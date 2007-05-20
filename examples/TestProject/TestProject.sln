@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestProject", "TestProject.vcproj", "{853A396E-C031-4C26-A716-5B4E176BE11D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "..\..\source\Irrlicht\Irrlicht7.1.vcproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Relase - Fast FPU = Relase - Fast FPU
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug.ActiveCfg = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Debug.Build.0 = Debug|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Relase - Fast FPU.ActiveCfg = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Relase - Fast FPU.Build.0 = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release.ActiveCfg = Release|Win32
+		{853A396E-C031-4C26-A716-5B4E176BE11D}.Release.Build.0 = Release|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug.ActiveCfg = Debug|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug.Build.0 = Debug|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Relase - Fast FPU.ActiveCfg = Relase - Fast FPU|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Relase - Fast FPU.Build.0 = Relase - Fast FPU|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.ActiveCfg = Release|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

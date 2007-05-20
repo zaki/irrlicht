@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpecialFx", "SpecialFX.vcproj", "{92C265D1-5821-4A09-AD6B-7E1D9E3D4D6C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{92C265D1-5821-4A09-AD6B-7E1D9E3D4D6C}.Debug.ActiveCfg = Debug|Win32
+		{92C265D1-5821-4A09-AD6B-7E1D9E3D4D6C}.Debug.Build.0 = Debug|Win32
+		{92C265D1-5821-4A09-AD6B-7E1D9E3D4D6C}.Release.ActiveCfg = Release|Win32
+		{92C265D1-5821-4A09-AD6B-7E1D9E3D4D6C}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

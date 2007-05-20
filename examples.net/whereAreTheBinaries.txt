@@ -1,0 +1,4 @@
+If you are searching for executeables of the examples and the techdemo,
+you'll find some for Windows in the directory
+/bin/Win32-VisualStudio.
+

@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo", "Demo.vcproj", "{5CFEB8FB-92BA-4FAD-A66C-EB53E3FD8DDA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "..\..\source\Irrlicht\Irrlicht7.1.vcproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{5CFEB8FB-92BA-4FAD-A66C-EB53E3FD8DDA}.Debug.ActiveCfg = Debug|Win32
+		{5CFEB8FB-92BA-4FAD-A66C-EB53E3FD8DDA}.Debug.Build.0 = Debug|Win32
+		{5CFEB8FB-92BA-4FAD-A66C-EB53E3FD8DDA}.Release.ActiveCfg = Release|Win32
+		{5CFEB8FB-92BA-4FAD-A66C-EB53E3FD8DDA}.Release.Build.0 = Release|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug.ActiveCfg = Debug|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug.Build.0 = Debug|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.ActiveCfg = Relase - Fast FPU|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.Build.0 = Relase - Fast FPU|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

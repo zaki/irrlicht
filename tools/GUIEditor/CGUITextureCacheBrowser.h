@@ -1,0 +1,74 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt / Gaz Davidson
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
+#ifndef __C_GUI_TEXTURE_CACHE_BROWSER_H_INCLUDED__
+#define __C_GUI_TEXTURE_CACHE_BROWSER_H_INCLUDED__
+
+#include "IGUIWindow.h"
+#include "CGUIPanel.h"
+#include "IGUIImage.h"
+
+namespace irr
+{
+namespace gui
+{
+
+	//! Texture cache browser
+
+	const u32 TEXTURE_BROWSER_TEXTURE_SELECTED = 0x5E1EC7ED; // custom event number for texture selected
+
+	class CGUITextureCacheBrowser : public IGUIWindow
+	{
+	public:
+
+		//! constructor
+		CGUITextureCacheBrowser(IGUIEnvironment* environment, s32 id=-1, IGUIElement *parent=0);
+
+		//! destructor
+		~CGUITextureCacheBrowser();
+
+		//! event handler
+		bool OnEvent(SEvent event);
+
+		//! draws the element
+		virtual void draw();
+
+		//! update absolute position
+		virtual void updateAbsolutePosition();
+
+		//! this shoudln't be serialized, but this is included as it's an example
+		virtual const c8* getTypeName() const { return "textureCacheBrowser"; }
+
+		//! Returns pointer to the close button
+		virtual IGUIButton* getCloseButton() { return CloseButton; }
+
+		//! Returns pointer to the minimize button
+		virtual IGUIButton* getMinimizeButton() { return 0;}
+
+		//! Returns pointer to the maximize button
+		virtual IGUIButton* getMaximizeButton() { return 0;}
+
+		void setSelected(s32 index=-1);
+
+	private:
+
+		void updateImageList();
+		core::array<IGUIImage*> Images;
+
+		bool Dragging;
+		core::position2d<s32> DragStart;
+
+		IGUIButton* CloseButton;
+		CGUIPanel*	Panel;
+		s32 SelectedTexture;
+
+	};
+
+
+} // end namespace gui
+} // end namespace irr
+
+#endif
+
+

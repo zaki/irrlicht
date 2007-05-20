@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TerrainRendering", "TerrainRendering.vcproj", "{CC3423A9-535A-4E83-9115-88383DCDA750}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{CC3423A9-535A-4E83-9115-88383DCDA750}.Debug.ActiveCfg = Debug|Win32
+		{CC3423A9-535A-4E83-9115-88383DCDA750}.Debug.Build.0 = Debug|Win32
+		{CC3423A9-535A-4E83-9115-88383DCDA750}.Release.ActiveCfg = Release|Win32
+		{CC3423A9-535A-4E83-9115-88383DCDA750}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

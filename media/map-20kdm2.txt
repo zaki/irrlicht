@@ -1,0 +1,50 @@
+ 
+-=( Map Information )=- -----------------------------------------------
+
+<Title>			: Return to Castle: Quake
+<Date>			: 02/02/02 - ren 11/17/2002
+<Filename>		: map-20kdm2.pk3
+<Author>		: Michael "<|3FG20K>" Cook
+<Email Address>		: bfg20k@nycap.rr.com / bfg20k@planetquake.com
+<Website>		: http://www.planetquake.com/bfg20k
+<Description>		: This is an Evil7 Castle! It has three tiers,
+			  tight spaces, and plenty of room for various
+			  battles.
+
+<Additional Credits>	: [HFX]Evil, for making great textures.
+
+-=( Construction )=- --------------------------------------------------
+
+<Base>			: None.
+<Editor(s) Used>	: Q3Radiant - Build 202 & Q3Build
+<Known Bugs>		: This isn't really a bug, but an added feature;
+			  you can walk on top of the battlements.
+<Construction Time>	: 3 weeks.
+<Compile Machine>	: 866mhz PIII, 512mb RAM
+
+-=( Play Information )=- ----------------------------------------------
+
+<Mod> 			: A good one.
+<Players>		: 2-8 Players
+<Bots>			: Duh! wait, I THINK they're smarter than Forrest
+			  Gump... You'll have to clarify that for me =).
+
+-={ Installation }=- --------------------------------------------------
+
+<Installation>		: Unzip the the zip file map-20kdm2.zip into
+			  your "Quake III Arena\baseq3" directory
+			  Run Quake III Arena, and under console type
+			  "/map 20kdm2" or select under Skirmish in
+			  SIngle Player mode.
+
+-=( Copyright / Permissions )=- ---------------------------------------
+
+<Copyright> 		: You not include or distribute this map in any
+			  sort of commercial product without permission
+			  from the author.  You may not mass distribute
+			  this level via any non-electronic means
+			  including but not limited to compact disks,
+			  and floppy disks without permission from the
+			  author.
+
+-=( This is the End )=- -----------------------------------------------

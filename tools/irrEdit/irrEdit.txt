@@ -1,0 +1,7 @@
+irrEdit is a free scene graph editor for Irrlicht Engine .irr files and is capable as being used as world editor,
+particle system designer, meshviewer and more. It is a visual front end for the Irrlicht Engine, and thus has a lot
+of impressive features like importing meshes of every format Irrlicht supports, simple but powerful material
+system and lots of special effects. 
+
+For package size reasons, irrEdit is not included in this SDK, but you can download it from 
+http://www.ambiera.com/irredit
