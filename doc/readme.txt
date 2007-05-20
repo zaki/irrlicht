@@ -1,0 +1,2 @@
+Linux Users: There are some tools at the web for reading .chm files (try http://xchm.sourceforge.net/).
+You can find a html version of this documentation at http://irrlicht.sourceforge.net/docu/index.html

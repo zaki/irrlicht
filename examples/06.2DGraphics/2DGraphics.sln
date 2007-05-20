@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "2DGraphics", "2DGraphics.vcproj", "{E71B6F18-10DC-4101-A541-F6D33F71B2BD}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{E71B6F18-10DC-4101-A541-F6D33F71B2BD}.Debug.ActiveCfg = Debug|Win32
+		{E71B6F18-10DC-4101-A541-F6D33F71B2BD}.Debug.Build.0 = Debug|Win32
+		{E71B6F18-10DC-4101-A541-F6D33F71B2BD}.Release.ActiveCfg = Release|Win32
+		{E71B6F18-10DC-4101-A541-F6D33F71B2BD}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

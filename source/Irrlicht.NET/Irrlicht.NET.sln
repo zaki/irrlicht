@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht.NET", "Irrlicht.NET.vcproj", "{70E64FA1-D175-4441-B112-A667E3FF1B68}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleApp", "ExampleApp\ExampleApp.csproj", "{16FB9D0E-3B9E-4192-B6C7-246CEC037718}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{70E64FA1-D175-4441-B112-A667E3FF1B68}.Debug.ActiveCfg = Debug|Win32
+		{70E64FA1-D175-4441-B112-A667E3FF1B68}.Debug.Build.0 = Debug|Win32
+		{70E64FA1-D175-4441-B112-A667E3FF1B68}.Release.ActiveCfg = Release|Win32
+		{70E64FA1-D175-4441-B112-A667E3FF1B68}.Release.Build.0 = Release|Win32
+		{16FB9D0E-3B9E-4192-B6C7-246CEC037718}.Debug.ActiveCfg = Debug|.NET
+		{16FB9D0E-3B9E-4192-B6C7-246CEC037718}.Debug.Build.0 = Debug|.NET
+		{16FB9D0E-3B9E-4192-B6C7-246CEC037718}.Release.ActiveCfg = Release|.NET
+		{16FB9D0E-3B9E-4192-B6C7-246CEC037718}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
