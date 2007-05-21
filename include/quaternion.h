@@ -93,6 +93,9 @@ class quaternion
 		//!  q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 		void fromAngleAxis (f32 angle, const vector3df& axis);
 
+		//! Fills an angle (radians) around an axis (unit vector)
+		void toAngleAxis (f32 &angle, vector3df& axis) const;
+
 		void toEuler(vector3df& euler) const;
 
 		//! set quaternion to identity
@@ -463,6 +466,26 @@ inline void quaternion::fromAngleAxis(f32 angle, const vector3df& axis)
 	X = fSin*axis.X;
 	Y = fSin*axis.Y;
 	Z = fSin*axis.Z;
+}
+
+inline void quaternion::toAngleAxis(f32 &angle, core::vector3df &axis) const
+{
+	f32 scale = sqrt (X*X + Y*Y + Z*Z);
+
+	if (core::equals(scale,0.0f) || W > 1.0f)
+	{
+		angle = 0.0f;
+		axis.X = 0.0f;
+		axis.Y = 1.0f;
+		axis.Z = 0.0f;
+	}
+	else
+	{
+		angle = 2.0f * acos(W);
+		axis.X = X / scale;
+		axis.Y = Y / scale;
+		axis.Z = Z / scale;
+	}
 }
 
 inline void quaternion::toEuler(vector3df& euler) const
