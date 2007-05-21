@@ -98,10 +98,6 @@ namespace irr
 		//! Returns the operation system opertator object.
 		virtual IOSOperator* getOSOperator();
 
-		//! Sets if the window should be resizeable in windowed mode. The default
-		//! is false.
-		virtual void setResizeAble(bool resize=false);
-
 	protected:
 
 		void createGUIAndScene();
