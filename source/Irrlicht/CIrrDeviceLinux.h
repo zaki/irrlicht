@@ -98,8 +98,8 @@ namespace irr
 			CCursorControl(CIrrDeviceLinux* dev, bool null)
 				: Device(dev), IsVisible(true), Null(null)
 			{
-#ifdef _IRR_COMPILE_WITH_X11_
 				Device->grab();
+#ifdef _IRR_COMPILE_WITH_X11_
 				if (!null)
 				{
 					XGCValues values;
