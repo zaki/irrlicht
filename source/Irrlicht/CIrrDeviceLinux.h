@@ -77,6 +77,9 @@ namespace irr
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
 
+		//! Sets if the window should be resizeable in windowed mode.
+		virtual void setResizeAble(bool resize=false);
+
 	private:
 
 		//! create the driver
@@ -86,9 +89,6 @@ namespace irr
 		bool createWindow(const core::dimension2d<s32>& windowSize, u32 bits);
 
 		void createKeyMap();
-
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl

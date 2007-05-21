@@ -206,13 +206,6 @@ IOSOperator* CIrrDeviceStub::getOSOperator()
 }
 
 
-//! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceStub::setResizeAble(bool resize)
-{
-
-}
-
-
 //! Sets the input receiving scene manager. 
 void CIrrDeviceStub::setInputReceivingSceneManager(scene::ISceneManager* sceneManager)
 {
