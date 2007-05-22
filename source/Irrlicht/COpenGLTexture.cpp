@@ -405,7 +405,7 @@ GLuint COpenGLTexture::getOpenGLTextureName()
 
 //! Returns whether this texture has mipmaps
 //! return true if texture has mipmaps
-bool COpenGLTexture::hasMipMaps()
+bool COpenGLTexture::hasMipMaps() const
 {
 	return HasMipMaps;
 }

@@ -61,7 +61,7 @@ public:
 	IDirect3DTexture8* getDX8Texture();
 
 	//! returns if texture has mipmap levels
-	bool hasMipMaps();
+	bool hasMipMaps() const;
 
 	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture

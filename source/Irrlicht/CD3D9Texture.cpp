@@ -560,7 +560,7 @@ IDirect3DTexture9* CD3D9Texture::getDX9Texture()
 
 
 //! returns if texture has mipmap levels
-bool CD3D9Texture::hasMipMaps()
+bool CD3D9Texture::hasMipMaps() const
 {
 	return HasMipMaps;
 }

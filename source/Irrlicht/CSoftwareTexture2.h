@@ -96,7 +96,7 @@ public:
 	}
 	
 	//! support mipmaps
-	virtual s32 hasMipMaps() const
+	virtual bool hasMipMaps() const
 	{
 		return HasMipMaps;
 	}
@@ -111,7 +111,7 @@ private:
 	CImage * MipMap[SOFTWARE_DRIVER_2_MIPMAPPING_MAX];
 
 	s32 MipMapLOD;
-	s32 HasMipMaps;
+	bool HasMipMaps;
 
 };
 

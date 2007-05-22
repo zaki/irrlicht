@@ -82,7 +82,7 @@ public:
 	GLuint getOpenGLTextureName();
 
 	//! return whether this texture has mipmaps
-	virtual bool hasMipMaps();
+	virtual bool hasMipMaps() const;
 
 	//! Regenerates the mip map levels of the texture. Useful after
 	//! locking and modifying the texture
