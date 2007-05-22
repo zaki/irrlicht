@@ -38,8 +38,14 @@ namespace core
 	//! Constant for PI.
 	const f32 PI			= 3.14159265359f;
 
+	//! Constant for reciprocal of PI.
+	const f32 RECIPROCAL_PI		= 1.0f/PI;
+
 	//! Constant for 64bit PI.
 	const f64 PI64			= 3.1415926535897932384626433832795028841971693993751;
+
+	//! Constant for 64bit reciprocal of PI.
+	const f64 RECIPROCAL_PI64	= 1.0/PI64;
 
 	//! 32bit Constant for converting from degrees to radians
 	const f32 DEGTORAD   = PI / 180.0f;
