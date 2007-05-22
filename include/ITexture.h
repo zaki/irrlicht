@@ -151,7 +151,7 @@ public:
 
 	//! Returns whether the texture has MipMaps
 	/** \return Returns true if texture has MipMaps, else false. */
-	virtual bool hasMipMaps() { return false; }
+	virtual bool hasMipMaps() const { return false; }
 
 	//! Regenerates the mip map levels of the texture.
 	/** Useful after locking and modifying the texture */

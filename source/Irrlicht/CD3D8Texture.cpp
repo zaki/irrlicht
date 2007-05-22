@@ -385,7 +385,7 @@ IDirect3DTexture8* CD3D8Texture::getDX8Texture()
 
 
 //! returns if texture has mipmap levels
-bool CD3D8Texture::hasMipMaps()
+bool CD3D8Texture::hasMipMaps() const
 {
 	return HasMipMaps;
 }
