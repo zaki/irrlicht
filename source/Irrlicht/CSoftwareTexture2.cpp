@@ -20,7 +20,7 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 : ITexture(name), MipMapLOD(0), HasMipMaps(generateMipLevels)
 {
 	#ifndef SOFTWARE_DRIVER_2_MIPMAPPING
-		HasMipMaps = 0;
+		HasMipMaps = false;
 	#endif
 
 	memset32 ( MipMap, 0, sizeof ( MipMap ) );
@@ -89,7 +89,7 @@ inline s32 CSoftwareTexture2::getTextureSizeFromSurfaceSize(s32 size)
 //! modifying the texture
 void CSoftwareTexture2::regenerateMipMapLevels()
 {
-	if ( 0 == HasMipMaps )
+	if ( !HasMipMaps )
 		return;
 
 	s32 i;

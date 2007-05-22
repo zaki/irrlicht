@@ -158,8 +158,8 @@ void CSphereSceneNode::setSizeAndPolys()
 			Buffer.Vertices[i] = video::S3DVertex(pos.X, pos.Y, pos.Z,
 						normal.X, normal.Y, normal.Z,
 						clr, 
-						(f32)(asin(normal.X)/core::PI*2) + 0.5f,
-						(f32)(acos(normal.Y)/core::PI*2) + 0.5f);
+						(f32)(asin(normal.X)/core::PI) + 0.5f,
+						(f32)(acos(normal.Y)/core::PI));
 
 			++i;
 		}
