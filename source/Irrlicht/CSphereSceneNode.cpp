@@ -122,19 +122,14 @@ void CSphereSceneNode::setSizeAndPolys()
 	Buffer.Indices[++i] = PolyCountSq1;
 
 	// calculate the angle which separates all points in a circle
-
-	f32 Angle = 2 * core::PI / (f32)PolyCount;
-	f32 sinay;
-	f32 cosay;
-	f32 sinaxz;
-	f32 cosaxz;
+	const f64 Angle = 2 * core::PI / PolyCount;
 
 	i = 0;
-	f32 axz;
+	f64 axz;
 
 	// we don't start at 0.
 
-	f32 ay = -Angle / 4;
+	f64 ay = -Angle / 4;
 
 	for (int y = 0; y < PolyCount; ++y)
 	{
@@ -146,31 +141,32 @@ void CSphereSceneNode::setSizeAndPolys()
 			// calculate points position
 
 			axz += Angle;
-			sinay = sin(ay) * Radius;
-			cosay = cos(ay) * Radius;
-			cosaxz = cos(axz);
-			sinaxz = sin(axz);
+			const f64 sinay = sin(ay);
 
-			core::vector3df pos(cosaxz * sinay, cosay, sinaxz * sinay);
+			const core::vector3df pos(Radius * cos(axz) * sinay,
+						Radius * cos(ay),
+						Radius * sin(axz) * sinay);
 			core::vector3df normal(pos);
 			normal.normalize();
 
+			f32 tu = 0.5f;
+			if (normal.Y != -1.0f && normal.Y != 1.0f)
+				tu = (f32)(acos(core::clamp(normal.X/sinay, -1.0, 1.0)) * 0.5 *core::RECIPROCAL_PI64);
 			Buffer.Vertices[i] = video::S3DVertex(pos.X, pos.Y, pos.Z,
 						normal.X, normal.Y, normal.Z,
 						clr, 
-						(f32)(asin(normal.X)/core::PI) + 0.5f,
-						(f32)(acos(normal.Y)/core::PI));
-
+						(normal.Z > 0.0f)?tu:1-tu,
+						(f32)(ay*core::RECIPROCAL_PI64));
 			++i;
 		}
 	}
 
 	// the vertex at the top of the sphere
-	Buffer.Vertices[i] = video::S3DVertex(0.0f,Radius,0.0f, 0.0f,1.0f,0.0f, clr, 0.5f, 0.5f);
+	Buffer.Vertices[i] = video::S3DVertex(0.0f,Radius,0.0f, 0.0f,1.0f,0.0f, clr, 0.5f, 0.0f);
 
 	// the vertex at the bottom of the sphere
 	++i;
-	Buffer.Vertices[i] = video::S3DVertex(0.0f,-Radius,0.0f, 0.0f,-1.0f,0.0f, clr, 0.5f, 0.5f);
+	Buffer.Vertices[i] = video::S3DVertex(0.0f,-Radius,0.0f, 0.0f,-1.0f,0.0f, clr, 0.5f, 1.0f);
 
 	// recalculate bounding box
 
