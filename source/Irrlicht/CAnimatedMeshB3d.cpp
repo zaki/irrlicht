@@ -607,7 +607,7 @@ bool CAnimatedMeshB3d::ReadChunkVRTS(io::IReadFile* file, SB3dNode *InNode, SB3D
 
 		if (tex_coord_sets >= 1 && tex_coord_set_size >= 2)
 		{
-			tu=tex_coords[0][0]; 
+			tu=tex_coords[0][0];
 			tv=tex_coords[0][1];
 		}
 
@@ -615,7 +615,7 @@ bool CAnimatedMeshB3d::ReadChunkVRTS(io::IReadFile* file, SB3dNode *InNode, SB3D
 
 		if (tex_coord_sets>=2 && tex_coord_set_size>=2)
 		{
-			tu2=tex_coords[1][0]; 
+			tu2=tex_coords[1][0];
 			tv2=tex_coords[1][1];
 		}
 
@@ -786,7 +786,7 @@ bool CAnimatedMeshB3d::ReadChunkNODE(io::IReadFile* file, SB3dNode *InNode)
 		for (n=0; n<=2; n++)
 			scale[n] = os::Byteswap::byteswap(scale[n]);
 
-		for (n=0; n<=4; n++)
+		for (n=0; n<=3; n++)
 			rotation[n] = os::Byteswap::byteswap(rotation[n]);
 	#endif
 
@@ -1196,8 +1196,8 @@ bool CAnimatedMeshB3d::loadFile(io::IReadFile* file)
 		{
 			Node->Bones[j].pos = BaseVertices[Node->Bones[j].vertex_id]->Pos;
 			Node->Bones[j].normal = BaseVertices[Node->Bones[j].vertex_id]->Normal;
-			Node->Bones[j].vertex = 
-				AnimatedVertices_MeshBuffer[ Node->Bones[j].vertex_id ]->getVertex( 
+			Node->Bones[j].vertex =
+				AnimatedVertices_MeshBuffer[ Node->Bones[j].vertex_id ]->getVertex(
 					AnimatedVertices_VertexID[ Node->Bones[j].vertex_id ] );
 		}
 	}
