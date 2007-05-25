@@ -237,7 +237,7 @@ void CGUIMenu::closeAllSubMenus()
 void CGUIMenu::updateAbsolutePosition()
 {
 	if (Parent)
-		RelativeRect.LowerRightCorner.X = Parent->getAbsolutePosition().getWidth();
+		DesiredRect.LowerRightCorner.X = Parent->getAbsolutePosition().getWidth();
 
 	IGUIElement::updateAbsolutePosition();
 }

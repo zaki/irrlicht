@@ -169,10 +169,10 @@ void CGUIEnvironment::drawAll()
 			AbsoluteRect.LowerRightCorner.Y != dim.Height)
 		{
 			// resize gui environment
-			RelativeRect.LowerRightCorner.X = Driver->getScreenSize().Width;
-			RelativeRect.LowerRightCorner.Y = Driver->getScreenSize().Height;
-			AbsoluteClippingRect = RelativeRect;
-			AbsoluteRect = RelativeRect;
+			DesiredRect.LowerRightCorner.X = Driver->getScreenSize().Width;
+			DesiredRect.LowerRightCorner.Y = Driver->getScreenSize().Height;
+			AbsoluteClippingRect = DesiredRect;
+			AbsoluteRect = DesiredRect;
 			updateAbsolutePosition();
 		}		
 	}
