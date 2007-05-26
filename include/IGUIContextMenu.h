@@ -69,6 +69,9 @@ namespace gui
 		 \param enabled: True if it is enabled, otherwise false. */
 		virtual void setItemChecked(s32 idx, bool enabled) = 0;
 
+		//! Check if a menu item is checked
+		/** \param idx: Zero based index of the menu item */
+		virtual bool isItemChecked(s32 idx) = 0;
 
 		//! Removes a menu item
 		/** \param idx: Zero based index of the menu item */

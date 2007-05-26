@@ -26,19 +26,23 @@ namespace gui
 		//! Returns amount of items in box
 		virtual s32 getItemCount() = 0;
 
-		//! returns string of an item. the idx may be a value from 0 to itemCount-1
+		//! Returns string of an item. the idx may be a value from 0 to itemCount-1
 		virtual const wchar_t* getItem(s32 idx) = 0;
 
-		//! adds an item and returns the index of it
+		//! Adds an item and returns the index of it
 		virtual s32 addItem(const wchar_t* text) = 0;
 
-		//! deletes all items in the combo box
+		//! Removes an item from the combo box.
+		/** Warning. This will change the IDs of all following items */
+		virtual void removeItem(s32 id) = 0;
+
+		//! Deletes all items in the combo box
 		virtual void clear() = 0;
 
-		//! returns id of selected item. returns -1 if no item is selected.
+		//! Returns id of selected item. returns -1 if no item is selected.
 		virtual s32 getSelected() = 0;
 
-		//! sets the selected item. Set this to -1 if no item should be selected
+		//! Sets the selected item. Set this to -1 if no item should be selected
 		virtual void setSelected(s32 id) = 0;
 
 	};

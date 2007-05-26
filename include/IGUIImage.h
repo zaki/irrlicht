@@ -28,17 +28,24 @@ namespace gui
 		//! destructor
 		~IGUIImage() {};
 
-		//! sets an image
+		//! Sets an image
 		virtual void setImage(video::ITexture* image) = 0;
 
-		//! sets the colour of the image
+		//! Sets the colour of the image
 		virtual void setColor(video::SColor color) = 0;
 
-		//! sets if the image should scale to fit the element
+		//! Sets if the image should scale to fit the element
 		virtual void setScaleImage(bool scale) = 0;
 
-		//! sets if the image should use its alpha channel to draw itself
+		//! Sets if the image should use its alpha channel to draw itself
 		virtual void setUseAlphaChannel(bool use) = 0;
+
+		//! Returns true if the image is scaled to fit, false if not
+		virtual bool isImageScaled() const = 0;
+
+		//! Returns true if the image is using the alpha channel, false if not
+		virtual bool isAlphaChannelUsed() const = 0;
+
 	};
 
 

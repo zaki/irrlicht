@@ -81,6 +81,18 @@ void CGUITab::setBackgroundColor(video::SColor c)
 	BackColor = c;
 }
 
+//! returns true if the tab is drawing its background, false if not
+bool CGUITab::isDrawingBackground() const
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return DrawBackground;
+}
+
+//! returns the color of the background
+video::SColor CGUITab::getBackgroundColor() const
+{
+	return BackColor;
+}
 
 //! Writes attributes of the element.
 void CGUITab::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)

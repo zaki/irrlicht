@@ -31,7 +31,7 @@ namespace gui
 		//! returns amount of list items
 		virtual s32 getItemCount();
 
-		//! returns string of a list item. the may be a value from 0 to itemCount-1
+		//! returns string of a list item. the id may be a value from 0 to itemCount-1
 		virtual const wchar_t* getListItem(s32 id);
 
 		//! adds an list item, returns id of item
@@ -58,6 +58,9 @@ namespace gui
 		//! \return
 		//! returns the id of the new created item
 		virtual s32 addItem(const wchar_t* text, s32 icon);
+
+		//! Returns the icon of an item
+		virtual s32 getIcon(s32 id) const;
 
 		//! removes an item from the list
 		virtual void removeItem(s32 id);

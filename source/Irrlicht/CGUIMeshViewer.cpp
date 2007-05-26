@@ -61,7 +61,11 @@ void CGUIMeshViewer::setMesh(scene::IAnimatedMesh* mesh)
 		Mesh->grab();
 }
 
-
+//! Gets the displayed mesh
+scene::IAnimatedMesh* CGUIMeshViewer::getMesh() const
+{
+	return Mesh;
+}
 
 //! sets the material
 void CGUIMeshViewer::setMaterial(const video::SMaterial& material)

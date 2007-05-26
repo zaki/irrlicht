@@ -37,6 +37,12 @@ namespace gui
 		//! sets if the image should use its alpha channel to draw itself
 		virtual void setUseAlphaChannel(bool use);
 
+		//! Returns true if the image is scaled to fit, false if not
+		virtual bool isImageScaled() const;
+
+		//! Returns true if the image is using the alpha channel, false if not
+		virtual bool isAlphaChannelUsed() const;
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
 
