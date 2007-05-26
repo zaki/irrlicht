@@ -4,6 +4,7 @@
 
 #include "CGUITextureCacheBrowser.h"
 #include "IGUIEnvironment.h"
+#include "IGUIButton.h"
 #include "IGUISkin.h"
 #include "IGUIFont.h"
 #include "IVideoDriver.h"

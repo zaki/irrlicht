@@ -1,7 +1,7 @@
 
 #include "CGUIAttributeEditor.h"
 #include "IGUIEnvironment.h"
-
+#include "IFileSystem.h"
 #include "IVideoDriver.h"
 #include "IAttributes.h"
 #include "IGUIFont.h"

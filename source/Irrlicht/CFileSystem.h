@@ -58,6 +58,10 @@ public:
 	//! Converts a relative path to an absolute (unique) path, resolving symbolic links
 	virtual irr::core::stringc getAbsolutePath(irr::core::stringc &filename);
 
+	//! Returns the directory a file is located in.
+	/** \param filename: The file to get the directory from */
+	virtual irr::core::stringc getFileDir(irr::core::stringc &filename);
+
 	//! Creates a list of files and directories in the current working directory 
 	//! and returns it.
 	virtual IFileList* createFileList();

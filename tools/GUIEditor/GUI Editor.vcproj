@@ -67,7 +67,7 @@
 				AdditionalOptions=" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib glu32.lib opengl32.lib "
 				OutputFile="../../bin/Win32-visualstudio/GUIEditor.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Administrator\My Documents\svn\irrlicht\lib\Win32-visualstudio&quot;"
+				AdditionalLibraryDirectories="&quot;..\..\lib\Win32-visualstudio&quot;"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/TestProject.pdb"
 				SubSystem="1"

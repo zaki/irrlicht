@@ -9,6 +9,7 @@
 #include "IVideoDriver.h"
 #include "IOSOperator.h"
 #include "IReadFile.h"
+#include "IFileSystem.h"
 #include "IXMLWriter.h"
 #include "IGUISkin.h"
 #include "IGUIElementFactory.h"

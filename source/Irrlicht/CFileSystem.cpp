@@ -231,6 +231,22 @@ irr::core::stringc CFileSystem::getAbsolutePath(irr::core::stringc &filename)
 	return ret;
 }
 
+irr::core::stringc CFileSystem::getFileDir(irr::core::stringc &filename)
+{
+	irr::core::stringc ret;
+ 
+	// find last forward or backslash
+	s32 lastSlash = filename.findLast('/');
+	s32 lastBackSlash = filename.findLast('\\');
+	lastSlash = lastSlash > lastBackSlash ? lastSlash : lastBackSlash;
+
+	if (lastSlash >= 0 && lastSlash < (s32)filename.size())
+		ret = filename.subString(0, lastSlash);
+	else
+		ret = ".";
+
+	return ret;
+}
 
 //! Creates a list of files and directories in the current working directory 
 IFileList* CFileSystem::createFileList()

@@ -53,8 +53,7 @@ int main()
 	IGUISkin *skin = env->createSkin(EGST_WINDOWS_METALLIC);
 	env->setSkin(skin);
 
-	device->getFileSystem()->addFolderFileArchive ( "../../media/" );
-	IGUIFont *font = env->getFont("lucida.xml");
+	IGUIFont *font = env->getFont("../../media/lucida.xml");
 	if (font)
 		skin->setFont(font);
 	skin->drop();
