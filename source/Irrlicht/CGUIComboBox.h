@@ -34,6 +34,9 @@ namespace gui
 		//! adds an item and returns the index of it
 		virtual s32 addItem(const wchar_t* text);
 
+		//! Removes an item from the combo box.
+		virtual void removeItem(s32 id);
+
 		//! deletes all items in the combo box
 		virtual void clear();
 

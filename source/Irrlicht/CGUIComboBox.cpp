@@ -74,6 +74,18 @@ const wchar_t* CGUIComboBox::getItem(s32 idx)
 	return Items[idx].c_str();
 }
 
+//! Removes an item from the combo box.
+void CGUIComboBox::removeItem(s32 idx)
+{
+	if (idx < 0 || idx >= (s32)Items.size())
+		return;
+
+	if (Selected == idx)
+		Selected = -1;
+
+	Items.erase(idx);
+}
+
 //! Returns caption of this element.
 const wchar_t* CGUIComboBox::getText()
 {

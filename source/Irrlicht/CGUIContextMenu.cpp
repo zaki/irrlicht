@@ -49,7 +49,7 @@ CGUIContextMenu::~CGUIContextMenu()
 //! Returns amount of menu items
 s32 CGUIContextMenu::getItemCount() const
 {
-	return Items.size();
+	return (s32)Items.size();
 }
 
 
@@ -135,6 +135,19 @@ bool CGUIContextMenu::isItemEnabled(s32 idx)
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Items[idx].Enabled;
+}
+
+//! Returns if a menu item is checked
+bool CGUIContextMenu::isItemChecked(s32 idx)
+{
+	if (idx < 0 || idx >= (s32)Items.size())
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+		return false;
+	}
+
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return Items[idx].Checked;
 }
 
 

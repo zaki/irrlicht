@@ -50,6 +50,9 @@ namespace gui
 		//! Sets if the menu item should be enabled.
 		virtual void setItemEnabled(s32 idx, bool enabled);
 
+		//! Returns if a menu item is checked
+		virtual bool isItemChecked(s32 idx);
+
 		//! Sets if the menu item should be checked.
 		virtual void setItemChecked(s32 idx, bool enabled);
 

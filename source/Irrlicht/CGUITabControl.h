@@ -41,6 +41,12 @@ namespace gui
 		//! sets the color of the background, if it should be drawn.
 		virtual void setBackgroundColor(video::SColor c);
 
+		//! returns true if the tab is drawing its background, false if not
+		virtual bool isDrawingBackground() const;
+
+		//! returns the color of the background
+		virtual video::SColor getBackgroundColor() const;
+
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
 

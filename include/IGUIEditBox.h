@@ -33,7 +33,7 @@ namespace gui
 
 		//! Sets another color for the text.
 		/** If set, the edit box does not use the EGDC_BUTTON_TEXT color defined
-         in the skin, but the set color instead. You don't need to call 
+		 in the skin, but the set color instead. You don't need to call 
 		 IGUIEditBox::enableOverrrideColor(true) after this, this is done
 		 by this function.
 		 If you set a color, and you want the text displayed with the color

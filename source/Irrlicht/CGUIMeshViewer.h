@@ -28,6 +28,9 @@ namespace gui
 		//! sets the mesh to be shown
 		virtual void setMesh(scene::IAnimatedMesh* mesh);
 
+		//! Gets the displayed mesh
+		virtual scene::IAnimatedMesh* getMesh() const;
+
 		//! sets the material
 		virtual void setMaterial(const video::SMaterial& material);
 

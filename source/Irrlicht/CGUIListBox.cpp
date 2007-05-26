@@ -80,6 +80,14 @@ const wchar_t* CGUIListBox::getListItem(s32 id)
 	return Items[id].text.c_str();
 }
 
+//! Returns the icon of an item
+s32 CGUIListBox::getIcon(s32 id) const
+{
+	if (id<0 || id>((s32)Items.size())-1)
+		return -1;
+
+	return Items[id].icon;
+}
 
 
 //! adds an list item, returns id of item

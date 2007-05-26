@@ -108,6 +108,20 @@ void CGUIImage::setScaleImage(bool scale)
 	ScaleImage = scale;
 }
 
+//! Returns true if the image is scaled to fit, false if not
+bool CGUIImage::isImageScaled() const
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return ScaleImage;
+}
+
+//! Returns true if the image is using the alpha channel, false if not
+bool CGUIImage::isAlphaChannelUsed() const
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return UseAlphaChannel;
+}
+
 
 //! Writes attributes of the element.
 void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
