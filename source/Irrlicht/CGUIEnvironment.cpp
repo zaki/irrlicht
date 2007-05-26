@@ -1184,12 +1184,19 @@ IGUIFont* CGUIEnvironment::getFont(const c8* filename)
 		{
 			CGUIFont* font = new CGUIFont(this, f.Filename.c_str());
 			ifont = (IGUIFont*)font;
+			// change working directory, for loading textures
+			core::stringc workingDir = FileSystem->getWorkingDirectory();
+			FileSystem->changeWorkingDirectoryTo(FileSystem->getFileDir(f.Filename).c_str());
+
+			// load the font
 			if (!font->load(xml))
 			{
 				font->drop();
 				font  = 0;
 				ifont = 0;
 			}
+			// change working dir back again
+			FileSystem->changeWorkingDirectoryTo( workingDir.c_str());
 		}
 		else if (t==EGFT_VECTOR)
 		{
