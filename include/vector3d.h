@@ -11,10 +11,10 @@ namespace irr
 {
 namespace core
 {
-	
+
 	//! 3d vector template class with lots of operators and methods.
 	template <class T>
-	class vector3d  
+	class vector3d
 	{
 	public:
 
@@ -23,7 +23,7 @@ namespace core
 #else
 		vector3d() : X(0), Y(0), Z(0) {};
 #endif
-		
+
 		vector3d(T nx, T ny, T nz) : X(nx), Y(ny), Z(nz) {};
 		vector3d(const vector3d<T>& other) : X(other.X), Y(other.Y), Z(other.Z) {};
 
@@ -61,15 +61,15 @@ namespace core
 		bool operator==(const vector3d<T>& other) const
 		{
 			return core::equals(X, other.X) &&
-				   core::equals(Y, other.Y) &&
-				   core::equals(Z, other.Z);
+				core::equals(Y, other.Y) &&
+				core::equals(Z, other.Z);
 		}
 
 		bool operator!=(const vector3d<T>& other) const
 		{
 			return !core::equals(X, other.X) ||
-				   !core::equals(Y, other.Y) ||
-				   !core::equals(Z, other.Z);
+				!core::equals(Y, other.Y) ||
+				!core::equals(Z, other.Z);
 		}
 
 		// functions
@@ -78,8 +78,8 @@ namespace core
 		bool equals(const vector3d<T>& other, const f32 tolerance = ROUNDING_ERROR_32 ) const
 		{
 			return core::equals(X, other.X, tolerance) &&
-				   core::equals(Y, other.Y, tolerance) &&
-				   core::equals(Z, other.Z, tolerance);
+				core::equals(Y, other.Y, tolerance) &&
+				core::equals(Z, other.Z, tolerance);
 		}
 
 		void set(const T nx, const T ny, const T nz) {X=nx; Y=ny; Z=nz; }
@@ -101,12 +101,12 @@ namespace core
 
 		//! Returns distance from another point.
 		/** Here, the vector is interpreted as point in 3 dimensional space. */
-		f64 getDistanceFrom(const vector3d<T>& other) const
+		T getDistanceFrom(const vector3d<T>& other) const
 		{
 			return vector3d<T>(X - other.X, Y - other.Y, Z - other.Z).getLength();
 		}
 
-		//! Returns squared distance from another point. 
+		//! Returns squared distance from another point.
 		/** Here, the vector is interpreted as point in 3 dimensional space. */
 		T getDistanceFromSQ(const vector3d<T>& other) const
 		{
@@ -114,8 +114,8 @@ namespace core
 		}
 
 		//! Calculates the cross product with another vector
- 		//! \param p: vector to multiply with.
- 		//! \return Crossproduct of this vector with p.
+		//! \param p: vector to multiply with.
+		//! \return Crossproduct of this vector with p.
 		vector3d<T> crossProduct(const vector3d<T>& p) const
 		{
 			return vector3d<T>(Y * p.Z - Z * p.Y, Z * p.X - X * p.Z, X * p.Y - Y * p.X);
@@ -123,13 +123,13 @@ namespace core
 
 		//! Returns if this vector interpreted as a point is on a line between two other points.
 		/** It is assumed that the point is on the line. */
- 		//! \param begin: Beginning vector to compare between.
- 		//! \param end: Ending vector to compare between.
- 		//! \return True if this vector is between begin and end.  False if not.
+		//! \param begin: Beginning vector to compare between.
+		//! \param end: Ending vector to compare between.
+		//! \return True if this vector is between begin and end.  False if not.
 		bool isBetweenPoints(const vector3d<T>& begin, const vector3d<T>& end) const
 		{
 			T f = (end - begin).getLengthSQ();
-			return getDistanceFromSQ(begin) < f && 
+			return getDistanceFromSQ(begin) < f &&
 				getDistanceFromSQ(end) < f;
 		}
 
@@ -163,7 +163,7 @@ namespace core
 			Z *= -1.0f;
 		}
 
-		//! Rotates the vector by a specified number of degrees around the Y 
+		//! Rotates the vector by a specified number of degrees around the Y
 		//! axis and the specified center.
 		//! \param degrees: Number of degrees to rotate around the Y axis.
 		//! \param center: The center of the rotation.
@@ -179,7 +179,7 @@ namespace core
 			Z += center.Z;
 		}
 
-		//! Rotates the vector by a specified number of degrees around the Z 
+		//! Rotates the vector by a specified number of degrees around the Z
 		//! axis and the specified center.
 		//! \param degrees: Number of degrees to rotate around the Z axis.
 		//! \param center: The center of the rotation.
@@ -239,33 +239,33 @@ namespace core
 
 		//! Gets the Y and Z rotations of a vector.
 		/** Thanks to Arras on the Irrlicht forums to add this method.
-		 \return A vector representing the rotation in degrees of
+		\return A vector representing the rotation in degrees of
 		this vector. The Z component of the vector will always be 0. */
 		vector3d<T> getHorizontalAngle()
 		{
 			vector3d<T> angle;
 
-			angle.Y = (T)atan2(X, Z); 
+			angle.Y = (T)atan2(X, Z);
 			angle.Y *= (f32)RADTODEG64;
 
 			if (angle.Y < 0.0f) angle.Y += 360.0f;
 			if (angle.Y >= 360.0f) angle.Y -= 360.0f;
 
-			f32 z1 = (f32)sqrt(X*X + Z*Z); 
-			    
-			angle.X = (T)atan2(z1, Y); 
+			f32 z1 = (f32)sqrt(X*X + Z*Z);
+
+			angle.X = (T)atan2(z1, Y);
 			angle.X *= (f32)RADTODEG64;
-			angle.X -= 90.0f; 
-			    
-			if (angle.X < 0.0f) angle.X += 360.0f; 
-			if (angle.X >= 360.0f) angle.X -= 360.0f; 
+			angle.X -= 90.0f;
+
+			if (angle.X < 0.0f) angle.X += 360.0f;
+			if (angle.X >= 360.0f) angle.X -= 360.0f;
 
 			return angle;
 		}
 
 		//! Fills an array of 4 values with the vector data (usually floats).
 		/** Useful for setting in shader constants for example. The fourth value
-		 will always be 0. */
+		will always be 0. */
 		void getAs4Values(T* array) const
 		{
 			array[0] = X;

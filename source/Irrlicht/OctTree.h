@@ -292,70 +292,16 @@ private:
 		}
 
 
-#if 0
-		// returns all ids of polygons partially or full enclosed 
-		// by the view frustum.
-		void getPolys(const scene::SViewFrustum& frustum, SIndexData* idxdata,u32 parentTest) const
-		{
-			// not full inside
-			//if ( parentTest != 2 )
-			{
-				s32 i; // new ISO for scoping problem in some compilers
-
-				core::vector3df edges[8];
-				Box.getEdges(edges);
-
-				u32 bitTest = 0;
-				for (i=0; i<scene::SViewFrustum::VF_PLANE_COUNT; ++i)
-				{
-					bool boxInFrustum = false;
-
-					for (int j=0; j<8; ++j)
-					if (frustum.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_BACK)
-					{
-						boxInFrustum = true;
-						break;
-					}
-
-					if (!boxInFrustum)
-					{
-						return;
-					}
-				}
-
-			}
-
-			s32 cnt = IndexData->size();
-			
-			for (i=0; i<cnt; ++i)
-			{
-				s32 idxcnt = (*IndexData)[i].Indices.size();
-
-				if (idxcnt)
-				{
-					memcpy(&idxdata[i].Indices[idxdata[i].CurrentSize], 
-						&(*IndexData)[i].Indices[0], idxcnt * sizeof(s16));
-					idxdata[i].CurrentSize += idxcnt;
-				}
-			}
-
-			for (i=0; i<8; ++i)
-				if (Children[i])
-					Children[i]->getPolys(frustum, idxdata,parentTest);
-		}
-#endif
 
 		// returns all ids of polygons partially or full enclosed 
 		// by the view frustum.
 		void getPolys(const scene::SViewFrustum& frustum, SIndexData* idxdata,u32 parentTest) const
 		{
-			u32 totalIn = 0;
 			s32 i; // new ISO for scoping problem in some compilers
 			
-			// not full inside
+			// not fully inside
 			//if ( parentTest != 2 )
 			{
-
 				core::vector3df edges[8];
 				Box.getEdges(edges);
 
@@ -365,18 +311,16 @@ private:
 					bool boxInFrustum = false;
 
 					for (int j=0; j<8; ++j)
-					if (frustum.planes[i].isFrontFacing(edges[j]) )
+//					if (frustum.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_BACK)
+					if (!frustum.planes[i].isFrontFacing(edges[j]) )
 					{
 						boxInFrustum = true;
 						break;
 					}
 
 					if (!boxInFrustum)
-					{
 						return;
-					}
 				}
-
 			}
 
 			s32 cnt = IndexData->size();

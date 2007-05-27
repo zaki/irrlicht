@@ -67,7 +67,7 @@ public:
 
 	//! Returns the length of the vector
 	//! \return Returns the length of the vector.
-	f64 getLength() const { return sqrt(X*X + Y*Y); }
+	T getLength() const { return (T)sqrt(X*X + Y*Y); }
 
 	//! Returns the squared length of this vector
 	/** This is useful because it is much faster than getLength(). */
@@ -81,7 +81,7 @@ public:
 
 	//! Returns distance from another point. Here, the vector is interpreted
 	//! as a point in 2 dimensional space.
-	f64 getDistanceFrom(const vector2d<T>& other) const
+	T getDistanceFrom(const vector2d<T>& other) const
 	{
 		return vector2d<T>(X - other.X, Y - other.Y).getLength();
 	}
@@ -130,19 +130,19 @@ public:
 	//! \return Returns a value between 0 and 360.
 	f64 getAngleTrig() const
 	{
-		if (X == 0.0)
-			return Y < 0.0 ? 270.0 : 90.0;
+		if (X == 0)
+			return Y < 0 ? 270 : 90;
 		else
 		if (Y == 0)
-			return X < 0.0 ? 180.0 : 0.0;
+			return X < 0 ? 180 : 0;
 
-		if ( Y > 0.0)
-			if (X > 0.0)
+		if ( Y > 0)
+			if (X > 0)
 				return atan(Y/X) * RADTODEG64;
 			else
 				return 180.0-atan(Y/-X) * RADTODEG64;
 		else
-			if (X > 0.0)
+			if (X > 0)
 				return 360.0-atan(-Y/X) * RADTODEG64;
 			else
 				return 180.0+atan(-Y/-X) * RADTODEG64;
@@ -152,24 +152,24 @@ public:
 	//! \return Returns a value between 0 and 360.
 	inline f64 getAngle() const
 	{
-		if (Y == 0.0)  // corrected thanks to a suggestion by Jox
-			return X < 0.0 ? 180.0 : 0.0; 
-		else if (X == 0.0) 
-			return Y < 0.0 ? 90.0 : 270.0;
+		if (Y == 0)  // corrected thanks to a suggestion by Jox
+			return X < 0 ? 180 : 0; 
+		else if (X == 0) 
+			return Y < 0 ? 90 : 270;
 
 		f64 tmp = Y / getLength();
 		tmp = atan(sqrt(1 - tmp*tmp) / tmp) * RADTODEG64;
 
-		if (X>0.0 && Y>0.0)
+		if (X>0 && Y>0)
 			return tmp + 270;
 		else
-		if (X>0.0 && Y<0.0)
+		if (X>0 && Y<0)
 			return tmp + 90;
 		else
-		if (X<0.0 && Y<0.0)
+		if (X<0 && Y<0)
 			return 90 - tmp;
 		else
-		if (X<0.0 && Y>0.0)
+		if (X<0 && Y>0)
 			return 270 - tmp;
 
 		return tmp;
@@ -185,7 +185,8 @@ public:
 			return 90.0;
 
 		tmp = tmp / sqrt((X*X + Y*Y) * (b.X*b.X + b.Y*b.Y));
-		if (tmp < 0.0) tmp = -tmp;
+		if (tmp < 0.0)
+			tmp = -tmp;
 
 		return atan(sqrt(1 - tmp*tmp) / tmp) * RADTODEG64;
 	}

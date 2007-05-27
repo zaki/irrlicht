@@ -498,10 +498,10 @@ void CSoftwareDriver::drawClippedIndexedTriangleListT(const VERTEXTYPE* vertices
 			for (t=0; t<3; ++t)
 			{
 				inout[t] = planes[p].classifyPointRelation(tClpBuf[v+t].Pos);
-				if (inout[t] == core::ISREL3D_FRONT)
+				if (inout[t] != core::ISREL3D_FRONT)
 					++inside;
 				else
-				if (inout[t] == core::ISREL3D_BACK)
+				if (inout[t] == core::ISREL3D_FRONT)
 					++outside;
 			}
 
