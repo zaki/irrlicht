@@ -116,10 +116,16 @@ namespace gui
 		virtual void setUseAlphaChannel(bool useAlphaChannel) = 0;
 
 		//! Returns if the alpha channel should be used for drawing background images on the button
-		virtual bool getUseAlphaChannel() = 0;
+		virtual bool isAlphaChannelUsed() = 0;
 
-		//! Sets if the button should use the skin to draw its border (default is true)
+		//! Returns whether the button is a push button
+		virtual bool isPushButton() = 0;
+
+		//! Sets if the button should use the skin to draw its border and button face (default is true)
 		virtual void setDrawBorder(bool border) = 0;
+
+		//! Returns if the border and button face are being drawn using the skin
+		virtual bool isDrawingBorder() = 0;
 	};
 
 

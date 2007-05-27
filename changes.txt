@@ -99,7 +99,8 @@ GUI:
 
   - Can now load/save gui environment from/to an element.
 
-  - Most element set functions now have a corresponding get function
+  - Most element set functions now have a corresponding get or is function. 
+   (API change) IGUIButton::getUseAlphaChannel is now isAlphaChannelUsed, to fit with other is* functions.
 
   - Fixed a bug with resizing the gui environment when the device is resized
 

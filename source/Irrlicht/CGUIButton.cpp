@@ -373,6 +373,13 @@ void CGUIButton::setPressed(bool pressed)
 	}
 }
 
+//! Returns whether the button is a push button
+bool CGUIButton::isPushButton()
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return IsPushButton;
+}
+
 //! Sets if the alpha channel should be used for drawing images on the button (default is false)
 void CGUIButton::setUseAlphaChannel(bool useAlphaChannel)
 {
@@ -380,9 +387,16 @@ void CGUIButton::setUseAlphaChannel(bool useAlphaChannel)
 }
 
 //! Returns if the alpha channel should be used for drawing images on the button
-bool CGUIButton::getUseAlphaChannel()
+bool CGUIButton::isAlphaChannelUsed()
 {
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return UseAlphaChannel;
+}
+
+bool CGUIButton::isDrawingBorder()
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return Border;
 }
 
 //! Writes attributes of the element.

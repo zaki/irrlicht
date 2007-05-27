@@ -76,7 +76,13 @@ namespace gui
 		virtual void setUseAlphaChannel(bool useAlphaChannel);
 
 		//! Returns if the alpha channel should be used for drawing images on the button
-		virtual bool getUseAlphaChannel();
+		virtual bool isAlphaChannelUsed();
+
+		//! Returns if the button face and border are being drawn
+		virtual bool isDrawingBorder();
+
+		//! Returns whether the button is a push button
+		virtual bool isPushButton();
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
