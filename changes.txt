@@ -6,7 +6,10 @@ Changes in version 1.3.1 (?? Mar 2007)
    triangle3d.isOnSameSide is now private - it's just a helper class not
    intended for further use.
 
- - updated to latest PNG library (1.2.18), fixing a vulnerability.
+ - Added IFileSystem::getFileDir, to get the directory when given a file 
+   name. Submitted by Jeff Myers
+
+ - Updated to latest PNG library (1.2.18), fixing a vulnerability.
 
  - Changed the external window pointer from s32 to void*. This makes the
    mechanism 64bit safe, but also breaks the API. You have to cast to
@@ -61,7 +64,7 @@ Changes in version 1.3.1 (?? Mar 2007)
  - Added LinuxDevice setResizeAble implementation.
  
  - Enumeration values of the ESCENE_NODE_TYPE enum are no longer ints but four
-   character codes. If you were using them as index previously, this is no more possible now.
+   character codes. If you were using them as index previously, this is no longer possible.
  
  - There is now a way to set which scene manager should recieve user input, when working
    with multiple scene managers: IrrlichtDevice::setInputReceivingSceneManager().
@@ -96,11 +99,20 @@ GUI:
 
   - Can now load/save gui environment from/to an element.
 
+  - Most element set functions now have a corresponding get function
+
+  - Fixed a bug with resizing the gui environment when the device is resized
+
+  - XML bitmap fonts now load textures from the XML file directory rather than the current one
+
 GUI Editor:
 
-  - Added cut/copy/paste using clipboard and xml (via memory file). Will have problems in Linux due to no clipboard support
+  - Added cut/copy/paste using clipboard and xml (via memory file). Will have problems in Linux due 
+    to no clipboard support
 
   - Added texture attribute element
+
+  - Added CGUIPanel, a container with optional scrollbars. Originally submitted by Asger Feldthaus
 
 
 -------------------------------------------
