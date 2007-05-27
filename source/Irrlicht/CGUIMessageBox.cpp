@@ -47,6 +47,7 @@ CGUIMessageBox::CGUIMessageBox(IGUIEnvironment* environment, const wchar_t* capt
 void CGUIMessageBox::refreshControls()
 {
 	IGUISkin* skin = Environment->getSkin();
+	IGUIElement* focusMe = 0;
 
 	s32 buttonHeight = skin->getSize(EGDS_BUTTON_HEIGHT);
 	s32 buttonWidth = skin->getSize(EGDS_BUTTON_WIDTH);
@@ -125,64 +126,13 @@ void CGUIMessageBox::refreshControls()
 		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
 		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
 
-		if (Environment->getFocus() == this)
-			Environment->setFocus(OkButton);
+		focusMe = OkButton;
 	}
 	else if (OkButton)
 	{
 		OkButton->drop();
 		OkButton->remove();
 		OkButton =0;
-	}
-
-
-	// add/remove yes button
-	if (Flags & EMBF_YES)
-	{
-		if (!YesButton)
-		{
-			YesButton = Environment->addButton(btnRect, this);
-			YesButton->setSubElement(true);
-			YesButton->grab();
-		}
-		else
-			YesButton->setRelativePosition(btnRect);
-
-		YesButton->setText(skin->getDefaultText(EGDT_MSG_BOX_YES));
-
-		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
-		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
-	}
-	else if (YesButton)
-	{
-		YesButton->drop();
-		YesButton->remove();
-		YesButton = 0;
-	}
-
-
-	// add no button
-	if (Flags & EMBF_NO)
-	{
-		if (!NoButton)
-		{
-			NoButton = Environment->addButton(btnRect, this);
-			NoButton->setSubElement(true);
-			NoButton->grab();
-		}
-		else
-			NoButton->setRelativePosition(btnRect);
-
-		NoButton->setText(skin->getDefaultText(EGDT_MSG_BOX_NO));
-
-		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
-		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
-	}
-	else if (NoButton)
-	{
-		NoButton->drop();
-		NoButton->remove();
-		NoButton = 0;
 	}
 
 	// add cancel button
@@ -202,6 +152,10 @@ void CGUIMessageBox::refreshControls()
 
 		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
 		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
+
+		if (!focusMe)
+			focusMe = CancelButton;
+
 	}
 	else if (CancelButton)
 	{
@@ -209,6 +163,65 @@ void CGUIMessageBox::refreshControls()
 		CancelButton->remove();
 		CancelButton = 0;
 	}
+
+
+	// add/remove yes button
+	if (Flags & EMBF_YES)
+	{
+		if (!YesButton)
+		{
+			YesButton = Environment->addButton(btnRect, this);
+			YesButton->setSubElement(true);
+			YesButton->grab();
+		}
+		else
+			YesButton->setRelativePosition(btnRect);
+
+		YesButton->setText(skin->getDefaultText(EGDT_MSG_BOX_YES));
+
+		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
+		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
+
+		if (!focusMe)
+			focusMe = YesButton;
+	}
+	else if (YesButton)
+	{
+		YesButton->drop();
+		YesButton->remove();
+		YesButton = 0;
+	}
+
+	// add no button
+	if (Flags & EMBF_NO)
+	{
+		if (!NoButton)
+		{
+			NoButton = Environment->addButton(btnRect, this);
+			NoButton->setSubElement(true);
+			NoButton->grab();
+		}
+		else
+			NoButton->setRelativePosition(btnRect);
+
+		NoButton->setText(skin->getDefaultText(EGDT_MSG_BOX_NO));
+
+		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
+		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
+
+		if (!focusMe)
+			focusMe = NoButton;
+
+	}
+	else if (NoButton)
+	{
+		NoButton->drop();
+		NoButton->remove();
+		NoButton = 0;
+	}
+
+	if (Environment->getFocus() == this && focusMe)
+		Environment->setFocus(focusMe);
 }
 
 
@@ -301,10 +314,10 @@ void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 {
 	Flags = 0;
 
-	Flags  = in->getAttributeAsBool("OkayButton")   ? EMBF_OK		: 0;
-	Flags |= in->getAttributeAsBool("CancelButton")	? EMBF_CANCEL		: 0;
-	Flags |= in->getAttributeAsBool("YesButton")	? EMBF_YES		: 0;
-	Flags |= in->getAttributeAsBool("NoButton")	? EMBF_NO		: 0;
+	Flags  = in->getAttributeAsBool("OkayButton")  ? EMBF_OK     : 0;
+	Flags |= in->getAttributeAsBool("CancelButton")? EMBF_CANCEL : 0;
+	Flags |= in->getAttributeAsBool("YesButton")   ? EMBF_YES    : 0;
+	Flags |= in->getAttributeAsBool("NoButton")    ? EMBF_NO     : 0;
 
 	MessageText = in->getAttributeAsStringW("MessageText").c_str();
 
