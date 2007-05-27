@@ -181,7 +181,7 @@ inline void AlignToUpVector(irr::core::matrix4 &m, const irr::core::vector3df &u
 	core::quaternion quatRot( up.Z, 0.f, -up.X, 1 + up.Y );
 	quatRot.normalize();
 	quatRot.getMatrix ( m );
-} 
+}
 
 
 
@@ -282,7 +282,7 @@ void CAnimatedMeshSceneNode::render()
 		{
 			for ( g=0; g< m->getMeshBufferCount(); ++g)
 			{
-				driver->draw3DBox( m->getMeshBuffer(g)->getBoundingBox(), 
+				driver->draw3DBox( m->getMeshBuffer(g)->getBoundingBox(),
 									video::SColor(0,190,128,128)
 								);
 			}
@@ -345,7 +345,7 @@ void CAnimatedMeshSceneNode::render()
 		// show normals
 		if ( DebugDataVisible & scene::EDS_NORMALS )
 		{
-			IAnimatedMesh * arrow = SceneManager->addArrowMesh ( "__debugnormal", 
+			IAnimatedMesh * arrow = SceneManager->addArrowMesh ( "__debugnormal",
 							4, 8, 1.f, 0.6f, 0.05f, 0.3f, 0xFFECEC00, 0xFF999900
 							);
 			if ( 0 == arrow )
@@ -367,7 +367,9 @@ void CAnimatedMeshSceneNode::render()
 				for ( i = 0; i != mb->getVertexCount(); ++i )
 				{
 					AlignToUpVector ( m2, v->Normal );
-					AbsoluteTransformation.transformVect ( m2.pointer(), v->Pos );
+
+					m2.setTranslation(v->Pos);
+					m2*=AbsoluteTransformation;
 
 					driver->setTransform(video::ETS_WORLD, m2 );
 					for ( u32 a = 0; a != mesh->getMeshBufferCount(); ++a )
@@ -778,7 +780,7 @@ const SMD3QuaterionTag& CAnimatedMeshSceneNode::getAbsoluteTransformation( const
 	SMD3QuaterionTag * tag = MD3Special.AbsoluteTagList.get ( tagname );
 	if ( tag )
 		return *tag;
-		
+
 	MD3Special.AbsoluteTagList.Container.push_back ( SMD3QuaterionTag ( tagname, AbsoluteTransformation ) );
 	return *MD3Special.AbsoluteTagList.get ( tagname );
 }
@@ -800,7 +802,7 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 	}
 
 	SMD3QuaterionTag relative( RelativeTranslation, RelativeRotation );
-	
+
 	SMD3QuaterionTagList *taglist;
 	taglist = ( (IAnimatedMeshMD3*) Mesh )->getTagList ( getFrameNr(),255,getStartFrame (),getEndFrame () );
 	if ( taglist )
