@@ -21,12 +21,26 @@ namespace core
 	{
 	public:
 
+		//! Constructor for an all 0 triangle
 		triangle3d() {}
+		//! Constructor for triangle with given three vertices
 		triangle3d(vector3d<T> v1, vector3d<T> v2, vector3d<T> v3) : pointA(v1), pointB(v2), pointC(v3) {}
+
+		//! Equality operator
+		bool operator==(const triangle3d<T>& other) const
+		{
+			return other.pointA==pointA && other.pointB==pointB && other.pointC==pointC;
+		}
+
+		//! Inequality operator
+		bool operator!=(const triangle3d<T>& other) const
+		{
+			return !(*this==other);
+		}
 
 		//! Determines if the triangle is totally inside a bounding box.
 		//! \param box: Box to check.
-		//! \return Returns true if the triangle is withing the box,
+		//! \return Returns true if the triangle is within the box,
 		//! and false otherwise.
 		bool isTotalInsideBox(const aabbox3d<T>& box) const
 		{
@@ -35,20 +49,18 @@ namespace core
 				box.isPointInside(pointC));
 		}
 
-		bool operator==(const triangle3d<T>& other) const { return other.pointA==pointA && other.pointB==pointB && other.pointC==pointC; }
-		bool operator!=(const triangle3d<T>& other) const { return other.pointA!=pointA || other.pointB!=pointB || other.pointC!=pointC; }
-
-		//! Returns the closest point on a triangle to a point on the same plane.
+		//! Get the closest point on a triangle to a point on the same plane.
 		//! \param p: Point which must be on the same plane as the triangle.
+		//! \return The closest point of the triangle
 		core::vector3d<T> closestPointOnTriangle(const core::vector3d<T>& p) const
 		{
-			core::vector3d<T> rab = line3d<T>(pointA, pointB).getClosestPoint(p);
-			core::vector3d<T> rbc = line3d<T>(pointB, pointC).getClosestPoint(p);
-			core::vector3d<T> rca = line3d<T>(pointC, pointA).getClosestPoint(p);
+			const core::vector3d<T> rab = line3d<T>(pointA, pointB).getClosestPoint(p);
+			const core::vector3d<T> rbc = line3d<T>(pointB, pointC).getClosestPoint(p);
+			const core::vector3d<T> rca = line3d<T>(pointC, pointA).getClosestPoint(p);
 
-			T d1 = rab.getDistanceFrom(p);
-			T d2 = rbc.getDistanceFrom(p);
-			T d3 = rca.getDistanceFrom(p);
+			const T d1 = rab.getDistanceFrom(p);
+			const T d2 = rbc.getDistanceFrom(p);
+			const T d3 = rca.getDistanceFrom(p);
 
 			if (d1 < d2)
 				return d1 < d3 ? rab : rca;
@@ -56,7 +68,7 @@ namespace core
 			return d2 < d3 ? rbc : rca;
 		}
 
-		//! Returns if a point is inside the triangle
+		//! Check if a point is inside the triangle
 		//! \param p: Point to test. Assumes that this point is already on the plane
 		//! of the triangle.
 		//! \return Returns true if the point is inside the triangle, otherwise false.
@@ -67,7 +79,7 @@ namespace core
 				isOnSameSide(p, pointC, pointA, pointB));
 		}
 
-		//! Returns if a point is inside the triangle. This method is an implementation
+		//! Check if a point is inside the triangle. This method is an implementation
 		//! of the example used in a paper by Kasper Fauerby original written
 		//! by Keidy from Mr-Gamemaker.
 		//! \param p: Point to test. Assumes that this point is already on the plane
@@ -95,20 +107,10 @@ namespace core
 		}
 
 
-		bool isOnSameSide(const vector3d<T>& p1, const vector3d<T>& p2, 
-			const vector3d<T>& a, const vector3d<T>& b) const
-		{
-			vector3d<T> bminusa = b - a;
-			vector3d<T> cp1 = bminusa.crossProduct(p1 - a);
-			vector3d<T> cp2 = bminusa.crossProduct(p2 - a);
-			return (cp1.dotProduct(cp2) >= 0.0f);
-		}
-
-
-		//! Returns an intersection with a 3d line.
+		//! Get an intersection with a 3d line.
 		//! \param line: Line to intersect with.
 		//! \param outIntersection: Place to store the intersection point, if there is one.
-		//! \return Returns true if there was an intersection, false if there was not.
+		//! \return Returns true if there was an intersection, false if not.
 		bool getIntersectionWithLimitedLine(const line3d<T>& line,
 			vector3d<T>& outIntersection) const
 		{
@@ -119,12 +121,12 @@ namespace core
 
 
 		//! Returns an intersection with a 3d line.
-		//! Please note that also points are returned as intersection, which
+		//! Please note that also points are returned as intersection which
 		//! are on the line, but not between the start and end point of the line.
-		//! If you want the returned point be between start and end, please
+		//! If you want the returned point be between start and end
 		//! use getIntersectionWithLimitedLine().
-		//! \param lineVect: Vector of the line to intersect with.
 		//! \param linePoint: Point of the line to intersect with.
+		//! \param lineVect: Vector of the line to intersect with.
 		//! \param outIntersection: Place to store the intersection point, if there is one.
 		//! \return Returns true if there was an intersection, false if there was not.
 		bool getIntersectionWithLine(const vector3d<T>& linePoint,
@@ -148,7 +150,7 @@ namespace core
 		{
 			const vector3d<T> normal = getNormal().normalize();
 			T t2;
-            
+
 			if ( core::iszero ( t2 = normal.dotProduct(lineVect) ) )
 				return false;
 
@@ -202,6 +204,16 @@ namespace core
 		vector3d<T> pointA; 
 		vector3d<T> pointB; 
 		vector3d<T> pointC; 
+
+	private:
+		bool isOnSameSide(const vector3d<T>& p1, const vector3d<T>& p2, 
+			const vector3d<T>& a, const vector3d<T>& b) const
+		{
+			vector3d<T> bminusa = b - a;
+			vector3d<T> cp1 = bminusa.crossProduct(p1 - a);
+			vector3d<T> cp2 = bminusa.crossProduct(p2 - a);
+			return (cp1.dotProduct(cp2) >= 0.0f);
+		}
 	};
 
 
