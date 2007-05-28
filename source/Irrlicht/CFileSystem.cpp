@@ -237,8 +237,10 @@ irr::core::stringc CFileSystem::getFileDir(irr::core::stringc &filename)
  
 	// find last forward or backslash
 	s32 lastSlash = filename.findLast('/');
+#ifdef _IRR_WINDOWS_API_
 	s32 lastBackSlash = filename.findLast('\\');
 	lastSlash = lastSlash > lastBackSlash ? lastSlash : lastBackSlash;
+#endif
 
 	if (lastSlash >= 0 && lastSlash < (s32)filename.size())
 		ret = filename.subString(0, lastSlash);
