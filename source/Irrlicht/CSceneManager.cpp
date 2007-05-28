@@ -330,7 +330,7 @@ ISceneNode* CSceneManager::addSphereSceneNode(f32 radius, s32 polyCount, ISceneN
 	if (!parent)
 		parent = this;
 
-	ISceneNode* node = new CSphereSceneNode(radius, polyCount, parent, this, id, position, rotation, scale);
+	ISceneNode* node = new CSphereSceneNode(radius, polyCount, polyCount, parent, this, id, position, rotation, scale);
 	node->drop();
 
 	return node;
