@@ -14,10 +14,10 @@ namespace scene
 {
 
 //! constructor
-CSphereSceneNode::CSphereSceneNode(f32 Radius, s32 polyCount, ISceneNode* parent, ISceneManager* mgr, s32 id,
+CSphereSceneNode::CSphereSceneNode(f32 Radius, u32 polyCountX, u32 polyCountY, ISceneNode* parent, ISceneManager* mgr, s32 id,
 			const core::vector3df& position, const core::vector3df& rotation, const core::vector3df& scale)
 : ISceneNode(parent, mgr, id, position, rotation, scale), Radius(Radius),
-	PolyCount(polyCount)
+	PolyCountX(polyCountX), PolyCountY(polyCountY)
 {
 	#ifdef _DEBUG
 	setDebugName("CSphereSceneNode");
@@ -41,57 +41,58 @@ void CSphereSceneNode::setSizeAndPolys()
 
 	// we are creating the sphere mesh here.
 
-	if (PolyCount < 2)
-		PolyCount = 2;
-	else
-	if (PolyCount > 181) // prevent u16 overflow
-		PolyCount = 181;
+	if (PolyCountX < 2)
+		PolyCountX = 2;
+	if (PolyCountY < 2)
+		PolyCountY = 2;
+	if (PolyCountX * PolyCountY > 32767) // prevent u16 overflow
+		if (PolyCountX > PolyCountY) // prevent u16 overflow
+			PolyCountX = 32767/PolyCountY-1;
+		else
+			PolyCountY = 32767/(PolyCountX+1);
 
-	Buffer.Vertices.set_used((PolyCount * PolyCount) + 2);
-	Buffer.Indices.set_used((PolyCount * PolyCount) * 6);
+	u32 PolyCountXPitch = PolyCountX+1; // get to same vertex on next level
+	Buffer.Vertices.set_used((PolyCountXPitch * PolyCountY) + 2);
+	Buffer.Indices.set_used((PolyCountX * PolyCountY) * 6);
 
 	video::SColor clr(100, 255,255,255);
 
-	int i=0;
-	int level = 0;
+	u32 i=0;
+	u32 level = 0;
 
-	for (int p1=0; p1<PolyCount-1; ++p1)
+	for (u32 p1 = 0; p1 < PolyCountY-1; ++p1)
 	{
-		level = p1 * PolyCount;
-		int p2;
-
-		for (p2 = 0; p2 < PolyCount - 1; ++p2)
+		//main quads, top to bottom
+		for (u32 p2 = 0; p2 < PolyCountX - 1; ++p2)
 		{
-			Buffer.Indices[i] = level + p2 + PolyCount;
-			Buffer.Indices[++i] = level + p2;
-			Buffer.Indices[++i] = level + p2 + 1;
+			const u32 curr = level + p2;
+			Buffer.Indices[i] = curr + PolyCountXPitch;
+			Buffer.Indices[++i] = curr;
+			Buffer.Indices[++i] = curr + 1;
+			Buffer.Indices[++i] = curr + PolyCountXPitch;
+			Buffer.Indices[++i] = curr+1;
+			Buffer.Indices[++i] = curr + 1 + PolyCountXPitch;
 			++i;
 		}
 
-		Buffer.Indices[i] = level + PolyCount - 1 + PolyCount;
-		Buffer.Indices[++i] = level + PolyCount - 1;
-		Buffer.Indices[++i] = level;
+		// the connectors from front to end
+		Buffer.Indices[i] = level + PolyCountX - 1 + PolyCountXPitch;
+		Buffer.Indices[++i] = level + PolyCountX - 1;
+		Buffer.Indices[++i] = level + PolyCountX;
 		++i;
 
-		Buffer.Indices[i] = level + PolyCount - 1 + PolyCount;
-		Buffer.Indices[++i] = level;
-		Buffer.Indices[++i] = level + PolyCount;
+		Buffer.Indices[i] = level + PolyCountX - 1 + PolyCountXPitch;
+		Buffer.Indices[++i] = level + PolyCountX;
+		Buffer.Indices[++i] = level + PolyCountX + PolyCountXPitch;
 		++i;
-
-		for (p2 = 1; p2 <= PolyCount - 1; ++p2)
-		{
-			Buffer.Indices[i] = level + p2 - 1 + PolyCount;
-			Buffer.Indices[++i] = level + p2;
-			Buffer.Indices[++i] = level + p2 + PolyCount;
-			++i;
-		}
+		level += PolyCountXPitch;
 	}
 
-	int PolyCountSq = PolyCount * PolyCount;
-	int PolyCountSq1 = PolyCountSq + 1;
-	int PolyCountSqM1 = (PolyCount - 1) * PolyCount;
+	const u32 PolyCountSq = PolyCountXPitch * PolyCountY; // top point
+	const u32 PolyCountSq1 = PolyCountSq + 1; // bottom point
+	const u32 PolyCountSqM1 = (PolyCountY - 1) * PolyCountXPitch; // last row's first vertex
 
-	for (int p2 = 0; p2 < PolyCount - 1; ++p2)
+	for (u32 p2 = 0; p2 < PolyCountX - 1; ++p2)
 	{
 		// create triangles which are at the top of the sphere
 
@@ -108,57 +109,71 @@ void CSphereSceneNode::setSizeAndPolys()
 		++i;
 	}
 
-	// create a triangle which is at the top of the sphere
+	// create final triangle which is at the top of the sphere
 
 	Buffer.Indices[i] = PolyCountSq;
-	Buffer.Indices[++i] = 0;
-	Buffer.Indices[++i] = PolyCount - 1;
+	Buffer.Indices[++i] = PolyCountX;
+	Buffer.Indices[++i] = PolyCountX-1;
 	++i;
 
-	// create a triangle which is at the bottom of the sphere
+	// create final triangle which is at the bottom of the sphere
 
-	Buffer.Indices[i] = PolyCountSqM1 + PolyCount - 1;
+	Buffer.Indices[i] = PolyCountSqM1 + PolyCountX - 1;
 	Buffer.Indices[++i] = PolyCountSqM1;
 	Buffer.Indices[++i] = PolyCountSq1;
 
 	// calculate the angle which separates all points in a circle
-	const f64 Angle = 2 * core::PI / PolyCount;
+	const f64 AngleX = 2 * core::PI / PolyCountX;
+	const f64 AngleY = core::PI / PolyCountY;
 
 	i = 0;
 	f64 axz;
 
 	// we don't start at 0.
 
-	f64 ay = -Angle / 4;
+	f64 ay = 0;//AngleY / 2;
 
-	for (int y = 0; y < PolyCount; ++y)
+	for (u32 y = 0; y < PolyCountY; ++y)
 	{
-		ay += Angle / 2;
+		ay += AngleY;
+		const f64 sinay = sin(ay);
 		axz = 0;
 
-		for (int xz = 0;xz < PolyCount; ++xz)
+		// calculate the necessary vertices without the doubled one
+		for (u32 xz = 0;xz < PolyCountX; ++xz)
 		{
 			// calculate points position
-
-			axz += Angle;
-			const f64 sinay = sin(ay);
 
 			const core::vector3df pos(Radius * cos(axz) * sinay,
 						Radius * cos(ay),
 						Radius * sin(axz) * sinay);
+			// for spheres the normal is the position
 			core::vector3df normal(pos);
 			normal.normalize();
 
+			// calculate texture coordinates via sphere mapping
+			// tu is the same on each level, so only calculate once
 			f32 tu = 0.5f;
-			if (normal.Y != -1.0f && normal.Y != 1.0f)
-				tu = (f32)(acos(core::clamp(normal.X/sinay, -1.0, 1.0)) * 0.5 *core::RECIPROCAL_PI64);
+			if (y==0)
+			{
+				if (normal.Y != -1.0f && normal.Y != 1.0f)
+					tu = (f32)(acos(core::clamp(normal.X/sinay, -1.0, 1.0)) * 0.5 *core::RECIPROCAL_PI64);
+				if (normal.Z < 0.0f)
+					tu=1-tu;
+			}
+			else
+				tu = Buffer.Vertices[i-PolyCountXPitch].TCoords.X;
 			Buffer.Vertices[i] = video::S3DVertex(pos.X, pos.Y, pos.Z,
 						normal.X, normal.Y, normal.Z,
-						clr, 
-						(normal.Z > 0.0f)?tu:1-tu,
+						clr, tu,
 						(f32)(ay*core::RECIPROCAL_PI64));
 			++i;
+			axz += AngleX;
 		}
+		// This is the doubled vertex on the initial position
+		Buffer.Vertices[i] = video::S3DVertex(Buffer.Vertices[i-PolyCountX]);
+		Buffer.Vertices[i].TCoords.X=1.0f;
+		++i;
 	}
 
 	// the vertex at the top of the sphere
@@ -242,7 +257,8 @@ void CSphereSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeR
 	ISceneNode::serializeAttributes(out, options);
 
 	out->addFloat("Radius", Radius);
-	out->addInt("PolyCount", PolyCount);
+	out->addInt("PolyCountX", PolyCountX);
+	out->addInt("PolyCountY", PolyCountY);
 }
 
 
@@ -250,14 +266,20 @@ void CSphereSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeR
 void CSphereSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
 	f32 oldRadius = Radius;
-	s32 oldPolyCount = PolyCount;
+	u32 oldPolyCountX = PolyCountX;
+	u32 oldPolyCountY = PolyCountY;
 
 	Radius = in->getAttributeAsFloat("Radius");
-	PolyCount = in->getAttributeAsInt("PolyCount");
+	PolyCountX = in->getAttributeAsInt("PolyCountX");
+	PolyCountY = in->getAttributeAsInt("PolyCountY");
+	// legacy values read for compatibility with older versions
+	u32 polyCount = in->getAttributeAsInt("PolyCount");
+	if (PolyCountX ==0 && PolyCountY == 0)
+		PolyCountX = PolyCountY = polyCount;
 
 	Radius = irr::core::max_(Radius, 0.0001f);
 
-	if ( !core::equals(Radius, oldRadius) || PolyCount != oldPolyCount)
+	if ( !core::equals(Radius, oldRadius) || PolyCountX != oldPolyCountX || PolyCountY != oldPolyCountY)
 		setSizeAndPolys();
 
 	ISceneNode::deserializeAttributes(in, options);
@@ -269,7 +291,7 @@ ISceneNode* CSphereSceneNode::clone(ISceneNode* newParent, ISceneManager* newMan
 	if (!newParent) newParent = Parent;
 	if (!newManager) newManager = SceneManager;
 
-	CSphereSceneNode* nb = new CSphereSceneNode(Radius, PolyCount, newParent, 
+	CSphereSceneNode* nb = new CSphereSceneNode(Radius, PolyCountX, PolyCountY, newParent, 
 		newManager, ID, RelativeTranslation);
 
 	nb->cloneMembers(this, newManager);

@@ -17,7 +17,7 @@ namespace scene
 	public:
 
 		//! constructor
-		CSphereSceneNode(f32 size, s32 polyCount, ISceneNode* parent, ISceneManager* mgr, s32 id,
+		CSphereSceneNode(f32 size, u32 polyCountX, u32 polyCountY, ISceneNode* parent, ISceneManager* mgr, s32 id,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f));
@@ -61,7 +61,8 @@ namespace scene
 
 		SMeshBuffer Buffer;
 		f32 Radius;
-		s32 PolyCount;
+		u32 PolyCountX;
+		u32 PolyCountY;
 	};
 
 } // end namespace scene
