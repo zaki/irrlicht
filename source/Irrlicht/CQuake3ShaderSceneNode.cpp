@@ -13,13 +13,12 @@ namespace scene
 {
 
 
-CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(scene::ISceneNode* parent, scene::ISceneManager* mgr,s32 id,
-									   io::IFileSystem *fileSystem, 
-									   scene::IMeshBuffer *buffer, const quake3::SShader * shader
-									  )
-: scene::ISceneNode(parent, mgr, id), Shader ( shader ),TimeAbs ( 0.f )
+CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
+			scene::ISceneNode* parent, scene::ISceneManager* mgr,s32 id,
+			io::IFileSystem *fileSystem, scene::IMeshBuffer *buffer,
+			const quake3::SShader * shader)
+	: scene::ISceneNode(parent, mgr, id), Shader ( shader ),TimeAbs ( 0.f )
 {
-
 	#ifdef _DEBUG
 		core::stringc dName = "CQuake3ShaderSceneNode ";
 		dName += Shader->name;
@@ -499,7 +498,6 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 
 	const quake3::SVarGroup *group = Shader->getGroup ( stage );
 
-
 	// select current texture
 	if ( Q3Texture [ stage ].TextureFrequency != 0.f )
 	{
@@ -511,7 +509,6 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 	core::matrix4 texturem;
 	core::matrix4 m2;
 	quake3::SModifierFunction function;
-
 
 	f32 f0;
 	f32 f1;

@@ -53,7 +53,7 @@ namespace scene
 		{
 			for (s32 i = (s32) MeshBuffers.size(); --i >= 0; )
 			{
-				if ( !(material != MeshBuffers[i]->getMaterial()) )
+				if ( material == MeshBuffers[i]->getMaterial())
 					return MeshBuffers[i];
 			}
 

@@ -38,9 +38,6 @@ namespace scene
 		//! returns the axis aligned bounding box of this node
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
-		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount();
-
 		//! sets the text string
 		virtual void setText(const wchar_t* text);
 
