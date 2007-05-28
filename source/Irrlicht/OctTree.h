@@ -305,21 +305,20 @@ private:
 				core::vector3df edges[8];
 				Box.getEdges(edges);
 
-				u32 bitTest = 0;
 				for (i=0; i<scene::SViewFrustum::VF_PLANE_COUNT; ++i)
 				{
-					bool boxInFrustum = false;
+					u32 inFrustum=0, outFrustum=0;
 
 					for (int j=0; j<8; ++j)
-//					if (frustum.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_BACK)
-					if (!frustum.planes[i].isFrontFacing(edges[j]) )
-					{
-						boxInFrustum = true;
-						break;
-					}
+						if (frustum.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
+							++inFrustum;
+						else
+							++outFrustum;
 
-					if (!boxInFrustum)
+					if (!inFrustum) // all edges outside
 						return;
+					else if (outFrustum) // intersection of plane
+						break;
 				}
 			}
 

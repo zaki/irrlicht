@@ -805,7 +805,7 @@ bool CSceneManager::isCulled(ISceneNode* node)
 {
 	ICameraSceneNode* cam = getActiveCamera();
 	if (!cam)
-		return false;
+		return true;
 
 	switch ( node->getAutomaticCulling() )
 	{
@@ -820,14 +820,13 @@ bool CSceneManager::isCulled(ISceneNode* node)
 
 		// can be seen by a bounding sphere
 		case scene::EAC_FRUSTUM_SPHERE:
-		{
+		{ // requires bbox diameter
 		};
 		break;
 
 		// can be seen by cam pyramid planes ?
 		case scene::EAC_FRUSTUM_BOX:
 		{
-
 			SViewFrustum frust = *cam->getViewFrustum();
 
 			//transform the frustum to the node's current absolute transformation
@@ -838,29 +837,24 @@ bool CSceneManager::isCulled(ISceneNode* node)
 			core::vector3df edges[8];
 			node->getBoundingBox().getEdges(edges);
 
-			bool visible = true;
 			for (s32 i=0; i<scene::SViewFrustum::VF_PLANE_COUNT; ++i)
 			{
-				bool boxInFrustum = false;
-
-				for (u32 j=0; j<8; ++j)
+				u32 inFrustum=0, outFrustum=0;
+				for (u32 j=0; (j<8) && (inFrustum==0 || outFrustum==0); ++j)
 				{
-					if (frust.planes[i].isFrontFacing(edges[j]) )
-					{
-						boxInFrustum = true;
-						break;
-					}
+					if (frust.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
+						++inFrustum;
+					else
+						++outFrustum;
 				}
 
-				if (!boxInFrustum)
-				{
-					visible = false;
-					break;
-				}
-
+				if (inFrustum==0)
+					return true;
+				else if (outFrustum)
+					return false;
 			}
 
-			return !visible;
+			return false;
 		}
 		break;
 		case scene::EAC_OFF:

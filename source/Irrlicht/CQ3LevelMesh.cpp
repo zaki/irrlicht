@@ -260,7 +260,7 @@ void CQ3LevelMesh::loadFaces(tBSPLump* l, io::IReadFile* file)
 	file->read(Faces, l->length);
 
 	#ifdef __BIG_ENDIAN__
-	for ( u32 i=0;i<NumFaces;i++)
+	for ( s32 i=0;i<NumFaces;i++)
 	{
 		Faces[i].textureID = os::Byteswap::byteswap(Faces[i].textureID);
 		Faces[i].effect = os::Byteswap::byteswap(Faces[i].effect);

@@ -72,12 +72,6 @@ const core::aabbox3d<f32>& CTextSceneNode::getBoundingBox() const
 	return Box;
 }
 
-//! returns amount of materials used by this scene node.
-u32 CTextSceneNode::getMaterialCount()
-{
-	return 0;
-}
-
 //! sets the text string
 void CTextSceneNode::setText(const wchar_t* text)
 {

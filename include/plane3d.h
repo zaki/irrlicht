@@ -181,11 +181,15 @@ class plane3d
 			return false;
 		}
 
-		//! Returns if the plane is front of backfacing. Note that this only
-		//! works if the normal is Normalized.
+		//! Test if the triangle would be front or backfacing from any
+		//! point. Thus, this method assumes a camera position from
+		//! which the triangle is definitely visible when looking into
+		//! the given direction.
+		//! Note that this only works if the normal is Normalized.
+		//! Do not use this method with points as it will give wrong results!
 		//! \param lookDirection: Look direction.
-		//! \return Returns true if the plane is front facing, which mean it would
-		//! be visible, and false if it is backfacing.
+		//! \return Returns true if the plane is front facing and
+		//! false if it is backfacing.
 		bool isFrontFacing(const vector3d<T>& lookDirection) const
 		{
 			const f32 d = Normal.dotProduct(lookDirection);

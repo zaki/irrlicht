@@ -165,8 +165,8 @@ class aabbox3d
 		//! Classifies a relation with a plane.
 		//! \param plane: Plane to classify relation to.
 		//! \return Returns ISREL3D_FRONT if the box is in front of the plane,
-		//! ISREL3D_BACK if the box is back of the plane, and
-		//! ISREL3D_CLIPPED if is on both sides of the plane.
+		//! ISREL3D_BACK if the box is behind the plane, and
+		//! ISREL3D_CLIPPED if it is on both sides of the plane.
 		EIntersectionRelation3D classifyPlaneRelation(const plane3d<T>& plane) const
 		{
 			vector3d<T> nearPoint(MaxEdge);
