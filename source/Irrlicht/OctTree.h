@@ -307,18 +307,17 @@ private:
 
 				for (i=0; i<scene::SViewFrustum::VF_PLANE_COUNT; ++i)
 				{
-					u32 inFrustum=0, outFrustum=0;
+					bool boxInFrustum=false;
 
 					for (int j=0; j<8; ++j)
 						if (frustum.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
-							++inFrustum;
-						else
-							++outFrustum;
+						{
+							boxInFrustum=true;
+							break;
+						}
 
 					if (!inFrustum) // all edges outside
 						return;
-					else if (outFrustum) // intersection of plane
-						break;
 				}
 			}
 
