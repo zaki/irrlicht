@@ -316,7 +316,7 @@ private:
 							break;
 						}
 
-					if (!inFrustum) // all edges outside
+					if (!boxInFrustum) // all edges outside
 						return;
 				}
 			}
