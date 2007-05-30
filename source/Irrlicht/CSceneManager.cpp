@@ -843,7 +843,10 @@ bool CSceneManager::isCulled(ISceneNode* node)
 				for (u32 j=0; j<8; ++j)
 				{
 					if (frust.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
+					{
 						boxInFrustum=true;
+						break;
+					}
 				}
 
 				if (!boxInFrustum)
