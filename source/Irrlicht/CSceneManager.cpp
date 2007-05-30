@@ -839,16 +839,14 @@ bool CSceneManager::isCulled(ISceneNode* node)
 
 			for (s32 i=0; i<scene::SViewFrustum::VF_PLANE_COUNT; ++i)
 			{
-				bool pointInFrustum=false, pointOutsideFrustum=false;
-				for (u32 j=0; (j<8) && (!pointInFrustum || !pointOutsideFrustum); ++j)
+				bool boxInFrustum=false;
+				for (u32 j=0; j<8; ++j)
 				{
 					if (frust.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
-						pointInFrustum=true;
-					else
-						pointOutsideFrustum=true;
+						boxInFrustum=true;
 				}
 
-				if (!pointInFrustum)
+				if (!boxInFrustum)
 					return true;
 			}
 
