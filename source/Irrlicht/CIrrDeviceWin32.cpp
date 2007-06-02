@@ -23,17 +23,23 @@ namespace irr
 {
 	namespace video
 	{
+		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 		IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWND window,
 			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
 			bool pureSoftware, bool highPrecisionFPU, bool vsync, bool antiAlias);
+		#endif
 
+		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 		IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize, HWND window,
 			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
 			bool pureSoftware, bool highPrecisionFPU, bool vsync, bool antiAlias);
+		#endif
 
+		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
 			u32 bits, bool fullscreen, bool stencilBuffer, io::IFileSystem* io,
 			bool vsync, bool antiAlias);
+		#endif
 	}
 } // end namespace irr
 
@@ -742,6 +748,8 @@ video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 		// enumerate video modes.
 		DWORD i=0;
 		DEVMODE mode;
+		memset(&mode, 0, sizeof(mode)); 
+		mode.dmSize = sizeof(mode);
 
 		while (EnumDisplaySettings(NULL, i, &mode))
 		{
