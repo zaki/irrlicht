@@ -13,7 +13,7 @@
 namespace irr
 {
 
-//! Interface for logging messages, warnings and errors
+//! Class for logging messages, warnings and errors to stdout
 class CLogger : public ILogger
 {
 public:

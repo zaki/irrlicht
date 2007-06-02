@@ -2170,14 +2170,13 @@ namespace irr
 namespace video
 {
 
-#if defined(_IRR_WINDOWS_)
+#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 //! creates a video driver
 IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize, HWND window,
 				u32 bits, bool fullscreen, bool stencilbuffer,
 				io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
 				bool vsync, bool antiAlias)
 {
-	#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 	CD3D9Driver* dx9 =  new CD3D9Driver(screenSize, window, fullscreen, stencilbuffer, io, pureSoftware);
 	if (!dx9->initDriver(screenSize, window, bits, fullscreen, pureSoftware, highPrecisionFPU, vsync, antiAlias))
 	{
@@ -2186,14 +2185,8 @@ IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize, HWN
 	}
 
 	return dx9;
-
-	#else
-
-	return 0;
-
-	#endif // _IRR_COMPILE_WITH_DIRECT3D_9_
 }
-#endif
+#endif // _IRR_COMPILE_WITH_DIRECT3D_9_
 
 } // end namespace video
 } // end namespace irr

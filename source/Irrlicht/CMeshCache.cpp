@@ -32,6 +32,40 @@ void CMeshCache::addMesh(const c8* filename, IAnimatedMesh* mesh)
 }
 
 
+//! Removes a mesh from the cache.
+void CMeshCache::removeMesh(const IAnimatedMesh* const mesh)
+{
+	if ( !mesh )
+		return;
+	for (u32 i=0; i<Meshes.size(); ++i)
+	{
+		if (Meshes[i].Mesh == mesh)
+		{
+			Meshes[i].Mesh->drop();
+			Meshes.erase(i);
+			return;
+		}
+	}
+}
+
+
+//! Removes a mesh from the cache.
+void CMeshCache::removeMesh(const IMesh* const mesh)
+{
+	if ( !mesh )
+		return;
+	for (u32 i=0; i<Meshes.size(); ++i)
+	{
+		if (Meshes[i].Mesh && Meshes[i].Mesh->getMesh(0) == mesh)
+		{
+			Meshes[i].Mesh->drop();
+			Meshes.erase(i);
+			return;
+		}
+	}
+}
+
+
 //! Returns amount of loaded meshes
 u32 CMeshCache::getMeshCount() const
 {
@@ -39,28 +73,7 @@ u32 CMeshCache::getMeshCount() const
 }
 
 
-//! Returns a mesh based on its index number
-IAnimatedMesh* CMeshCache::getMeshByIndex(u32 number)
-{
-	if (number >= Meshes.size())
-		return 0;
-
-	return Meshes[number].Mesh;
-}
-
-
-//! Returns a mesh based on its file name.
-IAnimatedMesh* CMeshCache::getMeshByFilename(const c8* filename)
-{
-	MeshEntry e;
-	e.Name = filename;
-	e.Name.make_lower();
-	s32 id = Meshes.binary_search(e);
-	return (id != -1) ? Meshes[id].Mesh : 0;
-}
-
-
-//! Returns current number of the mesh 
+//! Returns current number of the mesh
 s32 CMeshCache::getMeshIndex(const IAnimatedMesh* const mesh) const
 {
 	for (u32 i=0; i<Meshes.size(); ++i)
@@ -82,6 +95,27 @@ s32 CMeshCache::getMeshIndex(const IMesh* const mesh) const
 	}
 
 	return -1;
+}
+
+
+//! Returns a mesh based on its index number
+IAnimatedMesh* CMeshCache::getMeshByIndex(u32 number)
+{
+	if (number >= Meshes.size())
+		return 0;
+
+	return Meshes[number].Mesh;
+}
+
+
+//! Returns a mesh based on its file name.
+IAnimatedMesh* CMeshCache::getMeshByFilename(const c8* filename)
+{
+	MeshEntry e;
+	e.Name = filename;
+	e.Name.make_lower();
+	s32 id = Meshes.binary_search(e);
+	return (id != -1) ? Meshes[id].Mesh : 0;
 }
 
 
@@ -121,47 +155,6 @@ const c8* CMeshCache::getMeshFilename(const IMesh* const mesh) const
 	return 0;
 }
 
-
-
-//! returns if a mesh already was loaded
-bool CMeshCache::isMeshLoaded(const c8* filename)
-{
-	return getMeshByFilename(filename) != 0;
-}
-
-
-//! Removes a mesh from the cache.
-void CMeshCache::removeMesh(const IAnimatedMesh* const mesh)
-{
-	if ( !mesh )
-		return;
-	for (u32 i=0; i<Meshes.size(); ++i)
-	{
-		if (Meshes[i].Mesh == mesh)
-		{
-			Meshes[i].Mesh->drop();
-			Meshes.erase(i);
-			return;
-		}
-	}
-}
-
-
-//! Removes a mesh from the cache.
-void CMeshCache::removeMesh(const IMesh* const mesh)
-{
-	if ( !mesh )
-		return;
-	for (u32 i=0; i<Meshes.size(); ++i)
-	{
-		if (Meshes[i].Mesh && Meshes[i].Mesh->getMesh(0) == mesh)
-		{
-			Meshes[i].Mesh->drop();
-			Meshes.erase(i);
-			return;
-		}
-	}
-}
 
 
 //! Renames a loaded mesh, if possible.
@@ -208,6 +201,14 @@ bool CMeshCache::setMeshFilename(const IMesh* const mesh, const c8* filename)
 
 	return false;
 }
+
+
+//! returns if a mesh already was loaded
+bool CMeshCache::isMeshLoaded(const c8* filename)
+{
+	return getMeshByFilename(filename) != 0;
+}
+
 
 //! Clears the whole mesh cache, removing all meshes.
 void CMeshCache::clear()
