@@ -7,6 +7,8 @@
 
 #include "IrrCompileConfig.h"
 
+#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
+
 #ifdef _IRR_WINDOWS_
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
@@ -19,8 +21,6 @@
 // always included for static createDriver function
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
-
-#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 
 #include <d3d8.h>
 
