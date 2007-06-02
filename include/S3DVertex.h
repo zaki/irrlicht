@@ -67,6 +67,11 @@ struct S3DVertex
 		return (Pos != other.Pos || Normal != other.Normal ||
 			Color != other.Color || TCoords != other.TCoords);
 	}
+
+	E_VERTEX_TYPE getType() const
+	{
+		return EVT_STANDARD;
+	}
 };
 
 
@@ -137,6 +142,10 @@ struct S3DVertex2TCoords
 			TCoords2 != other.TCoords2);
 	}
 
+	E_VERTEX_TYPE getType() const
+	{
+		return EVT_2TCOORDS;
+	}
 };
 
 
@@ -187,6 +196,11 @@ struct S3DVertexTangents
 		return (Pos != other.Pos || Normal != other.Normal ||
 			Color != other.Color || TCoords != other.TCoords ||
 			Tangent != other.Tangent || Binormal != other.Binormal);
+	}
+
+	E_VERTEX_TYPE getType() const
+	{
+		return EVT_TANGENTS;
 	}
 };
 
