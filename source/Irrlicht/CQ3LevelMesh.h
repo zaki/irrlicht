@@ -9,6 +9,7 @@
 #include "IReadFile.h"
 #include "IFileSystem.h"
 #include "SMesh.h"
+#include "SMeshBufferLightMap.h"
 #include "IVideoDriver.h"
 #include "irrString.h"
 #include "ISceneManager.h"
@@ -18,8 +19,6 @@ namespace irr
 {
 namespace scene
 {
-	struct SMeshBufferLightMap;
-
 	class CQ3LevelMesh : public IQ3LevelMesh
 	{
 	public:
