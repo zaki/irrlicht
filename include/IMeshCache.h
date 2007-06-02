@@ -6,6 +6,7 @@
 #define __I_MESH_CACHE_H_INCLUDED__
 
 #include "IUnknown.h"
+#include "irrString.h"
 
 namespace irr
 {
@@ -28,7 +29,7 @@ namespace scene
 	public:
 
 		//! destructor
-		virtual ~IMeshCache() {};
+		virtual ~IMeshCache() = 0;
 
 		//! Adds a mesh to the internal list of loaded meshes.
 		/** Usually, ISceneManager::getMesh() is called to load a mesh from a file.
@@ -45,31 +46,31 @@ namespace scene
 
 		//! Removes a mesh from the cache.
 		/** After loading a mesh with getMesh(), the mesh can be removed from the cache
-		using this method, freeing a lot of memory.	*/
-		virtual void removeMesh(IAnimatedMesh* mesh) = 0;
+		using this method, freeing a lot of memory. */
+		virtual void removeMesh(const IAnimatedMesh* const mesh) = 0;
 
 		//! Removes a mesh from the cache.
 		/** After loading a mesh with getMesh(), the mesh can be removed from the cache
-		using this method, freeing a lot of memory.	*/
-		virtual void removeMesh(IMesh* mesh) = 0;
+		using this method, freeing a lot of memory. */
+		virtual void removeMesh(const IMesh* const mesh) = 0;
 
 		//! Returns amount of loaded meshes in the cache.
 		/** You can load new meshes into the cache using getMesh() and addMesh(). 
 		If you ever need to access the internal mesh cache, you can do this using
 		removeMesh(), getMeshNumber(), getMeshByIndex() and getMeshFilename() */
-		virtual s32 getMeshCount() = 0;
+		virtual u32 getMeshCount() const = 0;
 
 		//! Returns current index number of the mesh, and -1 if it is not in the cache.
-		virtual s32 getMeshIndex(IAnimatedMesh* mesh) = 0;
+		virtual s32 getMeshIndex(const IAnimatedMesh* const mesh) const = 0;
 
 		//! Returns current index number of the mesh, and -1 if it is not in the cache.
-		virtual s32 getMeshIndex(IMesh* mesh) = 0;
+		virtual s32 getMeshIndex(const IMesh* const mesh) const = 0;
 
 		//! Returns a mesh based on its index number.
 		/** \param index: Index of the mesh, number between 0 and getMeshCount()-1. 
 		Note that this number is only valid until a new mesh is loaded or removed *
 		\return Returns pointer to the mesh or 0 if there is none with this number. */
-		virtual IAnimatedMesh* getMeshByIndex(s32 index) = 0;
+		virtual IAnimatedMesh* getMeshByIndex(u32 index) = 0;
 
 		//! Returns a mesh based on its file name.
 		/** \return Returns pointer to the mesh or 0 if there is none with this number. */
@@ -78,33 +79,36 @@ namespace scene
 		//! Returns name of a mesh based on its index number. 
 		/** \param index: Index of the mesh, number between 0 and getMeshCount()-1. 
 		Note that this is only valid until a new mesh is loaded */
-		virtual const c8* getMeshFilename(s32 index) = 0;
+		virtual const c8* getMeshFilename(u32 index) const = 0;
 
 		//! Returns the filename of a loaded mesh, if there is any.
 		/** Returns 0 if there is none. */
-		virtual const c8* getMeshFilename(IAnimatedMesh* mesh) = 0;
+		virtual const c8* getMeshFilename(const IAnimatedMesh* const mesh) const = 0;
 
 		//! Returns the filename of a loaded mesh, if there is any.
 		/* Returns 0 if there is none.*/
-		virtual const c8* getMeshFilename(IMesh* mesh) = 0;
+		virtual const c8* getMeshFilename(const IMesh* const mesh) const = 0;
 
 		//! Renames a loaded mesh, if possible.
 		/** Returns true if sucessful. Note that renaming meshes might change
 		the ordering of the meshes, and so the index of the meshes as returned by
 		getMeshIndex() or taken by some methods will change. */
-		virtual bool setMeshFilename(s32 index, const c8* filename) = 0;
+		virtual bool setMeshFilename(u32 index, const c8* filename) = 0;
 
 		//! Renames a loaded mesh, if possible.
 		/** Returns true if sucessful. Note that renaming meshes might change
 		the ordering of the meshes, and so the index of the meshes as returned by
 		getMeshIndex() or taken by some methods will change. */
-		virtual bool setMeshFilename(IAnimatedMesh* mesh, const c8* filename) = 0;
+		virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const c8* filename) = 0;
 
 		//! Renames a loaded mesh, if possible.
 		/** Returns true if sucessful. Note that renaming meshes might change
 		the ordering of the meshes, and so the index of the meshes as returned by
 		getMeshIndex() or taken by some methods will change. */
-		virtual bool setMeshFilename(IMesh* mesh, const c8* filename) = 0;
+		virtual bool setMeshFilename(const IMesh* const mesh, const c8* filename) = 0;
+
+                //! returns if a mesh already was loaded
+                virtual bool isMeshLoaded(const c8* filename);
 
 		//! Clears the whole mesh cache, removing all meshes.
 		/** All meshes will be reloaded completely when using ISceneManager::getMesh() 

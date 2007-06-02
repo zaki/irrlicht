@@ -79,7 +79,7 @@ namespace scene
 
 //! constructor
 CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
-							 gui::ICursorControl* cursorControl, CMeshCache* cache,
+							 gui::ICursorControl* cursorControl, IMeshCache* cache,
 							 gui::IGUIEnvironment * gui)
 : ISceneNode(0, 0), Driver(driver), FileSystem(fs), GUIEnvironment(gui),
 	CursorControl(cursorControl), CollisionManager(0), MeshManipulator(0),
@@ -188,10 +188,7 @@ CSceneManager::~CSceneManager()
 //! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 IAnimatedMesh* CSceneManager::getMesh(const c8* filename)
 {
-	core::stringc name = filename;
-	name.make_lower();
-
-	IAnimatedMesh* msh = MeshCache->findMesh(name.c_str());
+	IAnimatedMesh* msh = MeshCache->getMeshByFilename(filename);
 	if (msh)
 		return msh;
 
@@ -202,6 +199,8 @@ IAnimatedMesh* CSceneManager::getMesh(const c8* filename)
 		return 0;
 	}
 
+	core::stringc name = filename;
+	name.make_lower();
 	s32 count = MeshLoaderList.size();
 	for (s32 i=count-1; i>=0; --i)
 	{
@@ -679,7 +678,7 @@ IDummyTransformationSceneNode* CSceneManager::addDummyTransformationSceneNode(
 //! and looks like a plane with some hills on it. It is uses mostly for quick
 //! tests of the engine only. You can specify how many hills there should be
 //! on the plane and how high they should be. Also you must specify a name for
-//! the mesh, because the mesh is added to the mesh pool, and can be retieved
+//! the mesh, because the mesh is added to the mesh pool, and can be retrieved
 //! again using ISceneManager::getMesh with the name as parameter.
 IAnimatedMesh* CSceneManager::addHillPlaneMesh(const c8* name,
 	const core::dimension2d<f32>& tileSize, const core::dimension2d<s32>& tileCount,
