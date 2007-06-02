@@ -7,14 +7,15 @@
 
 #include "IrrCompileConfig.h"
 
+#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
+
 #ifdef _IRR_WINDOWS_
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "CNullDriver.h"
-#include "IMaterialRendererServices.h"
 #endif
 
-#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
+#include "CNullDriver.h"
+#include "IMaterialRendererServices.h"
 #include <d3d9.h>
 
 namespace irr
