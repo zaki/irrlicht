@@ -96,16 +96,21 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param)
 	png_set_write_fn(png_ptr, file, user_write_data_fcn, NULL);
 
 	// Set info
-	if ((image->getColorFormat()==ECF_A8R8G8B8) || (image->getColorFormat()==ECF_A1R5G5B5))
-		png_set_IHDR(png_ptr, info_ptr,
-			image->getDimension().Width, image->getDimension().Height,
-			8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
-			PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-	else
-		png_set_IHDR(png_ptr, info_ptr,
-			image->getDimension().Width, image->getDimension().Height,
-			8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
-			PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+	switch(image->getColorFormat())
+	{
+		case ECF_A8R8G8B8:
+		case ECF_A1R5G5B5:
+			png_set_IHDR(png_ptr, info_ptr,
+				image->getDimension().Width, image->getDimension().Height,
+				8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
+				PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+		break;
+		default:
+			png_set_IHDR(png_ptr, info_ptr,
+				image->getDimension().Width, image->getDimension().Height,
+				8, PNG_COLOR_TYPE_RGB, PNG_INTERLACE_NONE,
+				PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+	}
 
 	s32 lineWidth=image->getDimension().Width;
 	switch(image->getColorFormat())

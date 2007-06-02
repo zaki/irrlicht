@@ -98,7 +98,7 @@ IAnimatedMesh* COgreMeshFileLoader::createMesh(io::IReadFile* file)
 		return 0;
 	ChunkData data;
 	readString(file, data, Version);
-	if (Version != "[MeshSerializer_v1.30]")
+	if ((Version != "[MeshSerializer_v1.30]") && (Version != "[MeshSerializer_v1.40]"))
 		return 0;
 
 	clearMeshes();

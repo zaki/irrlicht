@@ -56,7 +56,6 @@ inline void recalculateNormalsT_Smooth(VTXTYPE* v, int vtxcnt,
 	{
 		v[i].Normal.normalize ();
 	}
-
 }
 
 
@@ -127,7 +126,7 @@ void CMeshManipulator::flipSurfaces(scene::IMesh* mesh) const
 	for (u32 b=0; b<bcount; ++b)
 	{
 		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		u32 idxcnt = buffer->getIndexCount();
+		const u32 idxcnt = buffer->getIndexCount();
 		u16* idx = buffer->getIndices();
 		s32 tmp;
 
@@ -334,9 +333,7 @@ void CMeshManipulator::transformMesh(scene::IMesh* mesh, const core::matrix4& m)
 			meshbox.addInternalBox(buffer->getBoundingBox());
 	}
 
-
 	mesh->setBoundingBox( meshbox );
-
 }
 
 
@@ -936,7 +933,6 @@ IAnimatedMesh * CMeshManipulator::createAnimatedMesh(scene::IMesh* mesh,scene::E
 	//mesh->drop ();
 
 	return animatedMesh;
-
 }
 
 
