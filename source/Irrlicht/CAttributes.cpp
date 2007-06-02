@@ -683,7 +683,7 @@ f32 CAttributes::getAttributeAsFloat(s32 index)
 //! \param index: Index value, must be between 0 and getAttributeCount()-1.
 video::SColor CAttributes::getAttributeAsColor(s32 index)
 {
-	video::SColor ret;
+	video::SColor ret(0);
 
 	if (index >= 0 && index < (s32)Attributes.size())
 		ret = Attributes[index]->getColor();

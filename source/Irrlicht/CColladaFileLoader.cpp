@@ -893,6 +893,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				if (!Inputs.empty())
 				{
 					SInputSlot slot;
+					slot.Data=0;
 					slot.Semantic = Inputs.getLast().Semantic;
 
 					core::stringc sourceArrayURI;

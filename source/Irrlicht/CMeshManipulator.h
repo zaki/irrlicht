@@ -12,7 +12,7 @@ namespace irr
 namespace scene
 {
 
-//! An interface for easily manipulate meshes.
+//! An interface for easy manipulation of meshes.
 /** Scale, set alpha value, flip surfaces, and so on. This exists for fixing problems 
  with wrong imported or exported meshes quickly after loading. It is not intended for doing mesh
  modifications and/or animations during runtime.

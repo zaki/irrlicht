@@ -101,16 +101,14 @@ void jpeg_memory_dest (j_compress_ptr cinfo, u8 *jfif_buffer,
 /* write_JPEG_memory: store JPEG compressed image into memory.
 */
 void write_JPEG_memory (void *img_buf, s32 width, s32 height, u32 bpp, u32 pitch,
-						u8 *jpeg_buffer, u32 jpeg_buffer_size,
-						s32 quality, u32 *jpeg_comp_size
-						)
+					u8 *jpeg_buffer, u32 jpeg_buffer_size,
+					s32 quality, u32 *jpeg_comp_size)
 {
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 
 	/* More stuff */
 	JSAMPROW row_pointer[1];      /* pointer to JSAMPLE row[s] */
-
 
 	cinfo.err = jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
@@ -197,7 +195,7 @@ bool CImageWriterJPG::writeImage(io::IWriteFile *file, IImage *input,u32 quality
 	void *dst = image->lock();
 	for ( y = 0; y!= dim.Height; ++y )
 	{
-		format ( src, dim.Width, dst );
+		format( src, dim.Width, dst );
 		src = (void*) ( (u8*) src + input->getPitch () );
 		dst = (void*) ( (u8*) dst + image->getPitch () );
 	}
@@ -212,11 +210,10 @@ bool CImageWriterJPG::writeImage(io::IWriteFile *file, IImage *input,u32 quality
 		quality = 75;
 
 	write_JPEG_memory ( image->lock (), dim.Width, dim.Height,
-						image->getBytesPerPixel(), image->getPitch (),
-						dest, destSize,
-						quality,
-						&destSize
-					);
+				image->getBytesPerPixel(), image->getPitch(),
+				dest, destSize,
+				quality,
+				&destSize);
 
 	file->write ( dest, destSize );
 
