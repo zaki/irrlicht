@@ -207,7 +207,7 @@ struct SEvent
 
 };
 
-//! Interface of an object wich can receive events.
+//! Interface of an object which can receive events.
 class IEventReceiver
 {
 public:

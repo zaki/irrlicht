@@ -2071,14 +2071,13 @@ namespace irr
 namespace video
 {
 
-#ifdef _IRR_WINDOWS_API_
+#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 //! creates a video driver
 IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWND window,
 				u32 bits, bool fullscreen, bool stencilbuffer,
 				io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
 				bool vsync, bool antiAlias)
 {
-	#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 	CD3D8Driver* dx8 =  new CD3D8Driver(screenSize, window, fullscreen,
 					stencilbuffer, io, pureSoftware);
 
@@ -2090,14 +2089,8 @@ IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWN
 	}
 
 	return dx8;
-
-	#else
-
-	return 0;
-
-	#endif // _IRR_COMPILE_WITH_DIRECT3D_8_
 }
-#endif // _IRR_WINDOWS_API_
+#endif // _IRR_COMPILE_WITH_DIRECT3D_8_
 
 } // end namespace video
 } // end namespace irr
