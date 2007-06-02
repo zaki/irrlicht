@@ -21,7 +21,7 @@ namespace io
 }
 namespace scene
 {
-	class CMeshCache;
+	class IMeshCache;
 
 	/*!
 		The Scene Manager manages scene nodes, mesh recources, cameras and all the other stuff.
@@ -32,7 +32,7 @@ namespace scene
 
 		//! constructor
 		CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
-			gui::ICursorControl* cursorControl, CMeshCache* cache = 0, 
+			gui::ICursorControl* cursorControl, IMeshCache* cache = 0, 
 			gui::IGUIEnvironment *guiEnvironment = 0);
 
 		//! destructor
@@ -586,7 +586,7 @@ namespace scene
 		io::CAttributes Parameters;
 
 		//! Mesh cache
-		CMeshCache* MeshCache;
+		IMeshCache* MeshCache;
 
 		E_SCENE_NODE_RENDER_PASS CurrentRendertime;
 
