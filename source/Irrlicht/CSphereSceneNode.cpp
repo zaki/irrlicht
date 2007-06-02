@@ -14,9 +14,9 @@ namespace scene
 {
 
 //! constructor
-CSphereSceneNode::CSphereSceneNode(f32 Radius, u32 polyCountX, u32 polyCountY, ISceneNode* parent, ISceneManager* mgr, s32 id,
+CSphereSceneNode::CSphereSceneNode(f32 radius, u32 polyCountX, u32 polyCountY, ISceneNode* parent, ISceneManager* mgr, s32 id,
 			const core::vector3df& position, const core::vector3df& rotation, const core::vector3df& scale)
-: ISceneNode(parent, mgr, id, position, rotation, scale), Radius(Radius),
+: ISceneNode(parent, mgr, id, position, rotation, scale), Radius(radius),
 	PolyCountX(polyCountX), PolyCountY(polyCountY)
 {
 	#ifdef _DEBUG
@@ -144,9 +144,9 @@ void CSphereSceneNode::setSizeAndPolys()
 		{
 			// calculate points position
 
-			const core::vector3df pos(Radius * cos(axz) * sinay,
-						Radius * cos(ay),
-						Radius * sin(axz) * sinay);
+			const core::vector3df pos((f32)(Radius * cos(axz) * sinay),
+						(f32)(Radius * cos(ay)),
+						(f32)(Radius * sin(axz) * sinay));
 			// for spheres the normal is the position
 			core::vector3df normal(pos);
 			normal.normalize();
