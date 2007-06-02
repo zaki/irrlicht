@@ -8,14 +8,11 @@
 #include "IUnknown.h"
 #include "triangle3d.h"
 #include "aabbox3d.h"
+#include "matrix4.h"
 #include "line3d.h"
 
 namespace irr
 {
-namespace core
-{
-	class matrix4;
-} // end namespace core
 namespace scene
 {
 

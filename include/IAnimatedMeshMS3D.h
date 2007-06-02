@@ -6,13 +6,10 @@
 #define __I_ANIMATED_MESH_MS3D_H_INCLUDED__
 
 #include "IAnimatedMesh.h"
+#include "matrix4.h"
 
 namespace irr
 {
-namespace core
-{
-	class matrix4;
-} // end namespace core
 namespace scene
 {
 	//! Interface for using some special functions of MS3D meshes
