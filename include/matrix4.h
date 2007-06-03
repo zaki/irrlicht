@@ -279,7 +279,6 @@ namespace core
 	template <class T>
 	inline CMatrix4<T>::CMatrix4( eConstructor constructor ) : definitelyIdentityMatrix(false)
 	{
-#if 0
 		switch ( constructor )
 		{
 			case EM4CONST_NOTHING:
@@ -291,14 +290,11 @@ namespace core
 				makeIdentity();
 				break;
 		}
-#endif
-				makeIdentity();
 	}
 
 	template <class T>
 	inline CMatrix4<T>::CMatrix4( const CMatrix4<T>& other, eConstructor constructor) : definitelyIdentityMatrix(false)
 	{
-#if 0
 		switch ( constructor )
 		{
 			case EM4CONST_IDENTITY:
@@ -323,8 +319,6 @@ namespace core
 					*this=getTransposed();
 				break;
 		}
-#endif
-				*this = other;
 	}
 
 	//! Add another matrix.
