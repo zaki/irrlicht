@@ -277,7 +277,7 @@ namespace core
 	};
 
 	template <class T>
-	inline CMatrix4<T>::CMatrix4( CMatrix4<T>::eConstructor constructor ) : definitelyIdentityMatrix(false)
+	inline CMatrix4<T>::CMatrix4( eConstructor constructor ) : definitelyIdentityMatrix(false)
 	{
 #if 0
 		switch ( constructor )
@@ -296,7 +296,7 @@ namespace core
 	}
 
 	template <class T>
-	inline CMatrix4<T>::CMatrix4( const CMatrix4<T>& other,CMatrix4<T>::eConstructor constructor) : definitelyIdentityMatrix(false)
+	inline CMatrix4<T>::CMatrix4( const CMatrix4<T>& other, eConstructor constructor) : definitelyIdentityMatrix(false)
 	{
 #if 0
 		switch ( constructor )
