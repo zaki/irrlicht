@@ -70,6 +70,7 @@ void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
 	node->Box.getEdges(edges);
 
 	core::aabbox3d<f32> box;
+	core::array<core::triangle3df> keepTriangles;
 
 	// calculate children
 
@@ -85,10 +86,19 @@ void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
 			if (node->Triangles[i].isTotalInsideBox(box))
 			{
 				node->Child[ch]->Triangles.push_back(node->Triangles[i]);
-				node->Triangles.erase(i);
-				--i;
+				//node->Triangles.erase(i);
+				//--i;
+			}
+			else
+			{
+				keepTriangles.push_back(node->Triangles[i]);
 			}
 		}
+		memcpy(node->Triangles.pointer(), keepTriangles.pointer(), 
+			sizeof(core::triangle3df)*keepTriangles.size());
+
+		node->Triangles.set_used(keepTriangles.size());
+		keepTriangles.set_used(0);
 
 		if (node->Child[ch]->Triangles.empty())
 		{
