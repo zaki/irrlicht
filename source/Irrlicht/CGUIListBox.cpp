@@ -239,6 +239,13 @@ bool CGUIListBox::OnEvent(SEvent event)
 					ScrollBar->OnEvent(event))
 					return true;
 
+				if (!AbsoluteRect.isPointInside(p))
+				{
+					Selecting = false;
+					Environment->removeFocus(this);
+					break;
+				}
+
 				Selecting = false;
 				Environment->removeFocus(this);			
 				selectNew(event.MouseInput.Y);

@@ -206,7 +206,10 @@ bool CGUIComboBox::OnEvent(SEvent event)
 					ListBox->OnEvent(event))
 					return true;
 				else
+				{
 					openCloseMenu();
+					return true;
+				}
 				
 				if (!AbsoluteClippingRect.isPointInside(p))
 				{
