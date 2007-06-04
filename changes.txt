@@ -1,6 +1,6 @@
 Changes in version 1.3.1 (?? Mar 2007)
 
- - Some fixes in the 3d basic structures: plane3d.classifyPointRelation no
+ - Some fixes in the 3d basic structures: plane3d.classifyPointRelation now
    correctly returns the relation, it returned the opposite before. Also
    renamed existsInterSection to existsIntersection for consistency.
    triangle3d.isOnSameSide is now private - it's just a helper class not
@@ -88,6 +88,8 @@ Changes in version 1.3.1 (?? Mar 2007)
 
  - Fixed a crash when using Octtrees caused by unnecessary dropping of meshes when 
    deserializing the scene node.
+
+ - Removed an array::erase from Octtrees and Octtree triangle selector.
 
 GUI:
 

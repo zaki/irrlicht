@@ -189,6 +189,7 @@ private:
 			
 			// calculate all children
 			core::aabbox3d<f32> box;
+			core::array<u16> keepIndices;
 
 			if (totalPrimitives > minimalPolysPerNode && !Box.isEmpty())
 			for (s32 ch=0; ch<8; ++ch)
@@ -219,13 +220,19 @@ private:
 							tic.Indices.push_back((*indices)[i].Indices[t+1]);
 							tic.Indices.push_back((*indices)[i].Indices[t+2]);
 
-							(*indices)[i].Indices.erase(t, 3);
-
-							t-=3;
-
 							added = true;
 						}
+						else
+						{
+							keepIndices.push_back((*indices)[i].Indices[t]);
+							keepIndices.push_back((*indices)[i].Indices[t+1]);
+							keepIndices.push_back((*indices)[i].Indices[t+2]);
+						}
 					}
+					
+					memcpy( (*indices)[i].Indices.pointer(), keepIndices.pointer(), keepIndices.size()*sizeof(u16));
+					(*indices)[i].Indices.set_used(keepIndices.size());
+					keepIndices.set_used(0);
 				}
 
 				if (added)
