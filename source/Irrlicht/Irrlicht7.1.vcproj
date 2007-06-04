@@ -984,6 +984,12 @@
 					RelativePath=".\COpenGLTexture.h">
 				</File>
 				<File
+					RelativePath=".\COpenGLExtensionHandler.cpp">
+				</File>
+				<File
+					RelativePath=".\COpenGLExtensionHandler.h">
+				</File>
+				<File
 					RelativePath=".\glext.h">
 				</File>
 			</Filter>

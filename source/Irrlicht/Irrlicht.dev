@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIR
 Includes=..\..\include;zlib
 Linker=-lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32  -lglu32 -lopengl32_@@_
 Libs=
-UnitCount=579
+UnitCount=580
 Folders=doc,gui_impl,include,include/core,include/gui,include/io,include/scene,include/video,io_impl,other_impl,other_impl/extern,other_impl/extern/jpeglib,other_impl/extern/libpng,other_impl/extern/zlib,scene_impl,video_impl,"video_impl/Burning Video",video_impl/DirectX8,video_impl/DirectX9,video_impl/Null,video_impl/OpenGL,video_impl/Software
 ObjFiles=
 PrivateResource=
@@ -5832,6 +5832,16 @@ FileName=..\..\include\IGUISpriteBank.h
 CompileCpp=1
 Folder=include/gui
 Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit580]
+FileName=COpenGLExtensionHandler.cpp
+Folder=video_impl/OpenGL
+Compile=1
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0

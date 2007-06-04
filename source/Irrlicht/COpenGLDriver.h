@@ -8,6 +8,7 @@
 #include "IrrCompileConfig.h"
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
+#include "COpenGLExtensionHandler.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -63,7 +64,7 @@ namespace video
 {
 	class COpenGLTexture;
 
-	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices
+	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices, public COpenGLExtensionHandler
 	{
 	public:
 
@@ -108,7 +109,10 @@ namespace video
 		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 
 		//! queries the features of the driver, returns true if feature is available
-		bool queryFeature(E_VIDEO_DRIVER_FEATURE feature);
+		bool queryFeature(E_VIDEO_DRIVER_FEATURE feature)
+		{
+			return COpenGLExtensionHandler::queryFeature(feature);
+		}
 
 		//! Sets a material. All 3d drawing functions draw geometry now
 		//! using this material.
@@ -217,54 +221,6 @@ namespace video
 		//! Returns the transformation set by setTransform
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state);
 
-		// public access to the (loaded) extensions.
-		void extGlActiveTextureARB(GLenum texture);
-		void extGlClientActiveTextureARB(GLenum texture);
-		void extGlGenProgramsARB(GLsizei n, GLuint *programs);
-		void extGlBindProgramARB(GLenum target, GLuint program);
-		void extGlProgramStringARB(GLenum target, GLenum format, GLsizei len, const GLvoid *string);
-		void extGlDeleteProgramsARB(GLsizei n, const GLuint *programs);
-		void extGlProgramLocalParameter4fvARB(GLenum, GLuint, const GLfloat *);
-		GLhandleARB extGlCreateShaderObjectARB(GLenum shaderType);
-		void extGlShaderSourceARB(GLhandleARB shader, int numOfStrings, const char **strings, int *lenOfStrings);
-		void extGlCompileShaderARB(GLhandleARB shader);
-		GLhandleARB extGlCreateProgramObjectARB(void);
-		void extGlAttachObjectARB(GLhandleARB program, GLhandleARB shader);
-		void extGlLinkProgramARB(GLhandleARB program);
-		void extGlUseProgramObjectARB(GLhandleARB prog);
-		void extGlDeleteObjectARB(GLhandleARB object);
-		void extGlGetInfoLogARB(GLhandleARB object, GLsizei maxLength, GLsizei *length, GLcharARB *infoLog);
-		void extGlGetObjectParameterivARB(GLhandleARB object, GLenum type, int *param);
-		GLint extGlGetUniformLocationARB(GLhandleARB program, const char *name);
-		void extGlUniform4fvARB(GLint location, GLsizei count, const GLfloat *v);
-
-		void extGlUniform1ivARB (GLint loc, GLsizei count, const GLint *v);
-		void extGlUniform1fvARB (GLint loc, GLsizei count, const GLfloat *v);
-		void extGlUniform2fvARB (GLint loc, GLsizei count, const GLfloat *v);
-		void extGlUniform3fvARB (GLint loc, GLsizei count, const GLfloat *v);
-		void extGlUniformMatrix2fvARB (GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
-		void extGlUniformMatrix3fvARB (GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
-		void extGlUniformMatrix4fvARB (GLint loc, GLsizei count, GLboolean transpose, const GLfloat *v);
-		void extGlGetActiveUniformARB (GLhandleARB program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLcharARB *name);
-		void extGlPointParameterfARB (GLint loc, GLfloat f);
-		void extGlPointParameterfvARB (GLint loc, const GLfloat *v);
-		void extGlStencilFuncSeparate (GLenum frontfunc, GLenum backfunc, GLint ref, GLuint mask);
-		void extGlStencilOpSeparate (GLenum face, GLenum fail, GLenum zfail, GLenum zpass);
-		void extGlCompressedTexImage2D(GLenum target, GLint level,
-			GLenum internalformat, GLsizei width, GLsizei height,
-			GLint border, GLsizei imageSize, const void* data);
-
-        void extGlBindFramebufferEXT (GLenum target, GLuint framebuffer);
-        void extGlDeleteFramebuffersEXT (GLsizei n, const GLuint *framebuffers);
-        void extGlGenFramebuffersEXT (GLsizei n, GLuint *framebuffers);
-        GLenum extGlCheckFramebufferStatusEXT (GLenum target);
-        void extGlFramebufferTexture2DEXT (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
-        void extGlBindRenderbufferEXT (GLenum target, GLuint renderbuffer);
-        void extGlDeleteRenderbuffersEXT (GLsizei n, const GLuint *renderbuffers);
-        void extGlGenRenderbuffersEXT (GLsizei n, GLuint *renderbuffers);
-        void extGlRenderbufferStorageEXT (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-        void extGlFramebufferRenderbufferEXT (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 			bool resetAllRenderstates);
@@ -330,14 +286,13 @@ namespace video
 	private:
 
 		//! inits the parts of the open gl driver used on all platforms
-		bool genericDriverInit(const core::dimension2d<s32>& screenSize);
+		bool genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer);
 		//! returns a device dependent texture from a software surface (IImage)
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 		void createGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
-
 
 		//! sets the needed renderstates
 		void setRenderStates3DMode();
@@ -348,14 +303,13 @@ namespace video
 		// returns the current size of the screen or rendertarget
 		core::dimension2d<s32> getCurrentRenderTargetSize();
 
-		void loadExtensions();
 		void createMaterialRenderers();
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
 		core::array<u8> ColorBuffer;
 
-		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
+		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
 		enum E_RENDER_MODE
 		{
 			ERM_NONE = 0,	// no render state has been set yet.
@@ -364,92 +318,17 @@ namespace video
 		};
 
 		E_RENDER_MODE CurrentRenderMode;
-		bool ResetRenderStates; // bool to make all renderstates be reseted if set.
+		//! bool to make all renderstates reset if set to true.
+		bool ResetRenderStates;
 		bool Transformation3DChanged;
-		bool StencilBuffer;
 		bool AntiAlias;
-		bool MultiTextureExtension;
-		bool MultiSamplingExtension;
-		bool AnisotropyExtension;
-		bool ARBVertexProgramExtension; //GL_ARB_vertex_program
-		bool ARBFragmentProgramExtension; //GL_ARB_fragment_program
-		bool ARBShadingLanguage100Extension;
-		bool SeparateStencilExtension;
-		bool GenerateMipmapExtension;
-		bool TextureCompressionExtension;
-		bool TextureNPOTExtension;
-		bool FramebufferObjectExtension;
-		bool EXTPackedDepthStencil;
-		bool EXTSeparateSpecularColor;
 
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		s32 LastSetLight;
-		f32 MaxAnisotropy;
-
-		GLint MaxTextureUnits;
-		GLint MaxLights;
-		GLint MaxIndices;
 
 		core::dimension2d<s32> CurrentRendertargetSize;
-
-		#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-			PFNGLACTIVETEXTUREARBPROC pGlActiveTextureARB;
-			PFNGLCLIENTACTIVETEXTUREARBPROC	pGlClientActiveTextureARB;
-			PFNGLGENPROGRAMSARBPROC pGlGenProgramsARB;
-			PFNGLBINDPROGRAMARBPROC pGlBindProgramARB;
-			PFNGLPROGRAMSTRINGARBPROC pGlProgramStringARB;
-			PFNGLDELETEPROGRAMSNVPROC pGlDeleteProgramsARB;
-			PFNGLPROGRAMLOCALPARAMETER4FVARBPROC pGlProgramLocalParameter4fvARB;
-			PFNGLCREATESHADEROBJECTARBPROC pGlCreateShaderObjectARB;
-			PFNGLSHADERSOURCEARBPROC pGlShaderSourceARB;
-			PFNGLCOMPILESHADERARBPROC pGlCompileShaderARB;
-			PFNGLCREATEPROGRAMOBJECTARBPROC pGlCreateProgramObjectARB;
-			PFNGLATTACHOBJECTARBPROC pGlAttachObjectARB;
-			PFNGLLINKPROGRAMARBPROC pGlLinkProgramARB;
-			PFNGLUSEPROGRAMOBJECTARBPROC pGlUseProgramObjectARB;
-			PFNGLDELETEOBJECTARBPROC pGlDeleteObjectARB;
-			PFNGLGETINFOLOGARBPROC pGlGetInfoLogARB;
-			PFNGLGETOBJECTPARAMETERIVARBPROC pGlGetObjectParameterivARB;
-			PFNGLGETUNIFORMLOCATIONARBPROC pGlGetUniformLocationARB;
-			PFNGLUNIFORM1IVARBPROC pGlUniform1ivARB;
-			PFNGLUNIFORM1FVARBPROC pGlUniform1fvARB;
-			PFNGLUNIFORM2FVARBPROC pGlUniform2fvARB;
-			PFNGLUNIFORM3FVARBPROC pGlUniform3fvARB;
-			PFNGLUNIFORM4FVARBPROC pGlUniform4fvARB;
-			PFNGLUNIFORMMATRIX2FVARBPROC pGlUniformMatrix2fvARB;
-			PFNGLUNIFORMMATRIX3FVARBPROC pGlUniformMatrix3fvARB;
-			PFNGLUNIFORMMATRIX4FVARBPROC pGlUniformMatrix4fvARB;
-			PFNGLGETACTIVEUNIFORMARBPROC pGlGetActiveUniformARB;
-			PFNGLPOINTPARAMETERFARBPROC  pGlPointParameterfARB;
-			PFNGLPOINTPARAMETERFVARBPROC pGlPointParameterfvARB;
-			#ifdef GL_ATI_separate_stencil
-			PFNGLSTENCILFUNCSEPARATEPROC pGlStencilFuncSeparate;
-			PFNGLSTENCILOPSEPARATEPROC pGlStencilOpSeparate;
-			PFNGLSTENCILFUNCSEPARATEATIPROC pGlStencilFuncSeparateATI;
-			PFNGLSTENCILOPSEPARATEATIPROC pGlStencilOpSeparateATI;
-			#endif
-			#ifdef PFNGLCOMPRESSEDTEXIMAGE2DPROC
-			PFNGLCOMPRESSEDTEXIMAGE2DPROC pGlCompressedTexImage2D;
-			#endif // PFNGLCOMPRESSEDTEXIMAGE2DPROC
-			#ifdef _IRR_WINDOWS_API_
-			typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
-			PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT;
-			#elif defined(_IRR_LINUX_PLATFORM_) && defined(GLX_SGI_swap_control)
-			PFNGLXSWAPINTERVALSGIPROC glxSwapIntervalSGI;
-			#endif
-			PFNGLBINDFRAMEBUFFEREXTPROC pGlBindFramebufferEXT;
-			PFNGLDELETEFRAMEBUFFERSEXTPROC pGlDeleteFramebuffersEXT;
-			PFNGLGENFRAMEBUFFERSEXTPROC pGlGenFramebuffersEXT;
-			PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC pGlCheckFramebufferStatusEXT;
-			PFNGLFRAMEBUFFERTEXTURE2DEXTPROC pGlFramebufferTexture2DEXT;
-			PFNGLBINDRENDERBUFFEREXTPROC pGlBindRenderbufferEXT;
-			PFNGLDELETERENDERBUFFERSEXTPROC pGlDeleteRenderbuffersEXT;
-			PFNGLGENRENDERBUFFERSEXTPROC pGlGenRenderbuffersEXT;
-			PFNGLRENDERBUFFERSTORAGEEXTPROC pGlRenderbufferStorageEXT;
-			PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC pGlFramebufferRenderbufferEXT;
-		#endif
 
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
