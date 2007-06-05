@@ -107,23 +107,23 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
 
 #ifdef GL_EXT_framebuffer_object
 	// generate frame buffer
-	Driver->extGlGenFramebuffersEXT(1, &ColorFrameBuffer);
-	Driver->extGlBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
 
 	// attach color texture to frame buffer
-	Driver->extGlFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
 						GL_COLOR_ATTACHMENT0_EXT,
 						GL_TEXTURE_2D,
 						TextureName,
 						0);
 	// attach depth texture to depth buffer
-	Driver->extGlFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
 						GL_DEPTH_ATTACHMENT_EXT,
 						GL_TEXTURE_2D,
 						DepthRenderBuffer,
 						0);
 	// attach stencil texture to stencil buffer
-	Driver->extGlFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
 						GL_STENCIL_ATTACHMENT_EXT,
 						GL_TEXTURE_2D,
 						StencilRenderBuffer,
@@ -136,7 +136,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
 		printf("FBO=%d, Color=%d, Depth=%d, Stencil=%d\n",
 			ColorFrameBuffer, TextureName, DepthRenderBuffer, StencilRenderBuffer);
 		if (ColorFrameBuffer)
-			Driver->extGlDeleteFramebuffersEXT(1, &ColorFrameBuffer);
+			Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
 		if (DepthRenderBuffer)
 			glDeleteTextures(1, &DepthRenderBuffer);
 		if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
@@ -145,7 +145,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
 		DepthRenderBuffer = 0;
 		StencilRenderBuffer = 0;
 	}
-	Driver->extGlBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 #endif
 }
 
@@ -153,7 +153,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
 COpenGLTexture::~COpenGLTexture()
 {
 	if (ColorFrameBuffer)
-		Driver->extGlDeleteFramebuffersEXT(1, &ColorFrameBuffer);
+		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
 	if (DepthRenderBuffer)
 		glDeleteTextures(1, &DepthRenderBuffer);
 	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
@@ -459,7 +459,7 @@ void COpenGLTexture::bindFrameBufferObject()
 {
 #ifdef GL_EXT_framebuffer_object
     if (ColorFrameBuffer != 0)
-        Driver->extGlBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+        Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
 #endif
 }
 
@@ -468,14 +468,14 @@ void COpenGLTexture::unbindFrameBufferObject()
 {
 #ifdef GL_EXT_framebuffer_object
     if (ColorFrameBuffer != 0)
-        Driver->extGlBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 #endif
 }
 
 bool checkFBOStatus(COpenGLDriver* Driver)
 {
 #ifdef GL_EXT_framebuffer_object
-	GLenum status = Driver->extGlCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
 
 	switch (status)
 	{
