@@ -75,7 +75,7 @@ namespace video
 
 		//! inits the windows specific parts of the open gl driver
 		bool initDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool vsync);
+			u32 bits, bool fullscreen, bool vsync, bool stencilBuffer);
 		#endif
 
 		#ifdef _IRR_USE_LINUX_DEVICE_
