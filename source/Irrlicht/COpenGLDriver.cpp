@@ -450,7 +450,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			return;
 
 		if (MultiTextureExtension)
-			extGlActiveTextureARB(GL_TEXTURE0_ARB + ( state - ETS_TEXTURE_0 ));
+			extGlActiveTexture(GL_TEXTURE0_ARB + ( state - ETS_TEXTURE_0 ));
 
 		glMatrixMode(GL_TEXTURE);
 		createGLTextureMatrix(glmat, mat );
@@ -518,7 +518,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	setRenderStates3DMode();
 
 	if (MultiTextureExtension)
-		extGlClientActiveTextureARB(GL_TEXTURE0_ARB);
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
 
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -541,10 +541,10 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			// texture coordinates
 			if (MultiTextureExtension)
 			{
-				extGlClientActiveTextureARB(GL_TEXTURE1_ARB);
+				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
 				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &((S3DVertex2TCoords*)vertices)[0].TCoords2);
-				extGlClientActiveTextureARB(GL_TEXTURE0_ARB);
+				extGlClientActiveTexture(GL_TEXTURE0_ARB);
 			}
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &((S3DVertex2TCoords*)vertices)[0].TCoords);
 			break;
@@ -554,15 +554,15 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			// texture coordinates
 			if (MultiTextureExtension)
 			{
-				extGlClientActiveTextureARB(GL_TEXTURE1_ARB);
+				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
 				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &((S3DVertexTangents*)vertices)[0].Tangent);
 
-				extGlClientActiveTextureARB(GL_TEXTURE2_ARB);
+				extGlClientActiveTexture(GL_TEXTURE2_ARB);
 				glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
 				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &((S3DVertexTangents*)vertices)[0].Binormal);
 
-				extGlClientActiveTextureARB(GL_TEXTURE0_ARB);
+				extGlClientActiveTexture(GL_TEXTURE0_ARB);
 			}
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &((S3DVertexTangents*)vertices)[0].TCoords);
 			break;
@@ -611,15 +611,15 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	{
 		if (vType==EVT_TANGENTS)
 		{
-			extGlClientActiveTextureARB(GL_TEXTURE2_ARB);
+			extGlClientActiveTexture(GL_TEXTURE2_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 		if (vType!=EVT_STANDARD && MultiTextureExtension)
 		{
-			extGlClientActiveTextureARB(GL_TEXTURE1_ARB);
+			extGlClientActiveTexture(GL_TEXTURE1_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		extGlClientActiveTextureARB(GL_TEXTURE0_ARB);
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
 	}
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
@@ -1048,7 +1048,7 @@ bool COpenGLDriver::setTexture(s32 stage, video::ITexture* texture)
 		return true;
 
 	if (MultiTextureExtension)
-		extGlActiveTextureARB(GL_TEXTURE0_ARB + stage);
+		extGlActiveTexture(GL_TEXTURE0_ARB + stage);
 
 	CurrentTexture[stage]=texture;
 
@@ -1283,7 +1283,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		if (!material.Textures[i])
 			continue;
 		if (MultiTextureExtension)
-			extGlActiveTextureARB(GL_TEXTURE0_ARB + i);
+			extGlActiveTexture(GL_TEXTURE0_ARB + i);
 		else if (i>0)
 			break;
 
@@ -1417,7 +1417,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			}
 	
 			if (MultiTextureExtension)
-				extGlActiveTextureARB(GL_TEXTURE0_ARB + u);
+				extGlActiveTexture(GL_TEXTURE0_ARB + u);
 			else if (u>0)
 				break;
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
@@ -1845,7 +1845,7 @@ void COpenGLDriver::setVertexShaderConstant(const f32* data, s32 startRegister, 
 {
 #ifdef GL_ARB_vertex_program
 	for (int i=0; i<constantAmount; ++i)
-		extGlProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, startRegister+i, &data[i*4]);
+		extGlProgramLocalParameter4fv(GL_VERTEX_PROGRAM_ARB, startRegister+i, &data[i*4]);
 #endif
 }
 
@@ -1854,7 +1854,7 @@ void COpenGLDriver::setPixelShaderConstant(const f32* data, s32 startRegister, s
 {
 #ifdef GL_ARB_fragment_program
 	for (int i=0; i<constantAmount; ++i)
-		extGlProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, startRegister+i, &data[i*4]);
+		extGlProgramLocalParameter4fv(GL_FRAGMENT_PROGRAM_ARB, startRegister+i, &data[i*4]);
 #endif
 }
 

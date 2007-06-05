@@ -82,7 +82,7 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 
 	if(Program)
 	{
-		Driver->extGlDeleteObjectARB(Program);
+		Driver->extGlDeleteObject(Program);
 		Program = 0;
 	}
 
@@ -142,7 +142,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(video::SMaterial& material,
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if(Program)
-			Driver->extGlUseProgramObjectARB(Program);
+			Driver->extGlUseProgramObject(Program);
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetMaterial(material, material, true, this);
@@ -154,7 +154,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(video::SMaterial& material,
 
 void COpenGLSLMaterialRenderer::OnUnsetMaterial()
 {
-	Driver->extGlUseProgramObjectARB(0);
+	Driver->extGlUseProgramObject(0);
 	
 	if (BaseMaterial)
 		BaseMaterial->OnUnsetMaterial();
@@ -168,21 +168,21 @@ bool COpenGLSLMaterialRenderer::isTransparent()
 
 bool COpenGLSLMaterialRenderer::createProgram()
 {
-	Program = Driver->extGlCreateProgramObjectARB();
+	Program = Driver->extGlCreateProgramObject();
 	return true;
 }
 
 bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shader)
 {
-	GLhandleARB shaderHandle = Driver->extGlCreateShaderObjectARB(shaderType);
+	GLhandleARB shaderHandle = Driver->extGlCreateShaderObject(shaderType);
 
-	Driver->extGlShaderSourceARB(shaderHandle, 1, &shader, NULL);
-	Driver->extGlCompileShaderARB(shaderHandle);
+	Driver->extGlShaderSource(shaderHandle, 1, &shader, NULL);
+	Driver->extGlCompileShader(shaderHandle);
 
 	int status = 0;
 
 #ifdef GL_ARB_shader_objects
-	Driver->extGlGetObjectParameterivARB(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status);
+	Driver->extGlGetObjectParameteriv(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status);
 #endif
 
 	if (!status)
@@ -192,30 +192,30 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 		int maxLength=0;
 		GLsizei length;
 #ifdef GL_ARB_shader_objects
-		Driver->extGlGetObjectParameterivARB(shaderHandle,
+		Driver->extGlGetObjectParameteriv(shaderHandle,
 				 GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 #endif
 		GLcharARB *pInfoLog = new GLcharARB[maxLength];
-		Driver->extGlGetInfoLogARB(shaderHandle, maxLength, &length, pInfoLog);
+		Driver->extGlGetInfoLog(shaderHandle, maxLength, &length, pInfoLog);
 		os::Printer::log((const c8*)pInfoLog);
 		delete [] pInfoLog;
 
 		return false;
 	}
 
-	Driver->extGlAttachObjectARB(Program, shaderHandle);
+	Driver->extGlAttachObject(Program, shaderHandle);
 
 	return true;
 }
 
 bool COpenGLSLMaterialRenderer::linkProgram()
 {
-	Driver->extGlLinkProgramARB(Program);
+	Driver->extGlLinkProgram(Program);
 
 	int status = 0;
 
 #ifdef GL_ARB_shader_objects
-	Driver->extGlGetObjectParameterivARB(Program, GL_OBJECT_LINK_STATUS_ARB, &status);
+	Driver->extGlGetObjectParameteriv(Program, GL_OBJECT_LINK_STATUS_ARB, &status);
 #endif
 
 	if (!status)
@@ -225,11 +225,11 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 		int maxLength=0;
 		GLsizei length;
 #ifdef GL_ARB_shader_objects
-		Driver->extGlGetObjectParameterivARB(Program,
+		Driver->extGlGetObjectParameteriv(Program,
 				 GL_OBJECT_INFO_LOG_LENGTH_ARB, &maxLength);
 #endif
 		GLcharARB *pInfoLog = new GLcharARB[maxLength];
-		Driver->extGlGetInfoLogARB(Program, maxLength, &length, pInfoLog);
+		Driver->extGlGetInfoLog(Program, maxLength, &length, pInfoLog);
 		os::Printer::log((const c8*)pInfoLog);
 		delete [] pInfoLog;
 
@@ -240,7 +240,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 	int num = 0;
 #ifdef GL_ARB_shader_objects
-	Driver->extGlGetObjectParameterivARB(Program, GL_OBJECT_ACTIVE_UNIFORMS_ARB, &num);
+	Driver->extGlGetObjectParameteriv(Program, GL_OBJECT_ACTIVE_UNIFORMS_ARB, &num);
 #endif
 
 	if (num == 0)
@@ -251,7 +251,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 	int maxlen = 0;
 #ifdef GL_ARB_shader_objects
-	Driver->extGlGetObjectParameterivARB(Program, GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, &maxlen);
+	Driver->extGlGetObjectParameteriv(Program, GL_OBJECT_ACTIVE_UNIFORM_MAX_LENGTH_ARB, &maxlen);
 #endif
 
 	if (maxlen == 0) 
@@ -271,7 +271,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 		memset(buf, 0, maxlen);
 
 		GLint size;
-		Driver->extGlGetActiveUniformARB(Program, i, maxlen, 0, &size, &ui.type, (GLcharARB*)buf);
+		Driver->extGlGetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, (GLcharARB*)buf);
 		ui.name = buf;
 
 		UniformInfo.push_back(ui);
@@ -320,28 +320,28 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
     switch (UniformInfo[i].type) 
 	{
         case GL_FLOAT:          
-			Driver->extGlUniform1fvARB(i, count, floats); 
+			Driver->extGlUniform1fv(i, count, floats); 
 			break;
         case GL_FLOAT_VEC2_ARB: 
-			Driver->extGlUniform2fvARB(i, count/2, floats); 
+			Driver->extGlUniform2fv(i, count/2, floats); 
 			break;
         case GL_FLOAT_VEC3_ARB: 
-			Driver->extGlUniform3fvARB(i, count/3, floats); 
+			Driver->extGlUniform3fv(i, count/3, floats); 
 			break;
         case GL_FLOAT_VEC4_ARB: 
-			Driver->extGlUniform4fvARB(i, count/4, floats); 
+			Driver->extGlUniform4fv(i, count/4, floats); 
 			break;
         case GL_FLOAT_MAT2_ARB: 
-			Driver->extGlUniformMatrix2fvARB(i, count/4, false, floats); 
+			Driver->extGlUniformMatrix2fv(i, count/4, false, floats); 
 			break;
         case GL_FLOAT_MAT3_ARB: 
-			Driver->extGlUniformMatrix3fvARB(i, count/9, false, floats); 
+			Driver->extGlUniformMatrix3fv(i, count/9, false, floats); 
 			break;
         case GL_FLOAT_MAT4_ARB: 
-			Driver->extGlUniformMatrix4fvARB(i, count/16, false, floats); 
+			Driver->extGlUniformMatrix4fv(i, count/16, false, floats); 
 			break;
         default: 
-			Driver->extGlUniform1ivARB(i, count, (GLint*)floats);
+			Driver->extGlUniform1iv(i, count, (GLint*)floats);
 			break;
     }
 #endif

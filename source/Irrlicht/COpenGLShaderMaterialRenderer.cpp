@@ -58,10 +58,10 @@ COpenGLShaderMaterialRenderer::~COpenGLShaderMaterialRenderer()
 		CallBack->drop();
 
 	if (VertexShader)
-		Driver->extGlDeleteProgramsARB(1, &VertexShader);
+		Driver->extGlDeletePrograms(1, &VertexShader);
 
 	if (PixelShader)
-		Driver->extGlDeleteProgramsARB(1, &PixelShader);
+		Driver->extGlDeletePrograms(1, &PixelShader);
 
 	if (BaseMaterial)
 		BaseMaterial->drop ();
@@ -110,7 +110,7 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(video::SMaterial& material, co
 		if (VertexShader)
 		{
 			// set new vertex shader
-			Driver->extGlBindProgramARB(GL_VERTEX_PROGRAM_ARB, VertexShader);
+			Driver->extGlBindProgram(GL_VERTEX_PROGRAM_ARB, VertexShader);
 			glEnable(GL_VERTEX_PROGRAM_ARB);
 		}
 #endif
@@ -119,7 +119,7 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(video::SMaterial& material, co
 #ifdef GL_ARB_fragment_program
 		if (PixelShader)
 		{
-			Driver->extGlBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, PixelShader);
+			Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader);
 			glEnable(GL_FRAGMENT_PROGRAM_ARB);
 		}
 #endif
@@ -158,15 +158,15 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 	if (!pxsh)
 		return true;
 
-	Driver->extGlGenProgramsARB(1, &PixelShader);
+	Driver->extGlGenPrograms(1, &PixelShader);
 #ifdef GL_ARB_fragment_program
-	Driver->extGlBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, PixelShader);
+	Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader);
 
 	// clear error buffer
 	while(glGetError() != GL_NO_ERROR)	{}
 
 	// compile
-	Driver->extGlProgramStringARB(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
+	Driver->extGlProgramString(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
 		strlen(pxsh), pxsh);
 #endif
 
@@ -198,14 +198,14 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 		return true;
 
 #ifdef GL_ARB_vertex_program
-	Driver->extGlGenProgramsARB(1, &VertexShader);
-	Driver->extGlBindProgramARB(GL_VERTEX_PROGRAM_ARB, VertexShader);
+	Driver->extGlGenPrograms(1, &VertexShader);
+	Driver->extGlBindProgram(GL_VERTEX_PROGRAM_ARB, VertexShader);
 
 	// clear error buffer
 	while(glGetError() != GL_NO_ERROR)	{}
 
 	// compile
-	Driver->extGlProgramStringARB(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
+	Driver->extGlProgramString(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
 		strlen(vtxsh), vtxsh);
 
 	GLenum g = glGetError();

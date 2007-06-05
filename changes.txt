@@ -1,5 +1,24 @@
 Changes in version 1.3.1 (?? Mar 2007)
 
+ - Moved the OpenGL API functions from COpenGL driver into new extension
+   handler. Thereby, some renaming took place - the ARB and EXT suffix was
+   removed. Simply rename the functions in case you use them.
+
+ - matrix4 is now a template internally such that also int and double matrices
+   are possible now.
+
+ - CMeshBuffer is a new template replacing all previous SMeshBuffer* classes.
+   New mesh buffers can be easily implemented based on this code.
+
+ - Ogre 1.40 files now also load.
+
+ - New filename based methods in the MeshCache.
+
+ - CSphereSceneNode is now texture wrapped with sphere mapping by exactly one
+   texture. Only a small error on the top remained.
+
+ - Frustum culling fixed by using the fixed classifyPointRelation function.
+
  - Some fixes in the 3d basic structures: plane3d.classifyPointRelation now
    correctly returns the relation, it returned the opposite before. Also
    renamed existsInterSection to existsIntersection for consistency.
@@ -10,6 +29,8 @@ Changes in version 1.3.1 (?? Mar 2007)
    name. Submitted by Jeff Myers
 
  - Updated to latest PNG library (1.2.18), fixing a vulnerability.
+   Also changed some data structures which should make the library 64bit
+   compatible.
 
  - Changed the external window pointer from s32 to void*. This makes the
    mechanism 64bit safe, but also breaks the API. You have to cast to
