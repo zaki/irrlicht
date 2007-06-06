@@ -1,5 +1,4 @@
 #include "COpenGLExtensionHandler.h"
-#include "os.h"
 #include "irrString.h"
 #include "SMaterial.h" // for MATERIAL_MAX_TEXTURES
 
