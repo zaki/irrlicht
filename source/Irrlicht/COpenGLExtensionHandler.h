@@ -7,6 +7,7 @@
 
 #include "EDriverFeatures.h"
 #include "irrTypes.h"
+#include "os.h"
 
 #if defined(_IRR_WINDOWS_API_)
 	// include windows headers for HWND
