@@ -1166,7 +1166,7 @@ namespace core
 	inline void CMatrix4<T>::buildProjectionMatrixPerspectiveFovLH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar)
 	{
 		f64 h = 1.0/tan(fieldOfViewRadians/2.0);
-		T w = h / aspectRatio;
+		T w = (T)(h / aspectRatio);
 
 		M[0] = w;
 		M[1] = 0;
