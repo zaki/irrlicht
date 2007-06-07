@@ -137,6 +137,18 @@ void CMeshSceneNode::render()
 			driver->setMaterial(m);
 			driver->draw3DBox(Box, video::SColor(0,255,255,255));
 		}
+		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
+		{
+			video::SMaterial m;
+			m.Lighting = false;
+			driver->setMaterial(m);
+			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
+			{
+				driver->draw3DBox(
+					Mesh->getMeshBuffer(g)->getBoundingBox(), 
+					video::SColor(0,255,255,255));
+			}
+		}
 		if ( DebugDataVisible & scene::EDS_NORMALS )
 		{
 			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
