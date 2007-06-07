@@ -58,7 +58,7 @@ void COpenGLExtensionHandler::dump() const
 
 void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 {
-	const f32 ver = atof((c8*)glGetString(GL_VERSION));
+	const f32 ver = (f32)atof((c8*)glGetString(GL_VERSION));
 	Version = core::floor32(ver)*100+(s32)(ver-floor(ver));
 	if ( Version >= 102)
 		os::Printer::log("OpenGL driver version is 1.2 or better.", ELL_INFORMATION);
