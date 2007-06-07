@@ -16,6 +16,9 @@ Changes in version 1.3.1 (?? Mar 2007)
 
  - CSphereSceneNode is now texture wrapped with sphere mapping by exactly one
    texture. Only a small error on the top remained.
+   
+ - The Sky box scene node now clamps its textures now by default (meaning no more ugly
+   artifacts at the borders).
 
  - Frustum culling fixed by using the fixed classifyPointRelation function.
 
