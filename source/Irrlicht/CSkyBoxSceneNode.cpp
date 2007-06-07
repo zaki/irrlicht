@@ -40,6 +40,7 @@ CSkyBoxSceneNode::CSkyBoxSceneNode(video::ITexture* top, video::ITexture* bottom
 	mat.Lighting = false;
 	mat.ZBuffer = false;
 	mat.ZWriteEnable = false;
+	mat.TextureWrap[0] = video::ETC_CLAMP;
 
 	/* Hey, I am no artist, but look at that
 	   cool ASCII art I made! ;)
