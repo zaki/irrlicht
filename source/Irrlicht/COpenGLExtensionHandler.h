@@ -354,6 +354,7 @@ static const char* const OpenGLFeatureStrings[] = {
 
 class COpenGLExtensionHandler
 {
+	public:
 	enum EOpenGLFeatures {
 		IRR_3DFX_multisample = 0,
 		IRR_3DFX_tbuffer,
@@ -645,7 +646,6 @@ class COpenGLExtensionHandler
 		IRR_OpenGL_Feature_Count
 	};
 
-	public:
 	// constructor
 	COpenGLExtensionHandler();
 
