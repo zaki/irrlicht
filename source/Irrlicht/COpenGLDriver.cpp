@@ -1406,13 +1406,55 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 					mode=GL_CLAMP;
 					break;
 				case ETC_CLAMP_TO_EDGE:
-					mode=GL_CLAMP_TO_EDGE;
+#ifdef GL_VERSION_1_2
+					if (Version>101)
+						mode=GL_CLAMP_TO_EDGE;
+					else
+#endif
+#ifdef GL_SGIS_texture_edge_clamp
+					if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
+						mode=GL_CLAMP_TO_EDGE_SGIS;
+					else
+#endif
+						// fallback
+						mode=GL_CLAMP;
 					break;
 				case ETC_CLAMP_TO_BORDER:
-					mode=GL_CLAMP_TO_BORDER;
+#ifdef GL_VERSION_1_3
+					if (Version>102)
+						mode=GL_CLAMP_TO_BORDER;
+					else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+					if (FeatureAvailable[IRR_ARB_texture_border_clamp])
+						mode=GL_CLAMP_TO_BORDER_ARB;
+					else
+#endif
+#ifdef GL_SGIS_texture_border_clamp
+					if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
+						mode=GL_CLAMP_TO_BORDER_SGIS;
+					else
+#endif
+						// fallback
+						mode=GL_CLAMP_TO_EDGE;
 					break;
 				case ETC_MIRROR:
-					mode=GL_MIRRORED_REPEAT;
+#ifdef GL_VERSION_1_4
+					if (Version>103)
+						mode=GL_MIRRORED_REPEAT;
+					else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+					if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
+						mode=GL_MIRRORED_REPEAT_ARB;
+					else
+#endif
+#ifdef GL_IBM_texture_mirrored_repeat
+					if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
+						mode=GL_MIRRORED_REPEAT_IBM;
+					else
+#endif
+						mode=GL_REPEAT;
 					break;
 			}
 	
