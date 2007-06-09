@@ -21,7 +21,7 @@ CXAnimationPlayer::CXAnimationPlayer(CXFileReader* reader,
 					 const c8* filename)
 : Reader(reader), Driver(driver), AnimatedMesh(0),
 	FileName(filename), Manipulator(manip), IsAnimatedSkinnedMesh(false),
-	CurrentAnimationTime(0.0f), LastAnimationTime(1.0f),
+	CurrentAnimationTime(-1.0f), LastAnimationTime(1.0f),
 	CurrentAnimationSet(0), DebugSkeletonCrossSize(1.0f)
 {
 
@@ -73,10 +73,14 @@ IMesh* CXAnimationPlayer::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop
 	if (!IsAnimatedSkinnedMesh)
 		return &OriginalMesh;
 
-	CurrentAnimationTime = (f32)frame;
-	animateSkeleton();
-	modifySkin();
-	updateBoundingBoxFromAnimation();
+	if (CurrentAnimationTime != (f32)frame)
+	{
+
+		CurrentAnimationTime = (f32)frame;
+		animateSkeleton();
+		modifySkin();
+		updateBoundingBoxFromAnimation();
+	}
 	return AnimatedMesh;
 }
 
