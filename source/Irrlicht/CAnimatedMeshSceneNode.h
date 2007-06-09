@@ -127,7 +127,7 @@ namespace scene
 
 		// returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
 		// or the absolutetransformation if it's a normal scenenode
-		const SMD3QuaterionTag& getAbsoluteTransformation( const core::stringc & tagname);
+		const SMD3QuaterionTag& getMD3TagTransformation( const core::stringc & tagname);
 
 		//! updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePosition();
