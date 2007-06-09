@@ -96,9 +96,8 @@ namespace irr
 		public:
 
 			CCursorControl(CIrrDeviceLinux* dev, bool null)
-				: Device(dev), IsVisible(true), Null(null)
+				: Device(dev), IsVisible(true), Null(null), UseReferenceRect(false)
 			{
-				Device->grab();
 #ifdef _IRR_COMPILE_WITH_X11_
 				if (!null)
 				{
@@ -136,7 +135,6 @@ namespace irr
 #ifdef _IRR_COMPILE_WITH_X11_
 				XFreeGC(Device->display, gc);
 #endif
-				Device->drop();
 			}
 
 			//! Changes the visible state of the mouse cursor.
@@ -182,16 +180,33 @@ namespace irr
 			virtual void setPosition(s32 x, s32 y)
 			{
 #ifdef _IRR_COMPILE_WITH_X11_
+
 				if (!Null)
 				{
-					XWarpPointer(Device->display,
-						None,
-				 		Device->window, 0, 0,
-				 		Device->Width,
-				 		Device->Height, x, y);
+					if (UseReferenceRect)
+					{
+						XWarpPointer(Device->display,
+							None,
+				 			Device->window, 0, 0,
+				 			Device->Width,
+				 			Device->Height, 
+							ReferenceRect.UpperLeftCorner.X + x,
+							ReferenceRect.UpperLeftCorner.Y + y);
+						
+					}
+					else
+					{
+						XWarpPointer(Device->display,
+							None,
+				 			Device->window, 0, 0,
+				 			Device->Width,
+				 			Device->Height, x, y);
+					}
 					XFlush(Device->display);
 				}
 #endif
+				CursorPos.X = x;
+				CursorPos.Y = y;
 			}
 
 			//! Returns the current position of the mouse cursor.
@@ -205,12 +220,34 @@ namespace irr
 			virtual core::position2d<f32> getRelativePosition()
 			{
 				updateCursorPos();
-				return core::position2d<f32>(CursorPos.X / (f32)Device->Width,
-					CursorPos.Y / (f32)Device->Height);
+				
+				if (!UseReferenceRect)
+				{
+					return core::position2d<f32>(CursorPos.X / (f32)Device->Width,
+						CursorPos.Y / (f32)Device->Height);
+				}
+
+				return core::position2d<f32>(CursorPos.X / (f32)ReferenceRect.getWidth(),
+						CursorPos.Y / (f32)ReferenceRect.getHeight());
 			}
 
 			virtual void setReferenceRect(core::rect<s32>* rect=0)
 			{
+				if (rect)
+				{
+					ReferenceRect = *rect;
+					UseReferenceRect = true;
+
+					// prevent division through zero and uneven sizes
+
+					if (!ReferenceRect.getHeight() || ReferenceRect.getHeight()%2)
+						ReferenceRect.LowerRightCorner.Y += 1;
+
+					if (!ReferenceRect.getWidth() || ReferenceRect.getWidth()%2)
+						ReferenceRect.LowerRightCorner.X += 1;
+				}
+				else
+					UseReferenceRect = false;
 			}
 
 		private:
@@ -244,6 +281,8 @@ namespace irr
 			CIrrDeviceLinux* Device;
 			bool IsVisible;
 			bool Null;
+			bool UseReferenceRect;
+			core::rect<s32> ReferenceRect;
 #ifdef _IRR_COMPILE_WITH_X11_
 			GC gc;
 			Cursor invisCursor;
