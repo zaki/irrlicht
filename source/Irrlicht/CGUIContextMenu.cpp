@@ -382,7 +382,7 @@ void CGUIContextMenu::draw()
 	if (!skin)
 		return;
 	
-	IGUIFont* font = skin->getFont();
+	IGUIFont* font = skin->getFont(EGDF_MENU);
 	IGUISpriteBank* sprites = skin->getSpriteBank();
 
 	video::IVideoDriver* driver = Environment->getVideoDriver();
@@ -481,7 +481,7 @@ void CGUIContextMenu::draw()
 void CGUIContextMenu::recalculateSize()
 {
 	IGUISkin* skin = Environment->getSkin();
-	IGUIFont* font = skin->getFont();
+	IGUIFont* font = skin->getFont(EGDF_MENU);
 
 	if (!font)
 		return;

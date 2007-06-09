@@ -21,6 +21,7 @@ CGUIModalScreen::CGUIModalScreen(IGUIEnvironment* environment, IGUIElement* pare
 	#ifdef _DEBUG
 	setDebugName("CGUIModalScreen");
 	#endif
+	setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 }
 
 

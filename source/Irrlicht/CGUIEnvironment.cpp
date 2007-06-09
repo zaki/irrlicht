@@ -48,7 +48,7 @@ const wchar_t* IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE	= L"type";
 //! constructor
 CGUIEnvironment::CGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* driver, IOSOperator* op)
 : IGUIElement(EGUIET_ELEMENT, 0, 0, 0, core::rect<s32>(core::position2d<s32>(0,0), driver ? driver->getScreenSize() : core::dimension2d<s32>(0,0))),
-	Driver(driver), Hovered(0), Focus(0), CurrentSkin(0),
+	Driver(driver), Hovered(0), Focus(0), LastHoveredMousePos(0,0), CurrentSkin(0),
 	FileSystem(fs), UserReceiver(0), Operator(op)
 {
 	if (Driver)
@@ -101,6 +101,12 @@ CGUIEnvironment::~CGUIEnvironment()
 	{
 		Focus->drop();
 		Focus = 0;
+	}
+
+	if (ToolTip.Element)
+	{
+		ToolTip.Element->drop();
+		ToolTip.Element = 0;
 	}
 
 	if (FileSystem)
@@ -294,21 +300,28 @@ void CGUIEnvironment::OnPostRender( u32 time )
 		Hovered && Hovered != this &&
 		ToolTip.Element == 0 &&
 		Hovered != ToolTip.Element &&
-		Hovered->getToolTipText().size()
+		Hovered->getToolTipText().size() &&
+		getSkin() && 
+		getSkin()->getFont(EGDF_TOOLTIP)
 		)
 	{
 		core::rect<s32> pos;
-		pos.UpperLeftCorner = Hovered->getAbsolutePosition().LowerRightCorner;
-		pos.LowerRightCorner = pos.UpperLeftCorner + core::position2d<s32> ( 100, 50 );
-		if (getSkin() && getSkin()->getFont())
-		{
-			pos.LowerRightCorner = pos.UpperLeftCorner + 
-				getSkin()->getFont()->getDimension(Hovered->getToolTipText().c_str()) + 
-				core::position2di(getSkin()->getSize(EGDS_TEXT_DISTANCE_X)*2, getSkin()->getSize(EGDS_TEXT_DISTANCE_Y)*2);
-		}
+
+		pos.UpperLeftCorner = LastHoveredMousePos;
+		core::dimension2di dim = getSkin()->getFont(EGDF_TOOLTIP)->getDimension(Hovered->getToolTipText().c_str());
+		dim.Width += getSkin()->getSize(EGDS_TEXT_DISTANCE_X)*2;
+		dim.Height += getSkin()->getSize(EGDS_TEXT_DISTANCE_Y)*2;
+
+		pos.UpperLeftCorner.Y -= dim.Height-1;
+		pos.LowerRightCorner.Y = pos.UpperLeftCorner.Y + dim.Height-1;
+		pos.LowerRightCorner.X = pos.UpperLeftCorner.X + dim.Width;
+
+		pos.constrainTo(getAbsolutePosition());
 
 		ToolTip.Element = addStaticText(Hovered->getToolTipText().c_str(), pos, true, true, this, -1, true);
 		ToolTip.Element->setOverrideColor(getSkin()->getColor(EGDC_TOOLTIP));
+		ToolTip.Element->setBackgroundColor(getSkin()->getColor(EGDC_TOOLTIP_BACKGROUND));
+		ToolTip.Element->setOverrideFont(getSkin()->getFont(EGDF_TOOLTIP));
 		ToolTip.Element->setSubElement(true);
 		ToolTip.Element->grab();
 
@@ -327,6 +340,7 @@ void CGUIEnvironment::OnPostRender( u32 time )
 void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
 {
 	IGUIElement* lastHovered = Hovered;
+	LastHoveredMousePos = mousePos;
 
 	Hovered = getElementFromPoint(mousePos);
 
@@ -354,13 +368,14 @@ void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
 				ToolTip.Element->remove();
 				ToolTip.Element->drop();
 				ToolTip.Element = 0;
+				ToolTip.LastTime += 500;
 			}
 			else
 			{
 				// boost tooltip generation for relaunch
 				if ( now - ToolTip.LastTime < ToolTip.LastTime )
 				{
-					ToolTip.LastTime += 100;
+					ToolTip.LastTime += 500;
 				}
 				else
 				{

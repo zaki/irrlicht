@@ -36,6 +36,12 @@ namespace gui
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
 
+		//! Sets another color for the background.
+		virtual void setBackgroundColor(video::SColor color);
+
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw);
+
 		//! Gets the override color
 		virtual video::SColor const & getOverrideColor(void);
 
@@ -78,7 +84,7 @@ namespace gui
 		bool WordWrap;
 		bool Background;
 
-		video::SColor OverrideColor;
+		video::SColor OverrideColor, BGColor;
 		gui::IGUIFont* OverrideFont;
 		gui::IGUIFont* LastBreakFont; // stored because: if skin changes, line break must be recalculated.
 

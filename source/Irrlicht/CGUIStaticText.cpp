@@ -22,12 +22,17 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 			bool background)
 : IGUIStaticText(environment, parent, id, rectangle), Border(border),
 	OverrideColorEnabled(false), WordWrap(false), Background(background),
-	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0)
+	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
+	BGColor(video::SColor(101,210,210,210))
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIStaticText");
 	#endif
 	Text = text;
+	if (environment && environment->getSkin())
+	{
+		BGColor = environment->getSkin()->getColor(gui::EGDC_3D_FACE);
+	}
 }
 
 
@@ -56,8 +61,7 @@ void CGUIStaticText::draw()
 
 	if (Background)
 	{
-		driver->draw2DRectangle( skin->getColor(gui::EGDC_3D_FACE),
-			frameRect, &AbsoluteClippingRect);
+		driver->draw2DRectangle(BGColor, frameRect, &AbsoluteClippingRect);
 	}
 
 	// draw the border
@@ -132,6 +136,19 @@ void CGUIStaticText::setOverrideColor(video::SColor color)
 {
 	OverrideColor = color;
 	OverrideColorEnabled = true;
+}
+
+//! Sets another color for the text.
+void CGUIStaticText::setBackgroundColor(video::SColor color)
+{
+	BGColor = color;
+	Background = true;
+}
+
+//! Sets whether to draw the background
+void CGUIStaticText::setDrawBackground(bool draw)
+{
+	Background = draw;
 }
 
 video::SColor const & CGUIStaticText::getOverrideColor(void)

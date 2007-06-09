@@ -15,7 +15,7 @@ namespace gui
 {
 
 CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
-: Font(0), SpriteBank(0), Driver(driver), Type(type)
+: SpriteBank(0), Driver(driver), Type(type)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUISkin");
@@ -25,26 +25,27 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 			(Type == EGST_WINDOWS_METALLIC)
 		)
 	{
-		Colors[EGDC_3D_DARK_SHADOW] =	video::SColor(101,50,50,50);
-		Colors[EGDC_3D_SHADOW] =	video::SColor(101,130,130,130);
-		Colors[EGDC_3D_FACE] =		video::SColor(101,210,210,210);
-		Colors[EGDC_3D_HIGH_LIGHT] =	video::SColor(101,255,255,255);
-		Colors[EGDC_3D_LIGHT] =		video::SColor(101,210,210,210);
-		Colors[EGDC_ACTIVE_BORDER] =	video::SColor(101,16,14,115);
-		Colors[EGDC_ACTIVE_CAPTION] =	video::SColor(240,255,255,255);
-		Colors[EGDC_APP_WORKSPACE] =	video::SColor(101,100,100,100);
-		Colors[EGDC_BUTTON_TEXT] =	video::SColor(240,10,10,10);
-		Colors[EGDC_GRAY_TEXT] =	video::SColor(240,130,130,130);
-		Colors[EGDC_HIGH_LIGHT] =	video::SColor(101,8,36,107);
-		Colors[EGDC_HIGH_LIGHT_TEXT] =	video::SColor(240,255,255,255);
-		Colors[EGDC_INACTIVE_BORDER] =	video::SColor(101,165,165,165);
+		Colors[EGDC_3D_DARK_SHADOW]   = video::SColor(101,50,50,50);
+		Colors[EGDC_3D_SHADOW]        = video::SColor(101,130,130,130);
+		Colors[EGDC_3D_FACE]          = video::SColor(101,210,210,210);
+		Colors[EGDC_3D_HIGH_LIGHT]    = video::SColor(101,255,255,255);
+		Colors[EGDC_3D_LIGHT]         =	video::SColor(101,210,210,210);
+		Colors[EGDC_ACTIVE_BORDER]    = video::SColor(101,16,14,115);
+		Colors[EGDC_ACTIVE_CAPTION]   = video::SColor(200,255,255,255);
+		Colors[EGDC_APP_WORKSPACE]    = video::SColor(101,100,100,100);
+		Colors[EGDC_BUTTON_TEXT]      = video::SColor(240,10,10,10);
+		Colors[EGDC_GRAY_TEXT]        = video::SColor(240,130,130,130);
+		Colors[EGDC_HIGH_LIGHT]       = video::SColor(101,8,36,107);
+		Colors[EGDC_HIGH_LIGHT_TEXT]  = video::SColor(240,255,255,255);
+		Colors[EGDC_INACTIVE_BORDER]  = video::SColor(101,165,165,165);
 		Colors[EGDC_INACTIVE_CAPTION] = video::SColor(101,210,210,210);
-		Colors[EGDC_TOOLTIP] =		video::SColor(101,255,255,230);
-		Colors[EGDC_SCROLLBAR] =	video::SColor(101,230,230,230);
-		Colors[EGDC_WINDOW] =		video::SColor(101,255,255,255);
-		Colors[EGDC_WINDOW_SYMBOL] = video::SColor(240,10,10,10);
-		Colors[EGDC_ICON] =			video::SColor(240,255,255,255);
-		Colors[EGDC_ICON_HIGH_LIGHT] = video::SColor(240,10,10,10);
+		Colors[EGDC_TOOLTIP]          = video::SColor(200,0,0,0);
+		Colors[EGDC_TOOLTIP_BACKGROUND]= video::SColor(200,255,255,225);
+		Colors[EGDC_SCROLLBAR]        = video::SColor(101,230,230,230);
+		Colors[EGDC_WINDOW]           = video::SColor(101,255,255,255);
+		Colors[EGDC_WINDOW_SYMBOL]    = video::SColor(200,10,10,10);
+		Colors[EGDC_ICON]             = video::SColor(200,255,255,255);
+		Colors[EGDC_ICON_HIGH_LIGHT]  = video::SColor(200,10,10,10);
 
 		Sizes[EGDS_SCROLLBAR_SIZE] = 14;
 		Sizes[EGDS_MENU_HEIGHT] = 30;
@@ -78,6 +79,7 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 		Colors[EGDC_INACTIVE_BORDER]=	0xf0a5a5a5;
 		Colors[EGDC_INACTIVE_CAPTION]=	0xf0d2d2d2;
 		Colors[EGDC_TOOLTIP]		=	0xf00f2033;
+		Colors[EGDC_TOOLTIP_BACKGROUND]=0xc0cbd2d9;
 		Colors[EGDC_SCROLLBAR]		=	0xf0e0e0e0;
 		Colors[EGDC_WINDOW]			=	0xf0f0f0f0;
 		Colors[EGDC_WINDOW_SYMBOL]	=	0xd0161616;
@@ -123,6 +125,9 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Icons[EGDI_FILE] = 238;
 	Icons[EGDI_DIRECTORY] = 239;
 
+	for (u32 i=0; i<EGDF_COUNT; ++i)
+		Fonts[i] = 0;
+
 	UseGradient = (Type == EGST_WINDOWS_METALLIC) ||
 				  (Type == EGST_BURNING_SKIN) ;
 }
@@ -131,8 +136,12 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 //! destructor
 CGUISkin::~CGUISkin()
 {
-	if (Font)
-		Font->drop();
+	for (u32 i=0; i<EGDF_COUNT; ++i)
+	{
+		if (Fonts[i])
+			Fonts[i]->drop();
+	}
+
 	if (SpriteBank)
 		SpriteBank->drop();
 }
@@ -172,21 +181,24 @@ void CGUISkin::setSize(EGUI_DEFAULT_SIZE which, s32 size)
 
 
 //! returns the default font
-IGUIFont* CGUISkin::getFont()
+IGUIFont* CGUISkin::getFont(EGUI_DEFAULT_FONT which)
 {
-	return Font;
+	if (Fonts[which])
+		return Fonts[which];
+	else
+		return Fonts[EGDF_DEFAULT];
 }
 
 //! sets a default font
-void CGUISkin::setFont(IGUIFont* font)
+void CGUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
 {
-	if (Font)
-		Font->drop();
+	if (Fonts[which])
+		Fonts[which]->drop();
 
-	Font = font;
+	Fonts[which] = font;
 
-	if (Font)
-		Font->grab();
+	if (Fonts[which])
+		Fonts[which]->grab();
 }
 
 IGUISpriteBank* CGUISkin::getSpriteBank()

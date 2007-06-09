@@ -43,7 +43,7 @@ void CGUIMenu::draw()
 		return;
 
 	IGUISkin* skin = Environment->getSkin();
-	IGUIFont* font = skin->getFont();
+	IGUIFont* font = skin->getFont(EGDF_MENU);
 
 	core::rect<s32> rect = AbsoluteRect;
 
@@ -148,7 +148,7 @@ bool CGUIMenu::OnEvent(SEvent event)
 void CGUIMenu::recalculateSize()
 {
 	IGUISkin* skin = Environment->getSkin();
-	IGUIFont* font = skin->getFont();
+	IGUIFont* font = skin->getFont(EGDF_MENU);
 
 	if (!font)
 	{

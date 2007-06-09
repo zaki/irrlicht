@@ -196,7 +196,7 @@ void CGUIButton::draw()
 
 	IGUIFont* font = OverrideFont;
 	if (!OverrideFont)
-		font = skin->getFont();
+		font = skin->getFont(EGDF_BUTTON);
 
 	core::rect<s32> rect = AbsoluteRect;
 

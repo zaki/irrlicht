@@ -59,6 +59,12 @@ namespace gui
 		//! \return true if the override color is enabled, false otherwise
 		virtual bool isOverrideColorEnabled(void) = 0;
 
+		//! Sets another color for the background.
+		virtual void setBackgroundColor(video::SColor color) = 0;
+
+		//! Sets whether to draw the background
+		virtual void setDrawBackground(bool draw) = 0;
+
 		//! Enables or disables word wrap for using the static text as multiline text control.
 		/** \param enable: If set to true, words going over one line are 
 		 breaked to the next line. */

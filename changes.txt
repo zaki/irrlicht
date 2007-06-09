@@ -1,5 +1,7 @@
 Changes in version 1.3.1 (?? Mar 2007)
 
+ - Added rect::constrainTo for locking a rectangle inside another without resizing it
+
  - Moved the OpenGL API functions from COpenGL driver into new extension
    handler. Thereby, some renaming took place - the ARB and EXT suffix was
    removed. Simply rename the functions in case you use them.
@@ -117,11 +119,22 @@ Changes in version 1.3.1 (?? Mar 2007)
 
 GUI:
 
-  - Fixed a messagebox focus bug when no 'okay' button was present
+  - Added EGUI_DEFAULT_FONT for skins, default fonts can now be set for windows, menus, buttons and tooltips.
+    use IGUISkin::setFont and getFont to use them. Fonts are not serialized with saveGUI yet
+
+  - Added EGDC_TOOLTIP_BACKGROUND for setting background color of tooltips.
+
+  - Tooltips now appear relative to mouse position, also they do not appear for 500ms.
+
+  - Fixed a memory leak when dropping the GUIEnvironment when a tooltip was present.
+
+  - Added IGUIStaticText::setDrawBackground and IGUIStaticText::setBackgroundColor.
+
+  - Fixed a messagebox focus bug when no 'okay' button was present.
 
   - Added setColor and setScaleImage to GUIImage.
 
-  - Made GUIListBox clip properly.
+  - GUIListBox highlighted area now clips properly.
 
   - added getOSOperator to GUIEnvironment (for clipboard access in elements) and updated CGUIEditBox.
 
@@ -132,7 +145,12 @@ GUI:
 
   - Fixed a bug with resizing the gui environment when the device is resized
 
-  - XML bitmap fonts now load textures from the XML file directory rather than the current one
+  - Modal screens now resize to fit their parent.
+
+  - XML bitmap fonts now load textures from the XML file directory rather than the current one.
+
+  - Fixed a small bug with click areas in combo boxes.
+  
 
 GUI Editor:
 
