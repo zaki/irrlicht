@@ -775,7 +775,7 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 
 // returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
 // or the absolutetransformation if it's a normal scenenode
-const SMD3QuaterionTag& CAnimatedMeshSceneNode::getAbsoluteTransformation( const core::stringc & tagname)
+const SMD3QuaterionTag& CAnimatedMeshSceneNode::getMD3TagTransformation( const core::stringc & tagname)
 {
 	SMD3QuaterionTag * tag = MD3Special.AbsoluteTagList.get ( tagname );
 	if ( tag )
@@ -798,7 +798,7 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 	SMD3QuaterionTag parent;
 	if ( Parent && Parent->getType () == ESNT_ANIMATED_MESH)
 	{
-		parent = ((IAnimatedMeshSceneNode*) Parent)->getAbsoluteTransformation ( MD3Special.Tagname );
+		parent = ((IAnimatedMeshSceneNode*) Parent)->getMD3TagTransformation ( MD3Special.Tagname );
 	}
 
 	SMD3QuaterionTag relative( RelativeTranslation, RelativeRotation );

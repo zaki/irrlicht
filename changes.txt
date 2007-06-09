@@ -1,5 +1,8 @@
 Changes in version 1.3.1 (?? Mar 2007)
 
+ - renamed IAnimatedMeshSceneNode::getAbsoluteTransformation to getMD3TagTransformation
+   to avoid conflicts with ISceneNode::getAbsoluteTransformation
+
  - Added rect::constrainTo for locking a rectangle inside another without resizing it
 
  - Moved the OpenGL API functions from COpenGL driver into new extension
