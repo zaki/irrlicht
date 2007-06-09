@@ -265,6 +265,7 @@ private:
 	video::IVideoDriver* Driver;
 	IGUIElement* Hovered;
 	IGUIElement* Focus;
+	core::position2d<s32> LastHoveredMousePos;
 	IGUISkin* CurrentSkin;
 	io::IFileSystem* FileSystem;
 	IEventReceiver* UserReceiver;

@@ -182,14 +182,17 @@ int main()
 
 	/*
 	To make the font a little bit nicer, we load an external font
-	and set it as new font in the skin. An at last, we create a 
-	nice Irrlicht Engine logo in the top left corner.
+	and set it as the new default font in the skin. 
+	To keep the standard font for tool tip text, we set it to
+	the built-in font.
 	*/
 
 	IGUISkin* skin = env->getSkin();
 	IGUIFont* font = env->getFont("../../media/fonthaettenschweiler.bmp");
 	if (font)
 		skin->setFont(font);
+
+	skin->setFont(env->getBuiltInFont(), EGDF_TOOLTIP);
 
 	/*
 	We add three buttons. The first one closes the engine. The second
@@ -198,7 +201,7 @@ int main()
 	the button in the event receiver.
 	*/	
 
-	env->addButton(rect<s32>(10,210,110,210 + 32), 0, 101, L"Quit", L"Exits Programm");
+	env->addButton(rect<s32>(10,210,110,210 + 32), 0, 101, L"Quit", L"Exits Program");
 	env->addButton(rect<s32>(10,250,110,250 + 32), 0, 102, L"New Window", L"Launches a new Window");
 	env->addButton(rect<s32>(10,290,110,290 + 32), 0, 103, L"File Open", L"Opens a file");
 

@@ -192,7 +192,7 @@ void CGUIWindow::draw()
 		rect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y);
 		rect.LowerRightCorner.X -= skin->getSize(EGDS_WINDOW_BUTTON_WIDTH) + 5;
 
-		IGUIFont* font = skin->getFont();
+		IGUIFont* font = skin->getFont(EGDF_WINDOW);
 		if (font)
 			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true, cl);
 	}

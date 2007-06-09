@@ -622,8 +622,12 @@ int main()
 	setActiveCamera ( Camera[0] );
 
 	// load the irrlicht engine logo
-	env->addImage(driver->getTexture("irrlichtlogo2.png"),
-		core::position2d<s32>(10, driver->getScreenSize().Height - 64));
+	IGUIImage *img = 
+		env->addImage(driver->getTexture("irrlichtlogo2.png"),
+			core::position2d<s32>(10, driver->getScreenSize().Height - 64));
+
+	// lock the logo's edges to the bottom left corner of the screen
+	img->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 
 	// draw everything
 
