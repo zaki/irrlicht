@@ -95,7 +95,7 @@ public:
 		for (u32 i=0; i<IndexDataCount; ++i)
 			IndexData[i].CurrentSize = 0;
 
-		Root->getPolys(frustum, IndexData);
+		Root->getPolys(frustum, IndexData, 0);
 	}
 
 

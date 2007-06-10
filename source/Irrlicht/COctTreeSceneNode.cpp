@@ -113,16 +113,19 @@ void COctTreeSceneNode::render()
 	//transform the frustum to the current absolute transformation
 	core::matrix4 invTrans(AbsoluteTransformation);
 	invTrans.makeInverse();
-	frust.transform(invTrans);
+	/*
+	//frust.transform(invTrans);
+	//const core::aabbox3d<float> &box = frust.getBoundingBox();
+	*/
 
-	const core::aabbox3d<float> &box = frust.getBoundingBox();
+	frust.transform(invTrans);
 
 	switch(vertexType)
 	{
 	case video::EVT_STANDARD:
 		{
-			StdOctTree->calculatePolys(box);
-			//StdOctTree->calculatePolys(frust);
+			//StdOctTree->calculatePolys(box);
+			StdOctTree->calculatePolys(frust);
 
 			OctTree<video::S3DVertex>::SIndexData* d =  StdOctTree->getIndexData();
 
@@ -168,8 +171,8 @@ void COctTreeSceneNode::render()
 		}
 	case video::EVT_2TCOORDS:
 		{
-			LightMapOctTree->calculatePolys(box);
-			//LightMapOctTree->calculatePolys(frust);
+			//LightMapOctTree->calculatePolys(box);
+			LightMapOctTree->calculatePolys(frust);
 
 			OctTree<video::S3DVertex2TCoords>::SIndexData* d =  LightMapOctTree->getIndexData();
 
