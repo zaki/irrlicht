@@ -112,14 +112,10 @@ public:
 	//! normalizes the vector.
 	vector2d<T>& normalize()
 	{
-		T l = core::reciprocal_squareroot ( X*X + Y*Y );
-/*
-		T l = (T)getLength();
+		T l = X*X + Y*Y;
 		if (l == 0)
 			return *this;
-
-		l = (T)1.0 / l;
-*/
+		l = core::reciprocal_squareroot ( (f32)l );
 		X *= l;
 		Y *= l;
 		return *this;
