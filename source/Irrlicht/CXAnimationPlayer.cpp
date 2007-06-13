@@ -24,6 +24,7 @@ CXAnimationPlayer::CXAnimationPlayer(CXFileReader* reader,
 	CurrentAnimationTime(-1.0f), LastAnimationTime(1.0f),
 	CurrentAnimationSet(0), DebugSkeletonCrossSize(1.0f)
 {
+	OriginalMesh = new scene::SMesh();
 
 	if (!Reader)
 		return;
@@ -44,6 +45,8 @@ CXAnimationPlayer::CXAnimationPlayer(CXFileReader* reader,
 //! destructor
 CXAnimationPlayer::~CXAnimationPlayer()
 {
+	OriginalMesh->drop();
+
 	if (Reader)
 		Reader->drop();
 
@@ -71,7 +74,7 @@ s32 CXAnimationPlayer::getFrameCount()
 IMesh* CXAnimationPlayer::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
 {
 	if (!IsAnimatedSkinnedMesh)
-		return &OriginalMesh;
+		return OriginalMesh;
 
 	if (CurrentAnimationTime != (f32)frame)
 	{
@@ -122,7 +125,7 @@ void CXAnimationPlayer::createAnimationData()
 			DebugSkeletonCrossSize = AnimatedMesh->getBoundingBox().getExtent().X / 20.0f;
 		}
 		else
-			DebugSkeletonCrossSize = OriginalMesh.getBoundingBox().getExtent().X / 20.0f;
+			DebugSkeletonCrossSize = OriginalMesh->getBoundingBox().getExtent().X / 20.0f;
 	}
 }
 
@@ -138,17 +141,17 @@ void CXAnimationPlayer::createMeshData()
 		addFrameToMesh(pgRootFrames[i]);
 
 		// recalculate box
-		OriginalMesh.recalculateBoundingBox();
+		OriginalMesh->recalculateBoundingBox();
 
 		// store box (fix by jox, thnx)
-		Box = OriginalMesh.getBoundingBox();
+		Box = OriginalMesh->getBoundingBox();
 
 		// sort weights in joints
 		for (s32 j=0; j<(s32)Joints.size(); ++j)
 			Joints[j].Weights.sort();
 
 		// copy mesh
-		AnimatedMesh = Manipulator->createMeshCopy(&OriginalMesh);
+		AnimatedMesh = Manipulator->createMeshCopy(OriginalMesh);
 
 		// create and link animation data
 		prepareAnimationData();
@@ -173,7 +176,7 @@ void CXAnimationPlayer::addFrameToMesh(CXFileReader::SXFrame& frame)
 		{
 			// create buffer
 			SMeshBuffer *buf = new SMeshBuffer();
-			OriginalMesh.addMeshBuffer(buf);
+			OriginalMesh->addMeshBuffer(buf);
 			buf->drop();
 
 			// new weights buffer
@@ -184,7 +187,7 @@ void CXAnimationPlayer::addFrameToMesh(CXFileReader::SXFrame& frame)
 				frame.Meshes[m].MaterialList.Materials[mt]);
 
 			// add all faces of this material
-			addFacesToBuffer(OriginalMesh.MeshBuffers.size()-1,
+			addFacesToBuffer(OriginalMesh->MeshBuffers.size()-1,
 				frame.Meshes[m], mt, frame);
 			buf->recalculateBoundingBox();
 		}
@@ -219,7 +222,7 @@ video::SMaterial CXAnimationPlayer::getMaterialFromXMaterial(const CXFileReader:
 
 void CXAnimationPlayer::addFacesToBuffer(s32 meshbuffernr, CXFileReader::SXMesh& mesh, s32 matnr, const CXFileReader::SXFrame& frame)
 {
-	scene::SMeshBuffer* buf = (SMeshBuffer*)OriginalMesh.MeshBuffers[meshbuffernr];
+	scene::SMeshBuffer* buf = (SMeshBuffer*)OriginalMesh->MeshBuffers[meshbuffernr];
 
 	u32 tcnt = mesh.TextureCoords.size();
 	u32 ncnt = mesh.Normals.size();
@@ -659,7 +662,7 @@ void CXAnimationPlayer::modifySkin()
 	for (u32 mb=0; mb<AnimatedMesh->getMeshBufferCount(); ++mb)
 	{
 		video::S3DVertex* av = (video::S3DVertex*)AnimatedMesh->getMeshBuffer(mb)->getVertices();
-		video::S3DVertex* ov = (video::S3DVertex*)OriginalMesh.getMeshBuffer(mb)->getVertices();
+		video::S3DVertex* ov = (video::S3DVertex*)OriginalMesh->getMeshBuffer(mb)->getVertices();
 		const u32 c = AnimatedMesh->getMeshBuffer(mb)->getVertexCount();
 		for (u32 vt=0; vt<c; ++vt)
 		{
