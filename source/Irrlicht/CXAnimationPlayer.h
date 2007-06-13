@@ -163,7 +163,7 @@ namespace scene
 
 		CXFileReader* Reader;
 		video::IVideoDriver* Driver;
-		scene::SMesh OriginalMesh;
+		scene::SMesh *OriginalMesh;
 		scene::SMesh *AnimatedMesh;
 		core::aabbox3df Box;
 		core::stringc FileName;
