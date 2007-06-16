@@ -661,6 +661,14 @@ SOURCE=.\COpenGLDriver.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\COpenGLExtensionHandler.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\COpenGLExtensionHandler.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\COpenGLMaterialRenderer.h
 # End Source File
 # Begin Source File
