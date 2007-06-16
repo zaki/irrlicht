@@ -103,7 +103,7 @@ public:
 	{
 		if (Parent)
 		{
-			const core::rect<s32>& r2(Parent->getAbsolutePosition());
+			const core::rect<s32>& r2 = Parent->getAbsolutePosition();
 
 			core::dimension2df d((f32)(r2.getSize().Width), (f32)(r2.getSize().Height));
 
@@ -127,7 +127,7 @@ public:
 		if (!Parent)
 			return;
 		
-		const core::dimension2di& d(Parent->getAbsolutePosition().getSize());
+		const core::dimension2di& d = Parent->getAbsolutePosition().getSize();
 		
 		DesiredRect = core::rect<s32>( 
 						(s32)((f32)d.Width  * r.UpperLeftCorner.X),
