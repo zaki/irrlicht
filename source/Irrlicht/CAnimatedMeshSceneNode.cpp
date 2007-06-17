@@ -161,7 +161,7 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 
 	if ( Mesh )
 	{
-		Box = Mesh->getBoundingBox();
+		Box = Mesh->getBoundingBox(); //can we remove this, the box is set on 'setMesh', and without it the user can set their own boundingbox (if the normal one is too small) without it being overwritten
 	}
 
 	IAnimatedMeshSceneNode::OnAnimate ( timeMs );
