@@ -4,18 +4,18 @@
 
 #include "irrlicht.h"
 
-#ifdef _IRR_WINDOWS_
+#if defined(_IRR_WINDOWS_)
 	#ifdef _MBCS
 		#undef _MBCS
 	#endif
-	#define UNICODE
-	
-	#define _WIN32_WINNT 0x0500	
 
+	#define UNICODE
+	#define _WIN32_WINNT 0x0500	
 	#include "windows.h"
-#endif
-#ifdef _IRR_COMPILE_WITH_X11_
-#include <X11/Xlib.h>
+#else
+	#ifdef _IRR_COMPILE_WITH_X11_
+	#include <X11/Xlib.h>
+	#endif
 #endif
 
 
