@@ -1,5 +1,5 @@
 ==========================================================================
-The Irrlicht Engine SDK version 1.3
+The Irrlicht Engine SDK version 1.3.1 
 ==========================================================================
 
   Welcome the Irrlicht Engine SDK.
