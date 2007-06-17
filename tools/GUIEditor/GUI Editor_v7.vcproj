@@ -121,6 +121,9 @@
 		<Filter
 			Name="gui">
 			<File
+				RelativePath=".\CGUIDummyEditorStub.h">
+			</File>
+			<File
 				RelativePath=".\CGUIEditFactory.cpp">
 			</File>
 			<File
@@ -138,36 +141,49 @@
 			<File
 				RelativePath=".\CGUIEditWorkspace.h">
 			</File>
+			<File
+				RelativePath=".\CGUIPanel.cpp">
+			</File>
+			<File
+				RelativePath=".\CGUIPanel.h">
+			</File>
+			<File
+				RelativePath=".\CGUITextureAttribute.h">
+			</File>
+			<File
+				RelativePath=".\CGUITextureCacheBrowser.cpp">
+			</File>
+			<File
+				RelativePath=".\CGUITextureCacheBrowser.h">
+			</File>
+			<File
+				RelativePath=".\CMemoryReadWriteFile.cpp">
+			</File>
+			<File
+				RelativePath=".\CMemoryReadWriteFile.h">
+			</File>
 			<Filter
-				Name="GUIAttributes"
-				>
+				Name="GUIAttributes">
 				<File
-					RelativePath=".\CGUIAttribute.h"
-					>
+					RelativePath=".\CGUIAttribute.h">
 				</File>
 				<File
-					RelativePath=".\CGUIAttributeEditor.cpp"
-					>
+					RelativePath=".\CGUIAttributeEditor.cpp">
 				</File>
 				<File
-					RelativePath=".\CGUIAttributeEditor.h"
-					>
+					RelativePath=".\CGUIAttributeEditor.h">
 				</File>
 				<File
-					RelativePath=".\CGUIBoolAttribute.h"
-					>
+					RelativePath=".\CGUIBoolAttribute.h">
 				</File>
 				<File
-					RelativePath=".\CGUIColorAttribute.h"
-					>
+					RelativePath=".\CGUIColorAttribute.h">
 				</File>
 				<File
-					RelativePath=".\CGUIEnumAttribute.h"
-					>
+					RelativePath=".\CGUIEnumAttribute.h">
 				</File>
 				<File
-					RelativePath=".\CGUIStringAttribute.h"
-					>
+					RelativePath=".\CGUIStringAttribute.h">
 				</File>
 			</Filter>
 		</Filter>
