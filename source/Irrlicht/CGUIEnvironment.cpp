@@ -1175,13 +1175,13 @@ IGUIFont* CGUIEnvironment::getFont(const c8* filename)
 
 	// does the file exist?
 
-	if (!FileSystem->existFile(f.Filename.c_str()))
+	if (!FileSystem->existFile(filename))
 	{
 		os::Printer::log("Could not load font because the file does not exist", f.Filename.c_str(), ELL_ERROR);
 		return 0;
 	}
 
-	io::IXMLReader *xml = FileSystem->createXMLReader(f.Filename.c_str());
+	io::IXMLReader *xml = FileSystem->createXMLReader(filename);
 	if (xml)
 	{
 		// this is an XML font, but we need to know what type
@@ -1211,7 +1211,7 @@ IGUIFont* CGUIEnvironment::getFont(const c8* filename)
 
 		if (t==EGFT_BITMAP)
 		{
-			CGUIFont* font = new CGUIFont(this, f.Filename.c_str());
+			CGUIFont* font = new CGUIFont(this, filename);
 			ifont = (IGUIFont*)font;
 			// change working directory, for loading textures
 			core::stringc workingDir = FileSystem->getWorkingDirectory();
