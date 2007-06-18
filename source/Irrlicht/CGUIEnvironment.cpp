@@ -272,6 +272,20 @@ IOSOperator* CGUIEnvironment::getOSOperator()
 //! clear all GUI elements
 void CGUIEnvironment::clear()
 {
+
+	// Remove the focus
+	if (Focus)
+	{
+		Focus->drop();
+		Focus = 0;
+	}
+
+	if (Hovered && Hovered != this)
+	{
+		Hovered->drop();
+		Hovered = 0;
+	}
+
 	// get the root's children in case the root changes in future
 	const core::list<IGUIElement*>& children = getRootGUIElement()->getChildren();
 

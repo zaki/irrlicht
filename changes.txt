@@ -159,7 +159,8 @@ GUI:
   - XML bitmap fonts now load textures from the XML file directory rather than the current one.
 
   - Fixed a small bug with click areas in combo boxes.
-  
+
+  - Fixed a bug in clear() when an element was hovered or had focus
 
 GUI Editor:
 
