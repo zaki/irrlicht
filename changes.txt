@@ -162,6 +162,8 @@ GUI:
 
   - Fixed a bug in clear() when an element was hovered or had focus
 
+  - Fixed a bug when loading fonts with uppercase letters in the name in case-sensitive filesystems
+
 GUI Editor:
 
   - Added cut/copy/paste using clipboard and xml (via memory file). Will have problems in Linux due 
