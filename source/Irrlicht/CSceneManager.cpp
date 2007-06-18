@@ -1039,7 +1039,7 @@ void CSceneManager::drawAll()
 		for (i=0; i<CameraList.size(); ++i)
 			CameraList[i]->render();
 
-		CameraList.clear();
+		CameraList.set_used(0);
 	}
 
 	//render lights scenes
@@ -1056,7 +1056,7 @@ void CSceneManager::drawAll()
 		for (i=0; i< maxLights; ++i)
 			LightList[i].node->render();
 
-		LightList.clear();
+		LightList.set_used(0);
 	}
 
 	// render skyboxes
@@ -1066,7 +1066,7 @@ void CSceneManager::drawAll()
 		for (i=0; i<SkyBoxList.size(); ++i)
 			SkyBoxList[i]->render();
 
-		SkyBoxList.clear();
+		SkyBoxList.set_used(0);
 	}
 
 
@@ -1080,7 +1080,7 @@ void CSceneManager::drawAll()
 
 		Parameters.setAttribute ( "drawn", (s32) SolidNodeList.size () );
 
-		SolidNodeList.clear();
+		SolidNodeList.set_used(0);
 	}
 
 	// render shadows
@@ -1093,7 +1093,7 @@ void CSceneManager::drawAll()
 			Driver->drawStencilShadow(true,ShadowColor, ShadowColor,
 				ShadowColor, ShadowColor);
 
-		ShadowNodeList.clear();
+		ShadowNodeList.set_used(0);
 	}
 
 	// render transparent objects.
@@ -1104,7 +1104,7 @@ void CSceneManager::drawAll()
 		for (i=0; i<TransparentNodeList.size(); ++i)
 			TransparentNodeList[i].node->render();
 
-		TransparentNodeList.clear();
+		TransparentNodeList.set_used(0);
 	}
 
 	// render shader objects.
@@ -1121,7 +1121,7 @@ void CSceneManager::drawAll()
 			for (i=0; i< size; ++i)
 				ShaderNodeList[g][i].node->render();
 
-			ShaderNodeList[g].clear();
+			ShaderNodeList[g].set_used(0);
 		}
 	}
 
