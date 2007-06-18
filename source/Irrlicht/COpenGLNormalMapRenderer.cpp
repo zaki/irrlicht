@@ -163,7 +163,7 @@ const char OPENGL_NORMAL_MAP_PSH[] =
 	"\n"\
 	"# calculate color of light2; \n"\
 	"MAD temp2, light2Vector, {2,2,2,2}, {-1,-1,-1,-1}; \n"\
-	"DP3_SAT temp2, normalMapColor, light2Vector; \n"\
+	"DP3_SAT temp2, normalMapColor, temp2; \n"\
 	"MAD temp, light2Color, temp2, temp; \n"\
 	"\n"\
 	"# luminance * base color; \n"\

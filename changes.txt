@@ -1,5 +1,7 @@
 Changes in version 1.3.1 (20 Jun 2007)
 
+ - Fixed a typo to do with 2nd light vectors in opengl parallax and normal map renderers.
+
  - Fixed a bug with negative exponents in fast_atof, posted by RVL
 
  - renamed IAnimatedMeshSceneNode::getAbsoluteTransformation to getMD3TagTransformation
