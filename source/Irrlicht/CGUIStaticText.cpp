@@ -22,8 +22,8 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 			bool background)
 : IGUIStaticText(environment, parent, id, rectangle), Border(border),
 	OverrideColorEnabled(false), WordWrap(false), Background(background),
-	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
-	BGColor(video::SColor(101,210,210,210))
+	OverrideColor(video::SColor(101,255,255,255)), BGColor(video::SColor(101,210,210,210)),
+	OverrideFont(0), LastBreakFont(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIStaticText");
