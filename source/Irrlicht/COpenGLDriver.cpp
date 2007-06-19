@@ -446,15 +446,17 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	case ETS_TEXTURE_1:
 	case ETS_TEXTURE_2:
 	case ETS_TEXTURE_3:
-		if (mat.isIdentity())
-			return;
-
 		if (MultiTextureExtension)
 			extGlActiveTexture(GL_TEXTURE0_ARB + ( state - ETS_TEXTURE_0 ));
 
 		glMatrixMode(GL_TEXTURE);
-		createGLTextureMatrix(glmat, mat );
-		glLoadMatrixf(glmat);
+		if (mat.isIdentity())
+			glLoadIdentity();
+		else
+		{
+			createGLTextureMatrix(glmat, mat );
+			glLoadMatrixf(glmat);
+		}
 		break;
 	default:
 		break;
