@@ -146,14 +146,17 @@ void CD3D9Texture::createRenderTarget()
 	case D3DFMT_X1R5G5B5:
 	case D3DFMT_A1R5G5B5:
 		ColorFormat = ECF_A1R5G5B5;
+		Pitch = TextureSize.Width * 2;
 		break;
 	case D3DFMT_A8B8G8R8:
 	case D3DFMT_A8R8G8B8:
 	case D3DFMT_X8R8G8B8:
 		ColorFormat = ECF_A8R8G8B8;
+		Pitch = TextureSize.Width * 4;
 		break;
 	case D3DFMT_R5G6B5:
 		ColorFormat = ECF_R5G6B5;
+		Pitch = TextureSize.Width * 2;
 		break;
 	default:
 		ColorFormat = (ECOLOR_FORMAT)-1;
