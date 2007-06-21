@@ -804,7 +804,7 @@ void CGUIEditWorkspace::setDrawGrid(bool drawGrid)
 	DrawGrid = drawGrid;
 }
 
-void CGUIEditWorkspace::setGridSize(core::dimension2di	&gridSize)
+void CGUIEditWorkspace::setGridSize(const core::dimension2di& gridSize)
 {
 	GridSize = gridSize;
 	if (GridSize.Width < 2)

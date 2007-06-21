@@ -61,7 +61,7 @@ namespace gui
 
 		//! grid drawing...
 		virtual void setDrawGrid(bool drawGrid);
-		virtual void setGridSize(core::dimension2di	&gridSize);
+		virtual void setGridSize(const core::dimension2di& gridSize);
 		virtual void setUseGrid(bool useGrid);
 
 		//! returns the first editable element under the mouse

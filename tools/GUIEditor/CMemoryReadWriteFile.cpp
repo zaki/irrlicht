@@ -94,3 +94,4 @@ s32 CMemoryReadWriteFile::read(void* buffer, u32 sizeToRead)
 
 	return sizeToRead;
 }
+
