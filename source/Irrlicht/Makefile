@@ -1,5 +1,5 @@
-VERSION = 1.3.0
-# Irrlicht Engine 1.3
+VERSION = 1.3.1
+# Irrlicht Engine 1.3.1
 # Makefile for Linux, created by N.Gebhardt.
 # 
 # To use, just run:
@@ -67,7 +67,7 @@ all linux: staticlib
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/Linux
 sharedlib: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB) -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
