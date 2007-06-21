@@ -1659,12 +1659,12 @@ void COpenGLDriver::addDynamicLight(const SLight& light)
 	data[3] = light.AmbientColor.a;
 	glLightfv(lidx, GL_AMBIENT, data);
 
-	// 1.0f / (constant + linar * d + quadratic*(d*d);
+	// 1.0f / (constant + linear * d + quadratic*(d*d);
 
 	// set attenuation
-	glLightf(lidx, GL_CONSTANT_ATTENUATION, 0.0f);
-	glLightf(lidx, GL_LINEAR_ATTENUATION, 1.0f / light.Radius);
-	glLightf(lidx, GL_QUADRATIC_ATTENUATION, 0.0f);
+	glLightf(lidx, GL_CONSTANT_ATTENUATION, light.Attenuation.X);
+	glLightf(lidx, GL_LINEAR_ATTENUATION, light.Attenuation.Y);
+	glLightf(lidx, GL_QUADRATIC_ATTENUATION, light.Attenuation.Z);
 
 	glEnable(lidx);
 }

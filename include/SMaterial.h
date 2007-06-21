@@ -338,9 +338,7 @@ namespace video
 		{
 			// These pointers are checked during assignment
 			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			{
 				TextureMatrix[i] = 0;
-			}
 			*this = other;
 		}
 
@@ -348,8 +346,7 @@ namespace video
 		~SMaterial()
 		{
 			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				if (TextureMatrix[i])
-					delete TextureMatrix[i];
+				delete TextureMatrix[i];
 		}
 
 		//! Assignment operator

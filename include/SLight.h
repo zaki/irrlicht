@@ -36,8 +36,9 @@ by the irrlicht engine.
 */
 struct SLight
 {
-	SLight() : AmbientColor(0.0f,0.0f,0.0f), DiffuseColor(1.0f, 1.0f, 1.0f), 
-		SpecularColor(1.0f,1.0f,1.0f), Position(0.0f, 0.0f, 0.0f), Radius(100.0f),
+	SLight() : AmbientColor(0.0f,0.0f,0.0f), DiffuseColor(1.0f, 1.0f, 1.0f),
+		SpecularColor(1.0f,1.0f,1.0f), Position(0.0f, 0.0f, 0.0f),
+		Attenuation(1.0f, 0.0f, 0.0f), Radius(100.0f),
 		CastShadows(true), Type(ELT_POINT)
 		 {};
 
@@ -54,6 +55,9 @@ struct SLight
 
 	//! Position of the light. If Type is ELT_DIRECTIONAL, this is the direction vector the light is coming from.
 	core::vector3df Position;
+
+	//! Attenuation factors
+	core::vector3df Attenuation;
 
 	//! Radius of light. Everything within this radius be be lighted.
 	f32 Radius;
