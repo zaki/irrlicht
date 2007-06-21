@@ -1373,9 +1373,9 @@ void CSoftwareDriver2::addDynamicLight(const SLight& dl)
 	// light in eye space
 	Transformation[ETS_VIEW].m.transformVect ( &l.posEyeSpace.x, l.org.Position );
 
-	l.constantAttenuation = 0.f;
-	l.linearAttenuation = core::reciprocal ( l.org.Radius );
-	l.quadraticAttenuation = 0.f;
+	l.constantAttenuation = l.org.Attenuation.X;
+	l.linearAttenuation = l.org.Attenuation.Y;
+	l.quadraticAttenuation = l.org.Attenuation.Z;
 
 	l.AmbientColor.setColorf ( l.org.AmbientColor );
 	l.DiffuseColor.setColorf ( l.org.DiffuseColor );
@@ -1489,7 +1489,7 @@ void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 				vp.z = light.posEyeSpace.z - vertexEyeSpace.z;
 
 				// irrlicht attenuation model
-#if 1
+#if 0
 				const f32 d = vp.get_inverse_length_xyz();
 
 				vp.x *= d;
@@ -1499,7 +1499,7 @@ void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 
 #else
 				const f32 d = vp.get_length_xyz();
-				attenuation = 1.f / (light.constantAttenuation +
+				attenuation = core::reciprocal (light.constantAttenuation +
 									light.linearAttenuation * d +
 									light.quadraticAttenuation * d * d
 								);

@@ -1550,7 +1550,7 @@ namespace core
 	{
 		M[0] = (T)sx;
 		M[5] = (T)sy;
-		definitelyIdentityMatrix=false;
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (sx==1.0f) && (sy==1.0f) ;
 	}
 
 	template <class T>

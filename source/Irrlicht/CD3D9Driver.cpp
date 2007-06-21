@@ -1707,9 +1707,9 @@ void CD3D9Driver::addDynamicLight(const SLight& dl)
 	light.Specular = *(D3DCOLORVALUE*)((void*)(&dl.SpecularColor));
 	light.Ambient = *(D3DCOLORVALUE*)((void*)(&dl.AmbientColor));
 
-	light.Attenuation0 = 0.0f;
-	light.Attenuation1 = 1.f / dl.Radius;
-	light.Attenuation2 = 0.0f;
+	light.Attenuation0 = dl.Attenuation.X;
+	light.Attenuation1 = dl.Attenuation.Y;
+	light.Attenuation2 = dl.Attenuation.Z;
 
 	++LastSetLight;
 	pID3DDevice->SetLight(LastSetLight, &light);

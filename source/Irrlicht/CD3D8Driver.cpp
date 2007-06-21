@@ -1714,9 +1714,9 @@ void CD3D8Driver::addDynamicLight(const SLight& dl)
 	light.Ambient = *(D3DCOLORVALUE*)((void*)(&dl.AmbientColor));
 	light.Range = MaxLightDistance;
 
-	light.Attenuation0 = 0.0f;
-	light.Attenuation1 = 1.0f / dl.Radius;
-	light.Attenuation2 = 0.0f;
+	light.Attenuation0 = dl.Attenuation.X;
+	light.Attenuation1 = dl.Attenuation.Y;
+	light.Attenuation2 = dl.Attenuation.Z;
 
 	++LastSetLight;
 	pID3DDevice->SetLight(LastSetLight, &light);

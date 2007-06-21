@@ -1,13 +1,24 @@
-Changes in version 1.3.1 (20 Jun 2007)
+Changes in version 1.4 (... 2007)
 
- - Fixed a typo to do with 2nd light vectors in opengl parallax and normal map renderers.
+ - Added adjustable Attenuation for dynamic lights. This allows to change the
+   intensity of a light based on its distance. The default attenuation changed
+   from (0,1/radius,0) to (1,0,0) which means no effect by distance. Good
+   values for distance effects simply add small values to the second and third
+   element.
+
+ - Fixed a typo to do with 2nd light vectors in opengl parallax and normal map
+   renderers.
+
+Changes in version 1.3.1 (20 Jun 2007)
 
  - Fixed a bug with negative exponents in fast_atof, posted by RVL
 
- - renamed IAnimatedMeshSceneNode::getAbsoluteTransformation to getMD3TagTransformation
-   to avoid conflicts with ISceneNode::getAbsoluteTransformation
+ - renamed IAnimatedMeshSceneNode::getAbsoluteTransformation to
+   getMD3TagTransformation to avoid conflicts with
+   ISceneNode::getAbsoluteTransformation
 
- - Added rect::constrainTo for locking a rectangle inside another without resizing it
+ - Added rect::constrainTo for locking a rectangle inside another without
+   resizing it
 
  - Moved the OpenGL API functions from COpenGL driver into new extension
    handler. Thereby, some renaming took place - the ARB and EXT suffix was
@@ -26,8 +37,8 @@ Changes in version 1.3.1 (20 Jun 2007)
  - CSphereSceneNode is now texture wrapped with sphere mapping by exactly one
    texture. Only a small error on the top remained.
    
- - The Sky box scene node now clamps its textures now by default (meaning no more ugly
-   artifacts at the borders).
+ - The Sky box scene node now clamps its textures now by default (meaning no
+   more ugly artifacts at the borders).
 
  - Frustum culling fixed by using the fixed classifyPointRelation function.
 
@@ -84,7 +95,8 @@ Changes in version 1.3.1 (20 Jun 2007)
 
  - Fixed getHeight from terrain scene node.
 
- - The FPS counter now works as in previous releases, the accumulating counter can be enabled by a parameter.
+ - The FPS counter now works as in previous releases, the accumulating counter
+   can be enabled by a parameter.
 
  - getType() is now const correct (API Changes)
 
