@@ -99,7 +99,7 @@ namespace irr
 				: Device(dev), IsVisible(true), Null(null), UseReferenceRect(false)
 			{
 #ifdef _IRR_COMPILE_WITH_X11_
-				if (!null)
+				if (!Null)
 				{
 					XGCValues values;
 					unsigned long valuemask = 0;
@@ -133,7 +133,8 @@ namespace irr
 			~CCursorControl()
 			{
 #ifdef _IRR_COMPILE_WITH_X11_
-				XFreeGC(Device->display, gc);
+				if (!Null)
+					XFreeGC(Device->display, gc);
 #endif
 			}
 
