@@ -178,8 +178,7 @@ namespace core
 		//! false if it is backfacing.
 		bool isFrontFacing(const vector3d<T>& lookDirection) const
 		{
-			vector3d<T> n = getNormal();
-			n.normalize();
+			vector3d<T> n = getNormal().normalize();
 			return F32_LOWER_EQUAL_0(n.dotProduct(lookDirection));
 		}
 

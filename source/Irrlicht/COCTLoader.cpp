@@ -153,7 +153,6 @@ IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file)
 		buffer->Material.MaterialType = video::EMT_LIGHTMAP;
 		buffer->Material.Wireframe = false;
 		buffer->Material.Lighting = false;
-		buffer->Material.BilinearFilter = true;
 
 		Mesh->addMeshBuffer(buffer);
 

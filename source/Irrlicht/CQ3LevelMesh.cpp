@@ -627,7 +627,6 @@ s32 CQ3LevelMesh::setShaderMaterial ( video::SMaterial &material, const tBSPFace
 	material.MaterialType = video::EMT_SOLID;
 	material.Wireframe = false;
 	material.Lighting = false;
-	material.BilinearFilter = true;
 	material.BackfaceCulling = true;
 	material.Textures[0] = 0;
 	material.Textures[1] = 0;
@@ -907,7 +906,6 @@ void CQ3LevelMesh::constructMesh()
 		buffer->Material.MaterialType = video::EMT_LIGHTMAP_M4;
 		buffer->Material.Wireframe = false;
 		buffer->Material.Lighting = false;
-		buffer->Material.BilinearFilter = true;
 
 		Mesh[0]->addMeshBuffer(buffer);
 
