@@ -148,11 +148,11 @@ void CD3D9Texture::createRenderTarget()
 bool CD3D9Texture::createMipMaps(u32 level)
 {
 	if (level==0)
-		return;
+		return true;
+
 	if (HardwareMipMaps && Texture)
 	{
 		// generate mipmaps in hardware
-
 		Texture->GenerateMipSubLevels();
 		return true;
 	}

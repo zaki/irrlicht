@@ -1541,7 +1541,7 @@ void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 		}
 		else
 		{
-			pf = powf(dotHV, Material.org.Shininess );
+			pf = (f32)pow(dotHV, Material.org.Shininess );
 		}
 
 		// accumulate ambient
