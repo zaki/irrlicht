@@ -611,7 +611,6 @@ for (u32 p=0; p<nToRead; p++)
 			buffer->Material.MaterialType = video::EMT_LIGHTMAP_M2; // EMT_LIGHTMAP_M4 also possible
 			buffer->Material.Wireframe = false;
 			buffer->Material.Lighting = false;
-			buffer->Material.BilinearFilter = true;
 
 			if (matEnt)
 			{

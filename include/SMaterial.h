@@ -322,7 +322,6 @@ namespace video
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
 			ZBuffer(true), ZWriteEnable(true), BackfaceCulling(true),
-			BilinearFilter(true), TrilinearFilter(false), AnisotropicFilter(false),
 			FogEnable(false), NormalizeNormals(false)
 		{
 			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
@@ -330,6 +329,9 @@ namespace video
 				Textures[i] = 0;
 				TextureMatrix[i] = 0;
 				TextureWrap[i] = ETC_REPEAT;
+				BilinearFilter[i] = true;
+				TrilinearFilter[i] = false;
+				AnisotropicFilter[i] = false;
 			}
 		}
 
@@ -383,6 +385,9 @@ namespace video
 						TextureMatrix[i] = 0;
 				}
 				TextureWrap[i] = other.TextureWrap[i];
+				BilinearFilter[i] = other.BilinearFilter[i];
+				TrilinearFilter[i] = other.TrilinearFilter[i];
+				AnisotropicFilter[i] = other.AnisotropicFilter[i];
 			}
 
 			Wireframe = other.Wireframe;
@@ -392,9 +397,6 @@ namespace video
 			ZBuffer = other.ZBuffer;
 			ZWriteEnable = other.ZWriteEnable;
 			BackfaceCulling = other.BackfaceCulling;
-			BilinearFilter = other.BilinearFilter;
-			TrilinearFilter = other.TrilinearFilter;
-			AnisotropicFilter = other.AnisotropicFilter;
 			FogEnable = other.FogEnable;
 			NormalizeNormals = other.NormalizeNormals;
 
@@ -504,19 +506,19 @@ namespace video
 		bool BackfaceCulling;
 
 		//! Is bilinear filtering enabled? Default: true
-		bool BilinearFilter;
+		bool BilinearFilter[MATERIAL_MAX_TEXTURES];
 
 		//! Is trilinear filtering enabled? Default: false
 		/** If the trilinear filter flag is enabled,
 		the bilinear filtering flag is ignored. */
-		bool TrilinearFilter;
+		bool TrilinearFilter[MATERIAL_MAX_TEXTURES];
 
 		//! Is anisotropic filtering enabled? Default: false
 		/** In Irrlicht you can use anisotropic texture filtering
 		    in conjunction with bilinear or trilinear texture
 		    filtering to improve rendering results. Primitives
 		    will look less blurry with this flag switched on. */
-		bool AnisotropicFilter;
+		bool AnisotropicFilter[MATERIAL_MAX_TEXTURES];
 
 		//! Is fog enabled? Default: false
 		bool FogEnable;
@@ -572,18 +574,33 @@ namespace video
 				case EMF_BACK_FACE_CULLING:
 					BackfaceCulling = value; break;
 				case EMF_BILINEAR_FILTER:
-					BilinearFilter = value; break;
+				{
+					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						BilinearFilter[i] = value;
+				}
+				break;
 				case EMF_TRILINEAR_FILTER:
-					TrilinearFilter = value; break;
+				{
+					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						TrilinearFilter[i] = value;
+				}
+				break;
 				case EMF_ANISOTROPIC_FILTER:
-					AnisotropicFilter = value; break;
+				{
+					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						AnisotropicFilter[i] = value;
+				}
+				break;
 				case EMF_FOG_ENABLE:
 					FogEnable = value; break;
 				case EMF_NORMALIZE_NORMALS:
 					NormalizeNormals = value; break;
 				case EMF_TEXTURE_WRAP:
-					TextureWrap[0] = TextureWrap[1] = TextureWrap[2] = TextureWrap[3] = (E_TEXTURE_CLAMP)value;
-					break;
+				{
+					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+						TextureWrap[i] = (E_TEXTURE_CLAMP)value;
+				}
+				break;
 				default:
 					break;
 			}
@@ -609,11 +626,11 @@ namespace video
 				case EMF_BACK_FACE_CULLING:
 					return BackfaceCulling;
 				case EMF_BILINEAR_FILTER:
-					return BilinearFilter;
+					return BilinearFilter[0];
 				case EMF_TRILINEAR_FILTER:
-					return TrilinearFilter;
+					return TrilinearFilter[0];
 				case EMF_ANISOTROPIC_FILTER:
-					return AnisotropicFilter;
+					return AnisotropicFilter[0];
 				case EMF_FOG_ENABLE:
 					return FogEnable;
 				case EMF_NORMALIZE_NORMALS:
@@ -630,11 +647,7 @@ namespace video
 		//! Inequality operator
 		inline bool operator!=(const SMaterial& b) const
 		{
-			return 
-				Textures[0] != b.Textures[0] ||
-				Textures[1] != b.Textures[1] ||
-				Textures[2] != b.Textures[2] ||
-				Textures[3] != b.Textures[3] ||
+			bool different = 
 				MaterialType != b.MaterialType ||
 				AmbientColor != b.AmbientColor ||
 				DiffuseColor != b.DiffuseColor ||
@@ -651,19 +664,22 @@ namespace video
 				ZBuffer != b.ZBuffer ||
 				ZWriteEnable != b.ZWriteEnable ||
 				BackfaceCulling != b.BackfaceCulling ||
-				BilinearFilter != b.BilinearFilter ||
-				TrilinearFilter != b.TrilinearFilter ||
-				AnisotropicFilter != b.AnisotropicFilter ||
 				FogEnable != b.FogEnable ||
-				NormalizeNormals != b.NormalizeNormals ||
-				TextureWrap[0] != b.TextureWrap[0] ||
-				TextureWrap[1] != b.TextureWrap[1] ||
-				TextureWrap[2] != b.TextureWrap[2] ||
-				TextureWrap[3] != b.TextureWrap[3] ||
-				TextureMatrix[0] != b.TextureMatrix[0] ||
-				TextureMatrix[1] != b.TextureMatrix[1] ||
-				TextureMatrix[2] != b.TextureMatrix[2] ||
-				TextureMatrix[3] != b.TextureMatrix[3];
+				NormalizeNormals != b.NormalizeNormals;
+			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
+			{
+				different |= (Textures[i] != b.Textures[i]);
+				different |= (TextureWrap[i] != b.TextureWrap[i]);
+				different |= (BilinearFilter[i] != b.BilinearFilter[i]);
+				different |= (TrilinearFilter[i] != b.TrilinearFilter[i]);
+				different |= (AnisotropicFilter[i] != b.AnisotropicFilter[i]);
+			}
+			if (different)
+				return true;
+			else
+				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+					different |= (TextureMatrix[i] != b.TextureMatrix[i]);
+			return different;
 		}
 
 		//! Equality operator

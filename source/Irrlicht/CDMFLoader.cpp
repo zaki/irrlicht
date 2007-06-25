@@ -167,7 +167,6 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			buffer->Material.MaterialType = video::EMT_LIGHTMAP_LIGHTING  ;
 			buffer->Material.Wireframe = false;
 			buffer->Material.Lighting = true;
-			buffer->Material.BilinearFilter = true;
 			Mesh->addMeshBuffer(buffer);
 			buffer->drop();
 	}

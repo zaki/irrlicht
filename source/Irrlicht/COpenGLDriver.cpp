@@ -1290,18 +1290,18 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			break;
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-			(material.BilinearFilter || material.TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
+			(material.BilinearFilter[i] || material.TrilinearFilter[i]) ? GL_LINEAR : GL_NEAREST);
 
 		if (material.Textures[i] && material.Textures[i]->hasMipMaps())
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				material.TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR : material.BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST );
+				material.TrilinearFilter[i] ? GL_LINEAR_MIPMAP_LINEAR : material.BilinearFilter[i] ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST );
 		else
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				(material.BilinearFilter || material.TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
+				(material.BilinearFilter[i] || material.TrilinearFilter[i]) ? GL_LINEAR : GL_NEAREST);
 
 		if (AnisotropyExtension)
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-				material.AnisotropicFilter ? MaxAnisotropy : 1.0f );
+				material.AnisotropicFilter[i] ? MaxAnisotropy : 1.0f );
 	}
 
 	// fillmode

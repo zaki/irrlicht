@@ -248,7 +248,6 @@ void CLMTSMeshFileLoader::constructMesh()
 		meshBuffer->Material.MaterialType = video::EMT_LIGHTMAP; // EMT_LIGHTMAP_M2/EMT_LIGHTMAP_M4 also possible
 		meshBuffer->Material.Wireframe = false;
 		meshBuffer->Material.Lighting = false;
-		meshBuffer->Material.BilinearFilter = true;
 
 		Mesh->addMeshBuffer(meshBuffer);
 

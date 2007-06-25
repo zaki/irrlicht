@@ -1302,7 +1302,8 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	io::CAttributes* attr = new io::CAttributes(this);
 
 	const char** materialNames = new const char*[MaterialRenderers.size()+1];
-	for (u32 i=0; i < MaterialRenderers.size(); ++i)
+	u32 i;
+	for (i=0; i < MaterialRenderers.size(); ++i)
 		materialNames[i] = MaterialRenderers[i].Name.c_str();
 
 	materialNames[MaterialRenderers.size()] = 0;
@@ -1320,27 +1321,31 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addFloat("Param1", material.MaterialTypeParam);
 	attr->addFloat("Param2", material.MaterialTypeParam2);
 
-	attr->addTexture("Texture1", material.Textures[0]);
-	attr->addTexture("Texture2", material.Textures[1]);
-	attr->addTexture("Texture3", material.Textures[2]);
-	attr->addTexture("Texture4", material.Textures[3]);
+	core::stringc prefix="Texture";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		attr->addTexture((prefix+i).c_str(), material.Textures[i]);
 
 	attr->addBool("Wireframe", material.Wireframe);
 	attr->addBool("GouraudShading", material.GouraudShading);
 	attr->addBool("Lighting", material.Lighting);
 	attr->addBool("ZWriteEnable", material.ZWriteEnable);
+	attr->addInt("ZBuffer", material.ZBuffer);
 	attr->addBool("BackfaceCulling", material.BackfaceCulling);
-	attr->addBool("BilinearFilter", material.BilinearFilter);
-	attr->addBool("TrilinearFilter", material.TrilinearFilter);
-	attr->addBool("AnisotropicFilter", material.AnisotropicFilter);
 	attr->addBool("FogEnable", material.FogEnable);
 	attr->addBool("NormalizeNormals", material.NormalizeNormals);
 
-	attr->addInt("ZBuffer", material.ZBuffer);
-	attr->addEnum("TextureWrap1", material.TextureWrap[0], aTextureClampNames);
-	attr->addEnum("TextureWrap2", material.TextureWrap[1], aTextureClampNames);
-	attr->addEnum("TextureWrap3", material.TextureWrap[2], aTextureClampNames);
-	attr->addEnum("TextureWrap4", material.TextureWrap[3], aTextureClampNames);
+	prefix = "BilinearFilter";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		attr->addBool((prefix+i).c_str(), material.BilinearFilter[i]);
+	prefix = "TrilinearFilter";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		attr->addBool((prefix+i).c_str(), material.TrilinearFilter[i]);
+	prefix = "AnisotropicFilter";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		attr->addBool((prefix+i).c_str(), material.AnisotropicFilter[i]);
+	prefix="TextureWrap";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		attr->addEnum((prefix+i).c_str(), material.TextureWrap[i], aTextureClampNames);
 
 	return attr;
 }
@@ -1371,27 +1376,30 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.MaterialTypeParam = attr->getAttributeAsFloat("Param1");
 	outMaterial.MaterialTypeParam2 = attr->getAttributeAsFloat("Param2");
 
-	outMaterial.Textures[0] = attr->getAttributeAsTexture("Texture1");
-	outMaterial.Textures[1] = attr->getAttributeAsTexture("Texture2");
-	outMaterial.Textures[2] = attr->getAttributeAsTexture("Texture3");
-	outMaterial.Textures[3] = attr->getAttributeAsTexture("Texture4");
+	core::stringc prefix="Texture";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		outMaterial.Textures[i] = attr->getAttributeAsTexture((prefix+i).c_str());
 
 	outMaterial.Wireframe = attr->getAttributeAsBool("Wireframe");
 	outMaterial.GouraudShading = attr->getAttributeAsBool("GouraudShading");
 	outMaterial.Lighting = attr->getAttributeAsBool("Lighting");
 	outMaterial.ZWriteEnable = attr->getAttributeAsBool("ZWriteEnable");
+	outMaterial.ZBuffer = attr->getAttributeAsInt("ZBuffer");
 	outMaterial.BackfaceCulling = attr->getAttributeAsBool("BackfaceCulling");
-	outMaterial.BilinearFilter = attr->getAttributeAsBool("BilinearFilter");
-	outMaterial.TrilinearFilter = attr->getAttributeAsBool("TrilinearFilter");
-	outMaterial.AnisotropicFilter = attr->getAttributeAsBool("AnisotropicFilter");
 	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable");
 	outMaterial.NormalizeNormals = attr->getAttributeAsBool("NormalizeNormals");
-
-	outMaterial.ZBuffer = attr->getAttributeAsInt("ZBuffer");
-	outMaterial.TextureWrap[0] = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration("TextureWrap1", aTextureClampNames);
-	outMaterial.TextureWrap[1] = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration("TextureWrap2", aTextureClampNames);
-	outMaterial.TextureWrap[2] = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration("TextureWrap3", aTextureClampNames);
-	outMaterial.TextureWrap[3] = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration("TextureWrap4", aTextureClampNames);
+	prefix = "BilinearFilter";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		outMaterial.BilinearFilter[i] = attr->getAttributeAsBool((prefix+i).c_str());
+	prefix = "TrilinearFilter";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		outMaterial.TrilinearFilter[i] = attr->getAttributeAsBool((prefix+i).c_str());
+	prefix = "AnisotropicFilter";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		outMaterial.AnisotropicFilter[i] = attr->getAttributeAsBool((prefix+i).c_str());
+	prefix = "TextureWrap";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		outMaterial.TextureWrap[i] = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+i).c_str(), aTextureClampNames);
 }
 
 
