@@ -80,10 +80,13 @@ private:
 	inline s32 getTextureSizeFromImageSize(s32 size);
 
 	//! creates the hardware texture
-	void createTexture(u32 flags);
+	bool createTexture(u32 flags);
 
 	//! copies the image to the texture
 	bool copyTexture();
+
+	//! convert color formats
+	ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format);
 
 	//! optimized for 16 bit to 16 copy.
 	bool copyTo16BitTexture();
@@ -91,7 +94,7 @@ private:
 	//! copies texture to 32 bit hardware texture
 	bool copyTo32BitTexture();
 
-	bool createMipMaps(s32 level=1);
+	bool createMipMaps(u32 level=1);
 	
 	void copy16BitMipMap(char* src, char* tgt,
 		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt);

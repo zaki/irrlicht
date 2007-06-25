@@ -69,9 +69,7 @@ HasMipMaps(false), IsRenderTarget(false)
 	{
 		Image->grab();
 
-		createTexture(flags);
-
-		if (Texture)
+		if (createTexture(flags))
 		{
 			if (copyTexture() && generateMipLevels)
 			{
@@ -101,7 +99,7 @@ HasMipMaps(false), IsRenderTarget(false)
 
 
 //! creates the hardware texture
-void CD3D8Texture::createTexture(u32 flags)
+bool CD3D8Texture::createTexture(u32 flags)
 {
 	core::dimension2d<s32> optSize;
 	ImageSize = Image->getDimension();
@@ -157,7 +155,8 @@ void CD3D8Texture::createTexture(u32 flags)
 			0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED, &Texture);
 	}
 
-	ColorFormat = (format == D3DFMT_A1R5G5B5) ? ECF_A1R5G5B5 : ECF_A8R8G8B8;
+	ColorFormat = getColorFormatFromD3DFormat(format);
+	return (SUCCEEDED(hr));
 }
 
 
@@ -391,12 +390,14 @@ bool CD3D8Texture::hasMipMaps() const
 }
 
 
-bool CD3D8Texture::createMipMaps(s32 level)
+// The D3DXFilterTexture function seems to get linked wrong when
+// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
+// So mipmapgeneration is replaced with my own bad generation in d3d 8 when
+// compiling with both D3D 8 and 9.
+bool CD3D8Texture::createMipMaps(u32 level)
 {
-	// The D3DXFilterTexture function seems to get linked wrong when
-	// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-	// So mipmapgeneration is replaced with my own bad generation in d3d 8 when
-	// compiling with both D3D 8 and 9.
+	if (level==0)
+		return;
 
 	IDirect3DSurface8* upperSurface = 0;
 	IDirect3DSurface8* lowerSurface = 0;
@@ -474,6 +475,31 @@ bool CD3D8Texture::createMipMaps(s32 level)
 
 	// generate next level
 	return createMipMaps(level+1);
+}
+
+
+ECOLOR_FORMAT CD3D8Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
+{
+	switch(format)
+	{
+	case D3DFMT_X1R5G5B5:
+	case D3DFMT_A1R5G5B5:
+		Pitch = TextureSize.Width * 2;
+		return ECF_A1R5G5B5;
+		break;
+	case D3DFMT_A8B8G8R8:
+	case D3DFMT_A8R8G8B8:
+	case D3DFMT_X8R8G8B8:
+		Pitch = TextureSize.Width * 4;
+		return ECF_A8R8G8B8;
+		break;
+	case D3DFMT_R5G6B5:
+		Pitch = TextureSize.Width * 2;
+		return ECF_R5G6B5;
+		break;
+	default:
+		return (ECOLOR_FORMAT)0;
+	};
 }
 
 
@@ -601,26 +627,7 @@ void CD3D8Texture::createRenderTarget()
 		&Texture);
 
 	// get irrlicht format from D3D format
-
-	switch(d3DFormat)
-	{
-	case D3DFMT_X1R5G5B5:
-	case D3DFMT_A1R5G5B5:
-		ColorFormat = ECF_A1R5G5B5;
-		Pitch = TextureSize.Width * 2;
-		break;
-	case D3DFMT_A8R8G8B8:
-	case D3DFMT_X8R8G8B8:
-		ColorFormat = ECF_A8R8G8B8;
-		Pitch = TextureSize.Width * 4;
-		break;
-	case D3DFMT_R5G6B5:
-		ColorFormat = ECF_R5G6B5;
-		Pitch = TextureSize.Width * 2;
-		break;
-	default:
-		ColorFormat = (ECOLOR_FORMAT)-1;
-	};
+	ColorFormat = getColorFormatFromD3DFormat(d3DFormat);
 
 	if (FAILED(hr))
 		os::Printer::log("Could not create render target texture");

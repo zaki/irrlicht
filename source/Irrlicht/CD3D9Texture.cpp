@@ -68,9 +68,7 @@ HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
 	{
 		Image->grab();
 
-		createTexture(flags);
-
-		if (Texture)
+		if (createTexture(flags))
 		{
 			if (copyTexture() && generateMipLevels)
 			{
@@ -140,35 +138,17 @@ void CD3D9Texture::createRenderTarget()
 		NULL);
 
 	// get irrlicht format from D3D format
-
-	switch(d3DFormat)
-	{
-	case D3DFMT_X1R5G5B5:
-	case D3DFMT_A1R5G5B5:
-		ColorFormat = ECF_A1R5G5B5;
-		Pitch = TextureSize.Width * 2;
-		break;
-	case D3DFMT_A8B8G8R8:
-	case D3DFMT_A8R8G8B8:
-	case D3DFMT_X8R8G8B8:
-		ColorFormat = ECF_A8R8G8B8;
-		Pitch = TextureSize.Width * 4;
-		break;
-	case D3DFMT_R5G6B5:
-		ColorFormat = ECF_R5G6B5;
-		Pitch = TextureSize.Width * 2;
-		break;
-	default:
-		ColorFormat = (ECOLOR_FORMAT)-1;
-	};
+	ColorFormat = getColorFormatFromD3DFormat(d3DFormat);
 
 	if (FAILED(hr))
 		os::Printer::log("Could not create render target texture");
 }
 
 
-bool CD3D9Texture::createMipMaps(s32 level)
+bool CD3D9Texture::createMipMaps(u32 level)
 {
+	if (level==0)
+		return;
 	if (HardwareMipMaps && Texture)
 	{
 		// generate mipmaps in hardware
@@ -263,7 +243,7 @@ bool CD3D9Texture::createMipMaps(s32 level)
 
 
 //! creates the hardware texture
-void CD3D9Texture::createTexture(u32 flags)
+bool CD3D9Texture::createTexture(u32 flags)
 {
 	core::dimension2d<s32> optSize;
 	ImageSize = Image->getDimension();
@@ -335,9 +315,34 @@ void CD3D9Texture::createTexture(u32 flags)
 			0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED, &Texture, NULL);
 	}
 
-	ColorFormat = (format == D3DFMT_A1R5G5B5) ? ECF_A1R5G5B5 : ECF_A8R8G8B8;
+	ColorFormat = getColorFormatFromD3DFormat(format);
+	return (SUCCEEDED(hr));
 }
 
+
+ECOLOR_FORMAT CD3D9Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
+{
+	switch(format)
+	{
+	case D3DFMT_X1R5G5B5:
+	case D3DFMT_A1R5G5B5:
+		Pitch = TextureSize.Width * 2;
+		return ECF_A1R5G5B5;
+		break;
+	case D3DFMT_A8B8G8R8:
+	case D3DFMT_A8R8G8B8:
+	case D3DFMT_X8R8G8B8:
+		Pitch = TextureSize.Width * 4;
+		return ECF_A8R8G8B8;
+		break;
+	case D3DFMT_R5G6B5:
+		Pitch = TextureSize.Width * 2;
+		return ECF_R5G6B5;
+		break;
+	default:
+		return (ECOLOR_FORMAT)0;
+	};
+}
 
 
 //! copies the image to the texture
