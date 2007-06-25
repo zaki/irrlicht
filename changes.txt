@@ -1,5 +1,14 @@
 Changes in version 1.4 (... 2007)
 
+ - Fixed getSize/getOriginalSize method inversion in OpenGL textures.
+
+ - Added per texture-layer filter settings, i.e. one can choose to filter
+   only chosen texture layers. If all layers are set to the same value the
+   convenience function material.setFlag(EMF_BILINEAR_FILTER, boolean) can be
+   used, TRILINEAR_FILTER and ANISOTROPIC_FILTER do work, too. In all other
+   cases material.BilinearFilter[i] (resp. TrilinerFilter[i] or
+   AnisotropicFilter[i]) shall are to be used.
+
  - Added adjustable Attenuation for dynamic lights. This allows to change the
    intensity of a light based on its distance. The default attenuation changed
    from (0,1/radius,0) to (1,0,0) which means no effect by distance. Good
