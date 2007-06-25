@@ -25,10 +25,10 @@ class quaternion
 		//! Constructor
 		quaternion(f32 X, f32 Y, f32 Z, f32 W);
 
-		//! Constructor which converts euler angles to a quaternion
+		//! Constructor which converts euler angles (radians) to a quaternion
 		quaternion(f32 x, f32 y, f32 z);
 
-		//! Constructor which converts euler angles to a quaternion
+		//! Constructor which converts euler angles (radians) to a quaternion
 		quaternion(const vector3df& vec);
 
 		//! Constructor which converts a matrix to a quaternion
@@ -67,7 +67,7 @@ class quaternion
 		//! sets new quaternion
 		inline void set(f32 x, f32 y, f32 z, f32 w);
 
-		//! sets new quaternion based on euler angles
+		//! sets new quaternion based on euler angles (radians)
 		inline void set(f32 x, f32 y, f32 z);
 
 		//! normalizes the quaternion
@@ -96,6 +96,7 @@ class quaternion
 		//! Fills an angle (radians) around an axis (unit vector)
 		void toAngleAxis (f32 &angle, vector3df& axis) const;
 
+		//! Output this quaternion to an euler angle (radians)
 		void toEuler(vector3df& euler) const;
 
 		//! set quaternion to identity
