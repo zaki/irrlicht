@@ -158,17 +158,10 @@ COpenGLTexture::~COpenGLTexture()
 		glDeleteTextures(1, &DepthRenderBuffer);
 	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
 		glDeleteTextures(1, &StencilRenderBuffer);
-	ColorFrameBuffer = 0;
-	DepthRenderBuffer = 0;
-	StencilRenderBuffer = 0;
 
 	glDeleteTextures(1, &TextureName);
 	if (Image)
-	{
 		Image->drop();
-		Image=0;
-	}
-	ImageSize.Width=ImageSize.Height=0;
 }
 
 
@@ -346,21 +339,21 @@ void COpenGLTexture::unlock()
 
 
 
-//! Returns original size of the texture.
+//! Returns size of the original image.
 const core::dimension2d<s32>& COpenGLTexture::getOriginalSize()
+{
+	return ImageSize;
+}
+
+
+
+//! Returns of the texture.
+const core::dimension2d<s32>& COpenGLTexture::getSize()
 {
 	if (Image)
 		return Image->getDimension();
 	else
 		return ImageSize;
-}
-
-
-
-//! Returns (=size) of the texture.
-const core::dimension2d<s32>& COpenGLTexture::getSize()
-{
-	return ImageSize;
 }
 
 
