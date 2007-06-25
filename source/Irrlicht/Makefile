@@ -79,7 +79,7 @@ staticlib: $(STATIC_LIB)
 	cp $^ $(LIB_PATH)
 
 # Builds Irrlicht as dll (Irrlicht.dll) into ../../bin/Win32-gcc
-win32: sharedlib_win32
+all_win32 win32: sharedlib_win32
 sharedlib_win32: $(IRRLICHT_DLL)
 ../../bin/Win32-gcc/Irrlicht.dll: $(LINKOBJ)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -o $@ $^ $(LDFLAGS) -Wl,--out-implib,../../lib/Win32-gcc/$(STATIC_LIB)

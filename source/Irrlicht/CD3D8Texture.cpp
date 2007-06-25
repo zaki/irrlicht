@@ -397,7 +397,7 @@ bool CD3D8Texture::hasMipMaps() const
 bool CD3D8Texture::createMipMaps(u32 level)
 {
 	if (level==0)
-		return;
+		return true;
 
 	IDirect3DSurface8* upperSurface = 0;
 	IDirect3DSurface8* lowerSurface = 0;
@@ -422,7 +422,6 @@ bool CD3D8Texture::createMipMaps(u32 level)
 	D3DSURFACE_DESC upperDesc, lowerDesc;
 	upperSurface->GetDesc(&upperDesc);
 	lowerSurface->GetDesc(&lowerDesc);
-
 
 	D3DLOCKED_RECT upperlr;
 	D3DLOCKED_RECT lowerlr;
