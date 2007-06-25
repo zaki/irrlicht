@@ -38,7 +38,7 @@ CXXINCS = -I../../include -Izlib -Ijpeglib -Ilibpng
 CPPFLAGS = $(CXXINCS) -DIRRLICHT_EXPORTS=1
 CXXFLAGS = -Wall
 ifndef NDEBUG
-CXXFLAGS += -pg
+CXXFLAGS += -g
 else
 CXXFLAGS += -fexpensive-optimizations -O3
 endif
