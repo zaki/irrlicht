@@ -1,6 +1,7 @@
 #include "COpenGLExtensionHandler.h"
 #include "irrString.h"
 #include "SMaterial.h" // for MATERIAL_MAX_TEXTURES
+#include "fast_atof.h"
 
 #include "IrrCompileConfig.h"
 
@@ -58,8 +59,8 @@ void COpenGLExtensionHandler::dump() const
 
 void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 {
-	const f32 ver = (f32)atof((c8*)glGetString(GL_VERSION));
-	Version = core::floor32(ver)*100+(s32)(ver-floor(ver));
+	const f32 ver = core::fast_atof((c8*)glGetString(GL_VERSION));
+	Version = core::floor32(ver)*100+core::ceil32((ver-floor(ver))*10.0);
 	if ( Version >= 102)
 		os::Printer::log("OpenGL driver version is 1.2 or better.", ELL_INFORMATION);
 	else
