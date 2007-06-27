@@ -198,7 +198,7 @@ Note that the engine will run in D3D REF for this, which is a lot slower than HA
 
 		BURNINGVIDEO_RENDERER_FAST
 			32 Bit + Per Pixel Perspective Correct + SubPixel/SubTexel Correct + WBuffer +
-			Bilinear Dithering TextureFilterung + WBuffer
+			Bilinear Dithering TextureFiltering + WBuffer
 
 		BURNINGVIDEO_RENDERER_ULTRA_FAST
 			16Bit + SubPixel/SubTexel Correct + ZBuffer
