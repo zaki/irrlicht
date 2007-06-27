@@ -1799,11 +1799,11 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 	glBegin(GL_QUADS);
 
-	glColor4ub (leftUpEdge.getRed(), leftUpEdge.getGreen(), leftUpEdge.getBlue(), leftUpEdge.getAlpha() );
-	glVertex3f(-1.1f, 1.1f,0.9f);
-
 	glColor4ub (leftDownEdge.getRed(), leftDownEdge.getGreen(), leftDownEdge.getBlue(), leftDownEdge.getAlpha() );
 	glVertex3f(-1.1f,-1.1f,0.9f);
+
+	glColor4ub (leftUpEdge.getRed(), leftUpEdge.getGreen(), leftUpEdge.getBlue(), leftUpEdge.getAlpha() );
+	glVertex3f(-1.1f, 1.1f,0.9f);
 
 	glColor4ub (rightUpEdge.getRed(), rightUpEdge.getGreen(), rightUpEdge.getBlue(), rightUpEdge.getAlpha() );
 	glVertex3f( 1.1f, 1.1f,0.9f);
