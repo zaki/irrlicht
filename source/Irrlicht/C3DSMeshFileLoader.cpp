@@ -936,11 +936,13 @@ void C3DSMeshFileLoader::composeObject(io::IReadFile* file, const core::stringc&
 			{
 				u32 vtxCount = mb->Vertices.size();
 				if (vtxCount>maxPrimitives)
-				{
-					Mesh->addMeshBuffer(new SMeshBuffer());
+				{		
 					IMeshBuffer* tmp = mb;
-					mb=(SMeshBuffer*)(Mesh->MeshBuffers[mbPos]=Mesh->MeshBuffers.getLast());
-					Mesh->MeshBuffers[Mesh->MeshBuffers.size()-1]=tmp;
+					mb = new SMeshBuffer();
+					Mesh->addMeshBuffer(mb);
+					mb->drop();
+					Mesh->MeshBuffers[mbPos] = Mesh->MeshBuffers.getLast();
+					Mesh->MeshBuffers[Mesh->MeshBuffers.size()-1] = tmp;
 					mb->getMaterial() = *mat;
 					vtxCount=0;
 				}
