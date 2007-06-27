@@ -725,6 +725,7 @@ class COpenGLExtensionHandler
 	void extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers);
 	void extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 	void extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+	void extGlActiveStencilFace(GLenum face);
 
 	protected:
 	// the global feature array
@@ -785,6 +786,7 @@ class COpenGLExtensionHandler
 		PFNGLGENRENDERBUFFERSEXTPROC pGlGenRenderbuffersEXT;
 		PFNGLRENDERBUFFERSTORAGEEXTPROC pGlRenderbufferStorageEXT;
 		PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC pGlFramebufferRenderbufferEXT;
+		PFNGLACTIVESTENCILFACEEXTPROC pGlActiveStencilFaceEXT;
 	#endif
 };
 
@@ -1302,6 +1304,18 @@ inline void COpenGLExtensionHandler::extGlFramebufferRenderbuffer(GLenum target,
 	glFramebufferRenderbufferEXT(target, attachment, renderbuffertarget, renderbuffer);
 #else
 	os::Printer::log("glFramebufferRenderbuffer not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlActiveStencilFace(GLenum face)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlActiveStencilFaceEXT)
+		pGlActiveStencilFaceEXT(face);
+#elif defined(GL_EXT_stencil_two_side)
+	glActiveStencilFaceEXT(face);
+#else
+	os::Printer::log("glActiveStencilFace not supported", ELL_ERROR);
 #endif
 }
 
