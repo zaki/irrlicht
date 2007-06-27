@@ -104,8 +104,6 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		XFree(StdHints);
 	if (display)
 	{
-		//os::Printer::log("Deleting window...", ELL_INFORMATION);
-
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		if (Context)
 		{
@@ -591,7 +589,8 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 			ZPixmap, 0, 0, Width, Height,
 			BitmapPad(display), 0);
 
-		SoftwareImage->data = new char[SoftwareImage->bytes_per_line * SoftwareImage->height];
+		// use malloc because X will free it later on
+		SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
 	} 
 
 	XFree(visual);
