@@ -486,7 +486,6 @@ ECOLOR_FORMAT CD3D8Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
 		Pitch = TextureSize.Width * 2;
 		return ECF_A1R5G5B5;
 		break;
-	case D3DFMT_A8B8G8R8:
 	case D3DFMT_A8R8G8B8:
 	case D3DFMT_X8R8G8B8:
 		Pitch = TextureSize.Width * 4;
