@@ -1782,7 +1782,6 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glDepthMask(GL_FALSE);
 	glDepthFunc( GL_LEQUAL );
 
-	glFrontFace( GL_CCW );
 	glShadeModel( GL_FLAT );
 	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
@@ -1798,7 +1797,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glPushMatrix();
 	glLoadIdentity();
 
-	glBegin(GL_TRIANGLE_STRIP);
+	glBegin(GL_QUADS);
 
 	glColor4ub (leftUpEdge.getRed(), leftUpEdge.getGreen(), leftUpEdge.getBlue(), leftUpEdge.getAlpha() );
 	glVertex3f(-1.1f, 1.1f,0.9f);
