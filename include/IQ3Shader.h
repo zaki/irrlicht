@@ -53,9 +53,9 @@ namespace quake3
 			return name.size();
 		}
 
-		bool operator < ( const SVariable &other ) const
+		bool operator == ( const SVariable &other ) const
 		{
-			return name < other.name;
+			return name == other.name;
 		}
 	};
 
@@ -444,9 +444,14 @@ namespace quake3
 	class SShader
 	{
 		public:
+			bool operator == (const SShader &other ) const
+			{
+				return name == other.name;
+			}
+
 			bool operator < (const SShader &other ) const
 			{
-				return	name < other.name;
+				return name < other.name;
 			}
 
 			const SVarGroup * getGroup ( u32 stage ) const

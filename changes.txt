@@ -1,5 +1,10 @@
 Changes in version 1.4 (... 2007)
 
+ - Changed irrArray::linear_search to use the == operator rather than <
+   This may be slower in some cases, but it no longer returns false positives
+   when searching arrays of classes that override the < operator but 
+   !(x<y) && !(y<x) does not necessarily mean x==y (vectors, positions etc).
+
  - Fixed getSize/getOriginalSize method inversion in OpenGL textures.
 
  - Added per texture-layer filter settings, i.e. one can choose to filter

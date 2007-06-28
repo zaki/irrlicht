@@ -194,9 +194,9 @@ namespace scene
 		core::vector3df position;
 		core::quaternion rotation;
 
-		bool operator < ( const SMD3QuaterionTag &other ) const
+		bool operator == ( const SMD3QuaterionTag &other ) const
 		{
-			return Name < other.Name;
+			return Name == other.Name;
 		}
 	};
 
