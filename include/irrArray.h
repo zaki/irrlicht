@@ -426,7 +426,7 @@ public:
 	s32 linear_search(const T& element) const
 	{
 		for (u32 i=0; i<used; ++i)
-			if (!(element < data[i]) && !(data[i] < element))
+			if (element == data[i])
 				return (s32)i;
 
 		return -1;
