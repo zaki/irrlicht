@@ -379,6 +379,7 @@ IAnimatedMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 	buffer->Indices.push_back ( 1 );
 */
 	// add to mesh
+	buffer->recalculateBoundingBox();
 	mesh->addMeshBuffer ( buffer );
 	buffer->drop ();
 
@@ -458,9 +459,9 @@ IAnimatedMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 	buffer->Indices.push_back ( 0 );
 
 	// add to mesh
+	buffer->recalculateBoundingBox();
 	mesh->addMeshBuffer ( buffer );
 	buffer->drop ();
-
 
 	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
 	mesh->recalculateBoundingBox();
@@ -471,7 +472,6 @@ IAnimatedMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 	mesh->drop();
 
 	return animatedMesh;
-
 }
 
 
