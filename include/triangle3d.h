@@ -178,8 +178,9 @@ namespace core
 		//! false if it is backfacing.
 		bool isFrontFacing(const vector3d<T>& lookDirection) const
 		{
-			vector3d<T> n = getNormal().normalize();
-			return F32_LOWER_EQUAL_0(n.dotProduct(lookDirection));
+			const vector3d<T> n = getNormal().normalize();
+			const f32 d = (f32)n.dotProduct(lookDirection);
+			return F32_LOWER_EQUAL_0(d);
 		}
 
 		//! Returns the plane of this triangle.
