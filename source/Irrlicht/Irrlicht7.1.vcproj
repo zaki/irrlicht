@@ -695,6 +695,9 @@
 					RelativePath=".\..\..\include\IGUIScrollBar.h">
 				</File>
 				<File
+					RelativePath=".\..\..\include\IGUISpinBox.h">
+				</File>
+				<File
 					RelativePath=".\..\..\include\IGUISkin.h">
 				</File>
 				<File
@@ -827,6 +830,12 @@
 			</File>
 			<File
 				RelativePath=".\CGUIScrollBar.h">
+			</File>
+			<File
+				RelativePath="CGUISpinBox.cpp">
+			</File>
+			<File
+				RelativePath="CGUISpinBox.h">
 			</File>
 			<File
 				RelativePath=".\CGUISkin.cpp">

@@ -20,7 +20,8 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 			IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, const core::rect<s32>& rectangle,
 			bool background)
-: IGUIStaticText(environment, parent, id, rectangle), Border(border),
+: IGUIStaticText(environment, parent, id, rectangle), Border(border), 
+	HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_UPPERLEFT),
 	OverrideColorEnabled(false), WordWrap(false), Background(background),
 	OverrideColor(video::SColor(101,255,255,255)), BGColor(video::SColor(101,210,210,210)),
 	OverrideFont(0), LastBreakFont(0)
@@ -82,9 +83,22 @@ void CGUIStaticText::draw()
 		if (font)
 		{
 			if (!WordWrap)
+			{
+				if (VAlign == EGUIA_LOWERRIGHT)
+				{
+					frameRect.UpperLeftCorner.Y = frameRect.LowerRightCorner.Y - 
+						font->getDimension(L"A").Height - font->getKerningHeight();
+				}
+				if (HAlign == EGUIA_LOWERRIGHT)
+				{
+					frameRect.UpperLeftCorner.X = frameRect.LowerRightCorner.X - 
+						font->getDimension(Text.c_str()).Width;
+				}
+
 				font->draw(Text.c_str(), frameRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-					false, true, &AbsoluteClippingRect);
+					HAlign == EGUIA_CENTER, VAlign == EGUIA_CENTER, &AbsoluteClippingRect);
+			}
 			else
 			{
 				if (font != LastBreakFont)
@@ -92,12 +106,27 @@ void CGUIStaticText::draw()
 
 				core::rect<s32> r = frameRect;
 				s32 height = font->getDimension(L"A").Height + font->getKerningHeight();
+				s32 totalHeight = height * BrokenText.size();
+				if (VAlign == EGUIA_CENTER)
+				{
+					r.UpperLeftCorner.Y = r.getCenter().Y - (totalHeight / 2);
+				}
+				else if (VAlign == EGUIA_LOWERRIGHT)
+				{
+					r.UpperLeftCorner.Y = r.LowerRightCorner.Y - totalHeight;
+				}
 
 				for (u32 i=0; i<BrokenText.size(); ++i)
 				{
+					if (HAlign == EGUIA_LOWERRIGHT)
+					{
+						r.UpperLeftCorner.X = frameRect.LowerRightCorner.X - 
+							font->getDimension(BrokenText[i].c_str()).Width;
+					}
+
 					font->draw(BrokenText[i].c_str(), r,
 						OverrideColorEnabled ? OverrideColor : skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
-						false, false, &AbsoluteClippingRect);
+						HAlign == EGUIA_CENTER, false, &AbsoluteClippingRect);
 
 					r.LowerRightCorner.Y += height;
 					r.UpperLeftCorner.Y += height;
@@ -125,7 +154,7 @@ void CGUIStaticText::setOverrideFont(IGUIFont* font)
 	breakText();
 }
 
-IGUIFont * CGUIStaticText::getOverrideFont(void)
+IGUIFont * CGUIStaticText::getOverrideFont()
 {
 	return OverrideFont;
 }
@@ -151,7 +180,20 @@ void CGUIStaticText::setDrawBackground(bool draw)
 	Background = draw;
 }
 
-video::SColor const & CGUIStaticText::getOverrideColor(void)
+//! Sets whether to draw the border
+void CGUIStaticText::setDrawBorder(bool draw)
+{
+	Border = draw;
+}
+
+void CGUIStaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
+{
+	HAlign = horizontal;
+	VAlign = vertical;
+}
+
+
+video::SColor const & CGUIStaticText::getOverrideColor()
 {
 	return OverrideColor;
 }
@@ -164,7 +206,7 @@ void CGUIStaticText::enableOverrideColor(bool enable)
 	OverrideColorEnabled = enable;
 }
 
-bool CGUIStaticText::isOverrideColorEnabled(void)
+bool CGUIStaticText::isOverrideColorEnabled()
 {
 	return OverrideColorEnabled;
 }
@@ -178,7 +220,7 @@ void CGUIStaticText::setWordWrap(bool enable)
 	breakText();
 }
 
-bool CGUIStaticText::isWordWrapEnabled(void)
+bool CGUIStaticText::isWordWrapEnabled()
 {
 	return WordWrap;
 }
@@ -294,6 +336,12 @@ void CGUIStaticText::setText(const wchar_t* text)
 	breakText();
 }
 
+void CGUIStaticText::updateAbsolutePosition()
+{
+	IGUIElement::updateAbsolutePosition();
+	breakText();
+}
+
 
 //! Returns the height of the text in pixels when it is drawn.
 s32 CGUIStaticText::getTextHeight()
@@ -319,7 +367,7 @@ s32 CGUIStaticText::getTextHeight()
 }
 
 
-s32 CGUIStaticText::getTextWidth(void)
+s32 CGUIStaticText::getTextWidth()
 {
 	IGUIFont * font = OverrideFont;
 
@@ -360,16 +408,17 @@ s32 CGUIStaticText::getTextWidth(void)
 //! scripting languages, editors, debuggers or xml serialization purposes.
 void CGUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
 {
+	IGUIStaticText::serializeAttributes(out,options);
 
-	out->addBool	("Border",			Border);
-	out->addBool	("OverrideColorEnabled",	OverrideColorEnabled);
-	out->addBool	("WordWrap",			WordWrap);
-	out->addBool	("Background",			Background);
-	out->addColor	("OverrideColor",		OverrideColor);
+	out->addBool	("Border",               Border);
+	out->addBool	("OverrideColorEnabled", OverrideColorEnabled);
+	out->addBool	("WordWrap",			 WordWrap);
+	out->addBool	("Background",           Background);
+	out->addColor	("OverrideColor",        OverrideColor);
+	out->addEnum	("HTextAlign",           HAlign, GUIAlignmentNames);
+	out->addEnum	("VTextAlign",           VAlign, GUIAlignmentNames);
 
 	// out->addFont ("OverrideFont",		OverrideFont);
-
-	IGUIStaticText::serializeAttributes(out,options);
 }
 
 //! Reads attributes of the element
@@ -384,6 +433,9 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
 	Background = in->getAttributeAsBool("Background");
+
+	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
+                      (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
 
 	// OverrideFont = in->getAttributeAsFont("OverrideFont");
 }

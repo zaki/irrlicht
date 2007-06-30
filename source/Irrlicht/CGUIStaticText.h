@@ -31,7 +31,7 @@ namespace gui
 		virtual void setOverrideFont(IGUIFont* font=0);
 
 		//! Gets the override font (if any)
-		virtual IGUIFont * getOverrideFont(void);
+		virtual IGUIFont * getOverrideFont();
 
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
@@ -42,22 +42,28 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw);
 
+		//! Sets whether to draw the border
+		virtual void setDrawBorder(bool draw);
+
+		//! Sets alignment mode for text
+		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
+
 		//! Gets the override color
-		virtual video::SColor const & getOverrideColor(void);
+		virtual video::SColor const & getOverrideColor();
 
 		//! Sets if the static text should use the overide color or the
 		//! color in the gui skin.
 		virtual void enableOverrideColor(bool enable);
 
 		//! Checks if an override color is enabled
-		virtual bool isOverrideColorEnabled(void);
+		virtual bool isOverrideColorEnabled();
 
 		//! Enables or disables word wrap for using the static text as
 		//! multiline text control.
 		virtual void setWordWrap(bool enable);
 
 		//! Checks if word wrap is enabled
-		virtual bool isWordWrapEnabled(void);
+		virtual bool isWordWrapEnabled();
 
 		//! Sets the new caption of this element.
 		virtual void setText(const wchar_t* text);
@@ -66,7 +72,10 @@ namespace gui
 		virtual s32 getTextHeight();
 
 		//! Returns the width of the current text, in the current font
-		virtual s32 getTextWidth(void);
+		virtual s32 getTextWidth();
+
+		//! Updates the absolute position, splits text if word wrap is enabled
+		virtual void updateAbsolutePosition();
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
@@ -80,6 +89,7 @@ namespace gui
 		void breakText();
 
 		bool Border;
+		EGUI_ALIGNMENT HAlign, VAlign;
 		bool OverrideColorEnabled;
 		bool WordWrap;
 		bool Background;

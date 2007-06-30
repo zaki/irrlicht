@@ -1,5 +1,16 @@
 Changes in version 1.4 (... 2007)
 
+ - IGUIElement now calls getter and setter functions when serializing, 
+   in case people override them.
+
+ - Added setDrawBorder and setTextAlignment to IGUIEditBox and IGUIStaticText.
+
+ - IGUIEditBox now supports multiple lines, use setWordWrap and/or setMultiLine. 
+   When MultiLine is true, the edit box inserts a newline instead of sending
+   EGET_EDITBOX_ENTER events.
+
+ - Added IGUISpinBox, by Michael Zeilfelder (CuteAlien).
+
  - Changed irrArray::linear_search to use the == operator rather than <
    This may be slower in some cases, but it no longer returns false positives
    when searching arrays of classes that override the < operator but 

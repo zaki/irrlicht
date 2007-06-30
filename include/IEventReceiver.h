@@ -126,7 +126,10 @@ namespace irr
 			EGET_MENU_ITEM_SELECTED,
 
 			//! The selection in a combo box has been changed
-			EGET_COMBO_BOX_CHANGED
+			EGET_COMBO_BOX_CHANGED,
+
+			//! The value of a spin box has changed
+			EGET_SPINBOX_CHANGED
 		};
 	} // end namespace gui
 

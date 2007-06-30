@@ -292,6 +292,12 @@
 			<Option link="0"/>
 			<Option target="default"/>
 		</Unit>
+		<Unit filename="..\..\include\IGUISpinBox.h">
+			<Option compilerVar=""/>
+			<Option compile="0"/>
+			<Option link="0"/>
+			<Option target="default"/>
+		</Unit>
 		<Unit filename="..\..\include\IGUISpriteBank.h">
 			<Option compilerVar=""/>
 			<Option compile="0"/>
@@ -1412,6 +1418,16 @@
 			<Option link="0"/>
 			<Option target="default"/>
 		</Unit>
+		<Unit filename="CGUISpinBox.cpp">
+			<Option compilerVar="CPP"/>
+			<Option target="default"/>
+		</Unit>
+		<Unit filename="CGUISpinBox.h">
+			<Option compilerVar=""/>
+			<Option compile="0"/>
+			<Option link="0"/>
+			<Option target="default"/>
+		</Unit>
 		<Unit filename="CGUISpriteBank.cpp">
 			<Option compilerVar="CPP"/>
 			<Option target="default"/>
@@ -1844,6 +1860,16 @@
 			<Option link="0"/>
 			<Option target="default"/>
 		</Unit>
+		<Unit filename="COpenGLExtensionHandler.cpp">
+			<Option compilerVar="CPP"/>
+			<Option target="default"/>
+		</Unit>
+		<Unit filename="COpenGLExtensionHandler.h">
+			<Option compilerVar="CPP"/>
+			<Option compile="0"/>
+			<Option link="0"/>
+			<Option target="default"/>
+		</Unit>
 		<Unit filename="COpenGLMaterialRenderer.h">
 			<Option compilerVar="CPP"/>
 			<Option compile="0"/>
@@ -1895,16 +1921,6 @@
 			<Option target="default"/>
 		</Unit>
 		<Unit filename="COpenGLTexture.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="COpenGLExtensionHandler.cpp">
-			<Option compilerVar="CPP"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="COpenGLExtensionHandler.h">
 			<Option compilerVar="CPP"/>
 			<Option compile="0"/>
 			<Option link="0"/>

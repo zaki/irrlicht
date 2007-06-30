@@ -9,6 +9,7 @@
 #include "IGUIComboBox.h"
 #include "IGUIContextMenu.h"
 #include "IGUIEditBox.h"
+#include "IGUISpinBox.h"
 #include "IGUIFileOpenDialog.h"
 #include "IGUIColorSelectDialog.h"
 #include "IGUIInOutFader.h"
@@ -86,7 +87,8 @@ IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IG
 			return Environment->addToolBar(parent);
 		case EGUIET_WINDOW:
 			return Environment->addWindow(core::rect<s32>(0,0,100,100),false,0,parent);
-
+		case EGUIET_SPIN_BOX:
+			return Environment->addSpinBox(L"0.0", core::rect<s32>(0,0,100,100), parent);
 	}
 
 	return 0;

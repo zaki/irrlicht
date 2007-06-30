@@ -65,9 +65,19 @@ namespace gui
 		//! Sets whether to draw the background
 		virtual void setDrawBackground(bool draw) = 0;
 
+		//! Sets whether to draw the border
+		virtual void setDrawBorder(bool draw) = 0;
+
+		//! Sets text justification mode
+		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default), 
+		 EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
+		\param vertical: EGUIA_UPPERLEFT to align with top edge, 
+		 EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
+		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical) = 0;
+
 		//! Enables or disables word wrap for using the static text as multiline text control.
 		/** \param enable: If set to true, words going over one line are 
-		 breaked to the next line. */
+		 broken on to the next line. */
 		virtual void setWordWrap(bool enable) = 0;
 
 		//! Checks if word wrap is enabled
