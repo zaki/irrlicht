@@ -44,6 +44,7 @@ class IGUIColorSelectDialog;
 class IGUIInOutFader;
 class IGUIStaticText;
 class IGUIEditBox;
+class IGUISpinBox;
 class IGUITabControl;
 class IGUITab;
 class IGUIContextMenu;
@@ -275,16 +276,28 @@ public:
 	 scrolling, copying and pasting (exchanging data with the clipboard directly), maximum 
 	 character amount, marking and all shortcuts like ctrl+X, ctrl+V, ctrg+C, 
 	 shift+Left, shift+Right, Home, End, and so on. 
-	 \param text is the text to be displayed. Can be altered after creation with SetText().
+	 \param text is the text to be displayed. Can be altered after creation with setText().
 	 \param rectangle is the position of the edit box.
 	 \param border has to be set to true if the edit box should have a 3d border.
 	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the edit box directly in the environment.
 	 \param id is a s32 to identify the edit box.
 	 \return
-	 Returns a pointer to the created static text. Returns 0 if an error occured.
+	 Returns a pointer to the created edit box. Returns 0 if an error occured.
 	 This pointer should not be dropped. See IUnknown::drop() for more information. */
 	virtual IGUIEditBox* addEditBox(const wchar_t* text, const core::rect<s32>& rectangle, 
 		bool border=true, IGUIElement* parent=0, s32 id=-1) = 0;
+
+	//! Adds a spin box.  
+	/**  An edit box with up and down buttons
+	 \param text is the text to be displayed. Can be altered after creation with setText().
+	 \param rectangle is the position of the spin box.
+	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the spin box directly in the environment.
+	 \param id is a s32 to identify the spin box.
+	 \return
+	 Returns a pointer to the created spin box. Returns 0 if an error occured.
+	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle, 
+		IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds an element for fading in or out.
 	/* \param rectangle: Pointer to rectangle specifing the borders of the element.

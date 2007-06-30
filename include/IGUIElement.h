@@ -599,7 +599,7 @@ public:
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
 	{
 		out->addInt("Id", ID );
-		out->addString("Caption", Text.c_str());
+		out->addString("Caption", getText());
 		out->addRect("Rect", DesiredRect);
 		out->addPosition2d("MinSize", core::position2di(MinSize.Width, MinSize.Height));
 		out->addPosition2d("MaxSize", core::position2di(MaxSize.Width, MaxSize.Height));
@@ -617,20 +617,22 @@ public:
 	//! scripting languages, editors, debuggers or xml deserialization purposes.
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 	{
-		//! relative rect of element
-		ID = in->getAttributeAsInt("Id");
-		Text = in->getAttributeAsStringW("Caption").c_str();
-		IsVisible = in->getAttributeAsBool("Visible");
-		IsEnabled = in->getAttributeAsBool("Enabled");
+		setID(in->getAttributeAsInt("Id"));
+		setText(in->getAttributeAsStringW("Caption").c_str());
+		setVisible(in->getAttributeAsBool("Visible"));
+		setEnabled(in->getAttributeAsBool("Enabled"));
+
 		core::position2di p = in->getAttributeAsPosition2d("MaxSize");
-		MaxSize = core::dimension2di(p.X,p.Y);
+		setMaxSize(core::dimension2di(p.X,p.Y));
+
 		p = in->getAttributeAsPosition2d("MinSize");
-		MinSize = core::dimension2di(p.X,p.Y);
-		NoClip = in->getAttributeAsBool("NoClip");
-		AlignLeft = (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames);
-		AlignRight = (EGUI_ALIGNMENT)in->getAttributeAsEnumeration("RightAlign", GUIAlignmentNames);
-		AlignTop = (EGUI_ALIGNMENT)in->getAttributeAsEnumeration("TopAlign", GUIAlignmentNames);
-		AlignBottom = (EGUI_ALIGNMENT)in->getAttributeAsEnumeration("BottomAlign", GUIAlignmentNames);
+		setMinSize(core::dimension2di(p.X,p.Y));
+
+		setNotClipped(in->getAttributeAsBool("NoClip"));
+		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames),
+			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("RightAlign", GUIAlignmentNames),
+			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("TopAlign", GUIAlignmentNames),
+			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("BottomAlign", GUIAlignmentNames));
 
 		setRelativePosition(in->getAttributeAsRect("Rect"));
 	}

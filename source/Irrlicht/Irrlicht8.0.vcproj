@@ -801,6 +801,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IGUISpinBox.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\IGUISpriteBank.h"
 					>
 				</File>
@@ -978,6 +982,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CGUISpinBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUISpinBox.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CGUISpriteBank.cpp"
 				>
 			</File>
@@ -1125,6 +1137,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\COpenGLExtensionHandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\COpenGLExtensionHandler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\COpenGLMaterialRenderer.h"
 					>
 				</File>
@@ -1166,14 +1186,6 @@
 				</File>
 				<File
 					RelativePath=".\COpenGLTexture.h"
-					>
-				</File>
-				<File
-					RelativePath=".\COpenGLExtensionHandler.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\COpenGLExtensionHandler.h"
 					>
 				</File>
 				<File

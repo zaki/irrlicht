@@ -20,6 +20,7 @@
 #include "CGUIColorSelectDialog.h"
 #include "CGUIStaticText.h"
 #include "CGUIEditBox.h"
+#include "CGUISpinBox.h"
 #include "CGUIInOutFader.h"
 #include "CGUIMessageBox.h"
 #include "CGUIModalScreen.h"
@@ -236,7 +237,8 @@ void CGUIEnvironment::removeFocus(IGUIElement* element)
 		e.GUIEvent.Caller = Focus;
 		e.GUIEvent.EventType = EGET_ELEMENT_FOCUS_LOST;
 		Focus->OnEvent(e);
-		Focus->drop();
+		if (Focus)
+			Focus->drop();
 		Focus = 0;
 	}
 }
@@ -1057,6 +1059,18 @@ IGUIEditBox* CGUIEnvironment::addEditBox(const wchar_t* text,
 	d->drop();
 	return d;
 }
+
+//! Adds a spin box to the environment
+IGUISpinBox* CGUIEnvironment::addSpinBox(const wchar_t* text, 
+										 const core::rect<s32> &rectangle, 
+										 IGUIElement* parent, s32 id)
+{
+	IGUISpinBox* d = new CGUISpinBox(text, this, parent ? parent : this, id, rectangle);
+
+	d->drop();
+	return d;
+}
+
 
 //! Adds a tab control to the environment.
 IGUITabControl* CGUIEnvironment::addTabControl(const core::rect<s32>& rectangle,

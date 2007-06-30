@@ -47,6 +47,35 @@ namespace gui
 		 EGDC_BUTTON_TEXT color of the skin. */
 		virtual void enableOverrideColor(bool enable) = 0;
 
+		//! Turns the border on or off
+		/** \param border: true if you want the border to be drawn, false if not */
+		virtual void setDrawBorder(bool border) = 0;
+
+		//! Sets text justification mode
+		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default), 
+		 EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
+		\param vertical: EGUIA_UPPERLEFT to align with top edge, 
+		 EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
+		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical) = 0;
+
+		//! Enables or disables word wrap.
+		/** \param enable: If set to true, words going over one line are 
+		 broken to the next line. */
+		virtual void setWordWrap(bool enable) = 0;
+
+		//! Checks if word wrap is enabled
+		//! \return true if word wrap is enabled, false otherwise
+		virtual bool isWordWrapEnabled() = 0;
+
+		//! Enables or disables newlines.
+		/** \param enable: If set to true, the EGET_EDITBOX_ENTER event will not be fired,
+		instead a newline character will be inserted. */
+		virtual void setMultiLine(bool enable) = 0;
+
+		//! Checks if multi line editing is enabled
+		//! \return true if mult-line is enabled, false otherwise
+		virtual bool isMultiLineEnabled() = 0;
+
 		//! Sets the maximum amount of characters which may be entered in the box.
 		/** \param max: Maximum amount of characters. If 0, the character amount is 
 		 infinity. */

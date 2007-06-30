@@ -74,6 +74,9 @@ enum EGUI_ELEMENT_TYPE
 	//! A window
 	EGUIET_WINDOW,
 
+	//! A spin box (IGUISpinBox)
+	EGUIET_SPIN_BOX,
+
 	//! Not an element, amount of elements in there
 	EGUIET_COUNT,
 
@@ -109,6 +112,7 @@ const c8* const GUIElementTypeNames[] =
 	"tabControl",
 	"toolBar",
 	"window",
+	"spinBox",
 	0
 };
 

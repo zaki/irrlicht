@@ -123,6 +123,10 @@ public:
 	virtual IGUIEditBox* addEditBox(const wchar_t* text, const core::rect<s32>& rectangle, 
 		bool border=false, IGUIElement* parent=0, s32 id=-1);
 
+	//! Adds a spin box to the environment
+	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle, 
+		IGUIElement* parent=0, s32 id=-1);
+
 	//! Adds a tab control to the environment.
 	virtual IGUITabControl* addTabControl(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, bool fillbackground=false, bool border=true, s32 id=-1);
