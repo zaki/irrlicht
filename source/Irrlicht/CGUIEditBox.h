@@ -53,6 +53,18 @@ namespace gui
 		//! \return true if mult-line is enabled, false otherwise
 		virtual bool isMultiLineEnabled();
 
+		//! Enables or disables automatic scrolling with cursor position
+		//! \param enable: If set to true, the text will move around with the cursor position
+		virtual void setAutoScroll(bool enable);
+
+		//! Checks to see if automatic scrolling is enabled
+		//! \return true if automatic scrolling is enabled, false if not
+		virtual bool isAutoScrollEnabled();
+
+		//! Gets the size area of the text in the edit box
+		//! \return Returns the size in pixels of the text
+		virtual core::dimension2di getTextDimension();
+
 		//! Sets text justification
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 

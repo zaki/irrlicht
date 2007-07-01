@@ -768,6 +768,39 @@ void CGUIEditBox::setText(const wchar_t* text)
 	breakText();
 }
 
+//! Enables or disables automatic scrolling with cursor position
+//! \param enable: If set to true, the text will move around with the cursor position
+void CGUIEditBox::setAutoScroll(bool enable)
+{
+	AutoScroll = enable;
+}
+
+//! Checks to see if automatic scrolling is enabled
+//! \return true if automatic scrolling is enabled, false if not
+bool CGUIEditBox::isAutoScrollEnabled()
+{
+	return AutoScroll;
+}
+
+//! Gets the area of the text in the edit box
+//! \return Returns the size in pixels of the text
+core::dimension2di CGUIEditBox::getTextDimension()
+{
+	core::rect<s32> ret;
+
+	setTextRect(0);
+	ret = CurrentTextRect;
+
+	for (u32 i=1; i < BrokenText.size(); ++i)
+	{
+		setTextRect(i);
+		ret.addInternalPoint(CurrentTextRect.UpperLeftCorner);
+		ret.addInternalPoint(CurrentTextRect.LowerRightCorner);
+	}
+
+	return ret.getSize();
+}
+
 
 //! Sets the maximum amount of characters which may be entered in the box.
 //! \param max: Maximum amount of characters. If 0, the character amount is 
@@ -800,7 +833,8 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 			CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 			if (MouseMarking)
 				MarkEnd = CursorPos;
-			MouseMarking = false;			
+			MouseMarking = false;
+			calculateScrollPos();
 			return true;
 		}
 		break;
@@ -810,6 +844,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 			{
 				CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 				MarkEnd = CursorPos;
+				calculateScrollPos();
 				return true;
 			}
 		}
@@ -824,6 +859,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 			CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 			MarkBegin = CursorPos;
 			MarkEnd = CursorPos;
+			calculateScrollPos();
 			return true;
 		}
 		else
@@ -844,6 +880,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 
 			MouseMarking = true;
 			MarkEnd = CursorPos;
+			calculateScrollPos();
 			return true;
 		}	
 	}

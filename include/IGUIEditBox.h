@@ -76,6 +76,18 @@ namespace gui
 		//! \return true if mult-line is enabled, false otherwise
 		virtual bool isMultiLineEnabled() = 0;
 
+		//! Enables or disables automatic scrolling with cursor position
+		//! \param enable: If set to true, the text will move around with the cursor position
+		virtual void setAutoScroll(bool enable) = 0;
+
+		//! Checks to see if automatic scrolling is enabled
+		//! \return true if automatic scrolling is enabled, false if not
+		virtual bool isAutoScrollEnabled() = 0;
+
+		//! Gets the size area of the text in the edit box
+		//! \return Returns the size in pixels of the text
+		virtual core::dimension2di getTextDimension() = 0;
+
 		//! Sets the maximum amount of characters which may be entered in the box.
 		/** \param max: Maximum amount of characters. If 0, the character amount is 
 		 infinity. */
