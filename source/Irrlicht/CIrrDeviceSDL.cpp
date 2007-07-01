@@ -157,14 +157,14 @@ void CIrrDeviceSDL::createDriver(video::E_DRIVER_TYPE driverType,
 	{
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
-		os::Printer::log("This driver is not available in SDL.");
+		os::Printer::log("This driver is not available in SDL.", ELL_ERROR);
 		break;
 
 	case video::EDT_SOFTWARE:
 		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
 		VideoDriver = video::createSoftwareDriver(windowSize, Fullscreen, FileSystem, this);
 		#else
-		os::Printer::log("No Software driver support compiled in.", ELL_WARNING);
+		os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
 		break;
 		
@@ -172,7 +172,7 @@ void CIrrDeviceSDL::createDriver(video::E_DRIVER_TYPE driverType,
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		VideoDriver = video::createSoftwareDriver2(windowSize, Fullscreen, FileSystem, this);
 		#else
-		os::Printer::log("Burning's video driver was not compiled in.", ELL_WARNING);
+		os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
 		#endif
 		break;
 
@@ -180,12 +180,16 @@ void CIrrDeviceSDL::createDriver(video::E_DRIVER_TYPE driverType,
 	#ifdef _IRR_COMPILE_WITH_OPENGL_
 		VideoDriver = video::createOpenGLDriver(windowSize, Fullscreen, Stencilbuffer, FileSystem, Vsync, AntiAlias);
 	#else
-		os::Printer::log("No OpenGL support compiled in.", ELL_WARNING);
+		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 	#endif
 		break;
 
-	default:
+	case video::EDT_NULL:
 		VideoDriver = video::createNullDriver(FileSystem, windowSize);
+		break;
+
+	default:
+		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;
 	}
 }

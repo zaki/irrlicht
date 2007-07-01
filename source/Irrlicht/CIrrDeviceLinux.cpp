@@ -611,7 +611,7 @@ void CIrrDeviceLinux::createDriver(const core::dimension2d<s32>& windowSize,
 		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
 		VideoDriver = video::createSoftwareDriver(windowSize, Fullscreen, FileSystem, this);
 		#else
-		os::Printer::log("No Software driver support compiled in.", ELL_WARNING);
+		os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
 		break;
 		
@@ -619,7 +619,7 @@ void CIrrDeviceLinux::createDriver(const core::dimension2d<s32>& windowSize,
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		VideoDriver = video::createSoftwareDriver2(windowSize, Fullscreen, FileSystem, this);
 		#else
-		os::Printer::log("Burning's video driver was not compiled in.", ELL_WARNING);
+		os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
 		#endif
 		break;
 
@@ -628,25 +628,29 @@ void CIrrDeviceLinux::createDriver(const core::dimension2d<s32>& windowSize,
 		if (Context)
 			VideoDriver = video::createOpenGLDriver(windowSize, Fullscreen, StencilBuffer, FileSystem, vsync, AntiAlias);
 	#else
-		os::Printer::log("No OpenGL support compiled in.", ELL_WARNING);
+		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 	#endif
 		break;
 
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
 		os::Printer::log("This driver is not available in Linux. Try OpenGL or Software renderer.",
-			ELL_WARNING);
+			ELL_ERROR);
+		break;
+
+	case video::EDT_NULL:
+		VideoDriver = video::createNullDriver(FileSystem, windowSize);
 		break;
 
 	default:
-		VideoDriver = video::createNullDriver(FileSystem, windowSize);
+		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;
 #else
 	case video::EDT_NULL:
 		VideoDriver = video::createNullDriver(FileSystem, windowSize);
 		break;
 	default:
-		os::Printer::log("No X11 support compiled in. Only Null driver available.", ELL_WARNING);
+		os::Printer::log("No X11 support compiled in. Only Null driver available.", ELL_ERROR);
 		break;
 #endif
 	}

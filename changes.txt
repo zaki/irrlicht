@@ -1,15 +1,21 @@
 Changes in version 1.4 (... 2007)
 
+ - createDevice now reports errors if the driverType is unknown, previously it 
+   created a window but populated it with a null driver without any warning.
+
  - Fixed a bug in CBillboardTextSceneNode::setText where the old text was not cleared.
 
  - IGUIElement now calls getter and setter functions when serializing, 
    in case people override them.
 
- - Added setDrawBorder and setTextAlignment to IGUIEditBox and IGUIStaticText.
+ - Added setDrawBorder and setTextAlignment to IGUIStaticText.
 
- - IGUIEditBox now supports multiple lines, use setWordWrap and/or setMultiLine. 
-   When MultiLine is true, the edit box inserts a newline instead of sending
+ - IGUIEditBox new methods:
+   setWordWrap/isWordWrapEnabled, to split words on to the next line.
+   setMultiLine and isMultiLineEnabled, inserts a newline instead of sending
    EGET_EDITBOX_ENTER events.
+   setTextAlignment, to align the text to left, right, top, bottom and centers
+   setAutoScroll, to enable and disable automatic scrolling with the cursor
 
  - Added IGUISpinBox, by Michael Zeilfelder (CuteAlien).
 

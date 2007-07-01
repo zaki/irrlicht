@@ -516,9 +516,13 @@ void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
 		#endif 
 		break;
 
-	default:
+	case video::EDT_NULL:
 		// create null driver
 		VideoDriver = video::createNullDriver(FileSystem, windowSize);
+		break;
+
+	default:
+		os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 		break;
 	}
 }
