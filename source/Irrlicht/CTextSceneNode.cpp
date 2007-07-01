@@ -159,6 +159,13 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 
 	Symbol.clear();
 
+	// clear mesh
+	for (u32 j=0; j < Mesh->getMeshBufferCount(); ++j)
+	{
+		((SMeshBuffer*)Mesh->getMeshBuffer(j))->Indices.clear();
+		((SMeshBuffer*)Mesh->getMeshBuffer(j))->Vertices.clear();
+	}
+
 	if (!Font)
 		return;
 
