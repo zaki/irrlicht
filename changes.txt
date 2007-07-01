@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - Fixed a bug in CBillboardTextSceneNode::setText where the old text was not cleared.
+
  - IGUIElement now calls getter and setter functions when serializing, 
    in case people override them.
 
