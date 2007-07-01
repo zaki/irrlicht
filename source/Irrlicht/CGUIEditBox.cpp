@@ -1236,6 +1236,8 @@ void CGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	// out->addFont("OverrideFont",OverrideFont);
 	out->addInt		("MaxChars",             Max);
 	out->addBool	("WordWrap",			 WordWrap);
+	out->addBool	("MultiLine",			 MultiLine);
+	out->addBool	("AutoScroll",			 AutoScroll);
 	out->addEnum	("HTextAlign",           HAlign, GUIAlignmentNames);
 	out->addEnum	("VTextAlign",           VAlign, GUIAlignmentNames);
 
@@ -1250,6 +1252,9 @@ void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 	setOverrideColor(in->getAttributeAsColor("OverrideColor"));
 	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
 	setMax(in->getAttributeAsInt("MaxChars"));
+	setWordWrap(in->getAttributeAsBool("WordWrap"));
+	setMultiLine(in->getAttributeAsBool("MultiLine"));
+	setAutoScroll(in->getAttributeAsBool("AutoScroll"));
 
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
                       (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
