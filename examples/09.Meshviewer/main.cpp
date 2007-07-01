@@ -45,9 +45,9 @@ void setActiveCamera ( scene::ICameraSceneNode* newActive )
 }
 
 /*
-	The three following functions do several stuff used by the mesh viewer. 
+	The three following functions do several stuff used by the mesh viewer.
 	The first function showAboutText() simply displays a messagebox with a caption
-	and a message text. The texts will be stored in the MessageText and 
+	and a message text. The texts will be stored in the MessageText and
 	Caption variables at startup.
 */
 void showAboutText()
@@ -113,7 +113,7 @@ void loadModel(const c8* fn)
 
 	scene::IAnimatedMesh* m = Device->getSceneManager()->getMesh( filename.c_str() );
 
-	if (!m) 
+	if (!m)
 	{
 		// model could not be loaded
 
@@ -218,7 +218,7 @@ public:
 
 					IGUIContextMenu* menu = (IGUIContextMenu*)event.GUIEvent.Caller;
 					s32 id = menu->getItemCommandId(menu->getSelectedItem());
-					
+
 					switch(id)
 					{
 					case 100: // File -> Open Model
@@ -235,7 +235,35 @@ public:
 						break;
 					case 400: // View -> Debug Information
 						if (Model)
-							Model->setDebugDataVisible(Model->isDebugDataVisible() ? scene::EDS_OFF : scene::EDS_FULL);
+							Model->setDebugDataVisible(scene::EDS_OFF);
+						break;
+					case 410: // View -> Debug Information
+						if (Model)
+							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX));
+						break;
+					case 420: // View -> Debug Information
+						if (Model)
+							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_NORMALS));
+						break;
+					case 430: // View -> Debug Information
+						if (Model)
+							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_SKELETON));
+						break;
+					case 440: // View -> Debug Information
+						if (Model)
+							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_MESH_WIRE_OVERLAY));
+						break;
+					case 450: // View -> Debug Information
+						if (Model)
+							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_HALF_TRANSPARENCY));
+						break;
+					case 460: // View -> Debug Information
+						if (Model)
+							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX_BUFFERS));
+						break;
+					case 499: // View -> Debug Information
+						if (Model)
+							Model->setDebugDataVisible(scene::EDS_FULL);
 						break;
 					case 500: // Help->About
 						showAboutText();
@@ -261,20 +289,20 @@ public:
 						break;
 
 					}
-                    break;
+				break;
 				}
 
 			case EGET_FILE_SELECTED:
 				{
 					// load the model file, selected in the file open dialog
-					IGUIFileOpenDialog* dialog = 
+					IGUIFileOpenDialog* dialog =
 						(IGUIFileOpenDialog*)event.GUIEvent.Caller;
 					loadModel(core::stringc(dialog->getFilename()).c_str());
 				}
 
 			case EGET_SCROLL_BAR_CHANGED:
 
-				// control skin transparency 
+				// control skin transparency
 				if (id == 104)
 				{
 					s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
@@ -380,12 +408,12 @@ public:
 
 /*
 	Most of the hard work is done. We only need to create the Irrlicht Engine device
-	and all the buttons, menus and toolbars. 
+	and all the buttons, menus and toolbars.
 	We start up the engine as usual, using createDevice(). To make our application
 	catch events, we set our eventreceiver as parameter. The #ifdef WIN32 preprocessor
 	commands are not necesarry, but I included them to make the tutorial use DirectX on
-	Windows and OpenGL on all other platforms like Linux. 
-	As you can see, there is also a unusual call to IrrlichtDevice::setResizeAble(). 
+	Windows and OpenGL on all other platforms like Linux.
+	As you can see, there is also a unusual call to IrrlichtDevice::setResizeAble().
 	This makes the render window resizeable, which is quite useful for a mesh viewer.
 */
 int main()
@@ -411,7 +439,7 @@ int main()
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 1;
-	}	
+	}
 
 	// create device and exit if creation failed
 
@@ -438,7 +466,7 @@ int main()
 	Device->getFileSystem()->addFolderFileArchive ( "../../media/" );
 
 	/*
-		The next step is to read the configuration file. It is stored in the xml 
+		The next step is to read the configuration file. It is stored in the xml
 		format and looks a little bit like this:
 
 		<?xml version="1.0"?>
@@ -480,7 +508,7 @@ int main()
 	}
 
 	if (xml)
-		xml->drop(); // don't forget to delete the xml reader 
+		xml->drop(); // don't forget to delete the xml reader
 
 	/*
 		That wasn't difficult. Now we'll set a nicer font and create the
@@ -516,10 +544,20 @@ int main()
 
 	submenu = menu->getSubMenu(1);
 	submenu->addItem(L"toggle sky box visibility", 300);
-	submenu->addItem(L"toggle model debug information", 400);
+	submenu->addItem(L"toggle model debug information", -1, true, true);
 	submenu->addItem(L"model material", -1, true, true );
 
-	submenu = submenu->getSubMenu(2);
+	submenu = submenu->getSubMenu(1);
+	submenu->addItem(L"Off", 400);
+	submenu->addItem(L"Bounding Box", 410);
+	submenu->addItem(L"Normals", 420);
+	submenu->addItem(L"Skeleton", 430);
+	submenu->addItem(L"Wire overlay", 440);
+	submenu->addItem(L"Half-Transparent", 450);
+	submenu->addItem(L"Buffers bounding boxes", 460);
+	submenu->addItem(L"All", 499);
+
+	submenu = menu->getSubMenu(1)->getSubMenu(2);
 	submenu->addItem(L"Solid", 610);
 	submenu->addItem(L"Transparent", 620);
 	submenu->addItem(L"Reflection", 630);
@@ -532,7 +570,7 @@ int main()
 	submenu->addItem(L"About", 500);
 
 	/*
-		Below the toolbar, we want a toolbar, onto which we can place 
+		Below the toolbar, we want a toolbar, onto which we can place
 		colored buttons and important looking stuff like a senseless
 		combobox.
 	*/
@@ -564,9 +602,9 @@ int main()
 
 	/*
 		To make the editor look a little bit better, we disable transparent
-		gui elements, and add a Irrlicht Engine logo. In addition, a text,
-		which will show the current frame per second value is created, and
-		the window caption changed.
+		gui elements, and add a Irrlicht Engine logo. In addition, a text
+		showing the current frame per second value is created and
+		the window caption is changed.
 	*/
 
 	// disable alpha
@@ -582,7 +620,7 @@ int main()
 
 	createToolBox();
 
-	// create fps text 
+	// create fps text
 
 	IGUIStaticText* fpstext = env->addStaticText(L"", core::rect<s32>(400,4,570,23), true, false, bar);
 
@@ -594,7 +632,7 @@ int main()
 	Device->setWindowCaption(Caption.c_str());
 
 	/*
-		That's nearly the whole application. We simply show the about 
+		That's nearly the whole application. We simply show the about
 		message box at start up, and load the first model. To make everything
 		look better, a skybox is created and a user controled camera,
 		to make the application a little bit more interactive. Finally,
@@ -605,7 +643,7 @@ int main()
 	showAboutText();
 	loadModel(StartUpModelFile.c_str());
 
-	// add skybox 
+	// add skybox
 
 	SkyBox = smgr->addSkyBoxSceneNode(
 		driver->getTexture("irrlicht2_up.jpg"),
@@ -615,14 +653,14 @@ int main()
 		driver->getTexture("irrlicht2_ft.jpg"),
 		driver->getTexture("irrlicht2_bk.jpg"));
 
-	// add a camera scene node 
+	// add a camera scene node
 	Camera[0] = smgr->addCameraSceneNodeMaya();
 	Camera[1] = smgr->addCameraSceneNodeFPS();
 
 	setActiveCamera ( Camera[0] );
 
 	// load the irrlicht engine logo
-	IGUIImage *img = 
+	IGUIImage *img =
 		env->addImage(driver->getTexture("irrlichtlogo2.png"),
 			core::position2d<s32>(10, driver->getScreenSize().Height - 64));
 
