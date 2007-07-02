@@ -1737,10 +1737,14 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 
 	// The first parts are not correctly working, yet.
 #if 0
+#ifdef GL_EXT_stencil_two_side
 	if (FeatureAvailable[IRR_EXT_stencil_two_side] && FeatureAvailable[IRR_EXT_stencil_wrap])
 	{
 		glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
-		glEnable(GL_DEPTH_CLAMP_NV);
+#ifdef GL_NV_depth_clamp
+		if (FeatureAvailable[IRR_NV_depth_clamp])
+			glEnable(GL_DEPTH_CLAMP_NV);
+#endif
 		glDisable(GL_CULL_FACE);
 		if (!zfail)
 		{
@@ -1773,7 +1777,9 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
 	}
-	else if (FeatureAvailable[IRR_ATI_separate_stencil])
+	else
+#endif
+	if (FeatureAvailable[IRR_ATI_separate_stencil])
 	{
 		glDisable(GL_CULL_FACE);
 		if (!zfail)
