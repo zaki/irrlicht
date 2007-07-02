@@ -23,6 +23,9 @@ namespace gui
 		//! destructor
 		~CGUIToolBar();
 
+		//! called if an event happened.
+		virtual bool OnEvent(SEvent event);
+
 		//! draws the element and its children
 		virtual void draw();
 

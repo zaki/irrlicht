@@ -147,6 +147,12 @@ public:
 		return AbsoluteRect;
 	}
 
+	//! Returns the visible area of the element.
+	core::rect<s32> getAbsoluteClippingRect() const
+	{
+		return AbsoluteClippingRect;
+	}
+
 	//! Sets whether the element will ignore its parent's clipping rectangle
 	void setNotClipped(bool noClip)
 	{
@@ -516,10 +522,7 @@ public:
 	//! Called if an event happened.
 	virtual bool OnEvent(SEvent event)
 	{
-		if (Parent)
-			Parent->OnEvent(event);
-
-		return true;
+		return Parent ? Parent->OnEvent(event) : false;
 	}
 
 

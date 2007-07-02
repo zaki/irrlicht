@@ -208,6 +208,7 @@ void CGUIStaticText::enableOverrideColor(bool enable)
 
 bool CGUIStaticText::isOverrideColorEnabled()
 {
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return OverrideColorEnabled;
 }
 
@@ -222,6 +223,7 @@ void CGUIStaticText::setWordWrap(bool enable)
 
 bool CGUIStaticText::isWordWrapEnabled()
 {
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return WordWrap;
 }
 

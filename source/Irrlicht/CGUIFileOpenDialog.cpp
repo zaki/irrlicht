@@ -50,7 +50,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* en
 	s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
 	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
-		L"", skin ? skin->getDefaultText(EGDT_MSG_BOX_OK) : L"Close");
+		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close");
 	CloseButton->setSubElement(true);
 	if (sprites)
 	{

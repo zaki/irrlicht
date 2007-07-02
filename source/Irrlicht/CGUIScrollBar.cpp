@@ -93,9 +93,8 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 			break;
 		case EMIE_LMOUSE_PRESSED_DOWN:
 		{
-			IGUIElement *el = Environment->getRootGUIElement()->getElementFromPoint(
-				core::position2di(event.MouseInput.X, event.MouseInput.Y));
-			if (el == this )
+
+			if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
 			{
 				Dragging = true;
 				Environment->setFocus(this);
@@ -103,11 +102,7 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 			}
 			else
 			{
-				if (Environment->getFocus() == this)
-				{
-					Environment->setFocus(el);
-					return el->OnEvent(event);
-				}
+				Environment->removeFocus(this);
 			}
 			break;
 		}
