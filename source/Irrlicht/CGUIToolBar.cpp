@@ -68,7 +68,18 @@ CGUIToolBar::~CGUIToolBar()
 {
 }
 
+//! called if an event happened.
+bool CGUIToolBar::OnEvent(SEvent event)
+{
+	if (event.EventType == EET_MOUSE_INPUT_EVENT && 
+		event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+	{
+		if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
+			return true;
+	}
 
+	return Parent ? Parent->OnEvent(event) : false;
+}
 
 //! draws the element and its children
 void CGUIToolBar::draw()

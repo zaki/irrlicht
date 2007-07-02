@@ -5,20 +5,6 @@ Changes in version 1.4 (... 2007)
 
  - Fixed a bug in CBillboardTextSceneNode::setText where the old text was not cleared.
 
- - IGUIElement now calls getter and setter functions when serializing, 
-   in case people override them.
-
- - Added setDrawBorder and setTextAlignment to IGUIStaticText.
-
- - IGUIEditBox new methods:
-   setWordWrap/isWordWrapEnabled, to split words on to the next line.
-   setMultiLine and isMultiLineEnabled, inserts a newline instead of sending
-   EGET_EDITBOX_ENTER events.
-   setTextAlignment, to align the text to left, right, top, bottom and centers
-   setAutoScroll, to enable and disable automatic scrolling with the cursor
-
- - Added IGUISpinBox, by Michael Zeilfelder (CuteAlien).
-
  - Changed irrArray::linear_search to use the == operator rather than <
    This may be slower in some cases, but it no longer returns false positives
    when searching arrays of classes that override the < operator but 
@@ -41,6 +27,26 @@ Changes in version 1.4 (... 2007)
 
  - Fixed a typo to do with 2nd light vectors in opengl parallax and normal map
    renderers.
+
+GUI:
+
+ - IGUIElement changes:
+     OnEvent no longer absorbs events by default.
+     Serialize/deserialize now call getter and setter functions, in case people
+     override these and don't use the internal protected variables.
+     added getAbsoluteClippingRect, returns the visible area of an element.
+
+ - Added IGUISpinBox, by Michael Zeilfelder (CuteAlien).
+
+ - IGUIEditBox new methods:
+   setWordWrap/isWordWrapEnabled, to split words on to the next line.
+   setMultiLine and isMultiLineEnabled, inserts a newline instead of sending
+   EGET_EDITBOX_ENTER events.
+   setTextAlignment, to align the text to left, right, top, bottom and centers
+   setAutoScroll, to enable and disable automatic scrolling with the cursor
+
+ - IGUIStaticText new methods setDrawBorder and setTextAlignment.
+
 
 Changes in version 1.3.1 (20 Jun 2007)
 

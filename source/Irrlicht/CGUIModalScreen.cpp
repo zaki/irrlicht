@@ -44,7 +44,7 @@ bool CGUIModalScreen::OnEvent(SEvent event)
 		}
 	}
 
-	return IGUIElement::OnEvent(event);	
+	return true;	
 }
 
 
