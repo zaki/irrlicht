@@ -1725,39 +1725,106 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_FOG);
-	glDepthMask(GL_FALSE); // no depth buffer writing
 	glDepthFunc(GL_LEQUAL);
+	glDepthMask(GL_FALSE); // no depth buffer writing
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE ); // no color buffer drawing
 	glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_ALWAYS, 0, 0);
-	glEnable(GL_CULL_FACE);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),&triangles[0]);
+	glStencilMask(~0);
+	glStencilFunc(GL_ALWAYS, 0, ~0);
 
-	if (!zfail)
+	// The first parts are not correctly working, yet.
+#if 0
+	if (FeatureAvailable[IRR_EXT_stencil_two_side] && FeatureAvailable[IRR_EXT_stencil_wrap])
 	{
-		// ZPASS Method
+		glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
+		glEnable(GL_DEPTH_CLAMP_NV);
+		glDisable(GL_CULL_FACE);
+		if (!zfail)
+		{
+			// ZPASS Method
 
-		glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-		glCullFace(GL_BACK);
-		glDrawArrays(GL_TRIANGLES,0,count);
+			extGlActiveStencilFace(GL_BACK);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT);
 
-		glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-		glCullFace(GL_FRONT);
-		glDrawArrays(GL_TRIANGLES,0,count);
+			extGlActiveStencilFace(GL_FRONT);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT);
+			glStencilMask(~0);
+			glStencilFunc(GL_ALWAYS, 0, ~0);
+
+			glDrawArrays(GL_TRIANGLES,0,count);
+		}
+		else
+		{
+			// ZFAIL Method
+
+			extGlActiveStencilFace(GL_BACK);
+			glStencilOp(GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP);
+			glStencilMask(~0);
+			glStencilFunc(GL_ALWAYS, 0, ~0);
+
+			extGlActiveStencilFace(GL_FRONT);
+			glStencilOp(GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP);
+			glStencilMask(~0);
+			glStencilFunc(GL_ALWAYS, 0, ~0);
+
+			glDrawArrays(GL_TRIANGLES,0,count);
+		}
+	}
+	else if (FeatureAvailable[IRR_ATI_separate_stencil])
+	{
+		glDisable(GL_CULL_FACE);
+		if (!zfail)
+		{
+			// ZPASS Method
+
+			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, GL_DECR);
+			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR);
+			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
+
+			glDrawArrays(GL_TRIANGLES,0,count);
+		}
+		else
+		{
+			// ZFAIL Method
+
+			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
+			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
+			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
+
+			glDrawArrays(GL_TRIANGLES,0,count);
+		}
 	}
 	else
+#endif
 	{
-		// ZFAIL Method
+		glEnable(GL_CULL_FACE);
+		if (!zfail)
+		{
+			// ZPASS Method
 
-		glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
-		glCullFace(GL_FRONT);
-		glDrawArrays(GL_TRIANGLES,0,count);
+			glCullFace(GL_BACK);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+			glDrawArrays(GL_TRIANGLES,0,count);
 
-		glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
-		glCullFace(GL_BACK);
-		glDrawArrays(GL_TRIANGLES,0,count);
+			glCullFace(GL_FRONT);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+			glDrawArrays(GL_TRIANGLES,0,count);
+		}
+		else
+		{
+			// ZFAIL Method
+
+			glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+			glCullFace(GL_FRONT);
+			glDrawArrays(GL_TRIANGLES,0,count);
+
+			glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+			glCullFace(GL_BACK);
+			glDrawArrays(GL_TRIANGLES,0,count);
+		}
 	}
 
 	glDisableClientState(GL_VERTEX_ARRAY); //not stored on stack
@@ -1780,7 +1847,6 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glDisable( GL_LIGHTING );
 	glDisable(GL_FOG);
 	glDepthMask(GL_FALSE);
-	glDepthFunc( GL_LEQUAL );
 
 	glShadeModel( GL_FLAT );
 	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
@@ -1789,7 +1855,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glEnable( GL_STENCIL_TEST );
-	glStencilFunc(GL_NOTEQUAL, 0, 0xFFFFFFFFL);
+	glStencilFunc(GL_NOTEQUAL, 0, ~0);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
 	// draw a shadow rectangle covering the entire screen using stencil buffer

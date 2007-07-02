@@ -36,8 +36,7 @@ CShadowVolumeSceneNode::CShadowVolumeSceneNode(ISceneNode* parent,
 //! destructor
 CShadowVolumeSceneNode::~CShadowVolumeSceneNode()
 {
-	if (Edges)
-		delete [] Edges;
+	delete [] Edges;
 
 	for (u32 i=0; i<ShadowVolumes.size(); ++i)
 		delete [] ShadowVolumes[i].vertices;
@@ -97,10 +96,10 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 	s32 numEdges = 0;
 	core::vector3df ls = light * Infinity; // light scaled
 
-	//if (!UseZFailMethod)
-	//	createZPassVolume(faceCount, numEdges, light, svp);
-	//else
+	//if (UseZFailMethod)
 	//	createZFailVolume(faceCount, numEdges, light, svp);
+	//else
+	//	createZPassVolume(faceCount, numEdges, light, svp, false);
 
 	// the createZFailVolume does currently not work 100% correctly,
 	// so we create createZPassVolume with caps if the zfail method
@@ -144,13 +143,11 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 		wFace1 = Indices[3*i+1];
 		wFace2 = Indices[3*i+2];
 
-		core::vector3df v0 = Vertices[wFace0];
-		core::vector3df v1 = Vertices[wFace1];
-		core::vector3df v2 = Vertices[wFace2];
+		const core::vector3df v0 = Vertices[wFace0];
+		const core::vector3df v1 = Vertices[wFace1];
+		const core::vector3df v2 = Vertices[wFace2];
 
-		core::vector3df normal = (v2-v1).crossProduct(v1-v0);
-
-		if(normal.dotProduct(light) >= 0.0f )
+		if (core::triangle3df(v0,v1,v2).isFrontFacing(light))
 		{
 			FaceData[i] = false; // it's a back facing face
 
@@ -213,15 +210,13 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 
 void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 						s32& numEdges,
-						const core::vector3df& lightsource,
+						core::vector3df light,
 						SShadowVolume* svp, bool caps)
 {
-	core::vector3df light(lightsource);
 	light *= Infinity;
 	if (light == core::vector3df(0,0,0))
 		light = core::vector3df(0.0001f,0.0001f,0.0001f);
 
-	core::vector3df normal;
 	u16 wFace0, wFace1, wFace2;
 
 	for (s32 i=0; i<faceCount; ++i)
@@ -230,12 +225,7 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 		wFace1 = Indices[3*i+1];
 		wFace2 = Indices[3*i+2];
 
-		core::vector3df v0(Vertices[wFace2] - Vertices[wFace1]);
-		core::vector3df v1(Vertices[wFace1] - Vertices[wFace0]);
-
-		normal = v0.crossProduct(v1);
-
-		if (normal.dotProduct(light) >= 0.0f)
+		if (core::triangle3df(Vertices[wFace0],Vertices[wFace1],Vertices[wFace2]).isFrontFacing(light))
 		{
 			Edges[2*numEdges+0] = wFace0;
 			Edges[2*numEdges+1] = wFace1;
@@ -292,7 +282,7 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(IMesh* mesh)
 		totalVertices += b->getVertexCount();
 	}
 
-	// allocate memory if nececcary
+	// allocate memory if necessary
 
 	if (totalVertices > VertexCountAllocated)
 	{
