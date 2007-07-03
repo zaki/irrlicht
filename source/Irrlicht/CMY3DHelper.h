@@ -12,7 +12,7 @@
 //----------------------------------------------------------------------
 
 //**********************************************************************
-//                      some usefull functions
+//                      some useful functions
 //**********************************************************************
 
 #ifndef __C_MY3D_HELPER_H_INCLUDED__
@@ -23,106 +23,6 @@ namespace irr
 {
 namespace core 
 {
-
-//---------------------------------------------------------------------
-inline f32 fmax(f32 v1, f32 v2)
-{   return (v1>v2)?v1:v2;
-}
-//----------------------------------------------------------------------------
-template <class T>
-s32 strlen(T* str)
-{   int len = 0;
-    while(true)
-    {   if (*(str+len)==0)
-            break;
-        len++;
-    }
-    return len;
-}
-//----------------------------------------------------------------------------
-template <class T>
-T* strcpy (T* src, T* dst)
-{   if (src&&dst)
-    {   s32 len = strlen(src);
-        for (s32 i=0; i<len+1; i++)
-            dst[i] = src[i];
-        return dst;
-    }
-    return NULL;
-}
-//----------------------------------------------------------------------------
-template <class T>
-T* strcpy (T* src, T* dst, s32 startPos, s32 endPos)
-{   if (src&&dst)
-    {   s32 len = strlen(src);       
-
-        s32 charIndex=0;
-        for (s32 i=startPos; i<=endPos && endPos<len; i++)
-        {   dst[charIndex] = src[i];
-            charIndex++;
-        }
-        dst[charIndex]=0;
-
-        return dst;
-    }
-    return NULL;
-}
-//----------------------------------------------------------------------------
-template <class T>
-s32 findLast(T* Str, c8 ch)
-{   
-    s32 lenSrc = strlen(Str);
-    s32 n=lenSrc-1;
-    s32 lastCharInStringPos = -1;
-    while(true)
-    {   if (Str[n] == ch)
-        {   lastCharInStringPos = n;
-            break;          
-        }
-        if (n==0) break;
-        n--;
-    }
-    return lastCharInStringPos;
-}
-//----------------------------------------------------------------------------
-template <class T>
-s32 findLastDelimiter(T* Str)
-{   
-    s32 lenSrc = strlen(Str);
-    s32 n=lenSrc-1;
-    s32 lastDelimiterInStringPos = -1;
-    while(true)
-    {   if (Str[n] == '\\' || Str[n] == '/')
-        {   lastDelimiterInStringPos = n;
-            break;
-        }
-        if (n==0) break;
-        n--;
-    }
-    return lastDelimiterInStringPos;
-}
-//----------------------------------------------------------------------------
-template <class T>
-T* extractFilePath(T* sourceStr, T* buffer, s32 bufSize)
-{   
-    s32 lastDelimiterInStringPos = findLastDelimiter(sourceStr);
-
-    if (lastDelimiterInStringPos>=0 && lastDelimiterInStringPos<bufSize)
-        strcpy(sourceStr, buffer, 0, lastDelimiterInStringPos);    
-
-    return buffer;
-}
-//----------------------------------------------------------------------------
-template <class T>
-T* extractFileName(T* sourceStr, T* buffer, s32 bufSize)
-{   s32 lastDelimiterInStringPos = findLastDelimiter(sourceStr);
-    s32 lenSrc = strlen(sourceStr);
-    
-    if (lastDelimiterInStringPos>=-1 && (lenSrc-lastDelimiterInStringPos)<bufSize)    
-        strcpy(sourceStr, buffer, lastDelimiterInStringPos+1, lenSrc-1);    
-
-    return buffer;
-}
 
 //-----------------RLE stuff-----------------------------------------
 

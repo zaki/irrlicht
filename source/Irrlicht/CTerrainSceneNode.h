@@ -204,20 +204,23 @@ namespace scene
 		//! work best with your new terrain size.
 		virtual bool overrideLODDistance( s32 LOD, f64 newDistance );
 
-		//! Scales the base texture, similar to makePlanarTextureMapping 
-		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2=0.0f );
+		//! Scales the two textures
+		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f);
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TERRAIN; }
+		virtual ESCENE_NODE_TYPE getType() const {return ESNT_TERRAIN;}
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0);
+		virtual void serializeAttributes(io::IAttributes* out,
+				io::SAttributeReadWriteOptions* options=0);
 
 		//! Reads attributes of the scene node.
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+		virtual void deserializeAttributes(io::IAttributes* in,
+				io::SAttributeReadWriteOptions* options=0);
 
 		//! Creates a clone of this scene node and its children.
-		virtual ISceneNode* clone(ISceneNode* newParent, ISceneManager* newManager);
+		virtual ISceneNode* clone(ISceneNode* newParent,
+				ISceneManager* newManager);
 
 	private:
 
