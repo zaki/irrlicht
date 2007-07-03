@@ -3,7 +3,8 @@ Changes in version 1.4 (... 2007)
  - createDevice now reports errors if the driverType is unknown, previously it 
    created a window but populated it with a null driver without any warning.
 
- - Fixed a bug in CBillboardTextSceneNode::setText where the old text was not cleared.
+ - Fixed a bug in CBillboardTextSceneNode::setText where the old text was not 
+   cleared.
 
  - Changed irrArray::linear_search to use the == operator rather than <
    This may be slower in some cases, but it no longer returns false positives
@@ -29,6 +30,12 @@ Changes in version 1.4 (... 2007)
    renderers.
 
 GUI:
+
+ - Fixed the default font icons so they have a black border and are not 
+   invisible in default listboxes. Old font tool textures now keep their color
+   so colorful fonts are possible by editing the font's texture. The colors of 
+   completely transparent areas are no longer kept when generating the texture
+   from an image. Added builtInFont.bmp for ease of editing.
 
  - IGUIElement changes:
      OnEvent no longer absorbs events by default.

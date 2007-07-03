@@ -284,16 +284,13 @@ void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions
 		return;
 	}
 
-	// TODO: Hack till it's getting better...
-	// Pixel(0,0) == half opacity assume font with alpha..
-
-	s32 truealphaFont = ( (p[0] & 0xFF000000) == 0x7f000000 );
+	// fix half alpha of top left pixel in some font textures
 	p[0] |= 0xFF000000;
 
 	s32 colorTopLeft = p[0];
 	s32 colorLowerRight = *(p+1);
 	s32 colorBackGround = *(p+2);
-	s32 colorBackGroundTransparent = 0x00FFFFFF & colorBackGround;
+	s32 colorBackGroundTransparent = 0; // 0x00FFFFFF & colorBackGround;
 	s32 colorFont = 0xFFFFFFFF;
 
 	*(p+1) = colorBackGround;
@@ -348,11 +345,6 @@ void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions
 			{
 				*p = colorBackGroundTransparent;
 			}
-			else
-			if ( 0 == truealphaFont )
-			{
-				*p = colorFont;
-			}
 			++p;
 		}
 	}
@@ -376,13 +368,13 @@ void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions
 		return;
 	}
 
-	s16 truealphaFont = ( (p[0] & 0x8000) == 0x8000 );
+	// fix half alpha of top left pixel in some font textures
 	p[0] |= 0x8000;
 
-	s16 colorTopLeft = p[0];;
+	s16 colorTopLeft = p[0];
 	s16 colorLowerRight = *(p+1);
 	s16 colorBackGround = *(p+2);
-	s16 colorBackGroundTransparent = 0x7FFF & colorBackGround;
+	s16 colorBackGroundTransparent = 0; // 0x7FFF & colorBackGround;
 	u16 colorFont = 0xFFFF;
 
 	*(p+1) = colorBackGround;
@@ -436,11 +428,6 @@ void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions
 			else
 			if (*p == colorBackGround)
 				*p = colorBackGroundTransparent;
-			else
-			if ( 0 == truealphaFont )
-			{
-				*p = colorFont;
-			}
 			++p;
 		}
 	}

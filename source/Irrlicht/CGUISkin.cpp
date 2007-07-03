@@ -45,7 +45,7 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 		Colors[EGDC_WINDOW]           = video::SColor(101,255,255,255);
 		Colors[EGDC_WINDOW_SYMBOL]    = video::SColor(200,10,10,10);
 		Colors[EGDC_ICON]             = video::SColor(200,255,255,255);
-		Colors[EGDC_ICON_HIGH_LIGHT]  = video::SColor(200,10,10,10);
+		Colors[EGDC_ICON_HIGH_LIGHT]  = video::SColor(200,8,36,107);
 
 		Sizes[EGDS_SCROLLBAR_SIZE] = 14;
 		Sizes[EGDS_MENU_HEIGHT] = 30;
@@ -84,7 +84,7 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 		Colors[EGDC_WINDOW]			=	0xf0f0f0f0;
 		Colors[EGDC_WINDOW_SYMBOL]	=	0xd0161616;
 		Colors[EGDC_ICON]			=	0xd0161616;
-		Colors[EGDC_ICON_HIGH_LIGHT]=	0xd0e0e0e0;
+		Colors[EGDC_ICON_HIGH_LIGHT]=	0xd0606060;
 
 		Sizes[EGDS_SCROLLBAR_SIZE] = 14;
 		Sizes[EGDS_MENU_HEIGHT] = 48;
