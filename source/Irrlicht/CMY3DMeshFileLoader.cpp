@@ -394,10 +394,10 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 		}
 
 		// override materials types from they names
-		if (!strcmp(me.Header.Name, "AlphaChannel-"))
+		if (!strncmp(me.Header.Name, "AlphaChannel-", 13))
 			me.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 		else
-		if (!strcmp(me.Header.Name, "SphereMap-"))
+		if (!strncmp(me.Header.Name, "SphereMap-", 10))
 			me.MaterialType = video::EMT_SPHERE_MAP;
 
 		MaterialEntry.push_back(me);
