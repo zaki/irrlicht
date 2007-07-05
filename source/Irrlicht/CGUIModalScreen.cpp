@@ -43,6 +43,9 @@ bool CGUIModalScreen::OnEvent(SEvent event)
 			MouseDownTime = os::Timer::getTime();
 		}
 	}
+	
+	if (Parent)
+		Parent->OnEvent(event);
 
 	return true;	
 }

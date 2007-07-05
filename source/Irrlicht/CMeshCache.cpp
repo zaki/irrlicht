@@ -219,6 +219,21 @@ void CMeshCache::clear()
 	Meshes.clear();
 }
 
+//! Clears all meshes that are held in the mesh cache but not used anywhere else.
+void CMeshCache::clearUnusedMeshes()
+{
+	for (u32 i=0; i<Meshes.size(); ++i)
+	{
+		if (Meshes[i].Mesh->getReferenceCount() == 1)
+		{
+			Meshes[i].Mesh->drop();
+			Meshes.erase(i);
+			--i;
+		}
+	}
+}
+
+
 } // end namespace scene
 } // end namespace irr
 
