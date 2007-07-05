@@ -112,8 +112,15 @@ namespace scene
 
 		//! Clears the whole mesh cache, removing all meshes.
 		/** All meshes will be reloaded completely when using ISceneManager::getMesh()
-		after calling this method. */
+		after calling this method. 
+		Warning: If you have pointers to meshes that were loaded with ISceneManager::getMesh() 
+		and you did not grab them, then they may become invalid. */
 		virtual void clear() = 0;
+
+		//! Clears all meshes that are held in the mesh cache but not used anywhere else.
+		/** Warning: If you have pointers to meshes that were loaded with ISceneManager::getMesh() 
+		and you did not grab them, then they may become invalid. */
+		virtual void clearUnusedMeshes() = 0;
 	};
 
 

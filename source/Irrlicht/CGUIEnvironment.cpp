@@ -328,7 +328,7 @@ void CGUIEnvironment::OnPostRender( u32 time )
 		dim.Width += getSkin()->getSize(EGDS_TEXT_DISTANCE_X)*2;
 		dim.Height += getSkin()->getSize(EGDS_TEXT_DISTANCE_Y)*2;
 
-		pos.UpperLeftCorner.Y -= dim.Height-1;
+		pos.UpperLeftCorner.Y -= dim.Height+1;
 		pos.LowerRightCorner.Y = pos.UpperLeftCorner.Y + dim.Height-1;
 		pos.LowerRightCorner.X = pos.UpperLeftCorner.X + dim.Width;
 

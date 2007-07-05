@@ -1,5 +1,11 @@
 Changes in version 1.4 (... 2007)
 
+ - Added IMeshCache::clearUnusedMeshes(). This allows the user to remove 
+   meshes that are sitting in the mesh cache but aren't used by any scene nodes. 
+   This is useful for example when changing levels.
+
+ - Added IUnknown::getReferenceCount()
+
  - createDevice now reports errors if the driverType is unknown, previously it 
    created a window but populated it with a null driver without any warning.
 

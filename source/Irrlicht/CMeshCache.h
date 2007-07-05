@@ -92,6 +92,9 @@ namespace scene
 		//! Clears the whole mesh cache, removing all meshes.
 		virtual void clear();
 
+		//! Clears all meshes that are held in the mesh cache but not used anywhere else.
+		virtual void clearUnusedMeshes();
+
 	protected:
 
 		struct MeshEntry
