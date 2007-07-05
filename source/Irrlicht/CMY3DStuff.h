@@ -1,7 +1,7 @@
 // Copyright (C) 2002-2007 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
-// 
+//
 // This file was originally written by ZDimitor.
 
 //----------------------------------------------------------------------
@@ -16,9 +16,9 @@
 
 #include <irrTypes.h>
 
-namespace irr 
+namespace irr
 {
-namespace scene 
+namespace scene
 {
 
 //**********************************************************************
@@ -54,7 +54,7 @@ const unsigned long MY_PIXEL_FORMAT_24 = 0x5f32345f; // was: #define MY_PIXEL_FO
 const unsigned long MY_PIXEL_FORMAT_16 = 0x5f31365f; // was: #define MY_PIXEL_FORMAT_16 '_16_'
 //--------------------------------------------------------------------
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #   pragma pack( push, packing )
 #   pragma pack( 1 )
 #   define PACK_STRUCT
@@ -64,7 +64,7 @@ const unsigned long MY_PIXEL_FORMAT_16 = 0x5f31365f; // was: #define MY_PIXEL_FO
 #   error compiler not supported
 #endif
 //----------------------------------------------------------------------
-struct SMyColor 
+struct SMyColor
 {   SMyColor () {;}
     SMyColor (s32 __R, s32 __G, s32 __B, s32 __A)
         : R(__R), G(__G), B(__B), A(__A) {}
@@ -83,15 +83,15 @@ struct SMyVector2
     SMyVector2(f32 __X, f32 __Y)
         : X(__X), Y(__Y) {}
     f32 X, Y;
-} PACK_STRUCT; 
+} PACK_STRUCT;
 
 struct SMyVertex
 {   SMyVertex () {;}
     SMyVertex (SMyVector3 _Coord, SMyColor _Color, SMyVector3 _Normal)
-        :Coord(_Coord), Color(_Color), Normal(_Normal) {;}    
+        :Coord(_Coord), Color(_Color), Normal(_Normal) {;}
     SMyVector3 Coord;
-    SMyColor   Color;  
-    SMyVector3 Normal; 
+    SMyColor   Color;
+    SMyVector3 Normal;
 } PACK_STRUCT;
 
 struct SMyTVertex
@@ -117,7 +117,7 @@ struct SMyFileHeader
 // scene header
 struct SMySceneHeader
 {   SMyColor BackgrColor;  // background color
-    SMyColor AmbientColor; // ambient color  
+    SMyColor AmbientColor; // ambient color
     s32 MaterialCount;     // material count
     s32 MeshCount;         // mesh count
 } PACK_STRUCT;
@@ -130,7 +130,7 @@ struct SMyMaterialHeader
     SMyColor DiffuseColor;
     SMyColor EmissiveColor;
     SMyColor SpecularColor;
-    f32 Shininess;   
+    f32 Shininess;
     f32 Transparency;
     s32 TextureCount;        // texture count
 } PACK_STRUCT;
@@ -144,7 +144,7 @@ struct SMyMeshHeader
 
 // texture data header
 struct SMyTexDataHeader
-{   c8  Name[256]; // texture name   
+{   c8  Name[256]; // texture name
     u32 ComprMode; //compression mode
     u32 PixelFormat;
     u32 Width;   // image width
@@ -177,12 +177,12 @@ struct SMyRLEHeader
 } PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #   pragma pack( pop, packing )
 #endif
 
-} // end namespace 
-} // end namespace 
+} // end namespace
+} // end namespace
 
 #endif
 

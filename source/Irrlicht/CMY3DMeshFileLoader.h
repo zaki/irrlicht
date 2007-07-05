@@ -77,7 +77,7 @@ private:
 	{
 		SMyMaterialEntry ()
 		: Texture1FileName("null"), Texture2FileName("null"),
-		Texture1(0), Texture2(0), MaterialType(video::EMT_SOLID) {;}
+		Texture1(0), Texture2(0), MaterialType(video::EMT_SOLID) {}
 
 		SMyMaterialHeader Header;
 		core::stringc Texture1FileName;
@@ -91,17 +91,17 @@ private:
 	{
 		SMyMeshBufferEntry() : MaterialIndex(-1), MeshBuffer(0) {}
 		SMyMeshBufferEntry(s32 mi, SMeshBufferLightMap* mb)
-			: MaterialIndex(mi), MeshBuffer(mb) {;}
+			: MaterialIndex(mi), MeshBuffer(mb) {}
 
 		s32 MaterialIndex;
 		SMeshBufferLightMap* MeshBuffer;
 	};
 
-	core::array<SMyMaterialEntry>   MaterialEntry;
-	core::array<SMyMeshBufferEntry> MeshBufferEntry;
-
 	SMyMaterialEntry*    getMaterialEntryByIndex     (u32 matInd);
 	SMeshBufferLightMap* getMeshBufferByMaterialIndex(u32 matInd);
+
+	core::array<SMyMaterialEntry>   MaterialEntry;
+	core::array<SMyMeshBufferEntry> MeshBufferEntry;
 
 	core::array<ISceneNode*> ChildNodes;
 };
