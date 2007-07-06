@@ -63,7 +63,6 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		return 0;
 
 	const u32 WORD_BUFFER_LENGTH = 512;
-	c8 wordBuffer[WORD_BUFFER_LENGTH];
 
 	if (Mesh)
 		Mesh->drop();
@@ -175,6 +174,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 		case 'f':               // face
 		{
+			const u32 FACE_BUFFER_LENGTH = 1024;
+			c8* wordBuffer = new c8[FACE_BUFFER_LENGTH];
 			c8 vertexWord[WORD_BUFFER_LENGTH]; // for retrieving vertex data
 			video::S3DVertex v;
 			u32 currentVertexCount = pCurrMtl->pMeshbuffer->Vertices.size();
@@ -185,7 +186,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				v.Color = pCurrMtl->pMeshbuffer->Material.DiffuseColor;
 
 			// get all vertices data in this face (current line of obj file)
-			u32 length = copyLine(wordBuffer, pBufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+			u32 length = copyLine(&wordBuffer, pBufPtr, FACE_BUFFER_LENGTH, pBufEnd);
 			const c8* pLinePtr = wordBuffer;
 			const c8* const pEndPtr = wordBuffer+length;
 
@@ -233,8 +234,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				pCurrMtl->pMeshbuffer->Indices.push_back( ( facePointCount - 2 - i ) + currentVertexCount );
 				pCurrMtl->pMeshbuffer->Indices.push_back( ( facePointCount - 3 - i ) + currentVertexCount );
 			}
+			delete wordBuffer;
 		}
-			break;
+		break;
 
 		case '#': // comment 
 		default:
@@ -376,7 +378,7 @@ void COBJMeshFileLoader::readMTL(const c8* pFileName, core::stringc relPath)
 			case 'm': // texture maps
 			if (pCurrMaterial)
 			{
-				char type=0; // map_Kd - diffuse texture map
+				u8 type=0; // map_Kd - diffuse texture map
 				if (!strncmp(pBufPtr,"map_bump",8))
 					type=1;
 				else if (!strncmp(pBufPtr,"map_d",5))
@@ -697,7 +699,7 @@ u32 COBJMeshFileLoader::copyWord(c8* outBuf, const c8* const inBuf, u32 outBufLe
 }
 
 
-u32 COBJMeshFileLoader::copyLine(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* pBufEnd)
+u32 COBJMeshFileLoader::copyLine(c8** outBuf, const c8* inBuf, u32 outBufLength, const c8* pBufEnd)
 {
 	if (!outBufLength)
 		return 0;
@@ -715,12 +717,15 @@ u32 COBJMeshFileLoader::copyLine(c8* outBuf, const c8* inBuf, u32 outBufLength, 
 		++i;
 	}
 
-	u32 length = core::min_(i, outBufLength-1);
-	for (u32 j=0; j<length; ++j)
-		outBuf[j] = inBuf[j];
-
+	if (i>outBufLength-1)
+	{
+		delete [] *outBuf;
+		*outBuf = new c8[i+1];
+	}
+	memcpy(outBuf, inBuf, i);
 	outBuf[i] = 0;
-	return length;
+
+	return i;
 }
 
 
