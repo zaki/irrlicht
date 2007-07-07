@@ -771,8 +771,9 @@ EGUI_SKIN_TYPE CGUISkin::getType() const
 }
 
 //! draws a 2d rectangle.
-void CGUISkin::draw2DRectangle(IGUIElement* element, video::SColor &color, const core::rect<s32>& pos, 
-					 const core::rect<s32>* clip)
+void CGUISkin::draw2DRectangle(IGUIElement* element,
+		const video::SColor &color, const core::rect<s32>& pos,
+		const core::rect<s32>* clip)
 {
 	Driver->draw2DRectangle(color, pos, clip);
 }

@@ -199,7 +199,7 @@ namespace gui
 		\param pos: Position of the rectangle.
 		\param clip: Pointer to rectangle against which the rectangle will be clipped.
 		If the pointer is null, no clipping will be performed. */
-		virtual void draw2DRectangle(IGUIElement* element, video::SColor &color, 
+		virtual void draw2DRectangle(IGUIElement* element, const video::SColor &color, 
 			const core::rect<s32>& pos, const core::rect<s32>* clip = 0);
 
 
