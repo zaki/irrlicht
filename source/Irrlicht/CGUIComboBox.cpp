@@ -21,7 +21,7 @@ namespace gui
 CGUIComboBox::CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 	s32 id, core::rect<s32> rectangle)
 	: IGUIComboBox(environment, parent, id, rectangle),
-	ListButton(0), ListBox(0), Selected(-1)
+	ListButton(0), ListBox(0), Selected(-1), HasFocus(false), LastFocus(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUICheckBox");
@@ -48,8 +48,14 @@ CGUIComboBox::CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 		ListButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_CURSOR_DOWN), skin->getColor(EGDC_WINDOW_SYMBOL));
 	}
 	ListButton->setSubElement(true);
+	ListButton->setTabStop(false);
 
 	setNotClipped(true);
+
+	// this element can be tabbed to
+	setTabStop(true);
+	setTabOrder(-1);
+
 }
 
 
@@ -148,10 +154,75 @@ bool CGUIComboBox::OnEvent(SEvent event)
 {
 	switch(event.EventType)
 	{
+
+	case EET_KEY_INPUT_EVENT:
+		if (ListBox && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
+		{
+			// hide list box
+			openCloseMenu();
+			return true;
+		}
+		else
+		if (event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE)
+		{
+			if (!event.KeyInput.PressedDown)
+				openCloseMenu();
+
+			ListButton->setPressed(ListBox == 0);
+
+			return true;
+		}
+		else
+		if (event.KeyInput.PressedDown)
+		{
+			s32 oldSelected = Selected;
+			bool absorb = true;
+			switch (event.KeyInput.Key)
+			{
+				case KEY_DOWN: 
+					Selected += 1; 
+					break;
+				case KEY_UP: 
+					Selected -= 1;
+					break;
+				case KEY_HOME:
+				case KEY_PRIOR:
+					Selected = 0;
+					break;
+				case KEY_END:
+				case KEY_NEXT:
+					Selected = (s32)Items.size()-1;
+					break;
+				default:
+					absorb = false;
+			}
+
+			if (Selected <0)
+				Selected = 0;
+			else
+			if (Selected >= (s32)Items.size())
+				Selected = (s32)Items.size() -1;
+
+			if (Selected != oldSelected)
+				sendSelectionChangedEvent();
+
+			if (absorb)
+				return true;
+		}
+		break;
+
 	case EET_GUI_EVENT:
 
 		switch(event.GUIEvent.EventType)
 		{
+		case EGET_ELEMENT_FOCUS_LOST:
+			if (Environment->hasFocus(ListBox) && 
+				event.GUIEvent.Element != this && 
+				event.GUIEvent.Element != ListButton)
+			{
+				openCloseMenu();
+			}
+			break;
 		case EGET_BUTTON_CLICKED:
 			if (event.GUIEvent.Caller == ListButton)
 			{
@@ -179,22 +250,12 @@ bool CGUIComboBox::OnEvent(SEvent event)
 		{
 		case EMIE_LMOUSE_PRESSED_DOWN:
 			{
-				if (!ListBox)
-					Environment->removeFocus(this);
-
 				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 				
 				// send to list box
-				if (ListBox && ListBox->getAbsolutePosition().isPointInside(p) &&
-					ListBox->OnEvent(event))
+				if (ListBox && ListBox->isPointInside(p) && ListBox->OnEvent(event))
 					return true;
-		
-				// check if it is outside
-				if (!AbsoluteClippingRect.isPointInside(p))
-				{
-					Environment->removeFocus(this);
-					return false;
-				}
+
 				return true;
 			}
 		case EMIE_LMOUSE_LEFT_UP:
@@ -235,6 +296,7 @@ void CGUIComboBox::sendSelectionChangedEvent()
 
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = EGET_COMBO_BOX_CHANGED;
 		Parent->OnEvent(event);
 	}
@@ -249,6 +311,12 @@ void CGUIComboBox::draw()
 		return;
 
 	IGUISkin* skin = Environment->getSkin();
+	IGUIElement *currentFocus = Environment->getFocus();
+	if (currentFocus != LastFocus)
+	{
+		HasFocus = currentFocus == this || isMyChild(currentFocus);
+		LastFocus = currentFocus;
+	}
 
 	core::rect<s32> frameRect(AbsoluteRect);
 
@@ -263,11 +331,16 @@ void CGUIComboBox::draw()
 	{
 		frameRect = AbsoluteRect;
 		frameRect.UpperLeftCorner.X += 2;
+		frameRect.UpperLeftCorner.Y += 2;
+		frameRect.LowerRightCorner.X -= ListButton->getAbsolutePosition().getWidth() + 2;
+		frameRect.LowerRightCorner.Y -= 2;
+		if (HasFocus)
+			skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
 
 		IGUIFont* font = skin->getFont();
 		if (font)
 			font->draw(Items[Selected].c_str(), frameRect, 
-				skin->getColor(EGDC_BUTTON_TEXT),
+				skin->getColor(HasFocus ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT),
 				false, true, &AbsoluteClippingRect);
 	}
 
@@ -281,6 +354,7 @@ void CGUIComboBox::openCloseMenu()
 	if (ListBox)
 	{
 		// close list box
+		Environment->setFocus(this);
 		ListBox->remove();
 		ListBox = 0;
 	}

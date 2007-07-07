@@ -151,10 +151,10 @@ public:
 		IGUIElement* parent=0, s32 id=-1);
 
 	//! sets the focus to an element
-	virtual void setFocus(IGUIElement* element);
+	virtual bool setFocus(IGUIElement* element);
 
 	//! removes the focus from an element
-	virtual void removeFocus(IGUIElement* element);
+	virtual bool removeFocus(IGUIElement* element);
 
 	//! Returns if the element has focus
 	virtual bool hasFocus(IGUIElement* element);
@@ -228,6 +228,8 @@ public:
 
 
 private:
+
+	IGUIElement* getNextElement(bool reverse=false, bool group=false);
 
 	struct SFont
 	{

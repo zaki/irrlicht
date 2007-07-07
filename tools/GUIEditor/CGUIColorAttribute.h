@@ -108,9 +108,8 @@ namespace gui
 						AttribSliderR->setPos(col.getRed()); 
 						AttribSliderG->setPos(col.getGreen());
 						AttribSliderB->setPos(col.getBlue());
-
-						return updateAttrib();
 					}
+					break;
 				case EGET_SCROLL_BAR_CHANGED:
 					{
 						// update editbox from scrollbars

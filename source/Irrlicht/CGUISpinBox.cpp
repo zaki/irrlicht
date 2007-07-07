@@ -38,6 +38,7 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
 						rectangle.getWidth(), rectangle.getHeight()), this);
 	ButtonSpinDown->grab();
 	ButtonSpinDown->setSubElement(true);
+	ButtonSpinDown->setTabStop(false);
 	ButtonSpinDown->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_CENTER, EGUIA_LOWERRIGHT);
 
 	ButtonSpinUp = Environment->addButton(
@@ -45,6 +46,7 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
 						rectangle.getWidth(), rectangle.getHeight()/2), this);
 	ButtonSpinUp->grab();
 	ButtonSpinUp->setSubElement(true);
+	ButtonSpinUp->setTabStop(false);
 	ButtonSpinUp->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_CENTER);
 	if (sb)
 	{
@@ -67,8 +69,6 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
 	EditBox->grab();
 	EditBox->setSubElement(true);
 	EditBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-
-//    verifyValueRange();
 }
 
 //! destructor
@@ -188,13 +188,15 @@ bool CGUISpinBox::OnEvent(SEvent event)
 		SEvent e;
 		e.EventType = EET_GUI_EVENT;
 		e.GUIEvent.Caller = this;
-		//fprintf(stderr, "EGET_SPINBOX_CHANGED caller:%p id: %d\n", e.GUIEvent.Caller, e.GUIEvent.Caller->getID() );
+		e.GUIEvent.Element = 0;
+
 		e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
 		if ( Parent )
 			Parent->OnEvent(e);
+		return true;
 	}
 
-	return false;
+	return IGUIElement::OnEvent(event);
 }
 
 void CGUISpinBox::verifyValueRange()

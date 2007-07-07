@@ -46,6 +46,7 @@ namespace gui
 
 		s32 Flags;
 		core::stringw MessageText;
+		bool Pressed;
 	};
 
 } // end namespace gui

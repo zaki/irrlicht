@@ -52,6 +52,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* en
 	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close");
 	CloseButton->setSubElement(true);
+	CloseButton->setTabStop(false);
 	if (sprites)
 	{
 		CloseButton->setSpriteBank(sprites);
@@ -89,6 +90,8 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* en
 
 	if (FileSystem)
 		FileSystem->grab();
+
+	setTabGroup(true);
 
 	fillListBox();
 }
@@ -202,7 +205,6 @@ bool CGUIFileOpenDialog::OnEvent(SEvent event)
 			return true;
 		case EMIE_LMOUSE_LEFT_UP:
 			Dragging = false;
-			Environment->removeFocus(this);
 			return true;
 		case EMIE_MOUSE_MOVED:
 			if (Dragging)
@@ -293,6 +295,7 @@ void CGUIFileOpenDialog::sendSelectedEvent()
 	SEvent event;
 	event.EventType = EET_GUI_EVENT;
 	event.GUIEvent.Caller = this;
+	event.GUIEvent.Element = 0;
 	event.GUIEvent.EventType = EGET_FILE_SELECTED;
 	Parent->OnEvent(event);
 }
@@ -303,6 +306,7 @@ void CGUIFileOpenDialog::sendCancelEvent()
 	SEvent event;
 	event.EventType = EET_GUI_EVENT;
 	event.GUIEvent.Caller = this;
+	event.GUIEvent.Element = 0;
 	event.GUIEvent.EventType = EGET_FILE_CHOOSE_DIALOG_CANCELLED;
 	Parent->OnEvent(event);
 }

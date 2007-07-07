@@ -29,6 +29,9 @@ CGUIAttributeEditor::CGUIAttributeEditor(IGUIEnvironment* environment, s32 id, I
 	// create attributes
 	Attribs = environment->getFileSystem()->createEmptyAttributes(Environment->getVideoDriver());
 
+	calculateClientArea();
+	resizeInnerPane();
+
 	// refresh attrib list
 	refreshAttribs();
 
@@ -72,7 +75,7 @@ void CGUIAttributeEditor::refreshAttribs()
 	position2di top(10, 5);
 	rect<s32> r(top.X,
 				top.Y,
-				AbsoluteRect.getWidth() - 10,
+				getClientArea().getWidth() - 10,
 				5 + Environment->getSkin()->getFont()->getDimension(L"A").Height);
 
 	// add attribute elements

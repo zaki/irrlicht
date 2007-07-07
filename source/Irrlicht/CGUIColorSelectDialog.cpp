@@ -73,6 +73,7 @@ CGUIColorSelectDialog::CGUIColorSelectDialog( const wchar_t* title, IGUIEnvironm
 		CloseButton->setSprite(EGBS_BUTTON_DOWN, skin->getIcon(EGDI_WINDOW_CLOSE), skin->getColor(EGDC_WINDOW_SYMBOL));
 	}
 	CloseButton->setSubElement(true);
+	CloseButton->setTabStop(false);
 	CloseButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT); 
 	CloseButton->grab();
 
@@ -463,6 +464,7 @@ void CGUIColorSelectDialog::sendSelectedEvent()
 	SEvent event;
 	event.EventType = EET_GUI_EVENT;
 	event.GUIEvent.Caller = this;
+	event.GUIEvent.Element = 0;
 	event.GUIEvent.EventType = EGET_FILE_SELECTED;
 	Parent->OnEvent(event);
 }
@@ -473,6 +475,7 @@ void CGUIColorSelectDialog::sendCancelEvent()
 	SEvent event;
 	event.EventType = EET_GUI_EVENT;
 	event.GUIEvent.Caller = this;
+	event.GUIEvent.Element = 0;
 	event.GUIEvent.EventType = EGET_FILE_CHOOSE_DIALOG_CANCELLED;
 	Parent->OnEvent(event);
 }

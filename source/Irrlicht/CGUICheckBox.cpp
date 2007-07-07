@@ -21,6 +21,10 @@ CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIEleme
 	#ifdef _DEBUG
 	setDebugName("CGUICheckBox");
 	#endif
+
+	// this element can be tabbed into
+	setTabStop(true);
+	setTabOrder(-1);
 }
 
 
@@ -37,10 +41,43 @@ bool CGUICheckBox::OnEvent(SEvent event)
 {
 	switch(event.EventType)
 	{
+	case EET_KEY_INPUT_EVENT:
+		if (event.KeyInput.PressedDown &&
+			(event.KeyInput.Key == KEY_RETURN || 
+			 event.KeyInput.Key == KEY_SPACE))
+		{
+			Pressed = true;
+			return true;
+		}
+		else
+		if (Pressed && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
+		{
+			Pressed = false;
+			return true;
+		}
+		else
+		if (!event.KeyInput.PressedDown && Pressed &&
+			(event.KeyInput.Key == KEY_RETURN || 
+			 event.KeyInput.Key == KEY_SPACE))
+		{
+			Pressed = false;
+			if (Parent)
+			{
+				SEvent newEvent;
+				newEvent.EventType = EET_GUI_EVENT;
+				newEvent.GUIEvent.Caller = this;
+				newEvent.GUIEvent.Element = 0;
+				Checked = !Checked;
+				newEvent.GUIEvent.EventType = EGET_CHECKBOX_CHANGED;
+				Parent->OnEvent(newEvent);
+			}
+			return true;
+		}
+		break;
 	case EET_GUI_EVENT:
 		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 		{
-			if (event.GUIEvent.Caller == (IGUIElement*)this)
+			if (event.GUIEvent.Caller == this)
 				Pressed = false;
 		}
 		break;
@@ -70,6 +107,7 @@ bool CGUICheckBox::OnEvent(SEvent event)
 				SEvent newEvent;
 				newEvent.EventType = EET_GUI_EVENT;
 				newEvent.GUIEvent.Caller = this;
+				newEvent.GUIEvent.Element = 0;
 				Checked = !Checked;
 				newEvent.GUIEvent.EventType = EGET_CHECKBOX_CHANGED;
 				Parent->OnEvent(newEvent);

@@ -733,6 +733,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\EMessageBoxFlags.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\ICursorControl.h"
 					>
 				</File>

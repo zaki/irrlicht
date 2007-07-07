@@ -38,6 +38,7 @@ CGUIPanel::CGUIPanel( IGUIEnvironment* environment, IGUIElement* parent, s32 id,
     
     VScrollBar = environment->addScrollBar( false, rct, 0, id );
 	VScrollBar->setSubElement(true);
+	VScrollBar->setTabStop(false);
 	VScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
     VScrollBar->grab();
 	IGUIElement::addChild(VScrollBar);
@@ -46,6 +47,7 @@ CGUIPanel::CGUIPanel( IGUIEnvironment* environment, IGUIElement* parent, s32 id,
     
     HScrollBar = environment->addScrollBar( true, rct, 0, id );
 	HScrollBar->setSubElement(true);
+	HScrollBar->setTabStop(false);
 	HScrollBar->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
     HScrollBar->grab();
 	IGUIElement::addChild(HScrollBar);
@@ -181,7 +183,6 @@ bool CGUIPanel::OnEvent( SEvent event )
 			HScrollBar->OnEvent(event);
 			return true;
 		}
-		return false;
     }
     else
     {
@@ -192,11 +193,9 @@ bool CGUIPanel::OnEvent( SEvent event )
 
 			return true;
 		}
-		else
-			return IGUIElement::OnEvent( event );
     }
 
-	return false;
+	return IGUIElement::OnEvent(event);
 }
 
 void CGUIPanel::moveInnerPane()

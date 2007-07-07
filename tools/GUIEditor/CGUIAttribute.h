@@ -64,12 +64,15 @@ namespace gui
 					switch (e.GUIEvent.EventType)
 					{
 					case EGET_ELEMENT_FOCUSED:
-						if (Parent)
+						if (Parent && isMyChild(e.GUIEvent.Caller))
 							Parent->bringToFront(this);
 						break;
 					case EGET_ELEMENT_HOVERED:
 					case EGET_ELEMENT_LEFT:
-						return true;
+						return IGUIElement::OnEvent(e);
+					case EGET_ELEMENT_FOCUS_LOST:
+						updateAttrib();
+						return IGUIElement::OnEvent(e);
 					default:
 						return updateAttrib();
 					}

@@ -80,6 +80,10 @@ CGUIEnvironment::CGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* drive
 	ToolTip.LastTime = 0;
 	ToolTip.LaunchTime = 1000;
 	ToolTip.Element = 0;
+
+	// environment is root tab group
+	Environment = this;
+	setTabGroup(true);
 }
 
 
@@ -194,30 +198,79 @@ void CGUIEnvironment::drawAll()
 
 
 //! sets the focus to an element
-void CGUIEnvironment::setFocus(IGUIElement* element)
+bool CGUIEnvironment::setFocus(IGUIElement* element)
 {
 	if (Focus == element)
-		return;
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+		return false;
+	}
 
 	// GUI Environment should not get the focus
 	if (element == this)
 		element = 0;
 
-	removeFocus(Focus);
+	// stop element from being deleted
+	if (element)
+		element->grab();
 
-	Focus = element;
-
+	// focus may change or be removed in this call
+	IGUIElement *currentFocus = 0;
 	if (Focus)
 	{
-		Focus->grab();
+		currentFocus = Focus;
+		currentFocus->grab();
+		SEvent e;
+		e.EventType = EET_GUI_EVENT;
+		e.GUIEvent.Caller = Focus;
+		e.GUIEvent.Element = element;
+		e.GUIEvent.EventType = EGET_ELEMENT_FOCUS_LOST;
+		if (Focus->OnEvent(e))
+		{
+			if (element)
+				element->drop();
+			currentFocus->drop();
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			return false;
+		}
+		currentFocus->drop();
+		currentFocus = 0;
+	}
+	
+	if (element)
+	{
+		currentFocus = Focus;
+		if (currentFocus)
+			currentFocus->grab();
 
 		// send focused event
 		SEvent e;
 		e.EventType = EET_GUI_EVENT;
-		e.GUIEvent.Caller = Focus;
+		e.GUIEvent.Caller = element;
+		e.GUIEvent.Element = Focus;
 		e.GUIEvent.EventType = EGET_ELEMENT_FOCUSED;
-		Focus->OnEvent(e);
+		if (element->OnEvent(e))
+		{
+			if (element)
+				element->drop();
+			if (currentFocus)
+				currentFocus->drop();
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			return false;
+		}
 	}
+
+	if (currentFocus)
+		currentFocus->drop();
+
+	if (Focus)
+		Focus->drop();
+
+	// element is the new focus so it doesn't have to be dropped
+	Focus = element;
+	
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return true;
 }
 
 //! returns the element with the focus
@@ -228,19 +281,29 @@ IGUIElement* CGUIEnvironment::getFocus()
 
 
 //! removes the focus from an element
-void CGUIEnvironment::removeFocus(IGUIElement* element)
+bool CGUIEnvironment::removeFocus(IGUIElement* element)
 {
 	if (Focus && Focus==element)
 	{
 		SEvent e;
 		e.EventType = EET_GUI_EVENT;
 		e.GUIEvent.Caller = Focus;
+		e.GUIEvent.Element = 0;
 		e.GUIEvent.EventType = EGET_ELEMENT_FOCUS_LOST;
-		Focus->OnEvent(e);
-		if (Focus)
-			Focus->drop();
+		if (Focus->OnEvent(e))
+		{
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			return false;
+		}
+	}
+	if (Focus)
+	{
+		Focus->drop();
 		Focus = 0;
 	}
+	
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return true;
 }
 
 
@@ -429,23 +492,40 @@ bool CGUIEnvironment::postEventFromUser(SEvent event)
 		break;
 	case EET_MOUSE_INPUT_EVENT:
 
-		// sending input to focus, stopping of focus processed input
-		
+		updateHoveredElement(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+
+		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+			if ( (Hovered && Hovered != Focus) || !Focus )
+		{
+			setFocus(Hovered);
+		}
+
+		// sending input to focus
 		if (Focus && Focus->OnEvent(event))
 			return true;
 
-		if (!Focus) // focus could have died in last call
-		{
-			// trying to send input to hovered element
-			updateHoveredElement(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
+		// focus could have died in last call
+		if (!Focus && Hovered)
+			return Hovered->OnEvent(event);
 
-			if (Hovered && Hovered != this)
-				return Hovered->OnEvent(event);
-		}
 		break;
 	case EET_KEY_INPUT_EVENT:
-		if (Focus && Focus != this)
-			return Focus->OnEvent(event);
+		{
+			// send focus changing event
+			if (event.EventType == EET_KEY_INPUT_EVENT && 
+				event.KeyInput.PressedDown && 
+				event.KeyInput.Key == KEY_TAB)
+			{
+				IGUIElement *next = getNextElement(event.KeyInput.Shift, event.KeyInput.Control);
+				if (next && next != Focus)
+				{
+					if (setFocus(next))
+						return true;
+				}
+			}
+			if (Focus)
+				return Focus->OnEvent(event);
+		}
 		break;
 	} // end switch
 
@@ -1349,6 +1429,56 @@ IGUIFont* CGUIEnvironment::getBuiltInFont()
 IGUIElement* CGUIEnvironment::getRootGUIElement()
 {
 	return this;
+}
+
+//! Returns the next element in the tab group starting at the focused element
+IGUIElement* CGUIEnvironment::getNextElement(bool reverse, bool group)
+{
+	// start the search at the root of the current tab group
+	IGUIElement *startPos = Focus ? Focus->getTabGroup() : 0;
+	s32 startOrder = -1;
+
+	// if we're searching for a group
+	if (group && startPos)
+	{
+		startOrder = startPos->getTabOrder();
+	}
+	else 
+	if (!group && Focus && !Focus->isTabGroup())
+	{
+		startOrder = Focus->getTabOrder();
+		if (startOrder == -1)
+		{
+			// this element is not part of the tab cycle, 
+			// but its parent might be...
+			IGUIElement *el = Focus;
+			while (el && el->getParent() && startOrder == -1)
+			{
+				el = el->getParent();
+				startOrder = el->getTabOrder();
+			}
+
+		}
+	}
+
+	if (group || !startPos)
+		startPos = this; // start at the root
+
+	// find the element
+	IGUIElement *closest = 0;
+	IGUIElement *first = 0;
+	startPos->getNextElement(startOrder, reverse, group, first, closest);
+
+	IGUIElement *ret = 0;
+
+	if (closest)
+		ret = closest; // we found an element
+	else if (first)
+		ret = first; // go to the end or the start
+	else if (group)
+		ret = this; // no group found? root group
+
+	return ret;
 }
 
 

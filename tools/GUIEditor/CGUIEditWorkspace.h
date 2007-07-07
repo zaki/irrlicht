@@ -89,8 +89,6 @@ namespace gui
 
 	private:
 
-		bool isMyChild(IGUIElement* target);
-
 		enum EGUIEDIT_MODE
 		{
 			// when we are currently selecting an element

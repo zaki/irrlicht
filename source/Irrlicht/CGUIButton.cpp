@@ -30,6 +30,10 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 	// reset sprites
 	for (u32 i=0; i<EGBS_COUNT; ++i)
 		ButtonSprites[i].Index = -1;
+
+	// this element can be tabbed to
+	setTabStop(true);
+	setTabOrder(-1);
 }
 
 
@@ -101,12 +105,17 @@ bool CGUIButton::OnEvent(SEvent event)
 
 			return true;
 		}
+		if (Pressed && !IsPushButton && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
+		{
+			setPressed(false);
+			return true;
+		}
 		else
 		if (!event.KeyInput.PressedDown && Pressed &&
 			(event.KeyInput.Key == KEY_RETURN || 
 			 event.KeyInput.Key == KEY_SPACE))
 		{
-			Environment->removeFocus(this);
+			//Environment->removeFocus(this);
 
 			if (!IsPushButton)
 				setPressed(false);
@@ -116,6 +125,7 @@ bool CGUIButton::OnEvent(SEvent event)
 				SEvent newEvent;
 				newEvent.EventType = EET_GUI_EVENT;
 				newEvent.GUIEvent.Caller = this;
+				newEvent.GUIEvent.Element = 0;
 				newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
 				Parent->OnEvent(newEvent);
 			}
@@ -125,7 +135,7 @@ bool CGUIButton::OnEvent(SEvent event)
 	case EET_GUI_EVENT:
 		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 		{
-			if (event.GUIEvent.Caller == (IGUIElement*) this && !IsPushButton)
+			if (event.GUIEvent.Caller == this && !IsPushButton)
 				setPressed(false);
 		}
 		break;
@@ -149,7 +159,7 @@ bool CGUIButton::OnEvent(SEvent event)
 		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 		{
 			bool wasPressed = Pressed;
-			Environment->removeFocus(this);
+			//Environment->removeFocus(this);
 
 			if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y ) ) )
 			{
@@ -171,6 +181,7 @@ bool CGUIButton::OnEvent(SEvent event)
 				SEvent newEvent;
 				newEvent.EventType = EET_GUI_EVENT;
 				newEvent.GUIEvent.Caller = this;
+				newEvent.GUIEvent.Element = 0;
 				newEvent.GUIEvent.EventType = EGET_BUTTON_CLICKED;
 				Parent->OnEvent(newEvent);
 			}

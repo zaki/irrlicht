@@ -6,9 +6,11 @@
 #define __I_GUI_ENVIRONMENT_H_INCLUDED__
 
 #include "IUnknown.h"
-#include "IGUIWindow.h"
 #include "IGUISkin.h"
 #include "rect.h"
+#include "EMessageBoxFlags.h"
+#include "IEventReceiver.h"
+#include "IXMLReader.h"
 
 namespace irr
 {
@@ -50,6 +52,8 @@ class IGUITab;
 class IGUIContextMenu;
 class IGUIComboBox;
 class IGUIToolBar;
+class IGUIButton;
+class IGUIWindow;
 class IGUIElementFactory;
 
 //! GUI Environment. Used as factory and manager of all other GUI elements.
@@ -64,13 +68,19 @@ public:
 	virtual void drawAll() = 0;
 
 	//! Sets the focus to an element.
-	virtual void setFocus(IGUIElement* element) = 0;
+	/** Causes a EGET_ELEMENT_FOCUS_LOST event followed by a EGET_ELEMENT_FOCUSED event.
+	If someone absorbed either of the events, then the focus will not be changed.
+	\return Returns true on success, false on failure */
+	virtual bool setFocus(IGUIElement* element) = 0;
 
 	//! Returns the element with the focus
 	virtual IGUIElement* getFocus() = 0;
 
 	//! Removes the focus from an element.
-	virtual void removeFocus(IGUIElement* element) = 0;
+	/** Causes a EGET_ELEMENT_FOCUS_LOST event. If the event is absorbed then the focus
+	will not be changed.
+	\return Returns true on success, false on failure */
+	virtual bool removeFocus(IGUIElement* element) = 0;
 
 	//! Returns if the element has focus
 	virtual bool hasFocus(IGUIElement* element) = 0;

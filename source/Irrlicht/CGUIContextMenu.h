@@ -87,6 +87,12 @@ namespace gui
 		//! Adds a sub menu from an element that already exists.
 		virtual void setSubMenu(s32 index, CGUIContextMenu* menu);
 
+		//! Writes attributes of the element.
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+
+		//! Reads attributes of the element
+		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+
 	protected:
 
 		struct SItem
@@ -118,16 +124,13 @@ namespace gui
 		//! Gets drawing rect of Item
 		virtual core::rect<s32> getRect(const SItem& i, const core::rect<s32>& absolute);
 
-		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
-
-		//! Reads attributes of the element
-		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+		void setEventParent(IGUIElement *parent);
 
 		s32 HighLighted;
 		core::array<SItem> Items;
 		core::position2d<s32> Pos;
 		u32 ChangeTime;
+		IGUIElement* EventParent;
 	};
 
 } // end namespace gui

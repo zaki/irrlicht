@@ -36,6 +36,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 		core::rect<s32>(RelativeRect.getWidth() - s, 0, RelativeRect.getWidth(), RelativeRect.getHeight()),
 		!clip);
 	ScrollBar->setSubElement(true);
+	ScrollBar->setTabStop(false);
 	ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT); 
 	ScrollBar->drop();
 
@@ -43,6 +44,10 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 	ScrollBar->grab();
 
 	setNotClipped(!clip);
+
+	// this element can be tabbed to
+	setTabStop(true);
+	setTabOrder(-1);
 	
 	updateAbsolutePosition();
 }
@@ -182,6 +187,8 @@ void CGUIListBox::setSelected(s32 id)
 		Selected = id;
 
 	selectTime = os::Timer::getTime();
+
+	recalculateScrollPos();
 }
 
 
@@ -191,19 +198,84 @@ bool CGUIListBox::OnEvent(SEvent event)
 {
 	switch(event.EventType)
 	{
+	case EET_KEY_INPUT_EVENT:
+		if (event.KeyInput.PressedDown && 
+			(event.KeyInput.Key == KEY_DOWN || 
+			 event.KeyInput.Key == KEY_UP   || 
+			 event.KeyInput.Key == KEY_HOME ||
+			 event.KeyInput.Key == KEY_END  ||
+			 event.KeyInput.Key == KEY_NEXT ||
+			 event.KeyInput.Key == KEY_PRIOR ) )
+		{
+			s32 oldSelected = Selected;
+			switch (event.KeyInput.Key)
+			{
+				case KEY_DOWN: 
+					Selected += 1; 
+					break;
+				case KEY_UP: 
+					Selected -= 1;
+					break;
+				case KEY_HOME:
+					Selected = 0;
+					break;
+				case KEY_END:
+					Selected = (s32)Items.size()-1;
+					break;
+				case KEY_NEXT:
+					Selected += AbsoluteRect.getHeight() / ItemHeight;
+					break;
+				case KEY_PRIOR:
+					Selected -= AbsoluteRect.getHeight() / ItemHeight;
+			}
+			if (Selected >= (s32)Items.size())
+				Selected = Items.size() - 1;
+			else 
+			if (Selected<0)
+				Selected = 0;
+
+			recalculateScrollPos();
+
+			// post the news
+
+			if (oldSelected != Selected && Parent && !Selecting && !MoveOverSelect)
+			{
+				SEvent e;
+				e.EventType = EET_GUI_EVENT;
+				e.GUIEvent.Caller = this;
+				e.GUIEvent.Element = 0;
+				e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
+				Parent->OnEvent(e);
+			}
+			
+			return true;
+		}
+		else 
+		if (!event.KeyInput.PressedDown && ( event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE ) )
+		{
+			if (Parent)
+			{
+				SEvent e;
+				e.EventType = EET_GUI_EVENT;
+				e.GUIEvent.Caller = this;
+				e.GUIEvent.Element = 0;
+				e.GUIEvent.EventType = EGET_LISTBOX_SELECTED_AGAIN;
+				Parent->OnEvent(e);
+			}
+			return true;
+		}
+		break;
+
 	case EET_GUI_EVENT:
 		switch(event.GUIEvent.EventType)
 		{
 		case gui::EGET_SCROLL_BAR_CHANGED:
 			if (event.GUIEvent.Caller == ScrollBar)
-			{
-//				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
 				return true;
-			}
 			break;
 		case gui::EGET_ELEMENT_FOCUS_LOST:
 			{
-				if (event.GUIEvent.Caller == (IGUIElement*)this)
+				if (event.GUIEvent.Caller == this)
 					Selecting = false;
 			}
 		}
@@ -226,35 +298,36 @@ bool CGUIListBox::OnEvent(SEvent event)
 				if (Environment->hasFocus(this) &&	
 					ScrollBar == el &&
 					ScrollBar->OnEvent(event))
+				{
 					return true;
-			}
-
+				}
+			
 				Selecting = true;
 				Environment->setFocus(this);
 				return true;
+			}
 
 			case EMIE_LMOUSE_LEFT_UP:
 				if (Environment->hasFocus(this) &&	
-					ScrollBar->getAbsolutePosition().isPointInside(p) &&
+					ScrollBar->isPointInside(p) &&
 					ScrollBar->OnEvent(event))
 					return true;
 
-				if (!AbsoluteRect.isPointInside(p))
+				if (!isPointInside(p))
 				{
 					Selecting = false;
-					Environment->removeFocus(this);
+					//Environment->removeFocus(this);
 					break;
 				}
 
-				Selecting = false;
-				Environment->removeFocus(this);			
+				Selecting = false;			
 				selectNew(event.MouseInput.Y);
 				return true;
 
 			case EMIE_MOUSE_MOVED:
 				if (Selecting || MoveOverSelect)
 				{
-					if (getAbsolutePosition().isPointInside(p))
+					if (isPointInside(p))
 					{
 						selectNew(event.MouseInput.Y, true);
 						return true;
@@ -291,6 +364,7 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = (Selected != oldSelected) ? EGET_LISTBOX_CHANGED : EGET_LISTBOX_SELECTED_AGAIN;
 		Parent->OnEvent(event);
 	}
@@ -313,7 +387,6 @@ void CGUIListBox::draw()
 	recalculateItemHeight(); // if the font changed
 
 	IGUISkin* skin = Environment->getSkin();
-	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	core::rect<s32>* clipRect = 0;
 
@@ -349,7 +422,7 @@ void CGUIListBox::draw()
 			frameRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y)
 		{
 			if (i == Selected)
-				driver->draw2DRectangle(skin->getColor(EGDC_HIGH_LIGHT), frameRect, &clientClip);
+				skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), frameRect, &clientClip);
 
 			core::rect<s32> textRect = frameRect;
 			textRect.UpperLeftCorner.X += 3;
@@ -418,6 +491,20 @@ void CGUIListBox::setSpriteBank(IGUISpriteBank* bank)
 	IconBank = bank;
 	if (IconBank)
 		IconBank->grab();
+}
+void CGUIListBox::recalculateScrollPos()
+{
+	s32 selPos = Selected * ItemHeight - ScrollBar->getPos();
+
+	if (selPos < 0)
+	{
+		ScrollBar->setPos(ScrollBar->getPos() + selPos);
+	}
+	else 
+	if (selPos > AbsoluteRect.getHeight() - ItemHeight)
+	{
+		ScrollBar->setPos(ScrollBar->getPos() + selPos - AbsoluteRect.getHeight() + ItemHeight);
+	}
 }
 
 

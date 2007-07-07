@@ -92,6 +92,7 @@ namespace gui
 
 		void recalculateItemHeight();
 		void selectNew(s32 ypos, bool onlyHover=false);
+		void recalculateScrollPos();
 
 		core::array< ListItem > Items;
 		s32 Selected;

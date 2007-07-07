@@ -23,6 +23,13 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	setDebugName("CGUIEditWindow");
 	#endif
 
+	// we can't tab out of this window
+	setTabGroup(true);
+	// we can ctrl+tab to it
+	setTabStop(true);
+	// the tab order number is auto-assigned
+	setTabOrder(-1);
+
 	// set window text
 	setText(L"GUI Editor");
 
@@ -177,13 +184,12 @@ bool CGUIEditWindow::OnEvent(SEvent event)
 		switch(event.GUIEvent.EventType)
 		{
 		case EGET_ELEMENT_FOCUS_LOST:
-			Dragging = false;
-			Resizing = false;
-			return true;
-
-			break;
-
-		case EGET_BUTTON_CLICKED:
+			if (event.GUIEvent.Caller == this ||
+				event.GUIEvent.Caller == ResizeButton)
+			{
+				Dragging = false;
+				Resizing = false;
+			}
 			break;
 		}
 
@@ -202,7 +208,7 @@ bool CGUIEditWindow::OnEvent(SEvent event)
 			if (clickedElement == this)
 			{
 				Dragging = true;
-				Environment->setFocus(this);
+				//Environment->setFocus(this);
 				if (Parent)
 					Parent->bringToFront(this);
 				return true;
@@ -210,7 +216,7 @@ bool CGUIEditWindow::OnEvent(SEvent event)
 			else if (clickedElement == ResizeButton)
 			{
 				Resizing = true;
-				Environment->setFocus(this);
+				//Environment->setFocus(this);
 				if (Parent)
 					Parent->bringToFront(this);
 				return true;
@@ -221,7 +227,7 @@ bool CGUIEditWindow::OnEvent(SEvent event)
 			if (Dragging || Resizing)
 			{
 				Dragging = false;
-				Environment->removeFocus(this);
+				Resizing = false;
 				return true;
 			}
 			break;

@@ -48,6 +48,10 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* envi
 	if (Operator)
 		Operator->grab();
 
+	// this element can be tabbed to
+	setTabStop(true);
+	setTabOrder(-1);
+
 	breakText();
 }
 
@@ -146,7 +150,7 @@ bool CGUIEditBox::OnEvent(SEvent event)
 	case EET_GUI_EVENT:
 		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 		{
-			if (event.GUIEvent.Caller == (IGUIElement*)this)
+			if (event.GUIEvent.Caller == this)
 			{
 				MouseMarking = false;
 				MarkBegin = 0;
@@ -377,6 +381,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			SEvent e;
 			e.EventType = EET_GUI_EVENT;
 			e.GUIEvent.Caller = this;
+			e.GUIEvent.Element = 0;
 			e.GUIEvent.EventType = EGET_EDITBOX_ENTER;
 			Parent->OnEvent(e);
 		}
@@ -424,6 +429,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		BlinkStartTime = os::Timer::getTime();
 		break;
 	case KEY_UP:
+		if (MultiLine || (WordWrap && BrokenText.size() > 1) )
 		{
 			s32 lineNo = getLineFromPos(CursorPos);
 			s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin > MarkEnd ? MarkBegin : MarkEnd);
@@ -448,8 +454,13 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			}
 
 		}
+		else
+		{
+			return false;
+		}
 		break;
 	case KEY_DOWN:
+		if (MultiLine || (WordWrap && BrokenText.size() > 1) )
 		{
 			s32 lineNo = getLineFromPos(CursorPos);
 			s32 mb = (MarkBegin == MarkEnd) ? CursorPos : (MarkBegin < MarkEnd ? MarkBegin : MarkEnd);
@@ -473,6 +484,10 @@ bool CGUIEditBox::processKey(const SEvent& event)
 				MarkEnd = 0;
 			}
 
+		}
+		else
+		{
+			return false;
 		}
 		break;
 
@@ -717,7 +732,7 @@ void CGUIEditBox::draw()
 					CurrentTextRect.LowerRightCorner.X = CurrentTextRect.UpperLeftCorner.X + mend - mbegin;
 
 					// draw mark
-					driver->draw2DRectangle(skin->getColor(EGDC_HIGH_LIGHT), CurrentTextRect, &localClipRect);
+					skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), CurrentTextRect, &localClipRect);
 
 					// draw marked text
 					s = txtLine->subString(lineStartPos, lineEndPos - lineStartPos);
@@ -870,8 +885,6 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 			if (!AbsoluteClippingRect.isPointInside(
 			core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
 			{
-				// remove focus
-				Environment->removeFocus(this);
 				return false;
 			}
 			else

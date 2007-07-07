@@ -32,6 +32,10 @@ CGUIScrollBar::CGUIScrollBar(bool horizontal, IGUIEnvironment* environment,
 
 	setNotClipped(noclip);
 
+	// this element can be tabbed to
+	setTabStop(true);
+	setTabOrder(-1);
+
 	setPos(0);
 }
 
@@ -52,6 +56,46 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 {
 	switch(event.EventType)
 	{
+	case EET_KEY_INPUT_EVENT:
+		if (event.KeyInput.PressedDown)
+		{
+			s32 oldPos = Pos;
+			bool absorb = true;
+			switch (event.KeyInput.Key)
+			{
+			case KEY_LEFT:
+			case KEY_UP:
+				setPos(Pos-SmallStep);
+				break;
+			case KEY_RIGHT:
+			case KEY_DOWN:
+				setPos(Pos+SmallStep);
+				break;
+			case KEY_HOME:
+			case KEY_PRIOR:
+				setPos(0);
+				break;
+			case KEY_END:
+			case KEY_NEXT:
+				setPos(Max);
+				break;
+			default:
+				absorb = false;
+			}
+
+			if (Pos != oldPos)
+			{
+				SEvent newEvent;
+				newEvent.EventType = EET_GUI_EVENT;
+				newEvent.GUIEvent.Caller = this;
+				newEvent.GUIEvent.Element = 0;
+				newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+				Parent->OnEvent(newEvent);
+			}
+			if (absorb)
+				return true;
+		}
+		break;
 	case EET_GUI_EVENT:
 		if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
 		{
@@ -64,6 +108,7 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 			SEvent newEvent;
 			newEvent.EventType = EET_GUI_EVENT;
 			newEvent.GUIEvent.Caller = this;
+			newEvent.GUIEvent.Element = 0;
 			newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
 			Parent->OnEvent(newEvent);
 
@@ -72,7 +117,7 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 		else
 		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 		{
-			if (event.GUIEvent.Caller == (IGUIElement*)this)
+			if (event.GUIEvent.Caller == this)
 				Dragging = false;
 		}
 		break;
@@ -86,6 +131,7 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 				SEvent newEvent;
 				newEvent.EventType = EET_GUI_EVENT;
 				newEvent.GUIEvent.Caller = this;
+				newEvent.GUIEvent.Element = 0;
 				newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
 				Parent->OnEvent(newEvent);
 				return true;
@@ -121,6 +167,7 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 					SEvent newEvent;
 					newEvent.EventType = EET_GUI_EVENT;
 					newEvent.GUIEvent.Caller = this;
+					newEvent.GUIEvent.Element = 0;
 					newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
 					Parent->OnEvent(newEvent);
 				}
@@ -130,7 +177,7 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 //! draws the element and its children
@@ -143,12 +190,10 @@ void CGUIScrollBar::draw()
 	if (!skin)
 		return;
 
-	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
-
 	core::rect<s32> rect = AbsoluteRect;
 
 	// draws the background
-	driver->draw2DRectangle(skin->getColor(EGDC_SCROLLBAR), rect, &AbsoluteClippingRect);
+	skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), rect, &AbsoluteClippingRect);
 
 	if (Max!=0)
 	{
@@ -305,6 +350,7 @@ void CGUIScrollBar::refreshControls()
 		{
 			UpButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,0, h, h), NoClip);
 			UpButton->setSubElement(true);
+			UpButton->setTabStop(false);
 		}
 		if (sprites)
 		{
@@ -318,6 +364,7 @@ void CGUIScrollBar::refreshControls()
 		{
 			DownButton = new CGUIButton(Environment, this, -1, core::rect<s32>(RelativeRect.getWidth()-h, 0, RelativeRect.getWidth(), h), NoClip);
 			DownButton->setSubElement(true);
+			DownButton->setTabStop(false);
 		}
 		if (sprites)
 		{
@@ -335,6 +382,7 @@ void CGUIScrollBar::refreshControls()
 		{
 			UpButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,0, w, w), NoClip);
 			UpButton->setSubElement(true);
+			UpButton->setTabStop(false);
 		}
 		if (sprites)
 		{
@@ -348,6 +396,7 @@ void CGUIScrollBar::refreshControls()
 		{
 			DownButton = new CGUIButton(Environment, this, -1, core::rect<s32>(0,RelativeRect.getHeight()-w, w, RelativeRect.getHeight()), NoClip);
 			DownButton->setSubElement(true);
+			DownButton->setTabStop(false);
 		}
 		if (sprites)
 		{

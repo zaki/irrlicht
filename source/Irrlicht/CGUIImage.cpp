@@ -89,7 +89,7 @@ void CGUIImage::draw()
 	}
 	else
 	{
-		driver->draw2DRectangle(skin->getColor(EGDC_3D_DARK_SHADOW), AbsoluteRect, &AbsoluteClippingRect);
+		skin->draw2DRectangle(this, skin->getColor(EGDC_3D_DARK_SHADOW), AbsoluteRect, &AbsoluteClippingRect);
 	}
 
 	IGUIElement::draw();
