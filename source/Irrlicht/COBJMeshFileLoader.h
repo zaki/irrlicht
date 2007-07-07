@@ -76,7 +76,7 @@ private:
 	// copies the current word from the inBuf to the outBuf
 	u32 copyWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* const pBufEnd);
 	// copies the current line from the inBuf to the outBuf
-	u32 copyLine(c8** outBuf, const c8* inBuf, u32 outBufLength, const c8* const pBufEnd);
+	core::stringc copyLine(const c8* inBuf, const c8* const pBufEnd);
 	// combination of goNextWord followed by copyWord
 	const c8* goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* const pBufEnd);
 

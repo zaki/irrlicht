@@ -339,7 +339,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				me.Texture2FileName.append("Lightmaps/");
 				me.Texture2FileName.append(Name);
 
-				if (Name.size()>0)
+				if (Name.size())
 					me.Texture2 = Driver->getTexture(me.Texture2FileName.c_str());
 
 				me.MaterialType = video::EMT_LIGHTMAP_M2;
@@ -431,7 +431,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 		s32 vertsNum=0;
 		s32 facesNum=0;
 
-		// verticies
+		// vertices
 		file->read(&id, sizeof(id));
 		if (id!=MY_VERTS_ID)
 		{

@@ -193,9 +193,11 @@ namespace scene
 			f32 maxHeight, const core::dimension2d<s32>& defaultVertexBlockSize);
 
 		//! Add a arrow mesh to the mesh pool
-		virtual IAnimatedMesh* addArrowMesh(const c8* name, u32 tesselationCylinder, u32 tesselationCone, f32 height,
-											f32 cylinderHeight, f32 width0,f32 width1,
-											video::SColor vtxColor0, video::SColor vtxColor1);
+		virtual IAnimatedMesh* addArrowMesh(const c8* name,
+				video::SColor vtxColor0, video::SColor vtxColor1,
+				u32 tesselationCylinder, u32 tesselationCone,
+				f32 height, f32 cylinderHeight, f32 width0,
+				f32 width1);
 
 		//! Adds a particle system scene node. 
 		virtual IParticleSystemSceneNode* addParticleSystemSceneNode(

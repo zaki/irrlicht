@@ -497,7 +497,7 @@ namespace scene
 		 camera = sceneManager->addCameraSceneNodeFPS(0, 100, 500, -1, keyMap, 8);
 		 \endcode
 		 \param parent: Parent scene node of the camera. Can be null.
-		 \param rotateSpeed: Speed with wich the camera is rotated. This can be done
+		 \param rotateSpeed: Speed with which the camera is rotated. This can be done
 		 only with the mouse.
 		 \param moveSpeed: Speed with which the camera is moved. Movement is done with
 		 the cursor keys.
@@ -753,7 +753,7 @@ namespace scene
 		 good value to start, for example.
 		 \param tileCount: Specifies how much tiles there will be. If you specifiy
 		 for example that a tile has the size (10.0f, 10.0f) and the tileCount is
-		 (10,10), than you get a field of 100 tiles wich has the dimension 100.0fx100.0f.
+		 (10,10), than you get a field of 100 tiles which has the dimension 100.0fx100.0f.
 		 \param material: Material of the hill mesh.
 		 \param hillHeight: Height of the hills. If you specify a negative value
 		 you will get holes instead of hills. If the height is 0, no hills will be
@@ -803,14 +803,15 @@ namespace scene
 			const core::dimension2d<s32>& defaultVertexBlockSize = core::dimension2d<s32>(64,64)) = 0;
 
 		//! add a static arrow mesh to the meshpool
-		/** it quite usefull for debuggin purposes. ( showing directions eq )
-		*/
-		virtual IAnimatedMesh* addArrowMesh(const c8* name, u32 tesselationCylinder, u32 tesselationCone, f32 height,
-											f32 cylinderHeight, f32 width0,f32 width1,
-											video::SColor vtxColor0, video::SColor vtxColor1) = 0;
+		virtual IAnimatedMesh* addArrowMesh(const c8* name,
+				video::SColor vtxColor0=0xFFFFFFFF,
+				video::SColor vtxColor1=0xFFFFFFFF,
+				u32 tesselationCylinder=4, u32 tesselationCone=8,
+				f32 height=1.f, f32 cylinderHeight=0.6f,
+				f32 width0=0.05f, f32 width1=0.3f) = 0;
 
 		//! Returns the root scene node.
-		/** This is the scene node wich is parent
+		/** This is the scene node which is parent
 		 of all scene nodes. The root scene node is a special scene node which
 		 only exists to manage all scene nodes. It will not be rendered and cannot
 		 be removed from the scene.

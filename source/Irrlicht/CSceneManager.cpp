@@ -723,7 +723,10 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const c8* name,
 }
 
 //! Adds an arrow mesh to the mesh pool.
-IAnimatedMesh* CSceneManager::addArrowMesh(const c8* name,u32 tesselationCylinder, u32 tesselationCone, f32 height, f32 cylinderHeight, f32 width0,f32 width1, video::SColor vtxColor0, video::SColor vtxColor1)
+IAnimatedMesh* CSceneManager::addArrowMesh(const c8* name,
+		video::SColor vtxColor0, video::SColor vtxColor1,
+		u32 tesselationCylinder, u32 tesselationCone, f32 height,
+		f32 cylinderHeight, f32 width0,f32 width1)
 {
 	
 	if (!name || MeshCache->isMeshLoaded(name))

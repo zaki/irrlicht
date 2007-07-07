@@ -1,5 +1,10 @@
 Changes in version 1.4 (... 2007)
 
+ - Changed parameter order of addArrowMesh and added default parameters such
+   that it's enough to set the color (or even just the name).
+
+ - Fixed bugs in MY3D and OBJ loader.
+
  - Added IMeshCache::clearUnusedMeshes(). This allows the user to remove 
    meshes that are sitting in the mesh cache but aren't used by any scene nodes. 
    This is useful for example when changing levels.
