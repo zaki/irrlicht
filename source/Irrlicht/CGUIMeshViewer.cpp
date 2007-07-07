@@ -111,20 +111,20 @@ void CGUIMeshViewer::draw()
 	
 	core::rect<s32> frameRect(AbsoluteRect);
 	frameRect.LowerRightCorner.Y = frameRect.UpperLeftCorner.Y + 1;
-	driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), frameRect, &AbsoluteClippingRect);
+	skin->draw2DRectangle(this, skin->getColor(EGDC_3D_SHADOW), frameRect, &AbsoluteClippingRect);
 
 	frameRect.LowerRightCorner.Y = AbsoluteRect.LowerRightCorner.Y;
 	frameRect.LowerRightCorner.X = frameRect.UpperLeftCorner.X + 1;
-	driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), frameRect, &AbsoluteClippingRect);
+	skin->draw2DRectangle(this, skin->getColor(EGDC_3D_SHADOW), frameRect, &AbsoluteClippingRect);
 
 	frameRect = AbsoluteRect;
 	frameRect.UpperLeftCorner.X = frameRect.LowerRightCorner.X - 1;
-	driver->draw2DRectangle(skin->getColor(EGDC_3D_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
+	skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
 
 	frameRect = AbsoluteRect;
 	frameRect.UpperLeftCorner.Y = AbsoluteRect.LowerRightCorner.Y - 1;
 	frameRect.LowerRightCorner.Y = AbsoluteRect.LowerRightCorner.Y;
-	driver->draw2DRectangle(skin->getColor(EGDC_3D_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
+	skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT), frameRect, &AbsoluteClippingRect);
 
 	// draw the mesh
 

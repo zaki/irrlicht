@@ -72,7 +72,9 @@ namespace gui
 		IGUIButton* ListButton;
 		IGUIListBox* ListBox;
 		core::array< core::stringw > Items;
-		s32 Selected;		
+		s32 Selected;
+		bool HasFocus;
+		IGUIElement *LastFocus;
 	};
 
 

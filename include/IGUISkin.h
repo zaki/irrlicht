@@ -470,6 +470,18 @@ namespace gui
 			const core::position2di position, u32 starttime=0, u32 currenttime=0, 
 			bool loop=false, const core::rect<s32>* clip=0) = 0;
 
+		//! draws a 2d rectangle.
+		/** \param element: Pointer to the element which wishes to draw this icon. 
+		This parameter is usually not used by IGUISkin, but can be used for example 
+		by more complex implementations to find out how to draw the part exactly. 
+		\param color: Color of the rectangle to draw. The alpha component specifies how 
+		transparent the rectangle will be.
+		\param pos: Position of the rectangle.
+		\param clip: Pointer to rectangle against which the rectangle will be clipped.
+		If the pointer is null, no clipping will be performed. */
+		virtual void draw2DRectangle(IGUIElement* element, video::SColor &color, 
+			const core::rect<s32>& pos, const core::rect<s32>* clip = 0) = 0;
+
 		//! get the type of this skin
 		virtual EGUI_SKIN_TYPE getType() const { return EGST_UNKNOWN; };
 

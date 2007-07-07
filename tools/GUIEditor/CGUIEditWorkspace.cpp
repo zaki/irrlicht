@@ -143,22 +143,6 @@ IGUIElement* CGUIEditWorkspace::getEditableElementFromPoint(IGUIElement *start, 
 	return target;
 }
 
-bool CGUIEditWorkspace::isMyChild(IGUIElement* target)
-{
-	if (!target)
-		return false;
-
-	IGUIElement *current = target;
-	while(current->getParent())
-	{
-		current = current->getParent();
-		if (current == this)
-			return true;
-	}
-
-	return false;
-}
-
 void CGUIEditWorkspace::setSelectedElement(IGUIElement *sel)
 {
 	IGUIElement* focus = Environment->getFocus();
@@ -700,8 +684,9 @@ bool CGUIEditWorkspace::OnEvent(SEvent e)
 		break;
 	}
 
+	// even if we didn't absorb the event, 
 	// we never pass events back to the GUI we're editing!
-	return true;
+	return false;
 }
 
 

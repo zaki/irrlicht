@@ -770,6 +770,13 @@ EGUI_SKIN_TYPE CGUISkin::getType() const
 	return Type;
 }
 
+//! draws a 2d rectangle.
+void CGUISkin::draw2DRectangle(IGUIElement* element, video::SColor &color, const core::rect<s32>& pos, 
+					 const core::rect<s32>* clip)
+{
+	Driver->draw2DRectangle(color, pos, clip);
+}
+
 //! Writes attributes of the object.
 //! Implement this to expose the attributes of your scene node animator for 
 //! scripting languages, editors, debuggers or xml serialization purposes.

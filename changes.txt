@@ -37,6 +37,18 @@ Changes in version 1.4 (... 2007)
 
 GUI:
 
+ - Added IGUISkin::draw2dRectangle, so skins can override the default highlight.
+
+ - EGET_ELEMENT_FOCUS_LOST and EGET_ELEMENT_FOCUSED events can now be absorbed 
+   by returning true in OnEvent. Absorbing these events will cancel the focus 
+   change. 
+
+ - IGUIEnvironment::setFocus and removeFocus now return bools.
+
+ - New SEvent.GUIEvent.Element. Points to a second element that is being 
+   used in the event. During a EGET_ELEMENT_FOCUS_LOST event it points
+   to the element which would like the focus.
+
  - Fixed the default font icons so they have a black border and are not 
    invisible in default listboxes. Old font tool textures now keep their color
    so colorful fonts are possible by editing the font's texture. The colors of 
@@ -44,9 +56,36 @@ GUI:
    from an image. Added builtInFont.bmp for ease of editing.
 
  - IGUIElement changes:
+
+     Most elements can now be accessed using the keyboard. Use space and return
+     to select or deselect, escape to cancel selection (ie while pressing a 
+     button with space or return), and the cursor keys where appropriate.
+
+     Added navigation through the GUI using tab and the shift and control keys.
+     Use these new methods to control tab navigation:
+       setTabStop - set this to true if the focus will vist the element.
+       isTabStop - returns true if the focus will visit the element.
+       setTabOrder - Sets the order of focus within this tab group,
+         Only one element in each group should have the same TabOrder number.
+         Set to -1 to add to the end of the group.
+       setTabGroup - set this to true if the element is a group that contains 
+         other elements, and can be navigated with ctrl+tab/ctrl+shift+tab.
+       isTabGroup - returns true if the element is a tab group.
+       getTabGroup - returns the tab group that the element belongs to.
+       getNextElement - searches for the next element which would be focused 
+         within the element's children, only useful if you are doing your own 
+         custom navigation.
+
+     Added isMychild, to check if an element is descended from this one.
+
+     Added isPointInside, which is called by getElementFromPoint. Override this
+     when making non-rectangular elements.
+
      OnEvent no longer absorbs events by default.
+
      Serialize/deserialize now call getter and setter functions, in case people
      override these and don't use the internal protected variables.
+
      added getAbsoluteClippingRect, returns the visible area of an element.
 
  - Added IGUISpinBox, by Michael Zeilfelder (CuteAlien).

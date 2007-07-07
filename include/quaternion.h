@@ -473,7 +473,7 @@ inline void quaternion::toAngleAxis(f32 &angle, core::vector3df &axis) const
 {
 	f32 scale = sqrt (X*X + Y*Y + Z*Z);
 
-	if (core::equals(scale,0.0f) || W > 1.0f || W < -1.0f)
+	if (core::iszero(scale) || W > 1.0f || W < -1.0f)
 	{
 		angle = 0.0f;
 		axis.X = 0.0f;

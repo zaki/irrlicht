@@ -42,6 +42,7 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close" );
 	CloseButton->setSubElement(true);
+	CloseButton->setTabStop(false);
 	CloseButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	if (sprites)
 	{
@@ -55,6 +56,7 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_RESTORE) : L"Restore" );
 	RestoreButton->setVisible(false);
 	RestoreButton->setSubElement(true);
+	RestoreButton->setTabStop(false);
 	RestoreButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	if (sprites)
 	{
@@ -68,6 +70,7 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_MINIMIZE) : L"Minimize" );
 	MinButton->setVisible(false);
 	MinButton->setSubElement(true);
+	MinButton->setTabStop(false);
 	MinButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	if (sprites)
 	{
@@ -79,6 +82,11 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	MinButton->grab();
 	RestoreButton->grab();
 	CloseButton->grab();
+
+	// this element is a tab group
+	setTabGroup(true);
+	setTabStop(true);
+	setTabOrder(-1);
 }
 
 
@@ -106,10 +114,14 @@ bool CGUIWindow::OnEvent(SEvent event)
 	case EET_GUI_EVENT:
 		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 		{
-			if (event.GUIEvent.Caller == (IGUIElement*)this)
+			Dragging = false;
+		}
+		else
+		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
+		{
+			if (event.GUIEvent.Caller == this && Parent)
 			{
-				Dragging = false;
-				return true;
+				Parent->bringToFront(this);
 			}
 		}
 		else
@@ -128,9 +140,9 @@ bool CGUIWindow::OnEvent(SEvent event)
 		case EMIE_LMOUSE_PRESSED_DOWN:
 			DragStart.X = event.MouseInput.X;
 			DragStart.Y = event.MouseInput.Y;
+			Dragging = true;
 			if (!Environment->hasFocus(this))
 			{
-				Dragging = true;
 				Environment->setFocus(this);
 				if (Parent)
 					Parent->bringToFront(this);
@@ -138,7 +150,6 @@ bool CGUIWindow::OnEvent(SEvent event)
 			return true;
 		case EMIE_LMOUSE_LEFT_UP:
 			Dragging = false;
-			Environment->removeFocus(this);
 			return true;
 		case EMIE_MOUSE_MOVED:
 			if (Dragging)
@@ -162,7 +173,7 @@ bool CGUIWindow::OnEvent(SEvent event)
 		}
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 //! Updates the absolute position.

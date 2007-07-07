@@ -28,6 +28,10 @@ namespace gui
 		//! Removes a child.
 		virtual void removeChild(IGUIElement* child);
 
+		//! Adds a child
+		virtual void addChild(IGUIElement* child);
+
+
 		//! draws the element and its children
 		virtual void draw();
 

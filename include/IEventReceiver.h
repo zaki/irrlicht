@@ -72,6 +72,7 @@ namespace irr
 		enum EGUI_EVENT_TYPE
 		{
 			//! A gui element has lost its focus.
+			//! GUIEvent.Caller is losing the focus to GUIEvent.Element
 			EGET_ELEMENT_FOCUS_LOST = 0,
 
 			//! A gui element has got the focus.
@@ -130,11 +131,12 @@ namespace irr
 
 			//! The value of a spin box has changed
 			EGET_SPINBOX_CHANGED
+
 		};
 	} // end namespace gui
 
 
-//! Struct for holding event data. An event can be a gui, mouse or keyboard event.
+//! SEvents hold information about an event. 
 struct SEvent
 {
 	EEVENT_TYPE EventType;
@@ -145,6 +147,9 @@ struct SEvent
 		{
 			//! IGUIElement who called the event
 			gui::IGUIElement* Caller;
+
+			//! If the event has something to do with another element, it will be held here.
+			gui::IGUIElement* Element;
 
 			//! Type of GUI Event
 			gui::EGUI_EVENT_TYPE EventType;
@@ -217,7 +222,8 @@ public:
 
 	virtual ~IEventReceiver() {};
 
-	//! called if an event happened. returns true if event was processed
+	//! called if an event happened.
+	//! \return Returns true if the event was processed
 	virtual bool OnEvent(SEvent event) = 0;
 };
 

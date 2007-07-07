@@ -61,10 +61,10 @@ void CGUITab::draw()
 	if (!IsVisible)
 		return;
 
-	video::IVideoDriver* driver = Environment->getVideoDriver();
+	IGUISkin *skin = Environment->getSkin();
 
-	if (DrawBackground)
-		driver->draw2DRectangle(BackColor, AbsoluteRect, &AbsoluteClippingRect);
+	if (skin && DrawBackground)
+		skin->draw2DRectangle(this, BackColor, AbsoluteRect, &AbsoluteClippingRect);
 
 	IGUIElement::draw();
 }
@@ -135,6 +135,9 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 	: IGUITabControl(environment, parent, id, rectangle), ActiveTab(-1),
 	Border(border), FillBackground(fillbackground)
 {
+	#ifdef _DEBUG
+	setDebugName("CGUITabControl");
+	#endif
 }
 
 
@@ -240,14 +243,6 @@ bool CGUITabControl::OnEvent(SEvent event)
 
 	switch(event.EventType)
 	{
-	case EET_GUI_EVENT:
-		switch(event.GUIEvent.EventType)
-		{
-			case gui::EGET_ELEMENT_FOCUS_LOST:
-				if (event.GUIEvent.Caller == (IGUIElement*)this)
-					return true;
-		}
-		break;
 	case EET_MOUSE_INPUT_EVENT:
 		switch(event.MouseInput.Event)
 		{
@@ -313,12 +308,11 @@ void CGUITabControl::draw()
 		return;
 
 	IGUIFont* font = skin->getFont();
-	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	core::rect<s32> frameRect(AbsoluteRect);
 
 	if (Tabs.empty())
-		driver->draw2DRectangle(skin->getColor(EGDC_3D_HIGH_LIGHT),
+		skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT),
 		frameRect, &AbsoluteClippingRect);
 
 	if (!font)
@@ -382,11 +376,11 @@ void CGUITabControl::draw()
 		tr.LowerRightCorner.X = left - 1;
 		tr.UpperLeftCorner.Y = frameRect.LowerRightCorner.Y - 1;
 		tr.LowerRightCorner.Y = frameRect.LowerRightCorner.Y;
-		driver->draw2DRectangle(skin->getColor(EGDC_3D_HIGH_LIGHT), tr, &AbsoluteClippingRect);
+		skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT), tr, &AbsoluteClippingRect);
 
 		tr.UpperLeftCorner.X = right;
 		tr.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X;
-		driver->draw2DRectangle(skin->getColor(EGDC_3D_HIGH_LIGHT), tr, &AbsoluteClippingRect);
+		skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT), tr, &AbsoluteClippingRect);
 	}
 
 	skin->draw3DTabBody(this, Border, FillBackground, AbsoluteRect, &AbsoluteClippingRect);
@@ -429,6 +423,7 @@ bool CGUITabControl::setActiveTab(s32 idx)
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = EGET_TAB_CHANGED;
 		Parent->OnEvent(event);		
 	}

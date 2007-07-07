@@ -99,9 +99,13 @@ bool CGUIMenu::OnEvent(SEvent event)
 		switch(event.GUIEvent.EventType)
 		{
 		case gui::EGET_ELEMENT_FOCUS_LOST:
-			if (event.GUIEvent.Caller == (IGUIElement*)this)
+			if (event.GUIEvent.Caller == this)
 				closeAllSubMenus();
-            return true;
+			break;
+		case gui::EGET_ELEMENT_FOCUSED:
+			if (event.GUIEvent.Caller == this && Parent)
+				Parent->bringToFront(this);
+
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:

@@ -21,7 +21,7 @@ namespace gui
 CGUIContextMenu::CGUIContextMenu(IGUIEnvironment* environment,
 				 IGUIElement* parent, s32 id,
 				 core::rect<s32> rectangle, bool getFocus)
-: IGUIContextMenu(environment, parent, id, rectangle), HighLighted(-1), ChangeTime(0)
+: IGUIContextMenu(environment, parent, id, rectangle), HighLighted(-1), ChangeTime(0), EventParent(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIContextMenu");
@@ -210,11 +210,13 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 	case EET_GUI_EVENT:
 		switch(event.GUIEvent.EventType)
 		{
-		case gui::EGET_ELEMENT_FOCUS_LOST:
-			if (event.GUIEvent.Caller == (IGUIElement*)this)
+		case EGET_ELEMENT_FOCUS_LOST:
+			if (event.GUIEvent.Caller == this)
 			{
+				// set event parent of submenus
+				setEventParent(Parent);
 				remove();
-				return true;
+				return false;
 			}
 			break;
 		}
@@ -286,7 +288,7 @@ s32 CGUIContextMenu::sendClick(core::position2d<s32> p)
 	}
 
 	// check click on myself
-	if (AbsoluteClippingRect.isPointInside(p) &&
+	if (isPointInside(p) &&
 		HighLighted >= 0 && HighLighted <(s32)Items.size())
 	{
 		if (!Items[HighLighted].Enabled ||
@@ -297,8 +299,13 @@ s32 CGUIContextMenu::sendClick(core::position2d<s32> p)
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
+		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = EGET_MENU_ITEM_SELECTED;
-		Parent->OnEvent(event);
+		if (Parent)
+			Parent->OnEvent(event);
+		else
+		if (EventParent)
+			EventParent->OnEvent(event);
 
 		return 1;
 	}
@@ -385,8 +392,6 @@ void CGUIContextMenu::draw()
 	IGUIFont* font = skin->getFont(EGDF_MENU);
 	IGUISpriteBank* sprites = skin->getSpriteBank();
 
-	video::IVideoDriver* driver = Environment->getVideoDriver();
-
 	core::rect<s32> rect = AbsoluteRect;
 	core::rect<s32>* clip = 0;
 
@@ -408,11 +413,11 @@ void CGUIContextMenu::draw()
 			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + 1;
 			rect.UpperLeftCorner.X += 5;
 			rect.LowerRightCorner.X -= 5;
-			driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), rect, clip);
+			skin->draw2DRectangle(this, skin->getColor(EGDC_3D_SHADOW), rect, clip);
 
 			rect.LowerRightCorner.Y += 1;
 			rect.UpperLeftCorner.Y += 1;
-			driver->draw2DRectangle(skin->getColor(EGDC_3D_HIGH_LIGHT), rect, clip);
+			skin->draw2DRectangle(this, skin->getColor(EGDC_3D_HIGH_LIGHT), rect, clip);
 
 			y += 10;
 		}
@@ -429,7 +434,7 @@ void CGUIContextMenu::draw()
 				r.UpperLeftCorner.Y = rect.UpperLeftCorner.Y;
 				r.LowerRightCorner.X -= 5;
 				r.UpperLeftCorner.X += 5;
-				driver->draw2DRectangle(skin->getColor(EGDC_HIGH_LIGHT), r, clip);
+				skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), r, clip);
 			}
 
 			// draw text
@@ -661,6 +666,18 @@ void CGUIContextMenu::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 
 	recalculateSize();
 
+}
+
+// because sometimes the element has no parent at click time
+void CGUIContextMenu::setEventParent(IGUIElement *parent)
+{
+	EventParent = parent;
+
+	for (u32 i=0; i<(s32)Items.size(); ++i)
+		if (Items[i].SubMenu)
+		{
+			Items[i].SubMenu->setEventParent(parent);
+		}
 }
 
 

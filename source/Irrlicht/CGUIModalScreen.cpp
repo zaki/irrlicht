@@ -22,6 +22,9 @@ CGUIModalScreen::CGUIModalScreen(IGUIEnvironment* environment, IGUIElement* pare
 	setDebugName("CGUIModalScreen");
 	#endif
 	setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+	
+	// this element is a tab group
+	setTabGroup(true);
 }
 
 
@@ -36,6 +39,24 @@ bool CGUIModalScreen::OnEvent(SEvent event)
 {
     switch(event.EventType)
 	{
+	case EET_GUI_EVENT:
+		switch(event.GUIEvent.EventType)
+		{
+		case EGET_ELEMENT_FOCUSED:
+			if (event.GUIEvent.Caller != this && !isMyChild(event.GUIEvent.Caller))
+				Environment->setFocus(this);
+			return false;
+		case EGET_ELEMENT_FOCUS_LOST:
+			if (!(isMyChild(event.GUIEvent.Element) || event.GUIEvent.Element == this))
+			{
+				MouseDownTime = os::Timer::getTime();
+				return true;
+			}
+			else
+				return IGUIElement::OnEvent(event);
+			
+			break;
+		}
 	case EET_MOUSE_INPUT_EVENT:
 		switch(event.MouseInput.Event)
 		{
@@ -44,22 +65,25 @@ bool CGUIModalScreen::OnEvent(SEvent event)
 		}
 	}
 	
-	if (Parent)
-		Parent->OnEvent(event);
+	IGUIElement::OnEvent(event);
 
-	return true;	
+	return true; // absorb everything
 }
 
 
 //! draws the element and its children
 void CGUIModalScreen::draw()
 {
+	IGUISkin *skin = Environment->getSkin();
+
+	if (!skin)
+		return;
+
 	u32 now = os::Timer::getTime();
 	if (now - MouseDownTime < 300 && (now / 70)%2)
 	{
 		core::list<IGUIElement*>::Iterator it = Children.begin();
 		core::rect<s32> r;
-		video::IVideoDriver* driver = Environment->getVideoDriver();
 		video::SColor c = Environment->getSkin()->getColor(gui::EGDC_3D_HIGH_LIGHT);
 
 		for (; it != Children.end(); ++it)
@@ -70,7 +94,7 @@ void CGUIModalScreen::draw()
 			r.UpperLeftCorner.X -= 1;
 			r.UpperLeftCorner.Y -= 1;
 
-			driver->draw2DRectangle(c, r, &AbsoluteClippingRect);
+			skin->draw2DRectangle(this, c, r, &AbsoluteClippingRect);
 		}
 	}
 
@@ -86,6 +110,13 @@ void CGUIModalScreen::removeChild(IGUIElement* child)
 
 	if (Children.empty())
 		remove();
+}
+
+//! adds a child
+void CGUIModalScreen::addChild(IGUIElement* child)
+{
+	IGUIElement::addChild(child);
+	Environment->setFocus(child);
 }
 
 
