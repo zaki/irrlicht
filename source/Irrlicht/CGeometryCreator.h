@@ -32,21 +32,16 @@ public:
 		const core::dimension2d<f32>& textureRepeatCount);
 
 	static IAnimatedMesh* createTerrainMesh(video::IImage* texture,
-		video::IImage* heightmap, const core::dimension2d<f32>& stretchSize, f32 maxHeight,
-		video::IVideoDriver* driver,
+		video::IImage* heightmap, const core::dimension2d<f32>& stretchSize,
+		f32 maxHeight, video::IVideoDriver* driver,
 		const core::dimension2d<s32> defaultVertexBlockSize,
 		bool debugBorders=false);
 
-	static IAnimatedMesh* createArrowMesh (	const u32 tesselationCylinder,
-											const u32 tesselationCone,
-											const f32 height,
-											const f32 cylinderHeight,
-											const f32 width0,
-											const f32 width1,
-											const video::SColor vtxColor0,
-											const video::SColor vtxColor1
-										);
-
+	static IAnimatedMesh* createArrowMesh(const u32 tesselationCylinder,
+			const u32 tesselationCone, const f32 height,
+			const f32 cylinderHeight, const f32 width0,
+			const f32 width1, const video::SColor vtxColor0,
+			const video::SColor vtxColor1);
 
 };
 

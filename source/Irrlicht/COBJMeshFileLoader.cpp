@@ -174,8 +174,6 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 		case 'f':               // face
 		{
-			const u32 FACE_BUFFER_LENGTH = 1024;
-			c8* wordBuffer = new c8[FACE_BUFFER_LENGTH];
 			c8 vertexWord[WORD_BUFFER_LENGTH]; // for retrieving vertex data
 			video::S3DVertex v;
 			u32 currentVertexCount = pCurrMtl->pMeshbuffer->Vertices.size();
@@ -186,9 +184,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				v.Color = pCurrMtl->pMeshbuffer->Material.DiffuseColor;
 
 			// get all vertices data in this face (current line of obj file)
-			u32 length = copyLine(&wordBuffer, pBufPtr, FACE_BUFFER_LENGTH, pBufEnd);
-			const c8* pLinePtr = wordBuffer;
-			const c8* const pEndPtr = wordBuffer+length;
+			const core::stringc wordBuffer = copyLine(pBufPtr, pBufEnd);
+			const c8* pLinePtr = wordBuffer.c_str();
+			const c8* const pEndPtr = pLinePtr+wordBuffer.size();
 
 			// read in all vertices
 			pLinePtr = goNextWord(pLinePtr, pEndPtr);
@@ -234,7 +232,6 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				pCurrMtl->pMeshbuffer->Indices.push_back( ( facePointCount - 2 - i ) + currentVertexCount );
 				pCurrMtl->pMeshbuffer->Indices.push_back( ( facePointCount - 3 - i ) + currentVertexCount );
 			}
-			delete wordBuffer;
 		}
 		break;
 
@@ -699,33 +696,19 @@ u32 COBJMeshFileLoader::copyWord(c8* outBuf, const c8* const inBuf, u32 outBufLe
 }
 
 
-u32 COBJMeshFileLoader::copyLine(c8** outBuf, const c8* inBuf, u32 outBufLength, const c8* pBufEnd)
+core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* pBufEnd)
 {
-	if (!outBufLength)
-		return 0;
 	if (!inBuf)
-	{
-		*outBuf = 0;
-		return 0;
-	}
+		return core::stringc();
 
-	u32 i = 0;
-	while(inBuf[i])
+	const c8* ptr = inBuf;
+	while (ptr<pBufEnd)
 	{
-		if (inBuf[i]=='\n' || inBuf[i]=='\r' || &(inBuf[i]) == pBufEnd)
+		if (*ptr=='\n' || *ptr=='\r')
 			break;
-		++i;
+		++ptr;
 	}
-
-	if (i>outBufLength-1)
-	{
-		delete [] *outBuf;
-		*outBuf = new c8[i+1];
-	}
-	memcpy(outBuf, inBuf, i);
-	outBuf[i] = 0;
-
-	return i;
+	return core::stringc(inBuf, ptr-inBuf+1);
 }
 
 

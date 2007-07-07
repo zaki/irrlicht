@@ -303,9 +303,12 @@ void CAnimatedMeshSceneNode::render()
 			// show tag for quake3 models
 			if (Mesh->getMeshType() == EAMT_MD3 )
 			{
-				IAnimatedMesh * arrow = SceneManager->addArrowMesh ( "__tag_show",
-					4, 8, 5.f, 4.f, 0.5f, 1.f, 0xFF0000FF, 0xFF000088
-				);
+				IAnimatedMesh * arrow =
+					SceneManager->addArrowMesh (
+							"__tag_show",
+							0xFF0000FF, 0xFF000088,
+							4, 8, 5.f, 4.f, 0.5f,
+							1.f);
 				if ( 0 == arrow )
 				{
 					arrow = SceneManager->getMesh ( "__tag_show" );
@@ -341,9 +344,10 @@ void CAnimatedMeshSceneNode::render()
 		// show normals
 		if ( DebugDataVisible & scene::EDS_NORMALS )
 		{
-			IAnimatedMesh * arrow = SceneManager->addArrowMesh ( "__debugnormal",
-							4, 8, 1.f, 0.6f, 0.05f, 0.3f, 0xFFECEC00, 0xFF999900
-							);
+			IAnimatedMesh * arrow = SceneManager->addArrowMesh (
+					"__debugnormal", 0xFFECEC00,
+					0xFF999900, 4, 8, 1.f, 0.6f, 0.05f,
+					0.3f);
 			if ( 0 == arrow )
 			{
 				arrow = SceneManager->getMesh ( "__debugnormal" );
