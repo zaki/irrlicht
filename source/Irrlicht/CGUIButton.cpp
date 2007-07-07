@@ -305,7 +305,7 @@ void CGUIButton::setImage(video::ITexture* image)
 
 	Image = image;
 	if (image)
-		ImageRect = core::rect<s32>(core::position2d<s32>(0,0), image->getSize());
+		ImageRect = core::rect<s32>(core::position2d<s32>(0,0), image->getOriginalSize());
 
 	if (Image)
 		Image->grab();
@@ -338,7 +338,7 @@ void CGUIButton::setPressedImage(video::ITexture* image)
 
 	PressedImage = image;
 	if (image)
-		PressedImageRect = core::rect<s32>(core::position2d<s32>(0,0), image->getSize());
+		PressedImageRect = core::rect<s32>(core::position2d<s32>(0,0), image->getOriginalSize());
 
 	if (PressedImage)
 		PressedImage->grab();
