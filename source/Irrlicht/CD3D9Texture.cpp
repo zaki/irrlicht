@@ -328,17 +328,17 @@ ECOLOR_FORMAT CD3D9Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
 	case D3DFMT_A1R5G5B5:
 		Pitch = TextureSize.Width * 2;
 		return ECF_A1R5G5B5;
-		break;
 	case D3DFMT_A8B8G8R8:
 	case D3DFMT_A8R8G8B8:
 	case D3DFMT_X8R8G8B8:
 		Pitch = TextureSize.Width * 4;
 		return ECF_A8R8G8B8;
-		break;
 	case D3DFMT_R5G6B5:
 		Pitch = TextureSize.Width * 2;
 		return ECF_R5G6B5;
-		break;
+	case D3DFMT_R8G8B8:
+		Pitch = TextureSize.Width * 3;
+		return ECF_R8G8B8;
 	default:
 		return (ECOLOR_FORMAT)0;
 	};

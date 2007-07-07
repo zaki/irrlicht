@@ -421,8 +421,7 @@ void COpenGLTexture::regenerateMipMapLevels()
 		return;
 	}
 
-	// This code is wrong as it does not take into account the image scaling
-	// Therefore it is currently disabled
+	// Manually create mipmaps
 	u32 width=ImageSize.Width>>1;
 	u32 height=ImageSize.Height>>1;
 	u32 i=1;
