@@ -1738,7 +1738,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	// The first parts are not correctly working, yet.
 #if 0
 #ifdef GL_EXT_stencil_two_side
-	if (FeatureAvailable[IRR_EXT_stencil_two_side] && FeatureAvailable[IRR_EXT_stencil_wrap])
+	if (FeatureAvailable[IRR_EXT_stencil_two_side])
 	{
 		glEnable(GL_STENCIL_TEST_TWO_SIDE_EXT);
 #ifdef GL_NV_depth_clamp
@@ -1751,10 +1751,18 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZPASS Method
 
 			extGlActiveStencilFace(GL_BACK);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT);
+			if (FeatureAvailable[IRR_EXT_stencil_wrap])
+				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT);
+			else
+				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+			glStencilMask(~0);
+			glStencilFunc(GL_ALWAYS, 0, ~0);
 
 			extGlActiveStencilFace(GL_FRONT);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT);
+			if (FeatureAvailable[IRR_EXT_stencil_wrap])
+				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT);
+			else
+				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
@@ -1765,12 +1773,18 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZFAIL Method
 
 			extGlActiveStencilFace(GL_BACK);
-			glStencilOp(GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP);
+			if (FeatureAvailable[IRR_EXT_stencil_wrap])
+				glStencilOp(GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP);
+			else
+				glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
 			extGlActiveStencilFace(GL_FRONT);
-			glStencilOp(GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP);
+			if (FeatureAvailable[IRR_EXT_stencil_wrap])
+				glStencilOp(GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP);
+			else
+				glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
@@ -1789,6 +1803,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, GL_DECR);
 			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR);
 			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
+			glStencilMask(~0);
 
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
@@ -2094,39 +2109,35 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	setTexture(0, 0);
 	ResetRenderStates=true;
-    if (RenderTargetTexture!=0)
-    {
-        if (RenderTargetTexture->isFrameBufferObject())
-        {
-            RenderTargetTexture->unbindFrameBufferObject();
-        }
-        else
-        {
-            glBindTexture(GL_TEXTURE_2D, RenderTargetTexture->getOpenGLTextureName());
+	if (RenderTargetTexture!=0)
+	{
+		if (RenderTargetTexture->isFrameBufferObject())
+			RenderTargetTexture->unbindFrameBufferObject();
+		else
+		{
+			glBindTexture(GL_TEXTURE_2D, RenderTargetTexture->getOpenGLTextureName());
 
-            // Copy Our ViewPort To The Texture
-            glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-                RenderTargetTexture->getSize().Width, RenderTargetTexture->getSize().Height);
-        }
-    }
+			// Copy Our ViewPort To The Texture
+			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+			RenderTargetTexture->getSize().Width, RenderTargetTexture->getSize().Height);
+		}
+	}
 
-    if (texture)
-    {
+	if (texture)
+	{
 		// we want to set a new target. so do this.
 		glViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
-		RenderTargetTexture = (COpenGLTexture*)texture;
+		RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
 		CurrentRendertargetSize = texture->getSize();
 
-        if (RenderTargetTexture->isFrameBufferObject())
-        {
-            RenderTargetTexture->bindFrameBufferObject();
-        }
+		if (RenderTargetTexture->isFrameBufferObject())
+			RenderTargetTexture->bindFrameBufferObject();
 	}
 	else
 	{
-        glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
-        RenderTargetTexture = 0;
-        CurrentRendertargetSize = core::dimension2d<s32>(0,0);
+		glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
+		RenderTargetTexture = 0;
+		CurrentRendertargetSize = core::dimension2d<s32>(0,0);
 	}
 
 	GLbitfield mask = 0;

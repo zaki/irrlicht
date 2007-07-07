@@ -339,7 +339,7 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 		if (texture)
 			return texture;
 
-		texture = loadTextureFromFile(file );
+		texture = loadTextureFromFile(file);
 
 		if (texture)
 		{
@@ -1205,9 +1205,9 @@ bool CNullDriver::writeImageToFile(IImage* image, const char* filename,u32 param
 
 //! Creates a software image from a byte array.
 IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
-										const core::dimension2d<s32>& size, void *data,
-										bool ownForeignMemory,
-										bool deleteMemory)
+					const core::dimension2d<s32>& size,
+					void *data, bool ownForeignMemory,
+					bool deleteMemory)
 {
 	return new CImage(format, size, data, ownForeignMemory, deleteMemory);
 }
