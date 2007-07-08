@@ -221,6 +221,8 @@ namespace gui
 		EGDI_WINDOW_CLOSE,
 		//! minimize window button
 		EGDI_WINDOW_MINIMIZE,
+		//! resize icon for bottom right corner of a window
+		EGDI_WINDOW_RESIZE,
 		//! scroll bar up button
 		EGDI_CURSOR_UP,
 		//! scroll bar down button
@@ -241,6 +243,18 @@ namespace gui
 		EGDI_SMALL_CURSOR_DOWN,
 		//! selection dot in a radio button
 		EGDI_RADIO_BUTTON_CHECKED,
+		//! << icon indicating there is more content to the left
+		EGDI_MORE_LEFT,
+		//! >> icon indicating that there is more content to the right
+		EGDI_MORE_RIGHT,
+		//! icon indicating that there is more content above
+		EGDI_MORE_UP,
+		//! icon indicating that there is more content below
+		EGDI_MORE_DOWN,
+		//! plus icon for trees
+		EGDI_EXPAND,
+		//! minus icon for trees
+		EGDI_COLLAPSE,
 		//! file icon for file selection
 		EGDI_FILE,
 		//! folder icon for file selection
@@ -256,6 +270,7 @@ namespace gui
 		"windowRestore",
 		"windowClose",
 		"windowMinimize",
+		"windowResize", 
 		"cursorUp",
 		"cursorDown",
 		"cursorLeft",
@@ -266,6 +281,12 @@ namespace gui
 		"smallCursorUp",
 		"smallCursorDown",
 		"radioButtonChecked",
+		"moreLeft",
+		"moreRight",
+		"moreUp",
+		"moreDown",
+		"expand",
+		"collapse",
 		"file",
 		"directory",
 		0

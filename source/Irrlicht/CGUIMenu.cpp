@@ -18,7 +18,7 @@ namespace gui
 //! constructor
 CGUIMenu::CGUIMenu(IGUIEnvironment* environment, IGUIElement* parent,
 		 s32 id, core::rect<s32> rectangle)
-		 : CGUIContextMenu(environment, parent, id, rectangle, false)
+		 : CGUIContextMenu(environment, parent, id, rectangle, false, true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIMenu");
@@ -99,7 +99,7 @@ bool CGUIMenu::OnEvent(SEvent event)
 		switch(event.GUIEvent.EventType)
 		{
 		case gui::EGET_ELEMENT_FOCUS_LOST:
-			if (event.GUIEvent.Caller == this)
+			if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element))
 				closeAllSubMenus();
 			break;
 		case gui::EGET_ELEMENT_FOCUSED:

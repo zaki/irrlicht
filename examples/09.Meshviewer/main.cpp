@@ -171,6 +171,7 @@ void createToolBox()
 	env->addStaticText(L"Transparent Control:", core::rect<s32>(10,240,150,260), true, false, t1);
 	IGUIScrollBar* scrollbar = env->addScrollBar(true, core::rect<s32>(10,260,150,275), t1, 104);
 	scrollbar->setMax(255);
+	scrollbar->setPos(255);
 
 	// bring irrlicht engine logo to front, because it
 	// now may be below the newly created toolbox
