@@ -802,7 +802,7 @@ inline f32 CSoftwareDriver2::texelarea ( const s4DVertex *v, int tex ) const
 
 	z = x0*y1 - x1*y0;
 
-	const core::dimension2d<s32> &d = Texmap[tex].Texture->getOriginalSize();
+	const core::dimension2d<s32> &d = Texmap[tex].Texture->getMaxSize();
 	z *= d.Height;
 	z *= d.Width;
 	return z;
@@ -829,7 +829,7 @@ inline f32 CSoftwareDriver2::texelarea2 ( const s4DVertex **v, s32 tex ) const
 			(v[1]->Tex[tex].y - v[0]->Tex[tex].y )
 		;
 
-	const core::dimension2d<s32> &d = Texmap[tex].Texture->getOriginalSize();
+	const core::dimension2d<s32> &d = Texmap[tex].Texture->getMaxSize();
 	z *= d.Height;
 	z *= d.Width;
 	return z;
