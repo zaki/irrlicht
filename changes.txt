@@ -1,5 +1,9 @@
 Changes in version 1.4 (... 2007)
 
+ - Fixed CSoftwareTexture2::getOriginalSize, reported by CaptainPants. Added a
+   new method CSoftwareTexture2::getMaxSize to return the size of the largest
+   mipmap, which is used by texelarea instead of getOriginalSize.
+
  - Changed parameter order of addArrowMesh and added default parameters such
    that it's enough to set the color (or even just the name).
 

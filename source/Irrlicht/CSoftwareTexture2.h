@@ -43,8 +43,14 @@ public:
 	//! Returns original size of the texture.
 	virtual const core::dimension2d<s32>& getOriginalSize()
 	{
+		//return MipMap[0]->getDimension();
+		return OrigSize;
+	}
+
+	//! Returns the size of the largest mipmap.
+	const core::dimension2d<s32>& getMaxSize()
+	{
 		return MipMap[0]->getDimension();
-		//return OrigSize;
 	}
 
 	//! Returns (=size) of the texture.
