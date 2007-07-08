@@ -42,6 +42,13 @@ Changes in version 1.4 (... 2007)
 
 GUI:
 
+ - Added 7 more symbols to the built-in font and skin.
+   EGDI_MORE_LEFT, EGDI_MORE_RIGHT, EGDI_MORE_UP, EGDI_MORE_DOWN: "<<" symbols
+   indicating there is more content in that direction.
+   EGDI_WINDOW_RESIZE: Window symbol for resizing by clicking the bottom right
+   corner of a window.
+   EGDI_EXPAND, EGDI_COLLAPSE: Plus and minus buttons for trees.
+
  - Added IGUISkin::draw2dRectangle, so skins can override the default highlight.
 
  - EGET_ELEMENT_FOCUS_LOST and EGET_ELEMENT_FOCUSED events can now be absorbed 

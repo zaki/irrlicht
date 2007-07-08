@@ -22,7 +22,7 @@ namespace gui
 		//! constructor
 		CGUIContextMenu(IGUIEnvironment* environment,
 			IGUIElement* parent, s32 id, core::rect<s32> rectangle,
-			bool getFocus = true);
+			bool getFocus = true, bool allowFocus = true);
 
 		//! destructor
 		~CGUIContextMenu();
@@ -131,6 +131,7 @@ namespace gui
 		core::position2d<s32> Pos;
 		u32 ChangeTime;
 		IGUIElement* EventParent;
+		bool AllowFocus;
 	};
 
 } // end namespace gui

@@ -20,8 +20,9 @@ namespace gui
 //! constructor
 CGUIContextMenu::CGUIContextMenu(IGUIEnvironment* environment,
 				 IGUIElement* parent, s32 id,
-				 core::rect<s32> rectangle, bool getFocus)
-: IGUIContextMenu(environment, parent, id, rectangle), HighLighted(-1), ChangeTime(0), EventParent(0)
+				 core::rect<s32> rectangle, bool getFocus, bool allowFocus)
+: IGUIContextMenu(environment, parent, id, rectangle), HighLighted(-1), 
+  ChangeTime(0), EventParent(0), AllowFocus(allowFocus)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIContextMenu");
@@ -67,7 +68,7 @@ s32 CGUIContextMenu::addItem(const wchar_t* text, s32 id, bool enabled, bool has
 	if (hasSubMenu)
 	{
 		s.SubMenu = new CGUIContextMenu(Environment, this, id,
-			core::rect<s32>(0,0,100,100), false);
+			core::rect<s32>(0,0,100,100), false, false);
 		s.SubMenu->setVisible(false);
 	}
 
@@ -211,7 +212,7 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 		switch(event.GUIEvent.EventType)
 		{
 		case EGET_ELEMENT_FOCUS_LOST:
-			if (event.GUIEvent.Caller == this)
+			if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element))
 			{
 				// set event parent of submenus
 				setEventParent(Parent);
@@ -219,6 +220,11 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 				return false;
 			}
 			break;
+		case EGET_ELEMENT_FOCUSED:
+			if (event.GUIEvent.Caller == this && !AllowFocus)
+			{
+				return true;
+			}
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:

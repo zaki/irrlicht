@@ -122,8 +122,16 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	Icons[EGDI_SMALL_CURSOR_UP] = 235;
 	Icons[EGDI_SMALL_CURSOR_DOWN] = 236;
 	Icons[EGDI_RADIO_BUTTON_CHECKED] = 237;
-	Icons[EGDI_FILE] = 238;
-	Icons[EGDI_DIRECTORY] = 239;
+	Icons[EGDI_MORE_LEFT] = 238;
+	Icons[EGDI_MORE_RIGHT] = 239;
+	Icons[EGDI_MORE_UP] = 240;
+	Icons[EGDI_MORE_DOWN] = 241;
+	Icons[EGDI_WINDOW_RESIZE] = 242;
+	Icons[EGDI_EXPAND] = 243;
+	Icons[EGDI_COLLAPSE] = 244;
+
+	Icons[EGDI_FILE] = 245;
+	Icons[EGDI_DIRECTORY] = 246;
 
 	for (u32 i=0; i<EGDF_COUNT; ++i)
 		Fonts[i] = 0;
