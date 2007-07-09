@@ -274,6 +274,15 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 		CurrentTexture[i]=0;
 	// load extensions
 	initExtensions(stencilBuffer);
+	if (queryFeature(EVDF_ARB_GLSL))
+	{
+		char buf[32];
+		const u32 maj = ShaderLanguageVersion/100;
+		snprintf(buf, 32, "%u.%u", maj, ShaderLanguageVersion-maj*100);
+		os::Printer::log("GLSL version", buf, ELL_INFORMATION);
+	}
+	else
+		os::Printer::log("GLSL not available.", ELL_INFORMATION);
 
 	glViewport(0, 0, screenSize.Width, screenSize.Height); // Reset The Current Viewport
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
@@ -1459,7 +1468,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 						mode=GL_REPEAT;
 					break;
 			}
-	
+
 			if (MultiTextureExtension)
 				extGlActiveTexture(GL_TEXTURE0_ARB + u);
 			else if (u>0)
@@ -1468,6 +1477,9 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
 		}
 	}
+	// be sure to leave in texture stage 0
+	if (MultiTextureExtension)
+		extGlActiveTexture(GL_TEXTURE0_ARB);
 }
 
 
