@@ -655,7 +655,7 @@ class COpenGLExtensionHandler
 	//! queries the features of the driver, returns true if feature is available
 	bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
-	// show all features with availablity
+	//! show all features with availablity
 	void dump() const;
 
 	// Some variables for properties
@@ -669,11 +669,18 @@ class COpenGLExtensionHandler
 	bool SeparateSpecularColorExtension;
 
 	// Some non-boolean properties
+	//! Maxmimum texture layers supported by the fixed pipeline
 	GLint MaxTextureUnits;
+	//! Maximum hardware lights supported
 	GLint MaxLights;
+	//! Optimal number of indices per meshbuffer
 	GLint MaxIndices;
+	//! Maximal Anisotropy
 	f32 MaxAnisotropy;
+	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
 	u32 Version;
+	//! GLSL version as Integer: 100*Major+Minor
+	u32 ShaderLanguageVersion;
 
 	// public access to the (loaded) extensions.
 	// general functions

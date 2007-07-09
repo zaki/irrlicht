@@ -352,6 +352,19 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &MaxTextureUnits);
 	glGetIntegerv(GL_MAX_LIGHTS, &MaxLights);
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &MaxAnisotropy);
+	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &MaxIndices);
+	if (FeatureAvailable[IRR_ARB_shading_language_100])
+	{
+		glGetError(); // clean error buffer
+		const GLubyte* shaderVersion = glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
+		if (glGetError() == GL_INVALID_ENUM)
+			ShaderLanguageVersion = 100;
+		else
+		{
+			const f32 ver = core::fast_atof((c8*)shaderVersion);
+			ShaderLanguageVersion = core::floor32(ver)*100+core::ceil32((ver-floor(ver))*10.0);
+		}
+	}
 
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (!pGlActiveTextureARB || !pGlClientActiveTextureARB)
@@ -367,7 +380,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		os::Printer::log("Warning: OpenGL device only has one texture unit. Disabling multitexturing.", ELL_WARNING);
 	}
 	MaxTextureUnits = core::min_((u32)MaxTextureUnits,MATERIAL_MAX_TEXTURES);
-	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &MaxIndices);
 
 }
 
