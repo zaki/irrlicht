@@ -19,7 +19,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		TextureCompressionExtension(false),
 		PackedDepthStencilExtension(false),
 		MaxTextureUnits(1), MaxLights(1), MaxIndices(1),
-		MaxAnisotropy(1.0f), Version(0)
+		MaxAnisotropy(1.0f), Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
 	pGlGenProgramsARB(0), pGlBindProgramARB(0), pGlProgramStringARB(0),
@@ -353,7 +353,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	glGetIntegerv(GL_MAX_LIGHTS, &MaxLights);
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &MaxAnisotropy);
 	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &MaxIndices);
-	if (FeatureAvailable[IRR_ARB_shading_language_100])
+#if defined(GL_ARB_shading_language_100) || defined (GL_VERSION_2_0)
+	if (FeatureAvailable[IRR_ARB_shading_language_100] || Version>=200)
 	{
 		glGetError(); // clean error buffer
 		const GLubyte* shaderVersion = glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
@@ -365,6 +366,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 			ShaderLanguageVersion = core::floor32(ver)*100+core::ceil32((ver-floor(ver))*10.0);
 		}
 	}
+#endif
 
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (!pGlActiveTextureARB || !pGlClientActiveTextureARB)
