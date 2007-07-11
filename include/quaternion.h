@@ -6,6 +6,7 @@
 #define __IRR_QUATERNION_H_INCLUDED__
 
 #include "irrTypes.h"
+#include "irrMath.h"
 #include "matrix4.h"
 #include "vector3d.h"
 
@@ -503,7 +504,7 @@ inline void quaternion::toEuler(vector3df& euler) const
 	euler.X = (f32) (atan2(2.0 * (Y*Z +X*W),(-sqx - sqy + sqz + sqw)));
 
 	// attitude = rotation about y-axis
-	euler.Y = (f32) (asin(-2.0 * (X*Z - Y*W)));
+	euler.Y = (f32) (asin( clamp(-2.0 * (X*Z - Y*W), -1.0, 1.0) ));
 }
 
 inline vector3df quaternion::operator* (const vector3df& v) const
