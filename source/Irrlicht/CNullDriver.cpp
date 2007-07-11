@@ -1312,10 +1312,10 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 
 	delete [] materialNames;
 
-	attr->addColorf("Ambient", material.AmbientColor);
-	attr->addColorf("Diffuse", material.DiffuseColor);
-	attr->addColorf("Emissive", material.EmissiveColor);
-	attr->addColorf("Specular", material.SpecularColor);
+	attr->addColor("Ambient", material.AmbientColor);
+	attr->addColor("Diffuse", material.DiffuseColor);
+	attr->addColor("Emissive", material.EmissiveColor);
+	attr->addColor("Specular", material.SpecularColor);
 
 	attr->addFloat("Shininess", material.Shininess);
 	attr->addFloat("Param1", material.MaterialTypeParam);
