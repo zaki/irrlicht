@@ -680,7 +680,7 @@ public:
 			if (child->Parent)
 				child = child->Parent;
 
-		} while (child->Parent && child != this)
+		} while (child->Parent && child != this);
 
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return child == this;
