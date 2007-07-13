@@ -159,7 +159,8 @@ void CLightSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	LightData.AmbientColor =	in->getAttributeAsColorf("AmbientColor");
 	LightData.DiffuseColor =	in->getAttributeAsColorf("DiffuseColor");
 	LightData.SpecularColor =	in->getAttributeAsColorf("SpecularColor");
-	LightData.Attenuation =		in->getAttributeAsVector3d("Attenuation");
+	if (in->existsAttribute("Attenuation")) // might not exist in older files
+		LightData.Attenuation =		in->getAttributeAsVector3d("Attenuation");
 	LightData.Radius =		in->getAttributeAsFloat("Radius");
 	LightData.CastShadows =		in->getAttributeAsBool("CastShadows");
 	LightData.Type =		(video::E_LIGHT_TYPE)in->getAttributeAsEnumeration("LightType", video::LightTypeNames);

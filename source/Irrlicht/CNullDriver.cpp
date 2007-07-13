@@ -1323,7 +1323,7 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 
 	core::stringc prefix="Texture";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addTexture((prefix+i).c_str(), material.Textures[i]);
+		attr->addTexture((prefix+(i+1)).c_str(), material.Textures[i]);
 
 	attr->addBool("Wireframe", material.Wireframe);
 	attr->addBool("GouraudShading", material.GouraudShading);
@@ -1336,16 +1336,16 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 
 	prefix = "BilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addBool((prefix+i).c_str(), material.BilinearFilter[i]);
+		attr->addBool((prefix+(i+1)).c_str(), material.BilinearFilter[i]);
 	prefix = "TrilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addBool((prefix+i).c_str(), material.TrilinearFilter[i]);
+		attr->addBool((prefix+(i+1)).c_str(), material.TrilinearFilter[i]);
 	prefix = "AnisotropicFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addBool((prefix+i).c_str(), material.AnisotropicFilter[i]);
+		attr->addBool((prefix+(i+1)).c_str(), material.AnisotropicFilter[i]);
 	prefix="TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addEnum((prefix+i).c_str(), material.TextureWrap[i], aTextureClampNames);
+		attr->addEnum((prefix+(i+1)).c_str(), material.TextureWrap[i], aTextureClampNames);
 
 	return attr;
 }
@@ -1378,7 +1378,7 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 
 	core::stringc prefix="Texture";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.Textures[i] = attr->getAttributeAsTexture((prefix+i).c_str());
+		outMaterial.Textures[i] = attr->getAttributeAsTexture((prefix+(i+1)).c_str());
 
 	outMaterial.Wireframe = attr->getAttributeAsBool("Wireframe");
 	outMaterial.GouraudShading = attr->getAttributeAsBool("GouraudShading");
@@ -1389,17 +1389,29 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable");
 	outMaterial.NormalizeNormals = attr->getAttributeAsBool("NormalizeNormals");
 	prefix = "BilinearFilter";
-	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.BilinearFilter[i] = attr->getAttributeAsBool((prefix+i).c_str());
+	if (attr->existsAttribute(prefix.c_str())) // legacy
+		outMaterial.setFlag(EMF_BILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
+	else
+		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			outMaterial.BilinearFilter[i] = attr->getAttributeAsBool((prefix+(i+1)).c_str());
+
 	prefix = "TrilinearFilter";
-	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.TrilinearFilter[i] = attr->getAttributeAsBool((prefix+i).c_str());
+	if (attr->existsAttribute(prefix.c_str())) // legacy
+		outMaterial.setFlag(EMF_TRILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
+	else
+		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			outMaterial.TrilinearFilter[i] = attr->getAttributeAsBool((prefix+(i+1)).c_str());
+
 	prefix = "AnisotropicFilter";
-	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.AnisotropicFilter[i] = attr->getAttributeAsBool((prefix+i).c_str());
+	if (attr->existsAttribute(prefix.c_str())) // legacy
+		outMaterial.setFlag(EMF_ANISOTROPIC_FILTER, attr->getAttributeAsBool(prefix.c_str()));
+	else
+		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+			outMaterial.AnisotropicFilter[i] = attr->getAttributeAsBool((prefix+(i+1)).c_str());
+
 	prefix = "TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.TextureWrap[i] = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+i).c_str(), aTextureClampNames);
+		outMaterial.TextureWrap[i] = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+(i+1)).c_str(), aTextureClampNames);
 }
 
 
