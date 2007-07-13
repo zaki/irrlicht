@@ -2045,9 +2045,9 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 
 
 //! Creates a render target texture.
-ITexture* CD3D9Driver::createRenderTargetTexture(const core::dimension2d<s32>& size)
+ITexture* CD3D9Driver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
-	return new CD3D9Texture(this, size, 0);
+	return new CD3D9Texture(this, size, name);
 }
 
 

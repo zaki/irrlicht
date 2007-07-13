@@ -46,6 +46,8 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			// thanks to Murphy, the following line removed some
@@ -54,7 +56,6 @@ public:
 
 			glDisable(GL_ALPHA_TEST);
 		}
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 };
 
@@ -72,7 +73,6 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
-
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 //		if (material.MaterialType != lastMaterial.MaterialType ||
@@ -165,6 +165,7 @@ public:
 		Driver->setTexture(1, material.Textures[1]);
 		Driver->setTexture(0, material.Textures[0]);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))
@@ -195,6 +196,8 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+
 		if ((material.MaterialType != lastMaterial.MaterialType) || resetAllRenderstates)
 		{
 			glDisable(GL_ALPHA_TEST);
@@ -203,8 +206,6 @@ public:
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glEnable(GL_BLEND);
 		}
-
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
 	virtual void OnUnsetMaterial()
@@ -233,6 +234,7 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
@@ -250,7 +252,6 @@ public:
 			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
 		}
-		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 		glDepthMask(GL_FALSE);
 	}
 
@@ -289,7 +290,6 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
-
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates
@@ -343,7 +343,6 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
-
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -383,7 +382,6 @@ public:
 		Driver->disableTextures(2);
 		Driver->setTexture(1, material.Textures[1]);
 		Driver->setTexture(0, material.Textures[0]);
-
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -479,7 +477,6 @@ public:
 		Driver->disableTextures(2);
 		Driver->setTexture(1, material.Textures[1]);
 		Driver->setTexture(0, material.Textures[0]);
-
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -524,7 +521,6 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
-
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -573,7 +569,6 @@ public:
 		Driver->disableTextures(2);
 		Driver->setTexture(1, material.Textures[1]);
 		Driver->setTexture(0, material.Textures[0]);
-
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -644,7 +639,6 @@ public:
 		Driver->disableTextures(2);
 		Driver->setTexture(1, material.Textures[1]);
 		Driver->setTexture(0, material.Textures[0]);
-
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)

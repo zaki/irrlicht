@@ -196,7 +196,7 @@ namespace video
 		\return Returns a pointer to the created texture or 0 if the texture could not
 		be created. If you no longer need the image, you should call ITexture::drop().
 		See IUnknown::drop() for more information. */
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size) = 0;
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name = 0) = 0;
 
 		//! Removes a texture from the texture cache and deletes it, freeing lot of memory.
 		/** Please note that after calling this, the pointer to the ITexture
@@ -788,6 +788,9 @@ namespace video
 
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot() = 0;
+
+		//! looks if the image is already loaded
+		virtual video::ITexture* findTexture(const c8* filename) = 0;
 	};
 
 } // end namespace video

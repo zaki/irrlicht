@@ -96,20 +96,20 @@ namespace video
 		//! destructor
 		virtual ~COpenGLDriver();
 
-		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene( s32 windowId, core::rect<s32>* sourceRect=0 );
-
 		//! clears the zbuffer
 		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+
+		//! presents the rendered scene on the screen, returns false if failed
+		virtual bool endScene( s32 windowId, core::rect<s32>* sourceRect=0 );
 
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
 
 		//! draws a vertex primitive list
-		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 
 		//! queries the features of the driver, returns true if feature is available
-		bool queryFeature(E_VIDEO_DRIVER_FEATURE feature)
+		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature)
 		{
 			return COpenGLExtensionHandler::queryFeature(feature);
 		}
@@ -222,7 +222,7 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state);
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
-		void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
+		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 			bool resetAllRenderstates);
 
 		//! Sets a vertex shader constant.
@@ -247,17 +247,17 @@ namespace video
 
 		//! Adds a new material renderer to the VideoDriver, using extGLGetObjectParameterivARB(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status) pixel and/or
 		//! vertex shaders to render geometry.
-		s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
+		virtual s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 			IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);
 
 		//! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
-		s32 addHighLevelShaderMaterial(const c8* vertexShaderProgram, const c8* vertexShaderEntryPointName,
+		virtual s32 addHighLevelShaderMaterial(const c8* vertexShaderProgram, const c8* vertexShaderEntryPointName,
 			E_VERTEX_SHADER_TYPE vsCompileTarget, const c8* pixelShaderProgram, const c8* pixelShaderEntryPointName,
 			E_PIXEL_SHADER_TYPE psCompileTarget, IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial,
 			s32 userData);
 
 		//! Returns pointer to the IGPUProgrammingServices interface.
-		IGPUProgrammingServices* getGPUProgrammingServices();
+		virtual IGPUProgrammingServices* getGPUProgrammingServices();
 
 		//! Returns a pointer to the IVideoDriver interface. (Implementation for
 		//! IMaterialRendererServices)
@@ -268,9 +268,9 @@ namespace video
 		//! call.
 		virtual u32 getMaximalPrimitiveCount();
 
-		ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size);
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
 
-		bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
+		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color);
 
 		//! Clears the ZBuffer.
@@ -301,7 +301,7 @@ namespace video
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
 
 		// returns the current size of the screen or rendertarget
-		core::dimension2d<s32> getCurrentRenderTargetSize();
+		virtual core::dimension2d<s32> getCurrentRenderTargetSize();
 
 		void createMaterialRenderers();
 

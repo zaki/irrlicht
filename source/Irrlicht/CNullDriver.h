@@ -248,7 +248,7 @@ namespace video
 		virtual void removeAllTextures();
 
 		//! Creates a render target texture.
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size);
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
 		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color);
@@ -398,13 +398,13 @@ namespace video
 		//! Fills an SMaterial structure from attributes.
 		virtual void fillMaterialStructureFromAttributes(video::SMaterial& outMaterial, io::IAttributes* attributes);
 
+		//! looks if the image is already loaded
+		virtual video::ITexture* findTexture(const c8* filename);
+
 	protected:
 
 		//! deletes all textures
 		void deleteAllTextures();
-
-		//! looks if the image is already loaded
-		video::ITexture* findTexture(const c8* filename);
 
 		//! opens the file and loads it into the surface
 		video::ITexture* loadTextureFromFile(io::IReadFile* file, const c8* hashName = 0);
