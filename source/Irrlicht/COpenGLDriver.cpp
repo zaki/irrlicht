@@ -1305,9 +1305,11 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				(material.BilinearFilter[i] || material.TrilinearFilter[i]) ? GL_LINEAR : GL_NEAREST);
 
+#ifdef GL_EXT_texture_filter_anisotropic
 		if (AnisotropyExtension)
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
 				material.AnisotropicFilter[i] ? MaxAnisotropy : 1.0f );
+#endif
 	}
 
 	// fillmode

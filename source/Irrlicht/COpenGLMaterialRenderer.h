@@ -73,7 +73,7 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.Textures[0]);
-		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
+		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 //		if (material.MaterialType != lastMaterial.MaterialType ||
 //			material.MaterialTypeParam != lastMaterial.MaterialTypeParam ||

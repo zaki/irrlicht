@@ -18,7 +18,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		SeparateStencilExtension(false),
 		TextureCompressionExtension(false),
 		PackedDepthStencilExtension(false),
-		MaxTextureUnits(1), MaxLights(1), MaxIndices(1),
+		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
 		MaxAnisotropy(1.0f), Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
@@ -349,10 +349,19 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif // _IRR_WINDOWS_API_
 
 	// set some properties
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &MaxTextureUnits);
+#if defined(GL_ARB_multitexture) || defined(GL_VERSION_1_3)
+	if (Version>102 || FeatureAvailable[IRR_ARB_multitexture])
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &MaxTextureUnits);
+#endif
 	glGetIntegerv(GL_MAX_LIGHTS, &MaxLights);
-	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &MaxAnisotropy);
-	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &MaxIndices);
+#ifdef GL_EXT_texture_filter_anisotropic
+	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &MaxAnisotropy);
+#endif
+#ifdef GL_VERSION_1_2
+	if (Version>101)
+		glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &MaxIndices);
+#endif
 #if defined(GL_ARB_shading_language_100) || defined (GL_VERSION_2_0)
 	if (FeatureAvailable[IRR_ARB_shading_language_100] || Version>=200)
 	{
