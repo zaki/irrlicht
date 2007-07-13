@@ -17,9 +17,9 @@ namespace gui
 {
 
 //! constructor
-CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent, 
-						 s32 id, core::rect<s32> rectangle, bool clip,
-						 bool drawBack, bool moveOverSelect)
+CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
+						s32 id, core::rect<s32> rectangle, bool clip,
+						bool drawBack, bool moveOverSelect)
 : IGUIListBox(environment, parent, id, rectangle), Selected(-1), ItemHeight(0),
 	TotalItemHeight(0), ItemsIconWidth(0), Font(0), IconBank(0),
 	ScrollBar(0), Selecting(false), DrawBack(drawBack),
@@ -37,7 +37,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 		!clip);
 	ScrollBar->setSubElement(true);
 	ScrollBar->setTabStop(false);
-	ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT); 
+	ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	ScrollBar->drop();
 
 	ScrollBar->setPos(0);
@@ -48,7 +48,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 	// this element can be tabbed to
 	setTabStop(true);
 	setTabOrder(-1);
-	
+
 	updateAbsolutePosition();
 }
 
@@ -199,9 +199,9 @@ bool CGUIListBox::OnEvent(SEvent event)
 	switch(event.EventType)
 	{
 	case EET_KEY_INPUT_EVENT:
-		if (event.KeyInput.PressedDown && 
-			(event.KeyInput.Key == KEY_DOWN || 
-			 event.KeyInput.Key == KEY_UP   || 
+		if (event.KeyInput.PressedDown &&
+			(event.KeyInput.Key == KEY_DOWN ||
+			 event.KeyInput.Key == KEY_UP   ||
 			 event.KeyInput.Key == KEY_HOME ||
 			 event.KeyInput.Key == KEY_END  ||
 			 event.KeyInput.Key == KEY_NEXT ||
@@ -210,10 +210,10 @@ bool CGUIListBox::OnEvent(SEvent event)
 			s32 oldSelected = Selected;
 			switch (event.KeyInput.Key)
 			{
-				case KEY_DOWN: 
-					Selected += 1; 
+				case KEY_DOWN:
+					Selected += 1;
 					break;
-				case KEY_UP: 
+				case KEY_UP:
 					Selected -= 1;
 					break;
 				case KEY_HOME:
@@ -227,10 +227,13 @@ bool CGUIListBox::OnEvent(SEvent event)
 					break;
 				case KEY_PRIOR:
 					Selected -= AbsoluteRect.getHeight() / ItemHeight;
+					break;
+				default:
+					break;
 			}
 			if (Selected >= (s32)Items.size())
 				Selected = Items.size() - 1;
-			else 
+			else
 			if (Selected<0)
 				Selected = 0;
 
@@ -247,10 +250,10 @@ bool CGUIListBox::OnEvent(SEvent event)
 				e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
 				Parent->OnEvent(e);
 			}
-			
+
 			return true;
 		}
-		else 
+		else
 		if (!event.KeyInput.PressedDown && ( event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE ) )
 		{
 			if (Parent)
@@ -278,6 +281,8 @@ bool CGUIListBox::OnEvent(SEvent event)
 				if (event.GUIEvent.Caller == this)
 					Selecting = false;
 			}
+		default:
+		break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -295,20 +300,20 @@ bool CGUIListBox::OnEvent(SEvent event)
 				IGUIElement *el = Environment->getRootGUIElement()->getElementFromPoint(
 					core::position2di(event.MouseInput.X, event.MouseInput.Y));
 
-				if (Environment->hasFocus(this) &&	
+				if (Environment->hasFocus(this) &&
 					ScrollBar == el &&
 					ScrollBar->OnEvent(event))
 				{
 					return true;
 				}
-			
+
 				Selecting = true;
 				Environment->setFocus(this);
 				return true;
 			}
 
 			case EMIE_LMOUSE_LEFT_UP:
-				if (Environment->hasFocus(this) &&	
+				if (Environment->hasFocus(this) &&
 					ScrollBar->isPointInside(p) &&
 					ScrollBar->OnEvent(event))
 					return true;
@@ -320,7 +325,7 @@ bool CGUIListBox::OnEvent(SEvent event)
 					break;
 				}
 
-				Selecting = false;			
+				Selecting = false;
 				selectNew(event.MouseInput.Y);
 				return true;
 
@@ -333,6 +338,8 @@ bool CGUIListBox::OnEvent(SEvent event)
 						return true;
 					}
 				}
+			default:
+			break;
 			}
 		}
 		break;
@@ -353,7 +360,7 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 
 	if (Selected >= (s32)Items.size())
 		Selected = Items.size() - 1;
-	else 
+	else
 	if (Selected<0)
 		Selected = 0;
 
@@ -392,7 +399,7 @@ void CGUIListBox::draw()
 
 	// draw background
 	core::rect<s32> frameRect(AbsoluteRect);
-	
+
 	// draw items
 
 	core::rect<s32> clientClip(AbsoluteRect);
@@ -433,8 +440,8 @@ void CGUIListBox::draw()
 				{
 					core::position2di iconPos = textRect.UpperLeftCorner;
 					iconPos.Y += textRect.getHeight() / 2;
-					iconPos.X += ItemsIconWidth/2; 
-					IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip, 
+					iconPos.X += ItemsIconWidth/2;
+					IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
 						skin->getColor((i==Selected) ? EGDC_ICON_HIGH_LIGHT : EGDC_ICON),
 						(i==Selected) ? selectTime : 0 , (i==Selected) ? os::Timer::getTime() : 0, false, true);
 				}
@@ -466,20 +473,20 @@ s32 CGUIListBox::addItem(const wchar_t* text, s32 icon)
 	Items.push_back(i);
 	recalculateItemHeight();
 
-	if (IconBank && icon > -1 && 
+	if (IconBank && icon > -1 &&
 		IconBank->getSprites().size() > (u32)icon &&
 		IconBank->getSprites()[(u32)icon].Frames.size())
 	{
 		u32 rno = IconBank->getSprites()[(u32)icon].Frames[0].rectNumber;
 		if (IconBank->getPositions().size() > rno)
 		{
-			s32 w = IconBank->getPositions()[rno].getWidth();
+			const s32 w = IconBank->getPositions()[rno].getWidth();
 			if (w > ItemsIconWidth)
 				ItemsIconWidth = w;
 		}
 	}
 
-    return Items.size() - 1;
+	return Items.size() - 1;
 }
 
 
@@ -500,7 +507,7 @@ void CGUIListBox::recalculateScrollPos()
 	{
 		ScrollBar->setPos(ScrollBar->getPos() + selPos);
 	}
-	else 
+	else
 	if (selPos > AbsoluteRect.getHeight() - ItemHeight)
 	{
 		ScrollBar->setPos(ScrollBar->getPos() + selPos - AbsoluteRect.getHeight() + ItemHeight);
@@ -553,7 +560,6 @@ void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 	u32 i;
 	for (i=0; i<Items.size(); ++i)
 		addItem(tmpText[i].c_str(), tmpIcons[i].c_str());
-	
 
 	this->setSelected(in->getAttributeAsInt("Selected"));
 	*/

@@ -4,7 +4,7 @@
 #include "IVideoDriver.h"
 #include "ITexture.h"
 
-namespace irr 
+namespace irr
 {
 namespace gui
 {
@@ -18,7 +18,6 @@ CGUISpriteBank::CGUISpriteBank(IGUIEnvironment* env) :
 		if (Driver)
 			Driver->grab();
 	}
-
 }
 
 CGUISpriteBank::~CGUISpriteBank()
@@ -31,7 +30,6 @@ CGUISpriteBank::~CGUISpriteBank()
 	// drop video driver
 	if (Driver)
 		Driver->drop();
-
 }
 
 core::array< core::rect<s32> >& CGUISpriteBank::getPositions()
@@ -81,8 +79,9 @@ void CGUISpriteBank::setTexture(u32 index, video::ITexture* texture)
 
 
 //! draws a sprite in 2d with scale and color
-void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos, const core::rect<s32>* clip,
-				const video::SColor& color, u32 starttime, u32 currenttime, bool loop, bool center)
+void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
+		const core::rect<s32>* clip, const video::SColor& color,
+		u32 starttime, u32 currenttime, bool loop, bool center)
 {
 	if (index >= Sprites.size() || Sprites[index].Frames.empty())
 		return;
@@ -106,7 +105,7 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos, const
 		return;
 
 	core::rect<s32> &r = Rectangles[rn];
-	
+
 	if (center)
 	{
 		core::position2di p = pos;
@@ -118,7 +117,7 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos, const
 		Driver->draw2DImage(tex, pos, r, clip, color, true);
 	}
 
-	
+
 }
 
 } // namespace gui

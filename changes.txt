@@ -1,5 +1,10 @@
 Changes in version 1.4 (... 2007)
 
+ - Fixed some OpenGL renderstate stuff. setBasicRenderstate returns with
+   active texture layer 0. The material renderer must return from OnUnset
+   with the same active texture layer. The alpha test is disabled and the
+   texture mode should be GL_MODULATE.
+
  - Fixed CSoftwareTexture2::getOriginalSize, reported by CaptainPants. Added a
    new method CSoftwareTexture2::getMaxSize to return the size of the largest
    mipmap, which is used by texelarea instead of getOriginalSize.
