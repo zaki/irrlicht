@@ -1051,7 +1051,6 @@ bool COpenGLDriver::setTexture(s32 stage, video::ITexture* texture)
 	if (stage >= MaxTextureUnits)
 		return false;
 
-// Not working, texture confusion in menu of Meshviewer.
 	if (CurrentTexture[stage]==texture)
 		return true;
 
@@ -1187,6 +1186,7 @@ void COpenGLDriver::setRenderStates3DMode()
 	{
 		// Reset Texture Stages
 		glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE );
+		glDisable(GL_ALPHA_TEST);
 		glDisable( GL_BLEND );
 		glBlendFunc( GL_ONE, GL_ONE_MINUS_SRC_COLOR );
 
