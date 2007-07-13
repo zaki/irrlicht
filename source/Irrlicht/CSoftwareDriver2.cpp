@@ -1818,11 +1818,11 @@ const core::matrix4& CSoftwareDriver2::getTransform(E_TRANSFORMATION_STATE state
 }
 
 //! Creates a render target texture.
-ITexture* CSoftwareDriver2::createRenderTargetTexture(const core::dimension2d<s32>& size)
+ITexture* CSoftwareDriver2::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	CImage* img = new CImage(ECF_SOFTWARE2, size);
 
-	ITexture* tex = new CSoftwareTexture2(img, 0, false);
+	ITexture* tex = new CSoftwareTexture2(img, name, false);
 	img->drop();
 	return tex;	
 }

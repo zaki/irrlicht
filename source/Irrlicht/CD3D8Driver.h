@@ -175,7 +175,7 @@ namespace video
 		virtual IVideoDriver* getVideoDriver();
 
 		//! Creates a render target texture.
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size);
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
