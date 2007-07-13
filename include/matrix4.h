@@ -110,34 +110,34 @@ namespace core
 			bool isIdentity_integer_base () const;
 
 			//! Set the translation of the current matrix. Will erase any previous values.
-			void setTranslation( const vector3df& translation );
+			void setTranslation( const vector3d<T>& translation );
 
 			//! Gets the current translation
-			vector3df getTranslation() const;
+			vector3d<T> getTranslation() const;
 
 			//! Set the inverse translation of the current matrix. Will erase any previous values.
-			void setInverseTranslation( const vector3df& translation );
+			void setInverseTranslation( const vector3d<T>& translation );
 
 			//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
-			inline void setRotationRadians( const vector3df& rotation );
+			inline void setRotationRadians( const vector3d<T>& rotation );
 
 			//! Make a rotation matrix from Euler angles. The 4th row and column are unmodified.
-			void setRotationDegrees( const vector3df& rotation );
+			void setRotationDegrees( const vector3d<T>& rotation );
 
 			//! Returns the rotation, as set by setRotation(). This code was orginally written by by Chev.
-			core::vector3df getRotationDegrees() const;
+			core::vector3d<T> getRotationDegrees() const;
 
 			//! Make an inverted rotation matrix from Euler angles. The 4th row and column are unmodified.
-			inline void setInverseRotationRadians( const vector3df& rotation );
+			inline void setInverseRotationRadians( const vector3d<T>& rotation );
 
 			//! Make an inverted rotation matrix from Euler angles. The 4th row and column are unmodified.
-			void setInverseRotationDegrees( const vector3df& rotation );
+			void setInverseRotationDegrees( const vector3d<T>& rotation );
 
 			//! Set Scale
-			void setScale( const vector3df& scale );
+			void setScale( const vector3d<T>& scale );
 
 			//! Get Scale
-			core::vector3df getScale() const;
+			core::vector3d<T> getScale() const;
 
 			//! Translate a vector by the inverse of the translation part of this matrix.
 			void inverseTranslateVect( vector3df& vect ) const;
@@ -571,14 +571,14 @@ namespace core
 
 
 	template <class T>
-	inline vector3df CMatrix4<T>::getTranslation() const
+	inline vector3d<T> CMatrix4<T>::getTranslation() const
 	{
-		return vector3df(M[12], M[13], M[14]);
+		return vector3d<T>(M[12], M[13], M[14]);
 	}
 
 
 	template <class T>
-	inline void CMatrix4<T>::setTranslation( const vector3df& translation )
+	inline void CMatrix4<T>::setTranslation( const vector3d<T>& translation )
 	{
 		M[12] = translation.X;
 		M[13] = translation.Y;
@@ -587,7 +587,7 @@ namespace core
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setInverseTranslation( const vector3df& translation )
+	inline void CMatrix4<T>::setInverseTranslation( const vector3d<T>& translation )
 	{
 		M[12] = -translation.X;
 		M[13] = -translation.Y;
@@ -596,7 +596,7 @@ namespace core
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setScale( const vector3df& scale )
+	inline void CMatrix4<T>::setScale( const vector3d<T>& scale )
 	{
 		M[0] = scale.X;
 		M[5] = scale.Y;
@@ -605,25 +605,25 @@ namespace core
 	}
 
 	template <class T>
-	inline vector3df CMatrix4<T>::getScale() const
+	inline vector3d<T> CMatrix4<T>::getScale() const
 	{
-		return vector3df(M[0],M[5],M[10]);
+		return vector3d<T>(M[0],M[5],M[10]);
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setRotationDegrees( const vector3df& rotation )
+	inline void CMatrix4<T>::setRotationDegrees( const vector3d<T>& rotation )
 	{
 		setRotationRadians( rotation * core::DEGTORAD );
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setInverseRotationDegrees( const vector3df& rotation )
+	inline void CMatrix4<T>::setInverseRotationDegrees( const vector3d<T>& rotation )
 	{
 		setInverseRotationRadians( rotation * core::DEGTORAD );
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setRotationRadians( const vector3df& rotation )
+	inline void CMatrix4<T>::setRotationRadians( const vector3d<T>& rotation )
 	{
 		f64 cr = cos( rotation.X );
 		f64 sr = sin( rotation.X );
@@ -654,7 +654,7 @@ namespace core
 	//! Returns the rotation, as set by setRotation(). This code was sent
 	//! in by Chev.
 	template <class T>
-	inline core::vector3df CMatrix4<T>::getRotationDegrees() const
+	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
 	{
 		const CMatrix4<T> &mat = *this;
 
@@ -688,11 +688,11 @@ namespace core
 		if (Y < 0.0) Y += 360.0;
 		if (Z < 0.0) Z += 360.0;
 
-		return vector3df((f32)X,(f32)Y,(f32)Z);
+		return vector3d<T>((f32)X,(f32)Y,(f32)Z);
 	}
 
 	template <class T>
-	inline void CMatrix4<T>::setInverseRotationRadians( const vector3df& rotation )
+	inline void CMatrix4<T>::setInverseRotationRadians( const vector3d<T>& rotation )
 	{
 		f64 cr = cos( rotation.X );
 		f64 sr = sin( rotation.X );
