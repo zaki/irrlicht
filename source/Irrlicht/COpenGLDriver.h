@@ -329,6 +329,9 @@ namespace video
 		s32 LastSetLight;
 
 		core::dimension2d<s32> CurrentRendertargetSize;
+		//! bool to see if we are using clockwise or counter-clockwise winding,
+		//! render targets use opposite winding as their projection matrix is flipped.
+		bool ClockwiseWinding;
 
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context

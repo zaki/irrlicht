@@ -34,7 +34,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND wind
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias), RenderTargetTexture(0), LastSetLight(-1),
-	CurrentRendertargetSize(0,0),
+	CurrentRendertargetSize(0,0), ClockwiseWinding(true),
 	HDc(0), Window(window), HRc(0)
 {
 	#ifdef _DEBUG
@@ -157,7 +157,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias),
-	RenderTargetTexture(0), LastSetLight(-1),
+	LastSetLight(-1), RenderTargetTexture(0), ClockwiseWinding(true), 
 	CurrentRendertargetSize(0,0), _device(device)
 {
 	#ifdef _DEBUG
@@ -177,7 +177,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias),
-	RenderTargetTexture(0), LastSetLight(-1),
+	LastSetLight(-1), RenderTargetTexture(0), ClockwiseWinding(true), 
 	CurrentRendertargetSize(0,0)
 {
 	#ifdef _DEBUG
@@ -213,7 +213,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias),
-	RenderTargetTexture(0), LastSetLight(-1),
+	LastSetLight(-1), RenderTargetTexture(0), ClockwiseWinding(true),
 	CurrentRendertargetSize(0,0)
 {
 	#ifdef _DEBUG
@@ -448,6 +448,25 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		createGLMatrix(glmat, mat);
 		// flip z to compensate OpenGLs right-hand coordinate system
 		glmat[12] *= -1.0f;
+		// in render targets, flip the screen
+		if ( CurrentRendertargetSize.Width > 0 )
+		{
+			glmat[5] *= -1.0f;
+			// because we flipped the screen, triangles are the wrong way around
+			if (ClockwiseWinding)
+			{
+				glFrontFace(GL_CCW);
+				ClockwiseWinding = false;
+			}
+		}
+		else
+		{
+			if (!ClockwiseWinding)
+			{
+				glFrontFace(GL_CW);
+				ClockwiseWinding = true;
+			}
+		}
 		glMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(glmat);
 		break;

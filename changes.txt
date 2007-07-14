@@ -1,5 +1,9 @@
 Changes in version 1.4 (... 2007)
 
+ - OpenGL render targets now the same way up as the other drivers. If you have
+   written opengl shaders that use render targets then you'll need to change your 
+   texture coordinates accordingly.
+
  - Fixed some OpenGL renderstate stuff. setBasicRenderstate returns with
    active texture layer 0. The material renderer must return from OnUnset
    with the same active texture layer. The alpha test is disabled and the
