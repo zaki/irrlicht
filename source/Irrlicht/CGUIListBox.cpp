@@ -23,7 +23,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 : IGUIListBox(environment, parent, id, rectangle), Selected(-1), ItemHeight(0),
 	TotalItemHeight(0), ItemsIconWidth(0), Font(0), IconBank(0),
 	ScrollBar(0), Selecting(false), DrawBack(drawBack),
-	MoveOverSelect(moveOverSelect), selectTime(0)
+	MoveOverSelect(moveOverSelect), selectTime(0), AutoScroll(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIListBox");
@@ -38,6 +38,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 	ScrollBar->setSubElement(true);
 	ScrollBar->setTabStop(false);
 	ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+	ScrollBar->setVisible(false);
 	ScrollBar->drop();
 
 	ScrollBar->setPos(0);
@@ -103,6 +104,8 @@ s32 CGUIListBox::addItem(const wchar_t* text)
 
 	Items.push_back(i);
 	recalculateItemHeight();
+	recalculateScrollPos();
+
 	return Items.size() - 1;
 }
 
@@ -166,6 +169,12 @@ void CGUIListBox::recalculateItemHeight()
 
 	TotalItemHeight = ItemHeight * Items.size();
 	ScrollBar->setMax(TotalItemHeight - AbsoluteRect.getHeight());
+
+	if( TotalItemHeight < AbsoluteRect.getHeight() )
+		ScrollBar->setVisible(false);
+	else
+		ScrollBar->setVisible(true);
+
 }
 
 
@@ -321,8 +330,7 @@ bool CGUIListBox::OnEvent(SEvent event)
 				if (!isPointInside(p))
 				{
 					Selecting = false;
-					//Environment->removeFocus(this);
-					break;
+					return true;
 				}
 
 				Selecting = false;
@@ -380,9 +388,9 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 //! Update the position and size of the listbox, and update the scrollbar
 void CGUIListBox::updateAbsolutePosition()
 {
-	recalculateItemHeight();
-
 	IGUIElement::updateAbsolutePosition();
+
+	recalculateItemHeight();
 }
 
 //! draws the element and its children
@@ -501,7 +509,10 @@ void CGUIListBox::setSpriteBank(IGUISpriteBank* bank)
 }
 void CGUIListBox::recalculateScrollPos()
 {
-	s32 selPos = Selected * ItemHeight - ScrollBar->getPos();
+	if (!AutoScroll)
+		return;
+
+	s32 selPos = (Selected == -1 ? TotalItemHeight : Selected * ItemHeight) - ScrollBar->getPos();
 
 	if (selPos < 0)
 	{
@@ -514,6 +525,16 @@ void CGUIListBox::recalculateScrollPos()
 	}
 }
 
+void CGUIListBox::setAutoScrollEnabled(bool scroll)
+{
+	AutoScroll = scroll;
+}
+
+bool CGUIListBox::isAutoScrollEnabled()
+{
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return AutoScroll;
+}
 
 //! Writes attributes of the element.
 void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
@@ -521,8 +542,9 @@ void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	IGUIListBox::serializeAttributes(out,options);
 
 	// todo: out->addString	("IconBank",		IconBank->getName?);
-	out->addBool	("DrawBack",		DrawBack);
-	out->addBool	("MoveOverSelect",	MoveOverSelect);
+	out->addBool    ("DrawBack",        DrawBack);
+	out->addBool    ("MoveOverSelect",  MoveOverSelect);
+	out->addBool    ("AutoScroll",      AutoScroll);
 
 	// todo: save list of items and icons.
 	/*core::array<core::stringw> tmpText;
@@ -545,8 +567,9 @@ void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 //! Reads attributes of the element
 void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 {
-	DrawBack		= in->getAttributeAsBool("DrawBack");
-	MoveOverSelect	= in->getAttributeAsBool("MoveOverSelect");
+	DrawBack        = in->getAttributeAsBool("DrawBack");
+	MoveOverSelect  = in->getAttributeAsBool("MoveOverSelect");
+	AutoScroll      = in->getAttributeAsBool("AutoScroll");
 
 	IGUIListBox::deserializeAttributes(in,options);
 

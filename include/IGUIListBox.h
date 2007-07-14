@@ -62,6 +62,14 @@ namespace gui
 
 		//! sets the selected item. Set this to -1 if no item should be selected
 		virtual void setSelected(s32 id) = 0;
+
+		//! set whether the listbox should scroll to show a newly selected item
+		//! or a new item as it is added to the list.
+		virtual void setAutoScrollEnabled(bool scroll) = 0;
+
+		//! returns true if automatic scrolling is enabled, false if not.
+		virtual bool isAutoScrollEnabled() = 0;
+
 	};
 
 

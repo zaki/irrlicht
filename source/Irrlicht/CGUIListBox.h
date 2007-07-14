@@ -71,6 +71,12 @@ namespace gui
 		//! skin through getIcon
 		virtual void setSpriteBank(IGUISpriteBank* bank);
 		
+		//! sets if automatic scrolling is enabled or not. Default is true.
+		virtual void setAutoScrollEnabled(bool scroll);
+
+		//! returns true if automatic scrolling is enabled, false if not.
+		virtual bool isAutoScrollEnabled();
+
 		//! Update the position and size of the listbox, and update the scrollbar
 		virtual void updateAbsolutePosition();
 
@@ -106,6 +112,7 @@ namespace gui
 		bool DrawBack;
 		bool MoveOverSelect;
 		u32 selectTime;
+		bool AutoScroll;
 	};
 
 
