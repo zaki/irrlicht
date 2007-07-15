@@ -60,35 +60,6 @@ IImageWriter* createImageWriterPPM();
 
 
 
-//! Array holding the built in material type names
-const char* const sBuiltInMaterialTypeNames[] =
-{
-	"solid",
-	"solid_2layer",
-	"lightmap",
-	"lightmap_add",
-	"lightmap_m2",
-	"lightmap_m4",
-	"lightmap_light",
-	"lightmap_light_m2",
-	"lightmap_light_m4",
-	"detail_map",
-	"sphere_map",
-	"reflection_2layer",
-	"trans_add",
-	"trans_alphach",
-	"trans_alphach_ref",
-	"trans_vertex_alpha",
-	"trans_reflection_2layer",
-	"normalmap_solid",
-	"normalmap_trans_add",
-	"normalmap_trans_vertexalpha",
-	"parallaxmap_solid",
-	"parallaxmap_trans_add",
-	"parallaxmap_trans_vertexalpha"
-};
-
-
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
 : FileSystem(io), ViewPort(0,0,0,0), ScreenSize(screenSize),
@@ -1271,10 +1242,10 @@ s32 CNullDriver::addMaterialRenderer(IMaterialRenderer* renderer, const char* na
 	r.Renderer = renderer;
 	r.Name = name;
 
-	if (name == 0 && (MaterialRenderers.size() < sizeof(sBuiltInMaterialTypeNames) / sizeof(char*)))
+	if (name == 0 && (MaterialRenderers.size() < (sizeof(sBuiltInMaterialTypeNames) / sizeof(char*))-1 ))
 	{
 		// set name of built in renderer so that we don't have to implement name
-		// setting in all 5 available renderers.
+		// setting in all available renderers.
 		r.Name = sBuiltInMaterialTypeNames[MaterialRenderers.size()];
 	}
 
@@ -1288,7 +1259,7 @@ s32 CNullDriver::addMaterialRenderer(IMaterialRenderer* renderer, const char* na
 //! Sets the name of a material renderer.
 void CNullDriver::setMaterialRendererName(s32 idx, const char* name)
 {
-	if (idx < s32(sizeof(sBuiltInMaterialTypeNames) / sizeof(char*)) ||
+	if (idx < s32(sizeof(sBuiltInMaterialTypeNames) / sizeof(char*))-1 ||
 		idx >= (s32)MaterialRenderers.size())
 		return;
 
@@ -1301,16 +1272,7 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 {
 	io::CAttributes* attr = new io::CAttributes(this);
 
-	const char** materialNames = new const char*[MaterialRenderers.size()+1];
-	u32 i;
-	for (i=0; i < MaterialRenderers.size(); ++i)
-		materialNames[i] = MaterialRenderers[i].Name.c_str();
-
-	materialNames[MaterialRenderers.size()] = 0;
-
-	attr->addEnum("Type", material.MaterialType, materialNames);
-
-	delete [] materialNames;
+	attr->addEnum("Type", material.MaterialType, sBuiltInMaterialTypeNames);
 
 	attr->addColor("Ambient", material.AmbientColor);
 	attr->addColor("Diffuse", material.DiffuseColor);
@@ -1322,6 +1284,7 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addFloat("Param2", material.MaterialTypeParam2);
 
 	core::stringc prefix="Texture";
+	u32 i;
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		attr->addTexture((prefix+(i+1)).c_str(), material.Textures[i]);
 
