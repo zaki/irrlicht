@@ -1282,7 +1282,10 @@ void CImage::copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT fo
 		pitch = width*bpp;
 
 	if (Format==format && Size.Width==width && Size.Height==height && pitch==width*bpp)
+	{
 		memcpy(target, Data, height*pitch);
+		return;
+	}
 
 	const f32 sourceXStep = (f32)Size.Width / (f32)width;
 	const f32 sourceYStep = (f32)Size.Height / (f32)height;
