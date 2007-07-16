@@ -1218,6 +1218,27 @@ void COpenGLDriver::setRenderStates3DMode()
 
 		createGLMatrix(glmat, Matrices[ETS_PROJECTION]);
 		glmat[12] *= -1.0f;
+
+		// in render targets, flip the screen
+		if ( CurrentRendertargetSize.Width > 0 )
+		{
+			glmat[5] *= -1.0f;
+			// because we flipped the screen, triangles are the wrong way around
+			if (ClockwiseWinding)
+			{
+				glFrontFace(GL_CCW);
+				ClockwiseWinding = false;
+			}
+		}
+		else
+		{
+			if (!ClockwiseWinding)
+			{
+				glFrontFace(GL_CW);
+				ClockwiseWinding = true;
+			}
+		}
+
 		glMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(glmat);
 
