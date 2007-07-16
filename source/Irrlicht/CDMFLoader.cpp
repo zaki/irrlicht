@@ -99,347 +99,299 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 
 	u32 i;
 
-    //begin logging with
-    //fprintf(flog,"DMF Loader version %1.1f log file\nTrying to load: %s\n",DMFloader_vers,file->getFileName());
-    dmfHeader header;
+	dmfHeader header;
 
-    //load header
-    if (GetDMFHeader(dmfRawFile, header))
+	//load header
+	if (GetDMFHeader(dmfRawFile, header))
 	{
-       //print in log file some statistics
-       /*fprintf(flog,"DeleD Map Detected\nDeleD Map Version:%1.1f\nScene Name:%s\n"
-                    "Ambient Color(r,g,b):%d,%d,%d\nShadow Intensity:%f\n"
-                    "Number of Objects:%u\nNumber of Materials:%u\n"
-                    "Total Vertices: %u\nTotal Faces: %u\n"
-                    "Total Number of Dynamic Lights: %u\n"
-                    "Trying to Load Materials...",
-                    header.dmfVersion,header.dmfName,
-                    header.dmfAmbient.getRed(),header.dmfAmbient.getGreen(),header.dmfAmbient.getBlue(),
-                    header.dmfShadow,header.numObjects,header.numMaterials,
-                    header.numVertices,header.numFaces,header.numLights);*/
+		//let's set ambient light
+		SceneMgr->setAmbientLight( header.dmfAmbient);
 
-       //let's set ambient light
-       SceneMgr->setAmbientLight( header.dmfAmbient);
+		//let's create the correct number of materials, vertices and faces
+		dmfMaterial *materiali=new dmfMaterial[header.numMaterials];
+		dmfVert *verts=new dmfVert[header.numVertices];
+		dmfFace *faces=new dmfFace[header.numFaces];
 
-       //let's create the correct number of materials, vertices and faces
-       dmfMaterial *materiali=new dmfMaterial[header.numMaterials];
-       dmfVert *verts=new dmfVert[header.numVertices];
-       dmfFace *faces=new dmfFace[header.numFaces];
+		//let's get the materials
+		bool use_mat_dirs=false;
+		use_mat_dirs=SceneMgr->getParameters()->getAttributeAsBool(DMF_USE_MATERIALS_DIRS);
 
-       //let's get the materials
-       bool use_mat_dirs=false;
-       use_mat_dirs=SceneMgr->getParameters()->getAttributeAsBool(DMF_USE_MATERIALS_DIRS);
+		GetDMFMaterials(dmfRawFile , materiali,header.numMaterials,use_mat_dirs);
 
-       if ( GetDMFMaterials(dmfRawFile , materiali,header.numMaterials,use_mat_dirs))
-	   {
-               //print to log file some stats
-               /*fprintf(flog,"Materials Loaded\nShowing 1st and last infos:\n"
-                            " -1st Material (id,texname,lmapname):%u,%s,%s\n"
-                            " -Last Material (id,texname,lmapname):%u,%s,%s\n",
-                            materiali[0].materialID,materiali[0].textureName,
-                            materiali[0].lightmapName,materiali[header.numMaterials-1].materialID,
-                            materiali[header.numMaterials-1].textureName,materiali[header.numMaterials-1].lightmapName);*/
-       }
-       /*else
-		   fprintf(flog,"Cannot Load Materials.\n");
+		//let's get vertices and faces
+		GetDMFVerticesFaces(dmfRawFile, verts,faces);
 
-       fprintf(flog,"Trying to load Vertices and Faces...");*/
-
-       //let's get vertices and faces
-       if(GetDMFVerticesFaces(dmfRawFile, verts,faces))
-	   {
-              /* fprintf(flog,"Loaded\nShowing 1st face and last vertex infos:\n"
-                            " -1st Face (1st vertex,vert num,material id): %u,%u,%u\n"
-                            " -Last vertice (position;tex uv;lmap uv): %f,%f,%f;%f,%f;%f,%f\n",
-                            faces[0].firstVert,faces[0].numVerts,faces[0].materialID,
-                            verts[header.numVertices-1].pos[0],verts[header.numVertices-1].pos[1],verts[header.numVertices-1].pos[2],
-                            verts[header.numVertices-1].tc[0],verts[header.numVertices-1].tc[1],
-                            verts[header.numVertices-1].lc[0],verts[header.numVertices-1].lc[1]);*/
-       }
-	   /*else
-		   fprintf(flog,"Cannot Load Vertices and Faces.\n");*/
-
-	//create a meshbuffer for each material, then we'll remove empty ones
-	for (i=0; i<header.numMaterials; i++)
-	{
+		//create a meshbuffer for each material, then we'll remove empty ones
+		for (i=0; i<header.numMaterials; i++)
+		{
 			//create a new SMeshBufferLightMap for each material
 			SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
-			buffer->Material.MaterialType = video::EMT_LIGHTMAP_LIGHTING  ;
+			buffer->Material.MaterialType = video::EMT_LIGHTMAP_LIGHTING;
 			buffer->Material.Wireframe = false;
 			buffer->Material.Lighting = true;
 			Mesh->addMeshBuffer(buffer);
 			buffer->drop();
-	}
-
-	// Build the mesh buffers
-	for (i = 0; i < header.numFaces; i++)
-	{
-		if (faces[i].numVerts < 3)
-			continue;
-
-		f32 normal[3];
-
-		GetFaceNormal(verts[faces[i].firstVert].pos,
-			verts[faces[i].firstVert+1].pos, verts[faces[i].firstVert+2].pos, normal);
-
-		SMeshBufferLightMap * meshBuffer = (SMeshBufferLightMap*)Mesh->getMeshBuffer(
-			faces[i].materialID);
-
-		u32 base = meshBuffer->Vertices.size();
-
-		// Add this face's verts
-		u32 v;
-		for (v = 0; v < faces[i].numVerts; v++)
-		{
-			dmfVert * vv = &verts[faces[i].firstVert + v];
-			video::S3DVertex2TCoords vert(vv->pos[0], vv->pos[1], vv->pos[2],
-				normal[0], normal[1], normal[2], video::SColor(0,255,255,255), 0.0f, 0.0f);
-			if ( materiali[faces[i].materialID].textureBlend==4 &&
-				 SceneMgr->getParameters()->getAttributeAsBool(DMF_FLIP_ALPHA_TEXTURES))
-			{
-				vert.TCoords.set(vv->tc[0],-vv->tc[1]);
-				vert.TCoords2.set(vv->lc[0],vv->lc[1]);
-			}
-			else
-			{
-				vert.TCoords.set(vv->tc[0], vv->tc[1]);
-				vert.TCoords2.set(vv->lc[0], vv->lc[1]);
-			}
-			meshBuffer->Vertices.push_back(vert);
 		}
 
-		// Now add the indices
-		// This weird loop turns convex polygons into triangle strips.
-		// I do it this way instead of a simple fan because it usually
-		// looks  a lot better in wireframe, for example.
-		u32 h = faces[i].numVerts - 1, l = 0, c; // High, Low, Center
-		for (v = 0; v < faces[i].numVerts - 2; v++)
+		// Build the mesh buffers
+		for (i = 0; i < header.numFaces; i++)
 		{
-			if (v & 1)
-				c = h - 1;
-			else
-				c = l + 1;
+			if (faces[i].numVerts < 3)
+				continue;
 
-			meshBuffer->Indices.push_back(base + h);
-			meshBuffer->Indices.push_back(base + l);
-			meshBuffer->Indices.push_back(base + c);
+			f32 normal[3];
 
-			if (v & 1)
-				h--;
-			else
-				l++;
-		}
-	}
+			GetFaceNormal(verts[faces[i].firstVert].pos,
+					verts[faces[i].firstVert+1].pos, verts[faces[i].firstVert+2].pos, normal);
 
-    //load textures and lightmaps in materials.
-    //don't worry if you receive a could not load texture, cause if you don't need
-    //a particular material in your scene it will be loaded and then destroyed.
-	for (i=0; i<header.numMaterials; i++)
-	{
-		String path;
-        path = "";
-        if ( !SceneMgr->getParameters()->existsAttribute(DMF_TEXTURE_PATH) )
-		{
-			//get the right path for textures
-			StringList filepath = SubdivideString(String(file->getFileName()),"\\");
-			StringList filepath1 = SubdivideString(String(file->getFileName()),"/");
-			if(filepath1.size()>filepath.size())
+			SMeshBufferLightMap * meshBuffer = (SMeshBufferLightMap*)Mesh->getMeshBuffer(
+					faces[i].materialID);
+
+			u32 base = meshBuffer->Vertices.size();
+
+			// Add this face's verts
+			u32 v;
+			for (v = 0; v < faces[i].numVerts; v++)
 			{
-				filepath.clear();
-				filepath=filepath1;
+				dmfVert * vv = &verts[faces[i].firstVert + v];
+				video::S3DVertex2TCoords vert(vv->pos[0], vv->pos[1], vv->pos[2],
+					normal[0], normal[1], normal[2], video::SColor(0,255,255,255), 0.0f, 0.0f);
+				if ( materiali[faces[i].materialID].textureBlend==4 &&
+					SceneMgr->getParameters()->getAttributeAsBool(DMF_FLIP_ALPHA_TEXTURES))
+				{
+					vert.TCoords.set(vv->tc[0],-vv->tc[1]);
+					vert.TCoords2.set(vv->lc[0],vv->lc[1]);
+				}
+				else
+				{
+					vert.TCoords.set(vv->tc[0], vv->tc[1]);
+					vert.TCoords2.set(vv->lc[0], vv->lc[1]);
+				}
+				meshBuffer->Vertices.push_back(vert);
 			}
 
-			for (int j=0; j<(int)(filepath.size()-1); j++)
-				path = path + filepath[j] + String("\\");
-        }
-        else
-			path = path +
-				String( SceneMgr->getParameters()->getAttributeAsString(DMF_TEXTURE_PATH)) + String("\\");
+			// Now add the indices
+			// This weird loop turns convex polygons into triangle strips.
+			// I do it this way instead of a simple fan because it usually
+			// looks  a lot better in wireframe, for example.
+			u32 h = faces[i].numVerts - 1, l = 0, c; // High, Low, Center
+			for (v = 0; v < faces[i].numVerts - 2; v++)
+			{
+				if (v & 1)
+					c = h - 1;
+				else
+					c = l + 1;
 
-        //texture and lightmap
-        ITexture *tex = 0;
-        ITexture *lig = 0;
+				meshBuffer->Indices.push_back(base + h);
+				meshBuffer->Indices.push_back(base + l);
+				meshBuffer->Indices.push_back(base + c);
 
-        //currrent buffer to apply material
-        SMeshBufferLightMap* buffer = (SMeshBufferLightMap*)Mesh->getMeshBuffer(i);
+				if (v & 1)
+					h--;
+				else
+					l++;
+			}
+		}
 
-		//Primary texture is normal
-        if (materiali[i].textureFlag==0)
-			if(materiali[i].textureBlend==4) Driver->setTextureCreationFlag  (ETCF_ALWAYS_32_BIT,true);
+		//load textures and lightmaps in materials.
+		//don't worry if you receive a could not load texture, cause if you don't need
+		//a particular material in your scene it will be loaded and then destroyed.
+		for (i=0; i<header.numMaterials; i++)
+		{
+			String path = "";
+			if ( !SceneMgr->getParameters()->existsAttribute(DMF_TEXTURE_PATH) )
+			{
+				//get the right path for textures
+				StringList filepath = SubdivideString(String(file->getFileName()),"\\");
+				StringList filepath1 = SubdivideString(String(file->getFileName()),"/");
+				if(filepath1.size()>filepath.size())
+				{
+					filepath.clear();
+					filepath=filepath1;
+				}
+
+				for (u32 j=0; j<filepath.size()-1; ++j)
+					path = path + filepath[j] + String("\\");
+			}
+			else
+				path = path +
+						String( SceneMgr->getParameters()->getAttributeAsString(DMF_TEXTURE_PATH)) + String("\\");
+
+			//texture and lightmap
+			ITexture *tex = 0;
+			ITexture *lig = 0;
+
+			//current buffer to apply material
+			SMeshBufferLightMap* buffer = (SMeshBufferLightMap*)Mesh->getMeshBuffer(i);
+
+			//Primary texture is normal
+			if ((materiali[i].textureFlag==0) || (materiali[i].textureBlend==4))
+				Driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
 			tex = Driver->getTexture((path+String(materiali[i].textureName)).c_str());
 
-        //Primary texture is just a colour
-        if(materiali[i].textureFlag==1)
-		{
-			String colour(materiali[i].textureName);
-			String alpha,red,green,blue;
-
-			alpha.append((char*)&colour[0]);
-			alpha.append((char*)&colour[1]);
-			blue.append((char*)&colour[2]);
-			blue.append((char*)&colour[3]);
-			green.append((char*)&colour[4]);
-			green.append((char*)&colour[5]);
-			red.append((char*)&colour[6]);
-			red.append((char*)&colour[7]);
-
-			SColor color(axtoi(alpha.c_str()),
-				axtoi(red.c_str()),axtoi(green.c_str()),
-				axtoi(blue.c_str()));
-
-			s32 col = color.color;
-			s32 buf[64];
-
-			for (int k=0; k<64; k++)
-				buf[k]=col;
-
-            //just for compatibility with older Irrlicht versions
-			//to support transparent materials
-			if(color.getAlpha()!=255 && materiali[i].textureBlend==4) Driver->setTextureCreationFlag  (ETCF_ALWAYS_32_BIT,true);
-
-			IImage *immagine=Driver->createImageFromData(ECF_A8R8G8B8,
-				core::dimension2d<s32>(8,8),buf);
-
-			tex = Driver->addTexture("", immagine);
-
-			//to support transparent materials
-			if(color.getAlpha()!=255 && materiali[i].textureBlend==4){
-			    buffer->Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL ;
-                buffer->Material.MaterialTypeParam =(((f32) (color.getAlpha()-1))/255.0f);
-			}
-			immagine->drop();
-        }
-
-        //Lightmap is present
-        if (materiali[i].lightmapFlag == 0)
-            lig = Driver->getTexture((path+String(materiali[i].lightmapName)).c_str());
-        else //no lightmap
-	{
-             lig = 0;
-             buffer->Material.MaterialType = video::EMT_SOLID;
-             f32 mult = 100.0f - header.dmfShadow;
-             mult /= 100.0f;
-             buffer->Material.AmbientColor=header.dmfAmbient.getInterpolated  (  SColor(255,0,0,0),mult);
-        }
-
-        if(materiali[i].textureBlend==4) {
-        	buffer->Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-        	buffer->Material.MaterialTypeParam =SceneMgr->getParameters()->getAttributeAsFloat(DMF_ALPHA_CHANNEL_REF);
-       	}
-
-        core::dimension2d<s32> texsize;
-        core::dimension2d<s32> ligsize;
-
-        if (tex && header.dmfVersion<1.1)
-			texsize=tex->getSize();
-
-        if (lig && header.dmfVersion<1.1)
-			ligsize=lig->getSize();
-
-        // fprintf(flog,"%s real size w:%d h:%d\n",materiali[i].textureName,texsize.Width,texsize.Height);
-
-        //if texture is present mirror vertically owing to DeleD rapresentation
-        if (tex && header.dmfVersion<1.1)
-		{
-			void* pp = tex->lock();
-            if (pp)
+			//Primary texture is just a colour
+			if(materiali[i].textureFlag==1)
 			{
-				video::ECOLOR_FORMAT format = tex->getColorFormat();
-				if (format == video::ECF_A1R5G5B5)
-				{
-					s16* p = (s16*)pp;
-					s16 tmp=0;
-					for (s32 x=0; x<texsize.Width; x++)
-						for (s32 y=0; y<texsize.Height/2; y++)
-						{
-							tmp=p[y*texsize.Width + x];
-                            p[y*texsize.Width + x] = p[(texsize.Height-y-1)*texsize.Width + x];
-                            p[(texsize.Height-y-1)*texsize.Width + x]=tmp;
-						}
+				String colour(materiali[i].textureName);
+				String alpha,red,green,blue;
 
-					//fprintf(flog,"  Color Format: ECF_A1R5G5B5\n"	);
-				}
-				else
-				if (format == video::ECF_A8R8G8B8)
+				alpha.append((char*)&colour[0]);
+				alpha.append((char*)&colour[1]);
+				blue.append((char*)&colour[2]);
+				blue.append((char*)&colour[3]);
+				green.append((char*)&colour[4]);
+				green.append((char*)&colour[5]);
+				red.append((char*)&colour[6]);
+				red.append((char*)&colour[7]);
+
+				SColor color(axtoi(alpha.c_str()),
+					axtoi(red.c_str()),axtoi(green.c_str()),
+					axtoi(blue.c_str()));
+
+				s32 col = color.color;
+				s32 buf[64];
+
+				for (int k=0; k<64; k++)
+					buf[k]=col;
+
+				//just for compatibility with older Irrlicht versions
+				//to support transparent materials
+				if (color.getAlpha()!=255 && materiali[i].textureBlend==4)
+					Driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
+
+				IImage *immagine=Driver->createImageFromData(ECF_A8R8G8B8,
+					core::dimension2d<s32>(8,8),buf);
+
+				tex = Driver->addTexture("", immagine);
+
+				//to support transparent materials
+				if(color.getAlpha()!=255 && materiali[i].textureBlend==4)
 				{
-					s32* p = (s32*)pp;
-					s32 tmp=0;
-                    for (s32 x=0; x<texsize.Width; x++)
-						for (s32 y=0; y<texsize.Height/2; y++)
-						{
-							tmp=p[y*texsize.Width + x];
-                            p[y*texsize.Width + x] = p[(texsize.Height-y-1)*texsize.Width + x];
-                            p[(texsize.Height-y-1)*texsize.Width + x]=tmp;
-						}
-			     //fprintf(flog,"  Color Format: ECF_A8R8G8B8\n"	);
+					buffer->Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+					buffer->Material.MaterialTypeParam =(((f32) (color.getAlpha()-1))/255.0f);
 				}
+				immagine->drop();
+			}
+
+			//Lightmap is present
+			if (materiali[i].lightmapFlag == 0)
+				lig = Driver->getTexture((path+String(materiali[i].lightmapName)).c_str());
+			else //no lightmap
+			{
+				lig = 0;
+				buffer->Material.MaterialType = video::EMT_SOLID;
+				const f32 mult = 100.0f - header.dmfShadow;
+				buffer->Material.AmbientColor=header.dmfAmbient.getInterpolated(SColor(255,0,0,0),mult/100.f);
+			}
+
+			if(materiali[i].textureBlend==4)
+			{
+				buffer->Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				buffer->Material.MaterialTypeParam =SceneMgr->getParameters()->getAttributeAsFloat(DMF_ALPHA_CHANNEL_REF);
+			}
+
+			core::dimension2d<s32> texsize;
+			core::dimension2d<s32> ligsize;
+
+			if (tex && header.dmfVersion<1.1)
+				texsize=tex->getSize();
+
+			if (lig && header.dmfVersion<1.1)
+				ligsize=lig->getSize();
+
+			//if texture is present mirror vertically owing to DeleD rapresentation
+			if (tex && header.dmfVersion<1.1)
+			{
+				void* pp = tex->lock();
+				if (pp)
+				{
+					video::ECOLOR_FORMAT format = tex->getColorFormat();
+					if (format == video::ECF_A1R5G5B5)
+					{
+						s16* p = (s16*)pp;
+						s16 tmp=0;
+						for (s32 x=0; x<texsize.Width; x++)
+							for (s32 y=0; y<texsize.Height/2; y++)
+							{
+								tmp=p[y*texsize.Width + x];
+								p[y*texsize.Width + x] = p[(texsize.Height-y-1)*texsize.Width + x];
+								p[(texsize.Height-y-1)*texsize.Width + x]=tmp;
+							}
+					}
+					else
+					if (format == video::ECF_A8R8G8B8)
+					{
+						s32* p = (s32*)pp;
+						s32 tmp=0;
+						for (s32 x=0; x<texsize.Width; x++)
+							for (s32 y=0; y<texsize.Height/2; y++)
+							{
+								tmp=p[y*texsize.Width + x];
+								p[y*texsize.Width + x] = p[(texsize.Height-y-1)*texsize.Width + x];
+								p[(texsize.Height-y-1)*texsize.Width + x]=tmp;
+							}
+					}
+				}
+			}
+
+			if(tex && header.dmfVersion<1.1)
+			{
+				tex->unlock();
+				tex->regenerateMipMapLevels();
+			}
+
+			//if lightmap is present mirror vertically owing to DeleD rapresentation
+			if (lig && header.dmfVersion<1.1)
+			{
+				void* pp = lig->lock();
+				if (pp)
+				{
+					video::ECOLOR_FORMAT format = lig->getColorFormat();
+					if (format == video::ECF_A1R5G5B5)
+					{
+						s16* p = (s16*)pp;
+						s16 tmp=0;
+						for (s32 x=0; x<ligsize.Width; x++)
+						{
+							for (s32 y=0; y<ligsize.Height/2; y++)
+							{
+								tmp=p[y*ligsize.Width + x];
+								p[y*ligsize.Width + x] = p[(ligsize.Height-y-1)*ligsize.Width + x];
+								p[(ligsize.Height-y-1)*ligsize.Width + x]=tmp;
+							}
+						}
+					}
+					else if (format == video::ECF_A8R8G8B8)
+					{
+						s32* p = (s32*)pp;
+						s32 tmp=0;
+						for (s32 x=0; x<ligsize.Width; x++)
+						{
+							for (s32 y=0; y<ligsize.Height/2; y++)
+							{
+								tmp=p[y*ligsize.Width + x];
+								p[y*ligsize.Width + x] = p[(ligsize.Height-y-1)*ligsize.Width + x];
+								p[(ligsize.Height-y-1)*ligsize.Width + x]=tmp;
+							}
+						}
+					}
+				}
+			}
+
+			if (lig && header.dmfVersion<1.1)
+			{
+				lig->unlock();
+				lig->regenerateMipMapLevels();
+			}
+
+			buffer->Material.Textures[0]=tex;
+			buffer->Material.Textures[1]=lig;
 		}
-    }
 
-    if(tex && header.dmfVersion<1.1)
-	{
-       tex->unlock();
-       tex->regenerateMipMapLevels();
-    }
-
-    //if lightmap is present mirror vertically owing to DeleD rapresentation
-    if (lig && header.dmfVersion<1.1)
-	{
-			void* pp = lig->lock();
-            if (pp)
-			{
-				video::ECOLOR_FORMAT format = lig->getColorFormat();
-				if (format == video::ECF_A1R5G5B5)
-				{
-					s16* p = (s16*)pp;
-					s16 tmp=0;
-					for (s32 x=0; x<ligsize.Width; x++)
-						for (s32 y=0; y<ligsize.Height/2; y++)
-						{
-							tmp=p[y*ligsize.Width + x];
-                            p[y*ligsize.Width + x] = p[(ligsize.Height-y-1)*ligsize.Width + x];
-                            p[(ligsize.Height-y-1)*ligsize.Width + x]=tmp;
-						}
-
-					//fprintf(flog,"  Color Format: ECF_A1R5G5B5\n"	);
-				}
-				else
-				if (format == video::ECF_A8R8G8B8)
-				{
-					s32* p = (s32*)pp;
-					s32 tmp=0;
-                    for (s32 x=0; x<ligsize.Width; x++)
-						for (s32 y=0; y<ligsize.Height/2; y++)
-						{
-							tmp=p[y*ligsize.Width + x];
-                            p[y*ligsize.Width + x] = p[(ligsize.Height-y-1)*ligsize.Width + x];
-                            p[(ligsize.Height-y-1)*ligsize.Width + x]=tmp;
-						}
-
-					//fprintf(flog,"  Color Format: ECF_A8R8G8B8\n"	);
-				}
-			}
-    }
-
-    if (lig && header.dmfVersion<1.1)
-	{
-            lig->unlock();
-            lig->regenerateMipMapLevels();
-    }
-
-    buffer->Material.Textures[0]=tex;
-    buffer->Material.Textures[1]=lig;
-  }
-
-  delete verts;
-  delete faces;
-  delete materiali;
-}
-//else
-// fprintf(flog,"Cannot load %s, please check it's generated with DeleD 0.91+.");
-
-    //closing log file
-    //fclose(flog);
+		delete verts;
+		delete faces;
+		delete materiali;
+	}
 
 	// delete all buffers without geometry in it.
 	i = 0;
@@ -459,14 +411,12 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 		}
 	}
 
-
 	// create bounding box
 	for (i = 0; i < Mesh->MeshBuffers.size(); i++)
 	{
 		((SMeshBufferLightMap*)Mesh->MeshBuffers[i])->recalculateBoundingBox();
 	}
 	Mesh->recalculateBoundingBox();
-
 
 	// Set up an animated mesh to hold the mesh
 	SAnimatedMesh* AMesh = new SAnimatedMesh();
@@ -490,3 +440,4 @@ bool CDMFLoader::isALoadableFileExtension(const c8* filename)
 
 } // end namespace scene
 } // end namespace irr
+

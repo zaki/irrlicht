@@ -320,6 +320,23 @@ bool CD3D9Texture::createTexture(u32 flags)
 }
 
 
+D3DFORMAT CD3D9Texture::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
+{
+	switch(format)
+	{
+		case ECF_A1R5G5B5:
+			return D3DFMT_A1R5G5B5;
+		case ECF_R5G6B5:
+			return D3DFMT_R5G6B5;
+		case ECF_R8G8B8:
+			return D3DFMT_R8G8B8;
+		case ECF_A8R8G8B8:
+			return D3DFMT_A8R8G8B8;
+	}
+	return D3DFMT_UNKNOWN;
+}
+
+
 ECOLOR_FORMAT CD3D9Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
 {
 	switch(format)
@@ -417,7 +434,6 @@ bool CD3D9Texture::copyTo16BitTexture()
 
 	return true;
 }
-
 
 
 //! destructor

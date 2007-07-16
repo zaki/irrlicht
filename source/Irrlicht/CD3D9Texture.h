@@ -85,20 +85,26 @@ private:
 	//! copies the image to the texture
 	bool copyTexture();
 
-	//! convert color formats
-	ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format);
-
 	//! optimized for 16 bit to 16 copy.
 	bool copyTo16BitTexture();
 
 	//! copies texture to 32 bit hardware texture
 	bool copyTo32BitTexture();
 
+	//! Get D3D color format from Irrlicht color format.
+	D3DFORMAT getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const;
+
+	//! Get Irrlicht color format from D3D color format.
+	ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format);
+
+	//! Helper function for mipmap generation.
 	bool createMipMaps(u32 level=1);
-	
+
+	//! Helper function for mipmap generation.
 	void copy16BitMipMap(char* src, char* tgt,
 		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt);
 
+	//! Helper function for mipmap generation.
 	void copy32BitMipMap(char* src, char* tgt,
 		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt);
 
