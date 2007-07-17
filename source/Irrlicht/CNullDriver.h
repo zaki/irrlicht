@@ -420,7 +420,7 @@ namespace video
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
 
 		//! checks triangle count and print warning if wrong
-		bool checkPrimitiveCount(s32 prmcnt);
+		bool checkPrimitiveCount(u32 prmcnt);
 
 		// adds a material renderer and drops it afterwards. To be used for internal creation
 		s32 addAndDropMaterialRenderer(IMaterialRenderer* m);
