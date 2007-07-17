@@ -165,6 +165,34 @@ COpenGLTexture::~COpenGLTexture()
 }
 
 
+ECOLOR_FORMAT COpenGLTexture::getBestColorFormat(ECOLOR_FORMAT format)
+{
+	ECOLOR_FORMAT destFormat = ECF_A8R8G8B8;
+	switch (format)
+	{
+		case ECF_A1R5G5B5:
+			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
+				destFormat = ECF_A1R5G5B5;
+		break;
+		case ECF_R5G6B5:
+			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
+				destFormat = ECF_A1R5G5B5;
+		break;
+		case ECF_A8R8G8B8:
+			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
+					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
+				destFormat = ECF_A1R5G5B5;
+		break;
+		case ECF_R8G8B8:
+			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
+					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
+				destFormat = ECF_A1R5G5B5;
+		break;
+	}
+	return destFormat;
+}
+
+
 void COpenGLTexture::getImageData(IImage* image)
 {
 	if (!image)
@@ -190,28 +218,7 @@ void COpenGLTexture::getImageData(IImage* image)
 		nImageSize.Height = getTextureSizeFromSurfaceSize(ImageSize.Height);
 	}
 
-	ECOLOR_FORMAT destFormat = ECF_A8R8G8B8;
-	switch (image->getColorFormat())
-	{
-		case ECF_A1R5G5B5:
-			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_R5G6B5:
-			if (!Driver->getTextureCreationFlag(ETCF_ALWAYS_32_BIT))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_A8R8G8B8:
-			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
-					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				destFormat = ECF_A1R5G5B5;
-		break;
-		case ECF_R8G8B8:
-			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
-					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				destFormat = ECF_A1R5G5B5;
-		break;
-	}
+	ECOLOR_FORMAT destFormat = getBestColorFormat(image->getColorFormat());
 	if (ImageSize==nImageSize)
 		Image = new CImage(destFormat, image);
 	else
