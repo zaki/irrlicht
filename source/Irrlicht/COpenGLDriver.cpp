@@ -815,6 +815,9 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	if (clipRect)
 	{
+		if (!clipRect->isValid())
+			return;
+
 		glEnable(GL_SCISSOR_TEST);
 		glScissor(clipRect->UpperLeftCorner.X,renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(),clipRect->getHeight());
@@ -913,6 +916,9 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>&
 
 	if (clipRect)
 	{
+		if (!clipRect->isValid())
+			return;
+
 		glEnable(GL_SCISSOR_TEST);
 		glScissor(clipRect->UpperLeftCorner.X,renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(),clipRect->getHeight());
