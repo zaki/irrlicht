@@ -99,6 +99,10 @@ public:
 
 private:
 
+	//! get the desired color format based on texture creation flags and the input format.
+	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
+
+	//! convert the image into an internal image with better properties for this driver.
 	void getImageData(IImage* image);
 
 	//! copies the the texture into an open gl texture.

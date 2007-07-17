@@ -1842,12 +1842,6 @@ IImage* CSoftwareDriver2::createScreenShot()
 	return new CImage(BackBuffer->getColorFormat(), BackBuffer);
 }
 
-//! Enables or disables a texture creation flag.
-void CSoftwareDriver2::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled)
-{
-	CNullDriver::setTextureCreationFlag(flag,enabled);
-}
-
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
