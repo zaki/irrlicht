@@ -41,6 +41,9 @@ namespace core
 	//! Constant for reciprocal of PI.
 	const f32 RECIPROCAL_PI		= 1.0f/PI;
 
+	//! Constant for half of PI.
+	const f32 HALF_PI		= PI/2.0f;
+
 	//! Constant for 64bit PI.
 	const f64 PI64			= 3.1415926535897932384626433832795028841971693993751;
 
