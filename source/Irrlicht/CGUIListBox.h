@@ -113,6 +113,9 @@ namespace gui
 		bool MoveOverSelect;
 		u32 selectTime;
 		bool AutoScroll;
+		core::stringw KeyBuffer;
+		u32 LastKeyTime;
+		bool HighlightWhenNotFocused;
 	};
 
 

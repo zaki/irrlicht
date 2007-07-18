@@ -23,7 +23,8 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 : IGUIListBox(environment, parent, id, rectangle), Selected(-1), ItemHeight(0),
 	TotalItemHeight(0), ItemsIconWidth(0), Font(0), IconBank(0),
 	ScrollBar(0), Selecting(false), DrawBack(drawBack),
-	MoveOverSelect(moveOverSelect), selectTime(0), AutoScroll(true)
+	MoveOverSelect(moveOverSelect), selectTime(0), AutoScroll(true), 
+	KeyBuffer(), LastKeyTime(0), HighlightWhenNotFocused(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIListBox");
@@ -170,7 +171,7 @@ void CGUIListBox::recalculateItemHeight()
 	TotalItemHeight = ItemHeight * Items.size();
 	ScrollBar->setMax(TotalItemHeight - AbsoluteRect.getHeight());
 
-	if( TotalItemHeight < AbsoluteRect.getHeight() )
+	if( TotalItemHeight <= AbsoluteRect.getHeight() )
 		ScrollBar->setVisible(false);
 	else
 		ScrollBar->setVisible(true);
@@ -276,6 +277,85 @@ bool CGUIListBox::OnEvent(SEvent event)
 			}
 			return true;
 		}
+		else if (event.KeyInput.PressedDown && event.KeyInput.Char)
+		{
+			// change selection based on text as it is typed.
+			u32 now = os::Timer::getTime();
+
+			if (now - LastKeyTime < 500)
+			{
+				// add to key buffer if it isn't a key repeat
+				if (!(KeyBuffer.size() == 1 && KeyBuffer[0] == event.KeyInput.Char))
+				{
+					KeyBuffer += L" ";
+					KeyBuffer[KeyBuffer.size()-1] = event.KeyInput.Char;
+				}
+			}
+			else 
+			{
+				KeyBuffer = L" ";
+				KeyBuffer[0] = event.KeyInput.Char;
+			}
+			LastKeyTime = now;
+
+			// find the selected item, starting at the current selection
+			s32 start = Selected;
+			s32 current = start+1;
+			// dont change selection if the key buffer matches the current item
+			if (Selected > -1 && KeyBuffer.size() > 1)
+			{
+				if (Items[Selected].text.size() >= KeyBuffer.size() && 
+					KeyBuffer.equals_ignore_case(Items[Selected].text.subString(0,KeyBuffer.size())))
+					return true;
+			}
+
+			while (current < (s32)Items.size())
+			{
+				if (Items[current].text.size() >= KeyBuffer.size())
+				{
+					if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
+					{
+						if (Parent && Selected != current && !Selecting && !MoveOverSelect)
+						{
+							SEvent e;
+							e.EventType = EET_GUI_EVENT;
+							e.GUIEvent.Caller = this;
+							e.GUIEvent.Element = 0;
+							e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
+							Parent->OnEvent(e);
+						}
+						setSelected(current);
+						return true;
+					}
+				}
+				current++;
+			}
+			current = 0;
+			while (current <= start)
+			{
+				if (Items[current].text.size() >= KeyBuffer.size())
+				{
+					if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
+					{
+						if (Parent && Selected != current && !Selecting && !MoveOverSelect)
+						{
+							Selected = current;
+							SEvent e;
+							e.EventType = EET_GUI_EVENT;
+							e.GUIEvent.Caller = this;
+							e.GUIEvent.Element = 0;
+							e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
+							Parent->OnEvent(e);
+						}
+						setSelected(current);
+						return true;
+					}					
+				}
+				current++;
+			}
+
+			return true;
+		}
 		break;
 
 	case EET_GUI_EVENT:
@@ -306,26 +386,11 @@ bool CGUIListBox::OnEvent(SEvent event)
 
 			case EMIE_LMOUSE_PRESSED_DOWN:
 			{
-				IGUIElement *el = Environment->getRootGUIElement()->getElementFromPoint(
-					core::position2di(event.MouseInput.X, event.MouseInput.Y));
-
-				if (Environment->hasFocus(this) &&
-					ScrollBar == el &&
-					ScrollBar->OnEvent(event))
-				{
-					return true;
-				}
-
 				Selecting = true;
-				Environment->setFocus(this);
 				return true;
 			}
 
 			case EMIE_LMOUSE_LEFT_UP:
-				if (Environment->hasFocus(this) &&
-					ScrollBar->isPointInside(p) &&
-					ScrollBar->OnEvent(event))
-					return true;
 
 				if (!isPointInside(p))
 				{
@@ -372,8 +437,9 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 	if (Selected<0)
 		Selected = 0;
 
-	// post the news
+	recalculateScrollPos();
 
+	// post the news
 	if (Parent && !onlyHover)
 	{
 		SEvent event;
@@ -413,7 +479,8 @@ void CGUIListBox::draw()
 	core::rect<s32> clientClip(AbsoluteRect);
 	clientClip.UpperLeftCorner.Y += 1;
 	clientClip.UpperLeftCorner.X += 1;
-	clientClip.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - skin->getSize(EGDS_SCROLLBAR_SIZE);
+	if (ScrollBar->isVisible())
+		clientClip.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - skin->getSize(EGDS_SCROLLBAR_SIZE);
 	clientClip.LowerRightCorner.Y -= 1;
 	clientClip.clipAgainst(AbsoluteClippingRect);
 
@@ -425,18 +492,22 @@ void CGUIListBox::draw()
 
 	frameRect = AbsoluteRect;
 	frameRect.UpperLeftCorner.X += 1;
-	frameRect.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - skin->getSize(EGDS_SCROLLBAR_SIZE);
+	if (ScrollBar->isVisible())
+		frameRect.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - skin->getSize(EGDS_SCROLLBAR_SIZE);
+
 	frameRect.LowerRightCorner.Y = AbsoluteRect.UpperLeftCorner.Y + ItemHeight;
 
 	frameRect.UpperLeftCorner.Y -= ScrollBar->getPos();
 	frameRect.LowerRightCorner.Y -= ScrollBar->getPos();
+
+	bool hl = (HighlightWhenNotFocused || Environment->hasFocus(this) || Environment->hasFocus(ScrollBar));
 
 	for (s32 i=0; i<(s32)Items.size(); ++i)
 	{
 		if (frameRect.LowerRightCorner.Y >= AbsoluteRect.UpperLeftCorner.Y &&
 			frameRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y)
 		{
-			if (i == Selected)
+			if (i == Selected && hl)
 				skin->draw2DRectangle(this, skin->getColor(EGDC_HIGH_LIGHT), frameRect, &clientClip);
 
 			core::rect<s32> textRect = frameRect;
@@ -450,13 +521,13 @@ void CGUIListBox::draw()
 					iconPos.Y += textRect.getHeight() / 2;
 					iconPos.X += ItemsIconWidth/2;
 					IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
-						skin->getColor((i==Selected) ? EGDC_ICON_HIGH_LIGHT : EGDC_ICON),
-						(i==Selected) ? selectTime : 0 , (i==Selected) ? os::Timer::getTime() : 0, false, true);
+						skin->getColor((i==Selected && hl) ? EGDC_ICON_HIGH_LIGHT : EGDC_ICON),
+						(i==Selected && hl) ? selectTime : 0 , (i==Selected) ? os::Timer::getTime() : 0, false, true);
 				}
 
 				textRect.UpperLeftCorner.X += ItemsIconWidth+3;
 
-				Font->draw(Items[i].text.c_str(), textRect, skin->getColor((i==Selected) ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT), false, true, &clientClip);
+				Font->draw(Items[i].text.c_str(), textRect, skin->getColor((i==Selected && hl) ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT), false, true, &clientClip);
 
 				textRect.UpperLeftCorner.X -= ItemsIconWidth+3;
 			}

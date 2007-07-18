@@ -199,7 +199,7 @@ bool CGUIComboBox::OnEvent(SEvent event)
 
 			if (Selected <0)
 				Selected = 0;
-			else
+
 			if (Selected >= (s32)Items.size())
 				Selected = (s32)Items.size() -1;
 
@@ -216,9 +216,12 @@ bool CGUIComboBox::OnEvent(SEvent event)
 		switch(event.GUIEvent.EventType)
 		{
 		case EGET_ELEMENT_FOCUS_LOST:
-			if (Environment->hasFocus(ListBox) && 
+			if (ListBox && 
+				(Environment->hasFocus(ListBox) || ListBox->isMyChild(event.GUIEvent.Caller) ) && 
 				event.GUIEvent.Element != this && 
-				event.GUIEvent.Element != ListButton)
+				event.GUIEvent.Element != ListButton && 
+				event.GUIEvent.Element != ListBox && 
+				!ListBox->isMyChild(event.GUIEvent.Element))
 			{
 				openCloseMenu();
 			}
@@ -279,6 +282,20 @@ bool CGUIComboBox::OnEvent(SEvent event)
 				}
 			}
 			break;
+		case EMIE_MOUSE_WHEEL:
+			{
+				s32 oldSelected = Selected;
+				Selected += (event.MouseInput.Wheel < 0) ? 1 : -1;
+
+				if (Selected <0)
+					Selected = 0;
+
+				if (Selected >= (s32)Items.size())
+					Selected = (s32)Items.size() -1;
+
+				if (Selected != oldSelected)
+					sendSelectionChangedEvent();
+			}
 		}
 		break;
 	}
