@@ -1164,7 +1164,7 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 {
 	Material = material;
 
-	for (s32 i = 0; i < MaxTextureUnits; ++i)
+	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
 	{
 		setTransform ((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));

@@ -59,6 +59,9 @@ enum E_TEXTURE_CREATION_FLAG
 	//! Automatically creates mip map levels for the textures.
 	ETCF_CREATE_MIP_MAPS = 0x00000010,
 
+	//! Discard any alpha layer and use non-alpha color format.
+	ETCF_NO_ALPHA_CHANNEL = 0x00000020,
+
 	//! This flag is never used, it only forces the compiler to 
 	//! compile these enumeration values to 32 bit.
 	ETCF_FORCE_32_BIT_DO_NOT_USE = 0x7fffffff

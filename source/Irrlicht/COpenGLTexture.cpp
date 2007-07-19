@@ -189,6 +189,20 @@ ECOLOR_FORMAT COpenGLTexture::getBestColorFormat(ECOLOR_FORMAT format)
 				destFormat = ECF_A1R5G5B5;
 		break;
 	}
+	if (Driver->getTextureCreationFlag(ETCF_NO_ALPHA_CHANNEL))
+	{
+		switch (format)
+		{
+			case ECF_A1R5G5B5:
+				destFormat = ECF_R5G6B5;
+			break;
+			case ECF_A8R8G8B8:
+				destFormat = ECF_R8G8B8;
+			break;
+			default:
+			break;
+		}
+	}
 	return destFormat;
 }
 
@@ -247,12 +261,12 @@ void COpenGLTexture::copyTexture(bool newTexture)
 			break;
 		case ECF_R5G6B5:
 			InternalFormat=GL_RGB;
-			PixelFormat=GL_RGB;
-			PixelType=GL_UNSIGNED_SHORT_5_6_5;
+			PixelFormat=GL_BGR;
+			PixelType=GL_UNSIGNED_SHORT_5_6_5_REV;
 			break;
 		case ECF_R8G8B8:
-			InternalFormat=GL_RGB8;
-			PixelFormat=GL_RGB;
+			InternalFormat=GL_RGB;
+			PixelFormat=GL_BGR;
 			PixelType=GL_UNSIGNED_BYTE;
 			break;
 		case ECF_A8R8G8B8:
