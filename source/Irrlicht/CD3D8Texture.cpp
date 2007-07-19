@@ -153,7 +153,7 @@ bool CD3D8Texture::createTexture(u32 flags)
 	case ETCF_OPTIMIZED_FOR_SPEED:
 		format = D3DFMT_A1R5G5B5; break;
 	}
-	if (Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
+	if (false && Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
 	{
 		if (format == D3DFMT_A8R8G8B8)
 			format = D3DFMT_R8G8B8;
@@ -179,7 +179,7 @@ bool CD3D8Texture::createTexture(u32 flags)
 
 		hr = Device->CreateTexture(optSize.Width, optSize.Height,
 			mipmaps ? 0 : 1, // number of mipmaplevels (0 = automatic all)
-			0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED, &Texture);
+			0, format, D3DPOOL_MANAGED, &Texture);
 	}
 
 	ColorFormat = getColorFormatFromD3DFormat(format);
@@ -199,30 +199,23 @@ bool CD3D8Texture::copyTexture()
 		TextureSize.Width = desc.Width;
 		TextureSize.Height = desc.Height;
 
-		if ((desc.Format == D3DFMT_A1R5G5B5) || (desc.Format == D3DFMT_A8R8G8B8))
+		D3DLOCKED_RECT rect;
+		HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
+		if (FAILED(hr))
 		{
-			D3DLOCKED_RECT rect;
-			HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
-			if (FAILED(hr))
-			{
-				os::Printer::log("Could not lock D3D8 Texture.", ELL_ERROR);
-				return false;
-			}
-
-			Pitch = rect.Pitch;
-			Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
-
-			hr = Texture->UnlockRect(0);
-			if (FAILED(hr))
-			{
-				os::Printer::log("Could not unlock D3D8 Texture.", ELL_ERROR);
-				return false;
-			}
-
-			return true;
+			os::Printer::log("Could not lock D3D8 Texture.", ELL_ERROR);
+			return false;
 		}
-		else
-			os::Printer::log("CD3D8Texture: Unsupported D3D8 hardware texture format", ELL_ERROR);
+
+		Pitch = rect.Pitch;
+		Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+
+		hr = Texture->UnlockRect(0);
+		if (FAILED(hr))
+		{
+			os::Printer::log("Could not unlock D3D8 Texture.", ELL_ERROR);
+			return false;
+		}
 	}
 
 	return true;

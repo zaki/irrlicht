@@ -228,7 +228,7 @@ bool CD3D9Texture::createMipMaps(u32 level)
 	}
 	else
 	{
-		if (upperDesc.Format == D3DFMT_A1R5G5B5)
+		if ((upperDesc.Format == D3DFMT_A1R5G5B5) || (upperDesc.Format == D3DFMT_R5G6B5))
 			copy16BitMipMap((char*)upperlr.pBits, (char*)lowerlr.pBits,
 					lowerDesc.Width, lowerDesc.Height,
 					upperlr.Pitch, lowerlr.Pitch);
@@ -301,7 +301,7 @@ bool CD3D9Texture::createTexture(u32 flags)
 	default:
 		break;
 	}
-	if (Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
+	if (false && Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
 	{
 		if (format == D3DFMT_A8R8G8B8)
 			format = D3DFMT_R8G8B8;
@@ -340,7 +340,7 @@ bool CD3D9Texture::createTexture(u32 flags)
 
 		hr = Device->CreateTexture(optSize.Width, optSize.Height,
 			mipmaps ? 0 : 1, // number of mipmaplevels (0 = automatic all)
-			0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED, &Texture, NULL);
+			0, format, D3DPOOL_MANAGED, &Texture, NULL);
 	}
 
 	ColorFormat = getColorFormatFromD3DFormat(format);
@@ -401,30 +401,23 @@ bool CD3D9Texture::copyTexture()
 		TextureSize.Width = desc.Width;
 		TextureSize.Height = desc.Height;
 
-		if ((desc.Format == D3DFMT_A1R5G5B5) || (desc.Format == D3DFMT_A8R8G8B8))
+		D3DLOCKED_RECT rect;
+		HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
+		if (FAILED(hr))
 		{
-			D3DLOCKED_RECT rect;
-			HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
-			if (FAILED(hr))
-			{
-				os::Printer::log("Could not lock D3D9 Texture.", ELL_ERROR);
-				return false;
-			}
-
-			Pitch = rect.Pitch;
-			Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
-
-			hr = Texture->UnlockRect(0);
-			if (FAILED(hr))
-			{
-				os::Printer::log("Could not unlock D3D9 Texture.", ELL_ERROR);
-				return false;
-			}
-
-			return true;
+			os::Printer::log("Could not lock D3D9 Texture.", ELL_ERROR);
+			return false;
 		}
-		else
-			os::Printer::log("CD3D9Texture: Unsupported D3D9 hardware texture format", ELL_ERROR);
+
+		Pitch = rect.Pitch;
+		Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+
+		hr = Texture->UnlockRect(0);
+		if (FAILED(hr))
+		{
+			os::Printer::log("Could not unlock D3D9 Texture.", ELL_ERROR);
+			return false;
+		}
 	}
 
 	return true;
@@ -597,7 +590,10 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 			g /= 4;
 			b /= 4;
 
-			c = ((a & 0x1) <<15) | ((r & 0x1F)<<10) | ((g & 0x1F)<<5) | (b & 0x1F);
+			if (ColorFormat == ECF_A1R5G5B5)
+				c = RGBA16(r,g,b,a);
+			else
+				c = A8R8G8B8toR5G6B5(SColor(a,r,g,b).color);
 			*(u16*)((void*)&tgt[(x*2)+(y*pitchtgt)]) = c;
 		}
 }
