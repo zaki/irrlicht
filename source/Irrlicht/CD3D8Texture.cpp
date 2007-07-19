@@ -59,7 +59,7 @@ HasMipMaps(false), IsRenderTarget(false)
 	setDebugName("CD3D8Texture");
 	#endif
 
-	bool generateMipLevels = (flags & video::ETCF_CREATE_MIP_MAPS) != 0;
+	const bool generateMipLevels = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
 	Device=driver->getExposedVideoData().D3D8.D3DDev8;
 	if (Device)
@@ -96,6 +96,22 @@ HasMipMaps(false), IsRenderTarget(false)
 	}
 }
 
+
+//! destructor
+CD3D8Texture::~CD3D8Texture()
+{
+	if (Device)
+		Device->Release();
+
+	if (Image)
+		Image->drop();
+
+	if (Texture)
+		Texture->Release();
+
+	if (RTTSurface)
+		RTTSurface->Release();
+}
 
 
 //! creates the hardware texture
@@ -137,21 +153,32 @@ bool CD3D8Texture::createTexture(u32 flags)
 	case ETCF_OPTIMIZED_FOR_SPEED:
 		format = D3DFMT_A1R5G5B5; break;
 	}
+	if (Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
+	{
+		if (format == D3DFMT_A8R8G8B8)
+			format = D3DFMT_R8G8B8;
+		else if (format == D3DFMT_A1R5G5B5)
+			format = D3DFMT_R5G6B5;
+	}
 
-	bool mipmaps = (flags & video::ETCF_CREATE_MIP_MAPS) != 0;
+	const bool mipmaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
 	hr = Device->CreateTexture(optSize.Width, optSize.Height,
 		mipmaps ? 0 : 1, // number of mipmaplevels (0 = automatic all)
 		0, format, D3DPOOL_MANAGED, &Texture);
 
-	if (FAILED(hr) && format == D3DFMT_A8R8G8B8)
+	if (FAILED(hr))
 	{
 		// try brute force 16 bit
-
-		format = D3DFMT_A1R5G5B5;
+		if (format == D3DFMT_A8R8G8B8)
+			format = D3DFMT_A1R5G5B5;
+		else if (format == D3DFMT_R8G8B8)
+			format = D3DFMT_R5G6B5;
+		else
+			return false;
 
 		hr = Device->CreateTexture(optSize.Width, optSize.Height,
-			(flags & ETCF_CREATE_MIP_MAPS) ? 0 : 1, // number of mipmaplevels (0 = automatic all)
+			mipmaps ? 0 : 1, // number of mipmaplevels (0 = automatic all)
 			0, D3DFMT_A1R5G5B5, D3DPOOL_MANAGED, &Texture);
 	}
 
@@ -172,86 +199,34 @@ bool CD3D8Texture::copyTexture()
 		TextureSize.Width = desc.Width;
 		TextureSize.Height = desc.Height;
 
-		if (desc.Format == D3DFMT_A1R5G5B5)
-			return copyTo16BitTexture();
-		else
-		if (desc.Format == D3DFMT_A8R8G8B8)
-			return copyTo32BitTexture();
+		if ((desc.Format == D3DFMT_A1R5G5B5) || (desc.Format == D3DFMT_A8R8G8B8))
+		{
+			D3DLOCKED_RECT rect;
+			HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
+			if (FAILED(hr))
+			{
+				os::Printer::log("Could not lock D3D8 Texture.", ELL_ERROR);
+				return false;
+			}
+
+			Pitch = rect.Pitch;
+			Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+
+			hr = Texture->UnlockRect(0);
+			if (FAILED(hr))
+			{
+				os::Printer::log("Could not unlock D3D8 Texture.", ELL_ERROR);
+				return false;
+			}
+
+			return true;
+		}
 		else
 			os::Printer::log("CD3D8Texture: Unsupported D3D8 hardware texture format", ELL_ERROR);
 	}
 
 	return true;
 }
-
-
-//! copies texture to 32 bit hardware texture
-bool CD3D8Texture::copyTo32BitTexture()
-{
-	D3DLOCKED_RECT rect;
-	HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
-	if (FAILED(hr))
-	{
-		os::Printer::log("Could not lock DIRECT3D8 32 bit Texture.", ELL_ERROR);
-		return false;
-	}
-
-	Pitch = rect.Pitch;
-	Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ECF_A8R8G8B8, Pitch);
-
-	hr = Texture->UnlockRect(0);
-	if (FAILED(hr))
-	{
-		os::Printer::log("Could not unlock DIRECT3D8 Texture.", ELL_ERROR);
-		return false;
-	}
-
-	return true;
-}
-
-
-//! optimized for 16 bit to 16 copy.
-bool CD3D8Texture::copyTo16BitTexture()
-{
-	D3DLOCKED_RECT rect;
-	HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
-	if (FAILED(hr))
-	{
-		os::Printer::log("Could not lock DIRECT3D8 16 bit Texture.", ELL_ERROR);
-		return false;
-	}
-
-	Pitch = rect.Pitch;
-	Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ECF_A1R5G5B5, Pitch);
-
-	hr = Texture->UnlockRect(0);
-	if (FAILED(hr))
-	{
-		os::Printer::log("Could not unlock DIRECT3D8 16 bit Texture.", ELL_ERROR);
-		return false;
-	}
-
-	return true;
-}
-
-
-
-//! destructor
-CD3D8Texture::~CD3D8Texture()
-{
-	if (Device)
-		Device->Release();
-
-	if (Image)
-		Image->drop();
-
-	if (Texture)
-		Texture->Release();
-
-	if (RTTSurface)
-		RTTSurface->Release();
-}
-
 
 
 //! lock function

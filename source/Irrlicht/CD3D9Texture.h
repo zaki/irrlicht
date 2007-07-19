@@ -85,12 +85,6 @@ private:
 	//! copies the image to the texture
 	bool copyTexture();
 
-	//! optimized for 16 bit to 16 copy.
-	bool copyTo16BitTexture();
-
-	//! copies texture to 32 bit hardware texture
-	bool copyTo32BitTexture();
-
 	//! Get D3D color format from Irrlicht color format.
 	D3DFORMAT getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const;
 

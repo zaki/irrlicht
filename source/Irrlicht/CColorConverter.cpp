@@ -246,8 +246,8 @@ void CColorConverter::convert_A1R5G5B5toR8G8B8(const void* sP, s32 sN, void* dP)
 
 	for (s32 x = 0; x < sN; ++x)
 	{
-		dB[2] = (*sB & 0x7c) << 9;
-		dB[1] = (*sB & 0x3e) << 6;
+		dB[2] = (*sB & 0x7c00) >> 7;
+		dB[1] = (*sB & 0x03e0) >> 2;
 		dB[0] = (*sB & 0x1f) << 3;
 
 		sB += 1;
@@ -262,8 +262,8 @@ void CColorConverter::convert_A1R5G5B5toB8G8R8(const void* sP, s32 sN, void* dP)
 
 	for (s32 x = 0; x < sN; ++x)
 	{
-		dB[0] = (*sB & 0x7c) << 9;
-		dB[1] = (*sB & 0x3e) << 6;
+		dB[0] = (*sB & 0x7c00) >> 7;
+		dB[1] = (*sB & 0x03e0) >> 2;
 		dB[2] = (*sB & 0x1f) << 3;
 
 		sB += 1;
@@ -302,9 +302,9 @@ void CColorConverter::convert_A8R8G8B8toR8G8B8(const void* sP, s32 sN, void* dP)
 	for (s32 x = 0; x < sN; ++x)
 	{
 		// sB[3] is alpha
-		dB[0] = sB[0];
+		dB[0] = sB[2];
 		dB[1] = sB[1];
-		dB[2] = sB[2];
+		dB[2] = sB[0];
 
 		sB += 4;
 		dB += 3;
@@ -319,9 +319,9 @@ void CColorConverter::convert_A8R8G8B8toB8G8R8(const void* sP, s32 sN, void* dP)
 	for (s32 x = 0; x < sN; ++x)
 	{
 		// sB[3] is alpha
-		dB[0] = sB[2];
+		dB[0] = sB[0];
 		dB[1] = sB[1];
-		dB[2] = sB[0];
+		dB[2] = sB[2];
 
 		sB += 4;
 		dB += 3;
