@@ -79,7 +79,30 @@ namespace os
 
 	void Timer::initTimer()
 	{
-		HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
+		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
+		SYSTEM_INFO sysinfo;
+		DWORD affinity, sysaffinity;
+		GetSystemInfo(&sysinfo);
+		s32 affinityCount = 0;
+
+		// count the processors that can be used by this process
+		if (GetProcessAffinityMask( GetCurrentProcess(), &affinity, &sysaffinity ))
+		{
+			for (u32 i=0; i<32; ++i)
+			{
+				if ((1<<i) & affinity)
+					affinityCount++;
+			}
+		}
+
+		if (sysinfo.dwNumberOfProcessors == 1 || affinityCount == 1)
+		{
+			HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
+		}
+		else
+		{
+			HighPerformanceTimerSupport = false;
+		}
 		initVirtualTimer();
 	}
 

@@ -1,5 +1,9 @@
 Changes in version 1.4 (... 2007)
 
+ - Hires timers are disabled on windows systems with more than one CPU, due to bugs
+   in the BIOS of many multi-core motherboards. To enable hires timers in your project, 
+   use SetProcessAffinityMask to set to use only one CPU before creating the device.
+
  - OpenGL render targets now the same way up as the other drivers. If you have
    written opengl shaders that use render targets then you'll need to change your 
    texture coordinates accordingly.
