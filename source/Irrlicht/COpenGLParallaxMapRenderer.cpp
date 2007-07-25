@@ -19,7 +19,7 @@ namespace video
 
 // Irrlicht Engine OpenGL render path parallax map vertex shader
 // I guess it could be optimized a lot, because I wrote it in D3D ASM and
-// transfered it 1:1 to OpenGL
+// transferred it 1:1 to OpenGL
 const char OPENGL_PARALLAX_MAP_VSH[] =
 	"!!ARBvp1.0\n"\
 	"#input\n"\
