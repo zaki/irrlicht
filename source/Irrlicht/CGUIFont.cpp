@@ -291,7 +291,6 @@ void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions
 	s32 colorLowerRight = *(p+1);
 	s32 colorBackGround = *(p+2);
 	s32 colorBackGroundTransparent = 0; // 0x00FFFFFF & colorBackGround;
-	s32 colorFont = 0xFFFFFFFF;
 
 	*(p+1) = colorBackGround;
 
@@ -375,7 +374,6 @@ void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions
 	s16 colorLowerRight = *(p+1);
 	s16 colorBackGround = *(p+2);
 	s16 colorBackGroundTransparent = 0; // 0x7FFF & colorBackGround;
-	u16 colorFont = 0xFFFF;
 
 	*(p+1) = colorBackGround;
 

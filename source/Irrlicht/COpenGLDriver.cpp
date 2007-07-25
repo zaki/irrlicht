@@ -156,9 +156,8 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen, bool stencilBuffer, CIrrDeviceMacOSX *device, io::IFileSystem* io, bool vsync, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(antiAlias),
-	LastSetLight(-1), RenderTargetTexture(0), ClockwiseWinding(true), 
-	CurrentRendertargetSize(0,0), _device(device)
+	AntiAlias(antiAlias), RenderTargetTexture(0), LastSetLight(-1),
+	CurrentRendertargetSize(0,0), ClockwiseWinding(true), _device(device)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -175,10 +174,10 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 //! Linux constructor and init code
 COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(antiAlias),
-	LastSetLight(-1), RenderTargetTexture(0), ClockwiseWinding(true), 
-	CurrentRendertargetSize(0,0)
+	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
+	Transformation3DChanged(true), AntiAlias(antiAlias),
+	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0),
+	ClockwiseWinding(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -211,10 +210,10 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 //! SDL constructor and init code
 COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
-	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(antiAlias),
-	LastSetLight(-1), RenderTargetTexture(0), ClockwiseWinding(true),
-	CurrentRendertargetSize(0,0)
+	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
+	Transformation3DChanged(true), AntiAlias(antiAlias),
+	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0),
+	ClockwiseWinding(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");

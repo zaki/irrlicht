@@ -256,6 +256,7 @@ void* CD3D8Texture::lock()
 			return 0;
 		}
 		hr = Device->CopyRects(surface, NULL, 0, RTTSurface, NULL);
+		surface->Release();
 		if(FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D8 Texture.", ELL_ERROR);

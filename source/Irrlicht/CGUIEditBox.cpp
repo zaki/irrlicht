@@ -625,8 +625,6 @@ void CGUIEditBox::draw()
 	if (!skin)
 		return;
 
-	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
-
 	frameRect = AbsoluteRect;
 
 	// draw the border

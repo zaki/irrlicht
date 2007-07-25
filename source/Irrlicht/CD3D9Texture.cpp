@@ -458,6 +458,7 @@ void* CD3D9Texture::lock()
 			return 0;
 		}
 		hr = Device->GetRenderTargetData(surface, RTTSurface);
+		surface->Release();
 		if(FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
