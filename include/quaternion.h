@@ -495,37 +495,19 @@ inline void quaternion::toAngleAxis(f32 &angle, core::vector3df &axis) const
 
 inline void quaternion::toEuler(vector3df& euler) const
 {
-	/* new version after euclideanspace.com by Matthias Meyer
-	old version had a problem where the initial quaternion
-	would return -0 for Y value and NaN for rotation of 1.5708
-	around Y-axis when using fromangleaxis() */
+	double sqw = W*W;
+	double sqx = X*X;
+	double sqy = Y*Y;
+	double sqz = Z*Z;
 
-	f64 testValue = X * Y + Z * W;
-	if(testValue > 0.499f) // north pole singularity
-	{
-		euler.Y = (f32) (2 * atan2(X,W));
-		euler.Z = (f32) (HALF_PI);
-		euler.X = 0.0f;
-		return;
-	}
-	if(testValue < -0.499f) // south pole singularity
-	{
-		euler.Y = (f32) (-2 * atan2(X,W));
-		euler.Z = (f32) (-HALF_PI);
-		euler.X = 0.0f;
-		return;
-	}
-	f64 sqx = X*X;
-	f64 sqy = Y*Y;
-	f64 sqz = Z*Z;
-	f64 sqw = W*W;
-	f64 unit = sqx + sqy + sqz + sqw;
+	// heading = rotation about z-axis
+	euler.Z = (f32) (atan2(2.0 * (X*Y +Z*W),(sqx - sqy - sqz + sqw)));
 
-	euler.Y = (f32) atan2( 2.0*Y*W - 2.0*X*Z, sqx - sqy - sqz + sqw );
-	euler.Z = (f32) asin ( 2.0 * testValue / unit );
-	euler.X = (f32) atan2( 2.0*X*W - 2.0*Y*Z, -sqx + sqy - sqz + sqw );
+	// bank = rotation about x-axis
+	euler.X = (f32) (atan2(2.0 * (Y*Z +X*W),(-sqx - sqy + sqz + sqw)));
 
-	return;
+	// attitude = rotation about y-axis
+	euler.Y = (f32) (asin( clamp(-2.0 * (X*Z - Y*W), -1.0, 1.0) ));
 }
 
 inline vector3df quaternion::operator* (const vector3df& v) const
