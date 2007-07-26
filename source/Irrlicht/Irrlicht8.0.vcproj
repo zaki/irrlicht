@@ -866,6 +866,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CGUIColorSelectDialog.h"
+				>
+			</File>
+			<File
 				RelativePath="CGUIComboBox.cpp"
 				>
 			</File>

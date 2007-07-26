@@ -44,7 +44,7 @@ namespace scene
 		//! response is done. 
 		virtual void setEllipsoidRadius(const core::vector3df& radius);
 
-		//! Returns the radius of the ellipsoid with wich the collision detection and
+		//! Returns the radius of the ellipsoid with which the collision detection and
 		//! response is done.
 		virtual core::vector3df getEllipsoidRadius() const;
 

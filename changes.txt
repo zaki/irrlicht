@@ -59,6 +59,11 @@ Changes in version 1.4 (... 2007)
 
 GUI:
 
+ - Added _IRR_COMPILE_WITH_GUI_ to allow compiling without the GUI. 
+   This is useful if you use another GUI system (ie CEGUI) or are using Irrlicht 
+   inside another window. You will have to supply an external IGUIFont if you wish
+   to use font scene nodes as there will be no GUI environment available to load fonts.
+
  - Added 7 more symbols to the built-in font and skin.
    EGDI_MORE_LEFT, EGDI_MORE_RIGHT, EGDI_MORE_UP, EGDI_MORE_DOWN: "<<" symbols
    indicating there is more content in that direction.

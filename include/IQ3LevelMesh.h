@@ -12,7 +12,7 @@ namespace irr
 {
 namespace scene
 {
-	//! Interface for a Mesh wich can be loaded directly from a Quake3 .bsp-file.
+	//! Interface for a Mesh which can be loaded directly from a Quake3 .bsp-file.
 	/** The Mesh tries to load all textures of the map. There are currently 
 	no additional methods in this class, but maybe there will be some in later
 	releases if there are feature requests. */

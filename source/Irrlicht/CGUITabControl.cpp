@@ -3,6 +3,8 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CGUITabControl.h"
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
@@ -488,3 +490,4 @@ void CGUITabControl::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 } // end namespace irr
 } // end namespace gui
 
+#endif // _IRR_COMPILE_WITH_GUI_

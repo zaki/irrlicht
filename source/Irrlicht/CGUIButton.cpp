@@ -3,6 +3,8 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CGUIButton.h"
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
@@ -461,3 +463,5 @@ void CGUIButton::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
 
 } // end namespace gui
 } // end namespace irr
+
+#endif _IRR_COMPILE_WITH_GUI_

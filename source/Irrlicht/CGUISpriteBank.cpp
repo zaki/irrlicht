@@ -1,5 +1,7 @@
 
 #include "CGUISpriteBank.h"
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
 #include "ITexture.h"
@@ -122,3 +124,5 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 
 } // namespace gui
 } // namespace irr
+
+#endif // _IRR_COMPILE_WITH_GUI_

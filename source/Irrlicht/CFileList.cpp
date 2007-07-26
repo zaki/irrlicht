@@ -31,6 +31,11 @@ namespace io
 
 CFileList::CFileList()
 {
+
+	#ifdef _DEBUG
+	setDebugName("CFileList");
+	#endif
+
 	// --------------------------------------------
 	// Windows version
 	#ifdef _IRR_WINDOWS_API_

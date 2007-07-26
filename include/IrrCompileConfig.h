@@ -103,6 +103,10 @@ define out. */
 //#define _IRR_LINUX_X11_RANDR_
 #endif
 
+//! Define _IRR_COMPILE_WITH_GUI_ to compile the engine with the built-in GUI
+/** Disable this if you are using an external library to draw the GUI. If you disable this then
+you will not be able to use anything provided by the GUI Environment, including loading fonts. */
+#define _IRR_COMPILE_WITH_GUI_
 
 //! Define _IRR_COMPILE_WITH_ZLIB_ to enable compiling the engine using zlib.
 /** This enables the engine to read from compressed .zip archives. If you
