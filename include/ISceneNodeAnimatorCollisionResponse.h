@@ -45,7 +45,7 @@ namespace scene
 		//! \param radius: New radius of the ellipsoid.
 		virtual void setEllipsoidRadius(const core::vector3df& radius) = 0;
 
-		//! Returns the radius of the ellipsoid with wich the collision detection and
+		//! Returns the radius of the ellipsoid with which the collision detection and
 		//! response is done.
 		//! \return Radius of the ellipsoid.
 		virtual core::vector3df getEllipsoidRadius() const = 0;

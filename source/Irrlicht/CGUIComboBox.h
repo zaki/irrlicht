@@ -5,6 +5,9 @@
 #ifndef __C_GUI_COMBO_BOX_H_INCLUDED__
 #define __C_GUI_COMBO_BOX_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUIComboBox.h"
 #include "irrString.h"
 #include "irrArray.h"
@@ -13,6 +16,9 @@ namespace irr
 {
 namespace gui
 {
+	class IGUIButton;
+	class IGUIListBox;
+
 	//! Single line edit box for editing simple text.
 	class CGUIComboBox : public IGUIComboBox
 	{
@@ -81,5 +87,7 @@ namespace gui
 } // end namespace gui
 } // end namespace irr
 
-#endif
+#endif // _IRR_COMPILE_WITH_GUI_
+
+#endif // __C_GUI_COMBO_BOX_H_INCLUDED__
 

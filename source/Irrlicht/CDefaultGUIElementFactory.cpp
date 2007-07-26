@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CDefaultGUIElementFactory.h"
+
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUIEnvironment.h"
 #include "IGUIButton.h"
 #include "IGUICheckBox.h"
@@ -153,3 +156,4 @@ EGUI_ELEMENT_TYPE CDefaultGUIElementFactory::getTypeFromName(const c8* name)
 } // end namespace gui
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_GUI_

@@ -3,6 +3,8 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CGUISkin.h"
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUIFont.h"
 #include "IGUISpriteBank.h"
 #include "IVideoDriver.h"
@@ -829,3 +831,4 @@ void CGUISkin::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWrit
 } // end namespace gui
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_GUI_

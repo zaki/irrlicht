@@ -66,8 +66,10 @@ CIrrDeviceStub::~CIrrDeviceStub()
 
 void CIrrDeviceStub::createGUIAndScene()
 {
+	#ifdef _IRR_COMPILE_WITH_GUI_
 	// create gui environment
 	GUIEnvironment = gui::createGUIEnvironment(FileSystem, VideoDriver, Operator);
+	#endif 
 
 	// create Scene manager
 	SceneManager = scene::createSceneManager(VideoDriver, FileSystem, CursorControl, GUIEnvironment);

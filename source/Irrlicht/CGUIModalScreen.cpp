@@ -3,6 +3,8 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CGUIModalScreen.h"
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUIEnvironment.h"
 #include "os.h"
 #include "IVideoDriver.h"
@@ -152,3 +154,4 @@ void CGUIModalScreen::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 } // end namespace gui
 } // end namespace irr
 
+#endif // _IRR_COMPILE_WITH_GUI_

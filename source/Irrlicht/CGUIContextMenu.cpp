@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CGUIContextMenu.h"
+
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
@@ -689,4 +692,6 @@ void CGUIContextMenu::setEventParent(IGUIElement *parent)
 
 } // end namespace
 } // end namespace
+
+#endif // _IRR_COMPILE_WITH_GUI_
 

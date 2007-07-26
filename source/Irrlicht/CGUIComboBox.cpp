@@ -2,9 +2,11 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include "CGUIComboBox.h"
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
-#include "CGUIComboBox.h"
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IGUIFont.h"
@@ -431,3 +433,5 @@ void CGUIComboBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRead
 } // end namespace gui
 } // end namespace irr
 
+
+#endif // _IRR_COMPILE_WITH_GUI_
