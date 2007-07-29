@@ -399,6 +399,8 @@ bool CD3D8Texture::createMipMaps(u32 level)
 	if (FAILED(upperSurface->LockRect(&upperlr, NULL, 0)))
 	{
 		os::Printer::log("Could not lock upper texture for mip map generation", ELL_WARNING);
+		upperSurface->Release();
+		lowerSurface->Release();
 		return false;
 	}
 
@@ -406,6 +408,9 @@ bool CD3D8Texture::createMipMaps(u32 level)
 	if (FAILED(lowerSurface->LockRect(&lowerlr, NULL, 0)))
 	{
 		os::Printer::log("Could not lock lower texture for mip map generation", ELL_WARNING);
+		upperSurface->UnlockRect();
+		upperSurface->Release();
+		lowerSurface->Release();
 		return false;
 	}
 
@@ -428,18 +433,19 @@ bool CD3D8Texture::createMipMaps(u32 level)
 			os::Printer::log("Unsupported mipmap format, cannot copy.", ELL_WARNING);
 	}
 
+	bool result=true;
 	// unlock
 	if (FAILED(upperSurface->UnlockRect()))
-		return false;
+		result=false;
 	if (FAILED(lowerSurface->UnlockRect()))
-		return false;
+		result=false;
 
 	// release
 	upperSurface->Release();
 	lowerSurface->Release();
 
-	if (upperDesc.Width <= 2 || upperDesc.Height <= 2)
-		return true; // stop generating levels
+	if (!result || upperDesc.Width < 3 || upperDesc.Height < 3)
+		return result; // stop generating levels
 
 	// generate next level
 	return createMipMaps(level+1);
