@@ -204,13 +204,14 @@ bool CD3D9Texture::createMipMaps(u32 level)
 	upperSurface->GetDesc(&upperDesc);
 	lowerSurface->GetDesc(&lowerDesc);
 
-
 	D3DLOCKED_RECT upperlr;
 	D3DLOCKED_RECT lowerlr;
 
 	// lock upper surface
 	if (FAILED(upperSurface->LockRect(&upperlr, NULL, 0)))
 	{
+		upperSurface->Release();
+		lowerSurface->Release();
 		os::Printer::log("Could not lock upper texture for mip map generation", ELL_WARNING);
 		return false;
 	}
@@ -218,6 +219,9 @@ bool CD3D9Texture::createMipMaps(u32 level)
 	// lock lower surface
 	if (FAILED(lowerSurface->LockRect(&lowerlr, NULL, 0)))
 	{
+		upperSurface->UnlockRect();
+		upperSurface->Release();
+		lowerSurface->Release();
 		os::Printer::log("Could not lock lower texture for mip map generation", ELL_WARNING);
 		return false;
 	}
@@ -241,18 +245,19 @@ bool CD3D9Texture::createMipMaps(u32 level)
 			os::Printer::log("Unsupported mipmap format, cannot copy.", ELL_WARNING);
 	}
 
+	bool result=true;
 	// unlock
 	if (FAILED(upperSurface->UnlockRect()))
-		return false;
+		result=false;
 	if (FAILED(lowerSurface->UnlockRect()))
-		return false;
+		result=false;
 
 	// release
 	upperSurface->Release();
 	lowerSurface->Release();
 
-	if (upperDesc.Width <= 2 || upperDesc.Height <= 2)
-		return true; // stop generating levels
+	if (!result || upperDesc.Width < 3 || upperDesc.Height < 3)
+		return result; // stop generating levels
 
 	// generate next level
 	return createMipMaps(level+1);
@@ -573,18 +578,20 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 			s32 a=0, r=0, g=0, b=0;
 
 			for (int dx=0; dx<2; ++dx)
+			{
 				for (int dy=0; dy<2; ++dy)
 				{
 					int tgx = (x*2)+dx;
 					int tgy = (y*2)+dy;
 
-					c = *(u16*)((void*)&src[(tgx*2)+(tgy*pitchsrc)]);
+					c = *(u16*)(&src[(tgx*2)+(tgy*pitchsrc)]);
 
 					a += getAlpha(c);
 					r += getRed(c);
 					g += getGreen(c);
 					b += getBlue(c);
 				}
+			}
 
 			a /= 4;
 			r /= 4;
@@ -595,7 +602,7 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 				c = RGBA16(r,g,b,a);
 			else
 				c = A8R8G8B8toR5G6B5(SColor(a,r,g,b).color);
-			*(u16*)((void*)&tgt[(x*2)+(y*pitchtgt)]) = c;
+			*(u16*)(&tgt[(x*2)+(y*pitchtgt)]) = c;
 		}
 }
 
@@ -619,7 +626,7 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 					int tgx = (x*2)+dx;
 					int tgy = (y*2)+dy;
 
-					c = *(u32*)((void*)&src[(tgx<<2)+(tgy*pitchsrc)]);
+					c = *(u32*)(&src[(tgx*4)+(tgy*pitchsrc)]);
 
 					a += c.getAlpha();
 					r += c.getRed();
@@ -628,13 +635,13 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 				}
 			}
 
-			a >>= 2;
-			r >>= 2;
-			g >>= 2;
-			b >>= 2;
+			a /= 4;
+			r /= 4;
+			g /= 4;
+			b /= 4;
 
-			c = ((a & 0xff)<<24) | ((r & 0xff)<<16) | ((g & 0xff)<<8) | (b & 0xff);
-			*(u32*)((void*)&tgt[(x*4)+(y*pitchtgt)]) = c.color;
+			c.set(a, r, g, b);
+			*(u32*)(&tgt[(x*4)+(y*pitchtgt)]) = c.color;
 		}
 	}
 }

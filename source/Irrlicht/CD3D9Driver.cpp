@@ -1335,6 +1335,12 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		pID3DDevice->SetRenderState(D3DRS_NORMALIZENORMALS,  material.NormalizeNormals);
 	}
 
+	// thickness
+	if (resetAllRenderstates || lastmaterial.Thickness != material.Thickness)
+	{
+		pID3DDevice->SetRenderState(D3DRS_POINTSIZE,  *((DWORD*)&material.Thickness));
+	}
+
 	// texture address mode
 	for (u32 st=0; st<MaxTextureUnits; ++st)
 	{

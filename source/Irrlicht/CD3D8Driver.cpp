@@ -234,8 +234,6 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	// enable anti alias if possible and whished
 	if (antiAlias)
 	{
-		DWORD qualityLevels = 0;
-
 		if (!FAILED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
 				devtype , present.BackBufferFormat, !fullScreen,
 				D3DMULTISAMPLE_2_SAMPLES)))
@@ -1339,6 +1337,12 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	if (resetAllRenderstates || lastmaterial.NormalizeNormals != material.NormalizeNormals)
 	{
 		pID3DDevice->SetRenderState(D3DRS_NORMALIZENORMALS,  material.NormalizeNormals);
+	}
+
+	// thickness
+	if (resetAllRenderstates || lastmaterial.Thickness != material.Thickness)
+	{
+		pID3DDevice->SetRenderState(D3DRS_POINTSIZE,  *((DWORD*)&material.Thickness));
 	}
 
 	// texture address mode
