@@ -56,7 +56,6 @@ namespace scene
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
 	private:
-
 		void setSize();
 
 		SMeshBuffer Buffer;
