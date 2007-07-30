@@ -745,7 +745,7 @@ namespace scene
 		 and looks like a plane with some hills on it. It is uses mostly for quick
 		 tests of the engine only. You can specify how many hills there should be
 		 on the plane and how high they should be. Also you must specify a name for
-		 the mesh, because the mesh is added to the mesh pool, and can be retieved
+		 the mesh, because the mesh is added to the mesh pool, and can be retrieved
 		 again using ISceneManager::getMesh() with the name as parameter.
 		 \param name: The name of this mesh which must be specified in order
 		 to be able to retrieve the mesh later with ISceneManager::getMesh().
@@ -779,7 +779,7 @@ namespace scene
 		 (8000x8000 pixels would be no problem) because the generator splits the
 		 files into smaller textures if necessary.
 		 You must specify a name for the mesh, because the mesh is added to the mesh pool,
-		 and can be retieved again using ISceneManager::getMesh() with the name as parameter.
+		 and can be retrieved again using ISceneManager::getMesh() with the name as parameter.
 		 \param meshname: The name of this mesh which must be specified in order
 		 to be able to retrieve the mesh later with ISceneManager::getMesh().
 		 \param texture: Texture for the terrain. Please note that this is not a
@@ -809,6 +809,11 @@ namespace scene
 				u32 tesselationCylinder=4, u32 tesselationCone=8,
 				f32 height=1.f, f32 cylinderHeight=0.6f,
 				f32 width0=0.05f, f32 width1=0.3f) = 0;
+
+		//! add a static sphere mesh to the meshpool
+		virtual IAnimatedMesh* addSphereMesh(const c8* name,
+				f32 radius=5.f, u32 polyCountX = 16,
+				u32 polyCountY = 16) = 0;
 
 		//! Returns the root scene node.
 		/** This is the scene node which is parent

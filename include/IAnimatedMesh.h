@@ -98,8 +98,8 @@ namespace scene
 
 		//! Returns the type of the animated mesh.
 		/** In most cases it is not neccessary to use this method.
-		This is useful for making a save downcast, for example
-		if getMeshType() returns EAMT_MD2, its save to cast the
+		This is useful for making a safe downcast. For example,
+		if getMeshType() returns EAMT_MD2 it's safe to cast the
 		IAnimatedMesh to IAnimatedMeshMD2.
 		\returns Type of the mesh. */
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const

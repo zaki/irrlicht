@@ -1199,7 +1199,7 @@ void CNullDriver::setFog(SColor color, bool linearFog, f32 start, f32 end, f32 d
 
 
 //! Draws a mesh buffer
-void CNullDriver::drawMeshBuffer( const scene::IMeshBuffer* mb)
+void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 {
 	if (!mb)
 		return;
