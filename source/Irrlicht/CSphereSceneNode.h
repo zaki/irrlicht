@@ -6,7 +6,7 @@
 #define __C_SHPERE_SCENE_NODE_H_INCLUDED__
 
 #include "ISceneNode.h"
-#include "SMeshBuffer.h"
+#include "IMesh.h"
 
 namespace irr
 {
@@ -57,9 +57,8 @@ namespace scene
 
 	private:
 
-		void setSizeAndPolys();
-
-		SMeshBuffer Buffer;
+		IMesh* Mesh;
+		core::aabbox3d<f32> Box;
 		f32 Radius;
 		u32 PolyCountX;
 		u32 PolyCountY;

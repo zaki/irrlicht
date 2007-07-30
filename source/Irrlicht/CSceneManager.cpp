@@ -79,8 +79,8 @@ namespace scene
 
 //! constructor
 CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
-							 gui::ICursorControl* cursorControl, IMeshCache* cache,
-							 gui::IGUIEnvironment * gui)
+		gui::ICursorControl* cursorControl, IMeshCache* cache,
+		gui::IGUIEnvironment* gui)
 : ISceneNode(0, 0), Driver(driver), FileSystem(fs), GUIEnvironment(gui),
 	CursorControl(cursorControl), CollisionManager(0), MeshManipulator(0),
 	ActiveCamera(0), ShadowColor(150,0,0,0), AmbientLight(0,0,0,0),
@@ -244,10 +244,9 @@ gui::IGUIEnvironment* CSceneManager::getGUIEnvironment ()
 
 //! Adds a text scene node, which is able to display
 //! 2d text at a position in three dimensional space
-ITextSceneNode* CSceneManager::addTextSceneNode(gui::IGUIFont* font, const wchar_t* text,
-	video::SColor color,
-	ISceneNode* parent,	const core::vector3df& position,
-	s32 id)
+ITextSceneNode* CSceneManager::addTextSceneNode(gui::IGUIFont* font,
+		const wchar_t* text, video::SColor color, ISceneNode* parent,
+		const core::vector3df& position, s32 id)
 {
 	if (!font)
 		return 0;
@@ -263,11 +262,11 @@ ITextSceneNode* CSceneManager::addTextSceneNode(gui::IGUIFont* font, const wchar
 }
 
 //! Adds a text scene node, which uses billboards
-ITextSceneNode* CSceneManager::addBillboardTextSceneNode(gui::IGUIFont* font, const wchar_t* text,
-			ISceneNode* parent,
-			const core::dimension2d<f32>& size, 
-			const core::vector3df& position, s32 id,
-			video::SColor shade_top, video::SColor shade_down)
+ITextSceneNode* CSceneManager::addBillboardTextSceneNode(gui::IGUIFont* font,
+		const wchar_t* text, ISceneNode* parent,
+		const core::dimension2d<f32>& size,
+		const core::vector3df& position, s32 id,
+		video::SColor shade_top, video::SColor shade_down)
 {
 	if (!font)
 		return 0;
@@ -405,8 +404,8 @@ ISceneNode* CSceneManager::addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* 
 		return 0;
 
 	return addOctTreeSceneNode(mesh ? mesh->getMesh(0) : 0,
-							   parent, id, minimalPolysPerNode,
-							   alsoAddIfMeshPointerZero);
+				parent, id, minimalPolysPerNode,
+				alsoAddIfMeshPointerZero);
 }
 
 
@@ -415,8 +414,7 @@ ISceneNode* CSceneManager::addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* 
 //! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 //! faster then a bsp tree.
 ISceneNode* CSceneManager::addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent,
-											   s32 id, s32 minimalPolysPerNode,
-											   bool alsoAddIfMeshPointerZero)
+		s32 id, s32 minimalPolysPerNode, bool alsoAddIfMeshPointerZero)
 {
 	if (!alsoAddIfMeshPointerZero && !mesh)
 		return 0;
@@ -605,7 +603,7 @@ ITerrainSceneNode* CSceneManager::addTerrainSceneNode(
 	}
 
 	ITerrainSceneNode* terrain = addTerrainSceneNode(file, parent, id,
-		position, rotation, scale, vertexColor, maxLOD, patchSize, 
+		position, rotation, scale, vertexColor, maxLOD, patchSize,
 		smoothFactor, addAlsoIfHeightmapEmpty);
 
 	if (file)
@@ -639,7 +637,7 @@ ITerrainSceneNode* CSceneManager::addTerrainSceneNode(
 			node->remove();
 			node->drop();
 			return 0;
-		}		
+		}
 	}
 
 	node->drop();
@@ -681,18 +679,30 @@ IDummyTransformationSceneNode* CSceneManager::addDummyTransformationSceneNode(
 //! the mesh, because the mesh is added to the mesh pool, and can be retrieved
 //! again using ISceneManager::getMesh with the name as parameter.
 IAnimatedMesh* CSceneManager::addHillPlaneMesh(const c8* name,
-	const core::dimension2d<f32>& tileSize, const core::dimension2d<s32>& tileCount,
-	video::SMaterial* material,	f32 hillHeight, const core::dimension2d<f32>& countHills,
-	const core::dimension2d<f32>& textureRepeatCount)
+		const core::dimension2d<f32>& tileSize,
+		const core::dimension2d<s32>& tileCount,
+		video::SMaterial* material, f32 hillHeight,
+		const core::dimension2d<f32>& countHills,
+		const core::dimension2d<f32>& textureRepeatCount)
 {
 	if (!name || MeshCache->isMeshLoaded(name))
 		return 0;
 
-	IAnimatedMesh* animatedMesh = CGeometryCreator::createHillPlaneMesh(tileSize,
-		tileCount, material, hillHeight, countHills, textureRepeatCount);
+	IMesh* mesh = CGeometryCreator::createHillPlaneMesh(tileSize,
+			tileCount, material, hillHeight, countHills,
+			textureRepeatCount);
+	if (!mesh)
+		return 0;
+
+	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
+	if (!animatedMesh)
+		return 0;
+
+	animatedMesh->addMesh(mesh);
+	animatedMesh->recalculateBoundingBox();
+	mesh->drop();
 
 	MeshCache->addMesh(name, animatedMesh);
-
 	animatedMesh->drop();
 
 	return animatedMesh;
@@ -709,14 +719,21 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const c8* name,
 	if (!name || MeshCache->isMeshLoaded(name))
 		return 0;
 
-	IAnimatedMesh* animatedMesh = CGeometryCreator::createTerrainMesh(texture,
-		heightmap, stretchSize, maxHeight, getVideoDriver(), defaultVertexBlockSize);
+	IMesh* mesh = CGeometryCreator::createTerrainMesh(texture, heightmap,
+			stretchSize, maxHeight, getVideoDriver(),
+			defaultVertexBlockSize);
+	if (!mesh)
+		return 0;
 
+	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
 	if (!animatedMesh)
 		return 0;
 
-	MeshCache->addMesh(name, animatedMesh);
+	animatedMesh->addMesh(mesh);
+	animatedMesh->recalculateBoundingBox();
+	mesh->drop();
 
+	MeshCache->addMesh(name, animatedMesh);
 	animatedMesh->drop();
 
 	return animatedMesh;
@@ -728,18 +745,51 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const c8* name,
 		u32 tesselationCylinder, u32 tesselationCone, f32 height,
 		f32 cylinderHeight, f32 width0,f32 width1)
 {
-	
 	if (!name || MeshCache->isMeshLoaded(name))
 		return 0;
 
-	IAnimatedMesh* animatedMesh = CGeometryCreator::createArrowMesh(
-		tesselationCylinder, tesselationCone, height, cylinderHeight, width0,width1, vtxColor0, vtxColor1);
+	IMesh* mesh = CGeometryCreator::createArrowMesh( tesselationCylinder,
+			tesselationCone, height, cylinderHeight, width0,width1,
+			vtxColor0, vtxColor1);
+	if (!mesh)
+		return 0;
 
+	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
 	if (!animatedMesh)
 		return 0;
 
-	MeshCache->addMesh(name, animatedMesh);
+	animatedMesh->addMesh(mesh);
+	animatedMesh->recalculateBoundingBox();
+	mesh->drop();
 
+	MeshCache->addMesh(name, animatedMesh);
+	animatedMesh->drop();
+
+	return animatedMesh;
+}
+
+
+
+//! Adds a static sphere mesh to the mesh pool.
+IAnimatedMesh* CSceneManager::addSphereMesh(const c8* name,
+		f32 radius, u32 polyCountX, u32 polyCountY)
+{
+	if (!name || MeshCache->isMeshLoaded(name))
+		return 0;
+
+	IMesh* mesh = CGeometryCreator::createSphereMesh( radius, polyCountX, polyCountY);
+	if (!mesh)
+		return 0;
+
+	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
+	if (!animatedMesh)
+		return 0;
+
+	animatedMesh->addMesh(mesh);
+	animatedMesh->recalculateBoundingBox();
+	mesh->drop();
+
+	MeshCache->addMesh(name, animatedMesh);
 	animatedMesh->drop();
 
 	return animatedMesh;
@@ -1161,9 +1211,9 @@ ISceneNodeAnimator* CSceneManager::createRotationAnimator(const core::vector3df&
 
 
 //! creates a fly circle animator, which lets the attached scene node fly around a center.
-ISceneNodeAnimator* CSceneManager::createFlyCircleAnimator(const core::vector3df& normal,
-					   f32 radius, f32 speed,
-					   const core::vector3df& direction)
+ISceneNodeAnimator* CSceneManager::createFlyCircleAnimator(
+		const core::vector3df& normal, f32 radius, f32 speed,
+		const core::vector3df& direction)
 {
 	ISceneNodeAnimator* anim = new CSceneNodeAnimatorFlyCircle(os::Timer::getTime(), normal,
 			radius, speed, direction);
@@ -1583,7 +1633,7 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 		return false;
 
 	writer->writeXMLHeader();
-    writeSceneNode(writer, this, userDataSerializer);
+	writeSceneNode(writer, this, userDataSerializer);
 	writer->drop();
 
 	return true;
@@ -1597,7 +1647,7 @@ bool CSceneManager::loadScene(const c8* filename, ISceneUserDataSerializer* user
 	io::IReadFile* read = FileSystem->createAndOpenFile(filename);
 	if (!read)
 	{
-	    os::Printer::log("Unable to open scene file", filename, ELL_ERROR);
+		os::Printer::log("Unable to open scene file", filename, ELL_ERROR);
 		return false;
 	}
 
@@ -1613,20 +1663,20 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 {
 	if (!file)
 	{
-	    os::Printer::log("Unable to open scene file", ELL_ERROR);
+		os::Printer::log("Unable to open scene file", ELL_ERROR);
 		return false;
 	}
 
 	io::IXMLReader* reader = FileSystem->createXMLReader(file);
 	if (!reader)
 	{
-        os::Printer::log("Scene is not a valid XML file", file->getFileName(), ELL_ERROR);
+		os::Printer::log("Scene is not a valid XML file", file->getFileName(), ELL_ERROR);
 		return false;
 	}
-	
+
 	// for mesh loading, set collada loading attributes
 
-	bool bOldColladaSingleMesh = getParameters()->getAttributeAsBool(COLLADA_CREATE_SCENE_INSTANCES);
+	bool oldColladaSingleMesh = getParameters()->getAttributeAsBool(COLLADA_CREATE_SCENE_INSTANCES);
 	getParameters()->setAttribute(COLLADA_CREATE_SCENE_INSTANCES, false);
 
 	// read file
@@ -1638,7 +1688,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 
 	// restore old collada parameters
 
-	getParameters()->setAttribute(COLLADA_CREATE_SCENE_INSTANCES, bOldColladaSingleMesh);
+	getParameters()->setAttribute(COLLADA_CREATE_SCENE_INSTANCES, oldColladaSingleMesh);
 
 	// finish up
 
@@ -1674,8 +1724,7 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 			node = this; // root
 	}
 
-    // read attributes
-
+	// read attributes
 	while(reader->read())
 	{
 		bool endreached = false;
@@ -1719,7 +1768,7 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 			else
 			{
 				os::Printer::log("Found unknown element in irrlicht scene file",
-								 core::stringc(reader->getNodeName()).c_str());
+						core::stringc(reader->getNodeName()).c_str());
 			}
 			break;
 		default:
@@ -2043,9 +2092,9 @@ video::SColorf CSceneManager::getAmbientLight()
 
 
 // creates a scenemanager
-ISceneManager* createSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
-								  gui::ICursorControl* cursorcontrol, 
-								  gui::IGUIEnvironment *guiEnvironment )
+ISceneManager* createSceneManager(video::IVideoDriver* driver,
+		io::IFileSystem* fs, gui::ICursorControl* cursorcontrol,
+		gui::IGUIEnvironment *guiEnvironment)
 {
 	return new CSceneManager(driver, fs, cursorcontrol, 0, guiEnvironment );
 }

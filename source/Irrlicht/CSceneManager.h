@@ -179,7 +179,7 @@ namespace scene
 		//! and looks like a plane with some hills on it. It is uses mostly for quick
 		//! tests of the engine only. You can specify how many hills there should be 
 		//! on the plane and how high they should be. Also you must specify a name for
-		//! the mesh, because the mesh is added to the mesh pool, and can be retieved
+		//! the mesh, because the mesh is added to the mesh pool, and can be retrieved
 		//! again using ISceneManager::getMesh with the name as parameter.
 		virtual IAnimatedMesh* addHillPlaneMesh(const c8* name,
 			const core::dimension2d<f32>& tileSize, const core::dimension2d<s32>& tileCount,
@@ -198,6 +198,10 @@ namespace scene
 				u32 tesselationCylinder, u32 tesselationCone,
 				f32 height, f32 cylinderHeight, f32 width0,
 				f32 width1);
+
+		//! Adds a static sphere mesh to the mesh pool.
+		IAnimatedMesh* CSceneManager::addSphereMesh(const c8* name,
+				f32 radius, u32 polyCountX, u32 polyCountY);
 
 		//! Adds a particle system scene node. 
 		virtual IParticleSystemSceneNode* addParticleSystemSceneNode(
