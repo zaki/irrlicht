@@ -13,10 +13,24 @@ namespace irr
 namespace scene
 {
 
+	/*
+        011         111
+          /6,8------/5        y
+         /  |      / |        ^  z
+        /   |     /  |        | /
+    010 3,9-------2  |        |/
+        |   7- - -10,4 101     *---->x
+        |  /      |  /
+        |/        | /
+        0------11,1/
+       000       100       
+	*/
+
 //! constructor
-CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr, s32 id,
-			const core::vector3df& position, const core::vector3df& rotation,	const core::vector3df& scale)
-: ISceneNode(parent, mgr, id, position, rotation, scale), Size(size)
+CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
+		s32 id, const core::vector3df& position,
+		const core::vector3df& rotation, const core::vector3df& scale)
+	: ISceneNode(parent, mgr, id, position, rotation, scale), Size(size)
 {
 	#ifdef _DEBUG
 	setDebugName("CCubeSceneNode");
@@ -26,19 +40,17 @@ CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
             7,3,0,   7,6,3,   9,5,2,   9,8,5,   0,11,10,   0,10,7};
 
 	Buffer.Indices.set_used(36);
-	for (s32 i=0; i<36; ++i)
+	for (u32 i=0; i<36; ++i)
 		Buffer.Indices[i] = u[i];
 
 	setSize();
 }
 
 
-
 //! destructor
 CCubeSceneNode::~CCubeSceneNode()
 {
 }
-
 
 void CCubeSceneNode::setSize()
 {
@@ -65,7 +77,7 @@ void CCubeSceneNode::setSize()
 
 	Buffer.BoundingBox.reset(0,0,0); 
 
-	for (int i=0; i<12; ++i)
+	for (u32 i=0; i<12; ++i)
 	{
 		Buffer.Vertices[i].Pos -= core::vector3df(0.5f, 0.5f, 0.5f);
 		Buffer.Vertices[i].Pos *= Size;
@@ -74,32 +86,14 @@ void CCubeSceneNode::setSize()
 }
 
 
-
 //! renders the node.
 void CCubeSceneNode::render()
 {
-	/*
-        011         111
-          /6--------/5        y
-         /  |      / |        ^  z
-        /   |     /  |        | /
-    010 3---------2  |        |/
-        |   7- - -| -4 101     *---->x
-        |  /      |  /
-        |/        | /
-        0---------1/
-       000       100       
-	*/
-
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-
 	driver->setMaterial(Buffer.Material);
-
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-	
 	driver->drawMeshBuffer(&Buffer);
 }
-
 
 
 //! returns the axis aligned bounding box of this node
@@ -172,7 +166,6 @@ ISceneNode* CCubeSceneNode::clone(ISceneNode* newParent, ISceneManager* newManag
 	nb->drop();
 	return nb;
 }
-
 
 
 } // end namespace scene

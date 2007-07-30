@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - Fixed the hillplane mesh to work with non-quadratic dimensions as well. Changed the interface also, so use a u32 dimension to specify the tilecount now.
+
  - Hires timers are disabled on windows systems with more than one CPU, due to bugs
    in the BIOS of many multi-core motherboards. To enable hires timers in your project, 
    use SetProcessAffinityMask to set to use only one CPU before creating the device.

@@ -175,16 +175,17 @@ namespace scene
 												);
 
 
-		//! Adds a Hill Plane mesh to the mesh pool. The mesh is generated on the fly
-		//! and looks like a plane with some hills on it. It is uses mostly for quick
-		//! tests of the engine only. You can specify how many hills there should be 
-		//! on the plane and how high they should be. Also you must specify a name for
-		//! the mesh, because the mesh is added to the mesh pool, and can be retrieved
-		//! again using ISceneManager::getMesh with the name as parameter.
+		//! Adds a Hill Plane mesh to the mesh pool. The mesh is
+		//! generated on the fly and looks like a plane with some hills
+		//! on it. You can specify how many hills should be on the plane
+		//! and how high they should be. Also you must specify a name
+		//! for the mesh because the mesh is added to the mesh pool and
+		//! can be retrieved back using ISceneManager::getMesh with the
+		//! name as parameter.
 		virtual IAnimatedMesh* addHillPlaneMesh(const c8* name,
-			const core::dimension2d<f32>& tileSize, const core::dimension2d<s32>& tileCount,
+			const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 			video::SMaterial* material = 0,	f32 hillHeight = 0.0f, 
-			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(0.0f, 0.0f),
+			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(1.0f, 1.0f),
 			const core::dimension2d<f32>& textureRepeatCount = core::dimension2d<f32>(1.0f, 1.0f));
 
 		//! Adds a terrain mesh to the mesh pool.

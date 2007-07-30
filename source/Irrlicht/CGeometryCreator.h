@@ -27,7 +27,7 @@ class CGeometryCreator
 public:
 
 	static IMesh* createHillPlaneMesh(
-		const core::dimension2d<f32>& tileSize, const core::dimension2d<s32>& tileCount,
+		const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 		video::SMaterial* material, f32 hillHeight, const core::dimension2d<f32>& countHills,
 		const core::dimension2d<f32>& textureRepeatCount);
 

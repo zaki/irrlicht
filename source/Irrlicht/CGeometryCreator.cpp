@@ -18,69 +18,76 @@ namespace scene
 // creates a hill plane
 IMesh* CGeometryCreator::createHillPlaneMesh(
 		const core::dimension2d<f32>& tileSize,
-		const core::dimension2d<s32>& tc, video::SMaterial* material,
+		const core::dimension2d<u32>& tc, video::SMaterial* material,
 		f32 hillHeight, const core::dimension2d<f32>& ch,
 		const core::dimension2d<f32>& textureRepeatCount)
 {
-	core::dimension2d<s32> tileCount = tc;
+	core::dimension2d<u32> tileCount = tc;
 	core::dimension2d<f32> countHills = ch;
+
+	if (countHills.Width < 0.01f)
+		countHills.Width = 1.f;
+	if (countHills.Height < 0.01f)
+		countHills.Height = 1.f;
+
+	// center
+	const core::position2d<f32> center((tileSize.Width * tileCount.Width) / 2.0f, (tileSize.Height * tileCount.Height) / 2.0f);
+
+	// texture coord step
+	const core::dimension2d<f32> tx(
+			textureRepeatCount.Width / tileCount.Width,
+			textureRepeatCount.Height / tileCount.Height);
+
+	// add one more point in each direction for proper tile count
+	++tileCount.Height;
+	++tileCount.Width;
 
 	SMeshBuffer* buffer = new SMeshBuffer();
 	video::S3DVertex vtx;
 	vtx.Color.set(255,255,255,255);
 
-	if (countHills.Width < 0.01f)
-		countHills.Width = 1;
-	if (countHills.Height < 0.01f)
-		countHills.Height = 1;
+	// create vertices from left-front to right-back
+	u32 x;
 
-	const f32 halfX = (tileSize.Width * tileCount.Width) / 2.0f;
-	const f32 halfY = (tileSize.Height * tileCount.Height) / 2.0f;
-
-	const core::dimension2d<f32> tx(
-			1.0f / (tileCount.Width / textureRepeatCount.Width),
-			1.0f / (tileCount.Height / textureRepeatCount.Height));
-
-	++tileCount.Height;
-	++tileCount.Width;
-
-	// create vertices
-	s32 x;
-
+	f32 sx=0.f, tsx=0.f;
 	for (x=0; x<tileCount.Width; ++x)
 	{
-		for (s32 y=0; y<tileCount.Height; ++y)
+		f32 sy=0.f, tsy=0.f;
+		for (u32 y=0; y<tileCount.Height; ++y)
 		{
-			vtx.Pos.set(tileSize.Width * x - halfX, 0, tileSize.Height * y - halfY);
-			vtx.TCoords.set(x * tx.Width, 1.0f - y * tx.Height);
+			vtx.Pos.set(sx - center.X, 0, sy - center.Y);
+			vtx.TCoords.set(tsx, 1.0f - tsy);
 
-			if (hillHeight)
-				vtx.Pos.Y = (f32)(sin(vtx.Pos.X * countHills.Width * irr::core::PI / halfX) *
-					cos(vtx.Pos.Z * countHills.Height * irr::core::PI / halfY))
+			if (hillHeight != 0.0f)
+				vtx.Pos.Y = (f32)(sin(vtx.Pos.X * countHills.Width * irr::core::PI / center.X) *
+					cos(vtx.Pos.Z * countHills.Height * irr::core::PI / center.Y))
 					*hillHeight;
 
 			buffer->Vertices.push_back(vtx);
+			sy += tileSize.Height;
+			tsy += tx.Height;
 		}
+		sx += tileSize.Width;
+		tsx += tx.Width;
 	}
 
 	// create indices
 
 	for (x=0; x<tileCount.Width-1; ++x)
 	{
-		for (s32 y=0; y<tileCount.Height-1; ++y)
+		for (u32 y=0; y<tileCount.Height-1; ++y)
 		{
-			s32 current = y*tileCount.Width + x;
+			const s32 current = x*tileCount.Height + y;
 
 			buffer->Indices.push_back(current);
 			buffer->Indices.push_back(current + 1);
-			buffer->Indices.push_back(current + tileCount.Width);
+			buffer->Indices.push_back(current + tileCount.Height);
 
 			buffer->Indices.push_back(current + 1);
-			buffer->Indices.push_back(current + 1 + tileCount.Width);
-			buffer->Indices.push_back(current + tileCount.Width);
+			buffer->Indices.push_back(current + 1 + tileCount.Height);
+			buffer->Indices.push_back(current + tileCount.Height);
 		}
 	}
-
 
 	// recalculate normals
 	for (u32 i=0; i<buffer->Indices.size(); i+=3)

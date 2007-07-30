@@ -768,7 +768,7 @@ namespace scene
 		 exists. If successful, a pointer to the mesh is returned.
 		 This pointer should not be dropped. See IUnknown::drop() for more information. */
 		virtual IAnimatedMesh* addHillPlaneMesh(const c8* name,
-			const core::dimension2d<f32>& tileSize, const core::dimension2d<s32>& tileCount,
+			const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 			video::SMaterial* material = 0,	f32 hillHeight = 0.0f,
 			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(0.0f, 0.0f),
 			const core::dimension2d<f32>& textureRepeatCount = core::dimension2d<f32>(1.0f, 1.0f)) = 0;
