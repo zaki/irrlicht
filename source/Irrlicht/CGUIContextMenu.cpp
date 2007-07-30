@@ -477,7 +477,9 @@ void CGUIContextMenu::draw()
 			if (Items[i].Checked && sprites)
 			{
 				core::rect<s32> r = rect;
-				r.UpperLeftCorner.X -= 15;
+				r.LowerRightCorner.X = r.UpperLeftCorner.X - 15;
+				r.UpperLeftCorner.X = r.LowerRightCorner.X + 15;
+
 				sprites->draw2DSprite(skin->getIcon(EGDI_CHECK_BOX_CHECKED), 
 					r.getCenter(), clip, skin->getColor(c), 
 					(i == HighLighted) ? ChangeTime : 0,  
