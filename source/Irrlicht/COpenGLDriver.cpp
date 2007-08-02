@@ -1632,7 +1632,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 				glDisable(GL_BLEND);
 			}
 		}
-
 	}
 	else
 	{

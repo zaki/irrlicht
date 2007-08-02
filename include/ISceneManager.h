@@ -961,7 +961,7 @@ namespace scene
 		 how big the radius should be, you could use the following code to determine
 		 it:
 		 \code
-		 core::aabbox<f32> box = yourSceneNode->getBoundingBox();
+		 const core::aabbox<f32>& box = yourSceneNode->getBoundingBox();
 		 core::vector3df radius = box.MaxEdge - box.getCenter();
 		 \endcode
 		 \param gravityPerSecond: Sets the gravity of the environment. A good example value would be

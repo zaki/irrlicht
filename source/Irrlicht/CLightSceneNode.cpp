@@ -38,9 +38,9 @@ CLightSceneNode::~CLightSceneNode()
 //! pre render event
 void CLightSceneNode::OnRegisterSceneNode()
 {
-	doLightRecalc ();
+	doLightRecalc();
 
-	if (IsVisible  )
+	if (IsVisible)
 	{
 		SceneManager->registerNodeForRendering(this, ESNRP_LIGHT);
 		ISceneNode::OnRegisterSceneNode();
@@ -69,8 +69,8 @@ void CLightSceneNode::render()
 				break;
 
 			case video::ELT_DIRECTIONAL:
-				driver->draw3DLine(core::vector3df ( 0.f, 0.f, 0.f ), 
-						core::vector3df ( 0.f, 0.f, 0.f ) + (LightData.Position * 10.f ),
+				driver->draw3DLine(core::vector3df( 0.f, 0.f, 0.f ), 
+						core::vector3df( 0.f, 0.f, 0.f ) + (LightData.Position * 10.f ),
 						LightData.DiffuseColor.toSColor()
 									);
 				break;
@@ -81,12 +81,12 @@ void CLightSceneNode::render()
 }
 
 
-//! returns the light data
+//! sets the light data
 void CLightSceneNode::setLightData(const video::SLight& light)
 {
 	LightData = light;
 	ISceneNode::setPosition(light.Position);
-	ISceneNode::updateAbsolutePosition ();
+	ISceneNode::updateAbsolutePosition();
 }
 
 
@@ -111,24 +111,24 @@ void CLightSceneNode::doLightRecalc()
 		case video::ELT_POINT:
 		{
 			f32 r = LightData.Radius * LightData.Radius * 0.5f;
-			BBox.MaxEdge.set ( r, r, r );
-			BBox.MinEdge.set ( -r, -r, -r );
-			setAutomaticCulling ( scene::EAC_BOX );
+			BBox.MaxEdge.set( r, r, r );
+			BBox.MinEdge.set( -r, -r, -r );
+			setAutomaticCulling( scene::EAC_BOX );
 
 			LightData.Position = getAbsolutePosition();
 		} break;
 
 		case video::ELT_DIRECTIONAL:
-			BBox.reset ( 0, 0, 0 );
-			setAutomaticCulling ( scene::EAC_OFF );
+			BBox.reset( 0, 0, 0 );
+			setAutomaticCulling( scene::EAC_OFF );
 
 			// misuse Position as direction..
 			LightData.Position = getAbsolutePosition();
 			LightData.Position.invert();
 			if ( LightData.Position.getLengthSQ() == 0.0 )
 			{
-				LightData.Position.set ( 0.f, -1.f, 0.f );
-				os::Printer::log ( "Invalid Directional Light Direction" );
+				LightData.Position.set( 0.f, -1.f, 0.f );
+				os::Printer::log( "Invalid Directional Light Direction" );
 			}
 			else
 			{
@@ -171,8 +171,10 @@ void CLightSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 //! Creates a clone of this scene node and its children.
 ISceneNode* CLightSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
 {
-	if (!newParent) newParent = Parent;
-	if (!newManager) newManager = SceneManager;
+	if (!newParent)
+		newParent = Parent;
+	if (!newManager)
+		newManager = SceneManager;
 
 	CLightSceneNode* nb = new CLightSceneNode(newParent, 
 		newManager, ID, RelativeTranslation, LightData.DiffuseColor, LightData.Radius);

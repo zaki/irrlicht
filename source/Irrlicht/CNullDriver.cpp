@@ -63,7 +63,7 @@ IImageWriter* createImageWriterPPM();
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
 : FileSystem(io), ViewPort(0,0,0,0), ScreenSize(screenSize),
- PrimitivesDrawn(0), TextureCreationFlags(0)
+	PrimitivesDrawn(0), TextureCreationFlags(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");
@@ -406,7 +406,7 @@ ITexture* CNullDriver::addTexture(const c8* name, IImage* image)
 
 //! creates a Texture
 ITexture* CNullDriver::addTexture(const core::dimension2d<s32>& size,
-				 const c8* name, ECOLOR_FORMAT format)
+				const c8* name, ECOLOR_FORMAT format)
 {
 	if (!name)
 		return 0;
@@ -439,7 +439,7 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const char*
 
 //! sets a render target
 bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-					 bool clearZBuffer, SColor color)
+					bool clearZBuffer, SColor color)
 {
 	return false;
 }
@@ -587,7 +587,7 @@ void CNullDriver::draw2DImage(video::ITexture* texture,
 				bool useAlphaChannelOfTexture)
 {
 	core::position2d<s32> target(pos);
-	
+
 	for (u32 i=0; i<indices.size(); ++i)
 	{
 		draw2DImage(texture, target, sourceRects[indices[i]],
@@ -610,9 +610,9 @@ void CNullDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>& d
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 void CNullDriver::draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
-				 const core::rect<s32>& sourceRect,
-				 const core::rect<s32>* clipRect, SColor color,
-				 bool useAlphaChannelOfTexture)
+				const core::rect<s32>& sourceRect,
+				const core::rect<s32>* clipRect, SColor color,
+				bool useAlphaChannelOfTexture)
 {
 }
 
@@ -678,7 +678,7 @@ core::dimension2d<s32> CNullDriver::getScreenSize()
 	return ScreenSize;
 }
 
-//! returns the current render target size, 
+//! returns the current render target size,
 //! or the screen size if render targets are not implemented
 core::dimension2d<s32> CNullDriver::getCurrentRenderTargetSize()
 {
@@ -732,8 +732,9 @@ void CNullDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 
 //! Fills the stencil shadow with color. After the shadow volume has been drawn
 //! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
 //! to draw the color of the shadow.
-void CNullDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
-	video::SColor rightUpEdge,	video::SColor leftDownEdge,	video::SColor rightDownEdge)
+void CNullDriver::drawStencilShadow(bool clearStencilBuffer,
+		video::SColor leftUpEdge, video::SColor rightUpEdge,
+		video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
 }
 
@@ -743,7 +744,6 @@ void CNullDriver::deleteAllDynamicLights()
 {
 	Lights.set_used(0);
 }
-
 
 
 //! adds a dynamic light
@@ -760,6 +760,7 @@ u32 CNullDriver::getMaximalDynamicLightAmount()
 	return 0;
 }
 
+
 //! Returns current amount of dynamic lights set
 //! \return Current amount of dynamic lights set
 u32 CNullDriver::getDynamicLightCount()
@@ -767,16 +768,17 @@ u32 CNullDriver::getDynamicLightCount()
 	return Lights.size();
 }
 
-//! Returns light data which was previously set with IVideDriver::addDynamicLight().
+
+//! Returns light data which was previously set by IVideoDriver::addDynamicLight().
 //! \param idx: Zero based index of the light. Must be greater than 0 and smaller
 //! than IVideoDriver()::getDynamicLightCount.
 //! \return Light data.
 const SLight& CNullDriver::getDynamicLight(u32 idx)
 {
 	if ( idx < Lights.size() )
- 	   return Lights[idx];
- 	   
-	return *((SLight*)0);
+		return Lights[idx];
+	else
+		return *((SLight*)0);
 }
 
 
@@ -853,7 +855,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture, video::SColor co
 
 //! Creates an 1bit alpha channel of the texture based of an color key position.
 void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
-					 core::position2d<s32> colorKeyPixelPos)
+					core::position2d<s32> colorKeyPixelPos)
 {
 	if (!texture)
 		return;
