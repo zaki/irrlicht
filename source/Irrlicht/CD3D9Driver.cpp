@@ -1737,7 +1737,7 @@ void CD3D9Driver::setAmbientLight(const SColorf& color)
 
 
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D9
-//! driver, it would return "Direct3D9.1".
+//! driver, it would return "Direct3D9.0".
 const wchar_t* CD3D9Driver::getName()
 {
 	return L"Direct3D 9.0";

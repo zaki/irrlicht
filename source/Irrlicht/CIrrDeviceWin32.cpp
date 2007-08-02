@@ -696,18 +696,25 @@ bool CIrrDeviceWin32::isWindowActive()
 
 
 
-//! switchs to fullscreen
+//! switches to fullscreen
 bool CIrrDeviceWin32::switchToFullScreen(s32 width, s32 height, s32 bits)
 {
 	DEVMODE dm;
 	memset(&dm, 0, sizeof(dm));
 	dm.dmSize = sizeof(dm);
+	// use default values from current setting
+	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
 	dm.dmPelsWidth = width;
 	dm.dmPelsHeight	= height;
 	dm.dmBitsPerPel	= bits;
-	dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 	LONG ret = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
+	if (ret != DISP_CHANGE_SUCCESSFUL)
+	{ // try again without forcing display frequency
+		dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+		ret = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
+	}
 
 	switch(ret)
 	{
