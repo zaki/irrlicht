@@ -192,7 +192,7 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 #endif
 		GLcharARB *pInfoLog = new GLcharARB[maxLength];
 		Driver->extGlGetInfoLog(shaderHandle, maxLength, &length, pInfoLog);
-		os::Printer::log((const c8*)pInfoLog);
+		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog));
 		delete [] pInfoLog;
 
 		return false;
@@ -225,7 +225,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 #endif
 		GLcharARB *pInfoLog = new GLcharARB[maxLength];
 		Driver->extGlGetInfoLog(Program, maxLength, &length, pInfoLog);
-		os::Printer::log((const c8*)pInfoLog);
+		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog));
 		delete [] pInfoLog;
 
 		return false;
@@ -266,7 +266,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 		memset(buf, 0, maxlen);
 
 		GLint size;
-		Driver->extGlGetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, (GLcharARB*)buf);
+		Driver->extGlGetActiveUniform(Program, i, maxlen, 0, &size, &ui.type, reinterpret_cast<GLcharARB*>(buf));
 		ui.name = buf;
 
 		UniformInfo.push_back(ui);
@@ -301,9 +301,9 @@ void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 sta
 
 bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
-	int i = 0, num = (int)UniformInfo.size();
+	int i, num = static_cast<int>(UniformInfo.size());
 
-	for (; i < num; i++)
+	for (i=0; i < num; ++i)
 	{
 		if (UniformInfo[i].name == name)
 			break;
@@ -337,7 +337,7 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 			Driver->extGlUniformMatrix4fv(i, count/16, false, floats);
 			break;
 		default:
-			Driver->extGlUniform1iv(i, count, (GLint*)floats);
+			Driver->extGlUniform1iv(i, count, reinterpret_cast<const GLint*>(floats));
 			break;
 	}
 #endif

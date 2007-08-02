@@ -160,7 +160,8 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 	Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader);
 
 	// clear error buffer
-	while(glGetError() != GL_NO_ERROR)	{}
+	while(glGetError() != GL_NO_ERROR)
+		{}
 
 	// compile
 	Driver->extGlProgramString(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
@@ -199,7 +200,8 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 	Driver->extGlBindProgram(GL_VERTEX_PROGRAM_ARB, VertexShader);
 
 	// clear error buffer
-	while(glGetError() != GL_NO_ERROR)	{}
+	while(glGetError() != GL_NO_ERROR)
+		{}
 
 	// compile
 	Driver->extGlProgramString(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,

@@ -59,7 +59,7 @@ void COpenGLExtensionHandler::dump() const
 
 void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 {
-	const f32 ver = core::fast_atof((c8*)glGetString(GL_VERSION));
+	const f32 ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
 	Version = core::floor32(ver)*100+core::ceil32((ver-floor(ver))*10.0);
 	if ( Version >= 102)
 		os::Printer::log("OpenGL driver version is 1.2 or better.", ELL_INFORMATION);
@@ -67,25 +67,25 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		os::Printer::log("OpenGL driver version is not 1.2 or better.", ELL_WARNING);
 
 	const GLubyte* t = glGetString(GL_EXTENSIONS);
-//	os::Printer::log((const c8*)t, ELL_INFORMATION);
+//	os::Printer::log(reinterpret_cast<const c8*>(t), ELL_INFORMATION);
 	#ifdef GLU_VERSION_1_3
 	const GLubyte* gluVersion = gluGetString(GLU_VERSION);
 
 	if (gluVersion[0]>1 || gluVersion[3]>2)
 	{
 		for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
-			FeatureAvailable[i] = gluCheckExtension((const GLubyte*)OpenGLFeatureStrings[i], t);
+			FeatureAvailable[i] = gluCheckExtension(reinterpret_cast<const GLubyte*>(OpenGLFeatureStrings[i]), t);
 	}
 	else
 	#endif
 	{
-		s32 len = (s32)strlen((const char*)t);
+		size_t len = strlen(reinterpret_cast<const char*>(t));
 		c8 *str = new c8[len+1];
 		c8* p = str;
 
-		for (s32 i=0; i<len; ++i)
+		for (size_t i=0; i<len; ++i)
 		{
-			str[i] = (char)t[i];
+			str[i] = static_cast<char>(t[i]);
 
 			if (str[i] == ' ')
 			{
@@ -170,7 +170,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
         pGlFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) wglGetProcAddress("glFramebufferRenderbufferEXT");
 
 	// vsync extension
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC) wglGetProcAddress("wglSwapIntervalEXT");
 
 #elif defined(_IRR_USE_LINUX_DEVICE_) || defined (_IRR_USE_SDL_DEVICE_)
 	#ifdef _IRR_OPENGL_USE_EXTPOINTER_
@@ -351,7 +351,11 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	// set some properties
 #if defined(GL_ARB_multitexture) || defined(GL_VERSION_1_3)
 	if (Version>102 || FeatureAvailable[IRR_ARB_multitexture])
-		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &MaxTextureUnits);
+	{
+		GLint num;
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &num);
+		MaxTextureUnits=num;
+	}
 #endif
 	glGetIntegerv(GL_MAX_LIGHTS, &MaxLights);
 #ifdef GL_EXT_texture_filter_anisotropic
@@ -371,7 +375,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 			ShaderLanguageVersion = 100;
 		else
 		{
-			const f32 ver = core::fast_atof((c8*)shaderVersion);
+			const f32 ver = core::fast_atof(reinterpret_cast<const c8*>(shaderVersion));
 			ShaderLanguageVersion = core::floor32(ver)*100+core::ceil32((ver-floor(ver))*10.0);
 		}
 	}
@@ -390,7 +394,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		MultiTextureExtension = false;
 		os::Printer::log("Warning: OpenGL device only has one texture unit. Disabling multitexturing.", ELL_WARNING);
 	}
-	MaxTextureUnits = core::min_((u32)MaxTextureUnits,MATERIAL_MAX_TEXTURES);
+	MaxTextureUnits = core::min_(MaxTextureUnits,MATERIAL_MAX_TEXTURES);
 
 }
 
