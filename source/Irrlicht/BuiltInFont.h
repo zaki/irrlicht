@@ -1059,7 +1059,7 @@ u8 BuiltInFontData[] =
 } // end namespace gui
 } // end namespace irr
 
-#endif _IRR_COMPILE_WITH_GUI_
+#endif // _IRR_COMPILE_WITH_GUI_
 
 #endif
 

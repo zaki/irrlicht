@@ -139,78 +139,82 @@ namespace irr
 //! SEvents hold information about an event. 
 struct SEvent
 {
-	EEVENT_TYPE EventType;
+	struct SGUIEvent
+	{
+		//! IGUIElement who called the event
+		gui::IGUIElement* Caller;
 
+		//! If the event has something to do with another element, it will be held here.
+		gui::IGUIElement* Element;
+
+		//! Type of GUI Event
+		gui::EGUI_EVENT_TYPE EventType;
+
+	};
+
+	struct SMouseInput
+	{
+		//! X position of mouse cursor
+		s32 X;
+
+		//! Y position of mouse cursor
+		s32 Y;
+
+		//! mouse wheel delta, usually 1.0 or -1.0.
+		/** Only valid if event was EMIE_MOUSE_WHEEL */
+		f32 Wheel; 
+
+		//! type of mouse event
+		EMOUSE_INPUT_EVENT Event;
+	};
+
+	struct SKeyInput
+	{
+		//! Character corresponding to the key (0, if not a character)
+		wchar_t Char; 
+
+		//! Key which has been pressed or released
+		EKEY_CODE Key; 
+
+		//! if not pressed, then the key was left up
+		bool PressedDown; 
+
+		//! true if shift was also pressed
+		bool Shift; 
+
+		//! true if ctrl was also pressed
+		bool Control; 
+	};
+
+	struct SLogEvent
+	{
+		//! pointer to text which has been logged
+		const c8* Text;
+
+		//! log level in which the text has been logged
+		ELOG_LEVEL Level;
+	};
+
+	struct SUserEvent
+	{
+		//! Some user specified data as int
+		s32 UserData1; 
+
+		//! Another user specified data as int
+		s32 UserData2; 
+
+		//! Some user specified data as float
+		f32 UserData3; 
+	};
+
+	EEVENT_TYPE EventType;
 	union
 	{
-		struct 
-		{
-			//! IGUIElement who called the event
-			gui::IGUIElement* Caller;
-
-			//! If the event has something to do with another element, it will be held here.
-			gui::IGUIElement* Element;
-
-			//! Type of GUI Event
-			gui::EGUI_EVENT_TYPE EventType;
-
-		} GUIEvent;
-
-		struct
-		{
-			//! X position of mouse cursor
-			s32 X;
-
-			//! Y position of mouse cursor
-			s32 Y;
-
-			//! mouse wheel delta, usually 1.0 or -1.0.
-			/** Only valid if event was EMIE_MOUSE_WHEEL */
-			f32 Wheel; 
-
-			//! type of mouse event
-			EMOUSE_INPUT_EVENT Event;
-		} MouseInput;
-
-		struct
-		{
-			//! Character corresponding to the key (0, if not a character)
-			wchar_t Char; 
-
-			//! Key which has been pressed or released
-			EKEY_CODE Key; 
-
-			//! if not pressed, then the key was left up
-			bool PressedDown; 
-
-			//! true if shift was also pressed
-			bool Shift; 
-
-			//! true if ctrl was also pressed
-			bool Control; 
-		} KeyInput;
-
-		struct
-		{
-			//! pointer to text which has been logged
-			const c8* Text;
-
-			//! log level in which the text has been logged
-			ELOG_LEVEL Level;
-		} LogEvent;
-
-		struct
-		{
-			//! Some user specified data as int
-			s32 UserData1; 
-
-			//! Another user specified data as int
-			s32 UserData2; 
-
-			//! Some user specified data as float
-			f32 UserData3; 
-		} UserEvent;
-
+		struct SGUIEvent GUIEvent;
+		struct SMouseInput MouseInput;
+		struct SKeyInput KeyInput;
+		struct SLogEvent LogEvent;
+		struct SUserEvent UserEvent;
 	};
 
 };
