@@ -235,7 +235,7 @@ COpenGLParallaxMapRenderer::COpenGLParallaxMapRenderer(video::COpenGLDriver* dri
 	if (renderer)
 	{
 		// use the already compiled shaders
-		video::COpenGLParallaxMapRenderer* nmr = (video::COpenGLParallaxMapRenderer*)renderer;
+		video::COpenGLParallaxMapRenderer* nmr = reinterpret_cast<video::COpenGLParallaxMapRenderer*>(renderer);
 		CompiledShaders = false;
 
 		VertexShader = nmr->VertexShader;

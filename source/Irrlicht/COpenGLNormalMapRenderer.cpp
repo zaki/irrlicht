@@ -201,7 +201,7 @@ COpenGLNormalMapRenderer::COpenGLNormalMapRenderer(video::COpenGLDriver* driver,
 	if (renderer)
 	{
 		// use the already compiled shaders 
-		video::COpenGLNormalMapRenderer* nmr = (video::COpenGLNormalMapRenderer*)renderer;
+		video::COpenGLNormalMapRenderer* nmr = reinterpret_cast<video::COpenGLNormalMapRenderer*>(renderer);
 		CompiledShaders = false;
 
 		VertexShader = nmr->VertexShader;

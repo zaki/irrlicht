@@ -22,8 +22,7 @@ class COpenGLMaterialRenderer : public IMaterialRenderer
 public:
 
 	//! Constructor
-	COpenGLMaterialRenderer(video::COpenGLDriver* driver)
-		: Driver(driver)
+	COpenGLMaterialRenderer(video::COpenGLDriver* driver) : Driver(driver)
 	{
 	}
 

@@ -239,11 +239,11 @@ namespace video
 
 		//! sets the current Texture
 		//! Returns whether setting was a success or not.
-		bool setTexture(s32 stage, video::ITexture* texture);
+		bool setTexture(u32 stage, video::ITexture* texture);
 
 		//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 		//! Returns whether disabling was successful or not.
-		bool disableTextures(s32 fromStage=0);
+		bool disableTextures(u32 fromStage=0);
 
 		//! Adds a new material renderer to the VideoDriver, using extGLGetObjectParameterivARB(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status) pixel and/or
 		//! vertex shaders to render geometry.

@@ -670,7 +670,7 @@ class COpenGLExtensionHandler
 
 	// Some non-boolean properties
 	//! Maxmimum texture layers supported by the fixed pipeline
-	GLint MaxTextureUnits;
+	u32 MaxTextureUnits;
 	//! Maximum hardware lights supported
 	GLint MaxLights;
 	//! Optimal number of indices per meshbuffer
