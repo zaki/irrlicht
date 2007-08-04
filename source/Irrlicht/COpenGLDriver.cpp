@@ -966,7 +966,7 @@ void COpenGLDriver::draw2DRectangle(SColor color, const core::rect<s32>& positio
 
 	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
 	const s32 xPlus = renderTargetSize.Width/2;
-	const f32 xFact = 2.0f / renderTargetSize.Width/2;
+	const f32 xFact = 2.0f / renderTargetSize.Width;
 
 	const s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height/2);
 	const f32 yFact = 2.0f / renderTargetSize.Height;
