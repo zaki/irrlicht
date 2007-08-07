@@ -895,8 +895,9 @@ void CGUIEditWorkspace::deserializeAttributes(io::IAttributes* in, io::SAttribut
 	setDrawGrid(in->getAttributeAsBool("DrawGrid"));
 	setUseGrid(in->getAttributeAsBool("UseGrid"));
 
-	core::position2di tmpd = in->getAttributeAsPosition2d("GridSize");
-	setGridSize(core::dimension2di(tmpd.X, tmpd.Y));
+	core::position2di tmpp = in->getAttributeAsPosition2d("GridSize");
+	core::dimension2di tmpd(tmpp.X, tmpp.Y);
+	setGridSize(tmpd);
 	setMenuCommandIDStart(in->getAttributeAsInt("MenuCommandStart"));
 }
 

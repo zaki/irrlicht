@@ -15,15 +15,28 @@ namespace irr
 	enum EEVENT_TYPE
 	{
 		//! An event of the graphical user interface.
+		/** GUI events are created by the GUI environment or the GUI elements in response
+		to mouse or keyboard events. When a GUI element receives an event it will either 
+		process it and return true, or pass the event to its parent. If an event is not absorbed
+		before it reaches the root element then it will then be passed to the user receiver. */
 		EET_GUI_EVENT = 0,
 
 		//! A mouse input event.
+		/** Mouse events are created by the device and passed to IrrlichtDevice::postEventFromUser 
+		in response to mouse input received from the operating system. 
+		Mouse events are first passed to the user receiver, then to the GUI environment (and possibly
+		many GUI elements), then finally the input receiving scene manager (and possibly the active
+		camera) */
 		EET_MOUSE_INPUT_EVENT,
 
 		//! A key input evant.
+		/** Keyboard events are also created by the device and passed to IrrlichtDevice::postEventFromUser.
+		They take the same path as mouse events. */
 		EET_KEY_INPUT_EVENT,
 
 		//! A log event
+		/** Log events are only passed to the user receiver if there is one. If they are absorbed by the
+		user receiver then no text will be sent to the console. */
 		EET_LOG_TEXT_EVENT,
 
 		//! A user event with user data. This is not used by Irrlicht and can be used
@@ -136,7 +149,7 @@ namespace irr
 	} // end namespace gui
 
 
-//! SEvents hold information about an event. 
+//! SEvents hold information about an event. See irr::IEventReceiver for details on event handling.
 struct SEvent
 {
 	struct SGUIEvent
@@ -220,6 +233,11 @@ struct SEvent
 };
 
 //! Interface of an object which can receive events.
+/** Many of the engine's classes inherit IEventReceiver so they are able to process events.
+Events usually start at a postEventFromUser function and are passed down through a chain of 
+event receivers until OnEvent returns true.
+See irr::EEVENT_TYPE for a description of where each type of event starts, and the path it takes
+through the system. */
 class IEventReceiver
 {
 public:
