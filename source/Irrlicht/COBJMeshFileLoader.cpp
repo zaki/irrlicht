@@ -201,7 +201,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				// read in next vertex's data
 				u32 wlength = copyWord(vertexWord, pLinePtr, WORD_BUFFER_LENGTH, pBufEnd);
 				// this function will also convert obj's 1-based index to c++'s 0-based index
-				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1);
+				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer.size());
 				if ( -1 != Idx[0] )
 				{
 					v.Pos = vertexBuffer[Idx[0]];
@@ -720,7 +720,7 @@ const c8* COBJMeshFileLoader::goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32
 }
 
 
-bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const c8* pBufEnd)
+bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const c8* pBufEnd, u32 bufferSize)
 {
 	c8 word[16] = "";
 	const c8* pChar = goFirstWord(pVertexData, pBufEnd);
@@ -742,7 +742,7 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const
 			// if no number was found index will become 0 and later on -1 by decrement
 			index = atoi( word );
 			if (index<0)
-				index += pIdx[idxType];
+				index += bufferSize;
 			else
 				--index;
 			pIdx[idxType] = index;
