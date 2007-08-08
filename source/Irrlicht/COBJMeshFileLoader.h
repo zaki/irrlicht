@@ -96,7 +96,7 @@ private:
 	// reads and convert to integer the vertex indices in a line of obj file's face statement
 	// -1 for the index if it doesn't exist
 	// indices are changed to 0-based index instead of 1-based from the obj file
-	bool retrieveVertexIndices(c8* pVertexData, s32* Idx, const c8* pBufEnd);
+	bool retrieveVertexIndices(c8* pVertexData, s32* Idx, const c8* pBufEnd, u32 bufferSize);
 
 	void cleanUp();
 
