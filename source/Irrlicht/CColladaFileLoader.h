@@ -31,6 +31,7 @@ enum ECOLLADA_PARAM_NAME
 	ECPN_DIFFUSE,
 	ECPN_SPECULAR,
 	ECPN_SHININESS,
+	ECPN_TRANSPARENCY,
 	ECPN_YFOV,
 	ECPN_ZNEAR,
 	ECPN_ZFAR,
@@ -71,6 +72,8 @@ enum ECOLLADA_INPUT_SEMANTIC
 	ECIS_TEXCOORD,
 	ECIS_UV,
 	ECIS_TANGENT,
+	ECIS_IMAGE,
+	ECIS_TEXTURE,
 
 	ECIS_COUNT
 };
@@ -86,6 +89,22 @@ struct SColladaInput
 	ECOLLADA_INPUT_SEMANTIC Semantic;
 	core::stringc Source;
 };
+
+//! Collada images
+struct SColladaImage
+{
+	core::stringc Filename;
+	core::stringc Id;
+};
+
+
+//! Collada texture
+struct SColladaTexture
+{
+	video::ITexture* Texture;
+	core::stringc Id;
+};
+
 
 //! Collada material
 struct SColladaMaterial
@@ -196,6 +215,12 @@ private:
 	//! reads a <camera> element and stores it as prefab
 	void readCameraPrefab(io::IXMLReaderUTF8* reader);
 
+	//! reads a <image> element and stores it in the image section
+	void readImage(io::IXMLReaderUTF8* reader);
+
+	//! reads a <texture> element and stores it in the texture section
+	void readTexture(io::IXMLReaderUTF8* reader);
+
 	//! reads a <material> element and stores it in the material section
 	void readMaterial(io::IXMLReaderUTF8* reader);
 
@@ -214,7 +239,7 @@ private:
 	void findNextNoneWhiteSpace(const c8** p);
 
 	//! reads floats from inside of xml element until end of xml element
-	void readFloatsInsideElement(io::IXMLReaderUTF8* reader, f32* floats, s32 count);
+	void readFloatsInsideElement(io::IXMLReaderUTF8* reader, f32* floats, u32 count);
 
 	//! clears all loaded data
 	void clearData();
@@ -225,7 +250,7 @@ private:
 	//! returns a collada parameter or none if not found
 	SColladaParam* getColladaParameter(ECOLLADA_PARAM_NAME name);
 
-	//! parses all collada inuts inside an element and stores them in Inputs. Reads
+	//! parses all collada inputs inside an element and stores them in Inputs. Reads
 	//! until first tag which is not an input tag or the end of the parent is reached
 	void readColladaInputs(io::IXMLReaderUTF8* reader, const core::stringc& parentName);
 
@@ -256,6 +281,8 @@ private:
 
 	core::array<IColladaPrefab*> Prefabs;
 	core::array<SColladaParam> Parameters;
+	core::array<SColladaImage> Images;
+	core::array<SColladaTexture> Textures;
 	core::array<SColladaMaterial> Materials;
 	core::array<SColladaInput> Inputs;
 

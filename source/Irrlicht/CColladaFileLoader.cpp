@@ -34,6 +34,8 @@ namespace scene
 	const core::stringc cameraPrefabName =     "camera";
 	const core::stringc materialSectionName =  "material";
 	const core::stringc geometrySectionName =  "geometry";
+	const core::stringc imageSectionName =     "image";
+	const core::stringc textureSectionName =   "texture";
 
 	const core::stringc meshSectionName =      "mesh";
 	const core::stringc sourceSectionName =	   "source";
@@ -56,7 +58,7 @@ namespace scene
 	const core::stringc paramTagName =         "param";
 
 	const char* const inputSemanticNames[] = {"POSITION", "VERTEX", "NORMAL", "TEXCOORD",
-		"UV", "TANGENT", 0};
+		"UV", "TANGENT", "IMAGE", "TEXTURE", 0};
 
 	//! following class is for holding and creating instances of library objects,
 	//! named prefabs in this loader.
@@ -286,7 +288,7 @@ void CColladaFileLoader::skipSection(io::IXMLReaderUTF8* reader, bool reportSkip
 		return;
 
 	// read until we've reached the last element in this section
-	int tagCounter = 1;
+	u32 tagCounter = 1;
 
 	while(tagCounter && reader->read())
 	{
@@ -341,6 +343,12 @@ void CColladaFileLoader::readLibrarySection(io::IXMLReaderUTF8* reader)
 	{
 		if (lightPrefabName == reader->getNodeName())
 			readLightPrefab(reader);
+		else
+		if (imageSectionName == reader->getNodeName())
+			readImage(reader);
+		else
+		if (textureSectionName == reader->getNodeName())
+			readTexture(reader);
 		else
 		if (materialSectionName == reader->getNodeName())
 			readMaterial(reader);
@@ -628,7 +636,7 @@ void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISc
 	uriToId(url);
 
 	if (CreateInstances)
-	for (int i=0; i<(int)Prefabs.size(); ++i)
+	for (u32 i=0; i<Prefabs.size(); ++i)
 		if (url == Prefabs[i]->getId())
 		{
 			*outNode = Prefabs[i]->addInstance(parent, SceneManager);
@@ -666,6 +674,46 @@ void CColladaFileLoader::readCameraPrefab(io::IXMLReaderUTF8* reader)
 }
 
 
+//! reads a <image> element and stores it in the image section
+void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
+{
+	SColladaImage image;
+	image.Id = reader->getAttributeValue("id");
+	image.Filename = reader->getAttributeValue("source");
+
+	// add image to list of loaded images.
+	Images.push_back(image);
+}
+
+
+//! reads a <texture> element and stores it in the texture section
+void CColladaFileLoader::readTexture(io::IXMLReaderUTF8* reader)
+{
+	SColladaTexture texture;
+	texture.Id = reader->getAttributeValue("id");
+
+	if (!reader->isEmptyElement())
+	{
+		readColladaInputs(reader, textureSectionName);
+		SColladaInput* input = getColladaInput(ECIS_IMAGE);
+		if (input)
+		{
+			core::stringc imageName = input->Source;
+			uriToId(imageName);
+			for (u32 i=0; i<Images.size(); ++i)
+				if ((imageName == Images[i].Id) && Images[i].Filename.size())
+				{
+					texture.Texture = Driver->getTexture(Images[i].Filename.c_str());
+					break;
+				}
+		}
+	}
+
+	// add texture to list of loaded textures.
+	Textures.push_back(texture);
+}
+
+
 //! reads a <material> element and stores it in the material section
 void CColladaFileLoader::readMaterial(io::IXMLReaderUTF8* reader)
 {
@@ -674,9 +722,39 @@ void CColladaFileLoader::readMaterial(io::IXMLReaderUTF8* reader)
 
 	if (!reader->isEmptyElement())
 	{
-		// TODO: implement material parsing later.
-		// for now we only read and discard then all <param> tags.
+		readColladaInputs(reader, materialSectionName);
+		SColladaInput* input = getColladaInput(ECIS_TEXTURE);
+		if (input)
+		{
+			core::stringc textureName = input->Source;
+			uriToId(textureName);
+			for (u32 i=0; i<Textures.size(); ++i)
+				if (textureName == Textures[i].Id)
+				{
+					material.Mat.Textures[0] = Textures[i].Texture;
+					break;
+				}
+		}
+
+		//does not work because the wrong start node is chosen due to reading of inputs before
+#if 0
 		readColladaParameters(reader, materialSectionName);
+
+		SColladaParam* p;
+
+		p = getColladaParameter(ECPN_AMBIENT);
+		if (p && p->Type == ECPT_FLOAT3)
+			material.Mat.AmbientColor = video::SColorf(p->Floats[0],p->Floats[1],p->Floats[2]).toSColor();
+		p = getColladaParameter(ECPN_DIFFUSE);
+		if (p && p->Type == ECPT_FLOAT3)
+			material.Mat.DiffuseColor = video::SColorf(p->Floats[0],p->Floats[1],p->Floats[2]).toSColor();
+		p = getColladaParameter(ECPN_SPECULAR);
+		if (p && p->Type == ECPT_FLOAT3)
+			material.Mat.DiffuseColor = video::SColorf(p->Floats[0],p->Floats[1],p->Floats[2]).toSColor();
+		p = getColladaParameter(ECPN_SHININESS);
+		if (p && p->Type == ECPT_FLOAT)
+			material.Mat.Shininess = p->Floats[0];
+#endif
 	}
 
 	// add material to list of loaded materials.
@@ -792,10 +870,13 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 				core::stringc data = reader->getNodeData();
 				const c8* p = &data[0];
 
-				for (int i=0; i<(int)a.size(); ++i)
+				for (u32 i=0; i<a.size(); ++i)
 				{
 					findNextNoneWhiteSpace(&p);
-					a[i] = readFloat(&p);
+					if (*p)
+						a[i] = readFloat(&p);
+					else
+						a[i] = 0.0f;
 				}
 			} // end reading array
 
@@ -861,7 +942,7 @@ struct SInputSlot
 
 struct SPolygon
 {
-	core::array<int> Indices;
+	core::array<s32> Indices;
 };
 
 //! reads a polygons section and creates a mesh from it
@@ -869,12 +950,21 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 	core::stringc vertexPositionSource, core::array<SSource>& sources,
 	scene::SMesh* mesh)
 {
-	core::stringc material = reader->getAttributeValue("material");
+	core::stringc materialName = reader->getAttributeValue("material");
+	uriToId(materialName);
+	video::SMaterial mat;
+	for (u32 i=0; i<Materials.size(); ++i)
+		if (materialName == Materials[i].Id)
+		{
+			mat = Materials[i].Mat;
+			break;
+		}
+
 	// int polygonCount = reader->getAttributeValueAsInt("count");
 	core::array<SInputSlot> slots;
 	core::array<SPolygon> polygons;
 	bool parsePolygonOK = false;
-	int inputSemanticCount = 0;
+	u32 inputSemanticCount = 0;
 
 	// read all <input> and
 	if (!reader->isEmptyElement())
@@ -908,8 +998,8 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 					uriToId(sourceArrayURI);
 
 					// find source array (we'll ignore acessors for this implementation)
-					int s;
-					for (s=0; s<(int)sources.size(); ++s)
+					u32 s;
+					for (s=0; s<sources.size(); ++s)
 						if (sources[s].Id == sourceArrayURI)
 						{
 							// slot found
@@ -917,7 +1007,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 							break;
 						}
 
-					if (s == (int)sources.size())
+					if (s == sources.size())
 						os::Printer::log("COLLADA Warning, polygon input source not found",
 							sourceArrayURI.c_str());
 					else
@@ -965,7 +1055,8 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				while(*p)
 				{
 					findNextNoneWhiteSpace(&p);
-					poly.Indices.push_back(readInt(&p));
+					if (*p)
+						poly.Indices.push_back(readInt(&p));
 				}
 				parsePolygonOK = false;
 			}
@@ -973,7 +1064,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 	} // end while reader->read()
 
-	if (inputSemanticCount == 0 || inputSemanticCount != (int)slots.size())
+	if (inputSemanticCount == 0 || inputSemanticCount != slots.size())
 		return; // we cannot create the mesh if one of the input semantics wasn't found.
 
 	if (!polygons.size())
@@ -981,12 +1072,12 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 	// analyze content of slots to create a fitting mesh buffer
 
-	int i;
-	int textureCoordSetCount = 0;
-	int normalSlotCount = 0;
-	int secondTexCoordSetIndex = -1;
+	u32 i;
+	u32 textureCoordSetCount = 0;
+	bool normalSlotCount = false;
+	u32 secondTexCoordSetIndex = 0xFFFFFFFF;
 
-	for (i=0; i<(int)slots.size(); ++i)
+	for (i=0; i<slots.size(); ++i)
 	{
 		if (slots[i].Semantic == ECIS_TEXCOORD || slots[i].Semantic == ECIS_UV )
 		{
@@ -997,7 +1088,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		}
 		else
 		if (slots[i].Semantic == ECIS_NORMAL)
-			++normalSlotCount;
+			normalSlotCount=true;
 	}
 
 	// if there is more than one texture coordinate set, create a lightmap mesh buffer,
@@ -1005,29 +1096,30 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 	scene::IMeshBuffer* buffer = 0;
 
-	if ( textureCoordSetCount <= 1 )
+	if ( textureCoordSetCount == 0 )
 	{
 		// standard mesh buffer
 
 		scene::SMeshBuffer* mbuffer = new SMeshBuffer();
+		mbuffer->Material=mat;
 		buffer = mbuffer;
 
-		for (i=0; i<(int)polygons.size(); ++i)
+		for (i=0; i<polygons.size(); ++i)
 		{
-			int vertexCount = polygons[i].Indices.size() / inputSemanticCount;
+			u32 vertexCount = polygons[i].Indices.size() / inputSemanticCount;
 
-			// for all vertices in array
-			for (int v=0; v<(int)polygons[i].Indices.size(); v+=inputSemanticCount)
+			// for all index/semantic groups
+			for (u32 v=0; v<polygons[i].Indices.size(); v+=inputSemanticCount)
 			{
 				video::S3DVertex vtx;
-				vtx.Color.set(100,255,255,255);
+				vtx.Color.set(255,255,255,255);
 
 				// for all input semantics
-				for (int k=0; k<(int)slots.size(); ++k)
+				for (u32 k=0; k<slots.size(); ++k)
 				{
 					// build vertex from input semantics.
 
-					int idx = polygons[i].Indices[v+k];
+					s32 idx = polygons[i].Indices[v+k];
 
 					switch(slots[k].Semantic)
 					{
@@ -1059,9 +1151,8 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 			} // end for all vertices
 
 			// add vertex indices
-			int currentVertexCount = mbuffer->Vertices.size();
-			int oldVertexCount = currentVertexCount - vertexCount;
-			for (int face=0; face<vertexCount-2; ++face)
+			const u32 oldVertexCount = mbuffer->Vertices.size() - vertexCount;
+			for (u32 face=0; face<vertexCount-2; ++face)
 			{
 				mbuffer->Indices.push_back(oldVertexCount + 0);
 				mbuffer->Indices.push_back(oldVertexCount + 1 + face);
@@ -1075,24 +1166,25 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		// lightmap mesh buffer
 
 		scene::SMeshBufferLightMap* mbuffer = new SMeshBufferLightMap();
+		mbuffer->Material=mat;
 		buffer = mbuffer;
 
-		for (i=0; i<(int)polygons.size(); ++i)
+		for (i=0; i<polygons.size(); ++i)
 		{
-			int vertexCount = polygons[i].Indices.size() / inputSemanticCount;
+			u32 vertexCount = polygons[i].Indices.size() / inputSemanticCount;
 
 			// for all vertices in array
-			for (int v=0; v<(int)polygons[i].Indices.size(); v+=inputSemanticCount)
+			for (u32 v=0; v<polygons[i].Indices.size(); v+=inputSemanticCount)
 			{
 				video::S3DVertex2TCoords vtx;
 				vtx.Color.set(100,255,255,255);
 
 				// for all input semantics
-				for (int k=0; k<(int)slots.size(); ++k)
+				for (u32 k=0; k<slots.size(); ++k)
 				{
 					// build vertex from input semantics.
 
-					int idx = polygons[i].Indices[v+k];
+					u32 idx = polygons[i].Indices[v+k];
 
 					switch(slots[k].Semantic)
 					{
@@ -1132,9 +1224,8 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 			} // end for all vertices
 
 			// add vertex indices
-			int currentVertexCount = mbuffer->Vertices.size();
-			int oldVertexCount = currentVertexCount - vertexCount;
-			for (int face=0; face<vertexCount-2; ++face)
+			const u32 oldVertexCount = mbuffer->Vertices.size() - vertexCount;
+			for (u32 face=0; face<vertexCount-2; ++face)
 			{
 				mbuffer->Indices.push_back(oldVertexCount + 0);
 				mbuffer->Indices.push_back(oldVertexCount + 1 + face);
@@ -1180,7 +1271,7 @@ void CColladaFileLoader::readLightPrefab(io::IXMLReaderUTF8* reader)
 //! returns a collada parameter or none if not found
 SColladaParam* CColladaFileLoader::getColladaParameter(ECOLLADA_PARAM_NAME name)
 {
-	for (int i=0; i<(int)Parameters.size(); ++i)
+	for (u32 i=0; i<Parameters.size(); ++i)
 		if (Parameters[i].Name == name)
 			return &Parameters[i];
 
@@ -1190,7 +1281,7 @@ SColladaParam* CColladaFileLoader::getColladaParameter(ECOLLADA_PARAM_NAME name)
 //! returns a collada input or none if not found
 SColladaInput* CColladaFileLoader::getColladaInput(ECOLLADA_INPUT_SEMANTIC input)
 {
-	for (int i=0; i<(int)Inputs.size(); ++i)
+	for (u32 i=0; i<Inputs.size(); ++i)
 		if (Inputs[i].Semantic == input)
 			return &Inputs[i];
 
@@ -1205,9 +1296,8 @@ void CColladaFileLoader::readColladaInput(io::IXMLReaderUTF8* reader)
 	SColladaInput p;
 
 	// get type
-	int i;
 	core::stringc semanticName = reader->getAttributeValue("semantic");
-	for (i=0; inputSemanticNames[i]; ++i)
+	for (u32 i=0; inputSemanticNames[i]; ++i)
 		if (semanticName == inputSemanticNames[i])
 		{
 			p.Semantic = (ECOLLADA_INPUT_SEMANTIC)i;
@@ -1221,7 +1311,7 @@ void CColladaFileLoader::readColladaInput(io::IXMLReaderUTF8* reader)
 	Inputs.push_back(p);
 }
 
-//! parses all collada inuts inside an element and stores them in Parameters
+//! parses all collada inputs inside an element and stores them in Inputs
 void CColladaFileLoader::readColladaInputs(io::IXMLReaderUTF8* reader, const core::stringc& parentName)
 {
 	Inputs.clear();
@@ -1264,7 +1354,7 @@ void CColladaFileLoader::readColladaParameters(io::IXMLReaderUTF8* reader,
 			SColladaParam p;
 
 			// get type
-			int i;
+			u32 i;
 			core::stringc typeName = reader->getAttributeValue("type");
 			for (i=0; typeNames[i]; ++i)
 				if (typeName == typeNames[i])
@@ -1342,7 +1432,7 @@ void CColladaFileLoader::findNextNoneWhiteSpace(const c8** start)
 
 
 //! reads floats from inside of xml element until end of xml element
-void CColladaFileLoader::readFloatsInsideElement(io::IXMLReaderUTF8* reader, f32* floats, s32 count)
+void CColladaFileLoader::readFloatsInsideElement(io::IXMLReaderUTF8* reader, f32* floats, u32 count)
 {
 	if (reader->isEmptyElement())
 		return;
@@ -1358,10 +1448,13 @@ void CColladaFileLoader::readFloatsInsideElement(io::IXMLReaderUTF8* reader, f32
 			core::stringc data = reader->getNodeData();
 			const c8* p = &data[0];
 
-			for (int i=0; i<count; ++i)
+			for (u32 i=0; i<count; ++i)
 			{
 				findNextNoneWhiteSpace(&p);
-				floats[i] = readFloat(&p);
+				if (*p)
+					floats[i] = readFloat(&p);
+				else
+					floats[i] = 0.0f;
 			}
 		}
 		else
@@ -1376,13 +1469,19 @@ void CColladaFileLoader::clearData()
 {
 	// delete all prefabs
 
-	for (int i=0; i<(int)Prefabs.size(); ++i)
+	for (u32 i=0; i<Prefabs.size(); ++i)
 		Prefabs[i]->drop();
 
 	Prefabs.clear();
 
 	// clear all parameters
 	Parameters.clear();
+
+	// clear all materials
+	Images.clear();
+
+	// clear all materials
+	Textures.clear();
 
 	// clear all materials
 	Materials.clear();

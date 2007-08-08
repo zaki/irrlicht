@@ -803,8 +803,8 @@ void CMeshManipulator::calculateTangents(
 	core::vector3df& normal,
 	core::vector3df& tangent,
 	core::vector3df& binormal,
-	core::vector3df& vt1, core::vector3df& vt2, core::vector3df& vt3, // vertices
-	core::vector2df& tc1, core::vector2df& tc2, core::vector2df& tc3) // texture coords
+	const core::vector3df& vt1, const core::vector3df& vt2, const core::vector3df& vt3, // vertices
+	const core::vector2df& tc1, const core::vector2df& tc2, const core::vector2df& tc3) // texture coords
 {
 	// choose one of them:
 	//#define USE_NVIDIA_GLH_VERSION // use version used by nvidia in glh headers
