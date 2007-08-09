@@ -711,7 +711,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 				for (s32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(
 						video::S3DVertexTangents(
-							v[idx[i]].Pos, v[idx[i]].TCoords, v[idx[i]].Color));
+							v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords));
 			}
 			break;
 		case video::EVT_2TCOORDS:
@@ -721,7 +721,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 
 				for (s32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(video::S3DVertexTangents(
-						v[idx[i]].Pos, v[idx[i]].TCoords, v[idx[i]].Color));
+						v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords));
 			}
 			break;
 		case video::EVT_TANGENTS:
