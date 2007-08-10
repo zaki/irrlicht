@@ -401,6 +401,19 @@ namespace video
 		//! looks if the image is already loaded
 		virtual video::ITexture* findTexture(const c8* filename);
 
+		//! Set/unset a clipping plane.
+		//! There are at least 6 clipping planes available for the user to set at will.
+		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+		//! \param plane: The plane itself.
+		//! \param enable: If true, enable the clipping plane else disable it.
+		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false);
+
+		//! Enable/disable a clipping plane.
+		//! There are at least 6 clipping planes available for the user to set at will.
+		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+		//! \param enable: If true, enable the clipping plane else disable it.
+		virtual void enableClipPlane(u32 index, bool enable);
+
 	protected:
 
 		//! deletes all textures

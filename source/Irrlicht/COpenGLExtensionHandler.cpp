@@ -19,7 +19,8 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		TextureCompressionExtension(false),
 		PackedDepthStencilExtension(false),
 		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
-		MaxAnisotropy(1.0f), Version(0), ShaderLanguageVersion(0)
+		MaxAnisotropy(1.0f), MaxUserClipPlanes(0),
+		Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
 	pGlGenProgramsARB(0), pGlBindProgramARB(0), pGlProgramStringARB(0),
@@ -366,6 +367,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	if (Version>101)
 		glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &MaxIndices);
 #endif
+	glGetIntegerv(GL_MAX_CLIP_PLANES, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
 #if defined(GL_ARB_shading_language_100) || defined (GL_VERSION_2_0)
 	if (FeatureAvailable[IRR_ARB_shading_language_100] || Version>=200)
 	{

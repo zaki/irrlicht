@@ -10,6 +10,7 @@
 #include "ITexture.h"
 #include "irrArray.h"
 #include "matrix4.h"
+#include "plane3d.h"
 #include "dimension2d.h"
 #include "position2d.h"
 #include "SMaterial.h"
@@ -769,6 +770,21 @@ namespace video
 
 		//! looks if the image is already loaded
 		virtual video::ITexture* findTexture(const c8* filename) = 0;
+
+		//! Set/unset a clipping plane.
+		//! There are at least 6 clipping planes available for the user to set at will.
+		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+		//! \param plane: The plane itself.
+		//! \param enable: If true, enable the clipping plane else disable it.
+		//! \return Returns true if the clipping plane is usable.
+		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false) = 0;
+
+		//! Enable/disable a clipping plane.
+		//! There are at least 6 clipping planes available for the user to set at will.
+		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+		//! \param enable: If true, enable the clipping plane else disable it.
+		virtual void enableClipPlane(u32 index, bool enable) = 0;
+
 	};
 
 } // end namespace video

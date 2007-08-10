@@ -1693,6 +1693,26 @@ IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<s32>
 }
 
 
+//! Set/unset a clipping plane.
+//! There are at least 6 clipping planes available for the user to set at will.
+//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+//! \param plane: The plane itself.
+//! \param enable: If true, enable the clipping plane else disable it.
+bool CNullDriver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
+{
+	return false;
+}
+
+//! Enable/disable a clipping plane.
+//! There are at least 6 clipping planes available for the user to set at will.
+//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+//! \param enable: If true, enable the clipping plane else disable it.
+void CNullDriver::enableClipPlane(u32 index, bool enable)
+{
+	// not necessary
+}
+
+
 } // end namespace
 } // end namespace
 
