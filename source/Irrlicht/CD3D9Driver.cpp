@@ -30,7 +30,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<s32>& screenSize, HWND window,
 : CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
 	ResetRenderStates(true), Transformation3DChanged(false), StencilBuffer(stencilbuffer),
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
-	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0),
+	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false),
 	Fullscreen(fullscreen)
 {
@@ -415,6 +415,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	createMaterialRenderers();
 
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
+	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
 
 	// set the renderstates
 	setRenderStates3DMode();
@@ -2152,6 +2153,33 @@ core::dimension2d<s32> CD3D9Driver::getCurrentRenderTargetSize()
 		return CurrentRendertargetSize;
 }
 
+
+
+// Set/unset a clipping plane.
+bool CD3D9Driver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
+{
+	if (index >= MaxUserClipPlanes)
+		return false;
+
+	pID3DDevice->SetClipPlane(index, (const float*)&plane);
+	enableClipPlane(index, enable);
+	return true;
+}
+
+
+// Enable/disable a clipping plane.
+void CD3D9Driver::enableClipPlane(u32 index, bool enable)
+{
+	if (index >= MaxUserClipPlanes)
+		return;
+	DWORD renderstate;
+	pID3DDevice->GetRenderState(D3DRS_CLIPPLANEENABLE, &renderstate);
+	if (enable)
+		renderstate |= (1 << index);
+	else
+		renderstate &= ~(1 << index);
+	pID3DDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, renderstate);
+}
 
 
 } // end namespace video

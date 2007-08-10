@@ -2302,6 +2302,43 @@ IImage* COpenGLDriver::createScreenShot()
 }
 
 
+//! Set/unset a clipping plane.
+//! There are at least 6 clipping planes available for the user to set at will.
+//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+//! \param plane: The plane itself.
+//! \param enable: If true, enable the clipping plane else disable it.
+bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
+{
+	if (index >= MaxUserClipPlanes)
+		return false;
+
+	// opengl needs an array of doubles for the plane equation
+	double clip_plane[4];
+	clip_plane[0] = plane.Normal.X;
+	clip_plane[1] = plane.Normal.Y;
+	clip_plane[2] = plane.Normal.Z;
+	clip_plane[3] = plane.D;
+	glClipPlane(GL_CLIP_PLANE0 + index, clip_plane);
+	enableClipPlane(index, enable);
+	return true;
+}
+
+
+//! Enable/disable a clipping plane.
+//! There are at least 6 clipping planes available for the user to set at will.
+//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+//! \param enable: If true, enable the clipping plane else disable it.
+void COpenGLDriver::enableClipPlane(u32 index, bool enable)
+{
+	if (index >= MaxUserClipPlanes)
+		return;
+	if (enable)
+		glEnable(GL_CLIP_PLANE0 + index);
+	else
+		glDisable(GL_CLIP_PLANE0 + index);
+}
+
+
 } // end namespace
 } // end namespace
 

@@ -677,6 +677,9 @@ class COpenGLExtensionHandler
 	GLint MaxIndices;
 	//! Maximal Anisotropy
 	f32 MaxAnisotropy;
+	//! Number of user clipplanes
+	u32 MaxUserClipPlanes;
+
 	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
 	u32 Version;
 	//! GLSL version as Integer: 100*Major+Minor

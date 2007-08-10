@@ -183,6 +183,19 @@ namespace video
 		//! Returns an image created from the last rendered frame.
 		virtual IImage* createScreenShot();
 
+		//! Set/unset a clipping plane.
+		//! There are at least 6 clipping planes available for the user to set at will.
+		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+		//! \param plane: The plane itself.
+		//! \param enable: If true, enable the clipping plane else disable it.
+		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false);
+
+		//! Enable/disable a clipping plane.
+		//! There are at least 6 clipping planes available for the user to set at will.
+		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
+		//! \param enable: If true, enable the clipping plane else disable it.
+		virtual void enableClipPlane(u32 index, bool enable);
+
 	private:
 
 		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -267,6 +280,7 @@ namespace video
 		D3DMATRIX UnitMatrix;
 
 		u32 MaxTextureUnits;
+		u32 MaxUserClipPlanes;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
 		bool DeviceLost;
