@@ -32,7 +32,7 @@ const float fast_atof_table[16] =	{  // we write [16] here instead of [] to work
 										0.000000000000001f
 									};
 
-inline u32 strtol10( const char* in, const char* &out)
+inline u32 strtol10(const char* in, const char** out=0)
 {
 	u32 value = 0;
 	c8 symbol;
@@ -44,9 +44,10 @@ inline u32 strtol10( const char* in, const char* &out)
 			break;
 
 		value = ( value * 10 ) + ( symbol - '0' );
-		in += 1;
+		++in;
 	}
-	out = in;
+	if (out)
+		*out = in;
 	return value;
 }
 
@@ -66,16 +67,14 @@ inline const char* fast_atof_move( const char* c, float& out)
 	}
 
 	//f = (float)strtol(c, &t, 10);
-	f = (float) strtol10 ( c, t );
-
-	c = t;
+	f = (float) strtol10 ( c, &c );
 
 	if (*c == '.')
 	{
 		c++;
 
 		//float pl = (float)strtol(c, &t, 10);
-		float pl = (float) strtol10 ( c, t );
+		float pl = (float) strtol10 ( c, &t );
 		pl *= fast_atof_table[t-c];
 
 		f += pl;
@@ -90,12 +89,11 @@ inline const char* fast_atof_move( const char* c, float& out)
 			if (einv)
 				c++;
 
-			float exp = (float)strtol10(c, t);
+			float exp = (float)strtol10(c, &c);
 			if (einv)
 				exp *= -1.0f;
 
 			f *= (float)pow(10.0f, exp);
-			c = t;
 		}
 	}
 
