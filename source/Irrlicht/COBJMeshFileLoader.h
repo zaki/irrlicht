@@ -43,28 +43,17 @@ private:
 	struct SObjMtl
 	{
 		SObjMtl() : pMeshbuffer(0), illumination(0) {
-			this->pMeshbuffer = new SMeshBuffer();
-			this->pMeshbuffer->Material.Shininess = 0.0f;
-			this->pMeshbuffer->Material.AmbientColor = video::SColorf(0.2f, 0.2f, 0.2f, 1.0f).toSColor();
-			this->pMeshbuffer->Material.DiffuseColor = video::SColorf(0.8f, 0.8f, 0.8f, 1.0f).toSColor();
-			this->pMeshbuffer->Material.SpecularColor = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f).toSColor();
+			pMeshbuffer = new SMeshBuffer();
+			pMeshbuffer->Material.Shininess = 0.0f;
+			pMeshbuffer->Material.AmbientColor = video::SColorf(0.2f, 0.2f, 0.2f, 1.0f).toSColor();
+			pMeshbuffer->Material.DiffuseColor = video::SColorf(0.8f, 0.8f, 0.8f, 1.0f).toSColor();
+			pMeshbuffer->Material.SpecularColor = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f).toSColor();
 		};
-		SObjMtl(SObjMtl& o) : pMeshbuffer(o.pMeshbuffer) { o.pMeshbuffer->grab(); };
-
-		~SObjMtl() { 	};
+		SObjMtl(SObjMtl& o) : pMeshbuffer(o.pMeshbuffer), name(o.name), illumination(o.illumination) { o.pMeshbuffer->grab(); };
 
 		scene::SMeshBuffer *pMeshbuffer;
 		core::stringc name;
 		c8 illumination;
-	};
-
-	struct SObjGroup
-	{
-		SObjGroup() {};
-		SObjGroup(SObjGroup& o) {};
-		~SObjGroup() { 	};
-
-		core::stringc name;
 	};
 
 	// returns a pointer to the first printable character available in the buffer
@@ -80,7 +69,11 @@ private:
 	// combination of goNextWord followed by copyWord
 	const c8* goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* const pBufEnd);
 
+	//! Read the material from the given file
 	void readMTL(const c8* pFileName, core::stringc relPath);
+	//! Find and return the material with the given name
+	SObjMtl * findMtl(const c8* pMtlName);
+
 	//! Read RGB color
 	const c8* readColor(const c8* pBufPtr, video::SColor& color, const c8* const pBufEnd);
 	//! Read 3d vector of floats
@@ -89,14 +82,11 @@ private:
 	const c8* readVec2(const c8* pBufPtr, core::vector2df& vec, const c8* const pBufEnd);
 	//! Read boolean value represented as 'on' or 'off'
 	const c8* readBool(const c8* pBufPtr, bool& tf, const c8* const pBufEnd);
-	SObjMtl * findMtl(const c8* pMtlName);
-	SObjGroup * findGroup(const c8* pGroupName);
-	SObjGroup * findOrAddGroup(const c8* pGroupName);
 
 	// reads and convert to integer the vertex indices in a line of obj file's face statement
 	// -1 for the index if it doesn't exist
 	// indices are changed to 0-based index instead of 1-based from the obj file
-	bool retrieveVertexIndices(c8* pVertexData, s32* Idx, const c8* pBufEnd, u32 bufferSize);
+	bool retrieveVertexIndices(c8* pVertexData, s32* Idx, const c8* pBufEnd, const core::array<core::vector3df>& vbuffer);
 
 	void cleanUp();
 
@@ -104,7 +94,6 @@ private:
 	video::IVideoDriver* Driver;
 
 	core::array<SObjMtl*> materials;
-	core::array<SObjGroup*> groups;
 	SMesh* Mesh;
 };
 

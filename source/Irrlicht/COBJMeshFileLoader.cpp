@@ -71,10 +71,10 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	core::array<core::vector3df> vertexBuffer;
 	core::array<core::vector2df> textureCoordBuffer;
 	core::array<core::vector3df> normalsBuffer;
-	SObjGroup * pCurrGroup = 0;
 	SObjMtl * pCurrMtl = new SObjMtl();
 	pCurrMtl->name="";
 	materials.push_back(pCurrMtl);
+	u32 smoothingGroup=0;
 
 	// ********************************************************************
 	// Patch to locate the file in the same folder as the .obj.
@@ -143,19 +143,20 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			}
 			break;
 
-		case 'g': // group
-			// get name of group
+		case 'g': // group names skipped
 			{
-				c8 groupName[WORD_BUFFER_LENGTH];
-				pBufPtr = goAndCopyNextWord(groupName, pBufPtr, WORD_BUFFER_LENGTH, pBufEnd);
-				pCurrGroup = findOrAddGroup(groupName);
+				pBufPtr = goNextLine(pBufPtr, pBufEnd);
 			}
 			break;
 
-		case 's': // smoothing can be on or off
+		case 's': // smoothing can be a group or off (equiv. to 0)
 			{
 				c8 smooth[WORD_BUFFER_LENGTH];
 				pBufPtr = goAndCopyNextWord(smooth, pBufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+				if (core::stringc("off")==smooth)
+					smoothingGroup=0;
+				else
+					smoothingGroup=core::strtol10(smooth, 0);
 			}
 			break;
 
@@ -196,24 +197,21 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				// sends the buffer sizes and gets the actual indices
 				// if index not set returns -1
 				s32 Idx[3];
-				Idx[0] = Idx[1] = Idx[2] = -1;
+				Idx[1] = Idx[2] = -1;
 
 				// read in next vertex's data
 				u32 wlength = copyWord(vertexWord, pLinePtr, WORD_BUFFER_LENGTH, pBufEnd);
 				// this function will also convert obj's 1-based index to c++'s 0-based index
-				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer.size());
-				if ( -1 != Idx[0] )
-				{
-					v.Pos = vertexBuffer[Idx[0]];
-				}
+				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer);
+				v.Pos = vertexBuffer[Idx[0]];
 				if ( -1 != Idx[1] )
-				{
 					v.TCoords = textureCoordBuffer[Idx[1]];
-				}
+				else
+					v.TCoords.set(0.0f,0.0f);
 				if ( -1 != Idx[2] )
-				{
 					v.Normal = normalsBuffer[Idx[2]];
-				}
+				else
+					v.Normal.set(0.0f,0.0f,0.0f);
 				pCurrMtl->pMeshbuffer->Vertices.push_back(v);
 				++facePointCount;
 
@@ -605,33 +603,6 @@ COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const c8* pMtlName)
 
 
 
-COBJMeshFileLoader::SObjGroup * COBJMeshFileLoader::findGroup(const c8* pGroupName)
-{
-	for (u32 i = 0; i < groups.size(); ++i)
-	{
-		if ( groups[i]->name == pGroupName )
-			return groups[i];
-	}
-	return 0;
-}
-
-
-COBJMeshFileLoader::SObjGroup * COBJMeshFileLoader::findOrAddGroup(const c8* pGroupName)
-{
-	SObjGroup * pGroup = findGroup( pGroupName );
-	if ( 0 != pGroup )
-	{
-		// group found, return it
-		return pGroup;
-	}
-	// group not found, create a new group
-	SObjGroup* group = new SObjGroup();
-	group->name = pGroupName;
-	groups.push_back(group);
-	return group;
-}
-
-
 //! skip space characters and stop on first non-space
 const c8* COBJMeshFileLoader::goFirstWord(const c8* buf, const c8* const pBufEnd)
 {
@@ -720,12 +691,11 @@ const c8* COBJMeshFileLoader::goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32
 }
 
 
-bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const c8* pBufEnd, u32 bufferSize)
+bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const c8* pBufEnd, const core::array<core::vector3df>& vbuffer)
 {
 	c8 word[16] = "";
 	const c8* pChar = goFirstWord(pVertexData, pBufEnd);
 	u32 idxType = 0;	// 0 = posIdx, 1 = texcoordIdx, 2 = normalIdx
-	s32 index;
 
 	u32 i = 0;
 	while ( pChar != pBufEnd )
@@ -735,17 +705,16 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const
 			// build up the number
 			word[i++] = *pChar;
 		}
-		else if ( *pChar == '/' || *pChar == '\0' )
+		else if ( *pChar == '/' || *pChar == ' ' || *pChar == '\0' )
 		{
 			// number is completed. Convert and store it
 			word[i] = '\0';
 			// if no number was found index will become 0 and later on -1 by decrement
-			index = atoi( word );
+			const s32 index = core::strtol10(word, 0);
 			if (index<0)
-				index += bufferSize;
+				pIdx[idxType] = index+vbuffer.size();
 			else
-				--index;
-			pIdx[idxType] = index;
+				pIdx[idxType] = index-1;
 
 			// reset the word
 			word[0] = '\0';
@@ -760,7 +729,7 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const
 					idxType = 0;
 				}
 			}
-			else if (*pChar == '\0')
+			else
 			{
 				// set all missing values to disable (=-1)
 				while (++idxType < 3)
@@ -789,13 +758,6 @@ void COBJMeshFileLoader::cleanUp()
 	}
 
 	materials.clear();
-
-	for (i = 0; i < groups.size(); ++i )
-	{
-		delete groups[i];
-	}
-
-	groups.clear();
 }
 
 
