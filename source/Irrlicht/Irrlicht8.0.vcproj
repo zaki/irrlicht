@@ -2607,62 +2607,6 @@
 						RelativePath="jpeglib\jversion.h"
 						>
 					</File>
-					<File
-						RelativePath="jpeglib\rdbmp.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\rdcolmap.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\rdgif.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\rdppm.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\rdrle.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\rdswitch.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\rdtarga.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\transupp.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\transupp.h"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\wrbmp.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\wrgif.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\wrppm.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\wrrle.c"
-						>
-					</File>
-					<File
-						RelativePath="jpeglib\wrtarga.c"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="libpng"
