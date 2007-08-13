@@ -81,9 +81,6 @@ public:
 
 	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const;
 
-	//! Recalculates the bounding box for a meshbuffer
-	virtual void recalculateBoundingBox(scene::IMeshBuffer* buffer) const;
-
 	//! Returns amount of polygons in mesh.
 	virtual s32 getPolyCount(scene::IMesh* mesh) const;
 

@@ -147,8 +147,6 @@ namespace scene
 	//! Holding Frame Data for a Mesh
 	struct SMD3MeshBuffer : public IUnknown
 	{
-		virtual ~ SMD3MeshBuffer () {}
-
 		SMD3MeshHeader MeshHeader;
 
 		core::array < core::stringc > Shader;
@@ -188,8 +186,6 @@ namespace scene
 			rotation.set ( angle.X * core::DEGTORAD, angle.Y * core::DEGTORAD, angle.Z * core::DEGTORAD );
 		}
 
-		virtual ~SMD3QuaterionTag() {}
-
 		core::stringc Name;
 		core::vector3df position;
 		core::quaternion rotation;
@@ -203,9 +199,6 @@ namespace scene
 	// holds a assoziative list of named quaternions
 	struct SMD3QuaterionTagList : public virtual IUnknown
 	{
-		SMD3QuaterionTagList () {}
-		virtual ~SMD3QuaterionTagList () {}
-
 		SMD3QuaterionTag* get ( const core::stringc& name )
 		{
 			SMD3QuaterionTag search ( name );
@@ -234,7 +227,7 @@ namespace scene
 	//! Holding Frames Buffers and Tag Infos
 	struct SMD3Mesh: public IUnknown
 	{
-		virtual ~SMD3Mesh()
+		~SMD3Mesh()
 		{
 			for (u32 i=0; i<Buffer.size(); ++i)
 				Buffer[i]->drop();

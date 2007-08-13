@@ -96,17 +96,14 @@ namespace scene
 		//! Unweld vertices
 		virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const = 0;
 
-		//! Recalculates the bounding box for a meshbuffer
-		virtual void recalculateBoundingBox(scene::IMeshBuffer* buffer) const = 0;
+		//! Returns amount of polygons in mesh.
+		virtual s32 getPolyCount(IMesh* mesh) const = 0;
 
 		//! Returns amount of polygons in mesh.
-		virtual s32 getPolyCount(scene::IMesh* mesh) const = 0;
-
-		//! Returns amount of polygons in mesh.
-		virtual s32 getPolyCount(scene::IAnimatedMesh* mesh) const = 0;
+		virtual s32 getPolyCount(IAnimatedMesh* mesh) const = 0;
 
 		//! create a new AnimatedMesh and adds the mesh to it
-		virtual IAnimatedMesh * createAnimatedMesh(scene::IMesh* mesh,
+		virtual IAnimatedMesh * createAnimatedMesh(IMesh* mesh,
 			scene::E_ANIMATED_MESH_TYPE type = scene::EAMT_UNKNOWN) const = 0;
 
 	};
