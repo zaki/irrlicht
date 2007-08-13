@@ -410,54 +410,6 @@ void CMeshManipulator::scaleMesh(scene::IMesh* mesh, const core::vector3df& scal
 
 
 
-//! Recalculates the bounding box for a meshbuffer
-void CMeshManipulator::recalculateBoundingBox(scene::IMeshBuffer* buffer) const
-{
-	core::aabbox3df box;
-
-	const u32 vtxcnt = buffer->getVertexCount();
-	if ( 0 == vtxcnt )
-	{
-		buffer->setBoundingBox( box );
-		return;
-	}
-
-	void* v = buffer->getVertices();
-	u32 i;
-
-	switch(buffer->getVertexType())
-	{
-	case video::EVT_STANDARD:
-		{
-			box.reset(((video::S3DVertex*)v)[0].Pos);
-
-			for ( i=1; i<vtxcnt; ++i)
-				box.addInternalPoint(((video::S3DVertex*)v)[i].Pos);
-		}
-		break;
-	case video::EVT_2TCOORDS:
-		{
-			box.reset(((video::S3DVertex2TCoords*)v)[0].Pos);
-
-			for ( i=1; i<vtxcnt; ++i)
-				box.addInternalPoint(((video::S3DVertex2TCoords*)v)[i].Pos);
-		}
-		break;
-	case video::EVT_TANGENTS:
-		{
-			box.reset(((video::S3DVertexTangents*)v)[0].Pos);
-
-			for ( i=1; i<vtxcnt; ++i)
-				box.addInternalPoint(((video::S3DVertexTangents*)v)[i].Pos);
-		}
-		break;
-	}
-
-	buffer->setBoundingBox( box );
-}
-
-
-
 //! Clones a static IMesh into a modifyable SMesh.
 SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 {

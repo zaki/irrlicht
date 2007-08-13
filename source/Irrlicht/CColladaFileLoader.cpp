@@ -1241,7 +1241,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		SceneManager->getMeshManipulator()->recalculateNormals(buffer);
 
 	// recalculate bounding box
-	SceneManager->getMeshManipulator()->recalculateBoundingBox(buffer);
+	buffer->recalculateBoundingBox();
 
 	// add mesh buffer
 	mesh->addMeshBuffer(buffer);

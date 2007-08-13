@@ -97,6 +97,14 @@ enum E_PRIMITIVE_TYPE
 		//! set user axis aligned bounding box
 		virtual void setBoundingBox( const core::aabbox3df& box) = 0;
 
+		//! recalculates the bounding box. should be called if the mesh changed.
+		virtual void recalculateBoundingBox() = 0;
+
+		//! append the vertices and indices to the current buffer
+		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) = 0;
+
+		//! append the meshbuffer to the current buffer
+		virtual void append(const IMeshBuffer* const other) = 0;
 	};
 
 } // end namespace scene

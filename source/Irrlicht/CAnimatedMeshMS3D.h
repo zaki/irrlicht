@@ -157,6 +157,14 @@ namespace scene
 			//! returns the byte size (stride, pitch) of the vertex
 			virtual u32 getVertexPitch() const;
 
+			//! recalculates the bounding box. should be called if the mesh changed.
+			virtual void recalculateBoundingBox() {}
+
+			//! append the vertices and indices to the current buffer
+			virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) {}
+
+			//! append the meshbuffer to the current buffer
+			virtual void append(const IMeshBuffer* const other) {}
 
 			video::SMaterial Material;                  //! material for this meshBuffer. 
 			core::array<video::S3DVertex> *Vertices;      //! Array of vertices 
