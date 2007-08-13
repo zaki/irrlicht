@@ -351,93 +351,19 @@ u32 CAnimatedMeshMD2::getMeshBufferCount() const
 //! returns pointer to a mesh buffer
 IMeshBuffer* CAnimatedMeshMD2::getMeshBuffer(u32 nr) const
 {
-	return (IMeshBuffer*) this;
+	return const_cast<IMeshBuffer*>(reinterpret_cast<const IMeshBuffer*>(&InterpolationBuffer));
 }
 
 
 //! Returns pointer to a mesh buffer which fits a material
-IMeshBuffer* CAnimatedMeshMD2::getMeshBuffer( const video::SMaterial &material) const
+IMeshBuffer* CAnimatedMeshMD2::getMeshBuffer(const video::SMaterial &material) const
 {
-	if (Material == material)
-		return (IMeshBuffer*) this;
+	if (InterpolationBuffer.Material == material)
+		return const_cast<IMeshBuffer*>(reinterpret_cast<const IMeshBuffer*>(&InterpolationBuffer));
 	else
 		return 0;
 }
 
-
-//! returns the material of this meshbuffer
-const video::SMaterial& CAnimatedMeshMD2::getMaterial() const
-{
-	return Material;
-}
-
-
-//! returns the material of this meshbuffer
-video::SMaterial& CAnimatedMeshMD2::getMaterial()
-{
-	return Material;
-}
-
-
-
-//! returns pointer to vertices
-const void* CAnimatedMeshMD2::getVertices() const
-{
-	return InterpolateBuffer.const_pointer();
-}
-
-
-//! returns pointer to vertices
-void* CAnimatedMeshMD2::getVertices()
-{
-	return InterpolateBuffer.pointer();
-}
-
-
-
-//! returns which type of vertex data is stored.
-video::E_VERTEX_TYPE CAnimatedMeshMD2::getVertexType() const
-{
-	return video::EVT_STANDARD;
-}
-
-//! returns the byte size (stride, pitch) of the vertex
-u32 CAnimatedMeshMD2::getVertexPitch() const
-{
-	return sizeof ( video::S3DVertex );
-}
-
-
-
-//! returns amount of vertices
-u32 CAnimatedMeshMD2::getVertexCount() const
-{
-	return FrameList[0].size();
-}
-
-
-
-//! returns pointer to Indices
-const u16* CAnimatedMeshMD2::getIndices() const
-{
-	return Indices.const_pointer();
-}
-
-
-
-//! returns pointer to Indices
-u16* CAnimatedMeshMD2::getIndices()
-{
-	return Indices.pointer();
-}
-
-
-
-//! returns amount of indices
-u32 CAnimatedMeshMD2::getIndexCount() const
-{
-	return Indices.size();
-}
 
 
 // updates the interpolation buffer
@@ -471,7 +397,7 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 		div = frame * MD2_FRAME_SHIFT_RECIPROCAL;
 	}
 
-	video::S3DVertex* target = &InterpolateBuffer[0];
+	video::S3DVertex* target = reinterpret_cast<video::S3DVertex*>(InterpolationBuffer.getVertices());
 	video::S3DVertex* first = FrameList[firstFrame].pointer();
 	video::S3DVertex* second = FrameList[secondFrame].pointer();
 
@@ -489,7 +415,7 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 	}
 
 	//update bounding box
-	BoundingBox = BoxList[secondFrame].getInterpolated(BoxList[firstFrame], div);
+	InterpolationBuffer.setBoundingBox(BoxList[secondFrame].getInterpolated(BoxList[firstFrame], div));
 }
 
 
@@ -693,25 +619,25 @@ bool CAnimatedMeshMD2::loadFile(io::IReadFile* file)
 
 	// create indices
 
-	Indices.reallocate(header.numVertices);
+	InterpolationBuffer.Indices.reallocate(header.numVertices);
 	s16 count = TriangleCount*3;
 	for (s16 n=0; n<count; n+=3)
 	{
-		Indices.push_back(n);
-		Indices.push_back(n+1);
-		Indices.push_back(n+2);
+		InterpolationBuffer.Indices.push_back(n);
+		InterpolationBuffer.Indices.push_back(n+1);
+		InterpolationBuffer.Indices.push_back(n+2);
 	}
 
 	// reallocate interpolate buffer
 	if (header.numFrames)
 	{
-		s32 currCount = FrameList[0].size();
-		InterpolateBuffer.set_used(currCount);
+		u32 currCount = FrameList[0].size();
+		InterpolationBuffer.Vertices.set_used(currCount);
 
-		for (i=0; i<currCount; ++i)
+		for (u32 num=0; num<currCount; ++num)
 		{
-			InterpolateBuffer[i].TCoords = FrameList[0].pointer()[i].TCoords;
-			InterpolateBuffer[i].Color = vtx.Color;
+			InterpolationBuffer.Vertices[num].TCoords = FrameList[0].pointer()[num].TCoords;
+			InterpolationBuffer.Vertices[num].Color = vtx.Color;
 		}
 	}
 
@@ -734,7 +660,7 @@ bool CAnimatedMeshMD2::loadFile(io::IReadFile* file)
 //! calculates the bounding box
 void CAnimatedMeshMD2::calculateBoundingBox()
 {
-	BoundingBox.reset(0,0,0);
+	InterpolationBuffer.BoundingBox.reset(0,0,0);
 
 	if (FrameCount)
 	{
@@ -744,7 +670,7 @@ void CAnimatedMeshMD2::calculateBoundingBox()
 			defaultFrame = 0;
 
 			for (u32 j=0; j<FrameList[defaultFrame].size(); ++j)
-				BoundingBox.addInternalPoint(FrameList[defaultFrame].pointer()[j].Pos);
+				InterpolationBuffer.BoundingBox.addInternalPoint(FrameList[defaultFrame].pointer()[j].Pos);
 	}
 }
 
@@ -752,7 +678,7 @@ void CAnimatedMeshMD2::calculateBoundingBox()
 //! sets a flag of all contained materials to a new value
 void CAnimatedMeshMD2::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 {
-	Material.setFlag(flag, newvalue);
+	InterpolationBuffer.Material.setFlag(flag, newvalue);
 }
 
 
@@ -760,35 +686,15 @@ void CAnimatedMeshMD2::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalu
 //! returns an axis aligned bounding box
 const core::aabbox3d<f32>& CAnimatedMeshMD2::getBoundingBox() const
 {
-	return BoundingBox;
+	return InterpolationBuffer.BoundingBox;
 }
 
 //! set user axis aligned bounding box
 void CAnimatedMeshMD2::setBoundingBox( const core::aabbox3df& box)
 {
-	BoundingBox = box;
+	InterpolationBuffer.BoundingBox = box;
 }
 
-
-
-//! calculates normals
-void CAnimatedMeshMD2::calculateNormals()
-{
-	for (u32 i=0; i<FrameCount; ++i)
-	{
-		video::S3DVertex* vtx = FrameList[i].pointer();
-
-		for (u32 j=0; j<Indices.size(); j+=3)
-		{
-			core::plane3d<f32> plane(
-				vtx[Indices[j]].Pos, vtx[Indices[j+1]].Pos,	vtx[Indices[j+2]].Pos);
-
-			vtx[Indices[j]].Normal = plane.Normal;
-			vtx[Indices[j+1]].Normal = plane.Normal;
-			vtx[Indices[j+2]].Normal = plane.Normal;
-		}
-	}
-}
 
 
 //! Returns the type of the animated mesh.
