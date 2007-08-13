@@ -7,7 +7,7 @@
 
 #include "IAnimatedMeshMD2.h"
 #include "IMesh.h"
-#include "IMeshBuffer.h"
+#include "CMeshBuffer.h"
 #include "IReadFile.h"
 #include "S3DVertex.h"
 #include "irrArray.h"
@@ -18,7 +18,7 @@ namespace irr
 namespace scene
 {
 
-	class CAnimatedMeshMD2 : public IAnimatedMeshMD2, public IMesh, public IMeshBuffer
+	class CAnimatedMeshMD2 : public IAnimatedMeshMD2, public IMesh
 	{
 	public:
 
@@ -48,36 +48,6 @@ namespace scene
 		\return Returns the pointer to the mesh buffer or 
 		NULL if there is no such mesh buffer. */
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const;
-
-		//! returns the material of this meshbuffer
-		virtual const video::SMaterial& getMaterial() const;
-
-		//! returns the material of this meshbuffer
-		virtual video::SMaterial& getMaterial();
-
-		//! returns pointer to vertices
-		virtual const void* getVertices() const; 
-
-		//! returns pointer to vertices
-		virtual void* getVertices(); 
-
-		//! returns which type of vertex data is stored.
-		virtual video::E_VERTEX_TYPE getVertexType() const;
-
-		//! returns the byte size (stride, pitch) of the vertex
-		virtual u32 getVertexPitch() const;
-
-		//! returns amount of vertices
-		virtual u32 getVertexCount() const;
-
-		//! returns pointer to Indices
-		virtual const u16* getIndices() const;
-
-		//! returns pointer to Indices
-		virtual u16* getIndices();
-
-		//! returns amount of indices
-		virtual u32 getIndexCount() const;
 
 		//! returns an axis aligned bounding box
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
@@ -114,18 +84,12 @@ namespace scene
 		//! calculates the bounding box
 		virtual void calculateBoundingBox();
 
-		//! calculates normals
-		void calculateNormals();
-
-		core::array<u16> Indices;
 		core::array<video::S3DVertex> *FrameList;
 		core::array<core::aabbox3d<f32> > BoxList;
 		u32 FrameCount;
 		s32 TriangleCount;
-		video::SMaterial Material;
 
-		core::array<video::S3DVertex> InterpolateBuffer;
-		core::aabbox3d<f32> BoundingBox;
+		SMeshBuffer InterpolationBuffer;
 
 		struct SFrameData
 		{
