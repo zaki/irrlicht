@@ -301,7 +301,6 @@ CAnimatedMeshMD2::CAnimatedMeshMD2()
 	#ifdef _DEBUG
 	IAnimatedMesh::setDebugName("CAnimatedMeshMD2 IAnimatedMesh");
 	IMesh::setDebugName("CAnimatedMeshMD2 IMesh");
-	IMeshBuffer::setDebugName("CAnimatedMeshMD2 IMeshBuffer");
 	#endif
 }
 
