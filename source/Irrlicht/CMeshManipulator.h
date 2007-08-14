@@ -21,11 +21,8 @@ class CMeshManipulator : public IMeshManipulator
 {
 public:
 
-	//! Constructor
-	CMeshManipulator();
-
 	//! destructor
-	virtual ~CMeshManipulator();
+	virtual ~CMeshManipulator() {}
 
 	//! Flips the direction of surfaces. Changes backfacing triangles to frontfacing
 	//! triangles and vice versa.

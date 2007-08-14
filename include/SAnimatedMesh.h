@@ -19,18 +19,27 @@ namespace scene
 	struct SAnimatedMesh : public IAnimatedMesh
 	{
 		//! constructor
-		SAnimatedMesh()
+		SAnimatedMesh() : IAnimatedMesh(), Type(EAMT_UNKNOWN)
 		{
 			#ifdef _DEBUG
 			setDebugName("SAnimatedMesh");
 			#endif
+		}
 
-			Type = EAMT_UNKNOWN;
+
+		//! constructor
+		SAnimatedMesh(scene::IMesh* mesh, scene::E_ANIMATED_MESH_TYPE type) : IAnimatedMesh(), Type(type)
+		{
+			#ifdef _DEBUG
+			setDebugName("SAnimatedMesh");
+			#endif
+			addMesh(mesh);
+			recalculateBoundingBox();
 		}
 
 
 		//! destructor
-		~SAnimatedMesh()
+		virtual ~SAnimatedMesh()
 		{
 			// drop meshes
 			for (u32 i=0; i<Meshes.size(); ++i)
