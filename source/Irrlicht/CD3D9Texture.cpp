@@ -76,8 +76,7 @@ HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
 				#ifdef _IRR_USE_D3DXFilterTexture_
 					// The D3DXFilterTexture function seems to get linked wrong when
 					// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-					// So mipmapgeneration is replaced with my own bad generation in d3d 8 when
-					// compiling with both D3D 8 and 9.
+					// So mipmapgeneration is replaced with my own bad generation
 					HRESULT hr  = D3DXFilterTexture(Texture, NULL, D3DX_DEFAULT, D3DX_DEFAULT);
 					if (FAILED(hr))
 						os::Printer::log("Could not create direct3d mip map levels.", ELL_WARNING);
@@ -173,12 +172,7 @@ bool CD3D9Texture::createMipMaps(u32 level)
 		Texture->GenerateMipSubLevels();
 		return true;
 	}
-	//os::Printer::log("manual mipmap");
-
-	// The D3DXFilterTexture function seems to get linked wrong when
-	// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-	// So mipmapgeneration is replaced with my own bad generation here when
-	// compiling with both D3D 8 and 9.
+	// os::Printer::log("manual mipmap");
 
 	IDirect3DSurface9* upperSurface = 0;
 	IDirect3DSurface9* lowerSurface = 0;
@@ -256,7 +250,7 @@ bool CD3D9Texture::createMipMaps(u32 level)
 	upperSurface->Release();
 	lowerSurface->Release();
 
-	if (!result || upperDesc.Width < 3 || upperDesc.Height < 3)
+	if (!result || (upperDesc.Width < 3 && upperDesc.Height < 3))
 		return result; // stop generating levels
 
 	// generate next level
@@ -306,7 +300,7 @@ bool CD3D9Texture::createTexture(u32 flags)
 	default:
 		break;
 	}
-	if (false && Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
+	if (Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
 	{
 		if (format == D3DFMT_A8R8G8B8)
 			format = D3DFMT_R8G8B8;
@@ -318,15 +312,19 @@ bool CD3D9Texture::createTexture(u32 flags)
 
 	DWORD usage = 0;
 
-	// This enables hardware mip map generation. Disabled because
-	// some cards or drivers seem to have problems with this.
-	// D3DCAPS9 caps;
-	// Device->GetDeviceCaps(&caps);
-	// if (caps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP)
-	// {
-	//	usage = D3DUSAGE_AUTOGENMIPMAP;
-	//	HardwareMipMaps = true;
-	//}
+	// This enables hardware mip map generation.
+	if (mipmaps && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+	{
+		LPDIRECT3D9 intf = Driver->getExposedVideoData().D3D9.D3D9;
+		D3DDISPLAYMODE d3ddm;
+		intf->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
+
+		if (D3D_OK==intf->CheckDeviceFormat(D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,d3ddm.Format,D3DUSAGE_AUTOGENMIPMAP,D3DRTYPE_TEXTURE,format))
+		{
+			usage = D3DUSAGE_AUTOGENMIPMAP;
+			HardwareMipMaps = true;
+		}
+	}
 
 	hr = Device->CreateTexture(optSize.Width, optSize.Height,
 		mipmaps ? 0 : 1, // number of mipmaplevels (0 = automatic all)
@@ -336,6 +334,7 @@ bool CD3D9Texture::createTexture(u32 flags)
 	if (FAILED(hr))
 	{
 		// try brute force 16 bit
+		HardwareMipMaps = false;
 		if (format == D3DFMT_A8R8G8B8)
 			format = D3DFMT_A1R5G5B5;
 		else if (format == D3DFMT_R8G8B8)
@@ -570,26 +569,29 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 				   s32 width, s32 height,
 				   s32 pitchsrc, s32 pitchtgt)
 {
-	u16 c;
-
-	for (int x=0; x<width; ++x)
-		for (int y=0; y<height; ++y)
+	for (s32 y=0; y<height; ++y)
+	{
+		for (s32 x=0; x<width; ++x)
 		{
-			s32 a=0, r=0, g=0, b=0;
+			u32 a=0, r=0, g=0, b=0;
 
-			for (int dx=0; dx<2; ++dx)
+			for (s32 dy=0; dy<2; ++dy)
 			{
-				for (int dy=0; dy<2; ++dy)
+				const s32 tgy = (y*2)+dy;
+				for (s32 dx=0; dx<2; ++dx)
 				{
-					int tgx = (x*2)+dx;
-					int tgy = (y*2)+dy;
+					const s32 tgx = (x*2)+dx;
 
-					c = *(u16*)(&src[(tgx*2)+(tgy*pitchsrc)]);
+					SColor c;
+					if (ColorFormat == ECF_A1R5G5B5)
+						c = A1R5G5B5toA8R8G8B8(*(u16*)(&src[(tgx*2)+(tgy*pitchsrc)]));
+					else
+						c = R5G6B5toA8R8G8B8(*(u16*)(&src[(tgx*2)+(tgy*pitchsrc)]));
 
-					a += getAlpha(c);
-					r += getRed(c);
-					g += getGreen(c);
-					b += getBlue(c);
+					a += c.getAlpha();
+					r += c.getRed();
+					g += c.getGreen();
+					b += c.getBlue();
 				}
 			}
 
@@ -598,12 +600,14 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 			g /= 4;
 			b /= 4;
 
+			u16 c;
 			if (ColorFormat == ECF_A1R5G5B5)
 				c = RGBA16(r,g,b,a);
 			else
 				c = A8R8G8B8toR5G6B5(SColor(a,r,g,b).color);
 			*(u16*)(&tgt[(x*2)+(y*pitchtgt)]) = c;
 		}
+	}
 }
 
 
@@ -611,20 +615,19 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 				   s32 width, s32 height,
 				   s32 pitchsrc, s32 pitchtgt)
 {
-	SColor c;
-
-	for (int x=0; x<width; ++x)
+	for (s32 y=0; y<height; ++y)
 	{
-		for (int y=0; y<height; ++y)
+		for (s32 x=0; x<width; ++x)
 		{
-			s32 a=0, r=0, g=0, b=0;
+			u32 a=0, r=0, g=0, b=0;
+			SColor c;
 
-			for (int dx=0; dx<2; ++dx)
+			for (s32 dy=0; dy<2; ++dy)
 			{
-				for (int dy=0; dy<2; ++dy)
+				const s32 tgy = (y*2)+dy;
+				for (s32 dx=0; dx<2; ++dx)
 				{
-					int tgx = (x*2)+dx;
-					int tgy = (y*2)+dy;
+					const s32 tgx = (x*2)+dx;
 
 					c = *(u32*)(&src[(tgx*4)+(tgy*pitchsrc)]);
 

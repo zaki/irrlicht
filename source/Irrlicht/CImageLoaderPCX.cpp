@@ -100,7 +100,7 @@ IImage* CImageLoaderPCX::loadImage(irr::io::IReadFile* file)
 
 		u8 *tempPalette = new u8[768];
 		PaletteData = new s32[256];
-		memset(PaletteData, 0, 256*sizeof(s32));
+		memset(PaletteData, 0xFF, 256*sizeof(s32));
 		file->read( tempPalette, 768 );
 
 		for( s32 i=0; i<256; i++ )
