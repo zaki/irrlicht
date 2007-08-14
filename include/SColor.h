@@ -69,7 +69,7 @@ namespace video
 
 	//! Returns A8R8G8B8 Color from A1R5G5B5 color
 	//! build a nicer 32 Bit Color by extending dest lower bits with source high bits
-	inline u32 A1R5G5B5toA8R8G8B8(u32 color)
+	inline u32 A1R5G5B5toA8R8G8B8(u16 color)
 	{
 		return	( (( -( (s32) color & 0x00008000 ) >> (s32) 31 ) & 0xFF000000 ) |
 				(( color & 0x00007C00 ) << 9) | (( color & 0x00007000 ) << 4) |
@@ -134,7 +134,7 @@ namespace video
 		return (color & 0x1F);
 	}
 
-		//! Returns the red component from A1R5G5B5 color.
+	//! Returns the red component from A1R5G5B5 color.
 	//! Shift left by 3 to get 8 bit value.
 	inline s32 getRedSigned(u16 color)
 	{
@@ -285,7 +285,7 @@ namespace video
 		//! \return Returns true if the colors are different, and false if they are the same.
 		inline bool operator!=(const SColor& other) const { return other.color != color; }
 
-		//! Adds two lights
+		//! Adds two colors
 		inline SColor operator+(const SColor& other) const
 		{
 			s32 a = getAlpha() + other.getAlpha();

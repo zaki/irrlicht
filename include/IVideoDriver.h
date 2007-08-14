@@ -569,12 +569,6 @@ namespace video
 		/** \param light: Data specifying the dynamic light. */
 		virtual void addDynamicLight(const SLight& light) = 0;
 
-		//! Sets the dynamic ambient light color.
-		/** The default color is
-		(0,0,0,0) which means it is dark.
-		\param color: New color of the ambient light. */
-		virtual void setAmbientLight(const SColorf& color) = 0;
-
 		//! Returns the maximal amount of dynamic lights the device can handle
 		/** \return Maximal amount of dynamic lights. */
 		virtual u32 getMaximalDynamicLightAmount() = 0;
@@ -784,6 +778,11 @@ namespace video
 		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable) = 0;
+
+		//! Sets the driver's ambient light color.
+		/** This color is set in the scene manager, see ISceneManager.h.
+		\param color: New color of the ambient light. */
+		virtual void setAmbientLight(const SColorf& color) = 0;
 
 	};
 

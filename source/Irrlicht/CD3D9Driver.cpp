@@ -540,6 +540,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature)
 		return (Caps.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) != 0;
 	case EVDF_MIP_MAP:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) != 0;
+	case EVDF_MIP_MAP_AUTO_UPDATE:
+		return (Caps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) != 0;
 	case EVDF_STENCIL_BUFFER:
 		return StencilBuffer &&  Caps.StencilCaps;
 	case EVDF_VERTEX_SHADER_1_1:
