@@ -14,7 +14,7 @@ namespace scene
 
 
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -86,7 +86,7 @@ struct MS3DKeyframe
 } PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 
@@ -97,7 +97,7 @@ struct MS3DKeyframe
 CAnimatedMeshMS3D::CAnimatedMeshMS3D(video::IVideoDriver* driver)
 : Driver(driver)
 {
-	if (Driver) 
+	if (Driver)
 		Driver->grab();
 
 	lastCalculatedFrame = -1;
@@ -108,17 +108,17 @@ CAnimatedMeshMS3D::CAnimatedMeshMS3D(video::IVideoDriver* driver)
 //! destructor
 CAnimatedMeshMS3D::~CAnimatedMeshMS3D()
 {
-	if (Driver) 
+	if (Driver)
 		Driver->drop();
 }
 
 
 
-//! loads an md2 file
+//! loads an ms3d file
 bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 {
-	s32 i=0,j;
-	
+	u32 i=0;
+
 	if (!file)
 		return false;
 
@@ -174,10 +174,10 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 	pPtr += sizeof(MS3DVertex) * numVertices;
 #ifdef __BIG_ENDIAN__
 	for (i=0; i<numVertices; ++i)
-		for (j=0; j<3; ++j)
+		for (u32 j=0; j<3; ++j)
 			vertices[i].Vertex[j] = os::Byteswap::byteswap(vertices[i].Vertex[j]);
 #endif
-	
+
 	// triangles
 	u16 numTriangles = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
@@ -190,7 +190,7 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 	for (i=0; i<numTriangles; ++i)
 	{
 		triangles[i].Flags = os::Byteswap::byteswap(triangles[i].Flags);
-		for (j=0; j<3; ++j)
+		for (u32 j=0; j<3; ++j)
 		{
 			triangles[i].VertexIndices[j] = os::Byteswap::byteswap(triangles[i].VertexIndices[j]);
 			for (u16 k=0; k<3; ++k)
@@ -200,14 +200,14 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 		}
 	}
 #endif
-	
+
 	// groups
 	u16 numGroups = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numGroups = os::Byteswap::byteswap(numGroups);
 #endif
 	pPtr += sizeof(u16);
-	
+
 	//skip groups
 	for (i=0; i<numGroups; ++i)
 	{
@@ -223,9 +223,9 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 		triangleCount = os::Byteswap::byteswap(triangleCount);
 #endif
 		pPtr += sizeof(u16);
-		
+
 		//pPtr += sizeof(u16) * triangleCount; // triangle indices
-		for (j=0; j<triangleCount; ++j) 
+		for (u32 j=0; j<triangleCount; ++j)
 		{
 #ifdef __BIG_ENDIAN__
 			grp.VertexIds.push_back(os::Byteswap::byteswap(*(u16*)pPtr));
@@ -236,10 +236,10 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 		}
 
 		grp.MaterialIdx = *(u8*)pPtr;
-		
+
 		pPtr += sizeof(c8); // material index
 	}
-	
+
 	// skip materials
 	u16 numMaterials = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
@@ -250,35 +250,29 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 	// MS3DMaterial *materials = (MS3DMaterial*)pPtr;
 	// pPtr += sizeof(MS3DMaterial) * numMaterials;
 
-	if(numMaterials <= 0) 
-	{ 
-		// if there are no materials, add at least one buffer
-
-		Buffers.push_back (SMS3DMeshBuffer ()); 
-		SMS3DMeshBuffer& tmpBuffer = Buffers.getLast(); 
-		tmpBuffer.BoundingBox = &BoundingBox; 
-		tmpBuffer.Vertices = &AnimatedVertices; 
-	}
+	// if there are no materials, add at least one buffer
+	if(numMaterials == 0)
+		Buffers.push_back(SSharedMeshBuffer(&AnimatedVertices));
 
 	for (i=0; i<numMaterials; ++i)
 	{
 		MS3DMaterial *material = (MS3DMaterial*)pPtr;
 #ifdef __BIG_ENDIAN__
-		for (j=0; j<4; ++j)
+		for (u32 j=0; j<4; ++j)
 			material->Ambient[j] = os::Byteswap::byteswap(material->Ambient[j]);
-		for (j=0; j<4; ++j)
+		for (u32 j=0; j<4; ++j)
 			material->Diffuse[j] = os::Byteswap::byteswap(material->Diffuse[j]);
-		for (j=0; j<4; ++j)
+		for (u32 j=0; j<4; ++j)
 			material->Specular[j] = os::Byteswap::byteswap(material->Specular[j]);
-		for (j=0; j<4; ++j)
+		for (u32 j=0; j<4; ++j)
 			material->Emissive[j] = os::Byteswap::byteswap(material->Emissive[j]);
 		material->Shininess = os::Byteswap::byteswap(material->Shininess);
 		material->Transparency = os::Byteswap::byteswap(material->Transparency);
 #endif
 		pPtr += sizeof(MS3DMaterial);
 
-		Buffers.push_back (SMS3DMeshBuffer ());
-		SMS3DMeshBuffer& tmpBuffer = Buffers.getLast();
+		Buffers.push_back(SSharedMeshBuffer(&AnimatedVertices));
+		SSharedMeshBuffer& tmpBuffer = Buffers.getLast();
 
 		tmpBuffer.Material.MaterialType = video::EMT_SOLID;
 
@@ -288,8 +282,8 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 		tmpBuffer.Material.SpecularColor = video::SColorf(material->Specular[0], material->Specular[1], material->Specular[2], material->Specular[3]).toSColor ();
 		tmpBuffer.Material.Shininess = material->Shininess;
 		tmpBuffer.Material.Textures[0] = Driver->getTexture((const c8*)material->Texture);
-		tmpBuffer.BoundingBox = &BoundingBox;
-		tmpBuffer.Vertices = &AnimatedVertices;
+		if (tmpBuffer.Material.Textures[0]==0)
+			tmpBuffer.Material.Textures[0] = Driver->getTexture(strrchr((const c8*)material->Texture, '/')+1);
 	}
 
 	// animation time
@@ -298,31 +292,31 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 	framesPerSecond = os::Byteswap::byteswap(framesPerSecond);
 #endif
 	pPtr += sizeof(f32) * 2; // fps and current time
-	
+
 	s32 frameCount = *(s32*)pPtr;
 #ifdef __BIG_ENDIAN__
 	frameCount = os::Byteswap::byteswap(frameCount);
 #endif
 	pPtr += sizeof(s32);
-	
+
 	totalTime = (frameCount / framesPerSecond) * 1000.0f;
-	
+
 	u16 jointCount = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	jointCount = os::Byteswap::byteswap(jointCount);
 #endif
 	pPtr += sizeof(u16);
-	
-	// load joints	
+
+	// load joints
 	SJoint t;
-	
+
 	for (i=0; i<jointCount; ++i)
 	{
 		MS3DJoint *pJoint = (MS3DJoint*)pPtr;
 #ifdef __BIG_ENDIAN__
-		for (j=0; j<3; ++j)
+		for (u32 j=0; j<3; ++j)
 			pJoint->Rotation[j] = os::Byteswap::byteswap(pJoint->Rotation[j]);
-		for (j=0; j<3; ++j)
+		for (u32 j=0; j<3; ++j)
 			pJoint->Translation[j] = os::Byteswap::byteswap(pJoint->Translation[j]);
 		pJoint->NumRotationKeyframes= os::Byteswap::byteswap(pJoint->NumRotationKeyframes);
 		pJoint->NumTranslationKeyframes = os::Byteswap::byteswap(pJoint->NumTranslationKeyframes);
@@ -330,7 +324,7 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 		pPtr += sizeof(MS3DJoint);
 		Joints.push_back(t);
 		SJoint& jnt = Joints[Joints.size()-1];
-		
+
 		jnt.Name = pJoint->Name;
 		jnt.Index = i;
 		jnt.Rotation.X = pJoint->Rotation[0];
@@ -345,9 +339,9 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 		if (pJoint->NumRotationKeyframes ||
 			pJoint->NumTranslationKeyframes)
 			HasAnimation = true;
-		
+
 		// get rotation keyframes
-		for (j=0; j<pJoint->NumRotationKeyframes; ++j)
+		for (u32 j=0; j<pJoint->NumRotationKeyframes; ++j)
 		{
 			MS3DKeyframe* kf = (MS3DKeyframe*)pPtr;
 #ifdef __BIG_ENDIAN__
@@ -366,7 +360,7 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 		}
 
 		// get translation keyframes
-		for (j=0; j<pJoint->NumTranslationKeyframes; ++j)
+		for (u32 j=0; j<pJoint->NumTranslationKeyframes; ++j)
 		{
 			MS3DKeyframe* kf = (MS3DKeyframe*)pPtr;
 #ifdef __BIG_ENDIAN__
@@ -386,16 +380,16 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 	}
 
 	//find parent of every joint
-	for (i=0; i<(s32)Joints.size(); ++i)
+	for (i=0; i<Joints.size(); ++i)
 	{
 		if (Joints[i].ParentName.size() != 0)
 		{
-			for (j=0; j<(s32)Joints.size(); ++j)
+			for (u32 j=0; j<Joints.size(); ++j)
 				if (i != j && Joints[i].ParentName == Joints[j].Name)
 				{
 					Joints[i].Parent = j;
 					break;
-				}	
+				}
 
 			if (Joints[i].Parent == -1)
 				os::Printer::log("Found joint in model without parent.", ELL_WARNING);
@@ -403,7 +397,7 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 	}
 
 	// sets up all joints with initial rotation and translation
-	for (i=0; i<(s32)Joints.size(); ++i)
+	for (i=0; i<Joints.size(); ++i)
 	{
 		SJoint& jnt = Joints[i];
 
@@ -426,7 +420,7 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 
 	for (i=0; i<numTriangles; ++i)
 	{
-		for (j = 0; j<3; ++j)
+		for (u32 j = 0; j<3; ++j)
 		{
 			v.TCoords.X = triangles[i].S[j];
 			v.TCoords.Y = triangles[i].T[j];
@@ -466,12 +460,12 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 
 	//create groups
 	s32 iIndex = -1;
-	for (i=0; i<(int)Groups.size(); ++i) 
-	{ 
-		SGroup& grp = Groups[i]; 
+	for (i=0; i<Groups.size(); ++i)
+	{
+		SGroup& grp = Groups[i];
 
-		if (grp.MaterialIdx >= Buffers.size()) 
-			grp.MaterialIdx = 0; 
+		if (grp.MaterialIdx >= Buffers.size())
+			grp.MaterialIdx = 0;
 
 		core::array<u16>& indices = Buffers[grp.MaterialIdx].Indices;
 
@@ -484,23 +478,28 @@ bool CAnimatedMeshMS3D::loadFile(io::IReadFile* file)
 	if (!Vertices.empty())
 		BoundingBox.reset(Vertices[0].Pos);
 
-	for (i=0; i<(s32)Vertices.size(); ++i)
+	for (i=0; i<Vertices.size(); ++i)
 		BoundingBox.addInternalPoint(Vertices[i].Pos);
+
+	for (i=0; i<Buffers.size(); ++i)
+		Buffers[i].recalculateBoundingBox();
 
 	// inverse translate and rotate all vertices for making animation easier
 	if (HasAnimation)
-	for (i=0; i<(s32)Joints.size(); ++i)
 	{
-		for (j=0; j<(s32)Joints[i].VertexIds.size(); ++j)
+		for (u32 k=0; k<Joints.size(); ++k)
 		{
-			Joints[i].AbsoluteTransformation.inverseTranslateVect(
-				Vertices[Joints[i].VertexIds[j]].Pos);
-
-			Joints[i].AbsoluteTransformation.inverseRotateVect(
-				Vertices[Joints[i].VertexIds[j]].Pos);
-
-			Joints[i].AbsoluteTransformation.inverseRotateVect(
-				Vertices[Joints[i].VertexIds[j]].Normal);
+			for (u32 l=0; l<Joints[k].VertexIds.size(); ++l)
+			{
+				Joints[k].AbsoluteTransformation.inverseTranslateVect(
+					Vertices[Joints[k].VertexIds[l]].Pos);
+	
+				Joints[k].AbsoluteTransformation.inverseRotateVect(
+					Vertices[Joints[k].VertexIds[l]].Pos);
+	
+				Joints[k].AbsoluteTransformation.inverseRotateVect(
+					Vertices[Joints[k].VertexIds[l]].Normal);
+			}
 		}
 	}
 
@@ -589,7 +588,7 @@ void CAnimatedMeshMS3D::getKeyframeRotation(const core::array<SKeyframe>& keys, 
 }
 
 
-//! Returns a pointer to a transformation matrix of a part of the 
+//! Returns a pointer to a transformation matrix of a part of the
 //! mesh based on a frame time.
 core::matrix4* CAnimatedMeshMS3D::getMatrixOfJoint(s32 jointNumber, s32 frame)
 {
@@ -637,12 +636,13 @@ void CAnimatedMeshMS3D::animate(s32 frame)
 	f32 time = (f32)frame;
 	core::matrix4 transform;
 	lastCalculatedFrame = frame;
+	u32 i;
 
-	for (s32 i=0; i<(s32)Joints.size(); ++i)
+	for (i=0; i<Joints.size(); ++i)
 	{
 		core::vector3df translation = Joints[i].Translation;
 		core::vector3df rotation = Joints[i].Rotation;
-		
+
 		// find keyframe translation and rotation
 		getKeyframeData(Joints[i].TranslationKeys, time, translation);
 		getKeyframeRotation(Joints[i].RotationKeys, time, rotation);
@@ -663,7 +663,7 @@ void CAnimatedMeshMS3D::animate(s32 frame)
 
 
 		// transform all vertices
-		for (s32 j=0; j<(s32)Joints[i].VertexIds.size(); ++j)
+		for (u32 j=0; j<Joints[i].VertexIds.size(); ++j)
 		{
 			Joints[i].AbsoluteTransformationAnimated.transformVect(
 				AnimatedVertices[Joints[i].VertexIds[j]].Pos,
@@ -675,12 +675,14 @@ void CAnimatedMeshMS3D::animate(s32 frame)
 				Vertices[Joints[i].VertexIds[j]].Normal
 			);
 
-			// TODO: this could be done much more faster by 
+			// TODO: this could be done much more faster by
 			// first getting 8 extreme points and putting them in.
 			BoundingBox.addInternalPoint(AnimatedVertices[Joints[i].VertexIds[j]].Pos);
 		}
 	}
 
+	for (i=0; i<Buffers.size(); ++i)
+		Buffers[i].recalculateBoundingBox();
 }
 
 
@@ -730,7 +732,7 @@ void CAnimatedMeshMS3D::setBoundingBox( const core::aabbox3df& box)
 //! sets a flag of all contained materials to a new value
 void CAnimatedMeshMS3D::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 {
-	for (s32 i=0; i<(int)Buffers.size(); ++i) 
+	for (u32 i=0; i<Buffers.size(); ++i)
 		Buffers[i].Material.setFlag(flag, newvalue);
 }
 
@@ -741,92 +743,8 @@ E_ANIMATED_MESH_TYPE CAnimatedMeshMS3D::getMeshType() const
 	return EAMT_MS3D;
 }
 
-//! constructor 
-CAnimatedMeshMS3D::SMS3DMeshBuffer::SMS3DMeshBuffer() 
-{ 
-	#ifdef _DEBUG 
-	setDebugName("SMS3DMeshBuffer"); 
-	#endif 
-} 
-
-//! destructor 
-CAnimatedMeshMS3D::SMS3DMeshBuffer::~SMS3DMeshBuffer() 
-{
-} 
-
-//! returns the material of this meshbuffer 
-const video::SMaterial& CAnimatedMeshMS3D::SMS3DMeshBuffer::getMaterial() const 
-{ 
-	return Material; 
-} 
-
-//! returns the material of this meshbuffer 
-video::SMaterial& CAnimatedMeshMS3D::SMS3DMeshBuffer::getMaterial() 
-{ 
-	return Material; 
-} 
-
-//! returns pointer to vertices 
-const void* CAnimatedMeshMS3D::SMS3DMeshBuffer::getVertices() const 
-{ 
-	return Vertices->const_pointer(); 
-} 
-
-//! returns pointer to vertices 
-void* CAnimatedMeshMS3D::SMS3DMeshBuffer::getVertices() 
-{ 
-	return Vertices->pointer(); 
-} 
-
-//! returns amount of vertices 
-u32 CAnimatedMeshMS3D::SMS3DMeshBuffer::getVertexCount() const 
-{ 
-	return Vertices->size(); 
-} 
-
-//! returns pointer to Indices 
-const u16* CAnimatedMeshMS3D::SMS3DMeshBuffer::getIndices() const 
-{ 
-	return Indices.const_pointer(); 
-} 
-
-//! returns pointer to Indices 
-u16* CAnimatedMeshMS3D::SMS3DMeshBuffer::getIndices() 
-{ 
-	return Indices.pointer(); 
-} 
-
-//! returns amount of indices 
-u32 CAnimatedMeshMS3D::SMS3DMeshBuffer::getIndexCount() const 
-{ 
-	return Indices.size(); 
-} 
-
-//! returns an axis aligned bounding box 
-const core::aabbox3d<f32>& CAnimatedMeshMS3D::SMS3DMeshBuffer::getBoundingBox() const 
-{ 
-	return *BoundingBox; 
-} 
-
-//! returns an axis aligned bounding box 
-void CAnimatedMeshMS3D::SMS3DMeshBuffer::setBoundingBox( const core::aabbox3df& box) 
-{ 
-	*BoundingBox = box; 
-} 
-
-//! returns which type of vertex data is stored.
-video::E_VERTEX_TYPE CAnimatedMeshMS3D::SMS3DMeshBuffer::getVertexType() const
-{
-	return video::EVT_STANDARD;
-}
 
 //! returns the byte size (stride, pitch) of the vertex
-u32 CAnimatedMeshMS3D::SMS3DMeshBuffer::getVertexPitch() const
-{
-	return sizeof ( video::S3DVertex );
-}
-
-
 } // end namespace scene
 } // end namespace irr
 
