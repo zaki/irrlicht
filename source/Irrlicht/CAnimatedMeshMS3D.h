@@ -10,7 +10,7 @@
 #include "IReadFile.h"
 #include "S3DVertex.h"
 #include "irrString.h"
-#include "SMeshBuffer.h"
+#include "SSharedMeshBuffer.h"
 
 namespace irr
 {
@@ -47,8 +47,8 @@ namespace scene
 		virtual IMeshBuffer* getMeshBuffer(u32 nr) const;
 
 		//! Returns pointer to a mesh buffer which fits a material
- 		/** \param material: material to search for
-		\return Returns the pointer to the mesh buffer or 
+		/** \param material: material to search for
+		\return Returns the pointer to the mesh buffer or
 		NULL if there is no such mesh buffer. */
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const;
 
@@ -64,7 +64,7 @@ namespace scene
 		//! Returns the type of the animated mesh.
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
-		//! Returns a pointer to a transformation matrix of a part of the 
+		//! Returns a pointer to a transformation matrix of a part of the
 		//! mesh based on a frame time.
 		virtual core::matrix4* getMatrixOfJoint(s32 jointNumber, s32 frame);
 
@@ -78,99 +78,39 @@ namespace scene
 		virtual s32 getJointNumber(const c8* name) const;
 
 	private:
-	
+
 		struct SKeyframe
 		{
 			f32 timeindex;
 			core::vector3df data; // translation or rotation
 		};
-	
+
 		struct SJoint
 		{
 			core::stringc Name;
 			s32 Index;
 			core::vector3df Rotation;
 			core::vector3df Translation;
-			
+
 			core::matrix4 RelativeTransformation;
 			core::matrix4 AbsoluteTransformation;
 			core::matrix4 AbsoluteTransformationAnimated;
-			
+
 			core::array<SKeyframe> TranslationKeys;
 			core::array<SKeyframe> RotationKeys;
 			core::array<u16> VertexIds;
-			
+
 			s32 Parent;
 			core::stringc ParentName;
 		};
 
-		struct SGroup 
-		{ 
-			core::stringc Name; 
-			core::array<u16> VertexIds; 
+		struct SGroup
+		{
+			core::stringc Name;
+			core::array<u16> VertexIds;
 
-			u16 MaterialIdx; 
-		}; 
-		  
-		//! Simple implementation of the IMeshBuffer interface with S3DVertex vertices. 
-		struct SMS3DMeshBuffer : public IMeshBuffer 
-		{ 
-			//! constructor 
-			SMS3DMeshBuffer();
-
-			//! destructor 
-			~SMS3DMeshBuffer();
-
-			//! returns the material of this meshbuffer 
-			virtual const video::SMaterial& getMaterial() const;
-
-			//! returns the material of this meshbuffer 
-			virtual video::SMaterial& getMaterial();
-
-			//! returns pointer to vertices 
-			virtual const void* getVertices() const;
-
-			//! returns pointer to vertices 
-			virtual void* getVertices();
-
-			//! returns amount of vertices 
-			virtual u32 getVertexCount() const;
-
-			//! returns pointer to Indices 
-			virtual const u16* getIndices() const;
-
-			//! returns pointer to Indices 
-			virtual u16* getIndices();
-
-			//! returns amount of indices 
-			virtual u32 getIndexCount() const;
-
-			//! returns an axis aligned bounding box 
-			virtual const core::aabbox3d<f32>& getBoundingBox() const;
-
-			//! set user axis aligned bounding box
-			virtual void setBoundingBox( const core::aabbox3df& box);
-
-			//! returns which type of vertex data is stored. 
-			virtual video::E_VERTEX_TYPE getVertexType() const;
-
-			//! returns the byte size (stride, pitch) of the vertex
-			virtual u32 getVertexPitch() const;
-
-			//! recalculates the bounding box. should be called if the mesh changed.
-			virtual void recalculateBoundingBox() {}
-
-			//! append the vertices and indices to the current buffer
-			virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) {}
-
-			//! append the meshbuffer to the current buffer
-			virtual void append(const IMeshBuffer* const other) {}
-
-			video::SMaterial Material;                  //! material for this meshBuffer. 
-			core::array<video::S3DVertex> *Vertices;      //! Array of vertices 
-			core::array<u16> Indices;   //! Array of the Indices. 
-			core::aabbox3d<f32> *BoundingBox; 
-		}; 
+			u16 MaterialIdx;
+		};
 
 		void animate(s32 frame);
 		void getKeyframeData(const core::array<SKeyframe>& keys, f32 time, core::vector3df& outdata) const;
@@ -181,10 +121,10 @@ namespace scene
 		core::array<video::S3DVertex> Vertices;
 		core::array<video::S3DVertex> AnimatedVertices;
 		core::array<u16> Indices;
-		
+
 		core::array<SJoint> Joints;
 		core::array<SGroup> Groups;
-		core::array<SMS3DMeshBuffer> Buffers;
+		core::array<SSharedMeshBuffer> Buffers;
 
 		f32 totalTime;
 		bool HasAnimation;
