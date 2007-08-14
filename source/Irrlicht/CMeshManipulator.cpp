@@ -103,16 +103,6 @@ inline void makePlanarMappingT(VERTEXTYPE *v,
 	}
 }
 
-//! Constructor
-CMeshManipulator::CMeshManipulator()
-{
-}
-
-
-//! destructor
-CMeshManipulator::~CMeshManipulator()
-{
-}
 
 //! Flips the direction of surfaces. Changes backfacing triangles to frontfacing
 //! triangles and vice versa.
@@ -874,17 +864,9 @@ s32 CMeshManipulator::getPolyCount(scene::IAnimatedMesh* mesh) const
 }
 
 //! create a new AnimatedMesh and adds the mesh to it
-IAnimatedMesh * CMeshManipulator::createAnimatedMesh(scene::IMesh* mesh,scene::E_ANIMATED_MESH_TYPE type) const
+IAnimatedMesh * CMeshManipulator::createAnimatedMesh(scene::IMesh* mesh, scene::E_ANIMATED_MESH_TYPE type) const
 {
-	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
-
-	animatedMesh->Type = type;
-	animatedMesh->addMesh(mesh);
-	animatedMesh->recalculateBoundingBox();
-
-	//mesh->drop ();
-
-	return animatedMesh;
+	return new SAnimatedMesh(mesh, type);
 }
 
 

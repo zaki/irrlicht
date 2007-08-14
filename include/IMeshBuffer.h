@@ -57,7 +57,7 @@ enum E_PRIMITIVE_TYPE
 	public:
 
 		//! destructor
-		virtual ~IMeshBuffer() {}; 
+		virtual ~IMeshBuffer() { }
 
 		//! returns the material of this meshbuffer
 		virtual video::SMaterial& getMaterial() = 0;

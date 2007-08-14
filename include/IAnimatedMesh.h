@@ -71,7 +71,7 @@ namespace scene
 	public:
 
 		//! destructor
-		virtual ~IAnimatedMesh() {};
+		virtual ~IAnimatedMesh() { }
 
 		//! Gets the frame count of the animated mesh.
 		/** \return Returns the amount of frames. If the amount is 1, it is a
