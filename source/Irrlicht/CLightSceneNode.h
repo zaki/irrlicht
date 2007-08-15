@@ -22,7 +22,7 @@ public:
 	CLightSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, video::SColorf color, f32 range);
 
-	virtual ~CLightSceneNode();
+	virtual ~CLightSceneNode() { }
 
 	//! pre render event
 	virtual void OnRegisterSceneNode();
@@ -31,7 +31,10 @@ public:
 	virtual void render();
 
 	//! set node light data from light info
-	virtual void setLightData( const video::SLight& light);
+	virtual void setLightData(const video::SLight& light);
+
+	//! \return Returns the light data.
+	virtual const video::SLight& getLightData() const;
 
 	//! \return Returns the light data.
 	virtual video::SLight& getLightData();

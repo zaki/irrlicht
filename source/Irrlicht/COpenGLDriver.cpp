@@ -1690,30 +1690,47 @@ void COpenGLDriver::addDynamicLight(const SLight& light)
 	s32 lidx = GL_LIGHT0 + LastSetLight;
 	GLfloat data[4];
 
-	if( light.Type == video::ELT_DIRECTIONAL )
+	switch (light.Type)
 	{
-		// set direction
-		data[0] = -light.Position.X;
-		data[1] = -light.Position.Y;
-		data[2] = -light.Position.Z;
-
+	case video::ELT_SPOT:
+		data[0] = light.Direction.X;
+		data[1] = light.Direction.Y;
+		data[2] = light.Direction.Z;
 		data[3] = 0.0f;
-		glLightfv(lidx, GL_POSITION, data);
-
-		data[3] = 1.0f;
 		glLightfv(lidx, GL_SPOT_DIRECTION, data);
 
-		glLightf(lidx, GL_SPOT_CUTOFF, 180.0f);
-		glLightf(lidx, GL_SPOT_EXPONENT, 0.0f);
-	}
-	else
-	{
 		// set position
 		data[0] = light.Position.X;
 		data[1] = light.Position.Y;
 		data[2] = light.Position.Z;
-		data[3] = 1.0f;
+		data[3] = 1.0f; // 1.0f for positional light
 		glLightfv(lidx, GL_POSITION, data);
+
+		glLightf(lidx, GL_SPOT_EXPONENT, light.Falloff);
+		glLightf(lidx, GL_SPOT_CUTOFF, light.OuterCone);
+	break;
+	case video::ELT_POINT:
+		// set position
+		data[0] = light.Position.X;
+		data[1] = light.Position.Y;
+		data[2] = light.Position.Z;
+		data[3] = 1.0f; // 1.0f for positional light
+		glLightfv(lidx, GL_POSITION, data);
+
+		glLightf(lidx, GL_SPOT_EXPONENT, 0.0f);
+		glLightf(lidx, GL_SPOT_CUTOFF, 180.0f);
+	break;
+	case video::ELT_DIRECTIONAL:
+		// set direction
+		data[0] = -light.Direction.X;
+		data[1] = -light.Direction.Y;
+		data[2] = -light.Direction.Z;
+		data[3] = 0.0f; // 0.0f for directional light
+		glLightfv(lidx, GL_POSITION, data);
+
+		glLightf(lidx, GL_SPOT_EXPONENT, 0.0f);
+		glLightf(lidx, GL_SPOT_CUTOFF, 180.0f);
+	break;
 	}
 
 	// set diffuse color
@@ -2005,6 +2022,11 @@ void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
 	}
 	else
 		glFogf(GL_FOG_DENSITY, density);
+
+	if (pixelFog)
+		glHint(GL_FOG_HINT, GL_NICEST);
+	else
+		glHint(GL_FOG_HINT, GL_FASTEST);
 
 	SColorf color(c);
 	GLfloat data[4] = {color.r, color.g, color.b, color.a};

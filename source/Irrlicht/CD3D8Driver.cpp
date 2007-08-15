@@ -1693,26 +1693,35 @@ void CD3D8Driver::addDynamicLight(const SLight& dl)
 
 	D3DLIGHT8 light;
 
-	if ( dl.Type == ELT_POINT )
+	switch (dl.Type)
 	{
+	case ELT_POINT:
 		light.Type = D3DLIGHT_POINT;
-		light.Position = *(D3DVECTOR*)((void*)(&dl.Position));
-	}
-	else
-	if ( dl.Type == ELT_DIRECTIONAL )
-	{
+	break;
+	case ELT_SPOT:
+		light.Type = D3DLIGHT_SPOT;
+	break;
+	case ELT_DIRECTIONAL:
 		light.Type = D3DLIGHT_DIRECTIONAL;
-		light.Direction = *(D3DVECTOR*)((void*)(&dl.Position));
+	break;
 	}
+
+	light.Position = *(D3DVECTOR*)((void*)(&dl.Position));
+	light.Direction = *(D3DVECTOR*)((void*)(&dl.Direction));
+
+	light.Range = core::min_(dl.Radius, MaxLightDistance);
+	light.Falloff = dl.Falloff;
 
 	light.Diffuse = *(D3DCOLORVALUE*)((void*)(&dl.DiffuseColor));
 	light.Specular = *(D3DCOLORVALUE*)((void*)(&dl.SpecularColor));
 	light.Ambient = *(D3DCOLORVALUE*)((void*)(&dl.AmbientColor));
-	light.Range = MaxLightDistance;
 
 	light.Attenuation0 = dl.Attenuation.X;
 	light.Attenuation1 = dl.Attenuation.Y;
 	light.Attenuation2 = dl.Attenuation.Z;
+
+	light.Theta = dl.InnerCone * 2.0f * core::DEGTORAD;
+	light.Phi = dl.OuterCone * 2.0f * core::DEGTORAD;
 
 	++LastSetLight;
 	pID3DDevice->SetLight(LastSetLight, &light);

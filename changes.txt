@@ -1,8 +1,24 @@
 Changes in version 1.4 (... 2007)
 
- - Added river support for user defined clip planes, based on mandrav's patch.
+ - Added Spot light type for dynamic lights. Note that both position and direction for all dynamic lights are now determined by the LightSceneNode, the SLight attributes are only used for internal purposes.
+   API change! One can easily work around this change by setting the LightSceneNode's Position and Rotation instead of the SLight's. This change won't provoke a compile error, though, and can hence go unrecognized besides the visual problems.
+   The lights use a default direction (0,0,-1) which is rotated by the usual scene node transformations and can hence be modified by scene node animators.
+   A change in the Radius usage can lead to strange artifacts. Just increase the Radius in this case. further handling of Radius is to be discussed.
+
+ - Added per pixel fog support for OpenGL.
+
+ - Added driver support for user defined clip planes, based on mandrav's patch.
+   The OpenGL version is more picky about ModelView matrices, so it's best to set the projection plane at the time it is used.
 
  - .obj files now load relative indices correctly. Collada files load textures.
+
+ - A new MeshBuffer implementation is publicly available. It supports a shared vertex list for all MeshBuffers, used for MS3D meshes.
+
+ - MeshBuffers can recalculate their BoundingBoxes on their own now, no need for MeshManipulators. New append methods help to merge MeshBuffers. take care that the types match!
+
+ - The new texture generation mode is working. With ETCF_NO_ALPHA_CHANNEL textures are generated without ALPHA bits reserved.
+
+ - D3D9 hardware mipmap updates are re-enabled, problems should be reported.
 
  - In some cases fullscreeen modes under win32 should have a better frame rate now.
 
