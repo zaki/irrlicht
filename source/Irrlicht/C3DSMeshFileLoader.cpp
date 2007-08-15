@@ -879,8 +879,8 @@ void C3DSMeshFileLoader::composeObject(io::IReadFile* file, const core::stringc&
 		// no material group, so add all
 		SMaterialGroup group;
 		group.faceCount = CountFaces;
-		group.faces = new s16[group.faceCount];
-		for (int i=0; i<group.faceCount; ++i)
+		group.faces = new u16[group.faceCount];
+		for (u32 i=0; i<group.faceCount; ++i)
 			group.faces[i] = i;
 		MaterialGroups.push_back(group);
 
@@ -1177,12 +1177,13 @@ void C3DSMeshFileLoader::readMaterialGroup(io::IReadFile* file, ChunkData& data)
 	data.read += sizeof(group.faceCount);
 
 	// read faces
-	group.faces = new s16[group.faceCount];
-	file->read(group.faces, sizeof(s16) * group.faceCount);
+	group.faces = new u16[group.faceCount];
+	file->read(group.faces, sizeof(u16) * group.faceCount);
 #ifdef __BIG_ENDIAN__
-	for (int i=0;i<group.faceCount;i++) group.faces[i] = os::Byteswap::byteswap(group.faces[i]);
+	for (u32 i=0;i<group.faceCount;++i)
+		group.faces[i] = os::Byteswap::byteswap(group.faces[i]);
 #endif
-	data.read += sizeof(s16) * group.faceCount;
+	data.read += sizeof(u16) * group.faceCount;
 
 	MaterialGroups.push_back(group);
 }
