@@ -35,12 +35,12 @@ public:
 
 		irr::scene::ILightSceneNode* l = (irr::scene::ILightSceneNode*) node;
 
-		core::vector3df now = l->getPosition();
-
 		if ( ToFollow )
 		{
+			core::vector3df now = l->getPosition();
 			now += ToFollow->getBoundingBox().getCenter();
 			now += Offset;
+			l->setPosition(now);
 		}
 
 		irr::video::SColorHSL color;
@@ -52,7 +52,6 @@ public:
 
 		video::SLight light = l->getLightData();
 		light.DiffuseColor = rgb;
-		light.Position = now;
 		l->setLightData(light);
 	}
 

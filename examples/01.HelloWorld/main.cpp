@@ -133,7 +133,7 @@ int main()
 	We add a hello world label to the window, using the GUI environment.
 	*/
 	guienv->addStaticText(L"Hello World! This is the Irrlicht Software renderer!",
-		rect<int>(10,10,260,22), true);
+		rect<s32>(10,10,260,22), true);
 
 	/*
 	To display something interesting, we load a Quake 2 model 

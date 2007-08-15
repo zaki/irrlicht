@@ -361,12 +361,13 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(IMesh* mesh)
 	// create as much shadow volumes as there are lights but
 	// do not ignore the max light settings.
 
-	u32 lights = SceneManager->getVideoDriver()->getDynamicLightCount();
+	const u32 lights = SceneManager->getVideoDriver()->getDynamicLightCount();
 	core::matrix4 mat = Parent->getAbsoluteTransformation();
-	core::vector3df parentpos = Parent->getAbsolutePosition();
+	const core::vector3df parentpos = Parent->getAbsolutePosition();
 	core::vector3df lpos;
 	mat.makeInverse();
 
+	// TODO: Only correct for point lights.
 	for (i=0; i<lights; ++i)
 	{
 		const video::SLight& dl = SceneManager->getVideoDriver()->getDynamicLight(i);
