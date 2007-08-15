@@ -120,14 +120,14 @@ private:
 		{
 			MaterialName = o.MaterialName;
 			faceCount = o.faceCount;
-			faces = new s16[faceCount];
-			for (s32 i=0; i<faceCount; ++i)
+			faces = new u16[faceCount];
+			for (u32 i=0; i<faceCount; ++i)
 				faces[i] = o.faces[i];
 		}
 
 		core::stringc MaterialName;
 		u16 faceCount;
-		s16* faces;
+		u16* faces;
 	};
 
 	bool readChunk(io::IReadFile* file, ChunkData* parent);
