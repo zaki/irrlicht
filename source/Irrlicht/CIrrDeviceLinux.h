@@ -110,32 +110,29 @@ namespace irr
 					// this code, for making the cursor invisible was sent in by
 					// Sirshane, thank your very much!
 
-					Colormap screen_colormap;
 
-					invisBitmap = XCreatePixmap( Device->display, Device->window, 32, 32, depth );
-					maskBitmap = XCreatePixmap( Device->display, Device->window, 32, 32, depth );
-
-					screen_colormap = DefaultColormap( Device->display, DefaultScreen( Device->display ) );
+					Pixmap invisBitmap = XCreatePixmap( Device->display, Device->window, 32, 32, depth );
+					Pixmap maskBitmap = XCreatePixmap( Device->display, Device->window, 32, 32, depth );
+					Colormap screen_colormap = DefaultColormap( Device->display, DefaultScreen( Device->display ) );
 					XAllocNamedColor( Device->display, screen_colormap, "black", &fg, &fg );
 					XAllocNamedColor( Device->display, screen_colormap, "white", &bg, &bg );
 
-					gc = XCreateGC( Device->display, invisBitmap, valuemask, &values );
+					GC gc = XCreateGC( Device->display, invisBitmap, valuemask, &values );
 
 					XSetForeground( Device->display, gc, BlackPixel( Device->display, DefaultScreen( Device->display ) ) );
 					XFillRectangle( Device->display, invisBitmap, gc, 0, 0, 32, 32 );
 					XFillRectangle( Device->display, maskBitmap, gc, 0, 0, 32, 32 );
 
 					invisCursor = XCreatePixmapCursor( Device->display, invisBitmap, maskBitmap, &fg, &bg, 1, 1 );
+					XFreeGC(Device->display, gc);
+					XFreePixmap(Device->display, invisBitmap);
+					XFreePixmap(Device->display, maskBitmap);
 				}
 #endif
 			}
 
 			~CCursorControl()
 			{
-#ifdef _IRR_COMPILE_WITH_X11_
-				if (!Null)
-					XFreeGC(Device->display, gc);
-#endif
 			}
 
 			//! Changes the visible state of the mouse cursor.
@@ -285,10 +282,7 @@ namespace irr
 			bool UseReferenceRect;
 			core::rect<s32> ReferenceRect;
 #ifdef _IRR_COMPILE_WITH_X11_
-			GC gc;
 			Cursor invisCursor;
-			Pixmap invisBitmap;
-			Pixmap maskBitmap;
 #endif
 		};
 
