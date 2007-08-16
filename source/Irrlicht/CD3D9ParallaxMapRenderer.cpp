@@ -19,12 +19,12 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 	// 1.1/1.4 Shaders with two lights and vertex based attenuation
 
 	// Irrlicht Engine D3D9 render path normal map vertex shader
-	const char D3D9_PARALLAX_MAP_VSH[] = 
+	const char D3D9_PARALLAX_MAP_VSH[] =
 		";Irrlicht Engine 0.10 D3D9 render path parallax mapping vertex shader\n"\
 		"; c0-3: Transposed world matrix \n"\
 		"; c4: Eye position \n"\
@@ -45,7 +45,7 @@ namespace video
 		"def c96, -1, 1, 1, 1   ; somewhere I've got a bug. flipping the vectors with this fixes it. \n"\
 		"\n"\
 		"m4x4 oPos, v0, c8             ; transform position to clip space with worldViewProj matrix\n"\
-        "\n"\
+		"\n"\
 		"m3x3 r5, v4, c0               ; transform tangent U\n"\
 		"m3x3 r7, v1, c0               ; transform normal W\n"\
 		"m3x3 r6, v5, c0               ; transform binormal V\n"\
@@ -102,7 +102,7 @@ namespace video
 
 
 	// Irrlicht Engine D3D9 render path normal map pixel shader version 1.4
-	const char D3D9_PARALLAX_MAP_PSH[] = 
+	const char D3D9_PARALLAX_MAP_PSH[] =
 		";Irrlicht Engine 0.10 D3D9 render path parallax mapping pixel shader \n"\
 		";Input:  \n"\
 		";t0: color map texture coord  \n"\
@@ -121,7 +121,7 @@ namespace video
 		" \n"\
 		"texld  r1, t1              ; sample (normal.x, normal.y, normal.z, height) \n"\
 		"texcrd r4.xyz, t4          ; fetch eye vector  \n"\
-		"texcrd r0.xyz, t0          ; color map		 \n"\
+		"texcrd r0.xyz, t0          ; color map		\n"\
 		" \n"\
 		"; original parallax mapping: \n"\
 		";mul r3, r1_bx2.wwww, c6;   ; r3 = (height, height, height) * scale \n"\
@@ -150,7 +150,7 @@ namespace video
 		"\n";
 
 	// Irrlicht Engine D3D9 render path normal map pixel shader version 2.0
-	const char D3D9_PARALLAX_MAP_PSH_20[] = 
+	const char D3D9_PARALLAX_MAP_PSH_20[] =
 		";Irrlicht Engine 0.10 D3D9 render path parallax mapping pixel shader \n"\
 		";Input:  \n"\
 		" \n"\
@@ -219,15 +219,15 @@ namespace video
 		"mul r0.xyz, r0, r3          ; total luminance * base color \n"\
 		"mov r0.a, v0.a             ; write original alpha value \n"\
 		"mov oC0, r0; \n"\
-		"\n";	
+		"\n";
 
 	CD3D9ParallaxMapRenderer::CD3D9ParallaxMapRenderer(
-		IDirect3DDevice9* d3ddev, video::IVideoDriver* driver, 
+		IDirect3DDevice9* d3ddev, video::IVideoDriver* driver,
 		s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
 		: CD3D9ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial),
 		CurrentScale(0.0f)
 	{
-		// set this as callback. We could have done this in 
+		// set this as callback. We could have done this in
 		// the initialization list, but some compilers don't like it.
 
 		CallBack = this;
@@ -244,12 +244,12 @@ namespace video
 			return;
 		}
 
-        // check if already compiled parallax map shaders are there.
+		// check if already compiled parallax map shaders are there.
 
 		video::IMaterialRenderer* renderer = driver->getMaterialRenderer(EMT_PARALLAX_MAP_SOLID);
 		if (renderer)
 		{
-			// use the already compiled shaders 
+			// use the already compiled shaders
 			video::CD3D9ParallaxMapRenderer* nmr = (video::CD3D9ParallaxMapRenderer*)renderer;
 			VertexShader = nmr->VertexShader;
 			if (VertexShader)
@@ -303,17 +303,17 @@ namespace video
 		return CD3D9ShaderMaterialRenderer::OnRender(service, vtxtype);
 	}
 
-	void CD3D9ParallaxMapRenderer::OnSetMaterial(video::SMaterial& material, 
+	void CD3D9ParallaxMapRenderer::OnSetMaterial(video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services)
 	{
-		CD3D9ShaderMaterialRenderer::OnSetMaterial(material, lastMaterial, 
+		CD3D9ShaderMaterialRenderer::OnSetMaterial(material, lastMaterial,
 			resetAllRenderstates, services);
 
 		CurrentScale = material.MaterialTypeParam;
 	}
 
-	//! Returns the render capability of the material. 
+	//! Returns the render capability of the material.
 	s32 CD3D9ParallaxMapRenderer::getRenderCapability()
 	{
 		if (Driver->queryFeature(video::EVDF_PIXEL_SHADER_1_4) &&
@@ -335,8 +335,8 @@ namespace video
 
 		// set eye position
 
-		// The  viewpoint is at (0., 0., 0.) in eye space. 
-		// Turning this into a vector [0 0 0 1] and multiply it by 
+		// The  viewpoint is at (0., 0., 0.) in eye space.
+		// Turning this into a vector [0 0 0 1] and multiply it by
 		// the inverse of the view matrix, the resulting vector is the
 		// object space location of the camera.
 
@@ -348,7 +348,7 @@ namespace video
 
 		// set transposed worldViewProj matrix
 		core::matrix4 worldViewProj;
-		worldViewProj = driver->getTransform(video::ETS_PROJECTION);			
+		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
 		worldViewProj *= driver->getTransform(video::ETS_VIEW);
 		worldViewProj *= driver->getTransform(video::ETS_WORLD);
 		services->setVertexShaderConstant(worldViewProj.getTransposed().pointer(), 8, 4);
@@ -357,10 +357,10 @@ namespace video
 		// and set them as constants
 
 		int cnt = driver->getDynamicLightCount();
-		
+
 		for (int i=0; i<2; ++i)
 		{
-			SLight light; 
+			SLight light;
 
 			if (i<cnt)
 				light = driver->getDynamicLight(i);
@@ -383,14 +383,14 @@ namespace video
 		services->setVertexShaderConstant(c96, 96, 1);
 
 		// set scale factor
-        f32 factor = 0.02f; // default value
+		f32 factor = 0.02f; // default value
 		if (CurrentScale != 0)
 			factor = CurrentScale;
 
 		f32 c6[] = {factor, factor, factor, 0};
 		services->setPixelShaderConstant(c6, 6, 1);
 	}
-	
+
 
 } // end namespace video
 } // end namespace irr

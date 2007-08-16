@@ -82,7 +82,7 @@ namespace video
 		"\n";
 
 	// Irrlicht Engine D3D9 render path normal map pixel shader
-	const char D3D9_NORMAL_MAP_PSH[] = 
+	const char D3D9_NORMAL_MAP_PSH_1_1[] = 
 		";Irrlicht Engine 0.8 D3D9 render path normal map pixel shader\n"\
 		";Input: \n"\
 		";t0: color map texture coord \n"\
@@ -106,6 +106,60 @@ namespace video
 		"\n"\
 		"mul r0.xyz, t0, r0             ; total luminance * base color\n"\
 		"+mov r0.a, v0.a             ; write interpolated vertex alpha value \n"\
+		"\n"\
+		"";
+		
+	// Higher-quality normal map pixel shader (requires PS 2.0)
+	// uses per-pixel normalization for improved accuracy
+	const char D3D9_NORMAL_MAP_PSH_2_0[] = 
+		";Irrlicht Engine 0.8 D3D9 render path normal map pixel shader\n"\
+		";Input: \n"\
+		";t0: color map texture coord \n"\
+		";t1: normal map texture coords \n"\
+		";t2: light 1 vector in tangent space \n"\
+		";v0: light 1 color \n"\
+		";t3: light 2 vector in tangent space \n"\
+		";v1: light 2 color \n"\
+		";v0.a: vertex alpha value  \n"\
+
+		"ps_2_0 \n"\
+		"def c0, 0, 0, 0, 0\n"\
+		"def c1, 1.0, 1.0, 1.0, 1.0\n"\
+		"def c2, 2.0, 2.0, 2.0, 2.0\n"\
+		"def c3, -.5, -.5, -.5, -.5\n"\
+		"dcl t0\n"\
+		"dcl t1\n"\
+		"dcl t2\n"\
+		"dcl t3\n"\
+		"dcl v1\n"\
+		"dcl v0\n"\
+		"dcl_2d s0\n"\
+		"dcl_2d s1\n"\
+
+		"texld r0, t0, s0			; sample color map into r0 \n"\
+		"texld r4, t0, s1			; sample normal map into r4\n"\
+		"add r4, r4, c3				; bias the normal vector\n"\
+		"add r5, t2, c3				; bias the light 1 vector into r5\n"\
+		"add r6, t3, c3				; bias the light 2 vector into r6\n"\
+
+		"nrm r1, r4					; normalize the normal vector into r1\n"\
+		"nrm r2, r5					; normalize the light1 vector into r2\n"\
+		"nrm r3, r6					; normalize the light2 vector into r3\n"\
+		
+		"dp3 r2, r2, r1				; let r2 = normal DOT light 1 vector\n"\
+		"max r2, r2, c0				; clamp result to positive numbers\n"\
+		"mul r2, r2, v0             ; let r2 = luminance1 * light color 1 \n"\
+
+		"dp3 r3, r3, r1				; let r3 = normal DOT light 2 vector\n"\
+		"max r3, r3, c0				; clamp result to positive numbers\n"\
+
+		"mad r2, r3, v1, r2         ; let r2 = (luminance2 * light color 2) + (luminance2 * light color 1) \n"\
+
+		"mul r2, r2, r0	; let r2 = total luminance * base color\n"\
+		"mov r2.w, v0.w				; write interpolated vertex alpha value \n"\
+
+		"mov oC0, r2				; copy r2 to the output register \n"\
+
 		"\n"\
 		"";
 
@@ -151,7 +205,14 @@ namespace video
 		else
 		{
 			// compile shaders on our own
-			init(outMaterialTypeNr, D3D9_NORMAL_MAP_VSH, D3D9_NORMAL_MAP_PSH);
+			if (driver->queryFeature(video::EVDF_PIXEL_SHADER_2_0))
+			{
+				init(outMaterialTypeNr, D3D9_NORMAL_MAP_VSH, D3D9_NORMAL_MAP_PSH_2_0);
+			}
+			else
+			{
+				init(outMaterialTypeNr, D3D9_NORMAL_MAP_VSH, D3D9_NORMAL_MAP_PSH_1_1);
+			}
 		}
 	}
 
