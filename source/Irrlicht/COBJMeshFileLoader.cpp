@@ -145,7 +145,6 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 		case 'g': // group names skipped
 			{
-				pBufPtr = goNextLine(pBufPtr, pBufEnd);
 			}
 			break;
 
@@ -710,11 +709,10 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const
 			// number is completed. Convert and store it
 			word[i] = '\0';
 			// if no number was found index will become 0 and later on -1 by decrement
-			const s32 index = core::strtol10(word, 0);
-			if (index<0)
-				pIdx[idxType] = index+vbuffer.size();
+			if (word[0]=='-')
+				pIdx[idxType] = -core::strtol10(word+1,0)+vbuffer.size();
 			else
-				pIdx[idxType] = index-1;
+				pIdx[idxType] = core::strtol10(word,0)-1;
 
 			// reset the word
 			word[0] = '\0';
