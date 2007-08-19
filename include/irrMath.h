@@ -116,14 +116,14 @@ namespace core
 	//! point rounding errors into account
 	inline bool equals(const f32 a, const f32 b, const f32 tolerance = ROUNDING_ERROR_32)
 	{
-		return (a + tolerance > b) && (a - tolerance < b);
+		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
 	//! returns if a float equals zero, taking floating 
 	//! point rounding errors into account
 	inline bool iszero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
 	{
-		return fabs ( a ) < tolerance;
+		return fabs ( a ) <= tolerance;
 	}
 
 	inline s32 s32_min ( s32 a, s32 b)
