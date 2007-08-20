@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - OpenGL 2D drawing accuracy fix by tuXXX
+
  - Added OnResize and getCurrentRenderTargetSize to the software video drivers.
 
  - Added Spot light type for dynamic lights. Note that both position and direction for all dynamic lights are now determined by the LightSceneNode, the SLight attributes are only used for internal purposes.

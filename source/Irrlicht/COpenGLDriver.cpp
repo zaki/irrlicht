@@ -756,14 +756,6 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 	tcoords.LowerRightCorner.Y = (sourcePos.Y + sourceSize.Height) / static_cast<f32>(ss.Height);
 
 	core::rect<s32> poss(targetPos, sourceSize);
-	core::rect<f32> npos;
-	f32 xFact = 2.0f / ( renderTargetSize.Width );
-	f32 yFact = 2.0f / ( renderTargetSize.Height );
-
-	npos.UpperLeftCorner.X = ( poss.UpperLeftCorner.X * xFact ) - 1.0f;
-	npos.UpperLeftCorner.Y = 1.0f - ( poss.UpperLeftCorner.Y * yFact );
-	npos.LowerRightCorner.X = ( poss.LowerRightCorner.X * xFact ) - 1.0f;
-	npos.LowerRightCorner.Y = 1.0f - ( poss.LowerRightCorner.Y * yFact );
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 	disableTextures(1);
@@ -774,16 +766,16 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 	glBegin(GL_QUADS);
 
 	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(npos.UpperLeftCorner.X, npos.UpperLeftCorner.Y);
+	glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
 
 	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(npos.LowerRightCorner.X, npos.UpperLeftCorner.Y);
+	glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
 
 	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(npos.LowerRightCorner.X, npos.LowerRightCorner.Y);
+	glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y));
 
 	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(npos.UpperLeftCorner.X, npos.LowerRightCorner.Y);
+	glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
 
 	glEnd();
 }
@@ -806,6 +798,7 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 		return;
 
 	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 	disableTextures(1);
 	if (!setTexture(0, texture))
@@ -818,7 +811,7 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 			return;
 
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(clipRect->UpperLeftCorner.X,renderTargetSize.Height-clipRect->LowerRightCorner.Y,
+		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(),clipRect->getHeight());
 	}
 
@@ -827,8 +820,6 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 	core::position2d<s32> sourcePos;
 	core::dimension2d<s32> sourceSize;
 	core::rect<f32> tcoords;
-	f32 xFact = 2.0f / ( renderTargetSize.Width );
-	f32 yFact = 2.0f / ( renderTargetSize.Height );
 
 	for (u32 i=0; i<indices.size(); ++i)
 	{
@@ -844,27 +835,20 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 		tcoords.LowerRightCorner.Y = sourceRects[currentIndex].LowerRightCorner.Y / static_cast<f32>(ss.Height);
 
 		core::rect<s32> poss(targetPos, sourceSize);
-		core::rect<f32> npos;
-
-		npos.UpperLeftCorner.X = ( poss.UpperLeftCorner.X * xFact ) - 1.0f;
-		npos.UpperLeftCorner.Y = 1.0f - ( poss.UpperLeftCorner.Y * yFact );
-
-		npos.LowerRightCorner.X = ( poss.LowerRightCorner.X * xFact ) - 1.0f;
-		npos.LowerRightCorner.Y = 1.0f - ( poss.LowerRightCorner.Y * yFact ); 
 
 		glBegin(GL_QUADS);
 
 		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(npos.UpperLeftCorner.X, npos.UpperLeftCorner.Y);
+		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
 
 		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(npos.LowerRightCorner.X, npos.UpperLeftCorner.Y);
+		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
 
 		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(npos.LowerRightCorner.X, npos.LowerRightCorner.Y);
+		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y)); 
 
 		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(npos.UpperLeftCorner.X, npos.LowerRightCorner.Y);
+		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
 
 		glEnd();
 		targetPos.X += sourceRects[currentIndex].getWidth();
@@ -882,21 +866,13 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>&
 	if (!texture)
 		return;
 
+	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
 	const core::dimension2d<s32>& ss = texture->getOriginalSize();
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = sourceRect.UpperLeftCorner.X / static_cast<f32>(ss.Width);
 	tcoords.UpperLeftCorner.Y = sourceRect.UpperLeftCorner.Y / static_cast<f32>(ss.Height);
 	tcoords.LowerRightCorner.X = sourceRect.LowerRightCorner.X / static_cast<f32>(ss.Width);
 	tcoords.LowerRightCorner.Y = sourceRect.LowerRightCorner.Y / static_cast<f32>(ss.Height);
-
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	core::rect<f32> npos;
-	const f32 xFact = 2.0f / renderTargetSize.Width;
-	const f32 yFact = 2.0f / renderTargetSize.Height;
-	npos.UpperLeftCorner.X = ( destRect.UpperLeftCorner.X * xFact ) - 1.0f;
-	npos.UpperLeftCorner.Y = 1.0f - ( destRect.UpperLeftCorner.Y * yFact );
-	npos.LowerRightCorner.X = ( destRect.LowerRightCorner.X * xFact ) - 1.0f;
-	npos.LowerRightCorner.Y = 1.0f - ( destRect.LowerRightCorner.Y * yFact ); 
 
 	video::SColor temp[4] =
 	{
@@ -917,29 +893,29 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>&
 	{
 		if (!clipRect->isValid())
 			return;
-
+ 
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(clipRect->UpperLeftCorner.X,renderTargetSize.Height-clipRect->LowerRightCorner.Y,
-			clipRect->getWidth(),clipRect->getHeight());
+		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y, 
+			clipRect->getWidth(), clipRect->getHeight());
 	}
 
 	glBegin(GL_QUADS);
 
 	glColor4ub(useColor[0].getRed(), useColor[0].getGreen(), useColor[0].getBlue(), useColor[0].getAlpha());
 	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(npos.UpperLeftCorner.X, npos.UpperLeftCorner.Y);
+	glVertex2f(GLfloat(destRect.UpperLeftCorner.X), GLfloat(destRect.UpperLeftCorner.Y));
 
 	glColor4ub(useColor[3].getRed(), useColor[3].getGreen(), useColor[3].getBlue(), useColor[3].getAlpha());
 	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	glVertex2f(npos.LowerRightCorner.X, npos.UpperLeftCorner.Y);
+	glVertex2f(GLfloat(destRect.LowerRightCorner.X), GLfloat(destRect.UpperLeftCorner.Y));
 
 	glColor4ub(useColor[2].getRed(), useColor[2].getGreen(), useColor[2].getBlue(), useColor[2].getAlpha());
 	glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(npos.LowerRightCorner.X, npos.LowerRightCorner.Y);
+	glVertex2f(GLfloat(destRect.LowerRightCorner.X), GLfloat(destRect.LowerRightCorner.Y));
 
 	glColor4ub(useColor[1].getRed(), useColor[1].getGreen(), useColor[1].getBlue(), useColor[1].getAlpha());
 	glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-	glVertex2f(npos.UpperLeftCorner.X, npos.LowerRightCorner.Y);
+	glVertex2f(GLfloat(destRect.UpperLeftCorner.X), GLfloat(destRect.LowerRightCorner.Y));
 
 	glEnd();
 
@@ -964,18 +940,9 @@ void COpenGLDriver::draw2DRectangle(SColor color, const core::rect<s32>& positio
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = renderTargetSize.Width/2;
-	const f32 xFact = 2.0f / renderTargetSize.Width;
-
-	const s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height/2);
-	const f32 yFact = 2.0f / renderTargetSize.Height;
-
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glRectf((pos.UpperLeftCorner.X-xPlus) * xFact,
-		(yPlus-pos.UpperLeftCorner.Y) * yFact,
-		(pos.LowerRightCorner.X-xPlus) * xFact,
-		(yPlus-pos.LowerRightCorner.Y) * yFact);
+	glRectf(GLfloat(pos.UpperLeftCorner.X), GLfloat(pos.UpperLeftCorner.Y),
+		GLfloat(pos.LowerRightCorner.X), GLfloat(pos.LowerRightCorner.Y));
 }
 
 
@@ -993,19 +960,6 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = renderTargetSize.Width/2;
-	const f32 xFact = 2.0f / renderTargetSize.Width;
-
-	const s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height/2);
-	const f32 yFact = 2.0f / renderTargetSize.Height;
-
-	core::rect<f32> npos;
-	npos.UpperLeftCorner.X = (pos.UpperLeftCorner.X-xPlus) * xFact;
-	npos.UpperLeftCorner.Y = (yPlus-pos.UpperLeftCorner.Y) * yFact;
-	npos.LowerRightCorner.X = (pos.LowerRightCorner.X-xPlus) * xFact;
-	npos.LowerRightCorner.Y = (yPlus-pos.LowerRightCorner.Y) * yFact;
-
 	setRenderStates2DMode(colorLeftUp.getAlpha() < 255 ||
 		colorRightUp.getAlpha() < 255 ||
 		colorLeftDown.getAlpha() < 255 ||
@@ -1016,19 +970,19 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 	glBegin(GL_QUADS);
 	glColor4ub(colorLeftUp.getRed(), colorLeftUp.getGreen(),
 		colorLeftUp.getBlue(), colorLeftUp.getAlpha());
-	glVertex2f(npos.UpperLeftCorner.X, npos.UpperLeftCorner.Y);
+	glVertex2f(GLfloat(pos.UpperLeftCorner.X), GLfloat(pos.UpperLeftCorner.Y));
 
 	glColor4ub(colorRightUp.getRed(), colorRightUp.getGreen(),
 		colorRightUp.getBlue(), colorRightUp.getAlpha());
-	glVertex2f(npos.LowerRightCorner.X, npos.UpperLeftCorner.Y);
+	glVertex2f(GLfloat(pos.LowerRightCorner.X), GLfloat(pos.UpperLeftCorner.Y));
 
 	glColor4ub(colorRightDown.getRed(), colorRightDown.getGreen(),
 		colorRightDown.getBlue(), colorRightDown.getAlpha());
-	glVertex2f(npos.LowerRightCorner.X, npos.LowerRightCorner.Y);
+	glVertex2f(GLfloat(pos.LowerRightCorner.X), GLfloat(pos.LowerRightCorner.Y));
 
 	glColor4ub(colorLeftDown.getRed(), colorLeftDown.getGreen(),
 		colorLeftDown.getBlue(), colorLeftDown.getAlpha());
-	glVertex2f(npos.UpperLeftCorner.X, npos.LowerRightCorner.Y);
+	glVertex2f(GLfloat(pos.UpperLeftCorner.X), GLfloat(pos.LowerRightCorner.Y));
 
 	glEnd();
 }
@@ -1040,30 +994,13 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end,
 				SColor color)
 {
-	// thanks to Vash TheStampede who sent in his implementation
-
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = renderTargetSize.Width/2;
-	const f32 xFact = 2.0f / renderTargetSize.Width;
-
-	const s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height/2);
-	const f32 yFact = 2.0f / renderTargetSize.Height;
-
-	core::position2d<f32> npos_start;
-	npos_start.X  = (start.X - xPlus) * xFact;
-	npos_start.Y  = (yPlus - start.Y) * yFact;
-
-	core::position2d<f32> npos_end;
-	npos_end.X  = (end.X - xPlus) * xFact;
-	npos_end.Y  = (yPlus - end.Y) * yFact;
-
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 	disableTextures();
 
 	glBegin(GL_LINES);
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	glVertex2f(npos_start.X, npos_start.Y);
-	glVertex2f(npos_end.X,   npos_end.Y);
+	glVertex2f(GLfloat(start.X), GLfloat(start.Y));
+	glVertex2f(GLfloat(end.X),   GLfloat(end.Y));
 	glEnd();
 }
 
@@ -1565,6 +1502,10 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		// see http://www.opengl.org/resources/faq/technical/transformations.htm#tran0030
+		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		gluOrtho2D(0, renderTargetSize.Width, renderTargetSize.Height, 0);
+		glTranslatef (0.375, 0.375, 0.); 
 
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
