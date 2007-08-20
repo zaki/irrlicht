@@ -92,8 +92,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 			{
 				str[i] = 0;
 				for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
+				{
 					if (strstr(p, OpenGLFeatureStrings[i]))
+					{
 						FeatureAvailable[i] = true;
+						break;
+					}
+				}
 
 				p = p + strlen(p) + 1;
 			}
