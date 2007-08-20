@@ -290,6 +290,7 @@ namespace irr
 
 #ifdef _IRR_COMPILE_WITH_X11_
 		Display *display;
+		XVisualInfo* visual;
 		int screennr;
 		Window window;
 		XSetWindowAttributes attributes;

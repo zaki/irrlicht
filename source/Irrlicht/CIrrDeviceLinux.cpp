@@ -44,10 +44,10 @@ CIrrDeviceLinux::CIrrDeviceLinux(video::E_DRIVER_TYPE driverType,
 	const char* version)
  : CIrrDeviceStub(version, receiver),
 #ifdef _IRR_COMPILE_WITH_X11_
-	display(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
+	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
 #endif
 	Fullscreen(fullscreen), StencilBuffer(sbuffer), AntiAlias(antiAlias), DriverType(driverType),
-	Width(windowSize.Width), Height(windowSize.Height), Depth(24),
+	Width(windowSize.Width), Height(windowSize.Height), Depth(24), 
 	Close(false), WindowActive(false), WindowMinimized(false), UseXVidMode(false), UseXRandR(false), UseGLXWindow(false)
 {
 	#ifdef _DEBUG
@@ -137,6 +137,9 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		XDestroyWindow(display,window);
 		XCloseDisplay(display);
 	}
+	if (visual)
+		XFree(visual);
+
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 }
 
@@ -259,9 +262,6 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 			Fullscreen = false;
 		}
 	}
-
-	// get visual
-	XVisualInfo* visual = 0;
 	
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -593,7 +593,6 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 		SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
 	} 
 
-	XFree(visual);
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 	return true;
 }
@@ -681,6 +680,21 @@ bool CIrrDeviceLinux::run()
 				{
 					Width = event.xconfigure.width;
 					Height = event.xconfigure.height;
+
+					// resize image data
+					if (DriverType == video::EDT_SOFTWARE || DriverType == video::EDT_BURNINGSVIDEO)
+					{
+						XDestroyImage(SoftwareImage);
+
+						SoftwareImage = XCreateImage(display, 
+							visual->visual, visual->depth, 
+							ZPixmap, 0, 0, Width, Height,
+							BitmapPad(display), 0);
+
+						// use malloc because X will free it later on
+						SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
+					} 
+
 					if (VideoDriver)
 						VideoDriver->OnResize(core::dimension2d<s32>(Width, Height));
 				}
