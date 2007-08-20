@@ -732,18 +732,29 @@ void CSoftwareDriver::createPlanes(const core::matrix4& mat)
 //! the window was resized.
 void CSoftwareDriver::OnResize(const core::dimension2d<s32>& size)
 {
-	if (ViewPort.getWidth() == ScreenSize.Width &&
-		ViewPort.getHeight() == ScreenSize.Height)
-		ViewPort = core::rect<s32>(core::position2d<s32>(0,0), size);
+	// make sure width and height are multiples of 2
+	core::dimension2d<s32> realSize(size);
 
-	if (ScreenSize != size)
+	if (realSize.Width % 2)
+		realSize.Width += 1;
+
+	if (realSize.Height % 2)
+		realSize.Height += 1;
+
+	if (ScreenSize != realSize)
 	{
-		ScreenSize = size;
+		if (ViewPort.getWidth() == ScreenSize.Width &&
+			ViewPort.getHeight() == ScreenSize.Height)
+		{
+			ViewPort = core::rect<s32>(core::position2d<s32>(0,0), realSize);
+		}
+
+		ScreenSize = realSize;
 
 		bool resetRT = (RenderTargetSurface == BackBuffer);
 
 		BackBuffer->drop();
-		BackBuffer = new CImage(ECF_A1R5G5B5, size);
+		BackBuffer = new CImage(ECF_A1R5G5B5, realSize);
 
 		if (resetRT)
 			setRenderTarget(BackBuffer);

@@ -299,7 +299,7 @@ bool CSoftwareDriver2::queryFeature(E_VIDEO_DRIVER_FEATURE feature)
 
 	default:
 		return false;
-	};
+	}
 }
 
 
@@ -378,10 +378,8 @@ bool CSoftwareDriver2::setTexture(u32 stage, video::ITexture* texture)
 	if (Texture[stage])
 		Texture[stage]->grab();
 
-	if ( Texture[stage] )
-	{
+	if (Texture[stage])
 		Texmap[stage].Texture = (video::CSoftwareTexture2*) Texture[stage];
-	}
 
 	setCurrentShader();
 	return true;
@@ -464,7 +462,6 @@ bool CSoftwareDriver2::setRenderTarget(video::ITexture* texture, bool clearBackB
 	else
 	{
 		setRenderTarget(BackBuffer);
-		//setRenderTarget((video::CImage*)0);
 	}
 
 	if (RenderTargetSurface && (clearBackBuffer || clearZBuffer))
@@ -1629,18 +1626,29 @@ void CSoftwareDriver2::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 //! the window was resized.
 void CSoftwareDriver2::OnResize(const core::dimension2d<s32>& size)
 {
-	if (ViewPort.getWidth() == ScreenSize.Width &&
-		ViewPort.getHeight() == ScreenSize.Height)
-		ViewPort = core::rect<s32>(core::position2d<s32>(0,0), size);
+	// make sure width and height are multiples of 2
+	core::dimension2d<s32> realSize(size);
 
-	if (ScreenSize != size)
+	if (realSize.Width % 2)
+		realSize.Width += 1;
+
+	if (realSize.Height % 2)
+		realSize.Height += 1;
+
+	if (ScreenSize != realSize)
 	{
-		ScreenSize = size;
+		if (ViewPort.getWidth() == ScreenSize.Width &&
+			ViewPort.getHeight() == ScreenSize.Height)
+		{
+			ViewPort = core::rect<s32>(core::position2d<s32>(0,0), realSize);
+		}
+
+		ScreenSize = realSize;
 
 		bool resetRT = (RenderTargetSurface == BackBuffer);
 
 		BackBuffer->drop();
-		BackBuffer = new CImage(ECF_SOFTWARE2, size);
+		BackBuffer = new CImage(ECF_SOFTWARE2, realSize);
 
 		if (resetRT)
 			setRenderTarget(BackBuffer);

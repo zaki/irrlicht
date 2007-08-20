@@ -600,12 +600,6 @@ void CIrrDeviceWin32::resizeIfNecessary()
 		sprintf(tmp, "Resizing window (%ld %ld)", r.right, r.bottom);
 		os::Printer::log(tmp);
 
-		if ( r.right % 2 )
-			r.right += 1;
-
-		if ( r.bottom % 2 )
-			r.bottom += 1;
-
 		getVideoDriver()->OnResize(irr::core::dimension2d<irr::s32>(r.right, r.bottom));
 	}
 
