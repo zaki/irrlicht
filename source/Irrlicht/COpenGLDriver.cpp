@@ -1145,7 +1145,8 @@ void COpenGLDriver::setRenderStates3DMode()
 	if (CurrentRenderMode != ERM_3D)
 	{
 		// Reset Texture Stages
-		glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE );
+		if (FeatureAvailable[IRR_ARB_texture_env_combine])
+			glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE );
 		glDisable(GL_ALPHA_TEST);
 		glDisable( GL_BLEND );
 		glBlendFunc( GL_ONE, GL_ONE_MINUS_SRC_COLOR );
@@ -1953,7 +1954,8 @@ void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
 
 	glFogi(GL_FOG_MODE, linearFog ? GL_LINEAR : GL_EXP);
 #ifdef GL_EXT_fog_coord
-	glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);
+	if (FeatureAvailable[IRR_EXT_fog_coord])
+		glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);
 #endif
 
 	if(linearFog)
