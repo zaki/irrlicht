@@ -47,6 +47,13 @@ namespace video
 		//! clears the zbuffer
 		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
 
+		//! Only used by the internal engine. Used to notify the driver that
+		//! the window was resized.
+		virtual void OnResize(const core::dimension2d<s32>& size);
+
+		//! returns size of the current render target
+		virtual core::dimension2d<s32> getCurrentRenderTargetSize();
+
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();
 

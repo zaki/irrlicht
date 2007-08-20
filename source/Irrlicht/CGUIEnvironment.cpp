@@ -685,7 +685,7 @@ bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 	
 	if (!file)
 	{
-		os::Printer::log("Unable to open gui file", ELL_ERROR);
+		os::Printer::log("Unable to open GUI file", ELL_ERROR);
 		return false;
 	}
 
@@ -719,11 +719,10 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* parent
 
 	gui::IGUIElement* node = 0;
 
-	if (reader->getNodeType() == io::EXN_NONE)
-		reader->read();
+	io::EXML_NODE nodeType = reader->getNodeType();
 
-	if (reader->getNodeType() == io::EXN_UNKNOWN)
-		reader->read();
+	if (nodeType == io::EXN_NONE || nodeType == io::EXN_UNKNOWN || nodeType == io::EXN_ELEMENT_END)
+		return;
 
 	if (!parent && !wcscmp(IRR_XML_FORMAT_GUI_ENV, reader->getNodeName()))
 	{
