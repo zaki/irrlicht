@@ -636,7 +636,7 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
 		setTexture(i, Material.Textures[i]);
-		setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ), 
+		setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}
 
@@ -834,39 +834,55 @@ void CD3D8Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 	{
 		switch (pType)
 		{
-		   case scene::EPT_POINTS:
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
-				 primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			  break;
-		   case scene::EPT_LINE_STRIP:
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-				 primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			  break;
-		   case scene::EPT_LINE_LOOP:
-		   {
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-				 primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			  u16 tmpIndices[] = {0, primitiveCount};
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-				 1, tmpIndices, D3DFMT_INDEX16, vertices, stride);
-		   }
-			  break;
-		   case scene::EPT_LINES:
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-				 primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			  break;
-		   case scene::EPT_TRIANGLE_STRIP:
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount,
-				 primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			  break;
-		   case scene::EPT_TRIANGLE_FAN:
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount,
-				 primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			  break;
-		   case scene::EPT_TRIANGLES:
-			  pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
-				 primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			  break;
+			case scene::EPT_POINT_SPRITES:
+			case scene::EPT_POINTS:
+			{
+				if (pType==scene::EPT_POINT_SPRITES)
+					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
+				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
+				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&Material.Thickness));
+				f32 tmp=1.0f;
+				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
+				tmp=0.0f;
+				pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
+				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
+				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
+					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
+				if (pType==scene::EPT_POINT_SPRITES)
+					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+			}
+			break;
+			case scene::EPT_LINE_STRIP:
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+			break;
+			case scene::EPT_LINE_LOOP:
+			{
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+				u16 tmpIndices[] = {0, primitiveCount};
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+					1, tmpIndices, D3DFMT_INDEX16, vertices, stride);
+			}
+			break;
+			case scene::EPT_LINES:
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+			break;
+			case scene::EPT_TRIANGLE_STRIP:
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount,
+					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+			break;
+			case scene::EPT_TRIANGLE_FAN:
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount,
+					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+			break;
+			case scene::EPT_TRIANGLES:
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
+					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+			break;
 		}
 	}
 }

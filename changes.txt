@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - Point sprite support in the driver. Point sprites use just one 3d vertex and a size to create a textured billboard on the GPU. This can provide fast particle systems, especially in combination with shaders. The proper particle extension will follow later on as it needs some more refactoring.
+
  - OpenGL 2D drawing accuracy fix by tuXXX
 
  - Added OnResize and getCurrentRenderTargetSize to the software video drivers.
