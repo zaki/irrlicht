@@ -728,6 +728,35 @@ void CSoftwareDriver::createPlanes(const core::matrix4& mat)
 
 
 
+//! Only used by the internal engine. Used to notify the driver that
+//! the window was resized.
+void CSoftwareDriver::OnResize(const core::dimension2d<s32>& size)
+{
+	if (ViewPort.getWidth() == ScreenSize.Width &&
+		ViewPort.getHeight() == ScreenSize.Height)
+		ViewPort = core::rect<s32>(core::position2d<s32>(0,0), size);
+
+	if (ScreenSize != size)
+	{
+		ScreenSize = size;
+
+		bool resetRT = (RenderTargetSurface == BackBuffer);
+
+		BackBuffer->drop();
+		BackBuffer = new CImage(ECF_A1R5G5B5, size);
+
+		if (resetRT)
+			setRenderTarget(BackBuffer);
+	}
+}
+
+//! returns the current render target size
+core::dimension2d<s32> CSoftwareDriver::getCurrentRenderTargetSize()
+{
+	return RenderTargetSize;
+}
+
+
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 void CSoftwareDriver::draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
 					const core::rect<s32>& sourceRect,

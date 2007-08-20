@@ -179,7 +179,7 @@ namespace gui
 						const core::rect<s32>* clip=0);
 
 		//! draws an icon, usually from the skin's sprite bank
-		/**	\param parent: Pointer to the element which wishes to draw this icon. 
+		/**	\param element: Pointer to the element which wishes to draw this icon. 
 		This parameter is usually not used by IGUISkin, but can be used for example 
 		by more complex implementations to find out how to draw the part exactly. 
 		\param icon: Specifies the icon to be drawn.

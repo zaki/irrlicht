@@ -45,6 +45,13 @@ namespace video
 		//! clears the zbuffer
 		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
 
+		//! Only used by the internal engine. Used to notify the driver that
+		//! the window was resized.
+		virtual void OnResize(const core::dimension2d<s32>& size);
+
+		//! returns size of the current render target
+		virtual core::dimension2d<s32> getCurrentRenderTargetSize();
+
 		//! draws a vertex primitive list
 		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 

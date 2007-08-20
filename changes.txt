@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - Added OnResize and getCurrentRenderTargetSize to the software video drivers.
+
  - Added Spot light type for dynamic lights. Note that both position and direction for all dynamic lights are now determined by the LightSceneNode, the SLight attributes are only used for internal purposes.
    API change! One can easily work around this change by setting the LightSceneNode's Position and Rotation instead of the SLight's. This change won't provoke a compile error, though, and can hence go unrecognized besides the visual problems.
    The lights use a default direction (0,0,-1) which is rotated by the usual scene node transformations and can hence be modified by scene node animators.

@@ -1625,7 +1625,33 @@ void CSoftwareDriver2::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 	}
 }
 
+//! Only used by the internal engine. Used to notify the driver that
+//! the window was resized.
+void CSoftwareDriver2::OnResize(const core::dimension2d<s32>& size)
+{
+	if (ViewPort.getWidth() == ScreenSize.Width &&
+		ViewPort.getHeight() == ScreenSize.Height)
+		ViewPort = core::rect<s32>(core::position2d<s32>(0,0), size);
 
+	if (ScreenSize != size)
+	{
+		ScreenSize = size;
+
+		bool resetRT = (RenderTargetSurface == BackBuffer);
+
+		BackBuffer->drop();
+		BackBuffer = new CImage(ECF_SOFTWARE2, size);
+
+		if (resetRT)
+			setRenderTarget(BackBuffer);
+	}
+}
+
+//! returns the current render target size
+core::dimension2d<s32> CSoftwareDriver2::getCurrentRenderTargetSize()
+{
+	return RenderTargetSize;
+}
 
 //!Draws an 2d rectangle with a gradient.
 void CSoftwareDriver2::draw2DRectangle(const core::rect<s32>& position,
