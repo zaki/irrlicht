@@ -551,9 +551,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
-	if (pType!=scene::EPT_POINTS)
+	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	if (pType!=scene::EPT_POINTS)
+	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
 		glEnableClientState(GL_NORMAL_ARRAY);
 
 	glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
@@ -597,7 +597,28 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	switch (pType)
 	{
 		case scene::EPT_POINTS:
+		case scene::EPT_POINT_SPRITES:
+		{
+			if (pType==scene::EPT_POINT_SPRITES)
+				glEnable(GL_POINT_SPRITE_ARB);
+			float quadratic[] = {0.0f, 0.0f, 10.01f};
+			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
+			float maxParticleSize=1.0f;
+			glGetFloatv(GL_POINT_SIZE_MAX_ARB, &maxParticleSize);
+			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
+//			extGlPointParameterf(GL_POINT_SIZE_MAX_ARB,maxParticleSize);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_ARB,Material.Thickness/2);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
+			glPointSize(Material.Thickness*600.0f);
+			if (pType==scene::EPT_POINT_SPRITES)
+				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_TRUE);
 			glDrawArrays(GL_POINTS, 0, primitiveCount);
+			if (pType==scene::EPT_POINT_SPRITES)
+			{
+				glDisable(GL_POINT_SPRITE_ARB);
+				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_FALSE);
+			}
+		}
 			break;
 		case scene::EPT_LINE_STRIP:
 			glDrawElements(GL_LINE_STRIP, primitiveCount+1, GL_UNSIGNED_SHORT, indexList);

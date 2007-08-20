@@ -47,7 +47,10 @@ enum E_PRIMITIVE_TYPE
 	EPT_QUADS,
 
 	//! Just as LINE_LOOP, but filled.
-	EPT_POLYGON
+	EPT_POLYGON,
+
+	//! The single vertices are expanded to quad billboards on the GPU.
+	EPT_POINT_SPRITES
 };
 
 	//! Struct for holding a mesh with a single material
