@@ -599,25 +599,31 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		case scene::EPT_POINTS:
 		case scene::EPT_POINT_SPRITES:
 		{
-			if (pType==scene::EPT_POINT_SPRITES)
+#ifdef GL_ARB_point_sprite
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 				glEnable(GL_POINT_SPRITE_ARB);
+#endif
 			float quadratic[] = {0.0f, 0.0f, 10.01f};
 			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
 			float maxParticleSize=1.0f;
 			glGetFloatv(GL_POINT_SIZE_MAX_ARB, &maxParticleSize);
-			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
+//			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
 //			extGlPointParameterf(GL_POINT_SIZE_MAX_ARB,maxParticleSize);
-//			extGlPointParameterf(GL_POINT_SIZE_MIN_ARB,Material.Thickness/2);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_ARB,Material.Thickness);
 			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
-			glPointSize(Material.Thickness*600.0f);
-			if (pType==scene::EPT_POINT_SPRITES)
+			glPointSize(Material.Thickness);
+#ifdef GL_ARB_point_sprite
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_TRUE);
+#endif
 			glDrawArrays(GL_POINTS, 0, primitiveCount);
-			if (pType==scene::EPT_POINT_SPRITES)
+#ifdef GL_ARB_point_sprite
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 			{
 				glDisable(GL_POINT_SPRITE_ARB);
 				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_FALSE);
 			}
+#endif
 		}
 			break;
 		case scene::EPT_LINE_STRIP:
