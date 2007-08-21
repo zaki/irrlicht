@@ -214,7 +214,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
 		}
 
-		material.ZWriteEnable = false;
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
@@ -251,7 +250,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
 
-		material.ZWriteEnable = false;
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
@@ -299,7 +297,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
 
-		//material.ZWriteEnable = false;
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
@@ -560,7 +557,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 		}
 
-		material.ZWriteEnable = false;
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
