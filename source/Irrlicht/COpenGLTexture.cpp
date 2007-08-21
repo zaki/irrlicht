@@ -224,7 +224,7 @@ void COpenGLTexture::getImageData(IImage* image)
 	}
 
 	core::dimension2d<s32> nImageSize;
-	if (Driver && Driver->queryFeature(EVDF_TEXTURE_NPOT))
+	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
 		nImageSize=ImageSize;
 	else
 	{
@@ -272,41 +272,46 @@ void COpenGLTexture::copyTexture(bool newTexture)
 		case ECF_A8R8G8B8:
 			InternalFormat=GL_RGBA;
 			PixelFormat=GL_BGRA_EXT;
-			PixelType=GL_UNSIGNED_INT_8_8_8_8_REV;
+			if (reinterpret_cast<COpenGLDriver*>(Driver)->Version > 101)
+				PixelType=GL_UNSIGNED_INT_8_8_8_8_REV;
 			break;
 		default:
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
 			break;
 	}
 
-	#ifndef DISABLE_MIPMAPPING
-	if (HasMipMaps && Driver && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+	if (newTexture)
 	{
-		// automatically generate and update mipmaps
-		glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
-		AutomaticMipmapUpdate=true;
+		#ifndef DISABLE_MIPMAPPING
+		if (HasMipMaps && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
+		{
+			// automatically generate and update mipmaps
+			glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
+			AutomaticMipmapUpdate=true;
+		}
+		else
+		{
+			AutomaticMipmapUpdate=false;
+			regenerateMipMapLevels();
+		}
+		if (HasMipMaps) // might have changed in regenerateMipMapLevels
+		{
+			// enable bilinear mipmap filter
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
+		else
+		#else
+			HasMipMaps=false;
+			os::Printer::log("Did not create OpenGL texture mip maps.", ELL_ERROR);
+		#endif
+		{
+			// enable bilinear filter without mipmaps
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		}
 	}
-	else
-	{
-		AutomaticMipmapUpdate=false;
-		regenerateMipMapLevels();
-	}
-	if (HasMipMaps) // might have changed in regenerateMipMapLevels
-	{
-		// enable bilinear mipmap filter
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
-	else
-	#else
-		HasMipMaps=false;
-		os::Printer::log("Did not create OpenGL texture mip maps.", ELL_ERROR);
-	#endif
-	{
-		// enable bilinear filter without mipmaps
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	}
+
 	void* source = Image->lock();
 	if (newTexture)
 		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Image->getDimension().Width,

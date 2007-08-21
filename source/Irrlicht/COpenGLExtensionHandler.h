@@ -666,7 +666,6 @@ class COpenGLExtensionHandler
 	bool SeparateStencilExtension;
 	bool TextureCompressionExtension;
 	bool PackedDepthStencilExtension;
-	bool SeparateSpecularColorExtension;
 
 	// Some non-boolean properties
 	//! Maxmimum texture layers supported by the fixed pipeline

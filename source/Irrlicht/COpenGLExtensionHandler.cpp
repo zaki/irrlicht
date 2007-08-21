@@ -113,7 +113,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	SeparateStencilExtension = FeatureAvailable[IRR_ATI_separate_stencil];
 	TextureCompressionExtension = FeatureAvailable[IRR_ARB_texture_compression];
 	PackedDepthStencilExtension = FeatureAvailable[IRR_EXT_packed_depth_stencil];
-	SeparateSpecularColorExtension = FeatureAvailable[IRR_EXT_separate_specular_color];
 	StencilBuffer=stencilBuffer;
 
 #ifdef _IRR_WINDOWS_API_

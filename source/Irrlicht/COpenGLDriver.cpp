@@ -286,10 +286,13 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	glViewport(0, 0, screenSize.Width, screenSize.Height); // Reset The Current Viewport
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
 #ifdef GL_EXT_separate_specular_color
-	if (SeparateSpecularColorExtension)
+	if (FeatureAvailable[IRR_EXT_separate_specular_color])
 		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 #endif
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+// This is a fast replacement for NORMALIZE_NORMALS
+//	if ((Version>101) || FeatureAvailable[IRR_EXT_rescale_normal])
+//		glEnable(GL_RESCALE_NORMAL_EXT);
 	glClearDepth(1.0);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthFunc(GL_LEQUAL);
@@ -1269,7 +1272,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		if (material.Shininess != 0.0f)
 		{
 #ifdef GL_EXT_separate_specular_color
-			if (SeparateSpecularColorExtension)
+			if (FeatureAvailable[IRR_EXT_separate_specular_color])
 				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 #endif
 			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material.Shininess);
@@ -1281,7 +1284,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		}
 #ifdef GL_EXT_separate_specular_color
 		else
-			if (SeparateSpecularColorExtension)
+			if (FeatureAvailable[IRR_EXT_separate_specular_color])
 				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 #endif
 
