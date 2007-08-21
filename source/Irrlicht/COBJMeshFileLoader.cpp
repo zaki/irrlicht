@@ -710,7 +710,7 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const
 			word[i] = '\0';
 			// if no number was found index will become 0 and later on -1 by decrement
 			if (word[0]=='-')
-				pIdx[idxType] = -core::strtol10(word+1,0)+vbuffer.size();
+				pIdx[idxType] = vbuffer.size()-core::strtol10(word+1,0);
 			else
 				pIdx[idxType] = core::strtol10(word,0)-1;
 
