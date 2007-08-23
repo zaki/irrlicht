@@ -376,7 +376,11 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	if (FeatureAvailable[IRR_ARB_shading_language_100] || Version>=200)
 	{
 		glGetError(); // clean error buffer
+#ifdef GL_SHADING_LANGUAGE_VERSION
+		const GLubyte* shaderVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
+#else
 		const GLubyte* shaderVersion = glGetString(GL_SHADING_LANGUAGE_VERSION_ARB);
+#endif
 		if (glGetError() == GL_INVALID_ENUM)
 			ShaderLanguageVersion = 100;
 		else
