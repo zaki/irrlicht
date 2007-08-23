@@ -1540,10 +1540,9 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		glLoadMatrixf(glmat);
 
-		glTranslatef (0.375, 0.375, 0.0); 
-
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		glTranslatef (0.375, 0.375, 0.0); 
 
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
@@ -1560,7 +1559,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		glDisable(GL_ALPHA_TEST);
 		glCullFace(GL_BACK);
-
 	}
 
 	if (texture)
