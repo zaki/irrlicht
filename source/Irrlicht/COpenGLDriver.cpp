@@ -1507,13 +1507,22 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		GLfloat glmat[16];
 		core::matrix4 m;
+
+		glMatrixMode(GL_PROJECTION);
+
+		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		const core::vector3df translation(-1,1,0);
+
+		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-renderTargetSize.Height), -1.0, 1.0); 
+		m.setTranslation(translation);
+
 		createGLMatrix(glmat, m);
 
 		// in render targets, flip the screen
 		if ( CurrentRendertargetSize.Width != 0 )
 		{
 			glmat[5] *= -1.0f;
-			// because we flipped the screen, triangles are the wrong way around
+			// triangles are the wrong way around because we flipped the screen
 			if (ClockwiseWinding)
 			{
 				glFrontFace(GL_CCW);
@@ -1528,15 +1537,13 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 				ClockwiseWinding = true;
 			}
 		}
-		glMatrixMode(GL_PROJECTION);
+
 		glLoadMatrixf(glmat);
+
+		glTranslatef (0.375, 0.375, 0.0); 
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		// see http://www.opengl.org/resources/faq/technical/transformations.htm#tran0030
-		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-		gluOrtho2D(0, renderTargetSize.Width, renderTargetSize.Height, 0);
-		glTranslatef (0.375, 0.375, 0.); 
 
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
@@ -2419,4 +2426,5 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
+
 
