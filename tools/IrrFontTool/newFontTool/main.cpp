@@ -63,7 +63,7 @@ wchar_t *helptext = L"This tool creates bitmap fonts for the Irrlicht Engine\n\n
 					L"when making a font with a lot of characters, please be patient!\n\n"
 
 					L"Now you're ready to give your font a name, select a format and click save.\n\n"
-					L"To load your font in Irrlicht, simply use env->addFont(\"Myfont.xml\");\n\n"
+					L"To load your font in Irrlicht, simply use env->getFont(\"Myfont.xml\");\n\n"
 
 					L"That's all, have fun :-)";
 
