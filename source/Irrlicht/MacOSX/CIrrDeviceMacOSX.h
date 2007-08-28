@@ -25,12 +25,12 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType, 
-			 const core::dimension2d<s32>& windowSize,
-			 u32 bits, bool fullscreen,
-			 bool sbuffer, bool vsync, 
-			 bool antiAlias, IEventReceiver* receiver,
-			 const char* version);
+		CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType,
+			const core::dimension2d<s32>& windowSize,
+			u32 bits, bool fullscreen,
+			bool sbuffer, bool vsync,
+			bool antiAlias, IEventReceiver* receiver,
+			const char* version);
 
 		//! destructor
 		virtual ~CIrrDeviceMacOSX();
@@ -60,10 +60,10 @@ namespace irr
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize);
 
-		void	flush();
-		void	setMouseLocation(int x,int y);
-		void	setResize(int width,int height);
-		void	setCursorVisible(bool visible);
+		void flush();
+		void setMouseLocation(int x,int y);
+		void setResize(int width,int height);
+		void setCursorVisible(bool visible);
 
 	private:
 
@@ -112,7 +112,7 @@ namespace irr
 			//! Sets the new position of the cursor.
 			virtual void setPosition(const core::position2d<s32> &pos)
 			{
-				if (CursorPos.X != pos.X || CursorPos.Y != pos.Y) 
+				if (CursorPos.X != pos.X || CursorPos.Y != pos.Y)
 					setPosition(pos.X, pos.Y);
 			}
 
@@ -169,7 +169,7 @@ namespace irr
 			}
 
 			//! Updates the internal cursor position
-			void	updateInternalCursorPosition(int x,int y)
+			void updateInternalCursorPosition(int x,int y)
 			{
 				CursorPos.X = x;
 				CursorPos.Y = y;
@@ -186,12 +186,12 @@ namespace irr
 			core::rect<s32> ReferenceRect;
 		};
 
-		bool	createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer);
-		void	initKeycodes();
-		void	storeMouseLocation();
-		void	postMouseEvent(void *event,irr::SEvent &ievent);
-		void	postKeyEvent(void *event,irr::SEvent &ievent,bool pressed);
-		
+		bool createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer);
+		void initKeycodes();
+		void storeMouseLocation();
+		void postMouseEvent(void *event,irr::SEvent &ievent);
+		void postKeyEvent(void *event,irr::SEvent &ievent,bool pressed);
+
 		video::E_DRIVER_TYPE DriverType;
 		bool stencilbuffer;
 
