@@ -21,11 +21,15 @@
 	#pragma comment(lib, "GLu32.lib")
 #endif
 #elif defined(MACOSX)
-	#define GL_EXT_texture_env_combine 1
 	#include "CIrrDeviceMacOSX.h"
+	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+		#define GL_GLEXT_LEGACY 1
+	#endif
 	#include <OpenGL/gl.h>
 	#include <OpenGL/glu.h>
-	#include <OpenGL/glext.h>
+	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+		#include "glext.h"
+	#endif
 #elif defined(_IRR_USE_SDL_DEVICE_)
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#define GL_GLEXT_LEGACY 1

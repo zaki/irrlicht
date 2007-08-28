@@ -22,19 +22,20 @@
 	#pragma comment(lib, "OpenGL32.lib")
 	#pragma comment(lib, "GLu32.lib")
 #endif
-#elif defined(MACOSX)
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-	#include <OpenGL/glext.h>
 #else
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#define GL_GLEXT_LEGACY 1
 	#endif
-	#include <GL/gl.h>
+	#if defined(MACOSX)
+		#include <OpenGL/gl.h>
+		#include <OpenGL/glu.h>
+	#else
+		#include <GL/gl.h>
+		#include <GL/glu.h>
+	#endif
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#include "glext.h"
 	#endif
-	#include <GL/glu.h>
 #endif
 
 

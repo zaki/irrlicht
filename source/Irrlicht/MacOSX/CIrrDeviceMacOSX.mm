@@ -30,22 +30,22 @@ namespace irr
 	}
 } // end namespace irr
 
-static	bool	firstLaunch = true;
+static bool firstLaunch = true;
 
 namespace irr
 {
 //! constructor
-CIrrDeviceMacOSX::CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType, 
-				 const core::dimension2d<s32>& windowSize,
-				 u32 bits, bool fullscreen,
-				 bool sbuffer, bool vsync, 
-				 bool antiAlias, IEventReceiver* receiver,
-				 const char* version)
- : CIrrDeviceStub(version, receiver), DriverType(driverType), stencilbuffer(sbuffer)
+CIrrDeviceMacOSX::CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType,
+				const core::dimension2d<s32>& windowSize,
+				u32 bits, bool fullscreen,
+				bool sbuffer, bool vsync,
+				bool antiAlias, IEventReceiver* receiver,
+				const char* version)
+ : CIrrDeviceStub(version, receiver), DriverType(driverType), stencilbuffer(sbuffer), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL)
 {
-	struct	utsname	name;
-	NSString		*path;
-	
+	struct utsname name;
+	NSString	*path;
+
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceMacOSX");
 	#endif
@@ -63,11 +63,6 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType,
 		path = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
 		chdir([path cString]);
 	}
-	
-	_window = NULL;
-	_active = true;
-	_oglcontext = NULL;
-	_cglcontext = NULL;
 
 	uname(&name);
 	Operator = new COSOperator(name.version);
@@ -85,7 +80,7 @@ CIrrDeviceMacOSX::~CIrrDeviceMacOSX()
 	closeDevice();
 }
 
-void	CIrrDeviceMacOSX::closeDevice()
+void CIrrDeviceMacOSX::closeDevice()
 {
 	if (_window != NULL)
 	{
@@ -110,13 +105,13 @@ void	CIrrDeviceMacOSX::closeDevice()
 			CGLClearDrawable(_cglcontext);
 			CGLDestroyContext(_cglcontext);
 		}
-	}		
+	}
 
 	_active = FALSE;
 	_cglcontext = NULL;
 }
 
-bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer)
+bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer)
 {
 	int				index;
 	CGDisplayErr			error;
@@ -129,7 +124,7 @@ bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 	NSOpenGLPixelFormatAttribute	windowattribs[32];
 	CFDictionaryRef			displaymode,olddisplaymode;
 	long				numPixelFormats,newSwapInterval;
-	
+
 	result = false;
 	display = CGMainDisplayID();
 	_screenWidth = (int) CGDisplayPixelsWide(display);
@@ -141,7 +136,7 @@ bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 		if (_window != NULL)
 		{
 			index = 0;
-			windowattribs[index++] = NSOpenGLPFANoRecovery;	
+			windowattribs[index++] = NSOpenGLPFANoRecovery;
 			windowattribs[index++] = NSOpenGLPFADoubleBuffer;
 			windowattribs[index++] = NSOpenGLPFAAccelerated;
 			windowattribs[index++] = NSOpenGLPFADepthSize;
@@ -154,7 +149,7 @@ bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 				windowattribs[index++] = NSOpenGLPFAStencilSize;
 				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)1;
 			}
-			
+
 			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)NULL;
 
 			format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
@@ -163,7 +158,7 @@ bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 				_oglcontext = [[NSOpenGLContext alloc] initWithFormat:format shareContext:NULL];
 				[format release];
 			}
-			
+
 			if (_oglcontext != NULL)
 			{
 				[_window center];
@@ -196,7 +191,7 @@ bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 					numPixelFormats = 0;
 
 					index = 0;
-					fullattribs[index++] = kCGLPFAFullScreen;	
+					fullattribs[index++] = kCGLPFAFullScreen;
 					fullattribs[index++] = kCGLPFADisplayMask;
 					fullattribs[index++] = (CGLPixelFormatAttribute)CGDisplayIDToOpenGLDisplayMask(display);
 					fullattribs[index++] = kCGLPFADoubleBuffer;
@@ -211,16 +206,16 @@ bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 						fullattribs[index++] = kCGLPFAStencilSize;
 						fullattribs[index++] = (CGLPixelFormatAttribute)1;
 					}
-					
+
 					fullattribs[index++] = (CGLPixelFormatAttribute)NULL;
 					CGLChoosePixelFormat(fullattribs,&pixelFormat,&numPixelFormats);
- 
+
 					if (pixelFormat != NULL)
 					{
 						CGLCreateContext(pixelFormat,NULL,&_cglcontext);
 						CGLDestroyPixelFormat(pixelFormat);
 					}
-				
+
 					if (_cglcontext != NULL)
 					{
 						CGLSetFullScreen(_cglcontext);
@@ -249,7 +244,7 @@ bool	CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 	return (result);
 }
 
-void	CIrrDeviceMacOSX::setResize(int width,int height)
+void CIrrDeviceMacOSX::setResize(int width,int height)
 {
 	_width = width;
 	_height = height;
@@ -257,7 +252,7 @@ void	CIrrDeviceMacOSX::setResize(int width,int height)
 	getVideoDriver()->OnResize(core::dimension2d<s32>(width, height));
 }
 
-void	CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::dimension2d<s32>& windowSize,u32 bits,bool fullscreen,bool stencilbuffer, bool vsync, bool antiAlias)
+void CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::dimension2d<s32>& windowSize,u32 bits,bool fullscreen,bool stencilbuffer, bool vsync, bool antiAlias)
 {
 	switch (driverType)
 	{
@@ -268,7 +263,7 @@ void	CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::
 			os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
 			break;
-		
+
 		case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 			VideoDriver = video::createSoftwareDriver2(windowSize, fullscreen, FileSystem, this);
@@ -284,7 +279,7 @@ void	CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::
 			os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 		#endif
 			break;
-		
+
 		case video::EDT_DIRECT3D8:
 		case video::EDT_DIRECT3D9:
 			os::Printer::log("This driver is not available in OSX. Try OpenGL or Software renderer.", ELL_ERROR);
@@ -300,7 +295,7 @@ void	CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::
 	}
 }
 
-void	CIrrDeviceMacOSX::flush()
+void CIrrDeviceMacOSX::flush()
 {
 	if (_cglcontext != NULL)
 	{
@@ -309,11 +304,11 @@ void	CIrrDeviceMacOSX::flush()
 	}
 }
 
-bool	CIrrDeviceMacOSX::run()
+bool CIrrDeviceMacOSX::run()
 {
 	NSEvent		*event;
 	irr::SEvent	ievent;
-	
+
 	os::Timer::tick();
 	storeMouseLocation();
 
@@ -327,7 +322,7 @@ bool	CIrrDeviceMacOSX::run()
 			case NSKeyDown:
 				postKeyEvent(event,ievent,true);
 				break;
-				
+
 			case NSKeyUp:
 				postKeyEvent(event,ievent,false);
 				break;
@@ -351,7 +346,7 @@ bool	CIrrDeviceMacOSX::run()
 				ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 				postMouseEvent(event,ievent);
 				break;
-			
+
 			case NSRightMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
@@ -378,12 +373,12 @@ bool	CIrrDeviceMacOSX::run()
 				break;
 		}
 	}
-	
+
 	return (![[NSApp delegate] isQuit] && _active);
 }
 
 //! Pause the current process for the minimum time allowed only to allow other processes to execute
-void	CIrrDeviceMacOSX::yield()
+void CIrrDeviceMacOSX::yield()
 {
 	// TODO: Does this work or maybe is there a better way?
 	struct timespec ts = {0,0};
@@ -394,9 +389,9 @@ void	CIrrDeviceMacOSX::yield()
 void CIrrDeviceMacOSX::sleep(u32 timeMs, bool pauseTimer=false)
 {
 	// TODO: Does this work or maybe is there a better way?
-	
+
 	bool wasStopped = Timer ? Timer->isStopped() : true;
-	
+
 	struct timespec ts;
 	ts.tv_sec = (time_t) (timeMs / 1000);
 	ts.tv_nsec = (long) (timeMs % 1000) * 1000000;
@@ -410,11 +405,11 @@ void CIrrDeviceMacOSX::sleep(u32 timeMs, bool pauseTimer=false)
 		Timer->start();
 }
 
-void	CIrrDeviceMacOSX::present(video::IImage* image, s32 windowId, core::rect<s32>* src )
+void CIrrDeviceMacOSX::present(video::IImage* image, s32 windowId, core::rect<s32>* src )
 {
 }
 
-void	CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
+void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 {
 	size_t	size;
 	char	title[1024];
@@ -427,19 +422,19 @@ void	CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	}
 }
 
-bool	CIrrDeviceMacOSX::isWindowActive()
+bool CIrrDeviceMacOSX::isWindowActive()
 {
 	return (_active);
 }
 
-void	CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed)
+void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed)
 {
-	NSString							*str;
+	NSString				*str;
 	std::map<int,int>::const_iterator	iter;
-	unsigned int						result,c,mkey,mchar;
-	const unsigned char					*cStr;
-	BOOL								skipCommand;
-	
+	unsigned int				result,c,mkey,mchar;
+	const unsigned char			*cStr;
+	BOOL					skipCommand;
+
 	str = [event characters];
 	if (str != nil && [str length] > 0)
 	{
@@ -474,17 +469,19 @@ void	CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 		ievent.KeyInput.Control = ([event modifierFlags] & NSControlKeyMask) != 0;
 		ievent.KeyInput.Char = (irr::EKEY_CODE)mchar;
 
-		if (skipCommand) ievent.KeyInput.Control = true;
-		else if ([event modifierFlags] & NSCommandKeyMask) [NSApp sendEvent:(NSEvent *)event];
+		if (skipCommand)
+			ievent.KeyInput.Control = true;
+		else if ([event modifierFlags] & NSCommandKeyMask)
+			[NSApp sendEvent:(NSEvent *)event];
 
 		postEventFromUser(ievent);
 	}
 }
 
-void	CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
+void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 {
 	BOOL	post = true;
-	
+
 	if (_window != NULL)
 	{
 		ievent.MouseInput.X = (int)[event locationInWindow].x;
@@ -501,13 +498,13 @@ void	CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 	[NSApp sendEvent:(NSEvent *)event];
 }
 
-void	CIrrDeviceMacOSX::storeMouseLocation()
+void CIrrDeviceMacOSX::storeMouseLocation()
 {
-	NSPoint		p;
-	int			x,y;
+	NSPoint	p;
+	int	x,y;
 
 	p = [NSEvent mouseLocation];
-	
+
 	if (_window != NULL)
 	{
 		p = [_window convertScreenToBase:p];
@@ -523,11 +520,11 @@ void	CIrrDeviceMacOSX::storeMouseLocation()
 	((CCursorControl *)CursorControl)->updateInternalCursorPosition(x,y);
 }
 
-void	CIrrDeviceMacOSX::setMouseLocation(int x,int y)
+void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 {
-	NSPoint		p;
-	CGPoint		c;
-	
+	NSPoint	p;
+	CGPoint	c;
+
 	if (_window != NULL)
 	{
 		p.x = (float) x;
@@ -547,7 +544,7 @@ void	CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	CGWarpMouseCursorPosition(c);
 }
 
-void	CIrrDeviceMacOSX::setCursorVisible(bool visible)
+void CIrrDeviceMacOSX::setCursorVisible(bool visible)
 {
 	CGDirectDisplayID		display;
 
@@ -556,7 +553,7 @@ void	CIrrDeviceMacOSX::setCursorVisible(bool visible)
 	else CGDisplayHideCursor(display);
 }
 
-void	CIrrDeviceMacOSX::initKeycodes()
+void CIrrDeviceMacOSX::initKeycodes()
 {
 	_keycodes[NSUpArrowFunctionKey] = irr::KEY_UP;
 	_keycodes[NSDownArrowFunctionKey] = irr::KEY_DOWN;
@@ -598,23 +595,20 @@ void	CIrrDeviceMacOSX::initKeycodes()
 
 //! Sets if the window should be resizeable in windowed mode.
 
-void	CIrrDeviceMacOSX::setResizeAble(bool resize)
-
+void CIrrDeviceMacOSX::setResizeAble(bool resize)
 {
-
 	// todo: implement resize
-
 }
 
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
 	CIrrDeviceMacOSX* dev = new CIrrDeviceMacOSX(
-		param.DriverType, 
-		param.WindowSize, 
+		param.DriverType,
+		param.WindowSize,
 		param.Bits,
-		param.Fullscreen, 
-		param.Stencilbuffer, 
+		param.Fullscreen,
+		param.Stencilbuffer,
 		param.Vsync,
 		param.AntiAlias,
 		param.EventReceiver,
@@ -625,7 +619,7 @@ IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationP
 		dev->drop();
 		dev = 0;
 	}
-	
+
 	return dev;
 }
 
