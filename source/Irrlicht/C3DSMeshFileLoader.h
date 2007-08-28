@@ -156,6 +156,7 @@ private:
 
 	f32* Vertices;
 	u16* Indices;
+	u32* SmoothingGroups;
 	core::array<u16> TempIndices;
 	f32* TCoords;
 	u16 CountVertices;

@@ -100,7 +100,7 @@ const u16 C3DS_PERCENTAGE_F = 0x0031;
 
 //! Constructor
 C3DSMeshFileLoader::C3DSMeshFileLoader(IMeshManipulator* manip,io::IFileSystem* fs, video::IVideoDriver* driver)
-: FileSystem(fs), Driver(driver), Vertices(0), Indices(0), TCoords(0),
+: FileSystem(fs), Driver(driver), Vertices(0), Indices(0), SmoothingGroups(0), TCoords(0),
 	CountVertices(0), CountFaces(0), CountTCoords(0), Mesh(0), Manipulator(manip)
 {
 	TransformationMatrix.makeIdentity();
@@ -116,20 +116,13 @@ C3DSMeshFileLoader::C3DSMeshFileLoader(IMeshManipulator* manip,io::IFileSystem* 
 //! destructor
 C3DSMeshFileLoader::~C3DSMeshFileLoader()
 {
+	cleanUp();
+
 	if (FileSystem)
 		FileSystem->drop();
 
 	if (Driver)
 		Driver->drop();
-
-	if (Vertices)
-		delete [] Vertices;
-
-	if (Indices)
-		delete [] Indices;
-
-	if (TCoords)
-		delete [] TCoords;
 
 	if (Mesh)
 		Mesh->drop();
@@ -845,9 +838,8 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 			break;
 		case C3DS_TRISMOOTH: // TODO
 			{
-				u32 flags;
-				for (u16 i=0; i<CountFaces; ++i)
-					file->read(&flags, sizeof(u32));
+				SmoothingGroups = new u32[CountFaces];
+				file->read(&SmoothingGroups, CountFaces*sizeof(u32));
 #ifdef __BIG_ENDIAN__
 				for (u16 i=0; i<CountFaces; ++i)
 					flags = os::Byteswap::byteswap(flags);
@@ -1129,6 +1121,8 @@ void C3DSMeshFileLoader::cleanUp()
 	delete [] Indices;
 	Indices = 0;
 	CountFaces = 0;
+	delete [] SmoothingGroups;
+	SmoothingGroups = 0;
 	delete [] TCoords;
 	TCoords = 0;
 	CountTCoords = 0;
@@ -1204,7 +1198,8 @@ void C3DSMeshFileLoader::readIndices(io::IReadFile* file, ChunkData& data)
 	Indices = new u16[CountFaces * 4];
 	file->read(Indices, indexBufferByteSize);
 #ifdef __BIG_ENDIAN__
-	for (int i=0;i<CountFaces*4;++i) Indices[i] = os::Byteswap::byteswap(Indices[i]);
+	for (int i=0;i<CountFaces*4;++i)
+		Indices[i] = os::Byteswap::byteswap(Indices[i]);
 #endif
 	data.read += indexBufferByteSize;
 }
