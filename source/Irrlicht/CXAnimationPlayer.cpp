@@ -210,9 +210,9 @@ video::SMaterial CXAnimationPlayer::getMaterialFromXMaterial(const CXFileReader:
 	
 	if (xmat.TextureFileName.size() != 0)
 	{
-		mat.Textures[0] = Driver->getTexture(getTextureFileName(xmat.TextureFileName).c_str());
+		mat.Textures[0] = Driver->getTexture(xmat.TextureFileName.c_str());
 		if (mat.Textures[0] == 0)
-			mat.Textures[0] = Driver->getTexture(xmat.TextureFileName.c_str());
+			mat.Textures[0] = Driver->getTexture(getTextureFileName(xmat.TextureFileName).c_str());
 	}
 
 	return mat;
@@ -381,11 +381,9 @@ core::stringc CXAnimationPlayer::getTextureFileName(const core::stringc& texture
 		idx = FileName.findLast('\\');
 
 	if (idx == -1)
-		return core::stringc();
+		return texture;
 
-	core::stringc p = FileName.subString(0, idx+1);
-	p.append(texture);
-	return p;
+	return FileName.subString(idx+1, texture.size()-idx);
 }
 
 
