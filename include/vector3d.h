@@ -18,12 +18,7 @@ namespace core
 	{
 	public:
 
-#ifdef IRRLICHT_FAST_MATH
-		vector3d() {};
-#else
 		vector3d() : X(0), Y(0), Z(0) {};
-#endif
-
 		vector3d(T nx, T ny, T nz) : X(nx), Y(ny), Z(nz) {};
 		vector3d(const vector3d<T>& other) : X(other.X), Y(other.Y), Z(other.Z) {};
 

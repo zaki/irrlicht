@@ -150,10 +150,16 @@ IImage* CImageLoaderPng::loadImage(irr::io::IReadFile* file)
 
 	png_read_info(png_ptr, info_ptr); // Read the info section of the png file
 
-	// Extract info
-	png_get_IHDR(png_ptr, info_ptr,
-		(png_uint_32*)&Width, (png_uint_32*)&Height,
-		&BitDepth, &ColorType, NULL, NULL, NULL);
+	{
+		// Use temporary variables to avoid passing casted pointers
+		png_uint_32 w,h;
+		// Extract info
+		png_get_IHDR(png_ptr, info_ptr,
+			&w, &h,
+			&BitDepth, &ColorType, NULL, NULL, NULL);
+		Width=w;
+		Height=h;
+	}
 
 	// Convert palette color to true color
 	if (ColorType==PNG_COLOR_TYPE_PALETTE)
