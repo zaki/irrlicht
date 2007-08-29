@@ -5,6 +5,7 @@
 #include "CGUIListBox.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
 
+#include "CGUIListBox.h"
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
@@ -102,14 +103,7 @@ s32 CGUIListBox::getIcon(s32 id) const
 //! adds an list item, returns id of item
 s32 CGUIListBox::addItem(const wchar_t* text)
 {
-	ListItem i;
-	i.text = text;
-
-	Items.push_back(i);
-	recalculateItemHeight();
-	recalculateScrollPos();
-
-	return Items.size() - 1;
+	return addItem(text, -1);
 }
 
 //! adds an list item, returns id of item
@@ -522,14 +516,36 @@ void CGUIListBox::draw()
 					core::position2di iconPos = textRect.UpperLeftCorner;
 					iconPos.Y += textRect.getHeight() / 2;
 					iconPos.X += ItemsIconWidth/2;
-					IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
-						skin->getColor((i==Selected && hl) ? EGDC_ICON_HIGH_LIGHT : EGDC_ICON),
-						(i==Selected && hl) ? selectTime : 0 , (i==Selected) ? os::Timer::getTime() : 0, false, true);
+
+					if ( i==Selected && hl )
+					{
+						IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
+							hasItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) ? getItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_ICON_HIGHLIGHT),
+							selectTime, os::Timer::getTime(), false, true);
+					}
+					else
+					{
+						IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
+							hasItemOverrideColor(i, EGUI_LBC_ICON) ? getItemOverrideColor(i, EGUI_LBC_ICON) : getItemDefaultColor(EGUI_LBC_ICON),
+							0 , (i==Selected) ? os::Timer::getTime() : 0, false, true);
+					}
+					
 				}
 
 				textRect.UpperLeftCorner.X += ItemsIconWidth+3;
 
-				Font->draw(Items[i].text.c_str(), textRect, skin->getColor((i==Selected && hl) ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT), false, true, &clientClip);
+				if ( i==Selected && hl )
+				{
+					Font->draw(Items[i].text.c_str(), textRect, 
+						hasItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) ? getItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_TEXT_HIGHLIGHT),
+						false, true, &clientClip);
+				}
+				else
+				{
+					Font->draw(Items[i].text.c_str(), textRect, 
+						hasItemOverrideColor(i, EGUI_LBC_TEXT) ? getItemOverrideColor(i, EGUI_LBC_TEXT) : getItemDefaultColor(EGUI_LBC_TEXT),
+						false, true, &clientClip);
+				}
 
 				textRect.UpperLeftCorner.X -= ItemsIconWidth+3;
 			}
@@ -553,19 +569,7 @@ s32 CGUIListBox::addItem(const wchar_t* text, s32 icon)
 
 	Items.push_back(i);
 	recalculateItemHeight();
-
-	if (IconBank && icon > -1 &&
-		IconBank->getSprites().size() > (u32)icon &&
-		IconBank->getSprites()[(u32)icon].Frames.size())
-	{
-		u32 rno = IconBank->getSprites()[(u32)icon].Frames[0].rectNumber;
-		if (IconBank->getPositions().size() > rno)
-		{
-			const s32 w = IconBank->getPositions()[rno].getWidth();
-			if (w > ItemsIconWidth)
-				ItemsIconWidth = w;
-		}
-	}
+	recalculateItemWidth(icon);
 
 	return Items.size() - 1;
 }
@@ -609,6 +613,32 @@ bool CGUIListBox::isAutoScrollEnabled()
 	return AutoScroll;
 }
 
+bool CGUIListBox::getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::stringc & useColorLabel, core::stringc & colorLabel)
+{
+	switch ( colorType )
+	{
+	case EGUI_LBC_TEXT:
+		useColorLabel = "UseColText";
+		colorLabel = "ColText";
+		break;
+	case EGUI_LBC_TEXT_HIGHLIGHT:
+		useColorLabel = "UseColTextHl";
+		colorLabel = "ColTextHl";
+		break;
+	case EGUI_LBC_ICON:
+		useColorLabel = "UseColIcon";
+		colorLabel = "ColIcon";
+		break;
+	case EGUI_LBC_ICON_HIGHLIGHT:
+		useColorLabel = "UseColIconHl";
+		colorLabel = "ColIconHl";
+		break;
+	default:
+		return false;
+	}
+	return true;
+}
+
 //! Writes attributes of the element.
 void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
 {
@@ -619,49 +649,215 @@ void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	out->addBool    ("MoveOverSelect",  MoveOverSelect);
 	out->addBool    ("AutoScroll",      AutoScroll);
 
-	// todo: save list of items and icons.
-	/*core::array<core::stringw> tmpText;
-	core::array<core::stringw> tmpIcons;
+	// MICHA, StarSonata
+	// I also don't know yet how to handle icons, but added some text+color serialization now
+	// I did it the same way it's done for the context menus
+	out->addInt("ItemCount", Items.size());
 	u32 i;
 	for (i=0;i<Items.size(); ++i)
 	{
-		tmpText.push_back(Items[i].text);
-		tmpIcons.push_back(Items[i].icon);
+		core::stringc label;
+
+		label = "text"; label += i;
+		out->addString(label.c_str(), Items[i].text.c_str() );
+
+		for ( s32 c=0; c < (s32)EGUI_LBC_COUNT; ++c )
+		{
+			core::stringc useColorLabel, colorLabel;
+			if ( !getSerializationLabels((EGUI_LISTBOX_COLOR)c, useColorLabel, colorLabel) )
+				return;
+			label = useColorLabel; label += i;
+			if ( Items[i].OverrideColors[c].Use )
+			{
+				out->addBool(label.c_str(), true );
+				label = colorLabel; label += i;
+				out->addColor(label.c_str(), Items[i].OverrideColors[c].Color);
+			}
+			else
+			{
+				out->addBool(label.c_str(), false );
+			}
+		}
 	}
-
-	out->addArray	("ItemText",		tmpText);
-	out->addArray	("ItemIcons",		tmpIcons);
-
-	out->addInt		("Selected",		Selected);
-	*/
-
 }
 
 //! Reads attributes of the element
 void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 {
+	clear();
+
 	DrawBack        = in->getAttributeAsBool("DrawBack");
 	MoveOverSelect  = in->getAttributeAsBool("MoveOverSelect");
 	AutoScroll      = in->getAttributeAsBool("AutoScroll");
 
 	IGUIListBox::deserializeAttributes(in,options);
 
-	// read arrays
-	/*
-	core::array<core::stringw> tmpText;
-	core::array<core::stringw> tmpIcons;
+	// MICHA, StarSonata
+	// I also don't know yet how to handle icons, but added some text+color serialization now
+	// I did it the same way it's done for the context menus
+	s32 count = in->getAttributeAsInt("ItemCount");
+	for (s32 i=0; i<(s32)count; ++i)
+	{
+		core::stringc label;
+		ListItem item;
 
-	tmpText			= in->getAttributeAsArray("ItemText");
-	tmpIcons		= in->getAttributeAsArray("ItemIcons");
-	u32 i;
-	for (i=0; i<Items.size(); ++i)
-		addItem(tmpText[i].c_str(), tmpIcons[i].c_str());
+		label = "text"; label += i;
+		item.text = in->getAttributeAsStringW(label.c_str());
 
-	this->setSelected(in->getAttributeAsInt("Selected"));
-	*/
+		addItem(item.text.c_str(), item.icon);
 
+		for ( s32 c=0; c < (s32)EGUI_LBC_COUNT; ++c )
+		{
+			core::stringc useColorLabel, colorLabel;
+			if ( !getSerializationLabels((EGUI_LISTBOX_COLOR)c, useColorLabel, colorLabel) )
+				return;
+			label = useColorLabel; label += i;
+			Items[i].OverrideColors[c].Use = in->getAttributeAsBool(label.c_str());
+			if ( Items[i].OverrideColors[c].Use )
+			{
+				label = colorLabel; label += i;
+				Items[i].OverrideColors[c].Color = in->getAttributeAsColor(label.c_str());
+			}
+		}
+	}
 }
 
+// MICHA, StarSonata
+void CGUIListBox::recalculateItemWidth(s32 icon)
+{
+	if (IconBank && icon > -1 &&
+		IconBank->getSprites().size() > (u32)icon &&
+		IconBank->getSprites()[(u32)icon].Frames.size())
+	{
+		u32 rno = IconBank->getSprites()[(u32)icon].Frames[0].rectNumber;
+		if (IconBank->getPositions().size() > rno)
+		{
+			const s32 w = IconBank->getPositions()[rno].getWidth();
+			if (w > ItemsIconWidth)
+				ItemsIconWidth = w;
+		}
+	}
+}
+
+// MICHA, StarSonata
+void CGUIListBox::setItem(s32 index, const wchar_t* text, s32 icon)
+{
+	if ( index < 0 || index >= (s32)Items.size() )
+		return;
+
+	Items[index].text = text;
+	Items[index].icon = icon;
+
+	recalculateItemHeight();
+	recalculateItemWidth(icon);
+}
+
+// MICHA, StarSonata
+//! Insert the item at the given index 
+//! Return the index on success or -1 on failure.
+s32 CGUIListBox::insertItem(s32 index, const wchar_t* text, s32 icon)
+{
+	if ( index < 0 )
+		return -1;
+	ListItem i;
+	i.text = text;
+	i.icon = icon;
+
+	Items.insert(i, index);
+	recalculateItemHeight();
+	recalculateItemWidth(icon);
+
+	return index;
+}
+
+// MICHA, StarSonata
+void CGUIListBox::swapItems(s32 index1, s32 index2)
+{
+	if ( index1 < 0 || index2 < 0 || index1 >= (s32)Items.size() || index2 >= (s32)Items.size() )
+		return;
+
+	ListItem dummmy = Items[index1];
+	Items[index1] = Items[index2];
+	Items[index2] = dummmy;
+}
+
+// MICHA, StarSonata
+void CGUIListBox::setItemOverrideColor(s32 index, const video::SColor &color)
+{
+	for ( s32 c=0; c < (s32)EGUI_LBC_COUNT; ++c )
+	{
+		Items[index].OverrideColors[c].Use = true;
+		Items[index].OverrideColors[c].Color = color;
+	}
+}
+
+// MICHA, StarSonata
+void CGUIListBox::setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color)
+{
+	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
+		return;
+
+	Items[index].OverrideColors[colorType].Use = true;
+	Items[index].OverrideColors[colorType].Color = color;
+}
+
+// MICHA, StarSonata
+void CGUIListBox::clearItemOverrideColor(s32 index)
+{
+	for (s32 c=0; c < (s32)EGUI_LBC_COUNT; ++c )
+	{
+		Items[index].OverrideColors[c].Use = false;
+	}
+}
+
+// MICHA, StarSonata
+void CGUIListBox::clearItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
+{
+	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
+		return;
+
+	Items[index].OverrideColors[colorType].Use = false;
+}
+
+// MICHA, StarSonata
+bool CGUIListBox::hasItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
+{
+	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
+		return false;
+
+	return Items[index].OverrideColors[colorType].Use;
+}
+
+// MICHA, StarSonata
+video::SColor CGUIListBox::getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
+{
+	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
+		return video::SColor();
+
+	return Items[index].OverrideColors[colorType].Color;
+}
+
+// MICHA, StarSonata
+video::SColor CGUIListBox::getItemDefaultColor(EGUI_LISTBOX_COLOR colorType)
+{
+	IGUISkin* skin = Environment->getSkin();
+	if ( !skin )
+		return video::SColor();
+	
+	switch ( colorType )
+	{
+		case EGUI_LBC_TEXT:
+			return skin->getColor(EGDC_BUTTON_TEXT);
+		case EGUI_LBC_TEXT_HIGHLIGHT:
+			return skin->getColor(EGDC_HIGH_LIGHT_TEXT);
+		case EGUI_LBC_ICON:
+			return skin->getColor(EGDC_ICON);
+		case EGUI_LBC_ICON_HIGHLIGHT:
+			return skin->getColor(EGDC_ICON_HIGH_LIGHT);
+		default:
+			return video::SColor();
+	}
+}
 
 
 } // end namespace gui

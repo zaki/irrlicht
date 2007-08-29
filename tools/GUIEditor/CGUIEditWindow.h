@@ -4,7 +4,8 @@
 
 #include "IGUIWindow.h"
 #include "CGUIAttributeEditor.h"
-#include "IGUIStaticText.h"
+//#include "IGUIStaticText.h"
+#include "IGUIButton.h"
 #include "irrArray.h"
 #include "IAttributes.h"
 
@@ -46,16 +47,16 @@ namespace gui
 
 
 		// for dragging the window
-		bool					Dragging;
-		bool					Resizing;
-		core::position2d<s32>	DragStart;
+		bool                    Dragging;
+		bool                    Resizing;
+		core::position2d<s32>   DragStart;
 
-		IGUIElement*			SelectedElement; // current selected element
+		IGUIElement*            SelectedElement; // current selected element
 
-		CGUIAttributeEditor*	AttribEditor;	// edits the current attribute
-		CGUIAttributeEditor*	OptionEditor;	// edits the options for the window
-		CGUIAttributeEditor*	EnvEditor;		// edits attributes for the environment
-		IGUIStaticText*			ResizeButton;
+		CGUIAttributeEditor*    AttribEditor;	// edits the current attribute
+		CGUIAttributeEditor*    OptionEditor;	// edits the options for the window
+		CGUIAttributeEditor*    EnvEditor;		// edits attributes for the environment
+		IGUIButton*             ResizeButton;
 
 	};
 

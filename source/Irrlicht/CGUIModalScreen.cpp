@@ -45,19 +45,26 @@ bool CGUIModalScreen::OnEvent(SEvent event)
 		switch(event.GUIEvent.EventType)
 		{
 		case EGET_ELEMENT_FOCUSED:
+			// only children are allowed the focus
 			if (event.GUIEvent.Caller != this && !isMyChild(event.GUIEvent.Caller))
 				Environment->setFocus(this);
 			return false;
 		case EGET_ELEMENT_FOCUS_LOST:
+			// only children are allowed the focus
 			if (!(isMyChild(event.GUIEvent.Element) || event.GUIEvent.Element == this))
 			{
 				MouseDownTime = os::Timer::getTime();
 				return true;
 			}
 			else
+			{
 				return IGUIElement::OnEvent(event);
-			
+			}
 			break;
+		case EGET_ELEMENT_CLOSED:
+			// do not interfere with children being removed
+			return IGUIElement::OnEvent(event);
+			
 		}
 	case EET_MOUSE_INPUT_EVENT:
 		switch(event.MouseInput.Event)
@@ -69,7 +76,7 @@ bool CGUIModalScreen::OnEvent(SEvent event)
 	
 	IGUIElement::OnEvent(event);
 
-	return true; // absorb everything
+	return true; // absorb everything else
 }
 
 

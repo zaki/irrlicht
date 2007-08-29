@@ -29,7 +29,7 @@ namespace scene
 		EDS_MESH_WIRE_OVERLAY = 8,
 
 		//! Temporary use transparency Material Type 
-		EDS_HALF_TRANSPARENCY= 16,
+		EDS_HALF_TRANSPARENCY = 16,
 
 		//! Show Bounding Boxes of all MeshBuffers
 		EDS_BBOX_BUFFERS = 32,

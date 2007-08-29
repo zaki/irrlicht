@@ -33,7 +33,7 @@ namespace scene
 		//! Collision respose scene node animator
 		ESNAT_COLLISION_RESPONSE,
 
-		//! Amount of build in scene node animators
+		//! Amount of built-in scene node animators
 		ESNAT_COUNT,
 
 		//! Unknown scene node animator

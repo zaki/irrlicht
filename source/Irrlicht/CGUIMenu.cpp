@@ -102,46 +102,49 @@ bool CGUIMenu::OnEvent(SEvent event)
 		{
 		case gui::EGET_ELEMENT_FOCUS_LOST:
 			if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element))
+			{
 				closeAllSubMenus();
+				HighLighted = -1;
+			}
 			break;
 		case gui::EGET_ELEMENT_FOCUSED:
 			if (event.GUIEvent.Caller == this && Parent)
+			{
 				Parent->bringToFront(this);
-
+			}
+			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
 		switch(event.MouseInput.Event)
 		{
-		case EMIE_LMOUSE_LEFT_UP:
-			{
-				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
-				if (AbsoluteClippingRect.isPointInside(p))
-				{
-					if (HighLighted != -1)
-						Environment->removeFocus(this);
-					else
-						highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y));
-				}
-				else
-				{
-					s32 t = sendClick(p);
-					if ((t==0 || t==1) && Environment->hasFocus(this))
-						Environment->removeFocus(this);
-				}
-			}
-			return true;
 		case EMIE_LMOUSE_PRESSED_DOWN:
+		{
 			if (!Environment->hasFocus(this))
 			{
 				Environment->setFocus(this);
 				if (Parent)
 					Parent->bringToFront(this);
 			}
+
+			core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
+			bool shouldCloseSubMenu = hasOpenSubMenu();
+			if (!AbsoluteClippingRect.isPointInside(p))
+			{
+				shouldCloseSubMenu = false;
+				s32 t = sendClick(p);
+				if ((t==0 || t==1) && Environment->hasFocus(this))
+					Environment->removeFocus(this);
+			}
+			highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
+			if ( shouldCloseSubMenu )
+				closeAllSubMenus();
+			
 			return true;
+		}
 		case EMIE_MOUSE_MOVED:
 			if (Environment->hasFocus(this))
-				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y));
+				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), hasOpenSubMenu());
 			return true;
 		}
 		break;
@@ -229,17 +232,6 @@ core::rect<s32> CGUIMenu::getRect(const SItem& i, const core::rect<s32>& absolut
 	return getHRect(i, absolute);
 }
 
-
-void CGUIMenu::closeAllSubMenus()
-{
-	for (s32 i=0; i<(s32)Items.size(); ++i)
-		if (Items[i].SubMenu)
-			Items[i].SubMenu->setVisible(false);
-
-	HighLighted = -1;
-}
-
-
 void CGUIMenu::updateAbsolutePosition()
 {
 	if (Parent)
@@ -251,5 +243,6 @@ void CGUIMenu::updateAbsolutePosition()
 
 } // end namespace
 } // end namespace
+
 
 #endif // _IRR_COMPILE_WITH_GUI_

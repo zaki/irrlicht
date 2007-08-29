@@ -98,6 +98,9 @@ namespace gui
 
 	protected:
 
+		void closeAllSubMenus();
+		bool hasOpenSubMenu();
+
 		struct SItem
 		{
 			core::stringw Text;
@@ -112,8 +115,8 @@ namespace gui
 
 		virtual void recalculateSize();
 
-		//! returns true, if an element was highligted
-		virtual bool highlight(core::position2d<s32> p);
+		//! returns true, if an element was highlighted
+		virtual bool highlight(core::position2d<s32> p, bool canOpenSubMenu);
 
 		//! sends a click Returns:
 		//! 0 if click went outside of the element,
