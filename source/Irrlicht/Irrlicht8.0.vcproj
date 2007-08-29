@@ -49,8 +49,11 @@
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\include;zlib"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;IRRLICHT_EXPORTS;_CRT_SECURE_NO_DEPRECATE"
+				ExceptionHandling="0"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				DisableLanguageExtensions="false"
+				RuntimeTypeInfo="false"
 				PrecompiledHeaderFile=".\..\obj\IrrDebug/Irrlicht.pch"
 				AssemblerListingLocation=".\..\obj\IrrDebug/"
 				ObjectFile=".\..\obj\IrrDebug/"
@@ -556,6 +559,34 @@
 			<Filter
 				Name="scene"
 				>
+				<File
+					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleAttractionAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleCylinderEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleMeshEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleRingEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleRotationAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleSphereEmitter.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\..\..\include\ESceneNodeAnimatorTypes.h"
 					>
