@@ -78,15 +78,27 @@ public:
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0);
 
+	//! Creates a point attraction affector. This affector modifies the positions of the
+	//! particles and attracts them to a specified point at a specified speed per second.
+	virtual IParticleAttractionAffector* createAttractionAffector(
+		const core::vector3df& point, f32 speed = 1.0f, bool attract = true,
+		bool affectX = true, bool affectY = true, bool affectZ = true);
+
 	//! Creates a fade out particle affector.
-	virtual IParticleAffector* createFadeOutParticleAffector(
-		video::SColor targetColor = video::SColor(0,0,0,0),
+	virtual IParticleFadeOutAffector* createFadeOutParticleAffector(
+		const video::SColor& targetColor = video::SColor(0,0,0,0),
 		u32 timeNeededToFadeOut = 1000);
 
 	//! Creates a gravity affector.
-	virtual IParticleAffector* createGravityAffector(
+	virtual IParticleGravityAffector* createGravityAffector(
 		const core::vector3df& gravity = core::vector3df(0.0f,-0.03f,0.0f),
 		u32 timeForceLost = 1000);
+
+	//! Creates a rotation affector. This affector rotates the particles
+	//! around a specified pivot point. The speed is in Degrees per second.
+	virtual IParticleRotationAffector* createRotationAffector(
+		const core::vector3df& speed = core::vector3df(5.0f,5.0f,5.0f),
+		const core::vector3df& pivotPoint = core::vector3df(0.0f,0.0f,0.0f) );
 
 	//! Sets the size of all particles.
 	virtual void setParticleSize(

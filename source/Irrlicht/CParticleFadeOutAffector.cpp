@@ -13,10 +13,10 @@ namespace scene
 
 //! constructor
 CParticleFadeOutAffector::CParticleFadeOutAffector(
-	video::SColor targetColor, u32 fadeOutTime)
-	: IParticleAffector(), TargetColor(targetColor)
+	const video::SColor& targetColor, u32 fadeOutTime)
+	: IParticleFadeOutAffector(), TargetColor(targetColor)
 {
-	FadeOutTime = fadeOutTime ? (f32)fadeOutTime : 1.0f;
+	FadeOutTime = fadeOutTime ? static_cast<f32>(fadeOutTime) : 1.0f;
 }
 
 
@@ -40,7 +40,7 @@ void CParticleFadeOutAffector::affect(u32 now, SParticle* particlearray, u32 cou
 
 
 //! Writes attributes of the object.
-//! Implement this to expose the attributes of your scene node animator for 
+//! Implement this to expose the attributes of your scene node animator for
 //! scripting languages, editors, debuggers or xml serialization purposes.
 void CParticleFadeOutAffector::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
 {
@@ -49,7 +49,7 @@ void CParticleFadeOutAffector::serializeAttributes(io::IAttributes* out, io::SAt
 }
 
 //! Reads attributes of the object.
-//! Implement this to set the attributes of your scene node animator for 
+//! Implement this to set the attributes of your scene node animator for
 //! scripting languages, editors, debuggers or xml deserialization purposes.
 //! \param startIndex: start index where to start reading attributes.
 //! \return: returns last index of an attribute read by this affector

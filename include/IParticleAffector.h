@@ -17,8 +17,10 @@ namespace scene
 enum E_PARTICLE_AFFECTOR_TYPE
 {
 	EPAT_NONE = 0,
+	EPAT_ATTRACT,
 	EPAT_FADE_OUT,
 	EPAT_GRAVITY,
+	EPAT_ROTATE,
 	EPAT_COUNT
 };
 
@@ -26,8 +28,10 @@ enum E_PARTICLE_AFFECTOR_TYPE
 const c8* const ParticleAffectorTypeNames[] =
 {
 	"None",
+	"Attract",
 	"FadeOut",
 	"Gravity",
+	"Rotate",
 	0
 };
 
@@ -46,10 +50,10 @@ public:
 	virtual void affect(u32 now, SParticle* particlearray, u32 count) = 0;
 
 	//! Sets whether or not the affector is currently enabled.
-	virtual void setEnabled(bool enabled) {Enabled = enabled;}
+	virtual void setEnabled(bool enabled) { Enabled = enabled; }
 
 	//! Gets whether or not the affector is currently enabled.
-	virtual bool getEnabled() const { return Enabled;}
+	virtual bool getEnabled() const { return Enabled; }
 
 	//! Writes attributes of the object.
 	//! Implement this to expose the attributes of your scene node animator for
