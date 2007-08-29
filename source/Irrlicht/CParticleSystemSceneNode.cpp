@@ -10,8 +10,10 @@
 
 #include "CParticlePointEmitter.h"
 #include "CParticleBoxEmitter.h"
+#include "CParticleAttractionAffector.h"
 #include "CParticleFadeOutAffector.h"
 #include "CParticleGravityAffector.h"
+#include "CParticleRotationAffector.h"
 #include "SViewFrustum.h"
 
 namespace irr
@@ -133,20 +135,40 @@ IParticleEmitter* CParticleSystemSceneNode::createBoxEmitter(
 
 
 
+//! Creates a point attraction affector. This affector modifies the positions of the
+//! particles and attracts them to a specified point at a specified speed per second.
+IParticleAttractionAffector* CParticleSystemSceneNode::createAttractionAffector(
+	const core::vector3df& point, f32 speed, bool attract,
+	bool affectX, bool affectY, bool affectZ )
+{
+	return new CParticleAttractionAffector( point, speed, attract, affectX, affectY, affectZ );
+}
+
+
 //! Creates a fade out particle affector.
-IParticleAffector* CParticleSystemSceneNode::createFadeOutParticleAffector(
-		video::SColor targetColor,	u32 timeNeededToFadeOut)
+IParticleFadeOutAffector* CParticleSystemSceneNode::createFadeOutParticleAffector(
+		const video::SColor& targetColor, u32 timeNeededToFadeOut)
 {
 	return new CParticleFadeOutAffector(targetColor, timeNeededToFadeOut);
 }
 
 
 //! Creates a gravity affector.
-IParticleAffector* CParticleSystemSceneNode::createGravityAffector(
+IParticleGravityAffector* CParticleSystemSceneNode::createGravityAffector(
 		const core::vector3df& gravity, u32 timeForceLost)
 {
 	return new CParticleGravityAffector(gravity, timeForceLost);
 }
+
+
+//! Creates a rotation affector. This affector rotates the particles around a specified pivot
+//! point.  The speed represents Degrees of rotation per second.
+IParticleRotationAffector* CParticleSystemSceneNode::createRotationAffector(
+	const core::vector3df& speed, const core::vector3df& pivotPoint )
+{
+	return new CParticleRotationAffector( speed, pivotPoint );
+}
+
 
 
 //! pre render event

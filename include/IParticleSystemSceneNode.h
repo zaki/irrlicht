@@ -7,7 +7,10 @@
 
 #include "ISceneNode.h"
 #include "IParticleEmitter.h"
-#include "IParticleAffector.h"
+#include "IParticleAttractionAffector.h"
+#include "IParticleFadeOutAffector.h"
+#include "IParticleGravityAffector.h"
+#include "IParticleRotationAffector.h"
 #include "dimension2d.h"
 
 namespace irr
@@ -139,6 +142,23 @@ public:
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0) = 0;
 
+	//! Creates a point attraction affector. This affector modifies the positions of the
+	//! particles and attracts them to a specified point at a specified speed per second.
+	//! \param point: Point to attract particles to.
+	//! \param speed: Speed in units per second, to attract to the specified point.
+	//! \param attract: Whether the particles attract or detract from this point.
+	//! \param affectX: Whether or not this will affect the X position of the particle.
+	//! \param affectY: Whether or not this will affect the Y position of the particle.
+	//! \param affectZ: Whether or not this will affect the Z position of the particle.
+	//! \return Returns a pointer to the created particle affector.
+	//! To add this affector as new affector of this particle system,
+	//! just call addAffector(). Note that you'll have to drop() the
+	//! returned pointer, after you don't need it any more, see
+	//! IUnknown::drop() for more informations.
+	virtual IParticleAttractionAffector* createAttractionAffector(
+		const core::vector3df& point, f32 speed = 1.0f, bool attract = true,
+		bool affectX = true, bool affectY = true, bool affectZ = true) = 0;
+
 	//! Creates a fade out particle affector. This affector modifies
 	//! the color of every particle and and reaches the final color
 	//! when the particle dies.
@@ -153,8 +173,8 @@ public:
 	//! just call addAffector(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
 	//! IUnknown::drop() for more informations.
-	virtual IParticleAffector* createFadeOutParticleAffector(
-		video::SColor targetColor = video::SColor(0,0,0,0),
+	virtual IParticleFadeOutAffector* createFadeOutParticleAffector(
+		const video::SColor& targetColor = video::SColor(0,0,0,0),
 		u32 timeNeededToFadeOut = 1000) = 0;
 
 	//! Creates a gravity affector. This affector modifies the direction
@@ -171,9 +191,22 @@ public:
 	//! just call addAffector(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
 	//! IUnknown::drop() for more informations.
-	virtual IParticleAffector* createGravityAffector(
+	virtual IParticleGravityAffector* createGravityAffector(
 		const core::vector3df& gravity = core::vector3df(0.0f,-0.03f,0.0f),
 		u32 timeForceLost = 1000) = 0;
+
+	//! Creates a rotation affector. This affector modifies the positions of the
+	//! particles and attracts them to a specified point at a specified speed per second.
+	//! \param speed: Rotation in degrees per second
+	//! \param pivotPoint: Point to rotate the particles around
+	//! \return Returns a pointer to the created particle affector.
+	//! To add this affector as new affector of this particle system,
+	//! just call addAffector(). Note that you'll have to drop() the
+	//! returned pointer, after you don't need it any more, see
+	//! IUnknown::drop() for more informations.
+	virtual IParticleRotationAffector* createRotationAffector(
+		const core::vector3df& speed = core::vector3df(5.0f,5.0f,5.0f),
+		const core::vector3df& pivotPoint = core::vector3df(0.0f,0.0f,0.0f) ) = 0;
 };
 
 } // end namespace scene

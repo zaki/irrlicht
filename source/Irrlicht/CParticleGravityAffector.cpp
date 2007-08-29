@@ -14,7 +14,7 @@ namespace scene
 //! constructor
 CParticleGravityAffector::CParticleGravityAffector(
 	const core::vector3df& gravity, u32 timeForceLost)
-	: IParticleAffector(), TimeForceLost((f32)timeForceLost), Gravity(gravity)
+	: IParticleGravityAffector(), TimeForceLost(static_cast<f32>(timeForceLost)), Gravity(gravity)
 {
 }
 
