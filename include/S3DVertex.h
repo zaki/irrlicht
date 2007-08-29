@@ -91,12 +91,16 @@ struct S3DVertex2TCoords : S3DVertex
 	//! constructor with two different texture coords, but no normal
 	S3DVertex2TCoords(const core::vector3df& pos, SColor color,
 		const core::vector2d<f32>& tcoords, const core::vector2d<f32>& tcoords2)
-		: S3DVertex(pos, core::vector3df(0.0f, 0.0f, 0.0f), color, tcoords), TCoords2(tcoords2) {}
+		: S3DVertex(pos, core::vector3df(), color, tcoords), TCoords2(tcoords2) {}
 
 	//! constructor with all values
 	S3DVertex2TCoords(const core::vector3df& pos, const core::vector3df& normal, const SColor& color,
 		const core::vector2d<f32>& tcoords, const core::vector2d<f32>& tcoords2)
 		: S3DVertex(pos, normal, color, tcoords), TCoords2(tcoords2) {}
+
+	//! constructor with all values
+	S3DVertex2TCoords(f32 x, f32 y, f32 z, f32 nx, f32 ny, f32 nz, SColor c, f32 tu, f32 tv, f32 tu2, f32 tv2)
+		: S3DVertex(x,y,z, nx,ny,nz, c, tu,tv), TCoords2(tu2,tv2) {}
 
 	//! constructor with the same texture coords and normal
 	S3DVertex2TCoords(f32 x, f32 y, f32 z, f32 nx, f32 ny, f32 nz, SColor c, f32 tu, f32 tv)
@@ -149,14 +153,14 @@ struct S3DVertexTangents : S3DVertex
 	//! constructor
 	S3DVertexTangents(const core::vector3df& pos, SColor c,
 		const core::vector2df& tcoords)
-		: S3DVertex(pos, core::vector3df(0.0f, 0.0f, 0.0f), c, tcoords) { }
+		: S3DVertex(pos, core::vector3df(), c, tcoords) { }
 
 	//! constructor
 	S3DVertexTangents(const core::vector3df& pos,
 		const core::vector3df& normal, SColor c,
 		const core::vector2df& tcoords,
-		const core::vector3df& tangent=core::vector3df(0.0f, 0.0f, 0.0f),
-		const core::vector3df& binormal=core::vector3df(0.0f, 0.0f, 0.0f))
+		const core::vector3df& tangent=core::vector3df(),
+		const core::vector3df& binormal=core::vector3df())
 		: S3DVertex(pos, normal, c, tcoords), Tangent(tangent), Binormal(binormal) { }
 
 	//! Tangent vector along the x-axis of the texture

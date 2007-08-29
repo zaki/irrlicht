@@ -49,6 +49,9 @@ public:
 
 	//! Get whether or not to draw points inside the cylinder
 	virtual bool getOutlineOnly() const = 0;
+
+	//! Get emitter type
+	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_CYLINDER; }
 };
 
 } // end namespace scene
