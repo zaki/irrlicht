@@ -85,17 +85,24 @@ namespace irr
 		enum EGUI_EVENT_TYPE
 		{
 			//! A gui element has lost its focus.
-			//! GUIEvent.Caller is losing the focus to GUIEvent.Element
+			//! GUIEvent.Caller is losing the focus to GUIEvent.Element. 
+			//! If the event is absorbed then the focus will not be changed.
 			EGET_ELEMENT_FOCUS_LOST = 0,
 
 			//! A gui element has got the focus.
+			//! If the event is absorbed then the focus will not be changed.
 			EGET_ELEMENT_FOCUSED,
 
-			//! A gui element was hovered.
+			//! The mouse cursor hovered over a gui element.
 			EGET_ELEMENT_HOVERED,
 
-			//! A hovered gui element was left
+			//! The mouse cursor left the hovered element.
 			EGET_ELEMENT_LEFT,
+
+			//! An element would like to close.
+			//! Windows and context menus use this event when they would like to close,
+			//! this can be cancelled by absorbing the event.
+			EGET_ELEMENT_CLOSED,
 
 			//! A button was clicked.
 			EGET_BUTTON_CLICKED,

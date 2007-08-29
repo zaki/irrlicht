@@ -94,7 +94,14 @@ void CGUIContextMenu::setSubMenu(s32 index, CGUIContextMenu* menu)
 	menu->setVisible(false);
 	
 	if (Items[index].SubMenu)
+	{
 		menu->grab();
+		menu->AllowFocus = false;
+		if ( Environment->getFocus() == menu )
+		{
+			Environment->setFocus( this );
+		}
+	}
 
 	recalculateSize();
 }
@@ -215,7 +222,7 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 		switch(event.GUIEvent.EventType)
 		{
 		case EGET_ELEMENT_FOCUS_LOST:
-			if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element))
+			if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element) && AllowFocus)
 			{
 				// set event parent of submenus
 				setEventParent(Parent);
@@ -247,7 +254,7 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 			return true;
 		case EMIE_MOUSE_MOVED:
 			if (Environment->hasFocus(this))
-				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y));
+				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
 			return true;
 		}
 		break;
@@ -324,7 +331,7 @@ s32 CGUIContextMenu::sendClick(core::position2d<s32> p)
 
 
 //! returns true, if an element was highligted
-bool CGUIContextMenu::highlight(core::position2d<s32> p)
+bool CGUIContextMenu::highlight(core::position2d<s32> p, bool canOpenSubMenu)
 {
 	// get number of open submenu
 	s32 openmenu = -1;
@@ -339,7 +346,7 @@ bool CGUIContextMenu::highlight(core::position2d<s32> p)
 	// delegate highlight operation to submenu
 	if (openmenu != -1)
 	{
-		if (Items[openmenu].SubMenu->highlight(p))
+		if (Items[openmenu].SubMenu->highlight(p, canOpenSubMenu))
 		{
 			HighLighted = openmenu;
 			ChangeTime = os::Timer::getTime();
@@ -355,9 +362,14 @@ bool CGUIContextMenu::highlight(core::position2d<s32> p)
 			ChangeTime = os::Timer::getTime();
 
 			// make submenus visible/invisible
-			for (s32 j=0; j<(s32)Items.size(); ++j)
-				if (Items[j].SubMenu)
-					Items[j].SubMenu->setVisible(j == i);
+				for (s32 j=0; j<(s32)Items.size(); ++j)
+					if (Items[j].SubMenu)
+					{
+						if ( j == i && canOpenSubMenu )
+							Items[j].SubMenu->setVisible(true);
+						else if ( j != i )
+							Items[j].SubMenu->setVisible(false);
+					}
 			return true;
 		}
 
@@ -479,7 +491,6 @@ void CGUIContextMenu::draw()
 				core::rect<s32> r = rect;
 				r.LowerRightCorner.X = r.UpperLeftCorner.X - 15;
 				r.UpperLeftCorner.X = r.LowerRightCorner.X + 15;
-
 				sprites->draw2DSprite(skin->getIcon(EGDI_CHECK_BOX_CHECKED), 
 					r.getCenter(), clip, skin->getColor(c), 
 					(i == HighLighted) ? ChangeTime : 0,  
@@ -691,9 +702,28 @@ void CGUIContextMenu::setEventParent(IGUIElement *parent)
 		}
 }
 
+bool CGUIContextMenu::hasOpenSubMenu()
+{
+	for (s32 i=0; i<(s32)Items.size(); ++i)
+		if (Items[i].SubMenu)
+			if ( Items[i].SubMenu->isVisible() )
+				return true;
+	return false;
+}
+
+void CGUIContextMenu::closeAllSubMenus()
+{
+	for (s32 i=0; i<(s32)Items.size(); ++i)
+		if (Items[i].SubMenu)
+			Items[i].SubMenu->setVisible(false);
+
+	//HighLighted = -1;
+}
+
 
 } // end namespace
 } // end namespace
+
 
 #endif // _IRR_COMPILE_WITH_GUI_
 

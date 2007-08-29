@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_GUI_LIST_BOX_BAR_H_INCLUDED__
-#define __C_GUI_LIST_BOX_BAR_H_INCLUDED__
+#ifndef __C_GUI_LIST_BOX_H_INCLUDED__
+#define __C_GUI_LIST_BOX_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
@@ -22,7 +22,6 @@ namespace gui
 	class CGUIListBox : public IGUIListBox
 	{
 	public:
-
 		//! constructor
 		CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent, 
 			s32 id, core::rect<s32> rectangle, bool clip=true,
@@ -89,19 +88,73 @@ namespace gui
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
+		// MICHA, StarSonata, multicolor support
+		//! set all item colors at given index to color
+		virtual void setItemOverrideColor(s32 index, const video::SColor &color);
+
+		//! set all item colors of specified type at given index to color
+		virtual void setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color);
+
+		//! clear all item colors at index
+		virtual void clearItemOverrideColor(s32 index);
+
+		//! clear item color at index for given colortype 
+		virtual void clearItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType);
+
+		//! has the item at index it's color overwritten?
+		virtual bool hasItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType);
+
+		//! return the overwrite color at given item index. 
+		virtual video::SColor getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType);
+
+		//! return the default color which is used for the given colorType
+		virtual video::SColor getItemDefaultColor(EGUI_LISTBOX_COLOR colorType);
+
+		// MICHA, StarSonata
+		//! set the item at the given index 
+		virtual void setItem(s32 index, const wchar_t* text, s32 icon);
+
+		// MICHA, StarSonata
+		//! Insert the item at the given index 
+		//! Return the index on success or -1 on failure.
+		virtual s32 insertItem(s32 index, const wchar_t* text, s32 icon);
+
+		// MICHA, StarSonata
+		//! Swap the items at the given indices
+		virtual void swapItems(s32 index1, s32 index2);
+
 	private:
 
 		struct ListItem
 		{
-			ListItem() : icon(-1) {}
+			ListItem() : icon(-1) 
+			{}
 
 			core::stringw text;
 			s32 icon;
+
+			// MICHA, StarSonata
+			// A multicolor extension
+			struct ListItemOverrideColor
+			{
+				ListItemOverrideColor() : Use(false) {}
+				bool Use;
+				video::SColor Color;
+			};
+			ListItemOverrideColor OverrideColors[EGUI_LBC_COUNT];
 		};
 
 		void recalculateItemHeight();
 		void selectNew(s32 ypos, bool onlyHover=false);
 		void recalculateScrollPos();
+
+		// MICHA, StarSonata
+		// extracted that function to avoid copy&paste code
+		void recalculateItemWidth(s32 icon);
+
+		// MICHA, StarSonata
+		// get labels used for serialization
+		bool getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::stringc & useColorLabel, core::stringc & colorLabel);
 
 		core::array< ListItem > Items;
 		s32 Selected;

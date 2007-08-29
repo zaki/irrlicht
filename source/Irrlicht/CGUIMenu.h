@@ -44,13 +44,11 @@ namespace gui
 
 		//! Gets drawing rect of Item
 		virtual core::rect<s32> getRect(const SItem& i, const core::rect<s32>& absolute);
-
-		void closeAllSubMenus();
-
 	};
 
 } // end namespace gui
 } // end namespace irr
+
 
 #endif //  __C_GUI_MENU_H_INCLUDED__
 #endif // _IRR_COMPILE_WITH_GUI_

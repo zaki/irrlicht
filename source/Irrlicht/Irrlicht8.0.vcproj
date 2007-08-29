@@ -78,7 +78,7 @@
 				Name="VCLinkerTool"
 				UseLibraryDependencyInputs="true"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib glu32.lib opengl32.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib glu32.lib opengl32.lib"
 				OutputFile="..\..\bin\Win32-visualstudio\Irrlicht.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -585,6 +585,14 @@
 				</File>
 				<File
 					RelativePath=".\CParticleSphereEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\ECullingTypes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\EDebugSceneTypes.h"
 					>
 				</File>
 				<File

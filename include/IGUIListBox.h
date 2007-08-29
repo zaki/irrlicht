@@ -2,10 +2,11 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_GUI_LIST_BOX_BAR_H_INCLUDED__
-#define __I_GUI_LIST_BOX_BAR_H_INCLUDED__
+#ifndef __I_GUI_LIST_BOX_H_INCLUDED__
+#define __I_GUI_LIST_BOX_H_INCLUDED__
 
 #include "IGUIElement.h"
+#include "SColor.h"
 
 namespace irr
 {
@@ -14,11 +15,26 @@ namespace gui
 	class IGUIFont;
 	class IGUISpriteBank;
 
+	//! Enumeration for listbox colors
+	enum EGUI_LISTBOX_COLOR
+	{
+		//! Color of text
+		EGUI_LBC_TEXT=0,
+		//! Color of selected text
+		EGUI_LBC_TEXT_HIGHLIGHT,
+		//! Color of icon
+		EGUI_LBC_ICON,
+		//! Color of selected icon
+		EGUI_LBC_ICON_HIGHLIGHT,
+		//! Not used, just counts the number of available colors
+		EGUI_LBC_COUNT
+	};
+
+
 	//! Default list box GUI element.
 	class IGUIListBox : public IGUIElement
 	{
 	public:
-
 		//! constructor
 		IGUIListBox(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_LIST_BOX, environment, parent, id, rectangle) {}
@@ -70,11 +86,40 @@ namespace gui
 		//! returns true if automatic scrolling is enabled, false if not.
 		virtual bool isAutoScrollEnabled() = 0;
 
-	};
+		//! set all item colors at given index to color
+		virtual void setItemOverrideColor(s32 index, const video::SColor &color) = 0;
+
+		//! set all item colors of specified type at given index to color
+		virtual void setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color) = 0;
+
+		//! clear all item colors at index
+		virtual void clearItemOverrideColor(s32 index) = 0;
+
+		//! clear item color at index for given colortype 
+		virtual void clearItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType) = 0;
+
+		//! has the item at index it's color overwritten?
+		virtual bool hasItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType) = 0;
+
+		//! return the overwrite color at given item index. 
+		virtual video::SColor getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType) = 0;
+
+		//! return the default color which is used for the given colorType
+		virtual video::SColor getItemDefaultColor(EGUI_LISTBOX_COLOR colorType) = 0;
+
+		//! set the item at the given index 
+		virtual void setItem(s32 index, const wchar_t* text, s32 icon) = 0;
+
+		//! Insert the item at the given index 
+		//! Return the index on success or -1 on failure.
+		virtual s32 insertItem(s32 index, const wchar_t* text, s32 icon) = 0;
+
+		//! Swap the items at the given indices
+		virtual void swapItems(s32 index1, s32 index2) = 0;
+};
 
 
 } // end namespace gui
 } // end namespace irr
 
 #endif
-

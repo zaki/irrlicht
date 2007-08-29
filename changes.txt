@@ -95,6 +95,10 @@ Changes in version 1.4 (... 2007)
 
 GUI:
 
+ - Fixes to menu and listbox (de)serialization, and custom listbox colors by CuteAlien.
+
+ - Added EGET_ELEMENT_CLOSED GUI event type. Absorb this event to cancel closing a window.
+
  - Added _IRR_COMPILE_WITH_GUI_ to allow compiling without the GUI. 
    This is useful if you use another GUI system (ie CEGUI) or are using Irrlicht 
    inside another window. You will have to supply an external IGUIFont if you wish
