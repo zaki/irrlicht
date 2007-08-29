@@ -265,7 +265,7 @@ private:
 
 	//! reads a polygons section and creates a mesh from it
 	void readPolygonSection(io::IXMLReaderUTF8* reader,
-		core::stringc vertexPositionSource, core::array<SSource>& sources,
+		const core::stringc& vertexPositionSource, core::array<SSource>& sources,
 		scene::SMesh* mesh);
 
 	video::IVideoDriver* Driver;

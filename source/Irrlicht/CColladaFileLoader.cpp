@@ -338,6 +338,10 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 //! reads a <library> section and its content
 void CColladaFileLoader::readLibrarySection(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading library");
+	#endif
+
 	while(reader->read())
 	if (reader->getNodeType() == io::EXN_ELEMENT)
 	{
@@ -496,8 +500,8 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 		// TODO: set transformation correctly into node.
 		// currently this isn't done correctly. Need to get transformation,
 		// rotation and scale from the matrix.
-		core::vector3df trans = transform.getTranslation();
-		core::vector3df rot = transform.getRotationDegrees();
+		const core::vector3df& trans = transform.getTranslation();
+		const core::vector3df& rot = transform.getRotationDegrees();
 
 		node->setPosition(trans);
 		node->setRotation(rot);
@@ -533,6 +537,10 @@ core::matrix4 CColladaFileLoader::readLookAtNode(io::IXMLReaderUTF8* reader)
 //! reads a <skew> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading skew node");
+	#endif
+
 	core::matrix4 mat;
 	if (reader->isEmptyElement())
 		return mat;
@@ -550,6 +558,10 @@ core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 //! reads a <matrix> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading matrix node");
+	#endif
+
 	core::matrix4 mat;
 	if (reader->isEmptyElement())
 		return mat;
@@ -562,6 +574,10 @@ core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 //! reads a <perspective> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readPerspectiveNode(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading perspective node");
+	#endif
+
 	core::matrix4 mat;
 	if (reader->isEmptyElement())
 		return mat;
@@ -579,6 +595,10 @@ core::matrix4 CColladaFileLoader::readPerspectiveNode(io::IXMLReaderUTF8* reader
 //! reads a <rotate> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading rotate node");
+	#endif
+
 	core::matrix4 mat;
 	if (reader->isEmptyElement())
 		return mat;
@@ -587,14 +607,16 @@ core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 	readFloatsInsideElement(reader, floats, 4);
 
 	core::quaternion q(floats[0], floats[1], floats[2], floats[3]);
-	mat = q.getMatrix();
-
-	return mat;
+	return q.getMatrix();
 }
 
 //! reads a <scale> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readScaleNode(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading scale node");
+	#endif
+
 	core::matrix4 mat;
 	if (reader->isEmptyElement())
 		return mat;
@@ -611,6 +633,10 @@ core::matrix4 CColladaFileLoader::readScaleNode(io::IXMLReaderUTF8* reader)
 //! reads a <translate> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readTranslateNode(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading translate node");
+	#endif
+
 	core::matrix4 mat;
 	if (reader->isEmptyElement())
 		return mat;
@@ -649,6 +675,10 @@ void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISc
 //! reads a <camera> element and stores it as prefab
 void CColladaFileLoader::readCameraPrefab(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading camera prefab");
+	#endif
+
 	CCameraPrefab* prefab = new CCameraPrefab(reader->getAttributeValue("id"));
 
 	if (!reader->isEmptyElement())
@@ -677,6 +707,10 @@ void CColladaFileLoader::readCameraPrefab(io::IXMLReaderUTF8* reader)
 //! reads a <image> element and stores it in the image section
 void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading image");
+	#endif
+
 	SColladaImage image;
 	image.Id = reader->getAttributeValue("id");
 	image.Filename = reader->getAttributeValue("source");
@@ -689,6 +723,10 @@ void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 //! reads a <texture> element and stores it in the texture section
 void CColladaFileLoader::readTexture(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading texture");
+	#endif
+
 	SColladaTexture texture;
 	texture.Id = reader->getAttributeValue("id");
 
@@ -717,6 +755,10 @@ void CColladaFileLoader::readTexture(io::IXMLReaderUTF8* reader)
 //! reads a <material> element and stores it in the material section
 void CColladaFileLoader::readMaterial(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading material");
+	#endif
+
 	SColladaMaterial material;
 	material.Id = reader->getAttributeValue("id");
 
@@ -764,6 +806,10 @@ void CColladaFileLoader::readMaterial(io::IXMLReaderUTF8* reader)
 //! reads a <geometry> element and stores it as mesh if possible
 void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading geometry");
+	#endif
+
 	core::stringc id = reader->getAttributeValue("id");
 
 	core::stringc VertexPositionSource; // each mesh has exactly one <vertex> member, containing
@@ -947,9 +993,13 @@ struct SPolygon
 
 //! reads a polygons section and creates a mesh from it
 void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
-	core::stringc vertexPositionSource, core::array<SSource>& sources,
+	const core::stringc& vertexPositionSource, core::array<SSource>& sources,
 	scene::SMesh* mesh)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading polygon section");
+	#endif
+
 	core::stringc materialName = reader->getAttributeValue("material");
 	uriToId(materialName);
 	video::SMaterial mat;
@@ -1117,6 +1167,8 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				// for all input semantics
 				for (u32 k=0; k<slots.size(); ++k)
 				{
+					if (!slots[k].Data)
+						continue;
 					// build vertex from input semantics.
 
 					s32 idx = polygons[i].Indices[v+k];
@@ -1253,6 +1305,10 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 //! reads a <light> element and stores it as prefab
 void CColladaFileLoader::readLightPrefab(io::IXMLReaderUTF8* reader)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading light prefab");
+	#endif
+
 	CLightPrefab* prefab = new CLightPrefab(reader->getAttributeValue("id"));
 
 	if (!reader->isEmptyElement())
@@ -1335,7 +1391,7 @@ void CColladaFileLoader::readColladaInputs(io::IXMLReaderUTF8* reader, const cor
 
 //! parses all collada parameters inside an element and stores them in Parameters
 void CColladaFileLoader::readColladaParameters(io::IXMLReaderUTF8* reader,
-											   const core::stringc& parentName)
+		const core::stringc& parentName)
 {
 	Parameters.clear();
 
