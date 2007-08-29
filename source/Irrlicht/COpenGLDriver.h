@@ -249,7 +249,7 @@ namespace video
 		//! Returns whether disabling was successful or not.
 		bool disableTextures(u32 fromStage=0);
 
-		//! Adds a new material renderer to the VideoDriver, using extGLGetObjectParameterivARB(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status) pixel and/or
+		//! Adds a new material renderer to the VideoDriver, using extGLGetObjectParameteriv(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status) pixel and/or
 		//! vertex shaders to render geometry.
 		virtual s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 			IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);

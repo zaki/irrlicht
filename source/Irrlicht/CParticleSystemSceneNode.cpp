@@ -8,8 +8,13 @@
 #include "ICameraSceneNode.h"
 #include "IVideoDriver.h"
 
-#include "CParticlePointEmitter.h"
+#include "CParticleAnimatedMeshSceneNodeEmitter.h"
 #include "CParticleBoxEmitter.h"
+#include "CParticleCylinderEmitter.h"
+#include "CParticleMeshEmitter.h"
+#include "CParticlePointEmitter.h"
+#include "CParticleRingEmitter.h"
+#include "CParticleSphereEmitter.h"
 #include "CParticleAttractionAffector.h"
 #include "CParticleFadeOutAffector.h"
 #include "CParticleGravityAffector.h"
@@ -106,31 +111,114 @@ u32 CParticleSystemSceneNode::getMaterialCount()
 }
 
 
-
-//! Creates a point particle emitter.
-IParticleEmitter* CParticleSystemSceneNode::createPointEmitter(
-	const core::vector3df& direction, u32 minParticlesPerSecond,
-	u32 maxParticlePerSecond, video::SColor minStartColor,
-	video::SColor maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees)
+//! Creates a particle emitter for an animated mesh scene node
+IParticleAnimatedMeshSceneNodeEmitter*
+CParticleSystemSceneNode::createAnimatedMeshSceneNodeEmitter(
+	scene::IAnimatedMeshSceneNode* node, bool useNormalDirection,
+	const core::vector3df& direction, f32 normalDirectionModifier,
+	s32 mbNumber, bool everyMeshVertex,
+	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
+	const video::SColor& minStartColor, const video::SColor& maxStartColor,
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
 {
-	return new CParticlePointEmitter(direction, minParticlesPerSecond,
-		maxParticlePerSecond, minStartColor, maxStartColor,
-		lifeTimeMin, lifeTimeMax, maxAngleDegrees);
+	return new CParticleAnimatedMeshSceneNodeEmitter( node,
+			useNormalDirection, direction, normalDirectionModifier,
+			mbNumber, everyMeshVertex,
+			minParticlesPerSecond, maxParticlesPerSecond,
+			minStartColor, maxStartColor,
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees );
 }
 
 
+
 //! Creates a box particle emitter.
-IParticleEmitter* CParticleSystemSceneNode::createBoxEmitter(
+IParticleBoxEmitter* CParticleSystemSceneNode::createBoxEmitter(
 	const core::aabbox3df& box, const core::vector3df& direction,
-	u32 minParticlesPerSecond,	u32 maxParticlePerSecond,
-	video::SColor minStartColor,	video::SColor maxStartColor,
+	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
+	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax,
 	s32 maxAngleDegrees)
 {
 	return new CParticleBoxEmitter(box, direction, minParticlesPerSecond,
-		maxParticlePerSecond, minStartColor, maxStartColor,
+		maxParticlesPerSecond, minStartColor, maxStartColor,
 		lifeTimeMin, lifeTimeMax, maxAngleDegrees);
+}
+
+
+//! Creates a particle emitter for emitting from a cylinder
+IParticleCylinderEmitter* CParticleSystemSceneNode::createCylinderEmitter(
+	const core::vector3df& center, f32 radius,
+	const core::vector3df& normal, f32 length,
+	bool outlineOnly, const core::vector3df& direction,
+	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
+	const video::SColor& minStartColor, const video::SColor& maxStartColor,
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
+{
+	return new CParticleCylinderEmitter( center, radius, normal, length,
+			outlineOnly, direction,
+			minParticlesPerSecond, maxParticlesPerSecond,
+			minStartColor, maxStartColor,
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees );
+}
+
+
+//! Creates a mesh particle emitter.
+IParticleMeshEmitter* CParticleSystemSceneNode::createMeshEmitter(
+	scene::IMesh* mesh, bool useNormalDirection,
+	const core::vector3df& direction, f32 normalDirectionModifier,
+	s32 mbNumber, bool everyMeshVertex,
+	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
+	const video::SColor& minStartColor, const video::SColor& maxStartColor,
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
+{
+	return new CParticleMeshEmitter( mesh, useNormalDirection, direction,
+			normalDirectionModifier, mbNumber, everyMeshVertex,
+			minParticlesPerSecond, maxParticlesPerSecond,
+			minStartColor, maxStartColor,
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees );
+}
+
+
+
+//! Creates a point particle emitter.
+IParticlePointEmitter* CParticleSystemSceneNode::createPointEmitter(
+	const core::vector3df& direction, u32 minParticlesPerSecond,
+	u32 maxParticlesPerSecond, const video::SColor& minStartColor,
+	const video::SColor& maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
+	s32 maxAngleDegrees)
+{
+	return new CParticlePointEmitter(direction, minParticlesPerSecond,
+		maxParticlesPerSecond, minStartColor, maxStartColor,
+		lifeTimeMin, lifeTimeMax, maxAngleDegrees);
+}
+
+
+//! Creates a ring particle emitter.
+IParticleRingEmitter* CParticleSystemSceneNode::createRingEmitter(
+	const core::vector3df& center, f32 radius, f32 ringThickness,
+	const core::vector3df& direction,
+	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
+	const video::SColor& minStartColor, const video::SColor& maxStartColor,
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
+{
+	return new CParticleRingEmitter( center, radius, ringThickness, direction,
+		minParticlesPerSecond, maxParticlesPerSecond, minStartColor,
+		maxStartColor, lifeTimeMin, lifeTimeMax, maxAngleDegrees );
+}
+
+
+//! Creates a sphere particle emitter.
+IParticleSphereEmitter* CParticleSystemSceneNode::createSphereEmitter(
+	const core::vector3df& center, f32 radius, const core::vector3df& direction,
+	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
+	const video::SColor& minStartColor, const video::SColor& maxStartColor,
+	u32 lifeTimeMin, u32 lifeTimeMax,
+	s32 maxAngleDegrees)
+{
+	return new CParticleSphereEmitter(center, radius, direction,
+			minParticlesPerSecond, maxParticlesPerSecond,
+			minStartColor, maxStartColor,
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees);
 }
 
 

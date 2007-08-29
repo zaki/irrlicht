@@ -1013,6 +1013,82 @@ void CIrrDeviceLinux::setResizeAble(bool resize)
 }
 
 
+//! \return Returns a pointer to a list with all video modes supported
+//! by the gfx adapter.
+video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
+{
+
+	if (!VideoModeList.getVideoModeCount())
+	{
+		bool temporaryDisplay = false;
+
+		if (!display)
+		{
+			display = XOpenDisplay(0);
+			temporaryDisplay=true;
+		}
+		if (!display)
+		{
+			s32 eventbase, errorbase;
+			s32 defaultDepth=DefaultDepth(display,screennr);
+
+			#ifdef _IRR_LINUX_X11_VIDMODE_
+			if (XF86VidModeQueryExtension(display, &eventbase, &errorbase))
+			{
+				// enumerate video modes
+				int modeCount;
+				XF86VidModeModeInfo** modes;
+
+				XF86VidModeGetAllModeLines(display, screennr, &modeCount, &modes);
+
+				// save current video mode
+				oldVideoMode = *modes[0];
+
+				// find fitting mode
+
+				VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
+					modes[0]->hdisplay, modes[0]->vdisplay));
+				for (int i = 0; i<modeCount; ++i)
+				{
+					VideoModeList.addMode(core::dimension2d<s32>(
+						modes[i]->hdisplay, modes[i]->vdisplay), defaultDepth);
+				}
+				XFree(modes);
+			}
+			else
+			#endif
+			#ifdef _IRR_LINUX_X11_RANDR_
+			if (XRRQueryExtension(display, &eventbase, &errorbase))
+			{
+				int modeCount;
+				XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
+				oldRandrMode=XRRConfigCurrentConfiguration(config,&oldRandrRotation);
+				XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
+				VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
+					modes[oldRandrMode].width, modes[oldRandrMode].height));
+				for (int i = 0; i<modeCount; ++i)
+				{
+					VideoModeList.addMode(core::dimension2d<s32>(
+						modes[i].width, modes[i].height), defaultDepth);
+				}
+				XRRFreeScreenConfigInfo(config);
+			}
+			else
+			#endif
+			{
+				os::Printer::log("VidMode or RandR X11 extension requireed for VideoModeList." , ELL_WARNING);
+			}
+		}
+		if (display && temporaryDisplay)
+		{
+			XCloseDisplay(display);
+		}
+	}
+
+	return &VideoModeList;
+}
+
+
 
 void CIrrDeviceLinux::createKeyMap()
 {

@@ -2,31 +2,30 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_PARTICLE_BOX_EMITTER_H_INCLUDED__
-#define __C_PARTICLE_BOX_EMITTER_H_INCLUDED__
+#ifndef __C_PARTICLE_RING_EMITTER_H_INCLUDED__
+#define __C_PARTICLE_RING_EMITTER_H_INCLUDED__
 
-#include "IParticleBoxEmitter.h"
+#include "IParticleRingEmitter.h"
 #include "irrArray.h"
-#include "aabbox3d.h"
 
 namespace irr
 {
 namespace scene
 {
 
-//! A default box emitter
-class CParticleBoxEmitter : public IParticleBoxEmitter
+//! A ring emitter
+class CParticleRingEmitter : public IParticleRingEmitter
 {
 public:
 
 	//! constructor
-	CParticleBoxEmitter(
-		const core::aabbox3df& box,
+	CParticleRingEmitter(
+		const core::vector3df& center, f32 radius, f32 ringThickness,
 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
 		u32 minParticlesPerSecond = 20,
 		u32 maxParticlesPerSecond = 40,
-		video::SColor minStartColor = video::SColor(255,0,0,0),
-		video::SColor maxStartColor = video::SColor(255,255,255,255),
+		const video::SColor& minStartColor = video::SColor(255,0,0,0),
+		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000,
 		u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0);
@@ -35,52 +34,62 @@ public:
 	//! and returns how much new particles there are.
 	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray);
 
-	//! Set direction the emitter emits particles.
+	//! Set direction the emitter emits particles
 	virtual void setDirection( const core::vector3df& newDirection ) { Direction = newDirection; }
 
-	//! Set minimum number of particles emitted per second.
+	//! Set minimum number of particles the emitter emits per second
 	virtual void setMinParticlesPerSecond( u32 minPPS ) { MinParticlesPerSecond = minPPS; }
 
-	//! Set maximum number of particles emitted per second.
+	//! Set maximum number of particles the emitter emits per second
 	virtual void setMaxParticlesPerSecond( u32 maxPPS ) { MaxParticlesPerSecond = maxPPS; }
 
-	//! Set minimum start color.
+	//! Set minimum starting color for particles
 	virtual void setMinStartColor( const video::SColor& color ) { MinStartColor = color; }
 
-	//! Set maximum start color.
+	//! Set maximum starting color for particles
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
-	//! Set box from which the particles are emitted.
-	virtual void setBox( const core::aabbox3df& box ) { Box = box; }
+	//! Set the center of the ring
+	virtual void setCenter( const core::vector3df& center ) { Center = center; }
 
-	//! Gets direction the emitter emits particles.
+	//! Set the radius of the ring
+	virtual void setRadius( f32 radius ) { Radius = radius; }
+
+	//! Set the thickness of the ring
+	virtual void setRingThickness( f32 ringThickness ) { RingThickness = ringThickness; }
+
+	//! Gets direction the emitter emits particles
 	virtual const core::vector3df& getDirection() const { return Direction; }
 
-	//! Gets minimum number of particles emitted per second.
+	//! Gets the minimum number of particles the emitter emits per second
 	virtual u32 getMinParticlesPerSecond() const { return MinParticlesPerSecond; }
 
-	//! Gets maximum number of particles emitted per second.
+	//! Gets the maximum number of particles the emitter emits per second
 	virtual u32 getMaxParticlesPerSecond() const { return MaxParticlesPerSecond; }
 
-	//! Gets minimum start color.
+	//! Gets the minimum starting color for particles
 	virtual const video::SColor& getMinStartColor() const { return MinStartColor; }
 
-	//! Gets maximum start color.
+	//! Gets the maximum starting color for particles
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
-	//! Get box from which the particles are emitted.
-	virtual const core::aabbox3df& getBox() const { return Box; }
+	//! Get the center of the ring
+	virtual const core::vector3df& getCenter() const { return Center; }
 
-	//! Writes attributes of the object.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+	//! Get the radius of the ring
+	virtual f32 getRadius() const { return Radius; }
 
-	//! Reads attributes of the object.
-	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+	//! Get the thickness of the ring
+	virtual f32 getRingThickness() const { return RingThickness; }
 
 private:
 
 	core::array<SParticle> Particles;
-	core::aabbox3df Box;
+
+	core::vector3df	Center;
+	f32 Radius;
+	f32 RingThickness;
+
 	core::vector3df Direction;
 	u32 MinParticlesPerSecond, MaxParticlesPerSecond;
 	video::SColor MinStartColor, MaxStartColor;
@@ -89,6 +98,9 @@ private:
 	u32 Time;
 	u32 Emitted;
 	s32 MaxAngleDegrees;
+
+	f32 MinimumDistance;
+	f32 MaximumDistance;
 };
 
 } // end namespace scene
