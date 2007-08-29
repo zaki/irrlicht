@@ -14,7 +14,7 @@ namespace scene
 {
 
 //! A default point emitter
-class CParticlePointEmitter : public IParticleEmitter
+class CParticlePointEmitter : public IParticlePointEmitter
 {
 public:
 
@@ -33,22 +33,49 @@ public:
 	//! and returns how much new particles there are.
 	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray);
 
+	//! Set direction the emitter emits particles.
+	virtual void setDirection( const core::vector3df& newDirection ) { Direction = newDirection; }
+
+	//! Set minimum number of particles emitted per second.
+	virtual void setMinParticlesPerSecond( u32 minPPS ) { MinParticlesPerSecond = minPPS; }
+
+	//! Set maximum number of particles emitted per second.
+	virtual void setMaxParticlesPerSecond( u32 maxPPS ) { MaxParticlesPerSecond = maxPPS; }
+
+	//! Set minimum start color.
+	virtual void setMinStartColor( const video::SColor& color ) { MinStartColor = color; }
+
+	//! Set maximum start color.
+	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
+
+	//! Gets direction the emitter emits particles.
+	virtual const core::vector3df& getDirection() const { return Direction; }
+
+	//! Gets minimum number of particles emitted per second.
+	virtual u32 getMinParticlesPerSecond() const { return MinParticlesPerSecond; }
+
+	//! Gets maximum number of particles emitted per second.
+	virtual u32 getMaxParticlesPerSecond() const { return MaxParticlesPerSecond; }
+
+	//! Gets minimum start color.
+	virtual const video::SColor& getMinStartColor() const { return MinStartColor; }
+
+	//! Gets maximum start color.
+	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
+
 	//! Writes attributes of the object.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
 
 	//! Reads attributes of the object.
 	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
-	//! Get emitter type
-	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_POINT; }
-
 private:
 
 	SParticle Particle;
 	core::vector3df Direction;
-	s32 MinParticlesPerSecond, MaxParticlesPerSecond;
+	u32 MinParticlesPerSecond, MaxParticlesPerSecond;
 	video::SColor MinStartColor, MaxStartColor;
-	s32 MinLifeTime, MaxLifeTime;
+	u32 MinLifeTime, MaxLifeTime;
 	s32 MaxAngleDegrees;
 
 	u32 Time;

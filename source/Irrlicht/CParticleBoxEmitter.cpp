@@ -20,7 +20,7 @@ CParticleBoxEmitter::CParticleBoxEmitter(
 	video::SColor maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
 	s32 maxAngleDegrees)
  : Box(box), Direction(direction), MinParticlesPerSecond(minParticlesPerSecond),
-	MaxParticlesPerSecond(maxParticlesPerSecond), 
+	MaxParticlesPerSecond(maxParticlesPerSecond),
 	MinStartColor(minStartColor), MaxStartColor(maxStartColor),
 	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax), Time(0), Emitted(0),
 	MaxAngleDegrees(maxAngleDegrees)
@@ -42,15 +42,15 @@ s32 CParticleBoxEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outAr
 	if (Time > everyWhatMillisecond)
 	{
 		Particles.set_used(0);
-		s32 amount = (s32)((Time / everyWhatMillisecond) + 0.5f);
+		u32 amount = (u32)((Time / everyWhatMillisecond) + 0.5f);
 		Time = 0;
 		SParticle p;
 		const core::vector3df& extent = Box.getExtent();
 
-		if (amount > (s32)MaxParticlesPerSecond*2)
+		if (amount > MaxParticlesPerSecond*2)
 			amount = MaxParticlesPerSecond * 2;
 
-		for (s32 i=0; i<amount; ++i)
+		for (u32 i=0; i<amount; ++i)
 		{
 			p.pos.X = Box.MinEdge.X + fmodf((f32)os::Randomizer::rand(), extent.X);
 			p.pos.Y = Box.MinEdge.Y + fmodf((f32)os::Randomizer::rand(), extent.Y);
@@ -62,9 +62,9 @@ s32 CParticleBoxEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outAr
 			if (MaxAngleDegrees)
 			{
 				core::vector3df tgt = Direction;
-				tgt.rotateXYBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df(0,0,0));
-				tgt.rotateYZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df(0,0,0));
-				tgt.rotateXZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df(0,0,0));
+				tgt.rotateXYBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df());
+				tgt.rotateYZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df());
+				tgt.rotateXZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df());
 				p.vector = tgt;
 			}
 
@@ -136,10 +136,10 @@ s32 CParticleBoxEmitter::deserializeAttributes(s32 startIndex, io::IAttributes* 
 	MinParticlesPerSecond = in->getAttributeAsInt("MinParticlesPerSecond");
 	MaxParticlesPerSecond = in->getAttributeAsInt("MaxParticlesPerSecond");
 
-	MinParticlesPerSecond = core::max_<s32>(1, MinParticlesPerSecond);
-	MaxParticlesPerSecond = core::max_<s32>(MaxParticlesPerSecond, 1);
-	MaxParticlesPerSecond = core::min_<s32>(MaxParticlesPerSecond, 200);
-	MinParticlesPerSecond = core::min_<s32>(MinParticlesPerSecond, MaxParticlesPerSecond);
+	MinParticlesPerSecond = core::max_(1u, MinParticlesPerSecond);
+	MaxParticlesPerSecond = core::max_(MaxParticlesPerSecond, 1u);
+	MaxParticlesPerSecond = core::min_(MaxParticlesPerSecond, 200u);
+	MinParticlesPerSecond = core::min_(MinParticlesPerSecond, MaxParticlesPerSecond);
 
 	MinStartColor = in->getAttributeAsColor("MinStartColor");
 	MaxStartColor = in->getAttributeAsColor("MaxStartColor");
@@ -147,9 +147,9 @@ s32 CParticleBoxEmitter::deserializeAttributes(s32 startIndex, io::IAttributes* 
 	MaxLifeTime = in->getAttributeAsInt("MaxLifeTime");
 	MaxAngleDegrees = in->getAttributeAsInt("MaxAngleDegrees");
 
-	MinLifeTime = core::max_<s32>(0, MinLifeTime);
-	MaxLifeTime = core::max_<s32>(MaxLifeTime, MinLifeTime);
-	MinLifeTime = core::min_<s32>(MinLifeTime, MaxLifeTime);
+	MinLifeTime = core::max_(0u, MinLifeTime);
+	MaxLifeTime = core::max_(MaxLifeTime, MinLifeTime);
+	MinLifeTime = core::min_(MinLifeTime, MaxLifeTime);
 
 	return in->findAttribute("MaxAngleDegrees");
 }

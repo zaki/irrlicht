@@ -103,11 +103,9 @@
 #include "ISceneNodeAnimatorFactory.h"
 #include "ISceneNodeAnimatorCollisionResponse.h"
 #include "IShaderConstantSetCallBack.h"
-#include "IParticleSystemSceneNode.h"
+#include "IParticleSystemSceneNode.h" // also includes all emitters and attractors
 #include "ITerrainSceneNode.h"
 #include "ITextSceneNode.h"
-#include "IParticleEmitter.h"
-#include "IParticleAffector.h"
 #include "ITexture.h"
 #include "IUnknown.h"
 #include "IVideoDriver.h"

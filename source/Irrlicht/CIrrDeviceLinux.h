@@ -77,6 +77,10 @@ namespace irr
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
 
+		//! \return Returns a pointer to a list with all video modes
+		//! supported by the gfx adapter.
+		video::IVideoModeList* getVideoModeList();
+
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize=false);
 
@@ -105,14 +109,13 @@ namespace irr
 					unsigned long valuemask = 0;
 
 					XColor fg, bg;
-					int depth = 1;
 
 					// this code, for making the cursor invisible was sent in by
 					// Sirshane, thank your very much!
 
 
-					Pixmap invisBitmap = XCreatePixmap( Device->display, Device->window, 32, 32, depth );
-					Pixmap maskBitmap = XCreatePixmap( Device->display, Device->window, 32, 32, depth );
+					Pixmap invisBitmap = XCreatePixmap(Device->display, Device->window, 32, 32, 1);
+					Pixmap maskBitmap = XCreatePixmap(Device->display, Device->window, 32, 32, 1);
 					Colormap screen_colormap = DefaultColormap( Device->display, DefaultScreen( Device->display ) );
 					XAllocNamedColor( Device->display, screen_colormap, "black", &fg, &fg );
 					XAllocNamedColor( Device->display, screen_colormap, "white", &bg, &bg );
@@ -129,10 +132,6 @@ namespace irr
 					XFreePixmap(Device->display, maskBitmap);
 				}
 #endif
-			}
-
-			~CCursorControl()
-			{
 			}
 
 			//! Changes the visible state of the mouse cursor.
