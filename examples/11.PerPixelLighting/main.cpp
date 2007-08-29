@@ -364,6 +364,7 @@ int main()
 		smgr->addBillboardSceneNode(light1, core::dimension2d<f32>(60, 60));
 
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
+	bill->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 	bill->setMaterialTexture(0, driver->getTexture("../../media/particlered.bmp"));
 
