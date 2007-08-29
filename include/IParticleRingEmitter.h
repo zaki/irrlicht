@@ -37,6 +37,9 @@ public:
 
 	//! Get the thickness of the ring
 	virtual f32 getRingThickness() const = 0;
+
+	//! Get emitter type
+	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_RING; }
 };
 
 } // end namespace scene

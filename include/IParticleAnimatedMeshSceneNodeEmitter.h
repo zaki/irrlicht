@@ -46,6 +46,9 @@ public:
 	//! Gets whether to emit min<->max particles for every vertex per
 	//! second, or to pick  min<->max vertices every second
 	virtual bool getEveryMeshVertex() const = 0;
+
+	//! Get emitter type
+	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_ANIMATED_MESH; }
 };
 
 } // end namespace scene

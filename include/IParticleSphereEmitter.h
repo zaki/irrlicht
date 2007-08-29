@@ -31,6 +31,9 @@ public:
 
 	//! Get the radius of the sphere for particle emissions
 	virtual f32 getRadius() const = 0;
+
+	//! Get emitter type
+	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_SPHERE; }
 };
 
 } // end namespace scene

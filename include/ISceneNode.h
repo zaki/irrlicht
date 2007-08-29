@@ -437,7 +437,7 @@ namespace scene
 
 		//! Enables or disables automatic culling based on the bounding box.
 		/** Automatic culling is enabled by default. Note that not
-		all SceneNodes support culling (the billboard scene node for example)
+		all SceneNodes support culling (e.g. the billboard scene node)
 		and that some nodes always cull their geometry because it is their
 		only reason for existence, for example the OctreeSceneNode.
 		\param state: The culling state to be used. */

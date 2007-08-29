@@ -17,7 +17,12 @@ namespace scene
 enum E_PARTICLE_EMITTER_TYPE
 {
 	EPET_POINT = 0,
+	EPET_ANIMATED_MESH,
 	EPET_BOX,
+	EPET_CYLINDER,
+	EPET_MESH,
+	EPET_RING,
+	EPET_SPHERE,
 	EPET_COUNT
 };
 
@@ -25,7 +30,12 @@ enum E_PARTICLE_EMITTER_TYPE
 const c8* const ParticleEmitterTypeNames[] =
 {
 	"Point",
+	"AnimatedMesh",
 	"Box",
+	"Cylinder",
+	"Mesh",
+	"Ring",
+	"Sphere",
 	0
 };
 
