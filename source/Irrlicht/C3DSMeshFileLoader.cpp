@@ -839,10 +839,10 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 		case C3DS_TRISMOOTH: // TODO
 			{
 				SmoothingGroups = new u32[CountFaces];
-				file->read(&SmoothingGroups, CountFaces*sizeof(u32));
+				file->read(SmoothingGroups, CountFaces*sizeof(u32));
 #ifdef __BIG_ENDIAN__
 				for (u16 i=0; i<CountFaces; ++i)
-					flags = os::Byteswap::byteswap(flags);
+					SmoothingGroups[i] = os::Byteswap::byteswap(SmoothingGroups[i]);
 #endif
 				data.read += CountFaces*sizeof(u32);
 			}
