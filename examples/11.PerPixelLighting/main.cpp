@@ -393,6 +393,7 @@ int main()
 	// attach billboard to light
 	bill = smgr->addBillboardSceneNode(light2, core::dimension2d<f32>(120, 120));
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
+	bill->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 	bill->setMaterialTexture(0, driver->getTexture("../../media/particlewhite.bmp"));
 
@@ -419,6 +420,7 @@ int main()
 
 	// adjust some material settings
 	ps->setMaterialFlag(video::EMF_LIGHTING, false);
+	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	ps->setMaterialTexture(0, driver->getTexture("../../media/fireball.bmp"));
 	ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 
