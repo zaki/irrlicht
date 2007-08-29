@@ -143,6 +143,7 @@ namespace scene
 		void addFrameToMesh(CXFileReader::SXFrame& frame);
 		video::SMaterial getMaterialFromXMaterial(const CXFileReader::SXMaterial& xmat);
 		void addFacesToBuffer(s32 meshbuffernr, CXFileReader::SXMesh& mesh, s32 matnr, const CXFileReader::SXFrame& frame);
+		//! use .x file path as prefix for texture
 		core::stringc getTextureFileName(const core::stringc& texture);
 
 		s32 getJointNumberFromName(const core::stringc& name) const;

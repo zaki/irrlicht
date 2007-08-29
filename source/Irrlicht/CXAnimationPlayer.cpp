@@ -210,8 +210,10 @@ video::SMaterial CXAnimationPlayer::getMaterialFromXMaterial(const CXFileReader:
 	
 	if (xmat.TextureFileName.size() != 0)
 	{
+		// use name from .x file
 		mat.Textures[0] = Driver->getTexture(xmat.TextureFileName.c_str());
 		if (mat.Textures[0] == 0)
+			// use path from .x file with texture name
 			mat.Textures[0] = Driver->getTexture(getTextureFileName(xmat.TextureFileName).c_str());
 	}
 
@@ -372,6 +374,7 @@ s32 CXAnimationPlayer::getJointNumberFromName(const core::stringc& name) const
 
 
 
+//! Use .x file path as prefix for texture
 core::stringc CXAnimationPlayer::getTextureFileName(const core::stringc& texture)
 {
 	s32 idx = -1;
@@ -383,7 +386,7 @@ core::stringc CXAnimationPlayer::getTextureFileName(const core::stringc& texture
 	if (idx == -1)
 		return texture;
 
-	return FileName.subString(idx+1, texture.size()-idx);
+	return FileName.subString(0, idx+1)+texture;
 }
 
 
