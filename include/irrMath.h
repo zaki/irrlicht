@@ -179,7 +179,7 @@ namespace core
 	#define IEEE_1_0			0x3f800000						//!<	integer representation of 1.0
 	#define IEEE_255_0			0x437f0000						//!<	integer representation of 255.0
 
-	
+#ifdef IRRLICHT_FAST_MATH
 	#define	F32_LOWER_0(f)		(F32_AS_U32(f) >  F32_SIGN_BIT)
 	#define	F32_LOWER_EQUAL_0(f)	(F32_AS_S32(f) <= F32_VALUE_0)
 	#define	F32_GREATER_0(f)	(F32_AS_S32(f) >  F32_VALUE_0)
@@ -189,6 +189,15 @@ namespace core
 
 	// only same sign
 	#define	F32_A_GREATER_B(a,b)	(F32_AS_S32((a)) >  F32_AS_S32((b)))
+#else
+	#define	F32_LOWER_0(f)		((f) <  0.0f)
+	#define	F32_LOWER_EQUAL_0(f)	((f) <= 0.0f)
+	#define	F32_GREATER_0(f)	((f) >  0.0f)
+	#define	F32_GREATER_EQUAL_0(f)	((f) >= 0.0f)
+	#define	F32_EQUAL_1(f)		((f) == 1.0f)
+	#define	F32_EQUAL_0(f)		((f) == 0.0f)
+	#define	F32_A_GREATER_B(a,b)	((a) > (b))
+#endif
 
 
 #ifndef REALINLINE
