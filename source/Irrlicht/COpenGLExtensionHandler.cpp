@@ -67,20 +67,9 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	else
 		os::Printer::log("OpenGL driver version is not 1.2 or better.", ELL_WARNING);
 
-	const GLubyte* t = glGetString(GL_EXTENSIONS);
-//	os::Printer::log(reinterpret_cast<const c8*>(t), ELL_INFORMATION);
-	#ifdef GLU_VERSION_1_3
-	const GLubyte* gluVersion = gluGetString(GLU_VERSION);
-
-	if (gluVersion[0]>1 || gluVersion[3]>2)
 	{
-		for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
-			FeatureAvailable[i] = gluCheckExtension(reinterpret_cast<const GLubyte*>(OpenGLFeatureStrings[i]), t);
-	}
-	else
-	#endif
-	{
-		size_t len = strlen(reinterpret_cast<const char*>(t));
+		const char* t = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
+		const size_t len = strlen(t);
 		c8 *str = new c8[len+1];
 		c8* p = str;
 
@@ -91,9 +80,9 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 			if (str[i] == ' ')
 			{
 				str[i] = 0;
-				for (s32 i=IRR_OpenGL_Feature_Count-1; i>0; --i)
+				for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
 				{
-					if (strstr(p, OpenGLFeatureStrings[i]))
+					if (!strcmp(OpenGLFeatureStrings[i], p))
 					{
 						FeatureAvailable[i] = true;
 						break;
