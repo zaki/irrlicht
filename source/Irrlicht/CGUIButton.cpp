@@ -250,7 +250,7 @@ void CGUIButton::draw()
 			pos.X -= PressedImageRect.getWidth() / 2;
 			pos.Y -= PressedImageRect.getHeight() / 2;
 			// patch by Alan Tyndall/Jonas Petersen
-			if (Image == PressedImage)
+			if (Image == PressedImage && PressedImageRect == ImageRect)
 			{
 				pos.X += 1;
 				pos.Y += 1;
