@@ -649,9 +649,6 @@ void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	out->addBool    ("MoveOverSelect",  MoveOverSelect);
 	out->addBool    ("AutoScroll",      AutoScroll);
 
-	// MICHA, StarSonata
-	// I also don't know yet how to handle icons, but added some text+color serialization now
-	// I did it the same way it's done for the context menus
 	out->addInt("ItemCount", Items.size());
 	u32 i;
 	for (i=0;i<Items.size(); ++i)
@@ -692,9 +689,6 @@ void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 
 	IGUIListBox::deserializeAttributes(in,options);
 
-	// MICHA, StarSonata
-	// I also don't know yet how to handle icons, but added some text+color serialization now
-	// I did it the same way it's done for the context menus
 	s32 count = in->getAttributeAsInt("ItemCount");
 	for (s32 i=0; i<(s32)count; ++i)
 	{
@@ -722,7 +716,6 @@ void CGUIListBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 	}
 }
 
-// MICHA, StarSonata
 void CGUIListBox::recalculateItemWidth(s32 icon)
 {
 	if (IconBank && icon > -1 &&
@@ -739,7 +732,6 @@ void CGUIListBox::recalculateItemWidth(s32 icon)
 	}
 }
 
-// MICHA, StarSonata
 void CGUIListBox::setItem(s32 index, const wchar_t* text, s32 icon)
 {
 	if ( index < 0 || index >= (s32)Items.size() )
@@ -752,7 +744,6 @@ void CGUIListBox::setItem(s32 index, const wchar_t* text, s32 icon)
 	recalculateItemWidth(icon);
 }
 
-// MICHA, StarSonata
 //! Insert the item at the given index 
 //! Return the index on success or -1 on failure.
 s32 CGUIListBox::insertItem(s32 index, const wchar_t* text, s32 icon)
@@ -770,7 +761,6 @@ s32 CGUIListBox::insertItem(s32 index, const wchar_t* text, s32 icon)
 	return index;
 }
 
-// MICHA, StarSonata
 void CGUIListBox::swapItems(s32 index1, s32 index2)
 {
 	if ( index1 < 0 || index2 < 0 || index1 >= (s32)Items.size() || index2 >= (s32)Items.size() )
@@ -781,7 +771,6 @@ void CGUIListBox::swapItems(s32 index1, s32 index2)
 	Items[index2] = dummmy;
 }
 
-// MICHA, StarSonata
 void CGUIListBox::setItemOverrideColor(s32 index, const video::SColor &color)
 {
 	for ( s32 c=0; c < (s32)EGUI_LBC_COUNT; ++c )
@@ -791,7 +780,6 @@ void CGUIListBox::setItemOverrideColor(s32 index, const video::SColor &color)
 	}
 }
 
-// MICHA, StarSonata
 void CGUIListBox::setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color)
 {
 	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
@@ -801,7 +789,6 @@ void CGUIListBox::setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, 
 	Items[index].OverrideColors[colorType].Color = color;
 }
 
-// MICHA, StarSonata
 void CGUIListBox::clearItemOverrideColor(s32 index)
 {
 	for (s32 c=0; c < (s32)EGUI_LBC_COUNT; ++c )
@@ -810,7 +797,6 @@ void CGUIListBox::clearItemOverrideColor(s32 index)
 	}
 }
 
-// MICHA, StarSonata
 void CGUIListBox::clearItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
 {
 	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
@@ -819,7 +805,6 @@ void CGUIListBox::clearItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType
 	Items[index].OverrideColors[colorType].Use = false;
 }
 
-// MICHA, StarSonata
 bool CGUIListBox::hasItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
 {
 	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
@@ -828,7 +813,6 @@ bool CGUIListBox::hasItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
 	return Items[index].OverrideColors[colorType].Use;
 }
 
-// MICHA, StarSonata
 video::SColor CGUIListBox::getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
 {
 	if ( index < 0 || index >= (s32)Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
@@ -837,7 +821,6 @@ video::SColor CGUIListBox::getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR co
 	return Items[index].OverrideColors[colorType].Color;
 }
 
-// MICHA, StarSonata
 video::SColor CGUIListBox::getItemDefaultColor(EGUI_LISTBOX_COLOR colorType)
 {
 	IGUISkin* skin = Environment->getSkin();

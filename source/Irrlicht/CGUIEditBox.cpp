@@ -17,9 +17,9 @@
 	todo:
 	optional scrollbars
 	ctrl+left/right to select word
-	double click/ctrl click: word select + drag to select whole words
-	optional dragging selected text
-	optional triple click to select line
+	double click/ctrl click: word select + drag to select whole words, triple click to select line
+	optional? dragging selected text
+	numerical
 */
 
 namespace irr
@@ -35,7 +35,8 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* envi
 	Border(border), OverrideColorEnabled(false), MarkBegin(0), MarkEnd(0),
 	OverrideColor(video::SColor(101,255,255,255)),
 	OverrideFont(0), LastBreakFont(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
-	WordWrap(false), MultiLine(false), AutoScroll(true),
+	WordWrap(false), MultiLine(false), AutoScroll(true), PasswordBox(false),
+	PasswordChar(L'*'),
 	HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER)
 
 {
@@ -137,6 +138,23 @@ bool CGUIEditBox::isMultiLineEnabled()
 	return MultiLine;
 }
 
+void CGUIEditBox::setPasswordBox(bool passwordBox, wchar_t passwordChar)
+{
+	PasswordBox = passwordBox;
+	if (PasswordBox)
+	{
+		PasswordChar = passwordChar;
+		setMultiLine(false);
+		setWordWrap(false);
+		BrokenText.clear();
+	}
+}
+
+bool CGUIEditBox::isPasswordBox()
+{
+	return PasswordBox;
+}
+
 //! Sets text justification
 void CGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
 {
@@ -194,7 +212,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			break;
 		case KEY_KEY_C:
 			// copy to clipboard
-			if (Operator && MarkBegin != MarkEnd)
+			if (!PasswordBox && Operator && MarkBegin != MarkEnd)
 			{
 				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
 				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
@@ -206,7 +224,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			break;
 		case KEY_KEY_X:
 			// cut to the clipboard
-			if (Operator && MarkBegin != MarkEnd)
+			if (!PasswordBox && Operator && MarkBegin != MarkEnd)
 			{
 				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
 				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
@@ -666,11 +684,12 @@ void CGUIEditBox::draw()
 		core::stringw s, s2; 
 
 		// get mark position
+		bool ml = (!PasswordBox && (WordWrap || MultiLine));
 		s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
 		s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
-		s32 hlineStart = (WordWrap || MultiLine) ? getLineFromPos(realmbgn) : 0;
-		s32 hlineCount = (WordWrap || MultiLine) ? getLineFromPos(realmend) - hlineStart + 1 : 1;
-		s32 lineCount  = (WordWrap || MultiLine) ? BrokenText.size() : 1;
+		s32 hlineStart = ml ? getLineFromPos(realmbgn) : 0;
+		s32 hlineCount = ml ? getLineFromPos(realmend) - hlineStart + 1 : 1;
+		s32 lineCount  = ml ? BrokenText.size() : 1;
 
 		// Save the override color information.
 		// Then, alter it if the edit box is disabled.
@@ -679,10 +698,10 @@ void CGUIEditBox::draw()
 
 		if (Text.size())
 		{
-			if ( !this->IsEnabled && !OverrideColorEnabled )
+			if (!IsEnabled && !OverrideColorEnabled)
 			{
 				OverrideColorEnabled = true;
-				OverrideColor = skin->getColor( EGDC_GRAY_TEXT );
+				OverrideColor = skin->getColor(EGDC_GRAY_TEXT);
 			}
 
 			for (s32 i=0; i < lineCount; ++i)
@@ -696,8 +715,30 @@ void CGUIEditBox::draw()
 					continue;
 
 				// get current line
-				txtLine = (WordWrap || MultiLine) ? &BrokenText[i] : &Text;
-				startPos = (WordWrap || MultiLine) ? BrokenTextPositions[i] : 0;
+				if (PasswordBox)
+				{
+					if (BrokenText.size() != 1)
+					{
+						BrokenText.clear();
+						BrokenText.push_back(core::stringw());
+					}
+					if (BrokenText[0].size() != Text.size())
+					{
+						BrokenText[0] = Text;
+						for (u32 q = 0; q < Text.size(); ++q)
+						{
+							BrokenText[0] [q] = PasswordChar;
+						}
+					}
+					txtLine = &BrokenText[0];
+					startPos = 0;
+				}
+				else
+				{	
+					txtLine = ml ? &BrokenText[i] : &Text;
+					startPos = ml ? BrokenTextPositions[i] : 0;
+				}
+				
 
 				// draw normal text
 				font->draw(txtLine->c_str(), CurrentTextRect, 
@@ -1249,15 +1290,19 @@ void CGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 {
 	// IGUIEditBox::serializeAttributes(out,options);
 
-	out->addBool	("OverrideColorEnabled", OverrideColorEnabled );
-	out->addColor	("OverrideColor",        OverrideColor);
+	out->addBool  ("OverrideColorEnabled",OverrideColorEnabled );
+	out->addColor ("OverrideColor",       OverrideColor);
 	// out->addFont("OverrideFont",OverrideFont);
-	out->addInt		("MaxChars",             Max);
-	out->addBool	("WordWrap",			 WordWrap);
-	out->addBool	("MultiLine",			 MultiLine);
-	out->addBool	("AutoScroll",			 AutoScroll);
-	out->addEnum	("HTextAlign",           HAlign, GUIAlignmentNames);
-	out->addEnum	("VTextAlign",           VAlign, GUIAlignmentNames);
+	out->addInt   ("MaxChars",            Max);
+	out->addBool  ("WordWrap",            WordWrap);
+	out->addBool  ("MultiLine",           MultiLine);
+	out->addBool  ("AutoScroll",          AutoScroll);
+	out->addBool  ("PasswordBox",         PasswordBox);
+	core::stringw ch = L" ";
+	ch[0] = PasswordChar;
+	out->addString("PasswordChar",        ch.c_str());
+	out->addEnum  ("HTextAlign",          HAlign, GUIAlignmentNames);
+	out->addEnum  ("VTextAlign",          VAlign, GUIAlignmentNames);
 
 	IGUIEditBox::serializeAttributes(out,options);
 }
@@ -1273,6 +1318,12 @@ void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
 	setMultiLine(in->getAttributeAsBool("MultiLine"));
 	setAutoScroll(in->getAttributeAsBool("AutoScroll"));
+	core::stringw ch = in->getAttributeAsStringW("PasswordChar");
+
+	if (!ch.size())
+		setPasswordBox(in->getAttributeAsBool("PasswordBox"));
+	else
+		setPasswordBox(in->getAttributeAsBool("PasswordBox"), ch[0]);
 
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
                       (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));

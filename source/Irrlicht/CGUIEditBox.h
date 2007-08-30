@@ -88,6 +88,15 @@ namespace gui
 		//! Returns maximum amount of characters, previously set by setMax();
 		virtual s32 getMax();
 
+		//! Sets whether the edit box is a password box. Setting this to true will 
+		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
+		\param passwordBox: true to enable password, false to disable
+		\param passwordChar: the character that is displayed instead of letters */
+		virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*');
+
+		//! Returns true if the edit box is currently a password box.
+		virtual bool isPasswordBox();
+
 		//! Updates the absolute position, splits text if required
 		virtual void updateAbsolutePosition();
 
@@ -128,7 +137,8 @@ namespace gui
 		s32 HScrollPos, VScrollPos; // scroll position in characters
 		s32 Max;
 
-		bool WordWrap, MultiLine, AutoScroll;
+		bool WordWrap, MultiLine, AutoScroll, PasswordBox;
+		wchar_t PasswordChar;
 		EGUI_ALIGNMENT HAlign, VAlign;
 
 		core::array< core::stringw > BrokenText;
