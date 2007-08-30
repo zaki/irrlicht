@@ -88,7 +88,6 @@ namespace gui
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
-		// MICHA, StarSonata, multicolor support
 		//! set all item colors at given index to color
 		virtual void setItemOverrideColor(s32 index, const video::SColor &color);
 
@@ -110,16 +109,13 @@ namespace gui
 		//! return the default color which is used for the given colorType
 		virtual video::SColor getItemDefaultColor(EGUI_LISTBOX_COLOR colorType);
 
-		// MICHA, StarSonata
 		//! set the item at the given index 
 		virtual void setItem(s32 index, const wchar_t* text, s32 icon);
 
-		// MICHA, StarSonata
 		//! Insert the item at the given index 
 		//! Return the index on success or -1 on failure.
 		virtual s32 insertItem(s32 index, const wchar_t* text, s32 icon);
 
-		// MICHA, StarSonata
 		//! Swap the items at the given indices
 		virtual void swapItems(s32 index1, s32 index2);
 
@@ -133,7 +129,6 @@ namespace gui
 			core::stringw text;
 			s32 icon;
 
-			// MICHA, StarSonata
 			// A multicolor extension
 			struct ListItemOverrideColor
 			{
@@ -148,11 +143,9 @@ namespace gui
 		void selectNew(s32 ypos, bool onlyHover=false);
 		void recalculateScrollPos();
 
-		// MICHA, StarSonata
 		// extracted that function to avoid copy&paste code
 		void recalculateItemWidth(s32 icon);
 
-		// MICHA, StarSonata
 		// get labels used for serialization
 		bool getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::stringc & useColorLabel, core::stringc & colorLabel);
 
