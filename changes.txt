@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - fixed the keyboard autorepeat difference betwenn Linux and Windows. Thanks to denton we now have only KeyPressed events on both systems in case of autorepeat.
+
  - Added several new particle emitters and affectors from IrrSpintz. Also some new getter and setter methods were added.
 
  - D3D transparent materials do not disable zbuffer writing automatically anymore. This has to be done by the user to keep those settings configurable.
