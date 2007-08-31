@@ -866,10 +866,10 @@ void CIrrDeviceLinux::sleep(u32 timeMs, bool pauseTimer=false)
 //! sets the caption of the window
 void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 {
+#ifdef _IRR_COMPILE_WITH_X11_
 	if (DriverType == video::EDT_NULL)
 		return;
 
-#ifdef _IRR_COMPILE_WITH_X11_
 	XTextProperty txt;
 	XwcTextListToTextProperty(display, const_cast<wchar_t**>(&text), 1, XStdICCTextStyle, &txt);
 	XSetWMName(display, window, &txt);
@@ -1010,6 +1010,9 @@ bool CIrrDeviceLinux::isWindowActive()
 void CIrrDeviceLinux::setResizeAble(bool resize)
 {
 #ifdef _IRR_COMPILE_WITH_X11_
+	if (DriverType == video::EDT_NULL)
+		return;
+
 	XUnmapWindow(display, window);
 	if ( !resize )
 	{
