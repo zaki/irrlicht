@@ -377,10 +377,10 @@ public:
 	able to create automaticly, for example when loading data from xml files. */
 	virtual void registerGUIElementFactory(IGUIElementFactory* factoryToAdd) = 0;
 
-	//! Returns amount of registered scene node factories.
+	//! Returns amount of registered gui element factories.
 	virtual s32 getRegisteredGUIElementFactoryCount() = 0;
 
-	//! Returns a scene node factory by index
+	//! Returns a gui element factory by index
 	virtual IGUIElementFactory* getGUIElementFactory(s32 index) = 0;
 
 	//! Adds a GUI Element by its name
