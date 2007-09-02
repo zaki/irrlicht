@@ -2121,7 +2121,7 @@ IImage* CD3D9Driver::createScreenShot()
 		clientPoint.x = 0;
 		clientPoint.y = 0;
 
-		ClientToScreen((HWND)getExposedVideoData().D3D8.HWnd, &clientPoint);
+		ClientToScreen((HWND)getExposedVideoData().D3D9.HWnd, &clientPoint);
 
 		clientRect.left   = clientPoint.x;
 		clientRect.top    = clientPoint.y;
@@ -2141,23 +2141,18 @@ IImage* CD3D9Driver::createScreenShot()
 	IImage* newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
 
 	// d3d pads the image, so we need to copy the correct number of bytes
-	u32* pPixels = (u32*)newImage->lock();
-	if (pPixels)
+	u32* dP = (u32*)newImage->lock();
+	u8 * sP = (u8 *)lockedRect.pBits;
+
+	for (s32 y = 0; y < ScreenSize.Height; ++y)
 	{
-		u8 * sP = (u8 *)lockedRect.pBits;
-		u32* dP = (u32*)pPixels;
+		memcpy(dP, sP, ScreenSize.Width * 4);
 
-		s32 y;
-		for (y = 0; y < ScreenSize.Height; ++y)
-		{
-			memcpy(dP, sP, ScreenSize.Width * 4);
-
-			sP += lockedRect.Pitch;
-			dP += ScreenSize.Width;
-		}
-
-		newImage->unlock();
+		sP += lockedRect.Pitch;
+		dP += ScreenSize.Width;
 	}
+
+	newImage->unlock();
 
 	// we can unlock and release the surface
 	lpSurface->UnlockRect();
