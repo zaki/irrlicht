@@ -52,7 +52,7 @@ LIB_PATH = ../../lib/$(SYSTEM)
 INSTALL_DIR = /usr/local/lib
 staticlib sharedlib install: SYSTEM = Linux
 staticlib sharedlib : LDFLAGS = --no-export-all-symbols --add-stdcall-alias
-sharedlib : LDFLAGS += -L/usr/X11R6/lib -lGLU -lGL -lXxf86vm
+sharedlib : LDFLAGS += -L/usr/X11R6/lib -lGL -lXxf86vm
 staticlib sharedlib : CXXINCS += -I/usr/X11R6/include
 
 #Windows specific options
