@@ -2,13 +2,13 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-// This file was originally written by William Finlayson.
-// I (Nikolaus Gebhardt) did some minor modifications and changes to it and integrated
-// it into Irrlicht. Thanks a lot to William for his work on this and that he gave me
-// his permission to add it into Irrlicht using the zlib license.
+// This file was originally written by William Finlayson.  I (Nikolaus
+// Gebhardt) did some minor modifications and changes to it and integrated it
+// into Irrlicht. Thanks a lot to William for his work on this and that he gave
+// me his permission to add it into Irrlicht using the zlib license.
 
-// After Irrlicht 0.12, Michael Zoech did some improvements to this renderer, I merged this
-// into Irrlicht0.14, thanks to him for his work.
+// After Irrlicht 0.12, Michael Zoech did some improvements to this renderer, I
+// merged this into Irrlicht 0.14, thanks to him for his work.
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OPENGL_
