@@ -57,7 +57,7 @@ staticlib sharedlib : CXXINCS += -I/usr/X11R6/include
 
 #Windows specific options
 sharedlib_win32 staticlib_win32: SYSTEM = Win32-gcc
-sharedlib_win32: LDFLAGS = -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lglu32 -lopengl32
+sharedlib_win32: LDFLAGS = -lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 -luuid -lodbc32 -lodbccp32 -lopengl32
 sharedlib_win32 staticlib_win32: CPPFLAGS += -D__GNUWIN32__ -D_WIN32 -DWIN32 -D_WINDOWS -D_MBCS -D_USRDLL
 staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 

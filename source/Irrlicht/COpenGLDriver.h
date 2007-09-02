@@ -17,7 +17,6 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <GL/gl.h>
-	#include <GL/glu.h>
 	#include "glext.h"
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
@@ -29,7 +28,6 @@
 		#define GL_GLEXT_LEGACY 1
 	#endif
 	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#include "glext.h"
 	#endif
@@ -53,7 +51,6 @@
 		#define GLX_GLXEXT_PROTOTYPES 1
 	#endif
 	#include <GL/gl.h>
-	#include <GL/glu.h>
 	#include <GL/glx.h>
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	#include "glext.h"

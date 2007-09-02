@@ -433,36 +433,30 @@ bool COpenGLTexture::hasMipMaps() const
 
 //! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
-//! MipMap updates are automatically performed by OpenGL.
 void COpenGLTexture::regenerateMipMapLevels()
 {
 	if (AutomaticMipmapUpdate || !HasMipMaps)
 		return;
-	void* source = Image->lock();
-	if (gluBuild2DMipmaps(GL_TEXTURE_2D, InternalFormat,
-			ImageSize.Width, ImageSize.Height,
-			PixelFormat, PixelType, source))
-	{
-		Image->unlock();
+	if ((Image->getDimension().Width==1) && (Image->getDimension().Height==1))
 		return;
-	}
 
 	// Manually create mipmaps
-	u32 width=ImageSize.Width>>1;
-	u32 height=ImageSize.Height>>1;
-	u32 i=1;
+	u32 width=Image->getDimension().Width;
+	u32 height=Image->getDimension().Height;
+	u32 i=0;
 	u8* target = new u8[Image->getImageDataSizeInBytes()];
-	while (width>1 || height>1)
+	do
 	{
-		Image->copyToScaling(target, width, height, Image->getColorFormat(), Image->getPitch());
-		glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, Image->getDimension().Width,
-			Image->getDimension().Height, 0, PixelFormat, PixelType, target);
 		if (width>1)
 			width>>=1;
 		if (height>1)
 			height>>=1;
 		++i;
+		Image->copyToScaling(target, width, height, Image->getColorFormat());
+		glTexImage2D(GL_TEXTURE_2D, i, InternalFormat, width, height,
+				0, PixelFormat, PixelType, target);
 	}
+	while (width!=1 || height!=1);
 	delete [] target;
 	Image->unlock();
 }
