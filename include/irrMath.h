@@ -232,27 +232,30 @@ namespace core
 	}
 
 
-#ifdef IRRLICHT_FAST_MATH
 
 	REALINLINE void clearFPUException ()
 	{
+#ifdef feclearexcept
+		feclearexcept(FE_ALL_EXCEPT);
+#elif defined(_MSC_VER)
 		__asm fnclex;
+#elif defined(__GNUC__)
+		__asm__ __volatile__ ("fclex \n\t");
+#else
+#  warn clearFPUException not supported.
+#endif
 	}
 		
-// comes from Nvidia
-#if 1
 	REALINLINE f32 reciprocal_squareroot(const f32 x)
 	{
+#ifdef IRRLICHT_FAST_MATH
+		// comes from Nvidia
+#if 1
 		u32 tmp = (u32(IEEE_1_0 << 1) + IEEE_1_0 - *(u32*)&x) >> 1;   
 		f32 y = *(f32*)&tmp;                                             
 		return y * (1.47f - 0.47f * x * y * y);
-	}
-#endif
-
-// an sse2 version
-#if 0
-	REALINLINE f32 reciprocal_squareroot(const f32 x)
-	{
+#else
+		// an sse2 version
 		__asm
 		{
 			movss	xmm0, x
@@ -260,116 +263,136 @@ namespace core
 			movss	x, xmm0
 		}
 		return x;
-	}
 #endif
+#else // no fast math
+		return 1.f / sqrtf ( x );
+#endif
+	}
 
 
-	//! i do not divide through 0.. (fpu expection)
-	// instead set f to a high value to get a return value near zero..
-	// -1000000000000.f.. is use minus to stay negative..
-	// must test's here (plane.normal dot anything ) checks on <= 0.f
+
 	REALINLINE f32 reciprocal ( const f32 f )
 	{
+#ifdef IRRLICHT_FAST_MATH
+		//! i do not divide through 0.. (fpu expection)
+		// instead set f to a high value to get a return value near zero..
+		// -1000000000000.f.. is use minus to stay negative..
+		// must test's here (plane.normal dot anything ) checks on <= 0.f
 		return 1.f / f;
 		//u32 x = (-(AIR(f) != 0 ) >> 31 ) & ( IR(f) ^ 0xd368d4a5 ) ^ 0xd368d4a5;
 		//return 1.f / FR ( x );
+#else // no fast math
+		return 1.f / f;
+#endif
 	}
+
 
 	REALINLINE f32 reciprocal_approxim ( const f32 p )
 	{
+#ifdef IRRLICHT_FAST_MATH
 		register u32 x = 0x7F000000 - IR ( p );
 		const f32 r = FR ( x );
 		return r * (2.0f - p * r);
+#else // no fast math
+		return 1.f / p;
+#endif
 	}
 
 
 	REALINLINE s32 floor32(f32 x)
 	{
+#ifdef IRRLICHT_FAST_MATH
 		const f32 h = 0.5f;
 
 		s32 t;
 
+#if defined(_MSC_VER)
 		__asm
 		{
-			fld   x
+			fld	x
 			fsub	h
-			fistp t
+			fistp	t
 		}
-
+#elif defined(__GNUC__)
+		__asm__ __volatile__ (
+			"fsub %2 \n\t"
+			"fistpl %0"
+			: "=m" (t)
+			: "t" (x), "f" (h)
+			: "st"
+			);
+#else
+#  warn IRRLICHT_FAST_MATH not supported.
+		return (s32) floorf ( x );
+#endif
 		return t;
+#else // no fast math
+		return (s32) floorf ( x );
+#endif
 	}
+
 
 	REALINLINE s32 ceil32 ( f32 x )
 	{
+#ifdef IRRLICHT_FAST_MATH
 		const f32 h = 0.5f;
 
 		s32 t;
 
+#if defined(_MSC_VER)
 		__asm
 		{
-			fld   x
+			fld	x
 			fadd	h
-			fistp t
+			fistp	t
 		}
-
+#elif defined(__GNUC__)
+		__asm__ __volatile__ (
+			"fadd %2 \n\t"
+			"fistpl %0 \n\t"
+			: "=m"(t)
+			: "t"(x), "f"(h)
+			: "st"
+			);
+#else
+#  warn IRRLICHT_FAST_MATH not supported.
+		return (s32) ceilf ( x );
+#endif
 		return t;
-
+#else // not fast math
+		return (s32) ceilf ( x );
+#endif
 	}
+
 
 
 	REALINLINE s32 round32(f32 x)
 	{
+#if defined(IRRLICHT_FAST_MATH)
 		s32 t;
 
+#if defined(_MSC_VER)
 		__asm
 		{
 			fld   x
 			fistp t
 		}
-
-		return t;
-	}
-
-
+#elif defined(__GNUC__)
+		__asm__ __volatile__ (
+			"fistpl %0 \n\t"
+			: "=m"(t)
+			: "t"(x)
+			: "st"
+			);
 #else
-
-	REALINLINE void clearFPUException ()
-	{
+#  warn IRRLICHT_FAST_MATH not supported.
+		return (s32) round(x);
+#endif
+		return t;
+#else // no fast math
+		return (s32) round(x);
+#endif
 	}
-
-
-	inline f32 reciprocal_squareroot(const f32 x)
-	{
-		return 1.f / sqrtf ( x );
-	}
-
-
-	inline f32 reciprocal ( const f32 x )
-	{
-		return 1.f / x;
-	}
-
-	inline f32 reciprocal_approxim ( const f32 x )
-	{
-		return 1.f / x;
-	}
-
-
-	inline s32 floor32 ( f32 x )
-	{
-		return (s32) floorf ( x );
-	}
-
-	inline s32 ceil32 ( f32 x )
-	{
-		return (s32) ceilf ( x );
-	}
-
-	inline s32 round32 ( f32 x )
-	{
-		return (s32) ( x + 0.5f );
-	}
-
 
 	inline f32 f32_max3(const f32 a, const f32 b, const f32 c)
 	{
@@ -381,8 +404,6 @@ namespace core
 		return a < b ? (a < c ? a : c) : (b < c ? b : c);
 	}
 
-#endif
-
 	inline f32 fract ( f32 x )
 	{
 		return x - floorf ( x );
@@ -390,9 +411,8 @@ namespace core
 
 	inline f32 round ( f32 x )
 	{
-		return floorf ( x + 0.5f );
+		return ::round(x);
 	}
-
 
 } // end namespace core
 } // end namespace irr

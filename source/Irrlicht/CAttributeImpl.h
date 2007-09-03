@@ -1957,7 +1957,7 @@ public:
 
 	virtual void setString(const char* text) 
 	{
-		sscanf(text, "0x%x", (int*)(&Value));
+		sscanf(text, "0x%x", (unsigned int*)(&Value));
 	}
 
 	virtual E_ATTRIBUTE_TYPE getType() const
