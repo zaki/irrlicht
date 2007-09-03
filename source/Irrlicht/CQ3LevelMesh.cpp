@@ -989,13 +989,6 @@ inline f32 CQ3LevelMesh::Blend( const f64 s[3], const f64 t[3], const tBSPVertex
 	return (f32) res;
 }
 
-//!helper function 
-inline s32 s32_min ( s32 a, s32 b)
-{
-	s32 mask = (a - b) >> 31;
-	return (a & mask) | (b & ~mask);
-}
-
 void CQ3LevelMesh::S3DVertex2TCoords_64::copyto ( video::S3DVertex2TCoords &dest ) const
 {
 	dest.Pos.X = core::round ( (f32) Pos.X );
@@ -1041,10 +1034,10 @@ void CQ3LevelMesh::copy ( S3DVertex2TCoords_64 * dest, const tBSPVertex * source
 
 	if ( vertexcolor )
 	{
-		u32 a = s32_min ( source->color[3] * quake3::defaultModulate, 255 );
-		u32 r = s32_min ( source->color[0] * quake3::defaultModulate, 255 );
-		u32 g = s32_min ( source->color[1] * quake3::defaultModulate, 255 );
-		u32 b = s32_min ( source->color[2] * quake3::defaultModulate, 255 );
+		u32 a = core::s32_min ( source->color[3] * quake3::defaultModulate, 255 );
+		u32 r = core::s32_min ( source->color[0] * quake3::defaultModulate, 255 );
+		u32 g = core::s32_min ( source->color[1] * quake3::defaultModulate, 255 );
+		u32 b = core::s32_min ( source->color[2] * quake3::defaultModulate, 255 );
 
 		dest->Color.set (	a * 1.f/255.f,
 							r * 1.f/255.f,
@@ -1082,10 +1075,10 @@ inline void CQ3LevelMesh::copy ( video::S3DVertex2TCoords * dest, const tBSPVert
 
 	if ( vertexcolor )
 	{
-		u32 a = s32_min ( source->color[3] * quake3::defaultModulate, 255 );
-		u32 r = s32_min ( source->color[0] * quake3::defaultModulate, 255 );
-		u32 g = s32_min ( source->color[1] * quake3::defaultModulate, 255 );
-		u32 b = s32_min ( source->color[2] * quake3::defaultModulate, 255 );
+		u32 a = core::s32_min ( source->color[3] * quake3::defaultModulate, 255 );
+		u32 r = core::s32_min ( source->color[0] * quake3::defaultModulate, 255 );
+		u32 g = core::s32_min ( source->color[1] * quake3::defaultModulate, 255 );
+		u32 b = core::s32_min ( source->color[2] * quake3::defaultModulate, 255 );
 
 		dest->Color.color = a << 24 | r << 16 | g << 8 | b;
 	}
