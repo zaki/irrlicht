@@ -366,8 +366,9 @@ bool CXMeshFileLoader::parseDataObject()
 		return false;
 
 	// parse specific object
-
+#ifdef _DEBUG
 	os::Printer::log("debug DataObject:", objectName.c_str() );
+#endif
 
 	if (objectName == "template")
 		return parseDataObjectTemplate();
@@ -508,7 +509,9 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 	{
 		core::stringc objectName = getNextToken();
 
+#ifdef _DEBUG
 		os::Printer::log("debug DataObject in frame:", objectName.c_str() );
+#endif
 
 		if (objectName.size() == 0)
 		{
@@ -738,7 +741,9 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	{
 		core::stringc objectName = getNextToken();
 
+#ifdef _DEBUG
 		os::Printer::log("debug DataObject in mesh:", objectName.c_str() );
+#endif
 
 		if (objectName.size() == 0)
 		{
