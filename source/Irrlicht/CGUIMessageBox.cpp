@@ -422,4 +422,4 @@ void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 } // end namespace irr
 
 
-#endif _IRR_COMPILE_WITH_GUI_
+#endif // _IRR_COMPILE_WITH_GUI_
