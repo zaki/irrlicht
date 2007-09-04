@@ -720,6 +720,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\ISkinnedMesh.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\ITerrainSceneNode.h"
 					>
 				</File>
@@ -1688,14 +1692,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CAnimatedMeshB3d.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CAnimatedMeshB3d.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CAnimatedMeshMD2.cpp"
 					>
 				</File>
@@ -1712,11 +1708,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CAnimatedMeshMS3D.cpp"
+					RelativePath=".\CB3DMeshFileLoader.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CAnimatedMeshMS3D.h"
+					RelativePath=".\CB3DMeshFileLoader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CBSPMeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CBSPMeshFileLoader.h"
 					>
 				</File>
 				<File
@@ -1736,14 +1740,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CDefaultMeshFormatLoader.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CDefaultMeshFormatLoader.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CDMFLoader.cpp"
 					>
 				</File>
@@ -1760,11 +1756,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CMD2MeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CMD2MeshFileLoader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CMD3MeshFileLoader.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\CMD3MeshFileLoader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CMS3DMeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CMS3DMeshFileLoader.h"
 					>
 				</File>
 				<File
@@ -1816,6 +1828,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CSkinnedMesh.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CSkinnedMesh.h"
+					>
+				</File>
+				<File
 					RelativePath="CXAnimationPlayer.cpp"
 					>
 				</File>
@@ -1861,6 +1881,14 @@
 				</File>
 				<File
 					RelativePath=".\CBillboardSceneNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CBoneSceneNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CBoneSceneNode.h"
 					>
 				</File>
 				<File

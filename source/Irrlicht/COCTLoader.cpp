@@ -9,6 +9,9 @@
 //
 // See the header file for additional information including use and distribution rights.
 
+#include "IrrCompileConfig.h" 
+#ifdef _IRR_COMPILE_WITH_OCT_LOADER_
+
 #include "COCTLoader.h"
 #include "ISceneManager.h"
 #include "os.h"
@@ -382,3 +385,5 @@ bool COCTLoader::isALoadableFileExtension(const c8* filename)
 
 } // end namespace scene
 } // end namespace irr
+
+#endif // _IRR_COMPILE_WITH_OCT_LOADER_

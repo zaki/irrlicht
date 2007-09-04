@@ -6,12 +6,13 @@
 #define __C_X_MESH_FILE_LOADER_H_INCLUDED__
 
 #include "IMeshLoader.h"
-#include "IFileSystem.h"
+#include "IReadFile.h"
+
 #include "IVideoDriver.h"
 #include "irrString.h"
-#include "SMesh.h"
-#include "CXFileReader.h"
-#include "SMeshBuffer.h"
+
+#include "CSkinnedMesh.h"
+
 
 namespace irr
 {
@@ -25,7 +26,7 @@ class CXMeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	CXMeshFileLoader(IMeshManipulator* manip, video::IVideoDriver* driver);
+	CXMeshFileLoader(scene::ISceneManager* smgr);
 
 	//! destructor
 	virtual ~CXMeshFileLoader();
@@ -40,10 +41,148 @@ public:
 	//! See IUnknown::drop() for more information.
 	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
 
+	struct SXTemplateMaterial
+	{
+		core::stringc Name; // template name from Xfile
+		video::SMaterial Material; // material
+	};
+
+	struct SXMesh
+	{
+		// this mesh contains triangulated texture data.
+		// because in an .x file, faces can be made of more than 3
+		// vertices, the indices data structure is triangulated during the
+		// loading process. The IndexCountPerFace array is filled during
+		// this triangulation process and stores how much indices belong to
+		// every face. This data structure can be ignored, because all data
+		// in this structure is triangulated.
+
+		core::stringc Name;
+
+		core::array< s32 > IndexCountPerFace; // default 3, but could be more
+
+		core::array<scene::SSkinMeshBuffer*> Buffers;
+
+		core::array<video::S3DVertex> Vertices;
+
+		core::array<u32> Indices;
+
+		core::array<u32> FaceIndices; // index of material for each face
+
+		core::array<video::SMaterial> Materials; // material array
+	};
+
+
 private:
 
-	IMeshManipulator* Manipulator;
-	video::IVideoDriver* Driver;
+	bool load();
+
+	bool readFileIntoMemory();
+
+	bool parseFile();
+
+
+	bool parseDataObject();
+
+	bool parseDataObjectTemplate();
+
+	bool parseDataObjectFrame(CSkinnedMesh::SJoint *parent);
+
+	bool parseDataObjectTransformationMatrix(core::matrix4 &mat);
+
+	bool parseDataObjectMesh(SXMesh &mesh);
+
+	bool parseDataObjectSkinWeights(SXMesh &mesh);
+
+	bool parseDataObjectSkinMeshHeader();
+
+	bool parseDataObjectMeshNormals(SXMesh &mesh);
+
+	bool parseDataObjectMeshTextureCoords(SXMesh &mesh);
+
+	bool parseDataObjectMeshVertexColors(SXMesh &mesh);
+
+	bool parseDataObjectMeshMaterialList(SXMesh &mesh);
+
+	bool parseDataObjectMaterial(video::SMaterial& material);
+
+	bool parseDataObjectAnimationSet();
+
+	bool parseDataObjectAnimation();
+
+	bool parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint);
+
+	bool parseDataObjectTextureFilename(core::stringc& texturename);
+
+	bool parseUnknownDataObject();
+
+	//! places pointer to next begin of a token, and ignores comments
+	void findNextNoneWhiteSpace();
+
+	//! places pointer to next begin of a token, which must be a number,
+	// and ignores comments
+	void findNextNoneWhiteSpaceNumber();
+
+	//! returns next parseable token. Returns empty string if no token there
+	core::stringc getNextToken();
+
+	//! reads header of dataobject including the opening brace.
+	//! returns false if error happened, and writes name of object
+	//! if there is one
+	bool readHeadOfDataObject(core::stringc* outname=0);
+
+	//! checks for one following semicolons, returns false if they are not there
+	bool checkForOneFollowingSemicolons();
+
+	//! checks for two following semicolons, returns false if they are not there
+	bool checkForTwoFollowingSemicolons();
+
+	//! reads a x file style string
+	bool getNextTokenAsString(core::stringc& out);
+
+
+	void readUntilEndOfLine();
+
+	core::stringc stripPathFromString(core::stringc string, bool returnPath);
+
+	u16 readBinWord();
+	u32 readBinDWord();
+	s32 readInt();
+	f32 readFloat();
+	bool readVector2(core::vector2df& vec);
+	bool readVector3(core::vector3df& vec);
+	bool readRGB(video::SColorf& color);
+	bool readRGBA(video::SColorf& color);
+
+	bool readRGB(video::SColor& color);
+	bool readRGBA(video::SColor& color);
+
+	ISceneManager*	SceneManager;
+
+	core::array<scene::SSkinMeshBuffer*> *Buffers;
+	core::array<CSkinnedMesh::SJoint*> *AllJoints;
+
+	CSkinnedMesh*	AnimatedMesh;
+	io::IReadFile*	file;
+
+	s32 MajorVersion;
+	s32 MinorVersion;
+	bool binary;
+	s32 binaryNumCount;
+
+	c8* Buffer;
+	s32 Size;
+	c8 FloatSize;
+	const c8* P;
+	c8* End;
+
+	bool ErrorHappened;
+
+	CSkinnedMesh::SJoint *CurFrame;
+
+	core::array<SXMesh*> Meshes;
+
+	core::array<SXTemplateMaterial> TemplateMaterials;
 };
 
 } // end namespace scene

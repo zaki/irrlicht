@@ -6,6 +6,7 @@
 #define __I_ANIMATED_MESH_SCENE_NODE_H_INCLUDED__
 
 #include "ISceneNode.h"
+#include "IBoneSceneNode.h"
 #include "IAnimatedMeshMD2.h"
 #include "IAnimatedMeshMD3.h"
 #include "IShadowVolumeSceneNode.h"
@@ -54,7 +55,7 @@ namespace scene
 		//! \param frame: Number of the frame to let the animation be started from.
 		//! The frame number must be a valid frame number of the IMesh used by this
 		//! scene node. Set IAnimatedMesh::getMesh() for details.
-		virtual void setCurrentFrame(s32 frame) = 0;
+		virtual void setCurrentFrame(f32 frame) = 0;
 
 		//! Sets the frame numbers between the animation is looped.
 		//! The default is 0 - MaximalFrameCount of the mesh.
@@ -83,6 +84,26 @@ namespace scene
 		//! This pointer should not be dropped. See IUnknown::drop() for more information.
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(s32 id=-1,
 			bool zfailmethod=true, f32 infinity=10000.0f) = 0;
+
+
+		//! Returns a pointer to a child node, which has the same transformation as
+		//! the corresponding joint, if the mesh in this scene node is a ms3d mesh.
+		//! Otherwise 0 is returned. With this method it is possible to
+		//! attach scene nodes to joints more easily. In this way, it is
+		//! for example possible to attach a weapon to the left hand of an
+		//! animated model. This example shows how:
+		//! \code
+		//! ISceneNode* hand =
+		//!		yourAnimatedMeshSceneNode->getJointNode("LeftHand");
+		//! hand->addChild(weaponSceneNode);
+		//! \endcode
+		//! Please note that the SceneNode returned by this method may not exist
+		//! before this call and is created by it. (Todo: Rewrite)
+		//! \param jointName: Name of the joint.
+		//! \return Returns a pointer to the scene node which represents the joint
+		//! with the specified name. Returns 0 if the contained mesh is not an
+		//! ms3d mesh or the name of the joint could not be found.
+		virtual IBoneSceneNode* getJointNode(const c8* jointName)=0;
 
 		//! Returns a pointer to a child node, which has the same transformation as
 		//! the corresponding joint, if the mesh in this scene node is a ms3d mesh.
@@ -122,25 +143,6 @@ namespace scene
 		//! ms3d mesh or the name of the joint could not be found.
 		virtual ISceneNode* getXJointNode(const c8* jointName) = 0;
 
-		//! Returns a pointer to a child node, which has the same transformation as
-		//! the corresponding joint, if the mesh in this scene node is a b3d mesh.
-		//! Otherwise 0 is returned. With this method it is possible to
-		//! attach scene nodes to joints more easily. In this way, it is
-		//! for example possible to attach a weapon to the left hand of an
-		//! animated model. This example shows how:
-		//! \code
-		//! ISceneNode* hand =
-		//!		yourB3DAnimatedMeshSceneNode->getB3DJointNode("LeftHand");
-		//! hand->addChild(weaponSceneNode);
-		//! \endcode
-		//! Please note that the SceneNode returned by this method may not exist
-		//! before this call and is created by it.
-		//! \param jointName: Name of the joint.
-		//! \return Returns a pointer to the scene node which represents the joint
-		//! with the specified name. Returns 0 if the contained mesh is not an
-		//! ms3d mesh or the name of the joint could not be found.
-		virtual ISceneNode* getB3DJointNode(const c8* jointName) = 0;
-
 		//! Starts a default MD2 animation.
 		//! With this method it is easily possible to start a Run, Attack,
 		//! Die or whatever animation, if the mesh contained in this scene
@@ -165,7 +167,7 @@ namespace scene
 		virtual bool setMD2Animation(const c8* animationName) = 0;
 
 		//! Returns the current displayed frame number.
-		virtual s32 getFrameNr() const = 0;
+		virtual f32 getFrameNr() const = 0;
 		//! Returns the current start frame number.
 		virtual s32 getStartFrame() const = 0;
 		//! Returns the current end frame number.
@@ -198,6 +200,16 @@ namespace scene
 		// returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
 		// or the absolutetransformation if it's a normal scenenode
 		virtual const SMD3QuaterionTag& getMD3TagTransformation( const core::stringc & tagname) = 0;
+
+		//! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
+		virtual void setJointMode(s32 mode)=0;
+
+		//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
+		//! you must call animateJoints(), or the mesh will not animate
+		virtual void setTransitionTime(f32 Time) =0;
+
+		//! updates the joint positions of this mesh
+		virtual void animateJoints() = 0;
 
 	};
 

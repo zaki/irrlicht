@@ -43,6 +43,43 @@ namespace scene
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
+
+		//link?
+
+		//! returns amount of mesh buffers.
+		virtual u32 getMeshBufferCount() const
+		{
+			return 0;
+		}
+
+		//! returns pointer to a mesh buffer
+		virtual IMeshBuffer* getMeshBuffer(u32 nr) const
+		{
+			return 0;
+		}
+
+		//! Returns pointer to a mesh buffer which fits a material
+ 		/** \param material: material to search for
+		\return Returns the pointer to the mesh buffer or
+		NULL if there is no such mesh buffer. */
+		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const
+		{
+			return 0;
+		}
+
+		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
+		{
+			return;
+		}
+
+		//! set user axis aligned bounding box
+		virtual void setBoundingBox( const core::aabbox3df& box)
+		{
+			return;
+		}
+
+
+
 	private:
         //! animates one frame
         inline void Animate (u32 frame);
@@ -62,7 +99,7 @@ namespace scene
 			SCacheInfo ( s32 frame = -1, s32 start = -1, s32 end = -1 )
 				:	Frame ( frame ), startFrameLoop ( start ),
 					endFrameLoop ( end ) {}
-					
+
 			bool operator == ( const SCacheInfo &other ) const
 			{
 				return 0 == memcmp ( this, &other, sizeof ( SCacheInfo ) );

@@ -8,6 +8,9 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "IAnimatedMesh.h"
 
+#include "matrix4.h"
+
+
 namespace irr
 {
 namespace scene
@@ -28,7 +31,7 @@ namespace scene
 		virtual ~CAnimatedMeshSceneNode();
 
 		//! sets the current frame. from now on the animation is played from this frame.
-		virtual void setCurrentFrame(s32 frame);
+		virtual void setCurrentFrame(f32 frame);
 
 		//! frame
 		virtual void OnRegisterSceneNode();
@@ -73,16 +76,16 @@ namespace scene
 			bool zfailmethod=true, f32 infinity=10000.0f);
 
 		//! Returns a pointer to a child node, which has the same transformation as
+		//! the corrsesponding joint, if the mesh in this scene node is a skinned mesh.
+		virtual IBoneSceneNode* getJointNode(const c8* jointName);
+
+		//! Returns a pointer to a child node, which has the same transformation as
 		//! the corrsesponding joint, if the mesh in this scene node is a ms3d mesh.
 		virtual ISceneNode* getMS3DJointNode(const c8* jointName);
 
 		//! Returns a pointer to a child node, which has the same transformation as
 		//! the corrsesponding joint, if the mesh in this scene node is a x mesh.
 		virtual ISceneNode* getXJointNode(const c8* jointName);
-
-		//! Returns a pointer to a child node, which has the same transformation as
-		//! the corresponding joint, if the mesh in this scene node is a b3d mesh.
-		virtual ISceneNode* getB3DJointNode(const c8* jointName);
 
 		//! Removes a child from this scene node.
 		//! Implemented here, to be able to remove the shadow properly, if there is one,
@@ -96,7 +99,7 @@ namespace scene
 		virtual bool setMD2Animation(const c8* animationName);
 
 		//! Returns the current displayed frame number.
-		virtual s32 getFrameNr() const;
+		virtual f32 getFrameNr() const;
 		//! Returns the current start frame number.
 		virtual s32 getStartFrame() const;
 		//! Returns the current end frame number.
@@ -132,9 +135,24 @@ namespace scene
 		//! updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePosition();
 
+
+		//! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
+		virtual void setJointMode(s32 mode);
+
+		//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
+		//! you must call animateJoints(), or the mesh will not animate
+		virtual void setTransitionTime(f32 Time);
+
+		//! updates the joint positions of this mesh
+		virtual void animateJoints();
+
 	private:
 
-		u32 buildFrameNr( u32 timeMs);
+		f32 buildFrameNr( u32 timeMs);
+
+		void checkJoints();
+
+		void beginTransition();
 
 		core::array<video::SMaterial> Materials;
 		core::aabbox3d<f32> Box;
@@ -145,7 +163,15 @@ namespace scene
 		s32 EndFrame;
 		f32 FramesPerSecond;
 
-		s32 CurrentFrameNr;
+		f32 CurrentFrameNr;
+
+		s32 JointMode; //0-unused, 1-get joints only, 2-set joints only, 3-move and set
+		bool JointsUsed;
+
+		u32 TransitionTime; //Transition time in millisecs
+
+		f32 Transiting; //is mesh transiting (plus cache of TransitionTime)
+		f32 TransitingBlend; //0-1, calculated on buildFrameNr
 
 		bool Looping;
 		bool ReadOnlyMaterials;
@@ -155,7 +181,9 @@ namespace scene
 
 		IShadowVolumeSceneNode* Shadow;
 
-		core::array<IDummyTransformationSceneNode* > JointChildSceneNodes;
+		core::array<IBoneSceneNode* > JointChildSceneNodes;
+		core::array<core::matrix4> PretransitingSave;
+
 
 		struct SMD3Special
 		{

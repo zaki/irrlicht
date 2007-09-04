@@ -7,12 +7,12 @@
 
 #include "IUnknown.h"
 #include "aabbox3d.h"
+#include "IMesh.h"
 
 namespace irr
 {
 namespace scene
 {
-	class IMesh;
 
 	enum E_ANIMATED_MESH_TYPE
 	{
@@ -20,10 +20,10 @@ namespace scene
 		EAMT_UNKNOWN = 0,
 
 		//! Quake 2 MD2 model file
-		EAMT_MD2, 
+		EAMT_MD2,
 
 		//! Quake 3 MD3 model file
-		EAMT_MD3, 
+		EAMT_MD3,
 
 		//! Milkshape 3d skeletal animation file
 		EAMT_MS3D,
@@ -37,8 +37,8 @@ namespace scene
 		//! 3D Studio .3ds file
 		EAMT_3DS,
 
-		//! Microsoft Direct3D .x-file. Can contain static and skeletal animated 
-		//! skinned meshes. This is the standard and best supported 
+		//! Microsoft Direct3D .x-file. Can contain static and skeletal animated
+		//! skinned meshes. This is the standard and best supported
 		//! format of the Irrlicht Engine.
 		EAMT_X,
 
@@ -53,20 +53,20 @@ namespace scene
 		EAMT_CSM,
 
 		//! .oct file for Paul Nette's FSRad or from Murphy McCauley's Blender .oct exporter.
-		//! The oct file format contains 3D geometry and lightmaps and can 
+		//! The oct file format contains 3D geometry and lightmaps and can
 		//! be loaded directly by Irrlicht
 		EAMT_OCT,
 
-		//! Blitz Basic .b3d file, the file format by Mark Sibly
-		EAMT_B3D
+		//! genetic skinned mesh
+		EAMT_SKINNED
 	};
 
 	//! Interface for an animated mesh.
-	/** There are already simple implementations of this interface available so 
+	/** There are already simple implementations of this interface available so
 	you don't have to implement this interface on your own if you need to:
-	You might want to use irr::scene::SAnimatedMesh, irr::scene::SMesh, 
+	You might want to use irr::scene::SAnimatedMesh, irr::scene::SMesh,
 	irr::scene::SMeshBuffer etc. */
-	class IAnimatedMesh : public virtual IUnknown
+	class IAnimatedMesh : public IMesh
 	{
 	public:
 
@@ -86,7 +86,7 @@ namespace scene
 		\param startFrameLoop: Because some animated meshes (.MD2) are blended between 2
 		static frames, and maybe animated in a loop, the startFrameLoop and the endFrameLoop
 		have to be defined, to prevent the animation to be blended between frames which are
-		outside of this loop. 
+		outside of this loop.
 		If startFrameLoop and endFrameLoop are both -1, they are ignored.
 		\param endFrameLoop: see startFrameLoop.
 		\return Returns the animated mesh based on a detail level.  */

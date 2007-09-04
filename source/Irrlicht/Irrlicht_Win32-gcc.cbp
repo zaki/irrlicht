@@ -1,50 +1,47 @@
-<?xml version="1.0"?>
-<!DOCTYPE CodeBlocks_project_file>
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_project_file>
-	<FileVersion major="1" minor="1"/>
+	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Irrlicht"/>
-		<Option makefile="Makefile"/>
-		<Option makefile_is_custom="0"/>
-		<Option default_target="-1"/>
-		<Option compiler="0"/>
+		<Option title="Irrlicht" />
+		<Option pch_mode="0" />
+		<Option compiler="gcc" />
 		<Build>
 			<Target title="default">
-				<Option output="..\..\bin\win32-gcc\Irrlicht.dll"/>
-				<Option working_dir="."/>
-				<Option object_output=".objs"/>
-				<Option deps_output=".deps"/>
-				<Option type="3"/>
-				<Option compiler="0"/>
-				<Option createDefFile="1"/>
-				<Option createStaticLib="1"/>
+				<Option output="..\..\bin\win32-gcc\Irrlicht.dll" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin\win32-gcc" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
 				<Compiler>
-					<Add option="-O3"/>
+					<Add option="-O3" />
 				</Compiler>
 			</Target>
 		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="default;" />
+		</VirtualTargets>
 		<Compiler>
-			<Add option="-fexpensive-optimizations"/>
-			<Add option="-O3"/>
-			<Add option="-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIRRLICHT_EXPORTS"/>
-			<Add directory="..\..\include"/>
-			<Add directory="zlib"/>
+			<Add option="-fexpensive-optimizations" />
+			<Add option="-O3" />
+			<Add option="-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIRRLICHT_EXPORTS" />
+			<Add directory="..\..\include" />
+			<Add directory="zlib" />
 		</Compiler>
 		<Linker>
-			<Add library="kernel32"/>
-			<Add library="user32"/>
-			<Add library="gdi32"/>
-			<Add library="winspool"/>
-			<Add library="comdlg32"/>
-			<Add library="advapi32"/>
-			<Add library="shell32"/>
-			<Add library="ole32"/>
-			<Add library="oleaut32"/>
-			<Add library="uuid"/>
-			<Add library="odbc32"/>
-			<Add library="odbccp32"/>
-			<Add library="glu32"/>
-			<Add library="opengl32"/>
+			<Add library="kernel32" />
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="winspool" />
+			<Add library="comdlg32" />
+			<Add library="advapi32" />
+			<Add library="shell32" />
+			<Add library="ole32" />
+			<Add library="oleaut32" />
+			<Add library="uuid" />
+			<Add library="odbc32" />
+			<Add library="odbccp32" />
+			<Add library="opengl32" />
 		</Linker>
 		<Unit filename="..\..\changes.txt">
 			<Option compilerVar="CPP"/>
@@ -2587,434 +2584,248 @@
 			<Option target="default"/>
 		</Unit>
 		<Unit filename="jpeglib\cdjpeg.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\cdjpeg.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\cdjpeg.h" />
 		<Unit filename="jpeglib\jcapimin.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcapistd.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jccoefct.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jccolor.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcdctmgr.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jchuff.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jchuff.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jchuff.h" />
 		<Unit filename="jpeglib\jcinit.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcmainct.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcmarker.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcmaster.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcomapi.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jconfig.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jconfig.h" />
 		<Unit filename="jpeglib\jcparam.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcphuff.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcprepct.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jcsample.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jctrans.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdapimin.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdapistd.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdatadst.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdatasrc.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdcoefct.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdcolor.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdct.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jdct.h" />
 		<Unit filename="jpeglib\jddctmgr.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdhuff.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jdhuff.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jdhuff.h" />
 		<Unit filename="jpeglib\jdinput.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdmainct.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdmarker.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdmaster.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdmerge.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdphuff.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdpostct.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdsample.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jdtrans.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jerror.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jerror.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jerror.h" />
 		<Unit filename="jpeglib\jfdctflt.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jfdctfst.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jfdctint.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jidctflt.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jidctfst.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jidctint.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jidctred.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jinclude.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jinclude.h" />
 		<Unit filename="jpeglib\jmemmgr.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jmemnobs.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jmemsys.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="jpeglib\jmorecfg.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="jpeglib\jpegint.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="jpeglib\jpeglib.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jmemsys.h" />
+		<Unit filename="jpeglib\jmorecfg.h" />
+		<Unit filename="jpeglib\jpegint.h" />
+		<Unit filename="jpeglib\jpeglib.h" />
 		<Unit filename="jpeglib\jquant1.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jquant2.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib\jutils.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib\jversion.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="jpeglib\jversion.h" />
 		<Unit filename="libpng\png.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="libpng\png.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="libpng\pngconf.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="libpng\png.h" />
+		<Unit filename="libpng\pngconf.h" />
 		<Unit filename="libpng\pngerror.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngget.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngmem.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngpread.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngread.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngrio.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngrtran.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngrutil.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngset.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngtrans.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngwio.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngwrite.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngwtran.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="libpng\pngwutil.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="os.cpp">
-			<Option compilerVar="CPP"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="os.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="os.cpp" />
+		<Unit filename="os.h" />
 		<Unit filename="zlib\adler32.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="zlib\compress.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="zlib\crc32.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\crc32.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="zlib\crc32.h" />
 		<Unit filename="zlib\deflate.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\deflate.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="zlib\deflate.h" />
 		<Unit filename="zlib\inffast.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\inffast.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="zlib\inffast.h" />
 		<Unit filename="zlib\inflate.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="zlib\inftrees.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\inftrees.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="zlib\inftrees.h" />
 		<Unit filename="zlib\trees.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\trees.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="zlib\trees.h" />
 		<Unit filename="zlib\uncompr.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\zconf.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="zlib\zlib.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="zlib\zconf.h" />
+		<Unit filename="zlib\zlib.h" />
 		<Unit filename="zlib\zutil.c">
-			<Option compilerVar="CC"/>
-			<Option target="default"/>
+			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="zlib\zutil.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
+		<Unit filename="zlib\zutil.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

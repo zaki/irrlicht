@@ -13,6 +13,9 @@
   See the header file for additional information including use and distribution rights.
 */
 
+#include "IrrCompileConfig.h" 
+#ifdef _IRR_COMPILE_WITH_DMF_LOADER_
+
 #include "CDMFLoader.h"
 #include "ISceneManager.h"
 #include "IAttributes.h"
@@ -440,4 +443,6 @@ bool CDMFLoader::isALoadableFileExtension(const c8* filename)
 
 } // end namespace scene
 } // end namespace irr
+
+#endif // _IRR_COMPILE_WITH_DMF_LOADER_
 

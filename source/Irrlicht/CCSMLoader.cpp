@@ -5,6 +5,9 @@
 // This file was written by Saurav Mohapatra and modified by Nikolaus Gebhardt.
 // See CCSMLoader.h for details.
 
+#include "IrrCompileConfig.h" 
+#ifdef _IRR_COMPILE_WITH_CSM_LOADER_
+
 #include "CCSMLoader.h"
 #include "os.h"
 #include "IFileSystem.h"
@@ -871,3 +874,4 @@ namespace scene
 } // end namespace
 } // end namespace
 
+#endif // _IRR_COMPILE_WITH_CSM_LOADER_
