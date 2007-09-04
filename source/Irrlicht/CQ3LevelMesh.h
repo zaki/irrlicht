@@ -44,6 +44,9 @@ namespace scene
 		//! \return A bounding box of this mesh is returned.
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
+		virtual void setBoundingBox( const core::aabbox3df& box);
+
+
 		//! Returns the type of the animated mesh.
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
@@ -56,6 +59,40 @@ namespace scene
 
 		//! get's an interface to the entities
 		virtual const quake3::tQ3EntityList & getEntityList ();
+
+
+
+		//Link to held meshes? ...
+
+
+		//! returns amount of mesh buffers.
+		virtual u32 getMeshBufferCount() const
+		{
+			return 0;
+		}
+
+		//! returns pointer to a mesh buffer
+		virtual IMeshBuffer* getMeshBuffer(u32 nr) const
+		{
+			return 0;
+		}
+
+		//! Returns pointer to a mesh buffer which fits a material
+ 		/** \param material: material to search for
+		\return Returns the pointer to the mesh buffer or
+		NULL if there is no such mesh buffer. */
+		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const
+		{
+			return 0;
+		}
+
+		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
+		{
+			return;
+		}
+
+
+
 
 	private:
 
@@ -104,45 +141,45 @@ namespace scene
 		{
 			s32 offset;
 			s32 length;
-		}; 
+		};
 
 		struct tBSPHeader
 		{
 			s32 strID;     // This should always be 'IBSP'
 			s32 version;       // This should be 0x2e for Quake 3 files
-		}; 
+		};
 
 		struct tBSPVertex
 		{
-			f32 vPosition[3];      // (x, y, z) position. 
+			f32 vPosition[3];      // (x, y, z) position.
 			f32 vTextureCoord[2];  // (u, v) texture coordinate
 			f32 vLightmapCoord[2]; // (u, v) lightmap coordinate
 			f32 vNormal[3];        // (x, y, z) normal vector
-			u8 color[4];           // RGBA color for the vertex 
+			u8 color[4];           // RGBA color for the vertex
 		};
 
 		struct tBSPFace
 		{
-			s32 textureID;        // The index into the texture array 
-			s32 effect;           // The index for the effects (or -1 = n/a) 
-			s32 type;             // 1=polygon, 2=patch, 3=mesh, 4=billboard 
-			s32 vertexIndex;      // The index into this face's first vertex 
-			s32 numOfVerts;       // The number of vertices for this face 
-			s32 meshVertIndex;    // The index into the first meshvertex 
-			s32 numMeshVerts;     // The number of mesh vertices 
-			s32 lightmapID;       // The texture index for the lightmap 
-			s32 lMapCorner[2];    // The face's lightmap corner in the image 
-			s32 lMapSize[2];      // The size of the lightmap section 
-			f32 lMapPos[3];     // The 3D origin of lightmap. 
-			f32 lMapBitsets[2][3]; // The 3D space for s and t unit vectors. 
-			f32 vNormal[3];     // The face normal. 
-			s32 size[2];          // The bezier patch dimensions. 
+			s32 textureID;        // The index into the texture array
+			s32 effect;           // The index for the effects (or -1 = n/a)
+			s32 type;             // 1=polygon, 2=patch, 3=mesh, 4=billboard
+			s32 vertexIndex;      // The index into this face's first vertex
+			s32 numOfVerts;       // The number of vertices for this face
+			s32 meshVertIndex;    // The index into the first meshvertex
+			s32 numMeshVerts;     // The number of mesh vertices
+			s32 lightmapID;       // The texture index for the lightmap
+			s32 lMapCorner[2];    // The face's lightmap corner in the image
+			s32 lMapSize[2];      // The size of the lightmap section
+			f32 lMapPos[3];     // The 3D origin of lightmap.
+			f32 lMapBitsets[2][3]; // The 3D space for s and t unit vectors.
+			f32 vNormal[3];     // The face normal.
+			s32 size[2];          // The bezier patch dimensions.
 		};
 
 		struct tBSPTexture
 		{
-			c8 strName[64];   // The name of the texture w/o the extension 
-			u32 flags;          // The surface flags (unknown) 
+			c8 strName[64];   // The name of the texture w/o the extension
+			u32 flags;          // The surface flags (unknown)
 			u32 contents;       // The content flags (unknown)
 		};
 
@@ -153,29 +190,29 @@ namespace scene
 
 		struct tBSPNode
 		{
-			s32 plane;      // The index into the planes array 
-			s32 front;      // The child index for the front node 
-			s32 back;       // The child index for the back node 
-			s32 mins[3];    // The bounding box min position. 
-			s32 maxs[3];    // The bounding box max position. 
-		}; 
+			s32 plane;      // The index into the planes array
+			s32 front;      // The child index for the front node
+			s32 back;       // The child index for the back node
+			s32 mins[3];    // The bounding box min position.
+			s32 maxs[3];    // The bounding box max position.
+		};
 
 		struct tBSPLeaf
 		{
-			s32 cluster;           // The visibility cluster 
-			s32 area;              // The area portal 
-			s32 mins[3];           // The bounding box min position 
-			s32 maxs[3];           // The bounding box max position 
-			s32 leafface;          // The first index into the face array 
-			s32 numOfLeafFaces;    // The number of faces for this leaf 
-			s32 leafBrush;         // The first index for into the brushes 
-			s32 numOfLeafBrushes;  // The number of brushes for this leaf 
-		}; 
+			s32 cluster;           // The visibility cluster
+			s32 area;              // The area portal
+			s32 mins[3];           // The bounding box min position
+			s32 maxs[3];           // The bounding box max position
+			s32 leafface;          // The first index into the face array
+			s32 numOfLeafFaces;    // The number of faces for this leaf
+			s32 leafBrush;         // The first index for into the brushes
+			s32 numOfLeafBrushes;  // The number of brushes for this leaf
+		};
 
 		struct tBSPPlane
 		{
-			f32 vNormal[3];     // Plane normal. 
-			f32 d;              // The plane distance from origin 
+			f32 vNormal[3];     // Plane normal.
+			f32 d;              // The plane distance from origin
 		};
 
 		struct tBSPVisData
@@ -183,44 +220,44 @@ namespace scene
 			s32 numOfClusters;   // The number of clusters
 			s32 bytesPerCluster; // Bytes (8 bits) in the cluster's bitset
 			c8 *pBitsets;      // Array of bytes holding the cluster vis.
-		}; 
+		};
 
-		struct tBSPBrush 
+		struct tBSPBrush
 		{
-			s32 brushSide;           // The starting brush side for the brush 
+			s32 brushSide;           // The starting brush side for the brush
 			s32 numOfBrushSides;     // Number of brush sides for the brush
 			s32 textureID;           // The texture index for the brush
-		}; 
+		};
 
-		struct tBSPBrushSide 
+		struct tBSPBrushSide
 		{
 			s32 plane;              // The plane index
 			s32 textureID;          // The texture index
-		}; 
+		};
 
-		struct tBSPModel 
+		struct tBSPModel
 		{
 			f32 min[3];           // The min position for the bounding box
-			f32 max[3];           // The max position for the bounding box. 
-			s32 faceIndex;          // The first face index in the model 
-			s32 numOfFaces;         // The number of faces in the model 
-			s32 brushIndex;         // The first brush index in the model 
+			f32 max[3];           // The max position for the bounding box.
+			s32 faceIndex;          // The first face index in the model
+			s32 numOfFaces;         // The number of faces in the model
+			s32 brushIndex;         // The first brush index in the model
 			s32 numOfBrushes;       // The number brushes for the model
-		}; 
+		};
 
 		struct tBSPShader
 		{
-			c8 strName[64];     // The name of the shader file 
-			s32 brushIndex;       // The brush index for this shader 
+			c8 strName[64];     // The name of the shader file
+			s32 brushIndex;       // The brush index for this shader
 			s32 unknown;          // This is 99% of the time 5
-		}; 
+		};
 
 		struct tBSPLights
 		{
 			u8 ambient[3];     // This is the ambient color in RGB
 			u8 directional[3]; // This is the directional color in RGB
-			u8 direction[2];   // The direction of the light: [phi,theta] 
-		}; 
+			u8 direction[2];   // The direction of the light: [phi,theta]
+		};
 
 		void loadTextures	(tBSPLump* l, io::IReadFile* file);		// Load the textures
 		void loadLightmaps  (tBSPLump* l, io::IReadFile* file);      // Load the lightmaps
@@ -299,7 +336,7 @@ namespace scene
 			s32	Level;
 
 			core::array<S3DVertex2TCoords_64> column[3];
-			
+
 		};
 		SBezier Bezier;
 
@@ -331,7 +368,7 @@ namespace scene
 		s32 *LeafFaces;
 		s32 NumLeafFaces;
 
-		s32 *MeshVerts;           // The vertex offsets for a mesh 
+		s32 *MeshVerts;           // The vertex offsets for a mesh
 		s32 NumMeshVerts;
 
 		tBSPBrush* Brushes;

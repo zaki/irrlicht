@@ -2,6 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include "IrrCompileConfig.h"
 #include "CSceneManager.h"
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
@@ -17,18 +18,65 @@
 
 #include "CGeometryCreator.h"
 
-#include "CDefaultMeshFormatLoader.h"
+#ifdef _IRR_COMPILE_WITH_BSP_LOADER_
+#include "CBSPMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_MD2_LOADER_
+#include "CMD2MeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_MS3D_LOADER_
+#include "CMS3DMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_3DS_LOADER_
 #include "C3DSMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_X_LOADER_
 #include "CXMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OCT_LOADER_
 #include "COCTLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_CSM_LOADER_
 #include "CCSMLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_LMTS_LOADER_
 #include "CLMTSMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
 #include "CMY3DMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_COLLADA_LOADER_
 #include "CColladaFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_DMF_LOADER_
 #include "CDMFLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OGRE_LOADER_
 #include "COgreMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OBJ_LOADER_
 #include "COBJMeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_MD3_LOADER_
 #include "CMD3MeshFileLoader.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_B3D_LOADER_
+#include "CB3DMeshFileLoader.h"
+#endif
 
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
@@ -116,22 +164,56 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	// create manipulator
 	MeshManipulator = new CMeshManipulator();
 
-	// add default format loader
+	// add file format loaders
 
-	MeshLoaderList.push_back(new CDefaultMeshFormatLoader(FileSystem, Driver, this));
+
+	#ifdef _IRR_COMPILE_WITH_BSP_LOADER_
+	MeshLoaderList.push_back(new CBSPMeshFileLoader(FileSystem, Driver, this));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_MD2_LOADER_
+	MeshLoaderList.push_back(new CMD2MeshFileLoader());
+	#endif
+	#ifdef _IRR_COMPILE_WITH_MS3D_LOADER_
+	MeshLoaderList.push_back(new CMS3DMeshFileLoader(Driver));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_3DS_LOADER_
 	MeshLoaderList.push_back(new C3DSMeshFileLoader(MeshManipulator,FileSystem, Driver));
-	MeshLoaderList.push_back(new CXMeshFileLoader(MeshManipulator, Driver));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_X_LOADER_
+	MeshLoaderList.push_back(new CXMeshFileLoader(this));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_OCT_LOADER_
 	MeshLoaderList.push_back(new COCTLoader(Driver));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_CSM_LOADER_
 	MeshLoaderList.push_back(new CCSMLoader(this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_LMTS_LOADER_
 	MeshLoaderList.push_back(new CLMTSMeshFileLoader(FileSystem, Driver, &Parameters));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
 	MeshLoaderList.push_back(new CMY3DMeshFileLoader(FileSystem, Driver, this));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_COLLADA_LOADER_
 	MeshLoaderList.push_back(new CColladaFileLoader(Driver, this, FileSystem));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_DMF_LOADER_
 	MeshLoaderList.push_back(new CDMFLoader(Driver, this));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_OGRE_LOADER_
 	MeshLoaderList.push_back(new COgreMeshFileLoader(MeshManipulator, FileSystem, Driver));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_OBJ_LOADER_
 	MeshLoaderList.push_back(new COBJMeshFileLoader(FileSystem, Driver));
+	#endif
+	#ifdef _IRR_COMPILE_WITH_MD3_LOADER_
 	MeshLoaderList.push_back(new CMD3MeshFileLoader(FileSystem, Driver));
-	// factories
+	#endif
+	#ifdef _IRR_COMPILE_WITH_B3D_LOADER_
+	MeshLoaderList.push_back(new CB3DMeshFileLoader(this));
+	#endif
 
+	// factories
 	ISceneNodeFactory* factory = new CDefaultSceneNodeFactory(this);
 	registerSceneNodeFactory(factory);
 	factory->drop();

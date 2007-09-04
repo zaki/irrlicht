@@ -6,7 +6,7 @@
 #define __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 //! Irrlicht SDK Version
-#define IRRLICHT_SDK_VERSION "1.3.1"
+#define IRRLICHT_SDK_VERSION "1.4RC"
 
 //! The defines for different operating system are:
 //! _IRR_XBOX_PLATFORM_ for XBox
@@ -212,6 +212,46 @@ Note that the engine will run in D3D REF for this, which is a lot slower than HA
 //#define BURNINGVIDEO_RENDERER_FAST
 //#define BURNINGVIDEO_RENDERER_ULTRA_FAST
 
+
+//! Define _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_ if you want to use bone based
+/** animated meshes. If you compile without this, you will be unable to load
+B3D, MS3D or X meshes */
+#define _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+
+#ifdef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
+//! Define _IRR_COMPILE_WITH_B3D_LOADER_ if you want to use Blitz3D files
+#define _IRR_COMPILE_WITH_B3D_LOADER_
+//! Define _IRR_COMPILE_WITH_B3D_LOADER_ if you want to Milkshape files
+#define _IRR_COMPILE_WITH_MS3D_LOADER_
+//! Define _IRR_COMPILE_WITH_X_LOADER_ if you want to use Microsoft X files
+#define _IRR_COMPILE_WITH_X_LOADER_
+#endif
+
+//! Define _IRR_COMPILE_WITH_MD2_LOADER_ if you want to load Quake 2 animated files
+#define _IRR_COMPILE_WITH_MD2_LOADER_
+//! Define _IRR_COMPILE_WITH_MD3_LOADER_ if you want to load Quake 3 animated files
+#define _IRR_COMPILE_WITH_MD3_LOADER_
+
+//! Define _IRR_COMPILE_WITH_3DS_LOADER_ if you want to load 3D Studio Max files
+#define _IRR_COMPILE_WITH_3DS_LOADER_
+//! Define _IRR_COMPILE_WITH_COLLADA_LOADER_ if you want to load Collada files
+#define _IRR_COMPILE_WITH_COLLADA_LOADER_
+//! Define _IRR_COMPILE_WITH_CSM_LOADER_ if you want to load Cartography Shop files
+#define _IRR_COMPILE_WITH_CSM_LOADER_
+//! Define _IRR_COMPILE_WITH_BSP_LOADER_ if you want to load Quake 3 BSP files
+#define _IRR_COMPILE_WITH_BSP_LOADER_
+//! Define _IRR_COMPILE_WITH_DMF_LOADER_ if you want to load DeleD files
+#define _IRR_COMPILE_WITH_DMF_LOADER_
+//! Define _IRR_COMPILE_WITH_LMTS_LOADER_ if you want to load LMTools files
+#define _IRR_COMPILE_WITH_LMTS_LOADER_
+//! Define _IRR_COMPILE_WITH_MY3D_LOADER_ if you want to load MY3D files
+#define _IRR_COMPILE_WITH_MY3D_LOADER_
+//! Define _IRR_COMPILE_WITH_OBJ_LOADER_ if you want to load Wavefront OBJ files
+#define _IRR_COMPILE_WITH_OBJ_LOADER_
+//! Define _IRR_COMPILE_WITH_OCT_LOADER_ if you want to load FSRad OCT files
+#define _IRR_COMPILE_WITH_OCT_LOADER_
+//! Define _IRR_COMPILE_WITH_OGRE_LOADER_ if you want to load Ogre 3D files
+#define _IRR_COMPILE_WITH_OGRE_LOADER_
 
 //! Set FPU settings
 /** Irrlicht should use approximate float and integer fpu techniques

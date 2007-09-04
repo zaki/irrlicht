@@ -8,6 +8,9 @@
 // This tool created by ZDimitor everyone can use it as wants
 //--------------------------------------------------------------------------------
 
+#include "IrrCompileConfig.h" 
+#ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
+
 #include "CMY3DMeshFileLoader.h"
 
 #include "SAnimatedMesh.h"
@@ -837,3 +840,5 @@ core::array<ISceneNode*>& CMY3DMeshFileLoader::getChildNodes()
 
 } // end namespace scnene
 } // end namespace irr
+
+#endif // _IRR_COMPILE_WITH_MY3D_LOADER_
