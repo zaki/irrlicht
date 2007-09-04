@@ -1,5 +1,5 @@
-VERSION = 1.4RC
-# Irrlicht Engine 1.4RC
+VERSION = 1.4alpha
+# Irrlicht Engine 1.4alpha
 # Makefile for Linux, created by N.Gebhardt.
 #
 # To use, just run:

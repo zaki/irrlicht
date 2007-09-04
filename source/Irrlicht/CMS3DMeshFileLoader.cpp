@@ -193,7 +193,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 #ifdef __BIG_ENDIAN__
 	for (u16 tmp=0; tmp<numVertices; ++tmp)
 		for (u16 j=0; j<3; ++j)
-			vertices[i].Vertex[j] = os::Byteswap::byteswap(vertices[i].Vertex[j]);
+			vertices[tmp].Vertex[j] = os::Byteswap::byteswap(vertices[tmp].Vertex[j]);
 #endif
 
 	// triangles

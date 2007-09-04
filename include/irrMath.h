@@ -233,16 +233,23 @@ namespace core
 
 
 
+	inline f32 round ( f32 x )
+	{
+		return round(x);
+	}
+
 	REALINLINE void clearFPUException ()
 	{
+#ifdef IRRLICHT_FAST_MATH
 #ifdef feclearexcept
 		feclearexcept(FE_ALL_EXCEPT);
 #elif defined(_MSC_VER)
 		__asm fnclex;
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) && defined(__x86__)
 		__asm__ __volatile__ ("fclex \n\t");
 #else
 #  warn clearFPUException not supported.
+#endif
 #endif
 	}
 		
@@ -407,11 +414,6 @@ namespace core
 	inline f32 fract ( f32 x )
 	{
 		return x - floorf ( x );
-	}
-
-	inline f32 round ( f32 x )
-	{
-		return ::round(x);
 	}
 
 } // end namespace core
