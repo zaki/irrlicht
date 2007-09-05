@@ -735,12 +735,12 @@ void CSkinnedMesh::checkForAnimation()
 				//check for invalid ids
 				if (buffer_id>=LocalBuffers.size())
 				{
-					os::Printer::log("Skinned Mesh: Weight buffer id too large");
+					os::Printer::log("Skinned Mesh: Weight buffer id too large", ELL_WARNING);
 					Joint->Weights[j].buffer_id = Joint->Weights[j].vertex_id =0;
 				}
 				else if (vertex_id>=LocalBuffers[buffer_id]->getVertexCount())
 				{
-					os::Printer::log("Skinned Mesh: Weight vertex id too large");
+					os::Printer::log("Skinned Mesh: Weight vertex id too large", ELL_WARNING);
 					Joint->Weights[j].buffer_id = Joint->Weights[j].vertex_id =0;
 				}
 

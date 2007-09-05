@@ -18,7 +18,7 @@ namespace irr
 		return LogLevel;
 	}
 
-	//! Sets a new log level.	virtual void setLogLevel(ELOG_LEVEL ll);
+	//! Sets a new log level.
 	void CLogger::setLogLevel(ELOG_LEVEL ll)
 	{
 		LogLevel = ll;
