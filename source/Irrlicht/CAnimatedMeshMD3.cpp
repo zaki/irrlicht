@@ -27,9 +27,9 @@ namespace scene
 
 struct SMD3Bone
 {
-	f32  Mins[3];			// bounding box per frame
+	f32  Mins[3];		// bounding box per frame
 	f32  Maxs[3];
-	f32  Position[3];		// position of bounding box
+	f32  Position[3];	// position of bounding box
 	f32  scale;
 	c8   creator[16];
 };
@@ -37,9 +37,9 @@ struct SMD3Bone
 
 struct SMD3Tag
 {
-	c8 Name[64];				//name of 'tag' as it's usually called in the md3 files try to see it as a sub-mesh/seperate mesh-part.
-	f32 position[3];			//relative position of tag
-	f32 rotationMatrix[9];		//3x3 rotation direction of tag
+	c8 Name[64];		//name of 'tag' as it's usually called in the md3 files try to see it as a sub-mesh/seperate mesh-part.
+	f32 position[3];	//relative position of tag
+	f32 rotationMatrix[9];	//3x3 rotation direction of tag
 };
 
 struct SMD3Skin
@@ -72,7 +72,6 @@ CAnimatedMeshMD3::CAnimatedMeshMD3 ()
 }
 
 
-
 //! Destructor
 CAnimatedMeshMD3::~CAnimatedMeshMD3()
 {
@@ -82,12 +81,12 @@ CAnimatedMeshMD3::~CAnimatedMeshMD3()
 }
 
 
-
 //! Returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
 s32 CAnimatedMeshMD3::getFrameCount()
 {
 	return Mesh->MD3Header.numFrames << IPolShift;
 }
+
 
 //! Rendering Hint
 void CAnimatedMeshMD3::setInterpolationShift ( u32 shift, u32 loopMode )
@@ -105,6 +104,7 @@ SMD3QuaterionTagList *CAnimatedMeshMD3::getTagList(s32 frame, s32 detailLevel, s
 	getMesh ( frame, detailLevel, startFrameLoop, endFrameLoop );
 	return &TagListIPol;
 }
+
 
 //! Returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail.
 IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
@@ -152,16 +152,15 @@ IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 		frame >>= IPolShift;
 		frameA = core::s32_clamp ( frame, startFrameLoop, endFrameLoop );
 		frameB = core::s32_min ( frameA + 1, endFrameLoop );
-
 	}
 
-	// build curren vertex
+	// build current vertex
 	for ( i = 0; i!= Mesh->Buffer.size (); ++i )
 	{
-		buildVertexArray (	frameA, frameB, iPol,
-							Mesh->Buffer[i],
-							(SMeshBuffer*) MeshIPol.getMeshBuffer ( i )
-						);
+		buildVertexArray(frameA, frameB, iPol,
+					Mesh->Buffer[i],
+					(SMeshBuffer*) MeshIPol.getMeshBuffer(i)
+				);
 	}
 	MeshIPol.recalculateBoundingBox ();
 
@@ -202,18 +201,15 @@ IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer ( const SMD3MeshBuffer * source
 
 //! build final mesh's vertices from frames frameA and frameB with linear interpolation.
 void CAnimatedMeshMD3::buildVertexArray ( u32 frameA, u32 frameB, f32 interpolate,
-								const SMD3MeshBuffer * source,
-								SMeshBuffer * dest
-							)
+						const SMD3MeshBuffer * source,
+						SMeshBuffer * dest
+					)
 {
 	u32 i;
 	u32 frameOffsetA = frameA * source->MeshHeader.numVertices;
 	u32 frameOffsetB = frameB * source->MeshHeader.numVertices;
 
-	f32 scale = ( 1.f/ 64.f );
-
-	core::vector3df nA;
-	core::vector3df nB;
+	const f32 scale = ( 1.f/ 64.f );
 
 	for ( i = 0; i!= (u32)source->MeshHeader.numVertices; ++i )
 	{
@@ -228,13 +224,12 @@ void CAnimatedMeshMD3::buildVertexArray ( u32 frameA, u32 frameB, f32 interpolat
 		v.Pos.Z = scale * ( vA.position[1] + interpolate * ( vB.position[1] - vA.position[1] ) );
 
 		// normal
-		getNormal ( nA, vA.normal[0], vA.normal[1] );
-		getNormal ( nB, vB.normal[0], vB.normal[1] );
+		const core::vector3df nA(getNormal ( vA.normal[0], vA.normal[1] ));
+		const core::vector3df nB(getNormal ( vB.normal[0], vB.normal[1] ));
 
 		v.Normal.X = nA.X + interpolate * ( nB.X - nA.X );
 		v.Normal.Y = nA.Z + interpolate * ( nB.Z - nA.Z );
 		v.Normal.Z = nA.Y + interpolate * ( nB.Y - nA.Y );
-
 	}
 
 	dest->recalculateBoundingBox ();
@@ -262,7 +257,6 @@ void CAnimatedMeshMD3::buildTagArray ( u32 frameA, u32 frameB, f32 interpolate )
 		d.position.X = qA.position.X + interpolate * ( qB.position.X - qA.position.X );
 		d.position.Y = qA.position.Y + interpolate * ( qB.position.Y - qA.position.Y );
 		d.position.Z = qA.position.Z + interpolate * ( qB.position.Z - qA.position.Z );
-
 	}
 }
 
@@ -274,8 +268,6 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 {
 	if (!file)
 		return false;
-
-	u32 i,g;
 
 	file->seek(0);
 
@@ -299,6 +291,7 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 
 	SMD3Tag import;
 	SMD3QuaterionTag exp;
+	u32 i,g;
 
 	file->seek( Mesh->MD3Header.tagStart );
 	for (i = 0; i != totalTags; ++i )
@@ -385,7 +378,6 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 		TagListIPol.Container.push_back ( Mesh->TagList.Container[i] );
 	}
 
-
 	return true;
 }
 
@@ -396,12 +388,12 @@ SMD3Mesh * CAnimatedMeshMD3::getOriginalMesh ()
 }
 
 
-
 //! Returns an axis aligned bounding box
 const core::aabbox3d<f32>& CAnimatedMeshMD3::getBoundingBox() const
 {
 	return MeshIPol.BoundingBox;
 }
+
 
 //! Returns the type of the animated mesh.
 E_ANIMATED_MESH_TYPE CAnimatedMeshMD3::getMeshType() const
@@ -410,8 +402,8 @@ E_ANIMATED_MESH_TYPE CAnimatedMeshMD3::getMeshType() const
 }
 
 
-
 } // end namespace scene
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_MD3_LOADER_
+

@@ -18,7 +18,6 @@ namespace irr
 namespace scene
 {
 
-
 	class CAnimatedMeshMD3 : public IAnimatedMeshMD3
 	{
 	public:
@@ -79,7 +78,6 @@ namespace scene
 		}
 
 
-
 	private:
         //! animates one frame
         inline void Animate (u32 frame);
@@ -123,15 +121,14 @@ namespace scene
 
 		void buildTagArray ( u32 frameA, u32 frameB, f32 interpolate );
 
-		void getNormal ( core::vector3df & out, u32 i, u32 j )
+		core::vector3df getNormal ( u32 i, u32 j )
 		{
-			f32 lng = i * 2.0f * core::PI / 255.0f;
-			f32 lat = j * 2.0f * core::PI / 255.0f;
-			out.X = cosf ( lat ) * sinf ( lng );
-			out.Y = sinf ( lat ) * sinf ( lng );
-			out.Z = cos ( lng );
+			const f32 lng = i * 2.0f * core::PI / 255.0f;
+			const f32 lat = j * 2.0f * core::PI / 255.0f;
+			return core::vector3df(cosf ( lat ) * sinf ( lng ),
+					sinf ( lat ) * sinf ( lng ),
+					cos ( lng ));
 		}
-
 	};
 
 } // end namespace scene

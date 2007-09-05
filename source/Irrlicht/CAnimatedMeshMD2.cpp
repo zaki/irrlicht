@@ -367,7 +367,6 @@ IMeshBuffer* CAnimatedMeshMD2::getMeshBuffer(const video::SMaterial &material) c
 }
 
 
-
 // updates the interpolation buffer
 void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, s32 endFrameLoop)
 {
@@ -419,8 +418,6 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 	//update bounding box
 	InterpolationBuffer.setBoundingBox(BoxList[secondFrame].getInterpolated(BoxList[firstFrame], div));
 }
-
-
 
 
 //! loads an md2 file
@@ -658,7 +655,6 @@ bool CAnimatedMeshMD2::loadFile(io::IReadFile* file)
 }
 
 
-
 //! calculates the bounding box
 void CAnimatedMeshMD2::calculateBoundingBox()
 {
@@ -671,8 +667,8 @@ void CAnimatedMeshMD2::calculateBoundingBox()
 		if (defaultFrame>=FrameCount)
 			defaultFrame = 0;
 
-			for (u32 j=0; j<FrameList[defaultFrame].size(); ++j)
-				InterpolationBuffer.BoundingBox.addInternalPoint(FrameList[defaultFrame].pointer()[j].Pos);
+		for (u32 j=0; j<FrameList[defaultFrame].size(); ++j)
+			InterpolationBuffer.BoundingBox.addInternalPoint(FrameList[defaultFrame].pointer()[j].Pos);
 	}
 }
 
@@ -684,19 +680,18 @@ void CAnimatedMeshMD2::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalu
 }
 
 
-
 //! returns an axis aligned bounding box
 const core::aabbox3d<f32>& CAnimatedMeshMD2::getBoundingBox() const
 {
 	return InterpolationBuffer.BoundingBox;
 }
 
+
 //! set user axis aligned bounding box
 void CAnimatedMeshMD2::setBoundingBox( const core::aabbox3df& box)
 {
 	InterpolationBuffer.BoundingBox = box;
 }
-
 
 
 //! Returns the type of the animated mesh.
@@ -740,7 +735,6 @@ bool CAnimatedMeshMD2::getFrameLoop(const c8* name,
 }
 
 
-
 //! Returns amount of md2 animations in this file.
 s32 CAnimatedMeshMD2::getAnimationCount() const
 {
@@ -762,3 +756,4 @@ const c8* CAnimatedMeshMD2::getAnimationName(s32 nr) const
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_MD2_LOADER_
+

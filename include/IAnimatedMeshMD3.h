@@ -223,7 +223,6 @@ namespace scene
 	};
 
 
-
 	//! Holding Frames Buffers and Tag Infos
 	struct SMD3Mesh: public IUnknown
 	{
@@ -240,7 +239,6 @@ namespace scene
 	};
 
 
-
 	//! Interface for using some special functions of MD3 meshes
 	class IAnimatedMeshMD3 : public IAnimatedMesh
 	{
@@ -252,7 +250,6 @@ namespace scene
 		virtual SMD3QuaterionTagList *getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) = 0;
 
 		virtual SMD3Mesh * getOriginalMesh () = 0;
-
 	};
 
 } // end namespace scene

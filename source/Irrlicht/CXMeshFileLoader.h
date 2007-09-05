@@ -7,10 +7,7 @@
 
 #include "IMeshLoader.h"
 #include "IReadFile.h"
-
-#include "IVideoDriver.h"
 #include "irrString.h"
-
 #include "CSkinnedMesh.h"
 
 

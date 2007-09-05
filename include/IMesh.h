@@ -53,7 +53,6 @@ namespace scene
 		/** \param flag: Flag to set in all materials.
 		 \param newvalue: New value to set in all materials. */
 		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue) = 0;
-
 	};
 
 } // end namespace scene
