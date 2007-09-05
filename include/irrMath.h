@@ -24,7 +24,6 @@ namespace irr
 namespace core
 {
 
-
 	//! Rounding error constant often used when comparing f32 values.
 
 #ifdef IRRLICHT_FAST_MATH
@@ -64,50 +63,50 @@ namespace core
 
 	//! returns minimum of two values. Own implementation to get rid of the STL (VS6 problems)
 	template<class T>
-	inline const T min_(const T a, const T b)
+	inline const T& min_(const T& a, const T& b)
 	{
 		return a < b ? a : b;
 	}
 
 	//! returns minimum of three values. Own implementation to get rid of the STL (VS6 problems)
 	template<class T>
-	inline const T min_(const T a, const T b, const T c)
+	inline const T& min_(const T& a, const T& b, const T& c)
 	{
 		return a < b ? min_(a, c) : min_(b, c);
 	}
 
 	//! returns maximum of two values. Own implementation to get rid of the STL (VS6 problems)
 	template<class T>
-	inline T max_(const T a, const T b)
+	inline const T& max_(const T& a, const T& b)
 	{
 		return a < b ? b : a;
 	}
 
 	//! returns minimum of three values. Own implementation to get rid of the STL (VS6 problems)
 	template<class T>
-	inline const T max_(const T a, const T b, const T c)
+	inline const T& max_(const T& a, const T& b, const T& c)
 	{
 		return a < b ? max_(b, c) : max_(a, c);
 	}
 
 	//! returns abs of two values. Own implementation to get rid of STL (VS6 problems)
 	template<class T>
-	inline T abs_(const T a)
+	inline T abs_(const T& a)
 	{
-		return a < 0 ? -a : a;
+		return a < (T)0 ? -a : a;
 	}
 
 	//! returns linear interpolation of a and b with ratio t
 	//! \return: a if t==0, b if t==1, and the linear interpolation else
 	template<class T>
-	inline T lerp(const T a, const T b, const T t)
+	inline T lerp(const T& a, const T& b, const f32 t)
 	{
-		return (a*(1-t)) + (b*t);
+		return (a*(1.f-t)) + (b*t);
 	}
 
 	//! clamps a value between low and high
 	template <class T>
-	inline const T clamp (const T value, const T low, const T high) 
+	inline const T clamp (const T& value, const T& low, const T& high) 
 	{
 		return min_ (max_(value,low), high);
 	}
