@@ -2393,26 +2393,6 @@
 			<Option link="0"/>
 			<Option target="default"/>
 		</Unit>
-		<Unit filename="CXAnimationPlayer.cpp">
-			<Option compilerVar="CPP"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="CXAnimationPlayer.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="CXFileReader.cpp">
-			<Option compilerVar="CPP"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="CXFileReader.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
 		<Unit filename="CXMLReader.cpp">
 			<Option compilerVar="CPP"/>
 			<Option target="default"/>

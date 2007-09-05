@@ -10,8 +10,6 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "os.h"
 
-#include <iostream>
-
 
 namespace irr
 {
