@@ -1590,22 +1590,6 @@ SOURCE=.\CWaterSurfaceSceneNode.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\CXAnimationPlayer.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\CXAnimationPlayer.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\CXFileReader.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\CXFileReader.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\CXMeshFileLoader.cpp
 # End Source File
 # Begin Source File

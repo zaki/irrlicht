@@ -994,9 +994,9 @@ inline f32 CQ3LevelMesh::Blend( const f64 s[3], const f64 t[3], const tBSPVertex
 
 void CQ3LevelMesh::S3DVertex2TCoords_64::copyto ( video::S3DVertex2TCoords &dest ) const
 {
-	dest.Pos.X = core::round ( (f32) Pos.X );
-	dest.Pos.Y = core::round ( (f32) Pos.Y );
-	dest.Pos.Z = core::round ( (f32) Pos.Z );
+	dest.Pos.X = core::round_( (f32) Pos.X );
+	dest.Pos.Y = core::round_( (f32) Pos.Y );
+	dest.Pos.Z = core::round_( (f32) Pos.Z );
 	//dest.Pos.X = (f32) Pos.X;
 	//dest.Pos.Y = (f32) Pos.Y;
 	//dest.Pos.Z = (f32) Pos.Z;
@@ -1058,9 +1058,9 @@ void CQ3LevelMesh::copy ( S3DVertex2TCoords_64 * dest, const tBSPVertex * source
 
 inline void CQ3LevelMesh::copy ( video::S3DVertex2TCoords * dest, const tBSPVertex * source, s32 vertexcolor ) const
 {
-	dest->Pos.X = core::round ( source->vPosition[0] );
-	dest->Pos.Y = core::round ( source->vPosition[2] );
-	dest->Pos.Z = core::round ( source->vPosition[1] );
+	dest->Pos.X = core::round_( source->vPosition[0] );
+	dest->Pos.Y = core::round_( source->vPosition[2] );
+	dest->Pos.Z = core::round_( source->vPosition[1] );
 
 	//dest->Pos.X = source->vPosition[0];
 	//dest->Pos.Y = source->vPosition[2];

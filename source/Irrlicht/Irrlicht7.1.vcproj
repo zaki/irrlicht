@@ -1445,18 +1445,6 @@
 					RelativePath=".\CQ3LevelMesh.h">
 				</File>
 				<File
-					RelativePath="CXAnimationPlayer.cpp">
-				</File>
-				<File
-					RelativePath="CXAnimationPlayer.h">
-				</File>
-				<File
-					RelativePath="CXFileReader.cpp">
-				</File>
-				<File
-					RelativePath="CXFileReader.h">
-				</File>
-				<File
 					RelativePath="CXMeshFileLoader.cpp">
 				</File>
 				<File

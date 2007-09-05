@@ -106,8 +106,10 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		}
 	}
 
-	if (StartFrame==EndFrame) return StartFrame; //Support for non animated meshes
-	if (FramesPerSecond==0) return StartFrame;
+	if (StartFrame==EndFrame)
+		return (f32)StartFrame; //Support for non animated meshes
+	if (FramesPerSecond==0)
+		return (f32)StartFrame;
 
 
 	if (Looping)
@@ -133,8 +135,7 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 
 		if (FramesPerSecond>0) //forwards...
 		{
-
-			const f32 deltaFrame = core::floor32 ( f32 ( timeMs - BeginFrameTime ) * FramesPerSecond );
+			const f32 deltaFrame = floorf( f32 ( timeMs - BeginFrameTime ) * FramesPerSecond );
 
 			frame = StartFrame + deltaFrame;
 
@@ -147,7 +148,7 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		}
 		else //backwards... (untested)
 		{
-			const f32 deltaFrame = core::floor32 ( f32 ( timeMs - BeginFrameTime ) * -FramesPerSecond );
+			const f32 deltaFrame = floorf( f32 ( timeMs - BeginFrameTime ) * -FramesPerSecond );
 
 			frame = EndFrame - deltaFrame;
 
@@ -519,7 +520,7 @@ bool CAnimatedMeshSceneNode::setFrameLoop(s32 begin, s32 end)
 		StartFrame = core::s32_clamp(begin, 0, maxFrameCount);
 		EndFrame = core::s32_clamp(end, StartFrame, maxFrameCount);
 	}
-	setCurrentFrame ( StartFrame );
+	setCurrentFrame ( (f32)StartFrame );
 
 	return true;
 }
