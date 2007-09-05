@@ -235,7 +235,7 @@ namespace core
 
 	inline f32 round ( f32 x )
 	{
-		return round(x);
+		return roundf(x);
 	}
 
 	REALINLINE void clearFPUException ()
