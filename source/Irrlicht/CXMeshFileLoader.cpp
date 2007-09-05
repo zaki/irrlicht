@@ -411,11 +411,11 @@ bool CXMeshFileLoader::parseDataObject()
 	else
 	if (objectName == "}")
 	{
-		os::Printer::log("} found in dataObject");
+		os::Printer::log("} found in dataObject", ELL_WARNING);
 		return true;
 	}
 
-	os::Printer::log("Unknown data object in x file", objectName.c_str());
+	os::Printer::log("Unknown data object in x file", objectName.c_str(), ELL_WARNING);
 
 	return parseUnknownDataObject();
 }
@@ -491,13 +491,17 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 
 	if (!joint)
 	{
+#ifdef _DEBUG
 		os::Printer::log("creating joint ", Name.c_str());
+#endif
 		joint=AnimatedMesh->createJoint(Parent);
 		joint->Name=Name;
 	}
 	else
 	{
+#ifdef _DEBUG
 		os::Printer::log("using joint ", Name.c_str());
+#endif
 		if (Parent)
 			Parent->Children.push_back(joint);
 	}
@@ -563,7 +567,7 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 		}
 		else
 		{
-			os::Printer::log("Unknown data object in frame in x file", objectName.c_str());
+			os::Printer::log("Unknown data object in frame in x file", objectName.c_str(), ELL_WARNING);
 			if (!parseUnknownDataObject())
 				return false;
 		}
@@ -803,7 +807,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		}
 		else
 		{
-			os::Printer::log("Unknown data object in mesh in x file", objectName.c_str());
+			os::Printer::log("Unknown data object in mesh in x file", objectName.c_str(), ELL_WARNING);
 			if (!parseUnknownDataObject())
 				return false;
 		}
@@ -846,7 +850,9 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 		//os::Printer::log("no joints with correct name for weights,", TransformNodeName.c_str());
 		//return false;
 
+#ifdef _XREADER_DEBUG
 		os::Printer::log("pre-creating joint for skinning ", TransformNodeName.c_str());
+#endif
 		joint=AnimatedMesh->createJoint(0);
 		joint->Name=TransformNodeName;
 	}
@@ -956,7 +962,7 @@ bool CXMeshFileLoader::parseDataObjectSkinMeshHeader()
 
 	if (objectName != "}")
 	{
-		os::Printer::log("No closing brace in skin mesh header in x file", objectName.c_str());
+		os::Printer::log("No closing brace in skin mesh header in x file", objectName.c_str(), ELL_WARNING);
 		return false;
 	}
 
@@ -1159,7 +1165,6 @@ bool CXMeshFileLoader::parseDataObjectMeshVertexColors(SXMesh &mesh)
 	core::stringc tmp=getNextToken();
 	if (tmp != ";")
 	{
-		os::Printer::log("is (;)[", tmp.c_str());
 		os::Printer::log("No finishing semicolon in Mesh Vertex Colors Array found in x file", ELL_WARNING);
 		return false;
 	}
@@ -1263,7 +1268,7 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 		}
 		else
 		{
-			os::Printer::log("Unknown data object in material list in x file", objectName.c_str());
+			os::Printer::log("Unknown data object in material list in x file", objectName.c_str(), ELL_WARNING);
 			if (!parseUnknownDataObject())
 				return false;
 		}
@@ -1343,7 +1348,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 		}
 		else
 		{
-			os::Printer::log("Unknown data object in material in x file", objectName.c_str());
+			os::Printer::log("Unknown data object in material in x file", objectName.c_str(), ELL_WARNING);
 			if (!parseUnknownDataObject())
 				return false;
 		}
@@ -1392,7 +1397,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationSet()
 		}
 		else
 		{
-			os::Printer::log("Unknown data object in animation set in x file", objectName.c_str());
+			os::Printer::log("Unknown data object in animation set in x file", objectName.c_str(), ELL_WARNING);
 			if (!parseUnknownDataObject())
 				return false;
 		}
@@ -1441,7 +1446,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		{
 			if (!joint)
 			{
-				os::Printer::log("no joint to write animation to, dumping in temp joint");
+				os::Printer::log("no joint to write animation to, dumping in temp joint", ELL_WARNING);
 
 				if (!parseDataObjectAnimationKey(&animationDump))
 					return false;
@@ -1482,7 +1487,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 			}
 			else
 			{
-				os::Printer::log("Unknown data object in animation in x file", objectName.c_str());
+				os::Printer::log("Unknown data object in animation in x file", objectName.c_str(), ELL_WARNING);
 				if (!parseUnknownDataObject())
 					return false;
 			}
@@ -1490,8 +1495,9 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 
 		if (FrameName!="" && !joint)
 		{
+#ifdef _DEBUG
 			os::Printer::log("getting name: ", FrameName.c_str());
-
+#endif
 			for (u32 n=0;n < AnimatedMesh->getAllJoints().size();++n)
 			{
 				if (AnimatedMesh->getAllJoints()[n]->Name==FrameName)
@@ -1502,7 +1508,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 				//os::Printer::log("no joints with correct name for animation,", FrameName.c_str());
 				//return false;
 
-				os::Printer::log("pre-creating joint for animation ", FrameName.c_str());
+				os::Printer::log("pre-creating joint for animation ", FrameName.c_str(), ELL_WARNING);
 				joint=AnimatedMesh->createJoint(0);
 				joint->Name=FrameName;
 			}
@@ -1547,7 +1553,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 	}
 
 	if (FrameName=="")
-		os::Printer::log("joint name was never given");
+		os::Printer::log("joint name was never given", ELL_WARNING);
 
 	return true;
 }
@@ -1772,7 +1778,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 
 	if (objectName != "}")
 	{
-		os::Printer::log("No closing brace in animation key in x file", objectName.c_str());
+		os::Printer::log("No closing brace in animation key in x file", objectName.c_str(), ELL_WARNING);
 		return false;
 	}
 
@@ -2017,9 +2023,6 @@ core::stringc CXMeshFileLoader::getNextToken()
 			s.append(P[0]);
 			++P;
 		}
-
-		//os::Printer::log("end" );
-
 	}
 	return s;
 }
