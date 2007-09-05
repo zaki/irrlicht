@@ -86,10 +86,8 @@ namespace scene
 			bool zfailmethod=true, f32 infinity=10000.0f) = 0;
 
 
-		//! Returns a pointer to a child node, which has the same transformation as
-		//! the corresponding joint, if the mesh in this scene node is a ms3d mesh.
-		//! Otherwise 0 is returned. With this method it is possible to
-		//! attach scene nodes to joints more easily. In this way, it is
+		//! Returns a pointer to a joint in the mesh (if the mesh is a bone based mesh)
+		//! With this method it is possible to attach scene nodes to joints
 		//! for example possible to attach a weapon to the left hand of an
 		//! animated model. This example shows how:
 		//! \code
@@ -97,50 +95,21 @@ namespace scene
 		//!		yourAnimatedMeshSceneNode->getJointNode("LeftHand");
 		//! hand->addChild(weaponSceneNode);
 		//! \endcode
-		//! Please note that the SceneNode returned by this method may not exist
-		//! before this call and is created by it. (Todo: Rewrite)
+		//! Please note that the joint returned by this method may not exist
+		//! before this call and the joints in the node were created by it.
 		//! \param jointName: Name of the joint.
 		//! \return Returns a pointer to the scene node which represents the joint
 		//! with the specified name. Returns 0 if the contained mesh is not an
-		//! ms3d mesh or the name of the joint could not be found.
+		//! skinned mesh or the name of the joint could not be found.
 		virtual IBoneSceneNode* getJointNode(const c8* jointName)=0;
 
-		//! Returns a pointer to a child node, which has the same transformation as
-		//! the corresponding joint, if the mesh in this scene node is a ms3d mesh.
-		//! Otherwise 0 is returned. With this method it is possible to
-		//! attach scene nodes to joints more easily. In this way, it is
-		//! for example possible to attach a weapon to the left hand of an
-		//! animated model. This example shows how:
-		//! \code
-		//! ISceneNode* hand =
-		//!		yourMS3DAnimatedMeshSceneNode->getMS3DJointNode("LeftHand");
-		//! hand->addChild(weaponSceneNode);
-		//! \endcode
-		//! Please note that the SceneNode returned by this method may not exist
-		//! before this call and is created by it.
-		//! \param jointName: Name of the joint.
-		//! \return Returns a pointer to the scene node which represents the joint
-		//! with the specified name. Returns 0 if the contained mesh is not an
-		//! ms3d mesh or the name of the joint could not be found.
+		//! same as getJointNode(const c8* jointName), but based on id
+		virtual IBoneSceneNode* getJointNode(u32 jointID) = 0;
+
+		//! Redundant command, please use getJointNode (only for backwards compatibility)
 		virtual ISceneNode* getMS3DJointNode(const c8* jointName) = 0;
 
-		//! Returns a pointer to a child node, which has the same transformation as
-		//! the corresponding joint, if the mesh in this scene node is a x mesh.
-		//! Otherwise 0 is returned. With this method it is possible to
-		//! attach scene nodes to joints more easily. In this way, it is
-		//! for example possible to attach a weapon to the left hand of an
-		//! animated model. This example shows how:
-		//! \code
-		//! ISceneNode* hand =
-		//!		yourMS3DAnimatedMeshSceneNode->getXJointNode("LeftHand");
-		//! hand->addChild(weaponSceneNode);
-		//! \endcode
-		//! Please note that the SceneNode returned by this method may not exist
-		//! before this call and is created by it.
-		//! \param jointName: Name of the joint.
-		//! \return Returns a pointer to the scene node which represents the joint
-		//! with the specified name. Returns 0 if the contained mesh is not an
-		//! ms3d mesh or the name of the joint could not be found.
+		//! Redundant command, please use getJointNode (only for backwards compatibility)
 		virtual ISceneNode* getXJointNode(const c8* jointName) = 0;
 
 		//! Starts a default MD2 animation.
@@ -197,18 +166,21 @@ namespace scene
 		//! Returns the current mesh
 		virtual IAnimatedMesh* getMesh(void) = 0;
 
-		// returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
-		// or the absolutetransformation if it's a normal scenenode
+		//! returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
+		//! or the absolutetransformation if it's a normal scenenode
 		virtual const SMD3QuaterionTag& getMD3TagTransformation( const core::stringc & tagname) = 0;
 
-		//! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
+		//! Set how the joints should be updated on render
+		//! 0-do nothing
+		//! 1-get joints positions from the mesh (for attached nodes, etc)
+		//! 2-control joint positions in the mesh (eg. ragdolls, or set the animation from animateJoints() )
 		virtual void setJointMode(s32 mode)=0;
 
 		//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
 		//! you must call animateJoints(), or the mesh will not animate
 		virtual void setTransitionTime(f32 Time) =0;
 
-		//! updates the joint positions of this mesh
+		//! animates the joints in the mesh based on the current frame (also takes in to account transitions)
 		virtual void animateJoints() = 0;
 
 	};
