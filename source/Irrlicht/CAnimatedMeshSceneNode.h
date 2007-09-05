@@ -150,9 +150,7 @@ namespace scene
 	private:
 
 		f32 buildFrameNr( u32 timeMs);
-
 		void checkJoints();
-
 		void beginTransition();
 
 		core::array<video::SMaterial> Materials;
@@ -163,7 +161,6 @@ namespace scene
 		s32 StartFrame;
 		s32 EndFrame;
 		f32 FramesPerSecond;
-
 		f32 CurrentFrameNr;
 
 		s32 JointMode; //0-unused, 1-get joints only, 2-set joints only, 3-move and set
