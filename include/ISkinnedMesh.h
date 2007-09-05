@@ -183,10 +183,10 @@ namespace scene
 
 		//these functions will use the needed arrays, set vaules, etc to help the loaders
 
-		//! exposed for loaders to add mesh buffers
+		//! exposed for loaders: to add mesh buffers
 		virtual core::array<SSkinMeshBuffer*> &getMeshBuffers() = 0;
 
-		//! alternative method for adding joints
+		//! exposed for loaders: joints list
 		virtual core::array<SJoint*> &getAllJoints() = 0;
 
 		//! loaders should call this after populating the mesh
