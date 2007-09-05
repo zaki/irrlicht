@@ -4,6 +4,8 @@
 
 #include "IrrCompileConfig.h"
 
+static const char* const copyright = "Irrlicht Engine (c) 2002-2007 Nikolaus Gebhardt";
+
 #ifdef _IRR_WINDOWS_
 	#include <windows.h>
 	#if defined(_DEBUG) && !defined(__GNUWIN32__)
@@ -43,10 +45,6 @@ namespace irr
 
 
 #if defined(_IRR_WINDOWS_API_)
-
-#ifdef _MSC_VER
-#pragma comment(exestr, "Irrlicht Engine (c) 2002-2007 Nikolaus Gebhardt")
-#endif
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
