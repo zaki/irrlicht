@@ -584,6 +584,7 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(s32 id,
 
 
 
+
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 {
 
@@ -609,7 +610,21 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 		return 0;
 	}
 
-	return (IBoneSceneNode*)JointChildSceneNodes[number]; //JointChildSceneNodes will only be IBoneSceneNode later
+	return getJointNode((u32)number);
+
+}
+
+
+IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
+{
+
+	if (JointChildSceneNodes.size() <= jointID)
+	{
+		os::Printer::log("Joint not loaded into node", ELL_WARNING);
+		return 0;
+	}
+
+	return JointChildSceneNodes[jointID];
 
 }
 
@@ -621,7 +636,7 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 ISceneNode* CAnimatedMeshSceneNode::getMS3DJointNode(const c8* jointName)
 {
 
-	//return  getJointNode(jointName);
+	return  getJointNode(jointName);
 
 	return 0;
 }
@@ -631,7 +646,7 @@ ISceneNode* CAnimatedMeshSceneNode::getMS3DJointNode(const c8* jointName)
 //! the corrsesponding joint, if the mesh in this scene node is a ms3d mesh.
 ISceneNode* CAnimatedMeshSceneNode::getXJointNode(const c8* jointName)
 {
-	//return  getJointNode(jointName);
+	return  getJointNode(jointName);
 
 	return 0;
 }

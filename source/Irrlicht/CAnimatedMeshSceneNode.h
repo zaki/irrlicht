@@ -79,12 +79,13 @@ namespace scene
 		//! the corrsesponding joint, if the mesh in this scene node is a skinned mesh.
 		virtual IBoneSceneNode* getJointNode(const c8* jointName);
 
-		//! Returns a pointer to a child node, which has the same transformation as
-		//! the corrsesponding joint, if the mesh in this scene node is a ms3d mesh.
+		//! same as getJointNode(const c8* jointName), but based on id
+		virtual IBoneSceneNode* getJointNode(u32 jointID);
+
+		//! Redundant command, please use getJointNode.
 		virtual ISceneNode* getMS3DJointNode(const c8* jointName);
 
-		//! Returns a pointer to a child node, which has the same transformation as
-		//! the corrsesponding joint, if the mesh in this scene node is a x mesh.
+		//! Redundant command, please use getJointNode.
 		virtual ISceneNode* getXJointNode(const c8* jointName);
 
 		//! Removes a child from this scene node.
