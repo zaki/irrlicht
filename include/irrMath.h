@@ -17,6 +17,11 @@
 	#define floorf(X) floor(X)
 	#define powf(X,Y) pow(X,Y)
 	#define fmodf(X,Y) fmod(X,Y)
+#if defined(_IRR_SOLARIS_PLATFORM_)
+	#define roundf(X) (floor( X + 0.5f ))
+#else
+	#define roundf(X) round(X)
+#endif
 #endif
 
 namespace irr
@@ -233,7 +238,7 @@ namespace core
 
 
 
-	inline f32 round ( f32 x )
+	inline f32 round_( f32 x )
 	{
 		return roundf(x);
 	}
@@ -393,11 +398,11 @@ namespace core
 			);
 #else
 #  warn IRRLICHT_FAST_MATH not supported.
-		return (s32) round(x);
+		return (s32) round_(x);
 #endif
 		return t;
 #else // no fast math
-		return (s32) round(x);
+		return (s32) round_(x);
 #endif
 	}
 
