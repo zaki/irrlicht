@@ -34,26 +34,22 @@ CSkinnedMesh::CSkinnedMesh()
 //! destructor
 CSkinnedMesh::~CSkinnedMesh()
 {
-	u32 n;
+	for (u32 i=0; i<AllJoints.size(); ++i)
+		delete AllJoints[i];
 
-	for (n=0;n<AllJoints.size();++n)
+	for (u32 j=0; j<LocalBuffers.size(); ++j)
 	{
-		if (AllJoints[n])
-			delete AllJoints[n];
-	}
-
-	for (n=0;n<LocalBuffers.size();++n)
-	{
-		if (LocalBuffers[n])
-			LocalBuffers[n]->drop();
+		if (LocalBuffers[j])
+			LocalBuffers[j]->drop();
 	}
 }
 
 
-//! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
+//! returns the amount of frames in milliseconds.
+//! If the amount is 1, it is a static (=non animated) mesh.
 s32 CSkinnedMesh::getFrameCount()
 {
-	return (s32)AnimationFrames;
+	return core::floor32(AnimationFrames);
 }
 
 
@@ -72,7 +68,6 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 }
 
 
-
 //--------------------------------------------------------------------------
 //			Keyframe Animation
 //--------------------------------------------------------------------------
@@ -87,22 +82,22 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 
 	lastAnimatedFrame=frame;
 
-	if (blend<=0)
+	if (blend<=0.f)
 		return; //No need to animate
 
 	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
-		//To Bitplane: The joints can be animated here with no input from there parents, but for setAnimationMode extra check are needed to their parents
+		//To Bitplane: The joints can be animated here with no input from their parents, but for setAnimationMode extra checks are needed to their parents
 
 		SJoint *Joint = AllJoints[i];
 
-		core::vector3df oldPosition = Joint->Animatedposition;
-		core::vector3df oldScale = Joint->Animatedscale;
-		core::quaternion oldRotation = Joint->Animatedrotation;
+		const core::vector3df oldPosition = Joint->Animatedposition;
+		const core::vector3df oldScale = Joint->Animatedscale;
+		const core::quaternion oldRotation = Joint->Animatedrotation;
 
-		core::vector3df position =oldPosition;
-		core::vector3df scale =oldScale;
-		core::quaternion rotation =oldRotation;
+		core::vector3df position = oldPosition;
+		core::vector3df scale = oldScale;
+		core::quaternion rotation = oldRotation;
 
 		if (!BoneControlUsed)
 		{
@@ -112,31 +107,27 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		}
 
 		getFrameData(frame, Joint,
-					position, Joint->positionHint,
-					scale, Joint->scaleHint,
-					rotation, Joint->rotationHint);
+				position, Joint->positionHint,
+				scale, Joint->scaleHint,
+				rotation, Joint->rotationHint);
 
 		if (blend==1.0f)
 		{
-			//No blending need:
+			//No blending needed
 			Joint->Animatedposition = position;
 			Joint->Animatedscale = scale;
 			Joint->Animatedrotation = rotation;
 		}
 		else
 		{
-			//Blend animation:
-
-			f32 invBlend=1-blend;
-
-			Joint->Animatedposition = (position * blend) + (oldPosition* invBlend );
-			Joint->Animatedscale = (scale * blend) + (oldScale* invBlend );
+			//Blend animation
+			Joint->Animatedposition = core::lerp(oldPosition, position, blend);
+			Joint->Animatedscale = core::lerp(oldScale, scale, blend);
 			Joint->Animatedrotation.slerp(oldRotation, rotation, blend);
-
 		}
 
-		//Node:
-		//_LocalAnimatedMatrix needs to be built at some point, but this function maybe called lots of times for
+		//Note:
+		//_LocalAnimatedMatrix needs to be built at some point, but this function may be called lots of times for
 		//one render (to play two animations at the same time) _LocalAnimatedMatrix only needs to be built once.
 		//a call to buildAllLocalAnimatedMatrices is needed before skinning the mesh, and before the user gets the joints to move
 
@@ -144,7 +135,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		// Temp!
 		buildAll_LocalAnimatedMatrices();
 		//-----------------
-
 	}
 
 	BoneControlUsed=false;
@@ -179,13 +169,12 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 		{
 			Joint->LocalAnimatedMatrix=Joint->LocalMatrix;
 		}
-
 	}
 }
 
+
 void CSkinnedMesh::buildAll_GlobalAnimatedMatrices(SJoint *Joint, SJoint *ParentJoint)
 {
-
 	if (!Joint)
 	{
 		for (u32 i=0; i<RootJoints.size(); ++i)
@@ -869,66 +858,77 @@ void CSkinnedMesh::finalize()
 			core::array<SScaleKey> &ScaleKeys = AllJoints[i]->ScaleKeys;
 			core::array<SRotationKey> &RotationKeys = AllJoints[i]->RotationKeys;
 
-
 			if (PositionKeys.size()>2)
+			{
 				for(j=0;j<PositionKeys.size()-2;++j)
 				{
 					if (PositionKeys[j].position == PositionKeys[j+1].position && PositionKeys[j+1].position == PositionKeys[j+2].position)
 					{
 						PositionKeys.erase(j+1); //the middle key is unneeded
-						j--;
+						--j;
 					}
 				}
+			}
 
 			if (PositionKeys.size()>1)
+			{
 				for(j=0;j<PositionKeys.size()-1;++j)
 				{
 					if (PositionKeys[j].frame >= PositionKeys[j+1].frame) //bad frame, unneed and may cause problems
 					{
 						PositionKeys.erase(j+1);
-						j--;
+						--j;
 					}
 				}
+			}
 
 			if (ScaleKeys.size()>2)
+			{
 				for(j=0;j<ScaleKeys.size()-2;++j)
 				{
 					if (ScaleKeys[j].scale == ScaleKeys[j+1].scale && ScaleKeys[j+1].scale == ScaleKeys[j+2].scale)
 					{
 						ScaleKeys.erase(j+1); //the middle key is unneeded
-						j--;
+						--j;
 					}
 				}
+			}
 
 			if (ScaleKeys.size()>1)
-					for(j=0;j<ScaleKeys.size()-1;++j)
+			{
+				for(j=0;j<ScaleKeys.size()-1;++j)
+				{
+					if (ScaleKeys[j].frame >= ScaleKeys[j+1].frame) //bad frame, unneed and may cause problems
 					{
-						if (ScaleKeys[j].frame >= ScaleKeys[j+1].frame) //bad frame, unneed and may cause problems
-						{
-							ScaleKeys.erase(j+1);
-							j--;
-						}
+						ScaleKeys.erase(j+1);
+						--j;
 					}
+				}
+			}
 
 			if (RotationKeys.size()>2)
+			{
 				for(j=0;j<RotationKeys.size()-2;++j)
 				{
 					if (RotationKeys[j].rotation == RotationKeys[j+1].rotation && RotationKeys[j+1].rotation == RotationKeys[j+2].rotation)
 					{
 						RotationKeys.erase(j+1); //the middle key is unneeded
-						j--;
+						--j;
 					}
 				}
+			}
 
 			if (RotationKeys.size()>1)
+			{
 				for(j=0;j<RotationKeys.size()-1;++j)
 				{
 					if (RotationKeys[j].frame >= RotationKeys[j+1].frame) //bad frame, unneed and may cause problems
 					{
 						RotationKeys.erase(j+1);
-						j--;
+						--j;
 					}
 				}
+			}
 
 
 			//Fill empty keyframe areas
@@ -1088,7 +1088,7 @@ CSkinnedMesh::SWeight *CSkinnedMesh::createWeight(SJoint *joint)
 
 void CSkinnedMesh::normalizeWeights()
 {
-	// node: unsure if weights ids are going to be used.
+	// note: unsure if weights ids are going to be used.
 
 	// Normalise the weights on bones....
 
@@ -1178,6 +1178,7 @@ void CSkinnedMesh::tranferJointsToMesh(core::array<IBoneSceneNode*> &JointChildS
 
 	BoneControlUsed=true;
 }
+
 
 void CSkinnedMesh::createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,
 	IAnimatedMeshSceneNode* AnimatedMeshSceneNode, ISceneManager* SceneManager)

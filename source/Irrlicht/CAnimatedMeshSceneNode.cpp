@@ -30,8 +30,8 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh, ISceneNode* 
 			const core::vector3df& position, const core::vector3df& rotation,	const core::vector3df& scale)
 : IAnimatedMeshSceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
 	BeginFrameTime(0), StartFrame(0), EndFrame(0), FramesPerSecond(25.f / 1000.f ),
-	CurrentFrameNr(0.f), JointMode(0), JointsUsed(0),
-	TransitionTime(0), Transiting(0), TransitingBlend(0),
+	CurrentFrameNr(0.f), JointMode(0), JointsUsed(false),
+	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
 	Looping(true), ReadOnlyMaterials(false),
 	LoopCallBack(0), PassCount(0), Shadow(0)
 {
@@ -43,7 +43,6 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh, ISceneNode* 
 
 	setMesh(mesh);
 }
-
 
 
 //! destructor
@@ -64,15 +63,6 @@ CAnimatedMeshSceneNode::~CAnimatedMeshSceneNode()
 }
 
 
-
-
-
-
-
-
-
-
-
 //! Sets the current frame. From now on the animation is played from this frame.
 void CAnimatedMeshSceneNode::setCurrentFrame(f32 frame)
 {
@@ -81,8 +71,7 @@ void CAnimatedMeshSceneNode::setCurrentFrame(f32 frame)
 
 	BeginFrameTime = os::Timer::getTime() - (s32)((CurrentFrameNr - StartFrame) / FramesPerSecond);
 
-	beginTransition(); //transite to this frame if enabled
-
+	beginTransition(); //transit to this frame if enabled
 }
 
 
@@ -95,28 +84,26 @@ f32 CAnimatedMeshSceneNode::getFrameNr() const
 
 f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 {
-
-	if (Transiting!=0)
+	if (Transiting!=0.f)
 	{
-		TransitingBlend=f32(timeMs-BeginFrameTime) * Transiting;
-		if (TransitingBlend>1)
+		TransitingBlend = (f32)(timeMs-BeginFrameTime) * Transiting;
+		if (TransitingBlend > 1.f)
 		{
-			Transiting=0;
-			TransitingBlend=0;
+			Transiting=0.f;
+			TransitingBlend=0.f;
 		}
 	}
 
 	if (StartFrame==EndFrame)
 		return (f32)StartFrame; //Support for non animated meshes
-	if (FramesPerSecond==0)
+	if (FramesPerSecond==0.f)
 		return (f32)StartFrame;
-
 
 	if (Looping)
 	{
 		// play animation looped
 
-		if (FramesPerSecond>0) //forwards...
+		if (FramesPerSecond > 0.f) //forwards...
 		{
 			const s32 lenInTime = s32( f32(EndFrame - StartFrame) / FramesPerSecond);
 			return StartFrame + ( (timeMs - BeginFrameTime) % lenInTime) *FramesPerSecond;
@@ -133,7 +120,7 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 
 		f32 frame;
 
-		if (FramesPerSecond>0) //forwards...
+		if (FramesPerSecond > 0.f) //forwards...
 		{
 			const f32 deltaFrame = floorf( f32 ( timeMs - BeginFrameTime ) * FramesPerSecond );
 
@@ -874,9 +861,7 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 			MD3Special.AbsoluteTagList[i].position = parent.position + (*taglist)[i].position + relative.position;
 			MD3Special.AbsoluteTagList[i].rotation = parent.rotation * (*taglist)[i].rotation * relative.rotation;
 		}
-
 	}
-
 }
 
 //! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
@@ -893,11 +878,13 @@ void CAnimatedMeshSceneNode::setJointMode(s32 mode)
 
 //! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
 //! you must call animateJoints(), or the mesh will not animate
-void CAnimatedMeshSceneNode::setTransitionTime(f32 Time)
+void CAnimatedMeshSceneNode::setTransitionTime(f32 time)
 {
-	if (Time!=0) checkJoints();
-	if (!(JointMode &2)) setJointMode(2);
-	TransitionTime=u32(Time*1000.0f);
+	if (time != 0.f)
+		checkJoints();
+	if (!(JointMode & 0x2))
+		setJointMode(2);
+	TransitionTime = (u32)core::floor32(time*1000.0f);
 }
 
 //! updates the joint positions of this mesh
@@ -925,63 +912,54 @@ void CAnimatedMeshSceneNode::animateJoints()
 				}
 
 			//-----------------------------------------
-			//				Transition
+			//		Transition
 			//-----------------------------------------
 
-			if (Transiting!=0)
+			if (Transiting != 0.f)
 			{
-				u32 n;
-
 				//Check the array is big enough (not really needed)
 				if (PretransitingSave.size()<JointChildSceneNodes.size())
 				{
-					for(n=PretransitingSave.size();n<JointChildSceneNodes.size();++n)
+					for(u32 n=PretransitingSave.size(); n<JointChildSceneNodes.size(); ++n)
 						PretransitingSave.push_back(core::matrix4());
 				}
 
-				f32 InvTransitingBlend=1-TransitingBlend;
-				for (n=0;n<JointChildSceneNodes.size();++n)
+				for (u32 n=0; n<JointChildSceneNodes.size(); ++n)
 				{
-
 					//------Position------
 
-					JointChildSceneNodes[n]->setPosition(PretransitingSave[n].getTranslation()*InvTransitingBlend+
-														JointChildSceneNodes[n]->getPosition()*TransitingBlend);
-
+					JointChildSceneNodes[n]->setPosition(
+							core::lerp(
+								PretransitingSave[n].getTranslation(),
+								JointChildSceneNodes[n]->getPosition(),
+								TransitingBlend));
 
 					//------Rotation------
 
 					//Code is slow, needs to be fixed up
 
-					core::quaternion RotationStart, RotationEnd;
+					const core::quaternion RotationStart(PretransitingSave[n].getRotationDegrees()*core::DEGTORAD);
+					const core::quaternion RotationEnd(JointChildSceneNodes[n]->getRotation()*core::DEGTORAD);
+
 					core::quaternion QRotation;
-					core::vector3df tmpVector;
-
-					tmpVector=PretransitingSave[n].getRotationDegrees();
-					RotationStart.set(tmpVector.X*core::DEGTORAD ,tmpVector.Y*core::DEGTORAD,tmpVector.Z*core::DEGTORAD);
-
-					tmpVector=JointChildSceneNodes[n]->getRotation();
-					RotationEnd.set(tmpVector.X*core::DEGTORAD ,tmpVector.Y*core::DEGTORAD,tmpVector.Z*core::DEGTORAD);
-
 					QRotation.slerp(RotationStart, RotationEnd, TransitingBlend);
 
-					QRotation.toEuler (tmpVector);
-					tmpVector.X*=core::RADTODEG; tmpVector.Y*=core::RADTODEG; tmpVector.Z*=core::RADTODEG; //convert from radians back to degrees
+					core::vector3df tmpVector;
+					QRotation.toEuler(tmpVector);
+					tmpVector*=core::RADTODEG; //convert from radians back to degrees
 					JointChildSceneNodes[n]->setRotation( tmpVector );
-
 
 					//------Scale------
 
-					//JointChildSceneNodes[n]->setScale(PretransitingSave[n].getScale()*InvTransitingBlend+
-					//									JointChildSceneNodes[n]->getScale()*TransitingBlend);
-
+					//JointChildSceneNodes[n]->setScale(
+					//		core::lerp(
+					//			PretransitingSave[n].getScale(),
+					//			JointChildSceneNodes[n]->getScale(),
+					//			TransitingBlend));
 				}
-
 			}
-
 		}
 	}
-
 }
 
 
@@ -994,50 +972,38 @@ void CAnimatedMeshSceneNode::checkJoints()
 
 	if (!JointsUsed)
 	{
-
-
 		//Create joints for SkinnedMesh
 
-		((ISkinnedMesh*)Mesh)->createJoints( JointChildSceneNodes,this,SceneManager);
-		((ISkinnedMesh*)Mesh)->recoverJointsFromMesh( JointChildSceneNodes);
-
+		((ISkinnedMesh*)Mesh)->createJoints(JointChildSceneNodes, this, SceneManager);
+		((ISkinnedMesh*)Mesh)->recoverJointsFromMesh(JointChildSceneNodes);
 
 		JointsUsed=true;
 		JointMode=1;
-
 	}
-
 }
 
 void CAnimatedMeshSceneNode::beginTransition()
 {
-	if (!JointsUsed) return;
+	if (!JointsUsed)
+		return;
 
-	u32 n;
-
-	if (TransitionTime!=0)
+	if (TransitionTime != 0)
 	{
 		//Check the array is big enough
 		if (PretransitingSave.size()<JointChildSceneNodes.size())
 		{
-			for(n=PretransitingSave.size();n<JointChildSceneNodes.size();++n)
+			for(u32 n=PretransitingSave.size(); n<JointChildSceneNodes.size(); ++n)
 				PretransitingSave.push_back(core::matrix4());
 		}
 
 
 		//Copy the position of joints
-		for (n=0;n<JointChildSceneNodes.size();++n)
+		for (u32 n=0;n<JointChildSceneNodes.size();++n)
 			PretransitingSave[n]=JointChildSceneNodes[n]->getRelativeTransformation();
 
-		Transiting=1.0f/f32(TransitionTime);
-
+		Transiting = core::reciprocal((f32)TransitionTime);
 	}
 }
-
-
-
-
-
 
 
 } // end namespace scene
