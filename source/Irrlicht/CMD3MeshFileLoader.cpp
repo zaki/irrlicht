@@ -20,12 +20,10 @@ CMD3MeshFileLoader::CMD3MeshFileLoader(io::IFileSystem* fs, video::IVideoDriver*
 }
 
 
-
 //! destructor
 CMD3MeshFileLoader::~CMD3MeshFileLoader()
 {
 }
-
 
 
 //! returns true if the file maybe is able to be loaded by this class
@@ -34,6 +32,7 @@ bool CMD3MeshFileLoader::isALoadableFileExtension(const c8* filename)
 {
 	return strstr(filename, ".md3") != 0;
 }
+
 
 IAnimatedMesh* CMD3MeshFileLoader::createMesh(irr::io::IReadFile* file)
 {
@@ -51,3 +50,4 @@ IAnimatedMesh* CMD3MeshFileLoader::createMesh(irr::io::IReadFile* file)
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_MD3_LOADER_
+

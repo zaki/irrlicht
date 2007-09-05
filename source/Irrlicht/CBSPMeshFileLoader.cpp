@@ -22,9 +22,7 @@ CBSPMeshFileLoader::CBSPMeshFileLoader(io::IFileSystem* fs,video::IVideoDriver* 
 
 	if (Driver)
 		Driver->grab();
-
 }
-
 
 
 //! destructor
@@ -35,9 +33,7 @@ CBSPMeshFileLoader::~CBSPMeshFileLoader()
 
 	if (Driver)
 		Driver->drop();
-
 }
-
 
 
 //! returns true if the file maybe is able to be loaded by this class
@@ -46,7 +42,6 @@ bool CBSPMeshFileLoader::isALoadableFileExtension(const c8* filename)
 {
 	return strstr(filename, ".bsp") || strstr(filename, ".shader");
 }
-
 
 
 //! creates/loads an animated mesh from the file.
@@ -85,3 +80,4 @@ IAnimatedMesh* CBSPMeshFileLoader::createMesh(irr::io::IReadFile* file)
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_BSP_LOADER_
+

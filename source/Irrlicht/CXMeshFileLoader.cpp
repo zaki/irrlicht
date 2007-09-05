@@ -11,6 +11,7 @@
 
 #include "fast_atof.h"
 #include "coreutil.h"
+#include "IVideoDriver.h"
 
 namespace irr
 {

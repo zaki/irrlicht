@@ -1,6 +1,5 @@
 // B3D mesh loader
 
-
 #include "IrrCompileConfig.h"
 
 #ifndef __C_B3D_MESH_LOADER_H_INCLUDED__
@@ -102,7 +101,6 @@ private:
 
 	core::array<video::S3DVertex2TCoords*> BaseVertices;
 
-
 	core::array<scene::SSkinMeshBuffer*> *Buffers;
 	core::array<CSkinnedMesh::SJoint*> *AllJoints;
 
@@ -110,10 +108,8 @@ private:
 	ISceneManager*	SceneManager;
 	CSkinnedMesh*	AnimatedMesh;
 	io::IReadFile*	file;
-
-
-
 };
+
 
 } // end namespace scene
 } // end namespace irr
