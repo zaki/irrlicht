@@ -22,10 +22,10 @@ namespace gui
 
 //! constructor
 CGUIContextMenu::CGUIContextMenu(IGUIEnvironment* environment,
-				 IGUIElement* parent, s32 id,
-				 core::rect<s32> rectangle, bool getFocus, bool allowFocus)
-: IGUIContextMenu(environment, parent, id, rectangle), HighLighted(-1), 
-  ChangeTime(0), EventParent(0), AllowFocus(allowFocus)
+				IGUIElement* parent, s32 id,
+				core::rect<s32> rectangle, bool getFocus, bool allowFocus)
+	: IGUIContextMenu(environment, parent, id, rectangle), HighLighted(-1),
+		ChangeTime(0), EventParent(0), AllowFocus(allowFocus)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIContextMenu");
@@ -44,7 +44,7 @@ CGUIContextMenu::CGUIContextMenu(IGUIEnvironment* environment,
 //! destructor
 CGUIContextMenu::~CGUIContextMenu()
 {
-	for (s32 i=0; i<(s32)Items.size(); ++i)
+	for (u32 i=0; i<Items.size(); ++i)
 		if (Items[i].SubMenu)
 			Items[i].SubMenu->drop();
 }
@@ -84,7 +84,7 @@ s32 CGUIContextMenu::addItem(const wchar_t* text, s32 id, bool enabled, bool has
 //! Adds a sub menu from an element that already exists.
 void CGUIContextMenu::setSubMenu(s32 index, CGUIContextMenu* menu)
 {
-	if (index >= (s32)Items.size() || index < 0)
+	if ((u32)index >= Items.size())
 		return;
 
 	if (Items[index].SubMenu)
@@ -92,7 +92,7 @@ void CGUIContextMenu::setSubMenu(s32 index, CGUIContextMenu* menu)
 
 	Items[index].SubMenu = menu;
 	menu->setVisible(false);
-	
+
 	if (Items[index].SubMenu)
 	{
 		menu->grab();
@@ -117,7 +117,7 @@ void CGUIContextMenu::addSeparator()
 //! Returns text of the menu item.
 const wchar_t* CGUIContextMenu::getItemText(s32 idx)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return 0;
 
 	return Items[idx].Text.c_str();
@@ -127,7 +127,7 @@ const wchar_t* CGUIContextMenu::getItemText(s32 idx)
 //! Sets text of the menu item.
 void CGUIContextMenu::setItemText(s32 idx, const wchar_t* text)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return;
 
 	Items[idx].Text = text;
@@ -138,7 +138,7 @@ void CGUIContextMenu::setItemText(s32 idx, const wchar_t* text)
 //! Returns if a menu item is enabled
 bool CGUIContextMenu::isItemEnabled(s32 idx)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
@@ -151,7 +151,7 @@ bool CGUIContextMenu::isItemEnabled(s32 idx)
 //! Returns if a menu item is checked
 bool CGUIContextMenu::isItemChecked(s32 idx)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
@@ -165,7 +165,7 @@ bool CGUIContextMenu::isItemChecked(s32 idx)
 //! Sets if the menu item should be enabled.
 void CGUIContextMenu::setItemEnabled(s32 idx, bool enabled)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return;
 
 	Items[idx].Enabled = enabled;
@@ -174,7 +174,7 @@ void CGUIContextMenu::setItemEnabled(s32 idx, bool enabled)
 //! Sets if the menu item should be checked.
 void CGUIContextMenu::setItemChecked(s32 idx, bool checked )
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return;
 
 	Items[idx].Checked = checked;
@@ -184,7 +184,7 @@ void CGUIContextMenu::setItemChecked(s32 idx, bool checked )
 //! Removes a menu item
 void CGUIContextMenu::removeItem(s32 idx)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return;
 
 	if (Items[idx].SubMenu)
@@ -201,7 +201,7 @@ void CGUIContextMenu::removeItem(s32 idx)
 //! Removes all menu items
 void CGUIContextMenu::removeAllItems()
 {
-	for (s32 i=0; i<(s32)Items.size(); ++i)
+	for (u32 i=0; i<Items.size(); ++i)
 		if (Items[i].SubMenu)
 			Items[i].SubMenu->drop();
 
@@ -254,7 +254,7 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 			return true;
 		case EMIE_MOUSE_MOVED:
 			if (Environment->hasFocus(this))
-				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
+				highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), true);
 			return true;
 		}
 		break;
@@ -269,7 +269,7 @@ void CGUIContextMenu::setVisible(bool visible)
 {
 	HighLighted = -1;
 	ChangeTime = os::Timer::getTime();
-	for (s32 j=0; j<(s32)Items.size(); ++j)
+	for (u32 j=0; j<Items.size(); ++j)
 		if (Items[j].SubMenu)
 			Items[j].SubMenu->setVisible(false);
 
@@ -409,7 +409,7 @@ void CGUIContextMenu::draw()
 
 	if (!skin)
 		return;
-	
+
 	IGUIFont* font = skin->getFont(EGDF_MENU);
 	IGUISpriteBank* sprites = skin->getSpriteBank();
 
@@ -478,11 +478,11 @@ void CGUIContextMenu::draw()
 				core::rect<s32> r = rect;
 				r.UpperLeftCorner.X = r.LowerRightCorner.X - 15;
 
-				sprites->draw2DSprite(skin->getIcon(EGDI_CURSOR_RIGHT), 
-					r.getCenter(), clip, skin->getColor(c), 
-					(i == HighLighted) ? ChangeTime : 0,  
-					(i == HighLighted) ? os::Timer::getTime() : 0, 
-					(i == HighLighted), true); 
+				sprites->draw2DSprite(skin->getIcon(EGDI_CURSOR_RIGHT),
+					r.getCenter(), clip, skin->getColor(c),
+					(i == HighLighted) ? ChangeTime : 0,
+					(i == HighLighted) ? os::Timer::getTime() : 0,
+					(i == HighLighted), true);
 			}
 
 			// draw checked symbol
@@ -491,11 +491,11 @@ void CGUIContextMenu::draw()
 				core::rect<s32> r = rect;
 				r.LowerRightCorner.X = r.UpperLeftCorner.X - 15;
 				r.UpperLeftCorner.X = r.LowerRightCorner.X + 15;
-				sprites->draw2DSprite(skin->getIcon(EGDI_CHECK_BOX_CHECKED), 
-					r.getCenter(), clip, skin->getColor(c), 
-					(i == HighLighted) ? ChangeTime : 0,  
-					(i == HighLighted) ? os::Timer::getTime() : 0, 
-					(i == HighLighted), true); 
+				sprites->draw2DSprite(skin->getIcon(EGDI_CHECK_BOX_CHECKED),
+					r.getCenter(), clip, skin->getColor(c),
+					(i == HighLighted) ? ChangeTime : 0,
+					(i == HighLighted) ? os::Timer::getTime() : 0,
+					(i == HighLighted), true);
 			}
 
 		}
@@ -551,6 +551,7 @@ void CGUIContextMenu::recalculateSize()
 
 	// recalculate submenus
 	for (i=0; i<(s32)Items.size(); ++i)
+	{
 		if (Items[i].SubMenu)
 		{
 			// move submenu
@@ -561,6 +562,7 @@ void CGUIContextMenu::recalculateSize()
 				core::rect<s32>(width-5, Items[i].PosY,
 					width+w-5, Items[i].PosY+h));
 		}
+	}
 }
 
 
@@ -574,7 +576,7 @@ s32 CGUIContextMenu::getSelectedItem()
 //! \return Returns a pointer to the submenu of an item.
 IGUIContextMenu* CGUIContextMenu::getSubMenu(s32 idx)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return 0;
 
 	return Items[idx].SubMenu;
@@ -584,7 +586,7 @@ IGUIContextMenu* CGUIContextMenu::getSubMenu(s32 idx)
 //! Returns command id of a menu item
 s32 CGUIContextMenu::getItemCommandId(s32 idx)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return -1;
 
 	return Items[idx].CommandId;
@@ -593,7 +595,7 @@ s32 CGUIContextMenu::getItemCommandId(s32 idx)
 //! Sets the command id of a menu item
 void CGUIContextMenu::setItemCommandId(s32 idx, s32 id)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if ((u32)idx >= Items.size())
 		return;
 
 	Items[idx].CommandId = id;
@@ -603,25 +605,24 @@ void CGUIContextMenu::setItemCommandId(s32 idx, s32 id)
 void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
 {
 	IGUIElement::serializeAttributes(out,options);
-	out->addPosition2d	("Position",		Pos);
+	out->addPosition2d("Position", Pos);
 
 	if (Parent->getType() == EGUIET_CONTEXT_MENU || Parent->getType() == EGUIET_MENU )
 	{
 		IGUIContextMenu* ptr = (IGUIContextMenu*)Parent;
-		s32 i=0;
 		// find the position of this item in its parent's list
-		for (; i<(s32)ptr->getItemCount() && ptr->getSubMenu(i) != this; ++i);
+		s32 i;
+		for (i=0; i<ptr->getItemCount() && ptr->getSubMenu(i) != this; ++i);
 
-		out->addInt("ParentItem",	i);
+		out->addInt("ParentItem", i);
 	}
-	
+
 	// write out the item list
 	out->addInt("ItemCount", Items.size());
 
 	core::stringc tmp;
 
-	s32 i=0;
-	for (; i < (s32)Items.size(); ++i)
+	for (u32 i=0; i < Items.size(); ++i)
 	{
 		tmp = "IsSeparator"; tmp += i;
 		out->addBool(tmp.c_str(), Items[i].IsSeparator);
@@ -655,8 +656,7 @@ void CGUIContextMenu::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	// read the item list
 	s32 count = in->getAttributeAsInt("ItemCount");
 
-	s32 i=0;
-	for (; i<(s32)count; ++i)
+	for (s32 i=0; i<count; ++i)
 	{
 		core::stringc tmp;
 		core::stringw txt;
@@ -680,14 +680,12 @@ void CGUIContextMenu::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 
 			tmp = "Checked"; tmp += i;
 			checked = in->getAttributeAsBool(tmp.c_str());
-			
+
 			addItem(core::stringw(txt.c_str()).c_str(), commandid, enabled, false, checked);
 		}
 	}
 
-
 	recalculateSize();
-
 }
 
 // because sometimes the element has no parent at click time
@@ -695,7 +693,7 @@ void CGUIContextMenu::setEventParent(IGUIElement *parent)
 {
 	EventParent = parent;
 
-	for (u32 i=0; i<(s32)Items.size(); ++i)
+	for (u32 i=0; i<Items.size(); ++i)
 		if (Items[i].SubMenu)
 		{
 			Items[i].SubMenu->setEventParent(parent);
@@ -704,7 +702,7 @@ void CGUIContextMenu::setEventParent(IGUIElement *parent)
 
 bool CGUIContextMenu::hasOpenSubMenu()
 {
-	for (s32 i=0; i<(s32)Items.size(); ++i)
+	for (u32 i=0; i<Items.size(); ++i)
 		if (Items[i].SubMenu)
 			if ( Items[i].SubMenu->isVisible() )
 				return true;
@@ -713,7 +711,7 @@ bool CGUIContextMenu::hasOpenSubMenu()
 
 void CGUIContextMenu::closeAllSubMenus()
 {
-	for (s32 i=0; i<(s32)Items.size(); ++i)
+	for (u32 i=0; i<Items.size(); ++i)
 		if (Items[i].SubMenu)
 			Items[i].SubMenu->setVisible(false);
 
