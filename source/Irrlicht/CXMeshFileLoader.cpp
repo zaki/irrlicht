@@ -31,7 +31,7 @@ CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr)
 //! destructor
 CXMeshFileLoader::~CXMeshFileLoader()
 {
-	TemplateMaterials.clear();
+	
 }
 
 
@@ -75,7 +75,6 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 	MinorVersion=0;
 	binary=0;
 	binaryNumCount=0;
-	Buffer=0;
 	Size=0;
 	FloatSize=0;
 	P=0;
@@ -84,6 +83,12 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 	CurFrame=0;
 	TemplateMaterials.clear();
 
+	if (Buffer)
+		delete Buffer;
+	Buffer = 0;
+
+	for (u32 i=0; i<Meshes.size(); ++i)
+		delete Meshes[i];
 	Meshes.clear();
 
 	return AnimatedMesh;
