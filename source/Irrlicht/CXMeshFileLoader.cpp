@@ -12,6 +12,7 @@
 #include "fast_atof.h"
 #include "coreutil.h"
 #include "IVideoDriver.h"
+#include "IReadFile.h"
 
 namespace irr
 {
@@ -20,18 +21,10 @@ namespace scene
 
 //! Constructor
 CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr)
-: SceneManager(smgr), Buffers(0), AllJoints(0), AnimatedMesh(0), file(0),
-	MajorVersion(0), MinorVersion(0), binary(false), binaryNumCount(0),
-	Buffer(0), Size(0), FloatSize(0), P(0), End(0), ErrorHappened(false),
-	CurFrame(0)
+: SceneManager(smgr), AnimatedMesh(0), MajorVersion(0), MinorVersion(0),
+	BinaryFormat(false), BinaryNumCount(0), Buffer(0), P(0), End(0),
+	FloatSize(0), CurFrame(0)
 {
-}
-
-
-//! destructor
-CXMeshFileLoader::~CXMeshFileLoader()
-{
-	
 }
 
 
@@ -52,13 +45,9 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 	if (!f)
 		return 0;
 
-	file = f;
 	AnimatedMesh = new CSkinnedMesh();
 
-	Buffers = &AnimatedMesh->getMeshBuffers();
-	AllJoints = &AnimatedMesh->getAllJoints();
-
-	if ( load() )
+	if ( load(f) )
 	{
 		AnimatedMesh->finalize();
 	}
@@ -70,16 +59,13 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 
 	//Clear up
 
-	file=0;
 	MajorVersion=0;
 	MinorVersion=0;
-	binary=0;
-	binaryNumCount=0;
-	Size=0;
+	BinaryFormat=0;
+	BinaryNumCount=0;
 	FloatSize=0;
 	P=0;
 	End=0;
-	ErrorHappened=0;
 	CurFrame=0;
 	TemplateMaterials.clear();
 
@@ -94,48 +80,50 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 }
 
 
-bool CXMeshFileLoader::load()
+bool CXMeshFileLoader::load(io::IReadFile* file)
 {
-	if (!readFileIntoMemory())
+	if (!readFileIntoMemory(file))
 		return false;
 
 	if (!parseFile())
 		return false;
 
-	for (u32 n=0;n<Meshes.size();++n)
+	for (u32 n=0; n<Meshes.size(); ++n)
 	{
-		SXMesh *Mesh=Meshes[n];
+		SXMesh *mesh=Meshes[n];
 
-		if (!Mesh->Materials.size()) Mesh->Materials.push_back(video::SMaterial());
+		// default material if nothing loaded
+		if (!mesh->Materials.size())
+			mesh->Materials.push_back(video::SMaterial());
 
 		u32 i;
 
-		for (i=0;i<Mesh->Materials.size();++i)
+		for (i=0; i<mesh->Materials.size(); ++i)
 		{
-			Mesh->Buffers.push_back( AnimatedMesh->createBuffer() );
-			Mesh->Buffers.getLast()->Material=Mesh->Materials[i];
+			mesh->Buffers.push_back( AnimatedMesh->createBuffer() );
+			mesh->Buffers.getLast()->Material = mesh->Materials[i];
 		}
 
 
 		#ifdef BETTER_MESHBUFFER_SPLITTING_FOR_X
-
+		{
 			//the same vertex can be used in many different meshbuffers, but it's slow to work out
 
-			core::array< core::array< u32 > > VerticesLink;
-			VerticesLink.set_used(Mesh->Vertices.size());
-			core::array< core::array< u32 > > VerticesLinkBuffer;
-			VerticesLinkBuffer.set_used(Mesh->Vertices.size());
+			core::array< core::array< u32 > > verticesLink;
+			verticesLink.set_used(mesh->Vertices.size());
+			core::array< core::array< u32 > > verticesLinkBuffer;
+			verticesLinkBuffer.set_used(mesh->Vertices.size());
 
-			for (i=0;i<Mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceIndices.size();++i)
 			{
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
-					core::array< u32 > &Array=VerticesLinkBuffer[ Mesh->Indices[id] ];
+					core::array< u32 > &Array=verticesLinkBuffer[ mesh->Indices[id] ];
 					bool found=false;
 
 					for (u32 j=0; j < Array.size(); ++j)
 					{
-						if (Array[j]==Mesh->FaceIndices[i])
+						if (Array[j]==mesh->FaceIndices[i])
 						{
 							found=true;
 							break;
@@ -143,40 +131,40 @@ bool CXMeshFileLoader::load()
 					}
 
 					if (!found)
-						Array.push_back( Mesh->FaceIndices[i] );
+						Array.push_back( mesh->FaceIndices[i] );
 				}
 			}
 
-			for (i=0;i<VerticesLinkBuffer.size();++i)
+			for (i=0;i<verticesLinkBuffer.size();++i)
 			{
-				if (!VerticesLinkBuffer[i].size())
-					VerticesLinkBuffer[i].push_back(0);
+				if (!verticesLinkBuffer[i].size())
+					verticesLinkBuffer[i].push_back(0);
 			}
 
-			for (i=0;i<Mesh->Vertices.size();++i)
+			for (i=0;i<mesh->Vertices.size();++i)
 			{
-				core::array< u32 > &Array=VerticesLinkBuffer[i];
-				VerticesLink[i].reallocate(Array.size());
-				for (u32 j=0;j < Array.size(); ++j)
+				core::array< u32 > &Array = verticesLinkBuffer[i];
+				verticesLink[i].reallocate(Array.size());
+				for (u32 j=0; j < Array.size(); ++j)
 				{
-					scene::SSkinMeshBuffer *Buffer=Mesh->Buffers[ Array[j] ];
-					VerticesLink[i].push_back( Buffer->Vertices_Standard.size() );
-					Buffer->Vertices_Standard.push_back(  Mesh->Vertices[i] );
+					scene::SSkinMeshBuffer *buffer = mesh->Buffers[ Array[j] ];
+					verticesLink[i].push_back( buffer->Vertices_Standard.size() );
+					buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
 				}
 			}
 
-			for (i=0;i<Mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceIndices.size();++i)
 			{
-				scene::SSkinMeshBuffer *Buffer=Mesh->Buffers[ Mesh->FaceIndices[i] ];
+				scene::SSkinMeshBuffer *buffer=mesh->Buffers[ mesh->FaceIndices[i] ];
 
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
-					core::array< u32 > &Array=VerticesLinkBuffer[ Mesh->Indices[id] ];
+					core::array< u32 > &Array=verticesLinkBuffer[ mesh->Indices[id] ];
 
 					for (u32 j=0;j<  Array.size() ;++j)
 					{
-						if ( Array[j]== Mesh->FaceIndices[i] )
-							Buffer->Indices.push_back( VerticesLink[ Mesh->Indices[id] ][j] );
+						if ( Array[j]== mesh->FaceIndices[i] )
+							buffer->Indices.push_back( verticesLink[ mesh->Indices[id] ][j] );
 					}
 				}
 			}
@@ -192,61 +180,61 @@ bool CXMeshFileLoader::load()
 					ISkinnedMesh::SWeight& Weight = Joint->Weights[j];
 					const u32 id = Weight.vertex_id;
 
-					if (VerticesLinkBuffer[id].size()==1)
+					if (verticesLinkBuffer[id].size()==1)
 					{
-						Weight.vertex_id=VerticesLink[id][0];
-						Weight.buffer_id=VerticesLinkBuffer[id][0];
+						Weight.vertex_id=verticesLink[id][0];
+						Weight.buffer_id=verticesLinkBuffer[id][0];
 					}
-					else if (VerticesLinkBuffer[id].size() != 0)
+					else if (verticesLinkBuffer[id].size() != 0)
 					{
-						for (u32 k=1; k < VerticesLinkBuffer[id].size(); ++k)
+						for (u32 k=1; k < verticesLinkBuffer[id].size(); ++k)
 						{
 							ISkinnedMesh::SWeight& WeightClone=AnimatedMesh->createWeight(Joint);
 							WeightClone.strength = Weight.strength;
-							WeightClone.vertex_id = VerticesLink[id][k];
-							WeightClone.buffer_id = VerticesLinkBuffer[id][k];
+							WeightClone.vertex_id = verticesLink[id][k];
+							WeightClone.buffer_id = verticesLinkBuffer[id][k];
 						}
 					}
 				}
 			}
+		}
 		#else
+		{
+			core::array< u32 > verticesLink;
+			core::array< u32 > verticesLinkBuffer;
+			verticesLinkBuffer.set_used(mesh->Vertices.size());
+			verticesLink.set_used(mesh->Vertices.size());
 
-			core::array< u32 > VerticesLink;
-			core::array< u32 > VerticesLinkBuffer;
-
-			VerticesLinkBuffer.set_used(Mesh->Vertices.size());
-			VerticesLink.set_used(Mesh->Vertices.size());
-
-			for (i=0;i<Mesh->Vertices.size();++i)
+			// init with 0
+			for (i=0;i<mesh->Vertices.size();++i)
 			{
-				VerticesLinkBuffer[i]=0;
-				VerticesLink[i]=0;
+				verticesLinkBuffer[i]=0;
+				verticesLink[i]=0;
 			}
 
-			for (i=0;i<Mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceIndices.size();++i)
 			{
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
-					VerticesLinkBuffer[ Mesh->Indices[id] ] = Mesh->FaceIndices[i];
+					verticesLinkBuffer[ mesh->Indices[id] ] = mesh->FaceIndices[i];
 				}
 			}
 
-
-			for (i=0;i<Mesh->Vertices.size();++i)
+			for (i=0;i<mesh->Vertices.size();++i)
 			{
-				scene::SSkinMeshBuffer *Buffer=Mesh->Buffers[ VerticesLinkBuffer[i] ];
+				scene::SSkinMeshBuffer *buffer = mesh->Buffers[ verticesLinkBuffer[i] ];
 
-				VerticesLink[i] = Buffer->Vertices_Standard.size();
-				Buffer->Vertices_Standard.push_back(  Mesh->Vertices[i] );
+				verticesLink[i] = buffer->Vertices_Standard.size();
+				buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
 			}
 
-			for (i=0;i<Mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceIndices.size();++i)
 			{
-				scene::SSkinMeshBuffer *Buffer=Mesh->Buffers[ Mesh->FaceIndices[i] ];
+				scene::SSkinMeshBuffer *buffer=mesh->Buffers[ mesh->FaceIndices[i] ];
 
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
-					Buffer->Indices.push_back( VerticesLink[ Mesh->Indices[id] ] );
+					buffer->Indices.push_back( verticesLink[ mesh->Indices[id] ] );
 				}
 			}
 
@@ -260,10 +248,11 @@ bool CXMeshFileLoader::load()
 
 					const u32 id = Weight.vertex_id;
 
-					Weight.vertex_id=VerticesLink[id];
-					Weight.buffer_id=VerticesLinkBuffer[id];
+					Weight.vertex_id=verticesLink[id];
+					Weight.buffer_id=verticesLinkBuffer[id];
 				}
 			}
+		}
 		#endif
 	}
 
@@ -272,26 +261,25 @@ bool CXMeshFileLoader::load()
 
 
 //! Reads file into memory
-bool CXMeshFileLoader::readFileIntoMemory()
+bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 {
-	s32 Size = file->getSize();
-	if (Size < 12)
+	const s32 size = file->getSize();
+	if (size < 12)
 	{
 		os::Printer::log("X File is too small.", ELL_WARNING);
 		return false;
 	}
 
-	Buffer = new c8[Size];
+	Buffer = new c8[size];
 
 	//! read all into memory
-	file->seek(0); // apparently sometimes files have been read already, so reset it
-	if (file->read(Buffer, Size) != Size)
+	if (file->read(Buffer, size) != size)
 	{
 		os::Printer::log("Could not read from x file.", ELL_WARNING);
 		return false;
 	}
 
-	End = Buffer + Size;
+	End = Buffer + size;
 
 	//! check header "xof "
 	if (strncmp(Buffer, "xof ", 4)!=0)
@@ -305,23 +293,23 @@ bool CXMeshFileLoader::readFileIntoMemory()
 	tmp[2] = 0x0;
 	tmp[0] = Buffer[4];
 	tmp[1] = Buffer[5];
-	MajorVersion = strtol(tmp, (char**) &P, 10);
+	MajorVersion = core::strtol10(tmp);
 
 	tmp[0] = Buffer[6];
 	tmp[1] = Buffer[7];
-	MinorVersion = strtol(tmp, (char**) &P, 10);
+	MinorVersion = core::strtol10(tmp);
 
 	//! read format
 	if (strncmp(&Buffer[8], "txt ", 4) ==0)
-		binary = false;
+		BinaryFormat = false;
 	else if (strncmp(&Buffer[8], "bin ", 4) ==0)
-		binary = true;
+		BinaryFormat = true;
 	else
 	{
 		os::Printer::log("Only uncompressed x files currently supported.", ELL_WARNING);
 		return false;
 	}
-	binaryNumCount=0;
+	BinaryNumCount=0;
 
 	//! read float size
 	if (strncmp(&Buffer[12], "0032", 4) ==0)
@@ -337,6 +325,7 @@ bool CXMeshFileLoader::readFileIntoMemory()
 	P = &Buffer[16];
 
 	readUntilEndOfLine();
+	FilePath = stripPathFromString(file->getFileName(),true);
 
 	return true;
 }
@@ -384,12 +373,12 @@ bool CXMeshFileLoader::parseDataObject()
 		//CurFrame->Meshes.push_back(SXMesh());
 		//return parseDataObjectMesh(CurFrame->Meshes.getLast());
 
-		SXMesh *Mesh=new SXMesh;
+		SXMesh *mesh=new SXMesh;
 
-		//Mesh->Buffer=AnimatedMesh->createBuffer();
-		Meshes.push_back(Mesh);
+		//mesh->Buffer=AnimatedMesh->createBuffer();
+		Meshes.push_back(mesh);
 
-		return parseDataObjectMesh ( *Mesh );
+		return parseDataObjectMesh ( *mesh );
 	}
 	else
 	if (objectName == "AnimationSet")
@@ -555,11 +544,11 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 			if (!parseDataObjectMesh(frame.Meshes.getLast()))
 				return false;
 			*/
-			SXMesh *Mesh=new SXMesh;
+			SXMesh *mesh=new SXMesh;
 
-			Meshes.push_back(Mesh);
+			Meshes.push_back(mesh);
 
-			return parseDataObjectMesh ( *Mesh );
+			return parseDataObjectMesh ( *mesh );
 		}
 		else
 		{
@@ -586,7 +575,7 @@ bool CXMeshFileLoader::parseDataObjectTransformationMatrix(core::matrix4 &mat)
 		return false;
 	}
 
-	if (binary)
+	if (BinaryFormat)
 	{
 		// read matrix in binary format
 		if (readBinWord() != 7)
@@ -647,7 +636,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 
 
 	s32 count=0;
-	if (binary)
+	if (BinaryFormat)
 	{
 		// read vertices in binary format
 		if (readBinWord() != 7)
@@ -723,7 +712,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		}
 	}
 
-	if (binary && binaryNumCount)
+	if (BinaryFormat && BinaryNumCount)
 	{
 		os::Printer::log("Binary X: Mesh: Integer count mismatch", ELL_WARNING);
 		return false;
@@ -874,7 +863,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 
 	// read vertex weights
 
-	if (binary)
+	if (BinaryFormat)
 	{
 		// read float list in binary format
 		if (readBinWord() != 7)
@@ -952,7 +941,7 @@ bool CXMeshFileLoader::parseDataObjectSkinMeshHeader()
 	readInt(); //MaxSkinWeightsPerVertex
 	readInt(); //MaxSkinWeightsPerFace
 	readInt(); //BoneCount
-	if (!binary)
+	if (!BinaryFormat)
 		getNextToken(); // skip semicolon
 	core::stringc objectName = getNextToken();
 
@@ -986,7 +975,7 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 	normals.set_used(nNormals);
 
 	// read normals
-	if (binary)
+	if (BinaryFormat)
 	{
 		if (readBinWord() != 7)
 		{
@@ -1089,7 +1078,7 @@ bool CXMeshFileLoader::parseDataObjectMeshTextureCoords(SXMesh &mesh)
 	s32 nCoords;
 	u32 count;
 	nCoords = readInt();
-	if (binary)
+	if (BinaryFormat)
 	{
 		if (readBinWord() != 7)
 		{
@@ -1136,7 +1125,7 @@ bool CXMeshFileLoader::parseDataObjectMeshVertexColors(SXMesh &mesh)
 	s32 nColors;
 	u32 count;
 	nColors = readInt();
-	if (binary)
+	if (BinaryFormat)
 	{
 		if (readBinWord() != 7)
 		{
@@ -1218,7 +1207,7 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 
 	// in version 03.02, the face indices end with two semicolons.
 	// commented out version check, as version 03.03 exported from blender also has 2 semicolons
-	if (!binary) // && MajorVersion == 3 && MinorVersion <= 2)
+	if (!BinaryFormat) // && MajorVersion == 3 && MinorVersion <= 2)
 	{
 		if (P[0] == ';')
 			++P;
@@ -1287,7 +1276,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 	}
 
 	u32 count = 0;
-	if (binary)
+	if (BinaryFormat)
 	{
 		if (readBinWord() != 7)
 		{
@@ -1338,9 +1327,17 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 			if (!parseDataObjectTextureFilename(TextureFileName))
 				return false;
 
-			TextureFileName=stripPathFromString(file->getFileName(),true) + stripPathFromString(TextureFileName,false);
-
-			material.Textures[0]=SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() );
+			// original name
+			SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() );
+			// mesh path
+			if (!material.Textures[0])
+			{
+				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
+				material.Textures[0]=SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() );
+			}
+			// working directory
+			if (!material.Textures[0])
+				SceneManager->getVideoDriver()->getTexture ( stripPathFromString(TextureFileName,false).c_str() );
 		}
 		else
 		{
@@ -1582,7 +1579,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 
 	// eat the semicolon after the "0".  if there are keys present, readInt()
 	// does this for us.  If there aren't, we need to do it explicitly
-	if (!binary && numberOfKeys == 0)
+	if (!BinaryFormat && numberOfKeys == 0)
 		getNextToken(); // skip semicolon
 
 
@@ -1606,7 +1603,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 					return false;
 				}
 
-				if (binary)
+				if (BinaryFormat)
 				{
 					if (readBinWord() != 7)
 					{
@@ -1652,7 +1649,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 						return false;
 					}
 
-					if (binary)
+					if (BinaryFormat)
 					{
 						if (readBinWord() != 7)
 						{
@@ -1706,7 +1703,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				}
 
 				// read matrix
-				if (binary)
+				if (BinaryFormat)
 				{
 					if (readBinWord() != 7)
 					{
@@ -1768,7 +1765,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 		} // end switch
 	}
 
-	if (!binary)
+	if (!BinaryFormat)
 		getNextToken(); // skip another semicolon
 	core::stringc objectName = getNextToken();
 
@@ -1849,7 +1846,7 @@ bool CXMeshFileLoader::parseUnknownDataObject()
 //! checks for two following semicolons, returns false if they are not there
 bool CXMeshFileLoader::checkForOneFollowingSemicolons()
 {
-	if (binary)
+	if (BinaryFormat)
 		return true;
 
 	findNextNoneWhiteSpace();
@@ -1864,7 +1861,7 @@ bool CXMeshFileLoader::checkForOneFollowingSemicolons()
 //! checks for two following semicolons, returns false if they are not there
 bool CXMeshFileLoader::checkForTwoFollowingSemicolons()
 {
-	if (binary)
+	if (BinaryFormat)
 		return true;
 
 	for (s32 k=0; k<2; ++k)
@@ -1911,7 +1908,7 @@ core::stringc CXMeshFileLoader::getNextToken()
 	core::stringc s;
 
 	// process binary-formatted file
-	if (binary)
+	if (BinaryFormat)
 	{
 		// in binary mode it will only return NAME and STRING token
 		// and (correctly) skip over other tokens.
@@ -2028,7 +2025,7 @@ core::stringc CXMeshFileLoader::getNextToken()
 // and ignores comments
 void CXMeshFileLoader::findNextNoneWhiteSpaceNumber()
 {
-	if (binary)
+	if (BinaryFormat)
 		return;
 
 	while(true)
@@ -2052,7 +2049,7 @@ void CXMeshFileLoader::findNextNoneWhiteSpaceNumber()
 // places pointer to next begin of a token, and ignores comments
 void CXMeshFileLoader::findNextNoneWhiteSpace()
 {
-	if (binary)
+	if (BinaryFormat)
 		return;
 
 	while(true)
@@ -2076,7 +2073,7 @@ void CXMeshFileLoader::findNextNoneWhiteSpace()
 //! reads a x file style string
 bool CXMeshFileLoader::getNextTokenAsString(core::stringc& out)
 {
-	if (binary)
+	if (BinaryFormat)
 	{
 		out=getNextToken();
 		return true;
@@ -2106,7 +2103,7 @@ bool CXMeshFileLoader::getNextTokenAsString(core::stringc& out)
 
 void CXMeshFileLoader::readUntilEndOfLine()
 {
-	if (binary)
+	if (BinaryFormat)
 		return;
 
 	while(P < End)
@@ -2144,14 +2141,14 @@ u32 CXMeshFileLoader::readBinDWord()
 
 s32 CXMeshFileLoader::readInt()
 {
-	if (binary)
+	if (BinaryFormat)
 	{
-		if (!binaryNumCount)
+		if (!BinaryNumCount)
 		{
 			readBinWord(); // 0x06
-			binaryNumCount=readBinDWord(); // 0x0001
+			BinaryNumCount=readBinDWord(); // 0x0001
 		}
-		--binaryNumCount;
+		--BinaryNumCount;
 		return readBinDWord();
 	}
 	else
@@ -2159,14 +2156,14 @@ s32 CXMeshFileLoader::readInt()
 		f32 ftmp;
 		findNextNoneWhiteSpaceNumber();
 		P = core::fast_atof_move(P, ftmp);
-		return (s32)ftmp;
+		return core::floor32(ftmp);
 	}
 }
 
 
 f32 CXMeshFileLoader::readFloat()
 {
-	if (binary)
+	if (BinaryFormat)
 	{
 		if (FloatSize == 8)
 		{
