@@ -83,8 +83,7 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 	CurFrame=0;
 	TemplateMaterials.clear();
 
-	if (Buffer)
-		delete Buffer;
+	delete Buffer;
 	Buffer = 0;
 
 	for (u32 i=0; i<Meshes.size(); ++i)
@@ -123,13 +122,9 @@ bool CXMeshFileLoader::load()
 			//the same vertex can be used in many different meshbuffers, but it's slow to work out
 
 			core::array< core::array< u32 > > VerticesLink;
+			VerticesLink.set_used(Mesh->Vertices.size());
 			core::array< core::array< u32 > > VerticesLinkBuffer;
-
-			for (i=0;i<Mesh->Vertices.size();++i)
-			{
-				VerticesLinkBuffer.push_back( core::array< u32 >() );
-				VerticesLink.push_back( core::array< u32 >() );
-			}
+			VerticesLinkBuffer.set_used(Mesh->Vertices.size());
 
 			for (i=0;i<Mesh->FaceIndices.size();++i)
 			{
@@ -138,14 +133,19 @@ bool CXMeshFileLoader::load()
 					core::array< u32 > &Array=VerticesLinkBuffer[ Mesh->Indices[id] ];
 					bool found=false;
 
-					for (u32 j=0;j<  Array.size() ;++j)
-						if (Array[j]==Mesh->FaceIndices[i]) found=true;
+					for (u32 j=0; j < Array.size(); ++j)
+					{
+						if (Array[j]==Mesh->FaceIndices[i])
+						{
+							found=true;
+							break;
+						}
+					}
 
 					if (!found)
 						Array.push_back( Mesh->FaceIndices[i] );
 				}
 			}
-
 
 			for (i=0;i<VerticesLinkBuffer.size();++i)
 			{
@@ -156,6 +156,7 @@ bool CXMeshFileLoader::load()
 			for (i=0;i<Mesh->Vertices.size();++i)
 			{
 				core::array< u32 > &Array=VerticesLinkBuffer[i];
+				VerticesLink[i].reallocate(Array.size());
 				for (u32 j=0;j < Array.size(); ++j)
 				{
 					scene::SSkinMeshBuffer *Buffer=Mesh->Buffers[ Array[j] ];
@@ -187,30 +188,26 @@ bool CXMeshFileLoader::load()
 
 				for (u32 j=0;j<Joint->Weights.size();++j)
 				{
-					u32 id;
 
-					ISkinnedMesh::SWeight *Weight=&Joint->Weights[j];
-					id=Weight->vertex_id;
+					ISkinnedMesh::SWeight& Weight = Joint->Weights[j];
+					const u32 id = Weight.vertex_id;
 
 					if (VerticesLinkBuffer[id].size()==1)
 					{
-						Weight->vertex_id=VerticesLink[id][0];
-						Weight->buffer_id=VerticesLinkBuffer[id][0];
+						Weight.vertex_id=VerticesLink[id][0];
+						Weight.buffer_id=VerticesLinkBuffer[id][0];
 					}
-
-					if (VerticesLinkBuffer[id].size()>1)
+					else if (VerticesLinkBuffer[id].size() != 0)
 					{
-						for (u32 k=1;k<  VerticesLinkBuffer[id].size() ;++k)
+						for (u32 k=1; k < VerticesLinkBuffer[id].size(); ++k)
 						{
-							ISkinnedMesh::SWeight *WeightClone=AnimatedMesh->createWeight(Joint);
-							WeightClone->strength=Weight->strength;
-							WeightClone->vertex_id=VerticesLink[id][k];
-							WeightClone->buffer_id=VerticesLinkBuffer[id][k];
+							ISkinnedMesh::SWeight& WeightClone=AnimatedMesh->createWeight(Joint);
+							WeightClone.strength = Weight.strength;
+							WeightClone.vertex_id = VerticesLink[id][k];
+							WeightClone.buffer_id = VerticesLinkBuffer[id][k];
 						}
 					}
-
 				}
-
 			}
 		#else
 
@@ -237,12 +234,10 @@ bool CXMeshFileLoader::load()
 
 			for (i=0;i<Mesh->Vertices.size();++i)
 			{
-
 				scene::SSkinMeshBuffer *Buffer=Mesh->Buffers[ VerticesLinkBuffer[i] ];
 
 				VerticesLink[i] = Buffer->Vertices_Standard.size();
 				Buffer->Vertices_Standard.push_back(  Mesh->Vertices[i] );
-
 			}
 
 			for (i=0;i<Mesh->FaceIndices.size();++i)
@@ -255,21 +250,18 @@ bool CXMeshFileLoader::load()
 				}
 			}
 
-			for (i=0;i<AnimatedMesh->getAllJoints().size();++i)
+			for (i=0; i<AnimatedMesh->getAllJoints().size(); ++i)
 			{
-
-				ISkinnedMesh::SJoint *Joint=AnimatedMesh->getAllJoints()[i];
+				ISkinnedMesh::SJoint *Joint = AnimatedMesh->getAllJoints()[i];
 
 				for (u32 j=0;j<Joint->Weights.size();++j)
 				{
-					u32 id;
+					ISkinnedMesh::SWeight& Weight = Joint->Weights[j];
 
-					ISkinnedMesh::SWeight *Weight=&Joint->Weights[j];
+					const u32 id = Weight.vertex_id;
 
-					id=Weight->vertex_id;
-
-					Weight->vertex_id=VerticesLink[id];
-					Weight->buffer_id=VerticesLinkBuffer[id];
+					Weight.vertex_id=VerticesLink[id];
+					Weight.buffer_id=VerticesLinkBuffer[id];
 				}
 			}
 		#endif
@@ -277,7 +269,6 @@ bool CXMeshFileLoader::load()
 
 	return true;
 }
-
 
 
 //! Reads file into memory
@@ -397,7 +388,6 @@ bool CXMeshFileLoader::parseDataObject()
 
 		//Mesh->Buffer=AnimatedMesh->createBuffer();
 		Meshes.push_back(Mesh);
-
 
 		return parseDataObjectMesh ( *Mesh );
 	}
@@ -650,7 +640,6 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	// read vertex count
 	s32 nVertices = readInt();
 
-
 	// read vertices
 	mesh.Vertices.set_used(nVertices); //luke: change
 	for (s32 nums=0; nums<nVertices; ++nums)
@@ -713,7 +702,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 			mesh.Indices.set_used(mesh.Indices.size() + ((triangles*3)-3));
 			mesh.IndexCountPerFace[k] = triangles * 3;
 
-			for (int f=0; f<fcnt; ++f)
+			for (s32 f=0; f<fcnt; ++f)
 				polygonfaces[f] = readInt();
 
 			for (s32 jk=0; jk<triangles; ++jk)
@@ -845,10 +834,13 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 
 	CSkinnedMesh::SJoint *joint=0;
 
-	for (u32 n=0;n < AnimatedMesh->getAllJoints().size();++n)
+	for (u32 n=0; n < AnimatedMesh->getAllJoints().size(); ++n)
 	{
 		if (AnimatedMesh->getAllJoints()[n]->Name==TransformNodeName)
+		{
 			joint=AnimatedMesh->getAllJoints()[n];
+			break;
+		}
 	}
 
 	if (!joint)
@@ -868,7 +860,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	core::array<f32> Weights_Strength;
 
 	// read vertex weights
-	s32 nWeights = readInt();
+	const s32 nWeights = readInt();
 
 	Weights_Index.set_used(nWeights);
 	Weights_Strength.set_used(nWeights);
@@ -911,8 +903,6 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	core::matrix4 MatrixOffset; // transforms the mesh vertices to the space of the bone
 					// When concatenated to the bone's transform, this provides the
 					// world space coordinates of the mesh as affected by the bone
-
-
 
 	for (i=0; i<4; ++i)
 	{
@@ -992,7 +982,8 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 	s32 nNormals;
 	s32 count;
 	nNormals = readInt();
-	//normals.set_used(nNormals);
+	core::array<core::vector3df> normals;
+	normals.set_used(nNormals);
 
 	// read normals
 	if (binary)
@@ -1010,7 +1001,7 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 		}
 	}
 	for (s32 i=0; i<nNormals; ++i)
-		readVector3(mesh.Vertices[i].Normal);
+		readVector3(normals[i]);
 
 	if (!checkForTwoFollowingSemicolons())
 	{
@@ -1027,12 +1018,11 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 
 	normalIndices.set_used(triangulatedIndexCount);
 
-
 	s32 normalidx = 0;
 	core::array<s32> polygonfaces;
+	polygonfaces.reallocate(32);
 	for (s32 k=0; k<nFNormals; ++k)
 	{
-
 		s32 fcnt = readInt();
 		s32 triangles = fcnt - 2;
 		s32 indexcount = triangles * 3;
@@ -1043,12 +1033,14 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 			return false;
 		}
 
-
 		if (indexcount == 3)
 		{
 			// default, only one triangle in this face
 			for (s32 h=0; h<3; ++h)
-				normalIndices[normalidx++] = readInt();
+			{
+				s32 normalnum = readInt();
+				mesh.Vertices[mesh.Indices[normalidx++]].Normal.set(normals[normalnum]);
+			}
 		}
 		else
 		{
@@ -1060,12 +1052,11 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 
 			for (s32 jk=0; jk<triangles; ++jk)
 			{
-				normalIndices[normalidx++] = polygonfaces[0];
-				normalIndices[normalidx++] = polygonfaces[jk+1];
-				normalIndices[normalidx++] = polygonfaces[jk+2];
+				mesh.Vertices[mesh.Indices[normalidx++]].Normal.set(normals[polygonfaces[0]]);
+				mesh.Vertices[mesh.Indices[normalidx++]].Normal.set(normals[polygonfaces[jk+1]]);
+				mesh.Vertices[mesh.Indices[normalidx++]].Normal.set(normals[polygonfaces[jk+2]]);
 			}
 		}
-
 	}
 
 	if (!checkForTwoFollowingSemicolons())
@@ -1094,7 +1085,6 @@ bool CXMeshFileLoader::parseDataObjectMeshTextureCoords(SXMesh &mesh)
 		os::Printer::log("No opening brace in Mesh Texture Coordinates found in x file", ELL_WARNING);
 		return false;
 	}
-
 
 	s32 nCoords;
 	u32 count;
