@@ -6,13 +6,16 @@
 #define __C_X_MESH_FILE_LOADER_H_INCLUDED__
 
 #include "IMeshLoader.h"
-#include "IReadFile.h"
 #include "irrString.h"
 #include "CSkinnedMesh.h"
 
 
 namespace irr
 {
+namespace io
+{
+	class IReadFile;
+} // end namespace io
 namespace scene
 {
 class IMeshManipulator;
@@ -24,9 +27,6 @@ public:
 
 	//! Constructor
 	CXMeshFileLoader(scene::ISceneManager* smgr);
-
-	//! destructor
-	virtual ~CXMeshFileLoader();
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".cob")
@@ -69,12 +69,11 @@ public:
 		core::array<video::SMaterial> Materials; // material array
 	};
 
-
 private:
 
-	bool load();
+	bool load(io::IReadFile* file);
 
-	bool readFileIntoMemory();
+	bool readFileIntoMemory(io::IReadFile* file);
 
 	bool parseFile();
 
@@ -137,7 +136,6 @@ private:
 	//! reads a x file style string
 	bool getNextTokenAsString(core::stringc& out);
 
-
 	void readUntilEndOfLine();
 
 	core::stringc stripPathFromString(core::stringc string, bool returnPath);
@@ -156,24 +154,21 @@ private:
 
 	ISceneManager*	SceneManager;
 
-	core::array<scene::SSkinMeshBuffer*> *Buffers;
 	core::array<CSkinnedMesh::SJoint*> *AllJoints;
 
-	CSkinnedMesh*	AnimatedMesh;
-	io::IReadFile*	file;
+	CSkinnedMesh* AnimatedMesh;
 
-	s32 MajorVersion;
-	s32 MinorVersion;
-	bool binary;
-	s32 binaryNumCount;
+	u32 MajorVersion;
+	u32 MinorVersion;
+	bool BinaryFormat;
+	// counter for number arrays in binary format
+	s32 BinaryNumCount;
 
 	c8* Buffer;
-	s32 Size;
-	c8 FloatSize;
 	const c8* P;
 	c8* End;
-
-	bool ErrorHappened;
+	c8 FloatSize;
+	core::stringc FilePath;
 
 	CSkinnedMesh::SJoint *CurFrame;
 
