@@ -49,7 +49,8 @@ COCTLoader::~COCTLoader()
 // Doesn't really belong here, but it's jammed in for now.
 void COCTLoader::OCTLoadLights(irr::io::IReadFile* file, irr::scene::ISceneManager * scene, irr::scene::ISceneNode * parent, f32 radius, f32 intensityScale, bool rewind)
 {
-	if (rewind) file->seek(0);
+	if (rewind)
+		file->seek(0);
 
 	octHeader header;
 	file->read(&header, sizeof(octHeader));
@@ -64,14 +65,9 @@ void COCTLoader::OCTLoadLights(irr::io::IReadFile* file, irr::scene::ISceneManag
 
 	//TODO: Skip past my extended data just for good form
 
-	u32 i;
-	for (i = 0; i < header.numLights; i++)
+	for (u32 i = 0; i < header.numLights; i++)
 	{
-		f32 intensity;
-		intensity = lights[i].intensity * intensityScale;
-
-		//irr::scene::ISceneNode* node = scene->addCubeSceneNode(30,parent,-1, core::vector3df(lights[i].pos[0], lights[i].pos[2], lights[i].pos[1]));
-		//node->getMaterial(0).AmbientColor = video::SColorf(lights[i].color[0] * intensity, lights[i].color[1] * intensity, lights[i].color[2] * intensity).toSColor();
+		const f32 intensity = lights[i].intensity * intensityScale;
 
 		scene->addLightSceneNode(parent, core::vector3df(lights[i].pos[0], lights[i].pos[2], lights[i].pos[1]), 
 			video::SColorf(lights[i].color[0] * intensity, lights[i].color[1] * intensity, lights[i].color[2] * intensity, 1.0f),
@@ -81,27 +77,8 @@ void COCTLoader::OCTLoadLights(irr::io::IReadFile* file, irr::scene::ISceneManag
 
 
 //! given three points representing a face, return a face normal
-void COCTLoader::GetFaceNormal(f32 a[3], f32 b[3], f32 c[3], f32 out[3]) {
-	f32 v1[3], v2[3];
-
-	v1[0] = a[0] - b[0];
-	v1[1] = a[1] - b[1];
-	v1[2] = a[2] - b[2];
-
-	v2[0] = b[0] - c[0];
-	v2[1] = b[1] - c[1];
-	v2[2] = b[2] - c[2];
-
-	out[0] = (v1[1] * v2[2]) - (v1[2] * v2[1]);
-	out[1] = (v1[2] * v2[0]) - (v1[0] * v2[2]);
-	out[2] = (v1[0] * v2[1]) - (v1[1] * v2[0]);
-
-	f32 dist = (f32)sqrt((out[0] * out[0]) + (out[1] * out[1]) + (out[2] * out[2]));
-	if (dist == 0.0f) dist = 0.001f;
-	
-	out[0] /= dist;
-	out[1] /= dist;
-	out[2] /= dist;
+core::vector3df COCTLoader::GetFaceNormal(f32 a[3], f32 b[3], f32 c[3]) {
+	return core::plane3df(core::vector3df(a[0],a[1],a[2]), core::vector3df(b[0],c[1],c[2]), core::vector3df(c[0],c[1],c[2])).Normal;
 }
 
 
@@ -154,40 +131,41 @@ IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file)
 		scene::SMeshBufferLightMap* buffer = new scene::SMeshBufferLightMap();
 
 		buffer->Material.MaterialType = video::EMT_LIGHTMAP;
-		buffer->Material.Wireframe = false;
 		buffer->Material.Lighting = false;
-
 		Mesh->addMeshBuffer(buffer);
-
 		buffer->drop();
 	}
 
 	
 	// Build the mesh buffers
-	for (i = 0; i < header.numFaces; i++) {
-		if (faces[i].numVerts < 3) continue;
+	for (i = 0; i < header.numFaces; i++)
+	{
+		if (faces[i].numVerts < 3)
+			continue;
 
-		f32 normal[3];
-		GetFaceNormal(verts[faces[i].firstVert].pos,verts[faces[i].firstVert+1].pos,verts[faces[i].firstVert+2].pos, normal);
+		const core::vector3df normal =
+			GetFaceNormal(verts[faces[i].firstVert].pos,
+					verts[faces[i].firstVert+1].pos,
+					verts[faces[i].firstVert+2].pos);
 
-		u32 textureID = core::min_(s32(faces[i].textureID), s32(header.numTextures - 1)) + 1;
-		u32 lightmapID = core::min_(s32(faces[i].lightmapID),s32(header.numLightmaps - 1)) + 1;
+		const u32 textureID = core::min_(s32(faces[i].textureID), s32(header.numTextures - 1)) + 1;
+		const u32 lightmapID = core::min_(s32(faces[i].lightmapID),s32(header.numLightmaps - 1)) + 1;
 		SMeshBufferLightMap * meshBuffer = (SMeshBufferLightMap*)Mesh->getMeshBuffer(lightmapID * (header.numTextures + 1) + textureID);
-		u32 base = meshBuffer->Vertices.size();
+		const u32 base = meshBuffer->Vertices.size();
 		
 		// Add this face's verts
 		u32 v;
-		for (v = 0; v < faces[i].numVerts; v++)
+		for (v = 0; v < faces[i].numVerts; ++v)
 		{
 			octVert * vv = &verts[faces[i].firstVert + v];
-			video::S3DVertex2TCoords vert = video::S3DVertex2TCoords();
+			video::S3DVertex2TCoords vert;
 			vert.Pos.set(vv->pos[0], vv->pos[1], vv->pos[2]);
 			vert.Color = irr::video::SColor(0,255,255,255);
-			vert.Normal.set(normal[0], normal[1], normal[2]);
+			vert.Normal.set(normal);
 
 			if (textureID == 0)
 			{
-				// No texure -- just a lightmap.  Thus, use lightmap coords for texture 1.
+				// No texture -- just a lightmap.  Thus, use lightmap coords for texture 1.
 				// (the actual texture will be swapped later)
 				vert.TCoords.set(vv->lc[0], vv->lc[1]);
 			}
@@ -204,15 +182,21 @@ IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file)
 		// This weird loop turns convex polygons into triangle strips.
 		// I do it this way instead of a simple fan because it usually looks a lot better in wireframe, for example.
 		u32 h = faces[i].numVerts - 1, l = 0, c; // High, Low, Center
-		for (v = 0; v < faces[i].numVerts - 2; v++)
+		for (v = 0; v < faces[i].numVerts - 2; ++v)
 		{
-			if (v & 1) c = h - 1; else c = l + 1;
+			if (v & 1)
+				c = h - 1;
+			else
+				c = l + 1;
 
 			meshBuffer->Indices.push_back(base + h);
 			meshBuffer->Indices.push_back(base + l);
 			meshBuffer->Indices.push_back(base + c);
 
-			if (v & 1) h--; else l++;
+			if (v & 1)
+				--h;
+			else
+				++l;
 		}
 	} 
 
@@ -311,17 +295,17 @@ IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file)
 
 
 	// attach materials
-	u32 j;
 	for (i = 0; i < header.numLightmaps + 1; i++)
 	{
-		for (j = 0; j < header.numTextures + 1; j++)
+		for (u32 j = 0; j < header.numTextures + 1; j++)
 		{
 			u32 mb = i * (header.numTextures + 1) + j;
 			SMeshBufferLightMap * meshBuffer = (SMeshBufferLightMap*)Mesh->getMeshBuffer(mb);
 			meshBuffer->Material.Textures[0] = tex[j];
 			meshBuffer->Material.Textures[1] = lig[i];
 
-			if (meshBuffer->Material.Textures[0] == 0) {
+			if (meshBuffer->Material.Textures[0] == 0)
+			{
 				// This material has no texture, so we'll just show the lightmap if there is one.
 				// We swapped the texture coordinates earlier.
 				meshBuffer->Material.Textures[0] = meshBuffer->Material.Textures[1];
@@ -352,14 +336,15 @@ IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file)
 		}
 		else
 		{
-			i++;
+			++i;
 		}
 	}
 
 
 	// create bounding box
-	for (i = 0; i < Mesh->MeshBuffers.size(); i++) {
-		((SMeshBufferLightMap*)Mesh->MeshBuffers[i])->recalculateBoundingBox();
+	for (i = 0; i < Mesh->MeshBuffers.size(); ++i)
+	{
+		Mesh->MeshBuffers[i]->recalculateBoundingBox();
 	}
 	Mesh->recalculateBoundingBox();
 
@@ -387,3 +372,4 @@ bool COCTLoader::isALoadableFileExtension(const c8* filename)
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_OCT_LOADER_
+

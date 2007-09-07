@@ -78,7 +78,7 @@ namespace scene
 		virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
 
 	private:
-		void GetFaceNormal(f32 a[3], f32 b[3], f32 c[3], f32 out[3]);
+		core::vector3df GetFaceNormal(f32 a[3], f32 b[3], f32 c[3]);
 
 		struct octHeader {
 			u32 numVerts;

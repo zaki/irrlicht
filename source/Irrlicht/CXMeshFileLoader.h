@@ -64,7 +64,7 @@ public:
 
 		core::array<u32> Indices;
 
-		core::array<u32> FaceIndices; // index of material for each face
+		core::array<u32> FaceMaterialIndices; // index of material for each face
 
 		core::array<video::SMaterial> Materials; // material array
 	};
