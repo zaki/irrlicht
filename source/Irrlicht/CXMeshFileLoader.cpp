@@ -217,6 +217,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				verticesLink[i]=0;
 			}
 
+			// store meshbuffer number per vertex
 			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
 			{
 				for (u32 id=i*3+0;id<=i*3+2;++id)
@@ -225,6 +226,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				}
 			}
 
+			// store vertices in buffers and remember relation in verticesLink
 			for (i=0;i<mesh->Vertices.size();++i)
 			{
 				scene::SSkinMeshBuffer *buffer = mesh->Buffers[ verticesLinkBuffer[i] ];
@@ -233,11 +235,13 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
 			}
 
+			// create indices per buffer
 			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
 			{
-				scene::SSkinMeshBuffer *buffer=mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
+				scene::SSkinMeshBuffer *buffer = mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
+				buffer->Indices.reallocate(buffer->Indices.size()+3);
 
-				for (u32 id=i*3+0;id<=i*3+2;++id)
+				for (u32 id=i*3+0;id!=i*3+3;++id)
 				{
 					buffer->Indices.push_back( verticesLink[ mesh->Indices[id] ] );
 				}
@@ -783,7 +787,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		else
 		if (objectName == "XSkinMeshHeader")
 		{
-			if (!parseDataObjectSkinMeshHeader())
+			if (!parseDataObjectSkinMeshHeader(mesh))
 				return false;
 		}
 		else
@@ -814,7 +818,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 
 	if (!readHeadOfDataObject())
 	{
-		os::Printer::log("No opening brace in Skin Weights found in x file", ELL_WARNING);
+		os::Printer::log("No opening brace in Skin Weights found in .x file", ELL_WARNING);
 		return false;
 	}
 
@@ -822,7 +826,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 
 	if (!getNextTokenAsString(TransformNodeName))
 	{
-		os::Printer::log("Unknown syntax while reading transfrom node name string in x file", ELL_WARNING);
+		os::Printer::log("Unknown syntax while reading transfrom node name string in .x file", ELL_WARNING);
 		return false;
 	}
 
@@ -849,22 +853,23 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 		joint->Name=TransformNodeName;
 	}
 
-
-	core::array<u32> Weights_Index;
-	core::array<f32> Weights_Strength;
-
 	// read vertex weights
 	const s32 nWeights = readInt();
-
-	Weights_Index.set_used(nWeights);
-	Weights_Strength.set_used(nWeights);
 
 	// read vertex indices
 
 	s32 i;
 
+	const u32 jointStart = joint->Weights.size();
+	joint->Weights.reallocate(jointStart+nWeights);
+
 	for (i=0; i<nWeights; ++i)
-		Weights_Index[i] = readInt();
+	{
+		CSkinnedMesh::SWeight *weight=AnimatedMesh->createWeight(joint);
+
+		weight->buffer_id=0;
+		weight->vertex_id=readInt();
+	}
 
 	// read vertex weights
 
@@ -885,34 +890,19 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	}
 
 	for (i=0; i<nWeights; ++i)
-		Weights_Strength[i] = readFloat();
-
-	// sort weights
-
-	//weights.Weights.set_sorted(false);
-	//weights.Weights.sort();
+		joint->Weights[i].strength = readFloat();
 
 	// read matrix offset
 
-	core::matrix4 MatrixOffset; // transforms the mesh vertices to the space of the bone
-					// When concatenated to the bone's transform, this provides the
-					// world space coordinates of the mesh as affected by the bone
+	// transforms the mesh vertices to the space of the bone
+	// When concatenated to the bone's transform, this provides the
+	// world space coordinates of the mesh as affected by the bone
+	core::matrix4& MatrixOffset = joint->GlobalInversedMatrix;
 
 	for (i=0; i<4; ++i)
 	{
 		for (u32 j=0; j<4; ++j)
 			MatrixOffset(i,j) = readFloat();
-	}
-
-	joint->GlobalInversedMatrix=MatrixOffset;
-
-	for (i=0; i<nWeights; ++i)
-	{
-		CSkinnedMesh::SWeight *weight=AnimatedMesh->createWeight(joint);
-
-		weight->buffer_id=0;
-		weight->vertex_id=Weights_Index[i];
-		weight->strength=Weights_Strength[i];
 	}
 
 	if (!checkForTwoFollowingSemicolons())
@@ -931,7 +921,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 }
 
 
-bool CXMeshFileLoader::parseDataObjectSkinMeshHeader()
+bool CXMeshFileLoader::parseDataObjectSkinMeshHeader(SXMesh& mesh)
 {
 #ifdef _XREADER_DEBUG
 	os::Printer::log("CXFileReader: Reading skin mesh header");
@@ -939,16 +929,18 @@ bool CXMeshFileLoader::parseDataObjectSkinMeshHeader()
 
 	if (!readHeadOfDataObject())
 	{
-		os::Printer::log("No opening brace in Skin Mesh header found in x file", ELL_WARNING);
+		os::Printer::log("No opening brace in Skin Mesh header found in .x file", ELL_WARNING);
 		return false;
 	}
 
-	readInt(); //MaxSkinWeightsPerVertex
-	readInt(); //MaxSkinWeightsPerFace
-	readInt(); //BoneCount
+	mesh.MaxSkinWeightsPerVertex = readInt();
+	mesh.MaxSkinWeightsPerFace = readInt();
+	mesh.BoneCount = readInt();
+
 	if (!BinaryFormat)
 		getNextToken(); // skip semicolon
-	core::stringc objectName = getNextToken();
+
+	const core::stringc objectName = getNextToken();
 
 	if (objectName != "}")
 	{
@@ -1271,7 +1263,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 
 	if (!readHeadOfDataObject())
 	{
-		os::Printer::log("No opening brace in Mesh Material found in x file", ELL_WARNING);
+		os::Printer::log("No opening brace in Mesh Material found in .x file", ELL_WARNING);
 		return false;
 	}
 
@@ -1295,8 +1287,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 	readRGBA(material.DiffuseColor); checkForOneFollowingSemicolons();
 
 	// read power
-	//material.Power = readFloat();
-	readFloat();
+	material.Shininess = readFloat();
 
 	// read specular
 	readRGB(material.SpecularColor); checkForOneFollowingSemicolons();
@@ -1311,7 +1302,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 
 		if (objectName.size() == 0)
 		{
-			os::Printer::log("Unexpected ending found in Mesh Material in x file.", ELL_WARNING);
+			os::Printer::log("Unexpected ending found in Mesh Material in .x file.", ELL_WARNING);
 			return false;
 		}
 		else
@@ -1341,7 +1332,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 		}
 		else
 		{
-			os::Printer::log("Unknown data object in material in x file", objectName.c_str(), ELL_WARNING);
+			os::Printer::log("Unknown data object in material in .x file", objectName.c_str(), ELL_WARNING);
 			if (!parseUnknownDataObject())
 				return false;
 		}

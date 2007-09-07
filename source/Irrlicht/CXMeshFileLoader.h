@@ -46,6 +46,7 @@ public:
 
 	struct SXMesh
 	{
+		SXMesh() : MaxSkinWeightsPerVertex(0), MaxSkinWeightsPerFace(0), BoneCount(0) {}
 		// this mesh contains triangulated texture data.
 		// because in an .x file, faces can be made of more than 3
 		// vertices, the indices data structure is triangulated during the
@@ -55,6 +56,10 @@ public:
 		// in this structure is triangulated.
 
 		core::stringc Name;
+
+		s32 MaxSkinWeightsPerVertex;
+		s32 MaxSkinWeightsPerFace;
+		s32 BoneCount;
 
 		core::array< s32 > IndexCountPerFace; // default 3, but could be more
 
@@ -90,7 +95,7 @@ private:
 
 	bool parseDataObjectSkinWeights(SXMesh &mesh);
 
-	bool parseDataObjectSkinMeshHeader();
+	bool parseDataObjectSkinMeshHeader(SXMesh &mesh);
 
 	bool parseDataObjectMeshNormals(SXMesh &mesh);
 
