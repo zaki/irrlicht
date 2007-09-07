@@ -1007,10 +1007,10 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 	uriToId(materialName);
 	video::SMaterial mat;
 
-	for (u32 i=0; i<Materials.size(); ++i)
-		if (materialName == Materials[i].Id)
+	for (u32 matnum=0; matnum<Materials.size(); ++matnum)
+		if (materialName == Materials[matnum].Id)
 		{
-			mat = Materials[i].Mat;
+			mat = Materials[matnum].Mat;
 			break;
 		}
 
@@ -1225,7 +1225,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		mbuffer->Material=mat;
 		buffer = mbuffer;
 
-		for (i=0; i<polygons.size(); ++i)
+		for (u32 i=0; i<polygons.size(); ++i)
 		{
 			u32 vertexCount = polygons[i].Indices.size() / inputSemanticCount;
 

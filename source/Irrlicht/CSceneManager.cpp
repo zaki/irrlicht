@@ -939,7 +939,7 @@ bool CSceneManager::isCulled(ISceneNode* node)
 {
 	ICameraSceneNode* cam = getActiveCamera();
 	if (!cam)
-		return true;
+		return false;
 
 	switch ( node->getAutomaticCulling() )
 	{
