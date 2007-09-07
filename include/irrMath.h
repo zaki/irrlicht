@@ -10,13 +10,13 @@
 #include <math.h>
 
 #if defined(_IRR_SOLARIS_PLATFORM_) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-	#define sqrtf(X) sqrt(X)
-	#define sinf(X) sin(X)
-	#define cosf(X) cos(X)
-	#define ceilf(X) ceil(X)
-	#define floorf(X) floor(X)
-	#define powf(X,Y) pow(X,Y)
-	#define fmodf(X,Y) fmod(X,Y)
+	#define sqrtf(X) (f32)sqrt(X)
+	#define sinf(X) (f32)sin(X)
+	#define cosf(X) (f32)cos(X)
+	#define ceilf(X) (f32)ceil(X)
+	#define floorf(X) (f32)floor(X)
+	#define powf(X,Y) (f32)pow(X,Y)
+	#define fmodf(X,Y) (f32)fmod(X,Y)
 #endif
 
 namespace irr
@@ -234,7 +234,7 @@ namespace core
 
 	inline f32 round_( f32 x )
 	{
-		return (f32)floor( x + 0.5f );
+		return floorf( x + 0.5f );
 	}
 
 	REALINLINE void clearFPUException ()
