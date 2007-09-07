@@ -204,7 +204,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				// read in next vertex's data
 				u32 wlength = copyWord(vertexWord, pLinePtr, WORD_BUFFER_LENGTH, pBufEnd);
 				// this function will also convert obj's 1-based index to c++'s 0-based index
-				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer);
+				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer.size(), textureCoordBuffer.size(), normalsBuffer.size());
 				v.Pos = vertexBuffer[Idx[0]];
 				if ( -1 != Idx[1] )
 					v.TCoords = textureCoordBuffer[Idx[1]];
@@ -693,7 +693,7 @@ const c8* COBJMeshFileLoader::goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32
 }
 
 
-bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const c8* pBufEnd, const core::array<core::vector3df>& vbuffer)
+bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const c8* pBufEnd, u32 vbsize, u32 vtsize, u32 vnsize)
 {
 	c8 word[16] = "";
 	const c8* pChar = goFirstWord(pVertexData, pBufEnd);
@@ -713,7 +713,21 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const
 			word[i] = '\0';
 			// if no number was found index will become 0 and later on -1 by decrement
 			if (word[0]=='-')
-				pIdx[idxType] = vbuffer.size()-core::strtol10(word+1,0);
+			{
+				pIdx[idxType] = -core::strtol10(word+1,0);
+				switch (idxType)
+				{
+					case 0:
+						pIdx[idxType] += vbsize;
+						break;
+					case 1:
+						pIdx[idxType] += vtsize;
+						break;
+					case 2:
+						pIdx[idxType] += vnsize;
+						break;
+				}
+			}
 			else
 				pIdx[idxType] = core::strtol10(word,0)-1;
 
