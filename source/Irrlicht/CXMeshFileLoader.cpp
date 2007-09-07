@@ -1491,7 +1491,9 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 #ifdef _DEBUG
 			os::Printer::log("getting name: ", FrameName.c_str());
 #endif
-			for (u32 n=0;n < AnimatedMesh->getAllJoints().size();++n)
+			u32 n;
+
+			for (n=0;n < AnimatedMesh->getAllJoints().size();++n)
 			{
 				if (AnimatedMesh->getAllJoints()[n]->Name==FrameName)
 					joint=AnimatedMesh->getAllJoints()[n];
@@ -1505,8 +1507,6 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 				joint=AnimatedMesh->createJoint(0);
 				joint->Name=FrameName;
 			}
-
-			u32 n;
 
 			for (n=0;n<animationDump.PositionKeys.size();++n)
 			{

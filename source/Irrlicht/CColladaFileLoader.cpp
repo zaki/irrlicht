@@ -1006,6 +1006,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 	core::stringc materialName = reader->getAttributeValue("material");
 	uriToId(materialName);
 	video::SMaterial mat;
+
 	for (u32 i=0; i<Materials.size(); ++i)
 		if (materialName == Materials[i].Id)
 		{
@@ -1125,22 +1126,22 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 	// analyze content of slots to create a fitting mesh buffer
 
-	u32 i;
+	u32 u;
 	u32 textureCoordSetCount = 0;
 	bool normalSlotCount = false;
 	u32 secondTexCoordSetIndex = 0xFFFFFFFF;
 
-	for (i=0; i<slots.size(); ++i)
+	for (u=0; u<slots.size(); ++u)
 	{
-		if (slots[i].Semantic == ECIS_TEXCOORD || slots[i].Semantic == ECIS_UV )
+		if (slots[u].Semantic == ECIS_TEXCOORD || slots[u].Semantic == ECIS_UV )
 		{
 			++textureCoordSetCount;
 
 			if (textureCoordSetCount==2)
-				secondTexCoordSetIndex = i;
+				secondTexCoordSetIndex = u;
 		}
 		else
-		if (slots[i].Semantic == ECIS_NORMAL)
+		if (slots[u].Semantic == ECIS_NORMAL)
 			normalSlotCount=true;
 	}
 
@@ -1157,7 +1158,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		mbuffer->Material=mat;
 		buffer = mbuffer;
 
-		for (i=0; i<polygons.size(); ++i)
+		for (u32 i=0; i<polygons.size(); ++i)
 		{
 			u32 vertexCount = polygons[i].Indices.size() / inputSemanticCount;
 
