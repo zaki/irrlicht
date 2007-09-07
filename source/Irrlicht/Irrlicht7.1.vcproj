@@ -237,6 +237,9 @@
 				RelativePath=".\..\..\include\IOSOperator.h">
 			</File>
 			<File
+				RelativePath="..\..\include\IReferenceCounted.h">
+			</File>
+			<File
 				RelativePath=".\..\..\include\IrrCompileConfig.h">
 			</File>
 			<File
