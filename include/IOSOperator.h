@@ -5,13 +5,13 @@
 #ifndef __I_OS_OPERATOR_H_INCLUDED__
 #define __I_OS_OPERATOR_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
 
 //! The Operating system operator provides operation system specific methods and informations.
-class IOSOperator : public virtual IUnknown
+class IOSOperator : public virtual IReferenceCounted
 {
 public:
 

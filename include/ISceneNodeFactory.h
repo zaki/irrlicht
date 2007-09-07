@@ -5,7 +5,7 @@
 #ifndef __I_SCENE_NODE_FACTORY_H_INCLUDED__
 #define __I_SCENE_NODE_FACTORY_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "ESceneNodeTypes.h"
 
 namespace irr
@@ -25,7 +25,7 @@ namespace scene
 	scene node manager will grab() the factory anyway, and otherwise cyclic references will
 	be created and the scene manager and all its nodes won't get deallocated.
 	*/
-	class ISceneNodeFactory : public virtual IUnknown
+	class ISceneNodeFactory : public virtual IReferenceCounted
 	{
 	public:
 

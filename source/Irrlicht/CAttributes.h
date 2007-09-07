@@ -654,7 +654,7 @@ protected:
 };
 
 
-class IAttribute : public virtual IUnknown
+class IAttribute : public virtual IReferenceCounted
 {
 public:
 

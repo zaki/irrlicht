@@ -5,7 +5,7 @@
 #ifndef __I_MESH_CACHE_H_INCLUDED__
 #define __I_MESH_CACHE_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "irrString.h"
 
 namespace irr
@@ -24,7 +24,7 @@ namespace scene
 	this interface, it is possible to manually add new loaded meshes (if
 	ISceneManager::getMesh() is not sufficient), to remove them and to iterate through
 	already loaded meshes.  */
-	class IMeshCache : public virtual IUnknown
+	class IMeshCache : public virtual IReferenceCounted
 	{
 	public:
 

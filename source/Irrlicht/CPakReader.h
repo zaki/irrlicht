@@ -5,7 +5,7 @@
 #ifndef __C_PAK_READER_H_INCLUDED__
 #define __C_PAK_READER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "IReadFile.h"
 #include "irrArray.h"
 #include "irrString.h"
@@ -43,7 +43,7 @@ namespace io
 	};
 
 
-	class CPakReader : public IUnknown
+	class CPakReader : public IReferenceCounted
 	{
 	public:
 

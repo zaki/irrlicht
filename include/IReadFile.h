@@ -5,7 +5,7 @@
 #ifndef __I_READ_FILE_H_INCLUDED__
 #define __I_READ_FILE_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
@@ -13,7 +13,7 @@ namespace io
 {
 
 	//! Interface providing read acess to a file.
-	class IReadFile : public virtual IUnknown
+	class IReadFile : public virtual IReferenceCounted
 	{
 	public:
 

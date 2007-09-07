@@ -5,7 +5,7 @@
 #ifndef __I_IRRLICHT_DEVICE_H_INCLUDED__
 #define __I_IRRLICHT_DEVICE_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "dimension2d.h"
 #include "IVideoDriver.h"
 #include "EDriverTypes.h"
@@ -36,7 +36,7 @@ namespace irr
 	/** This is the most important class of the Irrlicht Engine. You can access everything
 	in the engine if you have a pointer to an instance of this class. 
 	*/
-	class IrrlichtDevice : public virtual IUnknown
+	class IrrlichtDevice : public virtual IReferenceCounted
 	{
 	public:
 

@@ -5,7 +5,7 @@
 #ifndef __I_FILE_SYSTEM_H_INCLUDED__
 #define __I_FILE_SYSTEM_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "IXMLReader.h"
 #include "irrString.h"
 
@@ -31,7 +31,7 @@ class IAttributes;
 	could be in a .zip-Archive or as file on disk, using the IFileSystem
 	makes no difference to this.
 */
-class IFileSystem : public virtual IUnknown
+class IFileSystem : public virtual IReferenceCounted
 {
 public:
 
@@ -42,7 +42,7 @@ public:
 	/** \param filename: Name of file to open.
 	\return Returns a pointer to the created file interface.
 	The returned pointer should be dropped when no longer needed.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IReadFile* createAndOpenFile(const c8* filename) = 0;
 
 	//! Creates an IReadFile interface for accessing memory like a file.
@@ -54,7 +54,7 @@ public:
 	along with the IReadFile when it is dropped.
 	\return Returns a pointer to the created file interface.
 	The returned pointer should be dropped when no longer needed.
-	See IUnknown::drop() for more information. 
+	See IReferenceCounted::drop() for more information. 
 	*/
 	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped=false) = 0;
 
@@ -65,7 +65,7 @@ public:
 	\return Returns a pointer to the created file interface. 0 is returned, if the
 	file could not created or opened for writing.
 	The returned pointer should be dropped when no longer needed.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IWriteFile* createAndWriteFile(const c8* filename, bool append=false) = 0;
 
 	//! Adds an zip archive to the file system.
@@ -122,7 +122,7 @@ public:
 	//! Creates a list of files and directories in the current working directory and returns it.
 	/** \return a Pointer to the created IFileList is returned. After the list has been used
 	it has to be deleted using its IFileList::drop() method.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IFileList* createFileList() = 0;
 
 	//! Determinates if a file exists and would be able to be opened.
@@ -136,7 +136,7 @@ public:
 	\return 0, if file could not be opened, otherwise a pointer to the created
 	IXMLReader is returned. After use, the reader
 	has to be deleted using its IXMLReader::drop() method.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IXMLReader* createXMLReader(const c8* filename) = 0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as wide characters (wchar_t*).
@@ -145,7 +145,7 @@ public:
 	\return 0, if file could not be opened, otherwise a pointer to the created
 	IXMLReader is returned. After use, the reader
 	has to be deleted using its IXMLReader::drop() method.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IXMLReader* createXMLReader(IReadFile* file) = 0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as ASCII/UTF-8 characters (char*).
@@ -154,7 +154,7 @@ public:
 	\return 0, if file could not be opened, otherwise a pointer to the created
 	IXMLReader is returned. After use, the reader
 	has to be deleted using its IXMLReaderUTF8::drop() method.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IXMLReaderUTF8* createXMLReaderUTF8(const c8* filename) = 0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as ASCII/UTF-8 characters (char*).
@@ -163,21 +163,21 @@ public:
 	\return 0, if file could not be opened, otherwise a pointer to the created
 	IXMLReader is returned. After use, the reader
 	has to be deleted using its IXMLReaderUTF8::drop() method.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IXMLReaderUTF8* createXMLReaderUTF8(IReadFile* file) = 0;
 
 	//! Creates a XML Writer from a file.
 	/** \return 0, if file could not be opened, otherwise a pointer to the created
 	IXMLWriter is returned. After use, the reader
 	has to be deleted using its IXMLWriter::drop() method.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IXMLWriter* createXMLWriter(const c8* filename) = 0;
 
 	//! Creates a XML Writer from a file.
 	/** \return 0, if file could not be opened, otherwise a pointer to the created
 	IXMLWriter is returned. After use, the reader
 	has to be deleted using its IXMLWriter::drop() method.
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IXMLWriter* createXMLWriter(IWriteFile* file) = 0;
 
 	//! Creates a new empty collection of attributes, usable for serialization and more.
@@ -185,7 +185,7 @@ public:
 	Can be null to prevent automatic texture loading by attributes.
 	\return Returns a pointer to the created object.
 	If you no longer need the object, you should call IAttributes::drop().
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IAttributes* createEmptyAttributes(video::IVideoDriver* driver=0) = 0;
 };
 

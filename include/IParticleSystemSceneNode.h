@@ -119,7 +119,7 @@ public:
 	//! To set this emitter as new emitter of this particle system,
 	//! just call setEmitter(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleAnimatedMeshSceneNodeEmitter* createAnimatedMeshSceneNodeEmitter(
 		scene::IAnimatedMeshSceneNode* node, bool useNormalDirection = true,
 		const core::vector3df& direction = core::vector3df(0.0f,0.0f,0.0f),
@@ -152,7 +152,7 @@ public:
 	//! To set this emitter as new emitter of this particle system,
 	//! just call setEmitter(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleBoxEmitter* createBoxEmitter(
 		const core::aabbox3df& box = core::aabbox3df(-10,28,-10,10,30,10),
 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
@@ -186,7 +186,7 @@ public:
 	//! To set this emitter as new emitter of this particle system,
 	//! just call setEmitter(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleCylinderEmitter* createCylinderEmitter(
 		const core::vector3df& center, f32 radius,
 		const core::vector3df& normal, f32 length,
@@ -230,7 +230,7 @@ public:
 	//! To set this emitter as new emitter of this particle system,
 	//! just call setEmitter(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleMeshEmitter* createMeshEmitter(
 		scene::IMesh* mesh, bool useNormalDirection = true,
 		const core::vector3df& direction = core::vector3df(0.0f,0.0f,0.0f),
@@ -262,7 +262,7 @@ public:
 	//! To set this emitter as new emitter of this particle system,
 	//! just call setEmitter(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticlePointEmitter* createPointEmitter(
 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
 		u32 minParticlesPerSecond = 5,
@@ -297,7 +297,7 @@ public:
 	//! To set this emitter as new emitter of this particle system,
 	//! just call setEmitter(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleRingEmitter* createRingEmitter(
 		const core::vector3df& center, f32 radius, f32 ringThickness,
 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
@@ -330,7 +330,7 @@ public:
 	//! To set this emitter as new emitter of this particle system,
 	//! just call setEmitter(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleSphereEmitter* createSphereEmitter(
 		const core::vector3df& center, f32 radius,
 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
@@ -353,7 +353,7 @@ public:
 	//! To add this affector as new affector of this particle system,
 	//! just call addAffector(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleAttractionAffector* createAttractionAffector(
 		const core::vector3df& point, f32 speed = 1.0f, bool attract = true,
 		bool affectX = true, bool affectY = true, bool affectZ = true) = 0;
@@ -371,7 +371,7 @@ public:
 	//! To add this affector as new affector of this particle system,
 	//! just call addAffector(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleFadeOutAffector* createFadeOutParticleAffector(
 		const video::SColor& targetColor = video::SColor(0,0,0,0),
 		u32 timeNeededToFadeOut = 1000) = 0;
@@ -389,7 +389,7 @@ public:
 	//! To add this affector as new affector of this particle system,
 	//! just call addAffector(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleGravityAffector* createGravityAffector(
 		const core::vector3df& gravity = core::vector3df(0.0f,-0.03f,0.0f),
 		u32 timeForceLost = 1000) = 0;
@@ -402,7 +402,7 @@ public:
 	//! To add this affector as new affector of this particle system,
 	//! just call addAffector(). Note that you'll have to drop() the
 	//! returned pointer, after you don't need it any more, see
-	//! IUnknown::drop() for more informations.
+	//! IReferenceCounted::drop() for more informations.
 	virtual IParticleRotationAffector* createRotationAffector(
 		const core::vector3df& speed = core::vector3df(5.0f,5.0f,5.0f),
 		const core::vector3df& pivotPoint = core::vector3df(0.0f,0.0f,0.0f) ) = 0;

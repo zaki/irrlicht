@@ -6,7 +6,7 @@
 #define __I_BURNING_SHADER_H_INCLUDED__
 
 #include "SoftwareDriver2_compile_config.h"
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "irrMath.h"
 #include "IImage.h"
 #include "S2DVertex.h"
@@ -58,7 +58,7 @@ namespace video
 		ETR2_COUNT
 	};
 
-	class IBurningShader : public virtual IUnknown
+	class IBurningShader : public virtual IReferenceCounted
 	{
 	public:
 		IBurningShader(IDepthBuffer* zbuffer);

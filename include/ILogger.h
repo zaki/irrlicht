@@ -5,7 +5,7 @@
 #ifndef __I_LOGGER_H_INCLUDED__
 #define __I_LOGGER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
@@ -28,7 +28,7 @@ enum ELOG_LEVEL
 
 
 //! Interface for logging messages, warnings and errors
-class ILogger : public virtual IUnknown
+class ILogger : public virtual IReferenceCounted
 {
 public:
 

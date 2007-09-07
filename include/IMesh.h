@@ -5,7 +5,7 @@
 #ifndef __I_MESH_H_INCLUDED__
 #define __I_MESH_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "SMaterial.h"
 
 namespace irr
@@ -18,7 +18,7 @@ namespace scene
 	/** An IMesh is nothing more than a collection of some mesh buffers (IMeshBuffer).
 	SMesh is a simple implementation of an IMesh.
 	*/
-	class IMesh : public virtual IUnknown
+	class IMesh : public virtual IReferenceCounted
 	{
 	public:
 

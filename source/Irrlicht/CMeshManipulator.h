@@ -73,7 +73,7 @@ public:
 	//! \param mesh: Input mesh
 	//! \return Mesh consiting only of S3DVertexNormalMapped vertices.
 	//! If you no longer need the cloned mesh, you should call IMesh::drop().
-	//! See IUnknown::drop() for more information.
+	//! See IReferenceCounted::drop() for more information.
 	virtual IMesh* createMeshWithTangents(IMesh* mesh) const;
 
 	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const;

@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __I_UNKNOWN_H_INCLUDED__
-#define __I_UNKNOWN_H_INCLUDED__
+#ifndef __I_IREFERENCE_COUNTED_H_INCLUDED__
+#define __I_IREFERENCE_COUNTED_H_INCLUDED__
 
 #include "irrTypes.h"
 
@@ -14,7 +14,7 @@ namespace irr
 	/** This class provides reference counting through the methods grab() and drop().
 	It also is able to store a debug string for every instance of an object.
 	Most objects of the Irrlicht
-	Engine are derived from IUnknown, and so they are reference counted.
+	Engine are derived from IReferenceCounted, and so they are reference counted.
 
 	When you create an object in the Irrlicht engine, calling a method
 	which starts with 'create', an object is created, and you get a pointer
@@ -38,18 +38,18 @@ namespace irr
 	the name of the method does not start with 'create'. The texture
 	is stored somewhere by the driver.
 	*/
-	class IUnknown
+	class IReferenceCounted
 	{
 	public:
 
 		//! Constructor.
-		IUnknown()
+		IReferenceCounted()
 			: ReferenceCounter(1), DebugName(0)
 		{
 		}
 
 		//! Destructor.
-		virtual ~IUnknown()
+		virtual ~IReferenceCounted()
 		{
 		}
 
@@ -57,9 +57,9 @@ namespace irr
 		//! Someone who calls grab() to an object, should later also call
 		//! drop() to it. If an object never gets as much drop() as grab()
 		//! calls, it will never be destroyed.
-		//! The IUnknown class provides a basic reference counting mechanism
+		//! The IReferenceCounted class provides a basic reference counting mechanism
 		//! with its methods grab() and drop(). Most objects of the Irrlicht
-		//! Engine are derived from IUnknown, and so they are reference counted.
+		//! Engine are derived from IReferenceCounted, and so they are reference counted.
 		//!
 		//! When you create an object in the Irrlicht engine, calling a method
 		//! which starts with 'create', an object is created, and you get a pointer
@@ -85,9 +85,9 @@ namespace irr
 
 		//! Drops the object. Decrements the reference counter by one.
 		//! Returns true, if the object was deleted.
-		//! The IUnknown class provides a basic reference counting mechanism
+		//! The IReferenceCounted class provides a basic reference counting mechanism
 		//! with its methods grab() and drop(). Most objects of the Irrlicht
-		//! Engine are derived from IUnknown, and so they are reference counted.
+		//! Engine are derived from IReferenceCounted, and so they are reference counted.
 		//!
 		//! When you create an object in the Irrlicht engine, calling a method
 		//! which starts with 'create', an object is created, and you get a pointer

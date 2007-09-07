@@ -20,7 +20,7 @@
 
 
 namespace irr {
-	class CFontTool : public irr::IUnknown
+	class CFontTool : public irr::IReferenceCounted
 	{
 	public:
 		CFontTool(irr::IrrlichtDevice* device);

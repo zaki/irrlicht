@@ -67,7 +67,7 @@ public:
 	//! Creates a new GUI Skin based on a template.
 	/** \return Returns a pointer to the created skin.
 	If you no longer need the skin, you should call IGUISkin::drop().
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IGUISkin* createSkin(EGUI_SKIN_TYPE type);
 
 	//! returns the font

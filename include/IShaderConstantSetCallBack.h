@@ -5,7 +5,7 @@
 #ifndef __I_SHADER_CONSTANT_SET_CALLBACT_H_INCLUDED__
 #define __I_SHADER_CONSTANT_SET_CALLBACT_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
@@ -17,7 +17,7 @@ namespace video
 /** Implement this interface in an own class and pass a pointer to it to one of the methods in
  IGPUProgrammingServices when creating a shader. The OnSetConstants method will be called
  every frame now. */
-class IShaderConstantSetCallBack : public virtual IUnknown
+class IShaderConstantSetCallBack : public virtual IReferenceCounted
 {
 public:
 

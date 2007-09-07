@@ -5,7 +5,7 @@
 #ifndef __I_WRITE_FILE_H_INCLUDED__
 #define __I_WRITE_FILE_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
@@ -13,7 +13,7 @@ namespace io
 {
 
 	//! Interface providing write acess to a file.
-	class IWriteFile : public virtual IUnknown
+	class IWriteFile : public virtual IReferenceCounted
 	{
 	public:
 

@@ -22,7 +22,7 @@ namespace scene
 	 IAnimatedMeshSceneNode::setAnimationEndCallback to be able to
 	 be notified if an animation playback has ended.
 	**/
-	class IAnimationEndCallBack : public virtual IUnknown
+	class IAnimationEndCallBack : public virtual IReferenceCounted
 	{
 	public:
 
@@ -81,7 +81,7 @@ namespace scene
 		//! \param infinity: Value used by the shadow volume algorithm to scale the
 		//! shadow volume.
 		//! \return Returns pointer to the created shadow scene node.
-		//! This pointer should not be dropped. See IUnknown::drop() for more information.
+		//! This pointer should not be dropped. See IReferenceCounted::drop() for more information.
 		virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(s32 id=-1,
 			bool zfailmethod=true, f32 infinity=10000.0f) = 0;
 

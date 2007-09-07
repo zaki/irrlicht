@@ -5,7 +5,7 @@
 #ifndef __I_GUI_ENVIRONMENT_H_INCLUDED__
 #define __I_GUI_ENVIRONMENT_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "IGUISkin.h"
 #include "rect.h"
 #include "EMessageBoxFlags.h"
@@ -57,7 +57,7 @@ class IGUIWindow;
 class IGUIElementFactory;
 
 //! GUI Environment. Used as factory and manager of all other GUI elements.
-class IGUIEnvironment : public virtual IUnknown
+class IGUIEnvironment : public virtual IReferenceCounted
 {
 public:
 
@@ -127,14 +127,14 @@ public:
 	/** Use setSkin() to set the created skin.
 	\return Returns a pointer to the created skin.
 	If you no longer need the image, you should call IGUISkin::drop().
-	See IUnknown::drop() for more information. */
+	See IReferenceCounted::drop() for more information. */
 	virtual IGUISkin* createSkin(EGUI_SKIN_TYPE type) = 0;
 
 	//! Returns pointer to the font with the specified file name. 
 	/** Loads the font if it was not loaded before. Returns 0 if the font could not be loaded.
 	\return
 	returns a pointer to the font.
-	This pointer should not be dropped. See IUnknown::drop() for more information. */
+	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIFont* getFont(const c8* filename) = 0;
 
 	//! Returns the default built-in font.
@@ -144,7 +144,7 @@ public:
 	/** Loads the bank if it was not loaded before. Returns 0 if it could not be loaded.
 	\return
 	returns a pointer to the sprite bank.
-	This pointer should not be dropped. See IUnknown::drop() for more information. */
+	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUISpriteBank* getSpriteBank(const c8* filename) = 0;
 
 	//! adds an empty sprite bank to the manager
@@ -154,13 +154,13 @@ public:
 	/** This is the first gui element, parent of all other
 	gui elements. You'll never need to use this method, unless you are not creating 
 	your own gui elements, trying to add them to the gui elements without a parent.
-	The returned pointer should not be dropped. See IUnknown::drop() for more information. */
+	The returned pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIElement* getRootGUIElement() = 0;
 
 	//! Adds an button element. 
 	/** \return
 	 Returns a pointer to the created button. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIButton* addButton(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0, const wchar_t* tooltiptext = 0) = 0;
 
@@ -170,7 +170,7 @@ public:
 	until this messagebox is removed.
 	\return
 	Returns a pointer to the created window. Returns 0 if an error occured.
-	This pointer should not be dropped. See IUnknown::drop() for more information. */
+	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIWindow* addWindow(const core::rect<s32>& rectangle, bool modal = false, 
 		const wchar_t* text=0, IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -178,7 +178,7 @@ public:
 	//! able to recieve input until its last child is removed, it then deletes its self.
 	/** \return
 	Returns a pointer to the created window. Returns 0 if an error occured.
-	This pointer should not be dropped. See IUnknown::drop() for more information. */
+	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIElement* addModalScreen(IGUIElement* parent) = 0;
 
 	//! Adds a message box.
@@ -194,14 +194,14 @@ public:
 	 \param id: Id with which the gui element can be identified.
 	 \return
 	 Returns a pointer to the created message box. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIWindow* addMessageBox(const wchar_t* caption, const wchar_t* text=0,
 		bool modal = true, s32 flags = EMBF_OK, IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a scrollbar. 
 	/** \return
 	Returns a pointer to the created scrollbar. Returns 0 if an error occured.
-	This pointer should not be dropped. See IUnknown::drop() for more information. */
+	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIScrollBar* addScrollBar(bool horizontal, const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -213,7 +213,7 @@ public:
 	 to draw itself.
 	 \return
 	 Returns a pointer to the created image element. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIImage* addImage(video::ITexture* image, core::position2d<s32> pos,
 		bool useAlphaChannel=true, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
 
@@ -221,28 +221,28 @@ public:
 	/** Use IGUIImage::setImage later to set the image to be displayed. 
 	\return
 	 Returns a pointer to the created image element. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIImage* addImage(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
 
 	//! Adds a checkbox element.
 	/** \return
 	 Returns a pointer to the created check box. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUICheckBox* addCheckBox(bool checked, const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
 
 	//! Adds a list box element.
 	/** \return
 	 Returns a pointer to the created list box. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIListBox* addListBox(const core::rect<s32>& rectangle, 
 		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false) = 0;
 
 	//! Adds an mesh viewer. Not 100% implemented yet.
 	/** \return
 	 Returns a pointer to the created mesh viewer. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
 
 	//! Adds a file open dialog.
@@ -251,7 +251,7 @@ public:
 	 until this messagebox is removed.
 	 \return
 	 Returns a pointer to the created file open dialog. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title = 0, 
 		bool modal=true, IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -261,7 +261,7 @@ public:
 	 until this messagebox is removed.
 	 \return
 	 Returns a pointer to the created file open dialog. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIColorSelectDialog* addColorSelectDialog(const wchar_t* title = 0, 
 		bool modal=true, IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -276,7 +276,7 @@ public:
 	 \param fillBackground specifies if the background will be filled. Default: false.
 	 \return
 	 Returns a pointer to the created static text. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIStaticText* addStaticText(const wchar_t* text, const core::rect<s32>& rectangle, 
 		bool border=false, bool wordWrap=true, IGUIElement* parent=0, s32 id=-1, 
 		bool fillBackground = false) = 0;
@@ -293,7 +293,7 @@ public:
 	 \param id is a s32 to identify the edit box.
 	 \return
 	 Returns a pointer to the created edit box. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIEditBox* addEditBox(const wchar_t* text, const core::rect<s32>& rectangle, 
 		bool border=true, IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -305,7 +305,7 @@ public:
 	 \param id is a s32 to identify the spin box.
 	 \return
 	 Returns a pointer to the created spin box. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle, 
 		IGUIElement* parent=0, s32 id=-1) = 0;
 
@@ -316,7 +316,7 @@ public:
 	 \param id: A s32 to identify the text.
 	 \return
 	 Returns a pointer to the created in-out-fader. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a tab control to the environment.
@@ -328,7 +328,7 @@ public:
 	 \param id is a s32 to identify the tab control.
 	 \return
 	 Returns a pointer to the created tab control element. Returns 0 if an error occured.
-	 This pointer should not be dropped. See IUnknown::drop() for more information. */
+	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 	virtual IGUITabControl* addTabControl(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, bool fillbackground=false,
 		bool border=true, s32 id=-1) = 0;

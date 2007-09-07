@@ -5,7 +5,7 @@
 #ifndef __I_MESH_MANIPULATOR_H_INCLUDED__
 #define __I_MESH_MANIPULATOR_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "vector3d.h"
 #include "aabbox3d.h"
 #include "matrix4.h"
@@ -26,7 +26,7 @@ namespace scene
 	with wrong imported or exported meshes quickly after loading. It is not intended for doing mesh
 	modifications and/or animations during runtime.
 	*/
-	class IMeshManipulator : public virtual IUnknown
+	class IMeshManipulator : public virtual IReferenceCounted
 	{
 	public:
 
@@ -73,7 +73,7 @@ namespace scene
 		\param mesh: Mesh to copy.
 		\return Returns the cloned mesh.
 		If you no longer need the cloned mesh, you should call SMesh::drop().
-		See IUnknown::drop() for more information. */
+		See IReferenceCounted::drop() for more information. */
 		virtual SMesh* createMeshCopy(IMesh* mesh) const = 0;
 
 
@@ -90,7 +90,7 @@ namespace scene
 		\param mesh: Input mesh
 		\return Mesh consiting only of S3DVertexTangents vertices.
 		If you no longer need the cloned mesh, you should call IMesh::drop().
-		See IUnknown::drop() for more information. */
+		See IReferenceCounted::drop() for more information. */
 		virtual IMesh* createMeshWithTangents(IMesh* mesh) const = 0;
 
 		//! Unweld vertices

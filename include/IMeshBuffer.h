@@ -5,7 +5,7 @@
 #ifndef __I_MESH_BUFFER_H_INCLUDED__
 #define __I_MESH_BUFFER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "SMaterial.h"
 #include "aabbox3d.h"
 #include "S3DVertex.h"
@@ -55,7 +55,7 @@ enum E_PRIMITIVE_TYPE
 
 	//! Struct for holding a mesh with a single material
 	/** SMeshBuffer is a simple implementation of a MeshBuffer. */
-	class IMeshBuffer : public virtual IUnknown
+	class IMeshBuffer : public virtual IReferenceCounted
 	{
 	public:
 

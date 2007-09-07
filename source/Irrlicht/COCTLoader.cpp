@@ -29,7 +29,7 @@ COCTLoader::COCTLoader(video::IVideoDriver* driver)
 : Driver(driver)
 {
 	#ifdef _DEBUG
-	IUnknown::setDebugName("COCTLoader");
+	IReferenceCounted::setDebugName("COCTLoader");
 	#endif	
 
 	if (Driver) 
@@ -108,7 +108,7 @@ void COCTLoader::GetFaceNormal(f32 a[3], f32 b[3], f32 c[3], f32 out[3]) {
 //! creates/loads an animated mesh from the file.
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
-//! See IUnknown::drop() for more information.
+//! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file) 
 {
 	if (!file)

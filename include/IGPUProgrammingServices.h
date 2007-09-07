@@ -5,7 +5,7 @@
 #ifndef __I_GPU_PROGRAMMING_SERVICES_H_INCLUDED__
 #define __I_GPU_PROGRAMMING_SERVICES_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "SMaterial.h"
 
 namespace irr

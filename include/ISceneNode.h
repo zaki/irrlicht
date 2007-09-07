@@ -5,7 +5,7 @@
 #ifndef __I_SCENE_NODE_H_INCLUDED__
 #define __I_SCENE_NODE_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "ESceneNodeTypes.h"
 #include "ECullingTypes.h"
 #include "EDebugSceneTypes.h"

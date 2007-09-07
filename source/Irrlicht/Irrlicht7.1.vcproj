@@ -252,9 +252,6 @@
 				RelativePath=".\..\..\include\ITimer.h">
 			</File>
 			<File
-				RelativePath=".\..\..\include\IUnknown.h">
-			</File>
-			<File
 				RelativePath=".\..\..\include\Keycodes.h">
 			</File>
 			<File

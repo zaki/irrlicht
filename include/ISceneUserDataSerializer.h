@@ -5,7 +5,7 @@
 #ifndef __I_SCENE_USER_DATA_SERIALIZER_H_INCLUDED__
 #define __I_SCENE_USER_DATA_SERIALIZER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {

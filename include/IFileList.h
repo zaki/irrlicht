@@ -5,7 +5,7 @@
 #ifndef __I_FILE_LIST_H_INCLUDED__
 #define __I_FILE_LIST_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
@@ -13,7 +13,7 @@ namespace io
 {
 
 //! The Filelist lists all files in a directory.
-class IFileList : public virtual IUnknown
+class IFileList : public virtual IReferenceCounted
 {
 public:
 
