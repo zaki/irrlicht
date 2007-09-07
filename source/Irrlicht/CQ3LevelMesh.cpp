@@ -1874,7 +1874,7 @@ const core::aabbox3d<f32>& CQ3LevelMesh::getBoundingBox() const
 
 void CQ3LevelMesh::setBoundingBox( const core::aabbox3df& box)
 {
-	return Mesh[0]->setBoundingBox(box); //?
+	Mesh[0]->setBoundingBox(box); //?
 }
 
 
