@@ -35,7 +35,7 @@ public:
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
-	//! See IUnknown::drop() for more information.
+	//! See IReferenceCounted::drop() for more information.
 	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
 
 	struct SXTemplateMaterial

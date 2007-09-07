@@ -5,7 +5,7 @@
 #ifndef __I_ATTRIBUTES_H_INCLUDED__
 #define __I_ATTRIBUTES_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "SColor.h"
 #include "vector3d.h"
 #include "vector2d.h"
@@ -117,7 +117,7 @@ enum E_ATTRIBUTE_TYPE
 };
 
 //! Provides a generic interface for attributes and their values and the possiblity to serialize them
-class IAttributes : public virtual IUnknown
+class IAttributes : public virtual IReferenceCounted
 {
 public:
 

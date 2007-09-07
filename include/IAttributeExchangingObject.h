@@ -5,7 +5,7 @@
 #ifndef __I_ATTRIBUTE_EXCHANGING_OBJECT_H_INCLUDED__
 #define __I_ATTRIBUTE_EXCHANGING_OBJECT_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 
 namespace irr
@@ -48,7 +48,7 @@ struct SAttributeReadWriteOptions
 
 
 //! An object which is able to serialize and deserialize its attributes into an attributes object
-class IAttributeExchangingObject : public virtual IUnknown
+class IAttributeExchangingObject : public virtual IReferenceCounted
 {
 public:
 

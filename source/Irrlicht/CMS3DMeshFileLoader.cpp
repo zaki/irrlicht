@@ -115,7 +115,7 @@ bool CMS3DMeshFileLoader::isALoadableFileExtension(const c8* filename)
 //! creates/loads an animated mesh from the file.
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
-//! See IUnknown::drop() for more information.
+//! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* CMS3DMeshFileLoader::createMesh(irr::io::IReadFile* file)
 {
 	if (!file)

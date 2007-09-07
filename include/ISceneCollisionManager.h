@@ -5,7 +5,7 @@
 #ifndef __I_SCENE_COLLISION_MANAGER_H_INCLUDED__
 #define __I_SCENE_COLLISION_MANAGER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "vector3d.h"
 #include "triangle3d.h"
 #include "position2d.h"
@@ -22,7 +22,7 @@ namespace scene
 	class ITriangleSelector;
 
 	//!	The Scene Collision Manager provides methods for performing collision tests and picking on scene nodes.
-	class ISceneCollisionManager : public virtual IUnknown
+	class ISceneCollisionManager : public virtual IReferenceCounted
 	{
 	public:
 

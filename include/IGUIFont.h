@@ -5,7 +5,7 @@
 #ifndef __I_GUI_FONT_H_INCLUDED__
 #define __I_GUI_FONT_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "SColor.h"
 #include "rect.h"
 
@@ -35,7 +35,7 @@ enum EGUI_FONT_TYPE
 };
 
 //! Font interface.
-class IGUIFont : public virtual IUnknown
+class IGUIFont : public virtual IReferenceCounted
 {
 public:
 

@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - the base class for nearly all Irrlicht classes has been renamed from IUnknown to IReferenceCounted
+
  - fixed the keyboard autorepeat difference betwenn Linux and Windows. Thanks to denton we now have only KeyPressed events on both systems in case of autorepeat.
 
  - Added several new particle emitters and affectors from IrrSpintz. Also some new getter and setter methods were added.

@@ -5,7 +5,7 @@
 #ifndef __I_SCENE_NODE_ANIMATOR_FACTORY_H_INCLUDED__
 #define __I_SCENE_NODE_ANIMATOR_FACTORY_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "ESceneNodeAnimatorTypes.h"
 
 namespace irr
@@ -24,7 +24,7 @@ namespace scene
 	scene node manager will grab() the factory anyway, and otherwise cyclic references will
 	be created and the scene manager and all its nodes won't get deallocated.
 	*/
-	class ISceneNodeAnimatorFactory : public virtual IUnknown
+	class ISceneNodeAnimatorFactory : public virtual IReferenceCounted
 	{
 	public:
 
@@ -32,14 +32,14 @@ namespace scene
 		/** \param type: Type of the scene node animator to add.
 		\param target: Target scene node of the new animator.
 		\return Returns pointer to the new scene node animator or null if not successful. You need to
-		drop this pointer after calling this, see IUnknown::drop() for details. */
+		drop this pointer after calling this, see IReferenceCounted::drop() for details. */
 		virtual ISceneNodeAnimator* createSceneNodeAnimator(ESCENE_NODE_ANIMATOR_TYPE type, ISceneNode* target) = 0;
 
 		//! creates a scene node animator based on its type name
 		/** \param typeName: Type of the scene node animator to add.
 		\param target: Target scene node of the new animator.
 		\return Returns pointer to the new scene node animator or null if not successful. You need to
-		drop this pointer after calling this, see IUnknown::drop() for details. */
+		drop this pointer after calling this, see IReferenceCounted::drop() for details. */
 		virtual ISceneNodeAnimator* createSceneNodeAnimator(const c8* typeName, ISceneNode* target) = 0;
 
 		//! returns amount of scene node animator types this factory is able to create

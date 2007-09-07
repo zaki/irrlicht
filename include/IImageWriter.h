@@ -1,7 +1,7 @@
 #ifndef _I_IMAGE_WRITER_H_INCLUDED__
 #define _I_IMAGE_WRITER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 
 namespace irr
 {
@@ -16,7 +16,7 @@ namespace video
 
 
 //! Interface for writing software image data.
-class IImageWriter : public IUnknown
+class IImageWriter : public IReferenceCounted
 {
 public:
 	//! constructor

@@ -5,7 +5,7 @@
 #ifndef __I_SCENE_NODE_ANIMATOR_H_INCLUDED__
 #define __I_SCENE_NODE_ANIMATOR_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "vector3d.h"
 #include "ESceneNodeAnimatorTypes.h"
 #include "IAttributeExchangingObject.h"
@@ -39,7 +39,7 @@ namespace scene
 		virtual void animateNode(ISceneNode* node, u32 timeMs) = 0;
 
 		//! Creates a clone of this animator. 
-		/** Please note that you will have to drop (IUnknown::drop()) 
+		/** Please note that you will have to drop (IReferenceCounted::drop()) 
 		the returned pointer after calling this. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) 
 		{

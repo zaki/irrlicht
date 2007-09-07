@@ -5,7 +5,7 @@
 #ifndef __I_GUI_ELEMENT_FACTORY_H_INCLUDED__
 #define __I_GUI_ELEMENT_FACTORY_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "EGUIElementTypes.h"
 
 namespace irr
@@ -24,7 +24,7 @@ namespace gui
 	increase the reference counter of the environment. This is not necessary because the
 	it will grab() the factory anyway, and otherwise cyclic references will be created.
 	*/
-	class IGUIElementFactory : public virtual IUnknown
+	class IGUIElementFactory : public virtual IReferenceCounted
 	{
 	public:
 

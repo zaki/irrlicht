@@ -5,7 +5,7 @@
 #ifndef __I_SURFACE_LOADER_H_INCLUDED__
 #define __I_SURFACE_LOADER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "IImage.h"
 
 namespace irr
@@ -22,7 +22,7 @@ namespace video
 currently unsupported file formats (e.g .gif), then implement
 this and add your new Surface loader with 
 IVideoDriver::addExternalImageLoader() to the engine. */
-class IImageLoader : public virtual IUnknown
+class IImageLoader : public virtual IReferenceCounted
 {
 public:
 

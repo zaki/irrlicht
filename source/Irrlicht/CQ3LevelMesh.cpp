@@ -26,7 +26,7 @@ CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, video::IVideoDriver* driver, sce
 	MeshVerts(0), Brushes(0), Driver(driver), FileSystem(fs), SceneManager ( smgr )
 {
 	#ifdef _DEBUG
-	IUnknown::setDebugName("CQ3LevelMesh");
+	IReferenceCounted::setDebugName("CQ3LevelMesh");
 	#endif
 
 	s32 i;

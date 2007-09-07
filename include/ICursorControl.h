@@ -5,7 +5,7 @@
 #ifndef __I_CURSOR_CONTROL_H_INCLUDED__
 #define __I_CURSOR_CONTROL_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "position2d.h"
 #include "rect.h"
 
@@ -15,7 +15,7 @@ namespace gui
 {
 
 	//! Interface to manipulate the mouse cursor.
-	class ICursorControl : public virtual IUnknown
+	class ICursorControl : public virtual IReferenceCounted
 	{
 	public:
 

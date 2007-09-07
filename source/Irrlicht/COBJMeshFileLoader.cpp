@@ -58,7 +58,7 @@ bool COBJMeshFileLoader::isALoadableFileExtension(const c8* filename)
 //! creates/loads an animated mesh from the file.
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
-//! See IUnknown::drop() for more information.
+//! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 {
 	const u32 filesize = file->getSize();

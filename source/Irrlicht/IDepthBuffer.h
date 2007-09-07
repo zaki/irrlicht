@@ -5,7 +5,7 @@
 #ifndef __I_Z2_BUFFER_H_INCLUDED__
 #define __I_Z2_BUFFER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "dimension2d.h"
 #include "S4DVertex.h"
 
@@ -13,7 +13,7 @@ namespace irr
 {
 namespace video
 {
-	class IDepthBuffer : public virtual IUnknown
+	class IDepthBuffer : public virtual IReferenceCounted
 	{
 	public:
 

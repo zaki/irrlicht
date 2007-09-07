@@ -2,7 +2,7 @@
 #ifndef __I_GUI_SPRITE_BANK_H_INCLUDED__
 #define __I_GUI_SPRITE_BANK_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "irrArray.h"
 #include "SColor.h"
 #include "rect.h"
@@ -33,7 +33,7 @@ struct SGUISprite
 
 
 //! Sprite bank interface.
-class IGUISpriteBank : public virtual IUnknown
+class IGUISpriteBank : public virtual IReferenceCounted
 {
 public:
 

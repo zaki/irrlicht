@@ -5,7 +5,7 @@
 #ifndef __I_TEXTURE_H_INCLUDED__
 #define __I_TEXTURE_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "IImage.h"
 #include "dimension2d.h"
 #include "EDriverTypes.h"
@@ -94,7 +94,7 @@ inline E_TEXTURE_CREATION_FLAG getTextureFormatFromFlags(u32 flags)
 	If you try to use a texture created by one device with an other device, the device
 	will refuse to do that and write a warning or an error message to the output buffer.
 */
-class ITexture : public virtual IUnknown
+class ITexture : public virtual IReferenceCounted
 {
 public:
 

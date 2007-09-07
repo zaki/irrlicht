@@ -46,7 +46,7 @@ bool CB3DMeshFileLoader::isALoadableFileExtension(const c8* fileName)
 //! creates/loads an animated mesh from the file.
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
-//! See IUnknown::drop() for more information.
+//! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* CB3DMeshFileLoader::createMesh(irr::io::IReadFile* f)
 {
 	if (!f)

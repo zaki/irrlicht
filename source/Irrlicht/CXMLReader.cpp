@@ -54,7 +54,7 @@ namespace io
 		if (!file)
 			return 0;
 
-		return new CXMLReaderImpl<wchar_t, IUnknown>(new CIrrXMLFileReadCallBack(file)); 
+		return new CXMLReaderImpl<wchar_t, IReferenceCounted>(new CIrrXMLFileReadCallBack(file)); 
 	}
 
 	//! Creates an instance of an UFT-8 or ASCII character xml parser. 
@@ -63,7 +63,7 @@ namespace io
 		if (!file)
 			return 0;
 
-		return new CXMLReaderImpl<char, IUnknown>(new CIrrXMLFileReadCallBack(file)); 
+		return new CXMLReaderImpl<char, IReferenceCounted>(new CIrrXMLFileReadCallBack(file)); 
 	}
 
 } // end namespace

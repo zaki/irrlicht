@@ -161,7 +161,7 @@ public:
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
-	//! See IUnknown::drop() for more information.
+	//! See IReferenceCounted::drop() for more information.
 	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
 
 private:
@@ -293,7 +293,7 @@ private:
 
 //! following class is for holding and createing instances of library objects,
 //! named prefabs in this loader.
-class IColladaPrefab : public virtual IUnknown
+class IColladaPrefab : public virtual IReferenceCounted
 {
 public:
 

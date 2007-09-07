@@ -5,7 +5,7 @@
 #ifndef __C_ZIP_READER_H_INCLUDED__
 #define __C_ZIP_READER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "IReadFile.h"
 #include "irrArray.h"
 #include "irrString.h"
@@ -87,7 +87,7 @@ namespace io
 	Doesn't decompress data, only reads the file and is able to
 	open uncompressed entries.
 */
-	class CZipReader : public virtual IUnknown
+	class CZipReader : public virtual IReferenceCounted
 	{
 	public:
 

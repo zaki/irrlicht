@@ -5,7 +5,7 @@
 #ifndef __I_MATERIAL_RENDERER_H_INCLUDED__
 #define __I_MATERIAL_RENDERER_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "SMaterial.h"
 #include "S3DVertex.h"
 
@@ -21,7 +21,7 @@ class IMaterialRendererServices;
 /** Refer to IVideoDriver::addMaterialRenderer() for more informations on how to extend the engine
  with new materials.
 */
-class IMaterialRenderer : public virtual IUnknown
+class IMaterialRenderer : public virtual IReferenceCounted
 {
 public:
 

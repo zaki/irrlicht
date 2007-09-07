@@ -432,7 +432,7 @@ namespace quake3
 		core::array < SVariable > Variable;
 	};
 
-	struct SVarGroupList: public IUnknown
+	struct SVarGroupList: public IReferenceCounted
 	{
 		SVarGroupList () {}
 		virtual ~SVarGroupList () {}
@@ -595,7 +595,7 @@ namespace quake3
 	/*!
 		Manages various Quake3 Shader Styles
 	*/
-	class IShaderManager : public irr::IUnknown
+	class IShaderManager : public irr::IReferenceCounted
 	{
 	};
 

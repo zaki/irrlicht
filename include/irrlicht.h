@@ -107,7 +107,7 @@
 #include "ITerrainSceneNode.h"
 #include "ITextSceneNode.h"
 #include "ITexture.h"
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "IVideoDriver.h"
 #include "IVideoModeList.h"
 #include "IWriteFile.h"

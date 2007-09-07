@@ -5,7 +5,7 @@
 #ifndef __I_TRIANGLE_SELECTOR_H_INCLUDED__
 #define __I_TRIANGLE_SELECTOR_H_INCLUDED__
 
-#include "IUnknown.h"
+#include "IReferenceCounted.h"
 #include "triangle3d.h"
 #include "aabbox3d.h"
 #include "matrix4.h"
@@ -23,7 +23,7 @@ namespace scene
  area between (1,1,1) and (10,10,10), you can get all triangles of the
  scene node in this area with the ITriangleSelector easily and check every triangle
  if it collided. */
-class ITriangleSelector : public virtual IUnknown
+class ITriangleSelector : public virtual IReferenceCounted
 {
 public:
 

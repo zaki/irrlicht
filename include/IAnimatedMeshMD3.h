@@ -145,7 +145,7 @@ namespace scene
 #undef PACK_STRUCT
 
 	//! Holding Frame Data for a Mesh
-	struct SMD3MeshBuffer : public IUnknown
+	struct SMD3MeshBuffer : public IReferenceCounted
 	{
 		SMD3MeshHeader MeshHeader;
 
@@ -197,7 +197,7 @@ namespace scene
 	};
 
 	// holds a assoziative list of named quaternions
-	struct SMD3QuaterionTagList : public virtual IUnknown
+	struct SMD3QuaterionTagList : public virtual IReferenceCounted
 	{
 		SMD3QuaterionTag* get ( const core::stringc& name )
 		{
@@ -224,7 +224,7 @@ namespace scene
 
 
 	//! Holding Frames Buffers and Tag Infos
-	struct SMD3Mesh: public IUnknown
+	struct SMD3Mesh: public IReferenceCounted
 	{
 		~SMD3Mesh()
 		{

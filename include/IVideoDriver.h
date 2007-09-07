@@ -73,7 +73,7 @@ namespace video
 	provides a lot of powerful classes and methods to make the programmers life
 	easier.
 	*/
-	class IVideoDriver : public virtual IUnknown
+	class IVideoDriver : public virtual IReferenceCounted
 	{
 	public:
 
@@ -129,7 +129,7 @@ namespace video
 		\param filename: Filename of the texture to be loaded.
 		\return Returns a pointer to the texture or 0 if the texture
 		could not be loaded.
-		This pointer should not be dropped. See IUnknown::drop() for more information.*/
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information.*/
 		virtual ITexture* getTexture(const c8* filename) = 0;
 
 		//! Returns a pointer to a texture.
@@ -140,7 +140,7 @@ namespace video
 		\param file: Pointer to an already opened file.
 		\return Returns a pointer to the texture or 0 if the texture
 		could not be loaded.
-		This pointer should not be dropped. See IUnknown::drop() for more information.*/
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information.*/
 		virtual ITexture* getTexture(io::IReadFile* file) = 0;
 
 		//! Returns a texture by index
@@ -162,7 +162,7 @@ namespace video
 		\param format: Desired color format of the texture. Please note that
 		the driver may choose to create the texture in another color format.
 		\return Returns a pointer to the newly created texture.
-		This pointer should not be dropped. See IUnknown::drop() for more information. */
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ITexture* addTexture(const core::dimension2d<s32>& size,
 			const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
 
@@ -171,7 +171,7 @@ namespace video
 		 will return this texture
 		\param image: Image the texture is created from.
 		\return Returns a pointer to the newly created Texture.
-		This pointer should not be dropped. See IUnknown::drop() for more information. */
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ITexture* addTexture(const c8* name, IImage* image) = 0;
 
 		//! Creates a render target texture.
@@ -181,7 +181,7 @@ namespace video
 		screen buffer.
 		\return Returns a pointer to the created texture or 0 if the texture could not
 		be created. If you no longer need the image, you should call ITexture::drop().
-		See IUnknown::drop() for more information. */
+		See IReferenceCounted::drop() for more information. */
 		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name = 0) = 0;
 
 		//! Removes a texture from the texture cache and deletes it, freeing lot of memory.
@@ -636,7 +636,7 @@ namespace video
 		\param filename: Name of the file from which the image is created.
 		\return Returns the created image.
 		If you no longer need the image, you should call IImage::drop().
-		See IUnknown::drop() for more information. */
+		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImageFromFile(const c8* filename) = 0;
 
 		//! Creates a software image from a file.
@@ -646,7 +646,7 @@ namespace video
 		\param file: File from which the image is created.
 		\return Returns the created image.
 		If you no longer need the image, you should call IImage::drop().
-		See IUnknown::drop() for more information. */
+		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImageFromFile(io::IReadFile* file) = 0;
 
 		//! Writes the provided image to disk file
@@ -671,7 +671,7 @@ namespace video
 		\param deleteMemory: Whether the memory is deallocated upon destruction
 		\return Returns the created image.
 		If you no longer need the image, you should call IImage::drop().
-		See IUnknown::drop() for more information. */
+		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImageFromData(ECOLOR_FORMAT format,
 			const core::dimension2d<s32>& size, void *data,
 			bool ownForeignMemory=false,
