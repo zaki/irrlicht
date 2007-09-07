@@ -110,11 +110,16 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 			//the same vertex can be used in many different meshbuffers, but it's slow to work out
 
 			core::array< core::array< u32 > > verticesLink;
-			verticesLink.set_used(mesh->Vertices.size());
+			verticesLink.reallocate(mesh->Vertices.size());
 			core::array< core::array< u32 > > verticesLinkBuffer;
-			verticesLinkBuffer.set_used(mesh->Vertices.size());
+			verticesLinkBuffer.reallocate(mesh->Vertices.size());
+			for (i=0;i<mesh->Vertices.size();++i)
+			{
+				verticesLink.push_back( core::array< u32 >() );
+				verticesLinkBuffer.push_back( core::array< u32 >() );
+			}
 
-			for (i=0;i<mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
 			{
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
@@ -123,7 +128,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 					for (u32 j=0; j < Array.size(); ++j)
 					{
-						if (Array[j]==mesh->FaceIndices[i])
+						if (Array[j]==mesh->FaceMaterialIndices[i])
 						{
 							found=true;
 							break;
@@ -131,7 +136,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 					}
 
 					if (!found)
-						Array.push_back( mesh->FaceIndices[i] );
+						Array.push_back( mesh->FaceMaterialIndices[i] );
 				}
 			}
 
@@ -153,9 +158,9 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				}
 			}
 
-			for (i=0;i<mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
 			{
-				scene::SSkinMeshBuffer *buffer=mesh->Buffers[ mesh->FaceIndices[i] ];
+				scene::SSkinMeshBuffer *buffer=mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
 
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
@@ -163,7 +168,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 					for (u32 j=0;j<  Array.size() ;++j)
 					{
-						if ( Array[j]== mesh->FaceIndices[i] )
+						if ( Array[j]== mesh->FaceMaterialIndices[i] )
 							buffer->Indices.push_back( verticesLink[ mesh->Indices[id] ][j] );
 					}
 				}
@@ -189,10 +194,10 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 					{
 						for (u32 k=1; k < verticesLinkBuffer[id].size(); ++k)
 						{
-							ISkinnedMesh::SWeight& WeightClone=AnimatedMesh->createWeight(Joint);
-							WeightClone.strength = Weight.strength;
-							WeightClone.vertex_id = verticesLink[id][k];
-							WeightClone.buffer_id = verticesLinkBuffer[id][k];
+							ISkinnedMesh::SWeight* WeightClone = AnimatedMesh->createWeight(Joint);
+							WeightClone->strength = Weight.strength;
+							WeightClone->vertex_id = verticesLink[id][k];
+							WeightClone->buffer_id = verticesLinkBuffer[id][k];
 						}
 					}
 				}
@@ -212,11 +217,11 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				verticesLink[i]=0;
 			}
 
-			for (i=0;i<mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
 			{
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
-					verticesLinkBuffer[ mesh->Indices[id] ] = mesh->FaceIndices[i];
+					verticesLinkBuffer[ mesh->Indices[id] ] = mesh->FaceMaterialIndices[i];
 				}
 			}
 
@@ -228,9 +233,9 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
 			}
 
-			for (i=0;i<mesh->FaceIndices.size();++i)
+			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
 			{
-				scene::SSkinMeshBuffer *buffer=mesh->Buffers[ mesh->FaceIndices[i] ];
+				scene::SSkinMeshBuffer *buffer=mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
 
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
@@ -1178,20 +1183,10 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 	}
 
 	// read material count
-	readInt();
+	mesh.Materials.reallocate(readInt());
 
 	// read non triangulated face material index count
-	s32 nFaceIndices = readInt();
-
-	// read non triangulated face indices
-
-	core::array<s32> nonTriFaceIndices;
-	nonTriFaceIndices.set_used(nFaceIndices);
-
-	for (s32 i=0; i<nFaceIndices; ++i)
-		nonTriFaceIndices[i] = readInt();
-
-	// create triangulated face indices
+	const s32 nFaceIndices = readInt();
 
 	if (nFaceIndices != (s32)mesh.IndexCountPerFace.size())
 	{
@@ -1199,11 +1194,16 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 		return false;
 	}
 
-	mesh.FaceIndices.set_used( mesh.Indices.size() / 3);
-	s32 triangulatedindex = 0;
+	// read non triangulated face indices and create triangulated ones
+	mesh.FaceMaterialIndices.set_used( mesh.Indices.size() / 3);
+	s32 triangulatedindex = -1;
 	for (s32 tfi=0; tfi<nFaceIndices; ++tfi)
-		for (s32 k=0; k<mesh.IndexCountPerFace[tfi]/3; ++k)
-			mesh.FaceIndices[triangulatedindex++] = nonTriFaceIndices[tfi];
+	{
+		const s32 ind = readInt();
+		const s32 fc = mesh.IndexCountPerFace[tfi]/3;
+		for (s32 k=0; k<fc; ++k)
+			mesh.FaceMaterialIndices[++triangulatedindex] = ind;
+	}
 
 	// in version 03.02, the face indices end with two semicolons.
 	// commented out version check, as version 03.03 exported from blender also has 2 semicolons
@@ -1221,7 +1221,7 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 
 		if (objectName.size() == 0)
 		{
-			os::Printer::log("Unexpected ending found in Mesh Material list in x file.", ELL_WARNING);
+			os::Printer::log("Unexpected ending found in Mesh Material list in .x file.", ELL_WARNING);
 			return false;
 		}
 		else

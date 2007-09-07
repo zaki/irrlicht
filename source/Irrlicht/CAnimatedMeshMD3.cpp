@@ -77,7 +77,6 @@ CAnimatedMeshMD3::~CAnimatedMeshMD3()
 {
 	if ( Mesh )
 		Mesh->drop ();
-
 }
 
 
@@ -199,19 +198,18 @@ IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer ( const SMD3MeshBuffer * source
 	return dest;
 }
 
+
 //! build final mesh's vertices from frames frameA and frameB with linear interpolation.
 void CAnimatedMeshMD3::buildVertexArray ( u32 frameA, u32 frameB, f32 interpolate,
 						const SMD3MeshBuffer * source,
 						SMeshBuffer * dest
 					)
 {
-	u32 i;
-	u32 frameOffsetA = frameA * source->MeshHeader.numVertices;
-	u32 frameOffsetB = frameB * source->MeshHeader.numVertices;
-
+	const u32 frameOffsetA = frameA * source->MeshHeader.numVertices;
+	const u32 frameOffsetB = frameB * source->MeshHeader.numVertices;
 	const f32 scale = ( 1.f/ 64.f );
 
-	for ( i = 0; i!= (u32)source->MeshHeader.numVertices; ++i )
+	for (s32 i = 0; i != source->MeshHeader.numVertices; ++i)
 	{
 		video::S3DVertex &v = dest->Vertices [ i ];
 
@@ -239,11 +237,10 @@ void CAnimatedMeshMD3::buildVertexArray ( u32 frameA, u32 frameB, f32 interpolat
 //! build final mesh's tag from frames frameA and frameB with linear interpolation.
 void CAnimatedMeshMD3::buildTagArray ( u32 frameA, u32 frameB, f32 interpolate )
 {
-	u32 i;
-	u32 frameOffsetA = frameA * Mesh->MD3Header.numTags;
-	u32 frameOffsetB = frameB * Mesh->MD3Header.numTags;
+	const u32 frameOffsetA = frameA * Mesh->MD3Header.numTags;
+	const u32 frameOffsetB = frameB * Mesh->MD3Header.numTags;
 
-	for ( i = 0; i!= (u32)Mesh->MD3Header.numTags; ++i )
+	for ( s32 i = 0; i != Mesh->MD3Header.numTags; ++i )
 	{
 		SMD3QuaterionTag &d = TagListIPol [ i ];
 
@@ -269,8 +266,6 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 	if (!file)
 		return false;
 
-	file->seek(0);
-
 	//! Check MD3Header
 	{
 		file->read( &Mesh->MD3Header, sizeof(SMD3Header) );
@@ -291,7 +286,7 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 
 	SMD3Tag import;
 	SMD3QuaterionTag exp;
-	u32 i,g;
+	u32 i;
 
 	file->seek( Mesh->MD3Header.tagStart );
 	for (i = 0; i != totalTags; ++i )
@@ -340,7 +335,7 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 
 		//! read skins (shaders)
 		file->seek( offset + buf->MeshHeader.offset_shaders );
-		for ( g = 0; g != (u32)buf->MeshHeader.numShader; ++g )
+		for ( s32 g = 0; g != buf->MeshHeader.numShader; ++g )
 		{
 			file->read( &skin, sizeof(skin) );
 			buf->Shader.push_back ( skin.name );
