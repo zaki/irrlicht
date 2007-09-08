@@ -404,27 +404,6 @@
 			<Filter
 				Name="scene">
 				<File
-					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp">
-				</File>
-				<File
-					RelativePath=".\CParticleAttractionAffector.cpp">
-				</File>
-				<File
-					RelativePath=".\CParticleCylinderEmitter.cpp">
-				</File>
-				<File
-					RelativePath=".\CParticleMeshEmitter.cpp">
-				</File>
-				<File
-					RelativePath=".\CParticleRingEmitter.cpp">
-				</File>
-				<File
-					RelativePath=".\CParticleRotationAffector.cpp">
-				</File>
-				<File
-					RelativePath=".\CParticleSphereEmitter.cpp">
-				</File>
-				<File
 					RelativePath="..\..\include\ECullingTypes.h">
 				</File>
 				<File
@@ -480,6 +459,9 @@
 				</File>
 				<File
 					RelativePath=".\..\..\include\IMeshSceneNode.h">
+				</File>
+				<File
+					RelativePath="..\..\include\IMeshWriter.h">
 				</File>
 				<File
 					RelativePath=".\..\..\include\IMetaTriangleSelector.h">
@@ -1496,10 +1478,19 @@
 			<Filter
 				Name="particleSystem">
 				<File
+					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp">
+				</File>
+				<File
+					RelativePath=".\CParticleAttractionAffector.cpp">
+				</File>
+				<File
 					RelativePath="CParticleBoxEmitter.cpp">
 				</File>
 				<File
 					RelativePath="CParticleBoxEmitter.h">
+				</File>
+				<File
+					RelativePath=".\CParticleCylinderEmitter.cpp">
 				</File>
 				<File
 					RelativePath="CParticleFadeOutAffector.cpp">
@@ -1514,10 +1505,22 @@
 					RelativePath="CParticleGravityAffector.h">
 				</File>
 				<File
+					RelativePath=".\CParticleMeshEmitter.cpp">
+				</File>
+				<File
 					RelativePath="CParticlePointEmitter.cpp">
 				</File>
 				<File
 					RelativePath="CParticlePointEmitter.h">
+				</File>
+				<File
+					RelativePath=".\CParticleRingEmitter.cpp">
+				</File>
+				<File
+					RelativePath=".\CParticleRotationAffector.cpp">
+				</File>
+				<File
+					RelativePath=".\CParticleSphereEmitter.cpp">
 				</File>
 				<File
 					RelativePath="CParticleSystemSceneNode.cpp">
@@ -1608,6 +1611,22 @@
 				</File>
 				<File
 					RelativePath=".\CSceneNodeAnimatorTexture.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="writers"
+				Filter="">
+				<File
+					RelativePath=".\CColladaMeshWriter.cpp">
+				</File>
+				<File
+					RelativePath=".\CColladaMeshWriter.h">
+				</File>
+				<File
+					RelativePath=".\CIrrMeshWriter.cpp">
+				</File>
+				<File
+					RelativePath=".\CIrrMeshWriter.h">
 				</File>
 			</Filter>
 		</Filter>

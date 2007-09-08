@@ -1,5 +1,9 @@
 Changes in version 1.4 (... 2007)
 
+ - Irrlicht is now able to write Meshes out into files again. Use ISceneManager::createMeshWriter()
+   to obtain an interface with which you can write out meshes. Currently, an own .irrmesh
+   file format is supported as well as COLLADA.
+   
  - the base class for nearly all Irrlicht classes has been renamed from IUnknown to IReferenceCounted
 
  - fixed the keyboard autorepeat difference betwenn Linux and Windows. Thanks to denton we now have only KeyPressed events on both systems in case of autorepeat.

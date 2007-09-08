@@ -13,6 +13,7 @@
 #include "ETerrainElements.h"
 #include "ESceneNodeTypes.h"
 #include "SceneParameters.h"
+#include "IMeshWriter.h"
 
 namespace irr
 {
@@ -1215,6 +1216,11 @@ namespace scene
 		Otherwise, simply specify 0 as this parameter.
 		\return Returns true if successful.	*/
 		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;	
+
+		//! Returns a mesh writer implementation if available
+		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
+		for details. */
+		virtual IMeshWriter* createMeshWriter(EMESH_WRITER_TYPE type) = 0;
 
 		//! Sets ambient color of the scene
 		virtual void setAmbientLight(const video::SColorf &ambientColor) = 0;
