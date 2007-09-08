@@ -11,6 +11,7 @@
 #include "irrString.h"
 #include "irrArray.h"
 #include "IMeshLoader.h"
+#include "IMeshWriter.h"
 #include "CAttributes.h"
 
 namespace irr
@@ -423,6 +424,9 @@ namespace scene
 	
 		//! Reads attributes of the scene node.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
+
+		//! Returns a mesh writer implementation if available
+		virtual IMeshWriter* createMeshWriter(EMESH_WRITER_TYPE type);
 
 		//! Sets ambient color of the scene
 		virtual void setAmbientLight(const video::SColorf &ambientColor);

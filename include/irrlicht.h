@@ -87,6 +87,7 @@
 #include "IMeshCache.h"
 #include "IMeshSceneNode.h"
 #include "IMeshManipulator.h"
+#include "IMeshWriter.h"
 #include "IMetaTriangleSelector.h"
 #include "IReadFile.h"
 #include "IrrlichtDevice.h"

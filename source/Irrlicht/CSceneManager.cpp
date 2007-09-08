@@ -117,6 +117,9 @@
 
 #include "CQuake3ShaderSceneNode.h"
 
+#include "CColladaMeshWriter.h"
+#include "CIrrMeshWriter.h"
+
 //! Enable debug features
 #define SCENEMANAGER_DEBUG
 
@@ -2170,6 +2173,21 @@ void CSceneManager::setAmbientLight(const video::SColorf &ambientColor)
 video::SColorf CSceneManager::getAmbientLight()
 {
 	return AmbientLight;
+}
+
+
+//! Returns a mesh writer implementation if available
+IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
+{
+	switch(type)
+	{
+	case EMWT_IRR_MESH:
+		return new CIrrMeshWriter(Driver, FileSystem);
+	case EMWT_COLLADA:
+		return new CColladaMeshWriter(Driver, FileSystem);
+	}
+
+	return 0;
 }
 
 
