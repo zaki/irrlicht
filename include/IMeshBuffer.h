@@ -14,44 +14,47 @@ namespace irr
 {
 namespace scene
 {
-//! Enumeration for all vertex types there are.
-enum E_PRIMITIVE_TYPE
-{
-	//! All vertices are non-connected points.
-	EPT_POINTS=0,
 
-	//! All vertices form a single connected line.
-	EPT_LINE_STRIP,
+	//! Enumeration for all primitive types there are.
+	enum E_PRIMITIVE_TYPE
+	{
+		//! All vertices are non-connected points.
+		EPT_POINTS=0,
 
-	//! Just as LINE_STRIP, but the last and the first vertex is also connected.
-	EPT_LINE_LOOP,
+		//! All vertices form a single connected line.
+		EPT_LINE_STRIP,
 
-	//! Every two vertices are connected creating n/2 lines.
-	EPT_LINES,
+		//! Just as LINE_STRIP, but the last and the first vertex is also connected.
+		EPT_LINE_LOOP,
 
-	//! After the first two vertices each vertex defines a new triangle.
-	//! Always the two last and the new one form a new triangle.
-	EPT_TRIANGLE_STRIP,
+		//! Every two vertices are connected creating n/2 lines.
+		EPT_LINES,
 
-	//! After the first two vertices each vertex defines a new triangle.
-	//! All around the common first vertex.
-	EPT_TRIANGLE_FAN,
+		//! After the first two vertices each vertex defines a new triangle.
+		//! Always the two last and the new one form a new triangle.
+		EPT_TRIANGLE_STRIP,
 
-	//! Explicitly set all vertices for each triangle.
-	EPT_TRIANGLES,
+		//! After the first two vertices each vertex defines a new triangle.
+		//! All around the common first vertex.
+		EPT_TRIANGLE_FAN,
 
-	//! After the first two vertices each further tw vetices create a quad with the preceding two.
-	EPT_QUAD_STRIP,
+		//! Explicitly set all vertices for each triangle.
+		EPT_TRIANGLES,
 
-	//! Every four vertices create a quad.
-	EPT_QUADS,
+		//! After the first two vertices each further tw vetices create a quad with the preceding two.
+		EPT_QUAD_STRIP,
 
-	//! Just as LINE_LOOP, but filled.
-	EPT_POLYGON,
+		//! Every four vertices create a quad.
+		EPT_QUADS,
 
-	//! The single vertices are expanded to quad billboards on the GPU.
-	EPT_POINT_SPRITES
-};
+		//! Just as LINE_LOOP, but filled.
+		EPT_POLYGON,
+
+		//! The single vertices are expanded to quad billboards on the GPU.
+		EPT_POINT_SPRITES
+	};
+
+
 
 	//! Struct for holding a mesh with a single material
 	/** SMeshBuffer is a simple implementation of a MeshBuffer. */
@@ -70,9 +73,6 @@ enum E_PRIMITIVE_TYPE
 
 		//! returns which type of vertex data is stored.
 		virtual video::E_VERTEX_TYPE getVertexType() const = 0;
-
-		//! returns the byte size (stride, pitch) of the vertex
-		virtual u32 getVertexPitch() const = 0;
 
 		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
 		//! type is used can be determined with getVertexType().

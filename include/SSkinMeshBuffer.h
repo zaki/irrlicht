@@ -149,17 +149,6 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		return VertexType;
 	}
 
-	//! returns the byte size (stride, pitch) of the vertex
-	virtual u32 getVertexPitch() const
-	{
-		switch (VertexType)
-		{
-			case video::EVT_2TCOORDS: 	return sizeof(video::S3DVertex2TCoords);
-			case video::EVT_TANGENTS: 	return sizeof(video::S3DVertexTangents);
-			default: 					return sizeof(video::S3DVertex);
-		}
-	}
-
 	virtual void MoveTo_2TCoords()
 	{
 		if (VertexType==video::EVT_STANDARD)

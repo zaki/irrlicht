@@ -443,7 +443,7 @@ void CAnimatedMeshSceneNode::render()
 			for ( g=0; g<m->getMeshBufferCount(); ++g)
 			{
 				scene::IMeshBuffer* mb = m->getMeshBuffer(g);
-				const u32 vSize = mb->getVertexPitch();
+				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
 				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
 				for ( i = 0; i != mb->getVertexCount(); ++i )
 				{

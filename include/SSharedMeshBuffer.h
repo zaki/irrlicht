@@ -108,12 +108,6 @@ namespace scene
 			return video::EVT_STANDARD;
 		}
 
-		//! returns the byte size (stride, pitch) of the vertex
-		virtual u32 getVertexPitch() const
-		{
-			return sizeof(video::S3DVertex);
-		}
-
 		//! recalculates the bounding box. should be called if the mesh changed.
 		virtual void recalculateBoundingBox()
 		{

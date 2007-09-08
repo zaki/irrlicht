@@ -189,6 +189,20 @@ struct S3DVertexTangents : S3DVertex
 
 
 
+inline u32 getVertexPitchFromType(E_VERTEX_TYPE vertexType) 
+{
+	switch (vertexType)
+	{
+	case video::EVT_2TCOORDS: 	
+		return sizeof(video::S3DVertex2TCoords);
+	case video::EVT_TANGENTS: 	
+		return sizeof(video::S3DVertexTangents);
+	}
+
+	return sizeof(video::S3DVertex);
+}
+
+
 } // end namespace video
 } // end namespace irr
 

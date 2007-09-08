@@ -105,12 +105,7 @@ namespace scene
 			return T().getType();
 		}
 
-		//! returns the byte size (stride, pitch) of the vertex
-		virtual u32 getVertexPitch() const
-		{
-			return sizeof ( T );
-		}
-
+	
 		//! append the vertices and indices to the current buffer
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices)
 		{

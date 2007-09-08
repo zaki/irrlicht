@@ -291,7 +291,7 @@ void CMeshManipulator::transformMesh(scene::IMesh* mesh, const core::matrix4& m)
 		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
 
 		const u32 vtxcnt = buffer->getVertexCount();
-		const u32 vtxPitch = buffer->getVertexPitch ();
+		const u32 vtxPitch = video::getVertexPitchFromType(buffer->getVertexType());
 
 		video::S3DVertex* v = (video::S3DVertex*) buffer->getVertices();
 
