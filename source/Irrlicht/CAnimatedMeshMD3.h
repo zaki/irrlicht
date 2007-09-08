@@ -79,8 +79,8 @@ namespace scene
 
 
 	private:
-        //! animates one frame
-        inline void Animate (u32 frame);
+		//! animates one frame
+		inline void Animate (u32 frame);
 
 		video::SMaterial Material;
 

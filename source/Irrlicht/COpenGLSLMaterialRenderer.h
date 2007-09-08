@@ -41,7 +41,6 @@ namespace video
 
 class COpenGLDriver;
 class IShaderConstantSetCallBack;
-class IMaterialRenderer;
 
 //! Class for using GLSL shaders with OpenGL
 //! Please note: This renderer implements its own IMaterialRendererServices

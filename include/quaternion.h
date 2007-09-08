@@ -71,6 +71,9 @@ class quaternion
 		//! sets new quaternion based on euler angles (radians)
 		inline void set(f32 x, f32 y, f32 z);
 
+		//! sets new quaternion based on euler angles (radians)
+		inline void set(const core::vector3df& vec);
+
 		//! normalizes the quaternion
 		inline quaternion& normalize();
 
@@ -395,6 +398,12 @@ inline void quaternion::set(f32 x, f32 y, f32 z)
 	W = (f32)(cr * cpcy + sr * spsy);
 
 	normalize();
+}
+
+//! sets new quaternion based on euler angles
+inline void quaternion::set(const core::vector3df& vec)
+{
+	set(vec.X, vec.Y, vec.Z);
 }
 
 //! normalizes the quaternion
