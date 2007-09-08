@@ -281,7 +281,7 @@ ITexture* CNullDriver::getTexture(const c8* filename)
 		if (texture)
 		{
 			addTexture(texture);
-			texture->drop(); // drop it becaus we created it, one grab too much
+			texture->drop(); // drop it because we created it, one grab too much
 		}
 	}
 	else

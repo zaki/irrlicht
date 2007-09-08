@@ -184,7 +184,7 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 				str += getVectorAsStringLine(vtx[j].Normal);
 
 				char tmp[12];
-				sprintf(tmp, " %08x ", vtx[j].Color);
+				sprintf(tmp, " %08x ", vtx[j].Color.color);
 				str += tmp;
 
 				str += getVectorAsStringLine(vtx[j].TCoords);
@@ -204,7 +204,7 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 				str += getVectorAsStringLine(vtx[j].Normal);
 
 				char tmp[12];
-				sprintf(tmp, " %08x ", vtx[j].Color);
+				sprintf(tmp, " %08x ", vtx[j].Color.color);
 				str += tmp;
 
 				str += getVectorAsStringLine(vtx[j].TCoords);
@@ -226,7 +226,7 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 				str += getVectorAsStringLine(vtx[j].Normal);
 
 				char tmp[12];
-				sprintf(tmp, " %08x ", vtx[j].Color);
+				sprintf(tmp, " %08x ", vtx[j].Color.color);
 				str += tmp;
 
 				str += getVectorAsStringLine(vtx[j].TCoords);

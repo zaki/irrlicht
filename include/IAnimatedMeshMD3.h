@@ -180,10 +180,10 @@ namespace scene
 		}
 
 		// construct from a position and euler angles in degrees
-		SMD3QuaterionTag ( const core::vector3df&pos, const core::vector3df &angle )
+		SMD3QuaterionTag ( const core::vector3df &pos, const core::vector3df &angle )
 		{
 			position = pos;
-			rotation.set ( angle.X * core::DEGTORAD, angle.Y * core::DEGTORAD, angle.Z * core::DEGTORAD );
+			rotation.set ( angle * core::DEGTORAD );
 		}
 
 		core::stringc Name;
@@ -199,6 +199,8 @@ namespace scene
 	// holds a assoziative list of named quaternions
 	struct SMD3QuaterionTagList : public virtual IReferenceCounted
 	{
+		~SMD3QuaterionTagList() {}
+
 		SMD3QuaterionTag* get ( const core::stringc& name )
 		{
 			SMD3QuaterionTag search ( name );
