@@ -25,13 +25,14 @@ const s32 FOD_HEIGHT = 250;
 
 
 //! constructor
-CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* environment, IGUIElement* parent, s32 id)
+CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
+		IGUIEnvironment* environment, IGUIElement* parent, s32 id)
 : IGUIFileOpenDialog(environment, parent, id,
- core::rect<s32>((parent->getAbsolutePosition().getWidth()-FOD_WIDTH)/2,
-					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2,	
+		core::rect<s32>((parent->getAbsolutePosition().getWidth()-FOD_WIDTH)/2,
+					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2,
 					(parent->getAbsolutePosition().getWidth()-FOD_WIDTH)/2+FOD_WIDTH,
-					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2+FOD_HEIGHT)),	
-  Dragging(false), FileNameText(0), FileList(0)
+					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2+FOD_HEIGHT)),
+	Dragging(false), FileNameText(0), FileList(0)
 {
 	#ifdef _DEBUG
 	IGUIElement::setDebugName("CGUIFileOpenDialog");
@@ -51,7 +52,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* en
 	s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 	s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
-	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
+	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close");
 	CloseButton->setSubElement(true);
 	CloseButton->setTabStop(false);
@@ -65,14 +66,14 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* en
 	CloseButton->grab();
 
 	OKButton = Environment->addButton(
-		core::rect<s32>(RelativeRect.getWidth()-80, 30, RelativeRect.getWidth()-10, 50), 
+		core::rect<s32>(RelativeRect.getWidth()-80, 30, RelativeRect.getWidth()-10, 50),
 		this, -1, skin ? skin->getDefaultText(EGDT_MSG_BOX_OK) : L"OK");
 	OKButton->setSubElement(true);
 	OKButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	OKButton->grab();
 
 	CancelButton = Environment->addButton(
-		core::rect<s32>(RelativeRect.getWidth()-80, 55, RelativeRect.getWidth()-10, 75), 
+		core::rect<s32>(RelativeRect.getWidth()-80, 55, RelativeRect.getWidth()-10, 75),
 		this, -1, skin ? skin->getDefaultText(EGDT_MSG_BOX_CANCEL) : L"Cancel");
 	CancelButton->setSubElement(true);
 	CancelButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
@@ -97,7 +98,6 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title, IGUIEnvironment* en
 
 	fillListBox();
 }
-
 
 
 //! destructor
@@ -131,7 +131,6 @@ const wchar_t* CGUIFileOpenDialog::getFilename()
 {
 	return FileName.c_str();
 }
-
 
 
 //! called if an event happened.
@@ -199,6 +198,8 @@ bool CGUIFileOpenDialog::OnEvent(SEvent event)
 	case EET_MOUSE_INPUT_EVENT:
 		switch(event.MouseInput.Event)
 		{
+		case EMIE_MOUSE_WHEEL:
+			return FileBox->OnEvent(event);
 		case EMIE_LMOUSE_PRESSED_DOWN:
 			DragStart.X = event.MouseInput.X;
 			DragStart.Y = event.MouseInput.Y;
@@ -243,7 +244,7 @@ void CGUIFileOpenDialog::draw()
 
 	core::rect<s32> rect = AbsoluteRect;
 
-	rect = skin->draw3DWindowBackground(this, true, skin->getColor(EGDC_ACTIVE_BORDER), 
+	rect = skin->draw3DWindowBackground(this, true, skin->getColor(EGDC_ACTIVE_BORDER),
 		rect, &AbsoluteClippingRect);
 
 	if (Text.size())
@@ -253,8 +254,9 @@ void CGUIFileOpenDialog::draw()
 
 		IGUIFont* font = skin->getFont(EGDF_WINDOW);
 		if (font)
-			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true, 
-			&AbsoluteClippingRect);
+			font->draw(Text.c_str(), rect,
+					skin->getColor(EGDC_ACTIVE_CAPTION),
+					false, true, &AbsoluteClippingRect);
 	}
 
 	IGUIElement::draw();
