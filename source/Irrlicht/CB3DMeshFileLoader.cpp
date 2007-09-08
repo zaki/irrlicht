@@ -524,6 +524,9 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 
 bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 Vertices_Start)
 {
+
+	bool showVertexWarning=false;
+
 	s32 triangle_brush_id; // Note: Irrlicht can't have different brushes for each triangle (I'm using a workaround)
 
 	file->read(&triangle_brush_id, sizeof(triangle_brush_id));
@@ -566,6 +569,15 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 
 		for(s32 i=0; i<3; ++i)
 		{
+			if (AnimatedVertices_VertexID[ vertex_id[i] ] != -1)
+			{
+				if ( AnimatedVertices_BufferID[ vertex_id[i] ] != (s32)MeshBufferID ) //If this vertex is linked in a different meshbuffer
+				{
+					AnimatedVertices_VertexID[ vertex_id[i] ] = -1;
+					AnimatedVertices_BufferID[ vertex_id[i] ] = -1;
+					showVertexWarning=true;
+				}
+			}
 			if (AnimatedVertices_VertexID[ vertex_id[i] ] == -1) //If this vertex is not in the meshbuffer
 			{
 
@@ -616,6 +628,11 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 	}
 
 	B3dStack.erase(B3dStack.size()-1);
+
+
+
+	if (showVertexWarning)
+		os::Printer::log("B3dMeshLoader: Warning, different meshbuffers linking to the same vertex, this will cause problems with animated meshes");
 
 	return true;
 }

@@ -410,12 +410,12 @@ bool CGUIEditBox::processKey(const SEvent& event)
 
 		if (event.KeyInput.Shift)
 		{
-			if (CursorPos > 0) 
-			{ 
-				if (MarkBegin == MarkEnd) 
-					MarkBegin = CursorPos; 
+			if (CursorPos > 0)
+			{
+				if (MarkBegin == MarkEnd)
+					MarkBegin = CursorPos;
 
-				MarkEnd = CursorPos-1; 
+				MarkEnd = CursorPos-1;
 			}
 		}
 		else
@@ -429,15 +429,15 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		break;
 
 	case KEY_RIGHT:
-		if (event.KeyInput.Shift) 
-		{ 
-			if (Text.size() > (u32)CursorPos) 
-			{ 
-				if (MarkBegin == MarkEnd) 
-					MarkBegin = CursorPos; 
+		if (event.KeyInput.Shift)
+		{
+			if (Text.size() > (u32)CursorPos)
+			{
+				if (MarkBegin == MarkEnd)
+					MarkBegin = CursorPos;
 
-				MarkEnd = CursorPos+1; 
-			} 
+				MarkEnd = CursorPos+1;
+			}
 		}
 		else
 		{
@@ -518,7 +518,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		if (Text.size())
 		{
 			core::stringw s;
-			
+
 			if (MarkBegin != MarkEnd)
 			{
 				// delete marked text
@@ -653,7 +653,7 @@ void CGUIEditBox::draw()
 	{
 		skin->draw3DSunkenPane(this, skin->getColor(EGDC_WINDOW),
 			false, true, frameRect, &AbsoluteClippingRect);
-		
+
 		frameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
 		frameRect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y)+1;
 		frameRect.LowerRightCorner.X -= skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
@@ -681,7 +681,7 @@ void CGUIEditBox::draw()
 		core::stringw *txtLine = &Text;
 		s32 startPos = 0;
 
-		core::stringw s, s2; 
+		core::stringw s, s2;
 
 		// get mark position
 		bool ml = (!PasswordBox && (WordWrap || MultiLine));
@@ -734,25 +734,25 @@ void CGUIEditBox::draw()
 					startPos = 0;
 				}
 				else
-				{	
+				{
 					txtLine = ml ? &BrokenText[i] : &Text;
 					startPos = ml ? BrokenTextPositions[i] : 0;
 				}
-				
+
 
 				// draw normal text
-				font->draw(txtLine->c_str(), CurrentTextRect, 
+				font->draw(txtLine->c_str(), CurrentTextRect,
 					OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
 					false, true, &localClipRect);
 
 				// draw mark and marked text
 				if (focus && MarkBegin != MarkEnd && i >= hlineStart && i < hlineStart + hlineCount)
 				{
-					
+
 					s32 mbegin = 0, mend = 0;
 					s32 lineStartPos = 0, lineEndPos = txtLine->size();
 
-					if (i == hlineStart) 
+					if (i == hlineStart)
 					{
 						// highlight start is on this line
 						s = txtLine->subString(0, realmbgn - startPos);
@@ -779,9 +779,9 @@ void CGUIEditBox::draw()
 					s = txtLine->subString(lineStartPos, lineEndPos - lineStartPos);
 
 					if (s.size())
-						font->draw(s.c_str(), CurrentTextRect, 
+						font->draw(s.c_str(), CurrentTextRect,
 							OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_HIGH_LIGHT_TEXT),
-							false, true, &localClipRect);	
+							false, true, &localClipRect);
 
 				}
 			}
@@ -793,7 +793,7 @@ void CGUIEditBox::draw()
 
 		// draw cursor
 
-		if (WordWrap || MultiLine) 
+		if (WordWrap || MultiLine)
 		{
 			cursorLine = getLineFromPos(CursorPos);
 			txtLine = &BrokenText[cursorLine];
@@ -807,7 +807,7 @@ void CGUIEditBox::draw()
 			setTextRect(cursorLine);
 			CurrentTextRect.UpperLeftCorner.X += charcursorpos;
 
-			font->draw(L"_", CurrentTextRect, 
+			font->draw(L"_", CurrentTextRect,
 				OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
 				false, true, &localClipRect);
 		}
@@ -862,7 +862,7 @@ core::dimension2di CGUIEditBox::getTextDimension()
 
 
 //! Sets the maximum amount of characters which may be entered in the box.
-//! \param max: Maximum amount of characters. If 0, the character amount is 
+//! \param max: Maximum amount of characters. If 0, the character amount is
 //! infinity.
 void CGUIEditBox::setMax(s32 max)
 {
@@ -941,7 +941,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 				calculateScrollPos();
 				return true;
 			}
-		}	
+		}
 	}
 
 	return false;
@@ -958,9 +958,9 @@ s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 	u32 lineCount = 1;
 
 	if (WordWrap || MultiLine)
-		lineCount = BrokenText.size(); 
+		lineCount = BrokenText.size();
 
-	core::stringw *txtLine;
+	core::stringw *txtLine=0;
 	s32 startPos=0;
 	x+=3;
 
@@ -985,12 +985,12 @@ s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 	if (x < CurrentTextRect.UpperLeftCorner.X)
 		x = CurrentTextRect.UpperLeftCorner.X;
 
-	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);	
-	
+	s32 idx = font->getCharacterFromPos(Text.c_str(), x - CurrentTextRect.UpperLeftCorner.X);
+
 	// click was on or left of the line
 	if (idx != -1)
-		return idx + startPos;		
-	
+		return idx + startPos;
+
 	// click was off the right edge of the line, go to end.
 	return txtLine->size() + startPos;
 }
@@ -1148,19 +1148,19 @@ void CGUIEditBox::setTextRect(s32 line)
 		// align to left edge
 		CurrentTextRect.UpperLeftCorner.X = 0;
 		CurrentTextRect.LowerRightCorner.X = d.Width;
-		
+
 	}
 
 	switch (VAlign)
 	{
 	case EGUIA_CENTER:
 		// align to v centre
-		CurrentTextRect.UpperLeftCorner.Y = 
+		CurrentTextRect.UpperLeftCorner.Y =
 			(frameRect.getHeight()/2) - (lineCount*d.Height)/2 + d.Height*line;
 		break;
 	case EGUIA_LOWERRIGHT:
 		// align to bottom edge
-		CurrentTextRect.UpperLeftCorner.Y = 
+		CurrentTextRect.UpperLeftCorner.Y =
 			frameRect.getHeight() - lineCount*d.Height + d.Height*line;
 		break;
 	default:
@@ -1184,7 +1184,7 @@ s32 CGUIEditBox::getLineFromPos(s32 pos)
 		return 0;
 
 	s32 i=0;
-	while (i < (s32)BrokenTextPositions.size()) 
+	while (i < (s32)BrokenTextPositions.size())
 	{
 		if (BrokenTextPositions[i] > pos)
 			return i-1;
@@ -1225,7 +1225,7 @@ void CGUIEditBox::inputChar(wchar_t c)
 				Text = s;
 				++CursorPos;
 			}
-			
+
 			BlinkStartTime = os::Timer::getTime();
 			MarkBegin = 0;
 			MarkEnd = 0;
@@ -1257,7 +1257,7 @@ void CGUIEditBox::calculateScrollPos()
 		core::stringw *txtLine = MultiLine ? &BrokenText[cursLine] : &Text;
 		s32 cPos = MultiLine ? CursorPos - BrokenTextPositions[cursLine] : CursorPos;
 
-		s32 cStart = CurrentTextRect.UpperLeftCorner.X + HScrollPos + 
+		s32 cStart = CurrentTextRect.UpperLeftCorner.X + HScrollPos +
 			font->getDimension(txtLine->subString(0, cPos).c_str()).Width;
 
 		s32 cEnd = cStart + font->getDimension(L"_ ").Width;
@@ -1268,7 +1268,7 @@ void CGUIEditBox::calculateScrollPos()
 			HScrollPos = cStart - frameRect.UpperLeftCorner.X;
 		else
 			HScrollPos = 0;
-		
+
 		// todo: adjust scrollbar
 
 	}
