@@ -157,7 +157,7 @@ void CMeshSceneNode::render()
 
 				u32 vSize;
 				u32 i;
-				vSize = mb->getVertexPitch ();
+				vSize = video::getVertexPitchFromType(mb->getVertexType());
 
 				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
 				video::SColor c ( 255, 128 ,0, 0 );
