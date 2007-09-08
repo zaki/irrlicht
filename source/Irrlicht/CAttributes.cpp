@@ -1378,14 +1378,17 @@ void CAttributes::setAttribute(s32 index, void* userPointer)
 //! Reads attributes from a xml file.
 //! \param readCurrentElementOnly: If set to true, reading only works if current element has the name 'attributes'.
 //! IF set to false, the first appearing list attributes are read.
-bool CAttributes::read(irr::io::IXMLReader* reader, bool readCurrentElementOnly)
+bool CAttributes::read(irr::io::IXMLReader* reader, bool readCurrentElementOnly,
+					    const wchar_t* nonDefaultElementName)
 {
 	if (!reader)
 		return false;
 
 	clear();
 
-	const core::stringw elementName = L"attributes";
+	core::stringw elementName = L"attributes";
+	if (nonDefaultElementName)
+		elementName = nonDefaultElementName;
 
 	if (readCurrentElementOnly)
 	{
@@ -1542,7 +1545,8 @@ void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 }
 
 //! Write these attributes into a xml file
-bool CAttributes::write(io::IXMLWriter* writer, bool writeXMLHeader)
+bool CAttributes::write(io::IXMLWriter* writer, bool writeXMLHeader,
+						const wchar_t* nonDefaultElementName)
 {
 	if (!writer)
 		return false;
@@ -1550,7 +1554,11 @@ bool CAttributes::write(io::IXMLWriter* writer, bool writeXMLHeader)
 	if (writeXMLHeader)
 		writer->writeXMLHeader();
 
-	writer->writeElement(L"attributes", false);
+	core::stringw elementName = L"attributes";
+	if (nonDefaultElementName)
+		elementName = nonDefaultElementName;
+
+	writer->writeElement(elementName.c_str(), false);
 	writer->writeLineBreak();
 
 	s32 i=0;
@@ -1594,7 +1602,7 @@ bool CAttributes::write(io::IXMLWriter* writer, bool writeXMLHeader)
 		writer->writeLineBreak();
 	}
 
-	writer->writeClosingTag(L"attributes");
+	writer->writeClosingTag(elementName.c_str());
 	writer->writeLineBreak();
 
 	return true;
