@@ -155,14 +155,16 @@ public:
 
 	//! Reads attributes from a xml file.
 	//! \param readCurrentElementOnly: If set to true, reading only works if current element has the name 'attributes'.
+	//! \param elementName: The surrounding element name. If it is null, the default one, "attributes" will be taken.
 	//! If set to false, the first appearing list of attributes are read.
-	virtual bool read(irr::io::IXMLReader* reader, bool readCurrentElementOnly=false) = 0;
+	virtual bool read(irr::io::IXMLReader* reader, bool readCurrentElementOnly=false, const wchar_t* elementName=0) = 0;
 
 	//! Write these attributes into a xml file
 	//! \param writer: The XML writer to write to
 	//! \param writeXMLHeader: Writes a header to the XML file, required if at the beginning of the file
+	//! \param elementName: The surrounding element name. If it is null, the default one, "attributes" will be taken.
 	//! and you haven't already written one with writer->writeXMLHeader()
-	virtual bool write(io::IXMLWriter* writer, bool writeXMLHeader=false) = 0;
+	virtual bool write(io::IXMLWriter* writer, bool writeXMLHeader=false, const wchar_t* elementName=0) = 0;
 
 
 	/*

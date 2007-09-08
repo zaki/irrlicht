@@ -62,10 +62,11 @@ public:
 	//! Reads attributes from a xml file.
 	//! \param readCurrentElementOnly: If set to true, reading only works if current element has the name 'attributes'.
 	//! IF set to false, the first appearing list attributes are read.
-	virtual bool read(irr::io::IXMLReader* reader, bool readCurrentElementOnly=false);
+	virtual bool read(irr::io::IXMLReader* reader, bool readCurrentElementOnly=false,
+					  const wchar_t* nonDefaultElementName = 0);
 
 	//! Write these attributes into a xml file
-	virtual bool write(io::IXMLWriter* writer, bool writeXMLHeader=false);
+	virtual bool write(io::IXMLWriter* writer, bool writeXMLHeader=false, const wchar_t* nonDefaultElementName=0);
 
 
 	/*
