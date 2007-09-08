@@ -10,13 +10,13 @@ namespace scene
 {
 
 
-CIrrMeshWriter::CIrrMeshWriter(irr::video::IVideoDriver* driver, 
-									   irr::io::IFileSystem* fs)
-: VideoDriver(driver), FileSystem(fs)
+CIrrMeshWriter::CIrrMeshWriter(irr::video::IVideoDriver* driver,
+				irr::io::IFileSystem* fs)
+	: FileSystem(fs), VideoDriver(driver), Writer(0)
 {
 	if (VideoDriver)
 		VideoDriver->grab();
-    
+
 	if (FileSystem)
 		FileSystem->grab();
 }
@@ -26,7 +26,7 @@ CIrrMeshWriter::~CIrrMeshWriter()
 {
 	if (VideoDriver)
 		VideoDriver->drop();
-    
+
 	if (FileSystem)
 		FileSystem->drop();
 }
@@ -39,7 +39,7 @@ EMESH_WRITER_TYPE CIrrMeshWriter::getType() const
 }
 
 
-//! writes a mesh 
+//! writes a mesh
 bool CIrrMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags)
 {
 	if (!file)
@@ -57,7 +57,7 @@ bool CIrrMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 	// write IRR MESH header
 
-    Writer->writeXMLHeader();
+	Writer->writeXMLHeader();
 
 	Writer->writeElement(L"irrmesh", false,
 		L"xmlns", L"http://irrlicht.sourceforge.net/IRRMESH_08_2007",
@@ -74,5 +74,5 @@ bool CIrrMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 
 
-} // end namespace 
+} // end namespace
 } // end namespace

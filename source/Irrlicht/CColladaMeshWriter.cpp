@@ -1,5 +1,6 @@
 #include "CColladaMeshWriter.h"
 #include "os.h"
+#include "IFileSystem.h"
 #include "IXMLWriter.h"
 #include "IMesh.h"
 #include "IAttributes.h"
@@ -10,13 +11,13 @@ namespace scene
 {
 
 
-CColladaMeshWriter::CColladaMeshWriter(irr::video::IVideoDriver* driver, 
-									   irr::io::IFileSystem* fs)
-: VideoDriver(driver), FileSystem(fs)
+CColladaMeshWriter::CColladaMeshWriter(irr::video::IVideoDriver* driver,
+					irr::io::IFileSystem* fs)
+	: FileSystem(fs), VideoDriver(driver), Writer(0)
 {
 	if (VideoDriver)
 		VideoDriver->grab();
-    
+
 	if (FileSystem)
 		FileSystem->grab();
 }
@@ -26,7 +27,7 @@ CColladaMeshWriter::~CColladaMeshWriter()
 {
 	if (VideoDriver)
 		VideoDriver->drop();
-    
+
 	if (FileSystem)
 		FileSystem->drop();
 }
@@ -39,7 +40,7 @@ EMESH_WRITER_TYPE CColladaMeshWriter::getType() const
 }
 
 
-//! writes a mesh 
+//! writes a mesh
 bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 flags)
 {
 	if (!file)
@@ -57,7 +58,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 	// write COLLADA header
 
-    Writer->writeXMLHeader();
+	Writer->writeXMLHeader();
 
 	Writer->writeElement(L"COLLADA", false,
 		L"xmlns", L"http://www.collada.org/2005/COLLADASchema",
@@ -88,12 +89,13 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"library", false,	L"type", L"MATERIAL");
 	Writer->writeLineBreak();
 
-	for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
+	u32 i;
+	for (i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		core::stringw strMat = "mat";
 		strMat += i;
 
-		Writer->writeElement(L"material", false, 
+		Writer->writeElement(L"material", false,
 			L"name", strMat.c_str(),
 			L"id", strMat.c_str());
 		Writer->writeLineBreak();
@@ -103,18 +105,18 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		irr::io::IAttributes* attributes = VideoDriver->createAttributesFromMaterial(
 			mesh->getMeshBuffer(i)->getMaterial());
 
-		int count = attributes->getAttributeCount();
-		for (int attridx=0; attridx<count; ++attridx)
+		s32 count = attributes->getAttributeCount();
+		for (s32 attridx=0; attridx<count; ++attridx)
 		{
 			core::stringw str = attributes->getAttributeName(attridx);
 
-			Writer->writeElement(L"param", false, 
+			Writer->writeElement(L"param", false,
 				L"name", str.c_str(),
 				L"type", attributes->getAttributeTypeString(attridx) );
 
 			str = attributes->getAttributeAsString(attridx).c_str();
 			Writer->writeText(str.c_str());
-			
+
 			Writer->writeClosingTag(L"param");
 			Writer->writeLineBreak();
 		}
@@ -145,11 +147,11 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	// - count amount of second texture coordinates
 	// - check for the need of tangents (TODO)
 
-	int totalVertexCount = 0;
-	int totalTCoords2Count = 0;
+	u32 totalVertexCount = 0;
+	u32 totalTCoords2Count = 0;
 	bool needsTangents = false; // TODO: tangents not supported here yet
 
-	for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
+	for (i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		totalVertexCount += mesh->getMeshBuffer(i)->getVertexCount();
 
@@ -171,12 +173,12 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"array", false, L"id", L"mesh-Pos-array",
 							L"type", L"float", L"count", vertexCountStr.c_str());
 	Writer->writeLineBreak();
-	
-	for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
+
+	for (i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
-		int vertexCount = buffer->getVertexCount();
+		u32 vertexCount = buffer->getVertexCount();
 
 		globalIndices[i].PosStartIndex = 0;
 
@@ -190,7 +192,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_STANDARD:
 			{
 				video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].Pos.X;
@@ -198,7 +200,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 					str += vtx[j].Pos.Y;
 					str += " ";
 					str += vtx[j].Pos.Z;
-			
+
 					Writer->writeText(str.c_str());
 					Writer->writeLineBreak();
 				}
@@ -207,7 +209,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_2TCOORDS:
 			{
 				video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].Pos.X;
@@ -224,7 +226,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_TANGENTS:
 			{
 				video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].Pos.X;
@@ -232,7 +234,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 					str += vtx[j].Pos.Y;
 					str += " ";
 					str += vtx[j].Pos.Z;
-	
+
 					Writer->writeText(str.c_str());
 					Writer->writeLineBreak();
 				}
@@ -249,9 +251,9 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 		vertexCountStr = totalVertexCount;
 
-		Writer->writeElement(L"accessor", false, L"source", L"#mesh-Pos-array",
-								L"count", vertexCountStr.c_str(), L"stride", L"3");
-		Writer->writeLineBreak();
+			Writer->writeElement(L"accessor", false, L"source", L"#mesh-Pos-array",
+					L"count", vertexCountStr.c_str(), L"stride", L"3");
+			Writer->writeLineBreak();
 
 			Writer->writeElement(L"param", true, L"name", L"X", L"type", L"float", L"flow", L"OUT");
 			Writer->writeLineBreak();
@@ -260,8 +262,8 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 			Writer->writeElement(L"param", true, L"name", L"Z", L"type", L"float", L"flow", L"OUT");
 			Writer->writeLineBreak();
 
-		Writer->writeClosingTag(L"accessor");
-		Writer->writeLineBreak();
+			Writer->writeClosingTag(L"accessor");
+			Writer->writeLineBreak();
 
 		Writer->writeClosingTag(L"technique");
 		Writer->writeLineBreak();
@@ -269,7 +271,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeClosingTag(L"source");
 	Writer->writeLineBreak();
 
-	// write texture coordinates 
+	// write texture coordinates
 
 	Writer->writeElement(L"source", false, L"id", L"mesh-TexCoord0");
 	Writer->writeLineBreak();
@@ -278,12 +280,12 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"array", false, L"id", L"mesh-TexCoord0-array",
 							L"type", L"float", L"count", vertexCountStr.c_str());
 	Writer->writeLineBreak();
-	
-	for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
+
+	for (i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
-		int vertexCount = buffer->getVertexCount();
+		u32 vertexCount = buffer->getVertexCount();
 
 		globalIndices[i].TCoord0StartIndex = 0;
 
@@ -297,13 +299,13 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_STANDARD:
 			{
 				video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].TCoords.X;
 					str += " ";
 					str += vtx[j].TCoords.Y;
-			
+
 					Writer->writeText(str.c_str());
 					Writer->writeLineBreak();
 				}
@@ -312,13 +314,13 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_2TCOORDS:
 			{
 				video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].TCoords.X;
 					str += " ";
 					str += vtx[j].TCoords.Y;
-			
+
 					Writer->writeText(str.c_str());
 					Writer->writeLineBreak();
 				}
@@ -327,13 +329,13 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_TANGENTS:
 			{
 				video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].TCoords.X;
 					str += " ";
 					str += vtx[j].TCoords.Y;
-				
+
 					Writer->writeText(str.c_str());
 					Writer->writeLineBreak();
 				}
@@ -350,17 +352,17 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 		vertexCountStr = totalVertexCount;
 
-		Writer->writeElement(L"accessor", false, L"source", L"#mesh-TexCoord0-array",
-								L"count", vertexCountStr.c_str(), L"stride", L"2");
-		Writer->writeLineBreak();
+			Writer->writeElement(L"accessor", false, L"source", L"#mesh-TexCoord0-array",
+					L"count", vertexCountStr.c_str(), L"stride", L"2");
+			Writer->writeLineBreak();
 
 			Writer->writeElement(L"param", true, L"name", L"U", L"type", L"float", L"flow", L"OUT");
 			Writer->writeLineBreak();
 			Writer->writeElement(L"param", true, L"name", L"V", L"type", L"float", L"flow", L"OUT");
 			Writer->writeLineBreak();
 
-		Writer->writeClosingTag(L"accessor");
-		Writer->writeLineBreak();
+			Writer->writeClosingTag(L"accessor");
+			Writer->writeLineBreak();
 
 		Writer->writeClosingTag(L"technique");
 		Writer->writeLineBreak();
@@ -375,14 +377,14 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 	vertexCountStr = (totalVertexCount*3);
 	Writer->writeElement(L"array", false, L"id", L"mesh-Normal-array",
-							L"type", L"float", L"count", vertexCountStr.c_str());
+			L"type", L"float", L"count", vertexCountStr.c_str());
 	Writer->writeLineBreak();
-	
-	for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
+
+	for (i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
-		int vertexCount = buffer->getVertexCount();
+		u32 vertexCount = buffer->getVertexCount();
 
 		globalIndices[i].NormalStartIndex = 0;
 
@@ -396,7 +398,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_STANDARD:
 			{
 				video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].Normal.X;
@@ -404,7 +406,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 					str += vtx[j].Normal.Y;
 					str += " ";
 					str += vtx[j].Normal.Z;
-			
+
 					Writer->writeText(str.c_str());
 					Writer->writeLineBreak();
 				}
@@ -413,7 +415,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_2TCOORDS:
 			{
 				video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].Normal.X;
@@ -430,7 +432,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		case video::EVT_TANGENTS:
 			{
 				video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
-				for (int j=0; j<vertexCount; ++j)
+				for (u32 j=0; j<vertexCount; ++j)
 				{
 					core::stringw str;
 					str += vtx[j].Normal.X;
@@ -438,7 +440,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 					str += vtx[j].Normal.Y;
 					str += " ";
 					str += vtx[j].Normal.Z;
-	
+
 					Writer->writeText(str.c_str());
 					Writer->writeLineBreak();
 				}
@@ -486,12 +488,12 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		Writer->writeElement(L"array", false, L"id", L"mesh-TexCoord1-array",
 								L"type", L"float", L"count", vertexCountStr.c_str());
 		Writer->writeLineBreak();
-		
-		for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
+
+		for (i=0; i<mesh->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 			video::E_VERTEX_TYPE vtxType = buffer->getVertexType();
-			int vertexCount = buffer->getVertexCount();
+			u32 vertexCount = buffer->getVertexCount();
 
 			if (hasSecondTextureCoordinates(vtxType))
 			{
@@ -507,13 +509,13 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 				case video::EVT_2TCOORDS:
 					{
 						video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-						for (int j=0; j<vertexCount; ++j)
+						for (u32 j=0; j<vertexCount; ++j)
 						{
 							core::stringw str;
 							str += vtx[j].TCoords2.X;
 							str += " ";
 							str += vtx[j].TCoords2.Y;
-					
+
 							Writer->writeText(str.c_str());
 							Writer->writeLineBreak();
 						}
@@ -567,16 +569,16 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 	// write polygons
 
-	for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
+	for (i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 
-		int polyCount = buffer->getIndexCount() / 3;
+		u32 polyCount = buffer->getIndexCount() / 3;
 		core::stringw strPolyCount = polyCount;
 		core::stringw strMat = "#mat";
 		strMat += i;
 
-		Writer->writeElement(L"polygons", false, L"count", strPolyCount.c_str(), 
+		Writer->writeElement(L"polygons", false, L"count", strPolyCount.c_str(),
 								L"material", strMat.c_str());
 		Writer->writeLineBreak();
 
@@ -586,7 +588,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		Writer->writeLineBreak();
 		Writer->writeElement(L"input", true, L"semantic", L"NORMAL", L"source", L"#mesh-Normal", L"idx", L"2");
 		Writer->writeLineBreak();
-		
+
 		bool has2ndTexCoords = hasSecondTextureCoordinates(buffer->getVertexType());
 		if (has2ndTexCoords)
 		{
@@ -596,52 +598,52 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 		// write indices now
 
-		int posIdx = globalIndices[i].PosStartIndex;
-		int tCoordIdx = globalIndices[i].TCoord0StartIndex;
-		int normalIdx = globalIndices[i].NormalStartIndex;
-		int tCoord2Idx = globalIndices[i].TCoord1StartIndex;
+		s32 posIdx = globalIndices[i].PosStartIndex;
+		s32 tCoordIdx = globalIndices[i].TCoord0StartIndex;
+		s32 normalIdx = globalIndices[i].NormalStartIndex;
+		s32 tCoord2Idx = globalIndices[i].TCoord1StartIndex;
 
-		for (int p=0; p<polyCount; ++p)
+		for (u32 p=0; p<polyCount; ++p)
 		{
 			Writer->writeElement(L"p", false);
 
 			core::stringw strP;
 
-			strP += (int)(buffer->getIndices()[(p*3) + 0]) + posIdx;
+			strP += buffer->getIndices()[(p*3) + 0] + posIdx;
 			strP += " ";
-			strP += (int)(buffer->getIndices()[(p*3) + 0]) + tCoordIdx;
+			strP += buffer->getIndices()[(p*3) + 0] + tCoordIdx;
 			strP += " ";
-			strP += (int)(buffer->getIndices()[(p*3) + 0]) + normalIdx;
+			strP += buffer->getIndices()[(p*3) + 0] + normalIdx;
 			strP += " ";
 			if (has2ndTexCoords)
 			{
-				strP += (int)(buffer->getIndices()[(p*3) + 0]) + tCoord2Idx;
+				strP += buffer->getIndices()[(p*3) + 0] + tCoord2Idx;
 				strP += " ";
 			}
 
-			strP += (int)(buffer->getIndices()[(p*3) + 1]) + posIdx;
+			strP += buffer->getIndices()[(p*3) + 1] + posIdx;
 			strP += " ";
-			strP += (int)(buffer->getIndices()[(p*3) + 1]) + tCoordIdx;
+			strP += buffer->getIndices()[(p*3) + 1] + tCoordIdx;
 			strP += " ";
-			strP += (int)(buffer->getIndices()[(p*3) + 1]) + normalIdx;
+			strP += buffer->getIndices()[(p*3) + 1] + normalIdx;
 			strP += " ";
 			if (has2ndTexCoords)
 			{
-				strP += (int)(buffer->getIndices()[(p*3) + 1]) + tCoord2Idx;
+				strP += buffer->getIndices()[(p*3) + 1] + tCoord2Idx;
 				strP += " ";
 			}
 
-			strP += (int)(buffer->getIndices()[(p*3) + 2]) + posIdx;
+			strP += buffer->getIndices()[(p*3) + 2] + posIdx;
 			strP += " ";
-			strP += (int)(buffer->getIndices()[(p*3) + 2]) + tCoordIdx;
+			strP += buffer->getIndices()[(p*3) + 2] + tCoordIdx;
 			strP += " ";
-			strP += (int)(buffer->getIndices()[(p*3) + 2]) + normalIdx;
+			strP += buffer->getIndices()[(p*3) + 2] + normalIdx;
 			if (has2ndTexCoords)
 			{
 				strP += " ";
-				strP += (int)(buffer->getIndices()[(p*3) + 2]) + tCoord2Idx;				
+				strP += buffer->getIndices()[(p*3) + 2] + tCoord2Idx;
 			}
-	
+
 			Writer->writeText(strP.c_str());
 
 			Writer->writeClosingTag(L"p");
@@ -654,7 +656,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		Writer->writeLineBreak();
 	}
 
-	// close mesh and geometry 
+	// close mesh and geometry
 
 	Writer->writeClosingTag(L"mesh");
 	Writer->writeLineBreak();
@@ -681,5 +683,5 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type)
 }
 
 
-} // end namespace 
+} // end namespace
 } // end namespace

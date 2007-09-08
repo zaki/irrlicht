@@ -14,7 +14,7 @@ namespace scene
 	class IMesh;
 
 	//! An enumeration for all supported types of built-in mesh writers
-	/** A scene mesh writers is represented by a four character code 
+	/** A scene mesh writers is represented by a four character code
 	such as 'irrm' or 'coll' instead of simple numbers, to avoid
 	name clashes with external mesh writers.*/
 	enum EMESH_WRITER_TYPE
@@ -51,21 +51,22 @@ namespace scene
 		enumeration to return your own unique mesh type id.*/
 		virtual EMESH_WRITER_TYPE getType() const = 0;
 
-		//! writes a static mesh 
+		//! writes a static mesh
 		/** \return Returns true if sucessful */
-		virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh, 
-							   s32 flags=EMWF_NONE) = 0;
+		virtual bool writeMesh(io::IWriteFile* file, scene::IMesh* mesh,
+							s32 flags=EMWF_NONE) = 0;
 
 		// writes an animated mesh
 		// for future use, no writer is able to write animated meshes currently
 		/* \return Returns true if sucessful */
-		//virtual bool writeAnimatedMesh(io::IWriteFile* file, 
-		// scene::IAnimatedMesh* mesh, 
+		//virtual bool writeAnimatedMesh(io::IWriteFile* file,
+		// scene::IAnimatedMesh* mesh,
 		// s32 flags=EMWF_NONE) = 0;
 	};
 
 
-} // end namespace 
+} // end namespace
 } // end namespace
 
 #endif
+
