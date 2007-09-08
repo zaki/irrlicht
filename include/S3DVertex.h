@@ -46,7 +46,7 @@ struct S3DVertex
 
 	//! Position
 	core::vector3df Pos;
-	
+
 	//! Normal vector
 	core::vector3df Normal;
 
@@ -189,17 +189,17 @@ struct S3DVertexTangents : S3DVertex
 
 
 
-inline u32 getVertexPitchFromType(E_VERTEX_TYPE vertexType) 
+inline u32 getVertexPitchFromType(E_VERTEX_TYPE vertexType)
 {
 	switch (vertexType)
 	{
-	case video::EVT_2TCOORDS: 	
+	case video::EVT_2TCOORDS:
 		return sizeof(video::S3DVertex2TCoords);
-	case video::EVT_TANGENTS: 	
+	case video::EVT_TANGENTS:
 		return sizeof(video::S3DVertexTangents);
+	default:
+		return sizeof(video::S3DVertex);
 	}
-
-	return sizeof(video::S3DVertex);
 }
 
 
