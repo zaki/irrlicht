@@ -421,10 +421,9 @@ bool CXMeshFileLoader::parseDataObjectTemplate()
 #endif
 
 	// parse a template data object. Currently not stored.
-	core::stringc name = getNextToken();
+	core::stringc name;
 
-	// ignore left delimiter
-	if (getNextToken() != "{")
+	if (!readHeadOfDataObject(&name))
 	{
 		os::Printer::log("Left delimiter in template data object missing.",
 			name.c_str(), ELL_ERROR);
@@ -463,9 +462,9 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 	// Frame template instances as child objects when loading a Frame
 	// instance.
 
-	core::stringc Name;
+	core::stringc name;
 
-	if (!readHeadOfDataObject(&Name))
+	if (!readHeadOfDataObject(&name))
 	{
 		os::Printer::log("No opening brace in Frame found in x file", ELL_WARNING);
 		return false;
@@ -473,11 +472,11 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 
 	CSkinnedMesh::SJoint *joint=0;
 
-	if (Name!="")
+	if (name!="")
 	{
 		for (u32 n=0;n < AnimatedMesh->getAllJoints().size();++n)
 		{
-			if (AnimatedMesh->getAllJoints()[n]->Name==Name)
+			if (AnimatedMesh->getAllJoints()[n]->Name==name)
 				joint=AnimatedMesh->getAllJoints()[n];
 		}
 	}
@@ -485,15 +484,15 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 	if (!joint)
 	{
 #ifdef _DEBUG
-		os::Printer::log("creating joint ", Name.c_str());
+		os::Printer::log("creating joint ", name.c_str());
 #endif
 		joint=AnimatedMesh->createJoint(Parent);
-		joint->Name=Name;
+		joint->Name=name;
 	}
 	else
 	{
 #ifdef _DEBUG
-		os::Printer::log("using joint ", Name.c_str());
+		os::Printer::log("using joint ", name.c_str());
 #endif
 		if (Parent)
 			Parent->Children.push_back(joint);
@@ -1406,7 +1405,6 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 	{
 		core::stringc objectName = getNextToken();
 
-
 		if (objectName.size() == 0)
 		{
 			os::Printer::log("Unexpected ending found in Animation in x file.", ELL_WARNING);
@@ -1456,17 +1454,9 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		}
 		else
 		{
-			if (objectName.size()>2 && objectName[0] == '{' &&
-				objectName[objectName.size()-1] == '}')
-			{
-				FrameName = objectName.subString(1,objectName.size()-2);
-			}
-			else
-			{
-				os::Printer::log("Unknown data object in animation in x file", objectName.c_str(), ELL_WARNING);
-				if (!parseUnknownDataObject())
-					return false;
-			}
+			os::Printer::log("Unknown data object in animation in x file", objectName.c_str(), ELL_WARNING);
+			if (!parseUnknownDataObject())
+				return false;
 		}
 
 		if (FrameName!="" && !joint)
@@ -1481,6 +1471,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 				if (AnimatedMesh->getAllJoints()[n]->Name==FrameName)
 					joint=AnimatedMesh->getAllJoints()[n];
 			}
+
 			if (!joint)
 			{
 				//os::Printer::log("no joints with correct name for animation,", FrameName.c_str());
@@ -1491,6 +1482,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 				joint->Name=FrameName;
 			}
 
+			joint->PositionKeys.reallocate(joint->PositionKeys.size()+animationDump.PositionKeys.size());
 			for (n=0;n<animationDump.PositionKeys.size();++n)
 			{
 				ISkinnedMesh::SPositionKey *key=&animationDump.PositionKeys[n];
@@ -1500,6 +1492,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 				joint->PositionKeys.push_back(*key);
 			}
 
+			joint->ScaleKeys.reallocate(joint->ScaleKeys.size()+animationDump.ScaleKeys.size());
 			for (n=0;n<animationDump.ScaleKeys.size();++n)
 			{
 				ISkinnedMesh::SScaleKey *key=&animationDump.ScaleKeys[n];
@@ -1509,10 +1502,10 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 				joint->ScaleKeys.push_back(*key);
 			}
 
+			joint->RotationKeys.reallocate(joint->RotationKeys.size()+animationDump.RotationKeys.size());
 			for (n=0;n<animationDump.RotationKeys.size();++n)
 			{
 				ISkinnedMesh::SRotationKey *key=&animationDump.RotationKeys[n];
-
 
 				core::matrix4 tmpMatrix;
 
@@ -1870,13 +1863,6 @@ bool CXMeshFileLoader::readHeadOfDataObject(core::stringc* outname)
 		if (outname)
 			(*outname) = nameOrBrace;
 
-		if (nameOrBrace.size() != 0 &&
-			nameOrBrace[nameOrBrace.size()-1] == '{')
-		{
-			(*outname) = nameOrBrace.subString(0, nameOrBrace.size()-1);
-			return true;
-		}
-
 		if (getNextToken() != "{")
 			return false;
 	}
@@ -2030,8 +2016,8 @@ void CXMeshFileLoader::findNextNoneWhiteSpaceNumber()
 		else
 			break;
 	}
-
 }
+
 
 // places pointer to next begin of a token, and ignores comments
 void CXMeshFileLoader::findNextNoneWhiteSpace()
