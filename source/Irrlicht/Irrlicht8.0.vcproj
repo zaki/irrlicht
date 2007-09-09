@@ -664,6 +664,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IMeshWriter.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\IMetaTriangleSelector.h"
 					>
 				</File>
@@ -1748,6 +1752,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CIrrMeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CIrrMeshFileLoader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CLMTSMeshFileLoader.cpp"
 					>
 				</File>
@@ -2165,6 +2177,26 @@
 				</File>
 				<File
 					RelativePath=".\CSceneNodeAnimatorTexture.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="writers"
+				>
+				<File
+					RelativePath=".\CColladaMeshWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CColladaMeshWriter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CIrrMeshWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CIrrMeshWriter.h"
 					>
 				</File>
 			</Filter>
