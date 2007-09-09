@@ -403,6 +403,7 @@ void CSkinnedMesh::skinMesh()
 	if ( !HasAnimation)
 		return;
 
+
 	//----------------
 	// Temp!
 	buildAll_GlobalAnimatedMatrices();
@@ -679,6 +680,15 @@ void CSkinnedMesh::checkForAnimation()
 			{
 				HasAnimation = true;
 			}
+		}
+	}
+
+	//meshes with weights, are still counted as animated for ragdolls, etc
+	if (!HasAnimation)
+	{
+		for(i=0;i<AllJoints.size();++i)
+		{
+			if (AllJoints[i]->Weights.size()) HasAnimation = true;
 		}
 	}
 

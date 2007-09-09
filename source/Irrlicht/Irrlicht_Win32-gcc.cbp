@@ -107,6 +107,7 @@
 		<Unit filename="..\..\include\IMeshLoader.h" />
 		<Unit filename="..\..\include\IMeshManipulator.h" />
 		<Unit filename="..\..\include\IMeshSceneNode.h" />
+		<Unit filename="..\..\include\IMeshWriter.h" />
 		<Unit filename="..\..\include\IMetaTriangleSelector.h" />
 		<Unit filename="..\..\include\IOSOperator.h" />
 		<Unit filename="..\..\include\IParticleAffector.h" />
@@ -223,6 +224,8 @@
 		<Unit filename="CCameraSceneNode.h" />
 		<Unit filename="CColladaFileLoader.cpp" />
 		<Unit filename="CColladaFileLoader.h" />
+		<Unit filename="CColladaMeshWriter.cpp" />
+		<Unit filename="CColladaMeshWriter.h" />
 		<Unit filename="CColorConverter.cpp" />
 		<Unit filename="CColorConverter.h" />
 		<Unit filename="CCubeSceneNode.cpp" />
@@ -358,6 +361,8 @@
 		<Unit filename="CIrrDeviceStub.h" />
 		<Unit filename="CIrrDeviceWin32.cpp" />
 		<Unit filename="CIrrDeviceWin32.h" />
+		<Unit filename="CIrrMeshWriter.cpp" />
+		<Unit filename="CIrrMeshWriter.h" />
 		<Unit filename="CLMTSMeshFileLoader.cpp" />
 		<Unit filename="CLMTSMeshFileLoader.h" />
 		<Unit filename="CLightSceneNode.cpp" />
