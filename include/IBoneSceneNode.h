@@ -1,7 +1,7 @@
 #ifndef __I_BONE_SCENE_NODE_H_INCLUDED__
 #define __I_BONE_SCENE_NODE_H_INCLUDED__
 
-// Used with SkinnedMesh and IAnimatedMeshSceneNode, for boned meshes
+// Used with ISkinnedMesh and IAnimatedMeshSceneNode, for boned meshes
 
 #include "ISceneNode.h"
 
@@ -80,14 +80,9 @@ namespace scene
 		virtual void updateAbsolutePositionOfAllChildren()=0;
 
 
-
-
-
 		s32 positionHint;
 		s32 scaleHint;
 		s32 rotationHint;
-
-
 	};
 
 } // end namespace scene
