@@ -571,11 +571,8 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(s32 id,
 }
 
 
-
-
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 {
-
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
 		return 0;
 
@@ -599,13 +596,11 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 	}
 
 	return getJointNode((u32)number);
-
 }
 
 
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
 {
-
 	if (JointChildSceneNodes.size() <= jointID)
 	{
 		os::Printer::log("Joint not loaded into node", ELL_WARNING);
@@ -613,20 +608,14 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
 	}
 
 	return JointChildSceneNodes[jointID];
-
 }
-
-
 
 
 //! Returns a pointer to a child node, which has the same transformation as
 //! the corrsesponding joint, if the mesh in this scene node is a ms3d mesh.
 ISceneNode* CAnimatedMeshSceneNode::getMS3DJointNode(const c8* jointName)
 {
-
 	return  getJointNode(jointName);
-
-	return 0;
 }
 
 
@@ -635,10 +624,7 @@ ISceneNode* CAnimatedMeshSceneNode::getMS3DJointNode(const c8* jointName)
 ISceneNode* CAnimatedMeshSceneNode::getXJointNode(const c8* jointName)
 {
 	return  getJointNode(jointName);
-
-	return 0;
 }
-
 
 
 //! Removes a child from this scene node.
@@ -657,7 +643,7 @@ bool CAnimatedMeshSceneNode::removeChild(ISceneNode* child)
 	{
 		if (ISceneNode::removeChild(child))
 		{
-			for (s32 i=0; i<(s32)JointChildSceneNodes.size(); ++i)
+			for (u32 i=0; i<JointChildSceneNodes.size(); ++i)
 			if (JointChildSceneNodes[i] == child)
 			{
 				//JointChildSceneNodes[i]->drop();
@@ -706,7 +692,6 @@ bool CAnimatedMeshSceneNode::setMD2Animation(const c8* animationName)
 	setFrameLoop(begin, end);
 	return true;
 }
-
 
 
 //! Sets looping mode which is on by default. If set to false,
