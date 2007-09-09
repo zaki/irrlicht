@@ -186,21 +186,19 @@ namespace scene
 			rotation.set ( angle * core::DEGTORAD );
 		}
 
-		core::stringc Name;
-		core::vector3df position;
-		core::quaternion rotation;
-
 		bool operator == ( const SMD3QuaterionTag &other ) const
 		{
 			return Name == other.Name;
 		}
+
+		core::stringc Name;
+		core::vector3df position;
+		core::quaternion rotation;
 	};
 
 	// holds a assoziative list of named quaternions
 	struct SMD3QuaterionTagList : public virtual IReferenceCounted
 	{
-		~SMD3QuaterionTagList() {}
-
 		SMD3QuaterionTag* get ( const core::stringc& name )
 		{
 			SMD3QuaterionTag search ( name );
@@ -219,7 +217,6 @@ namespace scene
 		{
 			return Container[index];
 		}
-
 
 		core::array < SMD3QuaterionTag > Container;
 	};

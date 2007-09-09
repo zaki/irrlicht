@@ -370,7 +370,6 @@ bool CXMeshFileLoader::parseDataObject()
 	else
 	if (objectName == "Frame")
 	{
-
 		return parseDataObjectFrame( 0 );
 	}
 	else
@@ -531,19 +530,12 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 		else
 		if (objectName == "FrameTransformMatrix")
 		{
-			//if (!parseDataObjectTransformationMatrix(joint->LocalMatrix))
-
 			if (!parseDataObjectTransformationMatrix(joint->LocalMatrix))
 				return false;
 
 			//joint->LocalAnimatedMatrix
-
-
 			//joint->LocalAnimatedMatrix.makeInverse();
-
 			//joint->LocalMatrix=tmp*joint->LocalAnimatedMatrix;
-
-
 		}
 		else
 		if (objectName == "Mesh")
@@ -566,7 +558,6 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 			if (!parseUnknownDataObject())
 				return false;
 		}
-
 	}
 
 	return true;
@@ -1996,19 +1987,23 @@ core::stringc CXMeshFileLoader::getNextToken()
 		if (P >= End)
 			return s;
 
-
-		char last=0;
-
-		//&& last!=';' && last!='}' && last!='{' && last!=','
-
-		while(P < End && !core::isspace(P[0]) ) //Luke:Not only space?
+		while((P < End) && !core::isspace(P[0]))
 		{
-			last=P[0];
-
+			// either keep token delimiters when already holding a token, or return if first valid char
+			if (P[0]==';' || P[0]=='}' || P[0]=='{' || P[0]==',')
+			{
+				if (!s.size())
+				{
+					s.append(P[0]);
+					++P;
+				}
+				break; // stop for delimiter
+			}
 			s.append(P[0]);
 			++P;
 		}
 	}
+os::Printer::log(s.c_str());
 	return s;
 }
 
@@ -2046,7 +2041,7 @@ void CXMeshFileLoader::findNextNoneWhiteSpace()
 
 	while(true)
 	{
-		while(P < End && (P[0]==' ' || P[0]=='\n' || P[0]=='\r' || P[0]=='\t'))
+		while((P < End) && core::isspace(P[0]))
 			++P;
 
 		if (P >= End)
@@ -2100,7 +2095,7 @@ void CXMeshFileLoader::readUntilEndOfLine()
 
 	while(P < End)
 	{
-		if (P[0] == '\n')
+		if (P[0] == '\n' || P[0] == '\r')
 		{
 			++P;
 			return;

@@ -140,6 +140,7 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 	BoneControlUsed=false;
 }
 
+
 void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 {
 	for (u32 i=0; i<AllJoints.size(); ++i)
@@ -194,6 +195,7 @@ void CSkinnedMesh::buildAll_GlobalAnimatedMatrices(SJoint *Joint, SJoint *Parent
 		buildAll_GlobalAnimatedMatrices(Joint->Children[j], Joint);
 }
 
+
 void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 				core::vector3df &position, s32 &positionHint,
 				core::vector3df &scale, s32 &scaleHint,
@@ -205,16 +207,16 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 
 	if (Joint->UseAnimationFrom)
 	{
-		core::array<SPositionKey> &PositionKeys=Joint->UseAnimationFrom->PositionKeys;
-		core::array<SScaleKey> &ScaleKeys=Joint->UseAnimationFrom->ScaleKeys;
-		core::array<SRotationKey> &RotationKeys=Joint->UseAnimationFrom->RotationKeys;
+		const core::array<SPositionKey> &PositionKeys=Joint->UseAnimationFrom->PositionKeys;
+		const core::array<SScaleKey> &ScaleKeys=Joint->UseAnimationFrom->ScaleKeys;
+		const core::array<SRotationKey> &RotationKeys=Joint->UseAnimationFrom->RotationKeys;
 
 		if (PositionKeys.size())
 		{
 			foundPositionIndex = -1;
 
 			//Test the Hints...
-			if (positionHint>0 && positionHint < (s32)PositionKeys.size()  )
+			if ((u32)positionHint < PositionKeys.size())
 			{
 				//check this hint
 				if (PositionKeys[positionHint].frame>=frame && PositionKeys[positionHint-1].frame<frame )
@@ -254,12 +256,12 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 				}
 				else if (InterpolationMode==EIM_LINEAR)
 				{
-					SPositionKey *KeyA = &PositionKeys[foundPositionIndex];
-					SPositionKey *KeyB = &PositionKeys[foundPositionIndex-1];
+					const SPositionKey& KeyA = PositionKeys[foundPositionIndex];
+					const SPositionKey& KeyB = PositionKeys[foundPositionIndex-1];
 
-					f32 fd1 = frame-KeyA->frame;
-					f32 fd2 = KeyB->frame-frame;
-					position = ((KeyB->position-KeyA->position)/(fd1+fd2))*fd1 + KeyA->position;
+					const f32 fd1 = frame - KeyA.frame;
+					const f32 fd2 = KeyB.frame - frame;
+					position = ((KeyB.position-KeyA.position)/(fd1+fd2))*fd1 + KeyA.position;
 				}
 			}
 		}
@@ -271,7 +273,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 			foundScaleIndex = -1;
 
 			//Test the Hints...
-			if (scaleHint>0 && scaleHint < (s32)ScaleKeys.size()  )
+			if ((u32)scaleHint < ScaleKeys.size())
 			{
 				//check this hint
 				if (ScaleKeys[scaleHint].frame>=frame && ScaleKeys[scaleHint-1].frame<frame )
@@ -312,12 +314,12 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 				}
 				else if (InterpolationMode==EIM_LINEAR)
 				{
-					SScaleKey *KeyA = &ScaleKeys[foundScaleIndex];
-					SScaleKey *KeyB = &ScaleKeys[foundScaleIndex-1];
+					const SScaleKey& KeyA = ScaleKeys[foundScaleIndex];
+					const SScaleKey& KeyB = ScaleKeys[foundScaleIndex-1];
 
-					f32 fd1 = frame-KeyA->frame;
-					f32 fd2 = KeyB->frame-frame;
-					scale = ((KeyB->scale-KeyA->scale)/(fd1+fd2))*fd1 + KeyA->scale;
+					const f32 fd1 = frame - KeyA.frame;
+					const f32 fd2 = KeyB.frame - frame;
+					scale = ((KeyB.scale-KeyA.scale)/(fd1+fd2))*fd1 + KeyA.scale;
 				}
 			}
 		}
@@ -329,7 +331,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 			foundRotationIndex = -1;
 
 			//Test the Hints...
-			if (rotationHint>0 && rotationHint < (s32)RotationKeys.size()  )
+			if ((u32)rotationHint < RotationKeys.size())
 			{
 				//check this hint
 				if (RotationKeys[rotationHint].frame>=frame && RotationKeys[rotationHint-1].frame<frame )
@@ -352,7 +354,7 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 			{
 				for (u32 i=0; i<RotationKeys.size(); ++i)
 				{
-					if (RotationKeys[i].frame >= frame) //Keys should to be sorted by frame
+					if (RotationKeys[i].frame >= frame) //Keys should be sorted by frame
 					{
 						foundRotationIndex=i;
 						rotationHint=i;
@@ -370,26 +372,24 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 				}
 				else if (InterpolationMode==EIM_LINEAR)
 				{
-					SRotationKey *KeyA = &RotationKeys[foundRotationIndex];
-					SRotationKey *KeyB = &RotationKeys[foundRotationIndex-1];
+					const SRotationKey& KeyA = RotationKeys[foundRotationIndex];
+					const SRotationKey& KeyB = RotationKeys[foundRotationIndex-1];
 
-					f32 fd1 = frame-KeyA->frame;
-					f32 fd2 = KeyB->frame - frame;
-					f32 t = (1.0f/(fd1+fd2))*fd1;
+					const f32 fd1 = frame - KeyA.frame;
+					const f32 fd2 = KeyB.frame - frame;
+					const f32 t = fd1/(fd1+fd2);
 
 					/*
 					f32 t = 0;
-					if (KeyA->frame!=KeyB->frame)
-						t = (frame-KeyA->frame) / (KeyB->frame - KeyA->frame);
+					if (KeyA.frame!=KeyB.frame)
+						t = (frame-KeyA.frame) / (KeyB.frame - KeyA.frame);
 					*/
 
-					rotation.slerp(KeyA->rotation, KeyB->rotation, t);
-
+					rotation.slerp(KeyA.rotation, KeyB.rotation, t);
 				}
 			}
 		}
 	}
-
 }
 
 //--------------------------------------------------------------------------
@@ -503,7 +503,7 @@ s32 CSkinnedMesh::getJointCount() const
 //! Gets the name of a joint.
 const c8* CSkinnedMesh::getJointName(s32 number) const
 {
-	if (number < 0 || number >= (s32)AllJoints.size())
+	if ((u32)number >= AllJoints.size())
 		return 0;
 	return AllJoints[number]->Name.c_str();
 }
@@ -512,7 +512,7 @@ const c8* CSkinnedMesh::getJointName(s32 number) const
 //! Gets a joint number from its name
 s32 CSkinnedMesh::getJointNumber(const c8* name) const
 {
-	for (s32 i=0; i<(s32)AllJoints.size(); ++i)
+	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
 		if (AllJoints[i]->Name == name)
 			return i;
@@ -638,7 +638,7 @@ void CSkinnedMesh::CalculateGlobalMatrixes(SJoint *Joint,SJoint *ParentJoint)
 	if (!Joint && ParentJoint) // bit of protection from endless loops
 		return;
 
-	//Go thought the root bones
+	//Go through the root bones
 	if (!Joint)
 	{
 		for (u32 i=0; i<RootJoints.size(); ++i)
@@ -688,13 +688,13 @@ void CSkinnedMesh::checkForAnimation()
 	{
 		for(i=0;i<AllJoints.size();++i)
 		{
-			if (AllJoints[i]->Weights.size()) HasAnimation = true;
+			if (AllJoints[i]->Weights.size())
+				HasAnimation = true;
 		}
 	}
 
 	if (HasAnimation)
 	{
-
 		//--- Find the length of the animation ---
 		AnimationFrames=0;
 		for(i=0;i<AllJoints.size();++i)
@@ -740,7 +740,6 @@ void CSkinnedMesh::checkForAnimation()
 					os::Printer::log("Skinned Mesh: Weight vertex id too large", ELL_WARNING);
 					Joint->Weights[j].buffer_id = Joint->Weights[j].vertex_id =0;
 				}
-
 			}
 		}
 
@@ -764,7 +763,6 @@ void CSkinnedMesh::checkForAnimation()
 				Joint->Weights[j].StaticPos = LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos;
 				Joint->Weights[j].StaticNormal = LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal;
 
-
 				//Joint->Weights[j]._Pos=&Buffers[buffer_id]->getVertex(vertex_id)->Pos;
 			}
 		}
@@ -778,7 +776,7 @@ void CSkinnedMesh::checkForAnimation()
 //! called by loader after populating with mesh and bone data
 void CSkinnedMesh::finalize()
 {
-	u32 i=0,j=0;
+	u32 i;
 
 	lastAnimatedFrame=-1;
 	lastSkinnedFrame=-1;
@@ -870,7 +868,7 @@ void CSkinnedMesh::finalize()
 
 			if (PositionKeys.size()>2)
 			{
-				for(j=0;j<PositionKeys.size()-2;++j)
+				for(u32 j=0;j<PositionKeys.size()-2;++j)
 				{
 					if (PositionKeys[j].position == PositionKeys[j+1].position && PositionKeys[j+1].position == PositionKeys[j+2].position)
 					{
@@ -882,7 +880,7 @@ void CSkinnedMesh::finalize()
 
 			if (PositionKeys.size()>1)
 			{
-				for(j=0;j<PositionKeys.size()-1;++j)
+				for(u32 j=0;j<PositionKeys.size()-1;++j)
 				{
 					if (PositionKeys[j].frame >= PositionKeys[j+1].frame) //bad frame, unneed and may cause problems
 					{
@@ -894,7 +892,7 @@ void CSkinnedMesh::finalize()
 
 			if (ScaleKeys.size()>2)
 			{
-				for(j=0;j<ScaleKeys.size()-2;++j)
+				for(u32 j=0;j<ScaleKeys.size()-2;++j)
 				{
 					if (ScaleKeys[j].scale == ScaleKeys[j+1].scale && ScaleKeys[j+1].scale == ScaleKeys[j+2].scale)
 					{
@@ -906,7 +904,7 @@ void CSkinnedMesh::finalize()
 
 			if (ScaleKeys.size()>1)
 			{
-				for(j=0;j<ScaleKeys.size()-1;++j)
+				for(u32 j=0;j<ScaleKeys.size()-1;++j)
 				{
 					if (ScaleKeys[j].frame >= ScaleKeys[j+1].frame) //bad frame, unneed and may cause problems
 					{
@@ -918,7 +916,7 @@ void CSkinnedMesh::finalize()
 
 			if (RotationKeys.size()>2)
 			{
-				for(j=0;j<RotationKeys.size()-2;++j)
+				for(u32 j=0;j<RotationKeys.size()-2;++j)
 				{
 					if (RotationKeys[j].rotation == RotationKeys[j+1].rotation && RotationKeys[j+1].rotation == RotationKeys[j+2].rotation)
 					{
@@ -930,7 +928,7 @@ void CSkinnedMesh::finalize()
 
 			if (RotationKeys.size()>1)
 			{
-				for(j=0;j<RotationKeys.size()-1;++j)
+				for(u32 j=0;j<RotationKeys.size()-1;++j)
 				{
 					if (RotationKeys[j].frame >= RotationKeys[j+1].frame) //bad frame, unneed and may cause problems
 					{
@@ -1033,7 +1031,7 @@ CSkinnedMesh::SJoint *CSkinnedMesh::createJoint(SJoint *parent)
 	}
 	else
 	{
-		//Set parent (Be careful  of the mesh loader also setting the parent)
+		//Set parent (Be careful of the mesh loader also setting the parent)
 		parent->Children.push_back(joint);
 	}
 
@@ -1235,6 +1233,7 @@ void CSkinnedMesh::createJoints(core::array<IBoneSceneNode*> &JointChildSceneNod
 		node->drop();
 	}
 }
+
 
 void CSkinnedMesh::convertMeshToTangents()
 {
