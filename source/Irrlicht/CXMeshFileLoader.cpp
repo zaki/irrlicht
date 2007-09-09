@@ -1989,7 +1989,6 @@ core::stringc CXMeshFileLoader::getNextToken()
 			++P;
 		}
 	}
-os::Printer::log(s.c_str());
 	return s;
 }
 
