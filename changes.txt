@@ -1,8 +1,12 @@
 Changes in version 1.4 (... 2007)
 
- - Irrlicht is now able to write Meshes out into files again. Use ISceneManager::createMeshWriter()
+ - Irrlicht now has its own file format for static meshes. It is based on xml and has the 
+   extension .irrmesh. Irrlicht is able to write every IMesh to this file format, and of course to
+   read it back again.
+   
+ - Irrlicht is now able to write Meshes out into files. Use ISceneManager::createMeshWriter()
    to obtain an interface with which you can write out meshes. Currently, an own .irrmesh
-   file format is supported as well as COLLADA.
+   file format is supported as well as the COLLADA file format.
    
  - the base class for nearly all Irrlicht classes has been renamed from IUnknown to IReferenceCounted
 

@@ -18,6 +18,10 @@
 
 #include "CGeometryCreator.h"
 
+#ifdef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
+#include "CIrrMeshFileLoader.h"
+#endif
+
 #ifdef _IRR_COMPILE_WITH_BSP_LOADER_
 #include "CBSPMeshFileLoader.h"
 #endif
@@ -169,7 +173,9 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 
 	// add file format loaders
 
-
+	#ifdef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
+	MeshLoaderList.push_back(new CIrrMeshFileLoader(Driver, this, FileSystem));
+	#endif
 	#ifdef _IRR_COMPILE_WITH_BSP_LOADER_
 	MeshLoaderList.push_back(new CBSPMeshFileLoader(FileSystem, Driver, this));
 	#endif
