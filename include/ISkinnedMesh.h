@@ -38,8 +38,8 @@ namespace scene
 		virtual s32 getJointCount() const = 0;
 
 		//! Gets the name of a joint.
-		//! \param number: Zero based index of joint. The last joint has the number
-		//! IAnimatedMeshB3d::getJointCount()-1;
+		//! \param number: Zero based index of joint. The last joint
+		//! has the number getJointCount()-1;
 		//! \return Returns name of joint and null if an error happened.
 		virtual const c8* getJointName(s32 number) const = 0;
 
@@ -171,12 +171,7 @@ namespace scene
 			s32 positionHint;
 			s32 scaleHint;
 			s32 rotationHint;
-
 		};
-
-
-
-
 
 
 		//Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
