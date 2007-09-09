@@ -557,7 +557,8 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 
 			Meshes.push_back(mesh);
 
-			return parseDataObjectMesh ( *mesh );
+			if (!parseDataObjectMesh(*mesh))
+				return false;
 		}
 		else
 		{
@@ -1145,7 +1146,7 @@ bool CXMeshFileLoader::parseDataObjectMeshVertexColors(SXMesh &mesh)
 	}
 
 	core::stringc tmp=getNextToken();
-	if (tmp != ";")
+	if (tmp != ";" && tmp != ";;")
 	{
 		os::Printer::log("No finishing semicolon in Mesh Vertex Colors Array found in x file", ELL_WARNING);
 		return false;
