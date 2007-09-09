@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
 
 #include "CIrrMeshFileLoader.h"
@@ -24,9 +24,8 @@ namespace scene
 //! Constructor
 CIrrMeshFileLoader::CIrrMeshFileLoader(video::IVideoDriver* driver,
 		scene::ISceneManager* smgr, io::IFileSystem* fs)
-: Driver(driver), SceneManager(smgr), FileSystem(fs)
+	: Driver(driver), SceneManager(smgr), FileSystem(fs)
 {
-	
 }
 
 
@@ -41,7 +40,7 @@ CIrrMeshFileLoader::~CIrrMeshFileLoader()
 bool CIrrMeshFileLoader::isALoadableFileExtension(const c8* fileName)
 {
 	return strstr(fileName, ".xml") ||
-		   strstr(fileName, ".irrmesh");
+			strstr(fileName, ".irrmesh");
 }
 
 
@@ -92,7 +91,7 @@ IAnimatedMesh* CIrrMeshFileLoader::readMesh(io::IXMLReader* reader)
 	core::stringc bbSectionName = "boundingBox";
 	core::stringc bufferSectionName = "buffer";
 	core::stringc meshSectionName = "mesh";
-	
+
 	if (!reader->isEmptyElement())
 	while(reader->read())
 	{
@@ -141,7 +140,7 @@ IAnimatedMesh* CIrrMeshFileLoader::readMesh(io::IXMLReader* reader)
 //! reads a mesh sections and creates a mesh buffer from it
 IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 {
-	IMeshBuffer* buffer = 0; 
+	IMeshBuffer* buffer = 0;
 	SMeshBuffer* sbuffer1 = 0;
 	SMeshBufferLightMap* sbuffer2 = 0;
 	SMeshBufferTangents* sbuffer3 = 0;
@@ -159,7 +158,7 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 	int indexCount = 0;
 
 	video::SMaterial material;
-	
+
 	if (!reader->isEmptyElement())
 	while(reader->read())
 	{
@@ -189,7 +188,7 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 
 				core::stringc vertexTypeName1 = "standard";
 				core::stringc vertexTypeName2 = "2tcoords";
-				core::stringc vertexTypeName3 = "tangents";				
+				core::stringc vertexTypeName3 = "tangents";
 
 				const wchar_t* vertexType = reader->getAttributeValue(L"type");
 				vertexCount = reader->getAttributeValueAsInt(L"vertexCount");
@@ -309,36 +308,36 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 		for (int i=0; i<vertexCount && *p; ++i)
 		{
-			// position 
+			// position
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.X = readFloat(&p); 
+			vtx.Pos.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Y = readFloat(&p); 
+			vtx.Pos.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Z = readFloat(&p); 
+			vtx.Pos.Z = readFloat(&p);
 
 			// normal
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.X = readFloat(&p); 
+			vtx.Normal.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Y = readFloat(&p); 
+			vtx.Normal.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Z = readFloat(&p); 
+			vtx.Normal.Z = readFloat(&p);
 
 			// color
 
 			findNextNoneWhiteSpace(&p);
-			sscanf(p, "%08x", &vtx.Color);
+			sscanf(p, "%08x", &vtx.Color.color);
 			skipCurrentNoneWhiteSpace(&p);
 
 			// tcoord1
 
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.X = readFloat(&p); 
+			vtx.TCoords.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.Y = readFloat(&p); 
+			vtx.TCoords.Y = readFloat(&p);
 
 			sbuffer->Vertices.push_back(vtx);
 		}
@@ -357,43 +356,43 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 		for (int i=0; i<vertexCount && *p; ++i)
 		{
-			// position 
+			// position
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.X = readFloat(&p); 
+			vtx.Pos.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Y = readFloat(&p); 
+			vtx.Pos.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Z = readFloat(&p); 
+			vtx.Pos.Z = readFloat(&p);
 
 			// normal
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.X = readFloat(&p); 
+			vtx.Normal.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Y = readFloat(&p); 
+			vtx.Normal.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Z = readFloat(&p); 
+			vtx.Normal.Z = readFloat(&p);
 
 			// color
 
 			findNextNoneWhiteSpace(&p);
-			sscanf(p, "%08x", &vtx.Color);
+			sscanf(p, "%08x", &vtx.Color.color);
 			skipCurrentNoneWhiteSpace(&p);
 
 			// tcoord1
 
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.X = readFloat(&p); 
+			vtx.TCoords.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.Y = readFloat(&p); 
+			vtx.TCoords.Y = readFloat(&p);
 
 			// tcoord2
 
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords2.X = readFloat(&p); 
+			vtx.TCoords2.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords2.Y = readFloat(&p); 
+			vtx.TCoords2.Y = readFloat(&p);
 
 			sbuffer->Vertices.push_back(vtx);
 		}
@@ -412,54 +411,54 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 		for (int i=0; i<vertexCount && *p; ++i)
 		{
-			// position 
+			// position
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.X = readFloat(&p); 
+			vtx.Pos.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Y = readFloat(&p); 
+			vtx.Pos.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Z = readFloat(&p); 
+			vtx.Pos.Z = readFloat(&p);
 
 			// normal
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.X = readFloat(&p); 
+			vtx.Normal.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Y = readFloat(&p); 
+			vtx.Normal.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Z = readFloat(&p); 
+			vtx.Normal.Z = readFloat(&p);
 
 			// color
 
 			findNextNoneWhiteSpace(&p);
-			sscanf(p, "%08x", &vtx.Color);
+			sscanf(p, "%08x", &vtx.Color.color);
 			skipCurrentNoneWhiteSpace(&p);
 
 			// tcoord1
-			
+
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.X = readFloat(&p); 
+			vtx.TCoords.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.Y = readFloat(&p); 
+			vtx.TCoords.Y = readFloat(&p);
 
 			// tangent
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Tangent.X = readFloat(&p); 
+			vtx.Tangent.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Tangent.Y = readFloat(&p); 
+			vtx.Tangent.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Tangent.Z = readFloat(&p); 
+			vtx.Tangent.Z = readFloat(&p);
 
 			// binormal
 
 			findNextNoneWhiteSpace(&p);
-			vtx.Binormal.X = readFloat(&p); 
+			vtx.Binormal.X = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Binormal.Y = readFloat(&p); 
+			vtx.Binormal.Y = readFloat(&p);
 			findNextNoneWhiteSpace(&p);
-			vtx.Binormal.Z = readFloat(&p);  
+			vtx.Binormal.Z = readFloat(&p);
 
 			sbuffer->Vertices.push_back(vtx);
 		}
@@ -489,7 +488,7 @@ void CIrrMeshFileLoader::skipSection(io::IXMLReader* reader, bool reportSkipping
 			#ifdef _DEBUG
 			if (reportSkipping)
 				os::Printer::log("irrMesh unknown element:", core::stringc(reader->getNodeName()).c_str());
-			#endif 
+			#endif
 
 			++tagCounter;
 		}
