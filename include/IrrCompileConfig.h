@@ -227,6 +227,9 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_X_LOADER_
 #endif
 
+//! Define _IRR_COMPILE_WITH_IRR_MESH_LOADER_ if you want to load Irrlicht Engine .irrmesh files
+#define _IRR_COMPILE_WITH_IRR_MESH_LOADER_
+
 //! Define _IRR_COMPILE_WITH_MD2_LOADER_ if you want to load Quake 2 animated files
 #define _IRR_COMPILE_WITH_MD2_LOADER_
 //! Define _IRR_COMPILE_WITH_MD3_LOADER_ if you want to load Quake 3 animated files

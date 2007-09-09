@@ -1277,6 +1277,12 @@
 					RelativePath=".\CDMFLoader.h">
 				</File>
 				<File
+					RelativePath=".\CIrrMeshFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\CIrrMeshFileLoader.h">
+				</File>
+				<File
 					RelativePath=".\CLMTSMeshFileLoader.cpp">
 				</File>
 				<File
