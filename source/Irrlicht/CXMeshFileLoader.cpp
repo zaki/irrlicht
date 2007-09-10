@@ -14,6 +14,9 @@
 #include "IVideoDriver.h"
 #include "IReadFile.h"
 
+#define _XREADER_DEBUG
+//#define BETTER_MESHBUFFER_SPLITTING_FOR_X
+
 namespace irr
 {
 namespace scene
@@ -361,7 +364,7 @@ bool CXMeshFileLoader::parseDataObject()
 		return false;
 
 	// parse specific object
-#ifdef _DEBUG
+#ifdef _XREADER_DEBUG
 	os::Printer::log("debug DataObject:", objectName.c_str() );
 #endif
 
@@ -483,7 +486,7 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 
 	if (!joint)
 	{
-#ifdef _DEBUG
+#ifdef _XREADER_DEBUG
 		os::Printer::log("creating joint ", name.c_str());
 #endif
 		joint=AnimatedMesh->createJoint(Parent);
@@ -491,7 +494,7 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 	}
 	else
 	{
-#ifdef _DEBUG
+#ifdef _XREADER_DEBUG
 		os::Printer::log("using joint ", name.c_str());
 #endif
 		if (Parent)
@@ -505,7 +508,7 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 	{
 		core::stringc objectName = getNextToken();
 
-#ifdef _DEBUG
+#ifdef _XREADER_DEBUG
 		os::Printer::log("debug DataObject in frame:", objectName.c_str() );
 #endif
 
@@ -729,7 +732,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	{
 		core::stringc objectName = getNextToken();
 
-#ifdef _DEBUG
+#ifdef _XREADER_DEBUG
 		os::Printer::log("debug DataObject in mesh:", objectName.c_str() );
 #endif
 
