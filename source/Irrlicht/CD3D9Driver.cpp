@@ -815,19 +815,8 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 
 	setVertexShader(vType);
 
-	size_t stride=0;
-	switch (vType)
-	{
-		case EVT_STANDARD:
-			stride=sizeof(S3DVertex);
-			break;
-		case EVT_2TCOORDS:
-			stride=sizeof(S3DVertex2TCoords);
-			break;
-		case EVT_TANGENTS:
-			stride=sizeof(S3DVertexTangents);
-			break;
-	}
+	const u32 stride = getVertexPitchFromType(vType);
+
 	if (setRenderStates3DMode())
 	{
 		switch (pType)

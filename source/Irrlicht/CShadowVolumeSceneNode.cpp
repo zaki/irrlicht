@@ -326,7 +326,7 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(IMesh* mesh)
 		case video::EVT_STANDARD:
 			{
 				const video::S3DVertex* vp = (video::S3DVertex*)b->getVertices();
-				const video::S3DVertex* vpend = vp + vtxcnt;
+				const video::S3DVertex* const vpend = vp + vtxcnt;
 
 				for (; vp!=vpend; ++vp)
 					Vertices[VertexCount++] = (*vp).Pos;
@@ -335,7 +335,7 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(IMesh* mesh)
 		case video::EVT_2TCOORDS:
 			{
 				const video::S3DVertex2TCoords* vp = (video::S3DVertex2TCoords*)b->getVertices();
-				const video::S3DVertex2TCoords* vpend = vp + vtxcnt;
+				const video::S3DVertex2TCoords* const vpend = vp + vtxcnt;
 
 				for (; vp!=vpend; ++vp)
 					Vertices[VertexCount++] = (*vp).Pos;
@@ -344,7 +344,7 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(IMesh* mesh)
 		case video::EVT_TANGENTS:
 			{
 				const video::S3DVertexTangents* vp = (video::S3DVertexTangents*)b->getVertices();
-				const video::S3DVertexTangents* vpend = vp + vtxcnt;
+				const video::S3DVertexTangents* const vpend = vp + vtxcnt;
 
 				for (; vp!=vpend; ++vp)
 					Vertices[VertexCount++] = (*vp).Pos;

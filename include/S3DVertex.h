@@ -29,6 +29,15 @@ enum E_VERTEX_TYPE
 	EVT_TANGENTS
 };
 
+//! Array holding the built in vertex type names
+const char* const sBuiltInVertexTypeNames[] =
+{
+	"standard",
+	"2tcoords",
+	"tangents",
+	0
+};
+
 //! standard vertex used by the Irrlicht engine.
 struct S3DVertex
 {

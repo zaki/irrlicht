@@ -157,19 +157,7 @@ void CGUIMeshViewer::draw()
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* mb = m->getMeshBuffer(i);
-
-			switch(mb->getVertexType())
-			{
-			case video::EVT_STANDARD:
-				driver->drawIndexedTriangleList((video::S3DVertex*)mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/ 3);
-				break;
-			case video::EVT_2TCOORDS:
-				driver->drawIndexedTriangleList((video::S3DVertex2TCoords*)mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/ 3);
-				break;
-			case video::EVT_TANGENTS:
-				driver->drawIndexedTriangleList((video::S3DVertexTangents*)mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/ 3);
-				break;
-			}
+			driver->drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/ 3, mb->getVertexType(), scene::EPT_TRIANGLES);
 		}
 
 		driver->setViewPort(oldViewPort);
