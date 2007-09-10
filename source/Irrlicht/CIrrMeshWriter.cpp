@@ -106,7 +106,7 @@ void CIrrMeshWriter::writeBoundingBox(const core::aabbox3df& box)
 }
 
 
-core::stringw CIrrMeshWriter::getVectorAsStringLine(const core::vector3df& v)
+core::stringw CIrrMeshWriter::getVectorAsStringLine(const core::vector3df& v) const
 {
 	core::stringw str;
 
@@ -120,7 +120,7 @@ core::stringw CIrrMeshWriter::getVectorAsStringLine(const core::vector3df& v)
 }
 
 
-core::stringw CIrrMeshWriter::getVectorAsStringLine(const core::vector2df& v)
+core::stringw CIrrMeshWriter::getVectorAsStringLine(const core::vector2df& v) const
 {
 	core::stringw str;
 
@@ -148,36 +148,22 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 
 	// write vertices
 
-	const wchar_t* vertexTypeStr;
-
-	switch(buffer->getVertexType())
-	{
-	case video::EVT_STANDARD:
-		vertexTypeStr = L"standard";
-		break;
-	case video::EVT_TANGENTS:
-		vertexTypeStr = L"tangents";
-		break;
-	case video::EVT_2TCOORDS:
-	default:
-		vertexTypeStr = L"2tcoords";
-		break;
-	}
+	const core::stringw vertexTypeStr = video::sBuiltInVertexTypeNames[buffer->getVertexType()];
 
 	Writer->writeElement(L"vertices", false, 
-		L"type", vertexTypeStr,
+		L"type", vertexTypeStr.c_str(),
 		L"vertexCount", core::stringw(buffer->getVertexCount()).c_str());
 
 	Writer->writeLineBreak();
 
-	int vertexCount = (int)buffer->getVertexCount();
+	u32 vertexCount = buffer->getVertexCount();
 
 	switch(buffer->getVertexType())
 	{
 	case video::EVT_STANDARD:
 		{
 			video::S3DVertex* vtx = (video::S3DVertex*)buffer->getVertices();
-			for (int j=0; j<vertexCount; ++j)
+			for (u32 j=0; j<vertexCount; ++j)
 			{
 				core::stringw str = getVectorAsStringLine(vtx[j].Pos);
 				str += L" ";
@@ -197,7 +183,7 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 	case video::EVT_2TCOORDS:
 		{
 			video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buffer->getVertices();
-			for (int j=0; j<vertexCount; ++j)
+			for (u32 j=0; j<vertexCount; ++j)
 			{
 				core::stringw str = getVectorAsStringLine(vtx[j].Pos);
 				str += L" ";
@@ -219,7 +205,7 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 	case video::EVT_TANGENTS:
 		{
 			video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buffer->getVertices();
-			for (int j=0; j<vertexCount; ++j)
+			for (u32 j=0; j<vertexCount; ++j)
 			{
 				core::stringw str = getVectorAsStringLine(vtx[j].Pos);
 				str += L" ";
@@ -299,3 +285,4 @@ void CIrrMeshWriter::writeMaterial(const video::SMaterial& material)
 
 } // end namespace
 } // end namespace
+

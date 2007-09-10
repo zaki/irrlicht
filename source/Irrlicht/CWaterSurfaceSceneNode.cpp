@@ -85,9 +85,7 @@ void CWaterSurfaceSceneNode::animateWaterSurface()
 
 				for (u32 i=0; i<vtxCnt; ++i)
 				{
-					v[i].Pos.Y = v2[i].Pos.Y +
-					(sinf(((v2[i].Pos.X/WaveLength) + time)) * WaveHeight) +
-					(cosf(((v2[i].Pos.Z/WaveLength) + time)) * WaveHeight);
+					addWave(v[i].Pos, v2[i].Pos, time);
 				}
 
 			}
@@ -102,9 +100,7 @@ void CWaterSurfaceSceneNode::animateWaterSurface()
 
 				for (u32 i=0; i<vtxCnt; ++i)
 				{
-					v[i].Pos.Y = v2[i].Pos.Y +
-					(sinf(((v2[i].Pos.X/WaveLength) + time)) * WaveHeight) +
-					(cosf(((v2[i].Pos.Z/WaveLength) + time)) * WaveHeight);
+					addWave(v[i].Pos, v2[i].Pos, time);
 				}
 			}
 			break;
@@ -118,9 +114,7 @@ void CWaterSurfaceSceneNode::animateWaterSurface()
 
 				for (u32 i=0; i<vtxCnt; ++i)
 				{
-					v[i].Pos.Y = v2[i].Pos.Y +
-					(sinf(((v2[i].Pos.X/WaveLength) + time)) * WaveHeight) +
-					(cosf(((v2[i].Pos.Z/WaveLength) + time)) * WaveHeight);
+					addWave(v[i].Pos, v2[i].Pos, time);
 				}
 			}
 			break;
@@ -136,8 +130,8 @@ void CWaterSurfaceSceneNode::animateWaterSurface()
 void CWaterSurfaceSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
 {
 
-	out->addFloat("WaveLength",	WaveLength);
-	out->addFloat("WaveSpeed",	WaveSpeed);
+	out->addFloat("WaveLength", WaveLength);
+	out->addFloat("WaveSpeed",  WaveSpeed);
 	out->addFloat("WaveHeight", WaveHeight);
 	
 	// serialize original mesh
@@ -160,9 +154,9 @@ void CWaterSurfaceSceneNode::serializeAttributes(io::IAttributes* out, io::SAttr
 //! Reads attributes of the scene node.
 void CWaterSurfaceSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	WaveLength	= in->getAttributeAsFloat("WaveLength");
-	WaveSpeed	= in->getAttributeAsFloat("WaveSpeed");
-	WaveHeight	= in->getAttributeAsFloat("WaveHeight");
+	WaveLength = in->getAttributeAsFloat("WaveLength");
+	WaveSpeed  = in->getAttributeAsFloat("WaveSpeed");
+	WaveHeight = in->getAttributeAsFloat("WaveHeight");
 	
 	if (Mesh)
 	{

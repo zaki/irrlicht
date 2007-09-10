@@ -521,6 +521,8 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 						}
 					}
 					break;
+				default:
+					break;
 				}
 			} // end this buffer has 2 texture coordinates
 		}
@@ -677,7 +679,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 }
 
 
-bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type)
+bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const
 {
 	return type == video::EVT_2TCOORDS;
 }

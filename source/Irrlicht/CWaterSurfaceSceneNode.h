@@ -38,6 +38,13 @@ namespace scene
 	private:
 
 		void animateWaterSurface();
+		void addWave(core::vector3df& dest, const core::vector3df source, f32 time)
+		{
+			dest.Y = source.Y +
+			(sinf(((source.X/WaveLength) + time)) * WaveHeight) +
+			(cosf(((source.Z/WaveLength) + time)) * WaveHeight);
+		}
+
 		f32 WaveLength;
 		f32 WaveSpeed;
 		f32 WaveHeight;

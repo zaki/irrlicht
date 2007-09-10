@@ -41,9 +41,9 @@ namespace scene
 
 		void writeMaterial(const video::SMaterial& material);
 
-		core::stringw getVectorAsStringLine(const core::vector3df& v);
+		core::stringw getVectorAsStringLine(const core::vector3df& v) const;
 
-		core::stringw getVectorAsStringLine(const core::vector2df& v);
+		core::stringw getVectorAsStringLine(const core::vector2df& v) const;
 
 		// member variables:
 

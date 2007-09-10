@@ -33,7 +33,7 @@ public:
 
 protected:
 
-	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type);
+	bool hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) const;
 
 	struct SComponentGlobalStartPos
 	{
