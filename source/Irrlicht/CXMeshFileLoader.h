@@ -132,7 +132,10 @@ private:
 	//! if there is one
 	bool readHeadOfDataObject(core::stringc* outname=0);
 
-	//! checks for one following semicolons, returns false if they are not there
+	//! checks for closing curly brace, returns false if not there
+	bool checkForClosingBrace();
+
+	//! checks for one following semicolons, returns false if not there
 	bool checkForOneFollowingSemicolons();
 
 	//! checks for two following semicolons, returns false if they are not there
