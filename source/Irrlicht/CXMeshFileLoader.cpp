@@ -14,7 +14,9 @@
 #include "IVideoDriver.h"
 #include "IReadFile.h"
 
+#ifdef _DEBUG
 #define _XREADER_DEBUG
+#endif
 //#define BETTER_MESHBUFFER_SPLITTING_FOR_X
 
 namespace irr
@@ -101,6 +103,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 		u32 i;
 
+		mesh->Buffers.reallocate(mesh->Materials.size());
 		for (i=0; i<mesh->Materials.size(); ++i)
 		{
 			mesh->Buffers.push_back( AnimatedMesh->createBuffer() );
@@ -116,6 +119,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 			verticesLink.reallocate(mesh->Vertices.size());
 			core::array< core::array< u32 > > verticesLinkBuffer;
 			verticesLinkBuffer.reallocate(mesh->Vertices.size());
+
 			for (i=0;i<mesh->Vertices.size();++i)
 			{
 				verticesLink.push_back( core::array< u32 >() );
@@ -578,22 +582,6 @@ bool CXMeshFileLoader::parseDataObjectTransformationMatrix(core::matrix4 &mat)
 		return false;
 	}
 
-	if (BinaryFormat)
-	{
-		// read matrix in binary format
-		if (readBinWord() != 7)
-		{
-			os::Printer::log("Binary X: Mesh: Expecting float list (for matrix)", ELL_WARNING);
-			return false;
-		}
-
-		if (readBinDWord() != 0x10)
-		{
-			os::Printer::log("Binary X: Mesh: Should be 16 floats in matrix", ELL_WARNING);
-			return false;
-		}
-	}
-
 	for (s32 i=0; i<4; ++i)
 		for (s32 j=0; j<4; ++j)
 			mat(i,j)=readFloat();
@@ -636,24 +624,6 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	mesh.Vertices.set_used(nVertices); //luke: change
 	for (s32 nums=0; nums<nVertices; ++nums)
 		mesh.Vertices[nums].Color=0xFFFFFFFF;
-
-
-	s32 count=0;
-	if (BinaryFormat)
-	{
-		// read vertices in binary format
-		if (readBinWord() != 7)
-		{
-			os::Printer::log("Binary X: Mesh: Expecting float list (for vertices)", ELL_WARNING);
-			return false;
-		}
-		count = readBinDWord();
-		if (count != (nVertices * 3))
-		{
-			os::Printer::log("Binary X: Mesh: Value count not matching vertices count", ELL_WARNING);
-			return false;
-		}
-	}
 
 	for (s32 n=0; n<nVertices; ++n)
 	{
@@ -851,7 +821,6 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	const s32 nWeights = readInt();
 
 	// read vertex indices
-
 	s32 i;
 
 	const u32 jointStart = joint->Weights.size();
@@ -866,22 +835,6 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	}
 
 	// read vertex weights
-
-	if (BinaryFormat)
-	{
-		// read float list in binary format
-		if (readBinWord() != 7)
-		{
-			os::Printer::log("Binary X: Mesh: Expecting float list (for SkinWeights)", ELL_WARNING);
-			return false;
-		}
-
-		if (readBinDWord() != (u32)(nWeights+16))
-		{
-			os::Printer::log("Binary X: Mesh: Wrong number of floats", ELL_WARNING);
-			return false;
-		}
-	}
 
 	for (i=0; i<nWeights; ++i)
 		joint->Weights[i].strength = readFloat();
@@ -960,26 +913,11 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 
 	// read count
 	s32 nNormals;
-	s32 count;
 	nNormals = readInt();
 	core::array<core::vector3df> normals;
 	normals.set_used(nNormals);
 
 	// read normals
-	if (BinaryFormat)
-	{
-		if (readBinWord() != 7)
-		{
-			os::Printer::log("Binary X: MeshNormals: Expecting float list", ELL_WARNING);
-			return false;
-		}
-		count = readBinDWord();
-		if (count != nNormals * 3)
-		{
-			os::Printer::log("Binary X: MeshNormals: Value count not equal to normal count", ELL_WARNING);
-			return false;
-		}
-	}
 	for (s32 i=0; i<nNormals; ++i)
 		readVector3(normals[i]);
 
@@ -1067,19 +1005,7 @@ bool CXMeshFileLoader::parseDataObjectMeshTextureCoords(SXMesh &mesh)
 	}
 
 	s32 nCoords;
-	u32 count;
 	nCoords = readInt();
-	if (BinaryFormat)
-	{
-		if (readBinWord() != 7)
-		{
-			os::Printer::log("Binary X: MeshTextureCoords: Expecting float list", ELL_WARNING);
-			return false;
-		}
-		count = readBinDWord();
-	}
-	//textureCoords.set_used(nCoords);
-
 	for (s32 i=0; i<nCoords; ++i)
 		readVector2(mesh.Vertices[i].TCoords);
 
@@ -1113,33 +1039,20 @@ bool CXMeshFileLoader::parseDataObjectMeshVertexColors(SXMesh &mesh)
 		return false;
 	}
 
-	s32 nColors;
-	u32 count;
-	nColors = readInt();
-	if (BinaryFormat)
+	const u32 nColors = readInt();
+	for (u32 i=0; i<nColors; ++i)
 	{
-		if (readBinWord() != 7)
-		{
-			os::Printer::log("Binary X: MeshVertexColors: Expecting float list", ELL_WARNING);
-			return false;
-		}
-		count = readBinDWord();
-	}
-	//vertexColors.set_used(nColors);
-
-	for (s32 i=0; i<nColors; ++i)
-	{
-		u32 Index=readInt();
+		const u32 Index=readInt();
 		if (Index>=mesh.Vertices.size() )
 			{
 				os::Printer::log("index value in parseDataObjectMeshVertexColors out of bounds", ELL_WARNING);
 				return false;
 			}
 		readRGBA(mesh.Vertices[i].Color);
+		checkForOneFollowingSemicolons();
 	}
 
-	core::stringc tmp=getNextToken();
-	if (tmp != ";" && tmp != ";;")
+	if (!checkForOneFollowingSemicolons())
 	{
 		os::Printer::log("No finishing semicolon in Mesh Vertex Colors Array found in x file", ELL_WARNING);
 		return false;
@@ -1153,7 +1066,6 @@ bool CXMeshFileLoader::parseDataObjectMeshVertexColors(SXMesh &mesh)
 
 	return true;
 }
-
 
 
 bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
@@ -1259,22 +1171,6 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 	{
 		os::Printer::log("No opening brace in Mesh Material found in .x file", ELL_WARNING);
 		return false;
-	}
-
-	u32 count = 0;
-	if (BinaryFormat)
-	{
-		if (readBinWord() != 7)
-		{
-			os::Printer::log("Binary X: Material: Expecting float list", ELL_WARNING);
-			return false;
-		}
-		count = readBinDWord();
-		if (count != 11)
-		{
-			os::Printer::log("Binary X: Material: Float list length not equal to 11", ELL_WARNING);
-			return false;
-		}
 	}
 
 	// read RGBA
@@ -1402,7 +1298,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 
 	CSkinnedMesh::SJoint animationDump;
 
-	core::stringc FrameName="";
+	core::stringc FrameName;
 
 	while(true)
 	{
@@ -1582,20 +1478,6 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 					return false;
 				}
 
-				if (BinaryFormat)
-				{
-					if (readBinWord() != 7)
-					{
-						os::Printer::log("Binary X: Animation Key: Expecting float list", ELL_WARNING);
-						return false;
-					}
-
-					if (readBinDWord() != 4)
-					{
-						os::Printer::log("Binary X: Animation Key : Value count not correct", ELL_WARNING);
-						return false;
-					}
-				}
 				f32 W = -readFloat();
 				f32 X = -readFloat();
 				f32 Y = -readFloat();
@@ -1626,21 +1508,6 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 					{
 						os::Printer::log("Expected 3 numbers in animation key in x file", ELL_WARNING);
 						return false;
-					}
-
-					if (BinaryFormat)
-					{
-						if (readBinWord() != 7)
-						{
-							os::Printer::log("Binary X: Animation Key: Expecting float list", ELL_WARNING);
-							return false;
-						}
-
-						if (readBinDWord() != 3)
-						{
-							os::Printer::log("Binary X: Animation Key : Value count not correct", ELL_WARNING);
-							return false;
-						}
 					}
 
 					core::vector3df vector;
@@ -1682,21 +1549,6 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				}
 
 				// read matrix
-				if (BinaryFormat)
-				{
-					if (readBinWord() != 7)
-					{
-						os::Printer::log("Binary X: Animation Key: Expecting float list", ELL_WARNING);
-						return false;
-					}
-
-					if (readBinDWord() != 16)
-					{
-						os::Printer::log("Binary X: Animation Key : Value count not correct", ELL_WARNING);
-						return false;
-					}
-				}
-
 				core::matrix4 Matrix;
 
 				for (s32 m=0; m<4; ++m)
@@ -1828,12 +1680,7 @@ bool CXMeshFileLoader::checkForOneFollowingSemicolons()
 	if (BinaryFormat)
 		return true;
 
-	findNextNoneWhiteSpace();
-	if (P[0] != ';')
-		return false;
-	++P;
-
-	return true;
+	return (getNextToken() == ";");
 }
 
 
@@ -1845,10 +1692,8 @@ bool CXMeshFileLoader::checkForTwoFollowingSemicolons()
 
 	for (s32 k=0; k<2; ++k)
 	{
-		findNextNoneWhiteSpace();
-		if (P[0] != ';')
+		if (getNextToken() != ";")
 			return false;
-		++P;
 	}
 
 	return true;
@@ -1964,6 +1809,8 @@ core::stringc CXMeshFileLoader::getNextToken()
 				return "string";
 			case 0x32:
 				return "unicode";
+			case 0x33:
+				return "cstring";
 			case 0x34:
 				return "array";
 		}
@@ -2120,8 +1967,11 @@ s32 CXMeshFileLoader::readInt()
 	{
 		if (!BinaryNumCount)
 		{
-			readBinWord(); // 0x06
-			BinaryNumCount=readBinDWord(); // 0x0001
+			u16 tmp = readBinWord(); // 0x06 or 0x03
+			if (tmp == 0x06)
+				BinaryNumCount = readBinDWord();
+			else
+				BinaryNumCount = 1; // single int
 		}
 		--BinaryNumCount;
 		return readBinDWord();
@@ -2140,6 +1990,15 @@ f32 CXMeshFileLoader::readFloat()
 {
 	if (BinaryFormat)
 	{
+		if (!BinaryNumCount)
+		{
+			u16 tmp = readBinWord(); // 0x07 or 0x42
+			if (tmp == 0x07)
+				BinaryNumCount = readBinDWord();
+			else
+				BinaryNumCount = 1; // single int
+		}
+		--BinaryNumCount;
 		if (FloatSize == 8)
 		{
 			char tmp[8];
