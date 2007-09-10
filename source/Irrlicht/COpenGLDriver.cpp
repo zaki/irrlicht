@@ -306,6 +306,14 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	if (AntiAlias && MultiSamplingExtension)
 		glEnable(GL_MULTISAMPLE_ARB);
 
+	UserClipPlane.reallocate(MaxUserClipPlanes);
+	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
+	for (u32 i=0; i<MaxUserClipPlanes; ++i)
+	{
+		UserClipPlane.push_back(core::plane3df());
+		UserClipPlaneEnabled.push_back(false);
+	}
+
 	// create material renderers
 	createMaterialRenderers();
 
@@ -441,10 +449,16 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	{
 	case ETS_VIEW:
 	case ETS_WORLD:
-		// OpenGL only has a model matrix, view and world is not existent. so lets fake these two.
-		createGLMatrix(glmat, Matrices[ETS_VIEW] * Matrices[ETS_WORLD]);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(glmat);
+		{
+			// OpenGL only has a model matrix, view and world is not existent. so lets fake these two.
+			createGLMatrix(glmat, Matrices[ETS_VIEW] * Matrices[ETS_WORLD]);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadMatrixf(glmat);
+			// we have to update the clip planes to the latest view matrix
+			for (u32 i=0; i<MaxUserClipPlanes; ++i)
+				if (UserClipPlaneEnabled[i])
+					uploadClipPlane(i);
+		}
 		break;
 	case ETS_PROJECTION:
 		createGLMatrix(glmat, mat);
@@ -2312,17 +2326,21 @@ bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool en
 	if (index >= MaxUserClipPlanes)
 		return false;
 
-	// opengl needs an array of doubles for the plane equation
-	double clip_plane[4];
-	clip_plane[0] = plane.Normal.X;
-	clip_plane[1] = plane.Normal.Y;
-	clip_plane[2] = plane.Normal.Z;
-	clip_plane[3] = plane.D;
-	glClipPlane(GL_CLIP_PLANE0 + index, clip_plane);
+	UserClipPlane[index]=plane;
 	enableClipPlane(index, enable);
 	return true;
 }
 
+void COpenGLDriver::uploadClipPlane(u32 index)
+{
+	// opengl needs an array of doubles for the plane equation
+	double clip_plane[4];
+	clip_plane[0] = UserClipPlane[index].Normal.X;
+	clip_plane[1] = UserClipPlane[index].Normal.Y;
+	clip_plane[2] = UserClipPlane[index].Normal.Z;
+	clip_plane[3] = UserClipPlane[index].D;
+	glClipPlane(GL_CLIP_PLANE0 + index, clip_plane);
+}
 
 //! Enable/disable a clipping plane.
 //! There are at least 6 clipping planes available for the user to set at will.
@@ -2333,9 +2351,17 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 	if (index >= MaxUserClipPlanes)
 		return;
 	if (enable)
-		glEnable(GL_CLIP_PLANE0 + index);
+	{
+		if (!UserClipPlaneEnabled[index])
+		{
+			uploadClipPlane(index);
+			glEnable(GL_CLIP_PLANE0 + index);
+		}
+	}
 	else
 		glDisable(GL_CLIP_PLANE0 + index);
+
+	UserClipPlaneEnabled[index]=enable;
 }
 
 

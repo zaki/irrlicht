@@ -299,6 +299,8 @@ namespace video
 
 	private:
 
+		void uploadClipPlane(u32 index);
+
 		//! inits the parts of the open gl driver used on all platforms
 		bool genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer);
 		//! returns a device dependent texture from a software surface (IImage)
@@ -341,6 +343,8 @@ namespace video
 		COpenGLTexture* RenderTargetTexture;
 		ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		s32 LastSetLight;
+		core::array<core::plane3df> UserClipPlane;
+		core::array<bool> UserClipPlaneEnabled;
 
 		core::dimension2d<s32> CurrentRendertargetSize;
 		//! bool to see if we are using clockwise or counter-clockwise winding,
