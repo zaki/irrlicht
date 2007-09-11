@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - Added IMeshManipulator::createMeshWelded which creates a copy of the mesh with similar vertices welded together.
+
  - Irrlicht now has its own file format for static meshes. It is based on xml and has the 
    extension .irrmesh. Irrlicht is able to write every IMesh to this file format, and of course to
    read it back again.

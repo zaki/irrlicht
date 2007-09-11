@@ -620,10 +620,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\..\..\include\IAnimatedMeshX.h"
-					>
-				</File>
-				<File
 					RelativePath=".\..\..\include\IBillboardSceneNode.h"
 					>
 				</File>
