@@ -93,8 +93,11 @@ namespace scene
 		See IReferenceCounted::drop() for more information. */
 		virtual IMesh* createMeshWithTangents(IMesh* mesh) const = 0;
 
-		//! Unweld vertices
+		//! Creates a copy of a mesh with all vertices unwelded
 		virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const = 0;
+
+		//! Creates a copy of a mesh with vertices welded
+		virtual IMesh* createMeshWelded(IMesh* mesh, f32 tolerance=core::ROUNDING_ERROR_32) const = 0;
 
 		//! Returns amount of polygons in mesh.
 		virtual s32 getPolyCount(IMesh* mesh) const = 0;

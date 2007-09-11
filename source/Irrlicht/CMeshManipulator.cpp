@@ -58,7 +58,6 @@ inline void recalculateNormalsT_Smooth(VTXTYPE* v, int vtxcnt,
 	}
 }
 
-
 //! Recalculates normals in a vertex array.
 //! This template function was a member of the CMeshManipulator class, but
 //! visual studio 6.0 didn't like it.
@@ -617,6 +616,175 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 	}// end for all mesh buffers
 
 	clone->BoundingBox = mesh->getBoundingBox();
+	return clone;
+}
+
+//! Creates a copy of a mesh, which will have identical vertices welded together
+IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
+{
+	SMesh* clone = new SMesh();
+	clone->BoundingBox = mesh->getBoundingBox();
+
+	core::array<u16> redirects;
+
+	for (u32 b=0; b<mesh->getMeshBufferCount(); ++b)
+	{
+		// reset redirect list
+		redirects.set_used(mesh->getMeshBuffer(b)->getVertexCount());
+
+		u16* indices = 0;
+		u32 indexCount = 0;
+		core::array<u16>* outIdx = 0;
+
+		switch(mesh->getMeshBuffer(b)->getVertexType())
+		{
+		case video::EVT_STANDARD:
+		{
+			SMeshBuffer* buffer = new SMeshBuffer();
+			buffer->BoundingBox = mesh->getMeshBuffer(b)->getBoundingBox();
+			buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+			clone->addMeshBuffer(buffer);
+			buffer->drop();
+
+			video::S3DVertex* v =
+					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
+
+			u32 vertexCount = mesh->getMeshBuffer(b)->getVertexCount();
+
+			indices = mesh->getMeshBuffer(b)->getIndices();
+			indexCount = mesh->getMeshBuffer(b)->getIndexCount();
+			outIdx = &buffer->Indices;
+
+			buffer->Vertices.reallocate(vertexCount);
+
+			for (u32 i=0; i < vertexCount; ++i)
+			{
+				bool found = false;
+				for (u32 j=0; j < i; ++j)
+				{
+					if ( v[i].Pos.equals( v[j].Pos, tolerance) &&
+						 v[i].Normal.equals( v[j].Normal, tolerance) &&
+						 v[i].TCoords.equals( v[j].TCoords ) &&
+						(v[i].Color == v[j].Color) )
+					{
+						redirects[i] = redirects[j];
+						u32 p = redirects[j];
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+				{
+					redirects[i] = buffer->Vertices.size();
+					buffer->Vertices.push_back(v[i]);
+				}
+			}
+			
+			break;
+		}
+		case video::EVT_2TCOORDS:
+		{
+			SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
+			buffer->BoundingBox = mesh->getMeshBuffer(b)->getBoundingBox();
+			buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+			clone->addMeshBuffer(buffer);
+			buffer->drop();
+
+			video::S3DVertex2TCoords* v =
+					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
+
+			u32 vertexCount = mesh->getMeshBuffer(b)->getVertexCount();
+
+			indices = mesh->getMeshBuffer(b)->getIndices();
+			indexCount = mesh->getMeshBuffer(b)->getIndexCount();
+			outIdx = &buffer->Indices;
+
+			buffer->Vertices.reallocate(vertexCount);
+
+			for (u32 i=0; i < vertexCount; ++i)
+			{
+				bool found = false;
+				for (u32 j=0; j < i; ++j)
+				{
+					if ( v[i].Pos.equals( v[j].Pos, tolerance) &&
+						 v[i].Normal.equals( v[j].Normal, tolerance) &&
+						 v[i].TCoords.equals( v[j].TCoords ) &&
+						 v[i].TCoords2.equals( v[j].TCoords2 ) &&
+						(v[i].Color == v[j].Color) )
+					{
+						redirects[i] = redirects[j];
+						u32 p = redirects[j];
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+				{
+					redirects[i] = buffer->Vertices.size();
+					buffer->Vertices.push_back(v[i]);
+				}
+			}
+			break;
+		}
+		case video::EVT_TANGENTS:
+		{
+			SMeshBufferTangents* buffer = new SMeshBufferTangents();
+			buffer->BoundingBox = mesh->getMeshBuffer(b)->getBoundingBox();
+			buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+			clone->addMeshBuffer(buffer);
+			buffer->drop();
+
+			video::S3DVertexTangents* v =
+					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
+
+			u32 vertexCount = mesh->getMeshBuffer(b)->getVertexCount();
+
+			indices = mesh->getMeshBuffer(b)->getIndices();
+			indexCount = mesh->getMeshBuffer(b)->getIndexCount();
+			outIdx = &buffer->Indices;
+
+			buffer->Vertices.reallocate(vertexCount);
+
+			for (u32 i=0; i < vertexCount; ++i)
+			{
+				bool found = false;
+				for (u32 j=0; j < i; ++j)
+				{
+					if ( v[i].Pos.equals( v[j].Pos, tolerance) &&
+						 v[i].Normal.equals( v[j].Normal, tolerance) &&
+						 v[i].TCoords.equals( v[j].TCoords ) &&
+						 v[i].Tangent.equals( v[j].Tangent, tolerance ) &&
+						 v[i].Binormal.equals( v[j].Binormal, tolerance ) &&
+						(v[i].Color == v[j].Color) )
+					{
+						redirects[i] = redirects[j];
+						u32 p = redirects[j];
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+				{
+					redirects[i] = buffer->Vertices.size();
+					buffer->Vertices.push_back(v[i]);
+				}
+			}
+			break;
+		}
+		default:
+			os::Printer::log("Cannot create welded mesh, vertex type unsupported", ELL_ERROR);
+			break;
+		}
+
+		// write the buffer's index list
+		core::array<u16> &Indices = *outIdx;
+
+		Indices.set_used(indexCount);
+		for (u32 i=0; i<indexCount; ++i)
+		{
+			Indices[i] = redirects[ indices[i] ];
+		}
+	}
 	return clone;
 }
 
