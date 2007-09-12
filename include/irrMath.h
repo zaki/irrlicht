@@ -17,6 +17,7 @@
 	#define floorf(X) (f32)floor(X)
 	#define powf(X,Y) (f32)pow(X,Y)
 	#define fmodf(X,Y) (f32)fmod(X,Y)
+	#define fabsf(X) (f32)fabs(X)
 #endif
 
 namespace irr
@@ -111,18 +112,40 @@ namespace core
 		return min_ (max_(value,low), high);
 	}
 
-	//! returns if a float equals the other one, taking floating 
-	//! point rounding errors into account
+	//! returns if a equals b, taking possible rounding errors into account
 	inline bool equals(const f32 a, const f32 b, const f32 tolerance = ROUNDING_ERROR_32)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
-	//! returns if a float equals zero, taking floating 
-	//! point rounding errors into account
+	//! returns if a equals b, taking possible rounding errors into account
+	inline bool equals(const s32 a, const s32 b, const s32 tolerance = 0)
+	{
+		return (a + tolerance >= b) && (a - tolerance <= b);
+	}
+
+	//! returns if a equals b, taking possible rounding errors into account
+	inline bool equals(const u32 a, const u32 b, const u32 tolerance = 0)
+	{
+		return (a + tolerance >= b) && (a - tolerance <= b);
+	}
+
+	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
 	{
-		return fabs ( a ) <= tolerance;
+		return fabsf ( a ) <= tolerance;
+	}
+
+	//! returns if a equals zero, taking rounding errors into account
+	inline bool iszero(const s32 a, const s32 tolerance = 0)
+	{
+		return ( a & 0x7ffffff ) <= tolerance;
+	}
+
+	//! returns if a equals zero, taking rounding errors into account
+	inline bool iszero(const u32 a, const u32 tolerance = 0)
+	{
+		return a <= tolerance;
 	}
 
 	inline s32 s32_min ( s32 a, s32 b)

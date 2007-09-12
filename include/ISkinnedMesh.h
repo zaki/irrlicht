@@ -123,10 +123,8 @@ namespace scene
 		//! Joints
 	  	struct SJoint
 		{
-			SJoint() :
-				Name(""), LocalMatrix(),
-				Children(), PositionKeys(), ScaleKeys(), RotationKeys(), Weights(),
-				UseAnimationFrom(0), LocalAnimatedMatrix_Animated(false),positionHint(-1),scaleHint(-1),rotationHint(-1)
+			SJoint() : UseAnimationFrom(0), LocalAnimatedMatrix_Animated(false),
+				   positionHint(-1),scaleHint(-1),rotationHint(-1)
 			{
 			}
 

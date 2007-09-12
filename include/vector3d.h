@@ -55,22 +55,18 @@ namespace core
 
 		bool operator==(const vector3d<T>& other) const
 		{
-			return core::equals(X, other.X) &&
-				core::equals(Y, other.Y) &&
-				core::equals(Z, other.Z);
+			return this->equals(other);
 		}
 
 		bool operator!=(const vector3d<T>& other) const
 		{
-			return !core::equals(X, other.X) ||
-				!core::equals(Y, other.Y) ||
-				!core::equals(Z, other.Z);
+			return !this->equals(other);
 		}
 
 		// functions
 
 		//! returns if this vector equals the other one, taking floating point rounding errors into account
-		bool equals(const vector3d<T>& other, const f32 tolerance = ROUNDING_ERROR_32 ) const
+		bool equals(const vector3d<T>& other, const T tolerance = (T)ROUNDING_ERROR_32 ) const
 		{
 			return core::equals(X, other.X, tolerance) &&
 				core::equals(Y, other.Y, tolerance) &&
