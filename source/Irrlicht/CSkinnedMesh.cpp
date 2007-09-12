@@ -435,48 +435,38 @@ void CSkinnedMesh::SkinJoint(SJoint *Joint, SJoint *ParentJoint)
 
 		core::vector3df ThisVertexMove, ThisNormalMove;
 
-		SWeight *Weight;
-
 		core::array<scene::SSkinMeshBuffer*> &BuffersUsed=*SkinningBuffers;
 
-		//Skin Vertices Normals...
-
-		//Skin Vertices Positions...
+		//Skin Vertices Positions and Normals...
 		for (u32 i=0; i<Joint->Weights.size(); ++i)
 		{
-			Weight=&Joint->Weights[i];
+			SWeight& weight = Joint->Weights[i];
 
 			// Pull this vertex...
-			ThisVertexMove.X = JointVertexPull[0]*Weight->StaticPos.X + JointVertexPull[4]*Weight->StaticPos.Y + JointVertexPull[8]*Weight->StaticPos.Z + JointVertexPull[12];
-			ThisVertexMove.Y = JointVertexPull[1]*Weight->StaticPos.X + JointVertexPull[5]*Weight->StaticPos.Y + JointVertexPull[9]*Weight->StaticPos.Z + JointVertexPull[13];
-			ThisVertexMove.Z = JointVertexPull[2]*Weight->StaticPos.X + JointVertexPull[6]*Weight->StaticPos.Y + JointVertexPull[10]*Weight->StaticPos.Z + JointVertexPull[14];
+			JointVertexPull.transformVect(ThisVertexMove, weight.StaticPos);
 
 			if (AnimateNormals)
+				JointVertexPull.rotateVect(ThisNormalMove, weight.StaticNormal);
+
+			if (! (*(weight.Moved)) )
 			{
-				ThisNormalMove.X = JointVertexPull[0]*Weight->StaticNormal.X + JointVertexPull[4]*Weight->StaticNormal.Y + JointVertexPull[8]*Weight->StaticNormal.Z;
-				ThisNormalMove.Y = JointVertexPull[1]*Weight->StaticNormal.X + JointVertexPull[5]*Weight->StaticNormal.Y + JointVertexPull[9]*Weight->StaticNormal.Z;
-				ThisNormalMove.Z = JointVertexPull[2]*Weight->StaticNormal.X + JointVertexPull[6]*Weight->StaticNormal.Y + JointVertexPull[10]*Weight->StaticNormal.Z;
-			}
+				*(weight.Moved) = true;
 
+				BuffersUsed[weight.buffer_id]->getVertex(weight.vertex_id)->Pos = ThisVertexMove * weight.strength;
 
+				if (AnimateNormals)
+					BuffersUsed[weight.buffer_id]->getVertex(weight.vertex_id)->Normal = ThisNormalMove * weight.strength;
 
-			if (! (*Weight->Moved) )
-			{
-				(*Weight->Moved) = true;
-
-				BuffersUsed[Weight->buffer_id]->getVertex(Weight->vertex_id)->Pos = (ThisVertexMove * Weight->strength);
-
-				if (AnimateNormals) BuffersUsed[Weight->buffer_id]->getVertex(Weight->vertex_id)->Normal = (ThisNormalMove * Weight->strength);
-
-				//(*Weight->_Pos) = ThisVertexMove * Weight->strength;
+				//*(weight._Pos) = ThisVertexMove * weight.strength;
 			}
 			else
 			{
-				BuffersUsed[Weight->buffer_id]->getVertex(Weight->vertex_id)->Pos += (ThisVertexMove* Weight->strength);
+				BuffersUsed[weight.buffer_id]->getVertex(weight.vertex_id)->Pos += ThisVertexMove * weight.strength;
 
-				if (AnimateNormals) BuffersUsed[Weight->buffer_id]->getVertex(Weight->vertex_id)->Normal += (ThisNormalMove * Weight->strength);
+				if (AnimateNormals)
+					BuffersUsed[weight.buffer_id]->getVertex(weight.vertex_id)->Normal += ThisNormalMove * weight.strength;
 
-				//(*Weight->_Pos) += (ThisVertexMove * Weight->strength);
+				//*(weight._Pos) += ThisVertexMove * weight.strength;
 			}
 		}
 	}
