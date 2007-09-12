@@ -377,10 +377,14 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 				if (!material.Textures[0])
 				{
 					// retry with relative path
-					core::stringc relative = CurrentlyLoadingFromPath;
-					relative += '/';
-					relative += Materials[k].Techniques[0].Passes[0].Texture.Filename;
-					material.Textures[0] = Driver->getTexture(relative.c_str());
+					core::stringc relative = Materials[k].Techniques[0].Passes[0].Texture.Filename;
+					s32 idx = relative.findLast('\\');
+					if (idx != -1)
+						relative = relative.subString(idx+1, relative.size()-idx-1);
+					idx = relative.findLast('/');
+					if (idx != -1)
+						relative = relative.subString(idx+1, relative.size()-idx-1);
+					material.Textures[0] = Driver->getTexture((CurrentlyLoadingFromPath+"/"+relative).c_str());
 				}
 			}
 			break;
@@ -517,8 +521,8 @@ scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const
 					u32 ePos=geom.Elements[i].Offset;
 					for (s32 k=0; k<geom.NumVertex; ++k)
 					{
-						mb->Vertices[k].TCoords.set( geom.Buffers[j].Data[ePos]  ,geom.Buffers[j].Data[ePos+1]);
-						mb->Vertices[k].TCoords2.set(geom.Buffers[j].Data[ePos+2],geom.Buffers[j].Data[ePos+3]);
+						mb->Vertices[k].TCoords.set(geom.Buffers[j].Data[ePos], geom.Buffers[j].Data[ePos+1]);
+						mb->Vertices[k].TCoords2.set(geom.Buffers[j].Data[ePos+2], geom.Buffers[j].Data[ePos+3]);
 						
 						ePos += eSize;
 					}

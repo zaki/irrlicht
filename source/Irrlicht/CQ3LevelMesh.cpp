@@ -1486,18 +1486,6 @@ const quake3::SShader * CQ3LevelMesh::getShader ( const c8 * filename, s32 fileN
 	if ( index >= 0 )
 		return 0;
 
-#if 0
-	core::stringc message;
-	message = loadFile + " for " + core::stringc ( filename );
-	os::Printer::log("Q3: Loading shader file ", message.c_str(), ELL_INFORMATION);
-	io::IReadFile *file = FileSystem->createAndOpenFile ( loadFile.c_str () );
-	if ( 0 == file )
-	{
-		os::Printer::log("Q3: could not load shader ", loadFile.c_str(), ELL_INFORMATION);
-		return 0;
-	}
-#endif
-
 	if ( !FileSystem->existFile ( loadFile.c_str () ) )
 		return 0;
 
