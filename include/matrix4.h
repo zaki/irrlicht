@@ -148,6 +148,12 @@ namespace core
 			//! Rotate a vector by the rotation part of this matrix.
 			void rotateVect( vector3df& vect ) const;
 
+			//! An alternate transform vector method, writing into a second vector
+			void rotateVect(vector3df& out,const core::vector3df& in) const;
+
+			//! An alternate transform vector method, writing into an array of 3 floats
+			void rotateVect(T *out,const core::vector3df &in) const;
+
 			//! Transforms the vector by this matrix
 			void transformVect( vector3df& vect) const;
 
@@ -156,9 +162,6 @@ namespace core
 
 			//! An alternate transform vector method, writing into an array of 4 floats
 			void transformVect(T *out,const core::vector3df &in) const;
-
-			//! An alternate transform vector method, writing into an array of 3 floats
-			void rotateVect(T *out,const core::vector3df &in) const;
 
 			//! Translate a vector by the translation part of this matrix.
 			void translateVect( vector3df& vect ) const;
@@ -475,8 +478,19 @@ namespace core
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::operator*=(const CMatrix4<T>& other)
 	{
-		CMatrix4<T> temp ( *this );
-		setbyproduct ( temp, other );
+		// do chacks on your own in order to avoid copy creation
+		if ( !other.isIdentity() )
+		{
+			if ( this->isIdentity() )
+			{
+				*this = other;
+			}
+			else
+			{
+				CMatrix4<T> temp ( *this );
+				setbyproduct_nocheck( temp, other );
+			}
+		}
 		return *this;
 	}
 
@@ -798,9 +812,18 @@ namespace core
 		vect.Z = tmp.X*M[2] + tmp.Y*M[6] + tmp.Z*M[10];
 	}
 
+	//! An alternate transform vector method, writing into a second vector
+	template <class T>
+	inline void CMatrix4<T>::rotateVect(core::vector3df& out, const core::vector3df& in) const
+	{
+		out.X = in.X*M[0] + in.Y*M[4] + in.Z*M[8];
+		out.Y = in.X*M[1] + in.Y*M[5] + in.Z*M[9];
+		out.Z = in.X*M[2] + in.Y*M[6] + in.Z*M[10];
+	}
+
 	//! An alternate transform vector method, writing into an array of 3 floats
 	template <class T>
-	inline void CMatrix4<T>::rotateVect(T *out,const core::vector3df &in) const
+	inline void CMatrix4<T>::rotateVect(T *out, const core::vector3df& in) const
 	{
 		out[0] = in.X*M[0] + in.Y*M[4] + in.Z*M[8];
 		out[1] = in.X*M[1] + in.Y*M[5] + in.Z*M[9];
