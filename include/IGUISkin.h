@@ -326,21 +326,21 @@ namespace gui
 	public:
 
 		//! destructor
-		~IGUISkin() {};
+		virtual ~IGUISkin() {};
 
 		//! returns default color
-		virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) = 0;
+		virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const = 0;
 
 		//! sets a default color
 		virtual void setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor) = 0;
 
 		//! returns default color
-		virtual s32 getSize(EGUI_DEFAULT_SIZE size) = 0;
+		virtual s32 getSize(EGUI_DEFAULT_SIZE size) const = 0;
 
 		//! Returns a default text. 
 		/** For example for Message box button captions:
 		"OK", "Cancel", "Yes", "No" and so on. */
-		virtual const wchar_t* getDefaultText(EGUI_DEFAULT_TEXT text) = 0;
+		virtual const wchar_t* getDefaultText(EGUI_DEFAULT_TEXT text) const = 0;
 
 		//! Sets a default text.
 		/** For example for Message box button captions:
@@ -351,20 +351,20 @@ namespace gui
 		virtual void setSize(EGUI_DEFAULT_SIZE which, s32 size) = 0;
 
 		//! returns the default font
-		virtual IGUIFont* getFont(EGUI_DEFAULT_FONT which=EGDF_DEFAULT) = 0;
+		virtual IGUIFont* getFont(EGUI_DEFAULT_FONT which=EGDF_DEFAULT) const = 0;
 
 		//! sets a default font
 		virtual void setFont(IGUIFont* font, EGUI_DEFAULT_FONT which=EGDF_DEFAULT) = 0;
 
 		//! returns the sprite bank
-		virtual IGUISpriteBank* getSpriteBank() = 0;
+		virtual IGUISpriteBank* getSpriteBank() const = 0;
 
 		//! sets the sprite bank
 		virtual void setSpriteBank(IGUISpriteBank* bank) = 0;
 
 		//! Returns a default icon
 		/** Returns the sprite index within the sprite bank */
-		virtual u32 getIcon(EGUI_DEFAULT_ICON icon) = 0;
+		virtual u32 getIcon(EGUI_DEFAULT_ICON icon) const = 0;
 
 		//! Sets a default icon
 		/** Sets the sprite index used for drawing icons like arrows, 

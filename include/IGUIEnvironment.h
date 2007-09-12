@@ -111,9 +111,9 @@ public:
 	virtual IGUISkin* getSkin() = 0;
 
 	//! Sets a new GUI Skin
-	/** You can used this to change the appearance of the whole GUI Environment. You
-	can set one ot the built-in skins or implement your own class derived from 
-	IGUISkin and set this useing this method.
+	/** You can use this to change the appearance of the whole GUI Environment. You
+	can set one of the built-in skins or implement your own class derived from 
+	IGUISkin and enable it using this method.
 	To set for example the built-in Windows classic skin, use the following code:
 	\code
 	gui::IGUISkin* newskin = environment->createSkin(gui::EGST_WINDOWS_CLASSIC);
@@ -126,7 +126,7 @@ public:
 	//! Creates a new GUI Skin based on a template.
 	/** Use setSkin() to set the created skin.
 	\return Returns a pointer to the created skin.
-	If you no longer need the image, you should call IGUISkin::drop().
+	If you no longer need it, you should call IGUISkin::drop().
 	See IReferenceCounted::drop() for more information. */
 	virtual IGUISkin* createSkin(EGUI_SKIN_TYPE type) = 0;
 
