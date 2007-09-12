@@ -226,7 +226,7 @@ void CGUIScrollBar::updateAbsolutePosition()
 
 	if (Horizontal)
 	{
-		f32 f = (RelativeRect.getWidth() - ((f32)RelativeRect.getHeight()*3.0f)) / (f32)Max;
+		const f32 f = (RelativeRect.getWidth() - ((f32)RelativeRect.getHeight()*3.0f)) / (f32)Max;
 		DrawPos = (s32)((Pos * f) + ((f32)RelativeRect.getHeight() * 0.5f));
 		DrawHeight = RelativeRect.getHeight();
 	}
@@ -245,12 +245,12 @@ void CGUIScrollBar::setPosFromMousePos(s32 x, s32 y)
 {
 	if (Horizontal)
 	{
-		f32 f = (RelativeRect.getWidth() - ((f32)RelativeRect.getHeight()*3.0f)) / (f32)Max;
+		const f32 f = (RelativeRect.getWidth() - ((f32)RelativeRect.getHeight()*3.0f)) / (f32)Max;
 		setPos((s32)(((f32)(x - AbsoluteRect.UpperLeftCorner.X - RelativeRect.getHeight())) / f));
 	}
 	else
 	{
-		f32 f = (RelativeRect.getHeight() - ((f32)RelativeRect.getWidth()*3.0f)) / (f32)Max;
+		const f32 f = (RelativeRect.getHeight() - ((f32)RelativeRect.getWidth()*3.0f)) / (f32)Max;
 		setPos((s32)(((f32)y - AbsoluteRect.UpperLeftCorner.Y - RelativeRect.getWidth()) / f));
 	}
 }
@@ -260,15 +260,16 @@ void CGUIScrollBar::setPosFromMousePos(s32 x, s32 y)
 //! sets the position of the scrollbar
 void CGUIScrollBar::setPos(s32 pos)
 {
-	Pos = pos;
-	if (Pos < 0)
+	if (pos < 0)
 		Pos = 0;
-	if (Pos > Max)
+	else if (pos > Max)
 		Pos = Max;
+	else
+		Pos = pos;
 
 	if (Horizontal)
 	{
-		f32 f = (RelativeRect.getWidth() - ((f32)RelativeRect.getHeight()*3.0f)) / (f32)Max;
+		const f32 f = (RelativeRect.getWidth() - ((f32)RelativeRect.getHeight()*3.0f)) / (f32)Max;
 		DrawPos = (s32)((Pos * f) + ((f32)RelativeRect.getHeight() * 0.5f));
 		DrawHeight = RelativeRect.getHeight();
 	}
@@ -417,9 +418,9 @@ void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeRead
 	IGUIScrollBar::serializeAttributes(out,options);
 
 	out->addBool("Horizontal",	Horizontal);
-	out->addInt	("Value",		Pos);
-	out->addInt	("Max",			Max);
-	out->addInt	("SmallStep",	SmallStep);
+	out->addInt ("Value",		Pos);
+	out->addInt ("Max",		Max);
+	out->addInt ("SmallStep",	SmallStep);
 }
 
 //! Reads attributes of the element
@@ -441,3 +442,4 @@ void CGUIScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

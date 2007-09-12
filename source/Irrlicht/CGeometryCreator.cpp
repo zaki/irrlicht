@@ -125,24 +125,22 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 	if (!texture || !heightmap)
 		return 0;
 
-	video::SMaterial material;
-	c8 textureName[64];
-	c8 tmp[255];
-
 	// debug border
-	s32 borderSkip = debugBorders ? 0 : 1;
+	const s32 borderSkip = debugBorders ? 0 : 1;
 
 	video::S3DVertex vtx;
 	vtx.Color.set(255,255,255,255);
 
 	SMesh* mesh = new SMesh();
 
-	u32 tm = os::Timer::getRealTime()/1000;
-	core::dimension2d<s32> hMapSize= heightmap->getDimension();
-	core::dimension2d<s32> tMapSize= texture->getDimension();
-	core::position2d<f32> thRel((f32)tMapSize.Width / hMapSize.Width, (f32)tMapSize.Height / hMapSize.Height);
-	core::position2d<s32> processed(0,0);
+	const u32 tm = os::Timer::getRealTime()/1000;
+	const core::dimension2d<s32> hMapSize= heightmap->getDimension();
+	const core::dimension2d<s32> tMapSize= texture->getDimension();
+	const core::position2d<f32> thRel((f32)tMapSize.Width / hMapSize.Width, (f32)tMapSize.Height / hMapSize.Height);
 
+	video::SMaterial material;
+
+	core::position2d<s32> processed(0,0);
 	while (processed.Y<hMapSize.Height)
 	{
 		while(processed.X<hMapSize.Width)
@@ -207,10 +205,11 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 
 			if (buffer->Vertices.size())
 			{
+				c8 textureName[64];
 				// create texture for this block
 				video::IImage* img = new video::CImage(texture,
-					core::position2d<s32>((s32)(processed.X*thRel.X), (s32)(processed.Y*thRel.Y)),
-					core::dimension2d<s32>((s32)(blockSize.Width*thRel.X), (s32)(blockSize.Height*thRel.Y)));
+					core::position2d<s32>(core::floor32(processed.X*thRel.X), core::floor32(processed.Y*thRel.Y)),
+					core::dimension2d<s32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y)));
 
 				sprintf(textureName, "terrain%u_%d", tm, mesh->getMeshBufferCount());
 
@@ -218,6 +217,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 
 				if (material.Textures[0])
 				{
+					c8 tmp[255];
 					sprintf(tmp, "Generated terrain texture (%dx%d): %s",
 						material.Textures[0]->getSize().Width,
 						material.Textures[0]->getSize().Height,
