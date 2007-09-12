@@ -48,24 +48,24 @@ CGUIMessageBox::CGUIMessageBox(IGUIEnvironment* environment, const wchar_t* capt
 
 void CGUIMessageBox::refreshControls()
 {
-	IGUISkin* skin = Environment->getSkin();
+	const IGUISkin* skin = Environment->getSkin();
 	IGUIElement* focusMe = 0;
 
-	s32 buttonHeight = skin->getSize(EGDS_BUTTON_HEIGHT);
-	s32 buttonWidth = skin->getSize(EGDS_BUTTON_WIDTH);
-	s32 titleHeight = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH)+2;
-	s32 buttonDistance = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	const s32 buttonHeight = skin->getSize(EGDS_BUTTON_HEIGHT);
+	const s32 buttonWidth = skin->getSize(EGDS_BUTTON_WIDTH);
+	const s32 titleHeight = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH)+2;
+	const s32 buttonDistance = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 
 	// add static multiline text
 
 	core::dimension2d<s32> dim(AbsoluteClippingRect.getWidth() - buttonWidth,
 		AbsoluteClippingRect.getHeight() - (buttonHeight * 3));
-	core::position2d<s32> pos((AbsoluteClippingRect.getWidth() - dim.Width) / 2,
+	const core::position2d<s32> pos((AbsoluteClippingRect.getWidth() - dim.Width) / 2,
 		buttonHeight / 2 + titleHeight);
 
 	if (!StaticText)
 	{
-		StaticText = Environment->addStaticText(MessageText.c_str(), 
+		StaticText = Environment->addStaticText(MessageText.c_str(),
 						core::rect<s32>(pos, dim), false, false, this);
 		StaticText->setWordWrap(true);
 		StaticText->setSubElement(true);
@@ -73,13 +73,13 @@ void CGUIMessageBox::refreshControls()
 	}
 	else
 	{
-		StaticText->setRelativePosition( core::rect<s32>(pos, dim));
+		StaticText->setRelativePosition(core::rect<s32>(pos, dim));
 		StaticText->setText(MessageText.c_str());
 	}
 
 	// adjust static text height
 
-	s32 textHeight = StaticText->getTextHeight();
+	const s32 textHeight = StaticText->getTextHeight();
 	core::rect<s32> tmp = StaticText->getRelativePosition();
 	tmp.LowerRightCorner.Y = tmp.UpperLeftCorner.Y + textHeight;
 	StaticText->setRelativePosition(tmp);
@@ -88,7 +88,7 @@ void CGUIMessageBox::refreshControls()
 	// adjust message box height
 
 	tmp = getRelativePosition();
-	s32 msgBoxHeight = textHeight +	(s32)(2.5f * buttonHeight) + titleHeight;
+	s32 msgBoxHeight = textHeight +	core::floor32(2.5f * buttonHeight) + titleHeight;
 
 	// adjust message box position
 
@@ -99,15 +99,19 @@ void CGUIMessageBox::refreshControls()
 	// add buttons
 
 	s32 countButtons = 0;
-	if (Flags & EMBF_OK) ++countButtons;
-	if (Flags & EMBF_CANCEL) ++countButtons;
-	if (Flags & EMBF_YES) ++countButtons;
-	if (Flags & EMBF_NO) ++countButtons;
+	if (Flags & EMBF_OK)
+		++countButtons;
+	if (Flags & EMBF_CANCEL)
+		++countButtons;
+	if (Flags & EMBF_YES)
+		++countButtons;
+	if (Flags & EMBF_NO)
+		++countButtons;
 
 	core::rect<s32> btnRect;
 	btnRect.UpperLeftCorner.Y = pos.Y + dim.Height + buttonHeight / 2;
 	btnRect.LowerRightCorner.Y = btnRect.UpperLeftCorner.Y + buttonHeight;
-	btnRect.UpperLeftCorner.X = (AbsoluteClippingRect.getWidth() - 
+	btnRect.UpperLeftCorner.X = (AbsoluteClippingRect.getWidth() -
 		((buttonWidth + buttonDistance)*countButtons)) / 2;
 	btnRect.LowerRightCorner.X = btnRect.UpperLeftCorner.X + buttonWidth;
 
@@ -134,7 +138,7 @@ void CGUIMessageBox::refreshControls()
 	{
 		OkButton->drop();
 		OkButton->remove();
-		OkButton =0;
+		OkButton = 0;
 	}
 
 	// add cancel button
@@ -150,7 +154,6 @@ void CGUIMessageBox::refreshControls()
 			CancelButton->setRelativePosition(btnRect);
 
 		CancelButton->setText(skin->getDefaultText(EGDT_MSG_BOX_CANCEL));
-		CancelButton->grab();
 
 		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
 		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
@@ -296,21 +299,23 @@ bool CGUIMessageBox::OnEvent(SEvent event)
 				else
 				if (CancelButton)
 				{
-					CancelButton->setPressed(true);	
+					CancelButton->setPressed(true);
 					Pressed = true;
-				} 
+				}
 				else
 				if (CloseButton && CloseButton->isVisible())
 				{
-					CloseButton->setPressed(true);	
+					CloseButton->setPressed(true);
 					Pressed = true;
 				}
+				break;
+			default: // no other key is handled here
+				break;
 			}
 		}
 		else
 		if (Pressed)
 		{
-		
 			if (OkButton && event.KeyInput.Key == KEY_RETURN)
 			{
 				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_OK;
@@ -355,7 +360,7 @@ bool CGUIMessageBox::OnEvent(SEvent event)
 				return true;
 			}
 			else
-			if (event.GUIEvent.Caller == CancelButton || 
+			if (event.GUIEvent.Caller == CancelButton ||
 				event.GUIEvent.Caller == CloseButton)
 			{
 				outevent.GUIEvent.EventType = EGET_MESSAGEBOX_CANCEL;
@@ -391,12 +396,12 @@ void CGUIMessageBox::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 {
 	CGUIWindow::serializeAttributes(out,options);
 
-	out->addBool	("OkayButton",		(Flags & EMBF_OK)	 != 0 );
-	out->addBool	("CancelButton",	(Flags & EMBF_CANCEL)!= 0 );
-	out->addBool	("YesButton",		(Flags & EMBF_YES)	 != 0 );
-	out->addBool	("NoButton",		(Flags & EMBF_NO)	 != 0 );
+	out->addBool	("OkayButton",		(Flags & EMBF_OK)	!= 0 );
+	out->addBool	("CancelButton",	(Flags & EMBF_CANCEL)	!= 0 );
+	out->addBool	("YesButton",		(Flags & EMBF_YES)	!= 0 );
+	out->addBool	("NoButton",		(Flags & EMBF_NO)	!= 0 );
 
-	out->addString	("MessageText",		MessageText.c_str() );
+	out->addString	("MessageText",		MessageText.c_str());
 }
 
 //! Reads attributes of the element
@@ -414,7 +419,6 @@ void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	CGUIWindow::deserializeAttributes(in,options);
 
 	refreshControls();
-
 }
 
 
@@ -423,3 +427,4 @@ void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 
 
 #endif // _IRR_COMPILE_WITH_GUI_
+
