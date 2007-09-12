@@ -57,11 +57,11 @@ public:
 
 		core::stringc Name;
 
-		s32 MaxSkinWeightsPerVertex;
-		s32 MaxSkinWeightsPerFace;
-		s32 BoneCount;
+		u32 MaxSkinWeightsPerVertex;
+		u32 MaxSkinWeightsPerFace;
+		u32 BoneCount;
 
-		core::array< s32 > IndexCountPerFace; // default 3, but could be more
+		core::array< u32 > IndexCountPerFace; // default 3, but could be more
 
 		core::array<scene::SSkinMeshBuffer*> Buffers;
 
@@ -150,7 +150,7 @@ private:
 
 	u16 readBinWord();
 	u32 readBinDWord();
-	s32 readInt();
+	u32 readInt();
 	f32 readFloat();
 	bool readVector2(core::vector2df& vec);
 	bool readVector3(core::vector3df& vec);
@@ -170,7 +170,7 @@ private:
 	u32 MinorVersion;
 	bool BinaryFormat;
 	// counter for number arrays in binary format
-	s32 BinaryNumCount;
+	u32 BinaryNumCount;
 
 	c8* Buffer;
 	const c8* P;

@@ -47,6 +47,9 @@ CXXFLAGS += -g -D_DEBUG
 else
 CXXFLAGS += -fexpensive-optimizations -O3
 endif
+ifdef PROFILE
+CXXFLAGS += -pg
+endif
 CFLAGS := -fexpensive-optimizations -O3 -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
 
 #Linux specific options

@@ -1116,23 +1116,6 @@ namespace scene
 			delete [] TerrainData.Patches;
 
 		TerrainData.Patches = new SPatch[TerrainData.PatchCount * TerrainData.PatchCount];
-
-#if 0
-		gui::IGUIFont* font = SceneManager->getGUIEnvironment()->getFont("../../media/bigfont.png");
-		font->setKerning ( -2 );
-		for( s32 j = 0; j < TerrainData.PatchCount * TerrainData.PatchCount; ++j )
-		{
-			const core::stringw buf(j);
-			TerrainData.Patches[j].DebugText = SceneManager->addTextSceneNode (
-				font,
-				buf.c_str(),
-				0xFFFFFFFF,
-				0
-				);
-		}
-#endif
-		
-
 	}
 
 	//! used to calculate the internal STerrainData structure both at creation and after scaling/position calls.
@@ -1323,10 +1306,10 @@ namespace scene
 
 		// set possible new scale
 
-		if (core::equals(tcoordScale1, 0))
+		if (core::equals(tcoordScale1, 0.f))
 			tcoordScale1 = 1.0f;
 
-		if (core::equals(tcoordScale2, 0))
+		if (core::equals(tcoordScale2, 0.f))
 			tcoordScale2 = 1.0f;
 
 		if (!core::equals(tcoordScale1, TCoordScale1) ||

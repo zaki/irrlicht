@@ -214,6 +214,9 @@ void CNullDriver::setMaterial(const SMaterial& material)
 //! memory.
 void CNullDriver::removeTexture(ITexture* texture)
 {
+	if (!texture)
+		return;
+
 	for (u32 i=0; i<Textures.size(); ++i)
 		if (Textures[i].Surface == texture)
 		{
@@ -252,8 +255,8 @@ s32 CNullDriver::getTextureCount()
 void CNullDriver::renameTexture(ITexture* texture, const c8* newName)
 {
 	// we can do a const_cast here safely, the name of the ITexture interface
-	// is only readonly to prevent the user changing the textures name without invoking
-	// this method, because the texures will need resorting afterwards
+	// is just readonly to prevent the user changing the texture name without invoking
+	// this method, because the textures will need resorting afterwards
 
 	core::stringc& name = const_cast<core::stringc&>(texture->getName());
 	name = newName;

@@ -596,8 +596,8 @@ bool CXMeshFileLoader::parseDataObjectTransformationMatrix(core::matrix4 &mat)
 		return false;
 	}
 
-	for (s32 i=0; i<4; ++i)
-		for (s32 j=0; j<4; ++j)
+	for (u32 i=0; i<4; ++i)
+		for (u32 j=0; j<4; ++j)
 			mat(i,j)=readFloat();
 
 	if (!checkForTwoFollowingSemicolons())
@@ -632,18 +632,16 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	}
 
 	// read vertex count
-	s32 nVertices = readInt();
+	const u32 nVertices = readInt();
 
 	// read vertices
 	mesh.Vertices.set_used(nVertices); //luke: change
-	for (s32 nums=0; nums<nVertices; ++nums)
-		mesh.Vertices[nums].Color=0xFFFFFFFF;
 
-	for (s32 n=0; n<nVertices; ++n)
+	for (u32 n=0; n<nVertices; ++n)
 	{
 		readVector3(mesh.Vertices[n].Pos);
+		mesh.Vertices[n].Color=0xFFFFFFFF;
 	}
-
 
 	if (!checkForTwoFollowingSemicolons())
 	{
@@ -652,17 +650,17 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	}
 
 	// read faces
-	s32 nFaces = readInt();
+	const u32 nFaces = readInt();
 
 	mesh.Indices.set_used(nFaces * 3);
 	mesh.IndexCountPerFace.set_used(nFaces);
 
-	core::array<s32> polygonfaces;
-	s32 currentIndex = 0;
+	core::array<u32> polygonfaces;
+	u32 currentIndex = 0;
 
-	for (s32 k=0; k<nFaces; ++k)
+	for (u32 k=0; k<nFaces; ++k)
 	{
-		s32 fcnt = readInt();
+		const u32 fcnt = readInt();
 
 		if (fcnt != 3)
 		{
@@ -674,14 +672,14 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 
 			// read face indices
 			polygonfaces.set_used(fcnt);
-			s32 triangles = (fcnt-2);
+			u32 triangles = (fcnt-2);
 			mesh.Indices.set_used(mesh.Indices.size() + ((triangles*3)-3));
 			mesh.IndexCountPerFace[k] = triangles * 3;
 
-			for (s32 f=0; f<fcnt; ++f)
+			for (u32 f=0; f<fcnt; ++f)
 				polygonfaces[f] = readInt();
 
-			for (s32 jk=0; jk<triangles; ++jk)
+			for (u32 jk=0; jk<triangles; ++jk)
 			{
 				mesh.Indices[currentIndex++] = polygonfaces[0];
 				mesh.Indices[currentIndex++] = polygonfaces[jk+1];
@@ -829,10 +827,10 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	}
 
 	// read vertex weights
-	const s32 nWeights = readInt();
+	const u32 nWeights = readInt();
 
 	// read vertex indices
-	s32 i;
+	u32 i;
 
 	const u32 jointStart = joint->Weights.size();
 	joint->Weights.reallocate(jointStart+nWeights);
@@ -921,13 +919,12 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 	}
 
 	// read count
-	s32 nNormals;
-	nNormals = readInt();
+	const u32 nNormals = readInt();
 	core::array<core::vector3df> normals;
 	normals.set_used(nNormals);
 
 	// read normals
-	for (s32 i=0; i<nNormals; ++i)
+	for (u32 i=0; i<nNormals; ++i)
 		readVector3(normals[i]);
 
 	if (!checkForTwoFollowingSemicolons())
@@ -936,23 +933,19 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 		return false;
 	}
 
-	core::array<s32> normalIndices;
-
-	s32 triangulatedIndexCount=mesh.Indices.size();
+	core::array<u32> normalIndices;
+	normalIndices.set_used(mesh.Indices.size());
 
 	// read face normal indices
-	s32 nFNormals = readInt();
+	const u32 nFNormals = readInt();
 
-	normalIndices.set_used(triangulatedIndexCount);
-
-	s32 normalidx = 0;
-	core::array<s32> polygonfaces;
-	polygonfaces.reallocate(32);
-	for (s32 k=0; k<nFNormals; ++k)
+	u32 normalidx = 0;
+	core::array<u32> polygonfaces;
+	for (u32 k=0; k<nFNormals; ++k)
 	{
-		s32 fcnt = readInt();
-		s32 triangles = fcnt - 2;
-		s32 indexcount = triangles * 3;
+		const u32 fcnt = readInt();
+		u32 triangles = fcnt - 2;
+		u32 indexcount = triangles * 3;
 
 		if (indexcount != mesh.IndexCountPerFace[k])
 		{
@@ -963,21 +956,20 @@ bool CXMeshFileLoader::parseDataObjectMeshNormals(SXMesh &mesh)
 		if (indexcount == 3)
 		{
 			// default, only one triangle in this face
-			for (s32 h=0; h<3; ++h)
+			for (u32 h=0; h<3; ++h)
 			{
-				s32 normalnum = readInt();
+				const u32 normalnum = readInt();
 				mesh.Vertices[mesh.Indices[normalidx++]].Normal.set(normals[normalnum]);
 			}
 		}
 		else
 		{
-			// multiple triangles in this face
 			polygonfaces.set_used(fcnt);
-
-			for (s32 h=0; h<fcnt; ++h)
+			// multiple triangles in this face
+			for (u32 h=0; h<fcnt; ++h)
 				polygonfaces[h] = readInt();
 
-			for (s32 jk=0; jk<triangles; ++jk)
+			for (u32 jk=0; jk<triangles; ++jk)
 			{
 				mesh.Vertices[mesh.Indices[normalidx++]].Normal.set(normals[polygonfaces[0]]);
 				mesh.Vertices[mesh.Indices[normalidx++]].Normal.set(normals[polygonfaces[jk+1]]);
@@ -1014,9 +1006,8 @@ bool CXMeshFileLoader::parseDataObjectMeshTextureCoords(SXMesh &mesh)
 		return false;
 	}
 
-	s32 nCoords;
-	nCoords = readInt();
-	for (s32 i=0; i<nCoords; ++i)
+	const u32 nCoords = readInt();
+	for (u32 i=0; i<nCoords; ++i)
 		readVector2(mesh.Vertices[i].TCoords);
 
 	if (!checkForTwoFollowingSemicolons())
@@ -1094,9 +1085,9 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 	mesh.Materials.reallocate(readInt());
 
 	// read non triangulated face material index count
-	const s32 nFaceIndices = readInt();
+	const u32 nFaceIndices = readInt();
 
-	if (nFaceIndices != (s32)mesh.IndexCountPerFace.size())
+	if (nFaceIndices != mesh.IndexCountPerFace.size())
 	{
 		os::Printer::log("Index count per face not equal to face material index count in x file.", ELL_WARNING);
 		return false;
@@ -1104,13 +1095,13 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 
 	// read non triangulated face indices and create triangulated ones
 	mesh.FaceMaterialIndices.set_used( mesh.Indices.size() / 3);
-	s32 triangulatedindex = -1;
-	for (s32 tfi=0; tfi<nFaceIndices; ++tfi)
+	u32 triangulatedindex = 0;
+	for (u32 tfi=0; tfi<nFaceIndices; ++tfi)
 	{
-		const s32 ind = readInt();
-		const s32 fc = mesh.IndexCountPerFace[tfi]/3;
-		for (s32 k=0; k<fc; ++k)
-			mesh.FaceMaterialIndices[++triangulatedindex] = ind;
+		const u32 ind = readInt();
+		const u32 fc = mesh.IndexCountPerFace[tfi]/3;
+		for (u32 k=0; k<fc; ++k)
+			mesh.FaceMaterialIndices[triangulatedindex++] = ind;
 	}
 
 	// in version 03.02, the face indices end with two semicolons.
@@ -1437,26 +1428,26 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 
 	// read key type
 
-	s32 keyType = readInt();
+	const u32 keyType = readInt();
 
-	if ((u32)keyType > 4)
+	if (keyType > 4)
 	{
 		os::Printer::log("Unknown key type found in Animation Key in x file", ELL_WARNING);
 		return false;
 	}
 
 	// read number of keys
-	const s32 numberOfKeys = readInt();
+	const u32 numberOfKeys = readInt();
 
 	// eat the semicolon after the "0".  if there are keys present, readInt()
 	// does this for us.  If there aren't, we need to do it explicitly
 	if (numberOfKeys == 0)
 		checkForOneFollowingSemicolons();
 
-	for (s32 i=0; i<numberOfKeys; ++i)
+	for (u32 i=0; i<numberOfKeys; ++i)
 	{
 		// read time
-		const s32 time = readInt();
+		const u32 time = readInt();
 
 		// read keys
 		switch(keyType)
@@ -1538,8 +1529,8 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				// read matrix
 				core::matrix4 Matrix;
 
-				for (s32 m=0; m<4; ++m)
-					for (s32 n=0; n<4; ++n)
+				for (u32 m=0; m<4; ++m)
+					for (u32 n=0; n<4; ++n)
 						Matrix(m,n) = readFloat();
 
 
@@ -1632,7 +1623,7 @@ bool CXMeshFileLoader::parseUnknownDataObject()
 			break;
 	}
 
-	s32 counter = 1;
+	u32 counter = 1;
 
 	// parse until closing delimiter
 
@@ -1677,7 +1668,7 @@ bool CXMeshFileLoader::checkForTwoFollowingSemicolons()
 	if (BinaryFormat)
 		return true;
 
-	for (s32 k=0; k<2; ++k)
+	for (u32 k=0; k<2; ++k)
 	{
 		if (getNextToken() != ";")
 			return false;
@@ -1718,7 +1709,7 @@ core::stringc CXMeshFileLoader::getNextToken()
 		// and (correctly) skip over other tokens.
 
 		s16 tok = readBinWord();
-		s32 len;
+		u32 len;
 
 		// standalone tokens
 		switch (tok) {
@@ -1948,7 +1939,7 @@ u32 CXMeshFileLoader::readBinDWord()
 }
 
 
-s32 CXMeshFileLoader::readInt()
+u32 CXMeshFileLoader::readInt()
 {
 	if (BinaryFormat)
 	{
@@ -1965,10 +1956,8 @@ s32 CXMeshFileLoader::readInt()
 	}
 	else
 	{
-		f32 ftmp;
 		findNextNoneWhiteSpaceNumber();
-		P = core::fast_atof_move(P, ftmp);
-		return core::floor32(ftmp);
+		return core::strtol10(P, &P);
 	}
 }
 
