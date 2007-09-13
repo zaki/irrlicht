@@ -1,0 +1,636 @@
+This file contains API changes between consecutive versions. You can get the
+relevant information about all changes to the public Irrlicht API needed for
+upgrading your code (esp. custom scene nodes and GUI elements) to a new Irrlicht
+version. Since all changes are incremental you should skip forward to the
+version you use right now and check all each note until you reach the desired
+version.
+Please note that the changes described here do not contain functional changes,
+but only syntactical ones. Also, new methods are not documented here and
+have to be looked up in the API documentation instead.
+
+Basically, all changes have to be reflected in user code where used. Removed
+and renamed methods are obviously not existant anymore. A hint is usually given
+for such changes on how to remedy the situation.
+Changed signatures of methods might go unnoticed. That need not be a bad thing,
+e.g. for changes from s32 to u32 the parameters are usually automatically
+converted by the compiler. However, one should be careful when writing custom
+scene nodes or GUI elements. It might happen that the methods are not properly
+chosen as candidates for virtual overloading. So always check that methods in
+the user code have the proper signatures just as the interface versions. The
+change hint will help to identify necessary changes.
+
+Changes for Version 1.2
+-----------------------
+Removed compile flag (always used where available)
+_IRR_LINUX_OPENGL_USE_EXTENSIONS_
+
+IAnimatedMeshB3d:
+Removed (no replacement available)
+	virtual void AddMatrixToJoint(s32 jointNumber, core::matrix4* matrix) = 0;
+
+IGUIElement.h
+Changed signatures (made const)
+	IGUIElement* getParent() const
+	core::rect<s32> getRelativePosition() const
+
+IGUITabControl.h
+Changed signatures (const param)
+	virtual IGUITab* addTab(const wchar_t* caption, s32 id=-1) = 0;
+
+IImage.h
+Changed signatures (made const)
+	virtual ECOLOR_FORMAT getColorFormat() const = 0;
+
+IParticleAffector.h
+Changed inheritance (from irr:IUnknown)
+	class IParticleAffector : public virtual io::IAttributeExchangingObject
+
+IParticleEmitter.h
+Changed inheritance (from irr:IUnknown)
+	class IParticleEmitter : public virtual io::IAttributeExchangingObject
+
+IParticleSystemSceneNode.h
+Changed signatures (const param)
+ 	virtual IParticleEmitter* createPointEmitter(
+		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
+ 		u32 minParticlesPerSecond = 5,
+ 		u32 maxParticlesPerSecond = 10,
+ 		video::SColor minStartColor = video::SColor(255,0,0,0),
+ 	virtual IParticleEmitter* createBoxEmitter(
+ 		const core::aabbox3df& box = core::aabbox3df(-10,28,-10,10,30,10),
+ 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
+ 		u32 minParticlesPerSecond = 5,
+ 		u32 maxParticlesPerSecond = 10,
+ 		video::SColor minStartColor = video::SColor(255,0,0,0),
+
+ 	virtual IParticleAffector* createGravityAffector(
+ 		const core::vector3df& gravity = core::vector3df(0.0f,-0.03f,0.0f),
+ 		u32 timeForceLost = 1000) = 0;
+
+ISceneManager.h
+Changed signatures (additional param)
+ 	virtual ISceneNodeAnimator* createFlyCircleAnimator(const core::vector3df& center,
+		f32 radius, f32 speed=0.001f, const core::vector3df& direction= core::vector3df ( 0.f, 1.f, 0.f ) ) = 0;
+
+ITexture.h
+Changed signatures (made const)
+	virtual ECOLOR_FORMAT getColorFormat() const = 0;
+
+IVideoDriver.h
+Changed signatures (changed default param, use ECF_A1R5G5B5 explicitly for old behavior)
+	virtual ITexture* addTexture(const core::dimension2d<s32>& size,
+			const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
+Changed signatures (made const)
+	virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size) = 0;
+
+matrix4.h
+Changed signatures (swapped parameter, it was (col, row) before although the names did not represent this)
+	f32& operator()(s32 row, s32 col);
+	const f32& operator()(s32 row, s32 col) const;
+
+S3DVertex.h
+Changed signatures (unconst param)
+	S3DVertex(f32 x, f32 y, f32 z, f32 nx, f32 ny, f32 nz, SColor c, f32 tu, f32 tv);
+ 	S3DVertex(const core::vector3df& pos, const core::vector3df& normal,
+		SColor color, const core::vector2d<f32>& tcoords);
+	S3DVertex2TCoords(f32 x, f32 y, f32 z, SColor c, f32 tu, f32 tv, f32 tu2, f32 tv2);
+	S3DVertex2TCoords(const core::vector3df& pos, SColor color,
+ 		const core::vector2d<f32>& tcoords, const core::vector2d<f32>& tcoords2);
+	S3DVertex2TCoords(f32 x, f32 y, f32 z, f32 nx, f32 ny, f32 nz, SColor c, f32 tu, f32 tv);
+ 	S3DVertex2TCoords(const core::vector3df& pos, const core::vector3df& normal,
+		SColor color, const core::vector2d<f32>& tcoords);
+ 	S3DVertexTangents(const core::vector3df& pos,
+		const core::vector2df& tcoords,	SColor c);
+
+SColor.h
+Changed signatures (changed param types from signed to unsigned)
+	inline u16 RGBA16(u32 r, u32 g, u32 b, u32 a);
+	inline u16 RGB16(u32 r, u32 g, u32 b);
+	inline u16 X8R8G8B8toA1R5G5B5(u32 color);
+	inline u32 A1R5G5B5toA8R8G8B8(u32 color);
+	inline u32 R5G6B5toA8R8G8B8(u16 color);
+	inline u16 R5G6B5toA1R5G5B5(u16 color);
+	inline u16 A1R5G5B5toR5G6B5(u16 color);
+	inline u32 getAlpha(u16 color);
+	inline u32 getRed(u16 color);
+	inline u32 getGreen(u16 color);
+	inline u32 getBlue(u16 color);
+	inline u32 getLuminance(u16 color);
+	inline SColor (u32 a, u32 r, u32 g, u32 b);
+	inline SColor(u32 clr);
+	inline u32 getAlpha() const
+	inline u32 getRed() const
+	inline u32 getGreen() const
+	inline u32 getBlue() const
+	inline void setAlpha(u32 a);
+	inline void setRed(u32 r);
+	inline void setGreen(u32 g);
+	inline void setBlue(u32 b);
+	inline u16 toA1R5G5B5() const
+	inline void toOpenGLColor(u8* dest) const
+	inline void set(u32 a, u32 r, u32 g, u32 b);
+	inline void set(u32 col);
+Changed signatures (const param)
+	inline SColor getInterpolated(const SColor &other, f32 d) const
+Changed public member (type changed)
+	u32 color;
+
+
+Changes for Version 1.3
+-----------------------
+Globally renamed Frustrum to Frustum in all signatures and code parts
+
+IAnimatedMeshB3d.h
+Renamed methods (small first letter)
+	virtual void setInterpolationMode(s32 mode) = 0;
+	virtual void setAnimateMode(s32 mode) = 0;
+
+IAnimatedMeshSceneNode.h
+changed signature (changed types)
+	virtual void setAnimationSpeed(f32 framesPerSecond) = 0;
+
+ICameraSceneNode.h
+Renamed methods and changed signature (changed types, frustum renaming)
+	virtual const SViewFrustum* getViewFrustum() const = 0;
+
+IFileSystem.h
+Renamed method (from addUnZipFileArchive)
+	virtual bool addFolderFileArchive(const c8* filename, bool ignoreCase = true, bool ignorePaths = true) = 0;
+
+IGUIContextMenu.h
+Changed signature (added param)
+ 	virtual s32 addItem(const wchar_t* text, s32 commandId=-1, bool enabled=true,
+			bool hasSubMenu=false, bool checked=false) = 0;
+
+IGUIElement.h
+Changed inheritance
+	class IGUIElement : public virtual io::IAttributeExchangingObject, public IEventReceiver
+Changed signature (made const)
+	core::rect<s32> getAbsolutePosition() const
+
+IGUIEnvironment.h
+Changed signature (added param)
+ 	virtual IGUIButton* addButton(const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0, const wchar_t* tooltiptext = 0) = 0;
+
+IGUIListBox.h
+Removed method (Using sprite bank now)
+	virtual void setIconFont(IGUIFont* font) = 0;
+Change signature (changed types, due to sprite bank)
+	virtual s32 addItem(const wchar_t* text, s32 icon) = 0;
+
+IGUISkin.h
+Changed inheritance
+	class IGUISkin : public virtual io::IAttributeExchangingObject
+
+IGUIToolbar.h
+Changed signature (Added param for tooltips)
+	virtual IGUIButton* addButton(s32 id=-1, const wchar_t* text=0, const wchar_t* tooltiptext=0,
+		video::ITexture* img=0, video::ITexture* pressedimg=0,
+		bool isPushButton=false, bool useAlphaChannel=false) = 0;
+
+IImage.h
+Changed signature (made const)
+	virtual u32 getPitch() const = 0;
+
+IImageWriter.h
+Changed signature (additional param)
+	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param = 0) = 0;
+
+IMeshBuffer.h
+Changed signature (changed return type)
+	virtual u32 getVertexCount() const = 0;
+	virtual u32 getIndexCount() const = 0;
+Removed method (use setBoundingBox instead)
+	virtual core::aabbox3df& getBoundingBox() = 0;
+
+IMesh.h
+Changed signature (changed types, made const)
+	virtual u32 getMeshBufferCount() const = 0;
+	virtual IMeshBuffer* getMeshBuffer(u32 nr) const = 0;
+Removed method (use setBoundingBox instead)
+	virtual core::aabbox3d<f32>& getBoundingBox() = 0;
+
+IReadFile.h
+Changed signature (changed types)
+	virtual s32 read(void* buffer, u32 sizeToRead) = 0;
+
+irrArray.h
+Changed signature (made const)
+	s32 binary_search(const T& element, s32 left, s32 right) const
+
+irrMath.h
+Constant changed
+	const f32 PI			= 3.14159265359f;
+Constants removed (use RADTODEG64 or DEGTORAD64 instead)
+	const f64 GRAD_PI		= 180.0 / PI64;
+	const f64 GRAD_PI2		= PI64 / 180.0;
+Changed signature (added tolerance parameter)
+	inline bool equals(const f32 a, const f32 b, const f32 tolerance = ROUNDING_ERROR_32)
+
+irrString.h
+Changed signature (const param)
+ 	template <class B> string(const B* const c, u32 length);
+ 	template <class B> string(const B* const c);
+ 	template <class B> string<T>& operator=(const B* const c);
+ 	template <class B> string<T> operator+(const B* const c) const
+	bool operator ==(const T* const str) const
+	bool operator !=(const T* const str) const
+	bool equalsn(const T* const str, int len) const
+	void append(const T* const other);
+	s32 findFirstChar(const T* const c, u32 count) const
+ 	template <class B> s32 findFirstCharNotInList(const B* const c, u32 count) const
+ 	template <class B> s32 findLastCharNotInList(const B* const c, u32 count) const
+ 	template <class B> s32 find(const B* const str) const
+	void operator += (const T* const c);
+Changed signature (changed type from signed)
+	T& operator [](const u32 index) const
+	u32 size() const
+	void append(const string<T>& other, u32 length);
+	void reserve(u32 count);
+	s32 findNext(T c, u32 startPos) const
+	string<T> subString(u32 begin, s32 length) const
+	void erase(u32 index);
+	void reallocate(u32 new_size);
+Changed signature (added param)
+	s32 findLast(T c, s32 start = -1) const
+
+ISceneManager.h
+Changed signature (changed default param from 128 minimalPolysPerNode)
+ 	virtual ISceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+		s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
+ 	virtual ISceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
+		s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
+Changed signature (added param)
+	virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
+		f32 rotateSpeed = 100.0f, f32 moveSpeed = 500.0f, s32 id=-1,
+		SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
+		f32 jumpSpeed = 0.f) = 0;
+
+	virtual IBillboardSceneNode* addBillboardSceneNode(ISceneNode* parent = 0,
+		const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
+		const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
+		video::SColor shade_top = 0xFFFFFFFF, video::SColor shade_down = 0xFFFFFFFF) = 0;
+
+	virtual ITerrainSceneNode* addTerrainSceneNode(
+		const c8* heightMapFileName,
+		ISceneNode* parent=0, s32 id=-1,
+		const core::vector3df& position = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& rotation = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& scale = core::vector3df(1.0f,1.0f,1.0f),
+		video::SColor vertexColor = video::SColor(255,255,255,255),
+		s32 maxLOD=5, E_TERRAIN_PATCH_SIZE patchSize=ETPS_17, s32 smoothFactor=0) = 0;
+
+	virtual ITerrainSceneNode* addTerrainSceneNode(
+		io::IReadFile* heightMapFile,
+		ISceneNode* parent=0, s32 id=-1,
+		const core::vector3df& position = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& rotation = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& scale = core::vector3df(1.0f,1.0f,1.0f),
+		video::SColor vertexColor = video::SColor(255,255,255,255),
+		s32 maxLOD=5, E_TERRAIN_PATCH_SIZE patchSize=ETPS_17, s32 smoothFactor=0) = 0;
+Changed signature (changed return type)
+	virtual u32 registerNodeForRendering(ISceneNode* node,
+		E_SCENE_NODE_RENDER_PASS pass = ESNRP_AUTOMATIC) = 0;
+
+ISceneNodeAnimatorCollisionResponse.h
+Changed signature (made const)
+	virtual void setEllipsoidTranslation(const core::vector3df &translation) = 0;
+
+ISceneNode.h
+Renamed method (from OnPreRender)
+	virtual void OnRegisterSceneNode();
+Renamed method (from OnPostRender)
+	virtual void OnAnimate(u32 timeMs);
+Changed signature (made const)
+	virtual const core::aabbox3d<f32> getTransformedBoundingBox() const
+	const core::matrix4& getAbsoluteTransformation() const
+	virtual bool isVisible() const
+	virtual s32 getID() const
+	scene::ISceneNode* getParent() const
+	virtual ESCENE_NODE_TYPE getType() const
+Changed signature (changed type)
+	virtual video::SMaterial& getMaterial(u32 num);
+	void setMaterialTexture(u32 textureLayer, video::ITexture* texture);
+	void setAutomaticCulling( E_CULLING_TYPE state);
+	virtual void setDebugDataVisible(E_DEBUG_SCENE_TYPE visible);
+Changed signature (changed return type)
+	virtual u32 getMaterialCount();
+	virtual const core::vector3df& getRotation() const
+	E_CULLING_TYPE getAutomaticCulling() const
+Changed signature (changed return type, made const)
+	E_DEBUG_SCENE_TYPE isDebugDataVisible() const
+
+ITerrainSceneNode.h
+Changed signature (changed return type)
+	virtual u32 getIndexCount() = 0;
+
+ITexture.h
+Changed signature (changed return type, made const)
+	virtual u32 getPitch() const = 0;
+Removed method (Available in SMaterial now)
+	core::matrix4& getTransformation();
+
+IVideoDriver.h
+Changed signature (changed types)
+	virtual ITexture* getTextureByIndex(u32 index) = 0;
+	virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType) = 0;
+ 	virtual void drawIndexedTriangleList(const S3DVertex* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
+	virtual void drawIndexedTriangleList(const S3DVertex2TCoords* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
+	virtual void drawIndexedTriangleList(const S3DVertexTangents* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
+	virtual void drawIndexedTriangleFan(const S3DVertex* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
+	virtual void drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
+		u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
+	virtual const SLight& getDynamicLight(u32 idx) = 0;
+	virtual IMaterialRenderer* getMaterialRenderer(u32 idx) = 0;
+	virtual const c8* getMaterialRendererName(u32 idx) = 0;
+Changed signature (const param)
+	virtual void drawMeshBuffer( const scene::IMeshBuffer* mb) = 0;
+	virtual io::IAttributes* createAttributesFromMaterial(const video::SMaterial& material) = 0;
+Changed signature (added param)
+	virtual u32 getPrimitiveCountDrawn( u32 param = 0 ) = 0;
+	virtual bool writeImageToFile(IImage* image, const c8* filename, u32 param = 0) = 0;
+	virtual IImage* createImageFromData(ECOLOR_FORMAT format,
+		const core::dimension2d<s32>& size, void *data,
+		bool ownForeignMemory=false,
+		bool deleteMemory = true) = 0;
+Changed signature (changed return types)
+	virtual u32 getMaximalDynamicLightAmount() = 0;
+	virtual u32 getDynamicLightCount() = 0;
+	virtual u32 getMaximalPrimitiveCount() = 0;
+	virtual u32 getMaterialRendererCount() = 0;
+
+matrix4.h
+Changed signature (added param)
+	matrix4( eConstructor constructor = EM4CONST_IDENTITY );
+Changed signature (const param)	
+	f32& operator()(const s32 row, const s32 col);
+	const f32& operator()(const s32 row, const s32 col) const
+Changed signature (param order)	
+	void transformVect( vector3df& out, const vector3df& in ) const;
+
+quaternion.h
+Changed signature (changed return type)
+	void slerp( quaternion q1, const quaternion q2, f32 interpolate );
+
+SColor.h
+Renamed method (from getLuminance), changed types
+	inline s32 getAverage(s16 color);
+Changed signature (changed return types)
+	inline f32 getLuminance() const
+Changed signature (const param)
+	inline SColorf getInterpolated(const SColorf &other, f32 d) const
+
+SMaterial.h
+Constant type changed
+	const u32 MATERIAL_MAX_TEXTURES = 4;
+Type changed
+	class SMaterial
+Public members removed (use Textures[] instead)
+	ITexture* Texture1;
+	ITexture* Texture2;
+	ITexture* Texture3;
+	ITexture* Texture4;
+Public members removed (use setFlag()/getFlag() instead)
+	Flags[]
+Public members changed (type changed)
+	u32 ZBuffer;
+Changed signature (made const)
+	inline bool operator!=(const SMaterial& b) const
+
+SMeshBuffer.h
+Changed signature (changed param)
+	virtual u32 getVertexCount() const
+	virtual u32 getIndexCount() const
+Removed method (use setBoundingBox instead)
+	virtual core::aabbox3d<f32>& getBoundingBox();
+
+SMeshBufferLightMap.h
+Changed signature (changed param)
+	virtual u32 getVertexCount() const
+	virtual u32 getIndexCount() const
+Removed method (use setBoundingBox instead)
+	virtual core::aabbox3d<f32>& getBoundingBox();
+
+SMeshBufferTangents.h
+Changed signature (changed param)
+	virtual u32 getVertexCount() const
+	virtual u32 getIndexCount() const
+Removed method (use setBoundingBox instead)
+	virtual core::aabbox3d<f32>& getBoundingBox();
+
+SMesh.h
+Changed signature (changed param, made const)
+	virtual u32 getMeshBufferCount() const
+	virtual IMeshBuffer* getMeshBuffer(u32 nr) const
+Removed method (use setBoundingBox instead);
+	virtual core::aabbox3d<f32>& getBoundingBox();
+
+vector3d.h
+Changed signature (changed return type)
+	T getLength() const
+Changed signature (changed type)
+	vector3d<T> getInterpolated(const vector3d<T>& other, const T d) const
+
+Changes for Version 1.3.1
+-------------------------
+Changed types:
+	SMeshBuffer* types are now template typedefs from CMeshBuffer
+
+dimension2d.h
+Changed signature (const param)
+	dimension2d(const T& width, const T& height);
+	dimension2d<T> operator/(const T& scale);
+	dimension2d<T> operator*(const T& scale);
+
+IAnimatedMeshSceneNode.h
+Changed signature (made const)
+	virtual s32 getFrameNr() const = 0;
+	virtual s32 getStartFrame() const = 0;
+	virtual s32 getEndFrame() const = 0;
+Renamed method (from getAbsoluteTransformation)
+	virtual const SMD3QuaterionTag& getMD3TagTransformation( const core::stringc & tagname) = 0;
+
+IGUIButton.h
+Renamed method (from getUseAlphaChannel)
+	virtual bool isAlphaChannelUsed() = 0;
+
+IGUIElementFactory.h
+Changed signature (made const)
+	EGUI_ELEMENT_TYPE getType() const
+	virtual const c8* getTypeName() const
+
+IGUIEnvironment.h
+Changed signature (added param)
+	virtual bool saveGUI(const c8* filename, IGUIElement* start=0) = 0;
+	virtual bool saveGUI(io::IWriteFile* file, IGUIElement* start=0) = 0;
+	virtual bool loadGUI(const c8* filename, IGUIElement* parent=0) = 0;
+	virtual bool loadGUI(io::IReadFile* file, IGUIElement* parent=0) = 0;
+
+IGUIFontBitmap.h
+Changed signature (made const)
+	virtual EGUI_FONT_TYPE getType() const { return EGFT_BITMAP; }
+
+IGUIFont.h
+Changed signature (made const)
+	virtual EGUI_FONT_TYPE getType() const { return EGFT_CUSTOM; }
+
+IGUISkin.h
+Changed signature (added param)
+	virtual IGUIFont* getFont(EGUI_DEFAULT_FONT which=EGDF_DEFAULT) = 0;
+	virtual void setFont(IGUIFont* font, EGUI_DEFAULT_FONT which=EGDF_DEFAULT) = 0;
+Changed signature (made const)
+	virtual EGUI_SKIN_TYPE getType() const { return EGST_UNKNOWN; };
+
+IImage.h
+Changed signature (made const)
+	virtual const core::dimension2d<s32>& getDimension() const = 0;
+	virtual u32 getRedMask() const = 0;
+	virtual u32 getGreenMask() const = 0;
+	virtual u32 getBlueMask() const = 0;
+	virtual u32 getAlphaMask() const = 0;
+Changed signature (changed return type, made const)
+	virtual u32 getBitsPerPixel() const = 0;
+	virtual u32 getBytesPerPixel() const = 0;
+	virtual u32 getImageDataSizeInBytes() const = 0;
+	virtual u32 getImageDataSizeInPixels() const = 0;
+Changed signature (changed param type, made const)
+	virtual SColor getPixel(u32 x, u32 y) const = 0;
+
+IMeshCache.h
+Changed signature (const param)
+	virtual void removeMesh(const IAnimatedMesh* const mesh) = 0;
+Changed signature (const param, made const)
+	virtual s32 getMeshIndex(const IAnimatedMesh* const mesh) const = 0;
+	virtual const c8* getMeshFilename(const IAnimatedMesh* const mesh) const = 0;
+	virtual const c8* getMeshFilename(const IMesh* const mesh) const = 0;
+Changed signature (changed return type, made const)
+	virtual u32 getMeshCount() const = 0;
+Changed signature (changed param type)
+	virtual IAnimatedMesh* getMeshByIndex(u32 index) = 0;
+Changed signature (made const)
+	virtual const c8* getMeshFilename(u32 index) const = 0;
+
+IParticleAffector.h
+Changed signature (made const)
+	virtual E_PARTICLE_AFFECTOR_TYPE getType() const = 0;
+
+IParticleEmitter.h
+Changed signature (made const)
+	virtual E_PARTICLE_EMITTER_TYPE getType() const = 0;
+
+irrString.h
+Changed signature (const param)
+	string(const double number);
+Changed signature (changed return type)
+	string<T>& operator += (T c);
+	string<T>& operator += (const string<T>& other);
+Changed signature (changed return type, const param)
+	string<T>& operator += (const T* const c);
+	string<T>& operator += (const int i);
+	string<T>& operator += (const double i);
+
+ISceneManager.h
+Changed signature (added param)
+	virtual ITerrainSceneNode* addTerrainSceneNode(
+		const c8* heightMapFileName,
+		ISceneNode* parent=0, s32 id=-1,
+		const core::vector3df& position = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& rotation = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& scale = core::vector3df(1.0f,1.0f,1.0f),
+		video::SColor vertexColor = video::SColor(255,255,255,255),
+		s32 maxLOD=5, E_TERRAIN_PATCH_SIZE patchSize=ETPS_17, s32 smoothFactor=0,
+		bool addAlsoIfHeightmapEmpty = false) = 0;
+	virtual ITerrainSceneNode* addTerrainSceneNode(
+		io::IReadFile* heightMapFile,
+		ISceneNode* parent=0, s32 id=-1,
+		const core::vector3df& position = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& rotation = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& scale = core::vector3df(1.0f,1.0f,1.0f),
+		video::SColor vertexColor = video::SColor(255,255,255,255),
+		s32 maxLOD=5, E_TERRAIN_PATCH_SIZE patchSize=ETPS_17, s32 smoothFactor=0,
+		bool addAlsoIfHeightmapEmpty = false) = 0;
+	virtual ISceneManager* createNewSceneManager(bool cloneContent=false) = 0;
+
+ISceneNodeAnimator.h
+Changed signature (made const)
+	virtual ESCENE_NODE_ANIMATOR_TYPE getType() const
+
+ITexture.h
+Changed signature (made const)
+	virtual bool hasMipMaps() const
+
+IVideoDriver.h
+Changed signature (reference param)
+	virtual void draw3DBox(const core::aabbox3d<f32>& box,
+		SColor color = SColor(255,255,255,255)) = 0;
+Changed signature (added defaults for param)
+	virtual void draw2DImage(video::ITexture* texture,
+			const core::position2d<s32>& pos,
+			const core::array<core::rect<s32> >& sourceRects,
+			const core::array<s32>& indices,
+			s32 kerningWidth=0,
+			const core::rect<s32>* clipRect=0,
+			SColor color=SColor(255,255,255,255),
+			bool useAlphaChannelOfTexture=false) = 0;
+Changed signature (changed return type)
+	virtual const SExposedVideoData& getExposedVideoData() = 0;
+
+line3d.h
+Changed signature (changed return type)
+	T getLength() const
+
+matrix4.h
+Changed type to template class
+	template <class T> class CMatrix4
+	typedef CMatrix4<f32> matrix4;
+Changed signature (changed return type)
+	T& operator()(const s32 row, const s32 col);
+	const T& operator()(const s32 row, const s32 col) const
+	T& operator[](u32 index);
+	const T& operator[](u32 index) const
+Changed signature (changed param type)
+	inline CMatrix4<T>& operator=(const T& scalar);
+	const T* pointer() const
+	T* pointer();
+	CMatrix4<T> operator*(const T& scalar) const;
+	CMatrix4<T>& operator*=(const T& scalar);
+	void transformVect(T *out,const core::vector3df &in) const;
+	void rotateVect(T *out,const core::vector3df &in) const;
+	void multiplyWith1x4Matrix(T* matrix) const;
+	CMatrix4<T> interpolate(const core::CMatrix4<T>& b, f32 time) const;
+
+plane3d.h
+Renamed method (from existsInterSection)
+	bool existsIntersection(const plane3d<T>& other) const
+
+quaternion.h
+Changed signature (unconst param)
+	void slerp( quaternion q1, quaternion q2, f32 interpolate );
+
+SExposedVideoData.h
+Removed public member (replaced by X11Display and X11Window)
+ 	OpenGLLinux.Window;
+
+SIrrCreationParameters.h
+Changed public member (changed type for 64bit system support)
+	void* WindowId;
+
+triangle3d.h
+Changed method to private
+	bool isOnSameSide(const vector3d<T>& p1, const vector3d<T>& p2,
+		const vector3d<T>& a, const vector3d<T>& b) const
+
+vector2d.h
+Changed signature (changed return value)
+	T getLength() const
+	T getDistanceFrom(const vector2d<T>& other) const
+
+vector3d.h
+Changed signature (changed return value)
+	T getDistanceFrom(const vector3d<T>& other) const
+
