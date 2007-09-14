@@ -101,9 +101,14 @@ public:
 			E_MODULATE_FUNC modulate;
 			unpack_texureBlendFunc ( srcFact, dstFact, modulate, material.MaterialTypeParam );
 
-			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, getD3DBlend ( srcFact ) );
-			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, getD3DBlend ( dstFact ) );
+			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO) 
+				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+			else
+			{
+				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, getD3DBlend ( srcFact ) );
+				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, getD3DBlend ( dstFact ) );
+			}
 
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLOROP, getD3DModulate ( modulate ) );
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
