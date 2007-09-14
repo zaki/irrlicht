@@ -83,7 +83,7 @@ namespace gui
 		virtual void updateAbsolutePosition();
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
@@ -147,7 +147,7 @@ namespace gui
 		void recalculateItemWidth(s32 icon);
 
 		// get labels used for serialization
-		bool getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::stringc & useColorLabel, core::stringc & colorLabel);
+		bool getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::stringc & useColorLabel, core::stringc & colorLabel) const;
 
 		core::array< ListItem > Items;
 		s32 Selected;

@@ -392,7 +392,7 @@ bool CGUIMessageBox::OnEvent(SEvent event)
 }
 
 //! Writes attributes of the element.
-void CGUIMessageBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIMessageBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	CGUIWindow::serializeAttributes(out,options);
 

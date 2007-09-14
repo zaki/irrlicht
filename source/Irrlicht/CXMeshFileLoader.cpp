@@ -673,7 +673,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 			// read face indices
 			polygonfaces.set_used(fcnt);
 			u32 triangles = (fcnt-2);
-			mesh.Indices.set_used(mesh.Indices.size() + ((triangles*3)-3));
+			mesh.Indices.set_used(mesh.Indices.size() + ((triangles-1)*3));
 			mesh.IndexCountPerFace[k] = triangles * 3;
 
 			for (u32 f=0; f<fcnt; ++f)

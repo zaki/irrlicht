@@ -413,21 +413,21 @@ bool CGUIButton::isDrawingBorder()
 }
 
 //! Writes attributes of the element.
-void CGUIButton::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIButton::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 
 	IGUIButton::serializeAttributes(out,options);
 
-	out->addBool		("PushButton",		IsPushButton );
+	out->addBool	("PushButton",		IsPushButton );
 	if (IsPushButton)
-		out->addBool	("Pressed",			Pressed);
+		out->addBool("Pressed",		Pressed);
 
-	out->addTexture ("Image",			Image);
+	out->addTexture ("Image",		Image);
 	out->addRect	("ImageRect",		ImageRect);
 	out->addTexture	("PressedImage",	PressedImage);
-	out->addRect	("PressedImageRect",PressedImageRect);
+	out->addRect	("PressedImageRect",	PressedImageRect);
 
-	out->addBool	("Border",	Border);
+	out->addBool	("Border",		Border);
 	out->addBool	("UseAlphaChannel",	UseAlphaChannel);
 
 	//   out->addString  ("OverrideFont",	OverrideFont);

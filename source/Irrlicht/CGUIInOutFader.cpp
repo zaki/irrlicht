@@ -161,7 +161,7 @@ void CGUIInOutFader::fadeOut(u32 time)
 }
 
 //! Writes attributes of the element.
-void CGUIInOutFader::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIInOutFader::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUIInOutFader::serializeAttributes(out,options);
 

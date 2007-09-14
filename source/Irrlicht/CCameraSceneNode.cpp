@@ -274,7 +274,7 @@ void CCameraSceneNode::recalculateViewArea()
 
 
 //! Writes attributes of the scene node.
-void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	ISceneNode::serializeAttributes(out, options);
 

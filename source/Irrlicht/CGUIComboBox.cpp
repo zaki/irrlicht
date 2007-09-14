@@ -74,7 +74,7 @@ s32 CGUIComboBox::getItemCount()
 }
 
 //! returns string of an item. the idx may be a value from 0 to itemCount-1
-const wchar_t* CGUIComboBox::getItem(s32 idx)
+const wchar_t* CGUIComboBox::getItem(s32 idx) const
 {
 	if (idx < 0 || idx >= (s32)Items.size())
 		return 0;
@@ -95,7 +95,7 @@ void CGUIComboBox::removeItem(s32 idx)
 }
 
 //! Returns caption of this element.
-const wchar_t* CGUIComboBox::getText()
+const wchar_t* CGUIComboBox::getText() const
 {
 	return getItem(Selected);
 }
@@ -413,12 +413,12 @@ void CGUIComboBox::openCloseMenu()
 }
 
 //! Writes attributes of the element.
-void CGUIComboBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIComboBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUIComboBox::serializeAttributes(out,options);
 
-	out->addInt		("Selected",		Selected );
-	out->addArray	("Items",			Items);
+	out->addInt	("Selected",	Selected );
+	out->addArray	("Items",	Items);
 }
 
 //! Reads attributes of the element

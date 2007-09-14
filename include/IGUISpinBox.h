@@ -43,10 +43,10 @@ namespace gui
 		virtual void setRange(f32 min, f32 max) = 0;
 
 		//! get the minimum value which can be used in the spinbox
-		virtual f32 getMin() = 0;
+		virtual f32 getMin() const = 0;
 
 		//! get the maximum value which can be used in the spinbox
-		virtual f32 getMax() = 0;
+		virtual f32 getMax() const = 0;
 
 		//! Step size by which values are changed when pressing the spinbuttons
 		/** The step size also determines the number of decimal places to display
@@ -58,7 +58,7 @@ namespace gui
 		virtual void setDecimalPlaces(s32 places) = 0;
 
 		//! get the current step size
-		virtual f32 getStepSize() = 0;
+		virtual f32 getStepSize() const = 0;
 	};
 } // end namespace gui
 } // end namespace irr

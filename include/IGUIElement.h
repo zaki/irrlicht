@@ -578,7 +578,7 @@ public:
 
 
 	//! Returns caption of this element.
-	virtual const wchar_t* getText()
+	virtual const wchar_t* getText() const
 	{
 		return Text.c_str();
 	}
@@ -789,7 +789,7 @@ public:
 	//! Writes attributes of the scene node.
 	//! Implement this to expose the attributes of your scene node for
 	//! scripting languages, editors, debuggers or xml serialization purposes.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 	{
 		out->addInt("Id", ID );
 		out->addString("Caption", getText());

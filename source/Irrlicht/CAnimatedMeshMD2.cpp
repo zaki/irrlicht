@@ -319,7 +319,7 @@ CAnimatedMeshMD2::~CAnimatedMeshMD2()
 
 
 //! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
-s32 CAnimatedMeshMD2::getFrameCount()
+u32 CAnimatedMeshMD2::getFrameCount() const
 {
 	return FrameCount<<MD2_FRAME_SHIFT;
 }

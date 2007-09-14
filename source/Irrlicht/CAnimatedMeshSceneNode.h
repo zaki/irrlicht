@@ -112,7 +112,7 @@ namespace scene
 		virtual void setReadOnlyMaterials(bool readonly);
 
 		//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-		virtual bool isReadOnlyMaterials();
+		virtual bool isReadOnlyMaterials() const;
 
 		//! Sets a new mesh
 		virtual void setMesh(IAnimatedMesh* mesh);
@@ -121,7 +121,7 @@ namespace scene
 		virtual IAnimatedMesh* getMesh(void) { return Mesh; }
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
 		//! Reads attributes of the scene node.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);

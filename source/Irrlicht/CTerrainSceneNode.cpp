@@ -1269,8 +1269,8 @@ namespace scene
 
 
 	//! Writes attributes of the scene node.
-	void CTerrainSceneNode::serializeAttributes(io::IAttributes* out, 
-												io::SAttributeReadWriteOptions* options)
+	void CTerrainSceneNode::serializeAttributes(io::IAttributes* out,
+				io::SAttributeReadWriteOptions* options) const
 	{
 		ISceneNode::serializeAttributes(out, options);
 

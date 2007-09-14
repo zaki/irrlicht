@@ -126,7 +126,7 @@ bool CGUIImage::isAlphaChannelUsed() const
 
 
 //! Writes attributes of the element.
-void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIImage::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUIImage::serializeAttributes(out,options);
 

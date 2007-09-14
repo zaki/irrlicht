@@ -815,7 +815,7 @@ void CGUISkin::draw2DRectangle(IGUIElement* element,
 //! Writes attributes of the object.
 //! Implement this to expose the attributes of your scene node animator for 
 //! scripting languages, editors, debuggers or xml serialization purposes.
-void CGUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) 
+void CGUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	u32 i;
 	for (i=0; i<EGDC_COUNT; ++i)

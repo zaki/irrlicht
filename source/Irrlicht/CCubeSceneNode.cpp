@@ -132,7 +132,7 @@ u32 CCubeSceneNode::getMaterialCount()
 
 
 //! Writes attributes of the scene node.
-void CCubeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CCubeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	ISceneNode::serializeAttributes(out, options);
 

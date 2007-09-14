@@ -33,7 +33,7 @@ namespace scene
 		bool loadFile(io::IReadFile* file);
 
 		//! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
-		virtual s32 getFrameCount();
+		virtual u32 getFrameCount() const;
 
 		//! returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail. Note, that some Meshes will ignore the detail level.
 		virtual IMesh* getMesh(s32 frameInMs, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1);

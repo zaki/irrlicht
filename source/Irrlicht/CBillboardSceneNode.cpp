@@ -171,7 +171,7 @@ const core::dimension2d<f32>& CBillboardSceneNode::getSize()
 
 
 //! Writes attributes of the scene node.
-void CBillboardSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CBillboardSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	IBillboardSceneNode::serializeAttributes(out, options);
 

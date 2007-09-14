@@ -538,7 +538,7 @@ bool CGUIEnvironment::postEventFromUser(SEvent event)
 
 
 //! returns the current gui skin
-IGUISkin* CGUIEnvironment::getSkin()
+IGUISkin* CGUIEnvironment::getSkin() const
 {
 	return CurrentSkin;
 }
@@ -803,7 +803,7 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 
 	// all gui elements must have at least one attribute
 	// if they have nothing then we ignore them.
-	if (attr->getAttributeCount() > 0)
+	if (attr->getAttributeCount() != 0)
 	{
 		if (node == this)
 		{
@@ -834,7 +834,7 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 	}
 
 	// write closing brace if required
-	if (attr->getAttributeCount() > 0)
+	if (attr->getAttributeCount() != 0)
 	{
 		writer->writeClosingTag(name);
 		writer->writeLineBreak();
@@ -847,7 +847,7 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 
 
 //! Writes attributes of the environment
-void CGUIEnvironment::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CGUIEnvironment::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	IGUISkin* skin = getSkin();
 

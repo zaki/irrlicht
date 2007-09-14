@@ -88,7 +88,7 @@ public:
 
 
 	//! Returns attribute count of the current XML node.
-	virtual int getAttributeCount() const
+	virtual unsigned int getAttributeCount() const
 	{
 		return Attributes.size();
 	}
@@ -97,7 +97,7 @@ public:
 	//! Returns name of an attribute.
 	virtual const char_type* getAttributeName(int idx) const
 	{
-		if (idx < 0 || idx >= (int)Attributes.size())
+		if ((u32)idx >= Attributes.size())
 			return 0;
 
 		return Attributes[idx].Name.c_str();
@@ -107,7 +107,7 @@ public:
 	//! Returns the value of an attribute. 
 	virtual const char_type* getAttributeValue(int idx) const
 	{
-		if (idx < 0 || idx >= (int)Attributes.size())
+		if ((unsigned int)idx >= Attributes.size())
 			return 0;
 
 		return Attributes[idx].Value.c_str();

@@ -38,7 +38,7 @@ public:
 	virtual void setReadOnlyMaterials(bool readonly) = 0;
 
 	//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-	virtual bool isReadOnlyMaterials() = 0;
+	virtual bool isReadOnlyMaterials() const = 0;
 };
 
 } // end namespace scene

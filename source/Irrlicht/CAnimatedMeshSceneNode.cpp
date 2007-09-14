@@ -724,14 +724,14 @@ void CAnimatedMeshSceneNode::setReadOnlyMaterials(bool readonly)
 
 
 //! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-bool CAnimatedMeshSceneNode::isReadOnlyMaterials()
+bool CAnimatedMeshSceneNode::isReadOnlyMaterials() const
 {
 	return ReadOnlyMaterials;
 }
 
 
 //! Writes attributes of the scene node.
-void CAnimatedMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CAnimatedMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	IAnimatedMeshSceneNode::serializeAttributes(out, options);
 

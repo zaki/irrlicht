@@ -274,7 +274,7 @@ void CMeshSceneNode::copyMaterials()
 
 
 //! Writes attributes of the scene node.
-void CMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	IMeshSceneNode::serializeAttributes(out, options);
 
@@ -313,7 +313,7 @@ void CMeshSceneNode::setReadOnlyMaterials(bool readonly)
 }
 
 //! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-bool CMeshSceneNode::isReadOnlyMaterials()
+bool CMeshSceneNode::isReadOnlyMaterials() const
 {
 	return ReadOnlyMaterials;
 }

@@ -289,7 +289,7 @@ namespace io
 		/** This is usually
 		non null if the current node is EXN_ELEMENT, and the element has attributes.
 		\return Returns amount of attributes of this xml node. */
-		virtual int getAttributeCount() const = 0;
+		virtual unsigned int getAttributeCount() const = 0;
 
 		//! Returns name of an attribute. 
 		/** \param idx: Zero based index, should be something between 0 and getAttributeCount()-1.

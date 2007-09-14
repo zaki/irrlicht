@@ -72,7 +72,7 @@ s32 CParticlePointEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& out
 
 
 //! Writes attributes of the object.
-void CParticlePointEmitter::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CParticlePointEmitter::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addVector3d("Direction", Direction);
 	out->addInt("MinParticlesPerSecond", MinParticlesPerSecond);

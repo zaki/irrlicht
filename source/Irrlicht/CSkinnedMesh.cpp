@@ -47,7 +47,7 @@ CSkinnedMesh::~CSkinnedMesh()
 
 //! returns the amount of frames in milliseconds.
 //! If the amount is 1, it is a static (=non animated) mesh.
-s32 CSkinnedMesh::getFrameCount()
+u32 CSkinnedMesh::getFrameCount() const
 {
 	return core::floor32(AnimationFrames);
 }

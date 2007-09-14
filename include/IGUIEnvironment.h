@@ -108,7 +108,7 @@ public:
 	virtual void setUserEventReceiver(IEventReceiver* evr) = 0;
 
 	//! Returns pointer to the current gui skin.
-	virtual IGUISkin* getSkin() = 0;
+	virtual IGUISkin* getSkin() const = 0;
 
 	//! Sets a new GUI Skin
 	/** You can use this to change the appearance of the whole GUI Environment. You
@@ -407,7 +407,7 @@ public:
 	virtual bool loadGUI(io::IReadFile* file, IGUIElement* parent=0) = 0;	
 
 	//! Writes attributes of the gui environment
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)=0;
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const =0;
 
 	//! Reads attributes of the gui environment
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)=0;

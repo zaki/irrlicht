@@ -350,7 +350,7 @@ u32 COctTreeSceneNode::getMaterialCount()
 
 
 //! Writes attributes of the scene node.
-void COctTreeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void COctTreeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	ISceneNode::serializeAttributes(out, options);
 

@@ -35,7 +35,7 @@ namespace scene
 		virtual ~CSkinnedMesh();
 
 		//! returns the amount of frames. If the amount is 1, it is a static (=non animated) mesh.
-		virtual s32 getFrameCount();
+		virtual u32 getFrameCount() const;
 
 		//! returns the animated mesh based on a detail level (which is ignored)
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1);

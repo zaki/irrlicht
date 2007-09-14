@@ -55,12 +55,12 @@ public:
 	//! Writes attributes of the object.
 	//! Implement this to expose the attributes of your scene node animator for 
 	//! scripting languages, editors, debuggers or xml serialization purposes.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)	{}
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const {}
 
 	//! Reads attributes of the object.
 	//! Implement this to set the attributes of your scene node animator for 
 	//! scripting languages, editors, debuggers or xml deserialization purposes.
-	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)	{}
+	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) {}
 
 };
 

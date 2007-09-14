@@ -573,7 +573,7 @@ namespace scene
 		//! Writes attributes of the scene node.
 		//! Implement this to expose the attributes of your scene node for
 		//! scripting languages, editors, debuggers or xml serialization purposes.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 		{
 			out->addString	("Name", Name.c_str());
 			out->addInt	("Id", ID );

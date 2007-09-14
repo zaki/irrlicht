@@ -146,7 +146,7 @@ void CGUIModalScreen::updateAbsolutePosition()
 }
 
 //! Writes attributes of the element.
-void CGUIModalScreen::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIModalScreen::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	// these don't get serialized, their status is added to their children.
 }
