@@ -176,7 +176,7 @@ bool CGUIFileOpenDialog::OnEvent(SEvent event)
 
 		case EGET_LISTBOX_SELECTED_AGAIN:
 			{
-				s32 selected = FileBox->getSelected();
+				const s32 selected = FileBox->getSelected();
 				if (FileList && FileSystem)
 				{
 					if (FileList->isDirectory(selected))

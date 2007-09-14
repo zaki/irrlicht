@@ -671,6 +671,7 @@ bool CIrrDeviceLinux::run()
 
 		while (XPending(display) > 0 && !Close)
 		{
+			XEvent event;
 			XNextEvent(display, &event);
 
 			switch (event.type)
@@ -773,16 +774,16 @@ bool CIrrDeviceLinux::run()
 				break;
 
 			case KeyRelease:
-				if (!AutorepeatSupport)
+				if (0 == AutorepeatSupport)
 				{
 					// check for Autorepeat manually
 					// We'll do the same as Windows does: Only send KeyPressed
 					// So every KeyRelease is a real release
 					XEvent next_event;
 					XPeekEvent (event.xkey.display, &next_event);
-					if (next_event.type == KeyPress &&
-							next_event.xkey.keycode == event.xkey.keycode &&
-							next_event.xkey.time == event.xkey.time)
+					if ((next_event.type == KeyPress) &&
+						(next_event.xkey.keycode == event.xkey.keycode) &&
+						(next_event.xkey.time == event.xkey.time))
 					{
 						/* Ignore the key release event */
 						break;

@@ -294,7 +294,6 @@ namespace irr
 		Window window;
 		XSetWindowAttributes attributes;
 		XSizeHints* StdHints;
-		XEvent event;
 		XImage* SoftwareImage;
 		#ifdef _IRR_LINUX_X11_VIDMODE_
 		XF86VidModeModeInfo oldVideoMode;

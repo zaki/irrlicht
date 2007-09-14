@@ -378,16 +378,14 @@ bool CGUIListBox::OnEvent(SEvent event)
 			}
 
 			case EMIE_LMOUSE_LEFT_UP:
-
-				if (!isPointInside(p))
-				{
-					Selecting = false;
-					return true;
-				}
-
+			{
 				Selecting = false;
-				selectNew(event.MouseInput.Y);
+
+				if (isPointInside(p))
+					selectNew(event.MouseInput.Y);
+
 				return true;
+			}
 
 			case EMIE_MOUSE_MOVED:
 				if (Selecting || MoveOverSelect)
@@ -420,11 +418,11 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 	if (ItemHeight!=0)
 		Selected = ((ypos - AbsoluteRect.UpperLeftCorner.Y - 1) + ScrollBar->getPos()) / ItemHeight;
 
-	if (Selected >= (s32)Items.size())
-		Selected = Items.size() - 1;
-	else
 	if (Selected<0)
 		Selected = 0;
+	else
+	if ((u32)Selected >= Items.size())
+		Selected = Items.size() - 1;
 
 	recalculateScrollPos();
 
