@@ -431,8 +431,8 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 
 	IGUIStaticText::deserializeAttributes(in,options);
 
-	Border = in->getAttributeAsBool	("Border");
-	OverrideColor = in->getAttributeAsBool("OverrideColor");
+	Border = in->getAttributeAsBool("Border");
+	OverrideColor = in->getAttributeAsColor("OverrideColor");
 
 	enableOverrideColor(in->getAttributeAsBool("OverrideColorEnabled"));
 	setWordWrap(in->getAttributeAsBool("WordWrap"));
@@ -449,3 +449,4 @@ void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+
