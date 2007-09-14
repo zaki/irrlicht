@@ -819,7 +819,7 @@ public:
 		setEnabled(in->getAttributeAsBool("Enabled"));
 		IsTabStop = in->getAttributeAsBool("TabStop");
 		IsTabGroup = in->getAttributeAsBool("TabGroup");
-		TabOrder = in->getAttributeAsBool("TabOrder");
+		TabOrder = in->getAttributeAsInt("TabOrder");
 
 		core::position2di p = in->getAttributeAsPosition2d("MaxSize");
 		setMaxSize(core::dimension2di(p.X,p.Y));
