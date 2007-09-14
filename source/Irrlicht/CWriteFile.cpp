@@ -41,7 +41,7 @@ inline bool CWriteFile::isOpen() const
 
 
 //! returns how much was read
-s32 CWriteFile::write(const void* buffer, s32 sizeToWrite)
+s32 CWriteFile::write(const void* buffer, u32 sizeToWrite)
 {
 	if (!isOpen())
 		return 0;
@@ -54,7 +54,7 @@ s32 CWriteFile::write(const void* buffer, s32 sizeToWrite)
 //! changes position in file, returns true if successful
 //! if relativeMovement==true, the pos is changed relative to current pos,
 //! otherwise from begin of file
-bool CWriteFile::seek(s32 finalPos, bool relativeMovement)
+bool CWriteFile::seek(long finalPos, bool relativeMovement)
 {
 	if (!isOpen())
 		return false;
@@ -65,7 +65,7 @@ bool CWriteFile::seek(s32 finalPos, bool relativeMovement)
 
 
 //! returns where in the file we are.
-s32 CWriteFile::getPos()
+long CWriteFile::getPos()
 {
 	return ftell(File);
 }
@@ -96,7 +96,7 @@ void CWriteFile::openFile(bool append)
 
 
 //! returns name of file
-const c8* CWriteFile::getFileName()
+const c8* CWriteFile::getFileName() const
 {
 	return Filename.c_str();
 }

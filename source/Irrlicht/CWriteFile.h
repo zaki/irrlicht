@@ -28,16 +28,16 @@ namespace io
 		virtual ~CWriteFile();
 
 		//! Reads an amount of bytes from the file.
-		virtual s32 write(const void* buffer, s32 sizeToWrite);
+		virtual s32 write(const void* buffer, u32 sizeToWrite);
 
 		//! Changes position in file, returns true if successful.
-		virtual bool seek(s32 finalPos, bool relativeMovement = false);
+		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! Returns the current position in the file.
-		virtual s32 getPos();
+		virtual long getPos();
 
 		//! Returns name of file.
-		virtual const c8* getFileName();
+		virtual const c8* getFileName() const;
 
 		//! returns if file is open
 		bool isOpen() const;
@@ -49,7 +49,7 @@ namespace io
 
 		core::stringc Filename;
 		FILE* File;
-		s32 FileSize;
+		long FileSize;
 	};
 
 } // end namespace io

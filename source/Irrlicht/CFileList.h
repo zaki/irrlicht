@@ -25,23 +25,20 @@ public:
 	//! constructor
 	CFileList();
 
-	//! destructor
-	virtual ~CFileList();
-
 	//! Returns the amount of files in the filelist.
 	//! \return
 	//! Returns the amount of files and directories in the file list.
-	virtual s32 getFileCount();
+	virtual u32 getFileCount() const;
 
 	//! Gets the name of a file in the list, based on an index.
 	//! \param index is the zero based index of the file which name should
 	//!   be returned. The index has to be smaller than the amount getFileCount() returns.
 	//! \return
 	//! Returns the file name of the file. Returns 0, if an error occured.
-	virtual const c8* getFileName(s32 index);
+	virtual const c8* getFileName(u32 index) const;
 
 	//! Gets the full name of a file in the list, path included, based on an index.
-	virtual const c8* getFullFileName(s32 index);
+	virtual const c8* getFullFileName(u32 index);
 
 	//! Returns of the file is a directory
 	//! \param index is the zero based index of the file which name should
@@ -49,7 +46,7 @@ public:
 	//! \return
 	//! Returns true, if the file is a directory, and false, if it is not.
 	//!  If an error occurs, the result is undefined.
-	virtual bool isDirectory(s32 index);
+	virtual bool isDirectory(u32 index) const;
 
 private:
 
@@ -57,7 +54,7 @@ private:
 	{
 		core::stringc Name;
 		core::stringc FullName;
-		s32 Size;
+		long Size;
 		bool isDirectory;
 
 		bool operator <(const struct FileEntry& other) const

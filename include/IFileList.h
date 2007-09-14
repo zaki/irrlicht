@@ -23,7 +23,7 @@ public:
 	//! Returns the amount of files in the filelist.
 	//! \return
 	//! Returns the amount of files and directories in the file list.
-	virtual s32 getFileCount() = 0;
+	virtual u32 getFileCount() const = 0;
 
 	//! Gets the name of a file in the list, based on an index.
 	//! The path is not included in this name. Use getFullFileName for this.
@@ -31,14 +31,14 @@ public:
 	//!   be returned. The index has to be smaller than the amount getFileCount() returns.
 	//! \return
 	//! Returns the file name of the file. Returns 0, if an error occured.
-	virtual const c8* getFileName(s32 index) = 0;
+	virtual const c8* getFileName(u32 index) const = 0;
 
 	//! Gets the full name of a file in the list, path included, based on an index.
 	//! \param index is the zero based index of the file which name should
 	//!   be returned. The index has to be smaller than the amount getFileCount() returns.
 	//! \return
 	//! Returns the file name of the file. Returns 0, if an error occured.
-	virtual const c8* getFullFileName(s32 index) = 0;
+	virtual const c8* getFullFileName(u32 index) = 0;
 
 	//! Returns of the file is a directory
 	//! \param
@@ -47,7 +47,7 @@ public:
 	//! \return
 	//! Returns true, if the file is a directory, and false, if it is not.
 	//!  If an error occurs, the result is undefined.
-	virtual bool isDirectory(s32 index) = 0;
+	virtual bool isDirectory(u32 index) const = 0;
 };
 
 } // end namespace irr
