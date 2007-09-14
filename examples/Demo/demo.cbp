@@ -24,33 +24,33 @@
 		<Linker>
 			<Add option="../../lib/Win32-gcc/libIrrlicht.a"/>
 		</Linker>
-		<Unit filename="..\..\..\irrlicht-svnnew\irrlicht\examples\Demo\CDemo.cpp">
+		<Unit filename="CDemo.cpp">
 			<Option compilerVar="CPP"/>
 			<Option target="default"/>
 		</Unit>
-		<Unit filename="..\..\..\irrlicht-svnnew\irrlicht\examples\Demo\CDemo.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="..\..\..\irrlicht-svnnew\irrlicht\examples\Demo\CMainMenu.cpp">
-			<Option compilerVar="CPP"/>
-			<Option target="default"/>
-		</Unit>
-		<Unit filename="..\..\..\irrlicht-svnnew\irrlicht\examples\Demo\CMainMenu.h">
+		<Unit filename="CDemo.h">
 			<Option compilerVar="CPP"/>
 			<Option compile="0"/>
 			<Option link="0"/>
 			<Option target="default"/>
 		</Unit>
-		<Unit filename="..\..\..\irrlicht-svnnew\irrlicht\examples\Demo\resource.h">
+		<Unit filename="Demo\CMainMenu.cpp">
+			<Option compilerVar="CPP"/>
+			<Option target="default"/>
+		</Unit>
+		<Unit filename="CMainMenu.h">
 			<Option compilerVar="CPP"/>
 			<Option compile="0"/>
 			<Option link="0"/>
 			<Option target="default"/>
 		</Unit>
-		<Unit filename="..\..\..\irrlicht-svnnew\irrlicht\examples\Demo\resscript.rc">
+		<Unit filename="resource.h">
+			<Option compilerVar="CPP"/>
+			<Option compile="0"/>
+			<Option link="0"/>
+			<Option target="default"/>
+		</Unit>
+		<Unit filename="resscript.rc">
 			<Option compilerVar="CPP"/>
 			<Option objectName="irrlicht-svnnew\irrlicht\examples\Demo\resscript.res"/>
 			<Option target="default"/>
