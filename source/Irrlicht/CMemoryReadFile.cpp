@@ -11,7 +11,7 @@ namespace io
 {
 
 
-CMemoryReadFile::CMemoryReadFile(void* memory, s32 len, const c8* fileName, bool d)
+CMemoryReadFile::CMemoryReadFile(void* memory, long len, const c8* fileName, bool d)
 : Buffer(memory), Len(len), Pos(0), deleteMemoryWhenDropped(d)
 {
 	#ifdef _DEBUG
@@ -34,27 +34,26 @@ CMemoryReadFile::~CMemoryReadFile()
 //! returns how much was read
 s32 CMemoryReadFile::read(void* buffer, u32 sizeToRead)
 {
-	s32 amount = sizeToRead;
+	s32 amount = static_cast<s32>(sizeToRead);
 	if (Pos + amount > Len)
 		amount -= Pos + amount - Len;
 
-	if (amount < 0)
-		amount = 0;
+	if (amount <= 0)
+		return 0;
 
 	c8* p = (c8*)Buffer;
 	memcpy(buffer, p + Pos, amount);
 	
-	Pos += static_cast<u32> ( amount );
+	Pos += amount;
 
 	return amount;
 }
 
 
-
 //! changes position in file, returns true if successful
 //! if relativeMovement==true, the pos is changed relative to current pos,
 //! otherwise from begin of file
-bool CMemoryReadFile::seek(s32 finalPos, bool relativeMovement)
+bool CMemoryReadFile::seek(long finalPos, bool relativeMovement)
 {
 	if (relativeMovement)
 	{
@@ -65,10 +64,10 @@ bool CMemoryReadFile::seek(s32 finalPos, bool relativeMovement)
 	}
 	else
 	{
-		if ( (unsigned) finalPos > Len)
+		if (finalPos > Len)
 			return false;
 		
-        Pos = finalPos;
+		Pos = finalPos;
 	}
 
 	return true;
@@ -77,7 +76,7 @@ bool CMemoryReadFile::seek(s32 finalPos, bool relativeMovement)
 
 
 //! returns size of file
-s32 CMemoryReadFile::getSize()
+long CMemoryReadFile::getSize()
 {
 	return Len;
 }
@@ -85,7 +84,7 @@ s32 CMemoryReadFile::getSize()
 
 
 //! returns where in the file we are.
-s32 CMemoryReadFile::getPos()
+long CMemoryReadFile::getPos()
 {
 	return Pos;
 }
@@ -93,14 +92,14 @@ s32 CMemoryReadFile::getPos()
 
 
 //! returns name of file
-const c8* CMemoryReadFile::getFileName()
+const c8* CMemoryReadFile::getFileName() const
 {
 	return Filename.c_str();
 }
 
 
 
-IReadFile* createMemoryReadFile(void* memory, s32 size, const c8* fileName, bool deleteMemoryWhenDropped)
+IReadFile* createMemoryReadFile(void* memory, long size, const c8* fileName, bool deleteMemoryWhenDropped)
 {
 	CMemoryReadFile* file = new CMemoryReadFile(memory, size, fileName, deleteMemoryWhenDropped);
 	return file;

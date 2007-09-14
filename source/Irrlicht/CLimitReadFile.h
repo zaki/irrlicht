@@ -25,7 +25,7 @@ namespace io
 	{
 	public:
 
-		CLimitReadFile(IReadFile* alreadyOpenedFile, s32 areaSize, const c8* name);
+		CLimitReadFile(IReadFile* alreadyOpenedFile, long areaSize, const c8* name);
 
 		virtual ~CLimitReadFile();
 
@@ -35,25 +35,25 @@ namespace io
 		//! changes position in file, returns true if successful
 		//! if relativeMovement==true, the pos is changed relative to current pos,
 		//! otherwise from begin of file
-		virtual bool seek(s32 finalPos, bool relativeMovement = false);
+		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! returns size of file
-		virtual s32 getSize();
+		virtual long getSize();
 
 		//! returns where in the file we are.
-		virtual s32 getPos();
+		virtual long getPos();
 
 		//! returns name of file
-		virtual const c8* getFileName();
+		virtual const c8* getFileName() const;
 
 	private:
 
 		void init();
 
 		core::stringc Filename;
-		s32 AreaSize;
-		s32 AreaStart;
-		s32 AreaEnd;
+		long AreaSize;
+		long AreaStart;
+		long AreaEnd;
 		IReadFile* File;
 	};
 

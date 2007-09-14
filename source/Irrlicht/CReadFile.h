@@ -33,10 +33,10 @@ namespace io
 		//! changes position in file, returns true if successful
 		//! if relativeMovement==true, the pos is changed relative to current pos,
 		//! otherwise from begin of file
-		virtual bool seek(s32 finalPos, bool relativeMovement = false);
+		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! returns size of file
-		virtual s32 getSize();
+		virtual long getSize();
 
 		//! returns if file is open
 		virtual bool isOpen() const
@@ -45,10 +45,10 @@ namespace io
 		}
 
 		//! returns where in the file we are.
-		virtual s32 getPos();
+		virtual long getPos();
 
 		//! returns name of file
-		virtual const c8* getFileName();
+		virtual const c8* getFileName() const;
 
 	private:
 
@@ -57,7 +57,7 @@ namespace io
 
 		core::stringc Filename;
 		FILE* File;
-		s32 FileSize;
+		long FileSize;
 	};
 
 } // end namespace io

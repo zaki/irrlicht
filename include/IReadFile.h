@@ -31,27 +31,27 @@ namespace io
 		//! changed relative to current position. Otherwise the position is changed 
 		//! from beginning of file.
 		//! \return Returns true if successful, otherwise false.
-		virtual bool seek(s32 finalPos, bool relativeMovement = false) = 0;
+		virtual bool seek(long finalPos, bool relativeMovement = false) = 0;
 
 		//! Returns size of file.
 		//! \return Returns the size of the file in bytes.
-		virtual s32 getSize() = 0;
+		virtual long getSize() = 0;
 
 		//! Returns the current position in the file.
 		//! \return Returns the current position in the file in bytes.
-		virtual s32 getPos() = 0;
+		virtual long getPos() = 0;
 
 		//! Returns name of file.
 		//! \return Returns the file name as zero terminated character string.
-		virtual const c8* getFileName() = 0;
+		virtual const c8* getFileName() const = 0;
 	};
 
 	//! Internal function, please do not use.
 	IReadFile* createReadFile(const c8* fileName);
 	//! Internal function, please do not use.
-	IReadFile* createLimitReadFile(const c8* fileName, IReadFile* alreadyOpenedFile, s32 areaSize);
+	IReadFile* createLimitReadFile(const c8* fileName, IReadFile* alreadyOpenedFile, long areaSize);
 	//! Internal function, please do not use.
-	IReadFile* createMemoryReadFile(void* memory, s32 size, const c8* fileName, bool deleteMemoryWhenDropped);
+	IReadFile* createMemoryReadFile(void* memory, long size, const c8* fileName, bool deleteMemoryWhenDropped);
 
 } // end namespace io
 } // end namespace irr

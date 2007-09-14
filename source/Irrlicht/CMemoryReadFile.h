@@ -21,7 +21,7 @@ namespace io
 	{
 	public:
 
-		CMemoryReadFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped);
+		CMemoryReadFile(void* memory, long len, const c8* fileName, bool deleteMemoryWhenDropped);
 
 		virtual ~CMemoryReadFile();
 
@@ -31,23 +31,23 @@ namespace io
 		//! changes position in file, returns true if successful
 		//! if relativeMovement==true, the pos is changed relative to current pos,
 		//! otherwise from begin of file
-		virtual bool seek(s32 finalPos, bool relativeMovement = false);
+		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! returns size of file
-		virtual s32 getSize();
+		virtual long getSize();
 
 		//! returns where in the file we are.
-		virtual s32 getPos();
+		virtual long getPos();
 
 		//! returns name of file
-		virtual const c8* getFileName();
+		virtual const c8* getFileName() const;
 
 	private:
 
 		core::stringc Filename;
 		void *Buffer;
-		u32 Len;
-		u32 Pos;
+		long Len;
+		long Pos;
 		bool deleteMemoryWhenDropped;
 	};
 

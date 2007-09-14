@@ -21,9 +21,9 @@ namespace io
 
 		//! Reads an amount of bytes from the file.
 		//! \param buffer: Pointer to buffer of bytes to write.
-		//! \param sizeToWrite: Amount of bytes to wrtie to the file.
+		//! \param sizeToWrite: Amount of bytes to write to the file.
 		//! \return Returns how much bytes were written.
-		virtual s32 write(const void* buffer, s32 sizeToWrite) = 0;
+		virtual s32 write(const void* buffer, u32 sizeToWrite) = 0;
 
 		//! Changes position in file, returns true if successful.
 		//! \param finalPos: Destination position in the file.
@@ -31,15 +31,15 @@ namespace io
 		//! changed relative to current position. Otherwise the position is changed 
 		//! from begin of file.		
 		//! \return Returns true if successful, otherwise false.
-		virtual bool seek(s32 finalPos, bool relativeMovement = false) = 0;
+		virtual bool seek(long finalPos, bool relativeMovement = false) = 0;
 
 		//! Returns the current position in the file.
 		//! \return Returns the current position in the file in bytes.
-		virtual s32 getPos() = 0;
+		virtual long getPos() = 0;
 
 		//! Returns name of file.
 		//! \return Returns the file name as zero terminated character string.
-		virtual const c8* getFileName() = 0;
+		virtual const c8* getFileName() const = 0;
 	};
 
 	//! Internal function, please do not use.

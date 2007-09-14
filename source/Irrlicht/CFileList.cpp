@@ -31,7 +31,6 @@ namespace io
 
 CFileList::CFileList()
 {
-
 	#ifdef _DEBUG
 	setDebugName("CFileList");
 	#endif
@@ -131,30 +130,25 @@ CFileList::CFileList()
 }
 
 
-CFileList::~CFileList()
-{
-}
-
-
-s32 CFileList::getFileCount()
+u32 CFileList::getFileCount() const
 {
 	return Files.size();
 }
 
 
-const c8* CFileList::getFileName(s32 index)
+const c8* CFileList::getFileName(u32 index) const
 {
-	if (index < 0 || index > (s32)Files.size())
+	if (index < Files.size())
+		return Files[index].Name.c_str();
+	else
 		return 0;
-
-	return Files[index].Name.c_str();
 }
 
 
 //! Gets the full name of a file in the list, path included, based on an index.
-const c8* CFileList::getFullFileName(s32 index)
+const c8* CFileList::getFullFileName(u32 index)
 {
-	if (index < 0 || index > (s32)Files.size())
+	if (index >= Files.size())
 		return 0;
 
 	if (Files[index].FullName.size() < Files[index].Name.size())
@@ -172,13 +166,16 @@ const c8* CFileList::getFullFileName(s32 index)
 }
 
 
-bool CFileList::isDirectory(s32 index)
+bool CFileList::isDirectory(u32 index) const
 {
-	if (index < 0 || index > (s32)Files.size())
-		return false;
+	bool ret;
+	if (index >= Files.size())
+		ret = false;
+	else
+		ret = Files[index].isDirectory;
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return Files[index].isDirectory;
+	return ret;
 }
 
 } // end namespace irr

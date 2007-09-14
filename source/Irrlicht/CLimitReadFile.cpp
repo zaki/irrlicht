@@ -11,7 +11,7 @@ namespace io
 {
 
 
-CLimitReadFile::CLimitReadFile(IReadFile* alreadyOpenedFile, s32 areaSize, const c8* name)
+CLimitReadFile::CLimitReadFile(IReadFile* alreadyOpenedFile, long areaSize, const c8* name)
 : Filename(name), AreaSize(areaSize), AreaStart(0), AreaEnd(0), File(alreadyOpenedFile)
 {
 	#ifdef _DEBUG
@@ -47,12 +47,12 @@ CLimitReadFile::~CLimitReadFile()
 //! returns how much was read
 s32 CLimitReadFile::read(void* buffer, u32 sizeToRead)
 {
-	s32 pos = File->getPos();
+	long pos = File->getPos();
 
 	if (pos >= AreaEnd)
 		return 0;
 
-	if (pos + (s32)sizeToRead >= AreaEnd)
+	if (pos + sizeToRead >= AreaEnd)
 		sizeToRead = AreaEnd - pos;
 
 	return File->read(buffer, sizeToRead);
@@ -63,9 +63,9 @@ s32 CLimitReadFile::read(void* buffer, u32 sizeToRead)
 //! changes position in file, returns true if successful
 //! if relativeMovement==true, the pos is changed relative to current pos,
 //! otherwise from begin of file
-bool CLimitReadFile::seek(s32 finalPos, bool relativeMovement)
+bool CLimitReadFile::seek(long finalPos, bool relativeMovement)
 {
-	s32 pos = File->getPos();
+	long pos = File->getPos();
 
 	if (relativeMovement)
 	{
@@ -75,7 +75,7 @@ bool CLimitReadFile::seek(s32 finalPos, bool relativeMovement)
 	else
 	{
 		finalPos += AreaStart;
-		if ((s32)finalPos > AreaEnd)
+		if (finalPos > AreaEnd)
 			return false;
 	}
 
@@ -83,9 +83,8 @@ bool CLimitReadFile::seek(s32 finalPos, bool relativeMovement)
 }
 
 
-
 //! returns size of file
-s32 CLimitReadFile::getSize()
+long CLimitReadFile::getSize()
 {
 	return AreaSize;
 }
@@ -93,7 +92,7 @@ s32 CLimitReadFile::getSize()
 
 
 //! returns where in the file we are.
-s32 CLimitReadFile::getPos()
+long CLimitReadFile::getPos()
 {
 	return File->getPos() - AreaStart;
 }
@@ -101,13 +100,13 @@ s32 CLimitReadFile::getPos()
 
 
 //! returns name of file
-const c8* CLimitReadFile::getFileName()
+const c8* CLimitReadFile::getFileName() const
 {
 	return Filename.c_str();
 }
 
 
-IReadFile* createLimitReadFile(const c8* fileName, IReadFile* alreadyOpenedFile, s32 areaSize)
+IReadFile* createLimitReadFile(const c8* fileName, IReadFile* alreadyOpenedFile, long areaSize)
 {
 	return new CLimitReadFile(alreadyOpenedFile, areaSize, fileName);
 }
@@ -115,3 +114,4 @@ IReadFile* createLimitReadFile(const c8* fileName, IReadFile* alreadyOpenedFile,
 
 } // end namespace io
 } // end namespace irr
+
