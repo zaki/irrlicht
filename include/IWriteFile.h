@@ -19,7 +19,7 @@ namespace io
 
 		virtual ~IWriteFile() {};
 
-		//! Reads an amount of bytes from the file.
+		//! Writes an amount of bytes to the file.
 		//! \param buffer: Pointer to buffer of bytes to write.
 		//! \param sizeToWrite: Amount of bytes to write to the file.
 		//! \return Returns how much bytes were written.
