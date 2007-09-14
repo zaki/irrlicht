@@ -44,7 +44,7 @@ void CSceneNodeAnimatorFlyCircle::animateNode(ISceneNode* node, u32 timeMs)
 
 
 //! Writes attributes of the scene node animator.
-void CSceneNodeAnimatorFlyCircle::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CSceneNodeAnimatorFlyCircle::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addVector3d("Center", Center);
 	out->addFloat("Radius", Radius);

@@ -182,10 +182,10 @@ bool CGUICheckBox::isChecked()
 }
 
 //! Writes attributes of the element.
-void CGUICheckBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUICheckBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUICheckBox::serializeAttributes(out,options);
-	out->addBool	("Checked",			Checked );
+	out->addBool	("Checked",	Checked );
 }
 
 //! Reads attributes of the element

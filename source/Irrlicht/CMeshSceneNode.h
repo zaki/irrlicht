@@ -46,7 +46,7 @@ namespace scene
 		virtual u32 getMaterialCount();
 
 		//! Writes attributes of the scene node.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
 		//! Reads attributes of the scene node.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
@@ -66,7 +66,7 @@ namespace scene
 		virtual void setReadOnlyMaterials(bool readonly);
 
 		//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
-		virtual bool isReadOnlyMaterials();
+		virtual bool isReadOnlyMaterials() const;
 
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);

@@ -97,11 +97,11 @@ video::SColor CGUITab::getBackgroundColor() const
 }
 
 //! Writes attributes of the element.
-void CGUITab::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUITab::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUITab::serializeAttributes(out,options);
 
-	out->addInt		("TabNumber",		Number);
+	out->addInt	("TabNumber",		Number);
 	out->addBool	("DrawBackground",	DrawBackground);
 	out->addColor	("BackColor",		BackColor);
 
@@ -463,20 +463,19 @@ void CGUITabControl::removeChild(IGUIElement* child)
 
 
 //! Writes attributes of the element.
-void CGUITabControl::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUITabControl::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUITabControl::serializeAttributes(out,options);
 
-	out->addInt	("ActiveTab",		ActiveTab);
-	out->addBool("Border",			Border);
+	out->addInt("ActiveTab",	ActiveTab);
+	out->addBool("Border",		Border);
 	out->addBool("FillBackground",	FillBackground);
-
 }
 
 //! Reads attributes of the element
 void CGUITabControl::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 {
-	Border			= in->getAttributeAsBool("Border");
+	Border		= in->getAttributeAsBool("Border");
 	FillBackground  = in->getAttributeAsBool("FillBackground");
 
 	ActiveTab = -1;
@@ -491,3 +490,4 @@ void CGUITabControl::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 } // end namespace gui
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

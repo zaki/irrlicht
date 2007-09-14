@@ -97,7 +97,7 @@ u32 CSphereSceneNode::getMaterialCount()
 
 
 //! Writes attributes of the scene node.
-void CSphereSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CSphereSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	ISceneNode::serializeAttributes(out, options);
 

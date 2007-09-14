@@ -131,7 +131,7 @@ void CLightSceneNode::doLightRecalc()
 
 
 //! Writes attributes of the scene node.
-void CLightSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CLightSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	ILightSceneNode::serializeAttributes(out, options);
 

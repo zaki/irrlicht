@@ -105,8 +105,8 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		irr::io::IAttributes* attributes = VideoDriver->createAttributesFromMaterial(
 			mesh->getMeshBuffer(i)->getMaterial());
 
-		s32 count = attributes->getAttributeCount();
-		for (s32 attridx=0; attridx<count; ++attridx)
+		u32 count = attributes->getAttributeCount();
+		for (u32 attridx=0; attridx<count; ++attridx)
 		{
 			core::stringw str = attributes->getAttributeName(attridx);
 

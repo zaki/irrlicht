@@ -27,7 +27,7 @@ namespace gui
 		virtual s32 getItemCount() = 0;
 
 		//! Returns string of an item. the idx may be a value from 0 to itemCount-1
-		virtual const wchar_t* getItem(s32 idx) = 0;
+		virtual const wchar_t* getItem(s32 idx) const = 0;
 
 		//! Adds an item and returns the index of it
 		virtual s32 addItem(const wchar_t* text) = 0;

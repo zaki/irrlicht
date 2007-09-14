@@ -72,9 +72,9 @@ namespace scene
 		virtual ~IAnimatedMesh() { }
 
 		//! Gets the frame count of the animated mesh.
-		/** \return Returns the amount of frames. If the amount is 1, it is a
-		static, non animated mesh. */
-		virtual s32 getFrameCount() = 0;
+		/** \return Returns the amount of frames. If the amount is 1,
+		it is a static, non animated mesh. */
+		virtual u32 getFrameCount() const = 0;
 
 		//! Returns the IMesh interface for a frame.
 		/** \param frame: Frame number as zero based index. The maximum

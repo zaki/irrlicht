@@ -212,7 +212,7 @@ namespace scene
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out,
-				io::SAttributeReadWriteOptions* options=0);
+				io::SAttributeReadWriteOptions* options=0) const;
 
 		//! Reads attributes of the scene node.
 		virtual void deserializeAttributes(io::IAttributes* in,

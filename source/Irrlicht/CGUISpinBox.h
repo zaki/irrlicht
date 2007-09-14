@@ -46,17 +46,17 @@ namespace gui
 		virtual void setRange(f32 min, f32 max);
 
 		//! get the minimum value which can be used in the spinbox
-		virtual f32 getMin();
+		virtual f32 getMin() const;
 
 		//! get the maximum value which can be used in the spinbox
-		virtual f32 getMax();
+		virtual f32 getMax() const;
 
 		//! step size by which values are changed when pressing the spin buttons
 		/** \param step: stepsize used for value changes when pressing spin buttons */
 		virtual void setStepSize(f32 step=1.f);
 
 		//! returns the step size
-		virtual f32 getStepSize();
+		virtual f32 getStepSize() const;
 
 		//! called if an event happened.
 		virtual bool OnEvent(SEvent event);
@@ -65,14 +65,14 @@ namespace gui
 		virtual void setText(const wchar_t* text);
 
 		//! Returns caption of this element.
-		virtual const wchar_t* getText();
+		virtual const wchar_t* getText() const;
 
 		//! Sets the number of decimal places to display.
 		/** \param places: The number of decimal places to display, use -1 to reset */
 		virtual void setDecimalPlaces(s32 places);
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);

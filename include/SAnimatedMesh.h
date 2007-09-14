@@ -49,7 +49,7 @@ namespace scene
 
 		//! Gets the frame count of the animated mesh.
 		//! \return Returns the amount of frames. If the amount is 1, it is a static, non animated mesh.
-		virtual s32 getFrameCount()
+		virtual u32 getFrameCount() const
 		{
 			return Meshes.size();
 		}

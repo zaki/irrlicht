@@ -59,7 +59,7 @@ public:
 	virtual bool OnEvent(SEvent event);
 
 	//! returns the current gui skin
-	virtual IGUISkin* getSkin();
+	virtual IGUISkin* getSkin() const;
 
 	//! Sets a new GUI Skin
 	virtual void setSkin(IGUISkin* skin);
@@ -218,7 +218,7 @@ public:
 	virtual bool loadGUI(io::IReadFile* file, IGUIElement* parent=0);	
 
 	//! Writes attributes of the environment
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0);
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
 	//! Reads attributes of the environment.
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);

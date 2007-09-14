@@ -37,7 +37,7 @@ namespace scene
 		virtual SMD3QuaterionTagList *getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop);
 
 		//IAnimatedMesh
-		virtual s32 getFrameCount();
+		virtual u32 getFrameCount() const;
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop);
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;

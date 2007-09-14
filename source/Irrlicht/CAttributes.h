@@ -28,7 +28,7 @@ public:
 	~CAttributes();
 
 	//! Returns amount of attributes in this collection of attributes.
-	virtual s32 getAttributeCount();
+	virtual u32 getAttributeCount() const;
 
 	//! Returns attribute name by index. 
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
@@ -431,10 +431,10 @@ public:
 	*/ 
 
 	//! Adds an attribute as matrix
-	virtual void addMatrix(const c8* attributeName, core::matrix4 v);
+	virtual void addMatrix(const c8* attributeName, const core::matrix4& v);
 
 	//! Sets an attribute as matrix
-	virtual void setAttribute(const c8* attributeName, core::matrix4 v);
+	virtual void setAttribute(const c8* attributeName, const core::matrix4& v);
 
 	//! Gets an attribute as a matrix4
 	//! \param attributeName: Name of the attribute to get.
@@ -446,7 +446,7 @@ public:
 	virtual core::matrix4 getAttributeAsMatrix(s32 index);
 
 	//! Sets an attribute as matrix
-	virtual void setAttribute(s32 index, core::matrix4 v);
+	virtual void setAttribute(s32 index, const core::matrix4& v);
 
 	/*
 		quaternion attribute

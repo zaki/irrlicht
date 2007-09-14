@@ -2019,7 +2019,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 	io::IAttributes* attr = FileSystem->createEmptyAttributes(Driver);
 	node->serializeAttributes(attr);
 
-	if (attr->getAttributeCount() > 0)
+	if (attr->getAttributeCount() != 0)
 	{
 		attr->write(writer);
 		writer->writeLineBreak();
@@ -2142,10 +2142,10 @@ const c8* CSceneManager::getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type)
 
 
 //! Writes attributes of the scene node.
-void CSceneManager::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CSceneManager::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addString	("Name", Name.c_str());
-	out->addInt		("Id", ID );
+	out->addInt	("Id", ID );
 	out->addColorf	("AmbientLight", AmbientLight);
 }
 

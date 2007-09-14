@@ -122,7 +122,7 @@ class IAttributes : public virtual IReferenceCounted
 public:
 
 	//! Returns amount of attributes in this collection of attributes.
-	virtual s32 getAttributeCount() = 0;
+	virtual u32 getAttributeCount() const = 0;
 
 	//! Returns attribute name by index. 
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
@@ -531,10 +531,10 @@ public:
 	*/ 
 
 	//! Adds an attribute as matrix
-	virtual void addMatrix(const c8* attributeName, core::matrix4 v) = 0;
+	virtual void addMatrix(const c8* attributeName, const core::matrix4& v) = 0;
 
 	//! Sets an attribute as matrix
-	virtual void setAttribute(const c8* attributeName, core::matrix4 v) = 0;
+	virtual void setAttribute(const c8* attributeName, const core::matrix4& v) = 0;
 
 	//! Gets an attribute as a matrix4
 	//! \param attributeName: Name of the attribute to get.
@@ -546,7 +546,7 @@ public:
 	virtual core::matrix4 getAttributeAsMatrix(s32 index) = 0;
 
 	//! Sets an attribute as matrix
-	virtual void setAttribute(s32 index, core::matrix4 v) = 0;
+	virtual void setAttribute(s32 index, const core::matrix4& v) = 0;
 
 	/*
 		quaternion attribute

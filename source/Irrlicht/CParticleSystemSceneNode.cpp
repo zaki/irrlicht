@@ -509,7 +509,7 @@ void CParticleSystemSceneNode::reallocateBuffers()
 
 
 //! Writes attributes of the scene node.
-void CParticleSystemSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CParticleSystemSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	IParticleSystemSceneNode::serializeAttributes(out, options);
 
@@ -583,7 +583,7 @@ void CParticleSystemSceneNode::deserializeAttributes(io::IAttributes* in, io::SA
 		break;
 	}
 
-	s32 idx = 0;
+	u32 idx = 0;
 
 	if (Emitter)
 		idx = Emitter->deserializeAttributes(idx, in);
@@ -593,7 +593,7 @@ void CParticleSystemSceneNode::deserializeAttributes(io::IAttributes* in, io::SA
 	// read affectors
 
 	removeAllAffectors();
-	s32 cnt = in->getAttributeCount();
+	u32 cnt = in->getAttributeCount();
 
 	while(idx < cnt)
 	{

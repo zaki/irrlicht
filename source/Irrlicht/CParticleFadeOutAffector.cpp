@@ -42,7 +42,7 @@ void CParticleFadeOutAffector::affect(u32 now, SParticle* particlearray, u32 cou
 //! Writes attributes of the object.
 //! Implement this to expose the attributes of your scene node animator for
 //! scripting languages, editors, debuggers or xml serialization purposes.
-void CParticleFadeOutAffector::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CParticleFadeOutAffector::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addColor("TargetColor", TargetColor);
 	out->addFloat("FadeOutTime", FadeOutTime);

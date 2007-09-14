@@ -45,7 +45,7 @@ void CSceneNodeAnimatorRotation::animateNode(ISceneNode* node, u32 timeMs)
 
 
 //! Writes attributes of the scene node animator.
-void CSceneNodeAnimatorRotation::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CSceneNodeAnimatorRotation::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addVector3d("Rotation", Rotation);
 }

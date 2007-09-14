@@ -413,7 +413,7 @@ void CGUIScrollBar::refreshControls()
 }
 
 //! Writes attributes of the element.
-void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUIScrollBar::serializeAttributes(out,options);
 

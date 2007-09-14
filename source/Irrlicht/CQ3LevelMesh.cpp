@@ -178,7 +178,7 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 
 
 //! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
-s32 CQ3LevelMesh::getFrameCount()
+u32 CQ3LevelMesh::getFrameCount() const
 {
 	return 1;
 }

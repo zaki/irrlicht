@@ -61,7 +61,7 @@ void CSceneNodeAnimatorFlyStraight::animateNode(ISceneNode* node, u32 timeMs)
 
 
 //! Writes attributes of the scene node animator.
-void CSceneNodeAnimatorFlyStraight::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CSceneNodeAnimatorFlyStraight::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addVector3d("Start", Start);
 	out->addVector3d("End", End);

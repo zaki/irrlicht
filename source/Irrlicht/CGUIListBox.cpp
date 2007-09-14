@@ -609,7 +609,7 @@ bool CGUIListBox::isAutoScrollEnabled()
 }
 
 
-bool CGUIListBox::getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::stringc & useColorLabel, core::stringc & colorLabel)
+bool CGUIListBox::getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::stringc & useColorLabel, core::stringc & colorLabel) const
 {
 	switch ( colorType )
 	{
@@ -637,7 +637,7 @@ bool CGUIListBox::getSerializationLabels(EGUI_LISTBOX_COLOR colorType, core::str
 
 
 //! Writes attributes of the element.
-void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIListBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUIListBox::serializeAttributes(out,options);
 

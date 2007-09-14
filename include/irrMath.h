@@ -283,7 +283,7 @@ namespace core
 		u32 tmp = (u32(IEEE_1_0 << 1) + IEEE_1_0 - *(u32*)&x) >> 1;   
 		f32 y = *(f32*)&tmp;                                             
 		return y * (1.47f - 0.47f * x * y * y);
-#else
+#elif defined(_MSC_VER)
 		// an sse2 version
 		__asm
 		{

@@ -51,7 +51,7 @@ namespace gui
 		virtual video::SColor getBackgroundColor() const;
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
@@ -110,7 +110,7 @@ namespace gui
 		virtual void removeChild(IGUIElement* child);
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);

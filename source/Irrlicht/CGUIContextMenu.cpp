@@ -602,7 +602,7 @@ void CGUIContextMenu::setItemCommandId(s32 idx, s32 id)
 }
 
 //! Writes attributes of the element.
-void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUIElement::serializeAttributes(out,options);
 	out->addPosition2d("Position", Pos);

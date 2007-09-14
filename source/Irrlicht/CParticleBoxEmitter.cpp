@@ -92,7 +92,7 @@ s32 CParticleBoxEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outAr
 
 
 //! Writes attributes of the object.
-void CParticleBoxEmitter::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CParticleBoxEmitter::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	core::vector3df b = Box.getExtent();
 	b *= 0.5f;

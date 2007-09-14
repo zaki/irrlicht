@@ -81,7 +81,7 @@ CAnimatedMeshMD3::~CAnimatedMeshMD3()
 
 
 //! Returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
-s32 CAnimatedMeshMD3::getFrameCount()
+u32 CAnimatedMeshMD3::getFrameCount() const
 {
 	return Mesh->MD3Header.numFrames << IPolShift;
 }

@@ -113,17 +113,17 @@ void CGUISpinBox::setRange(f32 min, f32 max)
 	verifyValueRange();
 }
 
-f32 CGUISpinBox::getMin()
+f32 CGUISpinBox::getMin() const
 {
 	return RangeMin;
 }
 
-f32 CGUISpinBox::getMax()
+f32 CGUISpinBox::getMax() const
 {
 	return RangeMax;
 }
 
-f32 CGUISpinBox::getStepSize()
+f32 CGUISpinBox::getStepSize() const
 {
 	return StepSize;
 }
@@ -222,13 +222,13 @@ void CGUISpinBox::setText(const wchar_t* text)
 }
 
 //! Returns caption of this element.
-const wchar_t* CGUISpinBox::getText()
+const wchar_t* CGUISpinBox::getText() const
 {
 	return EditBox->getText();
 }
 
 //! Writes attributes of the element.
-void CGUISpinBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CGUISpinBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	IGUIElement::serializeAttributes(out, options);
 	out->addFloat("Min", getMin());

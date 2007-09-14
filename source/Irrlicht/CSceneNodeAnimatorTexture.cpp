@@ -71,7 +71,7 @@ void CSceneNodeAnimatorTexture::animateNode(ISceneNode* node, u32 timeMs)
 
 
 //! Writes attributes of the scene node animator.
-void CSceneNodeAnimatorTexture::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options)
+void CSceneNodeAnimatorTexture::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addInt("TimePerFrame", TimePerFrame);
 	out->addBool("Loop", Loop);

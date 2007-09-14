@@ -1286,7 +1286,7 @@ void CGUIEditBox::calculateScrollPos()
 }
 
 //! Writes attributes of the element.
-void CGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0)
+void CGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	// IGUIEditBox::serializeAttributes(out,options);
 

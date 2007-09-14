@@ -35,7 +35,7 @@ namespace gui
 		virtual s32 getItemCount();
 
 		//! returns string of an item. the idx may be a value from 0 to itemCount-1
-		virtual const wchar_t* getItem(s32 idx);
+		virtual const wchar_t* getItem(s32 idx) const;
 
 		//! adds an item and returns the index of it
 		virtual s32 addItem(const wchar_t* text);
@@ -47,7 +47,7 @@ namespace gui
 		virtual void clear();
 
 		//! returns the text of the currently selected item
-		virtual const wchar_t* getText();
+		virtual const wchar_t* getText() const;
 
 		//! returns id of selected item. returns -1 if no item is selected.
 		virtual s32 getSelected();
@@ -65,7 +65,7 @@ namespace gui
 		virtual void draw();
 
 		//! Writes attributes of the element.
-		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
