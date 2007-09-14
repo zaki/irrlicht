@@ -498,8 +498,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			else
 			{
 				// skip other texture channels
-				u32 pos = file->getPos();
-				file->seek(pos+sizeof(SMyTVertex)*tVertsNum);
+				file->seek(file->getPos()+sizeof(SMyTVertex)*tVertsNum);
 			}
 
 			// reading texture faces
@@ -533,8 +532,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			else
 			{
 				// skip other texture channels
-				u32 pos = file->getPos();
-				file->seek(pos+sizeof(SMyFace)*tFacesNum);
+				file->seek(file->getPos()+sizeof(SMyFace)*tFacesNum);
 			}
 		}
 

@@ -269,7 +269,7 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
 
 	// read palette
 
-	s32 pos = file->getPos();
+	long pos = file->getPos();
 	s32 paletteSize = (header.BitmapDataOffset - pos) / 4;
 
 	if (paletteSize)
@@ -277,7 +277,7 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
 		PaletteData = new s32[paletteSize];
 		file->read(PaletteData, paletteSize * sizeof(s32));
 #ifdef __BIG_ENDIAN__
-		for (int i=0; i<paletteSize; ++i)
+		for (u32 i=0; i<paletteSize; ++i)
 			PaletteData[i] = os::Byteswap::byteswap(PaletteData[i]);
 #endif
 	}
@@ -288,7 +288,7 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
 	{
 		// okay, lets guess the size
 		// some tools simply don't set it
-		header.BitmapDataSize = file->getSize() - header.BitmapDataOffset;
+		header.BitmapDataSize = static_cast<u32>(file->getSize()) - header.BitmapDataOffset;
 	}
 
 	file->seek(header.BitmapDataOffset);

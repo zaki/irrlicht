@@ -144,7 +144,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		return false;
 
 	// find file size
-	s32 fileSize = file->getSize();
+	const long fileSize = file->getSize();
 
 	// read whole file
 

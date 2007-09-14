@@ -224,7 +224,7 @@ namespace io
 		virtual int read(void* buffer, int sizeToRead) = 0;
 
 		//! Returns size of file in bytes
-		virtual int getSize() = 0;
+		virtual long getSize() = 0;
 	};
 
 	//! Empty class to be used as parent class for IrrXMLReader.

@@ -232,12 +232,11 @@ namespace scene
 		u32 startTime = os::Timer::getTime();
 
 		// get file size
-		s32 fileSize = file->getSize();
-		s32 bytesPerPixel = bitsPerPixel / 8;
-		s32 heightMapSize = (s32)sqrt( (f64)( fileSize / bytesPerPixel ) );
+		const long fileSize = file->getSize();
+		const s32 bytesPerPixel = bitsPerPixel / 8;
 
 		// Get the dimension of the heightmap data
-		TerrainData.Size = heightMapSize;
+		TerrainData.Size = core::floor32(sqrtf( (f32)( fileSize / bytesPerPixel ) ));
 
 		switch( TerrainData.PatchSize )
 		{

@@ -95,7 +95,7 @@ IImage* CImageLoaderPCX::loadImage(irr::io::IReadFile* file)
 		// the palette indicator (usually a 0x0c is found infront of the actual palette data)
 		// is ignored because some exporters seem to forget to write it. This would result in
 		// no image loaded before, now only wrong colors will be set.
-		s32 pos = file->getPos();
+		const long pos = file->getPos();
 		file->seek( file->getSize()-256*3, false );
 
 		u8 *tempPalette = new u8[768];

@@ -1530,7 +1530,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 
 	if (vertexShaderProgram)
 	{
-		s32 size = vertexShaderProgram->getSize();
+		const long size = vertexShaderProgram->getSize();
 		if (size)
 		{
 			vs = new c8[size+1];
@@ -1541,7 +1541,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 
 	if (pixelShaderProgram)
 	{
-		s32 size = pixelShaderProgram->getSize();
+		const long size = pixelShaderProgram->getSize();
 		if (size)
 		{
 			ps = new c8[size+1];
@@ -1586,7 +1586,7 @@ s32 CNullDriver::addShaderMaterialFromFiles(io::IReadFile* vertexShaderProgram,
 
 	if (vertexShaderProgram)
 	{
-		s32 size = vertexShaderProgram->getSize();
+		const long size = vertexShaderProgram->getSize();
 		if (size)
 		{
 			vs = new c8[size+1];
@@ -1597,7 +1597,7 @@ s32 CNullDriver::addShaderMaterialFromFiles(io::IReadFile* vertexShaderProgram,
 
 	if (pixelShaderProgram)
 	{
-		s32 size = pixelShaderProgram->getSize();
+		const long size = pixelShaderProgram->getSize();
 		if (size)
 		{
 			ps = new c8[size+1];

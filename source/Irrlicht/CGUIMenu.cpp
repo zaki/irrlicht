@@ -163,8 +163,8 @@ void CGUIMenu::recalculateSize()
 	{
 		if (Parent && skin)
 			RelativeRect = core::rect<s32>(0,0,
-								Parent->getAbsolutePosition().LowerRightCorner.X,
-								skin->getSize(EGDS_MENU_HEIGHT));
+					Parent->getAbsolutePosition().LowerRightCorner.X,
+					skin->getSize(EGDS_MENU_HEIGHT));
 		return;
 	}
 

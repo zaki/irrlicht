@@ -290,7 +290,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 //! Reads file into memory
 bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 {
-	const s32 size = file->getSize();
+	const long size = file->getSize();
 	if (size < 12)
 	{
 		os::Printer::log("X File is too small.", ELL_WARNING);
