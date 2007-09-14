@@ -471,7 +471,7 @@ bool CAnimatedMeshMD2::loadFile(io::IReadFile* file)
 
 	// read TextureCoords
 
-	file->seek(header.offsetTexcoords, false);
+	file->seek(header.offsetTexcoords);
 	SMD2TextureCoordinate* textureCoords = new SMD2TextureCoordinate[header.numTexcoords];
 
 	if (!file->read(textureCoords, sizeof(SMD2TextureCoordinate)*header.numTexcoords))
@@ -490,7 +490,7 @@ bool CAnimatedMeshMD2::loadFile(io::IReadFile* file)
 
 	// read Triangles
 
-	file->seek(header.offsetTriangles, false);
+	file->seek(header.offsetTriangles);
 
 	SMD2Triangle *triangles = new SMD2Triangle[header.numTriangles];
 	if (!file->read(triangles, header.numTriangles *sizeof(SMD2Triangle)))
@@ -519,7 +519,7 @@ bool CAnimatedMeshMD2::loadFile(io::IReadFile* file)
 	core::array< core::vector3df >* vertices = new core::array< core::vector3df >[header.numFrames];
 	core::array< core::vector3df >* normals = new core::array< core::vector3df >[header.numFrames];
 
-	file->seek(header.offsetFrames, false);
+	file->seek(header.offsetFrames);
 
 	for (i = 0; i<header.numFrames; ++i)
 	{

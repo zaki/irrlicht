@@ -104,7 +104,7 @@ bool CPakReader::scanLocalHeader()
 
 	File->seek(header.offset);
 
-	int count = header.length / ((sizeof(u32) * 2) + 56);
+	const int count = header.length / ((sizeof(u32) * 2) + 56);
 
 	for(int i = 0; i < count; i++)
 	{

@@ -152,7 +152,7 @@ bool CB3DMeshFileLoader::load()
 		if (!knownChunk)
 		{
 			os::Printer::log("Unknown chunk found in mesh base - skipping");
-			file->seek( (B3dStack.getLast().startposition + B3dStack.getLast().length) , false);
+			file->seek(B3dStack.getLast().startposition + B3dStack.getLast().length);
 			B3dStack.erase(B3dStack.size()-1);
 		}
 	}
@@ -276,7 +276,7 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *InJoint)
 		if (!knownChunk)
 		{
 			os::Printer::log("Unknown chunk found in node chunk - skipping");
-			file->seek( (B3dStack.getLast().startposition + B3dStack.getLast().length), false);
+			file->seek(B3dStack.getLast().startposition + B3dStack.getLast().length);
 			B3dStack.erase(B3dStack.size()-1);
 		}
 	}
@@ -364,7 +364,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 		if (!knownChunk)
 		{
 			os::Printer::log("Unknown chunk found in mesh - skipping");
-			file->seek( (B3dStack.getLast().startposition + B3dStack.getLast().length) , false);
+			file->seek(B3dStack.getLast().startposition + B3dStack.getLast().length);
 			B3dStack.erase(B3dStack.size()-1);
 		}
 	}

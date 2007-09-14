@@ -199,7 +199,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 				break;
 			default:
 				parent.read=parent.header.length;
-				file->seek(-(int)sizeof(ChunkHeader), true);
+				file->seek(-(long)sizeof(ChunkHeader), true);
 				return true;
 		}
 		parent.read += data.read;
@@ -353,7 +353,7 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 			break;
 		default:
 			parent.read=parent.header.length;
-			file->seek(-(int)sizeof(ChunkHeader), true);
+			file->seek(-(long)sizeof(ChunkHeader), true);
 			return true;
 		}
 		parent.read += data.read;

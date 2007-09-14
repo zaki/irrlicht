@@ -1502,7 +1502,7 @@ const quake3::SShader * CQ3LevelMesh::getShader ( const c8 * filename, s32 fileN
 
 	// load script
 	core::array<u8> script;
-	u32 len = file->getSize ();
+	const long len = file->getSize ();
 
 	script.set_used ( len + 2 );
 	script[ len + 1 ] = 0;

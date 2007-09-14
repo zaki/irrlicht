@@ -279,7 +279,7 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-	for (s32 i=0; i<FileList->getFileCount(); ++i)
+	for (u32 i=0; i<FileList->getFileCount(); ++i)
 	{
 		s = FileList->getFileName(i);
 		FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
@@ -304,6 +304,7 @@ void CGUIFileOpenDialog::sendSelectedEvent()
 	Parent->OnEvent(event);
 }
 
+
 //! sends the event that the file choose process has been canceld
 void CGUIFileOpenDialog::sendCancelEvent()
 {
@@ -319,3 +320,4 @@ void CGUIFileOpenDialog::sendCancelEvent()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

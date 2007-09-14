@@ -61,7 +61,7 @@ bool COBJMeshFileLoader::isALoadableFileExtension(const c8* filename)
 //! See IReferenceCounted::drop() for more information.
 IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 {
-	const u32 filesize = file->getSize();
+	const long filesize = file->getSize();
 	if (!filesize)
 		return 0;
 
@@ -288,7 +288,7 @@ void COBJMeshFileLoader::readMTL(const c8* pFileName, core::stringc relPath)
 	if (!pMtlReader)	// fail to open and read file
 		return;
 
-	const u32 filesize = pMtlReader->getSize();
+	const long filesize = pMtlReader->getSize();
 	if (!filesize)
 		return;
 

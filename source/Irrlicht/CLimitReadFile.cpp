@@ -47,7 +47,7 @@ CLimitReadFile::~CLimitReadFile()
 //! returns how much was read
 s32 CLimitReadFile::read(void* buffer, u32 sizeToRead)
 {
-	long pos = File->getPos();
+	const long pos = File->getPos();
 
 	if (pos >= AreaEnd)
 		return 0;
@@ -65,7 +65,7 @@ s32 CLimitReadFile::read(void* buffer, u32 sizeToRead)
 //! otherwise from begin of file
 bool CLimitReadFile::seek(long finalPos, bool relativeMovement)
 {
-	long pos = File->getPos();
+	const long pos = File->getPos();
 
 	if (relativeMovement)
 	{

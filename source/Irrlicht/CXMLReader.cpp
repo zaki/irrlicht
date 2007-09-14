@@ -35,7 +35,7 @@ namespace io
 		}
 
 		//! Returns size of file in bytes
-		virtual int getSize()
+		virtual long getSize()
 		{
 			return ReadFile->getSize();
 		}

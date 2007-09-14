@@ -54,7 +54,7 @@ public:
 	}
 
 	//! Returns size of file in bytes
-	virtual int getSize()
+	virtual long getSize()
 	{
 		return Size;
 	}
@@ -70,7 +70,7 @@ private:
 	}
 
 	FILE* File;
-	int Size;
+	long Size;
 	bool Close;
 
 }; // end class CFileReadCallBack
