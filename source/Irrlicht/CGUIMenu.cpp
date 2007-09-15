@@ -113,6 +113,8 @@ bool CGUIMenu::OnEvent(SEvent event)
 				Parent->bringToFront(this);
 			}
 			break;
+		default:
+			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -146,7 +148,11 @@ bool CGUIMenu::OnEvent(SEvent event)
 			if (Environment->hasFocus(this))
 				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), hasOpenSubMenu());
 			return true;
+		default:
+			break;
 		}
+		break;
+	default:
 		break;
 	}
 

@@ -193,6 +193,8 @@ bool CGUIFileOpenDialog::OnEvent(SEvent event)
 				}
 			}
 			break;
+		default:
+			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -227,7 +229,11 @@ bool CGUIFileOpenDialog::OnEvent(SEvent event)
 				return true;
 			}
 			break;
+		default:
+			break;
 		}
+	default:
+		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;

@@ -64,14 +64,16 @@ bool CGUIModalScreen::OnEvent(SEvent event)
 		case EGET_ELEMENT_CLOSED:
 			// do not interfere with children being removed
 			return IGUIElement::OnEvent(event);
-			
+		default:
+			break;
 		}
 	case EET_MOUSE_INPUT_EVENT:
-		switch(event.MouseInput.Event)
+		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{
-		case EMIE_LMOUSE_PRESSED_DOWN:
 			MouseDownTime = os::Timer::getTime();
-		}
+        }
+	default:
+		break;
 	}
 	
 	IGUIElement::OnEvent(event);

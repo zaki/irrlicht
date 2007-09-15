@@ -386,6 +386,8 @@ bool CGUIMessageBox::OnEvent(SEvent event)
 			}
 		}
 		break;
+	default:
+		break;
 	}
 
 	return CGUIWindow::OnEvent(event);

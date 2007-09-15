@@ -255,7 +255,11 @@ bool CGUITabControl::OnEvent(SEvent event)
 			Environment->removeFocus(this);
 			selectTab(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y));
 			return true;
+		default:
+			break;
 		}
+		break;
+	default:
 		break;
 	}
 

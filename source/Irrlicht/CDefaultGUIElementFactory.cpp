@@ -47,7 +47,6 @@ CDefaultGUIElementFactory::~CDefaultGUIElementFactory()
 //! adds an element to the env based on its type id
 IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IGUIElement* parent)
 {
-	
 	switch(type)
 	{
 		case EGUIET_BUTTON:
@@ -92,9 +91,9 @@ IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IG
 			return Environment->addWindow(core::rect<s32>(0,0,100,100),false,0,parent);
 		case EGUIET_SPIN_BOX:
 			return Environment->addSpinBox(L"0.0", core::rect<s32>(0,0,100,100), parent);
+		default:
+ 			return 0;
 	}
-
-	return 0;
 }
 
 

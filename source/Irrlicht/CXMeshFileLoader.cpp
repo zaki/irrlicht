@@ -50,6 +50,8 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 	if (!f)
 		return 0;
 
+	u32 time = os::Timer::getRealTime();
+
 	AnimatedMesh = new CSkinnedMesh();
 
 	if ( load(f) )
@@ -61,7 +63,15 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
 		AnimatedMesh->drop();
 		AnimatedMesh = 0;
 	}
-
+#ifdef _XREADER_DEBUG
+	time = os::Timer::getRealTime() - time;
+	core::stringc tmpString = "Time to load ";
+	tmpString += BinaryFormat ? "binary" : "ascii";
+	tmpString += " X file: ";
+	tmpString += time;
+	tmpString += "ms";
+	os::Printer::log(tmpString.c_str());
+#endif
 	//Clear up
 
 	MajorVersion=0;

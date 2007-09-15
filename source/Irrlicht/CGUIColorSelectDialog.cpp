@@ -383,14 +383,10 @@ bool CGUIColorSelectDialog::OnEvent(SEvent event)
 			break;
 
 		case EGET_LISTBOX_CHANGED:
-			{
-			}
-			break;
-
 		case EGET_LISTBOX_SELECTED_AGAIN:
-			{
-			}
+		default:
 			break;
+			
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -423,8 +419,11 @@ bool CGUIColorSelectDialog::OnEvent(SEvent event)
 				DragStart.Y = event.MouseInput.Y;
 				return true;
 			}
+		default:
 			break;
 		}
+	default:
+		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;

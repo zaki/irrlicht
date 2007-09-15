@@ -192,7 +192,11 @@ bool CGUIWindow::OnEvent(SEvent event)
 				return true;
 			}
 			break;
+		default:
+			break;
 		}
+	default:
+		break;
 	}
 
 	return IGUIElement::OnEvent(event);

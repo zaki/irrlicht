@@ -215,7 +215,7 @@ void COctTreeSceneNode::render()
 			}
 		}
 		break;
-	};
+	}
 }
 
 

@@ -186,6 +186,8 @@ bool CGUIEditBox::OnEvent(SEvent event)
 		if (processMouse(event))
 			return true;
 		break;
+	default:
+		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
@@ -942,6 +944,8 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 				return true;
 			}
 		}
+	default:
+		break;
 	}
 
 	return false;
