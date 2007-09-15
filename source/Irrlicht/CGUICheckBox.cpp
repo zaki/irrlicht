@@ -119,6 +119,8 @@ bool CGUICheckBox::OnEvent(SEvent event)
 			return true;
 		}
 		break;
+	default:
+		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;

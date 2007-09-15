@@ -175,7 +175,11 @@ bool CGUIScrollBar::OnEvent(SEvent event)
 				}
 				return true;
 			}
+		default:
+			break;
 		}
+		break;
+	default:
 		break;
 	}
 

@@ -247,6 +247,8 @@ bool CGUIComboBox::OnEvent(SEvent event)
 				sendSelectionChangedEvent();
 			}
 			return true;
+		default:
+			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -298,7 +300,11 @@ bool CGUIComboBox::OnEvent(SEvent event)
 				if (Selected != oldSelected)
 					sendSelectionChangedEvent();
 			}
+		default:
+			break;
 		}
+		break;
+	default:
 		break;
 	}
 

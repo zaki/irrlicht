@@ -530,6 +530,8 @@ bool CGUIEnvironment::postEventFromUser(SEvent event)
 				return Focus->OnEvent(event);
 		}
 		break;
+	default:
+		break;
 	} // end switch
 
 	return false;
@@ -778,6 +780,8 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* parent
 								 core::stringc(reader->getNodeName()).c_str());
 			}
 
+			break;
+		default:
 			break;
 		}
 

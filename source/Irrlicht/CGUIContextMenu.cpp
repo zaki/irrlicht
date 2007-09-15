@@ -235,6 +235,9 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 			{
 				return true;
 			}
+			break;
+		default:
+ 			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -256,7 +259,11 @@ bool CGUIContextMenu::OnEvent(SEvent event)
 			if (Environment->hasFocus(this))
 				highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), true);
 			return true;
+		default:
+ 			break;
 		}
+		break;
+	default:
 		break;
 	}
 
