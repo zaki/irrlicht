@@ -37,13 +37,13 @@ public:
 	virtual void drawAll();
 
 	//! returns the current video driver
-	virtual video::IVideoDriver* getVideoDriver();
+	virtual video::IVideoDriver* getVideoDriver() const;
 
 	//! returns pointer to the filesystem
-	virtual io::IFileSystem* getFileSystem();
+	virtual io::IFileSystem* getFileSystem() const;
 
 	//! returns a pointer to the OS operator
-	virtual IOSOperator* getOSOperator();
+	virtual IOSOperator* getOSOperator() const;
 
 	//! posts an input event to the environment
 	virtual bool postEventFromUser(SEvent event);
@@ -116,6 +116,8 @@ public:
 
 	//! Adds a file open dialog.
 	virtual IGUIFileOpenDialog* addFileOpenDialog(const wchar_t* title = 0, bool modal=true, IGUIElement* parent=0, s32 id=-1);
+
+	//! Adds a color select dialog.
 	virtual IGUIColorSelectDialog* addColorSelectDialog(const wchar_t* title = 0, bool modal=true, IGUIElement* parent=0, s32 id=-1);
 
 	//! adds a static text. The returned pointer must not be dropped.
@@ -160,13 +162,13 @@ public:
 	virtual bool removeFocus(IGUIElement* element);
 
 	//! Returns if the element has focus
-	virtual bool hasFocus(IGUIElement* element);
+	virtual bool hasFocus(IGUIElement* element) const;
 
 	//! Returns the element with the focus
-	virtual IGUIElement* getFocus();
+	virtual IGUIElement* getFocus() const;
 
 	//! returns default font
-	virtual IGUIFont* getBuiltInFont();
+	virtual IGUIFont* getBuiltInFont() const;
 
 	//! Adds an element for fading in or out.
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1);
@@ -177,7 +179,7 @@ public:
 	virtual void OnPostRender( u32 time );
 
 	//! Returns the default element factory which can create all built in elements
-	virtual IGUIElementFactory* getDefaultGUIElementFactory();
+	virtual IGUIElementFactory* getDefaultGUIElementFactory() const;
 
 	//! Adds an element factory to the gui environment.
 	/** Use this to extend the gui environment with new element types which it should be
@@ -185,10 +187,10 @@ public:
 	virtual void registerGUIElementFactory(IGUIElementFactory* factoryToAdd);
 
 	//! Returns amount of registered scene node factories.
-	virtual s32 getRegisteredGUIElementFactoryCount();
+	virtual u32 getRegisteredGUIElementFactoryCount() const;
 
 	//! Returns a scene node factory by index
-	virtual IGUIElementFactory* getGUIElementFactory(s32 index);
+	virtual IGUIElementFactory* getGUIElementFactory(u32 index) const;
 
 	//! Adds a GUI Element by its name
 	virtual IGUIElement* addGUIElement(const c8* elementName, IGUIElement* parent=0);
@@ -234,6 +236,10 @@ private:
 
 	IGUIElement* getNextElement(bool reverse=false, bool group=false);
 
+	void updateHoveredElement(core::position2d<s32> mousePos);
+
+	void loadBuiltInFont();
+
 	struct SFont
 	{
 		core::stringc Filename;
@@ -262,10 +268,8 @@ private:
 		u32 LaunchTime;
 		IGUIStaticText* Element;
 	};
-	SToolTip ToolTip;
-	void updateHoveredElement(core::position2d<s32> mousePos);
 
-	void loadBuiltInFont();
+	SToolTip ToolTip;
 
 	core::array<IGUIElementFactory*> GUIElementFactoryList;
 

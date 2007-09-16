@@ -30,14 +30,12 @@ CGUIMeshViewer::CGUIMeshViewer(IGUIEnvironment* environment, IGUIElement* parent
 }
 
 
-
 //! destructor
 CGUIMeshViewer::~CGUIMeshViewer()
 {
 	if (Mesh)
 		Mesh->drop();
 }
-
 
 
 //! sets the mesh to be shown
@@ -63,11 +61,13 @@ void CGUIMeshViewer::setMesh(scene::IAnimatedMesh* mesh)
 		Mesh->grab();
 }
 
+
 //! Gets the displayed mesh
 scene::IAnimatedMesh* CGUIMeshViewer::getMesh() const
 {
 	return Mesh;
 }
+
 
 //! sets the material
 void CGUIMeshViewer::setMaterial(const video::SMaterial& material)
@@ -76,13 +76,11 @@ void CGUIMeshViewer::setMaterial(const video::SMaterial& material)
 }
 
 
-
 //! gets the material
-const video::SMaterial& CGUIMeshViewer::getMaterial()
+const video::SMaterial& CGUIMeshViewer::getMaterial() const
 {
 	return Material;
 }
-
 
 
 //! called if an event happened.
@@ -90,7 +88,6 @@ bool CGUIMeshViewer::OnEvent(SEvent event)
 {
 	return Parent ? Parent->OnEvent(event) : false;
 }
-
 
 
 //! draws the element and its children

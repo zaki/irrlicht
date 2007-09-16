@@ -24,7 +24,7 @@ namespace gui
 		CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
 		//! destructor
-		~CGUIWindow();
+		virtual ~CGUIWindow();
 
 		//! called if an event happened.
 		virtual bool OnEvent(SEvent event);
@@ -36,13 +36,13 @@ namespace gui
 		virtual void draw();
 
 		//! Returns pointer to the close button
-		virtual IGUIButton* getCloseButton();
+		virtual IGUIButton* getCloseButton() const;
 
 		//! Returns pointer to the minimize button
-		virtual IGUIButton* getMinimizeButton();
+		virtual IGUIButton* getMinimizeButton() const;
 
 		//! Returns pointer to the maximize button
-		virtual IGUIButton* getMaximizeButton();
+		virtual IGUIButton* getMaximizeButton() const;
 
 	protected:
 
@@ -60,3 +60,4 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif 
+

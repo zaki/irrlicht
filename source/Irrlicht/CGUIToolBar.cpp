@@ -64,12 +64,6 @@ CGUIToolBar::CGUIToolBar(IGUIEnvironment* environment, IGUIElement* parent, s32 
 }
 
 
-
-//! destructor
-CGUIToolBar::~CGUIToolBar()
-{
-}
-
 //! called if an event happened.
 bool CGUIToolBar::OnEvent(SEvent event)
 {
@@ -82,6 +76,7 @@ bool CGUIToolBar::OnEvent(SEvent event)
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
+
 
 //! draws the element and its children
 void CGUIToolBar::draw()
@@ -161,3 +156,4 @@ IGUIButton* CGUIToolBar::addButton(s32 id, const wchar_t* text,const wchar_t* to
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

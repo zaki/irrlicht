@@ -25,7 +25,7 @@ namespace gui
 			bool background = false);
 
 		//! destructor
-		~CGUIStaticText();
+		virtual ~CGUIStaticText();
 
 		//! draws the element and its children
 		virtual void draw();
@@ -34,7 +34,7 @@ namespace gui
 		virtual void setOverrideFont(IGUIFont* font=0);
 
 		//! Gets the override font (if any)
-		virtual IGUIFont * getOverrideFont();
+		virtual IGUIFont * getOverrideFont() const;
 
 		//! Sets another color for the text.
 		virtual void setOverrideColor(video::SColor color);
@@ -52,30 +52,30 @@ namespace gui
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
 
 		//! Gets the override color
-		virtual video::SColor const & getOverrideColor();
+		virtual video::SColor const & getOverrideColor() const;
 
 		//! Sets if the static text should use the overide color or the
 		//! color in the gui skin.
 		virtual void enableOverrideColor(bool enable);
 
 		//! Checks if an override color is enabled
-		virtual bool isOverrideColorEnabled();
+		virtual bool isOverrideColorEnabled() const;
 
 		//! Enables or disables word wrap for using the static text as
 		//! multiline text control.
 		virtual void setWordWrap(bool enable);
 
 		//! Checks if word wrap is enabled
-		virtual bool isWordWrapEnabled();
+		virtual bool isWordWrapEnabled() const;
 
 		//! Sets the new caption of this element.
 		virtual void setText(const wchar_t* text);
 
 		//! Returns the height of the text in pixels when it is drawn.
-		virtual s32 getTextHeight();
+		virtual s32 getTextHeight() const;
 
 		//! Returns the width of the current text, in the current font
-		virtual s32 getTextWidth();
+		virtual s32 getTextWidth() const;
 
 		//! Updates the absolute position, splits text if word wrap is enabled
 		virtual void updateAbsolutePosition();
@@ -110,3 +110,4 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif
+

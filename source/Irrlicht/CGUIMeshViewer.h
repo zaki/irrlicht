@@ -26,7 +26,7 @@ namespace gui
 		CGUIMeshViewer(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
 		//! destructor
-		~CGUIMeshViewer();
+		virtual ~CGUIMeshViewer();
 
 		//! sets the mesh to be shown
 		virtual void setMesh(scene::IAnimatedMesh* mesh);
@@ -38,14 +38,13 @@ namespace gui
 		virtual void setMaterial(const video::SMaterial& material);
 
 		//! gets the material
-		virtual const video::SMaterial& getMaterial();
+		virtual const video::SMaterial& getMaterial() const;
 
 		//! called if an event happened.
 		virtual bool OnEvent(SEvent event);
 
 		//! draws the element and its children
 		virtual void draw();
-
 
 	private:
 
@@ -60,3 +59,4 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif // __C_GUI_MESH_VIEWER_H_INCLUDED__
+

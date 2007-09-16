@@ -290,7 +290,7 @@ void CGUIScrollBar::setPos(s32 pos)
 
 
 //! gets the small step value
-s32 CGUIScrollBar::getSmallStep()
+s32 CGUIScrollBar::getSmallStep() const
 {
 	return SmallStep;
 }
@@ -308,7 +308,7 @@ void CGUIScrollBar::setSmallStep(s32 step)
 
 
 //! gets the maximum value of the scrollbar.
-s32 CGUIScrollBar::getMax()
+s32 CGUIScrollBar::getMax() const
 {
 	return Max;
 }
@@ -330,7 +330,7 @@ void CGUIScrollBar::setMax(s32 max)
 
 
 //! gets the current position of the scrollbar
-s32 CGUIScrollBar::getPos()
+s32 CGUIScrollBar::getPos() const
 {
 	return Pos;
 }
@@ -416,6 +416,7 @@ void CGUIScrollBar::refreshControls()
 	}
 }
 
+
 //! Writes attributes of the element.
 void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
@@ -426,6 +427,7 @@ void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeRead
 	out->addInt ("Max",		Max);
 	out->addInt ("SmallStep",	SmallStep);
 }
+
 
 //! Reads attributes of the element
 void CGUIScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)

@@ -48,14 +48,11 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 			temp->copyToScaling(MipMap[0]);
 			temp->drop ();
 		}
-
-
 	}
 
 	regenerateMipMapLevels ();
 	setCurrentMipMapLOD ( 0 );
 }
-
 
 
 //! destructor
@@ -70,7 +67,7 @@ CSoftwareTexture2::~CSoftwareTexture2()
 
 
 //! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CSoftwareTexture2::getTextureSizeFromSurfaceSize(s32 size)
+inline s32 CSoftwareTexture2::getTextureSizeFromSurfaceSize(s32 size) const
 {
 	s32 ts = 0x01;
 	while(ts < size)
@@ -82,7 +79,6 @@ inline s32 CSoftwareTexture2::getTextureSizeFromSurfaceSize(s32 size)
 */
 	return ts;
 }
-
 
 
 //! Regenerates the mip map levels of the texture. Useful after locking and 
@@ -124,3 +120,4 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
+

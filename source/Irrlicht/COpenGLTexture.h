@@ -62,13 +62,13 @@ public:
 	virtual void unlock();
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize();
+	virtual const core::dimension2d<s32>& getOriginalSize() const;
 
 	//! Returns size of the texture.
-	virtual const core::dimension2d<s32>& getSize();
+	virtual const core::dimension2d<s32>& getSize() const;
 
 	//! returns driver type of texture (=the driver, who created the texture)
-	virtual E_DRIVER_TYPE getDriverType();
+	virtual E_DRIVER_TYPE getDriverType() const;
 
 	//! returns color format of texture
 	virtual ECOLOR_FORMAT getColorFormat() const;
@@ -77,7 +77,7 @@ public:
 	virtual u32 getPitch() const;
 
 	//! return open gl texture name
-	GLuint getOpenGLTextureName();
+	GLuint getOpenGLTextureName() const;
 
 	//! return whether this texture has mipmaps
 	virtual bool hasMipMaps() const;
@@ -87,7 +87,7 @@ public:
 	virtual void regenerateMipMapLevels();
 
 	//! Is it a FrameBufferObject?
-	bool isFrameBufferObject();
+	bool isFrameBufferObject() const;
 
 	//! Bind FrameBufferObject (valid only if isFrameBufferObject() returns true).
 	void bindFrameBufferObject();
@@ -108,7 +108,7 @@ private:
 	void copyTexture(bool newTexture=true);
 
 	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size);
+	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	core::dimension2d<s32> ImageSize;
 	COpenGLDriver* Driver;

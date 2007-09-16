@@ -21,30 +21,29 @@ namespace gui
 			: IGUIElement(EGUIET_COMBO_BOX, environment, parent, id, rectangle) {}
 
 		//! destructor
-		~IGUIComboBox() {};
+		virtual ~IGUIComboBox() {}
 
 		//! Returns amount of items in box
-		virtual s32 getItemCount() = 0;
+		virtual u32 getItemCount() const = 0;
 
 		//! Returns string of an item. the idx may be a value from 0 to itemCount-1
-		virtual const wchar_t* getItem(s32 idx) const = 0;
+		virtual const wchar_t* getItem(u32 idx) const = 0;
 
 		//! Adds an item and returns the index of it
-		virtual s32 addItem(const wchar_t* text) = 0;
+		virtual u32 addItem(const wchar_t* text) = 0;
 
 		//! Removes an item from the combo box.
 		/** Warning. This will change the IDs of all following items */
-		virtual void removeItem(s32 id) = 0;
+		virtual void removeItem(u32 id) = 0;
 
 		//! Deletes all items in the combo box
 		virtual void clear() = 0;
 
 		//! Returns id of selected item. returns -1 if no item is selected.
-		virtual s32 getSelected() = 0;
+		virtual s32 getSelected() const = 0;
 
 		//! Sets the selected item. Set this to -1 if no item should be selected
 		virtual void setSelected(s32 id) = 0;
-
 	};
 
 

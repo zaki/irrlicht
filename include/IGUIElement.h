@@ -86,7 +86,7 @@ public:
 			(*it)->Parent = 0;
 			(*it)->drop();
 		}
-	};
+	}
 
 
 	//! Returns parent of this element.
@@ -126,6 +126,7 @@ public:
 		updateAbsolutePosition();
 	}
 
+
 	//! Sets the relative rectangle of this element.
 	void setRelativePosition(const core::rect<f32>& r)
 	{
@@ -135,10 +136,10 @@ public:
 		const core::dimension2di& d = Parent->getAbsolutePosition().getSize();
 		
 		DesiredRect = core::rect<s32>( 
-						(s32)((f32)d.Width  * r.UpperLeftCorner.X),
-						(s32)((f32)d.Height * r.UpperLeftCorner.Y),
-						(s32)((f32)d.Width  * r.LowerRightCorner.X),
-						(s32)((f32)d.Height * r.LowerRightCorner.Y));
+					core::floor32((f32)d.Width  * r.UpperLeftCorner.X),
+					core::floor32((f32)d.Height * r.UpperLeftCorner.Y),
+					core::floor32((f32)d.Width  * r.LowerRightCorner.X),
+					core::floor32((f32)d.Height * r.LowerRightCorner.Y));
 
 		ScaleRect = r;
 
@@ -152,11 +153,13 @@ public:
 		return AbsoluteRect;
 	}
 
+
 	//! Returns the visible area of the element.
 	core::rect<s32> getAbsoluteClippingRect() const
 	{
 		return AbsoluteClippingRect;
 	}
+
 
 	//! Sets whether the element will ignore its parent's clipping rectangle
 	void setNotClipped(bool noClip)
@@ -164,11 +167,13 @@ public:
 		NoClip = noClip;
 	}
 
+
 	//! Gets whether the element will ignore its parent's clipping rectangle
-	bool isNotClipped()
+	bool isNotClipped() const
 	{
 		return NoClip;
 	}
+
 
 	//! Sets the maximum size allowed for this element
 	/** If set to 0,0, there is no maximum size */
@@ -177,6 +182,7 @@ public:
 		MaxSize = size;
 		updateAbsolutePosition();
 	}
+
 
 	//! Sets the minimum size allowed for this element
 	void setMinSize(core::dimension2di size)
@@ -188,6 +194,7 @@ public:
 			MinSize.Height = 1;
 		updateAbsolutePosition();
 	}
+
 
 	void setAlignment(EGUI_ALIGNMENT left, EGUI_ALIGNMENT right, EGUI_ALIGNMENT top, EGUI_ALIGNMENT bottom)
 	{
@@ -212,6 +219,7 @@ public:
 				ScaleRect.LowerRightCorner.Y = (f32)DesiredRect.LowerRightCorner.Y / d.Height;
 		}
 	}
+
 
 	//! Updates the absolute position.
 	virtual void updateAbsolutePosition()
@@ -372,6 +380,7 @@ public:
 		return target;
 	}
 
+
 	//! Returns true if a point is within this element.
 	//! Elements with a shape other than a rectangle will override this method
 	virtual bool isPointInside(const core::position2d<s32>& point) const
@@ -428,6 +437,7 @@ public:
 			(*it)->draw();
 	}
 
+
 	//! animate the element and its children.
 	virtual void OnPostRender(u32 timeMs)
 	{
@@ -448,7 +458,7 @@ public:
 
 
 	//! Returns true if element is visible.
-	virtual bool isVisible()
+	virtual bool isVisible() const
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsVisible;
@@ -463,11 +473,12 @@ public:
 
 
 	//! Returns true if this element was created as part of its parent control
-	virtual bool isSubElement()
+	virtual bool isSubElement() const
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsSubElement;
 	}
+
 
 	//! Sets whether this control was created as part of its parent, 
 	//! for example when a scrollbar is part of a listbox. 
@@ -476,6 +487,7 @@ public:
 	{
 		IsSubElement = subElement;
 	}
+
 
 	//! If set to true, the focus will visit this element when using 
 	//! the tab key to cycle through elements.
@@ -486,12 +498,14 @@ public:
 		IsTabStop = enable;
 	}
 
+
 	//! Returns true if this element can be focused by navigating with the tab key
-	bool isTabStop()
+	bool isTabStop() const
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsTabStop;
 	}
+
 
 	//! Sets the priority of focus when using the tab key to navigate between a group 
 	//! of elements. See setTabGroup, isTabGroup and getTabGroup for information on tab groups.
@@ -522,11 +536,13 @@ public:
 			TabOrder = index;
 	}
 
+
 	//! Returns the number in the tab order sequence
-	s32 getTabOrder()
+	s32 getTabOrder() const
 	{
 		return TabOrder;
 	}
+
 
 	//! Sets whether this element is a container for a group of elements which
 	//! can be navigated using the tab key. For example, windows are tab groups.
@@ -536,12 +552,14 @@ public:
 		IsTabGroup = isGroup;
 	}
 
+
 	//! Returns true if this element is a tab group.
-	bool isTabGroup()
+	bool isTabGroup() const
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsTabGroup;
 	}
+
 
 	//! Returns the container element which holds all elements in this element's
 	//! tab group. 
@@ -555,8 +573,9 @@ public:
 		return ret;
 	}
 
+
 	//! Returns true if element is enabled.
-	virtual bool isEnabled()
+	virtual bool isEnabled() const
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return IsEnabled;
@@ -583,6 +602,7 @@ public:
 		return Text.c_str();
 	}
 
+
 	//! Sets the new caption of this element.
 	virtual void setToolTipText(const wchar_t* text)
 	{
@@ -591,17 +611,18 @@ public:
 
 
 	//! Returns caption of this element.
-	virtual core::stringw &getToolTipText()
+	virtual const core::stringw& getToolTipText() const
 	{
 		return ToolTipText;
 	}
 
 
 	//! Returns id. Can be used to identify the element.
-	virtual s32 getID()
+	virtual s32 getID() const
 	{
 		return ID;
 	}
+
 
 	//! Sets the id of this element
 	virtual void setID(s32 id)
@@ -636,11 +657,13 @@ public:
 		return false;
 	}
 
+
 	//! Returns list with children of this element
 	virtual const core::list<IGUIElement*>& getChildren() const
 	{
 		return Children;
 	}
+
 
 	//! Finds the first element with the given id.
 	/** \param id: Id to search for.
@@ -669,9 +692,10 @@ public:
 		return e;
 	}
 
+
 	//! returns true if the given element is a child of this one.
 	//! \param child: The child element to check
-	bool isMyChild(IGUIElement* child)
+	bool isMyChild(IGUIElement* child) const
 	{
 		if (!child)
 			return false;
@@ -686,6 +710,7 @@ public:
 		return child == this;
 	}
 
+
 	//! searches elements to find the closest next element to tab to
 	//! \param startOrder: The TabOrder of the current element, -1 if none
 	//! \param reverse: true if searching for a lower number
@@ -695,7 +720,7 @@ public:
 	//! \param includeInvisible: includes invisible elements in the search (default=false)
 	//! \return true if successfully found an element, false to continue searching/fail
 	bool getNextElement(s32 startOrder, bool reverse, bool group, 
-		IGUIElement*& first, IGUIElement*& closest, bool includeInvisible=false)
+		IGUIElement*& first, IGUIElement*& closest, bool includeInvisible=false) const
 	{
 		// we'll stop searching if we find this number
 		s32 wanted = startOrder + ( reverse ? -1 : 1 );
@@ -768,6 +793,7 @@ public:
 		return false;
 	}
 
+
 	//! Returns the type of the gui element. 
 	/** This is needed for the .NET wrapper but will be used
 	later for serializing and deserializing.
@@ -778,6 +804,7 @@ public:
 		return Type;
 	}
 
+
 	//! Returns the type name of the gui element. 
 	/** This is needed serializing elements. For serializing your own elements, override this function 
 	and return your own type name which is created by your IGUIElementFactory */
@@ -785,6 +812,7 @@ public:
 	{
 		return GUIElementTypeNames[Type];
 	}
+
 
 	//! Writes attributes of the scene node.
 	//! Implement this to expose the attributes of your scene node for
@@ -807,6 +835,7 @@ public:
 		out->addBool("TabGroup", IsTabGroup);
 		out->addInt("TabOrder", TabOrder);
 	}
+
 
 	//! Reads attributes of the scene node.
 	//! Implement this to set the attributes of your scene node for

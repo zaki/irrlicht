@@ -769,7 +769,7 @@ core::dimension2d<s32> CSoftwareDriver::getCurrentRenderTargetSize()
 
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CSoftwareDriver::draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
+void CSoftwareDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 					const core::rect<s32>& sourceRect,
 					const core::rect<s32>* clipRect, SColor color,
 					bool useAlphaChannelOfTexture)
@@ -845,11 +845,13 @@ const wchar_t* CSoftwareDriver::getName()
 	return L"Irrlicht Software Device 1.0";
 }
 
+
 //! Returns type of video driver
-E_DRIVER_TYPE CSoftwareDriver::getDriverType()
+E_DRIVER_TYPE CSoftwareDriver::getDriverType() const
 {
 	return EDT_SOFTWARE;
 }
+
 
 //! Returns the transformation set by setTransform
 const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)

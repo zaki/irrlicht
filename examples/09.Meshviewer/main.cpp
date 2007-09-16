@@ -298,7 +298,7 @@ public:
 					// load the model file, selected in the file open dialog
 					IGUIFileOpenDialog* dialog =
 						(IGUIFileOpenDialog*)event.GUIEvent.Caller;
-					loadModel(core::stringc(dialog->getFilename()).c_str());
+					loadModel(core::stringc(dialog->getFileName()).c_str());
 				}
 
 			case EGET_SCROLL_BAR_CHANGED:

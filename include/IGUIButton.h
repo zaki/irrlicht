@@ -61,7 +61,7 @@ namespace gui
 			: IGUIElement(EGUIET_BUTTON, environment, parent, id, rectangle) {}
 
 		//! destructor
-		~IGUIButton() {};
+		virtual ~IGUIButton() {}
 
 		//! Sets another skin independent font.
 		/** If this is set to zero, the button uses the font of the skin.
@@ -110,22 +110,22 @@ namespace gui
 		virtual void setPressed(bool pressed) = 0;
 
 		//! Returns if the button is currently pressed
-		virtual bool isPressed() = 0;
+		virtual bool isPressed() const = 0;
 
 		//! Sets if the alpha channel should be used for drawing background images on the button (default is false)
 		virtual void setUseAlphaChannel(bool useAlphaChannel) = 0;
 
 		//! Returns if the alpha channel should be used for drawing background images on the button
-		virtual bool isAlphaChannelUsed() = 0;
+		virtual bool isAlphaChannelUsed() const = 0;
 
 		//! Returns whether the button is a push button
-		virtual bool isPushButton() = 0;
+		virtual bool isPushButton() const = 0;
 
 		//! Sets if the button should use the skin to draw its border and button face (default is true)
 		virtual void setDrawBorder(bool border) = 0;
 
 		//! Returns if the border and button face are being drawn using the skin
-		virtual bool isDrawingBorder() = 0;
+		virtual bool isDrawingBorder() const = 0;
 	};
 
 

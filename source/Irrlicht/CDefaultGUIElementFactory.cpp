@@ -105,14 +105,14 @@ IGUIElement* CDefaultGUIElementFactory::addGUIElement(const c8* typeName, IGUIEl
 
 
 //! returns amount of element types this factory is able to create
-s32 CDefaultGUIElementFactory::getCreatableGUIElementTypeCount()
+s32 CDefaultGUIElementFactory::getCreatableGUIElementTypeCount() const
 {
 	return EGUIET_COUNT;
 }
 
 
 //! returns type of a createable element type
-EGUI_ELEMENT_TYPE CDefaultGUIElementFactory::getCreateableGUIElementType(s32 idx)
+EGUI_ELEMENT_TYPE CDefaultGUIElementFactory::getCreateableGUIElementType(s32 idx) const
 {
 	if (idx>=0 && idx<EGUIET_COUNT)
 		return (EGUI_ELEMENT_TYPE)idx;
@@ -122,7 +122,7 @@ EGUI_ELEMENT_TYPE CDefaultGUIElementFactory::getCreateableGUIElementType(s32 idx
 
 
 //! returns type name of a createable element type 
-const c8* CDefaultGUIElementFactory::getCreateableGUIElementTypeName(s32 idx)
+const c8* CDefaultGUIElementFactory::getCreateableGUIElementTypeName(s32 idx) const
 {
 	if (idx>=0 && idx<EGUIET_COUNT)
 		return GUIElementTypeNames[idx];
@@ -132,7 +132,7 @@ const c8* CDefaultGUIElementFactory::getCreateableGUIElementTypeName(s32 idx)
 
 
 //! returns type name of a createable element type 
-const c8* CDefaultGUIElementFactory::getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type)
+const c8* CDefaultGUIElementFactory::getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type) const
 {
 	// for this factory, type == index
 
@@ -142,9 +142,9 @@ const c8* CDefaultGUIElementFactory::getCreateableGUIElementTypeName(EGUI_ELEMEN
 	return 0;
 }
 
-EGUI_ELEMENT_TYPE CDefaultGUIElementFactory::getTypeFromName(const c8* name)
+EGUI_ELEMENT_TYPE CDefaultGUIElementFactory::getTypeFromName(const c8* name) const
 {
-	for ( int i=0; GUIElementTypeNames[i]; ++i)
+	for ( u32 i=0; GUIElementTypeNames[i]; ++i)
 		if (!strcmp(name, GUIElementTypeNames[i]) )
 			return (EGUI_ELEMENT_TYPE)i;
 
@@ -156,3 +156,4 @@ EGUI_ELEMENT_TYPE CDefaultGUIElementFactory::getTypeFromName(const c8* name)
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

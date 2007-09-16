@@ -32,13 +32,6 @@ CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIEleme
 
 
 
-//! destructor
-CGUICheckBox::~CGUICheckBox()
-{
-}
-
-
-
 //! called if an event happened.
 bool CGUICheckBox::OnEvent(SEvent event)
 {
@@ -177,7 +170,7 @@ void CGUICheckBox::setChecked(bool checked)
 
 
 //! returns if box is checked
-bool CGUICheckBox::isChecked()
+bool CGUICheckBox::isChecked() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Checked;

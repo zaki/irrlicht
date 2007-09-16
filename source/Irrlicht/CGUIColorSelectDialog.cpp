@@ -159,7 +159,6 @@ CGUIColorSelectDialog::CGUIColorSelectDialog( const wchar_t* title, IGUIEnvironm
 
 	bringToFront(CancelButton);
 	bringToFront(OKButton);
-
 }
 
 
@@ -186,7 +185,6 @@ CGUIColorSelectDialog::~CGUIColorSelectDialog()
 	{
 		ColorRing.Control->drop ();
 	}
-
 }
 
 //! renders a antialiased, colored ring

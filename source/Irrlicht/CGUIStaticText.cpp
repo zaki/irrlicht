@@ -16,7 +16,6 @@ namespace irr
 namespace gui
 {
 
-
 //! constructor
 CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 			IGUIEnvironment* environment, IGUIElement* parent,
@@ -31,6 +30,7 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 	#ifdef _DEBUG
 	setDebugName("CGUIStaticText");
 	#endif
+
 	Text = text;
 	if (environment && environment->getSkin())
 	{
@@ -141,7 +141,6 @@ void CGUIStaticText::draw()
 }
 
 
-
 //! Sets another skin independent font.
 void CGUIStaticText::setOverrideFont(IGUIFont* font)
 {
@@ -156,7 +155,8 @@ void CGUIStaticText::setOverrideFont(IGUIFont* font)
 	breakText();
 }
 
-IGUIFont * CGUIStaticText::getOverrideFont()
+
+IGUIFont * CGUIStaticText::getOverrideFont() const
 {
 	return OverrideFont;
 }
@@ -169,6 +169,7 @@ void CGUIStaticText::setOverrideColor(video::SColor color)
 	OverrideColorEnabled = true;
 }
 
+
 //! Sets another color for the text.
 void CGUIStaticText::setBackgroundColor(video::SColor color)
 {
@@ -176,17 +177,20 @@ void CGUIStaticText::setBackgroundColor(video::SColor color)
 	Background = true;
 }
 
+
 //! Sets whether to draw the background
 void CGUIStaticText::setDrawBackground(bool draw)
 {
 	Background = draw;
 }
 
+
 //! Sets whether to draw the border
 void CGUIStaticText::setDrawBorder(bool draw)
 {
 	Border = draw;
 }
+
 
 void CGUIStaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
 {
@@ -195,7 +199,7 @@ void CGUIStaticText::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT 
 }
 
 
-video::SColor const & CGUIStaticText::getOverrideColor()
+video::SColor const& CGUIStaticText::getOverrideColor() const
 {
 	return OverrideColor;
 }
@@ -208,7 +212,8 @@ void CGUIStaticText::enableOverrideColor(bool enable)
 	OverrideColorEnabled = enable;
 }
 
-bool CGUIStaticText::isOverrideColorEnabled()
+
+bool CGUIStaticText::isOverrideColorEnabled() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return OverrideColorEnabled;
@@ -223,7 +228,8 @@ void CGUIStaticText::setWordWrap(bool enable)
 	breakText();
 }
 
-bool CGUIStaticText::isWordWrapEnabled()
+
+bool CGUIStaticText::isWordWrapEnabled() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return WordWrap;
@@ -348,7 +354,7 @@ void CGUIStaticText::updateAbsolutePosition()
 
 
 //! Returns the height of the text in pixels when it is drawn.
-s32 CGUIStaticText::getTextHeight()
+s32 CGUIStaticText::getTextHeight() const
 {
 	IGUISkin* skin = Environment->getSkin();
 
@@ -371,7 +377,7 @@ s32 CGUIStaticText::getTextHeight()
 }
 
 
-s32 CGUIStaticText::getTextWidth()
+s32 CGUIStaticText::getTextWidth() const
 {
 	IGUIFont * font = OverrideFont;
 
@@ -406,7 +412,6 @@ s32 CGUIStaticText::getTextWidth()
 }
 
 
-
 //! Writes attributes of the element.
 //! Implement this to expose the attributes of your element for
 //! scripting languages, editors, debuggers or xml serialization purposes.
@@ -424,6 +429,7 @@ void CGUIStaticText::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 
 	// out->addFont ("OverrideFont",	OverrideFont);
 }
+
 
 //! Reads attributes of the element
 void CGUIStaticText::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)

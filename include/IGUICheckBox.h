@@ -22,13 +22,13 @@ namespace gui
 			: IGUIElement(EGUIET_CHECK_BOX, environment, parent, id, rectangle) {}
 
 		//! destructor
-		~IGUICheckBox() {};
+		virtual ~IGUICheckBox() {}
 
 		//! Set if box is checked.
 		virtual void setChecked(bool checked) = 0;
 
 		//! Returns true if box is checked.
-		virtual bool isChecked() = 0;
+		virtual bool isChecked() const = 0;
 	};
 
 } // end namespace gui

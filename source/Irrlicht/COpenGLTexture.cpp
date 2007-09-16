@@ -328,7 +328,7 @@ void COpenGLTexture::copyTexture(bool newTexture)
 
 
 //! returns the size of a texture which would be the optimal size for rendering it
-inline s32 COpenGLTexture::getTextureSizeFromSurfaceSize(s32 size)
+inline s32 COpenGLTexture::getTextureSizeFromSurfaceSize(s32 size) const
 {
 	s32 ts = 0x01;
 	while(ts < size)
@@ -366,7 +366,7 @@ void COpenGLTexture::unlock()
 
 
 //! Returns size of the original image.
-const core::dimension2d<s32>& COpenGLTexture::getOriginalSize()
+const core::dimension2d<s32>& COpenGLTexture::getOriginalSize() const
 {
 	return ImageSize;
 }
@@ -374,7 +374,7 @@ const core::dimension2d<s32>& COpenGLTexture::getOriginalSize()
 
 
 //! Returns of the texture.
-const core::dimension2d<s32>& COpenGLTexture::getSize()
+const core::dimension2d<s32>& COpenGLTexture::getSize() const
 {
 	if (Image)
 		return Image->getDimension();
@@ -385,7 +385,7 @@ const core::dimension2d<s32>& COpenGLTexture::getSize()
 
 
 //! returns driver type of texture (=the driver, who created the texture)
-E_DRIVER_TYPE COpenGLTexture::getDriverType()
+E_DRIVER_TYPE COpenGLTexture::getDriverType() const
 {
 	return EDT_OPENGL;
 }
@@ -415,11 +415,10 @@ u32 COpenGLTexture::getPitch() const
 
 
 //! return open gl texture name
-GLuint COpenGLTexture::getOpenGLTextureName()
+GLuint COpenGLTexture::getOpenGLTextureName() const
 {
 	return TextureName;
 }
-
 
 
 //! Returns whether this texture has mipmaps
@@ -428,7 +427,6 @@ bool COpenGLTexture::hasMipMaps() const
 {
 	return HasMipMaps;
 }
-
 
 
 //! Regenerates the mip map levels of the texture. Useful after locking and
@@ -461,10 +459,12 @@ void COpenGLTexture::regenerateMipMapLevels()
 	Image->unlock();
 }
 
-bool COpenGLTexture::isFrameBufferObject()
+
+bool COpenGLTexture::isFrameBufferObject() const
 {
     return ColorFrameBuffer != 0;
 }
+
 
 //! Bind ColorFrameBuffer (valid only if isFrameBufferObject() returns true).
 void COpenGLTexture::bindFrameBufferObject()
@@ -474,6 +474,7 @@ void COpenGLTexture::bindFrameBufferObject()
         Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
 #endif
 }
+
 
 //! Unbind ColorFrameBuffer (valid only if isFrameBufferObject() returns true).
 void COpenGLTexture::unbindFrameBufferObject()

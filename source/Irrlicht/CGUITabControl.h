@@ -25,12 +25,9 @@ namespace gui
 			IGUIElement* parent, const core::rect<s32>& rectangle,
 			s32 id);
 
-		//! destructor
-		virtual ~CGUITab();
-
 		//! Returns number of this tab in tabcontrol. Can be accessed
 		//! later IGUITabControl::getTab() by this number.
-		virtual s32 getNumber();
+		virtual s32 getNumber() const;
 
 		//! Sets the number
 		virtual void setNumber(s32 n);
@@ -86,10 +83,10 @@ namespace gui
 		virtual void addTab(CGUITab* tab);
 
 		//! Returns amount of tabs in the tabcontrol
-		virtual s32 getTabcount();
+		virtual s32 getTabCount() const;
 
 		//! Returns a tab based on zero based index
-		virtual IGUITab* getTab(s32 idx);
+		virtual IGUITab* getTab(s32 idx) const;
 
 		//! Brings a tab to front.
 		virtual bool setActiveTab(s32 idx);
@@ -98,7 +95,7 @@ namespace gui
 		virtual bool setActiveTab(IGUIElement *tab);
 
 		//! Returns which tab is currently active
-		virtual s32 getActiveTab();
+		virtual s32 getActiveTab() const;
 
 		//! called if an event happened.
 		virtual bool OnEvent(SEvent event);

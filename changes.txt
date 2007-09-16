@@ -1,5 +1,7 @@
 Changes in version 1.4 (... 2007)
 
+ - Major API rewriting for proper const usage. Now, most getter methods are const and so are the larger parameters and return values. Moreover, mayn methods taking only unsigned numbers now use u32 instead of s32 to get his limitation from the method's signature.
+
  - Added IMeshManipulator::createMeshWelded which creates a copy of the mesh with similar vertices welded together.
 
  - Irrlicht now has its own file format for static meshes. It is based on xml and has the 

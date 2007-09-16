@@ -105,7 +105,7 @@ public:
 	}
 
 	//! destructor
-	virtual ~ITexture() {};
+	virtual ~ITexture() {}
 
 	//! Lock function. 
 	/** Locks the Texture and returns a pointer to access the 
@@ -128,11 +128,11 @@ public:
 	of the original texture. Use ITexture::getSize() if you want to know 
 	the real size it has now stored in the system.
 	\return Returns the original size of the texture. */
-	virtual const core::dimension2d<s32>& getOriginalSize() = 0;
+	virtual const core::dimension2d<s32>& getOriginalSize() const = 0;
 
 	//! Returns dimension (=size) of the texture.
 	/** \return Returns the size of the texture. */
-	virtual const core::dimension2d<s32>& getSize() = 0;
+	virtual const core::dimension2d<s32>& getSize() const = 0;
 
 	//! Returns driver type of texture. 
 	/** This is the driver, which created the texture.
@@ -140,7 +140,7 @@ public:
 	use a texture because textures may be incompatible between different
 	devices.
 	\return Returns driver type of texture. */
-	virtual E_DRIVER_TYPE getDriverType() = 0;
+	virtual E_DRIVER_TYPE getDriverType() const = 0;
 
 	//! Returns the color format of texture.
 	/** \return Returns the color format of texture. */
@@ -161,7 +161,7 @@ public:
 	virtual void regenerateMipMapLevels() = 0;
 
 	//! Returns name of texture (in most cases this is the filename)
-	const core::stringc& getName() { return Name; }
+	const core::stringc& getName() const { return Name; }
 
 protected:
 

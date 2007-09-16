@@ -40,29 +40,29 @@ namespace gui
 			: IGUIElement(EGUIET_LIST_BOX, environment, parent, id, rectangle) {}
 
 		//! destructor
-		~IGUIListBox() {};
+		virtual ~IGUIListBox() {}
 
 		//! returns amount of list items
-		virtual s32 getItemCount() = 0;
+		virtual u32 getItemCount() const = 0;
 
 		//! returns string of a list item. the may id be a value from 0 to itemCount-1
-		virtual const wchar_t* getListItem(s32 id) = 0;
+		virtual const wchar_t* getListItem(u32 id) const = 0;
 
 		//! adds an list item, returns id of item
-		virtual s32 addItem(const wchar_t* text) = 0;
+		virtual u32 addItem(const wchar_t* text) = 0;
 
 		//! adds an list item with an icon
 		//! \param text Text of list entry
 		//! \param icon Sprite index of the Icon within the current sprite bank. Set it to -1 if you want no icon
 		//! \return
 		//! returns the id of the new created item
-		virtual s32 addItem(const wchar_t* text, s32 icon) = 0;
+		virtual u32 addItem(const wchar_t* text, s32 icon) = 0;
 
 		//! Removes an item from the list
-		virtual void removeItem(s32 index) = 0;
+		virtual void removeItem(u32 index) = 0;
 
 		//! Returns the icon of an item
-		virtual s32 getIcon(s32 id) const = 0;
+		virtual s32 getIcon(u32 index) const = 0;
 
 		//! Sets the sprite bank which should be used to draw list icons. This font is set to the sprite bank of
 		//! the built-in-font by default. A sprite can be displayed in front of every list item.
@@ -74,48 +74,48 @@ namespace gui
 		virtual void clear() = 0;
 
 		//! returns id of selected item. returns -1 if no item is selected.
-		virtual s32 getSelected() = 0;
+		virtual s32 getSelected() const = 0;
 
 		//! sets the selected item. Set this to -1 if no item should be selected
-		virtual void setSelected(s32 id) = 0;
+		virtual void setSelected(s32 index) = 0;
 
 		//! set whether the listbox should scroll to show a newly selected item
 		//! or a new item as it is added to the list.
 		virtual void setAutoScrollEnabled(bool scroll) = 0;
 
 		//! returns true if automatic scrolling is enabled, false if not.
-		virtual bool isAutoScrollEnabled() = 0;
+		virtual bool isAutoScrollEnabled() const = 0;
 
 		//! set all item colors at given index to color
-		virtual void setItemOverrideColor(s32 index, const video::SColor &color) = 0;
+		virtual void setItemOverrideColor(u32 index, const video::SColor &color) = 0;
 
 		//! set all item colors of specified type at given index to color
-		virtual void setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color) = 0;
+		virtual void setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color) = 0;
 
 		//! clear all item colors at index
-		virtual void clearItemOverrideColor(s32 index) = 0;
+		virtual void clearItemOverrideColor(u32 index) = 0;
 
 		//! clear item color at index for given colortype 
-		virtual void clearItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType) = 0;
+		virtual void clearItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) = 0;
 
 		//! has the item at index it's color overwritten?
-		virtual bool hasItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType) = 0;
+		virtual bool hasItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) const = 0;
 
 		//! return the overwrite color at given item index. 
-		virtual video::SColor getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType) = 0;
+		virtual video::SColor getItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) const = 0;
 
 		//! return the default color which is used for the given colorType
-		virtual video::SColor getItemDefaultColor(EGUI_LISTBOX_COLOR colorType) = 0;
+		virtual video::SColor getItemDefaultColor(EGUI_LISTBOX_COLOR colorType) const = 0;
 
 		//! set the item at the given index 
-		virtual void setItem(s32 index, const wchar_t* text, s32 icon) = 0;
+		virtual void setItem(u32 index, const wchar_t* text, s32 icon) = 0;
 
 		//! Insert the item at the given index 
 		//! Return the index on success or -1 on failure.
-		virtual s32 insertItem(s32 index, const wchar_t* text, s32 icon) = 0;
+		virtual s32 insertItem(u32 index, const wchar_t* text, s32 icon) = 0;
 
 		//! Swap the items at the given indices
-		virtual void swapItems(s32 index1, s32 index2) = 0;
+		virtual void swapItems(u32 index1, u32 index2) = 0;
 };
 
 
@@ -123,3 +123,4 @@ namespace gui
 } // end namespace irr
 
 #endif
+

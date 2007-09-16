@@ -25,19 +25,19 @@ namespace gui
 		~IGUIScrollBar() {};
 
 		//! gets the maximum value of the scrollbar.
-		virtual s32 getMax() = 0;
+		virtual s32 getMax() const = 0;
 
 		//! sets the maximum value of the scrollbar.
 		virtual void setMax(s32 max) = 0;
 
 		//! gets the small step value
-		virtual s32 getSmallStep() = 0;
+		virtual s32 getSmallStep() const = 0;
 
 		//! sets the small step value
 		virtual void setSmallStep(s32 step) = 0;
 
 		//! gets the current position of the scrollbar
-		virtual s32 getPos() = 0;
+		virtual s32 getPos() const = 0;
 
 		//! sets the current position of the scrollbar
 		virtual void setPos(s32 pos) = 0;

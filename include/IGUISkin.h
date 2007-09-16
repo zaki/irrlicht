@@ -505,7 +505,6 @@ namespace gui
 
 		//! get the type of this skin
 		virtual EGUI_SKIN_TYPE getType() const { return EGST_UNKNOWN; };
-
 	};
 
 
