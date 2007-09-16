@@ -33,7 +33,7 @@ CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIEleme
 
 
 //! called if an event happened.
-bool CGUICheckBox::OnEvent(SEvent event)
+bool CGUICheckBox::OnEvent(const SEvent& event)
 {
 	switch(event.EventType)
 	{

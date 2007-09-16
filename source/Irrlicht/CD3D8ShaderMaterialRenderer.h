@@ -45,7 +45,7 @@ public:
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent();
+	virtual bool isTransparent() const;
 
 protected:
 

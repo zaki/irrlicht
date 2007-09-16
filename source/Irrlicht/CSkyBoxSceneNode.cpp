@@ -237,7 +237,7 @@ video::SMaterial& CSkyBoxSceneNode::getMaterial(u32 i)
 
 
 //! returns amount of materials used by this scene node.
-u32 CSkyBoxSceneNode::getMaterialCount()
+u32 CSkyBoxSceneNode::getMaterialCount() const
 {
 	return 6;
 }

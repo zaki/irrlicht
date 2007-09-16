@@ -156,7 +156,7 @@ void COpenGLSLMaterialRenderer::OnUnsetMaterial()
 }
 
 //! Returns if the material is transparent.
-bool COpenGLSLMaterialRenderer::isTransparent()
+bool COpenGLSLMaterialRenderer::isTransparent() const
 {
 	return BaseMaterial ? BaseMaterial->isTransparent() : false;
 }

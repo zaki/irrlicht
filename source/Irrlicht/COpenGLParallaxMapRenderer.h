@@ -33,7 +33,7 @@ public:
 	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData);
 
 	//! Returns the render capability of the material.
-	virtual s32 getRenderCapability();
+	virtual s32 getRenderCapability() const;
 
 	virtual void OnSetMaterial(video::SMaterial& material,
 		const video::SMaterial& lastMaterial,

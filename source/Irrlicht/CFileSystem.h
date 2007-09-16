@@ -56,18 +56,18 @@ public:
 	virtual bool changeWorkingDirectoryTo(const c8* newDirectory);
 
 	//! Converts a relative path to an absolute (unique) path, resolving symbolic links
-	virtual irr::core::stringc getAbsolutePath(irr::core::stringc &filename);
+	virtual core::stringc getAbsolutePath(const core::stringc& filename) const;
 
 	//! Returns the directory a file is located in.
 	/** \param filename: The file to get the directory from */
-	virtual irr::core::stringc getFileDir(irr::core::stringc &filename);
+	virtual core::stringc getFileDir(const core::stringc& filename) const;
 
 	//! Creates a list of files and directories in the current working directory 
 	//! and returns it.
-	virtual IFileList* createFileList();
+	virtual IFileList* createFileList() const;
 
 	//! determinates if a file exists and would be able to be opened.
-	virtual bool existFile(const c8* filename);
+	virtual bool existFile(const c8* filename) const;
 
 	//! Creates a XML Reader from a file.
 	virtual IXMLReader* createXMLReader(const c8* filename);
@@ -97,7 +97,6 @@ private:
 	core::array<CUnZipReader*> UnZipFileSystems;
 	c8 WorkingDirectory[FILE_SYSTEM_MAX_PATH];
 };
-
 
 
 } // end namespace irr

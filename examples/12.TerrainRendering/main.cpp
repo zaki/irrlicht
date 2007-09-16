@@ -29,7 +29,7 @@ public:
 		Terrain = terrain;
 	}
 
-	bool OnEvent(SEvent event)
+	bool OnEvent(const SEvent& event)
 	{
 		// check if user presses the key 'W' or 'D'
 		if (event.EventType == irr::EET_KEY_INPUT_EVENT && !event.KeyInput.PressedDown)

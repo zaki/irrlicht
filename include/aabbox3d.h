@@ -24,10 +24,10 @@ class aabbox3d
 
 		// Constructors
 
-		aabbox3d(): MinEdge(-1,-1,-1), MaxEdge(1,1,1) {};
-		aabbox3d(const vector3d<T>& min, const vector3d<T>& max): MinEdge(min), MaxEdge(max) {};
-		aabbox3d(const vector3d<T>& init): MinEdge(init), MaxEdge(init) {};
-		aabbox3d(T minx, T miny, T minz, T maxx, T maxy, T maxz): MinEdge(minx, miny, minz), MaxEdge(maxx, maxy, maxz) {};
+		aabbox3d(): MinEdge(-1,-1,-1), MaxEdge(1,1,1) {}
+		aabbox3d(const vector3d<T>& min, const vector3d<T>& max): MinEdge(min), MaxEdge(max) {}
+		aabbox3d(const vector3d<T>& init): MinEdge(init), MaxEdge(init) {}
+		aabbox3d(T minx, T miny, T minz, T maxx, T maxy, T maxz): MinEdge(minx, miny, minz), MaxEdge(maxx, maxy, maxz) {}
 
 		// operators
 

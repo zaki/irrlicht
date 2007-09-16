@@ -145,7 +145,7 @@ void COpenGLShaderMaterialRenderer::OnUnsetMaterial()
 }
 
 //! Returns if the material is transparent.
-bool COpenGLShaderMaterialRenderer::isTransparent()
+bool COpenGLShaderMaterialRenderer::isTransparent() const
 {
 	return BaseMaterial ? BaseMaterial->isTransparent() : false;
 }

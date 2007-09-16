@@ -343,7 +343,7 @@ video::SMaterial& COctTreeSceneNode::getMaterial(u32 i)
 }
 
 //! returns amount of materials used by this scene node.
-u32 COctTreeSceneNode::getMaterialCount()
+u32 COctTreeSceneNode::getMaterialCount() const
 {
 	return Materials.size();
 }

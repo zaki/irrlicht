@@ -27,11 +27,11 @@ class IMeshLoader : public virtual IReferenceCounted
 public:
 
 	//! destructor
-	virtual ~IMeshLoader() {};
+	virtual ~IMeshLoader() {}
 
 	//! Returns true if the file maybe is able to be loaded by this class.
 	/** This decision should be based only on the file extension (e.g. ".cob") */
-	virtual bool isALoadableFileExtension(const c8* fileName) = 0;
+	virtual bool isALoadableFileExtension(const c8* fileName) const = 0;
 
 	//! Creates/loads an animated mesh from the file.
 	/** \return Pointer to the created mesh. Returns 0 if loading failed.

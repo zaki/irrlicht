@@ -65,7 +65,7 @@ CGUIToolBar::CGUIToolBar(IGUIEnvironment* environment, IGUIElement* parent, s32 
 
 
 //! called if an event happened.
-bool CGUIToolBar::OnEvent(SEvent event)
+bool CGUIToolBar::OnEvent(const SEvent& event)
 {
 	if (event.EventType == EET_MOUSE_INPUT_EVENT && 
 		event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)

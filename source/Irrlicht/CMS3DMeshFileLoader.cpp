@@ -105,7 +105,7 @@ CMS3DMeshFileLoader::CMS3DMeshFileLoader(video::IVideoDriver *driver)
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CMS3DMeshFileLoader::isALoadableFileExtension(const c8* filename)
+bool CMS3DMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 {
 	return strstr(filename, ".ms3d")!=0;
 }

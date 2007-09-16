@@ -79,28 +79,21 @@ public:
 	//! constructor
 	CImageLoaderBMP();
 
-	//! destructor
-	virtual ~CImageLoaderBMP();
-
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".tga")
-	virtual bool isALoadableFileExtension(const c8* fileName);
+	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	//! returns true if the file maybe is able to be loaded by this class
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file);
+	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
 
 	//! creates a surface from the file
-	virtual IImage* loadImage(irr::io::IReadFile* file);
+	virtual IImage* loadImage(irr::io::IReadFile* file) const;
 
 private:
 
-	void decompress8BitRLE(u8*& BmpData, s32 size, s32 width, s32 height, s32 pitch);
+	void decompress8BitRLE(u8*& BmpData, s32 size, s32 width, s32 height, s32 pitch) const;
 
-	void decompress4BitRLE(u8*& BmpData, s32 size, s32 width, s32 height, s32 pitch);
-
-	u8* BmpData;
-	s32* PaletteData;
-
+	void decompress4BitRLE(u8*& BmpData, s32 size, s32 width, s32 height, s32 pitch) const;
 };
 
 

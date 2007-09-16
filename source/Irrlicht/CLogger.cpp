@@ -13,7 +13,7 @@ namespace irr
 	}
 
 	//! Returns the current set log level.
-	ELOG_LEVEL CLogger::getLogLevel()
+	ELOG_LEVEL CLogger::getLogLevel() const
 	{
 		return LogLevel;
 	}

@@ -36,7 +36,7 @@ public:
 	virtual ~ILogger() {}
 
 	//! Returns the current set log level.
-	virtual ELOG_LEVEL getLogLevel() = 0;
+	virtual ELOG_LEVEL getLogLevel() const = 0;
 
 	//! Sets a new log level. With this value, texts which are sent to
 	//! the logger are filtered out. For example setting this value to

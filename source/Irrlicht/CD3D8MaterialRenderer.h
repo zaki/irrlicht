@@ -223,7 +223,7 @@ public:
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent()
+	virtual bool isTransparent() const
 	{
 		return true;
 	}
@@ -259,7 +259,7 @@ public:
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent()
+	virtual bool isTransparent() const
 	{
 		return true;
 	}
@@ -311,7 +311,7 @@ public:
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent()
+	virtual bool isTransparent() const
 	{
 		return true;
 	}
@@ -361,7 +361,7 @@ public:
 
 	//! Returns if the material is transparent. The scene managment needs to know this
 	//! for being able to sort the materials by opaque and transparent.
-	virtual bool isTransparent()
+	virtual bool isTransparent() const
 	{
 		return false; // this material is not really transparent because it does no blending.
 	}
@@ -573,7 +573,7 @@ public:
 	}
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent()
+	virtual bool isTransparent() const
 	{
 		return true;
 	}

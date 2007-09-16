@@ -90,7 +90,7 @@ video::SMaterial& CSphereSceneNode::getMaterial(u32 i)
 
 
 //! returns amount of materials used by this scene node.
-u32 CSphereSceneNode::getMaterialCount()
+u32 CSphereSceneNode::getMaterialCount() const
 {
 	return 1;
 }

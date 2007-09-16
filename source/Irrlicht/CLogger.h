@@ -21,7 +21,7 @@ public:
 	CLogger(IEventReceiver* r);
 
 	//! Returns the current set log level.
-	virtual ELOG_LEVEL getLogLevel();
+	virtual ELOG_LEVEL getLogLevel() const;
 
 	//! Sets a new log level.	virtual void setLogLevel(ELOG_LEVEL ll);
 	virtual void setLogLevel(ELOG_LEVEL ll);

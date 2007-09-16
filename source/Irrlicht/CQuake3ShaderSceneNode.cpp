@@ -684,7 +684,7 @@ const core::aabbox3d<f32>& CQuake3ShaderSceneNode::getBoundingBox() const
 }
 
 
-u32 CQuake3ShaderSceneNode::getMaterialCount()
+u32 CQuake3ShaderSceneNode::getMaterialCount() const
 {
 	return Q3Texture.size();
 }

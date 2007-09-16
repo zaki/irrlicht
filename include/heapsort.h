@@ -21,11 +21,11 @@ inline void heapsink(T*array, s32 element, s32 max)
 		s32 j = (element<<1);
 	
 		if (j+1 < max && array[j] < array[j+1])
-			j = j+1;							// take right child
+			j = j+1; // take right child
 
 		if (array[element] < array[j])
 		{
-			T t = array[j];						// swap elements
+			T t = array[j]; // swap elements
 			array[j] = array[element];
 			array[element] = t;
 			element = j;
@@ -66,8 +66,6 @@ inline void heapsort(T* array_, s32 size)
 
 } // end namespace core
 } // end namespace irr
-
-
 
 #endif
 

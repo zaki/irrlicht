@@ -66,24 +66,22 @@ namespace scene
 		virtual void OnAnimate(u32 timeMs) =0;
 
 		//! Does nothing as bones are not visible
-		virtual void render() { };
+		virtual void render() { }
 
 
-		virtual void setAbsoluteTransformation(core::matrix4 transformation)
+		virtual void setAbsoluteTransformation(const core::matrix4& transformation)
 		{
 			AbsoluteTransformation=transformation;
 		}
 
-
-
 		//! updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePositionOfAllChildren()=0;
-
 
 		s32 positionHint;
 		s32 scaleHint;
 		s32 rotationHint;
 	};
+
 
 } // end namespace scene
 } // end namespace irr

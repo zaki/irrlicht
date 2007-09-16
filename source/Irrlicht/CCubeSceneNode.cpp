@@ -125,7 +125,7 @@ video::SMaterial& CCubeSceneNode::getMaterial(u32 i)
 
 
 //! returns amount of materials used by this scene node.
-u32 CCubeSceneNode::getMaterialCount()
+u32 CCubeSceneNode::getMaterialCount() const
 {
 	return 1;
 }

@@ -22,12 +22,12 @@ CImageWriterPPM::CImageWriterPPM()
 #endif
 }
 
-bool CImageWriterPPM::isAWriteableFileExtension(const c8* fileName)
+bool CImageWriterPPM::isAWriteableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".ppm") != 0;
 }
 
-bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image,u32 param)
+bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image,u32 param) const
 {
 	char cache[70];
 	char size;

@@ -205,7 +205,7 @@ CColladaFileLoader::~CColladaFileLoader()
 
 //! Returns true if the file maybe is able to be loaded by this class.
 /** This decision should be based only on the file extension (e.g. ".cob") */
-bool CColladaFileLoader::isALoadableFileExtension(const c8* fileName)
+bool CColladaFileLoader::isALoadableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".xml") ||
 		   strstr(fileName, ".dae");

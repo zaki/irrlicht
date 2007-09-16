@@ -26,7 +26,7 @@ namespace gui
 		~CGUIModalScreen();
 
 		//! called if an event happened.
-		virtual bool OnEvent(SEvent event);
+		virtual bool OnEvent(const SEvent& event);
 
 		//! Removes a child.
 		virtual void removeChild(IGUIElement* child);

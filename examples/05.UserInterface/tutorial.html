@@ -68,7 +68,7 @@ IGUIListBox* listbox = 0;
           event) and get the pointer to the gui environment. </p>
         <table width="95%" border="0" cellspacing="2" cellpadding="0" bgcolor="#CCCCCC" align="center">
           <tr> 
-            <td> <pre>class MyEventReceiver : public IEventReceiver<br>{<br>public:<br>	virtual bool OnEvent(SEvent event)<br>	{<br>		if (event.EventType == EET_GUI_EVENT)<br>		{<br>			s32 id = event.GUIEvent.Caller-&gt;getID();<br>			IGUIEnvironment* env = device-&gt;getGUIEnvironment();</pre>
+            <td> <pre>class MyEventReceiver : public IEventReceiver<br>{<br>public:<br>	virtual bool OnEvent(const SEvent&amp; event)<br>	{<br>		if (event.EventType == EET_GUI_EVENT)<br>		{<br>			s32 id = event.GUIEvent.Caller-&gt;getID();<br>			IGUIEnvironment* env = device-&gt;getGUIEnvironment();</pre>
               <pre>            switch(event.GUIEvent.EventType)
             {</pre>
               </td>

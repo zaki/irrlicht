@@ -26,7 +26,7 @@ class IMaterialRenderer : public virtual IReferenceCounted
 public:
 
 	//! destructor
-	virtual ~IMaterialRenderer() {};
+	virtual ~IMaterialRenderer() {}
 
 	//! Called by the IVideoDriver implementation the let the renderer set its needed render states. 
 	/** This is called during the IVideoDriver::setMaterial() call.
@@ -69,12 +69,12 @@ public:
 	/** Called during the 
 	IVideoDriver::setMaterial() call before the new material will get the OnSetMaterial()
 	call. */
-	virtual void OnUnsetMaterial() {};
+	virtual void OnUnsetMaterial() {}
 
 	//! Returns if the material is transparent. 
 	/** The scene managment needs to know this
 	for being able to sort the materials by opaque and transparent. */
-	virtual bool isTransparent() { return false; }
+	virtual bool isTransparent() const { return false; }
 
 	//! Returns the render capability of the material. 
 	/** Because some more complex materials
@@ -86,7 +86,7 @@ public:
 	it cannot use the latest shaders. More specific examples: 
 	Fixed function pipeline materials should return 0 in most cases, parallax mapped
 	material will only return 0 when at least pixel shader 1.4 is available on that machine. */
-	virtual s32 getRenderCapability() { return 0; }
+	virtual s32 getRenderCapability() const { return 0; }
 };
 
 

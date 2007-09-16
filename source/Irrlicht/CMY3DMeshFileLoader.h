@@ -54,7 +54,7 @@ public:
 	io::IFileSystem* fs, video::IVideoDriver* driver, ISceneManager *scmgr);
 	virtual ~CMY3DMeshFileLoader();
 
-	virtual bool isALoadableFileExtension(const c8* fileName);
+	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 

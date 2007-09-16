@@ -53,7 +53,7 @@ CImageWriterPNG::CImageWriterPNG()
 #endif
 }
 
-bool CImageWriterPNG::isAWriteableFileExtension(const c8* fileName)
+bool CImageWriterPNG::isAWriteableFileExtension(const c8* fileName) const
 {
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
 	return strstr(fileName, ".png") != 0;
@@ -62,7 +62,7 @@ bool CImageWriterPNG::isAWriteableFileExtension(const c8* fileName)
 #endif
 }
 
-bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param)
+bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) const
 {
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
 	if (!file || !image)
@@ -149,8 +149,11 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param)
 		break;
 	}
 	image->unlock();
+
 	// Create array of pointers to rows in image data
-	RowPointers = new png_bytep[image->getDimension().Height];
+
+	//Used to point to image rows
+	u8** RowPointers = new png_bytep[image->getDimension().Height];
 	if (!RowPointers)
 	{
 		os::Printer::log("LOAD PNG: Internal PNG create row pointers failure\n", file->getFileName(), ELL_ERROR);

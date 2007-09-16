@@ -193,7 +193,7 @@ void CGUIListBox::setSelected(s32 id)
 
 
 //! called if an event happened.
-bool CGUIListBox::OnEvent(SEvent event)
+bool CGUIListBox::OnEvent(const SEvent& event)
 {
 	switch(event.EventType)
 	{

@@ -116,7 +116,7 @@ void CDemo::run()
 }
 
 
-bool CDemo::OnEvent(SEvent event)
+bool CDemo::OnEvent(const SEvent& event)
 {
 	if (!device)
 		return false;

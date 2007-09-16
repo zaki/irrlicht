@@ -368,7 +368,7 @@ namespace scene
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	bool CCSMLoader::isALoadableFileExtension(const c8* fileName)
+	bool CCSMLoader::isALoadableFileExtension(const c8* fileName) const
 	{
 		return strstr(fileName, ".csm")!=0;
 	}

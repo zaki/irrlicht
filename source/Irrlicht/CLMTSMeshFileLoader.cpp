@@ -138,19 +138,23 @@ CLMTSMeshFileLoader::~CLMTSMeshFileLoader()
 		FileSystem->drop();
 }
 
-void CLMTSMeshFileLoader::cleanup() {
+void CLMTSMeshFileLoader::cleanup()
+{
 	delete [] Textures;
 	delete [] TextureIDs;
 	delete [] Subsets;
 	delete [] Triangles;
 }
 
-bool CLMTSMeshFileLoader::isALoadableFileExtension(const c8* filename) {
+
+bool CLMTSMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+{
 	return strstr(filename, ".lmts") != 0;
 }
 
-IAnimatedMesh* CLMTSMeshFileLoader::createMesh(irr::io::IReadFile* file) {
 
+IAnimatedMesh* CLMTSMeshFileLoader::createMesh(irr::io::IReadFile* file)
+{
 	u32 i;
 	u32 id;
 
@@ -175,12 +179,16 @@ IAnimatedMesh* CLMTSMeshFileLoader::createMesh(irr::io::IReadFile* file) {
 
 	NumLightMaps = NumTextures = 0;
 
-	for (i=0; i<Header.TextureCount; i++) {
+	for (i=0; i<Header.TextureCount; i++)
+	{
 		file->read(&Textures[i], sizeof(SLMTSTextureInfoEntry));
-		if (Textures[i].Flags & 1) {
+		if (Textures[i].Flags & 1)
+		{
 			TextureIDs[i] = NumLightMaps;
 			NumLightMaps++;
-		} else {
+		}
+		else
+		{
 			TextureIDs[i] = NumTextures;
 			NumTextures++;
 		}
@@ -234,6 +242,7 @@ IAnimatedMesh* CLMTSMeshFileLoader::createMesh(irr::io::IReadFile* file) {
 	Mesh = 0;
 	return am;
 }
+
 
 void CLMTSMeshFileLoader::constructMesh()
 {
@@ -292,6 +301,7 @@ void CLMTSMeshFileLoader::constructMesh()
 	Mesh->recalculateBoundingBox();
 }
 
+
 void CLMTSMeshFileLoader::loadTextures()
 {
 	if (!Driver || !FileSystem)
@@ -328,30 +338,27 @@ void CLMTSMeshFileLoader::loadTextures()
 		}
 
 
-		if (Textures[t].Flags & 1) {
+		if (Textures[t].Flags & 1)
 			lig[lm_count++] = tmptex;
-		} else {
+		else
 			tex[tx_count++] = tmptex;
-		}
-
 	}
 
 	// attach textures to materials.
 
 	s32 i;
 	for (i=0; i<Header.SubsetCount; i++)
-		{
-			SMeshBufferLightMap* b = (SMeshBufferLightMap*)Mesh->getMeshBuffer(i);
+	{
+		SMeshBufferLightMap* b = (SMeshBufferLightMap*)Mesh->getMeshBuffer(i);
 
-			if (Subsets[i].TextID1 < Header.TextureCount)
-				b->Material.Textures[0] = tex[TextureIDs[Subsets[i].TextID1]];
-			if (Subsets[i].TextID2 < Header.TextureCount)
-				b->Material.Textures[1] = lig[TextureIDs[Subsets[i].TextID2]];
+		if (Subsets[i].TextID1 < Header.TextureCount)
+			b->Material.Textures[0] = tex[TextureIDs[Subsets[i].TextID1]];
+		if (Subsets[i].TextID2 < Header.TextureCount)
+			b->Material.Textures[1] = lig[TextureIDs[Subsets[i].TextID2]];
 
-			if (!b->Material.Textures[1])
-				b->Material.MaterialType = video::EMT_SOLID;
-		}
-
+		if (!b->Material.Textures[1])
+			b->Material.MaterialType = video::EMT_SOLID;
+	}
 }
 
 

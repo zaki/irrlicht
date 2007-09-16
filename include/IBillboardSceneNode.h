@@ -30,7 +30,7 @@ public:
 	virtual void setSize(const core::dimension2d<f32>& size) = 0;
 
 	//! Returns the size of the billboard.
-	virtual const core::dimension2d<f32>& getSize() = 0;
+	virtual const core::dimension2d<f32>& getSize() const = 0;
 
 	//! Set the color of all vertices of the billboard
 	//! \param overallColor: the color to set
@@ -44,7 +44,7 @@ public:
 	//! Gets the color of the top and bottom vertices of the billboard
 	//! \param topColor: stores the color of the top vertices
 	//! \param bottomColor: stores the color of the bottom vertices
-	virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) = 0;
+	virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const = 0;
 
 };
 

@@ -360,7 +360,7 @@ void CGUIEnvironment::clear()
 
 
 //! called by ui if an event happened.
-bool CGUIEnvironment::OnEvent(SEvent event)
+bool CGUIEnvironment::OnEvent(const SEvent& event)
 {
 	if (UserReceiver && (event.EventType != EET_GUI_EVENT || event.GUIEvent.Caller != this))
 		return UserReceiver->OnEvent(event);
@@ -483,7 +483,7 @@ void CGUIEnvironment::setUserEventReceiver(IEventReceiver* evr)
 
 
 //! posts an input event to the environment
-bool CGUIEnvironment::postEventFromUser(SEvent event)
+bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 {
 	switch(event.EventType)
 	{

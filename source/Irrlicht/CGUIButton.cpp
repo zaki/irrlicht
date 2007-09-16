@@ -88,7 +88,7 @@ void CGUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor col
 }
 
 //! called if an event happened.
-bool CGUIButton::OnEvent(SEvent event)
+bool CGUIButton::OnEvent(const SEvent& event)
 {
 	if (!IsEnabled)
 		return Parent ? Parent->OnEvent(event) : false;

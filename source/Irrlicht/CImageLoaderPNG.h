@@ -29,22 +29,13 @@ public:
 
    //! returns true if the file maybe is able to be loaded by this class
    //! based on the file extension (e.g. ".png")
-   virtual bool isALoadableFileExtension(const c8* fileName);
+   virtual bool isALoadableFileExtension(const c8* fileName) const;
 
    //! returns true if the file maybe is able to be loaded by this class
-   virtual bool isALoadableFileFormat(irr::io::IReadFile* file);
+   virtual bool isALoadableFileFormat(io::IReadFile* file) const;
 
    //! creates a surface from the file
-   virtual IImage* loadImage(irr::io::IReadFile* file);
-
-private:
-	//some variables
-	u32 Width;
-	u32 Height;
-	s32 BitDepth;
-	s32 ColorType;
-	video::IImage* Image;
-	u8** RowPointers; //Used to point to image rows
+   virtual IImage* loadImage(io::IReadFile* file) const;
 };
 
 

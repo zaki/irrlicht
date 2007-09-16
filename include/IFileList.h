@@ -18,7 +18,7 @@ class IFileList : public virtual IReferenceCounted
 public:
 
 	//! destructor
-	virtual ~IFileList() {};
+	virtual ~IFileList() {}
 
 	//! Returns the amount of files in the filelist.
 	//! \return

@@ -67,7 +67,7 @@ public:
 
 	void cleanup();
 
-	virtual bool isALoadableFileExtension(const c8* fileName);
+	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
 	
@@ -159,3 +159,4 @@ private:
 } // end namespace irr
 
 #endif // !defined(__C_LMTS_MESH_FILE_LOADER_H_INCLUDED__)
+

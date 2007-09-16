@@ -37,7 +37,7 @@ CIrrMeshFileLoader::~CIrrMeshFileLoader()
 
 //! Returns true if the file maybe is able to be loaded by this class.
 /** This decision should be based only on the file extension (e.g. ".cob") */
-bool CIrrMeshFileLoader::isALoadableFileExtension(const c8* fileName)
+bool CIrrMeshFileLoader::isALoadableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".xml") ||
 			strstr(fileName, ".irrmesh");

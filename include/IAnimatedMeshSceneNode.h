@@ -48,7 +48,7 @@ namespace scene
 			: ISceneNode(parent, mgr, id, position, rotation, scale) {}
 
 		//! Destructor
-		virtual ~IAnimatedMeshSceneNode() {};
+		virtual ~IAnimatedMeshSceneNode() {}
 
 		//! Sets the current frame number.
 		//! From now on the animation is played from this frame.

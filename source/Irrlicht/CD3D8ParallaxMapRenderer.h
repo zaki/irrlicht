@@ -40,7 +40,7 @@ public:
 		bool resetAllRenderstates, video::IMaterialRendererServices* services);
 
 	//! Returns the render capability of the material.
-	virtual s32 getRenderCapability();
+	virtual s32 getRenderCapability() const;
 
 private:
 

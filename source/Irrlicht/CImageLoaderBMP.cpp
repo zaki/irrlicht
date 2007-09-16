@@ -18,7 +18,6 @@ namespace video
 
 //! constructor
 CImageLoaderBMP::CImageLoaderBMP()
-: BmpData(0), PaletteData(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CImageLoaderBMP");
@@ -26,30 +25,16 @@ CImageLoaderBMP::CImageLoaderBMP()
 }
 
 
-
-//! destructor
-CImageLoaderBMP::~CImageLoaderBMP()
-{
-	if (PaletteData)
-		delete [] PaletteData;
-
-	if (BmpData)
-		delete [] BmpData;
-}
-
-
-
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderBMP::isALoadableFileExtension(const c8* fileName)
+bool CImageLoaderBMP::isALoadableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".bmp") != 0;
 }
 
 
-
 //! returns true if the file maybe is able to be loaded by this class
-bool CImageLoaderBMP::isALoadableFileFormat(irr::io::IReadFile* file)
+bool CImageLoaderBMP::isALoadableFileFormat(irr::io::IReadFile* file) const
 {
 	u16 headerID;
 	file->read(&headerID, sizeof(u16));
@@ -60,15 +45,15 @@ bool CImageLoaderBMP::isALoadableFileFormat(irr::io::IReadFile* file)
 }
 
 
-void CImageLoaderBMP::decompress8BitRLE(u8*& BmpData, s32 size, s32 width, s32 height, s32 pitch)
+void CImageLoaderBMP::decompress8BitRLE(u8*& bmpData, s32 size, s32 width, s32 height, s32 pitch) const
 {
-	u8* p = BmpData;
+	u8* p = bmpData;
 	u8* newBmp = new u8[(width+pitch)*height];
 	u8* d = newBmp;
 	u8* destEnd = newBmp + (width+pitch)*height;
 	s32 line = 0;
 
-	while (BmpData - p < size && d < destEnd)
+	while (bmpData - p < size && d < destEnd)
 	{
 		if (*p == 0)
 		{
@@ -82,8 +67,8 @@ void CImageLoaderBMP::decompress8BitRLE(u8*& BmpData, s32 size, s32 width, s32 h
 				d = newBmp + (line*(width+pitch));
 				break;
 			case 1: // end of bmp
-				delete [] BmpData;
-				BmpData = newBmp;
+				delete [] bmpData;
+				bmpData = newBmp;
 				return;
 			case 2:
 				++p; d +=(u8)*p;  // delta
@@ -121,22 +106,22 @@ void CImageLoaderBMP::decompress8BitRLE(u8*& BmpData, s32 size, s32 width, s32 h
 		}
 	}
 
-	delete [] BmpData;
-	BmpData = newBmp;
+	delete [] bmpData;
+	bmpData = newBmp;
 }
 
 
-void CImageLoaderBMP::decompress4BitRLE(u8*& BmpData, s32 size, s32 width, s32 height, s32 pitch)
+void CImageLoaderBMP::decompress4BitRLE(u8*& bmpData, s32 size, s32 width, s32 height, s32 pitch) const
 {
 	s32 lineWidth = (width+1)/2+pitch;
-	u8* p = BmpData;
+	u8* p = bmpData;
 	u8* newBmp = new u8[lineWidth*height];
 	u8* d = newBmp;
 	u8* destEnd = newBmp + lineWidth*height;
 	s32 line = 0;
 	s32 shift = 4;
 
-	while (BmpData - p < size && d < destEnd)
+	while (bmpData - p < size && d < destEnd)
 	{
 		if (*p == 0)
 		{
@@ -151,8 +136,8 @@ void CImageLoaderBMP::decompress4BitRLE(u8*& BmpData, s32 size, s32 width, s32 h
 				shift = 4;
 				break;
 			case 1: // end of bmp
-				delete [] BmpData;
-				BmpData = newBmp;
+				delete [] bmpData;
+				bmpData = newBmp;
 				return;
 			case 2:
 				{
@@ -221,14 +206,14 @@ void CImageLoaderBMP::decompress4BitRLE(u8*& BmpData, s32 size, s32 width, s32 h
 		}
 	}
 
-	delete [] BmpData;
-	BmpData = newBmp;
+	delete [] bmpData;
+	bmpData = newBmp;
 }
 
 
 
 //! creates a surface from the file
-IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
+IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file) const
 {
 	SBMPHeader header;
 
@@ -272,13 +257,14 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
 	long pos = file->getPos();
 	s32 paletteSize = (header.BitmapDataOffset - pos) / 4;
 
+	s32* paletteData;
 	if (paletteSize)
 	{
-		PaletteData = new s32[paletteSize];
-		file->read(PaletteData, paletteSize * sizeof(s32));
+		paletteData = new s32[paletteSize];
+		file->read(paletteData, paletteSize * sizeof(s32));
 #ifdef __BIG_ENDIAN__
 		for (u32 i=0; i<paletteSize; ++i)
-			PaletteData[i] = os::Byteswap::byteswap(PaletteData[i]);
+			paletteData[i] = os::Byteswap::byteswap(paletteData[i]);
 #endif
 	}
 
@@ -302,17 +288,17 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
 	s32 lineData = widthInBytes + ((4-(widthInBytes%4)))%4;
 	pitch = lineData - widthInBytes;
 
-	BmpData = new u8[header.BitmapDataSize];
-	file->read(BmpData, header.BitmapDataSize);
+	u8* bmpData = new u8[header.BitmapDataSize];
+	file->read(bmpData, header.BitmapDataSize);
 
 	// decompress data if needed
 	switch(header.Compression)
 	{
 	case 1: // 8 bit rle
-		decompress8BitRLE(BmpData, header.BitmapDataSize, header.Width, header.Height, pitch);
+		decompress8BitRLE(bmpData, header.BitmapDataSize, header.Width, header.Height, pitch);
 		break;
 	case 2: // 4 bit rle
-		decompress4BitRLE(BmpData, header.BitmapDataSize, header.Width, header.Height, pitch);
+		decompress4BitRLE(bmpData, header.BitmapDataSize, header.Width, header.Height, pitch);
 		break;
 	}
 
@@ -324,32 +310,32 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
 	case 1:
 		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
 		if (image)
-			CColorConverter::convert1BitTo16Bit(BmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
+			CColorConverter::convert1BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
 		break;
 	case 4:
 		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
 		if (image)
-			CColorConverter::convert4BitTo16Bit(BmpData, (s16*)image->lock(), header.Width, header.Height, PaletteData, pitch, true);
+			CColorConverter::convert4BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, paletteData, pitch, true);
 		break;
 	case 8:
 		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
 		if (image)
-			CColorConverter::convert8BitTo16Bit(BmpData, (s16*)image->lock(), header.Width, header.Height, PaletteData, pitch, true);
+			CColorConverter::convert8BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, paletteData, pitch, true);
 		break;
 	case 16:
 		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
 		if (image)
-			CColorConverter::convert16BitTo16Bit((s16*)BmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
+			CColorConverter::convert16BitTo16Bit((s16*)bmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
 		break;
 	case 24:
 		image = new CImage(ECF_R8G8B8, core::dimension2d<s32>(header.Width, header.Height));
 		if (image)
-			CColorConverter::convert24BitTo24Bit(BmpData, (u8*)image->lock(), header.Width, header.Height, pitch, true, true);
+			CColorConverter::convert24BitTo24Bit(bmpData, (u8*)image->lock(), header.Width, header.Height, pitch, true, true);
 		break;
 	case 32: // thx to Reinhard Ostermeier
 		image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(header.Width, header.Height));
 		if (image)
-			CColorConverter::convert32BitTo32Bit((s32*)BmpData, (s32*)image->lock(), header.Width, header.Height, pitch, true);
+			CColorConverter::convert32BitTo32Bit((s32*)bmpData, (s32*)image->lock(), header.Width, header.Height, pitch, true);
 		break;
 	};
 	if (image)
@@ -357,15 +343,11 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file)
 
 	// clean up
 
-	delete [] PaletteData;
-	PaletteData = 0;
-
-	delete [] BmpData;
-	BmpData = 0;
+	delete [] paletteData;
+	delete [] bmpData;
 
 	return image;
 }
-
 
 
 //! creates a loader which is able to load windows bitmaps
@@ -377,3 +359,4 @@ IImageLoader* createImageLoaderBMP()
 
 } // end namespace video
 } // end namespace irr
+

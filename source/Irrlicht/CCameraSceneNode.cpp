@@ -60,7 +60,7 @@ void CCameraSceneNode::setInputReceiverEnabled(bool enabled)
 
 
 //! Returns if the input receiver of the camera is currently enabled.
-bool CCameraSceneNode::isInputReceiverEnabled()
+bool CCameraSceneNode::isInputReceiverEnabled() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return InputReceiverEnabled;
@@ -80,7 +80,7 @@ void CCameraSceneNode::setProjectionMatrix(const core::matrix4& projection)
 
 //! Gets the current projection matrix of the camera
 //! \return Returns the current projection matrix of the camera.
-const core::matrix4& CCameraSceneNode::getProjectionMatrix()
+const core::matrix4& CCameraSceneNode::getProjectionMatrix() const
 {
 	return ViewArea.Matrices [ video::ETS_PROJECTION ];
 }
@@ -89,7 +89,7 @@ const core::matrix4& CCameraSceneNode::getProjectionMatrix()
 
 //! Gets the current view matrix of the camera
 //! \return Returns the current view matrix of the camera.
-const core::matrix4& CCameraSceneNode::getViewMatrix()
+const core::matrix4& CCameraSceneNode::getViewMatrix() const
 {
 	return ViewArea.Matrices [ video::ETS_VIEW ];
 }
@@ -101,7 +101,7 @@ const core::matrix4& CCameraSceneNode::getViewMatrix()
 //! example with scene::ISceneManager::addMayaCameraSceneNode or
 //! scene::ISceneManager::addFPSCameraSceneNode, may want to get this input
 //! for changing their position, look at target or whatever. 
-bool CCameraSceneNode::OnEvent(SEvent event)
+bool CCameraSceneNode::OnEvent(const SEvent& event)
 {
 	return false;
 }
@@ -143,22 +143,22 @@ core::vector3df CCameraSceneNode::getUpVector() const
 }
 
 
-f32 CCameraSceneNode::getNearValue()
+f32 CCameraSceneNode::getNearValue() const 
 {
 	return ZNear;
 }
 
-f32 CCameraSceneNode::getFarValue()
+f32 CCameraSceneNode::getFarValue() const 
 {
 	return ZFar;
 }
 
-f32 CCameraSceneNode::getAspectRatio()
+f32 CCameraSceneNode::getAspectRatio() const 
 {
 	return Aspect;
 }
 
-f32 CCameraSceneNode::getFOV()
+f32 CCameraSceneNode::getFOV() const 
 {
 	return Fovy;
 }

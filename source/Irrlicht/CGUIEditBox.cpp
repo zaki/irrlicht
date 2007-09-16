@@ -174,7 +174,7 @@ void CGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT ver
 
 
 //! called if an event happened.
-bool CGUIEditBox::OnEvent(SEvent event)
+bool CGUIEditBox::OnEvent(const SEvent& event)
 {
 	switch(event.EventType)
 	{

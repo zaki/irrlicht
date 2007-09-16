@@ -44,7 +44,7 @@ the pointer to the gui environment.
 class MyEventReceiver : public IEventReceiver
 {
 public:
-	virtual bool OnEvent(SEvent event)
+	virtual bool OnEvent(const SEvent& event)
 	{
 		if (event.EventType == EET_GUI_EVENT)
 		{

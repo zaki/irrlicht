@@ -58,7 +58,7 @@ public:
 	virtual void OnUnsetMaterial();
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent();
+	virtual bool isTransparent() const;
 
 protected:
 

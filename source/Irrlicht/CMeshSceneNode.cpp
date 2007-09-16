@@ -226,7 +226,7 @@ video::SMaterial& CMeshSceneNode::getMaterial(u32 i)
 
 
 //! returns amount of materials used by this scene node.
-u32 CMeshSceneNode::getMaterialCount()
+u32 CMeshSceneNode::getMaterialCount() const
 {
 	if (Mesh && ReadOnlyMaterials)
 		return Mesh->getMeshBufferCount();

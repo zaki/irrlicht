@@ -17,11 +17,10 @@ namespace core
 	class dimension2d
 	{
 		public:
-			dimension2d()
-				: Width(0), Height(0) {};
+			dimension2d() : Width(0), Height(0) {}
 
 			dimension2d(const T& width, const T& height)
-				: Width(width), Height(height) {};
+				: Width(width), Height(height) {}
 
 			bool operator == (const dimension2d<T>& other) const
 			{

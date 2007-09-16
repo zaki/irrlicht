@@ -42,7 +42,7 @@ public:
 
 	void run();
 
-	virtual bool OnEvent(SEvent event);
+	virtual bool OnEvent(const SEvent& event);
 
 private:
 

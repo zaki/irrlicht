@@ -54,30 +54,21 @@ public:
 	//! constructor
 	CImageLoaderPSD();
 
-	//! destructor
-	virtual ~CImageLoaderPSD();
-
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".tga")
-	virtual bool isALoadableFileExtension(const c8* fileName);
+	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	//! returns true if the file maybe is able to be loaded by this class
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file);
+	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
 
 	//! creates a surface from the file
-	virtual IImage* loadImage(irr::io::IReadFile* file);
+	virtual IImage* loadImage(irr::io::IReadFile* file) const;
 
 private:
 
-	bool readRawImageData(irr::io::IReadFile* file);
-	bool readRLEImageData(irr::io::IReadFile* file);
-	s16 getShiftFromChannel(c8 channelNr);
-
-	// member variables
-
-	u32* imageData;
-	PsdHeader header;
-	bool error;
+	bool readRawImageData(irr::io::IReadFile* file, const PsdHeader& header, u32* imageData) const;
+	bool readRLEImageData(irr::io::IReadFile* file, const PsdHeader& header, u32* imageData) const;
+	s16 getShiftFromChannel(c8 channelNr, const PsdHeader& header) const;
 };
 
 

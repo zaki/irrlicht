@@ -27,7 +27,7 @@ namespace gui
 		virtual ~CGUIWindow();
 
 		//! called if an event happened.
-		virtual bool OnEvent(SEvent event);
+		virtual bool OnEvent(const SEvent& event);
 
 		//! update absolute position
 		virtual void updateAbsolutePosition();

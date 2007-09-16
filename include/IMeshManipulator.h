@@ -31,7 +31,7 @@ namespace scene
 	public:
 
 		//! destructor
-		virtual ~IMeshManipulator() {};
+		virtual ~IMeshManipulator() {}
 
 		//! Flips the direction of surfaces. 
 		/** Changes backfacing triangles to frontfacing

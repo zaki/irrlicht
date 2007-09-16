@@ -22,12 +22,12 @@ CImageWriterPSD::CImageWriterPSD()
 #endif
 }
 
-bool CImageWriterPSD::isAWriteableFileExtension(const c8* fileName)
+bool CImageWriterPSD::isAWriteableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".psd") != 0;
 }
 
-bool CImageWriterPSD::writeImage(io::IWriteFile *file, IImage *image,u32 param)
+bool CImageWriterPSD::writeImage(io::IWriteFile *file, IImage *image,u32 param) const
 {
 	os::Printer::log("PSD writer not yet implemented. Image not written.", ELL_WARNING);
 	return false;

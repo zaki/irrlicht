@@ -15,12 +15,10 @@ public:
 	CImageWriterPNG();
 
 	//! return true if this writer can write a file with the given extension
-	virtual bool isAWriteableFileExtension(const c8* fileName);
+	virtual bool isAWriteableFileExtension(const c8* fileName) const;
 
 	//! write image to file
-	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param);
-private:
-	u8** RowPointers; //Used to point to image rows
+	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param) const;
 };
 
 } // namespace video

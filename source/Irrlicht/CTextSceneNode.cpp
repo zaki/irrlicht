@@ -388,7 +388,7 @@ video::SMaterial& CBillboardTextSceneNode::getMaterial(u32 i)
 
 
 //! returns amount of materials used by this scene node.
-u32 CBillboardTextSceneNode::getMaterialCount()
+u32 CBillboardTextSceneNode::getMaterialCount() const
 {
 	if (Mesh)
 		return Mesh->getMeshBufferCount();

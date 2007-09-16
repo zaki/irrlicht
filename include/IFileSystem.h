@@ -36,7 +36,7 @@ class IFileSystem : public virtual IReferenceCounted
 public:
 
 	//! destructor
-	virtual ~IFileSystem() {};
+	virtual ~IFileSystem() {}
 
 	//! Opens a file for read access.
 	/** \param filename: Name of file to open.
@@ -113,22 +113,22 @@ public:
 	virtual bool changeWorkingDirectoryTo(const c8* newDirectory) = 0;
 
 	//! Converts a relative path to an absolute (unique) path, resolving symbolic links if required
-	virtual irr::core::stringc getAbsolutePath(irr::core::stringc &filename) = 0;
+	virtual core::stringc getAbsolutePath(const core::stringc& filename) const = 0;
 
 	//! Returns the directory a file is located in.
 	/** \param filename: The file to get the directory from */
-	virtual irr::core::stringc getFileDir(irr::core::stringc &filename) = 0;
+	virtual core::stringc getFileDir(const core::stringc& filename) const = 0;
 
 	//! Creates a list of files and directories in the current working directory and returns it.
 	/** \return a Pointer to the created IFileList is returned. After the list has been used
 	it has to be deleted using its IFileList::drop() method.
 	See IReferenceCounted::drop() for more information. */
-	virtual IFileList* createFileList() = 0;
+	virtual IFileList* createFileList() const = 0;
 
-	//! Determinates if a file exists and would be able to be opened.
-	/** \param filename is the string identifying the file which should be tested for existance.
-	\return Returns true if file exsits, and false if it does not exist or an error occured. */
-	virtual bool existFile(const c8* filename) = 0;
+	//! Determines if a file exists and could be opened.
+	/** \param filename is the string identifying the file which should be tested for existence.
+	\return Returns true if file exists, and false if it does not exist or an error occured. */
+	virtual bool existFile(const c8* filename) const = 0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as wide characters (wchar_t*).
 	/** Use createXMLReaderUTF8() if you prefer char* instead of wchar_t*. See IIrrXMLReader for

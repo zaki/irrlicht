@@ -38,7 +38,7 @@ CBSPMeshFileLoader::~CBSPMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CBSPMeshFileLoader::isALoadableFileExtension(const c8* filename)
+bool CBSPMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 {
 	return strstr(filename, ".bsp") || strstr(filename, ".shader");
 }
