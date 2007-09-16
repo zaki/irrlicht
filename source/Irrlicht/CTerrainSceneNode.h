@@ -70,7 +70,7 @@ namespace scene
 
 		//! Returns amount of materials used by this scene node ( always 1 )
 		//! \return Returns current count of materials used by this scene node ( always 1 )
-		virtual u32 getMaterialCount()
+		virtual u32 getMaterialCount() const
 		{
 			return Mesh.getMeshBufferCount(); 
 		}

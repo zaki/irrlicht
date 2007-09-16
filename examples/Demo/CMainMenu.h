@@ -17,7 +17,7 @@ public:
 	bool run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 		bool& outAdditive, bool &outVSync, video::E_DRIVER_TYPE& outDriver);
 
-	virtual bool OnEvent(SEvent event);
+	virtual bool OnEvent(const SEvent& event);
 
 private:
 

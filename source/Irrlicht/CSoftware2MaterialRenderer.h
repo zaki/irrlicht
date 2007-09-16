@@ -39,7 +39,7 @@ public:
 		:CSoftware2MaterialRenderer ( driver ) {}
 
 	//! Returns if the material is transparent. 
-	virtual bool isTransparent() 
+	virtual bool isTransparent() const
 	{
 		return false; 
 	}
@@ -53,11 +53,11 @@ class CSoftware2MaterialRenderer_TRANSPARENT_ADD_COLOR : public CSoftware2Materi
 {
 public:
 	CSoftware2MaterialRenderer_TRANSPARENT_ADD_COLOR ( video::CSoftwareDriver2* driver )
-		:CSoftware2MaterialRenderer ( driver ) {}
+		: CSoftware2MaterialRenderer ( driver ) {}
 
 
 	//! Returns if the material is transparent. 
-	virtual bool isTransparent() 
+	virtual bool isTransparent() const
 	{
 		return true; 
 	}
@@ -69,9 +69,9 @@ class CSoftware2MaterialRenderer_UNSUPPORTED : public CSoftware2MaterialRenderer
 {
 public:
 	CSoftware2MaterialRenderer_UNSUPPORTED ( video::CSoftwareDriver2* driver )
-		:CSoftware2MaterialRenderer ( driver ) {}
+		: CSoftware2MaterialRenderer ( driver ) {}
 
-	virtual s32 getRenderCapability() { return 1; }
+	virtual s32 getRenderCapability() const { return 1; }
 
 };
 

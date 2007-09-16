@@ -67,23 +67,16 @@ public:
 	//! constructor
 	CImageLoaderPCX();
 
-	//! destructor
-	virtual ~CImageLoaderPCX();
-
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".tga")
-	virtual bool isALoadableFileExtension(const c8* fileName);
+	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	//! returns true if the file maybe is able to be loaded by this class
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file);
+	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
 
 	//! creates a surface from the file
-	virtual IImage* loadImage(irr::io::IReadFile* file);
+	virtual IImage* loadImage(irr::io::IReadFile* file) const;
 
-private:
-
-	u8* PCXData;
-	s32* PaletteData;
 };
 
 

@@ -44,7 +44,7 @@ namespace scene
 	{
 	public:
 
-		virtual ~IMeshWriter() {};
+		virtual ~IMeshWriter() {}
 
 		//! Returns the type of the mesh writer
 		/** For own implementations, use  MAKE_IRR_ID as shown in the EMESH_WRITER_TYPE

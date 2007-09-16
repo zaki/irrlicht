@@ -546,7 +546,7 @@ video::SMaterial& CAnimatedMeshSceneNode::getMaterial(u32 i)
 
 
 //! returns amount of materials used by this scene node.
-u32 CAnimatedMeshSceneNode::getMaterialCount()
+u32 CAnimatedMeshSceneNode::getMaterialCount() const
 {
 	return Materials.size();
 }

@@ -38,7 +38,7 @@ public:
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
 	//! Returns the render capability of the material.
-	virtual s32 getRenderCapability();
+	virtual s32 getRenderCapability() const;
 
 private:
 

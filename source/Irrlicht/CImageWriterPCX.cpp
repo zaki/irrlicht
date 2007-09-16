@@ -22,12 +22,12 @@ CImageWriterPCX::CImageWriterPCX()
 #endif
 }
 
-bool CImageWriterPCX::isAWriteableFileExtension(const c8* fileName)
+bool CImageWriterPCX::isAWriteableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".pcx") != 0;
 }
 
-bool CImageWriterPCX::writeImage(io::IWriteFile *file, IImage *image,u32 param)
+bool CImageWriterPCX::writeImage(io::IWriteFile *file, IImage *image,u32 param) const
 {
 	os::Printer::log("PCX writer not yet implemented. Image not written.", ELL_WARNING);
 	return false;
@@ -35,3 +35,4 @@ bool CImageWriterPCX::writeImage(io::IWriteFile *file, IImage *image,u32 param)
 
 } // namespace video
 } // namespace irr
+

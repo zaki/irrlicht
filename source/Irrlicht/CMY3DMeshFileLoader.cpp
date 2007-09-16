@@ -58,7 +58,7 @@ CMY3DMeshFileLoader::~CMY3DMeshFileLoader()
 
 
 
-bool CMY3DMeshFileLoader::isALoadableFileExtension(const c8* filename)
+bool CMY3DMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 {
 	return strstr(filename, ".my3d") != 0;
 }

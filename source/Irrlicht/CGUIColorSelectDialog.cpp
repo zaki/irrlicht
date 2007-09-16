@@ -337,7 +337,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 
 
 //! called if an event happened.
-bool CGUIColorSelectDialog::OnEvent(SEvent event)
+bool CGUIColorSelectDialog::OnEvent(const SEvent& event)
 {
 
 	switch(event.EventType)

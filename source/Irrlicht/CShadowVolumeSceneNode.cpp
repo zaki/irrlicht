@@ -254,7 +254,7 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 }
 
 //! sets the mesh from which the shadow volume should be generated.
-void CShadowVolumeSceneNode::setMeshToRenderFrom(IMesh* mesh)
+void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 {
 	ShadowVolumesUsed = 0;
 
@@ -273,7 +273,7 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(IMesh* mesh)
 	s32 totalVertices = 0;
 	s32 totalIndices = 0;
 	u32 bufcnt = mesh->getMeshBufferCount();
-	IMeshBuffer* b;
+	const IMeshBuffer* b;
 
 	for (i=0; i<bufcnt; ++i)
 	{
@@ -416,25 +416,6 @@ void CShadowVolumeSceneNode::render()
 const core::aabbox3d<f32>& CShadowVolumeSceneNode::getBoundingBox() const
 {
 	return Box;
-}
-
-
-
-//! returns the material based on the zero based index i.
-video::SMaterial& CShadowVolumeSceneNode::getMaterial(u32 i)
-{
-	// this should never be called, because a shadow volume has got no
-	// material
-	return *((video::SMaterial*)(0));
-
-}
-
-
-
-//! returns amount of materials used by this scene node.
-u32 CShadowVolumeSceneNode::getMaterialCount()
-{
-	return 0;
 }
 
 

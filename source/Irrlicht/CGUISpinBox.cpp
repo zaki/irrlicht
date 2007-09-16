@@ -159,7 +159,7 @@ void CGUISpinBox::setDecimalPlaces(s32 places)
 }
 
 
-bool CGUISpinBox::OnEvent(SEvent event)
+bool CGUISpinBox::OnEvent(const SEvent& event)
 {
 	bool changeEvent = false;
 	switch(event.EventType)

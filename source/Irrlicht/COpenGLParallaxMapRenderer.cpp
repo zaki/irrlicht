@@ -279,7 +279,7 @@ void COpenGLParallaxMapRenderer::OnSetMaterial(video::SMaterial& material,
 
 
 //! Returns the render capability of the material.
-s32 COpenGLParallaxMapRenderer::getRenderCapability()
+s32 COpenGLParallaxMapRenderer::getRenderCapability() const
 {
 	if (Driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1) &&
 		Driver->queryFeature(video::EVDF_ARB_VERTEX_PROGRAM_1))

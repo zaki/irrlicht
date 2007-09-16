@@ -105,7 +105,7 @@ video::SMaterial& CParticleSystemSceneNode::getMaterial(u32 i)
 
 
 //! Returns amount of materials used by this scene node.
-u32 CParticleSystemSceneNode::getMaterialCount()
+u32 CParticleSystemSceneNode::getMaterialCount() const
 {
 	return 1;
 }

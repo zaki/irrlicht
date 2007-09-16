@@ -249,11 +249,11 @@ class IEventReceiver
 {
 public:
 
-	virtual ~IEventReceiver() {};
+	virtual ~IEventReceiver() {}
 
 	//! called if an event happened.
 	//! \return Returns true if the event was processed
-	virtual bool OnEvent(SEvent event) = 0;
+	virtual bool OnEvent(const SEvent& event) = 0;
 };
 
 

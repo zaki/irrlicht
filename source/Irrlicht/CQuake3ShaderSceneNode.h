@@ -33,7 +33,7 @@ public:
 	virtual void OnAnimate(u32 timeMs);
 	virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
-	virtual u32 getMaterialCount();
+	virtual u32 getMaterialCount() const;
 	virtual video::SMaterial& getMaterial(u32 i);
 
 private:

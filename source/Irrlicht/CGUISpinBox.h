@@ -59,7 +59,7 @@ namespace gui
 		virtual f32 getStepSize() const;
 
 		//! called if an event happened.
-		virtual bool OnEvent(SEvent event);
+		virtual bool OnEvent(const SEvent& event);
 
 		//! Sets the new caption of the element
 		virtual void setText(const wchar_t* text);

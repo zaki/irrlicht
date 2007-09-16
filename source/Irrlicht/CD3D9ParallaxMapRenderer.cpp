@@ -314,7 +314,7 @@ namespace video
 	}
 
 	//! Returns the render capability of the material.
-	s32 CD3D9ParallaxMapRenderer::getRenderCapability()
+	s32 CD3D9ParallaxMapRenderer::getRenderCapability() const
 	{
 		if (Driver->queryFeature(video::EVDF_PIXEL_SHADER_1_4) &&
 			Driver->queryFeature(video::EVDF_VERTEX_SHADER_1_1))

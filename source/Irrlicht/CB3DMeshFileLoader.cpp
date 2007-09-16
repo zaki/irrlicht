@@ -37,7 +37,7 @@ CB3DMeshFileLoader::~CB3DMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CB3DMeshFileLoader::isALoadableFileExtension(const c8* fileName)
+bool CB3DMeshFileLoader::isALoadableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".b3d") != 0;
 }

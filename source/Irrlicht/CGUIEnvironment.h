@@ -46,7 +46,7 @@ public:
 	virtual IOSOperator* getOSOperator() const;
 
 	//! posts an input event to the environment
-	virtual bool postEventFromUser(SEvent event);
+	virtual bool postEventFromUser(const SEvent& event);
 
 	//! This sets a new event receiver for gui events. Usually you do not have to
 	//! use this method, it is used by the internal engine.
@@ -56,7 +56,7 @@ public:
 	virtual void clear();
 
 	//! called if an event happened.
-	virtual bool OnEvent(SEvent event);
+	virtual bool OnEvent(const SEvent& event);
 
 	//! returns the current gui skin
 	virtual IGUISkin* getSkin() const;

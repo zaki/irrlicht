@@ -35,10 +35,10 @@ namespace scene
 	public:
 
 		//! Constructor
-		ISceneNode(	ISceneNode* parent, ISceneManager* mgr, s32 id=-1,
-					const core::vector3df& position = core::vector3df(0,0,0),
-					const core::vector3df& rotation = core::vector3df(0,0,0),
-					const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f))
+		ISceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id=-1,
+				const core::vector3df& position = core::vector3df(0,0,0),
+				const core::vector3df& rotation = core::vector3df(0,0,0),
+				const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f))
 			: RelativeTranslation(position), RelativeRotation(rotation), RelativeScale(scale),
 				Parent(parent), ID(id), SceneManager(mgr), TriangleSelector(0),
 				AutomaticCullingState(EAC_BOX), IsVisible(true),
@@ -49,7 +49,6 @@ namespace scene
 
 			updateAbsolutePosition();
 		}
-
 
 
 		//! Destructor
@@ -332,7 +331,7 @@ namespace scene
 
 		//! Returns amount of materials used by this scene node.
 		//! \return Returns current count of materials used by this scene node.
-		virtual u32 getMaterialCount()
+		virtual u32 getMaterialCount() const
 		{
 			return 0;
 		}
@@ -356,7 +355,7 @@ namespace scene
 		//! \param texture: Texture to be used.
 		void setMaterialTexture(u32 textureLayer, video::ITexture* texture)
 		{
-			if (textureLayer>= video::MATERIAL_MAX_TEXTURES)
+			if (textureLayer >= video::MATERIAL_MAX_TEXTURES)
 				return;
 
 			for (u32 i=0; i<getMaterialCount(); ++i)
@@ -483,7 +482,7 @@ namespace scene
 		//! Returns if this scene node is a debug object.
 		/** Debug objects have some special properties, for example they can be easily
 		excluded from collision detection or from serialization, etc. */
-		bool isDebugObject()
+		bool isDebugObject() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsDebugObject;
@@ -545,6 +544,7 @@ namespace scene
 			if (TriangleSelector)
 				TriangleSelector->grab();
 		}
+
 
 		//! updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePosition()

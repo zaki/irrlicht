@@ -209,10 +209,10 @@ bool CFileSystem::changeWorkingDirectoryTo(const c8* newDirectory)
 	return success;
 }
 
-irr::core::stringc CFileSystem::getAbsolutePath(irr::core::stringc &filename)
+core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 {
 	c8 *p=0;
-	irr::core::stringc ret;
+	core::stringc ret;
 
 #ifdef _IRR_WINDOWS_API_
 
@@ -231,34 +231,28 @@ irr::core::stringc CFileSystem::getAbsolutePath(irr::core::stringc &filename)
 	return ret;
 }
 
-irr::core::stringc CFileSystem::getFileDir(irr::core::stringc &filename)
+core::stringc CFileSystem::getFileDir(const core::stringc& filename) const
 {
-	irr::core::stringc ret;
- 
 	// find last forward or backslash
 	s32 lastSlash = filename.findLast('/');
-#ifdef _IRR_WINDOWS_API_
-	s32 lastBackSlash = filename.findLast('\\');
+	const s32 lastBackSlash = filename.findLast('\\');
 	lastSlash = lastSlash > lastBackSlash ? lastSlash : lastBackSlash;
-#endif
 
-	if (lastSlash >= 0 && lastSlash < (s32)filename.size())
-		ret = filename.subString(0, lastSlash);
+	if ((u32)lastSlash < filename.size())
+		return filename.subString(0, lastSlash);
 	else
-		ret = ".";
-
-	return ret;
+		return ".";
 }
 
 //! Creates a list of files and directories in the current working directory 
-IFileList* CFileSystem::createFileList()
+IFileList* CFileSystem::createFileList() const
 {
 	return new CFileList();
 }
 
 
 //! determines if a file exists and would be able to be opened.
-bool CFileSystem::existFile(const c8* filename)
+bool CFileSystem::existFile(const c8* filename) const
 {
 	u32 i;
 

@@ -233,7 +233,7 @@ COpenGLNormalMapRenderer::~COpenGLNormalMapRenderer()
 
 
 //! Returns the render capability of the material. 
-s32 COpenGLNormalMapRenderer::getRenderCapability()
+s32 COpenGLNormalMapRenderer::getRenderCapability() const
 {
 	if (Driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1) &&
 		Driver->queryFeature(video::EVDF_ARB_VERTEX_PROGRAM_1))

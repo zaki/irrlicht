@@ -153,7 +153,7 @@ void CD3D8ShaderMaterialRenderer::OnUnsetMaterial()
 	
 //! Returns if the material is transparent. The scene managment needs to know this
 //! for being able to sort the materials by opaque and transparent.
-bool CD3D8ShaderMaterialRenderer::isTransparent() 
+bool CD3D8ShaderMaterialRenderer::isTransparent()  const
 {
 	return BaseMaterial ? BaseMaterial->isTransparent() : false; 
 }

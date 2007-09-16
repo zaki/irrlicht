@@ -44,7 +44,7 @@ class IImage : public virtual IReferenceCounted
 public:
 
 	//! destructor
-	virtual ~IImage() {};
+	virtual ~IImage() {}
 
 	//! Lock function. Use this to get a pointer to the image data. After you
 	//! don't need the pointer anymore, you must call unlock().

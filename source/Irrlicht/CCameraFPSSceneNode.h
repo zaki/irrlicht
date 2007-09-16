@@ -34,7 +34,7 @@ namespace scene
 		//! example with scene::ISceneManager::addMayaCameraSceneNode or
 		//! scene::ISceneManager::addMeshViewerCameraSceneNode, may want to get this input
 		//! for changing their position, look at target or whatever. 
-		virtual bool OnEvent(SEvent event);
+		virtual bool OnEvent(const SEvent& event);
 
 		//! OnAnimate() is called just before rendering the whole scene.
 		//! nodes may calculate or store animations here, and may do other useful things,

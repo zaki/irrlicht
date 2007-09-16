@@ -46,7 +46,7 @@ public:
 	virtual video::SMaterial& getMaterial(u32 i);
 
 	//! Returns amount of materials used by this scene node.
-	virtual u32 getMaterialCount();
+	virtual u32 getMaterialCount() const;
 
 	//! pre render event
 	virtual void OnRegisterSceneNode();

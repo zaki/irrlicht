@@ -27,17 +27,17 @@ class IImageLoader : public virtual IReferenceCounted
 public:
 
 	//! destructor
-	virtual ~IImageLoader() {};
+	virtual ~IImageLoader() {}
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".tga")
-	virtual bool isALoadableFileExtension(const c8* fileName) = 0;
+	virtual bool isALoadableFileExtension(const c8* fileName) const = 0;
 
 	//! returns true if the file maybe is able to be loaded by this class
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) = 0;
+	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const = 0;
 
 	//! creates a surface from the file
-	virtual IImage* loadImage(irr::io::IReadFile* file) = 0;
+	virtual IImage* loadImage(irr::io::IReadFile* file) const = 0;
 };
 
 

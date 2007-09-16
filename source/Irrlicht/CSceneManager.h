@@ -353,7 +353,7 @@ namespace scene
 
 		//! Posts an input event to the environment. Usually you do not have to
 		//! use this method, it is used by the internal engine.
-		virtual bool postEventFromUser(SEvent event);
+		virtual bool postEventFromUser(const SEvent& event);
 
 		//! Clears the whole scene. All scene nodes are removed. 
 		virtual void clear();

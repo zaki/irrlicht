@@ -52,7 +52,7 @@ public:
 		FilenameTemplate = templateName;
 	}
 
-	bool OnEvent(SEvent event)
+	bool OnEvent(const SEvent& event)
 	{
 		// check if user presses the key F9
 		if (event.EventType == EET_KEY_INPUT_EVENT &&

@@ -632,7 +632,7 @@ public:
 
 
 	//! Called if an event happened.
-	virtual bool OnEvent(SEvent event)
+	virtual bool OnEvent(const SEvent& event)
 	{
 		return Parent ? Parent->OnEvent(event) : false;
 	}

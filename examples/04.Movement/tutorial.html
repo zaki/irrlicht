@@ -64,7 +64,7 @@
           We will use this input to move the scene node with the keys W and S.</p>
         <table width="95%" border="0" cellspacing="2" cellpadding="0" bgcolor="#CCCCCC" align="center">
           <tr> 
-            <td> <pre>class MyEventReceiver : public IEventReceiver<br>{<br>public:<br>	virtual bool OnEvent(SEvent event)<br>	{ </pre></td>
+            <td> <pre>class MyEventReceiver : public IEventReceiver<br>{<br>public:<br>	virtual bool OnEvent(const SEvent&amp; event)<br>	{ </pre></td>
           </tr>
         </table>
         <p>If the key 'W' or 'S' was left up, we get the position of the scene 

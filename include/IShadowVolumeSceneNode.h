@@ -23,7 +23,7 @@ namespace scene
 			: ISceneNode(parent, mgr, id) {}
 
 		//! sets the mesh from which the shadow volume should be generated.
-		virtual void setMeshToRenderFrom(IMesh* mesh) = 0;
+		virtual void setMeshToRenderFrom(const IMesh* mesh) = 0;
 	};
 
 } // end namespace scene

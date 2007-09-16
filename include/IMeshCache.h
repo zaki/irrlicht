@@ -29,7 +29,7 @@ namespace scene
 	public:
 
 		//! destructor
-		virtual ~IMeshCache() {};
+		virtual ~IMeshCache() {}
 
 		//! Adds a mesh to the internal list of loaded meshes.
 		/** Usually, ISceneManager::getMesh() is called to load a mesh from a file.

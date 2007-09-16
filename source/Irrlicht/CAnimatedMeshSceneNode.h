@@ -68,7 +68,7 @@ namespace scene
 		virtual video::SMaterial& getMaterial(u32 i);
 
 		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount();
+		virtual u32 getMaterialCount() const;
 
 		//! Creates shadow volume scene node as child of this node
 		//! and returns a pointer to it.

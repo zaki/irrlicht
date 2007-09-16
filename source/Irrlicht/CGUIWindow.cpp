@@ -107,7 +107,7 @@ CGUIWindow::~CGUIWindow()
 
 
 //! called if an event happened.
-bool CGUIWindow::OnEvent(SEvent event)
+bool CGUIWindow::OnEvent(const SEvent& event)
 {
 	switch(event.EventType)
 	{

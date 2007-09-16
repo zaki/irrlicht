@@ -25,7 +25,7 @@ namespace scene
 		virtual ~CShadowVolumeSceneNode();
 
 		//! sets the mesh from which the shadow volume should be generated.
-		virtual void setMeshToRenderFrom(IMesh* mesh);
+		virtual void setMeshToRenderFrom(const IMesh* mesh);
 
 		//! pre render method
 		virtual void OnRegisterSceneNode();
@@ -35,12 +35,6 @@ namespace scene
 
 		//! returns the axis aligned bounding box of this node
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
-
-		//! returns the material based on the zero based index i.
-		virtual video::SMaterial& getMaterial(u32 i);
-		
-		//! returns amount of materials used by this scene node.
-		virtual u32 getMaterialCount();
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_SHADOW_VOLUME; }

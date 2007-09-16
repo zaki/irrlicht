@@ -16,7 +16,7 @@ namespace core
     \brief File containing useful basic utility functions
 */
 
-// ----------------------------- some basic quite often used string functions --------------------------
+// ----------- some basic quite often used string functions -----------------
 
 static const stringc irrEmtpyStringc = "";
 

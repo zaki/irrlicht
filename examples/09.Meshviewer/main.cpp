@@ -188,7 +188,7 @@ void createToolBox()
 class MyEventReceiver : public IEventReceiver
 {
 public:
-	virtual bool OnEvent(SEvent event)
+	virtual bool OnEvent(const SEvent& event)
 	{
 		// Escape swaps Camera Input
 		if (event.EventType == EET_KEY_INPUT_EVENT &&

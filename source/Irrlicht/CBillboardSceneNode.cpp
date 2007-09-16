@@ -15,10 +15,9 @@ namespace scene
 
 //! constructor
 CBillboardSceneNode::CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
-							const core::vector3df& position, const core::dimension2d<f32>& size,
-							video::SColor shade_top, video::SColor shade_down
-							)
-: IBillboardSceneNode(parent, mgr, id, position)
+				const core::vector3df& position, const core::dimension2d<f32>& size,
+				video::SColor shade_top, video::SColor shade_down)
+	: IBillboardSceneNode(parent, mgr, id, position)
 {
 	#ifdef _DEBUG
 	setDebugName("CBillboardSceneNode");
@@ -45,13 +44,6 @@ CBillboardSceneNode::CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr,
 	vertices[3].TCoords.set(0.0f, 1.0f);
 	vertices[3].Color = shade_down;
 }
-
-
-
-CBillboardSceneNode::~CBillboardSceneNode()
-{
-}
-
 
 
 //! pre render event
@@ -157,14 +149,14 @@ video::SMaterial& CBillboardSceneNode::getMaterial(u32 i)
 
 
 //! returns amount of materials used by this scene node.
-u32 CBillboardSceneNode::getMaterialCount()
+u32 CBillboardSceneNode::getMaterialCount() const
 {
 	return 1;
 }
 
 
 //! gets the size of the billboard
-const core::dimension2d<f32>& CBillboardSceneNode::getSize()
+const core::dimension2d<f32>& CBillboardSceneNode::getSize() const
 {
 	return Size;
 }
@@ -181,6 +173,7 @@ void CBillboardSceneNode::serializeAttributes(io::IAttributes* out, io::SAttribu
 	out->addColor ("Shade_Down", vertices[0].Color );
 }
 
+
 //! Reads attributes of the scene node.
 void CBillboardSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
@@ -194,6 +187,7 @@ void CBillboardSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttrib
 	setSize(Size);
 }
 
+
 //! Set the color of all vertices of the billboard
 //! \param overallColor: the color to set
 void CBillboardSceneNode::setColor(const video::SColor & overallColor)
@@ -201,6 +195,7 @@ void CBillboardSceneNode::setColor(const video::SColor & overallColor)
 	for(u32 vertex = 0; vertex < 4; ++vertex)
 		vertices[0].Color = overallColor;
 }
+
 
 //! Set the color of the top and bottom vertices of the billboard
 //! \param topColor: the color to set the top vertices
@@ -213,10 +208,11 @@ void CBillboardSceneNode::setColor(const video::SColor & topColor, const video::
 	vertices[3].Color = bottomColor;
 }
 
+
 //! Gets the color of the top and bottom vertices of the billboard
 //! \param[out] topColor: stores the color of the top vertices
 //! \param[out] bottomColor: stores the color of the bottom vertices
-void CBillboardSceneNode::getColor(video::SColor & topColor, video::SColor & bottomColor)
+void CBillboardSceneNode::getColor(video::SColor & topColor, video::SColor & bottomColor) const
 {
 	bottomColor = vertices[0].Color;
 	topColor = vertices[1].Color;
@@ -226,8 +222,10 @@ void CBillboardSceneNode::getColor(video::SColor & topColor, video::SColor & bot
 //! Creates a clone of this scene node and its children.
 ISceneNode* CBillboardSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
 {
-	if (!newParent) newParent = Parent;
-	if (!newManager) newManager = SceneManager;
+	if (!newParent)
+		newParent = Parent;
+	if (!newManager)
+		newManager = SceneManager;
 
 	CBillboardSceneNode* nb = new CBillboardSceneNode(newParent, 
 		newManager, ID, RelativeTranslation, Size);

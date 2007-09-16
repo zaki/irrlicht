@@ -22,12 +22,12 @@ CImageWriterTGA::CImageWriterTGA()
 #endif
 }
 
-bool CImageWriterTGA::isAWriteableFileExtension(const c8* fileName)
+bool CImageWriterTGA::isAWriteableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".tga") != 0;
 }
 
-bool CImageWriterTGA::writeImage(io::IWriteFile *file, IImage *image,u32 param)
+bool CImageWriterTGA::writeImage(io::IWriteFile *file, IImage *image,u32 param) const
 {
 	STGAHeader imageHeader;
 	imageHeader.IdLength = 0;

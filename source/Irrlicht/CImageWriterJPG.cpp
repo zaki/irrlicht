@@ -162,13 +162,13 @@ CImageWriterJPG::CImageWriterJPG()
 }
 
 
-bool CImageWriterJPG::isAWriteableFileExtension(const c8* fileName)
+bool CImageWriterJPG::isAWriteableFileExtension(const c8* fileName) const
 {
 	return strstr(fileName, ".jpg") != 0 || strstr(fileName, ".jpeg") != 0;
 }
 
 
-bool CImageWriterJPG::writeImage(io::IWriteFile *file, IImage *input,u32 quality )
+bool CImageWriterJPG::writeImage(io::IWriteFile *file, IImage *input,u32 quality) const
 {
 #ifndef _IRR_COMPILE_WITH_LIBJPEG_
 	return false;

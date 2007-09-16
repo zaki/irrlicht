@@ -73,7 +73,7 @@ public:
 	virtual void OnUnsetMaterial();
 
 	//! Returns if the material is transparent.
-	virtual bool isTransparent();
+	virtual bool isTransparent() const;
 
 	// implementations for the render services
 	virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates);

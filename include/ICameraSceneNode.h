@@ -32,7 +32,7 @@ namespace scene
 			: ISceneNode(parent, mgr, id, position, rotation, scale), IsOrthogonal(false) {}
 
 		//! Destructor
-		virtual ~ICameraSceneNode() {};
+		virtual ~ICameraSceneNode() {}
 
 		//! Sets the projection matrix of the camera. 
 		/** The core::matrix4 class has some methods
@@ -44,11 +44,11 @@ namespace scene
 
 		//! Gets the current projection matrix of the camera.
 		/** \return Returns the current projection matrix of the camera. */
-		virtual const core::matrix4& getProjectionMatrix() = 0;
+		virtual const core::matrix4& getProjectionMatrix() const = 0;
 
 		//! Gets the current view matrix of the camera.
 		/** \return Returns the current view matrix of the camera. */
-		virtual const core::matrix4& getViewMatrix() = 0;
+		virtual const core::matrix4& getViewMatrix() const = 0;
 
 		//! It is possible to send mouse and key events to the camera.
 		/** Most cameras
@@ -56,7 +56,7 @@ namespace scene
 		example with ISceneManager::addMayaCameraSceneNode or
 		ISceneManager::addMeshViewerCameraSceneNode, may want to get this input
 		for changing their position, look at target or whatever.  */
-		virtual bool OnEvent(SEvent event) = 0;
+		virtual bool OnEvent(const SEvent& event) = 0;
 
 		//! Sets the look at target of the camera
 		/** \param pos: Look at target of the camera. */
@@ -76,19 +76,19 @@ namespace scene
 
 		//! Gets the value of the near plane of the camera.
 		/** \return Returns the value of the near plane of the camera. */
-		virtual f32 getNearValue() = 0;
+		virtual f32 getNearValue() const = 0;
 
 		//! Gets the value of the far plane of the camera.
 		/** \return Returns the value of the far plane of the camera. */
-		virtual f32 getFarValue() = 0;
+		virtual f32 getFarValue() const = 0;
 
 		//! Gets the aspect ratio of the camera.
 		/** \return Returns the aspect ratio of the camera. */
-		virtual f32 getAspectRatio() = 0;
+		virtual f32 getAspectRatio() const = 0;
 
 		//! Gets the field of view of the camera.
 		/** \return Returns the field of view of the camera in radiants. */
-		virtual f32 getFOV() = 0;
+		virtual f32 getFOV() const = 0;
 
 		//! Sets the value of the near clipping plane. (default: 1.0f)
 		/** \param zn: New z near value. */
@@ -117,12 +117,12 @@ namespace scene
 		virtual void setInputReceiverEnabled(bool enabled) = 0;
 
 		//! Returns if the input receiver of the camera is currently enabled.
-		virtual bool isInputReceiverEnabled() = 0;
+		virtual bool isInputReceiverEnabled() const = 0;
 
 		//! Returns if a camera is orthogonal.
 		/** This setting does not change anything of the view or projection matrix. However
 		it influences how collision detection and picking is done with this camera. */
-		virtual bool isOrthogonal() 
+		virtual bool isOrthogonal() const 
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsOrthogonal;
@@ -135,7 +135,6 @@ namespace scene
 		{
 			IsOrthogonal = orthogonal;
 		}
-
 
 	private:
 

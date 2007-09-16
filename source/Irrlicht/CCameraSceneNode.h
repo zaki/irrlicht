@@ -32,18 +32,18 @@ namespace scene
 
 		//! Gets the current projection matrix of the camera
 		//! \return Returns the current projection matrix of the camera.
-		virtual const core::matrix4& getProjectionMatrix();
+		virtual const core::matrix4& getProjectionMatrix() const;
 
 		//! Gets the current view matrix of the camera
 		//! \return Returns the current view matrix of the camera.
-		virtual const core::matrix4& getViewMatrix();
+		virtual const core::matrix4& getViewMatrix() const;
 
 		//! It is possible to send mouse and key events to the camera. Most cameras
 		//! may ignore this input, but camera scene nodes which are created for 
 		//! example with scene::ISceneManager::addMayaCameraSceneNode or
 		//! scene::ISceneManager::addMeshViewerCameraSceneNode, may want to get this input
 		//! for changing their position, look at target or whatever. 
-		virtual bool OnEvent(SEvent event);
+		virtual bool OnEvent(const SEvent& event);
 
 		//! sets the look at target of the camera
 		//! \param pos: Look at target of the camera.
@@ -63,19 +63,19 @@ namespace scene
 
 		//! Gets distance from the camera to the near plane.
 		//! \return Value of the near plane of the camera.
-		virtual f32 getNearValue();
+		virtual f32 getNearValue() const;
 
 		//! Gets the distance from the camera to the far plane.
 		//! \return Value of the far plane of the camera.
-		virtual f32 getFarValue();
+		virtual f32 getFarValue() const;
 
 		//! Get the aspect ratio of the camera.
 		//! \return The aspect ratio of the camera.
-		virtual f32 getAspectRatio();
+		virtual f32 getAspectRatio() const;
 
 		//! Gets the field of view of the camera.
 		//! \return Field of view of the camera
-		virtual f32 getFOV();
+		virtual f32 getFOV() const;
 
 		//! Sets the value of the near clipping plane. (default: 1.0f)
 		virtual void setNearValue(f32 zn);
@@ -107,7 +107,7 @@ namespace scene
 		virtual void setInputReceiverEnabled(bool enabled);
 
 		//! Returns if the input receiver of the camera is currently enabled.
-		virtual bool isInputReceiverEnabled();
+		virtual bool isInputReceiverEnabled() const;
 
 		//! Writes attributes of the scene node.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;

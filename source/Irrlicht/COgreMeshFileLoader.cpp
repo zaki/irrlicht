@@ -76,7 +76,7 @@ COgreMeshFileLoader::~COgreMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool COgreMeshFileLoader::isALoadableFileExtension(const c8* filename)
+bool COgreMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 {
 	return strstr(filename, ".mesh")!=0;
 }

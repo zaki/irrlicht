@@ -90,7 +90,7 @@ void CGUIMenu::draw()
 
 
 //! called if an event happened.
-bool CGUIMenu::OnEvent(SEvent event)
+bool CGUIMenu::OnEvent(const SEvent& event)
 {
 	if (!IsEnabled)
 		return Parent ? Parent->OnEvent(event) : false;
