@@ -345,7 +345,7 @@ u32 CD3D8Texture::getPitch() const
 
 
 //! returns the DIRECT3D8 Texture
-IDirect3DTexture8* CD3D8Texture::getDX8Texture()
+IDirect3DTexture8* CD3D8Texture::getDX8Texture() const
 {
 	return Texture;
 }

@@ -219,7 +219,7 @@ namespace video
 		void setRenderStatesStencilShadowMode(bool zfail);
 
 		//! sets the current Texture
-		bool setTexture(s32 stage, video::ITexture* texture);
+		bool setTexture(s32 stage, const video::ITexture* texture);
 
 		//! resets the device
 		bool reset();
@@ -270,7 +270,7 @@ namespace video
 		bool ResetRenderStates; // bool to make all renderstates be reseted if set.
 		bool Transformation3DChanged;
 		bool StencilBuffer;
-		ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		bool LastTextureMipMapsAvailable[MATERIAL_MAX_TEXTURES];
 		core::matrix4 Matrices[ETS_COUNT]; // matrizes of the 3d mode we need to restore when we switch back from the 2d mode.
 
