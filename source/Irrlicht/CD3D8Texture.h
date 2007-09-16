@@ -58,7 +58,7 @@ public:
 	virtual u32 getPitch() const;
 
 	//! returns the DIRECT3D8 Texture
-	IDirect3DTexture8* getDX8Texture();
+	IDirect3DTexture8* getDX8Texture() const;
 
 	//! returns if texture has mipmap levels
 	bool hasMipMaps() const;

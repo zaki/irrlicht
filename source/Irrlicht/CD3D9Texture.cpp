@@ -552,7 +552,7 @@ u32 CD3D9Texture::getPitch() const
 
 
 //! returns the DIRECT3D9 Texture
-IDirect3DTexture9* CD3D9Texture::getDX9Texture()
+IDirect3DTexture9* CD3D9Texture::getDX9Texture() const
 {
 	return Texture;
 }

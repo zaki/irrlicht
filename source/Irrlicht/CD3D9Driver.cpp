@@ -70,10 +70,6 @@ CD3D9Driver::~CD3D9Driver()
 {
 	deleteMaterialRenders();
 
-	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		if (CurrentTexture[i])
-			CurrentTexture[i]->drop();
-
 	// drop d3d9
 
 	if (pID3DDevice)
@@ -612,7 +608,7 @@ void CD3D9Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4
 
 
 //! sets the current Texture
-bool CD3D9Driver::setTexture(s32 stage, video::ITexture* texture)
+bool CD3D9Driver::setTexture(s32 stage, const video::ITexture* texture)
 {
 	if (CurrentTexture[stage] == texture)
 		return true;
@@ -623,9 +619,6 @@ bool CD3D9Driver::setTexture(s32 stage, video::ITexture* texture)
 		return false;
 	}
 
-	if (CurrentTexture[stage])
-		CurrentTexture[stage]->drop();
-
 	CurrentTexture[stage] = texture;
 
 	if (!texture)
@@ -635,9 +628,7 @@ bool CD3D9Driver::setTexture(s32 stage, video::ITexture* texture)
 	}
 	else
 	{
-		pID3DDevice->SetTexture(stage, ((CD3D9Texture*)texture)->getDX9Texture());
-		texture->grab();
-
+		pID3DDevice->SetTexture(stage, ((const CD3D9Texture*)texture)->getDX9Texture());
 	}
 	return true;
 }
@@ -1920,12 +1911,7 @@ bool CD3D9Driver::reset()
 	LastVertexType = (E_VERTEX_TYPE)-1;
 
 	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-	{
-		if (CurrentTexture[i])
-			CurrentTexture[i]->drop();
-
 		CurrentTexture[i] = 0;
-	}
 
 	setVertexShader(EVT_STANDARD);
 	setRenderStates3DMode();
