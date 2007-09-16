@@ -458,7 +458,7 @@ void CGUITabControl::removeChild(IGUIElement* child)
 	// reassign numbers
 	if (isTab)
 	{
-		for (i=0; i<(s32)Tabs.size(); ++i)
+		for (i=0; i<Tabs.size(); ++i)
 			if (Tabs[i])
 				Tabs[i]->setNumber(i);
 	}

@@ -225,7 +225,7 @@ namespace video
 		void setRenderStatesStencilShadowMode(bool zfail);
 
 		//! sets the current Texture
-		bool setTexture(s32 stage, video::ITexture* texture);
+		bool setTexture(s32 stage, const video::ITexture* texture);
 
 		//! resets the device
 		bool reset();
