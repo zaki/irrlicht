@@ -92,7 +92,6 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 }
 
 
-
 //! destructor
 CGUIWindow::~CGUIWindow()
 {
@@ -105,7 +104,6 @@ CGUIWindow::~CGUIWindow()
 	if (CloseButton)
 		CloseButton->drop();
 }
-
 
 
 //! called if an event happened.
@@ -202,12 +200,12 @@ bool CGUIWindow::OnEvent(SEvent event)
 	return IGUIElement::OnEvent(event);
 }
 
+
 //! Updates the absolute position.
 void CGUIWindow::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
 }
-
 
 
 //! draws the element and its children
@@ -240,25 +238,22 @@ void CGUIWindow::draw()
 }
 
 
-
 //! Returns pointer to the close button
-IGUIButton* CGUIWindow::getCloseButton()
+IGUIButton* CGUIWindow::getCloseButton() const
 {
 	return CloseButton;
 }
 
 
-
 //! Returns pointer to the minimize button
-IGUIButton* CGUIWindow::getMinimizeButton()
+IGUIButton* CGUIWindow::getMinimizeButton() const
 {
 	return MinButton;
 }
 
 
-
 //! Returns pointer to the maximize button
-IGUIButton* CGUIWindow::getMaximizeButton()
+IGUIButton* CGUIWindow::getMaximizeButton() const
 {
 	return RestoreButton;
 }
@@ -268,3 +263,4 @@ IGUIButton* CGUIWindow::getMaximizeButton()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

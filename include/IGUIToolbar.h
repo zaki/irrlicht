@@ -27,7 +27,7 @@ namespace gui
 			: IGUIElement(EGUIET_TOOL_BAR, environment, parent, id, rectangle) {}
 
 		//! destructor
-		~IGUIToolBar() {};
+		virtual ~IGUIToolBar() {}
 
 		//! Adds a button to the tool bar
 		virtual IGUIButton* addButton(s32 id=-1, const wchar_t* text=0,const wchar_t* tooltiptext=0,

@@ -41,20 +41,20 @@ public:
 	}
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize()
+	virtual const core::dimension2d<s32>& getOriginalSize() const
 	{
 		//return MipMap[0]->getDimension();
 		return OrigSize;
 	}
 
 	//! Returns the size of the largest mipmap.
-	const core::dimension2d<s32>& getMaxSize()
+	const core::dimension2d<s32>& getMaxSize() const
 	{
 		return MipMap[0]->getDimension();
 	}
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<s32>& getSize()
+	virtual const core::dimension2d<s32>& getSize() const
 	{
 		return MipMap[MipMapLOD]->getDimension();
 	}
@@ -73,7 +73,7 @@ public:
 
 
 	//! returns driver type of texture (=the driver, who created the texture)
-	virtual E_DRIVER_TYPE getDriverType()
+	virtual E_DRIVER_TYPE getDriverType() const
 	{
 		return EDT_BURNINGSVIDEO;
 	}
@@ -110,7 +110,7 @@ public:
 private:
 
 	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size);
+	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	core::dimension2d<s32> OrigSize;
 
@@ -118,7 +118,6 @@ private:
 
 	s32 MipMapLOD;
 	bool HasMipMaps;
-
 };
 
 

@@ -73,16 +73,16 @@ CGUIListBox::~CGUIListBox()
 
 
 //! returns amount of list items
-s32 CGUIListBox::getItemCount()
+u32 CGUIListBox::getItemCount() const
 {
 	return Items.size();
 }
 
 
 //! returns string of a list item. the may be a value from 0 to itemCount-1
-const wchar_t* CGUIListBox::getListItem(s32 id)
+const wchar_t* CGUIListBox::getListItem(u32 id) const
 {
-	if ((u32)id>=Items.size())
+	if (id>=Items.size())
 		return 0;
 
 	return Items[id].text.c_str();
@@ -90,9 +90,9 @@ const wchar_t* CGUIListBox::getListItem(s32 id)
 
 
 //! Returns the icon of an item
-s32 CGUIListBox::getIcon(s32 id) const
+s32 CGUIListBox::getIcon(u32 id) const
 {
-	if ((u32)id>=Items.size())
+	if (id>=Items.size())
 		return -1;
 
 	return Items[id].icon;
@@ -100,23 +100,23 @@ s32 CGUIListBox::getIcon(s32 id) const
 
 
 //! adds a list item, returns id of item
-s32 CGUIListBox::addItem(const wchar_t* text)
+u32 CGUIListBox::addItem(const wchar_t* text)
 {
 	return addItem(text, -1);
 }
 
 
 //! adds a list item, returns id of item
-void CGUIListBox::removeItem(s32 id)
+void CGUIListBox::removeItem(u32 id)
 {
-	if ((u32)id >= Items.size())
+	if (id >= Items.size())
 		return;
 
-	if (Selected==id)
+	if ((u32)Selected==id)
 	{
 		Selected = -1;
 	}
-	else if (Selected > id)
+	else if ((u32)Selected > id)
 	{
 		Selected -= 1;
 		selectTime = os::Timer::getTime();
@@ -172,7 +172,7 @@ void CGUIListBox::recalculateItemHeight()
 
 
 //! returns id of selected item. returns -1 if no item is selected.
-s32 CGUIListBox::getSelected()
+s32 CGUIListBox::getSelected() const
 {
 	return Selected;
 }
@@ -552,7 +552,7 @@ void CGUIListBox::draw()
 
 
 //! adds an list item with an icon
-s32 CGUIListBox::addItem(const wchar_t* text, s32 icon)
+u32 CGUIListBox::addItem(const wchar_t* text, s32 icon)
 {
 	ListItem i;
 	i.text = text;
@@ -602,7 +602,7 @@ void CGUIListBox::setAutoScrollEnabled(bool scroll)
 }
 
 
-bool CGUIListBox::isAutoScrollEnabled()
+bool CGUIListBox::isAutoScrollEnabled() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return AutoScroll;
@@ -730,9 +730,9 @@ void CGUIListBox::recalculateItemWidth(s32 icon)
 }
 
 
-void CGUIListBox::setItem(s32 index, const wchar_t* text, s32 icon)
+void CGUIListBox::setItem(u32 index, const wchar_t* text, s32 icon)
 {
-	if ( (u32)index >= Items.size() )
+	if ( index >= Items.size() )
 		return;
 
 	Items[index].text = text;
@@ -745,10 +745,8 @@ void CGUIListBox::setItem(s32 index, const wchar_t* text, s32 icon)
 
 //! Insert the item at the given index
 //! Return the index on success or -1 on failure.
-s32 CGUIListBox::insertItem(s32 index, const wchar_t* text, s32 icon)
+s32 CGUIListBox::insertItem(u32 index, const wchar_t* text, s32 icon)
 {
-	if ( index < 0 )
-		return -1;
 	ListItem i;
 	i.text = text;
 	i.icon = icon;
@@ -761,9 +759,9 @@ s32 CGUIListBox::insertItem(s32 index, const wchar_t* text, s32 icon)
 }
 
 
-void CGUIListBox::swapItems(s32 index1, s32 index2)
+void CGUIListBox::swapItems(u32 index1, u32 index2)
 {
-	if ( (u32)index1 >= Items.size() || (u32)index2 >= Items.size() )
+	if ( index1 >= Items.size() || index2 >= Items.size() )
 		return;
 
 	ListItem dummmy = Items[index1];
@@ -772,7 +770,7 @@ void CGUIListBox::swapItems(s32 index1, s32 index2)
 }
 
 
-void CGUIListBox::setItemOverrideColor(s32 index, const video::SColor &color)
+void CGUIListBox::setItemOverrideColor(u32 index, const video::SColor &color)
 {
 	for ( u32 c=0; c < EGUI_LBC_COUNT; ++c )
 	{
@@ -782,9 +780,9 @@ void CGUIListBox::setItemOverrideColor(s32 index, const video::SColor &color)
 }
 
 
-void CGUIListBox::setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color)
+void CGUIListBox::setItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType, const video::SColor &color)
 {
-	if ( (u32)index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
+	if ( index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
 		return;
 
 	Items[index].OverrideColors[colorType].Use = true;
@@ -792,7 +790,7 @@ void CGUIListBox::setItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType, 
 }
 
 
-void CGUIListBox::clearItemOverrideColor(s32 index)
+void CGUIListBox::clearItemOverrideColor(u32 index)
 {
 	for (u32 c=0; c < (u32)EGUI_LBC_COUNT; ++c )
 	{
@@ -801,25 +799,25 @@ void CGUIListBox::clearItemOverrideColor(s32 index)
 }
 
 
-void CGUIListBox::clearItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
+void CGUIListBox::clearItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType)
 {
-	if ( (u32)index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
+	if ( index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
 		return;
 
 	Items[index].OverrideColors[colorType].Use = false;
 }
 
 
-bool CGUIListBox::hasItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
+bool CGUIListBox::hasItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) const
 {
-	if ( (u32)index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
+	if ( index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
 		return false;
 
 	return Items[index].OverrideColors[colorType].Use;
 }
 
 
-video::SColor CGUIListBox::getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR colorType)
+video::SColor CGUIListBox::getItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) const
 {
 	if ( (u32)index >= Items.size() || colorType < 0 || colorType >= EGUI_LBC_COUNT )
 		return video::SColor();
@@ -828,7 +826,7 @@ video::SColor CGUIListBox::getItemOverrideColor(s32 index, EGUI_LISTBOX_COLOR co
 }
 
 
-video::SColor CGUIListBox::getItemDefaultColor(EGUI_LISTBOX_COLOR colorType)
+video::SColor CGUIListBox::getItemDefaultColor(EGUI_LISTBOX_COLOR colorType) const
 {
 	IGUISkin* skin = Environment->getSkin();
 	if ( !skin )

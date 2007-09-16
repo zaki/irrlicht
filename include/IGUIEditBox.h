@@ -24,7 +24,7 @@ namespace gui
 			: IGUIElement(EGUIET_EDIT_BOX, environment, parent, id, rectangle) {}
 
 		//! destructor
-		~IGUIEditBox() {};
+		virtual ~IGUIEditBox() {};
 
 		//! Sets another skin independent font.
 		/** If this is set to zero, the button uses the font of the skin.
@@ -65,7 +65,7 @@ namespace gui
 
 		//! Checks if word wrap is enabled
 		//! \return true if word wrap is enabled, false otherwise
-		virtual bool isWordWrapEnabled() = 0;
+		virtual bool isWordWrapEnabled() const = 0;
 
 		//! Enables or disables newlines.
 		/** \param enable: If set to true, the EGET_EDITBOX_ENTER event will not be fired,
@@ -74,7 +74,7 @@ namespace gui
 
 		//! Checks if multi line editing is enabled
 		//! \return true if mult-line is enabled, false otherwise
-		virtual bool isMultiLineEnabled() = 0;
+		virtual bool isMultiLineEnabled() const = 0;
 
 		//! Enables or disables automatic scrolling with cursor position
 		//! \param enable: If set to true, the text will move around with the cursor position
@@ -82,7 +82,7 @@ namespace gui
 
 		//! Checks to see if automatic scrolling is enabled
 		//! \return true if automatic scrolling is enabled, false if not
-		virtual bool isAutoScrollEnabled() = 0;
+		virtual bool isAutoScrollEnabled() const = 0;
 
 		//! Sets whether the edit box is a password box. Setting this to true will 
 		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
@@ -91,7 +91,7 @@ namespace gui
 		virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*') = 0;
 
 		//! Returns true if the edit box is currently a password box.
-		virtual bool isPasswordBox() = 0;
+		virtual bool isPasswordBox() const = 0;
 
 		//! Gets the size area of the text in the edit box
 		//! \return Returns the size in pixels of the text
@@ -100,10 +100,10 @@ namespace gui
 		//! Sets the maximum amount of characters which may be entered in the box.
 		/** \param max: Maximum amount of characters. If 0, the character amount is 
 		 infinity. */
-		virtual void setMax(s32 max) = 0;
+		virtual void setMax(u32 max) = 0;
 
 		//! Returns maximum amount of characters, previously set by setMax();
-		virtual s32 getMax() = 0;
+		virtual u32 getMax() const = 0;
 	};
 
 

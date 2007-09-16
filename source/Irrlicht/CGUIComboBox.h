@@ -28,20 +28,17 @@ namespace gui
 		CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle);
 
-		//! destructor
-		~CGUIComboBox();
-
 		//! Returns amount of items in box
-		virtual s32 getItemCount();
+		virtual u32 getItemCount() const;
 
 		//! returns string of an item. the idx may be a value from 0 to itemCount-1
-		virtual const wchar_t* getItem(s32 idx) const;
+		virtual const wchar_t* getItem(u32 idx) const;
 
 		//! adds an item and returns the index of it
-		virtual s32 addItem(const wchar_t* text);
+		virtual u32 addItem(const wchar_t* text);
 
 		//! Removes an item from the combo box.
-		virtual void removeItem(s32 id);
+		virtual void removeItem(u32 id);
 
 		//! deletes all items in the combo box
 		virtual void clear();
@@ -50,7 +47,7 @@ namespace gui
 		virtual const wchar_t* getText() const;
 
 		//! returns id of selected item. returns -1 if no item is selected.
-		virtual s32 getSelected();
+		virtual s32 getSelected() const;
 
 		//! sets the selected item. Set this to -1 if no item should be selected
 		virtual void setSelected(s32 id);

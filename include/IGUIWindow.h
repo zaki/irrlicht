@@ -24,16 +24,16 @@ namespace gui
 			: IGUIElement(EGUIET_WINDOW, environment, parent, id, rectangle) {}
 
 		//! destructor
-		virtual ~IGUIWindow() {};
+		virtual ~IGUIWindow() {}
 
 		//! Returns pointer to the close button
-		virtual IGUIButton* getCloseButton() = 0;
+		virtual IGUIButton* getCloseButton() const = 0;
 
 		//! Returns pointer to the minimize button
-		virtual IGUIButton* getMinimizeButton() = 0;
+		virtual IGUIButton* getMinimizeButton() const = 0;
 
 		//! Returns pointer to the maximize button
-		virtual IGUIButton* getMaximizeButton() = 0;
+		virtual IGUIButton* getMaximizeButton() const = 0;
 	};
 
 

@@ -1564,7 +1564,7 @@ void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CSoftwareDriver2::draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
+void CSoftwareDriver2::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 					 const core::rect<s32>& sourceRect, 
 					 const core::rect<s32>* clipRect, SColor color, 
 					 bool useAlphaChannelOfTexture)
@@ -1840,7 +1840,7 @@ const wchar_t* CSoftwareDriver2::getName()
 }
 
 //! Returns type of video driver
-E_DRIVER_TYPE CSoftwareDriver2::getDriverType()
+E_DRIVER_TYPE CSoftwareDriver2::getDriverType() const
 {
 	return EDT_BURNINGSVIDEO;
 }

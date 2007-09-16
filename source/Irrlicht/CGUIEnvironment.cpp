@@ -145,7 +145,6 @@ CGUIEnvironment::~CGUIEnvironment()
 	// remove all factories
 	for (i=0; i<GUIElementFactoryList.size(); ++i)
 		GUIElementFactoryList[i]->drop();
-
 }
 
 
@@ -170,7 +169,6 @@ void CGUIEnvironment::loadBuiltInFont()
 
 	file->drop();
 }
-
 
 
 //! draws all gui elements
@@ -276,8 +274,9 @@ bool CGUIEnvironment::setFocus(IGUIElement* element)
 	return true;
 }
 
+
 //! returns the element with the focus
-IGUIElement* CGUIEnvironment::getFocus()
+IGUIElement* CGUIEnvironment::getFocus() const
 {
 	return Focus;
 }
@@ -311,28 +310,27 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 
 
 //! Returns if the element has focus
-bool CGUIEnvironment::hasFocus(IGUIElement* element)
+bool CGUIEnvironment::hasFocus(IGUIElement* element) const
 {
-	bool ret = (element == Focus); 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return ret;
+	return (element == Focus); 
 }
 
 
 //! returns the current video driver
-video::IVideoDriver* CGUIEnvironment::getVideoDriver()
+video::IVideoDriver* CGUIEnvironment::getVideoDriver() const
 {
 	return Driver;
 }
 
 //! returns the current file system
-io::IFileSystem* CGUIEnvironment::getFileSystem()
+io::IFileSystem* CGUIEnvironment::getFileSystem() const
 {
 	return FileSystem;
 }
 
 //! returns the current file system
-IOSOperator* CGUIEnvironment::getOSOperator()
+IOSOperator* CGUIEnvironment::getOSOperator() const
 {
 	return Operator;
 }
@@ -340,7 +338,6 @@ IOSOperator* CGUIEnvironment::getOSOperator()
 //! clear all GUI elements
 void CGUIEnvironment::clear()
 {
-
 	// Remove the focus
 	if (Focus)
 	{
@@ -371,8 +368,8 @@ bool CGUIEnvironment::OnEvent(SEvent event)
 	return false;
 }
 
-/*
-*/
+
+//
 void CGUIEnvironment::OnPostRender( u32 time )
 {
 	// check tooltip
@@ -417,8 +414,8 @@ void CGUIEnvironment::OnPostRender( u32 time )
 	IGUIElement::OnPostRender ( time );
 }
 
-/*
-*/
+
+//
 void CGUIEnvironment::updateHoveredElement(core::position2d<s32> mousePos)
 {
 	IGUIElement* lastHovered = Hovered;
@@ -538,7 +535,6 @@ bool CGUIEnvironment::postEventFromUser(SEvent event)
 }
 
 
-
 //! returns the current gui skin
 IGUISkin* CGUIEnvironment::getSkin() const
 {
@@ -557,6 +553,7 @@ void CGUIEnvironment::setSkin(IGUISkin* skin)
 	if (CurrentSkin)
 		CurrentSkin->grab();
 }
+
 
 //! Creates a new GUI Skin based on a template.
 /** \return Returns a pointer to the created skin.
@@ -584,10 +581,11 @@ IGUISkin* CGUIEnvironment::createSkin(EGUI_SKIN_TYPE type)
 
 
 //! Returns the default element factory which can create all built in elements
-IGUIElementFactory* CGUIEnvironment::getDefaultGUIElementFactory()
+IGUIElementFactory* CGUIEnvironment::getDefaultGUIElementFactory() const
 {
 	return getGUIElementFactory(0);
 }
+
 
 //! Adds an element factory to the gui environment.
 /** Use this to extend the gui environment with new element types which it should be
@@ -601,20 +599,23 @@ void CGUIEnvironment::registerGUIElementFactory(IGUIElementFactory* factoryToAdd
 	}
 }
 
+
 //! Returns amount of registered scene node factories.
-s32 CGUIEnvironment::getRegisteredGUIElementFactoryCount()
+u32 CGUIEnvironment::getRegisteredGUIElementFactoryCount() const
 {
 	return GUIElementFactoryList.size();
 }
 
-//! Returns a scene node factory by index
-IGUIElementFactory* CGUIEnvironment::getGUIElementFactory(s32 index)
-{
-	if (index>=0 && index<(int)GUIElementFactoryList.size())
-		return GUIElementFactoryList[index];
 
-	return 0;
+//! Returns a scene node factory by index
+IGUIElementFactory* CGUIEnvironment::getGUIElementFactory(u32 index) const
+{
+	if (index < GUIElementFactoryList.size())
+		return GUIElementFactoryList[index];
+	else
+		return 0;
 }
+
 
 //! adds a GUI Element using its name
 IGUIElement* CGUIEnvironment::addGUIElement(const c8* elementName, IGUIElement* parent)
@@ -624,7 +625,7 @@ IGUIElement* CGUIEnvironment::addGUIElement(const c8* elementName, IGUIElement* 
 	if (!parent)
 		parent = this;
 
-	for (s32 i=0; i<(int)GUIElementFactoryList.size() && !node; ++i)
+	for (u32 i=0; i<GUIElementFactoryList.size() && !node; ++i)
 		node = GUIElementFactoryList[i]->addGUIElement(elementName, parent);
 
 	return node;
@@ -684,7 +685,6 @@ bool CGUIEnvironment::loadGUI(const c8* filename, IGUIElement* parent)
 //! Loads the gui. Note that the current gui is not cleared before.
 bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 {
-	
 	if (!file)
 	{
 		os::Printer::log("Unable to open GUI file", ELL_ERROR);
@@ -708,9 +708,7 @@ bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 
 	reader->drop(); 
 	return true; 
-
 }
-
 
 
 //! reads an element
@@ -791,7 +789,6 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* parent
 }
 
 
-
 //! writes an element
 void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 {
@@ -846,7 +843,6 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 	}
 
 	attr->drop();
-
 }
 
 
@@ -862,10 +858,10 @@ void CGUIEnvironment::serializeAttributes(io::IAttributes* out, io::SAttributeRe
 	}
 }
 
+
 //! Reads attributes of the environment
 void CGUIEnvironment::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-
 	if (in->existsAttribute("Skin"))
 	{
 		IGUISkin *skin = getSkin();
@@ -890,13 +886,10 @@ void CGUIEnvironment::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	RelativeRect = AbsoluteRect = 
 			core::rect<s32>(core::position2d<s32>(0,0), 
 					Driver ? Driver->getScreenSize() : core::dimension2d<s32>(0,0));
-
 }
 
 
-
-
-//! adds an button. The returned pointer must not be dropped.
+//! adds a button. The returned pointer must not be dropped.
 IGUIButton* CGUIEnvironment::addButton(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id, const wchar_t* text, const wchar_t *tooltiptext)
 {
 	IGUIButton* button = new CGUIButton(this, parent ? parent : this, id, rectangle);
@@ -930,6 +923,8 @@ IGUIWindow* CGUIEnvironment::addWindow(const core::rect<s32>& rectangle, bool mo
 
 	return win;
 }
+
+
 //! adds a modal screen. The returned pointer must not be dropped.
 IGUIElement* CGUIEnvironment::addModalScreen(IGUIElement* parent)
 {
@@ -940,6 +935,7 @@ IGUIElement* CGUIEnvironment::addModalScreen(IGUIElement* parent)
 
 	return win;
 }
+
 
 //! Adds a message box.
 IGUIWindow* CGUIEnvironment::addMessageBox(const wchar_t* caption, const wchar_t* text,
@@ -1053,11 +1049,10 @@ IGUICheckBox* CGUIEnvironment::addCheckBox(bool checked, const core::rect<s32>& 
 }
 
 
-
 //! adds a list box
 IGUIListBox* CGUIEnvironment::addListBox(const core::rect<s32>& rectangle, 
-										 IGUIElement* parent, s32 id,
-										 bool drawBackground)
+					 IGUIElement* parent, s32 id,
+					 bool drawBackground)
 {
 	IGUIListBox* b = new CGUIListBox(this, parent ? parent : this, id, rectangle,
 		true, drawBackground, false);
@@ -1076,11 +1071,10 @@ IGUIListBox* CGUIEnvironment::addListBox(const core::rect<s32>& rectangle,
 }
 
 
-
 //! adds a file open dialog. The returned pointer must not be dropped.
 IGUIFileOpenDialog* CGUIEnvironment::addFileOpenDialog(const wchar_t* title, 
-													   bool modal,
-													   IGUIElement* parent, s32 id)
+						   bool modal,
+						   IGUIElement* parent, s32 id)
 {
 	parent = parent ? parent : this;
 
@@ -1099,8 +1093,8 @@ IGUIFileOpenDialog* CGUIEnvironment::addFileOpenDialog(const wchar_t* title,
 
 //! adds a color select dialog. The returned pointer must not be dropped.
 IGUIColorSelectDialog* CGUIEnvironment::addColorSelectDialog(const wchar_t* title, 
-													   bool modal,
-													   IGUIElement* parent, s32 id)
+						   bool modal,
+						   IGUIElement* parent, s32 id)
 {
 	parent = parent ? parent : this;
 
@@ -1118,14 +1112,12 @@ IGUIColorSelectDialog* CGUIEnvironment::addColorSelectDialog(const wchar_t* titl
 }
 
 
-
 //! adds a static text. The returned pointer must not be dropped.
 IGUIStaticText* CGUIEnvironment::addStaticText(const wchar_t* text,  
-											   const core::rect<s32>& rectangle,
-											   bool border,
-											   bool wordWrap,
-											   IGUIElement* parent, s32 id,
-											   bool background)
+					   const core::rect<s32>& rectangle,
+					   bool border, bool wordWrap,
+					   IGUIElement* parent, s32 id,
+					   bool background)
 {
 	IGUIStaticText* d = new CGUIStaticText(text, border, this,
 			parent ? parent : this, id, rectangle, background);
@@ -1137,12 +1129,11 @@ IGUIStaticText* CGUIEnvironment::addStaticText(const wchar_t* text,
 }
 
 
-
 //! Adds an edit box. The returned pointer must not be dropped.
 IGUIEditBox* CGUIEnvironment::addEditBox(const wchar_t* text, 
-										 const core::rect<s32>& rectangle, 
-										 bool border, IGUIElement* parent,
-										 s32 id)
+					 const core::rect<s32>& rectangle, 
+					 bool border, IGUIElement* parent,
+					 s32 id)
 {
 	IGUIEditBox* d = new CGUIEditBox(text, border, this,
 			parent ? parent : this, id, rectangle);
@@ -1151,10 +1142,11 @@ IGUIEditBox* CGUIEnvironment::addEditBox(const wchar_t* text,
 	return d;
 }
 
+
 //! Adds a spin box to the environment
 IGUISpinBox* CGUIEnvironment::addSpinBox(const wchar_t* text, 
-										 const core::rect<s32> &rectangle, 
-										 IGUIElement* parent, s32 id)
+					 const core::rect<s32> &rectangle, 
+					 IGUIElement* parent, s32 id)
 {
 	IGUISpinBox* d = new CGUISpinBox(text, this, parent ? parent : this, id, rectangle);
 
@@ -1211,6 +1203,7 @@ IGUIContextMenu* CGUIEnvironment::addMenu(IGUIElement* parent, s32 id)
 	return c;
 }
 
+
 //! Adds a toolbar to the environment. It is like a menu is always placed on top
 //! in its parent, and contains buttons.
 IGUIToolBar* CGUIEnvironment::addToolBar(IGUIElement* parent, s32 id)
@@ -1222,7 +1215,6 @@ IGUIToolBar* CGUIEnvironment::addToolBar(IGUIElement* parent, s32 id)
 	b->drop();
 	return b;
 }
-
 
 
 //! Adds an element for fading in or out.
@@ -1253,9 +1245,7 @@ IGUIComboBox* CGUIEnvironment::addComboBox(const core::rect<s32>& rectangle,
 		id, rectangle);
 	t->drop();
 	return t;
-
 }
-
 
 
 //! returns the font
@@ -1365,6 +1355,7 @@ IGUIFont* CGUIEnvironment::getFont(const c8* filename)
 	return ifont;
 }
 
+
 IGUISpriteBank* CGUIEnvironment::getSpriteBank(const c8* filename)
 {
 	// search for the file name
@@ -1392,8 +1383,8 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const c8* filename)
 	// todo: load it!
 
 	return 0;
-
 }
+
 
 IGUISpriteBank* CGUIEnvironment::addEmptySpriteBank(const c8 *name)
 {
@@ -1417,11 +1408,11 @@ IGUISpriteBank* CGUIEnvironment::addEmptySpriteBank(const c8 *name)
 	Banks.push_back(b);
 
 	return b.Bank;
-
 }
 
+
 //! returns default font
-IGUIFont* CGUIEnvironment::getBuiltInFont()
+IGUIFont* CGUIEnvironment::getBuiltInFont() const
 {
 	if (Fonts.empty())
 		return 0;
@@ -1436,6 +1427,7 @@ IGUIElement* CGUIEnvironment::getRootGUIElement()
 {
 	return this;
 }
+
 
 //! Returns the next element in the tab group starting at the focused element
 IGUIElement* CGUIEnvironment::getNextElement(bool reverse, bool group)
@@ -1475,23 +1467,21 @@ IGUIElement* CGUIEnvironment::getNextElement(bool reverse, bool group)
 	IGUIElement *first = 0;
 	startPos->getNextElement(startOrder, reverse, group, first, closest);
 
-	IGUIElement *ret = 0;
-
 	if (closest)
-		ret = closest; // we found an element
+		return closest; // we found an element
 	else if (first)
-		ret = first; // go to the end or the start
+		return first; // go to the end or the start
 	else if (group)
-		ret = this; // no group found? root group
-
-	return ret;
+		return this; // no group found? root group
+	else
+		return 0;
 }
 
 
-
 //! creates an GUI Environment
-IGUIEnvironment* createGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* Driver,
-									  IOSOperator* op)
+IGUIEnvironment* createGUIEnvironment(io::IFileSystem* fs,
+					video::IVideoDriver* Driver,
+					IOSOperator* op)
 {
 	return new CGUIEnvironment(fs, Driver, op);
 }
@@ -1501,3 +1491,4 @@ IGUIEnvironment* createGUIEnvironment(io::IFileSystem* fs, video::IVideoDriver* 
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

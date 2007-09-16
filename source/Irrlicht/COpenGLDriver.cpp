@@ -699,7 +699,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 //! draws a 2d image, using a color and the alpha channel of the texture if
 //! desired. The image is drawn at pos, clipped against clipRect (if != 0).
 //! Only the subtexture defined by sourceRect is used.
-void COpenGLDriver::draw2DImage(video::ITexture* texture,
+void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
@@ -831,7 +831,7 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 //! in one line. All drawings are clipped against clipRect (if != 0).
 //! The subtextures are defined by the array of sourceRects and are chosen
 //! by the indices given.
-void COpenGLDriver::draw2DImage(video::ITexture* texture,
+void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -903,7 +903,7 @@ void COpenGLDriver::draw2DImage(video::ITexture* texture,
 
 
 
-void COpenGLDriver::draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 		video::SColor* colors, bool useAlphaChannelOfTexture)
 {
@@ -1050,7 +1050,7 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 
 
 
-bool COpenGLDriver::setTexture(u32 stage, video::ITexture* texture)
+bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
 {
 	if (stage >= MaxTextureUnits)
 		return false;
@@ -1079,7 +1079,7 @@ bool COpenGLDriver::setTexture(u32 stage, video::ITexture* texture)
 
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,
-			static_cast<COpenGLTexture*>(texture)->getOpenGLTextureName());
+			static_cast<const COpenGLTexture*>(texture)->getOpenGLTextureName());
 	}
 	return true;
 }
@@ -2055,7 +2055,7 @@ void COpenGLDriver::OnResize(const core::dimension2d<s32>& size)
 
 
 //! Returns type of video driver
-E_DRIVER_TYPE COpenGLDriver::getDriverType()
+E_DRIVER_TYPE COpenGLDriver::getDriverType() const
 {
 	return EDT_OPENGL;
 }

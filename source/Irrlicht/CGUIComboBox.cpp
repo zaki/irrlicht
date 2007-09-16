@@ -57,38 +57,33 @@ CGUIComboBox::CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 	// this element can be tabbed to
 	setTabStop(true);
 	setTabOrder(-1);
-
-}
-
-
-//! destructor
-CGUIComboBox::~CGUIComboBox()
-{
 }
 
 
 //! Returns amount of items in box
-s32 CGUIComboBox::getItemCount()
+u32 CGUIComboBox::getItemCount() const
 {
 	return Items.size();
 }
 
+
 //! returns string of an item. the idx may be a value from 0 to itemCount-1
-const wchar_t* CGUIComboBox::getItem(s32 idx) const
+const wchar_t* CGUIComboBox::getItem(u32 idx) const
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if (idx >= Items.size())
 		return 0;
 
 	return Items[idx].c_str();
 }
 
+
 //! Removes an item from the combo box.
-void CGUIComboBox::removeItem(s32 idx)
+void CGUIComboBox::removeItem(u32 idx)
 {
-	if (idx < 0 || idx >= (s32)Items.size())
+	if (idx >= Items.size())
 		return;
 
-	if (Selected == idx)
+	if (Selected == (s32)idx)
 		Selected = -1;
 
 	Items.erase(idx);
@@ -102,7 +97,7 @@ const wchar_t* CGUIComboBox::getText() const
 
 
 //! adds an item and returns the index of it
-s32 CGUIComboBox::addItem(const wchar_t* text)
+u32 CGUIComboBox::addItem(const wchar_t* text)
 {
 	Items.push_back(core::stringw(text));
 
@@ -124,7 +119,7 @@ void CGUIComboBox::clear()
 
 
 //! returns id of selected item. returns -1 if no item is selected.
-s32 CGUIComboBox::getSelected()
+s32 CGUIComboBox::getSelected() const
 {
 	return Selected;
 }
@@ -134,7 +129,7 @@ s32 CGUIComboBox::getSelected()
 //! sets the selected item. Set this to -1 if no item should be selected
 void CGUIComboBox::setSelected(s32 id)
 {
-	if (id <0 || id>=(s32)Items.size())
+	if (id < -1 || id >= (s32)Items.size())
 		return;
 
 	Selected = id;
@@ -144,7 +139,7 @@ void CGUIComboBox::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
 
-	s32 width = Environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	const s32 width = Environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 
 	ListButton->setRelativePosition(core::rect<s32>(RelativeRect.getWidth() - width - 2, 2,
 													RelativeRect.getWidth() - 2, RelativeRect.getHeight() - 2));
@@ -441,3 +436,4 @@ void CGUIComboBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRead
 
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

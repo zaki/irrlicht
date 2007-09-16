@@ -29,7 +29,7 @@ namespace gui
 		virtual ~CGUIFileOpenDialog();
 
 		//! returns the filename of the selected file. Returns NULL, if no file was selected.
-		virtual const wchar_t* getFilename();
+		virtual const wchar_t* getFileName() const;
 
 		//! called if an event happened.
 		virtual bool OnEvent(SEvent event);
@@ -69,3 +69,4 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif // __C_GUI_FILE_OPEN_DIALOG_H_INCLUDED__
+

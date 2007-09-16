@@ -25,20 +25,20 @@ namespace gui
 			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle);
 
 		//! destructor
-		~CGUISpinBox();
+		virtual ~CGUISpinBox();
 
 		//! Access the edit box used in the spin control
 		/** \param enable: If set to true, the override color, which can be set
 		with IGUIEditBox::setOverrideColor is used, otherwise the
 		EGDC_BUTTON_TEXT color of the skin. */
-		virtual IGUIEditBox* getEditBox();
+		virtual IGUIEditBox* getEditBox() const;
 
 		//! set the current value of the spinbox
 		/** \param val: value to be set in the spinbox */
 		virtual void setValue(f32 val);
 
 		//! Get the current value of the spinbox
-		virtual f32 getValue();
+		virtual f32 getValue() const;
 
 		//! set the range of values which can be used in the spinbox
 		/** \param min: minimum value
@@ -90,6 +90,8 @@ namespace gui
 		core::stringw FormatString;
 		s32 DecimalPlaces;
 	};
+
+
 } // end namespace gui
 } // end namespace irr
 

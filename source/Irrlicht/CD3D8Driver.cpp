@@ -879,7 +879,7 @@ void CD3D8Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CD3D8Driver::draw2DImage(video::ITexture* texture, const core::position2d<s32>& pos,
+void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& pos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
 				bool useAlphaChannelOfTexture)
@@ -1007,7 +1007,7 @@ void CD3D8Driver::draw2DImage(video::ITexture* texture, const core::position2d<s
 
 
 
-void CD3D8Driver::draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 			video::SColor* colors, bool useAlphaChannelOfTexture)
 {
@@ -1907,7 +1907,7 @@ void CD3D8Driver::OnResize(const core::dimension2d<s32>& size)
 }
 
 //! Returns type of video driver
-E_DRIVER_TYPE CD3D8Driver::getDriverType()
+E_DRIVER_TYPE CD3D8Driver::getDriverType() const
 {
 	return EDT_DIRECT3D8;
 }

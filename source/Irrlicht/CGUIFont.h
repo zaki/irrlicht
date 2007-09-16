@@ -52,10 +52,10 @@ public:
 	virtual void draw(const wchar_t* text, const core::rect<s32>& position, video::SColor color, bool hcenter=false, bool vcenter=false, const core::rect<s32>* clip=0);
 
 	//! returns the dimension of a text
-	virtual core::dimension2d<s32> getDimension(const wchar_t* text);
+	virtual core::dimension2d<s32> getDimension(const wchar_t* text) const;
 
 	//! Calculates the index of the character in the text which is on a specific position.
-	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x);
+	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const;
 
 	//! Returns the type of this font
 	virtual EGUI_FONT_TYPE getType() const { return EGFT_BITMAP; }
@@ -65,14 +65,14 @@ public:
 	virtual void setKerningHeight (s32 kerning);
 
 	//! set an Pixel Offset on Drawing ( scale position on width )
-	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0);
-	virtual s32 getKerningHeight();
+	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const;
+	virtual s32 getKerningHeight() const;
 
 	//! gets the sprite bank
-	virtual IGUISpriteBank* getSpriteBank();
+	virtual IGUISpriteBank* getSpriteBank() const;
 
 	//! returns the sprite number from a given character
-	virtual u32 getSpriteNoFromChar(const wchar_t *c);
+	virtual u32 getSpriteNoFromChar(const wchar_t *c) const;
 
 private:
 
@@ -91,7 +91,7 @@ private:
 	void readPositions16bit(video::IImage* texture, s32& lowerRightPositions);
 	void readPositions32bit(video::IImage* texture, s32& lowerRightPositions);
 
-	s32 getAreaFromCharacter (const wchar_t c);
+	s32 getAreaFromCharacter (const wchar_t c) const;
 	void setMaxHeight();
 
 	core::array<SFontArea>		Areas;

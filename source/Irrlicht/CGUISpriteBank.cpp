@@ -22,6 +22,7 @@ CGUISpriteBank::CGUISpriteBank(IGUIEnvironment* env) :
 	}
 }
 
+
 CGUISpriteBank::~CGUISpriteBank()
 {
 	// drop textures
@@ -34,28 +35,33 @@ CGUISpriteBank::~CGUISpriteBank()
 		Driver->drop();
 }
 
+
 core::array< core::rect<s32> >& CGUISpriteBank::getPositions()
 {
 	return Rectangles;
 }
+
 
 core::array< SGUISprite >& CGUISpriteBank::getSprites()
 {
 	return Sprites;
 }
 
-u32 CGUISpriteBank::getTextureCount()
+
+u32 CGUISpriteBank::getTextureCount() const
 {
 	return Textures.size();
 }
 
-video::ITexture* CGUISpriteBank::getTexture(u32 index)
+
+video::ITexture* CGUISpriteBank::getTexture(u32 index) const
 {
 	if (index < Textures.size())
 		return Textures[index];
 	else
 		return 0;
 }
+
 
 void CGUISpriteBank::addTexture(video::ITexture* texture)
 {
@@ -64,6 +70,7 @@ void CGUISpriteBank::addTexture(video::ITexture* texture)
 
 	Textures.push_back(texture);
 }
+
 
 void CGUISpriteBank::setTexture(u32 index, video::ITexture* texture)
 {
@@ -85,7 +92,7 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 		const core::rect<s32>* clip, const video::SColor& color,
 		u32 starttime, u32 currenttime, bool loop, bool center)
 {
-	if (index >= Sprites.size() || Sprites[index].Frames.empty())
+	if (Sprites[index].Frames.empty() || index >= Sprites.size())
 		return;
 
 	// work out frame number
@@ -99,14 +106,15 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 			frame = (f >= Sprites[index].Frames.size()) ? Sprites[index].Frames.size() : f;
 	}
 
-	video::ITexture* tex = Textures[Sprites[index].Frames[frame].textureNumber];
+	const video::ITexture* tex = Textures[Sprites[index].Frames[frame].textureNumber];
 	if (!tex)
 		return;
-	u32 rn = Sprites[index].Frames[frame].rectNumber;
+
+	const u32 rn = Sprites[index].Frames[frame].rectNumber;
 	if (rn >= Rectangles.size())
 		return;
 
-	core::rect<s32> &r = Rectangles[rn];
+	const core::rect<s32>& r = Rectangles[rn];
 
 	if (center)
 	{
@@ -118,11 +126,11 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 	{
 		Driver->draw2DImage(tex, pos, r, clip, color, true);
 	}
-
-
 }
+
 
 } // namespace gui
 } // namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

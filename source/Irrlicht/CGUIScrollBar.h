@@ -35,19 +35,19 @@ namespace gui
 		virtual void draw();
 
 		//! gets the maximum value of the scrollbar.
-		virtual s32 getMax();
+		virtual s32 getMax() const;
 
 		//! sets the maximum value of the scrollbar.
 		virtual void setMax(s32 max);
 
 		//! gets the small step value
-		virtual s32 getSmallStep();
+		virtual s32 getSmallStep() const;
 
 		//! sets the small step value
 		virtual void setSmallStep(s32 step);
 
 		//! gets the current position of the scrollbar
-		virtual s32 getPos();
+		virtual s32 getPos() const;
 
 		//! sets the position of the scrollbar
 		virtual void setPos(s32 pos);
@@ -60,7 +60,6 @@ namespace gui
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
-
 
 	private:
 

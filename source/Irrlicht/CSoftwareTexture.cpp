@@ -80,14 +80,14 @@ void CSoftwareTexture::unlock()
 
 
 //! Returns original size of the texture.
-const core::dimension2d<s32>& CSoftwareTexture::getOriginalSize()
+const core::dimension2d<s32>& CSoftwareTexture::getOriginalSize() const
 {
 	return OrigSize;
 }
 
 
 //! Returns (=size) of the texture.
-const core::dimension2d<s32>& CSoftwareTexture::getSize()
+const core::dimension2d<s32>& CSoftwareTexture::getSize() const
 {
 	return Image->getDimension();
 }
@@ -110,7 +110,7 @@ CImage* CSoftwareTexture::getTexture()
 
 
 //! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CSoftwareTexture::getTextureSizeFromSurfaceSize(s32 size)
+inline s32 CSoftwareTexture::getTextureSizeFromSurfaceSize(s32 size) const
 {
 	s32 ts = 0x01;
 	while(ts < size)
@@ -122,7 +122,7 @@ inline s32 CSoftwareTexture::getTextureSizeFromSurfaceSize(s32 size)
 
 
 //! returns driver type of texture (=the driver, who created the texture)
-E_DRIVER_TYPE CSoftwareTexture::getDriverType()
+E_DRIVER_TYPE CSoftwareTexture::getDriverType() const
 {
 	return EDT_SOFTWARE;
 }
@@ -150,7 +150,6 @@ void CSoftwareTexture::regenerateMipMapLevels()
 {
 	// our software textures don't have mip maps
 }
-
 
 
 } // end namespace video

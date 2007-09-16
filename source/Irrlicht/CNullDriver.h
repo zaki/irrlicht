@@ -119,7 +119,7 @@ namespace video
 			SColor color = SColor(255,255,255,255));
 
 		//! draws an 2d image
-		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos);
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos);
 
 		//! draws a set of 2d images, using a color and the alpha
 		/** channel of the texture if desired. The images are drawn
@@ -138,7 +138,7 @@ namespace video
 		Note that the alpha component is used: If alpha is other than 255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
 		used to draw the image. */
-		virtual void draw2DImage(video::ITexture* texture,
+		virtual void draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -148,12 +148,12 @@ namespace video
 				bool useAlphaChannelOfTexture=false);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos, 
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos, 
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
 		//! Draws a part of the texture into the rectangle.
-		virtual void draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			video::SColor* colors=0, bool useAlphaChannelOfTexture=false);
 
@@ -300,7 +300,7 @@ namespace video
 		virtual const SExposedVideoData& getExposedVideoData();
 
 		//! Returns type of video driver
-		virtual E_DRIVER_TYPE getDriverType();
+		virtual E_DRIVER_TYPE getDriverType() const;
 
 		//! Returns the transformation set by setTransform
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state);
@@ -483,9 +483,9 @@ namespace video
 
 			virtual void* lock() { return 0; };
 			virtual void unlock(){}
-			virtual const core::dimension2d<s32>& getOriginalSize() { return size; }
-			virtual const core::dimension2d<s32>& getSize() { return size; }
-			virtual E_DRIVER_TYPE getDriverType() { return video::EDT_NULL; }
+			virtual const core::dimension2d<s32>& getOriginalSize() const { return size; }
+			virtual const core::dimension2d<s32>& getSize() const { return size; }
+			virtual E_DRIVER_TYPE getDriverType() const { return video::EDT_NULL; }
 			virtual ECOLOR_FORMAT getColorFormat() const { return video::ECF_A1R5G5B5; };
 			virtual u32 getPitch() const { return 0; }
 			virtual void regenerateMipMapLevels() {};

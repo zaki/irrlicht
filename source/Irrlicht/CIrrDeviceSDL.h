@@ -83,7 +83,7 @@ namespace irr
 			}
 
 			//! Returns if the cursor is currently visible.
-			virtual bool isVisible()
+			virtual bool isVisible() const
 			{
 				return IsVisible;
 			}

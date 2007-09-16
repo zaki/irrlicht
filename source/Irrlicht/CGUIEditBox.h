@@ -25,7 +25,7 @@ namespace gui
 			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle);
 
 		//! destructor
-		~CGUIEditBox();
+		virtual ~CGUIEditBox();
 
 		//! Sets another skin independent font.
 		virtual void setOverrideFont(IGUIFont* font=0);
@@ -45,7 +45,7 @@ namespace gui
 
 		//! Checks if word wrap is enabled
 		//! \return true if word wrap is enabled, false otherwise
-		virtual bool isWordWrapEnabled();
+		virtual bool isWordWrapEnabled() const;
 
 		//! Enables or disables newlines.
 		/** \param enable: If set to true, the EGET_EDITBOX_ENTER event will not be fired,
@@ -54,7 +54,7 @@ namespace gui
 
 		//! Checks if multi line editing is enabled
 		//! \return true if mult-line is enabled, false otherwise
-		virtual bool isMultiLineEnabled();
+		virtual bool isMultiLineEnabled() const;
 
 		//! Enables or disables automatic scrolling with cursor position
 		//! \param enable: If set to true, the text will move around with the cursor position
@@ -62,7 +62,7 @@ namespace gui
 
 		//! Checks to see if automatic scrolling is enabled
 		//! \return true if automatic scrolling is enabled, false if not
-		virtual bool isAutoScrollEnabled();
+		virtual bool isAutoScrollEnabled() const;
 
 		//! Gets the size area of the text in the edit box
 		//! \return Returns the size in pixels of the text
@@ -83,10 +83,10 @@ namespace gui
 		//! Sets the maximum amount of characters which may be entered in the box.
 		//! \param max: Maximum amount of characters. If 0, the character amount is 
 		//! infinity.
-		virtual void setMax(s32 max);
+		virtual void setMax(u32 max);
 
 		//! Returns maximum amount of characters, previously set by setMax();
-		virtual s32 getMax();
+		virtual u32 getMax() const;
 
 		//! Sets whether the edit box is a password box. Setting this to true will 
 		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
@@ -95,7 +95,7 @@ namespace gui
 		virtual void setPasswordBox(bool passwordBox, wchar_t passwordChar = L'*');
 
 		//! Returns true if the edit box is currently a password box.
-		virtual bool isPasswordBox();
+		virtual bool isPasswordBox() const;
 
 		//! Updates the absolute position, splits text if required
 		virtual void updateAbsolutePosition();
@@ -135,7 +135,7 @@ namespace gui
 		u32 BlinkStartTime;
 		s32 CursorPos;
 		s32 HScrollPos, VScrollPos; // scroll position in characters
-		s32 Max;
+		u32 Max;
 
 		bool WordWrap, MultiLine, AutoScroll, PasswordBox;
 		wchar_t PasswordChar;
@@ -145,11 +145,12 @@ namespace gui
 		core::array< s32 > BrokenTextPositions;
 
 		core::rect<s32> CurrentTextRect, frameRect; // temporary values
-
 	};
+
 
 } // end namespace gui
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
 #endif // __C_GUI_EDIT_BOX_H_INCLUDED__
+

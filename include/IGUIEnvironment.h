@@ -74,7 +74,7 @@ public:
 	virtual bool setFocus(IGUIElement* element) = 0;
 
 	//! Returns the element with the focus
-	virtual IGUIElement* getFocus() = 0;
+	virtual IGUIElement* getFocus() const = 0;
 
 	//! Removes the focus from an element.
 	/** Causes a EGET_ELEMENT_FOCUS_LOST event. If the event is absorbed then the focus
@@ -83,16 +83,16 @@ public:
 	virtual bool removeFocus(IGUIElement* element) = 0;
 
 	//! Returns if the element has focus
-	virtual bool hasFocus(IGUIElement* element) = 0;
+	virtual bool hasFocus(IGUIElement* element) const = 0;
 
 	//! Returns the current video driver.
-	virtual video::IVideoDriver* getVideoDriver() = 0;
+	virtual video::IVideoDriver* getVideoDriver() const = 0;
 
 	//! Returns the file system.
-	virtual io::IFileSystem* getFileSystem() = 0;
+	virtual io::IFileSystem* getFileSystem() const = 0;
 
 	//! returns a pointer to the OS operator
-	virtual IOSOperator* getOSOperator() = 0;
+	virtual IOSOperator* getOSOperator() const = 0;
 
 	//! removes all elements from the environment.
 	virtual void clear() = 0;
@@ -138,7 +138,7 @@ public:
 	virtual IGUIFont* getFont(const c8* filename) = 0;
 
 	//! Returns the default built-in font.
-	virtual IGUIFont* getBuiltInFont() = 0;
+	virtual IGUIFont* getBuiltInFont() const = 0;
 
 	//! Returns pointer to the sprite bank with the specified file name. 
 	/** Loads the bank if it was not loaded before. Returns 0 if it could not be loaded.
@@ -370,7 +370,7 @@ public:
 		IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Returns the default element factory which can create all built in elements
-	virtual IGUIElementFactory* getDefaultGUIElementFactory() = 0;
+	virtual IGUIElementFactory* getDefaultGUIElementFactory() const = 0;
 
 	//! Adds an element factory to the gui environment.
 	/** Use this to extend the gui environment with new element types which it should be
@@ -378,10 +378,10 @@ public:
 	virtual void registerGUIElementFactory(IGUIElementFactory* factoryToAdd) = 0;
 
 	//! Returns amount of registered gui element factories.
-	virtual s32 getRegisteredGUIElementFactoryCount() = 0;
+	virtual u32 getRegisteredGUIElementFactoryCount() const = 0;
 
 	//! Returns a gui element factory by index
-	virtual IGUIElementFactory* getGUIElementFactory(s32 index) = 0;
+	virtual IGUIElementFactory* getGUIElementFactory(u32 index) const = 0;
 
 	//! Adds a GUI Element by its name
 	virtual IGUIElement* addGUIElement(const c8* elementName, IGUIElement* parent=0) = 0;

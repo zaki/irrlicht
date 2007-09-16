@@ -42,13 +42,13 @@ public:
 	virtual void unlock();
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize();
+	virtual const core::dimension2d<s32>& getOriginalSize() const;
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<s32>& getSize();
+	virtual const core::dimension2d<s32>& getSize() const;
 
 	//! returns driver type of texture (=the driver, who created the texture)
-	virtual E_DRIVER_TYPE getDriverType();
+	virtual E_DRIVER_TYPE getDriverType() const;
 
 	//! returns color format of texture
 	virtual ECOLOR_FORMAT getColorFormat() const;
@@ -67,7 +67,7 @@ public:
 	virtual void regenerateMipMapLevels();
 
 	//! returns if it is a render target
-	bool isRenderTarget();
+	bool isRenderTarget() const;
 
 	//! Returns pointer to the render target surface
 	IDirect3DSurface9* getRenderTargetSurface();
@@ -77,7 +77,7 @@ private:
 	void createRenderTarget();
 
 	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromImageSize(s32 size);
+	inline s32 getTextureSizeFromImageSize(s32 size) const;
 
 	//! creates the hardware texture
 	bool createTexture(u32 flags);
@@ -96,11 +96,11 @@ private:
 
 	//! Helper function for mipmap generation.
 	void copy16BitMipMap(char* src, char* tgt,
-		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt);
+		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
 
 	//! Helper function for mipmap generation.
 	void copy32BitMipMap(char* src, char* tgt,
-		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt);
+		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
 
 	IImage* Image;
 	IDirect3DDevice9* Device;

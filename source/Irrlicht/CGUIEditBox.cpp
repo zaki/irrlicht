@@ -92,6 +92,7 @@ void CGUIEditBox::setOverrideColor(video::SColor color)
 	OverrideColorEnabled = true;
 }
 
+
 //! Turns the border on or off
 void CGUIEditBox::setDrawBorder(bool border)
 {
@@ -105,6 +106,7 @@ void CGUIEditBox::enableOverrideColor(bool enable)
 	OverrideColorEnabled = enable;
 }
 
+
 //! Enables or disables word wrap
 void CGUIEditBox::setWordWrap(bool enable)
 {
@@ -112,18 +114,21 @@ void CGUIEditBox::setWordWrap(bool enable)
 	breakText();
 }
 
+
 void CGUIEditBox::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
 	breakText();
 }
 
+
 //! Checks if word wrap is enabled
-bool CGUIEditBox::isWordWrapEnabled()
+bool CGUIEditBox::isWordWrapEnabled() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return WordWrap;
 }
+
 
 //! Enables or disables newlines.
 void CGUIEditBox::setMultiLine(bool enable)
@@ -131,12 +136,14 @@ void CGUIEditBox::setMultiLine(bool enable)
 	MultiLine = enable;
 }
 
+
 //! Checks if multi line editing is enabled
-bool CGUIEditBox::isMultiLineEnabled()
+bool CGUIEditBox::isMultiLineEnabled() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return MultiLine;
 }
+
 
 void CGUIEditBox::setPasswordBox(bool passwordBox, wchar_t passwordChar)
 {
@@ -150,10 +157,13 @@ void CGUIEditBox::setPasswordBox(bool passwordBox, wchar_t passwordChar)
 	}
 }
 
-bool CGUIEditBox::isPasswordBox()
+
+bool CGUIEditBox::isPasswordBox() const
 {
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return PasswordBox;
 }
+
 
 //! Sets text justification
 void CGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical)
@@ -161,6 +171,7 @@ void CGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT ver
 	HAlign = horizontal;
 	VAlign = vertical;
 }
+
 
 //! called if an event happened.
 bool CGUIEditBox::OnEvent(SEvent event)
@@ -272,7 +283,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 						s.append(p);
 						s.append( Text.subString(CursorPos, Text.size()-CursorPos) );
 
-						if (!Max || s.size()<=(u32)Max) // thx to Fish FH for fix
+						if (!Max || s.size()<=Max) // thx to Fish FH for fix
 						{
 							Text = s;
 							s = p;
@@ -287,7 +298,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 						s.append(p);
 						s.append( Text.subString(realmend, Text.size()-realmend) );
 
-						if (!Max || s.size()<=(u32)Max)  // thx to Fish FH for fix
+						if (!Max || s.size()<=Max)  // thx to Fish FH for fix
 						{
 							Text = s;
 							s = p;
@@ -813,9 +824,9 @@ void CGUIEditBox::draw()
 				OverrideColorEnabled ? OverrideColor : skin->getColor(EGDC_BUTTON_TEXT),
 				false, true, &localClipRect);
 		}
-
 	}
 }
+
 
 //! Sets the new caption of this element.
 void CGUIEditBox::setText(const wchar_t* text)
@@ -828,6 +839,7 @@ void CGUIEditBox::setText(const wchar_t* text)
 	breakText();
 }
 
+
 //! Enables or disables automatic scrolling with cursor position
 //! \param enable: If set to true, the text will move around with the cursor position
 void CGUIEditBox::setAutoScroll(bool enable)
@@ -835,9 +847,10 @@ void CGUIEditBox::setAutoScroll(bool enable)
 	AutoScroll = enable;
 }
 
+
 //! Checks to see if automatic scrolling is enabled
 //! \return true if automatic scrolling is enabled, false if not
-bool CGUIEditBox::isAutoScrollEnabled()
+bool CGUIEditBox::isAutoScrollEnabled() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return AutoScroll;
@@ -866,19 +879,17 @@ core::dimension2di CGUIEditBox::getTextDimension()
 //! Sets the maximum amount of characters which may be entered in the box.
 //! \param max: Maximum amount of characters. If 0, the character amount is
 //! infinity.
-void CGUIEditBox::setMax(s32 max)
+void CGUIEditBox::setMax(u32 max)
 {
 	Max = max;
-	if (Max < 0)
-		Max = 0;
 
-	if (Text.size() > (u32)Max && Max != 0)
+	if (Text.size() > Max && Max != 0)
 		Text = Text.subString(0, Max);
 }
 
 
 //! Returns maximum amount of characters, previously set by setMax();
-s32 CGUIEditBox::getMax()
+u32 CGUIEditBox::getMax() const
 {
 	return Max;
 }
@@ -999,6 +1010,7 @@ s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 	return txtLine->size() + startPos;
 }
 
+
 //! Breaks the single text line.
 void CGUIEditBox::breakText()
 {
@@ -1112,6 +1124,7 @@ void CGUIEditBox::breakText()
 	BrokenTextPositions.push_back(lastLineStart);
 }
 
+
 void CGUIEditBox::setTextRect(s32 line)
 {
 	core::dimension2di d;
@@ -1182,6 +1195,7 @@ void CGUIEditBox::setTextRect(s32 line)
 
 }
 
+
 s32 CGUIEditBox::getLineFromPos(s32 pos)
 {
 	if (!WordWrap && !MultiLine)
@@ -1197,6 +1211,7 @@ s32 CGUIEditBox::getLineFromPos(s32 pos)
 	return (s32)BrokenTextPositions.size() - 1;
 }
 
+
 void CGUIEditBox::inputChar(wchar_t c)
 {
 	if (!IsEnabled)
@@ -1204,7 +1219,7 @@ void CGUIEditBox::inputChar(wchar_t c)
 
 	if (c != 0)
 	{
-		if (Text.size() < (u32)Max || Max == 0)
+		if (Text.size() < Max || Max == 0)
 		{
 			core::stringw s;
 
@@ -1289,6 +1304,7 @@ void CGUIEditBox::calculateScrollPos()
 	// todo: adjust scrollbar
 }
 
+
 //! Writes attributes of the element.
 void CGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
@@ -1310,6 +1326,7 @@ void CGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 
 	IGUIEditBox::serializeAttributes(out,options);
 }
+
 
 //! Reads attributes of the element
 void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
@@ -1340,3 +1357,4 @@ void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

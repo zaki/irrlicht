@@ -65,12 +65,13 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
 		ButtonSpinUp->setText(L"+");
 	}
 
-	core::rect<s32> rectEdit(0, 0, rectangle.getWidth() - ButtonWidth - 1, rectangle.getHeight());
+	const core::rect<s32> rectEdit(0, 0, rectangle.getWidth() - ButtonWidth - 1, rectangle.getHeight());
 	EditBox = Environment->addEditBox(text, rectEdit, true, this, -1);
 	EditBox->grab();
 	EditBox->setSubElement(true);
 	EditBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 }
+
 
 //! destructor
 CGUISpinBox::~CGUISpinBox()
@@ -83,10 +84,12 @@ CGUISpinBox::~CGUISpinBox()
 		EditBox->drop();
 }
 
-IGUIEditBox* CGUISpinBox::getEditBox()
+
+IGUIEditBox* CGUISpinBox::getEditBox() const
 {
 	return EditBox;
 }
+
 
 void CGUISpinBox::setValue(f32 val)
 {
@@ -97,7 +100,8 @@ void CGUISpinBox::setValue(f32 val)
 	verifyValueRange();
 }
 
-f32 CGUISpinBox::getValue()
+
+f32 CGUISpinBox::getValue() const
 {
 	const wchar_t* val = EditBox->getText();
 	if ( !val )
@@ -106,6 +110,7 @@ f32 CGUISpinBox::getValue()
 	return core::fast_atof(tmp.c_str());
 }
 
+
 void CGUISpinBox::setRange(f32 min, f32 max)
 {
 	RangeMin = min;
@@ -113,25 +118,30 @@ void CGUISpinBox::setRange(f32 min, f32 max)
 	verifyValueRange();
 }
 
+
 f32 CGUISpinBox::getMin() const
 {
 	return RangeMin;
 }
+
 
 f32 CGUISpinBox::getMax() const
 {
 	return RangeMax;
 }
 
+
 f32 CGUISpinBox::getStepSize() const
 {
 	return StepSize;
 }
 
+
 void CGUISpinBox::setStepSize(f32 step)
 {
 	StepSize = step;
 }
+
 
 //! Sets the number of decimal places to display.
 void CGUISpinBox::setDecimalPlaces(s32 places)
@@ -147,6 +157,7 @@ void CGUISpinBox::setDecimalPlaces(s32 places)
 	}
 	setValue(getValue());
 }
+
 
 bool CGUISpinBox::OnEvent(SEvent event)
 {
@@ -200,6 +211,7 @@ bool CGUISpinBox::OnEvent(SEvent event)
 	return IGUIElement::OnEvent(event);
 }
 
+
 void CGUISpinBox::verifyValueRange()
 {
 	f32 val = getValue();
@@ -213,6 +225,7 @@ void CGUISpinBox::verifyValueRange()
 	setValue(val);
 }
 
+
 //! Sets the new caption of the element
 void CGUISpinBox::setText(const wchar_t* text)
 {
@@ -221,11 +234,13 @@ void CGUISpinBox::setText(const wchar_t* text)
 	verifyValueRange();
 }
 
+
 //! Returns caption of this element.
 const wchar_t* CGUISpinBox::getText() const
 {
 	return EditBox->getText();
 }
+
 
 //! Writes attributes of the element.
 void CGUISpinBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
@@ -246,7 +261,9 @@ void CGUISpinBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 	setDecimalPlaces(in->getAttributeAsInt("DecimalPlaces"));
 }
 
+
 } // end namespace gui
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

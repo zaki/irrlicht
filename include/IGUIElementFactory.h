@@ -41,22 +41,22 @@ namespace gui
 		virtual IGUIElement* addGUIElement(const c8* typeName, IGUIElement* parent=0) = 0;
 
 		//! returns amount of GUI element types this factory is able to create
-		virtual s32 getCreatableGUIElementTypeCount() = 0;
+		virtual s32 getCreatableGUIElementTypeCount() const = 0;
 
 		//! returns type of a createable element type
 		/** \param idx: Index of the element type in this factory. Must be a value between 0 and
 		getCreatableGUIElementTypeCount() */
-		virtual EGUI_ELEMENT_TYPE getCreateableGUIElementType(s32 idx) = 0;
+		virtual EGUI_ELEMENT_TYPE getCreateableGUIElementType(s32 idx) const = 0;
 
 		//! returns type name of a createable GUI element type by index
 		/** \param idx: Index of the type in this factory. Must be a value between 0 and
 		getCreatableGUIElementTypeCount() */
-		virtual const c8* getCreateableGUIElementTypeName(s32 idx) = 0;
+		virtual const c8* getCreateableGUIElementTypeName(s32 idx) const = 0;
 
 		//! returns type name of a createable GUI element
 		/** \param type: Type of GUI element. 
 		\return: Returns name of the type if this factory can create the type, otherwise 0. */
-		virtual const c8* getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type) = 0;
+		virtual const c8* getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type) const = 0;
 	};
 
 
@@ -64,3 +64,4 @@ namespace gui
 } // end namespace irr
 
 #endif // __I_GUI_ELEMENT_FACTORY_H_INCLUDED__
+

@@ -121,7 +121,7 @@ namespace video
 		virtual void setMaterial(const SMaterial& material);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
@@ -141,7 +141,7 @@ namespace video
 		Note that the alpha component is used: If alpha is other than 255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
 		used to draw the image. */
-		virtual void draw2DImage(video::ITexture* texture,
+		virtual void draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -150,7 +150,7 @@ namespace video
 				bool useAlphaChannelOfTexture=false);
 
 		//! Draws a part of the texture into the rectangle.
-		virtual void draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			video::SColor* colors=0, bool useAlphaChannelOfTexture=false);
 
@@ -217,7 +217,7 @@ namespace video
 		virtual void OnResize(const core::dimension2d<s32>& size);
 
 		//! Returns type of video driver
-		virtual E_DRIVER_TYPE getDriverType();
+		virtual E_DRIVER_TYPE getDriverType() const;
 
 		//! Returns the transformation set by setTransform
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state);
@@ -240,7 +240,7 @@ namespace video
 
 		//! sets the current Texture
 		//! Returns whether setting was a success or not.
-		bool setTexture(u32 stage, video::ITexture* texture);
+		bool setTexture(u32 stage, const video::ITexture* texture);
 
 		//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 		//! Returns whether disabling was successful or not.
@@ -341,7 +341,7 @@ namespace video
 
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
-		ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		s32 LastSetLight;
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;

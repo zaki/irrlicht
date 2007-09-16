@@ -22,14 +22,11 @@ namespace gui
 		//! constructor
 		CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
-		//! destructor
-		~CGUICheckBox();
-
 		//! set if box is checked
 		virtual void setChecked(bool checked);
 
 		//! returns if box is checked
-		virtual bool isChecked();
+		virtual bool isChecked() const;
 
 		//! called if an event happened.
 		virtual bool OnEvent(SEvent event);

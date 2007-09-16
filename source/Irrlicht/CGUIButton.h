@@ -67,7 +67,7 @@ namespace gui
 		virtual void setIsPushButton(bool isPushButton);
 
 		//! Returns if the button is currently pressed
-		virtual bool isPressed();
+		virtual bool isPressed() const;
 
 		//! Sets the pressed state of the button if this is a pushbutton
 		virtual void setPressed(bool pressed);
@@ -79,13 +79,13 @@ namespace gui
 		virtual void setUseAlphaChannel(bool useAlphaChannel);
 
 		//! Returns if the alpha channel should be used for drawing images on the button
-		virtual bool isAlphaChannelUsed();
+		virtual bool isAlphaChannelUsed() const;
 
 		//! Returns if the button face and border are being drawn
-		virtual bool isDrawingBorder();
+		virtual bool isDrawingBorder() const;
 
 		//! Returns whether the button is a push button
-		virtual bool isPushButton();
+		virtual bool isPushButton() const;
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;

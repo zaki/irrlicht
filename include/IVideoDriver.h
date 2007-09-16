@@ -388,7 +388,7 @@ namespace video
 		//! Draws a 2d image without any special effects
 		/** \param texture: Pointer to texture to use.
 		\param destPos: upper left 2d destination position where the image will be drawn. */
-		virtual void draw2DImage(video::ITexture* texture,
+		virtual void draw2DImage(const video::ITexture* texture,
 			const core::position2d<s32>& destPos) = 0;
 
 		//! Draws a 2d image using a color
@@ -404,7 +404,7 @@ namespace video
 		is used: If alpha is other than 255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
 		used to draw the image.*/
-		virtual void draw2DImage(video::ITexture* texture, const core::position2d<s32>& destPos,
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false) = 0;
 
@@ -425,7 +425,7 @@ namespace video
 		Note that the alpha component is used: If alpha is other than 255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
 		used to draw the image. */
-		virtual void draw2DImage(video::ITexture* texture,
+		virtual void draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -442,7 +442,7 @@ namespace video
 		\param clipRect: clips the destination rectangle (may be 0)
 		\param colors: array of 4 colors denoting the color values of the corners of the destRect
 		\param useAlphaChannelOfTexture: true if alpha channel will be blended. */
-		virtual void draw2DImage(video::ITexture* texture, const core::rect<s32>& destRect,
+		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			video::SColor* colors=0, bool useAlphaChannelOfTexture=false) = 0;
 
@@ -743,7 +743,7 @@ namespace video
 		virtual const SExposedVideoData& getExposedVideoData() = 0;
 
 		//! Returns type of video driver
-		virtual E_DRIVER_TYPE getDriverType() = 0;
+		virtual E_DRIVER_TYPE getDriverType() const = 0;
 
 		//! Returns pointer to the IGPUProgrammingServices interface.
 		/** Returns 0 if the

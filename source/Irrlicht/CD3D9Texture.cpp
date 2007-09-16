@@ -501,21 +501,21 @@ void CD3D9Texture::unlock()
 
 
 //! Returns original size of the texture.
-const core::dimension2d<s32>& CD3D9Texture::getOriginalSize()
+const core::dimension2d<s32>& CD3D9Texture::getOriginalSize() const
 {
 	return ImageSize;
 }
 
 
 //! Returns (=size) of the texture.
-const core::dimension2d<s32>& CD3D9Texture::getSize()
+const core::dimension2d<s32>& CD3D9Texture::getSize() const
 {
 	return TextureSize;
 }
 
 
 //! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CD3D9Texture::getTextureSizeFromImageSize(s32 size)
+inline s32 CD3D9Texture::getTextureSizeFromImageSize(s32 size) const
 {
 	s32 ts = 0x01;
 
@@ -528,7 +528,7 @@ inline s32 CD3D9Texture::getTextureSizeFromImageSize(s32 size)
 
 
 //! returns driver type of texture (=the driver, who created the texture)
-E_DRIVER_TYPE CD3D9Texture::getDriverType()
+E_DRIVER_TYPE CD3D9Texture::getDriverType() const
 {
 	return EDT_DIRECT3D9;
 }
@@ -567,7 +567,7 @@ bool CD3D9Texture::hasMipMaps() const
 
 void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 				   s32 width, s32 height,
-				   s32 pitchsrc, s32 pitchtgt)
+				   s32 pitchsrc, s32 pitchtgt) const
 {
 	for (s32 y=0; y<height; ++y)
 	{
@@ -613,7 +613,7 @@ void CD3D9Texture::copy16BitMipMap(char* src, char* tgt,
 
 void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 				   s32 width, s32 height,
-				   s32 pitchsrc, s32 pitchtgt)
+				   s32 pitchsrc, s32 pitchtgt) const
 {
 	for (s32 y=0; y<height; ++y)
 	{
@@ -660,7 +660,7 @@ void CD3D9Texture::regenerateMipMapLevels()
 
 
 //! returns if it is a render target
-bool CD3D9Texture::isRenderTarget()
+bool CD3D9Texture::isRenderTarget() const
 {
 	return IsRenderTarget;
 }
@@ -682,8 +682,8 @@ IDirect3DSurface9* CD3D9Texture::getRenderTargetSurface()
 }
 
 
-
 } // end namespace video
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
+

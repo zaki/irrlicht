@@ -40,7 +40,7 @@ class IGUIFont : public virtual IReferenceCounted
 public:
 
 	//! Destructor
-	virtual ~IGUIFont() {};
+	virtual ~IGUIFont() {}
 
 	//! Draws an text and clips it to the specified rectangle if wanted.
 	/** \param text: Text to draw
@@ -57,14 +57,14 @@ public:
 	//! Calculates the dimension of a text.
 	/** \return Returns width and height of the area covered by the text if it would be
 	  drawn. */
-	virtual core::dimension2d<s32> getDimension(const wchar_t* text) = 0;
+	virtual core::dimension2d<s32> getDimension(const wchar_t* text) const = 0;
 
 	//! Calculates the index of the character in the text which is on a specific position.
 	/** \param text: Text string.
 	\param pixel_x: X pixel position of which the index of the character will be returned.
 	\return Returns zero based index of the character in the text, and -1 if no no character
 	is on this position. (=the text is too short). */
-	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) = 0;
+	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const = 0;
 
 	//! Returns the type of this font
 	virtual EGUI_FONT_TYPE getType() const { return EGFT_CUSTOM; }
@@ -82,11 +82,10 @@ public:
 	kerning value. For example, in a font which supports kerning pairs a string such as 'Wo' may have 
 	the 'o' tucked neatly under the 'W'.
 	*/
-	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) = 0;
+	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const = 0;
 
 	//! Returns the distance between letters
-	virtual s32 getKerningHeight() = 0;
-
+	virtual s32 getKerningHeight() const = 0;
 };
 
 } // end namespace gui
