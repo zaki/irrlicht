@@ -590,7 +590,7 @@ void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4
 
 
 //! sets the current Texture
-bool CD3D8Driver::setTexture(s32 stage, video::ITexture* texture)
+bool CD3D8Driver::setTexture(s32 stage, const video::ITexture* texture)
 {
 	if (CurrentTexture[stage] == texture)
 		return true;
