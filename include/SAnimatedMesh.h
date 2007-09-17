@@ -139,7 +139,6 @@ namespace scene
 
 		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 		{
-			return;
 		}
 
 

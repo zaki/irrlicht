@@ -82,6 +82,18 @@
 #include "CB3DMeshFileLoader.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_COLLADA_WRITER_
+#include "CColladaMeshWriter.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_IRR_WRITER_
+#include "CIrrMeshWriter.h"
+#endif
+
+#ifdef _IRR_COMPILE_WITH_STL_WRITER_
+#include "CSTLMeshWriter.h"
+#endif
+
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
@@ -120,9 +132,6 @@
 #include "CDefaultSceneNodeAnimatorFactory.h"
 
 #include "CQuake3ShaderSceneNode.h"
-
-#include "CColladaMeshWriter.h"
-#include "CIrrMeshWriter.h"
 
 //! Enable debug features
 #define SCENEMANAGER_DEBUG
@@ -944,9 +953,9 @@ const core::aabbox3d<f32>& CSceneManager::getBoundingBox() const
 
 
 //! returns if node is culled
-bool CSceneManager::isCulled(ISceneNode* node)
+bool CSceneManager::isCulled(const ISceneNode* node)
 {
-	ICameraSceneNode* cam = getActiveCamera();
+	const ICameraSceneNode* cam = getActiveCamera();
 	if (!cam)
 		return false;
 
@@ -1604,7 +1613,7 @@ io::IAttributes* CSceneManager::getParameters()
 
 
 //! Returns current render pass.
-E_SCENE_NODE_RENDER_PASS CSceneManager::getSceneNodeRenderPass()
+E_SCENE_NODE_RENDER_PASS CSceneManager::getSceneNodeRenderPass() const
 {
 	return CurrentRendertime;
 }
@@ -1649,16 +1658,16 @@ void CSceneManager::registerSceneNodeFactory(ISceneNodeFactory* factoryToAdd)
 
 
 //! Returns amount of registered scene node factories.
-s32 CSceneManager::getRegisteredSceneNodeFactoryCount()
+u32 CSceneManager::getRegisteredSceneNodeFactoryCount() const
 {
 	return SceneNodeFactoryList.size();
 }
 
 
 //! Returns a scene node factory by index
-ISceneNodeFactory* CSceneManager::getSceneNodeFactory(s32 index)
+ISceneNodeFactory* CSceneManager::getSceneNodeFactory(u32 index)
 {
-	if (index>=0 && index<(int)SceneNodeFactoryList.size())
+	if (index<SceneNodeFactoryList.size())
 		return SceneNodeFactoryList[index];
 
 	return 0;
@@ -1683,16 +1692,16 @@ void CSceneManager::registerSceneNodeAnimatorFactory(ISceneNodeAnimatorFactory* 
 
 
 //! Returns amount of registered scene node animator factories.
-s32 CSceneManager::getRegisteredSceneNodeAnimatorFactoryCount()
+u32 CSceneManager::getRegisteredSceneNodeAnimatorFactoryCount() const
 {
 	return SceneNodeAnimatorFactoryList.size();
 }
 
 
 //! Returns a scene node animator factory by index
-ISceneNodeAnimatorFactory* CSceneManager::getSceneNodeAnimatorFactory(s32 index)
+ISceneNodeAnimatorFactory* CSceneManager::getSceneNodeAnimatorFactory(u32 index)
 {
-	if (index>=0 && index<(int)SceneNodeAnimatorFactoryList.size())
+	if (index<SceneNodeAnimatorFactoryList.size())
 		return SceneNodeAnimatorFactoryList[index];
 
 	return 0;
@@ -2130,11 +2139,11 @@ ISceneNode* CSceneManager::addSceneNode(const char* sceneNodeTypeName, ISceneNod
 
 
 //! Returns a typename from a scene node animator type or null if not found
-const c8* CSceneManager::getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type)
+const c8* CSceneManager::getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const
 {
 	const char* name = 0;
 
-	for (int i=0; !name && i<(int)SceneNodeAnimatorFactoryList.size(); ++i)
+	for (u32 i=0; !name && i<SceneNodeAnimatorFactoryList.size(); ++i)
 		name = SceneNodeAnimatorFactoryList[i]->getCreateableSceneNodeAnimatorTypeName(type);
 
 	return name;
@@ -2176,7 +2185,7 @@ void CSceneManager::setAmbientLight(const video::SColorf &ambientColor)
 
 
 //! Returns ambient color of the scene
-video::SColorf CSceneManager::getAmbientLight()
+const video::SColorf& CSceneManager::getAmbientLight() const
 {
 	return AmbientLight;
 }
@@ -2191,6 +2200,8 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 		return new CIrrMeshWriter(Driver, FileSystem);
 	case EMWT_COLLADA:
 		return new CColladaMeshWriter(Driver, FileSystem);
+	case EMWT_STL:
+		return new CSTLMeshWriter(this);
 	}
 
 	return 0;

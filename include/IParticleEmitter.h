@@ -46,9 +46,6 @@ class IParticleEmitter : public virtual io::IAttributeExchangingObject
 {
 public:
 
-	//! destructor
-	virtual ~IParticleEmitter() {};
-
 	//! Prepares an array with new particles to emitt into the system
 	//! and returns how much new particles there are.
 	//! \param now: Current time.

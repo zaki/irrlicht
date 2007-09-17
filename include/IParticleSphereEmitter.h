@@ -17,9 +17,6 @@ class IParticleSphereEmitter : public IParticleEmitter
 {
 public:
 
-	//! destructor
-	virtual ~IParticleSphereEmitter() {};
-
 	//! Set the center of the sphere for particle emissions
 	virtual void setCenter( const core::vector3df& center ) = 0;
 

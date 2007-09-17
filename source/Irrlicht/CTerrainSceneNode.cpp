@@ -708,7 +708,7 @@ namespace scene
 	//! Gets the meshbuffer data based on a specified Level of Detail.
 	//! \param mb: A reference to an SMeshBuffer object
 	//! \param LOD: The Level Of Detail you want the indices from.
-	void CTerrainSceneNode::getMeshBufferForLOD(SMeshBufferLightMap& mb, s32 LOD )
+	void CTerrainSceneNode::getMeshBufferForLOD(SMeshBufferLightMap& mb, s32 LOD ) const
 	{
 		if (!Mesh.getMeshBufferCount())
 			return;
@@ -778,7 +778,7 @@ namespace scene
 	//! the CurrentLOD.  If the CurrentLOD is set to -1, meaning it's not shown,
 	//! then it will retrieve the triangles at the highest LOD ( 0 ).
 	//! \return: Number if indices put into the buffer.
-	s32 CTerrainSceneNode::getIndicesForPatch(core::array<u32>& indices, s32 patchX, s32 patchZ, s32 LOD )
+	s32 CTerrainSceneNode::getIndicesForPatch(core::array<u32>& indices, s32 patchX, s32 patchZ, s32 LOD)
 	{
 		if ( patchX < 0 || patchX > TerrainData.PatchCount - 1 || patchZ < 0 || patchZ > TerrainData.PatchCount - 1 )
 			return -1;
@@ -854,7 +854,7 @@ namespace scene
 	//! Populates an array with the CurrentLOD of each patch.
 	//! \param LODs: A reference to a core::array<s32> to hold the values
 	//! \return Returns the number of elements in the array
-	s32 CTerrainSceneNode::getCurrentLODOfPatches(core::array<s32>& LODs)
+	s32 CTerrainSceneNode::getCurrentLODOfPatches(core::array<s32>& LODs) const
 	{
 		s32 numLODs;
 		LODs.clear ( );
@@ -931,7 +931,7 @@ namespace scene
 
 	//! used to get the indices when generating index data for patches at varying levels of detail.
 	u32 CTerrainSceneNode::getIndex(const s32& PatchX, const s32& PatchZ,
-					const s32& PatchIndex, u32 vX, u32 vZ)
+					const s32& PatchIndex, u32 vX, u32 vZ) const
 	{
 		// top border
 		if (vZ == 0)
@@ -1226,7 +1226,7 @@ namespace scene
 
 
 	//! Gets the height
-	f32 CTerrainSceneNode::getHeight( f32 x, f32 z )
+	f32 CTerrainSceneNode::getHeight( f32 x, f32 z ) const
 	{
 		if (!Mesh.getMeshBufferCount())
 			return 0;

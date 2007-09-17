@@ -65,7 +65,7 @@ bool CWriteFile::seek(long finalPos, bool relativeMovement)
 
 
 //! returns where in the file we are.
-long CWriteFile::getPos()
+long CWriteFile::getPos() const
 {
 	return ftell(File);
 }

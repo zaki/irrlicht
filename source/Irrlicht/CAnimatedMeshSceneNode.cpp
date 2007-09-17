@@ -259,10 +259,10 @@ void CAnimatedMeshSceneNode::render()
 		m = Mesh->getMesh((s32)frame, 255, StartFrame, EndFrame);
 	else
 	{
-		ISkinnedMesh* skinnedMesh=(ISkinnedMesh*)Mesh;
+		ISkinnedMesh* skinnedMesh = reinterpret_cast<ISkinnedMesh*>(Mesh);
 
 		if (JointMode &2)//write to mesh
-			skinnedMesh->tranferJointsToMesh(JointChildSceneNodes);
+			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
 		else
 			skinnedMesh->animateMesh(frame, 1.0f);
 

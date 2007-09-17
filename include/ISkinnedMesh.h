@@ -35,13 +35,13 @@ namespace scene
 
 		//! Gets joint count.
 		//! \return Returns amount of joints in the skeletal animated mesh.
-		virtual s32 getJointCount() const = 0;
+		virtual u32 getJointCount() const = 0;
 
 		//! Gets the name of a joint.
 		//! \param number: Zero based index of joint. The last joint
 		//! has the number getJointCount()-1;
 		//! \return Returns name of joint and null if an error happened.
-		virtual const c8* getJointName(s32 number) const = 0;
+		virtual const c8* getJointName(u32 number) const = 0;
 
 		//! Gets a joint number from its name
 		//! \param name: Name of the joint.
@@ -52,7 +52,7 @@ namespace scene
 		//! the animation is linked (not copied) based on joint names (so make sure they are unique)
 		//! \return Returns true if all joints in this mesh were matched up (empty names will not be matched, and it's case sensitive)
 		//! unmatched joints will not be animated
-		virtual bool useAnimationFrom(ISkinnedMesh *mesh) = 0;
+		virtual bool useAnimationFrom(const ISkinnedMesh *mesh) = 0;
 
 		//!Update Normals when Animating
 		//!False= Don't (default)
@@ -72,7 +72,7 @@ namespace scene
 		virtual void recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes) = 0;
 
 		//!Tranfers the joint data to the mesh
-		virtual void tranferJointsToMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes) = 0;
+		virtual void transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes) = 0;
 
 		//!Creates an array of joints from this mesh
 		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,
@@ -176,7 +176,7 @@ namespace scene
 
 		//Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
 
-		//these functions will use the needed arrays, set vaules, etc to help the loaders
+		//these functions will use the needed arrays, set values, etc to help the loaders
 
 		//! exposed for loaders: to add mesh buffers
 		virtual core::array<SSkinMeshBuffer*> &getMeshBuffers() = 0;
@@ -184,10 +184,11 @@ namespace scene
 		//! exposed for loaders: joints list
 		virtual core::array<SJoint*> &getAllJoints() = 0;
 
+		//! exposed for loaders: joints list
+		virtual const core::array<SJoint*> &getAllJoints() const = 0;
+
 		//! loaders should call this after populating the mesh
 		virtual void finalize() = 0;
-
-
 
 
 		virtual SSkinMeshBuffer *createBuffer() = 0;
@@ -205,6 +206,4 @@ namespace scene
 } // end namespace irr
 
 #endif
-
-
 

@@ -19,21 +19,21 @@ class line2d
 {
 	public:
 
-		line2d() : start(0,0), end(1,1) {};
-		line2d(T xa, T ya, T xb, T yb) : start(xa, ya), end(xb, yb) {};
-		line2d(const vector2d<T>& start, const vector2d<T>& end) : start(start), end(end) {};
-		line2d(const line2d<T>& other) : start(other.start), end(other.end) {};
+		line2d() : start(0,0), end(1,1) {}
+		line2d(T xa, T ya, T xb, T yb) : start(xa, ya), end(xb, yb) {}
+		line2d(const vector2d<T>& start, const vector2d<T>& end) : start(start), end(end) {}
+		line2d(const line2d<T>& other) : start(other.start), end(other.end) {}
 
 		// operators
 
-		line2d<T> operator+(const vector2d<T>& point) const { return line2d<T>(start + point, end + point); };
-		line2d<T>& operator+=(const vector2d<T>& point) { start += point; end += point; return *this; };
+		line2d<T> operator+(const vector2d<T>& point) const { return line2d<T>(start + point, end + point); }
+		line2d<T>& operator+=(const vector2d<T>& point) { start += point; end += point; return *this; }
 
-		line2d<T> operator-(const vector2d<T>& point) const { return line2d<T>(start - point, end - point); };
-		line2d<T>& operator-=(const vector2d<T>& point) { start -= point; end -= point; return *this; };
+		line2d<T> operator-(const vector2d<T>& point) const { return line2d<T>(start - point, end - point); }
+		line2d<T>& operator-=(const vector2d<T>& point) { start -= point; end -= point; return *this; }
 
-		bool operator==(const line2d<T>& other) const { return (start==other.start && end==other.end) || (end==other.start && start==other.end);};
-		bool operator!=(const line2d<T>& other) const { return !(start==other.start && end==other.end) || (end==other.start && start==other.end);};
+		bool operator==(const line2d<T>& other) const { return (start==other.start && end==other.end) || (end==other.start && start==other.end);}
+		bool operator!=(const line2d<T>& other) const { return !(start==other.start && end==other.end) || (end==other.start && start==other.end);}
 
 		// functions
 
@@ -43,11 +43,11 @@ class line2d
 
 		//! Returns length of line
 		//! \return Returns length of the line.
-		f64 getLength() const { return start.getDistanceFrom(end); };
+		f64 getLength() const { return start.getDistanceFrom(end); }
 
 		//! Returns squared length of the line
 		//! \return Returns squared length of line.
-		T getLengthSQ() const { return start.getDistanceFromSQ(end); };
+		T getLengthSQ() const { return start.getDistanceFromSQ(end); }
 
 		//! Returns middle of the line
 		vector2d<T> getMiddle() const
@@ -57,7 +57,7 @@ class line2d
 
 		//! Returns the vector of the line.
 		//! \return Returns the vector of the line.
-		vector2d<T> getVector() const { return vector2d<T>(start.X - end.X, start.Y - end.Y); };
+		vector2d<T> getVector() const { return vector2d<T>(start.X - end.X, start.Y - end.Y); }
 
 		//! Tests if this line intersects with another line.
 		//! \param l: Other line to test intersection with.
@@ -99,13 +99,13 @@ class line2d
 
 		//! Returns unit vector of the line.
 		//! \return Returns unit vector of this line.
-		vector2d<T> getUnitVector()
+		vector2d<T> getUnitVector() const
 		{
 			T len = (T)(1.0 / getLength());
 			return vector2d<T>((end.X - start.X) * len, (end.Y - start.Y) * len);
 		}
 
-		f64 getAngleWith(const line2d<T>& l)
+		f64 getAngleWith(const line2d<T>& l) const
 		{
 			vector2d<T> vect = getVector();
 			vector2d<T> vect2 = l.getVector();
@@ -116,7 +116,7 @@ class line2d
 		//! right, or on the direction of the line
 		//! \return Returns 0 if the point is on the line
 		//! <0 if to the left, or >0 if to the right.
-		T getPointOrientation(const vector2d<T>& point)
+		T getPointOrientation(const vector2d<T>& point) const
 		{
 			return ( (end.X   - start.X) * (point.Y - start.Y) - 
 					 (point.X - start.X) * (end.Y   - start.Y) );
@@ -124,7 +124,7 @@ class line2d
 
 		//! Returns if the given point is a member of the line
 		//! \return Returns true if 
-		bool isPointOnLine(const vector2d<T>& point)
+		bool isPointOnLine(const vector2d<T>& point) const
 		{
 			T d = getPointOrientation(point);
 			return (d == 0 && point.isBetweenPoints(start, end));

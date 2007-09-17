@@ -99,7 +99,7 @@ private:
 
 	IAnimatedMeshSceneNode* Node;
 	IAnimatedMesh*		AnimatedMesh;
-	IMesh*			BaseMesh;
+	const IMesh*			BaseMesh;
 	s32			TotalVertices;
 	u32			MBCount;
 	s32			MBNumber;

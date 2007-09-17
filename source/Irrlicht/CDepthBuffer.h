@@ -29,7 +29,7 @@ namespace video
 		virtual void setSize(const core::dimension2d<s32>& size);
 
 		//! returns the size of the zbuffer
-		virtual const core::dimension2d<s32>& getSize();
+		virtual const core::dimension2d<s32>& getSize() const;
 
 		//! locks the zbuffer
 		virtual fp24* lock();

@@ -24,22 +24,19 @@ namespace core
 	{
 	public:
 
-		rect()
-			: UpperLeftCorner(0,0), LowerRightCorner(0,0) {};
-
+		rect() : UpperLeftCorner(0,0), LowerRightCorner(0,0) {}
 
 		rect(T x, T y, T x2, T y2)
-			: UpperLeftCorner(x,y), LowerRightCorner(x2,y2) {};
-
+			: UpperLeftCorner(x,y), LowerRightCorner(x2,y2) {}
 
 		rect(const position2d<T>& upperLeft, const position2d<T>& lowerRight)
-			: UpperLeftCorner(upperLeft), LowerRightCorner(lowerRight) {};
+			: UpperLeftCorner(upperLeft), LowerRightCorner(lowerRight) {}
 
 		rect(const rect<T>& other)
-			: UpperLeftCorner(other.UpperLeftCorner), LowerRightCorner(other.LowerRightCorner) {};
+			: UpperLeftCorner(other.UpperLeftCorner), LowerRightCorner(other.LowerRightCorner) {}
 
 		rect(const position2d<T>& pos, const dimension2d<T>& size)
-			: UpperLeftCorner(pos), LowerRightCorner(pos.X + size.Width, pos.Y + size.Height) {};
+			: UpperLeftCorner(pos), LowerRightCorner(pos.X + size.Width, pos.Y + size.Height) {}
 
 
 		rect<T> operator+(const position2d<T>& pos) const
@@ -262,15 +259,13 @@ namespace core
 		}
 
 
-
-
 		position2d<T> UpperLeftCorner;
 		position2d<T> LowerRightCorner;
 	};
 
+
 } // end namespace core
 } // end namespace irr
-
 
 #endif
 

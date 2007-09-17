@@ -41,7 +41,7 @@ namespace irr
 	public:
 
 		//! destructor
-		virtual ~IrrlichtDevice() {};
+		virtual ~IrrlichtDevice() {}
 
         //! Runs the device. 
 		/** Also increments the virtual timer by calling ITimer::tick();. You can prevent this
@@ -144,7 +144,7 @@ while(device->run())
     // draw everything here
   }
 		\endcode */
-		virtual bool isWindowActive() = 0;
+		virtual bool isWindowActive() const = 0;
 
 		//! Notifies the device that it should close itself.
 		/** IrrlichtDevice::run() will always return false after closeDevice() was called. */
@@ -153,7 +153,7 @@ while(device->run())
 		//! Returns the version of the engine.
 		/** The returned string
 		will look like this: "1.2.3" or this: "1.2". */
-		virtual const c8* getVersion() = 0;
+		virtual const c8* getVersion() const = 0;
 
 		//! Sets a new event receiver to receive events.
 		virtual void setEventReceiver(IEventReceiver* receiver) = 0;

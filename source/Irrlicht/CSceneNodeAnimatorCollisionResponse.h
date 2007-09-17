@@ -38,7 +38,7 @@ namespace scene
 		//! Returns if the attached scene node is falling, which means that
 		//! there is no blocking wall from the scene node in the direction of
 		//! the gravity.
-		virtual bool isFalling();
+		virtual bool isFalling() const;
 
 		//! Sets the radius of the ellipsoid with which collision detection and
 		//! response is done. 

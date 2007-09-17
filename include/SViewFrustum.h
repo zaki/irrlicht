@@ -52,7 +52,7 @@ namespace scene
 		};
 
 		//! Default Constructor
-		SViewFrustum() {};
+		SViewFrustum() {}
 
 		//! Copy Constructor
 		SViewFrustum(const SViewFrustum& other);

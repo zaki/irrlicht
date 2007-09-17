@@ -32,7 +32,7 @@ namespace scene
 		//! the gravity. The implementation of this method is very fast,
 		//! no collision detection is done when invoking it. 
 		//! \return Returns true if the scene node is falling, false if not.
-		virtual bool isFalling() = 0;
+		virtual bool isFalling() const = 0;
 
 		//! Sets the radius of the ellipsoid with which collision detection and
 		//! response is done. If you have got a scene node, and you are unsure about

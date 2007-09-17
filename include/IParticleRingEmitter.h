@@ -17,9 +17,6 @@ class IParticleRingEmitter : public IParticleEmitter
 {
 public:
 
-	//! destructor
-	virtual ~IParticleRingEmitter() {};
-
 	//! Set the center of the ring
 	virtual void setCenter( const core::vector3df& center ) = 0;
 

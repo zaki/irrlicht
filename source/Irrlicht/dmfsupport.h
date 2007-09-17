@@ -159,7 +159,7 @@ public:
     This function loads a StringList from a file where each string is divided by a \\n char.*/
     void LoadFromFile(io::IReadFile* file)
 	{
-		int sz = file->getSize();
+		const long sz = file->getSize();
 		char* buf = new char[sz+1];
 		file->read(buf, sz);
 		buf[sz] = 0;

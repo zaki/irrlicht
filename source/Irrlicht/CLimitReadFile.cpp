@@ -84,7 +84,7 @@ bool CLimitReadFile::seek(long finalPos, bool relativeMovement)
 
 
 //! returns size of file
-long CLimitReadFile::getSize()
+long CLimitReadFile::getSize() const
 {
 	return AreaSize;
 }
@@ -92,7 +92,7 @@ long CLimitReadFile::getSize()
 
 
 //! returns where in the file we are.
-long CLimitReadFile::getPos()
+long CLimitReadFile::getPos() const
 {
 	return File->getPos() - AreaStart;
 }

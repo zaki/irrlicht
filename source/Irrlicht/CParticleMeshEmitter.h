@@ -98,7 +98,7 @@ public:
 
 private:
 
-	IMesh* Mesh;
+	const IMesh* Mesh;
 	s32 TotalVertices;
 	u32 MBCount;
 	s32 MBNumber;

@@ -20,9 +20,6 @@ namespace scene
 	{
 	public:
 
-		//! destructor
-		virtual ~IQ3LevelMesh() {};
-
 		//! releases a Mesh from the Q3 Loader
 		virtual void releaseMesh ( s32 index ) = 0;
 

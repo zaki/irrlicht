@@ -18,9 +18,6 @@ class IParticleAnimatedMeshSceneNodeEmitter : public IParticleEmitter
 {
 public:
 
-	//! destructor
-	virtual ~IParticleAnimatedMeshSceneNodeEmitter() {};
-
 	//! Set Mesh to emit particles from
 	virtual void setAnimatedMeshSceneNode( IAnimatedMeshSceneNode* node ) = 0;
 

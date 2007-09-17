@@ -77,7 +77,7 @@ namespace irr
 		virtual ITimer* getTimer();
 
 		//! Returns the version of the engine. 
-		virtual const char* getVersion();
+		virtual const char* getVersion() const;
 
 		//! send the event to the right receiver
 		virtual void postEventFromUser(const SEvent& event);

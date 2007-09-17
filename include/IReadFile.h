@@ -17,7 +17,7 @@ namespace io
 	{
 	public:
 
-		virtual ~IReadFile() {};
+		virtual ~IReadFile() {}
 
 		//! Reads an amount of bytes from the file.
 		//! \param buffer: Pointer to buffer where to read bytes will be written to.
@@ -35,11 +35,11 @@ namespace io
 
 		//! Returns size of file.
 		//! \return Returns the size of the file in bytes.
-		virtual long getSize() = 0;
+		virtual long getSize() const = 0;
 
 		//! Returns the current position in the file.
 		//! \return Returns the current position in the file in bytes.
-		virtual long getPos() = 0;
+		virtual long getPos() const = 0;
 
 		//! Returns name of file.
 		//! \return Returns the file name as zero terminated character string.

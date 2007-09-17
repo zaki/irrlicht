@@ -92,45 +92,45 @@ ISceneNodeAnimator* CDefaultSceneNodeAnimatorFactory::createSceneNodeAnimator(co
 
 
 //! returns amount of scene node animator types this factory is able to create
-s32 CDefaultSceneNodeAnimatorFactory::getCreatableSceneNodeAnimatorTypeCount()
+u32 CDefaultSceneNodeAnimatorFactory::getCreatableSceneNodeAnimatorTypeCount() const
 {
 	return ESNAT_COUNT;
 }
 
 
 //! returns type of a createable scene node animator type
-ESCENE_NODE_ANIMATOR_TYPE CDefaultSceneNodeAnimatorFactory::getCreateableSceneNodeAnimatorType(s32 idx)
+ESCENE_NODE_ANIMATOR_TYPE CDefaultSceneNodeAnimatorFactory::getCreateableSceneNodeAnimatorType(u32 idx) const
 {
-	if (idx>=0 && idx<ESNAT_COUNT)
+	if (idx<ESNAT_COUNT)
 		return (ESCENE_NODE_ANIMATOR_TYPE)idx;
-
-	return ESNAT_UNKNOWN;
+	else
+		return ESNAT_UNKNOWN;
 }
 
 
 //! returns type name of a createable scene node animator type 
-const c8* CDefaultSceneNodeAnimatorFactory::getCreateableSceneNodeAnimatorTypeName(s32 idx)
+const c8* CDefaultSceneNodeAnimatorFactory::getCreateableSceneNodeAnimatorTypeName(u32 idx) const
 {
-	if (idx>=0 && idx<ESNAT_COUNT)
+	if (idx<ESNAT_COUNT)
 		return SceneNodeAnimatorTypeNames[idx];
-
-	return 0;
+	else
+		return 0;
 }
 
 //! returns type name of a createable scene node animator type 
-const c8* CDefaultSceneNodeAnimatorFactory::getCreateableSceneNodeAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type)
+const c8* CDefaultSceneNodeAnimatorFactory::getCreateableSceneNodeAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const
 {
 	// for this factory: index == type
 
-	if (type>=0 && type<ESNAT_COUNT)
+	if (type<ESNAT_COUNT)
 		return SceneNodeAnimatorTypeNames[type];
-
-	return 0;
+	else
+		return 0;
 }
 
-ESCENE_NODE_ANIMATOR_TYPE CDefaultSceneNodeAnimatorFactory::getTypeFromName(const c8* name)
+ESCENE_NODE_ANIMATOR_TYPE CDefaultSceneNodeAnimatorFactory::getTypeFromName(const c8* name) const
 {
-	for ( int i=0; SceneNodeAnimatorTypeNames[i]; ++i)
+	for ( u32 i=0; SceneNodeAnimatorTypeNames[i]; ++i)
 		if (!strcmp(name, SceneNodeAnimatorTypeNames[i]) )
 			return (ESCENE_NODE_ANIMATOR_TYPE)i;
 

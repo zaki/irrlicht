@@ -681,7 +681,7 @@ void CIrrDeviceWin32::closeDevice()
 
 
 //! returns if window is active. if not, nothing need to be drawn
-bool CIrrDeviceWin32::isWindowActive()
+bool CIrrDeviceWin32::isWindowActive() const
 {
 	bool ret = (GetActiveWindow() == HWnd);
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;

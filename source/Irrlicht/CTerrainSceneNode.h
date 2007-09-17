@@ -49,7 +49,7 @@ namespace scene
 			const core::vector3df& rotation = core::vector3df(0.0f, 0.0f, 0.0f),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f));
 
-		~CTerrainSceneNode();
+		virtual ~CTerrainSceneNode();
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
 		virtual bool loadHeightMap(io::IReadFile* file, 
@@ -135,7 +135,7 @@ namespace scene
 		virtual const core::aabbox3d<f32>& getBoundingBox(s32 patchX, s32 patchZ) const;
 
 		//! Return the number of indices currently used to draw the scene node.
-		virtual u32 getIndexCount() { return IndicesToRender; }
+		virtual u32 getIndexCount() const { return IndicesToRender; }
 
 		//! Returns the mesh
 		virtual IMesh* getMesh() { return &Mesh; }
@@ -143,7 +143,7 @@ namespace scene
 		//! Gets the meshbuffer data based on a specified Level of Detail.
 		//! \param mb: A reference to an SMeshBufferLightMap object
 		//! \param LOD: The Level Of Detail you want the indices from.
-		virtual void getMeshBufferForLOD(SMeshBufferLightMap& mb, s32 LOD );
+		virtual void getMeshBufferForLOD(SMeshBufferLightMap& mb, s32 LOD ) const;
 
 		//! Gets the indices for a specified patch at a specified Level of Detail.  
 		//! \param indices: A reference to an array of u32 indices.
@@ -159,7 +159,7 @@ namespace scene
 		//! Populates an array with the CurrentLOD of each patch.
 		//! \param LODs: A reference to a core::array<s32> to hold the values
 		//! \return Returns the number of elements in the array
-		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs);
+		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const;
 
 		//! Manually sets the LOD of a patch
 		//! \param patchX: Patch x coordinate.
@@ -168,13 +168,13 @@ namespace scene
 		virtual void setLODOfPatch( s32 patchX, s32 patchZ, s32 LOD );
 
 		//! Returns center of terrain.
-		virtual core::vector3df getTerrainCenter() 
+		virtual const core::vector3df& getTerrainCenter() const
 		{
 			return TerrainData.Center;
 		}
 
 		//! Returns center of terrain.
-		virtual f32 getHeight( f32 x, f32 y );
+		virtual f32 getHeight( f32 x, f32 y ) const;
 
 		//! Sets the movement camera threshold which is used to determine when to recalculate
 		//! indices for the scene node.  The default value is 10.0f.
@@ -284,7 +284,7 @@ namespace scene
 		virtual void preRenderIndicesCalculations();
 
 		//! get indices when generating index data for patches at varying levels of detail.
-		u32 getIndex(const s32& PatchX, const s32& PatchZ, const s32& PatchIndex, u32 vX, u32 vZ);
+		u32 getIndex(const s32& PatchX, const s32& PatchZ, const s32& PatchIndex, u32 vX, u32 vZ) const;
 
 		//! calculate smooth normals 
 		void calculateNormals(SMeshBufferLightMap* pMeshBuffer );
@@ -328,12 +328,11 @@ namespace scene
 		f32 TCoordScale2;
 		core::stringc HeightmapFile;
 		io::IFileSystem* FileSystem;
-
 	};
+
 
 } // end namespace scene
 } // end namespace irr
-
 
 #endif // __C_TERRAIN_SCENE_NODE_H__
 

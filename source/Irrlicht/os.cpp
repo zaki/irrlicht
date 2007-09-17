@@ -148,7 +148,7 @@ namespace os
 
 	u32 Timer::getRealTime()
 	{
-		static timeval tv;
+		timeval tv;
 		gettimeofday(&tv, 0);
 		return (u32)(tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	}

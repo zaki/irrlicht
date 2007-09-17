@@ -116,36 +116,36 @@ ISceneNode* CDefaultSceneNodeFactory::addSceneNode(const c8* typeName, ISceneNod
 
 
 //! returns amount of scene node types this factory is able to create
-s32 CDefaultSceneNodeFactory::getCreatableSceneNodeTypeCount()
+u32 CDefaultSceneNodeFactory::getCreatableSceneNodeTypeCount() const
 {
 	return SupportedSceneNodeTypes.size();
 }
 
 
 //! returns type of a createable scene node type
-ESCENE_NODE_TYPE CDefaultSceneNodeFactory::getCreateableSceneNodeType(s32 idx)
+ESCENE_NODE_TYPE CDefaultSceneNodeFactory::getCreateableSceneNodeType(u32 idx) const
 {
-	if (idx>=0 && idx<(s32)SupportedSceneNodeTypes.size())
+	if (idx<SupportedSceneNodeTypes.size())
 		return SupportedSceneNodeTypes[idx].Type;
-
-	return ESNT_UNKNOWN;
+	else
+		return ESNT_UNKNOWN;
 }
 
 
 //! returns type name of a createable scene node type 
-const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(s32 idx)
+const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(u32 idx) const
 {
-	if (idx>=0 && idx<(s32)SupportedSceneNodeTypes.size())
+	if (idx<SupportedSceneNodeTypes.size())
 		return SupportedSceneNodeTypes[idx].TypeName.c_str();
-
-	return 0;
+	else
+		return 0;
 }
 
 
 //! returns type name of a createable scene node type 
-const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(ESCENE_NODE_TYPE type)
+const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(ESCENE_NODE_TYPE type) const
 {
-	for (unsigned int i=0; i<SupportedSceneNodeTypes.size(); ++i)
+	for (u32 i=0; i<SupportedSceneNodeTypes.size(); ++i)
 		if (SupportedSceneNodeTypes[i].Type == type)
 			return SupportedSceneNodeTypes[i].TypeName.c_str();
 
@@ -153,9 +153,9 @@ const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(ESCENE_NODE_T
 }
 
 
-ESCENE_NODE_TYPE CDefaultSceneNodeFactory::getTypeFromName(const c8* name)
+ESCENE_NODE_TYPE CDefaultSceneNodeFactory::getTypeFromName(const c8* name) const
 {
-	for (unsigned int i=0; i<SupportedSceneNodeTypes.size(); ++i)
+	for (u32 i=0; i<SupportedSceneNodeTypes.size(); ++i)
 		if (SupportedSceneNodeTypes[i].TypeName == name)
 			return SupportedSceneNodeTypes[i].Type;
 

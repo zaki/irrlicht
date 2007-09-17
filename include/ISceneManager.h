@@ -150,7 +150,7 @@ namespace scene
 	public:
 
 		//! destructor
-		virtual ~ISceneManager() {};
+		virtual ~ISceneManager() {}
 
 		//! Returns pointer to an animateable mesh. Loads the file if not loaded already.
 		/**
@@ -1121,7 +1121,7 @@ namespace scene
 		 manager is rendering currently, because for example they registered for rendering
 		 twice, once for transparent geometry and once for solid. When knowing what rendering
 		 pass currently is active they can render the correct part of their geometry. */
-		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() = 0;
+		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() const = 0;
 
 		//! Returns the default scene node factory which can create all built in scene nodes
 		virtual ISceneNodeFactory* getDefaultSceneNodeFactory() = 0;
@@ -1132,10 +1132,10 @@ namespace scene
 		virtual void registerSceneNodeFactory(ISceneNodeFactory* factoryToAdd) = 0;
 
 		//! Returns amount of registered scene node factories.
-		virtual s32 getRegisteredSceneNodeFactoryCount() = 0;
+		virtual u32 getRegisteredSceneNodeFactoryCount() const = 0;
 
 		//! Returns a scene node factory by index
-		virtual ISceneNodeFactory* getSceneNodeFactory(s32 index) = 0;
+		virtual ISceneNodeFactory* getSceneNodeFactory(u32 index) = 0;
 
 		//! Returns the default scene node animator factory which can create all built-in scene node animators
 		virtual ISceneNodeAnimatorFactory* getDefaultSceneNodeAnimatorFactory() = 0;
@@ -1146,10 +1146,10 @@ namespace scene
 		virtual void registerSceneNodeAnimatorFactory(ISceneNodeAnimatorFactory* factoryToAdd) = 0;
 
 		//! Returns amount of registered scene node animator factories.
-		virtual s32 getRegisteredSceneNodeAnimatorFactoryCount() = 0;
+		virtual u32 getRegisteredSceneNodeAnimatorFactoryCount() const = 0;
 
 		//! Returns a scene node animator factory by index
-		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(s32 index) = 0;
+		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index) = 0;
 
 		//! Returns a typename from a scene node type or null if not found
 		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type) = 0;
@@ -1226,7 +1226,7 @@ namespace scene
 		virtual void setAmbientLight(const video::SColorf &ambientColor) = 0;
 
 		//! Returns ambient color of the scene
-		virtual video::SColorf getAmbientLight() = 0;
+		virtual const video::SColorf& getAmbientLight() const = 0;
 
 	};
 

@@ -106,7 +106,7 @@ namespace video
 		/** Returns true if a feature is available
 		\param feature: A feature to query.
 		\return Returns true if the feature is available, false if not. */
-		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) = 0;
+		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const = 0;
 
 		//! Sets the view, world or projection transformation.
 		/* \param state: Transformation type to be set. Can be view, world or projection.
@@ -114,7 +114,7 @@ namespace video
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat) = 0;
 
 		//! Returns the transformation set by setTransform
-		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) = 0;
+		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const = 0;
 
 		//! Sets a material.
 		/** All 3d drawing functions will draw geometry using this material.
@@ -150,7 +150,7 @@ namespace video
 		virtual ITexture* getTextureByIndex(u32 index) = 0;
 
 		//! Returns amount of textures currently loaded
-		virtual s32 getTextureCount() = 0;
+		virtual u32 getTextureCount() const = 0;
 
 		//! Renames a texture
 		virtual void renameTexture(ITexture* texture, const c8* newName) = 0;
@@ -210,7 +210,7 @@ namespace video
 		in the engine and for example in picture edit programs. To avoid this
 		problem, you could use the makeColorKeyTexture method, which takes the position
 		of a pixel instead a color value. */
-		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color) = 0;
+		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color) const = 0;
 
 		//! Creates a 1bit alpha channel of the texture based of an color key position.
 		/** This makes the texture transparent at the regions where this color
@@ -219,7 +219,7 @@ namespace video
 		\param colorKeyPixelPos: Position of a pixel with the color key color.
 		Every pixel with this color will become transparent as described above. */
 		virtual void makeColorKeyTexture(video::ITexture* texture,
-			core::position2d<s32> colorKeyPixelPos) = 0;
+			core::position2d<s32> colorKeyPixelPos) const = 0;
 
 		//! Creates a normal map from a height map texture.
 		/** If the target texture
@@ -228,7 +228,7 @@ namespace video
 		material and similar materials.
 		\param texture: Texture whose alpha channel is modified.
 		\param amplitude: Constant value by which the height information is multiplied.*/
-		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) = 0;
+		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const = 0;
 
 		//! Sets a new render target.
 		/** This will only work if the driver
@@ -545,22 +545,22 @@ namespace video
 
 		//! Returns the size of the screen or render window.
 		/** \return Size of screen or render window. */
-		virtual core::dimension2d<s32> getScreenSize() = 0;
+		virtual const core::dimension2d<s32>& getScreenSize() const = 0;
 
 		//! Returns the size of the current render target, or the screen size if the driver 
 		//! doesnt support render to texture
 		/** \return Size of render target or screen/window */
-		virtual core::dimension2d<s32> getCurrentRenderTargetSize() = 0;
+		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const = 0;
 
 
 		//! Returns current frames per second value.
 		/** \return Returns amount of frames per second drawn. **/
-		virtual s32 getFPS() = 0;
+		virtual s32 getFPS() const = 0;
 
 		//! Returns amount of primitives (mostly triangles) which were drawn in the last frame.
 		/** Together with getFPS() very useful method for statistics.
 		\return Amount of primitives drawn in the last frame. */
-		virtual u32 getPrimitiveCountDrawn( u32 param = 0 ) = 0;
+		virtual u32 getPrimitiveCountDrawn( u32 param = 0 ) const = 0;
 
 		//! Deletes all dynamic lights which were previously added with addDynamicLight().
 		virtual void deleteAllDynamicLights() = 0;
@@ -571,22 +571,22 @@ namespace video
 
 		//! Returns the maximal amount of dynamic lights the device can handle
 		/** \return Maximal amount of dynamic lights. */
-		virtual u32 getMaximalDynamicLightAmount() = 0;
+		virtual u32 getMaximalDynamicLightAmount() const = 0;
 
 		//! Returns current amount of dynamic lights set
 		/** \return Current amount of dynamic lights set */
-		virtual u32 getDynamicLightCount() = 0;
+		virtual u32 getDynamicLightCount() const = 0;
 
 		//! Returns light data which was previously set by IVideoDriver::addDynamicLight().
 		/** \param idx: Zero based index of the light. Must be greater than 0 and smaller
 		than IVideoDriver()::getDynamicLightCount.
 		\return Light data. */
-		virtual const SLight& getDynamicLight(u32 idx) = 0;
+		virtual const SLight& getDynamicLight(u32 idx) const = 0;
 
 		//! Gets name of this video driver.
 		/** \return Returns the name of the video driver. Example: In case of the Direct3D8
 		driver, it would return "Direct3D 8.1". */
-		virtual const wchar_t* getName() = 0;
+		virtual const wchar_t* getName() const = 0;
 
 		//! Adds an external image loader to the engine.
 		/** This is useful if
@@ -610,7 +610,7 @@ namespace video
 		/** (mostly vertices) which
 		the device is able to render with one drawIndexedTriangleList
 		call. */
-		virtual u32 getMaximalPrimitiveCount() = 0;
+		virtual u32 getMaximalPrimitiveCount() const = 0;
 
 		//! Enables or disables a texture creation flag.
 		/** This flag defines how
@@ -627,7 +627,7 @@ namespace video
 		/** You can change this value using setTextureCreationMode().
 		\param flag: Texture creation flag.
 		\return Returns the current texture creation mode. */
-		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) = 0;
+		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const = 0;
 
 		//! Creates a software image from a file.
 		/** No hardware texture will
@@ -709,7 +709,7 @@ namespace video
 		virtual IMaterialRenderer* getMaterialRenderer(u32 idx) = 0;
 
 		//! Returns amount of currently available material renderers.
-		virtual u32 getMaterialRendererCount() = 0;
+		virtual u32 getMaterialRendererCount() const = 0;
 
 		//! Returns name of the material renderer
 		/** This string can for example be used to test if a specific renderer already has
@@ -717,7 +717,7 @@ namespace video
 		returned name will be also used when serializing Materials.
 		\param idx: Id of the material renderer. Can be a value of the E_MATERIAL_TYPE enum or a
 		value which was returned by addMaterialRenderer(). */
-		virtual const c8* getMaterialRendererName(u32 idx) = 0;
+		virtual const c8* getMaterialRendererName(u32 idx) const = 0;
 
 		//! Sets the name of a material renderer.
 		/** Will have no effect on built-in material renderers.

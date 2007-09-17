@@ -47,7 +47,7 @@ CSceneNodeAnimatorCollisionResponse::~CSceneNodeAnimatorCollisionResponse()
 //! Returns if the attached scene node is falling, which means that
 //! there is no blocking wall from the scene node in the direction of
 //! the gravity.
-bool CSceneNodeAnimatorCollisionResponse::isFalling()
+bool CSceneNodeAnimatorCollisionResponse::isFalling() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Falling;

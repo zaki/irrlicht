@@ -18,9 +18,9 @@ namespace core
 	{
 	public:
 
-		vector3d() : X(0), Y(0), Z(0) {};
-		vector3d(T nx, T ny, T nz) : X(nx), Y(ny), Z(nz) {};
-		vector3d(const vector3d<T>& other) : X(other.X), Y(other.Y), Z(other.Z) {};
+		vector3d() : X(0), Y(0), Z(0) {}
+		vector3d(T nx, T ny, T nz) : X(nx), Y(ny), Z(nz) {}
+		vector3d(const vector3d<T>& other) : X(other.X), Y(other.Y), Z(other.Z) {}
 
 		// operators
 

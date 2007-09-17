@@ -34,7 +34,7 @@ namespace io
 		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! Returns the current position in the file.
-		virtual long getPos();
+		virtual long getPos() const;
 
 		//! Returns name of file.
 		virtual const c8* getFileName() const;

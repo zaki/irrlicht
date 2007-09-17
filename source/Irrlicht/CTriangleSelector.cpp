@@ -93,18 +93,10 @@ CTriangleSelector::CTriangleSelector(core::aabbox3d<f32> box, ISceneNode* node)
 }
 
 
-
-//! destructor
-CTriangleSelector::~CTriangleSelector()
-{
-}
-
-
-
 //! Gets all triangles.
 void CTriangleSelector::getTriangles(core::triangle3df* triangles,
-									 s32 arraySize, s32& outTriangleCount, 
-									const core::matrix4* transform)
+					s32 arraySize, s32& outTriangleCount, 
+					const core::matrix4* transform) const
 {
 	s32 cnt = Triangles.size();
 	if (cnt > arraySize)
@@ -113,7 +105,7 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 	core::matrix4 mat;
 
 	if (transform)
-		mat = (*transform);
+		mat = *transform;
 
 	if (SceneNode)
 		mat *= SceneNode->getAbsoluteTransformation();
@@ -133,9 +125,9 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 
 //! Gets all triangles which lie within a specific bounding box.
 void CTriangleSelector::getTriangles(core::triangle3df* triangles, 
-									 s32 arraySize, s32& outTriangleCount, 
-									const core::aabbox3d<f32>& box,
-									const core::matrix4* transform)
+					s32 arraySize, s32& outTriangleCount, 
+					const core::aabbox3d<f32>& box,
+					const core::matrix4* transform) const
 {
 	// return all triangles
 	getTriangles(triangles, arraySize, outTriangleCount, transform);
@@ -143,9 +135,10 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 
 
 //! Gets all triangles which have or may have contact with a 3d line.
-void CTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::line3d<f32>& line, 
-	const core::matrix4* transform)
+void CTriangleSelector::getTriangles(core::triangle3df* triangles,
+					s32 arraySize, s32& outTriangleCount,
+					const core::line3d<f32>& line,
+					const core::matrix4* transform) const
 {
 	// return all triangles
 	getTriangles(triangles, arraySize, outTriangleCount, transform);

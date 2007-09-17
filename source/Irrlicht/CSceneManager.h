@@ -365,7 +365,7 @@ namespace scene
 		virtual io::IAttributes* getParameters();
 
 		//! Returns current render pass. 
-		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass();
+		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() const;
 
 		//! Creates a new scene manager. 
 		virtual ISceneManager* createNewSceneManager(bool cloneContent);
@@ -382,10 +382,10 @@ namespace scene
 		virtual void registerSceneNodeFactory(ISceneNodeFactory* factoryToAdd);
 
 		//! Returns amount of registered scene node factories.
-		virtual s32 getRegisteredSceneNodeFactoryCount();
+		virtual u32 getRegisteredSceneNodeFactoryCount() const;
 
 		//! Returns a scene node factory by index
-		virtual ISceneNodeFactory* getSceneNodeFactory(s32 index);
+		virtual ISceneNodeFactory* getSceneNodeFactory(u32 index);
 
 		//! Returns a typename from a scene node type or null if not found
 		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type);
@@ -400,10 +400,10 @@ namespace scene
 		virtual void registerSceneNodeAnimatorFactory(ISceneNodeAnimatorFactory* factoryToAdd);
 
 		//! Returns amount of registered scene node animator factories.
-		virtual s32 getRegisteredSceneNodeAnimatorFactoryCount();
+		virtual u32 getRegisteredSceneNodeAnimatorFactoryCount() const;
 
 		//! Returns a scene node animator factory by index
-		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(s32 index);
+		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index);
 
 		//! Saves the current scene into a file.
 		//! \param filename: Name of the file .
@@ -432,15 +432,15 @@ namespace scene
 		virtual void setAmbientLight(const video::SColorf &ambientColor);
 
 		//! Returns ambient color of the scene
-		virtual video::SColorf getAmbientLight();
+		virtual const video::SColorf& getAmbientLight() const;
 
 	private:
 
 		//! Returns a typename from a scene node animator type or null if not found
-		virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type);
+		virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const;
 
 		//! returns if node is culled
-		bool isCulled(ISceneNode* node);
+		bool isCulled(const ISceneNode* node);
 
 		//! clears the deletion list
 		void clearDeletionList();

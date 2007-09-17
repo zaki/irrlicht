@@ -388,7 +388,7 @@ void CIrrDeviceSDL::setResizeAble(bool resize)
 
 
 //! returns if window is active. if not, nothing need to be drawn
-bool CIrrDeviceSDL::isWindowActive()
+bool CIrrDeviceSDL::isWindowActive() const
 {
 	return WindowActive;
 }

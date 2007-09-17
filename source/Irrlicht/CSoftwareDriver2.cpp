@@ -280,7 +280,7 @@ void CSoftwareDriver2::setCurrentShader()
 
 
 //! queries the features of the driver, returns true if feature is available
-bool CSoftwareDriver2::queryFeature(E_VIDEO_DRIVER_FEATURE feature)
+bool CSoftwareDriver2::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
 	switch (feature)
 	{
@@ -1399,7 +1399,7 @@ void CSoftwareDriver2::deleteAllDynamicLights()
 }
 
 //! returns the maximal amount of dynamic lights the device can handle
-u32 CSoftwareDriver2::getMaximalDynamicLightAmount()
+u32 CSoftwareDriver2::getMaximalDynamicLightAmount() const
 {
 	return 8;
 }
@@ -1826,7 +1826,7 @@ void CSoftwareDriver2::draw3DLine(const core::vector3df& start,
 
 //! \return Returns the name of the video driver. Example: In case of the DirectX8
 //! driver, it would return "Direct3D8.1".
-const wchar_t* CSoftwareDriver2::getName()
+const wchar_t* CSoftwareDriver2::getName() const
 {
 #ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
 	return L"burnings video 0.38b";
@@ -1846,7 +1846,7 @@ E_DRIVER_TYPE CSoftwareDriver2::getDriverType() const
 }
 
 //! Returns the transformation set by setTransform
-const core::matrix4& CSoftwareDriver2::getTransform(E_TRANSFORMATION_STATE state)
+const core::matrix4& CSoftwareDriver2::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Transformation[state].m;
 }
@@ -1888,7 +1888,7 @@ ITexture* CSoftwareDriver2::createDeviceDependentTexture(IImage* surface, const 
 //! Returns the maximum amount of primitives (mostly vertices) which
 //! the device is able to render with one drawIndexedTriangleList
 //! call.
-u32 CSoftwareDriver2::getMaximalPrimitiveCount()
+u32 CSoftwareDriver2::getMaximalPrimitiveCount() const
 {
 	return 0x00800000;
 }

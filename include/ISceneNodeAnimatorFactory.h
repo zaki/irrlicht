@@ -43,22 +43,22 @@ namespace scene
 		virtual ISceneNodeAnimator* createSceneNodeAnimator(const c8* typeName, ISceneNode* target) = 0;
 
 		//! returns amount of scene node animator types this factory is able to create
-		virtual s32 getCreatableSceneNodeAnimatorTypeCount() = 0;
+		virtual u32 getCreatableSceneNodeAnimatorTypeCount() const = 0;
 
 		//! returns type of a createable scene node animator type
 		/** \param idx: Index of scene node animator type in this factory. Must be a value between 0 and
 		getCreatableSceneNodeTypeCount() */
-		virtual ESCENE_NODE_ANIMATOR_TYPE getCreateableSceneNodeAnimatorType(s32 idx) = 0;
+		virtual ESCENE_NODE_ANIMATOR_TYPE getCreateableSceneNodeAnimatorType(u32 idx) const = 0;
 
 		//! returns type name of a createable scene node animator type 
 		/** \param idx: Index of scene node animator type in this factory. Must be a value between 0 and
 		getCreatableSceneNodeAnimatorTypeCount() */
-		virtual const c8* getCreateableSceneNodeAnimatorTypeName(s32 idx) = 0;
+		virtual const c8* getCreateableSceneNodeAnimatorTypeName(u32 idx) const = 0;
 
 		//! returns type name of a createable scene node animator type 
 		/** \param type: Type of scene node animator. 
 		\return: Returns name of scene node animator type if this factory can create the type, otherwise 0. */
-		virtual const c8* getCreateableSceneNodeAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) = 0;
+		virtual const c8* getCreateableSceneNodeAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const = 0;
 	};
 
 

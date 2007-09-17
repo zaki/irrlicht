@@ -23,7 +23,7 @@ namespace io
 	public:
 
 		//! Destructor
-		virtual ~IXMLWriter() {};
+		virtual ~IXMLWriter() {}
 
 		//! Writes a xml 1.0 header like &lt;?xml version="1.0"?&gt;. This should
 		//! always be called before writing anything other, because also the
