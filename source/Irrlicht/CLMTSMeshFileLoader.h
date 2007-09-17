@@ -18,34 +18,13 @@ Version 1.5 - 15 March 2005
 
 */
 
-// set this to 1 if you want to integrate the loader directly into the engine
-#define LMTS_INTEGRATED_IN_IRRLICHT 1
-
-
-
 #if !defined(__C_LMTS_MESH_FILE_LOADER_H_INCLUDED__)
 #define __C_LMTS_MESH_FILE_LOADER_H_INCLUDED__
 
-#if LMTS_INTEGRATED_IN_IRRLICHT
-#define LMTS_LOG os::Printer::log
-#else
-#define LMTS_LOG Logger->log
-#endif
-
-#ifdef _MSC_VER
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-#endif
-
-#include <IMeshLoader.h>
-#include <SMesh.h>
-#include <IFileSystem.h>
-#include <IVideoDriver.h>
-
-#if !LMTS_INTEGRATED_IN_IRRLICHT
-#include <ILogger.h>
-#endif
+#include "IMeshLoader.h"
+#include "SMesh.h"
+#include "IFileSystem.h"
+#include "IVideoDriver.h"
 
 namespace irr
 {
@@ -56,25 +35,19 @@ class CLMTSMeshFileLoader : public IMeshLoader
 {
 public:
 
-#if LMTS_INTEGRATED_IN_IRRLICHT
 	CLMTSMeshFileLoader(io::IFileSystem* fs, 
 		video::IVideoDriver* driver, io::IAttributes* parameters);
-#else
-	CLMTSMeshFileLoader(IrrlichtDevice* device);
-#endif
 
 	virtual ~CLMTSMeshFileLoader();
-
-	void cleanup();
 
 	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
 	
 private:
-	void constructMesh();
-	void loadTextures();
-
+	void constructMesh(SMesh* mesh);
+	void loadTextures(SMesh* mesh, u32 numTextures, u32 numLightMaps, const core::array<u32>& textureIDs);
+	void cleanup();
 
 // byte-align structures
 #if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
@@ -86,7 +59,6 @@ private:
 #else
 #	error compiler not supported
 #endif
-
 
 	struct SLMTSMagigID {
 		u32 ID;
@@ -138,21 +110,12 @@ private:
 
 	SLMTSHeader Header;
 	SLMTSTextureInfoEntry* Textures;
-	u16* TextureIDs;
 	SLMTSSubsetInfoEntry* Subsets;
 	SLMTSTriangleDataEntry* Triangles;
-
-	scene::SMesh* Mesh;
-	s32 NumTextures;
-	s32 NumLightMaps;
 
 	io::IAttributes* Parameters;
 	video::IVideoDriver* Driver;
 	io::IFileSystem* FileSystem;
-
-#if !LMTS_INTEGRATED_IN_IRRLICHT
-	ILogger* Logger;
-#endif
 };
 
 } // end namespace scene
