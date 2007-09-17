@@ -32,12 +32,6 @@ CGUIMenu::CGUIMenu(IGUIEnvironment* environment, IGUIElement* parent,
 }
 
 
-//! destructor
-CGUIMenu::~CGUIMenu()
-{
-
-}
-
 //! draws the element and its children
 void CGUIMenu::draw()
 {
@@ -146,7 +140,7 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 		}
 		case EMIE_MOUSE_MOVED:
 			if (Environment->hasFocus(this))
-				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), hasOpenSubMenu());
+				highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), hasOpenSubMenu());
 			return true;
 		default:
 			break;
@@ -250,5 +244,5 @@ void CGUIMenu::updateAbsolutePosition()
 } // end namespace
 } // end namespace
 
-
 #endif // _IRR_COMPILE_WITH_GUI_
+

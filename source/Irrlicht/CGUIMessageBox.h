@@ -26,7 +26,7 @@ namespace gui
 			IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
 		//! destructor
-		~CGUIMessageBox();
+		virtual ~CGUIMessageBox();
 
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);

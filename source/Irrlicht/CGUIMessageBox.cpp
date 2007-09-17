@@ -46,6 +46,27 @@ CGUIMessageBox::CGUIMessageBox(IGUIEnvironment* environment, const wchar_t* capt
 	refreshControls();
 }
 
+
+//! destructor
+CGUIMessageBox::~CGUIMessageBox()
+{
+	if (StaticText)
+		StaticText->drop();
+
+	if (OkButton)
+		OkButton->drop();
+
+	if (CancelButton)
+		CancelButton->drop();
+
+	if (YesButton)
+		YesButton->drop();
+
+	if (NoButton)
+		NoButton->drop();
+}
+
+
 void CGUIMessageBox::refreshControls()
 {
 	const IGUISkin* skin = Environment->getSkin();
@@ -227,26 +248,6 @@ void CGUIMessageBox::refreshControls()
 
 	if (Environment->hasFocus(this) && focusMe)
 		Environment->setFocus(focusMe);
-}
-
-
-//! destructor
-CGUIMessageBox::~CGUIMessageBox()
-{
-	if (StaticText)
-		StaticText->drop();
-
-	if (OkButton)
-		OkButton->drop();
-
-	if (CancelButton)
-		CancelButton->drop();
-
-	if (YesButton)
-		YesButton->drop();
-
-	if (NoButton)
-		NoButton->drop();
 }
 
 

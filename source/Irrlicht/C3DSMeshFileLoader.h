@@ -76,10 +76,6 @@ private:
 
 	struct SCurrentMaterial
 	{
-		SCurrentMaterial() {};
-
-		~SCurrentMaterial() { 	};
-
 		void clear() {
 			Material=video::SMaterial();
 			Name="";
@@ -111,7 +107,7 @@ private:
 
 		void clear() 
 		{ 
-			if (faces) delete [] faces;
+			delete [] faces;
 			faces = 0;
 			faceCount = 0;
 		}

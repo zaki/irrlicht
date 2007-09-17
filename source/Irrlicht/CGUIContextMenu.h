@@ -115,13 +115,13 @@ namespace gui
 		virtual void recalculateSize();
 
 		//! returns true, if an element was highlighted
-		virtual bool highlight(core::position2d<s32> p, bool canOpenSubMenu);
+		virtual bool highlight(const core::position2d<s32>& p, bool canOpenSubMenu);
 
 		//! sends a click Returns:
 		//! 0 if click went outside of the element,
 		//! 1 if a valid button was clicked,
 		//! 2 if a nonclickable element was clicked
-		virtual u32 sendClick(core::position2d<s32> p);
+		virtual u32 sendClick(const core::position2d<s32>& p);
 
 		//! returns the item highlight-area
 		virtual core::rect<s32> getHRect(const SItem& i, const core::rect<s32>& absolute) const;

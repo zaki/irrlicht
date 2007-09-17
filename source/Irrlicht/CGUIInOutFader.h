@@ -23,9 +23,6 @@ namespace gui
 		CGUIInOutFader(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle);
 
-		//! destructor
-		~CGUIInOutFader();
-
 		//! draws the element and its children
 		virtual void draw();
 

@@ -22,9 +22,6 @@ namespace gui
 		//! constructor
 		CGUIModalScreen(IGUIEnvironment* environment, IGUIElement* parent, s32 id);
 
-		//! destructor
-		~CGUIModalScreen();
-
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
 

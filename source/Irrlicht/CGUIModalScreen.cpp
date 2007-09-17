@@ -30,12 +30,6 @@ CGUIModalScreen::CGUIModalScreen(IGUIEnvironment* environment, IGUIElement* pare
 }
 
 
-//! destructor
-CGUIModalScreen::~CGUIModalScreen()
-{
-}
-
-
 //! called if an event happened.
 bool CGUIModalScreen::OnEvent(const SEvent& event)
 {

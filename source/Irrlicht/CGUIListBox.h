@@ -28,7 +28,7 @@ namespace gui
 			bool drawBack=false, bool moveOverSelect=false);
 
 		//! destructor
-		~CGUIListBox();
+		virtual ~CGUIListBox();
 
 		//! returns amount of list items
 		virtual u32 getItemCount() const;
