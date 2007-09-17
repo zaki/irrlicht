@@ -359,6 +359,8 @@
 		<Unit filename="CIrrDeviceStub.h" />
 		<Unit filename="CIrrDeviceWin32.cpp" />
 		<Unit filename="CIrrDeviceWin32.h" />
+		<Unit filename="CIrrMeshFileLoader.cpp" />
+		<Unit filename="CIrrMeshFileLoader.h" />
 		<Unit filename="CIrrMeshWriter.cpp" />
 		<Unit filename="CIrrMeshWriter.h" />
 		<Unit filename="CLMTSMeshFileLoader.cpp" />

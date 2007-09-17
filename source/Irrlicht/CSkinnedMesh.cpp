@@ -409,12 +409,26 @@ void CSkinnedMesh::skinMesh()
 	buildAll_GlobalAnimatedMatrices();
 	//-----------------
 
+
 	//Software skin....
 
+	u32 i;
 
+
+
+
+	//rigid animation
+	for (i=0; i<AllJoints.size(); ++i)
+	{
+		for (u32 j=0; j<AllJoints[i]->AttachedMeshes.size(); ++j)
+		{
+			SSkinMeshBuffer* Buffer=(*SkinningBuffers)[ AllJoints[i]->AttachedMeshes[j] ];
+			Buffer->Transformation=AllJoints[i]->GlobalAnimatedMatrix;
+		}
+	}
 
 	//clear skinning helper array
-	u32 i;
+
 	for (i=0; i<Vertices_Moved.size(); ++i)
 		for (u32 j=0; j<Vertices_Moved[i].size(); ++j)
 			Vertices_Moved[i][j]=false;
@@ -999,6 +1013,21 @@ void CSkinnedMesh::finalize()
 	//animateMesh(0, 1);
 	//buildAll_LocalAnimatedMatrices();
 	//buildAll_GlobalAnimatedMatrices();
+
+
+
+	//rigid animation for non animated meshes
+	for (i=0; i<AllJoints.size(); ++i)
+	{
+		for (u32 j=0; j<AllJoints[i]->AttachedMeshes.size(); ++j)
+		{
+			SSkinMeshBuffer* Buffer=(*SkinningBuffers)[ AllJoints[i]->AttachedMeshes[j] ];
+			Buffer->Transformation=AllJoints[i]->GlobalAnimatedMatrix;
+		}
+	}
+
+
+
 }
 
 

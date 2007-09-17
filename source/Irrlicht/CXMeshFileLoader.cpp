@@ -118,8 +118,17 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 		{
 			mesh->Buffers.push_back( AnimatedMesh->createBuffer() );
 			mesh->Buffers.getLast()->Material = mesh->Materials[i];
-		}
 
+			if (!mesh->HasSkinning)
+			{
+				//Set up rigid animation
+				if (mesh->AttachedJointID!=-1)
+				{
+					AnimatedMesh->getAllJoints()[mesh->AttachedJointID]->AttachedMeshes.push_back( AnimatedMesh->getMeshBuffers().size()-1 );
+				}
+			}
+
+		}
 
 		#ifdef BETTER_MESHBUFFER_SPLITTING_FOR_X
 		{
@@ -200,7 +209,13 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				{
 
 					ISkinnedMesh::SWeight& Weight = Joint->Weights[j];
-					const u32 id = Weight.vertex_id;
+					u32 id = Weight.vertex_id;
+
+					if (id>verticesLink.size())
+					{
+						os::Printer::log("X loader: Weight id out of range", ELL_WARNING);
+						id=0;
+					}
 
 					if (verticesLinkBuffer[id].size()==1)
 					{
@@ -283,14 +298,30 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				{
 					ISkinnedMesh::SWeight& Weight = Joint->Weights[j];
 
-					const u32 id = Weight.vertex_id;
+					u32 id = Weight.vertex_id;
+
+					if (id>verticesLink.size())
+					{
+						os::Printer::log("X loader: Weight id out of range", ELL_WARNING);
+						id=0;
+					}
 
 					Weight.vertex_id=verticesLink[id];
 					Weight.buffer_id=verticesLinkBuffer[id];
+
 				}
 			}
 		}
 		#endif
+
+
+
+
+
+
+
+
+
 	}
 
 	return true;
@@ -490,6 +521,8 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 	// Frame template instances as child objects when loading a Frame
 	// instance.
 
+	u32 JointID=0;
+
 	core::stringc name;
 
 	if (!readHeadOfDataObject(&name))
@@ -507,6 +540,7 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 			if (AnimatedMesh->getAllJoints()[n]->Name==name)
 			{
 				joint=AnimatedMesh->getAllJoints()[n];
+				JointID=n;
 				break;
 			}
 		}
@@ -519,6 +553,7 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 #endif
 		joint=AnimatedMesh->createJoint(Parent);
 		joint->Name=name;
+		JointID=AnimatedMesh->getAllJoints().size()-1;
 	}
 	else
 	{
@@ -576,6 +611,8 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 				return false;
 			*/
 			SXMesh *mesh=new SXMesh;
+
+			mesh->AttachedJointID=JointID;
 
 			Meshes.push_back(mesh);
 
@@ -815,6 +852,9 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 		os::Printer::log("Unknown syntax while reading transfrom node name string in .x file", ELL_WARNING);
 		return false;
 	}
+
+
+	mesh.HasSkinning=true;
 
 	CSkinnedMesh::SJoint *joint=0;
 

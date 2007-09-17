@@ -8,10 +8,14 @@
 #include "IMeshBuffer.h"
 #include "S3DVertex.h"
 
+
+
+
 namespace irr
 {
 namespace scene
 {
+
 
 //! A mesh buffer able to choose between
 //! S3DVertex2TCoords, S3DVertex and S3DVertexTangents at runtime
@@ -204,6 +208,11 @@ struct SSkinMeshBuffer : public IMeshBuffer
 
 	//! append the meshbuffer to the current buffer
 	virtual void append(const IMeshBuffer* const other) {}
+
+
+	//ISkinnedMesh::SJoint *AttachedJoint;
+	core::matrix4 Transformation;
+
 
 	video::SMaterial Material;
 	video::E_VERTEX_TYPE VertexType;
