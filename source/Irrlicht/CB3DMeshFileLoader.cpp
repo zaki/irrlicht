@@ -569,6 +569,9 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 
 		for(s32 i=0; i<3; ++i)
 		{
+			if ((u32)vertex_id[i] >= AnimatedVertices_VertexID.size())
+				return false;
+
 			if (AnimatedVertices_VertexID[ vertex_id[i] ] != -1)
 			{
 				if ( AnimatedVertices_BufferID[ vertex_id[i] ] != (s32)MeshBufferID ) //If this vertex is linked in a different meshbuffer
