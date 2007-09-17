@@ -118,7 +118,7 @@ ITimer* CIrrDeviceStub::getTimer()
 
 
 //! Returns the version of the engine. 
-const char* CIrrDeviceStub::getVersion()
+const char* CIrrDeviceStub::getVersion() const
 {
 	return IRRLICHT_SDK_VERSION;
 }

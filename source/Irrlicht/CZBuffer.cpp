@@ -61,7 +61,7 @@ void CZBuffer::setSize(const core::dimension2d<s32>& size)
 
 
 //! returns the size of the zbuffer
-const core::dimension2d<s32>& CZBuffer::getSize()
+const core::dimension2d<s32>& CZBuffer::getSize() const
 {
 	return Size;
 }

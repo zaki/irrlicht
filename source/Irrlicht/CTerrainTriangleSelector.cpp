@@ -73,7 +73,7 @@ void CTerrainTriangleSelector::setTriangleData(ITerrainSceneNode* node, s32 LOD)
 
 //! Gets all triangles.
 void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::matrix4* transform )
+	s32& outTriangleCount, const core::matrix4* transform ) const
 {
 	s32 count = TrianglePatches.TotalTriangles;
 
@@ -108,7 +108,7 @@ void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 
 //! Gets all triangles which lie within a specific bounding box.
 void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 arraySize,
 	s32& outTriangleCount, const core::aabbox3d<f32>& box,
-	const core::matrix4* transform)
+	const core::matrix4* transform) const
 {
 	s32 count = TrianglePatches.TotalTriangles;
 
@@ -144,7 +144,7 @@ void CTerrainTriangleSelector::getTriangles ( core::triangle3df* triangles, s32 
 //! Gets all triangles which have or may have contact with a 3d line.
 void CTerrainTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 	s32& outTriangleCount, const core::line3d<f32>& line,
-	const core::matrix4* transform)
+	const core::matrix4* transform) const
 {
 	s32 count = TrianglePatches.TotalTriangles;
 

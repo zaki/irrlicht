@@ -110,7 +110,7 @@ namespace video
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 
 		//! queries the features of the driver, returns true if feature is available
-		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature)
+		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		{
 			return COpenGLExtensionHandler::queryFeature(feature);
 		}
@@ -175,7 +175,7 @@ namespace video
 
 		//! \return Returns the name of the video driver. Example: In case of the Direct3D8
 		//! driver, it would return "Direct3D8.1".
-		virtual const wchar_t* getName();
+		virtual const wchar_t* getName() const;
 
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();
@@ -184,7 +184,7 @@ namespace video
 		virtual void addDynamicLight(const SLight& light);
 
 		//! returns the maximal amount of dynamic lights the device can handle
-		virtual u32 getMaximalDynamicLightAmount();
+		virtual u32 getMaximalDynamicLightAmount() const;
 
 		//! Sets the dynamic ambient light color. The default color is
 		//! (0,0,0,0) which means it is dark.
@@ -220,7 +220,7 @@ namespace video
 		virtual E_DRIVER_TYPE getDriverType() const;
 
 		//! Returns the transformation set by setTransform
-		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state);
+		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
@@ -267,7 +267,7 @@ namespace video
 		//! Returns the maximum amount of primitives (mostly vertices) which
 		//! the device is able to render with one drawIndexedTriangleList
 		//! call.
-		virtual u32 getMaximalPrimitiveCount();
+		virtual u32 getMaximalPrimitiveCount() const;
 
 		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
 

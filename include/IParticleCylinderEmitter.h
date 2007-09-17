@@ -17,9 +17,6 @@ class IParticleCylinderEmitter : public IParticleEmitter
 {
 public:
 
-	//! destructor
-	virtual ~IParticleCylinderEmitter() {};
-
 	//! Set the center of the radius for the cylinder, at one end of the cylinder
 	virtual void setCenter( const core::vector3df& center ) = 0;
 

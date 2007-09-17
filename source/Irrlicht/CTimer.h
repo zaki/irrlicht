@@ -24,7 +24,7 @@ namespace irr
 		/** This value does not start with 0 when the application starts.
 		For example in one implementation the value returned could be the 
 		amount of milliseconds which have elapsed since the system was started. */
-		virtual u32 getRealTime()
+		virtual u32 getRealTime() const
 		{
 			return os::Timer::getRealTime();
 		}
@@ -33,7 +33,7 @@ namespace irr
 		/** This value starts with 0 and can be manipulated using setTime(), stopTimer(),
 		startTimer(), etc. This value depends on the set speed of the timer if the timer 
 		is stopped, etc. If you need the system time, use getRealTime() */
-		virtual u32 getTime()
+		virtual u32 getTime() const
 		{
 			return os::Timer::getTime();
 		}
@@ -73,13 +73,13 @@ namespace irr
 		//! Returns current speed of the timer
 		/** The speed is the factor with which the time is running faster or slower then the
 		real system time. */
-		virtual f32 getSpeed()
+		virtual f32 getSpeed() const
 		{
 			return os::Timer::getSpeed();
 		}
 
 		//! Returns if game timer is currently stopped
-		virtual bool isStopped()
+		virtual bool isStopped() const
 		{
 			bool ret = os::Timer::isStopped();
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
@@ -99,3 +99,4 @@ namespace irr
 } // end namespace
 
 #endif
+

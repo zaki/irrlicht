@@ -18,9 +18,6 @@ class IParticleMeshEmitter : public IParticleEmitter
 {
 public:
 
-	//! destructor
-	virtual ~IParticleMeshEmitter() {};
-
 	//! Set Mesh to emit particles from
 	virtual void setMesh( IMesh* mesh ) = 0;
 

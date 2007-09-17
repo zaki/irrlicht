@@ -419,7 +419,7 @@ public:
 
 
 	//! Finds an element in linear time, which is very slow. Use
-	//! binary_search for faster finding. Only works if =operator is implemented.
+	//! binary_search for faster finding. Only works if ==operator is implemented.
 	//! \param element: Element to search for.
 	//! \return Returns position of the searched element if it was found,
 	//! otherwise -1 is returned.
@@ -434,7 +434,7 @@ public:
 
 
 	//! Finds an element in linear time, which is very slow. Use
-	//! binary_search for faster finding. Only works if =operator is implemented.
+	//! binary_search for faster finding. Only works if ==operator is implemented.
 	//! \param element: Element to search for.
 	//! \return Returns position of the searched element if it was found,
 	//! otherwise -1 is returned.

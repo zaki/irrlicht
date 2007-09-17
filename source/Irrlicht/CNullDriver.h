@@ -45,7 +45,7 @@ namespace video
 		virtual bool endScene( s32 windowId = 0, core::rect<s32>* sourceRect=0 );
 
 		//! queries the features of the driver, returns true if feature is available
-		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature);
+		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
@@ -63,7 +63,7 @@ namespace video
 		virtual ITexture* getTextureByIndex(u32 index);
 
 		//! Returns amount of textures currently loaded
-		virtual s32 getTextureCount();
+		virtual u32 getTextureCount() const;
 
 		//! Renames a texture
 		virtual void renameTexture(ITexture* texture, const c8* newName);
@@ -179,17 +179,17 @@ namespace video
 			f32 density=0.01f, bool pixelFog=false, bool rangeFog=false);
 
 		//! returns screen size
-		virtual core::dimension2d<s32> getScreenSize();
+		virtual const core::dimension2d<s32>& getScreenSize() const;
 
 		//! returns screen size
-		virtual core::dimension2d<s32> getCurrentRenderTargetSize();
+		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
 
 		// returns current frames per second value
-		virtual s32 getFPS();
+		virtual s32 getFPS() const;
 
 		//! returns amount of primitives (mostly triangles) were drawn in the last frame.
 		//! very useful method for statistics.
-		virtual u32 getPrimitiveCountDrawn( u32 param = 0 );
+		virtual u32 getPrimitiveCountDrawn( u32 param = 0 ) const;
 
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();
@@ -198,11 +198,11 @@ namespace video
 		virtual void addDynamicLight(const SLight& light);
 
 		//! returns the maximal amount of dynamic lights the device can handle
-		virtual u32 getMaximalDynamicLightAmount();
+		virtual u32 getMaximalDynamicLightAmount() const;
 
 		//! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 		//! driver, it would return "Direct3D8.1".
-		virtual const wchar_t* getName();
+		virtual const wchar_t* getName() const;
 
 		//! Sets the dynamic ambient light color. The default color is
 		//! (0,0,0,0) which means it is dark.
@@ -231,13 +231,13 @@ namespace video
 
 		//! Returns current amount of dynamic lights set
 		//! \return Current amount of dynamic lights set
-		virtual u32 getDynamicLightCount();
+		virtual u32 getDynamicLightCount() const;
 
 		//! Returns light data which was previously set with IVideDriver::addDynamicLight().
 		//! \param idx: Zero based index of the light. Must be greater than 0 and smaller
 		//! than IVideoDriver()::getDynamicLightCount.
 		//! \return Light data.
-		virtual const SLight& getDynamicLight(u32 idx);
+		virtual const SLight& getDynamicLight(u32 idx) const;
 
 		//! Removes a texture from the texture cache and deletes it, freeing lot of
 		//! memory. 
@@ -251,25 +251,25 @@ namespace video
 		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
-		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color);
+		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color) const;
 
 		//! Creates an 1bit alpha channel of the texture based of an color key position.
-		virtual void makeColorKeyTexture(video::ITexture* texture, core::position2d<s32> colorKeyPixelPos);
+		virtual void makeColorKeyTexture(video::ITexture* texture, core::position2d<s32> colorKeyPixelPos) const;
 
 		//! Creates a normal map from a height map texture. 
 		//! \param amplitude: Constant value by which the height information is multiplied.
-		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f);
+		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const;
 
 		//! Returns the maximum amount of primitives (mostly vertices) which
 		//! the device is able to render with one drawIndexedTriangleList
 		//! call.
-		virtual u32 getMaximalPrimitiveCount();
+		virtual u32 getMaximalPrimitiveCount() const;
 
 		//! Enables or disables a texture creation flag.
 		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled);
 
 		//! Returns if a texture creation flag is enabled or disabled.
-		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag);
+		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const;
 
 		//! Creates a software image from a file. 
 		virtual IImage* createImageFromFile(const char* filename);
@@ -303,7 +303,7 @@ namespace video
 		virtual E_DRIVER_TYPE getDriverType() const;
 
 		//! Returns the transformation set by setTransform
-		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state);
+		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Returns pointer to the IGPUProgrammingServices interface.
 		virtual IGPUProgrammingServices* getGPUProgrammingServices();
@@ -336,10 +336,10 @@ namespace video
 		virtual IMaterialRenderer* getMaterialRenderer(u32 idx);
 
 		//! Returns amount of currently available material renderers.
-		virtual u32 getMaterialRendererCount();
+		virtual u32 getMaterialRendererCount() const;
 
 		//! Returns name of the material renderer
-		virtual const char* getMaterialRendererName(u32 idx);
+		virtual const char* getMaterialRendererName(u32 idx) const;
 
 		//! Adds a new material renderer to the VideoDriver, based on a high level shading 
 		//! language. Currently only HLSL in D3D9 is supported. 
@@ -433,7 +433,7 @@ namespace video
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
 
 		//! checks triangle count and print warning if wrong
-		bool checkPrimitiveCount(u32 prmcnt);
+		bool checkPrimitiveCount(u32 prmcnt) const;
 
 		// adds a material renderer and drops it afterwards. To be used for internal creation
 		s32 addAndDropMaterialRenderer(IMaterialRenderer* m);
@@ -445,7 +445,7 @@ namespace video
 		void printVersion();
 
 		//! normal map lookup 32 bit version
-		inline f32 nml32(int x, int y, int pitch, int height, s32 *p)
+		inline f32 nml32(int x, int y, int pitch, int height, s32 *p) const
 		{
 			if (x < 0) x = pitch-1; if (x >= pitch) x = 0;
 			if (y < 0) y = height-1; if (y >= height) y = 0;
@@ -453,7 +453,7 @@ namespace video
 		}
 
 		//! normal map lookup 16 bit version
-		inline f32 nml16(int x, int y, int pitch, int height, s16 *p)
+		inline f32 nml16(int x, int y, int pitch, int height, s16 *p) const
 		{
 			if (x < 0) x = pitch-1; if (x >= pitch) x = 0;
 			if (y < 0) y = height-1; if (y >= height) y = 0;

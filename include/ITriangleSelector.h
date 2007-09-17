@@ -28,7 +28,7 @@ class ITriangleSelector : public virtual IReferenceCounted
 public:
 
 	//! destructor
-	virtual ~ITriangleSelector() {};
+	virtual ~ITriangleSelector() {}
 
 	//! Returns amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const = 0;
@@ -42,7 +42,7 @@ public:
 	//! they are returned. Useful for example to scale all triangles down into an
 	//! ellipsoid space. If this pointer is null, no transformation will be done.
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::matrix4* transform=0) = 0;
+		s32& outTriangleCount, const core::matrix4* transform=0) const = 0;
 
 	//! Gets all triangles which lie within a specific bounding box.
 	//! Please note that unoptimized triangle selectors also may return triangles,
@@ -58,7 +58,7 @@ public:
 	//! ellipsoid space. If this pointer is null, no transformation will be done.
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::aabbox3d<f32>& box, 
-		const core::matrix4* transform=0) = 0;
+		const core::matrix4* transform=0) const = 0;
 
 	//! Gets all triangles which have or may have contact with a 3d line.
 	//! Please note that unoptimized triangle selectors also may return triangles,
@@ -74,7 +74,7 @@ public:
 	//! ellipsoid space. If this pointer is null, no transformation will be done.
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line, 
-		const core::matrix4* transform=0) = 0;
+		const core::matrix4* transform=0) const = 0;
 };
 
 } // end namespace scene

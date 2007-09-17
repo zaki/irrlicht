@@ -34,10 +34,10 @@ namespace io
 		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! returns size of file
-		virtual long getSize();
+		virtual long getSize() const;
 
 		//! returns where in the file we are.
-		virtual long getPos();
+		virtual long getPos() const;
 
 		//! returns name of file
 		virtual const c8* getFileName() const;

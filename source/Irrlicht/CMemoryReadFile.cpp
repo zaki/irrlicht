@@ -76,7 +76,7 @@ bool CMemoryReadFile::seek(long finalPos, bool relativeMovement)
 
 
 //! returns size of file
-long CMemoryReadFile::getSize()
+long CMemoryReadFile::getSize() const
 {
 	return Len;
 }
@@ -84,7 +84,7 @@ long CMemoryReadFile::getSize()
 
 
 //! returns where in the file we are.
-long CMemoryReadFile::getPos()
+long CMemoryReadFile::getPos() const
 {
 	return Pos;
 }

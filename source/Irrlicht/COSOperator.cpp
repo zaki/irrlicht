@@ -22,28 +22,26 @@ namespace irr
 
 
 // constructor
-COSOperator::COSOperator(const c8* osVersion)
-{
-	OperatingSystem = osVersion;
-}
+COSOperator::COSOperator(const c8* osVersion) : OperatingSystem(osVersion)
+{ }
 
 
 //! returns the current operating system version as string.
-const wchar_t* COSOperator::getOperationSystemVersion()
+const wchar_t* COSOperator::getOperationSystemVersion() const
 {
 	return OperatingSystem.c_str();
 }
 
 
 //! copies text to the clipboard
-void COSOperator::copyToClipboard(const c8* text)
+void COSOperator::copyToClipboard(const c8* text) const
 {
 	if (strlen(text)==0)
 		return;
 
 // Windows version
 #if defined(_IRR_WINDOWS_API_)
-	if (!OpenClipboard(0) || text == 0)
+	if (!OpenClipboard(NULL) || text == 0)
 		return;
 
 	EmptyClipboard();
@@ -72,7 +70,7 @@ void COSOperator::copyToClipboard(const c8* text)
 
 //! gets text from the clipboard
 //! \return Returns 0 if no string is in there.
-c8* COSOperator::getTextFromClipboard()
+c8* COSOperator::getTextFromClipboard() const
 {
 #if defined(_IRR_WINDOWS_API_)
 	if (!OpenClipboard(NULL))
@@ -97,7 +95,7 @@ c8* COSOperator::getTextFromClipboard()
 }
 
 
-bool COSOperator::getProcessorSpeedMHz(irr::u32* MHz)
+bool COSOperator::getProcessorSpeedMHz(irr::u32* MHz) const
 {
 #if defined(_IRR_WINDOWS_API_)
 	LONG Error;
@@ -139,7 +137,7 @@ bool COSOperator::getProcessorSpeedMHz(irr::u32* MHz)
 #endif
 }
 
-bool COSOperator::getSystemMemory(irr::u32* Total, irr::u32* Avail)
+bool COSOperator::getSystemMemory(irr::u32* Total, irr::u32* Avail) const
 {
 #if defined(_IRR_WINDOWS_API_)
 	MEMORYSTATUS MemoryStatus;

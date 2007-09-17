@@ -21,10 +21,10 @@ class quaternion
 	public:
 
 		//! Default Constructor
-		quaternion();
+		quaternion() : X(0.0f), Y(0.0f), Z(0.0f), W(1.0f) {}
 
 		//! Constructor
-		quaternion(f32 X, f32 Y, f32 Z, f32 W);
+		quaternion(f32 x, f32 y, f32 z, f32 w) : X(x), Y(y), Z(z), W(w) { }
 
 		//! Constructor which converts euler angles (radians) to a quaternion
 		quaternion(f32 x, f32 y, f32 z);
@@ -112,18 +112,6 @@ class quaternion
 		f32 X, Y, Z, W;
 };
 
-
-//! Default Constructor
-inline quaternion::quaternion()
-: X(0.0f), Y(0.0f), Z(0.0f), W(1.0f)
-{
-}
-
-//! Constructor
-inline quaternion::quaternion(f32 x, f32 y, f32 z, f32 w)
-: X(x), Y(y), Z(z), W(w)
-{
-}
 
 //! Constructor which converts euler angles to a quaternion
 inline quaternion::quaternion(f32 x, f32 y, f32 z)

@@ -523,7 +523,7 @@ bool CD3D9Driver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 
 
 //! queries the features of the driver, returns true if feature is available
-bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature)
+bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
 	switch (feature)
 	{
@@ -1723,7 +1723,7 @@ void CD3D9Driver::addDynamicLight(const SLight& dl)
 
 
 //! returns the maximal amount of dynamic lights the device can handle
-u32 CD3D9Driver::getMaximalDynamicLightAmount()
+u32 CD3D9Driver::getMaximalDynamicLightAmount() const
 {
 	return Caps.MaxActiveLights;
 }
@@ -1747,7 +1747,7 @@ void CD3D9Driver::setAmbientLight(const SColorf& color)
 
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D9
 //! driver, it would return "Direct3D9.0".
-const wchar_t* CD3D9Driver::getName()
+const wchar_t* CD3D9Driver::getName() const
 {
 	return L"Direct3D 9.0";
 }
@@ -1835,7 +1835,7 @@ void CD3D9Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftU
 //! Returns the maximum amount of primitives (mostly vertices) which
 //! the device is able to render with one drawIndexedTriangleList
 //! call.
-u32 CD3D9Driver::getMaximalPrimitiveCount()
+u32 CD3D9Driver::getMaximalPrimitiveCount() const
 {
 	return Caps.MaxPrimitiveCount;
 }
@@ -1946,7 +1946,7 @@ E_DRIVER_TYPE CD3D9Driver::getDriverType() const
 
 
 //! Returns the transformation set by setTransform
-const core::matrix4& CD3D9Driver::getTransform(E_TRANSFORMATION_STATE state)
+const core::matrix4& CD3D9Driver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Matrices[state];
 }

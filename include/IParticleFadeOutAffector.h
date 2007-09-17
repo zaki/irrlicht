@@ -24,11 +24,11 @@ public:
 	//! Sets the amount of time it takes for each particle to fade out.
 	virtual void setFadeOutTime( f32 fadeOutTime ) = 0;
 
-	//! Sets the targetColor, i.e.the color the particles will interpolate
+	//! Gets the targetColor, i.e. the color the particles will interpolate
 	//! to over time.
 	virtual const video::SColor& getTargetColor() const = 0;
 
-	//! Sets the amount of time it takes for each particle to fade out.
+	//! Gets the amount of time it takes for each particle to fade out.
 	virtual f32 getFadeOutTime() const = 0;
 
 	//! Get emitter type

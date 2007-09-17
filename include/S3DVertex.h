@@ -42,7 +42,7 @@ const char* const sBuiltInVertexTypeNames[] =
 struct S3DVertex
 {
 	//! default constructor
-	S3DVertex() {};
+	S3DVertex() {}
 
 	//! constructor
 	S3DVertex(f32 x, f32 y, f32 z, f32 nx, f32 ny, f32 nz, SColor c, f32 tu, f32 tv)
@@ -91,7 +91,7 @@ or other special materials.
 struct S3DVertex2TCoords : S3DVertex
 {
 	//! default constructor
-	S3DVertex2TCoords() : S3DVertex() {};
+	S3DVertex2TCoords() : S3DVertex() {}
 
 	//! constructor with two different texture coords, but no normal
 	S3DVertex2TCoords(f32 x, f32 y, f32 z, SColor c, f32 tu, f32 tv, f32 tu2, f32 tv2)
@@ -157,7 +157,7 @@ struct S3DVertexTangents : S3DVertex
 
 	//! constructor
 	S3DVertexTangents(f32 x, f32 y, f32 z, f32 nx=0.0f, f32 ny=0.0f, f32 nz=0.0f, SColor c = 0xFFFFFFFF, f32 tu=0.0f, f32 tv=0.0f, f32 tanx=0.0f, f32 tany=0.0f, f32 tanz=0.0f, f32 bx=0.0f, f32 by=0.0f, f32 bz=0.0f)
-	: S3DVertex(x,y,z, nx,ny,nz, c, tu,tv), Tangent(tanx,tany,tanz), Binormal(bx,by,bz) { }
+		: S3DVertex(x,y,z, nx,ny,nz, c, tu,tv), Tangent(tanx,tany,tanz), Binormal(bx,by,bz) { }
 
 	//! constructor
 	S3DVertexTangents(const core::vector3df& pos, SColor c,

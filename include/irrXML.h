@@ -215,7 +215,7 @@ namespace io
 	public:
 
 		//! virtual destructor
-		virtual ~IFileReadCallBack() {};
+		virtual ~IFileReadCallBack() {}
 
 		//! Reads an amount of bytes from the file.
 		/** \param buffer: Pointer to buffer where to read bytes will be written to.
@@ -224,7 +224,7 @@ namespace io
 		virtual int read(void* buffer, int sizeToRead) = 0;
 
 		//! Returns size of file in bytes
-		virtual long getSize() = 0;
+		virtual long getSize() const = 0;
 	};
 
 	//! Empty class to be used as parent class for IrrXMLReader.
@@ -276,7 +276,7 @@ namespace io
 	public:
 
 		//! Destructor
-		virtual ~IIrrXMLReader() {};
+		virtual ~IIrrXMLReader() {}
 
 		//! Reads forward to the next xml node. 
 		/** \return Returns false, if there was no further node.  */

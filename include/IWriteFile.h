@@ -17,7 +17,7 @@ namespace io
 	{
 	public:
 
-		virtual ~IWriteFile() {};
+		virtual ~IWriteFile() {}
 
 		//! Writes an amount of bytes to the file.
 		//! \param buffer: Pointer to buffer of bytes to write.
@@ -35,7 +35,7 @@ namespace io
 
 		//! Returns the current position in the file.
 		//! \return Returns the current position in the file in bytes.
-		virtual long getPos() = 0;
+		virtual long getPos() const = 0;
 
 		//! Returns name of file.
 		//! \return Returns the file name as zero terminated character string.

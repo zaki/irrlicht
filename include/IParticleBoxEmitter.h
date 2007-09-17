@@ -18,9 +18,6 @@ class IParticleBoxEmitter : public IParticleEmitter
 {
 public:
 
-	//! destructor
-	virtual ~IParticleBoxEmitter() {};
-
 	//! Set the box shape
 	virtual void setBox( const core::aabbox3df& box ) = 0;
 

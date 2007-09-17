@@ -102,11 +102,13 @@ class plane3d
 		//! \param linePoint2: Point 2 of the line.
 		//! \param outIntersection: Place to store the intersection point, if there is one.
 		//! \return Returns true if there was an intersection, false if there was not.
-		bool getIntersectionWithLimitedLine(const vector3d<T>& linePoint1,
-					const vector3d<T>& linePoint2, vector3d<T>& outIntersection) const
+		bool getIntersectionWithLimitedLine(
+				const vector3d<T>& linePoint1,
+				const vector3d<T>& linePoint2,
+				vector3d<T>& outIntersection) const
 		{
-			return (	getIntersectionWithLine(linePoint1, linePoint2 - linePoint1, outIntersection) &&
-						outIntersection.isBetweenPoints(linePoint1, linePoint2));
+			return (getIntersectionWithLine(linePoint1, linePoint2 - linePoint1, outIntersection) &&
+					outIntersection.isBetweenPoints(linePoint1, linePoint2));
 		}
 
 		//! Classifies the relation of a point to this plane.

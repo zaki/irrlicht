@@ -37,26 +37,26 @@ namespace scene
 		virtual ISceneNode* addSceneNode(const c8* typeName, ISceneNode* parent=0);
 
 		//! returns amount of scene node types this factory is able to create
-		virtual s32 getCreatableSceneNodeTypeCount();
+		virtual u32 getCreatableSceneNodeTypeCount() const;
 
 		//! returns type name of a createable scene node type by index
 		/** \param idx: Index of scene node type in this factory. Must be a value between 0 and
-		getCreatableSceneNodeTypeCount() */
-		virtual const c8* getCreateableSceneNodeTypeName(s32 idx);
+		uetCreatableSceneNodeTypeCount() */
+		virtual const c8* getCreateableSceneNodeTypeName(u32 idx) const;
 
 		//! returns type of a createable scene node type
 		/** \param idx: Index of scene node type in this factory. Must be a value between 0 and
 		getCreatableSceneNodeTypeCount() */
-		virtual ESCENE_NODE_TYPE getCreateableSceneNodeType(s32 idx);
+		virtual ESCENE_NODE_TYPE getCreateableSceneNodeType(u32 idx) const;
 
 		//! returns type name of a createable scene node type 
 		/** \param idx: Type of scene node. 
 		\return: Returns name of scene node type if this factory can create the type, otherwise 0. */
-		virtual const c8* getCreateableSceneNodeTypeName(ESCENE_NODE_TYPE type);
+		virtual const c8* getCreateableSceneNodeTypeName(ESCENE_NODE_TYPE type) const;
 
 	private:
 
-		ESCENE_NODE_TYPE getTypeFromName(const c8* name);
+		ESCENE_NODE_TYPE getTypeFromName(const c8* name) const;
 
 		struct SSceneNodeTypePair
 		{

@@ -21,23 +21,15 @@ namespace core
 	class position2d
 	{
 		public:
-			position2d(T x, T y)
-				: X(x), Y(y) {};
-
-
-			position2d()
-				: X(0), Y(0) {};
-
-
+			position2d() : X(0), Y(0) {}
+			position2d(T x, T y) : X(x), Y(y) {}
 			position2d(const position2d<T>& other)
-				: X(other.X), Y(other.Y) {};
-
+				: X(other.X), Y(other.Y) {}
 
 			bool operator == (const position2d<T>& other) const
 			{
 				return X == other.X && Y == other.Y;
 			}
-
 
 			bool operator != (const position2d<T>& other) const
 			{

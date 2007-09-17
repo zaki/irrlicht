@@ -498,16 +498,16 @@ E_ANIMATED_MESH_TYPE CSkinnedMesh::getMeshType() const
 
 
 //! Gets joint count.
-s32 CSkinnedMesh::getJointCount() const
+u32 CSkinnedMesh::getJointCount() const
 {
 	return AllJoints.size();
 }
 
 
 //! Gets the name of a joint.
-const c8* CSkinnedMesh::getJointName(s32 number) const
+const c8* CSkinnedMesh::getJointName(u32 number) const
 {
-	if ((u32)number >= AllJoints.size())
+	if (number >= AllJoints.size())
 		return 0;
 	return AllJoints[number]->Name.c_str();
 }
@@ -578,7 +578,7 @@ void CSkinnedMesh::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 
 
 //! uses animation from another mesh
-bool CSkinnedMesh::useAnimationFrom(ISkinnedMesh *mesh)
+bool CSkinnedMesh::useAnimationFrom(const ISkinnedMesh *mesh)
 {
 	bool unmatched=false;
 
@@ -632,6 +632,12 @@ core::array<scene::SSkinMeshBuffer*> &CSkinnedMesh::getMeshBuffers()
 
 
 core::array<CSkinnedMesh::SJoint*> &CSkinnedMesh::getAllJoints()
+{
+	return AllJoints;
+}
+
+
+const core::array<CSkinnedMesh::SJoint*> &CSkinnedMesh::getAllJoints() const
 {
 	return AllJoints;
 }
@@ -1185,7 +1191,7 @@ void CSkinnedMesh::recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChil
 	}
 }
 
-void CSkinnedMesh::tranferJointsToMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes)
+void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes)
 {
 	for (u32 i=0;i<AllJoints.size();++i)
 	{

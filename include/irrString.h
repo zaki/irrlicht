@@ -267,12 +267,18 @@ public:
 	}
 
 
-
 	//! Direct access operator
-	T& operator [](const u32 index) const
+	T& operator [](const u32 index)
 	{
 		_IRR_DEBUG_BREAK_IF(index>=used) // bad index
+		return array[index];
+	}
 
+
+	//! Direct access operator
+	const T& operator [](const u32 index) const
+	{
+		_IRR_DEBUG_BREAK_IF(index>=used) // bad index
 		return array[index];
 	}
 

@@ -182,7 +182,7 @@ bool CNullDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 
 
 //! queries the features of the driver, returns true if feature is available
-bool CNullDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature)
+bool CNullDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
 	return false;
 }
@@ -196,7 +196,7 @@ void CNullDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4
 
 
 //! Returns the transformation set by setTransform
-const core::matrix4& CNullDriver::getTransform(E_TRANSFORMATION_STATE state)
+const core::matrix4& CNullDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return TransformationMatrix;
 }
@@ -245,7 +245,7 @@ ITexture* CNullDriver::getTextureByIndex(u32 i)
 
 
 //! Returns amount of textures currently loaded
-s32 CNullDriver::getTextureCount()
+u32 CNullDriver::getTextureCount() const
 {
 	return Textures.size();
 }
@@ -676,21 +676,21 @@ void CNullDriver::draw2DPolygon(core::position2d<s32> center,
 
 
 //! returns screen size
-core::dimension2d<s32> CNullDriver::getScreenSize()
+const core::dimension2d<s32>& CNullDriver::getScreenSize() const
 {
 	return ScreenSize;
 }
 
 //! returns the current render target size,
 //! or the screen size if render targets are not implemented
-core::dimension2d<s32> CNullDriver::getCurrentRenderTargetSize()
+const core::dimension2d<s32>& CNullDriver::getCurrentRenderTargetSize() const
 {
 	return ScreenSize;
 }
 
 
 // returns current frames per second value
-s32 CNullDriver::getFPS()
+s32 CNullDriver::getFPS() const
 {
 	return FPSCounter.getFPS();
 }
@@ -699,7 +699,7 @@ s32 CNullDriver::getFPS()
 
 //! returns amount of primitives (mostly triangles) were drawn in the last frame.
 //! very useful method for statistics.
-u32 CNullDriver::getPrimitiveCountDrawn( u32 param )
+u32 CNullDriver::getPrimitiveCountDrawn( u32 param ) const
 {
 	return (0 == param) ? FPSCounter.getPrimitive() : (1 == param) ? FPSCounter.getPrimitiveAverage() : FPSCounter.getPrimitiveTotal();
 }
@@ -717,7 +717,7 @@ void CNullDriver::setAmbientLight(const SColorf& color)
 
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 //! driver, it would return "Direct3D8".
-const wchar_t* CNullDriver::getName()
+const wchar_t* CNullDriver::getName() const
 {
 	return L"Irrlicht NullDevice";
 }
@@ -758,7 +758,7 @@ void CNullDriver::addDynamicLight(const SLight& light)
 
 
 //! returns the maximal amount of dynamic lights the device can handle
-u32 CNullDriver::getMaximalDynamicLightAmount()
+u32 CNullDriver::getMaximalDynamicLightAmount() const
 {
 	return 0;
 }
@@ -766,7 +766,7 @@ u32 CNullDriver::getMaximalDynamicLightAmount()
 
 //! Returns current amount of dynamic lights set
 //! \return Current amount of dynamic lights set
-u32 CNullDriver::getDynamicLightCount()
+u32 CNullDriver::getDynamicLightCount() const
 {
 	return Lights.size();
 }
@@ -776,7 +776,7 @@ u32 CNullDriver::getDynamicLightCount()
 //! \param idx: Zero based index of the light. Must be greater than 0 and smaller
 //! than IVideoDriver()::getDynamicLightCount.
 //! \return Light data.
-const SLight& CNullDriver::getDynamicLight(u32 idx)
+const SLight& CNullDriver::getDynamicLight(u32 idx) const
 {
 	if ( idx < Lights.size() )
 		return Lights[idx];
@@ -786,7 +786,7 @@ const SLight& CNullDriver::getDynamicLight(u32 idx)
 
 
 //! Creates an 1bit alpha channel of the texture based of an color key.
-void CNullDriver::makeColorKeyTexture(video::ITexture* texture, video::SColor color)
+void CNullDriver::makeColorKeyTexture(video::ITexture* texture, video::SColor color) const
 {
 	if (!texture)
 		return;
@@ -858,7 +858,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture, video::SColor co
 
 //! Creates an 1bit alpha channel of the texture based of an color key position.
 void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
-					core::position2d<s32> colorKeyPixelPos)
+					core::position2d<s32> colorKeyPixelPos) const
 {
 	if (!texture)
 		return;
@@ -928,7 +928,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 //! Creates a normal map from a height map texture.
 //! \param amplitude: Constant value by which the height information is multiplied.
-void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude)
+void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude) const
 {
 	if (!texture)
 		return;
@@ -1046,16 +1046,16 @@ void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude)
 //! Returns the maximum amount of primitives (mostly vertices) which
 //! the device is able to render with one drawIndexedTriangleList
 //! call.
-u32 CNullDriver::getMaximalPrimitiveCount()
+u32 CNullDriver::getMaximalPrimitiveCount() const
 {
 	return 0xFFFFFFFF;
 }
 
 
 //! checks triangle count and print warning if wrong
-bool CNullDriver::checkPrimitiveCount(u32 prmCount)
+bool CNullDriver::checkPrimitiveCount(u32 prmCount) const
 {
-	u32 m = getMaximalPrimitiveCount();
+	const u32 m = getMaximalPrimitiveCount();
 
 	if (prmCount > m)
 	{
@@ -1088,7 +1088,7 @@ void CNullDriver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enab
 
 
 //! Returns if a texture creation flag is enabled or disabled.
-bool CNullDriver::getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag)
+bool CNullDriver::getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const
 {
 	return (TextureCreationFlags & flag)!=0;
 }
@@ -1412,21 +1412,21 @@ IMaterialRenderer* CNullDriver::getMaterialRenderer(u32 idx)
 {
 	if ( idx < MaterialRenderers.size() )
 		return MaterialRenderers[idx].Renderer;
-
-	return 0;
+	else
+		return 0;
 }
 
 
 
 //! Returns amount of currently available material renderers.
-u32 CNullDriver::getMaterialRendererCount()
+u32 CNullDriver::getMaterialRendererCount() const
 {
 	return MaterialRenderers.size();
 }
 
 
 //! Returns name of the material renderer
-const char* CNullDriver::getMaterialRendererName(u32 idx)
+const char* CNullDriver::getMaterialRendererName(u32 idx) const
 {
 	if ( idx < MaterialRenderers.size() )
 		return MaterialRenderers[idx].Name.c_str();

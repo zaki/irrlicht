@@ -168,7 +168,7 @@ bool CSoftwareDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 
 
 //! queries the features of the driver, returns true if feature is available
-bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature)
+bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
 	switch (feature)
 	{
@@ -840,7 +840,7 @@ void CSoftwareDriver::draw2DRectangle(const core::rect<s32>& pos,
 
 //! \return Returns the name of the video driver. Example: In case of the Direct3D8
 //! driver, it would return "Direct3D8.1".
-const wchar_t* CSoftwareDriver::getName()
+const wchar_t* CSoftwareDriver::getName() const
 {
 	return L"Irrlicht Software Device 1.0";
 }
@@ -887,7 +887,7 @@ IImage* CSoftwareDriver::createScreenShot()
 //! Returns the maximum amount of primitives (mostly vertices) which
 //! the device is able to render with one drawIndexedTriangleList
 //! call.
-u32 CSoftwareDriver::getMaximalPrimitiveCount()
+u32 CSoftwareDriver::getMaximalPrimitiveCount() const
 {
 	return 0x00800000;
 }

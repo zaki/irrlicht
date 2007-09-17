@@ -1000,7 +1000,7 @@ void CIrrDeviceLinux::closeDevice()
 
 
 //! returns if window is active. if not, nothing need to be drawn
-bool CIrrDeviceLinux::isWindowActive()
+bool CIrrDeviceLinux::isWindowActive() const
 {
 	return WindowActive;
 }

@@ -48,7 +48,7 @@ namespace irr
 		virtual void setWindowCaption(const wchar_t* text);
 
 		//! returns if window is active. if not, nothing need to be drawn
-		virtual bool isWindowActive();
+		virtual bool isWindowActive() const;
 
 		//! presents a surface in the client area
 		virtual void present(video::IImage* surface, s32 windowId = 0, core::rect<s32>* src=0);

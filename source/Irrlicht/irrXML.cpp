@@ -54,7 +54,7 @@ public:
 	}
 
 	//! Returns size of file in bytes
-	virtual long getSize()
+	virtual long getSize() const
 	{
 		return Size;
 	}

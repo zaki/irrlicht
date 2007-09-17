@@ -56,7 +56,7 @@ bool CReadFile::seek(long finalPos, bool relativeMovement)
 
 
 //! returns size of file
-long CReadFile::getSize()
+long CReadFile::getSize() const
 {
 	return FileSize;
 }
@@ -64,7 +64,7 @@ long CReadFile::getSize()
 
 
 //! returns where in the file we are.
-long CReadFile::getPos()
+long CReadFile::getPos() const
 {
 	return ftell(File);
 }

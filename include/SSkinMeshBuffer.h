@@ -9,8 +9,6 @@
 #include "S3DVertex.h"
 
 
-
-
 namespace irr
 {
 namespace scene
@@ -44,9 +42,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	{
 		switch (VertexType)
 		{
-			case video::EVT_2TCOORDS: 	return (video::S3DVertex*)&Vertices_2TCoords[index];
-			case video::EVT_TANGENTS: 	return (video::S3DVertex*)&Vertices_Tangents[index];
-			default: 					return &Vertices_Standard[index];
+			case video::EVT_2TCOORDS:	return (video::S3DVertex*)&Vertices_2TCoords[index];
+			case video::EVT_TANGENTS:	return (video::S3DVertex*)&Vertices_Tangents[index];
+			default:			return &Vertices_Standard[index];
 		}
 	}
 
@@ -54,9 +52,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	{
 		switch (VertexType)
 		{
-			case video::EVT_2TCOORDS: 	return Vertices_2TCoords.const_pointer();
-			case video::EVT_TANGENTS: 	return Vertices_Tangents.const_pointer();
-			default: 					return Vertices_Standard.const_pointer();
+			case video::EVT_2TCOORDS:	return Vertices_2TCoords.const_pointer();
+			case video::EVT_TANGENTS:	return Vertices_Tangents.const_pointer();
+			default:			return Vertices_Standard.const_pointer();
 		}
 	}
 
@@ -64,9 +62,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	{
 		switch (VertexType)
 		{
-			case video::EVT_2TCOORDS: 	return Vertices_2TCoords.pointer();
-			case video::EVT_TANGENTS: 	return Vertices_Tangents.pointer();
-			default: 					return Vertices_Standard.pointer();
+			case video::EVT_2TCOORDS:	return Vertices_2TCoords.pointer();
+			case video::EVT_TANGENTS:	return Vertices_Tangents.pointer();
+			default:			return Vertices_Standard.pointer();
 		}
 	}
 
@@ -74,9 +72,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	{
 		switch (VertexType)
 		{
-			case video::EVT_2TCOORDS: 	return Vertices_2TCoords.size();
-			case video::EVT_TANGENTS: 	return Vertices_Tangents.size();
-			default: 					return Vertices_Standard.size();
+			case video::EVT_2TCOORDS:	return Vertices_2TCoords.size();
+			case video::EVT_TANGENTS:	return Vertices_Tangents.size();
+			default:			return Vertices_Standard.size();
 		}
 	}
 
@@ -213,7 +211,6 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//ISkinnedMesh::SJoint *AttachedJoint;
 	core::matrix4 Transformation;
 
-
 	video::SMaterial Material;
 	video::E_VERTEX_TYPE VertexType;
 	core::array<video::S3DVertexTangents> Vertices_Tangents;
@@ -222,6 +219,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	core::array<u16> Indices;
 	core::aabbox3d<f32> BoundingBox;
 };
+
 
 } // end namespace scene
 } // end namespace irr

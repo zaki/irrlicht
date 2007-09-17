@@ -300,7 +300,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 					u32 id = Weight.vertex_id;
 
-					if (id>verticesLink.size())
+					if (id>=verticesLink.size())
 					{
 						os::Printer::log("X loader: Weight id out of range", ELL_WARNING);
 						id=0;
@@ -308,7 +308,6 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 					Weight.vertex_id=verticesLink[id];
 					Weight.buffer_id=verticesLinkBuffer[id];
-
 				}
 			}
 		}

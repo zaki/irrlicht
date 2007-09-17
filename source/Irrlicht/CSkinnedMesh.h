@@ -72,16 +72,16 @@ namespace scene
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
 		//! Gets joint count.
-		virtual s32 getJointCount() const;
+		virtual u32 getJointCount() const;
 
 		//! Gets the name of a joint.
-		virtual const c8* getJointName(s32 number) const;
+		virtual const c8* getJointName(u32 number) const;
 
 		//! Gets a joint number from its name
 		virtual s32 getJointNumber(const c8* name) const;
 
 		//! uses animation from another mesh
-		virtual bool useAnimationFrom(ISkinnedMesh *mesh);
+		virtual bool useAnimationFrom(const ISkinnedMesh *mesh);
 
 		//! Update Normals when Animating
 		//! False= Don't (default)
@@ -95,7 +95,7 @@ namespace scene
 		virtual void recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes);
 
 		//! Tranfers the joint data to the mesh
-		virtual void tranferJointsToMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes);
+		virtual void transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
 
 		//! Creates an array of joints from this mesh
 		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes, IAnimatedMeshSceneNode* AnimatedMeshSceneNode, ISceneManager* SceneManager);
@@ -116,6 +116,9 @@ namespace scene
 
 		//! alternative method for adding joints
 		virtual core::array<SJoint*> &getAllJoints();
+
+		//! alternative method for adding joints
+		virtual const core::array<SJoint*> &getAllJoints() const;
 
 		//! loaders should call this after populating the mesh
 		virtual void finalize();

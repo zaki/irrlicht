@@ -14,7 +14,6 @@ namespace video
 {
 
 
-
 //! constructor
 CDepthBuffer::CDepthBuffer(const core::dimension2d<s32>& size)
 : Buffer(0), Size(0,0)
@@ -73,7 +72,7 @@ void CDepthBuffer::setSize(const core::dimension2d<s32>& size)
 
 
 //! returns the size of the zbuffer
-const core::dimension2d<s32>& CDepthBuffer::getSize()
+const core::dimension2d<s32>& CDepthBuffer::getSize() const
 {
 	return Size;
 }

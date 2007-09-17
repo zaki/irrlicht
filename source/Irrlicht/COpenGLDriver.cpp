@@ -431,7 +431,7 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 
 
 //! Returns the transformation set by setTransform
-const core::matrix4& COpenGLDriver::getTransform(E_TRANSFORMATION_STATE state)
+const core::matrix4& COpenGLDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Matrices[state];
 }
@@ -1649,7 +1649,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 //! \return Returns the name of the video driver. Example: In case of the Direct3D8
 //! driver, it would return "Direct3D8.1".
-const wchar_t* COpenGLDriver::getName()
+const wchar_t* COpenGLDriver::getName() const
 {
 	return Name.c_str();
 }
@@ -1757,7 +1757,7 @@ void COpenGLDriver::addDynamicLight(const SLight& light)
 
 
 //! returns the maximal amount of dynamic lights the device can handle
-u32 COpenGLDriver::getMaximalDynamicLightAmount()
+u32 COpenGLDriver::getMaximalDynamicLightAmount() const
 {
 	return MaxLights;
 }
@@ -2179,7 +2179,7 @@ ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>&
 //! Returns the maximum amount of primitives (mostly vertices) which
 //! the device is able to render with one drawIndexedTriangleList
 //! call.
-u32 COpenGLDriver::getMaximalPrimitiveCount()
+u32 COpenGLDriver::getMaximalPrimitiveCount() const
 {
 	return 65535;// TODO: Fix all loaders to auto-split and then return the correct value: MaxIndices;
 }

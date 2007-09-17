@@ -54,7 +54,7 @@ namespace scene
 			: ISceneNode (parent, mgr, id, position, rotation, scale) {}
 
 		//! destructor
-		virtual ~ITerrainSceneNode() {};
+		virtual ~ITerrainSceneNode() {}
 
 		//! \return: Returns the bounding box of the entire terrain.
 		virtual const core::aabbox3d<f32>& getBoundingBox ( ) const = 0;
@@ -63,7 +63,7 @@ namespace scene
 		virtual const core::aabbox3d<f32>& getBoundingBox (s32 patchX, s32 patchZ) const = 0;
 
 		//! Returns the number of indices currently in the meshbuffer for this scene node.
-		virtual u32 getIndexCount() = 0;
+		virtual u32 getIndexCount() const = 0;
 
 		//! Returns pointer to the mesh
 		virtual IMesh* getMesh() = 0;
@@ -71,7 +71,7 @@ namespace scene
 		//! Gets the meshbuffer data based on a specified level of detail.
 		/** \param mb: A reference to an SMeshBuffer object
 		 \param LOD: the level of detail you want the indices from. */
-		virtual void getMeshBufferForLOD(SMeshBufferLightMap& mb, s32 LOD) = 0;
+		virtual void getMeshBufferForLOD(SMeshBufferLightMap& mb, s32 LOD) const = 0;
 
 		//! Gets the indices for a specified patch at a specified Level of Detail.  
 		/** \param indices: A reference to an array of u32 indices.
@@ -87,7 +87,7 @@ namespace scene
 		//! Populates an array with the CurrentLOD of each patch.
 		/** \param LODs: A reference to a core::array<s32> to hold the values
 		 \return: Returns the number of elements in the array */
-		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) = 0;
+		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const = 0;
 
 		//! Manually sets the LOD of a patch
 		/** \param patchX: Patch x coordinate.
@@ -96,10 +96,10 @@ namespace scene
 		virtual void setLODOfPatch( s32 patchX, s32 patchZ, s32 LOD ) = 0;
 
 		//! Returns center of terrain.
-		virtual core::vector3df getTerrainCenter() = 0;
+		virtual const core::vector3df& getTerrainCenter() const = 0;
 
 		//! Returns height of a point of the terrain.
-		virtual f32 getHeight( f32 x, f32 y ) = 0;
+		virtual f32 getHeight( f32 x, f32 y ) const = 0;
 
 		//! Sets the movement camera threshold.
 		/** It is used to determine when to recalculate

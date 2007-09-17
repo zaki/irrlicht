@@ -27,7 +27,7 @@ namespace scene
 	public:
 
 		//! destructor
-		virtual ~ISceneCollisionManager() {};
+		virtual ~ISceneCollisionManager() {}
 
 		//! Finds the collision point of a line and lots of triangles, if there is one.
 		//! \param ray: Line with witch collisions are tested.

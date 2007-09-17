@@ -39,7 +39,7 @@ s32 CMetaTriangleSelector::getTriangleCount() const
 
 //! Gets all triangles.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::matrix4* transform)
+	s32& outTriangleCount, const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
 
@@ -58,7 +58,7 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 //! Gets all triangles which lie within a specific bounding box.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 	s32& outTriangleCount, const core::aabbox3d<f32>& box, 
-	const core::matrix4* transform)
+	const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
 
@@ -78,7 +78,7 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 //! Gets all triangles which have or may have contact with a 3d line.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 	s32& outTriangleCount, const core::line3d<f32>& line, 
-	const core::matrix4* transform)
+	const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
 
