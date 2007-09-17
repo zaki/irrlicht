@@ -137,6 +137,8 @@ namespace scene
 			//! List of child joints
 			core::array<SJoint*> Children;
 
+			core::array<u32> AttachedMeshes;
+
 			//! Animation keys causing translation change
 			core::array<SPositionKey> PositionKeys;
 

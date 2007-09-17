@@ -335,11 +335,18 @@ void CAnimatedMeshSceneNode::render()
 			if (transparent == isTransparentPass)
 			{
 				scene::IMeshBuffer* mb = m->getMeshBuffer(i);
+
+				if (Mesh->getMeshType() == EAMT_SKINNED)
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+
+
 				driver->setMaterial(Materials[i]);
 				driver->drawMeshBuffer(mb);
 			}
 		}
 	}
+
+	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 	// for debug purposes only:
 	if (DebugDataVisible && PassCount==1)

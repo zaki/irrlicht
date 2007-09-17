@@ -46,7 +46,7 @@ public:
 
 	struct SXMesh
 	{
-		SXMesh() : MaxSkinWeightsPerVertex(0), MaxSkinWeightsPerFace(0), BoneCount(0) {}
+		SXMesh() : MaxSkinWeightsPerVertex(0), MaxSkinWeightsPerFace(0), BoneCount(0),AttachedJointID(-1),HasSkinning(false){}
 		// this mesh contains triangulated texture data.
 		// because in an .x file, faces can be made of more than 3
 		// vertices, the indices data structure is triangulated during the
@@ -72,6 +72,10 @@ public:
 		core::array<u32> FaceMaterialIndices; // index of material for each face
 
 		core::array<video::SMaterial> Materials; // material array
+
+		s32 AttachedJointID;
+
+		bool HasSkinning;
 	};
 
 private:
