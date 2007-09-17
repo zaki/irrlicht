@@ -26,7 +26,7 @@ namespace gui
 			s32 id, core::rect<s32> rectangle, bool noclip=false);
 
 		//! destructor
-		~CGUIButton();
+		virtual ~CGUIButton();
 
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);

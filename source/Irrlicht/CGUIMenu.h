@@ -23,9 +23,6 @@ namespace gui
 		//! constructor
 		CGUIMenu(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
-		//! destructor
-		~CGUIMenu();
-
 		//! draws the element and its children
 		virtual void draw();
 

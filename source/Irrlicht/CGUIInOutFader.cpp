@@ -31,14 +31,6 @@ CGUIInOutFader::CGUIInOutFader(IGUIEnvironment* environment, IGUIElement* parent
 }
 
 
-
-//! destructor
-CGUIInOutFader::~CGUIInOutFader()
-{
-}
-
-
-
 //! draws the element and its children
 void CGUIInOutFader::draw()
 {

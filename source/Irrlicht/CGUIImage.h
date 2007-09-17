@@ -23,7 +23,7 @@ namespace gui
 		CGUIImage(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle);
 
 		//! destructor
-		~CGUIImage();
+		virtual ~CGUIImage();
 
 		//! sets an image
 		virtual void setImage(video::ITexture* image);

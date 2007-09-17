@@ -80,6 +80,7 @@ u32 CGUIContextMenu::addItem(const wchar_t* text, s32 id, bool enabled, bool has
 	return Items.size() - 1;
 }
 
+
 //! Adds a sub menu from an element that already exists.
 void CGUIContextMenu::setSubMenu(u32 index, CGUIContextMenu* menu)
 {
@@ -289,7 +290,7 @@ void CGUIContextMenu::setVisible(bool visible)
 //! 0 if click went outside of the element,
 //! 1 if a valid button was clicked,
 //! 2 if a nonclickable element was clicked
-u32 CGUIContextMenu::sendClick(core::position2d<s32> p)
+u32 CGUIContextMenu::sendClick(const core::position2d<s32>& p)
 {
 	u32 t = 0;
 
@@ -313,7 +314,7 @@ u32 CGUIContextMenu::sendClick(core::position2d<s32> p)
 
 	// check click on myself
 	if (isPointInside(p) &&
-		HighLighted >= 0 && HighLighted <(s32)Items.size())
+		(u32)HighLighted < Items.size())
 	{
 		if (!Items[HighLighted].Enabled ||
 			Items[HighLighted].IsSeparator ||
@@ -339,7 +340,7 @@ u32 CGUIContextMenu::sendClick(core::position2d<s32> p)
 
 
 //! returns true, if an element was highligted
-bool CGUIContextMenu::highlight(core::position2d<s32> p, bool canOpenSubMenu)
+bool CGUIContextMenu::highlight(const core::position2d<s32>& p, bool canOpenSubMenu)
 {
 	// get number of open submenu
 	s32 openmenu = -1;
@@ -599,6 +600,7 @@ s32 CGUIContextMenu::getItemCommandId(u32 idx) const
 	return Items[idx].CommandId;
 }
 
+
 //! Sets the command id of a menu item
 void CGUIContextMenu::setItemCommandId(u32 idx, s32 id)
 {
@@ -607,6 +609,7 @@ void CGUIContextMenu::setItemCommandId(u32 idx, s32 id)
 
 	Items[idx].CommandId = id;
 }
+
 
 //! Writes attributes of the element.
 void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
@@ -697,6 +700,7 @@ void CGUIContextMenu::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	recalculateSize();
 }
 
+
 // because sometimes the element has no parent at click time
 void CGUIContextMenu::setEventParent(IGUIElement *parent)
 {
@@ -704,9 +708,7 @@ void CGUIContextMenu::setEventParent(IGUIElement *parent)
 
 	for (u32 i=0; i<Items.size(); ++i)
 		if (Items[i].SubMenu)
-		{
 			Items[i].SubMenu->setEventParent(parent);
-		}
 }
 
 
