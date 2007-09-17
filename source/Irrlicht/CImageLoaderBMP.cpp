@@ -257,7 +257,7 @@ IImage* CImageLoaderBMP::loadImage(irr::io::IReadFile* file) const
 	long pos = file->getPos();
 	s32 paletteSize = (header.BitmapDataOffset - pos) / 4;
 
-	s32* paletteData;
+	s32* paletteData = 0;
 	if (paletteSize)
 	{
 		paletteData = new s32[paletteSize];
