@@ -82,17 +82,8 @@
 #include "CB3DMeshFileLoader.h"
 #endif
 
-#ifdef _IRR_COMPILE_WITH_COLLADA_WRITER_
 #include "CColladaMeshWriter.h"
-#endif
-
-#ifdef _IRR_COMPILE_WITH_IRR_WRITER_
 #include "CIrrMeshWriter.h"
-#endif
-
-#ifdef _IRR_COMPILE_WITH_STL_WRITER_
-#include "CSTLMeshWriter.h"
-#endif
 
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
@@ -2200,8 +2191,6 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 		return new CIrrMeshWriter(Driver, FileSystem);
 	case EMWT_COLLADA:
 		return new CColladaMeshWriter(Driver, FileSystem);
-	case EMWT_STL:
-		return new CSTLMeshWriter(this);
 	}
 
 	return 0;
