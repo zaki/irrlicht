@@ -39,8 +39,6 @@
 			<Add library="ole32" />
 			<Add library="oleaut32" />
 			<Add library="uuid" />
-			<Add library="odbc32" />
-			<Add library="odbccp32" />
 			<Add library="opengl32" />
 		</Linker>
 		<Unit filename="..\..\changes.txt" />
