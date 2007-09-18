@@ -80,7 +80,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 			if (str[i] == ' ')
 			{
 				str[i] = 0;
-				for (u32 j=0; i<IRR_OpenGL_Feature_Count; ++j)
+				for (u32 j=0; j<IRR_OpenGL_Feature_Count; ++j)
 				{
 					if (!strcmp(OpenGLFeatureStrings[j], p))
 					{
