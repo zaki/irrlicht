@@ -218,7 +218,7 @@ void CGUIMenu::recalculateSize()
 
 
 //! returns the item highlight-area
-core::rect<s32> CGUIMenu::getHRect(const SItem& i, const core::rect<s32>& absolute)
+core::rect<s32> CGUIMenu::getHRect(const SItem& i, const core::rect<s32>& absolute) const
 {
 	core::rect<s32> r = absolute;
 	r.UpperLeftCorner.X += i.PosY;
@@ -227,7 +227,7 @@ core::rect<s32> CGUIMenu::getHRect(const SItem& i, const core::rect<s32>& absolu
 }
 
 //! Gets drawing rect of Item
-core::rect<s32> CGUIMenu::getRect(const SItem& i, const core::rect<s32>& absolute)
+core::rect<s32> CGUIMenu::getRect(const SItem& i, const core::rect<s32>& absolute) const
 {
 	return getHRect(i, absolute);
 }
