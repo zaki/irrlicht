@@ -58,7 +58,7 @@ private:
 	core::array< SQ3Texture > Q3Texture;
 
 	void loadTextures ( io::IFileSystem * fileSystem );
-	void clone ( scene::SMeshBufferLightMap * buffer );
+	void cloneBuffer ( scene::SMeshBufferLightMap * buffer );
 
 	void vertextransform_wave ( f32 dt, quake3::SModifierFunction &function );
 	void vertextransform_bulge( f32 dt, quake3::SModifierFunction &function );

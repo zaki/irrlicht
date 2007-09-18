@@ -21,7 +21,7 @@ namespace video
 {
 
 // helper function for render to texture
-bool checkFBOStatus(COpenGLDriver* Driver);
+static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! constructor for usual textures
 COpenGLTexture::COpenGLTexture(IImage* image, const char* name, COpenGLDriver* driver)
@@ -133,7 +133,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
 	// check the status
 	if (!checkFBOStatus(Driver))
 	{
-		printf("FBO=%d, Color=%d, Depth=%d, Stencil=%d\n",
+		printf("FBO=%u, Color=%u, Depth=%u, Stencil=%u\n",
 			ColorFrameBuffer, TextureName, DepthRenderBuffer, StencilRenderBuffer);
 		if (ColorFrameBuffer)
 			Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);

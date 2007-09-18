@@ -958,13 +958,12 @@ bool CSceneManager::isCulled(const ISceneNode* node)
 			core::aabbox3d<f32> tbox = node->getBoundingBox();
 			node->getAbsoluteTransformation().transformBox(tbox);
 			return !(tbox.intersectsWithBox(cam->getViewFrustum()->getBoundingBox() ));
-		};
-		break;
+		}
 
 		// can be seen by a bounding sphere
 		case scene::EAC_FRUSTUM_SPHERE:
 		{ // requires bbox diameter
-		};
+		}
 		break;
 
 		// can be seen by cam pyramid planes ?
@@ -998,15 +997,13 @@ bool CSceneManager::isCulled(const ISceneNode* node)
 
 			return false;
 		}
-		break;
+
 		case scene::EAC_OFF:
 		break;
 	}
 
 	return false;
 }
-
-
 
 
 //! registers a node for rendering it at a specific time.
@@ -2036,10 +2033,10 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 
 		for (u32 i=0; i < node->getMaterialCount(); ++i)
 		{
-			io::IAttributes* attr =
+			io::IAttributes* tmp_attr =
 				getVideoDriver()->createAttributesFromMaterial(node->getMaterial(i));
-			attr->write(writer);
-			attr->drop();
+			tmp_attr->write(writer);
+			tmp_attr->drop();
 		}
 
 		writer->writeClosingTag(materialElement);

@@ -316,7 +316,7 @@ void CTRTextureGouraud::drawIndexedTriangleList(S2DVertex* vertices, s32 vertexC
 				// draw the span
 				if (rightx + tDiffRight - leftx - tDiffLeft)
 				{
-					f32 tmpDiv = 1.0f / (f32)(rightx - leftx);
+					tmpDiv = 1.0f / (f32)(rightx - leftx);
 					spanZStep = (s32)((rightZValue - leftZValue) * tmpDiv);
 					spanZValue = leftZValue+tDiffLeft*spanZStep;
 

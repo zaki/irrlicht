@@ -1656,7 +1656,7 @@ void CSoftwareDriver2::OnResize(const core::dimension2d<s32>& size)
 }
 
 //! returns the current render target size
-core::dimension2d<s32> CSoftwareDriver2::getCurrentRenderTargetSize()
+const core::dimension2d<s32>& CSoftwareDriver2::getCurrentRenderTargetSize() const
 {
 	return RenderTargetSize;
 }

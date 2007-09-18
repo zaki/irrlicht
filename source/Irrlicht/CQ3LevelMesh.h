@@ -321,7 +321,7 @@ namespace scene
 			}
 		};
 
-		void copy ( video::S3DVertex2TCoords * dest, const tBSPVertex * source, s32 vertexcolor ) const;
+		inline void copy ( video::S3DVertex2TCoords * dest, const tBSPVertex * source, s32 vertexcolor ) const;
 		void copy ( S3DVertex2TCoords_64 * dest, const tBSPVertex * source, s32 vertexcolor ) const;
 
 

@@ -762,7 +762,7 @@ void CSoftwareDriver::OnResize(const core::dimension2d<s32>& size)
 }
 
 //! returns the current render target size
-core::dimension2d<s32> CSoftwareDriver::getCurrentRenderTargetSize()
+const core::dimension2d<s32>& CSoftwareDriver::getCurrentRenderTargetSize() const
 {
 	return RenderTargetSize;
 }
@@ -854,7 +854,7 @@ E_DRIVER_TYPE CSoftwareDriver::getDriverType() const
 
 
 //! Returns the transformation set by setTransform
-const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
+const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return TransformationMatrix[state];
 }

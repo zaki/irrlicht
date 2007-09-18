@@ -20,11 +20,9 @@ public:
 	//! Constructs a selector based on a mesh
 	CTriangleBBSelector(ISceneNode* node);
 
-	virtual ~CTriangleBBSelector() {};
-
 	//! Gets all triangles.
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
-		const core::matrix4* transform=0);
+		const core::matrix4* transform=0) const;
 };
 
 } // end namespace scene

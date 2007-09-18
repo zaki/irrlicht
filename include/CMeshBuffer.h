@@ -115,8 +115,8 @@ namespace scene
 			Vertices.reallocate(vertexCount+numVertices);
 			for (i=0; i<numVertices; ++i)
 			{
-				Vertices.push_back(reinterpret_cast<const T* const>(vertices)[i]);
-				BoundingBox.addInternalPoint(reinterpret_cast<const T* const>(vertices)[i].Pos);
+				Vertices.push_back(reinterpret_cast<const T*>(vertices)[i]);
+				BoundingBox.addInternalPoint(reinterpret_cast<const T*>(vertices)[i].Pos);
 			}
 
 			Indices.reallocate(getIndexCount()+numIndices);

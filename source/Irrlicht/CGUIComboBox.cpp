@@ -274,6 +274,7 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 					return true;
 				}
 				
+				// TODO: This is dead code
 				if (!AbsoluteClippingRect.isPointInside(p))
 				{
 					Environment->removeFocus(this);

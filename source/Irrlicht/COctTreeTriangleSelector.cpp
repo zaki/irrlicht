@@ -116,7 +116,7 @@ void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
 void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, 
 									 s32 arraySize, s32& outTriangleCount, 
 									const core::aabbox3d<f32>& box,
-									const core::matrix4* transform)
+									const core::matrix4* transform) const
 {
 	core::matrix4 mat;
 	core::aabbox3d<f32> invbox = box;
@@ -149,7 +149,7 @@ void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles,
 void COctTreeTriangleSelector::getTrianglesFromOctTree(
 		SOctTreeNode* node, s32& trianglesWritten,
 		s32 maximumSize, const core::aabbox3d<f32>& box,
-		const core::matrix4* mat, core::triangle3df* triangles)
+		const core::matrix4* mat, core::triangle3df* triangles) const
 {
 	if (!box.intersectsWithBox(node->Box))
 		return;
@@ -179,7 +179,7 @@ void COctTreeTriangleSelector::getTrianglesFromOctTree(
 //! Gets all triangles which have or may have contact with a 3d line.
 void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 	s32& outTriangleCount, const core::line3d<f32>& line, 
-	const core::matrix4* transform)
+	const core::matrix4* transform) const
 {
 	core::aabbox3d<f32> box(line.start);
 	box.addInternalPoint(line.end);

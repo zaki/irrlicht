@@ -845,8 +845,8 @@ void CQ3LevelMesh::constructMesh2()
 				}
 
 				// there are lightmapsids and textureid with -1
-				s32 index = ((Faces[i].lightmapID+1) * (NumTextures+1)) + (Faces[i].textureID+1);
-				buffer = (SMeshBufferLightMap*) Mesh[quake3::E_Q3_MESH_GEOMETRY]->getMeshBuffer(index);
+				const s32 tmp_index = ((Faces[i].lightmapID+1) * (NumTextures+1)) + (Faces[i].textureID+1);
+				buffer = (SMeshBufferLightMap*) Mesh[quake3::E_Q3_MESH_GEOMETRY]->getMeshBuffer(tmp_index);
 				buffer->getMaterial() = material;
 			}
 			else

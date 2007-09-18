@@ -26,12 +26,12 @@ public:
 
 	//! Gets all triangles which lie within a specific bounding box.
 	void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
-		const core::aabbox3d<f32>& box, const core::matrix4* transform=0);
+		const core::aabbox3d<f32>& box, const core::matrix4* transform=0) const;
 
 	//! Gets all triangles which have or may have contact with a 3d line.
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line, 
-		const core::matrix4* transform=0);
+		const core::matrix4* transform=0) const;
 
 private:
 
@@ -59,7 +59,7 @@ private:
 	void deleteEmptyNodes(SOctTreeNode* node);
 	void getTrianglesFromOctTree(SOctTreeNode* node, s32& trianglesWritten, s32 maximumSize, 
 		const core::aabbox3d<f32>& box, const core::matrix4* transform,
-		core::triangle3df* triangles);
+		core::triangle3df* triangles) const;
 
 	SOctTreeNode* Root;
 	s32 NodeCount;

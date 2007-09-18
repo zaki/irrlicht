@@ -232,7 +232,7 @@ public:
 					// draw the span
 					if (rightx + tDiffRight - leftx - tDiffLeft)
 					{
-						f32 tmpDiv = 1.0f / (f32)(rightx - leftx);
+						tmpDiv = 1.0f / (f32)(rightx - leftx);
 
 						spanStepR = (s32)((rightR - leftR) * tmpDiv);
 						spanR = leftR+tDiffLeft*spanStepR;

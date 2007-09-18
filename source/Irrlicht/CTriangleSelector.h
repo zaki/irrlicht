@@ -49,7 +49,7 @@ public:
 protected:
 
 	ISceneNode* SceneNode;
-	core::array<core::triangle3df> Triangles;
+	mutable core::array<core::triangle3df> Triangles;
 };
 
 } // end namespace scene

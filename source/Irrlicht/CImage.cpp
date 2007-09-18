@@ -1097,15 +1097,15 @@ void CImage::setBitMasks()
 	break;
 	case ECF_R8G8B8:
 		AlphaMask = 0x0;
-		RedMask = 0xFF<<16;
-		GreenMask = 0xFF<<8;
-		BlueMask = 0xFF;
+		RedMask   = 0x00FF0000;
+		GreenMask = 0x0000FF00;
+		BlueMask  = 0x000000FF;
 	break;
 	case ECF_A8R8G8B8:
-		AlphaMask = 0xFF<<24;
-		RedMask = 0xFF<<16;
-		GreenMask = 0xFF<<8;
-		BlueMask = 0xFF;
+		AlphaMask = 0xFF000000;
+		RedMask   = 0x00FF0000;
+		GreenMask = 0x0000FF00;
+		BlueMask  = 0x000000FF;
 	break;
 	}
 }

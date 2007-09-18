@@ -211,7 +211,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 					core::position2d<s32>(core::floor32(processed.X*thRel.X), core::floor32(processed.Y*thRel.Y)),
 					core::dimension2d<s32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y)));
 
-				sprintf(textureName, "terrain%u_%d", tm, mesh->getMeshBufferCount());
+				sprintf(textureName, "terrain%u_%u", tm, mesh->getMeshBufferCount());
 
 				material.Textures[0] = driver->addTexture(textureName, img);
 

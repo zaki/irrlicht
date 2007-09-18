@@ -158,7 +158,6 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 			Dragging = false;
 			return true;
 			
-			break;
 		case EMIE_MOUSE_MOVED:
 			if (Dragging)
 			{
