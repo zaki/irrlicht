@@ -839,7 +839,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture, video::SColor co
 		s32 pitch = texture->getPitch() / 4;
 
 		// color with alpha enabled (color opaque)
-		s32 ref = (0xff<<24) | (0x00ffffff & color.color);
+		s32 ref = 0xff000000 | (0x00ffffff & color.color);
 
 		for (s32 y=0; y<dim.Height; ++y)
 		{

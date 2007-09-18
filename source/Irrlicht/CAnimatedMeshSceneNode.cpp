@@ -407,7 +407,7 @@ void CAnimatedMeshSceneNode::render()
 				material.Lighting = false;
 				driver->setMaterial(material);
 
-				core::matrix4 m;
+				core::matrix4 matr;
 
 				SMD3QuaterionTagList *taglist = ((IAnimatedMeshMD3*)Mesh)->getTagList (	(s32)getFrameNr(),
 												255,
@@ -416,11 +416,11 @@ void CAnimatedMeshSceneNode::render()
 											);
 				if ( taglist )
 				{
-					for ( u32 g = 0; g != taglist->size();++g )
+					for ( u32 ts = 0; ts != taglist->size(); ++ts )
 					{
-						(*taglist)[g].setto ( m );
+						(*taglist)[ts].setto ( matr );
 
-						driver->setTransform(video::ETS_WORLD, m );
+						driver->setTransform(video::ETS_WORLD, matr );
 
 						for ( u32 a = 0; a != arrowMesh->getMeshBufferCount(); ++a )
 							driver->drawMeshBuffer ( arrowMesh->getMeshBuffer ( a ) );

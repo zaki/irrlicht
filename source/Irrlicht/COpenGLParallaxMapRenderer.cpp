@@ -25,9 +25,9 @@ const char OPENGL_PARALLAX_MAP_VSH[] =
 	"#input\n"\
 	"# 0-3: transposed world matrix;\n"\
 	"#;12: Light01 position \n"\
-	"#;13: x,y,z: Light01 color; .w: 1/LightRadius² \n"\
+	"#;13: x,y,z: Light01 color; .w: 1/LightRadius^2 \n"\
 	"#;14: Light02 position \n"\
-	"#;15: x,y,z: Light02 color; .w: 1/LightRadius² \n"\
+	"#;15: x,y,z: Light02 color; .w: 1/LightRadius^2 \n"\
 	"#;16: Eye position \n"\
 	"\n"\
 	"ATTRIB InPos = vertex.position;\n"\

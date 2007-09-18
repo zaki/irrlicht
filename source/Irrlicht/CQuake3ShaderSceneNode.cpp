@@ -30,7 +30,7 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 	this->Name = Shader->name;
 
 	// clone meshbuffer to modifiable buffer
-	clone ( static_cast< scene::SMeshBufferLightMap *> ( buffer ) );
+	cloneBuffer ( static_cast< scene::SMeshBufferLightMap *> ( buffer ) );
 
 	// load all Textures in all stages
 	loadTextures ( fileSystem );
@@ -45,7 +45,7 @@ CQuake3ShaderSceneNode::~CQuake3ShaderSceneNode ()
 /*
 	create single copies
 */
-void CQuake3ShaderSceneNode::clone ( scene::SMeshBufferLightMap * buffer )
+void CQuake3ShaderSceneNode::cloneBuffer ( scene::SMeshBufferLightMap * buffer )
 {
 	Original.Material = buffer->Material;
 	MeshBuffer.Material = buffer->Material;

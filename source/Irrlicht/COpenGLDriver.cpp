@@ -1177,8 +1177,9 @@ bool COpenGLDriver::testGLError()
 		os::Printer::log("GL_TABLE_TOO_LARGE", ELL_ERROR); break;
 	};
 	return true;
-#endif
+#else
 	return false;
+#endif
 }
 
 
@@ -2256,7 +2257,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 
 // returns the current size of the screen or rendertarget
-core::dimension2d<s32> COpenGLDriver::getCurrentRenderTargetSize()
+const core::dimension2d<s32>& COpenGLDriver::getCurrentRenderTargetSize() const
 {
 	if ( CurrentRendertargetSize.Width == 0 )
 		return ScreenSize;

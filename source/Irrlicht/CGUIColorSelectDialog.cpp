@@ -358,7 +358,7 @@ bool CGUIColorSelectDialog::OnEvent(const SEvent& event)
 					}
 				}
 				return true;
-			} break;
+			}
 
 		case EGET_ELEMENT_FOCUS_LOST:
 			Dragging = false;

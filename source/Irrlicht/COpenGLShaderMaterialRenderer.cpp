@@ -175,7 +175,7 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		GLint errPos;
 		glGetIntegerv( GL_PROGRAM_ERROR_POSITION_ARB, &errPos );
 
-		const GLubyte* errString = glGetString(GL_PROGRAM_ERROR_STRING_ARB);
+		const char* errString = reinterpret_cast<const char*>(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
 
 		char tmp[2048];
 		sprintf(tmp, "Pixel shader compilation failed at position %d:\n%s", errPos, errString);
@@ -213,7 +213,7 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 		GLint errPos;
 		glGetIntegerv( GL_PROGRAM_ERROR_POSITION_ARB, &errPos );
 
-		const GLubyte* errString = glGetString(GL_PROGRAM_ERROR_STRING_ARB);
+		const char* errString = reinterpret_cast<const char*>(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
 
 		char tmp[2048];
 		sprintf(tmp, "Vertex shader compilation failed at position %d:\n%s", errPos, errString);

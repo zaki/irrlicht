@@ -54,7 +54,6 @@ bool CGUIModalScreen::OnEvent(const SEvent& event)
 			{
 				return IGUIElement::OnEvent(event);
 			}
-			break;
 		case EGET_ELEMENT_CLOSED:
 			// do not interfere with children being removed
 			return IGUIElement::OnEvent(event);

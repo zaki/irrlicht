@@ -69,7 +69,7 @@ public:
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
 	//! Get Mesh we're emitting particles from
-	virtual const IMesh* const getMesh() const { return Mesh; }
+	virtual const IMesh* getMesh() const { return Mesh; }
 
 	//! Get whether to use vertex normal for direciton, or direction specified
 	virtual bool isUsingNormalDirection() const { return UseNormalDirection; }

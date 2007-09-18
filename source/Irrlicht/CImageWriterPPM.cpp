@@ -55,7 +55,7 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 		for (c = 0; c < imageSize.Width; ++c, ++n)
 		{
 			const video::SColor& pixel = image->getPixel(c, r);
-			size = snprintf(cache, 70, "%.3d %.3d %.3d%s", pixel.getRed(), pixel.getGreen(), pixel.getBlue(), n % 5 == 4 ? "\n" : "  ");	
+			size = snprintf(cache, 70, "%.3u %.3u %.3u%s", pixel.getRed(), pixel.getGreen(), pixel.getBlue(), n % 5 == 4 ? "\n" : "  ");	
 			if (file->write(cache, size) != size)
 				return false;
 		}

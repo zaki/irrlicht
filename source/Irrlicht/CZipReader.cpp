@@ -357,7 +357,7 @@ class CUnzipReadFile : public CReadFile
 		}
 		virtual ~CUnzipReadFile () {}
 
-		virtual const c8* getFileName()
+		virtual const c8* getFileName() const
 		{
 			return CallFileName.c_str ();
 		}

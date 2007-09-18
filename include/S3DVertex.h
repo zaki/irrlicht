@@ -88,7 +88,7 @@ struct S3DVertex
 /** Usually used for geometry with lightmaps
 or other special materials.
 */
-struct S3DVertex2TCoords : S3DVertex
+struct S3DVertex2TCoords : public S3DVertex
 {
 	//! default constructor
 	S3DVertex2TCoords() : S3DVertex() {}
@@ -150,7 +150,7 @@ struct S3DVertex2TCoords : S3DVertex
 //! Vertex with a tangent and binormal vector.
 /**  Usually used for tangent space normal mapping.
 */
-struct S3DVertexTangents : S3DVertex
+struct S3DVertexTangents : public S3DVertex
 {
 	//! default constructor
 	S3DVertexTangents() : S3DVertex() { }

@@ -52,7 +52,7 @@ namespace video
 		virtual void OnResize(const core::dimension2d<s32>& size);
 
 		//! returns size of the current render target
-		virtual core::dimension2d<s32> getCurrentRenderTargetSize();
+		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
 
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();

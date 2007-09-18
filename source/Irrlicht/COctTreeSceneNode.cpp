@@ -321,7 +321,7 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 
 	u32 endTime = os::Timer::getRealTime();
 	c8 tmp[255];
-	sprintf(tmp, "Needed %ums to create OctTree SceneNode.(%d nodes, %d polys)",
+	sprintf(tmp, "Needed %ums to create OctTree SceneNode.(%u nodes, %u polys)",
 		endTime - beginTime, nodeCount, polyCount/3);
 	os::Printer::log(tmp, ELL_INFORMATION);
 

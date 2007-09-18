@@ -60,8 +60,8 @@ void COpenGLExtensionHandler::dump() const
 
 void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 {
-	const f32 ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
-	Version = core::floor32(ver)*100+core::ceil32(core::fract(ver)*10.0f);
+	const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(glGetString(GL_VERSION)));
+	Version = core::floor32(ogl_ver)*100+core::ceil32(core::fract(ogl_ver)*10.0f);
 	if ( Version >= 102)
 		os::Printer::log("OpenGL driver version is 1.2 or better.", ELL_INFORMATION);
 	else
@@ -80,11 +80,11 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 			if (str[i] == ' ')
 			{
 				str[i] = 0;
-				for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
+				for (u32 j=0; i<IRR_OpenGL_Feature_Count; ++j)
 				{
-					if (!strcmp(OpenGLFeatureStrings[i], p))
+					if (!strcmp(OpenGLFeatureStrings[j], p))
 					{
-						FeatureAvailable[i] = true;
+						FeatureAvailable[j] = true;
 						break;
 					}
 				}
@@ -374,8 +374,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 			ShaderLanguageVersion = 100;
 		else
 		{
-			const f32 ver = core::fast_atof(reinterpret_cast<const c8*>(shaderVersion));
-			ShaderLanguageVersion = core::floor32(ver)*100+core::ceil32(core::fract(ver)*10.0f);
+			const f32 sl_ver = core::fast_atof(reinterpret_cast<const c8*>(shaderVersion));
+			ShaderLanguageVersion = core::floor32(sl_ver)*100+core::ceil32(core::fract(sl_ver)*10.0f);
 		}
 	}
 #endif

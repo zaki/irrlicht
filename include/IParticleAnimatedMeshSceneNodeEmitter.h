@@ -32,7 +32,7 @@ public:
 	virtual void setEveryMeshVertex( bool everyMeshVertex = true ) = 0;
 
 	//! Get Mesh we're emitting particles from
-	virtual const IAnimatedMeshSceneNode* const getAnimatedMeshSceneNode() const = 0;
+	virtual const IAnimatedMeshSceneNode* getAnimatedMeshSceneNode() const = 0;
 
 	//! Get whether to use vertex normal for direction, or direction specified
 	virtual bool isUsingNormalDirection() const = 0;

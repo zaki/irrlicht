@@ -357,9 +357,9 @@ void CParticleSystemSceneNode::render()
 	if ( DebugDataVisible & scene::EDS_BBOX )
 	{
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		video::SMaterial m;
-		m.Lighting = false;
-		driver->setMaterial(m);
+		video::SMaterial deb_m;
+		deb_m.Lighting = false;
+		driver->setMaterial(deb_m);
 		driver->draw3DBox(Buffer.BoundingBox, video::SColor(0,255,255,255));
 	}
 }
