@@ -200,40 +200,35 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				}
 			}
 
-			for (i=0;i<AnimatedMesh->getAllJoints().size();++i)
+			for (u32 j=0;j<mesh->Weights.size();++j)
 			{
+				ISkinnedMesh::SWeight& Weight = (*mesh->Weights[j]);
 
-				ISkinnedMesh::SJoint *Joint=AnimatedMesh->getAllJoints()[i];
+				u32 id = Weight.vertex_id;
 
-				for (u32 j=0;j<Joint->Weights.size();++j)
+				if (id>=verticesLink.size())
 				{
+					os::Printer::log("X loader: Weight id out of range", ELL_WARNING);
+					id=0;
+				}
 
-					ISkinnedMesh::SWeight& Weight = Joint->Weights[j];
-					u32 id = Weight.vertex_id;
-
-					if (id>verticesLink.size())
+				if (verticesLinkBuffer[id].size()==1)
+				{
+					Weight.vertex_id=verticesLink[id][0];
+					Weight.buffer_id=verticesLinkBuffer[id][0];
+				}
+				else if (verticesLinkBuffer[id].size() != 0)
+				{
+					for (u32 k=1; k < verticesLinkBuffer[id].size(); ++k)
 					{
-						os::Printer::log("X loader: Weight id out of range", ELL_WARNING);
-						id=0;
-					}
-
-					if (verticesLinkBuffer[id].size()==1)
-					{
-						Weight.vertex_id=verticesLink[id][0];
-						Weight.buffer_id=verticesLinkBuffer[id][0];
-					}
-					else if (verticesLinkBuffer[id].size() != 0)
-					{
-						for (u32 k=1; k < verticesLinkBuffer[id].size(); ++k)
-						{
-							ISkinnedMesh::SWeight* WeightClone = AnimatedMesh->createWeight(Joint);
-							WeightClone->strength = Weight.strength;
-							WeightClone->vertex_id = verticesLink[id][k];
-							WeightClone->buffer_id = verticesLinkBuffer[id][k];
-						}
+						ISkinnedMesh::SWeight* WeightClone = AnimatedMesh->createWeight(Joint);
+						WeightClone->strength = Weight.strength;
+						WeightClone->vertex_id = verticesLink[id][k];
+						WeightClone->buffer_id = verticesLinkBuffer[id][k];
 					}
 				}
 			}
+
 		}
 		#else
 		{
@@ -290,26 +285,23 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 					buffer->Indices.push_back( verticesLink[ mesh->Indices[id] ] );
 			}
 
-			for (i=0; i<AnimatedMesh->getAllJoints().size(); ++i)
+
+			for (u32 j=0;j<mesh->Weights.size();++j)
 			{
-				ISkinnedMesh::SJoint *Joint = AnimatedMesh->getAllJoints()[i];
+				ISkinnedMesh::SWeight& Weight = (*mesh->Weights[j]);
 
-				for (u32 j=0;j<Joint->Weights.size();++j)
+				u32 id = Weight.vertex_id;
+
+				if (id>=verticesLink.size())
 				{
-					ISkinnedMesh::SWeight& Weight = Joint->Weights[j];
-
-					u32 id = Weight.vertex_id;
-
-					if (id>=verticesLink.size())
-					{
-						os::Printer::log("X loader: Weight id out of range", ELL_WARNING);
-						id=0;
-					}
-
-					Weight.vertex_id=verticesLink[id];
-					Weight.buffer_id=verticesLinkBuffer[id];
+					os::Printer::log("X loader: Weight id out of range", ELL_WARNING);
+					id=0;
 				}
+
+				Weight.vertex_id=verticesLink[id];
+				Weight.buffer_id=verticesLinkBuffer[id];
 			}
+
 		}
 		#endif
 
@@ -884,12 +876,16 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	const u32 jointStart = joint->Weights.size();
 	joint->Weights.reallocate(jointStart+nWeights);
 
+	mesh.Weights.reallocate( mesh.Weights.size() + nWeights );
+
 	for (i=0; i<nWeights; ++i)
 	{
 		CSkinnedMesh::SWeight *weight=AnimatedMesh->createWeight(joint);
 
 		weight->buffer_id=0;
 		weight->vertex_id=readInt();
+
+		mesh.Weights.push_back(weight);
 	}
 
 	// read vertex weights
