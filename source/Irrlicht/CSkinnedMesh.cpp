@@ -736,9 +736,10 @@ void CSkinnedMesh::checkForAnimation()
 			SJoint *Joint = AllJoints[i];
 			for (j=0; j<Joint->Weights.size(); ++j)
 			{
-				u16 buffer_id=Joint->Weights[j].buffer_id;
-				u32 vertex_id=Joint->Weights[j].vertex_id;
+				const u16 buffer_id=Joint->Weights[j].buffer_id;
+				const u32 vertex_id=Joint->Weights[j].vertex_id;
 
+				assert(vertex_id<LocalBuffers[buffer_id]->getVertexCount());
 				//check for invalid ids
 				if (buffer_id>=LocalBuffers.size())
 				{
@@ -766,8 +767,8 @@ void CSkinnedMesh::checkForAnimation()
 			SJoint *Joint = AllJoints[i];
 			for (j=0; j<Joint->Weights.size(); ++j)
 			{
-				u32 vertex_id=Joint->Weights[j].vertex_id;
-				u32 buffer_id=Joint->Weights[j].buffer_id;
+				const u16 buffer_id=Joint->Weights[j].buffer_id;
+				const u32 vertex_id=Joint->Weights[j].vertex_id;
 
 				Joint->Weights[j].Moved = &Vertices_Moved[buffer_id] [vertex_id];
 				Joint->Weights[j].StaticPos = LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos;
@@ -805,9 +806,9 @@ void CSkinnedMesh::finalize()
 	else
 	{
 		BoundingBox.reset(LocalBuffers[0]->BoundingBox.MaxEdge);
-		for (u32 i=0; i<LocalBuffers.size(); ++i)
+		for (u32 j=0; j<LocalBuffers.size(); ++j)
 		{
-			BoundingBox.addInternalBox(LocalBuffers[i]->BoundingBox);
+			BoundingBox.addInternalBox(LocalBuffers[j]->BoundingBox);
 		}
 	}
 
