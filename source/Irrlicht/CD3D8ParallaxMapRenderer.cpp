@@ -211,7 +211,7 @@ namespace video
 		return CD3D8ShaderMaterialRenderer::OnRender(service, vtxtype);
 	}
 
-	void CD3D8ParallaxMapRenderer::OnSetMaterial(video::SMaterial& material, 
+	void CD3D8ParallaxMapRenderer::OnSetMaterial(const video::SMaterial& material, 
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services)
 	{
