@@ -40,7 +40,7 @@ public:
 	COpenGLMaterialRenderer_SOLID(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
@@ -65,7 +65,7 @@ public:
 	COpenGLMaterialRenderer_ONETEXTURE_BLEND(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
@@ -157,7 +157,7 @@ public:
 	COpenGLMaterialRenderer_SOLID_2_LAYER(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
@@ -189,7 +189,7 @@ public:
 	COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
@@ -225,7 +225,7 @@ public:
 	COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
@@ -279,7 +279,7 @@ public:
 	COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
@@ -332,7 +332,7 @@ public:
 	COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
@@ -368,7 +368,7 @@ public:
 	COpenGLMaterialRenderer_LIGHTMAP(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
@@ -462,7 +462,7 @@ public:
 	COpenGLMaterialRenderer_DETAIL_MAP(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
@@ -506,7 +506,7 @@ public:
 	COpenGLMaterialRenderer_SPHERE_MAP(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(1);
@@ -541,7 +541,7 @@ public:
 	COpenGLMaterialRenderer_REFLECTION_2_LAYER(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);
@@ -603,7 +603,7 @@ public:
 	COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(video::COpenGLDriver* d)
 		: COpenGLMaterialRenderer(d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		Driver->disableTextures(2);

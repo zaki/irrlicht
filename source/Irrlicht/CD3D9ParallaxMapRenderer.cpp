@@ -303,7 +303,7 @@ namespace video
 		return CD3D9ShaderMaterialRenderer::OnRender(service, vtxtype);
 	}
 
-	void CD3D9ParallaxMapRenderer::OnSetMaterial(video::SMaterial& material,
+	void CD3D9ParallaxMapRenderer::OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services)
 	{

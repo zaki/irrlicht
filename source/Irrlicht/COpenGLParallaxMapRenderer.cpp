@@ -266,7 +266,7 @@ COpenGLParallaxMapRenderer::~COpenGLParallaxMapRenderer()
 }
 
 
-void COpenGLParallaxMapRenderer::OnSetMaterial(video::SMaterial& material,
+void COpenGLParallaxMapRenderer::OnSetMaterial(const video::SMaterial& material,
 	const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {

@@ -63,7 +63,7 @@ public:
 	CD3D9MaterialRenderer_SOLID(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -89,7 +89,7 @@ public:
 	CD3D9MaterialRenderer_ONETEXTURE_BLEND(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType ||
@@ -192,7 +192,7 @@ public:
 	CD3D9MaterialRenderer_SOLID_2_LAYER(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -220,7 +220,7 @@ public:
 	CD3D9MaterialRenderer_TRANSPARENT_ADD_COLOR(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -256,7 +256,7 @@ public:
 	CD3D9MaterialRenderer_TRANSPARENT_VERTEX_ALPHA(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -295,7 +295,7 @@ public:
 	CD3D9MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates
@@ -350,7 +350,7 @@ public:
 	CD3D9MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -400,7 +400,7 @@ public:
 	CD3D9MaterialRenderer_LIGHTMAP(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -453,7 +453,7 @@ public:
 	CD3D9MaterialRenderer_DETAIL_MAP(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -485,7 +485,7 @@ public:
 	CD3D9MaterialRenderer_SPHERE_MAP(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -523,7 +523,7 @@ public:
 	CD3D9MaterialRenderer_REFLECTION_2_LAYER(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
@@ -563,7 +563,7 @@ public:
 	CD3D9MaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(IDirect3DDevice9* p, video::IVideoDriver* d)
 		: CD3D9MaterialRenderer(p, d) {}
 
-	virtual void OnSetMaterial(SMaterial& material, const SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
 		bool resetAllRenderstates, IMaterialRendererServices* services)
 	{
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)

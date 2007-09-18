@@ -102,7 +102,7 @@ bool CD3D9ShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E
 	return true;
 }
 
-void CD3D9ShaderMaterialRenderer::OnSetMaterial(video::SMaterial& material, const video::SMaterial& lastMaterial,
+void CD3D9ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services) 
 {
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)

@@ -65,7 +65,7 @@ public:
 	//! Destructor
 	~COpenGLSLMaterialRenderer();
 
-	virtual void OnSetMaterial(video::SMaterial& material, const video::SMaterial& lastMaterial,
+	virtual void OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services);
 
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);

@@ -94,7 +94,7 @@ bool COpenGLShaderMaterialRenderer::OnRender(IMaterialRendererServices* service,
 }
 
 
-void COpenGLShaderMaterialRenderer::OnSetMaterial(video::SMaterial& material, const video::SMaterial& lastMaterial,
+void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)

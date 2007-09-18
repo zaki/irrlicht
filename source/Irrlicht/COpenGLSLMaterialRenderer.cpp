@@ -127,7 +127,7 @@ bool COpenGLSLMaterialRenderer::OnRender(IMaterialRendererServices* service,
 }
 
 
-void COpenGLSLMaterialRenderer::OnSetMaterial(video::SMaterial& material,
+void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 				const video::SMaterial& lastMaterial,
 				bool resetAllRenderstates,
 				video::IMaterialRendererServices* services)
