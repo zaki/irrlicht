@@ -76,6 +76,8 @@ public:
 		s32 AttachedJointID;
 
 		bool HasSkinning;
+
+		core::array<ISkinnedMesh::SWeight*> Weights;
 	};
 
 private:
