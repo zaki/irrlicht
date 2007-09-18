@@ -739,7 +739,6 @@ void CSkinnedMesh::checkForAnimation()
 				const u16 buffer_id=Joint->Weights[j].buffer_id;
 				const u32 vertex_id=Joint->Weights[j].vertex_id;
 
-				assert(vertex_id<LocalBuffers[buffer_id]->getVertexCount());
 				//check for invalid ids
 				if (buffer_id>=LocalBuffers.size())
 				{
