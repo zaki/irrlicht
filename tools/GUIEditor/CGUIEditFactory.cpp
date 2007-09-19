@@ -145,14 +145,14 @@ IGUIElement* CGUIEditFactory::addGUIElement(const c8* typeName, IGUIElement* par
 
 
 //! returns amount of element types this factory is able to create
-s32 CGUIEditFactory::getCreatableGUIElementTypeCount()
+s32 CGUIEditFactory::getCreatableGUIElementTypeCount() const
 {
 	return EGUIEDIT_COUNT;
 }
 
 
 //! returns type name of a createable element type 
-const c8* CGUIEditFactory::getCreateableGUIElementTypeName(s32 idx)
+const c8* CGUIEditFactory::getCreateableGUIElementTypeName(s32 idx) const
 {
 	if (idx>=0 && idx<EGUIEDIT_COUNT)
 		return GUIEditElementTypeNames[idx];

@@ -89,7 +89,7 @@ namespace gui
 			CGUIAttribute::setAttrib(attribs, attribIndex);
 		}
 
-		virtual bool OnEvent(SEvent e)
+		virtual bool OnEvent(const SEvent &e)
 		{
 			switch (e.EventType)
 			{

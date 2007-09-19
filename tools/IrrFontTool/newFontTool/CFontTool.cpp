@@ -124,7 +124,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 		{
 			WCRANGE* current = &glyphs->ranges[range];
 
-			maxy=0;
+			//maxy=0;
 
 			// loop through each glyph and write its size and position
 			for (s32 ch=current->wcLow; ch< current->wcLow + current->cGlyphs; ch++)

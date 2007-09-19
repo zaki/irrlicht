@@ -100,7 +100,7 @@ public:
 		device->setEventReceiver(this);
 	}
 
-	virtual bool OnEvent(SEvent event)
+	virtual bool OnEvent(const SEvent &event)
 	{
 		if (event.EventType == EET_GUI_EVENT)
 		{

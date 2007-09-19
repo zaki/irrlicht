@@ -183,7 +183,7 @@ void CGUITextureCacheBrowser::updateAbsolutePosition()
 }
 
 //! called if an event happened.
-bool CGUITextureCacheBrowser::OnEvent(SEvent event)
+bool CGUITextureCacheBrowser::OnEvent(const SEvent &event)
 {
 	switch(event.EventType)
 	{
