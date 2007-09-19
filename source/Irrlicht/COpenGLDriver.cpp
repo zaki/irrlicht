@@ -267,7 +267,8 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	if (renderer && vendor)
 		os::Printer::log(reinterpret_cast<const c8*>(renderer), reinterpret_cast<const c8*>(vendor), ELL_INFORMATION);
 
-	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+	u32 i;
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		CurrentTexture[i]=0;
 	// load extensions
 	initExtensions(stencilBuffer);
@@ -306,7 +307,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 
 	UserClipPlane.reallocate(MaxUserClipPlanes);
 	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
-	for (u32 i=0; i<MaxUserClipPlanes; ++i)
+	for (i=0; i<MaxUserClipPlanes; ++i)
 	{
 		UserClipPlane.push_back(core::plane3df());
 		UserClipPlaneEnabled.push_back(false);

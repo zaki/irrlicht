@@ -619,10 +619,10 @@ void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeRe
 
 	if (Parent->getType() == EGUIET_CONTEXT_MENU || Parent->getType() == EGUIET_MENU )
 	{
-		IGUIContextMenu* ptr = (IGUIContextMenu*)Parent;
+		const IGUIContextMenu* const ptr = (const IGUIContextMenu*)Parent;
 		// find the position of this item in its parent's list
-		s32 i;
-		for (i=0; i<(s32)ptr->getItemCount() && ptr->getSubMenu(i) != this; ++i)
+		u32 i;
+		for (i=0; (i<ptr->getItemCount()) && (ptr->getSubMenu(i) != this); ++i)
 			; // do nothing
 
 		out->addInt("ParentItem", i);
