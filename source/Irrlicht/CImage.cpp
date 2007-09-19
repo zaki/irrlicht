@@ -1352,8 +1352,8 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
 
 	target->lock();
 
-	s32 fx = irr::core::ceil32 ( sourceXStep );
-	s32 fy = irr::core::ceil32 ( sourceYStep );
+	s32 fx = core::ceil32 ( sourceXStep );
+	s32 fy = core::ceil32 ( sourceYStep );
 	f32 sx;
 	f32 sy;
 

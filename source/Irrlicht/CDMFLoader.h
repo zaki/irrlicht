@@ -50,7 +50,7 @@ namespace scene
 	public:
 
 		/** constructor*/
-		CDMFLoader(video::IVideoDriver* driver,irr::scene::ISceneManager* smgr);
+		CDMFLoader(video::IVideoDriver* driver, ISceneManager* smgr);
 
 		/** destructor*/
 		virtual ~CDMFLoader();
@@ -63,13 +63,13 @@ namespace scene
 		 \return Pointer to the created mesh. Returns 0 if loading failed.
 		 If you no longer need the mesh, you should call IAnimatedMesh::drop().
 		 See IReferenceCounted::drop() for more information.*/
-		virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
+		virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 		
 		/** loads dynamic lights present in this scene.
         Note that loaded lights from DeleD must have the suffix \b dynamic_ and must be \b pointlight.
         Irrlicht correctly loads specular color, diffuse color , position and distance of object affected by light.
         \return number of lights loaded or 0 if loading failed.*/
-        int loadLights(const c8 * filename, irr::scene::ISceneManager* smgr,
+        int loadLights(const c8 * filename, ISceneManager* smgr,
 			ISceneNode*  parent = 0, s32 base_id = 1000);
 
         /** loads water plains present in this scene.
@@ -77,7 +77,7 @@ namespace scene
         Irrlicht correctly loads position and rotation of water plain as well as texture layers.
         \return number of water plains loaded or 0 if loading failed.*/
         int loadWaterPlains ( const c8 *filename,
-                              irr::scene::ISceneManager* smgr,
+                              ISceneManager* smgr,
                               ISceneNode * parent = 0,
                               s32 base_id = 2000,
                               bool mode = true);
@@ -87,7 +87,7 @@ namespace scene
         void GetFaceNormal(f32 a[3], f32 b[3], f32 c[3], f32 out[3]);
 
 		video::IVideoDriver* Driver;
-		scene::ISceneManager* SceneMgr;
+		ISceneManager* SceneMgr;
 	};
 
 } // end namespace scene

@@ -464,6 +464,9 @@
 					RelativePath="..\..\include\IMeshWriter.h">
 				</File>
 				<File
+					RelativePath="..\..\include\EMeshWriterEnums.h">
+				</File>
+				<File
 					RelativePath=".\..\..\include\IMetaTriangleSelector.h">
 				</File>
 				<File
@@ -1355,6 +1358,12 @@
 					RelativePath="CXMeshFileLoader.h">
 				</File>
 				<File
+					RelativePath="CSTLMeshFileLoader.cpp">
+				</File>
+				<File
+					RelativePath="CSTLMeshFileLoader.h">
+				</File>
+				<File
 					RelativePath=".\dmfsupport.h">
 				</File>
 			</Filter>
@@ -1633,6 +1642,12 @@
 				</File>
 				<File
 					RelativePath=".\CIrrMeshWriter.h">
+				</File>
+				<File
+					RelativePath=".\CSTLMeshWriter.cpp">
+				</File>
+				<File
+					RelativePath=".\CSTLMeshWriter.h">
 				</File>
 			</Filter>
 		</Filter>

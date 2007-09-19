@@ -42,7 +42,7 @@ public:
 
 	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
-	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
+	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 	
 private:
 	void constructMesh(SMesh* mesh);

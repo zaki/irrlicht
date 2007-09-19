@@ -24,7 +24,7 @@ namespace scene
 	{
 	public:
 
-		CIrrMeshWriter(irr::video::IVideoDriver* driver, irr::io::IFileSystem* fs);
+		CIrrMeshWriter(video::IVideoDriver* driver, io::IFileSystem* fs);
 		virtual ~CIrrMeshWriter();
 
 		//! Returns the type of the mesh writer

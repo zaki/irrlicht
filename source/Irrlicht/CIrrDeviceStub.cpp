@@ -17,12 +17,12 @@ namespace irr
 {
 
 //! constructor
-CIrrDeviceStub::CIrrDeviceStub(const char* version, irr::IEventReceiver* recv)
+CIrrDeviceStub::CIrrDeviceStub(const char* version, IEventReceiver* recv)
 : IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0), 
 	Timer(0), CursorControl(0), UserReceiver(recv), Logger(0), Operator(0),
 	FileSystem(io::createFileSystem()), InputReceivingSceneManager(0)
 {
-	Timer = new irr::CTimer();
+	Timer = new CTimer();
 	Logger = new CLogger(UserReceiver);
 	os::Printer::Logger = Logger;
 

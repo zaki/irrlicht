@@ -44,7 +44,7 @@ void CGUIInOutFader::draw()
 		return;
 	}
 
-	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
+	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	if (driver)
 	{

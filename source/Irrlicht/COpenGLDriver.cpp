@@ -2093,6 +2093,7 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 	return this;
 }
 
+
 ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	//disable mip-mapping
@@ -2154,7 +2155,9 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	if (RenderTargetTexture!=0)
 	{
 		if (RenderTargetTexture->isFrameBufferObject())
+		{
 			RenderTargetTexture->unbindFrameBufferObject();
+		}
 		else
 		{
 			glBindTexture(GL_TEXTURE_2D, RenderTargetTexture->getOpenGLTextureName());
@@ -2173,7 +2176,9 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		CurrentRendertargetSize = texture->getSize();
 
 		if (RenderTargetTexture->isFrameBufferObject())
+		{
 			RenderTargetTexture->bindFrameBufferObject();
+		}
 	}
 	else
 	{
@@ -2185,7 +2190,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	GLbitfield mask = 0;
 	if (clearBackBuffer)
 	{
-		f32 inv = 1.0f / 255.0f;
+		const f32 inv = 1.0f / 255.0f;
 		glClearColor(color.getRed() * inv, color.getGreen() * inv,
 				color.getBlue() * inv, color.getAlpha() * inv);
 

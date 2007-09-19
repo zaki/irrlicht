@@ -25,7 +25,7 @@ bool CImageLoaderTGA::isALoadableFileExtension(const c8* fileName) const
 
 
 //! loads a compressed tga.
-u8 *CImageLoaderTGA::loadCompressedImage(irr::io::IReadFile *file, const STGAHeader& header) const
+u8 *CImageLoaderTGA::loadCompressedImage(io::IReadFile *file, const STGAHeader& header) const
 {
 	// This was written and sent in by Jon Pry, thank you very much!
 	// I only changed the formatting a little bit.
@@ -75,7 +75,7 @@ u8 *CImageLoaderTGA::loadCompressedImage(irr::io::IReadFile *file, const STGAHea
 
 
 //! returns true if the file maybe is able to be loaded by this class
-bool CImageLoaderTGA::isALoadableFileFormat(irr::io::IReadFile* file) const
+bool CImageLoaderTGA::isALoadableFileFormat(io::IReadFile* file) const
 {
 	if (!file)
 		return false;
@@ -90,7 +90,7 @@ bool CImageLoaderTGA::isALoadableFileFormat(irr::io::IReadFile* file) const
 
 
 //! creates a surface from the file
-IImage* CImageLoaderTGA::loadImage(irr::io::IReadFile* file) const
+IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 {
 	STGAHeader header;
 	u8* colorMap = 0;

@@ -1,5 +1,6 @@
 #include "CIrrMeshWriter.h"
 #include "os.h"
+#include "IWriteFile.h"
 #include "IXMLWriter.h"
 #include "IMesh.h"
 #include "IAttributes.h"
@@ -10,8 +11,8 @@ namespace scene
 {
 
 
-CIrrMeshWriter::CIrrMeshWriter(irr::video::IVideoDriver* driver,
-				irr::io::IFileSystem* fs)
+CIrrMeshWriter::CIrrMeshWriter(video::IVideoDriver* driver,
+				io::IFileSystem* fs)
 	: FileSystem(fs), VideoDriver(driver), Writer(0)
 {
 	if (VideoDriver)
@@ -83,7 +84,7 @@ bool CIrrMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 	
 	for (int i=0; i<(int)mesh->getMeshBufferCount(); ++i)
 	{
-		irr::scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
+		scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		if (buffer)
 		{
 			writeMeshBuffer(buffer);
@@ -272,7 +273,7 @@ void CIrrMeshWriter::writeMaterial(const video::SMaterial& material)
 {
 	// simply use irrlichts built-in attribute serialization capabilities here:
 
-	irr::io::IAttributes* attributes = 
+	io::IAttributes* attributes = 
 		VideoDriver->createAttributesFromMaterial(material);
 
 	if (attributes)

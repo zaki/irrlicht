@@ -28,7 +28,7 @@ public:
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
-	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
+	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 };
 

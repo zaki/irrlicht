@@ -34,10 +34,10 @@ public:
 	virtual bool isALoadableFileExtension(const c8* fileName) const = 0;
 
 	//! returns true if the file maybe is able to be loaded by this class
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const = 0;
+	virtual bool isALoadableFileFormat(io::IReadFile* file) const = 0;
 
 	//! creates a surface from the file
-	virtual IImage* loadImage(irr::io::IReadFile* file) const = 0;
+	virtual IImage* loadImage(io::IReadFile* file) const = 0;
 };
 
 

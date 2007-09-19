@@ -38,7 +38,7 @@ void PNGAPI user_write_data_fcn(png_structp png_ptr, png_bytep data, png_size_t 
 {
 	png_size_t check;
 
-	irr::io::IWriteFile* file=(irr::io::IWriteFile*)png_ptr->io_ptr;
+	io::IWriteFile* file=(io::IWriteFile*)png_ptr->io_ptr;
 	check=(png_size_t) file->write((void*)data,length);
 
 	if (check != length)

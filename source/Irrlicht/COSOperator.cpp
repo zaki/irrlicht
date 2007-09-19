@@ -95,7 +95,7 @@ c8* COSOperator::getTextFromClipboard() const
 }
 
 
-bool COSOperator::getProcessorSpeedMHz(irr::u32* MHz) const
+bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 {
 #if defined(_IRR_WINDOWS_API_)
 	LONG Error;
@@ -137,7 +137,7 @@ bool COSOperator::getProcessorSpeedMHz(irr::u32* MHz) const
 #endif
 }
 
-bool COSOperator::getSystemMemory(irr::u32* Total, irr::u32* Avail) const
+bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 {
 #if defined(_IRR_WINDOWS_API_)
 	MEMORYSTATUS MemoryStatus;
@@ -147,9 +147,9 @@ bool COSOperator::getSystemMemory(irr::u32* Total, irr::u32* Avail) const
 	GlobalMemoryStatus(&MemoryStatus);
 
 	if (Total)
-		*Total = (irr::u32)(MemoryStatus.dwTotalPhys>>10);
+		*Total = (u32)(MemoryStatus.dwTotalPhys>>10);
 	if (Avail)
-		*Avail = (irr::u32)(MemoryStatus.dwAvailPhys>>10);
+		*Avail = (u32)(MemoryStatus.dwAvailPhys>>10);
 	
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;

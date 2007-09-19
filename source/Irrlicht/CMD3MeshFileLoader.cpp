@@ -34,7 +34,7 @@ bool CMD3MeshFileLoader::isALoadableFileExtension(const c8* filename) const
 }
 
 
-IAnimatedMesh* CMD3MeshFileLoader::createMesh(irr::io::IReadFile* file)
+IAnimatedMesh* CMD3MeshFileLoader::createMesh(io::IReadFile* file)
 {
 	CAnimatedMeshMD3 * mesh = new CAnimatedMeshMD3();
 

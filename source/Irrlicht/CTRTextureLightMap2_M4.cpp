@@ -121,8 +121,8 @@ REALINLINE void CTRTextureLightMap2_M4::scanline_bilinear2_mag ()
 
 
 	// apply top-left fill-convention, left
-	xStart = irr::core::ceil32( line.x[0] );
-	xEnd = irr::core::ceil32( line.x[1] ) - 1;
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
 
 	dx = xEnd - xStart;
 	if ( dx < 0 )
@@ -265,8 +265,8 @@ REALINLINE void CTRTextureLightMap2_M4::scanline_bilinear2_min ()
 
 
 	// apply top-left fill-convention, left
-	xStart = irr::core::ceil32( line.x[0] );
-	xEnd = irr::core::ceil32( line.x[1] ) - 1;
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
 
 	dx = xEnd - xStart;
 	if ( dx < 0 )
@@ -414,8 +414,8 @@ REALINLINE void CTRTextureLightMap2_M4::scanline_bilinear ()
 #endif
 
 	// apply top-left fill-convention, left
-	xStart = irr::core::ceil32( line.x[0] );
-	xEnd = irr::core::ceil32( line.x[1] ) - 1;
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
 
 	dx = xEnd - xStart;
 
@@ -693,8 +693,8 @@ void CTRTextureLightMap2_M4::drawTriangle_Min ( const s4DVertex *a,const s4DVert
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = irr::core::ceil32( a->Pos.y );
-		yEnd = irr::core::ceil32( b->Pos.y ) - 1;
+		yStart = core::ceil32( a->Pos.y );
+		yEnd = core::ceil32( b->Pos.y ) - 1;
 
 #ifdef SUBTEXEL
 		subPixel = ( (f32) yStart ) - a->Pos.y;
@@ -853,8 +853,8 @@ void CTRTextureLightMap2_M4::drawTriangle_Min ( const s4DVertex *a,const s4DVert
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = irr::core::ceil32( b->Pos.y );
-		yEnd = irr::core::ceil32( c->Pos.y ) - 1;
+		yStart = core::ceil32( b->Pos.y );
+		yEnd = core::ceil32( c->Pos.y ) - 1;
 
 #ifdef SUBTEXEL
 
@@ -1096,8 +1096,8 @@ void CTRTextureLightMap2_M4::drawTriangle ( const s4DVertex *a,const s4DVertex *
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = irr::core::ceil32( a->Pos.y );
-		yEnd = irr::core::ceil32( b->Pos.y ) - 1;
+		yStart = core::ceil32( a->Pos.y );
+		yEnd = core::ceil32( b->Pos.y ) - 1;
 
 #ifdef SUBTEXEL
 		subPixel = ( (f32) yStart ) - a->Pos.y;
@@ -1256,8 +1256,8 @@ void CTRTextureLightMap2_M4::drawTriangle ( const s4DVertex *a,const s4DVertex *
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = irr::core::ceil32( b->Pos.y );
-		yEnd = irr::core::ceil32( c->Pos.y ) - 1;
+		yStart = core::ceil32( b->Pos.y );
+		yEnd = core::ceil32( c->Pos.y ) - 1;
 
 #ifdef SUBTEXEL
 

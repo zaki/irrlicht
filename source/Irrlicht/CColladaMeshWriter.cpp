@@ -1,6 +1,7 @@
 #include "CColladaMeshWriter.h"
 #include "os.h"
 #include "IFileSystem.h"
+#include "IWriteFile.h"
 #include "IXMLWriter.h"
 #include "IMesh.h"
 #include "IAttributes.h"
@@ -11,8 +12,8 @@ namespace scene
 {
 
 
-CColladaMeshWriter::CColladaMeshWriter(irr::video::IVideoDriver* driver,
-					irr::io::IFileSystem* fs)
+CColladaMeshWriter::CColladaMeshWriter(video::IVideoDriver* driver,
+					io::IFileSystem* fs)
 	: FileSystem(fs), VideoDriver(driver), Writer(0)
 {
 	if (VideoDriver)
@@ -102,7 +103,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 
 		// write all interesting material parameters as parameter
 
-		irr::io::IAttributes* attributes = VideoDriver->createAttributesFromMaterial(
+		io::IAttributes* attributes = VideoDriver->createAttributesFromMaterial(
 			mesh->getMeshBuffer(i)->getMaterial());
 
 		u32 count = attributes->getAttributeCount();

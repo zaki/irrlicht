@@ -575,7 +575,7 @@ namespace quake3
 			video::ITexture* texture = 0;
 			for ( u32 g = 0; g != 2 ; ++g )
 			{
-				irr::core::cutFilenameExtension ( loadFile, stringList[i] ).append ( extension[g] );
+				core::cutFilenameExtension ( loadFile, stringList[i] ).append ( extension[g] );
 
 				if ( fileSystem->existFile ( loadFile.c_str() ) )
 				{
@@ -595,7 +595,7 @@ namespace quake3
 	/*!
 		Manages various Quake3 Shader Styles
 	*/
-	class IShaderManager : public irr::IReferenceCounted
+	class IShaderManager : public IReferenceCounted
 	{
 	};
 

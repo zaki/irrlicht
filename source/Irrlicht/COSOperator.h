@@ -32,13 +32,13 @@ public:
 	//! gets the processor speed in megahertz
 	//! \param Mhz:
 	//! \return Returns true if successful, false if not
-	virtual bool getProcessorSpeedMHz(irr::u32* MHz) const;
+	virtual bool getProcessorSpeedMHz(u32* MHz) const;
 
 	//! gets the total and available system RAM in kB
 	//! \param Total: will contain the total system memory
 	//! \param Avail: will contain the available memory
 	//! \return Returns true if successful, false if not
-	virtual bool getSystemMemory(irr::u32* Total, irr::u32* Avail) const;
+	virtual bool getSystemMemory(u32* Total, u32* Avail) const;
 
 private:
 

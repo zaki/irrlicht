@@ -48,7 +48,7 @@ bool CBSPMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* CBSPMeshFileLoader::createMesh(irr::io::IReadFile* file)
+IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 {
 	// load quake 3 bsp
 	if (strstr(file->getFileName(), ".bsp"))

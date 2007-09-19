@@ -56,7 +56,7 @@ void CGUIStaticText::draw()
 	IGUISkin* skin = Environment->getSkin();
 	if (!skin)
 		return;
-	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
+	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	core::rect<s32> frameRect(AbsoluteRect);
 

@@ -1317,7 +1317,7 @@ void CAttributes::setAttribute(s32 index, void* userPointer)
 //! Reads attributes from a xml file.
 //! \param readCurrentElementOnly: If set to true, reading only works if current element has the name 'attributes'.
 //! IF set to false, the first appearing list attributes are read.
-bool CAttributes::read(irr::io::IXMLReader* reader, bool readCurrentElementOnly,
+bool CAttributes::read(io::IXMLReader* reader, bool readCurrentElementOnly,
 					    const wchar_t* nonDefaultElementName)
 {
 	if (!reader)

@@ -47,7 +47,7 @@ bool CB3DMeshFileLoader::isALoadableFileExtension(const c8* fileName) const
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* CB3DMeshFileLoader::createMesh(irr::io::IReadFile* f)
+IAnimatedMesh* CB3DMeshFileLoader::createMesh(io::IReadFile* f)
 {
 	if (!f)
 		return 0;
@@ -211,9 +211,11 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *InJoint)
 
 	//Build LocalMatrix:
 
-	irr::core::matrix4 positionMatrix; positionMatrix.setTranslation( Joint->Animatedposition );
-	irr::core::matrix4 scaleMatrix; scaleMatrix.setScale( Joint->Animatedscale );
-	irr::core::matrix4 rotationMatrix = Joint->Animatedrotation.getMatrix();
+	core::matrix4 positionMatrix;
+	positionMatrix.setTranslation( Joint->Animatedposition );
+	core::matrix4 scaleMatrix;
+	scaleMatrix.setScale( Joint->Animatedscale );
+	core::matrix4 rotationMatrix = Joint->Animatedrotation.getMatrix();
 
 	Joint->LocalMatrix = positionMatrix * rotationMatrix * scaleMatrix;
 
@@ -601,7 +603,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 				if (B3dMaterial)
 				{
 					// Apply Material/Colour/etc...
-					irr::video::S3DVertex *Vertex=MeshBuffer->getVertex(MeshBuffer->getVertexCount()-1);
+					video::S3DVertex *Vertex=MeshBuffer->getVertex(MeshBuffer->getVertexCount()-1);
 
 					if (Vertex->Color.getAlpha() == 255) //Note: Irrlicht docs state that 0 is opaque, are they wrong?
 						Vertex->Color.setAlpha( (s32)(B3dMaterial->alpha * 255.0f) );
@@ -815,7 +817,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 
 		SB3dMaterial B3dMaterial;
 
-		B3dMaterial.Material = new irr::video::SMaterial();
+		B3dMaterial.Material = new video::SMaterial();
 		B3dMaterial.Textures[0]=0;
 		B3dMaterial.Textures[1]=0;
 

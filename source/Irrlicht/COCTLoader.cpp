@@ -47,7 +47,7 @@ COCTLoader::~COCTLoader()
 
 
 // Doesn't really belong here, but it's jammed in for now.
-void COCTLoader::OCTLoadLights(irr::io::IReadFile* file, irr::scene::ISceneManager * scene, irr::scene::ISceneNode * parent, f32 radius, f32 intensityScale, bool rewind)
+void COCTLoader::OCTLoadLights(io::IReadFile* file, scene::ISceneManager * scene, scene::ISceneNode * parent, f32 radius, f32 intensityScale, bool rewind)
 {
 	if (rewind)
 		file->seek(0);
@@ -86,7 +86,7 @@ core::vector3df COCTLoader::GetFaceNormal(f32 a[3], f32 b[3], f32 c[3]) {
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file) 
+IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file) 
 {
 	if (!file)
 		return 0;
@@ -160,7 +160,7 @@ IAnimatedMesh* COCTLoader::createMesh(irr::io::IReadFile* file)
 			octVert * vv = &verts[faces[i].firstVert + v];
 			video::S3DVertex2TCoords vert;
 			vert.Pos.set(vv->pos[0], vv->pos[1], vv->pos[2]);
-			vert.Color = irr::video::SColor(0,255,255,255);
+			vert.Color = video::SColor(0,255,255,255);
 			vert.Normal.set(normal);
 
 			if (textureID == 0)

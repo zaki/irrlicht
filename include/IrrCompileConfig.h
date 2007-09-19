@@ -100,7 +100,7 @@ define out. */
 //! to remove the dependencies such that Irrlicht will compile on those systems, too.
 #if defined(_IRR_LINUX_PLATFORM_)
 #define _IRR_LINUX_X11_VIDMODE_
-//#define _IRR_LINUX_X11_RANDR_
+#define _IRR_LINUX_X11_RANDR_
 #endif
 
 //! Define _IRR_COMPILE_WITH_GUI_ to compile the engine with the built-in GUI
@@ -255,6 +255,15 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_OCT_LOADER_
 //! Define _IRR_COMPILE_WITH_OGRE_LOADER_ if you want to load Ogre 3D files
 #define _IRR_COMPILE_WITH_OGRE_LOADER_
+//! Define _IRR_COMPILE_WITH_STL_LOADER_ if you want to load .stl files
+#define _IRR_COMPILE_WITH_STL_LOADER_
+
+//! Define _IRR_COMPILE_WITH_IRR_WRITER_ if you want to write static .irr files
+#define _IRR_COMPILE_WITH_IRR_WRITER_
+//! Define _IRR_COMPILE_WITH_COLLADA_WRITER_ if you want to write Collada files
+#define _IRR_COMPILE_WITH_COLLADA_WRITER_
+//! Define _IRR_COMPILE_WITH_STL_WRITER_ if you want to write .stl files
+#define _IRR_COMPILE_WITH_STL_WRITER_
 
 //! Set FPU settings
 /** Irrlicht should use approximate float and integer fpu techniques

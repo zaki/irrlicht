@@ -2,48 +2,21 @@
 #define __IRR_I_MESH_WRITER_H_INCLUDED__
 
 #include "IReferenceCounted.h"
-#include "IWriteFile.h"
-#include "irrTypes.h"
+#include "EMeshWriterEnums.h"
 
 namespace irr
 {
-	class IrrlichtDevice;
+namespace io
+{
+	class IWriteFile;
+} // end namespace io
 
 namespace scene
 {
 	class IMesh;
 
-	//! An enumeration for all supported types of built-in mesh writers
-	/** A scene mesh writers is represented by a four character code
-	such as 'irrm' or 'coll' instead of simple numbers, to avoid
-	name clashes with external mesh writers.*/
-	enum EMESH_WRITER_TYPE
-	{
-		//! Irrlicht Native mesh writer, for static .irrmesh files.
-		EMWT_IRR_MESH     = MAKE_IRR_ID('i','r','r','m'),
-
-		//! COLLADA mesh writer for .dae and .xml files
-		EMWT_COLLADA      = MAKE_IRR_ID('c','o','l','l'),
-
-		//! STL mesh writer for .stl files
-		EMWT_STL          = MAKE_IRR_ID('s','t','l',0)
-	};
-
-
-	//! flags configuring mesh writing
-	enum E_MESH_WRITER_FLAGS
-	{
-		//! no writer flags
-		EMWF_NONE = 0,
-
-		//! write lightmap textures out if possible
-		EMWF_WRITE_LIGHTMAPS = 0x1
-	};
-
-
-
 	// interface for writing meshes
-	class IMeshWriter : public virtual irr::IReferenceCounted
+	class IMeshWriter : public virtual IReferenceCounted
 	{
 	public:
 

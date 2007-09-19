@@ -9,7 +9,6 @@
 #include "IFileSystem.h"
 #include "IVideoDriver.h"
 #include "irrString.h"
-#include "SMesh.h"
 #include "SMeshBuffer.h"
 
 namespace irr
@@ -17,7 +16,7 @@ namespace irr
 namespace scene
 {
 
-//! Meshloader capable of loading 3ds meshes.
+//! Meshloader capable of loading obj meshes.
 class COBJMeshFileLoader : public IMeshLoader
 {
 public:
@@ -29,29 +28,30 @@ public:
 	virtual ~COBJMeshFileLoader();
 
 	//! returns true if the file maybe is able to be loaded by this class
-	//! based on the file extension (e.g. ".cob")
+	//! based on the file extension (e.g. ".obj")
 	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
-	virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
+	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 private:
 
 	struct SObjMtl
 	{
-		SObjMtl() : pMeshbuffer(0), illumination(0) {
-			pMeshbuffer = new SMeshBuffer();
-			pMeshbuffer->Material.Shininess = 0.0f;
-			pMeshbuffer->Material.AmbientColor = video::SColorf(0.2f, 0.2f, 0.2f, 1.0f).toSColor();
-			pMeshbuffer->Material.DiffuseColor = video::SColorf(0.8f, 0.8f, 0.8f, 1.0f).toSColor();
-			pMeshbuffer->Material.SpecularColor = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f).toSColor();
-		};
-		SObjMtl(SObjMtl& o) : pMeshbuffer(o.pMeshbuffer), name(o.name), illumination(o.illumination) { o.pMeshbuffer->grab(); };
+		SObjMtl() : Meshbuffer(0), illumination(0) {
+			Meshbuffer = new SMeshBuffer();
+			Meshbuffer->Material.Shininess = 0.0f;
+			Meshbuffer->Material.AmbientColor = video::SColorf(0.2f, 0.2f, 0.2f, 1.0f).toSColor();
+			Meshbuffer->Material.DiffuseColor = video::SColorf(0.8f, 0.8f, 0.8f, 1.0f).toSColor();
+			Meshbuffer->Material.SpecularColor = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f).toSColor();
+		}
 
-		scene::SMeshBuffer *pMeshbuffer;
+		SObjMtl(SObjMtl& o) : Meshbuffer(o.Meshbuffer), name(o.name), illumination(o.illumination) { o.Meshbuffer->grab(); }
+
+		scene::SMeshBuffer *Meshbuffer;
 		core::stringc name;
 		c8 illumination;
 	};
@@ -94,7 +94,6 @@ private:
 	video::IVideoDriver* Driver;
 
 	core::array<SObjMtl*> materials;
-	SMesh* Mesh;
 };
 
 } // end namespace scene

@@ -166,22 +166,20 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 	s32 cnt = 0;
 	selector->getTriangles(Triangles.pointer(), totalcnt, cnt, ray);
 
-	core::vector3df linevect = ray.getVector().normalize();
+	const core::vector3df linevect = ray.getVector().normalize();
 	core::vector3df intersection;
 	f32 nearest = 9999999999999.0f;
 	bool found = false;
-	f32 tmp, tmp2;
-	f32 raylength = (f32)ray.getLengthSQ();
+	const f32 raylength = ray.getLengthSQ();
 
 	for (s32 i=0; i<cnt; ++i)
 	{
 		if (Triangles[i].getIntersectionWithLine(ray.start, linevect, intersection))
 		{
-			tmp = (f32)intersection.getDistanceFromSQ(ray.start);
-			tmp2 = (f32)intersection.getDistanceFromSQ(ray.end);
+			const f32 tmp = intersection.getDistanceFromSQ(ray.start);
+			const f32 tmp2 = intersection.getDistanceFromSQ(ray.end);
 
-			if (tmp < raylength && tmp2 < raylength &&
-				tmp < nearest)
+			if (tmp < raylength && tmp2 < raylength && tmp < nearest)
 			{
 				nearest = tmp;
 				outTriangle = Triangles[i];
