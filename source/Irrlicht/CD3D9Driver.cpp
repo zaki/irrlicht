@@ -912,7 +912,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture, const core::rect<s
 
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 || useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255, true, useAlphaChannelOfTexture);
 
-	setTexture(0, texture);
+	setTexture(0, const_cast<video::ITexture*>(texture));
 
 	setVertexShader(EVT_STANDARD);
 
@@ -937,7 +937,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	if (!sourceRect.isValid())
 		return;
 
-	if (!setTexture(0, texture))
+	if (!setTexture(0, const_cast<video::ITexture*>(texture)))
 		return;
 
 	core::position2d<s32> targetPos = pos;

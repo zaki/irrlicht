@@ -863,7 +863,7 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 ITexture* CSoftwareDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
-	ITexture* tex = new CSoftwareTexture(img, name);
+	ITexture* tex = new CSoftwareTexture(img, name, true);
 	img->drop();
 	return tex;
 }

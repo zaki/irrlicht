@@ -1856,7 +1856,7 @@ ITexture* CSoftwareDriver2::createRenderTargetTexture(const core::dimension2d<s3
 {
 	CImage* img = new CImage(ECF_SOFTWARE2, size);
 
-	ITexture* tex = new CSoftwareTexture2(img, name, false);
+	ITexture* tex = new CSoftwareTexture2(img, name, false, true);
 	img->drop();
 	return tex;	
 }

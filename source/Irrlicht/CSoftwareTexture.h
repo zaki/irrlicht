@@ -21,7 +21,7 @@ class CSoftwareTexture : public ITexture
 public:
 
 	//! constructor
-	CSoftwareTexture(IImage* surface, const char* name);
+	CSoftwareTexture(IImage* surface, const char* name, bool renderTarget=false);
 
 	//! destructor
 	virtual ~CSoftwareTexture();
@@ -57,6 +57,9 @@ public:
 	//! modifying the texture
 	virtual void regenerateMipMapLevels();
 
+	//! is it a render target?
+	virtual bool isRenderTarget() const;
+
 private:
 
 	//! returns the size of a texture which would be the optimize size for rendering it
@@ -65,6 +68,7 @@ private:
 	CImage* Image;
 	CImage* Texture;
 	core::dimension2d<s32> OrigSize;
+	bool IsRenderTarget;
 };
 
 

@@ -27,7 +27,7 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 COpenGLTexture::COpenGLTexture(IImage* image, const char* name, COpenGLDriver* driver)
  : ITexture(name), Driver(driver), Image(0),
   TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
-  PixelType(GL_UNSIGNED_BYTE), HasMipMaps(true),
+  PixelType(GL_UNSIGNED_BYTE), HasMipMaps(true), IsRenderTarget(false),
   ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0), Locks(0)
 {
 	#ifdef _DEBUG
@@ -51,7 +51,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
                                 COpenGLDriver* driver)
  : ITexture(name), ImageSize(size), Driver(driver), Image(0),
   TextureName(0), InternalFormat(GL_RGB8), PixelFormat(GL_RGBA),
-  PixelType(GL_UNSIGNED_BYTE), HasMipMaps(false),
+  PixelType(GL_UNSIGNED_BYTE), HasMipMaps(false), IsRenderTarget(true),
   ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0), Locks(0)
 {
 	#ifdef _DEBUG
@@ -463,6 +463,16 @@ void COpenGLTexture::regenerateMipMapLevels()
 bool COpenGLTexture::isFrameBufferObject() const
 {
     return ColorFrameBuffer != 0;
+}
+
+bool COpenGLTexture::isRenderTarget() const
+{
+    return IsRenderTarget;
+}
+
+void COpenGLTexture::setRenderTarget(bool isTarget)
+{
+    IsRenderTarget = isTarget;
 }
 
 

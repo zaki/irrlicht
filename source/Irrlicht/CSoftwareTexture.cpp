@@ -14,8 +14,8 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture::CSoftwareTexture(IImage* image, const char* name)
-: ITexture(name), Texture(0)
+CSoftwareTexture::CSoftwareTexture(IImage* image, const char* name, bool renderTarget)
+: ITexture(name), Texture(0), IsRenderTarget(renderTarget)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture");
@@ -149,6 +149,11 @@ u32 CSoftwareTexture::getPitch() const
 void CSoftwareTexture::regenerateMipMapLevels()
 {
 	// our software textures don't have mip maps
+}
+
+bool CSoftwareTexture::isRenderTarget() const
+{
+	return IsRenderTarget;
 }
 
 

@@ -86,6 +86,9 @@ public:
 	//! locking and modifying the texture
 	virtual void regenerateMipMapLevels();
 
+	//! Is it a render target?
+	virtual bool isRenderTarget() const;
+
 	//! Is it a FrameBufferObject?
 	bool isFrameBufferObject() const;
 
@@ -94,6 +97,9 @@ public:
 
 	//! Unbind FrameBufferObject (valid only if isFrameBufferObject() returns true).
 	void unbindFrameBufferObject();
+
+	//! sets whether this texture is intended to be used as a render target.
+	void setRenderTarget(bool isTarget);
 
 private:
 
@@ -119,6 +125,7 @@ private:
 	GLenum PixelFormat;
 	GLenum PixelType;
 	bool HasMipMaps;
+	bool IsRenderTarget;
 	bool AutomaticMipmapUpdate;
 
 	GLuint ColorFrameBuffer; // for FBO path

@@ -160,6 +160,10 @@ public:
 	/** Useful after locking and modifying the texture */
 	virtual void regenerateMipMapLevels() = 0;
 
+	//! Returns whether the texture is a render target
+	/** \return Returns true if this is a render target, otherwise false. */
+	virtual bool isRenderTarget() const { return false; }
+
 	//! Returns name of texture (in most cases this is the filename)
 	const core::stringc& getName() const { return Name; }
 
