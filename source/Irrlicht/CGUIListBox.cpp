@@ -412,6 +412,7 @@ bool CGUIListBox::OnEvent(const SEvent& event)
 
 void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 {
+	u32 now = os::Timer::getTime();
 	s32 oldSelected = Selected;
 
 	// find new selected item.
@@ -433,9 +434,10 @@ void CGUIListBox::selectNew(s32 ypos, bool onlyHover)
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
 		event.GUIEvent.Element = 0;
-		event.GUIEvent.EventType = (Selected != oldSelected) ? EGET_LISTBOX_CHANGED : EGET_LISTBOX_SELECTED_AGAIN;
+		event.GUIEvent.EventType = (Selected == oldSelected && now < selectTime + 500) ? EGET_LISTBOX_SELECTED_AGAIN : EGET_LISTBOX_CHANGED;
 		Parent->OnEvent(event);
 	}
+	selectTime = now;
 }
 
 
