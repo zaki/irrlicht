@@ -7,9 +7,8 @@
 
 namespace irr
 {
-namespace scene  
+namespace scene
 {
-
 
 	//! An enumeration for all supported types of built-in mesh writers
 	/** A scene mesh writers is represented by a four character code
@@ -40,7 +39,6 @@ namespace scene
 		//! write in a way that does consume less disk space
 		EMWF_WRITE_COMPRESSED = 0x2
 	};
-
 
 } // end namespace scene
 } // end namespace irr

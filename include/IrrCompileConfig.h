@@ -100,7 +100,7 @@ define out. */
 //! to remove the dependencies such that Irrlicht will compile on those systems, too.
 #if defined(_IRR_LINUX_PLATFORM_)
 #define _IRR_LINUX_X11_VIDMODE_
-#define _IRR_LINUX_X11_RANDR_
+//#define _IRR_LINUX_X11_RANDR_
 #endif
 
 //! Define _IRR_COMPILE_WITH_GUI_ to compile the engine with the built-in GUI

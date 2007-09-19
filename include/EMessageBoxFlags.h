@@ -25,7 +25,7 @@ enum EMESSAGE_BOX_FLAG
 	//! Flag for the no button
 	EMBF_NO = 0x8,
 
-	//! This value is not used. It only forces this enumeration to compile in 32 bit. 
+	//! This value is not used. It only forces this enumeration to compile in 32 bit.
 	EMBF_FORCE_32BIT = 0x7fffffff	
 };
 

@@ -10,7 +10,7 @@ namespace irr
 namespace gui
 {
 
-//! List of all basic Irrlicht GUI elements. 
+//! List of all basic Irrlicht GUI elements.
 /** An IGUIElement returns this when calling IGUIElement::getType(); */
 enum EGUI_ELEMENT_TYPE
 {
@@ -83,7 +83,7 @@ enum EGUI_ELEMENT_TYPE
 	//! Unknown type.
 	EGUIET_ELEMENT,
 
-	//! This enum is never used, it only forces the compiler to 
+	//! This enum is never used, it only forces the compiler to
 	//! compile these enumeration values to 32 bit.
 	EGUIET_FORCE_32_BIT = 0x7fffffff
 
