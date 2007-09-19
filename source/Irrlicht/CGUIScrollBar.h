@@ -46,6 +46,12 @@ namespace gui
 		//! sets the small step value
 		virtual void setSmallStep(s32 step);
 
+		//! gets the large step value
+		virtual s32 getLargeStep() const;
+
+		//! sets the large step value
+		virtual void setLargeStep(s32 step);
+
 		//! gets the current position of the scrollbar
 		virtual s32 getPos() const;
 
@@ -64,18 +70,24 @@ namespace gui
 	private:
 
 		void refreshControls();
-		void setPosFromMousePos(s32 x, s32 y);
+		s32 getPosFromMousePos(s32 x, s32 y) const;
 
 		IGUIButton* UpButton;
 		IGUIButton* DownButton;
 
 		bool Dragging;
 		bool Horizontal;
+		bool DraggedBySlider;
+		bool TrayClick;
 		s32 Pos;
 		s32 DrawPos;
 		s32 DrawHeight;
 		s32 Max;
 		s32 SmallStep;
+		s32 LargeStep;
+		s32 DesiredPos;
+		u32 LastChange;
+		core::rect<s32> SliderRect;
 	};
 
 } // end namespace gui

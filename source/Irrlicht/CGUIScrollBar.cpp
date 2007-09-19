@@ -11,6 +11,7 @@
 #include "CGUIButton.h"
 #include "IGUIFont.h"
 #include "IGUIFontBitmap.h"
+#include "os.h"
 
 namespace irr
 {
@@ -23,8 +24,9 @@ CGUIScrollBar::CGUIScrollBar(bool horizontal, IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
 				core::rect<s32> rectangle, bool noclip)
 : IGUIScrollBar(environment, parent, id, rectangle), UpButton(0), DownButton(0),
-	Dragging(false), Horizontal(horizontal), Pos(0), DrawPos(0),
-	DrawHeight(0), Max(100), SmallStep(10)
+	Dragging(false), DraggedBySlider(false), TrayClick(false),
+	Horizontal(horizontal), Pos(0), DrawPos(0), DrawHeight(0), Max(100), SmallStep(10), LargeStep(50), 
+	DesiredPos(0), LastChange(0), SliderRect()
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIScrollBar");
@@ -74,12 +76,16 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 				setPos(Pos+SmallStep);
 				break;
 			case KEY_HOME:
-			case KEY_PRIOR:
 				setPos(0);
 				break;
+			case KEY_PRIOR:
+				setPos(Pos-LargeStep);
+				break;
 			case KEY_END:
-			case KEY_NEXT:
 				setPos(Max);
+				break;
+			case KEY_NEXT:
+				setPos(Pos+LargeStep);
 				break;
 			default:
 				absorb = false;
@@ -127,7 +133,7 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 		switch(event.MouseInput.Event)
 		{
 		case EMIE_MOUSE_WHEEL:
-			if (Environment->getFocus() == this)
+			if (Environment->hasFocus(this))
 			{ // thanks to a bug report by REAPER
 				setPos(getPos() + (s32)event.MouseInput.Wheel* -SmallStep);
 				SEvent newEvent;
@@ -141,28 +147,49 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 			break;
 		case EMIE_LMOUSE_PRESSED_DOWN:
 		{
-
 			if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
 			{
 				Dragging = true;
-				Environment->setFocus(this);
+				DraggedBySlider = SliderRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y));
+				DesiredPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
 				return true;
-			}
-			else
-			{
-				Environment->removeFocus(this);
 			}
 			break;
 		}
 		case EMIE_LMOUSE_LEFT_UP:
-			Dragging = false;
-			return true;
-			
 		case EMIE_MOUSE_MOVED:
 			if (Dragging)
 			{
+				if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
+					Dragging = false;
+
+				s32 newPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
 				s32 oldPos = Pos;
-				setPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
+
+				if (!DraggedBySlider)
+				{
+					if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
+					{
+						DraggedBySlider = SliderRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y));
+						TrayClick = !DraggedBySlider;
+					}
+					else
+					{
+						TrayClick = false;
+						if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
+							return true;
+					}
+				}
+				
+				if (DraggedBySlider)
+				{
+					setPos(newPos);
+				}
+				else
+				{
+					DesiredPos = newPos;
+				}
+
 				if (Pos != oldPos && Parent)
 				{
 					SEvent newEvent;
@@ -174,6 +201,7 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 				}
 				return true;
 			}
+			break;
 		default:
 			break;
 		}
@@ -195,26 +223,46 @@ void CGUIScrollBar::draw()
 	if (!skin)
 		return;
 
-	core::rect<s32> rect = AbsoluteRect;
+	u32 now = os::Timer::getRealTime();
+
+	if (Dragging && !DraggedBySlider && TrayClick && now > LastChange + 200)
+	{
+		LastChange = now;
+
+		if (DesiredPos >= Pos + LargeStep)
+			setPos(Pos + LargeStep);
+		else 
+		if (DesiredPos >= Pos + SmallStep)
+			setPos(Pos + SmallStep);
+		else 
+		if (DesiredPos <= Pos - LargeStep)
+			setPos(Pos - LargeStep);
+		else 
+		if (DesiredPos <= Pos - SmallStep)
+			setPos(Pos - SmallStep);
+	}
+
+
+	SliderRect = AbsoluteRect;
 
 	// draws the background
-	skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), rect, &AbsoluteClippingRect);
+	skin->draw2DRectangle(this, skin->getColor(EGDC_SCROLLBAR), SliderRect, &AbsoluteClippingRect);
 
 	if (Max!=0)
 	{
-		// draw thumb
+		// recalculate slider rectangle
 		if (Horizontal)
 		{
-			rect.UpperLeftCorner.X = AbsoluteRect.UpperLeftCorner.X + DrawPos + RelativeRect.getHeight() - DrawHeight/2;
-			rect.LowerRightCorner.X = rect.UpperLeftCorner.X + DrawHeight;
+			SliderRect.UpperLeftCorner.X = AbsoluteRect.UpperLeftCorner.X + DrawPos + RelativeRect.getHeight() - DrawHeight/2;
+			SliderRect.LowerRightCorner.X = SliderRect.UpperLeftCorner.X + DrawHeight;
 		}
 		else
 		{
-			rect.UpperLeftCorner.Y = AbsoluteRect.UpperLeftCorner.Y + DrawPos + RelativeRect.getWidth() - DrawHeight/2;
-			rect.LowerRightCorner.Y = rect.UpperLeftCorner.Y + DrawHeight;
+			SliderRect.UpperLeftCorner.Y = AbsoluteRect.UpperLeftCorner.Y + DrawPos + RelativeRect.getWidth() - DrawHeight/2;
+			SliderRect.LowerRightCorner.Y = SliderRect.UpperLeftCorner.Y + DrawHeight;
 		}
 
-		skin->draw3DButtonPaneStandard(this, rect, &AbsoluteClippingRect);
+		skin->draw3DButtonPaneStandard(this, SliderRect, &AbsoluteClippingRect);
 	}
 
 	// draw buttons
@@ -244,17 +292,19 @@ void CGUIScrollBar::updateAbsolutePosition()
 	}
 }
 
-void CGUIScrollBar::setPosFromMousePos(s32 x, s32 y)
+s32 CGUIScrollBar::getPosFromMousePos(s32 x, s32 y) const
 {
 	if (Horizontal)
 	{
-		const f32 f = (RelativeRect.getWidth() - ((f32)RelativeRect.getHeight()*3.0f)) / (f32)Max;
-		setPos((s32)(((f32)(x - AbsoluteRect.UpperLeftCorner.X - RelativeRect.getHeight())) / f));
+		const f32 w = RelativeRect.getWidth() - f32(RelativeRect.getHeight())*3.0f;
+		const f32 p = x - AbsoluteRect.UpperLeftCorner.X - RelativeRect.getHeight()*1.5f;
+		return s32( p/w * f32(Max) );
 	}
 	else
 	{
-		const f32 f = (RelativeRect.getHeight() - ((f32)RelativeRect.getWidth()*3.0f)) / (f32)Max;
-		setPos((s32)(((f32)y - AbsoluteRect.UpperLeftCorner.Y - RelativeRect.getWidth()) / f));
+		const f32 h = RelativeRect.getHeight() - f32(RelativeRect.getWidth())*3.0f;
+		const f32 p = y - AbsoluteRect.UpperLeftCorner.Y - RelativeRect.getWidth()*1.5f;
+		return s32( p/h * f32(Max) );
 	}
 }
 
@@ -302,8 +352,24 @@ void CGUIScrollBar::setSmallStep(s32 step)
 		SmallStep = step;
 	else
 		SmallStep = 10;
-
 }
+
+//! gets the small step value
+s32 CGUIScrollBar::getLargeStep() const
+{
+	return LargeStep;
+}
+
+
+//! sets the small step value
+void CGUIScrollBar::setLargeStep(s32 step)
+{
+	if (step > 0)
+		LargeStep = step;
+	else
+		LargeStep = 50;
+}
+
 
 
 //! gets the maximum value of the scrollbar.
@@ -425,6 +491,7 @@ void CGUIScrollBar::serializeAttributes(io::IAttributes* out, io::SAttributeRead
 	out->addInt ("Value",		Pos);
 	out->addInt ("Max",		Max);
 	out->addInt ("SmallStep",	SmallStep);
+	out->addInt ("LargeStep",	LargeStep);
 }
 
 
@@ -437,6 +504,7 @@ void CGUIScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 	setMax(in->getAttributeAsInt("Max"));
 	setPos(in->getAttributeAsInt("Value"));
 	setSmallStep(in->getAttributeAsInt("SmallStep"));
+	setLargeStep(in->getAttributeAsInt("LargeStep"));
 	NoClip = in->getAttributeAsBool("NoClip");
 
 	refreshControls();
