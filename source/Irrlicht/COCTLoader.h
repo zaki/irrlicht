@@ -59,7 +59,7 @@ namespace scene
 	class COCTLoader : public IMeshLoader
 	{
 	public:
-		void OCTLoadLights(irr::io::IReadFile* file, irr::scene::ISceneManager * scene, irr::scene::ISceneNode * parent = 0, f32 radius = 500.0f, f32 intensityScale = 0.0000001f*2.5, bool rewind = true);
+		void OCTLoadLights(io::IReadFile* file, ISceneManager * scene, ISceneNode * parent = 0, f32 radius = 500.0f, f32 intensityScale = 0.0000001f*2.5, bool rewind = true);
 
 		//! constructor
 		COCTLoader(video::IVideoDriver* driver);
@@ -75,7 +75,7 @@ namespace scene
 		//! \return Pointer to the created mesh. Returns 0 if loading failed.
 		//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 		//! See IReferenceCounted::drop() for more information.
-		virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
+		virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 	private:
 		core::vector3df GetFaceNormal(f32 a[3], f32 b[3], f32 c[3]);

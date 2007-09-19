@@ -126,7 +126,7 @@ bool CLMTSMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 }
 
 
-IAnimatedMesh* CLMTSMeshFileLoader::createMesh(irr::io::IReadFile* file)
+IAnimatedMesh* CLMTSMeshFileLoader::createMesh(io::IReadFile* file)
 {
 	u32 i;
 	u32 id;

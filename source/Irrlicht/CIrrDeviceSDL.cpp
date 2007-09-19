@@ -201,7 +201,7 @@ bool CIrrDeviceSDL::run()
 {
 	os::Timer::tick();
 
-	irr::SEvent irrevent;
+	SEvent irrevent;
 
 	while ( !Close && SDL_PollEvent( &SDL_event ) )
 	{

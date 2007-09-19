@@ -374,7 +374,7 @@ namespace scene
 	}
 
 	//! creates/loads an animated mesh from the file.
-	IAnimatedMesh* CCSMLoader::createMesh(irr::io::IReadFile* file)
+	IAnimatedMesh* CCSMLoader::createMesh(io::IReadFile* file)
 	{
 		file->grab(); // originally, this loader created the file on its own.
 
@@ -392,7 +392,7 @@ namespace scene
 		return am;
 	}
 
-	scene::IMesh* CCSMLoader::createCSMMesh(irr::io::IReadFile* file)
+	scene::IMesh* CCSMLoader::createCSMMesh(io::IReadFile* file)
 	{
 		if (!file)
 			return 0;

@@ -228,7 +228,7 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 	angle = dotproduct ( v(0,1,0), up )
 	axis = crossproduct ( v(0,1,0), up )
 */
-inline void AlignToUpVector(irr::core::matrix4 &m, const irr::core::vector3df &up )
+inline void AlignToUpVector(core::matrix4 &m, const core::vector3df &up )
 {
 	core::quaternion quatRot( up.Z, 0.f, -up.X, 1 + up.Y );
 	quatRot.normalize();

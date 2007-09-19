@@ -45,7 +45,7 @@ bool CXMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* CXMeshFileLoader::createMesh(irr::io::IReadFile* f)
+IAnimatedMesh* CXMeshFileLoader::createMesh(io::IReadFile* f)
 {
 	if (!f)
 		return 0;

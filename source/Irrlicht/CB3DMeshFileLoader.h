@@ -54,7 +54,7 @@ private:
 
 	struct SB3dTexture
 	{
-		irr::video::ITexture* Texture;
+		video::ITexture* Texture;
 		s32 Flags;
 		s32 Blend;
 		f32 Xpos;
@@ -66,7 +66,7 @@ private:
 
 	struct SB3dMaterial
 	{
-		irr::video::SMaterial* Material;
+		video::SMaterial* Material;
 		f32 red, green, blue, alpha;
 		f32 shininess;
 		s32 blend,fx;

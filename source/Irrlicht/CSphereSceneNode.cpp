@@ -122,7 +122,7 @@ void CSphereSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	if (PolyCountX ==0 && PolyCountY == 0)
 		PolyCountX = PolyCountY = polyCount;
 
-	Radius = irr::core::max_(Radius, 0.0001f);
+	Radius = core::max_(Radius, 0.0001f);
 
 	if ( !core::equals(Radius, oldRadius) || PolyCountX != oldPolyCountX || PolyCountY != oldPolyCountY)
 	{

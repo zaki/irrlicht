@@ -149,6 +149,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
 #endif
 }
 
+
 //! destructor
 COpenGLTexture::~COpenGLTexture()
 {

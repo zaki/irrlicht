@@ -22,7 +22,7 @@ class CColladaMeshWriter : public IMeshWriter
 {
 public:
 
-	CColladaMeshWriter(irr::video::IVideoDriver* driver, irr::io::IFileSystem* fs);
+	CColladaMeshWriter(video::IVideoDriver* driver, io::IFileSystem* fs);
 	virtual ~CColladaMeshWriter();
 
 	//! Returns the type of the mesh writer

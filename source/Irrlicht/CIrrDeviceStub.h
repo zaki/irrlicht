@@ -48,7 +48,7 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceStub(const char* version, irr::IEventReceiver* resv);
+		CIrrDeviceStub(const char* version, IEventReceiver* resv);
 
 		//! destructor
 		virtual ~CIrrDeviceStub();

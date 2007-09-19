@@ -141,8 +141,8 @@ void CTRTextureDetailMap2::scanline_bilinear ()
 #endif
 
 	// apply top-left fill-convention, left
-	xStart = irr::core::ceil32( line.x[0] );
-	xEnd = irr::core::ceil32( line.x[1] ) - 1;
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
 
 	dx = xEnd - xStart;
 
@@ -385,8 +385,8 @@ void CTRTextureDetailMap2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = irr::core::ceil32( a->Pos.y );
-		yEnd = irr::core::ceil32( b->Pos.y ) - 1;
+		yStart = core::ceil32( a->Pos.y );
+		yEnd = core::ceil32( b->Pos.y ) - 1;
 
 #ifdef SUBTEXEL
 		subPixel = ( (f32) yStart ) - a->Pos.y;
@@ -544,8 +544,8 @@ void CTRTextureDetailMap2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,
 #endif
 
 		// apply top-left fill convention, top part
-		yStart = irr::core::ceil32( b->Pos.y );
-		yEnd = irr::core::ceil32( c->Pos.y ) - 1;
+		yStart = core::ceil32( b->Pos.y );
+		yEnd = core::ceil32( c->Pos.y ) - 1;
 
 #ifdef SUBTEXEL
 

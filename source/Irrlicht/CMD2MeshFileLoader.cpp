@@ -31,7 +31,7 @@ bool CMD2MeshFileLoader::isALoadableFileExtension(const c8* filename) const
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* CMD2MeshFileLoader::createMesh(irr::io::IReadFile* file)
+IAnimatedMesh* CMD2MeshFileLoader::createMesh(io::IReadFile* file)
 {
 	IAnimatedMesh* msh = new CAnimatedMeshMD2();
 	if (msh)

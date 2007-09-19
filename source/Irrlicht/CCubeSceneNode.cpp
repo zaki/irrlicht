@@ -144,7 +144,7 @@ void CCubeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 void CCubeSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
 	Size =	in->getAttributeAsFloat("Size");
-	Size = irr::core::max_(Size, 0.0001f);
+	Size = core::max_(Size, 0.0001f);
 	setSize();
 
 	ISceneNode::deserializeAttributes(in, options);

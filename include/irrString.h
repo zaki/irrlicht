@@ -863,7 +863,7 @@ private:
 
 
 //! Typedef for character strings
-typedef string<irr::c8> stringc;
+typedef string<c8> stringc;
 
 //! Typedef for wide character strings
 typedef string<wchar_t> stringw;

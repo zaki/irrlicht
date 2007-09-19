@@ -28,7 +28,7 @@ namespace irr
 			bool stencilbuffer, bool vsync, IEventReceiver* res,
 			const char* version)
 	{
-		irr::SIrrlichtCreationParameters p;
+		SIrrlichtCreationParameters p;
 		p.DriverType = driverType;
 		p.WindowSize = windowSize;
 		p.Bits = bits;

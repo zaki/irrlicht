@@ -207,7 +207,7 @@ void CGUIButton::draw()
 		return;
 
 	IGUISkin* skin = Environment->getSkin();
-	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
+	video::IVideoDriver* driver = Environment->getVideoDriver();
 
 	IGUIFont* font = OverrideFont;
 	if (!OverrideFont)

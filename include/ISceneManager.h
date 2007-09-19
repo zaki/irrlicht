@@ -12,8 +12,8 @@
 #include "SColor.h"
 #include "ETerrainElements.h"
 #include "ESceneNodeTypes.h"
+#include "EMeshWriterEnums.h"
 #include "SceneParameters.h"
-#include "IMeshWriter.h"
 
 namespace irr
 {
@@ -45,6 +45,8 @@ namespace video
 
 namespace scene
 {
+	class IMeshWriter;
+
 	//! Enumeration for render passes.
 	/** A parameter passed to the registerNodeForRendering() method of the ISceneManager,
 	specifying when the mode wants to be drawn in relation to the other nodes. */

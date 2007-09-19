@@ -42,7 +42,7 @@ CSoftwareDriver2::CSoftwareDriver2(const core::dimension2d<s32>& windowSize, boo
 	
 	// create z buffer
 
-	DepthBuffer = irr::video::createDepthBuffer(BackBuffer->getDimension());
+	DepthBuffer = video::createDepthBuffer(BackBuffer->getDimension());
 
 	// create triangle renderers
 

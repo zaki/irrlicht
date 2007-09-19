@@ -158,7 +158,7 @@ public:
 	//! the name specified using elementName.
 	//! \param elementName: The surrounding element name. If it is null, the default one, "attributes" will be taken.
 	//! If set to false, the first appearing list of attributes are read.
-	virtual bool read(irr::io::IXMLReader* reader, bool readCurrentElementOnly=false, const wchar_t* elementName=0) = 0;
+	virtual bool read(io::IXMLReader* reader, bool readCurrentElementOnly=false, const wchar_t* elementName=0) = 0;
 
 	//! Write these attributes into a xml file
 	//! \param writer: The XML writer to write to

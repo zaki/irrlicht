@@ -67,15 +67,15 @@ public:
 	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 	//! returns true if the file maybe is able to be loaded by this class
-	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
+	virtual bool isALoadableFileFormat(io::IReadFile* file) const;
 
 	//! creates a surface from the file
-	virtual IImage* loadImage(irr::io::IReadFile* file) const;
+	virtual IImage* loadImage(io::IReadFile* file) const;
 
 private:
 
 	//! loads a compressed tga. Was written and sent in by Jon Pry, thank you very much!
-	u8* loadCompressedImage(irr::io::IReadFile *file, const STGAHeader& header) const;
+	u8* loadCompressedImage(io::IReadFile *file, const STGAHeader& header) const;
 };
 
 

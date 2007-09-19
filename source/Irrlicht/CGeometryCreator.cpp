@@ -59,8 +59,8 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 			vtx.TCoords.set(tsx, 1.0f - tsy);
 
 			if (hillHeight != 0.0f)
-				vtx.Pos.Y = (f32)(sin(vtx.Pos.X * countHills.Width * irr::core::PI / center.X) *
-					cos(vtx.Pos.Z * countHills.Height * irr::core::PI / center.Y))
+				vtx.Pos.Y = (f32)(sin(vtx.Pos.X * countHills.Width * core::PI / center.X) *
+					cos(vtx.Pos.Z * countHills.Height * core::PI / center.Y))
 					*hillHeight;
 
 			buffer->Vertices.push_back(vtx);

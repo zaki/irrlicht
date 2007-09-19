@@ -196,7 +196,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 	d.Width = dim.Width * supersample;
 	d.Height = dim.Height * supersample;
 
-	RawTexture = new video::CImage ( irr::video::ECF_A8R8G8B8, d );
+	RawTexture = new video::CImage ( video::ECF_A8R8G8B8, d );
 
 	RawTexture->fill ( 0x00808080 );
 
@@ -315,7 +315,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 
 	if ( supersample > 1 )
 	{
-		video::CImage * filter = new video::CImage(irr::video::ECF_A8R8G8B8, dim );
+		video::CImage * filter = new video::CImage(video::ECF_A8R8G8B8, dim );
 		RawTexture->copyToScalingBoxFilter ( filter, 0 );
 		RawTexture->drop ();
 		RawTexture = filter;

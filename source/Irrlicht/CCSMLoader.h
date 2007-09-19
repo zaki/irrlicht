@@ -63,11 +63,11 @@ namespace scene
 		virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 		//! creates/loads an animated mesh from the file.
-		virtual IAnimatedMesh* createMesh(irr::io::IReadFile* file);
+		virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 	private:
 
-		scene::IMesh* createCSMMesh(irr::io::IReadFile* file);
+		scene::IMesh* createCSMMesh(io::IReadFile* file);
 
 		scene::IMesh* createIrrlichtMesh(const CSMFile* csmFile,
 			core::stringc textureRoot, const c8* lmprefix);
