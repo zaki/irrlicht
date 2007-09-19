@@ -7,7 +7,7 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 	//! enumeration for querying features of the video driver.

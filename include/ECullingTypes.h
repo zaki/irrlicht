@@ -9,10 +9,10 @@
 
 namespace irr
 {
-namespace scene  
+namespace scene
 {
 
-	//! An enumeration for all types of automatic culling for built-in scene nodes 
+	//! An enumeration for all types of automatic culling for built-in scene nodes
 	enum E_CULLING_TYPE
 	{
 		EAC_OFF = 0,

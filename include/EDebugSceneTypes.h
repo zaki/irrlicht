@@ -7,11 +7,11 @@
 
 namespace irr
 {
-namespace scene  
+namespace scene
 {
 
 	//! An enumeration for all types of debug data for built-in scene nodes (flags)
-	enum E_DEBUG_SCENE_TYPE 
+	enum E_DEBUG_SCENE_TYPE
 	{
 		//! No Debug Data ( Default )
 		EDS_OFF	= 0,
@@ -28,7 +28,7 @@ namespace scene
 		//! Overlays Mesh Wireframe
 		EDS_MESH_WIRE_OVERLAY = 8,
 
-		//! Temporary use transparency Material Type 
+		//! Temporary use transparency Material Type
 		EDS_HALF_TRANSPARENCY = 16,
 
 		//! Show Bounding Boxes of all MeshBuffers

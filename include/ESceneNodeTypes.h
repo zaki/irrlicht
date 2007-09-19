@@ -9,10 +9,11 @@
 
 namespace irr
 {
-namespace scene  
+namespace scene
 {
-	//! An enumeration for all types of built-in scene nodes 
-	/** A scene node type is represented by a four character code 
+
+	//! An enumeration for all types of built-in scene nodes
+	/** A scene node type is represented by a four character code
 	such as 'cube' or 'mesh' instead of simple numbers, to avoid
 	name clashes with external scene nodes.*/
 	enum ESCENE_NODE_TYPE
