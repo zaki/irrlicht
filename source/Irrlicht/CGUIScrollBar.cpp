@@ -151,6 +151,7 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 			{
 				Dragging = true;
 				DraggedBySlider = SliderRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y));
+				TrayClick = !DraggedBySlider;
 				DesiredPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
 				return true;
 			}
@@ -229,19 +230,27 @@ void CGUIScrollBar::draw()
 	{
 		LastChange = now;
 
+		s32 oldPos = Pos;
+
 		if (DesiredPos >= Pos + LargeStep)
 			setPos(Pos + LargeStep);
-		else 
-		if (DesiredPos >= Pos + SmallStep)
-			setPos(Pos + SmallStep);
 		else 
 		if (DesiredPos <= Pos - LargeStep)
 			setPos(Pos - LargeStep);
 		else 
-		if (DesiredPos <= Pos - SmallStep)
-			setPos(Pos - SmallStep);
-	}
+		if (DesiredPos >= Pos - LargeStep && DesiredPos <= Pos + LargeStep)
+			setPos(DesiredPos);
 
+		if (Pos != oldPos && Parent)
+		{
+			SEvent newEvent;
+			newEvent.EventType = EET_GUI_EVENT;
+			newEvent.GUIEvent.Caller = this;
+			newEvent.GUIEvent.Element = 0;
+			newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+			Parent->OnEvent(newEvent);
+		}
+	}
 
 	SliderRect = AbsoluteRect;
 
