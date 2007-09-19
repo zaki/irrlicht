@@ -26,19 +26,19 @@ namespace gui
 		//! this part draws the window
 		virtual void draw();
 		//! handles events
-		virtual bool OnEvent(SEvent event);
+		virtual bool OnEvent(const SEvent &event);
 
 		//! change selection
 		virtual void setSelectedElement(IGUIElement *sel);
 
 		// not used
-		virtual IGUIButton* getCloseButton();
-		virtual IGUIButton* getMinimizeButton();
-		virtual IGUIButton* getMaximizeButton();
+		virtual IGUIButton* getCloseButton() const;
+		virtual IGUIButton* getMinimizeButton() const;
+		virtual IGUIButton* getMaximizeButton() const;
 
-		CGUIAttributeEditor* getAttributeEditor();
-		CGUIAttributeEditor* getOptionEditor();
-		CGUIAttributeEditor* getEnvironmentEditor();
+		CGUIAttributeEditor* getAttributeEditor() const;
+		CGUIAttributeEditor* getOptionEditor() const;
+		CGUIAttributeEditor* getEnvironmentEditor() const;
 
 		//! this shoudln't be serialized, but this is included as it's an example
 		virtual const c8* getTypeName() const { return "GUIEditWindow"; }

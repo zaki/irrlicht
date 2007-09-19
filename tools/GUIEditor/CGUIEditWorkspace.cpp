@@ -221,7 +221,7 @@ void CGUIEditWorkspace::selectPreviousSibling()
 }
 
 //! called if an event happened.
-bool CGUIEditWorkspace::OnEvent(SEvent e)
+bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 {
 	IGUIFileOpenDialog* dialog=0;
 	switch(e.EventType)
@@ -416,7 +416,7 @@ bool CGUIEditWorkspace::OnEvent(SEvent e)
 				sub->addItem(L"Default factory",-1,true, true);
 
 				// add elements from each factory
-				for (i=0; i < Environment->getRegisteredGUIElementFactoryCount(); ++i)
+				for (i=0; u32(i) < Environment->getRegisteredGUIElementFactoryCount(); ++i)
 				{
 					sub2 = sub->getSubMenu(i);
 
@@ -428,7 +428,7 @@ bool CGUIEditWorkspace::OnEvent(SEvent e)
 						c++;
 					}
 
-					if (i+1 < Environment->getRegisteredGUIElementFactoryCount())
+					if (u32(i+1) < Environment->getRegisteredGUIElementFactoryCount())
 					{
 						core::stringw strFact;
 						strFact = L"Factory ";
@@ -574,7 +574,7 @@ bool CGUIEditWorkspace::OnEvent(SEvent e)
 		// load a gui file
 		case EGET_FILE_SELECTED:
 			dialog = (IGUIFileOpenDialog*)e.GUIEvent.Caller;
-			Environment->loadGUI(core::stringc(dialog->getFilename()).c_str());
+			Environment->loadGUI(core::stringc(dialog->getFileName()).c_str());
 			break;
 
 		case EGET_MENU_ITEM_SELECTED:

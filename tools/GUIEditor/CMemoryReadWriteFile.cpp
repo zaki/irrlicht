@@ -14,7 +14,7 @@ CMemoryReadWriteFile::CMemoryReadWriteFile(const c8* filename)
 }
 
 
-s32 CMemoryReadWriteFile::write(const void* buffer, s32 sizeToWrite)
+s32 CMemoryReadWriteFile::write(const void* buffer, u32 sizeToWrite)
 {
 
 	// no point in writing 0 bytes
@@ -34,7 +34,7 @@ s32 CMemoryReadWriteFile::write(const void* buffer, s32 sizeToWrite)
 	
 }
 
-bool CMemoryReadWriteFile::seek(s32 finalPos, bool relativeMovement)
+bool CMemoryReadWriteFile::seek(long finalPos, bool relativeMovement)
 {
 	if (relativeMovement)
 	{
@@ -55,12 +55,12 @@ bool CMemoryReadWriteFile::seek(s32 finalPos, bool relativeMovement)
 
 }
 
-const c8* CMemoryReadWriteFile::getFileName()
+const c8* CMemoryReadWriteFile::getFileName() const
 {
 	return FileName.c_str();
 }
 
-s32 CMemoryReadWriteFile::getPos()
+long CMemoryReadWriteFile::getPos() const
 {
 	return Pos;
 }
@@ -71,7 +71,7 @@ core::array<c8>& CMemoryReadWriteFile::getData()
 }
 
 
-s32 CMemoryReadWriteFile::getSize()
+long CMemoryReadWriteFile::getSize() const
 {
 	return Data.size();
 }

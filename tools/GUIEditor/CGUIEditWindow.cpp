@@ -110,17 +110,17 @@ CGUIEditWindow::~CGUIEditWindow()
 		ResizeButton->drop();
 }
 
-CGUIAttributeEditor* CGUIEditWindow::getEnvironmentEditor()
+CGUIAttributeEditor* CGUIEditWindow::getEnvironmentEditor() const
 {
 	return EnvEditor;
 }
 
-CGUIAttributeEditor* CGUIEditWindow::getAttributeEditor()
+CGUIAttributeEditor* CGUIEditWindow::getAttributeEditor() const
 {
 	return AttribEditor;
 }
 
-CGUIAttributeEditor* CGUIEditWindow::getOptionEditor()
+CGUIAttributeEditor* CGUIEditWindow::getOptionEditor() const
 {
 	return OptionEditor;
 }
@@ -181,7 +181,7 @@ void CGUIEditWindow::draw()
 
 
 //! called if an event happened.
-bool CGUIEditWindow::OnEvent(SEvent event)
+bool CGUIEditWindow::OnEvent(const SEvent &event)
 {
 	switch(event.EventType)
 	{
@@ -277,6 +277,6 @@ bool CGUIEditWindow::OnEvent(SEvent event)
 
 // we're supposed to supply these if we're creating an IGUIWindow
 // but we don't need them so we'll just return null
-IGUIButton* CGUIEditWindow::getCloseButton()	   {return 0;}
-IGUIButton* CGUIEditWindow::getMinimizeButton() {return 0;}
-IGUIButton* CGUIEditWindow::getMaximizeButton() {return 0;}
+IGUIButton* CGUIEditWindow::getCloseButton() const     {return 0;}
+IGUIButton* CGUIEditWindow::getMinimizeButton() const  {return 0;}
+IGUIButton* CGUIEditWindow::getMaximizeButton() const  {return 0;}

@@ -166,7 +166,7 @@ void CGUIPanel::setHScrollBarMode( E_SCROLL_BAR_MODE mode )
 	NeedsUpdate = true;
 }
 
-bool CGUIPanel::OnEvent( SEvent event )
+bool CGUIPanel::OnEvent(const SEvent &event)
 {
     // Redirect mouse wheel to scrollbar
     if ( event.EventType == EET_MOUSE_INPUT_EVENT && event.MouseInput.Event == EMIE_MOUSE_WHEEL )

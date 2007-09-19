@@ -79,7 +79,7 @@ public:
 	//! returns the visible area inside the panel, excluding scrollbar and border
 	core::rect<s32> getClientArea() const;
     
-    virtual bool OnEvent(SEvent event);
+    virtual bool OnEvent(const SEvent &event);
 
 	//! adds a child to the panel
 	virtual void addChild(IGUIElement* child);

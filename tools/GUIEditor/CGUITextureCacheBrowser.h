@@ -29,7 +29,7 @@ namespace gui
 		~CGUITextureCacheBrowser();
 
 		//! event handler
-		bool OnEvent(SEvent event);
+		virtual bool OnEvent(const SEvent &event);
 
 		//! draws the element
 		virtual void draw();
@@ -41,13 +41,13 @@ namespace gui
 		virtual const c8* getTypeName() const { return "textureCacheBrowser"; }
 
 		//! Returns pointer to the close button
-		virtual IGUIButton* getCloseButton() { return CloseButton; }
+		virtual IGUIButton* getCloseButton() const { return CloseButton; }
 
 		//! Returns pointer to the minimize button
-		virtual IGUIButton* getMinimizeButton() { return 0;}
+		virtual IGUIButton* getMinimizeButton() const { return 0;}
 
 		//! Returns pointer to the maximize button
-		virtual IGUIButton* getMaximizeButton() { return 0;}
+		virtual IGUIButton* getMaximizeButton() const { return 0;}
 
 		void setSelected(s32 index=-1);
 

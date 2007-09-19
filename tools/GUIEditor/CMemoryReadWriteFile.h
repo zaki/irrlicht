@@ -27,7 +27,7 @@ namespace io
 		//! \param buffer: Pointer to buffer of bytes to write.
 		//! \param sizeToWrite: Amount of bytes to wrtie to the file.
 		//! \return Returns how much bytes were written.
-		virtual s32 write(const void* buffer, s32 sizeToWrite);
+		virtual s32 write(const void* buffer, u32 sizeToWrite);
 
 		//! Changes position in file, returns true if successful.
 		//! \param finalPos: Destination position in the file.
@@ -35,11 +35,11 @@ namespace io
 		//! changed relative to current position. Otherwise the position is changed 
 		//! from begin of file.		
 		//! \return Returns true if successful, otherwise false.
-		virtual bool seek(s32 finalPos, bool relativeMovement = false);
+		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! Returns size of file.
 		//! \return Returns the size of the file in bytes.
-		virtual s32 getSize();
+		virtual long getSize() const;
 
 		//! Reads an amount of bytes from the file.
 		//! \param buffer: Pointer to buffer where to read bytes will be written to.
@@ -49,11 +49,11 @@ namespace io
 
 		//! Returns the current position in the file.
 		//! \return Returns the current position in the file in bytes.
-		virtual s32 getPos();
+		virtual long getPos() const;
 
 		//! Returns name of file.
 		//! \return Returns the file name as zero terminated character string.
-		virtual const c8* getFileName();
+		virtual const c8* getFileName() const;
 
 		//! Returns file data as an array
 		core::array<c8>& getData();
