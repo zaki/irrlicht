@@ -23,7 +23,7 @@ class CSoftwareTexture2 : public ITexture
 public:
 
 	//! constructor
-	CSoftwareTexture2(IImage* surface, const char* name,bool generateMipLevels);
+	CSoftwareTexture2(IImage* surface, const char* name, bool generateMipLevels, bool isRenderTarget=false);
 
 	//! destructor
 	virtual ~CSoftwareTexture2();
@@ -107,6 +107,12 @@ public:
 		return HasMipMaps;
 	}
 
+	//! is a render target
+	virtual bool isRenderTarget() const
+	{
+		return IsRenderTarget;
+	}
+
 private:
 
 	//! returns the size of a texture which would be the optimize size for rendering it
@@ -117,7 +123,7 @@ private:
 	CImage * MipMap[SOFTWARE_DRIVER_2_MIPMAPPING_MAX];
 
 	s32 MipMapLOD;
-	bool HasMipMaps;
+	bool HasMipMaps, IsRenderTarget;
 };
 
 

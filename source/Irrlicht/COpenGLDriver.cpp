@@ -34,7 +34,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND wind
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias), RenderTargetTexture(0), LastSetLight(-1),
-	CurrentRendertargetSize(0,0), ClockwiseWinding(true),
+	CurrentRendertargetSize(0,0),
 	HDc(0), Window(window), HRc(0)
 {
 	#ifdef _DEBUG
@@ -157,7 +157,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias), RenderTargetTexture(0), LastSetLight(-1),
-	CurrentRendertargetSize(0,0), ClockwiseWinding(true), _device(device)
+	CurrentRendertargetSize(0,0), _device(device)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -176,8 +176,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(antiAlias),
-	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0),
-	ClockwiseWinding(true)
+	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -212,8 +211,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(antiAlias),
-	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0),
-	ClockwiseWinding(true)
+	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -464,25 +462,6 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		createGLMatrix(glmat, mat);
 		// flip z to compensate OpenGLs right-hand coordinate system
 		glmat[12] *= -1.0f;
-		// in render targets, flip the screen
-		if ( CurrentRendertargetSize.Width != 0 )
-		{
-			glmat[5] *= -1.0f;
-			// because we flipped the screen, triangles are the wrong way around
-			if (ClockwiseWinding)
-			{
-				glFrontFace(GL_CCW);
-				ClockwiseWinding = false;
-			}
-		}
-		else
-		{
-			if (!ClockwiseWinding)
-			{
-				glFrontFace(GL_CW);
-				ClockwiseWinding = true;
-			}
-		}
 		glMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(glmat);
 		break;
@@ -490,18 +469,25 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	case ETS_TEXTURE_1:
 	case ETS_TEXTURE_2:
 	case ETS_TEXTURE_3:
+	{
+		const u32 i = state - ETS_TEXTURE_0;
+		const bool isRTT = (Material.Textures[i] && Material.Textures[i]->isRenderTarget());
+
 		if (MultiTextureExtension)
-			extGlActiveTexture(GL_TEXTURE0_ARB + ( state - ETS_TEXTURE_0 ));
+			extGlActiveTexture(GL_TEXTURE0_ARB + i);
 
 		glMatrixMode(GL_TEXTURE);
-		if (mat.isIdentity())
+		if (mat.isIdentity() && !isRTT)
 			glLoadIdentity();
 		else
 		{
 			createGLTextureMatrix(glmat, mat );
+			if (isRTT)
+				glmat[5] *= -1;
 			glLoadMatrixf(glmat);
 		}
 		break;
+	}
 	default:
 		break;
 	}
@@ -1205,27 +1191,6 @@ void COpenGLDriver::setRenderStates3DMode()
 
 		createGLMatrix(glmat, Matrices[ETS_PROJECTION]);
 		glmat[12] *= -1.0f;
-
-		// in render targets, flip the screen
-		if ( CurrentRendertargetSize.Width > 0 )
-		{
-			glmat[5] *= -1.0f;
-			// because we flipped the screen, triangles are the wrong way around
-			if (ClockwiseWinding)
-			{
-				glFrontFace(GL_CCW);
-				ClockwiseWinding = false;
-			}
-		}
-		else
-		{
-			if (!ClockwiseWinding)
-			{
-				glFrontFace(GL_CW);
-				ClockwiseWinding = true;
-			}
-		}
-
 		glMatrixMode(GL_PROJECTION);
 		glLoadMatrixf(glmat);
 
@@ -1532,27 +1497,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		m.setTranslation(translation);
 
 		createGLMatrix(glmat, m);
-
-		// in render targets, flip the screen
-		if ( CurrentRendertargetSize.Width != 0 )
-		{
-			glmat[5] *= -1.0f;
-			// triangles are the wrong way around because we flipped the screen
-			if (ClockwiseWinding)
-			{
-				glFrontFace(GL_CCW);
-				ClockwiseWinding = false;
-			}
-		}
-		else
-		{
-			if (!ClockwiseWinding)
-			{
-				glFrontFace(GL_CW);
-				ClockwiseWinding = true;
-			}
-		}
-
 		glLoadMatrixf(glmat);
 
 		glMatrixMode(GL_MODELVIEW);
@@ -2165,9 +2109,12 @@ ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>&
 	else
 #endif
 	{
-	        rtt = addTexture(size, name);
+		rtt = addTexture(size, name);
 		if (rtt)
+		{
 			rtt->grab();
+			static_cast<video::COpenGLTexture*>(rtt)->setRenderTarget(true);
+		}
 	}
 
 	//restore mip-mapping

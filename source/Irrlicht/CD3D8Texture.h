@@ -68,7 +68,7 @@ public:
 	virtual void regenerateMipMapLevels();
 
 	//! returns if it is a render target
-	bool isRenderTarget() const;
+	virtual bool isRenderTarget() const;
 
 	//! Returns pointer to the render target surface
 	IDirect3DSurface8* getRenderTargetSurface();
