@@ -13,6 +13,7 @@
 #include "IReadFile.h"
 #include "fast_atof.h"
 #include "coreutil.h"
+#include "os.h"
 
 namespace irr
 {
