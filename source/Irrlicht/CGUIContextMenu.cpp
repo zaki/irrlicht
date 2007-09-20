@@ -622,7 +622,8 @@ void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeRe
 		const IGUIContextMenu* const ptr = (const IGUIContextMenu*)Parent;
 		// find the position of this item in its parent's list
 		u32 i;
-		for (i=0; (i<ptr->getItemCount()) && (ptr->getSubMenu(i) != this); ++i)
+		// VC6 needs the cast for this
+		for (i=0; (i<ptr->getItemCount()) && (ptr->getSubMenu(i) != (const IGUIContextMenu*)this); ++i)
 			; // do nothing
 
 		out->addInt("ParentItem", i);
@@ -666,7 +667,7 @@ void CGUIContextMenu::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	removeAllItems();
 
 	// read the item list
-	s32 count = in->getAttributeAsInt("ItemCount");
+	const s32 count = in->getAttributeAsInt("ItemCount");
 
 	for (s32 i=0; i<count; ++i)
 	{
