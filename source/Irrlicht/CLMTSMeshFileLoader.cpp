@@ -308,11 +308,11 @@ void CLMTSMeshFileLoader::loadTextures(SMesh* mesh, u32 numTextures, u32 numLigh
 	for (s32 i=0; i<Header.SubsetCount; ++i)
 	{
 		if (Subsets[i].TextID1 < Header.TextureCount)
-			mesh->getMeshBuffer(i)->getMaterial().Textures[0] = tex[textureIDs[Subsets[i].TextID1]];
+			mesh->getMeshBuffer(i)->getMaterial().setTexture(0, tex[textureIDs[Subsets[i].TextID1]]);
 		if (Subsets[i].TextID2 < Header.TextureCount)
-			mesh->getMeshBuffer(i)->getMaterial().Textures[1] = lig[textureIDs[Subsets[i].TextID2]];
+			mesh->getMeshBuffer(i)->getMaterial().setTexture(1, lig[textureIDs[Subsets[i].TextID2]]);
 
-		if (!mesh->getMeshBuffer(i)->getMaterial().Textures[1])
+		if (!mesh->getMeshBuffer(i)->getMaterial().getTexture(1))
 			mesh->getMeshBuffer(i)->getMaterial().MaterialType = video::EMT_SOLID;
 	}
 }

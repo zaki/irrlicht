@@ -122,7 +122,7 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 	}
 
 	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		Driver->setTexture(i, material.Textures[i]);
+		Driver->setTexture(i, material.getTexture(i));
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 

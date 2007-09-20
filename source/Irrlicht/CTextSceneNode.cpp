@@ -122,7 +122,7 @@ CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManag
 			{
 				SMeshBuffer *mb = new SMeshBuffer();
 				mb->Material = Material;
-				mb->Material.Textures[0] = Font->getSpriteBank()->getTexture(i);
+				mb->Material.setTexture(0, Font->getSpriteBank()->getTexture(i));
 				Mesh->addMeshBuffer(mb);
 				mb->drop();
 			}

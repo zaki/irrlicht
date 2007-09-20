@@ -64,7 +64,7 @@ to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
 and this to the linker settings: -ld3dx9 -ld3dx8 **/
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
-#define _IRR_COMPILE_WITH_DIRECT3D_8_
+//#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif

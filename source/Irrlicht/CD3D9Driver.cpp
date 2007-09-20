@@ -642,7 +642,7 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
-		setTexture(i, Material.Textures[i]);
+		setTexture(i, Material.getTexture(i));
 		setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}
@@ -1345,10 +1345,10 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	// texture address mode
 	for (u32 st=0; st<MaxTextureUnits; ++st)
 	{
-		if (resetAllRenderstates || lastmaterial.TextureWrap[st] != material.TextureWrap[st])
+		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrap != material.TextureLayer[st].TextureWrap)
 		{
 			u32 mode = D3DTADDRESS_WRAP;
-			switch (material.TextureWrap[st])
+			switch (material.TextureLayer[st].TextureWrap)
 			{
 				case ETC_REPEAT:
 					mode=D3DTADDRESS_WRAP;
@@ -1369,17 +1369,17 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetSamplerState(st, D3DSAMP_ADDRESSV, mode );
 		}
 
-		// Bilinear and/or trilinear
+		// Bilinear, trilinear, and anisotropic filter
 		if (resetAllRenderstates ||
-			lastmaterial.BilinearFilter[st] != material.BilinearFilter[st] ||
-			lastmaterial.TrilinearFilter[st] != material.TrilinearFilter[st] ||
-			lastmaterial.AnisotropicFilter[st] != material.AnisotropicFilter[st])
+			lastmaterial.TextureLayer[st].BilinearFilter != material.TextureLayer[st].BilinearFilter ||
+			lastmaterial.TextureLayer[st].TrilinearFilter != material.TextureLayer[st].TrilinearFilter ||
+			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter)
 		{
-			if (material.BilinearFilter[st] || material.TrilinearFilter[st] || material.AnisotropicFilter[st])
+			if (material.TextureLayer[st].BilinearFilter || material.TextureLayer[st].TrilinearFilter || material.TextureLayer[st].AnisotropicFilter)
 			{
-				D3DTEXTUREFILTERTYPE tftMag = ((Caps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC) && material.AnisotropicFilter[st]) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
-				D3DTEXTUREFILTERTYPE tftMin = ((Caps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC) && material.AnisotropicFilter[st]) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
-				D3DTEXTUREFILTERTYPE tftMip = material.TrilinearFilter[st] ? D3DTEXF_LINEAR : D3DTEXF_POINT;
+				D3DTEXTUREFILTERTYPE tftMag = ((Caps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC) && material.TextureLayer[st].AnisotropicFilter) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
+				D3DTEXTUREFILTERTYPE tftMin = ((Caps.TextureFilterCaps & D3DPTFILTERCAPS_MINFANISOTROPIC) && material.TextureLayer[st].AnisotropicFilter) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
+				D3DTEXTUREFILTERTYPE tftMip = material.TextureLayer[st].TrilinearFilter ? D3DTEXF_LINEAR : D3DTEXF_POINT;
 
 				pID3DDevice->SetSamplerState(st, D3DSAMP_MAGFILTER, tftMag);
 				pID3DDevice->SetSamplerState(st, D3DSAMP_MINFILTER, tftMin);

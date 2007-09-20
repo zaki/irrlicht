@@ -312,7 +312,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		if (TexturePath!="")
 		{
 			TexturePath=stripPathFromString(file->getFileName(),true) + stripPathFromString(TexturePath,false);
-			tmpBuffer->Material.Textures[0] = Driver->getTexture(TexturePath.c_str() );
+			tmpBuffer->Material.setTexture(0, Driver->getTexture(TexturePath.c_str()) );
 		}
 
 		core::stringc AlphamapPath=(const c8*)material->Alphamap;
@@ -320,7 +320,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		if (AlphamapPath!="")
 		{
 			AlphamapPath=stripPathFromString(file->getFileName(),true) + stripPathFromString(AlphamapPath,false);
-			tmpBuffer->Material.Textures[2] = Driver->getTexture(AlphamapPath.c_str() );
+			tmpBuffer->Material.setTexture(2, Driver->getTexture(AlphamapPath.c_str()) );
 		}
 
 	}

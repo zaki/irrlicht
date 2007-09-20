@@ -448,16 +448,16 @@ void COBJMeshFileLoader::readMTL(const c8* pFileName, core::stringc relPath)
 				if ( pTexture )
 				{
 					if (type==0)
-						pCurrMaterial->Meshbuffer->Material.Textures[0] = pTexture;
+						pCurrMaterial->Meshbuffer->Material.setTexture(0, pTexture);
 					else if (type==1)
 					{
 						Driver->makeNormalMapTexture(pTexture);
-						pCurrMaterial->Meshbuffer->Material.Textures[1] = pTexture;
+						pCurrMaterial->Meshbuffer->Material.setTexture(1, pTexture);
 						pCurrMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
 					}
 					else if (type==2)
 					{
-						pCurrMaterial->Meshbuffer->Material.Textures[0] = pTexture;
+						pCurrMaterial->Meshbuffer->Material.setTexture(0, pTexture);
 						pCurrMaterial->Meshbuffer->Material.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
 					}
 					else if (type==3)

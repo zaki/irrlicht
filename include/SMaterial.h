@@ -10,6 +10,7 @@
 #include "irrArray.h"
 #include "EMaterialTypes.h"
 #include "EMaterialFlags.h"
+#include "SMaterialLayer.h"
 
 namespace irr
 {
@@ -33,27 +34,6 @@ namespace video
 		EBF_ONE_MINUS_DST_ALPHA,	// src & dest	(1-destA, 1-destA, 1-destA, 1-destA)
 		EBF_SRC_ALPHA_SATURATE		// src		(min(srcA, 1-destA), idem, ...)
 	};
-
-	//! Texture coord clamp mode outside [0.0, 1.0]
-	enum E_TEXTURE_CLAMP
-	{
-		//! Texture repeats
-		ETC_REPEAT = 0,
-		//! Texture is clamped to the last pixel
-		ETC_CLAMP,
-		//! Texture is clamped to the edge pixel
-		ETC_CLAMP_TO_EDGE,
-		//! Texture is clamped to the border pixel (if exists)
-		ETC_CLAMP_TO_BORDER,
-		//! Texture is alternatingly mirrored (0..1..0..1..0..)
-		ETC_MIRROR
-	};
-	static const char* const aTextureClampNames[] = {
-			"texture_clamp_repeat",
-			"texture_clamp_clamp",
-			"texture_clamp_clamp_to_edge",
-			"texture_clamp_clamp_to_border",
-			"texture_clamp_mirror", 0};
 
 	//! MaterialTypeParam: eg. DirectX: D3DTOP_MODULATE, D3DTOP_MODULATE2X, D3DTOP_MODULATE4X
 	enum E_MODULATE_FUNC
@@ -81,7 +61,6 @@ namespace video
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = 4;
 
-
 	//! struct for holding parameters for a material renderer
 	class SMaterial
 	{
@@ -94,32 +73,15 @@ namespace video
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
 			ZBuffer(true), ZWriteEnable(true), BackfaceCulling(true),
 			FogEnable(false), NormalizeNormals(false)
-		{
-			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			{
-				Textures[i] = 0;
-				TextureMatrix[i] = 0;
-				TextureWrap[i] = ETC_REPEAT;
-				BilinearFilter[i] = true;
-				TrilinearFilter[i] = false;
-				AnisotropicFilter[i] = false;
-			}
-		}
+		{ }
 
 		//! copy constructor
 		SMaterial(const SMaterial& other)
 		{
 			// These pointers are checked during assignment
 			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				TextureMatrix[i] = 0;
+				TextureLayer[i].TextureMatrix = 0;
 			*this = other;
-		}
-
-		//! destructor
-		~SMaterial()
-		{
-			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-				delete TextureMatrix[i];
 		}
 
 		//! Assignment operator
@@ -137,28 +99,7 @@ namespace video
 			Thickness = other.Thickness;
 			for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 			{
-				Textures[i] = other.Textures[i];
-				if (TextureMatrix[i])
-				{
-					if (other.TextureMatrix[i])
-						*TextureMatrix[i] = *other.TextureMatrix[i];
-					else
-					{
-						delete TextureMatrix[i];
-						TextureMatrix[i] = 0;
-					}
-				}
-				else
-				{
-					if (other.TextureMatrix[i])
-						TextureMatrix[i] = new core::matrix4(*other.TextureMatrix[i]);
-					else
-						TextureMatrix[i] = 0;
-				}
-				TextureWrap[i] = other.TextureWrap[i];
-				BilinearFilter[i] = other.BilinearFilter[i];
-				TrilinearFilter[i] = other.TrilinearFilter[i];
-				AnisotropicFilter[i] = other.AnisotropicFilter[i];
+				TextureLayer[i] = other.TextureLayer[i];
 			}
 
 			Wireframe = other.Wireframe;
@@ -238,15 +179,7 @@ namespace video
 		f32 Thickness;
 
 		//! Texture layer array.
-		ITexture* Textures[MATERIAL_MAX_TEXTURES];
-
-		//! Texture Matrix array
-		//! Do not acces the elements directly as the internal
-		//! ressource management has to cope with Null pointers etc.
-		core::matrix4* TextureMatrix[MATERIAL_MAX_TEXTURES];
-
-		//! Texture Clamp Mode
-		E_TEXTURE_CLAMP TextureWrap[MATERIAL_MAX_TEXTURES];
+		SMaterialLayer TextureLayer[MATERIAL_MAX_TEXTURES];
 
 		//! material flags
 		/** The user can access the material flag using 
@@ -276,21 +209,6 @@ namespace video
 		//! Is backfaceculling enabled? Default: true
 		bool BackfaceCulling;
 
-		//! Is bilinear filtering enabled? Default: true
-		bool BilinearFilter[MATERIAL_MAX_TEXTURES];
-
-		//! Is trilinear filtering enabled? Default: false
-		/** If the trilinear filter flag is enabled,
-		the bilinear filtering flag is ignored. */
-		bool TrilinearFilter[MATERIAL_MAX_TEXTURES];
-
-		//! Is anisotropic filtering enabled? Default: false
-		/** In Irrlicht you can use anisotropic texture filtering
-		    in conjunction with bilinear or trilinear texture
-		    filtering to improve rendering results. Primitives
-		    will look less blurry with this flag switched on. */
-		bool AnisotropicFilter[MATERIAL_MAX_TEXTURES];
-
 		//! Is fog enabled? Default: false
 		bool FogEnable;
 
@@ -300,16 +218,15 @@ namespace video
 		//! Gets the texture transformation matrix for level i
 		core::matrix4& getTextureMatrix(u32 i)
 		{
-			if (i<MATERIAL_MAX_TEXTURES && !TextureMatrix[i])
-				TextureMatrix[i] = new core::matrix4(core::matrix4::EM4CONST_IDENTITY);
-			return *TextureMatrix[i];
+			if (i<MATERIAL_MAX_TEXTURES)
+				return TextureLayer[i].getTextureMatrix();
 		}
 
 		//! Gets the immutable texture transformation matrix for level i
 		const core::matrix4& getTextureMatrix(u32 i) const
 		{
-			if (i<MATERIAL_MAX_TEXTURES && TextureMatrix[i])
-				return *TextureMatrix[i];
+			if (i<MATERIAL_MAX_TEXTURES)
+				return TextureLayer[i].getTextureMatrix();
 			else
 				return core::IdentityMatrix;
 		}
@@ -319,10 +236,24 @@ namespace video
 		{
 			if (i>=MATERIAL_MAX_TEXTURES)
 				return;
-			if (!TextureMatrix[i])
-				TextureMatrix[i] = new core::matrix4(mat);
+			TextureLayer[i].setTextureMatrix(mat);
+		}
+
+		//! Gets the i-th texture
+		ITexture* getTexture(u32 i) const
+		{
+			if (i>=MATERIAL_MAX_TEXTURES)
+				return 0;
 			else
-				*TextureMatrix[i] = mat;
+				return TextureLayer[i].Texture;
+		}
+
+		//! Sets the i-th texture
+		void setTexture(u32 i, ITexture* tex)
+		{
+			if (i>=MATERIAL_MAX_TEXTURES)
+				return;
+			TextureLayer[i].Texture = tex;
 		}
 
 		//! Sets the Material flag to the given value
@@ -347,19 +278,19 @@ namespace video
 				case EMF_BILINEAR_FILTER:
 				{
 					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-						BilinearFilter[i] = value;
+						TextureLayer[i].BilinearFilter = value;
 				}
 				break;
 				case EMF_TRILINEAR_FILTER:
 				{
 					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-						TrilinearFilter[i] = value;
+						TextureLayer[i].TrilinearFilter = value;
 				}
 				break;
 				case EMF_ANISOTROPIC_FILTER:
 				{
 					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-						AnisotropicFilter[i] = value;
+						TextureLayer[i].AnisotropicFilter = value;
 				}
 				break;
 				case EMF_FOG_ENABLE:
@@ -369,7 +300,7 @@ namespace video
 				case EMF_TEXTURE_WRAP:
 				{
 					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-						TextureWrap[i] = (E_TEXTURE_CLAMP)value;
+						TextureLayer[i].TextureWrap = (E_TEXTURE_CLAMP)value;
 				}
 				break;
 				default:
@@ -397,17 +328,17 @@ namespace video
 				case EMF_BACK_FACE_CULLING:
 					return BackfaceCulling;
 				case EMF_BILINEAR_FILTER:
-					return BilinearFilter[0];
+					return TextureLayer[0].BilinearFilter;
 				case EMF_TRILINEAR_FILTER:
-					return TrilinearFilter[0];
+					return TextureLayer[0].TrilinearFilter;
 				case EMF_ANISOTROPIC_FILTER:
-					return AnisotropicFilter[0];
+					return TextureLayer[0].AnisotropicFilter;
 				case EMF_FOG_ENABLE:
 					return FogEnable;
 				case EMF_NORMALIZE_NORMALS:
 					return NormalizeNormals;
 				case EMF_TEXTURE_WRAP:
-					return !(TextureWrap[0] || TextureWrap[1] || TextureWrap[2] || TextureWrap[3]);
+					return !(TextureLayer[0].TextureWrap || TextureLayer[1].TextureWrap || TextureLayer[2].TextureWrap || TextureLayer[3].TextureWrap);
 				case EMF_MATERIAL_FLAG_COUNT:
 					break;
 			}
@@ -439,17 +370,8 @@ namespace video
 				NormalizeNormals != b.NormalizeNormals;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
 			{
-				different |= (Textures[i] != b.Textures[i]);
-				different |= (TextureWrap[i] != b.TextureWrap[i]);
-				different |= (BilinearFilter[i] != b.BilinearFilter[i]);
-				different |= (TrilinearFilter[i] != b.TrilinearFilter[i]);
-				different |= (AnisotropicFilter[i] != b.AnisotropicFilter[i]);
+				different |= (TextureLayer[i] != b.TextureLayer[i]);
 			}
-			if (different)
-				return true;
-			else
-				for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-					different |= (TextureMatrix[i] != b.TextureMatrix[i]);
 			return different;
 		}
 

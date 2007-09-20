@@ -1,8 +1,12 @@
 Changes in version 1.4 (... 2007)
 
- - Added ITexture::isRenderTarget()
+ - Major API change: All material properties which are available per texture layer (curently texture, texture matrix, texture filters, and texture wrap mode) are separated into a new struct SMaterialLayer. You can access them via the array TextureLayer[] in SMaterial. The texture matrix methods in SMaterial are still alive, and also textures can be accessed via methods in SMaterial now. But still, many places in user code need some update (usually changing material.Textures[i] to material.TextureLayer[i].Texture etc.)
 
- - Major API rewriting for proper const usage. Now, most getter methods are const and so are the larger parameters and return values. Moreover, mayn methods taking only unsigned numbers now use u32 instead of s32 to get his limitation from the method's signature.
+ - Major API rewriting for proper const usage. Now, most getter methods are const and so are the larger parameters and return values. Moreover, many methods taking only unsigned numbers now use u32 instead of s32 in order to recognize this limitation from the method's signature.
+
+ - the base class for nearly all Irrlicht classes has been renamed from IUnknown to IReferenceCounted
+
+ - Added ITexture::isRenderTarget()
 
  - Added STL mesh file format reader and writer.
 
@@ -16,8 +20,6 @@ Changes in version 1.4 (... 2007)
    to obtain an interface with which you can write out meshes. Currently, an own .irrmesh
    file format is supported as well as the COLLADA file format.
    
- - the base class for nearly all Irrlicht classes has been renamed from IUnknown to IReferenceCounted
-
  - fixed the keyboard autorepeat difference betwenn Linux and Windows. Thanks to denton we now have only KeyPressed events on both systems in case of autorepeat.
 
  - Added several new particle emitters and affectors from IrrSpintz. Also some new getter and setter methods were added.

@@ -213,14 +213,14 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 
 				sprintf(textureName, "terrain%u_%u", tm, mesh->getMeshBufferCount());
 
-				material.Textures[0] = driver->addTexture(textureName, img);
+				material.setTexture(0, driver->addTexture(textureName, img));
 
-				if (material.Textures[0])
+				if (material.getTexture(0))
 				{
 					c8 tmp[255];
 					sprintf(tmp, "Generated terrain texture (%dx%d): %s",
-						material.Textures[0]->getSize().Width,
-						material.Textures[0]->getSize().Height,
+						material.getTexture(0)->getSize().Width,
+						material.getTexture(0)->getSize().Height,
 						textureName);
 					os::Printer::log(tmp);
 				}
