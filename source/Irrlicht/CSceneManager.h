@@ -468,7 +468,7 @@ namespace scene
 				textureValue = 0;
 
 				if (n->getMaterialCount())
-					textureValue = (n->getMaterial(0).Textures[0]);
+					textureValue = (n->getMaterial(0).getTexture(0));
 
 				node = n;
 			}
@@ -488,7 +488,7 @@ namespace scene
 
 			ShaderNodeEntry(ISceneNode* n, u32 sceneTime )
 			{
-				textureValue = n->getMaterial( sceneTime ).Textures[0];
+				textureValue = n->getMaterial( sceneTime ).getTexture(0);
 
 				node = n;
 			}

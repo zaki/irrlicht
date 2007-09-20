@@ -562,13 +562,13 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				if (buffer->Material.MaterialType == video::EMT_REFLECTION_2_LAYER)
 				{
 					buffer->Material.Lighting = true;
-					buffer->Material.Textures[1] = matEnt->Texture1;
-					buffer->Material.Textures[0] = matEnt->Texture2;
+					buffer->Material.setTexture(1, matEnt->Texture1);
+					buffer->Material.setTexture(0, matEnt->Texture2);
 				}
 				else
 				{
-					buffer->Material.Textures[0] = matEnt->Texture1;
-					buffer->Material.Textures[1] = matEnt->Texture2;
+					buffer->Material.setTexture(0, matEnt->Texture1);
+					buffer->Material.setTexture(1, matEnt->Texture2);
 				}
 
 				if (buffer->Material.MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
@@ -601,8 +601,8 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			}
 			else
 			{
-				buffer->Material.Textures[0] = 0;
-				buffer->Material.Textures[1] = 0;
+				buffer->Material.setTexture(0, 0);
+				buffer->Material.setTexture(1, 0);
 
 				buffer->Material.AmbientColor = video::SColor(255, 255, 255, 255);
 				buffer->Material.DiffuseColor =	video::SColor(255, 255, 255, 255);
@@ -626,7 +626,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				}
 			}
 			else if (
-				!buffer->Material.Textures[1] &&
+				!buffer->Material.getTexture(1) &&
 				buffer->Material.MaterialType != video::EMT_TRANSPARENT_ALPHA_CHANNEL &&
 				buffer->Material.MaterialType != video::EMT_SPHERE_MAP)
 			{

@@ -359,7 +359,7 @@ namespace scene
 				return;
 
 			for (u32 i=0; i<getMaterialCount(); ++i)
-				getMaterial(i).Textures[textureLayer] = texture;
+				getMaterial(i).setTexture(textureLayer, texture);
 		}
 
 

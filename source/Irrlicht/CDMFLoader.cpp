@@ -387,8 +387,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				lig->regenerateMipMapLevels();
 			}
 
-			buffer->Material.Textures[0]=tex;
-			buffer->Material.Textures[1]=lig;
+			buffer->Material.setTexture(0, tex);
+			buffer->Material.setTexture(1, lig);
 		}
 
 		delete verts;
@@ -402,7 +402,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 	{
 		if (Mesh->MeshBuffers[i]->getVertexCount() == 0 ||
 			Mesh->MeshBuffers[i]->getIndexCount() == 0 ||
-			Mesh->MeshBuffers[i]->getMaterial().Textures[0] == 0)
+			Mesh->MeshBuffers[i]->getMaterial().getTexture(0) == 0)
 		{
 			// Meshbuffer is empty -- drop it
 			Mesh->MeshBuffers[i]->drop();

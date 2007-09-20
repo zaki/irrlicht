@@ -631,10 +631,10 @@ s32 CQ3LevelMesh::setShaderMaterial ( video::SMaterial &material, const tBSPFace
 	material.Wireframe = false;
 	material.Lighting = false;
 	material.BackfaceCulling = true;
-	material.Textures[0] = 0;
-	material.Textures[1] = 0;
-	material.Textures[2] = 0;
-	material.Textures[3] = 0;
+	material.setTexture(0, 0);
+	material.setTexture(1, 0);
+	material.setTexture(2, 0);
+	material.setTexture(3, 0);
 	material.ZBuffer = true;
 	material.ZWriteEnable = true;
 	material.MaterialTypeParam = 0.f;
@@ -643,13 +643,13 @@ s32 CQ3LevelMesh::setShaderMaterial ( video::SMaterial &material, const tBSPFace
 
 	if ( face->textureID >= 0 )
 	{
-		material.Textures[0] = Tex [ face->textureID ].Texture;
+		material.setTexture(0, Tex [ face->textureID ].Texture);
 		shaderState = Tex [ face->textureID ].ShaderID;
 	}
 
 	if ( face->lightmapID >= 0 )
 	{
-		material.Textures[1] = Lightmap [ face->lightmapID ];
+		material.setTexture(1, Lightmap [ face->lightmapID ]);
 		material.MaterialType = quake3::defaultLightMap;
 	}
 
@@ -674,7 +674,7 @@ s32 CQ3LevelMesh::setShaderMaterial ( video::SMaterial &material, const tBSPFace
 		if ( group->isDefined ( "surfaceparm", "nolightmap" ) )
 		{
 			material.MaterialType = video::EMT_SOLID;
-			material.Textures[1] = 0;
+			material.setTexture(1, 0);
 		}
 
 	}
@@ -763,7 +763,7 @@ void CQ3LevelMesh::constructMesh2()
 				{
 					if ( 0 == shader )
 					{
-						item.takeVertexColor = material.Textures[0] == 0 || material.Textures[1] == 0;
+						item.takeVertexColor = material.getTexture(0) == 0 || material.getTexture(1) == 0;
 						item.index = quake3::E_Q3_MESH_GEOMETRY;
 						toBuffer.push_back ( item );
 					}
@@ -837,7 +837,7 @@ void CQ3LevelMesh::constructMesh2()
 			{
 				if ( 0 == toBuffer[g].takeVertexColor )
 				{
-					toBuffer[g].takeVertexColor = material.Textures[0] == 0 || material.Textures[1];
+					toBuffer[g].takeVertexColor = material.getTexture(0) == 0 || material.getTexture(1);
 				}
 				if (Faces[i].lightmapID < -1 || Faces[i].lightmapID > NumLightMaps-1)
 				{
@@ -1680,20 +1680,20 @@ void CQ3LevelMesh::loadTextures()
 
 	// attach textures to materials.
 	for (s32 l=0; l<NumLightMaps+1; ++l)
+	{
 		for (t=0; t<NumTextures+1; ++t)
 		{
 			SMeshBufferLightMap* b = (SMeshBufferLightMap*)Mesh[0]->getMeshBuffer(l*(NumTextures+1) + t);
-			b->Material.Textures[1] = lig[l];
-			b->Material.Textures[0] = tex[t];
+			b->Material.setTexture(1, lig[l]);
+			b->Material.setTexture(0, tex[t]);
 
-			if (!b->Material.Textures[1])
+			if (!b->Material.getTexture(1))
 				b->Material.MaterialType = video::EMT_SOLID;
 
-			if ( !b->Material.Textures[0] )
+			if (!b->Material.getTexture(0))
  				b->Material.MaterialType = video::EMT_SOLID;
-
 		}
-
+	}
 }
 
 // delete all buffers without geometry in it.
@@ -1708,7 +1708,7 @@ void CQ3LevelMesh::cleanMeshes ()
 		{
 			if (Mesh[g]->MeshBuffers[i]->getVertexCount() == 0 ||
 				Mesh[g]->MeshBuffers[i]->getIndexCount() == 0 ||
-				( texture0important && Mesh[g]->MeshBuffers[i]->getMaterial().Textures[0] == 0 )
+				( texture0important && Mesh[g]->MeshBuffers[i]->getMaterial().getTexture(0) == 0 )
 				)
 			{
 				// delete Meshbuffer

@@ -1258,13 +1258,13 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 			// original name
 			SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() );
 			// mesh path
-			if (!material.Textures[0])
+			if (!material.getTexture(0))
 			{
 				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
-				material.Textures[0]=SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() );
+				material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
 			}
 			// working directory
-			if (!material.Textures[0])
+			if (!material.getTexture(0))
 				SceneManager->getVideoDriver()->getTexture ( stripPathFromString(TextureFileName,false).c_str() );
 		}
 		else

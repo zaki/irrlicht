@@ -869,9 +869,9 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		}
 
 		if (B3dMaterial.Textures[0] != 0)
-			B3dMaterial.Material->Textures[0] = B3dMaterial.Textures[0]->Texture;
+			B3dMaterial.Material->setTexture(0, B3dMaterial.Textures[0]->Texture);
 		if (B3dMaterial.Textures[1] != 0)
-			B3dMaterial.Material->Textures[1] = B3dMaterial.Textures[1]->Texture;
+			B3dMaterial.Material->setTexture(1, B3dMaterial.Textures[1]->Texture);
 
 		//If the first texture is empty:
 		if (B3dMaterial.Textures[1] != 0 && B3dMaterial.Textures[0] == 0)

@@ -16,7 +16,9 @@ a quake 3 level. I will not explain it, because it should already be known from 
 
 using namespace irr;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 
 int main()
@@ -155,7 +157,7 @@ int main()
 	// add 3 animated faeries.
 
 	video::SMaterial material;
-	material.Textures[0] = driver->getTexture("../../media/faerie2.bmp");
+	material.setTexture(0, driver->getTexture("../../media/faerie2.bmp"));
 	material.Lighting = true;
 
 	scene::IAnimatedMeshSceneNode* node = 0;
@@ -179,7 +181,7 @@ int main()
 		node->getMaterial(0) = material;
 	}
 
-	material.Textures[0] = 0;
+	material.setTexture(0, 0);
 	material.Lighting = false;
 
 	// Add a light

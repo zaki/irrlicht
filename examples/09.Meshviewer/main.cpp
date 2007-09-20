@@ -458,6 +458,7 @@ int main()
 	video::IVideoDriver* driver = Device->getVideoDriver();
 	IGUIEnvironment* env = Device->getGUIEnvironment();
 	scene::ISceneManager* smgr = Device->getSceneManager();
+	smgr->getParameters()->setAttribute(scene::COLLADA_CREATE_SCENE_INSTANCES, true);
 
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 

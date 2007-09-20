@@ -472,7 +472,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	case ETS_TEXTURE_3:
 	{
 		const u32 i = state - ETS_TEXTURE_0;
-		const bool isRTT = (Material.Textures[i] && Material.Textures[i]->isRenderTarget());
+		const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
 
 		if (MultiTextureExtension)
 			extGlActiveTexture(GL_TEXTURE0_ARB + i);
@@ -482,9 +482,9 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			glLoadIdentity();
 		else
 		{
-			createGLTextureMatrix(glmat, mat );
+			createGLTextureMatrix(glmat, mat);
 			if (isRTT)
-				glmat[5] *= -1;
+				glmat[5] *= -1.0f;
 			glLoadMatrixf(glmat);
 		}
 		break;
@@ -1281,7 +1281,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// Filtering has to be set for each texture layer
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
-		if (!material.Textures[i])
+		if (!material.getTexture(i))
 			continue;
 		if (MultiTextureExtension)
 			extGlActiveTexture(GL_TEXTURE0_ARB + i);
@@ -1289,19 +1289,19 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			break;
 
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-			(material.BilinearFilter[i] || material.TrilinearFilter[i]) ? GL_LINEAR : GL_NEAREST);
+			(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
-		if (material.Textures[i] && material.Textures[i]->hasMipMaps())
+		if (material.getTexture(i) && material.getTexture(i)->hasMipMaps())
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				material.TrilinearFilter[i] ? GL_LINEAR_MIPMAP_LINEAR : material.BilinearFilter[i] ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST );
+				material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR : material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST );
 		else
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				(material.BilinearFilter[i] || material.TrilinearFilter[i]) ? GL_LINEAR : GL_NEAREST);
+				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
 #ifdef GL_EXT_texture_filter_anisotropic
 		if (AnisotropyExtension)
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-				material.AnisotropicFilter[i] ? MaxAnisotropy : 1.0f );
+				material.TextureLayer[i].AnisotropicFilter ? MaxAnisotropy : 1.0f );
 #endif
 	}
 
@@ -1397,10 +1397,10 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// texture address mode
 	for (u32 u=0; u<MaxTextureUnits; ++u)
 	{
-		if (resetAllRenderStates || lastmaterial.TextureWrap[u] != material.TextureWrap[u])
+		if (resetAllRenderStates || lastmaterial.TextureLayer[u].TextureWrap != material.TextureLayer[u].TextureWrap)
 		{
 			GLint mode=GL_REPEAT;
-			switch (material.TextureWrap[u])
+			switch (material.TextureLayer[u].TextureWrap)
 			{
 				case ETC_REPEAT:
 					mode=GL_REPEAT;
@@ -2399,10 +2399,9 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 }
 #endif // _IRR_USE_SDL_DEVICE_
 
-} // end namespace
-} // end namespace
 
+} // end namespace
+} // end namespace
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
-
 

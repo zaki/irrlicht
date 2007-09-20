@@ -776,7 +776,7 @@ void CColladaFileLoader::readMaterial(io::IXMLReaderUTF8* reader)
 			for (u32 i=0; i<Textures.size(); ++i)
 				if (textureName == Textures[i].Id)
 				{
-					material.Mat.Textures[0] = Textures[i].Texture;
+					material.Mat.setTexture(0, Textures[i].Texture);
 					break;
 				}
 		}

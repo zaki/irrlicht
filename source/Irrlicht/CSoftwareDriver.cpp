@@ -220,7 +220,7 @@ void CSoftwareDriver::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < 1; ++i)
 	{
-		setTexture(Material.Textures[i]);
+		setTexture(Material.getTexture(i));
 		setTransform ((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}

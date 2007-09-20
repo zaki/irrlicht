@@ -373,8 +373,8 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 			material=Materials[k].Techniques[0].Passes[0].Material;
 			if (Materials[k].Techniques[0].Passes[0].Texture.Filename.size())
 			{
-				material.Textures[0]=Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename.c_str());
-				if (!material.Textures[0])
+				material.setTexture(0, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename.c_str()));
+				if (!material.getTexture(0))
 				{
 					// retry with relative path
 					core::stringc relative = Materials[k].Techniques[0].Passes[0].Texture.Filename;
@@ -384,7 +384,7 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 					idx = relative.findLast('/');
 					if (idx != -1)
 						relative = relative.subString(idx+1, relative.size()-idx-1);
-					material.Textures[0] = Driver->getTexture((CurrentlyLoadingFromPath+"/"+relative).c_str());
+					material.setTexture(0, Driver->getTexture((CurrentlyLoadingFromPath+"/"+relative).c_str()));
 				}
 			}
 			break;

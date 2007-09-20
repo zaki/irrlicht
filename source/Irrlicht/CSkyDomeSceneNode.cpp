@@ -49,7 +49,7 @@ CSkyDomeSceneNode::CSkyDomeSceneNode(video::ITexture* sky, u32 horiRes, u32 vert
 	Buffer.Material.Lighting = false;
 	Buffer.Material.ZBuffer = false;
 	Buffer.Material.ZWriteEnable = false;
-	Buffer.Material.Textures[0] = sky;
+	Buffer.Material.setTexture(0, sky);
 	Buffer.BoundingBox.MaxEdge.set(0,0,0);
 	Buffer.BoundingBox.MinEdge.set(0,0,0);
 

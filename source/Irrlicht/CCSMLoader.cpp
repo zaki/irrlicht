@@ -457,8 +457,8 @@ namespace scene
 				lmapName += "LMAP_";
 				lmapName += (int)surface->getLightMapId();
 
-				buffer->Material.Textures[0] = texture;
-				buffer->Material.Textures[1] = driver->getTexture(lmapName.c_str());
+				buffer->Material.setTexture(0, texture);
+				buffer->Material.setTexture(1, driver->getTexture(lmapName.c_str()));
 				buffer->Material.Lighting = false;
 				buffer->Material.MaterialType = video::EMT_LIGHTMAP_M4;
 

@@ -1035,7 +1035,7 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 				os::Printer::log("Could not load a texture for entry in 3ds file",
 					Materials[i].Filename[0].c_str(), ELL_WARNING);
 			else
-				m->getMaterial().Textures[0] = texture;
+				m->getMaterial().setTexture(0, texture);
 		}
 
 		if (Materials[i].Filename[2].size())
@@ -1057,7 +1057,7 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 			}
 			else
 			{
-				m->getMaterial().Textures[0] = texture;
+				m->getMaterial().setTexture(0, texture);
 				m->getMaterial().MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 			}
 		}
@@ -1081,8 +1081,8 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 			}
 			else
 			{
-				m->getMaterial().Textures[1] = m->getMaterial().Textures[0];
-				m->getMaterial().Textures[0] = texture;
+				m->getMaterial().setTexture(1, m->getMaterial().getTexture(0));
+				m->getMaterial().setTexture(0, texture);
 				m->getMaterial().MaterialType = video::EMT_REFLECTION_2_LAYER;
 			}
 		}
@@ -1104,7 +1104,7 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 					Materials[i].Filename[4].c_str(), ELL_WARNING);
 			else
 			{
-				m->getMaterial().Textures[1] = texture;
+				m->getMaterial().setTexture(1, texture);
 				Driver->makeNormalMapTexture(texture, 9.0f);
 				m->getMaterial().MaterialType=video::EMT_PARALLAX_MAP_SOLID;
 				m->getMaterial().MaterialTypeParam=0.035f;
