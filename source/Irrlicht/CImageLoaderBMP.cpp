@@ -263,7 +263,7 @@ IImage* CImageLoaderBMP::loadImage(io::IReadFile* file) const
 		paletteData = new s32[paletteSize];
 		file->read(paletteData, paletteSize * sizeof(s32));
 #ifdef __BIG_ENDIAN__
-		for (u32 i=0; i<paletteSize; ++i)
+		for (s32 i=0; i<paletteSize; ++i)
 			paletteData[i] = os::Byteswap::byteswap(paletteData[i]);
 #endif
 	}
