@@ -48,7 +48,7 @@ public:
 		IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData);
 
 	//! Destructor
-	~COpenGLShaderMaterialRenderer();
+	virtual ~COpenGLShaderMaterialRenderer();
 
 	virtual void OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services);

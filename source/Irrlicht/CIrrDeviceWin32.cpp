@@ -221,8 +221,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		event.MouseInput.X = (short)LOWORD(lParam);
 		event.MouseInput.Y = (short)HIWORD(lParam);
 		dev = getDeviceFromHWnd(hWnd);
+
 		if (dev)
 			dev->postEventFromUser(event);
+
 		return 0;
 
 	case WM_KEYDOWN:

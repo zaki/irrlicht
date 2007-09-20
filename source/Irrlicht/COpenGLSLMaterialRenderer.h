@@ -63,7 +63,7 @@ public:
 		s32 userData);
 
 	//! Destructor
-	~COpenGLSLMaterialRenderer();
+	virtual ~COpenGLSLMaterialRenderer();
 
 	virtual void OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services);

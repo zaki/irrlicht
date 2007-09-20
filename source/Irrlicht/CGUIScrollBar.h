@@ -75,6 +75,8 @@ namespace gui
 		IGUIButton* UpButton;
 		IGUIButton* DownButton;
 
+		core::rect<s32> SliderRect;
+
 		bool Dragging;
 		bool Horizontal;
 		bool DraggedBySlider;
@@ -87,7 +89,6 @@ namespace gui
 		s32 LargeStep;
 		s32 DesiredPos;
 		u32 LastChange;
-		core::rect<s32> SliderRect;
 	};
 
 } // end namespace gui

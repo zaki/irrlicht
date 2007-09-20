@@ -23,10 +23,11 @@ namespace gui
 CGUIScrollBar::CGUIScrollBar(bool horizontal, IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
 				core::rect<s32> rectangle, bool noclip)
-: IGUIScrollBar(environment, parent, id, rectangle), UpButton(0), DownButton(0),
-	Dragging(false), DraggedBySlider(false), TrayClick(false),
-	Horizontal(horizontal), Pos(0), DrawPos(0), DrawHeight(0), Max(100), SmallStep(10), LargeStep(50), 
-	DesiredPos(0), LastChange(0), SliderRect()
+	: IGUIScrollBar(environment, parent, id, rectangle), UpButton(0),
+	DownButton(0), Dragging(false), Horizontal(horizontal),
+	DraggedBySlider(false), TrayClick(false), Pos(0), DrawPos(0),
+	DrawHeight(0), Max(100), SmallStep(10), LargeStep(50), DesiredPos(0),
+	LastChange(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIScrollBar");
@@ -63,7 +64,7 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 	case EET_KEY_INPUT_EVENT:
 		if (event.KeyInput.PressedDown)
 		{
-			s32 oldPos = Pos;
+			const s32 oldPos = Pos;
 			bool absorb = true;
 			switch (event.KeyInput.Key)
 			{
@@ -164,8 +165,8 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 				if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
 					Dragging = false;
 
-				s32 newPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
-				s32 oldPos = Pos;
+				const s32 newPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
+				const s32 oldPos = Pos;
 
 				if (!DraggedBySlider)
 				{
@@ -230,7 +231,7 @@ void CGUIScrollBar::draw()
 	{
 		LastChange = now;
 
-		s32 oldPos = Pos;
+		const s32 oldPos = Pos;
 
 		if (DesiredPos >= Pos + LargeStep)
 			setPos(Pos + LargeStep);
