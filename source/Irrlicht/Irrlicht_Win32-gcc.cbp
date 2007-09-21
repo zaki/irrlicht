@@ -334,6 +334,8 @@
 		<Unit filename="CImageLoaderPCX.h" />
 		<Unit filename="CImageLoaderPNG.cpp" />
 		<Unit filename="CImageLoaderPNG.h" />
+		<Unit filename="CImageLoaderPPM.cpp" />
+		<Unit filename="CImageLoaderPPM.h" />
 		<Unit filename="CImageLoaderPSD.cpp" />
 		<Unit filename="CImageLoaderPSD.h" />
 		<Unit filename="CImageLoaderTGA.cpp" />

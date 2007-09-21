@@ -1348,11 +1348,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CImageLoaderPNG.cpp"
+					RelativePath="CImageLoaderPNG.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CImageLoaderPNG.h"
+					RelativePath="CImageLoaderPNG.h"
+					>
+				</File>
+				<File
+					RelativePath="CImageLoaderPPM.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CImageLoaderPPM.h"
 					>
 				</File>
 				<File

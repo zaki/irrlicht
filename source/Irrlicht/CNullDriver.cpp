@@ -37,6 +37,9 @@ IImageLoader* createImageLoaderPCX();
 //! creates a loader which is able to load png images
 IImageLoader* createImageLoaderPNG();
 
+//! creates a loader which is able to load ppm/pgm/pbm images
+IImageLoader* createImageLoaderPPM();
+
 //! creates a loader which is able to load bmp images
 IImageWriter* createImageWriterBMP();
 
@@ -87,6 +90,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
 	SurfaceLoader.push_back(video::createImageLoaderPCX());
 	SurfaceLoader.push_back(video::createImageLoaderPNG());
+	SurfaceLoader.push_back(video::createImageLoaderPPM());
 
 	SurfaceWriter.push_back(video::createImageWriterBMP());
 	SurfaceWriter.push_back(video::createImageWriterJPG());
