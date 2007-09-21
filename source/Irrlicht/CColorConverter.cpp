@@ -29,7 +29,7 @@ void CColorConverter::convert1BitTo16Bit(const u8* in, s16* out, s32 width, s32 
 
 		for (s32 x=0; x<width; ++x)
 		{
-			out[x] = *in>>shift & 0x01 ? (s16)0xffff : (s16)0x0000;
+			out[x] = *in>>shift & 0x01 ? (s16)0xffff : (s16)0x8000;
 
 			if ((--shift)<0) // 8 pixel done
 			{
