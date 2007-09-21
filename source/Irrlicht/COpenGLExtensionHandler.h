@@ -770,15 +770,11 @@ class COpenGLExtensionHandler
 		PFNGLGETACTIVEUNIFORMARBPROC pGlGetActiveUniformARB;
 		PFNGLPOINTPARAMETERFARBPROC  pGlPointParameterfARB;
 		PFNGLPOINTPARAMETERFVARBPROC pGlPointParameterfvARB;
-		#ifdef GL_ATI_separate_stencil
 		PFNGLSTENCILFUNCSEPARATEPROC pGlStencilFuncSeparate;
 		PFNGLSTENCILOPSEPARATEPROC pGlStencilOpSeparate;
 		PFNGLSTENCILFUNCSEPARATEATIPROC pGlStencilFuncSeparateATI;
 		PFNGLSTENCILOPSEPARATEATIPROC pGlStencilOpSeparateATI;
-		#endif
-		#ifdef PFNGLCOMPRESSEDTEXIMAGE2DPROC
 		PFNGLCOMPRESSEDTEXIMAGE2DPROC pGlCompressedTexImage2D;
-		#endif
 		#ifdef _IRR_WINDOWS_API_
 		typedef BOOL (APIENTRY *PFNWGLSWAPINTERVALFARPROC)(int);
 		PFNWGLSWAPINTERVALFARPROC wglSwapIntervalEXT;
@@ -1182,10 +1178,8 @@ inline void COpenGLExtensionHandler::extGlCompressedTexImage2D (GLenum target, G
 		GLsizei height, GLint border, GLsizei imageSize, const void* data)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	#ifdef PFNGLCOMPRESSEDTEXIMAGE2DPROC
-		if (pGlCompressedTexImage2D)
-			pGlCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
-	#endif
+	if (pGlCompressedTexImage2D)
+		pGlCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
 #elif defined(GL_ARB_texture_compression)
 	glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
 #else

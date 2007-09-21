@@ -33,9 +33,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlUniformMatrix3fvARB(0), pGlUniformMatrix4fvARB(0), pGlGetActiveUniformARB(0), pGlPointParameterfARB(0), pGlPointParameterfvARB(0),
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
-	#ifdef PFNGLCOMPRESSEDTEXIMAGE2DPROC
-		pGlCompressedTexImage2D(0),
-	#endif
+	pGlCompressedTexImage2D(0),
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 	wglSwapIntervalEXT(0),
 #elif defined(GLX_SGI_swap_control)
@@ -147,9 +145,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlStencilOpSeparateATI = (PFNGLSTENCILOPSEPARATEATIPROC) wglGetProcAddress("glStencilOpSeparateATI");
 
 	// compressed textures
-	#ifdef PFNGLCOMPRESSEDTEXIMAGE2DPROC
 	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC) wglGetProcAddress("glCompressedTexImage2D");
-	#endif
 
         // FrameBufferObjects
         pGlBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) wglGetProcAddress("glBindFramebufferEXT");
@@ -298,10 +294,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glStencilOpSeparateATI"));
 
 	// compressed textures
-	#ifdef PFNGLCOMPRESSEDTEXIMAGE2DPROC
 	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompressedTexImage2D"));
-	#endif
 
 	#if defined(GLX_SGI_swap_control) && !defined(_IRR_USE_SDL_DEVICE_)
 		// get vsync extension
