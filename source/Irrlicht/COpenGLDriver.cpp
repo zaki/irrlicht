@@ -383,6 +383,8 @@ bool COpenGLDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 {
 	CNullDriver::endScene( windowId );
 
+	glFlush();
+
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 	return SwapBuffers(HDc) == TRUE;
 #elif defined(_IRR_USE_LINUX_DEVICE_)
@@ -410,7 +412,7 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 
 	if (backBuffer)
 	{
-		f32 inv = 1.0f / 255.0f;
+		const f32 inv = 1.0f / 255.0f;
 		glClearColor(color.getRed() * inv, color.getGreen() * inv,
 				color.getBlue() * inv, color.getAlpha() * inv);
 
@@ -658,8 +660,6 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			glDrawElements(GL_POLYGON, primitiveCount, GL_UNSIGNED_SHORT, indexList);
 			break;
 	}
-
-	glFlush();
 
 	if (MultiTextureExtension)
 	{
@@ -1983,7 +1983,6 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	glVertex3f(start.X, start.Y, start.Z);
 
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	glVertex3f(end.X, end.Y, end.Z);
 	glEnd();
 }
