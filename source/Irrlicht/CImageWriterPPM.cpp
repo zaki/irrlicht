@@ -1,5 +1,11 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageWriterPPM.h"
+
+#ifdef _IRR_COMPILE_WITH_PPM_WRITER_
+
 #include "IWriteFile.h"
 #include "IImage.h"
 #include "dimension2d.h"
@@ -66,3 +72,6 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 
 } // namespace video
 } // namespace irr
+
+#endif
+

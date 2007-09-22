@@ -5,6 +5,10 @@
 #ifndef __C_IMAGE_LOADER_BMP_H_INCLUDED__
 #define __C_IMAGE_LOADER_BMP_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_BMP_LOADER_
+
 #include "IImageLoader.h"
 
 
@@ -101,5 +105,6 @@ private:
 } // end namespace irr
 
 
+#endif
 #endif
 

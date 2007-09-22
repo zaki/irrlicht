@@ -5,6 +5,10 @@
 #ifndef __C_IMAGE_LOADER_PPM_H_INCLUDED__
 #define __C_IMAGE_LOADER_PPM_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_PPM_LOADER_
+
 #include "IImageLoader.h"
 #include "irrString.h"
 
@@ -16,7 +20,7 @@ namespace video
 
 
 /*!
-	Surface Loader for Windows bitmaps
+	Surface Loader for SUN Pixmaps
 */
 class CImageLoaderPPM : public IImageLoader
 {
@@ -46,5 +50,6 @@ private:
 } // end namespace irr
 
 
+#endif
 #endif
 

@@ -1,12 +1,17 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageWriterJPG.h"
+
+#ifdef _IRR_COMPILE_WITH_JPG_WRITER_
+
 #include "CColorConverter.h"
 #include "IWriteFile.h"
 #include "CImage.h"
 #include "CColorConverter.h"
 #include "irrString.h"
 
-#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_LIBJPEG_
 #include <stdio.h> // required for jpeglib.h
 extern "C"
@@ -226,4 +231,6 @@ bool CImageWriterJPG::writeImage(io::IWriteFile *file, IImage *input,u32 quality
 
 } // namespace video
 } // namespace irr
+
+#endif
 

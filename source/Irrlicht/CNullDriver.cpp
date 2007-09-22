@@ -84,21 +84,49 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 
 	// create surface loader
 
+#ifdef _IRR_COMPILE_WITH_BMP_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderBMP());
+#endif
+#ifdef _IRR_COMPILE_WITH_JPG_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderJPG());
+#endif
+#ifdef _IRR_COMPILE_WITH_TGA_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderTGA());
+#endif
+#ifdef _IRR_COMPILE_WITH_PSD_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPSD());
+#endif
+#ifdef _IRR_COMPILE_WITH_PCX_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPCX());
+#endif
+#ifdef _IRR_COMPILE_WITH_PNG_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPNG());
+#endif
+#ifdef _IRR_COMPILE_WITH_PPM_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPPM());
+#endif
 
+#ifdef _IRR_COMPILE_WITH_BMP_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterBMP());
+#endif
+#ifdef _IRR_COMPILE_WITH_JPG_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterJPG());
+#endif
+#ifdef _IRR_COMPILE_WITH_TGA_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterTGA());
+#endif
+#ifdef _IRR_COMPILE_WITH_PSD_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterPSD());
+#endif
+#ifdef _IRR_COMPILE_WITH_PCX_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterPCX());
+#endif
+#ifdef _IRR_COMPILE_WITH_PNG_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterPNG());
+#endif
+#ifdef _IRR_COMPILE_WITH_PPM_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterPPM());
+#endif
 
 	// set ExposedData to 0
 	memset(&ExposedData, 0, sizeof(ExposedData));

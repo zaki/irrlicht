@@ -1,5 +1,13 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
 #ifndef _C_IMAGE_WRITER_PCX_H_INCLUDED__
 #define _C_IMAGE_WRITER_PCX_H_INCLUDED__
+
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_PCX_WRITER_
 
 #include "IImageWriter.h"
 
@@ -24,5 +32,6 @@ public:
 } // namespace video
 } // namespace irr
 
+#endif
 #endif // _C_IMAGE_WRITER_PCX_H_INCLUDED__
 

@@ -2,7 +2,9 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h"
+#include "CImageLoaderPNG.h"
+
+#ifdef _IRR_COMPILE_WITH_PNG_LOADER_
 
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
 	#ifndef _IRR_USE_NON_SYSTEM_LIB_PNG_
@@ -12,7 +14,6 @@
 	#endif // _IRR_USE_NON_SYSTEM_LIB_PNG_
 #endif // _IRR_COMPILE_WITH_LIBPNG_
 
-#include "CImageLoaderPNG.h"
 #include "CImage.h"
 #include "CReadFile.h"
 #include "os.h"
@@ -45,15 +46,6 @@ void PNGAPI user_read_data_fcn(png_structp png_ptr, png_bytep data, png_size_t l
 }
 #endif // _IRR_COMPILE_WITH_LIBPNG_
 
-CImageLoaderPng::CImageLoaderPng()
-{
-	// do something?
-}
-
-CImageLoaderPng::~CImageLoaderPng()
-{
-	// do something?
-}
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
@@ -275,4 +267,6 @@ IImageLoader* createImageLoaderPNG()
 
 }// end namespace irr
 }//end namespace video
+
+#endif
 

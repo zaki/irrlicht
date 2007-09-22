@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageLoaderPPM.h"
+
+#ifdef _IRR_COMPILE_WITH_PPM_LOADER_
+
 #include "IReadFile.h"
 #include "CColorConverter.h"
 #include "CImage.h"
@@ -269,4 +272,6 @@ IImageLoader* createImageLoaderPPM()
 
 } // end namespace video
 } // end namespace irr
+
+#endif
 

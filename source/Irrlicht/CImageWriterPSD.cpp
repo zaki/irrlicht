@@ -1,5 +1,11 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageWriterPSD.h"
+
+#ifdef _IRR_COMPILE_WITH_PSD_WRITER_
+
 #include "CImageLoaderPSD.h"
 #include "IWriteFile.h"
 #include "os.h" // for logging
@@ -35,3 +41,6 @@ bool CImageWriterPSD::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 
 } // namespace video
 } // namespace irr
+
+#endif
+

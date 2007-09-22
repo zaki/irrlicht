@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageLoaderJPG.h"
+
+#ifdef _IRR_COMPILE_WITH_JPG_LOADER_
+
 #include "IReadFile.h"
 #include "CImage.h"
 #include "os.h"
@@ -252,4 +255,6 @@ IImageLoader* createImageLoaderJPG()
 
 } // end namespace video
 } // end namespace irr
+
+#endif
 
