@@ -265,6 +265,36 @@ B3D, MS3D or X meshes */
 //! Define _IRR_COMPILE_WITH_STL_WRITER_ if you want to write .stl files
 #define _IRR_COMPILE_WITH_STL_WRITER_
 
+//! Define _IRR_COMPILE_WITH_BMP_LOADER_ if you want to load .bmp files
+#define _IRR_COMPILE_WITH_BMP_LOADER_
+//! Define _IRR_COMPILE_WITH_JPG_LOADER_ if you want to load .jpg files
+#define _IRR_COMPILE_WITH_JPG_LOADER_
+//! Define _IRR_COMPILE_WITH_PCX_LOADER_ if you want to load .pcx files
+#define _IRR_COMPILE_WITH_PCX_LOADER_
+//! Define _IRR_COMPILE_WITH_PNG_LOADER_ if you want to load .png files
+#define _IRR_COMPILE_WITH_PNG_LOADER_
+//! Define _IRR_COMPILE_WITH_PPM_LOADER_ if you want to load .ppm/.pgm/.pbm files
+#define _IRR_COMPILE_WITH_PPM_LOADER_
+//! Define _IRR_COMPILE_WITH_PSD_LOADER_ if you want to load .psd files
+#define _IRR_COMPILE_WITH_PSD_LOADER_
+//! Define _IRR_COMPILE_WITH_TGA_LOADER_ if you want to load .tga files
+#define _IRR_COMPILE_WITH_TGA_LOADER_
+
+//! Define _IRR_COMPILE_WITH_BMP_WRITER_ if you want to write .bmp files
+#define _IRR_COMPILE_WITH_BMP_WRITER_
+//! Define _IRR_COMPILE_WITH_JPG_WRITER_ if you want to write .jpg files
+#define _IRR_COMPILE_WITH_JPG_WRITER_
+//! Define _IRR_COMPILE_WITH_PCX_WRITER_ if you want to write .pcx files
+#define _IRR_COMPILE_WITH_PCX_WRITER_
+//! Define _IRR_COMPILE_WITH_PNG_WRITER_ if you want to write .png files
+#define _IRR_COMPILE_WITH_PNG_WRITER_
+//! Define _IRR_COMPILE_WITH_PPM_WRITER_ if you want to write .ppm files
+#define _IRR_COMPILE_WITH_PPM_WRITER_
+//! Define _IRR_COMPILE_WITH_PSD_WRITER_ if you want to write .psd files
+#define _IRR_COMPILE_WITH_PSD_WRITER_
+//! Define _IRR_COMPILE_WITH_TGA_WRITER_ if you want to write .tga files
+#define _IRR_COMPILE_WITH_TGA_WRITER_
+
 //! Set FPU settings
 /** Irrlicht should use approximate float and integer fpu techniques
 precision will be lower but speed higher. currently X86 only

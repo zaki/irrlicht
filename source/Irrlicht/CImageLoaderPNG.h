@@ -9,6 +9,10 @@
 #ifndef __C_IMAGE_LOADER_PNG_H_INCLUDED__
 #define __C_IMAGE_LOADER_PNG_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_PNG_LOADER_
+
 #include "IImageLoader.h"
 
 namespace irr
@@ -20,12 +24,6 @@ namespace video
 class CImageLoaderPng : public IImageLoader
 {
 public:
-
-   //! constructor
-   CImageLoaderPng();
-
-   //! destructor
-   virtual ~CImageLoaderPng();
 
    //! returns true if the file maybe is able to be loaded by this class
    //! based on the file extension (e.g. ".png")
@@ -43,3 +41,5 @@ public:
 } // end namespace irr
 
 #endif
+#endif
+

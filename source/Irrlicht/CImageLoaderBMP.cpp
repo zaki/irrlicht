@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageLoaderBMP.h"
+
+#ifdef _IRR_COMPILE_WITH_BMP_LOADER_
+
 #include "IReadFile.h"
 #include "SColor.h"
 #include "CColorConverter.h"
@@ -359,4 +362,6 @@ IImageLoader* createImageLoaderBMP()
 
 } // end namespace video
 } // end namespace irr
+
+#endif
 

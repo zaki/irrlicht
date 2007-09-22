@@ -5,6 +5,10 @@
 #ifndef __C_IMAGE_LOADER_PCX_H_INCLUDED__
 #define __C_IMAGE_LOADER_PCX_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_PCX_LOADER_
+
 #include "IImageLoader.h"
 
 namespace irr
@@ -83,6 +87,6 @@ public:
 } // end namespace video
 } // end namespace irr
 
-
+#endif
 #endif
 

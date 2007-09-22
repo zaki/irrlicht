@@ -1,5 +1,11 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageWriterBMP.h"
+
+#ifdef _IRR_COMPILE_WITH_BMP_WRITER_
+
 #include "CImageLoaderBMP.h"
 #include "IWriteFile.h"
 #include "CColorConverter.h"
@@ -125,3 +131,6 @@ bool CImageWriterBMP::writeImage(io::IWriteFile* file, IImage* image, u32 param)
 
 } // namespace video
 } // namespace irr
+
+#endif
+

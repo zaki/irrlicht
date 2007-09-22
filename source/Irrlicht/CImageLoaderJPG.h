@@ -5,10 +5,12 @@
 #ifndef __C_IMAGE_LOADER_JPG_H_INCLUDED__
 #define __C_IMAGE_LOADER_JPG_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_JPG_LOADER_
+
 #include "IImageLoader.h"
 
-
-#include "IrrCompileConfig.h"
 #include <stdio.h> // required for jpeglib.h
 #ifdef _IRR_COMPILE_WITH_LIBJPEG_
 extern "C" {
@@ -106,5 +108,6 @@ private:
 } // end namespace irr
 
 
+#endif
 #endif
 

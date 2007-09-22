@@ -1,12 +1,17 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageWriterPNG.h"
+
+#ifdef _IRR_COMPILE_WITH_PNG_WRITER_
+
 #include "CImageLoaderPNG.h"
 #include "CColorConverter.h"
 #include "IWriteFile.h"
 #include "irrString.h"
 #include "os.h" // for logging
 
-#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
 #ifndef _IRR_USE_NON_SYSTEM_LIB_PNG_
 	#include <png.h> // use system lib png
@@ -198,3 +203,6 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 
 } // namespace video
 } // namespace irr
+
+#endif
+
