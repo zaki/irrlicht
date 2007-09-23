@@ -82,7 +82,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
    const core::list<ISceneNode*>& children = root->getChildren();
 
-   core::list<ISceneNode*>::Iterator it = children.begin();
+   core::list<ISceneNode*>::ConstIterator it = children.begin();
    for (; it != children.end(); ++it)
    {
       ISceneNode* current = *it;

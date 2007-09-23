@@ -81,7 +81,7 @@ namespace irr
 		//! You will not have to drop the pointer to the loaded texture, because
 		//! the name of the method does not start with 'create'. The texture
 		//! is stored somewhere by the driver.
-		void grab() { ++ReferenceCounter; }
+		void grab() const { ++ReferenceCounter; }
 
 		//! Drops the object. Decrements the reference counter by one.
 		//! Returns true, if the object was deleted.
@@ -109,7 +109,7 @@ namespace irr
 		//! You will not have to drop the pointer to the loaded texture, because
 		//! the name of the method does not start with 'create'. The texture
 		//! is stored somewhere by the driver.
-		bool drop()
+		bool drop() const
 		{
 			_IRR_DEBUG_BREAK_IF(ReferenceCounter <= 0) // someone is doing bad reference counting.
 
@@ -149,7 +149,7 @@ namespace irr
 
 	private:
 
-		s32	ReferenceCounter;
+		mutable s32 ReferenceCounter;
 		const c8* DebugName;
 	};
 

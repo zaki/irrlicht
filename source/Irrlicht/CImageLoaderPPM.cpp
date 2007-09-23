@@ -78,14 +78,14 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 		const u32 bytesize = size/8+(size & 3)?1:0;
 		if (binary)
 		{
-			if (file->getSize()-file->getPos() < bytesize)
+			if (file->getSize()-file->getPos() < (long)bytesize)
 				return 0;
 			data = new u8[bytesize];
 			file->read(data, bytesize);
 		}
 		else
 		{
-			if (file->getSize()-file->getPos() < 2*size) // optimistic test
+			if (file->getSize()-file->getPos() < (long)(2*size)) // optimistic test
 				return 0;
 			data = new u8[bytesize];
 			memset(data, 0, bytesize);
@@ -116,7 +116,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 		{
 			if (binary)
 			{
-				if (file->getSize()-file->getPos() < size)
+				if (file->getSize()-file->getPos() < (long)size)
 					return 0;
 				data = new u8[size];
 				file->read(data, size);
@@ -135,7 +135,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 			}
 			else
 			{
-				if (file->getSize()-file->getPos() < 2*size) // optimistic test
+				if (file->getSize()-file->getPos() < (long)(2*size)) // optimistic test
 					return 0;
 				image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(width, height));
 				if (image)
@@ -158,7 +158,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 			const u32 bytesize = 3*size;
 			if (binary)
 			{
-				if (file->getSize()-file->getPos() < bytesize)
+				if (file->getSize()-file->getPos() < (long)bytesize)
 					return 0;
 				data = new u8[bytesize];
 				file->read(data, bytesize);
@@ -177,7 +177,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 			}
 			else
 			{
-				if (file->getSize()-file->getPos() < 2*bytesize) // optimistic test
+				if (file->getSize()-file->getPos() < (long)(2*bytesize)) // optimistic test
 					return 0;
 				image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(width, height));
 				if (image)

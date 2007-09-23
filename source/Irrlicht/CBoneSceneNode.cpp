@@ -88,7 +88,7 @@ void CBoneSceneNode::helper_updateAbsolutePositionOfAllChildren(ISceneNode *Node
 {
 	Node->updateAbsolutePosition();
 
-	core::list<ISceneNode*>::Iterator it = Node->getChildren().begin();
+	core::list<ISceneNode*>::ConstIterator it = Node->getChildren().begin();
 	for (; it != Node->getChildren().end(); ++it)
 	{
 		helper_updateAbsolutePositionOfAllChildren( (*it) );

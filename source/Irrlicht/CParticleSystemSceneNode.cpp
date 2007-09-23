@@ -532,7 +532,7 @@ void CParticleSystemSceneNode::serializeAttributes(io::IAttributes* out, io::SAt
 
 	E_PARTICLE_AFFECTOR_TYPE atype = EPAT_NONE;
 
-	for (core::list<IParticleAffector*>::Iterator it = AffectorList.begin();
+	for (core::list<IParticleAffector*>::ConstIterator it = AffectorList.begin();
 		 it != AffectorList.end(); ++it)
 	{
 		atype = (*it)->getType();
