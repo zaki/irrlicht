@@ -139,7 +139,7 @@
 #include "irrTypes.h"
 #include "coreutil.h"
 
-/*! \mainpage Irrlicht Engine 1.3.1 API documentation
+/*! \mainpage Irrlicht Engine 1.4 API documentation
  *
  * <div align="center"><img src="logobig.png" ></div>
  *
