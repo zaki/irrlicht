@@ -676,7 +676,7 @@ public:
 	{
 		IGUIElement* e = 0;
 
-		core::list<IGUIElement*>::Iterator it = Children.begin();
+		core::list<IGUIElement*>::ConstIterator it = Children.begin();
 		for (; it != Children.end(); ++it)
 		{
 			if ((*it)->getID() == id)
@@ -727,7 +727,7 @@ public:
 		if (wanted==-2)
 			wanted = 1073741824; // maximum s32
 
-		core::list<IGUIElement*>::Iterator it = Children.begin();
+		core::list<IGUIElement*>::ConstIterator it = Children.begin();
 
 		s32 closestOrder, currentOrder;
 

@@ -827,7 +827,7 @@ void CGUIEnvironment::writeGUIElement(io::IXMLWriter* writer, IGUIElement* node)
 
 	// write children
 
-	core::list<IGUIElement*>::Iterator it = node->getChildren().begin();
+	core::list<IGUIElement*>::ConstIterator it = node->getChildren().begin();
 	for (; it != node->getChildren().end(); ++it)
 	{
 		if (!(*it)->isSubElement())

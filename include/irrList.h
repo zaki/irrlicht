@@ -29,66 +29,105 @@ private:
 	};
 
 public:
+	class ConstIterator;
 
 	//! List iterator.
 	class Iterator
 	{
 	public:
+		Iterator() : Current(0) {}
 
-		Iterator() : Current(0) {};
+		Iterator& operator ++()    { Current = Current->Next; return *this; }
+		Iterator& operator --()    { Current = Current->Prev; return *this; }
+		Iterator  operator ++(s32) { Iterator tmp = *this; Current = Current->Next; return tmp; }
+		Iterator  operator --(s32) { Iterator tmp = *this; Current = Current->Prev; return tmp; }
 
-		Iterator& operator ++() { Current = Current->Next; return *this; };
-		Iterator& operator --() { Current = Current->Prev; return *this; };
-		Iterator operator ++(s32) { Iterator tmp = *this; Current = Current->Next; return tmp; };
-		Iterator operator --(s32) { Iterator tmp = *this; Current = Current->Prev; return tmp; };
-
-		Iterator operator+(s32 num) const
+		Iterator& operator +=(s32 num)
 		{
-			Iterator tmp = *this;
-
-			if (num >= 0)
-				while (num-- && tmp.Current != 0) ++tmp;
-			else
-				while (num++ && tmp.Current != 0) --tmp;
-
-			return tmp;
-		}
-
-		Iterator& operator+=(s32 num)
-		{
-			if (num >= 0)
+			if(num > 0)
+			{
 				while (num-- && this->Current != 0) ++(*this);
+			}
 			else
-				while (num++ && this->Current != 0) --(*this);
-
+			{
+				while(num++ && this->Current != 0) --(*this);
+			}
 			return *this;
 		}
 
-		Iterator operator-(s32 num) const  { return (*this)+(-num);          }
-		Iterator operator-=(s32 num) const { (*this)+=(-num);  return *this; }
+		Iterator  operator + (s32 num) const { Iterator tmp = *this; return tmp += num; }
+		Iterator& operator -=(s32 num) const { return (*this)+=(-num); }
+		Iterator  operator - (s32 num) const { return (*this)+ (-num); }
 
-		bool operator ==(const Iterator& other) const { return Current == other.Current; };
-		bool operator !=(const Iterator& other) const { return Current != other.Current; };
+		bool operator ==(const Iterator&      other) const { return Current == other.Current; }
+		bool operator !=(const Iterator&      other) const { return Current != other.Current; }
+		bool operator ==(const ConstIterator& other) const { return Current == other.Current; }
+		bool operator !=(const ConstIterator& other) const { return Current != other.Current; }
 
-		T& operator *() { return Current->Element; };
+		T & operator * () { return Current->Element;  }
+		T * operator ->() { return &Current->Element; }
 
 	private:
-
-		Iterator(SKListNode* begin) : Current(begin) {};
-
-		friend class list<T>;
+		Iterator(SKListNode* begin) : Current(begin) {}
 
 		SKListNode* Current;
+
+		friend class list<T>;
 	};
 
+	class ConstIterator
+	{
+	public:
+
+		ConstIterator() : Current(0) {}
+
+		ConstIterator& operator ++()    { Current = Current->Next; return *this; }
+		ConstIterator& operator --()    { Current = Current->Prev; return *this; }
+		ConstIterator  operator ++(s32) { Iterator tmp = *this; Current = Current->Next; return tmp; }
+		ConstIterator  operator --(s32) { Iterator tmp = *this; Current = Current->Prev; return tmp; }
+
+		ConstIterator& operator +=(s32 num)
+		{
+			if(num > 0)
+			{
+				while(num-- && this->Current != 0) ++(*this);
+			}
+			else
+			{
+				while(num++ && this->Current != 0) --(*this);
+			}
+			return *this;
+		}
+
+		ConstIterator  operator + (s32 num) const { ConstIterator tmp = *this; return tmp += num; }
+		ConstIterator& operator -=(s32 num) const { return (*this)+=(-num); }
+		ConstIterator  operator - (s32 num) const { return (*this)+ (-num); }
+
+		bool operator ==(const ConstIterator& other) const { return Current == other.Current; }
+		bool operator !=(const ConstIterator& other) const { return Current != other.Current; }
+		bool operator ==(const Iterator&      other) const { return Current == other.Current; }
+		bool operator !=(const Iterator&      other) const { return Current != other.Current; }
+
+		const T & operator * () { return Current->Element; }
+		const T * operator ->() { return &Current->Element; }
+
+		ConstIterator & operator =(const Iterator & iterator) { Current = iterator.Current; return *this; }
+
+	private:
+		ConstIterator(SKListNode* begin) : Current(begin) {}
+
+		SKListNode* Current;
+
+		friend class list<T>;
+	};
 
 	//! constructor
 	list()
-		: Root(0), Last(0), Size(0) {}
+		: First(0), Last(0), Size(0) {}
 
 
 	//! copy constructor
-	list(const list<T>& other) : Root(0), Last(0), Size(0)
+	list(const list<T>& other) : First(0), Last(0), Size(0)
 	{
 		*this = other;
 	}
@@ -101,19 +140,23 @@ public:
 	}
 
 
+	//! Assignment operator
+	void operator=(const list<T>& other)
+	{
+		if(&other == this)
+		{
+			return;
+		}
 
-	//! Assignment operator 
-	void operator=(const list<T>& other) 
-	{ 
 		clear();
- 
-		SKListNode* node = other.Root; 
-		while(node) 
-		{ 
-			push_back(node->Element); 
-			node = node->Next; 
-		} 
-	} 
+
+		SKListNode* node = other.First;
+		while(node)
+		{
+			push_back(node->Element);
+			node = node->Next;
+		}
+	}
 
 
 
@@ -130,15 +173,14 @@ public:
 	//! iterators of this list will be invalid.
 	void clear()
 	{
-		SKListNode* node = Root;
-		while(node)
+		while(First)
 		{
-			SKListNode* next = node->Next;
-			delete node;
-			node = next;
+			SKListNode * next = First->Next;
+			delete First;
+			First = next;
 		}
 
-		Root = 0;
+		//First = 0; handled by loop
 		Last = 0;
 		Size = 0;
 	}
@@ -149,7 +191,7 @@ public:
 	//! \return Returns true if the list is empty and false if not.
 	bool empty() const
 	{
-		return (Root == 0);
+		return (First == 0);
 	}
 
 
@@ -163,8 +205,8 @@ public:
 
 		++Size;
 
-		if (Root == 0)
-			Root = node;
+		if (First == 0)
+			First = node;
 
 		node->Prev = Last;
 
@@ -184,41 +226,65 @@ public:
 
 		++Size;
 
-		if (Root == 0)
+		if (First == 0)
 		{
 			Last = node;
-			Root = node;
+			First = node;
 		}
 		else
 		{
-			node->Next = Root;
-			Root->Prev = node;
-			Root = node;
+			node->Next = First;
+			First->Prev = node;
+			First = node;
 		}
 	}
 
 
 	//! Gets begin node.
 	//! \return Returns a list iterator pointing to the begin of the list.
-	Iterator begin() const
+	Iterator begin()
 	{
-		return Iterator(Root);
+		return Iterator(First);
+	}
+
+
+	//! Gets begin node.
+	//! \return Returns a list iterator pointing to the begin of the list.
+	ConstIterator begin() const
+	{
+		return ConstIterator(First);
 	}
 
 
 	//! Gets end node.
 	//! \return Returns a list iterator pointing to null.
-	Iterator end() const
+	Iterator end()
 	{
 		return Iterator(0);
 	}
 
 
+	//! Gets end node.
+	//! \return Returns a list iterator pointing to null.
+	ConstIterator end() const
+	{
+		return ConstIterator(0);
+	}
+
+
 	//! Gets last element.
 	//! \return Returns a list iterator pointing to the end of the list.
-	Iterator getLast() const
+	Iterator getLast()
 	{
 		return Iterator(Last);
+	}
+
+
+	//! Gets last element.
+	//! \return Returns a list iterator pointing to the end of the list.
+	ConstIterator getLast() const
+	{
+		return ConstIterator(Last);
 	}
 
 
@@ -226,7 +292,7 @@ public:
 	//! \param it: Iterator pointing to element after which the new element
 	//! should be inserted.
 	//! \param element: The new element to be inserted into the list.
-	void insert_after(Iterator& it, const T& element)
+	void insert_after(const Iterator& it, const T& element)
 	{
 		SKListNode* node = new SKListNode;
 		node->Element = element;
@@ -249,7 +315,7 @@ public:
 	//! \param it: Iterator pointing to element before which the new element
 	//! should be inserted.
 	//! \param element: The new element to be inserted into the list.
-	void insert_before(Iterator& it, const T& element)
+	void insert_before(const Iterator& it, const T& element)
 	{
 		SKListNode* node = new SKListNode;
 		node->Element = element;
@@ -263,8 +329,8 @@ public:
 		it.Current->Prev = node;
 		++Size;
 
-		if (it.Current == Root)
-			Root = node;
+		if (it.Current == First)
+			First = node;
 	}
 
 
@@ -273,20 +339,29 @@ public:
 	//! \return Returns iterator pointing to next element.
 	Iterator erase(Iterator& it)
 	{
+		// suggest changing this to a const Iterator& and
+		// working around line: it.Current = 0 (possibly with a mutable, or just let it be garbage?)
+
 		Iterator returnIterator(it);
 		++returnIterator;
 
-		if (it.Current == Root)
-			Root = it.Current->Next;
-
-		if (it.Current == Last)
-			Last = it.Current->Prev;
-
-		if (it.Current->Next)
-			it.Current->Next->Prev = it.Current->Prev;
-
-		if (it.Current->Prev)
+		if(it.Current == First)
+		{
+			First = it.Current->Next;
+		}
+		else
+		{
 			it.Current->Prev->Next = it.Current->Next;
+		}
+
+		if(it.Current == Last)
+		{
+			Last = it.Current->Prev;
+		}
+		else
+		{
+			it.Current->Next->Prev = it.Current->Prev;
+		}
 
 		delete it.Current;
 		it.Current = 0;
@@ -297,7 +372,7 @@ public:
 
 private:
 
-	SKListNode* Root;
+	SKListNode* First;
 	SKListNode* Last;
 	u32 Size;
 
