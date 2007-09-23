@@ -6,7 +6,7 @@
 #define __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 //! Irrlicht SDK Version
-#define IRRLICHT_SDK_VERSION "1.4alpha"
+#define IRRLICHT_SDK_VERSION "1.4beta"
 
 //! The defines for different operating system are:
 //! _IRR_XBOX_PLATFORM_ for XBox
