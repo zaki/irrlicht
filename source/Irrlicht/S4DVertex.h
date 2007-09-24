@@ -457,7 +457,7 @@ struct sScanLineData
 /*
 	load a color value
 */
-inline void getTexel_plain (	tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b, 
 							const sVec4 &v
 							)
 {

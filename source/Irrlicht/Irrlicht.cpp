@@ -55,7 +55,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     switch (ul_reason_for_call)
 	{
 		case DLL_PROCESS_ATTACH:
-			#if defined(_DEBUG) && !defined(__GNUWIN32__)
+			#if defined(_DEBUG) && !defined(__GNUWIN32__) && !defined(__BORLANDC__)
 				_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
 			#endif
 			break;

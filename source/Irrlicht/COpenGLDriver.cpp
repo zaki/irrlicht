@@ -72,18 +72,25 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 		if (i == 1)
 		{
 			if (stencilBuffer)
+			{
 				os::Printer::log("Cannot create a GL device with stencil buffer, disabling stencil shadows.", ELL_WARNING);
-			stencilBuffer = false;
-			pfd.cStencilBits = 0;
+				stencilBuffer = false;
+				pfd.cStencilBits = 0;
+			}
+			else
+				continue;
 		}
 		else
 		if (i == 2)
 		{
 			pfd.cDepthBits = 24;
 		}
-		if (i == 3) // might be checked twice, but shouldn't matter
+		if (i == 3)
 		{
-			pfd.cDepthBits = 16;
+			if (bits!=16)
+				pfd.cDepthBits = 16;
+			else
+				continue;
 		}
 		else
 		if (i == 4)

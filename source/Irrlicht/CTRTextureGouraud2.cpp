@@ -241,7 +241,7 @@ void CTRTextureGouraud2::scanline_bilinear ()
 			tx0 = f32_to_fixPoint ( line.t0[0].x );
 			ty0 = f32_to_fixPoint ( line.t0[0].y );
 #ifdef IPOL_C0
-			getTexel_plain ( r1, g1, b1, line.c[0] );
+			getTexel_plain2 ( r1, g1, b1, line.c[0] );
 #endif
 #endif
 
