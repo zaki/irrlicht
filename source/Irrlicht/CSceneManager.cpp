@@ -702,12 +702,6 @@ ITerrainSceneNode* CSceneManager::addTerrainSceneNode(
 	bool addAlsoIfHeightmapEmpty)
 {
 	io::IReadFile* file = FileSystem->createAndOpenFile(heightMapFileName);
-	if (!file && !addAlsoIfHeightmapEmpty)
-	{
-		os::Printer::log("Could not load terrain, because file could not be opened.",
-			heightMapFileName, ELL_ERROR);
-		return 0;
-	}
 
 	ITerrainSceneNode* terrain = addTerrainSceneNode(file, parent, id,
 		position, rotation, scale, vertexColor, maxLOD, patchSize,
@@ -733,6 +727,13 @@ ITerrainSceneNode* CSceneManager::addTerrainSceneNode(
 {
 	if (!parent)
 		parent = this;
+
+	if (!heightMapFile && !addAlsoIfHeightmapEmpty)
+	{
+		os::Printer::log("Could not load terrain, because file could not be opened.",
+			heightMapFile->getFileName(), ELL_ERROR);
+		return 0;
+	}
 
 	CTerrainSceneNode* node = new CTerrainSceneNode(parent, this, FileSystem, id,
 		maxLOD, patchSize, position, rotation, scale);

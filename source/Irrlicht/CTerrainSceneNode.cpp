@@ -4,7 +4,8 @@
 
 // The code for the TerrainSceneNode is based on the GeoMipMapSceneNode
 // developed by Spintz. He made it available for Irrlicht and allowed it to be
-// distributed under this licence. I only modified some parts. A lot of thanks go to him.
+// distributed under this licence. I only modified some parts. A lot of thanks
+// go to him.
 
 #include "CTerrainSceneNode.h"
 #include "CTerrainTriangleSelector.h"
@@ -49,6 +50,7 @@ namespace scene
 		setAutomaticCulling( scene::EAC_OFF );
 	}
 
+
 	//! destructor
 	CTerrainSceneNode::~CTerrainSceneNode ( )
 	{
@@ -61,6 +63,7 @@ namespace scene
 		if (FileSystem)
 			FileSystem->drop();
 	}
+
 
 	//! Initializes the terrain data.  Loads the vertices from the heightMapFile
 	bool CTerrainSceneNode::loadHeightMap( io::IReadFile* file, video::SColor vertexColor, s32 smoothFactor )
@@ -84,35 +87,35 @@ namespace scene
 
 		switch( TerrainData.PatchSize )
 		{
-		    case ETPS_9:
-			if( TerrainData.MaxLOD > 3 )
-			{
-				TerrainData.MaxLOD = 3;
-			}
+			case ETPS_9:
+				if( TerrainData.MaxLOD > 3 )
+				{
+					TerrainData.MaxLOD = 3;
+				}
 			break;
-		    case ETPS_17:
-			if( TerrainData.MaxLOD > 4 )
-			{
-				TerrainData.MaxLOD = 4;
-			}
+			case ETPS_17:
+				if( TerrainData.MaxLOD > 4 )
+				{
+					TerrainData.MaxLOD = 4;
+				}
 			break;
-		    case ETPS_33:
-			if( TerrainData.MaxLOD > 5 )
-			{
-				TerrainData.MaxLOD = 5;
-			}
+			case ETPS_33:
+				if( TerrainData.MaxLOD > 5 )
+				{
+					TerrainData.MaxLOD = 5;
+				}
 			break;
-		    case ETPS_65:
-			if( TerrainData.MaxLOD > 6 )
-			{
-				TerrainData.MaxLOD = 6;
-			}
+			case ETPS_65:
+				if( TerrainData.MaxLOD > 6 )
+				{
+					TerrainData.MaxLOD = 6;
+				}
 			break;
-		    case ETPS_129:
-			if( TerrainData.MaxLOD > 7 )
-			{
-				TerrainData.MaxLOD = 7;
-			}
+			case ETPS_129:
+				if( TerrainData.MaxLOD > 7 )
+				{
+					TerrainData.MaxLOD = 7;
+				}
 			break;
 		}
 
@@ -180,12 +183,12 @@ namespace scene
 
 		// add the MeshBuffer to the mesh
 		Mesh.addMeshBuffer( pMeshBuffer );
-		s32 vertexCount = pMeshBuffer->getVertexCount();
+		const u32 vertexCount = pMeshBuffer->getVertexCount();
 
 		// We copy the data to the renderBuffer, after the normals have been calculated.
 		RenderBuffer.Vertices.set_used( vertexCount );
 
-		for( s32 i = 0; i < vertexCount; ++i )
+		for( u32 i = 0; i < vertexCount; ++i )
 		{
 			RenderBuffer.Vertices[i] = pMeshBuffer->Vertices[i];
 			RenderBuffer.Vertices[i].Pos *= TerrainData.Scale;
@@ -203,16 +206,16 @@ namespace scene
 		// set the default rotation pivot point to the terrain nodes center
 		TerrainData.RotationPivot = TerrainData.Center;
 
-		// Rotate the vertices of the terrain by the rotation specified.  Must be done
-		// after calculating the terrain data, so we know what the current center of the
-		// terrain is.
+		// Rotate the vertices of the terrain by the rotation
+		// specified.  Must be done after calculating the terrain data,
+		// so we know what the current center of the terrain is.
 		setRotation( TerrainData.Rotation );
 
 		// Pre-allocate memory for indices
 		RenderBuffer.Indices.set_used( TerrainData.PatchCount * TerrainData.PatchCount *
 			TerrainData.CalcPatchSize * TerrainData.CalcPatchSize * 6 );
 
-		u32 endTime = os::Timer::getRealTime();
+		const u32 endTime = os::Timer::getRealTime();
 
 		c8 tmp[255];
 		sprintf(tmp, "Generated terrain data (%dx%d) in %.4f seconds",
@@ -240,35 +243,35 @@ namespace scene
 
 		switch( TerrainData.PatchSize )
 		{
-		    case ETPS_9:
-			if( TerrainData.MaxLOD > 3 )
-			{
-				TerrainData.MaxLOD = 3;
-			}
+			case ETPS_9:
+				if( TerrainData.MaxLOD > 3 )
+				{
+					TerrainData.MaxLOD = 3;
+				}
 			break;
-		    case ETPS_17:
-			if( TerrainData.MaxLOD > 4 )
-			{
-				TerrainData.MaxLOD = 4;
-			}
+			case ETPS_17:
+				if( TerrainData.MaxLOD > 4 )
+				{
+					TerrainData.MaxLOD = 4;
+				}
 			break;
-		    case ETPS_33:
-			if( TerrainData.MaxLOD > 5 )
-			{
-				TerrainData.MaxLOD = 5;
-			}
+			case ETPS_33:
+				if( TerrainData.MaxLOD > 5 )
+				{
+					TerrainData.MaxLOD = 5;
+				}
 			break;
-		    case ETPS_65:
-			if( TerrainData.MaxLOD > 6 )
-			{
-				TerrainData.MaxLOD = 6;
-			}
+			case ETPS_65:
+				if( TerrainData.MaxLOD > 6 )
+				{
+					TerrainData.MaxLOD = 6;
+				}
 			break;
-		    case ETPS_129:
-			if( TerrainData.MaxLOD > 7 )
-			{
-				TerrainData.MaxLOD = 7;
-			}
+			case ETPS_129:
+				if( TerrainData.MaxLOD > 7 )
+				{
+					TerrainData.MaxLOD = 7;
+				}
 			break;
 		}
 
@@ -337,12 +340,12 @@ namespace scene
 
 		// add the MeshBuffer to the mesh
 		Mesh.addMeshBuffer( pMeshBuffer );
-		s32 vertexCount = pMeshBuffer->getVertexCount();
+		const u32 vertexCount = pMeshBuffer->getVertexCount();
 
 		// We copy the data to the renderBuffer, after the normals have been calculated.
 		RenderBuffer.Vertices.set_used( vertexCount );
 
-		for( s32 i = 0; i < vertexCount; i++ )
+		for( u32 i = 0; i < vertexCount; i++ )
 		{
 			RenderBuffer.Vertices[i] = pMeshBuffer->Vertices[i];
 			RenderBuffer.Vertices[i].Pos *= TerrainData.Scale;
@@ -992,6 +995,7 @@ namespace scene
 		core::vector3df a, b, c, t;
 
 		for (s32 x=0; x<TerrainData.Size; ++x)
+		{
 			for (s32 z=0; z<TerrainData.Size; ++z)
 			{
 				count = 0;
@@ -1104,6 +1108,7 @@ namespace scene
 
 				pMeshBuffer->Vertices[x * TerrainData.Size + z].Normal = normal;
 			}
+		}
 	}
 
 	//! create patches, stuff that needs to be done only once for patches goes here.
@@ -1282,7 +1287,7 @@ namespace scene
 
 	//! Reads attributes of the scene node.
 	void CTerrainSceneNode::deserializeAttributes(io::IAttributes* in,
-												  io::SAttributeReadWriteOptions* options)
+													io::SAttributeReadWriteOptions* options)
 	{
 		core::stringc newHeightmap = in->getAttributeAsString("Heightmap");
 		f32 tcoordScale1 = in->getAttributeAsFloat("TextureScale1");
@@ -1324,12 +1329,14 @@ namespace scene
 	//! Creates a clone of this scene node and its children.
 	ISceneNode* CTerrainSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
 	{
-		if (!newParent) newParent = Parent;
-		if (!newManager) newManager = SceneManager;
+		if (!newParent)
+			newParent = Parent;
+		if (!newManager)
+			newManager = SceneManager;
 
 		CTerrainSceneNode* nb = new CTerrainSceneNode(
 			newParent, newManager, FileSystem, ID, 
-			4, ETPS_17,	getPosition(), getRotation(), getScale());
+			4, ETPS_17, getPosition(), getRotation(), getScale());
 
 		nb->cloneMembers(this, newManager);
 		
