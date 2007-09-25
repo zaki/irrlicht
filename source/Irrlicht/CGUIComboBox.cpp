@@ -273,13 +273,6 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 					openCloseMenu();
 					return true;
 				}
-				
-				// TODO: This is dead code
-				if (!AbsoluteClippingRect.isPointInside(p))
-				{
-					Environment->removeFocus(this);
-					return false;
-				}
 			}
 			break;
 		case EMIE_MOUSE_WHEEL:

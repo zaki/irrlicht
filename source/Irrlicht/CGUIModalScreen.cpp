@@ -60,6 +60,7 @@ bool CGUIModalScreen::OnEvent(const SEvent& event)
 		default:
 			break;
 		}
+		break;
 	case EET_MOUSE_INPUT_EVENT:
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{

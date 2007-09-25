@@ -560,39 +560,15 @@
 				Name="scene"
 				>
 				<File
-					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CParticleAttractionAffector.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CParticleCylinderEmitter.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CParticleMeshEmitter.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CParticleRingEmitter.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CParticleRotationAffector.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CParticleSphereEmitter.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\ECullingTypes.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\include\EDebugSceneTypes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\EMeshWriterEnums.h"
 					>
 				</File>
 				<File
@@ -661,10 +637,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\IMeshWriter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\EMeshWriterEnums.h"
 					>
 				</File>
 				<File
@@ -1856,19 +1828,19 @@
 					>
 				</File>
 				<File
-					RelativePath="CXMeshFileLoader.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CXMeshFileLoader.h"
-					>
-				</File>
-				<File
 					RelativePath="CSTLMeshFileLoader.cpp"
 					>
 				</File>
 				<File
 					RelativePath="CSTLMeshFileLoader.h"
+					>
+				</File>
+				<File
+					RelativePath="CXMeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CXMeshFileLoader.h"
 					>
 				</File>
 				<File
@@ -2044,11 +2016,23 @@
 				Name="particleSystem"
 				>
 				<File
+					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleAttractionAffector.cpp"
+					>
+				</File>
+				<File
 					RelativePath="CParticleBoxEmitter.cpp"
 					>
 				</File>
 				<File
 					RelativePath="CParticleBoxEmitter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleCylinderEmitter.cpp"
 					>
 				</File>
 				<File
@@ -2068,11 +2052,27 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CParticleMeshEmitter.cpp"
+					>
+				</File>
+				<File
 					RelativePath="CParticlePointEmitter.cpp"
 					>
 				</File>
 				<File
 					RelativePath="CParticlePointEmitter.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleRingEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleRotationAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleSphereEmitter.cpp"
 					>
 				</File>
 				<File

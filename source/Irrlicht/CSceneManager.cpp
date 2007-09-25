@@ -6,7 +6,7 @@
 #include "CSceneManager.h"
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
-#include "IAnimatedMesh.h"
+#include "SAnimatedMesh.h"
 #include "CMeshCache.h"
 #include "IWriteFile.h"
 #include "IXMLWriter.h"
