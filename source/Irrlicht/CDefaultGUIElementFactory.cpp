@@ -39,11 +39,6 @@ CDefaultGUIElementFactory::CDefaultGUIElementFactory(IGUIEnvironment* env)
 }
 
 
-CDefaultGUIElementFactory::~CDefaultGUIElementFactory()
-{
-}
-
-
 //! adds an element to the env based on its type id
 IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IGUIElement* parent)
 {

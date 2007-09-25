@@ -47,11 +47,6 @@ CDefaultSceneNodeFactory::CDefaultSceneNodeFactory(ISceneManager* mgr)
 }
 
 
-CDefaultSceneNodeFactory::~CDefaultSceneNodeFactory()
-{
-}
-
-
 //! adds a scene node to the scene graph based on its type id
 ISceneNode* CDefaultSceneNodeFactory::addSceneNode(ESCENE_NODE_TYPE type, ISceneNode* parent)
 {

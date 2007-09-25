@@ -20,7 +20,6 @@ namespace scene
 	public:
 
 		CDefaultSceneNodeAnimatorFactory(ISceneManager* mgr);
-		~CDefaultSceneNodeAnimatorFactory();
 
 		//! creates a scene node animator based on its type id
 		/** \param type: Type of the scene node animator to add.

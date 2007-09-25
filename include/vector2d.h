@@ -67,7 +67,7 @@ public:
 
 	//! Returns the length of the vector
 	//! \return Returns the length of the vector.
-	T getLength() const { return (T)sqrt(X*X + Y*Y); }
+	T getLength() const { return (T)sqrt((f64)(X*X + Y*Y)); }
 
 	//! Returns the squared length of this vector
 	/** This is useful because it is much faster than getLength(). */

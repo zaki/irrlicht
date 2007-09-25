@@ -22,7 +22,6 @@ namespace scene
 	public:
 
 		CDefaultSceneNodeFactory(ISceneManager* mgr);
-		~CDefaultSceneNodeFactory();
 
 		//! adds a scene node to the scene graph based on its type id
 		/** \param type: Type of the scene node to add.
