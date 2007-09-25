@@ -32,11 +32,6 @@ CDefaultSceneNodeAnimatorFactory::CDefaultSceneNodeAnimatorFactory(ISceneManager
 }
 
 
-CDefaultSceneNodeAnimatorFactory::~CDefaultSceneNodeAnimatorFactory()
-{
-}
-
-
 //! creates a scene node animator based on its type id
 ISceneNodeAnimator* CDefaultSceneNodeAnimatorFactory::createSceneNodeAnimator(ESCENE_NODE_ANIMATOR_TYPE type, ISceneNode* target)
 {

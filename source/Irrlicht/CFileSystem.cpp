@@ -90,7 +90,7 @@ IReadFile* CFileSystem::createAndOpenFile(const c8* filename)
 
 //! Creates an IReadFile interface for treating memory like a file.
 IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len, 
-											const c8* fileName, bool deleteMemoryWhenDropped)
+			const c8* fileName, bool deleteMemoryWhenDropped)
 {
 	if (!memory)
 		return 0;

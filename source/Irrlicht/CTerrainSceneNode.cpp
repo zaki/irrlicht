@@ -225,6 +225,7 @@ namespace scene
 		return true;
 	}
 
+
 	//! Initializes the terrain data.  Loads the vertices from the heightMapFile
 	bool CTerrainSceneNode::loadHeightMapRAW( io::IReadFile* file, s32 bitsPerPixel, video::SColor vertexColor, s32 smoothFactor )
 	{
@@ -381,6 +382,7 @@ namespace scene
 
 		return true;
 	}
+
 
 	//! Sets the scale of the scene node.
 	//! \param scale: New scale of the node

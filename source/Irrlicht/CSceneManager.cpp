@@ -2222,7 +2222,6 @@ ISceneManager* createSceneManager(video::IVideoDriver* driver,
 }
 
 
-
 } // end namespace scene
 } // end namespace irr
 
