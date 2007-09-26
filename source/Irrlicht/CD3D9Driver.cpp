@@ -944,8 +944,6 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	core::position2d<s32> sourcePos = sourceRect.UpperLeftCorner;
 	core::dimension2d<s32> sourceSize(sourceRect.getSize());
 
-	core::dimension2d<s32> renderTargetSize = getCurrentRenderTargetSize();
-
 	if (clipRect)
 	{
 		if (targetPos.X < clipRect->UpperLeftCorner.X)
@@ -995,6 +993,8 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.X = 0;
 	}
 
+	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+
 	if (targetPos.X + sourceSize.Width > renderTargetSize.Width)
 	{
 		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
@@ -1022,11 +1022,11 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	// ok, we've clipped everything.
 	// now draw it.
 
-	f32 xPlus = - renderTargetSize.Width / 2.f;
-	f32 xFact = 1.0f / (renderTargetSize.Width / 2.f);
+	s32 xPlus = -renderTargetSize.Width / 2;
+	f32 xFact = 2.0f / renderTargetSize.Width;
 
-	f32 yPlus = renderTargetSize.Height-(renderTargetSize.Height / 2.f);
-	f32 yFact = 1.0f / (renderTargetSize.Height / 2.f);
+	s32 yPlus = renderTargetSize.Height / 2;
+	f32 yFact = 2.0f / renderTargetSize.Height;
 
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = (((f32)sourcePos.X)+0.5f) / texture->getOriginalSize().Width ;
@@ -1069,11 +1069,11 @@ void CD3D9Driver::draw2DRectangle(const core::rect<s32>& position,
 
 	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
 
-	s32 xPlus = -(renderTargetSize.Width>>1);
-	f32 xFact = 1.0f / (renderTargetSize.Width>>1);
+	s32 xPlus = -renderTargetSize.Width / 2;
+	f32 xFact = 2.0f / renderTargetSize.Width;
 
-	s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
-	f32 yFact = 1.0f / (renderTargetSize.Height>>1);
+	s32 yPlus = renderTargetSize.Height / 2;
+	f32 yFact = 2.0f / renderTargetSize.Height;
 
 	S3DVertex vtx[4];
 	vtx[0] = S3DVertex((f32)(pos.UpperLeftCorner.X+xPlus) * xFact, (f32)(yPlus-pos.UpperLeftCorner.Y) * yFact , 0.0f, 0.0f, 0.0f, 0.0f, colorLeftUp, 0.0f, 0.0f);
@@ -1108,11 +1108,11 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 	// thanks to Vash TheStampede who sent in his implementation
 
 	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = -(renderTargetSize.Width>>1);
-	const f32 xFact = 1.0f / (renderTargetSize.Width>>1);
+	const s32 xPlus = -renderTargetSize.Width / 2;
+	const f32 xFact = 2.0f / renderTargetSize.Width;
 
-	const s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
-	const f32 yFact = 1.0f / (renderTargetSize.Height>>1);
+	const s32 yPlus = renderTargetSize.Height / 2;
+	const f32 yFact = 2.0f / renderTargetSize.Height;
 
 	S3DVertex vtx[2];
 	vtx[0] = S3DVertex((f32)(start.X + xPlus) * xFact,

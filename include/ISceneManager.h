@@ -22,7 +22,6 @@ namespace irr
 
 namespace io
 {
-	class IFileSystem;
 	class IReadFile;
 	class IAttributes;
 	class IWriteFile;
@@ -31,7 +30,6 @@ namespace io
 namespace gui
 {
 	class IGUIFont;
-	class IGUIFontBitmap;
 	class IGUIEnvironment;
 } // end namespace gui
 

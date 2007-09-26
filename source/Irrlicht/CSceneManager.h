@@ -18,6 +18,7 @@ namespace irr
 namespace io
 {
 	class IXMLWriter;
+	class IFileSystem;
 }
 namespace scene
 {

@@ -77,7 +77,7 @@ namespace core
 		void set(const vector3d<T>& p) { X=p.X; Y=p.Y; Z=p.Z;}
 
 		//! Returns length of the vector.
-		T getLength() const { return (T) sqrt(X*X + Y*Y + Z*Z); }
+		T getLength() const { return (T) sqrt((f64)(X*X + Y*Y + Z*Z)); }
 
 		//! Returns squared length of the vector.
 		/** This is useful because it is much faster than
@@ -242,7 +242,7 @@ namespace core
 			if (angle.Y < 0.0f) angle.Y += 360.0f;
 			if (angle.Y >= 360.0f) angle.Y -= 360.0f;
 
-			f32 z1 = (f32)sqrt(X*X + Z*Z);
+			f32 z1 = sqrtf(X*X + Z*Z);
 
 			angle.X = (T)atan2(z1, Y);
 			angle.X *= (f32)RADTODEG64;
