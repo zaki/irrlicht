@@ -84,9 +84,9 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 		++ShadowVolumesUsed;
 	}
 
-	s32 faceCount = (int)(IndexCount / 3);
+	const s32 faceCount = (s32)(IndexCount / 3);
 
-	if (faceCount * 6 > EdgeCount || !Edges)
+	if (!Edges || faceCount * 6 > EdgeCount)
 	{
 		delete [] Edges;
 		EdgeCount = faceCount * 6;
@@ -94,7 +94,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 	}
 
 	s32 numEdges = 0;
-	core::vector3df ls = light * Infinity; // light scaled
+	const core::vector3df ls = light * Infinity; // light scaled
 
 	//if (UseZFailMethod)
 	//	createZFailVolume(faceCount, numEdges, light, svp);
@@ -132,16 +132,15 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 						const core::vector3df& light,
 						SShadowVolume* svp)
 {
-	u16 wFace0, wFace1, wFace2;
 	s32 i;
-	core::vector3df ls = light * Infinity;
+	const core::vector3df ls = light * Infinity;
 
 	// Check every face if it is front or back facing the light.
 	for (i=0; i<faceCount; ++i)
 	{
-		wFace0 = Indices[3*i+0];
-		wFace1 = Indices[3*i+1];
-		wFace2 = Indices[3*i+2];
+		const u16 wFace0 = Indices[3*i+0];
+		const u16 wFace1 = Indices[3*i+1];
+		const u16 wFace2 = Indices[3*i+2];
 
 		const core::vector3df v0 = Vertices[wFace0];
 		const core::vector3df v1 = Vertices[wFace1];
@@ -168,18 +167,17 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 			FaceData[i] = true; // it's a front facing face
 	}
 
-
 	for(i=0; i<faceCount; ++i)
 	{
 		if (FaceData[i] == true)
 		{
-			wFace0 = Indices[3*i+0];
-			wFace1 = Indices[3*i+1];
-			wFace2 = Indices[3*i+2];
+			const u16 wFace0 = Indices[3*i+0];
+			const u16 wFace1 = Indices[3*i+1];
+			const u16 wFace2 = Indices[3*i+2];
 
-			u16 adj0 = Adjacency[3*i+0];
-			u16 adj1 = Adjacency[3*i+1];
-			u16 adj2 = Adjacency[3*i+2];
+			const u16 adj0 = Adjacency[3*i+0];
+			const u16 adj1 = Adjacency[3*i+1];
+			const u16 adj2 = Adjacency[3*i+2];
 
 			if (adj0 != (u16)-1 && FaceData[adj0] == false)
 			{
@@ -217,13 +215,11 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 	if (light == core::vector3df(0,0,0))
 		light = core::vector3df(0.0001f,0.0001f,0.0001f);
 
-	u16 wFace0, wFace1, wFace2;
-
 	for (s32 i=0; i<faceCount; ++i)
 	{
-		wFace0 = Indices[3*i+0];
-		wFace1 = Indices[3*i+1];
-		wFace2 = Indices[3*i+2];
+		const u16 wFace0 = Indices[3*i+0];
+		const u16 wFace1 = Indices[3*i+1];
+		const u16 wFace2 = Indices[3*i+2];
 
 		if (core::triangle3df(Vertices[wFace0],Vertices[wFace1],Vertices[wFace2]).isFrontFacing(light))
 		{
@@ -353,7 +349,7 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 		}
 	}
 
-	// recalculate adjacency if neccessarry
+	// recalculate adjacency if necessary
 	if (oldVertexCount != VertexCount &&
 		oldIndexCount != IndexCount && UseZFailMethod)
 		calculateAdjacency();
@@ -451,11 +447,11 @@ void CShadowVolumeSceneNode::calculateAdjacency(f32 epsilon)
 					for (s32 e=0; e<3; ++e)
 					{
 						t = v1.getDistanceFromSQ(Vertices[Indices[of+e]]);
-						if (t <= epsilon && t >= -epsilon)
+						if (core::iszero(t))
 							++cnt1;
 
 						t = v2.getDistanceFromSQ(Vertices[Indices[of+e]]);
-						if (t <= epsilon && t >= -epsilon)
+						if (core::iszero(t))
 							++cnt2;
 					}
 
@@ -474,3 +470,4 @@ void CShadowVolumeSceneNode::calculateAdjacency(f32 epsilon)
 
 } // end namespace scene
 } // end namespace irr
+

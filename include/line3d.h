@@ -104,7 +104,7 @@ class line3d
 			if (d < 0.0)
 				return false;
 
-			outdistance = v - sqrt(d);
+			outdistance = v - sqrt((f64)d);
 			return true;
 		}
 

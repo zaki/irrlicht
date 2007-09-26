@@ -10,14 +10,14 @@
 #include <math.h>
 
 #if defined(_IRR_SOLARIS_PLATFORM_) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
-	#define sqrtf(X) (f32)sqrt(X)
-	#define sinf(X) (f32)sin(X)
-	#define cosf(X) (f32)cos(X)
-	#define ceilf(X) (f32)ceil(X)
-	#define floorf(X) (f32)floor(X)
-	#define powf(X,Y) (f32)pow(X,Y)
-	#define fmodf(X,Y) (f32)fmod(X,Y)
-	#define fabsf(X) (f32)fabs(X)
+	#define sqrtf(X) (f32)sqrt((f64)(X))
+	#define sinf(X) (f32)sin((f64)(X))
+	#define cosf(X) (f32)cos((f64)(X))
+	#define ceilf(X) (f32)ceil((f64)(X))
+	#define floorf(X) (f32)floor((f64)(X))
+	#define powf(X,Y) (f32)pow((f64)(X),(f64)(Y))
+	#define fmodf(X,Y) (f32)fmod((f64)(X),(f64)(Y))
+	#define fabsf(X) (f32)fabs((f64)(X))
 #endif
 
 namespace irr
@@ -83,7 +83,7 @@ namespace core
 		return a < b ? b : a;
 	}
 
-	//! returns minimum of three values. Own implementation to get rid of the STL (VS6 problems)
+	//! returns maximum of three values. Own implementation to get rid of the STL (VS6 problems)
 	template<class T>
 	inline const T& max_(const T& a, const T& b, const T& c)
 	{

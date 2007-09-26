@@ -296,9 +296,6 @@ void CAnimatedMeshSceneNode::render()
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 
-	u32 i,g;
-
-
 	if (Shadow && PassCount==1)
 		Shadow->setMeshToRenderFrom(m);
 
@@ -311,12 +308,12 @@ void CAnimatedMeshSceneNode::render()
 		// overwrite half transparency
 		if ( DebugDataVisible & scene::EDS_HALF_TRANSPARENCY )
 		{
-			for ( g=0; g<m->getMeshBufferCount(); ++g)
+			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
 			{
 				mat = Materials[g];
 				mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 				driver->setMaterial(mat);
-				driver->drawMeshBuffer ( m->getMeshBuffer ( g ) );
+				driver->drawMeshBuffer ( m->getMeshBuffer(g) );
 			}
 			renderMeshes = 0;
 		}
@@ -325,7 +322,7 @@ void CAnimatedMeshSceneNode::render()
 	// render original meshes
 	if ( renderMeshes )
 	{
-		for ( i=0; i<m->getMeshBufferCount(); ++i)
+		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			video::IMaterialRenderer* rnd = driver->getMaterialRenderer(Materials[i].MaterialType);
 			bool transparent = (rnd && rnd->isTransparent());
@@ -357,11 +354,10 @@ void CAnimatedMeshSceneNode::render()
 		// show bounding box
 		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
 		{
-			for ( g=0; g< m->getMeshBufferCount(); ++g)
+			for (u32 g=0; g< m->getMeshBufferCount(); ++g)
 			{
 				driver->draw3DBox( m->getMeshBuffer(g)->getBoundingBox(),
-									video::SColor(0,190,128,128)
-								);
+						video::SColor(0,190,128,128) );
 			}
 		}
 
@@ -377,7 +373,7 @@ void CAnimatedMeshSceneNode::render()
 				// draw skeleton
 
 
-				for ( g=0; g < ((ISkinnedMesh*)Mesh)->getAllJoints().size(); g +=1 )
+				for (u32 g=0; g < ((ISkinnedMesh*)Mesh)->getAllJoints().size(); ++g)
 				{
 					ISkinnedMesh::SJoint *joint=((ISkinnedMesh*)Mesh)->getAllJoints()[g];
 
@@ -447,12 +443,12 @@ void CAnimatedMeshSceneNode::render()
 			core::matrix4 m2;
 
 			// draw normals
-			for ( g=0; g<m->getMeshBufferCount(); ++g)
+			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
 			{
-				scene::IMeshBuffer* mb = m->getMeshBuffer(g);
+				const scene::IMeshBuffer* mb = m->getMeshBuffer(g);
 				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
 				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
-				for ( i = 0; i != mb->getVertexCount(); ++i )
+				for ( u32 i=0; i != mb->getVertexCount(); ++i )
 				{
 					AlignToUpVector ( m2, v->Normal );
 
@@ -476,14 +472,12 @@ void CAnimatedMeshSceneNode::render()
 			mat.Wireframe = true;
 			driver->setMaterial(mat);
 
-			for ( g=0; g<m->getMeshBufferCount(); ++g)
+			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
 			{
-				driver->drawMeshBuffer ( m->getMeshBuffer ( g ) );
+				driver->drawMeshBuffer( m->getMeshBuffer(g) );
 			}
 		}
 	}
-
-
 }
 
 
@@ -848,7 +842,7 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 	if ( taglist )
 	{
 		MD3Special.AbsoluteTagList.Container.set_used ( taglist->size () );
-		for ( u32 i = 0; i!= taglist->size (); ++i )
+		for ( u32 i=0; i!= taglist->size (); ++i )
 		{
 			MD3Special.AbsoluteTagList[i].position = parent.position + (*taglist)[i].position + relative.position;
 			MD3Special.AbsoluteTagList[i].rotation = parent.rotation * (*taglist)[i].rotation * relative.rotation;

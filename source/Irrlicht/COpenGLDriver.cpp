@@ -708,7 +708,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	core::position2d<s32> targetPos(pos);
 	core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner);
 	core::dimension2d<s32> sourceSize(sourceRect.getSize());
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
 	if (clipRect)
 	{
 		if (targetPos.X < clipRect->UpperLeftCorner.X)
@@ -758,6 +757,8 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		targetPos.X = 0;
 	}
 
+	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+
 	if (targetPos.X + sourceSize.Width > renderTargetSize.Width)
 	{
 		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
@@ -793,7 +794,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	tcoords.LowerRightCorner.X = (sourcePos.X + sourceSize.Width) / static_cast<f32>(ss.Width);
 	tcoords.LowerRightCorner.Y = (sourcePos.Y + sourceSize.Height) / static_cast<f32>(ss.Height);
 
-	core::rect<s32> poss(targetPos, sourceSize);
+	const core::rect<s32> poss(targetPos, sourceSize);
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 	disableTextures(1);
@@ -820,83 +821,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 
 
-//! draws a set of 2d images, using a color and the alpha channel of the
-//! texture if desired. The images are drawn beginning at pos and concatenated
-//! in one line. All drawings are clipped against clipRect (if != 0).
-//! The subtextures are defined by the array of sourceRects and are chosen
-//! by the indices given.
-void COpenGLDriver::draw2DImage(const video::ITexture* texture,
-				const core::position2d<s32>& pos,
-				const core::array<core::rect<s32> >& sourceRects,
-				const core::array<s32>& indices,
-				const core::rect<s32>* clipRect, SColor color,
-				bool useAlphaChannelOfTexture)
-{
-	if (!texture)
-		return;
-
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-
-	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
-	disableTextures(1);
-	if (!setTexture(0, texture))
-		return;
-
-	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-	if (clipRect)
-	{
-		if (!clipRect->isValid())
-			return;
-
-		glEnable(GL_SCISSOR_TEST);
-		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
-			clipRect->getWidth(),clipRect->getHeight());
-	}
-
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
-	core::position2d<s32> targetPos(pos);
-	core::position2d<s32> sourcePos;
-	core::dimension2d<s32> sourceSize;
-	core::rect<f32> tcoords;
-
-	for (u32 i=0; i<indices.size(); ++i)
-	{
-		s32 currentIndex(indices[i]);
-		if (!sourceRects[currentIndex].isValid())
-			break;
-		sourcePos=sourceRects[currentIndex].UpperLeftCorner;
-		sourceSize=sourceRects[currentIndex].getSize();
-
-		tcoords.UpperLeftCorner.X = sourceRects[currentIndex].UpperLeftCorner.X / static_cast<f32>(ss.Width);
-		tcoords.UpperLeftCorner.Y = sourceRects[currentIndex].UpperLeftCorner.Y / static_cast<f32>(ss.Height);
-		tcoords.LowerRightCorner.X = sourceRects[currentIndex].LowerRightCorner.X / static_cast<f32>(ss.Width);
-		tcoords.LowerRightCorner.Y = sourceRects[currentIndex].LowerRightCorner.Y / static_cast<f32>(ss.Height);
-
-		core::rect<s32> poss(targetPos, sourceSize);
-
-		glBegin(GL_QUADS);
-
-		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
-
-		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
-
-		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y)); 
-
-		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
-
-		glEnd();
-		targetPos.X += sourceRects[currentIndex].getWidth();
-	}
-	if (clipRect)
-		glDisable(GL_SCISSOR_TEST);
-}
-
-
-
+//! The same, but with a four element array of colors, one for each vertex
 void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 		video::SColor* colors, bool useAlphaChannelOfTexture)
@@ -904,7 +829,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	if (!texture)
 		return;
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
 	const core::dimension2d<s32>& ss = texture->getOriginalSize();
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = sourceRect.UpperLeftCorner.X / static_cast<f32>(ss.Width);
@@ -933,6 +857,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 			return;
  
 		glEnable(GL_SCISSOR_TEST);
+		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
 		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y, 
 			clipRect->getWidth(), clipRect->getHeight());
 	}
@@ -957,6 +882,82 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 
 	glEnd();
 
+	if (clipRect)
+		glDisable(GL_SCISSOR_TEST);
+}
+
+
+
+//! draws a set of 2d images, using a color and the alpha channel of the
+//! texture if desired. The images are drawn beginning at pos and concatenated
+//! in one line. All drawings are clipped against clipRect (if != 0).
+//! The subtextures are defined by the array of sourceRects and are chosen
+//! by the indices given.
+void COpenGLDriver::draw2DImage(const video::ITexture* texture,
+				const core::position2d<s32>& pos,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::array<s32>& indices,
+				const core::rect<s32>* clipRect, SColor color,
+				bool useAlphaChannelOfTexture)
+{
+	if (!texture)
+		return;
+
+	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
+	disableTextures(1);
+	if (!setTexture(0, texture))
+		return;
+
+	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	if (clipRect)
+	{
+		if (!clipRect->isValid())
+			return;
+
+		glEnable(GL_SCISSOR_TEST);
+		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
+			clipRect->getWidth(),clipRect->getHeight());
+	}
+
+	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	core::position2d<s32> targetPos(pos);
+	core::position2d<s32> sourcePos;
+	core::dimension2d<s32> sourceSize;
+	core::rect<f32> tcoords;
+
+	for (u32 i=0; i<indices.size(); ++i)
+	{
+		s32 currentIndex(indices[i]);
+		if (!sourceRects[currentIndex].isValid())
+			break;
+		sourcePos=sourceRects[currentIndex].UpperLeftCorner;
+		sourceSize=sourceRects[currentIndex].getSize();
+
+		tcoords.UpperLeftCorner.X = sourceRects[currentIndex].UpperLeftCorner.X / static_cast<f32>(ss.Width);
+		tcoords.UpperLeftCorner.Y = sourceRects[currentIndex].UpperLeftCorner.Y / static_cast<f32>(ss.Height);
+		tcoords.LowerRightCorner.X = sourceRects[currentIndex].LowerRightCorner.X / static_cast<f32>(ss.Width);
+		tcoords.LowerRightCorner.Y = sourceRects[currentIndex].LowerRightCorner.Y / static_cast<f32>(ss.Height);
+
+		const core::rect<s32> poss(targetPos, sourceSize);
+
+		glBegin(GL_QUADS);
+
+		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+
+		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+
+		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y)); 
+
+		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
+		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
+
+		glEnd();
+		targetPos.X += sourceRects[currentIndex].getWidth();
+	}
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
 }
@@ -1499,10 +1500,8 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		glMatrixMode(GL_PROJECTION);
 
 		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-		const core::vector3df translation(-1,1,0);
-
 		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-renderTargetSize.Height), -1.0, 1.0); 
-		m.setTranslation(translation);
+		m.setTranslation(core::vector3df(-1,1,0));
 
 		createGLMatrix(glmat, m);
 		glLoadMatrixf(glmat);
