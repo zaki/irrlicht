@@ -84,7 +84,7 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(io::IReadFile* f)
 	CurFrame=0;
 	TemplateMaterials.clear();
 
-	delete Buffer;
+	delete [] Buffer;
 	Buffer = 0;
 
 	for (u32 i=0; i<Meshes.size(); ++i)
