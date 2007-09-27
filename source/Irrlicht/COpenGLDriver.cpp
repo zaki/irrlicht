@@ -576,6 +576,12 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Pos);
 			glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Normal);
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
+			if (MultiTextureExtension && CurrentTexture[1])
+			{
+				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
+			}
 			break;
 		case EVT_2TCOORDS:
 			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
@@ -675,7 +681,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			extGlClientActiveTexture(GL_TEXTURE2_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
-		if (vType!=EVT_STANDARD)
+		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
 		{
 			extGlClientActiveTexture(GL_TEXTURE1_ARB);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
