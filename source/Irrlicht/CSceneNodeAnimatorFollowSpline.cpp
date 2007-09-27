@@ -66,7 +66,7 @@ void CSceneNodeAnimatorFollowSpline::serializeAttributes(io::IAttributes* out, i
 	out->addFloat("Speed", Speed);
 	out->addFloat("Tightness", Tightness);
 
-	const u32 count = Points.size();
+	u32 count = Points.size();
 
 	if ( options && (options->Flags & io::EARWF_FOR_EDITOR))
 	{
