@@ -2202,11 +2202,23 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 	switch(type)
 	{
 	case EMWT_IRR_MESH:
+#ifdef _IRR_COMPILE_WITH_IRR_WRITER_
 		return new CIrrMeshWriter(Driver, FileSystem);
+#else
+		return 0;
+#endif
 	case EMWT_COLLADA:
+#ifdef _IRR_COMPILE_WITH_COLLADA_WRITER_
 		return new CColladaMeshWriter(Driver, FileSystem);
+#else
+		return 0;
+#endif
 	case EMWT_STL:
+#ifdef _IRR_COMPILE_WITH_STL_WRITER_
 		return new CSTLMeshWriter(this);
+#else
+		return 0;
+#endif
 	}
 
 	return 0;
