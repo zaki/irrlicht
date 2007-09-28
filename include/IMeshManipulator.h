@@ -93,6 +93,8 @@ namespace scene
 		See IReferenceCounted::drop() for more information. */
 		virtual IMesh* createMeshWithTangents(IMesh* mesh) const = 0;
 
+		//! Creates a copy of the mesh, which will only consist of S3DVertex2TCoord vertices.
+		virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const = 0;
 		//! Creates a copy of a mesh with all vertices unwelded
 		virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const = 0;
 

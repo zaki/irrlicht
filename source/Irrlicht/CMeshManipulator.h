@@ -75,6 +75,7 @@ public:
 	//! If you no longer need the cloned mesh, you should call IMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
 	virtual IMesh* createMeshWithTangents(IMesh* mesh) const;
+	virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const;
 
 	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const;
 

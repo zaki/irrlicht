@@ -31,13 +31,16 @@
 
 #include "IrrCompileConfig.h"
 #include "aabbox3d.h"
+#include "coreutil.h"
 #include "irrArray.h"
 #include "irrMap.h"
+#include "irrMath.h"
+#include "irrString.h"
+#include "irrTypes.h"
 #include "SColor.h"
 #include "SLight.h"
 #include "dimension2d.h"
 #include "EDriverTypes.h"
-#include "heapsort.h"
 #include "IAttributes.h"
 #include "IAttributeExchangingObject.h"
 #include "IAnimatedMesh.h"
@@ -91,8 +94,6 @@
 #include "IMetaTriangleSelector.h"
 #include "IReadFile.h"
 #include "IrrlichtDevice.h"
-#include "irrMath.h"
-#include "irrString.h"
 #include "ISceneManager.h"
 #include "ISceneNode.h"
 #include "ISceneUserDataSerializer.h"
@@ -136,8 +137,6 @@
 #include "SMeshBufferLightMap.h"
 #include "SMeshBufferTangents.h"
 #include "SViewFrustum.h"
-#include "irrTypes.h"
-#include "coreutil.h"
 
 /*! \mainpage Irrlicht Engine 1.4 API documentation
  *

@@ -426,9 +426,11 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 				video::S3DVertex* v =
 					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
 
+				buffer->Vertices.reallocate(vtxCnt);
 				for (i=0; i<vtxCnt; ++i)
 					buffer->Vertices.push_back(v[i]);
 
+				buffer->Indices.reallocate(idxCnt);
 				for (i=0; i<idxCnt; ++i)
 					buffer->Indices.push_back(idx[i]);
 
@@ -444,9 +446,11 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 				video::S3DVertex2TCoords* v =
 					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
 
+				buffer->Vertices.reallocate(vtxCnt);
 				for (i=0; i<vtxCnt; ++i)
 					buffer->Vertices.push_back(v[i]);
 
+				buffer->Indices.reallocate(idxCnt);
 				for (i=0; i<idxCnt; ++i)
 					buffer->Indices.push_back(idx[i]);
 
@@ -462,9 +466,11 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 				video::S3DVertexTangents* v =
 					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
 
+				buffer->Vertices.reallocate(vtxCnt);
 				for (i=0; i<vtxCnt; ++i)
 					buffer->Vertices.push_back(v[i]);
 
+				buffer->Indices.reallocate(idxCnt);
 				for (i=0; i<idxCnt; ++i)
 					buffer->Indices.push_back(idx[i]);
 
@@ -538,7 +544,7 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 
 	for ( u32 b=0; b<meshBufferCount; ++b)
 	{
-		s32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
+		const s32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
 		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
 
 		switch(mesh->getMeshBuffer(b)->getVertexType())
@@ -551,6 +557,8 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 				video::S3DVertex* v =
 					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
 
+				buffer->Vertices.reallocate(idxCnt);
+				buffer->Indices.reallocate(idxCnt);
 				for (s32 i=0; i<idxCnt; i += 3)
 				{
 					buffer->Vertices.push_back( v[idx[i + 0 ]] );
@@ -574,6 +582,8 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 				video::S3DVertex2TCoords* v =
 					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
 
+				buffer->Vertices.reallocate(idxCnt);
+				buffer->Indices.reallocate(idxCnt);
 				for (s32 i=0; i<idxCnt; i += 3)
 				{
 					buffer->Vertices.push_back( v[idx[i + 0 ]] );
@@ -596,6 +606,8 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 				video::S3DVertexTangents* v =
 					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
 
+				buffer->Vertices.reallocate(idxCnt);
+				buffer->Indices.reallocate(idxCnt);
 				for (s32 i=0; i<idxCnt; i += 3)
 				{
 					buffer->Vertices.push_back( v[idx[i + 0 ]] );
@@ -800,7 +812,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 
 	for (b=0; b<meshBufferCount; ++b)
 	{
-		s32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
+		const s32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
 		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
 
 		SMeshBufferTangents* buffer = new SMeshBufferTangents();
@@ -808,6 +820,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 
 		// copy vertices
 
+		buffer->Vertices.reallocate(idxCnt);
 		switch(mesh->getMeshBuffer(b)->getVertexType())
 		{
 		case video::EVT_STANDARD:
@@ -858,7 +871,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 	// now calculate tangents
 	for (b=0; b<meshBufferCount; ++b)
 	{
-		s32 idxCnt = clone->getMeshBuffer(b)->getIndexCount();
+		const s32 idxCnt = clone->getMeshBuffer(b)->getIndexCount();
 
 		u16* idx = clone->getMeshBuffer(b)->getIndices();
 		video::S3DVertexTangents* v =
@@ -900,6 +913,81 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 				v[idx[i+1]].TCoords);
 		}
 	}
+
+	return clone;
+}
+
+
+
+//! Creates a copy of the mesh, which will only consist of S3DVertex2TCoords vertices.
+IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
+{
+	if (!mesh)
+		return 0;
+
+	// copy mesh and fill data into SMeshBufferLightMap
+
+	SMesh* clone = new SMesh();
+	const u32 meshBufferCount = mesh->getMeshBufferCount();
+	u32 b;
+
+	for (b=0; b<meshBufferCount; ++b)
+	{
+		const s32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
+		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
+
+		SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
+		buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+
+		// copy vertices
+
+		buffer->Vertices.reallocate(idxCnt);
+		switch(mesh->getMeshBuffer(b)->getVertexType())
+		{
+		case video::EVT_STANDARD:
+			{
+				video::S3DVertex* v =
+					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
+
+				for (s32 i=0; i<idxCnt; ++i)
+					buffer->Vertices.push_back(
+						video::S3DVertex2TCoords(
+							v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
+			}
+			break;
+		case video::EVT_2TCOORDS:
+			{
+				video::S3DVertex2TCoords* v =
+					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
+
+				for (s32 i=0; i<idxCnt; ++i)
+					buffer->Vertices.push_back(v[idx[i]]);
+			}
+			break;
+		case video::EVT_TANGENTS:
+			{
+				video::S3DVertexTangents* v =
+					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
+
+				for (s32 i=0; i<idxCnt; ++i)
+					buffer->Vertices.push_back(video::S3DVertex2TCoords(
+						v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
+			}
+			break;
+		}
+
+		// create new indices
+
+		buffer->Indices.set_used(idxCnt);
+		for (s32 i=0; i<idxCnt; ++i)
+			buffer->Indices[i] = i;
+
+		// add new buffer
+		clone->addMeshBuffer(buffer);
+		buffer->drop();
+	}
+
+	clone->BoundingBox = mesh->getBoundingBox();
 
 	return clone;
 }
