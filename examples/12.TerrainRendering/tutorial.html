@@ -91,7 +91,7 @@
         </div>
         <table width="95%" border="0" cellspacing="2" cellpadding="0" bgcolor="#CCCCCC" align="center">
           <tr> 
-            <td> <pre><font color="#006600">// create triangle selector for the terrain	<br></font>scene::ITriangleSelector* selector =<br>    smgr-&gt;createTerrainTriangleSelector(terrain, 0);<br>terrain-&gt;setTriangleSelector(selector);<br>selector-&gt;drop();<br><br><font color="#006600">// create collision response animator and attach it to the camera<br></font>scene::ISceneNodeAnimator* anim = smgr-&gt;createCollisionResponseAnimator(<br>	selector, camera, core::vector3df(60,100,60),<br>	core::vector3df(0,0,0), <br>	core::vector3df(0,50,0));<br>camera-&gt;addAnimator(anim);<br>anim-&gt;drop();</pre></td>
+            <td> <pre><font color="#006600">// create triangle selector for the terrain	<br></font>scene::ITriangleSelector* selector =<br>    smgr-&gt;createTerrainTriangleSelector(terrain, 0);<br>terrain-&gt;setTriangleSelector(selector);<br><br><font color="#006600">// create collision response animator and attach it to the camera<br></font>scene::ISceneNodeAnimator* anim = smgr-&gt;createCollisionResponseAnimator(<br>	selector, camera, core::vector3df(60,100,60),<br>	core::vector3df(0,0,0), <br>	core::vector3df(0,50,0));<br>selector-&gt;drop();<br>camera-&gt;addAnimator(anim);<br>anim-&gt;drop();</pre></td>
           </tr>
         </table>
         <p> To make the user be able to switch between normal and wireframe mode, 

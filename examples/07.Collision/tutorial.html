@@ -95,7 +95,6 @@
 		selector = smgr-&gt;createOctTreeTriangleSelector(
             q3levelmesh-&gt;getMesh(<font color="#800080">0</font>), q3node, <font color="#800080">128</font>);
 		q3node-&gt;setTriangleSelector(selector);
-		selector-&gt;drop();
 	}</font></pre></td>
             </tr>
           </table>
@@ -140,6 +139,7 @@
 		selector, camera, core::vector3df(<font color="#800080">30</font>,<font color="#800080">50</font>,<font color="#800080">30</font>),
 		core::vector3df(<font color="#800080">0</font>,<font color="#800080">-3</font>,<font color="#800080">0</font>),
 		core::vector3df(<font color="#800080">0</font>,<font color="#800080">50</font>,<font color="#800080">0</font>));<br>
+		selector-&gt;drop();<br>
 	camera-&gt;addAnimator(anim);
 	anim-&gt;drop();</font></pre></td>
             </tr>
