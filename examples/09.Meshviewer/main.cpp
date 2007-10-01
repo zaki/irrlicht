@@ -76,10 +76,13 @@ void loadModel(const c8* fn)
 
 	// if a texture is loaded apply it to the current model..
 	if (	extension == ".jpg" ||
-			extension == ".png" ||
-			extension == ".tga" ||
 			extension == ".pcx" ||
+			extension == ".png" ||
+			extension == ".ppm" ||
+			extension == ".pgm" ||
+			extension == ".pbm" ||
 			extension == ".psd" ||
+			extension == ".tga" ||
 			extension == ".bmp"
 		)
 	{
@@ -664,7 +667,7 @@ int main()
 	// load the irrlicht engine logo
 	IGUIImage *img =
 		env->addImage(driver->getTexture("irrlichtlogo2.png"),
-			core::position2d<s32>(10, driver->getScreenSize().Height - 64));
+			core::position2d<s32>(10, driver->getScreenSize().Height - 128));
 
 	// lock the logo's edges to the bottom left corner of the screen
 	img->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
