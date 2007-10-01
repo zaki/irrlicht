@@ -175,7 +175,7 @@ IGUIEnvironment* env = device-&gt;getGUIEnvironment();
         the event receiver.</p>
       <table width="95%" border="0" cellspacing="2" cellpadding="0" bgcolor="#CCCCCC" align="center">
         <tr> 
-          <td><pre>env-&gt;addButton(rect&lt;s32&gt;(10,210,100,240), 0, 101, L&quot;Quit&quot;);<br>env-&gt;addButton(rect&lt;s32&gt;(10,250,100,290), 0, 102, L&quot;New Window&quot;);<br>env-&gt;addButton(rect&lt;s32&gt;(10,300,100,340), 0, 103, L&quot;File Open&quot;);</pre></td>
+          <td><pre>env-&gt;addButton(rect&lt;s32&gt;(10,240,100,270), 0, 101, L&quot;Quit&quot;);<br>env-&gt;addButton(rect&lt;s32&gt;(10,280,100,320), 0, 102, L&quot;New Window&quot;);<br>env-&gt;addButton(rect&lt;s32&gt;(10,330,100,370), 0, 103, L&quot;File Open&quot;);</pre></td>
         </tr>
       </table>
       <p> Now, we add a static text and a scrollbar, which modifies the transparency 
@@ -186,8 +186,8 @@ IGUIEnvironment* env = device-&gt;getGUIEnvironment();
         <tr> 
           <td><pre>env-&gt;addStaticText(L&quot;Transparent Control:&quot;, rect&lt;s32&gt;(150,20,350,40), true);<br>IGUIScrollBar* scrollbar = env-&gt;addScrollBar(true,
                rect&lt;s32&gt;(150, 45, 350, 60), 0, 104);<br>scrollbar-&gt;setMax(255);</pre>
-            <pre>env-&gt;addStaticText(L&quot;Logging ListBox:&quot;, rect&lt;s32&gt;(50,80,250,100), true);
-listbox = env-&gt;addListBox(rect&lt;s32&gt;(50, 110, 250, 180));</pre></td>
+            <pre>env-&gt;addStaticText(L&quot;Logging ListBox:&quot;, rect&lt;s32&gt;(50,110,250,130), true);
+listbox = env-&gt;addListBox(rect&lt;s32&gt;(50, 140, 250, 210));</pre></td>
         </tr>
       </table>
       <br>

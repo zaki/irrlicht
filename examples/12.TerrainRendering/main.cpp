@@ -183,13 +183,13 @@ int main()
 	scene::ITriangleSelector* selector
 		= smgr->createTerrainTriangleSelector(terrain, 0);
 	terrain->setTriangleSelector(selector);
-	selector->drop();
 
 	// create collision response animator and attach it to the camera
 	scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
 		selector, camera, core::vector3df(60,100,60),
 		core::vector3df(0,0,0), 
 		core::vector3df(0,50,0));
+	selector->drop();
 	camera->addAnimator(anim);
 	anim->drop();
 

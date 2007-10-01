@@ -89,7 +89,6 @@ int main()
 
 		selector = smgr->createOctTreeTriangleSelector(q3levelmesh->getMesh(0), q3node, 128);
 		q3node->setTriangleSelector(selector);
-		selector->drop();
 	}
 
 
@@ -125,12 +124,16 @@ int main()
 		smgr->addCameraSceneNodeFPS(0, 100.0f, 300.0f, -1, 0, 0, true);
 	camera->setPosition(core::vector3df(-100,50,-150));
 
-	scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
-		selector, camera, core::vector3df(30,50,30),
-		core::vector3df(0,-3,0), 
-		core::vector3df(0,50,0));
-	camera->addAnimator(anim);
-	anim->drop();
+	if (selector)
+	{
+		scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
+			selector, camera, core::vector3df(30,50,30),
+			core::vector3df(0,-3,0), 
+			core::vector3df(0,50,0));
+		selector->drop();
+		camera->addAnimator(anim);
+		anim->drop();
+	}
 
 	/*
 	Because collision detection is no big deal in irrlicht, I'll describe how to
