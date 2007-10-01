@@ -201,9 +201,9 @@ int main()
 	the button in the event receiver.
 	*/	
 
-	env->addButton(rect<s32>(10,210,110,210 + 32), 0, 101, L"Quit", L"Exits Program");
-	env->addButton(rect<s32>(10,250,110,250 + 32), 0, 102, L"New Window", L"Launches a new Window");
-	env->addButton(rect<s32>(10,290,110,290 + 32), 0, 103, L"File Open", L"Opens a file");
+	env->addButton(rect<s32>(10,240,110,240 + 32), 0, 101, L"Quit", L"Exits Program");
+	env->addButton(rect<s32>(10,280,110,280 + 32), 0, 102, L"New Window", L"Launches a new Window");
+	env->addButton(rect<s32>(10,320,110,320 + 32), 0, 103, L"File Open", L"Opens a file");
 
 	/*
 	Now, we add a static text and a scrollbar, which modifies the
@@ -220,8 +220,8 @@ int main()
 	// set scrollbar position to alpha value of an arbitrary element
 	scrollbar->setPos(env->getSkin()->getColor(EGDC_WINDOW).getAlpha());
 
-	env->addStaticText(L"Logging ListBox:", rect<s32>(50,80,250,100), true);
-	listbox = env->addListBox(rect<s32>(50, 110, 250, 180));
+	env->addStaticText(L"Logging ListBox:", rect<s32>(50,110,250,130), true);
+	listbox = env->addListBox(rect<s32>(50, 140, 250, 210));
 	env->addEditBox(L"Editable Text", rect<s32>(350, 80, 550, 100));
 
 	// add the engine logo
