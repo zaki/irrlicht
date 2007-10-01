@@ -7,8 +7,10 @@ This program is able to load and display all 3D geometry and models the Irrlicht
 Controls: Left mouse to rotate, right mouse to move, both buttons to zoom. Escape to Stop FPS Camera
 
 Supported formats are:
+- Irrlicht scene and mesh formats (.irr, .irrmesh, .xml)
 - 3D Studio (.3ds)
-- COLLADA (.dae, .xml)
+- Blitz3D (.b3d)
+- COLLADA 1.2/1.3 (.dae, .xml)
 - Cartography shop 4 (.csm)
 - DirectX (.x)
 - DeleD (.dmf)
@@ -16,9 +18,11 @@ Supported formats are:
 - Milkshape (.ms3d)
 - My3D (.my3D)
 - OCT (.oct)
+- Ogre3d (.mesh)
 - Pulsar LMTools (.lmts)
 - Quake 3 levels (.bsp)
 - Quake 2 models (.md2)
+- Stereolithography format (.stl)
 
 Please note that this program is also a demo of the user interface capabilities of the engine, so for example the combo box in the toolbar has no function.
 </messageText>
