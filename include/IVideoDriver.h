@@ -351,14 +351,16 @@ namespace video
 			u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
 
 		//! Draws a 3d line.
-		/** For some implementations, this method simply calls drawIndexedTriangles for some
-		triangles. Note that the line is drawn using the current transformation
-		matrix and material. So if you need to draw the 3D line independently of the
-		current transformation, use
+		/** For some implementations, this method simply calls
+		drawIndexedTriangles for some triangles.
+		Note that the line is drawn using the current transformation
+		matrix and material. So if you need to draw the 3D line
+		independently of the current transformation, use
 		\code
+		driver->setMaterial(unlitMaterial);
 		driver->setTransform(video::ETS_WORLD, core::matrix4());
 		\endcode
-		before drawing the line.
+		for some properly set up material before drawing the line.
 		\param start: Start of the 3d line.
 		\param end: End of the 3d line.
 		\param color: Color of the line.  */
@@ -367,19 +369,34 @@ namespace video
 
 		//! Draws a 3d triangle.
 		/** This method calls drawIndexedTriangles for some triangles.
-		Note that the line is drawn using the current transformation matrix and material.
-		This method works with all drivers because it simply calls drawIndexedTriangleList but
-		is hence not very fast.
+		This method works with all drivers because it simply calls
+		drawIndexedTriangleList but is hence not very fast.
+		Note that the triangle is drawn using the current
+		transformation matrix and material. So if you need to draw it
+		independently of the current transformation, use
+		\code
+		driver->setMaterial(unlitMaterial);
+		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		\endcode
+		for some properly set up material before drawing the triangle.
 		\param triangle: The triangle to draw.
 		\param color: Color of the line. */
 		virtual void draw3DTriangle(const core::triangle3df& triangle,
 			SColor color = SColor(255,255,255,255)) = 0;
 
 		//! Draws a 3d axis aligned box.
-		/** This method simply calls drawIndexedTriangles for some triangles.
-		Note that the line is drawn using the current transformation matrix and material.
-		This method works with all drivers because it simply calls drawIndexedTriangleList but
-		is hence not very fast.
+		/** This method simply calls drawIndexedTriangles for some
+		triangles. This method works with all drivers because it
+		simply calls drawIndexedTriangleList but is hence not very
+		fast.
+		Note that the box is drawn using the current transformation
+		matrix and material. So if you need to draw it independently of
+		the current transformation, use
+		\code
+		driver->setMaterial(unlitMaterial);
+		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		\endcode
+		for some properly set up material before drawing the box.
 		\param box: The axis aligned box to draw
 		\param color: Color to use while drawing the box. */
 		virtual void draw3DBox(const core::aabbox3d<f32>& box,
