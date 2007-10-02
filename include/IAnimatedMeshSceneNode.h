@@ -183,6 +183,8 @@ namespace scene
 		//! animates the joints in the mesh based on the current frame (also takes in to account transitions)
 		virtual void animateJoints() = 0;
 
+		//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
+		virtual void setRenderFromIdentity( bool On )=0;
 	};
 
 } // end namespace scene

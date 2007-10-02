@@ -123,7 +123,7 @@ namespace scene
 		//! Joints
 	  	struct SJoint
 		{
-			SJoint() : UseAnimationFrom(0), LocalAnimatedMatrix_Animated(false),
+			SJoint() : UseAnimationFrom(0), LocalAnimatedMatrix_Animated(false), GlobalSkinningSpace(false),
 				   positionHint(-1),scaleHint(-1),rotationHint(-1)
 			{
 			}
@@ -160,6 +160,8 @@ namespace scene
 			core::vector3df Animatedscale;
 			core::quaternion Animatedrotation;
 
+
+
 			core::matrix4 GlobalInversedMatrix; //the x format pre-calculates this
 
 		private:
@@ -168,6 +170,8 @@ namespace scene
 
 			SJoint *UseAnimationFrom;
 			bool LocalAnimatedMatrix_Animated;
+
+			bool GlobalSkinningSpace;
 
 			s32 positionHint;
 			s32 scaleHint;

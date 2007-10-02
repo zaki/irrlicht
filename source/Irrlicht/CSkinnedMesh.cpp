@@ -77,6 +77,7 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 //! blend: {0-old position, 1-New position}
 void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 {
+
 	if ( !HasAnimation  || lastAnimatedFrame==frame)
 		return;
 
@@ -158,6 +159,8 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 			Joint->LocalAnimatedMatrix.setTranslation(Joint->Animatedposition);
 			Joint->LocalAnimatedMatrix*=Joint->Animatedrotation.getMatrix();
 
+			Joint->GlobalSkinningSpace=false;
+
 			if (Joint->ScaleKeys.size())
 			{
 				//Joint->_LocalAnimatedMatrix.setScale(Joint->_Animatedscale);
@@ -185,10 +188,11 @@ void CSkinnedMesh::buildAll_GlobalAnimatedMatrices(SJoint *Joint, SJoint *Parent
 	else
 	{
 		// Find global matrix...
-		if (!ParentJoint)
+		if (!ParentJoint || Joint->GlobalSkinningSpace)
 			Joint->GlobalAnimatedMatrix = Joint->LocalAnimatedMatrix;
 		else
 			Joint->GlobalAnimatedMatrix = ParentJoint->GlobalAnimatedMatrix * Joint->LocalAnimatedMatrix;
+
 	}
 
 	for (u32 j=0; j<Joint->Children.size(); ++j)
@@ -1197,13 +1201,23 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &Join
 	{
 		IBoneSceneNode* node=JointChildSceneNodes[i];
 		SJoint *joint=AllJoints[i];
+
+
+
 		joint->LocalAnimatedMatrix.setTranslation( node->getPosition() );
 		joint->LocalAnimatedMatrix.setRotationDegrees( node->getRotation() );
+
+
 		//joint->LocalAnimatedMatrix.setScale( node->getScale() );
 
 		joint->positionHint=node->positionHint;
 		joint->scaleHint=node->scaleHint;
 		joint->rotationHint=node->rotationHint;
+
+		if (node->getSkinningSpace()==EBSS_GLOBAL)
+			joint->GlobalSkinningSpace=true;
+		else
+			joint->GlobalSkinningSpace=false;
 	}
 	//Remove cache, temp...
 	lastAnimatedFrame=-1;

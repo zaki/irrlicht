@@ -33,7 +33,7 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh, ISceneNode* 
 	CurrentFrameNr(0.f), JointMode(0), JointsUsed(false),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
 	Looping(true), ReadOnlyMaterials(false),
-	LoopCallBack(0), PassCount(0), Shadow(0)
+	LoopCallBack(0), PassCount(0), Shadow(0), RenderFromIdentity(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CAnimatedMeshSceneNode");
@@ -333,7 +333,9 @@ void CAnimatedMeshSceneNode::render()
 			{
 				scene::IMeshBuffer* mb = m->getMeshBuffer(i);
 
-				if (Mesh->getMeshType() == EAMT_SKINNED)
+				if (RenderFromIdentity)
+					driver->setTransform(video::ETS_WORLD, core::matrix4() );
+				else if (Mesh->getMeshType() == EAMT_SKINNED)
 					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
 
 
@@ -872,6 +874,14 @@ void CAnimatedMeshSceneNode::setTransitionTime(f32 time)
 		setJointMode(2);
 	TransitionTime = (u32)core::floor32(time*1000.0f);
 }
+
+//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
+void CAnimatedMeshSceneNode::setRenderFromIdentity( bool On )
+{
+	RenderFromIdentity=On;
+}
+
+
 
 //! updates the joint positions of this mesh
 void CAnimatedMeshSceneNode::animateJoints()

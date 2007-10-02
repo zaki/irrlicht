@@ -147,6 +147,9 @@ namespace scene
 		//! updates the joint positions of this mesh
 		virtual void animateJoints();
 
+		//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
+		virtual void setRenderFromIdentity( bool On );
+
 	private:
 
 		f32 buildFrameNr( u32 timeMs);
@@ -182,6 +185,7 @@ namespace scene
 		core::array<IBoneSceneNode* > JointChildSceneNodes;
 		core::array<core::matrix4> PretransitingSave;
 
+		bool RenderFromIdentity;
 
 		struct SMD3Special
 		{

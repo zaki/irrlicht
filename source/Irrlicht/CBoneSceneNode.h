@@ -54,10 +54,27 @@ namespace scene
 		//! Reads attributes of the scene node.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
+		//! How the relative transformation of the bone is used
+		virtual void setSkinningSpace( E_BONE_SKINNING_SPACE space )
+		{
+			SkinningSpace=space;
+		}
+
+		virtual E_BONE_SKINNING_SPACE getSkinningSpace()
+		{
+			return SkinningSpace;
+		}
+
 	private:
 		E_BONE_ANIMATION_MODE AnimationMode;
+		E_BONE_SKINNING_SPACE SkinningSpace;
+
 		u32 BoneIndex;
 		core::stringc BoneName;
+
+
+
+
 
 		core::aabbox3d<f32> Box;
 	};

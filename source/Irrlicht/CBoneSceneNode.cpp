@@ -11,7 +11,7 @@ namespace scene
 //! constructor
 CBoneSceneNode::CBoneSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 	u32 boneIndex, const c8* boneName)
-: IBoneSceneNode(parent, mgr, id), AnimationMode(EBAM_AUTOMATIC),
+: IBoneSceneNode(parent, mgr, id), AnimationMode(EBAM_AUTOMATIC), SkinningSpace(EBSS_LOCAL),
   BoneIndex(boneIndex), BoneName(boneName)
 {
 
