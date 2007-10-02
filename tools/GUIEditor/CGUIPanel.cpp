@@ -231,14 +231,14 @@ void CGUIPanel::resizeInnerPane()
 	// get desired size (total size of all children)
 	core::rect<s32> totalRect(0,0,0,0);
 
-	core::list<IGUIElement*>::Iterator it = InnerPane->getChildren().begin();
-
-	while ( it != InnerPane->getChildren().end() )
+	core::list<IGUIElement*>::ConstIterator it;
+       
+	for ( it = InnerPane->getChildren().begin();
+		it != InnerPane->getChildren().end(); ++it )
 	{
 		core::rect<s32> rct = (*it)->getRelativePosition();
 		totalRect.addInternalPoint(rct.UpperLeftCorner);
 		totalRect.addInternalPoint(rct.LowerRightCorner);
-		it++;
 	}
 
 	// move children if pane needs to grow
@@ -253,11 +253,10 @@ void CGUIPanel::resizeInnerPane()
 	{
 		totalRect += adjustedMovement;
 
-		it = InnerPane->getChildren().begin();
-		while ( it != InnerPane->getChildren().end() )
+		for (it = InnerPane->getChildren().begin();
+			it != InnerPane->getChildren().end(); ++it )
 		{
 			(*it)->move(adjustedMovement);
-			it++;
 		}
 	}
 
