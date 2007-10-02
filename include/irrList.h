@@ -83,8 +83,8 @@ public:
 
 		ConstIterator& operator ++()    { Current = Current->Next; return *this; }
 		ConstIterator& operator --()    { Current = Current->Prev; return *this; }
-		ConstIterator  operator ++(s32) { Iterator tmp = *this; Current = Current->Next; return tmp; }
-		ConstIterator  operator --(s32) { Iterator tmp = *this; Current = Current->Prev; return tmp; }
+		ConstIterator  operator ++(s32) { ConstIterator tmp = *this; Current = Current->Next; return tmp; }
+		ConstIterator  operator --(s32) { ConstIterator tmp = *this; Current = Current->Prev; return tmp; }
 
 		ConstIterator& operator +=(s32 num)
 		{
@@ -118,6 +118,7 @@ public:
 
 		SKListNode* Current;
 
+		friend class Iterator;
 		friend class list<T>;
 	};
 

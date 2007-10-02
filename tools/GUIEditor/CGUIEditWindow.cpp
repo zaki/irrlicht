@@ -127,7 +127,6 @@ CGUIAttributeEditor* CGUIEditWindow::getOptionEditor() const
 
 void CGUIEditWindow::setSelectedElement(IGUIElement *sel)
 {
-
 	// save changes
 	AttribEditor->updateAttribs();
 

@@ -117,7 +117,7 @@ IGUIElement* CGUIEditWorkspace::getEditableElementFromPoint(IGUIElement *start, 
 
 	// we have to search from back to front.
 
-	core::list<IGUIElement*>::Iterator it = start->getChildren().getLast();
+	core::list<IGUIElement*>::ConstIterator it = start->getChildren().getLast();
 	s32 count=0;
 	while(it != start->getChildren().end())
 	{
@@ -174,14 +174,13 @@ IGUIElement* CGUIEditWorkspace::getSelectedElement()
 void CGUIEditWorkspace::selectNextSibling()
 {
 	IGUIElement* p=0;
-	core::list<IGUIElement*>::Iterator it;
 
 	if (!SelectedElement)
 		p = Parent;
 	else
 		p = SelectedElement->getParent();
 
-	it = p->getChildren().begin();
+	core::list<IGUIElement*>::ConstIterator it = p->getChildren().begin();
 	// find selected element
 	if (SelectedElement)
 		while (*it != SelectedElement)
@@ -198,14 +197,13 @@ void CGUIEditWorkspace::selectNextSibling()
 void CGUIEditWorkspace::selectPreviousSibling()
 {
 	IGUIElement* p=0;
-	core::list<IGUIElement*>::Iterator it;
 
 	if (!SelectedElement)
 		p = Parent;
 	else
 		p = SelectedElement->getParent();
 
-	it = p->getChildren().getLast();
+	core::list<IGUIElement*>::ConstIterator it = p->getChildren().getLast();
 	// find selected element
 	if (SelectedElement)
 		while (*it != SelectedElement)
@@ -595,7 +593,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 					el = Parent;
 					grab();
 					// remove all children
-					while(el->getChildren().begin() != Children.end())
+					while(Children.end() != el->getChildren().begin())
 						el->removeChild(*(el->getChildren().begin()));
 					// attach to parent again
 					el->addChild(this);
