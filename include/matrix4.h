@@ -276,7 +276,7 @@ namespace core
 		private:
 			//! Matrix data, stored in row-major order
 			T M[16];
-			bool definitelyIdentityMatrix;
+			mutable bool definitelyIdentityMatrix;
 	};
 
 	template <class T>
@@ -766,6 +766,7 @@ namespace core
 					if (!iszero((*this)(i,j)))
 						return false;
 
+		definitelyIdentityMatrix=true;
 		return true;
 	}
 
@@ -799,6 +800,7 @@ namespace core
 		if(IR(M[13])!=0)		return false;
 		if(IR(M[13])!=0)		return false;
 		if(IR(M[15])!=F32_VALUE_1)	return false;
+		definitelyIdentityMatrix=true;
 		return true;
 	}
 
@@ -1100,6 +1102,9 @@ namespace core
 	template <class T>
 	inline bool CMatrix4<T>::makeInverse()
 	{
+		if (definitelyIdentityMatrix)
+			return true;
+
 		CMatrix4<T> temp ( EM4CONST_NOTHING );
 
 		if (getInverse(temp))
