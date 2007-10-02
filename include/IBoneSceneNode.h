@@ -28,6 +28,17 @@ namespace scene
 
 	};
 
+	enum E_BONE_SKINNING_SPACE
+	{
+		//! local skinning, standard
+		EBSS_LOCAL=0,
+
+		//! global skinning
+		EBSS_GLOBAL,
+
+		EBSS_COUNT
+	};
+
 	//! Names for bone animation modes
 	const c8* const BoneAnimationModeNames[] =
 	{
@@ -51,7 +62,7 @@ namespace scene
 		//! Returns the index of the bone
 		virtual u32 getBoneIndex() const = 0;
 
-		//! Sets the animation mode of the bone. Returns true if successful.
+		//! Sets the animation mode of the bone. Returns true if successful. (Unused)
 		virtual bool setAnimationMode(E_BONE_ANIMATION_MODE mode) = 0;
 
 		//! Gets the current animation mode of the bone
@@ -68,14 +79,16 @@ namespace scene
 		//! Does nothing as bones are not visible
 		virtual void render() { }
 
+		//! How the relative transformation of the bone is used
+		virtual void setSkinningSpace( E_BONE_SKINNING_SPACE space ) =0;
 
-		virtual void setAbsoluteTransformation(const core::matrix4& transformation)
-		{
-			AbsoluteTransformation=transformation;
-		}
+		//! How the relative transformation of the bone is used
+		virtual E_BONE_SKINNING_SPACE getSkinningSpace() =0;
 
 		//! updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePositionOfAllChildren()=0;
+
+
 
 		s32 positionHint;
 		s32 scaleHint;
