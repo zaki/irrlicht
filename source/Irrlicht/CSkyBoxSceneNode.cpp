@@ -110,19 +110,19 @@ CSkyBoxSceneNode::CSkyBoxSceneNode(video::ITexture* top, video::ITexture* bottom
 
 	Material[4] = mat;
 	Material[4].setTexture(0, top);
-	Vertices[16] = video::S3DVertex( l, l, l, 0,-1,0, video::SColor(255,255,255,255), t, t);
-	Vertices[17] = video::S3DVertex(-l, l, l, 0,-1,0, video::SColor(255,255,255,255), o, t);
-	Vertices[18] = video::S3DVertex(-l, l,-l, 0,-1,0, video::SColor(255,255,255,255), o, o);
-	Vertices[19] = video::S3DVertex( l, l,-l, 0,-1,0, video::SColor(255,255,255,255), t, o);
+	Vertices[16] = video::S3DVertex( l, l,-l, 0,-1,0, video::SColor(255,255,255,255), t, t);
+	Vertices[17] = video::S3DVertex( l, l, l, 0,-1,0, video::SColor(255,255,255,255), o, t);
+	Vertices[18] = video::S3DVertex(-l, l, l, 0,-1,0, video::SColor(255,255,255,255), o, o);
+	Vertices[19] = video::S3DVertex(-l, l,-l, 0,-1,0, video::SColor(255,255,255,255), t, o);
 
 	// create bottom side
 
 	Material[5] = mat;
 	Material[5].setTexture(0, bottom);
-	Vertices[20] = video::S3DVertex(-l,-l, l, 0,1,0, video::SColor(255,255,255,255), o, o);
-	Vertices[21] = video::S3DVertex( l,-l, l, 0,1,0, video::SColor(255,255,255,255), t, o);
-	Vertices[22] = video::S3DVertex( l,-l,-l, 0,1,0, video::SColor(255,255,255,255), t, t);
-	Vertices[23] = video::S3DVertex(-l,-l,-l, 0,1,0, video::SColor(255,255,255,255), o, t);
+	Vertices[20] = video::S3DVertex( l,-l, l, 0,1,0, video::SColor(255,255,255,255), o, o);
+	Vertices[21] = video::S3DVertex( l,-l,-l, 0,1,0, video::SColor(255,255,255,255), t, o);
+	Vertices[22] = video::S3DVertex(-l,-l,-l, 0,1,0, video::SColor(255,255,255,255), t, t);
+	Vertices[23] = video::S3DVertex(-l,-l, l, 0,1,0, video::SColor(255,255,255,255), o, t);
 }
 
 

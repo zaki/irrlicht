@@ -6,7 +6,7 @@ Changes in version 1.4 (... 2007)
 
  - the base class for nearly all Irrlicht classes has been renamed from IUnknown to IReferenceCounted
 
- - Fixed Skybox texture orientations. They are now displayed non-flipped. Existing skyboxes have to be changed, though. Echange left and right texture and rotate up-texture 270 degrees clockwise, and down-texture 90 degrees clockwise. Textures from Terragen and other tools can be used directly, now.
+ - Fixed Skybox texture orientations. They are now displayed non-flipped. Existing skyboxes have to be changed, though: Exchange left and right texture. Textures from Terragen and other tools can be used directly, now. Quake maps will also need the right/left exchange.
 
  - Added ITexture::isRenderTarget()
 
