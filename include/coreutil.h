@@ -18,8 +18,6 @@ namespace core
 
 // ----------- some basic quite often used string functions -----------------
 
-static const stringc irrEmtpyStringc = "";
-
 //! cut the filename extension from a string
 inline stringc& cutFilenameExtension ( stringc &dest, const stringc &source )
 {

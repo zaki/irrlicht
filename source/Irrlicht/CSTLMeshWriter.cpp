@@ -96,7 +96,8 @@ bool CSTLMeshWriter::writeMeshBinary(io::IWriteFile* file, scene::IMesh* mesh, s
 					const u16 attributes = 0;
 					for (u32 j=0; j<indexCount; j+=3)
 					{
-						file->write(&core::plane3df(vtx[buffer->getIndices()[j]].Pos,vtx[buffer->getIndices()[j+1]].Pos,vtx[buffer->getIndices()[j+2]].Pos).Normal, 12);
+						const core::plane3df tmpplane(vtx[buffer->getIndices()[j]].Pos,vtx[buffer->getIndices()[j+1]].Pos,vtx[buffer->getIndices()[j+2]].Pos);
+						file->write(&tmpplane.Normal, 12);
 						file->write(&vtx[buffer->getIndices()[j]].Pos, 12);
 						file->write(&vtx[buffer->getIndices()[j+1]].Pos, 12);
 						file->write(&vtx[buffer->getIndices()[j+2]].Pos, 12);
@@ -110,7 +111,8 @@ bool CSTLMeshWriter::writeMeshBinary(io::IWriteFile* file, scene::IMesh* mesh, s
 					const u16 attributes = 0;
 					for (u32 j=0; j<indexCount; j+=3)
 					{
-						file->write(&core::plane3df(vtx[buffer->getIndices()[j]].Pos,vtx[buffer->getIndices()[j+1]].Pos,vtx[buffer->getIndices()[j+2]].Pos).Normal, 12);
+						const core::plane3df tmpplane(vtx[buffer->getIndices()[j]].Pos,vtx[buffer->getIndices()[j+1]].Pos,vtx[buffer->getIndices()[j+2]].Pos);
+						file->write(&tmpplane.Normal, 12);
 						file->write(&vtx[buffer->getIndices()[j]].Pos, 12);
 						file->write(&vtx[buffer->getIndices()[j+1]].Pos, 12);
 						file->write(&vtx[buffer->getIndices()[j+2]].Pos, 12);
@@ -124,7 +126,8 @@ bool CSTLMeshWriter::writeMeshBinary(io::IWriteFile* file, scene::IMesh* mesh, s
 					const u16 attributes = 0;
 					for (u32 j=0; j<indexCount; j+=3)
 					{
-						file->write(&core::plane3df(vtx[buffer->getIndices()[j]].Pos,vtx[buffer->getIndices()[j+1]].Pos,vtx[buffer->getIndices()[j+2]].Pos).Normal, 12);
+						const core::plane3df tmpplane(vtx[buffer->getIndices()[j]].Pos,vtx[buffer->getIndices()[j+1]].Pos,vtx[buffer->getIndices()[j+2]].Pos);
+						file->write(&tmpplane.Normal, 12);
 						file->write(&vtx[buffer->getIndices()[j]].Pos, 12);
 						file->write(&vtx[buffer->getIndices()[j+1]].Pos, 12);
 						file->write(&vtx[buffer->getIndices()[j+2]].Pos, 12);
