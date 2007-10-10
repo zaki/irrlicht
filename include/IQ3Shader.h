@@ -18,6 +18,8 @@ namespace scene
 namespace quake3
 {
 
+	static const core::stringc irrEmptyStringc("");
+
 	//! Hold the different Mesh Types used for getMesh
 	enum eQ3MeshIndex
 	{
@@ -44,8 +46,8 @@ namespace quake3
 
 		void clear ()
 		{
-			name = core::irrEmtpyStringc;
-			content = core::irrEmtpyStringc;
+			name = "";
+			content = "";
 		}
 
 		s32 isValid () const
@@ -409,7 +411,7 @@ namespace quake3
 		{
 			s32 index = getIndex ( name );
 			if ( index < 0 )
-				return core::irrEmtpyStringc;
+				return irrEmptyStringc;
 
 			return Variable [ index ].content;
 		}
