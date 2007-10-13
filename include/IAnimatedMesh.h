@@ -24,9 +24,6 @@ namespace scene
 		//! Quake 3 MD3 model file
 		EAMT_MD3,
 
-		//! Milkshape 3d skeletal animation file
-		EAMT_MS3D,
-
 		//! Maya .obj static model
 		EAMT_OBJ,
 
@@ -35,10 +32,6 @@ namespace scene
 
 		//! 3D Studio .3ds file
 		EAMT_3DS,
-
-		//! Microsoft Direct3D .x file. Can contain static and skeletal
-		//! animated skinned meshes.
-		EAMT_X,
 
 		//! My3D Mesh, the file format by Zhuck Dimitry
 		EAMT_MY3D,
