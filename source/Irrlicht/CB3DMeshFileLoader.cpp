@@ -166,8 +166,6 @@ bool CB3DMeshFileLoader::load()
 	Materials.clear();
 	Textures.clear();
 
-	BaseVertices.clear();
-
 	Buffers=0;
 	AllJoints=0;
 
@@ -290,7 +288,7 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *InJoint)
 
 bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 {
-	s32 Vertices_Start=BaseVertices.size(); //B3Ds have Vertex ID's local within the mesh I don't want this
+	const s32 vertices_Start=BaseVertices.size(); //B3Ds have Vertex ID's local within the mesh I don't want this
 
 	s32 brush_id;
 
@@ -325,7 +323,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 		if ( strncmp( B3dStack.getLast().name, "VRTS", 4 ) == 0 )
 		{
 			knownChunk=true;
-			if (!readChunkVRTS(InJoint, 0, Vertices_Start))
+			if (!readChunkVRTS(InJoint, 0, vertices_Start))
 				return false;
 		}
 		else if ( strncmp( B3dStack.getLast().name, "TRIS", 4 ) == 0 )
@@ -337,7 +335,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 			if (brush_id!=-1)
 				MeshBuffer->Material=(*Materials[brush_id].Material);
 
-			if(readChunkTRIS(InJoint, MeshBuffer,AnimatedMesh->getMeshBuffers().size()-1, Vertices_Start)==false)
+			if(readChunkTRIS(InJoint, MeshBuffer,AnimatedMesh->getMeshBuffers().size()-1, vertices_Start)==false)
 				return false;
 
 			if (!NormalsInFile && MeshBuffer->Material.Lighting) // No point wasting time on lightmapped levels
@@ -358,7 +356,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 				for ( i = 0; i<(s32)MeshBuffer->getVertexCount(); ++i )
 				{
 					MeshBuffer->getVertex(i)->Normal.normalize ();
-					BaseVertices[Vertices_Start+i]->Normal=MeshBuffer->getVertex(i)->Normal;
+					BaseVertices[vertices_Start+i].Normal=MeshBuffer->getVertex(i)->Normal;
 				}
 			}
 		}
@@ -389,7 +387,7 @@ VRTS:
   float tex_coords[tex_coord_sets][tex_coord_set_size]	;tex coords
   }
 */
-bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSkinMeshBuffer* MeshBuffer, s32 Vertices_Start)
+bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSkinMeshBuffer* MeshBuffer, s32 vertices_Start)
 {
 	s32 flags, tex_coord_sets, tex_coord_set_size;
 
@@ -499,16 +497,14 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 		}
 
 		// Create Vertex...
-		video::S3DVertex2TCoords *Vertex=new video::S3DVertex2TCoords
-					(x, y, z, video::SColorf(red, green, blue, alpha).toSColor(), tu, tv, tu2, tv2);
-		Vertex->Normal = core::vector3df(nx, ny, nz);
+		video::S3DVertex2TCoords Vertex(x, y, z, nx, ny, nz, video::SColorf(red, green, blue, alpha).toSColor(), tu, tv, tu2, tv2);
 
 		// Transform the Vertex position by nested node...
 		core::matrix4 VertexMatrix;
-		VertexMatrix.setTranslation(Vertex->Pos);
+		VertexMatrix.setTranslation(Vertex.Pos);
 
 		VertexMatrix = InJoint->GlobalMatrix * VertexMatrix;
-		Vertex->Pos = VertexMatrix.getTranslation();
+		Vertex.Pos = VertexMatrix.getTranslation();
 
 		//Add it...
 
@@ -524,7 +520,7 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 }
 
 
-bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 Vertices_Start)
+bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 vertices_Start)
 {
 
 	bool showVertexWarning=false;
@@ -565,9 +561,9 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 		#endif
 
 		//Make Ids global:
-		vertex_id[0] += Vertices_Start;
-		vertex_id[1] += Vertices_Start;
-		vertex_id[2] += Vertices_Start;
+		vertex_id[0] += vertices_Start;
+		vertex_id[1] += vertices_Start;
+		vertex_id[2] += vertices_Start;
 
 		for(s32 i=0; i<3; ++i)
 		{
@@ -587,14 +583,14 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 			{
 
 				//Check for lightmapping:
-				if (BaseVertices[ vertex_id[i] ]->TCoords2 != core::vector2d<f32>(0,0))
+				if (BaseVertices[ vertex_id[i] ].TCoords2 != core::vector2d<f32>(0,0))
 					MeshBuffer->MoveTo_2TCoords(); //Will only affect the meshbuffer the first time this is called
 
 				//Add the vertex to the meshbuffer:
 				if (MeshBuffer->VertexType == video::EVT_STANDARD)
-					MeshBuffer->Vertices_Standard.push_back( *((video::S3DVertex*)BaseVertices[ vertex_id[i] ] ) );
+					MeshBuffer->Vertices_Standard.push_back( BaseVertices[ vertex_id[i] ] );
 				else
-					MeshBuffer->Vertices_2TCoords.push_back(*BaseVertices[ vertex_id[i] ] );
+					MeshBuffer->Vertices_2TCoords.push_back(BaseVertices[ vertex_id[i] ] );
 
 				//create vertex id to meshbuffer index link:
 				AnimatedVertices_VertexID[ vertex_id[i] ] = MeshBuffer->getVertexCount()-1;

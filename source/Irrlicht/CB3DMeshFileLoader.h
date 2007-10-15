@@ -99,7 +99,7 @@ private:
 
 	core::array<s32> AnimatedVertices_BufferID;
 
-	core::array<video::S3DVertex2TCoords*> BaseVertices;
+	core::array<video::S3DVertex2TCoords> BaseVertices;
 
 	core::array<scene::SSkinMeshBuffer*> *Buffers;
 	core::array<CSkinnedMesh::SJoint*> *AllJoints;
