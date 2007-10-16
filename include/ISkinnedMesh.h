@@ -68,16 +68,6 @@ namespace scene
 		//! Preforms a software skin on this mesh based of joint positions
 		virtual void skinMesh() = 0;
 
-		//!Recovers the joints from the mesh
-		virtual void recoverJointsFromMesh(core::array<IBoneSceneNode*> &JointChildSceneNodes) = 0;
-
-		//!Tranfers the joint data to the mesh
-		virtual void transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes) = 0;
-
-		//!Creates an array of joints from this mesh
-		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,
-			IAnimatedMeshSceneNode* AnimatedMeshSceneNode, ISceneManager* SceneManager) = 0;
-
 		virtual void convertMeshToTangents() = 0;
 
 		//! A vertex weight

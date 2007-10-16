@@ -9,7 +9,7 @@
 #include "os.h"
 #include "CShadowVolumeSceneNode.h"
 #include "IAnimatedMeshMD3.h"
-#include "ISkinnedMesh.h"
+#include "CSkinnedMesh.h"
 #include "IDummyTransformationSceneNode.h"
 #include "IBoneSceneNode.h"
 #include "IMaterialRenderer.h"
@@ -30,7 +30,7 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh, ISceneNode* 
 			const core::vector3df& position, const core::vector3df& rotation,	const core::vector3df& scale)
 : IAnimatedMeshSceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
 	BeginFrameTime(0), StartFrame(0), EndFrame(0), FramesPerSecond(25.f / 1000.f ),
-	CurrentFrameNr(0.f), JointMode(0), JointsUsed(false),
+	CurrentFrameNr(0.f), JointMode(EJUOR_NONE), JointsUsed(false),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
 	Looping(true), ReadOnlyMaterials(false),
 	LoopCallBack(0), PassCount(0), Shadow(0), RenderFromIdentity(0)
@@ -259,16 +259,16 @@ void CAnimatedMeshSceneNode::render()
 		m = Mesh->getMesh((s32)frame, 255, StartFrame, EndFrame);
 	else
 	{
-		ISkinnedMesh* skinnedMesh = reinterpret_cast<ISkinnedMesh*>(Mesh);
+		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
 
-		if (JointMode &2)//write to mesh
+		if (JointMode == EJUOR_CONTROL)//write to mesh
 			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
 		else
 			skinnedMesh->animateMesh(frame, 1.0f);
 
 		skinnedMesh->skinMesh();
 
-		if (JointMode &1)//read from mesh
+		if (JointMode == EJUOR_READ)//read from mesh
 		{
 			skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
 
@@ -853,12 +853,12 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 }
 
 //! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
-void CAnimatedMeshSceneNode::setJointMode(s32 mode)
+void CAnimatedMeshSceneNode::setJointMode(E_JOINT_UPDATE_ON_RENDER mode)
 {
 	checkJoints();
 
-	if (mode<0) mode=0;
-	if (mode>3) mode=3;
+	//if (mode<0) mode=0;
+	//if (mode>3) mode=3;
 
 	JointMode=mode;
 }
@@ -868,11 +868,12 @@ void CAnimatedMeshSceneNode::setJointMode(s32 mode)
 //! you must call animateJoints(), or the mesh will not animate
 void CAnimatedMeshSceneNode::setTransitionTime(f32 time)
 {
-	if (time != 0.f)
+	if (time != 0.0f)
+	{
 		checkJoints();
-	if (!(JointMode & 0x2))
-		setJointMode(2);
-	TransitionTime = (u32)core::floor32(time*1000.0f);
+		setJointMode(EJUOR_CONTROL);
+		TransitionTime = (u32)core::floor32(time*1000.0f);
+	}
 }
 
 //! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
@@ -884,7 +885,7 @@ void CAnimatedMeshSceneNode::setRenderFromIdentity( bool On )
 
 
 //! updates the joint positions of this mesh
-void CAnimatedMeshSceneNode::animateJoints()
+void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 {
 	checkJoints();
 
@@ -894,18 +895,21 @@ void CAnimatedMeshSceneNode::animateJoints()
 		{
 			f32 frame = getFrameNr(); //old?
 
-			ISkinnedMesh* skinnedMesh=(ISkinnedMesh*)Mesh;
+			CSkinnedMesh* skinnedMesh=reinterpret_cast<CSkinnedMesh*>(Mesh);
 
 			skinnedMesh->animateMesh(frame, 1.0f);
 
 			skinnedMesh->recoverJointsFromMesh( JointChildSceneNodes);
 
-			//---slow---
-			for (u32 n=0;n<JointChildSceneNodes.size();++n)
-				if (JointChildSceneNodes[n]->getParent()==this)
-				{
-					JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
-				}
+			if (CalculateAbsolutePositions)
+			{
+				//---slow---
+				for (u32 n=0;n<JointChildSceneNodes.size();++n)
+					if (JointChildSceneNodes[n]->getParent()==this)
+					{
+						JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
+					}
+			}
 
 			//-----------------------------------------
 			//		Transition
@@ -970,11 +974,11 @@ void CAnimatedMeshSceneNode::checkJoints()
 	{
 		//Create joints for SkinnedMesh
 
-		((ISkinnedMesh*)Mesh)->createJoints(JointChildSceneNodes, this, SceneManager);
-		((ISkinnedMesh*)Mesh)->recoverJointsFromMesh(JointChildSceneNodes);
+		((CSkinnedMesh*)Mesh)->createJoints(JointChildSceneNodes, this, SceneManager);
+		((CSkinnedMesh*)Mesh)->recoverJointsFromMesh(JointChildSceneNodes);
 
 		JointsUsed=true;
-		JointMode=1;
+		JointMode=EJUOR_READ;
 	}
 }
 

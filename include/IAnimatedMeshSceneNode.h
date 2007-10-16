@@ -15,6 +15,25 @@ namespace irr
 {
 namespace scene
 {
+
+
+	enum E_JOINT_UPDATE_ON_RENDER
+	{
+		// do nothing
+		EJUOR_NONE = 0,
+
+		// get joints positions from the mesh (for attached nodes, etc)
+		EJUOR_READ,
+
+		// control joint positions in the mesh (eg. ragdolls, or set the animation from animateJoints() )
+		EJUOR_CONTROL,
+
+		//! count of all available interpolation modes
+		EJUOR_COUNT
+	};
+
+
+
 	class IAnimatedMeshSceneNode;
 
 	//! Callback interface for catching events of ended animations.
@@ -174,14 +193,14 @@ namespace scene
 		//! 0-do nothing
 		//! 1-get joints positions from the mesh (for attached nodes, etc)
 		//! 2-control joint positions in the mesh (eg. ragdolls, or set the animation from animateJoints() )
-		virtual void setJointMode(s32 mode)=0;
+		virtual void setJointMode(E_JOINT_UPDATE_ON_RENDER mode)=0;
 
 		//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
-		//! you must call animateJoints(), or the mesh will not animate
+		//! you must call animateJoints(), or the mesh will not ani\mate
 		virtual void setTransitionTime(f32 Time) =0;
 
 		//! animates the joints in the mesh based on the current frame (also takes in to account transitions)
-		virtual void animateJoints() = 0;
+		virtual void animateJoints(bool CalculateAbsolutePositions=true) = 0;
 
 		//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
 		virtual void setRenderFromIdentity( bool On )=0;
