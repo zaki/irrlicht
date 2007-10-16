@@ -138,14 +138,14 @@ namespace scene
 
 
 		//! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
-		virtual void setJointMode(s32 mode);
+		virtual void setJointMode(E_JOINT_UPDATE_ON_RENDER mode);
 
 		//! Sets the transition time in seconds (note: This needs to enable joints, and setJointmode maybe set to 2)
 		//! you must call animateJoints(), or the mesh will not animate
 		virtual void setTransitionTime(f32 Time);
 
 		//! updates the joint positions of this mesh
-		virtual void animateJoints();
+		virtual void animateJoints(bool CalculateAbsolutePositions=true);
 
 		//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
 		virtual void setRenderFromIdentity( bool On );
@@ -166,7 +166,7 @@ namespace scene
 		f32 FramesPerSecond;
 		f32 CurrentFrameNr;
 
-		s32 JointMode; //0-unused, 1-get joints only, 2-set joints only, 3-move and set
+		E_JOINT_UPDATE_ON_RENDER JointMode; //0-unused, 1-get joints only, 2-set joints only, 3-move and set
 		bool JointsUsed;
 
 		u32 TransitionTime; //Transition time in millisecs
