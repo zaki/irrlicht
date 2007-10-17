@@ -252,12 +252,12 @@ namespace core
 				construct 2D Texture transformations
 				rotate about center, scale, and transform.
 			*/
-			void setTextureScale ( f32 sx, f32 sy );
+			void setTextureScale( f32 sx, f32 sy );
 
 			void setTextureRotationCenter( f32 radAngle );
 			void setTextureScaleCenter( f32 sx, f32 sy );
 
-			void setTextureTranslate ( f32 x, f32 y );
+			void setTextureTranslate( f32 x, f32 y );
 
 			void buildTextureTransform( f32 rotateRad,
 					const core::vector2df &rotatecenter,
@@ -1531,8 +1531,8 @@ namespace core
 					const core::vector2df &translate,
 					const core::vector2df &scale)
 	{
-		f32 c = cosf(rotateRad);
-		f32 s = sinf(rotateRad);
+		const f32 c = cosf(rotateRad);
+		const f32 s = sinf(rotateRad);
 
 		M[0] = (T)(c * scale.X);
 		M[1] = (T)(s * scale.Y);
@@ -1560,8 +1560,8 @@ namespace core
 	template <class T>
 	inline void CMatrix4<T>::setTextureRotationCenter( f32 rotateRad )
 	{
-		f32 c = cosf(rotateRad);
-		f32 s = sinf(rotateRad);
+		const f32 c = cosf(rotateRad);
+		const f32 s = sinf(rotateRad);
 		M[0] = (T)c;
 		M[1] = (T)s;
 		M[2] = (T)(-0.5f * ( c + s) + 0.5f);
@@ -1575,9 +1575,9 @@ namespace core
 	template <class T>
 	inline void CMatrix4<T>::setTextureTranslate ( f32 x, f32 y )
 	{
-		M[2] = (T)x;
-		M[6] = (T)y;
-		definitelyIdentityMatrix=false;
+		M[8] = (T)x;
+		M[9] = (T)y;
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f) ;
 	}
 
 	template <class T>
@@ -1595,7 +1595,7 @@ namespace core
 		M[2] = (T)(-0.5f * sx + 0.5f);
 		M[5] = (T)sy;
 		M[6] = (T)(-0.5f * sy + 0.5f);
-		definitelyIdentityMatrix=false;
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (sx==1.0f) && (sy==1.0f) ;
 	}
 
 	//! sets all matrix data members at once
