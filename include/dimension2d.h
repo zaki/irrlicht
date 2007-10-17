@@ -39,12 +39,26 @@ namespace core
 				return *this;
 			}
 
-			dimension2d<T> operator/(const T& scale) 
+			dimension2d<T>& operator/=(const T& scale)
+			{
+				Width /= scale;
+				Height /= scale;
+				return *this;
+			}
+
+			dimension2d<T> operator/(const T& scale) const
 			{
 				return dimension2d<T>(Width/scale, Height/scale);
 			}
 
-			dimension2d<T> operator*(const T& scale) 
+			dimension2d<T>& operator*=(const T& scale)
+			{
+				Width *= scale;
+				Height *= scale;
+				return *this;
+			}
+
+			dimension2d<T> operator*(const T& scale) const
 			{
 				return dimension2d<T>(Width*scale, Height*scale);
 			}
