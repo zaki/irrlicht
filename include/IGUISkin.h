@@ -334,7 +334,7 @@ namespace gui
 		//! sets a default color
 		virtual void setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor) = 0;
 
-		//! returns default color
+		//! returns size for the given size type
 		virtual s32 getSize(EGUI_DEFAULT_SIZE size) const = 0;
 
 		//! Returns a default text. 
