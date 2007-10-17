@@ -35,7 +35,7 @@ namespace gui
 		//! sets a default color
 		virtual void setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor);
 
-		//! returns default color
+		//! returns size for the given size type
 		virtual s32 getSize(EGUI_DEFAULT_SIZE size) const;
 
 		//! sets a default size
@@ -80,7 +80,7 @@ namespace gui
 		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details. 
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.
-		\param element: Pointer to the element which whiches to draw this. This parameter
+		\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. */
 		virtual void draw3DButtonPaneStandard(IGUIElement* element, 
@@ -93,7 +93,7 @@ namespace gui
 		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details. 
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.
-		\param element: Pointer to the element which whiches to draw this. This parameter
+		\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. */
 		virtual void draw3DButtonPanePressed(IGUIElement* element, 
@@ -102,7 +102,7 @@ namespace gui
 
 		//! draws a sunken 3d pane
 		/** Used for drawing the background of edit, combo or check boxes.
-		\param element: Pointer to the element which whiches to draw this. This parameter
+		\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. 
 		\param bgcolor: Background color.
@@ -118,7 +118,7 @@ namespace gui
 
 		//! draws a window background
 		/** Used for drawing the background of dialogs and windows.
-		\param element: Pointer to the element which whiches to draw this. This parameter
+		\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. 
 		\param titleBarColor: Title color.
@@ -135,7 +135,7 @@ namespace gui
 		/**	Used for drawing for menus and context menus. 
 		It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
 		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details. 
-		\param element: Pointer to the element which whishes to draw this. This parameter
+		\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. 
 		\param rect: Defining area where to draw.
@@ -146,7 +146,7 @@ namespace gui
 
 		//! draws a standard 3d tool bar
 		/**	Used for drawing for toolbars and menus.
-		\param element: Pointer to the element which whiches to draw this. This parameter
+		\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. 
 		\param rect: Defining area where to draw.
@@ -157,7 +157,7 @@ namespace gui
 
 		//! draws a tab button
 		/**	Used for drawing for tab buttons on top of tabs.
-		\param element: Pointer to the element which whiches to draw this. This parameter
+		\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. 
 		\param active: Specifies if the tab is currently active.
@@ -168,7 +168,7 @@ namespace gui
 						const core::rect<s32>* clip=0);
 
 		//! draws a tab control body
-		/**	\param element: Pointer to the element which whiches to draw this. This parameter
+		/**	\param element: Pointer to the element which wishes to draw this. This parameter
 		is usually not used by ISkin, but can be used for example by more complex 
 		implementations to find out how to draw the part exactly. 
 		\param border: Specifies if the border should be drawn.

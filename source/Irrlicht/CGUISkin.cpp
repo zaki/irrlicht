@@ -175,7 +175,7 @@ void CGUISkin::setColor(EGUI_DEFAULT_COLOR which, video::SColor newColor)
 }
 
 
-//! returns default color
+//! returns size for the given size type
 s32 CGUISkin::getSize(EGUI_DEFAULT_SIZE size) const
 {
 	if ((u32)size < EGDS_COUNT)
@@ -183,7 +183,6 @@ s32 CGUISkin::getSize(EGUI_DEFAULT_SIZE size) const
 	else
 		return 0;
 }
-
 
 
 //! sets a default size
@@ -281,7 +280,7 @@ It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
 EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
 \param rect: Defining area where to draw.
 \param clip: Clip area.
-\param element: Pointer to the element which whiches to draw this. This parameter
+\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly. */
 void CGUISkin::draw3DButtonPaneStandard(IGUIElement* element,
@@ -337,7 +336,7 @@ It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
 EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
 \param rect: Defining area where to draw.
 \param clip: Clip area.
-\param element: Pointer to the element which whiches to draw this. This parameter
+\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly. */
 void CGUISkin::draw3DButtonPanePressed(IGUIElement* element,
@@ -376,7 +375,7 @@ void CGUISkin::draw3DButtonPanePressed(IGUIElement* element,
 
 //! draws a sunken 3d pane
 /** Used for drawing the background of edit, combo or check boxes.
-\param element: Pointer to the element which whiches to draw this. This parameter
+\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly.
 \param bgcolor: Background color.
@@ -443,7 +442,7 @@ void CGUISkin::draw3DSunkenPane(IGUIElement* element, video::SColor bgcolor,
 
 //! draws a window background
 /** Used for drawing the background of dialogs and windows.
-\param element: Pointer to the element which whiches to draw this. This parameter
+\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly.
 \param titleBarColor: Title color.
@@ -549,7 +548,7 @@ core::rect<s32> CGUISkin::draw3DWindowBackground(IGUIElement* element,
 /**	Used for drawing for menus and context menus.
 It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
 EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
-\param element: Pointer to the element which whiches to draw this. This parameter
+\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly.
 \param rect: Defining area where to draw.
@@ -627,7 +626,7 @@ void CGUISkin::draw3DMenuPane(IGUIElement* element,
 
 //! draws a standard 3d tool bar
 /**	Used for drawing for toolbars and menus.
-\param element: Pointer to the element which whiches to draw this. This parameter
+\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly.
 \param rect: Defining area where to draw.
@@ -674,7 +673,7 @@ void CGUISkin::draw3DToolBar(IGUIElement* element,
 
 //! draws a tab button
 /**	Used for drawing for tab buttons on top of tabs.
-\param element: Pointer to the element which whiches to draw this. This parameter
+\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly.
 \param active: Specifies if the tab is currently active.
@@ -720,7 +719,7 @@ void CGUISkin::draw3DTabButton(IGUIElement* element, bool active,
 
 
 //! draws a tab control body
-/**	\param element: Pointer to the element which whiches to draw this. This parameter
+/**	\param element: Pointer to the element which wishes to draw this. This parameter
 is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly.
 \param border: Specifies if the border should be drawn.
