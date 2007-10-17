@@ -155,6 +155,7 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 	return true;
 
 #elif defined(_IRR_POSIX_API_)
+#if defined(_SC_PHYS_PAGES) && defined(_SC_AVPHYS_PAGES)
         long ps = sysconf(_SC_PAGESIZE);
         long pp = sysconf(_SC_PHYS_PAGES);
         long ap = sysconf(_SC_AVPHYS_PAGES);
@@ -167,6 +168,10 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 	if (Avail)
 		*Avail = ((ps*(long long)ap)>>10);
 	return true;
+#else
+	// TODO: implement for non-availablity of symbols/features
+	return false;
+#endif
 #else
 	// TODO: implement for OSX 
 	return false;
