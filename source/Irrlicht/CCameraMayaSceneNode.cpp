@@ -111,9 +111,9 @@ bool CCameraMayaSceneNode::isMouseKeyDown(s32 key)
 
 void CCameraMayaSceneNode::animate()
 {
-	//Alt + LM = Rotieren um KameraDrehpunkt
-	//Alt + LM + MM = Dolly vor/zurück in Kamerablickrichtung (Geschwindigkeit % von Abstand Kamera zu Drehpunkt - Maximalweg zum Kameradrehpunkt)
-	//Alt + MM = Verschieben in Kameraebene (Bildmitte hängt vom Tempo ungefähr am Mauszeiger)
+	//Alt + LM = Rotate around camera pivot
+	//Alt + LM + MM = Dolly forth/back in view direction (speed % distance camera pivot - max distance to pivot)
+	//Alt + MM = Move on camera plane (Screen center is about the mouse pointer, depending on move speed)
 
 	const SViewFrustum* va = getViewFrustum();
 

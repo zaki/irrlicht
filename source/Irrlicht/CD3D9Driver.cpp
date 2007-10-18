@@ -225,7 +225,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	{
 		present.BackBufferWidth = screenSize.Width;
 		present.BackBufferHeight = screenSize.Height;
-		// request 32bit mode if user specified 32 bit, added by Thomas Stüfe
+		// request 32bit mode if user specified 32 bit, added by Thomas Stuefe
 		if (bits == 32)
 			present.BackBufferFormat = D3DFMT_X8R8G8B8;
 		else
