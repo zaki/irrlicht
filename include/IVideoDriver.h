@@ -280,7 +280,7 @@ namespace video
 		results of this operation are not defined.
 		\param vertices: Pointer to array of vertices.
 		\param vertexCount: Amount of vertices in the array.
-		\param indexList: Pointer to array of indizes.
+		\param indexList: Pointer to array of indices.
 		\param triangleCount: amount of Triangles.
 		\param vType: Vertex type, e.g. EVT_STANDARD for S3DVertex.
 		\param pType: Primitive type, e.g. EPT_TRIANGLE_FAN for a triangle fan. */
@@ -293,8 +293,8 @@ namespace video
 		results of this operation are not defined.
 		\param vertices: Pointer to array of vertices.
 		\param vertexCount: Amount of vertices in the array.
-		\param indexList: Pointer to array of indizes.
-		\param triangleCount: amount of Triangles. Usually amount of indizes / 3. */
+		\param indexList: Pointer to array of indices.
+		\param triangleCount: amount of Triangles. Usually amount of indices / 3. */
 		virtual void drawIndexedTriangleList(const S3DVertex* vertices,
 			u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
 
@@ -305,8 +305,8 @@ namespace video
 		results of this operation are not defined.
 		\param vertices: Pointer to array of vertices.
 		\param vertexCount: Amount of vertices in the array.
-		\param indexList: Pointer to array of indizes.
-		\param triangleCount: amount of Triangles. Usually amount of indizes / 3.*/
+		\param indexList: Pointer to array of indices.
+		\param triangleCount: amount of Triangles. Usually amount of indices / 3.*/
 		virtual void drawIndexedTriangleList(const S3DVertex2TCoords* vertices,
 			u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
 
@@ -317,8 +317,8 @@ namespace video
 		results of this operation are not defined.
 		\param vertices: Pointer to array of vertices.
 		\param vertexCount: Amount of vertices in the array.
-		\param indexList: Pointer to array of indizes.
-		\param triangleCount: amount of Triangles. Usually amount of indizes / 3. */
+		\param indexList: Pointer to array of indices.
+		\param triangleCount: amount of Triangles. Usually amount of indices / 3. */
 		virtual void drawIndexedTriangleList(const S3DVertexTangents* vertices,
 			u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
 
@@ -331,8 +331,8 @@ namespace video
 		free code sent in by Mario Gruber, lots of thanks go to him!
 		\param vertices: Pointer to array of vertices.
 		\param vertexCount: Amount of vertices in the array.
-		\param indexList: Pointer to array of indizes.
-		\param triangleCount: amount of Triangles. Usually amount of indizes - 2. */
+		\param indexList: Pointer to array of indices.
+		\param triangleCount: amount of Triangles. Usually amount of indices - 2. */
 		virtual void drawIndexedTriangleFan(const S3DVertex* vertices,
 			u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
 
@@ -345,8 +345,8 @@ namespace video
 		free code sent in by Mario Gruber, lots of thanks go to him!
 		\param vertices: Pointer to array of vertices.
 		\param vertexCount: Amount of vertices in the array.
-		\param indexList: Pointer to array of indizes.
-		\param triangleCount: amount of Triangles. Usually amount of indizes - 2. */
+		\param indexList: Pointer to array of indices.
+		\param triangleCount: amount of Triangles. Usually amount of indices - 2. */
 		virtual void drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
 			u32 vertexCount, const u16* indexList, u32 triangleCount) = 0;
 
