@@ -29,8 +29,7 @@ CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, video::IVideoDriver* driver, sce
 	IReferenceCounted::setDebugName("CQ3LevelMesh");
 	#endif
 
-	s32 i;
-	for ( i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
+	for ( s32 i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
 	{
 		Mesh[i] = 0;
 	}
@@ -43,43 +42,22 @@ CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, video::IVideoDriver* driver, sce
 
 	// load default shaders
 	InitShader ();
-
-
 }
 
 
 //! destructor
 CQ3LevelMesh::~CQ3LevelMesh()
 {
-	if (Textures)
-		delete [] Textures;
-
-	if (LightMaps)
-		delete [] LightMaps;
-
-	if (Vertices)
-		delete [] Vertices;
-
-	if (Faces)
-		delete [] Faces;
-
-	if (Planes)
-		delete [] Planes;
-
-	if (Nodes)
-		delete [] Nodes;
-
-	if (Leafs)
-		delete [] Leafs;
-
-	if (LeafFaces)
-		delete [] LeafFaces;
-
-	if (MeshVerts)
-		delete [] MeshVerts;
-
-	if (Brushes)
-		delete [] Brushes;
+	delete [] Textures;
+	delete [] LightMaps;
+	delete [] Vertices;
+	delete [] Faces;
+	delete [] Planes;
+	delete [] Nodes;
+	delete [] Leafs;
+	delete [] LeafFaces;
+	delete [] MeshVerts;
+	delete [] Brushes;
 
 	if (Driver)
 		Driver->drop();
@@ -87,17 +65,15 @@ CQ3LevelMesh::~CQ3LevelMesh()
 	if (FileSystem)
 		FileSystem->drop();
 
-	s32 i;
-	for ( i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
+	for ( s32 i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
 	{
 		if (Mesh[i])
 			Mesh[i]->drop();
 	}
 
-	ReleaseShader ();
-	ReleaseEntity ();
+	ReleaseShader();
+	ReleaseEntity();
 }
-
 
 
 //! loads a level from a .bsp-File. Also tries to load all needed textures. Returns true if successful.
@@ -134,12 +110,11 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 	}
 	#endif
 
-	s32 i;
-	for ( i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
+	for ( s32 i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
 	{
 		Mesh[i] = new SMesh();
 	}
-	ReleaseEntity ();
+	ReleaseEntity();
 
 	// load everything
 
@@ -169,12 +144,11 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 	loadTextures2();
 	constructMesh2();
 
-	cleanMeshes ();
-	calcBoundingBoxes ();
+	cleanMeshes();
+	calcBoundingBoxes();
 
 	return true;
 }
-
 
 
 //! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
@@ -186,17 +160,18 @@ u32 CQ3LevelMesh::getFrameCount() const
 
 void CQ3LevelMesh::releaseMesh ( s32 index )
 {
-	if ( Mesh [ index ] )
+	if ( Mesh[index] )
 	{
-		Mesh [index]->drop ();
-		Mesh [index] = 0;
+		Mesh[index]->drop ();
+		Mesh[index] = 0;
 	}
 }
+
 
 //! returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail. Note, that some Meshes will ignore the detail level.
 IMesh* CQ3LevelMesh::getMesh(s32 frameInMs, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
 {
-	return Mesh[ frameInMs ];
+	return Mesh[frameInMs];
 }
 
 
@@ -337,6 +312,7 @@ void CQ3LevelMesh::loadEntities(tBSPLump* l, io::IReadFile* file)
 
 	parser_parse ( entity.pointer(), l->length, &CQ3LevelMesh::scriptcallback_entity );
 }
+
 
 // load shaders named in bsp
 void CQ3LevelMesh::loadShaders(tBSPLump* l, io::IReadFile* file)
@@ -493,7 +469,6 @@ void CQ3LevelMesh::parser_nextToken ()
 			return;
 	}
 
-
 	// user identity
 	Parser.token.append ( symbol );
 
@@ -521,6 +496,7 @@ void CQ3LevelMesh::parser_nextToken ()
 	Parser.tokenresult = Q3_TOKEN_TOKEN;
 	return;
 }
+
 
 /*
 	parse entity & shader
@@ -621,7 +597,6 @@ void CQ3LevelMesh::parser_parse ( const void * data, const u32 size, CQ3LevelMes
 }
 
 
-
 /*
 	this loader applies only textures for stage 1 & 2
 */
@@ -660,7 +635,6 @@ s32 CQ3LevelMesh::setShaderMaterial ( video::SMaterial &material, const tBSPFace
 	if ( 0 == shader )
 		return shaderState;
 
-
 	const quake3::SVarGroup *group;
 
 	s32 index;
@@ -691,7 +665,6 @@ s32 CQ3LevelMesh::setShaderMaterial ( video::SMaterial &material, const tBSPFace
 
 		startPos = 0;
 
-
 		index = group->getIndex ( "depthwrite" );
 		if ( index >= 0 )
 		{
@@ -707,9 +680,7 @@ s32 CQ3LevelMesh::setShaderMaterial ( video::SMaterial &material, const tBSPFace
 
 		// try if we can match better
 		shaderState |= (material.MaterialType == video::EMT_SOLID ) ? 0x00020000 : 0;
-
 	}
-
 
 	//material.BackfaceCulling = false;
 
@@ -775,7 +746,6 @@ void CQ3LevelMesh::constructMesh2()
 					}
 
 				} break;
-
 
 /*
 			case 1: // normal polygons
@@ -892,9 +862,8 @@ void CQ3LevelMesh::constructMesh2()
 			} // end switch
 		}
 	}
-
-
 }
+
 
 //! constructs a mesh from the quake 3 level file.
 void CQ3LevelMesh::constructMesh()
@@ -973,8 +942,8 @@ void CQ3LevelMesh::constructMesh()
 				break;
 		} // end switch
 	}
-
 }
+
 
 // helper method for creating curved surfaces, sent in by Dean P. Macri.
 inline f32 CQ3LevelMesh::Blend( const f64 s[3], const f64 t[3], const tBSPVertex *v[9], int offset)
@@ -991,6 +960,7 @@ inline f32 CQ3LevelMesh::Blend( const f64 s[3], const f64 t[3], const tBSPVertex
 
 	return (f32) res;
 }
+
 
 void CQ3LevelMesh::S3DVertex2TCoords_64::copyto ( video::S3DVertex2TCoords &dest ) const
 {
@@ -1042,17 +1012,13 @@ void CQ3LevelMesh::copy ( S3DVertex2TCoords_64 * dest, const tBSPVertex * source
 		u32 g = core::s32_min ( source->color[1] * quake3::defaultModulate, 255 );
 		u32 b = core::s32_min ( source->color[2] * quake3::defaultModulate, 255 );
 
-		dest->Color.set (	a * 1.f/255.f,
-							r * 1.f/255.f,
-							g * 1.f/255.f,
-							b * 1.f/255.f
-						);
+		dest->Color.set (a * 1.f/255.f, r * 1.f/255.f,
+				g * 1.f/255.f, b * 1.f/255.f);
 	}
 	else
 	{
 		dest->Color.set ( 1.f, 1.f, 1.f, 1.f );
 	}
-
 }
 
 
@@ -1090,6 +1056,7 @@ inline void CQ3LevelMesh::copy ( video::S3DVertex2TCoords * dest, const tBSPVert
 		dest->Color.color = 0xFFFFFFFF;
 	}
 }
+
 
 void CQ3LevelMesh::SBezier::tesselate ( s32 level )
 {
@@ -1149,11 +1116,10 @@ void CQ3LevelMesh::SBezier::tesselate ( s32 level )
 /*!
 	no subdivision
 */
-void CQ3LevelMesh::createCurvedSurface3 (	SMeshBufferLightMap* meshBuffer,
-											s32 faceIndex,
-											s32 patchTesselation,
-											s32 storevertexcolor
-										)
+void CQ3LevelMesh::createCurvedSurface3(SMeshBufferLightMap* meshBuffer,
+					s32 faceIndex,
+					s32 patchTesselation,
+					s32 storevertexcolor)
 {
 	tBSPFace * face = &Faces[faceIndex];
 	u32 j,k,m;
@@ -1187,13 +1153,13 @@ void CQ3LevelMesh::createCurvedSurface3 (	SMeshBufferLightMap* meshBuffer,
 	}
 }
 
+
 /*!
 */
-void CQ3LevelMesh::createCurvedSurface2 (	SMeshBufferLightMap* meshBuffer,
-											s32 faceIndex,
-											s32 patchTesselation,
-											s32 storevertexcolor
-										)
+void CQ3LevelMesh::createCurvedSurface2(SMeshBufferLightMap* meshBuffer,
+					s32 faceIndex,
+					s32 patchTesselation,
+					s32 storevertexcolor)
 {
 	tBSPFace * face = &Faces[faceIndex];
 	u32 j,k;
@@ -1202,11 +1168,9 @@ void CQ3LevelMesh::createCurvedSurface2 (	SMeshBufferLightMap* meshBuffer,
 	const u32 controlWidth = face->size[0];
 	const u32 controlHeight = face->size[1];
 
-
 	// number of biquadratic patches
 	const u32 biquadWidth =  (controlWidth - 1)/2;
 	const u32 biquadHeight = (controlHeight -1)/2;
-
 
 	// Create space for a temporary array of the patch's control points
 	core::array<S3DVertex2TCoords_64> controlPoint;
@@ -1243,7 +1207,6 @@ void CQ3LevelMesh::createCurvedSurface2 (	SMeshBufferLightMap* meshBuffer,
 		}
 	}
 
-
 	// stitch together with existing geometry
 	// TODO: only border needs to be checked
 	const u32 bsize = Bezier.Patch->getVertexCount();
@@ -1266,7 +1229,6 @@ void CQ3LevelMesh::createCurvedSurface2 (	SMeshBufferLightMap* meshBuffer,
 	}
 */
 
-
 	// add Patch to meshbuffer
 	for ( j = 0; j!= bsize; ++j )
 	{
@@ -1280,8 +1242,8 @@ void CQ3LevelMesh::createCurvedSurface2 (	SMeshBufferLightMap* meshBuffer,
 	}
 
 	delete Bezier.Patch;
-
 }
+
 
 void CQ3LevelMesh::createCurvedSurface(SMeshBufferLightMap* meshBuffer, s32 i)
 {
@@ -1423,6 +1385,7 @@ void CQ3LevelMesh::createCurvedSurface(SMeshBufferLightMap* meshBuffer, s32 i)
 	}
 }
 
+
 //! get's an interface to the entities
 const quake3::tQ3EntityList & CQ3LevelMesh::getEntityList ()
 {
@@ -1444,6 +1407,7 @@ const quake3::SShader * CQ3LevelMesh::getShader ( u32 index  ) const
 
 	return 0;
 }
+
 
 //! loads the shader definition
 //  either from file ( we assume /scripts on fileNameIsValid == 0 )
@@ -1522,6 +1486,7 @@ const quake3::SShader * CQ3LevelMesh::getShader ( const c8 * filename, s32 fileN
 	return 0;
 }
 
+
 //! adding default shaders
 void CQ3LevelMesh::InitShader ()
 {
@@ -1543,6 +1508,7 @@ void CQ3LevelMesh::InitShader ()
 	// load common named shader
 	getShader ( "scripts/common.shader", 1 );
 }
+
 
 //!. script callback for shaders
 //! i'm having troubles with the reference counting, during callback.. resorting..
