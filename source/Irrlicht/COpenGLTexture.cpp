@@ -192,7 +192,7 @@ ECOLOR_FORMAT COpenGLTexture::getBestColorFormat(ECOLOR_FORMAT format)
 	}
 	if (Driver->getTextureCreationFlag(ETCF_NO_ALPHA_CHANNEL))
 	{
-		switch (format)
+		switch (destFormat)
 		{
 			case ECF_A1R5G5B5:
 				destFormat = ECF_R5G6B5;
@@ -273,7 +273,7 @@ void COpenGLTexture::copyTexture(bool newTexture)
 		case ECF_A8R8G8B8:
 			InternalFormat=GL_RGBA;
 			PixelFormat=GL_BGRA_EXT;
-			if (reinterpret_cast<COpenGLDriver*>(Driver)->Version > 101)
+			if (Driver->Version > 101)
 				PixelType=GL_UNSIGNED_INT_8_8_8_8_REV;
 			break;
 		default:
