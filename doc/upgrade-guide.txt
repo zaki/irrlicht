@@ -634,3 +634,568 @@ vector3d.h
 Changed signature (changed return value)
 	T getDistanceFrom(const vector3d<T>& other) const
 
+Changes for Version 1.4
+-----------------------
+This release had many changes in API method signatures. Many methods have been
+made const, also several parameter types were changed. The two most noticeable
+changes (which almost every user of the Irrlicht API will come across) are the
+renaming of IUnknown to IReferenceCounted and const-ref change of the SEvent
+structure of the OnEvent method. Another important change: DirectX8 support is
+now by default disabled, enable the define in IrrCompileConfig.h to restore the
+old behavior.
+
+IReferenceCounted.h
+Renamed Type (from IUnknown). This changed most classes in Irrlicht
+	class IReferenceCounted
+
+IEventReceiver.h
+Changed signature (made const)
+	virtual bool OnEvent(const SEvent& event) = 0;
+
+IrrCompileConfig.h
+DirectX8 support is now by default disabled
+
+CMeshBuffer.h
+Removed method
+	virtual u32 getVertexPitch() const
+
+fast_atof.h
+Changed signature to allow optional second parameter
+	u32 strtol10(const char* in, const char** out=0)
+
+IAnimatedMesh.h
+Changed inheritance (instead of IReferenceCounted)
+	class IAnimatedMesh : public IMesh
+Changed signature (made const)
+	virtual u32 getFrameCount() const = 0;
+
+IAnimatedMeshSceneNode.h
+Changed signature (changed param type)
+	virtual void setCurrentFrame(f32 frame) = 0;
+Replaced methods (generalized method getJointNode available)
+	virtual ISceneNode* getMS3DJointNode(const c8* jointName) = 0;
+	virtual ISceneNode* getXJointNode(const c8* jointName) = 0;
+	virtual ISceneNode* getB3DJointNode(const c8* jointName) = 0;
+Changed signature (changed return type)
+	virtual f32 getFrameNr() const = 0;
+Changed signature (made const)
+	virtual bool isReadOnlyMaterials() const = 0;
+
+IAttributeExchangingObject.h
+Changed signature (made const)
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const {}
+
+IAttributes.h
+Changed signature (made const, changed param type)
+	virtual u32 getAttributeCount() const = 0;
+Changed signature (added param)
+	virtual bool read(io::IXMLReader* reader, bool readCurrentElementOnly=false, const wchar_t* elementName=0) = 0;
+	virtual bool write(io::IXMLWriter* writer, bool writeXMLHeader=false, const wchar_t* elementName=0) = 0;
+Changed signature (made const-ref param)
+	virtual void addMatrix(const c8* attributeName, const core::matrix4& v) = 0;
+	virtual void setAttribute(const c8* attributeName, const core::matrix4& v) = 0;
+	virtual void setAttribute(s32 index, const core::matrix4& v) = 0;
+
+IBillboardSceneNode.h
+Changed signature (made const)
+	virtual const core::dimension2d<f32>& getSize() const = 0;
+	virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const = 0;
+
+ICameraSceneNode.h
+Changed signature (made const)
+	virtual const core::matrix4& getProjectionMatrix() const = 0;
+	virtual const core::matrix4& getViewMatrix() const = 0;
+	virtual bool OnEvent(const SEvent& event) = 0;
+	virtual f32 getNearValue() const = 0;
+	virtual f32 getFarValue() const = 0;
+	virtual f32 getAspectRatio() const = 0;
+	virtual f32 getFOV() const = 0;
+	virtual bool isInputReceiverEnabled() const = 0;
+	virtual bool isOrthogonal() const 
+
+ICursorControl.h
+Changed signature (made const)
+		virtual bool isVisible() const = 0;
+
+IFileList.h
+Changed signature (made const, changed param or return types)
+	virtual u32 getFileCount() const = 0;
+	virtual const c8* getFileName(u32 index) const = 0;
+	virtual const c8* getFullFileName(u32 index) = 0;
+	virtual bool isDirectory(u32 index) const = 0;
+
+IFileSystem.h	2007-09-17 09:53:10.000000000 +0200
+Changed signature (made const method and const-ref param)
+	virtual core::stringc getAbsolutePath(const core::stringc& filename) const = 0;
+	virtual core::stringc getFileDir(const core::stringc& filename) const = 0;
+Changed signature (made const)
+	virtual IFileList* createFileList() const = 0;
+	virtual bool existFile(const c8* filename) const = 0;
+
+IGUIButton.h
+Changed signature (made const)
+	virtual bool isPressed() const = 0;
+	virtual bool isAlphaChannelUsed() const = 0;
+	virtual bool isPushButton() const = 0;
+	virtual bool isDrawingBorder() const = 0;
+
+IGUICheckBox.h
+Changed signature (made const)
+	virtual bool isChecked() const = 0;
+
+IGUIComboBox.h
+Changed signature (made const, changed param or return types)
+	virtual u32 getItemCount() const = 0;
+	virtual const wchar_t* getItem(u32 idx) const = 0;
+	virtual s32 getSelected() const = 0;
+Changed signature (changed param or return types)
+	virtual u32 addItem(const wchar_t* text) = 0;
+	virtual void removeItem(u32 id) = 0;
+
+IGUIContextMenu.h
+Changed signature (changed param or return types)
+	virtual u32 getItemCount() const = 0;
+	virtual u32 addItem(const wchar_t* text, s32 commandId=-1, bool enabled=true, bool hasSubMenu=false, bool checked=false) = 0;
+	virtual void setItemText(u32 idx, const wchar_t* text) = 0;
+	virtual void setItemEnabled(u32 idx, bool enabled) = 0;
+	virtual void setItemChecked(u32 idx, bool enabled) = 0;
+	virtual void removeItem(u32 idx) = 0;
+	virtual void setItemCommandId(u32 idx, s32 id) = 0;
+Changed signature (made const, changed param or return types)
+	virtual const wchar_t* getItemText(u32 idx) const = 0;
+	virtual bool isItemEnabled(u32 idx) const = 0;
+	virtual bool isItemChecked(u32 idx) const = 0;
+	virtual s32 getSelectedItem() const = 0;
+	virtual s32 getItemCommandId(u32 idx) const = 0;
+	virtual IGUIContextMenu* getSubMenu(u32 idx) const = 0;
+
+IGUIEditBox.h
+Changed signature (changed param or return types)
+	virtual void setMax(u32 max) = 0;
+Changed signature (made const, changed param or return types)
+	virtual u32 getMax() const = 0;
+
+IGUIElementFactory.h
+Changed signature (made const)
+	virtual s32 getCreatableGUIElementTypeCount() const = 0;
+	virtual EGUI_ELEMENT_TYPE getCreateableGUIElementType(s32 idx) const = 0;
+	virtual const c8* getCreateableGUIElementTypeName(s32 idx) const = 0;
+	virtual const c8* getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type) const = 0;
+
+IGUIElement.h
+Changed signature (made const)
+	bool isNotClipped() const
+	virtual bool isVisible() const
+	virtual bool isSubElement() const
+	virtual bool isEnabled() const
+	virtual const wchar_t* getText() const
+	virtual s32 getID() const
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+Changed signature (made const-ref param or return type)
+	virtual const core::stringw& getToolTipText() const
+	virtual bool OnEvent(const SEvent& event)
+
+IGUIEnvironment.h
+Changed signature (changed return type)
+	virtual bool setFocus(IGUIElement* element) = 0;
+	virtual bool removeFocus(IGUIElement* element) = 0;
+Changed signature (made const)
+	virtual IGUIElement* getFocus() const = 0;
+	virtual bool hasFocus(IGUIElement* element) const = 0;
+	virtual video::IVideoDriver* getVideoDriver() const = 0;
+	virtual io::IFileSystem* getFileSystem() const = 0;
+	virtual IOSOperator* getOSOperator() const = 0;
+	virtual IGUISkin* getSkin() const = 0;
+	virtual IGUIFont* getBuiltInFont() const = 0;
+	virtual IGUIElementFactory* getDefaultGUIElementFactory() const = 0;
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const =0;
+Changed signature (made const-ref param or return type)
+	virtual bool postEventFromUser(const SEvent& event) = 0;
+Changed signature (made const, changed param or return types)
+	virtual u32 getRegisteredGUIElementFactoryCount() const = 0;
+	virtual IGUIElementFactory* getGUIElementFactory(u32 index) const = 0;
+
+IGUIFileOpenDialog.h
+Changed signature (made const)
+	virtual const wchar_t* getFileName() const = 0;
+
+IGUIFontBitmap.h
+Changed signature (made const)
+	virtual IGUISpriteBank* getSpriteBank() const = 0;
+	virtual u32 getSpriteNoFromChar(const wchar_t *c) const = 0;
+	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const = 0;
+
+IGUIFont.h
+Changed signature (made const)
+	virtual core::dimension2d<s32> getDimension(const wchar_t* text) const = 0;
+	virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const = 0;
+	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const = 0;
+	virtual s32 getKerningHeight() const = 0;
+
+IGUIListBox.h
+Changed signature (made const, changed param or return types)
+	virtual u32 getItemCount() const = 0;
+	virtual const wchar_t* getListItem(u32 id) const = 0;
+	virtual s32 getIcon(u32 index) const = 0;
+Changed signature (changed param or return types)
+	virtual u32 addItem(const wchar_t* text) = 0;
+	virtual u32 addItem(const wchar_t* text, s32 icon) = 0;
+	virtual void removeItem(u32 index) = 0;
+Changed signature (made const)
+	virtual s32 getSelected() const = 0;
+
+IGUIMeshViewer.h
+Changed signature (made const)
+		virtual const video::SMaterial& getMaterial() const = 0;
+
+IGUIScrollBar.h
+Changed signature (made const)
+	virtual s32 getMax() const = 0;
+	virtual s32 getSmallStep() const = 0;
+	virtual s32 getPos() const = 0;
+
+IGUISkin.h
+Changed signature (made const)
+	virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const = 0;
+	virtual s32 getSize(EGUI_DEFAULT_SIZE size) const = 0;
+	virtual const wchar_t* getDefaultText(EGUI_DEFAULT_TEXT text) const = 0;
+	virtual IGUIFont* getFont(EGUI_DEFAULT_FONT which=EGDF_DEFAULT) const = 0;
+	virtual IGUISpriteBank* getSpriteBank() const = 0;
+	virtual u32 getIcon(EGUI_DEFAULT_ICON icon) const = 0;
+
+IGUISpriteBank.h
+Changed signature (made const)
+	virtual u32 getTextureCount() const = 0;
+	virtual video::ITexture* getTexture(u32 index) const = 0;
+
+IGUIStaticText.h
+Changed signature (made const)
+	virtual IGUIFont* getOverrideFont(void) const = 0;
+	virtual video::SColor const& getOverrideColor(void) const = 0;
+	virtual bool isOverrideColorEnabled(void) const = 0;
+	virtual bool isWordWrapEnabled(void) const = 0;
+	virtual s32 getTextHeight() const = 0;
+	virtual s32 getTextWidth(void) const = 0;
+
+IGUITabControl.h
+Changed signature (made const)
+	virtual s32 getNumber() const = 0;
+	virtual s32 getTabCount() const = 0;
+	virtual IGUITab* getTab(s32 idx) const = 0;
+	virtual s32 getActiveTab() const = 0;
+
+IGUIWindow.h
+Changed signature (made const)
+	virtual IGUIButton* getCloseButton() const = 0;
+	virtual IGUIButton* getMinimizeButton() const = 0;
+	virtual IGUIButton* getMaximizeButton() const = 0;
+
+IImageLoader.h
+Changed signature (made const)
+	virtual bool isALoadableFileExtension(const c8* fileName) const = 0;
+	virtual bool isALoadableFileFormat(io::IReadFile* file) const = 0;
+	virtual IImage* loadImage(io::IReadFile* file) const = 0;
+
+IImageWriter.h
+Changed signature (made const)
+	virtual bool isAWriteableFileExtension(const c8* fileName) const = 0;
+	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param = 0) const = 0;
+
+ILogger.h
+Changed signature (made const)
+	virtual ELOG_LEVEL getLogLevel() const = 0;
+
+IMaterialRenderer.h
+Changed signature (made const-ref param)
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial, bool resetAllRenderstates, IMaterialRendererServices* services) {};
+Changed signature (made const)
+	virtual bool isTransparent() const { return false; }
+	virtual s32 getRenderCapability() const { return 0; }
+
+IMesh.h
+Changed signature (made const)
+		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const = 0;
+
+IMeshLoader.h
+Changed signature (made const)
+	virtual bool isALoadableFileExtension(const c8* fileName) const = 0;
+
+IMeshManipulator.h
+Removed method (now in IMeshBuffer)
+	virtual void recalculateBoundingBox(scene::IMeshBuffer* buffer) const
+
+IMeshSceneNode.h
+Changed signature (made const)
+	virtual bool isReadOnlyMaterials() const = 0;
+
+IOSOperator.h
+Changed signature (made const)
+	virtual const wchar_t* getOperationSystemVersion() const = 0;
+	virtual void copyToClipboard(const c8* text) const = 0;
+	virtual c8* getTextFromClipboard() const = 0;	
+	virtual bool getProcessorSpeedMHz(u32* MHz) const = 0;
+	virtual bool getSystemMemory(u32* Total, u32* Avail) const = 0;
+
+IParticleAffector.h
+Changed signature (made const)
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const {}
+
+IParticleEmitter.h
+Changed signature (made const)
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const {}
+
+IParticleSystemSceneNode.h
+Changed signature (changed return type, changed param types)
+	virtual IParticlePointEmitter* createPointEmitter(
+ 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f), 
+ 		u32 minParticlesPerSecond = 5,
+ 		u32 maxParticlesPerSecond = 10,
+		const video::SColor& minStartColor = video::SColor(255,0,0,0),
+		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
+ 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
+ 		s32 maxAngleDegrees=0) = 0;
+	virtual IParticleEmitter* createBoxEmitter(
+ 		const core::aabbox3df& box = core::aabbox3df(-10,28,-10,10,30,10),
+ 		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f), 
+ 		u32 minParticlesPerSecond = 5,
+ 		u32 maxParticlesPerSecond = 10,
+		const video::SColor& minStartColor = video::SColor(255,0,0,0),
+		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
+ 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
+ 		s32 maxAngleDegrees=0) = 0;
+	virtual IParticleFadeOutAffector* createFadeOutParticleAffector(
+		const video::SColor& targetColor = video::SColor(0,0,0,0),
+ 		u32 timeNeededToFadeOut = 1000) = 0;
+	virtual IParticleGravityAffector* createGravityAffector(
+ 		const core::vector3df& gravity = core::vector3df(0.0f,-0.03f,0.0f),
+ 		u32 timeForceLost = 1000) = 0;
+
+IQ3Shader.h
+Removed method
+	bool operator < ( const SVariable &other ) const
+
+IReadFile.h
+Changed param types (adapt the correct C-API for file positions)
+	virtual bool seek(long finalPos, bool relativeMovement = false) = 0;
+	virtual long getSize() const = 0;
+	virtual long getPos() const = 0;
+	IReadFile* createLimitReadFile(const c8* fileName, IReadFile* alreadyOpenedFile, long areaSize);
+	IReadFile* createMemoryReadFile(void* memory, long size, const c8* fileName, bool deleteMemoryWhenDropped);
+Changed signature (made const)
+	virtual const c8* getFileName() const = 0;
+
+IrrlichtDevice.h
+Changed signature (made const)
+	virtual bool isWindowActive() const = 0;
+	virtual const c8* getVersion() const = 0;
+Changed signature (made const-ref param)
+	virtual void postEventFromUser(const SEvent& event) = 0;
+
+irrList.h
+Changed some structures in order to incorporate a ConstIterator class.
+	Iterator begin()
+	ConstIterator begin() const
+	Iterator end()
+	ConstIterator end() const
+	Iterator getLast()
+	ConstIterator getLast() const
+	void insert_after(const Iterator& it, const T& element)
+	void insert_before(const Iterator& it, const T& element)
+
+irrMath.h
+Changed signature (Use const references for better class handling)
+	inline const T& min_(const T& a, const T& b)
+	inline const T& min_(const T& a, const T& b, const T& c)
+	inline const T& max_(const T& a, const T& b)
+	inline const T& max_(const T& a, const T& b, const T& c)
+	inline T abs_(const T& a)
+	inline T lerp(const T& a, const T& b, const f32 t)
+	inline const T clamp (const T& value, const T& low, const T& high) 
+
+irrString.h
+Changed signature (made proper const method)
+	T& operator [](const u32 index)
+	const T& operator [](const u32 index) const
+
+irrXML.h
+Changed signature (adapt the correct C-API for file positions, made const)
+	virtual long getSize() const = 0;
+Changed signature (changed param types)
+	virtual unsigned int getAttributeCount() const = 0;
+
+ISceneManager.h
+Changed signature (changed param types)
+	virtual IAnimatedMesh* addHillPlaneMesh(const c8* name,
+		const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
+		video::SMaterial* material = 0,	f32 hillHeight = 0.0f,
+		const core::dimension2d<f32>& countHills = core::dimension2d<f32>(0.0f, 0.0f),
+		const core::dimension2d<f32>& textureRepeatCount = core::dimension2d<f32>(1.0f, 1.0f)) = 0;
+Changed signature (changed param types and order)
+	virtual IAnimatedMesh* addArrowMesh(const c8* name,
+			video::SColor vtxColor0=0xFFFFFFFF,
+			video::SColor vtxColor1=0xFFFFFFFF,
+			u32 tesselationCylinder=4, u32 tesselationCone=8,
+			f32 height=1.f, f32 cylinderHeight=0.6f,
+			f32 width0=0.05f, f32 width1=0.3f) = 0;
+Changed signature (changed param types)
+	virtual bool postEventFromUser(const SEvent& event) = 0;
+	virtual ISceneNodeFactory* getSceneNodeFactory(u32 index) = 0;
+	virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index) = 0;
+Changed signature (made const)
+	virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() const = 0;
+Changed signature (changed param types, made const)
+	virtual u32 getRegisteredSceneNodeFactoryCount() const = 0;
+	virtual u32 getRegisteredSceneNodeAnimatorFactoryCount() const = 0;
+	virtual const video::SColorf& getAmbientLight() const = 0;
+
+ISceneNodeAnimatorCollisionResponse.h
+Changed signature (made const)
+	virtual bool isFalling() const = 0;
+
+ISceneNodeAnimatorFactory.h
+Changed signature (changed param types, made const)
+	virtual u32 getCreatableSceneNodeAnimatorTypeCount() const = 0;
+	virtual ESCENE_NODE_ANIMATOR_TYPE getCreateableSceneNodeAnimatorType(u32 idx) const = 0;
+	virtual const c8* getCreateableSceneNodeAnimatorTypeName(u32 idx) const = 0;
+Changed signature (made const)
+	virtual const c8* getCreateableSceneNodeAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const = 0;
+
+ISceneNodeFactory.h
+Changed signature (changed param types, made const)
+	virtual u32 getCreatableSceneNodeTypeCount() const = 0;
+	virtual ESCENE_NODE_TYPE getCreateableSceneNodeType(u32 idx) const = 0;
+	virtual const c8* getCreateableSceneNodeTypeName(u32 idx) const = 0;
+Changed signature (made const)
+	virtual const c8* getCreateableSceneNodeTypeName(ESCENE_NODE_TYPE type) const = 0;
+
+ISceneNode.h
+Changed signature (made const)
+	virtual u32 getMaterialCount() const
+	bool isDebugObject() const
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+
+IShadowVolumeSceneNode.h
+Changed signature (made const param)
+	virtual void setMeshToRenderFrom(const IMesh* mesh) = 0;
+
+ITerrainSceneNode.h
+Changed signature (made const)
+	virtual u32 getIndexCount() const = 0;
+	virtual void getMeshBufferForLOD(SMeshBufferLightMap& mb, s32 LOD) const = 0;
+	virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const = 0;
+	virtual f32 getHeight( f32 x, f32 y ) const = 0;
+Changed signature (made const, made const-ref param)
+	virtual const core::vector3df& getTerrainCenter() const = 0;
+
+ITexture.h
+Changed signature (made const)
+	virtual const core::dimension2d<s32>& getOriginalSize() const = 0;
+	virtual const core::dimension2d<s32>& getSize() const = 0;
+	virtual E_DRIVER_TYPE getDriverType() const = 0;
+	const core::stringc& getName() const { return Name; }
+
+ITimer.h
+Changed signature (made const)
+	virtual u32 getRealTime() const = 0;
+	virtual u32 getTime() const = 0;
+	virtual f32 getSpeed() const = 0;
+	virtual bool isStopped() const = 0;
+
+ITriangleSelector.h
+Changed signature (made const)
+ 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
+		s32& outTriangleCount, const core::matrix4* transform=0) const = 0;
+ 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
+ 		s32& outTriangleCount, const core::aabbox3d<f32>& box, 
+		const core::matrix4* transform=0) const = 0;
+ 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
+ 		s32& outTriangleCount, const core::line3d<f32>& line, 
+		const core::matrix4* transform=0) const = 0;
+
+IVideoDriver.h
+Changed signature (made const, changed param type)
+	virtual u32 getTextureCount() const = 0;
+Changed signature (made const param) in all draw2DImage methods
+	virtual void draw2DImage(const video::ITexture* texture,
+Changed signature (made const-ref param, made const)
+	virtual const core::dimension2d<s32>& getScreenSize() const = 0;
+	virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const = 0;
+Changed signature (made const)
+	virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const = 0;
+	virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const = 0;
+	virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name = 0) = 0;
+	virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color) const = 0;
+	virtual void makeColorKeyTexture(video::ITexture* texture,
+		core::position2d<s32> colorKeyPixelPos) const = 0;
+	virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const = 0;
+	virtual s32 getFPS() const = 0;
+	virtual u32 getPrimitiveCountDrawn( u32 param = 0 ) const = 0;
+	virtual u32 getMaximalDynamicLightAmount() const = 0;
+	virtual u32 getDynamicLightCount() const = 0;
+	virtual const SLight& getDynamicLight(u32 idx) const = 0;
+	virtual const wchar_t* getName() const = 0;
+	virtual u32 getMaximalPrimitiveCount() const = 0;
+	virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const = 0;
+	virtual u32 getMaterialRendererCount() const = 0;
+	virtual const c8* getMaterialRendererName(u32 idx) const = 0;
+	virtual E_DRIVER_TYPE getDriverType() const = 0;
+
+IWriteFile.h
+Changed signature (changed param type)
+	virtual s32 write(const void* buffer, u32 sizeToWrite) = 0;
+	virtual bool seek(long finalPos, bool relativeMovement = false) = 0;
+Changed signature (changed param type, made const)
+	virtual long getPos() const = 0;
+Changed signature (made const)
+	virtual const c8* getFileName() const = 0;
+
+line2d.h
+Changed signature (made const)
+	vector2d<T> getUnitVector() const
+	f64 getAngleWith(const line2d<T>& l) const
+	T getPointOrientation(const vector2d<T>& point) const
+	bool isPointOnLine(const vector2d<T>& point) const
+
+matrix4.h
+Changed signature (made template param)
+	void setTranslation( const vector3d<T>& translation );
+	vector3d<T> getTranslation() const;
+	void setInverseTranslation( const vector3d<T>& translation );
+	inline void setRotationRadians( const vector3d<T>& rotation );
+	void setRotationDegrees( const vector3d<T>& rotation );
+	core::vector3d<T> getRotationDegrees() const;
+	inline void setInverseRotationRadians( const vector3d<T>& rotation );
+	void setInverseRotationDegrees( const vector3d<T>& rotation );
+	void setScale( const vector3d<T>& scale );
+	core::vector3d<T> getScale() const;
+
+rect.h
+Changed signature (made non-const ref param, C++ conformance)
+	rect<T>& operator+=(const position2d<T>& pos)
+	rect<T>& operator-=(const position2d<T>& pos)
+
+S3DVertex.h
+Changed inheritance (S3DVertex is now base class of other vertex types)
+struct S3DVertex2TCoords : public S3DVertex
+struct S3DVertexTangents : public S3DVertex
+
+SAnimatedMesh.h
+Changed signature (changed param type, made const)
+	virtual u32 getFrameCount() const
+
+SColor.h
+Changed signature (changed param type)
+	inline u32 A1R5G5B5toA8R8G8B8(u16 color)
+
+SLight.h
+Removed attribute (use LightSceneNode position instead)
+	core::vector3df Position;
+
+SMaterial.h
+Changed attribute structure (texture layer properties are now in thenew TextureLayer array). This changes access to Textures, TextureMatrix, TextureWrap, and the filter settings, which are also per-layer now.
+	SMaterialLayer TextureLayer[MATERIAL_MAX_TEXTURES];
+
+vector3d.h
+Changed signature (made template param)
+	bool equals(const vector3d<T>& other, const T tolerance = (T)ROUNDING_ERROR_32 ) const
+
