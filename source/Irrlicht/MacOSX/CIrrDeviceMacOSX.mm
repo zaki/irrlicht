@@ -422,7 +422,7 @@ void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	}
 }
 
-bool CIrrDeviceMacOSX::isWindowActive()
+bool CIrrDeviceMacOSX::isWindowActive() const
 {
 	return (_active);
 }
