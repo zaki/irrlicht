@@ -194,30 +194,38 @@ int main()
 
 	smgr->addCameraSceneNode(0, core::vector3df(0,-40,0), core::vector3df(0,0,0));
 
-	/*
-	Create our scene node. Note that it is dropped (->drop()) instantly after 
-	we create it. This is possible because the scene manager now takes
-	care of it. This is not nessecary, it would also be possible to drop it
-	at the end of the program.
-	*/
-
+	// Create our scene node.  I don't check the result of calling new, as it
+	// should throw an exception rather than returning 0 on failure.
+	// Because the new node will create itself with a reference count of 1, and
+	// then will have another reference added by its parent scene node when it is
+	// added to the scene, I need to drop my reference to it.  Best practice is
+	// to drop it only *after* I have finished using it, regardless of what the
+	// reference count of the object is after creation.
 	CSampleSceneNode *myNode = 
 		new CSampleSceneNode(smgr->getRootSceneNode(), smgr, 666);
 
-	myNode->drop();
-
-	/*
-	To animate something in this boring scene consisting only of one tetraeder,
-	and to show, that you now can use your scene node like any other scene
-	node in the engine, we add an animator to the scene node, which rotates
-	the node a little bit.
-	*/
-
+	// To animate something in this boring scene consisting only of one tetraeder,
+	// and to show, that you now can use your scene node like any other scene
+	// node in the engine, we add an animator to the scene node, which rotates
+	// the node a little bit.
 	scene::ISceneNodeAnimator* anim = 
 		smgr->createRotationAnimator(core::vector3df(0.8f, 0, 0.8f));
 
-	myNode->addAnimator(anim);
-	anim->drop();
+	// createRotationAnimator() could return 0, so should be checked
+	if(anim)
+	{
+		myNode->addAnimator(anim);
+		
+		// I'm done referring to anim, so must drop this reference now because it
+		// was produced by a createFoo() function.
+		anim->drop();
+		anim = 0; // As I shouldn't refer to it again, ensure that I can't
+	}
+
+	// I'm done with my CSampleSceneNode object, and so must drop my reference
+	myNode->drop();
+	myNode = 0; // As I shouldn't refer to it again, ensure that I can't
+
 
 	/* 
 	Now draw everything and finish.
