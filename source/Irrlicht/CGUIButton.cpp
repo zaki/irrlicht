@@ -29,11 +29,11 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 	#endif
 	setNotClipped(noclip);
 
-	// reset sprites
+	// Initialize the sprites.
 	for (u32 i=0; i<EGBS_COUNT; ++i)
 		ButtonSprites[i].Index = -1;
 
-	// this element can be tabbed to
+	// This element can be tabbed.
 	setTabStop(true);
 	setTabOrder(-1);
 }
@@ -318,7 +318,7 @@ void CGUIButton::setImage(video::ITexture* image)
 		setPressedImage(Image);
 }
 
-//! Sets an image which should be displayed on the button when it is in normal state. 
+//! Sets the image which should be displayed on the button when it is in its normal state.
 void CGUIButton::setImage(video::ITexture* image, const core::rect<s32>& pos)
 {
 	if (Image)
@@ -348,7 +348,7 @@ void CGUIButton::setPressedImage(video::ITexture* image)
 		PressedImage->grab();
 }
 
-//! Sets an image which should be displayed on the button when it is in pressed state. 
+//! Sets the image which should be displayed on the button when it is in its pressed state.
 void CGUIButton::setPressedImage(video::ITexture* image, const core::rect<s32>& pos)
 {
 	if (PressedImage)

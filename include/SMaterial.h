@@ -35,7 +35,7 @@ namespace video
 		EBF_SRC_ALPHA_SATURATE		// src		(min(srcA, 1-destA), idem, ...)
 	};
 
-	//! MaterialTypeParam: eg. DirectX: D3DTOP_MODULATE, D3DTOP_MODULATE2X, D3DTOP_MODULATE4X
+	//! MaterialTypeParam: e.g. DirectX: D3DTOP_MODULATE, D3DTOP_MODULATE2X, D3DTOP_MODULATE4X
 	enum E_MODULATE_FUNC
 	{
 		EMFN_MODULATE_1X	= 1,
@@ -166,12 +166,12 @@ namespace video
 		\endcode */
 		f32 Shininess;
 
-		//! Free parameter dependend on the material type.
+		//! Free parameter, dependent on the material type.
 		/** Mostly ignored, used for example in EMT_PARALLAX_MAP_SOLID
 		and EMT_TRANSPARENT_ALPHA_CHANNEL. */
 		f32 MaterialTypeParam;
 
-		//! Second free parameter dependend on the material type.
+		//! Second free parameter, dependent on the material type.
 		/** Mostly ignored. */
 		f32 MaterialTypeParam2;
 
@@ -197,16 +197,16 @@ namespace video
 		bool Lighting;
 
 		//! Is the ZBuffer enabled? Default: true
-		//! Changed from Bool to Integer
+		//! Changed from bool to integer
 		// ( 0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal )
 		u32 ZBuffer;
 
-		//! May be written to the zbuffer or is it readonly.
+		//! Is the zbuffer writeable or is it read-only.
 		/** Default: 1 This flag is ignored, if the MaterialType
 		is a transparent type. */
 		bool ZWriteEnable;
 
-		//! Is backfaceculling enabled? Default: true
+		//! Is backface culling enabled? Default: true
 		bool BackfaceCulling;
 
 		//! Is fog enabled? Default: false

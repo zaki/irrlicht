@@ -479,7 +479,7 @@ public:
 
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))
 			{
-				// detailmap
+				// detail map
 
 				Driver->extGlActiveTexture(GL_TEXTURE1_ARB);
 

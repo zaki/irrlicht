@@ -64,7 +64,7 @@ namespace scene
 		//! This value will never be returned by ISceneManager::getSceneNodeRenderPass().
 		//! The scene manager will determine by itself if an object is
 		//! transparent or solid and register the object as SNRT_TRANSPARENT or
-		//! SNRT_SOLD automaticly if you call registerNodeForRendering with this
+		//! SNRT_SOLD automatically if you call registerNodeForRendering with this
 		//! value (which is default). Note that it will register the node only as ONE type.
 		//! If your scene node has both solid and transparent material types register
 		//! it twice (one time as SNRT_SOLID, the other time as SNRT_TRANSPARENT) and
