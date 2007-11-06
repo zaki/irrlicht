@@ -80,7 +80,7 @@ void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr, const c8* verte
 	if (!createPixelShader(pixelShaderProgram))
 		return;
 
-	// register myself as new material
+	// register as a new material
 	outMaterialTypeNr = Driver->addMaterialRenderer(this);
 }
 

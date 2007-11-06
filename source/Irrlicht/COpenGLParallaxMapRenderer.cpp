@@ -216,7 +216,7 @@ COpenGLParallaxMapRenderer::COpenGLParallaxMapRenderer(video::COpenGLDriver* dri
 
 	CallBack = this;
 
-	// basicly, this thing simply compiles these hardcoded shaders if the
+	// basically, this simply compiles the hard coded shaders if the
 	// hardware is able to do them, otherwise it maps to the base material
 
 	if (!driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1) ||
@@ -317,7 +317,7 @@ void COpenGLParallaxMapRenderer::OnSetConstants(IMaterialRendererServices* servi
 	core::matrix4 tr(worldViewProj.getTransposed());
 	services->setVertexShaderConstant(tr.pointer(), 8, 4);
 
-	// here we've got to fetch the fixed function lights from the driver
+	// here we fetch the fixed function lights from the driver
 	// and set them as constants
 
 	u32 cnt = driver->getDynamicLightCount();
