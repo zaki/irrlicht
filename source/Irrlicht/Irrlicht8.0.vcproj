@@ -2341,6 +2341,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\CIrrDeviceSDL.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CIrrDeviceSDL.h"
+				>
+			</File>
+			<File
 				RelativePath="CIrrDeviceStub.cpp"
 				>
 			</File>

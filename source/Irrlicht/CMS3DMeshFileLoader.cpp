@@ -176,8 +176,13 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	if ( pHeader->Version < 3 || pHeader->Version > 4 )
 	{
 		delete [] buffer;
-		os::Printer::log("Only Milkshape3D version 1.3 and 1.4 is supported. Loading failed", file->getFileName(), ELL_ERROR);
+		os::Printer::log("Only Milkshape3D version 3 and 4 (1.3 to 1.8) is supported. Loading failed", file->getFileName(), ELL_ERROR);
 		return false;
+	}
+
+	if ( pHeader->Version == 4 )
+	{
+		os::Printer::log("Milkshape3D version 4 (1.8) is not fully supported. Some features may not be available.", file->getFileName(), ELL_WARNING);
 	}
 
 	// get pointers to data
