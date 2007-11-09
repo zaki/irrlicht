@@ -362,8 +362,11 @@ void CGUIEnvironment::clear()
 //! called by ui if an event happened.
 bool CGUIEnvironment::OnEvent(const SEvent& event)
 {
-	if (UserReceiver && (event.EventType != EET_GUI_EVENT || event.GUIEvent.Caller != this))
+	if (UserReceiver && (event.EventType != EET_MOUSE_INPUT_EVENT) &&
+		(event.EventType != EET_GUI_EVENT || event.GUIEvent.Caller != this))
+	{
 		return UserReceiver->OnEvent(event);
+	}
 
 	return false;
 }
