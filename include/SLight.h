@@ -55,7 +55,8 @@ struct SLight
 	/** For details how to use specular highlights, see SMaterial::Shininess */
 	SColorf SpecularColor;
 
-	//! Attenuation factors
+	//! Attenuation factors (constant, linear, quadratic)
+	/** Changes the light strength fading over distance */
 	core::vector3df Attenuation;
 
 	//! Radius of light. Everything within this radius be be lighted.
