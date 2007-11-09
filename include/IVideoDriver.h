@@ -595,7 +595,7 @@ namespace video
 		virtual u32 getDynamicLightCount() const = 0;
 
 		//! Returns light data which was previously set by IVideoDriver::addDynamicLight().
-		/** \param idx: Zero based index of the light. Must be greater than 0 and smaller
+		/** \param idx: Zero based index of the light. Must be 0 or greater and smaller
 		than IVideoDriver()::getDynamicLightCount.
 		\return Light data. */
 		virtual const SLight& getDynamicLight(u32 idx) const = 0;

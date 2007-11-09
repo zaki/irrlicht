@@ -119,9 +119,10 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 			if (!Environment->hasFocus(this))
 			{
 				Environment->setFocus(this);
-				if (Parent)
-					Parent->bringToFront(this);
 			}
+
+			if (Parent)
+				Parent->bringToFront(this); 
 
 			core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 			bool shouldCloseSubMenu = hasOpenSubMenu();
