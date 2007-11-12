@@ -1049,7 +1049,7 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 			display = XOpenDisplay(0);
 			temporaryDisplay=true;
 		}
-		if (!display)
+		if (display)
 		{
 			s32 eventbase, errorbase;
 			s32 defaultDepth=DefaultDepth(display,screennr);
