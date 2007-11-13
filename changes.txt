@@ -1,3 +1,12 @@
+-------------------------------------------
+Changes in version 1.4 (... 13.11.2007)
+	- Fixed somed CQuake3ShaderSceneNode problems.
+	- Changed BurningsVideo internal Vertex Format. version changed to 0.39
+	- SceneManager:
+		Removed the seperate rendering states for quake3 Shader Scene Nodes.
+		Nodes are now solid or transparent. ( but still more states are needed )
+-------------------------------------------
+
 Changes in version 1.4 (... 2007)
 
  - Major API change: All material properties which are available per texture layer (curently texture, texture matrix, texture filters, and texture wrap mode) are separated into a new struct SMaterialLayer. You can access them via the array TextureLayer[] in SMaterial. The texture matrix methods in SMaterial are still alive, and also textures can be accessed via methods in SMaterial now. But still, many places in user code need some update (usually changing material.Textures[i] to material.TextureLayer[i].Texture etc.)
@@ -74,7 +83,7 @@ Changes in version 1.4 (... 2007)
    texture mode should be GL_MODULATE.
 
  - Fixed CSoftwareTexture2::getOriginalSize, reported by CaptainPants. Added a
-   new method CSoftwareTexture2::getMaxSize to return the size of the largest
+   new method CSoftwareTexture2::getMaxMipMapSize to return the size of the largest
    mipmap, which is used by texelarea instead of getOriginalSize.
 
  - Changed parameter order of addArrowMesh and added default parameters such
