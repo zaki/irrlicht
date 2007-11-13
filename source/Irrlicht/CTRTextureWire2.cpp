@@ -115,8 +115,8 @@ static inline void swap_xor ( s32 &a, s32 &b )
 void CTRTextureWire2::renderLine ( const s4DVertex *a,const s4DVertex *b ) const
 {
 	
-	int pitch0 = SurfaceWidth << VIDEO_SAMPLE_GRANULARITY;
-	int pitch1 = SurfaceWidth << 2;
+	int pitch0 = RenderTarget->getDimension().Width << VIDEO_SAMPLE_GRANULARITY;
+	int pitch1 = RenderTarget->getDimension().Width << 2;
 
 	int aposx = (int) a->Pos.x;
 	int aposy = (int) a->Pos.y;
@@ -171,7 +171,7 @@ void CTRTextureWire2::renderLine ( const s4DVertex *a,const s4DVertex *b ) const
 
 	dst = (tVideoSample*) ( (u8*) lockedSurface + ( aposy * pitch0 ) + (aposx << VIDEO_SAMPLE_GRANULARITY ) );
 #ifdef USE_ZBUFFER
-	z = (fp24*) ( (u8*) lockedZBuffer + ( aposy * pitch1 ) + (aposx << 2 ) );
+	z = (fp24*) ( (u8*) lockedDepthBuffer + ( aposy * pitch1 ) + (aposx << 2 ) );
 #endif
 
 	c = dx << 1;
@@ -254,7 +254,7 @@ void CTRTextureWire2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 	lockedSurface = (tVideoSample*)RenderTarget->lock();
 
 #ifdef USE_ZBUFFER
-	lockedZBuffer = ZBuffer->lock();
+	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 	renderLine ( a, b );
@@ -264,7 +264,7 @@ void CTRTextureWire2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 	RenderTarget->unlock();
 
 #ifdef USE_ZBUFFER
-	ZBuffer->unlock();
+	DepthBuffer->unlock();
 #endif
 
 }
@@ -281,14 +281,14 @@ void CTRTextureWire2::drawLine ( const s4DVertex *a,const s4DVertex *b)
 	lockedSurface = (tVideoSample*)RenderTarget->lock();
 
 #ifdef USE_ZBUFFER
-	lockedZBuffer = ZBuffer->lock();
+	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 	renderLine ( a, b );
 	RenderTarget->unlock();
 
 #ifdef USE_ZBUFFER
-	ZBuffer->unlock();
+	DepthBuffer->unlock();
 #endif
 
 }

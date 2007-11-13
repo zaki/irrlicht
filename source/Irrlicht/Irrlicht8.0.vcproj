@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="Irrlicht"
 	ProjectGUID="{E08E042A-6C45-411B-92BE-3CC31331019F}"
 	RootNamespace="Irrlicht"
@@ -1483,6 +1483,10 @@
 			<Filter
 				Name="Burning Video"
 				>
+				<File
+					RelativePath=".\CBurningShader_Raster_Reference.cpp"
+					>
+				</File>
 				<File
 					RelativePath=".\CDepthBuffer.cpp"
 					>

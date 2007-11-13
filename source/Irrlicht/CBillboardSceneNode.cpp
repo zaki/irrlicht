@@ -50,10 +50,9 @@ CBillboardSceneNode::CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr,
 void CBillboardSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
-	{
 		SceneManager->registerNodeForRendering(this);
-		ISceneNode::OnRegisterSceneNode();
-	}
+
+	ISceneNode::OnRegisterSceneNode();
 }
 
 

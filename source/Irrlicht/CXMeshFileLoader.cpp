@@ -1420,8 +1420,6 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		{
 			ISkinnedMesh::SPositionKey *key=&animationDump.PositionKeys[n];
 
-			//key->position+=joint->LocalMatrix.getTranslation();
-
 			joint->PositionKeys.push_back(*key);
 		}
 

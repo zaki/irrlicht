@@ -221,8 +221,7 @@ void CCameraSceneNode::OnRegisterSceneNode()
 	if ( SceneManager->getActiveCamera () == this )
 		SceneManager->registerNodeForRendering(this, ESNRP_CAMERA);
 
-	if (IsVisible)
-		ISceneNode::OnRegisterSceneNode();
+	ISceneNode::OnRegisterSceneNode();
 }
 
 

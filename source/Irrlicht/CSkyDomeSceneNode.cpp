@@ -142,10 +142,9 @@ const core::aabbox3d<f32>& CSkyDomeSceneNode::getBoundingBox() const
 void CSkyDomeSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
-	{
 		SceneManager->registerNodeForRendering(this, ESNRP_SKY_BOX);
-		ISceneNode::OnRegisterSceneNode();
-	}
+
+	ISceneNode::OnRegisterSceneNode();
 }
 
 

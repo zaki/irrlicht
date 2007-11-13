@@ -135,10 +135,10 @@ void CTRGouraudAlpha2::scanline_bilinear ()
 	sVec4 slopeC;
 #endif
 #ifdef IPOL_T0
-	sVec2 slopeT0;
+	sVec2 slopeT[0];
 #endif
 #ifdef IPOL_T1
-	sVec2 slopeT1;
+	sVec2 slopeT[1];
 #endif
 
 	// apply top-left fill-convention, left
@@ -160,13 +160,13 @@ void CTRGouraudAlpha2::scanline_bilinear ()
 	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
 #endif
 #ifdef IPOL_C0
-	slopeC = (line.c[1] - line.c[0]) * invDeltaX;
+	slopeC = (line.c[0][1] - line.c[0][0]) * invDeltaX;
 #endif
 #ifdef IPOL_T0
-	slopeT0 = (line.t0[1] - line.t0[0]) * invDeltaX;
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
 #endif
 #ifdef IPOL_T1
-	slopeT1 = (line.t1[1] - line.t1[0]) * invDeltaX;
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
 #endif
 
 #ifdef SUBTEXEL
@@ -178,20 +178,20 @@ void CTRGouraudAlpha2::scanline_bilinear ()
 	line.w[0] += slopeW * subPixel;
 #endif
 #ifdef IPOL_C0
-	line.c[0] += slopeC * subPixel;
+	line.c[0][0] += slopeC * subPixel;
 #endif
 #ifdef IPOL_T0
-	line.t0[0] += slopeT0 * subPixel;
+	line.t[0][0] += slopeT[0] * subPixel;
 #endif
 #ifdef IPOL_T1
-	line.t1[0] += slopeT1 * subPixel;
+	line.t[1][0] += slopeT[1] * subPixel;
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * SurfaceWidth ) + xStart;
+	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedZBuffer + ( line.y * SurfaceWidth ) + xStart;
+	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -222,9 +222,9 @@ void CTRGouraudAlpha2::scanline_bilinear ()
 #ifdef INVERSE_W
 			inversew = core::reciprocal ( line.w[0] );
 
-			getSample_color ( a0, r0, g0, b0, line.c[0] * inversew );
+			getSample_color ( a0, r0, g0, b0, line.c[0][0] * inversew );
 #else
-			getSample_color ( a0, r0, g0, b0, line.c[0] );
+			getSample_color ( a0, r0, g0, b0, line.c[0][0] );
 #endif
 
 			color_to_fix ( r1, g1, b1, dst[i] );
@@ -253,13 +253,13 @@ void CTRGouraudAlpha2::scanline_bilinear ()
 		line.w[0] += slopeW;
 #endif
 #ifdef IPOL_C0
-		line.c[0] += slopeC;
+		line.c[0][0] += slopeC;
 #endif
 #ifdef IPOL_T0
-		line.t0[0] += slopeT0;
+		line.t[0][0] += slopeT[0];
 #endif
 #ifdef IPOL_T1
-		line.t1[0] += slopeT1;
+		line.t[1][0] += slopeT[1];
 #endif
 	}
 
@@ -308,18 +308,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-	scan.slopeC[0] = (c->Color[0] - a->Color[0]) * scan.invDeltaY[0];
-	scan.c[0] = a->Color[0];
+	scan.slopeC[0][0] = (c->Color[0] - a->Color[0]) * scan.invDeltaY[0];
+	scan.c[0][0] = a->Color[0];
 #endif
 
 #ifdef IPOL_T0
-	scan.slopeT0[0] = (c->Tex[0] - a->Tex[0]) * scan.invDeltaY[0];
-	scan.t0[0] = a->Tex[0];
+	scan.slopeT[0][0] = (c->Tex[0] - a->Tex[0]) * scan.invDeltaY[0];
+	scan.t[0][0] = a->Tex[0];
 #endif
 
 #ifdef IPOL_T1
-	scan.slopeT1[0] = (c->Tex[1] - a->Tex[1]) * scan.invDeltaY[0];
-	scan.t1[0] = a->Tex[1];
+	scan.slopeT[1][0] = (c->Tex[1] - a->Tex[1]) * scan.invDeltaY[0];
+	scan.t[1][0] = a->Tex[1];
 #endif
 
 	// top left fill convention y run
@@ -333,7 +333,7 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 	lockedSurface = (tVideoSample*)RenderTarget->lock();
 
 #ifdef USE_ZBUFFER
-	lockedZBuffer = ZBuffer->lock();
+	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 #ifdef IPOL_T0
@@ -362,18 +362,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-		scan.slopeC[1] = (b->Color[0] - a->Color[0]) * scan.invDeltaY[1];
-		scan.c[1] = a->Color[0];
+		scan.slopeC[0][1] = (b->Color[0] - a->Color[0]) * scan.invDeltaY[1];
+		scan.c[0][1] = a->Color[0];
 #endif
 
 #ifdef IPOL_T0
-		scan.slopeT0[1] = (b->Tex[0] - a->Tex[0]) * scan.invDeltaY[1];
-		scan.t0[1] = a->Tex[0];
+		scan.slopeT[0][1] = (b->Tex[0] - a->Tex[0]) * scan.invDeltaY[1];
+		scan.t[0][1] = a->Tex[0];
 #endif
 
 #ifdef IPOL_T1
-		scan.slopeT1[1] = (b->Tex[1] - a->Tex[1]) * scan.invDeltaY[1];
-		scan.t1[1] = a->Tex[1];
+		scan.slopeT[1][1] = (b->Tex[1] - a->Tex[1]) * scan.invDeltaY[1];
+		scan.t[1][1] = a->Tex[1];
 #endif
 
 		// apply top-left fill convention, top part
@@ -398,18 +398,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-		scan.c[0] += scan.slopeC[0] * subPixel;
-		scan.c[1] += scan.slopeC[1] * subPixel;		
+		scan.c[0][0] += scan.slopeC[0][0] * subPixel;
+		scan.c[0][1] += scan.slopeC[0][1] * subPixel;		
 #endif
 
 #ifdef IPOL_T0
-		scan.t0[0] += scan.slopeT0[0] * subPixel;
-		scan.t0[1] += scan.slopeT0[1] * subPixel;		
+		scan.t[0][0] += scan.slopeT[0][0] * subPixel;
+		scan.t[0][1] += scan.slopeT[0][1] * subPixel;		
 #endif
 
 #ifdef IPOL_T1
-		scan.t1[0] += scan.slopeT1[0] * subPixel;
-		scan.t1[1] += scan.slopeT1[1] * subPixel;		
+		scan.t[1][0] += scan.slopeT[1][0] * subPixel;
+		scan.t[1][1] += scan.slopeT[1][1] * subPixel;		
 #endif
 
 #endif
@@ -431,18 +431,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-			line.c[scan.left] = scan.c[0];
-			line.c[scan.right] = scan.c[1];
+			line.c[0][scan.left] = scan.c[0][0];
+			line.c[0][scan.right] = scan.c[0][1];
 #endif
 
 #ifdef IPOL_T0
-			line.t0[scan.left] = scan.t0[0];
-			line.t0[scan.right] = scan.t0[1];
+			line.t[0][scan.left] = scan.t[0][0];
+			line.t[0][scan.right] = scan.t[0][1];
 #endif
 
 #ifdef IPOL_T1
-			line.t1[scan.left] = scan.t1[0];
-			line.t1[scan.right] = scan.t1[1];
+			line.t[1][scan.left] = scan.t[1][0];
+			line.t[1][scan.right] = scan.t[1][1];
 #endif
 
 			// render a scanline
@@ -462,18 +462,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-			scan.c[0] += scan.slopeC[0];
-			scan.c[1] += scan.slopeC[1];
+			scan.c[0][0] += scan.slopeC[0][0];
+			scan.c[0][1] += scan.slopeC[0][1];
 #endif
 
 #ifdef IPOL_T0
-			scan.t0[0] += scan.slopeT0[0];
-			scan.t0[1] += scan.slopeT0[1];
+			scan.t[0][0] += scan.slopeT[0][0];
+			scan.t[0][1] += scan.slopeT[0][1];
 #endif
 
 #ifdef IPOL_T1
-			scan.t1[0] += scan.slopeT1[0];
-			scan.t1[1] += scan.slopeT1[1];
+			scan.t[1][0] += scan.slopeT[1][0];
+			scan.t[1][1] += scan.slopeT[1][1];
 #endif
 
 		}
@@ -495,13 +495,13 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 			scan.w[0] = a->Pos.w + scan.slopeW[0] * temp[0];
 #endif
 #ifdef IPOL_C0
-			scan.c[0] = a->Color[0] + scan.slopeC[0] * temp[0];
+			scan.c[0][0] = a->Color[0] + scan.slopeC[0][0] * temp[0];
 #endif
 #ifdef IPOL_T0
-			scan.t0[0] = a->Tex[0] + scan.slopeT0[0] * temp[0];
+			scan.t[0][0] = a->Tex[0] + scan.slopeT[0][0] * temp[0];
 #endif
 #ifdef IPOL_T1
-			scan.t1[0] = a->Tex[1] + scan.slopeT1[0] * temp[0];
+			scan.t[1][0] = a->Tex[1] + scan.slopeT[1][0] * temp[0];
 #endif
 
 		}
@@ -521,18 +521,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-		scan.slopeC[1] = (c->Color[0] - b->Color[0]) * scan.invDeltaY[2];
-		scan.c[1] = b->Color[0];
+		scan.slopeC[0][1] = (c->Color[0] - b->Color[0]) * scan.invDeltaY[2];
+		scan.c[0][1] = b->Color[0];
 #endif
 
 #ifdef IPOL_T0
-		scan.slopeT0[1] = (c->Tex[0] - b->Tex[0]) * scan.invDeltaY[2];
-		scan.t0[1] = b->Tex[0];
+		scan.slopeT[0][1] = (c->Tex[0] - b->Tex[0]) * scan.invDeltaY[2];
+		scan.t[0][1] = b->Tex[0];
 #endif
 
 #ifdef IPOL_T1
-		scan.slopeT1[1] = (c->Tex[1] - b->Tex[1]) * scan.invDeltaY[2];
-		scan.t1[1] = b->Tex[1];
+		scan.slopeT[1][1] = (c->Tex[1] - b->Tex[1]) * scan.invDeltaY[2];
+		scan.t[1][1] = b->Tex[1];
 #endif
 
 		// apply top-left fill convention, top part
@@ -558,18 +558,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-		scan.c[0] += scan.slopeC[0] * subPixel;
-		scan.c[1] += scan.slopeC[1] * subPixel;		
+		scan.c[0][0] += scan.slopeC[0][0] * subPixel;
+		scan.c[0][1] += scan.slopeC[0][1] * subPixel;		
 #endif
 
 #ifdef IPOL_T0
-		scan.t0[0] += scan.slopeT0[0] * subPixel;
-		scan.t0[1] += scan.slopeT0[1] * subPixel;		
+		scan.t[0][0] += scan.slopeT[0][0] * subPixel;
+		scan.t[0][1] += scan.slopeT[0][1] * subPixel;		
 #endif
 
 #ifdef IPOL_T1
-		scan.t1[0] += scan.slopeT1[0] * subPixel;
-		scan.t1[1] += scan.slopeT1[1] * subPixel;		
+		scan.t[1][0] += scan.slopeT[1][0] * subPixel;
+		scan.t[1][1] += scan.slopeT[1][1] * subPixel;		
 #endif
 
 #endif
@@ -591,18 +591,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-			line.c[scan.left] = scan.c[0];
-			line.c[scan.right] = scan.c[1];
+			line.c[0][scan.left] = scan.c[0][0];
+			line.c[0][scan.right] = scan.c[0][1];
 #endif
 
 #ifdef IPOL_T0
-			line.t0[scan.left] = scan.t0[0];
-			line.t0[scan.right] = scan.t0[1];
+			line.t[0][scan.left] = scan.t[0][0];
+			line.t[0][scan.right] = scan.t[0][1];
 #endif
 
 #ifdef IPOL_T1
-			line.t1[scan.left] = scan.t1[0];
-			line.t1[scan.right] = scan.t1[1];
+			line.t[1][scan.left] = scan.t[1][0];
+			line.t[1][scan.right] = scan.t[1][1];
 #endif
 
 			// render a scanline
@@ -622,18 +622,18 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 #endif
 
 #ifdef IPOL_C0
-			scan.c[0] += scan.slopeC[0];
-			scan.c[1] += scan.slopeC[1];
+			scan.c[0][0] += scan.slopeC[0][0];
+			scan.c[0][1] += scan.slopeC[0][1];
 #endif
 
 #ifdef IPOL_T0
-			scan.t0[0] += scan.slopeT0[0];
-			scan.t0[1] += scan.slopeT0[1];
+			scan.t[0][0] += scan.slopeT[0][0];
+			scan.t[0][1] += scan.slopeT[0][1];
 #endif
 
 #ifdef IPOL_T1
-			scan.t1[0] += scan.slopeT1[0];
-			scan.t1[1] += scan.slopeT1[1];
+			scan.t[1][0] += scan.slopeT[1][0];
+			scan.t[1][1] += scan.slopeT[1][1];
 #endif
 
 		}
@@ -642,7 +642,7 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 	RenderTarget->unlock();
 
 #ifdef USE_ZBUFFER
-	ZBuffer->unlock();
+	DepthBuffer->unlock();
 #endif
 
 #ifdef IPOL_T0

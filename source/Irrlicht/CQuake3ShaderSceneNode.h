@@ -63,18 +63,15 @@ private:
 	void vertextransform_wave ( f32 dt, quake3::SModifierFunction &function );
 	void vertextransform_bulge( f32 dt, quake3::SModifierFunction &function );
 	void vertextransform_autosprite( f32 dt, quake3::SModifierFunction &function );
-
-	void rgbgen ( f32 dt, quake3::SModifierFunction &function );
-	u32 tcgen ( f32 dt, quake3::SModifierFunction &function, core::matrix4 &texture );
+	void vertextransform_tcgen ( f32 dt, quake3::SModifierFunction &function );
+	void vertextransform_rgbgen ( f32 dt, quake3::SModifierFunction &function );
 
 	void transformtex ( const core::matrix4 &m, const u32 clamp );
 
 	f32 TimeAbs;
-	u32 animate( u32 stage, core::matrix4 &texture );
+	void animate( u32 stage, core::matrix4 &texture );
 
-
-	s32 PassedCulling;
-	s32 StageCall;
+	bool isTransparent ();
 
 };
 

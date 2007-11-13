@@ -15,6 +15,9 @@
 #include "S4DVertex.h"
 
 
+#define MAT_TEXTURE(tex) ( (video::CSoftwareTexture2*) Material.org.getTexture ( tex ) )
+
+
 namespace irr
 {
 namespace video
@@ -22,22 +25,17 @@ namespace video
 
 
 //! constructor
-CSoftwareDriver2::CSoftwareDriver2(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
+CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 : CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter),
 	RenderTargetTexture(0), RenderTargetSurface(0), CurrentShader(0),
 	 DepthBuffer(0), CurrentOut ( 12 * 2, 128 ), Temp ( 12 * 2, 128 )
 {
 	#ifdef _DEBUG
-	setDebugName("CSoftwareDriver2");
+	setDebugName("CBurningVideoDriver");
 	#endif
 
-	Texture[0] = 0;
-	Texture[1] = 0;
-	Texmap[0].Texture = 0;
-	Texmap[1].Texture = 0;
-
 	// create backbuffer
-	BackBuffer = new CImage(ECF_SOFTWARE2, windowSize);
+	BackBuffer = new CImage(BURNINGSHADER_COLOR_FORMAT, windowSize);
 	BackBuffer->fill(SColor(0));
 	
 	// create z buffer
@@ -73,6 +71,8 @@ CSoftwareDriver2::CSoftwareDriver2(const core::dimension2d<s32>& windowSize, boo
 	BurningShader[ETR_TEXTURE_GOURAUD_ALPHA_NOZ] = createTRTextureGouraudAlphaNoZ( DepthBuffer );
 
 	BurningShader[ETR_TEXTURE_BLEND] = createTRTextureBlend( DepthBuffer );
+
+	BurningShader[ETR_REFERENCE] = createTriangleRendererReference ( DepthBuffer );
 
 
 	// add the same renderer for all solid types
@@ -116,9 +116,10 @@ CSoftwareDriver2::CSoftwareDriver2(const core::dimension2d<s32>& windowSize, boo
 	setRenderTarget(BackBuffer);
 
 
-	Global_AmbientLight.set ( 0.f, 0.f, 0.f, 0.f );
+	LightSpace.Global_AmbientLight.set ( 0.f, 0.f, 0.f, 0.f );
 
 	// select the right renderer
+	//CurrentShader = BurningShader[ETR_REFERENCE];
 	setCurrentShader();
 
 }
@@ -126,14 +127,16 @@ CSoftwareDriver2::CSoftwareDriver2(const core::dimension2d<s32>& windowSize, boo
 
 
 //! destructor
-CSoftwareDriver2::~CSoftwareDriver2()
+CBurningVideoDriver::~CBurningVideoDriver()
 {
+	s32 i;
+
 	// delete Backbuffer
 	BackBuffer->drop();
 
 	// delete triangle renderers
 
-	for (s32 i=0; i<ETR2_COUNT; ++i)
+	for (i=0; i<ETR2_COUNT; ++i)
 		if (BurningShader[i])
 			BurningShader[i]->drop();
 
@@ -141,14 +144,6 @@ CSoftwareDriver2::~CSoftwareDriver2()
 
 	if (DepthBuffer)
 		DepthBuffer->drop();
-
-	// delete current texture
-
-	if ( Texture[0] )
-		Texture[0]->drop();
-
-	if ( Texture[1] )
-		Texture[1]->drop();
 
 	if (RenderTargetTexture)
 		RenderTargetTexture->drop();
@@ -160,7 +155,7 @@ CSoftwareDriver2::~CSoftwareDriver2()
 
 
 //! void selects the right triangle renderer based on the render states.
-void CSoftwareDriver2::setCurrentShader()
+void CBurningVideoDriver::setCurrentShader()
 {
 	EBurningFFShader shader = ETR_TEXTURE_GOURAUD;
 
@@ -249,6 +244,8 @@ void CSoftwareDriver2::setCurrentShader()
 		shader = ETR_TEXTURE_GOURAUD_WIRE;
 	}
 
+	//shader = ETR_REFERENCE;
+
 	// switchToTriangleRenderer
 	CurrentShader = BurningShader[shader];
 	if ( CurrentShader )
@@ -274,13 +271,14 @@ void CSoftwareDriver2::setCurrentShader()
 		}
 
 		CurrentShader->setRenderTarget(RenderTargetSurface, ViewPort);
+		CurrentShader->setMaterial ( Material );
 	}
 }
 
 
 
 //! queries the features of the driver, returns true if feature is available
-bool CSoftwareDriver2::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
+bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
 	switch (feature)
 	{
@@ -305,7 +303,7 @@ bool CSoftwareDriver2::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 
 
 //! sets transformation
-void CSoftwareDriver2::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
+void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
 	Transformation[state].m = mat;
 	Transformation[state].isIdentity = mat.isIdentity();
@@ -360,35 +358,8 @@ void CSoftwareDriver2::setTransform(E_TRANSFORMATION_STATE state, const core::ma
 }
 
 
-
-//! sets the current Texture
-bool CSoftwareDriver2::setTexture(u32 stage, video::ITexture* texture)
-{
-	if (texture && texture->getDriverType() != EDT_BURNINGSVIDEO)
-	{
-		os::Printer::log("Fatal Error: Tried to set a texture not owned by this driver.", ELL_ERROR);
-		return false;
-	}
-
-	if (Texture[stage])
-		Texture[stage]->drop();
-
-	Texture[stage] = texture;
-
-	if (Texture[stage])
-		Texture[stage]->grab();
-
-	if (Texture[stage])
-		Texmap[stage].Texture = (video::CSoftwareTexture2*) Texture[stage];
-
-	setCurrentShader();
-	return true;
-}
-
-
-
 //! sets a material
-void CSoftwareDriver2::setMaterial(const SMaterial& material)
+void CBurningVideoDriver::setMaterial(const SMaterial& material)
 {
 	Material.org = material;
 
@@ -403,18 +374,19 @@ void CSoftwareDriver2::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < 2; ++i)
 	{
-		setTexture( i, Material.org.getTexture(i) );
 		setTransform((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), 
 				material.getTextureMatrix(i));
 	}
+
+	setCurrentShader ();
+
 }
 
 
 
 //! clears the zbuffer
-bool CSoftwareDriver2::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 {
-
 	CNullDriver::beginScene(backBuffer, zBuffer, color);
 
 	if (backBuffer)
@@ -427,7 +399,7 @@ bool CSoftwareDriver2::beginScene(bool backBuffer, bool zBuffer, SColor color)
 }
 
 //! presents the rendered scene on the screen, returns false if failed
-bool CSoftwareDriver2::endScene( s32 windowId, core::rect<s32>* sourceRect )
+bool CBurningVideoDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 {
 	CNullDriver::endScene();
 
@@ -440,7 +412,7 @@ bool CSoftwareDriver2::endScene( s32 windowId, core::rect<s32>* sourceRect )
 
 
 //! sets a render target
-bool CSoftwareDriver2::setRenderTarget(video::ITexture* texture, bool clearBackBuffer, 
+bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer, 
 								 bool clearZBuffer, SColor color)
 {
 	if (texture && texture->getDriverType() != EDT_BURNINGSVIDEO)
@@ -478,7 +450,7 @@ bool CSoftwareDriver2::setRenderTarget(video::ITexture* texture, bool clearBackB
 
 
 //! sets a render target
-void CSoftwareDriver2::setRenderTarget(video::CImage* image)
+void CBurningVideoDriver::setRenderTarget(video::CImage* image)
 {
 	if (RenderTargetSurface)
 		RenderTargetSurface->drop();
@@ -502,7 +474,7 @@ void CSoftwareDriver2::setRenderTarget(video::CImage* image)
 
 
 //! sets a viewport
-void CSoftwareDriver2::setViewPort(const core::rect<s32>& area)
+void CBurningVideoDriver::setViewPort(const core::rect<s32>& area)
 {
 	ViewPort = area;
 
@@ -522,7 +494,7 @@ void CSoftwareDriver2::setViewPort(const core::rect<s32>& area)
 	can be rewritten with compares e.q near plane, a.z < -a.w and b.z < -b.w
 */
 
-const sVec4 CSoftwareDriver2::NDCPlane[6] =
+const sVec4 CBurningVideoDriver::NDCPlane[6] =
 {
 	sVec4(  0.f,  0.f, -1.f, -1.f ),	// near
 	sVec4(  0.f,  0.f,  1.f, -1.f ),	// far
@@ -557,7 +529,7 @@ const sVec4 CSoftwareDriver2::NDCPlane[6] =
 */
 #ifdef _MSC_VER
 
-REALINLINE u32 CSoftwareDriver2::clipToFrustumTest ( const s4DVertex * v  ) const
+REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) const
 {
 	f32 test[6];
 	u32 flag;
@@ -595,7 +567,7 @@ REALINLINE u32 CSoftwareDriver2::clipToFrustumTest ( const s4DVertex * v  ) cons
 #else
 
 
-REALINLINE u32 CSoftwareDriver2::clipToFrustumTest ( const s4DVertex * v  ) const
+REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) const
 {
 	u32 flag = 0;
 	for ( u32 i = 0; i!= 6; ++i )
@@ -607,7 +579,7 @@ REALINLINE u32 CSoftwareDriver2::clipToFrustumTest ( const s4DVertex * v  ) cons
 
 #endif // _MSC_VER 
 
-u32 CSoftwareDriver2::clipToHyperPlane ( s4DVertex * dest, const s4DVertex * source, u32 inCount, const sVec4 &plane )
+u32 CBurningVideoDriver::clipToHyperPlane ( s4DVertex * dest, const s4DVertex * source, u32 inCount, const sVec4 &plane )
 {
 	u32 outCount = 0;
 	s4DVertex * out = dest;
@@ -670,7 +642,7 @@ u32 CSoftwareDriver2::clipToHyperPlane ( s4DVertex * dest, const s4DVertex * sou
 }
 
 
-u32 CSoftwareDriver2::clipToFrustum ( s4DVertex *v0, s4DVertex * v1, const u32 vIn )
+u32 CBurningVideoDriver::clipToFrustum ( s4DVertex *v0, s4DVertex * v1, const u32 vIn )
 {
 	u32 vOut = vIn;
 
@@ -698,7 +670,7 @@ u32 CSoftwareDriver2::clipToFrustum ( s4DVertex *v0, s4DVertex * v1, const u32 v
 
 	replace w/w by 1/w
 */
-inline void CSoftwareDriver2::ndc_2_dc_and_project ( s4DVertex *dest,s4DVertex *source, u32 vIn ) const
+inline void CBurningVideoDriver::ndc_2_dc_and_project ( s4DVertex *dest,s4DVertex *source, u32 vIn ) const
 {
 	u32 g;
 
@@ -736,7 +708,7 @@ inline void CSoftwareDriver2::ndc_2_dc_and_project ( s4DVertex *dest,s4DVertex *
 }
 
 
-inline void CSoftwareDriver2::ndc_2_dc_and_project2 ( const s4DVertex **v, const u32 size ) const
+inline void CBurningVideoDriver::ndc_2_dc_and_project2 ( const s4DVertex **v, const u32 size ) const
 {
 	u32 g;
 
@@ -779,7 +751,7 @@ inline void CSoftwareDriver2::ndc_2_dc_and_project2 ( const s4DVertex **v, const
 /*!
 	crossproduct in projected 2D -> screen area triangle
 */
-inline f32 CSoftwareDriver2::screenarea ( const s4DVertex *v ) const
+inline f32 CBurningVideoDriver::screenarea ( const s4DVertex *v ) const
 {
 	return	( ( v[3].Pos.x - v[1].Pos.x ) * ( v[5].Pos.y - v[1].Pos.y ) ) -
 			( ( v[3].Pos.y - v[1].Pos.y ) * ( v[5].Pos.x - v[1].Pos.x ) );
@@ -788,7 +760,7 @@ inline f32 CSoftwareDriver2::screenarea ( const s4DVertex *v ) const
 
 /*!
 */
-inline f32 CSoftwareDriver2::texelarea ( const s4DVertex *v, int tex ) const
+inline f32 CBurningVideoDriver::texelarea ( const s4DVertex *v, int tex ) const
 {
 	f32 x0,y0, x1,y1, z;
 
@@ -799,7 +771,7 @@ inline f32 CSoftwareDriver2::texelarea ( const s4DVertex *v, int tex ) const
 
 	z = x0*y1 - x1*y0;
 
-	const core::dimension2d<s32> &d = Texmap[tex].Texture->getMaxSize();
+	const core::dimension2d<s32> &d = MAT_TEXTURE ( tex )->getMaxMipMapSize ();
 	z *= d.Height;
 	z *= d.Width;
 	return z;
@@ -808,7 +780,7 @@ inline f32 CSoftwareDriver2::texelarea ( const s4DVertex *v, int tex ) const
 /*!
 	crossproduct in projected 2D
 */
-inline f32 CSoftwareDriver2::screenarea2 ( const s4DVertex **v ) const
+inline f32 CBurningVideoDriver::screenarea2 ( const s4DVertex **v ) const
 {
 	return	( (( v[1] + 1 )->Pos.x - (v[0] + 1 )->Pos.x ) * ( (v[2] + 1 )->Pos.y - (v[0] + 1 )->Pos.y ) ) -
 			( (( v[1] + 1 )->Pos.y - (v[0] + 1 )->Pos.y ) * ( (v[2] + 1 )->Pos.x - (v[0] + 1 )->Pos.x ) );
@@ -816,7 +788,7 @@ inline f32 CSoftwareDriver2::screenarea2 ( const s4DVertex **v ) const
 
 /*!
 */
-inline f32 CSoftwareDriver2::texelarea2 ( const s4DVertex **v, s32 tex ) const
+inline f32 CBurningVideoDriver::texelarea2 ( const s4DVertex **v, s32 tex ) const
 {
 	f32 z;
 
@@ -826,7 +798,7 @@ inline f32 CSoftwareDriver2::texelarea2 ( const s4DVertex **v, s32 tex ) const
 			(v[1]->Tex[tex].y - v[0]->Tex[tex].y )
 		;
 
-	const core::dimension2d<s32> &d = Texmap[tex].Texture->getMaxSize();
+	const core::dimension2d<s32> &d = MAT_TEXTURE ( tex )->getMaxMipMapSize ();
 	z *= d.Height;
 	z *= d.Width;
 	return z;
@@ -837,13 +809,12 @@ inline f32 CSoftwareDriver2::texelarea2 ( const s4DVertex **v, s32 tex ) const
 
 /*!
 */
-inline void CSoftwareDriver2::select_polygon_mipmap ( s4DVertex *v, u32 vIn, s32 tex )
+inline void CBurningVideoDriver::select_polygon_mipmap ( s4DVertex *v, u32 vIn, s32 tex )
 {
 	f32 f[2];
-	const core::dimension2d<s32>& dim = Texmap[tex].Texture->getSize();
 
-	f[0] = (f32) dim.Width;
-	f[1] = (f32) dim.Height;
+	f[0] = (f32) MAT_TEXTURE ( tex )->getSize().Width;
+	f[1] = (f32) MAT_TEXTURE ( tex )->getSize().Height;
 
 #ifdef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
 	for ( u32 g = 0; g != vIn; g += 2 )
@@ -860,13 +831,12 @@ inline void CSoftwareDriver2::select_polygon_mipmap ( s4DVertex *v, u32 vIn, s32
 #endif
 }
 
-inline void CSoftwareDriver2::select_polygon_mipmap2 ( s4DVertex **v, s32 tex ) const
+inline void CBurningVideoDriver::select_polygon_mipmap2 ( s4DVertex **v, s32 tex ) const
 {
 	f32 f[2];
-	const core::dimension2d<s32>& dim = Texmap[tex].Texture->getSize();
 
-	f[0] = (f32) dim.Width;
-	f[1] = (f32) dim.Height;
+	f[0] = (f32) MAT_TEXTURE ( tex )->getSize().Width;
+	f[1] = (f32) MAT_TEXTURE ( tex )->getSize().Height;
 
 #ifdef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
 	(v[0] + 1 )->Tex[tex].x	= v[0]->Tex[tex].x * ( v[0] + 1 )->Pos.w * f[0];
@@ -891,11 +861,11 @@ inline void CSoftwareDriver2::select_polygon_mipmap2 ( s4DVertex **v, s32 tex ) 
 }
 
 // Vertex Cache
-const SVSize CSoftwareDriver2::vSize[] =
+const SVSize CBurningVideoDriver::vSize[] =
 {
-	{ VERTEX4D_FORMAT_0, sizeof(S3DVertex),1 },
-	{ VERTEX4D_FORMAT_1, sizeof(S3DVertex2TCoords),2 },
-	{ VERTEX4D_FORMAT_2, sizeof(S3DVertexTangents),2 }
+	{ VERTEX4D_FORMAT_TEXTURE_1 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex), 1 },
+	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex2TCoords),2 },
+	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertexTangents),2 }
 };
 
 
@@ -903,7 +873,7 @@ const SVSize CSoftwareDriver2::vSize[] =
 /*!
 	fill a cache line with transformed, light and clipp test triangles
 */
-void CSoftwareDriver2::VertexCache_fill(const u32 sourceIndex,
+void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 					const u32 destIndex)
 {
 	u8 * source;
@@ -963,7 +933,7 @@ void CSoftwareDriver2::VertexCache_fill(const u32 sourceIndex,
 		for ( t = 0; t != vSize[VertexCache.vType].TexSize; ++t )
 		{
 			const core::matrix4& M = Transformation [ ETS_TEXTURE_0 + t ].m;
-			if ( Material.org.TextureLayer[0].TextureWrap==ETC_REPEAT )
+			if ( Material.org.TextureLayer[t].TextureWrap==ETC_REPEAT )
 			{
 				dest->Tex[t].x = M[0] * src[t].X + M[4] * src[t].Y + M[8];
 				dest->Tex[t].y = M[1] * src[t].X + M[5] * src[t].Y + M[9];
@@ -1001,7 +971,7 @@ void CSoftwareDriver2::VertexCache_fill(const u32 sourceIndex,
 
 //
 
-REALINLINE s4DVertex * CSoftwareDriver2::VertexCache_getVertex ( const u32 sourceIndex )
+REALINLINE s4DVertex * CBurningVideoDriver::VertexCache_getVertex ( const u32 sourceIndex )
 {
 	for ( s32 i = 0; i < VERTEXCACHE_ELEMENT; ++i )
 	{
@@ -1019,7 +989,7 @@ REALINLINE s4DVertex * CSoftwareDriver2::VertexCache_getVertex ( const u32 sourc
 	fill blockwise on the next 16(Cache_Size) unique vertices in indexlist
 	merge the next 16 vertices with the current
 */
-REALINLINE void CSoftwareDriver2::VertexCache_get ( s4DVertex ** face )
+REALINLINE void CBurningVideoDriver::VertexCache_get ( s4DVertex ** face )
 {
 	SCacheInfo info[VERTEXCACHE_ELEMENT];
 
@@ -1109,7 +1079,7 @@ REALINLINE void CSoftwareDriver2::VertexCache_get ( s4DVertex ** face )
 	VertexCache.indicesRun += VertexCache.primitivePitch;
 }
 
-REALINLINE void CSoftwareDriver2::VertexCache_get2 ( s4DVertex ** face )
+REALINLINE void CBurningVideoDriver::VertexCache_get2 ( s4DVertex ** face )
 {
 	const u32 i0 = core::if_c_a_else_0 ( VertexCache.pType != scene::EPT_TRIANGLE_FAN, VertexCache.indicesRun );
 
@@ -1125,7 +1095,7 @@ REALINLINE void CSoftwareDriver2::VertexCache_get2 ( s4DVertex ** face )
 
 }
 
-void CSoftwareDriver2::VertexCache_reset ( const void* vertices, u32 vertexCount, 
+void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCount, 
 											const u16* indices, u32 primitiveCount, 
 											E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType )
 {
@@ -1157,7 +1127,7 @@ void CSoftwareDriver2::VertexCache_reset ( const void* vertices, u32 vertexCount
 
 
 //! draws a vertex primitive list
-void CSoftwareDriver2::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
+void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
 {
 	if (!checkPrimitiveCount(primitiveCount))
 		return;
@@ -1198,17 +1168,17 @@ void CSoftwareDriver2::drawVertexPrimitiveList(const void* vertices, u32 vertexC
 
 			dc_area = core::reciprocal ( dc_area );
 			// select mipmap
-			for ( g = 0; g != 2; ++g )
+			for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
 			{
-				if ( 0 == Texmap[g].Texture )
+				if ( 0 == MAT_TEXTURE ( g ) )
 				{
-					CurrentShader->setTexture(g, 0, 0);
+					CurrentShader->setTextureParam(g, 0, 0);
 					continue;
 				}
 
 				lodLevel = s32_log2_f32 ( texelarea2 ( face, g ) * dc_area );
 
-				CurrentShader->setTexture(g, Texmap[g].Texture, lodLevel);
+				CurrentShader->setTextureParam(g, MAT_TEXTURE ( g ), lodLevel);
 				select_polygon_mipmap2 ( (s4DVertex**) face, g );
 
 			}
@@ -1223,7 +1193,7 @@ void CSoftwareDriver2::drawVertexPrimitiveList(const void* vertices, u32 vertexC
 		irr::memcpy32_small ( ( (u8*) CurrentOut.data + ( 1 << ( SIZEOF_SVERTEX_LOG2 + 1 ) ) ), face[1], SIZEOF_SVERTEX * 2 );
 		irr::memcpy32_small ( ( (u8*) CurrentOut.data + ( 2 << ( SIZEOF_SVERTEX_LOG2 + 1 ) ) ), face[2], SIZEOF_SVERTEX * 2 );
 
-		u32 flag = CurrentOut.data->flag & VERTEX4D_FORMAT_MASK;
+		const u32 flag = CurrentOut.data->flag & VERTEX4D_FORMAT_MASK;
 
 		for ( g = 0; g != CurrentOut.ElementSize; ++g )
 		{
@@ -1312,17 +1282,17 @@ void CSoftwareDriver2::drawVertexPrimitiveList(const void* vertices, u32 vertexC
 			continue;
 
 		// select mipmap
-		for ( g = 0; g != 2; ++g )
+		for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
 		{
-			if ( 0 == Texmap[g].Texture )
+			if ( 0 == MAT_TEXTURE ( g ) )
 			{
-				CurrentShader->setTexture(g, 0, 0);
+				CurrentShader->setTextureParam(g, 0, 0);
 				continue;
 			}
 
 			lodLevel = s32_log2_f32 ( texelarea ( CurrentOut.data, g ) / dc_area );
 
-			CurrentShader->setTexture(g, Texmap[g].Texture, lodLevel);
+			CurrentShader->setTextureParam(g, MAT_TEXTURE ( g ), lodLevel);
 			select_polygon_mipmap ( CurrentOut.data, vOut, g );
 		}
 
@@ -1352,19 +1322,19 @@ void CSoftwareDriver2::drawVertexPrimitiveList(const void* vertices, u32 vertexC
 //! Sets the dynamic ambient light color. The default color is
 //! (0,0,0,0) which means it is dark.
 //! \param color: New color of the ambient light.
-void CSoftwareDriver2::setAmbientLight(const SColorf& color)
+void CBurningVideoDriver::setAmbientLight(const SColorf& color)
 {
-	Global_AmbientLight.setColorf ( color );
+	LightSpace.Global_AmbientLight.setColorf ( color );
 }
 
 
 //! adds a dynamic light
-void CSoftwareDriver2::addDynamicLight(const SLight& dl)
+void CBurningVideoDriver::addDynamicLight(const SLight& dl)
 {
-	if ( Light.size () >= getMaximalDynamicLightAmount () )
+	if ( LightSpace.Light.size () >= getMaximalDynamicLightAmount () )
 		return;
 
-	SInternalLight l;
+	SBurningShaderLight l;
 	l.org = dl;
 
 	// light in eye space
@@ -1386,20 +1356,20 @@ void CSoftwareDriver2::addDynamicLight(const SLight& dl)
 		} break;
 	}
 
-	Light.push_back ( l );
+	LightSpace.Light.push_back ( l );
 	CNullDriver::addDynamicLight( l.org );
 }
 
 //! deletes all dynamic lights there are
-void CSoftwareDriver2::deleteAllDynamicLights()
+void CBurningVideoDriver::deleteAllDynamicLights()
 {
-	Light.set_used ( 0 );
+	LightSpace.Light.set_used ( 0 );
 	CNullDriver::deleteAllDynamicLights();
 
 }
 
 //! returns the maximal amount of dynamic lights the device can handle
-u32 CSoftwareDriver2::getMaximalDynamicLightAmount() const
+u32 CBurningVideoDriver::getMaximalDynamicLightAmount() const
 {
 	return 8;
 }
@@ -1410,7 +1380,7 @@ u32 CSoftwareDriver2::getMaximalDynamicLightAmount() const
 
 /*!
 */
-void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
+void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 {
 	// apply lighting model
 	if ( false == Material.org.Lighting )
@@ -1468,9 +1438,9 @@ void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 	f32 attenuation = 1.f;
 
 	u32 i;
-	for ( i = 0; i!= Light.size (); ++i )
+	for ( i = 0; i!= LightSpace.Light.size (); ++i )
 	{
-		const SInternalLight &light = Light[i];
+		const SBurningShaderLight &light = LightSpace.Light[i];
 
 		sVec4 vp;			// unit vector vertex to light
 		sVec4 lightHalf;		// blinn-phong reflection
@@ -1550,7 +1520,7 @@ void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 
 	sVec4 dColor;
 
-	dColor = Global_AmbientLight;
+	dColor = LightSpace.Global_AmbientLight;
 	dColor += Material.EmissiveColor;
 	dColor += ambient * Material.AmbientColor;
 	dColor += diffuse * Material.DiffuseColor;
@@ -1564,7 +1534,7 @@ void CSoftwareDriver2::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CSoftwareDriver2::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
+void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 					 const core::rect<s32>& sourceRect, 
 					 const core::rect<s32>* clipRect, SColor color, 
 					 bool useAlphaChannelOfTexture)
@@ -1589,7 +1559,7 @@ void CSoftwareDriver2::draw2DImage(const video::ITexture* texture, const core::p
 
 
 //! Draws a 2d line. 
-void CSoftwareDriver2::draw2DLine(const core::position2d<s32>& start,
+void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color)
 {
@@ -1599,7 +1569,7 @@ void CSoftwareDriver2::draw2DLine(const core::position2d<s32>& start,
 
 
 //! draw an 2d rectangle
-void CSoftwareDriver2::draw2DRectangle(SColor color, const core::rect<s32>& pos,
+void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 									 const core::rect<s32>* clip)
 {
 	if (clip)
@@ -1624,7 +1594,7 @@ void CSoftwareDriver2::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
-void CSoftwareDriver2::OnResize(const core::dimension2d<s32>& size)
+void CBurningVideoDriver::OnResize(const core::dimension2d<s32>& size)
 {
 	// make sure width and height are multiples of 2
 	core::dimension2d<s32> realSize(size);
@@ -1648,7 +1618,7 @@ void CSoftwareDriver2::OnResize(const core::dimension2d<s32>& size)
 		bool resetRT = (RenderTargetSurface == BackBuffer);
 
 		BackBuffer->drop();
-		BackBuffer = new CImage(ECF_SOFTWARE2, realSize);
+		BackBuffer = new CImage(BURNINGSHADER_COLOR_FORMAT, realSize);
 
 		if (resetRT)
 			setRenderTarget(BackBuffer);
@@ -1656,13 +1626,13 @@ void CSoftwareDriver2::OnResize(const core::dimension2d<s32>& size)
 }
 
 //! returns the current render target size
-const core::dimension2d<s32>& CSoftwareDriver2::getCurrentRenderTargetSize() const
+const core::dimension2d<s32>& CBurningVideoDriver::getCurrentRenderTargetSize() const
 {
 	return RenderTargetSize;
 }
 
 //!Draws an 2d rectangle with a gradient.
-void CSoftwareDriver2::draw2DRectangle(const core::rect<s32>& position,
+void CBurningVideoDriver::draw2DRectangle(const core::rect<s32>& position,
 	SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
 	const core::rect<s32>* clip)
 {
@@ -1776,7 +1746,7 @@ void CSoftwareDriver2::draw2DRectangle(const core::rect<s32>& position,
 
 
 //! Draws a 3d line.
-void CSoftwareDriver2::draw3DLine(const core::vector3df& start,
+void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 	const core::vector3df& end, SColor color)
 {
 	Transformation [ ETS_CURRENT].m.transformVect ( &CurrentOut.data[0].Pos.x, start );
@@ -1826,35 +1796,35 @@ void CSoftwareDriver2::draw3DLine(const core::vector3df& start,
 
 //! \return Returns the name of the video driver. Example: In case of the DirectX8
 //! driver, it would return "Direct3D8.1".
-const wchar_t* CSoftwareDriver2::getName() const
+const wchar_t* CBurningVideoDriver::getName() const
 {
 #ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	return L"burnings video 0.38b";
+	return L"burnings video 0.39b";
 #elif defined ( BURNINGVIDEO_RENDERER_ULTRA_FAST )
-	return L"burnings video 0.38uf";
+	return L"burnings video 0.39uf";
 #elif defined ( BURNINGVIDEO_RENDERER_FAST )
-	return L"burnings video 0.38f";
+	return L"burnings video 0.39f";
 #else
-	return L"burnings video 0.38";
+	return L"burnings video 0.39";
 #endif
 }
 
 //! Returns type of video driver
-E_DRIVER_TYPE CSoftwareDriver2::getDriverType() const
+E_DRIVER_TYPE CBurningVideoDriver::getDriverType() const
 {
 	return EDT_BURNINGSVIDEO;
 }
 
 //! Returns the transformation set by setTransform
-const core::matrix4& CSoftwareDriver2::getTransform(E_TRANSFORMATION_STATE state) const
+const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Transformation[state].m;
 }
 
 //! Creates a render target texture.
-ITexture* CSoftwareDriver2::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CBurningVideoDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
-	CImage* img = new CImage(ECF_SOFTWARE2, size);
+	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
 
 	ITexture* tex = new CSoftwareTexture2(img, name, false, true);
 	img->drop();
@@ -1863,7 +1833,7 @@ ITexture* CSoftwareDriver2::createRenderTargetTexture(const core::dimension2d<s3
 
 
 //! Clears the DepthBuffer. 
-void CSoftwareDriver2::clearZBuffer()
+void CBurningVideoDriver::clearZBuffer()
 {
 	if (DepthBuffer)
 		DepthBuffer->clear();
@@ -1871,7 +1841,7 @@ void CSoftwareDriver2::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* CSoftwareDriver2::createScreenShot()
+IImage* CBurningVideoDriver::createScreenShot()
 {
 	return new CImage(BackBuffer->getColorFormat(), BackBuffer);
 }
@@ -1879,7 +1849,7 @@ IImage* CSoftwareDriver2::createScreenShot()
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CSoftwareDriver2::createDeviceDependentTexture(IImage* surface, const char* name)
+ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const char* name)
 {
 	return new CSoftwareTexture2(surface, name, getTextureCreationFlag(ETCF_CREATE_MIP_MAPS));
 
@@ -1888,7 +1858,7 @@ ITexture* CSoftwareDriver2::createDeviceDependentTexture(IImage* surface, const 
 //! Returns the maximum amount of primitives (mostly vertices) which
 //! the device is able to render with one drawIndexedTriangleList
 //! call.
-u32 CSoftwareDriver2::getMaximalPrimitiveCount() const
+u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 {
 	return 0x00800000;
 }
@@ -1907,7 +1877,7 @@ namespace video
 IVideoDriver* createSoftwareDriver2(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-	return new CSoftwareDriver2(windowSize, fullscreen, io, presenter);
+	return new CBurningVideoDriver(windowSize, fullscreen, io, presenter);
 	#else
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_

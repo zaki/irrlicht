@@ -16,15 +16,15 @@ namespace irr
 {
 namespace video
 {
-	class CSoftwareDriver2 : public CNullDriver
+	class CBurningVideoDriver : public CNullDriver
 	{
 	public:
 
 		//! constructor
-		CSoftwareDriver2(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter);
+		CBurningVideoDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter);
 
 		//! destructor
-		virtual ~CSoftwareDriver2();
+		virtual ~CBurningVideoDriver();
 
 		//! presents the rendered scene on the screen, returns false if failed
 		virtual bool endScene( s32 windowId = 0, core::rect<s32>* sourceRect=0 );
@@ -124,7 +124,7 @@ namespace video
 		void setRenderTarget(video::CImage* image);
 
 		//! sets the current Texture
-		bool setTexture(u32 stage, video::ITexture* texture);
+		//bool setTexture(u32 stage, video::ITexture* texture);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
@@ -145,8 +145,6 @@ namespace video
 
 		IDepthBuffer* DepthBuffer;
 
-		video::ITexture* Texture[2];
-		sInternalTexture Texmap[2];
 
 		/*
 			extend Matrix Stack
@@ -215,37 +213,8 @@ namespace video
 		void select_polygon_mipmap2 ( s4DVertex **source, s32 tex ) const;
 
 
-		sVec4 Global_AmbientLight;
-
-		struct SInternalLight
-		{
-			SLight org;
-
-			sVec4 posEyeSpace;
-
-			f32 constantAttenuation;
-			f32 linearAttenuation;
-			f32 quadraticAttenuation;
-
-			sVec4 AmbientColor;
-			sVec4 DiffuseColor;
-			sVec4 SpecularColor;
-		};
-		core::array<SInternalLight> Light;
-
-		struct SInternalMaterial
-		{
-			SMaterial org;
-
-			sVec4 AmbientColor;
-			sVec4 DiffuseColor;
-			sVec4 SpecularColor;
-			sVec4 EmissiveColor;
-
-			u32 SpecularEnabled;	// == Power2
-		};
-
-		SInternalMaterial Material;
+		SBurningShaderLightSpace LightSpace;
+		SBurningShaderMaterial Material;
 
 		static const sVec4 NDCPlane[6];
 

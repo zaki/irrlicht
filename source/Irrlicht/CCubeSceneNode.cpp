@@ -106,10 +106,8 @@ const core::aabbox3d<f32>& CCubeSceneNode::getBoundingBox() const
 void CCubeSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
-	{
 		SceneManager->registerNodeForRendering(this);
-		ISceneNode::OnRegisterSceneNode();
-	}
+	ISceneNode::OnRegisterSceneNode();
 }
 
 

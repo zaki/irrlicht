@@ -483,26 +483,6 @@ namespace scene
 			}
 		};
 
-		struct ShaderNodeEntry
-		{
-			ShaderNodeEntry() {};
-
-			ShaderNodeEntry(ISceneNode* n, u32 sceneTime )
-			{
-				textureValue = n->getMaterial( sceneTime ).getTexture(0);
-
-				node = n;
-			}
-
-			ISceneNode* node;
-			void* textureValue;
-
-			bool operator < (const ShaderNodeEntry& other) const
-			{
-				return (textureValue < other.textureValue);
-			}
-		};
-
 
 		struct TransparentNodeEntry
 		{
@@ -579,7 +559,6 @@ namespace scene
 		core::array<ISceneNode*> SkyBoxList;
 		core::array<DefaultNodeEntry> SolidNodeList;
 		core::array<TransparentNodeEntry> TransparentNodeList;
-		core::array<ShaderNodeEntry> ShaderNodeList[ ESNRP_SHADER_10 - ESNRP_SHADER_0 + 1];
 
 		core::array<IMeshLoader*> MeshLoaderList;
 		core::array<ISceneNode*> DeletionList;
