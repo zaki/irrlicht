@@ -94,7 +94,7 @@ namespace video
 		ITexture* Texture;
 
 		//! Texture Matrix
-		//! Do not acces this element directly as the internal
+		//! Do not access this element directly as the internal
 		//! ressource management has to cope with Null pointers etc.
 		core::matrix4* TextureMatrix;
 
