@@ -46,6 +46,8 @@ void CDemo::run()
 	}
 
 	device = createDevice(driverType,resolution, 32, fullscreen, shadows, vsync, this);
+	if ( 0 == device )
+		return;
 
 	device->getFileSystem()->addZipFileArchive("irrlicht.dat");
 	device->getFileSystem()->addZipFileArchive("../../media/irrlicht.dat");
@@ -362,7 +364,7 @@ void CDemo::loadSceneData()
 				quakeLevelNode, 128);
 
 			// if not using shader and no gamma it's better to use more lighting, because
-			// quake3 level are dark
+			// quake3 level are usually dark
 			quakeLevelNode->setMaterialType ( video::EMT_LIGHTMAP_M4 );
 
 			// set additive blending if wanted
@@ -462,9 +464,11 @@ void CDemo::loadSceneData()
 	core::array<video::ITexture*> textures;
 	for (s32 g=1; g<8; ++g)
 	{
-		char tmp[64];
-		sprintf(tmp, "../../media/portal%d.bmp", g);
-		video::ITexture* t = driver->getTexture(tmp);
+		core::stringc tmp;
+		tmp = "../../media/portal";
+		tmp += g;
+		tmp += ".bmp";
+		video::ITexture* t = driver->getTexture( tmp.c_str () );
 		textures.push_back(t);
 	}
 
@@ -530,6 +534,7 @@ void CDemo::loadSceneData()
 	paf->drop();
 
 	campFire->setMaterialFlag(video::EMF_LIGHTING, false);
+	campFire->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	campFire->setMaterialTexture(0, driver->getTexture("../../media/fireball.bmp"));
 	campFire->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 

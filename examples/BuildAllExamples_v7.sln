@@ -82,8 +82,8 @@ Global
 	GlobalSection(ProjectConfiguration) = postSolution
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug.ActiveCfg = Debug|Win32
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug.Build.0 = Debug|Win32
-		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.ActiveCfg = Relase - Fast FPU|Win32
-		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.Build.0 = Relase - Fast FPU|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.ActiveCfg = Release|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release.Build.0 = Release|Win32
 		{735B050B-1AC5-4602-B0BE-D2D2B5893E94}.Debug.ActiveCfg = Debug|Win32
 		{735B050B-1AC5-4602-B0BE-D2D2B5893E94}.Debug.Build.0 = Debug|Win32
 		{735B050B-1AC5-4602-B0BE-D2D2B5893E94}.Release.ActiveCfg = Release|Win32
