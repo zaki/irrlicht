@@ -1111,22 +1111,6 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 			taken = 1;
 		}
 		break;
-	case ESNRP_SHADER_0:
-	case ESNRP_SHADER_1:
-	case ESNRP_SHADER_2:
-	case ESNRP_SHADER_3:
-	case ESNRP_SHADER_4:
-	case ESNRP_SHADER_5:
-	case ESNRP_SHADER_6:
-	case ESNRP_SHADER_7:
-	case ESNRP_SHADER_8:
-	case ESNRP_SHADER_9:
-	case ESNRP_SHADER_10:
-		if ( !isCulled(node) )
-		{
-			ShaderNodeList[ time - ESNRP_SHADER_0].push_back( ShaderNodeEntry ( node,time - ESNRP_SHADER_0 ));
-			taken = 1;
-		} break;
 
 	case ESNRP_COUNT: // ignore this one
 		break;
@@ -1265,23 +1249,6 @@ void CSceneManager::drawAll()
 		TransparentNodeList.set_used(0);
 	}
 
-	// render shader objects.
-	{
-		for ( u32 g = 0; g!= ESNRP_SHADER_10 - ESNRP_SHADER_0 + 1; ++g )
-		{
-			CurrentRendertime = (scene::E_SCENE_NODE_RENDER_PASS) (ESNRP_SHADER_0 + g);
-
-			const u32 size = ShaderNodeList[g].size ();
-			if ( 0 == size )
-				continue;
-
-			ShaderNodeList[g].sort(); // sort by textures
-			for (i=0; i< size; ++i)
-				ShaderNodeList[g][i].node->render();
-
-			ShaderNodeList[g].set_used(0);
-		}
-	}
 
 	clearDeletionList();
 

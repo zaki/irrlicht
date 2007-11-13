@@ -48,7 +48,7 @@ public:
 	}
 
 	//! Returns the size of the largest mipmap.
-	const core::dimension2d<s32>& getMaxSize() const
+	const core::dimension2d<s32>& getMaxMipMapSize() const
 	{
 		return MipMap[0]->getDimension();
 	}
@@ -81,7 +81,7 @@ public:
 	//! returns color format of texture
 	virtual ECOLOR_FORMAT getColorFormat() const
 	{
-		return ECF_SOFTWARE2;
+		return BURNINGSHADER_COLOR_FORMAT;
 	}
 
 	//! returns pitch of texture (in bytes)

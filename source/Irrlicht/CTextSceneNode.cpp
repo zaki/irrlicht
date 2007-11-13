@@ -46,10 +46,9 @@ CTextSceneNode::~CTextSceneNode()
 void CTextSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
-	{
 		SceneManager->registerNodeForRendering(this, ESNRP_TRANSPARENT);
-		ISceneNode::OnRegisterSceneNode();
-	}
+
+	ISceneNode::OnRegisterSceneNode();
 }
 
 //! renders the node.
@@ -101,11 +100,11 @@ CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManag
 	setDebugName("CBillboardTextSceneNode");
 	#endif
 
-	Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-	Material.MaterialTypeParam = 0.5f;
+	Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+	Material.MaterialTypeParam = 1.f / 255.f;
 	Material.BackfaceCulling = false;
 	Material.Lighting = false;
-	Material.ZBuffer = false;
+	Material.ZBuffer = true;
 	Material.ZWriteEnable = false;
 
 	if (font)

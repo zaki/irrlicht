@@ -263,37 +263,47 @@ enum e4DVertexFlag
 	VERTEX4D_CLIPMASK	= 0x0000003F,
 	VERTEX4D_PROJECTED	= 0x00000100,
 
-	VERTEX4D_FORMAT_MASK	= 0xFFFF0000,
-	VERTEX4D_FORMAT_0	= 0x00010000,
-	VERTEX4D_FORMAT_1	= VERTEX4D_FORMAT_0 | 0x00020000,
-	VERTEX4D_FORMAT_2	= VERTEX4D_FORMAT_1 | 0x00040000
+	VERTEX4D_FORMAT_MASK			= 0xFFFF0000,
+
+	VERTEX4D_FORMAT_MASK_TEXTURE	= 0x000F0000,
+	VERTEX4D_FORMAT_TEXTURE_1		= 0x00010000,
+	VERTEX4D_FORMAT_TEXTURE_2		= 0x00020000,
+	VERTEX4D_FORMAT_TEXTURE_3		= 0x00030000,
+	VERTEX4D_FORMAT_TEXTURE_4		= 0x00040000,
+
+	VERTEX4D_FORMAT_MASK_COLOR		= 0x00F00000,
+	VERTEX4D_FORMAT_COLOR_1			= 0x00100000,
+	VERTEX4D_FORMAT_COLOR_2			= 0x00200000,
+
 };
 
-// dummy Vertex
+const u32 MATERIAL_MAX_COLORS = 2;
+
+// dummy Vertex. used for calculation vertex memory size
 struct __s4DVertex
 {
 	sVec4 Pos;
 
 #ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
-	sVec4 Color[1];
+	sVec4 Color[MATERIAL_MAX_COLORS];
 #endif
 
-	sVec2 Tex[2];
+	sVec2 Tex[MATERIAL_MAX_TEXTURES];
 	u32 flag;
 };
 
-#define SIZEOF_SVERTEX	64
-#define SIZEOF_SVERTEX_LOG2	6
+#define SIZEOF_SVERTEX	128
+#define SIZEOF_SVERTEX_LOG2	7
 
 struct s4DVertex
 {
 	sVec4 Pos;
 
 #ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
-	sVec4 Color[1];
+	sVec4 Color[ MATERIAL_MAX_COLORS ];
 #endif
 
-	sVec2 Tex[2];
+	sVec2 Tex[ MATERIAL_MAX_TEXTURES ];
 
 	u32 flag;
 
@@ -302,19 +312,24 @@ struct s4DVertex
 	// f = a * t + b * ( 1 - t )
 	void interpolate(const s4DVertex& b, const s4DVertex& a, const f32 t)
 	{
+		u32 i;
+		u32 size;
+
 		Pos.interpolate ( a.Pos, b.Pos, t );
 
 #ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
-		Color[0].interpolate ( a.Color[0], b.Color[0], t );
+		size = (flag & VERTEX4D_FORMAT_MASK_COLOR) >> 20;
+		for ( i = 0; i!= size; ++i )
+		{
+			Color[i].interpolate ( a.Color[i], b.Color[i], t );
+		}
 #endif
 
-		Tex[0].interpolate ( a.Tex[0], b.Tex[0], t );
-
-		if ( (flag & VERTEX4D_FORMAT_1 ) == VERTEX4D_FORMAT_1 )
+		size = (flag & VERTEX4D_FORMAT_MASK_TEXTURE) >> 16;
+		for ( i = 0; i!= size; ++i )
 		{
-			Tex[1].interpolate ( a.Tex[1], b.Tex[1], t );
+			Tex[i].interpolate ( a.Tex[i], b.Tex[i], t );
 		}
-
 
 	}
 };
@@ -403,11 +418,12 @@ inline void swapVertexPointer(const s4DVertex** v1, const s4DVertex** v2)
 // ------------------------ Internal Scanline Rasterizer -----------------------------
 
 
+
 // internal scan convert
 struct sScanConvertData
 {
-	s32 left;			// major edge left/right
-	s32 right;		// !left
+	u8 left;			// major edge left/right
+	u8 right;			// !left
 
 	f32 invDeltaY[3];	// inverse edge delta y
 
@@ -422,21 +438,18 @@ struct sScanConvertData
 	f32 slopeZ[2];		// z slope along edges
 #endif
 
-	sVec4 c[2];			// color
-	sVec4 slopeC[2];	// color slope along edges
+	sVec4 c[MATERIAL_MAX_COLORS][2];			// color
+	sVec4 slopeC[MATERIAL_MAX_COLORS][2];	// color slope along edges
 
-	sVec2 t0[2];			// texture
-	sVec2 slopeT0[2];	// texture slope along edges
-
-	sVec2 t1[2];			// texture
-	sVec2 slopeT1[2];	// texture slope along edges
+	sVec2 t[MATERIAL_MAX_TEXTURES][2];		// texture
+	sVec2 slopeT[MATERIAL_MAX_TEXTURES][2];	// texture slope along edges
 
 };
 
 // passed to scan Line
 struct sScanLineData
 {
-	s32 y;			// y position of scanline
+	s32 y;				// y position of scanline
 	f32 x[2];			// x start, x end of scanline
 
 #if defined ( SOFTWARE_DRIVER_2_USE_WBUFFER ) || defined ( SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT )
@@ -446,13 +459,23 @@ struct sScanLineData
 #endif
 
 #ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
-	sVec4 c[2];		// color start, color end of scanline
+	sVec4 c[MATERIAL_MAX_COLORS][2];			// color start, color end of scanline
 #endif
 
-	sVec2 t0[2];		// texture start, texture end of scanline
-	sVec2 t1[2];		// texture start, texture end of scanline
+	sVec2 t[MATERIAL_MAX_TEXTURES][2];		// texture start, texture end of scanline
 };
 
+// passed to pixel Shader
+struct sPixelShaderData
+{
+	tVideoSample *dst;
+	fp24 *z;
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+	s32 i;
+};
 
 /*
 	load a color value

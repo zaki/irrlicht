@@ -209,13 +209,13 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 
 	if ( Mesh )
 	{
-		/*
+/*
 		scene::IMesh *m = Mesh->getMesh(CurrentFrameNr, 255, StartFrame, EndFrame);
 		if ( m )
 		{
 			Box = m->getBoundingBox();
 		}
-		*/
+*/
 	}
 
 

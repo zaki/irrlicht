@@ -13,6 +13,7 @@
 #include "SoftwareDriver2_compile_config.h"
 #include "irrMath.h"
 #include "CSoftwareTexture2.h"
+#include "SMaterial.h"
 
 
 

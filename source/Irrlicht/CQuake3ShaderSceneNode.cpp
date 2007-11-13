@@ -6,6 +6,9 @@
 #include "IVideoDriver.h"
 #include "ICameraSceneNode.h"
 #include "SViewFrustum.h"
+#include "IMeshManipulator.h"
+#include "SMesh.h"
+#include "IMaterialRenderer.h"
 
 namespace irr
 {
@@ -34,7 +37,10 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 
 	// load all Textures in all stages
 	loadTextures ( fileSystem );
+
+	setAutomaticCulling ( scene::EAC_BOX );
 }
+
 
 /*
 */
@@ -60,17 +66,39 @@ void CQuake3ShaderSceneNode::cloneBuffer ( scene::SMeshBufferLightMap * buffer )
 	for ( u32 i = 0; i!= vsize; ++i )
 	{
 		const video::S3DVertex2TCoords * src = &buffer->Vertices[i];
+
+		// Original has same Vertex Format
 		Original.Vertices[i] = *src;
 
-		video::S3DVertex * d = &MeshBuffer.Vertices[i];
-
-		d->Pos = src->Pos;
-		d->Color = 0xFFFFFFFF; //src->Color;
-		d->Normal = src->Normal;
-		d->TCoords = src->TCoords;
+		// we have a different vertex format
+		MeshBuffer.Vertices[i].Pos = src->Pos;
+		MeshBuffer.Vertices[i].TCoords = src->TCoords;
+		MeshBuffer.Vertices[i].Color = 0xFFFFFFFF;
 	}
 
 	MeshBuffer.recalculateBoundingBox ();
+
+#if 1
+	// move the (temp) Mesh
+	{
+	// original bounding box
+		core::aabbox3df b = MeshBuffer.getBoundingBox();
+
+		// set Scene Node Position
+		setPosition ( b.getCenter() );
+
+		scene::SMesh * mesh = new SMesh ();
+		mesh->addMeshBuffer ( &Original );
+		mesh->addMeshBuffer ( &MeshBuffer );
+
+		core::matrix4 m;
+		m.setTranslation ( -b.getCenter() );
+		SceneManager->getMeshManipulator()->transformMesh ( mesh, m );
+		mesh->drop ();
+
+		MeshBuffer.recalculateBoundingBox ();
+	}
+#endif
 	// used for sorting
 	MeshBuffer.Material.setTexture(0, (video::ITexture*) Shader);
 }
@@ -157,32 +185,56 @@ void CQuake3ShaderSceneNode::loadTextures ( io::IFileSystem * fileSystem )
 */
 void CQuake3ShaderSceneNode::OnRegisterSceneNode()
 {
-	PassedCulling = 0;
-	StageCall = 0;
-	if ( !IsVisible)
-		return;
-
-	u32 first = 1;
-	for ( u32 i = 1; i < Q3Texture.size(); ++i )
+	if ( isVisible() )
 	{
-		if ( 0 == Q3Texture [ i ].Texture.size() && i >= 2 )
-			continue;
+		SceneManager->registerNodeForRendering(this, isTransparent () ? ESNRP_TRANSPARENT: ESNRP_SOLID );
+	}
+	ISceneNode::OnRegisterSceneNode ();
+}
 
-		scene::E_SCENE_NODE_RENDER_PASS time = (scene::E_SCENE_NODE_RENDER_PASS) ( scene::ESNRP_SHADER_0 + i );
-		if ( first )
+/*
+	is this a transparent node ?
+*/
+bool CQuake3ShaderSceneNode::isTransparent ()
+{
+	bool ret = false;
+
+	// generic stage
+	const quake3::SVarGroup *group;
+	
+	group = Shader->getGroup ( 1 );
+/*
+	if ( group->isDefined ( "surfaceparm", "nonsolid" ) )
+	{
+		ret = true;
+	}
+*/
+	if ( group->isDefined ( "surfaceparm", "trans" ) )
+	{
+		ret = true;
+	}
+	else
+	{
+		video::IVideoDriver* driver = SceneManager->getVideoDriver();
+
+		for ( u32 stage = 0; stage < Shader->VarGroup->VariableGroup.size (); ++stage )
 		{
-			setAutomaticCulling ( scene::EAC_BOX );
-			PassedCulling = SceneManager->registerNodeForRendering(this, time );
-			setAutomaticCulling ( scene::EAC_OFF );
-			first = 0;
-		}
-		else
-		if ( PassedCulling )
-		{
-			SceneManager->registerNodeForRendering(this, time );
+			if ( 0 == Q3Texture [ stage].Texture.size() )
+				continue;
+
+			group = Shader->getGroup ( stage );
+			quake3::SBlendFunc blendfunc;
+			quake3::getBlendFunc ( group->get ( "blendfunc" ), blendfunc );
+			quake3::getBlendFunc ( group->get ( "alphafunc" ), blendfunc );
+
+			ret = blendfunc.isTransparent;
+			break;
 		}
 	}
+
+	return ret;
 }
+
 
 /*
 	render in multipass technique
@@ -191,65 +243,79 @@ void CQuake3ShaderSceneNode::render()
 {
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
-	const u32 stage = SceneManager->getSceneNodeRenderPass() - scene::ESNRP_SHADER_0;
+
+	bool isTransparentPass =
+		SceneManager->getSceneNodeRenderPass() == scene::ESNRP_TRANSPARENT;
 
 	video::SMaterial material;
-
 	const quake3::SVarGroup *group;
+
+	material.Lighting = false;
+	material.setTexture(1, 0);
+	material.NormalizeNormals = false;
 
 	// generic stage
 	group = Shader->getGroup ( 1 );
-	material.BackfaceCulling = quake3::getBackfaceCulling ( group->get ( "cull" ) );
+	material.BackfaceCulling = quake3::isDisabled ( group->get ( "cull" ) );
 
-	// advance current stage
-	core::matrix4 texture;
-	animate ( stage, texture );
+	u32 zEnable = group->getIndex ( "polygonoffset" ) >= 0;
 
-	// stage 1 finished, no drawing stage ( vertex transform only )
-	if ( stage == 1 )
-		return;
+	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation );
 
-	// current stage
-	group = Shader->getGroup ( stage );
-
-
-	SQ3Texture &q = Q3Texture [ stage];
-
-	material.Lighting = false;
-	material.setTexture(0, q.Texture [ q.TextureIndex ]);
-	material.setTexture(1, 0);
-	material.ZBuffer = quake3::getDepthFunction ( group->get ( "depthfunc" ) );
-	material.ZWriteEnable = (0 == StageCall );
-	material.NormalizeNormals = false;
-
-	quake3::SBlendFunc blendfunc;
-	quake3::getBlendFunc ( group->get ( "blendfunc" ), blendfunc );
-	quake3::getBlendFunc ( group->get ( "alphafunc" ), blendfunc );
-
-	material.MaterialType = blendfunc.type;
-	material.MaterialTypeParam = blendfunc.param;
-
-/*
-	if ( textureTransform )
+	u32 drawCount = 0;
+	for ( u32 stage = 0; stage < Shader->VarGroup->VariableGroup.size (); ++stage )
+	//for ( u32 stage = 2; stage < 3; ++stage )
 	{
-		transformtex ( texture, q.TextureAddressMode );
+		SQ3Texture &q = Q3Texture [ stage];
+
+		// advance current stage
+		core::matrix4 texture;
+		animate ( stage, texture );
+
+		// stage 1 finished, no drawing stage ( vertex transform only )
+		if ( 0 == q.Texture.size() )
+			continue;
+
+		// current stage
+		group = Shader->getGroup ( stage );
+
+		material.setTexture(0, q.Texture [ q.TextureIndex ]);
+		material.ZBuffer = quake3::getDepthFunction ( group->get ( "depthfunc" ) );
+
+		if ( group->getIndex ( "depthwrite" ) >= 0 )
+		{
+			material.ZWriteEnable = true;
+		}
+		else
+		{
+			material.ZWriteEnable = drawCount ? false: !isTransparentPass;
+		}
+
+		//resolve quake3 blendfunction to irrlicht Material Type
+		quake3::SBlendFunc blendfunc;
+		quake3::getBlendFunc ( group->get ( "blendfunc" ), blendfunc );
+		quake3::getBlendFunc ( group->get ( "alphafunc" ), blendfunc );
+
+		material.MaterialType = blendfunc.type;
+		material.MaterialTypeParam = blendfunc.param;
+
+		material.TextureLayer[0].TextureWrap = q.TextureAddressMode;
+		material.setTextureMatrix ( 0, texture );
+
+		driver->setMaterial( material );
+		driver->drawMeshBuffer( &MeshBuffer );
+		drawCount += 1;
 	}
-*/
-	material.TextureLayer[0].TextureWrap = q.TextureAddressMode;
-	material.TextureLayer[1].TextureWrap = material.TextureLayer[0].TextureWrap;
-	driver->setTransform ( video::ETS_TEXTURE_0, texture );
 
-	driver->setMaterial( material );
-
-	if ( 0 == StageCall )
+	if ( DebugDataVisible & scene::EDS_BBOX )
 	{
-		driver->setTransform(video::ETS_WORLD, core::matrix4() );
+		video::SMaterial deb_m;
+		deb_m.Lighting = false;
+		driver->setMaterial(deb_m);
+		driver->draw3DBox( getBoundingBox(), video::SColor(0,255,255,255));
 	}
-	
-	driver->drawMeshBuffer( &MeshBuffer );
-
-	StageCall += 1;
 }
+
 
 
 /*!
@@ -347,7 +413,7 @@ void CQuake3ShaderSceneNode::vertextransform_autosprite ( f32 dt, quake3::SModif
 /*
 	Generate Vertex Color
 */
-void CQuake3ShaderSceneNode::rgbgen ( f32 dt, quake3::SModifierFunction &function )
+void CQuake3ShaderSceneNode::vertextransform_rgbgen ( f32 dt, quake3::SModifierFunction &function )
 {
 	u32 i;
 	const u32 vsize = MeshBuffer.Vertices.size();
@@ -378,17 +444,41 @@ void CQuake3ShaderSceneNode::rgbgen ( f32 dt, quake3::SModifierFunction &functio
 	}
 }
 
+
+
 /*
 	Generate Texture Coordinates
 */
-u32 CQuake3ShaderSceneNode::tcgen ( f32 dt, quake3::SModifierFunction &function, core::matrix4 &texture )
+void CQuake3ShaderSceneNode::vertextransform_tcgen ( f32 dt, quake3::SModifierFunction &function )
 {
-	u32 ret = 0;
 	u32 i;
 	const u32 vsize = MeshBuffer.Vertices.size();
 
 	switch ( function.tcgen )
 	{
+		case 12:
+			//tcgen turb
+		{
+			function.wave = core::reciprocal ( function.wave );
+
+			const f32 phase = function.phase;
+
+			for ( i = 0; i != vsize; ++i )
+			{
+				const video::S3DVertex2TCoords &src = Original.Vertices[i];
+				video::S3DVertex &dst = MeshBuffer.Vertices[i];
+
+				f32 wavephase = (src.Pos.X + src.Pos.Y + src.Pos.Z) * function.wave;
+				function.phase = phase + wavephase;
+
+				const f32 f = function.evaluate ( dt );
+
+				dst.TCoords.X = src.TCoords.X + f * src.Normal.X;
+				dst.TCoords.Y = src.TCoords.Y + f * src.Normal.Y;
+			}
+		}
+		break;
+
 		case 8:
 			// tcgen texture
 			for ( i = 0; i != vsize; ++i )
@@ -429,12 +519,9 @@ u32 CQuake3ShaderSceneNode::tcgen ( f32 dt, quake3::SModifierFunction &function,
 				MeshBuffer.Vertices[i].TCoords.Y = 1.f - ( (1.f + eyePlaneT.dotProduct ( v ) ) * 0.5f );
 			}
 
-			ret = 0;
-
 		} break;
-	}
 
-	return ret;
+	}
 }
 
 
@@ -492,27 +579,22 @@ void CQuake3ShaderSceneNode::transformtex ( const core::matrix4 &m, const u32 ad
 	Vertex transformation are called if found
 
 */
-u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
+void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 {
-	const f32 dt = TimeAbs;
-
 	const quake3::SVarGroup *group = Shader->getGroup ( stage );
 
 	// select current texture
 	if ( Q3Texture [ stage ].TextureFrequency != 0.f )
 	{
-		s32 v = core::floor32 ( dt * Q3Texture [ stage ].TextureFrequency );
+		s32 v = core::floor32 ( TimeAbs * Q3Texture [ stage ].TextureFrequency );
 		Q3Texture [ stage ].TextureIndex = v % Q3Texture [ stage ].Texture.size();
 	}
 
-
-	core::matrix4 texturem;
 	core::matrix4 m2;
 	quake3::SModifierFunction function;
 
 	f32 f0;
 	f32 f1;
-	u32 textureMatrixFound = 0;
 
 	// walk group for all modifiers
 	for ( u32 g = 0; g != group->Variable.size (); ++g )
@@ -535,11 +617,6 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 		{
 			//tcmod
 			case 0:
-				if ( 0 == textureMatrixFound )
-				{
-					texturem.makeIdentity ();
-					textureMatrixFound = 1;
-				}
 				m2.makeIdentity ();
 				break;
 		}
@@ -560,9 +637,9 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 		{
 			case 0:
 				// scroll
-				f0 = quake3::getAsFloat ( v.content, pos ) * dt;
-				f1 = quake3::getAsFloat ( v.content, pos ) * dt;
-				m2.setTextureTranslate ( f0, f1 );
+				f0 = quake3::getAsFloat ( v.content, pos ) * TimeAbs;
+				f1 = quake3::getAsFloat ( v.content, pos ) * TimeAbs;
+				m2.setTextureTranslate ( -f0, f1 );
 				break;
 			case 1:
 				// scale
@@ -572,7 +649,8 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 				break;
 			case 2:
 				//rotate
-				m2.setTextureRotationCenter ( quake3::getAsFloat ( v.content, pos ) * core::DEGTORAD * dt );
+				m2.setTextureRotationCenter ( quake3::getAsFloat ( v.content, pos ) * core::DEGTORAD * TimeAbs );
+				m2 = m2.getTransposed();
 				break;
 			case 3:
 			case 4:
@@ -602,25 +680,43 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 				{
 					case 3:
 						// stretch
-						f0 = core::reciprocal ( function.evaluate ( dt ) );
+						f0 = core::reciprocal ( function.evaluate ( TimeAbs ) );
 						m2.setTextureScaleCenter ( f0, f0 );
+						m2 = m2.getTransposed();
 						break;
 					case 4:
+					{
 						// turb
-						f0 = function.evaluate ( dt );
-						function.freq *= 2.f;
-						f1 = function.evaluate ( dt );
-						m2.setTextureTranslate ( f1, f0 );
-						break;
+/*
+						quake3::SModifierFunction ampFunction;
+						ampFunction.func = 0;
+						ampFunction.freq = function.freq;
+						ampFunction.base = 1.f;
+						ampFunction.amp = 0.2f;
+						f2 = ampFunction.evaluate ( TimeAbs );
+
+						f0 = function.evaluate ( TimeAbs );
+						function.func = 1;
+						f1 = function.evaluate ( TimeAbs );
+
+						m2.setTextureTranslate ( f0, f1 );
+						m2.setTextureScaleCenter ( f2, f2 );
+						//m2.setTextureScale ( f2, f2 );
+*/
+					}break;
 					case 5:
 						if ( function.masterfunc0 == 1 )
-							vertextransform_wave ( dt, function );
+						{
+							vertextransform_wave ( TimeAbs, function );
+						}
 						else
-							rgbgen ( dt, function );
+						{
+							vertextransform_rgbgen ( TimeAbs, function );
+						}
 						break;
 					case 6:
 					case 7:
-						rgbgen ( dt, function );
+						vertextransform_rgbgen ( TimeAbs, function );
 						break;
 				}
 				
@@ -641,13 +737,13 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 				function.bulgeheight = quake3::getAsFloat ( v.content, pos );
 				function.bulgespeed = quake3::getAsFloat ( v.content, pos );
 
-				vertextransform_bulge ( dt, function );
+				vertextransform_bulge ( TimeAbs, function );
 				break;
 
 			case 13:
 			case 14:
 				// deformvertexes autosprite
-				vertextransform_autosprite ( dt, function);
+				vertextransform_autosprite ( TimeAbs, function);
 				break;
 
 		} // func
@@ -655,27 +751,22 @@ u32 CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 		switch ( function.masterfunc0 )
 		{
 			case 0:
-				texturem *= m2;
+				texture *= m2;
 				break;
 		}
 
 	} // group
 
 	// texture coordinate modifier
-	textureMatrixFound += tcgen ( dt, function, texturem );
-
-	if ( textureMatrixFound )
-	{
-		texturem.getTransposed ( texture );
-	}
-
-	return textureMatrixFound;
+	vertextransform_tcgen ( TimeAbs, function);
 }
+
 
 
 void CQuake3ShaderSceneNode::OnAnimate(u32 timeMs)
 {
 	TimeAbs = f32( timeMs ) * ( 1.f/1000.f);
+	ISceneNode::OnAnimate ( timeMs );
 }
 
 const core::aabbox3d<f32>& CQuake3ShaderSceneNode::getBoundingBox() const

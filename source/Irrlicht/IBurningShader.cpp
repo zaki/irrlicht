@@ -15,25 +15,27 @@ namespace video
 {
 
 	const tFixPointu IBurningShader::dithermask[ 4 * 4] =
-		{
-			0x00,0x80,0x20,0xa0,
-			0xc0,0x40,0xe0,0x60,
-			0x30,0xb0,0x10,0x90,
-			0xf0,0x70,0xd0,0x50
-		};
+	{
+		0x00,0x80,0x20,0xa0,
+		0xc0,0x40,0xe0,0x60,
+		0x30,0xb0,0x10,0x90,
+		0xf0,0x70,0xd0,0x50
+	};
 
 	IBurningShader::IBurningShader(IDepthBuffer* zbuffer)
-		:RenderTarget(0),ZBuffer(zbuffer)
+		:RenderTarget(0),DepthBuffer(zbuffer)
 	{
-		IT[0].Texture = 0;
-		IT[1].Texture = 0;
-
 		#ifdef _DEBUG
-		setDebugName("CTRTextureLightMap2_M1");
+		setDebugName("IBurningShader");
 		#endif
 
-		if (ZBuffer)
-			zbuffer->grab();
+		for ( u32 i = 0; i != MATERIAL_MAX_TEXTURES; ++i )
+		{
+			IT[i].Texture = 0;
+		}
+
+		if ( DepthBuffer )
+			DepthBuffer->grab();
 	}
 
 
@@ -43,14 +45,14 @@ namespace video
 		if (RenderTarget)
 			RenderTarget->drop();
 
-		if (ZBuffer)
-			ZBuffer->drop();
+		if (DepthBuffer)
+			DepthBuffer->drop();
 
-		if ( IT[0].Texture )
-			IT[0].Texture->drop();
-
-		if ( IT[1].Texture )
-			IT[1].Texture->drop();
+		for ( u32 i = 0; i != MATERIAL_MAX_TEXTURES; ++i )
+		{
+			if ( IT[i].Texture )
+				IT[i].Texture->drop();
+		}
 	}
 
 	//! sets a render target
@@ -63,16 +65,22 @@ namespace video
 
 		if (RenderTarget)
 		{
-			SurfaceWidth = RenderTarget->getDimension().Width;
 			RenderTarget->grab();
+
+			//lockedSurface = (tVideoSample*)RenderTarget->lock();
+			//lockedDepthBuffer = DepthBuffer->lock();
 		}
+
 	}
 
 
 	//! sets the Texture
-	void IBurningShader::setTexture( u32 stage, video::CSoftwareTexture2* texture, s32 lodLevel)
+	void IBurningShader::setTextureParam( u32 stage, video::CSoftwareTexture2* texture, s32 lodLevel)
 	{
 		sInternalTexture *it = &IT[stage];
+
+		if ( it->Texture == texture )
+			return;
 
 		if ( it->Texture)
 			it->Texture->drop();
@@ -95,8 +103,10 @@ namespace video
 
 			it->textureXMask = s32_to_fixPoint ( it->Texture->getSize().Width - 1 ) & FIX_POINT_UNSIGNED_MASK;
 			it->textureYMask = s32_to_fixPoint ( it->Texture->getSize().Height - 1 ) & FIX_POINT_UNSIGNED_MASK;
+			it->data = (tVideoSample*) it->Texture->lock();
 		}
 	}
+
 
 
 } // end namespace video
