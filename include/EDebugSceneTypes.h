@@ -34,6 +34,9 @@ namespace scene
 		//! Show Bounding Boxes of all MeshBuffers
 		EDS_BBOX_BUFFERS = 32,
 
+		//! EDS_BBOX | EDS_BBOX_BUFFERS
+		EDS_BBOX_ALL = EDS_BBOX | EDS_BBOX_BUFFERS,
+
 		//! Show all debug infos
 		EDS_FULL = 0xffffffff
 	};

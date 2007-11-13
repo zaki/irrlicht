@@ -31,8 +31,8 @@ namespace quake3
 
 	// we are not using gamma, so quake3 is very dark.
 	// define the standard multiplication for lightmaps and vertex colors
-	const video::E_MATERIAL_TYPE defaultLightMap = video::EMT_LIGHTMAP_M2;
-	const video::E_MODULATE_FUNC defaultModulate = video::EMFN_MODULATE_2X;
+	const video::E_MATERIAL_TYPE defaultMaterialType = video::EMT_LIGHTMAP_M4;
+	const video::E_MODULATE_FUNC defaultModulate = video::EMFN_MODULATE_4X;
 
 	// some useful typedefs
 	typedef core::array< core::stringc > tStringList;
@@ -132,16 +132,24 @@ namespace quake3
 
 	}
 
+	/*
+		Maps Quake3 Blend to Irrlicht Material
+	*/
 	struct SBlendFunc
 	{
-		SBlendFunc () : type ( video::EMT_SOLID ), param ( 0.f ) {}
+		SBlendFunc ()
+			: type ( video::EMT_SOLID ), param ( 0.f ), modulate ( defaultModulate ),
+			isTransparent ( 0 ) {}
 
 		video::E_MATERIAL_TYPE type;
+		video::E_MODULATE_FUNC modulate;
+
+		bool isTransparent;
 		f32 param;
 	};
 
 	// parses the content of Variable cull
-	inline bool getBackfaceCulling ( const core::stringc &string )
+	inline bool isDisabled ( const core::stringc &string )
 	{
 		if ( string.size() == 0 )
 			return true;
@@ -181,7 +189,6 @@ namespace quake3
 		}
 		return ret;
 	}
-
 
 
 	// parses the content of Variable blendfunc,alphafunc
@@ -231,12 +238,14 @@ namespace quake3
 					// gl_one gl_zero
 					case video::EBF_ZERO:
 						blendfunc.type = video::EMT_SOLID;
+						blendfunc.isTransparent = false;
 						resolved = 1;
 						break;
 
 					// gl_one gl_one
 					case video::EBF_ONE:
 						blendfunc.type = video::EMT_TRANSPARENT_ADD_COLOR;
+						blendfunc.isTransparent = true;
 						resolved = 1;
 						break;
 				} break;
@@ -248,6 +257,7 @@ namespace quake3
 					case video::EBF_ONE_MINUS_SRC_ALPHA:
 						blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 						blendfunc.param = 1.f / 255.f;
+						blendfunc.isTransparent = true;
 						resolved = 1;
 						break;
 				} break;
@@ -255,30 +265,35 @@ namespace quake3
 			case 11:
 				// add
 				blendfunc.type = video::EMT_TRANSPARENT_ADD_COLOR;
+				blendfunc.isTransparent = true;
 				resolved = 1;
 				break;
 			case 12:
 				// filter = gl_dst_color gl_zero
 				blendfunc.type = video::EMT_ONETEXTURE_BLEND;
 				blendfunc.param = video::pack_texureBlendFunc ( video::EBF_DST_COLOR, video::EBF_ZERO, defaultModulate );
+				blendfunc.isTransparent = false;
 				resolved = 1;
 				break;
 			case 13:
 				// blend
 				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 				blendfunc.param = 1.f / 255.f;
+				blendfunc.isTransparent = true;
 				resolved = 1;
 				break;
 			case 14:
 				// alphafunc ge128
 				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 				blendfunc.param = 0.5f;
+				blendfunc.isTransparent = true;
 				resolved = 1;
 				break;
 			case 15:
 				// alphafunc gt0
 				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
 				blendfunc.param = 1.f / 255.f;
+				blendfunc.isTransparent = true;
 				resolved = 1;
 				break;
 		}
@@ -290,14 +305,24 @@ namespace quake3
 			blendfunc.param = video::pack_texureBlendFunc (
 					(video::E_BLEND_FACTOR) srcFact,
 					(video::E_BLEND_FACTOR) dstFact,
-					defaultModulate);
+					blendfunc.modulate);
+
+			if (srcFact == video::EBF_SRC_COLOR && dstFact == video::EBF_ZERO) 
+			{
+				blendfunc.isTransparent = 0;
+			}
+			else
+			{
+				blendfunc.isTransparent = true;
+			}
+
 		}
 	}
 
 	struct SModifierFunction
 	{
 		SModifierFunction ()
-			: masterfunc0 ( 0 ), masterfunc1(0), func ( 0 ),
+			: masterfunc0 ( -2 ), masterfunc1(0), func ( 0 ),
 			tcgen( 8 ), base ( 0 ), amp ( 1 ), phase ( 0 ), freq ( 1 ), wave(1) {}
 
 		// "tcmod","deformvertexes","rgbgen", "tcgen"

@@ -82,19 +82,6 @@ namespace scene
 		//! to front and drawn in that order.
 		ESNRP_TRANSPARENT,
 
-		//! Scene Nodes with special support
-		ESNRP_SHADER_0,
-		ESNRP_SHADER_1,
-		ESNRP_SHADER_2,
-		ESNRP_SHADER_3,
-		ESNRP_SHADER_4,
-		ESNRP_SHADER_5,
-		ESNRP_SHADER_6,
-		ESNRP_SHADER_7,
-		ESNRP_SHADER_8,
-		ESNRP_SHADER_9,
-		ESNRP_SHADER_10,
-
 		//! Never used, value specifing how much parameters there are.
 		ESNRP_COUNT
 	};

@@ -160,7 +160,7 @@ namespace scene
 
 
 		//! returns the absolute transformation of the node. Is recalculated every OnAnimate()-call.
-		const core::matrix4& getAbsoluteTransformation() const
+		virtual const core::matrix4& getAbsoluteTransformation() const
 		{
 			return AbsoluteTransformation;
 		}

@@ -258,6 +258,7 @@ namespace core
 			void setTextureScaleCenter( f32 sx, f32 sy );
 
 			void setTextureTranslate( f32 x, f32 y );
+			void setTextureTranslateTransposed( f32 x, f32 y );
 
 			void buildTextureTransform( f32 rotateRad,
 					const core::vector2df &rotatecenter,
@@ -1577,6 +1578,14 @@ namespace core
 	{
 		M[8] = (T)x;
 		M[9] = (T)y;
+		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f) ;
+	}
+
+	template <class T>
+	inline void CMatrix4<T>::setTextureTranslateTransposed ( f32 x, f32 y )
+	{
+		M[2] = (T)x;
+		M[6] = (T)y;
 		definitelyIdentityMatrix = definitelyIdentityMatrix && (x==0.0f) && (y==0.0f) ;
 	}
 
