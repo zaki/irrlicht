@@ -613,6 +613,17 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
 	return JointChildSceneNodes[jointID];
 }
 
+//! Gets joint count.
+u32 CAnimatedMeshSceneNode::getJointCount() const
+{
+	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
+		return 0;
+
+	ISkinnedMesh *skinnedMesh=(ISkinnedMesh*)Mesh;
+
+	return skinnedMesh->getJointCount();
+}
+
 
 //! Returns a pointer to a child node, which has the same transformation as
 //! the corrsesponding joint, if the mesh in this scene node is a ms3d mesh.
@@ -642,20 +653,21 @@ bool CAnimatedMeshSceneNode::removeChild(ISceneNode* child)
 		return true;
 	}
 
-	if (JointsUsed) //stop it doing weird things while the joints are being made
+
+	if (ISceneNode::removeChild(child))
 	{
-		if (ISceneNode::removeChild(child))
+		if (JointsUsed) //stop weird bugs caused while changing parents as the joints are being created
 		{
 			for (u32 i=0; i<JointChildSceneNodes.size(); ++i)
 			if (JointChildSceneNodes[i] == child)
 			{
-				//JointChildSceneNodes[i]->drop();
-				JointChildSceneNodes[i] = 0;
+				JointChildSceneNodes[i] = 0; //remove link to child
 				return true;
 			}
-
-			return true;
 		}
+
+		return true;
+
 	}
 
 	return false;

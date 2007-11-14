@@ -1123,6 +1123,16 @@ CSkinnedMesh::SWeight *CSkinnedMesh::createWeight(SJoint *joint)
 }
 
 
+
+
+bool CSkinnedMesh::isStatic()
+{
+	return !HasAnimation;
+}
+
+
+
+
 void CSkinnedMesh::normalizeWeights()
 {
 	// note: unsure if weights ids are going to be used.
@@ -1364,6 +1374,12 @@ void CSkinnedMesh::calculateTangents(
 		binormal *= -1.0f;
 	}
 }
+
+
+
+
+
+
 
 
 } // end namespace scene

@@ -195,6 +195,11 @@ namespace scene
 		virtual SRotationKey *createRotationKey(SJoint *joint) = 0;
 
 		virtual SWeight *createWeight(SJoint *joint) = 0;
+
+
+		virtual bool isStatic()=0;
+
+
 	};
 
 } // end namespace scene
