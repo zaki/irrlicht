@@ -2338,4 +2338,8 @@ SOURCE=.\changes.txt
 SOURCE=.\glxext.h
 # End Source File
 # End Target
+
+SOURCE=.\CBurningShader_Raster_Reference.cpp
+# End Source File
+# End Target
 # End Project

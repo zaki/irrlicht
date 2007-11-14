@@ -138,14 +138,14 @@ namespace quake3
 	struct SBlendFunc
 	{
 		SBlendFunc ()
-			: type ( video::EMT_SOLID ), param ( 0.f ), modulate ( defaultModulate ),
-			isTransparent ( 0 ) {}
+			: type ( video::EMT_SOLID ), modulate ( defaultModulate ), param ( 0.f ),
+			isTransparent ( false ) {}
 
 		video::E_MATERIAL_TYPE type;
 		video::E_MODULATE_FUNC modulate;
 
-		bool isTransparent;
 		f32 param;
+		bool isTransparent;
 	};
 
 	// parses the content of Variable cull

@@ -665,8 +665,6 @@ REALINLINE void CBurningShader_Raster_Reference::depthWrite ()
 */
 REALINLINE void CBurningShader_Raster_Reference::scanline2()
 {
-	s32 i;
-
 	// apply top-left fill-convention, left
 	pShader.xStart = core::ceil32( line.x[0] );
 	pShader.xEnd = core::ceil32( line.x[1] ) - 1;
@@ -682,6 +680,8 @@ REALINLINE void CBurningShader_Raster_Reference::scanline2()
 	// store slopes in endpoint, and correct first pixel
 
 	line.w[0] += (line.w[1] = (line.w[1] - line.w[0]) * invDeltaX) * subPixel;
+
+	u32 i;
 
 	for ( i = 0; i != ShaderParam.ColorUnits; ++i )
 	{
@@ -716,9 +716,7 @@ REALINLINE void CBurningShader_Raster_Reference::scanline2()
 		{
 			line.t[i][0] += line.t[i][1];
 		}
-
 	}
-
 }
 
 
