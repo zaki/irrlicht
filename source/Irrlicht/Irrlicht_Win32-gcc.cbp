@@ -258,6 +258,7 @@
 		<Unit filename="CBillboardSceneNode.h" />
 		<Unit filename="CBoneSceneNode.cpp" />
 		<Unit filename="CBoneSceneNode.h" />
+		<Unit filename="CBurningShader_Raster_Reference.cpp" />
 		<Unit filename="CCSMLoader.cpp" />
 		<Unit filename="CCSMLoader.h" />
 		<Unit filename="CCameraFPSSceneNode.cpp" />

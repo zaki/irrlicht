@@ -137,7 +137,7 @@ namespace scene
 		virtual SWeight *createWeight(SJoint *joint);
 
 
-
+		virtual bool isStatic();
 
 
 private:
