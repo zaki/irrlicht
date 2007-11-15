@@ -190,6 +190,9 @@ namespace video
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo() {return vendorName;};
+
 	private:
 
 		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -293,6 +296,8 @@ namespace video
 		bool Fullscreen;
 
 		SColorf AmbientLight;
+
+		core::stringc vendorName;
 	};
 
 
@@ -302,4 +307,5 @@ namespace video
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
 #endif // __C_VIDEO_DIRECTX_8_H_INCLUDED__
+
 

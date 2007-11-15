@@ -272,7 +272,10 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* vendor = glGetString(GL_VENDOR);
 	if (renderer && vendor)
+	{
 		os::Printer::log(reinterpret_cast<const c8*>(renderer), reinterpret_cast<const c8*>(vendor), ELL_INFORMATION);
+		vendorName = reinterpret_cast<const c8*>(vendor);
+	}
 
 	u32 i;
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
@@ -2415,4 +2418,5 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 } // end namespace
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
+
 

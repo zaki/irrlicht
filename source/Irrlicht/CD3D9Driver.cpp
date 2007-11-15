@@ -202,6 +202,18 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 		sprintf(tmp, "%s %s %d.%d.%d.%d", dai.Description, dai.Driver, Product, Version,
 			SubVersion, Build);
 		os::Printer::log(tmp, ELL_INFORMATION);
+
+		// Assign vendor name based on vendor id.
+		switch(dai.VendorId)
+		{
+			case 0x1002 : vendorName = "ATI Technologies Inc."; break;
+			case 0x10DE : vendorName = "NVIDIA Corporation"; break;
+			case 0x102B : vendorName = "Matrox Electronic Systems Ltd."; break;     
+			case 0x121A : vendorName = "3dfx Interactive Inc"; break;
+			case 0x5333 : vendorName = "S3 Graphics Co., Ltd."; break;
+			case 0x8086 : vendorName = "Intel Corporation"; break;
+			default: vendorName = "Unknown VendorId: ";vendorName += (u32)dai.VendorId; break;
+		}
 	}
 
 	D3DDISPLAYMODE d3ddm;
@@ -2212,4 +2224,5 @@ IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize, HWN
 
 } // end namespace video
 } // end namespace irr
+
 

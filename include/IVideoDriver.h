@@ -801,6 +801,9 @@ namespace video
 		\param color: New color of the ambient light. */
 		virtual void setAmbientLight(const SColorf& color) = 0;
 
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo() = 0;
+
 	};
 
 } // end namespace video
@@ -808,4 +811,5 @@ namespace video
 
 
 #endif
+
 
