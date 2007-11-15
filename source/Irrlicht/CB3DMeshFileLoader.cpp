@@ -500,11 +500,10 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 		video::S3DVertex2TCoords Vertex(x, y, z, nx, ny, nz, video::SColorf(red, green, blue, alpha).toSColor(), tu, tv, tu2, tv2);
 
 		// Transform the Vertex position by nested node...
-		core::matrix4 VertexMatrix;
-		VertexMatrix.setTranslation(Vertex.Pos);
+		InJoint->GlobalMatrix.transformVect(Vertex.Pos);
 
-		VertexMatrix = InJoint->GlobalMatrix * VertexMatrix;
-		Vertex.Pos = VertexMatrix.getTranslation();
+
+		InJoint->GlobalMatrix.rotateVect(Vertex.Normal);
 
 		//Add it...
 
