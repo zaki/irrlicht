@@ -414,6 +414,9 @@ namespace video
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo() {return "Not available on this driver.";};
+
 	protected:
 
 		//! deletes all textures
@@ -526,4 +529,5 @@ namespace video
 
 
 #endif
+
 

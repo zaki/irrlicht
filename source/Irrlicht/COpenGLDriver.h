@@ -297,6 +297,9 @@ namespace video
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo() {return vendorName;};
+
 	private:
 
 		void uploadClipPlane(u32 index);
@@ -348,6 +351,8 @@ namespace video
 
 		core::dimension2d<s32> CurrentRendertargetSize;
 
+		core::stringc vendorName;
+
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
@@ -366,5 +371,6 @@ namespace video
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
 #endif
+
 
 
