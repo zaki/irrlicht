@@ -40,6 +40,17 @@ void CGUIMenu::draw()
 
 	IGUISkin* skin = Environment->getSkin();
 	IGUIFont* font = skin->getFont(EGDF_MENU);
+	
+	if (font != LastFont)
+	{
+		if (LastFont)
+			LastFont->drop();
+		LastFont = font;
+		if (LastFont)
+			LastFont->grab();
+
+		recalculateSize();
+	}
 
 	core::rect<s32> rect = AbsoluteRect;
 

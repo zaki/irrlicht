@@ -24,7 +24,7 @@ CGUIContextMenu::CGUIContextMenu(IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
 				core::rect<s32> rectangle, bool getFocus, bool allowFocus)
 	: IGUIContextMenu(environment, parent, id, rectangle), HighLighted(-1),
-		ChangeTime(0), EventParent(0), AllowFocus(allowFocus)
+		ChangeTime(0), EventParent(0), AllowFocus(allowFocus), LastFont(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIContextMenu");
@@ -46,6 +46,9 @@ CGUIContextMenu::~CGUIContextMenu()
 	for (u32 i=0; i<Items.size(); ++i)
 		if (Items[i].SubMenu)
 			Items[i].SubMenu->drop();
+
+	if (LastFont)
+		LastFont->drop();
 }
 
 
@@ -420,6 +423,17 @@ void CGUIContextMenu::draw()
 		return;
 
 	IGUIFont* font = skin->getFont(EGDF_MENU);
+	if (font != LastFont)
+	{
+		if (LastFont)
+			LastFont->drop();
+		LastFont = font;
+		if (LastFont)
+			LastFont->grab();
+
+		recalculateSize();
+	}
+
 	IGUISpriteBank* sprites = skin->getSpriteBank();
 
 	core::rect<s32> rect = AbsoluteRect;
