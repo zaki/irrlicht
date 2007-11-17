@@ -11,6 +11,7 @@
 #include "IGUIContextMenu.h"
 #include "irrString.h"
 #include "irrArray.h"
+#include "IGUIFont.h"
 
 namespace irr
 {
@@ -137,6 +138,7 @@ namespace gui
 		u32 ChangeTime;
 		IGUIElement* EventParent;
 		bool AllowFocus;
+		IGUIFont *LastFont;
 	};
 
 
