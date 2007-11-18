@@ -1400,7 +1400,7 @@ inline void COpenGLExtensionHandler::extGlDeleteBuffers(GLsizei n, const GLuint 
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBufferSubData (GLenum target, GLintptrARB offset, GLsizeiptrARB size, const GLvoid *data)
+inline void COpenGLExtensionHandler::extGlBufferSubData(GLenum target, GLintptrARB offset, GLsizeiptrARB size, const GLvoid *data)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBufferSubDataARB)
@@ -1412,7 +1412,7 @@ inline void COpenGLExtensionHandler::extGlBufferSubData (GLenum target, GLintptr
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlGetBufferSubData (GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid *data)
+inline void COpenGLExtensionHandler::extGlGetBufferSubData(GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid *data)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetBufferSubDataARB)
@@ -1424,15 +1424,17 @@ inline void COpenGLExtensionHandler::extGlGetBufferSubData (GLenum target, GLint
 #endif
 }
 
-inline void  *COpenGLExtensionHandler::extGlMapBuffer (GLenum target, GLenum access)
+inline void *COpenGLExtensionHandler::extGlMapBuffer(GLenum target, GLenum access)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlMapBufferARB)
-		pGlMapBufferARB(target, access);
+		return pGlMapBufferARB(target, access);
+	return 0;
 #elif defined(GL_ARB_vertex_buffer_object)
-	glMapBuffer(target, access);
+	return glMapBuffer(target, access);
 #else
 	os::Printer::log("glMapBuffer not supported", ELL_ERROR);
+	return 0;
 #endif
 }
 
@@ -1440,11 +1442,13 @@ inline GLboolean COpenGLExtensionHandler::extGlUnmapBuffer (GLenum target)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlUnmapBufferARB)
-		pGlUnmapBufferARB(target);
+		return pGlUnmapBufferARB(target);
+	return false;
 #elif defined(GL_ARB_vertex_buffer_object)
-	glUnmapBuffer(target);
+	return glUnmapBuffer(target);
 #else
 	os::Printer::log("glUnmapBuffer not supported", ELL_ERROR);
+	return false;
 #endif
 }
 
@@ -1452,11 +1456,13 @@ inline GLboolean COpenGLExtensionHandler::extGlIsBuffer (GLuint buffer)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlIsBufferARB)
-		pGlIsBufferARB(buffer);
+		return pGlIsBufferARB(buffer);
+	return false;
 #elif defined(GL_ARB_vertex_buffer_object)
-	glIsBuffer(buffer);
+	return glIsBuffer(buffer);
 #else
 	os::Printer::log("glDeleteBuffers not supported", ELL_ERROR);
+	return false;
 #endif
 }
 
@@ -1489,5 +1495,4 @@ inline void COpenGLExtensionHandler::extGlGetBufferPointerv (GLenum target, GLen
 }
 
 #endif
-
 
