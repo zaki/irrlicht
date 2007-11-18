@@ -21,11 +21,11 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 //! Public constructor
-CD3D8ShaderMaterialRenderer::CD3D8ShaderMaterialRenderer(IDirect3DDevice8* d3ddev, video::IVideoDriver* driver, 
+CD3D8ShaderMaterialRenderer::CD3D8ShaderMaterialRenderer(IDirect3DDevice8* d3ddev, video::IVideoDriver* driver,
 		s32& outMaterialTypeNr, const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 		IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData)
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
@@ -43,7 +43,7 @@ CD3D8ShaderMaterialRenderer::CD3D8ShaderMaterialRenderer(IDirect3DDevice8* d3dde
 //! constructor only for use by derived classes who want to
 //! create a fall back material for example.
 CD3D8ShaderMaterialRenderer::CD3D8ShaderMaterialRenderer(IDirect3DDevice8* d3ddev,
-														 video::IVideoDriver* driver, 
+														 video::IVideoDriver* driver,
 														 IShaderConstantSetCallBack* callback,
 														 IMaterialRenderer* baseMaterial,
 														 s32 userData)
@@ -105,17 +105,17 @@ bool CD3D8ShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E
 
 
 void CD3D8ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
-	bool resetAllRenderstates, video::IMaterialRendererServices* services) 
+	bool resetAllRenderstates, video::IMaterialRendererServices* services)
 {
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
 		if (VertexShader)
 		{
-			// We do not need to save and reset the old vertex shader, because 
+			// We do not need to save and reset the old vertex shader, because
 			// in D3D8, this is mixed up with the fvf, and this is set by the driver
 			// every time.
 			//pID3DDevice->GetVertexShader(&OldVertexShader);
-			
+
 			// set new vertex shader
 			if (FAILED(pID3DDevice->SetVertexShader(VertexShader)))
 				os::Printer::log("Could not set vertex shader.");
@@ -132,12 +132,16 @@ void CD3D8ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material
 			BaseMaterial->OnSetMaterial(material, material, true, services);
 	}
 
+	//let callback know used material
+	if (CallBack)
+		CallBack->OnSetMaterial(material);
+
 	services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
-void CD3D8ShaderMaterialRenderer::OnUnsetMaterial() 
+void CD3D8ShaderMaterialRenderer::OnUnsetMaterial()
 {
-	// We do not need to save and reset the old vertex shader, because 
+	// We do not need to save and reset the old vertex shader, because
 	// in D3D8, this is mixed up with the fvf, and this is set by the driver
 	// every time.
 	//	if (VertexShader)
@@ -150,12 +154,12 @@ void CD3D8ShaderMaterialRenderer::OnUnsetMaterial()
 		BaseMaterial->OnUnsetMaterial();
 }
 
-	
+
 //! Returns if the material is transparent. The scene managment needs to know this
 //! for being able to sort the materials by opaque and transparent.
 bool CD3D8ShaderMaterialRenderer::isTransparent()  const
 {
-	return BaseMaterial ? BaseMaterial->isTransparent() : false; 
+	return BaseMaterial ? BaseMaterial->isTransparent() : false;
 }
 
 bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
@@ -178,7 +182,7 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		// compile shader and emitt some debug informations to
 		// make it possible to debug the shader in visual studio
 
-		static int irr_dbg_file_nr = 0; 
+		static int irr_dbg_file_nr = 0;
 		++irr_dbg_file_nr;
 		char tmp[32];
 		sprintf(tmp, "irr_d3d8_dbg_shader_%d.psh", irr_dbg_file_nr);
@@ -189,7 +193,7 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		fclose(f);
 
 		D3DXAssembleShaderFromFile(tmp, D3DXASM_DEBUG, 0, &code, &errors);
-		
+
 	#endif
 
 	if (errors)
@@ -237,7 +241,7 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 
 		// compile shader and emitt some debug informations to
 		// make it possible to debug the shader in visual studio
-		static int irr_dbg_file_nr = 0; 
+		static int irr_dbg_file_nr = 0;
 		++irr_dbg_file_nr;
 		char tmp[32];
 		sprintf(tmp, "irr_d3d8_dbg_shader_%d.vsh", irr_dbg_file_nr);
@@ -293,7 +297,7 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 	if (type == EVT_TANGENTS)
 		decl = dwTngtDecl;
 	else
-		decl = dwStdDecl;	
+		decl = dwStdDecl;
 
 	if (FAILED(pID3DDevice->CreateVertexShader(decl,
 		(DWORD*)code->GetBufferPointer(), &VertexShader, 0)))
