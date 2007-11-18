@@ -666,6 +666,7 @@ class COpenGLExtensionHandler
 	bool SeparateStencilExtension;
 	bool TextureCompressionExtension;
 	bool PackedDepthStencilExtension;
+	bool VertexBufferObjectExtension;
 
 	// Some non-boolean properties
 	//! Maxmimum texture layers supported by the fixed pipeline
@@ -736,6 +737,20 @@ class COpenGLExtensionHandler
 	void extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 	void extGlActiveStencilFace(GLenum face);
 
+	// vertex buffer object
+	void extGlGenBuffers(GLsizei n, GLuint *buffers);
+	void extGlBindBuffer(GLenum target, GLuint buffer);
+	void extGlBufferData(GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage);
+	void extGlDeleteBuffers(GLsizei n, const GLuint *buffers);
+	void extGlBufferSubData (GLenum target, GLintptrARB offset, GLsizeiptrARB size, const GLvoid *data);
+	void extGlGetBufferSubData (GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid *data);
+	void *extGlMapBuffer (GLenum target, GLenum access);
+	GLboolean extGlUnmapBuffer (GLenum target);
+	GLboolean extGlIsBuffer (GLuint buffer);
+	void extGlGetBufferParameteriv (GLenum target, GLenum pname, GLint *params);
+	void extGlGetBufferPointerv (GLenum target, GLenum pname, GLvoid **params);
+
+
 	protected:
 	// the global feature array
 	bool FeatureAvailable[IRR_OpenGL_Feature_Count];
@@ -792,6 +807,20 @@ class COpenGLExtensionHandler
 		PFNGLRENDERBUFFERSTORAGEEXTPROC pGlRenderbufferStorageEXT;
 		PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC pGlFramebufferRenderbufferEXT;
 		PFNGLACTIVESTENCILFACEEXTPROC pGlActiveStencilFaceEXT;
+		PFNGLGENBUFFERSARBPROC pGlGenBuffersARB;
+		PFNGLBINDBUFFERARBPROC pGlBindBufferARB;
+		PFNGLBUFFERDATAARBPROC pGlBufferDataARB;
+		PFNGLDELETEBUFFERSARBPROC pGlDeleteBuffersARB;
+		PFNGLBUFFERSUBDATAARBPROC pGlBufferSubDataARB;
+		PFNGLGETBUFFERSUBDATAARBPROC pGlGetBufferSubDataARB;
+		PFNGLMAPBUFFERARBPROC pGlMapBufferARB;
+		PFNGLUNMAPBUFFERARBPROC pGlUnmapBufferARB;
+		PFNGLISBUFFERARBPROC pGlIsBufferARB;
+		PFNGLGETBUFFERPARAMETERIVARBPROC pGlGetBufferParameterivARB;
+		PFNGLGETBUFFERPOINTERVARBPROC pGlGetBufferPointervARB;
+
+
+
 	#endif
 };
 
@@ -1323,8 +1352,142 @@ inline void COpenGLExtensionHandler::extGlActiveStencilFace(GLenum face)
 }
 
 
+inline void COpenGLExtensionHandler::extGlGenBuffers(GLsizei n, GLuint *buffers)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGenBuffersARB)
+		pGlGenBuffersARB(n, buffers);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glGenBuffers(n, buffers);
+#else
+	os::Printer::log("glGenBuffers not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBindBuffer(GLenum target, GLuint buffer)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBindBufferARB)
+		pGlBindBufferARB(target, buffer);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glBindBuffer(target, buffer);
+#else
+	os::Printer::log("glBindBuffer not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBufferData(GLenum target, int size, const GLvoid *data, GLenum usage)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBufferDataARB)
+		pGlBufferDataARB(target, size, data, usage);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glBufferData(target, size, data, usage);
+#else
+	os::Printer::log("glBufferData not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlDeleteBuffers(GLsizei n, const GLuint *buffers)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlDeleteBuffersARB)
+		pGlDeleteBuffersARB(n, buffers);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glDeleteBuffers(n, buffers);
+#else
+	os::Printer::log("glDeleteBuffers not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlBufferSubData (GLenum target, GLintptrARB offset, GLsizeiptrARB size, const GLvoid *data)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlBufferSubDataARB)
+		pGlBufferSubDataARB(target, offset, size, data);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glBufferSubData(target, offset, size, data);
+#else
+	os::Printer::log("glBufferSubData not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGetBufferSubData (GLenum target, GLintptrARB offset, GLsizeiptrARB size, GLvoid *data)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGetBufferSubDataARB)
+		pGlGetBufferSubDataARB(target, offset, size, data);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glGetBufferSubData(target, offset, size, data);
+#else
+	os::Printer::log("glGetBufferSubData not supported", ELL_ERROR);
+#endif
+}
+
+inline void  *COpenGLExtensionHandler::extGlMapBuffer (GLenum target, GLenum access)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlMapBufferARB)
+		pGlMapBufferARB(target, access);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glMapBuffer(target, access);
+#else
+	os::Printer::log("glMapBuffer not supported", ELL_ERROR);
+#endif
+}
+
+inline GLboolean COpenGLExtensionHandler::extGlUnmapBuffer (GLenum target)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlUnmapBufferARB)
+		pGlUnmapBufferARB(target);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glUnmapBuffer(target);
+#else
+	os::Printer::log("glUnmapBuffer not supported", ELL_ERROR);
+#endif
+}
+
+inline GLboolean COpenGLExtensionHandler::extGlIsBuffer (GLuint buffer)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlIsBufferARB)
+		pGlIsBufferARB(buffer);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glIsBuffer(buffer);
+#else
+	os::Printer::log("glDeleteBuffers not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGetBufferParameteriv (GLenum target, GLenum pname, GLint *params)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGetBufferParameterivARB)
+		pGlGetBufferParameterivARB(target, pname, params);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glGetBufferParameteriv(target, pname, params);
+#else
+	os::Printer::log("glGetBufferParameteriv not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlGetBufferPointerv (GLenum target, GLenum pname, GLvoid **params)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlGetBufferPointervARB)
+		pGlGetBufferPointervARB(target, pname, params);
+#elif defined(GL_ARB_vertex_buffer_object)
+	glGetBufferPointerv(target, pname, params);
+#else
+	os::Printer::log("glGetBufferPointerv not supported", ELL_ERROR);
+#endif
+}
+
+
 }
 }
 
 #endif
+
 
