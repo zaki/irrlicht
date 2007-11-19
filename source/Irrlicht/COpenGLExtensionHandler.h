@@ -1376,7 +1376,7 @@ inline void COpenGLExtensionHandler::extGlBindBuffer(GLenum target, GLuint buffe
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlBufferData(GLenum target, int size, const GLvoid *data, GLenum usage)
+inline void COpenGLExtensionHandler::extGlBufferData(GLenum target, GLsizeiptrARB size, const GLvoid *data, GLenum usage)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBufferDataARB)
