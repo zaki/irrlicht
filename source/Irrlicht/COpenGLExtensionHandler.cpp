@@ -381,7 +381,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlIsBufferARB = (PFNGLISBUFFERARBPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glIsBufferARB"));
 
-	pGlGetBufferParameterivARB = (PFNGLDELETEBUFFERSARBPROC)
+	pGlGetBufferParameterivARB = (PFNGLGETBUFFERPARAMETERIVARBPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetBufferParameterivARB"));
 
 	pGlGetBufferPointervARB = (PFNGLGETBUFFERPOINTERVARBPROC)
