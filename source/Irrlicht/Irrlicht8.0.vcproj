@@ -1352,6 +1352,14 @@
 					>
 				</File>
 				<File
+					RelativePath="CImageLoaderWAL.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CImageLoaderWAL.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CNullDriver.cpp"
 					>
 				</File>

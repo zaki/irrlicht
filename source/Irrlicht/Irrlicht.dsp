@@ -826,6 +826,14 @@ SOURCE=.\CImageWriterTGA.cpp
 
 SOURCE=.\CImageWriterTGA.h
 # End Source File
+# Begin Source File
+
+SOURCE=.\CImageWriterWAL.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CImageWriterWAL.h
+# End Source File
 # End Group
 # Begin Source File
 
