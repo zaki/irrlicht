@@ -50,7 +50,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
                                 const char* name,
                                 COpenGLDriver* driver)
  : ITexture(name), ImageSize(size), Driver(driver), Image(0),
-  TextureName(0), InternalFormat(GL_RGB8), PixelFormat(GL_RGBA),
+  TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
   PixelType(GL_UNSIGNED_BYTE), HasMipMaps(false), IsRenderTarget(true),
   ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0), Locks(0)
 {
