@@ -385,6 +385,8 @@
 		<Unit filename="CImageLoaderPSD.h" />
 		<Unit filename="CImageLoaderTGA.cpp" />
 		<Unit filename="CImageLoaderTGA.h" />
+		<Unit filename="CImageLoaderWAL.cpp" />
+		<Unit filename="CImageLoaderWAL.h" />
 		<Unit filename="CImageWriterBMP.cpp" />
 		<Unit filename="CImageWriterBMP.h" />
 		<Unit filename="CImageWriterJPG.cpp" />
