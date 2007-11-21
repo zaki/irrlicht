@@ -37,6 +37,9 @@ IImageLoader* createImageLoaderPCX();
 //! creates a loader which is able to load png images
 IImageLoader* createImageLoaderPNG();
 
+//! creates a loader which is able to load WAL images
+IImageLoader* createImageLoaderWAL();
+
 //! creates a loader which is able to load ppm/pgm/pbm images
 IImageLoader* createImageLoaderPPM();
 
@@ -101,6 +104,9 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 #endif
 #ifdef _IRR_COMPILE_WITH_PNG_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPNG());
+#endif
+#ifdef _IRR_COMPILE_WITH_WAL_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderWAL());
 #endif
 #ifdef _IRR_COMPILE_WITH_PPM_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPPM());
@@ -306,7 +312,6 @@ ITexture* CNullDriver::getTexture(const c8* filename)
 		return texture;
 
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
-	bool errorReported = false;
 
 	if (file)
 	{
@@ -321,12 +326,12 @@ ITexture* CNullDriver::getTexture(const c8* filename)
 	}
 	else
 	{
-		errorReported = true;
-		os::Printer::log("Could not open file of texture", filename, ELL_ERROR);
+		os::Printer::log("Could not open file of texture", filename, ELL_WARNING);
+		return texture;
 	}
 
-	if (!texture && !errorReported)
-		os::Printer::log("Could not load texture", filename, ELL_ERROR);
+	if (!texture)
+		os::Printer::log("Could not load texture", filename, ELL_WARNING);
 
 	return texture;
 }
@@ -355,7 +360,7 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 	}
 
 	if (!texture)
-		os::Printer::log("Could not load texture", file->getFileName(), ELL_ERROR);
+		os::Printer::log("Could not load texture", file->getFileName(), ELL_WARNING);
 
 	return texture;
 }
@@ -1141,7 +1146,7 @@ IImage* CNullDriver::createImageFromFile(const char* filename)
 		file->drop();
 	}
 	else
-		os::Printer::log("Could not open file of image", filename, ELL_ERROR);
+		os::Printer::log("Could not open file of image", filename, ELL_WARNING);
 
 	return image;
 }
