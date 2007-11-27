@@ -10,6 +10,10 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "os.h"
 
+/*
+#warning iostream
+#include "iostream"
+*/
 
 namespace irr
 {
@@ -100,13 +104,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		core::vector3df scale = oldScale;
 		core::quaternion rotation = oldRotation;
 
-		if (!BoneControlUsed)
-		{
-			Joint->positionHint=-1;
-			Joint->scaleHint=-1;
-			Joint->rotationHint=-1;
-		}
-
 		getFrameData(frame, Joint,
 				position, Joint->positionHint,
 				scale, Joint->scaleHint,
@@ -138,7 +135,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		//-----------------
 	}
 
-	BoneControlUsed=false;
 }
 
 
@@ -155,18 +151,46 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 			 Joint->UseAnimationFrom->ScaleKeys.size() ||
 			 Joint->UseAnimationFrom->RotationKeys.size() ))
 		{
-			Joint->LocalAnimatedMatrix.makeIdentity();
-			Joint->LocalAnimatedMatrix.setTranslation(Joint->Animatedposition);
-			Joint->LocalAnimatedMatrix*=Joint->Animatedrotation.getMatrix();
+			Joint->LocalAnimatedMatrix=Joint->Animatedrotation.getMatrix();
+			f32 *m1 = Joint->LocalAnimatedMatrix.pointer();
+			core::vector3df &Pos = Joint->Animatedposition;
+
+			m1[0] += Pos.X*m1[3];
+			m1[1] += Pos.Y*m1[3];
+			m1[2] += Pos.Z*m1[3];
+			m1[4] += Pos.X*m1[7];
+			m1[5] += Pos.Y*m1[7];
+			m1[6] += Pos.Z*m1[7];
+			m1[8] += Pos.X*m1[11];
+			m1[9] += Pos.Y*m1[11];
+			m1[10] += Pos.Z*m1[11];
+			m1[12] += Pos.X*m1[15];
+			m1[13] += Pos.Y*m1[15];
+			m1[14] += Pos.Z*m1[15];
 
 			Joint->GlobalSkinningSpace=false;
 
 			if (Joint->ScaleKeys.size())
 			{
-				//Joint->_LocalAnimatedMatrix.setScale(Joint->_Animatedscale);
+/*
 				core::matrix4 scaleMatrix;
 				scaleMatrix.setScale(Joint->Animatedscale);
 				Joint->LocalAnimatedMatrix *= scaleMatrix;
+*/
+				f32 *m1 = Joint->LocalAnimatedMatrix.pointer();
+				m1[0] *= Joint->Animatedscale.X;
+				m1[1] *= Joint->Animatedscale.X;
+				m1[2] *= Joint->Animatedscale.X;
+				m1[3] *= Joint->Animatedscale.X;
+				m1[4] *= Joint->Animatedscale.Y;
+				m1[5] *= Joint->Animatedscale.Y;
+				m1[6] *= Joint->Animatedscale.Y;
+				m1[7] *= Joint->Animatedscale.Y;
+				m1[8] *= Joint->Animatedscale.Z;
+				m1[9] *= Joint->Animatedscale.Z;
+				m1[10] *= Joint->Animatedscale.Z;
+				m1[11] *= Joint->Animatedscale.Z;
+				m1[12] *= Joint->Animatedscale.X;
 			}
 		}
 		else
@@ -1233,8 +1257,23 @@ void CSkinnedMesh::transferJointsToMesh(const core::array<IBoneSceneNode*> &Join
 	lastAnimatedFrame=-1;
 	lastSkinnedFrame=-1;
 
-	BoneControlUsed=true;
+
 }
+
+void CSkinnedMesh::transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes)
+{
+	for (u32 i=0;i<AllJoints.size();++i)
+	{
+		IBoneSceneNode* node=JointChildSceneNodes[i];
+		SJoint *joint=AllJoints[i];
+
+		joint->positionHint=node->positionHint;
+		joint->scaleHint=node->scaleHint;
+		joint->rotationHint=node->rotationHint;
+	}
+}
+
+
 
 
 void CSkinnedMesh::createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,

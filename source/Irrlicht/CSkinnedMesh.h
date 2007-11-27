@@ -97,6 +97,9 @@ namespace scene
 		//! Tranfers the joint data to the mesh
 		virtual void transferJointsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
 
+		//! Tranfers the joint hints to the mesh
+		virtual void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
+
 		//! Creates an array of joints from this mesh
 		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes, IAnimatedMeshSceneNode* AnimatedMeshSceneNode, ISceneManager* SceneManager);
 
