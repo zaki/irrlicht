@@ -915,19 +915,11 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 
 			CSkinnedMesh* skinnedMesh=reinterpret_cast<CSkinnedMesh*>(Mesh);
 
+			skinnedMesh->transferOnlyJointsHintsToMesh( JointChildSceneNodes );
+
 			skinnedMesh->animateMesh(frame, 1.0f);
 
 			skinnedMesh->recoverJointsFromMesh( JointChildSceneNodes);
-
-			if (CalculateAbsolutePositions)
-			{
-				//---slow---
-				for (u32 n=0;n<JointChildSceneNodes.size();++n)
-					if (JointChildSceneNodes[n]->getParent()==this)
-					{
-						JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
-					}
-			}
 
 			//-----------------------------------------
 			//		Transition
@@ -976,8 +968,28 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 					//			TransitingBlend));
 				}
 			}
+
+
+
+			if (CalculateAbsolutePositions)
+			{
+				//---slow---
+				for (u32 n=0;n<JointChildSceneNodes.size();++n)
+					if (JointChildSceneNodes[n]->getParent()==this)
+					{
+						JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
+					}
+			}
+
+
+
 		}
 	}
+
+
+
+
+
 }
 
 
