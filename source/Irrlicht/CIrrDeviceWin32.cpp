@@ -783,6 +783,8 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 			out.append("Microsoft Windows 2000 ");
 		if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1 )
 			out.append("Microsoft Windows XP ");
+		if ( osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0 )
+			out.append("Microsoft Windows Vista ");
 
 		if( bOsVersionInfoEx )
 		{

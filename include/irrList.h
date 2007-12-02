@@ -12,6 +12,7 @@ namespace irr
 namespace core
 {
 
+
 //! Double linked list template.
 template <class T>
 class list
@@ -63,6 +64,10 @@ public:
 		bool operator !=(const Iterator&      other) const { return Current != other.Current; }
 		bool operator ==(const ConstIterator& other) const { return Current == other.Current; }
 		bool operator !=(const ConstIterator& other) const { return Current != other.Current; }
+
+		#if defined (_MSC_VER) && (_MSC_VER < 1300)
+			#pragma warning(disable:4284) // infix notation problem when using iterator operator ->
+		#endif 
 
 		T & operator * () { return Current->Element;  }
 		T * operator ->() { return &Current->Element; }

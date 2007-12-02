@@ -1214,6 +1214,10 @@ SOURCE=.\CColladaFileLoader.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\CColladaMeshWriter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\CCSMLoader.cpp
 # End Source File
 # Begin Source File
@@ -1286,11 +1290,23 @@ SOURCE=.\CGUISpinBox.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\CImageLoaderPPM.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\CIrrDeviceSDL.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\CIrrDeviceSDL.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CIrrMeshFileLoader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CIrrMeshWriter.cpp
 # End Source File
 # Begin Source File
 
@@ -1643,6 +1659,14 @@ SOURCE=.\CSphereSceneNode.cpp
 # Begin Source File
 
 SOURCE=.\CSphereSceneNode.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CSTLMeshFileLoader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CSTLMeshWriter.cpp
 # End Source File
 # Begin Source File
 

@@ -659,7 +659,6 @@ bool CAnimatedMeshSceneNode::removeChild(ISceneNode* child)
 		return true;
 	}
 
-
 	if (ISceneNode::removeChild(child))
 	{
 		if (JointsUsed) //stop weird bugs caused while changing parents as the joints are being created
@@ -671,9 +670,7 @@ bool CAnimatedMeshSceneNode::removeChild(ISceneNode* child)
 				return true;
 			}
 		}
-
 		return true;
-
 	}
 
 	return false;
