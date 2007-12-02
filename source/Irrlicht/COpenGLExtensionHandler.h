@@ -665,7 +665,6 @@ class COpenGLExtensionHandler
 	bool AnisotropyExtension;
 	bool SeparateStencilExtension;
 	bool TextureCompressionExtension;
-	bool PackedDepthStencilExtension;
 	bool VertexBufferObjectExtension;
 
 	// Some non-boolean properties
