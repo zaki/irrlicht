@@ -17,7 +17,6 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		MultiTextureExtension(false), MultiSamplingExtension(false), AnisotropyExtension(false),
 		SeparateStencilExtension(false),
 		TextureCompressionExtension(false),
-		PackedDepthStencilExtension(false),
 		VertexBufferObjectExtension(false),
 		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
 		MaxAnisotropy(1.0f), MaxUserClipPlanes(0),
@@ -105,7 +104,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	AnisotropyExtension = FeatureAvailable[IRR_EXT_texture_filter_anisotropic];
 	SeparateStencilExtension = FeatureAvailable[IRR_ATI_separate_stencil];
 	TextureCompressionExtension = FeatureAvailable[IRR_ARB_texture_compression];
-	PackedDepthStencilExtension = FeatureAvailable[IRR_EXT_packed_depth_stencil];
 	VertexBufferObjectExtension = FeatureAvailable[IRR_ARB_vertex_buffer_object];
 	StencilBuffer=stencilBuffer;
 

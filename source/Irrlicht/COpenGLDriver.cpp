@@ -2121,11 +2121,11 @@ ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>&
 #if defined(GL_EXT_framebuffer_object)
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
-        	rtt = new COpenGLTexture(size, PackedDepthStencilExtension, name, this);
+        	rtt = new COpenGLTexture(size, FeatureAvailable[IRR_EXT_packed_depth_stencil], name, this);
 	else
 #endif
 	{
-		rtt = addTexture(size, name);
+		rtt = addTexture(size, name, ECF_A8R8G8B8);
 		if (rtt)
 		{
 			rtt->grab();
