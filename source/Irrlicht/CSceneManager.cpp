@@ -1146,14 +1146,13 @@ void CSceneManager::drawAll()
 	video::IVideoDriver* driver = getVideoDriver();
 	if ( driver )
 	{
-		core::matrix4 identity;
-		driver->setTransform ( video::ETS_PROJECTION, identity );
-		driver->setTransform ( video::ETS_VIEW, identity );
-		driver->setTransform ( video::ETS_WORLD, identity );
-		driver->setTransform ( video::ETS_TEXTURE_0, identity );
-		driver->setTransform ( video::ETS_TEXTURE_1, identity );
-		driver->setTransform ( video::ETS_TEXTURE_2, identity );
-		driver->setTransform ( video::ETS_TEXTURE_3, identity );
+		driver->setTransform ( video::ETS_PROJECTION, core::IdentityMatrix );
+		driver->setTransform ( video::ETS_VIEW, core::IdentityMatrix );
+		driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
+		driver->setTransform ( video::ETS_TEXTURE_0, core::IdentityMatrix );
+		driver->setTransform ( video::ETS_TEXTURE_1, core::IdentityMatrix );
+		driver->setTransform ( video::ETS_TEXTURE_2, core::IdentityMatrix );
+		driver->setTransform ( video::ETS_TEXTURE_3, core::IdentityMatrix );
 	}
 
 	// do animations and other stuff.

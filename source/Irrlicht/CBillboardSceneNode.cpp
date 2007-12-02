@@ -108,8 +108,7 @@ void CBillboardSceneNode::render()
 		driver->draw3DBox(BBox, video::SColor(0,208,195,152));
 	}
 
-	core::matrix4 mat;
-	driver->setTransform(video::ETS_WORLD, mat);
+	driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
 	driver->setMaterial(Material);
 

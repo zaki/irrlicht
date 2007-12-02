@@ -215,8 +215,6 @@ bool CQuake3ShaderSceneNode::isTransparent ()
 	}
 	else
 	{
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
-
 		for ( u32 stage = 0; stage < Shader->VarGroup->VariableGroup.size (); ++stage )
 		{
 			if ( 0 == Q3Texture [ stage].Texture.size() )
@@ -258,7 +256,7 @@ void CQuake3ShaderSceneNode::render()
 	group = Shader->getGroup ( 1 );
 	material.BackfaceCulling = quake3::isDisabled ( group->get ( "cull" ) );
 
-	u32 zEnable = group->getIndex ( "polygonoffset" ) >= 0;
+//	u32 zEnable = group->getIndex ( "polygonoffset" ) >= 0;
 
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation );
 
