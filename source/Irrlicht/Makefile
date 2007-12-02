@@ -1,5 +1,5 @@
-VERSION = 1.4beta
-# Irrlicht Engine 1.4beta
+VERSION = 1.4
+# Irrlicht Engine 1.4
 # Makefile for Linux
 #
 # To use, just run:

@@ -501,12 +501,9 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 
 		// Transform the Vertex position by nested node...
 		InJoint->GlobalMatrix.transformVect(Vertex.Pos);
-
-
 		InJoint->GlobalMatrix.rotateVect(Vertex.Normal);
 
 		//Add it...
-
 		BaseVertices.push_back(Vertex);
 
 		AnimatedVertices_VertexID.push_back(-1);

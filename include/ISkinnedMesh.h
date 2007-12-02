@@ -55,8 +55,8 @@ namespace scene
 		virtual bool useAnimationFrom(const ISkinnedMesh *mesh) = 0;
 
 		//!Update Normals when Animating
-		//!False= Don't (default)
-		//!True= Update normals, slower
+		//!False= Don't animate, faster
+		//!True= Update normals
 		virtual void updateNormalsWhenAnimating(bool on) = 0;
 
 		//!Sets Interpolation Mode
