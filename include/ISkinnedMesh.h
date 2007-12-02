@@ -68,7 +68,11 @@ namespace scene
 		//! Preforms a software skin on this mesh based of joint positions
 		virtual void skinMesh() = 0;
 
+		//! converts the vertex type of all meshbuffers to tangents. eg for bumpmapping
 		virtual void convertMeshToTangents() = 0;
+
+		//! (This feature is not implementated in irrlicht yet)
+		virtual bool setHardwareSkinning(bool on) = 0;
 
 		//! A vertex weight
 		struct SWeight

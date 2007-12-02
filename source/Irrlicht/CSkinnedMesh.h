@@ -106,6 +106,11 @@ namespace scene
 
 		virtual void convertMeshToTangents();
 
+		//! Does the mesh have non animation
+		virtual bool isStatic();
+
+		//! (This feature is not implementated in irrlicht yet)
+		virtual bool setHardwareSkinning(bool on);
 
 
 
@@ -127,8 +132,6 @@ namespace scene
 		virtual void finalize();
 
 
-
-
 		virtual SSkinMeshBuffer *createBuffer();
 
 		virtual SJoint *createJoint(SJoint *parent=0);
@@ -140,7 +143,7 @@ namespace scene
 		virtual SWeight *createWeight(SJoint *joint);
 
 
-		virtual bool isStatic();
+
 
 
 private:
@@ -185,6 +188,9 @@ private:
 		bool BoneControlUsed;
 
 		bool AnimateNormals;
+
+		bool HardwareSkinning;
+
 
 		E_INTERPOLATION_MODE InterpolationMode;
 
