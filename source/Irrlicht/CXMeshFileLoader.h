@@ -161,9 +161,6 @@ private:
 	f32 readFloat();
 	bool readVector2(core::vector2df& vec);
 	bool readVector3(core::vector3df& vec);
-	bool readRGB(video::SColorf& color);
-	bool readRGBA(video::SColorf& color);
-
 	bool readRGB(video::SColor& color);
 	bool readRGBA(video::SColor& color);
 

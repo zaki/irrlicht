@@ -730,9 +730,9 @@ void CGUIContextMenu::setEventParent(IGUIElement *parent)
 bool CGUIContextMenu::hasOpenSubMenu() const
 {
 	for (u32 i=0; i<Items.size(); ++i)
-		if (Items[i].SubMenu)
-			if ( Items[i].SubMenu->isVisible() )
-				return true;
+		if (Items[i].SubMenu && Items[i].SubMenu->isVisible())
+			return true;
+
 	return false;
 }
 
