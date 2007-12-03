@@ -32,50 +32,17 @@ CTriangleSelector::CTriangleSelector(IMesh* mesh, ISceneNode* node)
 	const u32 cnt = mesh->getMeshBufferCount();
 	for (u32 i=0; i<cnt; ++i)
 	{
-		IMeshBuffer* buf = mesh->getMeshBuffer(i);
+		const IMeshBuffer* buf = mesh->getMeshBuffer(i);
 
-		s32 idxCnt = buf->getIndexCount();
+		const u32 idxCnt = buf->getIndexCount();
 		const u16* const indices = buf->getIndices();
-		core::triangle3df tri;
 
-		switch (buf->getVertexType())
+		for (u32 j=0; j<idxCnt; j+=3)
 		{
-		case video::EVT_STANDARD:
-			{
-				video::S3DVertex* vtx = (video::S3DVertex*)buf->getVertices();
-				for (s32 j=0; j<idxCnt; j+=3)
-				{
-					Triangles.push_back(core::triangle3df(
-							vtx[indices[j+0]].Pos,
-							vtx[indices[j+1]].Pos,
-							vtx[indices[j+2]].Pos));
-				}
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				video::S3DVertex2TCoords* vtx = (video::S3DVertex2TCoords*)buf->getVertices();
-				for (s32 j=0; j<idxCnt; j+=3)
-				{
-					Triangles.push_back(core::triangle3df(
-							vtx[indices[j+0]].Pos,
-							vtx[indices[j+1]].Pos,
-							vtx[indices[j+2]].Pos));
-				}
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				video::S3DVertexTangents* vtx = (video::S3DVertexTangents*)buf->getVertices();
-				for (s32 j=0; j<idxCnt; j+=3)
-				{
-					Triangles.push_back(core::triangle3df(
-							vtx[indices[j+0]].Pos,
-							vtx[indices[j+1]].Pos,
-							vtx[indices[j+2]].Pos));
-				}
-			}
-			break;
+			Triangles.push_back(core::triangle3df(
+					buf->getPosition(indices[j+0]),
+					buf->getPosition(indices[j+1]),
+					buf->getPosition(indices[j+2])));
 		}
 	}
 }
