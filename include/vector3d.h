@@ -277,7 +277,8 @@ namespace core
 	//! Typedef for an integer 3d vector.
 	typedef vector3d<s32> vector3di;
 
-	template<class S, class T> vector3d<T> operator*(const S scalar, const vector3d<T>& vector) { return vector*scalar; }
+	template<class S, class T>
+	vector3d<T> operator*(const S scalar, const vector3d<T>& vector) { return vector*scalar; }
 
 } // end namespace core
 } // end namespace irr

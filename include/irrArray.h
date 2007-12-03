@@ -405,11 +405,11 @@ public:
 				left = m + 1;
 
 		} while((element < data[m] || data[m] < element) && left<=right);
-
 		// this last line equals to:
 		// " while((element != array[m]) && left<=right);"
 		// but we only want to use the '<' operator.
 		// the same in next line, it is "(element == array[m])"
+
 
 		if (!(element < data[m]) && !(data[m] < element))
 			return m;
