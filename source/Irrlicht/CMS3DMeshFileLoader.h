@@ -34,7 +34,7 @@ public:
 
 private:
 
-	core::stringc stripPathFromString(core::stringc string, bool returnPath);
+	core::stringc stripPathFromString(const core::stringc& inString, bool returnPath) const;
 
 	bool load(io::IReadFile* file);
 	video::IVideoDriver* Driver;

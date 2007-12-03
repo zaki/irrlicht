@@ -111,7 +111,7 @@ bool CB3DMeshFileLoader::load()
 
 	//------ Read main chunk ------
 
-	while ( B3dStack.getLast().startposition+B3dStack.getLast().length > file->getPos() )
+	while ( (B3dStack.getLast().startposition + B3dStack.getLast().length) > file->getPos() )
 	{
 		B3dStack.push_back(SB3dChunk());
 
@@ -175,30 +175,13 @@ bool CB3DMeshFileLoader::load()
 
 bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *InJoint)
 {
-	core::stringc JointName = readString();
+	const core::stringc JointName = readString();
 
 	f32 position[3], scale[3], rotation[4];
-	s32 n;
 
-	for (n=0; n<=2; n++)
-		file->read(&position[n], sizeof(f32));
-
-	for (n=0; n<=2; n++)
-		file->read(&scale[n], sizeof(f32));
-
-	for (n=0; n<=3; n++)
-		file->read(&rotation[n], sizeof(f32));
-
-	#ifdef __BIG_ENDIAN__
-		for (n=0; n<=2; n++)
-			position[n] = os::Byteswap::byteswap(position[n]);
-
-		for (n=0; n<=2; n++)
-			scale[n] = os::Byteswap::byteswap(scale[n]);
-
-		for (n=0; n<=3; n++)
-			rotation[n] = os::Byteswap::byteswap(rotation[n]);
-	#endif
+	readFloats(position, 3);
+	readFloats(scale, 3);
+	readFloats(rotation, 4);
 
 	CSkinnedMesh::SJoint *Joint = AnimatedMesh->createJoint(InJoint);
 
@@ -257,7 +240,7 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *InJoint)
 		else if ( strncmp( B3dStack.getLast().name, "ANIM", 4 ) == 0 )
 		{
 			knownChunk = true;
-			if (!readChunkANIM(Joint))
+			if (!readChunkANIM())
 				return false;
 		}
 		else if ( strncmp( B3dStack.getLast().name, "BONE", 4 ) == 0 )
@@ -323,7 +306,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 		if ( strncmp( B3dStack.getLast().name, "VRTS", 4 ) == 0 )
 		{
 			knownChunk=true;
-			if (!readChunkVRTS(InJoint, 0, vertices_Start))
+			if (!readChunkVRTS(InJoint))
 				return false;
 		}
 		else if ( strncmp( B3dStack.getLast().name, "TRIS", 4 ) == 0 )
@@ -335,7 +318,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 			if (brush_id!=-1)
 				MeshBuffer->Material=(*Materials[brush_id].Material);
 
-			if(readChunkTRIS(InJoint, MeshBuffer,AnimatedMesh->getMeshBuffers().size()-1, vertices_Start)==false)
+			if(readChunkTRIS(MeshBuffer,AnimatedMesh->getMeshBuffers().size()-1, vertices_Start)==false)
 				return false;
 
 			if (!NormalsInFile && MeshBuffer->Material.Lighting) // No point wasting time on lightmapped levels
@@ -387,7 +370,7 @@ VRTS:
   float tex_coords[tex_coord_sets][tex_coord_set_size]	;tex coords
   }
 */
-bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSkinMeshBuffer* MeshBuffer, s32 vertices_Start)
+bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint)
 {
 	s32 flags, tex_coord_sets, tex_coord_set_size;
 
@@ -428,59 +411,24 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 
 	while(B3dStack.getLast().startposition + B3dStack.getLast().length > file->getPos()) // this chunk repeats
 	{
-		f32 x=0.0f, y=0.0f, z=0.0f;
-		f32 nx=0.0f, ny=0.0f, nz=0.0f;
-		f32 red=1.0f, green=1.0f, blue=1.0f, alpha=1.0f;
+		f32 position[3];
+		f32 normal[3]={0.f, 0.f, 0.f};
+		f32 color[4]={1.0f, 1.0f, 1.0f, 1.0f};
 		f32 tex_coords[3][4];
 
-		file->read(&x, sizeof(x));
-		file->read(&y, sizeof(y));
-		file->read(&z, sizeof(z));
+		readFloats(position, 3);
 
 		if (flags & 1)
 		{
 			NormalsInFile = true;
-			file->read(&nx, sizeof(nx));
-			file->read(&ny, sizeof(ny));
-			file->read(&nz, sizeof(nz));
+			readFloats(normal, 3);
 		}
 
 		if (flags & 2)
-		{
-			file->read(&red, sizeof(red));
-			file->read(&green, sizeof(green));
-			file->read(&blue, sizeof(blue));
-			file->read(&alpha, sizeof(alpha));
-		}
+			file->read(color, 4);
 
 		for (s32 i=0; i<tex_coord_sets; ++i)
-			for (s32 j=0; j<tex_coord_set_size; ++j)
-				file->read(&tex_coords[i][j], sizeof(f32));
-
-		#ifdef __BIG_ENDIAN__
-			x = os::Byteswap::byteswap(x);
-			y = os::Byteswap::byteswap(y);
-			z = os::Byteswap::byteswap(z);
-
-			if (flags&1)
-			{
-				nx = os::Byteswap::byteswap(nx);
-				ny = os::Byteswap::byteswap(ny);
-				nz = os::Byteswap::byteswap(nz);
-			}
-
-			if (flags & 2)
-			{
-				red = os::Byteswap::byteswap(red);
-				green = os::Byteswap::byteswap(green);
-				blue = os::Byteswap::byteswap(blue);
-				alpha = os::Byteswap::byteswap(alpha);
-			}
-
-			for (s32 i=0; i<=tex_coord_sets-1; i++)
-				for (s32 j=0; j<=tex_coord_set_size-1; j++)
-					tex_coords[i][j] = os::Byteswap::byteswap(tex_coords[i][j]);
-		#endif
+			readFloats(tex_coords[i], tex_coord_set_size);
 
 		f32 tu=0.0f, tv=0.0f;
 		if (tex_coord_sets >= 1 && tex_coord_set_size >= 2)
@@ -497,7 +445,10 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 		}
 
 		// Create Vertex...
-		video::S3DVertex2TCoords Vertex(x, y, z, nx, ny, nz, video::SColorf(red, green, blue, alpha).toSColor(), tu, tv, tu2, tv2);
+		video::S3DVertex2TCoords Vertex(position[0], position[1], position[2],
+				normal[0], normal[1], normal[2],
+				video::SColorf(color[0], color[1], color[2], color[3]).toSColor(),
+				tu, tv, tu2, tv2);
 
 		// Transform the Vertex position by nested node...
 		InJoint->GlobalMatrix.transformVect(Vertex.Pos);
@@ -516,7 +467,7 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 }
 
 
-bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 vertices_Start)
+bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 vertices_Start)
 {
 
 	bool showVertexWarning=false;
@@ -542,7 +493,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 	s32 MemoryNeeded = B3dStack.getLast().length / sizeof(s32);
 	MeshBuffer->Indices.reallocate(MemoryNeeded + MeshBuffer->Indices.size() + 1);
 
-	while(B3dStack.getLast().startposition + B3dStack.getLast().length > file->getPos()) // this chunk repeats
+	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > file->getPos()) // this chunk repeats
 	{
 		s32 vertex_id[3];
 
@@ -579,7 +530,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 			{
 
 				//Check for lightmapping:
-				if (BaseVertices[ vertex_id[i] ].TCoords2 != core::vector2d<f32>(0,0))
+				if (BaseVertices[ vertex_id[i] ].TCoords2 != core::vector2df(0.f,0.f))
 					MeshBuffer->MoveTo_2TCoords(); //Will only affect the meshbuffer the first time this is called
 
 				//Add the vertex to the meshbuffer:
@@ -604,8 +555,8 @@ bool CB3DMeshFileLoader::readChunkTRIS(CSkinnedMesh::SJoint *InJoint, scene::SSk
 					// Use texture's scale
 					if (B3dMaterial->Textures[0])
 					{
-						Vertex->TCoords.X *=B3dMaterial->Textures[0]->Xscale;
-						Vertex->TCoords.Y *=B3dMaterial->Textures[0]->Yscale;
+						Vertex->TCoords.X *= B3dMaterial->Textures[0]->Xscale;
+						Vertex->TCoords.Y *= B3dMaterial->Textures[0]->Yscale;
 					}
 					/*
 					if (B3dMaterial->Textures[1])
@@ -639,7 +590,7 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *InJoint)
 {
 	if (B3dStack.getLast().length > 8)
 	{
-		while(B3dStack.getLast().startposition + B3dStack.getLast().length>file->getPos()) // this chunk repeats
+		while((B3dStack.getLast().startposition + B3dStack.getLast().length) > file->getPos()) // this chunk repeats
 		{
 			CSkinnedMesh::SWeight *Weight=AnimatedMesh->createWeight(InJoint);
 
@@ -680,7 +631,7 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 		flags = os::Byteswap::byteswap(flags);
 	#endif
 
-	while(B3dStack.getLast().startposition + B3dStack.getLast().length>file->getPos()) //this chunk repeats
+	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > file->getPos()) //this chunk repeats
 	{
 		s32 frame;
 
@@ -689,6 +640,9 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 		f32 rotationData[4];
 
 		file->read(&frame, sizeof(frame));
+		#ifdef __BIG_ENDIAN__
+		frame = os::Byteswap::byteswap(frame);
+		#endif
 
 		if (flags&1)
 			readFloats(positionData, 3);
@@ -698,10 +652,6 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 
 		if (flags&4)
 			readFloats(rotationData, 4);
-
-		#ifdef __BIG_ENDIAN__
-		frame = os::Byteswap::byteswap(frame);
-		#endif
 
 		core::vector3df position = core::vector3df(positionData[0], positionData[1], positionData[2]);
 		core::vector3df scale = core::vector3df(scaleData[0], scaleData[1], scaleData[2]);
@@ -734,7 +684,7 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 }
 
 
-bool CB3DMeshFileLoader::readChunkANIM(CSkinnedMesh::SJoint *InJoint)
+bool CB3DMeshFileLoader::readChunkANIM()
 {
 	s32 AnimFlags; //not stored\used
 	s32 AnimFrames;//not stored\used
@@ -758,7 +708,7 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 	bool Previous32BitTextureFlag = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_ALWAYS_32_BIT);
 	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
-	while(B3dStack.getLast().startposition + B3dStack.getLast().length>file->getPos()) //this chunk repeats
+	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > file->getPos()) //this chunk repeats
 	{
 		core::stringc TextureName=readString();
 
@@ -801,11 +751,17 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		n_texs = os::Byteswap::byteswap(n_texs);
 	#endif
 
-	while(B3dStack.getLast().startposition + B3dStack.getLast().length>file->getPos()) //this chunk repeats
+	if (n_texs>8)
+	{
+		os::Printer::log("n_texs too big", file->getFileName(), ELL_ERROR);
+		return false;
+	}
+
+	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > file->getPos()) //this chunk repeats
 	{
 		// This is what blitz basic calls a brush, like a Irrlicht Material
 
-		core::stringc MaterialName=readString(); //Not used but we still need the read it
+		readString(); //core::stringc MaterialName, not used but we still need the read it
 
 		SB3dMaterial B3dMaterial;
 
@@ -817,23 +773,18 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		texture_id[0]=-1;
 		texture_id[1]=-1;
 
-		file->read(&B3dMaterial.red, sizeof(B3dMaterial.red));
-		file->read(&B3dMaterial.green, sizeof(B3dMaterial.green));
-		file->read(&B3dMaterial.blue, sizeof(B3dMaterial.blue));
-		file->read(&B3dMaterial.alpha, sizeof(B3dMaterial.alpha));
-		file->read(&B3dMaterial.shininess, sizeof(B3dMaterial.shininess));
+		readFloats(&B3dMaterial.red, 1);
+		readFloats(&B3dMaterial.green, 1);
+		readFloats(&B3dMaterial.blue, 1);
+		readFloats(&B3dMaterial.alpha, 1);
+		readFloats(&B3dMaterial.shininess, 1);
+
 		file->read(&B3dMaterial.blend, sizeof(B3dMaterial.blend));
 		file->read(&B3dMaterial.fx, sizeof(B3dMaterial.fx));
 
-		for (s32 n=0; n < n_texs; ++n)
-			file->read(&texture_id[n], sizeof(s32)); //I'm not sure of getting the sizeof an array
+		file->read(texture_id, n_texs*sizeof(s32));
 
 		#ifdef __BIG_ENDIAN__
-			B3dMaterial.red = os::Byteswap::byteswap(B3dMaterial.red);
-			B3dMaterial.green = os::Byteswap::byteswap(B3dMaterial.green);
-			B3dMaterial.blue = os::Byteswap::byteswap(B3dMaterial.blue);
-			B3dMaterial.alpha = os::Byteswap::byteswap(B3dMaterial.alpha);
-			B3dMaterial.shininess = os::Byteswap::byteswap(B3dMaterial.shininess);
 			B3dMaterial.blend = os::Byteswap::byteswap(B3dMaterial.blend);
 			B3dMaterial.fx = os::Byteswap::byteswap(B3dMaterial.fx);
 
@@ -846,7 +797,6 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			B3dMaterial.Textures[0]=&Textures[texture_id[0]];
 		if (texture_id[1] != -1)
 			B3dMaterial.Textures[1]=&Textures[texture_id[1]];
-
 
 		//Fixes problems when the lightmap is on the first texture:
 		if (texture_id[0] != -1)
@@ -877,7 +827,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		//Two textures:
 		if (B3dMaterial.Textures[1])
 		{
-			if (B3dMaterial.alpha==1)
+			if (B3dMaterial.alpha==1.f)
 			{
 				if (B3dMaterial.Textures[1]->Blend & 5) //(Multiply 2)
 					B3dMaterial.Material->MaterialType = video::EMT_LIGHTMAP_M2;
@@ -893,14 +843,14 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			else if (B3dMaterial.Textures[0]->Flags & 4) //(Masked)
 				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF; // Todo: create color key texture
-			else if (B3dMaterial.alpha == 1)
+			else if (B3dMaterial.alpha == 1.f)
 				B3dMaterial.Material->MaterialType = video::EMT_SOLID;
 			else
 				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		}
 		else //No texture:
 		{
-			if (B3dMaterial.alpha == 1)
+			if (B3dMaterial.alpha == 1.f)
 				B3dMaterial.Material->MaterialType = video::EMT_SOLID;
 			else
 				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
@@ -954,7 +904,7 @@ core::stringc CB3DMeshFileLoader::readString()
 	return newstring;
 }
 
-core::stringc CB3DMeshFileLoader::stripPathFromString(core::stringc string, bool returnPath)
+core::stringc CB3DMeshFileLoader::stripPathFromString(core::stringc string, bool returnPath) const
 {
 	s32 slashIndex=string.findLast('/'); // forward slash
 	s32 backSlash=string.findLast('\\'); // back slash

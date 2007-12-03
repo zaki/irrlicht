@@ -76,16 +76,16 @@ private:
 	bool load();
 	bool readChunkNODE(CSkinnedMesh::SJoint* InJoint);
 	bool readChunkMESH(CSkinnedMesh::SJoint* InJoint);
-	bool readChunkVRTS(CSkinnedMesh::SJoint* InJoint, scene::SSkinMeshBuffer *MeshBuffer, s32 Vertices_Start);
-	bool readChunkTRIS(CSkinnedMesh::SJoint* InJoint, scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 Vertices_Start);
+	bool readChunkVRTS(CSkinnedMesh::SJoint* InJoint);
+	bool readChunkTRIS(scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 Vertices_Start);
 	bool readChunkBONE(CSkinnedMesh::SJoint* InJoint);
 	bool readChunkKEYS(CSkinnedMesh::SJoint* InJoint);
-	bool readChunkANIM(CSkinnedMesh::SJoint* InJoint);
+	bool readChunkANIM();
 	bool readChunkTEXS();
 	bool readChunkBRUS();
 
 	core::stringc readString();
-	core::stringc stripPathFromString(core::stringc string, bool returnPath=false);
+	core::stringc stripPathFromString(core::stringc string, bool returnPath=false) const;
 	void readFloats(f32* vec, u32 count);
 
 	core::array<SB3dChunk> B3dStack;
