@@ -65,23 +65,11 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 				{
 					for( u32 k=0; k<Mesh->getMeshBuffer(j)->getVertexCount(); ++k )
 					{
-						switch( Mesh->getMeshBuffer(j)->getVertexType() )
-						{
-						case video::EVT_STANDARD:
-							p.pos = ((video::S3DVertex*)Mesh->getMeshBuffer(j)->getVertices())[k].Pos;
-							if( UseNormalDirection )
-								p.vector = ((video::S3DVertex*)Mesh->getMeshBuffer(j)->getVertices())[k].Normal / NormalDirectionModifier;
-							else
-								p.vector = Direction;
-							break;
-						case video::EVT_TANGENTS:
-							p.pos = ((video::S3DVertexTangents*)Mesh->getMeshBuffer(j)->getVertices())[k].Pos;
-							if( UseNormalDirection )
-								p.vector = ((video::S3DVertexTangents*)Mesh->getMeshBuffer(j)->getVertices())[k].Normal / NormalDirectionModifier;
-							else
-								p.vector = Direction;
-							break;
-						}
+						p.pos = Mesh->getMeshBuffer(j)->getPosition(k);
+						if( UseNormalDirection )
+							p.vector = Mesh->getMeshBuffer(j)->getNormal(k) / NormalDirectionModifier;
+						else
+							p.vector = Direction;
 
 						p.startTime = now;
 
@@ -124,23 +112,11 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 
 				u32 vertexNumber = os::Randomizer::rand() % Mesh->getMeshBuffer(randomMB)->getVertexCount();
 
-				switch( Mesh->getMeshBuffer(randomMB)->getVertexType() )
-				{
-				case video::EVT_STANDARD:
-					p.pos = ((video::S3DVertex*)Mesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Pos;
-					if( UseNormalDirection )
-						p.vector = ((video::S3DVertex*)Mesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Normal / NormalDirectionModifier;
-					else
-						p.vector = Direction;
-					break;
-				case video::EVT_TANGENTS:
-					p.pos = ((video::S3DVertexTangents*)Mesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Pos;
-					if( UseNormalDirection )
-						p.vector = ((video::S3DVertexTangents*)Mesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Normal / NormalDirectionModifier;
-					else
-						p.vector = Direction;
-					break;
-				}
+				p.pos = Mesh->getMeshBuffer(randomMB)->getPosition(vertexNumber);
+				if( UseNormalDirection )
+					p.vector = Mesh->getMeshBuffer(randomMB)->getNormal(vertexNumber) / NormalDirectionModifier;
+				else
+					p.vector = Direction;
 
 				p.startTime = now;
 

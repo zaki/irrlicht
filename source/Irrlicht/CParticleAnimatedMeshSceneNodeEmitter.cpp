@@ -71,23 +71,11 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 				{
 					for( u32 k=0; k<frameMesh->getMeshBuffer(j)->getVertexCount(); ++k )
 					{
-						switch( frameMesh->getMeshBuffer(j)->getVertexType() )
-						{
-						case video::EVT_STANDARD:
-							p.pos = ((video::S3DVertex*)frameMesh->getMeshBuffer(j)->getVertices())[k].Pos;
-							if( UseNormalDirection )
-								p.vector = ((video::S3DVertex*)frameMesh->getMeshBuffer(j)->getVertices())[k].Normal / NormalDirectionModifier;
-							else
-								p.vector = Direction;
-							break;
-						case video::EVT_TANGENTS:
-							p.pos = ((video::S3DVertexTangents*)frameMesh->getMeshBuffer(j)->getVertices())[k].Pos;
-							if( UseNormalDirection )
-								p.vector = ((video::S3DVertexTangents*)frameMesh->getMeshBuffer(j)->getVertices())[k].Normal / NormalDirectionModifier;
-							else
-								p.vector = Direction;
-							break;
-						}
+						p.pos = frameMesh->getMeshBuffer(j)->getPosition(k);
+						if( UseNormalDirection )
+							p.vector = frameMesh->getMeshBuffer(j)->getNormal(k) / NormalDirectionModifier;
+						else
+							p.vector = Direction;
 
 						p.startTime = now;
 
@@ -130,23 +118,11 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 
 				u32 vertexNumber = os::Randomizer::rand() % frameMesh->getMeshBuffer(randomMB)->getVertexCount();
 
-				switch( frameMesh->getMeshBuffer(randomMB)->getVertexType() )
-				{
-				case video::EVT_STANDARD:
-					p.pos = ((video::S3DVertex*)frameMesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Pos;
-					if( UseNormalDirection )
-						p.vector = ((video::S3DVertex*)frameMesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Normal / NormalDirectionModifier;
-					else
-						p.vector = Direction;
-					break;
-				case video::EVT_TANGENTS:
-					p.pos = ((video::S3DVertexTangents*)frameMesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Pos;
-					if( UseNormalDirection )
-						p.vector = ((video::S3DVertexTangents*)frameMesh->getMeshBuffer(randomMB)->getVertices())[vertexNumber].Normal / NormalDirectionModifier;
-					else
-						p.vector = Direction;
-					break;
-				}
+				p.pos = frameMesh->getMeshBuffer(randomMB)->getPosition(vertexNumber);
+				if( UseNormalDirection )
+					p.vector = frameMesh->getMeshBuffer(randomMB)->getNormal(vertexNumber) / NormalDirectionModifier;
+				else
+					p.vector = Direction;
 
 				p.startTime = now;
 

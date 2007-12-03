@@ -105,6 +105,30 @@ namespace scene
 			return T().getType();
 		}
 
+		//! returns position of vertex i
+		virtual const core::vector3df& getPosition(u32 i) const
+		{
+			return Vertices[i].Pos;
+		} 
+
+		//! returns position of vertex i
+		virtual core::vector3df& getPosition(u32 i)
+		{
+			return Vertices[i].Pos;
+		} 
+
+		//! returns normal of vertex i
+		virtual const core::vector3df& getNormal(u32 i) const
+		{
+			return Vertices[i].Normal;
+		} 
+
+		//! returns normal of vertex i
+		virtual core::vector3df& getNormal(u32 i)
+		{
+			return Vertices[i].Normal;
+		} 
+
 	
 		//! append the vertices and indices to the current buffer
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices)
