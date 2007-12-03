@@ -55,17 +55,17 @@ const unsigned long EOD_FOUND = 3; // was: #define EOD_FOUND 3
 const unsigned long EOD = 0x00454f44; // was: #define EOD       'EOD'
 //-----------------------------------------------------------
 // number of decoded bytes
-int nDecodedBytes=0;
+static int nDecodedBytes=0;
 // number of coded bytes
-int nCodedBytes=0;
+static int nCodedBytes=0;
 // number of read bytes
-int nReadedBytes=0;
+static int nReadedBytes=0;
 // table used to look for sequences of repeating bytes
-unsigned char tmpbuf[4];  // we use subscripts 1 - 3
-int tmpbuf_cnt;
+static unsigned char tmpbuf[4];  // we use subscripts 1 - 3
+static int tmpbuf_cnt;
 // output buffer for non-compressed output data
-unsigned char outbuf[128];
-int outbuf_cnt;
+static unsigned char outbuf[128];
+static int outbuf_cnt;
 
 
 //-----------------------------------------------------------
