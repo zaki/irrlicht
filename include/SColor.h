@@ -167,7 +167,7 @@ namespace video
 
 	//! Class representing a 32 bit ARGB color.
 	/** The color values for alpha, red, green, and blue are
-	stored in a single s32. So all four values may be between 0 and 255.
+	stored in a single u32. So all four values may be between 0 and 255.
 	This class is used by most parts of the Irrlicht Engine
 	to specify a color. Another way is using the class Colorf, which
 	stores the color values in 4 floats.

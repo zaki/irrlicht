@@ -247,7 +247,8 @@ public:
 	//! Typedef for integer 2d vector.
 	typedef vector2d<s32> vector2di;
 
-	template<class S, class T> vector2d<T> operator*(const S scalar, const vector2d<T>& vector) { return vector*scalar; }
+	template<class S, class T>
+	vector2d<T> operator*(const S scalar, const vector2d<T>& vector) { return vector*scalar; }
 
 } // end namespace core
 } // end namespace irr

@@ -560,7 +560,7 @@ namespace quake3
 		for ( u32 i = 0; i != size; ++i )
 		{
 			group = &shader->VarGroup->VariableGroup[ i ];
-			dumpVarGroup ( dest, group, core::clamp ( (s32) i, 0, 2 ) );
+			dumpVarGroup ( dest, group, core::clamp( (int)i, 0, 2 ) );
 		}
 
 		if ( size <= 1 )
