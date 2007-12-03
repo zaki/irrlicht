@@ -17,48 +17,6 @@ namespace irr
 namespace scene
 {
 
-//! Recalculates the normals in vertex array.
-//! This template function was a member of the CMeshManipulator class, but
-//! visual studio 6.0 didn't like it.
-template<class VTXTYPE>
-inline void recalculateNormalsT_Flat(VTXTYPE* v, int vtxcnt,
-					u16* idx, int idxcnt)
-{
-	for (int i=0; i<idxcnt; i+=3)
-	{
-		const core::plane3d<f32> p(v[idx[i+0]].Pos, v[idx[i+1]].Pos, v[idx[i+2]].Pos);
-		v[idx[i+0]].Normal = p.Normal;
-		v[idx[i+1]].Normal = p.Normal;
-		v[idx[i+2]].Normal = p.Normal;
-	}
-}
-
-template<class VTXTYPE>
-inline void recalculateNormalsT_Smooth(VTXTYPE* v, int vtxcnt,
-					u16* idx, int idxcnt)
-{
-	s32 i;
-
-	for ( i = 0; i!= vtxcnt; ++i )
-	{
-		v[i].Normal.set ( 0.f, 0.f, 0.f );
-	}
-
-	for ( i=0; i<idxcnt; i+=3)
-	{
-		const core::plane3d<f32> p(v[idx[i+0]].Pos, v[idx[i+1]].Pos, v[idx[i+2]].Pos);
-		v[idx[i+0]].Normal += p.Normal;
-		v[idx[i+1]].Normal += p.Normal;
-		v[idx[i+2]].Normal += p.Normal;
-	}
-
-	for ( i = 0; i!= vtxcnt; ++i )
-	{
-		v[i].Normal.normalize ();
-	}
-}
-
-//! Recalculates normals in a vertex array.
 //! This template function was a member of the CMeshManipulator class, but
 //! visual studio 6.0 didn't like it.
 template<class VERTEXTYPE>
@@ -219,41 +177,41 @@ void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth) cons
 	if (!buffer)
 		return;
 
-	u32 vtxcnt = buffer->getVertexCount();
-	u32 idxcnt = buffer->getIndexCount();
-	u16* idx = buffer->getIndices();
+	const u32 vtxcnt = buffer->getVertexCount();
+	const u32 idxcnt = buffer->getIndexCount();
+	const u16* idx = buffer->getIndices();
 
-	switch(buffer->getVertexType())
+	if (!smooth)
+		for (u32 i=0; i<idxcnt; i+=3)
+		{
+			const core::vector3df& v1 = buffer->getPosition(idx[i+0]);
+			const core::vector3df& v2 = buffer->getPosition(idx[i+1]);
+			const core::vector3df& v3 = buffer->getPosition(idx[i+2]);
+			const core::vector3df normal = core::plane3d<f32>(v1, v2, v3).Normal;
+			buffer->getNormal(idx[i+0]) = normal;
+			buffer->getNormal(idx[i+1]) = normal;
+			buffer->getNormal(idx[i+2]) = normal;
+		}
+	else
 	{
-	case video::EVT_STANDARD:
-		{
-			video::S3DVertex* v = (video::S3DVertex*)buffer->getVertices();
+		u32 i;
 
-			if (!smooth)
-				recalculateNormalsT_Flat(v, vtxcnt, idx, idxcnt);
-			else
-				recalculateNormalsT_Smooth(v, vtxcnt, idx, idxcnt);
-		}
-		break;
-	case video::EVT_2TCOORDS:
-		{
-			video::S3DVertex2TCoords* v = (video::S3DVertex2TCoords*)buffer->getVertices();
+		for ( i = 0; i!= vtxcnt; ++i )
+			buffer->getNormal(i).set( 0.f, 0.f, 0.f );
 
-			if (!smooth)
-				recalculateNormalsT_Flat(v, vtxcnt, idx, idxcnt);
-			else
-				recalculateNormalsT_Smooth(v, vtxcnt, idx, idxcnt);
-		}
-		break;
-	case video::EVT_TANGENTS:
+		for ( i=0; i<idxcnt; i+=3)
 		{
-			// TODO: recalculate tangent and binormal
-			video::S3DVertexTangents* v = (video::S3DVertexTangents*)buffer->getVertices();
-			if (!smooth)
-				recalculateNormalsT_Flat(v, vtxcnt, idx, idxcnt);
-			else
-				recalculateNormalsT_Smooth(v, vtxcnt, idx, idxcnt);
+			const core::vector3df& v1 = buffer->getPosition(idx[i+0]);
+			const core::vector3df& v2 = buffer->getPosition(idx[i+1]);
+			const core::vector3df& v3 = buffer->getPosition(idx[i+2]);
+			const core::vector3df normal = core::plane3d<f32>(v1, v2, v3).Normal;
+			buffer->getNormal(idx[i+0]) += normal;
+			buffer->getNormal(idx[i+1]) += normal;
+			buffer->getNormal(idx[i+2]) += normal;
 		}
+
+		for ( i = 0; i!= vtxcnt; ++i )
+			buffer->getNormal(i).normalize();
 	}
 }
 
@@ -339,51 +297,17 @@ void CMeshManipulator::scaleMesh(scene::IMesh* mesh, const core::vector3df& scal
 	for ( u32 b=0; b<bcount; ++b)
 	{
 		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		void* v = buffer->getVertices();
 		const u32 vtxcnt = buffer->getVertexCount();
 		core::aabbox3df bufferbox;
 		u32 i;
 
-		switch(buffer->getVertexType())
+		if (vtxcnt != 0)
+			bufferbox.reset(buffer->getPosition(0) * scale);
+
+		for ( i=0; i<vtxcnt; ++i)
 		{
-		case video::EVT_STANDARD:
-			{
-				if (vtxcnt != 0)
-					bufferbox.reset(((video::S3DVertex*)v)[0].Pos * scale);
-
-				for ( i=0; i<vtxcnt; ++i)
-				{
-					((video::S3DVertex*)v)[i].Pos *= scale;
-					bufferbox.addInternalPoint(((video::S3DVertex*)v)[i].Pos);
-				}
-			}
-			break;
-
-		case video::EVT_2TCOORDS:
-			{
-				if (vtxcnt != 0)
-					bufferbox.reset(((video::S3DVertex2TCoords*)v)[0].Pos * scale);
-
-				for ( i=0; i<vtxcnt; ++i)
-				{
-					((video::S3DVertex2TCoords*)v)[i].Pos *= scale;
-					bufferbox.addInternalPoint(((video::S3DVertex2TCoords*)v)[i].Pos);
-				}
-			}
-			break;
-
-		case video::EVT_TANGENTS:
-			{
-				if (vtxcnt != 0)
-					bufferbox.reset(((video::S3DVertexTangents*)v)[0].Pos * scale);
-
-				for ( i=0; i<vtxcnt; ++i)
-				{
-					((video::S3DVertexTangents*)v)[i].Pos *= scale;
-					bufferbox.addInternalPoint(((video::S3DVertexTangents*)v)[i].Pos);
-				}
-			}
-			break;
+			buffer->getPosition(i) *= scale;
+			bufferbox.addInternalPoint(buffer->getPosition(i));
 		}
 
 		buffer->setBoundingBox( bufferbox );
