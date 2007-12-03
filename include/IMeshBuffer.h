@@ -103,6 +103,18 @@ namespace scene
 		//! recalculates the bounding box. should be called if the mesh changed.
 		virtual void recalculateBoundingBox() = 0;
 
+		//! returns position of vertex i
+		virtual const core::vector3df& getPosition(u32 i) const = 0;
+
+		//! returns position of vertex i
+		virtual core::vector3df& getPosition(u32 i) = 0;
+
+		//! returns normal of vertex i
+		virtual const core::vector3df& getNormal(u32 i) const = 0;
+
+		//! returns normal of vertex i
+		virtual core::vector3df& getNormal(u32 i) = 0;
+
 		//! append the vertices and indices to the current buffer
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) = 0;
 
