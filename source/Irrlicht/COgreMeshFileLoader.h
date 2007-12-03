@@ -135,7 +135,7 @@ private:
 	struct OgreVertexBuffer
 	{
 		OgreVertexBuffer() : BindIndex(0), VertexSize(0), Data(0) {}
-		void destroy() { delete [] Data; Data = 0; };
+		void destroy() { delete [] Data; Data = 0; }
 
 		u16 BindIndex,
 		VertexSize;

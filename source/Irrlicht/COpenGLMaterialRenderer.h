@@ -446,9 +446,11 @@ public:
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
 			Driver->extGlActiveTexture(GL_TEXTURE1_ARB);
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.f );
 			Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
 		}
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	}
 };
 
