@@ -425,7 +425,7 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint)
 		}
 
 		if (flags & 2)
-			file->read(color, 4);
+			readFloats(color, 4);
 
 		for (s32 i=0; i<tex_coord_sets; ++i)
 			readFloats(tex_coords[i], tex_coord_set_size);
