@@ -16,7 +16,7 @@ namespace scene
 	struct SSharedMeshBuffer : public IMeshBuffer
 	{
 		//! constructor
-		SSharedMeshBuffer() : IMeshBuffer(), Vertices(0)
+		SSharedMeshBuffer() : IMeshBuffer(), ChangedID(1),MappingHint(Never), Vertices(0)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");
@@ -126,6 +126,31 @@ namespace scene
 
 		//! append the meshbuffer to the current buffer
 		virtual void append(const IMeshBuffer* const other) {}
+
+
+		//! get the current hardware mapping hint
+		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const
+		{
+			return MappingHint;
+		}
+
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint )
+		{
+			MappingHint=NewMappingHint;
+		}
+
+
+		//! flags the mesh as changed, reloads hardware buffers
+		virtual void setDirty() {ChangedID++;}
+
+		virtual const u32 getChangedID() const {return ChangedID;}
+
+
+		u32 ChangedID;
+
+		// hardware mapping hint
+		E_HARDWARE_MAPPING MappingHint;
 
 		video::SMaterial Material;		//! material of this meshBuffer
 		core::array<video::S3DVertex> *Vertices;//! Shared Array of vertices

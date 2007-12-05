@@ -55,6 +55,20 @@ namespace scene
 	};
 
 
+	enum E_HARDWARE_MAPPING
+	{
+		//! Don't load in hardware
+		EHM_NEVER=0,
+
+		//! Rarely changed
+		EHM_STATIC,
+
+		//! Sometimes changed
+		EHM_DYNAMIC,
+
+		//! Always changed
+		EHM_STREAM
+	};
 
 	//! Struct for holding a mesh with a single material
 	/** SMeshBuffer is a simple implementation of a MeshBuffer. */
@@ -76,11 +90,11 @@ namespace scene
 
 		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
 		//! type is used can be determined with getVertexType().
-		virtual const void* getVertices() const = 0; 
+		virtual const void* getVertices() const = 0;
 
 		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
 		//! type is used can be determined with getVertexType().
-		virtual void* getVertices() = 0; 
+		virtual void* getVertices() = 0;
 
 		//! returns amount of vertices
 		virtual u32 getVertexCount() const = 0;
@@ -120,6 +134,21 @@ namespace scene
 
 		//! append the meshbuffer to the current buffer
 		virtual void append(const IMeshBuffer* const other) = 0;
+
+		//! get the current hardware mapping hint
+		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const = 0;
+
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) = 0;
+
+		//! flags the mesh as changed, reloads hardware buffers
+		virtual void setDirty() = 0;
+
+		virtual const u32 getChangedID() const = 0;
+
+
+		u32 HardwareHint;
+
 	};
 
 } // end namespace scene

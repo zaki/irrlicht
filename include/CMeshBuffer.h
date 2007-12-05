@@ -18,7 +18,7 @@ namespace scene
 	{
 	public:
 		//! constructor
-		CMeshBuffer() // everything's default constructed
+		CMeshBuffer():ChangedID(1),MappingHint(EHM_NEVER) // everything's default constructed
 		{
 			#ifdef _DEBUG
 			setDebugName("SMeshBuffer");
@@ -41,13 +41,13 @@ namespace scene
 		virtual const void* getVertices() const
 		{
 			return Vertices.const_pointer();
-		} 
+		}
 
 		//! returns pointer to vertices
 		virtual void* getVertices()
 		{
 			return Vertices.pointer();
-		} 
+		}
 
 		//! returns amount of vertices
 		virtual u32 getVertexCount() const
@@ -109,27 +109,27 @@ namespace scene
 		virtual const core::vector3df& getPosition(u32 i) const
 		{
 			return Vertices[i].Pos;
-		} 
+		}
 
 		//! returns position of vertex i
 		virtual core::vector3df& getPosition(u32 i)
 		{
 			return Vertices[i].Pos;
-		} 
+		}
 
 		//! returns normal of vertex i
 		virtual const core::vector3df& getNormal(u32 i) const
 		{
 			return Vertices[i].Normal;
-		} 
+		}
 
 		//! returns normal of vertex i
 		virtual core::vector3df& getNormal(u32 i)
 		{
 			return Vertices[i].Normal;
-		} 
+		}
 
-	
+
 		//! append the vertices and indices to the current buffer
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices)
 		{
@@ -169,6 +169,29 @@ namespace scene
 			}
 			BoundingBox.addInternalBox(other->getBoundingBox());
 		}
+
+		//! get the current hardware mapping hint
+		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const
+		{
+			return MappingHint;
+		}
+
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint )
+		{
+			MappingHint=NewMappingHint;
+		}
+
+		//! flags the mesh as changed, reloads hardware buffers
+		virtual void setDirty() {ChangedID++;}
+
+		virtual const u32 getChangedID() const {return ChangedID;}
+
+
+		u32 ChangedID;
+
+		//! hardware mapping hint
+		E_HARDWARE_MAPPING MappingHint;
 
 		//! Material for this meshbuffer.
 		video::SMaterial Material;

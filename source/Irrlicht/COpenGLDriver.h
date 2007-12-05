@@ -106,6 +106,30 @@ namespace video
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
 
+
+		struct SHWBufferLink_opengl : public SHWBufferLink
+		{
+			SHWBufferLink_opengl(const scene::IMeshBuffer *_MeshBuffer): SHWBufferLink(_MeshBuffer), vbo_verticesID(0),vbo_indicesID(0){}
+
+			GLuint vbo_verticesID; //tmp
+			GLuint vbo_indicesID; //tmp
+		};
+
+		bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
+		bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
+
+		//! updates hardware buffer if needed
+		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer);
+
+		//! Create hardware buffer from mesh
+		virtual SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer* mb);
+
+		//! Delete hardware buffer (only some drivers can)
+		virtual void deleteHardwareBuffer(SHWBufferLink *HWBuffer);
+
+		//! Draw hardware buffer
+		virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer);
+
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 
@@ -323,6 +347,10 @@ namespace video
 		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
 
 		void createMaterialRenderers();
+
+
+
+
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];

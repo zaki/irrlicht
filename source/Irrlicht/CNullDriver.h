@@ -30,6 +30,8 @@ namespace video
 	class IImageLoader;
 	class IImageWriter;
 
+
+
 	class CNullDriver : public IVideoDriver, public IGPUProgrammingServices
 	{
 	public:
@@ -72,7 +74,7 @@ namespace video
 		virtual ITexture* addTexture(const core::dimension2d<s32>& size, const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8);
 
 		//! sets a render target
-		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer, 
+		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 						 bool clearZBuffer, SColor color);
 
 		//! sets a viewport
@@ -148,7 +150,7 @@ namespace video
 				bool useAlphaChannelOfTexture=false);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos, 
+		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
@@ -165,17 +167,17 @@ namespace video
 			SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
 			const core::rect<s32>* clip = 0);
 
-		//! Draws a 2d line. 
+		//! Draws a 2d line.
 		virtual void draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
 
 		//! Draws a non filled concyclic reqular 2d polyon.
-		virtual void draw2DPolygon(core::position2d<s32> center, 
+		virtual void draw2DPolygon(core::position2d<s32> center,
 			f32 radius, video::SColor Color, s32 vertexCount);
 
 		virtual void setFog(SColor color=SColor(0,255,255,255), bool linearFog=true,
-			f32 start=50.0f, f32 end=100.0f, 
+			f32 start=50.0f, f32 end=100.0f,
 			f32 density=0.01f, bool pixelFog=false, bool rangeFog=false);
 
 		//! returns screen size
@@ -222,9 +224,9 @@ namespace video
 
 		//! Fills the stencil shadow with color. After the shadow volume has been drawn
 		//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
-		//! to draw the color of the shadow. 
-		virtual void drawStencilShadow(bool clearStencilBuffer=false, 
-			video::SColor leftUpEdge = video::SColor(0,0,0,0), 
+		//! to draw the color of the shadow.
+		virtual void drawStencilShadow(bool clearStencilBuffer=false,
+			video::SColor leftUpEdge = video::SColor(0,0,0,0),
 			video::SColor rightUpEdge = video::SColor(0,0,0,0),
 			video::SColor leftDownEdge = video::SColor(0,0,0,0),
 			video::SColor rightDownEdge = video::SColor(0,0,0,0));
@@ -240,11 +242,11 @@ namespace video
 		virtual const SLight& getDynamicLight(u32 idx) const;
 
 		//! Removes a texture from the texture cache and deletes it, freeing lot of
-		//! memory. 
+		//! memory.
 		virtual void removeTexture(ITexture* texture);
 
 		//! Removes all texture from the texture cache and deletes them, freeing lot of
-		//! memory. 
+		//! memory.
 		virtual void removeAllTextures();
 
 		//! Creates a render target texture.
@@ -256,7 +258,7 @@ namespace video
 		//! Creates an 1bit alpha channel of the texture based of an color key position.
 		virtual void makeColorKeyTexture(video::ITexture* texture, core::position2d<s32> colorKeyPixelPos) const;
 
-		//! Creates a normal map from a height map texture. 
+		//! Creates a normal map from a height map texture.
 		//! \param amplitude: Constant value by which the height information is multiplied.
 		virtual void makeNormalMapTexture(video::ITexture* texture, f32 amplitude=1.0f) const;
 
@@ -271,22 +273,68 @@ namespace video
 		//! Returns if a texture creation flag is enabled or disabled.
 		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const;
 
-		//! Creates a software image from a file. 
+		//! Creates a software image from a file.
 		virtual IImage* createImageFromFile(const char* filename);
 
-		//! Creates a software image from a file. 
+		//! Creates a software image from a file.
 		virtual IImage* createImageFromFile(io::IReadFile* file);
 
 		//! Creates a software image from a byte array.
 		//! \param useForeignMemory: If true, the image will use the data pointer
 		//! directly and own it from now on, which means it will also try to delete [] the
 		//! data when the image will be destructed. If false, the memory will by copied.
-		virtual IImage* createImageFromData(ECOLOR_FORMAT format, 
+		virtual IImage* createImageFromData(ECOLOR_FORMAT format,
 			const core::dimension2d<s32>& size, void *data,
 			bool ownForeignMemory=true, bool deleteForeignMemory = true);
 
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb);
+
+
+		struct SHWBufferLink
+		{
+			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer):MeshBuffer(_MeshBuffer),ChangedID(0),LastUsed(0),Mapped(scene::EHM_NEVER)
+			{
+				if (MeshBuffer)
+					MeshBuffer->grab();
+			}
+
+			virtual ~SHWBufferLink()
+			{
+				if (MeshBuffer)
+					MeshBuffer->drop();
+			}
+
+			const scene::IMeshBuffer *MeshBuffer;
+			u32 ChangedID;
+			u32 LastUsed;
+			scene::E_HARDWARE_MAPPING Mapped;
+		};
+
+
+		//! Gets hardware buffer link from a meshbuffer (may create or update buffer)
+		virtual SHWBufferLink *getBufferLink(const scene::IMeshBuffer* mb);
+
+		//! updates hardware buffer if needed  (only some drivers can)
+		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer) {}
+
+		//! Create hardware buffer from mesh (only some drivers can)
+		virtual SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer* mb) {return 0;}
+
+		//! Draw hardware buffer (only some drivers can)
+		virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer) {}
+
+		//! Delete hardware buffer (only some drivers can)
+		virtual void deleteHardwareBuffer(SHWBufferLink *HWBuffer) {}
+
+		//! Update all hardware buffers, remove unused ones
+		virtual void updateAllHardwareBuffers();
+
+		//! Remove all hardware buffers
+		virtual void removeAllHardwareBuffers();
+
+		//! is vbo recommended on this mesh?
+		virtual bool isHardwareBufferRecommend(const scene::IMeshBuffer* mb);
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
@@ -307,8 +355,8 @@ namespace video
 
 		//! Returns pointer to the IGPUProgrammingServices interface.
 		virtual IGPUProgrammingServices* getGPUProgrammingServices();
-		
-		//! Adds a new material renderer to the VideoDriver, using pixel and/or 
+
+		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
 		virtual s32 addShaderMaterial(const c8* vertexShaderProgram = 0,
 			const c8* pixelShaderProgram = 0,
@@ -316,7 +364,7 @@ namespace video
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
 
-		//! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the 
+		//! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the
 		//! programs from files.
 		virtual s32 addShaderMaterialFromFiles(io::IReadFile* vertexShaderProgram = 0,
 			io::IReadFile* pixelShaderProgram = 0,
@@ -324,7 +372,7 @@ namespace video
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
 
-		//! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the 
+		//! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the
 		//! programs from files.
 		virtual s32 addShaderMaterialFromFiles(const c8* vertexShaderProgramFileName = 0,
 			const c8* pixelShaderProgramFileName = 0,
@@ -341,46 +389,46 @@ namespace video
 		//! Returns name of the material renderer
 		virtual const char* getMaterialRendererName(u32 idx) const;
 
-		//! Adds a new material renderer to the VideoDriver, based on a high level shading 
-		//! language. Currently only HLSL in D3D9 is supported. 
+		//! Adds a new material renderer to the VideoDriver, based on a high level shading
+		//! language. Currently only HLSL in D3D9 is supported.
 		virtual s32 addHighLevelShaderMaterial(
 			const c8* vertexShaderProgram,
 			const c8* vertexShaderEntryPointName = 0,
 			E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
-			const c8* pixelShaderProgram = 0, 
+			const c8* pixelShaderProgram = 0,
 			const c8* pixelShaderEntryPointName = 0,
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData=0);   
+			s32 userData=0);
 
 		//! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
-		//! but tries to load the programs from files. 
+		//! but tries to load the programs from files.
 		virtual s32 addHighLevelShaderMaterialFromFiles(
 			const c8* vertexShaderProgram,
 			const c8* vertexShaderEntryPointName = "main",
 			E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
-			const c8* pixelShaderProgram = 0, 
+			const c8* pixelShaderProgram = 0,
 			const c8* pixelShaderEntryPointName = "main",
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData=0); 
+			s32 userData=0);
 
 		//! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
-		//! but tries to load the programs from files. 
+		//! but tries to load the programs from files.
 		virtual s32 addHighLevelShaderMaterialFromFiles(
 			io::IReadFile* vertexShaderProgram,
 			const c8* vertexShaderEntryPointName = "main",
 			E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
-			io::IReadFile* pixelShaderProgram = 0, 
+			io::IReadFile* pixelShaderProgram = 0,
 			const c8* pixelShaderEntryPointName = "main",
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
-			s32 userData=0); 
+			s32 userData=0);
 
-		//! Clears the ZBuffer. 
+		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
 
 		//! Returns an image created from the last rendered frame.
@@ -389,7 +437,7 @@ namespace video
 		//! Writes the provided image to disk file
 		virtual bool writeImageToFile(IImage* image, const char* filename, u32 param = 0);
 
-		//! Sets the name of a material renderer. 
+		//! Sets the name of a material renderer.
 		virtual void setMaterialRendererName(s32 idx, const char* name);
 
 		//! Creates material attributes list from a material, usable for serialization and more.
@@ -460,7 +508,7 @@ namespace video
 		{
 			if (x < 0) x = pitch-1; if (x >= pitch) x = 0;
 			if (y < 0) y = height-1; if (y >= height) y = 0;
-			
+
 			return (f32) getAverage ( p[(y * pitch) + x] );
 		}
 
@@ -495,11 +543,16 @@ namespace video
 			core::dimension2d<s32> size;
 		};
 
+
+
 		core::array<SSurface> Textures;
 		core::array<video::IImageLoader*> SurfaceLoader;
 		core::array<video::IImageWriter*> SurfaceWriter;
 		core::array<SLight> Lights;
 		core::array<SMaterialRenderer> MaterialRenderers;
+
+		core::array<SHWBufferLink*> HWBufferLinks;
+
 
 		io::IFileSystem* FileSystem;
 

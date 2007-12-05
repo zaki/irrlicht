@@ -506,6 +506,225 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	}
 }
 
+bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
+{
+	if (!HWBuffer)
+		return false;
+
+	if (!VertexBufferObjectExtension)
+		return false;
+
+	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
+	const void* vertices=mb->getVertices();
+	u32 vertexCount=mb->getVertexCount();
+	E_VERTEX_TYPE vType=mb->getVertexType();
+	u32 vertexSize = getVertexPitchFromType(vType);
+
+	//buffer vertex data, and convert colours...
+    core::array<c8> buffer(vertexSize * vertexCount);
+    memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
+
+    // in order to convert the colours into opengl format (RGBA)
+    switch (vType)
+	{
+		case EVT_STANDARD:
+		{
+			const S3DVertex* pb = reinterpret_cast<const S3DVertex*>(buffer.pointer());
+            const S3DVertex* po = reinterpret_cast<const S3DVertex*>(vertices);
+			for (u32 i=0; i<vertexCount; i++)
+			{
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+			}
+		}
+		break;
+		case EVT_2TCOORDS:
+		{
+			const S3DVertex2TCoords* pb = reinterpret_cast<const S3DVertex2TCoords*>(buffer.pointer());
+            const S3DVertex2TCoords* po = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
+			for (u32 i=0; i<vertexCount; i++)
+			{
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+			}
+		}
+		break;
+		case EVT_TANGENTS:
+		{
+			const S3DVertexTangents* pb = reinterpret_cast<const S3DVertexTangents*>(buffer.pointer());
+            const S3DVertexTangents* po = reinterpret_cast<const S3DVertexTangents*>(vertices);
+			for (u32 i=0; i<vertexCount; i++)
+			{
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+			}
+		}
+		break;
+        default:
+        {
+            return false;
+        }
+	}
+
+	//get or create buffer
+	bool newBuffer=false;
+	if (!HWBuffer->vbo_verticesID)
+	{
+		extGlGenBuffers(1, &HWBuffer->vbo_verticesID);
+		newBuffer=true;
+	}
+	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID );
+
+	//copy data to graphics card
+	if (!newBuffer)
+		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, buffer.const_pointer());
+	else
+	{
+		if (HWBuffer->Mapped==scene::EHM_STATIC)
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STATIC_DRAW);
+		else if (HWBuffer->Mapped==scene::EHM_DYNAMIC)
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_DYNAMIC_DRAW);
+		else //scene::EHM_STREAM
+			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STREAM_DRAW);
+	}
+
+	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	return true;
+}
+
+
+
+bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
+{
+	if (!HWBuffer)
+		return false;
+
+	if(!VertexBufferObjectExtension)
+		return false;
+
+	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
+	const u16* indices=mb->getIndices();
+	u32 indexCount= mb->getIndexCount();
+    u32 indexSize = 2;
+
+
+    //get or create buffer
+    bool newBuffer=false;
+	if (!HWBuffer->vbo_indicesID)
+	{
+		extGlGenBuffers(1, &HWBuffer->vbo_indicesID);
+		newBuffer=true;
+	}
+	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
+
+	//copy data to graphics card
+	if (!newBuffer)
+		extGlBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexCount * indexSize, indices);
+	else
+	{
+		if (HWBuffer->Mapped==scene::EHM_STATIC)
+			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_STATIC_DRAW);
+		else if (HWBuffer->Mapped==scene::EHM_DYNAMIC)
+			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_DYNAMIC_DRAW);
+		else //scene::EHM_STREAM
+			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_STREAM_DRAW);
+	}
+
+	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	return true;
+}
+
+
+
+
+//! updates hardware buffer if needed
+bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
+{
+	if (!HWBuffer) return false;
+
+	if (HWBuffer->ChangedID != HWBuffer->MeshBuffer->getChangedID()
+		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID
+		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
+	{
+		HWBuffer->ChangedID = HWBuffer->MeshBuffer->getChangedID();
+
+		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer)) return false;
+		if (!updateIndexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer)) return false;
+	}
+}
+
+//! Create hardware buffer from mesh
+COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::IMeshBuffer* mb)
+{
+	if (!mb) return 0;
+	if (mb->getHardwareMappingHint()==scene::EHM_NEVER) return 0;
+
+	SHWBufferLink_opengl *HWBuffer=new SHWBufferLink_opengl(mb);
+
+
+	//add to list, in order of their meshbuffer pointer
+	u32 n;
+	for (n=0;n<HWBufferLinks.size();++n)
+		if (HWBufferLinks[n]->MeshBuffer > HWBuffer->MeshBuffer)
+			break;
+	if (n<HWBufferLinks.size())
+		HWBufferLinks.insert(HWBuffer,n);
+	else
+		HWBufferLinks.push_back(HWBuffer);
+
+	HWBuffer->ChangedID=HWBuffer->MeshBuffer->getChangedID();
+	HWBuffer->Mapped=mb->getHardwareMappingHint();
+	HWBuffer->LastUsed=0;
+	HWBuffer->vbo_verticesID=0;
+	HWBuffer->vbo_indicesID=0;
+
+	if (!updateHardwareBuffer(HWBuffer))
+	{
+		deleteHardwareBuffer(HWBuffer);
+		HWBufferLinks.erase(n);
+		delete HWBuffer;
+		return 0;
+	}
+
+	return HWBuffer;
+}
+
+void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
+{
+	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
+
+	if (HWBuffer->vbo_verticesID)
+	{
+		extGlDeleteBuffers(1, &HWBuffer->vbo_verticesID);
+		HWBuffer->vbo_verticesID=0;
+	}
+	if (HWBuffer->vbo_indicesID)
+	{
+		extGlDeleteBuffers(1, &HWBuffer->vbo_indicesID);
+		HWBuffer->vbo_indicesID=0;
+	}
+
+}
+
+//! Draw hardware buffer
+void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
+{
+	if (!_HWBuffer) return;
+
+	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
+	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
+
+	updateHardwareBuffer(HWBuffer); //check if update is needed
+
+	HWBuffer->LastUsed=0;//reset count
+
+	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID);
+	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
+
+	drawVertexPrimitiveList(0, mb->getVertexCount(), 0, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
+
+	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
+	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
 
 
 //! draws a vertex primitive list
@@ -519,47 +738,49 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType);
 
-	// convert colors to gl color format.
-	vertexCount *= 4; //reused as color component count
-	ColorBuffer.set_used(vertexCount);
-	u32 i;
-
-	switch (vType)
+	if (vertices)
 	{
-		case EVT_STANDARD:
+		// convert colors to gl color format.
+		vertexCount *= 4; //reused as color component count
+		ColorBuffer.set_used(vertexCount);
+		u32 i;
+
+		switch (vType)
 		{
-			const S3DVertex* p = reinterpret_cast<const S3DVertex*>(vertices);
-			for ( i=0; i<vertexCount; i+=4)
+			case EVT_STANDARD:
 			{
-				p->Color.toOpenGLColor(&ColorBuffer[i]);
-				++p;
+				const S3DVertex* p = reinterpret_cast<const S3DVertex*>(vertices);
+				for ( i=0; i<vertexCount; i+=4)
+				{
+					p->Color.toOpenGLColor(&ColorBuffer[i]);
+					++p;
+				}
 			}
-		}
-		break;
-		case EVT_2TCOORDS:
-		{
-			const S3DVertex2TCoords* p = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
-			for ( i=0; i<vertexCount; i+=4)
+			break;
+			case EVT_2TCOORDS:
 			{
-				p->Color.toOpenGLColor(&ColorBuffer[i]);
-				++p;
+				const S3DVertex2TCoords* p = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
+				for ( i=0; i<vertexCount; i+=4)
+				{
+					p->Color.toOpenGLColor(&ColorBuffer[i]);
+					++p;
+				}
 			}
-		}
-		break;
-		case EVT_TANGENTS:
-		{
-			const S3DVertexTangents* p = reinterpret_cast<const S3DVertexTangents*>(vertices);
-			for ( i=0; i<vertexCount; i+=4)
+			break;
+			case EVT_TANGENTS:
 			{
-				p->Color.toOpenGLColor(&ColorBuffer[i]);
-				++p;
+				const S3DVertexTangents* p = reinterpret_cast<const S3DVertexTangents*>(vertices);
+				for ( i=0; i<vertexCount; i+=4)
+				{
+					p->Color.toOpenGLColor(&ColorBuffer[i]);
+					++p;
+				}
 			}
+			break;
 		}
-		break;
 	}
 
 	// draw everything
-
 	setRenderStates3DMode();
 
 	if (MultiTextureExtension)
@@ -572,13 +793,17 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
 		glEnableClientState(GL_NORMAL_ARRAY);
 
-	glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	if (vertices) glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+
 	switch (vType)
 	{
 		case EVT_STANDARD:
 			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Pos);
 			glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Normal);
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
+
+			if (!vertices) glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Color);
+
 			if (MultiTextureExtension && CurrentTexture[1])
 			{
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
@@ -591,6 +816,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
 			// texture coordinates
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
+
+			if (!vertices) glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
+
 			if (MultiTextureExtension)
 			{
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
@@ -603,6 +831,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			glNormalPointer(GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Normal);
 			// texture coordinates
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
+
+			if (!vertices) glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Color);
+
 			if (MultiTextureExtension)
 			{
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
@@ -695,6 +926,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
 }
 
 
@@ -864,10 +1096,10 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	{
 		if (!clipRect->isValid())
 			return;
- 
+
 		glEnable(GL_SCISSOR_TEST);
 		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y, 
+		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(), clipRect->getHeight());
 	}
 
@@ -959,7 +1191,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
 
 		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y)); 
+		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y));
 
 		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
@@ -1509,7 +1741,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		glMatrixMode(GL_PROJECTION);
 
 		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-renderTargetSize.Height), -1.0, 1.0); 
+		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-renderTargetSize.Height), -1.0, 1.0);
 		m.setTranslation(core::vector3df(-1,1,0));
 
 		createGLMatrix(glmat, m);
@@ -1517,7 +1749,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glTranslatef (0.375, 0.375, 0.0); 
+		glTranslatef (0.375, 0.375, 0.0);
 
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
@@ -2242,7 +2474,7 @@ void COpenGLDriver::clearZBuffer()
    glClear(GL_DEPTH_BUFFER_BIT);
 
    glDepthMask(enabled);
-} 
+}
 
 //! Returns an image created from the last rendered frame.
 IImage* COpenGLDriver::createScreenShot()
