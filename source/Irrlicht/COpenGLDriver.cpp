@@ -639,7 +639,8 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 //! updates hardware buffer if needed
 bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 {
-	if (!HWBuffer) return false;
+	if (!HWBuffer)
+		return false;
 
 	if (HWBuffer->ChangedID != HWBuffer->MeshBuffer->getChangedID()
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID
@@ -647,9 +648,12 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 	{
 		HWBuffer->ChangedID = HWBuffer->MeshBuffer->getChangedID();
 
-		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer)) return false;
-		if (!updateIndexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer)) return false;
+		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
+			return false;
+		if (!updateIndexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
+			return false;
 	}
+	return true;
 }
 
 //! Create hardware buffer from mesh
