@@ -417,6 +417,7 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 
 	//update bounding box
 	InterpolationBuffer.setBoundingBox(BoxList[secondFrame].getInterpolated(BoxList[firstFrame], div));
+	InterpolationBuffer.setDirty();
 }
 
 

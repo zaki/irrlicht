@@ -79,7 +79,6 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 //! blend: {0-old position, 1-New position}
 void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 {
-
 	if ( !HasAnimation  || lastAnimatedFrame==frame)
 		return;
 
@@ -91,7 +90,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 	for (u32 i=0; i<AllJoints.size(); ++i)
 	{
 		//To Bitplane: The joints can be animated here with no input from their parents, but for setAnimationMode extra checks are needed to their parents
-
 		SJoint *Joint = AllJoints[i];
 
 		const core::vector3df oldPosition = Joint->Animatedposition;
@@ -132,7 +130,6 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		buildAll_LocalAnimatedMatrices();
 		//-----------------
 	}
-
 }
 
 
@@ -431,16 +428,13 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 //! Preforms a software skin on this mesh based of joint positions
 void CSkinnedMesh::skinMesh()
 {
-
 	if ( !HasAnimation)
 		return;
-
 
 	//----------------
 	// Temp!
 	buildAll_GlobalAnimatedMatrices();
 	//-----------------
-
 
 	if (!HardwareSkinning)
 	{
@@ -466,9 +460,8 @@ void CSkinnedMesh::skinMesh()
 		for (i=0; i<RootJoints.size(); ++i)
 			SkinJoint(RootJoints[i], 0);
 	}
-
-
 }
+
 
 void CSkinnedMesh::SkinJoint(SJoint *Joint, SJoint *ParentJoint)
 {
@@ -520,16 +513,6 @@ void CSkinnedMesh::SkinJoint(SJoint *Joint, SJoint *ParentJoint)
 	for (u32 j=0; j<Joint->Children.size(); ++j)
 		SkinJoint(Joint->Children[j], Joint);
 }
-
-
-
-
-
-
-
-
-
-
 
 
 E_ANIMATED_MESH_TYPE CSkinnedMesh::getMeshType() const
@@ -940,7 +923,6 @@ void CSkinnedMesh::finalize()
 
 	if (HasAnimation)
 	{
-
 		//--- optimize and check keyframes ---
 		for(i=0;i<AllJoints.size();++i)
 		{
@@ -1103,9 +1085,6 @@ void CSkinnedMesh::finalize()
 			Buffer->Transformation=AllJoints[i]->GlobalAnimatedMatrix;
 		}
 	}
-
-
-
 }
 
 
