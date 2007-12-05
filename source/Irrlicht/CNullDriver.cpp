@@ -214,6 +214,7 @@ bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 bool CNullDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
+	updateAllHardwareBuffers();
 	return true;
 }
 
@@ -1246,10 +1247,84 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 	if (!mb)
 		return;
 
-	drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
+	//IVertexBuffer and IIndexBuffer later
+	SHWBufferLink *HWBuffer=getBufferLink(mb);
+
+	if (HWBuffer)
+		drawHardwareBuffer(HWBuffer);
+	else
+		drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
+
 }
 
+CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
+{
+	if (!isHardwareBufferRecommend(mb))
+		return 0;
 
+	/*
+	u32 startIndex=0;
+	for (u32 n=0;n<HWBufferLinks.size();n+=30)
+	{
+		if (HWBufferLinks[n]->MeshBuffer < mb)
+			startIndex=n;
+	}
+	*/
+
+	//search for hardware links
+	for (u32 n=0;n<HWBufferLinks.size();++n)
+	{
+		SHWBufferLink *Link=HWBufferLinks[n];
+		if (Link->MeshBuffer==mb)
+		{
+			((scene::IMeshBuffer*)mb)->HardwareHint=n;
+			return Link;
+		}
+	}
+
+	return createHardwareBuffer(mb); //no hardware links, and mesh wants one, create it
+}
+
+//! Update all hardware buffers, remove unused ones
+void CNullDriver::updateAllHardwareBuffers()
+{
+	for (u32 n=0;n<HWBufferLinks.size();++n)
+	{
+		SHWBufferLink *Link=HWBufferLinks[n];
+
+		Link->LastUsed++;
+
+		if (Link->LastUsed>1000)
+		{
+			deleteHardwareBuffer(Link);
+			delete Link;
+			HWBufferLinks.erase(n);
+		}
+	}
+}
+
+//! Remove all hardware buffers
+void CNullDriver::removeAllHardwareBuffers()
+{
+	for (u32 n=0;n<HWBufferLinks.size();++n)
+	{
+		deleteHardwareBuffer(HWBufferLinks[n]);
+		delete HWBufferLinks[n];
+	}
+
+	HWBufferLinks.clear();
+}
+
+bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
+{
+	if (mb->getHardwareMappingHint()==scene::EHM_NEVER)
+		return false;
+
+	if (mb->getVertexCount()<500) //todo: tweak and make user definable
+		return false;
+
+	return true;
+}
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
