@@ -696,7 +696,7 @@ bool CSkinnedMesh::setHardwareSkinning(bool on)
 
 		HardwareSkinning=on;
 	}
-	return true;
+	return HardwareSkinning;
 }
 
 void CSkinnedMesh::CalculateGlobalMatrixes(SJoint *Joint,SJoint *ParentJoint)
