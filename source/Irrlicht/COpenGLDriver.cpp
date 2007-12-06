@@ -516,9 +516,9 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const void* vertices=mb->getVertices();
-	u32 vertexCount=mb->getVertexCount();
-	E_VERTEX_TYPE vType=mb->getVertexType();
-	u32 vertexSize = getVertexPitchFromType(vType);
+	const u32 vertexCount=mb->getVertexCount();
+	const E_VERTEX_TYPE vType=mb->getVertexType();
+	const u32 vertexSize = getVertexPitchFromType(vType);
 
 	//buffer vertex data, and convert colours...
 	core::array<c8> buffer(vertexSize * vertexCount);
@@ -708,7 +708,6 @@ void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 		extGlDeleteBuffers(1, &HWBuffer->vbo_indicesID);
 		HWBuffer->vbo_indicesID=0;
 	}
-
 }
 
 
@@ -811,60 +810,85 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	{
 		case EVT_STANDARD:
 			if (vertices)
+			{
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Normal);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Pos);
+			}
 			else
+			{
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertex), (u8*)0 + 12);
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex), (u8*)0 + 24);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), (u8*)0 + 28);
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), 0);
-			glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Normal);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
-
-			if (!vertices)
-				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Color);
+			}
 
 			if (MultiTextureExtension && CurrentTexture[1])
 			{
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
+				if (vertices)
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
+				else
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), (u8*)0 + 28);
 			}
 			break;
 		case EVT_2TCOORDS:
 			if (vertices)
+			{
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
+			}
 			else
+			{
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertex2TCoords), (u8*)0 + 12);
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), (u8*)0 + 24);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), (u8*)0 + 28);
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), 0);
-			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
-			// texture coordinates
-			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
+			}
 
-			if (!vertices) glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Color);
 
 			if (MultiTextureExtension)
 			{
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
+				if (vertices)
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
+				else
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), (u8*)0 + 34);
 			}
 			break;
 		case EVT_TANGENTS:
 			if (vertices)
+			{
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Normal);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Pos);
+			}
 			else
+			{
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 12);
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), (u8*)0 + 24);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 28);
 				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), 0);
-			glNormalPointer(GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Normal);
-			// texture coordinates
-			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
-
-			if (!vertices) glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Color);
+			}
 
 			if (MultiTextureExtension)
 			{
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
+				if (vertices)
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
+				else
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 34);
 
 				extGlClientActiveTexture(GL_TEXTURE2_ARB);
 				glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
-				glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
+				if (vertices)
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
+				else
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 46);
 			}
 			break;
 	}
