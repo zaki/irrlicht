@@ -59,7 +59,9 @@ struct SMD3Skin
 
 //! Constructor
 CAnimatedMeshMD3::CAnimatedMeshMD3 ()
-: Mesh ( 0 )
+// TODO: Correct initial values needed
+: Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f)
+
 {
 #ifdef _DEBUG
 	setDebugName("CAnimatedMeshMD3");
@@ -91,6 +93,7 @@ u32 CAnimatedMeshMD3::getFrameCount() const
 void CAnimatedMeshMD3::setInterpolationShift ( u32 shift, u32 loopMode )
 {
 	IPolShift = shift;
+	LoopMode = loopMode;
 }
 
 
