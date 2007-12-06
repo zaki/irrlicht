@@ -61,13 +61,13 @@ public:
 	//! unlock function
 	virtual void unlock();
 
-	//! Returns original size of the texture.
+	//! Returns original size of the texture (image).
 	virtual const core::dimension2d<s32>& getOriginalSize() const;
 
 	//! Returns size of the texture.
 	virtual const core::dimension2d<s32>& getSize() const;
 
-	//! returns driver type of texture (=the driver, who created the texture)
+	//! returns driver type of texture (=the driver, that created it)
 	virtual E_DRIVER_TYPE getDriverType() const;
 
 	//! returns color format of texture
@@ -113,7 +113,7 @@ private:
 	//! \param: newTexture is true if method is called from a newly created texture for the first time. Otherwise call with false to improve memory handling.
 	void copyTexture(bool newTexture=true);
 
-	//! returns the size of a texture which would be the optimize size for rendering it
+	//! returns the size of a texture which would be optimal for rendering
 	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	core::dimension2d<s32> ImageSize;
