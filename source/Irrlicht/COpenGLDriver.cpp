@@ -570,6 +570,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		extGlGenBuffers(1, &HWBuffer->vbo_verticesID);
 		newBuffer=true;
 	}
+#if defined(GL_ARB_vertex_buffer_object)
 	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID );
 
 	//copy data to graphics card
@@ -586,6 +587,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	}
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
+#endif
 
 	return true;
 }
@@ -599,11 +601,6 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	if(!FeatureAvailable[IRR_ARB_vertex_buffer_object])
 		return false;
 
-	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
-	const u16* indices=mb->getIndices();
-	u32 indexCount= mb->getIndexCount();
-	u32 indexSize = 2;
-
 	//get or create buffer
 	bool newBuffer=false;
 	if (!HWBuffer->vbo_indicesID)
@@ -611,6 +608,13 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		extGlGenBuffers(1, &HWBuffer->vbo_indicesID);
 		newBuffer=true;
 	}
+
+#if defined(GL_ARB_vertex_buffer_object)
+	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
+
+	const u16* indices=mb->getIndices();
+	u32 indexCount= mb->getIndexCount();
+	u32 indexSize = 2;
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
 
 	//copy data to graphics card
@@ -627,6 +631,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	}
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+#endif
 
 	return true;
 }
@@ -714,11 +719,13 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 		return;
 
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
-	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
 	updateHardwareBuffer(HWBuffer); //check if update is needed
 
 	HWBuffer->LastUsed=0;//reset count
+
+#if defined(GL_ARB_vertex_buffer_object)
+	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID);
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
@@ -727,6 +734,7 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+#endif
 }
 
 
