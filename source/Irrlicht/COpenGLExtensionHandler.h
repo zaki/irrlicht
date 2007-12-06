@@ -663,9 +663,7 @@ class COpenGLExtensionHandler
 	bool MultiTextureExtension;
 	bool MultiSamplingExtension;
 	bool AnisotropyExtension;
-	bool SeparateStencilExtension;
 	bool TextureCompressionExtension;
-	bool VertexBufferObjectExtension;
 
 	// Some non-boolean properties
 	//! Maxmimum texture layers supported by the fixed pipeline

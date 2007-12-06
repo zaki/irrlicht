@@ -356,14 +356,14 @@ void COpenGLDriver::createMaterialRenderers()
 	lmr->drop();
 
 	// add remaining material renderer
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_DETAIL_MAP( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SPHERE_MAP( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_REFLECTION_2_LAYER( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER( this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_DETAIL_MAP(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SPHERE_MAP(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_REFLECTION_2_LAYER(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(this));
 
 	// add normal map renderers
 	s32 tmp = 0;
@@ -511,7 +511,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	if (!HWBuffer)
 		return false;
 
-	if (!VertexBufferObjectExtension)
+	if (!FeatureAvailable[IRR_ARB_vertex_buffer_object])
 		return false;
 
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
@@ -521,16 +521,16 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	u32 vertexSize = getVertexPitchFromType(vType);
 
 	//buffer vertex data, and convert colours...
-    core::array<c8> buffer(vertexSize * vertexCount);
-    memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
+	core::array<c8> buffer(vertexSize * vertexCount);
+	memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
 
-    // in order to convert the colours into opengl format (RGBA)
-    switch (vType)
+	// in order to convert the colours into opengl format (RGBA)
+	switch (vType)
 	{
 		case EVT_STANDARD:
 		{
 			const S3DVertex* pb = reinterpret_cast<const S3DVertex*>(buffer.pointer());
-            const S3DVertex* po = reinterpret_cast<const S3DVertex*>(vertices);
+			const S3DVertex* po = reinterpret_cast<const S3DVertex*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
 				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
@@ -540,7 +540,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		case EVT_2TCOORDS:
 		{
 			const S3DVertex2TCoords* pb = reinterpret_cast<const S3DVertex2TCoords*>(buffer.pointer());
-            const S3DVertex2TCoords* po = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
+			const S3DVertex2TCoords* po = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
 				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
@@ -550,17 +550,17 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		case EVT_TANGENTS:
 		{
 			const S3DVertexTangents* pb = reinterpret_cast<const S3DVertexTangents*>(buffer.pointer());
-            const S3DVertexTangents* po = reinterpret_cast<const S3DVertexTangents*>(vertices);
+			const S3DVertexTangents* po = reinterpret_cast<const S3DVertexTangents*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
 				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
 			}
 		}
 		break;
-        default:
-        {
-            return false;
-        }
+		default:
+		{
+			return false;
+		}
 	}
 
 	//get or create buffer
@@ -591,23 +591,21 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 }
 
 
-
 bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 {
 	if (!HWBuffer)
 		return false;
 
-	if(!VertexBufferObjectExtension)
+	if(!FeatureAvailable[IRR_ARB_vertex_buffer_object])
 		return false;
 
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const u16* indices=mb->getIndices();
 	u32 indexCount= mb->getIndexCount();
-    u32 indexSize = 2;
+	u32 indexSize = 2;
 
-
-    //get or create buffer
-    bool newBuffer=false;
+	//get or create buffer
+	bool newBuffer=false;
 	if (!HWBuffer->vbo_indicesID)
 	{
 		extGlGenBuffers(1, &HWBuffer->vbo_indicesID);
@@ -634,8 +632,6 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 }
 
 
-
-
 //! updates hardware buffer if needed
 bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 {
@@ -656,14 +652,14 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 	return true;
 }
 
-//! Create hardware buffer from mesh
+
+//! Create hardware buffer from meshbuffer
 COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::IMeshBuffer* mb)
 {
-	if (!mb) return 0;
-	if (mb->getHardwareMappingHint()==scene::EHM_NEVER) return 0;
+	if (!mb || (mb->getHardwareMappingHint()==scene::EHM_NEVER))
+		return 0;
 
 	SHWBufferLink_opengl *HWBuffer=new SHWBufferLink_opengl(mb);
-
 
 	//add to list, in order of their meshbuffer pointer
 	u32 n;
@@ -692,6 +688,7 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 	return HWBuffer;
 }
 
+
 void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
@@ -709,10 +706,12 @@ void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 
 }
 
+
 //! Draw hardware buffer
 void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
-	if (!_HWBuffer) return;
+	if (!_HWBuffer)
+		return;
 
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
@@ -797,16 +796,21 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
 		glEnableClientState(GL_NORMAL_ARRAY);
 
-	if (vertices) glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+	if (vertices)
+		glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
 
 	switch (vType)
 	{
 		case EVT_STANDARD:
-			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Pos);
+			if (vertices)
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Pos);
+			else
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), 0);
 			glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Normal);
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
 
-			if (!vertices) glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Color);
+			if (!vertices)
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Color);
 
 			if (MultiTextureExtension && CurrentTexture[1])
 			{
@@ -816,7 +820,10 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			}
 			break;
 		case EVT_2TCOORDS:
-			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
+			if (vertices)
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
+			else
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), 0);
 			glNormalPointer(GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
 			// texture coordinates
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
@@ -831,7 +838,10 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			}
 			break;
 		case EVT_TANGENTS:
-			glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Pos);
+			if (vertices)
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Pos);
+			else
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), 0);
 			glNormalPointer(GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Normal);
 			// texture coordinates
 			glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
@@ -930,9 +940,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
 }
-
 
 
 //! draws a 2d image, using a color and the alpha channel of the texture if
@@ -1980,8 +1988,8 @@ void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 
 	if (vp.getHeight()>0 && vp.getWidth()>0)
 		glViewport(vp.UpperLeftCorner.X,
-		           getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(),
-			   vp.getWidth(), vp.getHeight());
+				getCurrentRenderTargetSize().Height - vp.UpperLeftCorner.Y - vp.getHeight(),
+				vp.getWidth(), vp.getHeight());
 
 	ViewPort = vp;
 }
@@ -2357,7 +2365,7 @@ ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>&
 #if defined(GL_EXT_framebuffer_object)
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
-        	rtt = new COpenGLTexture(size, FeatureAvailable[IRR_EXT_packed_depth_stencil], name, this);
+		rtt = new COpenGLTexture(size, FeatureAvailable[IRR_EXT_packed_depth_stencil], name, this);
 	else
 #endif
 	{
@@ -2387,7 +2395,7 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 
 //! checks triangle count and print warning if wrong
 bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-								 bool clearZBuffer, SColor color)
+								bool clearZBuffer, SColor color)
 {
 	// check for right driver type
 
@@ -2405,6 +2413,8 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	ResetRenderStates=true;
 	if (RenderTargetTexture!=0)
 	{
+		glReadPixels(0, 0, RenderTargetTexture->getSize().Width, RenderTargetTexture->getSize().Height, GL_RGBA, GL_UNSIGNED_BYTE, RenderTargetTexture->lock());
+		RenderTargetTexture->unlock();
 		if (RenderTargetTexture->isFrameBufferObject())
 		{
 			RenderTargetTexture->unbindFrameBufferObject();
@@ -2468,17 +2478,19 @@ const core::dimension2d<s32>& COpenGLDriver::getCurrentRenderTargetSize() const
 		return CurrentRendertargetSize;
 }
 
+
 //! Clears the ZBuffer.
 void COpenGLDriver::clearZBuffer()
 {
-   GLboolean enabled = GL_TRUE;
-   glGetBooleanv(GL_DEPTH_WRITEMASK, &enabled);
+	GLboolean enabled = GL_TRUE;
+	glGetBooleanv(GL_DEPTH_WRITEMASK, &enabled);
 
-   glDepthMask(GL_TRUE);
-   glClear(GL_DEPTH_BUFFER_BIT);
+	glDepthMask(GL_TRUE);
+	glClear(GL_DEPTH_BUFFER_BIT);
 
-   glDepthMask(enabled);
+	glDepthMask(enabled);
 }
+
 
 //! Returns an image created from the last rendered frame.
 IImage* COpenGLDriver::createScreenShot()

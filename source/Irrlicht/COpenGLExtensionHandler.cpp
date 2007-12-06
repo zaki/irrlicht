@@ -15,9 +15,7 @@ namespace video
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false),
 		MultiTextureExtension(false), MultiSamplingExtension(false), AnisotropyExtension(false),
-		SeparateStencilExtension(false),
 		TextureCompressionExtension(false),
-		VertexBufferObjectExtension(false),
 		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
 		MaxAnisotropy(1.0f), MaxUserClipPlanes(0),
 		Version(0), ShaderLanguageVersion(0)
@@ -102,9 +100,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	MultiTextureExtension = FeatureAvailable[IRR_ARB_multitexture];
 	MultiSamplingExtension = FeatureAvailable[IRR_ARB_multisample];
 	AnisotropyExtension = FeatureAvailable[IRR_EXT_texture_filter_anisotropic];
-	SeparateStencilExtension = FeatureAvailable[IRR_ATI_separate_stencil];
 	TextureCompressionExtension = FeatureAvailable[IRR_ARB_texture_compression];
-	VertexBufferObjectExtension = FeatureAvailable[IRR_ARB_vertex_buffer_object];
 	StencilBuffer=stencilBuffer;
 
 #ifdef _IRR_WINDOWS_API_
