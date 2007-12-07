@@ -316,7 +316,7 @@ namespace video
 		virtual SHWBufferLink *getBufferLink(const scene::IMeshBuffer* mb);
 
 		//! updates hardware buffer if needed  (only some drivers can)
-		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer) {return true;}
+		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer) {return false;}
 
 		//! Create hardware buffer from mesh (only some drivers can)
 		virtual SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer* mb) {return 0;}

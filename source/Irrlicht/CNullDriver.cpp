@@ -1277,7 +1277,7 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer*
 		SHWBufferLink *Link=HWBufferLinks[n];
 		if (Link->MeshBuffer==mb)
 		{
-			((scene::IMeshBuffer*)mb)->HardwareHint=n;
+			//((scene::IMeshBuffer*)mb)->HardwareHint=n;
 			return Link;
 		}
 	}
