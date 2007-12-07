@@ -459,6 +459,10 @@ void CSkinnedMesh::skinMesh()
 		//skin starting with the root joints
 		for (i=0; i<RootJoints.size(); ++i)
 			SkinJoint(RootJoints[i], 0);
+
+		for (i=0; i<SkinningBuffers->size(); ++i)
+			(*SkinningBuffers)[i]->setDirty();
+
 	}
 }
 

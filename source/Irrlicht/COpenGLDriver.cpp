@@ -514,6 +514,8 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	if (!FeatureAvailable[IRR_ARB_vertex_buffer_object])
 		return false;
 
+#if defined(GL_ARB_vertex_buffer_object)
+
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const void* vertices=mb->getVertices();
 	const u32 vertexCount=mb->getVertexCount();
@@ -570,7 +572,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		extGlGenBuffers(1, &HWBuffer->vbo_verticesID);
 		newBuffer=true;
 	}
-#if defined(GL_ARB_vertex_buffer_object)
+
 	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID );
 
 	//copy data to graphics card
@@ -587,9 +589,14 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	}
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
 
 	return true;
+
+#else
+	return false;
+#endif
+
+
 }
 
 
@@ -601,6 +608,14 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	if(!FeatureAvailable[IRR_ARB_vertex_buffer_object])
 		return false;
 
+#if defined(GL_ARB_vertex_buffer_object)
+
+	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
+
+	const u16* indices=mb->getIndices();
+	u32 indexCount= mb->getIndexCount();
+	u32 indexSize = 2;
+
 	//get or create buffer
 	bool newBuffer=false;
 	if (!HWBuffer->vbo_indicesID)
@@ -609,12 +624,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		newBuffer=true;
 	}
 
-#if defined(GL_ARB_vertex_buffer_object)
-	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
-	const u16* indices=mb->getIndices();
-	u32 indexCount= mb->getIndexCount();
-	u32 indexSize = 2;
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
 
 	//copy data to graphics card
@@ -631,9 +641,13 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	}
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-#endif
 
 	return true;
+#else
+	return false;
+#endif
+
+
 }
 
 
@@ -647,6 +661,9 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
 	{
+		os::Printer::log("updating vbo", ELL_ERROR);
+
+
 		HWBuffer->ChangedID = HWBuffer->MeshBuffer->getChangedID();
 
 		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
@@ -661,12 +678,19 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 //! Create hardware buffer from meshbuffer
 COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::IMeshBuffer* mb)
 {
+#if defined(GL_ARB_vertex_buffer_object)
+
 	if (!mb || (mb->getHardwareMappingHint()==scene::EHM_NEVER))
 		return 0;
+
+
+
+	os::Printer::log("making vbo", ELL_ERROR);
 
 	SHWBufferLink_opengl *HWBuffer=new SHWBufferLink_opengl(mb);
 
 	//add to list, in order of their meshbuffer pointer
+
 	u32 n;
 	for (n=0;n<HWBufferLinks.size();++n)
 		if (HWBufferLinks[n]->MeshBuffer > HWBuffer->MeshBuffer)
@@ -674,6 +698,7 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 	if (n<HWBufferLinks.size())
 		HWBufferLinks.insert(HWBuffer,n);
 	else
+
 		HWBufferLinks.push_back(HWBuffer);
 
 	HWBuffer->ChangedID=HWBuffer->MeshBuffer->getChangedID();
@@ -691,13 +716,16 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 	}
 
 	return HWBuffer;
+#else
+	return 0;
+#endif
 }
 
 
 void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
+#if defined(GL_ARB_vertex_buffer_object)
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
-
 	if (HWBuffer->vbo_verticesID)
 	{
 		extGlDeleteBuffers(1, &HWBuffer->vbo_verticesID);
@@ -708,6 +736,7 @@ void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 		extGlDeleteBuffers(1, &HWBuffer->vbo_indicesID);
 		HWBuffer->vbo_indicesID=0;
 	}
+#endif
 }
 
 
