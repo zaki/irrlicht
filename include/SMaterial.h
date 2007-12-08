@@ -219,11 +219,6 @@ namespace video
 		core::matrix4& getTextureMatrix(u32 i)
 		{
 			return TextureLayer[i].getTextureMatrix();
-			else // this should not happen
-			{
-				_IRR_DEBUG_BREAK_IF(true)
-				return TextureLayer[0].getTextureMatrix();
-			}
 		}
 
 		//! Gets the immutable texture transformation matrix for level i
