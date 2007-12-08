@@ -912,10 +912,12 @@ core::stringc CB3DMeshFileLoader::stripPathFromString(core::stringc string, bool
 	if (backSlash>slashIndex) slashIndex=backSlash;
 
 	if (slashIndex==-1)//no slashes found
+	{
 		if (returnPath)
 			return core::stringc(); //no path to return
 		else
 			return string;
+	}
 
 	if (returnPath)
 		return string.subString(0, slashIndex + 1);

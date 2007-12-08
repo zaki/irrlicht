@@ -50,7 +50,7 @@ public:
 
 	//! Constructor
 	COpenGLSLMaterialRenderer(
-		video::COpenGLDriver* driver, 
+		COpenGLDriver* driver, 
 		s32& outMaterialTypeNr, 
 		const c8* vertexShaderProgram,
 		const c8* vertexShaderEntryPointName,
@@ -59,14 +59,14 @@ public:
 		const c8* pixelShaderEntryPointName,
 		E_PIXEL_SHADER_TYPE psCompileTarget,
 		IShaderConstantSetCallBack* callback,
-		video::IMaterialRenderer* baseMaterial,
+		IMaterialRenderer* baseMaterial,
 		s32 userData);
 
 	//! Destructor
 	virtual ~COpenGLSLMaterialRenderer();
 
-	virtual void OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
-		bool resetAllRenderstates, video::IMaterialRendererServices* services);
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
+		bool resetAllRenderstates, IMaterialRendererServices* services);
 
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
@@ -100,7 +100,7 @@ protected:
 	bool createShader(GLenum shaderType, const char* shader);
 	bool linkProgram();
 	
-	video::COpenGLDriver* Driver;
+	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
 	IMaterialRenderer* BaseMaterial;
 

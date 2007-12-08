@@ -2054,7 +2054,7 @@ IImage* CD3D8Driver::createScreenShot()
 
 
 // returns the current size of the screen or rendertarget
-core::dimension2d<s32> CD3D8Driver::getCurrentRenderTargetSize()
+const core::dimension2d<s32>& CD3D8Driver::getCurrentRenderTargetSize() const
 {
 	if ( CurrentRendertargetSize.Width == 0 )
 		return ScreenSize;

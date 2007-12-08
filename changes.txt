@@ -1,13 +1,32 @@
 -------------------------------------------
-Changes in version 1.4 (... 13.11.2007)
-	- Fixed somed CQuake3ShaderSceneNode problems.
-	- Changed BurningsVideo internal Vertex Format. version changed to 0.39
-	- SceneManager:
-		Removed the seperate rendering states for quake3 Shader Scene Nodes.
-		Nodes are now solid or transparent. ( but still more states are needed )
+Changes in version 1.5 (... 2008)
+
+ - Hardware accelerated Vertex and Index Buffer support finally integrated into Irrlicht. Thanks to a ressource handling idea by Klasker and the almost immediate implementation by Luke, Irrlicht now supports VBOs under OpenGL. D3D will follow soon.
+   Hardware buffers make rendering the same vertices much faster. In some cases this can be more than 10x faster. To sue this feature with a mesh simple set a usage type, e.g. via MeshBuffer->setHardwareMappingHint(scene::EHM_STATIC). The driver will upload the vertices and indices on the next draw and reuse this information without the need to upload it each frame.
+
+ - MeshBuffers can now access the elements of the S3DVertex base class in all vertex types directly, instead of using teh getVertices() pointer access. This simplifies simple mesh manipulations as it does not require a switch statement over all vertex types.
+
+ - GLSL changes for setting arrays. Also allow for only pixel or vertex shader to be set.
+
+ - Some bugfixes for Joint handling and skinned meshes.
+
+ - Added WAL image format support based on the original loader by Murphy McCauley, written for Irrlicht around version 0.7.
+
+ - OpenGL RTTs now also support alpha values.
+
+ - New method driver->getVendorInfo() to query information about the actual hardware driver.
+
+ - Fixed somed CQuake3ShaderSceneNode problems.
+
+ - Changed BurningsVideo internal Vertex Format. version changed to 0.39
+
+ - SceneManager:
+   Removed the seperate rendering states for quake3 Shader Scene Nodes.
+   Nodes are now solid or transparent. ( but still more states are needed )
+
 -------------------------------------------
 
-Changes in version 1.4 (... 2007)
+Changes in version 1.4 (30.11.2007)
 
  - Major API change: All material properties which are available per texture layer (curently texture, texture matrix, texture filters, and texture wrap mode) are separated into a new struct SMaterialLayer. You can access them via the array TextureLayer[] in SMaterial. The texture matrix methods in SMaterial are still alive, and also textures can be accessed via methods in SMaterial now. But still, many places in user code need some update (usually changing material.Textures[i] to material.TextureLayer[i].Texture etc.)
 

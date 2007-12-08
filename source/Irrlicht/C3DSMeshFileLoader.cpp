@@ -399,16 +399,24 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 				// read texture file name
 				c8* c = new c8[data.header.length - data.read];
 				file->read(c, data.header.length - data.read);
-				if (matSection == C3DS_MATTEXMAP)
+				switch (matSection)
+				{
+				case C3DS_MATTEXMAP:
 					CurrentMaterial.Filename[0] = c;
-				else if (matSection == C3DS_MATSPECMAP)
+				break;
+				case C3DS_MATSPECMAP:
 					CurrentMaterial.Filename[1] = c;
-				else if (matSection == C3DS_MATOPACMAP)
+				break;
+				case C3DS_MATOPACMAP:
 					CurrentMaterial.Filename[2] = c;
-				else if (matSection == C3DS_MATREFLMAP)
+				break;
+				case C3DS_MATREFLMAP:
 					CurrentMaterial.Filename[3] = c;
-				else if (matSection == C3DS_MATBUMPMAP)
+				break;
+				case C3DS_MATBUMPMAP:
 					CurrentMaterial.Filename[4] = c;
+				break;
+				}
 				data.read += data.header.length - data.read;
 				delete [] c;
 			}
@@ -433,6 +441,27 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 #ifdef __BIG_ENDIAN__
 				value = os::Byteswap::byteswap(value);
 #endif
+				u32 i=0;
+				if (matSection != C3DS_MATTEXMAP)
+					i=1;
+				u32 j=0,k=0;
+				if (data.header.id == C3DS_MAT_VSCALE)
+				{
+					j=1;
+					k=1;
+				}
+				else if (data.header.id == C3DS_MAT_UOFFSET)
+				{
+					j=2;
+					k=0;
+				}
+				else if (data.header.id == C3DS_MAT_VOFFSET)
+				{
+					j=2;
+					k=1;
+				}
+				CurrentMaterial.Material.getTextureMatrix(i)(j,k)=value;
+
 				data.read += 4;
 			}
 			break;
@@ -889,8 +918,7 @@ void C3DSMeshFileLoader::composeObject(io::IReadFile* file, const core::stringc&
 			mb->getMaterial() = Materials[0].Material;
 			mb->drop();
 			// add an empty mesh buffer name
-			core::stringc c = "";
-			MeshBufferNames.push_back(c);
+			MeshBufferNames.push_back("");
 		}
 	}
 

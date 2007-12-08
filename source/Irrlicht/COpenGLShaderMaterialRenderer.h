@@ -43,15 +43,15 @@ class COpenGLShaderMaterialRenderer : public IMaterialRenderer
 public:
 
 	//! Constructor
-	COpenGLShaderMaterialRenderer(video::COpenGLDriver* driver,
+	COpenGLShaderMaterialRenderer(COpenGLDriver* driver,
 		s32& outMaterialTypeNr, const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 		IShaderConstantSetCallBack* callback, IMaterialRenderer* baseMaterial, s32 userData);
 
 	//! Destructor
 	virtual ~COpenGLShaderMaterialRenderer();
 
-	virtual void OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
-		bool resetAllRenderstates, video::IMaterialRendererServices* services);
+	virtual void OnSetMaterial(const SMaterial& material, const SMaterial& lastMaterial,
+		bool resetAllRenderstates, IMaterialRendererServices* services);
 
 	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
@@ -74,7 +74,7 @@ protected:
 	bool createPixelShader(const c8* pxsh);
 	bool createVertexShader(const char* vtxsh);
 
-	video::COpenGLDriver* Driver;
+	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
 	IMaterialRenderer* BaseMaterial;
 

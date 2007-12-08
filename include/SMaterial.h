@@ -218,8 +218,7 @@ namespace video
 		//! Gets the texture transformation matrix for level i
 		core::matrix4& getTextureMatrix(u32 i)
 		{
-			if (i<MATERIAL_MAX_TEXTURES)
-				return TextureLayer[i].getTextureMatrix();
+			return TextureLayer[i].getTextureMatrix();
 			else // this should not happen
 			{
 				_IRR_DEBUG_BREAK_IF(true)

@@ -232,7 +232,7 @@ namespace video
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
 
 		// returns the current size of the screen or rendertarget
-		core::dimension2d<s32> getCurrentRenderTargetSize();
+		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
 
 		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
