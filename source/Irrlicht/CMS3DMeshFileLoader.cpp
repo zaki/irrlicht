@@ -581,10 +581,12 @@ core::stringc CMS3DMeshFileLoader::stripPathFromString(const core::stringc& inSt
 	if (backSlash>slashIndex) slashIndex=backSlash;
 
 	if (slashIndex==-1)//no slashes found
+	{
 		if (returnPath)
 			return core::stringc(); //no path to return
 		else
 			return inString;
+	}
 
 	if (returnPath)
 		return inString.subString(0, slashIndex + 1);

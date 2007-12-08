@@ -481,10 +481,12 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 	if (polyCountY < 2)
 		polyCountY = 2;
 	if (polyCountX * polyCountY > 32767) // prevent u16 overflow
+	{
 		if (polyCountX > polyCountY) // prevent u16 overflow
 			polyCountX = 32767/polyCountY-1;
 		else
 			polyCountY = 32767/(polyCountX+1);
+	}
 
 	u32 polyCountXPitch = polyCountX+1; // get to same vertex on next level
 	buffer->Vertices.set_used((polyCountXPitch * polyCountY) + 2);

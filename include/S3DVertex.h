@@ -65,16 +65,16 @@ struct S3DVertex
 	//! Texture coordinates
 	core::vector2d<f32> TCoords;
 
-	bool operator == (const S3DVertex& other) const
+	bool operator==(const S3DVertex& other) const
 	{
-		return (Pos == other.Pos && Normal == other.Normal &&
-			Color == other.Color && TCoords == other.TCoords);
+		return ((Pos == other.Pos) && (Normal == other.Normal) &&
+			(Color == other.Color) && (TCoords == other.TCoords));
 	}
 
-	bool operator != (const S3DVertex& other) const
+	bool operator!=(const S3DVertex& other) const
 	{
-		return (Pos != other.Pos || Normal != other.Normal ||
-			Color != other.Color || TCoords != other.TCoords);
+		return ((Pos != other.Pos) || (Normal != other.Normal) ||
+			(Color != other.Color) || (TCoords != other.TCoords));
 	}
 
 	E_VERTEX_TYPE getType() const
@@ -127,17 +127,17 @@ struct S3DVertex2TCoords : public S3DVertex
 	core::vector2d<f32> TCoords2;
 
 	//! Equality operator
-	bool operator == (const S3DVertex2TCoords& other) const
+	bool operator==(const S3DVertex2TCoords& other) const
 	{
-		return (static_cast<S3DVertex>(*this)==other &&
-			TCoords2 == other.TCoords2);
+		return ((static_cast<S3DVertex>(*this)==other) &&
+			(TCoords2 == other.TCoords2));
 	}
 
 	//! Inequality operator
-	bool operator != (const S3DVertex2TCoords& other) const
+	bool operator!=(const S3DVertex2TCoords& other) const
 	{
-		return (static_cast<S3DVertex>(*this)!=other &&
-			TCoords2 != other.TCoords2);
+		return ((static_cast<S3DVertex>(*this)!=other) ||
+			(TCoords2 != other.TCoords2));
 	}
 
 	E_VERTEX_TYPE getType() const
@@ -178,16 +178,18 @@ struct S3DVertexTangents : public S3DVertex
 	//! Binormal vector (tangent x normal)
 	core::vector3df Binormal;
 
-	bool operator == (const S3DVertexTangents& other) const
+	bool operator==(const S3DVertexTangents& other) const
 	{
-		return (static_cast<S3DVertex>(*this)==other &&
-			Tangent == other.Tangent && Binormal == other.Binormal);
+		return ((static_cast<S3DVertex>(*this)==other) &&
+			(Tangent == other.Tangent) &&
+			(Binormal == other.Binormal));
 	}
 
-	bool operator != (const S3DVertexTangents& other) const
+	bool operator!=(const S3DVertexTangents& other) const
 	{
-		return (static_cast<S3DVertex>(*this)!=other &&
-			Tangent != other.Tangent || Binormal != other.Binormal);
+		return ((static_cast<S3DVertex>(*this)!=other) ||
+			(Tangent != other.Tangent) ||
+			(Binormal != other.Binormal));
 	}
 
 	E_VERTEX_TYPE getType() const

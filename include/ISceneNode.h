@@ -73,7 +73,7 @@ namespace scene
 		 children from being able to register them selfes if they are clipped by simply
 		 not calling their OnRegisterSceneNode-Method. 
 		 If you are implementing your own scene node, you should overwrite this method
-		 with an implementtion code looking like this:
+		 with an implementation code looking like this:
 		 \code
 		 if (IsVisible)
 			SceneManager->registerNodeForRendering(this);
@@ -95,9 +95,9 @@ namespace scene
 		//! OnAnimate() is called just before rendering the whole scene.
 		//! Nodes may calculate or store animations here, and may do other useful things,
 		//! dependent on what they are. Also, OnAnimate() should be called for all
-		//! child scene nodes here. This method will called once per frame, independent
+		//! child scene nodes here. This method will be called once per frame, independent
 		//! of if the scene node is visible or not.
-		//! \param timeMs: Current time in milli seconds.
+		//! \param timeMs: Current time in milliseconds.
 		virtual void OnAnimate(u32 timeMs)
 		{
 			if (IsVisible)
