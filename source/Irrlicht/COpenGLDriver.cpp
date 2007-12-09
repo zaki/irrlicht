@@ -570,6 +570,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	if (!HWBuffer->vbo_verticesID)
 	{
 		extGlGenBuffers(1, &HWBuffer->vbo_verticesID);
+		if (!HWBuffer->vbo_verticesID) return false;
 		newBuffer=true;
 	}
 
@@ -621,6 +622,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	if (!HWBuffer->vbo_indicesID)
 	{
 		extGlGenBuffers(1, &HWBuffer->vbo_indicesID);
+		if (!HWBuffer->vbo_indicesID) return false;
 		newBuffer=true;
 	}
 
@@ -710,8 +712,6 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 	if (!updateHardwareBuffer(HWBuffer))
 	{
 		deleteHardwareBuffer(HWBuffer);
-		HWBufferLinks.erase(n);
-		delete HWBuffer;
 		return 0;
 	}
 
@@ -724,6 +724,8 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 
 void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
+	if (!_HWBuffer) return;
+
 #if defined(GL_ARB_vertex_buffer_object)
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
 	if (HWBuffer->vbo_verticesID)
@@ -737,6 +739,9 @@ void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 		HWBuffer->vbo_indicesID=0;
 	}
 #endif
+
+	CNullDriver::deleteHardwareBuffer(_HWBuffer);
+
 }
 
 

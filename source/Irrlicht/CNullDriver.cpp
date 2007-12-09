@@ -1262,22 +1262,12 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer*
 	if (!isHardwareBufferRecommend(mb))
 		return 0;
 
-	/*
-	u32 startIndex=0;
-	for (u32 n=0;n<HWBufferLinks.size();n+=30)
-	{
-		if (HWBufferLinks[n]->MeshBuffer < mb)
-			startIndex=n;
-	}
-	*/
-
 	//search for hardware links
 	for (u32 n=0;n<HWBufferLinks.size();++n)
 	{
 		SHWBufferLink *Link=HWBufferLinks[n];
 		if (Link->MeshBuffer==mb)
 		{
-			//((scene::IMeshBuffer*)mb)->HardwareHint=n;
 			return Link;
 		}
 	}
@@ -1294,26 +1284,44 @@ void CNullDriver::updateAllHardwareBuffers()
 
 		Link->LastUsed++;
 
-		if (Link->LastUsed>1000)
+		if (Link->LastUsed>20000)
 		{
 			deleteHardwareBuffer(Link);
-			delete Link;
-			HWBufferLinks.erase(n);
 		}
 	}
 }
 
-//! Remove all hardware buffers
-void CNullDriver::removeAllHardwareBuffers()
+
+void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
+{
+	s32 n=HWBufferLinks.binary_search(HWBuffer);
+	if (n!=-1) HWBufferLinks.erase(n);
+
+	delete HWBuffer;
+}
+
+
+//! Remove hardware buffer
+void CNullDriver::removeHardwareBuffer(const scene::IMeshBuffer* mb)
 {
 	for (u32 n=0;n<HWBufferLinks.size();++n)
 	{
-		deleteHardwareBuffer(HWBufferLinks[n]);
-		delete HWBufferLinks[n];
+		SHWBufferLink *Link=HWBufferLinks[n];
+		if (Link->MeshBuffer==mb)
+		{
+			deleteHardwareBuffer(Link);
+		}
 	}
-
-	HWBufferLinks.clear();
 }
+
+
+//! Remove all hardware buffers
+void CNullDriver::removeAllHardwareBuffers()
+{
+	while (HWBufferLinks.size())
+		deleteHardwareBuffer(HWBufferLinks[0]);
+}
+
 
 bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 {

@@ -324,11 +324,14 @@ namespace video
 		//! Draw hardware buffer (only some drivers can)
 		virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer) {}
 
-		//! Delete hardware buffer (only some drivers can)
-		virtual void deleteHardwareBuffer(SHWBufferLink *HWBuffer) {}
-
 		//! Update all hardware buffers, remove unused ones
 		virtual void updateAllHardwareBuffers();
+
+		//! Delete hardware buffer
+		virtual void deleteHardwareBuffer(SHWBufferLink *HWBuffer);
+
+		//! Remove hardware buffer
+		virtual void removeHardwareBuffer(const scene::IMeshBuffer* mb);
 
 		//! Remove all hardware buffers
 		virtual void removeAllHardwareBuffers();
