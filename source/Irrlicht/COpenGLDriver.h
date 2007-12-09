@@ -115,8 +115,8 @@ namespace video
 			GLuint vbo_indicesID; //tmp
 		};
 
-		bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
-		bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
+		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
+		bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 
 		//! updates hardware buffer if needed
 		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer);
