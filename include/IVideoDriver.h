@@ -199,6 +199,12 @@ namespace video
 		materials which are using textures to 0 first. */
 		virtual void removeAllTextures() = 0;
 
+		//! Remove hardware buffer
+		virtual void removeHardwareBuffer(const scene::IMeshBuffer* mb) = 0;
+
+		//! Remove all hardware buffers
+		virtual void removeAllHardwareBuffers() = 0;
+
 		//! Creates a 1bit alpha channel of the texture based of an color key.
 		/** This makes the texture transparent at the regions where this color
 		key can be found when using for example draw2DImage with useAlphachannel
@@ -564,7 +570,7 @@ namespace video
 		/** \return Size of screen or render window. */
 		virtual const core::dimension2d<s32>& getScreenSize() const = 0;
 
-		//! Returns the size of the current render target, or the screen size if the driver 
+		//! Returns the size of the current render target, or the screen size if the driver
 		//! doesnt support render to texture
 		/** \return Size of render target or screen/window */
 		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const = 0;
