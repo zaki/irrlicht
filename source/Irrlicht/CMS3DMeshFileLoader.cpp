@@ -341,12 +341,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	if (framesPerSecond==0)
 		framesPerSecond=1;
 
-	s32 frameCount = *(s32*)pPtr;
-#ifdef __BIG_ENDIAN__
-	frameCount = os::Byteswap::byteswap(frameCount);
-#endif
-	pPtr += sizeof(s32);
-
+	pPtr += sizeof(s32); // frameCount
 
 	u16 jointCount = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
