@@ -106,7 +106,6 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 	// is used
 	createZPassVolume(faceCount, numEdges, light, svp, UseZFailMethod);
 
-
 	for (s32 i=0; i<numEdges; ++i)
 	{
 		core::vector3df &v1 = Vertices[Edges[2*i+0]];
@@ -127,6 +126,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 		}
 	}
 }
+
 
 void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 						const core::vector3df& light,
@@ -206,6 +206,7 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 	}
 }
 
+
 void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 						s32& numEdges,
 						core::vector3df light,
@@ -248,6 +249,7 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 		}
 	}
 }
+
 
 //! sets the mesh from which the shadow volume should be generated.
 void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
@@ -344,7 +346,6 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 }
 
 
-
 //! pre render method
 void CShadowVolumeSceneNode::OnRegisterSceneNode()
 {
@@ -353,7 +354,6 @@ void CShadowVolumeSceneNode::OnRegisterSceneNode()
 
 	ISceneNode::OnRegisterSceneNode();
 }
-
 
 
 //! renders the node.
@@ -370,7 +370,6 @@ void CShadowVolumeSceneNode::render()
 		driver->drawStencilShadowVolume(ShadowVolumes[i].vertices,
 			ShadowVolumes[i].count, UseZFailMethod);
 }
-
 
 
 //! returns the axis aligned bounding box of this node
