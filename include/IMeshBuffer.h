@@ -9,6 +9,7 @@
 #include "SMaterial.h"
 #include "aabbox3d.h"
 #include "S3DVertex.h"
+#include "EHardwareBufferFlags.h"
 
 namespace irr
 {
@@ -52,22 +53,6 @@ namespace scene
 
 		//! The single vertices are expanded to quad billboards on the GPU.
 		EPT_POINT_SPRITES
-	};
-
-
-	enum E_HARDWARE_MAPPING
-	{
-		//! Don't load in hardware
-		EHM_NEVER=0,
-
-		//! Rarely changed
-		EHM_STATIC,
-
-		//! Sometimes changed
-		EHM_DYNAMIC,
-
-		//! Always changed
-		EHM_STREAM
 	};
 
 	//! Struct for holding a mesh with a single material
@@ -141,14 +126,12 @@ namespace scene
 		//! set the hardware mapping hint, for driver
 		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) = 0;
 
-		//! flags the mesh as changed, reloads hardware buffers
+		//! flags the meshbuffer as changed, reloads hardware buffers
 		virtual void setDirty() = 0;
 
 		virtual const u32 getChangedID() const = 0;
 
-
 		u32 HardwareHint;
-
 	};
 
 } // end namespace scene

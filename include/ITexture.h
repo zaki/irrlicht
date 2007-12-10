@@ -157,7 +157,7 @@ public:
 	virtual bool hasMipMaps() const { return false; }
 
 	//! Regenerates the mip map levels of the texture.
-	/** Useful after locking and modifying the texture */
+	/** Required after locking and modifying the texture */
 	virtual void regenerateMipMapLevels() = 0;
 
 	//! Returns whether the texture is a render target

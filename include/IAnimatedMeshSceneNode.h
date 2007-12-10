@@ -9,13 +9,12 @@
 #include "IBoneSceneNode.h"
 #include "IAnimatedMeshMD2.h"
 #include "IAnimatedMeshMD3.h"
-#include "IShadowVolumeSceneNode.h"
 
 namespace irr
 {
 namespace scene
 {
-
+	class IShadowVolumeSceneNode;
 
 	enum E_JOINT_UPDATE_ON_RENDER
 	{
