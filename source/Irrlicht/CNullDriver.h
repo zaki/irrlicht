@@ -290,7 +290,7 @@ namespace video
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb);
 
-
+	protected:
 		struct SHWBufferLink
 		{
 			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer):MeshBuffer(_MeshBuffer),ChangedID(0),LastUsed(0),Mapped(scene::EHM_NEVER)
@@ -339,6 +339,7 @@ namespace video
 		//! is vbo recommended on this mesh?
 		virtual bool isHardwareBufferRecommend(const scene::IMeshBuffer* mb);
 
+	public:
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
 		virtual void OnResize(const core::dimension2d<s32>& size);
