@@ -21,7 +21,7 @@ namespace video
 {
 
 // May or may not be fully implemented
-#define TRY_LOADING_PALETTE_FROM_FILE 0 
+#define TRY_LOADING_PALETTE_FROM_FILE 0
 
 // Default palette for Q2 WALs.
 
@@ -61,7 +61,7 @@ bool CImageLoaderWAL::isALoadableFileExtension(const c8* fileName) const
 
 bool CImageLoaderWAL::isALoadableFileFormat(irr::io::IReadFile* file) const
 {
-	return (file!=0);
+	return (file!=0 && isALoadableFileExtension(file->getFileName())); //seems better not to always blindly load this format for now (todo: add header check)
 }
 
 
@@ -79,7 +79,7 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 		if (!paletteImage)	paletteImage = createImageFromFile("colormap.pcx");
 		if (!paletteImage)	paletteImage = createImageFromFile("colormap.tga");
 		if (paletteImage && (paletteImage->getDimension().Width == 256) ) {
-			palette = new s32[256]; //FIXME: Never gets freed 
+			palette = new s32[256]; //FIXME: Never gets freed
 			for (u32 i = 0; i < 256; ++i) {
 				palette[i] = paletteImage->getPixel(i, 0).color;
 			}
@@ -90,7 +90,7 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 		if (paletteImage) paletteImage->drop();
 	} else {
 		palette = DefaultPaletteQ2;
-	}		
+	}
 #else
 	palette = DefaultPaletteQ2;
 #endif
@@ -133,4 +133,5 @@ IImageLoader* createImageLoaderWAL()
 
 }
 }
+
 
