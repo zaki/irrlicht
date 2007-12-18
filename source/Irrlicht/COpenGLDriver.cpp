@@ -890,7 +890,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				if (vertices)
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
 				else
-					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), (u8*)0 + 34);
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), (u8*)0 + 36);
 			}
 			break;
 		case EVT_TANGENTS:
@@ -915,14 +915,14 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				if (vertices)
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
 				else
-					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 34);
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 36);
 
 				extGlClientActiveTexture(GL_TEXTURE2_ARB);
 				glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
 				if (vertices)
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
 				else
-					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 46);
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), (u8*)0 + 48);
 			}
 			break;
 	}
@@ -2732,5 +2732,6 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 } // end namespace
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
+
 
 
