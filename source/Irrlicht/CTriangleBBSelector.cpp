@@ -11,7 +11,7 @@ namespace scene
 {
 
 //! constructor
-CTriangleBBSelector::CTriangleBBSelector(ISceneNode* node)
+CTriangleBBSelector::CTriangleBBSelector(const ISceneNode* node)
 : CTriangleSelector(node)
 {
 	#ifdef _DEBUG
@@ -32,7 +32,7 @@ void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
 		return;
 
 	// construct triangles
-	core::aabbox3d<f32> box = SceneNode->getBoundingBox();
+	const core::aabbox3d<f32>& box = SceneNode->getBoundingBox();
 	core::vector3df edges[8];
 	box.getEdges(edges);
 

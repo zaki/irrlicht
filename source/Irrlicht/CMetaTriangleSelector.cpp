@@ -29,7 +29,7 @@ CMetaTriangleSelector::~CMetaTriangleSelector()
 s32 CMetaTriangleSelector::getTriangleCount() const
 {
 	s32 count = 0;
-	for (s32 i=0; i<(s32)TriangleSelectors.size(); ++i)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 		count += TriangleSelectors[i]->getTriangleCount();
 
 	return count;
@@ -43,14 +43,14 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 {
 	s32 outWritten = 0;
 
-	for (s32 i=0; i<(s32)TriangleSelectors.size(); ++i)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten, arraySize - outWritten, t, transform);
 		outWritten += t;
 	}
 
-    outTriangleCount = outWritten;
+	outTriangleCount = outWritten;
 }
 
 
@@ -62,7 +62,7 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 {
 	s32 outWritten = 0;
 
-	for (s32 i=0; i<(s32)TriangleSelectors.size(); ++i)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten, arraySize - outWritten, t,
@@ -70,7 +70,7 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 		outWritten += t;
 	}
 
-    outTriangleCount = outWritten;
+	outTriangleCount = outWritten;
 }
 
 
@@ -82,7 +82,7 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 {
 	s32 outWritten = 0;
 
-	for (s32 i=0; i<(s32)TriangleSelectors.size(); ++i)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
 		s32 t = 0;
 		TriangleSelectors[i]->getTriangles(triangles + outWritten, arraySize - outWritten, t,
@@ -90,7 +90,7 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 		outWritten += t;
 	}
 
-    outTriangleCount = outWritten;
+	outTriangleCount = outWritten;
 }
 
 
@@ -111,7 +111,7 @@ void CMetaTriangleSelector::addTriangleSelector(ITriangleSelector* toAdd)
 //! Removes a specific triangle selector which was added before	from the collection.
 bool CMetaTriangleSelector::removeTriangleSelector(ITriangleSelector* toRemove)
 {
-	for (s32 i=0; i<(s32)TriangleSelectors.size(); ++i)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 		if (toRemove == TriangleSelectors[i])
 		{
 			TriangleSelectors[i]->drop();
@@ -127,12 +127,11 @@ bool CMetaTriangleSelector::removeTriangleSelector(ITriangleSelector* toRemove)
 //! Removes all triangle selectors from the collection.
 void CMetaTriangleSelector::removeAllTriangleSelectors()
 {
-	for (s32 i=0; i<(s32)TriangleSelectors.size(); ++i)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 		TriangleSelectors[i]->drop();
 
 	TriangleSelectors.clear();
 }
-
 
 
 } // end namespace scene
