@@ -31,7 +31,7 @@ namespace video
 
 //! rendertarget constructor
 CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, core::dimension2d<s32> size, const char* name)
-: ITexture(name), Image(0), Texture(0), RTTSurface(0), Driver(driver),
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
 	TextureSize(size), ImageSize(size), Pitch(0),
 	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true)
 {
@@ -50,7 +50,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, core::dimension2d<s32> size, con
 //! constructor
 CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 					   u32 flags, const char* name)
-: ITexture(name), Image(image), Texture(0), RTTSurface(0), Driver(driver),
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
 TextureSize(0,0), ImageSize(0,0), Pitch(0),
 HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
 {
@@ -64,13 +64,11 @@ HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
 	if (Device)
 		Device->AddRef();
 
-	if (Image)
+	if (image)
 	{
-		Image->grab();
-
-		if (createTexture(flags))
+		if (createTexture(flags, image))
 		{
-			if (copyTexture() && generateMipLevels)
+			if (copyTexture(image) && generateMipLevels)
 			{
 				// create mip maps.
 				#ifdef _IRR_USE_D3DXFilterTexture_
@@ -99,9 +97,6 @@ CD3D9Texture::~CD3D9Texture()
 {
 	if (Device)
 		Device->Release();
-
-	if (Image)
-		Image->drop();
 
 	if (Texture)
 		Texture->Release();
@@ -259,10 +254,10 @@ bool CD3D9Texture::createMipMaps(u32 level)
 
 
 //! creates the hardware texture
-bool CD3D9Texture::createTexture(u32 flags)
+bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 {
 	core::dimension2d<s32> optSize;
-	ImageSize = Image->getDimension();
+	ImageSize = image->getDimension();
 
 	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
 		optSize=ImageSize;
@@ -283,7 +278,7 @@ bool CD3D9Texture::createTexture(u32 flags)
 		format = D3DFMT_A8R8G8B8; break;
 	case ETCF_OPTIMIZED_FOR_QUALITY:
 		{
-			switch(Image->getColorFormat())
+			switch(image->getColorFormat())
 			{
 			case ECF_R8G8B8:
 			case ECF_A8R8G8B8:
@@ -395,9 +390,9 @@ ECOLOR_FORMAT CD3D9Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
 
 
 //! copies the image to the texture
-bool CD3D9Texture::copyTexture()
+bool CD3D9Texture::copyTexture(IImage * image)
 {
-	if (Texture && Image)
+	if (Texture && image)
 	{
 		D3DSURFACE_DESC desc;
 		Texture->GetLevelDesc(0, &desc);
@@ -414,7 +409,7 @@ bool CD3D9Texture::copyTexture()
 		}
 
 		Pitch = rect.Pitch;
-		Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+		image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
 
 		hr = Texture->UnlockRect(0);
 		if (FAILED(hr))
@@ -686,4 +681,5 @@ IDirect3DSurface9* CD3D9Texture::getRenderTargetSurface()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
+
 
