@@ -596,8 +596,6 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 #else
 	return false;
 #endif
-
-
 }
 
 
@@ -648,8 +646,6 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 #else
 	return false;
 #endif
-
-
 }
 
 
@@ -663,9 +659,6 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
 	{
-		os::Printer::log("updating vbo", ELL_ERROR);
-
-
 		HWBuffer->ChangedID = HWBuffer->MeshBuffer->getChangedID();
 
 		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
@@ -684,10 +677,6 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 
 	if (!mb || (mb->getHardwareMappingHint()==scene::EHM_NEVER))
 		return 0;
-
-
-
-	os::Printer::log("making vbo", ELL_ERROR);
 
 	SHWBufferLink_opengl *HWBuffer=new SHWBufferLink_opengl(mb);
 
@@ -2479,8 +2468,6 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	ResetRenderStates=true;
 	if (RenderTargetTexture!=0)
 	{
-		glReadPixels(0, 0, RenderTargetTexture->getSize().Width, RenderTargetTexture->getSize().Height, GL_RGBA, GL_UNSIGNED_BYTE, RenderTargetTexture->lock());
-		RenderTargetTexture->unlock();
 		if (RenderTargetTexture->isFrameBufferObject())
 		{
 			RenderTargetTexture->unbindFrameBufferObject();
