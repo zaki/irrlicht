@@ -1259,7 +1259,7 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 
 CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
 {
-	if (!isHardwareBufferRecommend(mb))
+	if (!mb || !isHardwareBufferRecommend(mb))
 		return 0;
 
 	//search for hardware links
@@ -1325,7 +1325,7 @@ void CNullDriver::removeAllHardwareBuffers()
 
 bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 {
-	if (mb->getHardwareMappingHint()==scene::EHM_NEVER)
+	if (!mb || mb->getHardwareMappingHint()==scene::EHM_NEVER)
 		return false;
 
 	if (mb->getVertexCount()<500) //todo: tweak and make user definable
