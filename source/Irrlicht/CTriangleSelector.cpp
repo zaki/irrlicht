@@ -12,7 +12,7 @@ namespace scene
 {
 
 //! constructor
-CTriangleSelector::CTriangleSelector(ISceneNode* node)
+CTriangleSelector::CTriangleSelector(const ISceneNode* node)
 : SceneNode(node)
 {
 	#ifdef _DEBUG
@@ -22,7 +22,7 @@ CTriangleSelector::CTriangleSelector(ISceneNode* node)
 
 
 //! constructor
-CTriangleSelector::CTriangleSelector(IMesh* mesh, ISceneNode* node)
+CTriangleSelector::CTriangleSelector(const IMesh* mesh, const ISceneNode* node)
 : SceneNode(node)
 {
 	#ifdef _DEBUG
@@ -30,6 +30,12 @@ CTriangleSelector::CTriangleSelector(IMesh* mesh, ISceneNode* node)
 	#endif
 
 	const u32 cnt = mesh->getMeshBufferCount();
+	u32 totalFaceCount = 0;
+	for (u32 j=0; j<cnt; ++j)
+		totalFaceCount += mesh->getMeshBuffer(j)->getIndexCount();
+	totalFaceCount /= 3;
+	Triangles.reallocate(totalFaceCount);
+
 	for (u32 i=0; i<cnt; ++i)
 	{
 		const IMeshBuffer* buf = mesh->getMeshBuffer(i);
@@ -49,7 +55,7 @@ CTriangleSelector::CTriangleSelector(IMesh* mesh, ISceneNode* node)
 
 
 //! constructor
-CTriangleSelector::CTriangleSelector(core::aabbox3d<f32> box, ISceneNode* node)
+CTriangleSelector::CTriangleSelector(const core::aabbox3d<f32>& box, const ISceneNode* node)
 : SceneNode(node)
 {
 	#ifdef _DEBUG

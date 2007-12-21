@@ -22,13 +22,13 @@ class CTriangleSelector : public ITriangleSelector
 public:
 
 	//! Constructs a selector based on a mesh
-	CTriangleSelector(ISceneNode* node);
+	CTriangleSelector(const ISceneNode* node);
 
 	//! Constructs a selector based on a mesh
-	CTriangleSelector(IMesh* mesh, ISceneNode* node);
+	CTriangleSelector(const IMesh* mesh, const ISceneNode* node);
 
 	//! Constructs a selector based on a bounding box
-	CTriangleSelector(core::aabbox3d<f32> box, ISceneNode* node);
+	CTriangleSelector(const core::aabbox3d<f32>& box, const ISceneNode* node);
 
 	//! Gets all triangles.
 	void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
@@ -48,7 +48,7 @@ public:
 
 protected:
 
-	ISceneNode* SceneNode;
+	const ISceneNode* SceneNode;
 	mutable core::array<core::triangle3df> Triangles;
 };
 

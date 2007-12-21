@@ -13,8 +13,8 @@ namespace scene
 {
 
 //! constructor
-COctTreeTriangleSelector::COctTreeTriangleSelector(IMesh* mesh,
-		ISceneNode* node, s32 minimalPolysPerNode)
+COctTreeTriangleSelector::COctTreeTriangleSelector(const IMesh* mesh,
+		const ISceneNode* node, s32 minimalPolysPerNode)
 	: CTriangleSelector(mesh, node), Root(0), NodeCount(0),
 	 MinimalPolysPerNode(minimalPolysPerNode)
 {

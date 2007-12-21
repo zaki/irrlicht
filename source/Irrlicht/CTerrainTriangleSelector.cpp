@@ -47,11 +47,11 @@ void CTerrainTriangleSelector::setTriangleData(ITerrainSceneNode* node, s32 LOD)
 	for (int o=0; o<TrianglePatches.NumPatches; ++o)
 		TrianglePatches.TrianglePatchArray.push_back(SGeoMipMapTrianglePatch());
 
+	s32 tIndex = 0;
 	for(s32 x = 0; x < terrainNode->TerrainData.PatchCount; ++x )
 	{
 		for(s32 z = 0; z < terrainNode->TerrainData.PatchCount; ++z )
 		{
-			s32 tIndex = x * terrainNode->TerrainData.PatchCount + z;
 			TrianglePatches.TrianglePatchArray[tIndex].NumTriangles = 0;
 			TrianglePatches.TrianglePatchArray[tIndex].Box = terrainNode->getBoundingBox( x, z );
 			u32 indexCount = terrainNode->getIndicesForPatch( indices, x, z, LOD );
@@ -67,6 +67,7 @@ void CTerrainTriangleSelector::setTriangleData(ITerrainSceneNode* node, s32 LOD)
 			}
 
 			TrianglePatches.TotalTriangles += TrianglePatches.TrianglePatchArray[tIndex].NumTriangles;
+			++tIndex;
 		}
 	}
 }
@@ -146,10 +147,7 @@ void CTerrainTriangleSelector::getTriangles(core::triangle3df* triangles, s32 ar
 	s32& outTriangleCount, const core::line3d<f32>& line,
 	const core::matrix4* transform) const
 {
-	s32 count = TrianglePatches.TotalTriangles;
-
-	if (count > arraySize)
-		count = arraySize;
+	const s32 count = core::min_((s32)TrianglePatches.TotalTriangles, arraySize);
 
 	core::matrix4 mat;
 
