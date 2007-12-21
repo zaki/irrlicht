@@ -80,10 +80,10 @@ private:
 	inline s32 getTextureSizeFromImageSize(s32 size) const;
 
 	//! creates the hardware texture
-	bool createTexture(u32 flags);
+	bool createTexture(u32 flags, IImage * image);
 
 	//! copies the image to the texture
-	bool copyTexture();
+	bool copyTexture(IImage * image);
 
 	//! Get D3D color format from Irrlicht color format.
 	D3DFORMAT getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const;
@@ -102,7 +102,6 @@ private:
 	void copy32BitMipMap(char* src, char* tgt,
 		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
 
-	IImage* Image;
 	IDirect3DDevice9* Device;
 	IDirect3DTexture9* Texture;
 	IDirect3DSurface9* RTTSurface;
@@ -124,4 +123,5 @@ private:
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif // __C_DIRECTX9_TEXTURE_H_INCLUDED__
+
 
