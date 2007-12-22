@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-// 07.10.2005 - Multicolor-Listbox addet by A. Buschhüter (Acki)
+// 07.10.2005 - Multicolor-Listbox addet by A. Buschhueter (Acki)
 //                                          A_Buschhueter@gmx.de
 
 #ifndef __C_GUI_TABLE_BAR_H_INCLUDED__

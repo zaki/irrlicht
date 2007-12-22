@@ -2,9 +2,6 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-// 07.10.2005 - Multicolor-Listbox added by A. Buschhüter (Acki)
-//                                          A_Buschhueter@gmx.de
-
 #ifndef __I_GUI_TABLE_H_INCLUDED__
 #define __I_GUI_TABLE_H_INCLUDED__
 
