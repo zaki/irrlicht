@@ -49,6 +49,7 @@ class IGUIEditBox;
 class IGUISpinBox;
 class IGUITabControl;
 class IGUITab;
+class IGUITable;
 class IGUIContextMenu;
 class IGUIComboBox;
 class IGUIToolBar;
@@ -369,6 +370,10 @@ public:
 	virtual IGUIComboBox* addComboBox(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
 
+	//! Adds a table to the environment
+	virtual IGUITable* addTable(const core::rect<s32>& rectangle, 
+		IGUIElement* parent=0, s32 id=-1, bool drawBackground = false) = 0;
+
 	//! Returns the default element factory which can create all built in elements
 	virtual IGUIElementFactory* getDefaultGUIElementFactory() const = 0;
 
@@ -425,4 +430,7 @@ public:
 } // end namespace irr
 
 #endif
+
+
+
 

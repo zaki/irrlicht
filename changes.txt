@@ -2,9 +2,9 @@
 Changes in version 1.5 (... 2008)
 
  - Hardware accelerated Vertex and Index Buffer support finally integrated into Irrlicht. Thanks to a ressource handling idea by Klasker and the almost immediate implementation by Luke, Irrlicht now supports VBOs under OpenGL. D3D will follow soon.
-   Hardware buffers make rendering the same vertices much faster. In some cases this can be more than 10x faster. To sue this feature with a mesh simple set a usage type, e.g. via MeshBuffer->setHardwareMappingHint(scene::EHM_STATIC). The driver will upload the vertices and indices on the next draw and reuse this information without the need to upload it each frame.
+   Hardware buffers make rendering the same vertices much faster. In some cases this can be more than 10x faster. To use this feature with a mesh simple set a usage type, e.g. via MeshBuffer->setHardwareMappingHint(scene::EHM_STATIC). The driver will upload the vertices and indices on the next draw and reuse this information without the need to upload it each frame.
 
- - MeshBuffers can now access the elements of the S3DVertex base class in all vertex types directly, instead of using teh getVertices() pointer access. This simplifies simple mesh manipulations as it does not require a switch statement over all vertex types.
+ - MeshBuffers can now access the elements of the S3DVertex base class in all vertex types directly, instead of using the getVertices() pointer access. This simplifies simple mesh manipulations as it does not require a switch statement over all vertex types.
 
  - GLSL changes for setting arrays. Also allow for only pixel or vertex shader to be set.
 
@@ -23,6 +23,9 @@ Changes in version 1.5 (... 2008)
  - SceneManager:
    Removed the seperate rendering states for quake3 Shader Scene Nodes.
    Nodes are now solid or transparent. ( but still more states are needed )
+
+ - GUI:
+   Finally added table control and TabControl additions from StarSonata team.
 
 -------------------------------------------
 

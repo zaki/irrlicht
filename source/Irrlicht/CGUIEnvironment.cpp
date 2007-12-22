@@ -32,6 +32,7 @@
 #include "CGUIComboBox.h"
 #include "CGUIMenu.h"
 #include "CGUIToolBar.h"
+#include "CGUITable.h"
 
 #include "CDefaultGUIElementFactory.h"
 #include "IWriteFile.h"
@@ -984,6 +985,12 @@ IGUIScrollBar* CGUIEnvironment::addScrollBar(bool horizontal, const core::rect<s
 	return bar;
 }
 
+IGUITable* CGUIEnvironment::addTable(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id, bool drawBackground)
+{
+	CGUITable* b = new CGUITable(this, parent ? parent : this, id, rectangle, true, drawBackground, false);
+	b->drop();
+	return b;
+}
 
 //! Adds an image element. 
 IGUIImage* CGUIEnvironment::addImage(video::ITexture* image, core::position2d<s32> pos,
@@ -1494,4 +1501,5 @@ IGUIEnvironment* createGUIEnvironment(io::IFileSystem* fs,
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+
 

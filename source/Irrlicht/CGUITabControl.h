@@ -10,11 +10,15 @@
 
 #include "IGUITabControl.h"
 #include "irrArray.h"
+#include "IGUISkin.h"
 
 namespace irr
 {
 namespace gui
 {
+	class CGUITabControl;
+	class IGUIButton;
+
 	// A tab, onto which other gui elements could be added.
 	class CGUITab : public IGUITab
 	{
@@ -24,6 +28,9 @@ namespace gui
 		CGUITab(s32 number, IGUIEnvironment* environment,
 			IGUIElement* parent, const core::rect<s32>& rectangle,
 			s32 id);
+
+		//! destructor
+		//virtual ~CGUITab();
 
 		//! Returns number of this tab in tabcontrol. Can be accessed
 		//! later IGUITabControl::getTab() by this number.
@@ -40,12 +47,17 @@ namespace gui
 
 		//! sets the color of the background, if it should be drawn.
 		virtual void setBackgroundColor(video::SColor c);
+	
+		//! sets the color of the text
+		virtual void setTextColor(video::SColor c);
 
 		//! returns true if the tab is drawing its background, false if not
 		virtual bool isDrawingBackground() const;
 
 		//! returns the color of the background
 		virtual video::SColor getBackgroundColor() const;
+
+		virtual video::SColor getTextColor() const;
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
@@ -59,6 +71,8 @@ namespace gui
 		s32 Number;
 		bool DrawBackground;
 		video::SColor BackColor;
+		video::SColor TextColor;
+
 	};
 
 
@@ -108,18 +122,51 @@ namespace gui
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
+		//! Set the height of the tabs
+		virtual void setTabHeight( s32 height );
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+		//! Get the height of the tabs
+		virtual s32 getTabHeight() const;
+
+		//! Set the alignment of the tabs
+		//! note: EGUIA_CENTER is not an option
+		virtual void setTabVerticalAlignment( gui::EGUI_ALIGNMENT alignment );
+
+		//! Get the alignment of the tabs
+		virtual gui::EGUI_ALIGNMENT getTabVerticalAlignment() const;
+
+		//! Set the extra width added to tabs on each side of the text
+		virtual void setTabExtraWidth( s32 extraWidth );
+
+		//! Get the extra width added to tabs on each side of the text
+		virtual s32 getTabExtraWidth() const;
+
+		//! Update the position of the element, decides scroll button status
+		virtual void updateAbsolutePosition();
 
 	private:
 
-		void selectTab(core::position2d<s32> p);
+		bool selectTab(core::position2d<s32> p);
+		void scrollLeft();
+		void scrollRight();
+		bool needScrollControl( s32 startIndex=0, bool withScrollControl=false );
+
+		void recalculateScrollBar();
 
 		core::array<CGUITab*> Tabs;
 		s32 ActiveTab;
 		bool Border;
 		bool FillBackground;
+		bool ScrollControl;
+		s32 TabHeight;
+		gui::EGUI_ALIGNMENT VerticalAlignment;
+		IGUIButton* UpButton;
+		IGUIButton* DownButton;
+		s32 TabMaxWidth;
+		s32 CurrentScrollTabIndex;
+		s32 TabExtraWidth;
 	};
 
 
@@ -129,4 +176,7 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif
+
+
+
 

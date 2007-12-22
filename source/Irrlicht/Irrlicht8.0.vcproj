@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="Irrlicht"
 	ProjectGUID="{E08E042A-6C45-411B-92BE-3CC31331019F}"
 	RootNamespace="Irrlicht"
@@ -748,6 +748,10 @@
 				Name="gui"
 				>
 				<File
+					RelativePath="..\..\include\EGUIAlignment.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\EGUIElementTypes.h"
 					>
 				</File>
@@ -1038,6 +1042,14 @@
 			</File>
 			<File
 				RelativePath="CGUITabControl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUITable.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUITable.h"
 				>
 			</File>
 			<File
