@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-// 07.10.2005 - Multicolor-Listbox addet by A. Buschhüter (Acki)
+// 07.10.2005 - Multicolor-Listbox added by A. Buschhueter (Acki)
 //                                          A_Buschhueter@gmx.de
 
 #include "CGUITable.h"
@@ -25,8 +25,8 @@ namespace gui
 
 //! constructor
 CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
-						 s32 id, core::rect<s32> rectangle, bool clip,
-						 bool drawBack, bool moveOverSelect)
+			s32 id, core::rect<s32> rectangle, bool clip,
+			bool drawBack, bool moveOverSelect)
 : IGUITable(environment, parent, id, rectangle), ScrollBar(0),
 	ItemHeight(0), TotalItemHeight(0), Font(0), Selected(-1),
 	Clip(clip), DrawBack(drawBack), Selecting(false), ActiveTab(-1),
@@ -46,7 +46,7 @@ CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 	if (ScrollBar)
 	{
 		ScrollBar->setPos(0);
-		ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT); 
+		ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 		ScrollBar->setSubElement(true);
 		ScrollBar->grab();
 	}
@@ -95,7 +95,7 @@ s32 CGUITable::getRowcount() const
 	return Rows.size();
 }
 
-bool CGUITable::setActiveColumn(s32 idx) 
+bool CGUITable::setActiveColumn(s32 idx)
 {
 	if (idx < 0 || idx >= (s32)Columns.size())
 		return false;
@@ -546,7 +546,6 @@ void CGUITable::draw()
 
 	s32 headerFinalPosition = frameRect.UpperLeftCorner.Y + ItemHeight;
 
-
 	frameRect = AbsoluteRect;
 	frameRect.UpperLeftCorner.X += 1;
 	frameRect.UpperLeftCorner.Y = headerFinalPosition;
@@ -566,9 +565,8 @@ void CGUITable::draw()
 
 	for ( u32 i = 0 ; i < Rows.size() ; ++i )
 	{
-
 		if (frameRect.LowerRightCorner.Y >= AbsoluteRect.UpperLeftCorner.Y &&
-			  frameRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y)
+			frameRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y)
 		{
 
 			core::rect<s32> textRect = frameRect;
@@ -580,7 +578,7 @@ void CGUITable::draw()
 
 			pos = frameRect.UpperLeftCorner.X;
 
-			if (s32(i) == Selected)
+			if ((s32)i == Selected)
 				driver->draw2DRectangle(skin->getColor(EGDC_HIGH_LIGHT), frameRect, &clientClip);
 
 			for ( u32 j = 0 ; j < Columns.size() ; ++j )
@@ -590,7 +588,7 @@ void CGUITable::draw()
 
 				s32 test = font->getDimension(Rows[i].Items[j].text.c_str()).Width;
 
-				if (s32(i) == Selected)
+				if ((s32)i == Selected)
 				{
 					font->draw(Rows[i].Items[j].text.c_str(), textRect, skin->getColor(EGDC_HIGH_LIGHT_TEXT), false, true, &clientClip);
 				}
@@ -606,7 +604,6 @@ void CGUITable::draw()
 		frameRect.UpperLeftCorner.Y += ItemHeight;
 		frameRect.LowerRightCorner.Y += ItemHeight;
 	}
-
 
 	frameRect = AbsoluteRect;
 	columnSeparator.UpperLeftCorner.Y = headerFinalPosition;
@@ -639,16 +636,16 @@ void CGUITable::draw()
 		columnrect.UpperLeftCorner.X += CellWidthPadding;
 		font->draw(text, columnrect, skin->getColor(EGDC_BUTTON_TEXT), false, true, &AbsoluteClippingRect);
 
-		if ( s32(i) == ActiveTab )
+		if ( (s32)i == ActiveTab )
 		{
-			if ( m_CurrentOrdering == EGOM_ASCENDING ) 
+			if ( m_CurrentOrdering == EGOM_ASCENDING )
 			{
 				columnrect.UpperLeftCorner.X = columnrect.LowerRightCorner.X - CellWidthPadding - ARROW_PAD / 2 + 2;
 				columnrect.UpperLeftCorner.Y += 7;
 				skin->drawIcon(this,EGDI_CURSOR_UP,columnrect.UpperLeftCorner);
 			}
-			else 
-			{					
+			else
+			{
 				columnrect.UpperLeftCorner.X = columnrect.LowerRightCorner.X - CellWidthPadding - ARROW_PAD / 2 + 2;
 				columnrect.UpperLeftCorner.Y += 7;
 				skin->drawIcon(this,EGDI_CURSOR_DOWN,columnrect.UpperLeftCorner);
@@ -662,8 +659,8 @@ void CGUITable::draw()
 	skin->draw3DButtonPaneStandard(this, columnrect, &AbsoluteClippingRect);
 
 	IGUIElement::draw();
-
 }
+
 
 void CGUITable::breakText(core::stringw &text, u32 cellWidth )
 {
@@ -679,14 +676,13 @@ void CGUITable::breakText(core::stringw &text, u32 cellWidth )
 	if (!font)
 		return;
 
-
-	core::stringw line, lineDots, character;
+	core::stringw line, lineDots;
 	wchar_t c[2];
 	c[1] = L'\0';
 
-	u32 maxLength = cellWidth - (CellWidthPadding * 2);
-	u32 maxLengthDots = cellWidth - (CellWidthPadding * 2) - font->getDimension(L"...").Width;
-	u32 size = text.size();
+	const u32 maxLength = cellWidth - (CellWidthPadding * 2);
+	const s32 maxLengthDots = cellWidth - (CellWidthPadding * 2) - font->getDimension(L"...").Width;
+	const u32 size = text.size();
 	u32 pos = 0;
 
 	u32 i;
@@ -702,18 +698,16 @@ void CGUITable::breakText(core::stringw &text, u32 cellWidth )
 		if ( pos > maxLength )
 			break;
 
-		if ( font->getDimension( (line + c[0]).c_str() ).Width > s32(maxLengthDots) )
+		if ( font->getDimension( (line + c[0]).c_str() ).Width > maxLengthDots )
 			lineDots = line;
 
 		line += c[0];
 	}
 
 	if ( i < size )
-		line = lineDots + L"...";
-
-
-	text = line;
-
+		text = lineDots + L"...";
+	else
+		text = line;
 }
 
 } // end namespace gui
