@@ -119,6 +119,7 @@
 		<Unit filename="../../include/IGUISpriteBank.h" />
 		<Unit filename="../../include/IGUIStaticText.h" />
 		<Unit filename="../../include/IGUITabControl.h" />
+		<Unit filename="../../include/IGUITable.h" />
 		<Unit filename="../../include/IGUIToolbar.h" />
 		<Unit filename="../../include/IGUIWindow.h" />
 		<Unit filename="../../include/IImage.h" />
@@ -346,6 +347,8 @@
 		<Unit filename="CGUIStaticText.h" />
 		<Unit filename="CGUITabControl.cpp" />
 		<Unit filename="CGUITabControl.h" />
+		<Unit filename="CGUITable.cpp" />
+		<Unit filename="CGUITable.h" />
 		<Unit filename="CGUIToolBar.cpp" />
 		<Unit filename="CGUIToolBar.h" />
 		<Unit filename="CGUIWindow.cpp" />

@@ -7,6 +7,7 @@
 
 #include "IGUIElement.h"
 #include "SColor.h"
+#include "IGUISkin.h"
 
 namespace irr
 {
@@ -39,6 +40,12 @@ namespace gui
 
 		//! returns the color of the background
 		virtual video::SColor getBackgroundColor() const = 0;
+
+		//! sets the color of the text
+		virtual void setTextColor(video::SColor c) = 0;
+
+		//! gets the color of the text
+		virtual video::SColor getTextColor() const = 0;
 	};
 
 	//! A standard tab control
@@ -77,6 +84,28 @@ namespace gui
 
 		//! Returns which tab is currently active
 		virtual s32 getActiveTab() const = 0;
+
+		//! Set the height of the tabs
+		virtual void setTabHeight( s32 height ) = 0;
+
+		//! Get the height of the tabs
+		/** return Returns the height of the tabs */
+		virtual s32 getTabHeight() const = 0;
+
+		//! Set the alignment of the tabs
+		//! Use EGUIA_UPPERLEFT or EGUIA_LOWERRIGHT
+		virtual void setTabVerticalAlignment( gui::EGUI_ALIGNMENT alignment ) = 0;
+
+		//! Get the alignment of the tabs
+		/** return Returns the alignment of the tabs */
+		virtual gui::EGUI_ALIGNMENT getTabVerticalAlignment() const = 0;
+
+		//! Set the extra width added to tabs on each side of the text
+		virtual void setTabExtraWidth( s32 extraWidth ) = 0;
+
+		//! Get the extra width added to tabs on each side of the text
+		/** return Returns the extra width of the tabs */
+		virtual s32 getTabExtraWidth() const = 0;
 	};
 
 
@@ -84,4 +113,8 @@ namespace gui
 } // end namespace irr
 
 #endif
+
+
+
+
 

@@ -70,7 +70,7 @@ int main()
 		now we add the GUI Editor Workspace
 	*/
 
-	env->loadGUI("c:\\out.xml");
+	env->loadGUI("guiTest.xml");
 
 	env->addGUIElement("GUIEditor");
 	

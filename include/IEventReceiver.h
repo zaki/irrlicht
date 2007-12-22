@@ -150,7 +150,12 @@ namespace irr
 			EGET_COMBO_BOX_CHANGED,
 
 			//! The value of a spin box has changed
-			EGET_SPINBOX_CHANGED
+			EGET_SPINBOX_CHANGED,
+
+			//! A table has changed
+			EGET_TABLE_CHANGED,
+			EGET_TABLE_HEADER_CHANGED,
+			EGET_TABLE_SELECTED_AGAIN
 
 		};
 	} // end namespace gui
@@ -260,4 +265,7 @@ public:
 } // end namespace irr
 
 #endif
+
+
+
 

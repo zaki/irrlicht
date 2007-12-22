@@ -7,25 +7,25 @@
 #ifdef _IRR_COMPILE_WITH_GUI_
 
 #include "IGUIEnvironment.h"
+
 #include "IGUIButton.h"
 #include "IGUICheckBox.h"
+#include "IGUIColorSelectDialog.h"
 #include "IGUIComboBox.h"
 #include "IGUIContextMenu.h"
 #include "IGUIEditBox.h"
-#include "IGUISpinBox.h"
 #include "IGUIFileOpenDialog.h"
-#include "IGUIColorSelectDialog.h"
 #include "IGUIInOutFader.h"
 #include "IGUIImage.h"
 #include "IGUIListBox.h"
 #include "IGUIMeshViewer.h"
 #include "IGUIScrollBar.h"
+#include "IGUISpinBox.h"
 #include "IGUIStaticText.h"
 #include "IGUITabControl.h"
+#include "IGUITable.h"
 #include "IGUIToolbar.h"
 #include "IGUIWindow.h"
-
-#include <string.h>
 
 namespace irr
 {
@@ -80,6 +80,8 @@ IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IG
 			return Environment->addTab(core::rect<s32>(0,0,100,100),parent);
 		case EGUIET_TAB_CONTROL:
 			return Environment->addTabControl(core::rect<s32>(0,0,100,100),parent);
+		case EGUIET_TABLE:
+			return Environment->addTable(core::rect<s32>(0,0,100,100), parent);
 		case EGUIET_TOOL_BAR:
 			return Environment->addToolBar(parent);
 		case EGUIET_WINDOW:

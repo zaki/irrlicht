@@ -78,6 +78,7 @@
 #include "IGUISpriteBank.h"
 #include "IGUIStaticText.h"
 #include "IGUITabControl.h"
+#include "IGUITable.h"
 #include "IGUIToolbar.h"
 #include "IGUIWindow.h"
 #include "IImage.h"
@@ -330,4 +331,5 @@ namespace irr
 */
 
 #endif
+
 
