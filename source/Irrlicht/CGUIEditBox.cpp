@@ -825,6 +825,9 @@ void CGUIEditBox::draw()
 				false, true, &localClipRect);
 		}
 	}
+
+	// draw children
+	IGUIElement::draw();
 }
 
 
