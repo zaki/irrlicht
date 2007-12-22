@@ -1,6 +1,8 @@
 -------------------------------------------
 Changes in version 1.5 (... 2008)
 
+ - Added collision manager speedup patch by RogerBorg.
+
  - Hardware accelerated Vertex and Index Buffer support finally integrated into Irrlicht. Thanks to a ressource handling idea by Klasker and the almost immediate implementation by Luke, Irrlicht now supports VBOs under OpenGL. D3D will follow soon.
    Hardware buffers make rendering the same vertices much faster. In some cases this can be more than 10x faster. To use this feature with a mesh simple set a usage type, e.g. via MeshBuffer->setHardwareMappingHint(scene::EHM_STATIC). The driver will upload the vertices and indices on the next draw and reuse this information without the need to upload it each frame.
 

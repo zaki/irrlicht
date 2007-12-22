@@ -10,6 +10,7 @@
 
 #include "os.h"
 #include "irrMath.h"
+#include <float.h> // For FLT_MAX
 
 namespace irr
 {
@@ -61,7 +62,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(core::line3d<f32> ray,
 						bool bNoDebugObjects)
 {
 	ISceneNode* best = 0;
-	f32 dist = 9999999999.0f;
+	f32 dist = FLT_MAX;
 
 	getPickedNodeBB(SceneManager->getRootSceneNode(), ray, 
 		idBitMask, bNoDebugObjects, dist, best);
@@ -168,13 +169,40 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 
 	const core::vector3df linevect = ray.getVector().normalize();
 	core::vector3df intersection;
-	f32 nearest = 9999999999999.0f;
+	f32 nearest = FLT_MAX;
 	bool found = false;
 	const f32 raylength = ray.getLengthSQ();
 
+	const f32 minX = core::min_(ray.start.X, ray.end.X);
+	const f32 maxX = core::max_(ray.start.X, ray.end.X);
+	const f32 minY = core::min_(ray.start.Y, ray.end.Y);
+	const f32 maxY = core::max_(ray.start.Y, ray.end.Y);
+	const f32 minZ = core::min_(ray.start.Z, ray.end.Z);
+	const f32 maxZ = core::max_(ray.start.Z, ray.end.Z);
+
 	for (s32 i=0; i<cnt; ++i)
 	{
-		if (Triangles[i].getIntersectionWithLine(ray.start, linevect, intersection))
+		const core::triangle3df & triangle = Triangles[i];
+
+		if(minX > triangle.pointA.X && minX > triangle.pointB.X && minX > triangle.pointC.X)
+			continue;
+		if(maxX < triangle.pointA.X && maxX < triangle.pointB.X && maxX < triangle.pointC.X)
+			continue;
+		if(minY > triangle.pointA.Y && minY > triangle.pointB.Y && minY > triangle.pointC.Y)
+			continue;
+		if(maxY < triangle.pointA.Y && maxY < triangle.pointB.Y && maxY < triangle.pointC.Y)
+			continue;
+		if(minZ > triangle.pointA.Z && minZ > triangle.pointB.Z && minZ > triangle.pointC.Z)
+			continue;
+		if(maxZ < triangle.pointA.Z && maxZ < triangle.pointB.Z && maxZ < triangle.pointC.Z)
+			continue;
+
+		if(ray.start.getDistanceFromSQ(triangle.pointA) >= nearest &&
+			ray.start.getDistanceFromSQ(triangle.pointB) >= nearest &&
+			ray.start.getDistanceFromSQ(triangle.pointC) >= nearest)
+			continue;
+
+		if (triangle.getIntersectionWithLine(ray.start, linevect, intersection))
 		{
 			const f32 tmp = intersection.getDistanceFromSQ(ray.start);
 			const f32 tmp2 = intersection.getDistanceFromSQ(ray.end);
@@ -182,7 +210,7 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 			if (tmp < raylength && tmp2 < raylength && tmp < nearest)
 			{
 				nearest = tmp;
-				outTriangle = Triangles[i];
+				outTriangle = triangle;
 				outIntersection = intersection;
 				found = true;
 			}
@@ -481,7 +509,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	colData.R3Position = position;
 	colData.R3Velocity = velocity;
 	colData.eRadius = radius;
-	colData.nearestDistance = 9999999999999.0f;
+	colData.nearestDistance = FLT_MAX;
 	colData.selector = selector;
 	colData.slidingSpeed = slidingSpeed;
 	colData.triangleHits = 0;
@@ -537,7 +565,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 	colData.normalizedVelocity.normalize();
 	colData.basePoint = pos;
 	colData.foundCollision = false;
-	colData.nearestDistance = 9999999999999.0f;
+	colData.nearestDistance = FLT_MAX;
 
 	//------------------ collide with world
 
@@ -734,4 +762,5 @@ inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR,
 
 } // end namespace scene
 } // end namespace irr
+
 
