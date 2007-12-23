@@ -55,10 +55,10 @@ namespace gui
 		//! Returns the ordering used by the currently active column
 		virtual EGUI_ORDERING_MODE getActiveColumnOrdering() const = 0;
 
-		//! set a column width
+		//! Set the width of a column
 		virtual void setColumnWidth(u32 columnIndex, u32 width) = 0;
 
-		//! This tells the table control wether is should send a EGET_TABLE_HEADER_CHANGED message or not when
+		//! This tells the table control whether is should send a EGET_TABLE_HEADER_CHANGED message or not when
 		//! a column header is clicked. If set to false, the table control will use a default alphabetical ordering scheme.
 		/** \param columnIndex: The index of the column header.
 		\param state: If true, a EGET_TABLE_HEADER_CHANGED message will be sent and you can order the table data as you whish.*/

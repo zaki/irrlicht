@@ -27,7 +27,7 @@ Changes in version 1.5 (... 2008)
    Nodes are now solid or transparent. ( but still more states are needed )
 
  - GUI:
-   Finally added table control and TabControl additions from StarSonata team.
+   Finally added StarSonata/Acki patch with table element and TabControl additions.
 
 -------------------------------------------
 

@@ -39,14 +39,15 @@ CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 	IGUISkin* skin = Environment->getSkin();
 	s32 s = skin->getSize(EGDS_SCROLLBAR_SIZE);
 
-	ScrollBar = new CGUIScrollBar(false, Environment, this, -1,
+	ScrollBar = Environment->addScrollBar(false, 
 		core::rect<s32>(RelativeRect.getWidth() - s, 0, RelativeRect.getWidth(), RelativeRect.getHeight()),
-		!clip);
+		this, -1);
 
 	if (ScrollBar)
 	{
 		ScrollBar->setPos(0);
-		ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+		ScrollBar->setNotClipped(clip);
+		ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT); 
 		ScrollBar->setSubElement(true);
 		ScrollBar->grab();
 	}
@@ -304,12 +305,11 @@ bool CGUITable::OnEvent(const SEvent& event)
 				return true;
 			}
 			break;
-		/*case gui::EGET_ELEMENT_FOCUS_LOST:
+		case gui::EGET_ELEMENT_FOCUS_LOST:
 			{
 				Selecting = false;
-				return true;
 			}
-			break;*/
+			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -709,6 +709,64 @@ void CGUITable::breakText(core::stringw &text, u32 cellWidth )
 	else
 		text = line;
 }
+
+
+
+
+//! Writes attributes of the object.
+//! Implement this to expose the attributes of your scene node animator for 
+//! scripting languages, editors, debuggers or xml serialization purposes.
+void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
+{
+	IGUIElement::serializeAttributes(out, options);
+
+	core::stringc tmp, tmp2;
+	out->addInt("Columns", Columns.size());
+	for (u32 i=0; i < Columns.size(); ++i)
+	{
+		tmp = "Column"; tmp += i; tmp += ".";
+		tmp2 = tmp + "Name";
+		out->addString(tmp2.c_str(), Columns[i].name.c_str());
+
+		tmp2 = tmp + "Width";
+		out->addInt(tmp2.c_str(), Columns[i].width);
+
+		tmp2 = tmp + "CustomOrdering";
+		out->addBool(tmp2.c_str(), Columns[i].useCustomOrdering);
+	}
+}
+
+//! Reads attributes of the object.
+//! Implement this to set the attributes of your scene node animator for 
+//! scripting languages, editors, debuggers or xml deserialization purposes.
+void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
+{
+	// clear everything
+	clear();
+
+	IGUIElement::deserializeAttributes(in , options);
+
+	// add columns
+	core::stringc tmp, tmp2;
+	u32 count = in->getAttributeAsInt("Columns");
+	for (u32 i=0; i < count; ++i)
+	{
+		tmp = "Column"; tmp += i; tmp += ".";
+		tmp2 = tmp + "Name";
+		addColumn(in->getAttributeAsStringW(tmp2.c_str()).c_str());
+
+		tmp2 = tmp + "Width";
+		setColumnWidth(i, in->getAttributeAsInt(tmp2.c_str()));
+
+		tmp2 = tmp + "CustomOrdering";
+		setColumnCustomOrdering(i, in->getAttributeAsBool(tmp2.c_str()));
+	}
+}
+
+
+
+
+
 
 } // end namespace gui
 } // end namespace irr
