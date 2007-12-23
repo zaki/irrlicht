@@ -78,7 +78,7 @@ CMainMenu::CMainMenu()
 bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 					bool& outAdditive, bool &outVSync, video::E_DRIVER_TYPE& outDriver)
 {
-	device = createDevice( video::EDT_BURNINGSVIDEO,
+	device = createDevice( outDriver, //Varmint: 2007/12/18 video::EDT_BURNINGSVIDEO,
 		core::dimension2d<s32>(512, 384), 16, false, false, false, this);
 
 	device->getFileSystem()->addZipFileArchive("irrlicht.dat");

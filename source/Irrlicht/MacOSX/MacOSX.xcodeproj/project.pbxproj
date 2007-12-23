@@ -33,8 +33,61 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		09198F100D188481001F5EF8 /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F000D188481001F5EF8 /* png.c */; };
+		09198F110D188481001F5EF8 /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F010D188481001F5EF8 /* pngerror.c */; };
+		09198F120D188481001F5EF8 /* pnggccrd.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F020D188481001F5EF8 /* pnggccrd.c */; };
+		09198F130D188481001F5EF8 /* pngget.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F030D188481001F5EF8 /* pngget.c */; };
+		09198F140D188481001F5EF8 /* pngmem.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F040D188481001F5EF8 /* pngmem.c */; };
+		09198F150D188481001F5EF8 /* pngpread.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F050D188481001F5EF8 /* pngpread.c */; };
+		09198F160D188481001F5EF8 /* pngread.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F060D188481001F5EF8 /* pngread.c */; };
+		09198F170D188481001F5EF8 /* pngrio.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F070D188481001F5EF8 /* pngrio.c */; };
+		09198F180D188481001F5EF8 /* pngrtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F080D188481001F5EF8 /* pngrtran.c */; };
+		09198F190D188481001F5EF8 /* pngrutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F090D188481001F5EF8 /* pngrutil.c */; };
+		09198F1A0D188481001F5EF8 /* pngset.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F0A0D188481001F5EF8 /* pngset.c */; };
+		09198F1B0D188481001F5EF8 /* pngtrans.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F0B0D188481001F5EF8 /* pngtrans.c */; };
+		09198F1C0D188481001F5EF8 /* pngwio.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F0C0D188481001F5EF8 /* pngwio.c */; };
+		09198F1D0D188481001F5EF8 /* pngwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F0D0D188481001F5EF8 /* pngwrite.c */; };
+		09198F1E0D188481001F5EF8 /* pngwtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F0E0D188481001F5EF8 /* pngwtran.c */; };
+		09198F1F0D188481001F5EF8 /* pngwutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F0F0D188481001F5EF8 /* pngwutil.c */; };
+		096840470D0F1A2300333EFD /* CB3DMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */; };
+		096840480D0F1A2300333EFD /* CB3DMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */; };
+		096840490D0F1A2300333EFD /* CBoneSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840200D0F1A2300333EFD /* CBoneSceneNode.cpp */; };
+		0968404A0D0F1A2300333EFD /* CBoneSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840210D0F1A2300333EFD /* CBoneSceneNode.h */; };
+		0968404B0D0F1A2300333EFD /* CBSPMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840220D0F1A2300333EFD /* CBSPMeshFileLoader.cpp */; };
+		0968404C0D0F1A2300333EFD /* CBSPMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840230D0F1A2300333EFD /* CBSPMeshFileLoader.h */; };
+		0968404E0D0F1A2300333EFD /* CColladaMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840250D0F1A2300333EFD /* CColladaMeshWriter.cpp */; };
+		0968404F0D0F1A2300333EFD /* CColladaMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840260D0F1A2300333EFD /* CColladaMeshWriter.h */; };
+		096840500D0F1A2300333EFD /* CImageLoaderPPM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840270D0F1A2300333EFD /* CImageLoaderPPM.cpp */; };
+		096840510D0F1A2300333EFD /* CImageLoaderPPM.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840280D0F1A2300333EFD /* CImageLoaderPPM.h */; };
+		096840540D0F1A2300333EFD /* CIrrMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968402B0D0F1A2300333EFD /* CIrrMeshFileLoader.cpp */; };
+		096840550D0F1A2300333EFD /* CIrrMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0968402C0D0F1A2300333EFD /* CIrrMeshFileLoader.h */; };
+		096840560D0F1A2300333EFD /* CIrrMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968402D0D0F1A2300333EFD /* CIrrMeshWriter.cpp */; };
+		096840570D0F1A2300333EFD /* CIrrMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0968402E0D0F1A2300333EFD /* CIrrMeshWriter.h */; };
+		096840580D0F1A2300333EFD /* CMD2MeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968402F0D0F1A2300333EFD /* CMD2MeshFileLoader.cpp */; };
+		096840590D0F1A2300333EFD /* CMD2MeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840300D0F1A2300333EFD /* CMD2MeshFileLoader.h */; };
+		0968405A0D0F1A2300333EFD /* CMS3DMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840310D0F1A2300333EFD /* CMS3DMeshFileLoader.cpp */; };
+		0968405B0D0F1A2300333EFD /* CMS3DMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840320D0F1A2300333EFD /* CMS3DMeshFileLoader.h */; };
+		0968405C0D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840330D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.cpp */; };
+		0968405D0D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840340D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.h */; };
+		0968405E0D0F1A2300333EFD /* CParticleAttractionAffector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840350D0F1A2300333EFD /* CParticleAttractionAffector.cpp */; };
+		0968405F0D0F1A2300333EFD /* CParticleAttractionAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840360D0F1A2300333EFD /* CParticleAttractionAffector.h */; };
+		096840600D0F1A2300333EFD /* CParticleCylinderEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840370D0F1A2300333EFD /* CParticleCylinderEmitter.cpp */; };
+		096840610D0F1A2300333EFD /* CParticleCylinderEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840380D0F1A2300333EFD /* CParticleCylinderEmitter.h */; };
+		096840620D0F1A2300333EFD /* CParticleMeshEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840390D0F1A2300333EFD /* CParticleMeshEmitter.cpp */; };
+		096840630D0F1A2300333EFD /* CParticleMeshEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0968403A0D0F1A2300333EFD /* CParticleMeshEmitter.h */; };
+		096840640D0F1A2300333EFD /* CParticleRingEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968403B0D0F1A2300333EFD /* CParticleRingEmitter.cpp */; };
+		096840650D0F1A2300333EFD /* CParticleRingEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 0968403C0D0F1A2300333EFD /* CParticleRingEmitter.h */; };
+		096840660D0F1A2300333EFD /* CParticleRotationAffector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968403D0D0F1A2300333EFD /* CParticleRotationAffector.cpp */; };
+		096840670D0F1A2300333EFD /* CParticleRotationAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 0968403E0D0F1A2300333EFD /* CParticleRotationAffector.h */; };
+		096840680D0F1A2300333EFD /* CParticleSphereEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968403F0D0F1A2300333EFD /* CParticleSphereEmitter.cpp */; };
+		096840690D0F1A2300333EFD /* CParticleSphereEmitter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840400D0F1A2300333EFD /* CParticleSphereEmitter.h */; };
+		0968406A0D0F1A2300333EFD /* CSkinnedMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840410D0F1A2300333EFD /* CSkinnedMesh.cpp */; };
+		0968406B0D0F1A2300333EFD /* CSkinnedMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840420D0F1A2300333EFD /* CSkinnedMesh.h */; };
+		0968406C0D0F1A2300333EFD /* CSTLMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840430D0F1A2300333EFD /* CSTLMeshFileLoader.cpp */; };
+		0968406D0D0F1A2300333EFD /* CSTLMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */; };
+		0968406E0D0F1A2300333EFD /* CSTLMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */; };
+		0968406F0D0F1A2300333EFD /* CSTLMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840460D0F1A2300333EFD /* CSTLMeshWriter.h */; };
 		4C364EA40A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C364EA20A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp */; };
-		4C43EEBC0A74A5A300F942FC /* CAnimatedMeshB3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C43EEBB0A74A5A300F942FC /* CAnimatedMeshB3d.cpp */; };
 		4C43EEC00A74A5C800F942FC /* CPakReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */; };
 		4C53E2500A48504D0014E966 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C0054770A48470500C844C2 /* main.cpp */; };
 		4C53E2510A4850550014E966 /* libIrrlicht.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E24D0A4850120014E966 /* libIrrlicht.a */; };
@@ -78,29 +131,16 @@
 		4C53E3990A4855BA0014E966 /* DemoApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */; };
 		4C53E39A0A4855BA0014E966 /* DemoApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */; };
 		4C53E39B0A4855BA0014E966 /* DemoApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */; };
-		4C53E3B30A4856B30014E966 /* pngrutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1170A484C2A0014E966 /* pngrutil.c */; };
-		4C53E3BB0A4856B30014E966 /* pngget.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E10D0A484C2A0014E966 /* pngget.c */; };
-		4C53E3C40A4856B30014E966 /* pngrtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1160A484C2A0014E966 /* pngrtran.c */; };
-		4C53E3C90A4856B30014E966 /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1090A484C2A0014E966 /* pngerror.c */; };
 		4C53E3CA0A4856B30014E966 /* gzio.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E17D0A484C2C0014E966 /* gzio.c */; };
-		4C53E3D70A4856B30014E966 /* pngtrans.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E11D0A484C2B0014E966 /* pngtrans.c */; };
 		4C53E3D80A4856B30014E966 /* inffast.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1800A484C2C0014E966 /* inffast.c */; };
 		4C53E3DC0A4856B30014E966 /* inftrees.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1850A484C2C0014E966 /* inftrees.c */; };
 		4C53E3E40A4856B30014E966 /* uncompr.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E18D0A484C2C0014E966 /* uncompr.c */; };
-		4C53E3E90A4856B30014E966 /* pngset.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1180A484C2A0014E966 /* pngset.c */; };
-		4C53E3EE0A4856B30014E966 /* pngrio.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1150A484C2A0014E966 /* pngrio.c */; };
 		4C53E3F30A4856B30014E966 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1750A484C2C0014E966 /* compress.c */; };
 		4C53E3F60A4856B30014E966 /* crc32.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1770A484C2C0014E966 /* crc32.c */; };
 		4C53E3FE0A4856B30014E966 /* zutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1920A484C2C0014E966 /* zutil.c */; };
 		4C53E4010A4856B30014E966 /* trees.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E18B0A484C2C0014E966 /* trees.c */; };
-		4C53E4030A4856B30014E966 /* pngwio.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1210A484C2B0014E966 /* pngwio.c */; };
-		4C53E4040A4856B30014E966 /* pngmem.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E10E0A484C2A0014E966 /* pngmem.c */; };
 		4C53E40A0A4856B30014E966 /* deflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1790A484C2C0014E966 /* deflate.c */; };
-		4C53E4110A4856B30014E966 /* pngpread.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1130A484C2A0014E966 /* pngpread.c */; };
-		4C53E4140A4856B30014E966 /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1010A484C2A0014E966 /* png.c */; };
 		4C53E4150A4856B30014E966 /* adler32.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1720A484C2C0014E966 /* adler32.c */; };
-		4C53E4160A4856B30014E966 /* pngwtran.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1230A484C2B0014E966 /* pngwtran.c */; };
-		4C53E41A0A4856B30014E966 /* pngwutil.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1240A484C2B0014E966 /* pngwutil.c */; };
 		4C53E4280A4856B30014E966 /* CImageLoaderPNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF600A484C230014E966 /* CImageLoaderPNG.cpp */; };
 		4C53E4290A4856B30014E966 /* CColorConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DEFC0A484C220014E966 /* CColorConverter.cpp */; };
 		4C53E42A0A4856B30014E966 /* CSceneManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFAB0A484C240014E966 /* CSceneManager.cpp */; };
@@ -136,7 +176,6 @@
 		4C53E4490A4856B30014E966 /* CTRTextureDetailMap2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFDC0A484C250014E966 /* CTRTextureDetailMap2.cpp */; };
 		4C53E44A0A4856B30014E966 /* CTRTextureGouraudAddNoZ2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFE40A484C250014E966 /* CTRTextureGouraudAddNoZ2.cpp */; };
 		4C53E44C0A4856B30014E966 /* CTRTextureGouraudNoZ.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFE50A484C250014E966 /* CTRTextureGouraudNoZ.cpp */; };
-		4C53E44D0A4856B30014E966 /* CXFileReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFF60A484C250014E966 /* CXFileReader.cpp */; };
 		4C53E44E0A4856B30014E966 /* CGUIScrollBar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF4C0A484C230014E966 /* CGUIScrollBar.cpp */; };
 		4C53E44F0A4856B30014E966 /* CSceneCollisionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFA90A484C240014E966 /* CSceneCollisionManager.cpp */; };
 		4C53E4500A4856B30014E966 /* CGUICheckBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF300A484C230014E966 /* CGUICheckBox.cpp */; };
@@ -158,7 +197,6 @@
 		4C53E4600A4856B30014E966 /* CTRTextureLightMap2_Add.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFE90A484C250014E966 /* CTRTextureLightMap2_Add.cpp */; };
 		4C53E4610A4856B30014E966 /* CReadFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFA70A484C240014E966 /* CReadFile.cpp */; };
 		4C53E4620A4856B30014E966 /* COpenGLTexture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF970A484C240014E966 /* COpenGLTexture.cpp */; };
-		4C53E4630A4856B30014E966 /* CAnimatedMeshMS3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DEEB0A484C220014E966 /* CAnimatedMeshMS3D.cpp */; };
 		4C53E4640A4856B30014E966 /* COSOperator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF990A484C240014E966 /* COSOperator.cpp */; };
 		4C53E4650A4856B30014E966 /* CMemoryReadFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF740A484C230014E966 /* CMemoryReadFile.cpp */; };
 		4C53E4660A4856B30014E966 /* CColladaFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DEFA0A484C220014E966 /* CColladaFileLoader.cpp */; };
@@ -168,7 +206,6 @@
 		4C53E46A0A4856B30014E966 /* CVideoModeList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFEE0A484C250014E966 /* CVideoModeList.cpp */; };
 		4C53E46B0A4856B30014E966 /* CXMLReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFFA0A484C250014E966 /* CXMLReader.cpp */; };
 		4C53E46C0A4856B30014E966 /* COpenGLParallaxMapRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF910A484C240014E966 /* COpenGLParallaxMapRenderer.cpp */; };
-		4C53E46D0A4856B30014E966 /* CDefaultMeshFormatLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF1A0A484C230014E966 /* CDefaultMeshFormatLoader.cpp */; };
 		4C53E46E0A4856B30014E966 /* CTRTextureGouraudNoZ2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFE60A484C250014E966 /* CTRTextureGouraudNoZ2.cpp */; };
 		4C53E46F0A4856B30014E966 /* CTRTextureGouraudWire.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFE80A484C250014E966 /* CTRTextureGouraudWire.cpp */; };
 		4C53E4700A4856B30014E966 /* CParticlePointEmitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFA10A484C240014E966 /* CParticlePointEmitter.cpp */; };
@@ -229,7 +266,6 @@
 		4C53E4A80A4856B30014E966 /* CLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF720A484C230014E966 /* CLogger.cpp */; };
 		4C53E4A90A4856B30014E966 /* CGUIInOutFader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF400A484C230014E966 /* CGUIInOutFader.cpp */; };
 		4C53E4AA0A4856B30014E966 /* CWriteFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFF20A484C250014E966 /* CWriteFile.cpp */; };
-		4C53E4AB0A4856B30014E966 /* CXAnimationPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFF40A484C250014E966 /* CXAnimationPlayer.cpp */; };
 		4C53E4AC0A4856B30014E966 /* CCameraMayaSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DEF60A484C220014E966 /* CCameraMayaSceneNode.cpp */; };
 		4C53E4AD0A4856B30014E966 /* CTRTextureGouraud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFDF0A484C250014E966 /* CTRTextureGouraud.cpp */; };
 		4C53E4AE0A4856B30014E966 /* CTRFlat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFD10A484C240014E966 /* CTRFlat.cpp */; };
@@ -254,7 +290,6 @@
 		4C53E57E0A4856B30014E966 /* OSXClipboard.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1670A484C2C0014E966 /* OSXClipboard.mm */; };
 		4C53E57F0A4856B30014E966 /* CIrrDeviceMacOSX.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E15F0A484C2C0014E966 /* CIrrDeviceMacOSX.mm */; };
 		4C53E5800A4856B30014E966 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E14D0A484C2C0014E966 /* AppDelegate.mm */; };
-		4C53E62E0A485ABF0014E966 /* pngread.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E1140A484C2A0014E966 /* pngread.c */; };
 		4C6DC9B70A48715A0017A6E5 /* inflate.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C6DC9B60A48715A0017A6E5 /* inflate.c */; };
 		4CA25BCE0A485EAD00B4E469 /* jcapimin.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E6F10A485CD80014E966 /* jcapimin.c */; };
 		4CA25BCF0A485EAD00B4E469 /* jcapistd.c in Sources */ = {isa = PBXBuildFile; fileRef = 4C53E6F20A485CD80014E966 /* jcapistd.c */; };
@@ -363,7 +398,6 @@
 		4CFA7BFA0A88735A00B03626 /* CImageWriterPSD.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA7BE80A88735900B03626 /* CImageWriterPSD.cpp */; };
 		4CFA7BFC0A88735A00B03626 /* CImageWriterTGA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA7BEA0A88735900B03626 /* CImageWriterTGA.cpp */; };
 		4CFA7BFE0A88735A00B03626 /* CSkyDomeSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4CFA7BEC0A88735A00B03626 /* CSkyDomeSceneNode.cpp */; };
-		5DD480480C7D8B9100728AA9 /* pngwrite.c in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480470C7D8B9100728AA9 /* pngwrite.c */; };
 		5DD4804E0C7D91DF00728AA9 /* CDepthBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD4804C0C7D91DF00728AA9 /* CDepthBuffer.cpp */; };
 		5DD4804F0C7D91DF00728AA9 /* CDepthBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5DD4804D0C7D91DF00728AA9 /* CDepthBuffer.h */; };
 		5DD480520C7D936700728AA9 /* IBurningShader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DD480500C7D936700728AA9 /* IBurningShader.cpp */; };
@@ -580,6 +614,60 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		09198F000D188481001F5EF8 /* png.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = png.c; path = ../libpng_osx/png.c; sourceTree = "<group>"; };
+		09198F010D188481001F5EF8 /* pngerror.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngerror.c; path = ../libpng_osx/pngerror.c; sourceTree = "<group>"; };
+		09198F020D188481001F5EF8 /* pnggccrd.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pnggccrd.c; path = ../libpng_osx/pnggccrd.c; sourceTree = "<group>"; };
+		09198F030D188481001F5EF8 /* pngget.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngget.c; path = ../libpng_osx/pngget.c; sourceTree = "<group>"; };
+		09198F040D188481001F5EF8 /* pngmem.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngmem.c; path = ../libpng_osx/pngmem.c; sourceTree = "<group>"; };
+		09198F050D188481001F5EF8 /* pngpread.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngpread.c; path = ../libpng_osx/pngpread.c; sourceTree = "<group>"; };
+		09198F060D188481001F5EF8 /* pngread.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngread.c; path = ../libpng_osx/pngread.c; sourceTree = "<group>"; };
+		09198F070D188481001F5EF8 /* pngrio.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngrio.c; path = ../libpng_osx/pngrio.c; sourceTree = "<group>"; };
+		09198F080D188481001F5EF8 /* pngrtran.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngrtran.c; path = ../libpng_osx/pngrtran.c; sourceTree = "<group>"; };
+		09198F090D188481001F5EF8 /* pngrutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngrutil.c; path = ../libpng_osx/pngrutil.c; sourceTree = "<group>"; };
+		09198F0A0D188481001F5EF8 /* pngset.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngset.c; path = ../libpng_osx/pngset.c; sourceTree = "<group>"; };
+		09198F0B0D188481001F5EF8 /* pngtrans.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngtrans.c; path = ../libpng_osx/pngtrans.c; sourceTree = "<group>"; };
+		09198F0C0D188481001F5EF8 /* pngwio.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwio.c; path = ../libpng_osx/pngwio.c; sourceTree = "<group>"; };
+		09198F0D0D188481001F5EF8 /* pngwrite.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwrite.c; path = ../libpng_osx/pngwrite.c; sourceTree = "<group>"; };
+		09198F0E0D188481001F5EF8 /* pngwtran.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwtran.c; path = ../libpng_osx/pngwtran.c; sourceTree = "<group>"; };
+		09198F0F0D188481001F5EF8 /* pngwutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwutil.c; path = ../libpng_osx/pngwutil.c; sourceTree = "<group>"; };
+		0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CB3DMeshFileLoader.cpp; sourceTree = "<group>"; };
+		0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CB3DMeshFileLoader.h; sourceTree = "<group>"; };
+		096840200D0F1A2300333EFD /* CBoneSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CBoneSceneNode.cpp; sourceTree = "<group>"; };
+		096840210D0F1A2300333EFD /* CBoneSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CBoneSceneNode.h; sourceTree = "<group>"; };
+		096840220D0F1A2300333EFD /* CBSPMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CBSPMeshFileLoader.cpp; sourceTree = "<group>"; };
+		096840230D0F1A2300333EFD /* CBSPMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CBSPMeshFileLoader.h; sourceTree = "<group>"; };
+		096840250D0F1A2300333EFD /* CColladaMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CColladaMeshWriter.cpp; sourceTree = "<group>"; };
+		096840260D0F1A2300333EFD /* CColladaMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CColladaMeshWriter.h; sourceTree = "<group>"; };
+		096840270D0F1A2300333EFD /* CImageLoaderPPM.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CImageLoaderPPM.cpp; sourceTree = "<group>"; };
+		096840280D0F1A2300333EFD /* CImageLoaderPPM.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CImageLoaderPPM.h; sourceTree = "<group>"; };
+		0968402B0D0F1A2300333EFD /* CIrrMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrMeshFileLoader.cpp; sourceTree = "<group>"; };
+		0968402C0D0F1A2300333EFD /* CIrrMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CIrrMeshFileLoader.h; sourceTree = "<group>"; };
+		0968402D0D0F1A2300333EFD /* CIrrMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrMeshWriter.cpp; sourceTree = "<group>"; };
+		0968402E0D0F1A2300333EFD /* CIrrMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CIrrMeshWriter.h; sourceTree = "<group>"; };
+		0968402F0D0F1A2300333EFD /* CMD2MeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CMD2MeshFileLoader.cpp; sourceTree = "<group>"; };
+		096840300D0F1A2300333EFD /* CMD2MeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CMD2MeshFileLoader.h; sourceTree = "<group>"; };
+		096840310D0F1A2300333EFD /* CMS3DMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CMS3DMeshFileLoader.cpp; sourceTree = "<group>"; };
+		096840320D0F1A2300333EFD /* CMS3DMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CMS3DMeshFileLoader.h; sourceTree = "<group>"; };
+		096840330D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleAnimatedMeshSceneNodeEmitter.cpp; sourceTree = "<group>"; };
+		096840340D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleAnimatedMeshSceneNodeEmitter.h; sourceTree = "<group>"; };
+		096840350D0F1A2300333EFD /* CParticleAttractionAffector.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleAttractionAffector.cpp; sourceTree = "<group>"; };
+		096840360D0F1A2300333EFD /* CParticleAttractionAffector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleAttractionAffector.h; sourceTree = "<group>"; };
+		096840370D0F1A2300333EFD /* CParticleCylinderEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleCylinderEmitter.cpp; sourceTree = "<group>"; };
+		096840380D0F1A2300333EFD /* CParticleCylinderEmitter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleCylinderEmitter.h; sourceTree = "<group>"; };
+		096840390D0F1A2300333EFD /* CParticleMeshEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleMeshEmitter.cpp; sourceTree = "<group>"; };
+		0968403A0D0F1A2300333EFD /* CParticleMeshEmitter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleMeshEmitter.h; sourceTree = "<group>"; };
+		0968403B0D0F1A2300333EFD /* CParticleRingEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleRingEmitter.cpp; sourceTree = "<group>"; };
+		0968403C0D0F1A2300333EFD /* CParticleRingEmitter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleRingEmitter.h; sourceTree = "<group>"; };
+		0968403D0D0F1A2300333EFD /* CParticleRotationAffector.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleRotationAffector.cpp; sourceTree = "<group>"; };
+		0968403E0D0F1A2300333EFD /* CParticleRotationAffector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleRotationAffector.h; sourceTree = "<group>"; };
+		0968403F0D0F1A2300333EFD /* CParticleSphereEmitter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleSphereEmitter.cpp; sourceTree = "<group>"; };
+		096840400D0F1A2300333EFD /* CParticleSphereEmitter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleSphereEmitter.h; sourceTree = "<group>"; };
+		096840410D0F1A2300333EFD /* CSkinnedMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSkinnedMesh.cpp; sourceTree = "<group>"; };
+		096840420D0F1A2300333EFD /* CSkinnedMesh.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSkinnedMesh.h; sourceTree = "<group>"; };
+		096840430D0F1A2300333EFD /* CSTLMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSTLMeshFileLoader.cpp; sourceTree = "<group>"; };
+		096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshFileLoader.h; sourceTree = "<group>"; };
+		096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSTLMeshWriter.cpp; sourceTree = "<group>"; };
+		096840460D0F1A2300333EFD /* CSTLMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshWriter.h; sourceTree = "<group>"; };
 		4C0054710A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C0054770A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C00547D0A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -600,8 +688,6 @@
 		4C0054CA0A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C364EA20A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = COBJMeshFileLoader.cpp; sourceTree = "<group>"; };
 		4C364EA30A6C6DC2004CFBB4 /* COBJMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = COBJMeshFileLoader.h; sourceTree = "<group>"; };
-		4C43EEBB0A74A5A300F942FC /* CAnimatedMeshB3d.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = CAnimatedMeshB3d.cpp; sourceTree = "<group>"; };
-		4C43EEBD0A74A5AB00F942FC /* CAnimatedMeshB3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAnimatedMeshB3d.h; sourceTree = "<group>"; };
 		4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CPakReader.cpp; sourceTree = "<group>"; };
 		4C43EEBF0A74A5C800F942FC /* CPakReader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CPakReader.h; sourceTree = "<group>"; };
 		4C53DEE60A484C220014E966 /* BuiltInFont.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; lineEnding = 2; path = BuiltInFont.h; sourceTree = "<group>"; };
@@ -609,8 +695,6 @@
 		4C53DEE80A484C220014E966 /* C3DSMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = C3DSMeshFileLoader.h; sourceTree = "<group>"; };
 		4C53DEE90A484C220014E966 /* CAnimatedMeshMD2.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 2; path = CAnimatedMeshMD2.cpp; sourceTree = "<group>"; };
 		4C53DEEA0A484C220014E966 /* CAnimatedMeshMD2.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAnimatedMeshMD2.h; sourceTree = "<group>"; };
-		4C53DEEB0A484C220014E966 /* CAnimatedMeshMS3D.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CAnimatedMeshMS3D.cpp; sourceTree = "<group>"; };
-		4C53DEEC0A484C220014E966 /* CAnimatedMeshMS3D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAnimatedMeshMS3D.h; sourceTree = "<group>"; };
 		4C53DEED0A484C220014E966 /* CAnimatedMeshSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CAnimatedMeshSceneNode.cpp; sourceTree = "<group>"; };
 		4C53DEEE0A484C220014E966 /* CAnimatedMeshSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAnimatedMeshSceneNode.h; sourceTree = "<group>"; };
 		4C53DEEF0A484C220014E966 /* CAttributeImpl.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAttributeImpl.h; sourceTree = "<group>"; };
@@ -656,8 +740,6 @@
 		4C53DF170A484C230014E966 /* CD3D9ShaderMaterialRenderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CD3D9ShaderMaterialRenderer.h; sourceTree = "<group>"; };
 		4C53DF180A484C230014E966 /* CD3D9Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CD3D9Texture.cpp; sourceTree = "<group>"; };
 		4C53DF190A484C230014E966 /* CD3D9Texture.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CD3D9Texture.h; sourceTree = "<group>"; };
-		4C53DF1A0A484C230014E966 /* CDefaultMeshFormatLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CDefaultMeshFormatLoader.cpp; sourceTree = "<group>"; };
-		4C53DF1B0A484C230014E966 /* CDefaultMeshFormatLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CDefaultMeshFormatLoader.h; sourceTree = "<group>"; };
 		4C53DF1C0A484C230014E966 /* CDefaultSceneNodeAnimatorFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CDefaultSceneNodeAnimatorFactory.cpp; sourceTree = "<group>"; };
 		4C53DF1D0A484C230014E966 /* CDefaultSceneNodeAnimatorFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CDefaultSceneNodeAnimatorFactory.h; sourceTree = "<group>"; };
 		4C53DF1E0A484C230014E966 /* CDefaultSceneNodeFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CDefaultSceneNodeFactory.cpp; sourceTree = "<group>"; };
@@ -870,10 +952,6 @@
 		4C53DFF10A484C250014E966 /* CWaterSurfaceSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CWaterSurfaceSceneNode.h; sourceTree = "<group>"; };
 		4C53DFF20A484C250014E966 /* CWriteFile.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CWriteFile.cpp; sourceTree = "<group>"; };
 		4C53DFF30A484C250014E966 /* CWriteFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CWriteFile.h; sourceTree = "<group>"; };
-		4C53DFF40A484C250014E966 /* CXAnimationPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CXAnimationPlayer.cpp; sourceTree = "<group>"; };
-		4C53DFF50A484C250014E966 /* CXAnimationPlayer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CXAnimationPlayer.h; sourceTree = "<group>"; };
-		4C53DFF60A484C250014E966 /* CXFileReader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CXFileReader.cpp; sourceTree = "<group>"; };
-		4C53DFF70A484C250014E966 /* CXFileReader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CXFileReader.h; sourceTree = "<group>"; };
 		4C53DFF80A484C250014E966 /* CXMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CXMeshFileLoader.cpp; sourceTree = "<group>"; };
 		4C53DFF90A484C250014E966 /* CXMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CXMeshFileLoader.h; sourceTree = "<group>"; };
 		4C53DFFA0A484C250014E966 /* CXMLReader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CXMLReader.cpp; sourceTree = "<group>"; };
@@ -892,20 +970,6 @@
 		4C53E00E0A484C250014E966 /* irrXML.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = irrXML.cpp; sourceTree = "<group>"; };
 		4C53E00F0A484C250014E966 /* ITriangleRenderer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ITriangleRenderer.h; sourceTree = "<group>"; };
 		4C53E0110A484C250014E966 /* IZBuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = IZBuffer.h; sourceTree = "<group>"; };
-		4C53E1010A484C2A0014E966 /* png.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = png.c; sourceTree = "<group>"; };
-		4C53E1090A484C2A0014E966 /* pngerror.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngerror.c; sourceTree = "<group>"; };
-		4C53E10D0A484C2A0014E966 /* pngget.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngget.c; sourceTree = "<group>"; };
-		4C53E10E0A484C2A0014E966 /* pngmem.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngmem.c; sourceTree = "<group>"; };
-		4C53E1130A484C2A0014E966 /* pngpread.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngpread.c; sourceTree = "<group>"; };
-		4C53E1140A484C2A0014E966 /* pngread.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngread.c; sourceTree = "<group>"; };
-		4C53E1150A484C2A0014E966 /* pngrio.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngrio.c; sourceTree = "<group>"; };
-		4C53E1160A484C2A0014E966 /* pngrtran.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngrtran.c; sourceTree = "<group>"; };
-		4C53E1170A484C2A0014E966 /* pngrutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngrutil.c; sourceTree = "<group>"; };
-		4C53E1180A484C2A0014E966 /* pngset.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngset.c; sourceTree = "<group>"; };
-		4C53E11D0A484C2B0014E966 /* pngtrans.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngtrans.c; sourceTree = "<group>"; };
-		4C53E1210A484C2B0014E966 /* pngwio.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngwio.c; sourceTree = "<group>"; };
-		4C53E1230A484C2B0014E966 /* pngwtran.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngwtran.c; sourceTree = "<group>"; };
-		4C53E1240A484C2B0014E966 /* pngwutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = pngwutil.c; sourceTree = "<group>"; };
 		4C53E14C0A484C2C0014E966 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		4C53E14D0A484C2C0014E966 /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
 		4C53E15E0A484C2C0014E966 /* CIrrDeviceMacOSX.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceMacOSX.h; sourceTree = "<group>"; };
@@ -932,7 +996,7 @@
 		4C53E18D0A484C2C0014E966 /* uncompr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = uncompr.c; sourceTree = "<group>"; };
 		4C53E1920A484C2C0014E966 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = zutil.c; sourceTree = "<group>"; };
 		4C53E24D0A4850120014E966 /* libIrrlicht.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libIrrlicht.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C53E2520A4850550014E966 /* Quake3Map.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Quake3Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C53E2520A4850550014E966 /* Quake3Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quake3Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C53E26D0A4850D60014E966 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		4C53E26E0A4850D60014E966 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "DemoApp-Info.plist"; sourceTree = "<group>"; };
@@ -1147,7 +1211,6 @@
 		4CFA7C7E0A88742900B03626 /* triangle3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = triangle3d.h; sourceTree = "<group>"; };
 		4CFA7C7F0A88742900B03626 /* vector2d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = vector2d.h; sourceTree = "<group>"; };
 		4CFA7C800A88742900B03626 /* vector3d.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = vector3d.h; sourceTree = "<group>"; };
-		5DD480470C7D8B9100728AA9 /* pngwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = pngwrite.c; sourceTree = "<group>"; };
 		5DD4804C0C7D91DF00728AA9 /* CDepthBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CDepthBuffer.cpp; sourceTree = "<group>"; };
 		5DD4804D0C7D91DF00728AA9 /* CDepthBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CDepthBuffer.h; sourceTree = "<group>"; };
 		5DD480500C7D936700728AA9 /* IBurningShader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IBurningShader.cpp; sourceTree = "<group>"; };
@@ -1475,7 +1538,7 @@
 				4C6DC9960A486B110017A6E5 /* Engine */,
 				4C53E14A0A484C2C0014E966 /* MacOSX */,
 				4C53E0130A484C250014E966 /* jpeglib */,
-				4C53E0A80A484C280014E966 /* libpng */,
+				4C53E0A80A484C280014E966 /* libpng_osx */,
 				4C53E1710A484C2C0014E966 /* zlib */,
 			);
 			name = Irrlicht;
@@ -1548,25 +1611,27 @@
 			path = jpeglib;
 			sourceTree = "<group>";
 		};
-		4C53E0A80A484C280014E966 /* libpng */ = {
+		4C53E0A80A484C280014E966 /* libpng_osx */ = {
 			isa = PBXGroup;
 			children = (
-				5DD480470C7D8B9100728AA9 /* pngwrite.c */,
-				4C53E1010A484C2A0014E966 /* png.c */,
-				4C53E1090A484C2A0014E966 /* pngerror.c */,
-				4C53E10D0A484C2A0014E966 /* pngget.c */,
-				4C53E10E0A484C2A0014E966 /* pngmem.c */,
-				4C53E1130A484C2A0014E966 /* pngpread.c */,
-				4C53E1140A484C2A0014E966 /* pngread.c */,
-				4C53E1150A484C2A0014E966 /* pngrio.c */,
-				4C53E1160A484C2A0014E966 /* pngrtran.c */,
-				4C53E1170A484C2A0014E966 /* pngrutil.c */,
-				4C53E1180A484C2A0014E966 /* pngset.c */,
-				4C53E11D0A484C2B0014E966 /* pngtrans.c */,
-				4C53E1210A484C2B0014E966 /* pngwio.c */,
-				4C53E1230A484C2B0014E966 /* pngwtran.c */,
-				4C53E1240A484C2B0014E966 /* pngwutil.c */,
+				09198F000D188481001F5EF8 /* png.c */,
+				09198F010D188481001F5EF8 /* pngerror.c */,
+				09198F020D188481001F5EF8 /* pnggccrd.c */,
+				09198F030D188481001F5EF8 /* pngget.c */,
+				09198F040D188481001F5EF8 /* pngmem.c */,
+				09198F050D188481001F5EF8 /* pngpread.c */,
+				09198F060D188481001F5EF8 /* pngread.c */,
+				09198F070D188481001F5EF8 /* pngrio.c */,
+				09198F080D188481001F5EF8 /* pngrtran.c */,
+				09198F090D188481001F5EF8 /* pngrutil.c */,
+				09198F0A0D188481001F5EF8 /* pngset.c */,
+				09198F0B0D188481001F5EF8 /* pngtrans.c */,
+				09198F0C0D188481001F5EF8 /* pngwio.c */,
+				09198F0D0D188481001F5EF8 /* pngwrite.c */,
+				09198F0E0D188481001F5EF8 /* pngwtran.c */,
+				09198F0F0D188481001F5EF8 /* pngwutil.c */,
 			);
+			name = libpng_osx;
 			path = libpng;
 			sourceTree = "<group>";
 		};
@@ -1669,6 +1734,44 @@
 		4C6DC9960A486B110017A6E5 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */,
+				0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */,
+				096840200D0F1A2300333EFD /* CBoneSceneNode.cpp */,
+				096840210D0F1A2300333EFD /* CBoneSceneNode.h */,
+				096840220D0F1A2300333EFD /* CBSPMeshFileLoader.cpp */,
+				096840230D0F1A2300333EFD /* CBSPMeshFileLoader.h */,
+				096840250D0F1A2300333EFD /* CColladaMeshWriter.cpp */,
+				096840260D0F1A2300333EFD /* CColladaMeshWriter.h */,
+				096840270D0F1A2300333EFD /* CImageLoaderPPM.cpp */,
+				096840280D0F1A2300333EFD /* CImageLoaderPPM.h */,
+				0968402B0D0F1A2300333EFD /* CIrrMeshFileLoader.cpp */,
+				0968402C0D0F1A2300333EFD /* CIrrMeshFileLoader.h */,
+				0968402D0D0F1A2300333EFD /* CIrrMeshWriter.cpp */,
+				0968402E0D0F1A2300333EFD /* CIrrMeshWriter.h */,
+				0968402F0D0F1A2300333EFD /* CMD2MeshFileLoader.cpp */,
+				096840300D0F1A2300333EFD /* CMD2MeshFileLoader.h */,
+				096840310D0F1A2300333EFD /* CMS3DMeshFileLoader.cpp */,
+				096840320D0F1A2300333EFD /* CMS3DMeshFileLoader.h */,
+				096840330D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.cpp */,
+				096840340D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.h */,
+				096840350D0F1A2300333EFD /* CParticleAttractionAffector.cpp */,
+				096840360D0F1A2300333EFD /* CParticleAttractionAffector.h */,
+				096840370D0F1A2300333EFD /* CParticleCylinderEmitter.cpp */,
+				096840380D0F1A2300333EFD /* CParticleCylinderEmitter.h */,
+				096840390D0F1A2300333EFD /* CParticleMeshEmitter.cpp */,
+				0968403A0D0F1A2300333EFD /* CParticleMeshEmitter.h */,
+				0968403B0D0F1A2300333EFD /* CParticleRingEmitter.cpp */,
+				0968403C0D0F1A2300333EFD /* CParticleRingEmitter.h */,
+				0968403D0D0F1A2300333EFD /* CParticleRotationAffector.cpp */,
+				0968403E0D0F1A2300333EFD /* CParticleRotationAffector.h */,
+				0968403F0D0F1A2300333EFD /* CParticleSphereEmitter.cpp */,
+				096840400D0F1A2300333EFD /* CParticleSphereEmitter.h */,
+				096840410D0F1A2300333EFD /* CSkinnedMesh.cpp */,
+				096840420D0F1A2300333EFD /* CSkinnedMesh.h */,
+				096840430D0F1A2300333EFD /* CSTLMeshFileLoader.cpp */,
+				096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */,
+				096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */,
+				096840460D0F1A2300333EFD /* CSTLMeshWriter.h */,
 				5DD480C10C7DA66800728AA9 /* COpenGLExtensionHandler.h */,
 				5DD480C20C7DA66800728AA9 /* CMD3MeshFileLoader.h */,
 				5DD480C30C7DA66800728AA9 /* CIrrDeviceSDL.h */,
@@ -1699,8 +1802,6 @@
 				4CFA7BED0A88735A00B03626 /* CSkyDomeSceneNode.h */,
 				4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */,
 				4C43EEBF0A74A5C800F942FC /* CPakReader.h */,
-				4C43EEBD0A74A5AB00F942FC /* CAnimatedMeshB3d.h */,
-				4C43EEBB0A74A5A300F942FC /* CAnimatedMeshB3d.cpp */,
 				4C364EA20A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp */,
 				4C364EA30A6C6DC2004CFBB4 /* COBJMeshFileLoader.h */,
 				4CC36B0D0A6B61DB0076C4B2 /* CSphereSceneNode.cpp */,
@@ -1710,8 +1811,6 @@
 				4C53DEE80A484C220014E966 /* C3DSMeshFileLoader.h */,
 				4C53DEE90A484C220014E966 /* CAnimatedMeshMD2.cpp */,
 				4C53DEEA0A484C220014E966 /* CAnimatedMeshMD2.h */,
-				4C53DEEB0A484C220014E966 /* CAnimatedMeshMS3D.cpp */,
-				4C53DEEC0A484C220014E966 /* CAnimatedMeshMS3D.h */,
 				4C53DEED0A484C220014E966 /* CAnimatedMeshSceneNode.cpp */,
 				4C53DEEE0A484C220014E966 /* CAnimatedMeshSceneNode.h */,
 				4C53DEEF0A484C220014E966 /* CAttributeImpl.h */,
@@ -1757,8 +1856,6 @@
 				4C53DF170A484C230014E966 /* CD3D9ShaderMaterialRenderer.h */,
 				4C53DF180A484C230014E966 /* CD3D9Texture.cpp */,
 				4C53DF190A484C230014E966 /* CD3D9Texture.h */,
-				4C53DF1A0A484C230014E966 /* CDefaultMeshFormatLoader.cpp */,
-				4C53DF1B0A484C230014E966 /* CDefaultMeshFormatLoader.h */,
 				4C53DF1C0A484C230014E966 /* CDefaultSceneNodeAnimatorFactory.cpp */,
 				4C53DF1D0A484C230014E966 /* CDefaultSceneNodeAnimatorFactory.h */,
 				4C53DF1E0A484C230014E966 /* CDefaultSceneNodeFactory.cpp */,
@@ -1971,10 +2068,6 @@
 				4C53DFF10A484C250014E966 /* CWaterSurfaceSceneNode.h */,
 				4C53DFF20A484C250014E966 /* CWriteFile.cpp */,
 				4C53DFF30A484C250014E966 /* CWriteFile.h */,
-				4C53DFF40A484C250014E966 /* CXAnimationPlayer.cpp */,
-				4C53DFF50A484C250014E966 /* CXAnimationPlayer.h */,
-				4C53DFF60A484C250014E966 /* CXFileReader.cpp */,
-				4C53DFF70A484C250014E966 /* CXFileReader.h */,
 				4C53DFF80A484C250014E966 /* CXMeshFileLoader.cpp */,
 				4C53DFF90A484C250014E966 /* CXMeshFileLoader.h */,
 				4C53DFFA0A484C250014E966 /* CXMLReader.cpp */,
@@ -2169,6 +2262,25 @@
 				5DD480C70C7DA66800728AA9 /* COpenGLExtensionHandler.h in Headers */,
 				5DD480C80C7DA66800728AA9 /* CMD3MeshFileLoader.h in Headers */,
 				5DD480C90C7DA66800728AA9 /* CIrrDeviceSDL.h in Headers */,
+				096840480D0F1A2300333EFD /* CB3DMeshFileLoader.h in Headers */,
+				0968404A0D0F1A2300333EFD /* CBoneSceneNode.h in Headers */,
+				0968404C0D0F1A2300333EFD /* CBSPMeshFileLoader.h in Headers */,
+				0968404F0D0F1A2300333EFD /* CColladaMeshWriter.h in Headers */,
+				096840510D0F1A2300333EFD /* CImageLoaderPPM.h in Headers */,
+				096840550D0F1A2300333EFD /* CIrrMeshFileLoader.h in Headers */,
+				096840570D0F1A2300333EFD /* CIrrMeshWriter.h in Headers */,
+				096840590D0F1A2300333EFD /* CMD2MeshFileLoader.h in Headers */,
+				0968405B0D0F1A2300333EFD /* CMS3DMeshFileLoader.h in Headers */,
+				0968405D0D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.h in Headers */,
+				0968405F0D0F1A2300333EFD /* CParticleAttractionAffector.h in Headers */,
+				096840610D0F1A2300333EFD /* CParticleCylinderEmitter.h in Headers */,
+				096840630D0F1A2300333EFD /* CParticleMeshEmitter.h in Headers */,
+				096840650D0F1A2300333EFD /* CParticleRingEmitter.h in Headers */,
+				096840670D0F1A2300333EFD /* CParticleRotationAffector.h in Headers */,
+				096840690D0F1A2300333EFD /* CParticleSphereEmitter.h in Headers */,
+				0968406B0D0F1A2300333EFD /* CSkinnedMesh.h in Headers */,
+				0968406D0D0F1A2300333EFD /* CSTLMeshFileLoader.h in Headers */,
+				0968406F0D0F1A2300333EFD /* CSTLMeshWriter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2746,29 +2858,16 @@
 				4CA25C1A0A485EAD00B4E469 /* wrppm.c in Sources */,
 				4CA25C1B0A485EAD00B4E469 /* wrrle.c in Sources */,
 				4CA25C1C0A485EAD00B4E469 /* wrtarga.c in Sources */,
-				4C53E3B30A4856B30014E966 /* pngrutil.c in Sources */,
-				4C53E3BB0A4856B30014E966 /* pngget.c in Sources */,
-				4C53E3C40A4856B30014E966 /* pngrtran.c in Sources */,
-				4C53E3C90A4856B30014E966 /* pngerror.c in Sources */,
 				4C53E3CA0A4856B30014E966 /* gzio.c in Sources */,
-				4C53E3D70A4856B30014E966 /* pngtrans.c in Sources */,
 				4C53E3D80A4856B30014E966 /* inffast.c in Sources */,
 				4C53E3DC0A4856B30014E966 /* inftrees.c in Sources */,
 				4C53E3E40A4856B30014E966 /* uncompr.c in Sources */,
-				4C53E3E90A4856B30014E966 /* pngset.c in Sources */,
-				4C53E3EE0A4856B30014E966 /* pngrio.c in Sources */,
 				4C53E3F30A4856B30014E966 /* compress.c in Sources */,
 				4C53E3F60A4856B30014E966 /* crc32.c in Sources */,
 				4C53E3FE0A4856B30014E966 /* zutil.c in Sources */,
 				4C53E4010A4856B30014E966 /* trees.c in Sources */,
-				4C53E4030A4856B30014E966 /* pngwio.c in Sources */,
-				4C53E4040A4856B30014E966 /* pngmem.c in Sources */,
 				4C53E40A0A4856B30014E966 /* deflate.c in Sources */,
-				4C53E4110A4856B30014E966 /* pngpread.c in Sources */,
-				4C53E4140A4856B30014E966 /* png.c in Sources */,
 				4C53E4150A4856B30014E966 /* adler32.c in Sources */,
-				4C53E4160A4856B30014E966 /* pngwtran.c in Sources */,
-				4C53E41A0A4856B30014E966 /* pngwutil.c in Sources */,
 				4C53E4280A4856B30014E966 /* CImageLoaderPNG.cpp in Sources */,
 				4C53E4290A4856B30014E966 /* CColorConverter.cpp in Sources */,
 				4C53E42A0A4856B30014E966 /* CSceneManager.cpp in Sources */,
@@ -2804,7 +2903,6 @@
 				4C53E4490A4856B30014E966 /* CTRTextureDetailMap2.cpp in Sources */,
 				4C53E44A0A4856B30014E966 /* CTRTextureGouraudAddNoZ2.cpp in Sources */,
 				4C53E44C0A4856B30014E966 /* CTRTextureGouraudNoZ.cpp in Sources */,
-				4C53E44D0A4856B30014E966 /* CXFileReader.cpp in Sources */,
 				4C53E44E0A4856B30014E966 /* CGUIScrollBar.cpp in Sources */,
 				4C53E44F0A4856B30014E966 /* CSceneCollisionManager.cpp in Sources */,
 				4C53E4500A4856B30014E966 /* CGUICheckBox.cpp in Sources */,
@@ -2826,7 +2924,6 @@
 				4C53E4600A4856B30014E966 /* CTRTextureLightMap2_Add.cpp in Sources */,
 				4C53E4610A4856B30014E966 /* CReadFile.cpp in Sources */,
 				4C53E4620A4856B30014E966 /* COpenGLTexture.cpp in Sources */,
-				4C53E4630A4856B30014E966 /* CAnimatedMeshMS3D.cpp in Sources */,
 				4C53E4640A4856B30014E966 /* COSOperator.cpp in Sources */,
 				4C53E4650A4856B30014E966 /* CMemoryReadFile.cpp in Sources */,
 				4C53E4660A4856B30014E966 /* CColladaFileLoader.cpp in Sources */,
@@ -2836,7 +2933,6 @@
 				4C53E46A0A4856B30014E966 /* CVideoModeList.cpp in Sources */,
 				4C53E46B0A4856B30014E966 /* CXMLReader.cpp in Sources */,
 				4C53E46C0A4856B30014E966 /* COpenGLParallaxMapRenderer.cpp in Sources */,
-				4C53E46D0A4856B30014E966 /* CDefaultMeshFormatLoader.cpp in Sources */,
 				4C53E46E0A4856B30014E966 /* CTRTextureGouraudNoZ2.cpp in Sources */,
 				4C53E46F0A4856B30014E966 /* CTRTextureGouraudWire.cpp in Sources */,
 				4C53E4700A4856B30014E966 /* CParticlePointEmitter.cpp in Sources */,
@@ -2897,7 +2993,6 @@
 				4C53E4A80A4856B30014E966 /* CLogger.cpp in Sources */,
 				4C53E4A90A4856B30014E966 /* CGUIInOutFader.cpp in Sources */,
 				4C53E4AA0A4856B30014E966 /* CWriteFile.cpp in Sources */,
-				4C53E4AB0A4856B30014E966 /* CXAnimationPlayer.cpp in Sources */,
 				4C53E4AC0A4856B30014E966 /* CCameraMayaSceneNode.cpp in Sources */,
 				4C53E4AD0A4856B30014E966 /* CTRTextureGouraud.cpp in Sources */,
 				4C53E4AE0A4856B30014E966 /* CTRFlat.cpp in Sources */,
@@ -2922,11 +3017,9 @@
 				4C53E57E0A4856B30014E966 /* OSXClipboard.mm in Sources */,
 				4C53E57F0A4856B30014E966 /* CIrrDeviceMacOSX.mm in Sources */,
 				4C53E5800A4856B30014E966 /* AppDelegate.mm in Sources */,
-				4C53E62E0A485ABF0014E966 /* pngread.c in Sources */,
 				4C6DC9B70A48715A0017A6E5 /* inflate.c in Sources */,
 				4CC36B0F0A6B61DB0076C4B2 /* CSphereSceneNode.cpp in Sources */,
 				4C364EA40A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp in Sources */,
-				4C43EEBC0A74A5A300F942FC /* CAnimatedMeshB3d.cpp in Sources */,
 				4C43EEC00A74A5C800F942FC /* CPakReader.cpp in Sources */,
 				4CFA7BEE0A88735A00B03626 /* CImageLoaderBMP.cpp in Sources */,
 				4CFA7BF00A88735A00B03626 /* CImageWriterBMP.cpp in Sources */,
@@ -2937,7 +3030,6 @@
 				4CFA7BFA0A88735A00B03626 /* CImageWriterPSD.cpp in Sources */,
 				4CFA7BFC0A88735A00B03626 /* CImageWriterTGA.cpp in Sources */,
 				4CFA7BFE0A88735A00B03626 /* CSkyDomeSceneNode.cpp in Sources */,
-				5DD480480C7D8B9100728AA9 /* pngwrite.c in Sources */,
 				5DD4804E0C7D91DF00728AA9 /* CDepthBuffer.cpp in Sources */,
 				5DD480520C7D936700728AA9 /* IBurningShader.cpp in Sources */,
 				5DD4805A0C7D945800728AA9 /* CAnimatedMeshMD3.cpp in Sources */,
@@ -2953,6 +3045,41 @@
 				5DD480CA0C7DA66800728AA9 /* CIrrDeviceSDL.cpp in Sources */,
 				5DD480CB0C7DA66800728AA9 /* COpenGLExtensionHandler.cpp in Sources */,
 				5DD480CC0C7DA66800728AA9 /* CMD3MeshFileLoader.cpp in Sources */,
+				096840470D0F1A2300333EFD /* CB3DMeshFileLoader.cpp in Sources */,
+				096840490D0F1A2300333EFD /* CBoneSceneNode.cpp in Sources */,
+				0968404B0D0F1A2300333EFD /* CBSPMeshFileLoader.cpp in Sources */,
+				0968404E0D0F1A2300333EFD /* CColladaMeshWriter.cpp in Sources */,
+				096840500D0F1A2300333EFD /* CImageLoaderPPM.cpp in Sources */,
+				096840540D0F1A2300333EFD /* CIrrMeshFileLoader.cpp in Sources */,
+				096840560D0F1A2300333EFD /* CIrrMeshWriter.cpp in Sources */,
+				096840580D0F1A2300333EFD /* CMD2MeshFileLoader.cpp in Sources */,
+				0968405A0D0F1A2300333EFD /* CMS3DMeshFileLoader.cpp in Sources */,
+				0968405C0D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.cpp in Sources */,
+				0968405E0D0F1A2300333EFD /* CParticleAttractionAffector.cpp in Sources */,
+				096840600D0F1A2300333EFD /* CParticleCylinderEmitter.cpp in Sources */,
+				096840620D0F1A2300333EFD /* CParticleMeshEmitter.cpp in Sources */,
+				096840640D0F1A2300333EFD /* CParticleRingEmitter.cpp in Sources */,
+				096840660D0F1A2300333EFD /* CParticleRotationAffector.cpp in Sources */,
+				096840680D0F1A2300333EFD /* CParticleSphereEmitter.cpp in Sources */,
+				0968406A0D0F1A2300333EFD /* CSkinnedMesh.cpp in Sources */,
+				0968406C0D0F1A2300333EFD /* CSTLMeshFileLoader.cpp in Sources */,
+				0968406E0D0F1A2300333EFD /* CSTLMeshWriter.cpp in Sources */,
+				09198F100D188481001F5EF8 /* png.c in Sources */,
+				09198F110D188481001F5EF8 /* pngerror.c in Sources */,
+				09198F120D188481001F5EF8 /* pnggccrd.c in Sources */,
+				09198F130D188481001F5EF8 /* pngget.c in Sources */,
+				09198F140D188481001F5EF8 /* pngmem.c in Sources */,
+				09198F150D188481001F5EF8 /* pngpread.c in Sources */,
+				09198F160D188481001F5EF8 /* pngread.c in Sources */,
+				09198F170D188481001F5EF8 /* pngrio.c in Sources */,
+				09198F180D188481001F5EF8 /* pngrtran.c in Sources */,
+				09198F190D188481001F5EF8 /* pngrutil.c in Sources */,
+				09198F1A0D188481001F5EF8 /* pngset.c in Sources */,
+				09198F1B0D188481001F5EF8 /* pngtrans.c in Sources */,
+				09198F1C0D188481001F5EF8 /* pngwio.c in Sources */,
+				09198F1D0D188481001F5EF8 /* pngwrite.c in Sources */,
+				09198F1E0D188481001F5EF8 /* pngwtran.c in Sources */,
+				09198F1F0D188481001F5EF8 /* pngwutil.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3174,6 +3301,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3182,7 +3311,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3190,7 +3319,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = 2DGraphics;
+				PRODUCT_NAME = 2DGraphics_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3231,6 +3360,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3239,7 +3370,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3247,7 +3378,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = Collision;
+				PRODUCT_NAME = Collision_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3288,6 +3419,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3296,7 +3429,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3304,7 +3437,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = PerPixelLighting;
+				PRODUCT_NAME = PerPixelLighting_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3346,6 +3479,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3354,7 +3489,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3362,7 +3497,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = TerrainRendering;
+				PRODUCT_NAME = TerrainRendering_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3403,6 +3538,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3411,7 +3548,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3419,7 +3556,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = SpecialFx;
+				PRODUCT_NAME = SpecialFx_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3460,6 +3597,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3468,7 +3607,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3476,7 +3615,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = UserInterface;
+				PRODUCT_NAME = UserInterface_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3517,6 +3656,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3525,7 +3666,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3533,7 +3674,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = CustomSceneNode;
+				PRODUCT_NAME = CustomSceneNode_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3574,6 +3715,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3582,7 +3725,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
@@ -3595,7 +3738,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = Quake3Map;
+				PRODUCT_NAME = Quake3Map_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3641,6 +3784,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3649,7 +3794,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3657,7 +3802,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = Shaders;
+				PRODUCT_NAME = Shaders_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3702,6 +3847,8 @@
 					i386,
 				);
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3710,7 +3857,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3718,7 +3865,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = Movement;
+				PRODUCT_NAME = Movement_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3763,6 +3910,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3771,7 +3920,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3779,7 +3928,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = MeshViewer;
+				PRODUCT_NAME = MeshViewer_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3820,6 +3969,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3828,7 +3979,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3836,7 +3987,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = RenderToTexture;
+				PRODUCT_NAME = RenderToTexture_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -3899,6 +4050,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
@@ -3907,7 +4060,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
 				INFOPLIST_FILE = "DemoApp-Info.plist";
-				INSTALL_PATH = "$(HOME)/Applications";
+				INSTALL_PATH = /;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -3915,7 +4068,7 @@
 					AppKit,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = Demo;
+				PRODUCT_NAME = Demo_dbg;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
