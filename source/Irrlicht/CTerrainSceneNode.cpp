@@ -54,11 +54,9 @@ namespace scene
 	//! destructor
 	CTerrainSceneNode::~CTerrainSceneNode ( )
 	{
-		if (TerrainData.LODDistanceThreshold)
-			delete [] TerrainData.LODDistanceThreshold;
+		delete [] TerrainData.LODDistanceThreshold;
 
-		if (TerrainData.Patches)
-			delete [] TerrainData.Patches;
+		delete [] TerrainData.Patches;
 
 		if (FileSystem)
 			FileSystem->drop();
@@ -525,67 +523,6 @@ namespace scene
 		}
 	}
 
-	void CTerrainSceneNode::preRenderLODCalculations_old()
-	{
-		SceneManager->registerNodeForRendering( this );
-		// Do Not call ISceneNode::OnRegisterSceneNode ( ), this node should have no children
-
-		// Determine the camera rotation, based on the camera direction.
-		core::line3d<f32> line;
-		line.start = SceneManager->getActiveCamera()->getAbsolutePosition();
-		line.end = SceneManager->getActiveCamera()->getTarget();
-		core::vector3df cameraRotation = line.getVector().getHorizontalAngle();
-		core::vector3df cameraPosition = SceneManager->getActiveCamera()->getPosition ( );
-
-		// Only check on the Camera's Y Rotation
-		if (( fabs(cameraRotation.X - OldCameraRotation.X) < CameraRotationDelta) &&
-			( fabs(cameraRotation.Y - OldCameraRotation.Y) < CameraRotationDelta))
-		{
-			if ((fabs(cameraPosition.X - OldCameraPosition.X) < CameraMovementDelta) &&
-				(fabs(cameraPosition.Y - OldCameraPosition.Y) < CameraMovementDelta) &&
-				(fabs(cameraPosition.Z - OldCameraPosition.Z) < CameraMovementDelta))
-			{
-				return;
-			}
-		}
-
-		OldCameraPosition = cameraPosition;
-		OldCameraRotation = cameraRotation;
-		const SViewFrustum* frustum = SceneManager->getActiveCamera()->getViewFrustum();
-
-		// Determine each patches LOD based on distance from camera ( and whether or not they are in
-		// the view frustum ).
-		for( s32 j = 0; j < TerrainData.PatchCount * TerrainData.PatchCount; ++j )
-		{
-			if( frustum->getBoundingBox().intersectsWithBox( TerrainData.Patches[j].BoundingBox ) )
-			{
-				f32 distance = (cameraPosition.X - TerrainData.Patches[j].Center.X) * (cameraPosition.X - TerrainData.Patches[j].Center.X) +
-					(cameraPosition.Y - TerrainData.Patches[j].Center.Y) * (cameraPosition.Y - TerrainData.Patches[j].Center.Y) +
-					(cameraPosition.Z - TerrainData.Patches[j].Center.Z) * (cameraPosition.Z - TerrainData.Patches[j].Center.Z);
-
-				for( s32 i = TerrainData.MaxLOD - 1; i >= 0; --i )
-				{
-					if( distance >= TerrainData.LODDistanceThreshold[i] )
-					{
-						TerrainData.Patches[j].CurrentLOD = i;
-						break;
-					}
-					//else if( i == 0 )
-					{
-						// If we've turned off a patch from viewing, because of the frustum, and now we turn around and it's
-						// too close, we need to turn it back on, at the highest LOD.  The if above doesn't catch this.
-						TerrainData.Patches[j].CurrentLOD = 0;
-					}
-				}
-			}
-			else
-			{
-				TerrainData.Patches[j].CurrentLOD = -1;
-			}
-		}
-	}
-
-
 	void CTerrainSceneNode::preRenderIndicesCalculations()
 	{
 		IndicesToRender = 0;
@@ -935,8 +872,8 @@ namespace scene
 	}
 
 	//! used to get the indices when generating index data for patches at varying levels of detail.
-	u32 CTerrainSceneNode::getIndex(const s32& PatchX, const s32& PatchZ,
-					const s32& PatchIndex, u32 vX, u32 vZ) const
+	u32 CTerrainSceneNode::getIndex(const s32 PatchX, const s32 PatchZ,
+					const s32 PatchIndex, u32 vX, u32 vZ) const
 	{
 		// top border
 		if (vZ == 0)
@@ -945,7 +882,7 @@ namespace scene
 				TerrainData.Patches[PatchIndex].CurrentLOD < TerrainData.Patches[PatchIndex].Top->CurrentLOD &&
 				(vX % ( 1 << TerrainData.Patches[PatchIndex].Top->CurrentLOD)) != 0 )
 			{
-				vX = vX - vX % ( 1 << TerrainData.Patches[PatchIndex].Top->CurrentLOD );
+				vX -= vX % ( 1 << TerrainData.Patches[PatchIndex].Top->CurrentLOD );
 			}
 		}
 		else
@@ -955,7 +892,7 @@ namespace scene
 				TerrainData.Patches[PatchIndex].CurrentLOD < TerrainData.Patches[PatchIndex].Bottom->CurrentLOD &&
 				(vX % ( 1 << TerrainData.Patches[PatchIndex].Bottom->CurrentLOD)) != 0)
 			{
-				vX = vX - vX % ( 1 << TerrainData.Patches[PatchIndex].Bottom->CurrentLOD );
+				vX -= vX % ( 1 << TerrainData.Patches[PatchIndex].Bottom->CurrentLOD );
 			}
 		}
 
@@ -966,7 +903,7 @@ namespace scene
 				TerrainData.Patches[PatchIndex].CurrentLOD < TerrainData.Patches[PatchIndex].Left->CurrentLOD &&
 				( vZ % ( 1 << TerrainData.Patches[PatchIndex].Left->CurrentLOD ) ) != 0)
 			{
-				vZ = vZ - vZ % ( 1 << TerrainData.Patches[PatchIndex].Left->CurrentLOD );
+				vZ -= vZ % ( 1 << TerrainData.Patches[PatchIndex].Left->CurrentLOD );
 			}
 		}
 		else
@@ -976,7 +913,7 @@ namespace scene
 				TerrainData.Patches[PatchIndex].CurrentLOD < TerrainData.Patches[PatchIndex].Right->CurrentLOD &&
 				( vZ %  ( 1 << TerrainData.Patches[PatchIndex].Right->CurrentLOD ) ) != 0)
 			{
-				vZ = vZ - vZ % ( 1 << TerrainData.Patches[PatchIndex].Right->CurrentLOD );
+				vZ -= vZ % ( 1 << TerrainData.Patches[PatchIndex].Right->CurrentLOD );
 			}
 		}
 
@@ -1175,12 +1112,6 @@ namespace scene
 					TerrainData.Patches[index].Right = &TerrainData.Patches[x * TerrainData.PatchCount + z + 1];
 				else
 					TerrainData.Patches[index].Right = 0;
-
-				if ( TerrainData.Patches[index].DebugText )
-				{
-					TerrainData.Patches[index].DebugText->setPosition ( TerrainData.Patches[index].Center );
-				}
-				
 			}
 		}
 
@@ -1225,7 +1156,7 @@ namespace scene
 			TerrainData.Patches[i].CurrentLOD = lod;
 	}
 
-	void CTerrainSceneNode::setCurrentLODOfPatches(core::array<s32>& lodarray)
+	void CTerrainSceneNode::setCurrentLODOfPatches(const core::array<s32>& lodarray)
 	{
 		for (s32 i=0; i<TerrainData.PatchCount * TerrainData.PatchCount; ++i)
 			TerrainData.Patches[i].CurrentLOD = lodarray[i];

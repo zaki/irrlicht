@@ -966,7 +966,7 @@ void C3DSMeshFileLoader::composeObject(io::IReadFile* file, const core::stringc&
 					mb->drop();
 					Mesh->MeshBuffers[mbPos] = Mesh->MeshBuffers.getLast();
 					Mesh->MeshBuffers[Mesh->MeshBuffers.size()-1] = tmp;
-					mb->getMaterial() = *mat;
+					mb->getMaterial() = tmp->getMaterial();
 					vtxCount=0;
 				}
 
