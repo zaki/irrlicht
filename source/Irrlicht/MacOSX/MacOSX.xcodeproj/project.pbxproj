@@ -33,6 +33,11 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0910B9DE0D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0910B9D90D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp */; };
+		0910B9DF0D1F5D4100D46B04 /* CGUITable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0910B9DA0D1F5D4100D46B04 /* CGUITable.cpp */; };
+		0910B9E00D1F5D4100D46B04 /* CGUITable.h in Headers */ = {isa = PBXBuildFile; fileRef = 0910B9DB0D1F5D4100D46B04 /* CGUITable.h */; };
+		0910B9E10D1F5D4100D46B04 /* CImageLoaderWAL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0910B9DC0D1F5D4100D46B04 /* CImageLoaderWAL.cpp */; };
+		0910B9E20D1F5D4100D46B04 /* CImageLoaderWAL.h in Headers */ = {isa = PBXBuildFile; fileRef = 0910B9DD0D1F5D4100D46B04 /* CImageLoaderWAL.h */; };
 		09198F100D188481001F5EF8 /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F000D188481001F5EF8 /* png.c */; };
 		09198F110D188481001F5EF8 /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F010D188481001F5EF8 /* pngerror.c */; };
 		09198F120D188481001F5EF8 /* pnggccrd.c in Sources */ = {isa = PBXBuildFile; fileRef = 09198F020D188481001F5EF8 /* pnggccrd.c */; };
@@ -614,6 +619,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0910B9D90D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CBurningShader_Raster_Reference.cpp; sourceTree = "<group>"; };
+		0910B9DA0D1F5D4100D46B04 /* CGUITable.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CGUITable.cpp; sourceTree = "<group>"; };
+		0910B9DB0D1F5D4100D46B04 /* CGUITable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CGUITable.h; sourceTree = "<group>"; };
+		0910B9DC0D1F5D4100D46B04 /* CImageLoaderWAL.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CImageLoaderWAL.cpp; sourceTree = "<group>"; };
+		0910B9DD0D1F5D4100D46B04 /* CImageLoaderWAL.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CImageLoaderWAL.h; sourceTree = "<group>"; };
 		09198F000D188481001F5EF8 /* png.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = png.c; path = ../libpng_osx/png.c; sourceTree = "<group>"; };
 		09198F010D188481001F5EF8 /* pngerror.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngerror.c; path = ../libpng_osx/pngerror.c; sourceTree = "<group>"; };
 		09198F020D188481001F5EF8 /* pnggccrd.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pnggccrd.c; path = ../libpng_osx/pnggccrd.c; sourceTree = "<group>"; };
@@ -1734,6 +1744,11 @@
 		4C6DC9960A486B110017A6E5 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				0910B9D90D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp */,
+				0910B9DA0D1F5D4100D46B04 /* CGUITable.cpp */,
+				0910B9DB0D1F5D4100D46B04 /* CGUITable.h */,
+				0910B9DC0D1F5D4100D46B04 /* CImageLoaderWAL.cpp */,
+				0910B9DD0D1F5D4100D46B04 /* CImageLoaderWAL.h */,
 				0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */,
 				0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */,
 				096840200D0F1A2300333EFD /* CBoneSceneNode.cpp */,
@@ -2281,6 +2296,8 @@
 				0968406B0D0F1A2300333EFD /* CSkinnedMesh.h in Headers */,
 				0968406D0D0F1A2300333EFD /* CSTLMeshFileLoader.h in Headers */,
 				0968406F0D0F1A2300333EFD /* CSTLMeshWriter.h in Headers */,
+				0910B9E00D1F5D4100D46B04 /* CGUITable.h in Headers */,
+				0910B9E20D1F5D4100D46B04 /* CImageLoaderWAL.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3080,6 +3097,9 @@
 				09198F1D0D188481001F5EF8 /* pngwrite.c in Sources */,
 				09198F1E0D188481001F5EF8 /* pngwtran.c in Sources */,
 				09198F1F0D188481001F5EF8 /* pngwutil.c in Sources */,
+				0910B9DE0D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp in Sources */,
+				0910B9DF0D1F5D4100D46B04 /* CGUITable.cpp in Sources */,
+				0910B9E10D1F5D4100D46B04 /* CImageLoaderWAL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
