@@ -61,7 +61,7 @@ bool CImageLoaderWAL::isALoadableFileExtension(const c8* fileName) const
 
 bool CImageLoaderWAL::isALoadableFileFormat(irr::io::IReadFile* file) const
 {
-	return (file!=0 && isALoadableFileExtension(file->getFileName())); //seems better not to always blindly load this format for now (todo: add header check)
+	return (false); // no recognition possible, use a proper file ending
 }
 
 
@@ -69,17 +69,22 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 {
 	// Try to get the color palette from elsewhere (usually in a pak along with the WAL).
 	// If this fails we use the DefaultPaletteQ2.
-	static s32 * palette = NULL;
+	static s32 * palette = 0;
+	s32 loadedPalette[256];
+	if (!palette)
+	{
 #if TRY_LOADING_PALETTE_FROM_FILE
-	if (!palette) {
 		IImage * paletteImage;
 		// Look in a couple different places...
-		/* ........... */	paletteImage = createImageFromFile("pics/colormap.pcx");
-		if (!paletteImage)	paletteImage = createImageFromFile("pics/colormap.tga");
-		if (!paletteImage)	paletteImage = createImageFromFile("colormap.pcx");
-		if (!paletteImage)	paletteImage = createImageFromFile("colormap.tga");
+		paletteImage = createImageFromFile("pics/colormap.pcx");
+		if (!paletteImage)
+			paletteImage = createImageFromFile("pics/colormap.tga");
+		if (!paletteImage)
+			paletteImage = createImageFromFile("colormap.pcx");
+		if (!paletteImage)
+			paletteImage = createImageFromFile("colormap.tga");
 		if (paletteImage && (paletteImage->getDimension().Width == 256) ) {
-			palette = new s32[256]; //FIXME: Never gets freed
+			palette = &loadedPalette;
 			for (u32 i = 0; i < 256; ++i) {
 				palette[i] = paletteImage->getPixel(i, 0).color;
 			}
@@ -87,24 +92,31 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 			//FIXME: try reading a simple palette from "wal.pal"
 			palette = DefaultPaletteQ2;
 		}
-		if (paletteImage) paletteImage->drop();
-	} else {
+		if (paletteImage)
+			paletteImage->drop();
+#endif
+	}
+	else
+	{
 		palette = DefaultPaletteQ2;
 	}
-#else
-	palette = DefaultPaletteQ2;
-#endif
 
 	SWALHeader header;
 
 	file->seek(0);
-	file->read(&header, sizeof(SWALHeader));
+	if (file->read(&header, sizeof(SWALHeader)) != sizeof(SWALHeader) )
+		return 0;
 
+	if (file->getSize() < header.MipmapOffset[0])
+		return 0;
 	file->seek(header.MipmapOffset[0]);
 
 	// read image
 
 	const u32 imageSize = header.ImageHeight * header.ImageWidth;
+	if (file->getSize() < (imageSize + header.MipmapOffset[0]))
+		return 0;
+
 	u8* data = new u8[imageSize];
 	file->read(data, imageSize);
 
@@ -115,8 +127,7 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 
 	// I wrote an 8 to 32 converter, but this works with released Irrlicht code.
 	CColorConverter::convert8BitTo16Bit(data,
-		(s16*)image->lock(), header.ImageWidth, header.ImageHeight, DefaultPaletteQ2);
-
+		(s16*)image->lock(), header.ImageWidth, header.ImageHeight, palette);
 	image->unlock();
 
 	delete [] data;
