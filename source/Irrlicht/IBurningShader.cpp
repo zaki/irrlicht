@@ -79,9 +79,6 @@ namespace video
 	{
 		sInternalTexture *it = &IT[stage];
 
-		if ( it->Texture == texture )
-			return;
-
 		if ( it->Texture)
 			it->Texture->drop();
 
@@ -101,8 +98,9 @@ namespace video
 			// prepare for optimal fixpoint
 			it->pitchlog2 = s32_log2_s32 ( it->Texture->getPitch() );
 
-			it->textureXMask = s32_to_fixPoint ( it->Texture->getSize().Width - 1 ) & FIX_POINT_UNSIGNED_MASK;
-			it->textureYMask = s32_to_fixPoint ( it->Texture->getSize().Height - 1 ) & FIX_POINT_UNSIGNED_MASK;
+			const core::dimension2d<s32> &dim = it->Texture->getSize();
+			it->textureXMask = s32_to_fixPoint ( dim.Width - 1 ) & FIX_POINT_UNSIGNED_MASK;
+			it->textureYMask = s32_to_fixPoint ( dim.Height - 1 ) & FIX_POINT_UNSIGNED_MASK;
 			it->data = (tVideoSample*) it->Texture->lock();
 		}
 	}

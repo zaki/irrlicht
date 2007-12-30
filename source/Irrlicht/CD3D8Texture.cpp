@@ -124,8 +124,8 @@ bool CD3D8Texture::createTexture(u32 flags)
 		optSize=ImageSize;
 	else
 	{
-		optSize.Width = getTextureSizeFromImageSize(ImageSize.Width);
-		optSize.Height = getTextureSizeFromImageSize(ImageSize.Height);
+		optSize.Width = getTextureSizeFromSurfaceSize(ImageSize.Width);
+		optSize.Height = getTextureSizeFromSurfaceSize(ImageSize.Height);
 	}
 
 	HRESULT hr;
@@ -309,7 +309,7 @@ const core::dimension2d<s32>& CD3D8Texture::getSize() const
 
 
 //! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CD3D8Texture::getTextureSizeFromImageSize(s32 size) const
+inline s32 CD3D8Texture::getTextureSizeFromSurfaceSize(s32 size) const
 {
 	s32 ts = 0x01;
 
@@ -559,8 +559,8 @@ void CD3D8Texture::copy32BitMipMap(char* src, char* tgt,
 
 void CD3D8Texture::createRenderTarget()
 {
-	TextureSize.Width = getTextureSizeFromImageSize(TextureSize.Width);
-	TextureSize.Height = getTextureSizeFromImageSize(TextureSize.Height);
+	TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
+	TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
 
 	// get backbuffer format to create the render target in the
 	// same format

@@ -118,6 +118,21 @@ namespace video
 		//! call.
 		virtual u32 getMaximalPrimitiveCount() const;
 
+		//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
+		//! this: First, draw all geometry. Then use this method, to draw the shadow
+		//! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
+		virtual void drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail);
+
+		//! Fills the stencil shadow with color. After the shadow volume has been drawn
+		//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
+		//! to draw the color of the shadow.
+		virtual void drawStencilShadow(bool clearStencilBuffer=false,
+			video::SColor leftUpEdge = video::SColor(0,0,0,0),
+			video::SColor rightUpEdge = video::SColor(0,0,0,0),
+			video::SColor leftDownEdge = video::SColor(0,0,0,0),
+			video::SColor rightDownEdge = video::SColor(0,0,0,0));
+
+
 	protected:
 
 		//! sets a render target

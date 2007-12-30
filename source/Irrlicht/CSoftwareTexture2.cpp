@@ -9,11 +9,14 @@
 #include "SoftwareDriver2_helper.h"
 #include "CSoftwareTexture2.h"
 #include "os.h"
+#include "CImageWriterBMP.h"
 
 namespace irr
 {
 namespace video  
 {
+
+IImageWriter* createImageWriterBMP();
 
 //! constructor
 CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool generateMipLevels, bool isRenderTarget)
@@ -41,11 +44,13 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 		}
 		else
 		{
+			os::Printer::log ( "Burningvideo: Warning Texture reformat", ELL_WARNING );
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
 
 			// temporary CImage needed
 			CImage * temp = new CImage ( BURNINGSHADER_COLOR_FORMAT, image );
-			temp->copyToScaling(MipMap[0]);
+			temp->copyToScalingBoxFilter ( MipMap[0], 0 );
+			//temp->copyToScaling(MipMap[0]);
 			temp->drop ();
 		}
 	}
@@ -67,16 +72,17 @@ CSoftwareTexture2::~CSoftwareTexture2()
 
 
 //! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CSoftwareTexture2::getTextureSizeFromSurfaceSize(s32 size) const
+s32 CSoftwareTexture2::getTextureSizeFromSurfaceSize(s32 size) const
 {
 	s32 ts = 0x01;
+
 	while(ts < size)
 		ts <<= 1;
 
-/*
-	if (ts > size && ts > 256 )
+	if ( ts > size )
 		ts >>= 1;
-*/
+
+	//ts = core::s32_min ( ts, 256 );
 	return ts;
 }
 
@@ -105,8 +111,8 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 	while ( i < SOFTWARE_DRIVER_2_MIPMAPPING_MAX )
 	{
 		currentSize = c->getDimension();
-		newSize.Width = core::s32_max ( 1, currentSize.Width >> 1 );
-		newSize.Height = core::s32_max ( 1, currentSize.Height >> 1 );
+		newSize.Width = core::s32_max ( 1, currentSize.Width >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
+		newSize.Height = core::s32_max ( 1, currentSize.Height >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
 
 		MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
 		MipMap[0]->copyToScalingBoxFilter ( MipMap[i], 0 );
