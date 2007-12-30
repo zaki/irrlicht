@@ -564,7 +564,8 @@ REALINLINE void CTRTextureLightMap2_M4::scanline_bilinear ()
 #endif
 
 
-#ifdef BURNINGVIDEO_RENDERER_FAST
+//#ifdef BURNINGVIDEO_RENDERER_FAST
+#if 1
 
 void CTRTextureLightMap2_M4::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c )
 {
@@ -646,7 +647,7 @@ void CTRTextureLightMap2_M4::drawTriangle_Min ( const s4DVertex *a,const s4DVert
 	lockedSurface = (tVideoSample*)RenderTarget->lock();
 
 #ifdef USE_ZBUFFER
-	lockedDepthBuffer = DepthBuffer->lock();
+	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 #ifdef IPOL_T0

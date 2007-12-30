@@ -762,19 +762,12 @@ inline f32 CBurningVideoDriver::screenarea ( const s4DVertex *v ) const
 */
 inline f32 CBurningVideoDriver::texelarea ( const s4DVertex *v, int tex ) const
 {
-	f32 x0,y0, x1,y1, z;
+	f32 z;
 
-	x0 = v[2].Tex[tex].x - v[0].Tex[tex].x;
-	y0 = v[2].Tex[tex].y - v[0].Tex[tex].y;
-	x1 = v[4].Tex[tex].x - v[0].Tex[tex].x;
-	y1 = v[4].Tex[tex].y - v[0].Tex[tex].y;
+	z =		( (v[2].Tex[tex].x - v[0].Tex[tex].x ) * (v[4].Tex[tex].y - v[0].Tex[tex].y ) )
+		 -	( (v[4].Tex[tex].x - v[0].Tex[tex].x ) * (v[2].Tex[tex].y - v[0].Tex[tex].y ) );
 
-	z = x0*y1 - x1*y0;
-
-	const core::dimension2d<s32> &d = MAT_TEXTURE ( tex )->getMaxMipMapSize ();
-	z *= d.Height;
-	z *= d.Width;
-	return z;
+	return MAT_TEXTURE ( tex )->getLODFactor ( z );
 }
 
 /*!
@@ -791,20 +784,11 @@ inline f32 CBurningVideoDriver::screenarea2 ( const s4DVertex **v ) const
 inline f32 CBurningVideoDriver::texelarea2 ( const s4DVertex **v, s32 tex ) const
 {
 	f32 z;
+	z =		( (v[1]->Tex[tex].x - v[0]->Tex[tex].x ) * (v[2]->Tex[tex].y - v[0]->Tex[tex].y ) )
+		 -	( (v[2]->Tex[tex].x - v[0]->Tex[tex].x ) * (v[1]->Tex[tex].y - v[0]->Tex[tex].y ) );
 
-	z =		(v[1]->Tex[tex].x - v[0]->Tex[tex].x ) *
-			(v[2]->Tex[tex].y - v[0]->Tex[tex].y )
-		 -	(v[2]->Tex[tex].x - v[0]->Tex[tex].x ) *
-			(v[1]->Tex[tex].y - v[0]->Tex[tex].y )
-		;
-
-	const core::dimension2d<s32> &d = MAT_TEXTURE ( tex )->getMaxMipMapSize ();
-	z *= d.Height;
-	z *= d.Width;
-	return z;
+	return MAT_TEXTURE ( tex )->getLODFactor ( z );
 }
-
-
 
 
 /*!
@@ -1167,8 +1151,11 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 			}
 
 			dc_area = core::reciprocal ( dc_area );
+
 			// select mipmap
-			for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
+
+			for ( g = 0; g != vSize[VertexCache.vType].TexSize; ++g )
+			//for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
 			{
 				if ( 0 == MAT_TEXTURE ( g ) )
 				{
@@ -1177,7 +1164,6 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 				}
 
 				lodLevel = s32_log2_f32 ( texelarea2 ( face, g ) * dc_area );
-
 				CurrentShader->setTextureParam(g, MAT_TEXTURE ( g ), lodLevel);
 				select_polygon_mipmap2 ( (s4DVertex**) face, g );
 
@@ -1282,7 +1268,8 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 			continue;
 
 		// select mipmap
-		for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
+		//for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
+		for ( g = 0; g != vSize[VertexCache.vType].TexSize; ++g )
 		{
 			if ( 0 == MAT_TEXTURE ( g ) )
 			{
@@ -1862,6 +1849,87 @@ u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 {
 	return 0x00800000;
 }
+
+//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
+//! this: Frist, draw all geometry. Then use this method, to draw the shadow
+//! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
+void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+{
+/*
+	if (!StencilBuffer || !count)
+		return;
+
+	setRenderStatesStencilShadowMode(zfail);
+
+	if (!zfail)
+	{
+		// ZPASS Method
+
+		// Draw front-side of shadow volume in stencil/z only
+		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW );
+		pID3DDevice->SetRenderState(D3DRS_STENCILPASS, D3DSTENCILOP_INCRSAT);
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+
+		// Now reverse cull order so front sides of shadow volume are written.
+		pID3DDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_CW );
+		pID3DDevice->SetRenderState( D3DRS_STENCILPASS, D3DSTENCILOP_DECRSAT);
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+	}
+	else
+	{
+		// ZFAIL Method
+
+		// Draw front-side of shadow volume in stencil/z only
+		pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW );
+		pID3DDevice->SetRenderState(D3DRS_STENCILZFAIL, D3DSTENCILOP_INCRSAT );
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+
+		// Now reverse cull order so front sides of shadow volume are written.
+		pID3DDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_CCW );
+		pID3DDevice->SetRenderState( D3DRS_STENCILZFAIL,  D3DSTENCILOP_DECRSAT );
+		pID3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLELIST, count / 3, triangles, sizeof(core::vector3df));
+	}
+*/
+}
+
+
+
+//! Fills the stencil shadow with color. After the shadow volume has been drawn
+//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
+//! to draw the color of the shadow.
+void CBurningVideoDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
+			video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
+{
+/*
+	if (!StencilBuffer)
+		return;
+
+	S3DVertex vtx[4];
+	vtx[0] = S3DVertex(1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, leftUpEdge, 0.0f, 0.0f);
+	vtx[1] = S3DVertex(1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, rightUpEdge, 0.0f, 1.0f);
+	vtx[2] = S3DVertex(-1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, leftDownEdge, 1.0f, 0.0f);
+	vtx[3] = S3DVertex(-1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, rightDownEdge, 1.0f, 1.0f);
+
+	s16 indices[6] = {0,1,2,1,3,2};
+
+	setRenderStatesStencilFillMode(
+		leftUpEdge.getAlpha() < 255 ||
+		rightUpEdge.getAlpha() < 255 ||
+		leftDownEdge.getAlpha() < 255 ||
+		rightDownEdge.getAlpha() < 255);
+
+	setTexture(0,0);
+
+	setVertexShader(EVT_STANDARD);
+
+	pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, 4, 2, &indices[0],
+		D3DFMT_INDEX16, &vtx[0], sizeof(S3DVertex));
+
+	if (clearStencilBuffer)
+		pID3DDevice->Clear( 0, NULL, D3DCLEAR_STENCIL,0, 1.0, 0);
+*/
+}
+
 
 } // end namespace video
 } // end namespace irr

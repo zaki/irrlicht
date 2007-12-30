@@ -256,7 +256,6 @@ void CTRGouraud2::scanline_bilinear ()
 
 void CTRGouraud2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c )
 {
-	return;
 	// sort on height, y
 	if ( a->Pos.y > b->Pos.y ) swapVertexPointer(&a, &b);
 	if ( a->Pos.y > c->Pos.y ) swapVertexPointer(&a, &c);

@@ -48,9 +48,9 @@ public:
 	}
 
 	//! Returns the size of the largest mipmap.
-	const core::dimension2d<s32>& getMaxMipMapSize() const
+	f32 getLODFactor( const f32 texArea ) const
 	{
-		return MipMap[0]->getDimension();
+		return MipMap[0]->getImageDataSizeInPixels () * texArea;
 	}
 
 	//! Returns (=size) of the texture.
@@ -116,7 +116,7 @@ public:
 private:
 
 	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
+	s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	core::dimension2d<s32> OrigSize;
 

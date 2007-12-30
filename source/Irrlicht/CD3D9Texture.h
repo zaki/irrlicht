@@ -77,7 +77,7 @@ private:
 	void createRenderTarget();
 
 	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromImageSize(s32 size) const;
+	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	//! creates the hardware texture
 	bool createTexture(u32 flags, IImage * image);

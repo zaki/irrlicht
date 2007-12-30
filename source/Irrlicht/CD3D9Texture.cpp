@@ -108,8 +108,8 @@ CD3D9Texture::~CD3D9Texture()
 
 void CD3D9Texture::createRenderTarget()
 {
-	TextureSize.Width = getTextureSizeFromImageSize(TextureSize.Width);
-	TextureSize.Height = getTextureSizeFromImageSize(TextureSize.Height);
+	TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
+	TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
 
 	// get backbuffer format to create the render target in the
 	// same format
@@ -263,8 +263,8 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 		optSize=ImageSize;
 	else
 	{
-		optSize.Width = getTextureSizeFromImageSize(ImageSize.Width);
-		optSize.Height = getTextureSizeFromImageSize(ImageSize.Height);
+		optSize.Width = getTextureSizeFromSurfaceSize(ImageSize.Width);
+		optSize.Height = getTextureSizeFromSurfaceSize(ImageSize.Height);
 	}
 
 	HRESULT hr;
@@ -510,7 +510,7 @@ const core::dimension2d<s32>& CD3D9Texture::getSize() const
 
 
 //! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CD3D9Texture::getTextureSizeFromImageSize(s32 size) const
+inline s32 CD3D9Texture::getTextureSizeFromSurfaceSize(s32 size) const
 {
 	s32 ts = 0x01;
 
