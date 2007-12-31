@@ -42,7 +42,7 @@ namespace gui
 		virtual void addColumn(const wchar_t* caption, s32 id=-1) = 0;
 
 		//! Returns the number of columns in the table control
-		virtual s32 getColumncount() const = 0;
+		virtual s32 getColumnCount() const = 0;
 
 		//! Makes a column active. This will trigger an ordering process.
 		/** \param idx: The id of the column to make active.
@@ -68,7 +68,7 @@ namespace gui
 		virtual s32 getSelected() const = 0;
 
 		//! Returns amount of rows in the tabcontrol
-		virtual s32 getRowcount() const = 0;
+		virtual s32 getRowCount() const = 0;
 
 		//! adds a row to the table
 		/** \param rowIndex: zero based index of rows. The row will be inserted at this

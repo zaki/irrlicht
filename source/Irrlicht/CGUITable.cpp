@@ -27,10 +27,11 @@ namespace gui
 CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool clip,
 			bool drawBack, bool moveOverSelect)
-: IGUITable(environment, parent, id, rectangle), ScrollBar(0),
-	ItemHeight(0), TotalItemHeight(0), Font(0), Selected(-1),
-	Clip(clip), DrawBack(drawBack), Selecting(false), ActiveTab(-1),
-	MoveOverSelect(moveOverSelect), CellHeightPadding(2), CellWidthPadding(5), m_CurrentOrdering(EGOM_ASCENDING)
+: IGUITable(environment, parent, id, rectangle), Font(0), ScrollBar(0),
+	Clip(clip), DrawBack(drawBack), MoveOverSelect(moveOverSelect),
+	Selecting(false), ItemHeight(0), TotalItemHeight(0), Selected(-1),
+	CellHeightPadding(2), CellWidthPadding(5), ActiveTab(-1),
+	CurrentOrdering(EGOM_ASCENDING)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUITable");
@@ -39,7 +40,7 @@ CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 	IGUISkin* skin = Environment->getSkin();
 	s32 s = skin->getSize(EGDS_SCROLLBAR_SIZE);
 
-	ScrollBar = Environment->addScrollBar(false, 
+	ScrollBar = Environment->addScrollBar(false,
 		core::rect<s32>(RelativeRect.getWidth() - s, 0, RelativeRect.getWidth(), RelativeRect.getHeight()),
 		this, -1);
 
@@ -47,7 +48,7 @@ CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 	{
 		ScrollBar->setPos(0);
 		ScrollBar->setNotClipped(clip);
-		ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT); 
+		ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 		ScrollBar->setSubElement(true);
 		ScrollBar->grab();
 	}
@@ -86,12 +87,12 @@ void CGUITable::addColumn(const wchar_t* caption, s32 id)
 		ActiveTab = 0;
 }
 
-s32 CGUITable::getColumncount() const
+s32 CGUITable::getColumnCount() const
 {
 	return Columns.size();
 }
 
-s32 CGUITable::getRowcount() const
+s32 CGUITable::getRowCount() const
 {
 	return Rows.size();
 }
@@ -105,7 +106,7 @@ bool CGUITable::setActiveColumn(s32 idx)
 
 	ActiveTab = idx;
 
-	m_CurrentOrdering = EGOM_ASCENDING;
+	CurrentOrdering = EGOM_ASCENDING;
 
 	if ( !Columns[idx].useCustomOrdering )
 		orderRows();
@@ -129,7 +130,7 @@ s32 CGUITable::getActiveColumn() const
 
 EGUI_ORDERING_MODE CGUITable::getActiveColumnOrdering() const
 {
-	return m_CurrentOrdering;
+	return CurrentOrdering;
 }
 
 void CGUITable::setColumnWidth(u32 columnIndex, u32 width)
@@ -301,15 +302,18 @@ bool CGUITable::OnEvent(const SEvent& event)
 		case gui::EGET_SCROLL_BAR_CHANGED:
 			if (event.GUIEvent.Caller == ScrollBar)
 			{
-				s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+				const s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+				// TODO: Scrollbar update?
 				return true;
 			}
-			break;
+		break;
 		case gui::EGET_ELEMENT_FOCUS_LOST:
 			{
 				Selecting = false;
 			}
-			break;
+		break;
+		default:
+		break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -359,20 +363,26 @@ bool CGUITable::OnEvent(const SEvent& event)
 						return true;
 					}
 				}
+			break;
+			default:
+			break;
 			}
 		}
-		break;
+	break;
+	default:
+	break;
 	}
-
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
+
 
 void CGUITable::setColumnCustomOrdering(u32 columnIndex, bool state)
 {
 	if ( columnIndex < Columns.size() )
 		Columns[columnIndex].useCustomOrdering = state;
 }
+
 
 void CGUITable::swapRows(u32 rowIndexA, u32 rowIndexB)
 {
@@ -393,11 +403,11 @@ void CGUITable::swapRows(u32 rowIndexA, u32 rowIndexB)
 
 }
 
+
 bool CGUITable::selectColumnHeader(s32 xpos, s32 ypos)
 {
 	if ( ypos > ( AbsoluteRect.UpperLeftCorner.Y + ItemHeight ) )
 		return false;
-
 
 	core::rect<s32> frameRect(AbsoluteRect);
 
@@ -412,15 +422,15 @@ bool CGUITable::selectColumnHeader(s32 xpos, s32 ypos)
 		{
 			if ( ActiveTab == s32(i) )
 			{
-				if ( m_CurrentOrdering == EGOM_ASCENDING )
-					m_CurrentOrdering = EGOM_DESCENDING;
+				if ( CurrentOrdering == EGOM_ASCENDING )
+					CurrentOrdering = EGOM_DESCENDING;
 				else
-					m_CurrentOrdering = EGOM_ASCENDING;
+					CurrentOrdering = EGOM_ASCENDING;
 			}
 			else
 			{
 				ActiveTab = i;
-				m_CurrentOrdering = EGOM_ASCENDING;
+				CurrentOrdering = EGOM_ASCENDING;
 			}
 
 			if ( !Columns[i].useCustomOrdering )
@@ -451,7 +461,7 @@ void CGUITable::orderRows()
 	Row swap;
 	s32 columnIndex = getActiveColumn();
 
-	if ( m_CurrentOrdering == EGOM_ASCENDING )
+	if ( CurrentOrdering == EGOM_ASCENDING )
 	{
 		for ( s32 i = 0 ; i < s32(Rows.size()) - 1 ; ++i )
 		{
@@ -525,6 +535,7 @@ void CGUITable::selectNew(s32 ypos, bool onlyHover)
 	}
 }
 
+
 //! draws the element and its children
 void CGUITable::draw()
 {
@@ -586,7 +597,7 @@ void CGUITable::draw()
 				textRect.UpperLeftCorner.X = pos + CellWidthPadding;
 				textRect.LowerRightCorner.X = pos + Columns[j].width - CellWidthPadding;
 
-				s32 test = font->getDimension(Rows[i].Items[j].text.c_str()).Width;
+				// s32 test = font->getDimension(Rows[i].Items[j].text.c_str()).Width;
 
 				if ((s32)i == Selected)
 				{
@@ -638,7 +649,7 @@ void CGUITable::draw()
 
 		if ( (s32)i == ActiveTab )
 		{
-			if ( m_CurrentOrdering == EGOM_ASCENDING )
+			if ( CurrentOrdering == EGOM_ASCENDING )
 			{
 				columnrect.UpperLeftCorner.X = columnrect.LowerRightCorner.X - CellWidthPadding - ARROW_PAD / 2 + 2;
 				columnrect.UpperLeftCorner.Y += 7;
@@ -711,10 +722,8 @@ void CGUITable::breakText(core::stringw &text, u32 cellWidth )
 }
 
 
-
-
 //! Writes attributes of the object.
-//! Implement this to expose the attributes of your scene node animator for 
+//! Implement this to expose the attributes of your scene node animator for
 //! scripting languages, editors, debuggers or xml serialization purposes.
 void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
@@ -737,7 +746,7 @@ void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 }
 
 //! Reads attributes of the object.
-//! Implement this to set the attributes of your scene node animator for 
+//! Implement this to set the attributes of your scene node animator for
 //! scripting languages, editors, debuggers or xml deserialization purposes.
 void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {

@@ -23,7 +23,7 @@ namespace gui
 	{
 	public:
 		//! constructor
-		CGUITable(IGUIEnvironment* environment, IGUIElement* parent, 
+		CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool clip=true,
 			bool drawBack=false, bool moveOverSelect=true);
 
@@ -34,11 +34,11 @@ namespace gui
 		virtual void addColumn(const wchar_t* caption, s32 id=-1);
 
 		//! Returns the number of columns in the table control
-		virtual s32 getColumncount() const;
+		virtual s32 getColumnCount() const;
 
 		//! Makes a column active. This will trigger an ordering process.
 		/** \param idx: The id of the column to make active.
-		 \return Returns true if successful. */
+			\return Returns true if successful. */
 		virtual bool setActiveColumn(s32 idx);
 
 		//! Returns which header is currently active
@@ -50,43 +50,44 @@ namespace gui
 		//! set a column width
 		virtual void setColumnWidth(u32 columnIndex, u32 width);
 
-		//! This tells the table control wether is should send a EGET_TABLE_HEADER_CHANGED message or not when
-		//! a column header is clicked. If set to false, the table control will use a default alphabetical ordering scheme.
+		//! This tells the table control whether is should send an
+		//! EGET_TABLE_HEADER_CHANGED message or not when a column
+		//! header is clicked. If set to false, the table control will
+		//! use a default alphabetical ordering scheme.
 		/** \param columnIndex: The index of the column header.
-		\param state: If true, a EGET_TABLE_HEADER_CHANGED message will be sent and you can order the table data as you whish.*/
+		\param state: If true, an EGET_TABLE_HEADER_CHANGED message will be sent.*/
 		virtual void setColumnCustomOrdering(u32 columnIndex, bool state);
-
-
 
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const;
 
 		//! Returns amount of rows in the tabcontrol
-		virtual s32 getRowcount() const;
+		virtual s32 getRowCount() const;
 
 		//! adds a row to the table
-		/** \param rowIndex: zero based index of rows. The row will be inserted at this
-		     position, if a row already exist there, it will be placed after it. If the row
-				 is larger than the actual number of row by more than one, it won't be created.
-		     Note that if you create a row that's not at the end, there might be performance issues*/
+		/** \param rowIndex: zero based index of rows. The row will be
+			inserted at this position. If a row already exists
+			there, it will be placed after it. If the row is larger
+			than the actual number of rows by more than one, it
+			won't be created. Note that if you create a row that is
+			not at the end, there might be performance issues*/
 		virtual void addRow(u32 rowIndex);
 
 		//! Remove a row from the table
 		virtual void removeRow(u32 rowIndex);
 
-		//! clears the table rows, but keeps the columns intact
+		//! clear the table rows, but keep the columns intact
 		virtual void clearRows();
 
 		//! Swap two row positions. This is useful for a custom ordering algo.
 		virtual void swapRows(u32 rowIndexA, u32 rowIndexB);
 
-		//! This tells the table to start ordering all the rows. You need to explicitly
-		//! tell the table to re order the rows when a new row is added or the cells data is
-		//! changed. This makes the system more flexible and doesn't make you pay the cost of
-		//! ordering when adding a lot of rows.
+		//! This tells the table to start ordering all the rows. You
+		//! need to explicitly tell the table to reorder the rows when
+		//! a new row is added or the cells data is changed. This makes
+		//! the system more flexible and doesn't make you pay the cost
+		//! of ordering when adding a lot of rows.
 		virtual void orderRows();
-
-
 
 		//! Set the text of a cell
 		virtual void setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text);
@@ -106,10 +107,8 @@ namespace gui
 		//! Get the data of a cell
 		virtual void* getCellData(u32 rowIndex, u32 columnIndex ) const;
 
-
 		//! clears the table, deletes all items in the table
 		virtual void clear();
-
 
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
@@ -117,14 +116,13 @@ namespace gui
 		//! draws the element and its children
 		virtual void draw();
 
-
 		//! Writes attributes of the object.
-		//! Implement this to expose the attributes of your scene node animator for 
+		//! Implement this to expose the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml serialization purposes.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
 		//! Reads attributes of the object.
-		//! Implement this to set the attributes of your scene node animator for 
+		//! Implement this to set the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml deserialization purposes.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
@@ -159,24 +157,24 @@ namespace gui
 
 		core::array< Column > Columns;
 		core::array< Row > Rows;
-		s32 ItemHeight;
-		s32 TotalItemHeight;
 		gui::IGUIFont* Font;
 		gui::IGUIScrollBar* ScrollBar;
 		bool Clip;
 		bool DrawBack;
 		bool MoveOverSelect;
-
-		s32 Selected;
-		s32 CellWidthPadding;
-		s32 CellHeightPadding;
-		s32 ActiveTab;
 		bool Selecting;
-		EGUI_ORDERING_MODE m_CurrentOrdering;
 
+		s32 ItemHeight;
+		s32 TotalItemHeight;
+		s32 Selected;
+		s32 CellHeightPadding;
+		s32 CellWidthPadding;
+		s32 ActiveTab;
+		EGUI_ORDERING_MODE CurrentOrdering;
 	};
 
 } // end namespace gui
 } // end namespace irr
 
 #endif
+

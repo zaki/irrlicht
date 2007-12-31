@@ -340,6 +340,8 @@ bool CGUITabControl::OnEvent(const SEvent& event)
 			}
 
 		break;
+		default:
+		break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
