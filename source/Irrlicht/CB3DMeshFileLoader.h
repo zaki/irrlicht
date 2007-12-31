@@ -47,9 +47,18 @@ private:
 
 	struct SB3dChunk
 	{
+		SB3dChunk(const SB3dChunkHeader& header, long sp)
+			: length(header.size+8), startposition(sp)
+		{
+			name[0]=header.name[0];
+			name[1]=header.name[1];
+			name[2]=header.name[2];
+			name[3]=header.name[3];
+		}
+
 		c8 name[4];
 		s32 length;
-		s32 startposition;
+		long startposition;
 	};
 
 	struct SB3dTexture
@@ -70,7 +79,7 @@ private:
 		f32 red, green, blue, alpha;
 		f32 shininess;
 		s32 blend,fx;
-		SB3dTexture *Textures[2];
+		SB3dTexture *Textures[video::MATERIAL_MAX_TEXTURES];
 	};
 
 	bool load();
@@ -85,7 +94,7 @@ private:
 	bool readChunkBRUS();
 
 	core::stringc readString();
-	core::stringc stripPathFromString(core::stringc string, bool returnPath=false) const;
+	core::stringc stripPathFromString(const core::stringc& string, bool returnPath=false) const;
 	void readFloats(f32* vec, u32 count);
 
 	core::array<SB3dChunk> B3dStack;
@@ -107,7 +116,7 @@ private:
 	//
 	ISceneManager*	SceneManager;
 	CSkinnedMesh*	AnimatedMesh;
-	io::IReadFile*	file;
+	io::IReadFile*	B3DFile;
 };
 
 
