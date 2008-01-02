@@ -277,7 +277,8 @@ enum e4DVertexFlag
 
 };
 
-const u32 MATERIAL_MAX_COLORS = 2;
+const u32 MATERIAL_MAX_COLORS = 1;
+const u32 BURNING_MATERIAL_MAX_TEXTURES = 2;
 
 // dummy Vertex. used for calculation vertex memory size
 struct __s4DVertex
@@ -288,12 +289,12 @@ struct __s4DVertex
 	sVec4 Color[MATERIAL_MAX_COLORS];
 #endif
 
-	sVec2 Tex[MATERIAL_MAX_TEXTURES];
+	sVec2 Tex[BURNING_MATERIAL_MAX_TEXTURES];
 	u32 flag;
 };
 
-#define SIZEOF_SVERTEX	128
-#define SIZEOF_SVERTEX_LOG2	7
+#define SIZEOF_SVERTEX	64
+#define SIZEOF_SVERTEX_LOG2	6
 
 struct s4DVertex
 {
@@ -303,7 +304,7 @@ struct s4DVertex
 	sVec4 Color[ MATERIAL_MAX_COLORS ];
 #endif
 
-	sVec2 Tex[ MATERIAL_MAX_TEXTURES ];
+	sVec2 Tex[ BURNING_MATERIAL_MAX_TEXTURES ];
 
 	u32 flag;
 
@@ -441,8 +442,8 @@ struct sScanConvertData
 	sVec4 c[MATERIAL_MAX_COLORS][2];			// color
 	sVec4 slopeC[MATERIAL_MAX_COLORS][2];	// color slope along edges
 
-	sVec2 t[MATERIAL_MAX_TEXTURES][2];		// texture
-	sVec2 slopeT[MATERIAL_MAX_TEXTURES][2];	// texture slope along edges
+	sVec2 t[BURNING_MATERIAL_MAX_TEXTURES][2];		// texture
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES][2];	// texture slope along edges
 
 };
 
@@ -462,7 +463,7 @@ struct sScanLineData
 	sVec4 c[MATERIAL_MAX_COLORS][2];			// color start, color end of scanline
 #endif
 
-	sVec2 t[MATERIAL_MAX_TEXTURES][2];		// texture start, texture end of scanline
+	sVec2 t[BURNING_MATERIAL_MAX_TEXTURES][2];		// texture start, texture end of scanline
 };
 
 // passed to pixel Shader

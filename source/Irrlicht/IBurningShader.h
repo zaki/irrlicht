@@ -125,7 +125,7 @@ namespace video
 		fp24* lockedDepthBuffer;
 		tVideoSample* lockedSurface;
 
-		sInternalTexture IT[ MATERIAL_MAX_TEXTURES ];
+		sInternalTexture IT[ BURNING_MATERIAL_MAX_TEXTURES ];
 
 		static const tFixPointu dithermask[ 4 * 4];
 	};

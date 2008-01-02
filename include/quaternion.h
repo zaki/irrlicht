@@ -483,7 +483,7 @@ inline void quaternion::toAngleAxis(f32 &angle, core::vector3df &axis) const
 	}
 	else
 	{
-		angle = 2.0f * acos(W);
+		angle = 2.0f * (f32) acos(W);
 		axis.X = X / scale;
 		axis.Y = Y / scale;
 		axis.Z = Z / scale;

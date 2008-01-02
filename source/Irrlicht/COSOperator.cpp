@@ -97,7 +97,7 @@ c8* COSOperator::getTextFromClipboard() const
 
 bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 {
-#if defined(_IRR_WINDOWS_API_)
+#if defined(_IRR_WINDOWS_API_) && !defined(_WIN32_WCE )
 	LONG Error;
 	
 	HKEY Key;

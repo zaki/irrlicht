@@ -17,6 +17,7 @@
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! _IRR_USE_SDL_DEVICE_ for platform independent SDL framework
 //! _IRR_USE_WINDOWS_DEVICE_ for Windows API based device
+//! _IRR_USE_WINDOWS_CE_DEVICE_ for Windows CE API based device
 //! _IRR_USE_LINUX_DEVICE_ for X11 based device
 //! MACOSX for Mac OS X
 
@@ -24,7 +25,7 @@
 
 //! WIN32 for Windows32
 //! WIN64 for Windows64
-#if defined(WIN32) || defined(WIN64)
+#if defined(WIN32) || defined(WIN64) || defined(_WIN32_WCE)
 #define _IRR_WINDOWS_
 #define _IRR_WINDOWS_API_
 #ifndef _IRR_USE_SDL_DEVICE_
@@ -310,6 +311,18 @@ precision will be lower but speed higher. currently X86 only
 #if defined(_IRR_XBOX_PLATFORM_)
 #undef _IRR_COMPILE_WITH_OPENGL_
 #undef _IRR_COMPILE_WITH_DIRECT3D_9_
+#endif
+
+// WinCE does not have OpenGL or DirectX9
+#if defined(_WIN32_WCE)
+	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
+	#undef _IRR_COMPILE_WITH_SOFTWARE_
+	#undef BURNINGVIDEO_RENDERER_BEAUTIFUL
+	#undef _IRR_USE_WINDOWS_DEVICE_
+	#define _IRR_USE_WINDOWS_CE_DEVICE_
+	#define BURNINGVIDEO_RENDERER_CE
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__

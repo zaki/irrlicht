@@ -17,7 +17,7 @@
 #if defined(PNG_READ_SUPPORTED)
 
 #ifdef PNG_FLOATING_POINT_SUPPORTED
-#  if defined(_WIN32_WCE)
+#  if defined(_WIN32_WCE) && 0
 /* strtod() function is not supported on WindowsCE */
 __inline double png_strtod(png_structp png_ptr, const char *nptr, char **endptr)
 {

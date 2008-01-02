@@ -44,7 +44,7 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 		}
 		else
 		{
-			os::Printer::log ( "Burningvideo: Warning Texture reformat", ELL_WARNING );
+			//os::Printer::log ( "Burningvideo: Warning Texture reformat", ELL_WARNING );
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
 
 			// temporary CImage needed

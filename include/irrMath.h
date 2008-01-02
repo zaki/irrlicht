@@ -9,7 +9,7 @@
 #include "irrTypes.h"
 #include <math.h>
 
-#if defined(_IRR_SOLARIS_PLATFORM_) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
+#if defined(_IRR_SOLARIS_PLATFORM_) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) || defined (_WIN32_WCE)
 	#define sqrtf(X) (f32)sqrt((f64)(X))
 	#define sinf(X) (f32)sin((f64)(X))
 	#define cosf(X) (f32)cos((f64)(X))

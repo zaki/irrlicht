@@ -703,7 +703,24 @@ inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 	(tFixPointu &) r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE);
 	(tFixPointu &) g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
 	(tFixPointu &) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
+}
 
+inline void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
+								)
+{
+	u32 ofs;
+
+	ofs = ( ( ty & t->textureYMask ) >> FIX_POINT_PRE ) << t->pitchlog2;
+	ofs |= ( tx & t->textureXMask ) >> ( FIX_POINT_PRE - VIDEO_SAMPLE_GRANULARITY );
+
+	// texel
+	const tVideoSample t00 = *((tVideoSample*)( (u8*) t->data + ofs ));
+
+	(tFixPointu &)a	 =	(t00 & MASK_A) >> ( SHIFT_A - FIX_POINT_PRE);
+	(tFixPointu &)r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE);
+	(tFixPointu &)g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
+	(tFixPointu &)b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
 }
 
 

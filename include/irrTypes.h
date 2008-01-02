@@ -70,7 +70,7 @@ typedef double				f64;
 //! standard on Windows platforms, but it does on all others.
 //! These should be int snprintf(char *str, size_t size, const char *format, ...);
 //! and int swprintf(wchar_t *wcs, size_t maxlen, const wchar_t *format, ...);
-#if defined(_MSC_VER) && _MSC_VER > 1310
+#if defined(_MSC_VER) && _MSC_VER > 1310 && !defined (_WIN32_WCE)
 #define swprintf swprintf_s
 #define snprintf sprintf_s
 #else
@@ -97,7 +97,7 @@ typedef unsigned short wchar_t;
 
 //! define a break macro for debugging.
 #if defined(_DEBUG)
-#if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER)
+#if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && !defined (_WIN32_WCE)
 #define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_asm int 3}
 #else 
 #include "assert.h"
@@ -122,7 +122,7 @@ Compiler version defines: VC6.0 : 1200, VC7.0 : 1300, VC7.1 : 1310, VC8.0 : 1400
 
 // memory debugging
 #if defined(_DEBUG) && defined(IRRLICHT_EXPORTS) && defined(_MSC_VER) && \
-	(_MSC_VER > 1299) && !defined(_IRR_DONT_DO_MEMORY_DEBUGGING_HERE)
+	(_MSC_VER > 1299) && !defined(_IRR_DONT_DO_MEMORY_DEBUGGING_HERE) && !defined(_WIN32_WCE)
 	
 	#define CRTDBG_MAP_ALLOC
 	#define _CRTDBG_MAP_ALLOC
