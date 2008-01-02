@@ -16,12 +16,14 @@
 #include "CAttributes.h"
 #include "CMemoryReadFile.h"
 
-#ifdef _IRR_WINDOWS_API_
-#include <direct.h> // for _chdir
+#if defined (_IRR_WINDOWS_API_)
+	#if !defined ( _WIN32_WCE )
+		#include <direct.h> // for _chdir
+	#endif
 #else
-#include <unistd.h>
-#include <limits.h>
-#include <stdlib.h>
+	#include <unistd.h>
+	#include <limits.h>
+	#include <stdlib.h>
 #endif
 
 namespace irr
@@ -184,7 +186,9 @@ bool CFileSystem::addPakFileArchive(const c8* filename, bool ignoreCase, bool ig
 const c8* CFileSystem::getWorkingDirectory()
 {
 #ifdef _IRR_WINDOWS_API_
-	_getcwd(WorkingDirectory, FILE_SYSTEM_MAX_PATH);
+	#if !defined ( _WIN32_WCE )
+		_getcwd(WorkingDirectory, FILE_SYSTEM_MAX_PATH);
+	#endif
 #endif
 
 #if (defined(_IRR_POSIX_API_) || defined(MACOSX))
@@ -202,7 +206,9 @@ bool CFileSystem::changeWorkingDirectoryTo(const c8* newDirectory)
 {
 	bool success=false;
 #ifdef _MSC_VER
-	success=(_chdir(newDirectory) == 0);
+	#if !defined ( _WIN32_WCE )
+		success=(_chdir(newDirectory) == 0);
+	#endif
 #else
 	success=(chdir(newDirectory) == 0);
 #endif
@@ -215,10 +221,11 @@ core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 	core::stringc ret;
 
 #ifdef _IRR_WINDOWS_API_
-
-	c8 fpath[_MAX_PATH];
-	p = _fullpath( fpath, filename.c_str(), _MAX_PATH);
-	ret = p;
+	#if !defined ( _WIN32_WCE )
+		c8 fpath[_MAX_PATH];
+		p = _fullpath( fpath, filename.c_str(), _MAX_PATH);
+		ret = p;
+	#endif
 
 #elif (defined(_IRR_POSIX_API_) || defined(MACOSX))
 

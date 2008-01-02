@@ -1,6 +1,10 @@
 30.12.2006 TA
+	added Initial Windows Mobile 6 Version.
+		- Windows Mobile 6 SDK
+		- Visual Studio 2005
+		
 	Minor:
-		- Burningvideo: MipMap Selection
+		- Burningvideo: MipMap Selection repaired
 		- renamed private Driver function getTextureSizeFromImageSize to getTextureSizeFromSurfaceSize
 -------------------------------------------
 Changes in version 1.5 (... 2008)

@@ -24,8 +24,10 @@ namespace io
 #endif
 
 #ifdef _IRR_WINDOWS_API_
-#include <io.h>
-#include <direct.h>
+	#if !defined ( _WIN32_WCE )
+		#include <io.h>
+		#include <direct.h>
+	#endif
 #endif
 
 
@@ -38,7 +40,7 @@ CFileList::CFileList()
 	// --------------------------------------------
 	// Windows version
 	#ifdef _IRR_WINDOWS_API_
-
+	#if !defined ( _WIN32_WCE )
 	char tmp[_MAX_PATH];
 	_getcwd(tmp, _MAX_PATH);
 	Path = tmp;
@@ -60,6 +62,7 @@ CFileList::CFileList()
 
 		_findclose( hFile );
 	}
+	#endif
 
 	//TODO add drives
 	//entry.Name = "E:\\";

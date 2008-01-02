@@ -67,11 +67,13 @@ namespace os
 	//! prints a debuginfo string
 	void Printer::print(const c8* message)
 	{
+#if !defined (_WIN32_WCE )
 		c8* tmp = new c8[strlen(message) + 2];
 		sprintf(tmp, "%s\n", message);
 		OutputDebugString(tmp);
 		printf(tmp);
 		delete [] tmp;
+#endif
 	}
 
 	LARGE_INTEGER HighPerformanceFreq;
@@ -79,6 +81,7 @@ namespace os
 
 	void Timer::initTimer()
 	{
+#if !defined (_WIN32_WCE )
 		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
 		SYSTEM_INFO sysinfo;
 		DWORD affinity, sysaffinity;
@@ -103,6 +106,9 @@ namespace os
 		{
 			HighPerformanceTimerSupport = false;
 		}
+#else
+		HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
+#endif
 		initVirtualTimer();
 	}
 

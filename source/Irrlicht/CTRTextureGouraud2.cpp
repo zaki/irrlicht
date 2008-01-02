@@ -133,7 +133,7 @@ void CTRTextureGouraud2::scanline_bilinear ()
 	sVec4 slopeC;
 #endif
 #ifdef IPOL_T0
-	sVec2 slopeT[MATERIAL_MAX_TEXTURES];
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
 #endif
 
 	// apply top-left fill-convention, left
@@ -197,8 +197,9 @@ void CTRTextureGouraud2::scanline_bilinear ()
 	tFixPoint tx0;
 	tFixPoint ty0;
 
-#ifdef IPOL_C0
 	tFixPoint r0, g0, b0;
+
+#ifdef IPOL_C0
 	tFixPoint r1, g1, b1;
 #endif
 

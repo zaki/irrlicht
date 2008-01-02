@@ -29,7 +29,7 @@ namespace video
 		setDebugName("IBurningShader");
 		#endif
 
-		for ( u32 i = 0; i != MATERIAL_MAX_TEXTURES; ++i )
+		for ( u32 i = 0; i != BURNING_MATERIAL_MAX_TEXTURES; ++i )
 		{
 			IT[i].Texture = 0;
 		}
@@ -48,7 +48,7 @@ namespace video
 		if (DepthBuffer)
 			DepthBuffer->drop();
 
-		for ( u32 i = 0; i != MATERIAL_MAX_TEXTURES; ++i )
+		for ( u32 i = 0; i != BURNING_MATERIAL_MAX_TEXTURES; ++i )
 		{
 			if ( IT[i].Texture )
 				IT[i].Texture->drop();

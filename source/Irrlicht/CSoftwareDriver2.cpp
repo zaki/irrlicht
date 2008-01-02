@@ -1155,7 +1155,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 			// select mipmap
 
 			for ( g = 0; g != vSize[VertexCache.vType].TexSize; ++g )
-			//for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
+			//for ( g = 0; g != BURNING_MATERIAL_MAX_TEXTURES; ++g )
 			{
 				if ( 0 == MAT_TEXTURE ( g ) )
 				{
@@ -1268,7 +1268,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 			continue;
 
 		// select mipmap
-		//for ( g = 0; g != MATERIAL_MAX_TEXTURES; ++g )
+		//for ( g = 0; g != BURNING_MATERIAL_MAX_TEXTURES; ++g )
 		for ( g = 0; g != vSize[VertexCache.vType].TexSize; ++g )
 		{
 			if ( 0 == MAT_TEXTURE ( g ) )
