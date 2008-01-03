@@ -659,6 +659,7 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
 	{
+
 		HWBuffer->ChangedID = HWBuffer->MeshBuffer->getChangedID();
 
 		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
@@ -680,17 +681,8 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 
 	SHWBufferLink_opengl *HWBuffer=new SHWBufferLink_opengl(mb);
 
-	//add to list, in order of their meshbuffer pointer
-
-	u32 n;
-	for (n=0;n<HWBufferLinks.size();++n)
-		if (HWBufferLinks[n]->MeshBuffer > HWBuffer->MeshBuffer)
-			break;
-	if (n<HWBufferLinks.size())
-		HWBufferLinks.insert(HWBuffer,n);
-	else
-
-		HWBufferLinks.push_back(HWBuffer);
+	//add to map
+	HWBufferMap.insert(HWBuffer->MeshBuffer, HWBuffer);
 
 	HWBuffer->ChangedID=HWBuffer->MeshBuffer->getChangedID();
 	HWBuffer->Mapped=mb->getHardwareMappingHint();
@@ -714,6 +706,7 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
 	if (!_HWBuffer) return;
+
 
 #if defined(GL_ARB_vertex_buffer_object)
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;

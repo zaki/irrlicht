@@ -11,6 +11,7 @@
 #include "IGPUProgrammingServices.h"
 #include "irrArray.h"
 #include "irrString.h"
+#include "irrMap.h"
 #include "IAttributes.h"
 #include "IMeshBuffer.h"
 #include "CFPSCounter.h"
@@ -305,10 +306,13 @@ namespace video
 					MeshBuffer->drop();
 			}
 
+			scene::E_BUFFER_TYPE Contains;
 			const scene::IMeshBuffer *MeshBuffer;
 			u32 ChangedID;
 			u32 LastUsed;
 			scene::E_HARDWARE_MAPPING Mapped;
+
+
 		};
 
 
@@ -555,8 +559,8 @@ namespace video
 		core::array<SLight> Lights;
 		core::array<SMaterialRenderer> MaterialRenderers;
 
-		core::array<SHWBufferLink*> HWBufferLinks;
-
+		//core::array<SHWBufferLink*> HWBufferLinks;
+		core::map< const scene::IMeshBuffer* , SHWBufferLink* > HWBufferMap;
 
 		io::IFileSystem* FileSystem;
 
