@@ -109,8 +109,13 @@ int main()
 	*/
 
 	IrrlichtDevice *device =
+#ifdef MACOSX
+		createDevice( video::EDT_OPENGL, dimension2d<s32>(640, 480), 16,
+			false, false, false, 0);
+#else
 		createDevice( video::EDT_SOFTWARE, dimension2d<s32>(640, 480), 16,
 			false, false, false, 0);
+#endif
 
 	/*
 	Set the caption of the window to some nice text. Note that there is 
