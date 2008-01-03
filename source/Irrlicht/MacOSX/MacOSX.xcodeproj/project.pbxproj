@@ -13,6 +13,9 @@
 			buildPhases = (
 			);
 			dependencies = (
+				09F649720D2CE2A1001E0599 /* PBXTargetDependency */,
+				09F649450D2CE100001E0599 /* PBXTargetDependency */,
+				09F649210D2CDFF0001E0599 /* PBXTargetDependency */,
 				4CA5CB9A0A4868B500ADB3D7 /* PBXTargetDependency */,
 				4CA5CB980A4868B500ADB3D7 /* PBXTargetDependency */,
 				4CA5CB960A4868B500ADB3D7 /* PBXTargetDependency */,
@@ -131,6 +134,24 @@
 		0968406D0D0F1A2300333EFD /* CSTLMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */; };
 		0968406E0D0F1A2300333EFD /* CSTLMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */; };
 		0968406F0D0F1A2300333EFD /* CSTLMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840460D0F1A2300333EFD /* CSTLMeshWriter.h */; };
+		09F648F80D2CDED9001E0599 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E1650A484C2C0014E966 /* MainMenu.nib */; };
+		09F648F90D2CDED9001E0599 /* DemoApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */; };
+		09F648FD0D2CDED9001E0599 /* libIrrlicht.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E24D0A4850120014E966 /* libIrrlicht.a */; };
+		09F648FE0D2CDED9001E0599 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26D0A4850D60014E966 /* Cocoa.framework */; };
+		09F648FF0D2CDED9001E0599 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26E0A4850D60014E966 /* OpenGL.framework */; };
+		09F6491A0D2CDF9A001E0599 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C0054710A48470500C844C2 /* main.cpp */; };
+		09F649330D2CE03E001E0599 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E1650A484C2C0014E966 /* MainMenu.nib */; };
+		09F649340D2CE03E001E0599 /* DemoApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */; };
+		09F649380D2CE03E001E0599 /* libIrrlicht.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E24D0A4850120014E966 /* libIrrlicht.a */; };
+		09F649390D2CE03E001E0599 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26D0A4850D60014E966 /* Cocoa.framework */; };
+		09F6493A0D2CE03E001E0599 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26E0A4850D60014E966 /* OpenGL.framework */; };
+		09F649430D2CE0ED001E0599 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F6492E0D2CE038001E0599 /* main.cpp */; };
+		09F6495A0D2CE206001E0599 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E1650A484C2C0014E966 /* MainMenu.nib */; };
+		09F6495B0D2CE206001E0599 /* DemoApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */; };
+		09F6495F0D2CE206001E0599 /* libIrrlicht.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E24D0A4850120014E966 /* libIrrlicht.a */; };
+		09F649600D2CE206001E0599 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26D0A4850D60014E966 /* Cocoa.framework */; };
+		09F649610D2CE206001E0599 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26E0A4850D60014E966 /* OpenGL.framework */; };
+		09F649740D2CE2D0001E0599 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F649730D2CE2D0001E0599 /* main.cpp */; };
 		4C364EA40A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C364EA20A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp */; };
 		4C43EEC00A74A5C800F942FC /* CPakReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */; };
 		4C53E2500A48504D0014E966 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C0054770A48470500C844C2 /* main.cpp */; };
@@ -473,6 +494,48 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		09F648F60D2CDED9001E0599 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = MacOSX;
+		};
+		09F649200D2CDFF0001E0599 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09F648F40D2CDED9001E0599;
+			remoteInfo = HelloWorld;
+		};
+		09F649310D2CE03E001E0599 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = MacOSX;
+		};
+		09F649440D2CE100001E0599 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09F6492F0D2CE03E001E0599;
+			remoteInfo = LoadIrrFile;
+		};
+		09F649580D2CE206001E0599 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = MacOSX;
+		};
+		09F649710D2CE2A1001E0599 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09F649560D2CE206001E0599;
+			remoteInfo = Quake3Shader;
+		};
 		4CA5CB810A4868B500ADB3D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -756,6 +819,14 @@
 		096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshFileLoader.h; sourceTree = "<group>"; };
 		096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSTLMeshWriter.cpp; sourceTree = "<group>"; };
 		096840460D0F1A2300333EFD /* CSTLMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshWriter.h; sourceTree = "<group>"; };
+		09F649030D2CDED9001E0599 /* HelloWorld.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloWorld.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		09F649050D2CDED9001E0599 /* DemoApp-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "DemoApp-Info copy.plist"; sourceTree = "<group>"; };
+		09F6492E0D2CE038001E0599 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = 15.LoadIrrFile/main.cpp; sourceTree = "<group>"; };
+		09F6493E0D2CE03E001E0599 /* LoadIrrFile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LoadIrrFile.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		09F649400D2CE03E001E0599 /* DemoApp-Info copy 2.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "DemoApp-Info copy 2.plist"; sourceTree = "<group>"; };
+		09F649650D2CE206001E0599 /* Quake3Shader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quake3Shader.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		09F649670D2CE206001E0599 /* DemoApp-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "DemoApp-Info copy.plist"; sourceTree = "<group>"; };
+		09F649730D2CE2D0001E0599 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = 16.Quake3MapShader/main.cpp; sourceTree = "<group>"; };
 		4C0054710A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C0054770A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C00547D0A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -1325,6 +1396,36 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		09F648FC0D2CDED9001E0599 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F648FD0D2CDED9001E0599 /* libIrrlicht.a in Frameworks */,
+				09F648FE0D2CDED9001E0599 /* Cocoa.framework in Frameworks */,
+				09F648FF0D2CDED9001E0599 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09F649370D2CE03E001E0599 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F649380D2CE03E001E0599 /* libIrrlicht.a in Frameworks */,
+				09F649390D2CE03E001E0599 /* Cocoa.framework in Frameworks */,
+				09F6493A0D2CE03E001E0599 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09F6495E0D2CE206001E0599 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F6495F0D2CE206001E0599 /* libIrrlicht.a in Frameworks */,
+				09F649600D2CE206001E0599 /* Cocoa.framework in Frameworks */,
+				09F649610D2CE206001E0599 /* OpenGL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B81CFE08097FD9F50057C06F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2155,6 +2256,22 @@
 			name = Software;
 			sourceTree = "<group>";
 		};
+		09F6492D0D2CE017001E0599 /* 15.LoadIrrFile */ = {
+			isa = PBXGroup;
+			children = (
+				09F6492E0D2CE038001E0599 /* main.cpp */,
+			);
+			name = 15.LoadIrrFile;
+			sourceTree = "<group>";
+		};
+		09F649530D2CE1EB001E0599 /* 16.Quake3Shader */ = {
+			isa = PBXGroup;
+			children = (
+				09F649730D2CE2D0001E0599 /* main.cpp */,
+			);
+			name = 16.Quake3Shader;
+			sourceTree = "<group>";
+		};
 		4C00546D0A48470500C844C2 /* examples */ = {
 			isa = PBXGroup;
 			children = (
@@ -2171,6 +2288,8 @@
 				4C0054AD0A48470500C844C2 /* 11.PerPixelLighting */,
 				4C0054B30A48470500C844C2 /* 12.TerrainRendering */,
 				4C0054B90A48470500C844C2 /* 13.RenderToTexture */,
+				09F6492D0D2CE017001E0599 /* 15.LoadIrrFile */,
+				09F649530D2CE1EB001E0599 /* 16.Quake3Shader */,
 				4C0054C40A48470500C844C2 /* Demo */,
 			);
 			name = examples;
@@ -2409,6 +2528,9 @@
 				4C53E1650A484C2C0014E966 /* MainMenu.nib */,
 				4C53E1660A484C2C0014E966 /* OSXClipboard.h */,
 				4C53E1670A484C2C0014E966 /* OSXClipboard.mm */,
+				09F649050D2CDED9001E0599 /* DemoApp-Info copy.plist */,
+				09F649400D2CE03E001E0599 /* DemoApp-Info copy 2.plist */,
+				09F649670D2CE206001E0599 /* DemoApp-Info copy.plist */,
 			);
 			path = MacOSX;
 			sourceTree = "<group>";
@@ -2479,6 +2601,9 @@
 				4CA25B9C0A485D9800B4E469 /* RenderToTexture.app */,
 				4CA25BAA0A485D9800B4E469 /* TerrainRendering.app */,
 				4CA25BA20A485D9800B4E469 /* Demo.app */,
+				09F6493E0D2CE03E001E0599 /* LoadIrrFile.app */,
+				09F649650D2CE206001E0599 /* Quake3Shader.app */,
+				09F649030D2CDED9001E0599 /* HelloWorld.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2634,6 +2759,60 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		09F648F40D2CDED9001E0599 /* HelloWorld */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "HelloWorld" */;
+			buildPhases = (
+				09F648F70D2CDED9001E0599 /* Resources */,
+				09F648FA0D2CDED9001E0599 /* Sources */,
+				09F648FC0D2CDED9001E0599 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09F648F50D2CDED9001E0599 /* PBXTargetDependency */,
+			);
+			name = HelloWorld;
+			productName = DemoApp;
+			productReference = 09F649030D2CDED9001E0599 /* HelloWorld.app */;
+			productType = "com.apple.product-type.application";
+		};
+		09F6492F0D2CE03E001E0599 /* LoadIrrFile */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09F6493B0D2CE03E001E0599 /* Build configuration list for PBXNativeTarget "LoadIrrFile" */;
+			buildPhases = (
+				09F649320D2CE03E001E0599 /* Resources */,
+				09F649350D2CE03E001E0599 /* Sources */,
+				09F649370D2CE03E001E0599 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09F649300D2CE03E001E0599 /* PBXTargetDependency */,
+			);
+			name = LoadIrrFile;
+			productName = DemoApp;
+			productReference = 09F6493E0D2CE03E001E0599 /* LoadIrrFile.app */;
+			productType = "com.apple.product-type.application";
+		};
+		09F649560D2CE206001E0599 /* Quake3Shader */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09F649620D2CE206001E0599 /* Build configuration list for PBXNativeTarget "Quake3Shader" */;
+			buildPhases = (
+				09F649590D2CE206001E0599 /* Resources */,
+				09F6495C0D2CE206001E0599 /* Sources */,
+				09F6495E0D2CE206001E0599 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09F649570D2CE206001E0599 /* PBXTargetDependency */,
+			);
+			name = Quake3Shader;
+			productName = DemoApp;
+			productReference = 09F649650D2CE206001E0599 /* Quake3Shader.app */;
+			productType = "com.apple.product-type.application";
+		};
 		B81CFDFE097FD9F50057C06F /* 2DGraphics */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = B81CFE0C097FD9F50057C06F /* Build configuration list for PBXNativeTarget "2DGraphics" */;
@@ -2911,11 +3090,41 @@
 				B81CFFAF097FE5F80057C06F /* RenderToTexture */,
 				B8DEF35C0950229200FDEA7E /* Demo */,
 				B81CFFC6097FE9980057C06F /* All */,
+				09F648F40D2CDED9001E0599 /* HelloWorld */,
+				09F6492F0D2CE03E001E0599 /* LoadIrrFile */,
+				09F649560D2CE206001E0599 /* Quake3Shader */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		09F648F70D2CDED9001E0599 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F648F80D2CDED9001E0599 /* MainMenu.nib in Resources */,
+				09F648F90D2CDED9001E0599 /* DemoApp-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09F649320D2CE03E001E0599 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F649330D2CE03E001E0599 /* MainMenu.nib in Resources */,
+				09F649340D2CE03E001E0599 /* DemoApp-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09F649590D2CE206001E0599 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F6495A0D2CE206001E0599 /* MainMenu.nib in Resources */,
+				09F6495B0D2CE206001E0599 /* DemoApp-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B81CFE01097FD9F50057C06F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3036,6 +3245,30 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		09F648FA0D2CDED9001E0599 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F6491A0D2CDF9A001E0599 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09F649350D2CE03E001E0599 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F649430D2CE0ED001E0599 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09F6495C0D2CE206001E0599 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09F649740D2CE2D0001E0599 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B81CFE03097FD9F50057C06F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3436,6 +3669,36 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		09F648F50D2CDED9001E0599 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D /* libIrrlicht.a */;
+			targetProxy = 09F648F60D2CDED9001E0599 /* PBXContainerItemProxy */;
+		};
+		09F649210D2CDFF0001E0599 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09F648F40D2CDED9001E0599 /* HelloWorld */;
+			targetProxy = 09F649200D2CDFF0001E0599 /* PBXContainerItemProxy */;
+		};
+		09F649300D2CE03E001E0599 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D /* libIrrlicht.a */;
+			targetProxy = 09F649310D2CE03E001E0599 /* PBXContainerItemProxy */;
+		};
+		09F649450D2CE100001E0599 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09F6492F0D2CE03E001E0599 /* LoadIrrFile */;
+			targetProxy = 09F649440D2CE100001E0599 /* PBXContainerItemProxy */;
+		};
+		09F649570D2CE206001E0599 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D /* libIrrlicht.a */;
+			targetProxy = 09F649580D2CE206001E0599 /* PBXContainerItemProxy */;
+		};
+		09F649720D2CE2A1001E0599 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09F649560D2CE206001E0599 /* Quake3Shader */;
+			targetProxy = 09F649710D2CE2A1001E0599 /* PBXContainerItemProxy */;
+		};
 		4CA5CB820A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B8DEF35C0950229200FDEA7E /* Demo */;
@@ -3569,6 +3832,213 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		09F649010D2CDED9001E0599 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = HelloWorld_dbg;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		09F649020D2CDED9001E0599 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = HelloWorld;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		09F6493C0D2CE03E001E0599 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = LoadIrrFile_dbg;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		09F6493D0D2CE03E001E0599 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = LoadIrrFile;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		09F649630D2CE206001E0599 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Quake3Shader_dbg;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		09F649640D2CE206001E0599 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Quake3Shader;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		1DEB921F08733DC00010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4458,6 +4928,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "HelloWorld" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09F649010D2CDED9001E0599 /* Debug */,
+				09F649020D2CDED9001E0599 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		09F6493B0D2CE03E001E0599 /* Build configuration list for PBXNativeTarget "LoadIrrFile" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09F6493C0D2CE03E001E0599 /* Debug */,
+				09F6493D0D2CE03E001E0599 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		09F649620D2CE206001E0599 /* Build configuration list for PBXNativeTarget "Quake3Shader" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09F649630D2CE206001E0599 /* Debug */,
+				09F649640D2CE206001E0599 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		1DEB921E08733DC00010E9CD /* Build configuration list for PBXNativeTarget "libIrrlicht.a" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
