@@ -10,9 +10,6 @@
 #include "IAnimatedMeshSceneNode.h"
 #include "os.h"
 
-
-
-
 namespace irr
 {
 namespace scene
@@ -245,10 +242,10 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 			foundPositionIndex = -1;
 
 			//Test the Hints...
-			if ((u32)positionHint < PositionKeys.size())
+			if (positionHint>=0 && (u32)positionHint < PositionKeys.size())
 			{
 				//check this hint
-				if (PositionKeys[positionHint].frame>=frame && PositionKeys[positionHint-1].frame<frame )
+				if (positionHint>0 && PositionKeys[positionHint].frame>=frame && PositionKeys[positionHint-1].frame<frame )
 					foundPositionIndex=positionHint;
 				else if (positionHint+1 < (s32)PositionKeys.size())
 				{
@@ -302,10 +299,10 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 			foundScaleIndex = -1;
 
 			//Test the Hints...
-			if ((u32)scaleHint < ScaleKeys.size())
+			if (scaleHint>=0 && (u32)scaleHint < ScaleKeys.size())
 			{
 				//check this hint
-				if (ScaleKeys[scaleHint].frame>=frame && ScaleKeys[scaleHint-1].frame<frame )
+				if (scaleHint>0 && ScaleKeys[scaleHint].frame>=frame && ScaleKeys[scaleHint-1].frame<frame )
 					foundScaleIndex=scaleHint;
 				else if (scaleHint+1 < (s32)ScaleKeys.size())
 				{
@@ -360,10 +357,10 @@ void CSkinnedMesh::getFrameData(f32 frame, SJoint *Joint,
 			foundRotationIndex = -1;
 
 			//Test the Hints...
-			if ((u32)rotationHint < RotationKeys.size())
+			if (rotationHint>=0 && (u32)rotationHint < RotationKeys.size())
 			{
 				//check this hint
-				if (RotationKeys[rotationHint].frame>=frame && RotationKeys[rotationHint-1].frame<frame )
+				if (rotationHint>0 && RotationKeys[rotationHint].frame>=frame && RotationKeys[rotationHint-1].frame<frame )
 					foundRotationIndex=rotationHint;
 				else if (rotationHint+1 < (s32)RotationKeys.size())
 				{
