@@ -1254,7 +1254,6 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 		drawHardwareBuffer(HWBuffer);
 	else
 		drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
-
 }
 
 CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
@@ -1263,14 +1262,8 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer*
 		return 0;
 
 	//search for hardware links
-	for (u32 n=0;n<HWBufferLinks.size();++n)
-	{
-		SHWBufferLink *Link=HWBufferLinks[n];
-		if (Link->MeshBuffer==mb)
-		{
-			return Link;
-		}
-	}
+	core::map< const scene::IMeshBuffer*,SHWBufferLink* >::Node* node = HWBufferMap.find(mb);
+	if (node) return node->getValue();
 
 	return createHardwareBuffer(mb); //no hardware links, and mesh wants one, create it
 }
@@ -1278,12 +1271,13 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer*
 //! Update all hardware buffers, remove unused ones
 void CNullDriver::updateAllHardwareBuffers()
 {
-	for (u32 n=0;n<HWBufferLinks.size();++n)
+	core::map<const scene::IMeshBuffer*,SHWBufferLink*>::ParentFirstIterator Iterator=HWBufferMap.getParentFirstIterator();
+
+	for (;!Iterator.atEnd();Iterator++)
 	{
-		SHWBufferLink *Link=HWBufferLinks[n];
+		SHWBufferLink *Link=Iterator.getNode()->getValue();
 
 		Link->LastUsed++;
-
 		if (Link->LastUsed>20000)
 		{
 			deleteHardwareBuffer(Link);
@@ -1294,34 +1288,27 @@ void CNullDriver::updateAllHardwareBuffers()
 
 void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 {
-	s32 n=HWBufferLinks.binary_search(HWBuffer);
-	if (n!=-1) HWBufferLinks.erase(n);
-
+	if (!HWBuffer) return;
+	HWBufferMap.remove( HWBuffer->MeshBuffer );
 	delete HWBuffer;
 }
-
 
 //! Remove hardware buffer
 void CNullDriver::removeHardwareBuffer(const scene::IMeshBuffer* mb)
 {
-	for (u32 n=0;n<HWBufferLinks.size();++n)
-	{
-		SHWBufferLink *Link=HWBufferLinks[n];
-		if (Link->MeshBuffer==mb)
-		{
-			deleteHardwareBuffer(Link);
-		}
-	}
+	core::map<const scene::IMeshBuffer*,SHWBufferLink*>::Node* node = HWBufferMap.find(mb);
+	if (node) deleteHardwareBuffer( node->getValue() );
 }
-
 
 //! Remove all hardware buffers
 void CNullDriver::removeAllHardwareBuffers()
 {
-	while (HWBufferLinks.size())
-		deleteHardwareBuffer(HWBufferLinks[0]);
-}
+	core::map<const scene::IMeshBuffer*,SHWBufferLink*>::ParentLastIterator Iterator=HWBufferMap.getParentLastIterator();
 
+	for (;!Iterator.atEnd();Iterator++)
+		deleteHardwareBuffer(Iterator.getNode()->getValue());
+
+}
 
 bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 {

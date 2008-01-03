@@ -55,6 +55,14 @@ namespace scene
 		EPT_POINT_SPRITES
 	};
 
+	enum E_BUFFER_TYPE
+	{
+		EBT_NONE=0,
+		EBT_VERTEX,
+		EBT_INDEX,
+		EBT_VERTEX_AND_INDEX
+	};
+
 	//! Struct for holding a mesh with a single material
 	/** SMeshBuffer is a simple implementation of a MeshBuffer. */
 	class IMeshBuffer : public virtual IReferenceCounted
