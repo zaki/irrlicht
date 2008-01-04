@@ -1,17 +1,19 @@
-30.12.2006 TA
-	added Initial Windows Mobile 6 Version.
-		- Windows Mobile 6 SDK
-		- Visual Studio 2005
-		
-	Minor:
-		- Burningvideo: MipMap Selection repaired
-		- renamed private Driver function getTextureSizeFromImageSize to getTextureSizeFromSurfaceSize
 -------------------------------------------
 Changes in version 1.5 (... 2008)
 
+ - Better fix for hires timers on dual core machines by RogerBorg
+
+ - added Initial Windows Mobile 6 Version. (30.12.2006 TA)
+  - Windows Mobile 6 SDK
+  - Visual Studio 2005
+		
+ - Burningvideo: MipMap Selection repaired
+
+ - renamed private Driver function getTextureSizeFromImageSize to getTextureSizeFromSurfaceSize
+
  - Added collision manager speedup patch by RogerBorg.
 
- - Hardware accelerated Vertex and Index Buffer support finally integrated into Irrlicht. Thanks to a ressource handling idea by Klasker and the almost immediate implementation by Luke, Irrlicht now supports VBOs under OpenGL. D3D will follow soon.
+ - Hardware accelerated Vertex and Index Buffer support finally integrated into Irrlicht. Thanks to a resource handling idea by Klasker and the almost immediate implementation by Luke, Irrlicht now supports VBOs under OpenGL. D3D will follow soon.
    Hardware buffers make rendering the same vertices much faster. In some cases this can be more than 10x faster. To use this feature with a mesh simple set a usage type, e.g. via MeshBuffer->setHardwareMappingHint(scene::EHM_STATIC). The driver will upload the vertices and indices on the next draw and reuse this information without the need to upload it each frame.
 
  - MeshBuffers can now access the elements of the S3DVertex base class in all vertex types directly, instead of using the getVertices() pointer access. This simplifies simple mesh manipulations as it does not require a switch statement over all vertex types.
