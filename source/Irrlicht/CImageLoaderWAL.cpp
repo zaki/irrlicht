@@ -114,7 +114,7 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 	// read image
 
 	const u32 imageSize = header.ImageHeight * header.ImageWidth;
-	if (file->getSize() < (imageSize + header.MipmapOffset[0]))
+	if (file->getSize() < (u32)(imageSize + header.MipmapOffset[0]))
 		return 0;
 
 	u8* data = new u8[imageSize];
