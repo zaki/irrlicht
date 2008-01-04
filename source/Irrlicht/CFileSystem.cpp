@@ -191,7 +191,7 @@ const c8* CFileSystem::getWorkingDirectory()
 	#endif
 #endif
 
-#if (defined(_IRR_POSIX_API_) || defined(MACOSX))
+#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 	getcwd(WorkingDirectory, (size_t)FILE_SYSTEM_MAX_PATH);
 #endif
 	return WorkingDirectory;
@@ -227,7 +227,7 @@ core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 		ret = p;
 	#endif
 
-#elif (defined(_IRR_POSIX_API_) || defined(MACOSX))
+#elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 
 	c8 fpath[4096];
 	p = realpath(filename.c_str(), fpath);

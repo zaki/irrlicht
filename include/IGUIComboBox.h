@@ -33,8 +33,8 @@ namespace gui
 		virtual u32 addItem(const wchar_t* text) = 0;
 
 		//! Removes an item from the combo box.
-		/** Warning. This will change the IDs of all following items */
-		virtual void removeItem(u32 id) = 0;
+		/** Warning. This will change the index of all following items */
+		virtual void removeItem(u32 idx) = 0;
 
 		//! Deletes all items in the combo box
 		virtual void clear() = 0;
@@ -43,7 +43,7 @@ namespace gui
 		virtual s32 getSelected() const = 0;
 
 		//! Sets the selected item. Set this to -1 if no item should be selected
-		virtual void setSelected(s32 id) = 0;
+		virtual void setSelected(s32 idx) = 0;
 	};
 
 

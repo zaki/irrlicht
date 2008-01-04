@@ -10,9 +10,8 @@
 
 #include "COpenGLDriver.h"
 #include "IMaterialRenderer.h"
-
-//Varmint: 2007/12/18
-#ifdef MACOSX
+#include "IMaterialRenderer.h"
+#if defined(_IRR_USE_OSX_DEVICE_)
 	#define GL_COMBINE_EXT                    0x8570
 	#define GL_COMBINE_RGB_EXT                0x8571
 	#define GL_COMBINE_ALPHA_EXT              0x8572
@@ -491,11 +490,9 @@ public:
 		if (Driver->queryFeature(EVDF_MULTITEXTURE))
 		{
 			Driver->extGlActiveTexture(GL_TEXTURE1_ARB);
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE_EXT, 1.f );
 			Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
 		}
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	}
 };
 

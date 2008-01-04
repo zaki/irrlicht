@@ -109,7 +109,7 @@ int main()
 	*/
 
 	IrrlichtDevice *device =
-#ifdef MACOSX
+#ifdef _IRR_OSX_PLATFORM_
 		createDevice( video::EDT_OPENGL, dimension2d<s32>(640, 480), 16,
 			false, false, false, 0);
 #else

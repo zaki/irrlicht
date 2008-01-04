@@ -25,7 +25,7 @@
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#define GL_GLEXT_LEGACY 1
 	#endif
-	#if defined(MACOSX)
+	#if defined(_IRR_USE_OSX_DEVICE_)
 		#include <OpenGL/gl.h>
 	#else
 		#include <GL/gl.h>

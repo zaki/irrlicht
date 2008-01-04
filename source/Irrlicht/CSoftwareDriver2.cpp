@@ -515,16 +515,16 @@ const sVec4 CBurningVideoDriver::NDCPlane[6] =
 	for ( u32 i = 0; i!= 6; ++i )
 	{
 		dotPlane = v->Pos.dotProduct ( NDCPlane[i] );
-		setbit ( flag, dotPlane <= 0.f, 1 << i );
+		core::setbit_cond( flag, dotPlane <= 0.f, 1 << i );
 	}
 
 	// this is the base for ndc frustum <-w,w>,<-w,w>,<-w,w>
-	setbits ( flag, ( v->Pos.z - v->Pos.w ) <= 0.f, 1 );
-	setbits ( flag, (-v->Pos.z - v->Pos.w ) <= 0.f, 2 );
-	setbits ( flag, ( v->Pos.x - v->Pos.w ) <= 0.f, 4 );
-	setbits ( flag, (-v->Pos.x - v->Pos.w ) <= 0.f, 8 );
-	setbits ( flag, ( v->Pos.y - v->Pos.w ) <= 0.f, 16 );
-	setbits ( flag, (-v->Pos.y - v->Pos.w ) <= 0.f, 32 );
+	core::setbit_cond( flag, ( v->Pos.z - v->Pos.w ) <= 0.f, 1 );
+	core::setbit_cond( flag, (-v->Pos.z - v->Pos.w ) <= 0.f, 2 );
+	core::setbit_cond( flag, ( v->Pos.x - v->Pos.w ) <= 0.f, 4 );
+	core::setbit_cond( flag, (-v->Pos.x - v->Pos.w ) <= 0.f, 8 );
+	core::setbit_cond( flag, ( v->Pos.y - v->Pos.w ) <= 0.f, 16 );
+	core::setbit_cond( flag, (-v->Pos.y - v->Pos.w ) <= 0.f, 32 );
 
 */
 #ifdef _MSC_VER
@@ -572,7 +572,7 @@ REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) c
 	u32 flag = 0;
 	for ( u32 i = 0; i!= 6; ++i )
 	{
-		core::setbit ( flag, v->Pos.dotProduct ( NDCPlane[i] ) <= 0.f, 1 << i );
+		core::setbit_cond( flag, v->Pos.dotProduct ( NDCPlane[i] ) <= 0.f, 1 << i );
 	}
 	return flag;
 }

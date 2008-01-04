@@ -233,7 +233,7 @@ void CXMLWriter::writeLineBreak()
 	if (!File)
 		return;
 
-#if defined(MACOSX)
+#if defined(_IRR_OSX_PLATFORM_)
 	File->write(L"\r", sizeof(wchar_t));
 #elif defined(_IRR_WINDOWS_API_)
 	File->write(L"\r\n", 2*sizeof(wchar_t));
