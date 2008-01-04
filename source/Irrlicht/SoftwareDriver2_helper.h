@@ -145,12 +145,6 @@ REALINLINE u32 if_mask_a_else_b ( const u32 mask, const u32 a, const u32 b )
 	return ( mask & ( a ^ b ) ) ^ b;
 }
 
-inline void setbits ( u32 &state, s32 condition, u32 mask )
-{
-	state ^= ( ( -condition >> 31 ) ^ state ) & mask;
-}
-
-
 // ------------------ Video---------------------------------------
 /*!
 	Pixel = dest * ( 1 - alpha ) + source * alpha

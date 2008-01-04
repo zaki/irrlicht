@@ -298,12 +298,10 @@ void CZipReader::deletePathFromFilename(core::stringc& filename)
 	// delete path from filename
 	const c8* p = filename.c_str() + filename.size();
 
-	// suche ein slash oder den anfang.
+	// search for path separator or beginning
 
 	while (*p!='/' && *p!='\\' && p!=filename.c_str())
 		--p;
-
-	core::stringc newName;
 
 	if (p != filename.c_str())
 	{

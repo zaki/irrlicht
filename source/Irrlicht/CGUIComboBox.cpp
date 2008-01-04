@@ -127,12 +127,12 @@ s32 CGUIComboBox::getSelected() const
 
 
 //! sets the selected item. Set this to -1 if no item should be selected
-void CGUIComboBox::setSelected(s32 id)
+void CGUIComboBox::setSelected(s32 idx)
 {
-	if (id < -1 || id >= (s32)Items.size())
+	if (idx < -1 || idx >= (s32)Items.size())
 		return;
 
-	Selected = id;
+	Selected = idx;
 }
 
 void CGUIComboBox::updateAbsolutePosition()

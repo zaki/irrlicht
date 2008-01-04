@@ -10,7 +10,7 @@
 #else
 #include <string.h>
 #include <unistd.h>
-#ifdef MACOSX
+#ifdef _IRR_USE_OSX_DEVICE_
 #include "OSXClipboard.h"
 #include <sys/types.h>
 #include <sys/sysctl.h>
@@ -59,9 +59,10 @@ void COSOperator::copyToClipboard(const c8* text) const
 	CloseClipboard();
 
 // MacOSX version
-#elif defined(MACOSX)
+#elif defined(_IRR_USE_OSX_DEVICE_)
 
 	OSXCopyToClipboard(text);
+#else
 
 // todo: Linux version
 #endif
@@ -84,7 +85,7 @@ c8* COSOperator::getTextFromClipboard() const
 	CloseClipboard();
 	return buffer;
 
-#elif defined(MACOSX)
+#elif defined(_IRR_USE_OSX_DEVICE_)
 	return (OSXCopyFromClipboard());
 #else
 
@@ -121,7 +122,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;
 
-#elif defined(MACOSX)
+#elif defined(_IRR_OSX_PLATFORM_)
 	struct clockinfo CpuClock;
 	size_t Size = sizeof(clockinfo);
 

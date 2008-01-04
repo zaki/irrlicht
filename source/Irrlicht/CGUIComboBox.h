@@ -50,7 +50,7 @@ namespace gui
 		virtual s32 getSelected() const;
 
 		//! sets the selected item. Set this to -1 if no item should be selected
-		virtual void setSelected(s32 id);
+		virtual void setSelected(s32 idx);
 
 		//! update the position
 		virtual void updateAbsolutePosition();

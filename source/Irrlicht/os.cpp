@@ -21,7 +21,8 @@
 		#define bswap_32(X) ( (((X)&0x000000FF)<<24) | (((X)&0xFF000000) >> 24) | (((X)&0x0000FF00) << 8) | (((X) &0x00FF0000) >> 8))
 	#endif
 #else
-	#ifdef MACOSX
+	#if defined(_IRR_OSX_PLATFORM_)
+		#include <libkern/OSByteOrder.h>
 		#define bswap_16(X) OSReadSwapInt16(&X,0)
 		#define bswap_32(X) OSReadSwapInt32(&X,0)
 	#elif defined(__FreeBSD__)

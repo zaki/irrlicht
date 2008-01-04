@@ -22,7 +22,7 @@ public:
 	//! Constructor
 	CMS3DMeshFileLoader(video::IVideoDriver* driver);
 
-	//! returns true if the file maybe is able to be loaded by this class
+	//! returns true if the file might be loadable by this class
 	//! based on the file extension (e.g. ".bsp")
 	virtual bool isALoadableFileExtension(const c8* fileName) const;
 
@@ -39,16 +39,6 @@ private:
 	bool load(io::IReadFile* file);
 	video::IVideoDriver* Driver;
 	CSkinnedMesh* AnimatedMesh;
-
-	struct SGroup
-	{
-		core::stringc Name;
-		core::array<u16> VertexIds;
-		u16 MaterialIdx;
-	};
-
-	core::array<SGroup> Groups;
-
 };
 
 } // end namespace scene

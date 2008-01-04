@@ -22,7 +22,7 @@
 	#pragma comment(lib, "OpenGL32.lib")
 	#pragma comment(lib, "GLu32.lib")
 #endif
-#elif defined(MACOSX)
+#elif defined(_IRR_USE_OSX_DEVICE_)
 	#include "CIrrDeviceMacOSX.h"
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#define GL_GLEXT_LEGACY 1
@@ -84,7 +84,7 @@ namespace video
 			bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias);
 		#endif
 
-		#ifdef MACOSX
+		#ifdef _IRR_USE_OSX_DEVICE_
 		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
 			bool stencilBuffer, CIrrDeviceMacOSX *device,io::IFileSystem* io, bool vsync, bool antiAlias);
 		#endif
@@ -388,7 +388,7 @@ namespace video
 		#elif defined(_IRR_USE_LINUX_DEVICE_)
 			GLXDrawable XWindow;
 			Display* XDisplay;
-		#elif defined(MACOSX)
+		#elif defined(_IRR_USE_OSX_DEVICE_)
 			CIrrDeviceMacOSX *_device;
 		#endif
 	};

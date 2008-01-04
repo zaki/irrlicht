@@ -211,7 +211,9 @@ namespace core
 
 	// only same sign
 	#define	F32_A_GREATER_B(a,b)	(F32_AS_S32((a)) >  F32_AS_S32((b)))
+
 #else
+
 	#define	F32_LOWER_0(n)		((n) <  0.0f)
 	#define	F32_LOWER_EQUAL_0(n)	((n) <= 0.0f)
 	#define	F32_GREATER_0(n)	((n) >  0.0f)
@@ -246,7 +248,7 @@ namespace core
 	/*
 		if (condition) state |= m; else state &= ~m; 
 	*/
-	REALINLINE void setbit ( u32 &state, s32 condition, u32 mask )
+	REALINLINE void setbit_cond ( u32 &state, s32 condition, u32 mask )
 	{
 		// 0, or any postive to mask
 		//s32 conmask = -condition >> 31;

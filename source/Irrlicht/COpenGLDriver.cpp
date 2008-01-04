@@ -156,9 +156,9 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 #endif //IRR_USE_WINDOWS_DEVICE_
 
 // -----------------------------------------------------------------------
-// MACOSX CONSTRUCTOR
+// MacOSX CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef MACOSX
+#ifdef _IRR_USE_OSX_DEVICE_
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen, bool stencilBuffer, CIrrDeviceMacOSX *device, io::IFileSystem* io, bool vsync, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
@@ -400,7 +400,7 @@ bool COpenGLDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 #elif defined(_IRR_USE_LINUX_DEVICE_)
 	glXSwapBuffers(XDisplay, XWindow);
 	return true;
-#elif defined(MACOSX)
+#elif defined(_IRR_USE_OSX_DEVICE_)
 	_device->flush();
 	return true;
 #elif defined(_IRR_USE_SDL_DEVICE_)
@@ -2661,7 +2661,7 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 // -----------------------------------
 // MACOSX VERSION
 // -----------------------------------
-#ifdef MACOSX
+#if defined(_IRR_USE_OSX_DEVICE_)
 IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 	CIrrDeviceMacOSX *device, bool fullscreen, bool stencilBuffer,
 	io::IFileSystem* io, bool vsync, bool antiAlias)
@@ -2673,7 +2673,7 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_
 }
-#endif // MACOSX
+#endif // _IRR_USE_OSX_DEVICE_
 
 // -----------------------------------
 // LINUX VERSION
