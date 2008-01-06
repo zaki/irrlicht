@@ -82,6 +82,7 @@
 				OutputFile="..\..\bin\Win32-visualstudio\Irrlicht.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories=""
 				IgnoreDefaultLibraryNames="libci.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\obj\IrrDebug\Irrlicht.pdb"
@@ -337,6 +338,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\..\..\include\IReferenceCounted.h"
+				>
+			</File>
+			<File
 				RelativePath=".\..\..\include\IrrCompileConfig.h"
 				>
 			</File>
@@ -354,10 +359,6 @@
 			</File>
 			<File
 				RelativePath=".\..\..\include\ITimer.h"
-				>
-			</File>
-			<File
-				RelativePath=".\..\..\include\IReferenceCounted.h"
 				>
 			</File>
 			<File
@@ -2025,6 +2026,14 @@
 				</File>
 				<File
 					RelativePath=".\CTextSceneNode.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CVolumeLightSceneNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CVolumeLightSceneNode.h"
 					>
 				</File>
 				<File
