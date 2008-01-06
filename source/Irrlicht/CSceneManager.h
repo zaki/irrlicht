@@ -50,6 +50,14 @@ namespace scene
 
 		virtual gui::IGUIEnvironment* getGUIEnvironment();
 
+		//! adds Volume Lighting Scene Node.
+		//! the returned pointer must not be dropped.
+		virtual ISceneNode* addVolumeLightSceneNode(ISceneNode* parent=0, s32 id=-1,
+			const s32 subdivU = 32, const s32 subdivV = 32,
+			const video::SColor foot = video::SColor(51, 0, 230, 180),
+			const video::SColor tail = video::SColor(0, 0, 0, 0),
+			const core::vector3df& position = core::vector3df(0,0,0),	const core::vector3df& rotation = core::vector3df(0,0,0),	const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f));
+
 		//! adds a cube scene node to the scene. It is a simple cube of (1,1,1) size. 
 		//! the returned pointer must not be dropped.
 		virtual ISceneNode* addCubeSceneNode(f32 size=10.0f, ISceneNode* parent=0, s32 id=-1,
