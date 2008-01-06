@@ -23,10 +23,6 @@ namespace io
 namespace scene
 {
 	//! A scene node for displaying terrain using the geo mip map algorithm.
-	/** The code for the TerrainSceneNode is based on the GeoMipMapSceneNode
-	 * developed by Spintz. He made it available for Irrlicht and allowed it to be 
-	 * distributed under this licence. I only modified some parts. A lot of thanks go to him. 
-	 **/
 	class CTerrainSceneNode : public ITerrainSceneNode
 	{
 	public:
@@ -281,8 +277,11 @@ namespace scene
 		//! get indices when generating index data for patches at varying levels of detail.
 		u32 getIndex(const s32 PatchX, const s32 PatchZ, const s32 PatchIndex, u32 vX, u32 vZ) const;
 
+		//! smooth the terrain
+		void smoothTerrain(SMeshBufferLightMap* mb, s32 smoothFactor);
+
 		//! calculate smooth normals 
-		void calculateNormals(SMeshBufferLightMap* pMeshBuffer );
+		void calculateNormals(SMeshBufferLightMap* mb);
 
 		//! create patches, stuff that needs to only be done once for patches goes here.
 		void createPatches();
