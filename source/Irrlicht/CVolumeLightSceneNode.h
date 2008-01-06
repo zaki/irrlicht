@@ -20,7 +20,7 @@ namespace scene
 
 		//! constructor
 		CVolumeLightSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
-			const s32 subdivU = 32, const s32 subdivV = 32,
+			const u32 subdivU = 32, const u32 subdivV = 32,
 			const video::SColor foot = video::SColor(51, 0, 230, 180),
 			const video::SColor tail = video::SColor(0, 0, 0, 0),
 			const core::vector3df& position = core::vector3df(0,0,0),
@@ -60,17 +60,17 @@ namespace scene
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 		
-		void setSubDivideU (const s32 inU) { mSubdivideU = inU; }
-		void setSubDivideV (const s32 inV) { mSubdivideV = inV; }
+		void setSubDivideU (const u32 inU) { SubdivideU = inU; }
+		void setSubDivideV (const u32 inV) { SubdivideV = inV; }
 		
-		s32 getSubDivideU () const { return mSubdivideU; }
-		s32 getSubDivideV () const { return mSubdivideV; }
+		u32 getSubDivideU () const { return SubdivideU; }
+		u32 getSubDivideV () const { return SubdivideV; }
 		
-		void setFootColour(const video::SColor inColouf) { mfootColour = inColouf; }
-		void setTailColour(const video::SColor inColouf) { mtailColour = inColouf; }
+		void setFootColour(const video::SColor inColouf) { FootColour = inColouf; }
+		void setTailColour(const video::SColor inColouf) { TailColour = inColouf; }
 		
-		video::SColor getFootColour () const { return mfootColour; }
-		video::SColor getTailColour () const { return mtailColour; }		
+		video::SColor getFootColour () const { return FootColour; }
+		video::SColor getTailColour () const { return TailColour; }		
 
 	private:
 		void addToBuffer(video::S3DVertex v);
@@ -78,18 +78,18 @@ namespace scene
 
 		SMeshBuffer * Buffer;
 		
-		f32  mlpDistance;		// Distance to hypothetical lightsource point -- affects fov angle
+		f32  LPDistance;		// Distance to hypothetical lightsource point -- affects fov angle
 
-		s32  mSubdivideU;		// Number of subdivisions in U and V space.
-		s32  mSubdivideV;		// Controls the number of "slices" in the volume.
-		// NOTE : Total number of polygons = 2 + ((mSubdiveU + 1) + (mSubdivideV + 1)) * 2
+		u32  SubdivideU;		// Number of subdivisions in U and V space.
+		u32  SubdivideV;		// Controls the number of "slices" in the volume.
+		// NOTE : Total number of polygons = 2 + ((SubdivideU + 1) + (SubdivideV + 1)) * 2
 		// Each slice being a quad plus the rectangular plane at the bottom.
 
-		video::SColor mfootColour;		// Color at the source
-		video::SColor mtailColour;		// Color at the end.
+		video::SColor FootColour;		// Color at the source
+		video::SColor TailColour;		// Color at the end.
 		
-		core::vector3df lightDimensions; // lightDimensions.Y Distance of shooting -- Length of beams
-										 // lightDimensions.X and lightDimensions.Z determine the size/dimension of the plane
+		core::vector3df LightDimensions; // LightDimensions.Y Distance of shooting -- Length of beams
+										 // LightDimensions.X and LightDimensions.Z determine the size/dimension of the plane
 	};
 
 } // end namespace scene

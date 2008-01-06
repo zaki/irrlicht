@@ -17,32 +17,20 @@ namespace scene
 
 //! constructor
 CVolumeLightSceneNode::CVolumeLightSceneNode(ISceneNode* parent, ISceneManager* mgr,
-		s32 id, const s32 subdivU, const s32 subdivV,
+		s32 id, const u32 subdivU, const u32 subdivV,
 		const video::SColor foot,
 		const video::SColor tail,
 		const core::vector3df& position,
 		const core::vector3df& rotation, const core::vector3df& scale)
-	: ISceneNode(parent, mgr, id, position, rotation, scale)
+	: ISceneNode(parent, mgr, id, position, rotation, scale), Buffer(0),
+		LPDistance(8.0f), SubdivideU(subdivU), SubdivideV(subdivV),
+		FootColour(foot), TailColour(tail),
+		LightDimensions(core::vector3df(1.0f, 1.2f, 1.0f))
 {
 	#ifdef _DEBUG
 	setDebugName("CVolumeLightSceneNode");
 	#endif
 
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	
-	lightDimensions = core::vector3df(1.0f, 1.2f, 1.0f);
-
-	mlpDistance = 8.0f;
-
-	mSubdivideU = subdivU;
-	mSubdivideV = subdivV;
-
-	//test light
-	mfootColour = foot;
-	mtailColour = tail;
-	
-	Buffer = NULL;
-	
 	constructLight();
 }
 
@@ -54,10 +42,11 @@ CVolumeLightSceneNode::~CVolumeLightSceneNode()
 		Buffer->drop();
 }
 
+
 void CVolumeLightSceneNode::addToBuffer(video::S3DVertex v)
 {
-	s32 tnidx = Buffer->Vertices.linear_reverse_search(v);
-	bool alreadyIn = (tnidx != -1);
+	const s32 tnidx = Buffer->Vertices.linear_reverse_search(v);
+	const bool alreadyIn = (tnidx != -1);
 	u16 nidx = (u16)tnidx;
 	if (!alreadyIn) {
 		nidx = Buffer->Vertices.size();
@@ -68,123 +57,127 @@ void CVolumeLightSceneNode::addToBuffer(video::S3DVertex v)
 
 }
 
+
 void CVolumeLightSceneNode::constructLight()
 {
-	core::vector3df lightPoint = core::vector3df(0, -(mlpDistance*lightDimensions.Y), 0);
-	f32 ax = lightDimensions.X / 2.0f; // X Axis
-	f32 az = lightDimensions.Z / 2.0f; // Z Axis
-	
+	const core::vector3df lightPoint(0, -(LPDistance*LightDimensions.Y), 0);
+	const f32 ax = LightDimensions.X * 0.5f; // X Axis
+	const f32 az = LightDimensions.Z * 0.5f; // Z Axis
+
 	if (Buffer)
 		Buffer->drop();
 	Buffer = new SMeshBuffer();
-	
+
 	//draw the bottom foot.. the glowing region
-	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, mfootColour, 0, 1));
-	addToBuffer(video::S3DVertex(ax , 0, az,  0,0,0, mfootColour, 1, 1));
-	addToBuffer(video::S3DVertex(ax , 0,-az,  0,0,0, mfootColour, 1, 0));
+	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, FootColour, 0, 1));
+	addToBuffer(video::S3DVertex(ax , 0, az,  0,0,0, FootColour, 1, 1));
+	addToBuffer(video::S3DVertex(ax , 0,-az,  0,0,0, FootColour, 1, 0));
 
-	addToBuffer(video::S3DVertex(ax , 0,-az,  0,0,0, mfootColour, 1, 0));
-	addToBuffer(video::S3DVertex(-ax, 0,-az,  0,0,0, mfootColour, 0, 0));
-	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, mfootColour, 0, 1));
+	addToBuffer(video::S3DVertex(ax , 0,-az,  0,0,0, FootColour, 1, 0));
+	addToBuffer(video::S3DVertex(-ax, 0,-az,  0,0,0, FootColour, 0, 0));
+	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, FootColour, 0, 1));
 
+	f32 tu = 0.f;
+	const f32 tuStep = 1.f/SubdivideU;
+	f32 bx = -ax;
+	const f32 bxStep = LightDimensions.X * tuStep;
 	// Slices in X/U space
-	for(s32 i = 0; i <= mSubdivideU; i++)  {
-		f32 k = ((f32)i) / mSubdivideU;				// use for the texture coord
-		f32	bx = ((lightDimensions.X / (f32)mSubdivideU) * i) - ax;
-		//printf("bx: %f\n", bx);
-		
+	for (u32 i = 0; i <= SubdivideU; ++i)
+	{
 		// These are the two endpoints for a slice at the foot
 		core::vector3df end1(bx, 0.0f, -az);
 		core::vector3df end2(bx, 0.0f, az);
-		
+
 		end1 -= lightPoint;		// get a vector from point to lightsource
 		end1.normalize();		// normalize vector
-		end1 *= lightDimensions.Y;	// multiply it out by shootlength
-		
+		end1 *= LightDimensions.Y;	// multiply it out by shootlength
+
 		end1.X += bx;			// Add the original point location to the vector
 		end1.Z -= az;
-		
+
 		// Do it again for the other point.
 		end2 -= lightPoint;
 		end2.normalize();
-		end2 *= lightDimensions.Y;
+		end2 *= LightDimensions.Y;
 
 		end2.X += bx;
 		end2.Z += az;
-		
-		
-		addToBuffer(video::S3DVertex(bx , 0,  az,  0,0,0, mfootColour, k, 1));
-		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, mfootColour, k, 0));
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, mtailColour, k, 1));
-		
-		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, mfootColour, k, 0));
-		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, mtailColour, k, 0));
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, mtailColour, k, 1));
-		
+
+		addToBuffer(video::S3DVertex(bx , 0,  az,  0,0,0, FootColour, tu, 1));
+		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, FootColour, tu, 0));
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColour, tu, 1));
+
+		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, FootColour, tu, 0));
+		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, TailColour, tu, 0));
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColour, tu, 1));
+
 		//back side
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, mtailColour, k, 1));
-		addToBuffer(video::S3DVertex(-bx , 0,  -az,  0,0,0, mfootColour, k, 1));
-		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, mfootColour, k, 0));
-		
-		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, mfootColour, k, 0));
-		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, mtailColour, k, 0));
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, mtailColour, k, 1));
-		
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColour, tu, 1));
+		addToBuffer(video::S3DVertex(-bx , 0,  -az,  0,0,0, FootColour, tu, 1));
+		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, FootColour, tu, 0));
+
+		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, FootColour, tu, 0));
+		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, TailColour, tu, 0));
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColour, tu, 1));
+		tu += tuStep;
+		bx += bxStep;
 	}
 
+	f32 tv = 0.f;
+	const f32 tvStep = 1.f/SubdivideV;
+	f32 bz = -az;
+	const f32 bzStep = LightDimensions.Z * tvStep;
 	// Slices in Z/V space
-	for(s32 i = 0; i <= mSubdivideV; i++)  {
-		f32 k = ((f32)i) / mSubdivideV;				// use for the texture coord
-		f32	bz = ((lightDimensions.Z / (f32)mSubdivideV) * i) - az;
-		
+	for(u32 i = 0; i <= SubdivideV; ++i)
+	{
 		// These are the two endpoints for a slice at the foot
 		core::vector3df end1(-ax, 0.0f, bz);
 		core::vector3df end2(ax, 0.0f, bz);
-		
+
 		end1 -= lightPoint;		// get a vector from point to lightsource
 		end1.normalize();		// normalize vector
-		end1 *= lightDimensions.Y;	// multiply it out by shootlength
-		
+		end1 *= LightDimensions.Y;	// multiply it out by shootlength
+
 		end1.X -= ax;			// Add the original point location to the vector
 		end1.Z += bz;
-		
+
 		// Do it again for the other point.
 		end2 -= lightPoint;
 		end2.normalize();
-		end2 *= lightDimensions.Y;
+		end2 *= LightDimensions.Y;
 
 		end2.X += ax;
 		end2.Z += bz;
-		
-		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, mfootColour, 0, k));
-		addToBuffer(video::S3DVertex(ax , 0,  bz,  0,0,0, mfootColour, 1, k));
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, mtailColour, 1, k));
-		
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, mtailColour, 1, k));
-		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, mtailColour, 0, k));
-		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, mfootColour, 0, k));
-		
+
+		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, FootColour, 0, tv));
+		addToBuffer(video::S3DVertex(ax , 0,  bz,  0,0,0, FootColour, 1, tv));
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColour, 1, tv));
+
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColour, 1, tv));
+		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, TailColour, 0, tv));
+		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, FootColour, 0, tv));
+
 		//back side
-		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, mfootColour, 0, k));
-		addToBuffer(video::S3DVertex(-ax , 0,  -bz,  0,0,0, mfootColour, 1, k));
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, mtailColour, 1, k));
-		
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, mtailColour, 1, k));
-		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, mtailColour, 0, k));
-		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, mfootColour, 0, k));
-		
+		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, FootColour, 0, tv));
+		addToBuffer(video::S3DVertex(-ax , 0,  -bz,  0,0,0, FootColour, 1, tv));
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColour, 1, tv));
+
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColour, 1, tv));
+		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, TailColour, 0, tv));
+		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, FootColour, 0, tv));
+		tv += tvStep;
+		bz += bzStep;
 	}
 
-	Buffer->BoundingBox.reset(0,0,0); 
-
 	Buffer->recalculateBoundingBox();
-	
+
 	Buffer->Material.MaterialType = video::EMT_ONETEXTURE_BLEND;
 	Buffer->Material.MaterialTypeParam = pack_texureBlendFunc( video::EBF_SRC_COLOR, video::EBF_SRC_ALPHA, video::EMFN_MODULATE_1X );
 
 	Buffer->Material.Lighting = false;
 	Buffer->Material.ZWriteEnable = false;
 }
+
 
 //! renders the node.
 void CVolumeLightSceneNode::render()
@@ -209,12 +202,13 @@ const core::aabbox3d<f32>& CVolumeLightSceneNode::getBoundingBox() const
 
 void CVolumeLightSceneNode::OnRegisterSceneNode()
 {
-	if (IsVisible) {
+	if (IsVisible)
+	{
 		//lie to sceneManager
 		Buffer->Material.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 		Buffer->Material.MaterialTypeParam = 0.01f;
 		SceneManager->registerNodeForRendering(this, ESNRP_AUTOMATIC);
-		
+
 		//restore state
 		Buffer->Material.MaterialType = video::EMT_ONETEXTURE_BLEND;
 		Buffer->Material.MaterialTypeParam = pack_texureBlendFunc( video::EBF_SRC_COLOR, video::EBF_SRC_ALPHA, video::EMFN_MODULATE_1X );
@@ -246,34 +240,34 @@ void CVolumeLightSceneNode::serializeAttributes(io::IAttributes* out, io::SAttri
 {
 	ISceneNode::serializeAttributes(out, options);
 
-	out->addFloat("lpDistance", mlpDistance);
-	out->addInt("subDivideU", mSubdivideU);
-	out->addInt("subDivideV", mSubdivideV);
-	
-	out->addColor("footColour", mfootColour);
-	out->addColor("tailColour", mtailColour);
-	
-	out->addVector3d("lightDimension", lightDimensions);
+	out->addFloat("lpDistance", LPDistance);
+	out->addInt("subDivideU", SubdivideU);
+	out->addInt("subDivideV", SubdivideV);
+
+	out->addColor("footColour", FootColour);
+	out->addColor("tailColour", TailColour);
+
+	out->addVector3d("lightDimension", LightDimensions);
 }
 
 
 //! Reads attributes of the scene node.
 void CVolumeLightSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	mlpDistance =	in->getAttributeAsFloat("lpDistance");
-	mlpDistance = core::max_(mlpDistance, 8.0f);
-	
-	mSubdivideU =	in->getAttributeAsInt("subDivideU");
-	mSubdivideU = core::max_(mSubdivideU, 1);
-	
-	mSubdivideV =	in->getAttributeAsInt("subDivideV");
-	mSubdivideV = core::max_(mSubdivideV, 1);
+	LPDistance = in->getAttributeAsFloat("lpDistance");
+	LPDistance = core::max_(LPDistance, 8.0f);
 
-	mfootColour =	in->getAttributeAsColor("footColour");
-	mtailColour =	in->getAttributeAsColor("tailColour");
-	
-	lightDimensions = in->getAttributeAsVector3d("lightDimension");
-	
+	SubdivideU = in->getAttributeAsInt("subDivideU");
+	SubdivideU = core::max_(SubdivideU, 1u);
+
+	SubdivideV = in->getAttributeAsInt("subDivideV");
+	SubdivideV = core::max_(SubdivideV, 1u);
+
+	FootColour = in->getAttributeAsColor("footColour");
+	TailColour = in->getAttributeAsColor("tailColour");
+
+	LightDimensions = in->getAttributeAsVector3d("lightDimension");
+
 	constructLight();
 
 	ISceneNode::deserializeAttributes(in, options);
@@ -283,11 +277,13 @@ void CVolumeLightSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttr
 //! Creates a clone of this scene node and its children.
 ISceneNode* CVolumeLightSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
 {
-	if (!newParent) newParent = Parent;
-	if (!newManager) newManager = SceneManager;
+	if (!newParent)
+		newParent = Parent;
+	if (!newManager)
+		newManager = SceneManager;
 
-	CVolumeLightSceneNode* nb = new CVolumeLightSceneNode(newParent, 
-		newManager, ID, mSubdivideU, mSubdivideV, mfootColour, mtailColour, RelativeTranslation);
+	CVolumeLightSceneNode* nb = new CVolumeLightSceneNode(newParent,
+		newManager, ID, SubdivideU, SubdivideV, FootColour, TailColour, RelativeTranslation);
 
 	nb->cloneMembers(this, newManager);
 	nb->Buffer->Material = Buffer->Material;
@@ -299,3 +295,4 @@ ISceneNode* CVolumeLightSceneNode::clone(ISceneNode* newParent, ISceneManager* n
 
 } // end namespace scene
 } // end namespace irr
+
