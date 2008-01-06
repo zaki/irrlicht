@@ -682,7 +682,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 	// number of texture ids read for Irrlicht
 	const u32 num_textures = core::min_(n_texs, video::MATERIAL_MAX_TEXTURES);
 	// number of bytes to skip (for ignored texture ids)
-	const u32 n_texs_offset = (num_textures<n_texs)?(n_texs-num_textures)*sizeof(s32):0;
+	const u32 n_texs_offset = (num_textures<n_texs)?(n_texs-num_textures):0;
 
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
 	{
@@ -715,14 +715,14 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			texture_id = os::Byteswap::byteswap(texture_id);
 #endif
 			//--- Get pointers to the texture, based on the IDs ---
-			if (texture_id != -1)
+			if ((u32)texture_id < Textures.size())
 				B3dMaterial.Textures[i]=&Textures[texture_id];
 			else
 				B3dMaterial.Textures[i]=0;
 		}
 		// skip other texture ids
 		if (n_texs_offset)
-			B3DFile->seek(n_texs_offset, true);
+			B3DFile->seek(n_texs_offset*sizeof(s32), true);
 
 		//Fixes problems when the lightmap is on the first texture:
 		if (B3dMaterial.Textures[0] != 0)
