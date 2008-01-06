@@ -23,7 +23,6 @@ CIrrDeviceStub::CIrrDeviceStub(const char* version, IEventReceiver* recv)
 	FileSystem(io::createFileSystem()), InputReceivingSceneManager(0)
 {
 	Timer = new CTimer();
-	Logger = new CLogger(UserReceiver);
 	if (os::Printer::Logger)
 	{
 		os::Printer::Logger->grab();
@@ -74,8 +73,6 @@ CIrrDeviceStub::~CIrrDeviceStub()
 
 	if (Logger->drop())
 		os::Printer::Logger = 0;
-
-	Logger = 0;
 }
 
 
