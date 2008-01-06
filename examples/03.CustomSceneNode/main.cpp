@@ -137,7 +137,7 @@ public:
 		return Box;
 	}
 
-	virtual u32 getMaterialCount()
+	virtual u32 getMaterialCount() const
 	{
 		return 1;
 	}
