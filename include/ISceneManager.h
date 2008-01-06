@@ -305,6 +305,31 @@ namespace scene
 		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual gui::IGUIEnvironment* getGUIEnvironment() = 0;
 
+		//! adds Volume Lighting Scene Node.
+		//! the returned pointer must not be dropped.
+		// Example Useage:
+		//	scene::ISceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
+		//						32, //Sub Divid U
+		//						32, //Sub Divid V
+		//						video::SColor(0, 180, 180, 180),   //foot colour
+		//						video::SColor(0, 0, 0, 0)         //tail colour
+		//						);
+		//	if (n) {
+		//		n->setScale(core::vector3df(46.0f, 45.0f, 46.0f));
+		//		n->setPosition(core::vector3df(0,0,0));
+		//		video::SMaterial& mat = n->getMaterial(0);
+		//		mat.setTexture(0, smgr->getVideoDriver()->getTexture("lightFalloff.png"));
+		//	} 
+		//
+		virtual ISceneNode* addVolumeLightSceneNode(ISceneNode* parent=0, s32 id=-1,
+			const s32 subdivU = 32, const s32 subdivV = 32,
+			const video::SColor foot = video::SColor(51, 0, 230, 180),
+			const video::SColor tail = video::SColor(0, 0, 0, 0),
+			const core::vector3df& position = core::vector3df(0,0,0),
+			const core::vector3df& rotation = core::vector3df(0,0,0),
+			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
+
+
 		//! Adds a test scene node for test purposes to the scene.
 		/** It is a simple cube of (1,1,1) size.
 		\param size: Size of the cube.

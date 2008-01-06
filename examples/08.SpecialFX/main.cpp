@@ -214,6 +214,21 @@ int main()
 	anode->setPosition(core::vector3df(-50,20,-60));
 	anode->setAnimationSpeed(15);
 
+	//volumetric lighting
+	scene::ISceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
+							32, //Sub Divid U
+							32, //Sub Divid V
+							video::SColor(0, 180, 180, 180),  //foot colour
+							video::SColor(0, 0, 0, 0)         //tail colour
+							);
+	   
+	if (n) {
+		n->setScale(core::vector3df(56.0f, 56.0f, 56.0f));
+		n->setPosition(core::vector3df(-120,60,40));
+		video::SMaterial& mat = n->getMaterial(0);
+		mat.setTexture(0, smgr->getVideoDriver()->getTexture("../../media/lightFalloff.png"));
+	}
+
 	// add shadow
 	anode->addShadowVolumeSceneNode();
 	smgr->setShadowColor(video::SColor(150,0,0,0));
