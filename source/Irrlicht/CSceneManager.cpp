@@ -415,9 +415,8 @@ ISceneNode* CSceneManager::addQuake3SceneNode(	IMeshBuffer* meshBuffer,
 //! adds Volume Lighting Scene Node.
 //! the returned pointer must not be dropped.
 ISceneNode* CSceneManager::addVolumeLightSceneNode(ISceneNode* parent, s32 id,
-	const s32 subdivU, const s32 subdivV,
-	const video::SColor foot,
-	const video::SColor tail,
+	const u32 subdivU, const u32 subdivV,
+	const video::SColor foot, const video::SColor tail,
 	const core::vector3df& position, const core::vector3df& rotation, const core::vector3df& scale)
 {
 	if (!parent)

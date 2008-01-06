@@ -307,7 +307,7 @@ namespace scene
 
 		//! adds Volume Lighting Scene Node.
 		//! the returned pointer must not be dropped.
-		// Example Useage:
+		// Example Usage:
 		//	scene::ISceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
 		//						32, //Sub Divid U
 		//						32, //Sub Divid V
@@ -322,7 +322,7 @@ namespace scene
 		//	} 
 		//
 		virtual ISceneNode* addVolumeLightSceneNode(ISceneNode* parent=0, s32 id=-1,
-			const s32 subdivU = 32, const s32 subdivV = 32,
+			const u32 subdivU = 32, const u32 subdivV = 32,
 			const video::SColor foot = video::SColor(51, 0, 230, 180),
 			const video::SColor tail = video::SColor(0, 0, 0, 0),
 			const core::vector3df& position = core::vector3df(0,0,0),
