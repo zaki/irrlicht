@@ -7,14 +7,14 @@
 #ifndef __VOLUME_LIGHT_SCENE_NODE_H_INCLUDED__
 #define __VOLUME_LIGHT_SCENE_NODE_H_INCLUDED__
 
-#include "ISceneNode.h"
+#include "IVolumeLightSceneNode.h"
 #include "SMeshBuffer.h"
 
 namespace irr
 {
 namespace scene
 {
-	class CVolumeLightSceneNode : public ISceneNode
+	class CVolumeLightSceneNode : public IVolumeLightSceneNode
 	{
 	public:
 
@@ -26,9 +26,6 @@ namespace scene
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f));
-
-		//! destructor
-		virtual ~CVolumeLightSceneNode();
 
 		virtual void OnRegisterSceneNode();
 
@@ -59,25 +56,25 @@ namespace scene
 
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
-		
-		void setSubDivideU (const u32 inU) { SubdivideU = inU; }
-		void setSubDivideV (const u32 inV) { SubdivideV = inV; }
-		
-		u32 getSubDivideU () const { return SubdivideU; }
-		u32 getSubDivideV () const { return SubdivideV; }
-		
-		void setFootColour(const video::SColor inColouf) { FootColour = inColouf; }
-		void setTailColour(const video::SColor inColouf) { TailColour = inColouf; }
-		
-		video::SColor getFootColour () const { return FootColour; }
-		video::SColor getTailColour () const { return TailColour; }		
+
+		virtual void setSubDivideU (const u32 inU) { SubdivideU = inU; }
+		virtual void setSubDivideV (const u32 inV) { SubdivideV = inV; }
+
+		virtual u32 getSubDivideU () const { return SubdivideU; }
+		virtual u32 getSubDivideV () const { return SubdivideV; }
+
+		virtual void setFootColour(const video::SColor inColouf) { FootColour = inColouf; }
+		virtual void setTailColour(const video::SColor inColouf) { TailColour = inColouf; }
+
+		virtual video::SColor getFootColour () const { return FootColour; }
+		virtual video::SColor getTailColour () const { return TailColour; }
 
 	private:
 		void addToBuffer(video::S3DVertex v);
 		void constructLight();
 
-		SMeshBuffer * Buffer;
-		
+		SMeshBuffer Buffer;
+
 		f32  LPDistance;		// Distance to hypothetical lightsource point -- affects fov angle
 
 		u32  SubdivideU;		// Number of subdivisions in U and V space.
@@ -87,7 +84,7 @@ namespace scene
 
 		video::SColor FootColour;		// Color at the source
 		video::SColor TailColour;		// Color at the end.
-		
+
 		core::vector3df LightDimensions; // LightDimensions.Y Distance of shooting -- Length of beams
 										 // LightDimensions.X and LightDimensions.Z determine the size/dimension of the plane
 	};
@@ -96,3 +93,4 @@ namespace scene
 } // end namespace irr
 
 #endif
+

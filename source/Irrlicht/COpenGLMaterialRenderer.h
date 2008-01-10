@@ -135,7 +135,7 @@ public:
 			glEnable(GL_ALPHA_TEST);
 			glEnable(GL_BLEND);
 
-			if ( getTexelAlpha ( srcFact ) + getTexelAlpha ( dstFact ) )
+			if ( getTexelAlpha(srcFact) || getTexelAlpha(dstFact) )
 			{
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
 				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
