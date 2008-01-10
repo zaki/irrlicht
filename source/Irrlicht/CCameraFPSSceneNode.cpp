@@ -151,7 +151,6 @@ void CCameraFPSSceneNode::animate( u32 timeMs )
 		LastAnimationTime = timeMs;
 	}
 
-
 	// update position
 	core::vector3df pos = getPosition();	
 
@@ -172,10 +171,10 @@ void CCameraFPSSceneNode::animate( u32 timeMs )
 				RelativeRotation.Y *= -1.0f;
 
 				RelativeRotation.Y += (0.5f - cursorpos.X) * RotateSpeed;
-				RelativeRotation.X = core::clamp (	RelativeRotation.X + (0.5f - cursorpos.Y) * RotateSpeed,
-													-MAX_VERTICAL_ANGLE,
-													+MAX_VERTICAL_ANGLE
-												);
+				RelativeRotation.X = core::clamp(
+						RelativeRotation.X + (0.5f - cursorpos.Y) * RotateSpeed,
+						-MAX_VERTICAL_ANGLE,
+						+MAX_VERTICAL_ANGLE);
 
 				RelativeRotation.X *= -1.0f;
 				RelativeRotation.Y *= -1.0f;
@@ -230,7 +229,6 @@ void CCameraFPSSceneNode::animate( u32 timeMs )
 		}
 
 		// write translation
-
 		setPosition(pos);
 	}
 
@@ -238,8 +236,8 @@ void CCameraFPSSceneNode::animate( u32 timeMs )
 
 	TargetVector = Target;
 	Target += pos;
-
 }
+
 
 void CCameraFPSSceneNode::allKeysUp()
 {

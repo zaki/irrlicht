@@ -113,6 +113,7 @@
 #include "IReferenceCounted.h"
 #include "IVideoDriver.h"
 #include "IVideoModeList.h"
+#include "IVolumeLightSceneNode.h"
 #include "IWriteFile.h"
 #include "IXMLReader.h"
 #include "IXMLWriter.h"
