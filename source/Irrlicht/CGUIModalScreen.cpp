@@ -93,13 +93,16 @@ void CGUIModalScreen::draw()
 
 		for (; it != Children.end(); ++it)
 		{
-			r = (*it)->getAbsolutePosition();
-			r.LowerRightCorner.X += 1;
-			r.LowerRightCorner.Y += 1;
-			r.UpperLeftCorner.X -= 1;
-			r.UpperLeftCorner.Y -= 1;
+			if ((*it)->isVisible())
+			{
+				r = (*it)->getAbsolutePosition();
+				r.LowerRightCorner.X += 1;
+				r.LowerRightCorner.Y += 1;
+				r.UpperLeftCorner.X -= 1;
+				r.UpperLeftCorner.Y -= 1;
 
-			skin->draw2DRectangle(this, c, r, &AbsoluteClippingRect);
+				skin->draw2DRectangle(this, c, r, &AbsoluteClippingRect);
+			}
 		}
 	}
 

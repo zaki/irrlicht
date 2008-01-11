@@ -4,11 +4,8 @@
 
 // 07.10.2005 - Multicolor-Listbox added by A. Buschhueter (Acki)
 //                                          A_Buschhueter@gmx.de
-
+                                         
 #include "CGUITable.h"
-
-#ifdef _IRR_COMPILE_WITH_GUI_
-
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
@@ -24,67 +21,107 @@ namespace gui
 {
 
 //! constructor
-CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
-			s32 id, core::rect<s32> rectangle, bool clip,
-			bool drawBack, bool moveOverSelect)
-: IGUITable(environment, parent, id, rectangle), Font(0), ScrollBar(0),
-	Clip(clip), DrawBack(drawBack), MoveOverSelect(moveOverSelect),
-	Selecting(false), ItemHeight(0), TotalItemHeight(0), Selected(-1),
+CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent, 
+						 s32 id, core::rect<s32> rectangle, bool clip,
+						 bool drawBack, bool moveOverSelect)
+: IGUITable(environment, parent, id, rectangle), Font(0), 
+	VerticalScrollBar(0), HorizontalScrollBar(0),
+	Clip(clip), DrawBack(drawBack), MoveOverSelect(moveOverSelect), 
+	Selecting(false), CurrentResizedColumn(-1), ResizeStart(0), ResizableColumns(true), 
+	ItemHeight(0), TotalItemHeight(0), TotalItemWidth(0), Selected(-1),
 	CellHeightPadding(2), CellWidthPadding(5), ActiveTab(-1),
-	CurrentOrdering(EGOM_ASCENDING)
+	CurrentOrdering(EGOM_NONE), DrawFlags(EGTDF_ROWS | EGTDF_COLUMNS | EGTDF_ACTIVE_ROW )
 {
 	#ifdef _DEBUG
 	setDebugName("CGUITable");
 	#endif
 
-	IGUISkin* skin = Environment->getSkin();
-	s32 s = skin->getSize(EGDS_SCROLLBAR_SIZE);
-
-	ScrollBar = Environment->addScrollBar(false,
-		core::rect<s32>(RelativeRect.getWidth() - s, 0, RelativeRect.getWidth(), RelativeRect.getHeight()),
-		this, -1);
-
-	if (ScrollBar)
+	VerticalScrollBar = Environment->addScrollBar(false, core::rect<s32>(0, 0, 100, 100), this, -1);
+	if (VerticalScrollBar)
 	{
-		ScrollBar->setPos(0);
-		ScrollBar->setNotClipped(clip);
-		ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-		ScrollBar->setSubElement(true);
-		ScrollBar->grab();
+		VerticalScrollBar->grab();
+		VerticalScrollBar->setNotClipped(false);
+		VerticalScrollBar->setSubElement(true);
 	}
 
-	recalculate();
+	HorizontalScrollBar = Environment->addScrollBar(true, core::rect<s32>(0, 0, 100, 100), this, -1);
+	if ( HorizontalScrollBar )
+	{
+		HorizontalScrollBar->grab();
+		HorizontalScrollBar->setNotClipped(false);
+		HorizontalScrollBar->setSubElement(true);
+	}
+
+	refreshControls();
 }
 
 
 //! destructor
 CGUITable::~CGUITable()
 {
-	if (ScrollBar)
-		ScrollBar->drop();
+	if (VerticalScrollBar)
+		VerticalScrollBar->drop();
+	if ( HorizontalScrollBar )
+		HorizontalScrollBar->drop();
 
 	if (Font)
 		Font->drop();
 }
 
 
-void CGUITable::addColumn(const wchar_t* caption, s32 id)
+void CGUITable::addColumn(const wchar_t* caption, s32 columnIndex)
 {
-	IGUISkin* skin = Environment->getSkin();
-	if (!skin)
-		return;
-
 	Column tabHeader;
-	tabHeader.name = caption;
-	tabHeader.width = Font->getDimension(caption).Width + (CellWidthPadding * 2) + ARROW_PAD;
-	tabHeader.TextColor = skin->getColor(EGDC_BUTTON_TEXT);
-	tabHeader.useCustomOrdering = false;
+	tabHeader.Name = caption;
+	tabHeader.Width = Font->getDimension(caption).Width + (CellWidthPadding * 2) + ARROW_PAD;
+	tabHeader.OrderingMode = EGCO_NONE;
 
+	IGUISkin* skin = Environment->getSkin();
+	if (skin)
+	{
+		tabHeader.TextColor = skin->getColor(EGDC_BUTTON_TEXT);
+	}
 
-	Columns.push_back(tabHeader);
+	if ( columnIndex < 0 || columnIndex >= (s32)Columns.size() )
+	{
+		Columns.push_back(tabHeader);
+		for ( u32 i=0; i < Rows.size(); ++i )
+		{
+			Cell cell;
+			Rows[i].Items.push_back(cell);
+		}
+	}
+	else
+	{
+		Columns.insert(tabHeader, columnIndex);
+		for ( u32 i=0; i < Rows.size(); ++i )
+		{
+			Cell cell;
+			Rows[i].Items.insert(cell, columnIndex);
+		}
+	}
 
 	if (ActiveTab == -1)
 		ActiveTab = 0;
+
+	recalculateWidths();
+}
+
+//! remove a column from the table
+void CGUITable::removeColumn(u32 columnIndex)
+{
+	if ( columnIndex < Columns.size() )
+	{
+		Columns.erase(columnIndex);
+		for ( u32 i=0; i < Rows.size(); ++i )
+		{
+			Rows[i].Items.erase(columnIndex);
+		}
+	}
+	if ( (s32)columnIndex <= ActiveTab )
+		ActiveTab = Columns.size() ? 0 : -1;
+
+	recalculateWidths();
 }
 
 s32 CGUITable::getColumnCount() const
@@ -97,7 +134,7 @@ s32 CGUITable::getRowCount() const
 	return Rows.size();
 }
 
-bool CGUITable::setActiveColumn(s32 idx)
+bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 {
 	if (idx < 0 || idx >= (s32)Columns.size())
 		return false;
@@ -105,11 +142,47 @@ bool CGUITable::setActiveColumn(s32 idx)
 	bool changed = (ActiveTab != idx);
 
 	ActiveTab = idx;
+	if ( ActiveTab < 0 )
+		return false;
 
-	CurrentOrdering = EGOM_ASCENDING;
+	if ( doOrder )
+	{
+		switch ( Columns[idx].OrderingMode )
+		{
+			case EGCO_NONE:
+				CurrentOrdering = EGOM_NONE;
+				break;
 
-	if ( !Columns[idx].useCustomOrdering )
-		orderRows();
+			case EGCO_CUSTOM:
+				CurrentOrdering = EGOM_NONE;
+				if (Parent)
+				{
+					SEvent event;
+					event.EventType = EET_GUI_EVENT;
+					event.GUIEvent.Caller = this;
+					event.GUIEvent.EventType = EGET_TABLE_HEADER_CHANGED;
+					Parent->OnEvent(event);
+				}
+
+				break;
+
+			case EGCO_ASCENDING:
+				CurrentOrdering = EGOM_ASCENDING;
+				break;
+
+			case EGCO_DESCENDING:
+				CurrentOrdering = EGOM_DESCENDING;
+				break;
+
+			case EGCO_FLIP_ASCENDING_DESCENDING:
+				CurrentOrdering = EGOM_ASCENDING == CurrentOrdering ? EGOM_DESCENDING : EGOM_ASCENDING;
+				break;
+			default:
+				CurrentOrdering = EGOM_NONE;
+		}
+
+		orderRows(getActiveColumn(), CurrentOrdering);
+	}
 
 	if (changed)
 	{
@@ -117,7 +190,7 @@ bool CGUITable::setActiveColumn(s32 idx)
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
 		event.GUIEvent.EventType = EGET_TABLE_HEADER_CHANGED;
-		Parent->OnEvent(event);
+		Parent->OnEvent(event);		
 	}
 
 	return true;
@@ -137,16 +210,36 @@ void CGUITable::setColumnWidth(u32 columnIndex, u32 width)
 {
 	if ( columnIndex < Columns.size() )
 	{
-		if ( width < ( Font->getDimension(Columns[columnIndex].name.c_str() ).Width + (u32(CellWidthPadding) * 2) ) )
-			width = Font->getDimension(Columns[columnIndex].name.c_str() ).Width + (CellWidthPadding * 2) + ARROW_PAD;
+		const u32 MIN_WIDTH = Font->getDimension(Columns[columnIndex].Name.c_str() ).Width + (CellWidthPadding * 2);
+		if ( width < MIN_WIDTH )
+			width = MIN_WIDTH;
 
-		Columns[columnIndex].width = width;
+		Columns[columnIndex].Width = width;
+		
+		for ( u32 i=0; i < Rows.size(); ++i )
+		{
+			breakText( Rows[i].Items[columnIndex].Text, Rows[i].Items[columnIndex].BrokenText, Columns[columnIndex].Width );
+		}
 	}
+	recalculateWidths();
 }
+
+
+void CGUITable::setResizableColumns(bool resizable)
+{
+	ResizableColumns = resizable;
+}
+
+
+bool CGUITable::hasResizableColumns() const
+{
+	return ResizableColumns;
+}
+
 
 void CGUITable::addRow(u32 rowIndex)
 {
-	if (!( rowIndex < (Rows.size() + 1) ) )
+	if ( rowIndex > Rows.size() )
 		return;
 
 	Row row;
@@ -159,16 +252,15 @@ void CGUITable::addRow(u32 rowIndex)
 	for ( u32 i = 0 ; i < Columns.size() ; ++i )
 	{
 		Cell cell;
-		cell.data = 0;
 		Rows[rowIndex].Items.push_back(cell);
 	}
 
-	recalculate();
+	recalculateHeights();
 }
 
 void CGUITable::removeRow(u32 rowIndex)
 {
-	if (!( rowIndex < Rows.size() ) )
+	if ( rowIndex > Rows.size() )
 		return;
 
 	Rows.erase( rowIndex );
@@ -176,54 +268,54 @@ void CGUITable::removeRow(u32 rowIndex)
 	if ( !(Selected < s32(Rows.size())) )
 		Selected = Rows.size() - 1;
 
-	recalculate();
+	recalculateHeights();
 }
 
 //! adds an list item, returns id of item
 void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text)
 {
-	if ( rowIndex < (Rows.size() + 1) && columnIndex < Columns.size() )
+	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
-		Rows[rowIndex].Items[columnIndex].text = text;
-		breakText( Rows[rowIndex].Items[columnIndex].text, Columns[columnIndex].width );
+		Rows[rowIndex].Items[columnIndex].Text = text;
+		breakText( Rows[rowIndex].Items[columnIndex].Text, Rows[rowIndex].Items[columnIndex].BrokenText, Columns[columnIndex].Width );
 
 		IGUISkin* skin = Environment->getSkin();
 		if ( skin )
-			Rows[rowIndex].Items[columnIndex].color = skin->getColor(EGDC_BUTTON_TEXT);
+			Rows[rowIndex].Items[columnIndex].Color = skin->getColor(EGDC_BUTTON_TEXT);
 	}
 }
 
 void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, video::SColor color)
 {
-	if ( rowIndex < (Rows.size() + 1) && columnIndex < Columns.size() )
+	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
-		Rows[rowIndex].Items[columnIndex].text = text;
-		breakText( Rows[rowIndex].Items[columnIndex].text, Columns[columnIndex].width );
-		Rows[rowIndex].Items[columnIndex].color = color;
+		Rows[rowIndex].Items[columnIndex].Text = text;
+		breakText( Rows[rowIndex].Items[columnIndex].Text, Rows[rowIndex].Items[columnIndex].BrokenText, Columns[columnIndex].Width );
+		Rows[rowIndex].Items[columnIndex].Color = color;
 	}
 }
 
 void CGUITable::setCellColor(u32 rowIndex, u32 columnIndex, video::SColor color)
 {
-	if ( rowIndex < (Rows.size() + 1) && columnIndex < Columns.size() )
+	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
-		Rows[rowIndex].Items[columnIndex].color = color;
+		Rows[rowIndex].Items[columnIndex].Color = color;
 	}
 }
 
 void CGUITable::setCellData(u32 rowIndex, u32 columnIndex, void *data)
 {
-	if ( rowIndex < (Rows.size() + 1) && columnIndex < Columns.size() )
+	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
-		Rows[rowIndex].Items[columnIndex].data = data;
+		Rows[rowIndex].Items[columnIndex].Data = data;
 	}
 }
 
 const wchar_t* CGUITable::getCellText(u32 rowIndex, u32 columnIndex ) const
 {
-	if ( rowIndex < (Rows.size() + 1) && columnIndex < Columns.size() )
+	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
-		return Rows[rowIndex].Items[columnIndex].text.c_str();
+		return Rows[rowIndex].Items[columnIndex].Text.c_str();
 	}
 
 	return 0;
@@ -231,9 +323,9 @@ const wchar_t* CGUITable::getCellText(u32 rowIndex, u32 columnIndex ) const
 
 void* CGUITable::getCellData(u32 rowIndex, u32 columnIndex ) const
 {
-	if ( rowIndex < (Rows.size() + 1) && columnIndex < Columns.size() )
+	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
-		return Rows[rowIndex].Items[columnIndex].data;
+		return Rows[rowIndex].Items[columnIndex].Data;
 	}
 
 	return 0;
@@ -245,20 +337,23 @@ void CGUITable::clear()
 	Rows.clear();
 	Columns.clear();
 
-	if (ScrollBar)
-		ScrollBar->setPos(0);
+	if (VerticalScrollBar)
+		VerticalScrollBar->setPos(0);
+	if ( HorizontalScrollBar )
+		HorizontalScrollBar->setPos(0);
 
-	recalculate();
+	recalculateHeights();
+	recalculateWidths();
 }
 
 void CGUITable::clearRows()
 {
 	Rows.clear();
 
-	if (ScrollBar)
-		ScrollBar->setPos(0);
+	if (VerticalScrollBar)
+		VerticalScrollBar->setPos(0);
 
-	recalculate();
+	recalculateHeights();
 }
 
 s32 CGUITable::getSelected() const
@@ -266,9 +361,19 @@ s32 CGUITable::getSelected() const
 	return Selected;
 }
 
-void CGUITable::recalculate()
+void CGUITable::recalculateWidths()
 {
+	TotalItemWidth=0;
+	for ( u32 i=0; i < Columns.size(); ++i )
+	{
+		TotalItemWidth += Columns[i].Width;
+	}
+	checkScrollbars();
+}
 
+void CGUITable::recalculateHeights()
+{
+	TotalItemHeight = 0;
 	IGUISkin* skin = Environment->getSkin();
 	if (Font != skin->getFont())
 	{
@@ -285,13 +390,115 @@ void CGUITable::recalculate()
 			Font->grab();
 		}
 	}
-
-	ScrollBar->setMax((ItemHeight * Rows.size()) - AbsoluteRect.getHeight() + ItemHeight);
-
+	TotalItemHeight = ItemHeight * Rows.size();		//  header is not counted, because we only want items
+	checkScrollbars();
 }
 
+// automatic enabled/disabling and resizing of scrollbars
+void CGUITable::checkScrollbars()
+{
+	IGUISkin* skin = Environment->getSkin();
+	if ( !HorizontalScrollBar || !VerticalScrollBar || !skin)
+		return;
+
+	s32 scrollBarSize = skin->getSize(EGDS_SCROLLBAR_SIZE);	
+	bool wasHorizontalScrollBarVisible = HorizontalScrollBar->isVisible();
+	bool wasVerticalScrollBarVisible = VerticalScrollBar->isVisible();	
+	HorizontalScrollBar->setVisible(false);
+	VerticalScrollBar->setVisible(false);
+
+	// CAREFUL: near identical calculations for tableRect and clientClip are also done in draw
+	// area of table used for drawing without scrollbars
+	core::rect<s32> tableRect(AbsoluteRect);
+	tableRect.UpperLeftCorner.X += 1;
+	tableRect.UpperLeftCorner.Y += 1;
+	s32 headerBottom = tableRect.UpperLeftCorner.Y + ItemHeight;
+
+	// area of for the items (without header and without scrollbars)
+	core::rect<s32> clientClip(tableRect);
+	clientClip.UpperLeftCorner.Y = headerBottom + 1;
+
+	// needs horizontal scroll be visible?
+	if( TotalItemWidth > clientClip.getWidth() )
+	{
+		clientClip.LowerRightCorner.Y -= scrollBarSize;
+		HorizontalScrollBar->setVisible(true);
+		HorizontalScrollBar->setMax(TotalItemWidth - clientClip.getWidth());
+	}
+
+	// needs vertical scroll be visible?
+	if( TotalItemHeight > clientClip.getHeight() )
+	{
+		clientClip.LowerRightCorner.X -= scrollBarSize;
+		VerticalScrollBar->setVisible(true);
+		VerticalScrollBar->setMax(TotalItemHeight - clientClip.getHeight());
+
+		// check horizontal again because we have now smaller clientClip 
+		if ( !HorizontalScrollBar->isVisible() )
+		{
+			if( TotalItemWidth > clientClip.getWidth() )
+			{
+				clientClip.LowerRightCorner.Y -= scrollBarSize;
+				HorizontalScrollBar->setVisible(true);
+				HorizontalScrollBar->setMax(TotalItemWidth - clientClip.getWidth());
+			}
+		}
+	}
+	
+	// find the correct size for the vertical scrollbar 
+	if ( VerticalScrollBar->isVisible() )
+	{
+		if  (!wasVerticalScrollBarVisible )
+			VerticalScrollBar->setPos(0);
+		
+		if ( HorizontalScrollBar->isVisible() )
+		{
+			VerticalScrollBar->setRelativePosition(	
+				core::rect<s32>(RelativeRect.getWidth() - scrollBarSize, 1, 
+				RelativeRect.getWidth()-1, RelativeRect.getHeight()-(1+scrollBarSize) ) );
+		}
+		else
+		{
+			VerticalScrollBar->setRelativePosition(	
+				core::rect<s32>(RelativeRect.getWidth() - scrollBarSize, 1, 
+				RelativeRect.getWidth()-1, RelativeRect.getHeight()-1) );
+		}
+	}
+
+	// find the correct size for the horizontal scrollbar 
+	if ( HorizontalScrollBar->isVisible() )
+	{
+		if ( !wasHorizontalScrollBarVisible )
+			HorizontalScrollBar->setPos(0);
+
+		if ( VerticalScrollBar->isVisible() )
+		{
+			HorizontalScrollBar->setRelativePosition( core::rect<s32>(1, RelativeRect.getHeight() - scrollBarSize, RelativeRect.getWidth()-(1+scrollBarSize), RelativeRect.getHeight()-1) );
+		}
+		else
+		{
+			HorizontalScrollBar->setRelativePosition( core::rect<s32>(1, RelativeRect.getHeight() - scrollBarSize, RelativeRect.getWidth()-1, RelativeRect.getHeight()-1) );
+		}
+	}
+}
+
+void CGUITable::refreshControls()
+{
+	updateAbsolutePosition();
+	
+	if ( VerticalScrollBar )
+		VerticalScrollBar->setVisible(false);		
+	
+	if ( HorizontalScrollBar )
+		HorizontalScrollBar->setVisible(false);
+	
+	recalculateHeights();
+	recalculateWidths();
+}
+
+
 //! called if an event happened.
-bool CGUITable::OnEvent(const SEvent& event)
+bool CGUITable::OnEvent(SEvent event)
 {
 
 	switch(event.EventType)
@@ -300,39 +507,60 @@ bool CGUITable::OnEvent(const SEvent& event)
 		switch(event.GUIEvent.EventType)
 		{
 		case gui::EGET_SCROLL_BAR_CHANGED:
-			if (event.GUIEvent.Caller == ScrollBar)
+			if (event.GUIEvent.Caller == VerticalScrollBar)
 			{
-				const s32 pos = ((gui::IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-				// TODO: Scrollbar update?
+				// current position will get read out in draw
 				return true;
 			}
-		break;
+			if (event.GUIEvent.Caller == HorizontalScrollBar)
+			{
+				// current position will get read out in draw
+				return true;
+			}
+			break;
 		case gui::EGET_ELEMENT_FOCUS_LOST:
 			{
+				CurrentResizedColumn = -1;
 				Selecting = false;
 			}
-		break;
+			break;
 		default:
-		break;
+			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
 		{
+			if ( !IsEnabled )
+				return false;
+			
 			core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 
 			switch(event.MouseInput.Event)
 			{
 			case EMIE_MOUSE_WHEEL:
-				ScrollBar->setPos(ScrollBar->getPos() + (s32)event.MouseInput.Wheel*-10);
+				VerticalScrollBar->setPos(VerticalScrollBar->getPos() + (s32)event.MouseInput.Wheel*-10);
 				return true;
 
 			case EMIE_LMOUSE_PRESSED_DOWN:
 
-				if (Environment->hasFocus(this) &&
-					ScrollBar->getAbsolutePosition().isPointInside(p) &&
-					ScrollBar->OnEvent(event))
+				if (Environment->hasFocus(this) &&	
+				    VerticalScrollBar->isVisible() &&
+					VerticalScrollBar->getAbsolutePosition().isPointInside(p) &&
+					VerticalScrollBar->OnEvent(event))
 					return true;
 
+				if (Environment->hasFocus(this) &&	
+				    HorizontalScrollBar->isVisible() &&
+					HorizontalScrollBar->getAbsolutePosition().isPointInside(p) &&
+					HorizontalScrollBar->OnEvent(event))
+					return true;
+
+				if ( dragColumnStart( event.MouseInput.X, event.MouseInput.Y ) )
+				{
+					Environment->setFocus(this);
+					return true;
+				}
+				
 				if ( selectColumnHeader( event.MouseInput.X, event.MouseInput.Y ) )
 					return true;
 
@@ -342,19 +570,40 @@ bool CGUITable::OnEvent(const SEvent& event)
 
 			case EMIE_LMOUSE_LEFT_UP:
 
-				if (Environment->hasFocus(this) &&
-					ScrollBar->getAbsolutePosition().isPointInside(p) &&
-					ScrollBar->OnEvent(event))
+				CurrentResizedColumn = -1;
+				Selecting = false;
+				if (!getAbsolutePosition().isPointInside(p))
+				{
+					Environment->removeFocus(this);
+				}
+
+				if (Environment->hasFocus(this) &&	
+				    VerticalScrollBar->isVisible() &&
+					VerticalScrollBar->getAbsolutePosition().isPointInside(p) &&
+					VerticalScrollBar->OnEvent(event))
 				{
 					return true;
 				}
 
-				Selecting = false;
-				Environment->removeFocus(this);
+				if (Environment->hasFocus(this) &&	
+				    HorizontalScrollBar->isVisible() &&
+					HorizontalScrollBar->getAbsolutePosition().isPointInside(p) &&
+					HorizontalScrollBar->OnEvent(event))
+				{
+					return true;
+				}
+
 				selectNew(event.MouseInput.Y);
 				return true;
 
 			case EMIE_MOUSE_MOVED:
+				if ( CurrentResizedColumn >= 0 )
+				{
+					if ( dragColumnUpdate(event.MouseInput.X) )
+					{
+						return true;
+					}
+				}
 				if (Selecting || MoveOverSelect)
 				{
 					if (getAbsolutePosition().isPointInside(p))
@@ -363,24 +612,24 @@ bool CGUITable::OnEvent(const SEvent& event)
 						return true;
 					}
 				}
-			break;
+				break;
 			default:
-			break;
+				break;
 			}
 		}
-	break;
+		break;
 	default:
-	break;
+		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
 
-void CGUITable::setColumnCustomOrdering(u32 columnIndex, bool state)
+void CGUITable::setColumnOrdering(u32 columnIndex, EGUI_COLUMN_ORDERING mode)
 {
 	if ( columnIndex < Columns.size() )
-		Columns[columnIndex].useCustomOrdering = state;
+		Columns[columnIndex].OrderingMode = mode;
 }
 
 
@@ -388,7 +637,7 @@ void CGUITable::swapRows(u32 rowIndexA, u32 rowIndexB)
 {
 	if ( rowIndexA >= Rows.size() )
 		return;
-
+		
 	if ( rowIndexB >= Rows.size() )
 		return;
 
@@ -403,51 +652,76 @@ void CGUITable::swapRows(u32 rowIndexA, u32 rowIndexB)
 
 }
 
+bool CGUITable::dragColumnStart(s32 xpos, s32 ypos)
+{
+	if ( !ResizableColumns )
+		return false;
+	
+	if ( ypos > ( AbsoluteRect.UpperLeftCorner.Y + ItemHeight ) )
+		return false;	
+	
+	const s32 CLICK_AREA = 3;	// to left and right of line which can be dragged
+	s32 pos = AbsoluteRect.UpperLeftCorner.X+1;
+	
+	if ( HorizontalScrollBar && HorizontalScrollBar->isVisible() )
+		pos -= HorizontalScrollBar->getPos();
+	
+	pos += TotalItemWidth;
+	
+	// have to search from the right as otherwise lines could no longer be resized when a column width is 0
+	for ( s32 i = (s32)Columns.size()-1; i >= 0 ; --i )
+	{
+		u32 colWidth = Columns[i].Width;
+
+		if ( xpos >= (pos - CLICK_AREA) && xpos < ( pos + CLICK_AREA ) )
+		{
+			CurrentResizedColumn = i;
+			ResizeStart = xpos;
+			return true;
+		}
+
+		pos -= colWidth;
+	}
+	
+	return false;
+}
+
+bool CGUITable::dragColumnUpdate(s32 xpos)
+{
+	if ( !ResizableColumns || CurrentResizedColumn < 0 || CurrentResizedColumn >= s32(Columns.size()) )
+	{
+		CurrentResizedColumn = -1;
+		return false;
+	}
+	
+	s32 width = s32(Columns[CurrentResizedColumn].Width) + (xpos-ResizeStart);
+	if ( width < 0 )
+		width = 0;
+	setColumnWidth(CurrentResizedColumn, u32(width));
+	ResizeStart = xpos;
+	
+	return false;
+}
 
 bool CGUITable::selectColumnHeader(s32 xpos, s32 ypos)
 {
 	if ( ypos > ( AbsoluteRect.UpperLeftCorner.Y + ItemHeight ) )
 		return false;
 
-	core::rect<s32> frameRect(AbsoluteRect);
-
-	s32 pos = frameRect.UpperLeftCorner.X;;
-	u32 colWidth;
-
+	s32 pos = AbsoluteRect.UpperLeftCorner.X+1;
+	
+	if ( HorizontalScrollBar && HorizontalScrollBar->isVisible() )
+		pos -= HorizontalScrollBar->getPos();
+	
 	for ( u32 i = 0 ; i < Columns.size() ; ++i )
 	{
-		colWidth = Columns[i].width;
+		u32 colWidth = Columns[i].Width;
 
 		if ( xpos >= pos && xpos < ( pos + s32(colWidth) ) )
 		{
-			if ( ActiveTab == s32(i) )
-			{
-				if ( CurrentOrdering == EGOM_ASCENDING )
-					CurrentOrdering = EGOM_DESCENDING;
-				else
-					CurrentOrdering = EGOM_ASCENDING;
-			}
-			else
-			{
-				ActiveTab = i;
-				CurrentOrdering = EGOM_ASCENDING;
-			}
+			setActiveColumn( i, true );
 
-			if ( !Columns[i].useCustomOrdering )
-				orderRows();
-			else
-			{
-				if (Parent)
-				{
-					SEvent event;
-					event.EventType = EET_GUI_EVENT;
-					event.GUIEvent.Caller = this;
-					event.GUIEvent.EventType = EGET_TABLE_HEADER_CHANGED;
-					Parent->OnEvent(event);
-				}
-			}
-
-			break;
+			return true;
 		}
 
 		pos += colWidth;
@@ -456,18 +730,22 @@ bool CGUITable::selectColumnHeader(s32 xpos, s32 ypos)
 	return false;
 }
 
-void CGUITable::orderRows()
+void CGUITable::orderRows(s32 columnIndex, EGUI_ORDERING_MODE mode)
 {
 	Row swap;
-	s32 columnIndex = getActiveColumn();
+	
+	if ( columnIndex == -1 )
+		columnIndex = getActiveColumn();
+	if ( columnIndex < 0 )
+		return;
 
-	if ( CurrentOrdering == EGOM_ASCENDING )
+	if ( mode == EGOM_ASCENDING )
 	{
 		for ( s32 i = 0 ; i < s32(Rows.size()) - 1 ; ++i )
 		{
 			for ( s32 j = 0 ; j < s32(Rows.size()) - i - 1 ; ++j )
 			{
-				if ( Rows[j+1].Items[columnIndex].text < Rows[j].Items[columnIndex].text )
+				if ( Rows[j+1].Items[columnIndex].Text < Rows[j].Items[columnIndex].Text )
 				{
 					swap = Rows[j];
 					Rows[j] = Rows[j+1];
@@ -481,13 +759,13 @@ void CGUITable::orderRows()
 			}
 		}
 	}
-	else
+	else if ( mode == EGOM_DESCENDING )
 	{
 		for ( s32 i = 0 ; i < s32(Rows.size()) - 1 ; ++i )
 		{
 			for ( s32 j = 0 ; j < s32(Rows.size()) - i - 1 ; ++j )
 			{
-				if ( Rows[j].Items[columnIndex].text < Rows[j+1].Items[columnIndex].text)
+				if ( Rows[j].Items[columnIndex].Text < Rows[j+1].Items[columnIndex].Text)
 				{
 					swap = Rows[j];
 					Rows[j] = Rows[j+1];
@@ -517,7 +795,7 @@ void CGUITable::selectNew(s32 ypos, bool onlyHover)
 
 	// find new selected item.
 	if (ItemHeight!=0)
-		Selected = ((ypos - AbsoluteRect.UpperLeftCorner.Y - ItemHeight - 1) + ScrollBar->getPos()) / ItemHeight;
+		Selected = ((ypos - AbsoluteRect.UpperLeftCorner.Y - ItemHeight - 1) + VerticalScrollBar->getPos()) / ItemHeight;
 
 	if (Selected >= (s32)Rows.size())
 		Selected = Rows.size() - 1;
@@ -544,9 +822,6 @@ void CGUITable::draw()
 
 	irr::video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	core::rect<s32> frameRect(AbsoluteRect);
-	core::rect<s32> columnSeparator(AbsoluteRect);
-
 	IGUISkin* skin = Environment->getSkin();
 	if (!skin)
 		return;
@@ -555,125 +830,149 @@ void CGUITable::draw()
 	if (!font)
 		return;
 
-	s32 headerFinalPosition = frameRect.UpperLeftCorner.Y + ItemHeight;
+	// CAREFUL: near identical calculations for tableRect and clientClip are also done in checkScrollbars and selectColumnHeader
+	// Area of table used for drawing without scrollbars
+	core::rect<s32> tableRect(AbsoluteRect);
+	tableRect.UpperLeftCorner.X += 1;
+	tableRect.UpperLeftCorner.Y += 1;
+	if ( VerticalScrollBar && VerticalScrollBar->isVisible() )
+		tableRect.LowerRightCorner.X -= skin->getSize(EGDS_SCROLLBAR_SIZE);
+	if ( HorizontalScrollBar && HorizontalScrollBar->isVisible() )
+		tableRect.LowerRightCorner.Y -= skin->getSize(EGDS_SCROLLBAR_SIZE);
 
-	frameRect = AbsoluteRect;
-	frameRect.UpperLeftCorner.X += 1;
-	frameRect.UpperLeftCorner.Y = headerFinalPosition;
-	frameRect.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - skin->getSize(EGDS_SCROLLBAR_SIZE);
-	frameRect.LowerRightCorner.Y = headerFinalPosition + ItemHeight;
+	s32 headerBottom = tableRect.UpperLeftCorner.Y + ItemHeight;
 
-	frameRect.UpperLeftCorner.Y -= ScrollBar->getPos();
-	frameRect.LowerRightCorner.Y -= ScrollBar->getPos();
-
-	core::rect<s32> clientClip(AbsoluteRect);
-	clientClip.UpperLeftCorner.Y = headerFinalPosition + 1;
-	clientClip.UpperLeftCorner.X += 1;
-	clientClip.LowerRightCorner.X = AbsoluteRect.LowerRightCorner.X - skin->getSize(EGDS_SCROLLBAR_SIZE);
-	clientClip.LowerRightCorner.Y -= 1;
-
-	u32 pos;
-
-	for ( u32 i = 0 ; i < Rows.size() ; ++i )
-	{
-		if (frameRect.LowerRightCorner.Y >= AbsoluteRect.UpperLeftCorner.Y &&
-			frameRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y)
-		{
-
-			core::rect<s32> textRect = frameRect;
-
-			textRect.UpperLeftCorner.Y = textRect.LowerRightCorner.Y - 1;
-			driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), textRect, &clientClip);
-
-			textRect = frameRect;
-
-			pos = frameRect.UpperLeftCorner.X;
-
-			if ((s32)i == Selected)
-				driver->draw2DRectangle(skin->getColor(EGDC_HIGH_LIGHT), frameRect, &clientClip);
-
-			for ( u32 j = 0 ; j < Columns.size() ; ++j )
-			{
-				textRect.UpperLeftCorner.X = pos + CellWidthPadding;
-				textRect.LowerRightCorner.X = pos + Columns[j].width - CellWidthPadding;
-
-				// s32 test = font->getDimension(Rows[i].Items[j].text.c_str()).Width;
-
-				if ((s32)i == Selected)
-				{
-					font->draw(Rows[i].Items[j].text.c_str(), textRect, skin->getColor(EGDC_HIGH_LIGHT_TEXT), false, true, &clientClip);
-				}
-				else
-				{
-					font->draw(Rows[i].Items[j].text.c_str(), textRect, Rows[i].Items[j].color, false, true, &clientClip);
-				}
-
-				pos += Columns[j].width;
-			}
-		}
-
-		frameRect.UpperLeftCorner.Y += ItemHeight;
-		frameRect.LowerRightCorner.Y += ItemHeight;
-	}
-
-	frameRect = AbsoluteRect;
-	columnSeparator.UpperLeftCorner.Y = headerFinalPosition;
+	// area of for the items (without header and without scrollbars)
+	core::rect<s32> clientClip(tableRect);
+	clientClip.UpperLeftCorner.Y = headerBottom + 1;
 
 	core::rect<s32>* clipRect = 0;
 	if (Clip)
 		clipRect = &AbsoluteClippingRect;
 
-	const wchar_t* text = 0;
-	pos = frameRect.UpperLeftCorner.X;
-	u32 colWidth;
+	// draw background for whole element
+	skin->draw3DSunkenPane(this, skin->getColor(EGDC_3D_HIGH_LIGHT), true, DrawBack, AbsoluteRect, clipRect);
 
-	skin->draw3DSunkenPane(this, skin->getColor(EGDC_3D_HIGH_LIGHT), true, DrawBack, frameRect, clipRect);
+	// scrolledTableClient is the area where the table items would be if it could be drawn completely
+	core::rect<s32> scrolledTableClient(tableRect);
+	scrolledTableClient.UpperLeftCorner.Y = headerBottom + 1;
+	scrolledTableClient.LowerRightCorner.Y = scrolledTableClient.UpperLeftCorner.Y + TotalItemHeight;
+	scrolledTableClient.LowerRightCorner.X = scrolledTableClient.UpperLeftCorner.X + TotalItemWidth;
+	if ( VerticalScrollBar && VerticalScrollBar->isVisible() )
+	{
+		scrolledTableClient.UpperLeftCorner.Y -= VerticalScrollBar->getPos();
+		scrolledTableClient.LowerRightCorner.Y -= VerticalScrollBar->getPos();
+	}
+	if ( HorizontalScrollBar && HorizontalScrollBar->isVisible() )
+	{
+		scrolledTableClient.UpperLeftCorner.X -= HorizontalScrollBar->getPos();
+		scrolledTableClient.LowerRightCorner.X -= HorizontalScrollBar->getPos();
+	}
+
+	// rowRect is around the scrolled row
+	core::rect<s32> rowRect(scrolledTableClient);
+	rowRect.LowerRightCorner.Y = rowRect.UpperLeftCorner.Y + ItemHeight;
+
+	u32 pos;
+	for ( u32 i = 0 ; i < Rows.size() ; ++i )
+	{
+		if (rowRect.LowerRightCorner.Y >= AbsoluteRect.UpperLeftCorner.Y &&
+			  rowRect.UpperLeftCorner.Y <= AbsoluteRect.LowerRightCorner.Y)
+		{
+			// draw row seperator
+			if ( DrawFlags & EGTDF_ROWS )
+			{
+				core::rect<s32> lineRect(rowRect);
+				lineRect.UpperLeftCorner.Y = lineRect.LowerRightCorner.Y - 1;
+				driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), lineRect, &clientClip);
+			}
+
+			core::rect<s32> textRect(rowRect);
+			pos = rowRect.UpperLeftCorner.X;
+
+			// draw selected row background highlighted
+			if ((s32)i == Selected && DrawFlags & EGTDF_ACTIVE_ROW ) 
+				driver->draw2DRectangle(skin->getColor(EGDC_HIGH_LIGHT), rowRect, &clientClip);
+
+			for ( u32 j = 0 ; j < Columns.size() ; ++j )
+			{
+				textRect.UpperLeftCorner.X = pos + CellWidthPadding;
+				textRect.LowerRightCorner.X = pos + Columns[j].Width - CellWidthPadding;
+
+				// draw item text
+				if ((s32)i == Selected)
+				{
+					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, skin->getColor(IsEnabled ? EGDC_HIGH_LIGHT_TEXT : EGDC_GRAY_TEXT), false, true, &clientClip);
+				}
+				else
+				{
+					font->draw(Rows[i].Items[j].BrokenText.c_str(), textRect, IsEnabled ? Rows[i].Items[j].Color : skin->getColor(EGDC_GRAY_TEXT), false, true, &clientClip);
+				}
+
+				pos += Columns[j].Width;
+			}
+		}
+
+		rowRect.UpperLeftCorner.Y += ItemHeight;
+		rowRect.LowerRightCorner.Y += ItemHeight;
+	}
+
+	core::rect<s32> columnSeparator(clientClip);
+	pos = scrolledTableClient.UpperLeftCorner.X;
 
 	for (u32 i = 0 ; i < Columns.size() ; ++i )
 	{
-		text = Columns[i].name.c_str();
-		colWidth = Columns[i].width;
+		const wchar_t* text = Columns[i].Name.c_str();
+		u32 colWidth = Columns[i].Width;
 
 		core::dimension2d<s32 > dim = font->getDimension(text);
 
-		core::rect<s32> columnrect(pos, frameRect.UpperLeftCorner.Y, pos + colWidth, headerFinalPosition);
+		core::rect<s32> columnrect(pos, tableRect.UpperLeftCorner.Y, pos + colWidth, headerBottom);
 
-		skin->draw3DButtonPaneStandard(this, columnrect, &AbsoluteClippingRect);
+		// draw column background
+		skin->draw3DButtonPaneStandard(this, columnrect, &tableRect);
 
-		columnSeparator.UpperLeftCorner.X = columnrect.LowerRightCorner.X;
-		columnSeparator.LowerRightCorner.X = columnrect.LowerRightCorner.X + 1;
-		driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), columnSeparator, &AbsoluteClippingRect);
+		// draw column seperator
+		if ( DrawFlags & EGTDF_COLUMNS )
+		{
+			columnSeparator.UpperLeftCorner.X = pos;
+			columnSeparator.LowerRightCorner.X = pos + 1;
+			driver->draw2DRectangle(skin->getColor(EGDC_3D_SHADOW), columnSeparator, &tableRect);
+		}
 
+		// draw header column text
 		columnrect.UpperLeftCorner.X += CellWidthPadding;
-		font->draw(text, columnrect, skin->getColor(EGDC_BUTTON_TEXT), false, true, &AbsoluteClippingRect);
+		font->draw(text, columnrect, skin->getColor( IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), false, true, &tableRect);
 
+		// draw icon for active column tab
 		if ( (s32)i == ActiveTab )
 		{
 			if ( CurrentOrdering == EGOM_ASCENDING )
 			{
 				columnrect.UpperLeftCorner.X = columnrect.LowerRightCorner.X - CellWidthPadding - ARROW_PAD / 2 + 2;
 				columnrect.UpperLeftCorner.Y += 7;
-				skin->drawIcon(this,EGDI_CURSOR_UP,columnrect.UpperLeftCorner);
+				skin->drawIcon(this,EGDI_CURSOR_UP,columnrect.UpperLeftCorner,0,0,false,&tableRect);
 			}
 			else
 			{
 				columnrect.UpperLeftCorner.X = columnrect.LowerRightCorner.X - CellWidthPadding - ARROW_PAD / 2 + 2;
 				columnrect.UpperLeftCorner.Y += 7;
-				skin->drawIcon(this,EGDI_CURSOR_DOWN,columnrect.UpperLeftCorner);
+				skin->drawIcon(this,EGDI_CURSOR_DOWN,columnrect.UpperLeftCorner,0,0,false,&tableRect);
 			}
 		}
 
 		pos += colWidth;
 	}
 
-	core::rect<s32> columnrect(pos, frameRect.UpperLeftCorner.Y, frameRect.LowerRightCorner.X - skin->getSize(EGDS_SCROLLBAR_SIZE), headerFinalPosition);
-	skin->draw3DButtonPaneStandard(this, columnrect, &AbsoluteClippingRect);
+	// fill up header background up to the right side
+	core::rect<s32> columnrect(pos, tableRect.UpperLeftCorner.Y, tableRect.LowerRightCorner.X , headerBottom);
+	skin->draw3DButtonPaneStandard(this, columnrect, &tableRect);
 
 	IGUIElement::draw();
 }
 
 
-void CGUITable::breakText(core::stringw &text, u32 cellWidth )
+void CGUITable::breakText(const core::stringw &text, core::stringw & brokenText, u32 cellWidth)
 {
 	IGUISkin* skin = Environment->getSkin();
 
@@ -716,69 +1015,178 @@ void CGUITable::breakText(core::stringw &text, u32 cellWidth )
 	}
 
 	if ( i < size )
-		text = lineDots + L"...";
+		brokenText = lineDots + L"...";
 	else
-		text = line;
+		brokenText = line;
+}
+
+//! Set some flags influencing the layout of the table
+void CGUITable::setDrawFlags(s32 flags)
+{
+	DrawFlags = flags;
+}
+
+//! Get the flags which influence the layout of the table
+s32 CGUITable::getDrawFlags() const
+{
+	return DrawFlags;
 }
 
 
-//! Writes attributes of the object.
-//! Implement this to expose the attributes of your scene node animator for
-//! scripting languages, editors, debuggers or xml serialization purposes.
+//! Writes attributes of the element.
 void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
-	IGUIElement::serializeAttributes(out, options);
+	IGUITable::serializeAttributes(out, options);
 
-	core::stringc tmp, tmp2;
-	out->addInt("Columns", Columns.size());
-	for (u32 i=0; i < Columns.size(); ++i)
+	out->addInt("ColumnCount", Columns.size());
+	u32 i;
+	for (i=0;i<Columns.size(); ++i)
 	{
-		tmp = "Column"; tmp += i; tmp += ".";
-		tmp2 = tmp + "Name";
-		out->addString(tmp2.c_str(), Columns[i].name.c_str());
+		core::stringc label;
 
-		tmp2 = tmp + "Width";
-		out->addInt(tmp2.c_str(), Columns[i].width);
-
-		tmp2 = tmp + "CustomOrdering";
-		out->addBool(tmp2.c_str(), Columns[i].useCustomOrdering);
+		label = "Column"; label += i; label += "name";
+		out->addString(label.c_str(), Columns[i].Name.c_str() );
+		label = "Column"; label += i; label += "color";
+		out->addColor(label.c_str(), Columns[i].TextColor );
+		label = "Column"; label += i; label += "width";
+		out->addInt(label.c_str(), Columns[i].Width );
+		label = "Column"; label += i; label += "OrderingMode";
+		out->addEnum(label.c_str(), Columns[i].OrderingMode, GUIColumnOrderingNames);
 	}
+
+	out->addInt("RowCount", Rows.size());
+	for (i=0;i<Rows.size(); ++i)
+	{
+		core::stringc label;
+
+		// Height currently not used and could be recalculated anyway
+		//label = "Row"; label += i; label += "height";
+		//out->addInt(label.c_str(), Rows[i].Height );
+
+		label = "Row"; label += i; label += "ItemCount";
+		out->addInt(label.c_str(), Rows[i].Items.size());
+		u32 c;
+		for ( c=0; c < Rows[i].Items.size(); ++c )
+		{
+			label = "Row"; label += i; label += "cell"; label += c; label += "text";
+			out->addString(label.c_str(), Rows[i].Items[c].Text.c_str() );
+			// core::stringw BrokenText;	// can be recalculated
+			label = "Row"; label += i; label += "cell"; label += c; label += "color";
+			out->addColor(label.c_str(), Rows[i].Items[c].Color );
+			// void *data;	// can't be serialized
+		}
+	}
+
+	// s32 ItemHeight;	// can be calculated
+	// TotalItemHeight	// calculated
+	// TotalItemWidth	// calculated
+	// gui::IGUIFont* Font; // font is just the current font from environment
+	// gui::IGUIScrollBar* VerticalScrollBar;		// not serialized
+	// gui::IGUIScrollBar* HorizontalScrollBar;		// not serialized
+
+	out->addBool ("Clip", Clip);
+	out->addBool ("DrawBack", DrawBack);
+	out->addBool ("MoveOverSelect", MoveOverSelect);
+	
+	// s32  CurrentResizedColumn;	// runtime info - depends on user action
+	out->addBool ("ResizableColumns", ResizableColumns);
+
+	// s32 Selected;	// runtime info - depends on user action
+	out->addInt("CellWidthPadding", CellWidthPadding );
+	out->addInt("CellHeightPadding", CellHeightPadding );
+	// s32 ActiveTab;	// runtime info - depends on user action
+	// bool Selecting;	// runtime info - depends on user action
+	out->addEnum("CurrentOrdering", CurrentOrdering, GUIOrderingModeNames);
+	out->addInt("DrawFlags", DrawFlags);
 }
 
-//! Reads attributes of the object.
-//! Implement this to set the attributes of your scene node animator for
-//! scripting languages, editors, debuggers or xml deserialization purposes.
+//! Reads attributes of the element
 void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	// clear everything
-	clear();
+	IGUITable::deserializeAttributes(in, options);
 
-	IGUIElement::deserializeAttributes(in , options);
-
-	// add columns
-	core::stringc tmp, tmp2;
-	u32 count = in->getAttributeAsInt("Columns");
-	for (u32 i=0; i < count; ++i)
+	Columns.clear();
+	u32 columnCount = in->getAttributeAsInt("ColumnCount");
+	u32 i;
+	for (i=0;i<columnCount; ++i)
 	{
-		tmp = "Column"; tmp += i; tmp += ".";
-		tmp2 = tmp + "Name";
-		addColumn(in->getAttributeAsStringW(tmp2.c_str()).c_str());
+		core::stringc label;
+		Column column;
 
-		tmp2 = tmp + "Width";
-		setColumnWidth(i, in->getAttributeAsInt(tmp2.c_str()));
+		label = "Column"; label += i; label += "name";
+		column.Name = core::stringw(in->getAttributeAsString(label.c_str()).c_str());
+		label = "Column"; label += i; label += "color";
+		column.TextColor = in->getAttributeAsColor(label.c_str());
+		label = "Column"; label += i; label += "width";
+		column.Width = in->getAttributeAsInt(label.c_str());
+		label = "Column"; label += i; label += "OrderingMode";
+		column.OrderingMode = (EGUI_COLUMN_ORDERING) in->getAttributeAsEnumeration(label.c_str(), GUIColumnOrderingNames);
 
-		tmp2 = tmp + "CustomOrdering";
-		setColumnCustomOrdering(i, in->getAttributeAsBool(tmp2.c_str()));
+		Columns.push_back(column);
 	}
+
+	Rows.clear();
+	u32 rowCount = in->getAttributeAsInt("RowCount");
+	for (i=0;i<rowCount; ++i)
+	{
+		core::stringc label;
+
+		Row row;
+
+		// Height currently not used and could be recalculated anyway
+		//label = "Row"; label += i; label += "height";
+		//row.Height = in->getAttributeAsInt(label.c_str() );
+
+		Rows.push_back(row);
+
+		label = "Row"; label += i; label += "ItemCount";
+		u32 itemCount = in->getAttributeAsInt(label.c_str());
+		u32 c;
+		for ( c=0; c < itemCount; ++c )
+		{
+			Cell cell;
+
+			label = "Row"; label += i; label += "cell"; label += c; label += "text";
+			cell.Text = core::stringw(in->getAttributeAsString(label.c_str()).c_str());
+			breakText( cell.Text, cell.BrokenText, Columns[c].Width );
+			label = "Row"; label += i; label += "cell"; label += c; label += "color";
+			cell.Color = in->getAttributeAsColor(label.c_str());
+			cell.Data = NULL;
+
+			Rows[Rows.size()-1].Items.push_back(cell);
+		}
+	}
+
+	ItemHeight = 0;			// calculated
+	TotalItemHeight = 0;	// calculated
+	TotalItemWidth = 0;		// calculated
+
+	// force font recalculation
+	if ( Font )
+	{
+		Font->drop();
+		Font = 0;
+	}
+
+	Clip = in->getAttributeAsBool("Clip");
+	DrawBack = in->getAttributeAsBool("DrawBack");
+	MoveOverSelect = in->getAttributeAsBool("MoveOverSelect");
+	
+	CurrentResizedColumn = -1;
+	ResizeStart = 0;
+	ResizableColumns = in->getAttributeAsBool("ResizableColumns");
+
+	Selected = -1;
+	CellWidthPadding = in->getAttributeAsInt("CellWidthPadding");
+	CellHeightPadding = in->getAttributeAsInt("CellHeightPadding");
+	ActiveTab = -1;
+	Selecting = false;
+
+	CurrentOrdering = (EGUI_ORDERING_MODE) in->getAttributeAsEnumeration("CurrentOrdering", GUIOrderingModeNames);
+	DrawFlags = in->getAttributeAsInt("DrawFlags");
+
+	refreshControls();
 }
-
-
-
-
-
 
 } // end namespace gui
 } // end namespace irr
-
-#endif // _IRR_COMPILE_WITH_GUI_
-
