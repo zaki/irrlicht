@@ -23,7 +23,7 @@ namespace gui
 	{
 	public:
 		//! constructor
-		CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
+		CGUITable(IGUIEnvironment* environment, IGUIElement* parent, 
 			s32 id, core::rect<s32> rectangle, bool clip=true,
 			bool drawBack=false, bool moveOverSelect=true);
 
@@ -31,15 +31,19 @@ namespace gui
 		~CGUITable();
 
 		//! Adds a column
-		virtual void addColumn(const wchar_t* caption, s32 id=-1);
+		//! If columnIndex is outside the current range, do push new colum at the end
+		virtual void addColumn(const wchar_t* caption, s32 columnIndex=-1);
+
+		//! remove a column from the table
+		virtual void removeColumn(u32 columnIndex);
 
 		//! Returns the number of columns in the table control
 		virtual s32 getColumnCount() const;
 
 		//! Makes a column active. This will trigger an ordering process.
 		/** \param idx: The id of the column to make active.
-			\return Returns true if successful. */
-		virtual bool setActiveColumn(s32 idx);
+		 \return Returns true if successful. */
+		virtual bool setActiveColumn(s32 columnIndex, bool doOrder=false);
 
 		//! Returns which header is currently active
 		virtual s32 getActiveColumn() const;
@@ -49,14 +53,20 @@ namespace gui
 
 		//! set a column width
 		virtual void setColumnWidth(u32 columnIndex, u32 width);
+		
+		//! columns can be resized by drag 'n drop
+		virtual void setResizableColumns(bool resizable);
+		
+		//! can columns be resized by dran 'n drop?
+		virtual bool hasResizableColumns() const;
 
-		//! This tells the table control whether is should send an
-		//! EGET_TABLE_HEADER_CHANGED message or not when a column
-		//! header is clicked. If set to false, the table control will
-		//! use a default alphabetical ordering scheme.
+		//! This tells the table control which ordering mode should be used when 
+		//! a column header is clicked. 
 		/** \param columnIndex: The index of the column header.
-		\param state: If true, an EGET_TABLE_HEADER_CHANGED message will be sent.*/
-		virtual void setColumnCustomOrdering(u32 columnIndex, bool state);
+		\param state: If true, a EGET_TABLE_HEADER_CHANGED message will be sent and you can order the table data as you whish.*/
+		//! \param mode: One of the modes defined in EGUI_COLUMN_ORDERING 
+		virtual void setColumnOrdering(u32 columnIndex, EGUI_COLUMN_ORDERING mode);
+
 
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const;
@@ -87,7 +97,9 @@ namespace gui
 		//! a new row is added or the cells data is changed. This makes
 		//! the system more flexible and doesn't make you pay the cost
 		//! of ordering when adding a lot of rows.
-		virtual void orderRows();
+		//! \param columnIndex: When set to -1 the active column is used. 
+		virtual void orderRows(s32 columnIndex=-1, EGUI_ORDERING_MODE mode=EGOM_NONE);
+
 
 		//! Set the text of a cell
 		virtual void setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text);
@@ -96,6 +108,7 @@ namespace gui
 		virtual void setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, video::SColor color);
 
 		//! Set the data of a cell
+		//! data will not be serialized.
 		virtual void setCellData(u32 rowIndex, u32 columnIndex, void *data);
 
 		//! Set the color of a cell text
@@ -111,10 +124,16 @@ namespace gui
 		virtual void clear();
 
 		//! called if an event happened.
-		virtual bool OnEvent(const SEvent& event);
+		virtual bool OnEvent(SEvent event);
 
 		//! draws the element and its children
 		virtual void draw();
+
+		//! Set flags, as defined in EGUI_TABLE_DRAW_FLAGS, which influence the layout
+		virtual void setDrawFlags(s32 flags);
+
+		//! Get the flags, as defined in EGUI_TABLE_DRAW_FLAGS, which influence the layout
+		virtual s32 getDrawFlags() const;
 
 		//! Writes attributes of the object.
 		//! Implement this to expose the attributes of your scene node animator for
@@ -126,51 +145,66 @@ namespace gui
 		//! scripting languages, editors, debuggers or xml deserialization purposes.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 
+	protected:
+		virtual void refreshControls();
+		virtual void checkScrollbars();
+
 	private:
 
 		struct Cell
 		{
-			core::stringw text;
+			Cell() : Data(0) {}
+			core::stringw Text;
 			core::stringw BrokenText;
-			video::SColor color;
-			void *data;
+			video::SColor Color;
+			void *Data;
 		};
 
 		struct Row
 		{
+			Row() {}
 			core::array<Cell> Items;
-			u32 height;
 		};
 
 		struct Column
 		{
-			core::stringw name;
+			Column() : Width(0), OrderingMode(EGCO_NONE) {}
+			core::stringw Name;
 			video::SColor TextColor;
-			u32 width;
-			bool useCustomOrdering;
+			u32 Width;
+			EGUI_COLUMN_ORDERING OrderingMode;
 		};
 
-		void breakText(core::stringw &text, u32 cellWidth);
+		void breakText(const core::stringw &text, core::stringw & brokenText, u32 cellWidth);
 		void selectNew(s32 ypos, bool onlyHover=false);
 		bool selectColumnHeader(s32 xpos, s32 ypos);
-		void recalculate();
+		bool dragColumnStart(s32 xpos, s32 ypos);
+		bool dragColumnUpdate(s32 xpos);
+		void recalculateHeights();
+		void recalculateWidths();
 
 		core::array< Column > Columns;
 		core::array< Row > Rows;
 		gui::IGUIFont* Font;
-		gui::IGUIScrollBar* ScrollBar;
+		gui::IGUIScrollBar* VerticalScrollBar;
+		gui::IGUIScrollBar* HorizontalScrollBar;
 		bool Clip;
 		bool DrawBack;
 		bool MoveOverSelect;
 		bool Selecting;
+		s32  CurrentResizedColumn;
+		s32  ResizeStart;
+		bool ResizableColumns;
 
 		s32 ItemHeight;
 		s32 TotalItemHeight;
+		s32 TotalItemWidth;
 		s32 Selected;
 		s32 CellHeightPadding;
 		s32 CellWidthPadding;
 		s32 ActiveTab;
 		EGUI_ORDERING_MODE CurrentOrdering;
+		s32 DrawFlags;
 	};
 
 } // end namespace gui

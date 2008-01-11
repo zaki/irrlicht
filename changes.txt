@@ -1,6 +1,8 @@
 -------------------------------------------
 Changes in version 1.5 (... 2008)
 
+ - Added volume light scene node
+
  - Better fix for hires timers on dual core machines by RogerBorg
 
  - added Initial Windows Mobile 6 Version. (30.12.2006 TA)
@@ -37,7 +39,8 @@ Changes in version 1.5 (... 2008)
    Nodes are now solid or transparent. ( but still more states are needed )
 
  - GUI:
-   Finally added StarSonata/Acki patch with table element and TabControl additions.
+   Finally added StarSonata patch with table element and TabControl additions. 
+   Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
 
 -------------------------------------------
 
