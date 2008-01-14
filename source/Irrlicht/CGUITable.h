@@ -124,7 +124,7 @@ namespace gui
 		virtual void clear();
 
 		//! called if an event happened.
-		virtual bool OnEvent(SEvent event);
+		virtual bool CGUITable::OnEvent(const SEvent &event);
 
 		//! draws the element and its children
 		virtual void draw();
