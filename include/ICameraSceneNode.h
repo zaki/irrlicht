@@ -120,17 +120,18 @@ namespace scene
 		virtual bool isInputReceiverEnabled() const = 0;
 
 		//! Returns if a camera is orthogonal.
-		/** This setting does not change anything of the view or projection matrix. However
-		it influences how collision detection and picking is done with this camera. */
 		virtual bool isOrthogonal() const 
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsOrthogonal;
 		} 
 
-		//! Sets if this camera should return if it is orthogonal. 
-		/** This setting does not change anything of the view or projection matrix. However
-		it influences how collision detection and picking is done with this camera. */
+		//! Sets if this camera should return that it is orthogonal. 
+		/** This setting does not change anything of the view or
+			projection matrix. However, the kind of camera
+			influences how collision detection and picking is done
+			and thus can be useful to query.
+		*/
 		void setIsOrthogonal( bool orthogonal )
 		{
 			IsOrthogonal = orthogonal;

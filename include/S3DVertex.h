@@ -77,6 +77,11 @@ struct S3DVertex
 			(Color != other.Color) || (TCoords != other.TCoords));
 	}
 
+	bool operator<(const S3DVertex& other) const
+	{
+		return ((Pos < other.Pos) || ((Pos == other.Pos) && (Normal < other.Normal)) || ((Pos == other.Pos) && (Normal == other.Normal) && (Color < other.Color)) || ((Pos == other.Pos) && (Normal == other.Normal) && (Color == other.Color) && (TCoords < other.TCoords)));
+	}
+
 	E_VERTEX_TYPE getType() const
 	{
 		return EVT_STANDARD;
@@ -140,6 +145,11 @@ struct S3DVertex2TCoords : public S3DVertex
 			(TCoords2 != other.TCoords2));
 	}
 
+	bool operator<(const S3DVertex2TCoords& other) const
+	{
+		return ((static_cast<S3DVertex>(*this) < other) || ((static_cast<S3DVertex>(*this) == other) && (TCoords2 < other.TCoords2)));
+	}
+
 	E_VERTEX_TYPE getType() const
 	{
 		return EVT_2TCOORDS;
@@ -190,6 +200,11 @@ struct S3DVertexTangents : public S3DVertex
 		return ((static_cast<S3DVertex>(*this)!=other) ||
 			(Tangent != other.Tangent) ||
 			(Binormal != other.Binormal));
+	}
+
+	bool operator<(const S3DVertexTangents& other) const
+	{
+		return ((static_cast<S3DVertex>(*this) < other) || ((static_cast<S3DVertex>(*this) == other) && (Tangent < other.Tangent)) || ((static_cast<S3DVertex>(*this) == other) && (Tangent == other.Tangent) && (Binormal < other.Binormal)));
 	}
 
 	E_VERTEX_TYPE getType() const
