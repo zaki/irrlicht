@@ -498,7 +498,7 @@ void CGUITable::refreshControls()
 
 
 //! called if an event happened.
-bool CGUITable::OnEvent(SEvent event)
+bool CGUITable::OnEvent(const SEvent &event)
 {
 
 	switch(event.EventType)

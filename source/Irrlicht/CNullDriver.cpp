@@ -143,27 +143,27 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 //! destructor
 CNullDriver::~CNullDriver()
 {
-	// delete file system
-
+	// drop file system
 	if (FileSystem)
 		FileSystem->drop();
 
 	// delete textures
-
 	deleteAllTextures();
 
 	// delete surface loader
-
 	u32 i;
 	for (i=0; i<SurfaceLoader.size(); ++i)
 		SurfaceLoader[i]->drop();
 
 	// delete surface writer
-
 	for (i=0; i<SurfaceWriter.size(); ++i)
 		SurfaceWriter[i]->drop();
 
+	// delete material renderers
 	deleteMaterialRenders();
+
+	// delete hardware mesh buffers
+	removeAllHardwareBuffers();
 }
 
 
@@ -1303,11 +1303,8 @@ void CNullDriver::removeHardwareBuffer(const scene::IMeshBuffer* mb)
 //! Remove all hardware buffers
 void CNullDriver::removeAllHardwareBuffers()
 {
-	core::map<const scene::IMeshBuffer*,SHWBufferLink*>::ParentLastIterator Iterator=HWBufferMap.getParentLastIterator();
-
-	for (;!Iterator.atEnd();Iterator++)
-		deleteHardwareBuffer(Iterator.getNode()->getValue());
-
+	while (HWBufferMap.size())
+		deleteHardwareBuffer(HWBufferMap.getRoot()->getValue());
 }
 
 bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
