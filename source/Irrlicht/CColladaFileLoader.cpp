@@ -56,6 +56,9 @@ namespace scene
 	const core::stringc scaleNodeName =        "scale";
 	const core::stringc translateNodeName =    "translate";
 	const core::stringc skewNodeName =         "skew";
+	const core::stringc bboxNodeName =         "boundingbox";
+	const core::stringc minNodeName =          "min";
+	const core::stringc maxNodeName =          "max";
 	const core::stringc instanceNodeName =     "instance";
 
 	const core::stringc paramTagName =         "param";
@@ -389,14 +392,50 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 
 	// read the scene
 
+	core::matrix4 transform; // transformation of this node
+	core::aabbox3df bbox;
+	scene::IDummyTransformationSceneNode* node = 0;
+
 	while(reader->read())
 	if (reader->getNodeType() == io::EXN_ELEMENT)
 	{
+		if (lookatNodeName == reader->getNodeName())
+			transform *= readLookAtNode(reader);
+		else
+		if (matrixNodeName == reader->getNodeName())
+			transform *= readMatrixNode(reader);
+		else
+		if (perspectiveNodeName == reader->getNodeName())
+			transform *= readPerspectiveNode(reader);
+		else
+		if (rotateNodeName == reader->getNodeName())
+			transform *= readRotateNode(reader);
+		else
+		if (scaleNodeName == reader->getNodeName())
+			transform *= readScaleNode(reader);
+		else
+		if (translateNodeName == reader->getNodeName())
+			transform *= readTranslateNode(reader);
+		else
+		if (skewNodeName == reader->getNodeName())
+			transform *= readSkewNode(reader);
+		else
+		if (bboxNodeName == reader->getNodeName())
+			readBboxNode(reader, bbox);
+		else
 		if (nodeSectionName == reader->getNodeName())
-			readNodeSection(reader, SceneManager->getRootSceneNode());
+		{
+			// create dummy node if there is none yet.
+			if (!node)
+				node = SceneManager->addDummyTransformationSceneNode(SceneManager->getRootSceneNode());
+
+			readNodeSection(reader, node);
+		}
 		else
 			skipSection(reader, true); // ignore all other sections
 	}
+	if (node)
+		node->getRelativeTransformationMatrix() = transform;
 }
 
 
@@ -426,11 +465,13 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 
 	core::stringc name = reader->getAttributeValue("name"); // name of the node
 	core::matrix4 transform; // transformation of this node
+	core::aabbox3df bbox;
 	scene::ISceneNode* node = 0; // instance
 
 	// read the node
 
 	while(reader->read())
+	{
 	if (reader->getNodeType() == io::EXN_ELEMENT)
 	{
 		if (lookatNodeName == reader->getNodeName())
@@ -453,6 +494,9 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 		else
 		if (skewNodeName == reader->getNodeName())
 			transform *= readSkewNode(reader);
+		else
+		if (bboxNodeName == reader->getNodeName())
+			readBboxNode(reader, bbox);
 		else
 		if (instanceNodeName == reader->getNodeName())
 		{
@@ -497,17 +541,14 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 		if (nodeSectionName == reader->getNodeName())
 			break;
 	}
+	}
 
 	if (node)
 	{
-		// TODO: set transformation correctly into node.
-		// currently this isn't done correctly. Need to get transformation,
-		// rotation and scale from the matrix.
-		const core::vector3df& trans = transform.getTranslation();
-		const core::vector3df& rot = transform.getRotationDegrees();
-
-		node->setPosition(trans);
-		node->setRotation(rot);
+		// set transformation correctly into node.
+		node->setPosition(transform.getTranslation());
+		node->setRotation(transform.getRotationDegrees());
+		node->setScale(transform.getScale());
 		node->updateAbsolutePosition();
 
 		node->setName(name.c_str());
@@ -537,6 +578,7 @@ core::matrix4 CColladaFileLoader::readLookAtNode(io::IXMLReaderUTF8* reader)
 	return mat;
 }
 
+
 //! reads a <skew> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 {
@@ -548,15 +590,84 @@ core::matrix4 CColladaFileLoader::readSkewNode(io::IXMLReaderUTF8* reader)
 	if (reader->isEmptyElement())
 		return mat;
 
-	f32 floats[7];
+	f32 floats[7]; // angle rotation-axis translation-axis
 	readFloatsInsideElement(reader, floats, 7);
 
-	// TODO: build skew matrix from these 7 floats
+	// build skew matrix from these 7 floats
+	core::quaternion q;
+	q.fromAngleAxis(floats[0]*core::DEGTORAD, core::vector3df(floats[1], floats[2], floats[3]));
+	q.getMatrix(mat);
 
-	os::Printer::log("COLLADA loader warning: <skew> not implemented yet.", ELL_WARNING);
+	if (floats[4]==1.f) // along x-axis
+	{
+		mat[4]=0.f;
+		mat[6]=0.f;
+		mat[8]=0.f;
+		mat[9]=0.f;
+	}
+	else
+	if (floats[5]==1.f) // along y-axis
+	{
+		mat[1]=0.f;
+		mat[2]=0.f;
+		mat[8]=0.f;
+		mat[9]=0.f;
+	}
+	else
+	if (floats[6]==1.f) // along z-axis
+	{
+		mat[1]=0.f;
+		mat[2]=0.f;
+		mat[4]=0.f;
+		mat[6]=0.f;
+	}
 
 	return mat;
 }
+
+
+//! reads a <boundingbox> element and its content and stores it in bbox
+void CColladaFileLoader::readBboxNode(io::IXMLReaderUTF8* reader,
+		core::aabbox3df& bbox)
+{
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA reading boundingbox node");
+	#endif
+
+	bbox.reset(core::aabbox3df());
+
+	if (reader->isEmptyElement())
+		return;
+
+	f32 floats[3];
+
+	while(reader->read())
+	{
+		if (reader->getNodeType() == io::EXN_ELEMENT)
+		{
+			if (minNodeName == reader->getNodeName())
+			{
+				readFloatsInsideElement(reader, floats, 3);
+				bbox.MinEdge.set(floats[0], floats[1], floats[2]);
+			}
+			else
+			if (maxNodeName == reader->getNodeName())
+			{
+				readFloatsInsideElement(reader, floats, 3);
+				bbox.MaxEdge.set(floats[0], floats[1], floats[2]);
+			}
+			else
+				skipSection(reader, true); // ignore all other sections
+		}
+		else
+		if (reader->getNodeType() == io::EXN_ELEMENT_END)
+		{
+			if (bboxNodeName == reader->getNodeName())
+				break;
+		}
+	}
+}
+
 
 //! reads a <matrix> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
@@ -573,6 +684,7 @@ core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 
 	return mat;
 }
+
 
 //! reads a <perspective> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readPerspectiveNode(io::IXMLReaderUTF8* reader)
@@ -595,6 +707,7 @@ core::matrix4 CColladaFileLoader::readPerspectiveNode(io::IXMLReaderUTF8* reader
 	return mat;
 }
 
+
 //! reads a <rotate> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 {
@@ -609,9 +722,11 @@ core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 	f32 floats[4];
 	readFloatsInsideElement(reader, floats, 4);
 
-	core::quaternion q(floats[0], floats[1], floats[2], floats[3]);
+	core::quaternion q;
+	q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[1], floats[2]));
 	return q.getMatrix();
 }
+
 
 //! reads a <scale> element and its content and creates a matrix from it
 core::matrix4 CColladaFileLoader::readScaleNode(io::IXMLReaderUTF8* reader)
@@ -651,6 +766,7 @@ core::matrix4 CColladaFileLoader::readTranslateNode(io::IXMLReaderUTF8* reader)
 
 	return mat;
 }
+
 
 //! reads a <instance> node and creates a scene node from it
 void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent,

@@ -418,11 +418,8 @@ namespace scene
 		// Do Not call ISceneNode::OnRegisterSceneNode ( ), this node should have no children
 
 		// Determine the camera rotation, based on the camera direction.
-		core::line3d<f32> line;
-		line.start = SceneManager->getActiveCamera()->getAbsolutePosition();
-		line.end = SceneManager->getActiveCamera()->getTarget();
-		core::vector3df cameraRotation = line.getVector().getHorizontalAngle();
-		core::vector3df cameraPosition = SceneManager->getActiveCamera()->getPosition ( );
+		const core::vector3df cameraPosition = SceneManager->getActiveCamera()->getAbsolutePosition();
+		const core::vector3df cameraRotation = core::line3d<f32>(cameraPosition, SceneManager->getActiveCamera()->getTarget()).getVector().getHorizontalAngle();
 
 		// Only check on the Camera's Y Rotation
 		if (!ForceRecalculation)
@@ -449,7 +446,7 @@ namespace scene
 		{
 			if( frustum->getBoundingBox().intersectsWithBox( TerrainData.Patches[j].BoundingBox ) )
 			{
-				f32 distance = (cameraPosition.X - TerrainData.Patches[j].Center.X) * (cameraPosition.X - TerrainData.Patches[j].Center.X) +
+				const f32 distance = (cameraPosition.X - TerrainData.Patches[j].Center.X) * (cameraPosition.X - TerrainData.Patches[j].Center.X) +
 					(cameraPosition.Y - TerrainData.Patches[j].Center.Y) * (cameraPosition.Y - TerrainData.Patches[j].Center.Y) +
 					(cameraPosition.Z - TerrainData.Patches[j].Center.Z) * (cameraPosition.Z - TerrainData.Patches[j].Center.Z);
 

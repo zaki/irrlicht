@@ -104,6 +104,7 @@ namespace core
 			const f32 ac_bb = (a*c)-(b*b);
 			f32 z = x+y-ac_bb;
 
+			// return sign(z) && !(sign(x)||sign(y))
 			return (( (IR(z)) & ~((IR(x))|(IR(y))) ) & 0x80000000)!=0;
 		}
 

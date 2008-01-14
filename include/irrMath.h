@@ -102,7 +102,7 @@ namespace core
 	template<class T>
 	inline T lerp(const T& a, const T& b, const f32 t)
 	{
-		return (a*(1.f-t)) + (b*t);
+		return (T)(a*(1.f-t)) + (b*t);
 	}
 
 	//! clamps a value between low and high

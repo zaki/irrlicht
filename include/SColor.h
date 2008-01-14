@@ -285,6 +285,10 @@ namespace video
 		//! \return Returns true if the colors are different, and false if they are the same.
 		inline bool operator!=(const SColor& other) const { return other.color != color; }
 
+		//! comparison operator
+		//! \return Returns true if this color is smaller than the other one
+		inline bool operator<(const SColor& other) const { return (color < other.color); }
+
 		//! Adds two colors
 		inline SColor operator+(const SColor& other) const
 		{

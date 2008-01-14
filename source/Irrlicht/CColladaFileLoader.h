@@ -199,6 +199,9 @@ private:
 	//! reads a <skew> element and its content and creates a matrix from it
 	core::matrix4 readSkewNode(io::IXMLReaderUTF8* reader);
 
+	//! reads a <boundingbox> element and its content and stores it in bbox
+	void readBboxNode(io::IXMLReaderUTF8* reader, core::aabbox3df& bbox);
+
 	//! reads a <scale> element and its content and creates a matrix from it
 	core::matrix4 readScaleNode(io::IXMLReaderUTF8* reader);
 

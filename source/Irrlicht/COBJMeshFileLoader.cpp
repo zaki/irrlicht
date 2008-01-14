@@ -12,6 +12,7 @@
 #include "IReadFile.h"
 #include "fast_atof.h"
 #include "coreutil.h"
+#include "irrMap.h"
 
 namespace irr
 {
@@ -70,9 +71,10 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	core::array<core::vector2df> textureCoordBuffer;
 	core::array<core::vector3df> normalsBuffer;
 	SObjMtl * currMtl = new SObjMtl();
-	currMtl->name="";
+	currMtl->Name="";
 	materials.push_back(currMtl);
 	u32 smoothingGroup=0;
+	core::map<video::S3DVertex, int> vertMap;
 
 	// ********************************************************************
 	// Patch to locate the file in the same folder as the .obj.
@@ -93,21 +95,21 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	// end of mtl folder patch
 	// ********************************************************************
 
-	c8* pBuf = new c8[filesize];
-	memset(pBuf, 0, filesize);
-	file->read((void*)pBuf, filesize);
-	const c8* const pBufEnd = pBuf+filesize;
+	c8* buf = new c8[filesize];
+	memset(buf, 0, filesize);
+	file->read((void*)buf, filesize);
+	const c8* const bufEnd = buf+filesize;
 
 	// Process obj information
-	const c8* bufPtr = pBuf;
-	while(bufPtr != pBufEnd)
+	const c8* bufPtr = buf;
+	while(bufPtr != bufEnd)
 	{
 		switch(bufPtr[0])
 		{
 		case 'm':	// mtllib (material)
 		{
 			c8 name[WORD_BUFFER_LENGTH];
-			bufPtr = goAndCopyNextWord(name, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+			bufPtr = goAndCopyNextWord(name, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 			readMTL(name, obj_relpath);
 		}
 			break;
@@ -118,7 +120,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			case ' ':          // vertex
 				{
 					core::vector3df vec;
-					bufPtr = readVec3(bufPtr, vec, pBufEnd);
+					bufPtr = readVec3(bufPtr, vec, bufEnd);
 					vertexBuffer.push_back(vec);
 				}
 				break;
@@ -126,7 +128,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			case 'n':       // normal
 				{
 					core::vector3df vec;
-					bufPtr = readVec3(bufPtr, vec, pBufEnd);
+					bufPtr = readVec3(bufPtr, vec, bufEnd);
 					normalsBuffer.push_back(vec);
 				}
 				break;
@@ -134,7 +136,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			case 't':       // texcoord
 				{
 					core::vector2df vec;
-					bufPtr = readVec2(bufPtr, vec, pBufEnd);
+					bufPtr = readVec2(bufPtr, vec, bufEnd);
 					textureCoordBuffer.push_back(vec);
 				}
 				break;
@@ -149,7 +151,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		case 's': // smoothing can be a group or off (equiv. to 0)
 			{
 				c8 smooth[WORD_BUFFER_LENGTH];
-				bufPtr = goAndCopyNextWord(smooth, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+				bufPtr = goAndCopyNextWord(smooth, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 				if (core::stringc("off")==smooth)
 					smoothingGroup=0;
 				else
@@ -161,12 +163,12 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			// get name of material
 			{
 				c8 matName[WORD_BUFFER_LENGTH];
-				bufPtr = goAndCopyNextWord(matName, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+				bufPtr = goAndCopyNextWord(matName, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 				// retrieve the material
-				SObjMtl *pUseMtl = findMtl(matName);
+				SObjMtl *useMtl = findMtl(matName);
 				// only change material if we found it
-				if (pUseMtl)
-					currMtl = pUseMtl;
+				if (useMtl)
+					currMtl = useMtl;
 			}
 			break;
 
@@ -174,17 +176,17 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		{
 			c8 vertexWord[WORD_BUFFER_LENGTH]; // for retrieving vertex data
 			video::S3DVertex v;
-			u32 currentVertexCount = currMtl->Meshbuffer->Vertices.size();
-			u32 facePointCount = 0;	// number of vertices in this face
-
 			// Assign vertex color from currently active material's diffuse colour
 			if (currMtl)
 				v.Color = currMtl->Meshbuffer->Material.DiffuseColor;
 
 			// get all vertices data in this face (current line of obj file)
-			const core::stringc wordBuffer = copyLine(bufPtr, pBufEnd);
+			const core::stringc wordBuffer = copyLine(bufPtr, bufEnd);
 			const c8* linePtr = wordBuffer.c_str();
 			const c8* const endPtr = linePtr+wordBuffer.size();
+
+			core::array<int> faceCorners;
+			faceCorners.reallocate(32); // should be large enough
 
 			// read in all vertices
 			linePtr = goNextWord(linePtr, endPtr);
@@ -197,7 +199,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				Idx[1] = Idx[2] = -1;
 
 				// read in next vertex's data
-				u32 wlength = copyWord(vertexWord, linePtr, WORD_BUFFER_LENGTH, pBufEnd);
+				u32 wlength = copyWord(vertexWord, linePtr, WORD_BUFFER_LENGTH, bufEnd);
 				// this function will also convert obj's 1-based index to c++'s 0-based index
 				retrieveVertexIndices(vertexWord, Idx, vertexWord+wlength+1, vertexBuffer.size(), textureCoordBuffer.size(), normalsBuffer.size());
 				v.Pos = vertexBuffer[Idx[0]];
@@ -209,24 +211,36 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 					v.Normal = normalsBuffer[Idx[2]];
 				else
 					v.Normal.set(0.0f,0.0f,0.0f);
-				currMtl->Meshbuffer->Vertices.push_back(v);
-				++facePointCount;
+
+				int vertLocation;
+				core::map<video::S3DVertex, int>::Node* n = vertMap.find(v);
+				if (n)
+				{
+					vertLocation = n->getValue();
+				}
+				else
+				{
+					currMtl->Meshbuffer->Vertices.push_back(v);
+					vertLocation = currMtl->Meshbuffer->Vertices.size() -1;
+					vertMap.insert(v, vertLocation);
+				}
+				
+				faceCorners.push_back(vertLocation);
 
 				// go to next vertex
 				linePtr = goNextWord(linePtr, endPtr);
 			}
 
-			// Add indices for first 3 vertices
-			currMtl->Meshbuffer->Indices.push_back( currentVertexCount );
-			currMtl->Meshbuffer->Indices.push_back( ( facePointCount - 1 ) + currentVertexCount );
-			currMtl->Meshbuffer->Indices.push_back( ( facePointCount - 2 ) + currentVertexCount );
-			// Add indices for subsequent vertices
-			for ( u32 i = 0; i < facePointCount - 3; ++i )
+			// triangulate the face
+			for ( u32 i = 1; i < faceCorners.size() - 1; ++i )
 			{
-				currMtl->Meshbuffer->Indices.push_back( currentVertexCount );
-				currMtl->Meshbuffer->Indices.push_back( ( facePointCount - 2 - i ) + currentVertexCount );
-				currMtl->Meshbuffer->Indices.push_back( ( facePointCount - 3 - i ) + currentVertexCount );
+				// Add a triangle
+				currMtl->Meshbuffer->Indices.push_back( faceCorners[i+1] );
+				currMtl->Meshbuffer->Indices.push_back( faceCorners[i] );
+				currMtl->Meshbuffer->Indices.push_back( faceCorners[0] );
 			}
+			faceCorners.set_used(0); // fast clear
+			faceCorners.reallocate(32);
 		}
 		break;
 
@@ -235,8 +249,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			break;
 		}	// end switch(bufPtr[0])
 		// eat up rest of line
-		bufPtr = goNextLine(bufPtr, pBufEnd);
-	}	// end while(bufPtr && (bufPtr-pBuf<filesize))
+		bufPtr = goNextLine(bufPtr, bufEnd);
+	}	// end while(bufPtr && (bufPtr-buf<filesize))
 
 	// Combine all the groups (meshbuffers) into the mesh
 	for ( u32 m = 0; m < materials.size(); ++m )
@@ -249,125 +263,125 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	}
 
 	// Create the Animated mesh if there's anything in the mesh
-	SAnimatedMesh* pAM = 0;
+	SAnimatedMesh* animMesh = 0;
 	if ( 0 != mesh->getMeshBufferCount() )
 	{
 		mesh->recalculateBoundingBox();
-		pAM = new SAnimatedMesh();
-		pAM->Type = EAMT_OBJ;
-		pAM->addMesh(mesh);
-		pAM->recalculateBoundingBox();
+		animMesh = new SAnimatedMesh();
+		animMesh->Type = EAMT_OBJ;
+		animMesh->addMesh(mesh);
+		animMesh->recalculateBoundingBox();
 	}
 
 	// Clean up the allocate obj file contents
-	delete [] pBuf;
+	delete [] buf;
 	// more cleaning up
 	cleanUp();
 	mesh->drop();
 
-	return pAM;
+	return animMesh;
 }
 
 
-void COBJMeshFileLoader::readMTL(const c8* pFileName, core::stringc relPath)
+void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 {
 	const u32 WORD_BUFFER_LENGTH = 512;
 
-	io::IReadFile * pMtlReader;
-	if (FileSystem->existFile(pFileName))
-		pMtlReader = FileSystem->createAndOpenFile(pFileName);
+	io::IReadFile * mtlReader;
+	if (FileSystem->existFile(fileName))
+		mtlReader = FileSystem->createAndOpenFile(fileName);
 	else
 		// try to read in the relative path, the .obj is loaded from
-		pMtlReader = FileSystem->createAndOpenFile((relPath + pFileName).c_str());
-	if (!pMtlReader)	// fail to open and read file
+		mtlReader = FileSystem->createAndOpenFile((relPath + fileName).c_str());
+	if (!mtlReader)	// fail to open and read file
 		return;
 
-	const long filesize = pMtlReader->getSize();
+	const long filesize = mtlReader->getSize();
 	if (!filesize)
 		return;
 
-	c8* pBuf = new c8[filesize];
-	pMtlReader->read((void*)pBuf, filesize);
-	const c8* pBufEnd = pBuf+filesize;
+	c8* buf = new c8[filesize];
+	mtlReader->read((void*)buf, filesize);
+	const c8* bufEnd = buf+filesize;
 
-	SObjMtl* pCurrMaterial = 0;
+	SObjMtl* currMaterial = 0;
 
-	const c8* bufPtr = pBuf;
-	while(bufPtr != pBufEnd)
+	const c8* bufPtr = buf;
+	while(bufPtr != bufEnd)
 	{
 		switch(*bufPtr)
 		{
 			case 'n': // newmtl
 			{
 				// if there's an existing material, store it first
-				if ( pCurrMaterial )
-					materials.push_back( pCurrMaterial );
+				if ( currMaterial )
+					materials.push_back( currMaterial );
 
 				// extract new material's name
 				c8 mtlNameBuf[WORD_BUFFER_LENGTH];
-				bufPtr = goAndCopyNextWord(mtlNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+				bufPtr = goAndCopyNextWord(mtlNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 
-				pCurrMaterial = new SObjMtl;
-				pCurrMaterial->name = mtlNameBuf;
+				currMaterial = new SObjMtl;
+				currMaterial->Name = mtlNameBuf;
 			}
 			break;
 			case 'i': // illum - illumination
-			if ( pCurrMaterial )
+			if ( currMaterial )
 			{
 				const u32 COLOR_BUFFER_LENGTH = 16;
 				c8 illumStr[COLOR_BUFFER_LENGTH];
 
-				bufPtr = goAndCopyNextWord(illumStr, bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
-				pCurrMaterial->illumination = (c8)atol(illumStr);
+				bufPtr = goAndCopyNextWord(illumStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
+				currMaterial->Illumination = (c8)atol(illumStr);
 			}
 			break;
 			case 'N': // Ns - shininess
-			if ( pCurrMaterial )
+			if ( currMaterial )
 			{
 				const u32 COLOR_BUFFER_LENGTH = 16;
 				c8 nsStr[COLOR_BUFFER_LENGTH];
 
-				bufPtr = goAndCopyNextWord(nsStr, bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
+				bufPtr = goAndCopyNextWord(nsStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
 				f32 shininessValue = core::fast_atof(nsStr);
 
 				// wavefront shininess is from [0, 1000], so scale for OpenGL
 				shininessValue *= 0.128f;
-				pCurrMaterial->Meshbuffer->Material.Shininess = shininessValue;
+				currMaterial->Meshbuffer->Material.Shininess = shininessValue;
 			}
 			break;
 			case 'K':
-			if ( pCurrMaterial )
+			if ( currMaterial )
 			{
 				switch(bufPtr[1])
 				{
 				case 'd':		// Kd = diffuse
 					{
-						bufPtr = readColor(bufPtr, pCurrMaterial->Meshbuffer->Material.DiffuseColor, pBufEnd);
+						bufPtr = readColor(bufPtr, currMaterial->Meshbuffer->Material.DiffuseColor, bufEnd);
 
 					}
 					break;
 
 				case 's':		// Ks = specular
 					{
-						bufPtr = readColor(bufPtr, pCurrMaterial->Meshbuffer->Material.SpecularColor, pBufEnd);
+						bufPtr = readColor(bufPtr, currMaterial->Meshbuffer->Material.SpecularColor, bufEnd);
 					}
 					break;
 
 				case 'a':		// Ka = ambience
 					{
-						bufPtr=readColor(bufPtr, pCurrMaterial->Meshbuffer->Material.AmbientColor, pBufEnd);
+						bufPtr=readColor(bufPtr, currMaterial->Meshbuffer->Material.AmbientColor, bufEnd);
 					}
 					break;
 				case 'e':		// Ke = emissive
 					{
-						bufPtr=readColor(bufPtr, pCurrMaterial->Meshbuffer->Material.EmissiveColor, pBufEnd);
+						bufPtr=readColor(bufPtr, currMaterial->Meshbuffer->Material.EmissiveColor, bufEnd);
 					}
 					break;
 				}	// end switch(bufPtr[1])
-			}	// end case 'K': if ( 0 != pCurrMaterial )...
+			}	// end case 'K': if ( 0 != currMaterial )...
 			break;
 			case 'm': // texture maps
-			if (pCurrMaterial)
+			if (currMaterial)
 			{
 				u8 type=0; // map_Kd - diffuse texture map
 				if (!strncmp(bufPtr,"map_bump",8))
@@ -378,117 +392,117 @@ void COBJMeshFileLoader::readMTL(const c8* pFileName, core::stringc relPath)
 					type=3;
 				// extract new material's name
 				c8 textureNameBuf[WORD_BUFFER_LENGTH];
-				bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+				bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 				// handle options
 				while (textureNameBuf[0]=='-')
 				{
 					if (!strncmp(bufPtr,"-blendu",7))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 					if (!strncmp(bufPtr,"-blendv",7))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 					if (!strncmp(bufPtr,"-cc",3))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 					if (!strncmp(bufPtr,"-clamp",6))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 					if (!strncmp(bufPtr,"-texres",7))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 					if (!strncmp(bufPtr,"-mm",3))
 					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 					}
 					if (!strncmp(bufPtr,"-o",2))
 					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						// next parameters are optional, so skip rest of loop if no number is found
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
 					}
 					if (!strncmp(bufPtr,"-s",2))
 					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						// next parameters are optional, so skip rest of loop if no number is found
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
 					}
 					if (!strncmp(bufPtr,"-t",2))
 					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						// next parameters are optional, so skip rest of loop if no number is found
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
 					}
 					// get next word
-					bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+					bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 				}
 				if (type==1)
 				{
-					pCurrMaterial->Meshbuffer->Material.MaterialTypeParam=core::fast_atof(textureNameBuf);
-					bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+					currMaterial->Meshbuffer->Material.MaterialTypeParam=core::fast_atof(textureNameBuf);
+					bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 				}
 
-				video::ITexture * pTexture;
+				video::ITexture * texture = 0;
 				if (FileSystem->existFile(textureNameBuf))
-					pTexture = Driver->getTexture( textureNameBuf );
+					texture = Driver->getTexture( textureNameBuf );
 				else
 					// try to read in the relative path, the .obj is loaded from
-					pTexture = Driver->getTexture( (relPath + textureNameBuf).c_str() );
-				if ( pTexture )
+					texture = Driver->getTexture( (relPath + textureNameBuf).c_str() );
+				if ( texture )
 				{
 					if (type==0)
-						pCurrMaterial->Meshbuffer->Material.setTexture(0, pTexture);
+						currMaterial->Meshbuffer->Material.setTexture(0, texture);
 					else if (type==1)
 					{
-						Driver->makeNormalMapTexture(pTexture);
-						pCurrMaterial->Meshbuffer->Material.setTexture(1, pTexture);
-						pCurrMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
+						Driver->makeNormalMapTexture(texture);
+						currMaterial->Meshbuffer->Material.setTexture(1, texture);
+						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
 					}
 					else if (type==2)
 					{
-						pCurrMaterial->Meshbuffer->Material.setTexture(0, pTexture);
-						pCurrMaterial->Meshbuffer->Material.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
+						currMaterial->Meshbuffer->Material.setTexture(0, texture);
+						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
 					}
 					else if (type==3)
 					{
-//						pCurrMaterial->Meshbuffer->Material.Textures[1] = pTexture;
-//						pCurrMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
+//						currMaterial->Meshbuffer->Material.Textures[1] = texture;
+//						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
 					}
 					// Set diffuse material colour to white so as not to affect texture colour
 					// Because Maya set diffuse colour Kd to black when you use a diffuse colour map
 					// But is this the right thing to do?
-					pCurrMaterial->Meshbuffer->Material.DiffuseColor.set(
-						pCurrMaterial->Meshbuffer->Material.DiffuseColor.getAlpha(), 255, 255, 255 );
+					currMaterial->Meshbuffer->Material.DiffuseColor.set(
+						currMaterial->Meshbuffer->Material.DiffuseColor.getAlpha(), 255, 255, 255 );
 				}
 			}
 			break;
 			case 'd': // d - transparency
-			if ( pCurrMaterial )
+			if ( currMaterial )
 			{
 				const u32 COLOR_BUFFER_LENGTH = 16;
 				c8 dStr[COLOR_BUFFER_LENGTH];
 
-				bufPtr = goAndCopyNextWord(dStr, bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
+				bufPtr = goAndCopyNextWord(dStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
 				f32 dValue = core::fast_atof(dStr);
 
-				pCurrMaterial->Meshbuffer->Material.DiffuseColor.setAlpha( (s32)(dValue * 255) );
+				currMaterial->Meshbuffer->Material.DiffuseColor.setAlpha( (s32)(dValue * 255) );
 				if (dValue<1.0f)
-					pCurrMaterial->Meshbuffer->Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+					currMaterial->Meshbuffer->Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 			}
 			break;
 			case 'T':
-			if ( pCurrMaterial )
+			if ( currMaterial )
 			{
 				switch ( bufPtr[1] )
 				{
@@ -498,15 +512,15 @@ void COBJMeshFileLoader::readMTL(const c8* pFileName, core::stringc relPath)
 					c8 greenStr[COLOR_BUFFER_LENGTH];
 					c8 blueStr[COLOR_BUFFER_LENGTH];
 
-					bufPtr = goAndCopyNextWord(redStr,   bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
-					bufPtr = goAndCopyNextWord(greenStr, bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
-					bufPtr = goAndCopyNextWord(blueStr,  bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
+					bufPtr = goAndCopyNextWord(redStr,   bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
+					bufPtr = goAndCopyNextWord(greenStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
+					bufPtr = goAndCopyNextWord(blueStr,  bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
 
 					f32 transparency = ( core::fast_atof(redStr) + core::fast_atof(greenStr) + core::fast_atof(blueStr) ) / 3;
 
-					pCurrMaterial->Meshbuffer->Material.DiffuseColor.setAlpha( (s32)(transparency * 255) );
+					currMaterial->Meshbuffer->Material.DiffuseColor.setAlpha( (s32)(transparency * 255) );
 					if (transparency < 1.0f)
-						pCurrMaterial->Meshbuffer->Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+						currMaterial->Meshbuffer->Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 				}
 			}
 			break;
@@ -514,84 +528,84 @@ void COBJMeshFileLoader::readMTL(const c8* pFileName, core::stringc relPath)
 			break;
 		} // end switch(bufPtr[0])
 		// go to next line
-		bufPtr = goNextLine(bufPtr, pBufEnd);
+		bufPtr = goNextLine(bufPtr, bufEnd);
 	}	// end while (bufPtr)
 
 	// end of file. if there's an existing material, store it
-	if ( pCurrMaterial )
+	if ( currMaterial )
 	{
-		materials.push_back( pCurrMaterial );
-		pCurrMaterial = 0;
+		materials.push_back( currMaterial );
+		currMaterial = 0;
 	}
 
-	delete [] pBuf;
-	pMtlReader->drop();
+	delete [] buf;
+	mtlReader->drop();
 }
 
 //! Read RGB color
-const c8* COBJMeshFileLoader::readColor(const c8* bufPtr, video::SColor& color, const c8* const pBufEnd)
+const c8* COBJMeshFileLoader::readColor(const c8* bufPtr, video::SColor& color, const c8* const bufEnd)
 {
 	const u32 COLOR_BUFFER_LENGTH = 16;
 	c8 colStr[COLOR_BUFFER_LENGTH];
 
 	color.setAlpha(255);
-	bufPtr = goAndCopyNextWord(colStr, bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(colStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
 	color.setRed((s32)(core::fast_atof(colStr) * 255.0f));
-	bufPtr = goAndCopyNextWord(colStr,   bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(colStr,   bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
 	color.setGreen((s32)(core::fast_atof(colStr) * 255.0f));
-	bufPtr = goAndCopyNextWord(colStr,   bufPtr, COLOR_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(colStr,   bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
 	color.setBlue((s32)(core::fast_atof(colStr) * 255.0f));
 	return bufPtr;
 }
 
 
 //! Read 3d vector of floats
-const c8* COBJMeshFileLoader::readVec3(const c8* bufPtr, core::vector3df& vec, const c8* const pBufEnd)
+const c8* COBJMeshFileLoader::readVec3(const c8* bufPtr, core::vector3df& vec, const c8* const bufEnd)
 {
 	const u32 WORD_BUFFER_LENGTH = 256;
 	c8 wordBuffer[WORD_BUFFER_LENGTH];
 
-	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	vec.X=-core::fast_atof(wordBuffer); // change handedness
-	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	vec.Y=core::fast_atof(wordBuffer);
-	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	vec.Z=core::fast_atof(wordBuffer);
 	return bufPtr;
 }
 
 
 //! Read 2d vector of floats
-const c8* COBJMeshFileLoader::readVec2(const c8* bufPtr, core::vector2df& vec, const c8* const pBufEnd)
+const c8* COBJMeshFileLoader::readVec2(const c8* bufPtr, core::vector2df& vec, const c8* const bufEnd)
 {
 	const u32 WORD_BUFFER_LENGTH = 256;
 	c8 wordBuffer[WORD_BUFFER_LENGTH];
 
-	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	vec.X=core::fast_atof(wordBuffer);
-	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	vec.Y=-core::fast_atof(wordBuffer); // change handedness
 	return bufPtr;
 }
 
 
 //! Read boolean value represented as 'on' or 'off'
-const c8* COBJMeshFileLoader::readBool(const c8* bufPtr, bool& tf, const c8* const pBufEnd)
+const c8* COBJMeshFileLoader::readBool(const c8* bufPtr, bool& tf, const c8* const bufEnd)
 {
 	const u32 BUFFER_LENGTH = 8;
 	c8 tfStr[BUFFER_LENGTH];
 
-	bufPtr = goAndCopyNextWord(tfStr, bufPtr, BUFFER_LENGTH, pBufEnd);
+	bufPtr = goAndCopyNextWord(tfStr, bufPtr, BUFFER_LENGTH, bufEnd);
 	tf = strcmp(tfStr, "off") != 0;
 	return bufPtr;
 }
 
 
-COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const c8* pMtlName)
+COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const c8* mtlName)
 {
 	for (u32 i = 0; i < materials.size(); ++i)
 	{
-		if ( materials[i]->name == pMtlName )
+		if ( materials[i]->Name == mtlName )
 			return materials[i];
 	}
 	return 0;
@@ -600,10 +614,10 @@ COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const c8* pMtlName)
 
 
 //! skip space characters and stop on first non-space
-const c8* COBJMeshFileLoader::goFirstWord(const c8* buf, const c8* const pBufEnd)
+const c8* COBJMeshFileLoader::goFirstWord(const c8* buf, const c8* const bufEnd)
 {
 	// skip space characters
-	while((buf != pBufEnd) && core::isspace(*buf))
+	while((buf != bufEnd) && core::isspace(*buf))
 		++buf;
 
 	return buf;
@@ -611,32 +625,32 @@ const c8* COBJMeshFileLoader::goFirstWord(const c8* buf, const c8* const pBufEnd
 
 
 //! skip current word and stop at beginning of next one
-const c8* COBJMeshFileLoader::goNextWord(const c8* buf, const c8* const pBufEnd)
+const c8* COBJMeshFileLoader::goNextWord(const c8* buf, const c8* const bufEnd)
 {
 	// skip current word
-	while(( buf != pBufEnd ) && !core::isspace(*buf))
+	while(( buf != bufEnd ) && !core::isspace(*buf))
 		++buf;
 
-	return goFirstWord(buf, pBufEnd);
+	return goFirstWord(buf, bufEnd);
 }
 
 
 //! Read until line break is reached and stop at the next non-space character
-const c8* COBJMeshFileLoader::goNextLine(const c8* buf, const c8* const pBufEnd)
+const c8* COBJMeshFileLoader::goNextLine(const c8* buf, const c8* const bufEnd)
 {
 	// look for newline characters
-	while(buf != pBufEnd)
+	while(buf != bufEnd)
 	{
 		// found it, so leave
 		if (*buf=='\n' || *buf=='\r')
 			break;
 		++buf;
 	}
-	return goFirstWord(buf, pBufEnd);
+	return goFirstWord(buf, bufEnd);
 }
 
 
-u32 COBJMeshFileLoader::copyWord(c8* outBuf, const c8* const inBuf, u32 outBufLength, const c8* const pBufEnd)
+u32 COBJMeshFileLoader::copyWord(c8* outBuf, const c8* const inBuf, u32 outBufLength, const c8* const bufEnd)
 {
 	if (!outBufLength)
 		return 0;
@@ -649,7 +663,7 @@ u32 COBJMeshFileLoader::copyWord(c8* outBuf, const c8* const inBuf, u32 outBufLe
 	u32 i = 0;
 	while(inBuf[i])
 	{
-		if (core::isspace(inBuf[i]) || &(inBuf[i]) == pBufEnd)
+		if (core::isspace(inBuf[i]) || &(inBuf[i]) == bufEnd)
 			break;
 		++i;
 	}
@@ -663,13 +677,13 @@ u32 COBJMeshFileLoader::copyWord(c8* outBuf, const c8* const inBuf, u32 outBufLe
 }
 
 
-core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* pBufEnd)
+core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* bufEnd)
 {
 	if (!inBuf)
 		return core::stringc();
 
 	const c8* ptr = inBuf;
-	while (ptr<pBufEnd)
+	while (ptr<bufEnd)
 	{
 		if (*ptr=='\n' || *ptr=='\r')
 			break;
@@ -679,59 +693,59 @@ core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* pBufEnd)
 }
 
 
-const c8* COBJMeshFileLoader::goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* pBufEnd)
+const c8* COBJMeshFileLoader::goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* bufEnd)
 {
-	inBuf = goNextWord(inBuf, pBufEnd);
-	copyWord(outBuf, inBuf, outBufLength, pBufEnd);
+	inBuf = goNextWord(inBuf, bufEnd);
+	copyWord(outBuf, inBuf, outBufLength, bufEnd);
 	return inBuf;
 }
 
 
-bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const c8* pBufEnd, u32 vbsize, u32 vtsize, u32 vnsize)
+bool COBJMeshFileLoader::retrieveVertexIndices(c8* vertexData, s32* idx, const c8* bufEnd, u32 vbsize, u32 vtsize, u32 vnsize)
 {
 	c8 word[16] = "";
-	const c8* pChar = goFirstWord(pVertexData, pBufEnd);
+	const c8* p = goFirstWord(vertexData, bufEnd);
 	u32 idxType = 0;	// 0 = posIdx, 1 = texcoordIdx, 2 = normalIdx
 
 	u32 i = 0;
-	while ( pChar != pBufEnd )
+	while ( p != bufEnd )
 	{
-		if ( ( core::isdigit(*pChar)) || (*pChar == '-') )
+		if ( ( core::isdigit(*p)) || (*p == '-') )
 		{
 			// build up the number
-			word[i++] = *pChar;
+			word[i++] = *p;
 		}
-		else if ( *pChar == '/' || *pChar == ' ' || *pChar == '\0' )
+		else if ( *p == '/' || *p == ' ' || *p == '\0' )
 		{
 			// number is completed. Convert and store it
 			word[i] = '\0';
 			// if no number was found index will become 0 and later on -1 by decrement
 			if (word[0]=='-')
 			{
-				pIdx[idxType] = core::strtol10(word+1,0);
-				pIdx[idxType] *= -1;
+				idx[idxType] = core::strtol10(word+1,0);
+				idx[idxType] *= -1;
 				switch (idxType)
 				{
 					case 0:
-						pIdx[idxType] += vbsize;
+						idx[idxType] += vbsize;
 						break;
 					case 1:
-						pIdx[idxType] += vtsize;
+						idx[idxType] += vtsize;
 						break;
 					case 2:
-						pIdx[idxType] += vnsize;
+						idx[idxType] += vnsize;
 						break;
 				}
 			}
 			else
-				pIdx[idxType] = core::strtol10(word,0)-1;
+				idx[idxType] = core::strtol10(word,0)-1;
 
 			// reset the word
 			word[0] = '\0';
 			i = 0;
 
 			// go to the next kind of index type
-			if (*pChar == '/')
+			if (*p == '/')
 			{
 				if ( ++idxType > 2 )
 				{
@@ -743,14 +757,14 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* pVertexData, s32* pIdx, const
 			{
 				// set all missing values to disable (=-1)
 				while (++idxType < 3)
-					pIdx[idxType]=-1;
-				++pChar;
+					idx[idxType]=-1;
+				++p;
 				break; // while
 			}
 		}
 
 		// go to the next char
-		++pChar;
+		++p;
 	}
 
 	return true;

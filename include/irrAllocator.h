@@ -19,8 +19,8 @@ namespace core
 #define DEBUG_CLIENTBLOCK new
 #endif
 
-//!	Very simple allocator implementation, containers using it are able to
-//! be used it across dll boundaries
+//! Very simple allocator implementation, containers using it can
+//! be used across dll boundaries
 template<typename T>
 class irrAllocator
 {

@@ -78,7 +78,8 @@ public:
 		bool HasSkinning;
 		bool HasVertexColors;
 
-		core::array<ISkinnedMesh::SWeight*> Weights;
+		core::array<u32> WeightJoint;
+		core::array<u32> WeightNum;
 	};
 
 private:
