@@ -67,7 +67,6 @@ namespace gui
 		//! \param mode: One of the modes defined in EGUI_COLUMN_ORDERING 
 		virtual void setColumnOrdering(u32 columnIndex, EGUI_COLUMN_ORDERING mode);
 
-
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const;
 
@@ -124,7 +123,7 @@ namespace gui
 		virtual void clear();
 
 		//! called if an event happened.
-		virtual bool CGUITable::OnEvent(const SEvent &event);
+		virtual bool OnEvent(const SEvent &event);
 
 		//! draws the element and its children
 		virtual void draw();
