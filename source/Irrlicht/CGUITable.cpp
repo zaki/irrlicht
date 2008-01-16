@@ -1063,8 +1063,8 @@ void CGUITable::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrit
 		//label = "Row"; label += i; label += "height";
 		//out->addInt(label.c_str(), Rows[i].Height );
 
-		label = "Row"; label += i; label += "ItemCount";
-		out->addInt(label.c_str(), Rows[i].Items.size());
+		//label = "Row"; label += i; label += "ItemCount";
+		//out->addInt(label.c_str(), Rows[i].Items.size());
 		u32 c;
 		for ( c=0; c < Rows[i].Items.size(); ++c )
 		{
@@ -1120,14 +1120,18 @@ void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 		label = "Column"; label += i; label += "width";
 		column.Width = in->getAttributeAsInt(label.c_str());
 		label = "Column"; label += i; label += "OrderingMode";
-		column.OrderingMode = (EGUI_COLUMN_ORDERING) in->getAttributeAsEnumeration(label.c_str(), GUIColumnOrderingNames);
+		
+		column.OrderingMode = EGCO_NONE;
+		s32 co = in->getAttributeAsEnumeration(label.c_str(), GUIColumnOrderingNames);
+		if (co > 0)
+			column.OrderingMode = EGUI_COLUMN_ORDERING(co);
 
 		Columns.push_back(column);
 	}
 
 	Rows.clear();
 	u32 rowCount = in->getAttributeAsInt("RowCount");
-	for (i=0;i<rowCount; ++i)
+	for (i=0; i<rowCount; ++i)
 	{
 		core::stringc label;
 
@@ -1139,10 +1143,10 @@ void CGUITable::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWri
 
 		Rows.push_back(row);
 
-		label = "Row"; label += i; label += "ItemCount";
-		u32 itemCount = in->getAttributeAsInt(label.c_str());
+		//label = "Row"; label += i; label += "ItemCount";
+		//u32 itemCount = in->getAttributeAsInt(label.c_str());
 		u32 c;
-		for ( c=0; c < itemCount; ++c )
+		for ( c=0; c < columnCount; ++c )
 		{
 			Cell cell;
 
