@@ -103,7 +103,7 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 		if (loop)
 			frame = f % Sprites[index].Frames.size();
 		else
-			frame = (f >= Sprites[index].Frames.size()) ? Sprites[index].Frames.size() : f;
+			frame = (f >= Sprites[index].Frames.size()) ? Sprites[index].Frames.size()-1 : f;
 	}
 
 	const video::ITexture* tex = Textures[Sprites[index].Frames[frame].textureNumber];
