@@ -8,7 +8,7 @@ Changes in version 1.5 (... 2008)
  - added Initial Windows Mobile 6 Version. (30.12.2006 TA)
   - Windows Mobile 6 SDK
   - Visual Studio 2005
-		
+
  - Burningvideo: MipMap Selection repaired
 
  - renamed private Driver function getTextureSizeFromImageSize to getTextureSizeFromSurfaceSize
@@ -39,8 +39,10 @@ Changes in version 1.5 (... 2008)
    Nodes are now solid or transparent. ( but still more states are needed )
 
  - GUI:
-   Finally added StarSonata patch with table element and TabControl additions. 
-   Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
+   - Fixed a bug in CGUISpriteBank which caused a crash when a non-looping animated sprite reached the end of its animation.
+   - Modal screens no longer flash invisible children when rejecting a focus change.
+   - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
+
 
 -------------------------------------------
 
