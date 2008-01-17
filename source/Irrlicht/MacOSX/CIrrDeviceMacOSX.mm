@@ -86,17 +86,17 @@ void CIrrDeviceMacOSX::closeDevice()
 {
 	if (_window != NULL)
 	{
-		[_window setIsVisible:FALSE];
+		[(NSWindow *)_window setIsVisible:FALSE];
 
 		if (_oglcontext != NULL)
 		{
-			[_oglcontext clearDrawable];
-			[_oglcontext release];
+			[(NSOpenGLContext *)_oglcontext clearDrawable];
+			[(NSOpenGLContext *)_oglcontext release];
 			_oglcontext = NULL;
 		}
 
-		[_window setReleasedWhenClosed:TRUE];
-		[_window release];
+		[(NSWindow *)_window setReleasedWhenClosed:TRUE];
+		[(NSWindow *)_window release];
 		_window = NULL;
 	}
 	else
@@ -163,14 +163,14 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 
 			if (_oglcontext != NULL)
 			{
-				[_window center];
-				[_window setDelegate:[NSApp delegate]];
-				[_oglcontext setView:[_window contentView]];
-				[_window setAcceptsMouseMovedEvents:TRUE];
-				[_window setIsVisible:TRUE];
-				[_window makeKeyAndOrderFront:nil];
+				[(NSWindow *)_window center];
+				[(NSWindow *)_window setDelegate:[NSApp delegate]];
+				[(NSOpenGLContext *)_oglcontext setView:[(NSWindow *)_window contentView]];
+				[(NSWindow *)_window setAcceptsMouseMovedEvents:TRUE];
+				[(NSWindow *)_window setIsVisible:TRUE];
+				[(NSWindow *)_window makeKeyAndOrderFront:nil];
 
-				_cglcontext = (CGLContextObj) [_oglcontext CGLContextObj];
+				_cglcontext = (CGLContextObj) [(NSOpenGLContext *)_oglcontext CGLContextObj];
 				_width = windowSize.Width;
 				_height = windowSize.Height;
 				result = true;
@@ -250,7 +250,7 @@ void CIrrDeviceMacOSX::setResize(int width,int height)
 {
 	_width = width;
 	_height = height;
-	[_oglcontext update];
+	[(NSOpenGLContext *)_oglcontext update];
 	getVideoDriver()->OnResize(core::dimension2d<s32>(width, height));
 }
 
@@ -319,7 +319,7 @@ bool CIrrDeviceMacOSX::run()
 	{
 		bzero(&ievent,sizeof(ievent));
 
-		switch([event type])
+		switch([(NSEvent *)event type])
 		{
 			case NSKeyDown:
 				postKeyEvent(event,ievent,true);
@@ -364,7 +364,7 @@ bool CIrrDeviceMacOSX::run()
 			case NSScrollWheel:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_MOUSE_WHEEL;
-				ievent.MouseInput.Wheel = [event deltaY];
+				ievent.MouseInput.Wheel = [(NSEvent *)event deltaY];
 				if (ievent.MouseInput.Wheel < 1.0f) ievent.MouseInput.Wheel *= 10.0f;
 				else ievent.MouseInput.Wheel *= 5.0f;
 				postMouseEvent(event,ievent);
@@ -420,7 +420,7 @@ void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	{
 		size = wcstombs(title,text,1024);
 		if (size == 1024) title[1023] = 0;
-		[_window setTitle:[NSString stringWithCString:title length:size]];
+		[(NSWindow *)_window setTitle:[NSString stringWithCString:title length:size]];
 	}
 }
 
@@ -437,7 +437,7 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 	const unsigned char			*cStr;
 	BOOL					skipCommand;
 
-	str = [event characters];
+	str = [(NSEvent *)event characters];
 	if (str != nil && [str length] > 0)
 	{
 		mkey = mchar = 0;
@@ -453,7 +453,7 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 			{
 				mchar = cStr[0];
 				mkey = toupper(mchar);
-				if ([event modifierFlags] & NSCommandKeyMask)
+				if ([(NSEvent *)event modifierFlags] & NSCommandKeyMask)
 				{
 					if (mkey == 'C' || mkey == 'V' || mkey == 'X')
 					{
@@ -467,13 +467,13 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 		ievent.EventType = irr::EET_KEY_INPUT_EVENT;
 		ievent.KeyInput.Key = (irr::EKEY_CODE)mkey;
 		ievent.KeyInput.PressedDown = pressed;
-		ievent.KeyInput.Shift = ([event modifierFlags] & NSShiftKeyMask) != 0;
-		ievent.KeyInput.Control = ([event modifierFlags] & NSControlKeyMask) != 0;
+		ievent.KeyInput.Shift = ([(NSEvent *)event modifierFlags] & NSShiftKeyMask) != 0;
+		ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
 		ievent.KeyInput.Char = (irr::EKEY_CODE)mchar;
 
 		if (skipCommand)
 			ievent.KeyInput.Control = true;
-		else if ([event modifierFlags] & NSCommandKeyMask)
+		else if ([(NSEvent *)event modifierFlags] & NSCommandKeyMask)
 			[NSApp sendEvent:(NSEvent *)event];
 
 		postEventFromUser(ievent);
@@ -486,8 +486,8 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 
 	if (_window != NULL)
 	{
-		ievent.MouseInput.X = (int)[event locationInWindow].x;
-		ievent.MouseInput.Y = _height - (int)[event locationInWindow].y;
+		ievent.MouseInput.X = (int)[(NSEvent *)event locationInWindow].x;
+		ievent.MouseInput.Y = _height - (int)[(NSEvent *)event locationInWindow].y;
 		if (ievent.MouseInput.Y < 0) post = false;
 	}
 	else
@@ -509,7 +509,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 
 	if (_window != NULL)
 	{
-		p = [_window convertScreenToBase:p];
+		p = [(NSWindow *)_window convertScreenToBase:p];
 		x = (int)p.x;
 		y = _height - (int)p.y;
 	}
@@ -531,7 +531,7 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	{
 		p.x = (float) x;
 		p.y = (float) (_height - y);
-		p = [_window convertBaseToScreen:p];
+		p = [(NSWindow *)_window convertBaseToScreen:p];
 		p.y = _screenHeight - p.y;
 	}
 	else
