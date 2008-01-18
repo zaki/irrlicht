@@ -19,7 +19,8 @@ namespace scene
 
 //! Constructor
 CB3DMeshFileLoader::CB3DMeshFileLoader(scene::ISceneManager* smgr)
-: NormalsInFile(false), SceneManager(smgr), AnimatedMesh(0), B3DFile(0)
+: SceneManager(smgr), AnimatedMesh(0), B3DFile(0), NormalsInFile(false),
+	ShowWarning(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CB3DMeshFileLoader");
@@ -54,6 +55,7 @@ IAnimatedMesh* CB3DMeshFileLoader::createMesh(io::IReadFile* f)
 
 	B3DFile = f;
 	AnimatedMesh = new scene::CSkinnedMesh();
+	ShowWarning = true; // If true a warning is issued if too many textures are used
 
 	Buffers = &AnimatedMesh->getMeshBuffers();
 	AllJoints = &AnimatedMesh->getAllJoints();
@@ -632,17 +634,15 @@ bool CB3DMeshFileLoader::readChunkANIM()
 
 bool CB3DMeshFileLoader::readChunkTEXS()
 {
-	bool Previous32BitTextureFlag = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_ALWAYS_32_BIT);
+	const bool previous32BitTextureFlag = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_ALWAYS_32_BIT);
 	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
 	{
-		core::stringc TextureName=readString();
-
-		TextureName=stripPathFromString(B3DFile->getFileName(),true) + stripPathFromString(TextureName,false);
+		core::stringc textureName=readString();
+		textureName=stripPathFromString(B3DFile->getFileName(),true) + stripPathFromString(textureName,false);
 
 		SB3dTexture B3dTexture;
-		B3dTexture.Texture=SceneManager->getVideoDriver()->getTexture ( TextureName.c_str() );
 
 		B3DFile->read(&B3dTexture.Flags, sizeof(s32));
 		B3DFile->read(&B3dTexture.Blend, sizeof(s32));
@@ -656,12 +656,18 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 		readFloats(&B3dTexture.Yscale, 1);
 		readFloats(&B3dTexture.Angle, 1);
 
+		// read texture from disk
+		// note that mipmaps might be disabled by Flags & 0x8
+		const bool doMipMaps = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
+		SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, (B3dTexture.Flags & 0x8) ? true:false);
+		B3dTexture.Texture=SceneManager->getVideoDriver()->getTexture ( textureName.c_str() );
+		SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, doMipMaps);
 		Textures.push_back(B3dTexture);
 	}
 
 	B3dStack.erase(B3dStack.size()-1);
 
-	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, Previous32BitTextureFlag);
+	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, previous32BitTextureFlag);
 
 	return true;
 }
@@ -675,10 +681,6 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 	n_texs = os::Byteswap::byteswap(n_texs);
 #endif
 
-	if (n_texs>video::MATERIAL_MAX_TEXTURES)
-	{
-		os::Printer::log("Too many textures used in one material", B3DFile->getFileName(), ELL_WARNING);
-	}
 	// number of texture ids read for Irrlicht
 	const u32 num_textures = core::min_(n_texs, video::MATERIAL_MAX_TEXTURES);
 	// number of bytes to skip (for ignored texture ids)
@@ -707,7 +709,8 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		B3dMaterial.fx = os::Byteswap::byteswap(B3dMaterial.fx);
 #endif
 
-		for (u32 i=0; i<num_textures; ++i)
+		u32 i;
+		for (i=0; i<num_textures; ++i)
 		{
 			s32 texture_id=-1;
 			B3DFile->read(&texture_id, sizeof(s32));
@@ -721,8 +724,19 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 				B3dMaterial.Textures[i]=0;
 		}
 		// skip other texture ids
-		if (n_texs_offset)
-			B3DFile->seek(n_texs_offset*sizeof(s32), true);
+		for (i=0; i<n_texs_offset; ++i)
+		{
+			s32 texture_id=-1;
+			B3DFile->read(&texture_id, sizeof(s32));
+#ifdef __BIG_ENDIAN__
+			texture_id = os::Byteswap::byteswap(texture_id);
+#endif
+			if (ShowWarning && (texture_id != -1) && (n_texs>video::MATERIAL_MAX_TEXTURES))
+			{
+				os::Printer::log("Too many textures used in one material", B3DFile->getFileName(), ELL_WARNING);
+				ShowWarning = false;
+			}
+		}
 
 		//Fixes problems when the lightmap is on the first texture:
 		if (B3dMaterial.Textures[0] != 0)
@@ -743,10 +757,17 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			B3dMaterial.Textures[1] = 0;
 		}
 
-		if (B3dMaterial.Textures[0] != 0)
-			B3dMaterial.Material->setTexture(0, B3dMaterial.Textures[0]->Texture);
-		if (B3dMaterial.Textures[1] != 0)
-			B3dMaterial.Material->setTexture(1, B3dMaterial.Textures[1]->Texture);
+		for (i=0; i<2; ++i)
+		{
+			if (B3dMaterial.Textures[i] != 0)
+			{
+				B3dMaterial.Material->setTexture(i, B3dMaterial.Textures[i]->Texture);
+				if (B3dMaterial.Textures[i]->Flags & 0x10) // Clamp U
+					B3dMaterial.Material->TextureLayer[i].TextureWrap=video::ETC_CLAMP;
+				if (B3dMaterial.Textures[i]->Flags & 0x20) // Clamp V, TODO: Needs another attribute
+					B3dMaterial.Material->TextureLayer[i].TextureWrap=video::ETC_CLAMP;
+			}
+		}
 
 		//------ Convert blitz flags/blend to irrlicht -------
 
@@ -755,7 +776,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		{
 			if (B3dMaterial.alpha==1.f)
 			{
-				if (B3dMaterial.Textures[1]->Blend & 5) //(Multiply 2)
+				if (B3dMaterial.Textures[1]->Blend == 5) //(Multiply 2)
 					B3dMaterial.Material->MaterialType = video::EMT_LIGHTMAP_M2;
 				else
 					B3dMaterial.Material->MaterialType = video::EMT_LIGHTMAP;
@@ -765,10 +786,15 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		}
 		else if (B3dMaterial.Textures[0]) //One texture:
 		{
-			if (B3dMaterial.Textures[0]->Flags & 2) //(Alpha mapped)
+			// Flags & 0x1 is usual SOLID, 0x8 is mipmap (handled before)
+			if (B3dMaterial.Textures[0]->Flags & 0x2) //(Alpha mapped)
 				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-			else if (B3dMaterial.Textures[0]->Flags & 4) //(Masked)
-				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF; // Todo: create color key texture
+			else if (B3dMaterial.Textures[0]->Flags & 0x4) //(Masked)
+				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF; // TODO: create color key texture
+			else if (B3dMaterial.Textures[0]->Flags & 0x40)
+				B3dMaterial.Material->MaterialType = video::EMT_SPHERE_MAP;
+			else if (B3dMaterial.Textures[0]->Flags & 0x80)
+				B3dMaterial.Material->MaterialType = video::EMT_SPHERE_MAP; // TODO: Should be cube map
 			else if (B3dMaterial.alpha == 1.f)
 				B3dMaterial.Material->MaterialType = video::EMT_SOLID;
 			else
@@ -800,8 +826,8 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		if (B3dMaterial.fx & 16) //disable backface culling
 			B3dMaterial.Material->BackfaceCulling = false;
 
-		if (B3dMaterial.fx & 32) //force vertex alpha-blending
-			B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+//		if (B3dMaterial.fx & 32) //force vertex alpha-blending
+//			B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 
 		B3dMaterial.Material->DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor ();
 		B3dMaterial.Material->EmissiveColor = video::SColorf(0.5, 0.5, 0.5, 0).toSColor ();

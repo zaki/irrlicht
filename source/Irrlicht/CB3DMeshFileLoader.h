@@ -76,7 +76,7 @@ private:
 	struct SB3dMaterial
 	{
 		SB3dMaterial() : Material(0), red(1.0f), green(1.0f),
-			blue(1.0f), alpha(1.0f), shininess(0.0f), blend(0),
+			blue(1.0f), alpha(1.0f), shininess(0.0f), blend(1),
 			fx(0)
 		{
 			for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
@@ -106,8 +106,6 @@ private:
 
 	core::array<SB3dChunk> B3dStack;
 
-	bool NormalsInFile;
-
 	core::array<SB3dMaterial> Materials;
 	core::array<SB3dTexture> Textures;
 
@@ -124,6 +122,9 @@ private:
 	ISceneManager*	SceneManager;
 	CSkinnedMesh*	AnimatedMesh;
 	io::IReadFile*	B3DFile;
+
+	bool NormalsInFile;
+	bool ShowWarning;
 };
 
 
