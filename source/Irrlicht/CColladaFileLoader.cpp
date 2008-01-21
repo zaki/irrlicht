@@ -20,8 +20,9 @@
 #include "IMeshCache.h"
 #include "IMeshSceneNode.h"
 #include "SMeshBufferLightMap.h"
+#include "irrMap.h"
 
-//#define COLLADA_READER_DEBUG
+#define COLLADA_READER_DEBUG
 namespace irr
 {
 namespace scene
@@ -30,8 +31,13 @@ namespace scene
 
 	const core::stringc colladaSectionName =   "COLLADA";
 	const core::stringc librarySectionName =   "library";
+	const core::stringc libraryGeometriesSectionName = "library_geometries";
+	const core::stringc libraryMaterialsSectionName = "library_materials";
+	const core::stringc libraryImagesSectionName = "library_images";
+	const core::stringc libraryVisualScenesSectionName = "library_visual_scenes";
 	const core::stringc assetSectionName =     "asset";
 	const core::stringc sceneSectionName =     "scene";
+	const core::stringc visualSceneSectionName = "visual_scene";
 
 	const core::stringc lightPrefabName =      "light";
 	const core::stringc cameraPrefabName =     "camera";
@@ -41,13 +47,19 @@ namespace scene
 	const core::stringc textureSectionName =   "texture";
 
 	const core::stringc meshSectionName =      "mesh";
-	const core::stringc sourceSectionName =	   "source";
+	const core::stringc sourceSectionName =    "source";
 	const core::stringc arraySectionName =     "array";
+	const core::stringc floatArraySectionName ="float_array";
+	const core::stringc intArraySectionName =  "int_array";
 	const core::stringc accessorSectionName =  "accessor";
 	const core::stringc verticesSectionName =  "vertices";
 	const core::stringc inputTagName =         "input";
+	const core::stringc polylistSectionName =  "polylist";
+	const core::stringc trianglesSectionName = "triangles";
 	const core::stringc polygonsSectionName =  "polygons";
 	const core::stringc primitivesName =       "p";
+	const core::stringc vcountName =           "vcount";
+
 	const core::stringc nodeSectionName =      "node";
 	const core::stringc lookatNodeName =       "lookat";
 	const core::stringc matrixNodeName =       "matrix";
@@ -60,22 +72,25 @@ namespace scene
 	const core::stringc minNodeName =          "min";
 	const core::stringc maxNodeName =          "max";
 	const core::stringc instanceNodeName =     "instance";
+	const core::stringc instanceGeometryName = "instance_geometry";
+	const core::stringc instanceSceneName =    "instance_visual_scene";
+	const core::stringc bindMaterialName =     "bind_material";
 	const core::stringc extraNodeName =        "extra";
 
 	const core::stringc paramTagName =         "param";
+	const core::stringc initFromName =         "init_from";
 
 	const char* const inputSemanticNames[] = {"POSITION", "VERTEX", "NORMAL", "TEXCOORD",
 		"UV", "TANGENT", "IMAGE", "TEXTURE", 0};
 
-	//! following class is for holding and creating instances of library objects,
-	//! named prefabs in this loader.
+	//! following class is for holding and creating instances of library
+	//! objects, named prefabs in this loader.
 	class CPrefab : public IColladaPrefab
 	{
 	public:
 
-		CPrefab(const char* id)
+		CPrefab(const char* id) : Id(id)
 		{
-			Id = id;
 		}
 
 		//! creates an instance of this prefab
@@ -136,7 +151,7 @@ namespace scene
 		{
 		}
 
-		scene::IMesh* Mesh; // public accessible
+		scene::IMesh* Mesh; // publicly accessible
 
 		//! creates an instance of this prefab
 		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
@@ -165,7 +180,7 @@ namespace scene
 			#endif
 		}
 
-		// public accessible data
+		// publicly accessible data
 		f32 YFov;
 		f32 ZNear;
 		f32 ZFar;
@@ -184,6 +199,41 @@ namespace scene
 			c->setFarValue(ZFar);
 			return c;
 		}
+	};
+
+
+	//! prefab for a container scene node
+	//! Collects other prefabs and instantiates them upon instantiation
+	//! Uses a dummy scene node to return the childs as one scene node
+	class CScenePrefab : public CPrefab
+	{
+	public:
+		CScenePrefab(const char* id) : CPrefab(id)
+		{
+			#ifdef COLLADA_READER_DEBUG
+			os::Printer::log("COLLADA: loaded scene prefab:", Id.c_str());
+			#endif
+		}
+
+		//! creates an instance of this prefab
+		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
+			scene::ISceneManager* mgr)
+		{
+			#ifdef COLLADA_READER_DEBUG
+			os::Printer::log("COLLADA: Constructing scene instance:", Id.c_str());
+			#endif
+
+			if (Childs.size()==0)
+				return 0;
+
+			scene::ISceneNode* c = mgr->addDummyTransformationSceneNode(parent);
+			for (u32 i=0; i<Childs.size(); ++i)
+				Childs[i]->addInstance(c, mgr);
+
+			return c;
+		}
+
+		core::array<IColladaPrefab*> Childs;
 	};
 
 //! Constructor
@@ -211,8 +261,7 @@ CColladaFileLoader::~CColladaFileLoader()
 /** This decision should be based only on the file extension (e.g. ".cob") */
 bool CColladaFileLoader::isALoadableFileExtension(const c8* fileName) const
 {
-	return strstr(fileName, ".xml") ||
-		   strstr(fileName, ".dae");
+	return strstr(fileName, ".xml") || strstr(fileName, ".dae");
 }
 
 
@@ -304,7 +353,7 @@ void CColladaFileLoader::skipSection(io::IXMLReaderUTF8* reader, bool reportSkip
 		{
 			#ifdef COLLADA_READER_DEBUG
 			if (reportSkipping)
-				os::Printer::log("COLLADA unknown element:", core::stringc(reader->getNodeName()).c_str());
+				os::Printer::log("Skipping COLLADA unknown element:", core::stringc(reader->getNodeName()).c_str());
 			#endif // COLLADA_READER_DEBUG
 
 			++tagCounter;
@@ -322,7 +371,10 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 	if (reader->isEmptyElement())
 		return;
 
-	// I ignore version information here. Keep on reading content:
+	const f32 version = core::fast_atof(core::stringc(reader->getAttributeValue("version")).c_str());
+	Version = core::floor32(version)*10000+core::ceil32(core::fract(version)*1000.0f);
+	if (Version >= 10400)
+		os::Printer::log("Collada version with only partial support:", core::stringc(version).c_str(), ELL_WARNING);
 
 	while(reader->read())
 	if (reader->getNodeType() == io::EXN_ELEMENT)
@@ -333,6 +385,21 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 		if (librarySectionName == reader->getNodeName())
 			readLibrarySection(reader);
 		else
+		if (libraryGeometriesSectionName == reader->getNodeName())
+			readLibrarySection(reader);
+		else
+		if (libraryMaterialsSectionName == reader->getNodeName())
+			readLibrarySection(reader);
+		else
+		if (libraryImagesSectionName == reader->getNodeName())
+			readLibrarySection(reader);
+		else
+		if (libraryVisualScenesSectionName == reader->getNodeName())
+			readVisualSceneSection(reader);
+		else
+		if (assetSectionName == reader->getNodeName())
+			readAssetSection(reader);
+		else
 		if (sceneSectionName == reader->getNodeName())
 			readSceneSection(reader);
 		else
@@ -342,7 +409,6 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 		}
 	}
 }
-
 
 
 //! reads a <library> section and its content
@@ -384,6 +450,47 @@ void CColladaFileLoader::readLibrarySection(io::IXMLReaderUTF8* reader)
 	{
 		if (librarySectionName == reader->getNodeName())
 			break; // end reading.
+		if (libraryGeometriesSectionName == reader->getNodeName())
+			break; // end reading.
+		if (libraryMaterialsSectionName == reader->getNodeName())
+			break; // end reading.
+		if (libraryImagesSectionName == reader->getNodeName())
+			break; // end reading.
+	}
+}
+
+
+//! reads a <visual_scene> element and stores it as a prefab
+void CColladaFileLoader::readVisualSceneSection(io::IXMLReaderUTF8* reader)
+{
+	CScenePrefab* p = 0;
+	while(reader->read())
+	{
+		if (reader->getNodeType() == io::EXN_ELEMENT)
+		{
+			if (visualSceneSectionName == reader->getNodeName())
+				p = new CScenePrefab(reader->getAttributeValue("id"));
+			else
+			if (nodeSectionName == reader->getNodeName())
+				readNodeSection(reader, SceneManager->getRootSceneNode());
+			else
+			if (assetSectionName == reader->getNodeName())
+				readAssetSection(reader);
+			else
+				skipSection(reader, true); // ignore all other sections
+		}
+		else
+		if (reader->getNodeType() == io::EXN_ELEMENT_END)
+		{
+			if (libraryVisualScenesSectionName == reader->getNodeName())
+				return;
+			else
+			if ((visualSceneSectionName == reader->getNodeName()) && p)
+			{
+				Prefabs.push_back(p);
+				p = 0;
+			}
+		}
 	}
 }
 
@@ -405,53 +512,61 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 	scene::IDummyTransformationSceneNode* node = 0;
 
 	while(reader->read())
-	if (reader->getNodeType() == io::EXN_ELEMENT)
 	{
-		if (lookatNodeName == reader->getNodeName())
-			transform *= readLookAtNode(reader);
-		else
-		if (matrixNodeName == reader->getNodeName())
-			transform *= readMatrixNode(reader);
-		else
-		if (perspectiveNodeName == reader->getNodeName())
-			transform *= readPerspectiveNode(reader);
-		else
-		if (rotateNodeName == reader->getNodeName())
-			transform *= readRotateNode(reader);
-		else
-		if (scaleNodeName == reader->getNodeName())
-			transform *= readScaleNode(reader);
-		else
-		if (skewNodeName == reader->getNodeName())
-			transform *= readSkewNode(reader);
-		else
-		if (translateNodeName == reader->getNodeName())
-			transform *= readTranslateNode(reader);
-		else
-		if (bboxNodeName == reader->getNodeName())
-			readBboxNode(reader, bbox);
-		else
-		if (nodeSectionName == reader->getNodeName())
+		if (reader->getNodeType() == io::EXN_ELEMENT)
 		{
-			// create dummy node if there is none yet.
-			if (!node)
-				node = SceneManager->addDummyTransformationSceneNode(SceneManager->getRootSceneNode());
+			if (lookatNodeName == reader->getNodeName())
+				transform *= readLookAtNode(reader);
+			else
+			if (matrixNodeName == reader->getNodeName())
+				transform *= readMatrixNode(reader);
+			else
+			if (perspectiveNodeName == reader->getNodeName())
+				transform *= readPerspectiveNode(reader);
+			else
+			if (rotateNodeName == reader->getNodeName())
+				transform *= readRotateNode(reader);
+			else
+			if (scaleNodeName == reader->getNodeName())
+				transform *= readScaleNode(reader);
+			else
+			if (translateNodeName == reader->getNodeName())
+				transform *= readTranslateNode(reader);
+			else
+			if (skewNodeName == reader->getNodeName())
+				transform *= readSkewNode(reader);
+			else
+			if (bboxNodeName == reader->getNodeName())
+				readBboxNode(reader, bbox);
+			else
+			if (nodeSectionName == reader->getNodeName())
+			{
+				// create dummy node if there is none yet.
+				if (!node)
+					node = SceneManager->addDummyTransformationSceneNode(SceneManager->getRootSceneNode());
 
-			readNodeSection(reader, node);
+				readNodeSection(reader, node);
+			}
+			else
+			if ((instanceSceneName == reader->getNodeName()))
+				readInstanceNode(reader, SceneManager->getRootSceneNode(), 0);
+			else
+			if (extraNodeName == reader->getNodeName())
+				skipSection(reader, false);
+			else
+			{
+				os::Printer::log("COLLADA loader warning: Wrong tag usage found", reader->getNodeName(), ELL_WARNING);
+				skipSection(reader, true); // ignore all other sections
+			}
 		}
 		else
-		if (extraNodeName == reader->getNodeName())
-			skipSection(reader, false);
-		else
-		{
-			os::Printer::log("COLLADA loader warning: Wrong tag usage found", reader->getNodeName(), ELL_WARNING);
-			skipSection(reader, true); // ignore all other sections
-		}
+		if ((reader->getNodeType() == io::EXN_ELEMENT_END) &&
+			(sceneSectionName == reader->getNodeName()))
+				return;
 	}
 	if (node)
 		node->getRelativeTransformationMatrix() = transform;
 }
-
 
 
 //! reads a <asset> section and its content
@@ -464,7 +579,6 @@ void CColladaFileLoader::readAssetSection(io::IXMLReaderUTF8* reader)
 	// don't need asset data so far, so skip it
 	skipSection(reader, false);
 }
-
 
 
 //! reads a <node> section and its content
@@ -512,7 +626,8 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 		if (bboxNodeName == reader->getNodeName())
 			readBboxNode(reader, bbox);
 		else
-		if (instanceNodeName == reader->getNodeName())
+		if ((instanceNodeName == reader->getNodeName()) ||
+			(instanceGeometryName == reader->getNodeName()))
 		{
 			scene::ISceneNode* newnode = 0;
 			readInstanceNode(reader, parent, &newnode);
@@ -787,7 +902,7 @@ core::matrix4 CColladaFileLoader::readTranslateNode(io::IXMLReaderUTF8* reader)
 }
 
 
-//! reads a <instance> node and creates a scene node from it
+//! reads any kind of <instance*> node and creates a scene node from it
 void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent,
 	scene::ISceneNode** outNode)
 {
@@ -799,15 +914,37 @@ void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISc
 	core::stringc url = reader->getAttributeValue("url");
 	uriToId(url);
 
-	if (CreateInstances)
-	for (u32 i=0; i<Prefabs.size(); ++i)
-		if (url == Prefabs[i]->getId())
+	if (!reader->isEmptyElement())
+	{
+		while(reader->read())
 		{
-			*outNode = Prefabs[i]->addInstance(parent, SceneManager);
-			if (*outNode)
-				(*outNode)->setName(reader->getAttributeValue("id"));
-			return;
+			if (reader->getNodeType() == io::EXN_ELEMENT)
+			{
+				if (bindMaterialName == reader->getNodeName())
+					;//readBindMaterialSection(reader);
+			}
+			else
+			if (reader->getNodeType() == io::EXN_ELEMENT_END)
+			{
+				if (instanceGeometryName == reader->getNodeName())
+					break;
+			}
 		}
+	}
+
+	if (CreateInstances)
+	{
+		for (u32 i=0; i<Prefabs.size(); ++i)
+		{
+			if (url == Prefabs[i]->getId())
+			{
+				*outNode = Prefabs[i]->addInstance(parent, SceneManager);
+				if (*outNode)
+					(*outNode)->setName(reader->getAttributeValue("id"));
+				return;
+			}
+		}
+	}
 }
 
 //! reads a <camera> element and stores it as prefab
@@ -854,7 +991,27 @@ void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 
 	SColladaImage image;
 	image.Id = reader->getAttributeValue("id");
-	image.Filename = reader->getAttributeValue("source");
+	if (Version >= 10400) // start with 1.4
+	{
+		while(reader->read())
+		{
+			if (reader->getNodeType() == io::EXN_ELEMENT &&
+				initFromName == reader->getNodeName())
+			{
+				image.Filename = reader->getNodeData();
+				readColladaInput(reader);
+			}
+			else
+			if (reader->getNodeType() == io::EXN_ELEMENT_END)
+			{
+				if (initFromName == reader->getNodeName())
+					return;
+			}
+
+		} // end while reader->read();
+	}
+	else
+		image.Filename = reader->getAttributeValue("source");
 
 	// add image to list of loaded images.
 	Images.push_back(image);
@@ -986,7 +1143,7 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 				#endif
 			}
 			else
-			if (arraySectionName == nodeName) // child of source
+			if (arraySectionName == nodeName || floatArraySectionName == nodeName || intArraySectionName == nodeName)
 			{
 				// create a new array and read it.
 				if (!sources.empty())
@@ -998,7 +1155,7 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 
 					// check if type of array is ok
 					const char* type = reader->getAttributeValue("type");
-					okToReadArray = (!strcmp("float", type) || !strcmp("int", type));
+					okToReadArray = (type && (!strcmp("float", type) || !strcmp("int", type))) || floatArraySectionName == nodeName || intArraySectionName == nodeName;
 
 					#ifdef COLLADA_READER_DEBUG
 					os::Printer::log("Read array", sources.getLast().Array.Name.c_str());
@@ -1041,7 +1198,9 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 			}
 			else
 			// lines and linestrips missing
-			if (polygonsSectionName == nodeName)
+			if (polygonsSectionName == nodeName || 
+				polylistSectionName == nodeName || 
+				trianglesSectionName == nodeName)
 			{
 				// read polygons section
 				readPolygonSection(reader, VertexPositionSource, sources, mesh);
@@ -1167,7 +1326,9 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 	// int polygonCount = reader->getAttributeValueAsInt("count"); // Not useful because it only determines the number of p tags, not the number of tris
 	core::array<SInputSlot> slots;
 	core::array<SPolygon> polygons;
+	core::array<int> vCounts;
 	bool parsePolygonOK = false;
+	bool parseVcountOK = false;
 	u32 inputSemanticCount = 0;
 
 	// read all <input> and
@@ -1236,6 +1397,12 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				parsePolygonOK = true;
 				polygons.push_back(SPolygon());
 			} // end  is polygon node
+			else
+			if (vcountName == nodeName)
+			{
+				parseVcountOK = true;
+			} // end  is polygon node
+
 
 		} // end is element node
 		else
@@ -1244,24 +1411,76 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 			if (primitivesName == nodeName)
 				parsePolygonOK = false; // end parsing a polygon
 			else
-			if (polygonsSectionName == nodeName)
+			if (vcountName == nodeName)
+				parseVcountOK = false; // end parsing vcounts
+			else
+			if (polygonsSectionName == nodeName || 
+				polylistSectionName == nodeName || 
+				trianglesSectionName == nodeName)
 				break; // cancel out and create mesh
 
 		} // end is element end
 		else
 		if (reader->getNodeType() == io::EXN_TEXT)
 		{
-			if (parsePolygonOK && polygons.size())
+			if (parseVcountOK)
 			{
-				// parse this text and add it to the last polygon data
 				core::stringc data = reader->getNodeData();
 				const c8* p = &data[0];
-				SPolygon& poly = polygons.getLast();
 				while(*p)
 				{
 					findNextNoneWhiteSpace(&p);
 					if (*p)
+						vCounts.push_back(readInt(&p));
+				}
+				parseVcountOK = false;
+			}
+			else
+			if (parsePolygonOK && polygons.size())
+			{
+				core::stringc data = reader->getNodeData();
+				const c8* p = &data[0];
+				SPolygon& poly = polygons.getLast();
+			
+				if (vCounts.empty())
+				{
+					while(*p)
+					{
+						findNextNoneWhiteSpace(&p);
 						poly.Indices.push_back(readInt(&p));
+					}
+				}
+				else
+				{
+
+					for (u32 i = 0; i < vCounts.size(); i++)
+					{
+						int polyVCount = vCounts[i];
+						
+						core::array<int> polyCorners;
+
+						for (u32 j = 0; j < polyVCount * inputSemanticCount; j++)
+						{
+							if (!*p)
+								break;
+							findNextNoneWhiteSpace(&p);
+							polyCorners.push_back(readInt(&p));
+						}
+
+						while (polyCorners.size() >= 3 * inputSemanticCount)
+						{
+							// add one triangle's worth of indices
+							for (u32 k = 0; k < inputSemanticCount * 3; ++k)
+							{
+								poly.Indices.push_back(polyCorners[k]);
+							}
+
+							// remove one corner from our poly
+							polyCorners.erase(inputSemanticCount,inputSemanticCount);
+						}
+						polyCorners.clear();
+					}
+					vCounts.clear();
 				}
 				parsePolygonOK = false;
 			}
@@ -1309,10 +1528,10 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		mbuffer->Material=mat;
 		buffer = mbuffer;
 
+		core::map<video::S3DVertex, int> vertMap;
+
 		for (u32 i=0; i<polygons.size(); ++i)
 		{
-			u32 vertexCount = polygons[i].Indices.size() / inputSemanticCount;
-
 			// for all index/semantic groups
 			for (u32 v=0; v<polygons[i].Indices.size(); v+=inputSemanticCount)
 			{
@@ -1353,18 +1572,20 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 					}
 				}
 
-				mbuffer->Vertices.push_back(vtx);
+				//first, try to find this vertex in the mesh
+				core::map<video::S3DVertex, int>::Node* n = vertMap.find(vtx);
+				if (n)
+				{
+					mbuffer->Indices.push_back(n->getValue());
+				}
+				else
+				{
+					mbuffer->Indices.push_back(mbuffer->getVertexCount());
+					mbuffer->Vertices.push_back(vtx);
+					vertMap.insert(vtx, mbuffer->getVertexCount()-1);
+				}
 
 			} // end for all vertices
-
-			// add vertex indices
-			const u32 oldVertexCount = mbuffer->Vertices.size() - vertexCount;
-			for (u32 face=0; face<vertexCount-2; ++face)
-			{
-				mbuffer->Indices.push_back(oldVertexCount + 0);
-				mbuffer->Indices.push_back(oldVertexCount + 1 + face);
-				mbuffer->Indices.push_back(oldVertexCount + 2 + face);
-			}
 
 		} // end for all polygons
 	}
