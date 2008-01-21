@@ -123,9 +123,11 @@ namespace scene
 		virtual core::vector3df& getNormal(u32 i) = 0;
 
 		//! append the vertices and indices to the current buffer
+		//! Only works for compatible vertex types
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) = 0;
 
 		//! append the meshbuffer to the current buffer
+		//! Only works for compatible vertex types
 		virtual void append(const IMeshBuffer* const other) = 0;
 
 		//! get the current hardware mapping hint

@@ -14,54 +14,41 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 
 /*
-In this tutorial, one of our goals is to move a scene node using some
-keys on the keyboard. We store a pointer to the scene node we want to
-move with the keys here.
-The other pointer is a pointer to the Irrlicht Device, which we need
-int the EventReceiver to manipulate the scene node and to get the 
-active camera.
-*/
-
-scene::ISceneNode* node = 0;
-IrrlichtDevice* device = 0;
-
-
-/*
-To get events like mouse and keyboard input, or GUI events like 
-"the OK button has been clicked", we need an object wich is derived from the 
+To receive events like mouse and keyboard input, or GUI events like 
+"the OK button has been clicked", we need an object which is derived from the 
 IEventReceiver object. There is only one method to override: OnEvent. 
-This method will be called by the engine when an event happened. 
-We will use this input to move the scene node with the keys W and S.
+This method will be called by the engine once when an event happens. 
+What we really want to know is whether a key is being held down,
+and so we will remember the current state of each key.
 */
 class MyEventReceiver : public IEventReceiver
 {
 public:
+	// This is the one method that we have to implement
 	virtual bool OnEvent(const SEvent& event)
 	{
-		/*
-		If the key 'W' or 'S' was left up, we get the position of the scene node,
-		and modify the Y coordinate a little bit. So if you press 'W', the node
-		moves up, and if you press 'S' it moves down.
-		*/
-
-		if (node != 0 && event.EventType == irr::EET_KEY_INPUT_EVENT&&
-			!event.KeyInput.PressedDown)
-		{
-			switch(event.KeyInput.Key)
-			{
-			case KEY_KEY_W:
-			case KEY_KEY_S:
-				{
-					core::vector3df v = node->getPosition();
-					v.Y += event.KeyInput.Key == KEY_KEY_W ? 2.0f : -2.0f;
-					node->setPosition(v);
-				}
-				return true;
-			}
-		}
+		// Remember whether each key is down or up
+		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
+			KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
 
 		return false;
 	}
+
+	// This is used to check whether a key is being held down
+	virtual bool IsKeyDown(EKEY_CODE keyCode) const
+	{
+		return KeyIsDown[keyCode];
+	}
+
+	MyEventReceiver()
+	{
+		for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
+			KeyIsDown[i] = false;
+	}
+
+private:
+	// We use this array to store the current state of each key
+	bool KeyIsDown[KEY_KEY_CODES_COUNT];
 };
 
 
@@ -117,20 +104,23 @@ int main()
 	interesting. Because we have no dynamic lights in this scene we disable
 	lighting for each model (otherwise the models would be black).
 	*/
-	node = smgr->addSphereSceneNode();
-	node->setPosition(core::vector3df(0,0,30));
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
-	node->setMaterialFlag(video::EMF_LIGHTING, false);
+	scene::ISceneNode * node = smgr->addSphereSceneNode();
+	if (node)
+	{
+		node->setPosition(core::vector3df(0,0,30));
+		node->setMaterialTexture(0, driver->getTexture("../../media/wall.bmp"));
+		node->setMaterialFlag(video::EMF_LIGHTING, false);
+	}
 
 
 	/* 
-	Now we create another node, moving using a scene node animator. Scene node
-	animators modify scene nodes and can be attached to any scene node like
-	mesh scene nodes, billboards, lights and even camera scene nodes. Scene node
-	animators are not only able to modify the position of a scene node, they can
-	also animate the textures of an object for example.
-	We create a cube scene node and attach a 'fly circle' scene node to it, letting
-	this node fly around our sphere scene node.
+	Now we create another node, moving using a scene node animator. Scene
+	node animators modify scene nodes and can be attached to any scene node
+	like mesh scene nodes, billboards, lights and even camera scene nodes.
+	Scene node animators are not only able to modify the position of a
+	scene node, they can also animate the textures of an object for
+	example.  We create a cube scene node and attach a 'fly circle' scene
+	node to it, letting this node fly around our sphere scene node.
 	*/
 	scene::ISceneNode* n = smgr->addCubeSceneNode();
 
@@ -140,8 +130,11 @@ int main()
 		n->setMaterialFlag(video::EMF_LIGHTING, false);
 		scene::ISceneNodeAnimator* anim =
 			smgr->createFlyCircleAnimator(core::vector3df(0,0,30), 20.0f);
-		n->addAnimator(anim);
-		anim->drop();
+		if (anim)
+		{
+			n->addAnimator(anim);
+			anim->drop();
+		}
 	}
 
 	/*
@@ -155,8 +148,11 @@ int main()
 		scene::ISceneNodeAnimator* anim =
 			smgr->createFlyStraightAnimator(core::vector3df(100,0,60), 
 			core::vector3df(-100,0,60), 2500, true);
-		anms->addAnimator(anim);
-		anim->drop();
+		if (anim)
+		{
+			anms->addAnimator(anim);
+			anim->drop();
+		}
 
 		/*
 		To make to model look right we set the frames between which the animation
@@ -181,9 +177,8 @@ int main()
 
 
 	/*
-	To be able to look at and move around in this scene, 
-	we create a first person shooter style camera and make the 
-	mouse cursor invisible.
+	To be able to look at and move around in this scene, we create a first
+	person shooter style camera and make the mouse cursor invisible.
 	*/
 	scene::ICameraSceneNode * cam = smgr->addCameraSceneNodeFPS(0, 100.0f, 100.0f);
 	device->getCursorControl()->setVisible(false);
@@ -204,6 +199,22 @@ int main()
 
 	while(device->run())
 	{
+		/* Check if key W or key S is being held down, and move the
+		sphere node up or down respectively.
+		*/
+		if(receiver.IsKeyDown(irr::KEY_KEY_W))
+		{
+			core::vector3df v = node->getPosition();
+			v.Y += 0.02f;
+			node->setPosition(v);
+		}
+		else if(receiver.IsKeyDown(irr::KEY_KEY_S))
+		{
+			core::vector3df v = node->getPosition();
+			v.Y -= 0.02f;
+			node->setPosition(v);
+		}
+
 		driver->beginScene(true, true, video::SColor(255,113,113,133));
 
 		smgr->drawAll(); // draw the 3d scene

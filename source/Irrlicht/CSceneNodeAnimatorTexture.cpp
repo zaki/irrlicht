@@ -55,16 +55,15 @@ void CSceneNodeAnimatorTexture::animateNode(ISceneNode* node, u32 timeMs)
 {
 	if (Textures.size())
 	{
-		u32 t = (timeMs-StartTime);
+		const u32 t = (timeMs-StartTime);
 
-		s32 idx = 0;
-
+		u32 idx = 0;
 		if (!Loop && timeMs >= EndTime)
 			idx = Textures.size() - 1;
 		else
 			idx = (t/TimePerFrame) % Textures.size();
 
-		if (idx < (s32)Textures.size())
+		if (idx < Textures.size())
 			node->setMaterialTexture(0, Textures[idx]);
 	}
 }

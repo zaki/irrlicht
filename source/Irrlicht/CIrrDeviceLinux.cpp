@@ -665,7 +665,7 @@ bool CIrrDeviceLinux::run()
 	os::Timer::tick();
 
 #ifdef _IRR_COMPILE_WITH_X11_
-	if (DriverType != video::EDT_NULL)
+	if ((DriverType != video::EDT_NULL) && display)
 	{
 		SEvent irrevent;
 

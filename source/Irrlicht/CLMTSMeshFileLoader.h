@@ -60,10 +60,6 @@ private:
 #	error compiler not supported
 #endif
 
-	struct SLMTSMagigID {
-		u32 ID;
-	} PACK_STRUCT;
-
 	struct SLMTSHeader
 	{
 		u32 MagicID;
