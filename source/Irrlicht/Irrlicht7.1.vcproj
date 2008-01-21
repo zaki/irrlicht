@@ -521,6 +521,9 @@
 					RelativePath=".\..\..\include\ITextSceneNode.h">
 				</File>
 				<File
+					RelativePath=".\..\..\include\IVolumeLightSceneNode.h">
+				</File>
+				<File
 					RelativePath=".\..\..\include\ITriangleSelector.h">
 				</File>
 				<File
@@ -1319,6 +1322,12 @@
 					RelativePath=".\CLMTSMeshFileLoader.h">
 				</File>
 				<File
+					RelativePath=".\CLWOMeshFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\CLWOMeshFileLoader.h">
+				</File>
+				<File
 					RelativePath=".\CMD2MeshFileLoader.cpp">
 				</File>
 				<File
@@ -1509,6 +1518,12 @@
 				</File>
 				<File
 					RelativePath=".\CTextSceneNode.h">
+				</File>
+				<File
+					RelativePath=".\CVolumeLightSceneNode.cpp">
+				</File>
+				<File
+					RelativePath=".\CVolumeLightSceneNode.h">
 				</File>
 				<File
 					RelativePath="CWaterSurfaceSceneNode.cpp">
