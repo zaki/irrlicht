@@ -175,6 +175,9 @@ private:
 	//! reads a <library> section and its content
 	void readLibrarySection(io::IXMLReaderUTF8* reader);
 
+	//! reads a <visual_scene> element and stores it as a prefab
+	void CColladaFileLoader::readVisualSceneSection(io::IXMLReaderUTF8* reader);
+
 	//! reads a <scene> section and its content
 	void readSceneSection(io::IXMLReaderUTF8* reader);
 
@@ -281,6 +284,7 @@ private:
 	scene::IAnimatedMesh* FirstLoadedMesh;
 	core::stringc FirstLoadedMeshName;
 	s32 LoadedMeshCount;
+	u32 Version;
 
 	core::array<IColladaPrefab*> Prefabs;
 	core::array<SColladaParam> Parameters;
