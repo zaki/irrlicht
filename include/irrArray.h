@@ -125,20 +125,7 @@ public:
 	//! \param element: Element to add at the back of the array.
 	void push_front(const T& element)
 	{
-		if (used + 1 > allocated)
-			reallocate(used +1);
-
-		for (u32 i=used; i>0; --i)
-		{
-			//data[i] = data[i-1];
-			allocator.construct(&data[i], data[i-1]);
-		}
-
-		// data[0] = element;
-		allocator.construct(&data[0], element);
-
-		is_sorted = false;
-		++used;
+		insert(element);
 	}
 
 
@@ -154,11 +141,18 @@ public:
 		if (used + 1 > allocated)
 			reallocate(used +1);
 
-		for (u32 i=used++; i>index; --i)
+		for (u32 i=used; i>index; --i)
+		{
+			if (i<used)
+				allocator.destruct(&data[i]);
 			allocator.construct(&data[i], data[i-1]); // data[i] = data[i-1];
+		}
 
+		if (used > index)
+			allocator.destruct(&data[index]);
 		allocator.construct(&data[index], element); // data[index] = element;
 		is_sorted = false;
+		++used;
 	}
 
 

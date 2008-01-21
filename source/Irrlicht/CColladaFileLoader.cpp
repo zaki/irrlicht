@@ -47,7 +47,7 @@ namespace scene
 	const core::stringc verticesSectionName =  "vertices";
 	const core::stringc inputTagName =         "input";
 	const core::stringc polygonsSectionName =  "polygons";
-	const core::stringc polygonName =          "p";
+	const core::stringc primitivesName =       "p";
 	const core::stringc nodeSectionName =      "node";
 	const core::stringc lookatNodeName =       "lookat";
 	const core::stringc matrixNodeName =       "matrix";
@@ -60,6 +60,7 @@ namespace scene
 	const core::stringc minNodeName =          "min";
 	const core::stringc maxNodeName =          "max";
 	const core::stringc instanceNodeName =     "instance";
+	const core::stringc extraNodeName =        "extra";
 
 	const core::stringc paramTagName =         "param";
 
@@ -326,16 +327,19 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 	while(reader->read())
 	if (reader->getNodeType() == io::EXN_ELEMENT)
 	{
-		if (librarySectionName == reader->getNodeName())
-			readLibrarySection(reader);
-		else
 		if (assetSectionName == reader->getNodeName())
 			readAssetSection(reader);
+		else
+		if (librarySectionName == reader->getNodeName())
+			readLibrarySection(reader);
 		else
 		if (sceneSectionName == reader->getNodeName())
 			readSceneSection(reader);
 		else
+		{
+			os::Printer::log("COLLADA loader warning: Wrong tag usage found", reader->getNodeName(), ELL_WARNING);
 			skipSection(reader, true); // unknown section
+		}
 	}
 }
 
@@ -351,25 +355,29 @@ void CColladaFileLoader::readLibrarySection(io::IXMLReaderUTF8* reader)
 	while(reader->read())
 	if (reader->getNodeType() == io::EXN_ELEMENT)
 	{
-		if (lightPrefabName == reader->getNodeName())
-			readLightPrefab(reader);
+		// animation section tbd
+		if (cameraPrefabName == reader->getNodeName())
+			readCameraPrefab(reader);
+		else
+		// code section tbd
+		// controller section tbd
+		if (geometrySectionName == reader->getNodeName())
+			readGeometry(reader);
 		else
 		if (imageSectionName == reader->getNodeName())
 			readImage(reader);
 		else
-		if (textureSectionName == reader->getNodeName())
-			readTexture(reader);
+		if (lightPrefabName == reader->getNodeName())
+			readLightPrefab(reader);
 		else
 		if (materialSectionName == reader->getNodeName())
 			readMaterial(reader);
 		else
-		if (cameraPrefabName == reader->getNodeName())
-			readCameraPrefab(reader);
+		// program section tbd
+		if (textureSectionName == reader->getNodeName())
+			readTexture(reader);
 		else
-		if (geometrySectionName == reader->getNodeName())
-			readGeometry(reader);
-		else
-			skipSection(reader, true); // unknown section
+			skipSection(reader, true); // unknown section, not all allowed supported yet
 	}
 	else
 	if (reader->getNodeType() == io::EXN_ELEMENT_END)
@@ -414,11 +422,11 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 		if (scaleNodeName == reader->getNodeName())
 			transform *= readScaleNode(reader);
 		else
-		if (translateNodeName == reader->getNodeName())
-			transform *= readTranslateNode(reader);
-		else
 		if (skewNodeName == reader->getNodeName())
 			transform *= readSkewNode(reader);
+		else
+		if (translateNodeName == reader->getNodeName())
+			transform *= readTranslateNode(reader);
 		else
 		if (bboxNodeName == reader->getNodeName())
 			readBboxNode(reader, bbox);
@@ -432,7 +440,13 @@ void CColladaFileLoader::readSceneSection(io::IXMLReaderUTF8* reader)
 			readNodeSection(reader, node);
 		}
 		else
+		if (extraNodeName == reader->getNodeName())
+			skipSection(reader, false);
+		else
+		{
+			os::Printer::log("COLLADA loader warning: Wrong tag usage found", reader->getNodeName(), ELL_WARNING);
 			skipSection(reader, true); // ignore all other sections
+		}
 	}
 	if (node)
 		node->getRelativeTransformationMatrix() = transform;
@@ -722,9 +736,14 @@ core::matrix4 CColladaFileLoader::readRotateNode(io::IXMLReaderUTF8* reader)
 	f32 floats[4];
 	readFloatsInsideElement(reader, floats, 4);
 
-	core::quaternion q;
-	q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[1], floats[2]));
-	return q.getMatrix();
+	if (!core::iszero(floats[3]))
+	{
+		core::quaternion q;
+		q.fromAngleAxis(floats[3]*core::DEGTORAD, core::vector3df(floats[0], floats[1], floats[2]));
+		return q.getMatrix();
+	}
+	else
+		return core::IdentityMatrix;
 }
 
 
@@ -802,10 +821,12 @@ void CColladaFileLoader::readCameraPrefab(io::IXMLReaderUTF8* reader)
 
 	if (!reader->isEmptyElement())
 	{
+		// read techniques optics and imager (the latter is completely ignored, though)
 		readColladaParameters(reader, cameraPrefabName);
 
 		SColladaParam* p;
 
+		// XFOV not yet supported
 		p = getColladaParameter(ECPN_YFOV);
 		if (p && p->Type == ECPT_FLOAT)
 			prefab->YFov = p->Floats[0];
@@ -817,6 +838,7 @@ void CColladaFileLoader::readCameraPrefab(io::IXMLReaderUTF8* reader)
 		p = getColladaParameter(ECPN_ZFAR);
 		if (p && p->Type == ECPT_FLOAT)
 			prefab->ZFar = p->Floats[0];
+		// orthographic camera uses LEFT, RIGHT, TOP, and BOTTOM
 	}
 
 	Prefabs.push_back(prefab);
@@ -940,8 +962,8 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 	scene::SMesh* mesh = new SMesh();
 	amesh->addMesh(mesh);
 
+	// handles geometry node and the mesh childs in this loop
 	// read sources with arrays and accessor for each mesh
-
 	if (!reader->isEmptyElement())
 	while(reader->read())
 	{
@@ -964,7 +986,7 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 				#endif
 			}
 			else
-			if (arraySectionName == nodeName)
+			if (arraySectionName == nodeName) // child of source
 			{
 				// create a new array and read it.
 				if (!sources.empty())
@@ -990,7 +1012,7 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 
 			}
 			else
-			if (accessorSectionName == nodeName)
+			if (accessorSectionName == nodeName) // child of source (below a technique tag)
 			{
 				SAccessor accessor;
 				accessor.Count = reader->getAttributeValueAsInt("count");
@@ -1018,10 +1040,20 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 					VertexPositionSource = input->Source;
 			}
 			else
+			// lines and linestrips missing
 			if (polygonsSectionName == nodeName)
 			{
 				// read polygons section
 				readPolygonSection(reader, VertexPositionSource, sources, mesh);
+			}
+			else
+			// triangles, trifans, and tristrips missing
+			if (extraNodeName == reader->getNodeName())
+				skipSection(reader, false);
+			else
+			{
+//				os::Printer::log("COLLADA loader warning: Wrong tag usage found", reader->getNodeName(), ELL_WARNING);
+				skipSection(reader, true); // ignore all other sections
 			}
 
 		} // end if node type is element
@@ -1124,13 +1156,15 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 	video::SMaterial mat;
 
 	for (u32 matnum=0; matnum<Materials.size(); ++matnum)
+	{
 		if (materialName == Materials[matnum].Id)
 		{
 			mat = Materials[matnum].Mat;
 			break;
 		}
+	}
 
-	// int polygonCount = reader->getAttributeValueAsInt("count");
+	// int polygonCount = reader->getAttributeValueAsInt("count"); // Not useful because it only determines the number of p tags, not the number of tris
 	core::array<SInputSlot> slots;
 	core::array<SPolygon> polygons;
 	bool parsePolygonOK = false;
@@ -1144,6 +1178,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 		if (reader->getNodeType() == io::EXN_ELEMENT)
 		{
+			// polygon node may contain params
 			if (inputTagName == nodeName)
 			{
 				// read input tag
@@ -1167,7 +1202,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 					uriToId(sourceArrayURI);
 
-					// find source array (we'll ignore acessors for this implementation)
+					// find source array (we'll ignore accessors for this implementation)
 					u32 s;
 					for (s=0; s<sources.size(); ++s)
 						if (sources[s].Id == sourceArrayURI)
@@ -1196,7 +1231,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				}
 			} // end is input node
 			else
-			if (polygonName == nodeName)
+			if (primitivesName == nodeName)
 			{
 				parsePolygonOK = true;
 				polygons.push_back(SPolygon());
@@ -1206,7 +1241,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		else
 		if (reader->getNodeType() == io::EXN_ELEMENT_END)
 		{
-			if (polygonName == nodeName)
+			if (primitivesName == nodeName)
 				parsePolygonOK = false; // end parsing a polygon
 			else
 			if (polygonsSectionName == nodeName)

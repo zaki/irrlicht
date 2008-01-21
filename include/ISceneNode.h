@@ -222,7 +222,7 @@ namespace scene
 		//! has got a parent, it is removed from there as child.
 		virtual void addChild(ISceneNode* child)
 		{
-			if (child)
+			if (child && (child != this))
 			{
 				child->grab();
 				child->remove(); // remove from old parent

@@ -95,6 +95,7 @@ class quaternion
 		//! axis must be unit length
 		//! The quaternion representing the rotation is
 		//!  q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
+		//! angle in radians
 		void fromAngleAxis (f32 angle, const vector3df& axis);
 
 		//! Fills an angle (radians) around an axis (unit vector)
@@ -469,6 +470,7 @@ inline void quaternion::fromAngleAxis(f32 angle, const vector3df& axis)
 	Y = fSin*axis.Y;
 	Z = fSin*axis.Z;
 }
+
 
 inline void quaternion::toAngleAxis(f32 &angle, core::vector3df &axis) const
 {

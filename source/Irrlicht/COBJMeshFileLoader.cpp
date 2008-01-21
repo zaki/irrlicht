@@ -72,7 +72,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	core::array<core::vector3df> normalsBuffer;
 	SObjMtl * currMtl = new SObjMtl();
 	currMtl->Name="";
-	materials.push_back(currMtl);
+	Materials.push_back(currMtl);
 	u32 smoothingGroup=0;
 	core::map<video::S3DVertex, int> vertMap;
 
@@ -253,12 +253,12 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	}	// end while(bufPtr && (bufPtr-buf<filesize))
 
 	// Combine all the groups (meshbuffers) into the mesh
-	for ( u32 m = 0; m < materials.size(); ++m )
+	for ( u32 m = 0; m < Materials.size(); ++m )
 	{
-		if ( materials[m]->Meshbuffer->getIndexCount() > 0 )
+		if ( Materials[m]->Meshbuffer->getIndexCount() > 0 )
 		{
-			materials[m]->Meshbuffer->recalculateBoundingBox();
-			mesh->addMeshBuffer( materials[m]->Meshbuffer );
+			Materials[m]->Meshbuffer->recalculateBoundingBox();
+			mesh->addMeshBuffer( Materials[m]->Meshbuffer );
 		}
 	}
 
@@ -315,7 +315,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 			{
 				// if there's an existing material, store it first
 				if ( currMaterial )
-					materials.push_back( currMaterial );
+					Materials.push_back( currMaterial );
 
 				// extract new material's name
 				c8 mtlNameBuf[WORD_BUFFER_LENGTH];
@@ -534,7 +534,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 	// end of file. if there's an existing material, store it
 	if ( currMaterial )
 	{
-		materials.push_back( currMaterial );
+		Materials.push_back( currMaterial );
 		currMaterial = 0;
 	}
 
@@ -603,10 +603,10 @@ const c8* COBJMeshFileLoader::readBool(const c8* bufPtr, bool& tf, const c8* con
 
 COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const c8* mtlName)
 {
-	for (u32 i = 0; i < materials.size(); ++i)
+	for (u32 i = 0; i < Materials.size(); ++i)
 	{
-		if ( materials[i]->Name == mtlName )
-			return materials[i];
+		if ( Materials[i]->Name == mtlName )
+			return Materials[i];
 	}
 	return 0;
 }
@@ -775,13 +775,13 @@ void COBJMeshFileLoader::cleanUp()
 {
 	u32 i;
 
-	for (i = 0; i < materials.size(); ++i )
+	for (i = 0; i < Materials.size(); ++i )
 	{
-		materials[i]->Meshbuffer->drop();
-		delete materials[i];
+		Materials[i]->Meshbuffer->drop();
+		delete Materials[i];
 	}
 
-	materials.clear();
+	Materials.clear();
 }
 
 

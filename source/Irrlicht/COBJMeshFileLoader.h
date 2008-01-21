@@ -93,7 +93,7 @@ private:
 	io::IFileSystem* FileSystem;
 	video::IVideoDriver* Driver;
 
-	core::array<SObjMtl*> materials;
+	core::array<SObjMtl*> Materials;
 };
 
 } // end namespace scene

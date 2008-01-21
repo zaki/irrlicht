@@ -803,11 +803,11 @@ IDummyTransformationSceneNode* CSceneManager::addDummyTransformationSceneNode(
 }
 
 //! Adds a Hill Plane mesh to the mesh pool. The mesh is generated on the fly
-//! and looks like a plane with some hills on it. It is uses mostly for quick
-//! tests of the engine only. You can specify how many hills there should be
-//! on the plane and how high they should be. Also you must specify a name for
-//! the mesh, because the mesh is added to the mesh pool, and can be retrieved
-//! again using ISceneManager::getMesh with the name as parameter.
+//! and looks like a plane with some hills on it. You can specify how many hills
+//! there should be on the plane and how high they should be. Also you must
+//! specify a name for the mesh, because the mesh is added to the mesh pool,
+//! and can be retrieved again using ISceneManager::getMesh with the name as
+//! parameter.
 IAnimatedMesh* CSceneManager::addHillPlaneMesh(const c8* name,
 		const core::dimension2d<f32>& tileSize,
 		const core::dimension2d<u32>& tileCount,
@@ -815,8 +815,11 @@ IAnimatedMesh* CSceneManager::addHillPlaneMesh(const c8* name,
 		const core::dimension2d<f32>& countHills,
 		const core::dimension2d<f32>& textureRepeatCount)
 {
-	if (!name || MeshCache->isMeshLoaded(name))
+	if (!name)
 		return 0;
+
+	if (MeshCache->isMeshLoaded(name))
+		return MeshCache->getMeshByFilename(name);
 
 	IMesh* mesh = CGeometryCreator::createHillPlaneMesh(tileSize,
 			tileCount, material, hillHeight, countHills,
@@ -826,11 +829,14 @@ IAnimatedMesh* CSceneManager::addHillPlaneMesh(const c8* name,
 
 	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
 	if (!animatedMesh)
+	{
+		mesh->drop();
 		return 0;
+	}
 
 	animatedMesh->addMesh(mesh);
-	animatedMesh->recalculateBoundingBox();
 	mesh->drop();
+	animatedMesh->recalculateBoundingBox();
 
 	MeshCache->addMesh(name, animatedMesh);
 	animatedMesh->drop();
@@ -846,8 +852,11 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const c8* name,
 	f32 maxHeight,
 	const core::dimension2d<s32>& defaultVertexBlockSize)
 {
-	if (!name || MeshCache->isMeshLoaded(name))
+	if (!name)
 		return 0;
+
+	if (MeshCache->isMeshLoaded(name))
+		return MeshCache->getMeshByFilename(name);
 
 	IMesh* mesh = CGeometryCreator::createTerrainMesh(texture, heightmap,
 			stretchSize, maxHeight, getVideoDriver(),
@@ -857,11 +866,14 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const c8* name,
 
 	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
 	if (!animatedMesh)
+	{
+		mesh->drop();
 		return 0;
+	}
 
 	animatedMesh->addMesh(mesh);
-	animatedMesh->recalculateBoundingBox();
 	mesh->drop();
+	animatedMesh->recalculateBoundingBox();
 
 	MeshCache->addMesh(name, animatedMesh);
 	animatedMesh->drop();
@@ -875,8 +887,11 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const c8* name,
 		u32 tesselationCylinder, u32 tesselationCone, f32 height,
 		f32 cylinderHeight, f32 width0,f32 width1)
 {
-	if (!name || MeshCache->isMeshLoaded(name))
+	if (!name)
 		return 0;
+
+	if (MeshCache->isMeshLoaded(name))
+		return MeshCache->getMeshByFilename(name);
 
 	IMesh* mesh = CGeometryCreator::createArrowMesh( tesselationCylinder,
 			tesselationCone, height, cylinderHeight, width0,width1,
@@ -886,11 +901,14 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const c8* name,
 
 	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
 	if (!animatedMesh)
+	{
+		mesh->drop();
 		return 0;
+	}
 
 	animatedMesh->addMesh(mesh);
-	animatedMesh->recalculateBoundingBox();
 	mesh->drop();
+	animatedMesh->recalculateBoundingBox();
 
 	MeshCache->addMesh(name, animatedMesh);
 	animatedMesh->drop();
@@ -904,20 +922,26 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const c8* name,
 IAnimatedMesh* CSceneManager::addSphereMesh(const c8* name,
 		f32 radius, u32 polyCountX, u32 polyCountY)
 {
-	if (!name || MeshCache->isMeshLoaded(name))
+	if (!name)
 		return 0;
 
-	IMesh* mesh = CGeometryCreator::createSphereMesh( radius, polyCountX, polyCountY);
+	if (MeshCache->isMeshLoaded(name))
+		return MeshCache->getMeshByFilename(name);
+
+	IMesh* mesh = CGeometryCreator::createSphereMesh(radius, polyCountX, polyCountY);
 	if (!mesh)
 		return 0;
 
 	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
 	if (!animatedMesh)
+	{
+		mesh->drop();
 		return 0;
+	}
 
 	animatedMesh->addMesh(mesh);
-	animatedMesh->recalculateBoundingBox();
 	mesh->drop();
+	animatedMesh->recalculateBoundingBox();
 
 	MeshCache->addMesh(name, animatedMesh);
 	animatedMesh->drop();

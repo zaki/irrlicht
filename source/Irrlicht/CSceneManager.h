@@ -399,7 +399,7 @@ namespace scene
 		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type);
 
 		//! Adds a scene node to the scene by name
-		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent);
+		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0);
 
 		//! Returns the default scene node animator factory which can create all built-in scene node animators
 		virtual ISceneNodeAnimatorFactory* getDefaultSceneNodeAnimatorFactory();
