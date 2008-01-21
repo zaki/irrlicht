@@ -176,7 +176,7 @@ private:
 	void readLibrarySection(io::IXMLReaderUTF8* reader);
 
 	//! reads a <visual_scene> element and stores it as a prefab
-	void CColladaFileLoader::readVisualSceneSection(io::IXMLReaderUTF8* reader);
+	void readVisualSceneSection(io::IXMLReaderUTF8* reader);
 
 	//! reads a <scene> section and its content
 	void readSceneSection(io::IXMLReaderUTF8* reader);
