@@ -709,6 +709,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\..\..\include\IVolumeLightSceneNode.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\ITriangleSelector.h"
 					>
 				</File>
@@ -1770,6 +1774,14 @@
 				</File>
 				<File
 					RelativePath=".\CLMTSMeshFileLoader.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CLWOMeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CLWOMeshFileLoader.h"
 					>
 				</File>
 				<File

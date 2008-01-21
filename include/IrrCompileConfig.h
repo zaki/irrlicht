@@ -273,6 +273,8 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_OCT_LOADER_
 //! Define _IRR_COMPILE_WITH_OGRE_LOADER_ if you want to load Ogre 3D files
 #define _IRR_COMPILE_WITH_OGRE_LOADER_
+//! Define _IRR_COMPILE_WITH_LWO_LOADER_ if you want to load Lightwave3D files
+#define _IRR_COMPILE_WITH_LWO_LOADER_
 //! Define _IRR_COMPILE_WITH_STL_LOADER_ if you want to load .stl files
 #define _IRR_COMPILE_WITH_STL_LOADER_
 

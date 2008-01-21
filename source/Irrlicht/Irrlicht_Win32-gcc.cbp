@@ -190,6 +190,7 @@
 		<Unit filename="..\..\include\ISkinnedMesh.h" />
 		<Unit filename="..\..\include\ITerrainSceneNode.h" />
 		<Unit filename="..\..\include\ITextSceneNode.h" />
+		<Unit filename="..\..\include\IVolumeLightSceneNode.h" />
 		<Unit filename="..\..\include\ITexture.h" />
 		<Unit filename="..\..\include\ITimer.h" />
 		<Unit filename="..\..\include\ITriangleSelector.h" />
@@ -416,6 +417,8 @@
 		<Unit filename="CIrrMeshWriter.h" />
 		<Unit filename="CLMTSMeshFileLoader.cpp" />
 		<Unit filename="CLMTSMeshFileLoader.h" />
+		<Unit filename="CLWOMeshFileLoader.cpp" />
+		<Unit filename="CLWOMeshFileLoader.h" />
 		<Unit filename="CLightSceneNode.cpp" />
 		<Unit filename="CLightSceneNode.h" />
 		<Unit filename="CLimitReadFile.cpp" />
@@ -572,6 +575,8 @@
 		<Unit filename="CTerrainTriangleSelector.h" />
 		<Unit filename="CTextSceneNode.cpp" />
 		<Unit filename="CTextSceneNode.h" />
+		<Unit filename="CVolumeLightSceneNode.cpp" />
+		<Unit filename="CVolumeLightSceneNode.h" />
 		<Unit filename="CTimer.h" />
 		<Unit filename="CTriangleBBSelector.cpp" />
 		<Unit filename="CTriangleBBSelector.h" />

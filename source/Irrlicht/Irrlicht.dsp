@@ -1326,6 +1326,14 @@ SOURCE=.\CLMTSMeshFileLoader.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\CLWOMeshFileLoader.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CLWOMeshFileLoader.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\CMD2MeshFileLoader.cpp
 # End Source File
 # Begin Source File
@@ -1691,6 +1699,14 @@ SOURCE=.\CTextSceneNode.cpp
 # Begin Source File
 
 SOURCE=.\CTextSceneNode.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\CVolumeLightSceneNode.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\CVolumeLightSceneNode.h
 # End Source File
 # Begin Source File
 

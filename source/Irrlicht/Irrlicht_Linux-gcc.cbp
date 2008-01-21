@@ -173,6 +173,7 @@
 		<Unit filename="../../include/ITriangleSelector.h" />
 		<Unit filename="../../include/IVideoDriver.h" />
 		<Unit filename="../../include/IVideoModeList.h" />
+		<Unit filename="../../include/IVolumeLightSceneNode.h" />
 		<Unit filename="../../include/IWriteFile.h" />
 		<Unit filename="../../include/IXMLReader.h" />
 		<Unit filename="../../include/IXMLWriter.h" />
@@ -401,6 +402,8 @@
 		<Unit filename="CIrrMeshWriter.h" />
 		<Unit filename="CLMTSMeshFileLoader.cpp" />
 		<Unit filename="CLMTSMeshFileLoader.h" />
+		<Unit filename="CLWOMeshFileLoader.cpp" />
+		<Unit filename="CLWOMeshFileLoader.h" />
 		<Unit filename="CLightSceneNode.cpp" />
 		<Unit filename="CLightSceneNode.h" />
 		<Unit filename="CLimitReadFile.cpp" />
@@ -571,6 +574,8 @@
 		<Unit filename="CTriangleSelector.h" />
 		<Unit filename="CVideoModeList.cpp" />
 		<Unit filename="CVideoModeList.h" />
+		<Unit filename="CVolumeLightSceneNode.cpp" />
+		<Unit filename="CVolumeLightSceneNode.h" />
 		<Unit filename="CWaterSurfaceSceneNode.cpp" />
 		<Unit filename="CWaterSurfaceSceneNode.h" />
 		<Unit filename="CWriteFile.cpp" />
