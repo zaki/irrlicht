@@ -555,7 +555,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 		u32 uiType;
 		u32 tmp32;
 		u16 subsize, tmp16;
-		u32 tmpf32;
+		f32 tmpf32;
 		File->read(&type, 4);
 		//Convert 4-char string to 4-byte integer
 		//Makes it possible to do a switch statement
@@ -985,7 +985,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 #ifndef __BIG_ENDIAN__
 					tmp16=os::Byteswap::byteswap(tmp16);
 #endif
-					mat->Texture[currTexture].Active=tmp16;
+					mat->Texture[currTexture].Active=(tmp16!=0);
 					size -= 2;
 				}
 				break;
