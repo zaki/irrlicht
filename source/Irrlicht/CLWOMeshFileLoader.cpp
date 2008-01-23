@@ -12,7 +12,7 @@ namespace irr
 namespace scene
 {
 
-#define LWO_READER_DEBUG
+//#define LWO_READER_DEBUG
 
 #define charsToUIntD(a, b, c, d) ((a << 24) | (b << 16) | (c << 8) | d)
 inline unsigned int charsToUInt(const char *str)
@@ -23,15 +23,17 @@ inline unsigned int charsToUInt(const char *str)
 
 struct tLWOTextureInfo
 {
-	tLWOTextureInfo() : Flags(0), WidthWrap(2), HeightWrap(2),
-			Value(0.0f), AntiAliasing(1.0f), Opacity(1.0f) {};
+	tLWOTextureInfo() : Flags(0), WidthWrap(2), HeightWrap(2), OpacType(0),
+			Color(0xffffffff), Value(0.0f), AntiAliasing(1.0f),
+			Opacity(1.0f), TCoords(0), Active(false) {};
 	core::stringc Type;
 	core::stringc Map;
 	core::stringc AlphaMap;
 	u16 Flags;
-	bool Active;
 	u16 WidthWrap;
 	u16 HeightWrap;
+	u16 OpacType;
+	u16 IParam[3];
 	core::vector3df Size;
 	core::vector3df Center;
 	core::vector3df Falloff;
@@ -40,18 +42,30 @@ struct tLWOTextureInfo
 	f32 Value;
 	f32 AntiAliasing;
 	f32 Opacity;
-	u16 OpacType;
 	f32 FParam[3];
-	u16 IParam[3];
+	core::array<core::vector2df>* TCoords;
+	bool Active;
 };
 
 struct CLWOMeshFileLoader::tLWOMaterial
 {
-	tLWOMaterial() : Luminance(0.0f),Diffuse(1.0f),Specular(0.0f),Reflection(0.0f),Transparency(0.0f),Translucency(0.0f),Sharpness(0.0f),ReflMode(3),ReflSeamAngle(0.0f),ReflBlur(0.0f),RefrIndex(1.0f),TranspMode(3),TranspBlur(0.0f) {};
+	tLWOMaterial() : Meshbuffer(0), Flags(0), ReflMode(3), TranspMode(3),
+		Glow(0), AlphaMode(2), Luminance(0.0f), Diffuse(1.0f), Specular(0.0f),
+		Reflection(0.0f), Transparency(0.0f), Translucency(0.0f),
+		Sharpness(0.0f), ReflSeamAngle(0.0f), ReflBlur(0.0f),
+		RefrIndex(1.0f), TranspBlur(0.0f), SmoothingAngle(0.0f),
+		EdgeTransparency(0.0f), HighlightColor(0.0f), ColorFilter(0.0f),
+		AdditiveTransparency(0.0f), GlowIntensity(0.0f), GlowSize(0.0f),
+		AlphaValue(0.0f), VertexColorIntensity(0.0f), VertexColor() {};
 
 	core::stringc Name;
 	scene::SMeshBuffer *Meshbuffer;
+	core::stringc ReflMap;
 	u16 Flags;
+	u16 ReflMode;
+	u16 TranspMode;
+	u16 Glow;
+	u16 AlphaMode;
 	f32 Luminance;
 	f32 Diffuse;
 	f32 Specular;
@@ -59,17 +73,22 @@ struct CLWOMeshFileLoader::tLWOMaterial
 	f32 Transparency;
 	f32 Translucency;
 	f32 Sharpness;
-	u16 ReflMode;
-	core::stringc ReflMap;
 	f32 ReflSeamAngle;
 	f32 ReflBlur;
 	f32 RefrIndex;
-	u16 TranspMode;
 	f32 TranspBlur;
-	f32 EdgeTransparency;
 	f32 SmoothingAngle;
+	f32 EdgeTransparency;
+	f32 HighlightColor;
+	f32 ColorFilter;
+	f32 AdditiveTransparency;
+	f32 GlowIntensity;
+	f32 GlowSize;
+	f32 AlphaValue;
+	f32 VertexColorIntensity;
+	video::SColorf VertexColor;
+	u32 Envelope[23];
 	tLWOTextureInfo Texture[7];
-	u32 Envelope[18];
 };
 
 struct tLWOLayerInfo
@@ -230,10 +249,16 @@ bool CLWOMeshFileLoader::readChunks()
 				}
 				break;
 			case charsToUIntD('V','M','A','P'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading Vertex mapping.");
+#endif
 				readVertexMapping(size);
 				break;
 			case charsToUIntD('P','O','L','S'):
 			case charsToUIntD('P','T','C','H'): // TODO: should be a subdivison mesh
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading polygons.");
+#endif
 				if (FormatVersion!=2)
 					readObj1(size);
 				else
@@ -256,6 +281,9 @@ bool CLWOMeshFileLoader::readChunks()
 				}
 				break;
 			case charsToUIntD('P','T','A','G'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading tag mapping.");
+#endif
 				readTagMapping(size);
 				break;
 //			case charsToUIntD('V','M','A','D'): // dicontinuous vertex mapping, i.e. additional texcoords
@@ -290,6 +318,9 @@ bool CLWOMeshFileLoader::readChunks()
 				}
 				break;
 			case charsToUIntD('S','U','R','F'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading material.");
+#endif
 				readMat(size);
 				break;
 			case charsToUIntD('B','B','O','X'):
@@ -333,9 +364,6 @@ bool CLWOMeshFileLoader::readChunks()
 
 void CLWOMeshFileLoader::readObj1(u32 size)
 {
-#ifdef LWO_READER_DEBUG
-	os::Printer::log("LWO loader: loading polygons (old format).");
-#endif
 	u32 pos;
 	u16 numVerts, vertIndex;
 	s16 material;
@@ -391,20 +419,23 @@ void CLWOMeshFileLoader::readObj1(u32 size)
 
 void CLWOMeshFileLoader::readVertexMapping(u32 size)
 {
-#ifdef LWO_READER_DEBUG
-	os::Printer::log("LWO loader: loading Vertex mapping.");
-#endif
 	char type[5];
 	type[4]=0;
 	u16 dimension;
 	core::stringc name;
 	File->read(&type, 4);
+#ifdef LWO_READER_DEBUG
+	os::Printer::log("LWO loader: Vertex map", type);
+#endif
 	File->read(&dimension, 2);
 #ifndef __BIG_ENDIAN__
 	dimension=os::Byteswap::byteswap(dimension);
 #endif
 	size -= 6;
 	size -= readString(name);
+#ifdef LWO_READER_DEBUG
+	os::Printer::log("LWO loader: Vertex map", name.c_str());
+#endif
 	if (strncmp(type, "TXUV", 4)) // also support RGB, RGBA, WGHT, ...
 	{
 		File->seek(size, true);
@@ -433,9 +464,6 @@ void CLWOMeshFileLoader::readVertexMapping(u32 size)
 
 void CLWOMeshFileLoader::readTagMapping(u32 size)
 {
-#ifdef LWO_READER_DEBUG
-	os::Printer::log("LWO loader: loading tag mappings.");
-#endif
 	char type[5];
 	type[4]=0;
 	File->read(&type, 4);
@@ -483,9 +511,6 @@ void CLWOMeshFileLoader::readTagMapping(u32 size)
 
 void CLWOMeshFileLoader::readObj2(u32 size)
 {
-#ifdef LWO_READER_DEBUG
-	os::Printer::log("LWO loader: loading polygons (new format).");
-#endif
 	char type[5];
 	type[4]=0;
 	File->read(&type, 4);
@@ -522,9 +547,6 @@ void CLWOMeshFileLoader::readObj2(u32 size)
 
 void CLWOMeshFileLoader::readMat(u32 size)
 {
-#ifdef LWO_READER_DEBUG
-	os::Printer::log("LWO loader: loading Surfaces.");
-#endif
 	core::stringc name;
 
 	tLWOMaterial* mat=0;
@@ -568,6 +590,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 		switch (uiType)
 		{
 			case charsToUIntD('C','O','L','R'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading Ambient color.");
+#endif
 				{
 					s32 colSize = readColor(irrMat->DiffuseColor);
 					irrMat->AmbientColor=irrMat->DiffuseColor;
@@ -578,6 +603,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('D','I','F','F'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading Diffuse color.");
+#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -602,6 +630,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('V','D','I','F'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading Diffuse color.");
+#endif
 				{
 					File->read(&mat->Diffuse, 4);
 #ifndef __BIG_ENDIAN__
@@ -611,6 +642,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('L','U','M','I'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading luminance.");
+#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -634,6 +668,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 					}				}
 				break;
 			case charsToUIntD('V','L','U','M'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading luminance.");
+#endif
 				{
 					File->read(&mat->Luminance, 4);
 #ifndef __BIG_ENDIAN__
@@ -643,6 +680,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('S','P','E','C'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading specular.");
+#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -667,6 +707,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('V','S','P','C'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading specular.");
+#endif
 				{
 					File->read(&mat->Specular, 4);
 #ifndef __BIG_ENDIAN__
@@ -676,6 +719,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('R','E','F','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading reflection.");
+#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -700,6 +746,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('V','R','F','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading reflection.");
+#endif
 				{
 					File->read(&mat->Reflection, 4);
 #ifndef __BIG_ENDIAN__
@@ -709,6 +758,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','R','A','N'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading transparency.");
+#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -733,6 +785,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('V','T','R','N'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading transparency.");
+#endif
 				{
 					File->read(&mat->Transparency, 4);
 #ifndef __BIG_ENDIAN__
@@ -742,6 +797,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','R','N','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading translucency.");
+#endif
 				{
 					File->read(&mat->Translucency, 4);
 #ifndef __BIG_ENDIAN__
@@ -754,6 +812,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('G','L','O','S'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading glossy.");
+#endif
 				{
 					if (FormatVersion == 2)
 					{
@@ -778,6 +839,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('S','H','R','P'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading sharpness.");
+#endif
 				{
 					File->read(&mat->Sharpness, 4);
 #ifndef __BIG_ENDIAN__
@@ -791,6 +855,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				break;
 			case charsToUIntD('B','U','M','P'):
 			case charsToUIntD('T','A','M','P'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading bumpiness.");
+#endif
 				{
 					File->read(&tmpf32, 4);
 #ifndef __BIG_ENDIAN__
@@ -805,6 +872,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('S','I','D','E'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading backface culled.");
+#endif
 				{
 					File->read(&tmp16, 2);
 #ifndef __BIG_ENDIAN__
@@ -818,6 +888,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('S','M','A','N'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading smoothing angle.");
+#endif
 				{
 					File->read(&mat->SmoothingAngle, 4);
 #ifndef __BIG_ENDIAN__
@@ -828,6 +901,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				break;
 			case charsToUIntD('R','F','O','P'):
 			case charsToUIntD('R','F','L','T'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading reflection mode.");
+#endif
 				{
 					File->read(&mat->ReflMode, 2);
 #ifndef __BIG_ENDIAN__
@@ -837,6 +913,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('R','I','M','G'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading reflection map.");
+#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -849,6 +928,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('R','S','A','N'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading reflection seam angle.");
+#endif
 				{
 					File->read(&mat->ReflSeamAngle, 4);
 #ifndef __BIG_ENDIAN__
@@ -860,6 +942,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('R','B','L','R'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading reflection blur.");
+#endif
 				{
 					File->read(&mat->ReflBlur, 4);
 #ifndef __BIG_ENDIAN__
@@ -871,6 +956,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('R','I','N','D'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading refraction index.");
+#endif
 				{
 					File->read(&mat->RefrIndex, 4);
 #ifndef __BIG_ENDIAN__
@@ -883,6 +971,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','R','O','P'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading transparency mode.");
+#endif
 				{
 					File->read(&mat->TranspMode, 2);
 #ifndef __BIG_ENDIAN__
@@ -892,6 +983,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','I','M','G'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading refraction map.");
+#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -907,6 +1001,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','B','L','R'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading transparency blur.");
+#endif
 				{
 					File->read(&mat->TranspBlur, 4);
 #ifndef __BIG_ENDIAN__
@@ -914,10 +1011,162 @@ void CLWOMeshFileLoader::readMat(u32 size)
 #endif
 					size -= 4;
 					if (FormatVersion==2)
-						size -= readVX(mat->Envelope[12]);
+						size -= readVX(mat->Envelope[13]);
+				}
+				break;
+			case charsToUIntD('C','L','R','H'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading highlight color.");
+#endif
+				{
+					File->read(&mat->HighlightColor, 4);
+#ifndef __BIG_ENDIAN__
+					mat->HighlightColor=os::Byteswap::byteswap(mat->HighlightColor);
+#endif
+					size -= 4;
+					if (FormatVersion==2)
+						size -= readVX(mat->Envelope[14]);
+				}
+				break;
+			case charsToUIntD('C','L','R','F'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading color filter.");
+#endif
+				{
+					File->read(&mat->ColorFilter, 4);
+#ifndef __BIG_ENDIAN__
+					mat->ColorFilter=os::Byteswap::byteswap(mat->ColorFilter);
+#endif
+					size -= 4;
+					if (FormatVersion==2)
+						size -= readVX(mat->Envelope[15]);
+				}
+				break;
+			case charsToUIntD('A','D','T','R'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading additive transparency.");
+#endif
+				{
+					File->read(&mat->AdditiveTransparency, 4);
+#ifndef __BIG_ENDIAN__
+					mat->AdditiveTransparency=os::Byteswap::byteswap(mat->AdditiveTransparency);
+#endif
+					size -= 4;
+					if (FormatVersion==2)
+						size -= readVX(mat->Envelope[16]);
+				}
+				break;
+			case charsToUIntD('G','L','O','W'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading glow.");
+#endif
+				{
+					File->read(&mat->Glow, 2);
+#ifndef __BIG_ENDIAN__
+					mat->Glow=os::Byteswap::byteswap(mat->Glow);
+#endif
+					size -= 2;
+					File->read(&mat->GlowIntensity, 4);
+#ifndef __BIG_ENDIAN__
+					mat->GlowIntensity=os::Byteswap::byteswap(mat->GlowIntensity);
+#endif
+					size -= 4;
+					if (FormatVersion==2)
+						size -= readVX(mat->Envelope[17]);
+					File->read(&mat->GlowSize, 4);
+#ifndef __BIG_ENDIAN__
+					mat->GlowSize=os::Byteswap::byteswap(mat->GlowSize);
+#endif
+					size -= 4;
+					if (FormatVersion==2)
+						size -= readVX(mat->Envelope[18]);
+				}
+				break;
+			case charsToUIntD('G','V','A','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading glow intensity.");
+#endif
+				{
+					File->read(&mat->GlowIntensity, 4);
+#ifndef __BIG_ENDIAN__
+					mat->GlowIntensity=os::Byteswap::byteswap(mat->GlowIntensity);
+#endif
+					size -= 4;
+					if (FormatVersion==2)
+						size -= readVX(mat->Envelope[17]);
+				}
+				break;
+			case charsToUIntD('L','I','N','E'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading isWireframe.");
+#endif
+				{
+					File->read(&tmp16, 2);
+#ifndef __BIG_ENDIAN__
+					tmp16=os::Byteswap::byteswap(tmp16);
+#endif
+					if (tmp16&1)
+						irrMat->Wireframe=true;
+					size -= 2;
+					if (size!=0)
+					{
+						File->read(&irrMat->Thickness, 4);
+#ifndef __BIG_ENDIAN__
+						irrMat->Thickness=os::Byteswap::byteswap(irrMat->Thickness);
+#endif
+						size -= 4;
+						if (FormatVersion==2)
+							size -= readVX(mat->Envelope[19]);
+					}
+					if (size!=0)
+					{
+						video::SColor lineColor;
+						size -= readColor(lineColor);
+						if (FormatVersion==2)
+							size -= readVX(mat->Envelope[20]);
+					}
+				}
+				break;
+			case charsToUIntD('A','L','P','H'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading alpha mode.");
+#endif
+				{
+					File->read(&mat->AlphaMode, 2);
+#ifndef __BIG_ENDIAN__
+					mat->AlphaMode=os::Byteswap::byteswap(mat->AlphaMode);
+#endif
+					size -= 2;
+					File->read(&mat->AlphaValue, 4);
+#ifndef __BIG_ENDIAN__
+					mat->AlphaValue=os::Byteswap::byteswap(mat->AlphaValue);
+#endif
+					size -= 4;
+				}
+				break;
+			case charsToUIntD('V','C','O','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading vertex color.");
+#endif
+				{
+					File->read(&mat->VertexColorIntensity, 4);
+#ifndef __BIG_ENDIAN__
+					mat->VertexColorIntensity=os::Byteswap::byteswap(mat->VertexColorIntensity);
+#endif
+					size -= 4;
+					if (FormatVersion==2)
+						size -= readVX(mat->Envelope[21]);
+					File->read(&tmp32, 4); // skip type
+					size -= 4;
+					core::stringc name;
+					size -= readString(name);
+//					mat->VertexColor = getColorVMAP(name);
 				}
 				break;
 			case charsToUIntD('F','L','A','G'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading flag.");
+#endif
 				{
 					File->read(&mat->Flags, 2);
 #ifndef __BIG_ENDIAN__
@@ -931,6 +1180,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('E','D','G','E'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading edge.");
+#endif
 				{
 					File->read(&mat->EdgeTransparency, 4);
 #ifndef __BIG_ENDIAN__
@@ -940,37 +1192,64 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('C','T','E','X'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading ctex.");
+#endif
 				currTexture=0;
 				size -= readString(mat->Texture[currTexture].Type);
 				break;
 			case charsToUIntD('D','T','E','X'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading dtex.");
+#endif
 				currTexture=1;
 				size -= readString(mat->Texture[currTexture].Type);
 				break;
 			case charsToUIntD('S','T','E','X'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading stex.");
+#endif
 				currTexture=2;
 				size -= readString(mat->Texture[currTexture].Type);
 				break;
 			case charsToUIntD('R','T','E','X'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading rtex.");
+#endif
 				currTexture=3;
 				size -= readString(mat->Texture[currTexture].Type);
 				break;
 			case charsToUIntD('T','T','E','X'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading ttex.");
+#endif
 				currTexture=4;
 				size -= readString(mat->Texture[currTexture].Type);
 				break;
 			case charsToUIntD('L','T','E','X'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading ltex.");
+#endif
 				currTexture=5;
 				size -= readString(mat->Texture[currTexture].Type);
 				break;
 			case charsToUIntD('B','T','E','X'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading btex.");
+#endif
 				currTexture=6;
 				size -= readString(mat->Texture[currTexture].Type);
 				break;
 			case charsToUIntD('T','A','L','P'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading alpha map.");
+#endif
 				size -= readString(mat->Texture[currTexture].AlphaMap);
 				break;
 			case charsToUIntD('T','F','L','G'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture flag.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].Flags, 2);
 #ifndef __BIG_ENDIAN__
@@ -980,6 +1259,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('E','N','A','B'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading isEnabled.");
+#endif
 				{
 					File->read(&tmp16, 2);
 #ifndef __BIG_ENDIAN__
@@ -989,7 +1271,11 @@ void CLWOMeshFileLoader::readMat(u32 size)
 					size -= 2;
 				}
 				break;
+			case charsToUIntD('W','R','A','P'):
 			case charsToUIntD('T','W','R','P'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture wrap.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].WidthWrap, 2);
 #ifndef __BIG_ENDIAN__
@@ -1003,30 +1289,63 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','S','I','Z'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture size.");
+#endif
 				size -= readVec(mat->Texture[currTexture].Size);
 				break;
 			case charsToUIntD('T','C','T','R'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture center.");
+#endif
 				size -= readVec(mat->Texture[currTexture].Center);
 				break;
 			case charsToUIntD('T','F','A','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture falloff.");
+#endif
 				size -= readVec(mat->Texture[currTexture].Falloff);
 				break;
 			case charsToUIntD('T','V','E','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture velocity.");
+#endif
 				size -= readVec(mat->Texture[currTexture].Velocity);
 				break;
 			case charsToUIntD('T','C','L','R'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture color.");
+#endif
 				size -= readColor(mat->Texture[currTexture].Color);
 				break;
+			case charsToUIntD('A','A','S','T'):
 			case charsToUIntD('T','A','A','S'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture antialias.");
+#endif
 				{
+					tmp16=0;
+					if (FormatVersion==2)
+					{
+						File->read(&tmp16, 2);
+#ifndef __BIG_ENDIAN__
+						tmp16=os::Byteswap::byteswap(tmp16);
+#endif
+						size -= 2;
+					}
 					File->read(&mat->Texture[currTexture].AntiAliasing, 4);
 #ifndef __BIG_ENDIAN__
 					mat->Texture[currTexture].AntiAliasing=os::Byteswap::byteswap(mat->Texture[currTexture].AntiAliasing);
 #endif
+					if (tmp16 & ~0x01)
+						mat->Texture[currTexture].AntiAliasing=0.0f; // disabled
 					size -= 4;
 				}
 				break;
 			case charsToUIntD('T','O','P','C'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture opacity.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].Opacity, 4);
 #ifndef __BIG_ENDIAN__
@@ -1036,6 +1355,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('O','P','A','C'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture opacity and type.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].OpacType, 2);
 #ifndef __BIG_ENDIAN__
@@ -1048,10 +1370,13 @@ void CLWOMeshFileLoader::readMat(u32 size)
 					size -= 6;
 					subsize -= 6;
 					if (FormatVersion==2)
-						size -= readVX(mat->Envelope[13]);
+						size -= readVX(mat->Envelope[22]);
 				}
 				break;
 			case charsToUIntD('T','V','A','L'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture value.");
+#endif
 				{
 					File->read(&tmp16, 2);
 #ifndef __BIG_ENDIAN__
@@ -1063,6 +1388,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				break;
 			case charsToUIntD('T','F','P','0'):
 			case charsToUIntD('T','S','P','0'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture param 0.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].FParam[0], 4);
 #ifndef __BIG_ENDIAN__
@@ -1073,6 +1401,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				break;
 			case charsToUIntD('T','F','P','1'):
 			case charsToUIntD('T','S','P','1'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture param 1.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].FParam[1], 4);
 #ifndef __BIG_ENDIAN__
@@ -1083,6 +1414,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				break;
 			case charsToUIntD('T','F','P','2'):
 			case charsToUIntD('T','S','P','2'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture param 2.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].FParam[2], 4);
 #ifndef __BIG_ENDIAN__
@@ -1093,6 +1427,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				break;
 			case charsToUIntD('T','F','R','Q'):
 			case charsToUIntD('T','I','P','0'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture iparam 0.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].IParam[0], 2);
 #ifndef __BIG_ENDIAN__
@@ -1102,6 +1439,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','I','P','1'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture param 1.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].IParam[1], 2);
 #ifndef __BIG_ENDIAN__
@@ -1111,6 +1451,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','I','P','2'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading texture param 2.");
+#endif
 				{
 					File->read(&mat->Texture[currTexture].IParam[2], 2);
 #ifndef __BIG_ENDIAN__
@@ -1119,7 +1462,20 @@ void CLWOMeshFileLoader::readMat(u32 size)
 					size -= 2;
 				}
 				break;
+			case charsToUIntD('V','M','A','P'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading material vmap binding.");
+#endif
+				{
+					core::stringc name;
+					size -= readString(name);
+					mat->Texture[currTexture].TCoords = &TCoords; // TODO: Needs to be searched for
+				}
+				break;
 			case charsToUIntD('B','L','O','K'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading blok.");
+#endif
 				{
 					core::stringc ordinal;
 					File->read(&type, 4);
@@ -1150,8 +1506,14 @@ void CLWOMeshFileLoader::readMat(u32 size)
 					else if (!strncmp(type, "BUMP", 4))
 						currTexture=6;
 				}
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading channel ", type);
+#endif
 				break;
 			case charsToUIntD('I','M','A','G'):
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading channel map.");
+#endif
 				{
 					u16 index;
 					File->read(&index, 2);
@@ -1172,7 +1534,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 	}
 
 	s32 stringPos;
-	if (mat->Texture[0].Map != "")
+	if (mat->Texture[0].Map != "") // diffuse
 	{
 		irrMat->setTexture(0,Driver->getTexture(mat->Texture[0].Map.c_str()));
 		if (!irrMat->getTexture(0))
@@ -1184,7 +1546,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				irrMat->setTexture(0, Driver->getTexture(mat->Texture[0].Map.subString(stringPos+1, mat->Texture[0].Map.size()-stringPos).c_str()));
 		}
 	}
-	if (mat->Texture[3].Map != "")
+	if (mat->Texture[3].Map != "") // reflection
 	{
 		video::ITexture* reflTexture = Driver->getTexture(mat->Texture[3].Map.c_str());
 		if (!reflTexture)
@@ -1202,7 +1564,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 			irrMat->MaterialType=video::EMT_REFLECTION_2_LAYER;
 		}
 	}
-	if (mat->Texture[4].Map != "")
+	if (mat->Texture[4].Map != "") // transparency
 	{
 		video::ITexture* transTexture = Driver->getTexture(mat->Texture[4].Map.c_str());
 		if (!transTexture)
@@ -1220,7 +1582,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 			irrMat->MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
 		}
 	}
-	if (mat->Texture[6].Map != "")
+	if (mat->Texture[6].Map != "") // bump
 	{
 		irrMat->setTexture(1, Driver->getTexture(mat->Texture[6].Map.c_str()));
 		if (!irrMat->getTexture(1))
