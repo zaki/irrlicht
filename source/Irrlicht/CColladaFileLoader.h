@@ -12,6 +12,7 @@
 #include "SMesh.h"
 #include "SMeshBuffer.h"
 #include "ISceneManager.h"
+#include "irrMap.h"
 
 namespace irr
 {
@@ -111,6 +112,24 @@ struct SColladaMaterial
 {
 	video::SMaterial Mat;
 	core::stringc Id;
+	core::stringc InstanceEffectId;
+	
+	inline bool operator< (const SColladaMaterial & other) const
+	{
+		return Id < other.Id;
+	}
+};
+
+//! Collada effect (materials, shaders, and programs)
+struct SColladaEffect
+{
+	video::SMaterial Mat;
+	core::stringc Id;
+	
+	inline bool operator< (const SColladaEffect & other) const
+	{
+		return Id < other.Id;
+	}
 };
 
 
@@ -141,6 +160,7 @@ struct SSource
 	core::array<SAccessor> Accessors;
 };
 
+class CScenePrefab;
 
 //! Meshloader capable of loading COLLADA meshes and scene descriptions into Irrlicht.
 class CColladaFileLoader : public IMeshLoader
@@ -176,7 +196,7 @@ private:
 	void readLibrarySection(io::IXMLReaderUTF8* reader);
 
 	//! reads a <visual_scene> element and stores it as a prefab
-	void readVisualSceneSection(io::IXMLReaderUTF8* reader);
+	void readVisualSceneLibrary(io::IXMLReaderUTF8* reader);
 
 	//! reads a <scene> section and its content
 	void readSceneSection(io::IXMLReaderUTF8* reader);
@@ -185,7 +205,8 @@ private:
 	void readAssetSection(io::IXMLReaderUTF8* reader);
 
 	//! reads a <node> section and its content
-	void readNodeSection(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent);
+	//! if a prefab pointer is passed the nodes are created as scene prefabs childs of that prefab
+	void readNodeSection(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent, CScenePrefab* p=0);
 
 	//! reads a <lookat> element and its content and creates a matrix from it
 	core::matrix4 readLookAtNode(io::IXMLReaderUTF8* reader);
@@ -211,9 +232,15 @@ private:
 	//! reads a <translate> element and its content and creates a matrix from it
 	core::matrix4 readTranslateNode(io::IXMLReaderUTF8* reader);
 
+	//! reads a <color> element
+	video::SColorf readColorNode(io::IXMLReaderUTF8* reader);
+
+	//! reads a <float> element
+	f32 readFloatNode(io::IXMLReaderUTF8* reader);
+
 	//! reads a <instance> node and creates a scene node from it
 	void readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent,
-		scene::ISceneNode** outNode);
+		scene::ISceneNode** outNode, CScenePrefab* p=0);
 
 	//! reads a <light> element and stores it as prefab
 	void readLightPrefab(io::IXMLReaderUTF8* reader);
@@ -229,6 +256,9 @@ private:
 
 	//! reads a <material> element and stores it in the material section
 	void readMaterial(io::IXMLReaderUTF8* reader);
+
+	//! reads a <effect> element and stores it in the effects section
+	void readEffect(io::IXMLReaderUTF8* reader, SColladaEffect * effect = 0);
 
 	//! reads a <geometry> element and stores it as mesh if possible
 	void readGeometry(io::IXMLReaderUTF8* reader);
@@ -246,6 +276,9 @@ private:
 
 	//! reads floats from inside of xml element until end of xml element
 	void readFloatsInsideElement(io::IXMLReaderUTF8* reader, f32* floats, u32 count);
+
+	//! reads ints from inside of xml element until end of xml element
+	void readIntsInsideElement(io::IXMLReaderUTF8* reader, s32* ints, u32 count);
 
 	//! clears all loaded data
 	void clearData();
@@ -272,7 +305,13 @@ private:
 	//! reads a polygons section and creates a mesh from it
 	void readPolygonSection(io::IXMLReaderUTF8* reader,
 		const core::stringc& vertexPositionSource, core::array<SSource>& sources,
-		scene::SMesh* mesh);
+		scene::SMesh* mesh, const core::stringc& geometryId);
+	
+	//! finds a material, possible instancing it
+	const SColladaMaterial * findMaterial(const core::stringc & materialName);
+	
+	//! reads and bind materials as given by the symbol->target bind mapping
+	void readBindMaterialSection(io::IXMLReaderUTF8* reader, const core::stringc & id);
 
 	video::IVideoDriver* Driver;
 	scene::ISceneManager* SceneManager;
@@ -292,6 +331,9 @@ private:
 	core::array<SColladaTexture> Textures;
 	core::array<SColladaMaterial> Materials;
 	core::array<SColladaInput> Inputs;
+	core::array<SColladaEffect> Effects;
+	core::map<core::stringc,u32> MaterialsToBind;
+	core::array< core::array<irr::scene::IMeshBuffer*> > MeshesToBind;
 
 	bool CreateInstances;
 };
