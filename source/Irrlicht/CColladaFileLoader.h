@@ -133,7 +133,7 @@ struct SColladaEffect
 };
 
 
-struct SNumberArray // for stroring float and int arrays
+struct SNumberArray // for storing float and int arrays
 {
 	core::stringc Name;
 	core::array<f32> Data;

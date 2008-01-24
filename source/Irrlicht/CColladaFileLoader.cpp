@@ -92,6 +92,7 @@ namespace scene
 	const core::stringc paramTagName =         "param";
 	const core::stringc initFromName =         "init_from";
 
+	const core::stringc textureNodeName =      "texture";
 	const core::stringc doubleSidedName =      "double_sided";
 
 	const core::stringc profileCOMMONSectionName = "profile_COMMON";
@@ -168,7 +169,6 @@ namespace scene
 		}
 
 		scene::IMesh* Mesh;
-		core::map<u32, video::SMaterial*> MaterialMapping;
 
 		//! creates an instance of this prefab
 		virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
@@ -1301,6 +1301,18 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 										transparency = colorf;
 								}
 								else
+								if (reader->getNodeType() == io::EXN_ELEMENT &&
+									textureNodeName == reader->getNodeName())
+								{
+									const core::stringc tname = reader->getAttributeValue("texture");
+									for (u32 i=0; i<Images.size(); ++i)
+										if ((tname == Images[i].Id) && Images[i].Filename.size())
+										{
+											effect->Mat.setTexture(0, Driver->getTexture(Images[i].Filename.c_str()));
+											break;
+										}
+								}
+								else
 								if (reader->getNodeType() == io::EXN_ELEMENT)
 									skipSection(reader, false);
 								else
@@ -1412,6 +1424,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	}
 }
 
+
 const SColladaMaterial * CColladaFileLoader::findMaterial(const core::stringc & materialName)
 {
 	// do a quick lookup in the materials
@@ -1437,6 +1450,7 @@ const SColladaMaterial * CColladaFileLoader::findMaterial(const core::stringc & 
 	}
 	return &Materials[mat];
 }
+
 
 void CColladaFileLoader::readBindMaterialSection(io::IXMLReaderUTF8* reader, const core::stringc & id)
 {
