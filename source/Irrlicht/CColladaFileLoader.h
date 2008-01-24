@@ -13,6 +13,7 @@
 #include "SMeshBuffer.h"
 #include "ISceneManager.h"
 #include "irrMap.h"
+#include "CAttributes.h"
 
 namespace irr
 {
@@ -83,19 +84,25 @@ enum ECOLLADA_INPUT_SEMANTIC
 struct SColladaInput
 {
 	SColladaInput()
-		: Semantic(ECIS_COUNT)
+		: Semantic(ECIS_COUNT), Data(0), Offset(0), Set(0), Stride(1)
 	{
 	}
 
 	ECOLLADA_INPUT_SEMANTIC Semantic;
 	core::stringc Source;
+	f32* Data;
+	u32 Offset;
+	u32 Set;
+	u32 Stride;
 };
 
 //! Collada images
 struct SColladaImage
 {
-	core::stringc Filename;
 	core::stringc Id;
+	core::stringc Source;
+	core::dimension2di Dimension;
+	bool SourceIsFilename;
 };
 
 
@@ -299,6 +306,9 @@ private:
 	//! returns a collada input or none if not found
 	SColladaInput* getColladaInput(ECOLLADA_INPUT_SEMANTIC input);
 
+	//! read Collada Id, uses id or name if id is missing
+	core::stringc readId(io::IXMLReaderUTF8* reader);
+
 	//! changes the XML URI into an internal id
 	void uriToId(core::stringc& str);
 
@@ -313,6 +323,12 @@ private:
 	//! reads and bind materials as given by the symbol->target bind mapping
 	void readBindMaterialSection(io::IXMLReaderUTF8* reader, const core::stringc & id);
 
+	//! create an Irrlicht texture from the SColladaImage
+	video::ITexture* getTextureFromImage(core::stringc uri);
+
+	//! read a parameter and value
+	void readParameter(io::IXMLReaderUTF8* reader);
+
 	video::IVideoDriver* Driver;
 	scene::ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
@@ -326,7 +342,7 @@ private:
 	u32 Version;
 
 	core::array<IColladaPrefab*> Prefabs;
-	core::array<SColladaParam> Parameters;
+	core::array<SColladaParam> ColladaParameters;
 	core::array<SColladaImage> Images;
 	core::array<SColladaTexture> Textures;
 	core::array<SColladaMaterial> Materials;
@@ -334,6 +350,7 @@ private:
 	core::array<SColladaEffect> Effects;
 	core::map<core::stringc,u32> MaterialsToBind;
 	core::array< core::array<irr::scene::IMeshBuffer*> > MeshesToBind;
+	io::CAttributes Parameters;
 
 	bool CreateInstances;
 };
@@ -351,7 +368,7 @@ public:
 		scene::ISceneManager* mgr) = 0;
 
 	//! returns id of this prefab
-	virtual const c8* getId() = 0;
+	virtual const core::stringc& getId() = 0;
 };
 
 
