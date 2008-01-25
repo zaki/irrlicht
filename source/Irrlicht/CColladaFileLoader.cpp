@@ -1096,8 +1096,8 @@ void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 	SColladaImage& image=Images.getLast();
 
 	image.Id = readId(reader);
-	image.Dimension.Height = (u32)reader->getAttributeValue("height");
-	image.Dimension.Width = (u32)reader->getAttributeValue("width");
+	image.Dimension.Height = (u32)reader->getAttributeValueAsInt("height");
+	image.Dimension.Width = (u32)reader->getAttributeValueAsInt("width");
 
 	if (Version >= 10400) // start with 1.4
 	{
@@ -1110,6 +1110,7 @@ void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 				else
 				if (initFromName == reader->getNodeName())
 				{
+					reader->read();
 					image.Source = reader->getNodeData();
 					image.Source.trim();
 					image.SourceIsFilename=true;
@@ -1117,6 +1118,7 @@ void CColladaFileLoader::readImage(io::IXMLReaderUTF8* reader)
 				else
 				if (dataName == reader->getNodeName())
 				{
+					reader->read();
 					image.Source = reader->getNodeData();
 					image.Source.trim();
 					image.SourceIsFilename=false;
@@ -1273,8 +1275,8 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 		if (reader->getNodeType() == io::EXN_ELEMENT)
 		{
 			// first come the tags we descend, but ignore the top-levels
-			if ((profileCOMMONSectionName == reader->getNodeName()) ||
-				(techniqueNodeName == reader->getNodeName()))
+			if (!reader->isEmptyElement() && ((profileCOMMONSectionName == reader->getNodeName()) ||
+				(techniqueNodeName == reader->getNodeName())))
 				readEffect(reader,effect);
 			else
 			if (newParamName == reader->getNodeName())
@@ -1391,7 +1393,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 				}
 			}
 			else
-			if (extraNodeName == reader->getNodeName())
+			if (!reader->isEmptyElement() && (extraNodeName == reader->getNodeName()))
 				readEffect(reader,effect);
 			else
 			if (doubleSidedName == reader->getNodeName())
@@ -1950,6 +1952,8 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		for (u32 i=0; i<polygons.size(); ++i)
 		{
 			core::array<u16> indices;
+			const u32 vertexCount = polygons[i].Indices.size() / maxOffset;
+			mbuffer->Vertices.reallocate(mbuffer->Vertices.size()+vertexCount);
 
 			// for all index/semantic groups
 			for (u32 v=0; v<polygons[i].Indices.size(); v+=maxOffset)
@@ -2039,8 +2043,8 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 		for (u32 i=0; i<polygons.size(); ++i)
 		{
-			u32 vertexCount = polygons[i].Indices.size() / maxOffset;
-
+			const u32 vertexCount = polygons[i].Indices.size() / maxOffset;
+			mbuffer->Vertices.reallocate(mbuffer->Vertices.size()+vertexCount);
 			// for all vertices in array
 			for (u32 v=0; v<polygons[i].Indices.size(); v+=maxOffset)
 			{
@@ -2103,6 +2107,9 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 		} // end for all polygons
 	}
 
+	const SColladaMaterial* m = findMaterial(materialName);
+	if (m)
+		buffer->getMaterial() = m->Mat;
 	// add future bind reference for the material
 	core::stringc materialReference = geometryId+"/"+materialName;
 	if (!MaterialsToBind.find(materialReference))
