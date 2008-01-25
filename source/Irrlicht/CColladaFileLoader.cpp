@@ -673,6 +673,7 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 	{
 		nodeprefab = new CScenePrefab(readId(reader));
 		p->Childs.push_back(nodeprefab);
+		Prefabs.push_back(nodeprefab); // in order to delete them later on
 	}
 
 	// read the node
@@ -1268,8 +1269,8 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 		Effects.push_back(SColladaEffect());
 		effect = &Effects.getLast();
 		effect->Id = readId(reader);
+		effect->Transparency = 1.f;
 	}
-	video::SColorf transparency;
 	while(reader->read())
 	{
 		if (reader->getNodeType() == io::EXN_ELEMENT)
@@ -1299,9 +1300,6 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 					if (reader->getNodeType() == io::EXN_ELEMENT)
 					{
 						const core::stringc node = reader->getNodeName();
-						#ifdef COLLADA_READER_DEBUG
-						os::Printer::log("COLLADA reading effect technique part", reader->getNodeName());
-						#endif
 						if (emissionNode == node || ambientNode == node ||
 							diffuseNode == node || specularNode == node ||
 							reflectiveNode == node || transparentNode == node )
@@ -1327,16 +1325,13 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 										effect->Mat.SpecularColor = color;
 									else
 									if (transparentNode == node)
-										transparency = colorf;
+										effect->Transparency = colorf.a;
 								}
 								else
 								if (reader->getNodeType() == io::EXN_ELEMENT &&
 									textureNodeName == reader->getNodeName())
 								{
 									const core::stringc tname = reader->getAttributeValue("texture");
-									#ifdef COLLADA_READER_DEBUG
-									os::Printer::log("COLLADA reading effect technique texture", tname.c_str());
-									#endif
 									effect->Mat.setTexture(0, getTextureFromImage(tname));
 									break;
 								}
@@ -1364,11 +1359,7 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 										effect->Mat.Shininess = f;
 									else
 									if (transparencyNode == node)
-									{
-										transparency.r *= f;
-										transparency.g *= f;
-										transparency.b *= f;
-									}
+										effect->Transparency *= f;
 								}
 								else
 								if (reader->getNodeType() == io::EXN_ELEMENT)
@@ -1432,25 +1423,8 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	if (effect->Mat.DiffuseColor == video::SColor(0) &&
 		effect->Mat.AmbientColor != video::SColor(0))
 		effect->Mat.DiffuseColor = effect->Mat.AmbientColor;
-	if (transparency.r > 0.0f || transparency.g > 0.0f || transparency.b > 0.0f)
-	{
-		effect->Mat.setFlag(irr::video::EMF_BACK_FACE_CULLING,false);
-		effect->Mat.setFlag(irr::video::EMF_ZWRITE_ENABLE,false);
-		effect->Mat.setFlag(irr::video::EMF_BACK_FACE_CULLING,false);
-		effect->Mat.MaterialType = irr::video::EMT_TRANSPARENT_ADD_COLOR;
-		video::SColorf ambient(effect->Mat.AmbientColor);
-		ambient.r *= transparency.r;
-		ambient.g *= transparency.g;
-		ambient.b *= transparency.b;
-		ambient.a *= transparency.a;
-		effect->Mat.AmbientColor = ambient.toSColor();
-		video::SColorf diffuse(effect->Mat.DiffuseColor);
-		diffuse.r *= transparency.r;
-		diffuse.g *= transparency.g;
-		diffuse.b *= transparency.b;
-		diffuse.a *= transparency.a;
-		effect->Mat.DiffuseColor = diffuse.toSColor();
-	}
+	if (effect->Transparency != 1.0f)
+		effect->Mat.MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
 }
 
 
@@ -1460,22 +1434,25 @@ const SColladaMaterial * CColladaFileLoader::findMaterial(const core::stringc & 
 	SColladaMaterial matToFind;
 	matToFind.Id = materialName;
 	s32 mat = Materials.binary_search(matToFind);
-	if (mat < 0)
+	if (mat == -1)
 		return 0;
-	// instance the material effect if needed
+	// instantiate the material effect if needed
 	if (Materials[mat].InstanceEffectId.size() > 0)
 	{
 		// do a quick lookup in the effects
 		SColladaEffect effectToFind;
 		effectToFind.Id = Materials[mat].InstanceEffectId;
 		s32 effect = Effects.binary_search(effectToFind);
-		if (effect >= 0)
+		if (effect != -1)
 		{
-			// found the effect, instance by copying into the material
+			// found the effect, instantiate by copying into the material
 			Materials[mat].Mat = Effects[effect].Mat;
-			// and indicate the material is instanced by removing the effect ref
+			Materials[mat].Transparency = Effects[effect].Transparency;
+			// and indicate the material is instantiated by removing the effect ref
 			Materials[mat].InstanceEffectId = "";
 		}
+		else
+			return 0;
 	}
 	return &Materials[mat];
 }
@@ -1513,9 +1490,19 @@ void CColladaFileLoader::readBindMaterialSection(io::IXMLReaderUTF8* reader, con
 				{
 					core::array<irr::scene::IMeshBuffer*> & toBind
 						= MeshesToBind[MaterialsToBind[materialReference]];
+					SMesh tmpmesh;
 					for (u32 i = 0; i < toBind.size(); ++i)
 					{
 						toBind[i]->getMaterial() = material->Mat;
+						if (material->Transparency!=1.0f)
+							tmpmesh.addMeshBuffer(toBind[i]);
+					}
+					if (material->Transparency!=1.0f)
+					{
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA found transparency material", core::stringc(material->Transparency).c_str());
+	#endif
+						SceneManager->getMeshManipulator()->setVertexColorAlpha(&tmpmesh, core::floor32(material->Transparency*255.0f));
 					}
 				}
 			}
@@ -2109,7 +2096,15 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 
 	const SColladaMaterial* m = findMaterial(materialName);
 	if (m)
+	{
 		buffer->getMaterial() = m->Mat;
+		if (m->Transparency != 1.0f)
+		{
+			SMesh tmpmesh;
+			tmpmesh.addMeshBuffer(buffer);
+			SceneManager->getMeshManipulator()->setVertexColorAlpha(&tmpmesh,core::floor32(m->Transparency*255.0f));
+		}
+	}
 	// add future bind reference for the material
 	core::stringc materialReference = geometryId+"/"+materialName;
 	if (!MaterialsToBind.find(materialReference))
@@ -2404,7 +2399,7 @@ video::SColorf CColladaFileLoader::readColorNode(io::IXMLReaderUTF8* reader)
 		result.r = color[0];
 		result.g = color[1];
 		result.b = color[2];
-		result.a = 1.0f-color[3];
+		result.a = color[3];
 	}
 
 	return result;
@@ -2488,6 +2483,9 @@ core::stringc CColladaFileLoader::readId(io::IXMLReaderUTF8* reader)
 //! create an Irrlicht texture from the reference
 video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 {
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA searching texture", uri.c_str());
+	#endif
 	for (;;)
 	{
 		uriToId(uri);
@@ -2520,7 +2518,12 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 			}
 		}
 		if (Parameters.getAttributeType(uri.c_str())==io::EAT_STRING)
+		{
 			uri = Parameters.getAttributeAsString(uri.c_str());
+#ifdef COLLADA_READER_DEBUG
+			os::Printer::log("COLLADA now searching texture", uri.c_str());
+#endif
+		}
 		else
 			break;
 	}
@@ -2568,7 +2571,8 @@ void CColladaFileLoader::readParameter(io::IXMLReaderUTF8* reader)
 					if ((initFromName == reader->getNodeName()) ||
 						(sourceSectionName == reader->getNodeName()))
 					{
-						Parameters.addString(reader->getNodeData(), name.c_str());
+						reader->read();
+						Parameters.addString(name.c_str(), reader->getNodeData());
 					}
 				}
 				else
