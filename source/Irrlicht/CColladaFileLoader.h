@@ -120,6 +120,7 @@ struct SColladaMaterial
 	video::SMaterial Mat;
 	core::stringc Id;
 	core::stringc InstanceEffectId;
+	f32 Transparency;
 	
 	inline bool operator< (const SColladaMaterial & other) const
 	{
@@ -132,6 +133,7 @@ struct SColladaEffect
 {
 	video::SMaterial Mat;
 	core::stringc Id;
+	f32 Transparency;
 	
 	inline bool operator< (const SColladaEffect & other) const
 	{
@@ -362,7 +364,6 @@ private:
 class IColladaPrefab : public virtual IReferenceCounted
 {
 public:
-
 	//! creates an instance of this prefab
 	virtual scene::ISceneNode* addInstance(scene::ISceneNode* parent,
 		scene::ISceneManager* mgr) = 0;
