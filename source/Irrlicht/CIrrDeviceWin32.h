@@ -91,6 +91,8 @@ namespace irr
 			virtual void setVisible(bool visible)
 			{
 				IsVisible = visible;
+				updateInternalCursorPosition();
+				setPosition(CursorPos.X, CursorPos.Y);
 			}
 
 			//! Returns if the cursor is currently visible.
