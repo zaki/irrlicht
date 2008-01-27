@@ -401,8 +401,7 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 
 	const f32 version = core::fast_atof(core::stringc(reader->getAttributeValue("version")).c_str());
 	Version = core::floor32(version)*10000+core::ceil32(core::fract(version)*1000.0f);
-	if (Version >= 10400)
-		os::Printer::log("Collada version with only partial support:", core::stringc(version).c_str(), ELL_WARNING);
+	// Version 1.4 can be checked for by if (Version >= 10400)
 
 	while(reader->read())
 	if (reader->getNodeType() == io::EXN_ELEMENT)
