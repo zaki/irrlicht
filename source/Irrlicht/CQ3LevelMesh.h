@@ -24,7 +24,7 @@ namespace scene
 	public:
 
 		//! constructor
-		CQ3LevelMesh(io::IFileSystem* fs, video::IVideoDriver* driver,  scene::ISceneManager* smgr);
+		CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr);
 
 		//! destructor
 		virtual ~CQ3LevelMesh();

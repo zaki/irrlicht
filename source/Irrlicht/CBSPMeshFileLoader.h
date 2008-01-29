@@ -21,7 +21,7 @@ class CBSPMeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	CBSPMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver, scene::ISceneManager* smgr);
+	CBSPMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs);
 
 	//! destructor
 	virtual ~CBSPMeshFileLoader();
@@ -39,7 +39,6 @@ public:
 private:
 
 	io::IFileSystem* FileSystem;
-	video::IVideoDriver* Driver;
 	scene::ISceneManager* SceneManager;
 };
 

@@ -20,10 +20,10 @@ namespace scene
 
 
 //! constructor
-CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, video::IVideoDriver* driver, scene::ISceneManager* smgr)
+CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr)
 : Textures(0), LightMaps(0),
  Vertices(0), Faces(0),	Planes(0), Nodes(0), Leafs(0), LeafFaces(0),
-	MeshVerts(0), Brushes(0), Driver(driver), FileSystem(fs), SceneManager ( smgr )
+	MeshVerts(0), Brushes(0), FileSystem(fs), SceneManager ( smgr )
 {
 	#ifdef _DEBUG
 	IReferenceCounted::setDebugName("CQ3LevelMesh");
@@ -34,6 +34,10 @@ CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, video::IVideoDriver* driver, sce
 		Mesh[i] = 0;
 	}
 
+	if (smgr)
+		Driver = smgr->getVideoDriver();
+	else
+		Driver = 0;
 	if (Driver)
 		Driver->grab();
 

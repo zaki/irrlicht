@@ -31,25 +31,13 @@ namespace scene
 {
 
 /** Constructor*/
-CDMFLoader::CDMFLoader(video::IVideoDriver* driver, ISceneManager* smgr)
-: Driver(driver) , SceneMgr(smgr)
+CDMFLoader::CDMFLoader(ISceneManager* smgr)
+: SceneMgr(smgr)
 {
 	#ifdef _DEBUG
 	IReferenceCounted::setDebugName("CDMFLoader");
 	#endif
-
-	if (Driver)
-		Driver->grab();
 }
-
-
-/** Destructor*/
-CDMFLoader::~CDMFLoader()
-{
-	if (Driver)
-		Driver->drop();
-}
-
 
 
 /** Given first three points of a face, returns a face normal*/
@@ -91,6 +79,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 {
 	if (!file)
 		return 0;
+	video::IVideoDriver* driver = SceneMgr->getVideoDriver();
 
 	//Load stringlist
 	StringList dmfRawFile(file);
@@ -229,8 +218,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 
 			//Primary texture is normal
 			if ((materiali[i].textureFlag==0) || (materiali[i].textureBlend==4))
-				Driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
-			tex = Driver->getTexture((path+String(materiali[i].textureName)).c_str());
+				driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
+			tex = driver->getTexture((path+String(materiali[i].textureName)).c_str());
 
 			//Primary texture is just a colour
 			if(materiali[i].textureFlag==1)
@@ -260,12 +249,12 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				//just for compatibility with older Irrlicht versions
 				//to support transparent materials
 				if (color.getAlpha()!=255 && materiali[i].textureBlend==4)
-					Driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
+					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
 
-				IImage *immagine=Driver->createImageFromData(ECF_A8R8G8B8,
+				IImage *immagine=driver->createImageFromData(ECF_A8R8G8B8,
 					core::dimension2d<s32>(8,8),buf);
 
-				tex = Driver->addTexture("", immagine);
+				tex = driver->addTexture("", immagine);
 
 				//to support transparent materials
 				if(color.getAlpha()!=255 && materiali[i].textureBlend==4)
@@ -278,7 +267,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 
 			//Lightmap is present
 			if (materiali[i].lightmapFlag == 0)
-				lig = Driver->getTexture((path+String(materiali[i].lightmapName)).c_str());
+				lig = driver->getTexture((path+String(materiali[i].lightmapName)).c_str());
 			else //no lightmap
 			{
 				lig = 0;

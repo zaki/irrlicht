@@ -50,10 +50,7 @@ namespace scene
 	public:
 
 		/** constructor*/
-		CDMFLoader(video::IVideoDriver* driver, ISceneManager* smgr);
-
-		/** destructor*/
-		virtual ~CDMFLoader();
+		CDMFLoader(ISceneManager* smgr);
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".cob")

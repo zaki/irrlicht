@@ -14,14 +14,12 @@ namespace scene
 {
 
 //! Constructor
-CBSPMeshFileLoader::CBSPMeshFileLoader(io::IFileSystem* fs,video::IVideoDriver* driver, scene::ISceneManager* smgr)
-: FileSystem(fs), Driver(driver), SceneManager(smgr)
+CBSPMeshFileLoader::CBSPMeshFileLoader(scene::ISceneManager* smgr,
+		io::IFileSystem* fs)
+: FileSystem(fs), SceneManager(smgr)
 {
 	if (FileSystem)
 		FileSystem->grab();
-
-	if (Driver)
-		Driver->grab();
 }
 
 
@@ -30,9 +28,6 @@ CBSPMeshFileLoader::~CBSPMeshFileLoader()
 {
 	if (FileSystem)
 		FileSystem->drop();
-
-	if (Driver)
-		Driver->drop();
 }
 
 
@@ -53,7 +48,7 @@ IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 	// load quake 3 bsp
 	if (strstr(file->getFileName(), ".bsp"))
 	{
-		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, Driver, SceneManager);
+		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, SceneManager);
 
 		q->getShader ( "scripts/models.shader", 1 );
 		q->getShader ( "scripts/liquid.shader", 1 );
@@ -68,7 +63,7 @@ IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 	// load quake 3 shader container
 	if (strstr(file->getFileName(), ".shader"))
 	{
-		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, Driver, SceneManager);
+		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, SceneManager);
 		q->getShader ( file->getFileName(), 1 );
 		return q;
 	}
