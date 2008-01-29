@@ -119,10 +119,8 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 		else
 		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
 		{
-			if (event.GUIEvent.Caller == this && Parent)
-			{
+			if (isMyChild(event.GUIEvent.Caller) && Parent)
 				Parent->bringToFront(this);
-			}
 		}
 		else
 		if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
@@ -140,9 +138,8 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 
 					// if the event was not absorbed
 					if (!Parent->OnEvent(e))
-					{
 						remove();
-					}
+
 					return true;
 
 				}

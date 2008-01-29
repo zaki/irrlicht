@@ -347,9 +347,9 @@ bool CGUITabControl::OnEvent(const SEvent& event)
 	case EET_MOUSE_INPUT_EVENT:
 		switch(event.MouseInput.Event)
 		{
-		//case EMIE_LMOUSE_PRESSED_DOWN:
-		//	Environment->setFocus(this);
-		//	return true;
+		case EMIE_LMOUSE_PRESSED_DOWN:
+			// todo: dragging tabs around
+			return true;
 		case EMIE_LMOUSE_LEFT_UP:
 			if (selectTab(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
 				return true;
