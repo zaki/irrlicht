@@ -177,8 +177,7 @@ class CColladaFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	CColladaFileLoader(video::IVideoDriver* driver,
-		scene::ISceneManager* smgr, io::IFileSystem* fs);
+	CColladaFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs);
 
 	//! destructor
 	virtual ~CColladaFileLoader();
@@ -331,7 +330,6 @@ private:
 	//! read a parameter and value
 	void readParameter(io::IXMLReaderUTF8* reader);
 
-	video::IVideoDriver* Driver;
 	scene::ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
 

@@ -266,9 +266,9 @@ namespace scene
 
 
 //! Constructor
-CColladaFileLoader::CColladaFileLoader(video::IVideoDriver* driver,
-		scene::ISceneManager* smgr, io::IFileSystem* fs)
-: Driver(driver), SceneManager(smgr), FileSystem(fs), DummyMesh(0),
+CColladaFileLoader::CColladaFileLoader(scene::ISceneManager* smgr,
+		io::IFileSystem* fs)
+: SceneManager(smgr), FileSystem(fs), DummyMesh(0),
 	FirstLoadedMesh(0), LoadedMeshCount(0), CreateInstances(false)
 {
 
@@ -2485,6 +2485,7 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 	#ifdef COLLADA_READER_DEBUG
 	os::Printer::log("COLLADA searching texture", uri.c_str());
 	#endif
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	for (;;)
 	{
 		uriToId(uri);
@@ -2493,7 +2494,7 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 			if (uri == Images[i].Id)
 			{
 				if (Images[i].Source.size() && Images[i].SourceIsFilename)
-					return Driver->getTexture(Images[i].Source.c_str());
+					return driver->getTexture(Images[i].Source.c_str());
 				else
 				if (Images[i].Source.size())
 				{
@@ -2508,8 +2509,8 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 						++ptrdest;
 						ptrsrc += 4;
 					}
-					video::IImage* img = Driver->createImageFromData(video::ECF_A8R8G8B8, Images[i].Dimension, data, true, true);
-					video::ITexture* tex = Driver->addTexture((CurrentlyLoadingMesh+"#"+Images[i].Id).c_str(), img);
+					video::IImage* img = driver->createImageFromData(video::ECF_A8R8G8B8, Images[i].Dimension, data, true, true);
+					video::ITexture* tex = driver->addTexture((CurrentlyLoadingMesh+"#"+Images[i].Id).c_str(), img);
 					img->drop();
 					return tex;
 				}

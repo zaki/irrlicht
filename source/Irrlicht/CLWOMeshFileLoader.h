@@ -2,20 +2,22 @@
 #define __C_LWO_MESH_FILE_LOADER_H_INCLUDED__
 
 #include "IMeshLoader.h"
-#include "IVideoDriver.h"
-#include "irrString.h"
 #include "SMeshBuffer.h"
+#include "irrString.h"
+#include "irrMap.h"
 
 namespace irr
 {
 namespace io
 {
 	class IReadFile;
+	class IFileSystem;
 } // end namespace io
 namespace scene
 {
 
-struct SMesh;
+	struct SMesh;
+	class ISceneManager;
 
 //! Meshloader capable of loading Lightwave 3D meshes.
 class CLWOMeshFileLoader : public IMeshLoader
@@ -23,7 +25,7 @@ class CLWOMeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	CLWOMeshFileLoader(video::IVideoDriver* driver);
+	CLWOMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs);
 
 	//! destructor
 	virtual ~CLWOMeshFileLoader();
@@ -53,14 +55,18 @@ private:
 	u32 readVec(core::vector3df& vec);
 	u32 readVX(u32& num);
 	u32 readColor(video::SColor& color);
+	video::ITexture* loadTexture(const core::stringc& file);
 
-	video::IVideoDriver* Driver;
+	scene::ISceneManager* SceneManager;
+	io::IFileSystem* FileSystem;
 	io::IReadFile* File;
 	SMesh* Mesh;
 
 	core::array<core::vector3df> Points;
-	core::array<core::array<u32> > Polygons;
-	core::array<core::vector2df> TCoords;
+	core::array<core::array<u32> > Indices;
+	core::array<u16> MaterialMapping;
+	core::map<core::stringc, u32> VMap;
+	core::array<core::array<core::vector2df> > TCoords;
 	core::array<tLWOMaterial*> Materials;
 	core::array<core::stringc> Images;
 	u8 FormatVersion;

@@ -1,9 +1,12 @@
 #include "CLWOMeshFileLoader.h"
-#include <cstring>
 #include "os.h"
 #include "SAnimatedMesh.h"
 #include "SMesh.h"
 #include "IReadFile.h"
+#include "ISceneManager.h"
+#include "IFileSystem.h"
+#include "IVideoDriver.h"
+#include "IMeshManipulator.h"
 
 using namespace std;
 
@@ -49,7 +52,7 @@ struct tLWOTextureInfo
 
 struct CLWOMeshFileLoader::tLWOMaterial
 {
-	tLWOMaterial() : Meshbuffer(0), Flags(0), ReflMode(3), TranspMode(3),
+	tLWOMaterial() : Meshbuffer(0), TagType(0), Flags(0), ReflMode(3), TranspMode(3),
 		Glow(0), AlphaMode(2), Luminance(0.0f), Diffuse(1.0f), Specular(0.0f),
 		Reflection(0.0f), Transparency(0.0f), Translucency(0.0f),
 		Sharpness(0.0f), ReflSeamAngle(0.0f), ReflBlur(0.0f),
@@ -61,6 +64,7 @@ struct CLWOMeshFileLoader::tLWOMaterial
 	core::stringc Name;
 	scene::SMeshBuffer *Meshbuffer;
 	core::stringc ReflMap;
+	u16 TagType;
 	u16 Flags;
 	u16 ReflMode;
 	u16 TranspMode;
@@ -103,25 +107,19 @@ struct tLWOLayerInfo
 
 
 //! Constructor
-CLWOMeshFileLoader::CLWOMeshFileLoader(video::IVideoDriver* driver)
-: Driver(driver), File(0), Mesh(0)
+CLWOMeshFileLoader::CLWOMeshFileLoader(scene::ISceneManager* smgr,
+		io::IFileSystem* fs)
+: SceneManager(smgr), FileSystem(fs), File(0), Mesh(0)
 {
-	if (Driver)
-		Driver->grab();
 }
-
 
 
 //! destructor
 CLWOMeshFileLoader::~CLWOMeshFileLoader()
 {
-	if (Driver)
-		Driver->drop();
-
 	if (Mesh)
 		Mesh->drop();
 }
-
 
 
 //! returns true if the file maybe is able to be loaded by this class
@@ -155,13 +153,51 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 	SAnimatedMesh* am = new SAnimatedMesh();
 	am->Type = EAMT_3DS;
 
+	for (u32 polyIndex=0; polyIndex<MaterialMapping.size(); ++polyIndex)
+	{
+		const u16 tag=MaterialMapping[polyIndex];
+		scene::SMeshBuffer *mb=Materials[tag]->Meshbuffer;
+		const s32 vertCount=mb->Vertices.size();
+		const core::array<u32>& poly = Indices[polyIndex];
+		const u32 polySize=poly.size();
+		video::S3DVertex vertex;
+		for (u32 i=0; i<polySize; ++i)
+		{
+			const s32 j=poly[i];
+			vertex.Pos=Points[j];
+			if (Materials[tag]->Texture[0].TCoords && (Materials[tag]->Texture[0].TCoords->size()>0))
+				vertex.TCoords=(*Materials[tag]->Texture[0].TCoords)[j];
+			mb->Vertices.push_back(vertex);
+		}
+		if (polySize>2)
+		{
+			for (u32 i=1; i<polySize-1; ++i)
+			{
+				core::vector3df normal = core::plane3df(mb->Vertices[vertCount].Pos,mb->Vertices[vertCount+i].Pos,mb->Vertices[vertCount+i+1].Pos).Normal.normalize();
+				mb->Vertices[vertCount].Normal=normal;
+				mb->Vertices[vertCount+i].Normal=normal;
+				mb->Vertices[vertCount+i+1].Normal=normal;
+				mb->Indices.push_back(vertCount);
+				mb->Indices.push_back(vertCount+i);
+				mb->Indices.push_back(vertCount+i+1);
+			}
+		}
+	}
 	for (u32 i=0; i<Materials.size(); ++i)
 	{
 		for (u32 j=0; j<Materials[i]->Meshbuffer->Vertices.size(); ++j)
 			Materials[i]->Meshbuffer->Vertices[j].Color=Materials[i]->Meshbuffer->Material.DiffuseColor;
 		Materials[i]->Meshbuffer->recalculateBoundingBox();
-		Mesh->addMeshBuffer(Materials[i]->Meshbuffer);
-		Materials[i]->Meshbuffer->drop();
+		if (Materials[i]->Meshbuffer->Material.MaterialType==video::EMT_NORMAL_MAP_SOLID)
+		{
+			SMesh tmpmesh;
+			tmpmesh.addMeshBuffer(Materials[i]->Meshbuffer);
+			SceneManager->getMeshManipulator()->createMeshWithTangents(&tmpmesh);
+			Mesh->addMeshBuffer(tmpmesh.getMeshBuffer(0));
+		}
+		else
+			Mesh->addMeshBuffer(Materials[i]->Meshbuffer);
+		Mesh->getMeshBuffer(Mesh->getMeshBufferCount()-1)->drop();
 	}
 
 	Mesh->recalculateBoundingBox();
@@ -172,7 +208,9 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 	Mesh = 0;
 
 	Points.clear();
-	Polygons.clear();
+	Indices.clear();
+	MaterialMapping.clear();
+	VMap.clear();
 	TCoords.clear();
 	Materials.clear();
 	Images.clear();
@@ -372,6 +410,7 @@ bool CLWOMeshFileLoader::readChunks()
 	return true;
 }
 
+
 void CLWOMeshFileLoader::readObj1(u32 size)
 {
 	u32 pos;
@@ -435,7 +474,7 @@ void CLWOMeshFileLoader::readVertexMapping(u32 size)
 	core::stringc name;
 	File->read(&type, 4);
 #ifdef LWO_READER_DEBUG
-	os::Printer::log("LWO loader: Vertex map", type);
+	os::Printer::log("LWO loader: Vertex map type", type);
 #endif
 	File->read(&dimension, 2);
 #ifndef __BIG_ENDIAN__
@@ -451,10 +490,13 @@ void CLWOMeshFileLoader::readVertexMapping(u32 size)
 		File->seek(size, true);
 		return;
 	}
+	VMap.insert(name,TCoords.size());
+	TCoords.push_back(core::array<core::vector2df>());
 
 	u32 index;
 	core::vector2df tcoord;
-	TCoords.set_used(Points.size());
+	core::array<core::vector2df>& tcArray = TCoords.getLast();
+	tcArray.set_used(Points.size());
 	while (size!=0)
 	{
 		size -= readVX(index);
@@ -466,8 +508,8 @@ void CLWOMeshFileLoader::readVertexMapping(u32 size)
 #ifndef __BIG_ENDIAN__
 		tcoord.Y=os::Byteswap::byteswap(tcoord.Y);
 #endif
-		tcoord.Y=-tcoord.Y;
-		TCoords[index]=tcoord;
+		tcoord.Y=tcoord.Y;
+		tcArray[index]=tcoord;
 		size -= 8;
 	}
 }
@@ -478,7 +520,7 @@ void CLWOMeshFileLoader::readTagMapping(u32 size)
 	type[4]=0;
 	File->read(&type, 4);
 	size -= 4;
-	if ((strncmp(type, "SURF", 4))||(Polygons.size()==0))
+	if ((strncmp(type, "SURF", 4))||(Indices.size()==0))
 	{
 		File->seek(size, true);
 		return;
@@ -494,28 +536,8 @@ void CLWOMeshFileLoader::readTagMapping(u32 size)
 		tag=os::Byteswap::byteswap(tag);
 #endif
 		size -= 2;
-
-		scene::SMeshBuffer *mb=Materials[tag]->Meshbuffer;
-		const s32 vertCount=mb->Vertices.size();
-		const s32 polySize=Polygons[polyIndex].size();
-		video::S3DVertex vertex;
-		for (s32 i=0; i<polySize; ++i)
-		{
-			vertex.Pos=Points[Polygons[polyIndex][i]];
-			if (TCoords.size()>0)
-				vertex.TCoords=TCoords[Polygons[polyIndex][i]];
-			mb->Vertices.push_back(vertex);
-		}
-		for (s32 i=1; i<polySize-1; ++i)
-		{
-			core::vector3df normal = core::plane3df(mb->Vertices[vertCount].Pos,mb->Vertices[vertCount+i].Pos,mb->Vertices[vertCount+i+1].Pos).Normal.normalize();
-			mb->Vertices[vertCount].Normal=normal;
-			mb->Vertices[vertCount+i].Normal=normal;
-			mb->Vertices[vertCount+i+1].Normal=normal;
-			mb->Indices.push_back(vertCount);
-			mb->Indices.push_back(vertCount+i);
-			mb->Indices.push_back(vertCount+i+1);
-		}
+		MaterialMapping[polyIndex]=tag;
+		Materials[tag]->TagType=1;
 	}
 }
 
@@ -525,7 +547,7 @@ void CLWOMeshFileLoader::readObj2(u32 size)
 	type[4]=0;
 	File->read(&type, 4);
 	size -= 4;
-	Polygons.clear();
+	Indices.clear();
 	if (strncmp(type, "FACE", 4)) // also possible are splines, subdivision patches, metaballs, and bones
 	{
 		File->seek(size, true);
@@ -542,9 +564,9 @@ void CLWOMeshFileLoader::readObj2(u32 size)
 		numVerts &= 0x03FF;
 
 		size -= 2;
-		Polygons.push_back(core::array<u32>());
+		Indices.push_back(core::array<u32>());
 		u32 vertIndex;
-		core::array<u32>& polyArray = Polygons.getLast();
+		core::array<u32>& polyArray = Indices.getLast();
 		polyArray.reallocate(numVerts);
 		for (u16 i=0; i<numVerts; ++i)
 		{
@@ -552,6 +574,9 @@ void CLWOMeshFileLoader::readObj2(u32 size)
 			polyArray.push_back(vertIndex);
 		}
 	}
+	MaterialMapping.reallocate(Indices.size());
+	for (u32 j=0; j<Indices.size(); ++j)
+		MaterialMapping.push_back(0);
 }
 
 
@@ -563,7 +588,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 	size -= readString(name);
 	for (u32 i=0; i<Materials.size(); ++i)
 	{
-		if (Materials[i]->Name==name)
+		if ((Materials[i]->TagType==1) && (Materials[i]->Name==name))
 		{
 			mat=Materials[i];
 			break;
@@ -1479,7 +1504,8 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				{
 					core::stringc name;
 					size -= readString(name);
-					mat->Texture[currTexture].TCoords = &TCoords; // TODO: Needs to be searched for
+					if (VMap.find(name) != 0)
+						mat->Texture[currTexture].TCoords = &TCoords[VMap.find(name)->getValue()];
 				}
 				break;
 			case charsToUIntD('B','L','O','K'):
@@ -1543,30 +1569,11 @@ void CLWOMeshFileLoader::readMat(u32 size)
 		}
 	}
 
-	s32 stringPos;
 	if (mat->Texture[0].Map != "") // diffuse
-	{
-		irrMat->setTexture(0,Driver->getTexture(mat->Texture[0].Map.c_str()));
-		if (!irrMat->getTexture(0))
-		{
-			stringPos = mat->Texture[0].Map.findLast('/');
-			if (stringPos==-1)
-				stringPos = mat->Texture[0].Map.findLast('\\');
-			if (stringPos != -1)
-				irrMat->setTexture(0, Driver->getTexture(mat->Texture[0].Map.subString(stringPos+1, mat->Texture[0].Map.size()-stringPos).c_str()));
-		}
-	}
+		irrMat->setTexture(0,loadTexture(mat->Texture[0].Map));
 	if (mat->Texture[3].Map != "") // reflection
 	{
-		video::ITexture* reflTexture = Driver->getTexture(mat->Texture[3].Map.c_str());
-		if (!reflTexture)
-		{
-			stringPos = mat->Texture[3].Map.findLast('/');
-			if (stringPos==-1)
-				stringPos = mat->Texture[3].Map.findLast('\\');
-			if (stringPos != -1)
-				reflTexture = Driver->getTexture(mat->Texture[3].Map.subString(stringPos+1, mat->Texture[3].Map.size()-stringPos).c_str());
-		}
+		video::ITexture* reflTexture = loadTexture(mat->Texture[3].Map);
 		if (reflTexture)
 		{
 			irrMat->setTexture(1, irrMat->getTexture(0));
@@ -1576,15 +1583,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 	}
 	if (mat->Texture[4].Map != "") // transparency
 	{
-		video::ITexture* transTexture = Driver->getTexture(mat->Texture[4].Map.c_str());
-		if (!transTexture)
-		{
-			stringPos = mat->Texture[4].Map.findLast('/');
-			if (stringPos==-1)
-				stringPos = mat->Texture[4].Map.findLast('\\');
-			if (stringPos != -1)
-				transTexture = Driver->getTexture(mat->Texture[4].Map.subString(stringPos+1, mat->Texture[4].Map.size()-stringPos).c_str());
-		}
+		video::ITexture* transTexture = loadTexture(mat->Texture[4].Map);
 		if (transTexture)
 		{
 			irrMat->setTexture(1, irrMat->getTexture(0));
@@ -1594,19 +1593,11 @@ void CLWOMeshFileLoader::readMat(u32 size)
 	}
 	if (mat->Texture[6].Map != "") // bump
 	{
-		irrMat->setTexture(1, Driver->getTexture(mat->Texture[6].Map.c_str()));
-		if (!irrMat->getTexture(1))
-		{
-			stringPos = mat->Texture[6].Map.findLast('/');
-			if (stringPos==-1)
-				stringPos = mat->Texture[6].Map.findLast('\\');
-			if (stringPos != -1)
-				irrMat->setTexture(1, Driver->getTexture(mat->Texture[6].Map.subString(stringPos+1, mat->Texture[6].Map.size()-stringPos).c_str()));
-		}
+		irrMat->setTexture(1, loadTexture(mat->Texture[6].Map));
 		if (irrMat->getTexture(1))
 		{
-			Driver->makeNormalMapTexture(irrMat->getTexture(1));
-			irrMat->MaterialType=video::EMT_PARALLAX_MAP_SOLID;
+//			SceneManager->getVideoDriver()->makeNormalMapTexture(irrMat->getTexture(1));
+			irrMat->MaterialType=video::EMT_NORMAL_MAP_SOLID;
 		}
 	}
 }
@@ -1747,6 +1738,41 @@ bool CLWOMeshFileLoader::readFileHeader()
 	return true;
 }
 
+
+video::ITexture* CLWOMeshFileLoader::loadTexture(const core::stringc& file)
+{
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+
+	if (FileSystem->existFile(file.c_str()))
+		return driver->getTexture(file.c_str());
+
+	core::stringc strippedName;
+	s32 stringPos = file.findLast('/');
+	if (stringPos==-1)
+		stringPos = file.findLast('\\');
+	if (stringPos != -1)
+	{
+		strippedName = file.subString(stringPos+1, file.size()-stringPos);
+		if (FileSystem->existFile(strippedName.c_str()))
+			return driver->getTexture(strippedName.c_str());
+	}
+	else
+		strippedName = file;
+	core::stringc newpath = File->getFileName();
+	stringPos = newpath.findLast('/');
+	if (stringPos==-1)
+		stringPos = newpath.findLast('\\');
+	if (stringPos != -1)
+	{
+		newpath = newpath.subString(0,stringPos+1);
+		newpath.append(strippedName);
+		if (FileSystem->existFile(newpath.c_str()))
+			return driver->getTexture(newpath.c_str());
+	}
+	os::Printer::log("Could not load texture", file.c_str(), ELL_WARNING);
+
+	return 0;
+}
 
 
 } // end namespace scene

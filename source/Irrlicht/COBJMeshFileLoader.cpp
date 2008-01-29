@@ -454,11 +454,13 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 				}
 
 				video::ITexture * texture = 0;
-				if (FileSystem->existFile(textureNameBuf))
-					texture = Driver->getTexture( textureNameBuf );
+				core::stringc texname(textureNameBuf);
+				texname.replace('\\', '/');
+				if (FileSystem->existFile(texname.c_str()))
+					texture = Driver->getTexture(texname.c_str());
 				else
 					// try to read in the relative path, the .obj is loaded from
-					texture = Driver->getTexture( (relPath + textureNameBuf).c_str() );
+					texture = Driver->getTexture( (relPath + texname).c_str() );
 				if ( texture )
 				{
 					if (type==0)
