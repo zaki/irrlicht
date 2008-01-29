@@ -12,7 +12,7 @@ namespace irr
 namespace scene
 {
 
-//#define LWO_READER_DEBUG
+#define LWO_READER_DEBUG
 
 #define charsToUIntD(a, b, c, d) ((a << 24) | (b << 16) | (c << 8) | d)
 inline unsigned int charsToUInt(const char *str)
@@ -140,8 +140,6 @@ bool CLWOMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 {
 	File = file;
-	Points.clear();
-	Materials.clear();
 
 	if (Mesh)
 		Mesh->drop();
@@ -172,8 +170,12 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 	am->recalculateBoundingBox();
 	Mesh->drop();
 	Mesh = 0;
+
 	Points.clear();
+	Polygons.clear();
+	TCoords.clear();
 	Materials.clear();
+	Images.clear();
 
 	return am;
 }
@@ -301,20 +303,28 @@ bool CLWOMeshFileLoader::readChunks()
 #ifndef __BIG_ENDIAN__
 					index=os::Byteswap::byteswap(index);
 #endif
-					File->read(&type, 4);
-					File->read(&subsize, 2);
-#ifndef __BIG_ENDIAN__
-					subsize=os::Byteswap::byteswap(subsize);
-#endif
-					size -= 10;
-					if (strncmp(type, "STIL", 4))
+					size -= 4;
+					while (size != 0)
 					{
-						File->seek(size, true);
-						break;
+						File->read(&type, 4);
+						File->read(&subsize, 2);
+#ifndef __BIG_ENDIAN__
+						subsize=os::Byteswap::byteswap(subsize);
+#endif
+						size -= 6;
+						if (strncmp(type, "STIL", 4))
+						{
+							File->seek(subsize, true);
+							size -= subsize;
+							continue;
+						}
+						core::stringc path;
+						size -= readString(path, subsize);
+	#ifdef LWO_READER_DEBUG
+						os::Printer::log("LWO loader: loaded clip", path.c_str());
+	#endif
+						Images.push_back(path);
 					}
-					core::stringc path;
-					size -= readString(path);
-					Images.push_back(path);
 				}
 				break;
 			case charsToUIntD('S','U','R','F'):
@@ -342,7 +352,7 @@ bool CLWOMeshFileLoader::readChunks()
 					os::Printer::log("LWO loader: loading text.");
 #endif
 					core::stringc text;
-					size -= readString(text);
+					size -= readString(text, size);
 				}
 				break;
 			// not needed
@@ -924,7 +934,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 							mat->ReflMap=Images[tmp32-1];
 					}
 					else
-						size -= readString(mat->ReflMap);
+						size -= readString(mat->ReflMap, size);
 				}
 				break;
 			case charsToUIntD('R','S','A','N'):
@@ -997,7 +1007,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 							mat->Texture[currTexture].Map=Images[tmp32-1];
 					}
 					else
-						size -= readString(mat->Texture[currTexture].Map);
+						size -= readString(mat->Texture[currTexture].Map, size);
 				}
 				break;
 			case charsToUIntD('T','B','L','R'):
@@ -1159,7 +1169,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 					File->read(&tmp32, 4); // skip type
 					size -= 4;
 					core::stringc name;
-					size -= readString(name);
+					size -= readString(name, size);
 //					mat->VertexColor = getColorVMAP(name);
 				}
 				break;
@@ -1196,55 +1206,55 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				os::Printer::log("LWO loader: loading ctex.");
 #endif
 				currTexture=0;
-				size -= readString(mat->Texture[currTexture].Type);
+				size -= readString(mat->Texture[currTexture].Type, size);
 				break;
 			case charsToUIntD('D','T','E','X'):
 #ifdef LWO_READER_DEBUG
 				os::Printer::log("LWO loader: loading dtex.");
 #endif
 				currTexture=1;
-				size -= readString(mat->Texture[currTexture].Type);
+				size -= readString(mat->Texture[currTexture].Type, size);
 				break;
 			case charsToUIntD('S','T','E','X'):
 #ifdef LWO_READER_DEBUG
 				os::Printer::log("LWO loader: loading stex.");
 #endif
 				currTexture=2;
-				size -= readString(mat->Texture[currTexture].Type);
+				size -= readString(mat->Texture[currTexture].Type, size);
 				break;
 			case charsToUIntD('R','T','E','X'):
 #ifdef LWO_READER_DEBUG
 				os::Printer::log("LWO loader: loading rtex.");
 #endif
 				currTexture=3;
-				size -= readString(mat->Texture[currTexture].Type);
+				size -= readString(mat->Texture[currTexture].Type, size);
 				break;
 			case charsToUIntD('T','T','E','X'):
 #ifdef LWO_READER_DEBUG
 				os::Printer::log("LWO loader: loading ttex.");
 #endif
 				currTexture=4;
-				size -= readString(mat->Texture[currTexture].Type);
+				size -= readString(mat->Texture[currTexture].Type, size);
 				break;
 			case charsToUIntD('L','T','E','X'):
 #ifdef LWO_READER_DEBUG
 				os::Printer::log("LWO loader: loading ltex.");
 #endif
 				currTexture=5;
-				size -= readString(mat->Texture[currTexture].Type);
+				size -= readString(mat->Texture[currTexture].Type, size);
 				break;
 			case charsToUIntD('B','T','E','X'):
 #ifdef LWO_READER_DEBUG
 				os::Printer::log("LWO loader: loading btex.");
 #endif
 				currTexture=6;
-				size -= readString(mat->Texture[currTexture].Type);
+				size -= readString(mat->Texture[currTexture].Type, size);
 				break;
 			case charsToUIntD('T','A','L','P'):
 #ifdef LWO_READER_DEBUG
 				os::Printer::log("LWO loader: loading alpha map.");
 #endif
-				size -= readString(mat->Texture[currTexture].AlphaMap);
+				size -= readString(mat->Texture[currTexture].AlphaMap, size);
 				break;
 			case charsToUIntD('T','F','L','G'):
 #ifdef LWO_READER_DEBUG
@@ -1484,7 +1494,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 					subsize=os::Byteswap::byteswap(subsize);
 #endif
 					size -= 6;
-					size -= readString(ordinal);
+					size -= readString(ordinal, size);
 				}
 				break;
 			case charsToUIntD('C','H','A','N'):
@@ -1637,11 +1647,13 @@ u32 CLWOMeshFileLoader::readColor(video::SColor& color)
 	}
 }
 
-u32 CLWOMeshFileLoader::readString(core::stringc& name)
+u32 CLWOMeshFileLoader::readString(core::stringc& name, u32 size)
 {
 	c8 c;
 
 	name="";
+	if (size)
+		name.reserve(size);
 	File->read(&c, 1);
 	while (c)
 	{

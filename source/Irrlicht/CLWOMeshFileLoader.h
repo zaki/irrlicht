@@ -49,7 +49,7 @@ private:
 	void readVertexMapping(u32 size);
 	void readObj2(u32 size);
 	void readMat(u32 size);
-	u32 readString(core::stringc& name);
+	u32 readString(core::stringc& name, u32 size=0);
 	u32 readVec(core::vector3df& vec);
 	u32 readVX(u32& num);
 	u32 readColor(video::SColor& color);
