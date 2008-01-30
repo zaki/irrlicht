@@ -12,6 +12,7 @@
 #include "fast_atof.h"
 #include "coreutil.h"
 #include "IVideoDriver.h"
+#include "IFileSystem.h"
 #include "IReadFile.h"
 
 #ifdef _DEBUG
@@ -25,10 +26,10 @@ namespace scene
 {
 
 //! Constructor
-CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr)
-: SceneManager(smgr), AnimatedMesh(0), MajorVersion(0), MinorVersion(0),
-	BinaryFormat(false), BinaryNumCount(0), Buffer(0), P(0), End(0),
-	FloatSize(0), CurFrame(0)
+CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs)
+: SceneManager(smgr), FileSystem(fs), AnimatedMesh(0), MajorVersion(0),
+	MinorVersion(0), BinaryFormat(false), BinaryNumCount(0), Buffer(0),
+	P(0), End(0), FloatSize(0), CurFrame(0)
 {
 }
 
@@ -1256,16 +1257,18 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 				return false;
 
 			// original name
-			material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
+			if (FileSystem->existFile(TextureFileName.c_str()))
+				material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
 			// mesh path
-			if (!material.getTexture(0))
+			else
 			{
 				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
-				material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
+				if (FileSystem->existFile(TextureFileName.c_str()))
+					material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
+				// working directory
+				else
+					material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( stripPathFromString(TextureFileName,false).c_str() ));
 			}
-			// working directory
-			if (!material.getTexture(0))
-				material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( stripPathFromString(TextureFileName,false).c_str() ));
 		}
 		else
 		{
