@@ -14,6 +14,7 @@ namespace irr
 {
 namespace io
 {
+	class IFileSystem;
 	class IReadFile;
 } // end namespace io
 namespace scene
@@ -26,7 +27,7 @@ class CXMeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	CXMeshFileLoader(scene::ISceneManager* smgr);
+	CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs);
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".cob")
@@ -166,6 +167,7 @@ private:
 	bool readRGBA(video::SColor& color);
 
 	ISceneManager*	SceneManager;
+	io::IFileSystem*	FileSystem;
 
 	core::array<CSkinnedMesh::SJoint*> *AllJoints;
 
