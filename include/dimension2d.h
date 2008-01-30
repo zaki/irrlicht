@@ -63,6 +63,11 @@ namespace core
 				return dimension2d<T>(Width*scale, Height*scale);
 			}
 
+			T getArea() const
+			{
+				return Width*Height;
+			}
+
 			T Width, Height;
 	};
 

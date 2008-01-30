@@ -1,4 +1,3 @@
--------------------------------------------
 Changes in version 1.5 (... 2008)
 
  - Added volume light scene node
@@ -43,9 +42,52 @@ Changes in version 1.5 (... 2008)
    - Modal screens no longer flash invisible children when rejecting a focus change.
    - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
 
+-------------------------------------------
+Changes in version 1.4.1 (??? 2008)
+
+ - Fixed the FollowSpline animator to avoid crashes when only one waypoint is given.
+
+ - OpenGL VolumeShadow now uses glPolygonOffset to avoid zbuffer artifacts.
+
+ - Fixed meshbuffer corruption in append methods.
+
+ - Fixed mem leaks in irrArray.
+
+ - Fixed minor bugs in ISceneNode and ISceneManager.
+
+ - Fixed the MeshCache handling of GeometryCreator meshes.
+
+ - Terrain LOD bugfix.
+
+ - Some Collada 1.3 loader enhancements and bug fixes.
+
+ - Fixed a bug in CGUISpriteBank which caused a crash when a non-looping animated sprite reached the end of its animation.
+
+ - Enhanced the .obj loader with the patch from ryanclark. This allows for recalculation of smoothed normals of the mesh, also should decrease the tri count on some meshes.
+
+ - Avoid the global Logger to be destroyed too early.
+
+ - Function setbit was renamed to setbit_cond to avoid name clashes.
+
+ - Fixed .x animations with multiple references to the same joint from different meshes.
+
+ - Support for Milkshape 1.8 files, also with multiple weights per joint.
+
+ - The config file now also supports _IRR_OSX_PLATFORM_ and _IRR_USE_OSX_DEVICE_. This allows to use the Linux device (X11 support) on OSX.
+
+ - Avoid terrain scene node crash when heightmap cannot be loaded.
+
+ - Speed improvements for WaterSceneNode.
+
+ - FlyCircle animator now also works for upvectors (Direction parameter) which are not (0,1,0). Is also faster now, since most calculations are done on init. Thanks to Dorth for working on this.
+
+ - The 3ds loader correctly creates a texture matrix when texture tiling properties are found in the file.
+
+ - Fix for S3DVertex comparison operators. Used some wrong logic.
+
+ - Bugfix getCurrentRenderTargetSize in D3D drivers. Due to signature differences a wrong virtual method was chosen. Thanks to Jiang for finding it.
 
 -------------------------------------------
-
 Changes in version 1.4 (30.11.2007)
 
  - Major API change: All material properties which are available per texture layer (curently texture, texture matrix, texture filters, and texture wrap mode) are separated into a new struct SMaterialLayer. You can access them via the array TextureLayer[] in SMaterial. The texture matrix methods in SMaterial are still alive, and also textures can be accessed via methods in SMaterial now. But still, many places in user code need some update (usually changing material.Textures[i] to material.TextureLayer[i].Texture etc.)
@@ -430,7 +472,6 @@ GUI Editor:
   - Added texture attribute element
 
   - Added CGUIPanel, a container with optional scrollbars. Originally submitted by Asger Feldthaus
-
 
 -------------------------------------------
 Changes in version 1.3 (15 Mar 2007)

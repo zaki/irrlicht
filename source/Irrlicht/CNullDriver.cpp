@@ -324,19 +324,16 @@ ITexture* CNullDriver::getTexture(const c8* filename)
 			addTexture(texture);
 			texture->drop(); // drop it because we created it, one grab too much
 		}
+		else
+			os::Printer::log("Could not load texture", filename, ELL_ERROR);
+		return texture;
 	}
 	else
 	{
 		os::Printer::log("Could not open file of texture", filename, ELL_WARNING);
-		return texture;
+		return 0;
 	}
-
-	if (!texture)
-		os::Printer::log("Could not load texture", filename, ELL_WARNING);
-
-	return texture;
 }
-
 
 
 //! loads a Texture
@@ -365,7 +362,6 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 
 	return texture;
 }
-
 
 
 //! opens the file and loads it into the surface

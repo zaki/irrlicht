@@ -998,11 +998,10 @@ namespace scene
 		//! Creates a follow spline animator.
 		/** The animator modifies the position of
 		 the attached scene node to make it follow a hermite spline.
-		 The code of the is based on a scene node
-		 Matthias Gall sent in. Thanks! I adapted the code just a little bit. Matthias
-		 wrote:
-		 Uses a subset of hermite splines: either cardinal splines (tightness != 0.5) or catmull-rom-splines (tightness == 0.5)
-		 but this is just my understanding of this stuff, I'm not a mathematician, so this might be wrong ;) */
+		 It uses a subset of hermite splines: either cardinal splines
+		 (tightness != 0.5) or catmull-rom-splines (tightness == 0.5).
+		 The animator moves from one control point to the next in
+		 1/speed seconds.  This code was sent in by Matthias Gall. */
 		virtual ISceneNodeAnimator* createFollowSplineAnimator(s32 startTime,
 			const core::array< core::vector3df >& points,
 			f32 speed = 1.0f, f32 tightness = 0.5f) = 0;
@@ -1208,7 +1207,7 @@ namespace scene
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
-		saved directly by the engine using ISceneManager::saveScene().		
+		saved directly by the engine using ISceneManager::saveScene().
 		\param filename: Name of the file.
 		\param userDataSerializer: If you want to load user data possibily saved in that file for
 		some scene nodes in the file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
@@ -1219,13 +1218,13 @@ namespace scene
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
-		saved directly by the engine using ISceneManager::saveScene().		
+		saved directly by the engine using ISceneManager::saveScene().
 		\param file: File where the scene is going to be saved into.
 		\param userDataSerializer: If you want to load user data possibily saved in that file for
 		some scene nodes in the file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
 		Otherwise, simply specify 0 as this parameter.
 		\return Returns true if successful.	*/
-		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;	
+		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;
 
 		//! Returns a mesh writer implementation if available
 		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
