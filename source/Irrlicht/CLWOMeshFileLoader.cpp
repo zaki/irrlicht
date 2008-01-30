@@ -316,6 +316,8 @@ bool CLWOMeshFileLoader::readChunks()
 						mat->Name="";
 						mat->Meshbuffer=new scene::SMeshBuffer();
 						size -= readString(mat->Name);
+						if (FormatVersion!=2)
+							mat->TagType = 1; // format 2 has more types
 						Materials.push_back(mat);
 					}
 				}
