@@ -1151,7 +1151,7 @@ namespace scene
 		s32 X(core::floor32( pos.X ));
 		s32 Z(core::floor32( pos.Z ));
 
-		if( X >= 0 && X < TerrainData.Size && Z >= 0 && Z <= TerrainData.Size )
+		if( X >= 0 && X < TerrainData.Size && Z >= 0 && Z < TerrainData.Size )
 		{
 			const video::S3DVertex2TCoords* Vertices = (const video::S3DVertex2TCoords*)Mesh.getMeshBuffer( 0 )->getVertices();
 			const core::vector3df& a = Vertices[ X * TerrainData.Size + Z ].Pos;

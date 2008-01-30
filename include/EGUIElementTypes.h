@@ -5,6 +5,8 @@
 #ifndef __E_GUI_ELEMENT_TYPES_H_INCLUDED__
 #define __E_GUI_ELEMENT_TYPES_H_INCLUDED__
 
+#include "irrTypes.h"
+
 namespace irr
 {
 namespace gui

@@ -2068,6 +2068,8 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glDepthMask(GL_FALSE); // no depth buffer writing
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE ); // no color buffer drawing
 	glEnable(GL_STENCIL_TEST);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(0.0f, 1.0f);
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(3,GL_FLOAT,sizeof(core::vector3df),&triangles[0]);

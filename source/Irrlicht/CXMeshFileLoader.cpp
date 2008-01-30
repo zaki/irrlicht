@@ -1256,7 +1256,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 				return false;
 
 			// original name
-			SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() );
+			material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
 			// mesh path
 			if (!material.getTexture(0))
 			{
@@ -1265,7 +1265,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 			}
 			// working directory
 			if (!material.getTexture(0))
-				SceneManager->getVideoDriver()->getTexture ( stripPathFromString(TextureFileName,false).c_str() );
+				material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( stripPathFromString(TextureFileName,false).c_str() ));
 		}
 		else
 		{

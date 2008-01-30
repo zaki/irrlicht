@@ -5,6 +5,8 @@
 #ifndef __E_MESH_WRITER_ENUMS_H_INCLUDED__
 #define __E_MESH_WRITER_ENUMS_H_INCLUDED__
 
+#include "irrTypes.h"
+
 namespace irr
 {
 namespace scene
