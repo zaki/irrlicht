@@ -1792,7 +1792,17 @@ void CNullDriver::printVersion()
 //! creates a video driver
 IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
 {
-	return new CNullDriver(io, screenSize);
+	CNullDriver* nullDriver = new CNullDriver(io, screenSize);
+
+	// create empty material renderers
+	for(u32 i=0; sBuiltInMaterialTypeNames[i]; ++i)
+	{
+		IMaterialRenderer* imr = new IMaterialRenderer();
+		nullDriver->addMaterialRenderer(imr);
+		imr->drop();
+	}
+
+	return nullDriver;
 }
 
 
