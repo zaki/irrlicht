@@ -128,8 +128,57 @@ void CMeshSceneNode::render()
 	Box = Mesh->getBoundingBox();
 
 	// for debug purposes only:
+
+	bool renderMeshes = true;
+	video::SMaterial mat;
+	if (DebugDataVisible && PassCount==1)
+	{
+		// overwrite half transparency
+		if ( DebugDataVisible & scene::EDS_HALF_TRANSPARENCY )
+		{
+			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
+			{
+				mat = Materials[g];
+				mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
+				driver->setMaterial(mat);
+				driver->drawMeshBuffer ( Mesh->getMeshBuffer(g) );
+			}
+			renderMeshes = false;
+		}
+	}
+
+	// render original meshes
+	if ( renderMeshes )
+	{
+		for (u32 i=0; i<Mesh->getMeshBufferCount(); ++i)
+		{
+			scene::IMeshBuffer* mb = Mesh->getMeshBuffer(i);
+			if (mb)
+			{
+				const video::SMaterial& material = ReadOnlyMaterials ? mb->getMaterial() : Materials[i];
+
+				video::IMaterialRenderer* rnd = driver->getMaterialRenderer(material.MaterialType);
+				bool transparent = (rnd && rnd->isTransparent());
+
+				// only render transparent buffer if this is the transparent render pass
+				// and solid only in solid pass
+				if (transparent == isTransparentPass) 
+				{
+					driver->setMaterial(material);
+					driver->drawMeshBuffer(mb);
+				}
+			}
+		}
+	}
+
+	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+
+	// for debug purposes only:
 	if ( DebugDataVisible && PassCount==1)
 	{
+		mat.Lighting = false;
+		driver->setMaterial(mat);
+
 		if ( DebugDataVisible & scene::EDS_BBOX )
 		{
 			video::SMaterial m;
@@ -146,51 +195,62 @@ void CMeshSceneNode::render()
 			{
 				driver->draw3DBox(
 					Mesh->getMeshBuffer(g)->getBoundingBox(), 
-					video::SColor(0,255,255,255));
+					video::SColor(0,190,128,128));
 			}
 		}
+
 		if ( DebugDataVisible & scene::EDS_NORMALS )
 		{
+			IAnimatedMesh * arrow = SceneManager->addArrowMesh (
+					"__debugnormal", 0xFFECEC00,
+					0xFF999900, 4, 8, 1.f, 0.6f, 0.05f,
+					0.3f);
+			if ( 0 == arrow )
+			{
+				arrow = SceneManager->getMesh ( "__debugnormal" );
+			}
+			IMesh *mesh = arrow->getMesh ( 0 );
+
+			// find a good scaling factor
+
+			core::matrix4 m2;
+
+			// draw normals
 			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
 			{
-				scene::IMeshBuffer* mb = Mesh->getMeshBuffer(g);
-
-				u32 vSize;
-				u32 i;
-				vSize = video::getVertexPitchFromType(mb->getVertexType());
-
+				const scene::IMeshBuffer* mb = Mesh->getMeshBuffer(g);
+				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
 				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
-				video::SColor c ( 255, 128 ,0, 0 );
-				video::SColor c1 ( 255, 255 ,0, 0 );
-				for ( i = 0; i != mb->getVertexCount(); ++i )
+				for ( u32 i=0; i != mb->getVertexCount(); ++i )
 				{
-					core::vector3df h = v->Normal * 5.f;
-					core::vector3df h1 = h.crossProduct ( core::vector3df ( 0.f, 1.f, 0.f ) );
+					// align to v->Normal
+					core::quaternion quatRot(v->Normal.X, 0.f, -up.X, 1+up.Y);
+					quatRot.normalize();
+					quatRot.getMatrix(m2);
 
-					driver->draw3DLine ( v->Pos, v->Pos + h, c );
-					driver->draw3DLine ( v->Pos + h, v->Pos + h + h1, c1 );
+					m2.setTranslation(v->Pos);
+					m2*=AbsoluteTransformation;
+
+					driver->setTransform(video::ETS_WORLD, m2 );
+					for ( u32 a = 0; a != mesh->getMeshBufferCount(); ++a )
+						driver->drawMeshBuffer ( mesh->getMeshBuffer ( a ) );
+
 					v = (const video::S3DVertex*) ( (u8*) v + vSize );
 				}
 			}
+			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
-	}
 
-	for (u32 i=0; i<Mesh->getMeshBufferCount(); ++i)
-	{
-		scene::IMeshBuffer* mb = Mesh->getMeshBuffer(i);
-		if (mb)
+		// show mesh
+		if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
 		{
-			const video::SMaterial& material = ReadOnlyMaterials ? mb->getMaterial() : Materials[i];
+			mat.Lighting = false;
+			mat.Wireframe = true;
+			driver->setMaterial(mat);
 
-			video::IMaterialRenderer* rnd = driver->getMaterialRenderer(material.MaterialType);
-			bool transparent = (rnd && rnd->isTransparent());
-
-			// only render transparent buffer if this is the transparent render pass
-			// and solid only in solid pass
-			if (transparent == isTransparentPass) 
+			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
 			{
-				driver->setMaterial(material);
-				driver->drawMeshBuffer(mb);
+				driver->drawMeshBuffer( Mesh->getMeshBuffer(g) );
 			}
 		}
 	}
