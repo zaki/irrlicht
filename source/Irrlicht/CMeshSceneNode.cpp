@@ -224,7 +224,7 @@ void CMeshSceneNode::render()
 				for ( u32 i=0; i != mb->getVertexCount(); ++i )
 				{
 					// align to v->Normal
-					core::quaternion quatRot(v->Normal.X, 0.f, -up.X, 1+up.Y);
+					core::quaternion quatRot(v->Normal.X, 0.f, -v->Normal.X, 1+v->Normal.Y);
 					quatRot.normalize();
 					quatRot.getMatrix(m2);
 
