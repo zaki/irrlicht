@@ -118,9 +118,6 @@
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
 		<Unit filename="..\..\include\EDebugSceneTypes.h">
 			<Option compile="0" />
 			<Option link="0" />
