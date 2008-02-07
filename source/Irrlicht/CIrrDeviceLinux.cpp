@@ -42,13 +42,14 @@ CIrrDeviceLinux::CIrrDeviceLinux(video::E_DRIVER_TYPE driverType,
 	u32 bits, bool fullscreen,
 	bool sbuffer, bool vsync, bool antiAlias,
 	IEventReceiver* receiver,
+	Window externalWindow,
 	const char* version)
  : CIrrDeviceStub(version, receiver),
 #ifdef _IRR_COMPILE_WITH_X11_
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
 #endif
 	Fullscreen(fullscreen), StencilBuffer(sbuffer), AntiAlias(antiAlias), DriverType(driverType),
-	Width(windowSize.Width), Height(windowSize.Height), Depth(24), 
+	Width(windowSize.Width), Height(windowSize.Height), Depth(24),
 	Close(false), WindowActive(false), WindowMinimized(false), UseXVidMode(false), UseXRandR(false), UseGLXWindow(false), AutorepeatSupport(0)
 {
 	#ifdef _DEBUG
@@ -58,7 +59,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(video::E_DRIVER_TYPE driverType,
 	// print version, distribution etc.
 	// thx to LynxLuna for pointing me to the uname function
 	core::stringc linuxversion;
-	struct utsname LinuxInfo; 
+	struct utsname LinuxInfo;
 	uname(&LinuxInfo);
 
 	linuxversion += LinuxInfo.sysname;
@@ -79,7 +80,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(video::E_DRIVER_TYPE driverType,
 	if (driverType != video::EDT_NULL)
 	{
 		// create the window, only if we do not use the null device
-		if (!createWindow(windowSize, bits))
+		if (!createWindow(windowSize, bits, externalWindow))
 			return;
 	}
 
@@ -160,7 +161,7 @@ int IrrPrintXError(Display *display, XErrorEvent *event)
 
 
 bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
-						u32 bits)
+						u32 bits, Window externalWindow)
 {
 	Width = windowSize.Width;
 	Height = windowSize.Height;
@@ -263,7 +264,7 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 			Fullscreen = false;
 		}
 	}
-	
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 	Context=0;
@@ -281,17 +282,17 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 				// attribute array for the draw buffer
 				int visualAttrBuffer[] =
 				{
-				    GLX_RENDER_TYPE, GLX_RGBA_BIT,
-				    GLX_RED_SIZE, 4,
-				    GLX_GREEN_SIZE, 4,
-				    GLX_BLUE_SIZE, 4,
-				    GLX_ALPHA_SIZE, 4,
-				    GLX_DEPTH_SIZE, 16,
-				    GLX_DOUBLEBUFFER, GL_TRUE,
-				    GLX_STENCIL_SIZE, 1,
-				    GLX_SAMPLE_BUFFERS_ARB, GL_TRUE,
-				    GLX_SAMPLES_ARB, MAX_SAMPLES,
-				    None
+					GLX_RENDER_TYPE, GLX_RGBA_BIT,
+					GLX_RED_SIZE, 4,
+					GLX_GREEN_SIZE, 4,
+					GLX_BLUE_SIZE, 4,
+					GLX_ALPHA_SIZE, 4,
+					GLX_DEPTH_SIZE, 16,
+					GLX_DOUBLEBUFFER, GL_TRUE,
+					GLX_STENCIL_SIZE, 1,
+					GLX_SAMPLE_BUFFERS_ARB, GL_TRUE,
+					GLX_SAMPLES_ARB, MAX_SAMPLES,
+					None
 				};
 
 				GLXFBConfig *configList=0;
@@ -410,15 +411,15 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 				// attribute array for the draw buffer
 				int visualAttrBuffer[] =
 				{
-				    GLX_RGBA, GL_TRUE,
-				    GLX_RED_SIZE, 4,
-				    GLX_GREEN_SIZE, 4,
-				    GLX_BLUE_SIZE, 4,
-				    GLX_ALPHA_SIZE, 4,
-				    GLX_DEPTH_SIZE, 16,
-				    GLX_DOUBLEBUFFER, GL_TRUE,
-				    GLX_STENCIL_SIZE, 1,
-				    None
+					GLX_RGBA, GL_TRUE,
+					GLX_RED_SIZE, 4,
+					GLX_GREEN_SIZE, 4,
+					GLX_BLUE_SIZE, 4,
+					GLX_ALPHA_SIZE, 4,
+					GLX_DEPTH_SIZE, 16,
+					GLX_DOUBLEBUFFER, GL_TRUE,
+					GLX_STENCIL_SIZE, 1,
+					None
 				};
 
 				if (StencilBuffer)
@@ -445,7 +446,7 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 		else
 			os::Printer::log("No GLX support available. OpenGL driver will not work.", ELL_WARNING);
 	}
-	
+
 #endif // _IRR_COMPILE_WITH_OPENGL_
 
 	// create visual with standard X methods
@@ -475,8 +476,8 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 	// create color map
 	Colormap colormap;
 	colormap = XCreateColormap(display,
-			    RootWindow(display, visual->screen),
-			    visual->visual, AllocNone);
+			RootWindow(display, visual->screen),
+			visual->visual, AllocNone);
 
 	attributes.colormap = colormap;
 	attributes.border_pixel = 0;
@@ -508,12 +509,24 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 		attributes.event_mask |= ExposureMask;
 		attributes.event_mask |= FocusChangeMask;
 
-		window = XCreateWindow(display,
-				RootWindow(display, visual->screen),
-				0, 0, Width, Height, 0, visual->depth,
-				InputOutput, visual->visual,
-				CWBorderPixel | CWColormap | CWEventMask,
-				&attributes);
+		if(!externalWindow)
+		{
+			window = XCreateWindow(display,
+					RootWindow(display, visual->screen),
+					0, 0, Width, Height, 0, visual->depth,
+					InputOutput, visual->visual,
+					CWBorderPixel | CWColormap | CWEventMask,
+					&attributes);
+		}
+		else
+		{
+			window = XCreateWindow(display,
+					externalWindow,
+					0, 0, Width, Height, 0, visual->depth,
+					InputOutput, visual->visual,
+					CWBorderPixel | CWColormap | CWEventMask,
+					&attributes);
+		}
 
 		Atom wmDelete;
 		wmDelete = XInternAtom(display, wmDeleteWindow, True);
@@ -581,19 +594,19 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 	long num;
 	XGetWMNormalHints(display, window, StdHints, &num);
 
-	// create an XImage for the software renderer 
+	// create an XImage for the software renderer
 	//(thx to Nadav for some clues on how to do that!)
 
 	if (DriverType == video::EDT_SOFTWARE || DriverType == video::EDT_BURNINGSVIDEO)
 	{
-		SoftwareImage = XCreateImage(display, 
-			visual->visual, visual->depth, 
+		SoftwareImage = XCreateImage(display,
+			visual->visual, visual->depth,
 			ZPixmap, 0, 0, Width, Height,
 			BitmapPad(display), 0);
 
 		// use malloc because X will free it later on
 		SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
-	} 
+	}
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 	return true;
@@ -602,7 +615,7 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 
 //! create the driver
 void CIrrDeviceLinux::createDriver(const core::dimension2d<s32>& windowSize,
-				   bool vsync)
+				bool vsync)
 {
 	switch(DriverType)
 	{
@@ -615,7 +628,7 @@ void CIrrDeviceLinux::createDriver(const core::dimension2d<s32>& windowSize,
 		os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
 		break;
-		
+
 	case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		VideoDriver = video::createSoftwareDriver2(windowSize, Fullscreen, FileSystem, this);
@@ -689,14 +702,14 @@ bool CIrrDeviceLinux::run()
 					{
 						XDestroyImage(SoftwareImage);
 
-						SoftwareImage = XCreateImage(display, 
-							visual->visual, visual->depth, 
+						SoftwareImage = XCreateImage(display,
+							visual->visual, visual->depth,
 							ZPixmap, 0, 0, Width, Height,
 							BitmapPad(display), 0);
 
 						// use malloc because X will free it later on
 						SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
-					} 
+					}
 
 					if (VideoDriver)
 						VideoDriver->OnResize(core::dimension2d<s32>(Width, Height));
@@ -850,7 +863,7 @@ void CIrrDeviceLinux::yield()
 void CIrrDeviceLinux::sleep(u32 timeMs, bool pauseTimer=false)
 {
 	bool wasStopped = Timer ? Timer->isStopped() : true;
-	
+
 	struct timespec ts;
 	ts.tv_sec = (time_t) (timeMs / 1000);
 	ts.tv_nsec = (long) (timeMs % 1000) * 1000000;
@@ -888,34 +901,34 @@ void CIrrDeviceLinux::present(video::IImage* image, s32 windowId, core::rect<s32
 	if (DriverType != video::EDT_SOFTWARE && DriverType != video::EDT_BURNINGSVIDEO)
 		return;
 
-	// thx to Nadav, who send me some clues of how to display the image 
+	// thx to Nadav, who send me some clues of how to display the image
 	// to the X Server.
 
 	if (image->getColorFormat() != video::ECF_A1R5G5B5 &&
-	    image->getColorFormat() != video::ECF_A8R8G8B8)
+		image->getColorFormat() != video::ECF_A8R8G8B8)
 	{
 		os::Printer::log("Internal error, can only present A1R5G5B5 and A8R8G8B8 pictures.");
 		return;
 	}
-	
+
 	int destwidth = SoftwareImage->width;
 	int destheight = SoftwareImage->height;
 	int srcwidth = image->getDimension().Width;
 	int srcheight = image->getDimension().Height;
 	// clip images
 	srcheight = srcheight < destheight ? srcheight : destheight;
-	
+
 	if ( image->getColorFormat() == video::ECF_A8R8G8B8 )
 	{
 		// display 24/32 bit image
-		
+
 		s32* srcdata = (s32*)image->lock();
-		
+
 		if ((Depth == 32)||(Depth == 24))
-		{	
+		{
 			int destPitch = SoftwareImage->bytes_per_line;
 			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-			
+
 			for (int y=0; y<srcheight; ++y)
 			{
 				video::CColorConverter::convert_A8R8G8B8toA8R8G8B8(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
@@ -927,10 +940,10 @@ void CIrrDeviceLinux::present(video::IImage* image, s32 windowId, core::rect<s32
 		if (Depth == 16)
 		{
 			// convert to R5G6B6
-			
+
 			int destPitch = SoftwareImage->bytes_per_line;
 			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-			
+
 			for (int y=0; y<srcheight; ++y)
 			{
 				video::CColorConverter::convert_A8R8G8B8toR5G6B5(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
@@ -940,22 +953,22 @@ void CIrrDeviceLinux::present(video::IImage* image, s32 windowId, core::rect<s32
 		}
 		else
 			os::Printer::log("Unsupported screen depth.");
-		
+
 		image->unlock();
 	}
 	else
 	{
 		// display 16 bit image
-	
+
 		s16* srcdata = (s16*)image->lock();
-	
+
 		if (Depth == 16)
 		{
 			// convert from A1R5G5B5 to R5G6B6
-			
+
 			int destPitch = SoftwareImage->bytes_per_line;
 			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-			
+
 			for (int y=0; y<srcheight; ++y)
 			{
 				video::CColorConverter::convert_A1R5G5B5toR5G6B5(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
@@ -967,10 +980,10 @@ void CIrrDeviceLinux::present(video::IImage* image, s32 windowId, core::rect<s32
 		if ((Depth == 32)||(Depth == 24))
 		{
 			// convert from A1R5G5B5 to X8R8G8B8
-				
+
 			int destPitch = SoftwareImage->bytes_per_line;
 			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-			
+
 			for (int y=0; y<srcheight; ++y)
 			{
 				video::CColorConverter::convert_A1R5G5B5toA8R8G8B8(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
@@ -980,7 +993,7 @@ void CIrrDeviceLinux::present(video::IImage* image, s32 windowId, core::rect<s32
 		}
 		else
 			os::Printer::log("Unsupported screen depth.");
-	
+
 		image->unlock();
 	}
 
@@ -1215,7 +1228,7 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_plus, KEY_PLUS)); //?
 	KeyMap.push_back(SKeyMap(XK_comma, KEY_COMMA)); //?
 	KeyMap.push_back(SKeyMap(XK_minus, KEY_MINUS)); //?
-	KeyMap.push_back(SKeyMap(XK_period, KEY_PERIOD)); //? 
+	KeyMap.push_back(SKeyMap(XK_period, KEY_PERIOD)); //?
 	KeyMap.push_back(SKeyMap(XK_slash, 0)); //?
 	KeyMap.push_back(SKeyMap(XK_0, KEY_KEY_0));
 	KeyMap.push_back(SKeyMap(XK_1, KEY_KEY_1));
@@ -1321,8 +1334,9 @@ IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationP
 		param.Vsync,
 		param.AntiAlias,
 		param.EventReceiver,
+		(Window)param.WindowId,
 		param.SDK_version_do_not_use);
-	
+
 	if (dev && !dev->getVideoDriver() && param.DriverType != video::EDT_NULL)
 	{
 		dev->drop();

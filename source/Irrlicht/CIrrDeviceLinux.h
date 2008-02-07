@@ -50,7 +50,7 @@ namespace irr
 		CIrrDeviceLinux(video::E_DRIVER_TYPE deviceType,
 			const core::dimension2d<s32>& windowSize, u32 bits,
 			bool fullscreen, bool stencilbuffer, bool vsync, bool antiAlias, IEventReceiver* receiver,
-			const char* version);
+			Window window, const char* version);
 
 		//! destructor
 		virtual ~CIrrDeviceLinux();
@@ -90,7 +90,8 @@ namespace irr
 		void createDriver(const core::dimension2d<s32>& windowSize,
 					bool vsync);
 
-		bool createWindow(const core::dimension2d<s32>& windowSize, u32 bits);
+		bool createWindow(const core::dimension2d<s32>& windowSize, u32 bits,
+				Window externalWindow);
 
 		void createKeyMap();
 
@@ -184,20 +185,20 @@ namespace irr
 					{
 						XWarpPointer(Device->display,
 							None,
-				 			Device->window, 0, 0,
-				 			Device->Width,
-				 			Device->Height, 
+							Device->window, 0, 0,
+							Device->Width,
+							Device->Height,
 							ReferenceRect.UpperLeftCorner.X + x,
 							ReferenceRect.UpperLeftCorner.Y + y);
-						
+
 					}
 					else
 					{
 						XWarpPointer(Device->display,
 							None,
-				 			Device->window, 0, 0,
-				 			Device->Width,
-				 			Device->Height, x, y);
+							Device->window, 0, 0,
+							Device->Width,
+							Device->Height, x, y);
 					}
 					XFlush(Device->display);
 				}
@@ -217,7 +218,7 @@ namespace irr
 			virtual core::position2d<f32> getRelativePosition()
 			{
 				updateCursorPos();
-				
+
 				if (!UseReferenceRect)
 				{
 					return core::position2d<f32>(CursorPos.X / (f32)Device->Width,
