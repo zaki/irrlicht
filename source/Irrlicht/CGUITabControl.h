@@ -177,6 +177,3 @@ namespace gui
 
 #endif
 
-
-
-
