@@ -115,7 +115,9 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 		u32 i;
 
 		mesh->Buffers.reallocate(mesh->Materials.size());
+#ifndef BETTER_MESHBUFFER_SPLITTING_FOR_X
 		const u32 bufferOffset = AnimatedMesh->getMeshBufferCount();
+#endif
 		for (i=0; i<mesh->Materials.size(); ++i)
 		{
 			mesh->Buffers.push_back( AnimatedMesh->createBuffer() );
@@ -129,7 +131,6 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 					AnimatedMesh->getAllJoints()[mesh->AttachedJointID]->AttachedMeshes.push_back( AnimatedMesh->getMeshBuffers().size()-1 );
 				}
 			}
-
 		}
 
 		if (!mesh->HasVertexColors)
@@ -205,7 +206,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				{
 					core::array< u16 > &Array=verticesLinkBuffer[ mesh->Indices[id] ];
 
-					for (u32 j=0;j<  Array.size() ;++j)
+					for (u32 j=0;j< Array.size() ;++j)
 					{
 						if ( Array[j]== mesh->FaceMaterialIndices[i] )
 							buffer->Indices.push_back( verticesLinkIndex[ mesh->Indices[id] ][j] );
@@ -215,7 +216,8 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 			for (u32 j=0;j<mesh->WeightJoint.size();++j)
 			{
-				ISkinnedMesh::SWeight& weight = (AnimatedMesh->getAllJoints()[mesh->WeightJoint[j]]->Weights[mesh->WeightNum[j]]);
+				ISkinnedMesh::SJoint* joint = AnimatedMesh->getAllJoints()[mesh->WeightJoint[j]];
+				ISkinnedMesh::SWeight& weight = joint->Weights[mesh->WeightNum[j]];
 
 				u32 id = weight.vertex_id;
 
@@ -246,22 +248,33 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 		#else
 		{
 			core::array< u32 > verticesLinkIndex;
-			core::array< u16 > verticesLinkBuffer;
+			core::array< s16 > verticesLinkBuffer;
 			verticesLinkBuffer.set_used(mesh->Vertices.size());
-			verticesLinkIndex.set_used(mesh->Vertices.size());
 
 			// init with 0
 			for (i=0;i<mesh->Vertices.size();++i)
 			{
-				verticesLinkBuffer[i]=0;
-				verticesLinkIndex[i]=0;
+				verticesLinkBuffer[i]=-1;
 			}
 
+			bool warned = false;
 			// store meshbuffer number per vertex
 			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
 			{
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
+					if ((verticesLinkBuffer[ mesh->Indices[id] ] != -1) && (verticesLinkBuffer[ mesh->Indices[id] ] != (s16)mesh->FaceMaterialIndices[i]))
+					{
+						if (!warned)
+						{
+							os::Printer::log("X loader", "Duplicated vertex, animation might be corrupted.", ELL_WARNING);
+							warned=true;
+						}
+						const u32 tmp = mesh->Vertices.size();
+						mesh->Vertices.push_back(mesh->Vertices[ mesh->Indices[id] ]);
+						mesh->Indices[id] = tmp;
+						verticesLinkBuffer.set_used(mesh->Vertices.size());
+					}
 					verticesLinkBuffer[ mesh->Indices[id] ] = mesh->FaceMaterialIndices[i];
 				}
 			}
@@ -275,6 +288,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 			for (i=0; i!=mesh->Buffers.size(); ++i)
 				mesh->Buffers[i]->Vertices_Standard.reallocate(vCountArray[i]);
 
+			verticesLinkIndex.set_used(mesh->Vertices.size());
 			// actually store vertices
 			for (i=0;i<mesh->Vertices.size();++i)
 			{
@@ -296,7 +310,9 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 			{
 				scene::SSkinMeshBuffer *buffer = mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
 				for (u32 id=i*3+0;id!=i*3+3;++id)
+				{
 					buffer->Indices.push_back( verticesLinkIndex[ mesh->Indices[id] ] );
+				}
 			}
 
 
@@ -314,7 +330,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				}
 
 				weight.vertex_id=verticesLinkIndex[id];
-				weight.buffer_id=verticesLinkBuffer[id] + bufferOffset;;
+				weight.buffer_id=verticesLinkBuffer[id] + bufferOffset;
 			}
 		}
 		#endif
