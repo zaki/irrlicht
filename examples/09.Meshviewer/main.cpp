@@ -420,7 +420,7 @@ public:
 	As you can see, there is also a unusual call to IrrlichtDevice::setResizeAble().
 	This makes the render window resizeable, which is quite useful for a mesh viewer.
 */
-int main()
+int main(int argc, char* argv[])
 {
 	// ask user for driver
 
@@ -514,6 +514,9 @@ int main()
 
 	if (xml)
 		xml->drop(); // don't forget to delete the xml reader
+
+	if (argc > 1)
+		StartUpModelFile = argv[1];
 
 	/*
 		That wasn't difficult. Now we'll set a nicer font and create the
@@ -645,7 +648,8 @@ int main()
 	*/
 
 	// show about message box and load default model
-	showAboutText();
+	if (argc==1)
+		showAboutText();
 	loadModel(StartUpModelFile.c_str());
 
 	// add skybox
@@ -660,7 +664,9 @@ int main()
 
 	// add a camera scene node
 	Camera[0] = smgr->addCameraSceneNodeMaya();
+	Camera[0]->setFarValue(20000.f);
 	Camera[1] = smgr->addCameraSceneNodeFPS();
+	Camera[1]->setFarValue(20000.f);
 
 	setActiveCamera ( Camera[0] );
 
