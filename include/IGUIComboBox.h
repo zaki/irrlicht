@@ -44,6 +44,13 @@ namespace gui
 
 		//! Sets the selected item. Set this to -1 if no item should be selected
 		virtual void setSelected(s32 idx) = 0;
+
+		//! Sets text justification of the text area
+		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default), 
+		 EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
+		\param vertical: EGUIA_UPPERLEFT to align with top edge, 
+		 EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
+		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical) = 0;
 	};
 
 
