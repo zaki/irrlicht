@@ -1432,6 +1432,7 @@ video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, co
 	return new COpenGLTexture(surface, name, this);
 }
 
+
 //! Sets a material. All 3d drawing functions draw geometry now
 //! using this material.
 //! \param material: Material to be used from now on.
@@ -1445,7 +1446,6 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 				material.getTextureMatrix(i));
 	}
 }
-
 
 
 //! prints error if an error happened.
@@ -1477,7 +1477,6 @@ bool COpenGLDriver::testGLError()
 	return false;
 #endif
 }
-
 
 
 //! sets the needed renderstates
@@ -1512,11 +1511,11 @@ void COpenGLDriver::setRenderStates3DMode()
 		// unset old material
 
 		if (LastMaterial.MaterialType != Material.MaterialType &&
-			LastMaterial.MaterialType >= 0 && LastMaterial.MaterialType < static_cast<s32>(MaterialRenderers.size()))
+			static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 			MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 
 		// set new material.
-		if (Material.MaterialType >= 0 && Material.MaterialType < static_cast<s32>(MaterialRenderers.size()))
+		if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
 			MaterialRenderers[Material.MaterialType].Renderer->OnSetMaterial(
 				Material, LastMaterial, ResetRenderStates, this);
 
@@ -1524,7 +1523,7 @@ void COpenGLDriver::setRenderStates3DMode()
 		ResetRenderStates = false;
 	}
 
-	if (Material.MaterialType >= 0 && Material.MaterialType < static_cast<s32>(MaterialRenderers.size()))
+	if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
 		MaterialRenderers[Material.MaterialType].Renderer->OnRender(this, video::EVT_STANDARD);
 
 	CurrentRenderMode = ERM_3D;
@@ -1615,12 +1614,11 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// fillmode
-	if (resetAllRenderStates || lastmaterial.Wireframe != material.Wireframe || lastmaterial.PointCloud != material.PointCloud)
+	if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
 		glPolygonMode(GL_FRONT_AND_BACK, material.Wireframe ? GL_LINE : material.PointCloud? GL_POINT : GL_FILL);
 
 	// shademode
-
-	if (resetAllRenderStates || lastmaterial.GouraudShading != material.GouraudShading)
+	if (resetAllRenderStates || (lastmaterial.GouraudShading != material.GouraudShading))
 	{
 		if (material.GouraudShading)
 			glShadeModel(GL_SMOOTH);
@@ -1629,8 +1627,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// lighting
-
-	if (resetAllRenderStates || lastmaterial.Lighting != material.Lighting)
+	if (resetAllRenderStates || (lastmaterial.Lighting != material.Lighting))
 	{
 		if (material.Lighting)
 			glEnable(GL_LIGHTING);
@@ -1669,7 +1666,6 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// back face culling
-
 	if (resetAllRenderStates || lastmaterial.BackfaceCulling != material.BackfaceCulling)
 	{
 		if (material.BackfaceCulling)
@@ -1784,16 +1780,21 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 }
 
 
-
 //! sets the needed renderstates
 void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
 		// unset last 3d material
-		if (CurrentRenderMode == ERM_3D && Material.MaterialType >= 0 &&
-				Material.MaterialType < static_cast<s32>(MaterialRenderers.size()))
-			MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+		if (CurrentRenderMode == ERM_3D)
+		{
+			if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
+				MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+			setBasicRenderStates(SMaterial(), SMaterial(), true);
+			// everything that is wrongly set by SMaterial default
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_LIGHTING);
+		}
 
 		GLfloat glmat[16];
 		core::matrix4 m;
@@ -1815,17 +1816,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		glLoadIdentity();
 
 		Transformation3DChanged = false;
-
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_FOG);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glDisable(GL_LIGHTING);
-
-		glDisable(GL_TEXTURE_GEN_S);
-		glDisable(GL_TEXTURE_GEN_T);
-
-		glDisable(GL_ALPHA_TEST);
-		glCullFace(GL_BACK);
 	}
 
 	if (texture)
@@ -2052,7 +2042,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 
 	// unset last 3d material
 	if (CurrentRenderMode == ERM_3D &&
-	Material.MaterialType >= 0 && Material.MaterialType < static_cast<s32>(MaterialRenderers.size()))
+		static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
 	{
 		MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
 		ResetRenderStates = true;
@@ -2365,6 +2355,7 @@ s32 COpenGLDriver::addShaderMaterial(const c8* vertexShaderProgram,
 	return nr;
 }
 
+
 //! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
 s32 COpenGLDriver::addHighLevelShaderMaterial(
 	const c8* vertexShaderProgram,
@@ -2445,7 +2436,7 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 
 //! checks triangle count and print warning if wrong
 bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-								bool clearZBuffer, SColor color)
+					bool clearZBuffer, SColor color)
 {
 	// check for right driver type
 
@@ -2595,6 +2586,7 @@ bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool en
 	return true;
 }
 
+
 void COpenGLDriver::uploadClipPlane(u32 index)
 {
 	// opengl needs an array of doubles for the plane equation
@@ -2605,6 +2597,7 @@ void COpenGLDriver::uploadClipPlane(u32 index)
 	clip_plane[3] = UserClipPlane[index].D;
 	glClipPlane(GL_CLIP_PLANE0 + index, clip_plane);
 }
+
 
 //! Enable/disable a clipping plane.
 //! There are at least 6 clipping planes available for the user to set at will.
