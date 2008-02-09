@@ -75,7 +75,7 @@ void CAnimatedMeshSceneNode::setCurrentFrame(f32 frame)
 }
 
 
-//! Returns the current displayed frame number.
+//! Returns the currently displayed frame number.
 f32 CAnimatedMeshSceneNode::getFrameNr() const
 {
 	return CurrentFrameNr;
@@ -103,15 +103,14 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 	{
 		// play animation looped
 
+		const s32 lenInMs = abs(s32( (EndFrame - StartFrame) / FramesPerSecond));
 		if (FramesPerSecond > 0.f) //forwards...
 		{
-			const s32 lenInTime = s32( f32(EndFrame - StartFrame) / FramesPerSecond);
-			return StartFrame + ( (timeMs - BeginFrameTime) % lenInTime) *FramesPerSecond;
+			return StartFrame + ( (timeMs - BeginFrameTime) % lenInMs) * FramesPerSecond;
 		}
 		else //backwards...
 		{
-			const s32 lenInTime = s32( f32(EndFrame - StartFrame) / -FramesPerSecond);
-			return EndFrame - ( (timeMs - BeginFrameTime) % lenInTime)*-FramesPerSecond;
+			return EndFrame - ( (timeMs - BeginFrameTime) % lenInMs)* -FramesPerSecond;
 		}
 	}
 	else
@@ -122,7 +121,7 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 
 		if (FramesPerSecond > 0.f) //forwards...
 		{
-			const f32 deltaFrame = floorf( f32 ( timeMs - BeginFrameTime ) * FramesPerSecond );
+			const f32 deltaFrame = ( timeMs - BeginFrameTime ) * FramesPerSecond;
 
 			frame = StartFrame + deltaFrame;
 
@@ -135,7 +134,7 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		}
 		else //backwards... (untested)
 		{
-			const f32 deltaFrame = floorf( f32 ( timeMs - BeginFrameTime ) * -FramesPerSecond );
+			const f32 deltaFrame = ( timeMs - BeginFrameTime ) * -FramesPerSecond;
 
 			frame = EndFrame - deltaFrame;
 
@@ -151,6 +150,7 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		return frame;
 	}
 }
+
 
 //! frame
 void CAnimatedMeshSceneNode::OnRegisterSceneNode()
@@ -200,11 +200,9 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 }
 
 
-
 //! OnAnimate() is called just before rendering the whole scene.
 void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
-
 	CurrentFrameNr = buildFrameNr ( timeMs );
 
 	if ( Mesh )
@@ -218,23 +216,8 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 */
 	}
 
-
 	IAnimatedMeshSceneNode::OnAnimate ( timeMs );
-
 }
-
-
-/*
-	angle = dotproduct ( v(0,1,0), up )
-	axis = crossproduct ( v(0,1,0), up )
-*/
-inline void AlignToUpVector(core::matrix4 &m, const core::vector3df &up )
-{
-	core::quaternion quatRot( up.Z, 0.f, -up.X, 1 + up.Y );
-	quatRot.normalize();
-	quatRot.getMatrix ( m );
-}
-
 
 
 //! renders the node.
@@ -452,7 +435,10 @@ void CAnimatedMeshSceneNode::render()
 				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
 				for ( u32 i=0; i != mb->getVertexCount(); ++i )
 				{
-					AlignToUpVector ( m2, v->Normal );
+					// Align to v->normal
+					core::quaternion quatRot( v->Normal.Z, 0.f, -v->Normal.X, 1 + v->Normal.Y );
+					quatRot.normalize();
+					quatRot.getMatrix ( m2 );
 
 					m2.setTranslation(v->Pos);
 					m2*=AbsoluteTransformation;

@@ -71,7 +71,7 @@ namespace video
 			EmissiveColor(0,0,0,0), SpecularColor(255,255,255,255),
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
-			ZBuffer(true), ZWriteEnable(true), BackfaceCulling(true),
+			ZBuffer(1), ZWriteEnable(true), BackfaceCulling(true),
 			FogEnable(false), NormalizeNormals(false)
 		{ }
 

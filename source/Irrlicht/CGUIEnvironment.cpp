@@ -549,6 +549,9 @@ IGUISkin* CGUIEnvironment::getSkin() const
 //! Sets a new GUI Skin
 void CGUIEnvironment::setSkin(IGUISkin* skin)
 {
+	if (CurrentSkin==skin)
+		return;
+
 	if (CurrentSkin)
 		CurrentSkin->drop();
 
