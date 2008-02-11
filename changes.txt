@@ -38,6 +38,7 @@ Changes in version 1.5 (... 2008)
    Nodes are now solid or transparent. ( but still more states are needed )
 
  - GUI:
+   - Disabling the BMP loader now compiles without the built-in font
    - Added setTextAlignment to IGUIComboBox
    - Fixed a bug in CGUISpriteBank which caused a crash when a non-looping animated sprite reached the end of its animation.
    - Modal screens no longer flash invisible children when rejecting a focus change.
