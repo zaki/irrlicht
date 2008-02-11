@@ -1,5 +1,7 @@
 Changes in version 1.5 (... 2008)
 
+ - Fixed a performance bug in ISceneNode constructor reported by izhbq412
+
  - Added volume light scene node
 
  - Better fix for hires timers on dual core machines by RogerBorg
