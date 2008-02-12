@@ -112,9 +112,6 @@ namespace scene
 		//! (This feature is not implementated in irrlicht yet)
 		virtual bool setHardwareSkinning(bool on);
 
-
-
-
 		//Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
 
 		//these functions will use the needed arrays, set vaules, etc to help the loaders
@@ -131,20 +128,15 @@ namespace scene
 		//! loaders should call this after populating the mesh
 		virtual void finalize();
 
-
 		virtual SSkinMeshBuffer *createBuffer();
 
 		virtual SJoint *createJoint(SJoint *parent=0);
 
 		virtual SPositionKey *createPositionKey(SJoint *joint);
-		virtual SScaleKey *createScaleKey(SJoint *joint);
 		virtual SRotationKey *createRotationKey(SJoint *joint);
+		virtual SScaleKey *createScaleKey(SJoint *joint);
 
 		virtual SWeight *createWeight(SJoint *joint);
-
-
-
-
 
 private:
 
@@ -158,7 +150,7 @@ private:
 
 		void getFrameData(f32 frame,SJoint *Node,core::vector3df &position, s32 &positionHint, core::vector3df &scale, s32 &scaleHint, core::quaternion &rotation, s32 &rotationHint);
 
-		void CalculateGlobalMatrixes(SJoint *Joint,SJoint *ParentJoint);
+		void CalculateGlobalMatrices(SJoint *Joint,SJoint *ParentJoint);
 
 		void SkinJoint(SJoint *Joint, SJoint *ParentJoint);
 
@@ -183,8 +175,8 @@ private:
 
 		f32 AnimationFrames;
 
-		f32 lastAnimatedFrame;
-		f32 lastSkinnedFrame;
+		f32 LastAnimatedFrame;
+		f32 LastSkinnedFrame;
 		bool BoneControlUsed;
 
 		bool AnimateNormals;

@@ -1,7 +1,4 @@
-
 #include "CBoneSceneNode.h"
-
-
 
 namespace irr
 {
@@ -17,11 +14,6 @@ CBoneSceneNode::CBoneSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 
 }
 
-//! destructor
-CBoneSceneNode::~CBoneSceneNode()
-{
-
-}
 
 //! Returns the name of the bone
 const c8* CBoneSceneNode::getBoneName() const
@@ -82,8 +74,6 @@ void CBoneSceneNode::OnAnimate(u32 timeMs)
 }
 
 
-
-
 void CBoneSceneNode::helper_updateAbsolutePositionOfAllChildren(ISceneNode *Node)
 {
 	Node->updateAbsolutePosition();
@@ -102,9 +92,6 @@ void CBoneSceneNode::updateAbsolutePositionOfAllChildren()
 }
 
 
-
-
-
 void CBoneSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
 	out->addInt("BoneIndex", BoneIndex);
@@ -112,13 +99,16 @@ void CBoneSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 	out->addEnum("AnimationMode", AnimationMode, BoneAnimationModeNames);
 }
 
+
 void CBoneSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
 	BoneIndex = in->getAttributeAsInt("BoneIndex");
 	BoneName = in->getAttributeAsString("BoneName");
 	AnimationMode = (E_BONE_ANIMATION_MODE)in->getAttributeAsEnumeration("AnimationMode", BoneAnimationModeNames);
-	// todo: add/replace bone in parent with bone from mesh
+	// TODO: add/replace bone in parent with bone from mesh
 }
+
 
 } // namespace scene
 } // namespace irr
+

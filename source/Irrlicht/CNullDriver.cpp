@@ -1500,12 +1500,13 @@ E_DRIVER_TYPE CNullDriver::getDriverType() const
 void CNullDriver::deleteMaterialRenders()
 {
 	// delete material renderers
-	for (int i=0; i<(int)MaterialRenderers.size(); ++i)
+	for (u32 i=0; i<MaterialRenderers.size(); ++i)
 		if (MaterialRenderers[i].Renderer)
 			MaterialRenderers[i].Renderer->drop();
 
 	MaterialRenderers.clear();
 }
+
 
 //! Returns pointer to material renderer or null
 IMaterialRenderer* CNullDriver::getMaterialRenderer(u32 idx)
@@ -1515,7 +1516,6 @@ IMaterialRenderer* CNullDriver::getMaterialRenderer(u32 idx)
 	else
 		return 0;
 }
-
 
 
 //! Returns amount of currently available material renderers.
