@@ -656,11 +656,9 @@ bool CXMeshFileLoader::parseDataObjectTransformationMatrix(core::matrix4 &mat)
 		return false;
 	}
 
-	for (u32 i=0; i<4; ++i)
-		for (u32 j=0; j<4; ++j)
-			mat(i,j)=readFloat();
+	readMatrix(mat);
 
-	if (!checkForTwoFollowingSemicolons())
+	if (!checkForOneFollowingSemicolons())
 	{
 		os::Printer::log("No finishing semicolon in Transformation Matrix found in x file", ELL_WARNING);
 		return false;
@@ -674,7 +672,6 @@ bool CXMeshFileLoader::parseDataObjectTransformationMatrix(core::matrix4 &mat)
 
 	return true;
 }
-
 
 
 bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
@@ -920,13 +917,9 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 	// world space coordinates of the mesh as affected by the bone
 	core::matrix4& MatrixOffset = joint->GlobalInversedMatrix;
 
-	for (i=0; i<4; ++i)
-	{
-		for (u32 j=0; j<4; ++j)
-			MatrixOffset(i,j) = readFloat();
-	}
+	readMatrix(MatrixOffset);
 
-	if (!checkForTwoFollowingSemicolons())
+	if (!checkForOneFollowingSemicolons())
 	{
 		os::Printer::log("No finishing semicolon in Skin Weights found in x file", ELL_WARNING);
 		return false;
@@ -1437,36 +1430,19 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		joint->PositionKeys.reallocate(joint->PositionKeys.size()+animationDump.PositionKeys.size());
 		for (n=0;n<animationDump.PositionKeys.size();++n)
 		{
-			ISkinnedMesh::SPositionKey *key=&animationDump.PositionKeys[n];
-
-			joint->PositionKeys.push_back(*key);
+			joint->PositionKeys.push_back(animationDump.PositionKeys[n]);
 		}
 
 		joint->ScaleKeys.reallocate(joint->ScaleKeys.size()+animationDump.ScaleKeys.size());
 		for (n=0;n<animationDump.ScaleKeys.size();++n)
 		{
-			ISkinnedMesh::SScaleKey *key=&animationDump.ScaleKeys[n];
-
-			//key->scale*=joint->LocalMatrix.getScale();
-
-			joint->ScaleKeys.push_back(*key);
+			joint->ScaleKeys.push_back(animationDump.ScaleKeys[n]);
 		}
 
 		joint->RotationKeys.reallocate(joint->RotationKeys.size()+animationDump.RotationKeys.size());
 		for (n=0;n<animationDump.RotationKeys.size();++n)
 		{
-			ISkinnedMesh::SRotationKey *key=&animationDump.RotationKeys[n];
-
-			core::matrix4 tmpMatrix;
-
-			tmpMatrix.setRotationRadians(
-				core::vector3df(key->rotation.X, key->rotation.Y, key->rotation.Z) );
-
-			tmpMatrix=joint->LocalMatrix*tmpMatrix;
-
-			//key->rotation  = core::quaternion(tmpMatrix);
-
-			joint->RotationKeys.push_back(*key);
+			joint->RotationKeys.push_back(animationDump.RotationKeys[n]);
 		}
 	}
 	else
@@ -1509,7 +1485,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 	for (u32 i=0; i<numberOfKeys; ++i)
 	{
 		// read time
-		const u32 time = readInt();
+		const f32 time = (f32)readInt();
 
 		// read keys
 		switch(keyType)
@@ -1537,7 +1513,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				}
 
 				ISkinnedMesh::SRotationKey *key=AnimatedMesh->createRotationKey(joint);
-				key->frame=(f32)time;
+				key->frame=time;
 				key->rotation.set(X,Y,Z,W);
 			}
 			break;
@@ -1565,13 +1541,13 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				if (keyType==2)
 				{
 					ISkinnedMesh::SPositionKey *key=AnimatedMesh->createPositionKey(joint);
-					key->frame=(f32)time;
+					key->frame=time;
 					key->position=vector;
 				}
 				else
 				{
 					ISkinnedMesh::SScaleKey *key=AnimatedMesh->createScaleKey(joint);
-					key->frame=(f32)time;
+					key->frame=time;
 					key->scale=vector;
 				}
 			}
@@ -1589,41 +1565,36 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				}
 
 				// read matrix
-				core::matrix4 Matrix;
+				core::matrix4 mat(core::matrix4::EM4CONST_NOTHING);
+				readMatrix(mat);
 
-				for (u32 m=0; m<4; ++m)
-					for (u32 n=0; n<4; ++n)
-						Matrix(m,n) = readFloat();
+				//mat=joint->LocalMatrix*mat;
 
-
-				//Matrix=joint->LocalMatrix*Matrix;
-
-				if (!checkForTwoFollowingSemicolons())
+				if (!checkForOneFollowingSemicolons())
 				{
 					os::Printer::log("No finishing semicolon after matrix animation key in x file", ELL_WARNING);
 					return false;
 				}
 
-				//core::vector3df rotation = Matrix.getRotationDegrees();
+				//core::vector3df rotation = mat.getRotationDegrees();
 
 				ISkinnedMesh::SRotationKey *keyR=AnimatedMesh->createRotationKey(joint);
-				keyR->frame=(f32)time;
-				//keyR->rotation.set(rotation.X*core::DEGTORAD,rotation.Y*core::DEGTORAD,rotation.Z*core::DEGTORAD);
-				keyR->rotation= core::quaternion(Matrix);
+				keyR->frame=time;
+				keyR->rotation= core::quaternion(mat);
 
 
 				ISkinnedMesh::SPositionKey *keyP=AnimatedMesh->createPositionKey(joint);
-				keyP->frame=(f32)time;
-				keyP->position=Matrix.getTranslation();
+				keyP->frame=time;
+				keyP->position=mat.getTranslation();
 
-				core::vector3df scale=Matrix.getScale();
+				core::vector3df scale=mat.getScale();
 
 				//if (scale.X==0) scale.X=1;
 				//if (scale.Y==0) scale.Y=1;
 				//if (scale.Z==0) scale.Z=1;
 /*
 				ISkinnedMesh::SScaleKey *keyS=AnimatedMesh->createScaleKey(joint);
-				keyS->frame=(f32)time;
+				keyS->frame=time;
 				keyS->scale=scale;
 */
 			}
@@ -2081,10 +2052,11 @@ bool CXMeshFileLoader::readVector3(core::vector3df& vec)
 // read color without alpha value. Stops after second semicolon after blue value
 bool CXMeshFileLoader::readRGB(video::SColor& color)
 {
-	color.setRed( (u32)(readFloat()*255.f)) ;
-	color.setGreen( (u32)(readFloat()*255.f)) ;
-	color.setBlue( (u32)(readFloat()*255.f)) ;
-	color.setAlpha( 255 );
+	video::SColorf tmpColor;
+	tmpColor.r = readFloat();
+	tmpColor.g = readFloat();
+	tmpColor.b = readFloat();
+	color = tmpColor.toSColor();
 	return checkForOneFollowingSemicolons();
 }
 
@@ -2092,10 +2064,21 @@ bool CXMeshFileLoader::readRGB(video::SColor& color)
 // read color with alpha value. Stops after second semicolon after blue value
 bool CXMeshFileLoader::readRGBA(video::SColor& color)
 {
-	color.setRed( (u32)(readFloat()*255)) ;
-	color.setGreen( (u32)(readFloat()*255)) ;
-	color.setBlue( (u32)(readFloat()*255)) ;
-	color.setAlpha( (u32)(readFloat()*255)) ;
+	video::SColorf tmpColor;
+	tmpColor.r = readFloat();
+	tmpColor.g = readFloat();
+	tmpColor.b = readFloat();
+	tmpColor.a = readFloat();
+	color = tmpColor.toSColor();
+	return checkForOneFollowingSemicolons();
+}
+
+
+// read matrix from list of floats
+bool CXMeshFileLoader::readMatrix(core::matrix4& mat)
+{
+	for (u32 i=0; i<16; ++i)
+		mat[i] = readFloat();
 	return checkForOneFollowingSemicolons();
 }
 
