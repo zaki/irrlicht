@@ -78,7 +78,7 @@ namespace scene
 		//! core::vector3df ( 2.0f, 2.0f, 2.0f ), although the total scaling of the scene node is
 		//! core::vector3df ( 100.0f, 10.0f, 100.0f ).
 		//! \return Returns the last scaling factor passed to the scene node.
-		virtual core::vector3df getScale() const
+		virtual const core::vector3df& getScale() const
 		{
 			return TerrainData.Scale; 
 		}
@@ -104,7 +104,7 @@ namespace scene
 
 		//! Gets the last positioning vector applied to the scene node. 
 		//! \return Returns the last position vector applied to the scene node.
-		virtual const core::vector3df getPosition() const
+		virtual const core::vector3df& getPosition() const
 		{
 			return TerrainData.Position;
 		}
