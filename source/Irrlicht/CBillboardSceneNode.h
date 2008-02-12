@@ -15,7 +15,7 @@ namespace scene
 
 //! Scene node which is a billboard. A billboard is like a 3d sprite: A 2d element,
 //! which always looks to the camera. 
-class CBillboardSceneNode : public IBillboardSceneNode
+class CBillboardSceneNode : virtual public IBillboardSceneNode
 {
 public:
 

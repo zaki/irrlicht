@@ -15,9 +15,9 @@ namespace scene
 
 //! constructor
 CBillboardSceneNode::CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
-				const core::vector3df& position, const core::dimension2d<f32>& size,
-				video::SColor shade_top, video::SColor shade_down)
-	: IBillboardSceneNode(parent, mgr, id, position)
+			const core::vector3df& position, const core::dimension2d<f32>& size,
+			video::SColor shade_top, video::SColor shade_down)
+	: ISceneNode(parent, mgr, id, position), IBillboardSceneNode(parent, mgr, id, position)
 {
 	#ifdef _DEBUG
 	setDebugName("CBillboardSceneNode");
