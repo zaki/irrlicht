@@ -375,7 +375,7 @@ namespace scene
 
 		//! Gets the scale of the scene node.
 		/** \return Returns the scale of the scene node. */
-		virtual const core::vector3df& getScale() const
+		virtual core::vector3df getScale() const
 		{
 			return RelativeScale;
 		}
@@ -410,7 +410,7 @@ namespace scene
 		//! Gets the position of the node.
 		/** Note that the position is relative to the parent.
 		\return Returns the current position of the node relative to the parent. */
-		virtual const core::vector3df& getPosition() const
+		virtual core::vector3df getPosition() const
 		{
 			return RelativeTranslation;
 		}
