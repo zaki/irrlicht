@@ -29,7 +29,7 @@ namespace irr
 		camera) */
 		EET_MOUSE_INPUT_EVENT,
 
-		//! A key input evant.
+		//! A key input event.
 		/** Keyboard events are also created by the device and passed to IrrlichtDevice::postEventFromUser.
 		They take the same path as mouse events. */
 		EET_KEY_INPUT_EVENT,
