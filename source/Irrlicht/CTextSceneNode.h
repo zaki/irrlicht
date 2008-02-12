@@ -6,6 +6,7 @@
 #define __C_TEXT_SCENE_NODE_H_INCLUDED__
 
 #include "ITextSceneNode.h"
+#include "IBillboardSceneNode.h"
 #include "IGUIFont.h"
 #include "IGUIFontBitmap.h"
 #include "ISceneCollisionManager.h"
@@ -56,7 +57,7 @@ namespace scene
 		core::aabbox3d<f32> Box;
 	};
 
-	class CBillboardTextSceneNode : public ITextSceneNode
+	class CBillboardTextSceneNode : virtual public ITextSceneNode, virtual public IBillboardSceneNode
 	{
 	public:
 
@@ -86,7 +87,7 @@ namespace scene
 		virtual void setSize(const core::dimension2d<f32>& size);
 
 		//! gets the size of the billboard
-		virtual const core::dimension2d<f32>& getSize();
+		virtual const core::dimension2d<f32>& getSize() const;
 
 		virtual video::SMaterial& getMaterial(u32 i);
 		
@@ -95,6 +96,20 @@ namespace scene
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_TEXT; }
+
+		//! Set the color of all vertices of the billboard
+		//! \param overallColor: the color to set
+		virtual void setColor(const video::SColor & overallColor);
+
+		//! Set the color of the top and bottom vertices of the billboard
+		//! \param topColor: the color to set the top vertices
+		//! \param bottomColor: the color to set the bottom vertices
+		virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor);
+
+		//! Gets the color of the top and bottom vertices of the billboard
+		//! \param topColor: stores the color of the top vertices
+		//! \param bottomColor: stores the color of the bottom vertices
+		virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const;
 
 	private:
 

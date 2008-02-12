@@ -48,7 +48,7 @@ struct SAttributeReadWriteOptions
 
 
 //! An object which is able to serialize and deserialize its attributes into an attributes object
-class IAttributeExchangingObject : public virtual IReferenceCounted
+class IAttributeExchangingObject : virtual public IReferenceCounted
 {
 public:
 

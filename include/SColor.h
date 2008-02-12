@@ -359,9 +359,9 @@ namespace video
 	{
 	public:
 
-		//! Constructs a color. All values are initialised with 0.0f, resulting
-		//! in a black color.
-		SColorf() : r(0.0f), g(0.0f), b(0.0f), a(0.0f) {};
+		//! Constructs a color. All colors are initialised with 0.0f, resulting
+		//! in a black color. alpha is 1.0f for no transparency.
+		SColorf() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {};
 
 		//! Constructs a color from three color values: red, green and blue.
 		//! \param r: Red color component. Should be a value between 0.0f meaning

@@ -30,7 +30,7 @@ namespace scene
 	visible, its children won't be visible too. In this way, it is for example easily possible
 	to attach a light to a moving car, or to place a walking character on a moving platform
 	on a moving ship. */
-	class ISceneNode : public io::IAttributeExchangingObject
+	class ISceneNode : virtual public io::IAttributeExchangingObject
 	{
 	public:
 
@@ -375,7 +375,7 @@ namespace scene
 
 		//! Gets the scale of the scene node.
 		/** \return Returns the scale of the scene node. */
-		virtual core::vector3df getScale() const
+		virtual const core::vector3df& getScale() const
 		{
 			return RelativeScale;
 		}
@@ -410,7 +410,7 @@ namespace scene
 		//! Gets the position of the node.
 		/** Note that the position is relative to the parent.
 		\return Returns the current position of the node relative to the parent. */
-		virtual const core::vector3df getPosition() const
+		virtual const core::vector3df& getPosition() const
 		{
 			return RelativeTranslation;
 		}
