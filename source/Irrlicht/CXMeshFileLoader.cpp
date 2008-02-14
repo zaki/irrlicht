@@ -907,7 +907,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 
 	// read vertex weights
 
-	for (i=0; i<nWeights; ++i)
+	for (i=jointStart; i<jointStart+nWeights; ++i)
 		joint->Weights[i].strength = readFloat();
 
 	// read matrix offset
