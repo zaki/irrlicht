@@ -487,8 +487,6 @@ void CColladaFileLoader::readLibrarySection(io::IXMLReaderUTF8* reader)
 				CScenePrefab p("");
 
 				readNodeSection(reader, SceneManager->getRootSceneNode(), &p);
-				for (u32 i=0; i<p.Childs.size(); ++i)
-					Prefabs.push_back(p.Childs[i]);
 			}
 			else
 			if (effectSectionName == reader->getNodeName())
@@ -2494,7 +2492,11 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 			if (uri == Images[i].Id)
 			{
 				if (Images[i].Source.size() && Images[i].SourceIsFilename)
-					return driver->getTexture(Images[i].Source.c_str());
+				{
+					if (FileSystem->existFile(Images[i].Source.c_str()))
+						return driver->getTexture(Images[i].Source.c_str());
+					return driver->getTexture((FileSystem->getFileDir(CurrentlyLoadingMesh)+"/"+Images[i].Source).c_str());
+				}
 				else
 				if (Images[i].Source.size())
 				{
