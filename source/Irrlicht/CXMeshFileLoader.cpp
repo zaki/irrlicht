@@ -51,7 +51,9 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(io::IReadFile* f)
 	if (!f)
 		return 0;
 
+#ifdef _XREADER_DEBUG
 	u32 time = os::Timer::getRealTime();
+#endif
 
 	AnimatedMesh = new CSkinnedMesh();
 
@@ -503,7 +505,7 @@ bool CXMeshFileLoader::parseDataObjectTemplate()
 	}
 
 	// read GUID
-	core::stringc guid = getNextToken();
+	getNextToken();
 
 	// read and ignore data members
 	while(true)
@@ -1587,12 +1589,15 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 				keyP->frame=time;
 				keyP->position=mat.getTranslation();
 
+/*
 				core::vector3df scale=mat.getScale();
 
-				//if (scale.X==0) scale.X=1;
-				//if (scale.Y==0) scale.Y=1;
-				//if (scale.Z==0) scale.Z=1;
-/*
+				if (scale.X==0)
+					scale.X=1;
+				if (scale.Y==0)
+					scale.Y=1;
+				if (scale.Z==0)
+					scale.Z=1;
 				ISkinnedMesh::SScaleKey *keyS=AnimatedMesh->createScaleKey(joint);
 				keyS->frame=time;
 				keyS->scale=scale;
