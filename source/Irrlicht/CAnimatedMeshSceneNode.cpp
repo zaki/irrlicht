@@ -205,15 +205,11 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
 	CurrentFrameNr = buildFrameNr ( timeMs );
 
-	if ( Mesh )
+	if ( Mesh && (Mesh->getMeshType() != EAMT_SKINNED))
 	{
-/*
-		scene::IMesh *m = Mesh->getMesh(CurrentFrameNr, 255, StartFrame, EndFrame);
+		scene::IMesh *m = Mesh->getMesh((s32)CurrentFrameNr, 255, StartFrame, EndFrame);
 		if ( m )
-		{
 			Box = m->getBoundingBox();
-		}
-*/
 	}
 
 	IAnimatedMeshSceneNode::OnAnimate ( timeMs );
@@ -263,11 +259,22 @@ void CAnimatedMeshSceneNode::render()
 				}
 
 		}
-
-
 		m=skinnedMesh;
+		if (m)
+		{
+			for (u32 g=0; g< m->getMeshBufferCount(); ++g)
+			{
+				const IMeshBuffer* mb = m->getMeshBuffer(g);
+				const core::matrix4 mat = AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation;
+				core::aabbox3df tmpbox(mb->getBoundingBox());
+				mat.transformBox(tmpbox);
+				if (g==0)
+					Box = tmpbox;
+				else
+					Box.addInternalBox(tmpbox);
+			}
+		}
 	}
-
 
 	if ( 0 == m )
 	{
@@ -284,27 +291,35 @@ void CAnimatedMeshSceneNode::render()
 
 	// for debug purposes only:
 
-	u32 renderMeshes = 1;
+	bool renderMeshes = true;
 	video::SMaterial mat;
 	if (DebugDataVisible && PassCount==1)
 	{
 		// overwrite half transparency
 		if ( DebugDataVisible & scene::EDS_HALF_TRANSPARENCY )
 		{
-			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
+			if (RenderFromIdentity)
+				driver->setTransform(video::ETS_WORLD, core::matrix4() );
+			for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 			{
-				mat = Materials[g];
+				scene::IMeshBuffer* mb = m->getMeshBuffer(i);
+				mat = Materials[i];
 				mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
+				if (Mesh->getMeshType() == EAMT_SKINNED)
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+
 				driver->setMaterial(mat);
-				driver->drawMeshBuffer ( m->getMeshBuffer(g) );
+				driver->drawMeshBuffer(mb);
 			}
-			renderMeshes = 0;
+			renderMeshes = false;
 		}
 	}
 
 	// render original meshes
 	if ( renderMeshes )
 	{
+		if (RenderFromIdentity)
+			driver->setTransform(video::ETS_WORLD, core::matrix4() );
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			video::IMaterialRenderer* rnd = driver->getMaterialRenderer(Materials[i].MaterialType);
@@ -316,11 +331,8 @@ void CAnimatedMeshSceneNode::render()
 			{
 				scene::IMeshBuffer* mb = m->getMeshBuffer(i);
 
-				if (RenderFromIdentity)
-					driver->setTransform(video::ETS_WORLD, core::matrix4() );
-				else if (Mesh->getMeshType() == EAMT_SKINNED)
+				if (Mesh->getMeshType() == EAMT_SKINNED)
 					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
-
 
 				driver->setMaterial(Materials[i]);
 				driver->drawMeshBuffer(mb);
@@ -336,14 +348,71 @@ void CAnimatedMeshSceneNode::render()
 		mat.Lighting = false;
 		driver->setMaterial(mat);
 
+		// show normals
+		if ( DebugDataVisible & scene::EDS_NORMALS )
+		{
+			IAnimatedMesh * arrow = SceneManager->addArrowMesh (
+					"__debugnormal", 0xFFECEC00,
+					0xFF999900, 4, 8, 1.f, 0.6f, 0.05f,
+					0.3f);
+			if ( 0 == arrow )
+			{
+				arrow = SceneManager->getMesh ( "__debugnormal" );
+			}
+			const IMesh *mesh = arrow->getMesh ( 0 );
+
+			// find a good scaling factor
+
+			core::matrix4 m2;
+
+			// draw normals
+			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
+			{
+				const scene::IMeshBuffer* mb = m->getMeshBuffer(g);
+				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
+				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
+				for ( u32 i=0; i != mb->getVertexCount(); ++i )
+				{
+					// Align to v->normal
+					core::quaternion quatRot( v->Normal.Z, 0.f, -v->Normal.X, 1 + v->Normal.Y );
+					quatRot.normalize();
+					quatRot.getMatrix ( m2 );
+
+					m2.setTranslation(v->Pos);
+					if (Mesh->getMeshType() == EAMT_SKINNED)
+					{
+						m2 = (AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation) * m2;
+					}
+					else
+						m2*=AbsoluteTransformation;
+
+					driver->setTransform(video::ETS_WORLD, m2 );
+					for ( u32 a = 0; a != mesh->getMeshBufferCount(); ++a )
+						driver->drawMeshBuffer ( mesh->getMeshBuffer ( a ) );
+
+					v = (const video::S3DVertex*) ( (u8*) v + vSize );
+				}
+			}
+			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
+		}
+
+		mat.MaterialType = video::EMT_SOLID;
+		mat.ZBuffer = false;
+		driver->setMaterial(mat);
 		// show bounding box
 		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
 		{
+			if (RenderFromIdentity)
+				driver->setTransform(video::ETS_WORLD, core::matrix4() );
 			for (u32 g=0; g< m->getMeshBufferCount(); ++g)
 			{
-				driver->draw3DBox( m->getMeshBuffer(g)->getBoundingBox(),
+				const IMeshBuffer* mb = m->getMeshBuffer(g);
+				if (Mesh->getMeshType() == EAMT_SKINNED)
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+				driver->draw3DBox( mb->getBoundingBox(),
 						video::SColor(0,190,128,128) );
 			}
+			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
 		if ( DebugDataVisible & scene::EDS_BBOX )
@@ -354,9 +423,7 @@ void CAnimatedMeshSceneNode::render()
 		{
 			if (Mesh->getMeshType() == EAMT_SKINNED)
 			{
-
 				// draw skeleton
-
 
 				for (u32 g=0; g < ((ISkinnedMesh*)Mesh)->getAllJoints().size(); ++g)
 				{
@@ -390,11 +457,9 @@ void CAnimatedMeshSceneNode::render()
 
 				core::matrix4 matr;
 
-				SMD3QuaterionTagList *taglist = ((IAnimatedMeshMD3*)Mesh)->getTagList (	(s32)getFrameNr(),
-												255,
-												getStartFrame (),
-												getEndFrame ()
-											);
+				SMD3QuaterionTagList *taglist = ((IAnimatedMeshMD3*)Mesh)->getTagList(
+						(s32)getFrameNr(), 255,
+						getStartFrame(), getEndFrame());
 				if ( taglist )
 				{
 					for ( u32 ts = 0; ts != taglist->size(); ++ts )
@@ -410,59 +475,22 @@ void CAnimatedMeshSceneNode::render()
 			}
 		}
 
-		// show normals
-		if ( DebugDataVisible & scene::EDS_NORMALS )
-		{
-			IAnimatedMesh * arrow = SceneManager->addArrowMesh (
-					"__debugnormal", 0xFFECEC00,
-					0xFF999900, 4, 8, 1.f, 0.6f, 0.05f,
-					0.3f);
-			if ( 0 == arrow )
-			{
-				arrow = SceneManager->getMesh ( "__debugnormal" );
-			}
-			IMesh *mesh = arrow->getMesh ( 0 );
-
-			// find a good scaling factor
-
-			core::matrix4 m2;
-
-			// draw normals
-			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
-			{
-				const scene::IMeshBuffer* mb = m->getMeshBuffer(g);
-				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
-				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
-				for ( u32 i=0; i != mb->getVertexCount(); ++i )
-				{
-					// Align to v->normal
-					core::quaternion quatRot( v->Normal.Z, 0.f, -v->Normal.X, 1 + v->Normal.Y );
-					quatRot.normalize();
-					quatRot.getMatrix ( m2 );
-
-					m2.setTranslation(v->Pos);
-					m2*=AbsoluteTransformation;
-
-					driver->setTransform(video::ETS_WORLD, m2 );
-					for ( u32 a = 0; a != mesh->getMeshBufferCount(); ++a )
-						driver->drawMeshBuffer ( mesh->getMeshBuffer ( a ) );
-
-					v = (const video::S3DVertex*) ( (u8*) v + vSize );
-				}
-			}
-			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		}
-
 		// show mesh
 		if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
 		{
 			mat.Lighting = false;
 			mat.Wireframe = true;
+			mat.ZBuffer = true;
 			driver->setMaterial(mat);
 
+			if (RenderFromIdentity)
+				driver->setTransform(video::ETS_WORLD, core::matrix4() );
 			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
 			{
-				driver->drawMeshBuffer( m->getMeshBuffer(g) );
+				const IMeshBuffer* mb = m->getMeshBuffer(g);
+				if (Mesh->getMeshType() == EAMT_SKINNED)
+					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
+				driver->drawMeshBuffer(mb);
 			}
 		}
 	}
@@ -504,7 +532,6 @@ bool CAnimatedMeshSceneNode::setFrameLoop(s32 begin, s32 end)
 }
 
 
-
 //! sets the speed with witch the animation is played
 void CAnimatedMeshSceneNode::setAnimationSpeed(f32 framesPerSecond)
 {
@@ -512,13 +539,11 @@ void CAnimatedMeshSceneNode::setAnimationSpeed(f32 framesPerSecond)
 }
 
 
-
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CAnimatedMeshSceneNode::getBoundingBox() const
 {
 	return Box;
 }
-
 
 
 //! returns the material based on the zero based index i. To get the amount

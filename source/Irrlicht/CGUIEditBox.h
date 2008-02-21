@@ -144,7 +144,7 @@ namespace gui
 		core::array< core::stringw > BrokenText;
 		core::array< s32 > BrokenTextPositions;
 
-		core::rect<s32> CurrentTextRect, frameRect; // temporary values
+		core::rect<s32> CurrentTextRect, FrameRect; // temporary values
 	};
 
 

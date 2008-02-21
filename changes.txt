@@ -49,6 +49,8 @@ Changes in version 1.5 (... 2008)
 -------------------------------------------
 Changes in version 1.4.1 (??? 2008)
 
+ - Fixed IGUICheckBox::setEnabled, reported by Dorth
+
  - Fixed the FollowSpline animator to avoid crashes when only one waypoint is given.
 
  - OpenGL VolumeShadow now uses glPolygonOffset to avoid zbuffer artifacts.

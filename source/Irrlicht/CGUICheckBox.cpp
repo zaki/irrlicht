@@ -35,85 +35,88 @@ CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIEleme
 //! called if an event happened.
 bool CGUICheckBox::OnEvent(const SEvent& event)
 {
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_KEY_INPUT_EVENT:
-		if (event.KeyInput.PressedDown &&
-			(event.KeyInput.Key == KEY_RETURN || 
-			 event.KeyInput.Key == KEY_SPACE))
+		switch(event.EventType)
 		{
-			Pressed = true;
-			return true;
-		}
-		else
-		if (Pressed && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
-		{
-			Pressed = false;
-			return true;
-		}
-		else
-		if (!event.KeyInput.PressedDown && Pressed &&
-			(event.KeyInput.Key == KEY_RETURN || 
-			 event.KeyInput.Key == KEY_SPACE))
-		{
-			Pressed = false;
-			if (Parent)
+		case EET_KEY_INPUT_EVENT:
+			if (event.KeyInput.PressedDown &&
+				(event.KeyInput.Key == KEY_RETURN || 
+				 event.KeyInput.Key == KEY_SPACE))
 			{
-				SEvent newEvent;
-				newEvent.EventType = EET_GUI_EVENT;
-				newEvent.GUIEvent.Caller = this;
-				newEvent.GUIEvent.Element = 0;
-				Checked = !Checked;
-				newEvent.GUIEvent.EventType = EGET_CHECKBOX_CHANGED;
-				Parent->OnEvent(newEvent);
+				Pressed = true;
+				return true;
 			}
-			return true;
-		}
-		break;
-	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
-		{
-			if (event.GUIEvent.Caller == this)
-				Pressed = false;
-		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
-		{
-			Pressed = true;
-			checkTime = os::Timer::getTime();
-			Environment->setFocus(this);
-			return true;
-		}
-		else
-		if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-		{
-			bool wasPressed = Pressed;
-			Environment->removeFocus(this);
-			Pressed = false;
-
-			if (wasPressed && Parent)
+			else
+			if (Pressed && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
 			{
-				if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y) ) )
+				Pressed = false;
+				return true;
+			}
+			else
+			if (!event.KeyInput.PressedDown && Pressed &&
+				(event.KeyInput.Key == KEY_RETURN || 
+				 event.KeyInput.Key == KEY_SPACE))
+			{
+				Pressed = false;
+				if (Parent)
 				{
+					SEvent newEvent;
+					newEvent.EventType = EET_GUI_EVENT;
+					newEvent.GUIEvent.Caller = this;
+					newEvent.GUIEvent.Element = 0;
+					Checked = !Checked;
+					newEvent.GUIEvent.EventType = EGET_CHECKBOX_CHANGED;
+					Parent->OnEvent(newEvent);
+				}
+				return true;
+			}
+			break;
+		case EET_GUI_EVENT:
+			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
+			{
+				if (event.GUIEvent.Caller == this)
 					Pressed = false;
-					return true;
+			}
+			break;
+		case EET_MOUSE_INPUT_EVENT:
+			if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+			{
+				Pressed = true;
+				checkTime = os::Timer::getTime();
+				Environment->setFocus(this);
+				return true;
+			}
+			else
+			if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
+			{
+				bool wasPressed = Pressed;
+				Environment->removeFocus(this);
+				Pressed = false;
+
+				if (wasPressed && Parent)
+				{
+					if ( !AbsoluteClippingRect.isPointInside( core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y) ) )
+					{
+						Pressed = false;
+						return true;
+					}
+
+					SEvent newEvent;
+					newEvent.EventType = EET_GUI_EVENT;
+					newEvent.GUIEvent.Caller = this;
+					newEvent.GUIEvent.Element = 0;
+					Checked = !Checked;
+					newEvent.GUIEvent.EventType = EGET_CHECKBOX_CHANGED;
+					Parent->OnEvent(newEvent);
 				}
 
-				SEvent newEvent;
-				newEvent.EventType = EET_GUI_EVENT;
-				newEvent.GUIEvent.Caller = this;
-				newEvent.GUIEvent.Element = 0;
-				Checked = !Checked;
-				newEvent.GUIEvent.EventType = EGET_CHECKBOX_CHANGED;
-				Parent->OnEvent(newEvent);
+				return true;
 			}
-
-			return true;
+			break;
+		default:
+			break;
 		}
-		break;
-	default:
-		break;
 	}
 
 	return Parent ? Parent->OnEvent(event) : false;
@@ -140,7 +143,7 @@ void CGUICheckBox::draw()
 	checkRect.LowerRightCorner.X = checkRect.UpperLeftCorner.X + height;
 	checkRect.LowerRightCorner.Y = checkRect.UpperLeftCorner.Y + height;
 
-	skin->draw3DSunkenPane(this, skin->getColor(Pressed ? EGDC_3D_FACE : EGDC_ACTIVE_CAPTION),
+	skin->draw3DSunkenPane(this, skin->getColor(Pressed || !IsEnabled ? EGDC_3D_FACE : EGDC_ACTIVE_CAPTION),
 		false, true, checkRect, &AbsoluteClippingRect);
 
 	if (Checked && Environment->getSkin())
