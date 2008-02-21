@@ -55,7 +55,6 @@ namespace scene
 		}
 
 
-
 		//! Returns the IMesh interface for a frame.
 		//! \param frame: Frame number as zero based index. The maximum frame number is
 		//! getFrameCount() - 1;
@@ -91,11 +90,13 @@ namespace scene
 			return Box;
 		}
 
+
 		//! set user axis aligned bounding box
 		virtual void setBoundingBox( const core::aabbox3df& box)
 		{
 			Box = box;
 		}
+
 
 		void recalculateBoundingBox()
 		{
@@ -110,23 +111,33 @@ namespace scene
 				Box.addInternalBox(Meshes[i]->getBoundingBox());
 		}
 
+
 		//! Returns the type of the animated mesh.
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const
 		{
 			return Type;
 		}
 
+
 		//! returns amount of mesh buffers.
 		virtual u32 getMeshBufferCount() const
 		{
-			return 0;
+			if (Meshes.empty())
+				return 0;
+
+			return Meshes[0]->getMeshBufferCount();
 		}
+
 
 		//! returns pointer to a mesh buffer
 		virtual IMeshBuffer* getMeshBuffer(u32 nr) const
 		{
-			return 0;
+			if (Meshes.empty())
+				return 0;
+
+			return Meshes[0]->getMeshBuffer(nr);
 		}
+
 
 		//! Returns pointer to a mesh buffer which fits a material
  		/** \param material: material to search for
@@ -134,13 +145,18 @@ namespace scene
 		NULL if there is no such mesh buffer. */
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const
 		{
-			return 0;
+			if (Meshes.empty())
+				return 0;
+
+			return Meshes[0]->getMeshBuffer(material);
 		}
+
 
 		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 		{
+			for (u32 i=0; i<Meshes.size(); ++i)
+				Meshes[i]->setMaterialFlag(flag, newvalue);
 		}
-
 
 		core::aabbox3d<f32> Box;
 		core::array<IMesh*> Meshes;

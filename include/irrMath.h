@@ -35,6 +35,9 @@ namespace core
 	const f64 ROUNDING_ERROR_64	= 0.00000001f;
 #endif
 
+#ifdef PI // make sure we don't collide with a define
+#undef PI
+#endif
 	//! Constant for PI.
 	const f32 PI			= 3.14159265359f;
 
@@ -44,6 +47,9 @@ namespace core
 	//! Constant for half of PI.
 	const f32 HALF_PI		= PI/2.0f;
 
+#ifdef PI64 // make sure we don't collide with a define
+#undef PI64
+#endif
 	//! Constant for 64bit PI.
 	const f64 PI64			= 3.1415926535897932384626433832795028841971693993751;
 
