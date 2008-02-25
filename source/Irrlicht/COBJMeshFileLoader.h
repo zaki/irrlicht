@@ -7,7 +7,7 @@
 
 #include "IMeshLoader.h"
 #include "IFileSystem.h"
-#include "IVideoDriver.h"
+#include "ISceneManager.h"
 #include "irrString.h"
 #include "SMeshBuffer.h"
 
@@ -22,7 +22,7 @@ class COBJMeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	COBJMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver);
+	COBJMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs);
 
 	//! destructor
 	virtual ~COBJMeshFileLoader();
@@ -41,7 +41,8 @@ private:
 
 	struct SObjMtl
 	{
-		SObjMtl() : Meshbuffer(0), Illumination(0) {
+		SObjMtl() : Meshbuffer(0), Bumpiness (1.0f), Illumination(0)
+		{
 			Meshbuffer = new SMeshBuffer();
 			Meshbuffer->Material.Shininess = 0.0f;
 			Meshbuffer->Material.AmbientColor = video::SColorf(0.2f, 0.2f, 0.2f, 1.0f).toSColor();
@@ -49,10 +50,14 @@ private:
 			Meshbuffer->Material.SpecularColor = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f).toSColor();
 		}
 
-		SObjMtl(SObjMtl& o) : Meshbuffer(o.Meshbuffer), Name(o.Name), Illumination(o.Illumination) { o.Meshbuffer->grab(); }
+		SObjMtl(SObjMtl& o)
+			: Meshbuffer(o.Meshbuffer), Name(o.Name),
+			Bumpiness(o.Bumpiness), Illumination(o.Illumination)
+		{ o.Meshbuffer->grab(); }
 
 		scene::SMeshBuffer *Meshbuffer;
 		core::stringc Name;
+		f32 Bumpiness;
 		c8 Illumination;
 	};
 
@@ -90,8 +95,8 @@ private:
 
 	void cleanUp();
 
+	scene::ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
-	video::IVideoDriver* Driver;
 
 	core::array<SObjMtl*> Materials;
 };
