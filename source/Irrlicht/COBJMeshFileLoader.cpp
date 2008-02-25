@@ -6,6 +6,8 @@
 #ifdef _IRR_COMPILE_WITH_OBJ_LOADER_
 
 #include "COBJMeshFileLoader.h"
+#include "IMeshManipulator.h"
+#include "IVideoDriver.h"
 #include "SMesh.h"
 #include "SMeshBuffer.h"
 #include "SAnimatedMesh.h"
@@ -20,16 +22,12 @@ namespace scene
 {
 
 //! Constructor
-COBJMeshFileLoader::COBJMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver)
-: FileSystem(fs), Driver(driver)
+COBJMeshFileLoader::COBJMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs)
+: SceneManager(smgr), FileSystem(fs)
 {
 	if (FileSystem)
 		FileSystem->grab();
-
-	if (Driver)
-		Driver->grab();
 }
-
 
 
 //! destructor
@@ -37,11 +35,7 @@ COBJMeshFileLoader::~COBJMeshFileLoader()
 {
 	if (FileSystem)
 		FileSystem->drop();
-
-	if (Driver)
-		Driver->drop();
 }
-
 
 
 //! returns true if the file maybe is able to be loaded by this class
@@ -258,7 +252,15 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		if ( Materials[m]->Meshbuffer->getIndexCount() > 0 )
 		{
 			Materials[m]->Meshbuffer->recalculateBoundingBox();
-			mesh->addMeshBuffer( Materials[m]->Meshbuffer );
+			if (Materials[m]->Meshbuffer->Material.MaterialType == video::EMT_PARALLAX_MAP_SOLID)
+			{
+				SMesh tmp;
+				tmp.addMeshBuffer(Materials[m]->Meshbuffer);
+				IMesh* tangentMesh = SceneManager->getMeshManipulator()->createMeshWithTangents(&tmp);
+				mesh->addMeshBuffer(tangentMesh->getMeshBuffer(0));
+			}
+			else
+				mesh->addMeshBuffer( Materials[m]->Meshbuffer );
 		}
 	}
 
@@ -335,18 +337,31 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 				currMaterial->Illumination = (c8)atol(illumStr);
 			}
 			break;
-			case 'N': // Ns - shininess
+			case 'N':
 			if ( currMaterial )
 			{
-				const u32 COLOR_BUFFER_LENGTH = 16;
-				c8 nsStr[COLOR_BUFFER_LENGTH];
+				switch(bufPtr[1])
+				{
+				case 's': // Ns - shininess
+					{
+						const u32 COLOR_BUFFER_LENGTH = 16;
+						c8 nsStr[COLOR_BUFFER_LENGTH];
 
-				bufPtr = goAndCopyNextWord(nsStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
-				f32 shininessValue = core::fast_atof(nsStr);
+						bufPtr = goAndCopyNextWord(nsStr, bufPtr, COLOR_BUFFER_LENGTH, bufEnd);
+						f32 shininessValue = core::fast_atof(nsStr);
 
-				// wavefront shininess is from [0, 1000], so scale for OpenGL
-				shininessValue *= 0.128f;
-				currMaterial->Meshbuffer->Material.Shininess = shininessValue;
+						// wavefront shininess is from [0, 1000], so scale for OpenGL
+						shininessValue *= 0.128f;
+						currMaterial->Meshbuffer->Material.Shininess = shininessValue;
+					}
+				break;
+				case 'i': // Ni - refraction index
+					{
+						c8 tmpbuf[WORD_BUFFER_LENGTH];
+						bufPtr = goAndCopyNextWord(tmpbuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+					}
+				break;
+				}
 			}
 			break;
 			case 'K':
@@ -380,38 +395,58 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 				}	// end switch(bufPtr[1])
 			}	// end case 'K': if ( 0 != currMaterial )...
 			break;
+			case 'b': // bump
 			case 'm': // texture maps
 			if (currMaterial)
 			{
-				u8 type=0; // map_Kd - diffuse texture map
-				if (!strncmp(bufPtr,"map_bump",8))
-					type=1;
+				u8 type=0; // map_Kd - diffuse color texture map
+				// map_Ks - specular color texture map
+				// map_Ka - ambient color texture map
+				if ((!strncmp(bufPtr,"map_bump",8)) || (!strncmp(bufPtr,"bump",4)))
+					type=1; // normal map
 				else if (!strncmp(bufPtr,"map_d",5))
-					type=2;
+					type=2; // opactity map
 				else if (!strncmp(bufPtr,"map_refl",8))
-					type=3;
+					type=3; // reflection map
 				// extract new material's name
 				c8 textureNameBuf[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+				core::stringc texname(textureNameBuf);
+				texname.replace('\\', '/');
+
+				f32 bumpiness = 1.0f;
+				bool clamp = false;
 				// handle options
 				while (textureNameBuf[0]=='-')
 				{
+					if (!strncmp(bufPtr,"-bm",3))
+					{
+						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+						bumpiness = core::fast_atof(textureNameBuf);
+					}
+					else
 					if (!strncmp(bufPtr,"-blendu",7))
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+					else
 					if (!strncmp(bufPtr,"-blendv",7))
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+					else
 					if (!strncmp(bufPtr,"-cc",3))
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+					else
 					if (!strncmp(bufPtr,"-clamp",6))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+						bufPtr = readBool(bufPtr, clamp, bufEnd);
+					else
 					if (!strncmp(bufPtr,"-texres",7))
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+					else
 					if (!strncmp(bufPtr,"-mm",3))
 					{
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 					}
-					if (!strncmp(bufPtr,"-o",2))
+					else
+					if (!strncmp(bufPtr,"-o",2)) // texture coord translation
 					{
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						// next parameters are optional, so skip rest of loop if no number is found
@@ -422,7 +457,8 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
 					}
-					if (!strncmp(bufPtr,"-s",2))
+					else
+					if (!strncmp(bufPtr,"-s",2)) // texture coord scale
 					{
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 						// next parameters are optional, so skip rest of loop if no number is found
@@ -433,6 +469,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 						if (!core::isdigit(textureNameBuf[0]))
 							continue;
 					}
+					else
 					if (!strncmp(bufPtr,"-t",2))
 					{
 						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
@@ -452,22 +489,22 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 					currMaterial->Meshbuffer->Material.MaterialTypeParam=core::fast_atof(textureNameBuf);
 					bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 				}
+				if (clamp)
+					currMaterial->Meshbuffer->Material.setFlag(video::EMF_TEXTURE_WRAP, video::ETC_CLAMP);
 
 				video::ITexture * texture = 0;
-				core::stringc texname(textureNameBuf);
-				texname.replace('\\', '/');
 				if (FileSystem->existFile(texname.c_str()))
-					texture = Driver->getTexture(texname.c_str());
+					texture = SceneManager->getVideoDriver()->getTexture(texname.c_str());
 				else
 					// try to read in the relative path, the .obj is loaded from
-					texture = Driver->getTexture( (relPath + texname).c_str() );
+					texture = SceneManager->getVideoDriver()->getTexture( (relPath + texname).c_str() );
 				if ( texture )
 				{
 					if (type==0)
 						currMaterial->Meshbuffer->Material.setTexture(0, texture);
 					else if (type==1)
 					{
-						Driver->makeNormalMapTexture(texture);
+						SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
 						currMaterial->Meshbuffer->Material.setTexture(1, texture);
 						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
 					}
