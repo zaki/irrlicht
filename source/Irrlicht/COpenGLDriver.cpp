@@ -1097,10 +1097,10 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 	const core::rect<s32> poss(targetPos, sourceSize);
 
-	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 	disableTextures(1);
 	if (!setTexture(0, texture))
 		return;
+	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	glBegin(GL_QUADS);
@@ -1147,10 +1147,9 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 
 	video::SColor* useColor = colors ? colors : temp;
 
-	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 || useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255, true, useAlphaChannelOfTexture);
-
 	disableTextures(1);
 	setTexture(0, texture);
+	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 || useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255, true, useAlphaChannelOfTexture);
 
 	if (clipRect)
 	{
@@ -1204,10 +1203,10 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	if (!texture)
 		return;
 
-	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 	disableTextures(1);
 	if (!setTexture(0, texture))
 		return;
+	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	if (clipRect)
@@ -1269,8 +1268,8 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 void COpenGLDriver::draw2DRectangle(SColor color, const core::rect<s32>& position,
 		const core::rect<s32>* clip)
 {
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 	disableTextures();
+	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
 	core::rect<s32> pos = position;
 
@@ -1300,12 +1299,12 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
+	disableTextures();
+
 	setRenderStates2DMode(colorLeftUp.getAlpha() < 255 ||
 		colorRightUp.getAlpha() < 255 ||
 		colorLeftDown.getAlpha() < 255 ||
 		colorRightDown.getAlpha() < 255, false, false);
-
-	disableTextures();
 
 	glBegin(GL_QUADS);
 	glColor4ub(colorLeftUp.getRed(), colorLeftUp.getGreen(),
@@ -1334,8 +1333,8 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end,
 				SColor color)
 {
-	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 	disableTextures();
+	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 
 	glBegin(GL_LINES);
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
@@ -1790,10 +1789,11 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		{
 			if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
-			setBasicRenderStates(SMaterial(), SMaterial(), true);
-			// everything that is wrongly set by SMaterial default
-			glDisable(GL_DEPTH_TEST);
-			glDisable(GL_LIGHTING);
+			SMaterial mat;
+			mat.ZBuffer=0;
+			mat.Lighting=false;
+			setBasicRenderStates(mat, mat, true);
+			LastMaterial = mat;
 		}
 
 		GLfloat glmat[16];
@@ -1855,14 +1855,12 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
 				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
-				glDisable(GL_ALPHA_TEST);
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				glEnable(GL_BLEND);
 			}
 			else
 			{
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-				glDisable(GL_ALPHA_TEST);
 				glDisable(GL_BLEND);
 			}
 		}
@@ -1871,18 +1869,12 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	{
 		if (alpha)
 		{
-			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glDisable(GL_ALPHA_TEST);
 		}
 		else
 		{
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			glDisable(GL_BLEND);
-			glDisable(GL_ALPHA_TEST);
 		}
 	}
 
@@ -2031,6 +2023,7 @@ void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 
 	ViewPort = vp;
 }
+
 
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
 //! this: First, draw all geometry. Then use this method, to draw the shadow
