@@ -158,12 +158,8 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 			DragStart.X = event.MouseInput.X;
 			DragStart.Y = event.MouseInput.Y;
 			Dragging = true;
-			if (!Environment->hasFocus(this))
-			{
-				Environment->setFocus(this);
-				if (Parent)
-					Parent->bringToFront(this);
-			}
+			if (Parent)
+				Parent->bringToFront(this);
 			return true;
 		case EMIE_LMOUSE_LEFT_UP:
 			Dragging = false;
