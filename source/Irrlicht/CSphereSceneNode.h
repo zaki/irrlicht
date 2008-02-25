@@ -5,14 +5,14 @@
 #ifndef __C_SHPERE_SCENE_NODE_H_INCLUDED__
 #define __C_SHPERE_SCENE_NODE_H_INCLUDED__
 
-#include "ISceneNode.h"
+#include "IMeshSceneNode.h"
 #include "IMesh.h"
 
 namespace irr
 {
 namespace scene
 {
-	class CSphereSceneNode : public ISceneNode
+	class CSphereSceneNode : public IMeshSceneNode
 	{
 	public:
 
@@ -54,6 +54,20 @@ namespace scene
 
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
+
+		//! The mesh cannot be changed
+		virtual void setMesh(IMesh* mesh) {}
+
+		//! Returns the current mesh
+		virtual IMesh* getMesh() { return Mesh; }
+
+		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
+		/* In this way it is possible to change the materials a mesh causing all mesh scene nodes 
+		referencing this mesh to change too. */
+		virtual void setReadOnlyMaterials(bool readonly) {}
+
+		//! Returns if the scene node should not copy the materials of the mesh but use them in a read only style
+		virtual bool isReadOnlyMaterials() const { return false; }
 
 	private:
 
