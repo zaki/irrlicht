@@ -10,6 +10,8 @@
 #include "SMeshBuffer.h"
 #include "SAnimatedMesh.h"
 #include "IReadFile.h"
+#include "IVideoDriver.h"
+#include "IMeshManipulator.h"
 
 namespace irr
 {
@@ -38,6 +40,8 @@ const u16 C3DS_MATSPECULAR   = 0xA030;
 const u16 C3DS_MATSHININESS  = 0xA040;
 const u16 C3DS_MATSHIN2PCT   = 0xA041;
 const u16 C3DS_TRANSPARENCY  = 0xA050;
+const u16 C3DS_TRANSPARENCY_FALLOFF  = 0xA052;
+const u16 C3DS_REFL_BLUR     = 0xA053;
 const u16 C3DS_TWO_SIDE      = 0xA081;
 const u16 C3DS_WIRE          = 0xA085;
 const u16 C3DS_SHADING       = 0xA100;
@@ -102,18 +106,14 @@ const u16 C3DS_PERCENTAGE_F = 0x0031;
 
 
 //! Constructor
-C3DSMeshFileLoader::C3DSMeshFileLoader(IMeshManipulator* manip,io::IFileSystem* fs, video::IVideoDriver* driver)
-: FileSystem(fs), Driver(driver), Vertices(0), Indices(0), SmoothingGroups(0), TCoords(0),
-	CountVertices(0), CountFaces(0), CountTCoords(0), Mesh(0), Manipulator(manip)
+C3DSMeshFileLoader::C3DSMeshFileLoader(ISceneManager* smgr, io::IFileSystem* fs)
+: SceneManager(smgr), FileSystem(fs), Vertices(0), Indices(0), SmoothingGroups(0), TCoords(0),
+	CountVertices(0), CountFaces(0), CountTCoords(0), Mesh(0)
 {
 	TransformationMatrix.makeIdentity();
 	if (FileSystem)
 		FileSystem->grab();
-
-	if (Driver)
-		Driver->grab();
 }
-
 
 
 //! destructor
@@ -124,13 +124,9 @@ C3DSMeshFileLoader::~C3DSMeshFileLoader()
 	if (FileSystem)
 		FileSystem->drop();
 
-	if (Driver)
-		Driver->drop();
-
 	if (Mesh)
 		Mesh->drop();
 }
-
 
 
 //! returns true if the file maybe is able to be loaded by this class
@@ -139,7 +135,6 @@ bool C3DSMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 {
 	return strstr(filename, ".3ds")!=0;
 }
-
 
 
 //! creates/loads an animated mesh from the file.
@@ -181,7 +176,17 @@ IAnimatedMesh* C3DSMeshFileLoader::createMesh(io::IReadFile* file)
 				mb->drop();
 			}
 			else
+			{
 				mb->recalculateBoundingBox();
+				if (mb->Material.MaterialType == video::EMT_PARALLAX_MAP_SOLID)
+				{
+					SMesh tmp;
+					tmp.addMeshBuffer(mb);
+					IMesh* tangentMesh = SceneManager->getMeshManipulator()->createMeshWithTangents(&tmp);
+					mb->drop();
+					Mesh->MeshBuffers[i]=tangentMesh->getMeshBuffer(0);
+				}
+			}
 		}
 
 		Mesh->recalculateBoundingBox();
@@ -387,10 +392,22 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 		case C3DS_MATBUMPMAP:
 			{
 				matSection=data.header.id;
-#if 0 // Should contain a percentage chunk, but does not work with the meshes
-				f32 percentage=0;
-				if (matSection!=C3DS_MATREFLMAP)
-					readPercentageChunk(file, &data, percentage);
+#if 1 // Should contain a percentage chunk, but does not work with the meshes
+				switch (matSection)
+				{
+				case C3DS_MATTEXMAP:
+					readPercentageChunk(file, &data, CurrentMaterial.Strength[0]);
+				break;
+				case C3DS_MATSPECMAP:
+					readPercentageChunk(file, &data, CurrentMaterial.Strength[1]);
+				break;
+				case C3DS_MATOPACMAP:
+					readPercentageChunk(file, &data, CurrentMaterial.Strength[2]);
+				break;
+				case C3DS_MATBUMPMAP:
+					readPercentageChunk(file, &data, CurrentMaterial.Strength[4]);
+				break;
+				}
 #endif
 			}
 			break;
@@ -928,7 +945,7 @@ void C3DSMeshFileLoader::composeObject(io::IReadFile* file, const core::stringc&
 		video::SMaterial* mat=0;
 		u32 mbPos;
 		// -3 because we add three vertices at once
-		u32 maxPrimitives = core::min_(Driver->getMaximalPrimitiveCount(), (u32)((1<<16)-1))-3; // currently hardcoded s16 max value for index pointers
+		u32 maxPrimitives = core::min_(SceneManager->getVideoDriver()->getMaximalPrimitiveCount(), (u32)((1<<16)-1))-3; // currently hardcoded s16 max value for index pointers
 
 		// find mesh buffer for this group
 		for (mbPos=0; mbPos<Materials.size(); ++mbPos)
@@ -1050,13 +1067,13 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 		m->getMaterial() = Materials[i].Material;
 		if (Materials[i].Filename[0].size())
 		{
-			video::ITexture* texture = Driver->getTexture(Materials[i].Filename[0].c_str());
+			video::ITexture* texture = SceneManager->getVideoDriver()->getTexture(Materials[i].Filename[0].c_str());
 			if (!texture)
 			{
 				core::stringc fname = getTextureFileName(
 					Materials[i].Filename[0], modelFilename);
 				if (fname.size())
-					texture = Driver->getTexture(fname.c_str());				
+					texture = SceneManager->getVideoDriver()->getTexture(fname.c_str());				
 			}
 
 			if (!texture)
@@ -1068,14 +1085,14 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 
 		if (Materials[i].Filename[2].size())
 		{
-			video::ITexture* texture = Driver->getTexture(Materials[i].Filename[2].c_str());
+			video::ITexture* texture = SceneManager->getVideoDriver()->getTexture(Materials[i].Filename[2].c_str());
 
 			if (!texture)
 			{
 				core::stringc fname = getTextureFileName(
 					Materials[i].Filename[2], modelFilename);
 				if (fname.size())
-					texture = Driver->getTexture(fname.c_str());				
+					texture = SceneManager->getVideoDriver()->getTexture(fname.c_str());				
 			}
 
 			if (!texture)
@@ -1092,14 +1109,14 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 
 		if (Materials[i].Filename[3].size())
 		{
-			video::ITexture* texture = Driver->getTexture(Materials[i].Filename[3].c_str());
+			video::ITexture* texture = SceneManager->getVideoDriver()->getTexture(Materials[i].Filename[3].c_str());
 
 			if (!texture)
 			{
 				core::stringc fname = getTextureFileName(
 					Materials[i].Filename[3], modelFilename);
 				if (fname.size())
-					texture = Driver->getTexture(fname.c_str());				
+					texture = SceneManager->getVideoDriver()->getTexture(fname.c_str());				
 			}
 
 			if (!texture)
@@ -1117,14 +1134,14 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 
 		if (Materials[i].Filename[4].size())
 		{
-			video::ITexture* texture = Driver->getTexture(Materials[i].Filename[4].c_str());
+			video::ITexture* texture = SceneManager->getVideoDriver()->getTexture(Materials[i].Filename[4].c_str());
 
 			if (!texture)
 			{
 				core::stringc fname = getTextureFileName(
 					Materials[i].Filename[4], modelFilename);
 				if (fname.size())
-					texture = Driver->getTexture(fname.c_str());				
+					texture = SceneManager->getVideoDriver()->getTexture(fname.c_str());				
 			}
 
 			if (!texture)
@@ -1133,9 +1150,9 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 			else
 			{
 				m->getMaterial().setTexture(1, texture);
-				Driver->makeNormalMapTexture(texture, 9.0f);
+				SceneManager->getVideoDriver()->makeNormalMapTexture(texture, Materials[i].Strength[4]);
 				m->getMaterial().MaterialType=video::EMT_PARALLAX_MAP_SOLID;
-				m->getMaterial().MaterialTypeParam=0.035f;
+				m->getMaterial().MaterialTypeParam=.035f;
 			}
 		}
 
