@@ -119,7 +119,7 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 		else
 		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
 		{
-			if (isMyChild(event.GUIEvent.Caller) && Parent)
+			if (Parent && ((event.GUIEvent.Caller == this) || isMyChild(event.GUIEvent.Caller)))
 				Parent->bringToFront(this);
 		}
 		else
