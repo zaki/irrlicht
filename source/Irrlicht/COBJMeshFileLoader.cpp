@@ -46,7 +46,6 @@ bool COBJMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 }
 
 
-
 //! creates/loads an animated mesh from the file.
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
@@ -59,13 +58,11 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 	const u32 WORD_BUFFER_LENGTH = 512;
 
-	SMesh* mesh = new SMesh();
-
 	core::array<core::vector3df> vertexBuffer;
-	core::array<core::vector2df> textureCoordBuffer;
 	core::array<core::vector3df> normalsBuffer;
+	core::array<core::vector2df> textureCoordBuffer;
+
 	SObjMtl * currMtl = new SObjMtl();
-	currMtl->Name="";
 	Materials.push_back(currMtl);
 	u32 smoothingGroup=0;
 	core::map<video::S3DVertex, int> vertMap;
@@ -74,7 +71,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	// Patch to locate the file in the same folder as the .obj.
 	// If you load the file as "data/some.obj" and mtllib contains
 	// "mtlname test.mtl" (as usual), the loading will fail. Instead it
-	// must look for data/test.tml. This patch does exactly that.
+	// must look for data/test.mtl. This patch does exactly that.
 	//
 	// patch by mandrav@codeblocks.org
 	// ********************************************************************
@@ -96,6 +93,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 	// Process obj information
 	const c8* bufPtr = buf;
+	core::stringc grpName;
 	while(bufPtr != bufEnd)
 	{
 		switch(bufPtr[0])
@@ -137,8 +135,11 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			}
 			break;
 
-		case 'g': // group names skipped
+		case 'g': // group name
 			{
+				c8 grp[WORD_BUFFER_LENGTH];
+				bufPtr = goAndCopyNextWord(grp, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+				grpName = grp;
 			}
 			break;
 
@@ -159,7 +160,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				c8 matName[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(matName, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 				// retrieve the material
-				SObjMtl *useMtl = findMtl(matName);
+				SObjMtl *useMtl = findMtl(matName, grpName);
 				// only change material if we found it
 				if (useMtl)
 					currMtl = useMtl;
@@ -245,6 +246,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		// eat up rest of line
 		bufPtr = goNextLine(bufPtr, bufEnd);
 	}	// end while(bufPtr && (bufPtr-buf<filesize))
+
+	SMesh* mesh = new SMesh();
 
 	// Combine all the groups (meshbuffers) into the mesh
 	for ( u32 m = 0; m < Materials.size(); ++m )
@@ -507,6 +510,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 						SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
 						currMaterial->Meshbuffer->Material.setTexture(1, texture);
 						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
+						currMaterial->Meshbuffer->Material.MaterialTypeParam=0.035f;
 					}
 					else if (type==2)
 					{
@@ -572,14 +576,12 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 
 	// end of file. if there's an existing material, store it
 	if ( currMaterial )
-	{
 		Materials.push_back( currMaterial );
-		currMaterial = 0;
-	}
 
 	delete [] buf;
 	mtlReader->drop();
 }
+
 
 //! Read RGB color
 const c8* COBJMeshFileLoader::readColor(const c8* bufPtr, video::SColor& color, const c8* const bufEnd)
@@ -640,16 +642,28 @@ const c8* COBJMeshFileLoader::readBool(const c8* bufPtr, bool& tf, const c8* con
 }
 
 
-COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const c8* mtlName)
+COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const core::stringc& mtlName, const core::stringc& grpName)
 {
+	COBJMeshFileLoader::SObjMtl* defMaterial = 0;
 	for (u32 i = 0; i < Materials.size(); ++i)
 	{
 		if ( Materials[i]->Name == mtlName )
-			return Materials[i];
+		{
+			if ( Materials[i]->Group == grpName )
+				return Materials[i];
+			else
+			if ( Materials[i]->Group == "" )
+				defMaterial = Materials[i];
+		}
+	}
+	if (defMaterial)
+	{
+		Materials.push_back(new SObjMtl(*defMaterial));
+		Materials.getLast()->Group = grpName;
+		return Materials.getLast();
 	}
 	return 0;
 }
-
 
 
 //! skip space characters and stop on first non-space
@@ -812,9 +826,7 @@ bool COBJMeshFileLoader::retrieveVertexIndices(c8* vertexData, s32* idx, const c
 
 void COBJMeshFileLoader::cleanUp()
 {
-	u32 i;
-
-	for (i = 0; i < Materials.size(); ++i )
+	for (u32 i=0; i < Materials.size(); ++i )
 	{
 		Materials[i]->Meshbuffer->drop();
 		delete Materials[i];
@@ -827,5 +839,5 @@ void COBJMeshFileLoader::cleanUp()
 } // end namespace scene
 } // end namespace irr
 
-
 #endif // _IRR_COMPILE_WITH_OBJ_LOADER_
+
