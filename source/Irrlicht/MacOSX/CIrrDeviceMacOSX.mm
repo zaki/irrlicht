@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/gl.h>
+#import <Carbon/Carbon.h>
 
 #include "CIrrDeviceMacOSX.h"
 #include "IEventReceiver.h"
@@ -79,6 +80,7 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType,
 
 CIrrDeviceMacOSX::~CIrrDeviceMacOSX()
 {
+	SetSystemUIMode(kUIModeNormal, 0);
 	closeDevice();
 }
 
@@ -233,6 +235,8 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 
 	if (result)
 	{
+		if (_window == NULL)
+			SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
 		CGLSetCurrentContext(_cglcontext);
 		newSwapInterval = (vsync) ? 1 : 0;
 		CGLSetParameter(_cglcontext,kCGLCPSwapInterval,&newSwapInterval);
@@ -516,7 +520,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 	else
 	{
 		x = (int)p.x;
-		y = _screenHeight - (int)p.y;
+		y = (int)p.y;
 	}
 
 	((CCursorControl *)CursorControl)->updateInternalCursorPosition(x,y);
@@ -537,7 +541,7 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	else
 	{
 		p.x = (float) x;
-		p.y = (float) (_height - y);
+		p.y = (float) y;
 	}
 
 	c.x = p.x;
