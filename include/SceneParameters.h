@@ -95,11 +95,20 @@ namespace scene
 	/** Use it like this:
 	 \code
 	 //this way you'll choose to flip alpha textures
-     SceneManager->()->setAttribute(
+     SceneManager->getParameters()->setAttribute(
 	   scene::DMF_FLIP_ALPHA_TEXTURES, true); 
 	\endcode
 	**/ 
 	const c8* const DMF_FLIP_ALPHA_TEXTURES = "DMF_FlipAlpha";
+
+
+	//! Flag to avoid loading group structures in .obj files
+	/** Use it like this:
+	 \code
+     SceneManager->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_GROUPS, true); 
+	\endcode
+	**/ 
+	const c8* const OBJ_LOADER_IGNORE_GROUPS = "OBJ_IgnoreGroups";
 
 
 	//! Flag set as parameter when the scene manager is used as editor
