@@ -51,12 +51,16 @@ private:
 		}
 
 		SObjMtl(SObjMtl& o)
-			: Meshbuffer(o.Meshbuffer), Name(o.Name),
+			: Name(o.Name), Group(o.Group),
 			Bumpiness(o.Bumpiness), Illumination(o.Illumination)
-		{ o.Meshbuffer->grab(); }
+		{
+			Meshbuffer = new SMeshBuffer();
+			Meshbuffer->Material = o.Meshbuffer->Material;
+		}
 
 		scene::SMeshBuffer *Meshbuffer;
 		core::stringc Name;
+		core::stringc Group;
 		f32 Bumpiness;
 		c8 Illumination;
 	};
@@ -77,7 +81,7 @@ private:
 	//! Read the material from the given file
 	void readMTL(const c8* fileName, core::stringc relPath);
 	//! Find and return the material with the given name
-	SObjMtl * findMtl(const c8* mtlName);
+	SObjMtl* findMtl(const core::stringc& mtlName, const core::stringc& grpName);
 
 	//! Read RGB color
 	const c8* readColor(const c8* bufPtr, video::SColor& color, const c8* const pBufEnd);
