@@ -12,6 +12,7 @@
 #include "SMeshBuffer.h"
 #include "SAnimatedMesh.h"
 #include "IReadFile.h"
+#include "IAttributes.h"
 #include "fast_atof.h"
 #include "coreutil.h"
 #include "irrMap.h"
@@ -94,6 +95,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	// Process obj information
 	const c8* bufPtr = buf;
 	core::stringc grpName;
+	bool useGroups = !SceneManager->getParameters()->getAttributeAsBool(OBJ_LOADER_IGNORE_GROUPS);
 	while(bufPtr != bufEnd)
 	{
 		switch(bufPtr[0])
@@ -139,7 +141,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			{
 				c8 grp[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(grp, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-				grpName = grp;
+				if (useGroups)
+					grpName = grp;
 			}
 			break;
 
