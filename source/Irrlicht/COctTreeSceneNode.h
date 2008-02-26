@@ -67,6 +67,9 @@ namespace scene
 		OctTree<video::S3DVertex2TCoords>* LightMapOctTree;
 		core::array< OctTree<video::S3DVertex2TCoords>::SMeshChunk > LightMapMeshes;
 
+		OctTree<video::S3DVertexTangents>* TangentsOctTree;
+		core::array< OctTree<video::S3DVertexTangents>::SMeshChunk > TangentsMeshes;
+
 		video::E_VERTEX_TYPE vertexType;
 		core::array< video::SMaterial > Materials;
 
