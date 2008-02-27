@@ -25,6 +25,38 @@
 #import <time.h>
 #import "AppDelegate.h"
 
+// some macros to make code more readable.
+#define GetModeWidth(mode) GetDictionaryLong((mode), kCGDisplayWidth)
+#define GetModeHeight(mode) GetDictionaryLong((mode), kCGDisplayHeight)
+#define GetModeRefreshRate(mode) GetDictionaryLong((mode), kCGDisplayRefreshRate)
+#define GetModeBitsPerPixel(mode) GetDictionaryLong((mode), kCGDisplayBitsPerPixel)
+
+#define GetModeSafeForHardware(mode) GetDictionaryBoolean((mode), kCGDisplayModeIsSafeForHardware)
+#define GetModeStretched(mode) GetDictionaryBoolean((mode), kCGDisplayModeIsStretched)
+
+//------------------------------------------------------------------------------------------
+Boolean GetDictionaryBoolean(CFDictionaryRef theDict, const void* key) 
+{
+	// get a boolean from the dictionary
+	Boolean value = false;
+	CFBooleanRef boolRef;
+	boolRef = (CFBooleanRef)CFDictionaryGetValue(theDict, key);
+	if (boolRef != NULL)
+		value = CFBooleanGetValue(boolRef); 	
+	return value;
+}
+//------------------------------------------------------------------------------------------
+long GetDictionaryLong(CFDictionaryRef theDict, const void* key) 
+{
+	// get a long from the dictionary
+	long value = 0;
+	CFNumberRef numRef;
+	numRef = (CFNumberRef)CFDictionaryGetValue(theDict, key); 
+	if (numRef != NULL)
+		CFNumberGetValue(numRef, kCFNumberLongType, &value); 	
+	return value;
+}
+
 namespace irr
 {
 	namespace video
@@ -133,6 +165,8 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 	display = CGMainDisplayID();
 	_screenWidth = (int) CGDisplayPixelsWide(display);
 	_screenHeight = (int) CGDisplayPixelsHigh(display);
+	
+	VideoModeList.setDesktop((s32)bits,core::dimension2d<s32>(_screenWidth, _screenHeight));
 
 	if (!fullscreen)
 	{
@@ -606,6 +640,33 @@ void CIrrDeviceMacOSX::setResizeAble(bool resize)
 	// todo: implement resize
 }
 
+video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
+{
+	if (!VideoModeList.getVideoModeCount()) {
+		CGDirectDisplayID		display;
+		display = CGMainDisplayID();
+
+		CFArrayRef availableModes = CGDisplayAvailableModes(display);
+		unsigned int numberOfAvailableModes = CFArrayGetCount(availableModes);
+		for (u32 i= 0; i<numberOfAvailableModes; ++i)
+		{
+			// look at each mode in the available list
+			CFDictionaryRef mode = (CFDictionaryRef)CFArrayGetValueAtIndex(availableModes, i);
+			long bitsPerPixel = GetModeBitsPerPixel(mode);
+			Boolean safeForHardware = GetModeSafeForHardware(mode);
+			Boolean stretched = GetModeStretched(mode);
+			
+			if (!safeForHardware)
+				continue;
+			
+			long width = GetModeWidth(mode);
+			long height = GetModeHeight(mode);
+			VideoModeList.addMode(core::dimension2d<s32>(width, height),
+				bitsPerPixel);
+		}
+	}
+	return &VideoModeList;
+}
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
