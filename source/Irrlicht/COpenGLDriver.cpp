@@ -573,6 +573,10 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		if (!HWBuffer->vbo_verticesID) return false;
 		newBuffer=true;
 	}
+	else if (HWBuffer->vbo_verticesSize < vertexCount*vertexSize)
+	{
+		newBuffer=true;
+	}
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID );
 
@@ -581,6 +585,8 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, buffer.const_pointer());
 	else
 	{
+		HWBuffer->vbo_verticesSize = vertexCount*vertexSize;
+
 		if (HWBuffer->Mapped==scene::EHM_STATIC)
 			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STATIC_DRAW);
 		else if (HWBuffer->Mapped==scene::EHM_DYNAMIC)
@@ -623,7 +629,10 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		if (!HWBuffer->vbo_indicesID) return false;
 		newBuffer=true;
 	}
-
+	else if (HWBuffer->vbo_indicesSize < indexCount*indexSize)
+	{
+		newBuffer=true;
+	}
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
 
@@ -632,6 +641,8 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		extGlBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexCount * indexSize, indices);
 	else
 	{
+		HWBuffer->vbo_indicesSize = indexCount*indexSize;
+
 		if (HWBuffer->Mapped==scene::EHM_STATIC)
 			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_STATIC_DRAW);
 		else if (HWBuffer->Mapped==scene::EHM_DYNAMIC)
@@ -689,6 +700,8 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 	HWBuffer->LastUsed=0;
 	HWBuffer->vbo_verticesID=0;
 	HWBuffer->vbo_indicesID=0;
+	HWBuffer->vbo_verticesSize=0;
+	HWBuffer->vbo_indicesSize=0;
 
 	if (!updateHardwareBuffer(HWBuffer))
 	{

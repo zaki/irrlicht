@@ -189,6 +189,8 @@ namespace scene
 		RenderBuffer.Indices.set_used( TerrainData.PatchCount * TerrainData.PatchCount *
 			TerrainData.CalcPatchSize * TerrainData.CalcPatchSize * 6 );
 
+		RenderBuffer.setDirty();
+
 		const u32 endTime = os::Timer::getRealTime();
 
 		c8 tmp[255];
@@ -394,6 +396,9 @@ namespace scene
 
 		calculateDistanceThresholds( true );
 		calculatePatchData();
+
+		RenderBuffer.setDirty(EBT_VERTEX);
+
 	}
 
 	//! Updates the scene nodes indices if the camera has moved or rotated by a certain
@@ -522,6 +527,10 @@ namespace scene
 			}
 		}
 
+		RenderBuffer.Indices.set_used(IndicesToRender);
+
+		RenderBuffer.setDirty(EBT_INDEX);
+
 		if ( DynamicSelectorUpdate && TriangleSelector )
 		{
 			CTerrainTriangleSelector* selector = (CTerrainTriangleSelector*)TriangleSelector;
@@ -547,10 +556,7 @@ namespace scene
 		driver->setMaterial(Mesh.getMeshBuffer(0)->getMaterial());
 
 		// For use with geomorphing
-		driver->drawVertexPrimitiveList(
-			RenderBuffer.getVertices(), RenderBuffer.getVertexCount(),
-			RenderBuffer.getIndices(), IndicesToRender / 3,
-			video::EVT_2TCOORDS, EPT_TRIANGLES);
+		driver->drawMeshBuffer(&RenderBuffer);
 
 		// for debug purposes only:
 		if (DebugDataVisible)
@@ -818,6 +824,8 @@ namespace scene
 			xval += resBySize;
 			x2val += res2BySize;
 		}
+
+		RenderBuffer.setDirty(EBT_VERTEX);
 	}
 
 	//! used to get the indices when generating index data for patches at varying levels of detail.
@@ -1206,7 +1214,7 @@ namespace scene
 			{
 				loadHeightMap(file, video::SColor(255,255,255,255), 0);
 				file->drop();
-			}	
+			}
 			else
 				os::Printer::log("could not open heightmap", newHeightmap.c_str());
 		}
@@ -1242,7 +1250,7 @@ namespace scene
 			4, ETPS_17, getPosition(), getRotation(), getScale());
 
 		nb->cloneMembers(this, newManager);
-		
+
 		// instead of cloning the data structures, recreate the terrain.
 		// (temporary solution)
 
@@ -1253,7 +1261,7 @@ namespace scene
 		{
 			nb->loadHeightMap(file, video::SColor(255,255,255,255), 0);
 			file->drop();
-		}	
+		}
 
 		// scale textures
 

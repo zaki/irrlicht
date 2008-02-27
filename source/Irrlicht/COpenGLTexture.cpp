@@ -253,6 +253,12 @@ void COpenGLTexture::copyTexture(bool newTexture)
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
+	if (!Image)
+	{
+		os::Printer::log("No image for OpenGL texture to upload", ELL_ERROR);
+		return;
+	}
+
 	switch (Image->getColorFormat())
 	{
 		case ECF_A1R5G5B5:
