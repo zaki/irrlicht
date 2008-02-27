@@ -60,6 +60,10 @@ namespace irr
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize);
 
+		//! \return Returns a pointer to a list with all video modes
+		//! supported by the gfx adapter.
+		video::IVideoModeList* getVideoModeList();
+
 		void flush();
 		void setMouseLocation(int x,int y);
 		void setResize(int width,int height);
