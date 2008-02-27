@@ -282,7 +282,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 
 
 	//! flags the mesh as changed, reloads hardware buffers
-	virtual void setDirty() {ChangedID++;}
+	virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) {ChangedID++;}
 
 	virtual const u32 getChangedID() const {return ChangedID;}
 

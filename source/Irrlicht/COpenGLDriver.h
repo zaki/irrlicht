@@ -113,6 +113,10 @@ namespace video
 
 			GLuint vbo_verticesID; //tmp
 			GLuint vbo_indicesID; //tmp
+
+			GLuint vbo_verticesSize; //tmp
+			GLuint vbo_indicesSize; //tmp
+
 		};
 
 		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);

@@ -137,7 +137,10 @@ namespace scene
 		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) = 0;
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
-		virtual void setDirty() = 0;
+		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) = 0;
+
+
+
 
 		virtual const u32 getChangedID() const = 0;
 
