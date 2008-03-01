@@ -527,7 +527,7 @@ namespace scene
 			}
 		}
 
-		RenderBuffer.Indices.set_used(IndicesToRender);
+
 
 		RenderBuffer.setDirty(EBT_INDEX);
 
@@ -555,8 +555,14 @@ namespace scene
 
 		driver->setMaterial(Mesh.getMeshBuffer(0)->getMaterial());
 
+
+		RenderBuffer.Indices.set_used(IndicesToRender);
+
 		// For use with geomorphing
 		driver->drawMeshBuffer(&RenderBuffer);
+
+		RenderBuffer.Indices.set_used( RenderBuffer.Indices.allocated_size() );
+
 
 		// for debug purposes only:
 		if (DebugDataVisible)
