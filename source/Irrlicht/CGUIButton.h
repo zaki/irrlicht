@@ -108,8 +108,6 @@ namespace gui
 		
 		bool Border;
 
-		u32 MouseOverTime;
-		u32 FocusTime;
 		u32 ClickTime;
 
 		IGUISpriteBank* SpriteBank;

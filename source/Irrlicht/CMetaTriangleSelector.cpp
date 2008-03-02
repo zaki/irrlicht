@@ -17,12 +17,12 @@ CMetaTriangleSelector::CMetaTriangleSelector()
 	#endif
 }
 
+
 //! destructor
 CMetaTriangleSelector::~CMetaTriangleSelector()
 {
 	removeAllTriangleSelectors();
 }
-
 
 
 //! Returns amount of all available triangles in this selector
@@ -36,10 +36,9 @@ s32 CMetaTriangleSelector::getTriangleCount() const
 }
 
 
-
 //! Gets all triangles.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::matrix4* transform) const
+		s32& outTriangleCount, const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
 
@@ -54,11 +53,10 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 }
 
 
-
 //! Gets all triangles which lie within a specific bounding box.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::aabbox3d<f32>& box, 
-	const core::matrix4* transform) const
+		s32& outTriangleCount, const core::aabbox3d<f32>& box,
+		const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
 
@@ -74,11 +72,10 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 }
 
 
-
 //! Gets all triangles which have or may have contact with a 3d line.
 void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-	s32& outTriangleCount, const core::line3d<f32>& line, 
-	const core::matrix4* transform) const
+		s32& outTriangleCount, const core::line3d<f32>& line,
+		const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
 
@@ -94,7 +91,6 @@ void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 array
 }
 
 
-
 //! Adds a triangle selector to the collection of triangle selectors
 //! in this metaTriangleSelector.
 void CMetaTriangleSelector::addTriangleSelector(ITriangleSelector* toAdd)
@@ -107,21 +103,21 @@ void CMetaTriangleSelector::addTriangleSelector(ITriangleSelector* toAdd)
 }
 
 
-
 //! Removes a specific triangle selector which was added before	from the collection.
 bool CMetaTriangleSelector::removeTriangleSelector(ITriangleSelector* toRemove)
 {
 	for (u32 i=0; i<TriangleSelectors.size(); ++i)
+	{
 		if (toRemove == TriangleSelectors[i])
 		{
 			TriangleSelectors[i]->drop();
 			TriangleSelectors.erase(i);
 			return true;
 		}
+	}
 
-    return false;
+	return false;
 }
-
 
 
 //! Removes all triangle selectors from the collection.
