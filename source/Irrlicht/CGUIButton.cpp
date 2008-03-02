@@ -21,8 +21,7 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 			   s32 id, core::rect<s32> rectangle, bool noclip)
 : IGUIButton(environment, parent, id, rectangle), Pressed(false),
 	IsPushButton(false), UseAlphaChannel(false), Border(true),
-	MouseOverTime(0), FocusTime(0), ClickTime(0), SpriteBank(0),
-	OverrideFont(0), Image(0), PressedImage(0)
+	ClickTime(0), SpriteBank(0), OverrideFont(0), Image(0), PressedImage(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIButton");
@@ -37,7 +36,6 @@ CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
 	setTabStop(true);
 	setTabOrder(-1);
 }
-
 
 
 //! destructor
@@ -56,11 +54,13 @@ CGUIButton::~CGUIButton()
 		SpriteBank->drop();
 }
 
+
 //! Sets if the button should use the skin to draw its border
 void CGUIButton::setDrawBorder(bool border)
 {
 	Border = border;
 }
+
 
 void CGUIButton::setSpriteBank(IGUISpriteBank* sprites)
 {
@@ -72,6 +72,7 @@ void CGUIButton::setSpriteBank(IGUISpriteBank* sprites)
 
 	SpriteBank = sprites;
 }
+
 
 void CGUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor color, bool loop)
 {
@@ -86,6 +87,7 @@ void CGUIButton::setSprite(EGUI_BUTTON_STATE state, s32 index, video::SColor col
 		ButtonSprites[(u32)state].Index = -1;
 	}
 }
+
 
 //! called if an event happened.
 bool CGUIButton::OnEvent(const SEvent& event)
@@ -199,7 +201,6 @@ bool CGUIButton::OnEvent(const SEvent& event)
 }
 
 
-
 //! draws the element and its children
 void CGUIButton::draw()
 {
@@ -287,7 +288,6 @@ void CGUIButton::draw()
 }
 
 
-
 //! sets another skin independent font. if this is set to zero, the button uses the font of the skin.
 void CGUIButton::setOverrideFont(IGUIFont* font)
 {
@@ -318,6 +318,7 @@ void CGUIButton::setImage(video::ITexture* image)
 		setPressedImage(Image);
 }
 
+
 //! Sets the image which should be displayed on the button when it is in its normal state.
 void CGUIButton::setImage(video::ITexture* image, const core::rect<s32>& pos)
 {
@@ -334,6 +335,7 @@ void CGUIButton::setImage(video::ITexture* image, const core::rect<s32>& pos)
 		setPressedImage(Image, pos);
 }
 
+
 //! Sets an image which should be displayed on the button when it is in pressed state. 
 void CGUIButton::setPressedImage(video::ITexture* image)
 {
@@ -347,6 +349,7 @@ void CGUIButton::setPressedImage(video::ITexture* image)
 	if (PressedImage)
 		PressedImage->grab();
 }
+
 
 //! Sets the image which should be displayed on the button when it is in its pressed state.
 void CGUIButton::setPressedImage(video::ITexture* image, const core::rect<s32>& pos)
@@ -378,6 +381,7 @@ bool CGUIButton::isPressed() const
 	return Pressed;
 }
 
+
 //! Sets the pressed state of the button if this is a pushbutton
 void CGUIButton::setPressed(bool pressed)
 {
@@ -388,6 +392,7 @@ void CGUIButton::setPressed(bool pressed)
 	}
 }
 
+
 //! Returns whether the button is a push button
 bool CGUIButton::isPushButton() const
 {
@@ -395,11 +400,13 @@ bool CGUIButton::isPushButton() const
 	return IsPushButton;
 }
 
+
 //! Sets if the alpha channel should be used for drawing images on the button (default is false)
 void CGUIButton::setUseAlphaChannel(bool useAlphaChannel)
 {
 	UseAlphaChannel = useAlphaChannel;
 }
+
 
 //! Returns if the alpha channel should be used for drawing images on the button
 bool CGUIButton::isAlphaChannelUsed() const
@@ -408,16 +415,17 @@ bool CGUIButton::isAlphaChannelUsed() const
 	return UseAlphaChannel;
 }
 
+
 bool CGUIButton::isDrawingBorder() const
 {
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return Border;
 }
 
+
 //! Writes attributes of the element.
 void CGUIButton::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
-
 	IGUIButton::serializeAttributes(out,options);
 
 	out->addBool	("PushButton",		IsPushButton );
@@ -434,6 +442,7 @@ void CGUIButton::serializeAttributes(io::IAttributes* out, io::SAttributeReadWri
 
 	//   out->addString  ("OverrideFont",	OverrideFont);
 }
+
 
 //! Reads attributes of the element
 void CGUIButton::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
@@ -463,7 +472,9 @@ void CGUIButton::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWr
 	updateAbsolutePosition();
 }
 
+
 } // end namespace gui
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

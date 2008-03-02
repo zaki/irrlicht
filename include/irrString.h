@@ -556,11 +556,11 @@ public:
 	}
 
 	//! finds first occurrence of a character of a list in string
-	/** \param c: List of strings to find. For example if the method
+	/** \param c: List of characters to find. For example if the method
 	should find the first occurrence of 'a' or 'b', this parameter should be "ab".
-	\param count: Amount of characters in the list. Ususally,
-	this should be strlen(ofParameter1)
-	\return Returns position where one of the character has been found,
+	\param count: Amount of characters in the list. Usually,
+	this should be strlen(c)
+	\return Returns position where one of the characters has been found,
 	or -1 if not found. */
 	s32 findFirstChar(const T* const c, u32 count) const
 	{
@@ -579,8 +579,8 @@ public:
 	//! Finds first position of a character not in a given list.
 	/** \param c: List of characters not to find. For example if the method
 	 should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
-	\param count: Amount of characters in the list. Ususally,
-	this should be strlen(ofParameter1)
+	\param count: Amount of characters in the list. Usually,
+	this should be strlen(c)
 	\return Returns position where the character has been found,
 	or -1 if not found. */
 	template <class B>
@@ -603,8 +603,8 @@ public:
 	//! Finds last position of a character not in a given list.
 	/** \param c: List of characters not to find. For example if the method
 	 should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
-	\param count: Amount of characters in the list. Ususally,
-	this should be strlen(ofParameter1)
+	\param count: Amount of characters in the list. Usually,
+	this should be strlen(c)
 	\return Returns position where the character has been found,
 	or -1 if not found. */
 	template <class B>
@@ -653,6 +653,27 @@ public:
 
 		return -1;
 	}
+
+	//! finds last occurrence of a character of a list in string
+	/** \param c: List of strings to find. For example if the method
+	should find the last occurrence of 'a' or 'b', this parameter should be "ab".
+	\param count: Amount of characters in the list. Usually,
+	this should be strlen(c)
+	\return Returns position where one of the characters has been found,
+	or -1 if not found. */
+	s32 findLastChar(const T* const c, u32 count) const
+	{
+		if (!c)
+			return -1;
+
+		for (u32 i=(used-1); i>=0; --i)
+			for (u32 j=0; j<count; ++j)
+				if (array[i] == c[j])
+					return i;
+
+		return -1;
+	}
+
 
 	//! finds another string in this string
 	//! \param str: Another string

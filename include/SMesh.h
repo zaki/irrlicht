@@ -49,7 +49,7 @@ namespace scene
 		// reverse search
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial & material) const
 		{
-			for (s32 i = (s32) MeshBuffers.size(); --i >= 0; )
+			for (s32 i = (s32)MeshBuffers.size()-1; i >= 0; --i)
 			{
 				if ( material == MeshBuffers[i]->getMaterial())
 					return MeshBuffers[i];

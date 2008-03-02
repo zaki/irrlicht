@@ -402,10 +402,9 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 	video::S3DVertex* first = FrameList[firstFrame].pointer();
 	video::S3DVertex* second = FrameList[secondFrame].pointer();
 
-	s32 count = FrameList[firstFrame].size();
-
 	// interpolate both frames
-	for (s32 i=0; i<count; ++i)
+	const u32 count = FrameList[firstFrame].size();
+	for (u32 i=0; i<count; ++i)
 	{
 		target->Pos = (second->Pos - first->Pos) * div + first->Pos;
 		target->Normal = (second->Normal - first->Normal) * div + first->Normal;
@@ -722,7 +721,8 @@ void CAnimatedMeshMD2::getFrameLoop(EMD2_ANIMATION_TYPE l,
 bool CAnimatedMeshMD2::getFrameLoop(const c8* name,
 	s32& outBegin, s32&outEnd, s32& outFPS) const
 {
-	for (s32 i=0; i<(s32)FrameData.size(); ++i)
+	for (u32 i=0; i<FrameData.size(); ++i)
+	{
 		if (FrameData[i].name == name)
 		{
 			outBegin = FrameData[i].begin << MD2_FRAME_SHIFT;
@@ -731,6 +731,7 @@ bool CAnimatedMeshMD2::getFrameLoop(const c8* name,
 			outFPS = FrameData[i].fps << MD2_FRAME_SHIFT;
 			return true;
 		}
+	}
 
 	return false;
 }
@@ -746,7 +747,7 @@ s32 CAnimatedMeshMD2::getAnimationCount() const
 //! Returns name of md2 animation.
 const c8* CAnimatedMeshMD2::getAnimationName(s32 nr) const
 {
-	if (nr < 0 || nr >= (s32)FrameData.size())
+	if ((u32)nr >= FrameData.size())
 		return 0;
 
 	return FrameData[nr].name.c_str();

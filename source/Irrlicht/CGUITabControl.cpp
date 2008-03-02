@@ -206,9 +206,11 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 //! destructor
 CGUITabControl::~CGUITabControl()
 {
-	for (s32 i=0; i<(s32)Tabs.size(); ++i)
+	for (u32 i=0; i<Tabs.size(); ++i)
+	{
 		if (Tabs[i])
 			Tabs[i]->drop();
+	}
 
 	if (UpButton)
 		UpButton->drop();
@@ -269,9 +271,11 @@ void CGUITabControl::addTab(CGUITab* tab)
 		return;
 
 	// check if its already added
-	for (s32 i=0; i < (s32)Tabs.size(); ++i)
+	for (u32 i=0; i < Tabs.size(); ++i)
+	{
 		if (Tabs[i] == tab)
 			return;
+	}
 
 	tab->grab();
 
@@ -309,7 +313,7 @@ s32 CGUITabControl::getTabCount() const
 //! Returns a tab based on zero based index
 IGUITab* CGUITabControl::getTab(s32 idx) const
 {
-	if (idx < 0 || idx >= (s32)Tabs.size())
+	if ((u32)idx >= Tabs.size())
 		return 0;
 
 	return Tabs[idx];
@@ -523,7 +527,7 @@ void CGUITabControl::draw()
 	//const wchar_t* activetext = 0;
 	CGUITab *activeTab = 0;
 
-	for (s32 i=CurrentScrollTabIndex; i<(s32)Tabs.size(); ++i)
+	for (u32 i=0; i<Tabs.size(); ++i)
 	{
 		// get Text
 		const wchar_t* text = 0;
@@ -543,7 +547,7 @@ void CGUITabControl::draw()
 
 		pos += len;
 
-		if (i == ActiveTab)
+		if ((s32)i == ActiveTab)
 		{
 			left = frameRect.UpperLeftCorner.X;
 			right = frameRect.LowerRightCorner.X;

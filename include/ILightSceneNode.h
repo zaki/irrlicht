@@ -14,11 +14,11 @@ namespace scene
 {
 
 //! Scene node which is a dynamic light. 
-/** You can switch the light on and off by 
-making it visible or not, and let it be animated by ordinary scene node animators.
-If you set the light type to be directional, you will need to set the direction of the
-light source manually in the SLight structure, the position of the scene node will have no
-effect on this direction.
+/** You can switch the light on and off by making it visible or not. It can be
+  animated by ordinary scene node animators.
+If the light type is directional or spot, the direction of the light source
+is defined by the rotation of the scene node (assuming (0,0,1) as the local
+direction of the light).
 */
 class ILightSceneNode : public ISceneNode
 {
@@ -30,6 +30,7 @@ public:
 		: ISceneNode(parent, mgr, id, position) {}
 
 	//! Sets the light data associated with this ILightSceneNode
+	//! \param light The new light data.
 	virtual void setLightData(const video::SLight& light) = 0;
 
 	//! Gets the light data associated with this ILightSceneNode
