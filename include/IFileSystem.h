@@ -119,6 +119,11 @@ public:
 	/** \param filename: The file to get the directory from */
 	virtual core::stringc getFileDir(const core::stringc& filename) const = 0;
 
+	//! Returns the base part of a filename, i.e. the name without the directory
+	//! part. If no directory is prefixed, the full name is returned.
+	/** \param filename: The file to get the basename from */
+	virtual core::stringc getFileBasename(const core::stringc& filename) const = 0;
+
 	//! Creates a list of files and directories in the current working directory and returns it.
 	/** \return a Pointer to the created IFileList is returned. After the list has been used
 	it has to be deleted using its IFileList::drop() method.
