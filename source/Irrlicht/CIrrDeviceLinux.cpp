@@ -1052,7 +1052,7 @@ void CIrrDeviceLinux::setResizeAble(bool resize)
 //! by the gfx adapter.
 video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 {
-
+#ifdef _IRR_COMPILE_WITH_X11_
 	if (!VideoModeList.getVideoModeCount())
 	{
 		bool temporaryDisplay = false;
@@ -1119,6 +1119,7 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 			XCloseDisplay(display);
 		}
 	}
+#endif
 
 	return &VideoModeList;
 }

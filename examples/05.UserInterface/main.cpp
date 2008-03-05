@@ -24,226 +24,91 @@ using namespace gui;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
+gui::IGUIButton *buttonMain;
+gui::IGUIWindow *windowMain;
+bool isWindowMinimized = false;
 
-IrrlichtDevice *device = 0;
-s32 cnt = 0;
-IGUIListBox* listbox = 0;
-
-
-/*
-The Event Receiver is not only capable of getting keyboard and
-mouse input events, but also events of the graphical user interface 
-(gui). There are events for almost everything: Button click, 
-Listbox selection change, events that say that a element was hovered
-and so on. To be able to react to some of these events, we create 
-an event receiver. 
-We only react to gui events, and if it's such an event, we get the
-id of the caller (the gui element which caused the event) and get 
-the pointer to the gui environment.
-*/
-class MyEventReceiver : public IEventReceiver
+class : public IEventReceiver
 {
-public:
-	virtual bool OnEvent(const SEvent& event)
-	{
-		if (event.EventType == EET_GUI_EVENT)
-		{
-			s32 id = event.GUIEvent.Caller->getID();
-			IGUIEnvironment* env = device->getGUIEnvironment();
+   virtual bool OnEvent(const SEvent& event)
+   {
+      static s32 windowHeight;
 
-			switch(event.GUIEvent.EventType)
-			{
+      if (event.EventType==EET_GUI_EVENT)
+      {
+         if (event.GUIEvent.EventType==gui::EGET_BUTTON_CLICKED)
+         {
+            if (event.GUIEvent.Caller==buttonMain)
+            {
+               isWindowMinimized = !isWindowMinimized;
 
-			/*
-			If a scrollbar changed its scroll position, and it is 'our'
-			scrollbar (the one with id 104), then we change the 
-			transparency of all gui elements. This is a very easy task:
-			There is a skin object, in which all color settings are stored.
-			We simply go through all colors stored in the skin and change
-			their alpha value.
-			*/
-			case EGET_SCROLL_BAR_CHANGED:
-				if (id == 104)
-				{
-					s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
-					
-					for (u32 i=0; i<EGDC_COUNT ; ++i)
-					{
-						SColor col = env->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
-						col.setAlpha(pos);
-						env->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, col);
-					}
-					
-				}
-				break;
+               rect<s32> pos = windowMain->getRelativePosition();
+               if (isWindowMinimized)
+               {
+                  windowHeight = pos.LowerRightCorner.Y - pos.UpperLeftCorner.Y;
+                  pos.LowerRightCorner.Y = pos.UpperLeftCorner.Y + 22;
+               } else {
+                  pos.LowerRightCorner.Y = pos.UpperLeftCorner.Y + windowHeight;
+               }
 
-			/*
-			If a button was clicked, it could be one of 'our'
-			three buttons. If it is the first, we shut down the engine.
-			If it is the second, we create a little window with some 
-			text on it. We also add a string to the list box to log
-			what happened. And if it is the third button, we create
-			a file open dialog, and add also this as string to the list box.
-			That's all for the event receiver.
-			*/
-			case EGET_BUTTON_CLICKED:
+               windowMain->setRelativePosition(pos);
 
-				if (id == 101)
-				{
-					device->closeDevice();
-					return true;
-				}
+               return true;
+            }
+         }
+      }
 
-				if (id == 102)
-				{
-					listbox->addItem(L"Window created");
-					cnt += 30;
-					if (cnt > 200) 
-						cnt = 0;
+      return false;
+   }
+} eventReceiver;
 
-					IGUIWindow* window = env->addWindow(
-						rect<s32>(100 + cnt, 100 + cnt, 300 + cnt, 200 + cnt), 
-						false, // modal?
-						L"Test window");
-
-					env->addStaticText(L"Please close me",  
-						rect<s32>(35,35,140,50),
-						true, // border?
-						false, // wordwrap?
-						window);
-
-					return true;
-				}
-
-				if (id == 103)
-				{
-					listbox->addItem(L"File open");
-					env->addFileOpenDialog(L"Please choose a file.");
-					return true;
-				}
-
-				break;
-			default:
-				break;
-			}
-		}
-
-		return false;
-	}
-};
-
-
-/*
-Ok, now for the more interesting part. First, create the 
-Irrlicht device. As in some examples before, we ask the user which
-driver he wants to use for this example:
-*/
 int main()
 {
-	// ask user for driver
-	
-	video::E_DRIVER_TYPE driverType;
+   // irr device and pointers
+   IrrlichtDevice *irrDevice = createDevice(video::EDT_DIRECT3D9);
+   video::IVideoDriver *irrVideo = irrDevice->getVideoDriver();
+   gui::IGUIEnvironment *irrGUI = irrDevice->getGUIEnvironment();
 
-	printf("Please select the driver you want for this example:\n"\
-		" (a) Direct3D 9.0c\n (b) Direct3D 8.1\n (c) OpenGL 1.5\n"\
-		" (d) Software Renderer\n (e) Burning's Software Renderer\n"\
-		" (f) NullDevice\n (otherKey) exit\n\n");
+   irrDevice->setEventReceiver(&eventReceiver);
 
-	char i;
-	std::cin >> i;
+   // gui mass
+   
+   buttonMain = irrGUI->addButton(rect<s32>(4,4,100,40), 0, -1, L"CLICK ME");
+   windowMain = irrGUI->addWindow(rect<s32>(40,40,400,400), false, L"Main Window");
 
-	switch(i)
-	{
-		case 'a': driverType = video::EDT_DIRECT3D9;break;
-		case 'b': driverType = video::EDT_DIRECT3D8;break;
-		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
-		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
-		case 'f': driverType = video::EDT_NULL;     break;
-		default: return 1;
-	}	
+   irrGUI->addButton(rect<s32>(4,24,100,40), windowMain, -1, L"button");
+   irrGUI->addCheckBox(true, rect<s32>(4,40,100,60), windowMain);
+   irrGUI->addComboBox(rect<s32>(4,60,100,80), windowMain)->addItem(L"item");
+   irrGUI->addEditBox(L"test", rect<s32>(4,80,100,100), true, windowMain);
+   irrGUI->addImage(rect<s32>(4,100,100,120), windowMain);
+   irrGUI->addListBox(rect<s32>(4,120,100,160), windowMain)->addItem(L"item");
+   gui::IGUIContextMenu *m = irrGUI->addMenu(windowMain);
+   m->setMinSize(dimension2di(100,40));
+   m->addItem(L"menuitem1");
+   m->addItem(L"menuitem2");
+   irrGUI->addMeshViewer(rect<s32>(4,160,100,180), windowMain);
+   irrGUI->addScrollBar(true, rect<s32>(4,180,100,200), windowMain);
+   irrGUI->addSpinBox(L"spinbox", rect<s32>(4,200,100,220), windowMain);
+   irrGUI->addStaticText(L"statictext", rect<s32>(4,220,100,240), false, true, windowMain);
+   irrGUI->addTabControl(rect<s32>(120,24,220,64), windowMain);
+//   irrGUI->addTable(rect<s32>(120,80,220,120), windowMain)->addColumn(L"column1");
+   gui::IGUIToolBar *t = irrGUI->addToolBar(windowMain);
+   t->setMinSize(dimension2di(100,80));
+   t->addButton(-1, L"toolbarButton1");
+   t->addButton(-1, L"toolbarButton2");
+   irrGUI->addWindow(rect<s32>(120,150,250,300), false, L"testWindow", windowMain);
 
-	// create device and exit if creation failed
+   // show time!
+   while(irrDevice->run())
+   if (irrDevice->isWindowActive())
+   {
+      irrVideo->beginScene(true, true, video::SColor(0x204060));
+      irrGUI->drawAll();
+      irrVideo->endScene();
+   }
 
-	device = createDevice(driverType, core::dimension2d<s32>(640, 480));
+   // drop time
+   irrDevice->drop();
 
-	if (device == 0)
-		return 1; // could not create selected driver.
-
-	/* The creation was successful, now we set the event receiver and
-		store pointers to the driver and to the gui environment. */
-
-	MyEventReceiver receiver;
-	device->setEventReceiver(&receiver);
-	device->setWindowCaption(L"Irrlicht Engine - User Interface Demo");
-
-	video::IVideoDriver* driver = device->getVideoDriver();
-	IGUIEnvironment* env = device->getGUIEnvironment();
-
-	/*
-	To make the font a little bit nicer, we load an external font
-	and set it as the new default font in the skin. 
-	To keep the standard font for tool tip text, we set it to
-	the built-in font.
-	*/
-
-	IGUISkin* skin = env->getSkin();
-	IGUIFont* font = env->getFont("../../media/fonthaettenschweiler.bmp");
-	if (font)
-		skin->setFont(font);
-
-	skin->setFont(env->getBuiltInFont(), EGDF_TOOLTIP);
-
-	/*
-	We add three buttons. The first one closes the engine. The second
-	creates a window and the third opens a file open dialog. The third
-	parameter is the id of the button, with which we can easily identify
-	the button in the event receiver.
-	*/	
-
-	env->addButton(rect<s32>(10,240,110,240 + 32), 0, 101, L"Quit", L"Exits Program");
-	env->addButton(rect<s32>(10,280,110,280 + 32), 0, 102, L"New Window", L"Launches a new Window");
-	env->addButton(rect<s32>(10,320,110,320 + 32), 0, 103, L"File Open", L"Opens a file");
-
-	/*
-	Now, we add a static text and a scrollbar, which modifies the
-	transparency of all gui elements. We set the maximum value of
-	the scrollbar to 255, because that's the maximal value for 
-	a color value.
-	Then we create an other static text and a list box.
-	*/
-
-	env->addStaticText(L"Transparent Control:", rect<s32>(150,20,350,40), true);
-	IGUIScrollBar* scrollbar = env->addScrollBar(true, rect<s32>(150, 45, 350, 60), 0, 104);
-	scrollbar->setMax(255);
-
-	// set scrollbar position to alpha value of an arbitrary element
-	scrollbar->setPos(env->getSkin()->getColor(EGDC_WINDOW).getAlpha());
-
-	env->addStaticText(L"Logging ListBox:", rect<s32>(50,110,250,130), true);
-	listbox = env->addListBox(rect<s32>(50, 140, 250, 210));
-	env->addEditBox(L"Editable Text", rect<s32>(350, 80, 550, 100));
-
-	// add the engine logo
-	env->addImage(driver->getTexture("../../media/irrlichtlogo2.png"),
-			position2d<int>(10,10));
-
-
-	/*
-	That's all, we only have to draw everything.
-	*/
-
-	while(device->run() && driver)
-	if (device->isWindowActive())
-	{
-		driver->beginScene(true, true, SColor(0,200,200,200));
-
-		env->drawAll();
-	
-		driver->endScene();
-	}
-
-	device->drop();
-
-	return 0;
+   return 0;
 }

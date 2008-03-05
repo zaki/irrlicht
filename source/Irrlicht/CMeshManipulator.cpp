@@ -3,12 +3,8 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CMeshManipulator.h"
-#include "IMesh.h"
 #include "SMesh.h"
-#include "SMeshBuffer.h"
-#include "SMeshBufferLightMap.h"
-#include "SMeshBufferTangents.h"
-#include "IAnimatedMesh.h"
+#include "CMeshBuffer.h"
 #include "SAnimatedMesh.h"
 #include "os.h"
 

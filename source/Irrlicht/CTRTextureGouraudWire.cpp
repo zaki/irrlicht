@@ -332,10 +332,9 @@ public:
 		RenderTarget->unlock();
 		ZBuffer->unlock();
 		Texture->unlock();
-
 	}
-
 };
+
 
 } // end namespace video
 } // end namespace irr
@@ -359,3 +358,4 @@ ITriangleRenderer* createTriangleRendererTextureGouraudWire(IZBuffer* zbuffer)
 
 } // end namespace video
 } // end namespace irr
+

@@ -11,17 +11,18 @@
 
 #include "ITerrainSceneNode.h"
 #include "SMesh.h"
-#include "IReadFile.h"
-#include "ITextSceneNode.h"
 
 namespace irr
 {
 namespace io
 {
 	class IFileSystem;
+	class IReadFile;
 }
 namespace scene
 {
+	class ITextSceneNode;
+
 	//! A scene node for displaying terrain using the geo mip map algorithm.
 	class CTerrainSceneNode : public ITerrainSceneNode
 	{

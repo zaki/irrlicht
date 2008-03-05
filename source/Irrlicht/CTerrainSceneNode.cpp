@@ -19,6 +19,7 @@
 #include "IGUIFont.h"
 #include "IFileSystem.h"
 #include "IReadFile.h"
+#include "ITextSceneNode.h"
 
 namespace irr
 {

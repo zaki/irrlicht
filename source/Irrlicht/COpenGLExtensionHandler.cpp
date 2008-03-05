@@ -1,11 +1,11 @@
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+
 #include "COpenGLExtensionHandler.h"
 #include "irrString.h"
 #include "SMaterial.h" // for MATERIAL_MAX_TEXTURES
 #include "fast_atof.h"
-
-#include "IrrCompileConfig.h"
-
-#ifdef _IRR_COMPILE_WITH_OPENGL_
 
 namespace irr
 {

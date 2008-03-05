@@ -89,7 +89,7 @@ void CGUIToolBar::draw()
 		return;
 
 	core::rect<s32> rect = AbsoluteRect;
-	core::rect<s32>* clip = 0;
+	core::rect<s32>* clip = &AbsoluteClippingRect;
 
 	// draw frame
 	skin->draw3DToolBar(this, rect, clip);
