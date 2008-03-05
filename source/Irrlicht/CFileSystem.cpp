@@ -238,6 +238,10 @@ core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 	return ret;
 }
 
+
+//! returns the directory part of a filename, i.e. all until the first
+//! slash or backslash, excluding it. If no directory path is prefixed, a '.'
+//! is returned.
 core::stringc CFileSystem::getFileDir(const core::stringc& filename) const
 {
 	// find last forward or backslash
@@ -250,6 +254,23 @@ core::stringc CFileSystem::getFileDir(const core::stringc& filename) const
 	else
 		return ".";
 }
+
+
+//! returns the base part of a filename, i.e. all except for the directory
+//! part. If no directory path is prefixed, the full name is returned.
+core::stringc CFileSystem::getFileBasename(const core::stringc& filename) const
+{
+	// find last forward or backslash
+	s32 lastSlash = filename.findLast('/');
+	const s32 lastBackSlash = filename.findLast('\\');
+	lastSlash = lastSlash > lastBackSlash ? lastSlash : lastBackSlash;
+
+	if ((u32)lastSlash < filename.size())
+		return filename.subString(lastSlash+1, filename.size()-lastSlash);
+	else
+		return filename;
+}
+
 
 //! Creates a list of files and directories in the current working directory 
 IFileList* CFileSystem::createFileList() const
