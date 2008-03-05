@@ -1497,3 +1497,4 @@ inline void COpenGLExtensionHandler::extGlGetBufferPointerv (GLenum target, GLen
 #endif
 
 #endif
+

@@ -26,8 +26,6 @@ public:
 				const quake3::SShader * shader
 		);
 
-	virtual ~CQuake3ShaderSceneNode ();
-
 	virtual void OnRegisterSceneNode();
 	virtual void render();
 	virtual void OnAnimate(u32 timeMs);

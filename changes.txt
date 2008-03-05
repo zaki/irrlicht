@@ -49,6 +49,11 @@ Changes in version 1.5 (... 2008)
 -------------------------------------------
 Changes in version 1.4.1 (??? 2008)
 
+ - Fixed clipping of menu, toolbar and combo box GUI elements, reported by greenya
+   - setNotClipped now applies all the way up to the root of the GUI environment, rather than just to the next parent 
+
+ - Made new scene managers use the original manager's GUIEnvironment, reported by MasterGod
+
  - Fixed IGUICheckBox::setEnabled, reported by Dorth
 
  - Fixed the FollowSpline animator to avoid crashes when only one waypoint is given.

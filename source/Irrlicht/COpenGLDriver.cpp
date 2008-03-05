@@ -2,8 +2,9 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h"
 #include "COpenGLDriver.h"
+// needed here also because of the create methods' parameters
+#include "CNullDriver.h"
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -2631,6 +2632,7 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 } // end namespace
 } // end namespace
 
+#endif // _IRR_COMPILE_WITH_OPENGL_
 
 namespace irr
 {
@@ -2711,8 +2713,4 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 
 } // end namespace
 } // end namespace
-
-#endif // _IRR_COMPILE_WITH_OPENGL_
-
-
 

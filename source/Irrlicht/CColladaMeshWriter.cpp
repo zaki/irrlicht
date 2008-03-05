@@ -1,3 +1,7 @@
+#include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_COLLADA_WRITER_
+
 #include "CColladaMeshWriter.h"
 #include "os.h"
 #include "IFileSystem.h"
@@ -813,4 +817,6 @@ bool CColladaMeshWriter::hasSecondTextureCoordinates(video::E_VERTEX_TYPE type) 
 
 } // end namespace
 } // end namespace
+
+#endif
 

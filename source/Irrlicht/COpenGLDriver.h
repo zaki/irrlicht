@@ -6,11 +6,12 @@
 #define __C_VIDEO_OPEN_GL_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
+
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "COpenGLExtensionHandler.h"
-
-#ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #if defined(_IRR_WINDOWS_API_)
 	// include windows headers for HWND

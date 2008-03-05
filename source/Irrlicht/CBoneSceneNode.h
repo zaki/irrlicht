@@ -1,3 +1,7 @@
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
 #ifndef __C_BONE_SCENE_NODE_H_INCLUDED__
 #define __C_BONE_SCENE_NODE_H_INCLUDED__
 
@@ -5,7 +9,6 @@
 
 #include "IBoneSceneNode.h"
 #include "irrString.h"
-
 
 namespace irr
 {
@@ -64,13 +67,13 @@ namespace scene
 	private:
 		void helper_updateAbsolutePositionOfAllChildren(ISceneNode *Node);
 
-		E_BONE_ANIMATION_MODE AnimationMode;
-		E_BONE_SKINNING_SPACE SkinningSpace;
-
 		u32 BoneIndex;
 		core::stringc BoneName;
 
 		core::aabbox3d<f32> Box;
+
+		E_BONE_ANIMATION_MODE AnimationMode;
+		E_BONE_SKINNING_SPACE SkinningSpace;
 	};
 
 } // end namespace scene

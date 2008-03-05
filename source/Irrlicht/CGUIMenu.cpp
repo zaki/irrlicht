@@ -28,6 +28,8 @@ CGUIMenu::CGUIMenu(IGUIEnvironment* environment, IGUIElement* parent,
 
 	Type = EGUIET_MENU;
 
+	setNotClipped(false);
+
 	recalculateSize();
 }
 

@@ -13,6 +13,7 @@
 #include "ISceneUserDataSerializer.h"
 #include "IGUIEnvironment.h"
 #include "IMaterialRenderer.h"
+#include "IReadFile.h"
 
 #include "os.h"
 
@@ -174,7 +175,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	if (CursorControl)
 		CursorControl->grab();
 
-	if ( GUIEnvironment )
+	if (GUIEnvironment)
 		GUIEnvironment->grab();
 
 	// create mesh cache if not there already
@@ -405,6 +406,7 @@ ISceneNode* CSceneManager::addQuake3SceneNode(IMeshBuffer* meshBuffer,
 					const quake3::SShader * shader,
 					ISceneNode* parent, s32 id)
 {
+#ifdef _IRR_COMPILE_WITH_BSP_LOADER_
 	if ( 0 == shader )
 		return 0;
 
@@ -415,6 +417,9 @@ ISceneNode* CSceneManager::addQuake3SceneNode(IMeshBuffer* meshBuffer,
 	node->drop();
 
 	return node;
+#else
+	return 0;
+#endif
 }
 
 //! adds Volume Lighting Scene Node.
@@ -1642,7 +1647,7 @@ IMeshCache* CSceneManager::getMeshCache()
 //! Creates a new scene manager.
 ISceneManager* CSceneManager::createNewSceneManager(bool cloneContent)
 {
-	CSceneManager* manager = new CSceneManager(Driver, FileSystem, CursorControl, MeshCache);
+	CSceneManager* manager = new CSceneManager(Driver, FileSystem, CursorControl, MeshCache, GUIEnvironment);
 
 	if (cloneContent)
 		manager->cloneMembers(this, manager);

@@ -5,7 +5,23 @@
 #ifndef __C_TRIANGLE_RENDERER_TEXTURE_GOURAUD_H_INCLUDED__
 #define __C_TRIANGLE_RENDERER_TEXTURE_GOURAUD_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifndef _IRR_COMPILE_WITH_SOFTWARE_
+// forward declarations for create methods
+namespace irr
+{
+namespace video
+{
+	class ITriangleRenderer;
+	class IZBuffer;
+} // end namespace video
+} // end namespace irr
+
+#else
+
 #include "ITriangleRenderer.h"
+#include "IImage.h"
 
 namespace irr
 {
@@ -21,7 +37,7 @@ namespace video
 	
 		//! destructor
 		virtual ~CTRTextureGouraud();
-
+	
 		//! sets a render target
 		virtual void setRenderTarget(video::IImage* surface, const core::rect<s32>& viewPort);
 
@@ -62,6 +78,8 @@ namespace video
 
 } // end namespace video
 } // end namespace irr
+
+#endif
 
 #endif
 

@@ -1,4 +1,4 @@
- // Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -215,12 +215,9 @@ public:
 			if (NoClip)
 			{
 				IGUIElement* p=this;
-				while (p && p->NoClip && p->Parent)
-						p = p->Parent;
-				if (p->Parent)
-					parentAbsoluteClip = p->Parent->AbsoluteClippingRect;
-				else
-					parentAbsoluteClip = p->AbsoluteClippingRect;
+				while (p && p->Parent)
+					p = p->Parent;
+				parentAbsoluteClip = p->AbsoluteClippingRect;
 			}
 			else
 				parentAbsoluteClip = Parent->AbsoluteClippingRect;

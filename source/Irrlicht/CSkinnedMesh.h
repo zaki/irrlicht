@@ -1,20 +1,18 @@
-// Copyright (C) 2002-2006 Nikolaus Gebhardt
+// Copyright (C) 2002-2007 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
-
 
 //New skinned mesh
 
 #ifndef __C_SKINNED_MESH_H_INCLUDED__
 #define __C_SKINNED_MESH_H_INCLUDED__
 
+#include "ISkinnedMesh.h"
+#include "SMeshBuffer.h"
 #include "S3DVertex.h"
 #include "irrString.h"
 #include "matrix4.h"
-#include "SMeshBuffer.h"
-#include <quaternion.h>
-
-#include "ISkinnedMesh.h"
+#include "quaternion.h"
 
 namespace irr
 {
