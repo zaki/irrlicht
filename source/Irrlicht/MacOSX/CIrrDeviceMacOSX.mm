@@ -160,6 +160,12 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 	NSOpenGLPixelFormatAttribute	windowattribs[32];
 	CFDictionaryRef			displaymode,olddisplaymode;
 	long				numPixelFormats,newSwapInterval;
+	int alphaSize = 4, depthSize = 16;
+	
+	if (bits == 32) {
+		alphaSize = 8;
+		depthSize = 32;
+	}
 
 	result = false;
 	display = CGMainDisplayID();
@@ -178,9 +184,11 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 			windowattribs[index++] = NSOpenGLPFADoubleBuffer;
 			windowattribs[index++] = NSOpenGLPFAAccelerated;
 			windowattribs[index++] = NSOpenGLPFADepthSize;
-			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)16;
+			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)depthSize;
 			windowattribs[index++] = NSOpenGLPFAColorSize;
 			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)bits;
+			windowattribs[index++] = NSOpenGLPFAAlphaSize;
+			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)alphaSize;
 
 			if (antiAlias) {
 				windowattribs[index++] = NSOpenGLPFASampleBuffers;
@@ -242,9 +250,11 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 					fullattribs[index++] = kCGLPFADoubleBuffer;
 					fullattribs[index++] = kCGLPFAAccelerated;
 					fullattribs[index++] = kCGLPFADepthSize;
-					fullattribs[index++] = (CGLPixelFormatAttribute)16;
+					fullattribs[index++] = (CGLPixelFormatAttribute)depthSize;
 					fullattribs[index++] = kCGLPFAColorSize;
 					fullattribs[index++] = (CGLPixelFormatAttribute)bits;
+					fullattribs[index++] = kCGLPFAAlphaSize;
+					fullattribs[index++] = (CGLPixelFormatAttribute)alphaSize;
 
 					if (antiAlias) {
 						fullattribs[index++] = kCGLPFASampleBuffers;
