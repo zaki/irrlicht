@@ -500,17 +500,24 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 		if (iter != _keycodes.end()) mkey = (*iter).second;
 		else
 		{
-			cStr = (unsigned char *)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
-			if (cStr != NULL && strlen((char*)cStr) > 0)
+			// workaround for period character
+			if (c == 0x2E)
 			{
-				mchar = cStr[0];
-				mkey = toupper(mchar);
-				if ([(NSEvent *)event modifierFlags] & NSCommandKeyMask)
+				mkey = irr::KEY_PERIOD;
+				mchar = '.';
+			} else {
+				cStr = (unsigned char *)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
+				if (cStr != NULL && strlen((char*)cStr) > 0)
 				{
-					if (mkey == 'C' || mkey == 'V' || mkey == 'X')
+					mchar = cStr[0];
+					mkey = toupper(mchar);
+					if ([(NSEvent *)event modifierFlags] & NSCommandKeyMask)
 					{
-						mchar = 0;
-						skipCommand = true;
+						if (mkey == 'C' || mkey == 'V' || mkey == 'X')
+						{
+							mchar = 0;
+							skipCommand = true;
+						}
 					}
 				}
 			}
