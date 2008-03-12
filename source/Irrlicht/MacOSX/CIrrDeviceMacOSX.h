@@ -190,7 +190,7 @@ namespace irr
 			core::rect<s32> ReferenceRect;
 		};
 
-		bool createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer);
+		bool createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer, bool antiAlias);
 		void initKeycodes();
 		void storeMouseLocation();
 		void postMouseEvent(void *event,irr::SEvent &ievent);
