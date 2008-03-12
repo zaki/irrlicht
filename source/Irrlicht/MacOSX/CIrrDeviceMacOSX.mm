@@ -104,7 +104,7 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType,
 	os::Printer::log(name.version,ELL_INFORMATION);
 
 	initKeycodes();
-	if (driverType != video::EDT_NULL) createWindow(windowSize,bits,fullscreen,vsync,stencilbuffer);
+	if (driverType != video::EDT_NULL) createWindow(windowSize,bits,fullscreen,vsync,stencilbuffer, antiAlias);
 	CursorControl = new CCursorControl(windowSize, this);
 	createDriver(driverType,windowSize,bits,fullscreen,stencilbuffer,vsync,antiAlias);
 	createGUIAndScene();
@@ -147,7 +147,7 @@ void CIrrDeviceMacOSX::closeDevice()
 	_cglcontext = NULL;
 }
 
-bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer)
+bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer, bool antiAlias)
 {
 	int				index;
 	CGDisplayErr			error;
@@ -181,6 +181,13 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)16;
 			windowattribs[index++] = NSOpenGLPFAColorSize;
 			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)bits;
+
+			if (antiAlias) {
+				windowattribs[index++] = NSOpenGLPFASampleBuffers;
+				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)1;
+				windowattribs[index++] = NSOpenGLPFASamples;
+				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)2;
+			}
 
 			if (stencilBuffer)
 			{
@@ -238,6 +245,13 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 					fullattribs[index++] = (CGLPixelFormatAttribute)16;
 					fullattribs[index++] = kCGLPFAColorSize;
 					fullattribs[index++] = (CGLPixelFormatAttribute)bits;
+
+					if (antiAlias) {
+						fullattribs[index++] = kCGLPFASampleBuffers;
+						fullattribs[index++] = (CGLPixelFormatAttribute)1;
+						fullattribs[index++] = kCGLPFASamples;
+						fullattribs[index++] = (CGLPixelFormatAttribute)2;
+					}
 
 					if (stencilBuffer)
 					{

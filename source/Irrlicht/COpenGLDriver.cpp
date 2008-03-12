@@ -308,6 +308,10 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace( GL_CW );
 // currently disabled, because often in software, and thus very slow
+	if (AntiAlias) {
+		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+		glEnable(GL_LINE_SMOOTH);
+	}
 //	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 //	glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 //	glEnable(GL_POINT_SMOOTH);
