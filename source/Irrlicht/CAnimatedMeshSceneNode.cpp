@@ -404,6 +404,7 @@ void CAnimatedMeshSceneNode::render()
 			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
+		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		if ( DebugDataVisible & scene::EDS_BBOX )
 			driver->draw3DBox(Box, video::SColor(0,255,255,255));
 
@@ -586,10 +587,9 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 
 	checkJoints();
 
-
 	ISkinnedMesh *skinnedMesh=(ISkinnedMesh*)Mesh;
 
-	s32 number = skinnedMesh->getJointNumber(jointName);
+	const s32 number = skinnedMesh->getJointNumber(jointName);
 
 	if (number == -1)
 	{
@@ -825,6 +825,7 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 		Mesh->grab();
 }
 
+
 // returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
 // or the absolutetransformation if it's a normal scenenode
 const SMD3QuaterionTag& CAnimatedMeshSceneNode::getMD3TagTransformation( const core::stringc & tagname)
@@ -973,24 +974,16 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 			{
 				//---slow---
 				for (u32 n=0;n<JointChildSceneNodes.size();++n)
+				{
 					if (JointChildSceneNodes[n]->getParent()==this)
 					{
 						JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
 					}
+				}
 			}
-
-
-
 		}
 	}
-
-
-
-
-
 }
-
-
 
 
 void CAnimatedMeshSceneNode::checkJoints()
@@ -1009,6 +1002,7 @@ void CAnimatedMeshSceneNode::checkJoints()
 		JointMode=EJUOR_READ;
 	}
 }
+
 
 void CAnimatedMeshSceneNode::beginTransition()
 {
