@@ -22,14 +22,6 @@ CDummyTransformationSceneNode::CDummyTransformationSceneNode(
 }
 
 
-
-//! destructor
-CDummyTransformationSceneNode::~CDummyTransformationSceneNode()
-{
-}
-
-
-
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CDummyTransformationSceneNode::getBoundingBox() const
 {

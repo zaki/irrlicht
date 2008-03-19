@@ -38,7 +38,7 @@ CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* 
 //! based on the file extension (e.g. ".bsp")
 bool CXMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 {
-	return strstr(filename, ".x") != 0;
+	return strncmp(&filename[strlen(filename)-2], ".x", 2) == 0;
 }
 
 
