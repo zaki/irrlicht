@@ -10,7 +10,6 @@
 
 #include "IGUIMeshViewer.h"
 #include "SMaterial.h"
-#include "vector3d.h"
 
 namespace irr
 {

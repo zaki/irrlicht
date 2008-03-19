@@ -9,7 +9,6 @@
 #include "IVideoDriver.h"
 #include "IAnimatedMesh.h"
 #include "IMesh.h"
-#include "irrMath.h"
 #include "os.h"
 #include "IGUISkin.h"
 
@@ -47,18 +46,16 @@ void CGUIMeshViewer::setMesh(scene::IAnimatedMesh* mesh)
 	Mesh = mesh;
 	if (!Mesh)
 		return;
+	else
+		Mesh->grab();
 
+	/* This might be used for proper transformation etc.
 	core::vector3df center(0.0f,0.0f,0.0f);
 	core::aabbox3d<f32> box;
 
-	if (mesh->getFrameCount())
-	{
-		box = mesh->getMesh(0)->getBoundingBox();
-		center = (box.MaxEdge + box.MinEdge) / 2;
-	}
-
-	if (Mesh)
-		Mesh->grab();
+	box = Mesh->getMesh(0)->getBoundingBox();
+	center = (box.MaxEdge + box.MinEdge) / 2;
+	*/
 }
 
 
@@ -150,7 +147,10 @@ void CGUIMeshViewer::draw()
 
 		driver->setMaterial(Material);
 
-		scene::IMesh* m = Mesh->getMesh(os::Timer::getTime()/20);
+		u32 frame = 0;
+		if(Mesh->getFrameCount())
+			frame = (os::Timer::getTime()/20)%Mesh->getFrameCount();
+		const scene::IMesh* const m = Mesh->getMesh(frame);
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* mb = m->getMeshBuffer(i);

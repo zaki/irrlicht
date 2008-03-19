@@ -7,6 +7,7 @@
 #ifdef _IRR_COMPILE_WITH_BSP_LOADER_
 
 #include "CQuake3ShaderSceneNode.h"
+#include "ISceneManager.h"
 #include "IVideoDriver.h"
 #include "ICameraSceneNode.h"
 #include "SViewFrustum.h"

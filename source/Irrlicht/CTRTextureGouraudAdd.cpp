@@ -4,7 +4,6 @@
 
 #include "IrrCompileConfig.h"
 #include "CTRTextureGouraud.h"
-#include "os.h"
 
 #ifdef _IRR_COMPILE_WITH_SOFTWARE_
 

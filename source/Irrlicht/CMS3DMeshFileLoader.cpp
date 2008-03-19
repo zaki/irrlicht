@@ -345,7 +345,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		tmpBuffer->Material.SpecularColor = video::SColorf(material->Specular[0], material->Specular[1], material->Specular[2], material->Specular[3]).toSColor ();
 		tmpBuffer->Material.Shininess = material->Shininess;
 
-		core::stringc TexturePath=(const c8*)material->Texture;
+		core::stringc TexturePath(material->Texture);
 		TexturePath.trim();
 		if (TexturePath!="")
 		{

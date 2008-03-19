@@ -11,6 +11,7 @@
 
 #include "fast_atof.h"
 #include "coreutil.h"
+#include "ISceneManager.h"
 #include "IVideoDriver.h"
 #include "IFileSystem.h"
 #include "IReadFile.h"
