@@ -19,9 +19,6 @@ namespace scene
 		//! constructor
 		CDummyTransformationSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id);
 
-		//! destructor
-		~CDummyTransformationSceneNode();
-
 		//! returns the axis aligned bounding box of this node
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
