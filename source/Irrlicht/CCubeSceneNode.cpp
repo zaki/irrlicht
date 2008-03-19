@@ -6,6 +6,7 @@
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
 #include "S3DVertex.h"
+#include "SMeshBuffer.h"
 #include "os.h"
 
 namespace irr
@@ -30,7 +31,7 @@ namespace scene
 CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
 		s32 id, const core::vector3df& position,
 		const core::vector3df& rotation, const core::vector3df& scale)
-	: ISceneNode(parent, mgr, id, position, rotation, scale), Size(size)
+	: IMeshSceneNode(parent, mgr, id, position, rotation, scale), Size(size)
 {
 	#ifdef _DEBUG
 	setDebugName("CCubeSceneNode");
@@ -39,9 +40,11 @@ CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
 	const u16 u[36] = {   0,2,1,   0,3,2,   1,5,4,   1,2,5,   4,6,7,   4,5,6, 
             7,3,0,   7,6,3,   9,5,2,   9,8,5,   0,11,10,   0,10,7};
 
-	Buffer.Indices.set_used(36);
+	SMeshBuffer* buf = new SMeshBuffer();
+	Mesh.addMeshBuffer(buf);
+	buf->Indices.set_used(36);
 	for (u32 i=0; i<36; ++i)
-		Buffer.Indices[i] = u[i];
+		buf->Indices[i] = u[i];
 
 	setSize();
 }
@@ -61,27 +64,28 @@ void CCubeSceneNode::setSize()
 
 	video::SColor clr(255,255,255,255);
 
-	Buffer.Vertices.set_used(12);
-	Buffer.Vertices[0]  = video::S3DVertex(0,0,0, -1,-1,-1, clr, 0, 1); 
-	Buffer.Vertices[1]  = video::S3DVertex(1,0,0,  1,-1,-1, clr, 1, 1); 
-	Buffer.Vertices[2]  = video::S3DVertex(1,1,0,  1, 1,-1, clr, 1, 0); 
-	Buffer.Vertices[3]  = video::S3DVertex(0,1,0, -1, 1,-1, clr, 0, 0); 
-	Buffer.Vertices[4]  = video::S3DVertex(1,0,1,  1,-1, 1, clr, 0, 1); 
-	Buffer.Vertices[5]  = video::S3DVertex(1,1,1,  1, 1, 1, clr, 0, 0); 
-	Buffer.Vertices[6]  = video::S3DVertex(0,1,1, -1, 1, 1, clr, 1, 0); 
-	Buffer.Vertices[7]  = video::S3DVertex(0,0,1, -1,-1, 1, clr, 1, 1); 
-	Buffer.Vertices[8]  = video::S3DVertex(0,1,1, -1, 1, 1, clr, 0, 1); 
-	Buffer.Vertices[9]  = video::S3DVertex(0,1,0, -1, 1,-1, clr, 1, 1); 
-	Buffer.Vertices[10] = video::S3DVertex(1,0,1,  1,-1, 1, clr, 1, 0); 
-	Buffer.Vertices[11] = video::S3DVertex(1,0,0,  1,-1,-1, clr, 0, 0); 
+	SMeshBuffer* buf = (SMeshBuffer*)Mesh.getMeshBuffer(0);
+	buf->Vertices.reallocate(12);
+	buf->Vertices.push_back(video::S3DVertex(0,0,0, -1,-1,-1, clr, 0, 1));
+	buf->Vertices.push_back(video::S3DVertex(1,0,0,  1,-1,-1, clr, 1, 1));
+	buf->Vertices.push_back(video::S3DVertex(1,1,0,  1, 1,-1, clr, 1, 0));
+	buf->Vertices.push_back(video::S3DVertex(0,1,0, -1, 1,-1, clr, 0, 0));
+	buf->Vertices.push_back(video::S3DVertex(1,0,1,  1,-1, 1, clr, 0, 1));
+	buf->Vertices.push_back(video::S3DVertex(1,1,1,  1, 1, 1, clr, 0, 0));
+	buf->Vertices.push_back(video::S3DVertex(0,1,1, -1, 1, 1, clr, 1, 0));
+	buf->Vertices.push_back(video::S3DVertex(0,0,1, -1,-1, 1, clr, 1, 1));
+	buf->Vertices.push_back(video::S3DVertex(0,1,1, -1, 1, 1, clr, 0, 1));
+	buf->Vertices.push_back(video::S3DVertex(0,1,0, -1, 1,-1, clr, 1, 1));
+	buf->Vertices.push_back(video::S3DVertex(1,0,1,  1,-1, 1, clr, 1, 0));
+	buf->Vertices.push_back(video::S3DVertex(1,0,0,  1,-1,-1, clr, 0, 0));
 
-	Buffer.BoundingBox.reset(0,0,0); 
+	buf->BoundingBox.reset(0,0,0); 
 
 	for (u32 i=0; i<12; ++i)
 	{
-		Buffer.Vertices[i].Pos -= core::vector3df(0.5f, 0.5f, 0.5f);
-		Buffer.Vertices[i].Pos *= Size;
-		Buffer.BoundingBox.addInternalPoint(Buffer.Vertices[i].Pos);
+		buf->Vertices[i].Pos -= core::vector3df(0.5f, 0.5f, 0.5f);
+		buf->Vertices[i].Pos *= Size;
+		buf->BoundingBox.addInternalPoint(buf->Vertices[i].Pos);
 	}
 }
 
@@ -90,16 +94,16 @@ void CCubeSceneNode::setSize()
 void CCubeSceneNode::render()
 {
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	driver->setMaterial(Buffer.Material);
+	driver->setMaterial(Mesh.getMeshBuffer(0)->getMaterial());
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-	driver->drawMeshBuffer(&Buffer);
+	driver->drawMeshBuffer(Mesh.getMeshBuffer(0));
 }
 
 
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CCubeSceneNode::getBoundingBox() const
 {
-	return Buffer.BoundingBox;
+	return Mesh.getMeshBuffer(0)->getBoundingBox();
 }
 
 
@@ -118,7 +122,7 @@ void CCubeSceneNode::OnRegisterSceneNode()
 //! to directly modify the material of a scene node.
 video::SMaterial& CCubeSceneNode::getMaterial(u32 i)
 {
-	return Buffer.Material;
+	return Mesh.getMeshBuffer(0)->getMaterial();
 }
 
 
@@ -159,7 +163,7 @@ ISceneNode* CCubeSceneNode::clone(ISceneNode* newParent, ISceneManager* newManag
 		newManager, ID, RelativeTranslation);
 
 	nb->cloneMembers(this, newManager);
-	nb->Buffer.Material = Buffer.Material;
+	nb->getMaterial(0) = getMaterial(0);
 
 	nb->drop();
 	return nb;
