@@ -108,7 +108,7 @@ class quaternion
 		quaternion& makeIdentity();
 
 		//! sets quaternion to represent a rotation from one angle to another
-		quaternion& quaternion::rotationFromTo(const vector3df& from, const vector3df& to);
+		quaternion& rotationFromTo(const vector3df& from, const vector3df& to);
 
 		f32 X, Y, Z, W;
 };
