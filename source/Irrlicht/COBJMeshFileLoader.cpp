@@ -68,24 +68,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	u32 smoothingGroup=0;
 	core::map<video::S3DVertex, int> vertMap;
 
-	// ********************************************************************
-	// Patch to locate the file in the same folder as the .obj.
-	// If you load the file as "data/some.obj" and mtllib contains
-	// "mtlname test.mtl" (as usual), the loading will fail. Instead it
-	// must look for data/test.mtl. This patch does exactly that.
-	//
-	// patch by mandrav@codeblocks.org
-	// ********************************************************************
-	core::stringc obj_fullname = file->getFileName();
-	core::stringc obj_relpath = "";
-	s32 pathend = obj_fullname.findLast('/');
-	if (pathend == -1)
-		pathend = obj_fullname.findLast('\\');
-	if (pathend != -1)
-		obj_relpath = obj_fullname.subString(0, pathend + 1);
-	// ********************************************************************
-	// end of mtl folder patch
-	// ********************************************************************
+	const core::stringc fullName = file->getFileName();
+	const core::stringc relPath = FileSystem->getFileDir(fullName)+"/";
 
 	c8* buf = new c8[filesize];
 	memset(buf, 0, filesize);
@@ -104,7 +88,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		{
 			c8 name[WORD_BUFFER_LENGTH];
 			bufPtr = goAndCopyNextWord(name, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			readMTL(name, obj_relpath);
+			readMTL(name, relPath);
 		}
 			break;
 

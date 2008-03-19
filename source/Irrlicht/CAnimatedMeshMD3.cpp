@@ -58,17 +58,16 @@ struct SMD3Skin
 
 
 //! Constructor
-CAnimatedMeshMD3::CAnimatedMeshMD3 ()
+CAnimatedMeshMD3::CAnimatedMeshMD3()
 // TODO: Correct initial values needed
 : Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f)
-
 {
 #ifdef _DEBUG
 	setDebugName("CAnimatedMeshMD3");
 #endif
 
-	Mesh = new SMD3Mesh ();
-	memset ( &Mesh->MD3Header, 0, sizeof ( Mesh->MD3Header ) );
+	Mesh = new SMD3Mesh();
+	memset( &Mesh->MD3Header, 0, sizeof ( Mesh->MD3Header ) );
 
 	setInterpolationShift ( 0, 0 );
 }
@@ -77,8 +76,8 @@ CAnimatedMeshMD3::CAnimatedMeshMD3 ()
 //! Destructor
 CAnimatedMeshMD3::~CAnimatedMeshMD3()
 {
-	if ( Mesh )
-		Mesh->drop ();
+	if (Mesh)
+		Mesh->drop();
 }
 
 
