@@ -150,7 +150,6 @@ private:
 	void composeObject(io::IReadFile* file, const core::stringc& name);
 	void loadMaterials(io::IReadFile* file);
 	void cleanUp();
-	core::stringc getTextureFileName(const core::stringc& texture, core::stringc& model);
 
 	scene::ISceneManager* SceneManager;
 	io::IFileSystem* FileSystem;
