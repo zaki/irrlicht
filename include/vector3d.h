@@ -73,8 +73,8 @@ namespace core
 				core::equals(Z, other.Z, tolerance);
 		}
 
-		void set(const T nx, const T ny, const T nz) {X=nx; Y=ny; Z=nz; }
-		void set(const vector3d<T>& p) { X=p.X; Y=p.Y; Z=p.Z;}
+		vector3d<T>& set(const T nx, const T ny, const T nz) {X=nx; Y=ny; Z=nz; return *this;}
+		vector3d<T>& set(const vector3d<T>& p) {X=p.X; Y=p.Y; Z=p.Z;return *this;}
 
 		//! Returns length of the vector.
 		T getLength() const { return (T) sqrt((f64)(X*X + Y*Y + Z*Z)); }
@@ -140,25 +140,26 @@ namespace core
 		}
 
 		//! Sets the length of the vector to a new value
-		void setLength(T newlength)
+		vector3d<T>& setLength(T newlength)
 		{
 			normalize();
-			*this *= newlength;
+			return (*this *= newlength);
 		}
 
 		//! Inverts the vector.
-		void invert()
+		vector3d<T>& invert()
 		{
 			X *= -1.0f;
 			Y *= -1.0f;
 			Z *= -1.0f;
+			return *this;
 		}
 
 		//! Rotates the vector by a specified number of degrees around the Y
 		//! axis and the specified center.
 		//! \param degrees: Number of degrees to rotate around the Y axis.
 		//! \param center: The center of the rotation.
-		void rotateXZBy(f64 degrees, const vector3d<T>& center)
+		void rotateXZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
 			T cs = (T)cos(degrees);
@@ -174,7 +175,7 @@ namespace core
 		//! axis and the specified center.
 		//! \param degrees: Number of degrees to rotate around the Z axis.
 		//! \param center: The center of the rotation.
-		void rotateXYBy(f64 degrees, const vector3d<T>& center)
+		void rotateXYBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
 			T cs = (T)cos(degrees);
@@ -190,7 +191,7 @@ namespace core
 		//! axis and the specified center.
 		//! \param degrees: Number of degrees to rotate around the X axis.
 		//! \param center: The center of the rotation.
-		void rotateYZBy(f64 degrees, const vector3d<T>& center)
+		void rotateYZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
 			T cs = (T)cos(degrees);
@@ -264,7 +265,6 @@ namespace core
 			array[2] = Z;
 			array[3] = 0;
 		}
-
 
 		// member variables
 

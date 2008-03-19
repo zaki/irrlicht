@@ -50,13 +50,13 @@ class quaternion
 		//! multiplication operator
 		quaternion operator*(const quaternion& other) const;
 
-		//! multiplication operator
+		//! scalar multiplication operator
 		quaternion operator*(f32 s) const;
 
-		//! multiplication operator
+		//! scalar multiplication operator
 		quaternion& operator*=(f32 s);
 
-		//! multiplication operator
+		//! vector multiplication operator
 		vector3df operator* (const vector3df& v) const;
 
 		//! multiplication operator
@@ -90,13 +90,13 @@ class quaternion
 		quaternion& makeInverse();
 
 		//! set this quaternion to the result of the interpolation between two quaternions
-		void slerp( quaternion q1, quaternion q2, f32 interpolate );
+		quaternion& slerp( quaternion q1, quaternion q2, f32 interpolate );
 
-		//! axis must be unit length
 		//! The quaternion representing the rotation is
 		//!  q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
+		//! axis must be unit length
 		//! angle in radians
-		void fromAngleAxis (f32 angle, const vector3df& axis);
+		quaternion& fromAngleAxis (f32 angle, const vector3df& axis);
 
 		//! Fills an angle (radians) around an axis (unit vector)
 		void toAngleAxis (f32 &angle, vector3df& axis) const;
@@ -165,12 +165,11 @@ inline quaternion& quaternion::operator=(const quaternion& other)
 //! matrix assignment operator
 inline quaternion& quaternion::operator=(const matrix4& m)
 {
-	f32 diag = m(0,0) + m(1,1) + m(2,2) + 1;
-	f32 scale = 0.0f;
+	const f32 diag = m(0,0) + m(1,1) + m(2,2) + 1;
 
 	if( diag > 0.0f )
 	{
-		scale = sqrtf(diag) * 2.0f; // get scale from diagonal
+		const f32 scale = sqrtf(diag) * 2.0f; // get scale from diagonal
 
 		// TODO: speed this up
 		X = ( m(2,1) - m(1,2)) / scale;
@@ -184,7 +183,7 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 		{
 			// 1st element of diag is greatest value
 			// find scale according to 1st element, and double it
-			scale = sqrtf( 1.0f + m(0,0) - m(1,1) - m(2,2)) * 2.0f;
+			const f32 scale = sqrtf( 1.0f + m(0,0) - m(1,1) - m(2,2)) * 2.0f;
 
 			// TODO: speed this up
 			X = 0.25f * scale;
@@ -196,7 +195,7 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 		{
 			// 2nd element of diag is greatest value
 			// find scale according to 2nd element, and double it
-			scale = sqrtf( 1.0f + m(1,1) - m(0,0) - m(2,2)) * 2.0f;
+			const f32 scale = sqrtf( 1.0f + m(1,1) - m(0,0) - m(2,2)) * 2.0f;
 
 			// TODO: speed this up
 			X = (m(0,1) + m(1,0) ) / scale;
@@ -208,7 +207,7 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 		{
 			// 3rd element of diag is greatest value
 			// find scale according to 3rd element, and double it
-			scale  = sqrtf( 1.0f + m(2,2) - m(0,0) - m(1,1)) * 2.0f;
+			const f32 scale = sqrtf( 1.0f + m(2,2) - m(0,0) - m(1,1)) * 2.0f;
 
 			// TODO: speed this up
 			X = (m(0,2) + m(2,0)) / scale;
@@ -245,7 +244,10 @@ inline quaternion quaternion::operator*(f32 s) const
 //! multiplication operator
 inline quaternion& quaternion::operator*=(f32 s)
 {
-	X *= s; Y*=s; Z*=s; W*=s;
+	X*=s;
+	Y*=s;
+	Z*=s;
+	W*=s;
 	return *this;
 }
 
@@ -346,21 +348,21 @@ inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 	f64 angle;
 
 	angle = x * 0.5;
-	f64 sr = (f32)sin(angle);
-	f64 cr = (f32)cos(angle);
+	const f64 sr = sin(angle);
+	const f64 cr = cos(angle);
 
 	angle = y * 0.5;
-	f64 sp = (f32)sin(angle);
-	f64 cp = (f32)cos(angle);
+	const f64 sp = sin(angle);
+	const f64 cp = cos(angle);
 
 	angle = z * 0.5;
-	f64 sy = (f32)sin(angle);
-	f64 cy = (f32)cos(angle);
+	const f64 sy = sin(angle);
+	const f64 cy = cos(angle);
 
-	f64 cpcy = cp * cy;
-	f64 spcy = sp * cy;
-	f64 cpsy = cp * sy;
-	f64 spsy = sp * sy;
+	const f64 cpcy = cp * cy;
+	const f64 spcy = sp * cy;
+	const f64 cpsy = cp * sy;
+	const f64 spsy = sp * sy;
 
 	X = (f32)(sr * cpcy - cr * spsy);
 	Y = (f32)(cr * spcy + sr * cpsy);
@@ -396,7 +398,7 @@ inline quaternion& quaternion::normalize()
 
 
 // set this quaternion to the result of the interpolation between two quaternions
-inline void quaternion::slerp( quaternion q1, quaternion q2, f32 time)
+inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time)
 {
 	f32 angle = q1.dotProduct(q2);
 
@@ -413,10 +415,10 @@ inline void quaternion::slerp( quaternion q1, quaternion q2, f32 time)
 	{
 		if ((1.0f - angle) >= 0.05f)  // spherical interpolation
 		{
-			f32 theta = (f32)acos(angle);
-			f32 invsintheta = 1.0f / (f32)sin(theta);
-			scale = (f32)sin(theta * (1.0f-time)) * invsintheta;
-			invscale = (f32)sin(theta * time) * invsintheta;
+			const f32 theta = acosf(angle);
+			const f32 invsintheta = reciprocal(sinf(theta));
+			scale = sinf(theta * (1.0f-time)) * invsintheta;
+			invscale = sinf(theta * time) * invsintheta;
 		}
 		else // linear interploation
 		{
@@ -427,11 +429,11 @@ inline void quaternion::slerp( quaternion q1, quaternion q2, f32 time)
 	else
 	{
 		q2.set(-q1.Y, q1.X, -q1.W, q1.Z);
-		scale = (f32)sin(PI * (0.5f - time));
-		invscale = (f32)sin(PI * time);
+		scale = sinf(PI * (0.5f - time));
+		invscale = sinf(PI * time);
 	}
 
-	*this = (q1*scale) + (q2*invscale);
+	return (*this = (q1*scale) + (q2*invscale));
 }
 
 
@@ -442,7 +444,9 @@ inline f32 quaternion::dotProduct(const quaternion& q2) const
 }
 
 
-inline void quaternion::fromAngleAxis(f32 angle, const vector3df& axis)
+//! axis must be unit length
+//! angle in radians
+inline quaternion& quaternion::fromAngleAxis(f32 angle, const vector3df& axis)
 {
 	const f32 fHalfAngle = 0.5f*angle;
 	const f32 fSin = sinf(fHalfAngle);
@@ -450,12 +454,13 @@ inline void quaternion::fromAngleAxis(f32 angle, const vector3df& axis)
 	X = fSin*axis.X;
 	Y = fSin*axis.Y;
 	Z = fSin*axis.Z;
+	return *this;
 }
 
 
 inline void quaternion::toAngleAxis(f32 &angle, core::vector3df &axis) const
 {
-	f32 scale = sqrtf(X*X + Y*Y + Z*Z);
+	const f32 scale = sqrtf(X*X + Y*Y + Z*Z);
 
 	if (core::iszero(scale) || W > 1.0f || W < -1.0f)
 	{
@@ -466,19 +471,20 @@ inline void quaternion::toAngleAxis(f32 &angle, core::vector3df &axis) const
 	}
 	else
 	{
-		angle = 2.0f * (f32) acos(W);
-		axis.X = X / scale;
-		axis.Y = Y / scale;
-		axis.Z = Z / scale;
+		const f32 invscale = reciprocal(scale);
+		angle = 2.0f * acosf(W);
+		axis.X = X * invscale;
+		axis.Y = Y * invscale;
+		axis.Z = Z * invscale;
 	}
 }
 
 inline void quaternion::toEuler(vector3df& euler) const
 {
-	double sqw = W*W;
-	double sqx = X*X;
-	double sqy = Y*Y;
-	double sqz = Z*Z;
+	const f64 sqw = W*W;
+	const f64 sqx = X*X;
+	const f64 sqy = Y*Y;
+	const f64 sqz = Z*Z;
 
 	// heading = rotation about z-axis
 	euler.Z = (f32) (atan2(2.0 * (X*Y +Z*W),(sqx - sqy - sqz + sqw)));
@@ -487,8 +493,9 @@ inline void quaternion::toEuler(vector3df& euler) const
 	euler.X = (f32) (atan2(2.0 * (Y*Z +X*W),(-sqx - sqy + sqz + sqw)));
 
 	// attitude = rotation about y-axis
-	euler.Y = (f32) (asin( clamp(-2.0 * (X*Z - Y*W), -1.0, 1.0) ));
+	euler.Y = asinf( clamp(-2.0 * (X*Z - Y*W), -1.0, 1.0) );
 }
+
 
 inline vector3df quaternion::operator* (const vector3df& v) const
 {
