@@ -63,16 +63,16 @@ class quaternion
 		quaternion& operator*=(const quaternion& other);
 
 		//! calculates the dot product
-		inline f32 getDotProduct(const quaternion& other) const;
+		inline f32 dotProduct(const quaternion& other) const;
 
 		//! sets new quaternion
-		inline void set(f32 x, f32 y, f32 z, f32 w);
+		inline quaternion& set(f32 x, f32 y, f32 z, f32 w);
 
 		//! sets new quaternion based on euler angles (radians)
-		inline void set(f32 x, f32 y, f32 z);
+		inline quaternion& set(f32 x, f32 y, f32 z);
 
 		//! sets new quaternion based on euler angles (radians)
-		inline void set(const core::vector3df& vec);
+		inline quaternion& set(const core::vector3df& vec);
 
 		//! normalizes the quaternion
 		inline quaternion& normalize();
@@ -87,7 +87,7 @@ class quaternion
 		void getMatrix_transposed( matrix4 &dest ) const;
 
 		//! Inverts this quaternion
-		void makeInverse();
+		quaternion& makeInverse();
 
 		//! set this quaternion to the result of the interpolation between two quaternions
 		void slerp( quaternion q1, quaternion q2, f32 interpolate );
@@ -105,10 +105,10 @@ class quaternion
 		void toEuler(vector3df& euler) const;
 
 		//! set quaternion to identity
-		void makeIdentity();
+		quaternion& makeIdentity();
 
 		//! sets quaternion to represent a rotation from one angle to another
-		void rotationFromTo(const vector3df& from, const vector3df& to);
+		quaternion& quaternion::rotationFromTo(const vector3df& from, const vector3df& to);
 
 		f32 X, Y, Z, W;
 };
@@ -218,8 +218,7 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 		}
 	}
 
-	normalize();
-	return *this;
+	return normalize();
 }
 
 
@@ -268,27 +267,7 @@ inline quaternion quaternion::operator+(const quaternion& b) const
 inline matrix4 quaternion::getMatrix() const
 {
 	core::matrix4 m;
-
-	m(0,0) = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
-	m(1,0) = 2.0f*X*Y + 2.0f*Z*W;
-	m(2,0) = 2.0f*X*Z - 2.0f*Y*W;
-	m(3,0) = 0.0f;
-
-	m(0,1) = 2.0f*X*Y - 2.0f*Z*W;
-	m(1,1) = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
-	m(2,1) = 2.0f*Z*Y + 2.0f*X*W;
-	m(3,1) = 0.0f;
-
-	m(0,2) = 2.0f*X*Z + 2.0f*Y*W;
-	m(1,2) = 2.0f*Z*Y - 2.0f*X*W;
-	m(2,2) = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
-	m(3,2) = 0.0f;
-
-	m(0,3) = 0.0f;
-	m(1,3) = 0.0f;
-	m(2,3) = 0.0f;
-	m(3,3) = 1.0f;
-
+	getMatrix(m);
 	return m;
 }
 
@@ -344,23 +323,25 @@ inline void quaternion::getMatrix_transposed( matrix4 &dest ) const
 
 
 //! Inverts this quaternion
-inline void quaternion::makeInverse()
+inline quaternion& quaternion::makeInverse()
 {
 	X = -X; Y = -Y; Z = -Z;
+	return *this;
 }
 
 //! sets new quaternion
-inline void quaternion::set(f32 x, f32 y, f32 z, f32 w)
+inline quaternion& quaternion::set(f32 x, f32 y, f32 z, f32 w)
 {
 	X = x;
 	Y = y;
 	Z = z;
 	W = w;
+	return *this;
 }
 
 
 //! sets new quaternion based on euler angles
-inline void quaternion::set(f32 x, f32 y, f32 z)
+inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 {
 	f64 angle;
 
@@ -386,13 +367,13 @@ inline void quaternion::set(f32 x, f32 y, f32 z)
 	Z = (f32)(cr * cpsy - sr * spcy);
 	W = (f32)(cr * cpcy + sr * spsy);
 
-	normalize();
+	return normalize();
 }
 
 //! sets new quaternion based on euler angles
-inline void quaternion::set(const core::vector3df& vec)
+inline quaternion& quaternion::set(const core::vector3df& vec)
 {
-	set(vec.X, vec.Y, vec.Z);
+	return set(vec.X, vec.Y, vec.Z);
 }
 
 //! normalizes the quaternion
@@ -417,7 +398,7 @@ inline quaternion& quaternion::normalize()
 // set this quaternion to the result of the interpolation between two quaternions
 inline void quaternion::slerp( quaternion q1, quaternion q2, f32 time)
 {
-	f32 angle = q1.getDotProduct(q2);
+	f32 angle = q1.dotProduct(q2);
 
 	if (angle < 0.0f)
 	{
@@ -455,7 +436,7 @@ inline void quaternion::slerp( quaternion q1, quaternion q2, f32 time)
 
 
 //! calculates the dot product
-inline f32 quaternion::getDotProduct(const quaternion& q2) const
+inline f32 quaternion::dotProduct(const quaternion& q2) const
 {
 	return (X * q2.X) + (Y * q2.Y) + (Z * q2.Z) + (W * q2.W);
 }
@@ -463,9 +444,9 @@ inline f32 quaternion::getDotProduct(const quaternion& q2) const
 
 inline void quaternion::fromAngleAxis(f32 angle, const vector3df& axis)
 {
-	f32 fHalfAngle = 0.5f*angle;
-	f32 fSin = (f32)sin(fHalfAngle);
-	W = (f32)cos(fHalfAngle);
+	const f32 fHalfAngle = 0.5f*angle;
+	const f32 fSin = sinf(fHalfAngle);
+	W = cosf(fHalfAngle);
 	X = fSin*axis.X;
 	Y = fSin*axis.Y;
 	Z = fSin*axis.Z;
@@ -523,16 +504,17 @@ inline vector3df quaternion::operator* (const vector3df& v) const
 	return v + uv + uuv;
 }
 
-//! set quaterion to identity
-inline void quaternion::makeIdentity()
+//! set quaternion to identity
+inline core::quaternion& quaternion::makeIdentity()
 {
 	W = 1.f;
 	X = 0.f;
 	Y = 0.f;
 	Z = 0.f;
+	return *this;
 }
 
-inline void quaternion::rotationFromTo(const vector3df& from, const vector3df& to)
+inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const vector3df& to)
 {
 	// Based on Stan Melax's article in Game Programming Gems
 	// Copy, since cannot modify local
@@ -546,7 +528,7 @@ inline void quaternion::rotationFromTo(const vector3df& from, const vector3df& t
 	f32 d = v0.dotProduct(v1);
 	if (d >= 1.0f) // If dot == 1, vectors are the same
 	{
-		*this=quaternion(0,0,0,1); //IDENTITY;
+		return (*this=quaternion(0,0,0,1)); //IDENTITY;
 	}
 	f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
 	f32 invs = 1 / s;
@@ -555,6 +537,8 @@ inline void quaternion::rotationFromTo(const vector3df& from, const vector3df& t
 	Y = c.Y * invs;
 	Z = c.Z * invs;
 	W = s * 0.5f;
+
+	return *this;
 }
 
 
