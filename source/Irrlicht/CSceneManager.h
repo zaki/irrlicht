@@ -494,52 +494,45 @@ namespace scene
 
 		struct TransparentNodeEntry
 		{
-			TransparentNodeEntry() {};
+			TransparentNodeEntry() : node(0), distance(0.f) {};
 
 			TransparentNodeEntry(ISceneNode* n, const core::vector3df &camera)
+				: node(n)
 			{
-				node = n;
-
-				// TODO: this could be optimized, by not using sqrt
-				distance = (f32)(node->getAbsoluteTransformation().getTranslation().getDistanceFrom(camera));
+				distance = (f32)(node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(camera));
 			}
-
-			ISceneNode* node;
-			f32 distance;
 
 			bool operator < (const TransparentNodeEntry& other) const
 			{
 				return (distance > other.distance);
 			}
+
+			ISceneNode* node;
+			f32 distance;
 		};
 
 		//! sort on distance (sphere) to camera
 		struct DistanceNodeEntry
 		{
-			DistanceNodeEntry() {};
+			DistanceNodeEntry() : node(0), distance(0.) {}
 
 			DistanceNodeEntry(ISceneNode* n, f64 d)
-			{
-				node = n;
-				distance = d;
-			}
+				: node(n), distance(d) {}
 
 			DistanceNodeEntry(ISceneNode* n, const core::vector3df &cameraPos)
+				: node(n)
 			{
-				node = n;
-
-				distance = (node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(cameraPos));
-				distance -= node->getBoundingBox().getExtent().getLengthSQ() / 2.0;
+				distance = node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(cameraPos);
+				distance -= node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
 			}
-
-			ISceneNode* node;
-
-			f64 distance;
 
 			bool operator < (const DistanceNodeEntry& other) const
 			{
 				return distance < other.distance;
 			}
+
+			ISceneNode* node;
+			f64 distance;
 		};
 
 		//! video driver
