@@ -436,7 +436,7 @@ public:
 	{
 		if (!str)
 			return false;
-		u32 i;
+		s32 i;
 		for(i=0; array[i] && str[i] && i < n; ++i)
 			if (array[i] != str[i])
 				return false;
@@ -810,11 +810,11 @@ public:
 		const u32 whitespacecount = 4;
 
 		// find start and end of real string without whitespace
-		s32 begin = findFirstCharNotInList(whitespace, whitespacecount);
+		const s32 begin = findFirstCharNotInList(whitespace, whitespacecount);
 		if (begin == -1)
 			return (*this="");
 
-		s32 end = findLastCharNotInList(whitespace, whitespacecount);
+		const s32 end = findLastCharNotInList(whitespace, whitespacecount);
 
 		return (*this = subString(begin, (end +1) - begin));
 	}
@@ -832,8 +832,6 @@ public:
 
 		--used;
 	}
-
-
 
 private:
 /*
