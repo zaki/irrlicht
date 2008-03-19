@@ -354,6 +354,7 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 				for (i=0; i<idxCnt; ++i)
 					buffer->Indices.push_back(idx[i]);
 
+				buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
@@ -374,6 +375,7 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 				for (i=0; i<idxCnt; ++i)
 					buffer->Indices.push_back(idx[i]);
 
+				buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
@@ -394,6 +396,7 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 				for (i=0; i<idxCnt; ++i)
 					buffer->Indices.push_back(idx[i]);
 
+				buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
@@ -490,6 +493,7 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 					buffer->Indices.push_back( i + 2 );
 				}
 
+				buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
@@ -514,6 +518,7 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 					buffer->Indices.push_back( i + 1 );
 					buffer->Indices.push_back( i + 2 );
 				}
+				buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
@@ -539,6 +544,7 @@ IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 					buffer->Indices.push_back( i + 2 );
 				}
 
+				buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
@@ -781,6 +787,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 		for (s32 i=0; i<idxCnt; ++i)
 			buffer->Indices[i] = i;
 
+		buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 		// add new buffer
 		clone->addMeshBuffer(buffer);
 		buffer->drop();
@@ -902,6 +909,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 		for (s32 i=0; i<idxCnt; ++i)
 			buffer->Indices[i] = i;
 
+		buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 		// add new buffer
 		clone->addMeshBuffer(buffer);
 		buffer->drop();
