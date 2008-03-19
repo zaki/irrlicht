@@ -39,14 +39,14 @@ public:
 	vector2d<T> operator-(const T v) const { return vector2d<T>(X - v, Y - v); }
 	vector2d<T>& operator-=(const T v) { X-=v; Y-=v; return *this; }
 
-	vector2d<T> operator*(const vector2d<T>& other) const { return vector2d<T>(X * other.X, Y * other.Y);	}
+	vector2d<T> operator*(const vector2d<T>& other) const { return vector2d<T>(X * other.X, Y * other.Y); }
 	vector2d<T>& operator*=(const vector2d<T>& other) { X*=other.X; Y*=other.Y; return *this; }
-	vector2d<T> operator*(const T v) const { return vector2d<T>(X * v, Y * v);	}
+	vector2d<T> operator*(const T v) const { return vector2d<T>(X * v, Y * v); }
 	vector2d<T>& operator*=(const T v) { X*=v; Y*=v; return *this; }
 
-	vector2d<T> operator/(const vector2d<T>& other) const { return vector2d<T>(X / other.X, Y / other.Y);	}
+	vector2d<T> operator/(const vector2d<T>& other) const { return vector2d<T>(X / other.X, Y / other.Y); }
 	vector2d<T>& operator/=(const vector2d<T>& other) { X/=other.X; Y/=other.Y; return *this; }
-	vector2d<T> operator/(const T v) const { return vector2d<T>(X / v, Y / v);	}
+	vector2d<T> operator/(const T v) const { return vector2d<T>(X / v, Y / v); }
 	vector2d<T>& operator/=(const T v) { X/=v; Y/=v; return *this; }
 
 	bool operator<=(const vector2d<T>&other) const { return X<=other.X && Y<=other.Y; }
@@ -66,8 +66,8 @@ public:
 		return core::equals(X, other.X) && core::equals(Y, other.Y);
 	}
 
-	void set(T nx, T ny) {X=nx; Y=ny; }
-	void set(const vector2d<T>& p) { X=p.X; Y=p.Y;}
+	vector2d<T>& set(T nx, T ny) {X=nx; Y=ny; return *this; }
+	vector2d<T>& set(const vector2d<T>& p) { X=p.X; Y=p.Y; return *this; }
 
 	//! Returns the length of the vector
 	//! \return Returns the length of the vector.
@@ -98,11 +98,11 @@ public:
 	}
 
 	//! rotates the point around a center by an amount of degrees.
-	void rotateBy(f64 degrees, const vector2d<T>& center)
+	vector2d<T>& rotateBy(f64 degrees, const vector2d<T>& center=vector2d<T>())
 	{
 		degrees *= DEGTORAD64;
-		T cs = (T)cos(degrees);
-		T sn = (T)sin(degrees);
+		const T cs = (T)cos(degrees);
+		const T sn = (T)sin(degrees);
 
 		X -= center.X;
 		Y -= center.Y;
@@ -111,6 +111,7 @@ public:
 
 		X += center.X;
 		Y += center.Y;
+		return *this;
 	}
 
 	//! normalizes the vector.
@@ -232,10 +233,11 @@ public:
 	/** \param a: first vector to interpolate with
 	\param b: second vector to interpolate with
 	\param t: value between 0.0f and 1.0f. */
-	void interpolate(const vector2d<T>& a, const vector2d<T>& b, const f32 t)
+	vector2d<T>& interpolate(const vector2d<T>& a, const vector2d<T>& b, const f32 t)
 	{
 		X = b.X + ( ( a.X - b.X ) * t );
 		Y = b.Y + ( ( a.Y - b.Y ) * t );
+		return *this;
 	}
 
 	// member variables

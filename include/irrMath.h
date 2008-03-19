@@ -13,6 +13,8 @@
 	#define sqrtf(X) (f32)sqrt((f64)(X))
 	#define sinf(X) (f32)sin((f64)(X))
 	#define cosf(X) (f32)cos((f64)(X))
+	#define asinf(X) (f32)asin((f64)(X))
+	#define acosf(X) (f32)acos((f64)(X))
 	#define ceilf(X) (f32)ceil((f64)(X))
 	#define floorf(X) (f32)floor((f64)(X))
 	#define powf(X,Y) (f32)pow((f64)(X),(f64)(Y))
