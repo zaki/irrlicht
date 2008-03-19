@@ -139,9 +139,6 @@ namespace scene
 		//! flags the meshbuffer as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) = 0;
 
-
-
-
 		virtual const u32 getChangedID() const = 0;
 
 		u32 HardwareHint;

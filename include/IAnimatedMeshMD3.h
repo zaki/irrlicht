@@ -86,32 +86,32 @@ namespace scene
 	struct SMD3Header
 	{
 		c8	headerID[4];	//id of file, always "IDP3" 
-		s32	Version;		//this is a version number, always 15 
+		s32	Version;	//this is a version number, always 15 
 		s8	fileName[68];	//sometimes left Blank... 65 chars, 32bit aligned == 68 chars 
-		s32	numFrames;		//number of KeyFrames
-		s32	numTags;		//number of 'tags' per frame
-		s32	numMeshes;		//number of meshes/skins 
+		s32	numFrames;	//number of KeyFrames
+		s32	numTags;	//number of 'tags' per frame
+		s32	numMeshes;	//number of meshes/skins 
 		s32	numMaxSkins;	//maximum number of unique skins used in md3 file 
-		s32	headerSize;		//always equal to the length of this header 
-		s32	tagStart;		//starting position of tag-structures 
-		s32	tagEnd;			//ending position of tag-structures/starting position of mesh-structures 
+		s32	headerSize;	//always equal to the length of this header 
+		s32	tagStart;	//starting position of tag-structures 
+		s32	tagEnd;		//ending position of tag-structures/starting position of mesh-structures 
 		s32	fileSize;
 	};
 
 	struct SMD3MeshHeader
 	{
-		c8 meshID[4];			//id, must be IDP3 
-		c8 meshName[68];		//name of mesh 65 chars, 32 bit aligned == 68 chars
+		c8 meshID[4];		//id, must be IDP3 
+		c8 meshName[68];	//name of mesh 65 chars, 32 bit aligned == 68 chars
 
-		s32 numFrames;			//number of meshframes in mesh 
-		s32 numShader;			//number of skins in mesh 
-		s32 numVertices;		//number of vertices 
-		s32 numTriangles;		//number of Triangles 
+		s32 numFrames;		//number of meshframes in mesh 
+		s32 numShader;		//number of skins in mesh 
+		s32 numVertices;	//number of vertices 
+		s32 numTriangles;	//number of Triangles 
 
 		s32 offset_triangles;	//starting position of Triangle data, relative to start of Mesh_Header 
-		s32 offset_shaders;		//size of header 
-		s32 offset_st;			//starting position of texvector data, relative to start of Mesh_Header 
-		s32 vertexStart;		//starting position of vertex data,relative to start of Mesh_Header 
+		s32 offset_shaders;	//size of header 
+		s32 offset_st;		//starting position of texvector data, relative to start of Mesh_Header 
+		s32 vertexStart;	//starting position of vertex data,relative to start of Mesh_Header 
 		s32 offset_end;
 	};
 
