@@ -2556,7 +2556,7 @@ IImage* COpenGLDriver::createScreenShot()
 
 	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGB, GL_UNSIGNED_BYTE, pPixels);
 
-	// opengl images are inverted, so we have to fix that here.
+	// opengl images are horizontally flipped, so we have to fix that here.
 	s32 pitch=newImage->getPitch();
 	u8* p2 = pPixels + (ScreenSize.Height - 1) * pitch;
 	u8* tmpBuffer = new u8[pitch];

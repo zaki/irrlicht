@@ -5,11 +5,10 @@
 #ifndef __I_SCENE_NODE_H_INCLUDED__
 #define __I_SCENE_NODE_H_INCLUDED__
 
-#include "IReferenceCounted.h"
+#include "IAttributeExchangingObject.h"
 #include "ESceneNodeTypes.h"
 #include "ECullingTypes.h"
 #include "EDebugSceneTypes.h"
-#include "ISceneManager.h"
 #include "ISceneNodeAnimator.h"
 #include "ITriangleSelector.h"
 #include "SMaterial.h"
@@ -18,12 +17,13 @@
 #include "matrix4.h"
 #include "irrList.h"
 #include "IAttributes.h"
-#include "IAttributeExchangingObject.h"
 
 namespace irr
 {
 namespace scene
 {
+	class ISceneManager;
+
 	//! Scene node interface.
 	/** A scene node is a node in the hierarchical scene graph. Every scene
 	node may have children, which are also scene nodes. Children move

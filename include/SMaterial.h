@@ -71,8 +71,8 @@ namespace video
 			EmissiveColor(0,0,0,0), SpecularColor(255,255,255,255),
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
-			ZBuffer(1), ZWriteEnable(true), BackfaceCulling(true),
-			FogEnable(false), NormalizeNormals(false)
+			ZWriteEnable(true), BackfaceCulling(true),
+			FogEnable(false), NormalizeNormals(false), ZBuffer(1)
 		{ }
 
 		//! copy constructor
@@ -106,11 +106,11 @@ namespace video
 			PointCloud = other.PointCloud;
 			GouraudShading = other.GouraudShading;
 			Lighting = other.Lighting;
-			ZBuffer = other.ZBuffer;
 			ZWriteEnable = other.ZWriteEnable;
 			BackfaceCulling = other.BackfaceCulling;
 			FogEnable = other.FogEnable;
 			NormalizeNormals = other.NormalizeNormals;
+			ZBuffer = other.ZBuffer;
 
 			return *this;
 		}
@@ -196,11 +196,6 @@ namespace video
 		//! Will this material be lighted? Default: true
 		bool Lighting;
 
-		//! Is the ZBuffer enabled? Default: true
-		//! Changed from bool to integer
-		// ( 0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal )
-		u32 ZBuffer;
-
 		//! Is the zbuffer writeable or is it read-only.
 		/** Default: 1 This flag is ignored, if the MaterialType
 		is a transparent type. */
@@ -214,6 +209,11 @@ namespace video
 
 		//! Should normals be normalized? Default: false
 		bool NormalizeNormals;
+
+		//! Is the ZBuffer enabled? Default: true
+		//! Changed from bool to integer
+		// ( 0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal )
+		u32 ZBuffer;
 
 		//! Gets the texture transformation matrix for level i
 		core::matrix4& getTextureMatrix(u32 i)

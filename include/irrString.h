@@ -418,32 +418,32 @@ public:
 
 
 	//! compares the first n characters of the strings
-	bool equalsn(const string<T>& other, int len) const
+	bool equalsn(const string<T>& other, u32 n) const
 	{
 		u32 i;
-		for(i=0; array[i] && other[i] && i < len; ++i)
+		for(i=0; array[i] && other[i] && i < n; ++i)
 			if (array[i] != other[i])
 				return false;
 
 		// if one (or both) of the strings was smaller then they
 		// are only equal if they have the same length
-		return (i == len) || (used == other.used);
+		return (i == n) || (used == other.used);
 	}
 
 
 	//! compares the first n characters of the strings
-	bool equalsn(const T* const str, int len) const
+	bool equalsn(const T* const str, u32 n) const
 	{
 		if (!str)
 			return false;
 		u32 i;
-		for(i=0; array[i] && str[i] && i < len; ++i)
+		for(i=0; array[i] && str[i] && i < n; ++i)
 			if (array[i] != str[i])
 				return false;
 
 		// if one (or both) of the strings was smaller then they
 		// are only equal if they have the same length
-		return (i == len) || (array[i] == 0 && str[i] == 0);
+		return (i == n) || (array[i] == 0 && str[i] == 0);
 	}
 
 
@@ -666,7 +666,7 @@ public:
 		if (!c)
 			return -1;
 
-		for (u32 i=(used-1); i>=0; --i)
+		for (s32 i=used-1; i>=0; --i)
 			for (u32 j=0; j<count; ++j)
 				if (array[i] == c[j])
 					return i;
@@ -692,7 +692,7 @@ public:
 			if (len > used-1)
 				return -1;
 
-			for (u32 i=0; i<used-len; ++i)
+			for (s32 i=0; i<used-len; ++i)
 			{
 				u32 j=0;
 
@@ -804,7 +804,7 @@ public:
 
 	//! trims the string.
 	/** Removes whitespace from begin and end of the string. */
-	void trim()
+	string<T>& trim()
 	{
 		const c8 whitespace[] = " \t\n\r";
 		const u32 whitespacecount = 4;
@@ -812,14 +812,11 @@ public:
 		// find start and end of real string without whitespace
 		s32 begin = findFirstCharNotInList(whitespace, whitespacecount);
 		if (begin == -1)
-		{
-			*this="";
-			return;
-		}
+			return (*this="");
 
 		s32 end = findLastCharNotInList(whitespace, whitespacecount);
 
-		*this = subString(begin, (end +1) - begin);
+		return (*this = subString(begin, (end +1) - begin));
 	}
 
 

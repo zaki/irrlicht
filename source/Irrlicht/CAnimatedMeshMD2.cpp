@@ -329,13 +329,13 @@ u32 CAnimatedMeshMD2::getFrameCount() const
 //! returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail. Note, that some Meshes will ignore the detail level.
 IMesh* CAnimatedMeshMD2::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
 {
-	if ((u32)frame > (FrameCount<<MD2_FRAME_SHIFT))
-		frame = (frame % (FrameCount<<MD2_FRAME_SHIFT));
+	if ((u32)frame > getFrameCount())
+		frame = (frame % getFrameCount());
 
 	if (startFrameLoop == -1 && endFrameLoop == -1)
 	{
 		startFrameLoop = 0;
-		endFrameLoop = FrameCount<<MD2_FRAME_SHIFT;
+		endFrameLoop = getFrameCount();
 	}
 
 	updateInterpolationBuffer(frame, startFrameLoop, endFrameLoop);
