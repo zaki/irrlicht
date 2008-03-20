@@ -138,16 +138,10 @@ inline quaternion::quaternion(const matrix4& mat)
 //! equal operator
 inline bool quaternion::operator==(const quaternion& other) const
 {
-	if(X != other.X)
-		return false;
-	if(Y != other.Y)
-		return false;
-	if(Z != other.Z)
-		return false;
-	if(W != other.W)
-		return false;
-
-	return true;
+	return ((X == other.X) &&
+		(Y == other.Y) &&
+		(Z == other.Z) &&
+		(W == other.W));
 }
 
 
@@ -254,8 +248,7 @@ inline quaternion& quaternion::operator*=(f32 s)
 //! multiplication operator
 inline quaternion& quaternion::operator*=(const quaternion& other)
 {
-	*this = other * (*this);
-	return *this;
+	return (*this = other * (*this));
 }
 
 //! add operator
@@ -269,7 +262,7 @@ inline quaternion quaternion::operator+(const quaternion& b) const
 inline matrix4 quaternion::getMatrix() const
 {
 	core::matrix4 m;
-	getMatrix(m);
+	getMatrix_transposed(m);
 	return m;
 }
 
@@ -381,19 +374,13 @@ inline quaternion& quaternion::set(const core::vector3df& vec)
 //! normalizes the quaternion
 inline quaternion& quaternion::normalize()
 {
-	f32 n = X*X + Y*Y + Z*Z + W*W;
+	const f32 n = X*X + Y*Y + Z*Z + W*W;
 
 	if (n == 1)
 		return *this;
 
 	//n = 1.0f / sqrtf(n);
-	n = reciprocal_squareroot ( n );
-	X *= n;
-	Y *= n;
-	Z *= n;
-	W *= n;
-
-	return *this;
+	return (*this *= reciprocal_squareroot ( n ));
 }
 
 
@@ -530,15 +517,15 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 	v0.normalize();
 	v1.normalize();
 
-	vector3df c = v0.crossProduct(v1);
-
-	f32 d = v0.dotProduct(v1);
+	const f32 d = v0.dotProduct(v1);
 	if (d >= 1.0f) // If dot == 1, vectors are the same
 	{
-		return (*this=quaternion(0,0,0,1)); //IDENTITY;
+		return makeIdentity();
 	}
-	f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
-	f32 invs = 1 / s;
+
+	const vector3df c = v0.crossProduct(v1);
+	const f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
+	const f32 invs = 1.f / s;
 
 	X = c.X * invs;
 	Y = c.Y * invs;
