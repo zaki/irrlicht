@@ -57,14 +57,14 @@ namespace scene
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
-		virtual void setSubDivideU (const u32 inU) { SubdivideU = inU; }
-		virtual void setSubDivideV (const u32 inV) { SubdivideV = inV; }
+		virtual void setSubDivideU (const u32 inU);
+		virtual void setSubDivideV (const u32 inV);
 
 		virtual u32 getSubDivideU () const { return SubdivideU; }
 		virtual u32 getSubDivideV () const { return SubdivideV; }
 
-		virtual void setFootColour(const video::SColor inColouf) { FootColour = inColouf; }
-		virtual void setTailColour(const video::SColor inColouf) { TailColour = inColouf; }
+		virtual void setFootColour(const video::SColor inColouf);
+		virtual void setTailColour(const video::SColor inColouf);
 
 		virtual video::SColor getFootColour () const { return FootColour; }
 		virtual video::SColor getTailColour () const { return TailColour; }

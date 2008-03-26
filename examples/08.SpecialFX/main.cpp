@@ -215,7 +215,7 @@ int main()
 	anode->setAnimationSpeed(15);
 
 	//volumetric lighting
-	scene::ISceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
+	scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
 							32, //Sub Divid U
 							32, //Sub Divid V
 							video::SColor(0, 180, 180, 180),  //foot colour

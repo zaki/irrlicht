@@ -226,6 +226,34 @@ u32 CVolumeLightSceneNode::getMaterialCount() const
 }
 
 
+void CVolumeLightSceneNode::setSubDivideU (const u32 inU)
+{
+	SubdivideU = inU;
+	constructLight();
+}
+
+
+void CVolumeLightSceneNode::setSubDivideV (const u32 inV)
+{
+	SubdivideV = inV;
+	constructLight();
+}
+
+
+void CVolumeLightSceneNode::setFootColour(const video::SColor inColouf)
+{
+	FootColour = inColouf;
+	constructLight();
+}
+
+
+void CVolumeLightSceneNode::setTailColour(const video::SColor inColouf)
+{
+	TailColour = inColouf;
+	constructLight();
+}
+
+
 //! Writes attributes of the scene node.
 void CVolumeLightSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
