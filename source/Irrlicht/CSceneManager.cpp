@@ -424,7 +424,7 @@ ISceneNode* CSceneManager::addQuake3SceneNode(IMeshBuffer* meshBuffer,
 
 //! adds Volume Lighting Scene Node.
 //! the returned pointer must not be dropped.
-ISceneNode* CSceneManager::addVolumeLightSceneNode(ISceneNode* parent, s32 id,
+IVolumeLightSceneNode* CSceneManager::addVolumeLightSceneNode(ISceneNode* parent, s32 id,
 	const u32 subdivU, const u32 subdivV,
 	const video::SColor foot, const video::SColor tail,
 	const core::vector3df& position, const core::vector3df& rotation, const core::vector3df& scale)
@@ -432,7 +432,7 @@ ISceneNode* CSceneManager::addVolumeLightSceneNode(ISceneNode* parent, s32 id,
 	if (!parent)
 		parent = this;
 
-	ISceneNode* node = new CVolumeLightSceneNode(parent, this, id, subdivU, subdivV, foot, tail, position, rotation, scale);
+	IVolumeLightSceneNode* node = new CVolumeLightSceneNode(parent, this, id, subdivU, subdivV, foot, tail, position, rotation, scale);
 	node->drop();
 
 	return node;
@@ -440,14 +440,14 @@ ISceneNode* CSceneManager::addVolumeLightSceneNode(ISceneNode* parent, s32 id,
 
 //! adds a test scene node for test purposes to the scene. It is a simple cube of (1,1,1) size.
 //! the returned pointer must not be dropped.
-ISceneNode* CSceneManager::addCubeSceneNode(f32 size, ISceneNode* parent,
+IMeshSceneNode* CSceneManager::addCubeSceneNode(f32 size, ISceneNode* parent,
 		s32 id, const core::vector3df& position,
 		const core::vector3df& rotation, const core::vector3df& scale)
 {
 	if (!parent)
 		parent = this;
 
-	ISceneNode* node = new CCubeSceneNode(size, parent, this, id, position, rotation, scale);
+	IMeshSceneNode* node = new CCubeSceneNode(size, parent, this, id, position, rotation, scale);
 	node->drop();
 
 	return node;
@@ -455,14 +455,14 @@ ISceneNode* CSceneManager::addCubeSceneNode(f32 size, ISceneNode* parent,
 
 
 //! Adds a sphere scene node for test purposes to the scene.
-ISceneNode* CSceneManager::addSphereSceneNode(f32 radius, s32 polyCount,
+IMeshSceneNode* CSceneManager::addSphereSceneNode(f32 radius, s32 polyCount,
 		ISceneNode* parent, s32 id, const core::vector3df& position,
 		const core::vector3df& rotation, const core::vector3df& scale)
 {
 	if (!parent)
 		parent = this;
 
-	ISceneNode* node = new CSphereSceneNode(radius, polyCount, polyCount, parent, this, id, position, rotation, scale);
+	IMeshSceneNode* node = new CSphereSceneNode(radius, polyCount, polyCount, parent, this, id, position, rotation, scale);
 	node->drop();
 
 	return node;

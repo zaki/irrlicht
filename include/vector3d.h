@@ -233,7 +233,7 @@ namespace core
 		/** Thanks to Arras on the Irrlicht forums to add this method.
 		\return A vector representing the rotation in degrees of
 		this vector. The Z component of the vector will always be 0. */
-		vector3d<T> getHorizontalAngle()
+		vector3d<T> getHorizontalAngle() const
 		{
 			vector3d<T> angle;
 
@@ -243,7 +243,7 @@ namespace core
 			if (angle.Y < 0.0f) angle.Y += 360.0f;
 			if (angle.Y >= 360.0f) angle.Y -= 360.0f;
 
-			f32 z1 = sqrtf(X*X + Z*Z);
+			const f64 z1 = sqrt(X*X + Z*Z);
 
 			angle.X = (T)atan2(z1, Y);
 			angle.X *= (f32)RADTODEG64;

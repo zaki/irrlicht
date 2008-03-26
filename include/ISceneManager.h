@@ -107,6 +107,7 @@ namespace scene
 	class IMetaTriangleSelector;
 	class IMeshManipulator;
 	class ITextSceneNode;
+	class IVolumeLightSceneNode;
 	class ISceneNodeFactory;
 	class ISceneNodeAnimatorFactory;
 	class ISceneUserDataSerializer;
@@ -308,7 +309,7 @@ namespace scene
 		//! adds Volume Lighting Scene Node.
 		//! the returned pointer must not be dropped.
 		/** Example Usage:
-			scene::ISceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
+			scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
 						32, 32, //Subdivide U/V
 						video::SColor(0, 180, 180, 180),   //foot color
 						video::SColor(0, 0, 0, 0)         //tail color
@@ -319,7 +320,7 @@ namespace scene
 				n->getMaterial(0).setTexture(0, smgr->getVideoDriver()->getTexture("lightFalloff.png"));
 			}
 		**/
-		virtual ISceneNode* addVolumeLightSceneNode(ISceneNode* parent=0, s32 id=-1,
+		virtual IVolumeLightSceneNode* addVolumeLightSceneNode(ISceneNode* parent=0, s32 id=-1,
 			const u32 subdivU = 32, const u32 subdivV = 32,
 			const video::SColor foot = video::SColor(51, 0, 230, 180),
 			const video::SColor tail = video::SColor(0, 0, 0, 0),
@@ -339,7 +340,7 @@ namespace scene
 		\param scale: Initial scale of the scene node.
 		\return Returns pointer to the created test scene node.
 	     This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual ISceneNode* addCubeSceneNode(f32 size=10.0f, ISceneNode* parent=0, s32 id=-1,
+		virtual IMeshSceneNode* addCubeSceneNode(f32 size=10.0f, ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
@@ -356,7 +357,7 @@ namespace scene
 		\param scale: Initial scale of the scene node.
 		\return Returns pointer to the created test scene node.
 	     This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual ISceneNode* addSphereSceneNode(f32 radius=5.0f, s32 polyCount=16, ISceneNode* parent=0, s32 id=-1,
+		virtual IMeshSceneNode* addSphereSceneNode(f32 radius=5.0f, s32 polyCount=16, ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
