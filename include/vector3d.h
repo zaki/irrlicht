@@ -243,10 +243,10 @@ namespace core
 			if (angle.Y < 0.0f) angle.Y += 360.0f;
 			if (angle.Y >= 360.0f) angle.Y -= 360.0f;
 
-			const f64 z1 = sqrt(X*X + Z*Z);
+			const f32 z1 = sqrtf(X*X + Z*Z);
 
-			angle.X = (T)atan2(z1, Y);
-			angle.X *= (f32)RADTODEG64;
+			angle.X = (T)atan2f(z1, (f32)Y);
+			angle.X *= RADTODEG;
 			angle.X -= 90.0f;
 
 			if (angle.X < 0.0f) angle.X += 360.0f;
