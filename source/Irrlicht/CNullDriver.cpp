@@ -1644,6 +1644,9 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		const long size = pixelShaderProgram->getSize();
 		if (size)
 		{
+			// if both handles are the same we must reset the file
+			if (pixelShaderProgram==vertexShaderProgram)
+				pixelShaderProgram->seek(0);
 			ps = new c8[size+1];
 			pixelShaderProgram->read(ps, size);
 			ps[size] = 0;

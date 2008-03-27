@@ -100,7 +100,7 @@ namespace os
 #if !defined(_WIN32_WCE)
 			// Avoid potential timing inaccuracies across multiple cores by 
 			// temporarily setting the affinity of this process to one core.
-			DWORD affinityMask;
+			DWORD_PTR affinityMask;
 			if(MultiCore)
 				affinityMask = SetThreadAffinityMask(GetCurrentThread(), 1); 
 #endif
