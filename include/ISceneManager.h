@@ -290,6 +290,17 @@ namespace scene
 		 **/
 		virtual IAnimatedMesh* getMesh(const c8* filename) = 0;
 
+		//! Returns pointer to an animateable mesh. Loads the file if not loaded already.
+		/**
+		 * Works just as getMesh(const char* filename)
+		 * If you want to remove a loaded mesh from the cache again, use removeMesh().
+		 *  \param file: File handle of the mesh to load.
+		 *  \return Returns NULL if failed and the pointer to the mesh if
+		 *  successful.
+		 *  This pointer should not be dropped. See IReferenceCounted::drop() for more information.
+		 **/
+		virtual IAnimatedMesh* getMesh(io::IReadFile* file) = 0;
+
 		//! Returns an interface to the mesh cache which is shared beween all existing scene managers.
 		/** With this interface, it is possible to manually add new loaded
 		meshes (if ISceneManager::getMesh() is not sufficient), to remove them and to iterate
@@ -891,9 +902,9 @@ namespace scene
 		 ISceneNode::OnRegisterSceneNode() call.
 		 \param node: Node to register for drawing. Usually scene nodes would set 'this'
 		 as parameter here because they want to be drawn.
-		 \param pass: Specifies when the mode wants to be drawn in relation to the other nodes.
+		 \param pass: Specifies when the node wants to be drawn in relation to the other nodes.
 		 For example, if the node is a shadow, it usually wants to be drawn after all other nodes
-		 and will use ESNRP_SHADOW for this. See E_SCENE_NODE_RENDER_PASS for details.
+		 and will use ESNRP_SHADOW for this. See scene::E_SCENE_NODE_RENDER_PASS for details.
 		 \return scene will be rendered ( passed culling ) */
 		virtual u32 registerNodeForRendering(ISceneNode* node,
 			E_SCENE_NODE_RENDER_PASS pass = ESNRP_AUTOMATIC) = 0;
@@ -973,7 +984,7 @@ namespace scene
 		 how big the radius should be, you could use the following code to determine
 		 it:
 		 \code
-		 const core::aabbox<f32>& box = yourSceneNode->getBoundingBox();
+		 const core::aabbox3d<f32>& box = yourSceneNode->getBoundingBox();
 		 core::vector3df radius = box.MaxEdge - box.getCenter();
 		 \endcode
 		 \param gravityPerSecond: Sets the gravity of the environment. A good example value would be

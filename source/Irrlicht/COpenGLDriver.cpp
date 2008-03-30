@@ -396,7 +396,7 @@ void COpenGLDriver::createMaterialRenderers()
 //! presents the rendered scene on the screen, returns false if failed
 bool COpenGLDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
 {
-	CNullDriver::endScene( windowId );
+	CNullDriver::endScene();
 
 	glFlush();
 
@@ -2257,7 +2257,7 @@ void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
 {
 	CNullDriver::setFog(c, linearFog, start, end, density, pixelFog, rangeFog);
 
-	glFogi(GL_FOG_MODE, linearFog ? GL_LINEAR : GL_EXP);
+	glFogf(GL_FOG_MODE, linearFog ? GL_LINEAR : GL_EXP);
 #ifdef GL_EXT_fog_coord
 	if (FeatureAvailable[IRR_EXT_fog_coord])
 		glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);

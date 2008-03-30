@@ -191,7 +191,7 @@ void CBillboardSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttrib
 void CBillboardSceneNode::setColor(const video::SColor & overallColor)
 {
 	for(u32 vertex = 0; vertex < 4; ++vertex)
-		vertices[0].Color = overallColor;
+		vertices[vertex].Color = overallColor;
 }
 
 
