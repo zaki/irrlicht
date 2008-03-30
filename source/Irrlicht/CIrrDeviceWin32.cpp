@@ -237,7 +237,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			WORD KeyAsc=0;
 			GetKeyboardState(allKeys);
-			ToAscii(wParam,lParam,allKeys,&KeyAsc,0);
+			ToAscii((UINT)wParam,(UINT)lParam,allKeys,&KeyAsc,0);
 
 			event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
 			event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
@@ -610,7 +610,7 @@ void CIrrDeviceWin32::present(video::IImage* image, s32 windowId, core::rect<s32
 {
 	HWND hwnd = HWnd;
 	if ( windowId )
-		hwnd = (HWND)windowId;
+		hwnd = reinterpret_cast<HWND>(windowId);
 
 	HDC dc = GetDC(hwnd);
 
@@ -779,10 +779,13 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 	case VER_PLATFORM_WIN32_NT:
 		if (osvi.dwMajorVersion <= 4)
 			out.append("Microsoft Windows NT ");
+		else
 		if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0)
 			out.append("Microsoft Windows 2000 ");
+		else
 		if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1 )
 			out.append("Microsoft Windows XP ");
+		else
 		if ( osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0 )
 			out.append("Microsoft Windows Vista ");
 

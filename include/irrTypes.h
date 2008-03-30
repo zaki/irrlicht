@@ -12,11 +12,19 @@ namespace irr
 
 //! 8 bit unsigned variable.
 /** This is a typedef for unsigned char, it ensures portability of the engine. */
+#ifdef _MSC_VER
+typedef unsigned __int8		u8; 
+#else
 typedef unsigned char		u8; 
+#endif
 
 //! 8 bit signed variable.
 /** This is a typedef for signed char, it ensures portability of the engine. */
+#ifdef _MSC_VER
+typedef __int8			s8; 
+#else
 typedef signed char		s8; 
+#endif
 
 //! 8 bit character variable.
 /** This is a typedef for char, it ensures portability of the engine. */
@@ -26,21 +34,37 @@ typedef char			c8;
 
 //! 16 bit unsigned variable.
 /** This is a typedef for unsigned short, it ensures portability of the engine. */
+#ifdef _MSC_VER
+typedef unsigned __int16	u16; 
+#else
 typedef unsigned short		u16;
+#endif
 
 //! 16 bit signed variable.
 /** This is a typedef for signed short, it ensures portability of the engine. */
+#ifdef _MSC_VER
+typedef __int16			s16; 
+#else
 typedef signed short		s16; 
+#endif
 
 
 
 //! 32 bit unsigned variable.
 /** This is a typedef for unsigned int, it ensures portability of the engine. */
+#ifdef _MSC_VER
+typedef unsigned __int32	u32; 
+#else
 typedef unsigned int		u32;
+#endif
 
 //! 32 bit signed variable.
 /** This is a typedef for signed int, it ensures portability of the engine. */
+#ifdef _MSC_VER
+typedef __int32			s32; 
+#else
 typedef signed int		s32; 
+#endif
 
 
 
@@ -98,7 +122,12 @@ typedef unsigned short wchar_t;
 //! define a break macro for debugging.
 #if defined(_DEBUG)
 #if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && !defined (_WIN32_WCE)
-#define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_asm int 3}
+  #if defined(_WIN64) // using portable common solution for x64 configuration
+  #include <crtdbg.h>
+  #define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_CrtDbgBreak();}
+  #else
+  #define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) if (_CONDITION_) {_asm int 3}
+  #endif
 #else 
 #include "assert.h"
 #define _IRR_DEBUG_BREAK_IF( _CONDITION_ ) assert( !(_CONDITION_) );
@@ -108,7 +137,7 @@ typedef unsigned short wchar_t;
 #endif
 
 //! Defines a small statement to work around a microsoft compiler bug.
-/** The microsft compiler 7.0 - 7.1 has a bug:
+/** The microsoft compiler 7.0 - 7.1 has a bug:
 When you call unmanaged code that returns a bool type value of false from managed code, 
 the return value may appear as true. See 
 http://support.microsoft.com/default.aspx?kbid=823071 for details. 

@@ -345,6 +345,44 @@ IAnimatedMesh* CSceneManager::getMesh(const c8* filename)
 }
 
 
+//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
+IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
+{
+	if (!file)
+		return 0;
+
+	core::stringc name = file->getFileName();
+	IAnimatedMesh* msh = MeshCache->getMeshByFilename(file->getFileName());
+	if (msh)
+		return msh;
+
+	name.make_lower();
+	s32 count = MeshLoaderList.size();
+	for (s32 i=count-1; i>=0; --i)
+	{
+		if (MeshLoaderList[i]->isALoadableFileExtension(name.c_str()))
+		{
+			// reset file to avoid side effects of previous calls to createMesh
+			file->seek(0);
+			msh = MeshLoaderList[i]->createMesh(file);
+			if (msh)
+			{
+				MeshCache->addMesh(file->getFileName(), msh);
+				msh->drop();
+				break;
+			}
+		}
+	}
+
+	if (!msh)
+		os::Printer::log("Could not load mesh, file format seems to be unsupported", file->getFileName(), ELL_ERROR);
+	else
+		os::Printer::log("Loaded mesh", file->getFileName(), ELL_INFORMATION);
+
+	return msh;
+}
+
+
 //! returns the video driver
 video::IVideoDriver* CSceneManager::getVideoDriver()
 {

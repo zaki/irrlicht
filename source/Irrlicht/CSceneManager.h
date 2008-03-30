@@ -42,6 +42,9 @@ namespace scene
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 		virtual IAnimatedMesh* getMesh(const c8* filename);
 
+		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
+		virtual IAnimatedMesh* getMesh(io::IReadFile* file);
+
 		//! Returns an interface to the mesh cache which is shared beween all existing scene managers.
 		virtual IMeshCache* getMeshCache();
 
