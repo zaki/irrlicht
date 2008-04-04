@@ -282,42 +282,44 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				}
 			}
 
-			// store vertices in buffers and remember relation in verticesLinkIndex
-			u32* vCountArray = new u32[mesh->Buffers.size()];
-			memset(vCountArray, 0, mesh->Buffers.size()*sizeof(u32));
-			// count vertices in each buffer and reallocate
-			for (i=0;i<mesh->Vertices.size();++i)
-				++vCountArray[verticesLinkBuffer[i]];
-			for (i=0; i!=mesh->Buffers.size(); ++i)
-				mesh->Buffers[i]->Vertices_Standard.reallocate(vCountArray[i]);
-
-			verticesLinkIndex.set_used(mesh->Vertices.size());
-			// actually store vertices
-			for (i=0;i<mesh->Vertices.size();++i)
+			if (mesh->FaceMaterialIndices.size() != 0)
 			{
-				scene::SSkinMeshBuffer *buffer = mesh->Buffers[ verticesLinkBuffer[i] ];
+				// store vertices in buffers and remember relation in verticesLinkIndex
+				u32* vCountArray = new u32[mesh->Buffers.size()];
+				memset(vCountArray, 0, mesh->Buffers.size()*sizeof(u32));
+				// count vertices in each buffer and reallocate
+				for (i=0;i<mesh->Vertices.size();++i)
+					++vCountArray[verticesLinkBuffer[i]];
+				for (i=0; i!=mesh->Buffers.size(); ++i)
+					mesh->Buffers[i]->Vertices_Standard.reallocate(vCountArray[i]);
 
-				verticesLinkIndex[i] = buffer->Vertices_Standard.size();
-				buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
-			}
-
-			// count indices per buffer and reallocate
-			memset(vCountArray, 0, mesh->Buffers.size()*sizeof(u32));
-			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
-				++vCountArray[ mesh->FaceMaterialIndices[i] ];
-			for (i=0; i!=mesh->Buffers.size(); ++i)
-				mesh->Buffers[i]->Indices.reallocate(vCountArray[i]);
-			delete [] vCountArray;
-			// create indices per buffer
-			for (i=0;i<mesh->FaceMaterialIndices.size();++i)
-			{
-				scene::SSkinMeshBuffer *buffer = mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
-				for (u32 id=i*3+0;id!=i*3+3;++id)
+				verticesLinkIndex.set_used(mesh->Vertices.size());
+				// actually store vertices
+				for (i=0;i<mesh->Vertices.size();++i)
 				{
-					buffer->Indices.push_back( verticesLinkIndex[ mesh->Indices[id] ] );
+					scene::SSkinMeshBuffer *buffer = mesh->Buffers[ verticesLinkBuffer[i] ];
+
+					verticesLinkIndex[i] = buffer->Vertices_Standard.size();
+					buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
+				}
+
+				// count indices per buffer and reallocate
+				memset(vCountArray, 0, mesh->Buffers.size()*sizeof(u32));
+				for (i=0;i<mesh->FaceMaterialIndices.size();++i)
+					++vCountArray[ mesh->FaceMaterialIndices[i] ];
+				for (i=0; i!=mesh->Buffers.size(); ++i)
+					mesh->Buffers[i]->Indices.reallocate(vCountArray[i]);
+				delete [] vCountArray;
+				// create indices per buffer
+				for (i=0;i<mesh->FaceMaterialIndices.size();++i)
+				{
+					scene::SSkinMeshBuffer *buffer = mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
+					for (u32 id=i*3+0;id!=i*3+3;++id)
+					{
+						buffer->Indices.push_back( verticesLinkIndex[ mesh->Indices[id] ] );
+					}
 				}
 			}
-
 
 			for (u32 j=0;j<mesh->WeightJoint.size();++j)
 			{
