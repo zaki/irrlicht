@@ -1685,8 +1685,23 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// back face culling
 	if (resetAllRenderStates || lastmaterial.BackfaceCulling != material.BackfaceCulling)
 	{
-		if (material.BackfaceCulling)
+		if ((material.FrontfaceCulling) && (material.BackfaceCulling))
+		{
+			glCullFace(GL_FRONT_AND_BACK);
 			glEnable(GL_CULL_FACE);
+		}
+		else
+		if (material.BackfaceCulling)
+		{
+			glCullFace(GL_BACK);
+			glEnable(GL_CULL_FACE);
+		}
+		else
+		if (material.FrontfaceCulling)
+		{
+			glCullFace(GL_FRONT);
+			glEnable(GL_CULL_FACE);
+		}
 		else
 			glDisable(GL_CULL_FACE);
 	}

@@ -1318,12 +1318,18 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 
 	// back face culling
 
-	if (resetAllRenderstates || lastmaterial.BackfaceCulling != material.BackfaceCulling)
+	if (resetAllRenderstates || (lastmaterial.FrontfaceCulling != material.FrontfaceCulling) || (lastmaterial.BackfaceCulling != material.BackfaceCulling))
 	{
-		if (material.BackfaceCulling)
-			pID3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW);
+		if (material.FrontfaceCulling && material.BackfaceCulling)
+			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW|D3DCULL_CCW);
 		else
-			pID3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE);
+		if (material.FrontfaceCulling)
+			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+		else
+		if (material.BackfaceCulling)
+			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+		else
+			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	}
 
 	// fog
