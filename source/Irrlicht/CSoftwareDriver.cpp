@@ -157,7 +157,7 @@ void CSoftwareDriver::selectRightTriangleRenderer()
 
 
 //! presents the rendered scene on the screen, returns false if failed
-bool CSoftwareDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
+bool CSoftwareDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
 {
 	CNullDriver::endScene();
 

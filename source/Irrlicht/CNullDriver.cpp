@@ -211,7 +211,7 @@ bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 
 
 //! applications must call this method after performing any rendering. returns false if failed.
-bool CNullDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
+bool CNullDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
 	updateAllHardwareBuffers();

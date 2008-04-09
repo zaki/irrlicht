@@ -415,7 +415,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	// set exposed data
 	ExposedData.D3D9.D3D9 = pID3D;
 	ExposedData.D3D9.D3DDev9 = pID3DDevice;
-	ExposedData.D3D9.HWnd =  reinterpret_cast<s32>(hwnd);
+	ExposedData.D3D9.HWnd = hwnd;
 
 	ResetRenderStates = true;
 
@@ -490,7 +490,7 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 
 
 //! applications must call this method after performing any rendering. returns false if failed.
-bool CD3D9Driver::endScene( s32 windowId, core::rect<s32>* sourceRect )
+bool CD3D9Driver::endScene( void* windowId, core::rect<s32>* sourceRect )
 {
 	if (DeviceLost)
 		return false;

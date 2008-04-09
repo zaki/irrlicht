@@ -729,7 +729,7 @@ core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* bufEnd)
 			break;
 		++ptr;
 	}
-	return core::stringc(inBuf, ptr-inBuf+1);
+	return core::stringc(inBuf, (u32)(ptr-inBuf+1));
 }
 
 

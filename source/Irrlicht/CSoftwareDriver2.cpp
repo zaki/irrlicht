@@ -399,7 +399,7 @@ bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer, SColor color
 }
 
 //! presents the rendered scene on the screen, returns false if failed
-bool CBurningVideoDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
+bool CBurningVideoDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
 {
 	CNullDriver::endScene();
 
