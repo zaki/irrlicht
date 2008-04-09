@@ -894,7 +894,7 @@ void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 
 
 //! presents a surface in the client area
-void CIrrDeviceLinux::present(video::IImage* image, s32 windowId, core::rect<s32>* src )
+void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s32>* src )
 {
 #ifdef _IRR_COMPILE_WITH_X11_
 	// this is only necessary for software drivers.

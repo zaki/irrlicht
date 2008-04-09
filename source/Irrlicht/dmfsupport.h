@@ -168,7 +168,7 @@ public:
 		{
 			if (*p == '\n')
 			{
-				core::stringc str(start, p - start - 1);
+				core::stringc str(start, (u32)(p - start - 1));
 				str.trim();
 				Add(str);
 				start = p+1;
@@ -179,7 +179,7 @@ public:
 
 		if (p - start > 1)
 		{
-			core::stringc str(start, p - start - 1);
+			core::stringc str(start, (u32)(p - start - 1));
 			str.trim();
 			Add(str);
 		}

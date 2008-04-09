@@ -147,9 +147,9 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 		wglSwapIntervalEXT(vsync ? 1 : 0);
 
 	// set exposed data
-	ExposedData.OpenGLWin32.HDc = reinterpret_cast<s32>(HDc);
-	ExposedData.OpenGLWin32.HRc = reinterpret_cast<s32>(HRc);
-	ExposedData.OpenGLWin32.HWnd = reinterpret_cast<s32>(Window);
+	ExposedData.OpenGLWin32.HDc = HDc;
+	ExposedData.OpenGLWin32.HRc = HRc;
+	ExposedData.OpenGLWin32.HWnd = Window;
 
 	return true;
 }
@@ -394,7 +394,7 @@ void COpenGLDriver::createMaterialRenderers()
 
 
 //! presents the rendered scene on the screen, returns false if failed
-bool COpenGLDriver::endScene( s32 windowId, core::rect<s32>* sourceRect )
+bool COpenGLDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
 {
 	CNullDriver::endScene();
 

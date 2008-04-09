@@ -100,7 +100,7 @@ namespace video
 		\param sourceRect: Pointer to a rectangle defining the source rectangle of the area
 		to be presented. Set to null to present everything. Note: not implemented in all devices.
 		\return Returns false if failed and true if succeeded. */
-		virtual bool endScene( s32 windowId = 0, core::rect<s32>* sourceRect=0 ) = 0;
+		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 ) = 0;
 
 		//! Queries the features of the driver.
 		/** Returns true if a feature is available

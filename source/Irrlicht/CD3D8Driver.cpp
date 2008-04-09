@@ -469,7 +469,7 @@ bool CD3D8Driver::reset()
 
 
 //! applications must call this method after performing any rendering. returns false if failed.
-bool CD3D8Driver::endScene( s32 windowId, core::rect<s32>* sourceRect )
+bool CD3D8Driver::endScene( void* windowId, core::rect<s32>* sourceRect )
 {
 	CNullDriver::endScene();
 

@@ -27,7 +27,7 @@ namespace video
 		virtual ~CBurningVideoDriver();
 
 		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene( s32 windowId = 0, core::rect<s32>* sourceRect=0 );
+		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 );
 
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;

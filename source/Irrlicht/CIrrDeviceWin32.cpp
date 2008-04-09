@@ -606,7 +606,7 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 
 
 //! presents a surface in the client area
-void CIrrDeviceWin32::present(video::IImage* image, s32 windowId, core::rect<s32>* src )
+void CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s32>* src)
 {
 	HWND hwnd = HWnd;
 	if ( windowId )

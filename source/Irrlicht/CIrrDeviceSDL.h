@@ -51,7 +51,7 @@ namespace irr
 		virtual bool isWindowActive() const;
 
 		//! presents a surface in the client area
-		virtual void present(video::IImage* surface, s32 windowId = 0, core::rect<s32>* src=0);
+		virtual void present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0);
 
 		//! notifies the device that it should close itself
 		virtual void closeDevice();

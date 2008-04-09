@@ -26,7 +26,7 @@ namespace video
 
 		virtual ~IImagePresenter() {};
 		//! presents a surface in the client area
-		virtual void present(video::IImage* surface, s32 windowId=0, core::rect<s32>* src=0 ) = 0;
+		virtual void present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0 ) = 0;
 	};
 
 } // end namespace video
