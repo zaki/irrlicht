@@ -47,7 +47,39 @@ Changes in version 1.5 (... 2008)
    - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
 
 -------------------------------------------
-Changes in version 1.4.1 (??? 2008)
+Changes in version 1.4.1 (??.4.2008)
+
+ - New JPG image writer version by Vitek.
+
+ - Texture matrix fixes, all methods should now work as expected.
+
+ - Some container methods now return the this pointer after member functions have been called on them, in order to allow call chains.
+
+ - Some new methods for SColorf access, for uniform API of all colors.
+
+ - bug fix for SMaterialLayer equality check. Did only check the TextureMatrix pointers, instead of the matrices.
+
+ - New getMesh method for the SceneManager, which takes an IReadFile instead of a filename.
+
+ - Support for flags _WIN32 and _WIN64 in addition to WIN32 and WIN64 added, this simplifies usage of Irrlicht headers under MSVC.
+
+ - Fixed a crash in GUIMeshViewer
+
+ - new string method findLastChar by Halifax
+
+ - GUIEditBox got the 1 pixel shift after click fixed.
+
+ - Some debug visualization has been fixed for skinned meshes
+
+ - Undef PI symbol before declaring core::PI to avoid compilation problems
+
+ - SAnimatedMesh now properly returns properties of Meshes[0] if those exist, such that it should be usable in place of an SMesh again.
+
+ - Fixed 2d initialisation in opengl and d3d9 driver. This should fix problems with render states mixing up and distrubing, e.g. skin effects.
+
+ - Avoid a crash when passing setSkin the current skin
+
+ - Fixed current frame calculation for non-looped animations. Bug reported by greenya.
 
  - Fixed bug in CBillboardSceneNode::setColor, reported by rogerborg
 
@@ -82,7 +114,7 @@ Changes in version 1.4.1 (??? 2008)
 
  - Function setbit was renamed to setbit_cond to avoid name clashes.
 
- - Fixed .x animations with multiple references to the same joint from different meshes.
+ - Fixed .x animations with multiple references to the same joint from different meshes. Fixed texture path problems.
 
  - Support for Milkshape 1.8 files, also with multiple weights per joint.
 

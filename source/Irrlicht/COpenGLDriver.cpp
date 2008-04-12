@@ -2272,7 +2272,7 @@ void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
 {
 	CNullDriver::setFog(c, linearFog, start, end, density, pixelFog, rangeFog);
 
-	glFogf(GL_FOG_MODE, linearFog ? GL_LINEAR : GL_EXP);
+	glFogf(GL_FOG_MODE, GLfloat(linearFog ? GL_LINEAR : GL_EXP));
 #ifdef GL_EXT_fog_coord
 	if (FeatureAvailable[IRR_EXT_fog_coord])
 		glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);
