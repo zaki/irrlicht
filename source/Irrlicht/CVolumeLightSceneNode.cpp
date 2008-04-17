@@ -31,6 +31,7 @@ CVolumeLightSceneNode::CVolumeLightSceneNode(ISceneNode* parent, ISceneManager* 
 	setDebugName("CVolumeLightSceneNode");
 	#endif
 
+	Buffer.setHardwareMappingHint(EHM_STATIC);
 	constructLight();
 }
 
@@ -167,6 +168,8 @@ void CVolumeLightSceneNode::constructLight()
 
 	Buffer.Material.Lighting = false;
 	Buffer.Material.ZWriteEnable = false;
+
+	Buffer.setDirty(EBT_VERTEX_AND_INDEX);
 }
 
 
@@ -177,10 +180,7 @@ void CVolumeLightSceneNode::render()
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 	driver->setMaterial(Buffer.Material);
-	driver->drawVertexPrimitiveList(
-			Buffer.getVertices(), Buffer.getVertexCount(),
-			Buffer.getIndices(), Buffer.getIndexCount() / 3 ,
-			Buffer.getVertexType(), EPT_TRIANGLES);
+	driver->drawMeshBuffer(&Buffer);
 }
 
 
@@ -195,14 +195,7 @@ void CVolumeLightSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
 	{
-		//lie to sceneManager
-		Buffer.Material.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
-		Buffer.Material.MaterialTypeParam = 0.01f;
-		SceneManager->registerNodeForRendering(this, ESNRP_AUTOMATIC);
-
-		//restore state
-		Buffer.Material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-		Buffer.Material.MaterialTypeParam = pack_texureBlendFunc( video::EBF_SRC_COLOR, video::EBF_SRC_ALPHA, video::EMFN_MODULATE_1X );
+		SceneManager->registerNodeForRendering(this, ESNRP_TRANSPARENT);
 	}
 	ISceneNode::OnRegisterSceneNode();
 }
