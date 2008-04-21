@@ -59,6 +59,32 @@ namespace video
 		//! gets the area of the current viewport
 		virtual const core::rect<s32>& getViewPort() const;
 
+		struct SHWBufferLink_d3d9 : public SHWBufferLink
+		{
+			SHWBufferLink_d3d9(const scene::IMeshBuffer *_MeshBuffer): SHWBufferLink(_MeshBuffer), vertexBuffer(0), indexBuffer(0){}
+
+			IDirect3DVertexBuffer9* vertexBuffer;
+			IDirect3DIndexBuffer9* indexBuffer;
+
+			u32 vertexBufferSize;
+            u32 indexBufferSize;
+ 		};
+
+		bool updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer);
+		bool updateIndexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer);
+
+		//! updates hardware buffer if needed
+		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer);
+
+		//! Create hardware buffer from mesh
+		virtual SHWBufferLink *createHardwareBuffer(const scene::IMeshBuffer* mb);
+
+		//! Delete hardware buffer (only some drivers can)
+		virtual void deleteHardwareBuffer(SHWBufferLink *HWBuffer);
+
+		//! Draw hardware buffer
+		virtual void drawHardwareBuffer(SHWBufferLink *HWBuffer);
+
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 
@@ -307,5 +333,7 @@ namespace video
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
 #endif // __C_VIDEO_DIRECTX_8_H_INCLUDED__
+
+
 
 
