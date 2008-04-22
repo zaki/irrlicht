@@ -248,6 +248,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				tmp.addMeshBuffer(Materials[m]->Meshbuffer);
 				IMesh* tangentMesh = SceneManager->getMeshManipulator()->createMeshWithTangents(&tmp);
 				mesh->addMeshBuffer(tangentMesh->getMeshBuffer(0));
+				tangentMesh->drop();
 			}
 			else
 				mesh->addMeshBuffer( Materials[m]->Meshbuffer );
