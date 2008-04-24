@@ -9,6 +9,10 @@
 
 namespace irr
 {
+namespace gui
+{
+	class ICursorControl;
+}
 namespace scene
 {
 	class ISceneNodeAnimator;
@@ -19,7 +23,9 @@ namespace scene
 	{
 	public:
 
-		CDefaultSceneNodeAnimatorFactory(ISceneManager* mgr);
+		CDefaultSceneNodeAnimatorFactory(ISceneManager* mgr, gui::ICursorControl* crs);
+
+		virtual ~CDefaultSceneNodeAnimatorFactory();
 
 		//! creates a scene node animator based on its type id
 		/** \param type: Type of the scene node animator to add.
@@ -58,6 +64,7 @@ namespace scene
 		ESCENE_NODE_ANIMATOR_TYPE getTypeFromName(const c8* name) const;
 
 		ISceneManager* Manager;
+		gui::ICursorControl* CursorControl;
 	};
 
 

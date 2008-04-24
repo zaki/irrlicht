@@ -1,5 +1,11 @@
 Changes in version 1.5 (... 2008)
 
+ - FPS and Maya style cameras are now standard cameras with a special animator.
+  - ISceneNodeAnimator now inherits IEventReceiver
+  - New method ISceneNodeAnimator::isEventReceiverEnabled, returns false by default
+  - CCameraSceneNode::OnEvent passes events to animators with enabled event receivers
+  - ISceneNodeAnimatorCameraFPS and ISceneNodeAnimatorCameraMaya interfaces for changing camera settings at run-time.
+
  - Fixed a performance bug in ISceneNode constructor reported by izhbq412
 
  - Added volume light scene node

@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CDefaultSceneNodeAnimatorFactory.h"
+#include "CSceneNodeAnimatorCameraFPS.h"
+#include "CSceneNodeAnimatorCameraMaya.h"
+#include "ICursorControl.h"
 #include "ISceneNodeAnimatorCollisionResponse.h"
 #include "ISceneManager.h"
 
@@ -21,16 +24,25 @@ const c8* const SceneNodeAnimatorTypeNames[] =
 	"texture",
 	"deletion",
 	"collisionResponse",
+	"cameraFPS",
+	"cameraMaya",
 	0
 };
 
 
-CDefaultSceneNodeAnimatorFactory::CDefaultSceneNodeAnimatorFactory(ISceneManager* mgr)
-: Manager(mgr)
+CDefaultSceneNodeAnimatorFactory::CDefaultSceneNodeAnimatorFactory(ISceneManager* mgr, gui::ICursorControl* crs)
+: Manager(mgr), CursorControl(crs)
 {
 	// don't grab the scene manager here to prevent cyclic references
+	if (CursorControl)
+		CursorControl->grab();
 }
 
+CDefaultSceneNodeAnimatorFactory::~CDefaultSceneNodeAnimatorFactory()
+{
+	if (CursorControl)
+		CursorControl->drop();
+}
 
 //! creates a scene node animator based on its type id
 ISceneNodeAnimator* CDefaultSceneNodeAnimatorFactory::createSceneNodeAnimator(ESCENE_NODE_ANIMATOR_TYPE type, ISceneNode* target)
@@ -67,6 +79,12 @@ ISceneNodeAnimator* CDefaultSceneNodeAnimatorFactory::createSceneNodeAnimator(ES
 		break;
 	case ESNAT_COLLISION_RESPONSE:
 		anim = Manager->createCollisionResponseAnimator(0, target);
+		break;
+	case ESNAT_CAMERA_FPS:
+		anim = new CSceneNodeAnimatorCameraFPS(CursorControl);
+		break;
+	case ESNAT_CAMERA_MAYA:
+		anim = new CSceneNodeAnimatorCameraMaya(CursorControl);
 		break;
 	default:
 		break;

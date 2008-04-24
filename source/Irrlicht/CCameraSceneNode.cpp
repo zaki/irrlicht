@@ -103,6 +103,18 @@ const core::matrix4& CCameraSceneNode::getViewMatrix() const
 //! for changing their position, look at target or whatever. 
 bool CCameraSceneNode::OnEvent(const SEvent& event)
 {
+	if (!InputReceiverEnabled)
+		return false;
+
+	// send events to event receiving animators
+
+	core::list<ISceneNodeAnimator*>::Iterator ait = Animators.begin();
+	
+	for (; ait != Animators.end(); ++ait)
+		if ((*ait)->isEventReceiverEnabled() && (*ait)->OnEvent(event))
+			return true;
+
+	// if nobody processed the event, return false
 	return false;
 }
 

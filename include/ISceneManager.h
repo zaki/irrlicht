@@ -478,8 +478,8 @@ namespace scene
 			const core::vector3df& lookat = core::vector3df(0,0,100), s32 id=-1) = 0;
 
 		//! Adds a maya style user controlled camera scene node to the scene graph.
-		/** The maya camera is able to be controlled with the mouse similar
-		 like in the 3D Software Maya by Alias Wavefront.
+		/** This is a standard camera with an animator that provides mouse control similar
+		 to camera in the 3D Software Maya by Alias Wavefront.
 		 \param parent: Parent scene node of the camera. Can be null.
 		 \param rotateSpeed: Rotation speed of the camera.
 		 \param zoomSpeed: Zoom speed of the camera.
@@ -490,7 +490,8 @@ namespace scene
 		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
 			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f, f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
 
-		//! Adds a camera scene node which is able to be controlled with the mouse and keys like in most first person shooters (FPS).
+		//! Adds a camera scene node with an animator which provides mouse and keyboard control 
+		//! like in most first person shooters (FPS).
 		/** Look with the mouse, move with cursor keys. If you do not like the default
 		 key layout, you may want to specify your own. For example to make the camera
 		 be controlled by the cursor keys AND the keys W,A,S, and D, do something

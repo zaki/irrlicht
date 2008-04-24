@@ -9,6 +9,7 @@
 #include "vector3d.h"
 #include "ESceneNodeAnimatorTypes.h"
 #include "IAttributeExchangingObject.h"
+#include "IEventReceiver.h"
 
 namespace irr
 {
@@ -26,7 +27,7 @@ namespace scene
 	change its position, rotation, scale and/or material. There are lots of animators
 	to choose from. You can create scene node animators with the ISceneManager interface.
 	*/
-	class ISceneNodeAnimator : public io::IAttributeExchangingObject
+	class ISceneNodeAnimator : public io::IAttributeExchangingObject, public IEventReceiver
 	{
 	public:
 
@@ -44,6 +45,20 @@ namespace scene
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) 
 		{
 			return 0; // to be implemented by derived classes.
+		}
+
+		//! Returns true if this animator receives events.
+		//! When attached to the an active camera, this animator will be able to respond to events
+		//! such as mouse and keyboard events.
+		virtual bool isEventReceiverEnabled() const
+		{
+			return false;
+		}
+
+		//! Event receiver, override this function for camera controlling animators
+		virtual bool OnEvent(const SEvent& event)
+		{
+			return false;
 		}
 
 		//! Returns type of the scene node animator
