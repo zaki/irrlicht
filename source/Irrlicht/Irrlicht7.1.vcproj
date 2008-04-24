@@ -497,6 +497,12 @@
 					RelativePath=".\..\..\include\ISceneNodeAnimator.h">
 				</File>
 				<File
+					RelativePath=".\..\..\include\ISceneNodeAnimatorCameraFPS.h">
+				</File>
+				<File
+					RelativePath=".\..\..\include\ISceneNodeAnimatorCameraMaya.h">
+				</File>
+				<File
 					RelativePath=".\..\..\include\ISceneNodeAnimatorCollisionResponse.h">
 				</File>
 				<File
@@ -1424,18 +1430,6 @@
 					RelativePath=".\CBoneSceneNode.h">
 				</File>
 				<File
-					RelativePath=".\CCameraFPSSceneNode.cpp">
-				</File>
-				<File
-					RelativePath=".\CCameraFPSSceneNode.h">
-				</File>
-				<File
-					RelativePath=".\CCameraMayaSceneNode.cpp">
-				</File>
-				<File
-					RelativePath=".\CCameraMayaSceneNode.h">
-				</File>
-				<File
 					RelativePath=".\CCameraSceneNode.cpp">
 				</File>
 				<File
@@ -1627,6 +1621,18 @@
 			</Filter>
 			<Filter
 				Name="animators">
+				<File
+					RelativePath="CSceneNodeAnimatorCameraFPS.cpp">
+				</File>
+				<File
+					RelativePath="CSceneNodeAnimatorCameraFPS.h">
+				</File>
+				<File
+					RelativePath="CSceneNodeAnimatorCameraMaya.cpp">
+				</File>
+				<File
+					RelativePath="CSceneNodeAnimatorCameraMaya.h">
+				</File>
 				<File
 					RelativePath="CSceneNodeAnimatorCollisionResponse.cpp">
 				</File>

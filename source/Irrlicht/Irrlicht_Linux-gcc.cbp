@@ -159,6 +159,8 @@
 		<Unit filename="../../include/ISceneManager.h" />
 		<Unit filename="../../include/ISceneNode.h" />
 		<Unit filename="../../include/ISceneNodeAnimator.h" />
+		<Unit filename="../../include/ISceneNodeAnimatorCameraFPS.h" />
+		<Unit filename="../../include/ISceneNodeAnimatorCameraMaya.h" />
 		<Unit filename="../../include/ISceneNodeAnimatorCollisionResponse.h" />
 		<Unit filename="../../include/ISceneNodeAnimatorFactory.h" />
 		<Unit filename="../../include/ISceneNodeFactory.h" />
@@ -246,10 +248,6 @@
 		<Unit filename="CBurningShader_Raster_Reference.cpp" />
 		<Unit filename="CCSMLoader.cpp" />
 		<Unit filename="CCSMLoader.h" />
-		<Unit filename="CCameraFPSSceneNode.cpp" />
-		<Unit filename="CCameraFPSSceneNode.h" />
-		<Unit filename="CCameraMayaSceneNode.cpp" />
-		<Unit filename="CCameraMayaSceneNode.h" />
 		<Unit filename="CCameraSceneNode.cpp" />
 		<Unit filename="CCameraSceneNode.h" />
 		<Unit filename="CColladaFileLoader.cpp" />
@@ -499,6 +497,10 @@
 		<Unit filename="CSceneCollisionManager.h" />
 		<Unit filename="CSceneManager.cpp" />
 		<Unit filename="CSceneManager.h" />
+		<Unit filename="CSceneNodeAnimatorCameraFPS.cpp" />
+		<Unit filename="CSceneNodeAnimatorCameraFPS.h" />
+		<Unit filename="CSceneNodeAnimatorCameraMaya.cpp" />
+		<Unit filename="CSceneNodeAnimatorCameraMaya.h" />
 		<Unit filename="CSceneNodeAnimatorCollisionResponse.cpp" />
 		<Unit filename="CSceneNodeAnimatorCollisionResponse.h" />
 		<Unit filename="CSceneNodeAnimatorDelete.cpp" />

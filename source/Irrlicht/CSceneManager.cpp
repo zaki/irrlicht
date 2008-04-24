@@ -108,8 +108,7 @@
 #include "CAnimatedMeshSceneNode.h"
 #include "COctTreeSceneNode.h"
 #include "CCameraSceneNode.h"
-#include "CCameraMayaSceneNode.h"
-#include "CCameraFPSSceneNode.h"
+
 #include "CLightSceneNode.h"
 #include "CBillboardSceneNode.h"
 #include "CMeshSceneNode.h"
@@ -138,6 +137,8 @@
 #include "CSceneNodeAnimatorCollisionResponse.h"
 #include "CSceneNodeAnimatorDelete.h"
 #include "CSceneNodeAnimatorFollowSpline.h"
+#include "CSceneNodeAnimatorCameraFPS.h"
+#include "CSceneNodeAnimatorCameraMaya.h"
 #include "CDefaultSceneNodeAnimatorFactory.h"
 
 #include "CQuake3ShaderSceneNode.h"
@@ -252,7 +253,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	registerSceneNodeFactory(factory);
 	factory->drop();
 
-	ISceneNodeAnimatorFactory* animatorFactory = new CDefaultSceneNodeAnimatorFactory(this);
+	ISceneNodeAnimatorFactory* animatorFactory = new CDefaultSceneNodeAnimatorFactory(this, CursorControl);
 	registerSceneNodeAnimatorFactory(animatorFactory);
 	animatorFactory->drop();
 }
@@ -625,8 +626,8 @@ ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
 }
 
 
-//! Adds a camera scene node which is able to be controlle with the mouse similar
-//! like in the 3D Software Maya by Alias Wavefront.
+//! Adds a camera scene node which is able to be controlld with the mouse similar
+//! to in the 3D Software Maya by Alias Wavefront.
 //! The returned pointer must not be dropped.
 ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id)
@@ -634,8 +635,12 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 	if (!parent)
 		parent = this;
 
-	ICameraSceneNode* node = new CCameraMayaSceneNode(parent, this, id, rotateSpeed,
-		zoomSpeed, translationSpeed);
+	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
+	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl, 
+		rotateSpeed, zoomSpeed, translationSpeed);
+
+	node->addAnimator(anm);
+	anm->drop();
 	node->drop();
 
 	setActiveCamera(node);
@@ -653,11 +658,16 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
 	if (!parent)
 		parent = this;
 
-	ICameraSceneNode* node = new CCameraFPSSceneNode(parent, this, CursorControl,
-		id, rotateSpeed, moveSpeed, jumpSpeed, keyMapArray, keyMapSize, noVerticalMovement);
+	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
+	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl, rotateSpeed, 
+		moveSpeed, jumpSpeed, keyMapArray, keyMapSize, noVerticalMovement);
+
+	node->addAnimator(anm);
+	anm->drop();
 	node->drop();
 
 	setActiveCamera(node);
+
 
 	return node;
 }

@@ -677,6 +677,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\ISceneNodeAnimatorCameraFPS.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\ISceneNodeAnimatorCameraMaya.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\ISceneNodeAnimatorCollisionResponse.h"
 					>
 				</File>
@@ -686,10 +694,6 @@
 				</File>
 				<File
 					RelativePath=".\..\..\include\ISceneNodeFactory.h"
-					>
-				</File>
-				<File
-					RelativePath=".\..\..\include\ISceneNodeMeshLoader.h"
 					>
 				</File>
 				<File
@@ -709,11 +713,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\..\..\include\IVolumeLightSceneNode.h"
+					RelativePath=".\..\..\include\ITriangleSelector.h"
 					>
 				</File>
 				<File
-					RelativePath=".\..\..\include\ITriangleSelector.h"
+					RelativePath=".\..\..\include\IVolumeLightSceneNode.h"
 					>
 				</File>
 				<File
@@ -1913,22 +1917,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CCameraFPSSceneNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CCameraFPSSceneNode.h"
-					>
-				</File>
-				<File
-					RelativePath=".\CCameraMayaSceneNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CCameraMayaSceneNode.h"
-					>
-				</File>
-				<File
 					RelativePath=".\CCameraSceneNode.cpp"
 					>
 				</File>
@@ -2184,6 +2172,22 @@
 			<Filter
 				Name="animators"
 				>
+				<File
+					RelativePath=".\CSceneNodeAnimatorCameraFPS.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CSceneNodeAnimatorCameraFPS.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CSceneNodeAnimatorCameraMaya.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CSceneNodeAnimatorCameraMaya.h"
+					>
+				</File>
 				<File
 					RelativePath="CSceneNodeAnimatorCollisionResponse.cpp"
 					>
