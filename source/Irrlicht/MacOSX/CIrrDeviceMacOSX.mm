@@ -586,6 +586,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 	{
 		x = (int)p.x;
 		y = (int)p.y;
+		y -= (_screenHeight - _height);
 	}
 
 	((CCursorControl *)CursorControl)->updateInternalCursorPosition(x,y);
@@ -606,7 +607,7 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	else
 	{
 		p.x = (float) x;
-		p.y = (float) y;
+		p.y = (float) y + (_screenHeight - _height);
 	}
 
 	c.x = p.x;
