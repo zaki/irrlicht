@@ -20,8 +20,10 @@ namespace irr
 namespace video
 {
 
+#ifdef GL_EXT_framebuffer_object
 // helper function for render to texture
 static bool checkFBOStatus(COpenGLDriver* Driver);
+#endif
 
 //! constructor for usual textures
 COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDriver* driver)
@@ -502,9 +504,9 @@ void COpenGLTexture::unbindFrameBufferObject()
 #endif
 }
 
+#ifdef GL_EXT_framebuffer_object
 bool checkFBOStatus(COpenGLDriver* Driver)
 {
-#ifdef GL_EXT_framebuffer_object
 	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
 
 	switch (status)
@@ -552,9 +554,9 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 			break;
 	}
 	os::Printer::log("FBO error", ELL_ERROR);
-#endif
 	return false;
 }
+#endif
 
 } // end namespace video
 } // end namespace irr
