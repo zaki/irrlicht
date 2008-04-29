@@ -60,6 +60,11 @@ CXXFLAGS += -pg
 endif
 CFLAGS := -fexpensive-optimizations -O3 -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
 
+#multilib handling
+ifeq ($(HOSTTYPE), x86_64)
+LIBSELECT=64
+endif
+
 #Linux specific options
 STATIC_LIB = libIrrlicht.a
 SHARED_LIB = libIrrlicht.so
@@ -68,7 +73,7 @@ LIB_PATH = ../../lib/$(SYSTEM)
 INSTALL_DIR = /usr/local/lib
 staticlib sharedlib install: SYSTEM = Linux
 staticlib sharedlib : LDFLAGS = --no-export-all-symbols --add-stdcall-alias
-sharedlib : LDFLAGS += -L/usr/X11R6/lib -lGL -lXxf86vm
+sharedlib : LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
 staticlib sharedlib : CXXINCS += -I/usr/X11R6/include
 
 #Windows specific options
