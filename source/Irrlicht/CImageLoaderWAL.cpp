@@ -70,10 +70,12 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 	// Try to get the color palette from elsewhere (usually in a pak along with the WAL).
 	// If this fails we use the DefaultPaletteQ2.
 	static s32 * palette = 0;
+#if TRY_LOADING_PALETTE_FROM_FILE
+	s32 loadedPalette[256];
+#endif
 	if (!palette)
 	{
 #if TRY_LOADING_PALETTE_FROM_FILE
-		s32 loadedPalette[256];
 		IImage * paletteImage;
 		// Look in a couple different places...
 		paletteImage = createImageFromFile("pics/colormap.pcx");

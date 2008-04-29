@@ -539,12 +539,12 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	core::array<c8> buffer(vertexSize * vertexCount);
 	memcpy(buffer.pointer(), vertices, vertexSize * vertexCount);
 
-	// in order to convert the colours into opengl format (RGBA)
+	// in order to convert the colors into opengl format (RGBA)
 	switch (vType)
 	{
 		case EVT_STANDARD:
 		{
-			const S3DVertex* pb = reinterpret_cast<const S3DVertex*>(buffer.pointer());
+			S3DVertex* pb = reinterpret_cast<S3DVertex*>(buffer.pointer());
 			const S3DVertex* po = reinterpret_cast<const S3DVertex*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
@@ -554,7 +554,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		break;
 		case EVT_2TCOORDS:
 		{
-			const S3DVertex2TCoords* pb = reinterpret_cast<const S3DVertex2TCoords*>(buffer.pointer());
+			S3DVertex2TCoords* pb = reinterpret_cast<S3DVertex2TCoords*>(buffer.pointer());
 			const S3DVertex2TCoords* po = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
@@ -564,7 +564,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		break;
 		case EVT_TANGENTS:
 		{
-			const S3DVertexTangents* pb = reinterpret_cast<const S3DVertexTangents*>(buffer.pointer());
+			S3DVertexTangents* pb = reinterpret_cast<S3DVertexTangents*>(buffer.pointer());
 			const S3DVertexTangents* po = reinterpret_cast<const S3DVertexTangents*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
