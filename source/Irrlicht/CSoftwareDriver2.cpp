@@ -1145,10 +1145,10 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 		if ( ( face[0]->flag & face[1]->flag & face[2]->flag & VERTEX4D_CLIPMASK ) == VERTEX4D_INSIDE )
 		{
 			dc_area = screenarea2 ( face );
-			if ( Material.org.BackfaceCulling && F32_LOWER_EQUAL_0 ( dc_area ) )
-			{
+			if ( Material.org.BackfaceCulling && F32_LOWER_EQUAL_0( dc_area ) )
 				continue;
-			}
+			if ( Material.org.FrontfaceCulling && F32_GREATER_EQUAL_0( dc_area ) )
+				continue;
 
 			dc_area = core::reciprocal ( dc_area );
 
@@ -1265,6 +1265,8 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 		// check 2d backface culling on first
 		dc_area = screenarea ( CurrentOut.data );
 		if ( Material.org.BackfaceCulling && F32_LOWER_EQUAL_0 ( dc_area ) )
+			continue;
+		if ( Material.org.FrontfaceCulling && F32_GREATER_EQUAL_0( dc_area ) )
 			continue;
 
 		// select mipmap
