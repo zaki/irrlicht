@@ -636,7 +636,7 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 				// scroll
 				f0 = quake3::getAsFloat ( v.content, pos ) * TimeAbs;
 				f1 = quake3::getAsFloat ( v.content, pos ) * TimeAbs;
-				m2.setTextureTranslate ( -f0, f1 );
+				m2.setTextureTranslate ( f0, f1 );
 				break;
 			case 1:
 				// scale
