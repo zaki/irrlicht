@@ -10,14 +10,13 @@ namespace irr
 namespace scene
 {
 
-const f32 MAX_VERTICAL_ANGLE = 88.0f;
-
-
 //! constructor
-CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl, f32 rotateSpeed,
-		f32 moveSpeed, f32 jumpSpeed, SKeyMap* keyMapArray, s32 keyMapSize, bool noVerticalMovement)
-: CursorControl(cursorControl),	MoveSpeed(moveSpeed), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
-	firstUpdate(true), LastAnimationTime(0), NoVerticalMovement(noVerticalMovement)
+CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl,
+		f32 rotateSpeed, f32 moveSpeed, f32 jumpSpeed,
+		SKeyMap* keyMapArray, u32 keyMapSize, bool noVerticalMovement)
+: CursorControl(cursorControl), MaxVerticalAngle(88.0f),
+	MoveSpeed(moveSpeed/1000.0f), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
+	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNodeAnimatorFPS");
@@ -25,8 +24,6 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 
 	if (CursorControl)
 		CursorControl->grab();
-
-	MoveSpeed /= 1000.0f;
 
 	allKeysUp();
 
@@ -44,7 +41,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	{
 		// create custom key map
 		setKeyMap(keyMapArray, keyMapSize);
-	}// end if
+	}
 }
 
 
@@ -67,11 +64,13 @@ bool CSceneNodeAnimatorCameraFPS::OnEvent(const SEvent& evt)
 	{
 	case EET_KEY_INPUT_EVENT:
 		for (u32 i=0; i<KeyMap.size(); ++i)
+		{
 			if (KeyMap[i].keycode == evt.KeyInput.Key)
 			{
 				CursorKeys[KeyMap[i].action] = evt.KeyInput.PressedDown;
 				return true;
 			}
+		}
 		break;
 
 	case EET_MOUSE_INPUT_EVENT:
@@ -92,12 +91,10 @@ bool CSceneNodeAnimatorCameraFPS::OnEvent(const SEvent& evt)
 
 void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 {
-	ICameraSceneNode* camera = 0;
-
 	if (node->getType() != ESNT_CAMERA)
 		return;
 
-	camera = static_cast<ICameraSceneNode*>(node);
+	ICameraSceneNode* camera = static_cast<ICameraSceneNode*>(node);
 
 	if (firstUpdate)
 	{
@@ -113,55 +110,52 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	}
 
 	// get time
-	f32 timeDiff = 0.f;
-
-	timeDiff = (f32) ( timeMs - LastAnimationTime );
+	f32 timeDiff = (f32) ( timeMs - LastAnimationTime );
 	LastAnimationTime = timeMs;
 
 	// update position
 	core::vector3df pos = camera->getPosition();
 
 	// Update rotation
-	core::vector3df Target = (camera->getTarget() - camera->getAbsolutePosition());
-	core::vector3df RelativeRotation = Target.getHorizontalAngle();
+	core::vector3df target = (camera->getTarget() - camera->getAbsolutePosition());
+	core::vector3df relativeRotation = target.getHorizontalAngle();
 
 	if (CursorControl)
 	{
 		if (CursorPos != CenterCursor)
 		{
-			RelativeRotation.Y -= (0.5f - CursorPos.X) * RotateSpeed;
-			RelativeRotation.X -= (0.5f - CursorPos.Y) * RotateSpeed;
+			relativeRotation.Y -= (0.5f - CursorPos.X) * RotateSpeed;
+			relativeRotation.X -= (0.5f - CursorPos.Y) * RotateSpeed;
 
-			// X < MAX_VERTICAL_ANGLE or X > 360-MAX_VERTICAL_ANGLE
+			// X < MaxVerticalAngle or X > 360-MaxVerticalAngle
 
-			if (RelativeRotation.X > MAX_VERTICAL_ANGLE*2 &&
-				RelativeRotation.X < 360.0f-MAX_VERTICAL_ANGLE)
+			if (relativeRotation.X > MaxVerticalAngle*2 &&
+				relativeRotation.X < 360.0f-MaxVerticalAngle)
 			{
-				RelativeRotation.X = 360.0f-MAX_VERTICAL_ANGLE;
+				relativeRotation.X = 360.0f-MaxVerticalAngle;
 			}
 			else
-			if (RelativeRotation.X > MAX_VERTICAL_ANGLE &&
-				RelativeRotation.X < 360.0f-MAX_VERTICAL_ANGLE)
+			if (relativeRotation.X > MaxVerticalAngle &&
+				relativeRotation.X < 360.0f-MaxVerticalAngle)
 			{
-				RelativeRotation.X = MAX_VERTICAL_ANGLE;
+				relativeRotation.X = MaxVerticalAngle;
 			}
 
 			// reset cursor position
 			CursorControl->setPosition(0.5f, 0.5f);
 			CenterCursor = CursorControl->getRelativePosition();
 		}
-
 	}
 
 	// set target
 
-	Target.set(0,0,1);
+	target.set(0,0,1);
 
 	core::matrix4 mat;
-	mat.setRotationDegrees(core::vector3df( RelativeRotation.X, RelativeRotation.Y, 0));
-	mat.transformVect(Target);
+	mat.setRotationDegrees(core::vector3df(relativeRotation.X, relativeRotation.Y, 0));
+	mat.transformVect(target);
 
-	core::vector3df movedir = Target;
+	core::vector3df movedir = target;
 
 	if (NoVerticalMovement)
 		movedir.Y = 0.f;
@@ -176,7 +170,7 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	// strafing
 
-	core::vector3df strafevect = Target;
+	core::vector3df strafevect = target;
 	strafevect = strafevect.crossProduct(camera->getUpVector());
 
 	if (NoVerticalMovement)
@@ -201,17 +195,18 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	// write right target
 
-	TargetVector = Target;
-	Target += pos;
-	camera->setTarget(Target);
-
+	TargetVector = target;
+	target += pos;
+	camera->setTarget(target);
 }
+
 
 void CSceneNodeAnimatorCameraFPS::allKeysUp()
 {
-	for (s32 i=0; i<6; ++i)
+	for (u32 i=0; i<6; ++i)
 		CursorKeys[i] = false;
 }
+
 
 //! Sets the rotation speed
 void CSceneNodeAnimatorCameraFPS::setRotateSpeed(f32 speed)
@@ -219,17 +214,20 @@ void CSceneNodeAnimatorCameraFPS::setRotateSpeed(f32 speed)
 	RotateSpeed = speed;
 }
 
+
 //! Sets the movement speed
 void CSceneNodeAnimatorCameraFPS::setMoveSpeed(f32 speed)
 {
 	MoveSpeed = speed;
 }
 
+
 //! Gets the rotation speed
 f32 CSceneNodeAnimatorCameraFPS::getRotateSpeed() const
 {
 	return RotateSpeed;
 }
+
 
 // Gets the movement speed
 f32 CSceneNodeAnimatorCameraFPS::getMoveSpeed() const
@@ -272,6 +270,6 @@ void CSceneNodeAnimatorCameraFPS::setVerticalMovement(bool allow)
 }
 
 
-
 } // namespace scene
 } // namespace irr
+
