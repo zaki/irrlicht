@@ -28,6 +28,11 @@ CParticleAnimatedMeshSceneNodeEmitter::CParticleAnimatedMeshSceneNodeEmitter(
 	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax),
 	Time(0), Emitted(0), MaxAngleDegrees(maxAngleDegrees)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CParticleAnimatedMeshSceneNodeEmitter");
+	#endif
+
 	AnimatedMesh = node->getMesh();
 	BaseMesh = AnimatedMesh->getMesh(0);
 

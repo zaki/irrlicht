@@ -18,6 +18,10 @@ CBoneSceneNode::CBoneSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 : IBoneSceneNode(parent, mgr, id), BoneIndex(boneIndex), BoneName(boneName),
 	AnimationMode(EBAM_AUTOMATIC), SkinningSpace(EBSS_LOCAL)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CBoneSceneNode");
+	#endif
 }
 
 

@@ -20,6 +20,11 @@ CColladaMeshWriter::CColladaMeshWriter(video::IVideoDriver* driver,
 					io::IFileSystem* fs)
 	: FileSystem(fs), VideoDriver(driver), Writer(0)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CColladaMeshWriter");
+	#endif
+
 	if (VideoDriver)
 		VideoDriver->grab();
 

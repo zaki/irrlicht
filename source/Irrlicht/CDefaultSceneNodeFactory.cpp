@@ -23,6 +23,11 @@ namespace scene
 CDefaultSceneNodeFactory::CDefaultSceneNodeFactory(ISceneManager* mgr)
 : Manager(mgr)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CDefaultSceneNodeFactory");
+	#endif
+
 	// don't grab the scene manager here to prevent cyclic references
 
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_CUBE, "cube"));

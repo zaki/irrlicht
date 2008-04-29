@@ -31,6 +31,11 @@ CD3D8ShaderMaterialRenderer::CD3D8ShaderMaterialRenderer(IDirect3DDevice8* d3dde
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 	VertexShader(0), OldVertexShader(0), PixelShader(0), UserData(userData)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CD3D8ShaderMaterialRenderer");
+	#endif
+
 	if (BaseMaterial)
 		BaseMaterial->grab();
 

@@ -16,6 +16,11 @@ namespace scene
 //! Constructor
 CMD2MeshFileLoader::CMD2MeshFileLoader()
 {
+
+	#ifdef _DEBUG
+	setDebugName("CMD2MeshFileLoader");
+	#endif
+
 }
 
 

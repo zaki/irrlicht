@@ -25,6 +25,11 @@ CParticleSphereEmitter::CParticleSphereEmitter(
 	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax), Time(0), Emitted(0),
 	MaxAngleDegrees(maxAngleDegrees)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CParticleSphereEmitter");
+	#endif
+
 }
 
 

@@ -360,6 +360,10 @@ namespace scene
 	CCSMLoader::CCSMLoader(scene::ISceneManager* manager, io::IFileSystem* fs)
 		: FileSystem(fs), SceneManager(manager)
 	{
+
+		#ifdef _DEBUG
+		setDebugName("CCSMLoader");
+		#endif
 	}
 
 	CCSMLoader::~CCSMLoader()

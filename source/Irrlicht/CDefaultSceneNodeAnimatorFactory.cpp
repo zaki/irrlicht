@@ -33,6 +33,10 @@ const c8* const SceneNodeAnimatorTypeNames[] =
 CDefaultSceneNodeAnimatorFactory::CDefaultSceneNodeAnimatorFactory(ISceneManager* mgr, gui::ICursorControl* crs)
 : Manager(mgr), CursorControl(crs)
 {
+	#ifdef _DEBUG
+	setDebugName("CDefaultSceneNodeAnimatorFactory");
+	#endif
+
 	// don't grab the scene manager here to prevent cyclic references
 	if (CursorControl)
 		CursorControl->grab();

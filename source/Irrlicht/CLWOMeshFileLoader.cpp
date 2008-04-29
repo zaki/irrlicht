@@ -111,6 +111,9 @@ CLWOMeshFileLoader::CLWOMeshFileLoader(scene::ISceneManager* smgr,
 		io::IFileSystem* fs)
 : SceneManager(smgr), FileSystem(fs), File(0), Mesh(0)
 {
+	#ifdef _DEBUG
+	setDebugName("CLWOMeshFileLoader");
+	#endif
 }
 
 

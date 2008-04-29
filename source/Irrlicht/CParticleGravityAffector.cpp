@@ -16,6 +16,9 @@ CParticleGravityAffector::CParticleGravityAffector(
 	const core::vector3df& gravity, u32 timeForceLost)
 	: IParticleGravityAffector(), TimeForceLost(static_cast<f32>(timeForceLost)), Gravity(gravity)
 {
+	#ifdef _DEBUG
+	setDebugName("CParticleGravityAffector");
+	#endif
 }
 
 

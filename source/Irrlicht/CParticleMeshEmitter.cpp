@@ -28,6 +28,11 @@ CParticleMeshEmitter::CParticleMeshEmitter(
 	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax),
 	Time(0), Emitted(0), MaxAngleDegrees(maxAngleDegrees)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CParticleMeshEmitter");
+	#endif
+
 	MBCount = Mesh->getMeshBufferCount();
 	for( u32 i = 0; i < MBCount; ++i )
 	{

@@ -15,7 +15,7 @@ CMemoryReadFile::CMemoryReadFile(void* memory, long len, const c8* fileName, boo
 : Buffer(memory), Len(len), Pos(0), deleteMemoryWhenDropped(d)
 {
 	#ifdef _DEBUG
-	setDebugName("CReadFile");
+	setDebugName("CMemoryReadFile");
 	#endif
 
 	Filename = fileName;

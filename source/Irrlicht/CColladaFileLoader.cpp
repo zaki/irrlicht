@@ -271,7 +271,9 @@ CColladaFileLoader::CColladaFileLoader(scene::ISceneManager* smgr,
 : SceneManager(smgr), FileSystem(fs), DummyMesh(0),
 	FirstLoadedMesh(0), LoadedMeshCount(0), CreateInstances(false)
 {
-
+	#ifdef _DEBUG
+	setDebugName("CColladaFileLoader");
+	#endif
 }
 
 

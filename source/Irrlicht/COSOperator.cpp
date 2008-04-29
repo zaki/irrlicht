@@ -23,7 +23,11 @@ namespace irr
 
 // constructor
 COSOperator::COSOperator(const c8* osVersion) : OperatingSystem(osVersion)
-{ }
+{
+	#ifdef _DEBUG
+	setDebugName("COSOperator");
+	#endif
+}
 
 
 //! returns the current operating system version as string.

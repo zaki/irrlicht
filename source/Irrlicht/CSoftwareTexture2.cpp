@@ -22,6 +22,11 @@ IImageWriter* createImageWriterBMP();
 CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool generateMipLevels, bool isRenderTarget)
 : ITexture(name), MipMapLOD(0), HasMipMaps(generateMipLevels), IsRenderTarget(isRenderTarget)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CSoftwareTexture2");
+	#endif
+
 	#ifndef SOFTWARE_DRIVER_2_MIPMAPPING
 		HasMipMaps = false;
 	#endif

@@ -17,6 +17,10 @@ namespace io
 CXMLWriter::CXMLWriter(IWriteFile* file)
 : File(file), Tabs(0), TextWrittenLast(false)
 {
+	#ifdef _DEBUG
+	setDebugName("CXMLWriter");
+	#endif
+	
 	if (File)
 		File->grab();
 }

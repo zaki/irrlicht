@@ -115,6 +115,11 @@ namespace video
 		: CD3D8ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial), 
 		CompiledShaders(true)
 	{
+
+		#ifdef _DEBUG
+		setDebugName("CD3D8NormalMapRenderer");
+		#endif
+
 		// set this as callback. We could have done this in 
 		// the initialization list, but some compilers don't like it.
 

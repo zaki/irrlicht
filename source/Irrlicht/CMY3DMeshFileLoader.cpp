@@ -35,6 +35,11 @@ CMY3DMeshFileLoader::CMY3DMeshFileLoader(
 	io::IFileSystem* fs, video::IVideoDriver* driver, ISceneManager *scmgr)
 	: Mesh(0), Driver(driver), FileSystem(fs), SceneManager(scmgr)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CMY3DMeshFileLoader");
+	#endif
+	
 	if (Driver)
 		Driver->grab();
 

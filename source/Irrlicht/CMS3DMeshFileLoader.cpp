@@ -113,6 +113,9 @@ struct SGroup
 CMS3DMeshFileLoader::CMS3DMeshFileLoader(video::IVideoDriver *driver)
 : Driver(driver), AnimatedMesh(0)
 {
+	#ifdef _DEBUG
+	setDebugName("CMS3DMeshFileLoader");
+	#endif
 }
 
 
