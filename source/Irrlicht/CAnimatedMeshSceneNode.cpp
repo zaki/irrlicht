@@ -844,11 +844,10 @@ const SMD3QuaterionTag& CAnimatedMeshSceneNode::getMD3TagTransformation( const c
 //! updates the absolute position based on the relative and the parents position
 void CAnimatedMeshSceneNode::updateAbsolutePosition()
 {
+	IAnimatedMeshSceneNode::updateAbsolutePosition();
+
 	if ( 0 == Mesh || Mesh->getMeshType() != EAMT_MD3 )
-	{
-		IAnimatedMeshSceneNode::updateAbsolutePosition();
 		return;
-	}
 
 	SMD3QuaterionTag parent;
 	if ( Parent && Parent->getType () == ESNT_ANIMATED_MESH)
