@@ -45,6 +45,7 @@ CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
 	buf->Indices.set_used(36);
 	for (u32 i=0; i<36; ++i)
 		buf->Indices[i] = u[i];
+	buf->drop();
 
 	setSize();
 }
