@@ -716,7 +716,7 @@ namespace core
 
 		if (fabs(C)>ROUNDING_ERROR_64)
 		{
-			const T invC = 1.0/C;
+			const T invC = (T)(1.0/C);
 			rotx = mat(2,2) * invC;
 			roty = mat(1,2) * invC;
 			X = atan2( roty, rotx ) * RADTODEG64;
