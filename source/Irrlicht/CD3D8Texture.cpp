@@ -32,7 +32,7 @@ namespace video
 
 //! rendertarget constructor
 CD3D8Texture::CD3D8Texture(CD3D8Driver* driver, core::dimension2d<s32> size, const char* name)
-: ITexture(name), Image(0), Texture(0), RTTSurface(0), Driver(driver),
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
 	TextureSize(size), ImageSize(size), Pitch(0),
 	HasMipMaps(false), IsRenderTarget(true)
 {
@@ -51,7 +51,7 @@ CD3D8Texture::CD3D8Texture(CD3D8Driver* driver, core::dimension2d<s32> size, con
 //! constructor
 CD3D8Texture::CD3D8Texture(IImage* image, CD3D8Driver* driver,
 				u32 flags, const char* name)
-: ITexture(name), Image(image), Texture(0), RTTSurface(0), Driver(driver),
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
 TextureSize(0,0), ImageSize(0,0), Pitch(0),
 HasMipMaps(false), IsRenderTarget(false)
 {
@@ -65,13 +65,11 @@ HasMipMaps(false), IsRenderTarget(false)
 	if (Device)
 		Device->AddRef();
 
-	if (Image)
+	if (image)
 	{
-		Image->grab();
-
-		if (createTexture(flags))
+		if (createTexture(image, flags))
 		{
-			if (copyTexture() && generateMipLevels)
+			if (copyTexture(image) && generateMipLevels)
 			{
 				// create mip maps.
 
@@ -103,9 +101,6 @@ CD3D8Texture::~CD3D8Texture()
 	if (Device)
 		Device->Release();
 
-	if (Image)
-		Image->drop();
-
 	if (Texture)
 		Texture->Release();
 
@@ -115,10 +110,10 @@ CD3D8Texture::~CD3D8Texture()
 
 
 //! creates the hardware texture
-bool CD3D8Texture::createTexture(u32 flags)
+bool CD3D8Texture::createTexture(video::IImage* image, u32 flags)
 {
 	core::dimension2d<s32> optSize;
-	ImageSize = Image->getDimension();
+	ImageSize = image->getDimension();
 
 	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
 		optSize=ImageSize;
@@ -139,7 +134,7 @@ bool CD3D8Texture::createTexture(u32 flags)
 		format = D3DFMT_A8R8G8B8; break;
 	case ETCF_OPTIMIZED_FOR_QUALITY:
 		{
-			switch(Image->getColorFormat())
+			switch(image->getColorFormat())
 			{
 			case ECF_R8G8B8:
 			case ECF_A8R8G8B8:
@@ -187,11 +182,10 @@ bool CD3D8Texture::createTexture(u32 flags)
 }
 
 
-
 //! copies the image to the texture
-bool CD3D8Texture::copyTexture()
+bool CD3D8Texture::copyTexture(video::IImage* image)
 {
-	if (Texture && Image)
+	if (Texture && image)
 	{
 		D3DSURFACE_DESC desc;
 		Texture->GetLevelDesc(0, &desc);
@@ -208,7 +202,7 @@ bool CD3D8Texture::copyTexture()
 		}
 
 		Pitch = rect.Pitch;
-		Image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
+		image->copyToScaling(rect.pBits, TextureSize.Width, TextureSize.Height, ColorFormat, Pitch);
 
 		hr = Texture->UnlockRect(0);
 		if (FAILED(hr))

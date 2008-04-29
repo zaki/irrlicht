@@ -81,10 +81,10 @@ private:
 	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	//! creates the hardware texture
-	bool createTexture(u32 flags);
+	bool createTexture(IImage* Image, u32 flags);
 
 	//! copies the image to the texture
-	bool copyTexture();
+	bool copyTexture(IImage* Image);
 
 	//! convert color formats
 	ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format);
@@ -97,7 +97,6 @@ private:
 	void copy32BitMipMap(char* src, char* tgt,
 		s32 width, s32 height, s32 pitchsrc, s32 pitchtgt) const;
 
-	IImage* Image;
 	IDirect3DDevice8* Device;
 	IDirect3DTexture8* Texture;
 	IDirect3DSurface8* RTTSurface;
