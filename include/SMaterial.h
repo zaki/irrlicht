@@ -218,7 +218,7 @@ namespace video
 		//! Is the ZBuffer enabled? Default: true
 		//! Changed from bool to integer
 		// ( 0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal )
-		u32 ZBuffer;
+		char ZBuffer;
 
 		//! Gets the texture transformation matrix for level i
 		core::matrix4& getTextureMatrix(u32 i)
