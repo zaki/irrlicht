@@ -274,7 +274,10 @@ namespace video
 		//! \param b: Sets the blue component of the Color.
 		//! Has to be a value between 0 and 255.
 		//! 0 means no blue, 255 means full blue.
-		void set(u32 a, u32 r, u32 g, u32 b) { color = (((a & 0xff)<<24) | ((r & 0xff)<<16) | ((g & 0xff)<<8) | (b & 0xff)); }
+		void set(u32 a, u32 r, u32 g, u32 b)
+		{
+			color = (((a & 0xff)<<24) | ((r & 0xff)<<16) | ((g & 0xff)<<8) | (b & 0xff));
+		}
 		void set(u32 col) { color = col; }
 
 		//! Compares the color to another color.
@@ -327,10 +330,15 @@ namespace video
 			const f32 mul1 = 2.f * d * inv;
 			const f32 mul2 = d * d;
 
-			return SColor ( core::clamp ( core::floor32 ( getAlpha() * mul0 + c1.getAlpha() * mul1 + c2.getAlpha() * mul2 ), 0, 255 ),
-					core::clamp ( core::floor32 ( getRed()   * mul0 + c1.getRed()   * mul1 + c2.getRed()   * mul2 ), 0, 255 ),
-					core::clamp ( core::floor32 ( getGreen() * mul0 + c1.getGreen() * mul1 + c2.getGreen() * mul2 ), 0, 255 ),
-					core::clamp ( core::floor32 ( getBlue()  * mul0 + c1.getBlue()  * mul1 + c2.getBlue()  * mul2 ), 0, 255 ));
+			return SColor(
+					core::clamp( core::floor32(
+							getAlpha() * mul0 + c1.getAlpha() * mul1 + c2.getAlpha() * mul2 ), 0, 255 ),
+					core::clamp( core::floor32(
+							getRed()   * mul0 + c1.getRed()   * mul1 + c2.getRed()   * mul2 ), 0, 255 ),
+					core::clamp ( core::floor32(
+							getGreen() * mul0 + c1.getGreen() * mul1 + c2.getGreen() * mul2 ), 0, 255 ),
+					core::clamp ( core::floor32(
+							getBlue()  * mul0 + c1.getBlue()  * mul1 + c2.getBlue()  * mul2 ), 0, 255 ));
 		}
 
 		//! color in A8R8G8B8 Format
@@ -415,7 +423,8 @@ namespace video
 		/** \param c1: first color to interpolate with
 		\param c2: second color to interpolate with
 		\param d: value between 0.0f and 1.0f. */
-		inline SColorf getInterpolated_quadratic(const SColorf& c1, const SColorf& c2, f32 d) const
+		inline SColorf getInterpolated_quadratic(const SColorf& c1, const SColorf& c2,
+				f32 d) const
 		{
 			d = core::clamp(d, 0.f, 1.f);
 			// this*(1-d)*(1-d) + 2 * c1 * (1-d) + c2 * d * d;
@@ -534,7 +543,8 @@ namespace video
 		else if (rh < 180.0f * core::DEGTORAD )
 			rm1 = rm2;
 		else if (rh < 240.0f * core::DEGTORAD )
-			rm1 = rm1 + (rm2 - rm1) * ( ( 240.0f * core::DEGTORAD ) - rh) / (60.0f * core::DEGTORAD);
+			rm1 = rm1 + (rm2 - rm1) * ( ( 240.0f * core::DEGTORAD ) - rh) /
+				(60.0f * core::DEGTORAD);
 		                
 		return (u32) (rm1 * 255.f);
 	}

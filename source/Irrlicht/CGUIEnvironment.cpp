@@ -137,9 +137,14 @@ CGUIEnvironment::~CGUIEnvironment()
 		CurrentSkin = 0;
 	}
 
-	// delete all fonts
 	u32 i;
 
+	// delete all sprite banks
+	for (i=0; i<Banks.size(); ++i)
+		if (Banks[i].Bank)
+			Banks[i].Bank->drop();
+
+	// delete all fonts
 	for (i=0; i<Fonts.size(); ++i)
 		Fonts[i].Font->drop();
 
@@ -1409,10 +1414,9 @@ IGUISpriteBank* CGUIEnvironment::addEmptySpriteBank(const c8 *name)
 	else
 		b.Filename = name;
 
-	s32 index = Banks.binary_search(b);
+	const s32 index = Banks.binary_search(b);
 	if (index != -1)
 		return 0; 
-
 
 	// create a new sprite bank
 
@@ -1432,7 +1436,6 @@ IGUIFont* CGUIEnvironment::getBuiltInFont() const
 
 	return Fonts[0].Font;
 }
-
 
 
 //! Returns the root gui element. 

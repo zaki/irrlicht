@@ -67,7 +67,8 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 					{
 						p.pos = Mesh->getMeshBuffer(j)->getPosition(k);
 						if( UseNormalDirection )
-							p.vector = Mesh->getMeshBuffer(j)->getNormal(k) / NormalDirectionModifier;
+							p.vector = Mesh->getMeshBuffer(j)->getNormal(k) /
+								NormalDirectionModifier;
 						else
 							p.vector = Direction;
 
@@ -114,7 +115,8 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 
 				p.pos = Mesh->getMeshBuffer(randomMB)->getPosition(vertexNumber);
 				if( UseNormalDirection )
-					p.vector = Mesh->getMeshBuffer(randomMB)->getNormal(vertexNumber) / NormalDirectionModifier;
+					p.vector = Mesh->getMeshBuffer(randomMB)->getNormal(vertexNumber) /
+							NormalDirectionModifier;
 				else
 					p.vector = Direction;
 

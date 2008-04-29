@@ -103,8 +103,7 @@ public:
 			if (!TriangleRect.isRectCollided(ViewPortRect))
 				continue;
 
-
-			// höhe des dreiecks berechnen
+			// calculate height of triangle
 			height = v3->Pos.Y - v1->Pos.Y;
 			if (!height)
 				continue;
@@ -252,7 +251,9 @@ public:
 						while (hSpanBegin < hSpanEnd) 
 						{
 							color = lockedTexture[((spanTy>>8)&textureYMask) * lockedTextureWidth + ((spanTx>>8)&textureXMask)];
-							*hSpanBegin = video::RGB16(video::getRed(color) * (spanR>>8) >>2, video::getGreen(color) * (spanG>>8) >>2, video::getBlue(color) * (spanB>>8) >>2);
+							*hSpanBegin = video::RGB16(video::getRed(color) * (spanR>>8) >>2,
+									video::getGreen(color) * (spanG>>8) >>2,
+									video::getBlue(color) * (spanB>>8) >>2);
 
 							spanR += spanStepR;
 							spanG += spanStepG;

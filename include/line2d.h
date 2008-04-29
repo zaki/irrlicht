@@ -32,8 +32,10 @@ class line2d
 		line2d<T> operator-(const vector2d<T>& point) const { return line2d<T>(start - point, end - point); }
 		line2d<T>& operator-=(const vector2d<T>& point) { start -= point; end -= point; return *this; }
 
-		bool operator==(const line2d<T>& other) const { return (start==other.start && end==other.end) || (end==other.start && start==other.end);}
-		bool operator!=(const line2d<T>& other) const { return !(start==other.start && end==other.end) || (end==other.start && start==other.end);}
+		bool operator==(const line2d<T>& other) const
+		{ return (start==other.start && end==other.end) || (end==other.start && start==other.end);}
+		bool operator!=(const line2d<T>& other) const
+		{ return !(start==other.start && end==other.end) || (end==other.start && start==other.end);}
 
 		// functions
 

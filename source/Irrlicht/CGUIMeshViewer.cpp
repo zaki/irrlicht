@@ -154,7 +154,10 @@ void CGUIMeshViewer::draw()
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			scene::IMeshBuffer* mb = m->getMeshBuffer(i);
-			driver->drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/ 3, mb->getVertexType(), scene::EPT_TRIANGLES);
+			driver->drawVertexPrimitiveList(mb->getVertices(),
+					mb->getVertexCount(), mb->getIndices(),
+					mb->getIndexCount()/ 3, mb->getVertexType(),
+					scene::EPT_TRIANGLES);
 		}
 
 		driver->setViewPort(oldViewPort);

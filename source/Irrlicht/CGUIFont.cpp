@@ -33,6 +33,8 @@ CGUIFont::CGUIFont(IGUIEnvironment *env, const c8* filename)
 		Driver = Environment->getVideoDriver();
 
 		SpriteBank = Environment->addEmptySpriteBank(filename);
+		if (SpriteBank)
+			SpriteBank->grab();
 	}
 
 	if (Driver)
@@ -48,7 +50,6 @@ CGUIFont::~CGUIFont()
 
 	if (SpriteBank)
 		SpriteBank->drop();
-
 }
 
 

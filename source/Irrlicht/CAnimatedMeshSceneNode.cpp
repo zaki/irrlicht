@@ -421,7 +421,9 @@ void CAnimatedMeshSceneNode::render()
 
 					for (u32 n=0;n<joint->Children.size();++n)
 					{
-						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(), joint->Children[n]->GlobalAnimatedMatrix.getTranslation(),  video::SColor(0,51,66,255));
+						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(),
+								joint->Children[n]->GlobalAnimatedMatrix.getTranslation(),
+								video::SColor(0,51,66,255));
 					}
 				}
 			}

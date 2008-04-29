@@ -62,7 +62,8 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 			amount = MaxParticlesPerSecond * 2;
 
 		// Get Mesh for this frame
-		IMesh* frameMesh = AnimatedMesh->getMesh( core::floor32(Node->getFrameNr()), 255, Node->getStartFrame(), Node->getEndFrame() );
+		IMesh* frameMesh = AnimatedMesh->getMesh( core::floor32(Node->getFrameNr()),
+				255, Node->getStartFrame(), Node->getEndFrame() );
 		for(u32 i=0; i<amount; ++i)
 		{
 			if( EveryMeshVertex )
@@ -73,7 +74,8 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 					{
 						p.pos = frameMesh->getMeshBuffer(j)->getPosition(k);
 						if( UseNormalDirection )
-							p.vector = frameMesh->getMeshBuffer(j)->getNormal(k) / NormalDirectionModifier;
+							p.vector = frameMesh->getMeshBuffer(j)->getNormal(k) /
+								NormalDirectionModifier;
 						else
 							p.vector = Direction;
 
@@ -120,7 +122,8 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 
 				p.pos = frameMesh->getMeshBuffer(randomMB)->getPosition(vertexNumber);
 				if( UseNormalDirection )
-					p.vector = frameMesh->getMeshBuffer(randomMB)->getNormal(vertexNumber) / NormalDirectionModifier;
+					p.vector = frameMesh->getMeshBuffer(randomMB)->getNormal(vertexNumber) /
+						NormalDirectionModifier;
 				else
 					p.vector = Direction;
 

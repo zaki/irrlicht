@@ -50,8 +50,9 @@ namespace scene
 
 		//! uses animation from another mesh
 		//! the animation is linked (not copied) based on joint names (so make sure they are unique)
-		//! \return Returns true if all joints in this mesh were matched up (empty names will not be matched, and it's case sensitive)
-		//! unmatched joints will not be animated
+		//! \return Returns true if all joints in this mesh were
+		//! matched up (empty names will not be matched, and it's case
+		//! sensitive). Unmatched joints will not be animated.
 		virtual bool useAnimationFrom(const ISkinnedMesh *mesh) = 0;
 
 		//!Update Normals when Animating

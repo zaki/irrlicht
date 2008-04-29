@@ -118,20 +118,22 @@ namespace scene
 	} // end namespace quake3
 
 	//!	The Scene Manager manages scene nodes, mesh recources, cameras and all the other stuff.
-	/** All Scene nodes can be created only here. There is a always growing list of scene
-	nodes for lots of purposes: Indoor rendering scene nodes like the Octree
-	(addOctTreeSceneNode()) or the terrain renderer (addTerrainSceneNode()),
-	different Camera scene nodes (addCameraSceneNode(), addCameraSceneNodeMaya()),
-	scene nodes for Light (addLightSceneNode()), Billboards (addBillboardSceneNode())
-	and so on.
-	A scene node is a node in the hierachical scene graph. Every scene node may have children,
-	which are other scene nodes. Children move relative the their parents position. If the parent of a node is not
-	visible, its children won't be visible, too. In this way, it is for example easily possible
-	to attach a light to a moving car or to place a walking character on a moving platform
-	on a moving ship.
-	The SceneManager is also able to load 3d mesh files of different formats. Take a look
-	at getMesh() to find out what formats are supported. And if these formats are not enough
-	use addExternalMeshLoader() to add new formats to the engine.
+	/** All Scene nodes can be created only here. There is a always growing
+	list of scene nodes for lots of purposes: Indoor rendering scene nodes
+	like the Octree (addOctTreeSceneNode()) or the terrain renderer
+	(addTerrainSceneNode()), different Camera scene nodes
+	(addCameraSceneNode(), addCameraSceneNodeMaya()), scene nodes for Light
+	(addLightSceneNode()), Billboards (addBillboardSceneNode()) and so on.
+	A scene node is a node in the hierachical scene graph. Every scene node
+	may have children, which are other scene nodes. Children move relative
+	the their parents position. If the parent of a node is not visible, its
+	children won't be visible, too. In this way, it is for example easily
+	possible to attach a light to a moving car or to place a walking
+	character on a moving platform on a moving ship.
+	The SceneManager is also able to load 3d mesh files of different
+	formats. Take a look at getMesh() to find out what formats are
+	supported. And if these formats are not enough use
+	addExternalMeshLoader() to add new formats to the engine.
 	*/
 	class ISceneManager : public virtual IReferenceCounted
 	{
@@ -151,128 +153,171 @@ namespace scene
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>3D Studio (.3ds)</TD>
-		 *    <TD>Loader for 3D-Studio files which lots of 3D packages are able to export.
-		 *      Only static meshes are currently supported by this importer. </TD>
+		 *    <TD>Loader for 3D-Studio files which lots of 3D packages
+		 *      are able to export.  Only static meshes are currently
+		 *      supported by this importer. </TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Bliz Basic B3D (.b3d)</TD>
-		 *    <TD>Loader for blitz basic files, developed by Mark Sibly, also supports animations.</TD>
+		 *    <TD>Loader for blitz basic files, developed by Mark
+		 *      Sibly, also supports animations.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Cartography shop 4 (.csm)</TD>
-		 *    <TD>Cartography Shop is a modeling program for creating architecture and calculating
-		 *      lighting. Irrlicht can directly import .csm files thanks to the IrrCSM library
-		 *      created by Saurav Mohapatra which is now integrated directly in Irrlicht.
-		 *      If you are using this loader, please note that you'll have to set the path
-		 *      of the textures before loading .csm files. You can do this using SceneManager-&gt;getParameters()-&gt;setParameter(scene::CSM_TEXTURE_PATH,
+		 *    <TD>Cartography Shop is a modeling program for creating
+		 *      architecture and calculating lighting. Irrlicht can
+		 *      directly import .csm files thanks to the IrrCSM library
+		 *      created by Saurav Mohapatra which is now integrated
+		 *      directly in Irrlicht.  If you are using this loader,
+		 *      please note that you'll have to set the path of the
+		 *      textures before loading .csm files. You can do this
+		 *      using
+		 *      SceneManager-&gt;getParameters()-&gt;setParameter(scene::CSM_TEXTURE_PATH,
 		 *      &quot;path/to/your/textures&quot;);</TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>COLLADA (.dae, .xml)</TD>
-		 *    <TD>COLLADA is an open Digital Asset Exchange Schema for the interactive 3D industry. There are
-		 *        exporters and importers for this format available for most of the big 3d packages
-		 *        at http://collada.org. Irrlicht can import COLLADA files by using the
-		 *        ISceneManager::getMesh() method. COLLADA files need not contain only one single mesh
-		 *        but multiple meshes and a whole scene setup with lights, cameras and mesh instances,
-		 *        this loader can set up a scene as described by the COLLADA file instead of loading
-		 *        and returning one single mesh. By default, this loader behaves like the other loaders
-		 *        and does not create instances, but it can be switched into this mode by using
+		 *    <TD>COLLADA is an open Digital Asset Exchange Schema for
+		 *        the interactive 3D industry.  There are exporters and
+		 *        importers for this format available for most of the
+		 *        big 3d packagesat http://collada.org. Irrlicht can
+		 *        import COLLADA files by using the
+		 *        ISceneManager::getMesh() method. COLLADA files need
+		 *        not contain only one single mesh but multiple meshes
+		 *        and a whole scene setup with lights, cameras and mesh
+		 *        instances, this loader can set up a scene as
+		 *        described by the COLLADA file instead of loading and
+		 *        returning one single mesh. By default, this loader
+		 *        behaves like the other loaders and does not create
+		 *        instances, but it can be switched into this mode by
+		 *        using
 		 *        SceneManager->getParameters()->setParameter(COLLADA_CREATE_SCENE_INSTANCES, true);
-		 *        Created scene nodes will be named as the names of the nodes in the
-		 *        COLLADA file. The returned mesh is just a dummy object in this mode. Meshes included in
-		 *        the scene will be added into the scene manager with the following naming scheme:
-		 *        path/to/file/file.dea#meshname. The loading of such meshes is logged.
-		 *        Currently, this loader is able to create meshes (made of only polygons), lights,
-		 *        and cameras. Materials and animations are currently not supported but this will
-		 *        change with future releases.
+		 *        Created scene nodes will be named as the names of the
+		 *        nodes in the COLLADA file. The returned mesh is just
+		 *        a dummy object in this mode. Meshes included in the
+		 *        scene will be added into the scene manager with the
+		 *        following naming scheme:
+		 *        path/to/file/file.dea#meshname. The loading of such
+		 *        meshes is logged.  Currently, this loader is able to
+		 *        create meshes (made of only polygons), lights, and
+		 *        cameras. Materials and animations are currently not
+		 *        supported but this will change with future releases.
 		 *    </TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Delgine DeleD (.dmf)</TD>
-		 *    <TD>DeleD (delgine.com) is a 3D editor and level-editor combined into one and is specifically
-		 *        designed for 3D game-development. With this loader, it is possible to directly load
-		 *        all geometry is as well as textures and lightmaps from .dmf files. To set texture and
-		 *        material paths, see scene::DMF_USE_MATERIALS_DIRS and scene::DMF_TEXTURE_PATH. It is also
-		 *        possible to flip the alpha texture by setting scene::DMF_FLIP_ALPHA_TEXTURES to true and
-		 *        to set the material transparent reference value by setting scene::DMF_ALPHA_CHANNEL_REF to
-		 *        a float between 0 and 1. The loader is
-		 *        based on Salvatore Russo's .dmf loader, I just changed some parts of it. Thanks to
-		 *        Salvatore for his work and for allowing me to use his code in Irrlicht and put it under Irrlicht's
-		 *        license. For newer and more enchanced versions of the loader, take a look at delgine.com.
+		 *    <TD>DeleD (delgine.com) is a 3D editor and level-editor
+		 *        combined into one and is specifically designed for 3D
+		 *        game-development. With this loader, it is possible to
+		 *        directly load all geometry is as well as textures and
+		 *        lightmaps from .dmf files.  To set texture and
+		 *        material paths, see scene::DMF_USE_MATERIALS_DIRS and
+		 *        scene::DMF_TEXTURE_PATH. It is also possible to flip
+		 *        the alpha texture by setting
+		 *        scene::DMF_FLIP_ALPHA_TEXTURES to true and to set the
+		 *        material transparent reference value by setting
+		 *        scene::DMF_ALPHA_CHANNEL_REF to a float between 0 and
+		 *        1. The loader is based on Salvatore Russo's .dmf
+		 *        loader, I just changed some parts of it. Thanks to
+		 *        Salvatore for his work and for allowing me to use his
+		 *        code in Irrlicht and put it under Irrlicht's license.
+		 *        For newer and more enchanced versions of the loader,
+		 *        take a look at delgine.com.
 		 *    </TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>DirectX (.x)</TD>
-		 *    <TD>Platform independent importer (so not D3D-only) for .x files. Most 3D
-		 *      packages can export these natively and there are several tools for them
-		 *      available. (e.g. the Maya exporter included in the DX SDK) .x files can
-		 *      include skeletal animations and Irrlicht is able to play and display them.
-		 *      Currently, Irrlicht only supports uncompressed .x files.</TD>
+		 *    <TD>Platform independent importer (so not D3D-only) for
+		 *      .x files. Most 3D packages can export these natively
+		 *      and there are several tools for them available, e.g.
+		 *      the Maya exporter included in the DX SDK.
+		 *      .x files can include skeletal animations and Irrlicht
+		 *      is able to play and display them.  Currently, Irrlicht
+		 *      only supports uncompressed .x files.</TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Maya (.obj)</TD>
-		 *    <TD>Most 3D software can create .obj files which contain static geometry without
-		 *      material data. The material files .mtl are also supported. This importer
-		 *      for Irrlicht can load them directly. </TD>
+		 *    <TD>Most 3D software can create .obj files which contain
+		 *      static geometry without material data. The material
+		 *      files .mtl are also supported. This importer for
+		 *      Irrlicht can load them directly. </TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Milkshape (.ms3d)</TD>
-		 *    <TD>.MS3D files contain models and sometimes skeletal animations from the
-		 *      Milkshape 3D modeling and animation software. This importer for Irrlicht
-		 *      can display and/or animate these files.  </TD>
+		 *    <TD>.MS3D files contain models and sometimes skeletal
+		 *      animations from the Milkshape 3D modeling and animation
+		 *      software. This importer for Irrlicht can display and/or
+		 *      animate these files.  </TD>
 		 *  </TR>
 		 *  <TR>
 		 *  <TD>My3D (.my3d)</TD>
-		 *      <TD>.my3D is a flexible 3D file format. The My3DTools contains plug-ins to
-		 *        export .my3D files from several 3D packages. With this built-in importer,
-		 *        Irrlicht can read and display those files directly. This loader was written
-		 *        by Zhuck Dimitry who also created the whole My3DTools package. If you are using this loader, please
-		 *      note that you can set the path of the textures before loading .my3d files.
-		 *      You can do this using SceneManager-&gt;getParameters()-&gt;setParameter(scene::MY3D_TEXTURE_PATH,
-		 *      &quot;path/to/your/textures&quot;); </TD>
+		 *      <TD>.my3D is a flexible 3D file format. The My3DTools
+		 *        contains plug-ins to export .my3D files from several
+		 *        3D packages. With this built-in importer, Irrlicht
+		 *        can read and display those files directly. This
+		 *        loader was written by Zhuck Dimitry who also created
+		 *        the whole My3DTools package. If you are using this
+		 *        loader, please note that you can set the path of the
+		 *        textures before loading .my3d files.  You can do this
+		 *        using
+		 *        SceneManager-&gt;getParameters()-&gt;setParameter(scene::MY3D_TEXTURE_PATH,
+		 *        &quot;path/to/your/textures&quot;);
+		 *        </TD>
 		 *    </TR>
 		 *    <TR>
 		 *      <TD>OCT (.oct)</TD>
-		 *      <TD>The oct file format contains 3D geometry and lightmaps and can be loaded
-		 *        directly by Irrlicht. OCT files<br>
-		 *        can be created by FSRad, Paul Nette's radiosity processor or exported from
-		 *        Blender using OCTTools which can be found in the exporters/OCTTools directory
-		 *        of the SDK. Thanks to Murphy McCauley for creating all this.</TD>
+		 *      <TD>The oct file format contains 3D geometry and
+		 *        lightmaps and can be loaded directly by Irrlicht. OCT
+		 *        files<br> can be created by FSRad, Paul Nette's
+		 *        radiosity processor or exported from Blender using
+		 *        OCTTools which can be found in the exporters/OCTTools
+		 *        directory of the SDK. Thanks to Murphy McCauley for
+		 *        creating all this.</TD>
 		 *    </TR>
 		 *	  <TR>
 		 *      <TD>OGRE Meshes (.mesh)</TD>
-		 *      <TD>Ogre .mesh files contain 3D data for the OGRE 3D engine. Irrlicht can read and
-		 *          display them directly with this importer. To define materials for the mesh,
-		 *			copy a .material file named like the corresponding .mesh file where the .mesh
-		 *			file is. (For example ogrehead.material for ogrehead.mesh). Thanks to Christian Stehno
-		 *			who wrote and contributed this loader.</TD>
+		 *      <TD>Ogre .mesh files contain 3D data for the OGRE 3D
+		 *        engine. Irrlicht can read and display them directly
+		 *        with this importer. To define materials for the mesh,
+		 *        copy a .material file named like the corresponding
+		 *        .mesh file where the .mesh file is. (For example
+		 *        ogrehead.material for ogrehead.mesh). Thanks to
+		 *        Christian Stehno who wrote and contributed this
+		 *        loader.</TD>
 		 *    </TR>
 		 *    <TR>
 		 *      <TD>Pulsar LMTools (.lmts)</TD>
-		 *      <TD>LMTools is a set of tools (Windows &amp; Linux) for creating lightmaps.
-		 *        Irrlicht can directly read .lmts files thanks to<br>
-		 *        the importer created by Jonas Petersen. If you are using this loader, please
-		 *        note that you can set the path of the textures before loading .lmts files.
-		 *        You can do this using SceneManager-&gt;getParameters()-&gt;setParameter(scene::LMTS_TEXTURE_PATH,
-		 *        &quot;path/to/your/textures&quot;); Notes for<br>
-		 *        this version of the loader:<br>
-		 *        - It does not recognice/support user data in the *.lmts files.<br>
-		 *        - The TGAs generated by LMTools don't work in Irrlicht for some reason (the
-		 *        textures are upside down). Opening and resaving them in a graphics app will
-		 *        solve the problem.</TD>
+		 *      <TD>LMTools is a set of tools (Windows &amp; Linux) for
+		 *        creating lightmaps.  Irrlicht can directly read .lmts
+		 *        files thanks to<br> the importer created by Jonas
+		 *        Petersen. If you are using this loader, please note
+		 *        that you can set the path of the textures before
+		 *        loading .lmts files.  You can do this using
+		 *        SceneManager-&gt;getParameters()-&gt;setParameter(scene::LMTS_TEXTURE_PATH,
+		 *        &quot;path/to/your/textures&quot;);
+		 *        Notes for<br> this version of the loader:<br>
+		 *        - It does not recognise/support user data in the
+		 *          *.lmts files.<br>
+		 *        - The TGAs generated by LMTools don't work in
+		 *          Irrlicht for some reason (the textures are upside
+		 *          down). Opening and resaving them in a graphics app
+		 *          will solve the problem.</TD>
 		 *    </TR>
 		 *    <TR>
 		 *      <TD>Quake 3 levels (.bsp)</TD>
-		 *      <TD>Quake 3 is a popular game by IDSoftware, and .pk3 files contain .bsp files
-		 *        and textures/lightmaps describing huge<br>
-		 *        prelighted levels. Irrlicht can read .pk3 and .bsp files directly and thus
-		 *        render Quake 3 levels directly. Written by Nikolaus Gebhardt enhanced by
-		 *        Dean P. Macri with the curved surfaces feature. </TD>
+		 *      <TD>Quake 3 is a popular game by IDSoftware, and .pk3
+		 *        files contain .bsp files and textures/lightmaps
+		 *        describing huge prelighted levels. Irrlicht can read
+		 *        .pk3 and .bsp files directly and thus render Quake 3
+		 *        levels directly. Written by Nikolaus Gebhardt
+		 *        enhanced by Dean P. Macri with the curved surfaces
+		 *        feature. </TD>
 		 *    </TR>
 		 *    <TR>
 		 *      <TD>Quake 2 models (.md2)</TD>
-		 *      <TD>Quake 2 models are characters with morph target animation. Irrlicht can
-		 *        read, display and animate them directly with this importer. </TD>
+		 *      <TD>Quake 2 models are characters with morph target
+		 *        animation. Irrlicht can read, display and animate
+		 *        them directly with this importer. </TD>
 		 *    </TR>
 		 *  </TABLE>
 		 *
@@ -368,10 +413,11 @@ namespace scene
 		\param scale: Initial scale of the scene node.
 		\return Returns pointer to the created test scene node.
 	     This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IMeshSceneNode* addSphereSceneNode(f32 radius=5.0f, s32 polyCount=16, ISceneNode* parent=0, s32 id=-1,
-			const core::vector3df& position = core::vector3df(0,0,0),
-			const core::vector3df& rotation = core::vector3df(0,0,0),
-			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
+		virtual IMeshSceneNode* addSphereSceneNode(f32 radius=5.0f, s32 polyCount=16,
+				ISceneNode* parent=0, s32 id=-1,
+				const core::vector3df& position = core::vector3df(0,0,0),
+				const core::vector3df& rotation = core::vector3df(0,0,0),
+				const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
 
 		//! Adds a scene node for rendering an animated mesh model.
 		/** \param mesh: Pointer to the loaded animated mesh to be displayed.
@@ -384,11 +430,12 @@ namespace scene
 		\param alsoAddIfMeshPointerZero: Add the scene node even if a 0 pointer is passed.
 		\return Returns pointer to the created scene node.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMeshSceneNode* addAnimatedMeshSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0, s32 id=-1,
-			const core::vector3df& position = core::vector3df(0,0,0),
-			const core::vector3df& rotation = core::vector3df(0,0,0),
-			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f),
-			bool alsoAddIfMeshPointerZero=false) = 0;
+		virtual IAnimatedMeshSceneNode* addAnimatedMeshSceneNode(IAnimatedMesh* mesh,
+				ISceneNode* parent=0, s32 id=-1,
+				const core::vector3df& position = core::vector3df(0,0,0),
+				const core::vector3df& rotation = core::vector3df(0,0,0),
+				const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f),
+				bool alsoAddIfMeshPointerZero=false) = 0;
 
 		//! Adds a scene node for rendering a static mesh.
 		/** \param mesh: Pointer to the loaded static mesh to be displayed.
@@ -488,10 +535,11 @@ namespace scene
 		 \return Returns a pointer to the interface of the camera if successful, otherwise 0.
 		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
-			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f, f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
+			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
+			f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
 
-		//! Adds a camera scene node with an animator which provides mouse and keyboard control 
-		//! like in most first person shooters (FPS).
+		//! Adds a camera scene node with an animator which provides
+		//! mouse and keyboard control like in most first person shooters (FPS).
 		/** Look with the mouse, move with cursor keys. If you do not like the default
 		 key layout, you may want to specify your own. For example to make the camera
 		 be controlled by the cursor keys AND the keys W,A,S, and D, do something
@@ -566,7 +614,8 @@ namespace scene
 		 lensflares and things like that.
 		 \param parent: Parent scene node of the billboard. Can be null. If the parent moves,
 		 the billboard will move too.
-		 \param position: Position of the space relative to its parent where the billboard will be placed.
+		 \param position: Position of the space relative to its parent
+		  where the billboard will be placed.
 		 \param size: Size of the billboard. This size is 2 dimensional because a billboard only has
 		 width and height.
 		 \param id: An id of the node. This id can be used to identify the node.
@@ -604,8 +653,11 @@ namespace scene
 		 \param texture: Texture for the dome.
 		 \param horiRes: Number of vertices of a horizontal layer of the sphere.
 		 \param vertRes: Number of vertices of a vertical layer of the sphere.
-		 \param texturePercentage: How much of the height of the texture is used. Should be between 0 and 1.
-		 \param spherePercentage: How much of the sphere is drawn. Value should be between 0 and 2, where 1 is an exact half-sphere and 2 is a full sphere.
+		 \param texturePercentage: How much of the height of the
+		  texture is used. Should be between 0 and 1.
+		 \param spherePercentage: How much of the sphere is drawn.
+		  Value should be between 0 and 2, where 1 is an exact
+		  half-sphere and 2 is a full sphere.
 		 \param parent: Parent scene node of the dome. A dome usually has no parent,
 		 so this should be null. Note: If a parent is set, the dome will not
 		 change how it is drawn.
@@ -652,24 +704,32 @@ namespace scene
 		 a LOD (Level of Detail) which is determined based on a patch's
 		 distance from the camera.
 
-		 The patch size of the terrain must always be a size of ( 2^N+1, i.e. 8+1(9), 16+1(17), etc. ).
-		 The MaxLOD available is directly dependent on the patch size of the terrain.  LOD 0 contains all
-		 of the indices to draw all the triangles at the max detail for a patch.  As each LOD goes up by 1
-		 the step taken, in generating indices increases by - 2^LOD, so for LOD 1, the step taken is 2, for
-		 LOD 2, the step taken is 4, LOD 3 - 8, etc.  The step can be no larger than the size of the patch,
-		 so having a LOD of 8, with a patch size of 17, is asking the algoritm to generate indices every
-		 2^8 ( 256 ) vertices, which is not possible with a patch size of 17.  The maximum LOD for a patch
-		 size of 17 is 2^4 ( 16 ).  So, with a MaxLOD of 5, you'll have LOD 0 ( full detail ), LOD 1 ( every
-		 2 vertices ), LOD 2 ( every 4 vertices ), LOD 3 ( every 8 vertices ) and LOD 4 ( every 16 vertices ).
+		 The patch size of the terrain must always be a size of 2^N+1,
+		 i.e. 8+1(9), 16+1(17), etc.
+		 The MaxLOD available is directly dependent on the patch size
+		 of the terrain.  LOD 0 contains all of the indices to draw all
+		 the triangles at the max detail for a patch.  As each LOD goes
+		 up by 1 the step taken, in generating indices increases by
+		 -2^LOD, so for LOD 1, the step taken is 2, for LOD 2, the step
+		 taken is 4, LOD 3 - 8, etc.  The step can be no larger than
+		 the size of the patch, so having a LOD of 8, with a patch size
+		 of 17, is asking the algoritm to generate indices every 2^8 (
+		 256 ) vertices, which is not possible with a patch size of 17.
+		 The maximum LOD for a patch size of 17 is 2^4 ( 16 ).  So,
+		 with a MaxLOD of 5, you'll have LOD 0 ( full detail ), LOD 1 (
+		 every 2 vertices ), LOD 2 ( every 4 vertices ), LOD 3 ( every
+		 8 vertices ) and LOD 4 ( every 16 vertices ).
 		 \param heightMapFileName: The name of the file on disk, to read vertex data from. This should
 		 be a gray scale bitmap.
 		 \param parent: Parent of the scene node. Can be 0 if no parent.
 		 \param id: Id of the node. This id can be used to identify the scene node.
 		 \param position: The absolute position of this node.
 		 \param rotation: The absolute rotation of this node. ( NOT YET IMPLEMENTED )
-		 \param scale: The scale factor for the terrain.  If you're using a heightmap of size 129x129 and would like
-		 your terrain to be 12900x12900 in game units, then use a scale factor of ( core::vector ( 100.0f, 100.0f, 100.0f ).
-		 If you use a Y scaling factor of 0.0f, then your terrain will be flat.
+		 \param scale: The scale factor for the terrain.  If you're
+		  using a heightmap of size 129x129 and would like your terrain
+		  to be 12900x12900 in game units, then use a scale factor of (
+		  core::vector ( 100.0f, 100.0f, 100.0f ).  If you use a Y
+		  scaling factor of 0.0f, then your terrain will be flat.
 		 \param vertexColor: The default color of all the vertices. If no texture is associated
 		 with the scene node, then all vertices will be this color. Defaults to white.
 		 \param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
@@ -678,9 +738,11 @@ namespace scene
 		 know what you are doing, this might lead to strange behaviour.
 		 \param smoothFactor: The number of times the vertices are smoothed.
 		 \param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
-		 \return Returns pointer to the created scene node. Can be null if the
-		 terrain could not be created, for example because the heightmap could not be loaded.
-		 The returned pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		 \return Returns pointer to the created scene node. Can be null
+		  if the terrain could not be created, for example because the
+		  heightmap could not be loaded.  The returned pointer should
+		  not be dropped. See IReferenceCounted::drop() for more
+		  information. */
 		virtual ITerrainSceneNode* addTerrainSceneNode(
 				const c8* heightMapFileName,
 				ISceneNode* parent=0, s32 id=-1,
@@ -701,9 +763,11 @@ namespace scene
 		 \param id: Id of the node. This id can be used to identify the scene node.
 		 \param position: The absolute position of this node.
 		 \param rotation: The absolute rotation of this node. ( NOT YET IMPLEMENTED )
-		 \param scale: The scale factor for the terrain.  If you're using a heightmap of size 129x129 and would like
-		 your terrain to be 12900x12900 in game units, then use a scale factor of ( core::vector ( 100.0f, 100.0f, 100.0f ).
-		 If you use a Y scaling factor of 0.0f, then your terrain will be flat.
+		 \param scale: The scale factor for the terrain.  If you're
+		  using a heightmap of size 129x129 and would like your terrain
+		  to be 12900x12900 in game units, then use a scale factor of (
+		  core::vector ( 100.0f, 100.0f, 100.0f ).  If you use a Y
+		  scaling factor of 0.0f, then your terrain will be flat.
 		 \param vertexColor: The default color of all the vertices. If no texture is associated
 		 with the scene node, then all vertices will be this color. Defaults to white.
 		 \param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
@@ -712,9 +776,11 @@ namespace scene
 		 know what you are doing, this might lead to strange behaviour.
 		 \param smoothFactor: The number of times the vertices are smoothed.
 		 \param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
-		 \return Returns pointer to the created scene node. Can be null if the
-		 terrain could not be created, for example because the heightmap could not be loaded.
-		 The returned pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		 \return Returns pointer to the created scene node. Can be null
+		  if the terrain could not be created, for example because the
+		  heightmap could not be loaded.  The returned pointer should
+		  not be dropped. See IReferenceCounted::drop() for more
+		  information. */
 		virtual ITerrainSceneNode* addTerrainSceneNode(
 			io::IReadFile* heightMapFile,
 			ISceneNode* parent=0, s32 id=-1,
@@ -751,7 +817,8 @@ namespace scene
 		virtual IDummyTransformationSceneNode* addDummyTransformationSceneNode(
 			ISceneNode* parent=0, s32 id=-1) = 0;
 
-		//! Adds a text scene node, which is able to display  2d text at a position in three dimensional space
+		//! Adds a text scene node, which is able to display 2d text at
+		//! a position in three dimensional space
 		virtual ITextSceneNode* addTextSceneNode(gui::IGUIFont* font, const wchar_t* text,
 			video::SColor color=video::SColor(100,255,255,255),
 			ISceneNode* parent = 0,	const core::vector3df& position = core::vector3df(0,0,0),
@@ -880,7 +947,9 @@ namespace scene
 		\param start: Scene node to start from. All children of this scene
 		node are searched. If null is specified, the root scene node is
 		taken. */
-		virtual void getSceneNodesFromType(ESCENE_NODE_TYPE type, core::array<scene::ISceneNode*>& outNodes, ISceneNode* start=0) = 0;
+		virtual void getSceneNodesFromType(ESCENE_NODE_TYPE type,
+				core::array<scene::ISceneNode*>& outNodes,
+				ISceneNode* start=0) = 0;
 
 		//! Returns the current active camera.
 		/** \return The active camera is returned. Note that this can be NULL, if there
@@ -935,9 +1004,11 @@ namespace scene
 		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
 		 See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createFlyCircleAnimator(const core::vector3df& center,
-			f32 radius, f32 speed=0.001f, const core::vector3df& direction= core::vector3df ( 0.f, 1.f, 0.f ) ) = 0;
+				f32 radius, f32 speed=0.001f,
+				const core::vector3df& direction=core::vector3df ( 0.f, 1.f, 0.f ) ) = 0;
 
-		//! Creates a fly straight animator, which lets the attached scene node fly or move along a line between two points.
+		//! Creates a fly straight animator, which lets the attached
+		//! scene node fly or move along a line between two points.
 		/** \param startPoint: Start point of the line.
 		 \param endPoint: End point of the line.
 		 \param timeForWay: Time in milli seconds how long the node should need to
@@ -951,7 +1022,8 @@ namespace scene
 		virtual ISceneNodeAnimator* createFlyStraightAnimator(const core::vector3df& startPoint,
 			const core::vector3df& endPoint, u32 timeForWay, bool loop=false) = 0;
 
-		//! Creates a texture animator, which switches the textures of the target scene	 node based on a list of textures.
+		//! Creates a texture animator, which switches the textures of
+		//! the target scene node based on a list of textures.
 		/** \param textures: List of textures to use.
 		 \param timePerFrame: Time in milliseconds, how long any texture in the list
 		 should be visible.
@@ -1159,7 +1231,8 @@ namespace scene
 		//! Returns a scene node factory by index
 		virtual ISceneNodeFactory* getSceneNodeFactory(u32 index) = 0;
 
-		//! Returns the default scene node animator factory which can create all built-in scene node animators
+		//! Returns the default scene node animator factory which can
+		//! create all built-in scene node animators
 		virtual ISceneNodeAnimatorFactory* getDefaultSceneNodeAnimatorFactory() = 0;
 
 		//! Adds a scene node animator factory to the scene manager.
@@ -1180,16 +1253,23 @@ namespace scene
 		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0) = 0;
 
 		//! Creates a new scene manager.
-		/** This can be used to easily draw and/or store two independent scenes at the same time.
-		The mesh cache will be shared between all existing scene managers, which means if you load
-		a mesh in the original scene manager using for example getMesh(), the mesh will be available
-		in all other scene managers too, without loading.
-		The original/main scene manager will still be there and accessible via IrrlichtDevice::getSceneManager().
-		If you need input event in this new scene manager, for example for FPS cameras, you'll need
-		to forward input to this manually: Just implement an IEventReceiver and call
-		yourNewSceneManager->postEventFromUser(), and return true so that the original scene manager
-		doesn't get the event. Otherwise, all input will go automaticly to the main scene manager.
-		If you no longer need the new scene manager, you should call ISceneManager::drop().
+		/** This can be used to easily draw and/or store two
+		independent scenes at the same time.  The mesh cache will be
+		shared between all existing scene managers, which means if you
+		load a mesh in the original scene manager using for example
+		getMesh(), the mesh will be available in all other scene
+		managers too, without loading.
+		The original/main scene manager will still be there and
+		accessible via IrrlichtDevice::getSceneManager().  If you need
+		input event in this new scene manager, for example for FPS
+		cameras, you'll need to forward input to this manually: Just
+		implement an IEventReceiver and call
+		yourNewSceneManager->postEventFromUser(), and return true so
+		that the original scene manager doesn't get the event.
+		Otherwise, all input will go to the main scene manager
+		automatically.
+		If you no longer need the new scene manager, you should call
+		ISceneManager::drop().
 		See IReferenceCounted::drop() for more information. */
 		virtual ISceneManager* createNewSceneManager(bool cloneContent=false) = 0;
 
@@ -1222,9 +1302,11 @@ namespace scene
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
 		saved directly by the engine using ISceneManager::saveScene().
 		\param filename: Name of the file.
-		\param userDataSerializer: If you want to load user data possibily saved in that file for
-		some scene nodes in the file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
-		Otherwise, simply specify 0 as this parameter.
+		\param userDataSerializer: If you want to load user data
+		possibily saved in that file for some scene nodes in the file,
+		implement the ISceneUserDataSerializer interface and provide it
+		as parameter here. Otherwise, simply specify 0 as this
+		parameter.
 		\return Returns true if successful. */
 		virtual bool loadScene(const c8* filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
 
@@ -1233,10 +1315,12 @@ namespace scene
 		Be edited with the Irrlicht Engine Editor, irrEdit (http://irredit.irrlicht3d.org) or
 		saved directly by the engine using ISceneManager::saveScene().
 		\param file: File where the scene is going to be saved into.
-		\param userDataSerializer: If you want to load user data possibily saved in that file for
-		some scene nodes in the file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
-		Otherwise, simply specify 0 as this parameter.
-		\return Returns true if successful.	*/
+		\param userDataSerializer: If you want to load user data
+		possibily saved in that file for some scene nodes in the file,
+		implement the ISceneUserDataSerializer interface and provide it
+		as parameter here. Otherwise, simply specify 0 as this
+		parameter.
+		\return Returns true if successful. */
 		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0) = 0;
 
 		//! Returns a mesh writer implementation if available

@@ -29,14 +29,19 @@ namespace scene
 		//! destructor
 		virtual ~CQ3LevelMesh();
 
-		//! loads a level from a .bsp-File. Also tries to load all needed textures. Returns true if successful.
+		//! loads a level from a .bsp-File. Also tries to load all
+		//! needed textures. Returns true if successful.
 		bool loadFile(io::IReadFile* file);
 
-		//! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
+		//! returns the amount of frames in milliseconds. If the amount
+		//! is 1, it is a static (=non animated) mesh.
 		virtual u32 getFrameCount() const;
 
-		//! returns the animated mesh based on a detail level. 0 is the lowest, 255 the highest detail. Note, that some Meshes will ignore the detail level.
-		virtual IMesh* getMesh(s32 frameInMs, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1);
+		//! returns the animated mesh based on a detail level. 0 is the
+		//! lowest, 255 the highest detail. Note, that some Meshes will
+		//! ignore the detail level.
+		virtual IMesh* getMesh(s32 frameInMs, s32 detailLevel=255,
+				s32 startFrameLoop=-1, s32 endFrameLoop=-1);
 
 		virtual void releaseMesh ( s32 index );
 
@@ -259,38 +264,32 @@ namespace scene
 			u8 direction[2];   // The direction of the light: [phi,theta]
 		};
 
-		void loadTextures	(tBSPLump* l, io::IReadFile* file);		// Load the textures
-		void loadLightmaps  (tBSPLump* l, io::IReadFile* file);      // Load the lightmaps
-		void loadVerts      (tBSPLump* l, io::IReadFile* file);		// Load the vertices
-		void loadFaces      (tBSPLump* l, io::IReadFile* file);		// Load the faces
-		void loadPlanes     (tBSPLump* l, io::IReadFile* file);		// Load the Planes of the BSP
-		void loadNodes      (tBSPLump* l, io::IReadFile* file);		// load the Nodes of the BSP
-		void loadLeafs      (tBSPLump* l, io::IReadFile* file);		// load the Leafs of the BSP
-		void loadLeafFaces  (tBSPLump* l, io::IReadFile* file);		// load the Faces of the Leafs of the BSP
-		void loadVisData    (tBSPLump* l, io::IReadFile* file);		// load the visibility data of the clusters
-		void loadEntities   (tBSPLump* l, io::IReadFile* file);		// load the entities
-		void loadModels     (tBSPLump* l, io::IReadFile* file);		// load the models
-		void loadMeshVerts  (tBSPLump* l, io::IReadFile* file);		// load the mesh vertices
-		void loadBrushes    (tBSPLump* l, io::IReadFile* file);		// load the brushes of the BSP
-		void loadBrushSides (tBSPLump* l, io::IReadFile* file);		// load the brushsides of the BSP
-		void loadLeafBrushes(tBSPLump* l, io::IReadFile* file);		// load the brushes of the leaf
-		void loadShaders	(tBSPLump* l, io::IReadFile* file);		// load the shaders
+		void loadTextures   (tBSPLump* l, io::IReadFile* file); // Load the textures
+		void loadLightmaps  (tBSPLump* l, io::IReadFile* file); // Load the lightmaps
+		void loadVerts      (tBSPLump* l, io::IReadFile* file); // Load the vertices
+		void loadFaces      (tBSPLump* l, io::IReadFile* file); // Load the faces
+		void loadPlanes     (tBSPLump* l, io::IReadFile* file); // Load the Planes of the BSP
+		void loadNodes      (tBSPLump* l, io::IReadFile* file); // load the Nodes of the BSP
+		void loadLeafs      (tBSPLump* l, io::IReadFile* file); // load the Leafs of the BSP
+		void loadLeafFaces  (tBSPLump* l, io::IReadFile* file); // load the Faces of the Leafs of the BSP
+		void loadVisData    (tBSPLump* l, io::IReadFile* file); // load the visibility data of the clusters
+		void loadEntities   (tBSPLump* l, io::IReadFile* file); // load the entities
+		void loadModels     (tBSPLump* l, io::IReadFile* file); // load the models
+		void loadMeshVerts  (tBSPLump* l, io::IReadFile* file); // load the mesh vertices
+		void loadBrushes    (tBSPLump* l, io::IReadFile* file); // load the brushes of the BSP
+		void loadBrushSides (tBSPLump* l, io::IReadFile* file); // load the brushsides of the BSP
+		void loadLeafBrushes(tBSPLump* l, io::IReadFile* file); // load the brushes of the leaf
+		void loadShaders    (tBSPLump* l, io::IReadFile* file); // load the shaders
 
 		// second parameter i is the zero based index of the current face.
 		void createCurvedSurface(SMeshBufferLightMap* meshBuffer, s32 i);
 
 		//bi-quadratic bezier patches
-		void createCurvedSurface2 (	SMeshBufferLightMap* meshBuffer,
-									s32 faceIndex,
-									s32 patchTesselation,
-									s32 storevertexcolor
-								);
+		void createCurvedSurface2(SMeshBufferLightMap* meshBuffer,
+				s32 faceIndex, s32 patchTesselation, s32 storevertexcolor);
 
-		void createCurvedSurface3 (	SMeshBufferLightMap* meshBuffer,
-									s32 faceIndex,
-									s32 patchTesselation,
-									s32 storevertexcolor
-								);
+		void createCurvedSurface3(SMeshBufferLightMap* meshBuffer,
+				s32 faceIndex, s32 patchTesselation, s32 storevertexcolor);
 
 		f32 Blend( const f64 s[3], const f64 t[3], const tBSPVertex *v[9], int offset);
 
@@ -309,19 +308,20 @@ namespace scene
 				const core::vector2d<f64>& tcoords, const core::vector2d<f64>& tcoords2)
 				: Pos(pos), Normal(normal), Color(color), TCoords(tcoords), TCoords2(tcoords2) {}
 
-			S3DVertex2TCoords_64 getInterpolated_quadratic(const S3DVertex2TCoords_64& v2, const S3DVertex2TCoords_64& v3, const f64 d) const
+			S3DVertex2TCoords_64 getInterpolated_quadratic(const S3DVertex2TCoords_64& v2,
+					const S3DVertex2TCoords_64& v3, const f64 d) const
 			{
 				return S3DVertex2TCoords_64 (
 						Pos.getInterpolated_quadratic ( v2.Pos, v3.Pos, d  ),
 						Normal.getInterpolated_quadratic ( v2.Normal, v3.Normal, d ),
 						Color.getInterpolated_quadratic ( v2.Color, v3.Color, (f32) d ),
 						TCoords.getInterpolated_quadratic ( v2.TCoords, v3.TCoords, d ),
-						TCoords2.getInterpolated_quadratic ( v2.TCoords2, v3.TCoords2, d )
-					);
+						TCoords2.getInterpolated_quadratic ( v2.TCoords2, v3.TCoords2, d ));
 			}
 		};
 
-		inline void copy ( video::S3DVertex2TCoords * dest, const tBSPVertex * source, s32 vertexcolor ) const;
+		inline void copy ( video::S3DVertex2TCoords * dest, const tBSPVertex * source,
+				s32 vertexcolor ) const;
 		void copy ( S3DVertex2TCoords_64 * dest, const tBSPVertex * source, s32 vertexcolor ) const;
 
 

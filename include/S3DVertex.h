@@ -79,7 +79,10 @@ struct S3DVertex
 
 	bool operator<(const S3DVertex& other) const
 	{
-		return ((Pos < other.Pos) || ((Pos == other.Pos) && (Normal < other.Normal)) || ((Pos == other.Pos) && (Normal == other.Normal) && (Color < other.Color)) || ((Pos == other.Pos) && (Normal == other.Normal) && (Color == other.Color) && (TCoords < other.TCoords)));
+		return ((Pos < other.Pos) ||
+				((Pos == other.Pos) && (Normal < other.Normal)) ||
+				((Pos == other.Pos) && (Normal == other.Normal) && (Color < other.Color)) ||
+				((Pos == other.Pos) && (Normal == other.Normal) && (Color == other.Color) && (TCoords < other.TCoords)));
 	}
 
 	E_VERTEX_TYPE getType() const
@@ -147,7 +150,8 @@ struct S3DVertex2TCoords : public S3DVertex
 
 	bool operator<(const S3DVertex2TCoords& other) const
 	{
-		return ((static_cast<S3DVertex>(*this) < other) || ((static_cast<S3DVertex>(*this) == other) && (TCoords2 < other.TCoords2)));
+		return ((static_cast<S3DVertex>(*this) < other) ||
+				((static_cast<S3DVertex>(*this) == other) && (TCoords2 < other.TCoords2)));
 	}
 
 	E_VERTEX_TYPE getType() const
@@ -166,7 +170,10 @@ struct S3DVertexTangents : public S3DVertex
 	S3DVertexTangents() : S3DVertex() { }
 
 	//! constructor
-	S3DVertexTangents(f32 x, f32 y, f32 z, f32 nx=0.0f, f32 ny=0.0f, f32 nz=0.0f, SColor c = 0xFFFFFFFF, f32 tu=0.0f, f32 tv=0.0f, f32 tanx=0.0f, f32 tany=0.0f, f32 tanz=0.0f, f32 bx=0.0f, f32 by=0.0f, f32 bz=0.0f)
+	S3DVertexTangents(f32 x, f32 y, f32 z, f32 nx=0.0f, f32 ny=0.0f, f32 nz=0.0f,
+			SColor c = 0xFFFFFFFF, f32 tu=0.0f, f32 tv=0.0f,
+			f32 tanx=0.0f, f32 tany=0.0f, f32 tanz=0.0f,
+			f32 bx=0.0f, f32 by=0.0f, f32 bz=0.0f)
 		: S3DVertex(x,y,z, nx,ny,nz, c, tu,tv), Tangent(tanx,tany,tanz), Binormal(bx,by,bz) { }
 
 	//! constructor
@@ -204,7 +211,9 @@ struct S3DVertexTangents : public S3DVertex
 
 	bool operator<(const S3DVertexTangents& other) const
 	{
-		return ((static_cast<S3DVertex>(*this) < other) || ((static_cast<S3DVertex>(*this) == other) && (Tangent < other.Tangent)) || ((static_cast<S3DVertex>(*this) == other) && (Tangent == other.Tangent) && (Binormal < other.Binormal)));
+		return ((static_cast<S3DVertex>(*this) < other) ||
+				((static_cast<S3DVertex>(*this) == other) && (Tangent < other.Tangent)) ||
+				((static_cast<S3DVertex>(*this) == other) && (Tangent == other.Tangent) && (Binormal < other.Binormal)));
 	}
 
 	E_VERTEX_TYPE getType() const

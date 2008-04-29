@@ -515,7 +515,8 @@ void CGUIListBox::draw()
 					if ( i==Selected && hl )
 					{
 						IconBank->draw2DSprite( (u32)Items[i].icon, iconPos, &clientClip,
-							hasItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) ? getItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_ICON_HIGHLIGHT),
+							hasItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) ?
+							getItemOverrideColor(i, EGUI_LBC_ICON_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_ICON_HIGHLIGHT),
 							selectTime, os::Timer::getTime(), false, true);
 					}
 					else
@@ -531,7 +532,8 @@ void CGUIListBox::draw()
 				if ( i==Selected && hl )
 				{
 					Font->draw(Items[i].text.c_str(), textRect,
-						hasItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) ? getItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_TEXT_HIGHLIGHT),
+						hasItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) ?
+						getItemOverrideColor(i, EGUI_LBC_TEXT_HIGHLIGHT) : getItemDefaultColor(EGUI_LBC_TEXT_HIGHLIGHT),
 						false, true, &clientClip);
 				}
 				else

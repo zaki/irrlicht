@@ -104,8 +104,7 @@ public:
 			if (!TriangleRect.isRectCollided(ViewPortRect))
 				continue;
 
-
-			// höhe des dreiecks berechnen
+			// calculate height of triangle
 			height = v3->Pos.Y - v1->Pos.Y;
 			if (!height)
 				continue;
@@ -234,7 +233,9 @@ public:
 						{
 							*(zTarget + leftx) = leftZValue;
 							color = lockedTexture[((leftTy>>8)&textureYMask) * lockedTextureWidth + ((leftTx>>8)&textureXMask)];
-							*(targetSurface + leftx) = video::RGB16(video::getRed(color) * (leftR>>8) >>2, video::getGreen(color) * (leftG>>8) >>2, video::getBlue(color) * (leftR>>8) >>2);
+							*(targetSurface + leftx) = video::RGB16(video::getRed(color) * (leftR>>8) >>2,
+									video::getGreen(color) * (leftG>>8) >>2,
+									video::getBlue(color) * (leftR>>8) >>2);
 						}
 					}
 
@@ -246,7 +247,9 @@ public:
 						{
 							*(zTarget + rightx) = rightZValue;
 							color = lockedTexture[((rightTy>>8)&textureYMask) * lockedTextureWidth + ((rightTx>>8)&textureXMask)];
-							*(targetSurface + rightx) = video::RGB16(video::getRed(color) * (rightR>>8) >>2, video::getGreen(color) * (rightG>>8) >>2, video::getBlue(color) * (rightR>>8) >>2);
+							*(targetSurface + rightx) = video::RGB16(video::getRed(color) * (rightR>>8) >>2,
+									video::getGreen(color) * (rightG>>8) >>2,
+									video::getBlue(color) * (rightR>>8) >>2);
 						}
 
 					}

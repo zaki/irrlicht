@@ -35,8 +35,12 @@ namespace irr
 
 	namespace video
 	{
-		IVideoDriver* createSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter);
-		IVideoDriver* createSoftwareDriver2(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter);
+		IVideoDriver* createSoftwareDriver(const core::dimension2d<s32>& windowSize,
+				bool fullscreen, io::IFileSystem* io,
+				video::IImagePresenter* presenter);
+		IVideoDriver* createSoftwareDriver2(const core::dimension2d<s32>& windowSize,
+				bool fullscreen, io::IFileSystem* io,
+				video::IImagePresenter* presenter);
 		IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize);
 	}
 

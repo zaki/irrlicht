@@ -324,7 +324,10 @@ void CIrrDeviceSDL::setWindowCaption(const wchar_t* text)
 void CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* src)
 {
 	SDL_Rect srcClip;
-	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom (surface->lock(), surface->getDimension().Width, surface->getDimension().Height, surface->getBitsPerPixel(), surface->getPitch(), surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), 0);
+	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom(
+			surface->lock(), surface->getDimension().Width, surface->getDimension().Height,
+			surface->getBitsPerPixel(), surface->getPitch(),
+			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), 0);
 	if (src)
 	{
 		srcClip.x = src->UpperLeftCorner.X;

@@ -120,8 +120,7 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 		if (!TriangleRect.isRectCollided(ViewPortRect))
 			continue;
 
-
-		// höhe des dreiecks berechnen
+		// calculate height of triangle
 		height = v3->Pos.Y - v1->Pos.Y;
 		if (!height)
 			continue;
