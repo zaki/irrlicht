@@ -29,6 +29,11 @@ CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3dde
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 	VertexShader(0), OldVertexShader(0), PixelShader(0), UserData(userData)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CD3D9ShaderMaterialRenderer");
+	#endif
+
 	if (BaseMaterial)
 		BaseMaterial->grab();
 
@@ -50,6 +55,11 @@ CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3dde
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 	VertexShader(0), OldVertexShader(0), PixelShader(0), UserData(userData)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CD3D9ShaderMaterialRenderer");
+	#endif
+
 	if (BaseMaterial)
 		BaseMaterial->grab();
 

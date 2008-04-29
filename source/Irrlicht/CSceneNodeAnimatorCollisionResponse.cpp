@@ -24,6 +24,11 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 	World(world), Object(object), SceneManager(scenemanager),
 	SlidingSpeed(slidingSpeed), Falling(false)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CSceneNodeAnimatorCollisionResponse");
+	#endif
+	
 	if (World)
 		World->grab();
 

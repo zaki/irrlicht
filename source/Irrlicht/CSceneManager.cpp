@@ -265,9 +265,6 @@ CSceneManager::~CSceneManager()
 {
 	clearDeletionList();
 
-	if (Driver)
-		Driver->drop();
-
 	if (FileSystem)
 		FileSystem->drop();
 
@@ -290,6 +287,7 @@ CSceneManager::~CSceneManager()
 
 	if (ActiveCamera)
 		ActiveCamera->drop();
+	ActiveCamera = 0;
 
 	if (MeshCache)
 		MeshCache->drop();
@@ -299,6 +297,14 @@ CSceneManager::~CSceneManager()
 
 	for (i=0; i<SceneNodeAnimatorFactoryList.size(); ++i)
 		SceneNodeAnimatorFactoryList[i]->drop();
+
+	// remove all nodes and animators before dropping the driver
+	// as render targets may be destroyed twice
+	removeAll();
+	removeAnimators();
+
+	if (Driver)
+		Driver->drop();
 }
 
 

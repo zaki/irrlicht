@@ -41,6 +41,11 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 	: Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 		Program(0), UserData(userData)
 {
+
+	#ifdef _DEBUG
+	setDebugName("COpenGLSLMaterialRenderer");
+	#endif
+
 	//entry points must always be main, and the compile target isn't selectable
 	//it is fine to ignore what has been asked for, as the compiler should spot anything wrong
 	//just check that GLSL is available

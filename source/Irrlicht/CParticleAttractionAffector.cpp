@@ -16,6 +16,9 @@ CParticleAttractionAffector::CParticleAttractionAffector(
 	: Point(point), Speed(speed), AffectX(affectX), AffectY(affectY),
 		AffectZ(affectZ), Attract(attract), LastTime(0)
 {
+	#ifdef _DEBUG
+	setDebugName("CParticleAttractionAffector");
+	#endif
 }
 
 

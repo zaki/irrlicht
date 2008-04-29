@@ -32,6 +32,9 @@ CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* 
 	MinorVersion(0), BinaryFormat(false), BinaryNumCount(0), Buffer(0),
 	P(0), End(0), FloatSize(0), CurFrame(0)
 {
+	#ifdef _DEBUG
+	setDebugName("CXMeshFileLoader");
+	#endif
 }
 
 

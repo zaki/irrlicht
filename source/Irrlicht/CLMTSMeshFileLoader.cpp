@@ -95,6 +95,10 @@ CLMTSMeshFileLoader::CLMTSMeshFileLoader(io::IFileSystem* fs, video::IVideoDrive
 	: Textures(0), Subsets(0), Triangles(0),
 	Parameters(parameters), Driver(driver), FileSystem(fs)
 {
+	#ifdef _DEBUG
+	setDebugName("CLMTSMeshFileLoader");
+	#endif
+
 	if (Driver)
 		Driver->grab();
 

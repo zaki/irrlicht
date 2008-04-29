@@ -25,6 +25,11 @@ COpenGLShaderMaterialRenderer::COpenGLShaderMaterialRenderer(video::COpenGLDrive
 	: Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 		VertexShader(0), PixelShader(0), UserData(userData)
 {
+
+	#ifdef _DEBUG
+	setDebugName("COpenGLShaderMaterialRenderer");
+	#endif
+
 	if (BaseMaterial)
 		BaseMaterial->grab();
 

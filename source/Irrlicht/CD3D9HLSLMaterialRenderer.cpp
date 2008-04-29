@@ -37,6 +37,11 @@ CD3D9HLSLMaterialRenderer::CD3D9HLSLMaterialRenderer(IDirect3DDevice9* d3ddev,
 	: CD3D9ShaderMaterialRenderer(d3ddev, driver, callback, baseMaterial, userData),
 	VSConstantsTable(0), PSConstantsTable(0)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CD3D9HLSLMaterialRenderer");
+	#endif
+
 	outMaterialTypeNr = -1;
 
 	// now create shaders

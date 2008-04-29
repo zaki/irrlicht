@@ -12,6 +12,10 @@ namespace video
 //! constructor
 CVideoModeList::CVideoModeList()
 {
+	#ifdef _DEBUG
+	setDebugName("CVideoModeList");
+	#endif
+
 	Desktop.depth = 0;
 	Desktop.size = core::dimension2d<s32>(0,0);
 }

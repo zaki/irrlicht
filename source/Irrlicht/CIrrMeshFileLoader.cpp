@@ -26,6 +26,11 @@ CIrrMeshFileLoader::CIrrMeshFileLoader(scene::ISceneManager* smgr,
 		io::IFileSystem* fs)
 	: SceneManager(smgr), FileSystem(fs)
 {
+
+	#ifdef _DEBUG
+	setDebugName("CIrrMeshFileLoader");
+	#endif
+
 }
 
 
