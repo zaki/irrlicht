@@ -179,9 +179,13 @@ IAnimatedMesh* C3DSMeshFileLoader::createMesh(io::IReadFile* file)
 				{
 					SMesh tmp;
 					tmp.addMeshBuffer(mb);
-					IMesh* tangentMesh = SceneManager->getMeshManipulator()->createMeshWithTangents(&tmp);
 					mb->drop();
+					IMesh* tangentMesh = SceneManager->getMeshManipulator()->createMeshWithTangents(&tmp);
 					Mesh->MeshBuffers[i]=tangentMesh->getMeshBuffer(0);
+					// we need to grab because we replace the buffer manually.
+					Mesh->MeshBuffers[i]->grab();
+					// clean up intermediate mesh struct
+					tangentMesh->drop();
 				}
 				Mesh->MeshBuffers[i]->recalculateBoundingBox();
 			}
