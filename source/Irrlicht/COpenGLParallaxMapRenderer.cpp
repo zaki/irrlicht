@@ -248,6 +248,10 @@ COpenGLParallaxMapRenderer::COpenGLParallaxMapRenderer(video::COpenGLDriver* dri
 		// compile shaders on our own
 		init(outMaterialTypeNr, OPENGL_PARALLAX_MAP_VSH, OPENGL_PARALLAX_MAP_PSH, EVT_TANGENTS);
 	}
+
+	// fallback if compilation has failed
+	if (-1==outMaterialTypeNr)
+		outMaterialTypeNr = driver->addMaterialRenderer(this);
 }
 
 

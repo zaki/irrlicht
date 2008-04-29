@@ -18,9 +18,9 @@ namespace video
 {
 
 // Irrlicht Engine OpenGL render path normal map vertex shader
-// I guess it could be optimized a lot, because I wrote it in D3D ASM and 
+// I guess it could be optimized a lot, because I wrote it in D3D ASM and
 // transferred it 1:1 to OpenGL
-const char OPENGL_NORMAL_MAP_VSH[] = 
+const char OPENGL_NORMAL_MAP_VSH[] =
 	"!!ARBvp1.0\n"\
 	"#input\n"\
 	"# 0-3: transposed world matrix;\n"\
@@ -132,9 +132,9 @@ const char OPENGL_NORMAL_MAP_VSH[] =
 	"END\n";
 
 // Irrlicht Engine OpenGL render path normal map pixel shader
-// I guess it could be optimized a bit, because I wrote it in D3D ASM and 
+// I guess it could be optimized a bit, because I wrote it in D3D ASM and
 // transfered it 1:1 to OpenGL
-const char OPENGL_NORMAL_MAP_PSH[] = 
+const char OPENGL_NORMAL_MAP_PSH[] =
 	"!!ARBfp1.0\n"\
 	"\n"\
 	"#Input\n"\
@@ -173,16 +173,16 @@ const char OPENGL_NORMAL_MAP_PSH[] =
 	"END\n";
 
 //! Constructor
-COpenGLNormalMapRenderer::COpenGLNormalMapRenderer(video::COpenGLDriver* driver, 
+COpenGLNormalMapRenderer::COpenGLNormalMapRenderer(video::COpenGLDriver* driver,
 	s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
 	: COpenGLShaderMaterialRenderer(driver, 0, baseMaterial), CompiledShaders(true)
 {
-	// set this as callback. We could have done this in 
+	// set this as callback. We could have done this in
 	// the initialization list, but some compilers don't like it.
 
 	CallBack = this;
 
-	// basicly, this thing simply compiles these hardcoded shaders if the
+	// basically, this thing simply compiles the hardcoded shaders if the
 	// hardware is able to do them, otherwise it maps to the base material
 
 	if (!driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1) ||
@@ -200,7 +200,7 @@ COpenGLNormalMapRenderer::COpenGLNormalMapRenderer(video::COpenGLDriver* driver,
 
 	if (renderer)
 	{
-		// use the already compiled shaders 
+		// use the already compiled shaders
 		video::COpenGLNormalMapRenderer* nmr = reinterpret_cast<video::COpenGLNormalMapRenderer*>(renderer);
 		CompiledShaders = false;
 
@@ -213,7 +213,11 @@ COpenGLNormalMapRenderer::COpenGLNormalMapRenderer(video::COpenGLDriver* driver,
 	{
 		// compile shaders on our own
 		init(outMaterialTypeNr, OPENGL_NORMAL_MAP_VSH, OPENGL_NORMAL_MAP_PSH, EVT_TANGENTS);
-	}	
+	}
+
+	// fallback if compilation has failed
+	if (-1==outMaterialTypeNr)
+		outMaterialTypeNr = driver->addMaterialRenderer(this);
 }
 
 
@@ -225,14 +229,14 @@ COpenGLNormalMapRenderer::~COpenGLNormalMapRenderer()
 
 	if (!CompiledShaders)
 	{
-		// prevent this from deleting shaders we did not create 
+		// prevent this from deleting shaders we did not create
 		VertexShader = 0;
 		PixelShader = 0;
 	}
 }
 
 
-//! Returns the render capability of the material. 
+//! Returns the render capability of the material.
 s32 COpenGLNormalMapRenderer::getRenderCapability() const
 {
 	if (Driver->queryFeature(video::EVDF_ARB_FRAGMENT_PROGRAM_1) &&
@@ -264,10 +268,10 @@ void COpenGLNormalMapRenderer::OnSetConstants(IMaterialRendererServices* service
 	// and set them as constants
 
 	u32 cnt = driver->getDynamicLightCount();
-	
+
 	for (u32 i=0; i<2; ++i)
 	{
-		video::SLight light; 
+		video::SLight light;
 
 		if (i<cnt)
 			light = driver->getDynamicLight(i);

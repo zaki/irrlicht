@@ -38,8 +38,8 @@ COpenGLShaderMaterialRenderer::COpenGLShaderMaterialRenderer(video::COpenGLDrive
 //! constructor only for use by derived classes who want to
 //! create a fall back material for example.
 COpenGLShaderMaterialRenderer::COpenGLShaderMaterialRenderer(COpenGLDriver* driver,
-							IShaderConstantSetCallBack* callback,
-							IMaterialRenderer* baseMaterial, s32 userData)
+				IShaderConstantSetCallBack* callback,
+				IMaterialRenderer* baseMaterial, s32 userData)
 : Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 		VertexShader(0), PixelShader(0), UserData(userData)
 {
@@ -64,8 +64,9 @@ COpenGLShaderMaterialRenderer::~COpenGLShaderMaterialRenderer()
 		Driver->extGlDeletePrograms(1, &PixelShader);
 
 	if (BaseMaterial)
-		BaseMaterial->drop ();
+		BaseMaterial->drop();
 }
+
 
 void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr, const c8* vertexShaderProgram,
 	const c8* pixelShaderProgram, E_VERTEX_TYPE type)
@@ -83,6 +84,7 @@ void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr, const c8* verte
 	// register as a new material
 	outMaterialTypeNr = Driver->addMaterialRenderer(this);
 }
+
 
 bool COpenGLShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 {
@@ -148,11 +150,13 @@ void COpenGLShaderMaterialRenderer::OnUnsetMaterial()
 		BaseMaterial->OnUnsetMaterial();
 }
 
+
 //! Returns if the material is transparent.
 bool COpenGLShaderMaterialRenderer::isTransparent() const
 {
 	return BaseMaterial ? BaseMaterial->isTransparent() : false;
 }
+
 
 bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 {
@@ -193,6 +197,7 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 
 	return true;
 }
+
 
 bool COpenGLShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 {
