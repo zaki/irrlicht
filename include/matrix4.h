@@ -136,6 +136,9 @@ namespace core
 			//! Set Scale
 			CMatrix4<T>& setScale( const vector3d<T>& scale );
 
+			//! Set Scale
+			CMatrix4<T>& setScale( const T scale ) { return setScale(core::vector3d<T>(scale,scale,scale)); }
+
 			//! Get Scale
 			core::vector3d<T> getScale() const;
 
@@ -711,7 +714,7 @@ namespace core
 
 		f64 rotx, roty, X, Z;
 
-		if (fabs(C)>0.0005f)
+		if (fabs(C)>ROUNDING_ERROR_64)
 		{
 			const T invC = 1.0/C;
 			rotx = mat(2,2) * invC;
