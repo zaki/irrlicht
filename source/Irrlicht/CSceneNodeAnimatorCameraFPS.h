@@ -28,7 +28,7 @@ namespace scene
 		//! Constructor
 		CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl, 
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = 500.0f, f32 jumpSpeed=0.f,
-			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false);
+			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false);
 			
 		//! Destructor
 		virtual ~CSceneNodeAnimatorCameraFPS();
@@ -84,21 +84,23 @@ namespace scene
 
 		void allKeysUp();
 
-		bool CursorKeys[6];
-
 		gui::ICursorControl *CursorControl;
+
+		f32 MaxVerticalAngle;
 
 		f32 MoveSpeed;
 		f32 RotateSpeed;
 		f32 JumpSpeed;
 
-		bool firstUpdate;
 		s32 LastAnimationTime;
 
 		core::vector3df TargetVector;
 		core::array<SCamKeyMap> KeyMap;
 		core::position2d<f32> CenterCursor, CursorPos;
 
+		bool CursorKeys[6];
+
+		bool firstUpdate;
 		bool NoVerticalMovement;
 	};
 
