@@ -244,7 +244,8 @@ public:
 	/** \return
 	 Returns a pointer to the created mesh viewer. Returns 0 if an error occured.
 	 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
+	virtual IGUIMeshViewer* addMeshViewer(const core::rect<s32>& rectangle,
+			IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
 
 	//! Adds a file open dialog.
 	/** \param modal: Defines if the dialog is modal. This means, that all other
@@ -272,7 +273,8 @@ public:
 	 \param rectangle is the position of the static text.
 	 \param border has to be set to true if the static text should have a 3d border.
 	 \param wordWrap specifies, if the text should be wrapped into multiple lines.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the fader directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the fader directly in the environment.
 	 \param id is a s32 to identify the static text element.
 	 \param fillBackground specifies if the background will be filled. Default: false.
 	 \return
@@ -290,7 +292,8 @@ public:
 	 \param text is the text to be displayed. Can be altered after creation with setText().
 	 \param rectangle is the position of the edit box.
 	 \param border has to be set to true if the edit box should have a 3d border.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the edit box directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the edit box directly in the environment.
 	 \param id is a s32 to identify the edit box.
 	 \return
 	 Returns a pointer to the created edit box. Returns 0 if an error occured.
@@ -302,7 +305,8 @@ public:
 	/**  An edit box with up and down buttons
 	 \param text is the text to be displayed. Can be altered after creation with setText().
 	 \param rectangle is the position of the spin box.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the spin box directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the spin box directly in the environment.
 	 \param id is a s32 to identify the spin box.
 	 \return
 	 Returns a pointer to the created spin box. Returns 0 if an error occured.
@@ -313,7 +317,8 @@ public:
 	//! Adds an element for fading in or out.
 	/* \param rectangle: Pointer to rectangle specifing the borders of the element.
 	 If the pointer is NULL, the whole screen is used.
-	 \param parent: Parent item of the element. E.g. a window. Set it to 0 to place the static text directly in the environment.
+	 \param parent: Parent item of the element, e.g. a window.
+	 Set it to 0 to place the static text directly in the environment.
 	 \param id: A s32 to identify the text.
 	 \return
 	 Returns a pointer to the created in-out-fader. Returns 0 if an error occured.
@@ -322,10 +327,12 @@ public:
 
 	//! Adds a tab control to the environment.
 	/** \param rectangle is the position of the tab control.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the tab control directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the tab control directly in the environment.
 	 \param fillbackground specifies if the background of the tab control should be drawn to.
-	 \param border specifiys if a flat 3d border should be drawn.
-	 This is usually not necesarry unless you don't place the control directly into the environment without a window as parent.
+	 \param border specifiys if a flat 3d border should be drawn. This is
+	 usually not necesarry unless you don't place the control directly into
+	 the environment without a window as parent.
 	 \param id is a s32 to identify the tab control.
 	 \return
 	 Returns a pointer to the created tab control element. Returns 0 if an error occured.
@@ -338,7 +345,8 @@ public:
 	/**  You can use this element to group other elements. This is not used for creating tabs on tab controls,
 	 please use IGUITabControl::addTab() for this instead.
 	 \param rectangle is the position of the tab.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the tab directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the tab directly in the environment.
 	 \param id is a s32 to identify the tab. */
 	virtual IGUITab* addTab(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
@@ -346,26 +354,30 @@ public:
 	//! Adds a context menu to the environment.
 	/** \param rectangle is the position of the menu. Note that the menu is 
 	 resizing itself based on what items you add.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the menu directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the menu directly in the environment.
 	 \param id is a s32 to identify the menu. */
 	virtual IGUIContextMenu* addContextMenu(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a menu to the environment.
 	/*  This is like the menu you can find on top of most windows in modern graphical user interfaces.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the menu directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the menu directly in the environment.
 	 \param id is a s32 to identify the menu. */
 	virtual IGUIContextMenu* addMenu(IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a toolbar to the environment.
 	/** It is like a menu is always placed on top
 	 in its parent, and contains buttons.
-	 \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the tool bar directly in the environment.
+	 \param parent is the parent item of the element, e.g. a window.
+	 Set it to 0 to place the tool bar directly in the environment.
 	 \param id is a s32 to identify the tool bar. */
 	virtual IGUIToolBar* addToolBar(IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a combo box to the environment.
-	/** \param parent is the parent item of the element. E.g. a window. Set it to 0 to place the combo box directly in the environment.
+	/** \param parent is the parent item of the element, e.g. a window.
+	  Set it to 0 to place the combo box directly in the environment.
 	 \param id is a s32 to identify the combo box. */
 	virtual IGUIComboBox* addComboBox(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1) = 0;

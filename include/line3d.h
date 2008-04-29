@@ -33,14 +33,19 @@ class line3d
 		line3d<T> operator-(const vector3d<T>& point) const { return line3d<T>(start - point, end - point); }
 		line3d<T>& operator-=(const vector3d<T>& point) { start -= point; end -= point; return *this; }
 
-		bool operator==(const line3d<T>& other) const { return (start==other.start && end==other.end) || (end==other.start && start==other.end);}
-		bool operator!=(const line3d<T>& other) const { return !(start==other.start && end==other.end) || (end==other.start && start==other.end);}
+		bool operator==(const line3d<T>& other) const
+		{ return (start==other.start && end==other.end) || (end==other.start && start==other.end);}
+		bool operator!=(const line3d<T>& other) const
+		{ return !(start==other.start && end==other.end) || (end==other.start && start==other.end);}
 
 		// functions
 
-		void setLine(const T& xa, const T& ya, const T& za, const T& xb, const T& yb, const T& zb) {start.set(xa, ya, za); end.set(xb, yb, zb);}
-		void setLine(const vector3d<T>& nstart, const vector3d<T>& nend) {start.set(nstart); end.set(nend);}
-		void setLine(const line3d<T>& line) {start.set(line.start); end.set(line.end);}
+		void setLine(const T& xa, const T& ya, const T& za, const T& xb, const T& yb, const T& zb)
+		{start.set(xa, ya, za); end.set(xb, yb, zb);}
+		void setLine(const vector3d<T>& nstart, const vector3d<T>& nend)
+		{start.set(nstart); end.set(nend);}
+		void setLine(const line3d<T>& line)
+		{start.set(line.start); end.set(line.end);}
 
 		//! Returns length of line
 		//! \return Returns length of line.

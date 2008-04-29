@@ -1135,7 +1135,9 @@ inline void COpenGLExtensionHandler::extGlUniformMatrix4fv(GLint loc, GLsizei co
 #endif
 }
 
-inline void COpenGLExtensionHandler::extGlGetActiveUniform(GLhandleARB program, GLuint index, GLsizei maxlength, GLsizei *length, GLint *size, GLenum *type, GLcharARB *name)
+inline void COpenGLExtensionHandler::extGlGetActiveUniform(GLhandleARB program,
+		GLuint index, GLsizei maxlength, GLsizei *length,
+		GLint *size, GLenum *type, GLcharARB *name)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGetActiveUniformARB)

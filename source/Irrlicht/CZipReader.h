@@ -15,11 +15,11 @@ namespace irr
 {
 namespace io
 {
-
-	const s16 ZIP_FILE_ENCRYPTED =		0x0001; // set if the file is encrypted
-	const s16 ZIP_INFO_IN_DATA_DESCRITOR =	0x0008; // the fields crc-32, compressed size
-														// and uncompressed size are set to zero in the local
-														// header
+	// set if the file is encrypted
+	const s16 ZIP_FILE_ENCRYPTED =		0x0001;
+	// the fields crc-32, compressed size and uncompressed size are set to
+	// zero in the local header
+	const s16 ZIP_INFO_IN_DATA_DESCRITOR =	0x0008;
 
 #if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
 #	pragma pack( push, packing )
@@ -111,7 +111,8 @@ namespace io
 
 	private:
 		
-		//! scans for a local header, returns false if there is no more local file header.
+		//! scans for a local header, returns false if there is no more
+		//! local file header.
 		bool scanLocalHeader();
 		IReadFile* File;
 
@@ -134,7 +135,8 @@ namespace io
 	{
 	public:
 
-		CUnZipReader( IFileSystem *parent, const c8* basename, bool ignoreCase, bool ignorePaths);
+		CUnZipReader(IFileSystem *parent, const c8* basename,
+				bool ignoreCase, bool ignorePaths);
 
 		//! opens a file by file name
 		virtual IReadFile* openFile(const c8* filename);

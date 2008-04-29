@@ -633,7 +633,8 @@ namespace scene
 			setScale(in->getAttributeAsVector3d("Scale"));
 
 			IsVisible = in->getAttributeAsBool("Visible");
-			AutomaticCullingState = (scene::E_CULLING_TYPE ) in->getAttributeAsEnumeration("AutomaticCulling", scene::AutomaticCullingNames);
+			AutomaticCullingState = (scene::E_CULLING_TYPE) in->getAttributeAsEnumeration("AutomaticCulling",
+					scene::AutomaticCullingNames);
 
 			DebugDataVisible = in->getAttributeAsInt("DebugDataVisible");
 			IsDebugObject = in->getAttributeAsBool("IsDebugObject");

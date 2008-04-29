@@ -279,7 +279,8 @@ namespace irr
 	*/
 	IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
 		video::E_DRIVER_TYPE deviceType = video::EDT_SOFTWARE,
-		const core::dimension2d<s32>& windowSize = (core::dimension2d<s32>(640,480)), // paranthese are necessary for some compilers
+		// parantheses are necessary for some compilers
+		const core::dimension2d<s32>& windowSize = (core::dimension2d<s32>(640,480)),
 		u32 bits = 16,
 		bool fullscreen = false,
 		bool stencilbuffer = false,
@@ -312,12 +313,14 @@ namespace irr
 	{
 	}
 
-	//! This namespace provides interfaces for input/output: Reading and writing files, accessing zip archives, xml files, ...
+	//! This namespace provides interfaces for input/output: Reading and
+	//! writing files, accessing zip archives, xml files, ...
 	namespace io
 	{
 	}
 
-	//! All scene management can be found in this namespace: Mesh loading, special scene nodes like octrees and billboards, ...
+	//! All scene management can be found in this namespace: Mesh loading,
+	//! special scene nodes like octrees and billboards, ...
 	namespace scene
 	{
 	}

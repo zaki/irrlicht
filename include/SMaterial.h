@@ -50,7 +50,8 @@ namespace video
 	}
 
 	//! EMT_ONETEXTURE_BLEND: unpack srcFact & dstFact and Modulo to MaterialTypeParam
-	inline void unpack_texureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact, E_MODULATE_FUNC &modulo, const f32 param )
+	inline void unpack_texureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
+			E_MODULATE_FUNC &modulo, const f32 param )
 	{
 		const u32 state = (u32)param;
 		modulo	= E_MODULATE_FUNC  ( ( state & 0x00FF0000 ) >> 16 );
@@ -342,7 +343,10 @@ namespace video
 				case EMF_NORMALIZE_NORMALS:
 					return NormalizeNormals;
 				case EMF_TEXTURE_WRAP:
-					return !(TextureLayer[0].TextureWrap || TextureLayer[1].TextureWrap || TextureLayer[2].TextureWrap || TextureLayer[3].TextureWrap);
+					return !(TextureLayer[0].TextureWrap ||
+							TextureLayer[1].TextureWrap ||
+							TextureLayer[2].TextureWrap ||
+							TextureLayer[3].TextureWrap);
 				case EMF_MATERIAL_FLAG_COUNT:
 					break;
 			}

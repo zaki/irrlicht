@@ -199,16 +199,18 @@ namespace core
 
 	//! code is taken from IceFPU
 	//! Integer representation of a floating-point value.
-	#define IR(x)					((u32&)(x))
+	#define IR(x)				((u32&)(x))
 
 	//! Absolute integer representation of a floating-point value
-	#define AIR(x)					(IR(x)&0x7fffffff)
+	#define AIR(x)				(IR(x)&0x7fffffff)
 
 	//! Floating-point representation of an integer value.
-	#define FR(x)					((f32&)(x))
+	#define FR(x)				((f32&)(x))
 
-	#define IEEE_1_0			0x3f800000						//!<	integer representation of 1.0
-	#define IEEE_255_0			0x437f0000						//!<	integer representation of 255.0
+	//! integer representation of 1.0
+	#define IEEE_1_0			0x3f800000
+	//! integer representation of 255.0
+	#define IEEE_255_0			0x437f0000
 
 #ifdef IRRLICHT_FAST_MATH
 	#define	F32_LOWER_0(f)		(F32_AS_U32(f) >  F32_SIGN_BIT)

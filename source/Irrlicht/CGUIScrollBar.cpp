@@ -515,7 +515,6 @@ void CGUIScrollBar::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 	setPos(in->getAttributeAsInt("Value"));
 	setSmallStep(in->getAttributeAsInt("SmallStep"));
 	setLargeStep(in->getAttributeAsInt("LargeStep"));
-	NoClip = in->getAttributeAsBool("NoClip");
 
 	refreshControls();
 }

@@ -251,7 +251,8 @@ namespace scene
 
 		for (s32 i=0; i<6; ++i)
 		{
-			const f32 len = core::reciprocal_squareroot ( planes[i].Normal.getLengthSQ() );
+			const f32 len = core::reciprocal_squareroot(
+					planes[i].Normal.getLengthSQ() );
 			planes[i].Normal *= len;
 			planes[i].D *= len;
 		}
@@ -305,7 +306,8 @@ namespace scene
 		u32 i;
 		for ( i=0; i != VF_PLANE_COUNT; ++i)
 		{
-			const f32 len = - core::reciprocal_squareroot ( planes[i].Normal.getLengthSQ() );
+			const f32 len = -core::reciprocal_squareroot(
+					planes[i].Normal.getLengthSQ());
 			planes[i].Normal *= len;
 			planes[i].D *= len;
 		}
@@ -319,13 +321,16 @@ namespace scene
 		switch ( state )
 		{
 			case video::ETS_VIEW:
-				Matrices[ETS_VIEW_PROJECTION_3].setbyproduct_nocheck( Matrices[ video::ETS_PROJECTION], Matrices[ video::ETS_VIEW] );
+				Matrices[ETS_VIEW_PROJECTION_3].setbyproduct_nocheck(
+						Matrices[video::ETS_PROJECTION],
+						Matrices[video::ETS_VIEW]);
 				Matrices[ETS_VIEW_MODEL_INVERSE_3] = Matrices[video::ETS_VIEW];
 				Matrices[ETS_VIEW_MODEL_INVERSE_3].makeInverse();
 				break;
 
 			case video::ETS_WORLD:
-				Matrices[ETS_CURRENT_3].setbyproduct( Matrices[ETS_VIEW_PROJECTION_3],
+				Matrices[ETS_CURRENT_3].setbyproduct(
+						Matrices[ETS_VIEW_PROJECTION_3 ],
 						Matrices[video::ETS_WORLD]);
 				break;
 			default:

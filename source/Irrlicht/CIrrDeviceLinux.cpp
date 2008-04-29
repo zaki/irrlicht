@@ -209,7 +209,11 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 			{
 				if (bestMode==-1 && modes[i]->hdisplay >= Width && modes[i]->vdisplay >= Height)
 					bestMode = i;
-				else if (bestMode!=-1 && modes[i]->hdisplay >= Width && modes[i]->vdisplay >= Height && modes[i]->hdisplay < modes[bestMode]->hdisplay && modes[i]->vdisplay < modes[bestMode]->vdisplay)
+				else if (bestMode!=-1 &&
+						modes[i]->hdisplay >= Width &&
+						modes[i]->vdisplay >= Height &&
+						modes[i]->hdisplay < modes[bestMode]->hdisplay &&
+						modes[i]->vdisplay < modes[bestMode]->vdisplay)
 					bestMode = i;
 				VideoModeList.addMode(core::dimension2d<s32>(
 					modes[i]->hdisplay, modes[i]->vdisplay), defaultDepth);
@@ -244,7 +248,11 @@ bool CIrrDeviceLinux::createWindow(const core::dimension2d<s32>& windowSize,
 			{
 				if (bestMode==-1 && (u32)modes[i].width >= Width && (u32)modes[i].height >= Height)
 					bestMode = i;
-				else if (bestMode!=-1 && (u32)modes[i].width >= Width && (u32)modes[i].height >= Height && modes[i].width < modes[bestMode].width && modes[i].height < modes[bestMode].height)
+				else if (bestMode!=-1 &&
+						(u32)modes[i].width >= Width &&
+						(u32)modes[i].height >= Height &&
+						modes[i].width < modes[bestMode].width &&
+						modes[i].height < modes[bestMode].height)
 					bestMode = i;
 				VideoModeList.addMode(core::dimension2d<s32>(
 					modes[i].width, modes[i].height), defaultDepth);

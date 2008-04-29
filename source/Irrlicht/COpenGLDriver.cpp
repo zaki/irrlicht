@@ -31,7 +31,9 @@ namespace video
 // -----------------------------------------------------------------------
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 //! Windows constructor and init code
-COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window, bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool antiAlias)
+COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
+		HWND window, bool fullscreen, bool stencilBuffer,
+		io::IFileSystem* io, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias), RenderTargetTexture(0), LastSetLight(-1),
@@ -161,7 +163,9 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 // -----------------------------------------------------------------------
 #ifdef _IRR_USE_OSX_DEVICE_
 //! Windows constructor and init code
-COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen, bool stencilBuffer, CIrrDeviceMacOSX *device, io::IFileSystem* io, bool vsync, bool antiAlias)
+COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
+		bool fullscreen, bool stencilBuffer, CIrrDeviceMacOSX *device,
+		io::IFileSystem* io, bool vsync, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(antiAlias), RenderTargetTexture(0), LastSetLight(-1),
@@ -180,7 +184,9 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 // -----------------------------------------------------------------------
 #ifdef _IRR_USE_LINUX_DEVICE_
 //! Linux constructor and init code
-COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
+COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
+		bool fullscreen, bool stencilBuffer, io::IFileSystem* io,
+		bool vsync, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(antiAlias),
@@ -215,7 +221,9 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool full
 // -----------------------------------------------------------------------
 #ifdef _IRR_USE_SDL_DEVICE_
 //! SDL constructor and init code
-COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
+COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
+		bool fullscreen, bool stencilBuffer, io::IFileSystem* io,
+		bool vsync, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(antiAlias),
@@ -772,7 +780,9 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 
 
 //! draws a vertex primitive list
-void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
+void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+		const u16* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
 {
 	if (!primitiveCount || !vertexCount)
 		return;
@@ -1167,7 +1177,9 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 
 	disableTextures(1);
 	setTexture(0, texture);
-	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 || useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255, true, useAlphaChannelOfTexture);
+	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
+			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
+			true, useAlphaChannelOfTexture);
 
 	if (clipRect)
 	{
@@ -1618,7 +1630,9 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 
 		if (material.getTexture(i) && material.getTexture(i)->hasMipMaps())
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR : material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST : GL_NEAREST_MIPMAP_NEAREST );
+				material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
+				material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
+				GL_NEAREST_MIPMAP_NEAREST );
 		else
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);

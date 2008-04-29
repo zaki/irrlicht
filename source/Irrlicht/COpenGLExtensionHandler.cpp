@@ -461,9 +461,9 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_ARB_FRAGMENT_PROGRAM_1:
 		return FeatureAvailable[IRR_ARB_fragment_program];
 	case EVDF_ARB_GLSL:
-		return FeatureAvailable[IRR_ARB_shading_language_100];
+		return (FeatureAvailable[IRR_ARB_shading_language_100]||Version>=200);
 	case EVDF_TEXTURE_NPOT:
-		return FeatureAvailable[IRR_ARB_texture_non_power_of_two];
+		return (FeatureAvailable[IRR_ARB_texture_non_power_of_two]||Version>=200);
 	case EVDF_FRAMEBUFFER_OBJECT:
 		return FeatureAvailable[IRR_EXT_framebuffer_object];
 	case EVDF_VERTEX_BUFFER_OBJECT:

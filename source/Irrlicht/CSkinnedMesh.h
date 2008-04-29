@@ -99,15 +99,17 @@ namespace scene
 		virtual void transferOnlyJointsHintsToMesh(const core::array<IBoneSceneNode*> &JointChildSceneNodes);
 
 		//! Creates an array of joints from this mesh
-		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes, IAnimatedMeshSceneNode* AnimatedMeshSceneNode, ISceneManager* SceneManager);
+		virtual void createJoints(core::array<IBoneSceneNode*> &JointChildSceneNodes,
+				IAnimatedMeshSceneNode* AnimatedMeshSceneNode,
+				ISceneManager* SceneManager);
 
-
+		//! Convertes the mesh to contain tangent information
 		virtual void convertMeshToTangents();
 
-		//! Does the mesh have non animation
+		//! Does the mesh have no animation
 		virtual bool isStatic();
 
-		//! (This feature is not implementated in irrlicht yet)
+		//! (This feature is not implemented in irrlicht yet)
 		virtual bool setHardwareSkinning(bool on);
 
 		//Interface for the mesh loaders (finalize should lock these functions, and they should have some prefix like loader_
@@ -146,7 +148,10 @@ private:
 
 		void buildAll_GlobalAnimatedMatrices(SJoint *Joint=0, SJoint *ParentJoint=0);
 
-		void getFrameData(f32 frame,SJoint *Node,core::vector3df &position, s32 &positionHint, core::vector3df &scale, s32 &scaleHint, core::quaternion &rotation, s32 &rotationHint);
+		void getFrameData(f32 frame, SJoint *Node,
+				core::vector3df &position, s32 &positionHint,
+				core::vector3df &scale, s32 &scaleHint,
+				core::quaternion &rotation, s32 &rotationHint);
 
 		void CalculateGlobalMatrices(SJoint *Joint,SJoint *ParentJoint);
 
@@ -156,8 +161,6 @@ private:
 			core::vector3df& tangent, core::vector3df& binormal,
 			core::vector3df& vt1, core::vector3df& vt2, core::vector3df& vt3,
 			core::vector2df& tc1, core::vector2df& tc2, core::vector2df& tc3);
-
-		//void createSkelton_Helper(ISceneManager* SceneManager, core::array<IBoneSceneNode*> &JointChildSceneNodes, IAnimatedMeshSceneNode *AnimatedMeshSceneNode, ISceneNode* ParentNode, SJoint *ParentNode, SJoint *Node);
 
 
 		core::array<SSkinMeshBuffer*> *SkinningBuffers; //Meshbuffer to skin, default is to skin localBuffers
