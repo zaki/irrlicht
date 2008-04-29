@@ -24,6 +24,7 @@
 #include "irrString.h"
 #include "irrMath.h"
 #include "dmfsupport.h"
+#include "CImage.h"
 
 namespace irr
 {
@@ -240,21 +241,16 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 					axtoi(red.c_str()),axtoi(green.c_str()),
 					axtoi(blue.c_str()));
 
-				s32 col = color.color;
-				s32 buf[64];
-
-				for (int k=0; k<64; k++)
-					buf[k]=col;
-
 				//just for compatibility with older Irrlicht versions
 				//to support transparent materials
 				if (color.getAlpha()!=255 && materiali[i].textureBlend==4)
 					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
 
-				IImage *immagine=driver->createImageFromData(ECF_A8R8G8B8,
-					core::dimension2d<s32>(8,8),buf);
-
+				CImage *immagine= new CImage(ECF_A8R8G8B8,
+					core::dimension2d<s32>(8,8));
+				immagine->fill(color);
 				tex = driver->addTexture("", immagine);
+				immagine->drop();
 
 				//to support transparent materials
 				if(color.getAlpha()!=255 && materiali[i].textureBlend==4)

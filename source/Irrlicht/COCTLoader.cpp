@@ -18,6 +18,7 @@
 #include "SAnimatedMesh.h"
 #include "SMeshBufferLightMap.h"
 #include "irrString.h"
+#include "CImage.h"
 
 namespace irr
 {
@@ -200,7 +201,6 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		}
 	} 
 
-
 	// load textures
 	core::array<video::ITexture*> tex;
 	tex.set_used(header.numTextures + 1);
@@ -211,77 +211,40 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		tex[i] = Driver->getTexture(textures[i-1].fileName);
 	}
 
-
 	// prepare lightmaps
 	core::array<video::ITexture*> lig;
 	lig.set_used(header.numLightmaps + 1);
-
-	u32 lightmapWidth = 128, lightmapHeight = 128;
 	lig[0] = 0;
-	core::dimension2d<s32> lmapsize(lightmapWidth, lightmapHeight);
+
+	const u32 lightmapWidth = 128;
+	const u32 lightmapHeight = 128;
+	const core::dimension2d<s32> lmapsize(lightmapWidth, lightmapHeight);
 
 	bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
-	for (i = 1; i < (header.numLightmaps + 1); i++)
+	video::CImage tmpImage(video::ECF_R8G8B8, lmapsize);
+	for (i = 1; i < (header.numLightmaps + 1); ++i)
 	{
 		core::stringc lightmapname = file->getFileName();
 		lightmapname += ".lightmap.";
 		lightmapname += (int)i;
-		lig[i] = Driver->addTexture(lmapsize, lightmapname.c_str());
 
-		if (lig[i]->getSize() != lmapsize)
-			os::Printer::log("OCTLoader: Created lightmap is not of the requested size", ELL_ERROR);
+		const octLightmap* lm = &lightmaps[i-1];
 
-		if (lig[i])
+		for (u32 x=0; x<lightmapWidth; ++x)
 		{
-			void* pp = lig[i]->lock();
-
-			if (pp)
+			for (u32 y=0; y<lightmapHeight; ++y)
 			{
-				video::ECOLOR_FORMAT format = lig[i]->getColorFormat();
-				if (format == video::ECF_A1R5G5B5)
-				{
-					s16* p = (s16*)pp;
-
-					octLightmap * lm;					
-					lm = &lightmaps[i-1];
-
-					for (u32 x=0; x<lightmapWidth; ++x)
-						for (u32 y=0; y<lightmapHeight; ++y)
-						{
-							p[x*128 + y] = video::RGB16(
-								lm->data[x][y][2],
-								lm->data[x][y][1],
-								lm->data[x][y][0]);
-						}
-				}
-				else
-				if (format == video::ECF_A8R8G8B8)
-				{
-					s32* p = (s32*)pp;
-
-					octLightmap* lm;
-					lm = &lightmaps[i-1];
-
-					for (u32 x=0; x<lightmapWidth; ++x)
-						for (u32 y=0; y<lightmapHeight; ++y)
-						{
-							p[x*128 + y] = video::SColor(255,
-								lm->data[x][y][2],
-								lm->data[x][y][1],
-								lm->data[x][y][0]).color;
-						}
-				}
-				else
-					os::Printer::log(
-						"OCTLoader: Could not create lightmap, unsupported texture format.", ELL_ERROR);
+				tmpImage.setPixel(x, y,
+						video::SColor(255,
+						lm->data[x][y][2],
+						lm->data[x][y][1],
+						lm->data[x][y][0]));
 			}
-
-			lig[i]->unlock();
 		}
-		else
-			os::Printer::log("OCTLoader: Could not create lightmap, driver created no texture.", ELL_ERROR);
+
+		lig[i] = Driver->addTexture(lightmapname.c_str(), &tmpImage);
 	}
 	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
 
