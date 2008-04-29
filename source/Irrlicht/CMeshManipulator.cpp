@@ -1034,7 +1034,6 @@ s32 CMeshManipulator::getPolyCount(scene::IMesh* mesh) const
 }
 
 
-
 //! Returns amount of polygons in mesh.
 s32 CMeshManipulator::getPolyCount(scene::IAnimatedMesh* mesh) const
 {
@@ -1043,6 +1042,7 @@ s32 CMeshManipulator::getPolyCount(scene::IAnimatedMesh* mesh) const
 
 	return 0;
 }
+
 
 //! create a new AnimatedMesh and adds the mesh to it
 IAnimatedMesh * CMeshManipulator::createAnimatedMesh(scene::IMesh* mesh, scene::E_ANIMATED_MESH_TYPE type) const

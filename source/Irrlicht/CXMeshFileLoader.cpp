@@ -817,6 +817,19 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 				return false;
 		}
 		else
+		if (objectName == "DeclData")
+		{
+			// arbitrary vertex attributes
+			// first comes the number of element definitions
+			// then the vertex element type definitions
+			// with format type;tesselator;semantics;usageindex
+			// we want to support 2;0;6;0 == tangent
+			//                    2;0;7;0 == binormal
+			// and              1/2;0;5;1 == 2nd uv coord
+			if (!parseUnknownDataObject())
+				return false;
+		}
+		else
 		if (objectName == "XSkinMeshHeader")
 		{
 			if (!parseDataObjectSkinMeshHeader(mesh))

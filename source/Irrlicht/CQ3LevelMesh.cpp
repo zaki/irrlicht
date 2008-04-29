@@ -971,12 +971,14 @@ inline f32 CQ3LevelMesh::Blend( const f64 s[3], const f64 t[3], const tBSPVertex
 	f64 res = 0.0;
 	f32 *ptr;
 
-	for( int i=0; i<3; i++ )
-		for( int j=0; j<3; j++ )
+	for( int i=0; i<3; ++i )
+	{
+		for( int j=0; j<3; ++j )
 		{
 			ptr = (f32 *)( (char*)v[i*3+j] + offset );
 			res += s[i] * t[j] *  (*ptr);
 		}
+	}
 
 	return (f32) res;
 }
