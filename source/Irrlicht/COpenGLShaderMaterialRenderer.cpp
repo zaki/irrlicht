@@ -78,12 +78,13 @@ void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr, const c8* verte
 {
 	outMaterialTypeNr = -1;
 
+	bool failure;
+
 	// create vertex shader
-	if (!createVertexShader(vertexShaderProgram))
-		return;
+	failure=createVertexShader(vertexShaderProgram);
 
 	// create pixel shader
-	if (!createPixelShader(pixelShaderProgram))
+	if (!createPixelShader(pixelShaderProgram) || failure)
 		return;
 
 	// register as a new material
@@ -194,6 +195,9 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		sprintf(tmp, "Pixel shader compilation failed at position %d:\n%s", errPos, errString);
 		os::Printer::log(tmp);
 
+		Driver->extGlDeletePrograms(1, &PixelShader);
+		PixelShader=0;
+
 		return false;
 	}
 #else
@@ -215,7 +219,7 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 
 	// clear error buffer
 	while(glGetError() != GL_NO_ERROR)
-		{}
+	{}
 
 	// compile
 	Driver->extGlProgramString(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
@@ -232,6 +236,9 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 		char tmp[2048];
 		sprintf(tmp, "Vertex shader compilation failed at position %d:\n%s", errPos, errString);
 		os::Printer::log(tmp);
+
+		Driver->extGlDeletePrograms(1, &VertexShader);
+		VertexShader=0;
 
 		return false;
 	}
