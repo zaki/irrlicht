@@ -354,8 +354,8 @@ void COpenGLDriver::createMaterialRenderers()
 {
 	// create OpenGL material renderers
 
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID( this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID_2_LAYER( this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID(this));
+	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID_2_LAYER(this));
 
 	// add the same renderer for all lightmap types
 	COpenGLMaterialRenderer_LIGHTMAP* lmr = new COpenGLMaterialRenderer_LIGHTMAP( this);
