@@ -289,7 +289,11 @@ namespace video
 
 			#endif // SHADER_EXTERNAL_DEBUG
 		}
+		// something failed, use base material
+		if (-1==outMaterialTypeNr)
+			driver->addMaterialRenderer(this);
 	}
+
 
 	CD3D9ParallaxMapRenderer::~CD3D9ParallaxMapRenderer()
 	{
@@ -308,6 +312,7 @@ namespace video
 		return CD3D9ShaderMaterialRenderer::OnRender(service, vtxtype);
 	}
 
+
 	void CD3D9ParallaxMapRenderer::OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services)
@@ -317,6 +322,7 @@ namespace video
 
 		CurrentScale = material.MaterialTypeParam;
 	}
+
 
 	//! Returns the render capability of the material.
 	s32 CD3D9ParallaxMapRenderer::getRenderCapability() const
@@ -329,8 +335,8 @@ namespace video
 	}
 
 
-	//! Called by the engine when the vertex and/or pixel shader constants for an
-	//! material renderer should be set.
+	//! Called by the engine when the vertex and/or pixel shader constants
+	//! for an material renderer should be set.
 	void CD3D9ParallaxMapRenderer::OnSetConstants(IMaterialRendererServices* services, s32 userData)
 	{
 		video::IVideoDriver* driver = services->getVideoDriver();
@@ -358,12 +364,12 @@ namespace video
 		worldViewProj *= driver->getTransform(video::ETS_WORLD);
 		services->setVertexShaderConstant(worldViewProj.getTransposed().pointer(), 8, 4);
 
-		// here we've got to fetch the fixed function lights from the driver
-		// and set them as constants
+		// here we've got to fetch the fixed function lights from the
+		// driver and set them as constants
 
-		int cnt = driver->getDynamicLightCount();
+		const u32 cnt = driver->getDynamicLightCount();
 
-		for (int i=0; i<2; ++i)
+		for (u32 i=0; i<2; ++i)
 		{
 			SLight light;
 

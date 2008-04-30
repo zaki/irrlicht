@@ -190,7 +190,11 @@ namespace video
 			// compile shaders on our own
 			init(outMaterialTypeNr, D3D8_PARALLAX_MAP_VSH, D3D8_PARALLAX_MAP_PSH, EVT_TANGENTS);
 		}
+		// something failed, use base material
+		if (-1==outMaterialTypeNr)
+			driver->addMaterialRenderer(this);
 	}
+
 
 	CD3D8ParallaxMapRenderer::~CD3D8ParallaxMapRenderer()
 	{
@@ -205,6 +209,7 @@ namespace video
 		}
 	}
 
+
 	bool CD3D8ParallaxMapRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 	{
 		if (vtxtype != video::EVT_TANGENTS)
@@ -216,6 +221,7 @@ namespace video
 		return CD3D8ShaderMaterialRenderer::OnRender(service, vtxtype);
 	}
 
+
 	void CD3D8ParallaxMapRenderer::OnSetMaterial(const video::SMaterial& material, 
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services)
@@ -225,6 +231,7 @@ namespace video
 
 		CurrentScale = material.MaterialTypeParam;
 	}
+
 
 	//! Returns the render capability of the material. 
 	s32 CD3D8ParallaxMapRenderer::getRenderCapability() const
@@ -237,8 +244,8 @@ namespace video
 	}
 
 
-	//! Called by the engine when the vertex and/or pixel shader constants for an
-	//! material renderer should be set.
+	//! Called by the engine when the vertex and/or pixel shader constants
+	//! for an material renderer should be set.
 	void CD3D8ParallaxMapRenderer::OnSetConstants(IMaterialRendererServices* services, s32 userData)
 	{
 		video::IVideoDriver* driver = services->getVideoDriver();
@@ -268,7 +275,7 @@ namespace video
 		// here we've got to fetch the fixed function lights from the driver
 		// and set them as constants
 
-		u32 cnt = driver->getDynamicLightCount();
+		const u32 cnt = driver->getDynamicLightCount();
 		
 		for (u32 i=0; i<2; ++i)
 		{
@@ -295,7 +302,7 @@ namespace video
 		services->setVertexShaderConstant(c96, 96, 1);
 
 		// set scale factor
-        f32 factor = 0.02f; // default value
+		f32 factor = 0.02f; // default value
 		if (CurrentScale != 0)
 			factor = CurrentScale;
 
