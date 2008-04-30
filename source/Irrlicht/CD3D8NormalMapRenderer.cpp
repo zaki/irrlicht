@@ -156,7 +156,11 @@ namespace video
 			// compile shaders on our own
 			init(outMaterialTypeNr, D3D8_NORMAL_MAP_VSH, D3D8_NORMAL_MAP_PSH, EVT_TANGENTS);
 		}
+		// something failed, use base material
+		if (-1==outMaterialTypeNr)
+			driver->addMaterialRenderer(this);
 	}
+
 
 	CD3D8NormalMapRenderer::~CD3D8NormalMapRenderer()
 	{
@@ -170,6 +174,7 @@ namespace video
 			PixelShader = 0;
 		}
 	}
+
 
 	bool CD3D8NormalMapRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 	{

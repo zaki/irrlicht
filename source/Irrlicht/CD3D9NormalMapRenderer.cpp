@@ -168,7 +168,6 @@ namespace video
 		s32& outMaterialTypeNr, IMaterialRenderer* baseMaterial)
 		: CD3D9ShaderMaterialRenderer(d3ddev, driver, 0, baseMaterial)
 	{
-	
 		#ifdef _DEBUG
 		setDebugName("CD3D9NormalMapRenderer");
 		#endif
@@ -178,8 +177,9 @@ namespace video
 
 		CallBack = this;
 
-		// basicly, this thing simply compiles these hardcoded shaders if the
-		// hardware is able to do them, otherwise it maps to the base material
+		// basically, this thing simply compiles the hardcoded shaders
+		// if the hardware is able to do them, otherwise it maps to the
+		// base material
 
 		if (!driver->queryFeature(video::EVDF_PIXEL_SHADER_1_1) ||
 			!driver->queryFeature(video::EVDF_VERTEX_SHADER_1_1))
@@ -190,7 +190,7 @@ namespace video
 			return;
 		}
 
-        // check if already compiled normal map shaders are there.
+		// check if already compiled normal map shaders are there.
 
 		video::IMaterialRenderer* renderer = driver->getMaterialRenderer(EMT_NORMAL_MAP_SOLID);
 		if (renderer)
@@ -219,13 +219,18 @@ namespace video
 				init(outMaterialTypeNr, D3D9_NORMAL_MAP_VSH, D3D9_NORMAL_MAP_PSH_1_1);
 			}
 		}
+		// something failed, use base material
+		if (-1==outMaterialTypeNr)
+			driver->addMaterialRenderer(this);
 	}
+
 
 	CD3D9NormalMapRenderer::~CD3D9NormalMapRenderer()
 	{
 		if (CallBack == this)
 			CallBack = 0;
 	}
+
 
 	bool CD3D9NormalMapRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 	{
@@ -250,8 +255,8 @@ namespace video
 	}
 
 
-	//! Called by the engine when the vertex and/or pixel shader constants for an
-	//! material renderer should be set.
+	//! Called by the engine when the vertex and/or pixel shader constants
+	//! for an material renderer should be set.
 	void CD3D9NormalMapRenderer::OnSetConstants(IMaterialRendererServices* services, s32 userData)
 	{
 		video::IVideoDriver* driver = services->getVideoDriver();
@@ -265,8 +270,8 @@ namespace video
 		worldViewProj *= driver->getTransform(video::ETS_WORLD);
 		services->setVertexShaderConstant(worldViewProj.getTransposed().pointer(), 8, 4);
 
-		// here we've got to fetch the fixed function lights from the driver
-		// and set them as constants
+		// here we've got to fetch the fixed function lights from the
+		// driver and set them as constants
 
 		u32 cnt = driver->getDynamicLightCount();
 
