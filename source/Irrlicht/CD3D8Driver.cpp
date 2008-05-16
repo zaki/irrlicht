@@ -358,7 +358,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	// set exposed data
 	ExposedData.D3D8.D3D8 = pID3D;
 	ExposedData.D3D8.D3DDev8 = pID3DDevice;
-	ExposedData.D3D8.HWnd = reinterpret_cast<s32>(hwnd);
+	ExposedData.D3D8.HWnd = hwnd;
 
 	ResetRenderStates = true;
 
