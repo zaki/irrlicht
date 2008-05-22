@@ -1,9 +1,7 @@
-/*
-  CImageLoaderWAL by Murphy McCauley (December 2004)
-  An Irrlicht image loader for Quake engine WAL textures
-
-  See the header file for additional information including use and distribution rights.
-*/
+// Copyright (C) 2004 Murphy McCauley
+// Copyright (C) 2007-2008 Christian Stehno
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CImageLoaderWAL.h"
 #include "CColorConverter.h"

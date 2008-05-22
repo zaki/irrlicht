@@ -1,3 +1,7 @@
+// Copyright (C) 2004 Murphy McCauley
+// Copyright (C) 2007-2008 Christian Stehno
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 /*
  Thanks to:
  Max McGuire for his Flipcode article about WAL textures
@@ -44,6 +48,7 @@ namespace video
 #endif
 #undef PACK_STRUCT
 
+//! An Irrlicht image loader for Quake engine WAL textures
 class CImageLoaderWAL : public irr::video::IImageLoader
 {
 public:
