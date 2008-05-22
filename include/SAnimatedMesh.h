@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -48,7 +48,7 @@ namespace scene
 
 
 		//! Gets the frame count of the animated mesh.
-		//! \return Returns the amount of frames. If the amount is 1, it is a static, non animated mesh.
+		/** \return Amount of frames. If the amount is 1, it is a static, non animated mesh. */
 		virtual u32 getFrameCount() const
 		{
 			return Meshes.size();
@@ -56,13 +56,13 @@ namespace scene
 
 
 		//! Returns the IMesh interface for a frame.
-		//! \param frame: Frame number as zero based index. The maximum frame number is
-		//! getFrameCount() - 1;
-		//! \param detailLevel: Level of detail. 0 is the lowest,
-		//! 255 the highest level of detail. Most meshes will ignore the detail level.
-		//! \param startFrameLoop: start frame
-		//! \param endFrameLoop: end frame
-		//! \return Returns the animated mesh based on a detail level.
+		/** \param frame: Frame number as zero based index. The maximum frame number is
+		getFrameCount() - 1;
+		\param detailLevel: Level of detail. 0 is the lowest,
+		255 the highest level of detail. Most meshes will ignore the detail level.
+		\param startFrameLoop: start frame
+		\param endFrameLoop: end frame
+		\return The animated mesh based on a detail level. */
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop=-1, s32 endFrameLoop=-1)
 		{
 			if (Meshes.empty())
@@ -84,7 +84,7 @@ namespace scene
 
 
 		//! Returns an axis aligned bounding box of the mesh.
-		//! \return A bounding box of this mesh is returned.
+		/** \return A bounding box of this mesh is returned. */
 		virtual const core::aabbox3d<f32>& getBoundingBox() const
 		{
 			return Box;
@@ -97,7 +97,7 @@ namespace scene
 			Box = box;
 		}
 
-
+		//! Recalculates the bounding box.
 		void recalculateBoundingBox()
 		{
 			Box.reset(0,0,0);
@@ -140,7 +140,7 @@ namespace scene
 
 
 		//! Returns pointer to a mesh buffer which fits a material
- 		/** \param material: material to search for
+		/** \param material: material to search for
 		\return Returns the pointer to the mesh buffer or
 		NULL if there is no such mesh buffer. */
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const
@@ -152,14 +152,18 @@ namespace scene
 		}
 
 
+		//! Set a material flag for all meshbuffers of this mesh.
 		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 		{
 			for (u32 i=0; i<Meshes.size(); ++i)
 				Meshes[i]->setMaterialFlag(flag, newvalue);
 		}
 
+		//! The bounding box of this mesh
 		core::aabbox3d<f32> Box;
+		//! All meshes defining the animated mesh
 		core::array<IMesh*> Meshes;
+		//! Tyhe type fo the mesh.
 		E_ANIMATED_MESH_TYPE Type;
 	};
 

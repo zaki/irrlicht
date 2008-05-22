@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -42,7 +42,7 @@ namespace video
 	//! Converts a 32bit (X8R8G8B8) color to a 16bit A1R5G5B5 color
 	inline u16 X8R8G8B8toA1R5G5B5(u32 color)
 	{
-		return (	0x8000 |
+		return (0x8000 |
 			( color & 0x00F80000) >> 9 |
 			( color & 0x0000F800) >> 6 |
 			( color & 0x000000F8) >> 3);
@@ -68,14 +68,14 @@ namespace video
 	}
 
 
-	//! Returns A8R8G8B8 Color from A1R5G5B5 color
-	//! build a nicer 32bit Color by extending dest lower bits with source high bits
+	//! Convert A8R8G8B8 Color from A1R5G5B5 color
+	/** build a nicer 32bit Color by extending dest lower bits with source high bits. */
 	inline u32 A1R5G5B5toA8R8G8B8(u16 color)
 	{
-		return	( (( -( (s32) color & 0x00008000 ) >> (s32) 31 ) & 0xFF000000 ) |
+		return ( (( -( (s32) color & 0x00008000 ) >> (s32) 31 ) & 0xFF000000 ) |
 				(( color & 0x00007C00 ) << 9) | (( color & 0x00007000 ) << 4) |
 				(( color & 0x000003E0 ) << 6) | (( color & 0x00000380 ) << 1) |
-				(( color & 0x0000001F ) << 3) | (( color & 0x0000001C ) >> 2) 
+				(( color & 0x0000001F ) << 3) | (( color & 0x0000001C ) >> 2)
 				);
 	}
 
@@ -113,7 +113,7 @@ namespace video
 
 
 	//! Returns the red component from A1R5G5B5 color.
-	//! Shift left by 3 to get 8 bit value.
+	/** Shift left by 3 to get 8 bit value. */
 	inline u32 getRed(u16 color)
 	{
 		return ((color >> 10)&0x1F);
@@ -121,7 +121,7 @@ namespace video
 
 
 	//! Returns the green component from A1R5G5B5 color
-	//! Shift left by 3 to get 8 bit value.
+	/** Shift left by 3 to get 8 bit value. */
 	inline u32 getGreen(u16 color)
 	{
 		return ((color >> 5)&0x1F);
@@ -129,14 +129,14 @@ namespace video
 
 
 	//! Returns the blue component from A1R5G5B5 color
-	//! Shift left by 3 to get 8 bit value.
+	/** Shift left by 3 to get 8 bit value. */
 	inline u32 getBlue(u16 color)
 	{
 		return (color & 0x1F);
 	}
 
 	//! Returns the red component from A1R5G5B5 color.
-	//! Shift left by 3 to get 8 bit value.
+	/** Shift left by 3 to get 8 bit value. */
 	inline s32 getRedSigned(u16 color)
 	{
 		return ((color >> 10)&0x1F);
@@ -144,7 +144,7 @@ namespace video
 
 
 	//! Returns the green component from A1R5G5B5 color
-	//! Shift left by 3 to get 8 bit value.
+	/** Shift left by 3 to get 8 bit value. */
 	inline s32 getGreenSigned(u16 color)
 	{
 		return ((color >> 5)&0x1F);
@@ -152,7 +152,7 @@ namespace video
 
 
 	//! Returns the blue component from A1R5G5B5 color
-	//! Shift left by 3 to get 8 bit value.
+	/** Shift left by 3 to get 8 bit value. */
 	inline s32 getBlueSigned(u16 color)
 	{
 		return (color & 0x1F);
@@ -176,37 +176,38 @@ namespace video
 	{
 	public:
 
-		//! Constructor of the Color. Does nothing. The color value
-		//! is not initialized to save time.
+		//! Constructor of the Color. Does nothing.
+		/** The color value is not initialized to save time. */
 		SColor() {}
 
-		//! Constructs the color from 4 values representing the alpha, red, green and
-		//! blue components of the color. Must be values between 0 and 255.
+		//! Constructs the color from 4 values representing the alpha, red, green and blue component.
+		/** Must be values between 0 and 255. */
 		SColor (u32 a, u32 r, u32 g, u32 b)
-			: color(((a & 0xff)<<24) | ((r & 0xff)<<16) | ((g & 0xff)<<8) | (b & 0xff))	{}
+			: color(((a & 0xff)<<24) | ((r & 0xff)<<16) | ((g & 0xff)<<8) | (b & 0xff)) {}
 
 		//! Constructs the color from a 32 bit value. Could be another color.
 		SColor(u32 clr)
 			: color(clr) {}
 
-		//! Returns the alpha component of the color. The alpha component
-		//! defines how transparent a color should be.
-		//! 255 means not transparent (opaque), 0 means fully transparent.
+		//! Returns the alpha component of the color.
+		/** The alpha component defines how transparent a color should
+		be. 255 means not transparent (opaque), 0 means fully
+		transparent. */
 		u32 getAlpha() const { return color>>24; }
 
 		//! Returns the red component of the color.
-		//! \return Returns a value between 0 and 255, specifying how red the color is.
-		//! 0 means no red, 255 means full red.
+		/** \return Value between 0 and 255, specifying how red the color is.
+		0 means no red, 255 means full red. */
 		u32 getRed() const { return (color>>16) & 0xff; }
 
 		//! Returns the green component of the color.
-		//! \return Returns a value between 0 and 255, specifying how green the color is.
-		//! 0 means no green, 255 means full green.
+		/** \return Value between 0 and 255, specifying how green the color is.
+		0 means no green, 255 means full green. */
 		u32 getGreen() const { return (color>>8) & 0xff; }
 
 		//! Returns the blue component of the color.
-		//! \return Returns a value between 0 and 255, specifying how blue the color is.
-		//! 0 means no blue, 255 means full blue.
+		/** \return Value between 0 and 255, specifying how blue the color is.
+		0 means no blue, 255 means full blue. */
 		u32 getBlue() const { return color & 0xff; }
 
 		//! Returns the luminance of the color.
@@ -221,35 +222,36 @@ namespace video
 			return ( getRed() + getGreen() + getBlue() ) / 3;
 		}
 
-		//! Sets the alpha component of the Color. The alpha component
-		//! defines how transparent a color should be.
-		//! \param a: Has to be a value between 0 and 255.
-		//! 255 means not transparent (opaque), 0 means fully transparent.
+		//! Sets the alpha component of the Color.
+		/** The alpha component defines how transparent a color should
+		be.
+		\param a: Has to be a value between 0 and 255.
+		255 means not transparent (opaque), 0 means fully transparent. */
 		void setAlpha(u32 a) { color = ((a & 0xff)<<24) | (color & 0x00ffffff); }
 
 		//! Sets the red component of the Color.
-		//! \param r: Has to be a value between 0 and 255.
-		//! 0 means no red, 255 means full red.
+		/** \param r: Has to be a value between 0 and 255.
+		0 means no red, 255 means full red. */
 		void setRed(u32 r) { color = ((r & 0xff)<<16) | (color & 0xff00ffff); }
 
 		//! Sets the green component of the Color.
-		//! \param g: Has to be a value between 0 and 255.
-		//! 0 means no green, 255 means full green.
+		/** \param g: Has to be a value between 0 and 255.
+		0 means no green, 255 means full green. */
 		void setGreen(u32 g) { color = ((g & 0xff)<<8) | (color & 0xffff00ff); }
 
 		//! Sets the blue component of the Color.
-		//! \param b: Has to be a value between 0 and 255.
-		//! 0 means no blue, 255 means full blue.
+		/** \param b: Has to be a value between 0 and 255.
+		0 means no blue, 255 means full blue. */
 		void setBlue(u32 b) { color = (b & 0xff) | (color & 0xffffff00); }
 
 		//! Calculates a 16 bit A1R5G5B5 value of this color.
-		//! \return Returns the 16 bit A1R5G5B5 value of this color.
+		/** \return 16 bit A1R5G5B5 value of this color. */
 		u16 toA1R5G5B5() const { return A8R8G8B8toA1R5G5B5(color); };
 
-		//! Converts color to OpenGL color format,
-		//! from ARGB to RGBA in 4 byte components for endian aware
-		//! passing to OpenGL
-		//! \param dest: address where the 4x8 bit OpenGL color is stored.
+		//! Converts color to OpenGL color format
+		/** From ARGB to RGBA in 4 byte components for endian aware
+		passing to OpenGL
+		\param dest: address where the 4x8 bit OpenGL color is stored. */
 		void toOpenGLColor(u8* dest) const
 		{
 			*dest =   getRed();
@@ -259,21 +261,20 @@ namespace video
 		};
 
 		//! Sets all four components of the color at once.
-		//! Constructs the color from 4 values representing the alpha, red, green and
-		//! blue components of the color. Must be values between 0 and 255.
-		//! \param a: Alpha component of the color.
-		//! The alpha component defines how transparent a color should be.
-		//! Has to be a value between 0 and 255.
-		//! 255 means not transparent (opaque), 0 means fully transparent.
-		//! \param r: Sets the red component of the Color.
-		//! Has to be a value between 0 and 255.
-		//! 0 means no red, 255 means full red.
-		//! \param g: Sets the green component of the Color.
-		//! Has to be a value between 0 and 255.
-		//! 0 means no green, 255 means full green.
-		//! \param b: Sets the blue component of the Color.
-		//! Has to be a value between 0 and 255.
-		//! 0 means no blue, 255 means full blue.
+		/** Constructs the color from 4 values representing the alpha,
+		red, green and blue components of the color. Must be values
+		between 0 and 255.
+		\param a: Alpha component of the color. The alpha component
+		defines how transparent a color should be. Has to be a value
+		between 0 and 255. 255 means not transparent (opaque), 0 means
+		fully transparent.
+		\param r: Sets the red component of the Color. Has to be a
+		value between 0 and 255. 0 means no red, 255 means full red.
+		\param g: Sets the green component of the Color. Has to be a
+		value between 0 and 255. 0 means no green, 255 means full
+		green.
+		\param b: Sets the blue component of the Color. Has to be a
+		value between 0 and 255. 0 means no blue, 255 means full blue. */
 		void set(u32 a, u32 r, u32 g, u32 b)
 		{
 			color = (((a & 0xff)<<24) | ((r & 0xff)<<16) | ((g & 0xff)<<8) | (b & 0xff));
@@ -281,20 +282,20 @@ namespace video
 		void set(u32 col) { color = col; }
 
 		//! Compares the color to another color.
-		//! \return Returns true if the colors are the same, and false if not.
+		/** \return True if the colors are the same, and false if not. */
 		bool operator==(const SColor& other) const { return other.color == color; }
 
 		//! Compares the color to another color.
-		//! \return Returns true if the colors are different, and false if they are the same.
+		/** \return True if the colors are different, and false if they are the same. */
 		bool operator!=(const SColor& other) const { return other.color != color; }
 
 		//! comparison operator
-		//! \return Returns true if this color is smaller than the other one
+		/** \return True if this color is smaller than the other one */
 		bool operator<(const SColor& other) const { return (color < other.color); }
 
 		//! Adds two colors, result is clamped to 0..255 values
-		//! \param other Color to add to this color
-		//! \return Addition of the two colors, clamped to 0..255 values
+		/** \param other Color to add to this color
+		\return Addition of the two colors, clamped to 0..255 values */
 		SColor operator+(const SColor& other) const
 		{
 			return SColor(core::min_(getAlpha() + other.getAlpha(), 255u),
@@ -304,9 +305,9 @@ namespace video
 		}
 
 		//! Interpolates the color with a f32 value to another color
-		//! \param other: Other color
-		//! \param d: value between 0.0f and 1.0f
-		//! \return Returns interpolated color.
+		/** \param other: Other color
+		\param d: value between 0.0f and 1.0f
+		\return Interpolated color. */
 		SColor getInterpolated(const SColor &other, f32 d) const
 		{
 			d = core::clamp(d, 0.f, 1.f);
@@ -319,7 +320,7 @@ namespace video
 
 		//! Returns interpolated color. ( quadratic )
 		/** \param c1: first color to interpolate with
-		    \param c2: second color to interpolate with
+		\param c2: second color to interpolate with
 		\param d: value between 0.0f and 1.0f. */
 		SColor getInterpolated_quadratic(const SColor& c1, const SColor& c2, f32 d) const
 		{
@@ -347,7 +348,7 @@ namespace video
 
 
 	//! Class representing a color with four floats.
-	/**	The color values for red, green, blue
+	/** The color values for red, green, blue
 	and alpha are each stored in a 32 bit floating point variable.
 	So all four values may be between 0.0f and 1.0f.
 	Another, faster way to define colors is using the class SColor, which
@@ -357,21 +358,21 @@ namespace video
 	{
 	public:
 		//! Constructs a color from up to four color values: red, green, blue, and alpha.
-		//! \param r: Red color component. Should be a value between 0.0f meaning
-		//! no red and 1.0f, meaning full red.
-		//! \param g: Green color component. Should be a value between 0.0f meaning
-		//! no green and 1.0f, meaning full green.
-		//! \param b: Blue color component. Should be a value between 0.0f meaning
-		//! no blue and 1.0f, meaning full blue.
-		//! \param a: Alpha color component of the color.
-		//! The alpha component defines how transparent a color should be.
-		//! Has to be a value between 0.0f and 1.0f,
-		//! 1.0f means not transparent (opaque), 0.0f means fully transparent.
+		/** \param r: Red color component. Should be a value between
+		0.0f meaning no red and 1.0f, meaning full red.
+		\param g: Green color component. Should be a value between 0.0f
+		meaning no green and 1.0f, meaning full green.
+		\param b: Blue color component. Should be a value between 0.0f
+		meaning no blue and 1.0f, meaning full blue.
+		\param a: Alpha color component of the color. The alpha
+		component defines how transparent a color should be. Has to be
+		a value between 0.0f and 1.0f, 1.0f means not transparent
+		(opaque), 0.0f means fully transparent. */
 		SColorf(f32 r=0.f, f32 g=0.f, f32 b=0.f, f32 a=1.f) : r(r), g(g), b(b), a(a) {}
 
 		//! Constructs a color from 32 bit Color.
-		//! \param c: 32 bit color from which this SColorf class is
-		//! constructed from.
+		/** \param c: 32 bit color from which this SColorf class is
+		constructed from. */
 		SColorf(SColor c)
 		{
 			const f32 inv = 1.0f / 255.0f;
@@ -388,29 +389,29 @@ namespace video
 		}
 
 		//! Sets three color components to new values at once.
-		//! \param rr: Red color component. Should be a value between 0.0f meaning
-		//! no red (=black) and 1.0f, meaning full red.
-		//! \param gg: Green color component. Should be a value between 0.0f meaning
-		//! no green (=black) and 1.0f, meaning full green.
-		//! \param bb: Blue color component. Should be a value between 0.0f meaning
-		//! no blue (=black) and 1.0f, meaning full blue.
+		/** \param rr: Red color component. Should be a value between 0.0f meaning
+		no red (=black) and 1.0f, meaning full red.
+		\param gg: Green color component. Should be a value between 0.0f meaning
+		no green (=black) and 1.0f, meaning full green.
+		\param bb: Blue color component. Should be a value between 0.0f meaning
+		no blue (=black) and 1.0f, meaning full blue. */
 		void set(f32 rr, f32 gg, f32 bb) {r = rr; g =gg; b = bb; };
 
 		//! Sets all four color components to new values at once.
-		//! \param aa: Alpha component. Should be a value between 0.0f meaning
-		//! fully transparent and 1.0f, meaning opaque.
-		//! \param rr: Red color component. Should be a value between 0.0f meaning
-		//! no red and 1.0f, meaning full red.
-		//! \param gg: Green color component. Should be a value between 0.0f meaning
-		//! no green and 1.0f, meaning full green.
-		//! \param bb: Blue color component. Should be a value between 0.0f meaning
-		//! no blue and 1.0f, meaning full blue.
+		/** \param aa: Alpha component. Should be a value between 0.0f meaning
+		fully transparent and 1.0f, meaning opaque.
+		\param rr: Red color component. Should be a value between 0.0f meaning
+		no red and 1.0f, meaning full red.
+		\param gg: Green color component. Should be a value between 0.0f meaning
+		no green and 1.0f, meaning full green.
+		\param bb: Blue color component. Should be a value between 0.0f meaning
+		no blue and 1.0f, meaning full blue. */
 		void set(f32 aa, f32 rr, f32 gg, f32 bb) {a = aa; r = rr; g =gg; b = bb; };
 
 		//! Interpolates the color with a f32 value to another color
-		//! \param other: Other color
-		//! \param d: value between 0.0f and 1.0f
-		//! \return Returns interpolated color.
+		/** \param other: Other color
+		\param d: value between 0.0f and 1.0f
+		\return Interpolated color. */
 		SColorf getInterpolated(const SColorf &other, f32 d) const
 		{
 			d = core::clamp(d, 0.f, 1.f);
@@ -433,10 +434,10 @@ namespace video
 			const f32 mul1 = 2.f * d * inv;
 			const f32 mul2 = d * d;
 
-			return SColorf ( r * mul0 + c1.r * mul1 + c2.r * mul2,
-					 g * mul0 + c1.g * mul1 + c2.g * mul2,
-					 g * mul0 + c1.b * mul1 + c2.b * mul2,
-					 a * mul0 + c1.a * mul1 + c2.a * mul2);
+			return SColorf (r * mul0 + c1.r * mul1 + c2.r * mul2,
+					g * mul0 + c1.g * mul1 + c2.g * mul2,
+					g * mul0 + c1.b * mul1 + c2.b * mul2,
+					a * mul0 + c1.a * mul1 + c2.a * mul2);
 		}
 
 
@@ -479,7 +480,7 @@ namespace video
 
 
 	//! Class representing a color in HSV format
-	/**	The color values for hue, saturation, value
+	/** The color values for hue, saturation, value
 	are stored in a 32 bit floating point variable.
 	*/
 	class SColorHSL
@@ -511,18 +512,18 @@ namespace video
 			return;
 		}
 
-		f32 rm1, rm2;
-			
+		f32 rm2;
+
 		if ( Luminance <= 0.5f )
 		{
-			rm2 = Luminance + Luminance * Saturation;  
+			rm2 = Luminance + Luminance * Saturation;
 		}
 		else
 		{
 			rm2 = Luminance + Saturation - Luminance * Saturation;
 		}
 
-		rm1 = 2.0f * Luminance - rm2;   
+		const f32 rm1 = 2.0f * Luminance - rm2;
 
 		color.setRed ( toRGB1(rm1, rm2, Hue + (120.0f * core::DEGTORAD )) );
 		color.setGreen ( toRGB1(rm1, rm2, Hue) );
@@ -538,14 +539,14 @@ namespace video
 		while ( rh < 0.f )
 			rh += 2.f * core::PI;
 
-		if (rh <  60.0f * core::DEGTORAD )
+		if (rh < 60.0f * core::DEGTORAD )
 			rm1 = rm1 + (rm2 - rm1) * rh / (60.0f * core::DEGTORAD);
 		else if (rh < 180.0f * core::DEGTORAD )
 			rm1 = rm2;
 		else if (rh < 240.0f * core::DEGTORAD )
 			rm1 = rm1 + (rm2 - rm1) * ( ( 240.0f * core::DEGTORAD ) - rh) /
 				(60.0f * core::DEGTORAD);
-		                
+
 		return (u32) (rm1 * 255.f);
 	}
 

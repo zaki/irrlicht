@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,8 +15,8 @@ namespace io
 {
 
 	//! Interface providing methods for making it easier to write XML files.
-	/** This XML Writer only writes UTF-16 xml files, because these are parsed 
-	faster than all other formats by IXMLReader.
+	/** This XML Writer only writes UTF-16 xml files, because these are
+	parsed faster than all other formats by IXMLReader.
 	*/
 	class IXMLWriter : public virtual IReferenceCounted
 	{
@@ -25,26 +25,29 @@ namespace io
 		//! Destructor
 		virtual ~IXMLWriter() {}
 
-		//! Writes a xml 1.0 header like &lt;?xml version="1.0"?&gt;. This should
-		//! always be called before writing anything other, because also the
-		//! text file header for unicode texts is written out with this method.
+		//! Writes an xml 1.0 header.
+		/** Looks like &lt;?xml version="1.0"?&gt;. This should always
+		be called before writing anything other, because also the text
+		file header for unicode texts is written out with this method. */
 		virtual void writeXMLHeader() = 0;
 
 		//! Writes an xml element with maximal 5 attributes like "<foo />" or
-		//! &lt;foo optAttr="value" /&gt;. The element can be empty or not.
-		//! \param name: Name of the element
-		//! \param empty: Specifies if the element should be empty. Like "<foo />". If
-		//! You set this to false, something like this is written instead: "<foo>".
-		//! \param attr1Name: 1st attributes name
-		//! \param attr1Value: 1st attributes value
-		//! \param attr2Name: 2nd attributes name
-		//! \param attr2Value: 2nd attributes value
-		//! \param attr3Name: 3rd attributes name
-		//! \param attr3Value: 3rd attributes value
-		//! \param attr4Name: 4th attributes name
-		//! \param attr4Value: 4th attributes value
-		//! \param attr5Name: 5th attributes name
-		//! \param attr5Value: 5th attributes value
+		//! &lt;foo optAttr="value" /&gt;.
+		/** The element can be empty or not.
+		\param name: Name of the element
+		\param empty: Specifies if the element should be empty. Like
+		"<foo />". If You set this to false, something like this is
+		written instead: "<foo>".
+		\param attr1Name: 1st attributes name
+		\param attr1Value: 1st attributes value
+		\param attr2Name: 2nd attributes name
+		\param attr2Value: 2nd attributes value
+		\param attr3Name: 3rd attributes name
+		\param attr3Value: 3rd attributes value
+		\param attr4Name: 4th attributes name
+		\param attr4Value: 4th attributes value
+		\param attr5Name: 5th attributes name
+		\param attr5Value: 5th attributes value */
 		virtual void writeElement(const wchar_t* name, bool empty=false,
 			const wchar_t* attr1Name = 0, const wchar_t* attr1Value = 0,
 			const wchar_t* attr2Name = 0, const wchar_t* attr2Value = 0,
@@ -62,8 +65,10 @@ namespace io
 		//! Writes the closing tag for an element. Like "</foo>"
 		virtual void writeClosingTag(const wchar_t* name) = 0;
 
-		//! Writes a text into the file. All occurrences of special characters like
-		//! & (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automaticly replaced.
+		//! Writes a text into the file.
+		/** All occurrences of special characters such as
+		& (&amp;), < (&lt;), > (&gt;), and " (&quot;) are automaticly
+		replaced. */
 		virtual void writeText(const wchar_t* text) = 0;
 
 		//! Writes a line break

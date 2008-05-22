@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -11,13 +11,12 @@
 namespace irr
 {
 
-
 namespace scene
 {
 	class ISceneNode;
-	
-	//!	Interface making it possible to dynamicly create scene nodes 
-	/** To be able to add custom scene nodes to Irrlicht and to make it possible for the 
+
+	//! Interface for dynamic creation of scene nodes
+	/** To be able to add custom scene nodes to Irrlicht and to make it possible for the
 	scene manager to save and load those external scene nodes, simply implement this
 	interface and register it in you scene manager via ISceneManager::registerSceneNodeFactory.
 	Note: When implementing your own scene node factory, don't call ISceneNodeManager::grab() to
@@ -56,8 +55,8 @@ namespace scene
 		getCreatableSceneNodeTypeCount() */
 		virtual const c8* getCreateableSceneNodeTypeName(u32 idx) const = 0;
 
-		//! returns type name of a createable scene node type 
-		/** \param type: Type of scene node. 
+		//! returns type name of a createable scene node type
+		/** \param type: Type of scene node.
 		\return: Returns name of scene node type if this factory can create the type, otherwise 0. */
 		virtual const c8* getCreateableSceneNodeTypeName(ESCENE_NODE_TYPE type) const = 0;
 	};

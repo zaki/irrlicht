@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -21,8 +21,8 @@ class IBillboardSceneNode : virtual public ISceneNode
 {
 public:
 
-	//! constructor
-	IBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, 
+	//! Constructor
+	IBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position = core::vector3df(0,0,0))
 		: ISceneNode(parent, mgr, id, position) {}
 
@@ -33,17 +33,17 @@ public:
 	virtual const core::dimension2d<f32>& getSize() const = 0;
 
 	//! Set the color of all vertices of the billboard
-	//! \param overallColor: the color to set
+	/** \param overallColor: the color to set */
 	virtual void setColor(const video::SColor & overallColor) = 0;
 
 	//! Set the color of the top and bottom vertices of the billboard
-	//! \param topColor: the color to set the top vertices
-	//! \param bottomColor: the color to set the bottom vertices
+	/** \param topColor: the color to set the top vertices
+	\param bottomColor: the color to set the bottom vertices */
 	virtual void setColor(const video::SColor & topColor, const video::SColor & bottomColor) = 0;
 
 	//! Gets the color of the top and bottom vertices of the billboard
-	//! \param topColor: stores the color of the top vertices
-	//! \param bottomColor: stores the color of the bottom vertices
+	/** \param topColor: stores the color of the top vertices
+	\param bottomColor: stores the color of the bottom vertices */
 	virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const = 0;
 
 };

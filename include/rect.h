@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -16,8 +16,8 @@ namespace core
 
 	//! Rectangle template.
 	/** Mostly used by 2D GUI elements and for 2D drawing methods.
-	    It has 2 positions instead of position and dimension and a fast
-	    method for collision detection with other rectangles and points.
+	It has 2 positions instead of position and dimension and a fast
+	method for collision detection with other rectangles and points.
 	*/
 	template <class T>
 	class rect
@@ -108,7 +108,7 @@ namespace core
 		}
 
 		//! Clips this rectangle with another one.
-		void clipAgainst(const rect<T>& other) 
+		void clipAgainst(const rect<T>& other)
 		{
 			if (other.LowerRightCorner.X < LowerRightCorner.X)
 				LowerRightCorner.X = other.LowerRightCorner.X;
@@ -129,7 +129,7 @@ namespace core
 
 		//! Moves this rectangle to fit inside another one.
 		//! \return: returns true on success, false if not possible
-		bool constrainTo(const rect<T>& other) 
+		bool constrainTo(const rect<T>& other)
 		{
 			if (other.getWidth() < getWidth() || other.getHeight() < getHeight())
 				return false;
@@ -219,7 +219,7 @@ namespace core
 		}
 
 
-		//! Adds a point to the rectangle, causing it to grow bigger, 
+		//! Adds a point to the rectangle, causing it to grow bigger,
 		//! if point is outside of the box
 		//! \param p: Point to add into the box.
 		void addInternalPoint(const position2d<T>& p)
@@ -227,7 +227,7 @@ namespace core
 			addInternalPoint(p.X, p.Y);
 		}
 
-		//! Adds a point to the bounding rectangle, causing it to grow bigger, 
+		//! Adds a point to the bounding rectangle, causing it to grow bigger,
 		//! if point is outside of the box.
 		//! \param x: X Coordinate of the point to add to this box.
 		//! \param y: Y Coordinate of the point to add to this box.

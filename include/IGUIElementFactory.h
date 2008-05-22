@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -11,14 +11,13 @@
 namespace irr
 {
 
-
 namespace gui
 {
 	class IGUIElement;
-	
-	//!	Interface making it possible to dynamicly create GUI elements
-	/** To be able to add custom elements to Irrlicht and to make it possible for the 
-	scene manager to save and load them, simply implement this interface and register it 
+
+	//! Interface making it possible to dynamicly create GUI elements
+	/** To be able to add custom elements to Irrlicht and to make it possible for the
+	scene manager to save and load them, simply implement this interface and register it
 	in your gui environment via IGUIEnvironment::registerGUIElementFactory.
 	Note: When implementing your own element factory, don't call IGUIEnvironment::grab() to
 	increase the reference counter of the environment. This is not necessary because the
@@ -57,7 +56,7 @@ namespace gui
 		virtual const c8* getCreateableGUIElementTypeName(s32 idx) const = 0;
 
 		//! returns type name of a createable GUI element
-		/** \param type: Type of GUI element. 
+		/** \param type: Type of GUI element.
 		\return: Returns name of the type if this factory can create the type, otherwise 0. */
 		virtual const c8* getCreateableGUIElementTypeName(EGUI_ELEMENT_TYPE type) const = 0;
 	};

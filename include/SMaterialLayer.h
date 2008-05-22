@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -34,11 +34,11 @@ namespace video
 			"texture_clamp_clamp_to_border",
 			"texture_clamp_mirror", 0};
 
-	//! struct for holding material parameters which exist per texture layer
+	//! Struct for holding material parameters which exist per texture layer
 	class SMaterialLayer
 	{
 	public:
-		//! default constructor
+		//! Default constructor
 		SMaterialLayer()
 			: Texture(0), TextureMatrix(0),
 				TextureWrap(ETC_REPEAT),
@@ -47,7 +47,8 @@ namespace video
 				AnisotropicFilter(false)
 			{}
 
-		//! copy constructor
+		//! Copy constructor
+		/** \param other Material layer to copy from. */
 		SMaterialLayer(const SMaterialLayer& other)
 		{
 			// This pointer is checked during assignment
@@ -55,13 +56,15 @@ namespace video
 			*this = other;
 		}
 
-		//! destructor
+		//! Destructor
 		~SMaterialLayer()
 		{
 			delete TextureMatrix;
 		}
 
 		//! Assignment operator
+		/** \param other Material layer to copy from.
+		\return This material layer, updated. */
 		SMaterialLayer& operator=(const SMaterialLayer& other)
 		{
 			Texture = other.Texture;
@@ -94,8 +97,8 @@ namespace video
 		ITexture* Texture;
 
 		//! Texture Matrix
-		//! Do not access this element directly as the internal
-		//! ressource management has to cope with Null pointers etc.
+		/** Do not access this element directly as the internal
+		resource management has to cope with Null pointers etc. */
 		core::matrix4* TextureMatrix;
 
 		//! Texture Clamp Mode
@@ -111,12 +114,13 @@ namespace video
 
 		//! Is anisotropic filtering enabled? Default: false
 		/** In Irrlicht you can use anisotropic texture filtering
-		    in conjunction with bilinear or trilinear texture
-		    filtering to improve rendering results. Primitives
-		    will look less blurry with this flag switched on. */
+		in conjunction with bilinear or trilinear texture
+		filtering to improve rendering results. Primitives
+		will look less blurry with this flag switched on. */
 		bool AnisotropicFilter;
 
 		//! Gets the texture transformation matrix
+		/** \return Texture matrix of this layer. */
 		core::matrix4& getTextureMatrix()
 		{
 			if (!TextureMatrix)
@@ -125,6 +129,7 @@ namespace video
 		}
 
 		//! Gets the immutable texture transformation matrix
+		/** \return Texture matrix of this layer. */
 		const core::matrix4& getTextureMatrix() const
 		{
 			if (TextureMatrix)
@@ -134,6 +139,7 @@ namespace video
 		}
 
 		//! Sets the texture transformation matrix to mat
+		/** \param mat New texture matrix for this layer. */
 		void setTextureMatrix(const core::matrix4& mat)
 		{
 			if (!TextureMatrix)
@@ -143,9 +149,11 @@ namespace video
 		}
 
 		//! Inequality operator
+		/** \param b Layer to compare to.
+		\return True if layers are different, else false. */
 		inline bool operator!=(const SMaterialLayer& b) const
 		{
-			bool different = 
+			bool different =
 				Texture != b.Texture ||
 				TextureWrap != b.TextureWrap ||
 				BilinearFilter != b.BilinearFilter ||
@@ -161,6 +169,8 @@ namespace video
 		}
 
 		//! Equality operator
+		/** \param b Layer to compare to.
+		\return True if layers are equal, else false. */
 		inline bool operator==(const SMaterialLayer& b) const
 		{ return !(b!=*this); }
 	};

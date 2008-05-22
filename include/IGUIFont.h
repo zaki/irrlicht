@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -20,8 +20,8 @@ enum EGUI_FONT_TYPE
 	//! Bitmap fonts loaded from an XML file or a texture.
 	EGFT_BITMAP = 0,
 
-	//! Scalable vector fonts loaded from an XML file. 
-	//! These fonts reside in system memory and use no video memory 
+	//! Scalable vector fonts loaded from an XML file.
+	//! These fonts reside in system memory and use no video memory
 	//! until they are displayed. These are slower than bitmap fonts
 	//! but can be easily scaled and rotated.
 	EGFT_VECTOR,
@@ -44,19 +44,19 @@ public:
 
 	//! Draws an text and clips it to the specified rectangle if wanted.
 	/** \param text: Text to draw
-	 \param position: Rectangle specifying position where to draw the text.
-	 \param color: Color of the text
-	 \param hcenter: Specifiies if the text should be centered horizontally into the rectangle.
-	 \param vcenter: Specifiies if the text should be centered vertically into the rectangle.
-	 \param clip: Optional pointer to a rectangle against which the text will be clipped.
-	 If the pointer is null, no clipping will be done. */
-	virtual void draw(const wchar_t* text, const core::rect<s32>& position, 
+	\param position: Rectangle specifying position where to draw the text.
+	\param color: Color of the text
+	\param hcenter: Specifiies if the text should be centered horizontally into the rectangle.
+	\param vcenter: Specifiies if the text should be centered vertically into the rectangle.
+	\param clip: Optional pointer to a rectangle against which the text will be clipped.
+	If the pointer is null, no clipping will be done. */
+	virtual void draw(const wchar_t* text, const core::rect<s32>& position,
 		video::SColor color, bool hcenter=false, bool vcenter=false,
 		const core::rect<s32>* clip=0) = 0;
 
 	//! Calculates the dimension of a text.
-	/** \return Returns width and height of the area covered by the text if it would be
-	  drawn. */
+	/** \return Returns width and height of the area covered by the text if
+	it would be drawn. */
 	virtual core::dimension2d<s32> getDimension(const wchar_t* text) const = 0;
 
 	//! Calculates the index of the character in the text which is on a specific position.
@@ -79,7 +79,7 @@ public:
 	to the global kerning value. For example, a space might only be one pixel wide, but it may
 	be displayed as several pixels.
 	\param previousLetter: If provided, kerning is calculated for both letters and added to the global
-	kerning value. For example, in a font which supports kerning pairs a string such as 'Wo' may have 
+	kerning value. For example, in a font which supports kerning pairs a string such as 'Wo' may have
 	the 'o' tucked neatly under the 'W'.
 	*/
 	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const = 0;

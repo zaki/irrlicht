@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and irrXML.h
 
@@ -17,8 +17,8 @@ namespace irr
 namespace core
 {
 
-//!	Very simple string class with some useful features.
-/**	string<c8> and string<wchar_t> work both with unicode AND ascii,
+//! Very simple string class with some useful features.
+/** string<c8> and string<wchar_t> work both with unicode AND ascii,
 so you can assign unicode to string<c8> and ascii to string<wchar_t>
 (and the other way round) if your ever would want to.
 Note that the conversation between both is not done using an encoding.
@@ -507,7 +507,7 @@ public:
 
 	//! Appends a string of the length l to this string.
 	/** \param other: other String to append to this string.
-	 \param length: How much characters of the other string to add to this one. */
+	\param length: How much characters of the other string to add to this one. */
 	void append(const string<T>& other, u32 length)
 	{
 		if (other.size() < length)
@@ -578,7 +578,7 @@ public:
 
 	//! Finds first position of a character not in a given list.
 	/** \param c: List of characters not to find. For example if the method
-	 should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
+	should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
 	\param count: Amount of characters in the list. Usually,
 	this should be strlen(c)
 	\return Returns position where the character has been found,
@@ -602,7 +602,7 @@ public:
 
 	//! Finds last position of a character not in a given list.
 	/** \param c: List of characters not to find. For example if the method
-	 should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
+	should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
 	\param count: Amount of characters in the list. Usually,
 	this should be strlen(c)
 	\return Returns position where the character has been found,
@@ -677,7 +677,7 @@ public:
 
 	//! finds another string in this string
 	//! \param str: Another string
-	//! \return Returns positions where the string has been found, 
+	//! \return Returns positions where the string has been found,
 	//! or -1 if not found.
 	template <class B>
 	s32 find(const B* const str) const

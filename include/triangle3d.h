@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -14,10 +14,10 @@ namespace irr
 {
 namespace core
 {
-	
+
 	//! 3d triangle template class for doing collision detection and other things.
 	template <class T>
-	class triangle3d  
+	class triangle3d
 	{
 	public:
 
@@ -44,7 +44,7 @@ namespace core
 		//! and false otherwise.
 		bool isTotalInsideBox(const aabbox3d<T>& box) const
 		{
-			return (box.isPointInside(pointA) && 
+			return (box.isPointInside(pointA) &&
 				box.isPointInside(pointB) &&
 				box.isPointInside(pointC));
 		}
@@ -64,7 +64,7 @@ namespace core
 
 			if (d1 < d2)
 				return d1 < d3 ? rab : rca;
-            
+
 			return d2 < d3 ? rbc : rca;
 		}
 
@@ -137,11 +137,11 @@ namespace core
 			if (getIntersectionOfPlaneWithLine(linePoint, lineVect, outIntersection))
 				return isPointInside(outIntersection);
 
-			return false;			
+			return false;
 		}
 
 
-		//! Calculates the intersection between a 3d line and 
+		//! Calculates the intersection between a 3d line and
 		//! the plane the triangle is on.
 		//! \param lineVect: Vector of the line to intersect with.
 		//! \param linePoint: Point of the line to intersect with.
@@ -162,7 +162,7 @@ namespace core
 			return true;
 		}
 
-		
+
 		//! Returns the normal of the triangle.
 		//! Please note: The normal is not normalized.
 		vector3d<T> getNormal() const
@@ -207,12 +207,12 @@ namespace core
 		}
 
 		//! the three points of the triangle
-		vector3d<T> pointA; 
-		vector3d<T> pointB; 
-		vector3d<T> pointC; 
+		vector3d<T> pointA;
+		vector3d<T> pointB;
+		vector3d<T> pointC;
 
 	private:
-		bool isOnSameSide(const vector3d<T>& p1, const vector3d<T>& p2, 
+		bool isOnSameSide(const vector3d<T>& p1, const vector3d<T>& p2,
 			const vector3d<T>& a, const vector3d<T>& b) const
 		{
 			vector3d<T> bminusa = b - a;

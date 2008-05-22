@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -65,27 +65,27 @@ namespace gui
 
 		//! Sets another skin independent font.
 		/** If this is set to zero, the button uses the font of the skin.
-		 \param font: New font to set. */
+		\param font: New font to set. */
 		virtual void setOverrideFont(IGUIFont* font=0) = 0;
 
-		//! Sets an image which should be displayed on the button when it is in normal state. 
+		//! Sets an image which should be displayed on the button when it is in normal state.
 		/** \param image: Image to be displayed */
 		virtual void setImage(video::ITexture* image) = 0;
 
-		//! Sets a background image for the button when it is in normal state. 
+		//! Sets a background image for the button when it is in normal state.
 		/** \param image: Texture containing the image to be displayed
-		 \param pos: Position in the texture, where the image is located */
+		\param pos: Position in the texture, where the image is located */
 		virtual void setImage(video::ITexture* image, const core::rect<s32>& pos) = 0;
 
-		//! Sets a background image for the button when it is in pressed state. 
+		//! Sets a background image for the button when it is in pressed state.
 		/** If no images is specified for the pressed state via
 		setPressedImage(), this image is also drawn in pressed state.
 		\param image: Image to be displayed */
 		virtual void setPressedImage(video::ITexture* image) = 0;
 
-		//! Sets an image which should be displayed on the button when it is in pressed state. 
+		//! Sets an image which should be displayed on the button when it is in pressed state.
 		/** \param image: Texture containing the image to be displayed
-		 \param pos: Position in the texture, where the image is located */
+		\param pos: Position in the texture, where the image is located */
 		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) = 0;
 
 		//! Sets the sprite bank used by the button
@@ -98,10 +98,10 @@ namespace gui
 		\param color: The color of the sprite
 		\param loop: True if the animation should loop, false if not
 		*/
-		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index, 
+		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index,
 				video::SColor color=video::SColor(255,255,255,255), bool loop=false) = 0;
 
-		//! Sets if the button should behave like a push button. 
+		//! Sets if the button should behave like a push button.
 		/** Which means it can be in two states: Normal or Pressed. With a click on the button,
 		the user can change the state of the button. */
 		virtual void setIsPushButton(bool isPushButton) = 0;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -17,31 +17,31 @@ namespace core
 	class vector3d
 	{
 	public:
-
+		//! Default constructor (null vector).
 		vector3d() : X(0), Y(0), Z(0) {}
 		vector3d(T nx, T ny, T nz) : X(nx), Y(ny), Z(nz) {}
 		vector3d(const vector3d<T>& other) : X(other.X), Y(other.Y), Z(other.Z) {}
 
 		// operators
 
-		vector3d<T> operator-() const { return vector3d<T>(-X, -Y, -Z);   }
+		vector3d<T> operator-() const { return vector3d<T>(-X, -Y, -Z); }
 
-		vector3d<T>& operator=(const vector3d<T>& other)	{ X = other.X; Y = other.Y; Z = other.Z; return *this; }
+		vector3d<T>& operator=(const vector3d<T>& other) { X = other.X; Y = other.Y; Z = other.Z; return *this; }
 
-		vector3d<T> operator+(const vector3d<T>& other) const { return vector3d<T>(X + other.X, Y + other.Y, Z + other.Z);	}
-		vector3d<T>& operator+=(const vector3d<T>& other)	{ X+=other.X; Y+=other.Y; Z+=other.Z; return *this; }
+		vector3d<T> operator+(const vector3d<T>& other) const { return vector3d<T>(X + other.X, Y + other.Y, Z + other.Z); }
+		vector3d<T>& operator+=(const vector3d<T>& other) { X+=other.X; Y+=other.Y; Z+=other.Z; return *this; }
 
-		vector3d<T> operator-(const vector3d<T>& other) const { return vector3d<T>(X - other.X, Y - other.Y, Z - other.Z);	}
-		vector3d<T>& operator-=(const vector3d<T>& other)	{ X-=other.X; Y-=other.Y; Z-=other.Z; return *this; }
+		vector3d<T> operator-(const vector3d<T>& other) const { return vector3d<T>(X - other.X, Y - other.Y, Z - other.Z); }
+		vector3d<T>& operator-=(const vector3d<T>& other) { X-=other.X; Y-=other.Y; Z-=other.Z; return *this; }
 
-		vector3d<T> operator*(const vector3d<T>& other) const { return vector3d<T>(X * other.X, Y * other.Y, Z * other.Z);	}
-		vector3d<T>& operator*=(const vector3d<T>& other)	{ X*=other.X; Y*=other.Y; Z*=other.Z; return *this; }
-		vector3d<T> operator*(const T v) const { return vector3d<T>(X * v, Y * v, Z * v);	}
+		vector3d<T> operator*(const vector3d<T>& other) const { return vector3d<T>(X * other.X, Y * other.Y, Z * other.Z); }
+		vector3d<T>& operator*=(const vector3d<T>& other) { X*=other.X; Y*=other.Y; Z*=other.Z; return *this; }
+		vector3d<T> operator*(const T v) const { return vector3d<T>(X * v, Y * v, Z * v); }
 		vector3d<T>& operator*=(const T v) { X*=v; Y*=v; Z*=v; return *this; }
 
-		vector3d<T> operator/(const vector3d<T>& other) const { return vector3d<T>(X / other.X, Y / other.Y, Z / other.Z);	}
-		vector3d<T>& operator/=(const vector3d<T>& other)	{ X/=other.X; Y/=other.Y; Z/=other.Z; return *this; }
-		vector3d<T> operator/(const T v) const { T i=(T)1.0/v; return vector3d<T>(X * i, Y * i, Z * i);	}
+		vector3d<T> operator/(const vector3d<T>& other) const { return vector3d<T>(X / other.X, Y / other.Y, Z / other.Z); }
+		vector3d<T>& operator/=(const vector3d<T>& other) { X/=other.X; Y/=other.Y; Z/=other.Z; return *this; }
+		vector3d<T> operator/(const T v) const { T i=(T)1.0/v; return vector3d<T>(X * i, Y * i, Z * i); }
 		vector3d<T>& operator/=(const T v) { T i=(T)1.0/v; X*=i; Y*=i; Z*=i; return *this; }
 
 		bool operator<=(const vector3d<T>&other) const { return X<=other.X && Y<=other.Y && Z<=other.Z;};
@@ -49,10 +49,7 @@ namespace core
 		bool operator<(const vector3d<T>&other) const { return X<other.X && Y<other.Y && Z<other.Z;};
 		bool operator>(const vector3d<T>&other) const { return X>other.X && Y>other.Y && Z>other.Z;};
 
-		//! use week float compare
-		//bool operator==(const vector3d<T>& other) const { return other.X==X && other.Y==Y && other.Z==Z; }
-		//bool operator!=(const vector3d<T>& other) const { return other.X!=X || other.Y!=Y || other.Z!=Z; }
-
+		//! use weak float compare
 		bool operator==(const vector3d<T>& other) const
 		{
 			return this->equals(other);
@@ -76,21 +73,21 @@ namespace core
 		vector3d<T>& set(const T nx, const T ny, const T nz) {X=nx; Y=ny; Z=nz; return *this;}
 		vector3d<T>& set(const vector3d<T>& p) {X=p.X; Y=p.Y; Z=p.Z;return *this;}
 
-		//! Returns length of the vector.
+		//! Get length of the vector.
 		T getLength() const { return (T) sqrt((f64)(X*X + Y*Y + Z*Z)); }
 
-		//! Returns squared length of the vector.
-		/** This is useful because it is much faster than
-		getLength(). */
+		//! Get squared length of the vector.
+		/** This is useful because it is much faster than getLength().
+		\return Squared length of the vector. */
 		T getLengthSQ() const { return X*X + Y*Y + Z*Z; }
 
-		//! Returns the dot product with another vector.
+		//! Get the dot product with another vector.
 		T dotProduct(const vector3d<T>& other) const
 		{
 			return X*other.X + Y*other.Y + Z*other.Z;
 		}
 
-		//! Returns distance from another point.
+		//! Get distance from another point.
 		/** Here, the vector is interpreted as point in 3 dimensional space. */
 		T getDistanceFrom(const vector3d<T>& other) const
 		{
@@ -104,19 +101,19 @@ namespace core
 			return vector3d<T>(X - other.X, Y - other.Y, Z - other.Z).getLengthSQ();
 		}
 
-		//! Calculates the cross product with another vector
-		//! \param p: vector to multiply with.
-		//! \return Crossproduct of this vector with p.
+		//! Calculates the cross product with another vector.
+		/** \param p Vector to multiply with.
+		\return Crossproduct of this vector with p. */
 		vector3d<T> crossProduct(const vector3d<T>& p) const
 		{
 			return vector3d<T>(Y * p.Z - Z * p.Y, Z * p.X - X * p.Z, X * p.Y - Y * p.X);
 		}
 
 		//! Returns if this vector interpreted as a point is on a line between two other points.
-		/** It is assumed that the point is on the line. */
-		//! \param begin: Beginning vector to compare between.
-		//! \param end: Ending vector to compare between.
-		//! \return True if this vector is between begin and end.  False if not.
+		/** It is assumed that the point is on the line.
+		\param begin Beginning vector to compare between.
+		\param end Ending vector to compare between.
+		\return True if this vector is between begin and end, false if not. */
 		bool isBetweenPoints(const vector3d<T>& begin, const vector3d<T>& end) const
 		{
 			T f = (end - begin).getLengthSQ();
@@ -124,9 +121,11 @@ namespace core
 				getDistanceFromSQ(end) < f;
 		}
 
-		//! Normalizes the vector. In case of the 0 vector the result
-		//! is still 0, otherwise the length of the vector will be 1.
-		//! Todo: 64 Bit template doesnt work.. need specialized template
+		//! Normalizes the vector.
+		/** In case of the 0 vector the result is still 0, otherwise
+		the length of the vector will be 1.
+		TODO: 64 Bit template doesnt work.. need specialized template
+		\return Reference to this vector after normalization. */
 		vector3d<T>& normalize()
 		{
 			T l = X*X + Y*Y + Z*Z;
@@ -155,10 +154,9 @@ namespace core
 			return *this;
 		}
 
-		//! Rotates the vector by a specified number of degrees around the Y
-		//! axis and the specified center.
-		//! \param degrees: Number of degrees to rotate around the Y axis.
-		//! \param center: The center of the rotation.
+		//! Rotates the vector by a specified number of degrees around the Y axis and the specified center.
+		/** \param degrees Number of degrees to rotate around the Y axis.
+		\param center The center of the rotation. */
 		void rotateXZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
@@ -171,10 +169,9 @@ namespace core
 			Z += center.Z;
 		}
 
-		//! Rotates the vector by a specified number of degrees around the Z
-		//! axis and the specified center.
-		//! \param degrees: Number of degrees to rotate around the Z axis.
-		//! \param center: The center of the rotation.
+		//! Rotates the vector by a specified number of degrees around the Z axis and the specified center.
+		/** \param degrees: Number of degrees to rotate around the Z axis.
+		\param center: The center of the rotation. */
 		void rotateXYBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
@@ -187,10 +184,9 @@ namespace core
 			Y += center.Y;
 		}
 
-		//! Rotates the vector by a specified number of degrees around the X
-		//! axis and the specified center.
-		//! \param degrees: Number of degrees to rotate around the X axis.
-		//! \param center: The center of the rotation.
+		//! Rotates the vector by a specified number of degrees around the X axis and the specified center.
+		/** \param degrees: Number of degrees to rotate around the X axis.
+		\param center: The center of the rotation. */
 		void rotateYZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
@@ -204,8 +200,8 @@ namespace core
 		}
 
 		//! Returns interpolated vector.
-		/** \param other: other vector to interpolate between
-		\param d: value between 0.0f and 1.0f. */
+		/** \param other Other vector to interpolate between
+		\param d Value between 0.0f and 1.0f. */
 		vector3d<T> getInterpolated(const vector3d<T>& other, const T d) const
 		{
 			const T inv = (T) 1.0 - d;
@@ -213,9 +209,9 @@ namespace core
 		}
 
 		//! Returns interpolated vector. ( quadratic )
-		/** \param v2: second vector to interpolate with
-		\param v3: third vector to interpolate with
-		\param d: value between 0.0f and 1.0f. */
+		/** \param v2 Second vector to interpolate with
+		\param v3 Third vector to interpolate with
+		\param d Value between 0.0f and 1.0f. */
 		vector3d<T> getInterpolated_quadratic(const vector3d<T>& v2, const vector3d<T>& v3, const T d) const
 		{
 			// this*(1-d)*(1-d) + 2 * v2 * (1-d) + v3 * d * d;
@@ -266,9 +262,12 @@ namespace core
 			array[3] = 0;
 		}
 
-		// member variables
-
-		T X, Y, Z;
+		//! X coordinate of the vector
+		T X;
+		//! Y coordinate of the vector
+		T Y;
+		//! Z coordinate of the vector
+		T Z;
 	};
 
 
@@ -277,6 +276,7 @@ namespace core
 	//! Typedef for an integer 3d vector.
 	typedef vector3d<s32> vector3di;
 
+	//! Function multiplying a scalar and a vector component-wise.
 	template<class S, class T>
 	vector3d<T> operator*(const S scalar, const vector3d<T>& vector) { return vector*scalar; }
 

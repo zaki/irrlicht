@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -28,7 +28,7 @@ public:
 	virtual void setNormalDirectionModifier( f32 normalDirectionModifier ) = 0;
 
 	//! Sets whether to emit min<->max particles for every vertex per
-	//! second, or to pick  min<->max vertices every second
+	//! second, or to pick min<->max vertices every second
 	virtual void setEveryMeshVertex( bool everyMeshVertex = true ) = 0;
 
 	//! Get Mesh we're emitting particles from
@@ -41,7 +41,7 @@ public:
 	virtual f32 getNormalDirectionModifier() const = 0;
 
 	//! Gets whether to emit min<->max particles for every vertex per
-	//! second, or to pick  min<->max vertices every second
+	//! second, or to pick min<->max vertices every second
 	virtual bool getEveryMeshVertex() const = 0;
 
 	//! Get emitter type

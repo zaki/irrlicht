@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,7 +6,7 @@
 #define __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 //! Irrlicht SDK Version
-#define IRRLICHT_SDK_VERSION "1.4"
+#define IRRLICHT_SDK_VERSION "1.4.1"
 
 //! The defines for different operating system are:
 //! _IRR_XBOX_PLATFORM_ for XBox

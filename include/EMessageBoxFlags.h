@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -26,7 +26,7 @@ enum EMESSAGE_BOX_FLAG
 	EMBF_NO = 0x8,
 
 	//! This value is not used. It only forces this enumeration to compile in 32 bit.
-	EMBF_FORCE_32BIT = 0x7fffffff	
+	EMBF_FORCE_32BIT = 0x7fffffff
 };
 
 } // namespace gui

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -13,7 +13,7 @@ namespace irr
 namespace scene
 {
 	//! Interface for a Mesh which can be loaded directly from a Quake3 .bsp-file.
-	/** The Mesh tries to load all textures of the map. There are currently 
+	/** The Mesh tries to load all textures of the map. There are currently
 	no additional methods in this class, but maybe there will be some in later
 	releases if there are feature requests. */
 	class IQ3LevelMesh : public IAnimatedMesh
@@ -24,11 +24,11 @@ namespace scene
 		virtual void releaseMesh ( s32 index ) = 0;
 
 		//! loads the shader definition
-		//  either from file ( we assume /scripts on fileNameIsValid == 0 )
+		/** Either from file ( we assume /scripts on fileNameIsValid == 0 ) */
 		virtual const quake3::SShader * getShader ( const c8 * filename, s32 fileNameIsValid ) = 0;
 
 		//! returns a already loaded Shader
-		virtual const quake3::SShader * getShader ( u32 index  ) const = 0;
+		virtual const quake3::SShader * getShader ( u32 index ) const = 0;
 
 		//! get's an interface to the entities
 		virtual const quake3::tQ3EntityList & getEntityList () = 0;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -96,19 +96,21 @@ namespace scene
 		};
 
 
-		//! Animation keyframe which describes a new position, scale or rotation
+		//! Animation keyframe which describes a new position
 		struct SPositionKey
 		{
 			f32 frame;
 			core::vector3df position;
 		};
 
+		//! Animation keyframe which describes a new scale
 		struct SScaleKey
 		{
 			f32 frame;
 			core::vector3df scale;
 		};
 
+		//! Animation keyframe which describes a new rotation
 		struct SRotationKey
 		{
 			f32 frame;
@@ -116,10 +118,10 @@ namespace scene
 		};
 
 		//! Joints
-	  	struct SJoint
+		struct SJoint
 		{
 			SJoint() : UseAnimationFrom(0), LocalAnimatedMatrix_Animated(false), GlobalSkinningSpace(false),
-				   positionHint(-1),scaleHint(-1),rotationHint(-1)
+				positionHint(-1),scaleHint(-1),rotationHint(-1)
 			{
 			}
 
