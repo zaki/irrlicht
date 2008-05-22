@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -16,14 +16,14 @@ namespace irr
 	{
 		//! An event of the graphical user interface.
 		/** GUI events are created by the GUI environment or the GUI elements in response
-		to mouse or keyboard events. When a GUI element receives an event it will either 
+		to mouse or keyboard events. When a GUI element receives an event it will either
 		process it and return true, or pass the event to its parent. If an event is not absorbed
 		before it reaches the root element then it will then be passed to the user receiver. */
 		EET_GUI_EVENT = 0,
 
 		//! A mouse input event.
-		/** Mouse events are created by the device and passed to IrrlichtDevice::postEventFromUser 
-		in response to mouse input received from the operating system. 
+		/** Mouse events are created by the device and passed to IrrlichtDevice::postEventFromUser
+		in response to mouse input received from the operating system.
 		Mouse events are first passed to the user receiver, then to the GUI environment (and possibly
 		many GUI elements), then finally the input receiving scene manager (and possibly the active
 		camera) */
@@ -39,8 +39,9 @@ namespace irr
 		user receiver then no text will be sent to the console. */
 		EET_LOG_TEXT_EVENT,
 
-		//! A user event with user data. This is not used by Irrlicht and can be used
-		//! to send user specific data though the system.
+		//! A user event with user data.
+		/** This is not used by Irrlicht and can be used
+		to send user specific data though the system. */
 		EET_USER_EVENT
 	};
 
@@ -68,7 +69,7 @@ namespace irr
 		//! The mouse cursor changed its position.
 		EMIE_MOUSE_MOVED,
 
-		//! The mouse wheel was moved. Use Wheel value in event data to find out 
+		//! The mouse wheel was moved. Use Wheel value in event data to find out
 		//! in what direction and how fast.
 		EMIE_MOUSE_WHEEL,
 
@@ -85,12 +86,12 @@ namespace irr
 		enum EGUI_EVENT_TYPE
 		{
 			//! A gui element has lost its focus.
-			//! GUIEvent.Caller is losing the focus to GUIEvent.Element. 
-			//! If the event is absorbed then the focus will not be changed.
+			/** GUIEvent.Caller is losing the focus to GUIEvent.Element.
+			If the event is absorbed then the focus will not be changed. */
 			EGET_ELEMENT_FOCUS_LOST = 0,
 
 			//! A gui element has got the focus.
-			//! If the event is absorbed then the focus will not be changed.
+			/** If the event is absorbed then the focus will not be changed. */
 			EGET_ELEMENT_FOCUSED,
 
 			//! The mouse cursor hovered over a gui element.
@@ -100,8 +101,8 @@ namespace irr
 			EGET_ELEMENT_LEFT,
 
 			//! An element would like to close.
-			//! Windows and context menus use this event when they would like to close,
-			//! this can be cancelled by absorbing the event.
+			/** Windows and context menus use this event when they would like to close,
+			this can be cancelled by absorbing the event. */
 			EGET_ELEMENT_CLOSED,
 
 			//! A button was clicked.
@@ -114,10 +115,10 @@ namespace irr
 			EGET_CHECKBOX_CHANGED,
 
 			//! A new item in a listbox was seleted.
-			EGET_LISTBOX_CHANGED, 
+			EGET_LISTBOX_CHANGED,
 
 			//! An item in the listbox was selected, which was already selected.
-			EGET_LISTBOX_SELECTED_AGAIN, 
+			EGET_LISTBOX_SELECTED_AGAIN,
 
 			//! A file has been selected in the file dialog
 			EGET_FILE_SELECTED,
@@ -151,7 +152,6 @@ namespace irr
 
 			//! The value of a spin box has changed
 			EGET_SPINBOX_CHANGED,
-
 			//! A table has changed
 			EGET_TABLE_CHANGED,
 			EGET_TABLE_HEADER_CHANGED,
@@ -164,6 +164,7 @@ namespace irr
 //! SEvents hold information about an event. See irr::IEventReceiver for details on event handling.
 struct SEvent
 {
+	//! Any kind of GUI event.
 	struct SGUIEvent
 	{
 		//! IGUIElement who called the event
@@ -177,6 +178,7 @@ struct SEvent
 
 	};
 
+	//! Any kind of mouse event.
 	struct SMouseInput
 	{
 		//! X position of mouse cursor
@@ -187,49 +189,52 @@ struct SEvent
 
 		//! mouse wheel delta, usually 1.0 or -1.0.
 		/** Only valid if event was EMIE_MOUSE_WHEEL */
-		f32 Wheel; 
+		f32 Wheel;
 
-		//! type of mouse event
+		//! Type of mouse event
 		EMOUSE_INPUT_EVENT Event;
 	};
 
+	//! Any kind of keyboard event.
 	struct SKeyInput
 	{
 		//! Character corresponding to the key (0, if not a character)
-		wchar_t Char; 
+		wchar_t Char;
 
 		//! Key which has been pressed or released
-		EKEY_CODE Key; 
+		EKEY_CODE Key;
 
-		//! if not pressed, then the key was left up
-		bool PressedDown; 
+		//! If not true, then the key was left up
+		bool PressedDown;
 
-		//! true if shift was also pressed
-		bool Shift; 
+		//! True if shift was also pressed
+		bool Shift;
 
-		//! true if ctrl was also pressed
-		bool Control; 
+		//! True if ctrl was also pressed
+		bool Control;
 	};
 
+	//! Any kind of log event.
 	struct SLogEvent
 	{
-		//! pointer to text which has been logged
+		//! Pointer to text which has been logged
 		const c8* Text;
 
-		//! log level in which the text has been logged
+		//! Log level in which the text has been logged
 		ELOG_LEVEL Level;
 	};
 
+	//! Any kind of user event.
 	struct SUserEvent
 	{
 		//! Some user specified data as int
-		s32 UserData1; 
+		s32 UserData1;
 
 		//! Another user specified data as int
-		s32 UserData2; 
+		s32 UserData2;
 
 		//! Some user specified data as float
-		f32 UserData3; 
+		f32 UserData3;
 	};
 
 	EEVENT_TYPE EventType;
@@ -245,19 +250,20 @@ struct SEvent
 };
 
 //! Interface of an object which can receive events.
-/** Many of the engine's classes inherit IEventReceiver so they are able to process events.
-Events usually start at a postEventFromUser function and are passed down through a chain of 
-event receivers until OnEvent returns true.
-See irr::EEVENT_TYPE for a description of where each type of event starts, and the path it takes
-through the system. */
+/** Many of the engine's classes inherit IEventReceiver so they are able to
+process events. Events usually start at a postEventFromUser function and are
+passed down through a chain of event receivers until OnEvent returns true. See
+irr::EEVENT_TYPE for a description of where each type of event starts, and the
+path it takes through the system. */
 class IEventReceiver
 {
 public:
 
+	//! Destructor
 	virtual ~IEventReceiver() {}
 
-	//! called if an event happened.
-	//! \return Returns true if the event was processed
+	//! Called if an event happened.
+	/** \return True if the event was processed. */
 	virtual bool OnEvent(const SEvent& event) = 0;
 };
 

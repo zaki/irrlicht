@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -46,7 +46,7 @@ namespace scene
 		}
 
 		//! returns a meshbuffer which fits a material
-		// reverse search
+		/** reverse search */
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial & material) const
 		{
 			for (s32 i = (s32)MeshBuffers.size()-1; i >= 0; --i)
@@ -100,7 +100,9 @@ namespace scene
 				MeshBuffers[i]->getMaterial().setFlag(flag, newvalue);
 		}
 
+		//! The meshbuffers of this mesh
 		core::array<IMeshBuffer*> MeshBuffers;
+		//! The bounding box of this mesh
 		core::aabbox3d<f32> BoundingBox;
 	};
 

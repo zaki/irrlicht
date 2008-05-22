@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -17,26 +17,33 @@ namespace io
 namespace video
 {
 
-//!	Class which is able to create a image from a file.
-/** If you want the Irrlicht Engine be able to load textures of 
+//! Class which is able to create a image from a file.
+/** If you want the Irrlicht Engine be able to load textures of
 currently unsupported file formats (e.g .gif), then implement
-this and add your new Surface loader with 
+this and add your new Surface loader with
 IVideoDriver::addExternalImageLoader() to the engine. */
 class IImageLoader : public virtual IReferenceCounted
 {
 public:
 
-	//! destructor
+	//! Destructor
 	virtual ~IImageLoader() {}
 
-	//! returns true if the file maybe is able to be loaded by this class
-	//! based on the file extension (e.g. ".tga")
+	//! Check if the file might be loaded by this class
+	/** Check is based on the file extension (e.g. ".tga")
+	\param fileName Name of file to check.
+	\return True if file seems to be loadable. */
 	virtual bool isALoadableFileExtension(const c8* fileName) const = 0;
 
-	//! returns true if the file maybe is able to be loaded by this class
+	//! Check if the file might be loaded by this class
+	/** Check might look into the file.
+	\param file File handle to check.
+	\return True if file seems to be loadable. */
 	virtual bool isALoadableFileFormat(io::IReadFile* file) const = 0;
 
-	//! creates a surface from the file
+	//! Creates a surface from the file
+	/** \param file File handle to check.
+	\return Pointer to newly created image, or 0 upon error. */
 	virtual IImage* loadImage(io::IReadFile* file) const = 0;
 };
 

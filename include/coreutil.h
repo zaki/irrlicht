@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -13,7 +13,7 @@ namespace core
 {
 
 /*! \file irrxml.h
-    \brief File containing useful basic utility functions
+	\brief File containing useful basic utility functions
 */
 
 // ----------- some basic quite often used string functions -----------------
@@ -42,7 +42,7 @@ inline stringc& getFileNameExtension ( stringc &dest, const stringc &source )
 #undef isspace
 #undef isupper
 inline s32 isdigit(s32 c) { return c >= '0' && c <= '9'; }
-inline s32 isspace(s32 c) { return	c ==  ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v';	}
+inline s32 isspace(s32 c) { return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v'; }
 inline s32 isupper(s32 c) { return c >= 'A' && c <= 'Z'; }
 
 

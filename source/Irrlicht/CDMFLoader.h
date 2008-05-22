@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // 
@@ -19,12 +19,9 @@
   This loader is used to load DMF files in Irrlicht.
   Look at the documentation for a sample application.
   
-  Parts of this code are from Irrlicht's CQ3LevelMesh and C3DSMeshFileLoader,
-  and are Copyright (C) 2002-2004 Nikolaus Gebhardt.
-  
-  Parts of this code are from Murphy McCauley COCTLoader just like GetFaceNormal() or indexes
-  creation routines and a routine to add faces. So please refer to COCTLoader.h to know more
-  about rights granted.
+  Parts of this code are from Murphy McCauley COCTLoader just like
+  GetFaceNormal() or indexes creation routines and a routine to add faces. So
+  please refer to COCTLoader.h to know more about rights granted.
   
   You can use this software as you wish but you must not remove these notes about license nor
   credits to others for parts of this code.

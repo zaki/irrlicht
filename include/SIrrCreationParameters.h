@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -27,9 +27,9 @@ namespace irr
 			SDK_version_do_not_use = IRRLICHT_SDK_VERSION;
 		}
 
-		//! Type of the device. 
-		/** This can currently be video::EDT_NULL, 
-		video::EDT_SOFTWARE, video::EDT_DIRECT3D8, video::EDT_DIRECT3D9 and video::EDT_OPENGL. 
+		//! Type of the device.
+		/** This can currently be video::EDT_NULL,
+		video::EDT_SOFTWARE, video::EDT_DIRECT3D8, video::EDT_DIRECT3D9 and video::EDT_OPENGL.
 		Default: Software. */
 		video::E_DRIVER_TYPE DriverType;
 
@@ -39,14 +39,14 @@ namespace irr
 		//! Bits per pixel in fullscreen mode. Ignored if windowed mode. Default: 16.
 		u32 Bits;
 
-		//! Should be set to true if the device should run in fullscreen. 
-		/** Otherwise the device runs in windowed mode. Default: false.  */
+		//! Should be set to true if the device should run in fullscreen.
+		/** Otherwise the device runs in windowed mode. Default: false. */
 		bool Fullscreen;
 
-		//! Specifies if the stencil buffer should be enabled. 
+		//! Specifies if the stencil buffer should be enabled.
 		/** Set this to true,
-	    if you want the engine be able to draw stencil buffer shadows. Note that not all
-		devices are able to use the stencil buffer. If they don't no shadows will be drawn. 
+		if you want the engine be able to draw stencil buffer shadows. Note that not all
+		devices are able to use the stencil buffer. If they don't no shadows will be drawn.
 		Default: false. */
 		bool Stencilbuffer;
 
@@ -56,10 +56,10 @@ namespace irr
 		bool Vsync;
 
 		//! Specifies if the device should use fullscreen anti aliasing
-		/** Makes sharp/pixelated edges softer, but requires more performance. Also, 2D 
-		elements might look blurred with this switched on. The resulting rendering quality 
+		/** Makes sharp/pixelated edges softer, but requires more performance. Also, 2D
+		elements might look blurred with this switched on. The resulting rendering quality
 		also depends on the hardware and driver you are using, your program might look
-		different on different hardware with this. So if you are writing a 
+		different on different hardware with this. So if you are writing a
 		game/application with antiAlias switched on, it would be a good idea to make it
 		possible to switch this option off again by the user.
 		This is only supported in D3D9 and D3D8. In D3D9, both sample types are supported,
@@ -78,10 +78,10 @@ namespace irr
 		IEventReceiver* EventReceiver;
 
 		//! Window Id.
-		/** If this is set to a value other than 0, the Irrlicht Engine will be created in 
+		/** If this is set to a value other than 0, the Irrlicht Engine will be created in
 		an already existing window. For windows, set this to the HWND of the window you want.
 		The windowSize and FullScreen options will be ignored when using the WindowId parameter.
-		Default this is set to 0. 
+		Default this is set to 0.
 		To make Irrlicht run inside the custom window, you still will have to draw Irrlicht
 		on your own. You can use this loop, as usual:
 		\code
@@ -94,8 +94,8 @@ namespace irr
 		\endcode
 		Instead of this, you can also simply use your own message loop
 		using GetMessage, DispatchMessage and whatever. Calling
-		IrrlichtDevice::run() will cause Irrlicht to dispatch messages internally too. 
-		You need not call Device->run() if you want to do your own message 
+		IrrlichtDevice::run() will cause Irrlicht to dispatch messages internally too.
+		You need not call Device->run() if you want to do your own message
 		dispatching loop, but Irrlicht will not be able to fetch
 		user input then and you have to do it on your own using the window
 		messages, DirectInput, or whatever. Also, you'll have to increment the Irrlicht timer.
@@ -127,7 +127,7 @@ namespace irr
 		*/
 		void* WindowId;
 
-		//! Don't use or change this parameter. 
+		//! Don't use or change this parameter.
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.
 		This is needed for sdk version checks. */
 		const c8* SDK_version_do_not_use;

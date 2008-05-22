@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2007-2008 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -23,8 +23,7 @@ namespace scene
 		EMD3_NUMMODELS
 	};
 
-
-	// Animation list
+	//! Animation list
 	enum EMD3_ANIMATION_TYPE
 	{
 		// Animations for both lower and upper parts of the player
@@ -64,15 +63,19 @@ namespace scene
 
 	struct SMD3AnimationInfo
 	{
-		s32 first;     // First frame
-		s32 num;       // Last frame
-		s32 looping;   // Looping frames
-		s32 fps;       // Frames per second
+		//! First frame
+		s32 first;
+		//! Last frame
+		s32 num;
+		//! Looping frames
+		s32 looping;
+		//! Frames per second
+		s32 fps;
 	};
 
 
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -82,36 +85,37 @@ namespace scene
 #	error compiler not supported
 #endif
 
-	// this holds the header info of the MD3 file
+	//! this holds the header info of the MD3 file
 	struct SMD3Header
 	{
-		c8	headerID[4];	//id of file, always "IDP3" 
-		s32	Version;	//this is a version number, always 15 
-		s8	fileName[68];	//sometimes left Blank... 65 chars, 32bit aligned == 68 chars 
+		c8	headerID[4];	//id of file, always "IDP3"
+		s32	Version;	//this is a version number, always 15
+		s8	fileName[68];	//sometimes left Blank... 65 chars, 32bit aligned == 68 chars
 		s32	numFrames;	//number of KeyFrames
 		s32	numTags;	//number of 'tags' per frame
-		s32	numMeshes;	//number of meshes/skins 
-		s32	numMaxSkins;	//maximum number of unique skins used in md3 file 
-		s32	headerSize;	//always equal to the length of this header 
-		s32	tagStart;	//starting position of tag-structures 
-		s32	tagEnd;		//ending position of tag-structures/starting position of mesh-structures 
+		s32	numMeshes;	//number of meshes/skins
+		s32	numMaxSkins;	//maximum number of unique skins used in md3 file
+		s32	headerSize;	//always equal to the length of this header
+		s32	tagStart;	//starting position of tag-structures
+		s32	tagEnd;		//ending position of tag-structures/starting position of mesh-structures
 		s32	fileSize;
 	};
 
+	//! this holds the header info of an MD3 mesh section
 	struct SMD3MeshHeader
 	{
-		c8 meshID[4];		//id, must be IDP3 
+		c8 meshID[4];		//id, must be IDP3
 		c8 meshName[68];	//name of mesh 65 chars, 32 bit aligned == 68 chars
 
-		s32 numFrames;		//number of meshframes in mesh 
-		s32 numShader;		//number of skins in mesh 
-		s32 numVertices;	//number of vertices 
-		s32 numTriangles;	//number of Triangles 
+		s32 numFrames;		//number of meshframes in mesh
+		s32 numShader;		//number of skins in mesh
+		s32 numVertices;	//number of vertices
+		s32 numTriangles;	//number of Triangles
 
-		s32 offset_triangles;	//starting position of Triangle data, relative to start of Mesh_Header 
-		s32 offset_shaders;	//size of header 
-		s32 offset_st;		//starting position of texvector data, relative to start of Mesh_Header 
-		s32 vertexStart;	//starting position of vertex data,relative to start of Mesh_Header 
+		s32 offset_triangles;	//starting position of Triangle data, relative to start of Mesh_Header
+		s32 offset_shaders;	//size of header
+		s32 offset_st;		//starting position of texvector data, relative to start of Mesh_Header
+		s32 vertexStart;	//starting position of vertex data,relative to start of Mesh_Header
 		s32 offset_end;
 	};
 
@@ -123,7 +127,7 @@ namespace scene
 		u8 normal[2];
 	};
 
-	//! Texure Coordinate
+	//! Texture Coordinate
 	struct SMD3TexCoord
 	{
 		f32 u;
@@ -138,7 +142,7 @@ namespace scene
 
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 
@@ -156,7 +160,7 @@ namespace scene
 	};
 
 	//! hold a tag info for connecting meshes
-	//! basically its an alternate way to describe a transformation
+	/** Basically its an alternate way to describe a transformation. */
 	struct SMD3QuaterionTag
 	{
 		SMD3QuaterionTag() {}
@@ -196,7 +200,7 @@ namespace scene
 		core::quaternion rotation;
 	};
 
-	// holds a assoziative list of named quaternions
+	//! holds a associative list of named quaternions
 	struct SMD3QuaterionTagList : public virtual IReferenceCounted
 	{
 		SMD3QuaterionTag* get ( const core::stringc& name )
@@ -243,11 +247,13 @@ namespace scene
 	{
 	public:
 
-		//! tune how many frames you want to render inbetween
+		//! tune how many frames you want to render inbetween.
 		virtual void setInterpolationShift ( u32 shift, u32 loopMode ) = 0;
 
+		//! get the tag list of the mesh.
 		virtual SMD3QuaterionTagList *getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) = 0;
 
+		//! get the original md3 mesh.
 		virtual SMD3Mesh * getOriginalMesh () = 0;
 	};
 

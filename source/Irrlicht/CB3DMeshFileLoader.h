@@ -1,4 +1,10 @@
-// B3D mesh loader
+// Copyright (C) 2006-2008 Luke Hoschke
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
+// B3D Mesh loader
+// File format designed by Mark Sibly for the Blitz3D engine and has been
+// declared public domain
 
 #include "IrrCompileConfig.h"
 

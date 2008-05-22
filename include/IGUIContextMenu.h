@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -29,15 +29,15 @@ namespace gui
 
 		//! Adds a menu item.
 		/** \param text: Text of menu item. Set this to 0 to create
-		 an separator instead of a real item, which is the same like
-		 calling addSeparator();
-		 \param commandId: Command id of menu item, a simple id you may 
-		 set to whatever you want.
-		 \param enabled: Specifies if the menu item should be enabled.
-		 \param hasSubMenu: Set this to true if there should be a submenu
-		 at this item. You can acess this submenu via getSubMenu().
-		 \param checked: Specifies if the menu item should be initially checked.
-		 \return Returns the index of the new item */
+		an separator instead of a real item, which is the same like
+		calling addSeparator();
+		\param commandId: Command id of menu item, a simple id you may
+		set to whatever you want.
+		\param enabled: Specifies if the menu item should be enabled.
+		\param hasSubMenu: Set this to true if there should be a submenu
+		at this item. You can acess this submenu via getSubMenu().
+		\param checked: Specifies if the menu item should be initially checked.
+		\return Returns the index of the new item */
 		virtual u32 addItem(const wchar_t* text, s32 commandId=-1, bool enabled=true,
 			bool hasSubMenu=false,
 			bool checked=false
@@ -52,7 +52,7 @@ namespace gui
 
 		//! Sets text of the menu item.
 		/** \param idx: Zero based index of the menu item
-		 \param text: New text of the item. */
+		\param text: New text of the item. */
 		virtual void setItemText(u32 idx, const wchar_t* text) = 0;
 
 		//! Check if a menu item is enabled
@@ -61,12 +61,12 @@ namespace gui
 
 		//! Sets if the menu item should be enabled.
 		/** \param idx: Zero based index of the menu item
-		 \param enabled: True if it is enabled, otherwise false. */
+		\param enabled: True if it is enabled, otherwise false. */
 		virtual void setItemEnabled(u32 idx, bool enabled) = 0;
 
 		//! Sets if the menu item should be checked.
 		/** \param idx: Zero based index of the menu item
-		 \param enabled: True if it is enabled, otherwise false. */
+		\param enabled: True if it is enabled, otherwise false. */
 		virtual void setItemChecked(u32 idx, bool enabled) = 0;
 
 		//! Check if a menu item is checked
@@ -90,14 +90,14 @@ namespace gui
 
 		//! Sets the command id of a menu item
 		/** \param idx: Zero based index of the menu item
-		 \param id: Command id of menu item, a simple id you may 
-		 set to whatever you want. */
+		\param id: Command id of menu item, a simple id you may
+		set to whatever you want. */
 		virtual void setItemCommandId(u32 idx, s32 id) = 0;
 
-		//! Get a pointer to the submenu of an item. 
+		//! Get a pointer to the submenu of an item.
 		/** 0 is returned if there is no submenu
-		 \param idx: Zero based index of the menu item
-		 \return Returns a pointer to the submenu of an item. */
+		\param idx: Zero based index of the menu item
+		\return Returns a pointer to the submenu of an item. */
 		virtual IGUIContextMenu* getSubMenu(u32 idx) const = 0;
 	};
 

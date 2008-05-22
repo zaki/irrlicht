@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -14,9 +14,9 @@ namespace scene
 {
 	class ISceneNode;
 	class ISceneNodeAnimator;
-	
-	//!	Interface making it possible to dynamicly create scene nodes animators 
-	/** To be able to add custom scene node animators to Irrlicht and to make it possible for the 
+
+	//! Interface for dynamic creation of scene node animators
+	/** To be able to add custom scene node animators to Irrlicht and to make it possible for the
 	scene manager to save and load those external animators, simply implement this
 	interface and register it in you scene manager via ISceneManager::registerSceneNodeAnimatorFactory.
 	Note: When implementing your own scene node factory, don't call ISceneNodeManager::grab() to
@@ -52,13 +52,13 @@ namespace scene
 		getCreatableSceneNodeTypeCount() */
 		virtual ESCENE_NODE_ANIMATOR_TYPE getCreateableSceneNodeAnimatorType(u32 idx) const = 0;
 
-		//! returns type name of a createable scene node animator type 
+		//! returns type name of a createable scene node animator type
 		/** \param idx: Index of scene node animator type in this factory. Must be a value between 0 and
 		getCreatableSceneNodeAnimatorTypeCount() */
 		virtual const c8* getCreateableSceneNodeAnimatorTypeName(u32 idx) const = 0;
 
-		//! returns type name of a createable scene node animator type 
-		/** \param type: Type of scene node animator. 
+		//! returns type name of a createable scene node animator type
+		/** \param type: Type of scene node animator.
 		\return: Returns name of scene node animator type if this factory can create the type, otherwise 0. */
 		virtual const c8* getCreateableSceneNodeAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const = 0;
 	};

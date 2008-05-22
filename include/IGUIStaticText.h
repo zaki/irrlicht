@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -37,12 +37,12 @@ namespace gui
 
 		//! Sets another color for the text.
 		/** If set, the static text does not use the EGDC_BUTTON_TEXT color defined
-		 in the skin, but the set color instead. You don't need to call 
-		 IGUIStaticText::enableOverrrideColor(true) after this, this is done
-		 by this function.
-		 If you set a color, and you want the text displayed with the color
-		 of the skin again, call IGUIStaticText::enableOverrideColor(false);
-		 \param color: New color of the text. */
+		in the skin, but the set color instead. You don't need to call
+		IGUIStaticText::enableOverrrideColor(true) after this, this is done
+		by this function.
+		If you set a color, and you want the text displayed with the color
+		of the skin again, call IGUIStaticText::enableOverrideColor(false);
+		\param color: New color of the text. */
 		virtual void setOverrideColor(video::SColor color) = 0;
 
 		//! Gets the override color
@@ -69,30 +69,30 @@ namespace gui
 		virtual void setDrawBorder(bool draw) = 0;
 
 		//! Sets text justification mode
-		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default), 
-		 EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
-		\param vertical: EGUIA_UPPERLEFT to align with top edge, 
-		 EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
+		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default),
+		EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
+		\param vertical: EGUIA_UPPERLEFT to align with top edge,
+		EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical) = 0;
 
 		//! Enables or disables word wrap for using the static text as multiline text control.
-		/** \param enable: If set to true, words going over one line are 
-		 broken on to the next line. */
+		/** \param enable: If set to true, words going over one line are
+		broken on to the next line. */
 		virtual void setWordWrap(bool enable) = 0;
 
 		//! Checks if word wrap is enabled
 		//! \return true if word wrap is enabled, false otherwise
 		virtual bool isWordWrapEnabled(void) const = 0;
 
-		//! Returns the height of the text in pixels when it is drawn. 
-		/** This is useful for adjusting the layout of gui elements based on the height 
-		 of the multiline text in this element. 
-		 \return Returns height of text in pixels. */
+		//! Returns the height of the text in pixels when it is drawn.
+		/** This is useful for adjusting the layout of gui elements based on the height
+		of the multiline text in this element.
+		\return Height of text in pixels. */
 		virtual s32 getTextHeight() const = 0;
 
 		//! Returns the width of the current text, in the current font
 		/** If the text is broken, this returns the width of the widest line
-		 \return The width of the text, or the widest broken line. */
+		\return The width of the text, or the widest broken line. */
 		virtual s32 getTextWidth(void) const = 0;
 	};
 

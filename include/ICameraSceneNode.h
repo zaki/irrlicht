@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -25,7 +25,7 @@ namespace scene
 	public:
 
 		//! Constructor
-		ICameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, 
+		ICameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f,1.0f,1.0f))
@@ -34,12 +34,12 @@ namespace scene
 		//! Destructor
 		virtual ~ICameraSceneNode() {}
 
-		//! Sets the projection matrix of the camera. 
+		//! Sets the projection matrix of the camera.
 		/** The core::matrix4 class has some methods
 		to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH.
-		Note that the matrix will only stay as set by this method until one of 
+		Note that the matrix will only stay as set by this method until one of
 		the following Methods are called: setNearValue, setFarValue, setAspectRatio, setFOV.
-		\param projection: The new projection matrix of the camera.  */
+		\param projection: The new projection matrix of the camera. */
 		virtual void setProjectionMatrix(const core::matrix4& projection) = 0;
 
 		//! Gets the current projection matrix of the camera.
@@ -52,10 +52,10 @@ namespace scene
 
 		//! It is possible to send mouse and key events to the camera.
 		/** Most cameras
-		may ignore this input, but camera scene nodes which are created for 
+		may ignore this input, but camera scene nodes which are created for
 		example with ISceneManager::addMayaCameraSceneNode or
 		ISceneManager::addMeshViewerCameraSceneNode, may want to get this input
-		for changing their position, look at target or whatever.  */
+		for changing their position, look at target or whatever. */
 		virtual bool OnEvent(const SEvent& event) = 0;
 
 		//! Sets the look at target of the camera
@@ -106,27 +106,27 @@ namespace scene
 		/** \param fovy: New field of view in radiants. */
 		virtual void setFOV(f32 fovy) = 0;
 
-		//! Returns the view frustum. 
+		//! Returns the view frustum.
 		/** Needed sometimes by bspTree or LOD render nodes.
 		\return Returns the current view frustum. */
 		virtual const SViewFrustum* getViewFrustum() const = 0;
 
 		//! Disables or enables the camera to get key or mouse inputs.
 		/** If this is set to true, the camera will respond to key inputs
-		 otherwise not. */
+		otherwise not. */
 		virtual void setInputReceiverEnabled(bool enabled) = 0;
 
 		//! Returns if the input receiver of the camera is currently enabled.
 		virtual bool isInputReceiverEnabled() const = 0;
 
 		//! Returns if a camera is orthogonal.
-		virtual bool isOrthogonal() const 
+		virtual bool isOrthogonal() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsOrthogonal;
-		} 
+		}
 
-		//! Sets if this camera should return that it is orthogonal. 
+		//! Sets if this camera should return that it is orthogonal.
 		/** This setting does not change anything of the view or
 			projection matrix. However, the kind of camera
 			influences how collision detection and picking is done

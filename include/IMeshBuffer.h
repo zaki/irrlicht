@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -69,45 +69,57 @@ namespace scene
 	{
 	public:
 
-		//! destructor
+		//! Destructor
 		virtual ~IMeshBuffer() { }
 
-		//! returns the material of this meshbuffer
+		//! Get the material of this meshbuffer
+		/** \return Material of this buffer. */
 		virtual video::SMaterial& getMaterial() = 0;
 
-		//! returns the material of this meshbuffer
+		//! Get the material of this meshbuffer
+		/** \return Material of this buffer. */
 		virtual const video::SMaterial& getMaterial() const = 0;
 
-		//! returns which type of vertex data is stored.
+		//! Get type of vertex data which is stored in this meshbuffer.
+		/** \return Vertex type of this buffer. */
 		virtual video::E_VERTEX_TYPE getVertexType() const = 0;
 
-		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
-		//! type is used can be determined with getVertexType().
+		//! Get access to vertex data. The data is an array of vertices.
+		/** Which vertex type is used can be determined by getVertexType().
+		\return Pointer to array of vertices. */
 		virtual const void* getVertices() const = 0;
 
-		//! returns pointer to vertex data. The data is an array of vertices. Which vertex
-		//! type is used can be determined with getVertexType().
+		//! Get access to vertex data. The data is an array of vertices.
+		/** Which vertex type is used can be determined by getVertexType().
+		\return Pointer to array of vertices. */
 		virtual void* getVertices() = 0;
 
-		//! returns amount of vertices
+		//! Get amount of vertices in meshbuffer.
+		/** \return Number of vertices in this buffer. */
 		virtual u32 getVertexCount() const = 0;
 
-		//! returns pointer to Indices
+		//! Get access to Indices.
+		/** \return Pointer to indices array. */
 		virtual const u16* getIndices() const = 0;
 
-		//! returns pointer to Indices
+		//! Get access to Indices.
+		/** \return Pointer to indices array. */
 		virtual u16* getIndices() = 0;
 
-		//! returns amount of indices
+		//! Get amount of indices in this meshbuffer.
+		/** \return Number of indices in this buffer. */
 		virtual u32 getIndexCount() const = 0;
 
-		//! returns an axis aligned bounding box
+		//! Get the axis aligned bounding box of this meshbuffer.
+		/** \return Axis aligned bounding box of this buffer. */
 		virtual const core::aabbox3df& getBoundingBox() const = 0;
 
-		//! set user axis aligned bounding box
-		virtual void setBoundingBox( const core::aabbox3df& box) = 0;
+		//! Set axis aligned bounding box
+		/** \param box User defined axis aligned bounding box to use
+		for this buffer. */
+		virtual void setBoundingBox(const core::aabbox3df& box) = 0;
 
-		//! recalculates the bounding box. should be called if the mesh changed.
+		//! Recalculates the bounding box. Should be called if the mesh changed.
 		virtual void recalculateBoundingBox() = 0;
 
 		//! returns position of vertex i
@@ -122,12 +134,17 @@ namespace scene
 		//! returns normal of vertex i
 		virtual core::vector3df& getNormal(u32 i) = 0;
 
-		//! append the vertices and indices to the current buffer
-		//! Only works for compatible vertex types
+		//! Append the vertices and indices to the current buffer
+		/** Only works for compatible vertex types.
+		\param vertices Pointer to a vertex array.
+		\param numVertices Number of vertices in the array.
+		\param indices Pointer to index array.
+		\param numIndices Number of indices in array. */
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) = 0;
 
-		//! append the meshbuffer to the current buffer
-		//! Only works for compatible vertex types
+		//! Append the meshbuffer to the current buffer
+		/** Only works for compatible vertex types
+		\param other Buffer to append to this one. */
 		virtual void append(const IMeshBuffer* const other) = 0;
 
 		//! get the current hardware mapping hint

@@ -1,5 +1,6 @@
-// Copyright (C) 2006 Michael Zeilfelder
-// This file uses the licence of the Irrlicht Engine.
+// Copyright (C) 2006-2008 Michael Zeilfelder
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #ifndef __C_GUI_SPIN_BOX_H_INCLUDED__
 #define __C_GUI_SPIN_BOX_H_INCLUDED__

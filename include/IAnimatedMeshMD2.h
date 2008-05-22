@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -46,29 +46,29 @@ namespace scene
 	{
 	public:
 
-		// Get frame loop data for a default MD2 animation type.
-		//! \param l: The EMD2_ANIMATION_TYPE to get the frames for.
-		//! \param outBegin: The returned beginning frame for animation type specified.
-		//! \param outEnd: The returned ending frame for the animation type specified.
-		//! \param outFPS: The number of frames per second, this animation should be played at.
-		//! \return Returns the beginframe, endframe and frames per second for a default MD2 animation type.
+		//! Get frame loop data for a default MD2 animation type.
+		/** \param l The EMD2_ANIMATION_TYPE to get the frames for.
+		\param outBegin The returned beginning frame for animation type specified.
+		\param outEnd The returned ending frame for the animation type specified.
+		\param outFPS The number of frames per second, this animation should be played at.
+		\return beginframe, endframe and frames per second for a default MD2 animation type. */
 		virtual void getFrameLoop(EMD2_ANIMATION_TYPE l, s32& outBegin,
 			s32& outEnd, s32& outFPS) const = 0;
 
-		// Get frame loop data for a special MD2 animation type, identified by name.
-		//! \param name: Name of the animation.
-		//! \param outBegin: The returned beginning frame for animation type specified.
-		//! \param outEnd: The returned ending frame for the animation type specified.
-		//! \param outFPS: The number of frames per second, this animation should be played at.
-		//! \return Returns the beginframe, endframe and frames per second for a special MD2 animation type.
-		virtual bool getFrameLoop(const c8* name, 
+		//! Get frame loop data for a special MD2 animation type, identified by name.
+		/** \param name Name of the animation.
+		\param outBegin The returned beginning frame for animation type specified.
+		\param outEnd The returned ending frame for the animation type specified.
+		\param outFPS The number of frames per second, this animation should be played at.
+		\return beginframe, endframe and frames per second for a special MD2 animation type. */
+		virtual bool getFrameLoop(const c8* name,
 			s32& outBegin, s32& outEnd, s32& outFPS) const = 0;
 
-		//! Returns amount of md2 animations in this file.
+		//! Get amount of md2 animations in this file.
 		virtual s32 getAnimationCount() const = 0;
 
-		//! Returns name of md2 animation. 
-		//! \param nr: Zero based index of animation. 
+		//! Get name of md2 animation.
+		/** \param nr: Zero based index of animation. */
 		virtual const c8* getAnimationName(s32 nr) const = 0;
 	};
 

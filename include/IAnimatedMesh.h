@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -12,7 +12,7 @@ namespace irr
 {
 namespace scene
 {
-
+	//! Possible types of (animated) meshes.
 	enum E_ANIMATED_MESH_TYPE
 	{
 		//! Unknown animated mesh type.
@@ -36,16 +36,15 @@ namespace scene
 		//! My3D Mesh, the file format by Zhuck Dimitry
 		EAMT_MY3D,
 
-		//! Pulsar LMTools .lmts file. This Irrlicht loader was
-		//! written by Jonas Petersen
+		//! Pulsar LMTools .lmts file. This Irrlicht loader was written by Jonas Petersen
 		EAMT_LMTS,
 
 		//! Cartography Shop .csm file. This loader was created by Saurav Mohapatra.
 		EAMT_CSM,
 
-		//! .oct file for Paul Nette's FSRad or from Murphy McCauley's
-		//! Blender .oct exporter. The oct file format contains 3D
-		//! geometry and lightmaps and can be loaded directly by Irrlicht
+		//! .oct file for Paul Nette's FSRad or from Murphy McCauley's Blender .oct exporter.
+		/** The oct file format contains 3D geometry and lightmaps and
+		can be loaded directly by Irrlicht */
 		EAMT_OCT,
 
 		//! generic skinned mesh
@@ -61,7 +60,7 @@ namespace scene
 	{
 	public:
 
-		//! destructor
+		//! Destructor
 		virtual ~IAnimatedMesh() { }
 
 		//! Gets the frame count of the animated mesh.
@@ -81,7 +80,7 @@ namespace scene
 		outside of this loop.
 		If startFrameLoop and endFrameLoop are both -1, they are ignored.
 		\param endFrameLoop: see startFrameLoop.
-		\return Returns the animated mesh based on a detail level.  */
+		\return Returns the animated mesh based on a detail level. */
 		virtual IMesh* getMesh(s32 frame, s32 detailLevel=255, s32 startFrameLoop=-1, s32 endFrameLoop=-1) = 0;
 
 		//! Returns the type of the animated mesh.

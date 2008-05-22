@@ -1,7 +1,9 @@
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
 #ifndef __I_BONE_SCENE_NODE_H_INCLUDED__
 #define __I_BONE_SCENE_NODE_H_INCLUDED__
-
-// Used with ISkinnedMesh and IAnimatedMeshSceneNode, for boned meshes
 
 #include "ISceneNode.h"
 
@@ -16,8 +18,7 @@ namespace scene
 		//! The bone is usually animated, unless it's parent is not animated
 		EBAM_AUTOMATIC=0,
 
-		//! The bone is animated by the skin, if it's parent is not animated
-		//! then animation will resume from this bone onward
+		//! The bone is animated by the skin, if it's parent is not animated then animation will resume from this bone onward
 		EBAM_ANIMATED,
 
 		//! The bone is not animated by the skin
@@ -49,6 +50,8 @@ namespace scene
 	};
 
 
+	//! Interface for bones used for skeletal animation.
+	/** Used with ISkinnedMesh and IAnimatedMeshSceneNode. */
 	class IBoneSceneNode : public ISceneNode
 	{
 	public:
@@ -56,27 +59,30 @@ namespace scene
 		IBoneSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id=-1) :
 			ISceneNode(parent, mgr, id),positionHint(-1),scaleHint(-1),rotationHint(-1) { }
 
-		//! Returns the name of the bone
+		//! Get the name of the bone
 		virtual const c8* getBoneName() const = 0;
 
-		//! Returns the index of the bone
+		//! Get the index of the bone
 		virtual u32 getBoneIndex() const = 0;
 
-		//! Sets the animation mode of the bone. Returns true if successful. (Unused)
+		//! Sets the animation mode of the bone.
+		/** \return True if successful. (Unused) */
 		virtual bool setAnimationMode(E_BONE_ANIMATION_MODE mode) = 0;
 
 		//! Gets the current animation mode of the bone
 		virtual E_BONE_ANIMATION_MODE getAnimationMode() const = 0;
 
-		//! returns the axis aligned bounding box of this node
+		//! Get the axis aligned bounding box of this node
 		virtual const core::aabbox3d<f32>& getBoundingBox() const = 0;
 
 		//! Returns the relative transformation of the scene node.
 		//virtual core::matrix4 getRelativeTransformation() const = 0;
 
+		//! The animation method.
 		virtual void OnAnimate(u32 timeMs) =0;
 
-		//! Does nothing as bones are not visible
+		//! The render method.
+		/** Does nothing as bones are not visible. */
 		virtual void render() { }
 
 		//! How the relative transformation of the bone is used
@@ -85,7 +91,7 @@ namespace scene
 		//! How the relative transformation of the bone is used
 		virtual E_BONE_SKINNING_SPACE getSkinningSpace() const =0;
 
-		//! updates the absolute position based on the relative and the parents position
+		//! Updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePositionOfAllChildren()=0;
 
 		s32 positionHint;

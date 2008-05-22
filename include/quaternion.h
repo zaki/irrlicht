@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,7 +15,9 @@ namespace irr
 namespace core
 {
 
-//! Quaternion class.
+//! Quaternion class for representing rotations.
+/** It provides cheap combinations and avoids gimbal locks.
+Also useful for interpolations. */
 class quaternion
 {
 	public:
@@ -35,46 +37,46 @@ class quaternion
 		//! Constructor which converts a matrix to a quaternion
 		quaternion(const matrix4& mat);
 
-		//! equal operator
+		//! Equalilty operator
 		bool operator==(const quaternion& other) const;
 
-		//! assignment operator
+		//! Assignment operator
 		inline quaternion& operator=(const quaternion& other);
 
-		//! matrix assignment operator
+		//! Matrix assignment operator
 		inline quaternion& operator=(const matrix4& other);
 
-		//! add operator
+		//! Add operator
 		quaternion operator+(const quaternion& other) const;
 
-		//! multiplication operator
+		//! Multiplication operator
 		quaternion operator*(const quaternion& other) const;
 
-		//! scalar multiplication operator
+		//! Multiplication operator with scalar
 		quaternion operator*(f32 s) const;
 
-		//! scalar multiplication operator
+		//! Multiplication operator with scalar
 		quaternion& operator*=(f32 s);
 
-		//! vector multiplication operator
-		vector3df operator* (const vector3df& v) const;
+		//! Multiplication operator
+		vector3df operator*(const vector3df& v) const;
 
-		//! multiplication operator
+		//! Multiplication operator
 		quaternion& operator*=(const quaternion& other);
 
-		//! calculates the dot product
+		//! Calculates the dot product
 		inline f32 dotProduct(const quaternion& other) const;
 
-		//! sets new quaternion
+		//! Sets new quaternion
 		inline quaternion& set(f32 x, f32 y, f32 z, f32 w);
 
-		//! sets new quaternion based on euler angles (radians)
+		//! Sets new quaternion based on euler angles (radians)
 		inline quaternion& set(f32 x, f32 y, f32 z);
 
-		//! sets new quaternion based on euler angles (radians)
+		//! Sets new quaternion based on euler angles (radians)
 		inline quaternion& set(const core::vector3df& vec);
 
-		//! normalizes the quaternion
+		//! Normalizes the quaternion
 		inline quaternion& normalize();
 
 		//! Creates a matrix from this quaternion
@@ -89,53 +91,56 @@ class quaternion
 		//! Inverts this quaternion
 		quaternion& makeInverse();
 
-		//! set this quaternion to the result of the interpolation between two quaternions
+		//! Set this quaternion to the result of the interpolation between two quaternions
 		quaternion& slerp( quaternion q1, quaternion q2, f32 interpolate );
 
-		//! The quaternion representing the rotation is
-		//!  q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
-		//! axis must be unit length
-		//! angle in radians
+		//! Create quaternion from rotation angle and rotation axis.
+		/** Axis must be unit length.
+		The quaternion representing the rotation is
+		q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k).
+		\param angle Rotation Angle in radians.
+		\param axis Rotation axis. */
 		quaternion& fromAngleAxis (f32 angle, const vector3df& axis);
 
 		//! Fills an angle (radians) around an axis (unit vector)
-		void toAngleAxis (f32 &angle, vector3df& axis) const;
+		void toAngleAxis (f32 &angle, core::vector3df& axis) const;
 
 		//! Output this quaternion to an euler angle (radians)
 		void toEuler(vector3df& euler) const;
 
-		//! set quaternion to identity
+		//! Set quaternion to identity
 		quaternion& makeIdentity();
 
-		//! sets quaternion to represent a rotation from one angle to another
+		//! Set quaternion to represent a rotation from one vector to another.
 		quaternion& rotationFromTo(const vector3df& from, const vector3df& to);
 
+		//! Quaternion elements.
 		f32 X, Y, Z, W;
 };
 
 
-//! Constructor which converts euler angles to a quaternion
+// Constructor which converts euler angles to a quaternion
 inline quaternion::quaternion(f32 x, f32 y, f32 z)
 {
 	set(x,y,z);
 }
 
 
-//! Constructor which converts euler angles to a quaternion
+// Constructor which converts euler angles to a quaternion
 inline quaternion::quaternion(const vector3df& vec)
 {
 	set(vec.X,vec.Y,vec.Z);
 }
 
 
-//! Constructor which converts a matrix to a quaternion
+// Constructor which converts a matrix to a quaternion
 inline quaternion::quaternion(const matrix4& mat)
 {
 	(*this) = mat;
 }
 
 
-//! equal operator
+// equal operator
 inline bool quaternion::operator==(const quaternion& other) const
 {
 	return ((X == other.X) &&
@@ -145,7 +150,7 @@ inline bool quaternion::operator==(const quaternion& other) const
 }
 
 
-//! assignment operator
+// assignment operator
 inline quaternion& quaternion::operator=(const quaternion& other)
 {
 	X = other.X;
@@ -156,7 +161,7 @@ inline quaternion& quaternion::operator=(const quaternion& other)
 }
 
 
-//! matrix assignment operator
+// matrix assignment operator
 inline quaternion& quaternion::operator=(const matrix4& m)
 {
 	const f32 diag = m(0,0) + m(1,1) + m(2,2) + 1;
@@ -215,7 +220,7 @@ inline quaternion& quaternion::operator=(const matrix4& m)
 }
 
 
-//! multiplication operator
+// multiplication operator
 inline quaternion quaternion::operator*(const quaternion& other) const
 {
 	quaternion tmp;
@@ -229,13 +234,13 @@ inline quaternion quaternion::operator*(const quaternion& other) const
 }
 
 
-//! multiplication operator
+// multiplication operator
 inline quaternion quaternion::operator*(f32 s) const
 {
 	return quaternion(s*X, s*Y, s*Z, s*W);
 }
 
-//! multiplication operator
+// multiplication operator
 inline quaternion& quaternion::operator*=(f32 s)
 {
 	X*=s;
@@ -245,20 +250,20 @@ inline quaternion& quaternion::operator*=(f32 s)
 	return *this;
 }
 
-//! multiplication operator
+// multiplication operator
 inline quaternion& quaternion::operator*=(const quaternion& other)
 {
 	return (*this = other * (*this));
 }
 
-//! add operator
+// add operator
 inline quaternion quaternion::operator+(const quaternion& b) const
 {
 	return quaternion(X+b.X, Y+b.Y, Z+b.Z, W+b.W);
 }
 
 
-//! Creates a matrix from this quaternion
+// Creates a matrix from this quaternion
 inline matrix4 quaternion::getMatrix() const
 {
 	core::matrix4 m;
@@ -267,7 +272,7 @@ inline matrix4 quaternion::getMatrix() const
 }
 
 
-//! Creates a matrix from this quaternion
+// Creates a matrix from this quaternion
 inline void quaternion::getMatrix( matrix4 &dest ) const
 {
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
@@ -291,7 +296,7 @@ inline void quaternion::getMatrix( matrix4 &dest ) const
 	dest[15] = 1.f;
 }
 
-//! Creates a matrix from this quaternion
+// Creates a matrix from this quaternion
 inline void quaternion::getMatrix_transposed( matrix4 &dest ) const
 {
 	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
@@ -317,14 +322,14 @@ inline void quaternion::getMatrix_transposed( matrix4 &dest ) const
 
 
 
-//! Inverts this quaternion
+// Inverts this quaternion
 inline quaternion& quaternion::makeInverse()
 {
 	X = -X; Y = -Y; Z = -Z;
 	return *this;
 }
 
-//! sets new quaternion
+// sets new quaternion
 inline quaternion& quaternion::set(f32 x, f32 y, f32 z, f32 w)
 {
 	X = x;
@@ -335,7 +340,7 @@ inline quaternion& quaternion::set(f32 x, f32 y, f32 z, f32 w)
 }
 
 
-//! sets new quaternion based on euler angles
+// sets new quaternion based on euler angles
 inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 {
 	f64 angle;
@@ -365,13 +370,13 @@ inline quaternion& quaternion::set(f32 x, f32 y, f32 z)
 	return normalize();
 }
 
-//! sets new quaternion based on euler angles
+// sets new quaternion based on euler angles
 inline quaternion& quaternion::set(const core::vector3df& vec)
 {
 	return set(vec.X, vec.Y, vec.Z);
 }
 
-//! normalizes the quaternion
+// normalizes the quaternion
 inline quaternion& quaternion::normalize()
 {
 	const f32 n = X*X + Y*Y + Z*Z + W*W;
@@ -400,7 +405,7 @@ inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time)
 
 	if ((angle + 1.0f) > 0.05f)
 	{
-		if ((1.0f - angle) >= 0.05f)  // spherical interpolation
+		if ((1.0f - angle) >= 0.05f) // spherical interpolation
 		{
 			const f32 theta = acosf(angle);
 			const f32 invsintheta = reciprocal(sinf(theta));
@@ -424,7 +429,7 @@ inline quaternion& quaternion::slerp(quaternion q1, quaternion q2, f32 time)
 }
 
 
-//! calculates the dot product
+// calculates the dot product
 inline f32 quaternion::dotProduct(const quaternion& q2) const
 {
 	return (X * q2.X) + (Y * q2.Y) + (Z * q2.Z) + (W * q2.W);
@@ -498,7 +503,7 @@ inline vector3df quaternion::operator* (const vector3df& v) const
 	return v + uv + uuv;
 }
 
-//! set quaternion to identity
+// set quaternion to identity
 inline core::quaternion& quaternion::makeIdentity()
 {
 	W = 1.f;

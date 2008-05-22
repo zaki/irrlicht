@@ -1,4 +1,4 @@
-// Copyright (C) 2006 Michael Zeilfelder
+// Copyright (C) 2006-2008 Michael Zeilfelder
 // This file uses the licence of the Irrlicht Engine.
 
 #include "CGUISpinBox.h"

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -17,7 +17,7 @@ namespace scene
 	class CMeshBuffer : public IMeshBuffer
 	{
 	public:
-		//! constructor
+		//! Default constructor for empty meshbuffer
 		CMeshBuffer():ChangedID(1),MappingHint(EHM_NEVER) // everything's default constructed
 		{
 			#ifdef _DEBUG
@@ -25,60 +25,81 @@ namespace scene
 			#endif
 		}
 
-		//! returns the material of this meshbuffer
+
+		//! Get material of this meshbuffer
+		/** \return Material of this buffer */
 		virtual const video::SMaterial& getMaterial() const
 		{
 			return Material;
 		}
 
-		//! returns the material of this meshbuffer
+
+		//! Get material of this meshbuffer
+		/** \return Material of this buffer */
 		virtual video::SMaterial& getMaterial()
 		{
 			return Material;
 		}
 
-		//! returns pointer to vertices
+
+		//! Get pointer to vertices
+		/** \return Pointer to vertices. */
 		virtual const void* getVertices() const
 		{
 			return Vertices.const_pointer();
 		}
 
-		//! returns pointer to vertices
+
+		//! Get pointer to vertices
+		/** \return Pointer to vertices. */
 		virtual void* getVertices()
 		{
 			return Vertices.pointer();
 		}
 
-		//! returns amount of vertices
+
+		//! Get number of vertices
+		/** \return Number of vertices. */
 		virtual u32 getVertexCount() const
 		{
 			return Vertices.size();
 		}
 
-		//! returns pointer to Indices
+
+		//! Get pointer to indices
+		/** \return Pointer to indices. */
 		virtual const u16* getIndices() const
 		{
 			return Indices.const_pointer();
 		}
 
-		//! returns pointer to Indices
+
+		//! Get pointer to indices
+		/** \return Pointer to indices. */
 		virtual u16* getIndices()
 		{
 			return Indices.pointer();
 		}
 
-		//! returns amount of indices
+
+		//! Get number of indices
+		/** \return Number of indices. */
 		virtual u32 getIndexCount() const
 		{
 			return Indices.size();
 		}
 
-		//! returns an axis aligned bounding box
+
+		//! Get the axis aligned bounding box
+		/** \return Axis aligned bounding box of this buffer. */
 		virtual const core::aabbox3d<f32>& getBoundingBox() const
 		{
 			return BoundingBox;
 		}
 
+
+		//! Set the axis aligned bounding box
+		/** \param box New axis aligned bounding box for this buffer. */
 		//! set user axis aligned bounding box
 		virtual void setBoundingBox(const core::aabbox3df& box)
 		{
@@ -86,7 +107,8 @@ namespace scene
 		}
 
 
-		//! recalculates the bounding box. should be called if the mesh changed.
+		//! Recalculate the bounding box.
+		/** should be called if the mesh changed. */
 		virtual void recalculateBoundingBox()
 		{
 			if (Vertices.empty())
@@ -99,7 +121,9 @@ namespace scene
 			}
 		}
 
-		//! returns which type of vertex data is stored.
+
+		//! Get type of vertex data stored in this buffer.
+		/** \return Type of vertex data. */
 		virtual video::E_VERTEX_TYPE getVertexType() const
 		{
 			return T().getType();
@@ -130,7 +154,11 @@ namespace scene
 		}
 
 
-		//! append the vertices and indices to the current buffer
+		//! Append the vertices and indices to the current buffer
+		/** Only works for compatible types, i.e. either the same type
+		or the main buffer is of standard type. Otherwise, behavior is
+		undefined.
+		*/
 		virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices)
 		{
 			if (vertices == getVertices())
@@ -153,7 +181,13 @@ namespace scene
 			}
 		}
 
-		//! append the meshbuffer to the current buffer
+
+		//! Append the meshbuffer to the current buffer
+		/** Only works for compatible types, i.e. either the same type
+		or the main buffer is of standard type. Otherwise, behavior is
+		undefined.
+		\param other Meshbuffer to be appended to this one.
+		*/
 		virtual void append(const IMeshBuffer* const other)
 		{
 			if (this==other)
@@ -209,8 +243,11 @@ namespace scene
 		core::aabbox3d<f32> BoundingBox;
 	};
 
+	//! Standard meshbuffer
 	typedef CMeshBuffer<video::S3DVertex> SMeshBuffer;
+	//! Meshbuffer with two texture coords per vertex, e.g. for lightmaps
 	typedef CMeshBuffer<video::S3DVertex2TCoords> SMeshBufferLightMap;
+	//! Meshbuffer with vertices having tangents stored, e.g. for normal mapping
 	typedef CMeshBuffer<video::S3DVertexTangents> SMeshBufferTangents;
 } // end namespace scene
 } // end namespace irr

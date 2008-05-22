@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and irrXML.h
 
@@ -14,7 +14,7 @@ namespace irr
 namespace core
 {
 
-//!	Self reallocating template array (like stl vector) with additional features.
+//! Self reallocating template array (like stl vector) with additional features.
 /** Some features are: Heap sorting, binary search methods, easier debugging.
 */
 template <class T, typename TAlloc = irrAllocator<T> >
@@ -23,14 +23,15 @@ class array
 
 public:
 
+	//! Default constructor for empty array.
 	array()
 		: data(0), allocated(0), used(0),
 			free_when_destroyed(true), is_sorted(true)
 	{
 	}
 
-	//! Constructs a array and allocates an initial chunk of memory.
-	//! \param start_count: Amount of elements to allocate.
+	//! Constructs an array and allocates an initial chunk of memory.
+	/** \param start_count Amount of elements to pre-allocate. */
 	array(u32 start_count)
 		: data(0), allocated(0), used(0),
 			free_when_destroyed(true), is_sorted(true)
@@ -48,8 +49,9 @@ public:
 
 
 
-	//! Destructor. Frees allocated memory, if set_free_when_destroyed
-	//! was not set to false by the user before.
+	//! Destructor.
+	/** Frees allocated memory, if set_free_when_destroyed was not set to
+	false by the user before. */
 	~array()
 	{
 		if (free_when_destroyed)
@@ -62,9 +64,8 @@ public:
 	}
 
 
-
 	//! Reallocates the array, make it bigger or smaller.
-	//! \param new_size: New size of array.
+	/** \param new_size New size of array. */
 	void reallocate(u32 new_size)
 	{
 		T* old_data = data;
@@ -74,7 +75,7 @@ public:
 
 		// copy old data
 		s32 end = used < new_size ? used : new_size;
-		
+
 		for (s32 i=0; i<end; ++i)
 		{
 			// data[i] = old_data[i];
@@ -91,9 +92,10 @@ public:
 		allocator.deallocate(old_data); //delete [] old_data;
 	}
 
-	//! Adds an element at back of array. If the array is too small to
-	//! add this new element it is made bigger.
-	//! \param element: Element to add at the back of the array.
+
+	//! Adds an element at back of array.
+	/** If the array is too small to add this new element it is made bigger.
+	\param element: Element to add at the back of the array. */
 	void push_back(const T& element)
 	{
 		if (used + 1 > allocated)
@@ -106,7 +108,7 @@ public:
 			T e(element);
 			reallocate(used * 2 +1); // increase data block
 
-			allocator.construct(&data[used++], e); // data[used++] = e;  // push_back
+			allocator.construct(&data[used++], e); // data[used++] = e; // push_back
 		}
 		else
 		{
@@ -119,21 +121,23 @@ public:
 	}
 
 
-	//! Adds an element at the front of the array. If the array is to small to
-	//! add this new element, the array is made bigger. Please note that this
-	//! is slow, because the whole array needs to be copied for this.
-	//! \param element: Element to add at the back of the array.
+	//! Adds an element at the front of the array.
+	/** If the array is to small to add this new element, the array is
+	made bigger. Please note that this is slow, because the whole array
+	needs to be copied for this.
+	\param element Element to add at the back of the array. */
 	void push_front(const T& element)
 	{
 		insert(element);
 	}
 
 
-	//! Insert item into array at specified position. Please use this
-	//! only if you know what you are doing (possible performance loss).
-	//! The preferred method of adding elements should be push_back().
-	//! \param element: Element to be inserted
-	//! \param index: Where position to insert the new element.
+	//! Insert item into array at specified position.
+	/** Please use this only if you know what you are doing (possible
+	performance loss). The preferred method of adding elements should be
+	push_back().
+	\param element: Element to be inserted
+	\param index: Where position to insert the new element. */
 	void insert(const T& element, u32 index=0)
 	{
 		_IRR_DEBUG_BREAK_IF(index>used) // access violation
@@ -156,8 +160,6 @@ public:
 	}
 
 
-
-
 	//! Clears the array and deletes all allocated memory.
 	void clear()
 	{
@@ -172,10 +174,9 @@ public:
 	}
 
 
-
 	//! Sets pointer to new array, using this as new workspace.
-	//! \param newPointer: Pointer to new array of elements.
-	//! \param size: Size of the new array.
+	/** \param newPointer: Pointer to new array of elements.
+	\param size: Size of the new array. */
 	void set_pointer(T* newPointer, u32 size)
 	{
 		for (u32 i=0; i<used; ++i)
@@ -189,21 +190,19 @@ public:
 	}
 
 
-
-	//! Sets if the array should delete the memory it used.
-	//! \param f: If true, the array frees the allocated memory in its
-	//! destructor, otherwise not. The default is true.
+	//! Sets if the array should delete the memory it uses upon destruction.
+	/** \param f If true, the array frees the allocated memory in its
+	destructor, otherwise not. The default is true. */
 	void set_free_when_destroyed(bool f)
 	{
 		free_when_destroyed = f;
 	}
 
 
-
-	//! Sets the size of the array and adds some new elements if necessary.
-	/** Please note: This is only secure when using it with simple types, because
-	no default constructor will be called for the added new elements.
-	\param usedNow: Amount of elements now used. */
+	//! Sets the size of the array and allocates new elements if necessary.
+	/** Please note: This is only secure when using it with simple types,
+	because no default constructor will be called for the added elements.
+	\param usedNow Amount of elements now used. */
 	void set_used(u32 usedNow)
 	{
 		if (allocated < usedNow)
@@ -211,7 +210,6 @@ public:
 
 		used = usedNow;
 	}
-
 
 
 	//! Assignment operator
@@ -240,7 +238,8 @@ public:
 			allocator.construct(&data[i], other.data[i]); // data[i] = other.data[i];
 	}
 
-	// equality operator
+
+	//! Equality operator
 	bool operator == (const array<T>& other) const
 	{
 		if (used != other.used)
@@ -252,11 +251,12 @@ public:
 		return true;
 	}
 
-	// inequality operator
+	//! Inequality operator
 	bool operator != (const array<T>& other) const
 	{
 		return !(*this==other);
 	}
+
 
 	//! Direct access operator
 	T& operator [](u32 index)
@@ -267,8 +267,7 @@ public:
 	}
 
 
-
-	//! Direct access operator
+	//! Direct const access operator
 	const T& operator [](u32 index) const
 	{
 		_IRR_DEBUG_BREAK_IF(index>=used) // access violation
@@ -276,7 +275,8 @@ public:
 		return data[index];
 	}
 
-	//! Gets last frame
+
+	//! Gets last element.
 	T& getLast()
 	{
 		_IRR_DEBUG_BREAK_IF(!used) // access violation
@@ -285,7 +285,7 @@ public:
 	}
 
 
-	//! Gets last frame
+	//! Gets last element
 	const T& getLast() const
 	{
 		_IRR_DEBUG_BREAK_IF(!used) // access violation
@@ -293,54 +293,51 @@ public:
 		return data[used-1];
 	}
 
-	//! Returns a pointer to the array.
-	//! \return Pointer to the array.
+
+	//! Gets a pointer to the array.
+	/** \return Pointer to the array. */
 	T* pointer()
 	{
 		return data;
 	}
 
 
-
-	//! Returns a const pointer to the array.
-	//! \return Pointer to the array.
+	//! Gets a const pointer to the array.
+	/** \return Pointer to the array. */
 	const T* const_pointer() const
 	{
 		return data;
 	}
 
 
-
-	//! Returns size of used array.
-	//! \return Size of elements in the array.
+	//! Get size of array.
+	/** \return Size of elements used in the array. */
 	u32 size() const
 	{
 		return used;
 	}
 
 
-
-	//! Returns amount memory allocated.
-	//! \return Returns amount of memory allocated. The amount of bytes
-	//! allocated would  be allocated_size() * sizeof(ElementsUsed);
+	//! Get amount of memory allocated.
+	/** \return Amount of memory allocated. The amount of bytes
+	allocated would be allocated_size() * sizeof(ElementsUsed); */
 	u32 allocated_size() const
 	{
 		return allocated;
 	}
 
 
-
-	//! Returns true if array is empty
-	//! \return True if the array is empty, false if not.
+	//! Check if array is empty.
+	/** \return True if the array is empty false if not. */
 	bool empty() const
 	{
 		return used == 0;
 	}
 
 
-
-	//! Sorts the array using heapsort. There is no additional memory waste and
-	//! the algorithm performs O(n*log n) in worst case.
+	//! Sorts the array using heapsort.
+	/** There is no additional memory waste and the algorithm performs
+	O(n*log n) in worst case. */
 	void sort()
 	{
 		if (is_sorted || used<2)
@@ -351,37 +348,36 @@ public:
 	}
 
 
-
 	//! Performs a binary search for an element, returns -1 if not found.
-	//! The array will be sorted before the binary search if it is not
-	//! already sorted.
-	//! \param element: Element to search for.
-	//! \return Returns position of the searched element if it was found,
-	//! otherwise -1 is returned.
+	/** The array will be sorted before the binary search if it is not
+	already sorted.
+	\param element Element to search for.
+	\return Position of the searched element if it was found,
+	otherwise -1 is returned. */
 	s32 binary_search(const T& element)
 	{
 		sort();
 		return binary_search(element, 0, used-1);
 	}
 
+
 	//! Performs a binary search for an element, returns -1 if not found.
-	//! The array must be sorted prior
-	//! \param element: Element to search for.
-	//! \return Returns position of the searched element if it was found,
-	//! otherwise -1 is returned.
+	/** The array must be sorted prior
+	\param element Element to search for.
+	\return Position of the searched element if it was found, otherwise -1
+	is returned. */
 	s32 binary_search_const(const T& element) const
 	{
 		return binary_search(element, 0, used-1);
 	}
 
 
-
 	//! Performs a binary search for an element, returns -1 if not found.
-	//! \param element: Element to search for.
-	//! \param left: First left index
-	//! \param right: Last right index.
-	//! \return Returns position of the searched element if it was found,
-	//! otherwise -1 is returned.
+	/** \param element: Element to search for.
+	\param left First left index
+	\param right Last right index.
+	\return Position of the searched element if it was found, otherwise -1
+	is returned. */
 	s32 binary_search(const T& element, s32 left, s32 right) const
 	{
 		if (!used)
@@ -412,11 +408,12 @@ public:
 	}
 
 
-	//! Finds an element in linear time, which is very slow. Use
-	//! binary_search for faster finding. Only works if ==operator is implemented.
-	//! \param element: Element to search for.
-	//! \return Returns position of the searched element if it was found,
-	//! otherwise -1 is returned.
+	//! Finds an element in linear time, which is very slow.
+	/** Use binary_search for faster finding. Only works if ==operator is
+	implemented.
+	\param element Element to search for.
+	\return Position of the searched element if it was found, otherwise -1
+	is returned. */
 	s32 linear_search(const T& element) const
 	{
 		for (u32 i=0; i<used; ++i)
@@ -427,11 +424,12 @@ public:
 	}
 
 
-	//! Finds an element in linear time, which is very slow. Use
-	//! binary_search for faster finding. Only works if ==operator is implemented.
-	//! \param element: Element to search for.
-	//! \return Returns position of the searched element if it was found,
-	//! otherwise -1 is returned.
+	//! Finds an element in linear time, which is very slow.
+	/** Use binary_search for faster finding. Only works if ==operator is
+	implemented.
+	\param element: Element to search for.
+	\return Position of the searched element if it was found, otherwise -1
+	is returned. */
 	s32 linear_reverse_search(const T& element) const
 	{
 		for (s32 i=used-1; i>=0; --i)
@@ -442,10 +440,10 @@ public:
 	}
 
 
-
-	//! Erases an element from the array. May be slow, because all elements
-	//! following after the erased element have to be copied.
-	//! \param index: Index of element to be erased.
+	//! Erases an element from the array.
+	/** May be slow, because all elements following after the erased
+	element have to be copied.
+	\param index: Index of element to be erased. */
 	void erase(u32 index)
 	{
 		_IRR_DEBUG_BREAK_IF(index>=used) // access violation
@@ -462,10 +460,11 @@ public:
 	}
 
 
-	//! Erases some elements from the array. may be slow, because all elements
-	//! following after the erased element have to be copied.
-	//! \param index: Index of the first element to be erased.
-	//! \param count: Amount of elements to be erased.
+	//! Erases some elements from the array.
+	/** May be slow, because all elements following after the erased
+	element have to be copied.
+	\param index: Index of the first element to be erased.
+	\param count: Amount of elements to be erased. */
 	void erase(u32 index, s32 count)
 	{
 		_IRR_DEBUG_BREAK_IF(index>=used || count<1 || index+count>used) // access violation
@@ -494,7 +493,6 @@ public:
 	{
 		is_sorted = _is_sorted;
 	}
-
 
 	private:
 

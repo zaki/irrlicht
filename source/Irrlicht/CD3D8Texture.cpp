@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -148,7 +148,7 @@ bool CD3D8Texture::createTexture(video::IImage* image, u32 flags)
 	case ETCF_OPTIMIZED_FOR_SPEED:
 		format = D3DFMT_A1R5G5B5; break;
 	}
-	if (false && Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
+	if (Driver->getTextureCreationFlag(video::ETCF_NO_ALPHA_CHANNEL))
 	{
 		if (format == D3DFMT_A8R8G8B8)
 			format = D3DFMT_R8G8B8;

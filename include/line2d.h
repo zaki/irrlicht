@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -18,10 +18,13 @@ template <class T>
 class line2d
 {
 	public:
-
+		//! Default constructor for line going from (0,0) to (1,1).
 		line2d() : start(0,0), end(1,1) {}
+		//! Constructor for line between the two points.
 		line2d(T xa, T ya, T xb, T yb) : start(xa, ya), end(xb, yb) {}
+		//! Constructor for line between the two points given as vectors.
 		line2d(const vector2d<T>& start, const vector2d<T>& end) : start(start), end(end) {}
+		//! Copy constructor.
 		line2d(const line2d<T>& other) : start(other.start), end(other.end) {}
 
 		// operators
@@ -38,34 +41,37 @@ class line2d
 		{ return !(start==other.start && end==other.end) || (end==other.start && start==other.end);}
 
 		// functions
-
+		//! Set this line to new line going through the two points.
 		void setLine(const T& xa, const T& ya, const T& xb, const T& yb){start.set(xa, ya); end.set(xb, yb);}
+		//! Set this line to new line going through the two points.
 		void setLine(const vector2d<T>& nstart, const vector2d<T>& nend){start.set(nstart); end.set(nend);}
+		//! Set this line to new line given as parameter.
 		void setLine(const line2d<T>& line){start.set(line.start); end.set(line.end);}
 
-		//! Returns length of line
-		//! \return Returns length of the line.
+		//! Get length of line
+		/** \return Length of the line. */
 		f64 getLength() const { return start.getDistanceFrom(end); }
 
-		//! Returns squared length of the line
-		//! \return Returns squared length of line.
+		//! Get squared length of the line
+		/** \return Squared length of line. */
 		T getLengthSQ() const { return start.getDistanceFromSQ(end); }
 
-		//! Returns middle of the line
+		//! Get middle of the line
+		/** \return center of the line. */
 		vector2d<T> getMiddle() const
 		{
 			return (start + end) * (T)0.5;
 		}
 
-		//! Returns the vector of the line.
-		//! \return Returns the vector of the line.
+		//! Get the vector of the line.
+		/** \return The vector of the line. */
 		vector2d<T> getVector() const { return vector2d<T>(start.X - end.X, start.Y - end.Y); }
 
 		//! Tests if this line intersects with another line.
-		//! \param l: Other line to test intersection with.
-		//! \param out: If there is an intersection, the location of the intersection will
-		//! be stored in this vector.
-		//! \return Returns true if there is an intersection, false if not.
+		/** \param l: Other line to test intersection with.
+		\param out: If there is an intersection, the location of the
+		intersection will be stored in this vector.
+		\return True if there is an intersection, false if not. */
 		bool intersectWith(const line2d<T>& l, vector2d<T>& out) const
 		{
 			bool found=false;
@@ -83,13 +89,13 @@ class line2d
 				b2 = (l.end.Y-l.start.Y)/(l.end.X-l.start.X);
 
 			// calculate position
-			a1 = start.Y   - b1 *  start.X;
+			a1 = start.Y   - b1 * start.X;
 			a2 = l.start.Y - b2 * l.start.X;
 			out.X = - (a1-a2)/(b1-b2);
 			out.Y = a1 + b1*out.X;
 
 			// did the lines cross?
-			if (	(start.X-out.X) *(out.X-end.X)	 >= -ROUNDING_ERROR_32 &&
+			if ((start.X-out.X) *(out.X-end.X) >= -ROUNDING_ERROR_32 &&
 				(l.start.X-out.X)*(out.X-l.end.X)>= -ROUNDING_ERROR_32 &&
 				(start.Y-out.Y)  *(out.Y-end.Y)  >= -ROUNDING_ERROR_32 &&
 				(l.start.Y-out.Y)*(out.Y-l.end.Y)>= -ROUNDING_ERROR_32 )
@@ -99,14 +105,17 @@ class line2d
 			return found;
 		}
 
-		//! Returns unit vector of the line.
-		//! \return Returns unit vector of this line.
+		//! Get unit vector of the line.
+		/** \return Unit vector of this line. */
 		vector2d<T> getUnitVector() const
 		{
 			T len = (T)(1.0 / getLength());
 			return vector2d<T>((end.X - start.X) * len, (end.Y - start.Y) * len);
 		}
 
+		//! Get angle between this line and given line.
+		/** \param l Other line for test.
+		\return Angle in degrees. */
 		f64 getAngleWith(const line2d<T>& l) const
 		{
 			vector2d<T> vect = getVector();
@@ -114,32 +123,31 @@ class line2d
 			return vect.getAngleWith(vect2);
 		}
 
-		//! Tells us if the given point lies to the left, 
-		//! right, or on the direction of the line
-		//! \return Returns 0 if the point is on the line
-		//! <0 if to the left, or >0 if to the right.
+		//! Tells us if the given point lies to the left, right, or on the line.
+		/** \return 0 if the point is on the line
+		<0 if to the left, or >0 if to the right. */
 		T getPointOrientation(const vector2d<T>& point) const
 		{
-			return ( (end.X   - start.X) * (point.Y - start.Y) - 
-					 (point.X - start.X) * (end.Y   - start.Y) );
+			return ( (end.X - start.X) * (point.Y - start.Y) -
+					(point.X - start.X) * (end.Y - start.Y) );
 		}
 
-		//! Returns if the given point is a member of the line
-		//! \return Returns true if 
+		//! Check if the given point is a member of the line
+		/** \return Returns true if point is between start and end, else false. */
 		bool isPointOnLine(const vector2d<T>& point) const
 		{
 			T d = getPointOrientation(point);
 			return (d == 0 && point.isBetweenPoints(start, end));
 		}
 
-		//! Returns if the given point is between start and end of the
-		//! line. Assumes that the point is already somewhere on the line.
+		//! Check if the given point is between start and end of the line.
+		/** Assumes that the point is already somewhere on the line. */
 		bool isPointBetweenStartAndEnd(const vector2d<T>& point) const
 		{
 			return point.isBetweenPoints(start, end);
 		}
 
-		//! Returns the closest point on this line to a point
+		//! Get the closest point on this line to a point
 		vector2d<T> getClosestPoint(const vector2d<T>& point) const
 		{
 			vector2d<T> c = point - start;
@@ -155,13 +163,13 @@ class line2d
 			return start + v;
 		}
 
-		// member variables
-
+		//! Start point of the line.
 		vector2d<T> start;
+		//! End point of the line.
 		vector2d<T> end;
 };
 
-	//! Typedef for a f32 line.
+	//! Typedef for an f32 line.
 	typedef line2d<f32> line2df;
 	//! Typedef for an integer line.
 	typedef line2d<s32> line2di;

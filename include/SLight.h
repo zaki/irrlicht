@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -42,21 +42,21 @@ struct SLight
 		Radius(100.f), OuterCone(45.f), InnerCone(0.f), Falloff(2.f),
 		Position(0.f,0.f,0.f), Direction(0.f,0.f,1.f),
 		Type(ELT_POINT), CastShadows(true)
-		 {};
+		{}
 
 	//! Ambient color emitted by the light
 	SColorf AmbientColor;
 
 	//! Diffuse color emitted by the light.
-	//! This is the primary color you want to set.
-	SColorf DiffuseColor; 
+	/** This is the primary color you want to set. */
+	SColorf DiffuseColor;
 
-	//! Specular color emitted by the light. 
-	//! For details how to use specular highlights, see SMaterial::Shininess
+	//! Specular color emitted by the light.
+	/** For details how to use specular highlights, see SMaterial::Shininess */
 	SColorf SpecularColor;
 
 	//! Attenuation factors (constant, linear, quadratic)
-	//! Changes the light strength fading over distance
+	/** Changes the light strength fading over distance */
 	core::vector3df Attenuation;
 
 	//! Radius of light. Everything within this radius be be lighted.
@@ -71,12 +71,12 @@ struct SLight
 	//! The light strength's decrease between Outer and Inner cone.
 	f32 Falloff;
 
-	//! Read-ONLY! Position of the light. If Type is ELT_DIRECTIONAL,
-	//! it is ignored. Changed via light scene node's position.
+	//! Read-ONLY! Position of the light.
+	/** If Type is ELT_DIRECTIONAL, it is ignored. Changed via light scene node's position. */
 	core::vector3df Position;
 
-	//! Read-ONLY! Direction of the light. If Type is ELT_POINT,
-	//! it is ignored. Changed via light scene node's rotation.
+	//! Read-ONLY! Direction of the light.
+	/** If Type is ELT_POINT, it is ignored. Changed via light scene node's rotation. */
 	core::vector3df Direction;
 
 	//! Type of the light. Default: ELT_POINT

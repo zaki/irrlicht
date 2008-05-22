@@ -1,3 +1,7 @@
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
+
 #ifndef _I_IMAGE_WRITER_H_INCLUDED__
 #define _I_IMAGE_WRITER_H_INCLUDED__
 
@@ -19,13 +23,19 @@ namespace video
 class IImageWriter : public IReferenceCounted
 {
 public:
-	//! destructor
+	//! Destructor
 	virtual ~IImageWriter() { }
 
-	//! return true if this writer can write a file with the given extension
+	//! Check if this writer can write a file with the given extension
+	/** \param fileName Name of the file to check.
+	\return True if file extension specifies a writable type. */
 	virtual bool isAWriteableFileExtension(const c8* fileName) const = 0;
 
-	//! write image to file
+	//! Write image to file
+	/** \param file File handle to write to.
+	\param image Image to write into file.
+	\param param Writer specific parameter, influencing e.g. quality.
+	\return True if image was successfully written. */
 	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param = 0) const = 0;
 };
 

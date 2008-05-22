@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -69,17 +69,17 @@ namespace gui
 		//! Returns a tab based on zero based index
 		/** \param idx: zero based index of tab. Is a value betwenn 0 and getTabcount()-1;
 		\return Returns pointer to the Tab. Returns 0 if no tab
-		 is corresponding to this tab. */
+		is corresponding to this tab. */
 		virtual IGUITab* getTab(s32 idx) const = 0;
 
 		//! Brings a tab to front.
 		/** \param idx: number of the tab.
-		 \return Returns true if successful. */
+		\return Returns true if successful. */
 		virtual bool setActiveTab(s32 idx) = 0;
 
 		//! Brings a tab to front.
 		/** \param tab: pointer to the tab.
-		 \return Returns true if successful. */
+		\return Returns true if successful. */
 		virtual bool setActiveTab(IGUIElement *tab) = 0;
 
 		//! Returns which tab is currently active

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -17,10 +17,10 @@ namespace video
 {
 
 //! structure for holding data describing a driver and operating system specific data.
-/** This data can be retrived by IVideoDriver::getExposedVideoData(). Use this with caution. 
- This only should be used to make it possible to extend the engine easily without
- modification of its source. Note that this structure does not contain any valid data, if
- you are using the software or the null device.
+/** This data can be retrived by IVideoDriver::getExposedVideoData(). Use this with caution.
+This only should be used to make it possible to extend the engine easily without
+modification of its source. Note that this structure does not contain any valid data, if
+you are using the software or the null device.
 */
 struct SExposedVideoData
 {
@@ -34,8 +34,8 @@ struct SExposedVideoData
 			//! Pointer to the IDirect3D9 interface
 			IDirect3DDevice9* D3DDev9;
 
-			//! Window handle. Get with for example 
-			//! HWND h = reinterpret_cast<HWND>(exposedData.D3D9.HWnd)
+			//! Window handle.
+			/** Get with for example HWND h = reinterpret_cast<HWND>(exposedData.D3D9.HWnd) */
 			void* HWnd;
 
 		} D3D9;
@@ -48,29 +48,28 @@ struct SExposedVideoData
 			//! Pointer to the IDirect3D8 interface
 			IDirect3DDevice8* D3DDev8;
 
-			//! Window handle. Get with for example with:
-			//! HWND h = reinterpret_cast<HWND>(exposedData.D3D8.HWnd)
+			//! Window handle.
+			/** Get with for example with: HWND h = reinterpret_cast<HWND>(exposedData.D3D8.HWnd) */
 			void* HWnd;
 
 		} D3D8;
 
-		struct 
+		struct
 		{
-			//! Private GDI Device Context. Get if for example with:
-			//! HDC h = reinterpret_cast<HDC>(exposedData.OpenGLWin32.HDc)
-			void* HDc; 
+			//! Private GDI Device Context.
+			/** Get if for example with: HDC h = reinterpret_cast<HDC>(exposedData.OpenGLWin32.HDc) */
+			void* HDc;
 
-			//! Permanent Rendering Context. Get if for example with:
-			//! HGLRC h = reinterpret_cast<HGLRC>(exposedData.OpenGLWin32.HRc)
-			void* HRc; 
+			//! Permanent Rendering Context.
+			/** Get if for example with: HGLRC h = reinterpret_cast<HGLRC>(exposedData.OpenGLWin32.HRc) */
+			void* HRc;
 
-			//! Window handle. Get with for example with:
-			//! HWND h = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd)
+			//! Window handle.
+			/** Get with for example with: HWND h = reinterpret_cast<HWND>(exposedData.OpenGLWin32.HWnd) */
 			void* HWnd;
-		
 		} OpenGLWin32;
 
-		struct 
+		struct
 		{
 			// XWindow handles
 			void* X11Display;

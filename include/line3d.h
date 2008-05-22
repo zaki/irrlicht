@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -19,10 +19,12 @@ class line3d
 {
 	public:
 
-		// Constructors
-
+		//! Default constructor
+		/** line from (0,0,0) to (1,1,1) */
 		line3d() : start(0,0,0), end(1,1,1) {}
+		//! Constructor with two points
 		line3d(T xa, T ya, T za, T xb, T yb, T zb) : start(xa, ya, za), end(xb, yb, zb) {}
+		//! Constructor with two points as vectors
 		line3d(const vector3d<T>& start, const vector3d<T>& end) : start(start), end(end) {}
 
 		// operators
@@ -39,42 +41,51 @@ class line3d
 		{ return !(start==other.start && end==other.end) || (end==other.start && start==other.end);}
 
 		// functions
-
+		//! Set this line to a new line going through the two points.
 		void setLine(const T& xa, const T& ya, const T& za, const T& xb, const T& yb, const T& zb)
 		{start.set(xa, ya, za); end.set(xb, yb, zb);}
+		//! Set this line to a new line going through the two points.
 		void setLine(const vector3d<T>& nstart, const vector3d<T>& nend)
 		{start.set(nstart); end.set(nend);}
+		//! Set this line to new line given as parameter.
 		void setLine(const line3d<T>& line)
 		{start.set(line.start); end.set(line.end);}
 
-		//! Returns length of line
-		//! \return Returns length of line.
+		//! Get length of line
+		/** \return Length of line. */
 		T getLength() const { return start.getDistanceFrom(end); }
 
-		//! Returns sqared length of line
-		//! \return Returns sqared length of line.
+		//! Get squared length of line
+		/** \return Squared length of line. */
 		T getLengthSQ() const { return start.getDistanceFromSQ(end); }
 
-		//! Returns middle of line
+		//! Get middle of line
+		/** \return Center of line. */
 		vector3d<T> getMiddle() const
 		{
 			return (start + end) * (T)0.5;
 		}
 
-		//! Returns vector of line
+		//! Get vector of line
+		/** \return vector of line. */
 		vector3d<T> getVector() const
 		{
 			return end - start;
 		}
 
-		//! Returns if the given point is between start and end of the
-		//! line. Assumes that the point is already somewhere on the line.
+		//! Returns if the given point is between start and end of the line.
+		/** Assumes that the point is already somewhere on the line.
+		\param point The point to test.
+		\return True if point is on the line between start and end, else false.
+		*/
 		bool isPointBetweenStartAndEnd(const vector3d<T>& point) const
 		{
 			return point.isBetweenPoints(start, end);
 		}
 
 		//! Returns the closest point on this line to a point
+		/** \param point The point to compare to.
+		\return The nearest point which is part of the line. */
 		vector3d<T> getClosestPoint(const vector3d<T>& point) const
 		{
 			vector3d<T> c = point - start;
@@ -93,12 +104,12 @@ class line3d
 		}
 
 		//! Returns if the line intersects with a shpere
-		//! \param sorigin: Origin of the shpere.
-		//! \param sradius: Radius of the sphere.
-		//! \param outdistance: The distance to the first intersection point.
-		//! \return Returns true if there is an intersection.
-		//! If there is one, the distance to the first intersection point
-		//! is stored in outdistance.
+		/** \param sorigin: Origin of the shpere.
+		\param sradius: Radius of the sphere.
+		\param outdistance: The distance to the first intersection point.
+		\return Returns true if there is an intersection.
+		If there is one, the distance to the first intersection point
+		is stored in outdistance. */
 		bool getIntersectionWithSphere(vector3d<T> sorigin, T sradius, f64& outdistance) const
 		{
 			const vector3d<T> q = sorigin - start;
@@ -115,7 +126,9 @@ class line3d
 
 		// member variables
 
+		//! Start point of line
 		vector3d<T> start;
+		//! End point of line
 		vector3d<T> end;
 };
 

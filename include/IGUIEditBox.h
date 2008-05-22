@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2007 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -28,23 +28,23 @@ namespace gui
 
 		//! Sets another skin independent font.
 		/** If this is set to zero, the button uses the font of the skin.
-		 \param font: New font to set. */
+		\param font: New font to set. */
 		virtual void setOverrideFont(IGUIFont* font=0) = 0;
 
 		//! Sets another color for the text.
 		/** If set, the edit box does not use the EGDC_BUTTON_TEXT color defined
-		 in the skin, but the set color instead. You don't need to call 
-		 IGUIEditBox::enableOverrrideColor(true) after this, this is done
-		 by this function.
-		 If you set a color, and you want the text displayed with the color
-		 of the skin again, call IGUIEditBox::enableOverrideColor(false);
-		 \param color: New color of the text. */
+		in the skin, but the set color instead. You don't need to call
+		IGUIEditBox::enableOverrrideColor(true) after this, this is done
+		by this function.
+		If you set a color, and you want the text displayed with the color
+		of the skin again, call IGUIEditBox::enableOverrideColor(false);
+		\param color: New color of the text. */
 		virtual void setOverrideColor(video::SColor color) = 0;
 
 		//! Sets if the text should use the overide color or the color in the gui skin.
 		/** \param enable: If set to true, the override color, which can be set
-		 with IGUIEditBox::setOverrideColor is used, otherwise the
-		 EGDC_BUTTON_TEXT color of the skin. */
+		with IGUIEditBox::setOverrideColor is used, otherwise the
+		EGDC_BUTTON_TEXT color of the skin. */
 		virtual void enableOverrideColor(bool enable) = 0;
 
 		//! Turns the border on or off
@@ -52,15 +52,15 @@ namespace gui
 		virtual void setDrawBorder(bool border) = 0;
 
 		//! Sets text justification mode
-		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default), 
-		 EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
-		\param vertical: EGUIA_UPPERLEFT to align with top edge, 
-		 EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
+		/** \param horizontal: EGUIA_UPPERLEFT for left justified (default),
+		EGUIA_LOWEERRIGHT for right justified, or EGUIA_CENTER for centered text.
+		\param vertical: EGUIA_UPPERLEFT to align with top edge,
+		EGUIA_LOWEERRIGHT for bottom edge, or EGUIA_CENTER for centered text (default). */
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical) = 0;
 
 		//! Enables or disables word wrap.
-		/** \param enable: If set to true, words going over one line are 
-		 broken to the next line. */
+		/** \param enable: If set to true, words going over one line are
+		broken to the next line. */
 		virtual void setWordWrap(bool enable) = 0;
 
 		//! Checks if word wrap is enabled
@@ -84,7 +84,7 @@ namespace gui
 		//! \return true if automatic scrolling is enabled, false if not
 		virtual bool isAutoScrollEnabled() const = 0;
 
-		//! Sets whether the edit box is a password box. Setting this to true will 
+		//! Sets whether the edit box is a password box. Setting this to true will
 		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
 		\param passwordBox: true to enable password, false to disable
 		\param passwordChar: the character that is displayed instead of letters */
@@ -98,8 +98,8 @@ namespace gui
 		virtual core::dimension2di getTextDimension() = 0;
 
 		//! Sets the maximum amount of characters which may be entered in the box.
-		/** \param max: Maximum amount of characters. If 0, the character amount is 
-		 infinity. */
+		/** \param max: Maximum amount of characters. If 0, the character amount is
+		infinity. */
 		virtual void setMax(u32 max) = 0;
 
 		//! Returns maximum amount of characters, previously set by setMax();

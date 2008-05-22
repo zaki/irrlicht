@@ -1,3 +1,6 @@
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// This file is part of the "Irrlicht Engine".
+// For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #ifndef __I_GUI_SPRITE_BANK_H_INCLUDED__
 #define __I_GUI_SPRITE_BANK_H_INCLUDED__
@@ -18,12 +21,14 @@ namespace video
 namespace gui
 {
 
+//! A single sprite frame.
 struct SGUISpriteFrame
 {
 	u32 textureNumber;
 	u32 rectNumber;
 };
 
+//! A sprite composed of several frames.
 struct SGUISprite
 {
 	SGUISprite() : Frames(), frameTime(0) { };
