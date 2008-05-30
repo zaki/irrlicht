@@ -12,6 +12,8 @@
 #include <unistd.h>
 #ifdef _IRR_USE_OSX_DEVICE_
 #include "OSXClipboard.h"
+#endif
+#ifdef _IRR_OSX_PLATFORM_
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #endif
