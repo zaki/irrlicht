@@ -31,7 +31,7 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 		countHills.Height = 1.f;
 
 	// center
-	const core::position2d<f32> center((tileSize.Width * tileCount.Width) / 2.0f, (tileSize.Height * tileCount.Height) / 2.0f);
+	const core::position2d<f32> center((tileSize.Width * tileCount.Width) * 0.5f, (tileSize.Height * tileCount.Height) * 0.5f);
 
 	// texture coord step
 	const core::dimension2d<f32> tx(
@@ -59,9 +59,9 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 			vtx.TCoords.set(tsx, 1.0f - tsy);
 
 			if (hillHeight != 0.0f)
-				vtx.Pos.Y = (f32)(sin(vtx.Pos.X * countHills.Width * core::PI / center.X) *
-					cos(vtx.Pos.Z * countHills.Height * core::PI / center.Y))
-					*hillHeight;
+				vtx.Pos.Y = sinf(vtx.Pos.X * countHills.Width * core::PI / center.X) *
+					cosf(vtx.Pos.Z * countHills.Height * core::PI / center.Y) *
+					hillHeight;
 
 			buffer->Vertices.push_back(vtx);
 			sy += tileSize.Height;
@@ -136,9 +136,8 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 	const u32 tm = os::Timer::getRealTime()/1000;
 	const core::dimension2d<s32> hMapSize= heightmap->getDimension();
 	const core::dimension2d<s32> tMapSize= texture->getDimension();
-	const core::position2d<f32> thRel((f32)tMapSize.Width / hMapSize.Width, (f32)tMapSize.Height / hMapSize.Height);
-
-	video::SMaterial material;
+	const core::position2d<f32> thRel(static_cast<f32>(tMapSize.Width) / hMapSize.Width, static_cast<f32>(tMapSize.Height) / hMapSize.Height);
+	maxHeight /= 255.0f; // height step per color value
 
 	core::position2d<s32> processed(0,0);
 	while (processed.Y<hMapSize.Height)
@@ -152,32 +151,39 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 				blockSize.Height = hMapSize.Height - processed.Y;
 
 			SMeshBuffer* buffer = new SMeshBuffer();
-
+			buffer->setHardwareMappingHint(scene::EHM_STATIC);
+			buffer->Vertices.reallocate(blockSize.getArea());
 			// add vertices of vertex block
 			s32 y;
-
+			core::vector2df pos(0.f, processed.Y*stretchSize.Height);
+			const core::vector2df bs(1.f/blockSize.Width, 1.f/blockSize.Height);
+			core::vector2df tc(0.f, 0.5f*bs.Y);
 			for (y=0; y<blockSize.Height; ++y)
 			{
+				pos.X=processed.X*stretchSize.Width;
+				tc.X=0.5f*bs.X;
 				for (s32 x=0; x<blockSize.Width; ++x)
 				{
-					video::SColor clr = heightmap->getPixel(x+processed.X, y+processed.Y);
-					const f32 height = ((clr.getRed() + clr.getGreen() + clr.getBlue()) / 3.0f)/255.0f * maxHeight;
+					const f32 height = heightmap->getPixel(x+processed.X, y+processed.Y).getAverage() * maxHeight;
 
-					vtx.Pos.set((f32)(x+processed.X) * stretchSize.Width,
-						height, (f32)(y+processed.Y) * stretchSize.Height);
-
-					vtx.TCoords.set((x+0.5f) / blockSize.Width,
-						(y+0.5f) / blockSize.Height);
+					vtx.Pos.set(pos.X, height, pos.Y);
+					vtx.TCoords.set(tc);
 					buffer->Vertices.push_back(vtx);
+					pos.X += stretchSize.Width;
+					tc.X += bs.X;
 				}
+				pos.Y += stretchSize.Height;
+				tc.Y += bs.Y;
 			}
 
+			buffer->Indices.reallocate((blockSize.Height-1)*(blockSize.Width-1)*6);
 			// add indices of vertex block
 			for (y=0; y<blockSize.Height-1; ++y)
 			{
+				s32 c1 = 0;
 				for (s32 x=0; x<blockSize.Width-1; ++x)
 				{
-					s32 c = (y*blockSize.Width) + x;
+					const s32 c = c1 + x;
 
 					buffer->Indices.push_back(c);
 					buffer->Indices.push_back(c + blockSize.Width);
@@ -187,10 +193,11 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 					buffer->Indices.push_back(c + blockSize.Width);
 					buffer->Indices.push_back(c + 1 + blockSize.Width);
 				}
+				c1 += blockSize.Width;
 			}
 
 			// recalculate normals
-			for (s32 i=0; i<(s32)buffer->Indices.size(); i+=3)
+			for (u32 i=0; i<buffer->Indices.size(); i+=3)
 			{
 				core::plane3d<f32> p(
 					buffer->Vertices[buffer->Indices[i+0]].Pos,
@@ -213,21 +220,20 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 
 				sprintf(textureName, "terrain%u_%u", tm, mesh->getMeshBufferCount());
 
-				material.setTexture(0, driver->addTexture(textureName, img));
+				buffer->Material.setTexture(0, driver->addTexture(textureName, img));
 
-				if (material.getTexture(0))
+				if (buffer->Material.getTexture(0))
 				{
 					c8 tmp[255];
 					sprintf(tmp, "Generated terrain texture (%dx%d): %s",
-						material.getTexture(0)->getSize().Width,
-						material.getTexture(0)->getSize().Height,
+						buffer->Material.getTexture(0)->getSize().Width,
+						buffer->Material.getTexture(0)->getSize().Height,
 						textureName);
 					os::Printer::log(tmp);
 				}
 				else
 					os::Printer::log("Could not create terrain texture.", textureName, ELL_ERROR);
 
-				buffer->Material = material;
 				img->drop();
 			}
 
@@ -581,9 +587,9 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 		{
 			// calculate points position
 
-			const core::vector3df pos((f32)(radius * cos(axz) * sinay),
-						(f32)(radius * cos(ay)),
-						(f32)(radius * sin(axz) * sinay));
+			const core::vector3df pos(static_cast<f32>(radius * cos(axz) * sinay),
+						static_cast<f32>(radius * cos(ay)),
+						static_cast<f32>(radius * sin(axz) * sinay));
 			// for spheres the normal is the position
 			core::vector3df normal(pos);
 			normal.normalize();
@@ -594,7 +600,7 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 			if (y==0)
 			{
 				if (normal.Y != -1.0f && normal.Y != 1.0f)
-					tu = (f32)(acos(core::clamp(normal.X/sinay, -1.0, 1.0)) * 0.5 *core::RECIPROCAL_PI64);
+					tu = static_cast<f32>(acos(core::clamp(normal.X/sinay, -1.0, 1.0)) * 0.5 *core::RECIPROCAL_PI64);
 				if (normal.Z < 0.0f)
 					tu=1-tu;
 			}
@@ -603,7 +609,7 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 			buffer->Vertices[i] = video::S3DVertex(pos.X, pos.Y, pos.Z,
 						normal.X, normal.Y, normal.Z,
 						clr, tu,
-						(f32)(ay*core::RECIPROCAL_PI64));
+						static_cast<f32>(ay*core::RECIPROCAL_PI64));
 			++i;
 			axz += AngleX;
 		}
