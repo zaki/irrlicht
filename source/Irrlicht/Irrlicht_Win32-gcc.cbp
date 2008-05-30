@@ -1545,11 +1545,6 @@
 			<Option compile="0"/>
 			<Option link="0"/>
 		</Unit>
-		<Unit filename="CMY3DStuff.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-		</Unit>
 		<Unit filename="CMemoryReadFile.cpp">
 			<Option compilerVar="CPP"/>
 		</Unit>

@@ -4,9 +4,9 @@
 //
 // This file was originally written by ZDimitor.
 
-//--------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // This tool created by ZDimitor everyone can use it as wants
-//--------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 #include "IrrCompileConfig.h" 
 #ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
@@ -30,10 +30,32 @@ namespace irr
 namespace scene
 {
 
+static const u32 MY3D_ID = 0x4d593344;
+static const u16 MY3D_VER = 0x0003;
+static const u16 MY3D_SCENE_HEADER_ID = 0x1000;
+static const u16 MY3D_MAT_LIST_ID = 0x2000;
+static const u16 MY3D_MAT_HEADER_ID = 0x2100;
+static const u16 MY3D_TEX_FNAME_ID = 0x2101;
+static const u16 MY3D_TEXDATA_HEADER_ID = 0x2501;
+static const u16 MY3D_TEXDATA_RLE_HEADER_ID = 0x2502;
+static const u16 MY3D_MESH_LIST_ID =  0x3000;
+static const u16 MY3D_MESH_HEADER_ID = 0x3100;
+static const u16 MY3D_VERTS_ID = 0x3101;
+static const u16 MY3D_FACES_ID = 0x3102;
+static const u16 MY3D_TVERTS_ID = 0x3103;
+static const u16 MY3D_TFACES_ID = 0x3104;
+static const u16 MY3D_FILE_END_ID = 0xFFFF;
+
+static const unsigned long MY3D_TEXDATA_COMPR_NONE_ID = 0x4e4f4e45;
+static const unsigned long MY3D_TEXDATA_COMPR_SIMPLE_ID = 0x53494d50;
+static const unsigned long MY3D_TEXDATA_COMPR_RLE_ID = 0x20524c45;
+
+static const unsigned long MY3D_PIXEL_FORMAT_24 = 0x5f32345f;
+static const unsigned long MY3D_PIXEL_FORMAT_16 = 0x5f31365f;
 
 CMY3DMeshFileLoader::CMY3DMeshFileLoader(
 	io::IFileSystem* fs, video::IVideoDriver* driver, ISceneManager *scmgr)
-	: Mesh(0), Driver(driver), FileSystem(fs), SceneManager(scmgr)
+	: Driver(driver), FileSystem(fs), SceneManager(scmgr)
 {
 
 	#ifdef _DEBUG
@@ -48,19 +70,14 @@ CMY3DMeshFileLoader::CMY3DMeshFileLoader(
 }
 
 
-
 CMY3DMeshFileLoader::~CMY3DMeshFileLoader()
 {
-	if (Mesh)
-		Mesh->drop();
-
 	if (Driver)
 		Driver->drop();
 
 	if (FileSystem)
 		FileSystem->drop();
 }
-
 
 
 bool CMY3DMeshFileLoader::isALoadableFileExtension(const c8* filename) const
@@ -75,19 +92,19 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 	MeshBufferEntry.clear();
 	ChildNodes.clear();
 
-	core::stringc file_name = file->getFileName();
-
 	// working directory (from which we load the scene)
-	core::stringc filepath = FileSystem->getFileDir(file_name);
+	core::stringc filepath = FileSystem->getFileDir(file->getFileName());
 	filepath.append("/");
-
-	core::stringc msg="";
 
 	// read file into memory
 	SMyFileHeader fileHeader;
 	file->read(&fileHeader, sizeof(SMyFileHeader));
+#ifdef __BIG_ENDIAN__
+	fileHeader.MyId = os::Byteswap::byteswap(fileHeader.MyId);
+	fileHeader.Ver = os::Byteswap::byteswap(fileHeader.Ver);
+#endif
 
-	if (fileHeader.MyId!=MY_ID || fileHeader.Ver!=MY_VER)
+	if (fileHeader.MyId!=MY3D_ID || fileHeader.Ver!=MY3D_VER)
 	{
 		os::Printer::log("Bad MY3D file header, loading failed!", ELL_ERROR);
 		return 0;
@@ -96,29 +113,31 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 	u16 id;
 
 	file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+	id = os::Byteswap::byteswap(id);
+#endif
 
-	if (id!=MY_SCENE_HEADER_ID)
+	if (id!=MY3D_SCENE_HEADER_ID)
 	{
-		os::Printer::log("Cannot find MY_SCENE_HEADER_ID, loading failed!", ELL_ERROR);
+		os::Printer::log("Cannot find MY3D_SCENE_HEADER_ID, loading failed!", ELL_ERROR);
 		return 0;
 	}
 
 	SMySceneHeader sceneHeader;
 	file->read(&sceneHeader, sizeof(SMySceneHeader));
-
-	SceneBackgrColor = video::SColor(
-		sceneHeader.BackgrColor.R, sceneHeader.BackgrColor.G,
-		sceneHeader.BackgrColor.B, sceneHeader.BackgrColor.A);
-
-	SceneAmbientColor = video::SColor(
-		sceneHeader.AmbientColor.R, sceneHeader.AmbientColor.G,
-		sceneHeader.AmbientColor.B, sceneHeader.AmbientColor.A);
+#ifdef __BIG_ENDIAN__
+	sceneHeader.MaterialCount = os::Byteswap::byteswap(sceneHeader.MaterialCount);
+	sceneHeader.MeshCount = os::Byteswap::byteswap(sceneHeader.MeshCount);
+#endif
 
 	file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+	id = os::Byteswap::byteswap(id);
+#endif
 
-	if (id!=MY_MAT_LIST_ID)
+	if (id!=MY3D_MAT_LIST_ID)
 	{
-		os::Printer::log("Can not find MY_MAT_LIST_ID, loading failed!", ELL_ERROR);
+		os::Printer::log("Can not find MY3D_MAT_LIST_ID, loading failed!", ELL_ERROR);
 		return 0;
 	}
 
@@ -126,267 +145,100 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 		SceneManager->getParameters()->getAttributeAsString(MY3D_TEXTURE_PATH);
 
 	file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+	id = os::Byteswap::byteswap(id);
+#endif
 
-	s32 texCount=0, matCount=0;
-	c8 name[256];
+	c8 namebuf[256];
 	for (s32 m=0; m<sceneHeader.MaterialCount; ++m)
 	{
-		if (id!=MY_MAT_HEADER_ID)
+		if (id != MY3D_MAT_HEADER_ID)
 		{
-			os::Printer::log("Cannot find MY_MAT_HEADER_ID, loading failed!", ELL_ERROR);
+			os::Printer::log("Cannot find MY3D_MAT_HEADER_ID, loading failed!", ELL_ERROR);
 			return 0;
 		}
 
-		matCount++;
-
 		// read material header
-		SMyMaterialHeader materialHeader;
-		file->read(&materialHeader, sizeof(SMyMaterialHeader));
-
-		SMyMaterialEntry me;
-		me.Header = materialHeader;
+		MaterialEntry.push_back(SMyMaterialEntry());
+		SMyMaterialEntry& me=MaterialEntry.getLast();
+		file->read(&(me.Header), sizeof(SMyMaterialHeader));
 
 		// read next identificator
 		file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+		id = os::Byteswap::byteswap(id);
+#endif
 
-		bool GetLightMap=false, GetMainMap=false;
-		static int LightMapIndex=0;
+		bool gotLightMap=false, gotMainMap=false;
 
-		for (int t=0; t<materialHeader.TextureCount; t++)
+		for (u32 t=0; t<me.Header.TextureCount; ++t)
 		{
-			if (id==MY_TEX_FNAME_ID)
-				file->read(name, 256);
+			if (id==MY3D_TEX_FNAME_ID)
+				file->read(namebuf, 256);
 			else
 			{
-				file->read(&id, sizeof(id));
-				if (id!=MY_TEXDATA_HEADER_ID)
-				{
-					os::Printer::log("Can not find MY_TEXDATA_HEADER_ID, loading failed!", ELL_ERROR);
+				me.Texture2 = readEmbeddedLightmap(file, namebuf);
+				if (!me.Texture2)
 					return 0;
-				}
-
-				SMyTexDataHeader texDataHeader;
-
-				file->read(&texDataHeader, sizeof(SMyTexDataHeader));
-
-				strcpy(texDataHeader.Name, name);
-
-				char LightMapName[255];
-				sprintf(LightMapName,"My3D.Lightmap.%d",++LightMapIndex);
-
-				core::stringc pixFormatStr;
-				if (texDataHeader.PixelFormat == MY_PIXEL_FORMAT_24)
-					pixFormatStr = "24bit,";
-				else
-				if (texDataHeader.PixelFormat == MY_PIXEL_FORMAT_16)
-					pixFormatStr = "16bit,";
-				else
-				{
-					msg="Unknown format of image data (";
-					msg.append(LightMapName);
-					msg.append("), loading failed!");
-					os::Printer::log(msg.c_str(), ELL_ERROR);
-					return 0;
-				}
-
-				if (texDataHeader.ComprMode != MY_TEXDATA_COMPR_NONE_ID &&
-						texDataHeader.ComprMode != MY_TEXDATA_COMPR_RLE_ID &&
-						texDataHeader.ComprMode != MY_TEXDATA_COMPR_SIMPLE_ID )
-				{
-					os::Printer::log("Unknown method of compression image data, loading failed!", ELL_ERROR);
-					return 0;
-				}
-
-				u32 num_pixels = texDataHeader.Width*texDataHeader.Height;
-
-				void* data = 0;
-
-				if (texDataHeader.ComprMode==MY_TEXDATA_COMPR_NONE_ID)
-				{
-					// none compressed image data
-					if (texDataHeader.PixelFormat == MY_PIXEL_FORMAT_24)
-					{
-						data = (void*) new SMyPixelColor24[num_pixels];
-						file->read(data, sizeof(SMyPixelColor24)*num_pixels);
-					}
-					else
-					{
-						data = (void*) new SMyPixelColor16[num_pixels];
-						file->read(data, sizeof(SMyPixelColor16)*num_pixels);
-					}
-				}
-				else
-				if (texDataHeader.ComprMode==MY_TEXDATA_COMPR_RLE_ID)
-				{
-					// read RLE header identificator
-					file->read(&id, sizeof(id));
-					if (id!=MY_TEXDATA_RLE_HEADER_ID)
-					{
-						os::Printer::log("Can not find MY_TEXDATA_RLE_HEADER_ID, loading failed!", ELL_ERROR);
-						return 0;
-					}
-
-					// read RLE header
-					SMyRLEHeader rleHeader;
-					file->read(&rleHeader, sizeof(SMyRLEHeader));
-
-					//allocate memory for input and output buffers
-					void *input_buffer  = (void*) new unsigned char[rleHeader.nEncodedBytes];
-					void *output_buffer = (void*) new unsigned char[rleHeader.nDecodedBytes];
-
-					// read encoded data
-					file->read(input_buffer, rleHeader.nEncodedBytes);
-
-					// decode data
-					data = 0;//(void*) new unsigned char[rleHeader.nDecodedBytes];
-					s32 decodedBytes = core::rle_decode(
-						(unsigned char*)input_buffer,  rleHeader.nEncodedBytes,
-						(unsigned char*)output_buffer, rleHeader.nDecodedBytes);
-
-					if (decodedBytes!=(s32)rleHeader.nDecodedBytes)
-					{
-						os::Printer::log("Error extracting data from RLE compression, loading failed!", ELL_ERROR);
-						return 0;
-					}
-
-					// free input buffer
-					delete [] (unsigned char*)input_buffer;
-
-					// here decoded data
-					data = output_buffer;
-				}
-				else if (texDataHeader.ComprMode==MY_TEXDATA_COMPR_SIMPLE_ID)
-				{
-					// simple compressed image data
-					if (texDataHeader.PixelFormat == MY_PIXEL_FORMAT_24)
-						data = (void*) new SMyPixelColor24[num_pixels];
-					else
-						data = (void*) new SMyPixelColor16[num_pixels];
-
-					u32 nReadedPixels=0, nToRead=0;
-					while (true)
-					{
-						file->read(&nToRead, sizeof(nToRead));
-
-						if ((nReadedPixels+nToRead) > num_pixels)
-							break;
-
-						if (texDataHeader.PixelFormat == MY_PIXEL_FORMAT_24)
-						{
-							SMyPixelColor24 col24;
-							file->read(&col24, sizeof(SMyPixelColor24));
-							for (u32 p=0; p<nToRead; p++)
-							{
-								((SMyPixelColor24*)data)[nReadedPixels+p] =
-									SMyPixelColor24(col24.r, col24.g, col24.b);
-							}
-						}
-						else
-						{
-							SMyPixelColor16 col16;
-							file->read(&col16, sizeof(SMyPixelColor16));
-							for (u32 p=0; p<nToRead; p++)
-								((SMyPixelColor16*)data)[nReadedPixels+p].argb = col16.argb;
-						}
-
-						nReadedPixels+=nToRead;
-
-						if (nReadedPixels >= num_pixels)
-							break;
-					}
-
-					if (nReadedPixels != num_pixels)
-					{
-						os::Printer::log("Image data seems to be corrupted, loading failed!", ELL_ERROR);
-						return 0;
-					}
-				}
-
-				//! Creates a software image from a byte array.
-				video::IImage* light_img = 0;
-
-				if (texDataHeader.PixelFormat == MY_PIXEL_FORMAT_24)
-				{
-					// 24 bit lightmap format
-					light_img = Driver->createImageFromData(
-					video::ECF_R8G8B8, 
-					core::dimension2d<s32>(texDataHeader.Width, texDataHeader.Height), 
-						data, true);
-				}
-				else
-				{
-					// 16 bit lightmap format
-					light_img = Driver->createImageFromData(
-						video::ECF_A1R5G5B5,
-						core::dimension2d<s32>(texDataHeader.Width, texDataHeader.Height),
-						data, true);
-				}
-
-				const bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
-				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-				me.Texture2 = Driver->addTexture(LightMapName, light_img);
-				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
-
-				light_img->drop();
-				GetLightMap = true;
+				gotLightMap = true;
 			}
 
-			const core::stringc Name = name;
-			const s32 pos2 = Name.findLast('.');
+			const core::stringc name = namebuf;
+			const s32 pos = name.findLast('.');
 			const core::stringc LightingMapStr = "LightingMap";
-			const u32 ls = LightingMapStr.size();
-			const bool isSubString = (LightingMapStr == Name.subString(core::max_(0u, (pos2 - ls)), ls));
-			if ((isSubString || (Name[pos2-1]=='m' &&
-				Name[pos2-2]=='l' && Name[pos2-3]=='_')) &&
-				!GetLightMap)
+			const s32 ls = LightingMapStr.size();
+			const bool isSubString = (LightingMapStr == name.subString(core::max_(0, (pos - ls)), ls));
+			if ((isSubString || (name[pos-1]=='m' &&
+				name[pos-2]=='l' && name[pos-3]=='_')) &&
+				!gotLightMap)
 			{
 				const bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 				me.Texture2FileName = texturePath.size() ? texturePath : filepath;
 				me.Texture2FileName.append("Lightmaps/");
-				me.Texture2FileName.append(Name);
+				me.Texture2FileName.append(name);
 
-				if (Name.size())
+				if (name.size())
 					me.Texture2 = Driver->getTexture(me.Texture2FileName.c_str());
 
 				me.MaterialType = video::EMT_LIGHTMAP_M2;
-				GetLightMap = true;
+				gotLightMap = true;
 
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
 			}
 			else
-			if (!GetLightMap&&GetMainMap)
+			if (!gotLightMap && gotMainMap)
 			{
 				me.Texture2FileName = texturePath.size() ? texturePath : filepath;
-				me.Texture2FileName.append(Name);
+				me.Texture2FileName.append(name);
 
-				if (Name.size())
+				if (name.size())
 					me.Texture2 = Driver->getTexture(me.Texture2FileName.c_str());
 
 				me.MaterialType = video::EMT_REFLECTION_2_LAYER;
 			}
 			else
-			if (!GetMainMap && !GetLightMap )
+			if (!gotMainMap && !gotLightMap)
 			{
 				me.Texture1FileName = filepath;
-				me.Texture1FileName.append(Name);
-				if (Name.size())
-				{
+				me.Texture1FileName.append(name);
+				if (name.size())
 					me.Texture1 = Driver->getTexture(me.Texture1FileName.c_str());
-					texCount++;
-				}
 
-				GetMainMap = true;
+				gotMainMap = true;
 				me.MaterialType = video::EMT_SOLID;
 			}
 			else
-			if (GetLightMap)
+			if (gotLightMap)
 			{
 				me.MaterialType = video::EMT_LIGHTMAP_M2;
 			}
 
 			file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+			id = os::Byteswap::byteswap(id);
+#endif
 		}
 
 		// override material types based on their names
@@ -395,36 +247,34 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 		else
 		if (!strncmp(me.Header.Name, "SphereMap-", 10))
 			me.MaterialType = video::EMT_SPHERE_MAP;
-
-		MaterialEntry.push_back(me);
 	}
 
 	// loading meshes
 
-	if (Mesh)
-		Mesh->drop();
+	SMesh* mesh = new SMesh();
 
-	Mesh = new SMesh();
-
-	if (id!=MY_MESH_LIST_ID)
+	if (id!=MY3D_MESH_LIST_ID)
 	{
-		os::Printer::log("Can not find MY_MESH_LIST_ID, loading failed!", ELL_ERROR);
+		os::Printer::log("Can not find MY3D_MESH_LIST_ID, loading failed!", ELL_ERROR);
 		return 0;
 	}
 
 	file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+	id = os::Byteswap::byteswap(id);
+#endif
 
 	for (s32 mesh_id=0; mesh_id<sceneHeader.MeshCount; mesh_id++)
 	{
 		// Warning!!! In some cases MY3D exporter uncorrectly calculates
 		// MeshCount (it's a problem, has to be solved) thats why
 		// i added this code line
-		if (id!=MY_MESH_HEADER_ID)
+		if (id!=MY3D_MESH_HEADER_ID)
 			break;
 
-		if (id!=MY_MESH_HEADER_ID)
+		if (id!=MY3D_MESH_HEADER_ID)
 		{
-			os::Printer::log("Can not find MY_MESH_HEADER_ID, loading failed!", ELL_ERROR);
+			os::Printer::log("Can not find MY3D_MESH_HEADER_ID, loading failed!", ELL_ERROR);
 			return 0;
 		}
 
@@ -441,29 +291,33 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 
 		// vertices
 		file->read(&id, sizeof(id));
-		if (id!=MY_VERTS_ID)
+#ifdef __BIG_ENDIAN__
+	id = os::Byteswap::byteswap(id);
+#endif
+		if (id!=MY3D_VERTS_ID)
 		{
-			os::Printer::log("Can not find MY_VERTS_ID, loading failed!", ELL_ERROR);
+			os::Printer::log("Can not find MY3D_VERTS_ID, loading failed!", ELL_ERROR);
 			return 0;
 		}
 
 		file->read(&vertsNum, sizeof(vertsNum));
-		Vertex.reallocate(vertsNum);
-		file->read(Vertex.pointer(), sizeof(SMyVertex)*vertsNum);
 		Vertex.set_used(vertsNum);
+		file->read(Vertex.pointer(), sizeof(SMyVertex)*vertsNum);
 
 		// faces
 		file->read(&id, sizeof(id));
-		if (id!=MY_FACES_ID)
+#ifdef __BIG_ENDIAN__
+		id = os::Byteswap::byteswap(id);
+#endif
+		if (id!=MY3D_FACES_ID)
 		{
-			os::Printer::log("Can not find MY_FACES_ID, loading failed!", ELL_ERROR);
+			os::Printer::log("Can not find MY3D_FACES_ID, loading failed!", ELL_ERROR);
 			return 0;
 		}
 
 		file->read(&facesNum, sizeof(facesNum));
-		Face.reallocate(facesNum);
-		file->read(Face.pointer(), sizeof(SMyFace)*facesNum);
 		Face.set_used(facesNum);
+		file->read(Face.pointer(), sizeof(SMyFace)*facesNum);
 
 		// reading texture channels
 		for (s32 tex=0; tex<(s32)meshHeader.TChannelCnt; tex++)
@@ -473,10 +327,13 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 
 			// reading texture coords
 			file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+			id = os::Byteswap::byteswap(id);
+#endif
 
-			if (id!=MY_TVERTS_ID)
+			if (id!=MY3D_TVERTS_ID)
 			{
-				msg="Can not find MY_TVERTS_ID (";
+				core::stringc msg="Can not find MY3D_TVERTS_ID (";
 				msg.append(tex);
 				msg.append("texture channel), loading failed!");
 				os::Printer::log(msg.c_str(), ELL_ERROR);
@@ -488,17 +345,15 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			if (tex==0)
 			{
 				// 1st texture channel
-				TVertex1.reallocate(tVertsNum);
-				file->read(TVertex1.pointer(), sizeof(SMyTVertex)*tVertsNum);
 				TVertex1.set_used(tVertsNum);
+				file->read(TVertex1.pointer(), sizeof(SMyTVertex)*tVertsNum);
 			}
 			else
 			if (tex==1)
 			{
 				// 2nd texture channel
-				TVertex2.reallocate(tVertsNum);
-				file->read(TVertex2.pointer(), sizeof(SMyTVertex)*tVertsNum);
 				TVertex2.set_used(tVertsNum);
+				file->read(TVertex2.pointer(), sizeof(SMyTVertex)*tVertsNum);
 			}
 			else
 			{
@@ -508,10 +363,13 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 
 			// reading texture faces
 			file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+			id = os::Byteswap::byteswap(id);
+#endif
 
-			if (id!=MY_TFACES_ID)
+			if (id!=MY3D_TFACES_ID)
 			{
-				msg="Can not find MY_TFACES_ID (";
+				core::stringc msg="Can not find MY3D_TFACES_ID (";
 				msg.append(tex);
 				msg.append("texture channel), loading failed!");
 				os::Printer::log(msg.c_str(), ELL_ERROR);
@@ -523,16 +381,14 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			if (tex==0)
 			{
 				// 1st texture channel
-				TFace1.reallocate(tFacesNum);
-				file->read(TFace1.pointer(), sizeof(SMyFace)*tFacesNum);
 				TFace1.set_used(tFacesNum);
+				file->read(TFace1.pointer(), sizeof(SMyFace)*tFacesNum);
 			}
 			else if (tex==1)
 			{
 				// 2nd texture channel
-				TFace2.reallocate(tFacesNum);
-				file->read(TFace2.pointer(), sizeof(SMyFace)*tFacesNum);
 				TFace2.set_used(tFacesNum);
+				file->read(TFace2.pointer(), sizeof(SMyFace)*tFacesNum);
 			}
 			else
 			{
@@ -644,31 +500,39 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 		}
 
 		video::S3DVertex2TCoords VertexA, VertexB, VertexC;
-		video::SColor vert_color;
-		core::triangle3df face;
 
+		// vertices (A, B, C) color
+		video::SColor vert_color;
+		if (matEnt &&
+			(buffer->Material.MaterialType == video::EMT_TRANSPARENT_VERTEX_ALPHA ||
+			buffer->Material.MaterialType == video::EMT_TRANSPARENT_REFLECTION_2_LAYER))
+		{
+			video::SColor color(
+			matEnt->Header.DiffuseColor.A, matEnt->Header.DiffuseColor.R,
+			matEnt->Header.DiffuseColor.G, matEnt->Header.DiffuseColor.B);
+
+			vert_color = color.getInterpolated(video::SColor(0,0,0,0),
+				1-matEnt->Header.Transparency);
+		}
+		else
+		{
+			vert_color = buffer->Material.DiffuseColor;
+		}
+
+		VertexA.Color = VertexB.Color = VertexC.Color = vert_color;
+
+		if (buffer->Material.MaterialType == video::EMT_TRANSPARENT_ALPHA_CHANNEL)
+		{
+			buffer->Indices.reallocate(buffer->Indices.size()+6*facesNum);
+			buffer->Vertices.reallocate(buffer->Vertices.size()+6*facesNum);
+		}
+		else
+		{
+			buffer->Indices.reallocate(buffer->Indices.size()+3*facesNum);
+			buffer->Vertices.reallocate(buffer->Vertices.size()+3*facesNum);
+		}
 		for (int f=0; f<facesNum; f++)
 		{
-			// vertices (A, B, C) color
-
-			if (matEnt &&
-				(buffer->Material.MaterialType == video::EMT_TRANSPARENT_VERTEX_ALPHA ||
-				buffer->Material.MaterialType == video::EMT_TRANSPARENT_REFLECTION_2_LAYER))
-			{
-				video::SColor color(
-				matEnt->Header.DiffuseColor.A, matEnt->Header.DiffuseColor.R,
-				matEnt->Header.DiffuseColor.G, matEnt->Header.DiffuseColor.B);
-
-				vert_color = color.getInterpolated(video::SColor(0,0,0,0),
-					1-matEnt->Header.Transparency);
-			}
-			else
-			{
-				vert_color = buffer->Material.DiffuseColor;
-			}
-
-			VertexA.Color = VertexB.Color = VertexC.Color = vert_color;
-
 			// vertex A
 
 			VertexA.Pos.X = Vertex[Face[f].C].Coord.X;
@@ -772,6 +636,9 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			}
 		}
 		file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+		id = os::Byteswap::byteswap(id);
+#endif
 	}
 
 	// creating mesh
@@ -783,32 +650,208 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 		if (!buffer)
 			continue;
 
-		Mesh->addMeshBuffer(buffer);
+		mesh->addMeshBuffer(buffer);
 
 		buffer->recalculateBoundingBox();
 		buffer->drop();
 	}
 
-	Mesh->recalculateBoundingBox();
+	mesh->recalculateBoundingBox();
 
-	//sprintf(ch, "Loaded: meshes (%d).", MeshBufferEntry.size());
-	//os::Printer::log(ch, ELL_INFORMATION);
-
-	if (id != MY_FILE_END_ID)
-		os::Printer::log("Loading finished, but can not find MY_FILE_END_ID token.", ELL_WARNING);
+	if (id != MY3D_FILE_END_ID)
+		os::Printer::log("Loading finished, but can not find MY3D_FILE_END_ID token.", ELL_WARNING);
 
 	SAnimatedMesh* am = new SAnimatedMesh();
 
-	// you have to add this type in IAnimatedMesh.h
-	//am->Type = EAMT_MY3D;
-
-	am->addMesh(Mesh);
+	am->addMesh(mesh);
+	mesh->drop();
 	am->recalculateBoundingBox();
 
-	Mesh->drop();
-	Mesh = 0;
-
 	return am;
+}
+
+
+video::ITexture* CMY3DMeshFileLoader::readEmbeddedLightmap(io::IReadFile* file, char* namebuf)
+{
+	static int LightMapIndex=0;
+	u16 id;
+	file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+	id = os::Byteswap::byteswap(id);
+#endif
+	if (id!=MY3D_TEXDATA_HEADER_ID)
+	{
+		os::Printer::log("Can not find MY3D_TEXDATA_HEADER_ID, loading failed!", ELL_ERROR);
+		return 0;
+	}
+
+	SMyTexDataHeader texDataHeader;
+
+	file->read(&texDataHeader, sizeof(SMyTexDataHeader));
+
+	strcpy(texDataHeader.Name, namebuf);
+
+	char LightMapName[255];
+	sprintf(LightMapName,"My3D.Lightmap.%d",++LightMapIndex);
+
+	core::stringc pixFormatStr;
+	if (texDataHeader.PixelFormat == MY3D_PIXEL_FORMAT_24)
+		pixFormatStr = "24bit,";
+	else
+	if (texDataHeader.PixelFormat == MY3D_PIXEL_FORMAT_16)
+		pixFormatStr = "16bit,";
+	else
+	{
+		core::stringc msg="Unknown format of image data (";
+		msg.append(LightMapName);
+		msg.append("), loading failed!");
+		os::Printer::log(msg.c_str(), ELL_ERROR);
+		return 0;
+	}
+
+	if (texDataHeader.ComprMode != MY3D_TEXDATA_COMPR_NONE_ID &&
+			texDataHeader.ComprMode != MY3D_TEXDATA_COMPR_RLE_ID &&
+			texDataHeader.ComprMode != MY3D_TEXDATA_COMPR_SIMPLE_ID )
+	{
+		os::Printer::log("Unknown method of compression image data, loading failed!", ELL_ERROR);
+		return 0;
+	}
+
+	const u32 num_pixels = texDataHeader.Width*texDataHeader.Height;
+
+	void* data = 0;
+
+	if (texDataHeader.ComprMode==MY3D_TEXDATA_COMPR_NONE_ID)
+	{
+		// none compressed image data
+		if (texDataHeader.PixelFormat == MY3D_PIXEL_FORMAT_24)
+		{
+			data = (void*) new SMyPixelColor24[num_pixels];
+			file->read(data, sizeof(SMyPixelColor24)*num_pixels);
+		}
+		else
+		{
+			data = (void*) new SMyPixelColor16[num_pixels];
+			file->read(data, sizeof(SMyPixelColor16)*num_pixels);
+		}
+	}
+	else
+	if (texDataHeader.ComprMode==MY3D_TEXDATA_COMPR_RLE_ID)
+	{
+		// read RLE header identificator
+		file->read(&id, sizeof(id));
+#ifdef __BIG_ENDIAN__
+		id = os::Byteswap::byteswap(id);
+#endif
+		if (id!=MY3D_TEXDATA_RLE_HEADER_ID)
+		{
+			os::Printer::log("Can not find MY3D_TEXDATA_RLE_HEADER_ID, loading failed!", ELL_ERROR);
+			return 0;
+		}
+
+		// read RLE header
+		SMyRLEHeader rleHeader;
+		file->read(&rleHeader, sizeof(SMyRLEHeader));
+
+		//allocate memory for input and output buffers
+		void *input_buffer  = (void*) new unsigned char[rleHeader.nEncodedBytes];
+		void *output_buffer = (void*) new unsigned char[rleHeader.nDecodedBytes];
+
+		// read encoded data
+		file->read(input_buffer, rleHeader.nEncodedBytes);
+
+		// decode data
+		data = 0;//(void*) new unsigned char[rleHeader.nDecodedBytes];
+		s32 decodedBytes = core::rle_decode(
+			(unsigned char*)input_buffer,  rleHeader.nEncodedBytes,
+			(unsigned char*)output_buffer, rleHeader.nDecodedBytes);
+
+		if (decodedBytes!=(s32)rleHeader.nDecodedBytes)
+		{
+			os::Printer::log("Error extracting data from RLE compression, loading failed!", ELL_ERROR);
+			return 0;
+		}
+
+		// free input buffer
+		delete [] (unsigned char*)input_buffer;
+
+		// here decoded data
+		data = output_buffer;
+	}
+	else if (texDataHeader.ComprMode==MY3D_TEXDATA_COMPR_SIMPLE_ID)
+	{
+		// simple compressed image data
+		if (texDataHeader.PixelFormat == MY3D_PIXEL_FORMAT_24)
+			data = (void*) new SMyPixelColor24[num_pixels];
+		else
+			data = (void*) new SMyPixelColor16[num_pixels];
+
+		u32 nReadedPixels=0, nToRead=0;
+		while (true)
+		{
+			file->read(&nToRead, sizeof(nToRead));
+
+			if ((nReadedPixels+nToRead) > num_pixels)
+				break;
+
+			if (texDataHeader.PixelFormat == MY3D_PIXEL_FORMAT_24)
+			{
+				SMyPixelColor24 col24;
+				file->read(&col24, sizeof(SMyPixelColor24));
+				for (u32 p=0; p<nToRead; p++)
+				{
+					((SMyPixelColor24*)data)[nReadedPixels+p] =
+						SMyPixelColor24(col24.r, col24.g, col24.b);
+				}
+			}
+			else
+			{
+				SMyPixelColor16 col16;
+				file->read(&col16, sizeof(SMyPixelColor16));
+				for (u32 p=0; p<nToRead; p++)
+					((SMyPixelColor16*)data)[nReadedPixels+p].argb = col16.argb;
+			}
+
+			nReadedPixels+=nToRead;
+
+			if (nReadedPixels >= num_pixels)
+				break;
+		}
+
+		if (nReadedPixels != num_pixels)
+		{
+			os::Printer::log("Image data seems to be corrupted, loading failed!", ELL_ERROR);
+			return 0;
+		}
+	}
+
+	//! Creates a software image from a byte array.
+	video::IImage* light_img = 0;
+
+	if (texDataHeader.PixelFormat == MY3D_PIXEL_FORMAT_24)
+	{
+		// 24 bit lightmap format
+		light_img = Driver->createImageFromData(
+		video::ECF_R8G8B8, 
+		core::dimension2d<s32>(texDataHeader.Width, texDataHeader.Height), 
+			data, true);
+	}
+	else
+	{
+		// 16 bit lightmap format
+		light_img = Driver->createImageFromData(
+			video::ECF_A1R5G5B5,
+			core::dimension2d<s32>(texDataHeader.Width, texDataHeader.Height),
+			data, true);
+	}
+
+	const bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
+	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+	video::ITexture* lmtex = Driver->addTexture(LightMapName, light_img);
+	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
+
+	light_img->drop();
+	return lmtex;
 }
 
 
@@ -834,8 +877,7 @@ SMeshBufferLightMap* CMY3DMeshFileLoader::getMeshBufferByMaterialIndex(u32 matIn
 }
 
 
-
-core::array<ISceneNode*>& CMY3DMeshFileLoader::getChildNodes()
+const core::array<ISceneNode*>& CMY3DMeshFileLoader::getChildNodes() const
 {
 	return ChildNodes;
 }
@@ -845,3 +887,4 @@ core::array<ISceneNode*>& CMY3DMeshFileLoader::getChildNodes()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_MY3D_LOADER_
+

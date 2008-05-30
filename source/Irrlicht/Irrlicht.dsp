@@ -1402,10 +1402,6 @@ SOURCE=.\CMY3DMeshFileLoader.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\CMY3DStuff.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\COBJMeshFileLoader.cpp
 # End Source File
 # Begin Source File

@@ -1825,10 +1825,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CMY3DStuff.h"
-					>
-				</File>
-				<File
 					RelativePath=".\COBJMeshFileLoader.cpp"
 					>
 				</File>
