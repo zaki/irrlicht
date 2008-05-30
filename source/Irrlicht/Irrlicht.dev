@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIR
 Includes=..\..\include;zlib
 Linker=-lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lopengl32_@@_
 Libs=
-UnitCount=606
+UnitCount=605
 Folders=doc,gui_impl,include,include/core,include/gui,include/io,include/scene,include/video,io_impl,other_impl,other_impl/extern,other_impl/extern/jpeglib,other_impl/extern/libpng,other_impl/extern/zlib,scene_impl,scene_impl/animators,scene_impl/collision,scene_impl/mesh,scene_impl/mesh/loaders,scene_impl/mesh/writers,scene_impl/nodes,scene_impl/nodes/particles,video_impl,"video_impl/Burning Video",video_impl/DirectX8,video_impl/DirectX9,video_impl/Null,video_impl/OpenGL,video_impl/Software
 ObjFiles=
 PrivateResource=
@@ -2160,8 +2160,8 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit214]
-FileName=CMY3DStuff.h
-Folder=scene_impl/mesh/loaders
+FileName=..\..\include\EGUIAlignment.h
+Folder=include/gui
 Compile=1
 CompileCpp=1
 Link=1
@@ -5978,16 +5978,6 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit594]
-FileName=..\..\include\EGUIAlignment.h
-Folder=include/gui
-Compile=1
-CompileCpp=1
-Link=1
-Priority=1000
-OverrideBuildCmd=0
-BuildCmd=
-
-[Unit595]
 FileName=..\..\include\IGUITable.h
 Folder=include/gui
 Compile=1
@@ -5997,7 +5987,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit596]
+[Unit595]
 FileName=CVolumeLightSceneNode.h
 CompileCpp=1
 Folder=scene_impl/nodes
@@ -6007,7 +5997,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit597]
+[Unit596]
 FileName=CVolumeLightSceneNode.cpp
 CompileCpp=1
 Folder=scene_impl/nodes
@@ -6017,7 +6007,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit598]
+[Unit597]
 FileName=..\..\include\IVolumeLightSceneNode.h
 CompileCpp=1
 Folder=include/scene
@@ -6027,7 +6017,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit599]
+[Unit598]
 FileName=CLWOMeshFileLoader.cpp
 CompileCpp=1
 Folder=scene_impl/mesh/loaders
@@ -6037,7 +6027,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit600]
+[Unit599]
 FileName=CLWOMeshFileLoader.h
 CompileCpp=1
 Folder=scene_impl/mesh/loaders
@@ -6047,7 +6037,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit601]
+[Unit600]
 FileName=..\..\include\ISceneNodeAnimatorCameraMaya.h
 CompileCpp=1
 Folder=include/scene
@@ -6057,7 +6047,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit602]
+[Unit601]
 FileName=..\..\include\ISceneNodeAnimatorCameraFPS.h
 CompileCpp=1
 Folder=include/scene
@@ -6067,7 +6057,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit603]
+[Unit602]
 FileName=CSceneNodeAnimatorCameraMaya.h
 Folder=scene_impl/animators
 Compile=1
@@ -6077,7 +6067,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit604]
+[Unit603]
 FileName=CSceneNodeAnimatorCameraFPS.cpp
 Folder=scene_impl/animators
 Compile=1
@@ -6087,7 +6077,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit605]
+[Unit604]
 FileName=CSceneNodeAnimatorCameraFPS.h
 CompileCpp=1
 Folder=scene_impl/animators
@@ -6097,7 +6087,7 @@ Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
-[Unit606]
+[Unit605]
 FileName=CSceneNodeAnimatorCameraMaya.cpp
 CompileCpp=1
 Folder=scene_impl/animators

@@ -39,13 +39,47 @@
 #include "irrString.h"
 #include "ISceneManager.h"
 
-#include "CMY3DStuff.h"
-
 namespace irr
 {
 namespace scene
 {
 
+//--------------------------------------------------------------------
+// byte-align structures
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
+#   pragma pack( push, packing )
+#   pragma pack( 1 )
+#   define PACK_STRUCT
+#elif defined( __GNUC__ )
+#   define PACK_STRUCT  __attribute__((packed))
+#else
+#   error compiler not supported
+#endif
+//----------------------------------------------------------------------
+struct SMyColor
+{   SMyColor () {;}
+    SMyColor (s32 __R, s32 __G, s32 __B, s32 __A)
+        : R(__R), G(__G), B(__B), A(__A) {}
+    s32 R, G, B, A;
+} PACK_STRUCT;
+
+// material header
+struct SMyMaterialHeader
+{   c8  Name[256];           // material name
+    u32 Index;
+    SMyColor AmbientColor;
+    SMyColor DiffuseColor;
+    SMyColor EmissiveColor;
+    SMyColor SpecularColor;
+    f32 Shininess;
+    f32 Transparency;
+    u32 TextureCount;        // texture count
+} PACK_STRUCT;
+
+// Default alignment
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
+#   pragma pack( pop, packing )
+#endif
 
 class CMY3DMeshFileLoader : public IMeshLoader
 {
@@ -60,18 +94,15 @@ public:
 
 	//! getting access to the nodes (with transparent material), creating
 	//! while loading .my3d file
-	core::array<ISceneNode*>& getChildNodes();
+	const core::array<ISceneNode*>& getChildNodes() const;
 
 private:
 
-	scene::SMesh* Mesh;
+	video::ITexture* readEmbeddedLightmap(io::IReadFile* file, char* namebuf);
 
 	video::IVideoDriver* Driver;
 	io::IFileSystem* FileSystem;
-	ISceneManager *SceneManager;
-
-	video::SColor SceneBackgrColor;
-	video::SColor SceneAmbientColor;
+	scene::ISceneManager* SceneManager;
 
 	struct SMyMaterialEntry
 	{
