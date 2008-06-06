@@ -615,7 +615,7 @@ typedef struct {
 #endif
 
 //! presents a surface in the client area
-void CIrrDeviceWinCE::present(video::IImage* image, s32 windowId, core::rect<s32>* src )
+void CIrrDeviceWinCE::present(video::IImage* image, void* windowId, core::rect<s32>* src)
 {
 	HWND hwnd = HWnd;
 	if ( windowId )
