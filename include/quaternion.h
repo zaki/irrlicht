@@ -528,13 +528,13 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 		return makeIdentity();
 	}
 
-	const vector3df c = v0.crossProduct(v1);
 	const f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
 	const f32 invs = 1.f / s;
+	const vector3df c = v0.crossProduct(v1)*invs;
 
-	X = c.X * invs;
-	Y = c.Y * invs;
-	Z = c.Z * invs;
+	X = c.X;
+	Y = c.Y;
+	Z = c.Z;
 	W = s * 0.5f;
 
 	return *this;
