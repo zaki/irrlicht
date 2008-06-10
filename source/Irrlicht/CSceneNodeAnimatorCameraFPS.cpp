@@ -153,16 +153,22 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	// set target
 
-	target.set(0,0,1);
+	target.set(0,0,100);
+	core::vector3df movedir = target;
 
 	core::matrix4 mat;
 	mat.setRotationDegrees(core::vector3df(relativeRotation.X, relativeRotation.Y, 0));
 	mat.transformVect(target);
 
-	core::vector3df movedir = target;
-
 	if (NoVerticalMovement)
-		movedir.Y = 0.f;
+	{
+		mat.setRotationDegrees(core::vector3df(0, relativeRotation.Y, 0));
+		mat.transformVect(movedir);
+	}
+	else
+	{
+		movedir = target;
+	}
 
 	movedir.normalize();
 

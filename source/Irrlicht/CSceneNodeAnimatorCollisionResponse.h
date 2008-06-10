@@ -81,6 +81,9 @@ namespace scene
 		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return ESNAT_COLLISION_RESPONSE; }
 
 	private:
+
+		void setNode(ISceneNode* node);
+
 		core::vector3df LastPosition;
 		core::vector3df Radius;
 		core::vector3df Gravity;
@@ -93,6 +96,8 @@ namespace scene
 		u32 FallStartTime;
 		f32 SlidingSpeed;
 		bool Falling;
+		bool IsCamera;
+		bool AnimateCameraTarget;
 
 		core::triangle3df RefTriangle;
 	};
