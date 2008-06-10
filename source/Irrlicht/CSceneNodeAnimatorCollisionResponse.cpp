@@ -5,6 +5,7 @@
 #include "CSceneNodeAnimatorCollisionResponse.h"
 #include "ISceneCollisionManager.h"
 #include "ISceneManager.h"
+#include "ICameraSceneNode.h"
 #include "os.h"
 
 namespace irr
@@ -22,7 +23,7 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 		f32 slidingSpeed)
 : Radius(ellipsoidRadius), Gravity(gravityPerSecond / 1000.0f), Translation(ellipsoidTranslation),
 	World(world), Object(object), SceneManager(scenemanager),
-	SlidingSpeed(slidingSpeed), Falling(false)
+	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false), AnimateCameraTarget(true)
 {
 
 	#ifdef _DEBUG
@@ -32,11 +33,7 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 	if (World)
 		World->grab();
 
-	if (Object)
-		LastPosition = Object->getPosition();
-
-	LastTime = os::Timer::getTime();
-	FallStartTime = LastTime;
+	setNode(Object);
 }
 
 
@@ -138,7 +135,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 {
 	if (node != Object)
 	{
-		os::Printer::log("CollisionResponseAnimator only works with same scene node as set as object during creation", ELL_ERROR);
+		setNode(node);
 		return;
 	}
 
@@ -190,7 +187,29 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		Object->setPosition(pos);
 	}
 
+	// move camera target
+	if (AnimateCameraTarget && IsCamera)
+	{
+		const core::vector3df diff = Object->getPosition() - LastPosition - vel;
+		ICameraSceneNode* cam = (ICameraSceneNode*)Object;
+		cam->setTarget(cam->getTarget() + diff);
+	}
+
 	LastPosition = Object->getPosition();
+}
+
+void CSceneNodeAnimatorCollisionResponse::setNode(ISceneNode* node)
+{
+	Object = node;
+
+	if (Object)
+	{
+		LastPosition = Object->getPosition();
+		IsCamera = (Object->getType() == ESNT_CAMERA);
+	}
+
+	LastTime = os::Timer::getTime();
+	FallStartTime = LastTime;
 }
 
 //! Writes attributes of the scene node animator.
@@ -199,6 +218,7 @@ void CSceneNodeAnimatorCollisionResponse::serializeAttributes(io::IAttributes* o
 	out->addVector3d("Radius", Radius);
 	out->addVector3d("Gravity", Gravity);
 	out->addVector3d("Translation", Translation);
+	out->addBool("AnimateCameraTarget", AnimateCameraTarget);
 }
 
 //! Reads attributes of the scene node animator.
@@ -207,6 +227,7 @@ void CSceneNodeAnimatorCollisionResponse::deserializeAttributes(io::IAttributes*
 	Radius = in->getAttributeAsVector3d("Radius");
 	Gravity = in->getAttributeAsVector3d("Gravity");
 	Translation = in->getAttributeAsVector3d("Translation");
+	AnimateCameraTarget = in->getAttributeAsBool("AnimateCameraTarget");
 }
 
 
