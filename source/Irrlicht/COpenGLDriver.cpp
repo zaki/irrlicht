@@ -303,6 +303,9 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 
 	glViewport(0, 0, screenSize.Width, screenSize.Height); // Reset The Current Viewport
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
+// This needs an SMaterial flag to enable/disable later on, but should become default sometimes
+//	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+//	glEnable(GL_COLOR_MATERIAL);
 #ifdef GL_EXT_separate_specular_color
 	if (FeatureAvailable[IRR_EXT_separate_specular_color])
 		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
@@ -315,15 +318,14 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace( GL_CW );
-// currently disabled, because often in software, and thus very slow
-	if (AntiAlias) {
+	if (AntiAlias)
+	{
 		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 		glEnable(GL_LINE_SMOOTH);
 	}
+// currently disabled, because often in software, and thus very slow
 //	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
-//	glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 //	glEnable(GL_POINT_SMOOTH);
-//	glEnable(GL_LINE_SMOOTH);
 
 	if (AntiAlias && MultiSamplingExtension)
 		glEnable(GL_MULTISAMPLE_ARB);
@@ -2583,21 +2585,34 @@ IImage* COpenGLDriver::createScreenShot()
 		return 0;
 	}
 
+	// allows to read pixels in top-to-bottom order
+#ifdef GL_MESA_pack_invert
+	if (FeatureAvailable[IRR_MESA_pack_invert])
+		glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
+#endif
+
 	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGB, GL_UNSIGNED_BYTE, pPixels);
 
-	// opengl images are horizontally flipped, so we have to fix that here.
-	s32 pitch=newImage->getPitch();
-	u8* p2 = pPixels + (ScreenSize.Height - 1) * pitch;
-	u8* tmpBuffer = new u8[pitch];
-	for (s32 i=0; i < ScreenSize.Height; i += 2)
+#ifdef GL_MESA_pack_invert
+	if (FeatureAvailable[IRR_MESA_pack_invert])
+		glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
+	else
+#endif
 	{
-		memcpy(tmpBuffer, pPixels, pitch);
-		memcpy(pPixels, p2, pitch);
-		memcpy(p2, tmpBuffer, pitch);
-		pPixels += pitch;
-		p2 -= pitch;
+		// opengl images are horizontally flipped, so we have to fix that here.
+		s32 pitch=newImage->getPitch();
+		u8* p2 = pPixels + (ScreenSize.Height - 1) * pitch;
+		u8* tmpBuffer = new u8[pitch];
+		for (s32 i=0; i < ScreenSize.Height; i += 2)
+		{
+			memcpy(tmpBuffer, pPixels, pitch);
+			memcpy(pPixels, p2, pitch);
+			memcpy(p2, tmpBuffer, pitch);
+			pPixels += pitch;
+			p2 -= pitch;
+		}
+		delete [] tmpBuffer;
 	}
-	delete [] tmpBuffer;
 
 	newImage->unlock();
 
