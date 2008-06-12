@@ -348,6 +348,9 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	// set fog mode
 	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
+	// create matrix for flipping textures
+	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
+
 	return true;
 }
 
@@ -509,9 +512,11 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			glLoadIdentity();
 		else
 		{
-			createGLTextureMatrix(glmat, mat);
 			if (isRTT)
-				glmat[5] *= -1.0f;
+				createGLTextureMatrix(glmat, mat * TextureFlipMatrix);
+			else
+				createGLTextureMatrix(glmat, mat);
+
 			glLoadMatrixf(glmat);
 		}
 		break;

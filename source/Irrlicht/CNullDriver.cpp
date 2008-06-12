@@ -1277,6 +1277,9 @@ void CNullDriver::updateAllHardwareBuffers()
 		if (Link->LastUsed>20000)
 		{
 			deleteHardwareBuffer(Link);
+
+			// todo: needs better fix
+			Iterator = HWBufferMap.getParentFirstIterator();
 		}
 	}
 }
