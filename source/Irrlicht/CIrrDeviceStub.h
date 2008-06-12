@@ -7,6 +7,7 @@
 
 #include "IrrlichtDevice.h"
 #include "IImagePresenter.h"
+#include "SIrrCreationParameters.h"
 #include "CVideoModeList.h"
 
 namespace irr
@@ -52,7 +53,7 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceStub(const char* version, IEventReceiver* resv);
+		CIrrDeviceStub(const SIrrlichtCreationParameters& param);
 
 		//! destructor
 		virtual ~CIrrDeviceStub();
@@ -114,12 +115,13 @@ namespace irr
 		scene::ISceneManager* SceneManager;
 		ITimer* Timer;
 		gui::ICursorControl* CursorControl;
-		video::CVideoModeList VideoModeList;
 		IEventReceiver* UserReceiver;
 		CLogger* Logger;
 		IOSOperator* Operator;
 		io::IFileSystem* FileSystem;
 		scene::ISceneManager* InputReceivingSceneManager;
+		video::CVideoModeList VideoModeList;
+		SIrrlichtCreationParameters CreationParams;
 	};
 
 } // end namespace irr

@@ -30,9 +30,8 @@ namespace irr
 			core::dimension2d<s32> windowSize, u32 bits,
 			bool fullscreen, bool stencilbuffer, bool vsync, 
 			bool antiAlias, bool highPrecisionFPU,
-			IEventReceiver* receiver,
 			HWND window,
-			const char* version);
+			const SIrrlichtCreationParameters& params);
 
 		//! destructor
 		virtual ~CIrrDeviceWinCE();

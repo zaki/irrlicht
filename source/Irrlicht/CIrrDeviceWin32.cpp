@@ -283,10 +283,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(video::E_DRIVER_TYPE driverType,
 				 bool stencilbuffer, bool vsync,
 				 bool antiAlias,
 				 bool highPrecisionFPU,
-				 IEventReceiver* receiver,
 				 HWND externalWindow,
-				 const char* version)
-: CIrrDeviceStub(version, receiver), HWnd(0), ChangedToFullScreen(false),
+				 const SIrrlichtCreationParameters& params)
+: CIrrDeviceStub(param), HWnd(0), ChangedToFullScreen(false),
 	FullScreen(fullscreen), IsNonNTWindows(false), Resized(false),
 	ExternalWindow(false), Win32CursorControl(0)
 {
@@ -938,9 +937,8 @@ IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 		parameters.Vsync,
 		parameters.AntiAlias,
 		parameters.HighPrecisionFPU,
-		parameters.EventReceiver,
 		reinterpret_cast<HWND>(parameters.WindowId),
-		parameters.SDK_version_do_not_use);
+		parameters);
 
 	if (dev && !dev->getVideoDriver() && parameters.DriverType != video::EDT_NULL)
 	{

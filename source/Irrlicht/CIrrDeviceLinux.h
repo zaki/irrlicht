@@ -47,10 +47,7 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceLinux(video::E_DRIVER_TYPE deviceType,
-			const core::dimension2d<s32>& windowSize, u32 bits,
-			bool fullscreen, bool stencilbuffer, bool vsync, bool antiAlias, IEventReceiver* receiver,
-			Window window, const char* version);
+		CIrrDeviceLinux(const SIrrlichtCreationParameters& param);
 
 		//! destructor
 		virtual ~CIrrDeviceLinux();
@@ -87,11 +84,9 @@ namespace irr
 	private:
 
 		//! create the driver
-		void createDriver(const core::dimension2d<s32>& windowSize,
-					bool vsync);
+		void createDriver();
 
-		bool createWindow(const core::dimension2d<s32>& windowSize, u32 bits,
-				Window externalWindow);
+		bool createWindow();
 
 		void createKeyMap();
 
@@ -308,11 +303,6 @@ namespace irr
 		GLXContext Context;
 		#endif
 #endif
-		bool Fullscreen;
-		bool StencilBuffer;
-		bool AntiAlias;
-		video::E_DRIVER_TYPE DriverType;
-
 		u32 Width, Height, Depth;
 		bool Close;
 		bool WindowActive;
