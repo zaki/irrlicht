@@ -17,10 +17,10 @@ namespace irr
 {
 
 //! constructor
-CIrrDeviceStub::CIrrDeviceStub(const char* version, IEventReceiver* recv)
+CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 : IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0), 
-	Timer(0), CursorControl(0), UserReceiver(recv), Logger(0), Operator(0),
-	FileSystem(io::createFileSystem()), InputReceivingSceneManager(0)
+	Timer(0), CursorControl(0), UserReceiver(params.EventReceiver), Logger(0), Operator(0),
+	FileSystem(0), InputReceivingSceneManager(0), CreationParams(params)
 {
 	Timer = new CTimer();
 	if (os::Printer::Logger)
@@ -37,11 +37,12 @@ CIrrDeviceStub::CIrrDeviceStub(const char* version, IEventReceiver* recv)
 
 	os::Printer::Logger = Logger;
 
+	FileSystem = io::createFileSystem();
 	core::stringc s = "Irrlicht Engine version ";
 	s.append(getVersion());
 	os::Printer::log(s.c_str(), ELL_INFORMATION);
 
-	checkVersion(version);
+	checkVersion(params.SDK_version_do_not_use);
 }
 
 

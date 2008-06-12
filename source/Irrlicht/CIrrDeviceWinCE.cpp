@@ -282,10 +282,9 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(video::E_DRIVER_TYPE driverType,
 				 bool stencilbuffer, bool vsync,
 				 bool antiAlias,
 				 bool highPrecisionFPU,
-				 IEventReceiver* receiver,
 				 HWND externalWindow,
-				 const char* version)
-: CIrrDeviceStub(version, receiver), HWnd(0), ChangedToFullScreen(false),
+				 const SIrrlichtCreationParameters& params)
+: CIrrDeviceStub(params), HWnd(externalWindow), ChangedToFullScreen(false),
 	FullScreen(fullscreen), Resized(false),
 	ExternalWindow(false), Win32CursorControl(0)
 {
@@ -303,7 +302,7 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(video::E_DRIVER_TYPE driverType,
 	#endif
 
 	// create the window, only if we do not use the null device
-	if (driverType != video::EDT_NULL && externalWindow==0)
+	if (driverType != video::EDT_NULL && HWnd==0)
 	{
 		const wchar_t* ClassName = L"CIrrDeviceWinCE";
 
@@ -361,7 +360,6 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(video::E_DRIVER_TYPE driverType,
 	// attach external window
 	if (externalWindow)
 	{
-		HWnd = externalWindow;
 		RECT r;
 		GetWindowRect(HWnd, &r);
 		windowSize.Width = r.right - r.left;
@@ -789,9 +787,8 @@ IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 		parameters.Vsync,
 		parameters.AntiAlias,
 		parameters.HighPrecisionFPU,
-		parameters.EventReceiver,
 		reinterpret_cast<HWND>(parameters.WindowId),
-		parameters.SDK_version_do_not_use);
+		parameters);
 
 	if (dev && !dev->getVideoDriver() && parameters.DriverType != video::EDT_NULL)
 	{

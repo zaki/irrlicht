@@ -37,17 +37,10 @@ namespace irr
 const char* wmDeleteWindow = "WM_DELETE_WINDOW";
 
 //! constructor
-CIrrDeviceSDL::CIrrDeviceSDL(video::E_DRIVER_TYPE driverType,
-				const core::dimension2d<s32>& windowSize,
-				u32 bits,
-				bool fullscreen, bool stencilbuffer, bool vsync,
-				bool antiAlias, IEventReceiver* receiver,
-				void* windowID, const char* version)
-	: CIrrDeviceStub(version, receiver), Depth(bits),
-	Fullscreen(fullscreen), Stencilbuffer(stencilbuffer), Vsync(vsync),
-	AntiAlias(antiAlias), Resizeable(false),
-	Screen((SDL_Surface*)windowID), SDL_Flags(SDL_HWSURFACE|SDL_ANYFORMAT),
-	Width(windowSize.Width), Height(windowSize.Height), Close(0),
+CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
+	: CIrrDeviceStub(param), Resizeable(false),
+	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_HWSURFACE|SDL_ANYFORMAT),
+	Width(param.WindowSize.Width), Height(param.WindowSize.Height), Close(0),
 	WindowActive(false)
 {
 	#ifdef _DEBUG
@@ -56,7 +49,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(video::E_DRIVER_TYPE driverType,
 
 	// Initialize SDL... Timer for sleep, video for the obvious, and
 	// noparachute prevents SDL from catching fatal errors.
-	if ( SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE ) < 0 )
+	if (SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE ) < 0)
 	{
 		os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
 		Close = 1;
@@ -81,29 +74,28 @@ CIrrDeviceSDL::CIrrDeviceSDL(video::E_DRIVER_TYPE driverType,
 	// enable key to character translation
 	SDL_EnableUNICODE(1);
 
-	if ( Fullscreen )
+	if ( CreationParams.Fullscreen )
 		SDL_Flags |= SDL_FULLSCREEN;
-	if (driverType == video::EDT_OPENGL)
+	if (CreationParams.DriverType == video::EDT_OPENGL)
 		SDL_Flags |= SDL_OPENGL;
 	else
 		SDL_Flags |= SDL_DOUBLEBUF;
 	// create window
-	if (driverType != video::EDT_NULL)
+	if (CreationParams.DriverType != video::EDT_NULL)
 	{
 		// create the window, only if we do not use the null device
-		createWindow(driverType);
+		createWindow();
 	}
 
 	// create cursor control
 	CursorControl = new CCursorControl(this);
 
 	// create driver
-	createDriver(driverType, windowSize);
+	createDriver();
 
 	if (VideoDriver)
 		createGUIAndScene();
 }
-
 
 
 //! destructor
@@ -115,15 +107,14 @@ CIrrDeviceSDL::~CIrrDeviceSDL()
 }
 
 
-
-bool CIrrDeviceSDL::createWindow(video::E_DRIVER_TYPE driverType)
+bool CIrrDeviceSDL::createWindow()
 {
 	if ( Close )
 		return false;
 
-	if (driverType == video::EDT_OPENGL)
+	if (CreationParams.DriverType == video::EDT_OPENGL)
 	{
-		if (Depth==16)
+		if (CreationParams.Bits==16)
 		{
 			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
 			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
@@ -135,12 +126,12 @@ bool CIrrDeviceSDL::createWindow(video::E_DRIVER_TYPE driverType)
 			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
 			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
 		}
-		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, Depth);
+		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.Bits);
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 	}
 
 	if ( !Screen )
-		Screen = SDL_SetVideoMode( Width, Height, Depth, SDL_Flags );
+		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 	if ( !Screen )
 	{
 		os::Printer::log( "Could not initialize display!" );
@@ -152,10 +143,9 @@ bool CIrrDeviceSDL::createWindow(video::E_DRIVER_TYPE driverType)
 
 
 //! create the driver
-void CIrrDeviceSDL::createDriver(video::E_DRIVER_TYPE driverType,
-				const core::dimension2d<s32>& windowSize)
+void CIrrDeviceSDL::createDriver()
 {
-	switch(driverType)
+	switch(CreationParams.DriverType)
 	{
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
@@ -164,7 +154,7 @@ void CIrrDeviceSDL::createDriver(video::E_DRIVER_TYPE driverType,
 
 	case video::EDT_SOFTWARE:
 		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
-		VideoDriver = video::createSoftwareDriver(windowSize, Fullscreen, FileSystem, this);
+		VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 		os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
@@ -172,7 +162,7 @@ void CIrrDeviceSDL::createDriver(video::E_DRIVER_TYPE driverType,
 		
 	case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-		VideoDriver = video::createSoftwareDriver2(windowSize, Fullscreen, FileSystem, this);
+		VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 		os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
 		#endif
@@ -180,14 +170,14 @@ void CIrrDeviceSDL::createDriver(video::E_DRIVER_TYPE driverType,
 
 	case video::EDT_OPENGL:
 	#ifdef _IRR_COMPILE_WITH_OPENGL_
-		VideoDriver = video::createOpenGLDriver(windowSize, Fullscreen, Stencilbuffer, FileSystem, Vsync, AntiAlias);
+		VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, CreationParams.Fullscreen, CreationParams.Stencilbuffer, FileSystem, CreationParams.Vsync, CreationParams.AntiAlias);
 	#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 	#endif
 		break;
 
 	case video::EDT_NULL:
-		VideoDriver = video::createNullDriver(FileSystem, windowSize);
+		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 		break;
 
 	default:
@@ -388,7 +378,7 @@ void CIrrDeviceSDL::setResizeAble(bool resize)
 		else
 			SDL_Flags &= ~SDL_RESIZABLE;
 		SDL_FreeSurface(Screen);
-		Screen = SDL_SetVideoMode( Width, Height, Depth, SDL_Flags );
+		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 		Resizeable = resize;
 	}
 }
@@ -543,17 +533,7 @@ void CIrrDeviceSDL::createKeyMap()
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
-	CIrrDeviceSDL* dev = new CIrrDeviceSDL(
-		param.DriverType,
-		param.WindowSize,
-		param.Bits,
-		param.Fullscreen,
-		param.Stencilbuffer,
-		param.Vsync,
-		param.AntiAlias,
-		param.EventReceiver,
-		param.WindowId,
-		param.SDK_version_do_not_use);
+	CIrrDeviceSDL* dev = new CIrrDeviceSDL(param);
 
 	if (dev && !dev->getVideoDriver() && param.DriverType != video::EDT_NULL)
 	{

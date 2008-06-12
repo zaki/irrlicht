@@ -26,11 +26,7 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceSDL(video::E_DRIVER_TYPE deviceType, 
-			const core::dimension2d<s32>& windowSize, u32 bits,
-			bool fullscreen, bool stencilbuffer, bool vsync,
-			bool antiAlias, IEventReceiver* receiver,
-			void* windowID, const char* version);
+		CIrrDeviceSDL(const SIrrlichtCreationParameters& param);
 
 		//! destructor
 		virtual ~CIrrDeviceSDL();
@@ -156,19 +152,13 @@ namespace irr
 	private:
 
 		//! create the driver
-		void createDriver(video::E_DRIVER_TYPE driverType,
-			const core::dimension2d<s32>& windowSize);
+		void createDriver();
 
-		bool createWindow(video::E_DRIVER_TYPE driverType);
+		bool createWindow();
 
 		void createKeyMap();
 
 		s32 MouseX, MouseY;
-		u32 Depth;
-		bool Fullscreen;
-		bool Stencilbuffer;
-		bool Vsync;
-		bool AntiAlias;
 		bool Resizeable;
 		
 		SDL_Surface* Screen;
