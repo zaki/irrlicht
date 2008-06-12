@@ -389,6 +389,8 @@ namespace video
 
 		core::stringc vendorName;
 
+		core::matrix4 TextureFlipMatrix;
+
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
