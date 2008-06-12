@@ -69,7 +69,7 @@ private:
 
 CMainMenu::CMainMenu()
 : startButton(0), device(0), selected(2), start(false), fullscreen(true),
-	music(true), shadows(false), additive(false), transparent(true), vsync(true)
+	music(true), shadows(false), additive(false), transparent(true), vsync(false)
 {
 }
 

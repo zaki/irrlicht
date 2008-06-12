@@ -324,11 +324,11 @@ namespace video
 		\param vertices Pointer to array of vertices.
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
-		\param triangleCount Amount of Triangles.
+		\param primCount Amount of Primitives
 		\param vType Vertex type, e.g. EVT_STANDARD for S3DVertex.
 		\param pType Primitive type, e.g. EPT_TRIANGLE_FAN for a triangle fan. */
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-				const u16* indexList, u32 triangleCount,
+				const u16* indexList, u32 primCount,
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType) = 0;
 
 		//! Draws an indexed triangle list.

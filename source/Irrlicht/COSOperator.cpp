@@ -171,9 +171,9 @@ bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 		return false;
 
 	if (Total)
-		*Total = ((ps*(long long)pp)>>10);
+		*Total = (u32)((ps*(long long)pp)>>10);
 	if (Avail)
-		*Avail = ((ps*(long long)ap)>>10);
+		*Avail = (u32)((ps*(long long)ap)>>10);
 	return true;
 #else
 	// TODO: implement for non-availablity of symbols/features

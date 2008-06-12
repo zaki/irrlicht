@@ -816,7 +816,7 @@ bool CIrrDeviceLinux::run()
 					SKeyMap mp;
 					//mp.X11Key = XLookupKeysym(&event.xkey, 0);
 					char buf[5]="\0\0\0\0";
-					XLookupString (&event.xkey, buf, 4, &mp.X11Key, NULL) ;
+					XLookupString(&event.xkey, buf, 4, &mp.X11Key, NULL);
 
 					s32 idx = KeyMap.binary_search(mp);
 
@@ -896,6 +896,7 @@ void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 	XwcTextListToTextProperty(display, const_cast<wchar_t**>(&text), 1, XStdICCTextStyle, &txt);
 	XSetWMName(display, window, &txt);
 	XSetWMIconName(display, window, &txt);
+	XFree(txt.value);
 #endif
 }
 

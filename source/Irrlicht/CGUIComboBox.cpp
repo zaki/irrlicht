@@ -277,16 +277,12 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 
 				// send to list box
-				if (ListBox && ListBox->getAbsolutePosition().isPointInside(p) &&
-					ListBox->OnEvent(event))
-					return true;
-				else
-				{
+				if (!(ListBox &&
+						ListBox->getAbsolutePosition().isPointInside(p) &&
+						ListBox->OnEvent(event)))
 					openCloseMenu();
-					return true;
-				}
+				return true;
 			}
-			break;
 		case EMIE_MOUSE_WHEEL:
 			{
 				s32 oldSelected = Selected;
