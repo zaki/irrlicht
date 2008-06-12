@@ -53,7 +53,7 @@ Changes in version 1.5 (... 2008)
    - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
 
 -------------------------------------------
-Changes in version 1.4.1 (??.5.2008)
+Changes in version 1.4.1 (04 Jun 2008)
 
  - MD3 meshes are movable again.
 
@@ -141,7 +141,7 @@ Changes in version 1.4.1 (??.5.2008)
  - Bugfix getCurrentRenderTargetSize in D3D drivers. Due to signature differences a wrong virtual method was chosen. Thanks to Jiang for finding it.
 
 -------------------------------------------
-Changes in version 1.4 (30.11.2007)
+Changes in version 1.4 (30 Nov 2007)
 
  - Major API change: All material properties which are available per texture layer (curently texture, texture matrix, texture filters, and texture wrap mode) are separated into a new struct SMaterialLayer. You can access them via the array TextureLayer[] in SMaterial. The texture matrix methods in SMaterial are still alive, and also textures can be accessed via methods in SMaterial now. But still, many places in user code need some update (usually changing material.Textures[i] to material.TextureLayer[i].Texture etc.)
 

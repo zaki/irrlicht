@@ -736,7 +736,7 @@ void CDemo::createParticleImpacts()
 				if (sound)
 				{
 					// adjust max value a bit to make to sound of an impact louder
-					sound->setMinDistance(200);
+					sound->setMinDistance(400);
 					sound->drop();
 				}
 			}

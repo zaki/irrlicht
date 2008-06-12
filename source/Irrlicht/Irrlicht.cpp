@@ -24,7 +24,7 @@ namespace irr
 	//! stub for calling createDeviceEx
 	IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(video::E_DRIVER_TYPE driverType,
 			const core::dimension2d<s32>& windowSize,
-			u32 bits, bool fullscreen, 
+			u32 bits, bool fullscreen,
 			bool stencilbuffer, bool vsync, IEventReceiver* res,
 			const char* version)
 	{
@@ -35,7 +35,7 @@ namespace irr
 		p.Fullscreen = fullscreen;
 		p.Stencilbuffer = stencilbuffer;
 		p.Vsync = vsync;
-		p.EventReceiver = res;	
+		p.EventReceiver = res;
 		p.SDK_version_do_not_use = version;
 
 		return createDeviceEx(p);
@@ -46,8 +46,8 @@ namespace irr
 
 #if defined(_IRR_WINDOWS_API_)
 
-BOOL APIENTRY DllMain( HANDLE hModule, 
-                       DWORD  ul_reason_for_call, 
+BOOL APIENTRY DllMain( HANDLE hModule,
+                       DWORD  ul_reason_for_call,
                        LPVOID lpReserved )
 {
 	// _crtBreakAlloc = 139;
