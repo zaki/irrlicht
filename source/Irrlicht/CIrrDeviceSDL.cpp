@@ -101,7 +101,8 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 //! destructor
 CIrrDeviceSDL::~CIrrDeviceSDL()
 {
-	if (Screen)
+	// only free surfaces created by us
+	if (Screen && !param.WindowId)
 		SDL_FreeSurface(Screen);
 	SDL_Quit();
 }
@@ -128,7 +129,7 @@ bool CIrrDeviceSDL::createWindow()
 			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
 			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel?8:0 );
 		}
-		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.Bits);
+		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 	}
 

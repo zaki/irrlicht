@@ -70,13 +70,8 @@ static bool firstLaunch = true;
 namespace irr
 {
 //! constructor
-CIrrDeviceMacOSX::CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType,
-				const core::dimension2d<s32>& windowSize,
-				u32 bits, bool fullscreen,
-				bool sbuffer, bool vsync,
-				bool antiAlias, IEventReceiver* receiver,
-				const char* version)
- : CIrrDeviceStub(version, receiver), DriverType(driverType), stencilbuffer(sbuffer), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL)
+CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
+ : CIrrDeviceStub(param), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL)
 {
 	struct utsname name;
 	NSString	*path;
@@ -104,9 +99,10 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(video::E_DRIVER_TYPE driverType,
 	os::Printer::log(name.version,ELL_INFORMATION);
 
 	initKeycodes();
-	if (driverType != video::EDT_NULL) createWindow(windowSize,bits,fullscreen,vsync,stencilbuffer, antiAlias);
-	CursorControl = new CCursorControl(windowSize, this);
-	createDriver(driverType,windowSize,bits,fullscreen,stencilbuffer,vsync,antiAlias);
+	if (CreationParams.DriverType != video::EDT_NULL)
+		createWindow();
+	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
+	createDriver();
 	createGUIAndScene();
 }
 
@@ -147,7 +143,7 @@ void CIrrDeviceMacOSX::closeDevice()
 	_cglcontext = NULL;
 }
 
-bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& windowSize, irr::u32 bits, bool fullscreen, bool vsync, bool stencilBuffer, bool antiAlias)
+bool CIrrDeviceMacOSX::createWindow()
 {
 	int				index;
 	CGDisplayErr			error;
@@ -160,23 +156,21 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 	NSOpenGLPixelFormatAttribute	windowattribs[32];
 	CFDictionaryRef			displaymode,olddisplaymode;
 	long				numPixelFormats,newSwapInterval;
-	int alphaSize = 4, depthSize = 16;
+	int alphaSize = CreationParams.WithAlphaChannel?4:0, depthSize = CreationParams.ZBufferBits;
 	
-	if (bits == 32) {
+	if (CreationParams.WithAlphaChannel && (CreationParams.Bits == 32))
 		alphaSize = 8;
-		depthSize = 32;
-	}
 
 	result = false;
 	display = CGMainDisplayID();
 	_screenWidth = (int) CGDisplayPixelsWide(display);
 	_screenHeight = (int) CGDisplayPixelsHigh(display);
 	
-	VideoModeList.setDesktop((s32)bits,core::dimension2d<s32>(_screenWidth, _screenHeight));
+	VideoModeList.setDesktop(CreationParams.Bits,core::dimension2d<s32>(_screenWidth, _screenHeight));
 
-	if (!fullscreen)
+	if (!CreationParams.Fullscreen)
 	{
-		_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,windowSize.Width,windowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
+		_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
 		if (_window != NULL)
 		{
 			index = 0;
@@ -186,18 +180,18 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 			windowattribs[index++] = NSOpenGLPFADepthSize;
 			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)depthSize;
 			windowattribs[index++] = NSOpenGLPFAColorSize;
-			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)bits;
+			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)CreationParams.Bits;
 			windowattribs[index++] = NSOpenGLPFAAlphaSize;
 			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)alphaSize;
 
-			if (antiAlias) {
+			if (CreationParams.AntiAlias) {
 				windowattribs[index++] = NSOpenGLPFASampleBuffers;
 				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)1;
 				windowattribs[index++] = NSOpenGLPFASamples;
 				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)2;
 			}
 
-			if (stencilBuffer)
+			if (CreationParams.StencilBuffer)
 			{
 				windowattribs[index++] = NSOpenGLPFAStencilSize;
 				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)1;
@@ -222,15 +216,15 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 				[(NSWindow *)_window makeKeyAndOrderFront:nil];
 
 				_cglcontext = (CGLContextObj) [(NSOpenGLContext *)_oglcontext CGLContextObj];
-				_width = windowSize.Width;
-				_height = windowSize.Height;
+				_width = CreationParams.WindowSize.Width;
+				_height = CreationParams.WindowSize.Height;
 				result = true;
 			}
 		}
 	}
 	else
 	{
-		displaymode = CGDisplayBestModeForParameters(display,bits,windowSize.Width,windowSize.Height,NULL);
+		displaymode = CGDisplayBestModeForParameters(display,CreationParams.Bits,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height,NULL);
 		if (displaymode != NULL)
 		{
 			olddisplaymode = CGDisplayCurrentMode(display);
@@ -252,18 +246,18 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 					fullattribs[index++] = kCGLPFADepthSize;
 					fullattribs[index++] = (CGLPixelFormatAttribute)depthSize;
 					fullattribs[index++] = kCGLPFAColorSize;
-					fullattribs[index++] = (CGLPixelFormatAttribute)bits;
+					fullattribs[index++] = (CGLPixelFormatAttribute)CreationParams.Bits;
 					fullattribs[index++] = kCGLPFAAlphaSize;
 					fullattribs[index++] = (CGLPixelFormatAttribute)alphaSize;
 
-					if (antiAlias) {
+					if (CreationParams.AntiAlias) {
 						fullattribs[index++] = kCGLPFASampleBuffers;
 						fullattribs[index++] = (CGLPixelFormatAttribute)1;
 						fullattribs[index++] = kCGLPFASamples;
 						fullattribs[index++] = (CGLPixelFormatAttribute)2;
 					}
 
-					if (stencilBuffer)
+					if (CreationParams.StencilBuffer)
 					{
 						fullattribs[index++] = kCGLPFAStencilSize;
 						fullattribs[index++] = (CGLPixelFormatAttribute)1;
@@ -296,7 +290,7 @@ bool CIrrDeviceMacOSX::createWindow(const irr::core::dimension2d<irr::s32>& wind
 		if (_window == NULL)
 			SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
 		CGLSetCurrentContext(_cglcontext);
-		newSwapInterval = (vsync) ? 1 : 0;
+		newSwapInterval = (CreationParams.Vsync) ? 1 : 0;
 		CGLSetParameter(_cglcontext,kCGLCPSwapInterval,&newSwapInterval);
 		glViewport(0,0,_width,_height);
 		glMatrixMode(GL_PROJECTION);
@@ -316,13 +310,13 @@ void CIrrDeviceMacOSX::setResize(int width,int height)
 	getVideoDriver()->OnResize(core::dimension2d<s32>(width, height));
 }
 
-void CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::dimension2d<s32>& windowSize,u32 bits,bool fullscreen,bool stencilbuffer, bool vsync, bool antiAlias)
+void CIrrDeviceMacOSX::createDriver()
 {
-	switch (driverType)
+	switch (CreationParams.DriverType)
 	{
 		case video::EDT_SOFTWARE:
 		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
-			VideoDriver = video::createSoftwareDriver(windowSize, fullscreen, FileSystem, this);
+			VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 			os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
@@ -330,7 +324,7 @@ void CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::
 
 		case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-			VideoDriver = video::createSoftwareDriver2(windowSize, fullscreen, FileSystem, this);
+			VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 			os::Printer::log("Burning's video driver was not compiled in.", ELL_ERROR);
 		#endif
@@ -338,7 +332,7 @@ void CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::
 
 		case video::EDT_OPENGL:
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-			VideoDriver = video::createOpenGLDriver(windowSize, this, fullscreen, stencilbuffer, FileSystem, vsync, antiAlias);
+			VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, this, CreationParams.Fullscreen, CreationParams.Stencilbuffer, FileSystem, CreationParams.Vsync, creationParams.AntiAlias);
 		#else
 			os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 		#endif
@@ -350,7 +344,7 @@ void CIrrDeviceMacOSX::createDriver(video::E_DRIVER_TYPE driverType,const core::
 			break;
 
 		case video::EDT_NULL:
-			VideoDriver = video::createNullDriver(FileSystem, windowSize);
+			VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 			break;
 
 		default:
@@ -702,16 +696,7 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
-	CIrrDeviceMacOSX* dev = new CIrrDeviceMacOSX(
-		param.DriverType,
-		param.WindowSize,
-		param.Bits,
-		param.Fullscreen,
-		param.Stencilbuffer,
-		param.Vsync,
-		param.AntiAlias,
-		param.EventReceiver,
-		param.SDK_version_do_not_use);
+	CIrrDeviceMacOSX* dev = new CIrrDeviceMacOSX(param);
 
 	if (dev && !dev->getVideoDriver() && param.DriverType != video::EDT_NULL)
 	{

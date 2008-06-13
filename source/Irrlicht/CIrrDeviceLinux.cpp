@@ -283,7 +283,7 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_GREEN_SIZE, 4,
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
-					GLX_DEPTH_SIZE, 16,
+					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
 					GLX_DOUBLEBUFFER, GL_TRUE,
 					GLX_STENCIL_SIZE, 1,
 					GLX_SAMPLE_BUFFERS_ARB, 1,
@@ -412,7 +412,7 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_GREEN_SIZE, 4,
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
-					GLX_DEPTH_SIZE, 16,
+					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
 					GLX_DOUBLEBUFFER, GL_TRUE,
 					GLX_STENCIL_SIZE, 1,
 					None
@@ -584,8 +584,10 @@ bool CIrrDeviceLinux::createWindow()
 	Window tmp;
 	u32 borderWidth;
 	int x,y;
+	unsigned int bits;
 
-	XGetGeometry(display, window, &tmp, &x, &y, &Width, &Height, &borderWidth, &CreationParams.Bits);
+	XGetGeometry(display, window, &tmp, &x, &y, &Width, &Height, &borderWidth, &bits);
+	CreationParams.Bits = bits;
 	StdHints = XAllocSizeHints();
 	long num;
 	XGetWMNormalHints(display, window, StdHints, &num);
