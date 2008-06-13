@@ -16,6 +16,7 @@ namespace irr
 			DriverType(video::EDT_BURNINGSVIDEO),
 			WindowSize(core::dimension2d<s32>(800, 600)),
 			Bits(16),
+			ZBufferBits(16),
 			Fullscreen(false),
 			Stencilbuffer(false),
 			Vsync(false),
@@ -38,8 +39,11 @@ namespace irr
 		//! Size of the window or the video mode in fullscreen mode. Default: 800x600
 		core::dimension2d<s32> WindowSize;
 
-		//! Bits per pixel in fullscreen mode. Ignored if windowed mode. Default: 16.
-		u32 Bits;
+		//! Minimum Bits per pixel of the color buffer in fullscreen mode. Ignored if windowed mode. Default: 16.
+		u8 Bits;
+
+		//! Minimum Bits per pixel of the depth buffer. Default: 16.
+		u8 ZBufferBits;
 
 		//! Should be set to true if the device should run in fullscreen.
 		/** Otherwise the device runs in windowed mode. Default: false. */

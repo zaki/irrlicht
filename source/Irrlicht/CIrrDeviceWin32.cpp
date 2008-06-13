@@ -336,11 +336,11 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 		AdjustWindowRect(&clientSize, style, FALSE);
 
-		s32 realWidth = clientSize.right - clientSize.left;
-		s32 realHeight = clientSize.bottom - clientSize.top;
+		const s32 realWidth = clientSize.right - clientSize.left;
+		const s32 realHeight = clientSize.bottom - clientSize.top;
 
-		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+		const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+		const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
 		if (CreationParams.Fullscreen)
 		{
@@ -351,7 +351,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		// create window
 
 		HWnd = CreateWindow( ClassName, "", style, windowLeft, windowTop,
-					realWidth, realHeight,	NULL, NULL, hInstance, NULL);
+					realWidth, realHeight, NULL, NULL, hInstance, NULL);
 
 		ShowWindow(HWnd , SW_SHOW);
 		UpdateWindow(HWnd);
@@ -630,8 +630,8 @@ void CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 		bi.bV4Width         = image->getDimension().Width;
 		bi.bV4Height        = -image->getDimension().Height;
 		bi.bV4V4Compression = BI_BITFIELDS;
-		bi.bV4AlphaMask     = image->getAlphaMask ();
-		bi.bV4RedMask       = image->getRedMask ();
+		bi.bV4AlphaMask     = image->getAlphaMask();
+		bi.bV4RedMask       = image->getRedMask();
 		bi.bV4GreenMask     = image->getGreenMask();
 		bi.bV4BlueMask      = image->getBlueMask();
 
@@ -688,8 +688,8 @@ bool CIrrDeviceWin32::switchToFullScreen(s32 width, s32 height, s32 bits)
 	// use default values from current setting
 	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
 	dm.dmPelsWidth = width;
-	dm.dmPelsHeight	= height;
-	dm.dmBitsPerPel	= bits;
+	dm.dmPelsHeight = height;
+	dm.dmBitsPerPel = bits;
 	dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 	LONG ret = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
@@ -769,10 +769,10 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-	if(!(bOsVersionInfoEx = GetVersionEx ((OSVERSIONINFO*) &osvi)))
+	if (!(bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO*) &osvi)))
 	{
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		if (! GetVersionEx ( (OSVERSIONINFO *) &osvi) )
+		if (! GetVersionEx((OSVERSIONINFO *) &osvi))
 			return;
 	}
 
@@ -785,13 +785,13 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 		if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 0)
 			out.append("Microsoft Windows 2000 ");
 		else
-		if ( osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1 )
+		if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1)
 			out.append("Microsoft Windows XP ");
 		else
-		if ( osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0 )
+		if (osvi.dwMajorVersion == 6 && osvi.dwMinorVersion == 0)
 			out.append("Microsoft Windows Vista ");
 
-		if( bOsVersionInfoEx )
+		if (bOsVersionInfoEx)
 		{
 			#ifdef VER_SUITE_ENTERPRISE
 			if (osvi.wProductType == VER_NT_WORKSTATION)
@@ -829,9 +829,9 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 
 			if (lstrcmpi( "WINNT", szProductType) == 0 )
 				out.append("Professional ");
-			if ( lstrcmpi( "LANMANNT", szProductType) == 0 )
-				out.append("Server " );
-			if ( lstrcmpi( "SERVERNT", szProductType) == 0 )
+			if (lstrcmpi( "LANMANNT", szProductType) == 0)
+				out.append("Server ");
+			if (lstrcmpi( "SERVERNT", szProductType) == 0)
 				out.append("Advanced Server ");
 		}
 
@@ -841,7 +841,7 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 
 		if (osvi.dwMajorVersion <= 4 )
 		{
-			sprintf (tmp, "version %ld.%ld %s (Build %ld)",
+			sprintf(tmp, "version %ld.%ld %s (Build %ld)",
 				osvi.dwMajorVersion,
 				osvi.dwMinorVersion,
 				osvi.szCSDVersion,
@@ -849,7 +849,7 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 		}
 		else
 		{
-			sprintf (tmp, "%s (Build %ld)", osvi.szCSDVersion,
+			sprintf(tmp, "%s (Build %ld)", osvi.szCSDVersion,
 				osvi.dwBuildNumber & 0xFFFF);
 		}
 
@@ -917,11 +917,11 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 
 	AdjustWindowRect(&clientSize, style, FALSE);
 
-	s32 realWidth = clientSize.right - clientSize.left;
-	s32 realHeight = clientSize.bottom - clientSize.top;
+	const s32 realWidth = clientSize.right - clientSize.left;
+	const s32 realHeight = clientSize.bottom - clientSize.top;
 
-	s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-	s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+	const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+	const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
 	SetWindowPos(HWnd, HWND_TOP, windowLeft, windowTop, realWidth, realHeight,
 		SWP_FRAMECHANGED | SWP_NOMOVE | SWP_SHOWWINDOW);
