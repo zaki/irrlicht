@@ -163,18 +163,17 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 // -----------------------------------------------------------------------
 #ifdef _IRR_USE_OSX_DEVICE_
 //! Windows constructor and init code
-COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
-		bool fullscreen, bool stencilBuffer, CIrrDeviceMacOSX *device,
-		io::IFileSystem* io, bool vsync, bool antiAlias)
-: CNullDriver(io, screenSize), COpenGLExtensionHandler(),
+COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io, CIrrDeviceMacOSX *device)
+: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(antiAlias), RenderTargetTexture(0), LastSetLight(-1),
+	AntiAlias(params.AntiAlias), RenderTargetTexture(0), LastSetLight(-1),
 	CurrentRendertargetSize(0,0), _device(device)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
-	genericDriverInit(screenSize, stencilBuffer);
+	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 }
 
 #endif
@@ -2726,13 +2725,11 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 // MACOSX VERSION
 // -----------------------------------
 #if defined(_IRR_USE_OSX_DEVICE_)
-IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
-	CIrrDeviceMacOSX *device, bool fullscreen, bool stencilBuffer,
-	io::IFileSystem* io, bool vsync, bool antiAlias)
+IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io, CIrrDeviceMacOSX *device)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	return new COpenGLDriver(screenSize, fullscreen, stencilBuffer,
-		device, io, vsync, antiAlias);
+	return new COpenGLDriver(params, io, device);
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_

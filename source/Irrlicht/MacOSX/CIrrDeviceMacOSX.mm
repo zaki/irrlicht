@@ -61,7 +61,7 @@ namespace irr
 {
 	namespace video
 	{
-		IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize, CIrrDeviceMacOSX *device, bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias);
+		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& param, io::IFileSystem* io, CIrrDeviceMacOSX *device);
 	}
 } // end namespace irr
 
@@ -332,7 +332,7 @@ void CIrrDeviceMacOSX::createDriver()
 
 		case video::EDT_OPENGL:
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-			VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, this, CreationParams.Fullscreen, CreationParams.Stencilbuffer, FileSystem, CreationParams.Vsync, creationParams.AntiAlias);
+			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
 		#else
 			os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 		#endif
