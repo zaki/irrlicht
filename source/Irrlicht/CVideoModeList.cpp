@@ -21,13 +21,6 @@ CVideoModeList::CVideoModeList()
 }
 
 
-//! destructor
-CVideoModeList::~CVideoModeList()
-{
-}
-
-
-
 void CVideoModeList::setDesktop(s32 desktopDepth, const core::dimension2d<s32>& desktopSize)
 {
 	Desktop.depth = desktopDepth;
@@ -42,7 +35,6 @@ s32 CVideoModeList::getVideoModeCount() const
 }
 
 
-
 //! Returns the screen size of a video mode in pixels.
 core::dimension2d<s32> CVideoModeList::getVideoModeResolution(s32 modeNumber) const
 {
@@ -51,7 +43,6 @@ core::dimension2d<s32> CVideoModeList::getVideoModeResolution(s32 modeNumber) co
 
 	return VideoModes[modeNumber].size;
 }
-
 
 
 //! Returns the pixel depth of a video mode in bits.
@@ -65,7 +56,7 @@ s32 CVideoModeList::getVideoModeDepth(s32 modeNumber) const
 
 
 //! Returns current desktop screen resolution.
-core::dimension2d<s32> CVideoModeList::getDesktopResolution() const
+const core::dimension2d<s32>& CVideoModeList::getDesktopResolution() const
 {
 	return Desktop.size;
 }
@@ -76,7 +67,6 @@ s32 CVideoModeList::getDesktopDepth() const
 {
 	return Desktop.depth;
 }
-
 
 
 //! adds a new mode to the list

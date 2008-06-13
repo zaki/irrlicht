@@ -24,9 +24,6 @@ namespace video
 	{
 	public:
 
-		//! destructor
-		virtual ~IVideoModeList() {}
-
 		//! Gets amount of video modes in the list.
 		/** \return Returns amount of video modes. */
 		virtual s32 getVideoModeCount() const = 0;
@@ -43,7 +40,7 @@ namespace video
 
 		//! Get current desktop screen resolution.
 		/** \return Size of screen in pixels of the current desktop video mode. */
-		virtual core::dimension2d<s32> getDesktopResolution() const = 0;
+		virtual const core::dimension2d<s32>& getDesktopResolution() const = 0;
 
 		//! Get the pixel depth of a video mode in bits.
 		/** \return Size of each pixel of the current desktop video mode in bits. */
