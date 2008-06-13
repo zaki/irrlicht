@@ -299,34 +299,43 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	else
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
 
-	glViewport(0, 0, screenSize.Width, screenSize.Height); // Reset The Current Viewport
-	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
+	// We want to read the front buffer to get the latest render finished.
+	glReadBuffer(GL_FRONT);
+
+	// Reset The Current Viewport
+	glViewport(0, 0, screenSize.Width, screenSize.Height);
+
 // This needs an SMaterial flag to enable/disable later on, but should become default sometimes
 //	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 //	glEnable(GL_COLOR_MATERIAL);
+
+	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
 #ifdef GL_EXT_separate_specular_color
 	if (FeatureAvailable[IRR_EXT_separate_specular_color])
 		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SEPARATE_SPECULAR_COLOR);
 #endif
 	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+
 // This is a fast replacement for NORMALIZE_NORMALS
 //	if ((Version>101) || FeatureAvailable[IRR_EXT_rescale_normal])
 //		glEnable(GL_RESCALE_NORMAL_EXT);
+
 	glClearDepth(1.0);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace( GL_CW );
+
 	if (AntiAlias)
 	{
+		if (MultiSamplingExtension)
+			glEnable(GL_MULTISAMPLE_ARB);
+
 		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 		glEnable(GL_LINE_SMOOTH);
 	}
 // currently disabled, because often in software, and thus very slow
 //	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 //	glEnable(GL_POINT_SMOOTH);
-
-	if (AntiAlias && MultiSamplingExtension)
-		glEnable(GL_MULTISAMPLE_ARB);
 
 	UserClipPlane.reallocate(MaxUserClipPlanes);
 	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
