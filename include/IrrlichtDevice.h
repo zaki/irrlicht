@@ -161,8 +161,11 @@ namespace irr
 		\return String which contains the version. */
 		virtual const c8* getVersion() const = 0;
 
-		//! Sets a new event receiver to receive events.
-		/** \param receiver New receiver to be used. */
+		//! Sets a new user event receiver which will receive events from the engine. 
+		/** Return true in IEventReceiver::OnEvent to prevent the event from continuing along 
+		the chain of event receivers. The path that an event takes through the system depends
+		on its type. See irr::EEVENT_TYPE for details.
+		\param receiver New receiver to be used. */
 		virtual void setEventReceiver(IEventReceiver* receiver) = 0;
 
 		//! Provides access to the current event receiver.

@@ -277,33 +277,27 @@ namespace irr
 {
 
 //! constructor
-CIrrDeviceWin32::CIrrDeviceWin32(video::E_DRIVER_TYPE driverType,
-				 core::dimension2d<s32> windowSize,
-				 u32 bits, bool fullscreen,
-				 bool stencilbuffer, bool vsync,
-				 bool antiAlias,
-				 bool highPrecisionFPU,
-				 HWND externalWindow,
-				 const SIrrlichtCreationParameters& params)
-: CIrrDeviceStub(param), HWnd(0), ChangedToFullScreen(false),
-	FullScreen(fullscreen), IsNonNTWindows(false), Resized(false),
+CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
+: CIrrDeviceStub(params), HWnd(0), ChangedToFullScreen(false),
+	FullScreen(CreationParams.Fullscreen), IsNonNTWindows(false), Resized(false),
 	ExternalWindow(false), Win32CursorControl(0)
 {
-	core::stringc winversion;
-	getWindowsVersion(winversion);
-	Operator = new COSOperator(winversion.c_str());
-	os::Printer::log(winversion.c_str(), ELL_INFORMATION);
-
-	// create window
-
-	HINSTANCE hInstance = GetModuleHandle(0);
 
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceWin32");
 	#endif
 
-	// create the window, only if we do not use the null device
-	if (driverType != video::EDT_NULL && externalWindow==0)
+	// get windows version and create OS operator
+	core::stringc winversion;
+	getWindowsVersion(winversion);
+	Operator = new COSOperator(winversion.c_str());
+	os::Printer::log(winversion.c_str(), ELL_INFORMATION);
+
+	// get handle to exe file
+	HINSTANCE hInstance = GetModuleHandle(0);
+
+	// create the window if we need to and we do not use the null device
+	if (!CreationParams.WindowId && CreationParams.DriverType != video::EDT_NULL)
 	{
 		const c8* ClassName = "CIrrDeviceWin32";
 
@@ -332,12 +326,12 @@ CIrrDeviceWin32::CIrrDeviceWin32(video::E_DRIVER_TYPE driverType,
 		RECT clientSize;
 		clientSize.top = 0;
 		clientSize.left = 0;
-		clientSize.right = windowSize.Width;
-		clientSize.bottom = windowSize.Height;
+		clientSize.right = CreationParams.WindowSize.Width;
+		clientSize.bottom = CreationParams.WindowSize.Height;
 
 		DWORD style = WS_POPUP;
 
-		if (!fullscreen)
+		if (!CreationParams.Fullscreen)
 			style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 
 		AdjustWindowRect(&clientSize, style, FALSE);
@@ -348,7 +342,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(video::E_DRIVER_TYPE driverType,
 		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
 		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
-		if (fullscreen)
+		if (CreationParams.Fullscreen)
 		{
 			windowLeft = 0;
 			windowTop = 0;
@@ -367,25 +361,25 @@ CIrrDeviceWin32::CIrrDeviceWin32(video::E_DRIVER_TYPE driverType,
 	}
 
 	// attach external window
-	if (externalWindow)
+	if (CreationParams.WindowId)
 	{
-		HWnd = externalWindow;
+		HWnd = static_cast<HWND>(CreationParams.WindowId);
 		RECT r;
 		GetWindowRect(HWnd, &r);
-		windowSize.Width = r.right - r.left;
-		windowSize.Height = r.bottom - r.top;
-		fullscreen = false;
+		CreationParams.WindowSize.Width = r.right - r.left;
+		CreationParams.WindowSize.Height = r.bottom - r.top;
+		CreationParams.Fullscreen = false;
 		ExternalWindow = true;
 	}
 
 	// create cursor control
 
-	Win32CursorControl = new CCursorControl(windowSize, HWnd, fullscreen);
+	Win32CursorControl = new CCursorControl(CreationParams.WindowSize, HWnd, CreationParams.Fullscreen);
 	CursorControl = Win32CursorControl;
 
 	// create driver
 
-	createDriver(driverType, windowSize, bits, fullscreen, stencilbuffer, vsync, antiAlias, highPrecisionFPU);
+	createDriver();
 
 	if (VideoDriver)
 		createGUIAndScene();
@@ -424,21 +418,18 @@ CIrrDeviceWin32::~CIrrDeviceWin32()
 
 
 //! create the driver
-void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
-				   const core::dimension2d<s32>& windowSize,
-				   u32 bits,
-				   bool fullscreen,
-				   bool stencilbuffer,
-				   bool vsync,
-				   bool antiAlias,
-				   bool highPrecisionFPU)
+void CIrrDeviceWin32::createDriver()
 {
-	switch(driverType)
+	switch(CreationParams.DriverType)
 	{
 	case video::EDT_DIRECT3D8:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
-		VideoDriver = video::createDirectX8Driver(windowSize, HWnd, bits, fullscreen,
-			stencilbuffer, FileSystem, false, highPrecisionFPU, vsync, antiAlias);
+
+		VideoDriver = video::createDirectX8Driver(CreationParams.WindowSize, HWnd, 
+			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer, 
+			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync, 
+			CreationParams.AntiAlias);
+
 		if (!VideoDriver)
 		{
 			os::Printer::log("Could not create DIRECT3D8 Driver.", ELL_ERROR);
@@ -451,8 +442,12 @@ void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
 
 	case video::EDT_DIRECT3D9:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
-		VideoDriver = video::createDirectX9Driver(windowSize, HWnd, bits, fullscreen,
-			stencilbuffer, FileSystem, false, highPrecisionFPU, vsync, antiAlias);
+
+		VideoDriver = video::createDirectX9Driver(CreationParams.WindowSize, HWnd, 
+			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer, 
+			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync, 
+			CreationParams.AntiAlias);
+
 		if (!VideoDriver)
 		{
 			os::Printer::log("Could not create DIRECT3D9 Driver.", ELL_ERROR);
@@ -466,9 +461,13 @@ void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
 	case video::EDT_OPENGL:
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		if (fullscreen)	switchToFullScreen(windowSize.Width, windowSize.Height, bits);
-		VideoDriver = video::createOpenGLDriver(windowSize, HWnd, bits, fullscreen, stencilbuffer, FileSystem,
-			vsync, antiAlias);
+
+		if (CreationParams.Fullscreen)
+			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
+
+		VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, HWnd, CreationParams.Bits, 
+			CreationParams.Fullscreen, CreationParams.Stencilbuffer, FileSystem,
+			CreationParams.Vsync, CreationParams.AntiAlias);
 		if (!VideoDriver)
 		{
 			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
@@ -481,8 +480,10 @@ void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
 	case video::EDT_SOFTWARE:
 
 		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
-		if (fullscreen)	switchToFullScreen(windowSize.Width, windowSize.Height, bits);
-		VideoDriver = video::createSoftwareDriver(windowSize, fullscreen, FileSystem, this);
+		if (CreationParams.Fullscreen)
+			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
+
+		VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 		os::Printer::log("Software driver was not compiled in.", ELL_ERROR);
 		#endif
@@ -491,8 +492,10 @@ void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
 
 	case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-		if (fullscreen)	switchToFullScreen(windowSize.Width, windowSize.Height, bits);
-		VideoDriver = video::createSoftwareDriver2(windowSize, fullscreen, FileSystem, this);
+		if (CreationParams.Fullscreen)
+			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
+
+		VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 		os::Printer::log("Burning's Video driver was not compiled in.", ELL_ERROR);
 		#endif 
@@ -500,7 +503,7 @@ void CIrrDeviceWin32::createDriver(video::E_DRIVER_TYPE driverType,
 
 	case video::EDT_NULL:
 		// create null driver
-		VideoDriver = video::createNullDriver(FileSystem, windowSize);
+		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
 		break;
 
 	default:
@@ -928,17 +931,7 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 	const SIrrlichtCreationParameters& parameters)
 {
-	CIrrDeviceWin32* dev = new CIrrDeviceWin32(
-		parameters.DriverType,
-		parameters.WindowSize,
-		parameters.Bits,
-		parameters.Fullscreen,
-		parameters.Stencilbuffer,
-		parameters.Vsync,
-		parameters.AntiAlias,
-		parameters.HighPrecisionFPU,
-		reinterpret_cast<HWND>(parameters.WindowId),
-		parameters);
+	CIrrDeviceWin32* dev = new CIrrDeviceWin32(parameters);
 
 	if (dev && !dev->getVideoDriver() && parameters.DriverType != video::EDT_NULL)
 	{
