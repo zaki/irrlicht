@@ -339,8 +339,8 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		const s32 realWidth = clientSize.right - clientSize.left;
 		const s32 realHeight = clientSize.bottom - clientSize.top;
 
-		const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+		s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+		s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
 		if (CreationParams.Fullscreen)
 		{
