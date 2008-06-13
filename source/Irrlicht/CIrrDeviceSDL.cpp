@@ -116,15 +116,17 @@ bool CIrrDeviceSDL::createWindow()
 	{
 		if (CreationParams.Bits==16)
 		{
-			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 4 );
+			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 4 );
+			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 4 );
+			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0 );
 		}
 		else
 		{
 			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
 			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
 			SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
+			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel?8:0 );
 		}
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.Bits);
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
