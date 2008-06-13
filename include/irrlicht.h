@@ -272,8 +272,6 @@ namespace irr
 	\param vsync: Specifies vertical syncronisation: If set to true, the driver will wait
 	for the vertical retrace period, otherwise not.
 	\param receiver: A user created event receiver.
-	\param sdk_version_do_not_use: Don't use or change this parameter. Always set it to
-	IRRLICHT_SDK_VERSION, which is done by default. This is needed for sdk version checks.
 	\return Returns pointer to the created IrrlichtDevice or null if the
 	device could not be created.
 	*/
@@ -285,8 +283,7 @@ namespace irr
 		bool fullscreen = false,
 		bool stencilbuffer = false,
 		bool vsync = false,
-		IEventReceiver* receiver = 0,
-		const c8* sdk_version_do_not_use = IRRLICHT_SDK_VERSION);
+		IEventReceiver* receiver = 0);
 
 	//! Creates an Irrlicht device with the option to specify advanced parameters.
 	/** Usually you should used createDevice() for creating an Irrlicht Engine device.
