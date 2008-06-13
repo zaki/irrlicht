@@ -86,8 +86,8 @@ namespace video
 		#endif
 
 		#ifdef _IRR_USE_OSX_DEVICE_
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
-			bool stencilBuffer, CIrrDeviceMacOSX *device,io::IFileSystem* io, bool vsync, bool antiAlias);
+		COpenGLDriver(const SIrrlichtCreationParameters& params,
+				io::IFileSystem* io, CIrrDeviceMacOSX *device);
 		#endif
 
 		//! destructor
