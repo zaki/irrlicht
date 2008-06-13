@@ -26,11 +26,8 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceWinCE(video::E_DRIVER_TYPE deviceType, 
-			core::dimension2d<s32> windowSize, u32 bits,
-			bool fullscreen, bool stencilbuffer, bool vsync, 
-			bool antiAlias, bool highPrecisionFPU,
-			HWND window,
+		CIrrDeviceWinCE(
+			core::dimension2d<s32> windowSize,
 			const SIrrlichtCreationParameters& params);
 
 		//! destructor
@@ -235,24 +232,21 @@ namespace irr
 	private:
 
 		//! create the driver
-		void createDriver(video::E_DRIVER_TYPE driverType,
-			const core::dimension2d<s32>& windowSize, u32 bits, bool fullscreen,
-			bool stencilbuffer, bool vsync, bool antiAlias, bool highPrecisionFPU);
+		void createDriver();
 
 		//! switchs to fullscreen
-		bool switchToFullScreen(s32 width, s32 height, s32 bits);
+		bool switchToFullScreen();
 
 		void getWindowsVersion(core::stringc& version);
 
 		void resizeIfNecessary();
 
 		HWND HWnd;
+		CCursorControl* Win32CursorControl;
 
 		bool ChangedToFullScreen;
-		bool FullScreen;
 		bool Resized;
 		bool ExternalWindow;
-		CCursorControl* Win32CursorControl;
 	};
 
 
