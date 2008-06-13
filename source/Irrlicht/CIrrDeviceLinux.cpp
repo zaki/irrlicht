@@ -42,7 +42,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 #ifdef _IRR_COMPILE_WITH_X11_
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
 #endif
-	Width(param.WindowSize.Width), Height(param.WindowSize.Height), Depth(24),
+	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	Close(false), WindowActive(false), WindowMinimized(false), UseXVidMode(false), UseXRandR(false), UseGLXWindow(false), AutorepeatSupport(0)
 {
 	#ifdef _DEBUG
@@ -282,11 +282,11 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_RED_SIZE, 4,
 					GLX_GREEN_SIZE, 4,
 					GLX_BLUE_SIZE, 4,
-					GLX_ALPHA_SIZE, 0,
+					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, 16,
 					GLX_DOUBLEBUFFER, GL_TRUE,
 					GLX_STENCIL_SIZE, 1,
-					GLX_SAMPLE_BUFFERS_ARB, GL_TRUE,
+					GLX_SAMPLE_BUFFERS_ARB, 1,
 					GLX_SAMPLES_ARB, MAX_SAMPLES,
 					None
 				};
@@ -295,7 +295,7 @@ bool CIrrDeviceLinux::createWindow()
 				int nitems=0;
 				if (!CreationParams.AntiAlias)
 				{
-					visualAttrBuffer[17] = GL_FALSE;
+					visualAttrBuffer[17] = 0;
 					visualAttrBuffer[19] = 0;
 				}
 				if (CreationParams.Stencilbuffer)
@@ -310,7 +310,7 @@ bool CIrrDeviceLinux::createWindow()
 						}
 						if (!configList)
 						{
-							visualAttrBuffer[17] = GL_FALSE;
+							visualAttrBuffer[17] = 0;
 							visualAttrBuffer[19] = 0;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 							if (configList)
@@ -321,7 +321,7 @@ bool CIrrDeviceLinux::createWindow()
 							else
 							{
 								//reenable multisampling
-								visualAttrBuffer[17] = GL_TRUE;
+								visualAttrBuffer[17] = 1;
 								visualAttrBuffer[19] = MAX_SAMPLES;
 							}
 						}
@@ -345,7 +345,7 @@ bool CIrrDeviceLinux::createWindow()
 						}
 						if (!configList)
 						{
-							visualAttrBuffer[17] = GL_FALSE;
+							visualAttrBuffer[17] = 0;
 							visualAttrBuffer[19] = 0;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 							if (configList)
@@ -356,7 +356,7 @@ bool CIrrDeviceLinux::createWindow()
 							else
 							{
 								//reenable multisampling
-								visualAttrBuffer[17] = GL_TRUE;
+								visualAttrBuffer[17] = 1;
 								visualAttrBuffer[19] = MAX_SAMPLES;
 							}
 						}
@@ -377,7 +377,7 @@ bool CIrrDeviceLinux::createWindow()
 						}
 						if (!configList)
 						{
-							visualAttrBuffer[17] = GL_FALSE;
+							visualAttrBuffer[17] = 0;
 							visualAttrBuffer[19] = 0;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 							if (configList)
@@ -388,7 +388,7 @@ bool CIrrDeviceLinux::createWindow()
 							else
 							{
 								//reenable multisampling
-								visualAttrBuffer[17] = GL_TRUE;
+								visualAttrBuffer[17] = 1;
 								visualAttrBuffer[19] = MAX_SAMPLES;
 							}
 						}
@@ -411,7 +411,7 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_RED_SIZE, 4,
 					GLX_GREEN_SIZE, 4,
 					GLX_BLUE_SIZE, 4,
-					GLX_ALPHA_SIZE, 0,
+					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, 16,
 					GLX_DOUBLEBUFFER, GL_TRUE,
 					GLX_STENCIL_SIZE, 1,
@@ -585,7 +585,7 @@ bool CIrrDeviceLinux::createWindow()
 	u32 borderWidth;
 	int x,y;
 
-	XGetGeometry(display, window, &tmp, &x, &y, &Width, &Height, &borderWidth, &Depth);
+	XGetGeometry(display, window, &tmp, &x, &y, &Width, &Height, &borderWidth, &CreationParams.Bits);
 	StdHints = XAllocSizeHints();
 	long num;
 	XGetWMNormalHints(display, window, StdHints, &num);
@@ -853,6 +853,7 @@ void CIrrDeviceLinux::yield()
 	nanosleep(&ts, NULL);
 }
 
+
 //! Pause execution and let other processes to run for a specified amount of time.
 void CIrrDeviceLinux::sleep(u32 timeMs, bool pauseTimer=false)
 {
@@ -871,6 +872,7 @@ void CIrrDeviceLinux::sleep(u32 timeMs, bool pauseTimer=false)
 		Timer->start();
 }
 
+
 //! sets the caption of the window
 void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 {
@@ -885,7 +887,6 @@ void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 	XFree(txt.value);
 #endif
 }
-
 
 
 //! presents a surface in the client area
@@ -919,7 +920,7 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 
 		s32* srcdata = (s32*)image->lock();
 
-		if ((Depth == 32)||(Depth == 24))
+		if ((CreationParams.Bits == 32)||(CreationParams.Bits == 24))
 		{
 			int destPitch = SoftwareImage->bytes_per_line;
 			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
@@ -932,7 +933,7 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 			}
 		}
 		else
-		if (Depth == 16)
+		if (CreationParams.Bits == 16)
 		{
 			// convert to R5G6B6
 
@@ -957,7 +958,7 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 
 		s16* srcdata = (s16*)image->lock();
 
-		if (Depth == 16)
+		if (CreationParams.Bits == 16)
 		{
 			// convert from A1R5G5B5 to R5G6B6
 
@@ -972,7 +973,7 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 			}
 		}
 		else
-		if ((Depth == 32)||(Depth == 24))
+		if ((CreationParams.Bits == 32)||(CreationParams.Bits == 24))
 		{
 			// convert from A1R5G5B5 to X8R8G8B8
 
@@ -998,7 +999,6 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 }
 
 
-
 //! notifies the device that it should close itself
 void CIrrDeviceLinux::closeDevice()
 {
@@ -1006,13 +1006,11 @@ void CIrrDeviceLinux::closeDevice()
 }
 
 
-
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceLinux::isWindowActive() const
 {
 	return WindowActive;
 }
-
 
 
 //! Sets if the window should be resizeable in windowed mode.
@@ -1043,8 +1041,7 @@ void CIrrDeviceLinux::setResizeAble(bool resize)
 }
 
 
-//! \return Returns a pointer to a list with all video modes supported
-//! by the gfx adapter.
+//! Return pointer to a list with all video modes supported by the gfx adapter.
 video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
@@ -1120,7 +1117,6 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 }
 
 
-
 void CIrrDeviceLinux::createKeyMap()
 {
 	// I don't know if this is the best method  to create
@@ -1128,6 +1124,7 @@ void CIrrDeviceLinux::createKeyMap()
 	// I find a better version.
 
 #ifdef _IRR_COMPILE_WITH_X11_
+	KeyMap.reallocate(84);
 	KeyMap.push_back(SKeyMap(XK_BackSpace, KEY_BACK));
 	KeyMap.push_back(SKeyMap(XK_Tab, KEY_TAB));
 	KeyMap.push_back(SKeyMap(XK_Linefeed, 0)); // ???

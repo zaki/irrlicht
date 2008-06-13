@@ -270,15 +270,15 @@ namespace irr
 #endif
 			}
 
-			core::position2d<s32> CursorPos;
 			CIrrDeviceLinux* Device;
-			bool IsVisible;
-			bool Null;
-			bool UseReferenceRect;
+			core::position2d<s32> CursorPos;
 			core::rect<s32> ReferenceRect;
 #ifdef _IRR_COMPILE_WITH_X11_
 			Cursor invisCursor;
 #endif
+			bool IsVisible;
+			bool Null;
+			bool UseReferenceRect;
 		};
 
 		friend class CCursorControl;
@@ -303,7 +303,7 @@ namespace irr
 		GLXContext Context;
 		#endif
 #endif
-		u32 Width, Height, Depth;
+		u32 Width, Height;
 		bool Close;
 		bool WindowActive;
 		bool WindowMinimized;
