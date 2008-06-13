@@ -184,12 +184,11 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
 // -----------------------------------------------------------------------
 #ifdef _IRR_USE_LINUX_DEVICE_
 //! Linux constructor and init code
-COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
-		bool fullscreen, bool stencilBuffer, io::IFileSystem* io,
-		bool vsync, bool antiAlias)
-: CNullDriver(io, screenSize), COpenGLExtensionHandler(),
+COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io)
+: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
-	Transformation3DChanged(true), AntiAlias(antiAlias),
+	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0)
 {
 	#ifdef _DEBUG
@@ -199,15 +198,16 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
 	XDisplay = glXGetCurrentDisplay();
 	ExposedData.OpenGLLinux.X11Display = XDisplay;
 	ExposedData.OpenGLLinux.X11Window = XWindow;
-	genericDriverInit(screenSize, stencilBuffer);
+
+	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
 	// set vsync
 #ifdef GLX_SGI_swap_control
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (vsync && glxSwapIntervalSGI)
+	if (params.Vsync && glxSwapIntervalSGI)
 		glxSwapIntervalSGI(1);
 #else
-	if (vsync)
+	if (params.Vsync)
 		glXSwapIntervalSGI(1);
 #endif
 #endif
@@ -221,19 +221,18 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
 // -----------------------------------------------------------------------
 #ifdef _IRR_USE_SDL_DEVICE_
 //! SDL constructor and init code
-COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
-		bool fullscreen, bool stencilBuffer, io::IFileSystem* io,
-		bool vsync, bool antiAlias)
-: CNullDriver(io, screenSize), COpenGLExtensionHandler(),
+COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io)
+: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
-	Transformation3DChanged(true), AntiAlias(antiAlias),
+	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
 
-	genericDriverInit(screenSize, stencilBuffer);
+	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 }
 
 #endif // _IRR_USE_SDL_DEVICE_
@@ -2741,37 +2740,19 @@ IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
 #endif // _IRR_USE_OSX_DEVICE_
 
 // -----------------------------------
-// LINUX VERSION
+// X11/SDL VERSION
 // -----------------------------------
-#ifdef _IRR_USE_LINUX_DEVICE_
-IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
-		bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
+#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
+IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	return new COpenGLDriver(screenSize, fullscreen, stencilBuffer,
-		io, vsync, antiAlias);
+	return new COpenGLDriver(params, io);
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_
 }
 #endif // _IRR_USE_LINUX_DEVICE_
-
-// -----------------------------------
-// SDL VERSION
-// -----------------------------------
-#ifdef _IRR_USE_SDL_DEVICE_
-IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
-		bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
-{
-#ifdef _IRR_COMPILE_WITH_OPENGL_
-	return new COpenGLDriver(screenSize, fullscreen, stencilBuffer,
-		io, vsync, antiAlias);
-#else
-	return 0;
-#endif //  _IRR_COMPILE_WITH_OPENGL_
-}
-#endif // _IRR_USE_SDL_DEVICE_
-
 
 } // end namespace
 } // end namespace

@@ -24,8 +24,8 @@ namespace irr
 {
 	namespace video
 	{
-		IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
-			bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias);
+		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+				io::IFileSystem* io);
 	}
 } // end namespace irr
 
@@ -637,7 +637,7 @@ void CIrrDeviceLinux::createDriver()
 	case video::EDT_OPENGL:
 	#ifdef _IRR_COMPILE_WITH_OPENGL_
 		if (Context)
-			VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, CreationParams.Fullscreen, CreationParams.Stencilbuffer, FileSystem, CreationParams.Vsync, CreationParams.AntiAlias);
+			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
 	#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
 	#endif
