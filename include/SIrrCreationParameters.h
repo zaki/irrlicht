@@ -151,7 +151,7 @@ namespace irr
 		//! Don't use or change this parameter.
 		/** Always set it to IRRLICHT_SDK_VERSION, which is done by default.
 		This is needed for sdk version checks. */
-		const c8* SDK_version_do_not_use;
+		const c8* const SDK_version_do_not_use;
 	};
 
 
