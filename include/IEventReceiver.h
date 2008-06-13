@@ -24,14 +24,14 @@ namespace irr
 		//! A mouse input event.
 		/** Mouse events are created by the device and passed to IrrlichtDevice::postEventFromUser
 		in response to mouse input received from the operating system.
-		Mouse events are first passed to the user receiver, then to the GUI environment (and possibly
-		many GUI elements), then finally the input receiving scene manager (and possibly the active
-		camera) */
+		Mouse events are first passed to the user receiver, then to the GUI environment and its elements,
+		then finally the input receiving scene manager where it is passed to the active camera.
+		*/
 		EET_MOUSE_INPUT_EVENT,
 
 		//! A key input event.
-		/** Keyboard events are also created by the device and passed to IrrlichtDevice::postEventFromUser.
-		They take the same path as mouse events. */
+		/** Like mouse events, keyboard events are created by the device and passed to 
+		IrrlichtDevice::postEventFromUser. They take the same path as mouse events. */
 		EET_KEY_INPUT_EVENT,
 
 		//! A log event
@@ -40,8 +40,7 @@ namespace irr
 		EET_LOG_TEXT_EVENT,
 
 		//! A user event with user data.
-		/** This is not used by Irrlicht and can be used
-		to send user specific data though the system. */
+		/** This is not used by Irrlicht and can be used to send user specific data though the system. */
 		EET_USER_EVENT
 	};
 
