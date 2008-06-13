@@ -12,6 +12,7 @@
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "COpenGLExtensionHandler.h"
+#include "SIrrCreationParameters.h"
 
 #if defined(_IRR_WINDOWS_API_)
 	// include windows headers for HWND
@@ -40,8 +41,8 @@
 		#define GL_GLEXT_PROTOTYPES 1
 		#define GLX_GLXEXT_PROTOTYPES 1
 	#endif
-	#include <SDL/SDL_opengl.h>
 	#define NO_SDL_GLEXT
+	#include <SDL/SDL_opengl.h>
 	#include "glext.h"
 #else
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
@@ -80,19 +81,13 @@ namespace video
 			u32 bits, bool fullscreen, bool vsync, bool stencilBuffer);
 		#endif
 
-		#ifdef _IRR_USE_LINUX_DEVICE_
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
-			bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias);
+		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
 		#endif
 
 		#ifdef _IRR_USE_OSX_DEVICE_
 		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
 			bool stencilBuffer, CIrrDeviceMacOSX *device,io::IFileSystem* io, bool vsync, bool antiAlias);
-		#endif
-
-		#ifdef _IRR_USE_SDL_DEVICE_
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, bool fullscreen,
-			bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias);
 		#endif
 
 		//! destructor

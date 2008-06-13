@@ -38,8 +38,9 @@
 		#define GL_GLEXT_PROTOTYPES 1
 		#define GLX_GLXEXT_PROTOTYPES 1
 	#endif
-	#include <SDL/SDL_opengl.h>
 	#define NO_SDL_GLEXT
+	#include <SDL/SDL_video.h>
+	#include <SDL/SDL_opengl.h>
 	#include "glext.h"
 #else
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)

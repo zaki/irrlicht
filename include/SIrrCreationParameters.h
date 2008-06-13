@@ -7,6 +7,8 @@
 
 namespace irr
 {
+	class IEventReceiver;
+
 	//! Structure for holding Irrlicht Device creation parameters.
 	/** This structure is used in the createDeviceEx() function. */
 	struct SIrrlichtCreationParameters
