@@ -114,6 +114,10 @@
 		0925114B0D744ADE006784D9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0925113D0D744ADE006784D9 /* Carbon.framework */; };
 		0925114C0D744ADE006784D9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0925113D0D744ADE006784D9 /* Carbon.framework */; };
 		0925114D0D744ADE006784D9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0925113D0D744ADE006784D9 /* Carbon.framework */; };
+		093973C00E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093973BC0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp */; };
+		093973C10E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h in Headers */ = {isa = PBXBuildFile; fileRef = 093973BD0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h */; };
+		093973C20E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093973BE0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp */; };
+		093973C30E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h in Headers */ = {isa = PBXBuildFile; fileRef = 093973BF0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h */; };
 		096840470D0F1A2300333EFD /* CB3DMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */; };
 		096840480D0F1A2300333EFD /* CB3DMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */; };
 		096840490D0F1A2300333EFD /* CBoneSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840200D0F1A2300333EFD /* CBoneSceneNode.cpp */; };
@@ -322,7 +326,6 @@
 		4C53E48A0A4856B30014E966 /* COctTreeSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF860A484C240014E966 /* COctTreeSceneNode.cpp */; };
 		4C53E48B0A4856B30014E966 /* CParticleSystemSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFA30A484C240014E966 /* CParticleSystemSceneNode.cpp */; };
 		4C53E48C0A4856B30014E966 /* CTerrainSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFCA0A484C240014E966 /* CTerrainSceneNode.cpp */; };
-		4C53E48D0A4856B30014E966 /* CCameraFPSSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DEF40A484C220014E966 /* CCameraFPSSceneNode.cpp */; };
 		4C53E48E0A4856B30014E966 /* CGUIFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF3C0A484C230014E966 /* CGUIFont.cpp */; };
 		4C53E48F0A4856B30014E966 /* CParticleFadeOutAffector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF9D0A484C240014E966 /* CParticleFadeOutAffector.cpp */; };
 		4C53E4910A4856B30014E966 /* CDummyTransformationSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF220A484C230014E966 /* CDummyTransformationSceneNode.cpp */; };
@@ -351,7 +354,6 @@
 		4C53E4A80A4856B30014E966 /* CLogger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF720A484C230014E966 /* CLogger.cpp */; };
 		4C53E4A90A4856B30014E966 /* CGUIInOutFader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DF400A484C230014E966 /* CGUIInOutFader.cpp */; };
 		4C53E4AA0A4856B30014E966 /* CWriteFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFF20A484C250014E966 /* CWriteFile.cpp */; };
-		4C53E4AC0A4856B30014E966 /* CCameraMayaSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DEF60A484C220014E966 /* CCameraMayaSceneNode.cpp */; };
 		4C53E4AD0A4856B30014E966 /* CTRTextureGouraud.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFDF0A484C250014E966 /* CTRTextureGouraud.cpp */; };
 		4C53E4AE0A4856B30014E966 /* CTRFlat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFD10A484C240014E966 /* CTRFlat.cpp */; };
 		4C53E4AF0A4856B30014E966 /* CTerrainTriangleSelector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C53DFCC0A484C240014E966 /* CTerrainTriangleSelector.cpp */; };
@@ -804,6 +806,10 @@
 		09198F0E0D188481001F5EF8 /* pngwtran.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwtran.c; path = ../libpng_osx/pngwtran.c; sourceTree = "<group>"; };
 		09198F0F0D188481001F5EF8 /* pngwutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwutil.c; path = ../libpng_osx/pngwutil.c; sourceTree = "<group>"; };
 		0925113D0D744ADE006784D9 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		093973BC0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneNodeAnimatorCameraFPS.cpp; sourceTree = "<group>"; };
+		093973BD0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSceneNodeAnimatorCameraFPS.h; sourceTree = "<group>"; };
+		093973BE0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneNodeAnimatorCameraMaya.cpp; sourceTree = "<group>"; };
+		093973BF0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSceneNodeAnimatorCameraMaya.h; sourceTree = "<group>"; };
 		0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CB3DMeshFileLoader.cpp; sourceTree = "<group>"; };
 		0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CB3DMeshFileLoader.h; sourceTree = "<group>"; };
 		096840200D0F1A2300333EFD /* CBoneSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CBoneSceneNode.cpp; sourceTree = "<group>"; };
@@ -883,10 +889,6 @@
 		4C53DEF10A484C220014E966 /* CAttributes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CAttributes.h; sourceTree = "<group>"; };
 		4C53DEF20A484C220014E966 /* CBillboardSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CBillboardSceneNode.cpp; sourceTree = "<group>"; };
 		4C53DEF30A484C220014E966 /* CBillboardSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CBillboardSceneNode.h; sourceTree = "<group>"; };
-		4C53DEF40A484C220014E966 /* CCameraFPSSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CCameraFPSSceneNode.cpp; sourceTree = "<group>"; };
-		4C53DEF50A484C220014E966 /* CCameraFPSSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CCameraFPSSceneNode.h; sourceTree = "<group>"; };
-		4C53DEF60A484C220014E966 /* CCameraMayaSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CCameraMayaSceneNode.cpp; sourceTree = "<group>"; };
-		4C53DEF70A484C220014E966 /* CCameraMayaSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CCameraMayaSceneNode.h; sourceTree = "<group>"; };
 		4C53DEF80A484C220014E966 /* CCameraSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CCameraSceneNode.cpp; sourceTree = "<group>"; };
 		4C53DEF90A484C220014E966 /* CCameraSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CCameraSceneNode.h; sourceTree = "<group>"; };
 		4C53DEFA0A484C220014E966 /* CColladaFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CColladaFileLoader.cpp; sourceTree = "<group>"; };
@@ -1020,7 +1022,6 @@
 		4C53DF7E0A484C230014E966 /* CMY3DHelper.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CMY3DHelper.h; sourceTree = "<group>"; };
 		4C53DF7F0A484C230014E966 /* CMY3DMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CMY3DMeshFileLoader.cpp; sourceTree = "<group>"; };
 		4C53DF800A484C230014E966 /* CMY3DMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CMY3DMeshFileLoader.h; sourceTree = "<group>"; };
-		4C53DF810A484C230014E966 /* CMY3DStuff.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CMY3DStuff.h; sourceTree = "<group>"; };
 		4C53DF820A484C240014E966 /* CNullDriver.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CNullDriver.cpp; sourceTree = "<group>"; };
 		4C53DF830A484C240014E966 /* CNullDriver.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CNullDriver.h; sourceTree = "<group>"; };
 		4C53DF840A484C240014E966 /* COCTLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = COCTLoader.cpp; sourceTree = "<group>"; };
@@ -1990,7 +1991,6 @@
 				4C53DF7E0A484C230014E966 /* CMY3DHelper.h */,
 				4C53DF7F0A484C230014E966 /* CMY3DMeshFileLoader.cpp */,
 				4C53DF800A484C230014E966 /* CMY3DMeshFileLoader.h */,
-				4C53DF810A484C230014E966 /* CMY3DStuff.h */,
 				4C364EA20A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp */,
 				4C364EA30A6C6DC2004CFBB4 /* COBJMeshFileLoader.h */,
 				4C53DF840A484C240014E966 /* COCTLoader.cpp */,
@@ -2044,16 +2044,16 @@
 		0910BA890D1F6F6600D46B04 /* sceneNodes */ = {
 			isa = PBXGroup;
 			children = (
+				093973BC0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp */,
+				093973BD0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h */,
+				093973BE0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp */,
+				093973BF0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h */,
 				4C53DEED0A484C220014E966 /* CAnimatedMeshSceneNode.cpp */,
 				4C53DEEE0A484C220014E966 /* CAnimatedMeshSceneNode.h */,
 				4C53DEF20A484C220014E966 /* CBillboardSceneNode.cpp */,
 				4C53DEF30A484C220014E966 /* CBillboardSceneNode.h */,
 				096840200D0F1A2300333EFD /* CBoneSceneNode.cpp */,
 				096840210D0F1A2300333EFD /* CBoneSceneNode.h */,
-				4C53DEF40A484C220014E966 /* CCameraFPSSceneNode.cpp */,
-				4C53DEF50A484C220014E966 /* CCameraFPSSceneNode.h */,
-				4C53DEF60A484C220014E966 /* CCameraMayaSceneNode.cpp */,
-				4C53DEF70A484C220014E966 /* CCameraMayaSceneNode.h */,
 				4C53DEF80A484C220014E966 /* CCameraSceneNode.cpp */,
 				4C53DEF90A484C220014E966 /* CCameraSceneNode.h */,
 				4C53DF000A484C220014E966 /* CCubeSceneNode.cpp */,
@@ -2795,6 +2795,8 @@
 				0910BA4A0D1F64B300D46B04 /* SViewFrustum.h in Headers */,
 				090FBC830D31085E0076D847 /* CVolumeLightSceneNode.h in Headers */,
 				09C638730D4F1A69000B6A18 /* CLWOMeshFileLoader.h in Headers */,
+				093973C10E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h in Headers */,
+				093973C30E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3586,7 +3588,6 @@
 				4C53E48A0A4856B30014E966 /* COctTreeSceneNode.cpp in Sources */,
 				4C53E48B0A4856B30014E966 /* CParticleSystemSceneNode.cpp in Sources */,
 				4C53E48C0A4856B30014E966 /* CTerrainSceneNode.cpp in Sources */,
-				4C53E48D0A4856B30014E966 /* CCameraFPSSceneNode.cpp in Sources */,
 				4C53E48E0A4856B30014E966 /* CGUIFont.cpp in Sources */,
 				4C53E48F0A4856B30014E966 /* CParticleFadeOutAffector.cpp in Sources */,
 				4C53E4910A4856B30014E966 /* CDummyTransformationSceneNode.cpp in Sources */,
@@ -3615,7 +3616,6 @@
 				4C53E4A80A4856B30014E966 /* CLogger.cpp in Sources */,
 				4C53E4A90A4856B30014E966 /* CGUIInOutFader.cpp in Sources */,
 				4C53E4AA0A4856B30014E966 /* CWriteFile.cpp in Sources */,
-				4C53E4AC0A4856B30014E966 /* CCameraMayaSceneNode.cpp in Sources */,
 				4C53E4AD0A4856B30014E966 /* CTRTextureGouraud.cpp in Sources */,
 				4C53E4AE0A4856B30014E966 /* CTRFlat.cpp in Sources */,
 				4C53E4AF0A4856B30014E966 /* CTerrainTriangleSelector.cpp in Sources */,
@@ -3707,6 +3707,8 @@
 				0910B9E10D1F5D4100D46B04 /* CImageLoaderWAL.cpp in Sources */,
 				090FBC820D31085E0076D847 /* CVolumeLightSceneNode.cpp in Sources */,
 				09C638720D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp in Sources */,
+				093973C00E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp in Sources */,
+				093973C20E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
