@@ -191,7 +191,7 @@ bool CIrrDeviceMacOSX::createWindow()
 				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)2;
 			}
 
-			if (CreationParams.StencilBuffer)
+			if (CreationParams.Stencilbuffer)
 			{
 				windowattribs[index++] = NSOpenGLPFAStencilSize;
 				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)1;
@@ -257,7 +257,7 @@ bool CIrrDeviceMacOSX::createWindow()
 						fullattribs[index++] = (CGLPixelFormatAttribute)2;
 					}
 
-					if (CreationParams.StencilBuffer)
+					if (CreationParams.Stencilbuffer)
 					{
 						fullattribs[index++] = kCGLPFAStencilSize;
 						fullattribs[index++] = (CGLPixelFormatAttribute)1;
@@ -463,10 +463,6 @@ void CIrrDeviceMacOSX::sleep(u32 timeMs, bool pauseTimer=false)
 		Timer->start();
 }
 
-void CIrrDeviceMacOSX::present(video::IImage* image, s32 windowId, core::rect<s32>* src )
-{
-}
-
 void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 {
 	size_t	size;
@@ -664,6 +660,11 @@ void CIrrDeviceMacOSX::initKeycodes()
 void CIrrDeviceMacOSX::setResizeAble(bool resize)
 {
 	// todo: implement resize
+}
+
+void CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
+{
+	// todo: implement 
 }
 
 video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
