@@ -104,6 +104,9 @@ namespace irr
 		//! Checks if the window is running in fullscreen mode.
 		virtual bool isFullscreen() const;
 
+		//! get color format of the current window
+		virtual video::ECOLOR_FORMAT getColorFormat() const;
+
 	protected:
 
 		void createGUIAndScene();

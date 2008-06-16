@@ -452,12 +452,12 @@ bool CIrrDeviceLinux::createWindow()
 		int visNumber; // Return value of available visuals
 
 		visTempl.screen = screennr;
-		visTempl.depth = 16;
-		while ((!visual) && (visTempl.depth<=32))
+		visTempl.depth = 32;
+		while ((!visual) && (visTempl.depth>=16))
 		{
 			visual = XGetVisualInfo(display, VisualScreenMask|VisualDepthMask,
 				&visTempl, &visNumber);
-			visTempl.depth+=8;
+			visTempl.depth-=8;
 		}
 	}
 
@@ -1025,6 +1025,16 @@ bool CIrrDeviceLinux::isWindowFocused() const
 bool CIrrDeviceLinux::isWindowMinimized() const
 {
 	return WindowMinimized;
+}
+
+
+//! returns color format of the window.
+video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
+{
+	if (visual && (visual->depth != 16))
+		return video::ECF_R8G8B8;
+	else
+		return video::ECF_R5G6B5;
 }
 
 

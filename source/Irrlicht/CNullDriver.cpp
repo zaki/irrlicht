@@ -707,6 +707,11 @@ void CNullDriver::draw2DPolygon(core::position2d<s32> center,
 }
 
 
+//! returns color format
+ECOLOR_FORMAT CNullDriver::getColorFormat() const
+{
+	return ECF_R5G6B5;
+}
 
 
 //! returns screen size
@@ -714,6 +719,7 @@ const core::dimension2d<s32>& CNullDriver::getScreenSize() const
 {
 	return ScreenSize;
 }
+
 
 //! returns the current render target size,
 //! or the screen size if render targets are not implemented
