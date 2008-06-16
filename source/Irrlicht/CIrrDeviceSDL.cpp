@@ -25,7 +25,7 @@ namespace irr
 	{
 		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io);
-	}
+	} // end namespace video
 
 } // end namespace irr
 
@@ -104,7 +104,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 CIrrDeviceSDL::~CIrrDeviceSDL()
 {
 	// only free surfaces created by us
-	if (Screen && !param.WindowId)
+	if (Screen && !CreationParams.WindowId)
 		SDL_FreeSurface(Screen);
 	SDL_Quit();
 }
@@ -415,11 +415,38 @@ bool CIrrDeviceSDL::isWindowMinimized() const
 }
 
 
+//! returns color format of the window.
+video::ECOLOR_FORMAT CIrrDeviceSDL::getColorFormat() const
+{
+	if (Screen)
+	{
+		if (Screen->format->BitsPerPixel==16)
+		{
+			if (Screen->format->Amask != 0)
+				return video::ECF_A1R5G5B5;
+			else
+				return video::ECF_R5G6B5;
+		}
+		else
+		{
+			if (Screen->format->Amask != 0)
+				return video::ECF_A8R8G8B8;
+			else
+				return video::ECF_R8G8B8;
+		}
+	}
+	else
+		return CIrrDeviceStub::getColorFormat();
+}
+
+
 void CIrrDeviceSDL::createKeyMap()
 {
 	// I don't know if this is the best method  to create
 	// the lookuptable, but I'll leave it like that until
 	// I find a better version.
+
+	KeyMap.reallocate(105);
 
 	// buttons missing
 

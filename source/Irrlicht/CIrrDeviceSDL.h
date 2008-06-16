@@ -46,6 +46,15 @@ namespace irr
 		//! returns if window is active. if not, nothing need to be drawn
 		virtual bool isWindowActive() const;
 
+		//! returns if window has focus.
+		bool isWindowFocused() const;
+
+		//! returns if window is minimized.
+		bool isWindowMinimized() const;
+			
+		//! returns color format of the window.
+		video::ECOLOR_FORMAT getColorFormat() const;
+
 		//! presents a surface in the client area
 		virtual void present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0);
 
