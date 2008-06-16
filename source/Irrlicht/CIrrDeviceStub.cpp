@@ -234,6 +234,12 @@ void CIrrDeviceStub::setInputReceivingSceneManager(scene::ISceneManager* sceneMa
 }
 
 
+//! Checks if the window is running in fullscreen mode
+bool CIrrDeviceStub::isFullscreen() const
+{
+	return CreationParams.Fullscreen;
+}
+
 
 } // end namespace irr
 

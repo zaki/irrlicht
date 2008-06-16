@@ -246,7 +246,6 @@ namespace irr
 		HWND HWnd;
 
 		bool ChangedToFullScreen;
-		bool FullScreen;
 		bool IsNonNTWindows;
 		bool Resized;
 		bool ExternalWindow;
