@@ -38,10 +38,12 @@ const char* wmDeleteWindow = "WM_DELETE_WINDOW";
 
 //! constructor
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
-	: CIrrDeviceStub(param), Resizeable(false),
+	: CIrrDeviceStub(param),
 	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_HWSURFACE|SDL_ANYFORMAT),
-	Width(param.WindowSize.Width), Height(param.WindowSize.Height), Close(0),
-	WindowActive(false)
+	MouseX(0), MouseY(0),
+	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
+	Close(0), Resizeable(false),
+	WindowHasFocus(false), WindowMinimized(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceSDL");
@@ -197,6 +199,7 @@ bool CIrrDeviceSDL::run()
 	os::Timer::tick();
 
 	SEvent irrevent;
+	SDL_Event SDL_event;
 
 	while ( !Close && SDL_PollEvent( &SDL_event ) )
 	{
@@ -269,8 +272,12 @@ bool CIrrDeviceSDL::run()
 			break;
 
 		case SDL_ACTIVEEVENT:
-			if (SDL_event.active.state == SDL_APPMOUSEFOCUS)
-				WindowActive = (SDL_event.active.gain==1);
+			if ((SDL_event.active.state == SDL_APPMOUSEFOCUS) ||
+					(SDL_event.active.state == SDL_APPINPUTFOCUS))
+				WindowHasFocus = (SDL_event.active.gain==1);
+			else
+			if (SDL_event.active.state == SDL_APPACTIVE)
+				WindowMinimized = (SDL_event.active.gain!=1);
 			break;
 
 		default:
@@ -293,7 +300,7 @@ void CIrrDeviceSDL::yield()
 //! pause execution for a specified time
 void CIrrDeviceSDL::sleep(u32 timeMs, bool pauseTimer)
 {
-	bool wasStopped = Timer ? Timer->isStopped() : true;
+	const bool wasStopped = Timer ? Timer->isStopped() : true;
 	if (pauseTimer && !wasStopped)
 		Timer->stop();
 	
@@ -387,11 +394,24 @@ void CIrrDeviceSDL::setResizeAble(bool resize)
 }
 
 
-
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {
-	return WindowActive;
+	return (WindowHasFocus && !WindowMinimized);
+}
+
+
+//! returns if window has focus.
+bool CIrrDeviceSDL::isWindowFocused() const
+{
+	return WindowHasFocus;
+}
+
+
+//! returns if window is minimized.
+bool CIrrDeviceSDL::isWindowMinimized() const
+{
+	return WindowMinimized;
 }
 
 

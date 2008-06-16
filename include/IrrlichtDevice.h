@@ -151,6 +151,14 @@ namespace irr
 		\return True if window is active. */
 		virtual bool isWindowActive() const = 0;
 
+		//! Checks if the Irrlicht window has focus
+		/** \return True if window has focus. */
+		virtual bool isWindowFocused() const = 0;
+
+		//! Checks if the Irrlicht window is minimized
+		/** \return True if window is minimized. */
+		virtual bool isWindowMinimized() const = 0;
+
 		//! Notifies the device that it should close itself.
 		/** IrrlichtDevice::run() will always return false after closeDevice() was called. */
 		virtual void closeDevice() = 0;

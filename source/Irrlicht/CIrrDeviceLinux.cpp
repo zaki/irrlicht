@@ -43,7 +43,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
 #endif
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-	Close(false), WindowActive(false), WindowMinimized(false), UseXVidMode(false), UseXRandR(false), UseGLXWindow(false), AutorepeatSupport(0)
+	Close(false), WindowHasFocus(false), WindowMinimized(false), UseXVidMode(false), UseXRandR(false), UseGLXWindow(false), AutorepeatSupport(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceLinux");
@@ -529,7 +529,7 @@ bool CIrrDeviceLinux::createWindow()
 		XSetWMProtocols(display, window, &wmDelete, 1);
 		XMapRaised(display, window);
 	}
-	WindowActive=true;
+	WindowMinimized=false;
 	XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -668,7 +668,6 @@ void CIrrDeviceLinux::createDriver()
 }
 
 
-
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceLinux::run()
 {
@@ -722,11 +721,11 @@ bool CIrrDeviceLinux::run()
 				break;
 
 			case FocusIn:
-				WindowActive=true;
+				WindowHasFocus=true;
 				break;
 
 			case FocusOut:
-				WindowActive=false;
+				WindowHasFocus=false;
 				break;
 
 			case MotionNotify:
@@ -859,7 +858,7 @@ void CIrrDeviceLinux::yield()
 //! Pause execution and let other processes to run for a specified amount of time.
 void CIrrDeviceLinux::sleep(u32 timeMs, bool pauseTimer=false)
 {
-	bool wasStopped = Timer ? Timer->isStopped() : true;
+	const bool wasStopped = Timer ? Timer->isStopped() : true;
 
 	struct timespec ts;
 	ts.tv_sec = (time_t) (timeMs / 1000);
@@ -1011,7 +1010,21 @@ void CIrrDeviceLinux::closeDevice()
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceLinux::isWindowActive() const
 {
-	return WindowActive;
+	return (WindowHasFocus && !WindowMinimized);
+}
+
+
+//! returns if window has focus.
+bool CIrrDeviceLinux::isWindowFocused() const
+{
+	return WindowHasFocus;
+}
+
+
+//! returns if window is minimized.
+bool CIrrDeviceLinux::isWindowMinimized() const
+{
+	return WindowMinimized;
 }
 
 
