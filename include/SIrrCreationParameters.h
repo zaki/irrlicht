@@ -5,6 +5,8 @@
 #ifndef __I_IRRLICHT_CREATION_PARAMETERS_H_INCLUDED__
 #define __I_IRRLICHT_CREATION_PARAMETERS_H_INCLUDED__
 
+#include "EDriverTypes.h"
+
 namespace irr
 {
 	class IEventReceiver;
