@@ -183,13 +183,16 @@ namespace video
 			f32 start=50.0f, f32 end=100.0f,
 			f32 density=0.01f, bool pixelFog=false, bool rangeFog=false);
 
-		//! returns screen size
+		//! get color format of the current color buffer
+		virtual ECOLOR_FORMAT getColorFormat() const;
+
+		//! get screen size
 		virtual const core::dimension2d<s32>& getScreenSize() const;
 
-		//! returns screen size
+		//! get render target size
 		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
 
-		// returns current frames per second value
+		// get current frames per second value
 		virtual s32 getFPS() const;
 
 		//! returns amount of primitives (mostly triangles) were drawn in the last frame.

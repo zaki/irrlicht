@@ -77,9 +77,6 @@ namespace video
 	{
 	public:
 
-		//! Destructor
-		virtual ~IVideoDriver() {}
-
 		//! Applications must call this method before performing any rendering.
 		/** This method can clear the back- and the z-buffer.
 		\param backBuffer Specifies if the back buffer should be
@@ -639,7 +636,11 @@ namespace video
 				f32 density=0.01f, 
 				bool pixelFog=false, bool rangeFog=false) = 0;
 
-		//! Returns the size of the screen or render window.
+		//! Get the current color format of the color buffer
+		/** \return Color format of the color buffer. */
+		virtual ECOLOR_FORMAT getColorFormat() const = 0;
+
+		//! Get the size of the screen or render window.
 		/** \return Size of screen or render window. */
 		virtual const core::dimension2d<s32>& getScreenSize() const = 0;
 
