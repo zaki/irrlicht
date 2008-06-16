@@ -279,7 +279,7 @@ namespace irr
 //! constructor
 CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 : CIrrDeviceStub(params), HWnd(0), ChangedToFullScreen(false),
-	FullScreen(CreationParams.Fullscreen), IsNonNTWindows(false), Resized(false),
+	IsNonNTWindows(false), Resized(false),
 	ExternalWindow(false), Win32CursorControl(0)
 {
 
@@ -916,7 +916,7 @@ void CIrrDeviceWin32::OnResized()
 //! Sets if the window should be resizeable in windowed mode.
 void CIrrDeviceWin32::setResizeAble(bool resize)
 {
-	if (ExternalWindow || !getVideoDriver() || FullScreen)
+	if (ExternalWindow || !getVideoDriver() || CreationParams.Fullscreen)
 		return;
 
 	LONG style = WS_POPUP;

@@ -159,6 +159,10 @@ namespace irr
 		/** \return True if window is minimized. */
 		virtual bool isWindowMinimized() const = 0;
 
+		//! Checks if the Irrlicht window is running in fullscreen mode
+		/** \return True if window is fullscreen. */
+		virtual bool isFullscreen() const = 0;
+
 		//! Notifies the device that it should close itself.
 		/** IrrlichtDevice::run() will always return false after closeDevice() was called. */
 		virtual void closeDevice() = 0;

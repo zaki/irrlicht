@@ -73,12 +73,10 @@ namespace irr
 		//! \return Returns a pointer to the mouse cursor control interface.
 		virtual gui::ICursorControl* getCursorControl();
 
-		//! \return Returns a pointer to a list with all video modes supported
-		//! by the gfx adapter.
+		//! Returns a pointer to a list with all video modes supported by the gfx adapter.
 		virtual video::IVideoModeList* getVideoModeList();
 
-		//! \return Returns a pointer to the ITimer object. With it the
-		//! current Time can be received.
+		//! Returns a pointer to the ITimer object. With it the current Time can be received.
 		virtual ITimer* getTimer();
 
 		//! Returns the version of the engine. 
@@ -90,24 +88,27 @@ namespace irr
 		//! Sets a new event receiver to receive events
 		virtual void setEventReceiver(IEventReceiver* receiver);
 
-		//! Returns poinhter to the current event receiver. Returns 0 if there is none.
+		//! Returns pointer to the current event receiver. Returns 0 if there is none.
 		virtual IEventReceiver* getEventReceiver();
 
 		//! Sets the input receiving scene manager. 
 		/** If set to null, the main scene manager (returned by GetSceneManager()) will receive the input */
 		virtual void setInputReceivingSceneManager(scene::ISceneManager* sceneManager);
 
-		//! \return Returns a pointer to the logger.
+		//! Returns a pointer to the logger.
 		virtual ILogger* getLogger();
 
 		//! Returns the operation system opertator object.
 		virtual IOSOperator* getOSOperator();
 
+		//! Checks if the window is running in fullscreen mode.
+		virtual bool isFullscreen() const;
+
 	protected:
 
 		void createGUIAndScene();
 
-		//! checks version of sdk and prints warning if there might be a problem
+		//! checks version of SDK and prints warning if there might be a problem
 		bool checkVersion(const char* version);
 
 		video::IVideoDriver* VideoDriver;
