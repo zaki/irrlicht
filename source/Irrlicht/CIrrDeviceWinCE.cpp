@@ -528,7 +528,7 @@ void CIrrDeviceWinCE::yield()
 //! Pause execution and let other processes to run for a specified amount of time.
 void CIrrDeviceWinCE::sleep(u32 timeMs, bool pauseTimer)
 {
-	bool wasStopped = Timer ? Timer->isStopped() : true;
+	const bool wasStopped = Timer ? Timer->isStopped() : true;
 	if (pauseTimer && !wasStopped)
 		Timer->stop();
 	
@@ -657,7 +657,6 @@ void CIrrDeviceWinCE::closeDevice()
 }
 
 
-
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceWinCE::isWindowActive() const
 {
@@ -666,6 +665,27 @@ bool CIrrDeviceWinCE::isWindowActive() const
 	return ret;
 }
 
+
+//! returns if window has focus
+bool CIrrDeviceWinCE::isWindowFocused() const
+{
+	bool ret = (GetFocus() == HWnd);
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return ret;
+}
+
+
+//! returns if window is minimized
+bool CIrrDeviceWinCE::isWindowMinimized() const
+{
+	WINDOWPLACEMENT plc;
+	plc.length=sizeof(WINDOWPLACEMENT);
+	bool ret=false;
+	if (GetWindowPlacement(HWnd,&plc))
+		ret=(plc.showCmd & SW_SHOWMINIMIZED);
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return ret;
+}
 
 
 //! switches to fullscreen

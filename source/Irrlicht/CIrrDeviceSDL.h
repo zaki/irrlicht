@@ -158,16 +158,17 @@ namespace irr
 
 		void createKeyMap();
 
-		s32 MouseX, MouseY;
-		bool Resizeable;
-		
 		SDL_Surface* Screen;
-		SDL_Event SDL_event;
 		int SDL_Flags;
 
+		s32 MouseX, MouseY;
+		
 		u32 Width, Height;
+
 		bool Close;
-		bool WindowActive;
+		bool Resizeable;
+		bool WindowHasFocus;
+		bool WindowMinimized;
 
 		struct SKeyMap
 		{
