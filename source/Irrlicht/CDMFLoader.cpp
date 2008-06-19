@@ -98,7 +98,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 	if (GetDMFHeader(dmfRawFile, header))
 	{
 		//let's set ambient light
-		SceneMgr->setAmbientLight( header.dmfAmbient);
+		SceneMgr->setAmbientLight(header.dmfAmbient);
 
 		//let's create the correct number of materials, vertices and faces
 		dmfMaterial *materiali=new dmfMaterial[header.numMaterials];

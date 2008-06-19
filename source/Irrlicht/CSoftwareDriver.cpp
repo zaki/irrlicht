@@ -19,8 +19,9 @@ namespace video
 
 //! constructor
 CSoftwareDriver::CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
-: CNullDriver(io, windowSize), RenderTargetTexture(0), RenderTargetSurface(0),
-	CurrentTriangleRenderer(0), ZBuffer(0), Texture(0), Presenter(presenter)
+: CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter),
+	RenderTargetTexture(0), RenderTargetSurface(0),
+	CurrentTriangleRenderer(0), ZBuffer(0), Texture(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareDriver");
@@ -683,7 +684,6 @@ void CSoftwareDriver::drawClippedIndexedTriangleListT(const VERTEXTYPE* vertices
 }
 
 
-
 //! Draws a 3d line.
 void CSoftwareDriver::draw3DLine(const core::vector3df& start,
 				const core::vector3df& end, SColor color)
@@ -711,20 +711,10 @@ void CSoftwareDriver::draw3DLine(const core::vector3df& start,
 }
 
 
-
 //! clips a triangle against the viewing frustum
 void CSoftwareDriver::clipTriangle(f32* transformedPos)
 {
 }
-
-
-
-//! creates the clipping planes from the matrix
-void CSoftwareDriver::createPlanes(const core::matrix4& mat)
-{
-	Frustum = scene::SViewFrustum(mat);
-}
-
 
 
 //! Only used by the internal engine. Used to notify the driver that
