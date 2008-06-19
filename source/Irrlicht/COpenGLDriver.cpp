@@ -49,7 +49,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
 bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 				HWND window, u32 bits, bool fullscreen, bool vsync, bool stencilBuffer)
 {
-	static	PIXELFORMATDESCRIPTOR pfd =	{
+	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
 		1,				// Version Number
 		PFD_DRAW_TO_WINDOW |		// Format Must Support Window
@@ -142,6 +142,26 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 		break;
 	}
 
+	if (HDc)
+	{
+		int pf = GetPixelFormat(HDc);
+		DescribePixelFormat(HDc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+		if (pfd.cAlphaBits != 0)
+		{
+			if (pfd.cRedBits == 8)
+				ColorFormat = ECF_A8R8G8B8;
+			else
+				ColorFormat = ECF_A1R5G5B5;
+		}
+		else
+		{
+			if (pfd.cRedBits == 8)
+				ColorFormat = ECF_R8G8B8;
+			else
+				ColorFormat = ECF_R5G6B5;
+		}
+	}
+
 	genericDriverInit(screenSize, stencilBuffer);
 
 	// set vsync
@@ -168,7 +188,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0), LastSetLight(-1),
-	CurrentRendertargetSize(0,0), _device(device)
+	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8), _device(device)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -188,15 +208,14 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0)
+	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
-	XWindow = glXGetCurrentDrawable();
-	XDisplay = glXGetCurrentDisplay();
-	ExposedData.OpenGLLinux.X11Display = XDisplay;
-	ExposedData.OpenGLLinux.X11Window = XWindow;
+	ExposedData.OpenGLLinux.X11Context = glXGetCurrentContext();
+	ExposedData.OpenGLLinux.X11Display = glXGetCurrentDisplay();
+	ExposedData.OpenGLLinux.X11Window = glXGetCurrentDrawable();
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
@@ -225,7 +244,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0)
+	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -423,7 +442,7 @@ bool COpenGLDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 	return SwapBuffers(HDc) == TRUE;
 #elif defined(_IRR_USE_LINUX_DEVICE_)
-	glXSwapBuffers(XDisplay, XWindow);
+	glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, ExposedData.OpenGLLinux.X11Window);
 	return true;
 #elif defined(_IRR_USE_OSX_DEVICE_)
 	_device->flush();
@@ -2360,13 +2379,18 @@ void COpenGLDriver::OnResize(const core::dimension2d<s32>& size)
 }
 
 
-
 //! Returns type of video driver
 E_DRIVER_TYPE COpenGLDriver::getDriverType() const
 {
 	return EDT_OPENGL;
 }
 
+
+//! returns color format
+ECOLOR_FORMAT COpenGLDriver::getColorFormat() const
+{
+	return ColorFormat;
+}
 
 
 //! Sets a vertex shader constant.
@@ -2511,8 +2535,6 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	// check if we should set the previous RT back
 
-	bool ret = true;
-
 	setTexture(0, 0);
 	ResetRenderStates=true;
 	if (RenderTargetTexture!=0)
@@ -2567,7 +2589,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	glClear(mask);
 
-	return ret;
+	return true;
 }
 
 

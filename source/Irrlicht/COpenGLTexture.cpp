@@ -46,6 +46,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDrive
 	}
 }
 
+
 //! ColorFrameBuffer constructor
 COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
                                 bool extPackedDepthStencilSupported,
@@ -247,7 +248,6 @@ void COpenGLTexture::getImageData(IImage* image)
 }
 
 
-
 //! copies the the texture into an open gl texture.
 void COpenGLTexture::copyTexture(bool newTexture)
 {
@@ -335,7 +335,6 @@ void COpenGLTexture::copyTexture(bool newTexture)
 }
 
 
-
 //! returns the size of a texture which would be the optimal size for rendering it
 inline s32 COpenGLTexture::getTextureSizeFromSurfaceSize(s32 size) const
 {
@@ -360,7 +359,6 @@ void* COpenGLTexture::lock()
 }
 
 
-
 //! unlock function
 void COpenGLTexture::unlock()
 {
@@ -373,13 +371,11 @@ void COpenGLTexture::unlock()
 }
 
 
-
 //! Returns size of the original image.
 const core::dimension2d<s32>& COpenGLTexture::getOriginalSize() const
 {
 	return ImageSize;
 }
-
 
 
 //! Returns of the texture.
@@ -392,13 +388,11 @@ const core::dimension2d<s32>& COpenGLTexture::getSize() const
 }
 
 
-
-//! returns driver type of texture (=the driver, who created the texture)
+//! returns driver type of texture, i.e. the driver, which created the texture
 E_DRIVER_TYPE COpenGLTexture::getDriverType() const
 {
 	return EDT_OPENGL;
 }
-
 
 
 //! returns color format of texture
@@ -411,7 +405,6 @@ ECOLOR_FORMAT COpenGLTexture::getColorFormat() const
 }
 
 
-
 //! returns pitch of texture (in bytes)
 u32 COpenGLTexture::getPitch() const
 {
@@ -420,7 +413,6 @@ u32 COpenGLTexture::getPitch() const
 	else
 		return 0;
 }
-
 
 
 //! return open gl texture name
@@ -474,10 +466,12 @@ bool COpenGLTexture::isFrameBufferObject() const
     return ColorFrameBuffer != 0;
 }
 
+
 bool COpenGLTexture::isRenderTarget() const
 {
     return IsRenderTarget;
 }
+
 
 void COpenGLTexture::setRenderTarget(bool isTarget)
 {
@@ -503,6 +497,7 @@ void COpenGLTexture::unbindFrameBufferObject()
         Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
 #endif
 }
+
 
 #ifdef GL_EXT_framebuffer_object
 bool checkFBOStatus(COpenGLDriver* Driver)
@@ -557,6 +552,7 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 	return false;
 }
 #endif
+
 
 } // end namespace video
 } // end namespace irr
