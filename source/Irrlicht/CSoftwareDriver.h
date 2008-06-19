@@ -87,6 +87,9 @@ namespace video
 		//! Returns type of video driver
 		virtual E_DRIVER_TYPE getDriverType() const;
 
+		//! get color format of the current color buffer
+		virtual ECOLOR_FORMAT getColorFormat() const;
+
 		//! Returns the transformation set by setTransform
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 

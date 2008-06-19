@@ -245,6 +245,9 @@ namespace video
 		//! Returns type of video driver
 		virtual E_DRIVER_TYPE getDriverType() const;
 
+		//! get color format of the current color buffer
+		virtual ECOLOR_FORMAT getColorFormat() const;
+
 		//! Returns the transformation set by setTransform
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
@@ -352,9 +355,6 @@ namespace video
 		void createMaterialRenderers();
 
 
-
-
-
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
 		core::array<u8> ColorBuffer;
@@ -386,13 +386,13 @@ namespace video
 
 		core::matrix4 TextureFlipMatrix;
 
+		//! Color buffer format
+		ECOLOR_FORMAT ColorFormat;
+
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
 			HGLRC HRc; // Permanent Rendering Context
-		#elif defined(_IRR_USE_LINUX_DEVICE_)
-			GLXDrawable XWindow;
-			Display* XDisplay;
 		#elif defined(_IRR_USE_OSX_DEVICE_)
 			CIrrDeviceMacOSX *_device;
 		#endif

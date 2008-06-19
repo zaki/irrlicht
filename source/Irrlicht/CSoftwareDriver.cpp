@@ -20,7 +20,7 @@ namespace video
 //! constructor
 CSoftwareDriver::CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 : CNullDriver(io, windowSize), RenderTargetTexture(0), RenderTargetSurface(0),
-	CurrentTriangleRenderer(0), ZBuffer(0), Texture(0)
+	CurrentTriangleRenderer(0), ZBuffer(0), Texture(0), Presenter(presenter)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareDriver");
@@ -29,15 +29,13 @@ CSoftwareDriver::CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool 
 	// create backbuffer
 
 	BackBuffer = new CImage(ECF_A1R5G5B5, windowSize);
-	BackBuffer->fill(SColor(0));
+	if (BackBuffer)
+	{
+		BackBuffer->fill(SColor(0));
 
-	// get presenter
-
-	Presenter = presenter;
-
-	// create z buffer
-
-	ZBuffer = video::createZBuffer(BackBuffer->getDimension());
+		// create z buffer
+		ZBuffer = video::createZBuffer(BackBuffer->getDimension());
+	}
 
 	// create triangle renderers
 
@@ -67,7 +65,8 @@ CSoftwareDriver::CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool 
 CSoftwareDriver::~CSoftwareDriver()
 {
 	// delete Backbuffer
-	BackBuffer->drop();
+	if (BackBuffer)
+		BackBuffer->drop();
 
 	// delete triangle renderers
 
@@ -232,7 +231,7 @@ bool CSoftwareDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color);
 
-	if (backBuffer)
+	if (backBuffer && BackBuffer)
 		BackBuffer->fill( color );
 
 	if (ZBuffer && zBuffer)
@@ -753,7 +752,8 @@ void CSoftwareDriver::OnResize(const core::dimension2d<s32>& size)
 
 		bool resetRT = (RenderTargetSurface == BackBuffer);
 
-		BackBuffer->drop();
+		if (BackBuffer)
+			BackBuffer->drop();
 		BackBuffer = new CImage(ECF_A1R5G5B5, realSize);
 
 		if (resetRT)
@@ -853,6 +853,16 @@ E_DRIVER_TYPE CSoftwareDriver::getDriverType() const
 }
 
 
+//! returns color format
+ECOLOR_FORMAT CSoftwareDriver::getColorFormat() const
+{
+	if (BackBuffer)
+		return BackBuffer->getColorFormat();
+	else
+		return CNullDriver::getColorFormat();
+}
+
+
 //! Returns the transformation set by setTransform
 const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
@@ -880,7 +890,10 @@ void CSoftwareDriver::clearZBuffer()
 //! Returns an image created from the last rendered frame.
 IImage* CSoftwareDriver::createScreenShot()
 {
-	return new CImage(BackBuffer->getColorFormat(), BackBuffer);
+	if (BackBuffer)
+		return new CImage(BackBuffer->getColorFormat(), BackBuffer);
+	else
+		return 0;
 }
 
 

@@ -73,6 +73,7 @@ struct SExposedVideoData
 		{
 			// XWindow handles
 			void* X11Display;
+			void* X11Context;
 			unsigned long X11Window;
 		} OpenGLLinux;
 	};

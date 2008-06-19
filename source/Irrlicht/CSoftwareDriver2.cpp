@@ -36,11 +36,13 @@ CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<s32>& windowSiz
 
 	// create backbuffer
 	BackBuffer = new CImage(BURNINGSHADER_COLOR_FORMAT, windowSize);
-	BackBuffer->fill(SColor(0));
+	if (BackBuffer)
+	{
+		BackBuffer->fill(SColor(0));
 	
-	// create z buffer
-
-	DepthBuffer = video::createDepthBuffer(BackBuffer->getDimension());
+		// create z buffer
+		DepthBuffer = video::createDepthBuffer(BackBuffer->getDimension());
+	}
 
 	// create triangle renderers
 
@@ -110,33 +112,28 @@ CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<s32>& windowSiz
 	tmr->drop ();
 	umr->drop ();
 
-
 	// select render target
 
 	setRenderTarget(BackBuffer);
-
 
 	LightSpace.Global_AmbientLight.set ( 0.f, 0.f, 0.f, 0.f );
 
 	// select the right renderer
 	//CurrentShader = BurningShader[ETR_REFERENCE];
 	setCurrentShader();
-
 }
-
 
 
 //! destructor
 CBurningVideoDriver::~CBurningVideoDriver()
 {
-	s32 i;
-
 	// delete Backbuffer
-	BackBuffer->drop();
+	if (BackBuffer)
+		BackBuffer->drop();
 
 	// delete triangle renderers
 
-	for (i=0; i<ETR2_COUNT; ++i)
+	for (s32 i=0; i<ETR2_COUNT; ++i)
 		if (BurningShader[i])
 			BurningShader[i]->drop();
 
@@ -151,7 +148,6 @@ CBurningVideoDriver::~CBurningVideoDriver()
 	if (RenderTargetSurface)
 		RenderTargetSurface->drop();
 }
-
 
 
 //! void selects the right triangle renderer based on the render states.
@@ -389,7 +385,7 @@ bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer, SColor color
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color);
 
-	if (backBuffer)
+	if (backBuffer && BackBuffer)
 		BackBuffer->fill( color );
 
 	if (DepthBuffer && zBuffer)
@@ -403,7 +399,7 @@ bool CBurningVideoDriver::endScene( void* windowId, core::rect<s32>* sourceRect 
 {
 	CNullDriver::endScene();
 
-	Presenter->present(BackBuffer, windowId, sourceRect );
+	Presenter->present(BackBuffer, windowId, sourceRect);
 
 	return true;
 }
@@ -1556,7 +1552,6 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 }
 
 
-
 //! draw an 2d rectangle
 void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 									 const core::rect<s32>* clip)
@@ -1580,6 +1575,7 @@ void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& p
 		BackBuffer->drawRectangle(pos, color);
 	}
 }
+
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
@@ -1606,7 +1602,8 @@ void CBurningVideoDriver::OnResize(const core::dimension2d<s32>& size)
 
 		bool resetRT = (RenderTargetSurface == BackBuffer);
 
-		BackBuffer->drop();
+		if (BackBuffer)
+			BackBuffer->drop();
 		BackBuffer = new CImage(BURNINGSHADER_COLOR_FORMAT, realSize);
 
 		if (resetRT)
@@ -1614,11 +1611,13 @@ void CBurningVideoDriver::OnResize(const core::dimension2d<s32>& size)
 	}
 }
 
+
 //! returns the current render target size
 const core::dimension2d<s32>& CBurningVideoDriver::getCurrentRenderTargetSize() const
 {
 	return RenderTargetSize;
 }
+
 
 //!Draws an 2d rectangle with a gradient.
 void CBurningVideoDriver::draw2DRectangle(const core::rect<s32>& position,
@@ -1733,7 +1732,6 @@ void CBurningVideoDriver::draw2DRectangle(const core::rect<s32>& position,
 }
 
 
-
 //! Draws a 3d line.
 void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 	const core::vector3df& end, SColor color)
@@ -1782,7 +1780,6 @@ void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 }
 
 
-
 //! \return Returns the name of the video driver. Example: In case of the DirectX8
 //! driver, it would return "Direct3D8.1".
 const wchar_t* CBurningVideoDriver::getName() const
@@ -1798,17 +1795,27 @@ const wchar_t* CBurningVideoDriver::getName() const
 #endif
 }
 
+
 //! Returns type of video driver
 E_DRIVER_TYPE CBurningVideoDriver::getDriverType() const
 {
 	return EDT_BURNINGSVIDEO;
 }
 
+
+//! returns color format
+ECOLOR_FORMAT CBurningVideoDriver::getColorFormat() const
+{
+	return BURNINGSHADER_COLOR_FORMAT;
+}
+
+
 //! Returns the transformation set by setTransform
 const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Transformation[state].m;
 }
+
 
 //! Creates a render target texture.
 ITexture* CBurningVideoDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
@@ -1832,7 +1839,10 @@ void CBurningVideoDriver::clearZBuffer()
 //! Returns an image created from the last rendered frame.
 IImage* CBurningVideoDriver::createScreenShot()
 {
-	return new CImage(BackBuffer->getColorFormat(), BackBuffer);
+	if (BackBuffer)
+		return new CImage(BackBuffer->getColorFormat(), BackBuffer);
+	else
+		return 0;
 }
 
 
@@ -1844,6 +1854,7 @@ ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, con
 
 }
 
+
 //! Returns the maximum amount of primitives (mostly vertices) which
 //! the device is able to render with one drawIndexedTriangleList
 //! call.
@@ -1852,8 +1863,9 @@ u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 	return 0x00800000;
 }
 
+
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
-//! this: Frist, draw all geometry. Then use this method, to draw the shadow
+//! this: First, draw all geometry. Then use this method, to draw the shadow
 //! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
 void CBurningVideoDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
 {
