@@ -109,20 +109,11 @@ namespace video
 
 	protected:
 
-		struct splane
-		{
-			core::vector3df Normal;
-			f32 Dist;
-		};
-
 		//! sets a render target
 		void setRenderTarget(video::CImage* image);
 
 		//! sets the current Texture
 		bool setTexture(video::ITexture* texture);
-
-		video::CImage* BackBuffer;
-		video::IImagePresenter* Presenter;
 
 		//! switches to a triangle renderer
 		void switchToTriangleRenderer(ETriangleRenderer renderer);
@@ -133,12 +124,12 @@ namespace video
 		//! clips a triangle agains the viewing frustum
 		void clipTriangle(f32* transformedPos);
 
-		//! creates the clipping planes from the view matrix
-		void createPlanes(const core::matrix4& mat);
-
 		template<class VERTEXTYPE>
 		void drawClippedIndexedTriangleListT(const VERTEXTYPE* vertices,
 			s32 vertexCount, const u16* indexList, s32 triangleCount);
+
+		video::CImage* BackBuffer;
+		video::IImagePresenter* Presenter;
 
 		core::array<S2DVertex> TransformedPoints;
 
@@ -157,11 +148,8 @@ namespace video
 		IZBuffer* ZBuffer;
 
 		video::ITexture* Texture;
-		scene::SViewFrustum Frustum;
 
 		SMaterial Material;
-
-		splane planes[6]; // current planes of the view frustum
 	};
 
 } // end namespace video
