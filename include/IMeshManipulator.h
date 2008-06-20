@@ -93,11 +93,13 @@ namespace scene
 		mapped geometry because it calculates the tangent and binormal
 		data which is needed there.
 		\param mesh Input mesh
+		\param smooth The normals are smoothed across the meshbuffer's faces if this flag is set.
+		\param angleWeighted Improved smoothing calculation used
 		\return Mesh consisting only of S3DVertexTangents vertices. If
 		you no longer need the cloned mesh, you should call
 		IMesh::drop(). See IReferenceCounted::drop() for more
 		information. */
-		virtual IMesh* createMeshWithTangents(IMesh* mesh) const = 0;
+		virtual IMesh* createMeshWithTangents(IMesh* mesh, bool smooth=false, bool angleWeighted=false) const = 0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertex2TCoord vertices.
 		/** \param mesh Input mesh

@@ -68,17 +68,15 @@ public:
 	virtual void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution) const;
 
 	//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
-	//! This is useful if you want to draw tangent space normal mapped geometry because
-	//! it calculates the tangent and binormal data which is needed there.
-	//! \param mesh: Input mesh
-	//! \return Mesh consiting only of S3DVertexNormalMapped vertices.
-	//! If you no longer need the cloned mesh, you should call IMesh::drop().
-	//! See IReferenceCounted::drop() for more information.
-	virtual IMesh* createMeshWithTangents(IMesh* mesh) const;
+	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool smooth=false, bool angleWeighted=false) const;
+
+	//! Creates a copy of the mesh, which will only consist of S3D2TCoords vertices.
 	virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const;
 
+	//! Creates a copy of the mesh, which will only consist of unique triangles, i.e. no vertices are shared.
 	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const;
 
+	//! Creates a copy of the mesh, which will have all duplicated vertices removed, i.e. maximal amount of vertices are shared via indexing.
 	virtual IMesh* createMeshWelded(IMesh *mesh, f32 tolerance=core::ROUNDING_ERROR_32) const;
 
 	//! Returns amount of polygons in mesh.
