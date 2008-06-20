@@ -783,6 +783,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 					B3dMaterial.Material->MaterialType = video::EMT_LIGHTMAP_M2;
 				else
 					B3dMaterial.Material->MaterialType = video::EMT_LIGHTMAP;
+				B3dMaterial.Material->Lighting = false;
 			}
 			else
 				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
@@ -811,7 +812,7 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		}
 
-		B3dMaterial.Material->AmbientColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor ();
+		B3dMaterial.Material->DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor();
 
 		//------ Material fx ------
 
@@ -820,6 +821,8 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			B3dMaterial.Material->AmbientColor = video::SColor(255, 255, 255, 255);
 			B3dMaterial.Material->Lighting = false;
 		}
+		else
+			B3dMaterial.Material->AmbientColor = B3dMaterial.Material->DiffuseColor;
 
 		//if (B3dMaterial.fx & 2) //use vertex colors instead of brush color
 
@@ -832,9 +835,6 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 //		if (B3dMaterial.fx & 32) //force vertex alpha-blending
 //			B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 
-		B3dMaterial.Material->DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor ();
-		B3dMaterial.Material->EmissiveColor = video::SColorf(0.5, 0.5, 0.5, 0).toSColor ();
-		B3dMaterial.Material->SpecularColor = video::SColorf(0, 0, 0, 0).toSColor ();
 		B3dMaterial.Material->Shininess = B3dMaterial.shininess;
 
 		Materials.push_back(B3dMaterial);
