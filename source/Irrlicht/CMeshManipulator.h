@@ -68,7 +68,7 @@ public:
 	virtual void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution) const;
 
 	//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
-	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool smooth=false, bool angleWeighted=false) const;
+	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const;
 
 	//! Creates a copy of the mesh, which will only consist of S3D2TCoords vertices.
 	virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const;

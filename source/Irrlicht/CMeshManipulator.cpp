@@ -751,7 +751,7 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 
 
 //! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
-IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool angleWeighted) const
+IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNormals, bool smooth, bool angleWeighted) const
 {
 	if (!mesh)
 		return 0;
@@ -764,7 +764,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 
 	for (b=0; b<meshBufferCount; ++b)
 	{
-		const s32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
+		const u32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
 		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
 
 		SMeshBufferTangents* buffer = new SMeshBufferTangents();
@@ -780,10 +780,10 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 				video::S3DVertex* v =
 					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
 
-				for (s32 i=0; i<idxCnt; ++i)
+				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(
 						video::S3DVertexTangents(
-							v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords));
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
 			}
 			break;
 		case video::EVT_2TCOORDS:
@@ -791,9 +791,9 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 				video::S3DVertex2TCoords* v =
 					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
 
-				for (s32 i=0; i<idxCnt; ++i)
+				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(video::S3DVertexTangents(
-						v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords));
+						v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
 			}
 			break;
 		case video::EVT_TANGENTS:
@@ -801,7 +801,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 				video::S3DVertexTangents* v =
 					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
 
-				for (s32 i=0; i<idxCnt; ++i)
+				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(v[idx[i]]);
 			}
 			break;
@@ -810,7 +810,7 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 		// create new indices
 
 		buffer->Indices.set_used(idxCnt);
-		for (s32 i=0; i<idxCnt; ++i)
+		for (u32 i=0; i<idxCnt; ++i)
 			buffer->Indices[i] = i;
 
 		buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
@@ -837,7 +837,8 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 
 			for ( i = 0; i!= vtxCnt; ++i )
 			{
-				v[i].Normal.set( 0.f, 0.f, 0.f );
+				if (recalculateNormals)
+					v[i].Normal.set( 0.f, 0.f, 0.f );
 				v[i].Tangent.set( 0.f, 0.f, 0.f );
 				v[i].Binormal.set( 0.f, 0.f, 0.f );
 			}
@@ -875,7 +876,8 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 					v[idx[i+1]].TCoords,
 					v[idx[i+2]].TCoords);
 
-				v[idx[i+0]].Tangent += localTangent * weight.X;
+				if (recalculateNormals)
+					v[idx[i+0]].Tangent += localTangent * weight.X;
 				v[idx[i+0]].Binormal += localBinormal * weight.X;
 				v[idx[i+0]].Normal += localNormal * weight.X;
 				
@@ -890,7 +892,8 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 					v[idx[i+2]].TCoords,
 					v[idx[i+0]].TCoords);
 
-				v[idx[i+1]].Tangent += localTangent * weight.Y;
+				if (recalculateNormals)
+					v[idx[i+1]].Tangent += localTangent * weight.Y;
 				v[idx[i+1]].Binormal += localBinormal * weight.Y;
 				v[idx[i+1]].Normal += localNormal * weight.Y;
 
@@ -905,25 +908,31 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 					v[idx[i+0]].TCoords,
 					v[idx[i+1]].TCoords);
 
-				v[idx[i+2]].Tangent += localTangent * weight.Z;
+				if (recalculateNormals)
+					v[idx[i+2]].Tangent += localTangent * weight.Z;
 				v[idx[i+2]].Binormal += localBinormal * weight.Z;
 				v[idx[i+2]].Normal += localNormal * weight.Z;
 			}
 
 			// Normalize the tangents and binormals
+			if (recalculateNormals)
+			{
+				for ( i = 0; i!= vtxCnt; ++i )
+					v[i].Normal.normalize();
+			}
 			for ( i = 0; i!= vtxCnt; ++i )
 			{
 				v[i].Tangent.normalize();
 				v[i].Binormal.normalize();
-				v[i].Normal.normalize();
 			}
 		}
 		else
 		{
+			core::vector3df localNormal; 
 			for (u32 i=0; i<idxCnt; i+=3)
 			{
 				calculateTangents(
-					v[idx[i+0]].Normal,
+					localNormal,
 					v[idx[i+0]].Tangent,
 					v[idx[i+0]].Binormal,
 					v[idx[i+0]].Pos,
@@ -932,9 +941,11 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 					v[idx[i+0]].TCoords,
 					v[idx[i+1]].TCoords,
 					v[idx[i+2]].TCoords);
+				if (recalculateNormals)
+					v[idx[i+0]].Normal=localNormal;
 
 				calculateTangents(
-					v[idx[i+1]].Normal,
+					localNormal,
 					v[idx[i+1]].Tangent,
 					v[idx[i+1]].Binormal,
 					v[idx[i+1]].Pos,
@@ -943,9 +954,11 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 					v[idx[i+1]].TCoords,
 					v[idx[i+2]].TCoords,
 					v[idx[i+0]].TCoords);
+				if (recalculateNormals)
+					v[idx[i+1]].Normal=localNormal;
 
 				calculateTangents(
-					v[idx[i+2]].Normal,
+					localNormal,
 					v[idx[i+2]].Tangent,
 					v[idx[i+2]].Binormal,
 					v[idx[i+2]].Pos,
@@ -954,6 +967,8 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool a
 					v[idx[i+2]].TCoords,
 					v[idx[i+0]].TCoords,
 					v[idx[i+1]].TCoords);
+				if (recalculateNormals)
+					v[idx[i+2]].Normal=localNormal;
 			}
 		}
 	}
@@ -1035,7 +1050,6 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 
 	return clone;
 }
-
 
 
 void CMeshManipulator::calculateTangents(
