@@ -52,13 +52,15 @@ namespace scene
 
 		//! Recalculates all normals of the mesh.
 		/** \param mesh: Mesh on which the operation is performed.
-		\param smooth: If the normals shall be smoothed. */
-		virtual void recalculateNormals(IMesh* mesh, bool smooth = false) const = 0;
+		\param smooth: If the normals shall be smoothed.
+		\param angleWeighted: If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision. */
+		virtual void recalculateNormals(IMesh* mesh, bool smooth = false, bool angleWeighted = false) const = 0;
 
 		//! Recalculates all normals of the mesh buffer.
 		/** \param buffer: Mesh buffer on which the operation is performed.
-		\param smooth: If the normals shall be smoothed. */
-		virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false) const = 0;
+		\param smooth: If the normals shall be smoothed.
+		\param angleWeighted: If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision. */
+		virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const = 0;
 
 		//! Scales the whole mesh.
 		/** \param mesh: Mesh on which the operation is performed.
