@@ -57,6 +57,27 @@ inline void makePlanarMappingT(VERTEXTYPE *v,
 }
 
 
+static inline core::vector3df getAngleWeight(const core::vector3df& v1,
+		const core::vector3df& v2,
+		const core::vector3df& v3)
+{
+	// Calculate this triangle's weight for each of its three vertices
+	// start by calculating the lengths of its sides
+	const f32 a = v2.getDistanceFromSQ(v3);
+	const f32 asqrt = sqrtf(a);
+	const f32 b = v1.getDistanceFromSQ(v3);
+	const f32 bsqrt = sqrtf(b);
+	const f32 c = v1.getDistanceFromSQ(v2);
+	const f32 csqrt = sqrtf(c);
+
+	// use them to find the angle at each vertex
+	return core::vector3df(
+		acosf((b + c - a) / (2.f * bsqrt * csqrt)),
+		acosf((-b + c + a) / (2.f * asqrt * csqrt)),
+		acosf((b - c + a) / (2.f * bsqrt * asqrt)));
+}
+
+
 //! Flips the direction of surfaces. Changes backfacing triangles to frontfacing
 //! triangles and vice versa.
 //! \param mesh: Mesh on which the operation is performed.
@@ -203,24 +224,10 @@ void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth, bool
 			const core::vector3df& v2 = buffer->getPosition(idx[i+1]);
 			const core::vector3df& v3 = buffer->getPosition(idx[i+2]);
 			core::vector3df normal = core::plane3d<f32>(v1, v2, v3).Normal;
-			if (angleWeighted)
-			{
-				// Calculate this triangle's weight for each of its three vertices
-				// start by calculating the lengths of its sides
-				const f32 a = v2.getDistanceFromSQ(v3);
-				const f32 asqrt = sqrtf(a);
-				const f32 b = v1.getDistanceFromSQ(v3);
-				const f32 bsqrt = sqrtf(b);
-				const f32 c = v1.getDistanceFromSQ(v2);
-				const f32 csqrt = sqrtf(c);
 
-				// use them to find the angle at each vertex
-				const core::vector3df weight(
-					acosf((b + c - a) / (2.f * bsqrt * csqrt)),
-					acosf((-b + c + a) / (2.f * asqrt * csqrt)),
-					acosf((b - c + a) / (2.f * bsqrt * asqrt)));
-				normal *= weight;
-			}
+			if (angleWeighted)
+				normal *= getAngleWeight(v1,v2,v3);
+
 			buffer->getNormal(idx[i+0]) += normal;
 			buffer->getNormal(idx[i+1]) += normal;
 			buffer->getNormal(idx[i+2]) += normal;
@@ -744,7 +751,7 @@ IMesh* CMeshManipulator::createMeshWelded(IMesh *mesh, f32 tolerance) const
 
 
 //! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
-IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
+IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool smooth, bool angleWeighted) const
 {
 	if (!mesh)
 		return 0;
@@ -817,52 +824,142 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh) const
 	// now calculate tangents
 	for (b=0; b<meshBufferCount; ++b)
 	{
-		const s32 idxCnt = clone->getMeshBuffer(b)->getIndexCount();
+		const u32 vtxCnt = mesh->getMeshBuffer(b)->getVertexCount();
+		const u32 idxCnt = clone->getMeshBuffer(b)->getIndexCount();
 
 		u16* idx = clone->getMeshBuffer(b)->getIndices();
 		video::S3DVertexTangents* v =
 			(video::S3DVertexTangents*)clone->getMeshBuffer(b)->getVertices();
 
-		for (s32 i=0; i<idxCnt; i+=3)
+		if (smooth)
 		{
-			calculateTangents(
-				v[idx[i+0]].Normal,
-				v[idx[i+0]].Tangent,
-				v[idx[i+0]].Binormal,
-				v[idx[i+0]].Pos,
-				v[idx[i+1]].Pos,
-				v[idx[i+2]].Pos,
-				v[idx[i+0]].TCoords,
-				v[idx[i+1]].TCoords,
-				v[idx[i+2]].TCoords);
+			u32 i;
 
-			calculateTangents(
-				v[idx[i+1]].Normal,
-				v[idx[i+1]].Tangent,
-				v[idx[i+1]].Binormal,
-				v[idx[i+1]].Pos,
-				v[idx[i+2]].Pos,
-				v[idx[i+0]].Pos,
-				v[idx[i+1]].TCoords,
-				v[idx[i+2]].TCoords,
-				v[idx[i+0]].TCoords);
+			for ( i = 0; i!= vtxCnt; ++i )
+			{
+				v[i].Normal.set( 0.f, 0.f, 0.f );
+				v[i].Tangent.set( 0.f, 0.f, 0.f );
+				v[i].Binormal.set( 0.f, 0.f, 0.f );
+			}
 
-			calculateTangents(
-				v[idx[i+2]].Normal,
-				v[idx[i+2]].Tangent,
-				v[idx[i+2]].Binormal,
-				v[idx[i+2]].Pos,
-				v[idx[i+0]].Pos,
-				v[idx[i+1]].Pos,
-				v[idx[i+2]].TCoords,
-				v[idx[i+0]].TCoords,
-				v[idx[i+1]].TCoords);
+			//Each vertex gets the sum of the tangents and binormals from the faces around it
+			for ( i=0; i<idxCnt; i+=3)
+			{
+				// if this triangle is degenerate, skip it!
+				if (v[idx[i+0]].Pos == v[idx[i+1]].Pos || 
+					v[idx[i+0]].Pos == v[idx[i+2]].Pos || 
+					v[idx[i+1]].Pos == v[idx[i+2]].Pos 
+					/*||
+					v[idx[i+0]].TCoords == v[idx[i+1]].TCoords || 
+					v[idx[i+0]].TCoords == v[idx[i+2]].TCoords || 
+					v[idx[i+1]].TCoords == v[idx[i+2]].TCoords */
+					) 
+					continue;
+
+				//Angle-weighted normals look better, but are slightly more CPU intensive to calculate
+				core::vector3df weight(1.f,1.f,1.f);
+				if (angleWeighted)
+					weight = getAngleWeight(v[i+0].Pos,v[i+1].Pos,v[i+2].Pos);
+				core::vector3df localNormal; 
+				core::vector3df localTangent;
+				core::vector3df localBinormal;
+
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords);
+
+				v[idx[i+0]].Tangent += localTangent * weight.X;
+				v[idx[i+0]].Binormal += localBinormal * weight.X;
+				v[idx[i+0]].Normal += localNormal * weight.X;
+				
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords);
+
+				v[idx[i+1]].Tangent += localTangent * weight.Y;
+				v[idx[i+1]].Binormal += localBinormal * weight.Y;
+				v[idx[i+1]].Normal += localNormal * weight.Y;
+
+				calculateTangents(
+					localNormal,
+					localTangent,
+					localBinormal,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords);
+
+				v[idx[i+2]].Tangent += localTangent * weight.Z;
+				v[idx[i+2]].Binormal += localBinormal * weight.Z;
+				v[idx[i+2]].Normal += localNormal * weight.Z;
+			}
+
+			// Normalize the tangents and binormals
+			for ( i = 0; i!= vtxCnt; ++i )
+			{
+				v[i].Tangent.normalize();
+				v[i].Binormal.normalize();
+				v[i].Normal.normalize();
+			}
+		}
+		else
+		{
+			for (u32 i=0; i<idxCnt; i+=3)
+			{
+				calculateTangents(
+					v[idx[i+0]].Normal,
+					v[idx[i+0]].Tangent,
+					v[idx[i+0]].Binormal,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords);
+
+				calculateTangents(
+					v[idx[i+1]].Normal,
+					v[idx[i+1]].Tangent,
+					v[idx[i+1]].Binormal,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].TCoords,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords);
+
+				calculateTangents(
+					v[idx[i+2]].Normal,
+					v[idx[i+2]].Tangent,
+					v[idx[i+2]].Binormal,
+					v[idx[i+2]].Pos,
+					v[idx[i+0]].Pos,
+					v[idx[i+1]].Pos,
+					v[idx[i+2]].TCoords,
+					v[idx[i+0]].TCoords,
+					v[idx[i+1]].TCoords);
+			}
 		}
 	}
 
 	return clone;
 }
-
 
 
 //! Creates a copy of the mesh, which will only consist of S3DVertex2TCoords vertices.
@@ -879,7 +976,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 
 	for (b=0; b<meshBufferCount; ++b)
 	{
-		const s32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
+		const u32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
 		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
 
 		SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
@@ -895,7 +992,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 				video::S3DVertex* v =
 					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
 
-				for (s32 i=0; i<idxCnt; ++i)
+				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(
 						video::S3DVertex2TCoords(
 							v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
@@ -906,7 +1003,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 				video::S3DVertex2TCoords* v =
 					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
 
-				for (s32 i=0; i<idxCnt; ++i)
+				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(v[idx[i]]);
 			}
 			break;
@@ -915,7 +1012,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 				video::S3DVertexTangents* v =
 					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
 
-				for (s32 i=0; i<idxCnt; ++i)
+				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(video::S3DVertex2TCoords(
 						v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
 			}
@@ -925,7 +1022,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 		// create new indices
 
 		buffer->Indices.set_used(idxCnt);
-		for (s32 i=0; i<idxCnt; ++i)
+		for (u32 i=0; i<idxCnt; ++i)
 			buffer->Indices[i] = i;
 
 		buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
