@@ -168,7 +168,7 @@ void CMeshManipulator::setVertexColors(IMesh* mesh, video::SColor color) const
 
 //! Recalculates all normals of the mesh buffer.
 /** \param buffer: Mesh buffer on which the operation is performed. */
-void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth) const
+void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth, bool angleWeighted) const
 {
 	if (!buffer)
 		return;
@@ -178,6 +178,7 @@ void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth) cons
 	const u16* idx = buffer->getIndices();
 
 	if (!smooth)
+	{
 		for (u32 i=0; i<idxcnt; i+=3)
 		{
 			const core::vector3df& v1 = buffer->getPosition(idx[i+0]);
@@ -188,6 +189,7 @@ void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth) cons
 			buffer->getNormal(idx[i+1]) = normal;
 			buffer->getNormal(idx[i+2]) = normal;
 		}
+	}
 	else
 	{
 		u32 i;
@@ -200,7 +202,25 @@ void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth) cons
 			const core::vector3df& v1 = buffer->getPosition(idx[i+0]);
 			const core::vector3df& v2 = buffer->getPosition(idx[i+1]);
 			const core::vector3df& v3 = buffer->getPosition(idx[i+2]);
-			const core::vector3df normal = core::plane3d<f32>(v1, v2, v3).Normal;
+			core::vector3df normal = core::plane3d<f32>(v1, v2, v3).Normal;
+			if (angleWeighted)
+			{
+				// Calculate this triangle's weight for each of its three vertices
+				// start by calculating the lengths of its sides
+				const f32 a = v2.getDistanceFromSQ(v3);
+				const f32 asqrt = sqrtf(a);
+				const f32 b = v1.getDistanceFromSQ(v3);
+				const f32 bsqrt = sqrtf(b);
+				const f32 c = v1.getDistanceFromSQ(v2);
+				const f32 csqrt = sqrtf(c);
+
+				// use them to find the angle at each vertex
+				const core::vector3df weight(
+					acosf((b + c - a) / (2.f * bsqrt * csqrt)),
+					acosf((-b + c + a) / (2.f * asqrt * csqrt)),
+					acosf((b - c + a) / (2.f * bsqrt * asqrt)));
+				normal *= weight;
+			}
 			buffer->getNormal(idx[i+0]) += normal;
 			buffer->getNormal(idx[i+1]) += normal;
 			buffer->getNormal(idx[i+2]) += normal;
@@ -212,17 +232,16 @@ void CMeshManipulator::recalculateNormals(IMeshBuffer* buffer, bool smooth) cons
 }
 
 
-
 //! Recalculates all normals of the mesh.
 //! \param mesh: Mesh on which the operation is performed.
-void CMeshManipulator::recalculateNormals(scene::IMesh* mesh, bool smooth) const
+void CMeshManipulator::recalculateNormals(scene::IMesh* mesh, bool smooth, bool angleWeighted) const
 {
 	if (!mesh)
 		return;
 
 	const u32 bcount = mesh->getMeshBufferCount();
 	for ( u32 b=0; b<bcount; ++b)
-		recalculateNormals(mesh->getMeshBuffer(b), smooth);
+		recalculateNormals(mesh->getMeshBuffer(b), smooth, angleWeighted);
 }
 
 
