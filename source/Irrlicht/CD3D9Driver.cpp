@@ -253,9 +253,22 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 		present.Windowed		= TRUE;
 	}
 
+	UINT adapter = D3DADAPTER_DEFAULT;
 	D3DDEVTYPE devtype = D3DDEVTYPE_HAL;
 	#ifndef _IRR_D3D_NO_SHADER_DEBUGGING
 	devtype = D3DDEVTYPE_REF;
+	#elif defined(_IRR_USE_NVIDIA_PERFHUD_)
+	for (UINT adapter_i = 0; adapter_i < pID3D->GetAdapterCount(); ++adapter_i)
+	{
+		D3DADAPTER_IDENTIFIER9 identifier;
+		pID3D->GetAdapterIdentifier(adapter_i,0,&identifier);
+		if (strstr(identifier.Description,"PerfHUD") != 0)
+		{
+			adapter = adapter_i;
+			devtype = D3DDEVTYPE_REF;
+			break;
+		}
+	}
 	#endif
 
 	// enable anti alias if possible and desired
@@ -263,7 +276,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	{
 		DWORD qualityLevels = 0;
 
-		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
 				devtype, present.BackBufferFormat, !fullScreen,
 				D3DMULTISAMPLE_4_SAMPLES, &qualityLevels)))
 		{
@@ -273,7 +286,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 			present.SwapEffect         = D3DSWAPEFFECT_DISCARD;
 		}
 		else
-		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
 				devtype, present.BackBufferFormat, !fullScreen,
 				D3DMULTISAMPLE_2_SAMPLES, &qualityLevels)))
 		{
@@ -283,7 +296,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 			present.SwapEffect         = D3DSWAPEFFECT_DISCARD;
 		}
 		else
-		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
 					devtype, present.BackBufferFormat, !fullScreen,
 					D3DMULTISAMPLE_NONMASKABLE, &qualityLevels)))
 		{
@@ -303,17 +316,17 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	if (StencilBuffer)
 	{
 		present.AutoDepthStencilFormat = D3DFMT_D24S8;
-		if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
 			present.AutoDepthStencilFormat = D3DFMT_D24X4S4;
-			if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+			if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
 				present.AutoDepthStencilFormat = D3DFMT_D15S1;
-				if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+				if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
@@ -323,7 +336,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 			}
 		}
 		else
-		if(FAILED(pID3D->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, devtype,
+		if(FAILED(pID3D->CheckDepthStencilMatch(adapter, devtype,
 			present.BackBufferFormat, present.BackBufferFormat, present.AutoDepthStencilFormat)))
 		{
 			os::Printer::log("Depth-stencil format is not compatible with display format, disabling stencil buffer.", ELL_WARNING);
@@ -334,17 +347,17 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	if (!StencilBuffer)
 	{
 		present.AutoDepthStencilFormat = D3DFMT_D32;
-		if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+		if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
 			present.AutoDepthStencilFormat = D3DFMT_D24X8;
-			if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+			if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
 				present.AutoDepthStencilFormat = D3DFMT_D16;
-				if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+				if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
@@ -368,15 +381,15 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 	}
 	else
 	{
-		hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, devtype, hwnd,
+		hr = pID3D->CreateDevice(adapter, devtype, hwnd,
 				fpuPrecision | D3DCREATE_HARDWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if(FAILED(hr))
-			hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, devtype, hwnd,
+			hr = pID3D->CreateDevice(adapter, devtype, hwnd,
 					fpuPrecision | D3DCREATE_MIXED_VERTEXPROCESSING , &present, &pID3DDevice);
 
 		if(FAILED(hr))
-			hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, devtype, hwnd,
+			hr = pID3D->CreateDevice(adapter, devtype, hwnd,
 					fpuPrecision | D3DCREATE_SOFTWARE_VERTEXPROCESSING, &present, &pID3DDevice);
 
 		if (FAILED(hr))
@@ -1151,7 +1164,6 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 }
 
 
-
 void CD3D9Driver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 		video::SColor* colors, bool useAlphaChannelOfTexture)
@@ -1213,7 +1225,6 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture, const core::rect<s
 				D3DFMT_INDEX16,&vtx[0], sizeof(S3DVertex));
 
 }
-
 
 
 //! draws a 2d image, using a color and the alpha channel of the texture if
@@ -2513,6 +2524,7 @@ IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize, HWN
 
 } // end namespace video
 } // end namespace irr
+
 
 
 

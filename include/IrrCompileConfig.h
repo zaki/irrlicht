@@ -172,6 +172,11 @@ watch registers, variables etc. This works with ASM, HLSL, and both with pixel a
 Note that the engine will run in D3D REF for this, which is a lot slower than HAL. */
 #define _IRR_D3D_NO_SHADER_DEBUGGING
 
+//! Define _IRR_USE_NVIDIA_PERFHUD_ to opt-in to using the nVidia PerHUD tool
+/** Enable, by opting-in, to use the nVidia PerfHUD performance analysis driver
+tool <http://developer.nvidia.com/object/nvperfhud_home.html>. */
+#undef _IRR_USE_NVIDIA_PERFHUD_
+
 
 #ifdef _IRR_WINDOWS_API_
 
@@ -346,4 +351,5 @@ precision will be lower but speed higher. currently X86 only
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__
+
 
