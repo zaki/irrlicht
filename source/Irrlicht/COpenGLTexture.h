@@ -50,7 +50,7 @@ public:
 	//! constructor
 	COpenGLTexture(IImage* surface, const char* name, COpenGLDriver* driver=0);
 	//! FrameBufferObject constructor
-	COpenGLTexture(const core::dimension2d<s32>& size, bool extPackedDepthStencilSupported, const char* name, COpenGLDriver* driver=0);
+	COpenGLTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
 
 	//! destructor
 	virtual ~COpenGLTexture();
@@ -124,15 +124,17 @@ private:
 	GLint InternalFormat;
 	GLenum PixelFormat;
 	GLenum PixelType;
-	bool HasMipMaps;
-	bool IsRenderTarget;
-	bool AutomaticMipmapUpdate;
 
 	GLuint ColorFrameBuffer; // for FBO path
 	GLuint DepthRenderBuffer; // for FBO path
 	GLuint StencilRenderBuffer; // for FBO path
 
 	u32 Locks;
+
+	bool HasMipMaps;
+	bool IsRenderTarget;
+	bool AutomaticMipmapUpdate;
+	bool UseStencil;
 };
 
 

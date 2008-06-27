@@ -659,6 +659,12 @@ class COpenGLExtensionHandler
 	//! queries the features of the driver, returns true if feature is available
 	bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
+	//! queries the features of the driver, returns true if feature is available
+	bool queryOpenGLFeature(EOpenGLFeatures feature) const
+	{
+		return FeatureAvailable[feature];
+	}
+
 	//! show all features with availablity
 	void dump() const;
 
