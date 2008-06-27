@@ -60,6 +60,9 @@ CXXFLAGS += -pg
 endif
 CFLAGS := -fexpensive-optimizations -O3 -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
 
+sharedlib sharedlib_win32 : CXXFLAGS += -fpic
+sharedlib sharedlib_win32 : CFLAGS += -fpic
+
 #multilib handling
 ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
