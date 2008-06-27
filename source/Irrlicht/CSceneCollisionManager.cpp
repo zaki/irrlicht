@@ -659,7 +659,7 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 	core::vector3df lefttoright = f->getFarRightUp() - farLeftUp;
 	core::vector3df uptodown = f->getFarLeftDown() - farLeftUp;
 
-	core::rect<s32> viewPort = Driver->getViewPort();
+	const core::rect<s32>& viewPort = Driver->getViewPort();
 	core::dimension2d<s32> screenSize(viewPort.getWidth(), viewPort.getHeight());
 
 	f32 dx = pos.X / (f32)screenSize.Width;
@@ -676,51 +676,43 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 }
 
 
-
 //! Calculates 2d screen position from a 3d position.
 core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition(
 	core::vector3df pos3d, ICameraSceneNode* camera)
 {
-	core::position2d<s32> pos2d(-1000,-1000);
-
 	if (!SceneManager || !Driver)
-		return pos2d;
+		return core::position2d<s32>(-1000,-1000);
 
 	if (!camera)
 		camera = SceneManager->getActiveCamera();
 
 	if (!camera)
-		return pos2d;
+		return core::position2d<s32>(-1000,-1000);
 
-	core::rect<s32> viewPort = Driver->getViewPort();
+	const core::rect<s32>& viewPort = Driver->getViewPort();
 	core::dimension2d<s32> dim(viewPort.getWidth(), viewPort.getHeight());
 
 	dim.Width /= 2;
 	dim.Height /= 2;
 
-	f32 transformedPos[4];
-
 	core::matrix4 trans = camera->getProjectionMatrix();
 	trans *= camera->getViewMatrix();
 
-	transformedPos[0] = pos3d.X;
-	transformedPos[1] = pos3d.Y;
-	transformedPos[2] = pos3d.Z;
-	transformedPos[3] = 1.0f;
+	f32 transformedPos[4] = { pos3d.X, pos3d.Y, pos3d.Z, 1.0f };
 
 	trans.multiplyWith1x4Matrix(transformedPos);
 
 	if (transformedPos[3] < 0)
 		return core::position2d<s32>(-10000,-10000);
 
-	f32 zDiv = transformedPos[3] == 0.0f ? 1.0f :
-		(1.0f / transformedPos[3]);
+	const f32 zDiv = transformedPos[3] == 0.0f ? 1.0f :
+		core::reciprocal(transformedPos[3]);
 
-	pos2d.X = (s32)(dim.Width * transformedPos[0] * zDiv) + dim.Width;
-	pos2d.Y = ((s32)(dim.Height - (dim.Height * (transformedPos[1] * zDiv))));
-
-	return pos2d;
+	return core::position2d<s32>(
+			core::round32(dim.Width * transformedPos[0] * zDiv) + dim.Width,
+			dim.Height - core::round32(dim.Height * (transformedPos[1] * zDiv)));
 }
+
 
 inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR, f32* root)
 {
