@@ -1,6 +1,6 @@
-.TH LIBPNG 3 "May 15, 2007"
+.TH LIBPNG 3 "May 8, 2008"
 .SH NAME
-libpng \- Portable Network Graphics (PNG) Reference Library 1.2.18
+libpng \- Portable Network Graphics (PNG) Reference Library 1.2.29
 .SH SYNOPSIS
 \fB
 #include <png.h>\fP
@@ -410,14 +410,18 @@ Following is a copy of the libpng.txt file that accompanies libpng.
 .SH LIBPNG.TXT
 libpng.txt - A description on how to use and modify libpng
 
- libpng version 1.2.18 - May 15, 2007
+ libpng version 1.2.29 - May 8, 2008
  Updated and distributed by Glenn Randers-Pehrson
  <glennrp at users.sourceforge.net>
- Copyright (c) 1998-2007 Glenn Randers-Pehrson
+ Copyright (c) 1998-2008 Glenn Randers-Pehrson
  For conditions of distribution and use, see copyright
  notice in png.h.
 
- based on:
+ Based on:
+
+ libpng versions 0.97, January 1998, through 1.2.29 - May 8, 2008
+ Updated and distributed by Glenn Randers-Pehrson
+ Copyright (c) 1998-2008 Glenn Randers-Pehrson
 
  libpng 1.0 beta 6  version 0.96 May 28, 1997
  Updated and distributed by Andreas Dilger
@@ -457,12 +461,14 @@ a W3C Recommendation and as an ISO Standard (ISO/IEC 15948:2003 (E)) at
 The W3C and ISO documents have identical technical content.
 
 The PNG-1.2 specification is available at
-<http://www.libpng.org/pub/png/documents/>
+<http://www.libpng.org/pub/png/documents/>.  It is technically equivalent
+to the PNG specification (second edition) but has some additional material.
 
 The PNG-1.0 specification is available
 as RFC 2083 <http://www.libpng.org/pub/png/documents/> and as a
-W3C Recommendation <http://www.w3.org/TR/REC.png.html>. Some
-additional chunks are described in the special-purpose public chunks
+W3C Recommendation <http://www.w3.org/TR/REC.png.html>.
+
+Some additional chunks are described in the special-purpose public chunks
 documents at <http://www.libpng.org/pub/png/documents/>.
 
 Other information
@@ -496,9 +502,7 @@ Libpng is thread safe, provided the threads are using different
 instances of the structures.  Each thread should have its own
 png_struct and png_info instances, and thus its own image.
 Libpng does not protect itself against two threads using the
-same instance of a structure.  Note: thread safety may be defeated
-by use of some of the MMX assembler code in pnggccrd.c, which is only
-compiled when the user defines PNG_THREAD_UNSAFE_OK.
+same instance of a structure.
 
 .SH II. Structures
 
@@ -672,15 +676,19 @@ input stream. You must supply the function
          png_unknown_chunkp chunk);
     {
        /* The unknown chunk structure contains your
-          chunk data: */
+          chunk data, along with similar data for any other
+          unknown chunks: */
+
            png_byte name[5];
            png_byte *data;
            png_size_t size;
+
        /* Note that libpng has already taken care of
           the CRC handling */
 
-       /* put your code here.  Return one of the
-          following: */
+       /* put your code here.  Search for your chunk in the
+          unknown chunk structure, process it, and return one
+          of the following: */
 
        return (-n); /* chunk had an error */
        return (0); /* did not recognize */
@@ -699,6 +707,11 @@ This names not only the callback function, but also a user pointer that
 you can retrieve with
 
     png_get_user_chunk_ptr(png_ptr);
+
+If you call the png_set_read_user_chunk_fn() function, then all unknown
+chunks will be saved when read, in case your callback function will need
+one or more of them.  This behavior can be changed with the
+png_set_keep_unknown_chunks() function, described below.
 
 At this point, you can set up a callback function that will be
 called after each row has been read, which you can use to control
@@ -744,13 +757,13 @@ If you need to retrieve the limits that are being applied, use
 Now you get to set the way the library processes unknown chunks in the
 input PNG stream. Both known and unknown chunks will be read.  Normal
 behavior is that known chunks will be parsed into information in
-various info_ptr members; unknown chunks will be discarded. To change
+various info_ptr members while unknown chunks will be discarded. To change
 this, you can call:
 
     png_set_keep_unknown_chunks(png_ptr, keep,
         chunk_list, num_chunks);
-    keep       - 0: do not handle as unknown
-                 1: do not keep
+    keep       - 0: default unknown chunk handling
+                 1: ignore; do not keep
                  2: keep only if safe-to-copy
                  3: keep even if unsafe-to-copy
                You can use these definitions:
@@ -772,6 +785,37 @@ according to the "keep" directive.  If a chunk is named in successive
 instances of png_set_keep_unknown_chunks(), the final instance will
 take precedence.  The IHDR and IEND chunks should not be named in
 chunk_list; if they are, libpng will process them normally anyway.
+
+Here is an example of the usage of png_set_keep_unknown_chunks(),
+where the private "vpAg" chunk will later be processed by a user chunk
+callback function:
+
+    png_byte vpAg[5]={118, 112,  65, 103, (png_byte) '\0'};
+
+    #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
+      png_byte unused_chunks[]=
+      {
+        104,  73,  83,  84, (png_byte) '\0',   /* hIST */
+        105,  84,  88, 116, (png_byte) '\0',   /* iTXt */
+        112,  67,  65,  76, (png_byte) '\0',   /* pCAL */
+        115,  67,  65,  76, (png_byte) '\0',   /* sCAL */
+        115,  80,  76,  84, (png_byte) '\0',   /* sPLT */
+        116,  73,  77,  69, (png_byte) '\0',   /* tIME */
+      };
+    #endif
+
+    ...
+
+    #if defined(PNG_UNKNOWN_CHUNKS_SUPPORTED)
+      /* ignore all unknown chunks: */
+      png_set_keep_unknown_chunks(read_ptr, 1, NULL, 0);
+      /* except for vpAg: */
+      png_set_keep_unknown_chunks(read_ptr, 2, vpAg, 1);
+      /* also ignore unused known chunks: */
+      png_set_keep_unknown_chunks(read_ptr, 1, unused_chunks,
+         (int)sizeof(unused_chunks)/5);
+    #endif
+
 
 .SS The high-level read interface
 
@@ -1215,6 +1259,7 @@ As of libpng version 1.2.9, png_set_expand_gray_1_2_4_to_8() was
 added.  It expands the sample depth without changing tRNS to alpha.
 At the same time, png_set_gray_1_2_4_to_8() was deprecated, and it
 will be removed from a future version.
+
 
 PNG can have files with 16 bits per channel.  If you only can handle
 8 bits per channel, this will strip the pixels down to 8 bit.
@@ -2155,6 +2200,11 @@ Some of the more important parts of the png_info are:
                      can also be
                      PNG_INTRAPIXEL_DIFFERENCING)
 
+If you call png_set_IHDR(), the call must appear before any of the
+other png_set_*() functions, which might require access to some of
+the IHDR settings.  The remaining png_set_*() functions can be called
+in any order.
+
     png_set_PLTE(png_ptr, info_ptr, palette,
        num_palette);
     palette        - the palette for the file
@@ -2765,17 +2815,13 @@ For a more compact example of writing a PNG image, see the file example.c.
 
 .SH V. Modifying/Customizing libpng:
 
-There are three issues here.  The first is changing how libpng does
+There are two issues here.  The first is changing how libpng does
 standard things like memory allocation, input/output, and error handling.
 The second deals with more complicated things like adding new chunks,
 adding new transformations, and generally changing how libpng works.
 Both of those are compile-time issues; that is, they are generally
 determined at the time the code is written, and there is rarely a need
-to provide the user with a means of changing them.  The third is a
-run-time issue:  choosing between and/or tuning one or more alternate
-versions of computationally intensive routines; specifically, optimized
-assembly-language (and therefore compiler- and platform-dependent)
-versions.
+to provide the user with a means of changing them.
 
 Memory allocation, input/output, and error handling
 
@@ -2806,6 +2852,9 @@ Your replacement memory functions must have prototypes as follows:
 Your malloc_fn() must return NULL in case of failure.  The png_malloc()
 function will normally call png_error() if it receives a NULL from the
 system memory allocator or from your replacement malloc_fn().
+
+Your free_fn() will never be called with a NULL ptr, since libpng's
+png_free() checks for NULL before calling free_fn().
 
 Input/Output in libpng is done through png_read() and png_write(),
 which currently just call fread() and fwrite().  The FILE * is stored in
@@ -3136,125 +3185,6 @@ When PNG_DEBUG = 1, the macros are defined, but only png_debug statements
 having level = 0 will be printed.  There aren't any such statements in
 this version of libpng, but if you insert some they will be printed.
 
-.SH VI.  Runtime optimization
-
-A new feature in libpng 1.2.0 is the ability to dynamically switch between
-standard and optimized versions of some routines.  Currently these are
-limited to three computationally intensive tasks when reading PNG files:
-decoding row filters, expanding interlacing, and combining interlaced or
-transparent row data with previous row data.  Currently the optimized
-versions are available only for x86 (Intel, AMD, etc.) platforms with
-MMX support, though this may change in future versions.  (For example,
-the non-MMX assembler optimizations for zlib might become similarly
-runtime-selectable in future releases, in which case libpng could be
-extended to support them.  Alternatively, the compile-time choice of
-floating-point versus integer routines for gamma correction might become
-runtime-selectable.)
-
-Because such optimizations tend to be very platform- and compiler-dependent,
-both in how they are written and in how they perform, the new runtime code
-in libpng has been written to allow programs to query, enable, and disable
-either specific optimizations or all such optimizations.  For example, to
-enable all possible optimizations (bearing in mind that some "optimizations"
-may actually run more slowly in rare cases):
-
-    #if defined(PNG_LIBPNG_VER) && (PNG_LIBPNG_VER >= 10200)
-       png_uint_32 mask, flags;
-
-       flags = png_get_asm_flags(png_ptr);
-       mask = png_get_asm_flagmask(PNG_SELECT_READ | PNG_SELECT_WRITE);
-       png_set_asm_flags(png_ptr, flags | mask);
-    #endif
-
-To enable only optimizations relevant to reading PNGs, use PNG_SELECT_READ
-by itself when calling png_get_asm_flagmask(); similarly for optimizing
-only writing.  To disable all optimizations:
-
-    #if defined(PNG_LIBPNG_VER) && (PNG_LIBPNG_VER >= 10200)
-       flags = png_get_asm_flags(png_ptr);
-       mask = png_get_asm_flagmask(PNG_SELECT_READ | PNG_SELECT_WRITE);
-       png_set_asm_flags(png_ptr, flags & ~mask);
-    #endif
-
-To enable or disable only MMX-related features, use png_get_mmx_flagmask()
-in place of png_get_asm_flagmask().  The mmx version takes one additional
-parameter:
-
-    #if defined(PNG_LIBPNG_VER) && (PNG_LIBPNG_VER >= 10200)
-       int selection = PNG_SELECT_READ | PNG_SELECT_WRITE;
-       int compilerID;
-
-       mask = png_get_mmx_flagmask(selection, &compilerID);
-    #endif
-
-On return, compilerID will indicate which version of the MMX assembler
-optimizations was compiled.  Currently two flavors exist:  Microsoft
-Visual C++ (compilerID == 1) and GNU C (a.k.a. gcc/gas, compilerID == 2).
-On non-x86 platforms or on systems compiled without MMX optimizations, a
-value of -1 is used.
-
-Note that both png_get_asm_flagmask() and png_get_mmx_flagmask() return
-all valid, settable optimization bits for the version of the library that's
-currently in use.  In the case of shared (dynamically linked) libraries,
-this may include optimizations that did not exist at the time the code was
-written and compiled.  It is also possible, of course, to enable only known,
-specific optimizations; for example:
-
-    #if defined(PNG_LIBPNG_VER) && (PNG_LIBPNG_VER >= 10200)
-       flags = PNG_ASM_FLAG_MMX_READ_COMBINE_ROW  \
-             | PNG_ASM_FLAG_MMX_READ_INTERLACE    \
-             | PNG_ASM_FLAG_MMX_READ_FILTER_SUB   \
-             | PNG_ASM_FLAG_MMX_READ_FILTER_UP    \
-             | PNG_ASM_FLAG_MMX_READ_FILTER_AVG   \
-             | PNG_ASM_FLAG_MMX_READ_FILTER_PAETH ;
-       png_set_asm_flags(png_ptr, flags);
-    #endif
-
-This method would enable only the MMX read-optimizations available at the
-time of libpng 1.2.0's release, regardless of whether a later version of
-the DLL were actually being used.  (Also note that these functions did not
-exist in versions older than 1.2.0, so any attempt to run a dynamically
-linked app on such an older version would fail.)
-
-To determine whether the processor supports MMX instructions at all, use
-the png_mmx_support() function:
-
-    #if defined(PNG_LIBPNG_VER) && (PNG_LIBPNG_VER >= 10200)
-       mmxsupport = png_mmx_support();
-    #endif
-
-It returns -1 if MMX support is not compiled into libpng, 0 if MMX code
-is compiled but MMX is not supported by the processor, or 1 if MMX support
-is fully available.  Note that png_mmx_support(), png_get_mmx_flagmask(),
-and png_get_asm_flagmask() all may be called without allocating and ini-
-tializing any PNG structures (for example, as part of a usage screen or
-"about" box).
-
-The following code can be used to prevent an application from using the
-thread_unsafe features, even if libpng was built with PNG_THREAD_UNSAFE_OK
-defined:
-
-#if defined(PNG_USE_PNGGCCRD) && defined(PNG_ASSEMBLER_CODE_SUPPORTED) \
-  && defined(PNG_THREAD_UNSAFE_OK)
-    /* Disable thread-unsafe features of pnggccrd */
-    if (png_access_version_number() >= 10200)
-    {
-      png_uint_32 mmx_disable_mask = 0;
-      png_uint_32 asm_flags;
-
-      mmx_disable_mask |= ( PNG_ASM_FLAG_MMX_READ_COMBINE_ROW  \
-                          | PNG_ASM_FLAG_MMX_READ_FILTER_SUB   \
-                          | PNG_ASM_FLAG_MMX_READ_FILTER_AVG   \
-                          | PNG_ASM_FLAG_MMX_READ_FILTER_PAETH );
-      asm_flags = png_get_asm_flags(png_ptr);
-      png_set_asm_flags(png_ptr, asm_flags & ~mmx_disable_mask);
-    }
-#endif
-
-For more extensive examples of runtime querying, enabling and disabling
-of optimized features, see contrib/gregbook/readpng2.c in the libpng
-source-code distribution.
-
 .SH VII.  MNG support
 
 The MNG specification (available at http://www.libpng.org/pub/mng) allows
@@ -3331,13 +3261,13 @@ application:
 
 .SH IX. Y2K Compliance in libpng
 
-May 15, 2007
+May 8, 2008
 
 Since the PNG Development group is an ad-hoc body, we can't make
 an official declaration.
 
 This is your unofficial assurance that libpng from version 0.71 and
-upward through 1.2.18 are Y2K compliant.  It is my belief that earlier
+upward through 1.2.29 are Y2K compliant.  It is my belief that earlier
 versions were also Y2K compliant.
 
 Libpng only has three year fields.  One is a 2-byte unsigned integer that
@@ -3526,6 +3456,49 @@ the first widely used release:
  1.2.17              13    10217  12.so.0.17[.0]
  1.0.26              10    10026  10.so.0.26[.0]
  1.2.18              13    10218  12.so.0.18[.0]
+ 1.2.19beta1-31      13    10219  12.so.0.19[.0]
+ 1.0.27rc1-6         10    10027  10.so.0.27[.0]
+ 1.2.19rc1-6         13    10219  12.so.0.19[.0]
+ 1.0.27              10    10027  10.so.0.27[.0]
+ 1.2.19              13    10219  12.so.0.19[.0]
+ 1.2.20beta01-04     13    10220  12.so.0.20[.0]
+ 1.0.28rc1-6         10    10028  10.so.0.28[.0]
+ 1.2.20rc1-6         13    10220  12.so.0.20[.0]
+ 1.0.28              10    10028  10.so.0.28[.0]
+ 1.2.20              13    10220  12.so.0.20[.0]
+ 1.2.21beta1-2       13    10221  12.so.0.21[.0]
+ 1.2.21rc1-3         13    10221  12.so.0.21[.0]
+ 1.0.29              10    10029  10.so.0.29[.0]
+ 1.2.21              13    10221  12.so.0.21[.0]
+ 1.2.22beta1-4       13    10222  12.so.0.22[.0]
+ 1.0.30rc1           13    10030  10.so.0.30[.0]
+ 1.2.22rc1           13    10222  12.so.0.22[.0]
+ 1.0.30              10    10030  10.so.0.30[.0]
+ 1.2.22              13    10222  12.so.0.22[.0]
+ 1.2.23beta01-05     13    10223  12.so.0.23[.0]
+ 1.2.23rc01          13    10223  12.so.0.23[.0]
+ 1.2.23              13    10223  12.so.0.23[.0]
+ 1.2.24beta01-02     13    10224  12.so.0.24[.0]
+ 1.2.24rc01          13    10224  12.so.0.24[.0]
+ 1.2.24              13    10224  12.so.0.24[.0]
+ 1.2.25beta01-06     13    10225  12.so.0.25[.0]
+ 1.2.25rc01-02       13    10225  12.so.0.25[.0]
+ 1.0.31              10    10031  10.so.0.31[.0]
+ 1.2.25              13    10225  12.so.0.25[.0]
+ 1.2.26beta01-06     13    10226  12.so.0.26[.0]
+ 1.2.26rc01          13    10226  12.so.0.26[.0]
+ 1.2.26              13    10226  12.so.0.26[.0]
+ 1.0.32              10    10032  10.so.0.32[.0]
+ 1.2.27beta01-06     13    10227  12.so.0.27[.0]
+ 1.2.27rc01          13    10227  12.so.0.27[.0]
+ 1.0.33              10    10033  10.so.0.33[.0]
+ 1.2.27              13    10227  12.so.0.27[.0]
+ 1.0.34              10    10034  10.so.0.34[.0]
+ 1.2.28              13    10228  12.so.0.28[.0]
+ 1.2.29beta01-03     13    10229  12.so.0.29[.0]
+ 1.2.29rc01          13    10229  12.so.0.29[.0]
+ 1.0.35              10    10035  10.so.0.35[.0]
+ 1.2.29              13    10229  12.so.0.29[.0]
 
 Henceforth the source version will match the shared-library minor
 and patch numbers; the shared-library major version number will be
@@ -3538,7 +3511,7 @@ version 1.0.6j; from then on they were given the upcoming public
 release number plus "betaNN" or "rcN".
 
 .SH "SEE ALSO"
-libpngpf(3), png(5)
+.IR libpngpf(3) ", " png(5)
 .LP
 .IR libpng :
 .IP
@@ -3561,7 +3534,7 @@ ftp://ftp.info-zip.org/pub/infozip/zlib
 .I libpng
 or at
 .br
-ftp://ds.internic.net/rfc/rfc2083.txt
+ftp://ftp.rfc-editor.org:/in-notes/rfc2083.txt
 .br
 or (as a W3C Recommendation) at
 .br
@@ -3581,7 +3554,7 @@ possible without all of you.
 
 Thanks to Frank J. T. Wojcik for helping with the documentation.
 
-Libpng version 1.2.18 - May 15, 2007:
+Libpng version 1.2.29 - May 8, 2008:
 Initially created in 1995 by Guy Eric Schalnat, then of Group 42, Inc.
 Currently maintained by Glenn Randers-Pehrson (glennrp at users.sourceforge.net).
 
@@ -3602,8 +3575,8 @@ included in the libpng distribution, the latter shall prevail.)
 If you modify libpng you may insert additional notices immediately following
 this sentence.
 
-libpng versions 1.2.6, August 15, 2004, through 1.2.18, May 15, 2007, are
-Copyright (c) 2004,2006-2007 Glenn Randers-Pehrson, and are
+libpng versions 1.2.6, August 15, 2004, through 1.2.29, May 8, 2008, are
+Copyright (c) 2004,2006-2008 Glenn Randers-Pehrson, and are
 distributed according to the same disclaimer and license as libpng-1.2.5
 with the following individual added to the list of Contributing Authors
 
@@ -3701,7 +3674,7 @@ certification mark of the Open Source Initiative.
 
 Glenn Randers-Pehrson
 glennrp at users.sourceforge.net
-May 15, 2007
+May 8, 2008
 
 .\" end of man page
 
