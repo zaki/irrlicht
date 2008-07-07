@@ -226,9 +226,9 @@ namespace scene
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
 		{
 			if (Buffer==EBT_VERTEX_AND_INDEX ||Buffer==EBT_VERTEX)
-				ChangedID_Vertex++;
-			else if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_INDEX)
-				ChangedID_Index++;
+				++ChangedID_Vertex;
+			if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_INDEX)
+				++ChangedID_Index;
 		}
 
 		//! Get the currently used ID for identification of changes.

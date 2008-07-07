@@ -69,9 +69,6 @@ namespace scene
 	{
 	public:
 
-		//! Destructor
-		virtual ~IMeshBuffer() { }
-
 		//! Get the material of this meshbuffer
 		/** \return Material of this buffer. */
 		virtual video::SMaterial& getMaterial() = 0;
@@ -164,7 +161,6 @@ namespace scene
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
 		virtual const u32 getChangedID_Index() const = 0;
-
 
 		u32 HardwareHint;
 	};
