@@ -16,7 +16,7 @@ namespace scene
 	struct SSharedMeshBuffer : public IMeshBuffer
 	{
 		//! constructor
-		SSharedMeshBuffer() : IMeshBuffer(), ChangedID(1), MappingHint(Never), Vertices(0)
+		SSharedMeshBuffer() : IMeshBuffer(), ChangedID_Vertex(1), ChangedID_Index(1), MappingHint(Never), Vertices(0)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");
@@ -141,12 +141,29 @@ namespace scene
 			MappingHint=NewMappingHint;
 		}
 
+
 		//! flags the mesh as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) {ChangedID++;}
+		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
+		{
+			if (E_BUFFER_TYPE Buffer==EBT_VERTEX_AND_INDEX || E_BUFFER_TYPE Buffer==EBT_VERTEX)
+				ChangedID_Vertex++;
+			else if (E_BUFFER_TYPE Buffer==EBT_VERTEX_AND_INDEX || E_BUFFER_TYPE Buffer==EBT_INDEX)
+				ChangedID_Index++;
+		}
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual const u32 getChangedID_Vertex() const {return ChangedID_Vertex;}
 
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
-		virtual const u32 getChangedID() const {return ChangedID;}
+		virtual const u32 getChangedID_Index() const {return ChangedID_Index;}
+
+		//! ID used for hardware buffer management
+		u32 ChangedID_Vertex;
+
+		//! ID used for hardware buffer management
+		u32 ChangedID_Index;
+
 
 		//! Material of this meshBuffer
 		video::SMaterial Material;
@@ -158,8 +175,7 @@ namespace scene
 		core::aabbox3df BoundingBox;
 		//! hardware mapping hint
 		E_HARDWARE_MAPPING MappingHint;
-		//! ID used for hardware buffer management
-		u32 ChangedID;
+
 	};
 
 

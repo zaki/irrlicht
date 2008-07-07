@@ -1621,8 +1621,8 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 		// unset last 3d material
 		if (CurrentRenderMode == ERM_3D &&
-			Material.MaterialType >= 0 && Material.MaterialType < (s32)MaterialRenderers.size())
-			MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+			Material.MaterialType >= 0 && LastMaterial.MaterialType < (s32)MaterialRenderers.size())
+			MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 	}
 
 	if (texture)

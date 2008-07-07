@@ -156,7 +156,15 @@ namespace scene
 		//! flags the meshbuffer as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) = 0;
 
-		virtual const u32 getChangedID() const = 0;
+		//to be spit into vertex and index buffers:
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual const u32 getChangedID_Vertex() const = 0;
+
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual const u32 getChangedID_Index() const = 0;
+
 
 		u32 HardwareHint;
 	};

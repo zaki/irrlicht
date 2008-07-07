@@ -458,7 +458,7 @@ void CSkinnedMesh::skinMesh()
 			SkinJoint(RootJoints[i], 0);
 
 		for (i=0; i<SkinningBuffers->size(); ++i)
-			(*SkinningBuffers)[i]->setDirty();
+			(*SkinningBuffers)[i]->setDirty(EBT_VERTEX);
 
 	}
 }

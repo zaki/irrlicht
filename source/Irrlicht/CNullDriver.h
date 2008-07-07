@@ -299,7 +299,7 @@ namespace video
 	protected:
 		struct SHWBufferLink
 		{
-			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer):MeshBuffer(_MeshBuffer),ChangedID(0),LastUsed(0),Mapped(scene::EHM_NEVER)
+			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer):MeshBuffer(_MeshBuffer),ChangedID_Vertex(0),ChangedID_Index(0),LastUsed(0),Mapped(scene::EHM_NEVER)
 			{
 				if (MeshBuffer)
 					MeshBuffer->grab();
@@ -313,7 +313,8 @@ namespace video
 
 			scene::E_BUFFER_TYPE Contains;
 			const scene::IMeshBuffer *MeshBuffer;
-			u32 ChangedID;
+			u32 ChangedID_Vertex;
+			u32 ChangedID_Index;
 			u32 LastUsed;
 			scene::E_HARDWARE_MAPPING Mapped;
 
