@@ -26,6 +26,7 @@ namespace irr
 			Vsync(false),
 			AntiAlias(false),
 			WithAlphaChannel(false),
+			IgnoreInput(false),
 			HighPrecisionFPU(false),
 			EventReceiver(0),
 			WindowId(0),
@@ -86,6 +87,13 @@ namespace irr
 		tries to create a framebuffer with alpha channel.
 		Default value: false */
 		bool WithAlphaChannel;
+
+		//! Specifies if the device should ignore input events
+		/** This is only relevant when using external I/O handlers.
+		External windows need to take care of this themselves.
+		Currently only supported under X11.
+		Default value: false */
+		bool IgnoreInput;
 
 		//! Specifies if the device should use high precision FPU setting
 		/** This is only relevant for DirectX Devices, which switch to

@@ -426,7 +426,7 @@ bool CIrrDeviceLinux::createWindow()
 				{
 					if (CreationParams.Stencilbuffer)
 					{
-						os::Printer::log("No stencilbuffer available, disabling stencil shadows.", ELL_WARNING);
+						os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
 						CreationParams.Stencilbuffer = false;
 					}
 					visualAttrBuffer[15]=0;
@@ -479,9 +479,11 @@ bool CIrrDeviceLinux::createWindow()
 
 	attributes.colormap = colormap;
 	attributes.border_pixel = 0;
-	attributes.event_mask = KeyPressMask | ButtonPressMask |
-			StructureNotifyMask | PointerMotionMask |
-			ButtonReleaseMask | KeyReleaseMask;
+	attributes.event_mask = StructureNotifyMask;
+	if (!CreationParams.IgnoreInput)
+		attributes.event_mask |= PointerMotionMask |
+				ButtonPressMask | KeyPressMask |
+				ButtonReleaseMask | KeyReleaseMask;
 
 	// create Window, either for Fullscreen or windowed mode
 	if (CreationParams.Fullscreen)
