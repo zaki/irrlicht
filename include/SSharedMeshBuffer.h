@@ -141,15 +141,15 @@ namespace scene
 			MappingHint=NewMappingHint;
 		}
 
-
 		//! flags the mesh as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
 		{
 			if (E_BUFFER_TYPE Buffer==EBT_VERTEX_AND_INDEX || E_BUFFER_TYPE Buffer==EBT_VERTEX)
-				ChangedID_Vertex++;
-			else if (E_BUFFER_TYPE Buffer==EBT_VERTEX_AND_INDEX || E_BUFFER_TYPE Buffer==EBT_INDEX)
-				ChangedID_Index++;
+				++ChangedID_Vertex;
+			if (E_BUFFER_TYPE Buffer==EBT_VERTEX_AND_INDEX || E_BUFFER_TYPE Buffer==EBT_INDEX)
+				++ChangedID_Index;
 		}
+
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
 		virtual const u32 getChangedID_Vertex() const {return ChangedID_Vertex;}
@@ -163,7 +163,6 @@ namespace scene
 
 		//! ID used for hardware buffer management
 		u32 ChangedID_Index;
-
 
 		//! Material of this meshBuffer
 		video::SMaterial Material;

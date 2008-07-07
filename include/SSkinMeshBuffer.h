@@ -282,16 +282,11 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		}
 	}
 
-
-
-
 	//! append the vertices and indices to the current buffer
 	virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) {}
 
 	//! append the meshbuffer to the current buffer
 	virtual void append(const IMeshBuffer* const other) {}
-
-
 
 	//! get the current hardware mapping hint
 	virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const
@@ -308,18 +303,18 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//! flags the mesh as changed, reloads hardware buffers
 	virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
 	{
-		if (Buffer==EBT_VERTEX_AND_INDEX ||Buffer==EBT_VERTEX)
-			ChangedID_Vertex++;
-		else if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_INDEX)
-			ChangedID_Index++;
+		if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_VERTEX)
+			++ChangedID_Vertex;
+		if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_INDEX)
+			++ChangedID_Index;
 	}
 
 	virtual const u32 getChangedID_Vertex() const {return ChangedID_Vertex;}
+
 	virtual const u32 getChangedID_Index() const {return ChangedID_Index;}
 
 	u32 ChangedID_Vertex;
 	u32 ChangedID_Index;
-
 
 	// hardware mapping hint
 	E_HARDWARE_MAPPING MappingHint;
