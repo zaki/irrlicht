@@ -714,18 +714,29 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 	if (!HWBuffer)
 		return false;
 
-	if (HWBuffer->ChangedID != HWBuffer->MeshBuffer->getChangedID()
-		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID
+	if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex()
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
 	{
 
-		HWBuffer->ChangedID = HWBuffer->MeshBuffer->getChangedID();
+		HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
 
 		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
 			return false;
+	}
+
+
+
+	if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
+		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID)
+	{
+
+		HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
+
 		if (!updateIndexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
 			return false;
 	}
+
+
 	return true;
 }
 
@@ -743,7 +754,8 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 	//add to map
 	HWBufferMap.insert(HWBuffer->MeshBuffer, HWBuffer);
 
-	HWBuffer->ChangedID=HWBuffer->MeshBuffer->getChangedID();
+	HWBuffer->ChangedID_Vertex=HWBuffer->MeshBuffer->getChangedID_Vertex();
+	HWBuffer->ChangedID_Index=HWBuffer->MeshBuffer->getChangedID_Index();
 	HWBuffer->Mapped=mb->getHardwareMappingHint();
 	HWBuffer->LastUsed=0;
 	HWBuffer->vbo_verticesID=0;
@@ -1880,8 +1892,8 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		// unset last 3d material
 		if (CurrentRenderMode == ERM_3D)
 		{
-			if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
-				MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
+				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			SMaterial mat;
 			mat.ZBuffer=0;
 			mat.Lighting=false;

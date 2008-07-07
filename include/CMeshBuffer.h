@@ -18,7 +18,7 @@ namespace scene
 	{
 	public:
 		//! Default constructor for empty meshbuffer
-		CMeshBuffer():ChangedID(1),MappingHint(EHM_NEVER) // everything's default constructed
+		CMeshBuffer():ChangedID_Vertex(1),ChangedID_Index(1),MappingHint(EHM_NEVER) // everything's default constructed
 		{
 			#ifdef _DEBUG
 			setDebugName("SMeshBuffer");
@@ -223,12 +223,24 @@ namespace scene
 		}
 
 		//! flags the mesh as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) {ChangedID++;}
+		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
+		{
+			if (Buffer==EBT_VERTEX_AND_INDEX ||Buffer==EBT_VERTEX)
+				ChangedID_Vertex++;
+			else if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_INDEX)
+				ChangedID_Index++;
+		}
 
-		virtual const u32 getChangedID() const {return ChangedID;}
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual const u32 getChangedID_Vertex() const {return ChangedID_Vertex;}
 
+		//! Get the currently used ID for identification of changes.
+		/** This shouldn't be used for anything outside the VideoDriver. */
+		virtual const u32 getChangedID_Index() const {return ChangedID_Index;}
 
-		u32 ChangedID;
+		u32 ChangedID_Vertex;
+		u32 ChangedID_Index;
 
 		//! hardware mapping hint
 		E_HARDWARE_MAPPING MappingHint;

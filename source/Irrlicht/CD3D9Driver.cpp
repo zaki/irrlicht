@@ -208,7 +208,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 		{
 			case 0x1002 : vendorName = "ATI Technologies Inc."; break;
 			case 0x10DE : vendorName = "NVIDIA Corporation"; break;
-			case 0x102B : vendorName = "Matrox Electronic Systems Ltd."; break;     
+			case 0x102B : vendorName = "Matrox Electronic Systems Ltd."; break;
 			case 0x121A : vendorName = "3dfx Interactive Inc"; break;
 			case 0x5333 : vendorName = "S3 Graphics Co., Ltd."; break;
 			case 0x8086 : vendorName = "Intel Corporation"; break;
@@ -842,28 +842,28 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
 		// Get the vertex sizes and cvf
 		switch (vType)
 		{
-			case EVT_STANDARD: 
-				vertexSize = sizeof(S3DVertex); 
+			case EVT_STANDARD:
+				vertexSize = sizeof(S3DVertex);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 				break;
-			case EVT_2TCOORDS: 
-				vertexSize = sizeof(S3DVertex2TCoords); 
+			case EVT_2TCOORDS:
+				vertexSize = sizeof(S3DVertex2TCoords);
 				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX2;
 				break;
-			case EVT_TANGENTS: 
+			case EVT_TANGENTS:
 				vertexSize = sizeof(S3DVertexTangents);
-				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX3; 
+				FVF = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX3;
 				break;
-			default: 
+			default:
 				return false;
-		} 
+		}
 
 		flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
 		if(HWBuffer->Mapped != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC;
 
 		pID3DDevice->CreateVertexBuffer(vertexCount * vertexSize, flags, FVF, D3DPOOL_DEFAULT, &HWBuffer->vertexBuffer, NULL);
-		
+
 		if(!HWBuffer->vertexBuffer)
 			return false;
 
@@ -878,7 +878,7 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
 		HWBuffer->vertexBufferSize = vertexCount * vertexSize;
 	}
 	else
-	{		
+	{
 		HWBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, D3DLOCK_DISCARD);
 		memcpy(pLockedBuffer, vertices, vertexCount * vertexSize);
 		HWBuffer->vertexBuffer->Unlock();
@@ -944,17 +944,30 @@ bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 	if (!HWBuffer)
 		return false;
 
-	if (HWBuffer->ChangedID != HWBuffer->MeshBuffer->getChangedID()
-		|| !((SHWBufferLink_d3d9*)HWBuffer)->vertexBuffer
-		|| !((SHWBufferLink_d3d9*)HWBuffer)->indexBuffer)
+	if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex()
+		|| !((SHWBufferLink_d3d9*)HWBuffer)->vertexBuffer)
 	{
-		HWBuffer->ChangedID = HWBuffer->MeshBuffer->getChangedID();
+
+		HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
 
 		if (!updateVertexHardwareBuffer((SHWBufferLink_d3d9*)HWBuffer))
 			return false;
+	}
+
+
+
+	if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
+		|| !((SHWBufferLink_d3d9*)HWBuffer)->indexBuffer)
+	{
+
+		HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
+
 		if (!updateIndexHardwareBuffer((SHWBufferLink_d3d9*)HWBuffer))
 			return false;
 	}
+
+
+
 	return true;
 }
 
@@ -970,7 +983,8 @@ CD3D9Driver::SHWBufferLink *CD3D9Driver::createHardwareBuffer(const scene::IMesh
 	//add to map
 	HWBufferMap.insert(HWBuffer->MeshBuffer, HWBuffer);
 
-	HWBuffer->ChangedID=HWBuffer->MeshBuffer->getChangedID();
+	HWBuffer->ChangedID_Vertex=HWBuffer->MeshBuffer->getChangedID_Vertex();
+	HWBuffer->ChangedID_Index=HWBuffer->MeshBuffer->getChangedID_Index();
 	HWBuffer->Mapped=mb->getHardwareMappingHint();
 	HWBuffer->LastUsed=0;
 	HWBuffer->vertexBuffer=0;
@@ -1108,7 +1122,7 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				{
 					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
 					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-	         
+
 					u16 tmpIndices[] = {0, primitiveCount};
 
 					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
@@ -1154,7 +1168,7 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 					pID3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vertexCount, 0, primitiveCount);
 				}
 				else
-				{				
+				{
 					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
 						primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
 				}
@@ -1870,8 +1884,8 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		// unset last 3d material
 		if (CurrentRenderMode != ERM_2D)
 		{
-			if (static_cast<u32>(Material.MaterialType) < MaterialRenderers.size())
-				MaterialRenderers[Material.MaterialType].Renderer->OnUnsetMaterial();
+			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
+				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			setBasicRenderStates(SMaterial(), SMaterial(), true);
 			// everything that is wrongly set by SMaterial default
 			pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
