@@ -323,50 +323,51 @@ IGUITab* CGUITabControl::getTab(s32 idx) const
 //! called if an event happened.
 bool CGUITabControl::OnEvent(const SEvent& event)
 {
-	if (!IsEnabled)
-		return Parent ? Parent->OnEvent(event) : false;
-
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_GUI_EVENT:
-		switch(event.GUIEvent.EventType)
-		{
-		case EGET_BUTTON_CLICKED:
-			if (event.GUIEvent.Caller == UpButton)
-			{
-				scrollLeft();
-				return true;
-			}
-			else if (event.GUIEvent.Caller == DownButton)
-			{
-				scrollRight();
-				return true;
-			}
 
-		break;
-		default:
-		break;
-		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		switch(event.MouseInput.Event)
+		switch(event.EventType)
 		{
-		case EMIE_LMOUSE_PRESSED_DOWN:
-			// todo: dragging tabs around
-			return true;
-		case EMIE_LMOUSE_LEFT_UP:
-			if (selectTab(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
+		case EET_GUI_EVENT:
+			switch(event.GUIEvent.EventType)
+			{
+			case EGET_BUTTON_CLICKED:
+				if (event.GUIEvent.Caller == UpButton)
+				{
+					scrollLeft();
+					return true;
+				}
+				else if (event.GUIEvent.Caller == DownButton)
+				{
+					scrollRight();
+					return true;
+				}
+
+			break;
+			default:
+			break;
+			}
+			break;
+		case EET_MOUSE_INPUT_EVENT:
+			switch(event.MouseInput.Event)
+			{
+			case EMIE_LMOUSE_PRESSED_DOWN:
+				// todo: dragging tabs around
 				return true;
+			case EMIE_LMOUSE_LEFT_UP:
+				if (selectTab(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
+					return true;
+				break;
+			default:
+				break;
+			}
 			break;
 		default:
 			break;
 		}
-		break;
-	default:
-		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 void CGUITabControl::scrollLeft()

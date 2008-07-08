@@ -161,132 +161,52 @@ void CGUIComboBox::setSelected(s32 idx)
 //! called if an event happened.
 bool CGUIComboBox::OnEvent(const SEvent& event)
 {
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-
-	case EET_KEY_INPUT_EVENT:
-		if (ListBox && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
+		switch(event.EventType)
 		{
-			// hide list box
-			openCloseMenu();
-			return true;
-		}
-		else
-		if (event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE)
-		{
-			if (!event.KeyInput.PressedDown)
-				openCloseMenu();
 
-			ListButton->setPressed(ListBox == 0);
-
-			return true;
-		}
-		else
-		if (event.KeyInput.PressedDown)
-		{
-			s32 oldSelected = Selected;
-			bool absorb = true;
-			switch (event.KeyInput.Key)
+		case EET_KEY_INPUT_EVENT:
+			if (ListBox && event.KeyInput.PressedDown && event.KeyInput.Key == KEY_ESCAPE)
 			{
-				case KEY_DOWN: 
-					setSelected(Selected+1); 
-					break;
-				case KEY_UP: 
-					setSelected(Selected-1);
-					break;
-				case KEY_HOME:
-				case KEY_PRIOR:
-					setSelected(0);
-					break;
-				case KEY_END:
-				case KEY_NEXT:
-					setSelected((s32)Items.size()-1);
-					break;
-				default:
-					absorb = false;
-			}
-
-			if (Selected <0)
-				setSelected(0);
-
-			if (Selected >= (s32)Items.size())
-				setSelected((s32)Items.size() -1);
-
-			if (Selected != oldSelected)
-				sendSelectionChangedEvent();
-
-			if (absorb)
-				return true;
-		}
-		break;
-
-	case EET_GUI_EVENT:
-
-		switch(event.GUIEvent.EventType)
-		{
-		case EGET_ELEMENT_FOCUS_LOST:
-			if (ListBox && 
-				(Environment->hasFocus(ListBox) || ListBox->isMyChild(event.GUIEvent.Caller) ) && 
-				event.GUIEvent.Element != this && 
-				event.GUIEvent.Element != ListButton && 
-				event.GUIEvent.Element != ListBox && 
-				!ListBox->isMyChild(event.GUIEvent.Element))
-			{
-				openCloseMenu();
-			}
-			break;
-		case EGET_BUTTON_CLICKED:
-			if (event.GUIEvent.Caller == ListButton)
-			{
+				// hide list box
 				openCloseMenu();
 				return true;
 			}
-			break;
-		case EGET_LISTBOX_SELECTED_AGAIN:
-		case EGET_LISTBOX_CHANGED:
-			if (event.GUIEvent.Caller == ListBox)
+			else
+			if (event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE)
 			{
-				setSelected(ListBox->getSelected());
-				if (Selected <0 || Selected >= (s32)Items.size())
-					setSelected(-1);
-				openCloseMenu();
-
-				sendSelectionChangedEvent();
-			}
-			return true;
-		default:
-			break;
-		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-
-		switch(event.MouseInput.Event)
-		{
-		case EMIE_LMOUSE_PRESSED_DOWN:
-			{
-				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
-				
-				// send to list box
-				if (ListBox && ListBox->isPointInside(p) && ListBox->OnEvent(event))
-					return true;
-
-				return true;
-			}
-		case EMIE_LMOUSE_LEFT_UP:
-			{
-				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
-
-				// send to list box
-				if (!(ListBox &&
-						ListBox->getAbsolutePosition().isPointInside(p) &&
-						ListBox->OnEvent(event)))
+				if (!event.KeyInput.PressedDown)
 					openCloseMenu();
+
+				ListButton->setPressed(ListBox == 0);
+
 				return true;
 			}
-		case EMIE_MOUSE_WHEEL:
+			else
+			if (event.KeyInput.PressedDown)
 			{
 				s32 oldSelected = Selected;
-				setSelected( Selected +(event.MouseInput.Wheel < 0) ? 1 : -1);
+				bool absorb = true;
+				switch (event.KeyInput.Key)
+				{
+					case KEY_DOWN: 
+						setSelected(Selected+1); 
+						break;
+					case KEY_UP: 
+						setSelected(Selected-1);
+						break;
+					case KEY_HOME:
+					case KEY_PRIOR:
+						setSelected(0);
+						break;
+					case KEY_END:
+					case KEY_NEXT:
+						setSelected((s32)Items.size()-1);
+						break;
+					default:
+						absorb = false;
+				}
 
 				if (Selected <0)
 					setSelected(0);
@@ -296,16 +216,99 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 
 				if (Selected != oldSelected)
 					sendSelectionChangedEvent();
+
+				if (absorb)
+					return true;
 			}
+			break;
+
+		case EET_GUI_EVENT:
+
+			switch(event.GUIEvent.EventType)
+			{
+			case EGET_ELEMENT_FOCUS_LOST:
+				if (ListBox && 
+					(Environment->hasFocus(ListBox) || ListBox->isMyChild(event.GUIEvent.Caller) ) && 
+					event.GUIEvent.Element != this && 
+					event.GUIEvent.Element != ListButton && 
+					event.GUIEvent.Element != ListBox && 
+					!ListBox->isMyChild(event.GUIEvent.Element))
+				{
+					openCloseMenu();
+				}
+				break;
+			case EGET_BUTTON_CLICKED:
+				if (event.GUIEvent.Caller == ListButton)
+				{
+					openCloseMenu();
+					return true;
+				}
+				break;
+			case EGET_LISTBOX_SELECTED_AGAIN:
+			case EGET_LISTBOX_CHANGED:
+				if (event.GUIEvent.Caller == ListBox)
+				{
+					setSelected(ListBox->getSelected());
+					if (Selected <0 || Selected >= (s32)Items.size())
+						setSelected(-1);
+					openCloseMenu();
+
+					sendSelectionChangedEvent();
+				}
+				return true;
+			default:
+				break;
+			}
+			break;
+		case EET_MOUSE_INPUT_EVENT:
+
+			switch(event.MouseInput.Event)
+			{
+			case EMIE_LMOUSE_PRESSED_DOWN:
+				{
+					core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
+					
+					// send to list box
+					if (ListBox && ListBox->isPointInside(p) && ListBox->OnEvent(event))
+						return true;
+
+					return true;
+				}
+			case EMIE_LMOUSE_LEFT_UP:
+				{
+					core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
+
+					// send to list box
+					if (!(ListBox &&
+							ListBox->getAbsolutePosition().isPointInside(p) &&
+							ListBox->OnEvent(event)))
+						openCloseMenu();
+					return true;
+				}
+			case EMIE_MOUSE_WHEEL:
+				{
+					s32 oldSelected = Selected;
+					setSelected( Selected +(event.MouseInput.Wheel < 0) ? 1 : -1);
+
+					if (Selected <0)
+						setSelected(0);
+
+					if (Selected >= (s32)Items.size())
+						setSelected((s32)Items.size() -1);
+
+					if (Selected != oldSelected)
+						sendSelectionChangedEvent();
+				}
+			default:
+				break;
+			}
+			break;
 		default:
 			break;
 		}
-		break;
-	default:
-		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 

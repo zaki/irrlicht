@@ -119,7 +119,7 @@ bool CGUICheckBox::OnEvent(const SEvent& event)
 		}
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 

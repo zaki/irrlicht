@@ -187,32 +187,36 @@ void CGUIEditBox::setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT ver
 //! called if an event happened.
 bool CGUIEditBox::OnEvent(const SEvent& event)
 {
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
+
+		switch(event.EventType)
 		{
-			if (event.GUIEvent.Caller == this)
+		case EET_GUI_EVENT:
+			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 			{
-				MouseMarking = false;
-				MarkBegin = 0;
-				MarkEnd = 0;
+				if (event.GUIEvent.Caller == this)
+				{
+					MouseMarking = false;
+					MarkBegin = 0;
+					MarkEnd = 0;
+				}
 			}
+			break;
+		case EET_KEY_INPUT_EVENT:
+			if (processKey(event))
+				return true;
+			break;
+		case EET_MOUSE_INPUT_EVENT:
+			if (processMouse(event))
+				return true;
+			break;
+		default:
+			break;
 		}
-		break;
-	case EET_KEY_INPUT_EVENT:
-		if (processKey(event))
-			return true;
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		if (processMouse(event))
-			return true;
-		break;
-	default:
-		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 
