@@ -1755,7 +1755,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// back face culling
-	if (resetAllRenderStates || lastmaterial.BackfaceCulling != material.BackfaceCulling)
+	if (resetAllRenderStates || (lastmaterial.FrontfaceCulling != material.FrontfaceCulling) || (lastmaterial.BackfaceCulling != material.BackfaceCulling))
 	{
 		if ((material.FrontfaceCulling) && (material.BackfaceCulling))
 		{
