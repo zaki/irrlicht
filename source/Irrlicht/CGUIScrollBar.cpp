@@ -59,140 +59,43 @@ CGUIScrollBar::~CGUIScrollBar()
 //! called if an event happened.
 bool CGUIScrollBar::OnEvent(const SEvent& event)
 {
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_KEY_INPUT_EVENT:
-		if (event.KeyInput.PressedDown)
-		{
-			const s32 oldPos = Pos;
-			bool absorb = true;
-			switch (event.KeyInput.Key)
-			{
-			case KEY_LEFT:
-			case KEY_UP:
-				setPos(Pos-SmallStep);
-				break;
-			case KEY_RIGHT:
-			case KEY_DOWN:
-				setPos(Pos+SmallStep);
-				break;
-			case KEY_HOME:
-				setPos(0);
-				break;
-			case KEY_PRIOR:
-				setPos(Pos-LargeStep);
-				break;
-			case KEY_END:
-				setPos(Max);
-				break;
-			case KEY_NEXT:
-				setPos(Pos+LargeStep);
-				break;
-			default:
-				absorb = false;
-			}
 
-			if (Pos != oldPos)
+		switch(event.EventType)
+		{
+		case EET_KEY_INPUT_EVENT:
+			if (event.KeyInput.PressedDown)
 			{
-				SEvent newEvent;
-				newEvent.EventType = EET_GUI_EVENT;
-				newEvent.GUIEvent.Caller = this;
-				newEvent.GUIEvent.Element = 0;
-				newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-				Parent->OnEvent(newEvent);
-			}
-			if (absorb)
-				return true;
-		}
-		break;
-	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
-		{
-			if (event.GUIEvent.Caller == UpButton)
-				setPos(Pos-SmallStep);
-			else
-			if (event.GUIEvent.Caller == DownButton)
-				setPos(Pos+SmallStep);
-
-			SEvent newEvent;
-			newEvent.EventType = EET_GUI_EVENT;
-			newEvent.GUIEvent.Caller = this;
-			newEvent.GUIEvent.Element = 0;
-			newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-			Parent->OnEvent(newEvent);
-
-			return true;
-		}
-		else
-		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
-		{
-			if (event.GUIEvent.Caller == this)
-				Dragging = false;
-		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		switch(event.MouseInput.Event)
-		{
-		case EMIE_MOUSE_WHEEL:
-			if (Environment->hasFocus(this))
-			{ // thanks to a bug report by REAPER
-				setPos(getPos() + (s32)event.MouseInput.Wheel* -SmallStep);
-				SEvent newEvent;
-				newEvent.EventType = EET_GUI_EVENT;
-				newEvent.GUIEvent.Caller = this;
-				newEvent.GUIEvent.Element = 0;
-				newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
-				Parent->OnEvent(newEvent);
-				return true;
-			}
-			break;
-		case EMIE_LMOUSE_PRESSED_DOWN:
-		{
-			if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
-			{
-				Dragging = true;
-				DraggedBySlider = SliderRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y));
-				TrayClick = !DraggedBySlider;
-				DesiredPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
-				return true;
-			}
-			break;
-		}
-		case EMIE_LMOUSE_LEFT_UP:
-		case EMIE_MOUSE_MOVED:
-			if (Dragging)
-			{
-				if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
-					Dragging = false;
-
-				const s32 newPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
 				const s32 oldPos = Pos;
+				bool absorb = true;
+				switch (event.KeyInput.Key)
+				{
+				case KEY_LEFT:
+				case KEY_UP:
+					setPos(Pos-SmallStep);
+					break;
+				case KEY_RIGHT:
+				case KEY_DOWN:
+					setPos(Pos+SmallStep);
+					break;
+				case KEY_HOME:
+					setPos(0);
+					break;
+				case KEY_PRIOR:
+					setPos(Pos-LargeStep);
+					break;
+				case KEY_END:
+					setPos(Max);
+					break;
+				case KEY_NEXT:
+					setPos(Pos+LargeStep);
+					break;
+				default:
+					absorb = false;
+				}
 
-				if (!DraggedBySlider)
-				{
-					if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
-					{
-						DraggedBySlider = SliderRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y));
-						TrayClick = !DraggedBySlider;
-					}
-					else
-					{
-						TrayClick = false;
-						if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
-							return true;
-					}
-				}
-				
-				if (DraggedBySlider)
-				{
-					setPos(newPos);
-				}
-				else
-				{
-					DesiredPos = newPos;
-				}
-
-				if (Pos != oldPos && Parent)
+				if (Pos != oldPos)
 				{
 					SEvent newEvent;
 					newEvent.EventType = EET_GUI_EVENT;
@@ -201,15 +104,116 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 					newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
 					Parent->OnEvent(newEvent);
 				}
+				if (absorb)
+					return true;
+			}
+			break;
+		case EET_GUI_EVENT:
+			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
+			{
+				if (event.GUIEvent.Caller == UpButton)
+					setPos(Pos-SmallStep);
+				else
+				if (event.GUIEvent.Caller == DownButton)
+					setPos(Pos+SmallStep);
+
+				SEvent newEvent;
+				newEvent.EventType = EET_GUI_EVENT;
+				newEvent.GUIEvent.Caller = this;
+				newEvent.GUIEvent.Element = 0;
+				newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+				Parent->OnEvent(newEvent);
+
 				return true;
+			}
+			else
+			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
+			{
+				if (event.GUIEvent.Caller == this)
+					Dragging = false;
+			}
+			break;
+		case EET_MOUSE_INPUT_EVENT:
+			switch(event.MouseInput.Event)
+			{
+			case EMIE_MOUSE_WHEEL:
+				if (Environment->hasFocus(this))
+				{ // thanks to a bug report by REAPER
+					setPos(getPos() + (s32)event.MouseInput.Wheel* -SmallStep);
+					SEvent newEvent;
+					newEvent.EventType = EET_GUI_EVENT;
+					newEvent.GUIEvent.Caller = this;
+					newEvent.GUIEvent.Element = 0;
+					newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+					Parent->OnEvent(newEvent);
+					return true;
+				}
+				break;
+			case EMIE_LMOUSE_PRESSED_DOWN:
+			{
+				if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
+				{
+					Dragging = true;
+					DraggedBySlider = SliderRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y));
+					TrayClick = !DraggedBySlider;
+					DesiredPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
+					return true;
+				}
+				break;
+			}
+			case EMIE_LMOUSE_LEFT_UP:
+			case EMIE_MOUSE_MOVED:
+				if (Dragging)
+				{
+					if (event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)
+						Dragging = false;
+
+					const s32 newPos = getPosFromMousePos(event.MouseInput.X, event.MouseInput.Y);
+					const s32 oldPos = Pos;
+
+					if (!DraggedBySlider)
+					{
+						if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
+						{
+							DraggedBySlider = SliderRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y));
+							TrayClick = !DraggedBySlider;
+						}
+						else
+						{
+							TrayClick = false;
+							if (event.MouseInput.Event == EMIE_MOUSE_MOVED)
+								return true;
+						}
+					}
+					
+					if (DraggedBySlider)
+					{
+						setPos(newPos);
+					}
+					else
+					{
+						DesiredPos = newPos;
+					}
+
+					if (Pos != oldPos && Parent)
+					{
+						SEvent newEvent;
+						newEvent.EventType = EET_GUI_EVENT;
+						newEvent.GUIEvent.Caller = this;
+						newEvent.GUIEvent.Element = 0;
+						newEvent.GUIEvent.EventType = EGET_SCROLL_BAR_CHANGED;
+						Parent->OnEvent(newEvent);
+					}
+					return true;
+				}
+				break;
+			default:
+				break;
 			}
 			break;
 		default:
 			break;
 		}
-		break;
-	default:
-		break;
 	}
 
 	return IGUIElement::OnEvent(event);

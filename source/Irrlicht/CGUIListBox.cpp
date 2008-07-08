@@ -195,218 +195,221 @@ void CGUIListBox::setSelected(s32 id)
 //! called if an event happened.
 bool CGUIListBox::OnEvent(const SEvent& event)
 {
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_KEY_INPUT_EVENT:
-		if (event.KeyInput.PressedDown &&
-			(event.KeyInput.Key == KEY_DOWN ||
-			event.KeyInput.Key == KEY_UP   ||
-			event.KeyInput.Key == KEY_HOME ||
-			event.KeyInput.Key == KEY_END  ||
-			event.KeyInput.Key == KEY_NEXT ||
-			event.KeyInput.Key == KEY_PRIOR ) )
+		switch(event.EventType)
 		{
-			s32 oldSelected = Selected;
-			switch (event.KeyInput.Key)
+		case EET_KEY_INPUT_EVENT:
+			if (event.KeyInput.PressedDown &&
+				(event.KeyInput.Key == KEY_DOWN ||
+				event.KeyInput.Key == KEY_UP   ||
+				event.KeyInput.Key == KEY_HOME ||
+				event.KeyInput.Key == KEY_END  ||
+				event.KeyInput.Key == KEY_NEXT ||
+				event.KeyInput.Key == KEY_PRIOR ) )
 			{
-				case KEY_DOWN:
-					Selected += 1;
-					break;
-				case KEY_UP:
-					Selected -= 1;
-					break;
-				case KEY_HOME:
+				s32 oldSelected = Selected;
+				switch (event.KeyInput.Key)
+				{
+					case KEY_DOWN:
+						Selected += 1;
+						break;
+					case KEY_UP:
+						Selected -= 1;
+						break;
+					case KEY_HOME:
+						Selected = 0;
+						break;
+					case KEY_END:
+						Selected = (s32)Items.size()-1;
+						break;
+					case KEY_NEXT:
+						Selected += AbsoluteRect.getHeight() / ItemHeight;
+						break;
+					case KEY_PRIOR:
+						Selected -= AbsoluteRect.getHeight() / ItemHeight;
+						break;
+					default:
+						break;
+				}
+				if (Selected >= (s32)Items.size())
+					Selected = Items.size() - 1;
+				else
+				if (Selected<0)
 					Selected = 0;
-					break;
-				case KEY_END:
-					Selected = (s32)Items.size()-1;
-					break;
-				case KEY_NEXT:
-					Selected += AbsoluteRect.getHeight() / ItemHeight;
-					break;
-				case KEY_PRIOR:
-					Selected -= AbsoluteRect.getHeight() / ItemHeight;
-					break;
-				default:
-					break;
-			}
-			if (Selected >= (s32)Items.size())
-				Selected = Items.size() - 1;
-			else
-			if (Selected<0)
-				Selected = 0;
 
-			recalculateScrollPos();
+				recalculateScrollPos();
 
-			// post the news
+				// post the news
 
-			if (oldSelected != Selected && Parent && !Selecting && !MoveOverSelect)
-			{
-				SEvent e;
-				e.EventType = EET_GUI_EVENT;
-				e.GUIEvent.Caller = this;
-				e.GUIEvent.Element = 0;
-				e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
-				Parent->OnEvent(e);
-			}
-
-			return true;
-		}
-		else
-		if (!event.KeyInput.PressedDown && ( event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE ) )
-		{
-			if (Parent)
-			{
-				SEvent e;
-				e.EventType = EET_GUI_EVENT;
-				e.GUIEvent.Caller = this;
-				e.GUIEvent.Element = 0;
-				e.GUIEvent.EventType = EGET_LISTBOX_SELECTED_AGAIN;
-				Parent->OnEvent(e);
-			}
-			return true;
-		}
-		else if (event.KeyInput.PressedDown && event.KeyInput.Char)
-		{
-			// change selection based on text as it is typed.
-			u32 now = os::Timer::getTime();
-
-			if (now - LastKeyTime < 500)
-			{
-				// add to key buffer if it isn't a key repeat
-				if (!(KeyBuffer.size() == 1 && KeyBuffer[0] == event.KeyInput.Char))
+				if (oldSelected != Selected && Parent && !Selecting && !MoveOverSelect)
 				{
-					KeyBuffer += L" ";
-					KeyBuffer[KeyBuffer.size()-1] = event.KeyInput.Char;
+					SEvent e;
+					e.EventType = EET_GUI_EVENT;
+					e.GUIEvent.Caller = this;
+					e.GUIEvent.Element = 0;
+					e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
+					Parent->OnEvent(e);
 				}
-			}
-			else
-			{
-				KeyBuffer = L" ";
-				KeyBuffer[0] = event.KeyInput.Char;
-			}
-			LastKeyTime = now;
 
-			// find the selected item, starting at the current selection
-			s32 start = Selected;
-			// dont change selection if the key buffer matches the current item
-			if (Selected > -1 && KeyBuffer.size() > 1)
-			{
-				if (Items[Selected].text.size() >= KeyBuffer.size() &&
-					KeyBuffer.equals_ignore_case(Items[Selected].text.subString(0,KeyBuffer.size())))
-					return true;
-			}
-
-			s32 current;
-			for (current = start+1; current < (s32)Items.size(); ++current)
-			{
-				if (Items[current].text.size() >= KeyBuffer.size())
-				{
-					if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
-					{
-						if (Parent && Selected != current && !Selecting && !MoveOverSelect)
-						{
-							SEvent e;
-							e.EventType = EET_GUI_EVENT;
-							e.GUIEvent.Caller = this;
-							e.GUIEvent.Element = 0;
-							e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
-							Parent->OnEvent(e);
-						}
-						setSelected(current);
-						return true;
-					}
-				}
-			}
-			for (current = 0; current <= start; ++current)
-			{
-				if (Items[current].text.size() >= KeyBuffer.size())
-				{
-					if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
-					{
-						if (Parent && Selected != current && !Selecting && !MoveOverSelect)
-						{
-							Selected = current;
-							SEvent e;
-							e.EventType = EET_GUI_EVENT;
-							e.GUIEvent.Caller = this;
-							e.GUIEvent.Element = 0;
-							e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
-							Parent->OnEvent(e);
-						}
-						setSelected(current);
-						return true;
-					}
-				}
-			}
-
-			return true;
-		}
-		break;
-
-	case EET_GUI_EVENT:
-		switch(event.GUIEvent.EventType)
-		{
-		case gui::EGET_SCROLL_BAR_CHANGED:
-			if (event.GUIEvent.Caller == ScrollBar)
 				return true;
+			}
+			else
+			if (!event.KeyInput.PressedDown && ( event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE ) )
+			{
+				if (Parent)
+				{
+					SEvent e;
+					e.EventType = EET_GUI_EVENT;
+					e.GUIEvent.Caller = this;
+					e.GUIEvent.Element = 0;
+					e.GUIEvent.EventType = EGET_LISTBOX_SELECTED_AGAIN;
+					Parent->OnEvent(e);
+				}
+				return true;
+			}
+			else if (event.KeyInput.PressedDown && event.KeyInput.Char)
+			{
+				// change selection based on text as it is typed.
+				u32 now = os::Timer::getTime();
+
+				if (now - LastKeyTime < 500)
+				{
+					// add to key buffer if it isn't a key repeat
+					if (!(KeyBuffer.size() == 1 && KeyBuffer[0] == event.KeyInput.Char))
+					{
+						KeyBuffer += L" ";
+						KeyBuffer[KeyBuffer.size()-1] = event.KeyInput.Char;
+					}
+				}
+				else
+				{
+					KeyBuffer = L" ";
+					KeyBuffer[0] = event.KeyInput.Char;
+				}
+				LastKeyTime = now;
+
+				// find the selected item, starting at the current selection
+				s32 start = Selected;
+				// dont change selection if the key buffer matches the current item
+				if (Selected > -1 && KeyBuffer.size() > 1)
+				{
+					if (Items[Selected].text.size() >= KeyBuffer.size() &&
+						KeyBuffer.equals_ignore_case(Items[Selected].text.subString(0,KeyBuffer.size())))
+						return true;
+				}
+
+				s32 current;
+				for (current = start+1; current < (s32)Items.size(); ++current)
+				{
+					if (Items[current].text.size() >= KeyBuffer.size())
+					{
+						if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
+						{
+							if (Parent && Selected != current && !Selecting && !MoveOverSelect)
+							{
+								SEvent e;
+								e.EventType = EET_GUI_EVENT;
+								e.GUIEvent.Caller = this;
+								e.GUIEvent.Element = 0;
+								e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
+								Parent->OnEvent(e);
+							}
+							setSelected(current);
+							return true;
+						}
+					}
+				}
+				for (current = 0; current <= start; ++current)
+				{
+					if (Items[current].text.size() >= KeyBuffer.size())
+					{
+						if (KeyBuffer.equals_ignore_case(Items[current].text.subString(0,KeyBuffer.size())))
+						{
+							if (Parent && Selected != current && !Selecting && !MoveOverSelect)
+							{
+								Selected = current;
+								SEvent e;
+								e.EventType = EET_GUI_EVENT;
+								e.GUIEvent.Caller = this;
+								e.GUIEvent.Element = 0;
+								e.GUIEvent.EventType = EGET_LISTBOX_CHANGED;
+								Parent->OnEvent(e);
+							}
+							setSelected(current);
+							return true;
+						}
+					}
+				}
+
+				return true;
+			}
 			break;
-		case gui::EGET_ELEMENT_FOCUS_LOST:
+
+		case EET_GUI_EVENT:
+			switch(event.GUIEvent.EventType)
 			{
-				if (event.GUIEvent.Caller == this)
-					Selecting = false;
-			}
-		default:
-		break;
-		}
-		break;
-
-	case EET_MOUSE_INPUT_EVENT:
-		{
-			core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
-
-			switch(event.MouseInput.Event)
-			{
-			case EMIE_MOUSE_WHEEL:
-				ScrollBar->setPos(ScrollBar->getPos() + (s32)event.MouseInput.Wheel*-10);
-				return true;
-
-			case EMIE_LMOUSE_PRESSED_DOWN:
-			{
-				Selecting = true;
-				return true;
-			}
-
-			case EMIE_LMOUSE_LEFT_UP:
-			{
-				Selecting = false;
-
-				if (isPointInside(p))
-					selectNew(event.MouseInput.Y);
-
-				return true;
-			}
-
-			case EMIE_MOUSE_MOVED:
-				if (Selecting || MoveOverSelect)
+			case gui::EGET_SCROLL_BAR_CHANGED:
+				if (event.GUIEvent.Caller == ScrollBar)
+					return true;
+				break;
+			case gui::EGET_ELEMENT_FOCUS_LOST:
 				{
-					if (isPointInside(p))
-					{
-						selectNew(event.MouseInput.Y, true);
-						return true;
-					}
+					if (event.GUIEvent.Caller == this)
+						Selecting = false;
 				}
 			default:
 			break;
 			}
+			break;
+
+		case EET_MOUSE_INPUT_EVENT:
+			{
+				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
+
+				switch(event.MouseInput.Event)
+				{
+				case EMIE_MOUSE_WHEEL:
+					ScrollBar->setPos(ScrollBar->getPos() + (s32)event.MouseInput.Wheel*-10);
+					return true;
+
+				case EMIE_LMOUSE_PRESSED_DOWN:
+				{
+					Selecting = true;
+					return true;
+				}
+
+				case EMIE_LMOUSE_LEFT_UP:
+				{
+					Selecting = false;
+
+					if (isPointInside(p))
+						selectNew(event.MouseInput.Y);
+
+					return true;
+				}
+
+				case EMIE_MOUSE_MOVED:
+					if (Selecting || MoveOverSelect)
+					{
+						if (isPointInside(p))
+						{
+							selectNew(event.MouseInput.Y, true);
+							return true;
+						}
+					}
+				default:
+				break;
+				}
+			}
+			break;
+		case EET_LOG_TEXT_EVENT:
+		case EET_USER_EVENT:
+			break;
 		}
-		break;
-	case EET_LOG_TEXT_EVENT:
-	case EET_USER_EVENT:
-		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 

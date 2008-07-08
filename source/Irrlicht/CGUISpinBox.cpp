@@ -161,51 +161,54 @@ void CGUISpinBox::setDecimalPlaces(s32 places)
 
 bool CGUISpinBox::OnEvent(const SEvent& event)
 {
-	bool changeEvent = false;
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
+		bool changeEvent = false;
+		switch(event.EventType)
 		{
-			if (event.GUIEvent.Caller == ButtonSpinUp)
+		case EET_GUI_EVENT:
+			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
 			{
-				f32 val = getValue();
-				val += StepSize;
-				setValue(val);
-				changeEvent = true;
+				if (event.GUIEvent.Caller == ButtonSpinUp)
+				{
+					f32 val = getValue();
+					val += StepSize;
+					setValue(val);
+					changeEvent = true;
+				}
+				else if ( event.GUIEvent.Caller == ButtonSpinDown)
+				{
+					f32 val = getValue();
+					val -= StepSize;
+					setValue(val);
+					changeEvent = true;
+				}
 			}
-			else if ( event.GUIEvent.Caller == ButtonSpinDown)
+			if ( event.GUIEvent.EventType == EGET_EDITBOX_ENTER )
 			{
-				f32 val = getValue();
-				val -= StepSize;
-				setValue(val);
-				changeEvent = true;
+				if (event.GUIEvent.Caller == EditBox)
+				{
+					verifyValueRange();
+					changeEvent = true;
+				}
 			}
-		}
-		if ( event.GUIEvent.EventType == EGET_EDITBOX_ENTER )
-		{
-			if (event.GUIEvent.Caller == EditBox)
-			{
-				verifyValueRange();
-				changeEvent = true;
-			}
-		}
+			break;
+		default:
 		break;
-	default:
-	break;
-	}
+		}
 
-	if ( changeEvent )
-	{
-		SEvent e;
-		e.EventType = EET_GUI_EVENT;
-		e.GUIEvent.Caller = this;
-		e.GUIEvent.Element = 0;
+		if ( changeEvent )
+		{
+			SEvent e;
+			e.EventType = EET_GUI_EVENT;
+			e.GUIEvent.Caller = this;
+			e.GUIEvent.Element = 0;
 
-		e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
-		if ( Parent )
-			Parent->OnEvent(e);
-		return true;
+			e.GUIEvent.EventType = EGET_SPINBOX_CHANGED;
+			if ( Parent )
+				Parent->OnEvent(e);
+			return true;
+		}
 	}
 
 	return IGUIElement::OnEvent(event);

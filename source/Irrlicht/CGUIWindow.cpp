@@ -109,85 +109,89 @@ CGUIWindow::~CGUIWindow()
 //! called if an event happened.
 bool CGUIWindow::OnEvent(const SEvent& event)
 {
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_GUI_EVENT:
-		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
+
+		switch(event.EventType)
 		{
-			Dragging = false;
-		}
-		else
-		if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
-		{
-			if (Parent && ((event.GUIEvent.Caller == this) || isMyChild(event.GUIEvent.Caller)))
-				Parent->bringToFront(this);
-		}
-		else
-		if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
-		{
-			if (event.GUIEvent.Caller == CloseButton)
+		case EET_GUI_EVENT:
+			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUS_LOST)
 			{
-				if (Parent)
-				{
-					// send close event to parent
-					SEvent e;
-					e.EventType = EET_GUI_EVENT;
-					e.GUIEvent.Caller = this;
-					e.GUIEvent.Element = 0;
-					e.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
-
-					// if the event was not absorbed
-					if (!Parent->OnEvent(e))
-						remove();
-
-					return true;
-
-				}
-				else
-				{
-					remove();
-					return true;
-				}
+				Dragging = false;
 			}
-		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		switch(event.MouseInput.Event)
-		{
-		case EMIE_LMOUSE_PRESSED_DOWN:
-			DragStart.X = event.MouseInput.X;
-			DragStart.Y = event.MouseInput.Y;
-			Dragging = true;
-			if (Parent)
-				Parent->bringToFront(this);
-			return true;
-		case EMIE_LMOUSE_LEFT_UP:
-			Dragging = false;
-			return true;
-		case EMIE_MOUSE_MOVED:
-			if (Dragging)
+			else
+			if (event.GUIEvent.EventType == EGET_ELEMENT_FOCUSED)
 			{
-				// gui window should not be dragged outside its parent
-				if (Parent)
-					if (event.MouseInput.X < Parent->getAbsolutePosition().UpperLeftCorner.X +1 ||
-						event.MouseInput.Y < Parent->getAbsolutePosition().UpperLeftCorner.Y +1 ||
-						event.MouseInput.X > Parent->getAbsolutePosition().LowerRightCorner.X -1 ||
-						event.MouseInput.Y > Parent->getAbsolutePosition().LowerRightCorner.Y -1)
+				if (Parent && ((event.GUIEvent.Caller == this) || isMyChild(event.GUIEvent.Caller)))
+					Parent->bringToFront(this);
+			}
+			else
+			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
+			{
+				if (event.GUIEvent.Caller == CloseButton)
+				{
+					if (Parent)
+					{
+						// send close event to parent
+						SEvent e;
+						e.EventType = EET_GUI_EVENT;
+						e.GUIEvent.Caller = this;
+						e.GUIEvent.Element = 0;
+						e.GUIEvent.EventType = EGET_ELEMENT_CLOSED;
+
+						// if the event was not absorbed
+						if (!Parent->OnEvent(e))
+							remove();
 
 						return true;
-					
 
-				move(core::position2d<s32>(event.MouseInput.X - DragStart.X, event.MouseInput.Y - DragStart.Y));
-				DragStart.X = event.MouseInput.X;
-				DragStart.Y = event.MouseInput.Y;
-				return true;
+					}
+					else
+					{
+						remove();
+						return true;
+					}
+				}
 			}
 			break;
+		case EET_MOUSE_INPUT_EVENT:
+			switch(event.MouseInput.Event)
+			{
+			case EMIE_LMOUSE_PRESSED_DOWN:
+				DragStart.X = event.MouseInput.X;
+				DragStart.Y = event.MouseInput.Y;
+				Dragging = true;
+				if (Parent)
+					Parent->bringToFront(this);
+				return true;
+			case EMIE_LMOUSE_LEFT_UP:
+				Dragging = false;
+				return true;
+			case EMIE_MOUSE_MOVED:
+				if (Dragging)
+				{
+					// gui window should not be dragged outside its parent
+					if (Parent)
+						if (event.MouseInput.X < Parent->getAbsolutePosition().UpperLeftCorner.X +1 ||
+							event.MouseInput.Y < Parent->getAbsolutePosition().UpperLeftCorner.Y +1 ||
+							event.MouseInput.X > Parent->getAbsolutePosition().LowerRightCorner.X -1 ||
+							event.MouseInput.Y > Parent->getAbsolutePosition().LowerRightCorner.Y -1)
+
+							return true;
+						
+
+					move(core::position2d<s32>(event.MouseInput.X - DragStart.X, event.MouseInput.Y - DragStart.Y));
+					DragStart.X = event.MouseInput.X;
+					DragStart.Y = event.MouseInput.Y;
+					return true;
+				}
+				break;
+			default:
+				break;
+			}
 		default:
 			break;
 		}
-	default:
-		break;
 	}
 
 	return IGUIElement::OnEvent(event);

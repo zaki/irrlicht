@@ -99,72 +99,73 @@ void CGUIMenu::draw()
 //! called if an event happened.
 bool CGUIMenu::OnEvent(const SEvent& event)
 {
-	if (!IsEnabled)
-		return Parent ? Parent->OnEvent(event) : false;
-
-	switch(event.EventType)
+	if (IsEnabled)
 	{
-	case EET_GUI_EVENT:
-		switch(event.GUIEvent.EventType)
+
+		switch(event.EventType)
 		{
-		case gui::EGET_ELEMENT_FOCUS_LOST:
-			if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element))
+		case EET_GUI_EVENT:
+			switch(event.GUIEvent.EventType)
 			{
-				closeAllSubMenus();
-				HighLighted = -1;
+			case gui::EGET_ELEMENT_FOCUS_LOST:
+				if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element))
+				{
+					closeAllSubMenus();
+					HighLighted = -1;
+				}
+				break;
+			case gui::EGET_ELEMENT_FOCUSED:
+				if (event.GUIEvent.Caller == this && Parent)
+				{
+					Parent->bringToFront(this);
+				}
+				break;
+			default:
+				break;
 			}
 			break;
-		case gui::EGET_ELEMENT_FOCUSED:
-			if (event.GUIEvent.Caller == this && Parent)
+		case EET_MOUSE_INPUT_EVENT:
+			switch(event.MouseInput.Event)
 			{
-				Parent->bringToFront(this);
+			case EMIE_LMOUSE_PRESSED_DOWN:
+			{
+				if (!Environment->hasFocus(this))
+				{
+					Environment->setFocus(this);
+				}
+
+				if (Parent)
+					Parent->bringToFront(this); 
+
+				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
+				bool shouldCloseSubMenu = hasOpenSubMenu();
+				if (!AbsoluteClippingRect.isPointInside(p))
+				{
+					shouldCloseSubMenu = false;
+					s32 t = sendClick(p);
+					if ((t==0 || t==1) && Environment->hasFocus(this))
+						Environment->removeFocus(this);
+				}
+				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
+				if ( shouldCloseSubMenu )
+					closeAllSubMenus();
+				
+				return true;
+			}
+			case EMIE_MOUSE_MOVED:
+				if (Environment->hasFocus(this))
+					highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), hasOpenSubMenu());
+				return true;
+			default:
+				break;
 			}
 			break;
 		default:
 			break;
 		}
-		break;
-	case EET_MOUSE_INPUT_EVENT:
-		switch(event.MouseInput.Event)
-		{
-		case EMIE_LMOUSE_PRESSED_DOWN:
-		{
-			if (!Environment->hasFocus(this))
-			{
-				Environment->setFocus(this);
-			}
-
-			if (Parent)
-				Parent->bringToFront(this); 
-
-			core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
-			bool shouldCloseSubMenu = hasOpenSubMenu();
-			if (!AbsoluteClippingRect.isPointInside(p))
-			{
-				shouldCloseSubMenu = false;
-				s32 t = sendClick(p);
-				if ((t==0 || t==1) && Environment->hasFocus(this))
-					Environment->removeFocus(this);
-			}
-			highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
-			if ( shouldCloseSubMenu )
-				closeAllSubMenus();
-			
-			return true;
-		}
-		case EMIE_MOUSE_MOVED:
-			if (Environment->hasFocus(this))
-				highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), hasOpenSubMenu());
-			return true;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
 	}
 
-	return Parent ? Parent->OnEvent(event) : false;
+	return IGUIElement::OnEvent(event);
 }
 
 
