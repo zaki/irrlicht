@@ -178,9 +178,9 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 
 			buffer->Indices.reallocate((blockSize.Height-1)*(blockSize.Width-1)*6);
 			// add indices of vertex block
+			s32 c1 = 0;
 			for (y=0; y<blockSize.Height-1; ++y)
 			{
-				s32 c1 = 0;
 				for (s32 x=0; x<blockSize.Width-1; ++x)
 				{
 					const s32 c = c1 + x;
