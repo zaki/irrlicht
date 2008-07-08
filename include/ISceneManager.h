@@ -893,6 +893,15 @@ namespace scene
 			const core::dimension2d<s32>& defaultVertexBlockSize = core::dimension2d<s32>(64,64)) = 0;
 
 		//! add a static arrow mesh to the meshpool
+		/** \param name Name of the mesh
+		\param vtxColor0 color of the cylinder
+		\param vtxColor1 color of the cone
+		\param tesselationCylinder Number of quads the cylinder side consists of
+		\param tesselationCone Number of triangles the cone's roof consits of
+		\param height Total height of the arrow
+		\param cylinderHeight Total height of the cylinder, should be lesser than total height
+		\param width0 Diameter of the cylinder
+		\param width1 Diameter of the cone's base, should be not smaller than the cylinder's diameter */
 		virtual IAnimatedMesh* addArrowMesh(const c8* name,
 				video::SColor vtxColor0=0xFFFFFFFF,
 				video::SColor vtxColor1=0xFFFFFFFF,
@@ -901,6 +910,10 @@ namespace scene
 				f32 width0=0.05f, f32 width1=0.3f) = 0;
 
 		//! add a static sphere mesh to the meshpool
+		/** \param name Name of the mesh
+		\param radius Radius of the sphere
+		\param polyCountX Number of quads used for the horizontal tiling
+		\param polyCountY Number of quads used for the vertical tiling */
 		virtual IAnimatedMesh* addSphereMesh(const c8* name,
 				f32 radius=5.f, u32 polyCountX = 16,
 				u32 polyCountY = 16) = 0;
