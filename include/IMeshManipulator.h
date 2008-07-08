@@ -31,9 +31,6 @@ namespace scene
 	{
 	public:
 
-		//! Destructor
-		virtual ~IMeshManipulator() {}
-
 		//! Flips the direction of surfaces.
 		/** Changes backfacing triangles to frontfacing
 		triangles and vice versa.
@@ -63,13 +60,13 @@ namespace scene
 		virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const = 0;
 
 		//! Scales the whole mesh.
-		/** \param mesh: Mesh on which the operation is performed.
-		\param scale: Scale factor. */
+		/** \param mesh Mesh on which the operation is performed.
+		\param scale Scale factor. */
 		virtual void scaleMesh(IMesh* mesh, const core::vector3df& scale) const = 0;
 
 		//! Applies a transformation
-		/** \param mesh: Mesh on which the operation is performed.
-		\param m: transformation matrix. */
+		/** \param mesh Mesh on which the operation is performed.
+		\param m transformation matrix. */
 		virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const = 0;
 
 		//! Clones a static IMesh into a modifiable SMesh.

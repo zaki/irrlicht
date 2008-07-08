@@ -880,7 +880,7 @@ namespace scene
 		 of triangles created depends on the size of this texture, so use a small
 		 heightmap to increase rendering speed.
 		 \param stretchSize: Parameter defining how big a is pixel on the heightmap.
-		 \param maxHeight: Defines how height a white pixel on the heighmap is.
+		 \param maxHeight: Defines how high a white pixel on the heighmap is.
 		 \param defaultVertexBlockSize: Defines the initial dimension between vertices.
 		 \return Returns null if the creation failed. The reason could be that you
 		 specified some invalid parameters, that a mesh with that name already
