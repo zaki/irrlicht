@@ -724,8 +724,6 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 			return false;
 	}
 
-
-
 	if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
 		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID)
 	{
@@ -735,7 +733,6 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 		if (!updateIndexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
 			return false;
 	}
-
 
 	return true;
 }
