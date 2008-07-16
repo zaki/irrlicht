@@ -476,10 +476,26 @@ void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	}
 }
 
+
 bool CIrrDeviceMacOSX::isWindowActive() const
 {
 	return (_active);
 }
+
+
+bool isWindowFocused() const
+{
+	// TODO: return proper value
+	return true;
+}
+
+
+bool isWindowMinimized() const
+{
+	// TODO: return proper value
+	return false;
+}
+
 
 void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed)
 {
