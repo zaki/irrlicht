@@ -31,8 +31,6 @@ namespace io
 		virtual s32 read(void* buffer, u32 sizeToRead);
 
 		//! changes position in file, returns true if successful
-		//! if relativeMovement==true, the pos is changed relative to current pos,
-		//! otherwise from begin of file
 		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! returns size of file
@@ -55,9 +53,9 @@ namespace io
 		//! opens the file
 		void openFile();
 
-		core::stringc Filename;
 		FILE* File;
 		long FileSize;
+		core::stringc Filename;
 	};
 
 } // end namespace io
