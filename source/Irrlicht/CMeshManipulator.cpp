@@ -253,48 +253,52 @@ void CMeshManipulator::recalculateNormals(scene::IMesh* mesh, bool smooth, bool 
 
 
 //! Applies a transformation
+/** \param buffer: Meshbuffer on which the operation is performed.
+	\param m: matrix. */
+void CMeshManipulator::transform(scene::IMeshBuffer* buffer, const core::matrix4& m) const
+{
+	const u32 vtxcnt = buffer->getVertexCount();
+	if (!vtxcnt)
+		return;
+
+	core::aabbox3df bufferbox;
+	// first transform
+	{
+		m.transformVect(buffer->getPosition(0));
+		m.rotateVect(buffer->getNormal(0));
+		buffer->getNormal(0).normalize();
+
+		bufferbox.reset(buffer->getPosition(0));
+	}
+
+	for ( u32 i=1 ;i < vtxcnt; ++i)
+	{
+		m.transformVect(buffer->getPosition(i));
+		m.rotateVect(buffer->getNormal(i));
+		buffer->getNormal(i).normalize();
+
+		bufferbox.addInternalPoint(buffer->getPosition(i));
+	}
+
+	buffer->setBoundingBox(bufferbox);
+}
+
+
+//! Applies a transformation
 /** \param mesh: Mesh on which the operation is performed.
 	\param m: matrix. */
-void CMeshManipulator::transformMesh(scene::IMesh* mesh, const core::matrix4& m) const
+void CMeshManipulator::transform(scene::IMesh* mesh, const core::matrix4& m) const
 {
 	if (!mesh)
 		return;
 
 	core::aabbox3df meshbox;
-	core::aabbox3df bufferbox;
-	u32 i;
 
 	const u32 bcount = mesh->getMeshBufferCount();
 	for ( u32 b=0; b<bcount; ++b)
 	{
 		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-
-		const u32 vtxcnt = buffer->getVertexCount();
-		const u32 vtxPitch = video::getVertexPitchFromType(buffer->getVertexType());
-
-		video::S3DVertex* v = (video::S3DVertex*) buffer->getVertices();
-
-		for ( i=0; i < 1; ++i)
-		{
-			m.transformVect ( v->Pos);
-			m.rotateVect ( v->Normal );
-			v->Normal.normalize();
-
-			bufferbox.reset( v->Pos);
-			v = (video::S3DVertex*) ((u8*) v + vtxPitch);
-		}
-
-		for ( ;i < vtxcnt; ++i)
-		{
-			m.transformVect ( v->Pos);
-			m.rotateVect ( v->Normal );
-			v->Normal.normalize();
-
-			bufferbox.addInternalPoint( v->Pos);
-			v = (video::S3DVertex*) ((u8*) v + vtxPitch);
-		}
-
-		buffer->setBoundingBox(bufferbox);
+		transform(buffer, m);
 
 		if (b == 0)
 			meshbox.reset(buffer->getBoundingBox());
@@ -342,7 +346,6 @@ void CMeshManipulator::scaleMesh(scene::IMesh* mesh, const core::vector3df& scal
 
 	mesh->setBoundingBox( meshbox );
 }
-
 
 
 //! Clones a static IMesh into a modifyable SMesh.

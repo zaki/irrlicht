@@ -52,10 +52,15 @@ public:
 	//! \param scale: 3D Vector, defining the value, for each axis, to scale the mesh by.
 	virtual void scaleMesh(scene::IMesh* mesh, const core::vector3df& scale) const;
 
-	//! Applies a transformation
+	//! Applies a transformation to a meshbuffer
+	/** \param buffer: Meshbuffer on which the operation is performed.
+		\param m: matrix. */
+	void transform(scene::IMeshBuffer* buffer, const core::matrix4& m) const;
+
+	//! Applies a transformation to a mesh
 	/** \param mesh: Mesh on which the operation is performed.
 		\param m: transformation matrix. */
-	virtual void transformMesh(scene::IMesh* mesh, const core::matrix4& m) const;
+	virtual void transform(scene::IMesh* mesh, const core::matrix4& m) const;
 
 	//! Clones a static IMesh into a modifiable SMesh.
 	virtual SMesh* createMeshCopy(scene::IMesh* mesh) const;

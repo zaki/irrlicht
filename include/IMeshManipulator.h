@@ -64,10 +64,21 @@ namespace scene
 		\param scale Scale factor. */
 		virtual void scaleMesh(IMesh* mesh, const core::vector3df& scale) const = 0;
 
-		//! Applies a transformation
+		//! Applies a transformation to a mesh
 		/** \param mesh Mesh on which the operation is performed.
 		\param m transformation matrix. */
-		virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const = 0;
+		virtual void transform(IMesh* mesh, const core::matrix4& m) const = 0;
+
+		//! Applies a transformation to a meshbuffer
+		/** \param buffer Meshbuffer on which the operation is performed.
+		\param m transformation matrix. */
+		virtual void transform(IMeshBuffer* buffer, const core::matrix4& m) const = 0;
+
+		//! Applies a transformation to a mesh
+		/** \deprecated
+		\param mesh Mesh on which the operation is performed.
+		\param m transformation matrix. */
+		virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const {return transform(mesh,m);}
 
 		//! Clones a static IMesh into a modifiable SMesh.
 		/** All meshbuffers in the returned SMesh
