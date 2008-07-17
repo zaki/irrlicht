@@ -116,7 +116,7 @@ namespace core
 		\return True if this vector is between begin and end, false if not. */
 		bool isBetweenPoints(const vector3d<T>& begin, const vector3d<T>& end) const
 		{
-			T f = (end - begin).getLengthSQ();
+			const T f = (end - begin).getLengthSQ();
 			return getDistanceFromSQ(begin) < f &&
 				getDistanceFromSQ(end) < f;
 		}
@@ -249,6 +249,45 @@ namespace core
 			if (angle.X >= 360.0f) angle.X -= 360.0f;
 
 			return angle;
+		}
+
+		//! Builds a direction vector from (this) rotation vector.
+		/** This vector is assumed to hold 3 Euler angle rotations, in degrees.
+		The implementation performs the same calculations as using a matrix to
+		do the rotation.
+		\param[in] forwards  The direction representing "forwards" which will be
+		rotated by this vector.  If you do not provide a
+		direction, then the positive Z axis (0, 0, 1) will
+		be assumed to be fowards.
+		\return A vector calculated by rotating the forwards direction by
+		the 3 Euler angles that this vector is assumed to represent. */
+		vector3d<T> rotationToDirection(const vector3d<T> & forwards = vector3d<T>(0, 0, 1)) const
+		{
+			const f64 cr = cos( core::DEGTORAD64 * X );
+			const f64 sr = sin( core::DEGTORAD64 * X );
+			const f64 cp = cos( core::DEGTORAD64 * Y );
+			const f64 sp = sin( core::DEGTORAD64 * Y );
+			const f64 cy = cos( core::DEGTORAD64 * Z );
+			const f64 sy = sin( core::DEGTORAD64 * Z );
+
+			const f64 srsp = sr*sp;
+			const f64 crsp = cr*sp;
+
+			const f64 pseudoMatrix[] = {
+				( cp*cy ), ( cp*sy ), ( -sp ),
+				( srsp*cy-cr*sy ), ( srsp*sy+cr*cy ), ( sr*cp ),
+				( crsp*cy+sr*sy ), ( crsp*sy-sr*cy ), ( cr*cp )};
+
+			return vector3d<T>(
+				(T)(forwards.X * pseudoMatrix[0] +
+					forwards.Y * pseudoMatrix[3] +
+					forwards.Z * pseudoMatrix[6]),
+				(T)(forwards.X * pseudoMatrix[1] +
+					forwards.Y * pseudoMatrix[4] +
+					forwards.Z * pseudoMatrix[7]),
+				(T)(forwards.X * pseudoMatrix[2] +
+					forwards.Y * pseudoMatrix[5] +
+					forwards.Z * pseudoMatrix[8]));
 		}
 
 		//! Fills an array of 4 values with the vector data (usually floats).
