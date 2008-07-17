@@ -218,24 +218,19 @@ bool CFileSystem::changeWorkingDirectoryTo(const c8* newDirectory)
 core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 {
 	c8 *p=0;
-	core::stringc ret;
 
 #ifdef _IRR_WINDOWS_API_
 	#if !defined ( _WIN32_WCE )
 		c8 fpath[_MAX_PATH];
 		p = _fullpath( fpath, filename.c_str(), _MAX_PATH);
-		ret = p;
 	#endif
 
 #elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
-
 	c8 fpath[4096];
 	p = realpath(filename.c_str(), fpath);
-	ret = p;
-
 #endif
 
-	return ret;
+	return core::stringc(p);
 }
 
 

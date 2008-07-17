@@ -22,7 +22,6 @@ IImageWriter* createImageWriterBMP();
 CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool generateMipLevels, bool isRenderTarget)
 : ITexture(name), MipMapLOD(0), HasMipMaps(generateMipLevels), IsRenderTarget(isRenderTarget)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture2");
 	#endif
@@ -37,13 +36,12 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 	{
 		
 		core::dimension2d<s32> optSize;
-		core::dimension2d<s32> origSize = image->getDimension();
-		OrigSize = origSize;
+		OrigSize = image->getDimension();
 
-		optSize.Width = getTextureSizeFromSurfaceSize(origSize.Width);
-		optSize.Height = getTextureSizeFromSurfaceSize(origSize.Height);
+		optSize.Width = getTextureSizeFromSurfaceSize(OrigSize.Width);
+		optSize.Height = getTextureSizeFromSurfaceSize(OrigSize.Height);
 		
-		if ( origSize == optSize )
+		if ( OrigSize == optSize )
 		{
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, image);
 		}
@@ -60,8 +58,8 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 		}
 	}
 
-	regenerateMipMapLevels ();
-	setCurrentMipMapLOD ( 0 );
+	regenerateMipMapLevels();
+	setCurrentMipMapLOD(0);
 }
 
 
@@ -71,7 +69,7 @@ CSoftwareTexture2::~CSoftwareTexture2()
 	for ( s32 i = 0; i!= SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i )
 	{
 		if ( MipMap[i] )
-			MipMap[i]->drop ();
+			MipMap[i]->drop();
 	}
 }
 
@@ -105,7 +103,7 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 	for ( i = 1; i!= SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i )
 	{
 		if ( MipMap[i] )
-			MipMap[i]->drop ();
+			MipMap[i]->drop();
 	}
 
 	core::dimension2d<s32> newSize;
@@ -120,9 +118,9 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 		newSize.Height = core::s32_max ( 1, currentSize.Height >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
 
 		MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
-		MipMap[0]->copyToScalingBoxFilter ( MipMap[i], 0 );
+		MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0 );
 		c = MipMap[i];
-		i += 1;
+		++i;
 	}
 }
 

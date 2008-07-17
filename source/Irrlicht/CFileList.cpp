@@ -171,10 +171,8 @@ const c8* CFileList::getFullFileName(u32 index)
 
 bool CFileList::isDirectory(u32 index) const
 {
-	bool ret;
-	if (index >= Files.size())
-		ret = false;
-	else
+	bool ret = false;
+	if (index < Files.size())
 		ret = Files[index].isDirectory;
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
