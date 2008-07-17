@@ -32,9 +32,6 @@ class IFileSystem : public virtual IReferenceCounted
 {
 public:
 
-	//! Destructor
-	virtual ~IFileSystem() {}
-
 	//! Opens a file for read access.
 	/** \param filename: Name of file to open.
 	\return Returns a pointer to the created file interface.
@@ -189,7 +186,7 @@ public:
 	//! Creates a new empty collection of attributes, usable for serialization and more.
 	/** \param driver: Video driver to be used to load textures when specified as attribute values.
 	Can be null to prevent automatic texture loading by attributes.
-	\return Returns a pointer to the created object.
+	\return Pointer to the created object.
 	If you no longer need the object, you should call IAttributes::drop().
 	See IReferenceCounted::drop() for more information. */
 	virtual IAttributes* createEmptyAttributes(video::IVideoDriver* driver=0) = 0;

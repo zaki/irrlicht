@@ -16,18 +16,15 @@ namespace io
 	class IReadFile : public virtual IReferenceCounted
 	{
 	public:
-		//! Destructor
-		virtual ~IReadFile() {}
-
 		//! Reads an amount of bytes from the file.
-		/** \param buffer Pointer to buffer where to read bytes will be written to.
+		/** \param buffer Pointer to buffer where read bytes are written to.
 		\param sizeToRead Amount of bytes to read from the file.
 		\return How much bytes were read. */
 		virtual s32 read(void* buffer, u32 sizeToRead) = 0;
 
 		//! Changes position in file
-		/** \param finalPos: Destination position in the file.
-		\param relativeMovement: If set to true, the position in the file is
+		/** \param finalPos Destination position in the file.
+		\param relativeMovement If set to true, the position in the file is
 		changed relative to current position. Otherwise the position is changed
 		from beginning of file.
 		\return True if successful, otherwise false. */

@@ -26,8 +26,6 @@ class map
 			: LeftChild(0), RightChild(0), Parent(0), Key(k),
 				Value(v), IsRed(true) {}
 
-		~RBTree() {}
-
 		void setLeftChild(RBTree* p)
 		{
 			LeftChild=p;
@@ -280,10 +278,10 @@ class map
 
 
 	//! Parent First Iterator.
-	//! Traverses the tree from top to bottom. Typical usage is
-	//! when storing the tree structure, because when reading it
-	//! later (and inserting elements) the tree structure will
-	//! be the same.
+	/** Traverses the tree from top to bottom. Typical usage is
+	when storing the tree structure, because when reading it
+	later (and inserting elements) the tree structure will
+	be the same. */
 	class ParentFirstIterator
 	{
 	public:
@@ -388,10 +386,10 @@ class map
 
 
 	//! Parent Last Iterator
-	//! Traverse the tree from bottom to top.
-	//! Typical usage is when deleting all elements in the tree
-	//! because you must delete the children before you delete
-	//! their parent.
+	/** Traverse the tree from bottom to top.
+	Typical usage is when deleting all elements in the tree
+	because you must delete the children before you delete
+	their parent. */
 	class ParentLastIterator
 	{
 	public:
@@ -475,7 +473,6 @@ class map
 				Cur = Cur->getParent();
 		}
 
-
 		Node* Root;
 		Node* Cur;
 	}; // ParentLastIterator
@@ -539,10 +536,9 @@ class map
 	//------------------------------
 
 	//! Inserts a new node into the tree
-	//! \param keyNew: the index for this value
-	//! \param v: the value to insert
-	//! \return Returns true if successful,
-	//! false if it fails (already exists)
+	/** \param keyNew: the index for this value
+	\param v: the value to insert
+	\return True if successful, false if it fails (already exists) */
 	bool insert(const KeyType& keyNew, const ValueType& v)
 	{
 		// First insert node the "usual" way (no fancy balance logic yet)
@@ -622,10 +618,9 @@ class map
 		return true;
 	}
 
-	//! Replaces the value if the key already exists,
-	//! otherwise inserts a new element.
-	//! \param k: the index for this value
-	//! \param v: the new value of
+	//! Replaces the value if the key already exists, otherwise inserts a new element.
+	/** \param k The index for this value
+	\param v The new value of */
 	void set(const KeyType& k, const ValueType& v)
 	{
 		Node* p = find(k);
@@ -636,9 +631,9 @@ class map
 	}
 
 	//! Removes a node from the tree and returns it.
-	//! The returned node must be deleted by the user
-	//! \param k: the key to remove
-	//! \return: A pointer to the node, or 0 if not found
+	/** The returned node must be deleted by the user
+	\param k the key to remove
+	\return A pointer to the node, or 0 if not found */
 	Node* delink(const KeyType& k)
 	{
 		Node* p = find(k);
@@ -677,7 +672,7 @@ class map
 	}
 
 	//! Removes a node from the tree and deletes it.
-	//! \return True if the node was found and deleted
+	/** \return True if the node was found and deleted */
 	bool remove(const KeyType& k)
 	{
 		Node* p = find(k);
@@ -916,7 +911,6 @@ class map
 	//! Pull up node's left child and let it knock node down to the right
 	void rotateRight(Node* p)
 	{
-
 		Node* left = p->getLeftChild();
 
 		p->setLeftChild(left->getRightChild());

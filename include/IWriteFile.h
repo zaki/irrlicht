@@ -16,9 +16,6 @@ namespace io
 	class IWriteFile : public virtual IReferenceCounted
 	{
 	public:
-		//! Destructor
-		virtual ~IWriteFile() {}
-
 		//! Writes an amount of bytes to the file.
 		/** \param buffer Pointer to buffer of bytes to write.
 		\param sizeToWrite Amount of bytes to write to the file.
