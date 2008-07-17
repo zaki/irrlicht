@@ -60,19 +60,18 @@ void CQuake3ShaderSceneNode::cloneBuffer ( scene::SMeshBufferLightMap * buffer )
 
 	const u32 vsize = buffer->Vertices.size ();
 
-	Original.Vertices.set_used ( vsize );
-	MeshBuffer.Vertices.set_used ( vsize );
+	Original.Vertices.reallocate( vsize );
+	MeshBuffer.Vertices.reallocate( vsize );
 	for ( u32 i = 0; i!= vsize; ++i )
 	{
-		const video::S3DVertex2TCoords * src = &buffer->Vertices[i];
+		const video::S3DVertex2TCoords& src = buffer->Vertices[i];
 
 		// Original has same Vertex Format
-		Original.Vertices[i] = *src;
+		Original.Vertices.push_back(src);
 
 		// we have a different vertex format
-		MeshBuffer.Vertices[i].Pos = src->Pos;
-		MeshBuffer.Vertices[i].TCoords = src->TCoords;
-		MeshBuffer.Vertices[i].Color = 0xFFFFFFFF;
+		MeshBuffer.Vertices.push_back(src);
+		MeshBuffer.Vertices.getLast().Color=0xFFFFFFFF;
 	}
 
 	MeshBuffer.recalculateBoundingBox ();
