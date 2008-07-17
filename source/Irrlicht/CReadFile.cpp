@@ -11,16 +11,14 @@ namespace io
 
 
 CReadFile::CReadFile(const c8* fileName)
-: File(0), FileSize(0)
+: File(0), FileSize(0), Filename(fileName)
 {
 	#ifdef _DEBUG
 	setDebugName("CReadFile");
 	#endif
 
-	Filename = fileName;
 	openFile();
 }
-
 
 
 CReadFile::~CReadFile()
@@ -28,7 +26,6 @@ CReadFile::~CReadFile()
 	if (File)
 		fclose(File);
 }
-
 
 
 //! returns how much was read
@@ -39,7 +36,6 @@ s32 CReadFile::read(void* buffer, u32 sizeToRead)
 
 	return (s32)fread(buffer, 1, sizeToRead, File);
 }
-
 
 
 //! changes position in file, returns true if successful
@@ -54,7 +50,6 @@ bool CReadFile::seek(long finalPos, bool relativeMovement)
 }
 
 
-
 //! returns size of file
 long CReadFile::getSize() const
 {
@@ -62,13 +57,11 @@ long CReadFile::getSize() const
 }
 
 
-
 //! returns where in the file we are.
 long CReadFile::getPos() const
 {
 	return ftell(File);
 }
-
 
 
 //! opens the file

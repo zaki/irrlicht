@@ -21,16 +21,16 @@ namespace io
 	{
 	public:
 
+		//! Constructor
 		CMemoryReadFile(void* memory, long len, const c8* fileName, bool deleteMemoryWhenDropped);
 
+		//! Destructor
 		virtual ~CMemoryReadFile();
 
 		//! returns how much was read
 		virtual s32 read(void* buffer, u32 sizeToRead);
 
 		//! changes position in file, returns true if successful
-		//! if relativeMovement==true, the pos is changed relative to current pos,
-		//! otherwise from begin of file
 		virtual bool seek(long finalPos, bool relativeMovement = false);
 
 		//! returns size of file
@@ -44,10 +44,10 @@ namespace io
 
 	private:
 
-		core::stringc Filename;
 		void *Buffer;
 		long Len;
 		long Pos;
+		core::stringc Filename;
 		bool deleteMemoryWhenDropped;
 	};
 
