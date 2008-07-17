@@ -483,14 +483,14 @@ bool CIrrDeviceMacOSX::isWindowActive() const
 }
 
 
-bool isWindowFocused() const
+bool CIrrDeviceMacOSX::isWindowFocused() const
 {
 	// TODO: return proper value
 	return true;
 }
 
 
-bool isWindowMinimized() const
+bool CIrrDeviceMacOSX::isWindowMinimized() const
 {
 	// TODO: return proper value
 	return false;
