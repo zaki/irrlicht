@@ -16,10 +16,6 @@ namespace io
 class IFileList : public virtual IReferenceCounted
 {
 public:
-
-	//! Destructor
-	virtual ~IFileList() {}
-
 	//! Get the number of files in the filelist.
 	/** \return Amount of files and directories in the file list. */
 	virtual u32 getFileCount() const = 0;
@@ -37,11 +33,10 @@ public:
 	\return File name of the file. Returns 0, if an error occured. */
 	virtual const c8* getFullFileName(u32 index) = 0;
 
-	//! Returns of the file is a directory
-	/** \param index is the zero based index of the file which name should
+	//! Check if the file is a directory
+	/** \param index The zero based index of the file whose name shall
 	be returned. The index has to be smaller than the amount getFileCount() returns.
-	\return True, if the file is a directory, and false, if it is not.
-	If an error occurs, the result is undefined. */
+	\return True if the file is a directory, else false. */
 	virtual bool isDirectory(u32 index) const = 0;
 };
 

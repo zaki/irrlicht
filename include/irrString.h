@@ -713,10 +713,13 @@ public:
 	//! \param length: Length of substring.
 	string<T> subString(u32 begin, s32 length) const
 	{
+		// if start after string
+		// or no proper substring length
+		if ((length <= 0) || (begin>=size()))
+			return string<T>("");
+		// clamp length to maximal value
 		if ((length+begin) > size())
 			length = size()-begin;
-		if (length <= 0)
-			return string<T>("");
 
 		string<T> o;
 		o.reserve(length+1);

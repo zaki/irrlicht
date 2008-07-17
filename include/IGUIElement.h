@@ -223,7 +223,6 @@ public:
 				parentAbsoluteClip = Parent->AbsoluteClippingRect;
 		}
 
-
 		diffx = parentAbsolute.getWidth() - LastParentRect.getWidth();
 		diffy = parentAbsolute.getHeight() - LastParentRect.getHeight();
 
@@ -232,7 +231,6 @@ public:
 
 		if (AlignTop == EGUIA_SCALE || AlignBottom == EGUIA_SCALE)
 			fh = (f32)parentAbsolute.getHeight();
-
 
 		switch (AlignLeft)
 		{
@@ -296,8 +294,8 @@ public:
 
 		RelativeRect = DesiredRect;
 
-		s32 w = RelativeRect.getWidth();
-		s32 h = RelativeRect.getHeight();
+		const s32 w = RelativeRect.getWidth();
+		const s32 h = RelativeRect.getHeight();
 
 		// make sure the desired rectangle is allowed
 		if (w < MinSize.Width)
