@@ -460,7 +460,7 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length, u32 tesselat
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 
-	const f32 recTesselation = core::reciprocal(tesselation);
+	const f32 recTesselation = core::reciprocal((f32)tesselation);
 	const f32 recTesselationHalf = recTesselation * 0.5f;
 	const f32 angleStep = (core::PI * 2.f ) * recTesselation;
 	const f32 angleStepHalf = angleStep*0.5f;
