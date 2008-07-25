@@ -95,14 +95,14 @@ HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
 //! destructor
 CD3D9Texture::~CD3D9Texture()
 {
-	if (Device)
-		Device->Release();
-
 	if (Texture)
 		Texture->Release();
 
 	if (RTTSurface)
 		RTTSurface->Release();
+
+	if (Device)
+		Device->Release();
 }
 
 

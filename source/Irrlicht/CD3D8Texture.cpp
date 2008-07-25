@@ -98,14 +98,14 @@ HasMipMaps(false), IsRenderTarget(false)
 //! destructor
 CD3D8Texture::~CD3D8Texture()
 {
-	if (Device)
-		Device->Release();
-
 	if (Texture)
 		Texture->Release();
 
 	if (RTTSurface)
 		RTTSurface->Release();
+
+	if (Device)
+		Device->Release();
 }
 
 
