@@ -226,27 +226,28 @@ namespace core
 		}
 
 		//! Gets the Y and Z rotations of a vector.
-		/** Thanks to Arras on the Irrlicht forums to add this method.
+		/** Thanks to Arras on the Irrlicht forums for this method.
 		\return A vector representing the rotation in degrees of
 		this vector. The Z component of the vector will always be 0. */
 		vector3d<T> getHorizontalAngle() const
 		{
 			vector3d<T> angle;
 
-			angle.Y = (T)atan2(X, Z);
-			angle.Y *= (f32)RADTODEG64;
+			angle.Y = (T)(atan2(X, Z) * RADTODEG64);
 
-			if (angle.Y < 0.0f) angle.Y += 360.0f;
-			if (angle.Y >= 360.0f) angle.Y -= 360.0f;
+			if (angle.Y < 0.0f)
+				angle.Y += 360.0f;
+			if (angle.Y >= 360.0f)
+				angle.Y -= 360.0f;
 
-			const f32 z1 = sqrtf(X*X + Z*Z);
+			const f64 z1 = sqrt(X*X + Z*Z);
 
-			angle.X = (T)atan2f(z1, (f32)Y);
-			angle.X *= RADTODEG;
-			angle.X -= 90.0f;
+			angle.X = (T)(atan2(z1, (f64)Y) * RADTODEG64 - 90.0);
 
-			if (angle.X < 0.0f) angle.X += 360.0f;
-			if (angle.X >= 360.0f) angle.X -= 360.0f;
+			if (angle.X < 0.0f)
+				angle.X += 360.0f;
+			if (angle.X >= 360.0f)
+				angle.X -= 360.0f;
 
 			return angle;
 		}
