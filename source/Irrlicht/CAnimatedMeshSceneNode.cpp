@@ -192,10 +192,6 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 			SceneManager->registerNodeForRendering(this, scene::ESNRP_TRANSPARENT);
 
 		ISceneNode::OnRegisterSceneNode();
-
-		for (u32 j=0; j<JointChildSceneNodes.size(); ++j)
-			if (JointChildSceneNodes[j])
-				JointChildSceneNodes[j]->OnRegisterSceneNode();
 	}
 }
 
@@ -1026,6 +1022,7 @@ void CAnimatedMeshSceneNode::beginTransition()
 
 		Transiting = core::reciprocal((f32)TransitionTime);
 	}
+	TransitingBlend = 0.f;
 }
 
 

@@ -66,15 +66,8 @@ class CScreenShotFactory : public IEventReceiver
 public:
 
 	CScreenShotFactory( IrrlichtDevice *device, const c8 * templateName )
+		: Device(device), Number(0), FilenameTemplate(templateName)
 	{
-		// store pointer to device so we can use it
-		Device = device;
-
-		// start with zero
-		Number = 0;
-
-		Filename.reserve ( 256 );
-		FilenameTemplate = templateName;
 		FilenameTemplate.replace ( '/', '_' );
 		FilenameTemplate.replace ( '\\', '_' );
 	}
@@ -104,8 +97,7 @@ public:
 private:
 	IrrlichtDevice *Device;
 	u32 Number;
-	core::stringc Filename;
-	core::stringc FilenameTemplate;
+	const core::stringc FilenameTemplate;
 };
 
 
