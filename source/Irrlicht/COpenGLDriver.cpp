@@ -1574,8 +1574,8 @@ void COpenGLDriver::setRenderStates3DMode()
 		if (FeatureAvailable[IRR_ARB_texture_env_combine])
 			glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_ALPHA_ARB, GL_MODULATE );
 		glDisable(GL_ALPHA_TEST);
-		glDisable( GL_BLEND );
-		glBlendFunc( GL_ONE, GL_ONE_MINUS_SRC_COLOR );
+		glDisable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
 		// switch back the matrices
 		glMatrixMode(GL_MODELVIEW);
@@ -1673,8 +1673,6 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// Filtering has to be set for each texture layer
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
-		if (!material.getTexture(i))
-			continue;
 		if (MultiTextureExtension)
 			extGlActiveTexture(GL_TEXTURE0_ARB + i);
 		else if (i>0)
@@ -1801,80 +1799,78 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// texture address mode
+	// Has to be checked always because it depends on the textures
 	for (u32 u=0; u<MaxTextureUnits; ++u)
 	{
-		if (resetAllRenderStates || (lastmaterial.TextureLayer[u].TextureWrap != material.TextureLayer[u].TextureWrap))
-		{
-			if (MultiTextureExtension)
-				extGlActiveTexture(GL_TEXTURE0_ARB + u);
-			else if (u>0)
-				break; // stop loop
+		if (MultiTextureExtension)
+			extGlActiveTexture(GL_TEXTURE0_ARB + u);
+		else if (u>0)
+			break; // stop loop
 
-			GLint mode=GL_REPEAT;
-			switch (material.TextureLayer[u].TextureWrap)
-			{
-				case ETC_REPEAT:
-					mode=GL_REPEAT;
-					break;
-				case ETC_CLAMP:
-					mode=GL_CLAMP;
-					break;
-				case ETC_CLAMP_TO_EDGE:
+		GLint mode=GL_REPEAT;
+		switch (material.TextureLayer[u].TextureWrap)
+		{
+			case ETC_REPEAT:
+				mode=GL_REPEAT;
+				break;
+			case ETC_CLAMP:
+				mode=GL_CLAMP;
+				break;
+			case ETC_CLAMP_TO_EDGE:
 #ifdef GL_VERSION_1_2
-					if (Version>101)
-						mode=GL_CLAMP_TO_EDGE;
-					else
+				if (Version>101)
+					mode=GL_CLAMP_TO_EDGE;
+				else
 #endif
 #ifdef GL_SGIS_texture_edge_clamp
-					if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
-						mode=GL_CLAMP_TO_EDGE_SGIS;
-					else
+				if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
+					mode=GL_CLAMP_TO_EDGE_SGIS;
+				else
 #endif
-						// fallback
-						mode=GL_CLAMP;
-					break;
-				case ETC_CLAMP_TO_BORDER:
+					// fallback
+					mode=GL_CLAMP;
+				break;
+			case ETC_CLAMP_TO_BORDER:
 #ifdef GL_VERSION_1_3
-					if (Version>102)
-						mode=GL_CLAMP_TO_BORDER;
-					else
+				if (Version>102)
+					mode=GL_CLAMP_TO_BORDER;
+				else
 #endif
 #ifdef GL_ARB_texture_border_clamp
-					if (FeatureAvailable[IRR_ARB_texture_border_clamp])
-						mode=GL_CLAMP_TO_BORDER_ARB;
-					else
+				if (FeatureAvailable[IRR_ARB_texture_border_clamp])
+					mode=GL_CLAMP_TO_BORDER_ARB;
+				else
 #endif
 #ifdef GL_SGIS_texture_border_clamp
-					if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
-						mode=GL_CLAMP_TO_BORDER_SGIS;
-					else
+				if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
+					mode=GL_CLAMP_TO_BORDER_SGIS;
+				else
 #endif
-						// fallback
-						mode=GL_CLAMP;
-					break;
-				case ETC_MIRROR:
+					// fallback
+					mode=GL_CLAMP;
+				break;
+			case ETC_MIRROR:
 #ifdef GL_VERSION_1_4
-					if (Version>103)
-						mode=GL_MIRRORED_REPEAT;
-					else
+				if (Version>103)
+					mode=GL_MIRRORED_REPEAT;
+				else
 #endif
 #ifdef GL_ARB_texture_border_clamp
-					if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
-						mode=GL_MIRRORED_REPEAT_ARB;
-					else
+				if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
+					mode=GL_MIRRORED_REPEAT_ARB;
+				else
 #endif
 #ifdef GL_IBM_texture_mirrored_repeat
-					if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
-						mode=GL_MIRRORED_REPEAT_IBM;
-					else
+				if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
+					mode=GL_MIRRORED_REPEAT_IBM;
+				else
 #endif
-						mode=GL_REPEAT;
-					break;
-			}
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+					mode=GL_REPEAT;
+				break;
 		}
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
 	}
 	// be sure to leave in texture stage 0
 	if (MultiTextureExtension)
@@ -1895,8 +1891,10 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			SMaterial mat;
 			mat.ZBuffer=0;
 			mat.Lighting=false;
+			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);
 			LastMaterial = mat;
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
 		glMatrixMode(GL_PROJECTION);
@@ -1917,30 +1915,25 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		Transformation3DChanged = false;
 	}
 
+	if (alphaChannel || alpha)
+		glEnable(GL_BLEND);
+	else
+		glDisable(GL_BLEND);
+
 	if (texture)
 	{
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
 		if (alphaChannel)
 		{
 			if (alpha)
 			{
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_MODULATE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
 				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
 			}
 			else
 			{
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
 			}
-
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glEnable(GL_BLEND);
+			glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
 
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 			glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
@@ -1954,26 +1947,11 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
 				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				glEnable(GL_BLEND);
 			}
 			else
 			{
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-				glDisable(GL_BLEND);
 			}
-		}
-	}
-	else
-	{
-		if (alpha)
-		{
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
-		else
-		{
-			glDisable(GL_BLEND);
 		}
 	}
 
@@ -1981,8 +1959,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 }
 
 
-//! \return Returns the name of the video driver. Example: In case of the Direct3D8
-//! driver, it would return "Direct3D8.1".
+//! \return Returns the name of the video driver.
 const wchar_t* COpenGLDriver::getName() const
 {
 	return Name.c_str();
