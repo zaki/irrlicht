@@ -255,7 +255,7 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 				if (sbuffer2)
 					readIndices(reader, indexCount, sbuffer2->Indices);
 				else
-				if (sbuffer2)
+				if (sbuffer3)
 					readIndices(reader, indexCount, sbuffer3->Indices);
 
 				insideIndexSection = false;
