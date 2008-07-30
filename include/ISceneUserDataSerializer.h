@@ -18,7 +18,7 @@ namespace scene
 	class ISceneNode;
 
 //! Interface to read and write user data to and from .irr files.
-/** This interface is to be imlpemented by the user, to make it possible to read
+/** This interface is to be implemented by the user, to make it possible to read
 and write user data when reading or writing .irr files via ISceneManager.
 To be used with ISceneManager::loadScene() and ISceneManager::saveScene() */
 class ISceneUserDataSerializer
@@ -27,6 +27,9 @@ public:
 
 	virtual ~ISceneUserDataSerializer() {}
 
+	//! Called when the scene manager create a scene node while loading a file.
+	virtual void OnCreateNode(ISceneNode* node) = 0;
+	
 	//! Called when the scene manager read a scene node while loading a file.
 	/** The userData pointer contains a list of attributes with userData which
 	were attached to the scene node in the read scene file.*/

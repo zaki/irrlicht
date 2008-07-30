@@ -1876,22 +1876,20 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 
 	scene::ISceneNode* node = 0;
 
-	if ((!parent && IRR_XML_FORMAT_SCENE==reader->getNodeName()) ||
-		( parent && IRR_XML_FORMAT_NODE==reader->getNodeName()))
+	if (!parent && IRR_XML_FORMAT_SCENE==reader->getNodeName())
+		node = this; // root
+	else if (parent && IRR_XML_FORMAT_NODE==reader->getNodeName())
 	{
-		if (parent)
-		{
-			// find node type and create it
-			core::stringc attrName = reader->getAttributeValue(IRR_XML_FORMAT_NODE_ATTR_TYPE.c_str());
+		// find node type and create it
+		core::stringc attrName = reader->getAttributeValue(IRR_XML_FORMAT_NODE_ATTR_TYPE.c_str());
 
-			for (int i=(int)SceneNodeFactoryList.size()-1; i>=0 && !node; --i)
-				node = SceneNodeFactoryList[i]->addSceneNode(attrName.c_str(), parent);
+		for (s32 i=(s32)SceneNodeFactoryList.size()-1; i>=0 && !node; --i)
+			node = SceneNodeFactoryList[i]->addSceneNode(attrName.c_str(), parent);
 
-			if (!node)
-				os::Printer::log("Could not create scene node of unknown type", attrName.c_str());
-		}
-		else
-			node = this; // root
+		if (!node)
+			os::Printer::log("Could not create scene node of unknown type", attrName.c_str());
+		else if ( userDataSerializer )
+			userDataSerializer->OnCreateNode(node);
 	}
 
 	// read attributes
