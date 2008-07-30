@@ -496,6 +496,7 @@ bool CIrrDeviceLinux::createWindow()
 				InputOutput, visual->visual,
 				CWBorderPixel | CWColormap | CWEventMask |
 				CWOverrideRedirect, &attributes);
+		CreationParams.WindowId = (void*)window;
 
 		XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
 		XMapRaised(display, window);
@@ -517,6 +518,7 @@ bool CIrrDeviceLinux::createWindow()
 					InputOutput, visual->visual,
 					CWBorderPixel | CWColormap | CWEventMask,
 					&attributes);
+			CreationParams.WindowId = (void*)window;
 		}
 		else
 		{
