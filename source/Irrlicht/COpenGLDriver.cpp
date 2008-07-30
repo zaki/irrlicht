@@ -215,7 +215,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	#endif
 	ExposedData.OpenGLLinux.X11Context = glXGetCurrentContext();
 	ExposedData.OpenGLLinux.X11Display = glXGetCurrentDisplay();
-	ExposedData.OpenGLLinux.X11Window = glXGetCurrentDrawable();
+	ExposedData.OpenGLLinux.X11Window = (unsigned long)params.WindowId;
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
