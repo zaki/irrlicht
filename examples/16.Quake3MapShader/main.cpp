@@ -82,12 +82,11 @@ public:
 			video::IImage* image = Device->getVideoDriver()->createScreenShot();
 			if (image)
 			{
-				snprintf (	(c8*) Filename.c_str() , 255,
-							"%s_shot%04d.jpg",
-							FilenameTemplate.c_str (),
-							Number++
-						);
-				Device->getVideoDriver()->writeImageToFile(image, Filename.c_str(), 85 );
+				c8 buf[256];
+				snprintf(buf, 256, "%s_shot%04d.jpg",
+						FilenameTemplate.c_str(),
+						++Number);
+				Device->getVideoDriver()->writeImageToFile(image, buf, 85 );
 				image->drop();
 			}
 		}
@@ -97,7 +96,7 @@ public:
 private:
 	IrrlichtDevice *Device;
 	u32 Number;
-	const core::stringc FilenameTemplate;
+	core::stringc FilenameTemplate;
 };
 
 
