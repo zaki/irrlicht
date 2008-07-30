@@ -31,14 +31,6 @@ CB3DMeshFileLoader::CB3DMeshFileLoader(scene::ISceneManager* smgr)
 }
 
 
-//! destructor
-CB3DMeshFileLoader::~CB3DMeshFileLoader()
-{
-	for (s32 n=Materials.size()-1; n>=0; --n)
-		delete Materials[n].Material;
-}
-
-
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
 bool CB3DMeshFileLoader::isALoadableFileExtension(const c8* fileName) const
@@ -269,7 +261,7 @@ bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 			scene::SSkinMeshBuffer *MeshBuffer = AnimatedMesh->createBuffer();
 
 			if (brush_id!=-1)
-				MeshBuffer->Material=(*Materials[brush_id].Material);
+				MeshBuffer->Material=Materials[brush_id].Material;
 
 			if(readChunkTRIS(MeshBuffer,AnimatedMesh->getMeshBuffers().size()-1, vertices_Start)==false)
 				return false;
@@ -354,10 +346,10 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint)
 
 	NumberOfReads += tex_coord_sets*tex_coord_set_size;
 
-	const s32 MemoryNeeded = (B3dStack.getLast().length / sizeof(f32)) / NumberOfReads;
+	const s32 memoryNeeded = (B3dStack.getLast().length / sizeof(f32)) / NumberOfReads;
 
-	BaseVertices.reallocate(MemoryNeeded + BaseVertices.size() + 1);
-	AnimatedVertices_VertexID.reallocate(MemoryNeeded + AnimatedVertices_VertexID.size() + 1);
+	BaseVertices.reallocate(memoryNeeded + BaseVertices.size() + 1);
+	AnimatedVertices_VertexID.reallocate(memoryNeeded + AnimatedVertices_VertexID.size() + 1);
 
 	//--------------------------------------------//
 
@@ -437,10 +429,10 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *MeshBuffer, u32 M
 		B3dMaterial = 0;
 
 	if (B3dMaterial)
-		MeshBuffer->Material = (*B3dMaterial->Material);
+		MeshBuffer->Material = B3dMaterial->Material;
 
-	const s32 MemoryNeeded = B3dStack.getLast().length / sizeof(s32);
-	MeshBuffer->Indices.reallocate(MemoryNeeded + MeshBuffer->Indices.size() + 1);
+	const s32 memoryNeeded = B3dStack.getLast().length / sizeof(s32);
+	MeshBuffer->Indices.reallocate(memoryNeeded + MeshBuffer->Indices.size() + 1);
 
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) // this chunk repeats
 	{
@@ -584,29 +576,28 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 		#endif
 
 		// Add key frames
+		f32 data[4];
 		if (flags & 1)
 		{
-			f32 positionData[3];
-			readFloats(positionData, 3);
+			readFloats(data, 3);
 			CSkinnedMesh::SPositionKey *Key=AnimatedMesh->createPositionKey(InJoint);
 			Key->frame = (f32)frame;
-			Key->position.set(positionData[0], positionData[1], positionData[2]);
+			Key->position.set(data[0], data[1], data[2]);
 		}
 		if (flags & 2)
 		{
-			f32 scaleData[3];
-			readFloats(scaleData, 3);
+			readFloats(data, 3);
 			CSkinnedMesh::SScaleKey *Key=AnimatedMesh->createScaleKey(InJoint);
 			Key->frame = (f32)frame;
-			Key->scale.set(scaleData[0], scaleData[1], scaleData[2]);
+			Key->scale.set(data[0], data[1], data[2]);
 		}
 		if (flags & 4)
 		{
-			f32 rotationData[4];
-			readFloats(rotationData, 4);
+			readFloats(data, 4);
 			CSkinnedMesh::SRotationKey *Key=AnimatedMesh->createRotationKey(InJoint);
 			Key->frame = (f32)frame;
-			Key->rotation.set(rotationData[1], rotationData[2], rotationData[3], rotationData[0]); // meant to be in this order
+			// meant to be in this order since b3d stores W first
+			Key->rotation.set(data[1], data[2], data[3], data[0]);
 		}
 	}
 
@@ -695,9 +686,8 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 
 		readString(); //MaterialName not used, but still need to read it
 
-		SB3dMaterial B3dMaterial;
-
-		B3dMaterial.Material = new video::SMaterial();
+		Materials.push_back(SB3dMaterial());
+		SB3dMaterial& B3dMaterial=Materials.getLast();
 
 		readFloats(&B3dMaterial.red, 1);
 		readFloats(&B3dMaterial.green, 1);
@@ -764,11 +754,11 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		{
 			if (B3dMaterial.Textures[i] != 0)
 			{
-				B3dMaterial.Material->setTexture(i, B3dMaterial.Textures[i]->Texture);
+				B3dMaterial.Material.setTexture(i, B3dMaterial.Textures[i]->Texture);
 				if (B3dMaterial.Textures[i]->Flags & 0x10) // Clamp U
-					B3dMaterial.Material->TextureLayer[i].TextureWrap=video::ETC_CLAMP;
+					B3dMaterial.Material.TextureLayer[i].TextureWrapU=video::ETC_CLAMP;
 				if (B3dMaterial.Textures[i]->Flags & 0x20) // Clamp V, TODO: Needs another attribute
-					B3dMaterial.Material->TextureLayer[i].TextureWrap=video::ETC_CLAMP;
+					B3dMaterial.Material.TextureLayer[i].TextureWrapV=video::ETC_CLAMP;
 			}
 		}
 
@@ -780,64 +770,62 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			if (B3dMaterial.alpha==1.f)
 			{
 				if (B3dMaterial.Textures[1]->Blend == 5) //(Multiply 2)
-					B3dMaterial.Material->MaterialType = video::EMT_LIGHTMAP_M2;
+					B3dMaterial.Material.MaterialType = video::EMT_LIGHTMAP_M2;
 				else
-					B3dMaterial.Material->MaterialType = video::EMT_LIGHTMAP;
-				B3dMaterial.Material->Lighting = false;
+					B3dMaterial.Material.MaterialType = video::EMT_LIGHTMAP;
+				B3dMaterial.Material.Lighting = false;
 			}
 			else
-				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		}
 		else if (B3dMaterial.Textures[0]) //One texture:
 		{
 			// Flags & 0x1 is usual SOLID, 0x8 is mipmap (handled before)
 			if (B3dMaterial.Textures[0]->Flags & 0x2) //(Alpha mapped)
-				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
 			else if (B3dMaterial.Textures[0]->Flags & 0x4) //(Masked)
-				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF; // TODO: create color key texture
+				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF; // TODO: create color key texture
 			else if (B3dMaterial.Textures[0]->Flags & 0x40)
-				B3dMaterial.Material->MaterialType = video::EMT_SPHERE_MAP;
+				B3dMaterial.Material.MaterialType = video::EMT_SPHERE_MAP;
 			else if (B3dMaterial.Textures[0]->Flags & 0x80)
-				B3dMaterial.Material->MaterialType = video::EMT_SPHERE_MAP; // TODO: Should be cube map
+				B3dMaterial.Material.MaterialType = video::EMT_SPHERE_MAP; // TODO: Should be cube map
 			else if (B3dMaterial.alpha == 1.f)
-				B3dMaterial.Material->MaterialType = video::EMT_SOLID;
+				B3dMaterial.Material.MaterialType = video::EMT_SOLID;
 			else
-				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		}
 		else //No texture:
 		{
 			if (B3dMaterial.alpha == 1.f)
-				B3dMaterial.Material->MaterialType = video::EMT_SOLID;
+				B3dMaterial.Material.MaterialType = video::EMT_SOLID;
 			else
-				B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		}
 
-		B3dMaterial.Material->DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor();
+		B3dMaterial.Material.DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor();
 
 		//------ Material fx ------
 
 		if (B3dMaterial.fx & 1) //full-bright
 		{
-			B3dMaterial.Material->AmbientColor = video::SColor(255, 255, 255, 255);
-			B3dMaterial.Material->Lighting = false;
+			B3dMaterial.Material.AmbientColor = video::SColor(255, 255, 255, 255);
+			B3dMaterial.Material.Lighting = false;
 		}
 		else
-			B3dMaterial.Material->AmbientColor = B3dMaterial.Material->DiffuseColor;
+			B3dMaterial.Material.AmbientColor = B3dMaterial.Material.DiffuseColor;
 
 		//if (B3dMaterial.fx & 2) //use vertex colors instead of brush color
 
 		if (B3dMaterial.fx & 4) //flatshaded
-			B3dMaterial.Material->GouraudShading = false;
+			B3dMaterial.Material.GouraudShading = false;
 
 		if (B3dMaterial.fx & 16) //disable backface culling
-			B3dMaterial.Material->BackfaceCulling = false;
+			B3dMaterial.Material.BackfaceCulling = false;
 
 //		if (B3dMaterial.fx & 32) //force vertex alpha-blending
-//			B3dMaterial.Material->MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+//			B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 
-		B3dMaterial.Material->Shininess = B3dMaterial.shininess;
-
-		Materials.push_back(B3dMaterial);
+		B3dMaterial.Material.Shininess = B3dMaterial.shininess;
 	}
 
 	B3dStack.erase(B3dStack.size()-1);
