@@ -148,6 +148,9 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 			// reset cursor position
 			CursorControl->setPosition(0.5f, 0.5f);
 			CenterCursor = CursorControl->getRelativePosition();
+			// needed to avoid problems when the ecent receiver is
+			// disabled
+			CursorPos = CenterCursor;
 		}
 	}
 
