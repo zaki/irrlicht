@@ -1888,8 +1888,6 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 
 		if (!node)
 			os::Printer::log("Could not create scene node of unknown type", attrName.c_str());
-		else if ( userDataSerializer )
-			userDataSerializer->OnCreateNode(node);
 	}
 
 	// read attributes
@@ -1946,6 +1944,8 @@ void CSceneManager::readSceneNode(io::IXMLReader* reader, ISceneNode* parent, IS
 		if (endreached)
 			break;
 	}
+	if ( node && userDataSerializer )
+		userDataSerializer->OnCreateNode(node);
 }
 
 
