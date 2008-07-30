@@ -1611,7 +1611,7 @@ ISceneNode* CSceneManager::getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, IS
 	if (start == 0)
 		start = getRootSceneNode();
 
-	if (start->getType() == type)
+	if (start->getType() == type || ESNT_ANY == type)
 		return start;
 
 	ISceneNode* node = 0;
@@ -1634,7 +1634,7 @@ void CSceneManager::getSceneNodesFromType(ESCENE_NODE_TYPE type, core::array<sce
 	if (start == 0)
 		start = getRootSceneNode();
 
-	if (start->getType() == type)
+	if (start->getType() == type || ESNT_ANY == type)
 		outNodes.push_back(start);
 
 	const core::list<ISceneNode*>& list = start->getChildren();

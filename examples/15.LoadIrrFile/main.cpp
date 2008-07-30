@@ -64,17 +64,81 @@ int main()
 	*/
 
 	// load the scene
-
 	smgr->loadScene("../../media/example.irr");
 
-	/* 
-	That was it already. Now add a camera and draw the scene
-	*/
+	// Now we'll create a camera, and give it a collision response animator
+	// that's built from the mesh nodes in the scene we just loaded.
+	scene::ICameraSceneNode * camera = smgr->addCameraSceneNodeFPS(0, 50, 100);
 
-	// add a user controlled camera
+	// Create a meta triangle selector to hold several triangle selectors.
+	scene::IMetaTriangleSelector * meta = smgr->createMetaTriangleSelector();
 
-	smgr->addCameraSceneNodeFPS();
+	// Now we will find all the nodes in the scene and create triangle
+	// selectors for all suitable nodes.  Typically, you would want to make a
+	// more informed decision about which nodes to performs collision checks
+	// on; you could capture that information in the node name or Id.
+	core::array<scene::ISceneNode *> nodes;
+	smgr->getSceneNodesFromType(scene::ESNT_ANY, nodes); // Find all nodes
 
+	for (u32 i=0; i < nodes.size(); ++i)
+	{
+		scene::ISceneNode * node = nodes[i];
+		scene::ITriangleSelector * selector = 0;
+
+		switch(node->getType())
+		{
+		case scene::ESNT_CUBE:
+		case scene::ESNT_ANIMATED_MESH: // Because the selector won't animate with the mesh,
+		   // and is only being used for camera collision, we'll just use an approximate
+		   // bounding box instead of ((scene::IAnimatedMeshSceneNode*)node)->getMesh(0)
+		   selector = smgr->createTriangleSelectorFromBoundingBox(node);
+		   break;
+
+		case scene::ESNT_MESH:
+		case scene::ESNT_SPHERE: // Derived from IMeshSceneNode
+		   selector = smgr->createTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
+		   break;
+
+		case scene::ESNT_TERRAIN:
+		   selector = smgr->createTerrainTriangleSelector((scene::ITerrainSceneNode*)node);
+		   break;
+
+		case scene::ESNT_OCT_TREE:
+		   selector = smgr->createOctTreeTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
+		   break;
+
+		default:
+		   // Don't create a selector for this node type
+		   break;
+		}
+
+		if(selector)
+		{
+		   // Add it to the meta selector, which will take a reference to it
+		   meta->addTriangleSelector(selector);
+		   // And drop my reference to it, so that the meta selector owns it.
+		   selector->drop();
+		}
+	}
+
+	// Now that the mesh scene nodes have had triangle selectors created and added
+	// to the meta selector, create a collision response animator from that meta selector.
+	scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
+		meta, camera, core::vector3df(5,5,5),
+		core::vector3df(0,0,0));
+	meta->drop(); // I'm done with the meta selector now
+
+	camera->addAnimator(anim);
+	anim->drop(); // I'm done with the animator now
+
+	// And set the camera position so that it doesn't start off stuck in the geometry
+	camera->setPosition(core::vector3df(0.f, 20.f, 0.f));
+
+	// Point the camera at the cube node, by finding the first node of type ESNT_CUBE
+	scene::ISceneNode * cube = smgr->getSceneNodeFromType(scene::ESNT_CUBE);
+	if(cube)
+		camera->setTarget(cube->getAbsolutePosition());
+	
 	// and draw everything.
 
 	int lastFPS = -1;
