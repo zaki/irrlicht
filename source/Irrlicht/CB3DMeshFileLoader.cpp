@@ -756,9 +756,9 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			{
 				B3dMaterial.Material.setTexture(i, B3dMaterial.Textures[i]->Texture);
 				if (B3dMaterial.Textures[i]->Flags & 0x10) // Clamp U
-					B3dMaterial.Material.TextureLayer[i].TextureWrapU=video::ETC_CLAMP;
+					B3dMaterial.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;
 				if (B3dMaterial.Textures[i]->Flags & 0x20) // Clamp V, TODO: Needs another attribute
-					B3dMaterial.Material.TextureLayer[i].TextureWrapV=video::ETC_CLAMP;
+					B3dMaterial.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;
 			}
 		}
 
