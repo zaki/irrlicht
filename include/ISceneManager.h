@@ -954,7 +954,7 @@ namespace scene
 		virtual ISceneNode* getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, ISceneNode* start=0) = 0;
 
 		//! Get scene nodes by type.
-		/** \param type: Type of scene node to find.
+		/** \param type: Type of scene node to find (ESNT_ANY will return all child nodes).
 		\param outNodes: array to be filled with results.
 		\param start: Scene node to start from. All children of this scene
 		node are searched. If null is specified, the root scene node is
