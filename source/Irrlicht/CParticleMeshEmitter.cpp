@@ -116,7 +116,10 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 					randomMB = MBNumber;
 				}
 
-				u32 vertexNumber = os::Randomizer::rand() % Mesh->getMeshBuffer(randomMB)->getVertexCount();
+				u32 vertexNumber = Mesh->getMeshBuffer(randomMB)->getVertexCount();
+				if (!vertexNumber)
+					continue;
+				vertexNumber = os::Randomizer::rand() % vertexNumber;
 
 				p.pos = Mesh->getMeshBuffer(randomMB)->getPosition(vertexNumber);
 				if( UseNormalDirection )
