@@ -21,6 +21,8 @@ namespace irr
 namespace scene
 {
 
+static const u32 WORD_BUFFER_LENGTH = 512;
+
 //! Constructor
 COBJMeshFileLoader::COBJMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs)
 : SceneManager(smgr), FileSystem(fs)
@@ -190,7 +192,10 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 				if ( -1 != Idx[2] )
 					v.Normal = normalsBuffer[Idx[2]];
 				else
+				{
 					v.Normal.set(0.0f,0.0f,0.0f);
+					currMtl->RecalculateNormals=true;
+				}
 
 				int vertLocation;
 				core::map<video::S3DVertex, int>::Node* n = currMtl->VertMap.find(v);
@@ -240,6 +245,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		if ( Materials[m]->Meshbuffer->getIndexCount() > 0 )
 		{
 			Materials[m]->Meshbuffer->recalculateBoundingBox();
+			if (Materials[m]->RecalculateNormals)
+				SceneManager->getMeshManipulator()->recalculateNormals(Materials[m]->Meshbuffer);
 			if (Materials[m]->Meshbuffer->Material.MaterialType == video::EMT_PARALLAX_MAP_SOLID)
 			{
 				SMesh tmp;
@@ -274,10 +281,140 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 }
 
 
-void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
+const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const bufEnd, SObjMtl* currMaterial, const core::stringc& relPath)
 {
-	const u32 WORD_BUFFER_LENGTH = 512;
+	u8 type=0; // map_Kd - diffuse color texture map
+	// map_Ks - specular color texture map
+	// map_Ka - ambient color texture map
+	if ((!strncmp(bufPtr,"map_bump",8)) || (!strncmp(bufPtr,"bump",4)))
+		type=1; // normal map
+	else if (!strncmp(bufPtr,"map_d",5))
+		type=2; // opactity map
+	else if (!strncmp(bufPtr,"map_refl",8))
+		type=3; // reflection map
+	// extract new material's name
+	c8 textureNameBuf[WORD_BUFFER_LENGTH];
+	bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+	core::stringc texname(textureNameBuf);
+	texname.replace('\\', '/');
 
+	f32 bumpiness = 1.0f;
+	bool clamp = false;
+	// handle options
+	while (textureNameBuf[0]=='-')
+	{
+		if (!strncmp(bufPtr,"-bm",3))
+		{
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			bumpiness = core::fast_atof(textureNameBuf);
+		}
+		else
+		if (!strncmp(bufPtr,"-blendu",7))
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+		else
+		if (!strncmp(bufPtr,"-blendv",7))
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+		else
+		if (!strncmp(bufPtr,"-cc",3))
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+		else
+		if (!strncmp(bufPtr,"-clamp",6))
+			bufPtr = readBool(bufPtr, clamp, bufEnd);
+		else
+		if (!strncmp(bufPtr,"-texres",7))
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+		else
+		if (!strncmp(bufPtr,"-mm",3))
+		{
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+		}
+		else
+		if (!strncmp(bufPtr,"-o",2)) // texture coord translation
+		{
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			// next parameters are optional, so skip rest of loop if no number is found
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (!core::isdigit(textureNameBuf[0]))
+				continue;
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (!core::isdigit(textureNameBuf[0]))
+				continue;
+		}
+		else
+		if (!strncmp(bufPtr,"-s",2)) // texture coord scale
+		{
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			// next parameters are optional, so skip rest of loop if no number is found
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (!core::isdigit(textureNameBuf[0]))
+				continue;
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (!core::isdigit(textureNameBuf[0]))
+				continue;
+		}
+		else
+		if (!strncmp(bufPtr,"-t",2))
+		{
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			// next parameters are optional, so skip rest of loop if no number is found
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (!core::isdigit(textureNameBuf[0]))
+				continue;
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			if (!core::isdigit(textureNameBuf[0]))
+				continue;
+		}
+		// get next word
+		bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+	}
+	if (type==1)
+	{
+		currMaterial->Meshbuffer->Material.MaterialTypeParam=core::fast_atof(textureNameBuf);
+		bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+	}
+	if (clamp)
+		currMaterial->Meshbuffer->Material.setFlag(video::EMF_TEXTURE_WRAP, video::ETC_CLAMP);
+
+	video::ITexture * texture = 0;
+	if (FileSystem->existFile(texname.c_str()))
+		texture = SceneManager->getVideoDriver()->getTexture(texname.c_str());
+	else
+		// try to read in the relative path, the .obj is loaded from
+		texture = SceneManager->getVideoDriver()->getTexture( (relPath + texname).c_str() );
+	if ( texture )
+	{
+		if (type==0)
+			currMaterial->Meshbuffer->Material.setTexture(0, texture);
+		else if (type==1)
+		{
+			SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
+			currMaterial->Meshbuffer->Material.setTexture(1, texture);
+			currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
+			currMaterial->Meshbuffer->Material.MaterialTypeParam=0.035f;
+		}
+		else if (type==2)
+		{
+			currMaterial->Meshbuffer->Material.setTexture(0, texture);
+			currMaterial->Meshbuffer->Material.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
+		}
+		else if (type==3)
+		{
+//						currMaterial->Meshbuffer->Material.Textures[1] = texture;
+//						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
+		}
+		// Set diffuse material colour to white so as not to affect texture colour
+		// Because Maya set diffuse colour Kd to black when you use a diffuse colour map
+		// But is this the right thing to do?
+		currMaterial->Meshbuffer->Material.DiffuseColor.set(
+			currMaterial->Meshbuffer->Material.DiffuseColor.getAlpha(), 255, 255, 255 );
+	}
+	return bufPtr;
+}
+
+
+void COBJMeshFileLoader::readMTL(const c8* fileName, const core::stringc& relPath)
+{
 	io::IReadFile * mtlReader;
 	if (FileSystem->existFile(fileName))
 		mtlReader = FileSystem->createAndOpenFile(fileName);
@@ -388,132 +525,7 @@ void COBJMeshFileLoader::readMTL(const c8* fileName, core::stringc relPath)
 			case 'm': // texture maps
 			if (currMaterial)
 			{
-				u8 type=0; // map_Kd - diffuse color texture map
-				// map_Ks - specular color texture map
-				// map_Ka - ambient color texture map
-				if ((!strncmp(bufPtr,"map_bump",8)) || (!strncmp(bufPtr,"bump",4)))
-					type=1; // normal map
-				else if (!strncmp(bufPtr,"map_d",5))
-					type=2; // opactity map
-				else if (!strncmp(bufPtr,"map_refl",8))
-					type=3; // reflection map
-				// extract new material's name
-				c8 textureNameBuf[WORD_BUFFER_LENGTH];
-				bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-				core::stringc texname(textureNameBuf);
-				texname.replace('\\', '/');
-
-				f32 bumpiness = 1.0f;
-				bool clamp = false;
-				// handle options
-				while (textureNameBuf[0]=='-')
-				{
-					if (!strncmp(bufPtr,"-bm",3))
-					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						bumpiness = core::fast_atof(textureNameBuf);
-					}
-					else
-					if (!strncmp(bufPtr,"-blendu",7))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-					else
-					if (!strncmp(bufPtr,"-blendv",7))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-					else
-					if (!strncmp(bufPtr,"-cc",3))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-					else
-					if (!strncmp(bufPtr,"-clamp",6))
-						bufPtr = readBool(bufPtr, clamp, bufEnd);
-					else
-					if (!strncmp(bufPtr,"-texres",7))
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-					else
-					if (!strncmp(bufPtr,"-mm",3))
-					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-					}
-					else
-					if (!strncmp(bufPtr,"-o",2)) // texture coord translation
-					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						// next parameters are optional, so skip rest of loop if no number is found
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						if (!core::isdigit(textureNameBuf[0]))
-							continue;
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						if (!core::isdigit(textureNameBuf[0]))
-							continue;
-					}
-					else
-					if (!strncmp(bufPtr,"-s",2)) // texture coord scale
-					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						// next parameters are optional, so skip rest of loop if no number is found
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						if (!core::isdigit(textureNameBuf[0]))
-							continue;
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						if (!core::isdigit(textureNameBuf[0]))
-							continue;
-					}
-					else
-					if (!strncmp(bufPtr,"-t",2))
-					{
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						// next parameters are optional, so skip rest of loop if no number is found
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						if (!core::isdigit(textureNameBuf[0]))
-							continue;
-						bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-						if (!core::isdigit(textureNameBuf[0]))
-							continue;
-					}
-					// get next word
-					bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-				}
-				if (type==1)
-				{
-					currMaterial->Meshbuffer->Material.MaterialTypeParam=core::fast_atof(textureNameBuf);
-					bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-				}
-				if (clamp)
-					currMaterial->Meshbuffer->Material.setFlag(video::EMF_TEXTURE_WRAP, video::ETC_CLAMP);
-
-				video::ITexture * texture = 0;
-				if (FileSystem->existFile(texname.c_str()))
-					texture = SceneManager->getVideoDriver()->getTexture(texname.c_str());
-				else
-					// try to read in the relative path, the .obj is loaded from
-					texture = SceneManager->getVideoDriver()->getTexture( (relPath + texname).c_str() );
-				if ( texture )
-				{
-					if (type==0)
-						currMaterial->Meshbuffer->Material.setTexture(0, texture);
-					else if (type==1)
-					{
-						SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
-						currMaterial->Meshbuffer->Material.setTexture(1, texture);
-						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
-						currMaterial->Meshbuffer->Material.MaterialTypeParam=0.035f;
-					}
-					else if (type==2)
-					{
-						currMaterial->Meshbuffer->Material.setTexture(0, texture);
-						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
-					}
-					else if (type==3)
-					{
-//						currMaterial->Meshbuffer->Material.Textures[1] = texture;
-//						currMaterial->Meshbuffer->Material.MaterialType=video::EMT_REFLECTION_2_LAYER;
-					}
-					// Set diffuse material colour to white so as not to affect texture colour
-					// Because Maya set diffuse colour Kd to black when you use a diffuse colour map
-					// But is this the right thing to do?
-					currMaterial->Meshbuffer->Material.DiffuseColor.set(
-						currMaterial->Meshbuffer->Material.DiffuseColor.getAlpha(), 255, 255, 255 );
-				}
+				bufPtr=readTextures(bufPtr, bufEnd, currMaterial, relPath);
 			}
 			break;
 			case 'd': // d - transparency
