@@ -42,7 +42,8 @@ private:
 
 	struct SObjMtl
 	{
-		SObjMtl() : Meshbuffer(0), Bumpiness (1.0f), Illumination(0)
+		SObjMtl() : Meshbuffer(0), Bumpiness (1.0f), Illumination(0),
+			RecalculateNormals(false)
 		{
 			Meshbuffer = new SMeshBuffer();
 			Meshbuffer->Material.Shininess = 0.0f;
@@ -51,9 +52,10 @@ private:
 			Meshbuffer->Material.SpecularColor = video::SColorf(1.0f, 1.0f, 1.0f, 1.0f).toSColor();
 		}
 
-		SObjMtl(SObjMtl& o)
+		SObjMtl(const SObjMtl& o)
 			: Name(o.Name), Group(o.Group),
-			Bumpiness(o.Bumpiness), Illumination(o.Illumination)
+			Bumpiness(o.Bumpiness), Illumination(o.Illumination),
+			RecalculateNormals(false)
 		{
 			Meshbuffer = new SMeshBuffer();
 			Meshbuffer->Material = o.Meshbuffer->Material;
@@ -65,7 +67,11 @@ private:
 		core::stringc Group;
 		f32 Bumpiness;
 		c8 Illumination;
+		bool RecalculateNormals;
 	};
+
+	// helper method for material reading
+	const c8* readTextures(const c8* bufPtr, const c8* const bufEnd, SObjMtl* currMaterial, const core::stringc& relPath);
 
 	// returns a pointer to the first printable character available in the buffer
 	const c8* goFirstWord(const c8* buf, const c8* const bufEnd);
@@ -81,7 +87,7 @@ private:
 	const c8* goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* const pBufEnd);
 
 	//! Read the material from the given file
-	void readMTL(const c8* fileName, core::stringc relPath);
+	void readMTL(const c8* fileName, const core::stringc& relPath);
 	//! Find and return the material with the given name
 	SObjMtl* findMtl(const core::stringc& mtlName, const core::stringc& grpName);
 
