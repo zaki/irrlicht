@@ -15,11 +15,14 @@
 #include "IAttributes.h"
 #include "fast_atof.h"
 #include "coreutil.h"
+#include "os.h"
 
 namespace irr
 {
 namespace scene
 {
+
+//#define _IRR_DEBUG_OBJ_LOADER_
 
 static const u32 WORD_BUFFER_LENGTH = 512;
 
@@ -88,6 +91,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 		{
 			c8 name[WORD_BUFFER_LENGTH];
 			bufPtr = goAndCopyNextWord(name, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+#ifdef _IRR_DEBUG_OBJ_LOADER_
+	os::Printer::log("Reading material file",name);
+#endif
 			readMTL(name, relPath);
 		}
 			break;
@@ -125,6 +131,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			{
 				c8 grp[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(grp, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+#ifdef _IRR_DEBUG_OBJ_LOADER_
+	os::Printer::log("Loaded group start",grp);
+#endif
 				if (useGroups)
 					grpName = grp;
 			}
@@ -134,6 +143,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			{
 				c8 smooth[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(smooth, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+#ifdef _IRR_DEBUG_OBJ_LOADER_
+	os::Printer::log("Loaded smoothing group start",smooth);
+#endif
 				if (core::stringc("off")==smooth)
 					smoothingGroup=0;
 				else
@@ -146,6 +158,9 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			{
 				c8 matName[WORD_BUFFER_LENGTH];
 				bufPtr = goAndCopyNextWord(matName, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+#ifdef _IRR_DEBUG_OBJ_LOADER_
+	os::Printer::log("Loaded material start",matName);
+#endif
 				// retrieve the material
 				SObjMtl *useMtl = findMtl(matName, grpName);
 				// only change material if we found it
@@ -295,10 +310,8 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 	// extract new material's name
 	c8 textureNameBuf[WORD_BUFFER_LENGTH];
 	bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-	core::stringc texname(textureNameBuf);
-	texname.replace('\\', '/');
 
-	f32 bumpiness = 1.0f;
+	f32 bumpiness = 6.0f;
 	bool clamp = false;
 	// handle options
 	while (textureNameBuf[0]=='-')
@@ -306,7 +319,9 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 		if (!strncmp(bufPtr,"-bm",3))
 		{
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-			bumpiness = core::fast_atof(textureNameBuf);
+			currMaterial->Meshbuffer->Material.MaterialTypeParam=core::fast_atof(textureNameBuf);
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+			continue;
 		}
 		else
 		if (!strncmp(bufPtr,"-blendu",7))
@@ -322,6 +337,9 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 			bufPtr = readBool(bufPtr, clamp, bufEnd);
 		else
 		if (!strncmp(bufPtr,"-texres",7))
+			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
+		else
+		if (!strncmp(bufPtr,"-type",5))
 			bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 		else
 		if (!strncmp(bufPtr,"-mm",3))
@@ -368,13 +386,17 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 		// get next word
 		bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	}
-	if (type==1)
+
+	if ((type==1) && (core::isdigit(textureNameBuf[0])))
 	{
 		currMaterial->Meshbuffer->Material.MaterialTypeParam=core::fast_atof(textureNameBuf);
 		bufPtr = goAndCopyNextWord(textureNameBuf, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	}
 	if (clamp)
 		currMaterial->Meshbuffer->Material.setFlag(video::EMF_TEXTURE_WRAP, video::ETC_CLAMP);
+
+	core::stringc texname(textureNameBuf);
+	texname.replace('\\', '/');
 
 	video::ITexture * texture = 0;
 	if (FileSystem->existFile(texname.c_str()))
