@@ -13,6 +13,8 @@
 #include "IVideoDriver.h"
 #include "IMeshManipulator.h"
 
+#define _IRR_DEBUG_3DS_LOADER_
+
 namespace irr
 {
 namespace scene
@@ -89,10 +91,17 @@ const u16 C3DS_KF_CURTIME    = 0xB009;
 const u16 C3DS_KF_NODE_HDR   = 0xB010;
 const u16 C3DS_PIVOTPOINT    = 0xB013;
 const u16 C3DS_BOUNDBOX      = 0xB014;
+const u16 C3DS_MORPH_SMOOTH  = 0xB015;
 const u16 C3DS_POS_TRACK_TAG = 0xB020;
 const u16 C3DS_ROT_TRACK_TAG = 0xB021;
 const u16 C3DS_SCL_TRACK_TAG = 0xB022;
 const u16 C3DS_NODE_ID       = 0xB030;
+
+// Viewport definitions
+const u16 C3DS_VIEWPORT_LAYOUT = 0x7001;
+const u16 C3DS_VIEWPORT_DATA   = 0x7011;
+const u16 C3DS_VIEWPORT_DATA_3 = 0x7012;
+const u16 C3DS_VIEWPORT_SIZE   = 0x7020;
 
 // different color chunk types
 const u16 C3DS_COL_RGB    = 0x0010;
@@ -217,6 +226,10 @@ IAnimatedMesh* C3DSMeshFileLoader::createMesh(io::IReadFile* file)
 bool C3DSMeshFileLoader::readPercentageChunk(io::IReadFile* file,
 					ChunkData* chunk, f32& percentage)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load percentage chunk.");
+#endif
+
 	ChunkData data;
 	readChunkData(file, data);
 
@@ -265,6 +278,9 @@ bool C3DSMeshFileLoader::readPercentageChunk(io::IReadFile* file,
 bool C3DSMeshFileLoader::readColorChunk(io::IReadFile* file, ChunkData* chunk,
 					video::SColor& out)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load color chunk.");
+#endif
 	ChunkData data;
 	readChunkData(file, data);
 
@@ -313,6 +329,9 @@ bool C3DSMeshFileLoader::readColorChunk(io::IReadFile* file, ChunkData* chunk,
 
 bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* parent)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load material chunk.");
+#endif
 	u16 matSection=0;
 
 	while(parent->read < parent->header.length)
@@ -520,6 +539,9 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 bool C3DSMeshFileLoader::readTrackChunk(io::IReadFile* file, ChunkData& data,
 					IMeshBuffer* mb, const core::vector3df& pivot)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load track chunk.");
+#endif
 	u16 flags;
 	u32 flags2;
 	// Track flags
@@ -598,9 +620,11 @@ bool C3DSMeshFileLoader::readTrackChunk(io::IReadFile* file, ChunkData& data,
 }
 
 
-
 bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load frame chunk.");
+#endif
 	ChunkData data;
 
 	//KF_HDR is always at the beginning
@@ -609,22 +633,26 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 		return false;
 	else
 	{
-		u16 flags;
-		file->read(&flags, 2);
-#ifdef __BIG_ENDIAN__
-		flags = os::Byteswap::byteswap(flags);
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load keyframe header.");
 #endif
-		c8* c = new c8[data.header.length - data.read-4];
-		file->read(c, data.header.length - data.read-4);
-		file->read(&flags, 2);
+		u16 version;
+		file->read(&version, 2);
+#ifdef __BIG_ENDIAN__
+		flags = os::Byteswap::byteswap(version);
+#endif
+		core::stringc name;
+		readString(file, data, name);
+		u32 flags;
+		file->read(&flags, 4);
 #ifdef __BIG_ENDIAN__
 		flags = os::Byteswap::byteswap(flags);
 #endif
 
-		data.read += data.header.length - data.read;
+		data.read += 4;
 		parent->read += data.read;
-		delete [] c;
 	}
+	data.read=0;
 
 	IMeshBuffer* mb=0;
 	core::vector3df pivot,bboxCenter;
@@ -636,26 +664,35 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 		{
 		case C3DS_OBJECT_TAG:
 			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load object tag.");
+#endif
 				mb=0;
 				pivot.set(0.0f, 0.0f, 0.0f);
 			}
 			break;
 		case C3DS_KF_SEG:
 			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load keyframe segment.");
+#endif
 				u32 flags;
 				file->read(&flags, 4);
 #ifdef __BIG_ENDIAN__
-		flags = os::Byteswap::byteswap(flags);
+				flags = os::Byteswap::byteswap(flags);
 #endif
 				file->read(&flags, 4);
 #ifdef __BIG_ENDIAN__
-		flags = os::Byteswap::byteswap(flags);
+				flags = os::Byteswap::byteswap(flags);
 #endif
 				data.read += 8;
 			}
 			break;
 		case C3DS_KF_NODE_HDR:
 			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load keyframe node header.");
+#endif
 				s16 flags;
 				c8* c = new c8[data.header.length - data.read-6];
 				file->read(c, data.header.length - data.read-6);
@@ -688,6 +725,9 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 			break;
 		case C3DS_KF_CURTIME:
 			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load keyframe current time.");
+#endif
 				u32 flags;
 				file->read(&flags, 4);
 #ifdef __BIG_ENDIAN__
@@ -698,6 +738,9 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 			break;
 		case C3DS_NODE_ID:
 			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load node ID.");
+#endif
 				u16 flags;
 				file->read(&flags, 2);
 #ifdef __BIG_ENDIAN__
@@ -708,6 +751,9 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 			break;
 		case C3DS_PIVOTPOINT:
 			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load pivot point.");
+#endif
 				file->read(&pivot.X, sizeof(f32));
 				file->read(&pivot.Y, sizeof(f32));
 				file->read(&pivot.Z, sizeof(f32));
@@ -721,6 +767,9 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 			break;
 		case C3DS_BOUNDBOX:
 			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load bounding box.");
+#endif
 				core::aabbox3df bbox;
 				// abuse bboxCenter as temporary variable
 				file->read(&bboxCenter.X, sizeof(f32));
@@ -745,6 +794,19 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 				data.read += 24;
 			}
 			break;
+		case C3DS_MORPH_SMOOTH:
+			{
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load morph smooth.");
+#endif
+				f32 flag;
+				file->read(&flag, 4);
+#ifdef __BIG_ENDIAN__
+				flags = os::Byteswap::byteswap(flags);
+#endif
+				data.read += 4;
+			}
+			break;
 		case C3DS_POS_TRACK_TAG:
 		case C3DS_ROT_TRACK_TAG:
 		case C3DS_SCL_TRACK_TAG:
@@ -762,7 +824,6 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 
 	return true;
 }
-
 
 
 bool C3DSMeshFileLoader::readChunk(io::IReadFile* file, ChunkData* parent)
@@ -828,9 +889,11 @@ bool C3DSMeshFileLoader::readChunk(io::IReadFile* file, ChunkData* parent)
 }
 
 
-
 bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load object chunk.");
+#endif
 	while(parent->read < parent->header.length)
 	{
 		ChunkData data;
@@ -1177,10 +1240,11 @@ void C3DSMeshFileLoader::cleanUp()
 }
 
 
-
-
 void C3DSMeshFileLoader::readTextureCoords(io::IReadFile* file, ChunkData& data)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load texture coords.");
+#endif
 	file->read(&CountTCoords, sizeof(CountTCoords));
 #ifdef __BIG_ENDIAN__
 	CountTCoords = os::Byteswap::byteswap(CountTCoords);
@@ -1206,6 +1270,9 @@ void C3DSMeshFileLoader::readTextureCoords(io::IReadFile* file, ChunkData& data)
 
 void C3DSMeshFileLoader::readMaterialGroup(io::IReadFile* file, ChunkData& data)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load material group.");
+#endif
 	SMaterialGroup group;
 
 	readString(file, data, group.MaterialName);
@@ -1231,6 +1298,9 @@ void C3DSMeshFileLoader::readMaterialGroup(io::IReadFile* file, ChunkData& data)
 
 void C3DSMeshFileLoader::readIndices(io::IReadFile* file, ChunkData& data)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load indices.");
+#endif
 	file->read(&CountFaces, sizeof(CountFaces));
 #ifdef __BIG_ENDIAN__
 	CountFaces = os::Byteswap::byteswap(CountFaces);
@@ -1251,9 +1321,11 @@ void C3DSMeshFileLoader::readIndices(io::IReadFile* file, ChunkData& data)
 }
 
 
-
 void C3DSMeshFileLoader::readVertices(io::IReadFile* file, ChunkData& data)
 {
+#ifdef _IRR_DEBUG_3DS_LOADER_
+	os::Printer::log("Load vertices.");
+#endif
 	file->read(&CountVertices, sizeof(CountVertices));
 #ifdef __BIG_ENDIAN__
 	CountVertices = os::Byteswap::byteswap(CountVertices);
@@ -1277,7 +1349,6 @@ void C3DSMeshFileLoader::readVertices(io::IReadFile* file, ChunkData& data)
 }
 
 
-
 void C3DSMeshFileLoader::readChunkData(io::IReadFile* file, ChunkData& data)
 {
 	file->read(&data.header, sizeof(ChunkHeader));
@@ -1299,9 +1370,8 @@ void C3DSMeshFileLoader::readString(io::IReadFile* file, ChunkData& data, core::
 		file->read(&c, sizeof(c8));
 		if (c)
 			out.append(c);
-
-		++data.read;
 	}
+	data.read+=out.size()+1;
 }
 
 
@@ -1309,3 +1379,4 @@ void C3DSMeshFileLoader::readString(io::IReadFile* file, ChunkData& data, core::
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_3DS_LOADER_
+
