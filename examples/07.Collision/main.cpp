@@ -130,7 +130,6 @@ int main()
 			selector, camera, core::vector3df(30,50,30),
 			core::vector3df(0,-3,0), 
 			core::vector3df(0,50,0));
-		selector->drop();
 		camera->addAnimator(anim);
 		anim->drop();
 	}
@@ -286,6 +285,7 @@ int main()
 		}
 	}
 
+	selector->drop();
 	device->drop();
 	
 	return 0;

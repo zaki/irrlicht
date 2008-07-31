@@ -65,8 +65,8 @@ class CScreenShotFactory : public IEventReceiver
 {
 public:
 
-	CScreenShotFactory( IrrlichtDevice *device, const c8 * templateName )
-		: Device(device), Number(0), FilenameTemplate(templateName)
+	CScreenShotFactory( IrrlichtDevice *device, const c8 * templateName, ISceneNode* node )
+		: Device(device), Number(0), FilenameTemplate(templateName), Node(node)
 	{
 		FilenameTemplate.replace ( '/', '_' );
 		FilenameTemplate.replace ( '\\', '_' );
@@ -75,19 +75,26 @@ public:
 	bool OnEvent(const SEvent& event)
 	{
 		// check if user presses the key F9
-		if (event.EventType == EET_KEY_INPUT_EVENT &&
-			event.KeyInput.Key == KEY_F9 &&
-			event.KeyInput.PressedDown == false)
+		if ((event.EventType == EET_KEY_INPUT_EVENT) &&
+				event.KeyInput.PressedDown)
 		{
-			video::IImage* image = Device->getVideoDriver()->createScreenShot();
-			if (image)
+			if (event.KeyInput.Key == KEY_F9)
 			{
-				c8 buf[256];
-				snprintf(buf, 256, "%s_shot%04d.jpg",
-						FilenameTemplate.c_str(),
-						++Number);
-				Device->getVideoDriver()->writeImageToFile(image, buf, 85 );
-				image->drop();
+				video::IImage* image = Device->getVideoDriver()->createScreenShot();
+				if (image)
+				{
+					c8 buf[256];
+					snprintf(buf, 256, "%s_shot%04d.jpg",
+							FilenameTemplate.c_str(),
+							++Number);
+					Device->getVideoDriver()->writeImageToFile(image, buf, 85 );
+					image->drop();
+				}
+			}
+			else
+			if (event.KeyInput.Key == KEY_F8)
+			{
+				Node->setDebugDataVisible(scene::EDS_BBOX_ALL);
 			}
 		}
 		return false;
@@ -97,6 +104,7 @@ private:
 	IrrlichtDevice *Device;
 	u32 Number;
 	core::stringc FilenameTemplate;
+	ISceneNode* Node;
 };
 
 
@@ -138,13 +146,18 @@ int IRRCALLCONV main(int argc, char* argv[])
 	}	
 
 	// create device and exit if creation failed
-	core::dimension2di videoDim ( 800,600 );
+	const core::dimension2di videoDim ( 800,600 );
 
 	IrrlichtDevice *device = createDevice(driverType, videoDim, 32, false );
 
 	if (device == 0)
 		return 1; // could not create selected driver.
 
+	const char* mapname=0;
+	if (argc>2)
+		mapname = argv[2];
+	else
+		mapname = QUAKE3_MAP_NAME;
 
 	/*
 	Get a pointer to the video driver and the SceneManager so that
@@ -155,22 +168,20 @@ int IRRCALLCONV main(int argc, char* argv[])
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
-	// create an event receiver for making screenshots
-	CScreenShotFactory screenshotFactory ( device, QUAKE3_MAP_NAME );
-	device->setEventReceiver ( &screenshotFactory );
-
-
 	//! add our private media directory to the file system
 	device->getFileSystem()->addFolderFileArchive("../../media/");
 
 	/*
 	To display the Quake 3 map, we first need to load it. Quake 3 maps
-	are packed into .pk3 files wich are nothing other than .zip files.
+	are packed into .pk3 files, which are nothing other than .zip files.
 	So we add the .pk3 file to our FileSystem. After it was added,
 	we are able to read from the files in that archive as they would
 	directly be stored on disk.
 	*/
-	device->getFileSystem()->QUAKE3_STORAGE_FORMAT ( QUAKE3_STORAGE_1 );
+	if (argc>2)
+		device->getFileSystem()->QUAKE3_STORAGE_FORMAT (argv[1]);
+	else
+		device->getFileSystem()->QUAKE3_STORAGE_FORMAT ( QUAKE3_STORAGE_1 );
 #ifdef QUAKE3_STORAGE_2
 	device->getFileSystem()->QUAKE3_STORAGE_FORMAT ( QUAKE3_STORAGE_2 );
 #endif
@@ -193,8 +204,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	IVideoDriver class). Note that this optimization with the Octree is only
 	useful when drawing huge meshes consisting of lots of geometry.
 	*/
-	scene::IQ3LevelMesh* mesh = (scene::IQ3LevelMesh*) smgr->getMesh( QUAKE3_MAP_NAME );
-
+	scene::IQ3LevelMesh* mesh = (scene::IQ3LevelMesh*) smgr->getMesh(mapname);
 
 	/*
 		add the geometry mesh to the Scene ( polygon & patches )
@@ -203,9 +213,14 @@ int IRRCALLCONV main(int argc, char* argv[])
 	scene::ISceneNode* node = 0;
 	if ( mesh )
 	{
-		scene::IMesh *geometry = mesh->getMesh(quake3::E_Q3_MESH_GEOMETRY );
-		node = smgr->addMeshSceneNode ( geometry );
+		scene::IMesh *geometry = mesh->getMesh(quake3::E_Q3_MESH_GEOMETRY);
+//		node = smgr->addMeshSceneNode ( geometry );
+		node = smgr->addOctTreeSceneNode(geometry, 0, -1, 1024);
 	}
+
+	// create an event receiver for making screenshots
+	CScreenShotFactory screenshotFactory ( device, mapname, node );
+	device->setEventReceiver ( &screenshotFactory );
 
 	/*
 		now construct SceneNodes for each Shader
