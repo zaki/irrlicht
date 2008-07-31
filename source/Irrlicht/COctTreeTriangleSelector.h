@@ -39,13 +39,13 @@ private:
 	{
 		SOctTreeNode()
 		{
-			for (s32 i=0; i<8; ++i)
+			for (u32 i=0; i!=8; ++i)
 				Child[i] = 0;
 		}
 
 		~SOctTreeNode()
 		{
-			for (s32 i=0; i<8; ++i)
+			for (u32 i=0; i!=8; ++i)
 				delete Child[i];
 		}
 
@@ -57,9 +57,10 @@ private:
 
 	void constructOctTree(SOctTreeNode* node);
 	void deleteEmptyNodes(SOctTreeNode* node);
-	void getTrianglesFromOctTree(SOctTreeNode* node, s32& trianglesWritten, s32 maximumSize, 
-		const core::aabbox3d<f32>& box, const core::matrix4* transform,
-		core::triangle3df* triangles) const;
+	void getTrianglesFromOctTree(SOctTreeNode* node, s32& trianglesWritten,
+			s32 maximumSize, const core::aabbox3d<f32>& box,
+			const core::matrix4* transform,
+			core::triangle3df* triangles) const;
 
 	SOctTreeNode* Root;
 	s32 NodeCount;
