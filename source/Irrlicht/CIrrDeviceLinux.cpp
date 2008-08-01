@@ -479,7 +479,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	attributes.colormap = colormap;
 	attributes.border_pixel = 0;
-	attributes.event_mask = StructureNotifyMask;
+	attributes.event_mask = StructureNotifyMask | FocusChangeMask;
 	if (!CreationParams.IgnoreInput)
 		attributes.event_mask |= PointerMotionMask |
 				ButtonPressMask | KeyPressMask |
