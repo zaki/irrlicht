@@ -216,6 +216,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	ExposedData.OpenGLLinux.X11Context = glXGetCurrentContext();
 	ExposedData.OpenGLLinux.X11Display = glXGetCurrentDisplay();
 	ExposedData.OpenGLLinux.X11Window = (unsigned long)params.WindowId;
+	Drawable = glXGetCurrentDrawable();
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
@@ -368,7 +369,6 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	createMaterialRenderers();
 
 	// set the renderstates
-	ResetRenderStates = true;
 	setRenderStates3DMode();
 
 	// set fog mode
@@ -433,7 +433,7 @@ void COpenGLDriver::createMaterialRenderers()
 
 
 //! presents the rendered scene on the screen, returns false if failed
-bool COpenGLDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
+bool COpenGLDriver::endScene(void* windowId, core::rect<s32>* sourceRect)
 {
 	CNullDriver::endScene();
 
@@ -442,7 +442,7 @@ bool COpenGLDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 	return SwapBuffers(HDc) == TRUE;
 #elif defined(_IRR_USE_LINUX_DEVICE_)
-	glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, ExposedData.OpenGLLinux.X11Window);
+	glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, Drawable);
 	return true;
 #elif defined(_IRR_USE_OSX_DEVICE_)
 	_device->flush();
@@ -563,7 +563,6 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		return false;
 
 #if defined(GL_ARB_vertex_buffer_object)
-
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const void* vertices=mb->getVertices();
 	const u32 vertexCount=mb->getVertexCount();
@@ -580,7 +579,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		case EVT_STANDARD:
 		{
 			S3DVertex* pb = reinterpret_cast<S3DVertex*>(buffer.pointer());
-			const S3DVertex* po = reinterpret_cast<const S3DVertex*>(vertices);
+			const S3DVertex* po = static_cast<const S3DVertex*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
 				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
@@ -590,7 +589,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		case EVT_2TCOORDS:
 		{
 			S3DVertex2TCoords* pb = reinterpret_cast<S3DVertex2TCoords*>(buffer.pointer());
-			const S3DVertex2TCoords* po = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
+			const S3DVertex2TCoords* po = static_cast<const S3DVertex2TCoords*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
 				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
@@ -600,7 +599,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		case EVT_TANGENTS:
 		{
 			S3DVertexTangents* pb = reinterpret_cast<S3DVertexTangents*>(buffer.pointer());
-			const S3DVertexTangents* po = reinterpret_cast<const S3DVertexTangents*>(vertices);
+			const S3DVertexTangents* po = static_cast<const S3DVertexTangents*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
 				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
@@ -629,6 +628,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID );
 
 	//copy data to graphics card
+	glGetError(); // clear error storage
 	if (!newBuffer)
 		extGlBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount * vertexSize, buffer.const_pointer());
 	else
@@ -645,8 +645,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	return true;
-
+	return (glGetError() == GL_NO_ERROR);
 #else
 	return false;
 #endif
@@ -662,7 +661,6 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 		return false;
 
 #if defined(GL_ARB_vertex_buffer_object)
-
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
 	const u16* indices=mb->getIndices();
@@ -685,6 +683,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
 
 	//copy data to graphics card
+	glGetError(); // clear error storage
 	if (!newBuffer)
 		extGlBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indexCount * indexSize, indices);
 	else
@@ -701,7 +700,7 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	return true;
+	return (glGetError() == GL_NO_ERROR);
 #else
 	return false;
 #endif
@@ -742,7 +741,6 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::IMeshBuffer* mb)
 {
 #if defined(GL_ARB_vertex_buffer_object)
-
 	if (!mb || (mb->getHardwareMappingHint()==scene::EHM_NEVER))
 		return 0;
 
@@ -854,7 +852,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		{
 			case EVT_STANDARD:
 			{
-				const S3DVertex* p = reinterpret_cast<const S3DVertex*>(vertices);
+				const S3DVertex* p = static_cast<const S3DVertex*>(vertices);
 				for ( i=0; i<vertexCount; i+=4)
 				{
 					p->Color.toOpenGLColor(&ColorBuffer[i]);
@@ -864,7 +862,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			break;
 			case EVT_2TCOORDS:
 			{
-				const S3DVertex2TCoords* p = reinterpret_cast<const S3DVertex2TCoords*>(vertices);
+				const S3DVertex2TCoords* p = static_cast<const S3DVertex2TCoords*>(vertices);
 				for ( i=0; i<vertexCount; i+=4)
 				{
 					p->Color.toOpenGLColor(&ColorBuffer[i]);
@@ -874,7 +872,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			break;
 			case EVT_TANGENTS:
 			{
-				const S3DVertexTangents* p = reinterpret_cast<const S3DVertexTangents*>(vertices);
+				const S3DVertexTangents* p = static_cast<const S3DVertexTangents*>(vertices);
 				for ( i=0; i<vertexCount; i+=4)
 				{
 					p->Color.toOpenGLColor(&ColorBuffer[i]);
@@ -906,9 +904,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		case EVT_STANDARD:
 			if (vertices)
 			{
-				glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Normal);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
-				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].Pos);
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Normal);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
 			}
 			else
 			{
@@ -923,7 +921,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
-					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(reinterpret_cast<const S3DVertex*>(vertices))[0].TCoords);
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
 				else
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), buffer_offset(28));
 			}
@@ -931,9 +929,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		case EVT_2TCOORDS:
 			if (vertices)
 			{
-				glNormalPointer(GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
-				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Normal);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
 			}
 			else
 			{
@@ -949,7 +947,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
-					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(reinterpret_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
 				else
 					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(36));
 			}
@@ -957,9 +955,9 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		case EVT_TANGENTS:
 			if (vertices)
 			{
-				glNormalPointer(GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Normal);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
-				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Pos);
+				glNormalPointer(GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Normal);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
+				glVertexPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Pos);
 			}
 			else
 			{
@@ -974,14 +972,14 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 				extGlClientActiveTexture(GL_TEXTURE1_ARB);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				if (vertices)
-					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Tangent);
 				else
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(36));
 
 				extGlClientActiveTexture(GL_TEXTURE2_ARB);
 				glEnableClientState ( GL_TEXTURE_COORD_ARRAY );
 				if (vertices)
-					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(reinterpret_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
+					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Binormal);
 				else
 					glTexCoordPointer(3, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(48));
 			}
@@ -1274,7 +1272,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 }
 
 
-
 //! draws a set of 2d images, using a color and the alpha channel of the
 //! texture if desired. The images are drawn beginning at pos and concatenated
 //! in one line. All drawings are clipped against clipRect (if != 0).
@@ -1350,7 +1347,6 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 }
 
 
-
 //! draw a 2d rectangle
 void COpenGLDriver::draw2DRectangle(SColor color, const core::rect<s32>& position,
 		const core::rect<s32>* clip)
@@ -1370,7 +1366,6 @@ void COpenGLDriver::draw2DRectangle(SColor color, const core::rect<s32>& positio
 	glRectf(GLfloat(pos.UpperLeftCorner.X), GLfloat(pos.UpperLeftCorner.Y),
 		GLfloat(pos.LowerRightCorner.X), GLfloat(pos.LowerRightCorner.Y));
 }
-
 
 
 //! draw an 2d rectangle
@@ -1412,7 +1407,6 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 
 	glEnd();
 }
-
 
 
 //! Draws a 2d line.
@@ -1467,7 +1461,6 @@ bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
 }
 
 
-
 //! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
 //! Returns whether disabling was successful or not.
 bool COpenGLDriver::disableTextures(u32 fromStage)
@@ -1477,7 +1470,6 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 		result &= setTexture(i, 0);
 	return result;
 }
-
 
 
 //! creates a matrix in supplied GLfloat array to pass to OpenGL
@@ -1907,7 +1899,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glTranslatef (0.375, 0.375, 0.0);
+		glTranslatef(0.375, 0.375, 0.0);
 
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
@@ -2488,7 +2480,7 @@ ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>&
 		if (rtt)
 		{
 			rtt->grab();
-			static_cast<video::COpenGLTexture*>(rtt)->setRenderTarget(true);
+			static_cast<video::COpenGLTexture*>(rtt)->setIsRenderTarget(true);
 		}
 	}
 
@@ -2608,7 +2600,7 @@ IImage* COpenGLDriver::createScreenShot()
 {
 	IImage* newImage = new CImage(ECF_R8G8B8, ScreenSize);
 
-	u8* pPixels = reinterpret_cast<u8*>(newImage->lock());
+	u8* pPixels = static_cast<u8*>(newImage->lock());
 	if (!pPixels)
 	{
 		newImage->drop();

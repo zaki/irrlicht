@@ -406,7 +406,7 @@ const core::dimension2d<s32>& COpenGLTexture::getOriginalSize() const
 }
 
 
-//! Returns of the texture.
+//! Returns size of the texture.
 const core::dimension2d<s32>& COpenGLTexture::getSize() const
 {
 	if (Image)
@@ -501,7 +501,7 @@ bool COpenGLTexture::isRenderTarget() const
 }
 
 
-void COpenGLTexture::setRenderTarget(bool isTarget)
+void COpenGLTexture::setIsRenderTarget(bool isTarget)
 {
     IsRenderTarget = isTarget;
 }

@@ -393,6 +393,8 @@ namespace video
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
 			HGLRC HRc; // Permanent Rendering Context
+		#elif defined(_IRR_USE_LINUX_DEVICE_)
+			GLXDrawable Drawable;
 		#elif defined(_IRR_USE_OSX_DEVICE_)
 			CIrrDeviceMacOSX *_device;
 		#endif
