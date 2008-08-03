@@ -99,7 +99,7 @@ public:
 	void unbindFrameBufferObject();
 
 	//! sets whether this texture is intended to be used as a render target.
-	void setRenderTarget(bool isTarget);
+	void setIsRenderTarget(bool isTarget);
 
 private:
 

@@ -91,7 +91,7 @@ public:
 		Driver->setTexture(0, material.getTexture(0));
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
-		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
+		if (resetAllRenderstates || (material.MaterialType != lastMaterial.MaterialType))
 		{
 			// thanks to Murphy, the following line removed some
 			// bugs with several OpenGL implementations.
