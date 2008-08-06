@@ -70,8 +70,9 @@ bool CCameraSceneNode::isInputReceiverEnabled() const
 //! Sets the projection matrix of the camera. The core::matrix4 class has some methods
 //! to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH
 //! \param projection: The new projection matrix of the camera. 
-void CCameraSceneNode::setProjectionMatrix(const core::matrix4& projection)
+void CCameraSceneNode::setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal)
 {
+	IsOrthogonal = isOrthogonal;
 	ViewArea.Matrices [ video::ETS_PROJECTION ] = projection;
 	ViewArea.setTransformState ( video::ETS_PROJECTION );
 }

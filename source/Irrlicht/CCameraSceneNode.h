@@ -25,10 +25,15 @@ namespace scene
 		//! destructor
 		virtual ~CCameraSceneNode();
 
-		//! Sets the projection matrix of the camera. The core::matrix4 class has some methods
-		//! to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH
-		//! \param projection: The new projection matrix of the camera. 
-		virtual void setProjectionMatrix(const core::matrix4& projection);
+		//! Sets the projection matrix of the camera.
+		/** The core::matrix4 class has some methods
+		to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH.
+		Note that the matrix will only stay as set by this method until one of
+		the following Methods are called: setNearValue, setFarValue, setAspectRatio, setFOV.
+		\param projection The new projection matrix of the camera.
+		\param isOrthogonal Set this to true if the matrix is an orthogonal one (e.g.
+		from matrix4::buildProjectionMatrixOrthoLH(). */
+		virtual void setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal = false);
 
 		//! Gets the current projection matrix of the camera
 		//! \return Returns the current projection matrix of the camera.
