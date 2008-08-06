@@ -268,9 +268,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			(wParam & 0xFFF0) == SC_MONITORPOWER)
 			return 0;
 		break;
-	}
 
-	return DefWindowProc(hWnd, message, wParam, lParam);
+	case WM_USER:
+		event.EventType = irr::EET_USER_EVENT;
+		event.UserEvent.UserData1 = (irr::s32)wParam;
+		event.UserEvent.UserData2 = (irr::s32)lParam;
+		dev = getDeviceFromHWnd(hWnd);
+
+		if (dev)
+			dev->postEventFromUser(event);
+
+		return 0;
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+		break;
+	}
 }
 
 namespace irr
