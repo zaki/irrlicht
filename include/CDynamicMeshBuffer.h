@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,35 +15,30 @@ namespace irr
 namespace scene
 {
 
-
 	class CDynamicMeshBuffer: public IDynamicMeshBuffer
 	{
-
-		IVertexBuffer *VertexBuffer;
-		IIndexBuffer *IndexBuffer;
-
-
-		public:
-
-
+	public:
+		//! constructor
 		CDynamicMeshBuffer(video::E_VERTEX_TYPE vertexType, video::E_INDEX_TYPE indexType)
 		{
 			VertexBuffer=new CVertexBuffer(vertexType);
 			IndexBuffer=new CIndexBuffer(indexType);
-
 		}
 
+		//! destructor
 		~CDynamicMeshBuffer()
 		{
-			if (VertexBuffer) VertexBuffer->drop();
-			if (IndexBuffer) IndexBuffer->drop();
+			if (VertexBuffer)
+				VertexBuffer->drop();
+			if (IndexBuffer)
+				IndexBuffer->drop();
 		}
-
 
 		virtual IVertexBuffer &getVertexBuffer() const
 		{
 			return *VertexBuffer;
 		}
+
 		virtual IIndexBuffer &getIndexBuffer() const
 		{
 			return *IndexBuffer;
@@ -51,20 +46,23 @@ namespace scene
 
 		virtual void setVertexBuffer(IVertexBuffer *newVertexBuffer)
 		{
-			if (newVertexBuffer) newVertexBuffer->grab();
-			if (VertexBuffer) VertexBuffer->drop();
+			if (newVertexBuffer)
+				newVertexBuffer->grab();
+			if (VertexBuffer)
+				VertexBuffer->drop();
 
 			VertexBuffer=newVertexBuffer;
 		}
 
 		virtual void setIndexBuffer(IIndexBuffer *newIndexBuffer)
 		{
-			if (newIndexBuffer) newIndexBuffer->grab();
-			if (IndexBuffer) IndexBuffer->drop();
+			if (newIndexBuffer)
+				newIndexBuffer->grab();
+			if (IndexBuffer)
+				IndexBuffer->drop();
 
 			IndexBuffer=newIndexBuffer;
 		}
-
 
 		//! Get Material of this buffer.
 		virtual const video::SMaterial& getMaterial() const
@@ -93,7 +91,6 @@ namespace scene
 		//! Recalculate bounding box
 		virtual void recalculateBoundingBox()
 		{
-
 			if (!getVertexBuffer().size())
 				BoundingBox.reset(0,0,0);
 			else
@@ -102,15 +99,14 @@ namespace scene
 				for (u32 i=1; i<getVertexBuffer().size(); ++i)
 					BoundingBox.addInternalPoint(getVertexBuffer()[i].Pos);
 			}
-
-
 		}
 
 		video::SMaterial Material;
 		core::aabbox3d<f32> BoundingBox;
-
+	private:
+		IVertexBuffer *VertexBuffer;
+		IIndexBuffer *IndexBuffer;
 	};
-
 
 
 } // end namespace scene

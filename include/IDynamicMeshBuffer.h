@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,8 +6,6 @@
 #define __I_DYNAMIC_MESH_BUFFER_H_INCLUDED__
 
 #include "IMeshBuffer.h"
-
-
 #include "IVertexBuffer.h"
 #include "IIndexBuffer.h"
 
@@ -20,37 +18,31 @@ namespace scene
 	class IDynamicMeshBuffer : public IMeshBuffer
 	{
 	public:
-
-
 		virtual IVertexBuffer &getVertexBuffer() const =0;
 		virtual IIndexBuffer &getIndexBuffer() const =0;
 
 		virtual void setVertexBuffer(IVertexBuffer *vertexBuffer) =0;
 		virtual void setIndexBuffer(IIndexBuffer *indexBuffer) =0;
 
+		//! Get the material of this meshbuffer
+		/** \return Material of this buffer. */
+		virtual video::SMaterial& getMaterial() =0;
 
 		//! Get the material of this meshbuffer
 		/** \return Material of this buffer. */
-		virtual video::SMaterial& getMaterial() = 0;
-
-		//! Get the material of this meshbuffer
-		/** \return Material of this buffer. */
-		virtual const video::SMaterial& getMaterial() const = 0;
-
+		virtual const video::SMaterial& getMaterial() const =0;
 
 		//! Get the axis aligned bounding box of this meshbuffer.
 		/** \return Axis aligned bounding box of this buffer. */
-		virtual const core::aabbox3df& getBoundingBox() const = 0;
+		virtual const core::aabbox3df& getBoundingBox() const =0;
 
 		//! Set axis aligned bounding box
 		/** \param box User defined axis aligned bounding box to use
 		for this buffer. */
-		virtual void setBoundingBox(const core::aabbox3df& box) = 0;
+		virtual void setBoundingBox(const core::aabbox3df& box) =0;
 
 		//! Recalculates the bounding box. Should be called if the mesh changed.
-		virtual void recalculateBoundingBox() = 0;
-
-
+		virtual void recalculateBoundingBox() =0;
 
 		//! Append the vertices and indices to the current buffer
 		/** Only works for compatible vertex types.
@@ -71,9 +63,7 @@ namespace scene
 
 		}
 
-
 		// ------------------- To be removed? -------------------  //
-
 
 		//! get the current hardware mapping hint
 		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
@@ -114,8 +104,6 @@ namespace scene
 		{
 			return getIndexBuffer().getChangedID();
 		}
-
-
 
 		// ------------------- Old interface -------------------  //
 
@@ -188,18 +176,19 @@ namespace scene
 		{
 			return getVertexBuffer()[i].Pos;
 		}
+
 		//! returns normal of vertex i
 		virtual const core::vector3df& getNormal(u32 i) const
 		{
 			return getVertexBuffer()[i].Normal;
 		}
+
 		//! returns normal of vertex i
 		virtual core::vector3df& getNormal(u32 i)
 		{
 			return getVertexBuffer()[i].Normal;
 		}
 	};
-
 
 
 } // end namespace scene

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -7,32 +7,29 @@
 
 #include "IVertexBuffer.h"
 
-
 namespace irr
 {
 namespace scene
 {
 
-
 	class CVertexBuffer : public IVertexBuffer
 	{
-
-
 
 		class IVertexList
 		{
 		public:
 			virtual u32 stride() const =0;
 
-			virtual u32 size() const=0;
+			virtual u32 size() const =0;
+
 			virtual void push_back (const video::S3DVertex &element) =0;
-			virtual video::S3DVertex& operator [](const u32 index) const=0;
+			virtual video::S3DVertex& operator [](const u32 index) const =0;
 			virtual video::S3DVertex& getLast() =0;
 			virtual void set_used(u32 usedNow) =0;
-			virtual void reallocate(u32 new_size)=0;
+			virtual void reallocate(u32 new_size) =0;
 			virtual u32 allocated_size() const =0;
 			virtual video::S3DVertex* pointer() =0;
-			virtual video::E_VERTEX_TYPE getType()=0;
+			virtual video::E_VERTEX_TYPE getType() =0;
 		};
 
 		template <class T>
@@ -43,8 +40,7 @@ namespace scene
 
 			virtual u32 stride() const {return sizeof(T);}
 
-			virtual u32 size() const
-			{return Vertices.size();}
+			virtual u32 size() const {return Vertices.size();}
 
 			virtual void push_back (const video::S3DVertex &element)
 			{Vertices.push_back((T&)element);}
@@ -81,16 +77,13 @@ namespace scene
 
 		~CVertexBuffer()
 		{
-			if (Vertices)
-				delete Vertices;
+			delete Vertices;
 		}
-
 
 		//virtual void setType(video::E_VERTEX_TYPE vertexType);
 
 		virtual void setType(video::E_VERTEX_TYPE vertexType)
 		{
-
 			IVertexList *NewVertices=0;
 
 			switch (vertexType)
@@ -122,12 +115,10 @@ namespace scene
 			}
 
 			Vertices=NewVertices;
-
 		}
 
-
-
 		virtual void* getData() {return Vertices->pointer();}
+
 		virtual video::E_VERTEX_TYPE getType(){return Vertices->getType();}
 
 		virtual u32 stride() const {return Vertices->stride();}
@@ -196,9 +187,7 @@ namespace scene
 
 		E_HARDWARE_MAPPING MappingHint;
 		u32 ChangedID;
-
 	};
-
 
 
 } // end namespace scene

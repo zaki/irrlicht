@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -19,7 +19,6 @@ enum E_INDEX_TYPE
 };
 
 
-
 /*
 //! vertex index used by the Irrlicht engine.
 template <class T>
@@ -27,13 +26,11 @@ struct SSpecificVertexIndex
 {
 	T Index;
 
-
 	//! default constructor
 	SSpecificVertexIndex() {}
 
 	//! constructor
 	SSpecificVertexIndex(u32 _index) :Index(_index) {}
-
 
 	bool operator==(const SSpecificVertexIndex& other) const
 	{
@@ -50,8 +47,6 @@ struct SSpecificVertexIndex
 		return (Index < other.Index);
 	}
 
-
-
 	SSpecificVertexIndex operator+(const u32& other) const
 	{
 		return SSpecificVertexIndex(Index + other);
@@ -64,14 +59,14 @@ struct SSpecificVertexIndex
 
 	E_INDEX_TYPE getType() const
 	{
-		if (sizeof(T)==sizeof(u16)) return video::EIT_16BIT;
+		if (sizeof(T)==sizeof(u16))
+			return video::EIT_16BIT;
 		return video::EIT_32BIT;
 	}
 
 };
 
 //typedef SSpecificVertexIndex<u16> SVertexIndex;
-
 
 typedef u32 SVertexIndex;
 */
