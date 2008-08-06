@@ -72,7 +72,7 @@ namespace scene
 		virtual video::SColor getTailColour () const { return TailColour; }
 
 	private:
-		void addToBuffer(video::S3DVertex v);
+		void addToBuffer(const video::S3DVertex& v);
 		void constructLight();
 
 		SMeshBuffer* Buffer;
