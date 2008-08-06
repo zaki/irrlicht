@@ -84,12 +84,9 @@ namespace scene
 		//! calculates the bounding box
 		virtual void calculateBoundingBox();
 
+		SMeshBuffer* InterpolationBuffer;
 		core::array<video::S3DVertex> *FrameList;
 		core::array<core::aabbox3d<f32> > BoxList;
-		u32 FrameCount;
-		s32 TriangleCount;
-
-		SMeshBuffer InterpolationBuffer;
 
 		struct SFrameData
 		{
@@ -100,6 +97,9 @@ namespace scene
 		};
 
 		core::array< SFrameData > FrameData;
+
+		u32 FrameCount;
+		s32 TriangleCount;
 	};
 
 } // end namespace scene

@@ -31,22 +31,33 @@ CVolumeLightSceneNode::CVolumeLightSceneNode(ISceneNode* parent, ISceneManager* 
 	setDebugName("CVolumeLightSceneNode");
 	#endif
 
-	Buffer.setHardwareMappingHint(EHM_STATIC);
-	constructLight();
+	Buffer = new SMeshBuffer();
+	if (Buffer)
+	{
+		Buffer->setHardwareMappingHint(EHM_STATIC);
+		constructLight();
+	}
+}
+
+
+CVolumeLightSceneNode::~CVolumeLightSceneNode()
+{
+	if (Buffer)
+		Buffer->drop();
 }
 
 
 void CVolumeLightSceneNode::addToBuffer(video::S3DVertex v)
 {
-	const s32 tnidx = Buffer.Vertices.linear_reverse_search(v);
+	const s32 tnidx = Buffer->Vertices.linear_reverse_search(v);
 	const bool alreadyIn = (tnidx != -1);
 	u16 nidx = (u16)tnidx;
 	if (!alreadyIn) {
-		nidx = Buffer.Vertices.size();
-		Buffer.Indices.push_back(nidx);
-		Buffer.Vertices.push_back(v);
+		nidx = Buffer->Vertices.size();
+		Buffer->Indices.push_back(nidx);
+		Buffer->Vertices.push_back(v);
 	} else
-		Buffer.Indices.push_back(nidx);
+		Buffer->Indices.push_back(nidx);
 }
 
 
@@ -56,10 +67,10 @@ void CVolumeLightSceneNode::constructLight()
 	const f32 ax = LightDimensions.X * 0.5f; // X Axis
 	const f32 az = LightDimensions.Z * 0.5f; // Z Axis
 
-	Buffer.Vertices.clear();
-	Buffer.Vertices.reallocate(6+12*(SubdivideU+SubdivideV));
-	Buffer.Indices.clear();
-	Buffer.Indices.reallocate(6+12*(SubdivideU+SubdivideV));
+	Buffer->Vertices.clear();
+	Buffer->Vertices.reallocate(6+12*(SubdivideU+SubdivideV));
+	Buffer->Indices.clear();
+	Buffer->Indices.reallocate(6+12*(SubdivideU+SubdivideV));
 	//draw the bottom foot.. the glowing region
 	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, FootColour, 0, 1));
 	addToBuffer(video::S3DVertex(ax , 0, az,  0,0,0, FootColour, 1, 1));
@@ -161,33 +172,36 @@ void CVolumeLightSceneNode::constructLight()
 		bz += bzStep;
 	}
 
-	Buffer.recalculateBoundingBox();
+	Buffer->recalculateBoundingBox();
 
-	Buffer.Material.MaterialType = video::EMT_ONETEXTURE_BLEND;
-	Buffer.Material.MaterialTypeParam = pack_texureBlendFunc( video::EBF_SRC_COLOR, video::EBF_SRC_ALPHA, video::EMFN_MODULATE_1X );
+	Buffer->Material.MaterialType = video::EMT_ONETEXTURE_BLEND;
+	Buffer->Material.MaterialTypeParam = pack_texureBlendFunc( video::EBF_SRC_COLOR, video::EBF_SRC_ALPHA, video::EMFN_MODULATE_1X );
 
-	Buffer.Material.Lighting = false;
-	Buffer.Material.ZWriteEnable = false;
+	Buffer->Material.Lighting = false;
+	Buffer->Material.ZWriteEnable = false;
 
-	Buffer.setDirty(EBT_VERTEX_AND_INDEX);
+	Buffer->setDirty(EBT_VERTEX_AND_INDEX);
 }
 
 
 //! renders the node.
 void CVolumeLightSceneNode::render()
 {
+	if (!Buffer)
+		return;
+
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
-	driver->setMaterial(Buffer.Material);
-	driver->drawMeshBuffer(&Buffer);
+	driver->setMaterial(Buffer->Material);
+	driver->drawMeshBuffer(Buffer);
 }
 
 
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CVolumeLightSceneNode::getBoundingBox() const
 {
-	return Buffer.BoundingBox;
+	return Buffer->BoundingBox;
 }
 
 
@@ -208,7 +222,7 @@ void CVolumeLightSceneNode::OnRegisterSceneNode()
 //! to directly modify the material of a scene node.
 video::SMaterial& CVolumeLightSceneNode::getMaterial(u32 i)
 {
-	return Buffer.Material;
+	return Buffer->Material;
 }
 
 
@@ -298,7 +312,7 @@ ISceneNode* CVolumeLightSceneNode::clone(ISceneNode* newParent, ISceneManager* n
 		newManager, ID, SubdivideU, SubdivideV, FootColour, TailColour, RelativeTranslation);
 
 	nb->cloneMembers(this, newManager);
-	nb->Buffer.Material = Buffer.Material;
+	nb->Buffer->Material = Buffer->Material;
 
 	nb->drop();
 	return nb;

@@ -33,7 +33,7 @@ namespace scene
 			const core::vector3df& rotation,
 			const core::vector3df& scale)
 	: ITerrainSceneNode(parent, mgr, id, position, rotation, scale),
-	TerrainData(patchSize, maxLOD, position, rotation, scale),
+	TerrainData(patchSize, maxLOD, position, rotation, scale), RenderBuffer(0),
 	VerticesToRender(0), IndicesToRender(0), DynamicSelectorUpdate(false),
 	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(false),
 	OldCameraPosition(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
@@ -44,6 +44,8 @@ namespace scene
 		#ifdef _DEBUG
 		setDebugName("CTerrainSceneNode");
 		#endif
+
+		RenderBuffer = new SMeshBufferLightMap();
 
 		if (FileSystem)
 			FileSystem->grab();
@@ -61,6 +63,9 @@ namespace scene
 
 		if (FileSystem)
 			FileSystem->drop();
+
+		if (RenderBuffer)
+			RenderBuffer->drop();
 	}
 
 
@@ -161,13 +166,13 @@ namespace scene
 		const u32 vertexCount = mb->getVertexCount();
 
 		// We copy the data to the renderBuffer, after the normals have been calculated.
-		RenderBuffer.Vertices.set_used( vertexCount );
+		RenderBuffer->Vertices.set_used( vertexCount );
 
 		for( u32 i = 0; i < vertexCount; ++i )
 		{
-			RenderBuffer.Vertices[i] = mb->Vertices[i];
-			RenderBuffer.Vertices[i].Pos *= TerrainData.Scale;
-			RenderBuffer.Vertices[i].Pos += TerrainData.Position;
+			RenderBuffer->Vertices[i] = mb->Vertices[i];
+			RenderBuffer->Vertices[i].Pos *= TerrainData.Scale;
+			RenderBuffer->Vertices[i].Pos += TerrainData.Position;
 		}
 
 		// We no longer need the mb
@@ -187,10 +192,10 @@ namespace scene
 		setRotation( TerrainData.Rotation );
 
 		// Pre-allocate memory for indices
-		RenderBuffer.Indices.set_used( TerrainData.PatchCount * TerrainData.PatchCount *
+		RenderBuffer->Indices.set_used( TerrainData.PatchCount * TerrainData.PatchCount *
 			TerrainData.CalcPatchSize * TerrainData.CalcPatchSize * 6 );
 
-		RenderBuffer.setDirty();
+		RenderBuffer->setDirty();
 
 		const u32 endTime = os::Timer::getRealTime();
 
@@ -297,13 +302,13 @@ namespace scene
 		const u32 vertexCount = mb->getVertexCount();
 
 		// We copy the data to the renderBuffer, after the normals have been calculated.
-		RenderBuffer.Vertices.set_used( vertexCount );
+		RenderBuffer->Vertices.set_used( vertexCount );
 
 		for( u32 i = 0; i < vertexCount; i++ )
 		{
-			RenderBuffer.Vertices[i] = mb->Vertices[i];
-			RenderBuffer.Vertices[i].Pos *= TerrainData.Scale;
-			RenderBuffer.Vertices[i].Pos += TerrainData.Position;
+			RenderBuffer->Vertices[i] = mb->Vertices[i];
+			RenderBuffer->Vertices[i].Pos *= TerrainData.Scale;
+			RenderBuffer->Vertices[i].Pos += TerrainData.Position;
 		}
 
 		// We no longer need the mb
@@ -323,7 +328,7 @@ namespace scene
 		setRotation( TerrainData.Rotation );
 
 		// Pre-allocate memory for indices
-		RenderBuffer.Indices.set_used( TerrainData.PatchCount * TerrainData.PatchCount *
+		RenderBuffer->Indices.set_used( TerrainData.PatchCount * TerrainData.PatchCount *
 			TerrainData.CalcPatchSize * TerrainData.CalcPatchSize * 6 );
 
 		u32 endTime = os::Timer::getTime();
@@ -388,17 +393,17 @@ namespace scene
 
 		for( s32 i = 0; i < vtxCount; ++i )
 		{
-			RenderBuffer.Vertices[i].Pos = meshVertices[i].Pos * TerrainData.Scale + TerrainData.Position;
+			RenderBuffer->Vertices[i].Pos = meshVertices[i].Pos * TerrainData.Scale + TerrainData.Position;
 
-			RenderBuffer.Vertices[i].Pos -= TerrainData.RotationPivot;
-			rotMatrix.inverseRotateVect( RenderBuffer.Vertices[i].Pos );
-			RenderBuffer.Vertices[i].Pos += TerrainData.RotationPivot;
+			RenderBuffer->Vertices[i].Pos -= TerrainData.RotationPivot;
+			rotMatrix.inverseRotateVect( RenderBuffer->Vertices[i].Pos );
+			RenderBuffer->Vertices[i].Pos += TerrainData.RotationPivot;
 		}
 
 		calculateDistanceThresholds( true );
 		calculatePatchData();
 
-		RenderBuffer.setDirty(EBT_VERTEX);
+		RenderBuffer->setDirty(EBT_VERTEX);
 
 	}
 
@@ -448,7 +453,8 @@ namespace scene
 
 		// Determine each patches LOD based on distance from camera ( and whether or not they are in
 		// the view frustum ).
-		for( s32 j = 0; j < TerrainData.PatchCount * TerrainData.PatchCount; ++j )
+		const s32 count = TerrainData.PatchCount * TerrainData.PatchCount;
+		for( s32 j = 0; j < count; ++j )
 		{
 			if( frustum->getBoundingBox().intersectsWithBox( TerrainData.Patches[j].BoundingBox ) )
 			{
@@ -508,12 +514,12 @@ namespace scene
 						index12 = getIndex( j, i, index, x, z + step );
 						index22 = getIndex( j, i, index, x + step, z + step );
 
-						RenderBuffer.Indices[IndicesToRender++] = index12;
-						RenderBuffer.Indices[IndicesToRender++] = index11;
-						RenderBuffer.Indices[IndicesToRender++] = index22;
-						RenderBuffer.Indices[IndicesToRender++] = index22;
-						RenderBuffer.Indices[IndicesToRender++] = index11;
-						RenderBuffer.Indices[IndicesToRender++] = index21;
+						RenderBuffer->Indices[IndicesToRender++] = index12;
+						RenderBuffer->Indices[IndicesToRender++] = index11;
+						RenderBuffer->Indices[IndicesToRender++] = index22;
+						RenderBuffer->Indices[IndicesToRender++] = index22;
+						RenderBuffer->Indices[IndicesToRender++] = index11;
+						RenderBuffer->Indices[IndicesToRender++] = index21;
 
 						// increment index position horizontally
 						x += step;
@@ -528,7 +534,7 @@ namespace scene
 			}
 		}
 
-		RenderBuffer.setDirty(EBT_INDEX);
+		RenderBuffer->setDirty(EBT_INDEX);
 
 		if ( DynamicSelectorUpdate && TriangleSelector )
 		{
@@ -554,12 +560,12 @@ namespace scene
 
 		driver->setMaterial(Mesh.getMeshBuffer(0)->getMaterial());
 
-		RenderBuffer.Indices.set_used(IndicesToRender);
+		RenderBuffer->Indices.set_used(IndicesToRender);
 
 		// For use with geomorphing
-		driver->drawMeshBuffer(&RenderBuffer);
+		driver->drawMeshBuffer(RenderBuffer);
 
-		RenderBuffer.Indices.set_used( RenderBuffer.Indices.allocated_size() );
+		RenderBuffer->Indices.set_used( RenderBuffer->Indices.allocated_size() );
 
 		// for debug purposes only:
 		if (DebugDataVisible)
@@ -759,7 +765,8 @@ namespace scene
 		s32 numLODs;
 		LODs.clear ( );
 
-		for ( numLODs = 0; numLODs < TerrainData.PatchCount * TerrainData.PatchCount; numLODs++ )
+		const s32 count = TerrainData.PatchCount * TerrainData.PatchCount;
+		for ( numLODs = 0; numLODs < count; numLODs++ )
 			LODs.push_back ( TerrainData.Patches[numLODs].CurrentLOD );
 
 		return LODs.size();
@@ -808,17 +815,17 @@ namespace scene
 			zval=z2val=0;
 			for (s32 z=0; z<TerrainData.Size; ++z)
 			{
-				RenderBuffer.Vertices[index].TCoords.X = xval;
-				RenderBuffer.Vertices[index].TCoords.Y = zval;
+				RenderBuffer->Vertices[index].TCoords.X = xval;
+				RenderBuffer->Vertices[index].TCoords.Y = zval;
 
 				if ( resolution2 == 0 )
 				{
-					RenderBuffer.Vertices[index].TCoords2 = RenderBuffer.Vertices[index].TCoords;
+					RenderBuffer->Vertices[index].TCoords2 = RenderBuffer->Vertices[index].TCoords;
 				}
 				else
 				{
-					RenderBuffer.Vertices[index].TCoords2.X = x2val;
-					RenderBuffer.Vertices[index].TCoords2.Y = z2val;
+					RenderBuffer->Vertices[index].TCoords2.X = x2val;
+					RenderBuffer->Vertices[index].TCoords2.Y = z2val;
 				}
 				++index;
 				zval += resBySize;
@@ -828,7 +835,7 @@ namespace scene
 			x2val += res2BySize;
 		}
 
-		RenderBuffer.setDirty(EBT_VERTEX);
+		RenderBuffer->setDirty(EBT_VERTEX);
 	}
 
 	//! used to get the indices when generating index data for patches at varying levels of detail.
@@ -1061,7 +1068,7 @@ namespace scene
 
 				for( s32 xx = x*(TerrainData.CalcPatchSize); xx <= ( x + 1 ) * TerrainData.CalcPatchSize; ++xx )
 					for( s32 zz = z*(TerrainData.CalcPatchSize); zz <= ( z + 1 ) * TerrainData.CalcPatchSize; ++zz )
-						TerrainData.Patches[index].BoundingBox.addInternalPoint( RenderBuffer.Vertices[xx * TerrainData.Size + zz].Pos );
+						TerrainData.Patches[index].BoundingBox.addInternalPoint( RenderBuffer->Vertices[xx * TerrainData.Size + zz].Pos );
 
 				// Reconfigure the bounding box of the terrain as a whole
 				TerrainData.BoundingBox.addInternalBox( TerrainData.Patches[index].BoundingBox );
@@ -1133,13 +1140,15 @@ namespace scene
 
 	void CTerrainSceneNode::setCurrentLODOfPatches(s32 lod)
 	{
-		for (s32 i=0; i< TerrainData.PatchCount * TerrainData.PatchCount; ++i)
+		const s32 count = TerrainData.PatchCount * TerrainData.PatchCount;
+		for (s32 i=0; i< count; ++i)
 			TerrainData.Patches[i].CurrentLOD = lod;
 	}
 
 	void CTerrainSceneNode::setCurrentLODOfPatches(const core::array<s32>& lodarray)
 	{
-		for (s32 i=0; i<TerrainData.PatchCount * TerrainData.PatchCount; ++i)
+		const s32 count = TerrainData.PatchCount * TerrainData.PatchCount;
+		for (s32 i=0; i<count; ++i)
 			TerrainData.Patches[i].CurrentLOD = lodarray[i];
 	}
 
@@ -1283,7 +1292,7 @@ namespace scene
 			}
 		}
 
-		nb->RenderBuffer.Material = RenderBuffer.Material;
+		nb->RenderBuffer->Material = RenderBuffer->Material;
 
 		// finish
 

@@ -188,7 +188,7 @@ private:
 	u32 LastEmitTime;
 	s32 MaxParticles;
 
-	SMeshBuffer Buffer;
+	SMeshBuffer* Buffer;
 
 	enum E_PARTICLES_PRIMITIVE
 	{
