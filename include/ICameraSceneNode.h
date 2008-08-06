@@ -39,8 +39,10 @@ namespace scene
 		to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH.
 		Note that the matrix will only stay as set by this method until one of
 		the following Methods are called: setNearValue, setFarValue, setAspectRatio, setFOV.
-		\param projection: The new projection matrix of the camera. */
-		virtual void setProjectionMatrix(const core::matrix4& projection) = 0;
+		\param projection The new projection matrix of the camera.
+		\param isOrthogonal Set this to true if the matrix is an
+		orthogonal one (e.g. from matrix4::buildProjectionMatrixOrtho... */
+		virtual void setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal = false) = 0;
 
 		//! Gets the current projection matrix of the camera.
 		/** \return Returns the current projection matrix of the camera. */
@@ -126,18 +128,7 @@ namespace scene
 			return IsOrthogonal;
 		}
 
-		//! Sets if this camera should return that it is orthogonal.
-		/** This setting does not change anything of the view or
-			projection matrix. However, the kind of camera
-			influences how collision detection and picking is done
-			and thus can be useful to query.
-		*/
-		void setIsOrthogonal( bool orthogonal )
-		{
-			IsOrthogonal = orthogonal;
-		}
-
-	private:
+	protected:
 
 		bool IsOrthogonal;
 	};
