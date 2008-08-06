@@ -25,7 +25,8 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 			scene::ISceneNode* parent, scene::ISceneManager* mgr,s32 id,
 			io::IFileSystem *fileSystem, scene::IMeshBuffer *buffer,
 			const quake3::SShader * shader)
-	: scene::ISceneNode(parent, mgr, id), Shader ( shader ),TimeAbs ( 0.f )
+	: scene::ISceneNode(parent, mgr, id), MeshBuffer(0), Original(0),
+	Shader(shader), TimeAbs(0.f)
 {
 	#ifdef _DEBUG
 		core::stringc dName = "CQuake3ShaderSceneNode ";
@@ -34,11 +35,14 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 		setDebugName( dName.c_str() );
 	#endif
 
+	MeshBuffer = new SMeshBuffer();
+	Original = new SMeshBufferLightMap();
+
 	// name the Scene Node
 	this->Name = Shader->name;
 
 	// clone meshbuffer to modifiable buffer
-	cloneBuffer ( static_cast< scene::SMeshBufferLightMap *> ( buffer ) );
+	cloneBuffer( static_cast< scene::SMeshBufferLightMap *> ( buffer ) );
 
 	// load all Textures in all stages
 	loadTextures ( fileSystem );
@@ -47,58 +51,63 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 }
 
 
+CQuake3ShaderSceneNode::~CQuake3ShaderSceneNode()
+{
+	if (MeshBuffer)
+		MeshBuffer->drop();
+	if (Original)
+		Original->drop();
+}
+
+
 /*
 	create single copies
 */
 void CQuake3ShaderSceneNode::cloneBuffer ( scene::SMeshBufferLightMap * buffer )
 {
-	Original.Material = buffer->Material;
-	MeshBuffer.Material = buffer->Material;
+	Original->Material = buffer->Material;
+	MeshBuffer->Material = buffer->Material;
 
-	Original.Indices = buffer->Indices;
-	MeshBuffer.Indices = buffer->Indices;
+	Original->Indices = buffer->Indices;
+	MeshBuffer->Indices = buffer->Indices;
 
 	const u32 vsize = buffer->Vertices.size ();
 
-	Original.Vertices.reallocate( vsize );
-	MeshBuffer.Vertices.reallocate( vsize );
+	Original->Vertices.reallocate( vsize );
+	MeshBuffer->Vertices.reallocate( vsize );
 	for ( u32 i = 0; i!= vsize; ++i )
 	{
 		const video::S3DVertex2TCoords& src = buffer->Vertices[i];
 
 		// Original has same Vertex Format
-		Original.Vertices.push_back(src);
+		Original->Vertices.push_back(src);
 
 		// we have a different vertex format
-		MeshBuffer.Vertices.push_back(src);
-		MeshBuffer.Vertices.getLast().Color=0xFFFFFFFF;
+		MeshBuffer->Vertices.push_back(src);
+		MeshBuffer->Vertices.getLast().Color=0xFFFFFFFF;
 	}
 
-	MeshBuffer.recalculateBoundingBox ();
+	MeshBuffer->recalculateBoundingBox ();
 
 #if 1
 	// move the (temp) Mesh
 	{
-	// original bounding box
-		core::aabbox3df b = MeshBuffer.getBoundingBox();
+		// original bounding box
+		const core::aabbox3df& b = MeshBuffer->getBoundingBox();
 
 		// set Scene Node Position
-		setPosition ( b.getCenter() );
-
-		scene::SMesh * mesh = new SMesh ();
-		mesh->addMeshBuffer ( &Original );
-		mesh->addMeshBuffer ( &MeshBuffer );
+		setPosition( b.getCenter() );
 
 		core::matrix4 m;
-		m.setTranslation ( -b.getCenter() );
-		SceneManager->getMeshManipulator()->transformMesh ( mesh, m );
-		mesh->drop ();
+		m.setTranslation( -b.getCenter() );
+		SceneManager->getMeshManipulator()->transform( Original, m );
+		SceneManager->getMeshManipulator()->transform( MeshBuffer, m );
 
-		MeshBuffer.recalculateBoundingBox ();
+		MeshBuffer->recalculateBoundingBox ();
 	}
 #endif
 	// used for sorting
-	MeshBuffer.Material.setTexture(0, (video::ITexture*) Shader);
+	MeshBuffer->Material.setTexture(0, (video::ITexture*) Shader);
 }
 
 
@@ -132,7 +141,7 @@ void CQuake3ShaderSceneNode::loadTextures ( io::IFileSystem * fileSystem )
 		// our lightmap is passed in material.Texture[2]
 		if ( mapname == "$lightmap" )
 		{
-			Q3Texture [i].Texture.push_back ( Original.getMaterial().getTexture(1) );
+			Q3Texture [i].Texture.push_back( Original->getMaterial().getTexture(1) );
 		}
 		else
 		{
@@ -193,7 +202,7 @@ void CQuake3ShaderSceneNode::OnRegisterSceneNode()
 /*
 	is this a transparent node ?
 */
-bool CQuake3ShaderSceneNode::isTransparent ()
+bool CQuake3ShaderSceneNode::isTransparent () const
 {
 	bool ret = false;
 
@@ -299,7 +308,7 @@ void CQuake3ShaderSceneNode::render()
 		material.setTextureMatrix ( 0, texture );
 
 		driver->setMaterial( material );
-		driver->drawMeshBuffer( &MeshBuffer );
+		driver->drawMeshBuffer( MeshBuffer );
 		drawCount += 1;
 	}
 
@@ -322,11 +331,11 @@ void CQuake3ShaderSceneNode::vertextransform_wave ( f32 dt, quake3::SModifierFun
 
 	const f32 phase = function.phase;
 
-	const u32 vsize = MeshBuffer.Vertices.size();
+	const u32 vsize = MeshBuffer->Vertices.size();
 	for ( u32 i = 0; i != vsize; ++i )
 	{
-		const video::S3DVertex2TCoords &src = Original.Vertices[i];
-		video::S3DVertex &dst = MeshBuffer.Vertices[i];
+		const video::S3DVertex2TCoords &src = Original->Vertices[i];
+		video::S3DVertex &dst = MeshBuffer->Vertices[i];
 
 		f32 wavephase = (src.Pos.X + src.Pos.Y + src.Pos.Z) * function.wave;
 		function.phase = phase + wavephase;
@@ -349,13 +358,13 @@ void CQuake3ShaderSceneNode::vertextransform_bulge ( f32 dt, quake3::SModifierFu
 	dt *= function.bulgespeed * 0.1f;
 	const f32 phase = function.phase;
 
-	const u32 vsize = MeshBuffer.Vertices.size();
+	const u32 vsize = MeshBuffer->Vertices.size();
 	for ( u32 i = 0; i != vsize; ++i )
 	{
-		const video::S3DVertex2TCoords &src = Original.Vertices[i];
-		video::S3DVertex &dst = MeshBuffer.Vertices[i];
+		const video::S3DVertex2TCoords &src = Original->Vertices[i];
+		video::S3DVertex &dst = MeshBuffer->Vertices[i];
 
-		f32 wavephase = (Original.Vertices[i].TCoords.X ) * function.wave;
+		f32 wavephase = (Original->Vertices[i].TCoords.X ) * function.wave;
 		function.phase = phase + wavephase;
 
 		const f32 f = function.evaluate ( dt );
@@ -373,7 +382,7 @@ void CQuake3ShaderSceneNode::vertextransform_autosprite ( f32 dt, quake3::SModif
 	const core::matrix4 &m = SceneManager->getActiveCamera()->getViewFrustum()->Matrices [ video::ETS_VIEW ];
 	const core::vector3df view ( -m[2], -m[6] , -m[10] );
 
-	const u32 vsize = MeshBuffer.Vertices.size();
+	const u32 vsize = MeshBuffer->Vertices.size();
 
 	core::aabbox3df box;
 	u32 g;
@@ -381,10 +390,10 @@ void CQuake3ShaderSceneNode::vertextransform_autosprite ( f32 dt, quake3::SModif
 	for ( u32 i = 0; i < vsize; i += 4 )
 	{
 		// in pairs of 4
-		box.reset ( Original.Vertices[i].Pos );
+		box.reset ( Original->Vertices[i].Pos );
 		for ( g = 1; g != 4; ++g )
 		{
-			box.addInternalPoint ( Original.Vertices[i + g].Pos );
+			box.addInternalPoint ( Original->Vertices[i + g].Pos );
 		}
 
 		core::vector3df c = box.getCenter ();
@@ -394,15 +403,15 @@ void CQuake3ShaderSceneNode::vertextransform_autosprite ( f32 dt, quake3::SModif
 		const core::vector3df h ( m[0] * sh, m[4] * sh, m[8] * sh );
 		const core::vector3df v ( m[1] * sv, m[5] * sv, m[9] * sv );
 
-		MeshBuffer.Vertices[ i + 0 ].Pos = c + h + v;
-		MeshBuffer.Vertices[ i + 1 ].Pos = c - h - v;
-		MeshBuffer.Vertices[ i + 2 ].Pos = c + h - v;
-		MeshBuffer.Vertices[ i + 3 ].Pos = c - h + v;
+		MeshBuffer->Vertices[ i + 0 ].Pos = c + h + v;
+		MeshBuffer->Vertices[ i + 1 ].Pos = c - h - v;
+		MeshBuffer->Vertices[ i + 2 ].Pos = c + h - v;
+		MeshBuffer->Vertices[ i + 3 ].Pos = c - h + v;
 
-		MeshBuffer.Vertices[ i + 0 ].Normal = view;
-		MeshBuffer.Vertices[ i + 1 ].Normal = view;
-		MeshBuffer.Vertices[ i + 2 ].Normal = view;
-		MeshBuffer.Vertices[ i + 3 ].Normal = view;
+		MeshBuffer->Vertices[ i + 0 ].Normal = view;
+		MeshBuffer->Vertices[ i + 1 ].Normal = view;
+		MeshBuffer->Vertices[ i + 2 ].Normal = view;
+		MeshBuffer->Vertices[ i + 3 ].Normal = view;
 	}
 }
 
@@ -412,19 +421,19 @@ void CQuake3ShaderSceneNode::vertextransform_autosprite ( f32 dt, quake3::SModif
 void CQuake3ShaderSceneNode::vertextransform_rgbgen ( f32 dt, quake3::SModifierFunction &function )
 {
 	u32 i;
-	const u32 vsize = MeshBuffer.Vertices.size();
+	const u32 vsize = MeshBuffer->Vertices.size();
 
 	switch ( function.masterfunc1 )
 	{
 		case 6:
 			//identity
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer.Vertices[i].Color = 0xFFFFFFFF;
+				MeshBuffer->Vertices[i].Color = 0xFFFFFFFF;
 			break;
 		case 7:
 			// vertex
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer.Vertices[i].Color = Original.Vertices[i].Color;
+				MeshBuffer->Vertices[i].Color = Original->Vertices[i].Color;
 			break;
 		case 5:
 		{
@@ -435,7 +444,7 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen ( f32 dt, quake3::SModifierF
 			value |= value << 16;
 
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer.Vertices[i].Color = value;
+				MeshBuffer->Vertices[i].Color = value;
 		} break;
 	}
 }
@@ -448,7 +457,7 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen ( f32 dt, quake3::SModifierF
 void CQuake3ShaderSceneNode::vertextransform_tcgen ( f32 dt, quake3::SModifierFunction &function )
 {
 	u32 i;
-	const u32 vsize = MeshBuffer.Vertices.size();
+	const u32 vsize = MeshBuffer->Vertices.size();
 
 	switch ( function.tcgen )
 	{
@@ -461,8 +470,8 @@ void CQuake3ShaderSceneNode::vertextransform_tcgen ( f32 dt, quake3::SModifierFu
 
 			for ( i = 0; i != vsize; ++i )
 			{
-				const video::S3DVertex2TCoords &src = Original.Vertices[i];
-				video::S3DVertex &dst = MeshBuffer.Vertices[i];
+				const video::S3DVertex2TCoords &src = Original->Vertices[i];
+				video::S3DVertex &dst = MeshBuffer->Vertices[i];
 
 				f32 wavephase = (src.Pos.X + src.Pos.Y + src.Pos.Z) * function.wave;
 				function.phase = phase + wavephase;
@@ -478,12 +487,12 @@ void CQuake3ShaderSceneNode::vertextransform_tcgen ( f32 dt, quake3::SModifierFu
 		case 8:
 			// tcgen texture
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer.Vertices[i].TCoords = Original.Vertices[i].TCoords;
+				MeshBuffer->Vertices[i].TCoords = Original->Vertices[i].TCoords;
 			break;
 		case 9:
 			// tcgen lightmap
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer.Vertices[i].TCoords = Original.Vertices[i].TCoords2;
+				MeshBuffer->Vertices[i].TCoords = Original->Vertices[i].TCoords2;
 			break;
 		case 10:
 		{
@@ -508,11 +517,11 @@ void CQuake3ShaderSceneNode::vertextransform_tcgen ( f32 dt, quake3::SModifierFu
 			for ( i = 0; i != vsize; ++i )
 			{
 				// vertex in eye space
-				view.transformVect ( v, Original.Vertices[i].Pos );
+				view.transformVect ( v, Original->Vertices[i].Pos );
 				v.normalize();
 
-				MeshBuffer.Vertices[i].TCoords.X = (1.f + eyePlaneS.dotProduct ( v ) ) * 0.5f;
-				MeshBuffer.Vertices[i].TCoords.Y = 1.f - ( (1.f + eyePlaneT.dotProduct ( v ) ) * 0.5f );
+				MeshBuffer->Vertices[i].TCoords.X = (1.f + eyePlaneS.dotProduct ( v ) ) * 0.5f;
+				MeshBuffer->Vertices[i].TCoords.Y = 1.f - ( (1.f + eyePlaneT.dotProduct ( v ) ) * 0.5f );
 			}
 
 		} break;
@@ -528,7 +537,7 @@ void CQuake3ShaderSceneNode::vertextransform_tcgen ( f32 dt, quake3::SModifierFu
 void CQuake3ShaderSceneNode::transformtex ( const core::matrix4 &m, const u32 addressMode )
 {
 	u32 i;
-	const u32 vsize = MeshBuffer.Vertices.size();
+	const u32 vsize = MeshBuffer->Vertices.size();
 
 	f32 tx1;
 	f32 ty1;
@@ -537,7 +546,7 @@ void CQuake3ShaderSceneNode::transformtex ( const core::matrix4 &m, const u32 ad
 	{
 		for ( i = 0; i != vsize; ++i )
 		{
-			core::vector2df &tx = MeshBuffer.Vertices[i].TCoords;
+			core::vector2df &tx = MeshBuffer->Vertices[i].TCoords;
 
 			tx1 = m[0] * tx.X + m[4] * tx.Y + m[8];
 			ty1 = m[1] * tx.X + m[5] * tx.Y + m[9];
@@ -551,7 +560,7 @@ void CQuake3ShaderSceneNode::transformtex ( const core::matrix4 &m, const u32 ad
 
 		for ( i = 0; i != vsize; ++i )
 		{
-			core::vector2df &tx = MeshBuffer.Vertices[i].TCoords;
+			core::vector2df &tx = MeshBuffer->Vertices[i].TCoords;
 
 			tx1 = m[0] * tx.X + m[4] * tx.Y + m[8];
 			ty1 = m[1] * tx.X + m[5] * tx.Y + m[9];
@@ -767,7 +776,7 @@ void CQuake3ShaderSceneNode::OnAnimate(u32 timeMs)
 
 const core::aabbox3d<f32>& CQuake3ShaderSceneNode::getBoundingBox() const
 {
-	return MeshBuffer.getBoundingBox ();
+	return MeshBuffer->getBoundingBox ();
 }
 
 
@@ -778,7 +787,7 @@ u32 CQuake3ShaderSceneNode::getMaterialCount() const
 
 video::SMaterial& CQuake3ShaderSceneNode::getMaterial(u32 i)
 {
-	video::SMaterial& m = MeshBuffer.getMaterial();
+	video::SMaterial& m = MeshBuffer->getMaterial();
 	m.setTexture(0, 0);
 	if ( Q3Texture [ i ].TextureIndex )
 		m.setTexture(0, Q3Texture [ i ].Texture [ Q3Texture [ i ].TextureIndex ]);

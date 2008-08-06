@@ -23,8 +23,9 @@ public:
 
 	CQuake3ShaderSceneNode( ISceneNode* parent, ISceneManager* mgr,s32 id,
 				io::IFileSystem *fileSystem,IMeshBuffer *buffer,
-				const quake3::SShader * shader
-		);
+				const quake3::SShader * shader);
+
+	virtual ~CQuake3ShaderSceneNode();
 
 	virtual void OnRegisterSceneNode();
 	virtual void render();
@@ -35,9 +36,9 @@ public:
 	virtual video::SMaterial& getMaterial(u32 i);
 
 private:
-	SMeshBuffer MeshBuffer;
-	SMeshBufferLightMap Original;
-	const quake3::SShader * Shader;
+	SMeshBuffer* MeshBuffer;
+	SMeshBufferLightMap* Original;
+	const quake3::SShader* Shader;
 
 	struct SQ3Texture
 	{
@@ -69,7 +70,7 @@ private:
 	f32 TimeAbs;
 	void animate( u32 stage, core::matrix4 &texture );
 
-	bool isTransparent ();
+	bool isTransparent() const;
 
 };
 

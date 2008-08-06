@@ -137,8 +137,7 @@ namespace scene
 		virtual IMesh* getMesh() { return &Mesh; }
 
 		//! Returns a pointer to the buffer used by the terrain (most users will not need this)
-		virtual IMeshBuffer* getRenderBuffer() { return &RenderBuffer; }
-
+		virtual IMeshBuffer* getRenderBuffer() { return RenderBuffer; }
 
 		//! Gets the meshbuffer data based on a specified Level of Detail.
 		//! \param mb: A reference to an SMeshBufferLightMap object
@@ -308,7 +307,7 @@ namespace scene
 
 		STerrainData TerrainData;
 		SMesh Mesh;
-		SMeshBufferLightMap RenderBuffer;
+		SMeshBufferLightMap* RenderBuffer;
 		u32 VerticesToRender;
 		u32 IndicesToRender;
 
