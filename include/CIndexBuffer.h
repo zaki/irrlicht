@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -7,14 +7,10 @@
 
 #include "IIndexBuffer.h"
 
-
 namespace irr
 {
-
-
 namespace scene
 {
-
 
 	class CIndexBuffer : public IIndexBuffer
 	{
@@ -23,16 +19,16 @@ namespace scene
 		{
 		public:
 			virtual u32 stride() const =0;
-			virtual u32 size() const=0;
-			virtual void push_back (const u32 &element) =0;
-			virtual const u32 operator [](u32 index) const=0;
-			virtual const u32 getLast() =0;
+			virtual u32 size() const =0;
+			virtual void push_back(const u32 &element) =0;
+			virtual u32 operator [](u32 index) const =0;
+			virtual u32 getLast() =0;
 			virtual void setValue(u32 index, u32 value) =0;
 			virtual void set_used(u32 usedNow) =0;
-			virtual void reallocate(u32 new_size)=0;
-			virtual u32 allocated_size() const=0;
+			virtual void reallocate(u32 new_size) =0;
+			virtual u32 allocated_size() const =0;
 			virtual void* pointer() =0;
-			virtual video::E_INDEX_TYPE getType()=0;
+			virtual video::E_INDEX_TYPE getType() =0;
 		};
 
 		template <class T>
@@ -43,29 +39,34 @@ namespace scene
 
 			virtual u32 stride() const {return sizeof(T);}
 
-			virtual u32 size() const
-			{return Indices.size();}
+			virtual u32 size() const {return Indices.size();}
 
-			virtual void push_back (const u32 &element)
-			{Indices.push_back((T&)element);}
+			virtual void push_back(const u32 &element)
+			{
+				Indices.push_back((T&)element);
+			}
 
-			virtual const u32 operator [](u32 index) const
-			{return (u32) (Indices[index]);}
+			virtual u32 operator [](u32 index) const
+			{
+				return (u32)(Indices[index]);
+			}
 
-			virtual const u32 getLast()
-			{return (u32)Indices.getLast();}
+			virtual u32 getLast() {return (u32)Indices.getLast();}
 
 			virtual void setValue(u32 index, u32 value)
 			{
 				Indices[index]=(T)value;
 			}
 
-
 			virtual void set_used(u32 usedNow)
-			{Indices.set_used(usedNow);}
+			{
+				Indices.set_used(usedNow);
+			}
 
 			virtual void reallocate(u32 new_size)
-			{Indices.reallocate(new_size);}
+			{
+				Indices.reallocate(new_size);
+			}
 
 			virtual u32 allocated_size() const
 			{
@@ -76,7 +77,8 @@ namespace scene
 
 			virtual video::E_INDEX_TYPE getType()
 			{
-				if (sizeof(T)==sizeof(u16)) return video::EIT_16BIT;
+				if (sizeof(T)==sizeof(u16))
+					return video::EIT_16BIT;
 				return video::EIT_32BIT;
 			}
 		};
@@ -91,14 +93,12 @@ namespace scene
 
 		~CIndexBuffer()
 		{
-			if (Indices)
-				delete Indices;
+			delete Indices;
 		}
 
 		//virtual void setType(video::E_INDEX_TYPE IndexType);
 		virtual void setType(video::E_INDEX_TYPE IndexType)
 		{
-
 			IIndexList *NewIndices=0;
 
 			switch (IndexType)
@@ -128,9 +128,8 @@ namespace scene
 			Indices=NewIndices;
 		}
 
-
-
 		virtual void* getData() {return Indices->pointer();}
+
 		virtual video::E_INDEX_TYPE getType(){return Indices->getType();}
 
 		virtual u32 stride() const {return Indices->stride();}
@@ -140,7 +139,7 @@ namespace scene
 			return Indices->size();
 		}
 
-		virtual void push_back (const u32 &element)
+		virtual void push_back(const u32 &element)
 		{
 			Indices->push_back(element);
 		}
@@ -159,7 +158,6 @@ namespace scene
 		{
 			Indices->setValue(index, value);
 		}
-
 
 		virtual void set_used(u32 usedNow)
 		{
@@ -206,11 +204,6 @@ namespace scene
 		E_HARDWARE_MAPPING MappingHint;
 		u32 ChangedID;
 	};
-
-
-
-
-
 
 
 } // end namespace scene
