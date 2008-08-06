@@ -837,6 +837,14 @@ bool CIrrDeviceLinux::run()
 						os::Printer::log("Quit message received.", ELL_INFORMATION);
 						Close = true;
 					}
+					else
+					{
+						// we assume it's a user message
+						irrevent.EventType = irr::EET_USER_EVENT;
+						irrevent.UserEvent.UserData1 = (s32)event.xclient.data.l[0];
+						irrevent.UserEvent.UserData2 = (s32)event.xclient.data.l[1];
+						postEventFromUser(irrevent);
+					}
 					XFree(atom);
 				}
 				break;
