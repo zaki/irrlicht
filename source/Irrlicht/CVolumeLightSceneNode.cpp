@@ -47,7 +47,7 @@ CVolumeLightSceneNode::~CVolumeLightSceneNode()
 }
 
 
-void CVolumeLightSceneNode::addToBuffer(video::S3DVertex v)
+void CVolumeLightSceneNode::addToBuffer(const video::S3DVertex& v)
 {
 	const s32 tnidx = Buffer->Vertices.linear_reverse_search(v);
 	const bool alreadyIn = (tnidx != -1);
