@@ -65,6 +65,8 @@ namespace irr
 namespace video
 {
 
+	class COpenGLTexture;
+
 static const char* const OpenGLFeatureStrings[] = {
 	"GL_3DFX_multisample",
 	"GL_3DFX_tbuffer",
@@ -649,6 +651,8 @@ class COpenGLExtensionHandler
 		IRR_WIN_specular_fog,
 		IRR_OpenGL_Feature_Count
 	};
+
+	friend class COpenGLTexture;
 
 	// constructor
 	COpenGLExtensionHandler();

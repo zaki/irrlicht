@@ -30,7 +30,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDrive
  : ITexture(name), Driver(driver), Image(0),
   TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
   PixelType(GL_UNSIGNED_BYTE),
-  ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0), Locks(0),
+  ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
   HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false), UseStencil(false)
 {
 	#ifdef _DEBUG
@@ -56,7 +56,7 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
  : ITexture(name), ImageSize(size), Driver(driver), Image(0),
   TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
   PixelType(GL_UNSIGNED_BYTE),
-  ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0), Locks(0),
+  ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
   HasMipMaps(false), IsRenderTarget(true), AutomaticMipmapUpdate(false), UseStencil(useStencil)
 {
 	#ifdef _DEBUG
@@ -377,25 +377,62 @@ inline s32 COpenGLTexture::getTextureSizeFromSurfaceSize(s32 size) const
 //! lock function
 void* COpenGLTexture::lock()
 {
-	if (Image)
+	if (!Image)
+		Image = new CImage(ECF_A8R8G8B8, ImageSize);
+	if (IsRenderTarget)
 	{
-		++Locks;
-		return Image->lock();
+		u8* pPixels = static_cast<u8*>(Image->lock());
+		if (!pPixels)
+		{
+			return 0;
+		}
+		// we need to keep the correct texture bound...
+		GLint tmpTexture;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &tmpTexture);
+		glBindTexture(GL_TEXTURE_2D, TextureName);
+
+		// allows to read pixels in top-to-bottom order
+#ifdef GL_MESA_pack_invert
+		if (Driver->FeatureAvailable[COpenGLExtensionHandler::IRR_MESA_pack_invert])
+			glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
+#endif
+
+		glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pPixels);
+
+#ifdef GL_MESA_pack_invert
+		if (Driver->FeatureAvailable[COpenGLExtensionHandler::IRR_MESA_pack_invert])
+			glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
+		else
+#endif
+		{
+			// opengl images are horizontally flipped, so we have to fix that here.
+			const s32 pitch=Image->getPitch();
+			u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
+			u8* tmpBuffer = new u8[pitch];
+			for (s32 i=0; i < ImageSize.Height; i += 2)
+			{
+				memcpy(tmpBuffer, pPixels, pitch);
+				memcpy(pPixels, p2, pitch);
+				memcpy(p2, tmpBuffer, pitch);
+				pPixels += pitch;
+				p2 -= pitch;
+			}
+			delete [] tmpBuffer;
+		}
+		Image->unlock();
+
+		//reset old bound texture
+		glBindTexture(GL_TEXTURE_2D, tmpTexture);
 	}
-	else
-		return 0;
+	return Image->lock();
 }
 
 
 //! unlock function
 void COpenGLTexture::unlock()
 {
-	if (Image)
-	{
-		--Locks;
-		Image->unlock();
-		copyTexture(false);
-	}
+	Image->unlock();
+	copyTexture(false);
 }
 
 

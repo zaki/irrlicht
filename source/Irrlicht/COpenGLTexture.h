@@ -129,8 +129,6 @@ private:
 	GLuint DepthRenderBuffer; // for FBO path
 	GLuint StencilRenderBuffer; // for FBO path
 
-	u32 Locks;
-
 	bool HasMipMaps;
 	bool IsRenderTarget;
 	bool AutomaticMipmapUpdate;
