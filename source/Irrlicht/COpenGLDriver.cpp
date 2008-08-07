@@ -2630,7 +2630,7 @@ IImage* COpenGLDriver::createScreenShot()
 #endif
 	{
 		// opengl images are horizontally flipped, so we have to fix that here.
-		s32 pitch=newImage->getPitch();
+		const s32 pitch=newImage->getPitch();
 		u8* p2 = pPixels + (ScreenSize.Height - 1) * pitch;
 		u8* tmpBuffer = new u8[pitch];
 		for (s32 i=0; i < ScreenSize.Height; i += 2)
