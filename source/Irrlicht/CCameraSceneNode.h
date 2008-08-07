@@ -22,9 +22,6 @@ namespace scene
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& lookat = core::vector3df(0,0,100));
 
-		//! destructor
-		virtual ~CCameraSceneNode();
-
 		//! Sets the projection matrix of the camera.
 		/** The core::matrix4 class has some methods
 		to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH.
@@ -56,7 +53,7 @@ namespace scene
 
 		//! Gets the current look at target of the camera
 		//! \return Returns the current look at target of the camera
-		virtual core::vector3df getTarget() const;
+		virtual const core::vector3df& getTarget() const;
 
 		//! Sets the up vector of the camera.
 		//! \param pos: New upvector of the camera.
@@ -64,7 +61,7 @@ namespace scene
 
 		//! Gets the up vector of the camera.
 		//! \return Returns the up vector of the camera.
-		virtual core::vector3df getUpVector() const;
+		virtual const core::vector3df& getUpVector() const;
 
 		//! Gets distance from the camera to the near plane.
 		//! \return Value of the near plane of the camera.
@@ -122,8 +119,6 @@ namespace scene
 
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_CAMERA; }
-
-		virtual core::vector3df getAbsolutePosition() const;
 
 	protected:
 

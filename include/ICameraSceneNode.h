@@ -31,9 +31,6 @@ namespace scene
 			const core::vector3df& scale = core::vector3df(1.0f,1.0f,1.0f))
 			: ISceneNode(parent, mgr, id, position, rotation, scale), IsOrthogonal(false) {}
 
-		//! Destructor
-		virtual ~ICameraSceneNode() {}
-
 		//! Sets the projection matrix of the camera.
 		/** The core::matrix4 class has some methods
 		to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH.
@@ -66,7 +63,7 @@ namespace scene
 
 		//! Gets the current look at target of the camera
 		/** \return Returns the current look at target of the camera */
-		virtual core::vector3df getTarget() const = 0;
+		virtual const core::vector3df& getTarget() const = 0;
 
 		//! Sets the up vector of the camera.
 		/** \param pos: New upvector of the camera. */
@@ -74,7 +71,7 @@ namespace scene
 
 		//! Gets the up vector of the camera.
 		/** \return Returns the up vector of the camera. */
-		virtual core::vector3df getUpVector() const = 0;
+		virtual const core::vector3df& getUpVector() const = 0;
 
 		//! Gets the value of the near plane of the camera.
 		/** \return Returns the value of the near plane of the camera. */
