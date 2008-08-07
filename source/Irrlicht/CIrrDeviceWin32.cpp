@@ -279,11 +279,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			dev->postEventFromUser(event);
 
 		return 0;
-
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
-		break;
 	}
+	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 namespace irr
