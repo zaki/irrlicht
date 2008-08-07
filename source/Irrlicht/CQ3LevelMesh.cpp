@@ -187,13 +187,14 @@ void CQ3LevelMesh::loadTextures(tBSPLump* l, io::IReadFile* file)
 	file->seek(l->offset);
 	file->read(Textures, l->length);
 
-	#ifdef __BIG_ENDIAN__
-	for (int i=0;i<NumTextures;i++)
+	for (int i=0;i<NumTextures;++i)
 	{
+	#ifdef __BIG_ENDIAN__
 		Textures[i].flags = os::Byteswap::byteswap(Textures[i].flags);
 		Textures[i].contents = os::Byteswap::byteswap(Textures[i].contents);
-	}
 	#endif
+		os::Printer::log("Loaded texture", Textures[i].strName, ELL_INFORMATION);
+	}
 }
 
 

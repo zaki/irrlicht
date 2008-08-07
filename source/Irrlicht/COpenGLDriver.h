@@ -73,12 +73,12 @@ namespace video
 
 		#ifdef _IRR_WINDOWS_API_
 		//! win32 constructor
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window, bool fullscreen,
+		COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
 			bool stencilBuffer, io::IFileSystem* io, bool antiAlias);
 
 		//! inits the windows specific parts of the open gl driver
 		bool initDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool vsync, bool stencilBuffer);
+			u32 bits, bool vsync, bool stencilBuffer);
 		#endif
 
 		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
@@ -342,6 +342,9 @@ namespace video
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 		inline void createGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
+
+		//! Set GL pipeline to desired texture wrap modes of the material
+		void setWrapMode(const SMaterial& material);
 
 		//! sets the needed renderstates
 		void setRenderStates3DMode();
