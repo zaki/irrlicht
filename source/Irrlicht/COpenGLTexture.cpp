@@ -27,11 +27,12 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! constructor for usual textures
 COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDriver* driver)
- : ITexture(name), Driver(driver), Image(0),
-  TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
-  PixelType(GL_UNSIGNED_BYTE),
-  ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
-  HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false), UseStencil(false)
+	: ITexture(name), Driver(driver), Image(0),
+	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
+	PixelType(GL_UNSIGNED_BYTE),
+	ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
+	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	UseStencil(false), ReadOnlyLock(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -53,11 +54,12 @@ COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
                                 const char* name,
                                 COpenGLDriver* driver,
 				bool useStencil)
- : ITexture(name), ImageSize(size), Driver(driver), Image(0),
-  TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
-  PixelType(GL_UNSIGNED_BYTE),
-  ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
-  HasMipMaps(false), IsRenderTarget(true), AutomaticMipmapUpdate(false), UseStencil(useStencil)
+	: ITexture(name), ImageSize(size), Driver(driver), Image(0),
+	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
+	PixelType(GL_UNSIGNED_BYTE),
+	ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
+	HasMipMaps(false), IsRenderTarget(true), AutomaticMipmapUpdate(false),
+	UseStencil(useStencil), ReadOnlyLock(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture_FBO");
@@ -375,8 +377,10 @@ inline s32 COpenGLTexture::getTextureSizeFromSurfaceSize(s32 size) const
 
 
 //! lock function
-void* COpenGLTexture::lock()
+void* COpenGLTexture::lock(bool readOnly)
 {
+	ReadOnlyLock |= readOnly;
+
 	if (!Image)
 		Image = new CImage(ECF_A8R8G8B8, ImageSize);
 	if (IsRenderTarget)
@@ -432,7 +436,9 @@ void* COpenGLTexture::lock()
 void COpenGLTexture::unlock()
 {
 	Image->unlock();
-	copyTexture(false);
+	if (!ReadOnlyLock)
+		copyTexture(false);
+	ReadOnlyLock = false;
 }
 
 

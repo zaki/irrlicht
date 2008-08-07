@@ -37,7 +37,7 @@ public:
 	virtual ~CD3D8Texture();
 
 	//! lock function
-	virtual void* lock();
+	virtual void* lock(bool readOnly = false);
 
 	//! unlock function
 	virtual void unlock();
