@@ -217,7 +217,7 @@ bool CD3D8Texture::copyTexture(video::IImage* image)
 
 
 //! lock function
-void* CD3D8Texture::lock()
+void* CD3D8Texture::lock(bool readOnly)
 {
 	if (!Texture)
 		return 0;
@@ -226,7 +226,7 @@ void* CD3D8Texture::lock()
 	D3DLOCKED_RECT rect;
 	if(!IsRenderTarget)
 	{
-		hr = Texture->LockRect(0, &rect, 0, 0);
+		hr = Texture->LockRect(0, &rect, 0, readOnly?D3DLOCK_READONLY:0);
 	}
 	else
 	{
@@ -242,21 +242,21 @@ void* CD3D8Texture::lock()
 			}
 		}
 
-		IDirect3DSurface8 *surface = NULL;
+		IDirect3DSurface8 *surface = 0;
 		hr = Texture->GetSurfaceLevel(0, &surface);
 		if (FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D8 Texture.", ELL_ERROR);
 			return 0;
 		}
-		hr = Device->CopyRects(surface, NULL, 0, RTTSurface, NULL);
+		hr = Device->CopyRects(surface, 0, 0, RTTSurface, 0);
 		surface->Release();
 		if(FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D8 Texture.", ELL_ERROR);
 			return 0;
 		}
-		hr = RTTSurface->LockRect(&rect, NULL, 0);
+		hr = RTTSurface->LockRect(&rect, 0, readOnly?D3DLOCK_READONLY:0);
 		if(FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D8 Texture.", ELL_ERROR);
@@ -272,7 +272,6 @@ void* CD3D8Texture::lock()
 
 	return rect.pBits;
 }
-
 
 
 //! unlock function

@@ -424,7 +424,7 @@ bool CD3D9Texture::copyTexture(IImage * image)
 
 
 //! lock function
-void* CD3D9Texture::lock()
+void* CD3D9Texture::lock(bool readOnly)
 {
 	if (!Texture)
 		return 0;
@@ -433,7 +433,7 @@ void* CD3D9Texture::lock()
 	D3DLOCKED_RECT rect;
 	if(!IsRenderTarget)
 	{
-		hr = Texture->LockRect(0, &rect, 0, 0);
+		hr = Texture->LockRect(0, &rect, 0, readOnly?D3DLOCK_READONLY:0);
 	}
 	else
 	{
@@ -441,7 +441,7 @@ void* CD3D9Texture::lock()
 		Texture->GetLevelDesc(0, &desc);
 		if (!RTTSurface)
 		{
-			hr = Device->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &RTTSurface, NULL);
+			hr = Device->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &RTTSurface, 0);
 			if (FAILED(hr))
 			{
 				os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
@@ -449,7 +449,7 @@ void* CD3D9Texture::lock()
 			}
 		}
 
-		IDirect3DSurface9 *surface = NULL;
+		IDirect3DSurface9 *surface = 0;
 		hr = Texture->GetSurfaceLevel(0, &surface);
 		if (FAILED(hr))
 		{
@@ -463,7 +463,7 @@ void* CD3D9Texture::lock()
 			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
 			return 0;
 		}
-		hr = RTTSurface->LockRect(&rect, NULL, 0);
+		hr = RTTSurface->LockRect(&rect, 0, readOnly?D3DLOCK_READONLY:0);
 		if(FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
@@ -479,7 +479,6 @@ void* CD3D9Texture::lock()
 
 	return rect.pBits;
 }
-
 
 
 //! unlock function

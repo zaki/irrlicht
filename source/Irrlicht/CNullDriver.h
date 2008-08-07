@@ -546,7 +546,7 @@ namespace video
 		{
 			SDummyTexture(const char* name) : ITexture(name), size(0,0) {};
 
-			virtual void* lock() { return 0; };
+			virtual void* lock(bool readOnly = false) { return 0; };
 			virtual void unlock(){}
 			virtual const core::dimension2d<s32>& getOriginalSize() const { return size; }
 			virtual const core::dimension2d<s32>& getSize() const { return size; }

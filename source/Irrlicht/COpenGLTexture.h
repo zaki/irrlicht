@@ -56,7 +56,7 @@ public:
 	virtual ~COpenGLTexture();
 
 	//! lock function
-	virtual void* lock();
+	virtual void* lock(bool readOnly = false);
 
 	//! unlock function
 	virtual void unlock();
@@ -133,6 +133,7 @@ private:
 	bool IsRenderTarget;
 	bool AutomaticMipmapUpdate;
 	bool UseStencil;
+	bool ReadOnlyLock;
 };
 
 

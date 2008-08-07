@@ -29,7 +29,7 @@ public:
 	virtual ~CSoftwareTexture2();
 
 	//! lock function
-	virtual void* lock()
+	virtual void* lock(bool readOnly = false)
 	{
 		return MipMap[MipMapLOD]->lock();
 	}
