@@ -106,12 +106,11 @@ void COctTreeSceneNode::render()
 	//transform the frustum to the current absolute transformation
 	core::matrix4 invTrans(AbsoluteTransformation);
 	invTrans.makeInverse();
-	/*
-	//frust.transform(invTrans);
-	//const core::aabbox3d<float> &box = frust.getBoundingBox();
-	*/
 
 	frust.transform(invTrans);
+	/*
+	//const core::aabbox3d<float> &box = frust.getBoundingBox();
+	*/
 
 	switch(vertexType)
 	{

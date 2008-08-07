@@ -25,7 +25,7 @@ namespace irr
 	{
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 		IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
+			u32 bits, bool stencilbuffer, io::IFileSystem* io,
 			bool pureSoftware, bool highPrecisionFPU, bool vsync, bool antiAlias);
 		#endif
 
@@ -37,7 +37,7 @@ namespace irr
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool stencilBuffer, io::IFileSystem* io,
+			u32 bits, bool stencilBuffer, io::IFileSystem* io,
 			bool vsync, bool antiAlias);
 		#endif
 	}
@@ -366,7 +366,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		HWnd = CreateWindow( ClassName, "", style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
 
-		ShowWindow(HWnd , SW_SHOW);
+		ShowWindow(HWnd, SW_SHOW);
 		UpdateWindow(HWnd);
 
 		// fix ugly ATI driver bugs. Thanks to ariaci

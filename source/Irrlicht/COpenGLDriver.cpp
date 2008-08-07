@@ -32,7 +32,7 @@ namespace video
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
-		HWND window, bool fullscreen, bool stencilBuffer,
+		HWND window, bool stencilBuffer,
 		io::IFileSystem* io, bool antiAlias)
 : CNullDriver(io, screenSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
@@ -47,7 +47,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
 
 //! inits the open gl driver
 bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
-				HWND window, u32 bits, bool fullscreen, bool vsync, bool stencilBuffer)
+				HWND window, u32 bits, bool vsync, bool stencilBuffer)
 {
 	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
@@ -321,6 +321,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 
 	// We want to read the front buffer to get the latest render finished.
 	glReadBuffer(GL_FRONT);
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 	// Reset The Current Viewport
 	glViewport(0, 0, screenSize.Width, screenSize.Height);
@@ -1606,6 +1607,85 @@ void COpenGLDriver::setRenderStates3DMode()
 }
 
 
+void COpenGLDriver::setWrapMode(const SMaterial& material)
+{
+	// texture address mode
+	// Has to be checked always because it depends on the textures
+	for (u32 u=0; u<MaxTextureUnits; ++u)
+	{
+		if (MultiTextureExtension)
+			extGlActiveTexture(GL_TEXTURE0_ARB + u);
+		else if (u>0)
+			break; // stop loop
+
+		GLint mode=GL_REPEAT;
+		switch (material.TextureLayer[u].TextureWrap)
+		{
+			case ETC_REPEAT:
+				mode=GL_REPEAT;
+				break;
+			case ETC_CLAMP:
+				mode=GL_CLAMP;
+				break;
+			case ETC_CLAMP_TO_EDGE:
+#ifdef GL_VERSION_1_2
+				if (Version>101)
+					mode=GL_CLAMP_TO_EDGE;
+				else
+#endif
+#ifdef GL_SGIS_texture_edge_clamp
+				if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
+					mode=GL_CLAMP_TO_EDGE_SGIS;
+				else
+#endif
+					// fallback
+					mode=GL_CLAMP;
+				break;
+			case ETC_CLAMP_TO_BORDER:
+#ifdef GL_VERSION_1_3
+				if (Version>102)
+					mode=GL_CLAMP_TO_BORDER;
+				else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+				if (FeatureAvailable[IRR_ARB_texture_border_clamp])
+					mode=GL_CLAMP_TO_BORDER_ARB;
+				else
+#endif
+#ifdef GL_SGIS_texture_border_clamp
+				if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
+					mode=GL_CLAMP_TO_BORDER_SGIS;
+				else
+#endif
+					// fallback
+					mode=GL_CLAMP;
+				break;
+			case ETC_MIRROR:
+#ifdef GL_VERSION_1_4
+				if (Version>103)
+					mode=GL_MIRRORED_REPEAT;
+				else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+				if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
+					mode=GL_MIRRORED_REPEAT_ARB;
+				else
+#endif
+#ifdef GL_IBM_texture_mirrored_repeat
+				if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
+					mode=GL_MIRRORED_REPEAT_IBM;
+				else
+#endif
+					mode=GL_REPEAT;
+				break;
+		}
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+	}
+}
+
+
 //! Can be called by an IMaterialRenderer to make its work easier.
 void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 	bool resetAllRenderStates)
@@ -1790,80 +1870,8 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		glLineWidth(material.Thickness);
 	}
 
-	// texture address mode
-	// Has to be checked always because it depends on the textures
-	for (u32 u=0; u<MaxTextureUnits; ++u)
-	{
-		if (MultiTextureExtension)
-			extGlActiveTexture(GL_TEXTURE0_ARB + u);
-		else if (u>0)
-			break; // stop loop
+	setWrapMode(material);
 
-		GLint mode=GL_REPEAT;
-		switch (material.TextureLayer[u].TextureWrap)
-		{
-			case ETC_REPEAT:
-				mode=GL_REPEAT;
-				break;
-			case ETC_CLAMP:
-				mode=GL_CLAMP;
-				break;
-			case ETC_CLAMP_TO_EDGE:
-#ifdef GL_VERSION_1_2
-				if (Version>101)
-					mode=GL_CLAMP_TO_EDGE;
-				else
-#endif
-#ifdef GL_SGIS_texture_edge_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
-					mode=GL_CLAMP_TO_EDGE_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
-				break;
-			case ETC_CLAMP_TO_BORDER:
-#ifdef GL_VERSION_1_3
-				if (Version>102)
-					mode=GL_CLAMP_TO_BORDER;
-				else
-#endif
-#ifdef GL_ARB_texture_border_clamp
-				if (FeatureAvailable[IRR_ARB_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER_ARB;
-				else
-#endif
-#ifdef GL_SGIS_texture_border_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
-				break;
-			case ETC_MIRROR:
-#ifdef GL_VERSION_1_4
-				if (Version>103)
-					mode=GL_MIRRORED_REPEAT;
-				else
-#endif
-#ifdef GL_ARB_texture_border_clamp
-				if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_ARB;
-				else
-#endif
-#ifdef GL_IBM_texture_mirrored_repeat
-				if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_IBM;
-				else
-#endif
-					mode=GL_REPEAT;
-				break;
-		}
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
-	}
 	// be sure to leave in texture stage 0
 	if (MultiTextureExtension)
 		extGlActiveTexture(GL_TEXTURE0_ARB);
@@ -2715,11 +2723,11 @@ namespace video
 // -----------------------------------
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
-	HWND window, u32 bits, bool fullscreen, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
+	HWND window, u32 bits, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	COpenGLDriver* ogl =  new COpenGLDriver(screenSize, window, fullscreen, stencilBuffer, io, antiAlias);
-	if (!ogl->initDriver(screenSize, window, bits, fullscreen, vsync, stencilBuffer))
+	COpenGLDriver* ogl =  new COpenGLDriver(screenSize, window, stencilBuffer, io, antiAlias);
+	if (!ogl->initDriver(screenSize, window, bits, vsync, stencilBuffer))
 	{
 		ogl->drop();
 		ogl = 0;
