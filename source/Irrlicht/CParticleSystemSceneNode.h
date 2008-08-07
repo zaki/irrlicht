@@ -165,7 +165,7 @@ public:
 	//! Sets if the particles should be global. If they are, the particles are affected by
 	//! the movement of the particle system scene node too, otherwise they completely
 	//! ignore it. Default is true.
-	virtual void setParticlesAreGlobal(bool global);
+	virtual void setParticlesAreGlobal(bool global=true);
 
 	//! Writes attributes of the scene node.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;

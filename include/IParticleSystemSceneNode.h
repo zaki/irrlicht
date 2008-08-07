@@ -25,8 +25,8 @@ namespace scene
 
 //! A particle system scene node for creating snow, fire, exlosions, smoke...
 /** A scene node controlling a particle System. The behavior of the particles
-can be controlling by setting the right particle emitters and effectors.
-You can for example easily a campfire by doing this:
+can be controlled by setting the right particle emitters and affectors.
+You can for example easily create a campfire by doing this:
 
 \code
 	scene::IParticleSystemSceneNode* p = scenemgr->addParticleSystemSceneNode();
@@ -59,14 +59,14 @@ public:
 		const core::dimension2d<f32> &size = core::dimension2d<f32>(5.0f, 5.0f)) = 0;
 
 	//! Sets if the particles should be global.
-	/** If it is, the particles are affected by the movement of the
+	/** If they are, the particles are affected by the movement of the
 	particle system scene node too, otherwise they completely ignore it.
 	Default is true. */
-	virtual void setParticlesAreGlobal(bool global) = 0;
+	virtual void setParticlesAreGlobal(bool global=true) = 0;
 
 	//! Sets the particle emitter, which creates the particles.
-	/** A particle emitter can be created using one of the methods. For
-	example to create and use a simple PointEmitter, call
+	/** A particle emitter can be created using one of the createEmitter
+	methods. For example to create and use a simple PointEmitter, call
 	IParticleEmitter* p = createPointEmitter(); setEmitter(p); p->drop();
 	\param emitter: Sets the particle emitter. You can set this to 0 for
 	removing the current emitter and stopping the particle system emitting
@@ -82,7 +82,7 @@ public:
 	addAffector(p);
 	p->drop();
 	\endcode
-	Please note that a affector is not necessary for the particle system to
+	Please note that an affector is not necessary for the particle system to
 	work.
 	\param affector: New affector. */
 	virtual void addAffector(IParticleAffector* affector) = 0;
