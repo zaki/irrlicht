@@ -479,7 +479,7 @@ void CIrrDeviceWin32::createDriver()
 			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
 
 		VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, HWnd, CreationParams.Bits, 
-			CreationParams.Fullscreen, CreationParams.Stencilbuffer, FileSystem,
+			CreationParams.Stencilbuffer, FileSystem,
 			CreationParams.Vsync, CreationParams.AntiAlias);
 		if (!VideoDriver)
 		{
