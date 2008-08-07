@@ -639,7 +639,7 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 		u16 version;
 		file->read(&version, 2);
 #ifdef __BIG_ENDIAN__
-		flags = os::Byteswap::byteswap(version);
+		version = os::Byteswap::byteswap(version);
 #endif
 		core::stringc name;
 		readString(file, data, name);
@@ -802,7 +802,7 @@ bool C3DSMeshFileLoader::readFrameChunk(io::IReadFile* file, ChunkData* parent)
 				f32 flag;
 				file->read(&flag, 4);
 #ifdef __BIG_ENDIAN__
-				flags = os::Byteswap::byteswap(flags);
+				flag = os::Byteswap::byteswap(flag);
 #endif
 				data.read += 4;
 			}
