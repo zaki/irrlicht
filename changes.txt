@@ -185,6 +185,27 @@ Changes in version 1.5 (... 2008)
    - EditBox didn't draw children.
 
 -------------------------------------------
+Changes in version 1.4.2 (x.x.2008)
+
+ - irrMap fix to make root node always black, by rogerborg.
+
+ - Possible core dump fixed in particle system node, by CuteAlien.
+
+ - Mem leak fixed in b3d loader.
+
+ - Avoid double rendering of child nodes of joints.
+
+ - Support for d3d draw2dimage clipping by CuteAlien.
+
+ - Fixed an animation transition bug, pointed out by wuallen.
+
+ - Fixed the major problem with OpenGL drivers, that claim to be 2.x compatible, but don't offer NPOT support (well, they do, but only in sw rendering...). Now we check for the extension string only.
+
+ - Fixed .obj loader bug which inserted vertices in wrong buffers.
+
+ - Fixed minor mem leak in Linux device.
+
+-------------------------------------------
 Changes in version 1.4.1 (04 Jun 2008)
 
  - MD3 meshes are movable again.

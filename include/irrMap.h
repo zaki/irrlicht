@@ -810,7 +810,7 @@ class map
 	//------------------------------
 
 	//! operator [] for access to elements
-	//! for example myMap["key"]
+	/** for example myMap["key"] */
 	AccessClass operator[](const KeyType& k)
 	{
 		return AccessClass(*this, k);
@@ -820,21 +820,29 @@ class map
 	//------------------------------
 	// Disabled methods
 	//------------------------------
-	//! Copy constructor and assignment operator deliberately
-	//! defined but not implemented. The tree should never be
-	//! copied, pass along references to it instead.
+	// Copy constructor and assignment operator deliberately
+	// defined but not implemented. The tree should never be
+	// copied, pass along references to it instead.
 	explicit map(const map& src);
 	map& operator = (const map& src);
 
+	//! Set node as new root.
+	/** The node will be set to black, otherwise core dumps may arise
+	(patch provided by rogerborg).
+	\param newRoot Node which will be the new root
+	*/
 	void setRoot(Node* newRoot)
 	{
 		Root = newRoot;
 		if (Root != 0)
+		{
 			Root->setParent(0);
+			Root->setBlack();
+		}
 	}
 
 	//! Insert a node into the tree without using any fancy balancing logic.
-	//! Returns false if that key already exist in the tree.
+	/** \return false if that key already exist in the tree. */
 	bool insert(Node* newNode)
 	{
 		bool result=true; // Assume success
