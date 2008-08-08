@@ -270,7 +270,7 @@ void CAnimatedMeshSceneNode::render()
 
 
 	if (Shadow && PassCount==1)
-		Shadow->setMeshToRenderFrom(m);
+		Shadow->updateShadowVolumes();
 
 	// for debug purposes only:
 
@@ -559,8 +559,8 @@ u32 CAnimatedMeshSceneNode::getMaterialCount() const
 
 //! Creates shadow volume scene node as child of this node
 //! and returns a pointer to it.
-IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(s32 id,
-						 bool zfailmethod, f32 infinity)
+IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(const IMesh* shadowMesh,
+						 s32 id, bool zfailmethod, f32 infinity)
 {
 	if (!SceneManager->getVideoDriver()->queryFeature(video::EVDF_STENCIL_BUFFER))
 		return 0;
@@ -571,7 +571,10 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(s32 id,
 		return 0;
 	}
 
-	Shadow = new CShadowVolumeSceneNode(this, SceneManager, id,  zfailmethod, infinity);
+	if (!shadowMesh)
+		shadowMesh = Mesh; // if null is given, use the mesh of node
+
+	Shadow = new CShadowVolumeSceneNode(shadowMesh, this, SceneManager, id,  zfailmethod, infinity);
 	return Shadow;
 }
 
