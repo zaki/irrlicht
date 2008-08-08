@@ -34,6 +34,28 @@ namespace irr
 		{
 		}
 
+		SIrrlichtCreationParameters(const SIrrlichtCreationParameters& other) :
+			SDK_version_do_not_use(IRRLICHT_SDK_VERSION)
+		{*this = other;}
+
+		SIrrlichtCreationParameters& operator=(const SIrrlichtCreationParameters& other)
+		{
+			DriverType = other.DriverType;
+			WindowSize = other.WindowSize;
+			Bits = other.Bits;
+			ZBufferBits = other.ZBufferBits;
+			Fullscreen = other.Fullscreen;
+			Stencilbuffer = other.Stencilbuffer;
+			Vsync = other.Vsync;
+			AntiAlias = other.AntiAlias;
+			WithAlphaChannel = other.WithAlphaChannel;
+			IgnoreInput = other.IgnoreInput;
+			HighPrecisionFPU = other.HighPrecisionFPU;
+			EventReceiver = other.EventReceiver;
+			WindowId = other.WindowId;
+			return *this;
+		}
+
 		//! Type of the device.
 		/** This can currently be video::EDT_NULL, video::EDT_SOFTWARE,
 		video::EDT_BURNINGSVIDEO, video::EDT_DIRECT3D8,
