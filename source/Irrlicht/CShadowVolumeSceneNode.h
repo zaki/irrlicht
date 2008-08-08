@@ -18,14 +18,19 @@ namespace scene
 	public:
 
 		//! constructor
-		CShadowVolumeSceneNode(ISceneNode* parent, ISceneManager* mgr, 
+		CShadowVolumeSceneNode(const IMesh* shadowMesh, ISceneNode* parent, ISceneManager* mgr, 
 			s32 id,  bool zfailmethod=true, f32 infinity=10000.0f);
 
 		//! destructor
 		virtual ~CShadowVolumeSceneNode();
 
-		//! sets the mesh from which the shadow volume should be generated.
-		virtual void setMeshToRenderFrom(const IMesh* mesh);
+		//! Sets the mesh from which the shadow volume should be generated.
+		/** To optimize shadow rendering, use a simpler mesh for shadows.
+		*/
+		virtual void setShadowMesh(const IMesh* mesh);
+
+		//! Updates the shadow volumes for current light positions.
+		virtual void updateShadowVolumes();
 
 		//! pre render method
 		virtual void OnRegisterSceneNode();
@@ -58,24 +63,30 @@ namespace scene
 
 		core::aabbox3d<f32> Box;
 
-		u16* Indices;
+		// a shadow volume for every light
+		core::array<SShadowVolume> ShadowVolumes;
+
 		core::vector3df* Vertices;
+		u16* Indices;
 		u16* Adjacency;
-		bool* FaceData; // used for zfail method, if face is front facing
-		bool UseZFailMethod;
+		u16* Edges;
+		// used for zfail method, if face is front facing
+		bool* FaceData;
+
+		const scene::IMesh* ShadowMesh;
 
 		s32 IndexCountAllocated;
 		s32 VertexCountAllocated;
 		s32 IndexCount;
 		s32 VertexCount;
 
-		core::array<SShadowVolume> ShadowVolumes; // a shadow volume for every light
-		s32 ShadowVolumesUsed;
-
-		u16* Edges;
 		s32 EdgeCount;
 
+		s32 ShadowVolumesUsed;
+
 		f32 Infinity;
+
+		bool UseZFailMethod;
 	};
 
 } // end namespace scene

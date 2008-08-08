@@ -15,27 +15,28 @@ namespace scene
 
 
 //! constructor
-CShadowVolumeSceneNode::CShadowVolumeSceneNode(ISceneNode* parent,
-					ISceneManager* mgr, s32 id,
-					bool zfailmethod, f32 infinity)
-: IShadowVolumeSceneNode(parent, mgr, id), Indices(0), Vertices(0),
-	Adjacency(0), FaceData(0), UseZFailMethod(zfailmethod),
+CShadowVolumeSceneNode::CShadowVolumeSceneNode(const IMesh* shadowMesh, ISceneNode* parent,
+		ISceneManager* mgr, s32 id, bool zfailmethod, f32 infinity)
+: IShadowVolumeSceneNode(parent, mgr, id), Vertices(0), Indices(0),
+	Adjacency(0), Edges(0), FaceData(0), ShadowMesh(0),
 	IndexCountAllocated(0), VertexCountAllocated(0),
-	IndexCount(0), VertexCount(0), ShadowVolumesUsed(0),
-	Edges(0), EdgeCount(0), Infinity(infinity)
+	IndexCount(0), VertexCount(0), EdgeCount(0), ShadowVolumesUsed(0),
+	Infinity(infinity), UseZFailMethod(zfailmethod)
 {
 	#ifdef _DEBUG
 	setDebugName("CShadowVolumeSceneNode");
 	#endif
-
+	setShadowMesh(shadowMesh);
 	setAutomaticCulling(scene::EAC_OFF);
 }
-
 
 
 //! destructor
 CShadowVolumeSceneNode::~CShadowVolumeSceneNode()
 {
+	if (ShadowMesh)
+		ShadowMesh->drop();
+
 	delete [] Edges;
 
 	for (u32 i=0; i<ShadowVolumes.size(); ++i)
@@ -46,7 +47,6 @@ CShadowVolumeSceneNode::~CShadowVolumeSceneNode()
 	delete [] Adjacency;
 	delete [] FaceData;
 }
-
 
 
 void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
@@ -251,17 +251,26 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 }
 
 
-//! sets the mesh from which the shadow volume should be generated.
-void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
+void CShadowVolumeSceneNode::setShadowMesh(const IMesh* mesh)
 {
-	ShadowVolumesUsed = 0;
+	if (ShadowMesh)
+		ShadowMesh->drop();
+	ShadowMesh = mesh;
+	if (ShadowMesh)
+		ShadowMesh->grab();
+}
 
-	s32 oldIndexCount = IndexCount;
-	s32 oldVertexCount = VertexCount;
+
+void CShadowVolumeSceneNode::updateShadowVolumes()
+{
+	const s32 oldIndexCount = IndexCount;
+	const s32 oldVertexCount = VertexCount;
 
 	VertexCount = 0;
 	IndexCount = 0;
+	ShadowVolumesUsed = 0;
 
+	const IMesh* const mesh = ShadowMesh;
 	if (!mesh)
 		return;
 
@@ -270,7 +279,7 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 	u32 i;
 	s32 totalVertices = 0;
 	s32 totalIndices = 0;
-	u32 bufcnt = mesh->getMeshBufferCount();
+	const u32 bufcnt = mesh->getMeshBufferCount();
 
 	for (i=0; i<bufcnt; ++i)
 	{
@@ -350,9 +359,10 @@ void CShadowVolumeSceneNode::setMeshToRenderFrom(const IMesh* mesh)
 void CShadowVolumeSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
+	{
 		SceneManager->registerNodeForRendering(this, scene::ESNRP_SHADOW);
-
-	ISceneNode::OnRegisterSceneNode();
+		ISceneNode::OnRegisterSceneNode();
+	}
 }
 
 
