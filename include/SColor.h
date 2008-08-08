@@ -135,28 +135,6 @@ namespace video
 		return (color & 0x1F);
 	}
 
-	//! Returns the red component from A1R5G5B5 color.
-	/** Shift left by 3 to get 8 bit value. */
-	inline s32 getRedSigned(u16 color)
-	{
-		return ((color >> 10)&0x1F);
-	}
-
-
-	//! Returns the green component from A1R5G5B5 color
-	/** Shift left by 3 to get 8 bit value. */
-	inline s32 getGreenSigned(u16 color)
-	{
-		return ((color >> 5)&0x1F);
-	}
-
-
-	//! Returns the blue component from A1R5G5B5 color
-	/** Shift left by 3 to get 8 bit value. */
-	inline s32 getBlueSigned(u16 color)
-	{
-		return (color & 0x1F);
-	}
 
 	//! Returns the average from a 16 bit A1R5G5B5 color
 	inline s32 getAverage(s16 color)

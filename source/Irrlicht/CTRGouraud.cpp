@@ -122,9 +122,9 @@ public:
 			leftZValue = v1->ZValue;
 			rightZValue = v1->ZValue;
 
-			leftR = rightR = video::getRedSigned(v1->Color)<<3;
-			leftG = rightG = video::getGreenSigned(v1->Color)<<3;
-			leftB = rightB = video::getBlueSigned(v1->Color)<<3;
+			leftR = rightR = video::getRed(v1->Color)<<3;
+			leftG = rightG = video::getGreen(v1->Color)<<3;
+			leftB = rightB = video::getBlue(v1->Color)<<3;
 
 			targetSurface = lockedSurface + span * SurfaceWidth;
 			zTarget = lockedZBuffer + span * SurfaceWidth;
@@ -134,32 +134,32 @@ public:
 				tmpDiv = 1.0f / (f32)(v2->Pos.Y - v1->Pos.Y);
 				rightdeltaxf = (v2->Pos.X - v1->Pos.X) * tmpDiv;
 				rightZStep = (s32)((v2->ZValue - v1->ZValue) * tmpDiv);
-				rightStepR = (s32)(((video::getRedSigned(v2->Color)<<3) - rightR) * tmpDiv);
-				rightStepG = (s32)(((video::getGreenSigned(v2->Color)<<3) - rightG) * tmpDiv);
-				rightStepB = (s32)(((video::getBlueSigned(v2->Color)<<3) - rightB) * tmpDiv);
+				rightStepR = (s32)(((video::getRed(v2->Color)<<3) - rightR) * tmpDiv);
+				rightStepG = (s32)(((video::getGreen(v2->Color)<<3) - rightG) * tmpDiv);
+				rightStepB = (s32)(((video::getBlue(v2->Color)<<3) - rightB) * tmpDiv);
 
 				tmpDiv = 1.0f / (f32)height;
 				leftdeltaxf = (v3->Pos.X - v1->Pos.X) * tmpDiv;
 				leftZStep = (s32)((v3->ZValue - v1->ZValue) * tmpDiv);
-				leftStepR = (s32)(((video::getRedSigned(v3->Color)<<3) - leftR) * tmpDiv);
-				leftStepG = (s32)(((video::getGreenSigned(v3->Color)<<3) - leftG) * tmpDiv);
-				leftStepB = (s32)(((video::getBlueSigned(v3->Color)<<3) - leftB) * tmpDiv);
+				leftStepR = (s32)(((video::getRed(v3->Color)<<3) - leftR) * tmpDiv);
+				leftStepG = (s32)(((video::getGreen(v3->Color)<<3) - leftG) * tmpDiv);
+				leftStepB = (s32)(((video::getBlue(v3->Color)<<3) - leftB) * tmpDiv);
 			}
 			else
 			{
 				tmpDiv = 1.0f / (f32)height;
 				rightdeltaxf = (v3->Pos.X - v1->Pos.X) * tmpDiv;
 				rightZStep = (s32)((v3->ZValue - v1->ZValue) * tmpDiv);
-				rightStepR = (s32)(((video::getRedSigned(v3->Color)<<3) - rightR) * tmpDiv);
-				rightStepG = (s32)(((video::getGreenSigned(v3->Color)<<3) - rightG) * tmpDiv);
-				rightStepB = (s32)(((video::getBlueSigned(v3->Color)<<3) - rightB) * tmpDiv);
+				rightStepR = (s32)(((video::getRed(v3->Color)<<3) - rightR) * tmpDiv);
+				rightStepG = (s32)(((video::getGreen(v3->Color)<<3) - rightG) * tmpDiv);
+				rightStepB = (s32)(((video::getBlue(v3->Color)<<3) - rightB) * tmpDiv);
 
 				tmpDiv = 1.0f / (f32)(v2->Pos.Y - v1->Pos.Y);
 				leftdeltaxf = (v2->Pos.X - v1->Pos.X) * tmpDiv;
 				leftZStep = (s32)((v2->ZValue - v1->ZValue) * tmpDiv);
-				leftStepR = (s32)(((video::getRedSigned(v2->Color)<<3) - leftR) * tmpDiv);
-				leftStepG = (s32)(((video::getGreenSigned(v2->Color)<<3) - leftG) * tmpDiv);
-				leftStepB = (s32)(((video::getBlueSigned(v2->Color)<<3) - leftB) * tmpDiv);
+				leftStepR = (s32)(((video::getRed(v2->Color)<<3) - leftR) * tmpDiv);
+				leftStepG = (s32)(((video::getGreen(v2->Color)<<3) - leftG) * tmpDiv);
+				leftStepB = (s32)(((video::getBlue(v2->Color)<<3) - leftB) * tmpDiv);
 			}
 
 
@@ -295,12 +295,12 @@ public:
 					rightZValue = v2->ZValue;
 					rightZStep = (s32)((v3->ZValue - v2->ZValue) * tmpDiv);
 
-					rightR = video::getRedSigned(v2->Color)<<3;
-					rightG = video::getGreenSigned(v2->Color)<<3;
-					rightB = video::getBlueSigned(v2->Color)<<3;
-					rightStepR = (s32)(((video::getRedSigned(v3->Color)<<3) - rightR) * tmpDiv);
-					rightStepG = (s32)(((video::getGreenSigned(v3->Color)<<3) - rightG) * tmpDiv);
-					rightStepB = (s32)(((video::getBlueSigned(v3->Color)<<3) - rightB) * tmpDiv);
+					rightR = video::getRed(v2->Color)<<3;
+					rightG = video::getGreen(v2->Color)<<3;
+					rightB = video::getBlue(v2->Color)<<3;
+					rightStepR = (s32)(((video::getRed(v3->Color)<<3) - rightR) * tmpDiv);
+					rightStepG = (s32)(((video::getGreen(v3->Color)<<3) - rightG) * tmpDiv);
+					rightStepB = (s32)(((video::getBlue(v3->Color)<<3) - rightB) * tmpDiv);
 				}
 				else
 				{
@@ -312,12 +312,12 @@ public:
 					leftZValue = v2->ZValue;
 					leftZStep = (s32)((v3->ZValue - v2->ZValue) * tmpDiv);
 
-					leftR = video::getRedSigned(v2->Color)<<3;
-					leftG = video::getGreenSigned(v2->Color)<<3;
-					leftB = video::getBlueSigned(v2->Color)<<3;
-					leftStepR = (s32)(((video::getRedSigned(v3->Color)<<3) - leftR) * tmpDiv);
-					leftStepG = (s32)(((video::getGreenSigned(v3->Color)<<3) - leftG) * tmpDiv);
-					leftStepB = (s32)(((video::getBlueSigned(v3->Color)<<3) - leftB) * tmpDiv);
+					leftR = video::getRed(v2->Color)<<3;
+					leftG = video::getGreen(v2->Color)<<3;
+					leftB = video::getBlue(v2->Color)<<3;
+					leftStepR = (s32)(((video::getRed(v3->Color)<<3) - leftR) * tmpDiv);
+					leftStepG = (s32)(((video::getGreen(v3->Color)<<3) - leftG) * tmpDiv);
+					leftStepB = (s32)(((video::getBlue(v3->Color)<<3) - leftB) * tmpDiv);
 				}
 
 
