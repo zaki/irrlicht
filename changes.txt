@@ -1,20 +1,142 @@
 Changes in version 1.5 (... 2008)
 
+ - Added support for read-only locking of textures. Can speed up those calls.
+
+ - Added support for locking RTTs under OpenGL.
+
+ - Implementation of UserData events from system events.
+
+ - ICameraSceneNode::setIsOrthogonal replaced by a parameter to setProjectionMatrix.
+
+ - All meshbuffers are now dynamically allocated to avoid problems with grabbed buffers, which may be deleted before the last drop happens (due to static memory allocation).
+
+ - Enhanced scene graph traversal with example from rogerborg.
+
+ - FPS camera disabling of event receiver works better now.
+
+ - scene deserialization allows for a user defined callback after a new scene node is created.
+
+ - Fixed tangent mesh loading from .irrmesh files.
+
+ - OpenGL clamp modes are now properly set.
+
+ - transformMesh renamed to transform, also supports meshbuffers now.
+
+ - vector3d::rotationToDirection added.
+
+ - New mesh generators for cone and cylinder.
+
+ - Hardware accelerated Vertex and Index Buffer support finally integrated into Irrlicht. Thanks to a resource handling idea by Klasker and the almost immediate implementation by Luke, Irrlicht now supports VBOs under OpenGL and D3D.
+   Hardware buffers make rendering the same vertices much faster. To use this feature with a mesh, simply set a usage type via MeshBuffer->setHardwareMappingHint(scene::EHM_STATIC). The driver will upload the vertices and indices on the next draw and reuse this information without the need to upload it each frame.
+   Vertex and Index buffers can also be updated separately, which is e.g. useful for the terrain node's LOD.
+
+ - Changed FBO creation according to Nadro's patch. Seems to have zbuffer problems currently.
+
+ - Update to libpng 1.2.29
+
+ - Compiler flag for PerfHUD support added.
+
+ - recalculateNormals and tangent space creation enhancements by ryanclark.
+
+ - Added getColorFormat methods for device and driver, returning the color format of the device's window and the driver's framebuffer.
+
+ - Added isFullscreen method.
+
+ - Added isWindowFocused and isWindowMinimized methods.
+
+ - Screenshots are now always made from the frontbuffer, so always the last completely rendered image is captured. However, overlapping windows may corrupt those parts of the screenshot (as was previously happening with d3d already).
+
+ - New device creation parameter to disable Irrlicht's system event handling.
+
+ - New device creation parameter to specify depth bits.
+
+ - New device creation parameter to request alpha channel in framebuffer.
+
+ - Draw2DImage methods under OpenGL now also handle RTTs correctly.
+
+ - Fixed RTT bug which lead to strangely clamped textures.
+
+ - Speed improvement for screenshots on some Intel cards under OpenGL.
+
+ - My3D file loader fixed.
+
+ - Terrain mesh performance increased.
+
+ - Fixed mem leak in cube node.
+
+ - Compiler errors in shaders won't corrupt the material renderer list anymore.
+
+ - Quake3 shader files now have properly working texture matrices again.
+
  - FPS and Maya style cameras are now standard cameras with a special animator.
   - ISceneNodeAnimator now inherits IEventReceiver
   - New method ISceneNodeAnimator::isEventReceiverEnabled, returns false by default
   - CCameraSceneNode::OnEvent passes events to animators with enabled event receivers
   - ISceneNodeAnimatorCameraFPS and ISceneNodeAnimatorCameraMaya interfaces for changing camera settings at run-time.
 
+ - Changed SExposedVideoData to use void* instead of s32. Fixed 64bit portability.
+
+ - Added support for front face culling.
+
+ - Fix for HLSL shaders in one file.
+
+ - Billboard::setColor bug fix by rogerborg.
+
+ - Scene node sorting uses squared distances now.
+
+ - Enhanced API for hte math functions. Many of them will now return a reference to *this for chained method invocations.
+
+ - prevent .x loader to load .xml files.
+
+ - AntiAlias support for OSX device.
+
+ - Period character handling bug fixed.
+
+ - New filesystem methods for filename handling.
+
+ - added getVideoModeList and getDesktopResolution support for OSX
+
+ - Octree supports tangent meshes now. Some performance improvements for the generation.
+
+ - Fix mouse pointer and fullscreen mode problems in OSX.
+
+ - Make cube and sphere scene node a mesh scene node (for access to the cube/sphere mesh).
+
+ - Support for normal maps in 3ds files. Mem leak fixed. Loading for files with keyframe data fixed.
+
+ - BillboardTextSceneNode is now an IBillboardSceneNode and an ITextSceneNode.
+
+ - Support for external windows under Linux.
+
+ - .X loader bug fixes.
+
+ - Better debug visualization for MeshSceneNodes.
+
+ - Fixed bug in material serialization when using the NullDriver.
+
+ - Fix for Win32 CursorControl::setVisible
+
+ - Support for LWO files.
+
+ - Support for Collada 1.4 files.
+
+ - Better and faster terrain smoothing by Frosty Topaz.
+
  - Fixed a performance bug in ISceneNode constructor reported by izhbq412
 
  - Added volume light scene node
 
+ - .obj files now won't duplicate vertices unnecessarily. This allows recalculation of smooth normals and other things, and is also faster when rendering. The loading is a little slower now.
+   They also support normal maps and texture clamping now. Group support added, can be ignored via scene manager attribute scene::OBJ_LOADER_IGNORE_GROUPS.
+   Normals will be calculated if the file doesn't provide them.
+
  - Better fix for hires timers on dual core machines by RogerBorg
 
- - added Initial Windows Mobile 6 Version. (30.12.2006 TA)
+ - added Initial Windows Mobile 6 Version.
   - Windows Mobile 6 SDK
   - Visual Studio 2005
+
+ - b3d meshes now always contain proper normals. Also some other bugs fixed.
 
  - Burningvideo: MipMap Selection repaired
 
@@ -22,14 +144,19 @@ Changes in version 1.5 (... 2008)
 
  - Added collision manager speedup patch by RogerBorg.
 
- - Hardware accelerated Vertex and Index Buffer support finally integrated into Irrlicht. Thanks to a resource handling idea by Klasker and the almost immediate implementation by Luke, Irrlicht now supports VBOs under OpenGL. D3D will follow soon.
-   Hardware buffers make rendering the same vertices much faster. In some cases this can be more than 10x faster. To use this feature with a mesh simple set a usage type, e.g. via MeshBuffer->setHardwareMappingHint(scene::EHM_STATIC). The driver will upload the vertices and indices on the next draw and reuse this information without the need to upload it each frame.
+ - The d3d textures don't keep the initial IImage copied, but use the texture data to recover.
+
+ - SDL device character handling enhanced.
 
  - MeshBuffers can now access the elements of the S3DVertex base class in all vertex types directly, instead of using the getVertices() pointer access. This simplifies simple mesh manipulations as it does not require a switch statement over all vertex types.
 
+ - More OpenGL renderstate bugs fixed
+
  - GLSL changes for setting arrays. Also allow for only pixel or vertex shader to be set.
 
- - Some bugfixes for Joint handling and skinned meshes.
+ - Bugfix for removeChild in AnimatedMeshSceneNode.
+
+ - Some bugfixes for Joint handling and skinned meshes. Added getJointCount in IAnimatedMeshSceneNode and isStatic in ISkinnedMesh.
 
  - Added WAL image format support based on the original loader by Murphy McCauley, written for Irrlicht around version 0.7.
 
@@ -47,11 +174,15 @@ Changes in version 1.5 (... 2008)
 
  - GUI:
    - Checking IsEnabled is now consistent across all GUI elements
+   - Move window to front bug fixed.
    - Disabling the BMP loader now compiles without the built-in font
    - Added setTextAlignment to IGUIComboBox
+   - Avoid dropping skin pointer which is in use.
+   - Better warning for fonts without regions (sometimes wrong file is loaded by the user).
    - Fixed a bug in CGUISpriteBank which caused a crash when a non-looping animated sprite reached the end of its animation.
    - Modal screens no longer flash invisible children when rejecting a focus change.
    - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
+   - EditBox didn't draw children.
 
 -------------------------------------------
 Changes in version 1.4.1 (04 Jun 2008)
