@@ -1,5 +1,13 @@
 Changes in version 1.5 (... 2008)
 
+ - Enable use of other meshes for shadow mesh generation, can be used to speed up shadow generation and rendering for complex meshes. Patch based on a version by tonic.
+
+ - Fixed Software renderer color flicker, was a signed shift bug I believe.
+
+ - Fixed usage of SIrrCreationParameters struct, which dind't have copy constructor and assignment operator anymore, since the Irrlicht version string was made const.
+
+ - New glext.h (version 40)
+
  - Added support for read-only locking of textures. Can speed up those calls.
 
  - Added support for locking RTTs under OpenGL.
@@ -20,7 +28,8 @@ Changes in version 1.5 (... 2008)
 
  - OpenGL clamp modes are now properly set.
 
- - transformMesh renamed to transform, also supports meshbuffers now.
+ - IMeshManipulator::transformMesh renamed to transform, also supports meshbuffers now.
+   scaleMesh renamed to scale, supports meshbuffers as well.
 
  - vector3d::rotationToDirection added.
 

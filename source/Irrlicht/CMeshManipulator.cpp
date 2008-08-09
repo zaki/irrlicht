@@ -310,9 +310,8 @@ void CMeshManipulator::transform(scene::IMesh* mesh, const core::matrix4& m) con
 }
 
 
-//! Scales the whole mesh.
-//! \param mesh: Mesh on which the operation is performed.
-void CMeshManipulator::scaleMesh(scene::IMesh* mesh, const core::vector3df& scale) const
+//! Scales the actual mesh, not a scene node.
+void CMeshManipulator::scale(scene::IMesh* mesh, const core::vector3df& factor) const
 {
 	if (!mesh)
 		return;
@@ -323,20 +322,7 @@ void CMeshManipulator::scaleMesh(scene::IMesh* mesh, const core::vector3df& scal
 	for ( u32 b=0; b<bcount; ++b)
 	{
 		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		const u32 vtxcnt = buffer->getVertexCount();
-		core::aabbox3df bufferbox;
-		u32 i;
-
-		if (vtxcnt != 0)
-			bufferbox.reset(buffer->getPosition(0) * scale);
-
-		for ( i=0; i<vtxcnt; ++i)
-		{
-			buffer->getPosition(i) *= scale;
-			bufferbox.addInternalPoint(buffer->getPosition(i));
-		}
-
-		buffer->setBoundingBox( bufferbox );
+		scale(buffer, factor);
 
 		if (b == 0)
 			meshbox.reset(buffer->getBoundingBox());
@@ -345,6 +331,28 @@ void CMeshManipulator::scaleMesh(scene::IMesh* mesh, const core::vector3df& scal
 	}
 
 	mesh->setBoundingBox( meshbox );
+}
+
+
+//! Scales the actual meshbuffer, not a scene node.
+void CMeshManipulator::scale(scene::IMeshBuffer* buffer, const core::vector3df& factor) const
+{
+	if (!buffer)
+		return;
+
+	const u32 vtxcnt = buffer->getVertexCount();
+	core::aabbox3df bufferbox;
+
+	if (vtxcnt != 0)
+		bufferbox.reset(buffer->getPosition(0) * factor);
+
+	for (u32 i=0; i<vtxcnt; ++i)
+	{
+		buffer->getPosition(i) *= factor;
+			bufferbox.addInternalPoint(buffer->getPosition(i));
+	}
+
+	buffer->setBoundingBox(bufferbox);
 }
 
 

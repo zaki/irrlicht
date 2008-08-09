@@ -13,25 +13,21 @@ namespace scene
 {
 
 //! An interface for easy manipulation of meshes.
-/** Scale, set alpha value, flip surfaces, and so on. This exists for fixing problems 
- with wrong imported or exported meshes quickly after loading. It is not intended for doing mesh
- modifications and/or animations during runtime.
+/** Scale, set alpha value, flip surfaces, and so on. This exists for fixing
+problems with wrong imported or exported meshes quickly after loading. It is
+not intended for doing mesh modifications and/or animations during runtime.
 */
 class CMeshManipulator : public IMeshManipulator
 {
 public:
-
-	//! destructor
-	virtual ~CMeshManipulator() {}
-
-	//! Flips the direction of surfaces. Changes backfacing triangles to frontfacing
-	//! triangles and vice versa.
-	//! \param mesh: Mesh on which the operation is performed.
+	//! Flips the direction of surfaces.
+	/** Changes backfacing triangles to frontfacing triangles and vice versa.
+	\param mesh: Mesh on which the operation is performed. */
 	virtual void flipSurfaces(scene::IMesh* mesh) const;
 
 	//! Sets the alpha vertex color value of the whole mesh to a new value
-	//! \param mesh: Mesh on which the operation is performed.
-	//! \param alpha: New alpha for the vertex color.
+	/** \param mesh: Mesh on which the operation is performed.
+	\param alpha: New alpha for the vertex color. */
 	virtual void setVertexColorAlpha(scene::IMesh* mesh, s32 alpha) const;
 
 	//! Sets the colors of all vertices to one color
@@ -47,10 +43,15 @@ public:
 	    \param smooth: Whether to use smoothed normals. */
 	virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const;
 
-	//! Scales the whole mesh.
-	//! \param mesh: Mesh on which the operation is performed.
-	//! \param scale: 3D Vector, defining the value, for each axis, to scale the mesh by.
-	virtual void scaleMesh(scene::IMesh* mesh, const core::vector3df& scale) const;
+	//! Scales the actual mesh, not the scene node.
+	/** \param mesh Mesh on which the operation is performed.
+	\param factor Vector which defines the scale for each axis. */
+	virtual void scale(scene::IMesh* mesh, const core::vector3df& factor) const;
+
+	//! Scales the actual meshbuffer, not the scene node.
+	/** \param buffer MeshBuffer on which the operation is performed.
+	\param factor Vector which defines the scale for each axis. */
+	virtual void scale(scene::IMeshBuffer* buffer, const core::vector3df& factor) const;
 
 	//! Applies a transformation to a meshbuffer
 	/** \param buffer: Meshbuffer on which the operation is performed.
@@ -66,10 +67,10 @@ public:
 	virtual SMesh* createMeshCopy(scene::IMesh* mesh) const;
 
 	//! Creates a planar texture mapping on the mesh
-	//! \param mesh: Mesh on which the operation is performed.
-	//! \param resolution: resolution of the planar mapping. This is the value
-	//! specifying which is the relation between world space and 
-	//! texture coordinate space.
+	/** \param mesh: Mesh on which the operation is performed.
+	\param resolution: resolution of the planar mapping. This is the value
+	specifying which is the relation between world space and 
+	texture coordinate space. */
 	virtual void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution) const;
 
 	//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
