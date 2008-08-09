@@ -153,6 +153,18 @@ namespace scene
 			return Vertices[i].Normal;
 		}
 
+		//! returns texture coord of vertex i
+		virtual const core::vector2df& getTCoords(u32 i) const
+		{
+			return Vertices[i].TCoords;
+		}
+
+		//! returns texture coord of vertex i
+		virtual core::vector2df& getTCoords(u32 i)
+		{
+			return Vertices[i].TCoords;
+		}
+
 
 		//! Append the vertices and indices to the current buffer
 		/** Only works for compatible types, i.e. either the same type
