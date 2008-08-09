@@ -75,6 +75,18 @@ namespace scene
 		\param factor Scale factor for each axis. */
 		virtual void scaleMesh(IMesh* mesh, const core::vector3df& factor) const {return scale(mesh,factor);}
 
+		//! Scale the texture coords of a mesh.
+		/** \param mesh Mesh on which the operation is performed.
+		\param factor Vector which defines the scale for each axis.
+		\param level Number of texture coord, starting from 1. Support for level 2 exists for LightMap buffers. */
+		virtual void scaleTCoords(scene::IMesh* mesh, const core::vector2df& factor, u32 layer=1) const =0;
+
+		//! Scale the texture coords of a meshbuffer.
+		/** \param mesh Mesh on which the operation is performed.
+		\param factor Vector which defines the scale for each axis.
+		\param level Number of texture coord, starting from 1. Support for level 2 exists for LightMap buffers. */
+		virtual void scaleTCoords(scene::IMeshBuffer* buffer, const core::vector2df& factor, u32 level=1) const =0;
+
 		//! Applies a transformation to a mesh
 		/** \param mesh Mesh on which the operation is performed.
 		\param m transformation matrix. */

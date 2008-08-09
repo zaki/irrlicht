@@ -1,5 +1,7 @@
 Changes in version 1.5 (... 2008)
 
+ - Added scaleTCoords methods to MeshManipulator
+
  - Enable use of other meshes for shadow mesh generation, can be used to speed up shadow generation and rendering for complex meshes. Patch based on a version by tonic.
 
  - Fixed Software renderer color flicker, was a signed shift bug I believe.

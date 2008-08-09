@@ -282,6 +282,34 @@ struct SSkinMeshBuffer : public IMeshBuffer
 		}
 	}
 
+	//! returns texture coords of vertex i
+	virtual const core::vector2df& getTCoords(u32 i) const
+	{
+		switch (VertexType)
+		{
+			case video::EVT_2TCOORDS:
+				return Vertices_2TCoords[i].TCoords;
+			case video::EVT_TANGENTS:
+				return Vertices_Tangents[i].TCoords;
+			default:
+				return Vertices_Standard[i].TCoords;
+		}
+	}
+
+	//! returns texture coords of vertex i
+	virtual core::vector2df& getTCoords(u32 i)
+	{
+		switch (VertexType)
+		{
+			case video::EVT_2TCOORDS:
+				return Vertices_2TCoords[i].TCoords;
+			case video::EVT_TANGENTS:
+				return Vertices_Tangents[i].TCoords;
+			default:
+				return Vertices_Standard[i].TCoords;
+		}
+	}
+
 	//! append the vertices and indices to the current buffer
 	virtual void append(const void* const vertices, u32 numVertices, const u16* const indices, u32 numIndices) {}
 
