@@ -59,10 +59,21 @@ namespace scene
 		\param angleWeighted: If the normals shall be smoothed in relation to their angles. More expensive, but also higher precision. */
 		virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const = 0;
 
-		//! Scales the whole mesh.
+		//! Scales the actual mesh, not a scene node.
 		/** \param mesh Mesh on which the operation is performed.
-		\param scale Scale factor. */
-		virtual void scaleMesh(IMesh* mesh, const core::vector3df& scale) const = 0;
+		\param factor Scale factor for each axis. */
+		virtual void scale(IMesh* mesh, const core::vector3df& factor) const = 0;
+
+		//! Scales the actual meshbuffer, not a scene node.
+		/** \param buffer Meshbuffer on which the operation is performed.
+		\param factor Scale factor for each axis. */
+		virtual void scale(IMeshBuffer* buffer, const core::vector3df& factor) const = 0;
+
+		//! Scales the actual mesh, not a scene node.
+		/** \deprecated
+		\param mesh Mesh on which the operation is performed.
+		\param factor Scale factor for each axis. */
+		virtual void scaleMesh(IMesh* mesh, const core::vector3df& factor) const {return scale(mesh,factor);}
 
 		//! Applies a transformation to a mesh
 		/** \param mesh Mesh on which the operation is performed.
