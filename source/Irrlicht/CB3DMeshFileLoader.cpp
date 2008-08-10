@@ -826,13 +826,13 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
 	{
 		SB3dTexture* B3dTexture = material.Textures[i];
-		if (B3dTexture->TextureName.size() && !material.Material.getTexture(i))
+		if (B3dTexture && B3dTexture->TextureName.size() && !material.Material.getTexture(i))
 		{
 			SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, (B3dTexture->Flags & 0x8) ? true:false);
 			material.Material.setTexture(i, SceneManager->getVideoDriver()->getTexture( B3dTexture->TextureName.c_str() ));
 			if (material.Textures[i]->Flags & 0x10) // Clamp U
 				material.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;
-			if (material.Textures[i]->Flags & 0x20) // Clamp V, TODO: Needs another attribute
+			if (material.Textures[i]->Flags & 0x20) // Clamp V
 				material.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;
 		}
 	}
