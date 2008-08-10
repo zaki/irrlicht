@@ -117,8 +117,8 @@ namespace core
 		bool isBetweenPoints(const vector3d<T>& begin, const vector3d<T>& end) const
 		{
 			const T f = (end - begin).getLengthSQ();
-			return getDistanceFromSQ(begin) < f &&
-				getDistanceFromSQ(end) < f;
+			return getDistanceFromSQ(begin) <= f &&
+				getDistanceFromSQ(end) <= f;
 		}
 
 		//! Normalizes the vector.
