@@ -218,8 +218,8 @@ public:
 	bool isBetweenPoints(const vector2d<T>& begin, const vector2d<T>& end) const
 	{
 		const T f = (end - begin).getLengthSQ();
-		return getDistanceFromSQ(begin) < f &&
-			getDistanceFromSQ(end) < f;
+		return getDistanceFromSQ(begin) <= f &&
+			getDistanceFromSQ(end) <= f;
 	}
 
 	//! Get the interpolated vector

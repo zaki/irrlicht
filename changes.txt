@@ -1,5 +1,7 @@
 Changes in version 1.5 (... 2008)
 
+ - isBetweenPoints return true now even for the begin and end points, i.e. line segments are now including their start and end.
+
  - Fix XML reader creation for non-existing files and invalid callbacks.
 
  - Avoid loading textures which are not used by the mesh in b3d loader.
