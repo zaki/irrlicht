@@ -64,7 +64,14 @@ namespace scene
 	};
 
 	//! Struct for holding a mesh with a single material
-	/** SMeshBuffer is a simple implementation of a MeshBuffer. */
+	/** SMeshBuffer is a simple implementation of a MeshBuffer.
+
+	Since meshbuffers are used for drawing, and hence will be exposed
+	to the driver, chances are high that they are grab()'ed from somewhere.
+	It's therefore required to dynamically allocate meshbuffers which are
+	passed to a video driver and only drop hte buffer once it's not used in
+	the current code block anymore.
+	*/
 	class IMeshBuffer : public virtual IReferenceCounted
 	{
 	public:
