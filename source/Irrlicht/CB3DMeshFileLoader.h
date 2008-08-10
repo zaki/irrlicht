@@ -66,7 +66,7 @@ private:
 
 	struct SB3dTexture
 	{
-		video::ITexture* Texture;
+		core::stringc TextureName;
 		s32 Flags;
 		s32 Blend;
 		f32 Xpos;
@@ -103,6 +103,8 @@ private:
 	bool readChunkTEXS();
 	bool readChunkBRUS();
 
+	void loadTextures(SB3dMaterial& material) const;
+
 	core::stringc readString();
 	core::stringc stripPathFromString(const core::stringc& string, bool returnPath=false) const;
 	void readFloats(f32* vec, u32 count);
@@ -121,7 +123,6 @@ private:
 	core::array<scene::SSkinMeshBuffer*> *Buffers;
 	core::array<CSkinnedMesh::SJoint*> *AllJoints;
 
-	//
 	ISceneManager*	SceneManager;
 	CSkinnedMesh*	AnimatedMesh;
 	io::IReadFile*	B3DFile;
