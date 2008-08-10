@@ -550,7 +550,9 @@ private:
 	//! reads the xml file and converts it into the wanted character format.
 	bool readFile(IFileReadCallBack* callback)
 	{
-		int size = callback->getSize();		
+		long size = callback->getSize();		
+		if (size<0)
+			return false;
 		size += 4; // We need two terminating 0's at the end.
 		           // For ASCII we need 1 0's, for UTF-16 2, for UTF-32 4.
 
