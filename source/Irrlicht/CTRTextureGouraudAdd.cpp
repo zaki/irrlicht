@@ -151,18 +151,18 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 			tmpDiv = 1.0f / (f32)(v2->Pos.Y - v1->Pos.Y);
 			rightdeltaxf = (v2->Pos.X - v1->Pos.X) * tmpDiv;
 			rightZStep = (s32)((v2->ZValue - v1->ZValue) * tmpDiv);
-			rightStepR = (s32)(((video::getRed(v2->Color)<<8) - rightR) * tmpDiv);
-			rightStepG = (s32)(((video::getGreen(v2->Color)<<8) - rightG) * tmpDiv);
-			rightStepB = (s32)(((video::getBlue(v2->Color)<<8) - rightB) * tmpDiv);
+			rightStepR = (s32)(((s32)(video::getRed(v2->Color)<<8) - rightR) * tmpDiv);
+			rightStepG = (s32)(((s32)(video::getGreen(v2->Color)<<8) - rightG) * tmpDiv);
+			rightStepB = (s32)(((s32)(video::getBlue(v2->Color)<<8) - rightB) * tmpDiv);
 			rightTxStep = (s32)((v2->TCoords.X - rightTx) * tmpDiv);
 			rightTyStep = (s32)((v2->TCoords.Y - rightTy) * tmpDiv);
 
 			tmpDiv = 1.0f / (f32)height;
 			leftdeltaxf = (v3->Pos.X - v1->Pos.X) * tmpDiv;
 			leftZStep = (s32)((v3->ZValue - v1->ZValue) * tmpDiv);
-			leftStepR = (s32)(((video::getRed(v3->Color)<<8) - leftR) * tmpDiv);
-			leftStepG = (s32)(((video::getGreen(v3->Color)<<8) - leftG) * tmpDiv);
-			leftStepB = (s32)(((video::getBlue(v3->Color)<<8) - leftB) * tmpDiv);
+			leftStepR = (s32)(((s32)(video::getRed(v3->Color)<<8) - leftR) * tmpDiv);
+			leftStepG = (s32)(((s32)(video::getGreen(v3->Color)<<8) - leftG) * tmpDiv);
+			leftStepB = (s32)(((s32)(video::getBlue(v3->Color)<<8) - leftB) * tmpDiv);
 			leftTxStep = (s32)((v3->TCoords.X - leftTx) * tmpDiv);
 			leftTyStep = (s32)((v3->TCoords.Y - leftTy) * tmpDiv);
 		}
@@ -171,18 +171,18 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 			tmpDiv = 1.0f / (f32)height;
 			rightdeltaxf = (v3->Pos.X - v1->Pos.X) * tmpDiv;
 			rightZStep = (s32)((v3->ZValue - v1->ZValue) * tmpDiv);
-			rightStepR = (s32)(((video::getRed(v3->Color)<<8) - rightR) * tmpDiv);
-			rightStepG = (s32)(((video::getGreen(v3->Color)<<8) - rightG) * tmpDiv);
-			rightStepB = (s32)(((video::getBlue(v3->Color)<<8) - rightB) * tmpDiv);
+			rightStepR = (s32)(((s32)(video::getRed(v3->Color)<<8) - rightR) * tmpDiv);
+			rightStepG = (s32)(((s32)(video::getGreen(v3->Color)<<8) - rightG) * tmpDiv);
+			rightStepB = (s32)(((s32)(video::getBlue(v3->Color)<<8) - rightB) * tmpDiv);
 			rightTxStep = (s32)((v3->TCoords.X - rightTx) * tmpDiv);
 			rightTyStep = (s32)((v3->TCoords.Y - rightTy) * tmpDiv);
 
 			tmpDiv = 1.0f / (f32)(v2->Pos.Y - v1->Pos.Y);
 			leftdeltaxf = (v2->Pos.X - v1->Pos.X) * tmpDiv;
 			leftZStep = (s32)((v2->ZValue - v1->ZValue) * tmpDiv);
-			leftStepR = (s32)(((video::getRed(v2->Color)<<8) - leftR) * tmpDiv);
-			leftStepG = (s32)(((video::getGreen(v2->Color)<<8) - leftG) * tmpDiv);
-			leftStepB = (s32)(((video::getBlue(v2->Color)<<8) - leftB) * tmpDiv);
+			leftStepR = (s32)(((s32)(video::getRed(v2->Color)<<8) - leftR) * tmpDiv);
+			leftStepG = (s32)(((s32)(video::getGreen(v2->Color)<<8) - leftG) * tmpDiv);
+			leftStepB = (s32)(((s32)(video::getBlue(v2->Color)<<8) - leftB) * tmpDiv);
 			leftTxStep = (s32)((v2->TCoords.X - leftTx) * tmpDiv);
 			leftTyStep = (s32)((v2->TCoords.Y - leftTy) * tmpDiv);
 		}
@@ -242,7 +242,7 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 
 				// perform some clipping
 				// thanks to a correction by hybrid
-                // calculations delayed to correctly propagate to textures etc.
+				// calculations delayed to correctly propagate to textures etc.
 				s32 tDiffLeft=0, tDiffRight=0;
 				if (leftx<ViewPortRect.UpperLeftCorner.X)
 					tDiffLeft=ViewPortRect.UpperLeftCorner.X-leftx;
@@ -286,12 +286,12 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 							//*spanZTarget = spanZValue;
 							color = lockedTexture[((spanTy>>8)&textureYMask) * lockedTextureWidth + ((spanTx>>8)&textureXMask)];
 
-							int basis = *hSpanBegin;
-							int r = (video::getRed(basis)<<3) + (video::getRed(color)<<3);
+							s32 basis = *hSpanBegin;
+							s32 r = (video::getRed(basis)<<3) + (video::getRed(color)<<3);
 							if (r > 255) r = 255;
-							int g = (video::getGreen(basis)<<3) + (video::getGreen(color)<<3);
+							s32 g = (video::getGreen(basis)<<3) + (video::getGreen(color)<<3);
 							if (g > 255) g = 255;
-							int b = (video::getBlue(basis)<<3) + (video::getBlue(color)<<3);
+							s32 b = (video::getBlue(basis)<<3) + (video::getBlue(color)<<3);
 							if (b > 255) b = 255;
 
 							*hSpanBegin = video::RGB16(r, g, b);
@@ -350,9 +350,9 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 				rightR = video::getRed(v2->Color)<<8;
 				rightG = video::getGreen(v2->Color)<<8;
 				rightB = video::getBlue(v2->Color)<<8;
-				rightStepR = (s32)(((video::getRed(v3->Color)<<8) - rightR) * tmpDiv);
-				rightStepG = (s32)(((video::getGreen(v3->Color)<<8) - rightG) * tmpDiv);
-				rightStepB = (s32)(((video::getBlue(v3->Color)<<8) - rightB) * tmpDiv);
+				rightStepR = (s32)(((s32)(video::getRed(v3->Color)<<8) - rightR) * tmpDiv);
+				rightStepG = (s32)(((s32)(video::getGreen(v3->Color)<<8) - rightG) * tmpDiv);
+				rightStepB = (s32)(((s32)(video::getBlue(v3->Color)<<8) - rightB) * tmpDiv);
 
 				rightTx = v2->TCoords.X;
 				rightTy = v2->TCoords.Y;
@@ -372,9 +372,9 @@ void CTRTextureGouraudAdd::drawIndexedTriangleList(S2DVertex* vertices, s32 vert
 				leftR = video::getRed(v2->Color)<<8;
 				leftG = video::getGreen(v2->Color)<<8;
 				leftB = video::getBlue(v2->Color)<<8;
-				leftStepR = (s32)(((video::getRed(v3->Color)<<8) - leftR) * tmpDiv);
-				leftStepG = (s32)(((video::getGreen(v3->Color)<<8) - leftG) * tmpDiv);
-				leftStepB = (s32)(((video::getBlue(v3->Color)<<8) - leftB) * tmpDiv);
+				leftStepR = (s32)(((s32)(video::getRed(v3->Color)<<8) - leftR) * tmpDiv);
+				leftStepG = (s32)(((s32)(video::getGreen(v3->Color)<<8) - leftG) * tmpDiv);
+				leftStepB = (s32)(((s32)(video::getBlue(v3->Color)<<8) - leftB) * tmpDiv);
 
 				leftTx = v2->TCoords.X;
 				leftTy = v2->TCoords.Y;
