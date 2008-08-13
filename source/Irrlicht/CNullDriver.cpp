@@ -12,6 +12,7 @@
 #include "IImageLoader.h"
 #include "IImageWriter.h"
 #include "IMaterialRenderer.h"
+#include "CMeshManipulator.h"
 
 
 namespace irr
@@ -68,7 +69,7 @@ IImageWriter* createImageWriterPPM();
 
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
-: FileSystem(io), ViewPort(0,0,0,0), ScreenSize(screenSize),
+: FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
 	PrimitivesDrawn(0), TextureCreationFlags(0)
 {
 	#ifdef _DEBUG
@@ -81,6 +82,9 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, true);
 
 	ViewPort = core::rect<s32>(core::position2d<s32>(0,0), screenSize);
+
+	// create manipulator
+	MeshManipulator = new scene::CMeshManipulator();
 
 	if (FileSystem)
 		FileSystem->grab();
@@ -139,23 +143,20 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 }
 
 
-
 //! destructor
 CNullDriver::~CNullDriver()
 {
-	// drop file system
 	if (FileSystem)
 		FileSystem->drop();
 
-	// delete textures
+	if (MeshManipulator)
+		MeshManipulator->drop();
 	deleteAllTextures();
 
-	// delete surface loader
 	u32 i;
 	for (i=0; i<SurfaceLoader.size(); ++i)
 		SurfaceLoader[i]->drop();
 
-	// delete surface writer
 	for (i=0; i<SurfaceWriter.size(); ++i)
 		SurfaceWriter[i]->drop();
 
@@ -1231,9 +1232,30 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 }
 
 
+//! Creates an empty software image.
+IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size)
+{
+        return new CImage(format, size);
+}
+
+
+//! Creates a software image from another image.
+IImage* CNullDriver::createImage(ECOLOR_FORMAT format, IImage *imageToCopy)
+{
+        return new CImage(format, imageToCopy);
+}
+
+
+//! Creates a software image from part of another image.
+IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32>& pos, const core::dimension2d<s32>& size)
+{
+        return new CImage(imageToCopy, pos, size);
+}
+
+
 //! Sets the fog mode.
-void CNullDriver::setFog(SColor color, bool linearFog, f32 start, f32 end, f32 density,
-						bool pixelFog, bool rangeFog)
+void CNullDriver::setFog(SColor color, bool linearFog, f32 start, f32 end,
+		f32 density, bool pixelFog, bool rangeFog)
 {
 	FogColor = color;
 	LinearFog = linearFog;
@@ -1789,6 +1811,14 @@ ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& s
 void CNullDriver::clearZBuffer()
 {
 }
+
+
+//! Returns a pointer to the mesh manipulator.
+scene::IMeshManipulator* CNullDriver::getMeshManipulator()
+{
+	return MeshManipulator;
+}
+
 
 //! Returns an image created from the last rendered frame.
 IImage* CNullDriver::createScreenShot()

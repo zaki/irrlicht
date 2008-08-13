@@ -7,6 +7,7 @@
 
 #include "IReferenceCounted.h"
 #include "position2d.h"
+#include "rect.h"
 #include "SColor.h"
 
 namespace irr
@@ -42,9 +43,6 @@ these images into their (hardware) textures.
 class IImage : public virtual IReferenceCounted
 {
 public:
-
-	//! Destructor
-	virtual ~IImage() {}
 
 	//! Lock function. Use this to get a pointer to the image data.
 	/** After you don't need the pointer anymore, you must call unlock().
@@ -96,13 +94,27 @@ public:
 	virtual u32 getAlphaMask() const = 0;
 
 	//! Returns pitch of image
-	virtual u32 getPitch() const = 0;
+	virtual u32 getPitch() const =0;
 
 	//! Copies the image into the target, scaling the image to fit
-	virtual void copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format=ECF_A8R8G8B8, u32 pitch=0) = 0;
+	virtual void copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format=ECF_A8R8G8B8, u32 pitch=0) =0;
 
 	//! Copies the image into the target, scaling the image to fit
-	virtual void copyToScaling(IImage* target) = 0;
+	virtual void copyToScaling(IImage* target) =0;
+
+	//! copies this surface into another
+	virtual void copyTo(IImage* target, const core::position2d<s32>& pos=core::position2d<s32>(0,0)) =0;
+
+	//! copies this surface into another
+	virtual void copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect=0) =0;
+
+	//! copies this surface into another, using the alpha mask, an cliprect and a color to add with
+	virtual void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos,
+			const core::rect<s32>& sourceRect, const SColor &color,
+			const core::rect<s32>* clipRect = 0) =0;
+
+	//! fills the surface with black or white
+	virtual void fill(const SColor &color) =0;
 
 };
 

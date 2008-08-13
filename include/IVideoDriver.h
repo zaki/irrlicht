@@ -29,6 +29,7 @@ namespace io
 namespace scene
 {
 	class IMeshBuffer;
+	class IMeshManipulator;
 } // end namespace scene
 
 namespace video
@@ -781,6 +782,35 @@ namespace video
 			bool ownForeignMemory=false,
 			bool deleteMemory = true) = 0;
 
+		//! Creates an empty software image.
+		/**
+		\param format Desired color format of the image.
+		\param size Size of the image to create.
+		\return The created image.
+		If you no longer need the image, you should call IImage::drop().
+		See IReferenceCounted::drop() for more information. */
+		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size) =0;
+
+		//! Creates a software image by converting it to given format from another image.
+		/**
+		\param format Desired color format of the image.
+		\param imageToCopy Image to copy to the new image.
+		\return The created image.
+		If you no longer need the image, you should call IImage::drop().
+		See IReferenceCounted::drop() for more information. */
+		virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
+
+		//! Creates a software image from a part of another image.
+		/**
+		\param imageToCopy Image to copy the the new image in part.
+		\param pos Position of rectangle to copy.
+		\param size Extents of rectangle to copy.
+		\return The created image.
+		If you no longer need the image, you should call IImage::drop().
+		See IReferenceCounted::drop() for more information. */
+                virtual IImage* createImage(IImage* imageToCopy,
+		    const core::position2d<s32>& pos, const core::dimension2d<s32>& size) =0;
+
 		//! Event handler for resize events. Only used by the engine internally.
 		/** Used to notify the driver that the window was resized.
 		Usually, there is no need to call this method. */
@@ -874,6 +904,9 @@ namespace video
 		if the video driver does not support this. For example the
 		Software driver and the Null driver will always return 0. */
 		virtual IGPUProgrammingServices* getGPUProgrammingServices() = 0;
+
+		//! Returns a pointer to the mesh manipulator.
+		virtual scene::IMeshManipulator* getMeshManipulator() = 0;
 
 		//! Clears the ZBuffer.
 		/** Note that you usually need not to call this method, as it

@@ -27,7 +27,7 @@ class COgreMeshFileLoader : public IMeshLoader
 public:
 
 	//! Constructor
-	COgreMeshFileLoader(IMeshManipulator* manip,io::IFileSystem* fs, video::IVideoDriver* driver);
+	COgreMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver);
 
 	//! destructor
 	virtual ~COgreMeshFileLoader();
@@ -230,7 +230,6 @@ private:
 	core::array<OgreMaterial> Materials;
 
 	SMesh* Mesh;
-	IMeshManipulator* Manipulator;
 	u32 NumUV;
 };
 

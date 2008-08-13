@@ -84,43 +84,39 @@ public:
 	//! returns the color format
 	virtual ECOLOR_FORMAT getColorFormat() const;
 
-	//! draws a rectangle
-	void drawRectangle(const core::rect<s32>& rect, const SColor &color);
+	//! returns pitch of image
+	virtual u32 getPitch() const { return Pitch; }
+
+	//! copies this surface into another, scaling it to fit.
+	virtual void copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format, u32 pitch=0);
+
+	//! copies this surface into another, scaling it to fit.
+	virtual void copyToScaling(IImage* target);
 
 	//! copies this surface into another
-	void copyTo(IImage* target, const core::position2d<s32>& pos=core::position2d<s32>(0,0));
+	virtual void copyTo(IImage* target, const core::position2d<s32>& pos=core::position2d<s32>(0,0));
 
 	//! copies this surface into another
-	void copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect=0);
+	virtual void copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect=0);
 
 	//! copies this surface into another, using the alpha mask, an cliprect and a color to add with
-	void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos,
+	virtual void copyToWithAlpha(IImage* target, const core::position2d<s32>& pos,
 			const core::rect<s32>& sourceRect, const SColor &color,
 			const core::rect<s32>* clipRect = 0);
-
-	//! copies this surface into another, scaling it to fit.
-	void copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format, u32 pitch=0);
-
-	//! copies this surface into another, scaling it to fit.
-	void copyToScaling(IImage* target);
 
 	//! copies this surface into another, scaling it to fit, appyling a box filter
 	void copyToScalingBoxFilter(IImage* target, s32 bias = 0);
 
+	//! fills the surface with black or white
+	virtual void fill(const SColor &color);
+
+	//! draws a rectangle
+	void drawRectangle(const core::rect<s32>& rect, const SColor &color);
+
 	//! draws a line from to
 	void drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color);
 
-	//! fills the surface with black or white
-	void fill(const SColor &color);
-
-	//! returns pitch of image
-	virtual u32 getPitch() const
-	{
-		return Pitch;
-	}
-
 	static u32 getBitsPerPixelFromFormat(ECOLOR_FORMAT format);
-
 
 private:
 
