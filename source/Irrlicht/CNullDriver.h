@@ -286,12 +286,23 @@ namespace video
 		virtual IImage* createImageFromFile(io::IReadFile* file);
 
 		//! Creates a software image from a byte array.
-		//! \param useForeignMemory: If true, the image will use the data pointer
-		//! directly and own it from now on, which means it will also try to delete [] the
-		//! data when the image will be destructed. If false, the memory will by copied.
+		/** \param useForeignMemory: If true, the image will use the data pointer
+		directly and own it from now on, which means it will also try to delete [] the
+		data when the image will be destructed. If false, the memory will by copied. */
 		virtual IImage* createImageFromData(ECOLOR_FORMAT format,
 			const core::dimension2d<s32>& size, void *data,
 			bool ownForeignMemory=true, bool deleteForeignMemory = true);
+
+		//! Creates an empty software image.
+                virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
+
+
+		//! Creates a software image from another image.
+                virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy);
+
+		//! Creates a software image from part of another image.
+                virtual IImage* createImage(IImage* imageToCopy,
+                        const core::position2d<s32>& pos, const core::dimension2d<s32>& size);
 
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb);
@@ -317,10 +328,7 @@ namespace video
 			u32 ChangedID_Index;
 			u32 LastUsed;
 			scene::E_HARDWARE_MAPPING Mapped;
-
-
 		};
-
 
 		//! Gets hardware buffer link from a meshbuffer (may create or update buffer)
 		virtual SHWBufferLink *getBufferLink(const scene::IMeshBuffer* mb);
@@ -350,8 +358,8 @@ namespace video
 		virtual bool isHardwareBufferRecommend(const scene::IMeshBuffer* mb);
 
 	public:
-		//! Only used by the internal engine. Used to notify the driver that
-		//! the window was resized.
+		//! Only used by the engine internally.
+		/** Used to notify the driver that the window was resized. */
 		virtual void OnResize(const core::dimension2d<s32>& size);
 
 		//! Adds a new material renderer to the video device.
@@ -442,6 +450,9 @@ namespace video
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
 
+		//! Returns a pointer to the mesh manipulator.
+		virtual scene::IMeshManipulator* getMeshManipulator();
+		
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
 
@@ -569,6 +580,9 @@ namespace video
 		core::map< const scene::IMeshBuffer* , SHWBufferLink* > HWBufferMap;
 
 		io::IFileSystem* FileSystem;
+
+		//! mesh manipulator
+		scene::IMeshManipulator* MeshManipulator;
 
 		core::rect<s32> ViewPort;
 		core::dimension2d<s32> ScreenSize;

@@ -44,9 +44,10 @@ const u16 COGRE_SUBMESH_OPERATION= 0x4010;
 const u16 COGRE_SUBMESH_BONE_ASSIGNMENT= 0x4100;
 const u16 COGRE_SUBMESH_TEXTURE_ALIAS= 0x4200;
 
+
 //! Constructor
-COgreMeshFileLoader::COgreMeshFileLoader(IMeshManipulator* manip,io::IFileSystem* fs, video::IVideoDriver* driver)
-: FileSystem(fs), Driver(driver), SwapEndian(false), Mesh(0), Manipulator(manip), NumUV(0)
+COgreMeshFileLoader::COgreMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver)
+: FileSystem(fs), Driver(driver), SwapEndian(false), Mesh(0), NumUV(0)
 {
 
 	#ifdef _DEBUG
@@ -59,7 +60,6 @@ COgreMeshFileLoader::COgreMeshFileLoader(IMeshManipulator* manip,io::IFileSystem
 	if (Driver)
 		Driver->grab();
 }
-
 
 
 //! destructor
@@ -78,14 +78,12 @@ COgreMeshFileLoader::~COgreMeshFileLoader()
 }
 
 
-
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
 bool COgreMeshFileLoader::isALoadableFileExtension(const c8* filename) const
 {
 	return strstr(filename, ".mesh")!=0;
 }
-
 
 
 //! creates/loads an animated mesh from the file.
