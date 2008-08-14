@@ -44,10 +44,10 @@ namespace core
 		vector3d<T> operator/(const T v) const { T i=(T)1.0/v; return vector3d<T>(X * i, Y * i, Z * i); }
 		vector3d<T>& operator/=(const T v) { T i=(T)1.0/v; X*=i; Y*=i; Z*=i; return *this; }
 
-		bool operator<=(const vector3d<T>&other) const { return X<=other.X && Y<=other.Y && Z<=other.Z;};
-		bool operator>=(const vector3d<T>&other) const { return X>=other.X && Y>=other.Y && Z>=other.Z;};
-		bool operator<(const vector3d<T>&other) const { return X<other.X && Y<other.Y && Z<other.Z;};
-		bool operator>(const vector3d<T>&other) const { return X>other.X && Y>other.Y && Z>other.Z;};
+		bool operator<=(const vector3d<T>&other) const { return X<=other.X && Y<=other.Y && Z<=other.Z;}
+		bool operator>=(const vector3d<T>&other) const { return X>=other.X && Y>=other.Y && Z>=other.Z;}
+		bool operator<(const vector3d<T>&other) const { return X<other.X && Y<other.Y && Z<other.Z;}
+		bool operator>(const vector3d<T>&other) const { return X>other.X && Y>other.Y && Z>other.Z;}
 
 		//! use weak float compare
 		bool operator==(const vector3d<T>& other) const

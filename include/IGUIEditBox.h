@@ -23,9 +23,6 @@ namespace gui
 		IGUIEditBox(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_EDIT_BOX, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIEditBox() {};
-
 		//! Sets another skin independent font.
 		/** If this is set to zero, the button uses the font of the skin.
 		\param font: New font to set. */

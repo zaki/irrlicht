@@ -20,9 +20,6 @@ namespace gui
 		//! constructor
 		IGUIColorSelectDialog(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_COLOR_SELECT_DIALOG, environment, parent, id, rectangle) {}
-
-		//! destructor
-		virtual ~IGUIColorSelectDialog() {}
 	};
 
 

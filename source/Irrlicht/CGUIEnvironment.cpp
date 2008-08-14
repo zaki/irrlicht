@@ -276,7 +276,6 @@ bool CGUIEnvironment::setFocus(IGUIElement* element)
 	// element is the new focus so it doesn't have to be dropped
 	Focus = element;
 	
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;
 }
 
@@ -310,7 +309,6 @@ bool CGUIEnvironment::removeFocus(IGUIElement* element)
 		Focus = 0;
 	}
 	
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return true;
 }
 
@@ -368,13 +366,15 @@ void CGUIEnvironment::clear()
 //! called by ui if an event happened.
 bool CGUIEnvironment::OnEvent(const SEvent& event)
 {
+	bool ret = false;
 	if (UserReceiver && (event.EventType != EET_MOUSE_INPUT_EVENT) &&
 		(event.EventType != EET_GUI_EVENT || event.GUIEvent.Caller != this))
 	{
-		return UserReceiver->OnEvent(event);
+		ret = UserReceiver->OnEvent(event);
 	}
 
-	return false;
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return ret;
 }
 
 
@@ -515,7 +515,10 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 
 		// focus could have died in last call
 		if (!Focus && Hovered)
+		{
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return Hovered->OnEvent(event);
+		}
 
 		break;
 	case EET_KEY_INPUT_EVENT:
@@ -533,13 +536,17 @@ bool CGUIEnvironment::postEventFromUser(const SEvent& event)
 				}
 			}
 			if (Focus)
+			{
+				_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 				return Focus->OnEvent(event);
+			}
 		}
 		break;
 	default:
 		break;
 	} // end switch
 
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return false;
 }
 
@@ -650,10 +657,14 @@ bool CGUIEnvironment::saveGUI(const c8* filename, IGUIElement* start)
 {
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
 	if (!file)
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
+	}
 
 	bool ret = saveGUI(file, start);
 	file->drop();
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -662,11 +673,17 @@ bool CGUIEnvironment::saveGUI(const c8* filename, IGUIElement* start)
 bool CGUIEnvironment::saveGUI(io::IWriteFile* file, IGUIElement* start)
 {
 	if (!file)
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
+	}
 
 	io::IXMLWriter* writer = FileSystem->createXMLWriter(file);
 	if (!writer)
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
+	}
 
 	writer->writeXMLHeader();
 	writeGUIElement(writer, start ? start : this);
@@ -684,12 +701,14 @@ bool CGUIEnvironment::loadGUI(const c8* filename, IGUIElement* parent)
 	if (!read)
 	{
 		os::Printer::log("Unable to open gui file", filename, ELL_ERROR);
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
 	bool ret = loadGUI(read, parent);
 	read->drop();
 
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -700,6 +719,7 @@ bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 	if (!file)
 	{
 		os::Printer::log("Unable to open GUI file", ELL_ERROR);
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -707,6 +727,7 @@ bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 	if (!reader)
 	{
 		os::Printer::log("GUI is not a valid XML file", file->getFileName(), ELL_ERROR);
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 	

@@ -21,9 +21,6 @@ namespace gui
 		IGUIFileOpenDialog(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_FILE_OPEN_DIALOG, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIFileOpenDialog() {}
-
 		//! Returns the filename of the selected file. Returns NULL, if no file was selected.
 		virtual const wchar_t* getFileName() const = 0;
 	};

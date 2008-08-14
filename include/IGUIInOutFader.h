@@ -32,9 +32,6 @@ namespace gui
 		IGUIInOutFader(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_IN_OUT_FADER, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIInOutFader() {}
-
 		//! Gets the color to fade out to or to fade in from.
 		virtual video::SColor getColor() const = 0;
 

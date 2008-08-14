@@ -23,9 +23,6 @@ namespace gui
 					s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_SPIN_BOX, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUISpinBox() {}
-
 		//! Access the edit box used in the spin control
 		virtual IGUIEditBox* getEditBox() const = 0;
 

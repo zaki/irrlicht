@@ -31,7 +31,8 @@ struct SGUISpriteFrame
 //! A sprite composed of several frames.
 struct SGUISprite
 {
-	SGUISprite() : Frames(), frameTime(0) { };
+	SGUISprite() : Frames(), frameTime(0) {}
+
 	core::array<SGUISpriteFrame> Frames;
 	u32 frameTime;
 };
@@ -41,9 +42,6 @@ struct SGUISprite
 class IGUISpriteBank : public virtual IReferenceCounted
 {
 public:
-
-	//! Destructor
-	virtual ~IGUISpriteBank() {}
 
 	//! Returns the list of rectangles held by the sprite bank
 	virtual core::array< core::rect<s32> >& getPositions() = 0;
@@ -64,10 +62,11 @@ public:
 	virtual void setTexture(u32 index, video::ITexture* texture) = 0;
 
 	//! Draws a sprite in 2d with position and color
-	virtual void draw2DSprite(u32 index, const core::position2di& pos, const core::rect<s32>* clip=0,
+	virtual void draw2DSprite(u32 index, const core::position2di& pos,
+			const core::rect<s32>* clip=0,
 			const video::SColor& color= video::SColor(255,255,255,255),
-			u32 starttime=0, u32 currenttime=0, bool loop=true, bool center=false) = 0;
-
+			u32 starttime=0, u32 currenttime=0,
+			bool loop=true, bool center=false) = 0;
 };
 
 

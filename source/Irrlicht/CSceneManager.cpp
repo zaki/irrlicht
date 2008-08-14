@@ -1058,7 +1058,10 @@ bool CSceneManager::isCulled(const ISceneNode* node)
 {
 	const ICameraSceneNode* cam = getActiveCamera();
 	if (!cam)
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
+	}
 
 	switch ( node->getAutomaticCulling() )
 	{
@@ -1067,6 +1070,7 @@ bool CSceneManager::isCulled(const ISceneNode* node)
 		{
 			core::aabbox3d<f32> tbox = node->getBoundingBox();
 			node->getAbsoluteTransformation().transformBox(tbox);
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return !(tbox.intersectsWithBox(cam->getViewFrustum()->getBoundingBox() ));
 		}
 
@@ -1104,14 +1108,14 @@ bool CSceneManager::isCulled(const ISceneNode* node)
 				if (!boxInFrustum)
 					return true;
 			}
-
-			return false;
 		}
+		break;
 
 		case scene::EAC_OFF:
 		break;
 	}
 
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return false;
 }
 
@@ -1774,12 +1778,14 @@ ISceneNodeAnimatorFactory* CSceneManager::getSceneNodeAnimatorFactory(u32 index)
 //! \param filename: Name of the file .
 bool CSceneManager::saveScene(const c8* filename, ISceneUserDataSerializer* userDataSerializer)
 {
+	bool ret = false;
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
-	if (!file)
-		return false;
-
-	bool ret = saveScene(file, userDataSerializer);
-	file->drop();
+	if (file)
+	{
+		ret = saveScene(file, userDataSerializer);
+		file->drop();
+	}
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -1788,11 +1794,17 @@ bool CSceneManager::saveScene(const c8* filename, ISceneUserDataSerializer* user
 bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer)
 {
 	if (!file)
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
+	}
 
 	io::IXMLWriter* writer = FileSystem->createXMLWriter(file);
 	if (!writer)
+	{
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
+	}
 
 	writer->writeXMLHeader();
 	writeSceneNode(writer, this, userDataSerializer);
@@ -1806,16 +1818,19 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 //! \param filename: Name of the file .
 bool CSceneManager::loadScene(const c8* filename, ISceneUserDataSerializer* userDataSerializer)
 {
+	bool ret = false;
 	io::IReadFile* read = FileSystem->createAndOpenFile(filename);
 	if (!read)
 	{
 		os::Printer::log("Unable to open scene file", filename, ELL_ERROR);
-		return false;
+	}
+	else
+	{
+		ret = loadScene(read, userDataSerializer);
+		read->drop();
 	}
 
-	bool ret = loadScene(read, userDataSerializer);
-	read->drop();
-
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
 
@@ -1826,6 +1841,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 	if (!file)
 	{
 		os::Printer::log("Unable to open scene file", ELL_ERROR);
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 
@@ -1833,6 +1849,7 @@ bool CSceneManager::loadScene(io::IReadFile* file, ISceneUserDataSerializer* use
 	if (!reader)
 	{
 		os::Printer::log("Scene is not a valid XML file", file->getFileName(), ELL_ERROR);
+		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return false;
 	}
 

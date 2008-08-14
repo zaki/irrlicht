@@ -83,7 +83,7 @@ namespace irr
 		virtual const char* getVersion() const;
 
 		//! send the event to the right receiver
-		virtual void postEventFromUser(const SEvent& event);
+		virtual bool postEventFromUser(const SEvent& event);
 
 		//! Sets a new event receiver to receive events
 		virtual void setEventReceiver(IEventReceiver* receiver);

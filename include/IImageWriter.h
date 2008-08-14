@@ -23,9 +23,6 @@ namespace video
 class IImageWriter : public IReferenceCounted
 {
 public:
-	//! Destructor
-	virtual ~IImageWriter() { }
-
 	//! Check if this writer can write a file with the given extension
 	/** \param fileName Name of the file to check.
 	\return True if file extension specifies a writable type. */

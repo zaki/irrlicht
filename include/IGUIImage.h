@@ -25,9 +25,6 @@ namespace gui
 		IGUIImage(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_IMAGE, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIImage() {}
-
 		//! Sets an image
 		virtual void setImage(video::ITexture* image) = 0;
 

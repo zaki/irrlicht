@@ -32,9 +32,6 @@ namespace gui
 		IGUIMeshViewer(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_MESH_VIEWER, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIMeshViewer() {}
-
 		//! Sets the mesh to be shown
 		virtual void setMesh(scene::IAnimatedMesh* mesh) = 0;
 

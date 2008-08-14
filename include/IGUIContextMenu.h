@@ -21,9 +21,6 @@ namespace gui
 		IGUIContextMenu(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_CONTEXT_MENU, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIContextMenu() {};
-
 		//! Get amount of menu items
 		virtual u32 getItemCount() const = 0;
 

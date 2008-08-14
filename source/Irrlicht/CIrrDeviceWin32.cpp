@@ -681,9 +681,8 @@ void CIrrDeviceWin32::closeDevice()
 //! returns if window is active. if not, nothing needs to be drawn
 bool CIrrDeviceWin32::isWindowActive() const
 {
-	bool ret = (GetActiveWindow() == HWnd);
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return ret;
+	return (GetActiveWindow() == HWnd);
 }
 
 
@@ -722,37 +721,41 @@ bool CIrrDeviceWin32::switchToFullScreen(s32 width, s32 height, s32 bits)
 	dm.dmBitsPerPel = bits;
 	dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
-	LONG ret = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
-	if (ret != DISP_CHANGE_SUCCESSFUL)
+	LONG res = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
+	if (res != DISP_CHANGE_SUCCESSFUL)
 	{ // try again without forcing display frequency
 		dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-		ret = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
+		res = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
 	}
 
-	switch(ret)
+	bool ret = false;
+	switch(res)
 	{
 	case DISP_CHANGE_SUCCESSFUL:
 		ChangedToFullScreen = true;
-		return true;
+		ret = true;
+		break;
 	case DISP_CHANGE_RESTART:
 		os::Printer::log("Switch to fullscreen: The computer must be restarted in order for the graphics mode to work.", ELL_ERROR);
-		return false;
+		break;
 	case DISP_CHANGE_BADFLAGS:
 		os::Printer::log("Switch to fullscreen: An invalid set of flags was passed in.", ELL_ERROR);
-		return false;
+		break;
 	case DISP_CHANGE_BADPARAM:
 		os::Printer::log("Switch to fullscreen: An invalid parameter was passed in. This can include an invalid flag or combination of flags.", ELL_ERROR);
-		return false;
+		break;
 	case DISP_CHANGE_FAILED:
 		os::Printer::log("Switch to fullscreen: The display driver failed the specified graphics mode.", ELL_ERROR);
-		return false;
+		break;
 	case DISP_CHANGE_BADMODE:
 		os::Printer::log("Switch to fullscreen: The graphics mode is not supported.", ELL_ERROR);
-		return false;
+		break;
+	default:
+		os::Printer::log("An unknown error occured while changing to fullscreen.", ELL_ERROR);
+		break;
 	}
-
-	os::Printer::log("An unknown error occured while changing to fullscreen.", ELL_ERROR);
-	return false;
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return ret;
 }
 
 

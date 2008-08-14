@@ -88,6 +88,8 @@ namespace scene
 		//! Get the current triangle selector containing all triangles for collision detection.
 		virtual ITriangleSelector* getWorld() const = 0;
 	};
+
+
 } // end namespace scene
 } // end namespace irr
 

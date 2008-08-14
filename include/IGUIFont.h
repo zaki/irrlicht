@@ -39,9 +39,6 @@ class IGUIFont : public virtual IReferenceCounted
 {
 public:
 
-	//! Destructor
-	virtual ~IGUIFont() {}
-
 	//! Draws an text and clips it to the specified rectangle if wanted.
 	/** \param text: Text to draw
 	\param position: Rectangle specifying position where to draw the text.

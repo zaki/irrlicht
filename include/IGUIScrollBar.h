@@ -21,9 +21,6 @@ namespace gui
 		IGUIScrollBar(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_SCROLL_BAR, environment, parent, id, rectangle) {}
 
-		//! destructor
-		~IGUIScrollBar() {};
-
 		//! gets the maximum value of the scrollbar.
 		virtual s32 getMax() const = 0;
 

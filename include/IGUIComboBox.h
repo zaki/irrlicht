@@ -21,9 +21,6 @@ namespace gui
 		IGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_COMBO_BOX, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIComboBox() {}
-
 		//! Returns amount of items in box
 		virtual u32 getItemCount() const = 0;
 

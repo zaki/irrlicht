@@ -26,9 +26,6 @@ class IImageLoader : public virtual IReferenceCounted
 {
 public:
 
-	//! Destructor
-	virtual ~IImageLoader() {}
-
 	//! Check if the file might be loaded by this class
 	/** Check is based on the file extension (e.g. ".tga")
 	\param fileName Name of file to check.

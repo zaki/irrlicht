@@ -224,7 +224,7 @@ namespace video
 
 		//! Calculates a 16 bit A1R5G5B5 value of this color.
 		/** \return 16 bit A1R5G5B5 value of this color. */
-		u16 toA1R5G5B5() const { return A8R8G8B8toA1R5G5B5(color); };
+		u16 toA1R5G5B5() const { return A8R8G8B8toA1R5G5B5(color); }
 
 		//! Converts color to OpenGL color format
 		/** From ARGB to RGBA in 4 byte components for endian aware
@@ -236,7 +236,7 @@ namespace video
 			*++dest = getGreen();
 			*++dest = getBlue();
 			*++dest = getAlpha();
-		};
+		}
 
 		//! Sets all four components of the color at once.
 		/** Constructs the color from 4 values representing the alpha,
@@ -373,7 +373,7 @@ namespace video
 		no green (=black) and 1.0f, meaning full green.
 		\param bb: Blue color component. Should be a value between 0.0f meaning
 		no blue (=black) and 1.0f, meaning full blue. */
-		void set(f32 rr, f32 gg, f32 bb) {r = rr; g =gg; b = bb; };
+		void set(f32 rr, f32 gg, f32 bb) {r = rr; g =gg; b = bb; }
 
 		//! Sets all four color components to new values at once.
 		/** \param aa: Alpha component. Should be a value between 0.0f meaning
@@ -384,7 +384,7 @@ namespace video
 		no green and 1.0f, meaning full green.
 		\param bb: Blue color component. Should be a value between 0.0f meaning
 		no blue and 1.0f, meaning full blue. */
-		void set(f32 aa, f32 rr, f32 gg, f32 bb) {a = aa; r = rr; g =gg; b = bb; };
+		void set(f32 aa, f32 rr, f32 gg, f32 bb) {a = aa; r = rr; g =gg; b = bb; }
 
 		//! Interpolates the color with a f32 value to another color
 		/** \param other: Other color
