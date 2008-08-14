@@ -41,7 +41,6 @@ CFileSystem::CFileSystem()
 }
 
 
-
 //! destructor
 CFileSystem::~CFileSystem()
 {
@@ -56,7 +55,6 @@ CFileSystem::~CFileSystem()
 	for ( i= 0; i<UnZipFileSystems.size(); ++i)
 		UnZipFileSystems[i]->drop();
 }
-
 
 
 //! opens a file for read access
@@ -86,9 +84,9 @@ IReadFile* CFileSystem::createAndOpenFile(const c8* filename)
 			return file;
 	}
 
-	file = createReadFile(filename);
-	return file;
+	return createReadFile(filename);
 }
+
 
 //! Creates an IReadFile interface for treating memory like a file.
 IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len, 
@@ -100,6 +98,7 @@ IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len,
 		return new CMemoryReadFile(memory, len, fileName, deleteMemoryWhenDropped);
 }
 
+
 //! Opens a file for write access.
 IWriteFile* CFileSystem::createAndWriteFile(const c8* filename, bool append)
 {
@@ -109,76 +108,64 @@ IWriteFile* CFileSystem::createAndWriteFile(const c8* filename, bool append)
 
 bool CFileSystem::addFolderFileArchive(const c8* filename, bool ignoreCase, bool ignorePaths)
 {
-	bool ret = false;
-
-	CUnZipReader* zr = new CUnZipReader( this, filename, ignoreCase, ignorePaths);
+	CUnZipReader* zr = new CUnZipReader(this, filename, ignoreCase, ignorePaths);
 	if (zr)
-	{
 		UnZipFileSystems.push_back(zr);
-		ret = true;
-	}
-
 	#ifdef _DEBUG
-	if ( false == ret )
+	else
 	{
-		os::Printer::log("Could not open file. UnZipfile not added", filename, ELL_ERROR);
+		os::Printer::log("Could not open file. Folderfile not added", filename, ELL_ERROR);
 	}
 	#endif
 
-	return ret;
-
+	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+	return (zr!=0);
 }
 
 
 //! adds an zip archive to the filesystem
 bool CFileSystem::addZipFileArchive(const c8* filename, bool ignoreCase, bool ignorePaths)
 {
-	IReadFile* file = createReadFile(filename);
+	CZipReader* zr = 0;
+	IReadFile* file = createAndOpenFile(filename);
 	if (file)
 	{
-		CZipReader* zr = new CZipReader(file, ignoreCase, ignorePaths);
+		zr = new CZipReader(file, ignoreCase, ignorePaths);
 		if (zr)
 			ZipFileSystems.push_back(zr);
 
 		file->drop();
-
-		bool ret = (zr != 0);
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-		return ret;
 	}
-
 	#ifdef _DEBUG
-	os::Printer::log("Could not open file. Zipfile not added", filename, ELL_ERROR);
+	else
+		os::Printer::log("Could not open file. Zipfile not added", filename, ELL_ERROR);
 	#endif
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return false;
+	return (zr != 0);
 }
 
 
 //! adds an pak archive to the filesystem
 bool CFileSystem::addPakFileArchive(const c8* filename, bool ignoreCase, bool ignorePaths)
 {
-	IReadFile* file = createReadFile(filename);
+	CPakReader* zr = 0;
+	IReadFile* file = createAndOpenFile(filename);
 	if (file)
 	{
-		CPakReader* zr = new CPakReader(file, ignoreCase, ignorePaths);
+		zr = new CPakReader(file, ignoreCase, ignorePaths);
 		if (zr)
 			PakFileSystems.push_back(zr);
 
 		file->drop();
-
-		bool ret = (zr != 0);
-		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-		return ret;
 	}
-
 	#ifdef _DEBUG
-	os::Printer::log("Could not open file. Pakfile not added", filename, ELL_ERROR);
+	else
+		os::Printer::log("Could not open file. Pakfile not added", filename, ELL_ERROR);
 	#endif
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return false;
+	return (zr != 0);
 }
 
 
@@ -214,6 +201,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const c8* newDirectory)
 #endif
 	return success;
 }
+
 
 core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 {
@@ -325,6 +313,7 @@ IXMLReader* CFileSystem::createXMLReader(IReadFile* file)
 	return createIXMLReader(file);
 }
 
+
 //! Creates a XML Reader from a file.
 IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(const c8* filename)
 {
@@ -336,6 +325,7 @@ IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(const c8* filename)
 	file->drop();
 	return reader;
 }
+
 
 //! Creates a XML Reader from a file.
 IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(IReadFile* file)
@@ -371,11 +361,13 @@ IFileSystem* createFileSystem()
 	return new CFileSystem();
 }
 
+
 //! Creates a new empty collection of attributes, usable for serialization and more.
 IAttributes* CFileSystem::createEmptyAttributes(video::IVideoDriver* driver)
 {
 	return new CAttributes(driver);
 }
+
 
 } // end namespace irr
 } // end namespace io
