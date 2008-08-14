@@ -40,6 +40,9 @@ CGUIImage::~CGUIImage()
 //! sets an image
 void CGUIImage::setImage(video::ITexture* image)
 {
+	if (image == Texture)
+		return;
+
 	if (Texture)
 		Texture->drop();
 

@@ -1015,9 +1015,10 @@ namespace scene
 		 and the animator will animate it.
 		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
 		 See IReferenceCounted::drop() for more information. */
-		virtual ISceneNodeAnimator* createFlyCircleAnimator(const core::vector3df& center,
-				f32 radius, f32 speed=0.001f,
-				const core::vector3df& direction=core::vector3df ( 0.f, 1.f, 0.f ) ) = 0;
+		virtual ISceneNodeAnimator* createFlyCircleAnimator(
+				const core::vector3df& center=core::vector3df(0.f,0.f,0.f),
+				f32 radius=100.f, f32 speed=0.001f,
+				const core::vector3df& direction=core::vector3df(0.f, 1.f, 0.f)) = 0;
 
 		//! Creates a fly straight animator, which lets the attached scene node fly or move along a line between two points.
 		/** \param startPoint: Start point of the line.
