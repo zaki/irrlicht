@@ -22,9 +22,6 @@ namespace gui
 		IGUITab(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_TAB, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUITab() {}
-
 		//! Returns number of tab if in tabcontrol.
 		/** Can be accessed later IGUITabControl::getTab() by this number. */
 		virtual s32 getNumber() const = 0;
@@ -56,9 +53,6 @@ namespace gui
 		//! constructor
 		IGUITabControl(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_TAB_CONTROL, environment, parent, id, rectangle) {}
-
-		//! destructor
-		virtual ~IGUITabControl() {}
 
 		//! Adds a tab
 		virtual IGUITab* addTab(const wchar_t* caption, s32 id=-1) = 0;

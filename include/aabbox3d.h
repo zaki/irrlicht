@@ -35,11 +35,11 @@ class aabbox3d
 		//! Equality operator
 		/** \param other box to compare with.
 		\return True if both boxes are equal, else false. */
-		inline bool operator==(const aabbox3d<T>& other) const { return (MinEdge == other.MinEdge && other.MaxEdge == MaxEdge);};
+		inline bool operator==(const aabbox3d<T>& other) const { return (MinEdge == other.MinEdge && other.MaxEdge == MaxEdge);}
 		//! Inequality operator
 		/** \param other box to compare with.
 		\return True if both boxes are different, else false. */
-		inline bool operator!=(const aabbox3d<T>& other) const { return !(MinEdge == other.MinEdge && other.MaxEdge == MaxEdge);};
+		inline bool operator!=(const aabbox3d<T>& other) const { return !(MinEdge == other.MinEdge && other.MaxEdge == MaxEdge);}
 
 		// functions
 
@@ -109,7 +109,7 @@ class aabbox3d
 			return (p.X >= MinEdge.X && p.X <= MaxEdge.X &&
 				p.Y >= MinEdge.Y && p.Y <= MaxEdge.Y &&
 				p.Z >= MinEdge.Z && p.Z <= MaxEdge.Z);
-		};
+		}
 
 		//! Determines if a point is within this box and its borders.
 		/** \param p: Point to check.
@@ -119,7 +119,7 @@ class aabbox3d
 			return (p.X > MinEdge.X && p.X < MaxEdge.X &&
 				p.Y > MinEdge.Y && p.Y < MaxEdge.Y &&
 				p.Z > MinEdge.Z && p.Z < MaxEdge.Z);
-		};
+		}
 
 		//! Determines if the box intersects with another box.
 		/** \param other: Other box to check a intersection with.

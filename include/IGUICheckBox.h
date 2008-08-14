@@ -21,9 +21,6 @@ namespace gui
 		IGUICheckBox(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_CHECK_BOX, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUICheckBox() {}
-
 		//! Set if box is checked.
 		virtual void setChecked(bool checked) = 0;
 

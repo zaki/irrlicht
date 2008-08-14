@@ -39,9 +39,6 @@ namespace gui
 		IGUIListBox(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_LIST_BOX, environment, parent, id, rectangle) {}
 
-		//! destructor
-		virtual ~IGUIListBox() {}
-
 		//! returns amount of list items
 		virtual u32 getItemCount() const = 0;
 

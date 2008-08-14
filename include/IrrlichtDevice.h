@@ -194,7 +194,7 @@ namespace irr
 		input, you can use this to post key or mouse input events to
 		the engine. Internally, this method only delegates the events
 		further to the scene manager and the GUI environment. */
-		virtual void postEventFromUser(const SEvent& event) = 0;
+		virtual bool postEventFromUser(const SEvent& event) = 0;
 
 		//! Sets the input receiving scene manager.
 		/** If set to null, the main scene manager (returned by

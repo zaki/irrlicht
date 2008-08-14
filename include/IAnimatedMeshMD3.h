@@ -231,7 +231,7 @@ namespace scene
 		{
 			for (u32 i=0; i<Buffer.size(); ++i)
 				Buffer[i]->drop();
-		};
+		}
 
 		SMD3Header MD3Header;
 		core::stringc Name;

@@ -45,7 +45,6 @@ public:
 	/** \param topColor: stores the color of the top vertices
 	\param bottomColor: stores the color of the bottom vertices */
 	virtual void getColor(video::SColor & topColor, video::SColor & bottomColor) const = 0;
-
 };
 
 } // end namespace scene

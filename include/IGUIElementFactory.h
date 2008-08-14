@@ -27,9 +27,6 @@ namespace gui
 	{
 	public:
 
-		// destructor
-		virtual ~IGUIElementFactory() {}
-
 		//! adds an element to the gui environment based on its type id
 		/** \param type: Type of the element to add.
 		\param parent: Parent scene node of the new element, can be null to add to the root.

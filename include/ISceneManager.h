@@ -1342,7 +1342,6 @@ namespace scene
 
 		//! Returns ambient color of the scene
 		virtual const video::SColorf& getAmbientLight() const = 0;
-
 	};
 
 

@@ -326,9 +326,6 @@ namespace gui
 	{
 	public:
 
-		//! destructor
-		virtual ~IGUISkin() {};
-
 		//! returns default color
 		virtual video::SColor getColor(EGUI_DEFAULT_COLOR color) const = 0;
 
@@ -505,7 +502,7 @@ namespace gui
 			const core::rect<s32>& pos, const core::rect<s32>* clip = 0) = 0;
 
 		//! get the type of this skin
-		virtual EGUI_SKIN_TYPE getType() const { return EGST_UNKNOWN; };
+		virtual EGUI_SKIN_TYPE getType() const { return EGST_UNKNOWN; }
 	};
 
 

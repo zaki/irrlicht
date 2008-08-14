@@ -35,7 +35,7 @@ namespace scene
 			// drop meshes
 			for (u32 i=0; i<Meshes.size(); ++i)
 				Meshes[i]->drop();
-		};
+		}
 
 
 		//! Gets the frame count of the animated mesh.
