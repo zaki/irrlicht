@@ -60,7 +60,7 @@ public:
 	//! Creates a particle emitter for an animated mesh scene node
 	virtual IParticleAnimatedMeshSceneNodeEmitter* createAnimatedMeshSceneNodeEmitter(
 		scene::IAnimatedMeshSceneNode* node, bool useNormalDirection = true,
-		const core::vector3df& direction = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
 		f32 normalDirectionModifier = 100.0f, s32 mbNumber = -1,
 		bool everyMeshVertex = false, u32 minParticlesPerSecond = 5,
 		u32 maxParticlesPerSecond = 10,
@@ -84,7 +84,7 @@ public:
 	virtual IParticleCylinderEmitter* createCylinderEmitter(
 		const core::vector3df& center, f32 radius,
 		const core::vector3df& normal, f32 length,
-		bool outlineOnly = false, const core::vector3df& direction = core::vector3df(0.0f,0.0f,0.0f),
+		bool outlineOnly = false, const core::vector3df& direction = core::vector3df(0.0f,0.5f,0.0f),
 		u32 minParticlesPerSecond = 5, u32 maxParticlesPersSecond = 10,
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
@@ -94,7 +94,7 @@ public:
 	//! Creates a mesh particle emitter.
 	virtual IParticleMeshEmitter* createMeshEmitter(
 		scene::IMesh* mesh, bool useNormalDirection = true,
-		const core::vector3df& direction = core::vector3df(0.0f,0.0f,0.0f),
+		const core::vector3df& direction = core::vector3df(0.0f,0.03f,0.0f),
 		f32 normalDirectionModifier = 100.0f, s32 mbNumber = -1,
 		bool everyMeshVertex = false,
 		u32 minParticlesPerSecond = 5,

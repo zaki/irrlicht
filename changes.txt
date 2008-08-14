@@ -10,8 +10,6 @@ Changes in version 1.5 (... 2008)
 
  - Enable use of other meshes for shadow mesh generation, can be used to speed up shadow generation and rendering for complex meshes. Patch based on a version by tonic.
 
- - Fixed Software renderer color flicker, was a signed shift bug I believe.
-
  - Fixed usage of SIrrCreationParameters struct, which dind't have copy constructor and assignment operator anymore, since the Irrlicht version string was made const.
 
  - New glext.h (version 40)
@@ -203,6 +201,10 @@ Changes in version 1.5 (... 2008)
 
 -------------------------------------------
 Changes in version 1.4.2 (x.x.2008)
+
+ - Fixed rounding problem in getScreenCoordinatesFrom3DPosition
+
+ - Fixed Software renderer color flicker, was a shift bug I believe.
 
  - irrMap fix to make root node always black, by rogerborg.
 

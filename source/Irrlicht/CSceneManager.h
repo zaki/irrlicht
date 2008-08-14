@@ -276,13 +276,16 @@ namespace scene
 		//! and the animator will animate it.
 		virtual ISceneNodeAnimator* createRotationAnimator(const core::vector3df& rotationPerSecond);
 
-		//! creates a fly circle animator, which lets the attached scene node fly
-		//! around a center. The center is the position of the scene node.
-		//! \param rotationSpeed:
-		//! \return Returns the animator. Attach it to a scene node with ISceneNode::addAnimator()
-		//! and the animator will animate it.
-		virtual ISceneNodeAnimator* createFlyCircleAnimator(const core::vector3df& normal, f32 radius, f32 speed,
-			const core::vector3df& direction);
+		//! creates a fly circle animator
+		/** Lets the attached scene node fly around a center.
+		\param center Center relative to node origin
+		\param speed rotation speed
+		\return Animator. Attach it to a scene node with ISceneNode::addAnimator()
+		and the animator will animate it. */
+		virtual ISceneNodeAnimator* createFlyCircleAnimator(
+				const core::vector3df& center=core::vector3df(0.f, 0.f, 0.f),
+				f32 radius=100.f, f32 speed=0.001f,
+				const core::vector3df& direction=core::vector3df(0.f, 1.f, 0.f));
 
 		//! Creates a fly straight animator, which lets the attached scene node
 		//! fly or move along a line between two points.
