@@ -507,7 +507,7 @@ namespace video
 		blended. */
 		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
-			video::SColor* colors=0, bool useAlphaChannelOfTexture=false) = 0;
+			const video::SColor * const colors=0, bool useAlphaChannelOfTexture=false) = 0;
 
 		//! Draws a 2d rectangle.
 		/** \param color Color of the rectangle to draw. The alpha

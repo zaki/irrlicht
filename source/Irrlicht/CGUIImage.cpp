@@ -75,11 +75,7 @@ void CGUIImage::draw()
 	{
 		if (ScaleImage)
 		{
-			video::SColor Colors[4];
-			Colors[0] = Color;
-			Colors[1] = Color;
-			Colors[2] = Color;
-			Colors[3] = Color;
+			const video::SColor Colors[] = {Color,Color,Color,Color};
 
 			driver->draw2DImage(Texture, AbsoluteRect, 
 				core::rect<s32>(core::position2d<s32>(0,0), Texture->getOriginalSize()),

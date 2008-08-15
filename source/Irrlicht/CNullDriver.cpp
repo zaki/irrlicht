@@ -642,10 +642,9 @@ void CNullDriver::draw2DImage(const video::ITexture* texture,
 //! Draws a part of the texture into the rectangle.
 void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 	const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-	video::SColor* colors, bool useAlphaChannelOfTexture)
+	const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
 }
-
 
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
