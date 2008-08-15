@@ -1012,7 +1012,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::positi
 
 void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-			video::SColor* colors, bool useAlphaChannelOfTexture)
+			const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
 	if(!texture)
 		return;
@@ -1055,7 +1055,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s
 	npos.LowerRightCorner.X = ( clippedRect.LowerRightCorner.X * xFact ) - 1.0f;
 	npos.LowerRightCorner.Y = 1.0f - ( clippedRect.LowerRightCorner.Y * yFact );
 
-	video::SColor temp[4] =
+	const video::SColor temp[4] =
 	{
 		0xFFFFFFFF,
 		0xFFFFFFFF,
@@ -1063,7 +1063,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s
 		0xFFFFFFFF
 	};
 
-	video::SColor* useColor = colors ? colors : temp;
+	const video::SColor* const useColor = colors ? colors : temp;
 
 	S3DVertex vtx[4]; // clock wise
 	vtx[0] = S3DVertex(npos.UpperLeftCorner.X, npos.UpperLeftCorner.Y, 0.0f,

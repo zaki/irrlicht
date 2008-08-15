@@ -1205,7 +1205,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 //! The same, but with a four element array of colors, one for each vertex
 void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-		video::SColor* colors, bool useAlphaChannelOfTexture)
+		const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
 	if (!texture)
 		return;
@@ -1221,7 +1221,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 			sourceRect.LowerRightCorner.X * invW,
 			(isRTT?sourceRect.UpperLeftCorner.Y:sourceRect.LowerRightCorner.Y) *invH);
 
-	video::SColor temp[4] =
+	const video::SColor temp[4] =
 	{
 		0xFFFFFFFF,
 		0xFFFFFFFF,
@@ -1229,7 +1229,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 		0xFFFFFFFF
 	};
 
-	video::SColor* useColor = colors ? colors : temp;
+	const video::SColor* const useColor = colors ? colors : temp;
 
 	disableTextures(1);
 	setTexture(0, texture);
