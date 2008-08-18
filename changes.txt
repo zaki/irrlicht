@@ -12,7 +12,7 @@ Changes in version 1.5 (... 2008)
 
  - Fixed usage of SIrrCreationParameters struct, which dind't have copy constructor and assignment operator anymore, since the Irrlicht version string was made const.
 
- - New glext.h (version 40)
+ - New glext.h (version 41) and glxext.h (version 20) supporting OpenGL 3.0
 
  - Added support for read-only locking of textures. Can speed up those calls.
 
@@ -139,6 +139,10 @@ Changes in version 1.5 (... 2008)
 
  - Fixed a performance bug in ISceneNode constructor reported by izhbq412
 
+ - Win32 device now makes the cursor invisible immediately when setVisible(false) is called.
+
+ - Command line tool for mesh conversion added.
+
  - Added volume light scene node
 
  - .obj files now won't duplicate vertices unnecessarily. This allows recalculation of smooth normals and other things, and is also faster when rendering. The loading is a little slower now.
@@ -151,7 +155,8 @@ Changes in version 1.5 (... 2008)
   - Windows Mobile 6 SDK
   - Visual Studio 2005
 
- - b3d meshes now always contain proper normals. Also some other bugs fixed.
+ - Added checks to avoid buffer overrun in b3d loader. Enabled normals calculation in all cases, previously it was not done for lightmapped meshes.
+   Fixed transparency support. Added mipmap creation flag support which might disable mipmap creation too often. Should be checked.
 
  - Burningvideo: MipMap Selection repaired
 
@@ -159,7 +164,7 @@ Changes in version 1.5 (... 2008)
 
  - Added collision manager speedup patch by RogerBorg.
 
- - The d3d textures don't keep the initial IImage copied, but use the texture data to recover.
+ - D3D drivers now releases the IImage member from initialization, thus freeing lots of memory. The image is accessible via the driver anyway.
 
  - SDL device character handling enhanced.
 
@@ -188,6 +193,8 @@ Changes in version 1.5 (... 2008)
    Nodes are now solid or transparent. ( but still more states are needed )
 
  - GUI:
+
+   - Editbox didn't draw children
    - Checking IsEnabled is now consistent across all GUI elements
    - Move window to front bug fixed.
    - Disabling the BMP loader now compiles without the built-in font
@@ -197,7 +204,6 @@ Changes in version 1.5 (... 2008)
    - Fixed a bug in CGUISpriteBank which caused a crash when a non-looping animated sprite reached the end of its animation.
    - Modal screens no longer flash invisible children when rejecting a focus change.
    - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
-   - EditBox didn't draw children.
 
 -------------------------------------------
 Changes in version 1.4.2 (x.x.2008)
