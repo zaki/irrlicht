@@ -92,11 +92,11 @@ public:
 	//! Is it a FrameBufferObject?
 	bool isFrameBufferObject() const;
 
-	//! Bind FrameBufferObject (valid only if isFrameBufferObject() returns true).
-	void bindFrameBufferObject();
+	//! Bind RenderTargetTexture
+	void bindRTT();
 
-	//! Unbind FrameBufferObject (valid only if isFrameBufferObject() returns true).
-	void unbindFrameBufferObject();
+	//! Unbind RenderTargetTexture
+	void unbindRTT();
 
 	//! sets whether this texture is intended to be used as a render target.
 	void setIsRenderTarget(bool isTarget);
