@@ -1550,6 +1550,10 @@ bool COpenGLDriver::testGLError()
 		os::Printer::log("GL_OUT_OF_MEMORY", ELL_ERROR); break;
 	case GL_TABLE_TOO_LARGE:
 		os::Printer::log("GL_TABLE_TOO_LARGE", ELL_ERROR); break;
+#if defined(GL_EXT_framebuffer_object)
+	case GL_INVALID_FRAMEBUFFER_OPERATION_EXT:
+		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", ELL_ERROR); break;
+#endif
 	};
 	return true;
 #else
@@ -2526,31 +2530,15 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	ResetRenderStates=true;
 	if (RenderTargetTexture!=0)
 	{
-		if (RenderTargetTexture->isFrameBufferObject())
-		{
-			RenderTargetTexture->unbindFrameBufferObject();
-		}
-		else
-		{
-			glBindTexture(GL_TEXTURE_2D, RenderTargetTexture->getOpenGLTextureName());
-
-			// Copy Our ViewPort To The Texture
-			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0,
-			RenderTargetTexture->getSize().Width, RenderTargetTexture->getSize().Height);
-		}
+		RenderTargetTexture->unbindRTT();
 	}
 
 	if (texture)
 	{
 		// we want to set a new target. so do this.
-		glViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
 		RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
+		RenderTargetTexture->bindRTT();
 		CurrentRendertargetSize = texture->getSize();
-
-		if (RenderTargetTexture->isFrameBufferObject())
-		{
-			RenderTargetTexture->bindFrameBufferObject();
-		}
 	}
 	else
 	{
