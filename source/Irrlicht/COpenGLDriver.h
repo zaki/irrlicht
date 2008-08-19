@@ -7,6 +7,14 @@
 
 #include "IrrCompileConfig.h"
 
+#if defined(_IRR_WINDOWS_API_)
+	// include windows headers for HWND
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+#elif defined(_IRR_USE_OSX_DEVICE_)
+	#include "CIrrDeviceMacOSX.h"
+#endif
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "CNullDriver.h"
@@ -15,9 +23,6 @@
 #include "SIrrCreationParameters.h"
 
 #if defined(_IRR_WINDOWS_API_)
-	// include windows headers for HWND
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
 	#include <GL/gl.h>
 	#include "glext.h"
 #ifdef _MSC_VER
@@ -25,7 +30,6 @@
 	#pragma comment(lib, "GLu32.lib")
 #endif
 #elif defined(_IRR_USE_OSX_DEVICE_)
-	#include "CIrrDeviceMacOSX.h"
 	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		#define GL_GLEXT_LEGACY 1
 	#endif
