@@ -73,7 +73,7 @@ class line3d
 			return end - start;
 		}
 
-		//! Returns if the given point is between start and end of the line.
+		//! Check if the given point is between start and end of the line.
 		/** Assumes that the point is already somewhere on the line.
 		\param point The point to test.
 		\return True if point is on the line between start and end, else false.
@@ -83,7 +83,7 @@ class line3d
 			return point.isBetweenPoints(start, end);
 		}
 
-		//! Returns the closest point on this line to a point
+		//! Get the closest point on this line to a point
 		/** \param point The point to compare to.
 		\return The nearest point which is part of the line. */
 		vector3d<T> getClosestPoint(const vector3d<T>& point) const
@@ -103,11 +103,11 @@ class line3d
 			return start + v;
 		}
 
-		//! Returns if the line intersects with a shpere
+		//! Check if the line intersects with a shpere
 		/** \param sorigin: Origin of the shpere.
 		\param sradius: Radius of the sphere.
 		\param outdistance: The distance to the first intersection point.
-		\return Returns true if there is an intersection.
+		\return True if there is an intersection.
 		If there is one, the distance to the first intersection point
 		is stored in outdistance. */
 		bool getIntersectionWithSphere(vector3d<T> sorigin, T sradius, f64& outdistance) const

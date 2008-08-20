@@ -133,7 +133,7 @@ class line2d
 		}
 
 		//! Check if the given point is a member of the line
-		/** \return Returns true if point is between start and end, else false. */
+		/** \return True if point is between start and end, else false. */
 		bool isPointOnLine(const vector2d<T>& point) const
 		{
 			T d = getPointOrientation(point);
