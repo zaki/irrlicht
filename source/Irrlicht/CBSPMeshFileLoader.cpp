@@ -55,9 +55,9 @@ IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 	{
 		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, SceneManager);
 
-		q->getShader ( "scripts/models.shader", 1 );
-		q->getShader ( "scripts/liquid.shader", 1 );
-		//q->getShader ( "scripts/sky.shader", 1 );
+		q->getShader("scripts/models.shader");
+		q->getShader("scripts/liquid.shader");
+		//q->getShader("scripts/sky.shader");
 
 		if ( q->loadFile(file) )
 			return q;
@@ -69,7 +69,7 @@ IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 	if (strstr(file->getFileName(), ".shader"))
 	{
 		CQ3LevelMesh* q = new CQ3LevelMesh(FileSystem, SceneManager);
-		q->getShader ( file->getFileName(), 1 );
+		q->getShader(file->getFileName());
 		return q;
 	}
 

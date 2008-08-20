@@ -21,18 +21,18 @@ namespace scene
 	public:
 
 		//! releases a Mesh from the Q3 Loader
-		virtual void releaseMesh ( s32 index ) = 0;
+		virtual void releaseMesh(s32 index) = 0;
 
-		//! loads the shader definition
-		/** Either from file ( we assume /scripts on fileNameIsValid == 0 ) */
-		virtual const quake3::SShader * getShader ( const c8 * filename, s32 fileNameIsValid ) = 0;
+		//! loads the shader definition from file
+		/** \param filename Name of the shaderfile, defaults to /scripts if fileNameIsValid is false.
+		\param fileNameIsValid Specifies whether the filename is valid in the current situation. */
+		virtual const quake3::SShader* getShader( const c8* filename, bool fileNameIsValid=true ) = 0;
 
 		//! returns a already loaded Shader
-		virtual const quake3::SShader * getShader ( u32 index ) const = 0;
+		virtual const quake3::SShader* getShader(u32 index) const = 0;
 
 		//! get's an interface to the entities
-		virtual const quake3::tQ3EntityList & getEntityList () = 0;
-
+		virtual const quake3::tQ3EntityList& getEntityList() = 0;
 	};
 
 } // end namespace scene
