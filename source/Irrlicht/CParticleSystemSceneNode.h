@@ -33,6 +33,9 @@ public:
 	//! destructor
 	virtual ~CParticleSystemSceneNode();
 
+	//! Gets the particle emitter, which creates the particles.
+	virtual IParticleEmitter* getEmitter();
+
 	//! Sets the particle emitter, which creates the particles.
 	virtual void setEmitter(IParticleEmitter* emitter);
 

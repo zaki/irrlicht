@@ -206,7 +206,7 @@ namespace scene
 
 		//! Sets if the node should be visible or not.
 		/** All children of this node won't be visible either, when set
-		to true.
+		to false.
 		\param isVisible If the node shall be visible. */
 		virtual void setVisible(bool isVisible)
 		{

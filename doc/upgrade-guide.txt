@@ -1199,3 +1199,81 @@ vector3d.h
 Changed signature (made template param)
 	bool equals(const vector3d<T>& other, const T tolerance = (T)ROUNDING_ERROR_32 ) const
 
+Changes for Version 1.4.1
+-------------------------
+Since this version is a backward compatible bugfix release, the API changes are only a few. None of them should result
+in uncompilable code. Newly found warnings might point out wrongly used variables, additional casts or type changes in the
+app should easily fix that. The only change which might go unnoticed by the compiler, but affect the application is the
+changed initialization in SColorf. This was done to synchronize with other constructors from SColorf and SColor, though,
+so the expectations are now much better met.
+Also, OSX users have to adjust the defines in IrrCompileConfig, as we now also have OSX defines in Irrlicht style. It's now
+even possible to build with X11 support under OSX without changes in the device code.
+
+SColor.h
+Changed signature (SColorf is now default initialized to alpha=1.0f)
+	SColorf(f32 r=0.f, f32 g=0.f, f32 b=0.f, f32 a=1.f) : r(r), g(g), b(b), a(a) {}
+
+IrrCompileConfig.h
+Split the OSX define into platform and device (from old MACOSX define)
+	_IRR_OSX_PLATFORM_ for Apple systems running OSX
+	_IRR_USE_OSX_DEVICE_ for Cocoa native windowing on OSX
+
+ISceneManager.h
+Added new overload for getMesh with IReadFile instead of filename.
+	virtual IAnimatedMesh* getMesh(io::IReadFile* file) = 0;
+
+irrMath.h
+Renamed method setbit
+	REALINLINE void setbit_cond ( u32 &state, s32 condition, u32 mask )
+
+ISceneNode.h
+Changed signature (because the debug data enum values can be OR'ed to enable multiple debug data types)
+	virtual void setDebugDataVisible(s32 state)
+	s32 isDebugDataVisible() const
+	s32 DebugDataVisible;
+
+matrix4.h
+Changed signature (Added return values to some methods)
+	inline CMatrix4<T>& setbyproduct(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
+	CMatrix4<T>& setbyproduct_nocheck(const CMatrix4<T>& other_a,const CMatrix4<T>& other_b );
+	inline CMatrix4<T>& makeIdentity();
+	CMatrix4<T>& setTranslation( const vector3d<T>& translation );
+	CMatrix4<T>& setInverseTranslation( const vector3d<T>& translation );
+	inline CMatrix4<T>& setRotationRadians( const vector3d<T>& rotation );
+	CMatrix4<T>& setRotationDegrees( const vector3d<T>& rotation );
+	inline CMatrix4<T>& setInverseRotationRadians( const vector3d<T>& rotation );
+	CMatrix4<T>& setInverseRotationDegrees( const vector3d<T>& rotation );
+	CMatrix4<T>& setScale( const vector3d<T>& scale );
+	CMatrix4<T>& buildProjectionMatrixPerspectiveFovRH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar);
+	CMatrix4<T>& buildProjectionMatrixPerspectiveFovLH(f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar);
+	CMatrix4<T>& buildProjectionMatrixPerspectiveRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+	CMatrix4<T>& buildProjectionMatrixPerspectiveLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+	CMatrix4<T>& buildProjectionMatrixOrthoLH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+	CMatrix4<T>& buildProjectionMatrixOrthoRH(f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar);
+	CMatrix4<T>& buildCameraLookAtMatrixLH(...)
+	CMatrix4<T>& buildCameraLookAtMatrixRH(...)
+	CMatrix4<T>& buildShadowMatrix(const core::vector3df& light, core::plane3df plane, f32 point=1.0f);
+	CMatrix4<T>& buildNDCToDCMatrix( const core::rect<s32>& area, f32 zScale);
+	CMatrix4<T>& setTextureScale( f32 sx, f32 sy );
+	CMatrix4<T>& setTextureRotationCenter( f32 radAngle );
+	CMatrix4<T>& setTextureScaleCenter( f32 sx, f32 sy );
+	CMatrix4<T>& setTextureTranslate( f32 x, f32 y );
+	CMatrix4<T>& setM(const T* data);
+Added overload (for one scale value for all axes)
+	CMatrix4<T>& setScale( const T scale ) { return setScale(core::vector3d<T>(scale,scale,scale)); }
+
+S3DVertex.h
+Added operator
+	bool operator<(const S3DVertex& other) const
+	bool operator<(const S3DVertex2TCoords& other) const
+	bool operator<(const S3DVertexTangents& other) const
+
+irrString.h
+Changed signature (int->u32, negative length didn't make sense)
+	bool equalsn(const string<T>& other, u32 n) const
+	bool equalsn(const T* const str, u32 n) const
+New overload/missing method (completing the findLast... and find...Char methods)
+	s32 findLastChar(const T* const c, u32 count) const
+Changed signature (Added return value)
+	string<T>& trim()
+
