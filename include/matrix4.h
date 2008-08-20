@@ -967,7 +967,7 @@ namespace core
 	template <class T>
 	inline void CMatrix4<T>::transformBox(core::aabbox3d<f32>& box) const
 	{
-		if (isIdentity() )
+		if (isIdentity())
 			return;
 
 		transformVect(box.MinEdge);
@@ -979,32 +979,24 @@ namespace core
 	template <class T>
 	inline void CMatrix4<T>::transformBoxEx(core::aabbox3d<f32>& box) const
 	{
-		f32 Amin[3];
-		f32 Amax[3];
+		const f32 Amin[3] = {box.MinEdge.X, box.MinEdge.Y, box.MinEdge.Z};
+		const f32 Amax[3] = {box.MaxEdge.X, box.MaxEdge.Y, box.MaxEdge.Z};
+
 		f32 Bmin[3];
 		f32 Bmax[3];
-
-		Amin[0] = box.MinEdge.X;
-		Amin[1] = box.MinEdge.Y;
-		Amin[2] = box.MinEdge.Z;
-
-		Amax[0] = box.MaxEdge.X;
-		Amax[1] = box.MaxEdge.Y;
-		Amax[2] = box.MaxEdge.Z;
 
 		Bmin[0] = Bmax[0] = M[12];
 		Bmin[1] = Bmax[1] = M[13];
 		Bmin[2] = Bmax[2] = M[14];
 
-		u32 i, j;
 		const CMatrix4<T> &m = *this;
 
-		for (i = 0; i < 3; ++i)
+		for (u32 i = 0; i < 3; ++i)
 		{
-			for (j = 0; j < 3; ++j)
+			for (u32 j = 0; j < 3; ++j)
 			{
-				f32 a = m(j,i) * Amin[j];
-				f32 b = m(j,i) * Amax[j];
+				const f32 a = m(j,i) * Amin[j];
+				const f32 b = m(j,i) * Amax[j];
 
 				if (a < b)
 				{

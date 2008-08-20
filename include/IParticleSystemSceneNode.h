@@ -64,6 +64,10 @@ public:
 	Default is true. */
 	virtual void setParticlesAreGlobal(bool global=true) = 0;
 
+	//! Gets the particle emitter, which creates the particles.
+	/** \return The particle emitter. Can be 0 if none is set. */
+	virtual IParticleEmitter* getEmitter() =0;
+
 	//! Sets the particle emitter, which creates the particles.
 	/** A particle emitter can be created using one of the createEmitter
 	methods. For example to create and use a simple PointEmitter, call
