@@ -66,7 +66,7 @@ class plane3d
 		}
 
 
-		//! Returns an intersection with a 3d line.
+		//! Get an intersection with a 3d line.
 		/** \param lineVect Vector of the line to intersect with.
 		\param linePoint Point of the line to intersect with.
 		\param outIntersection Place to store the intersection point, if there is one.
@@ -86,7 +86,7 @@ class plane3d
 			return true;
 		}
 
-		//! Returns where on a line between two points an intersection with this plane happened.
+		//! Get percentage of line between two points where an intersection with this plane happens.
 		/** Only useful if known that there is an intersection.
 		\param linePoint1 Point1 of the line to intersect with.
 		\param linePoint2 Point2 of the line to intersect with.
@@ -101,7 +101,7 @@ class plane3d
 			return (f32)-((Normal.dotProduct(linePoint1) + D) / t2);
 		}
 
-		//! Returns an intersection with a 3d line, limited between two 3d points.
+		//! Get an intersection with a 3d line, limited between two 3d points.
 		/** \param linePoint1 Point 1 of the line.
 		\param linePoint2 Point 2 of the line.
 		\param outIntersection Place to store the intersection point, if there is one.
@@ -180,7 +180,7 @@ class plane3d
 			return true;
 		}
 
-		//! Returns the intersection point with two other planes if there is one.
+		//! Get the intersection point with two other planes if there is one.
 		bool getIntersectionWithPlanes(const plane3d<T>& o1,
 				const plane3d<T>& o2, vector3d<T>& outPoint) const
 		{
@@ -198,7 +198,7 @@ class plane3d
 		Note that this only works if the normal is Normalized.
 		Do not use this method with points as it will give wrong results!
 		\param lookDirection: Look direction.
-		\return Returns true if the plane is front facing and
+		\return True if the plane is front facing and
 		false if it is backfacing. */
 		bool isFrontFacing(const vector3d<T>& lookDirection) const
 		{
@@ -206,7 +206,7 @@ class plane3d
 			return F32_LOWER_EQUAL_0 ( d );
 		}
 
-		//! Returns the distance to a point.
+		//! Get the distance to a point.
 		/** Note that this only works if the normal is normalized. */
 		T getDistanceTo(const vector3d<T>& point) const
 		{
