@@ -223,7 +223,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CColladaFileLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_DMF_LOADER_
-	MeshLoaderList.push_back(new CDMFLoader(this));
+	MeshLoaderList.push_back(new CDMFLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_OGRE_LOADER_
 	MeshLoaderList.push_back(new COgreMeshFileLoader(FileSystem, Driver));
