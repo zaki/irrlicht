@@ -32,6 +32,7 @@
 
 #include "IMeshLoader.h"
 #include "IReadFile.h"
+#include "IFileSystem.h"
 #include "SMesh.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
@@ -47,41 +48,41 @@ namespace scene
 	public:
 
 		/** constructor*/
-		CDMFLoader(ISceneManager* smgr);
+		CDMFLoader(ISceneManager* smgr, io::IFileSystem* filesys);
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".cob")
 		virtual bool isALoadableFileExtension(const c8* fileName) const;
 
 		/** creates/loads an animated mesh from the file.
-		 \return Pointer to the created mesh. Returns 0 if loading failed.
-		 If you no longer need the mesh, you should call IAnimatedMesh::drop().
-		 See IReferenceCounted::drop() for more information.*/
+		\return Pointer to the created mesh. Returns 0 if loading failed.
+		If you no longer need the mesh, you should call IAnimatedMesh::drop().
+		See IReferenceCounted::drop() for more information.*/
 		virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 		
 		/** loads dynamic lights present in this scene.
-        Note that loaded lights from DeleD must have the suffix \b dynamic_ and must be \b pointlight.
-        Irrlicht correctly loads specular color, diffuse color , position and distance of object affected by light.
-        \return number of lights loaded or 0 if loading failed.*/
-        int loadLights(const c8 * filename, ISceneManager* smgr,
+		Note that loaded lights from DeleD must have the suffix \b dynamic_ and must be \b pointlight.
+		Irrlicht correctly loads specular color, diffuse color , position and distance of object affected by light.
+		\return number of lights loaded or 0 if loading failed.*/
+		int loadLights(const c8 * filename, ISceneManager* smgr,
 			ISceneNode*  parent = 0, s32 base_id = 1000);
 
-        /** loads water plains present in this scene.
-        Note that loaded water plains from DeleD must have the suffix \b water_ and must be \b rectangle (with just 1 rectangular face).
-        Irrlicht correctly loads position and rotation of water plain as well as texture layers.
-        \return number of water plains loaded or 0 if loading failed.*/
-        int loadWaterPlains ( const c8 *filename,
-                              ISceneManager* smgr,
-                              ISceneNode * parent = 0,
-                              s32 base_id = 2000,
-                              bool mode = true);
-    
+		/** loads water plains present in this scene.
+		Note that loaded water plains from DeleD must have the suffix \b water_ and must be \b rectangle (with just 1 rectangular face).
+		Irrlicht correctly loads position and rotation of water plain as well as texture layers.
+		\return number of water plains loaded or 0 if loading failed.*/
+		int loadWaterPlains ( const c8 *filename,
+				ISceneManager* smgr,
+				ISceneNode * parent = 0,
+				s32 base_id = 2000,
+				bool mode = true);
+
 	private:
 		
-        void GetFaceNormal(f32 a[3], f32 b[3], f32 c[3], f32 out[3]);
+		void GetFaceNormal(f32 a[3], f32 b[3], f32 c[3], f32 out[3]);
 
-		video::IVideoDriver* Driver;
 		ISceneManager* SceneMgr;
+		io::IFileSystem* FileSystem;
 	};
 
 } // end namespace scene
