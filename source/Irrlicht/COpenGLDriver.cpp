@@ -1922,6 +1922,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 	{
 		glEnable(GL_BLEND);
 		glEnable(GL_ALPHA_TEST);
+		glAlphaFunc(GL_GREATER, 0.f);
 	}
 	else
 	{

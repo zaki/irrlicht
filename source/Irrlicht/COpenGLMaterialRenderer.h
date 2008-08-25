@@ -132,6 +132,7 @@ public:
 
 			glBlendFunc( getGLBlend(srcFact), getGLBlend(dstFact) );
 			glEnable(GL_ALPHA_TEST);
+			glAlphaFunc(GL_GREATER, 0.f);
 			glEnable(GL_BLEND);
 
 			if ( getTexelAlpha(srcFact) || getTexelAlpha(dstFact) )
@@ -359,11 +360,7 @@ public:
 			glEnable(GL_BLEND);
 			glEnable(GL_ALPHA_TEST);
 
-			f32 refValue = material.MaterialTypeParam;
-			if ( refValue == 0.0f )
-				refValue = 0.5f;
-
-			glAlphaFunc(GL_GREATER, refValue);
+			glAlphaFunc(GL_GREATER, material.MaterialTypeParam);
 		}
 	}
 
@@ -400,7 +397,7 @@ public:
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
 			glEnable(GL_ALPHA_TEST);
-			glAlphaFunc(GL_GREATER, 0.5);
+			glAlphaFunc(GL_GREATER, 0.5f);
 			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		}
 	}
