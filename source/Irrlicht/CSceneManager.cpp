@@ -1069,7 +1069,7 @@ bool CSceneManager::isCulled(const ISceneNode* node)
 		case scene::EAC_BOX:
 		{
 			core::aabbox3d<f32> tbox = node->getBoundingBox();
-			node->getAbsoluteTransformation().transformBox(tbox);
+			node->getAbsoluteTransformation().transformBoxEx(tbox);
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return !(tbox.intersectsWithBox(cam->getViewFrustum()->getBoundingBox() ));
 		}
