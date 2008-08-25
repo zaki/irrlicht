@@ -186,12 +186,12 @@ namespace core
 			void transformPlane( const core::plane3d<f32> &in, core::plane3d<f32> &out) const;
 
 			//! Transforms a axis aligned bounding box
-			/** The result box of this operation may not be very accurate. For
-			accurate results, use transformBoxEx() */
+			/** The result box of this operation may not be accurate at all. For
+			correct results, use transformBoxEx() */
 			void transformBox(core::aabbox3d<f32>& box) const;
 
-			//! Transforms a axis aligned bounding box more accurately than transformBox()
-			/** The result box of this operation should by quite accurate, but this operation
+			//! Transforms a axis aligned bounding box
+			/** The result box of this operation should by accurate, but this operation
 			is slower than transformBox(). */
 			void transformBoxEx(core::aabbox3d<f32>& box) const;
 

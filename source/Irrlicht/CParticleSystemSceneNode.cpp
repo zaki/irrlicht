@@ -433,8 +433,7 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 		}
 	}
 
-	f32 m = ParticleSize.Width > ParticleSize.Height ? ParticleSize.Width : ParticleSize.Height;
-	m *= 0.5f;
+	const f32 m = (ParticleSize.Width > ParticleSize.Height ? ParticleSize.Width : ParticleSize.Height) * 0.5f;
 	Buffer->BoundingBox.MaxEdge.X += m;
 	Buffer->BoundingBox.MaxEdge.Y += m;
 	Buffer->BoundingBox.MaxEdge.Z += m;
@@ -445,9 +444,8 @@ void CParticleSystemSceneNode::doParticleSystem(u32 time)
 
 	if (ParticlesAreGlobal)
 	{
-		core::matrix4 absinv = AbsoluteTransformation;
-		absinv.makeInverse();
-		absinv.transformBox(Buffer->BoundingBox);
+		core::matrix4 absinv( AbsoluteTransformation, core::matrix4::EM4CONST_INVERSE );
+		absinv.transformBoxEx(Buffer->BoundingBox);
 	}
 }
 

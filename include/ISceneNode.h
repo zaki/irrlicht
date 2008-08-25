@@ -158,7 +158,7 @@ namespace scene
 		virtual const core::aabbox3d<f32> getTransformedBoundingBox() const
 		{
 			core::aabbox3d<f32> box = getBoundingBox();
-			AbsoluteTransformation.transformBox(box);
+			AbsoluteTransformation.transformBoxEx(box);
 			return box;
 		}
 

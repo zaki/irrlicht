@@ -310,13 +310,12 @@ void CBillboardTextSceneNode::OnRegisterSceneNode()
 	// make bounding box
 
 	for (i=0; i< Mesh->getMeshBufferCount() ; ++i)
-		((SMeshBuffer*)Mesh->getMeshBuffer(i))->recalculateBoundingBox();
+		Mesh->getMeshBuffer(i)->recalculateBoundingBox();
 	Mesh->recalculateBoundingBox();
 
 	BBox = Mesh->getBoundingBox();
-	core::matrix4 mat = getAbsoluteTransformation();
-	mat.makeInverse();
-	mat.transformBox(BBox);
+	core::matrix4 mat( getAbsoluteTransformation(), core::matrix4::EM4CONST_INVERSE );
+	mat.transformBoxEx(BBox);
 
 	SceneManager->registerNodeForRendering(this, ESNRP_TRANSPARENT);
 	ISceneNode::OnRegisterSceneNode();
