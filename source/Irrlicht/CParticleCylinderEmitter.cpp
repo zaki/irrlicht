@@ -62,9 +62,7 @@ s32 CParticleCylinderEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& 
 				distance = Radius;
 
 			// Random direction from center
-			p.pos.X = Center.X + distance;
-			p.pos.Y = Center.Y;
-			p.pos.Z = Center.Z + distance;
+			p.pos.set(Center.X + distance, Center.Y, Center.Z + distance);
 			p.pos.rotateXZBy( os::Randomizer::rand() % 360, Center );
 
 			// Random length
