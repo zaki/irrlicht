@@ -18,9 +18,13 @@ template <class T>
 class vector2d
 {
 public:
-
+	//! Default constructor (null vector)
 	vector2d() : X(0), Y(0) {}
+	//! Constructor with two different values
 	vector2d(T nx, T ny) : X(nx), Y(ny) {}
+	//! Constructor with the same value for both members
+	explicit vector2d(T n) : X(n), Y(n) {}
+	//! Copy constructor
 	vector2d(const vector2d<T>& other) : X(other.X), Y(other.Y) {}
 
 	// operators
@@ -217,9 +221,16 @@ public:
 	\return True if this vector is between begin and end, false if not. */
 	bool isBetweenPoints(const vector2d<T>& begin, const vector2d<T>& end) const
 	{
-		const T f = (end - begin).getLengthSQ();
-		return getDistanceFromSQ(begin) <= f &&
-			getDistanceFromSQ(end) <= f;
+		if (begin.X != end.X)
+		{
+			return ((begin.X <= X && X <= end.X) ||
+				(begin.X >= X && X >= end.X));
+		}
+		else
+		{
+			return ((begin.Y <= Y && Y <= end.Y) ||
+				(begin.Y >= Y && Y >= end.Y));
+		}
 	}
 
 	//! Get the interpolated vector

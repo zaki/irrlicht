@@ -91,7 +91,7 @@ namespace scene
 			setType(IndexType);
 		}
 
-		~CIndexBuffer()
+		virtual ~CIndexBuffer()
 		{
 			delete Indices;
 		}

@@ -14,7 +14,6 @@ namespace scene
 
 	class CVertexBuffer : public IVertexBuffer
 	{
-
 		class IVertexList
 		{
 		public:
@@ -75,7 +74,7 @@ namespace scene
 			setType(vertexType);
 		}
 
-		~CVertexBuffer()
+		virtual ~CVertexBuffer()
 		{
 			delete Vertices;
 		}
