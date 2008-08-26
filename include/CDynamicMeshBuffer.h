@@ -26,7 +26,7 @@ namespace scene
 		}
 
 		//! destructor
-		~CDynamicMeshBuffer()
+		virtual ~CDynamicMeshBuffer()
 		{
 			if (VertexBuffer)
 				VertexBuffer->drop();

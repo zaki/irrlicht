@@ -19,7 +19,11 @@ namespace core
 	public:
 		//! Default constructor (null vector).
 		vector3d() : X(0), Y(0), Z(0) {}
+		//! Constructor with three different values
 		vector3d(T nx, T ny, T nz) : X(nx), Y(ny), Z(nz) {}
+		//! Constructor with the same value for all elements
+		explicit vector3d(T n) : X(n), Y(n), Z(n) {}
+		//! Copy constructor
 		vector3d(const vector3d<T>& other) : X(other.X), Y(other.Y), Z(other.Z) {}
 
 		// operators
@@ -30,9 +34,13 @@ namespace core
 
 		vector3d<T> operator+(const vector3d<T>& other) const { return vector3d<T>(X + other.X, Y + other.Y, Z + other.Z); }
 		vector3d<T>& operator+=(const vector3d<T>& other) { X+=other.X; Y+=other.Y; Z+=other.Z; return *this; }
+		vector3d<T> operator+(const T val) const { return vector3d<T>(X + val, Y + val, Z + val); }
+		vector3d<T>& operator+=(const T val) { X+=val; Y+=val; Z+=val; return *this; }
 
 		vector3d<T> operator-(const vector3d<T>& other) const { return vector3d<T>(X - other.X, Y - other.Y, Z - other.Z); }
 		vector3d<T>& operator-=(const vector3d<T>& other) { X-=other.X; Y-=other.Y; Z-=other.Z; return *this; }
+		vector3d<T> operator-(const T val) const { return vector3d<T>(X - val, Y - val, Z - val); }
+		vector3d<T>& operator-=(const T val) { X-=val; Y-=val; Z-=val; return *this; }
 
 		vector3d<T> operator*(const vector3d<T>& other) const { return vector3d<T>(X * other.X, Y * other.Y, Z * other.Z); }
 		vector3d<T>& operator*=(const vector3d<T>& other) { X*=other.X; Y*=other.Y; Z*=other.Z; return *this; }

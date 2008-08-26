@@ -18,7 +18,7 @@ namespace scene
 	{
 	public:
 		//! Default constructor for empty meshbuffer
-		CMeshBuffer():ChangedID_Vertex(1),ChangedID_Index(1),MappingHint(EHM_NEVER) // everything's default constructed
+		CMeshBuffer() : ChangedID_Vertex(1), ChangedID_Index(1), MappingHint(EHM_NEVER)
 		{
 			#ifdef _DEBUG
 			setDebugName("SMeshBuffer");

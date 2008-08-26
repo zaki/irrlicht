@@ -17,6 +17,10 @@
 
 namespace irr
 {
+namespace io
+{
+	class IReadFile;
+} // end namespace io
 namespace scene
 {
 	class IMesh;
@@ -146,6 +150,15 @@ namespace scene
 		first set. If this is another value than zero, it will scale
 		the second texture coordinate set by this value. */
 		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f) = 0;
+
+		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
+		virtual bool loadHeightMap(io::IReadFile* file, 
+			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 ) =0;
+
+		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
+		virtual bool loadHeightMapRAW(io::IReadFile* file, s32 bitsPerPixel = 16,
+			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 ) =0;
+
 	};
 
 } // end namespace scene
