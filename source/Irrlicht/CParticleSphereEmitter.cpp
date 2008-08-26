@@ -59,9 +59,7 @@ s32 CParticleSphereEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& ou
 			f32 distance = fmodf( (f32)os::Randomizer::rand(), Radius * 1000.0f ) * 0.001f;
 
 			// Random direction from center
-			p.pos.X = Center.X + distance;
-			p.pos.Y = Center.Y + distance;
-			p.pos.Z = Center.Z + distance;
+			p.pos.set(Center + distance);
 			p.pos.rotateXYBy( os::Randomizer::rand() % 360, Center );
 			p.pos.rotateYZBy( os::Randomizer::rand() % 360, Center );
 			p.pos.rotateXZBy( os::Randomizer::rand() % 360, Center );
@@ -72,9 +70,9 @@ s32 CParticleSphereEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& ou
 			if(MaxAngleDegrees)
 			{
 				core::vector3df tgt = Direction;
-				tgt.rotateXYBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df());
-				tgt.rotateYZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df());
-				tgt.rotateXZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees, core::vector3df());
+				tgt.rotateXYBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees);
+				tgt.rotateYZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees);
+				tgt.rotateXZBy((os::Randomizer::rand()%(MaxAngleDegrees*2)) - MaxAngleDegrees);
 				p.vector = tgt;
 			}
 

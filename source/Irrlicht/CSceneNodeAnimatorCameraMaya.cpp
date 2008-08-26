@@ -78,6 +78,7 @@ bool CSceneNodeAnimatorCameraMaya::OnEvent(const SEvent& event)
 	return true;
 }
 
+
 //! OnAnimate() is called just before rendering the whole scene.
 //! nodes may calculate or store animations here, and may do other useful things,
 //! dependent on what they are.
@@ -222,8 +223,8 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 
 	// jox: fixed bug: jitter when rotating to the top and bottom of y
 	UpVector.set(0,1,0);
-	UpVector.rotateXYBy(-nRotY, core::vector3df(0,0,0));
-	UpVector.rotateXZBy(-nRotX+180.f, core::vector3df(0,0,0));
+	UpVector.rotateXYBy(-nRotY);
+	UpVector.rotateXZBy(-nRotX+180.f);
 
 	camera->setPosition(Pos);
 	camera->setTarget(Target);
@@ -254,7 +255,7 @@ void CSceneNodeAnimatorCameraMaya::updateAnimationState()
 	RotX = (f32)vec2d.getAngle();
 
 	// Y rotation
-	pos.rotateXZBy(RotX, core::vector3df());
+	pos.rotateXZBy(RotX);
 	vec2d.set(pos.X, pos.Y);
 	RotY = -(f32)vec2d.getAngle();
 
@@ -262,17 +263,20 @@ void CSceneNodeAnimatorCameraMaya::updateAnimationState()
 	CurrentZoom = (f32)Pos.getDistanceFrom(Target);
 }
 
+
 //! Sets the rotation speed
 void CSceneNodeAnimatorCameraMaya::setRotateSpeed(f32 speed)
 {
 	RotateSpeed = speed;	
 }
 
+
 //! Sets the movement speed
 void CSceneNodeAnimatorCameraMaya::setMoveSpeed(f32 speed)
 {
 	TranslateSpeed = speed;
 }
+
 
 //! Sets the zoom speed
 void CSceneNodeAnimatorCameraMaya::setZoomSpeed(f32 speed)
@@ -287,17 +291,20 @@ f32 CSceneNodeAnimatorCameraMaya::getRotateSpeed() const
 	return RotateSpeed;
 }
 
+
 // Gets the movement speed
 f32 CSceneNodeAnimatorCameraMaya::getMoveSpeed() const
 {
 	return TranslateSpeed;
 }
 
+
 //! Gets the zoom speed
 f32 CSceneNodeAnimatorCameraMaya::getZoomSpeed() const
 {
 	return ZoomSpeed;
 }
+
 
 } // end namespace
 } // end namespace
