@@ -238,7 +238,7 @@ namespace scene
 		}
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
 		{
 			return MappingHint_Index;
 		}

@@ -166,7 +166,7 @@ namespace scene
 		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const = 0;
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Index() const = 0;
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const = 0;
 
 		//! set the hardware mapping hint, for driver
 		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX ) = 0;
