@@ -27,7 +27,7 @@ namespace scene
 
 		virtual void* getData() =0;
 
-		virtual video::E_INDEX_TYPE getType() =0;
+		virtual video::E_INDEX_TYPE getType() const =0;
 		virtual void setType(video::E_INDEX_TYPE IndexType) =0;
 
 		virtual u32 stride() const =0;

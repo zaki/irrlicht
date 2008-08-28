@@ -70,8 +70,8 @@ namespace video
 
 		//! draws a vertex primitive list
 		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-				const u16* indexList, u32 primitiveCount,
-				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
@@ -138,6 +138,12 @@ namespace video
 			video::SColor rightDownEdge = video::SColor(0,0,0,0));
 
 	protected:
+
+
+		void drawVertexPrimitiveList16(const void* vertices, u32 vertexCount,
+				const u16* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+
 
 		//! sets a render target
 		void setRenderTarget(video::CImage* image);
@@ -244,4 +250,5 @@ namespace video
 
 
 #endif
+
 

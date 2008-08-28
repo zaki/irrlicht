@@ -326,8 +326,8 @@ namespace video
 		\param vType Vertex type, e.g. EVT_STANDARD for S3DVertex.
 		\param pType Primitive type, e.g. EPT_TRIANGLE_FAN for a triangle fan. */
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-				const u16* indexList, u32 primCount,
-				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType) = 0;
+				const void* indexList, u32 primCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType) = 0;
 
 		//! Draws an indexed triangle list.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -634,7 +634,7 @@ namespace video
 		available with D3D and vertex fog. */
 		virtual void setFog(SColor color=SColor(0,255,255,255),
 				bool linearFog=true, f32 start=50.0f, f32 end=100.0f,
-				f32 density=0.01f, 
+				f32 density=0.01f,
 				bool pixelFog=false, bool rangeFog=false) = 0;
 
 		//! Get the current color format of the color buffer
@@ -964,5 +964,6 @@ namespace video
 
 
 #endif
+
 
 

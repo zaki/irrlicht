@@ -18,6 +18,8 @@ namespace scene
 		class IIndexList
 		{
 		public:
+			virtual ~IIndexList(){};
+
 			virtual u32 stride() const =0;
 			virtual u32 size() const =0;
 			virtual void push_back(const u32 &element) =0;
@@ -28,7 +30,7 @@ namespace scene
 			virtual void reallocate(u32 new_size) =0;
 			virtual u32 allocated_size() const =0;
 			virtual void* pointer() =0;
-			virtual video::E_INDEX_TYPE getType() =0;
+			virtual video::E_INDEX_TYPE getType() const =0;
 		};
 
 		template <class T>
@@ -75,7 +77,7 @@ namespace scene
 
 			virtual void* pointer() {return Indices.pointer();}
 
-			virtual video::E_INDEX_TYPE getType()
+			virtual video::E_INDEX_TYPE getType() const
 			{
 				if (sizeof(T)==sizeof(u16))
 					return video::EIT_16BIT;
@@ -89,6 +91,15 @@ namespace scene
 		CIndexBuffer(video::E_INDEX_TYPE IndexType) :Indices(0), MappingHint(EHM_NEVER), ChangedID(1)
 		{
 			setType(IndexType);
+		}
+
+		CIndexBuffer(const IIndexBuffer &IndexBufferCopy) :Indices(0), MappingHint(EHM_NEVER), ChangedID(1)
+		{
+			setType(IndexBufferCopy.getType());
+			reallocate(IndexBufferCopy.size());
+
+			for (u32 n=0;n<IndexBufferCopy.size();++n)
+				push_back(IndexBufferCopy[n]);
 		}
 
 		virtual ~CIndexBuffer()
@@ -130,7 +141,7 @@ namespace scene
 
 		virtual void* getData() {return Indices->pointer();}
 
-		virtual video::E_INDEX_TYPE getType(){return Indices->getType();}
+		virtual video::E_INDEX_TYPE getType() const {return Indices->getType();}
 
 		virtual u32 stride() const {return Indices->stride();}
 

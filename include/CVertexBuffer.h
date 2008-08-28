@@ -7,6 +7,7 @@
 
 #include "IVertexBuffer.h"
 
+
 namespace irr
 {
 namespace scene
@@ -17,6 +18,8 @@ namespace scene
 		class IVertexList
 		{
 		public:
+			virtual ~IVertexList(){};
+
 			virtual u32 stride() const =0;
 
 			virtual u32 size() const =0;
@@ -28,7 +31,7 @@ namespace scene
 			virtual void reallocate(u32 new_size) =0;
 			virtual u32 allocated_size() const =0;
 			virtual video::S3DVertex* pointer() =0;
-			virtual video::E_VERTEX_TYPE getType() =0;
+			virtual video::E_VERTEX_TYPE getType() const =0;
 		};
 
 		template <class T>
@@ -63,7 +66,7 @@ namespace scene
 
 			virtual video::S3DVertex* pointer() {return Vertices.pointer();}
 
-			virtual video::E_VERTEX_TYPE getType(){return T().getType();}
+			virtual video::E_VERTEX_TYPE getType() const {return T().getType();}
 		};
 
 	public:
@@ -72,6 +75,15 @@ namespace scene
 		CVertexBuffer(video::E_VERTEX_TYPE vertexType) :Vertices(0), MappingHint(EHM_NEVER), ChangedID(1)
 		{
 			setType(vertexType);
+		}
+
+		CVertexBuffer(const IVertexBuffer &VertexBufferCopy) :Vertices(0), MappingHint(EHM_NEVER), ChangedID(1)
+		{
+			setType(VertexBufferCopy.getType());
+			reallocate(VertexBufferCopy.size());
+
+			for (u32 n=0;n<VertexBufferCopy.size();++n)
+				push_back(VertexBufferCopy[n]);
 		}
 
 		virtual ~CVertexBuffer()
@@ -118,7 +130,7 @@ namespace scene
 
 		virtual void* getData() {return Vertices->pointer();}
 
-		virtual video::E_VERTEX_TYPE getType(){return Vertices->getType();}
+		virtual video::E_VERTEX_TYPE getType() const {return Vertices->getType();}
 
 		virtual u32 stride() const {return Vertices->stride();}
 

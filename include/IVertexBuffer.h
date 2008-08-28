@@ -18,7 +18,7 @@ namespace scene
 	{
 	public:
 		virtual void* getData() =0;
-		virtual video::E_VERTEX_TYPE getType() =0;
+		virtual video::E_VERTEX_TYPE getType() const =0;
 		virtual void setType(video::E_VERTEX_TYPE vertexType) =0;
 		virtual u32 stride() const =0;
 		virtual u32 size() const =0;

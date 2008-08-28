@@ -352,7 +352,7 @@ void CParticleSystemSceneNode::render()
 	driver->setMaterial(Buffer->Material);
 
 	driver->drawVertexPrimitiveList(Buffer->getVertices(), Particles.size()*4,
-		Buffer->getIndices(), Particles.size()*2, video::EVT_STANDARD, EPT_TRIANGLES);
+		Buffer->getIndices(), Particles.size()*2, video::EVT_STANDARD, EPT_TRIANGLES,Buffer->getIndexType());
 
 	// for debug purposes only:
 	if ( DebugDataVisible & scene::EDS_BBOX )
@@ -631,4 +631,5 @@ void CParticleSystemSceneNode::deserializeAttributes(io::IAttributes* in, io::SA
 
 } // end namespace scene
 } // end namespace irr
+
 

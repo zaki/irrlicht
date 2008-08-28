@@ -177,6 +177,18 @@ namespace scene
 			return getVertexBuffer()[i].Pos;
 		}
 
+		//! returns texture coords of vertex i
+		virtual const core::vector2df& getTCoords(u32 i) const
+		{
+			return getVertexBuffer()[i].TCoords;
+		}
+
+		//! returns texture coords of vertex i
+		virtual core::vector2df& getTCoords(u32 i)
+		{
+			return getVertexBuffer()[i].TCoords;
+		}
+
 		//! returns normal of vertex i
 		virtual const core::vector3df& getNormal(u32 i) const
 		{
@@ -195,4 +207,5 @@ namespace scene
 } // end namespace irr
 
 #endif
+
 

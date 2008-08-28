@@ -39,7 +39,7 @@ CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<s32>& windowSiz
 	if (BackBuffer)
 	{
 		BackBuffer->fill(SColor(0));
-	
+
 		// create z buffer
 		DepthBuffer = video::createDepthBuffer(BackBuffer->getDimension());
 	}
@@ -96,8 +96,8 @@ CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<s32>& windowSiz
 	addMaterialRenderer ( umr ); // EMT_SPHERE_MAP,
 	addMaterialRenderer ( smr ); // EMT_REFLECTION_2_LAYER,
 	addMaterialRenderer ( tmr ); // EMT_TRANSPARENT_ADD_COLOR,
-	addMaterialRenderer ( tmr ); // EMT_TRANSPARENT_ALPHA_CHANNEL,	
-	addMaterialRenderer ( tmr ); // EMT_TRANSPARENT_ALPHA_CHANNEL_REF,	
+	addMaterialRenderer ( tmr ); // EMT_TRANSPARENT_ALPHA_CHANNEL,
+	addMaterialRenderer ( tmr ); // EMT_TRANSPARENT_ALPHA_CHANNEL_REF,
 	addMaterialRenderer ( tmr ); // EMT_TRANSPARENT_VERTEX_ALPHA,
 	addMaterialRenderer ( smr ); // EMT_TRANSPARENT_REFLECTION_2_LAYER,
 	addMaterialRenderer ( umr ); // EMT_NORMAL_MAP_SOLID,
@@ -370,7 +370,7 @@ void CBurningVideoDriver::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < 2; ++i)
 	{
-		setTransform((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i), 
+		setTransform((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
 				material.getTextureMatrix(i));
 	}
 
@@ -408,7 +408,7 @@ bool CBurningVideoDriver::endScene( void* windowId, core::rect<s32>* sourceRect 
 
 
 //! sets a render target
-bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer, 
+bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 								 bool clearZBuffer, SColor color)
 {
 	if (texture && texture->getDriverType() != EDT_BURNINGSVIDEO)
@@ -573,7 +573,7 @@ REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) c
 	return flag;
 }
 
-#endif // _MSC_VER 
+#endif // _MSC_VER
 
 u32 CBurningVideoDriver::clipToHyperPlane ( s4DVertex * dest, const s4DVertex * source, u32 inCount, const sVec4 &plane )
 {
@@ -898,13 +898,13 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 	{
 	/*
 			Generate texture coordinates as linear functions so that:
-				u = Ux*x + Uy*y + Uz*z + Uw 
+				u = Ux*x + Uy*y + Uz*z + Uw
 				v = Vx*x + Vy*y + Vz*z + Vw
 			The matrix M for this case is:
-				Ux  Vx  0  0 
-				Uy  Vy  0  0 
-				Uz  Vz  0  0 
-				Uw  Vw  0  0 
+				Ux  Vx  0  0
+				Uy  Vy  0  0
+				Uz  Vz  0  0
+				Uw  Vw  0  0
 	*/
 
 		const core::vector2d<f32> *src = &((S3DVertex*) source )->TCoords;
@@ -937,7 +937,7 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 
 	dest[0].flag = dest[1].flag = vSize[VertexCache.vType].Format;
 
-	// test vertex 
+	// test vertex
 	dest[0].flag |= clipToFrustumTest ( dest);
 
 	// to DC Space, project homogenous vertex
@@ -1075,8 +1075,8 @@ REALINLINE void CBurningVideoDriver::VertexCache_get2 ( s4DVertex ** face )
 
 }
 
-void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCount, 
-											const u16* indices, u32 primitiveCount, 
+void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCount,
+											const u16* indices, u32 primitiveCount,
 											E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType )
 {
 	VertexCache.vertices = vertices;
@@ -1106,13 +1106,37 @@ void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCo
 }
 
 
+void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+
+{
+	switch (iType)
+	{
+		case (EIT_16BIT):
+		{
+			drawVertexPrimitiveList16(vertices, vertexCount, (const u16*) indexList, primitiveCount, vType, pType);
+			break;
+		}
+		case (EIT_32BIT):
+		{
+			os::Printer::log("Software driver can not render 32bit buffers", ELL_ERROR);
+			break;
+		}
+	}
+
+
+}
+
+
+
 //! draws a vertex primitive list
-void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
+void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
 {
 	if (!checkPrimitiveCount(primitiveCount))
 		return;
 
-	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType);
+	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, EIT_16BIT);
 
 	if ( 0 == CurrentShader )
 		return;
@@ -1194,7 +1218,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 				u32 flag;
 				const char * name;
 			};
-			
+
 			SCheck check[5];
 			check[0].flag = face[0]->flag;
 			check[0].name = "face0";
@@ -1464,7 +1488,7 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source
 				lightHalf.y = vp.y - vertexEyeSpaceUnit.y;
 				lightHalf.z = vp.z - vertexEyeSpaceUnit.z;
 				lightHalf.normalize_xyz();
-		
+
 			} break;
 
 			case video::ELT_DIRECTIONAL:
@@ -1520,8 +1544,8 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source
 
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
-					 const core::rect<s32>& sourceRect, 
-					 const core::rect<s32>* clipRect, SColor color, 
+					 const core::rect<s32>& sourceRect,
+					 const core::rect<s32>* clipRect, SColor color,
 					 bool useAlphaChannelOfTexture)
 {
 	if (texture)
@@ -1543,7 +1567,7 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 
 
 
-//! Draws a 2d line. 
+//! Draws a 2d line.
 void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color)
@@ -1562,7 +1586,7 @@ void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& p
 
 		p.clipAgainst(*clip);
 
-		if(!p.isValid())  
+		if(!p.isValid())
 			return;
 
 		BackBuffer->drawRectangle(p, color);
@@ -1824,11 +1848,11 @@ ITexture* CBurningVideoDriver::createRenderTargetTexture(const core::dimension2d
 
 	ITexture* tex = new CSoftwareTexture2(img, name, false, true);
 	img->drop();
-	return tex;	
+	return tex;
 }
 
 
-//! Clears the DepthBuffer. 
+//! Clears the DepthBuffer.
 void CBurningVideoDriver::clearZBuffer()
 {
 	if (DepthBuffer)

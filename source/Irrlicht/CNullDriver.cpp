@@ -502,7 +502,7 @@ const core::rect<s32>& CNullDriver::getViewPort() const
 
 
 //! draws a vertex primitive list
-void CNullDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
+void CNullDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const void* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
 	PrimitivesDrawn += primitiveCount;
 }
@@ -512,7 +512,7 @@ void CNullDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 //! draws an indexed triangle list
 inline void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES);
+	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
 }
 
 
@@ -520,7 +520,7 @@ inline void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 
 //! draws an indexed triangle list
 inline void CNullDriver::drawIndexedTriangleList(const S3DVertex2TCoords* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLES);
+	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLES, EIT_16BIT);
 }
 
 
@@ -528,7 +528,7 @@ inline void CNullDriver::drawIndexedTriangleList(const S3DVertex2TCoords* vertic
 inline void CNullDriver::drawIndexedTriangleList(const S3DVertexTangents* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES);
+	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES, EIT_16BIT);
 }
 
 
@@ -537,7 +537,7 @@ inline void CNullDriver::drawIndexedTriangleList(const S3DVertexTangents* vertic
 inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLE_FAN);
+	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
 }
 
 
@@ -546,7 +546,7 @@ inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex* vertices,
 inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLE_FAN);
+	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
 }
 
 
@@ -555,7 +555,7 @@ inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertice
 inline void CNullDriver::drawIndexedTriangleFan(const S3DVertexTangents* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN);
+	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
 }
 
 
@@ -1278,7 +1278,7 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 	if (HWBuffer)
 		drawHardwareBuffer(HWBuffer);
 	else
-		drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
+		drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
 }
 
 CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
@@ -1337,7 +1337,7 @@ void CNullDriver::removeAllHardwareBuffers()
 
 bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 {
-	if (!mb || mb->getHardwareMappingHint()==scene::EHM_NEVER)
+	if (!mb || (mb->getHardwareMappingHint_Index()==scene::EHM_NEVER && mb->getHardwareMappingHint_Vertex()==scene::EHM_NEVER))
 		return false;
 
 	if (mb->getVertexCount()<500) //todo: tweak and make user definable
@@ -1873,4 +1873,5 @@ void CNullDriver::enableClipPlane(u32 index, bool enable)
 
 } // end namespace
 } // end namespace
+
 

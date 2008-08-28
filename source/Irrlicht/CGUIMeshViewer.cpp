@@ -104,7 +104,7 @@ void CGUIMeshViewer::draw()
 	viewPort.clipAgainst(AbsoluteClippingRect);
 
 	// draw the frame
-	
+
 	core::rect<s32> frameRect(AbsoluteRect);
 	frameRect.LowerRightCorner.Y = frameRect.UpperLeftCorner.Y + 1;
 	skin->draw2DRectangle(this, skin->getColor(EGDC_3D_SHADOW), frameRect, &AbsoluteClippingRect);
@@ -157,7 +157,7 @@ void CGUIMeshViewer::draw()
 			driver->drawVertexPrimitiveList(mb->getVertices(),
 					mb->getVertexCount(), mb->getIndices(),
 					mb->getIndexCount()/ 3, mb->getVertexType(),
-					scene::EPT_TRIANGLES);
+					scene::EPT_TRIANGLES, mb->getIndexType());
 		}
 
 		driver->setViewPort(oldViewPort);
@@ -171,4 +171,5 @@ void CGUIMeshViewer::draw()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+
 

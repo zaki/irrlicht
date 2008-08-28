@@ -379,6 +379,21 @@ void CShadowVolumeSceneNode::render()
 	for (s32 i=0; i<ShadowVolumesUsed; ++i)
 		driver->drawStencilShadowVolume(ShadowVolumes[i].vertices,
 			ShadowVolumes[i].count, UseZFailMethod);
+
+/*
+	if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
+	{
+		video::SMaterial mat;
+		mat.Lighting = false;
+		mat.Wireframe = true;
+		mat.ZBuffer = true;
+		driver->setMaterial(mat);
+
+		for (s32 i=0; i<ShadowVolumesUsed; ++i)
+			driver->drawVertexPrimitiveList(ShadowVolumes[i].vertices,
+			ShadowVolumes[i].count,0,0,video::EVT_STANDARD,scene::EPT_LINES);
+	}
+*/
 }
 
 
@@ -444,4 +459,5 @@ void CShadowVolumeSceneNode::calculateAdjacency(f32 epsilon)
 
 } // end namespace scene
 } // end namespace irr
+
 
