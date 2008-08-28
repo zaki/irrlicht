@@ -66,13 +66,13 @@ namespace scene
 		// ------------------- To be removed? -------------------  //
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
 		{
 			return getVertexBuffer().getHardwareMappingHint();
 		}
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
 		{
 			return getIndexBuffer().getHardwareMappingHint();
 		}
@@ -95,12 +95,12 @@ namespace scene
 				getIndexBuffer().setDirty();
 		}
 
-		virtual const u32 getChangedID_Vertex() const
+		virtual u32 getChangedID_Vertex() const
 		{
 			return getVertexBuffer().getChangedID();
 		}
 
-		virtual const u32 getChangedID_Index() const
+		virtual u32 getChangedID_Index() const
 		{
 			return getIndexBuffer().getChangedID();
 		}

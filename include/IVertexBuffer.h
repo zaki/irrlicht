@@ -31,7 +31,7 @@ namespace scene
 		virtual video::S3DVertex* pointer() =0;
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const =0;
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint() const =0;
 
 		//! set the hardware mapping hint, for driver
 		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) =0;
@@ -41,7 +41,7 @@ namespace scene
 
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
-		virtual const u32 getChangedID() const = 0;
+		virtual u32 getChangedID() const = 0;
 	};
 
 

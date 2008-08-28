@@ -155,12 +155,12 @@ namespace scene
 			Indices->push_back(element);
 		}
 
-		virtual const u32 operator [](u32 index) const
+		virtual u32 operator [](u32 index) const
 		{
 			return (*Indices)[index];
 		}
 
-		virtual const u32 getLast()
+		virtual u32 getLast()
 		{
 			return Indices->getLast();
 		}
@@ -191,7 +191,7 @@ namespace scene
 		}
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint() const
 		{
 			return MappingHint;
 		}
@@ -210,7 +210,7 @@ namespace scene
 
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
-		virtual const u32 getChangedID() const {return ChangedID;}
+		virtual u32 getChangedID() const {return ChangedID;}
 
 		E_HARDWARE_MAPPING MappingHint;
 		u32 ChangedID;
