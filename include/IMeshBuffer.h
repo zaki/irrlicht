@@ -9,6 +9,7 @@
 #include "SMaterial.h"
 #include "aabbox3d.h"
 #include "S3DVertex.h"
+#include "SVertexIndex.h"
 #include "EHardwareBufferFlags.h"
 
 namespace irr
@@ -102,6 +103,10 @@ namespace scene
 		/** \return Number of vertices in this buffer. */
 		virtual u32 getVertexCount() const = 0;
 
+		//! Get type of index data which is stored in this meshbuffer.
+		/** \return Index type of this buffer. */
+		virtual video::E_INDEX_TYPE getIndexType() const =0;
+
 		//! Get access to Indices.
 		/** \return Pointer to indices array. */
 		virtual const u16* getIndices() const = 0;
@@ -158,10 +163,13 @@ namespace scene
 		virtual void append(const IMeshBuffer* const other) = 0;
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const = 0;
+		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const = 0;
+
+		//! get the current hardware mapping hint
+		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Index() const = 0;
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) = 0;
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX ) = 0;
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) = 0;
@@ -174,12 +182,11 @@ namespace scene
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
 		virtual const u32 getChangedID_Index() const = 0;
-
-		u32 HardwareHint;
 	};
 
 } // end namespace scene
 } // end namespace irr
 
 #endif
+
 

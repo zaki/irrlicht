@@ -638,9 +638,9 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	{
 		HWBuffer->vbo_verticesSize = vertexCount*vertexSize;
 
-		if (HWBuffer->Mapped==scene::EHM_STATIC)
+		if (HWBuffer->Mapped_Vertex==scene::EHM_STATIC)
 			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STATIC_DRAW);
-		else if (HWBuffer->Mapped==scene::EHM_DYNAMIC)
+		else if (HWBuffer->Mapped_Vertex==scene::EHM_DYNAMIC)
 			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_DYNAMIC_DRAW);
 		else //scene::EHM_STREAM
 			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STREAM_DRAW);
@@ -666,9 +666,28 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 #if defined(GL_ARB_vertex_buffer_object)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
-	const u16* indices=mb->getIndices();
+	const void* indices=mb->getIndices();
 	u32 indexCount= mb->getIndexCount();
-	u32 indexSize = 2;
+
+	GLenum indexSize;
+	switch (mb->getIndexType())
+	{
+		case (EIT_16BIT):
+		{
+			indexSize=sizeof(u16);
+			break;
+		}
+		case (EIT_32BIT):
+		{
+			indexSize=sizeof(u32);
+			break;
+		}
+		default:
+		{
+			return false;
+		}
+	}
+
 
 	//get or create buffer
 	bool newBuffer=false;
@@ -693,9 +712,9 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 	{
 		HWBuffer->vbo_indicesSize = indexCount*indexSize;
 
-		if (HWBuffer->Mapped==scene::EHM_STATIC)
+		if (HWBuffer->Mapped_Index==scene::EHM_STATIC)
 			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_STATIC_DRAW);
-		else if (HWBuffer->Mapped==scene::EHM_DYNAMIC)
+		else if (HWBuffer->Mapped_Index==scene::EHM_DYNAMIC)
 			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_DYNAMIC_DRAW);
 		else //scene::EHM_STREAM
 			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_STREAM_DRAW);
@@ -716,24 +735,30 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 	if (!HWBuffer)
 		return false;
 
-	if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex()
-		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
+	if (HWBuffer->Mapped_Vertex!=scene::EHM_NEVER)
 	{
+		if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex()
+			|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_verticesID)
+		{
 
-		HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
+			HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
 
-		if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
-			return false;
+			if (!updateVertexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
+				return false;
+		}
 	}
 
-	if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
-		|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID)
+	if (HWBuffer->Mapped_Index!=scene::EHM_NEVER)
 	{
+		if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
+			|| !((SHWBufferLink_opengl*)HWBuffer)->vbo_indicesID)
+		{
 
-		HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
+			HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
 
-		if (!updateIndexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
-			return false;
+			if (!updateIndexHardwareBuffer((SHWBufferLink_opengl*)HWBuffer))
+				return false;
+		}
 	}
 
 	return true;
@@ -744,7 +769,7 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::IMeshBuffer* mb)
 {
 #if defined(GL_ARB_vertex_buffer_object)
-	if (!mb || (mb->getHardwareMappingHint()==scene::EHM_NEVER))
+	if (!mb || (mb->getHardwareMappingHint_Index()==scene::EHM_NEVER && mb->getHardwareMappingHint_Vertex()==scene::EHM_NEVER))
 		return 0;
 
 	SHWBufferLink_opengl *HWBuffer=new SHWBufferLink_opengl(mb);
@@ -754,7 +779,8 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 
 	HWBuffer->ChangedID_Vertex=HWBuffer->MeshBuffer->getChangedID_Vertex();
 	HWBuffer->ChangedID_Index=HWBuffer->MeshBuffer->getChangedID_Index();
-	HWBuffer->Mapped=mb->getHardwareMappingHint();
+	HWBuffer->Mapped_Vertex=mb->getHardwareMappingHint_Vertex();
+	HWBuffer->Mapped_Index=mb->getHardwareMappingHint_Index();
 	HWBuffer->LastUsed=0;
 	HWBuffer->vbo_verticesID=0;
 	HWBuffer->vbo_indicesID=0;
@@ -813,13 +839,33 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 #if defined(GL_ARB_vertex_buffer_object)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
-	extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID);
-	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
 
-	drawVertexPrimitiveList(0, mb->getVertexCount(), 0, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES);
+	const void *vertices=mb->getVertices();
+	const void *indexList=mb->getIndices();
 
-	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
-	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	if (HWBuffer->Mapped_Vertex!=scene::EHM_NEVER)
+	{
+		extGlBindBuffer(GL_ARRAY_BUFFER, HWBuffer->vbo_verticesID);
+		vertices=0;
+	}
+
+	if (HWBuffer->Mapped_Index!=scene::EHM_NEVER)
+	{
+		extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, HWBuffer->vbo_indicesID);
+		indexList=0;
+	}
+
+
+	drawVertexPrimitiveList(vertices, mb->getVertexCount(), indexList, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
+
+	if (HWBuffer->Mapped_Vertex!=scene::EHM_NEVER)
+		extGlBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	if (HWBuffer->Mapped_Index!=scene::EHM_NEVER)
+		extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
+
 #endif
 }
 
@@ -833,16 +879,17 @@ static inline u8* buffer_offset(const long offset)
 
 //! draws a vertex primitive list
 void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-		const u16* indexList, u32 primitiveCount,
-		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
+		const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
+
 	if (!primitiveCount || !vertexCount)
 		return;
 
 	if (!checkPrimitiveCount(primitiveCount))
 		return;
 
-	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType);
+	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 	if (vertices)
 	{
@@ -989,6 +1036,22 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			break;
 	}
 
+	GLenum indexSize=0;
+
+	switch (iType)
+	{
+		case (EIT_16BIT):
+		{
+			indexSize=GL_UNSIGNED_SHORT;
+			break;
+		}
+		case (EIT_32BIT):
+		{
+			indexSize=GL_UNSIGNED_INT;
+			break;
+		}
+	}
+
 	switch (pType)
 	{
 		case scene::EPT_POINTS:
@@ -1022,31 +1085,31 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		}
 			break;
 		case scene::EPT_LINE_STRIP:
-			glDrawElements(GL_LINE_STRIP, primitiveCount+1, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_LINE_STRIP, primitiveCount+1, indexSize, indexList);
 			break;
 		case scene::EPT_LINE_LOOP:
-			glDrawElements(GL_LINE_LOOP, primitiveCount, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_LINE_LOOP, primitiveCount, indexSize, indexList);
 			break;
 		case scene::EPT_LINES:
-			glDrawElements(GL_LINES, primitiveCount*2, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_LINES, primitiveCount*2, indexSize, indexList);
 			break;
 		case scene::EPT_TRIANGLE_STRIP:
-			glDrawElements(GL_TRIANGLE_STRIP, primitiveCount+2, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_TRIANGLE_STRIP, primitiveCount+2, indexSize, indexList);
 			break;
 		case scene::EPT_TRIANGLE_FAN:
-			glDrawElements(GL_TRIANGLE_FAN, primitiveCount+2, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_TRIANGLE_FAN, primitiveCount+2, indexSize, indexList);
 			break;
 		case scene::EPT_TRIANGLES:
-			glDrawElements(GL_TRIANGLES, primitiveCount*3, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_TRIANGLES, primitiveCount*3, indexSize, indexList);
 			break;
 		case scene::EPT_QUAD_STRIP:
-			glDrawElements(GL_QUAD_STRIP, primitiveCount*2+2, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_QUAD_STRIP, primitiveCount*2+2, indexSize, indexList);
 			break;
 		case scene::EPT_QUADS:
-			glDrawElements(GL_QUADS, primitiveCount*4, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_QUADS, primitiveCount*4, indexSize, indexList);
 			break;
 		case scene::EPT_POLYGON:
-			glDrawElements(GL_POLYGON, primitiveCount, GL_UNSIGNED_SHORT, indexList);
+			glDrawElements(GL_POLYGON, primitiveCount, indexSize, indexList);
 			break;
 	}
 
@@ -2775,4 +2838,5 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 
 } // end namespace
 } // end namespace
+
 

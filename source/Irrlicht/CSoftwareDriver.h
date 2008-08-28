@@ -54,8 +54,8 @@ namespace video
 
 		//! draws a vertex primitive list
 		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-				const u16* indexList, u32 primitiveCount,
-				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
@@ -124,6 +124,13 @@ namespace video
 		//! clips a triangle agains the viewing frustum
 		void clipTriangle(f32* transformedPos);
 
+
+		//! draws a vertex primitive list
+		void drawVertexPrimitiveList16(const void* vertices, u32 vertexCount,
+				const u16* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+
+
 		template<class VERTEXTYPE>
 		void drawClippedIndexedTriangleListT(const VERTEXTYPE* vertices,
 			s32 vertexCount, const u16* indexList, s32 triangleCount);
@@ -157,4 +164,5 @@ namespace video
 
 
 #endif
+
 

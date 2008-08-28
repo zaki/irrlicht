@@ -16,6 +16,7 @@
 #include "IMeshBuffer.h"
 #include "CFPSCounter.h"
 #include "S3DVertex.h"
+#include "SVertexIndex.h"
 #include "SLight.h"
 #include "SExposedVideoData.h"
 
@@ -86,8 +87,8 @@ namespace video
 
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-				const u16* indexList, u32 primitiveCount,
-				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
 		//! draws an indexed triangle list
 		virtual void drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount);
@@ -310,7 +311,7 @@ namespace video
 	protected:
 		struct SHWBufferLink
 		{
-			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer):MeshBuffer(_MeshBuffer),ChangedID_Vertex(0),ChangedID_Index(0),LastUsed(0),Mapped(scene::EHM_NEVER)
+			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer):MeshBuffer(_MeshBuffer),ChangedID_Vertex(0),ChangedID_Index(0),LastUsed(0),Mapped_Vertex(scene::EHM_NEVER),Mapped_Index(scene::EHM_NEVER)
 			{
 				if (MeshBuffer)
 					MeshBuffer->grab();
@@ -327,7 +328,8 @@ namespace video
 			u32 ChangedID_Vertex;
 			u32 ChangedID_Index;
 			u32 LastUsed;
-			scene::E_HARDWARE_MAPPING Mapped;
+			scene::E_HARDWARE_MAPPING Mapped_Vertex;
+			scene::E_HARDWARE_MAPPING Mapped_Index;
 		};
 
 		//! Gets hardware buffer link from a meshbuffer (may create or update buffer)
@@ -452,7 +454,7 @@ namespace video
 
 		//! Returns a pointer to the mesh manipulator.
 		virtual scene::IMeshManipulator* getMeshManipulator();
-		
+
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
 
@@ -610,5 +612,6 @@ namespace video
 
 
 #endif
+
 
 

@@ -324,9 +324,30 @@ void CSoftwareDriver::setViewPort(const core::rect<s32>& area)
 		CurrentTriangleRenderer->setRenderTarget(RenderTargetSurface, ViewPort);
 }
 
+void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+
+{
+	switch (iType)
+	{
+		case (EIT_16BIT):
+		{
+			drawVertexPrimitiveList16(vertices, vertexCount, (const u16*)indexList, primitiveCount, vType, pType);
+			break;
+		}
+		case (EIT_32BIT):
+		{
+			os::Printer::log("Software driver can not render 32bit buffers", ELL_ERROR);
+			break;
+		}
+	}
+
+
+}
 
 //! draws a vertex primitive list
-void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
+void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
 {
 	const u16* indexPointer=0;
 	core::array<u16> newBuffer;
@@ -364,7 +385,7 @@ void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCo
 			}
 			return;
 		case scene::EPT_LINE_LOOP:
-			drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount-1, vType, scene::EPT_LINE_STRIP);
+			drawVertexPrimitiveList16(vertices, vertexCount, indexList, primitiveCount-1, vType, scene::EPT_LINE_STRIP);
 			switch (vType)
 			{
 				case EVT_STANDARD:
@@ -628,7 +649,7 @@ void CSoftwareDriver::drawClippedIndexedTriangleListT(const VERTEXTYPE* vertices
 	// draw triangles
 
 	CNullDriver::drawVertexPrimitiveList(clippedVertices.pointer(), clippedVertices.size(),
-		clippedIndices.pointer(), clippedIndices.size()/3, EVT_STANDARD, scene::EPT_TRIANGLES);
+		clippedIndices.pointer(), clippedIndices.size()/3, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
 
 	if (TransformedPoints.size() < clippedVertices.size())
 		TransformedPoints.set_used(clippedVertices.size());
