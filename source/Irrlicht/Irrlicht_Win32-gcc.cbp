@@ -2273,14 +2273,6 @@
 			<Option compile="0"/>
 			<Option link="0"/>
 		</Unit>
-		<Unit filename="jpeglib\cdjpeg.c">
-			<Option compilerVar="CC"/>
-		</Unit>
-		<Unit filename="jpeglib\cdjpeg.h">
-			<Option compilerVar="CPP"/>
-			<Option compile="0"/>
-			<Option link="0"/>
-		</Unit>
 		<Unit filename="jpeglib\jcapimin.c">
 			<Option compilerVar="CC"/>
 		</Unit>
