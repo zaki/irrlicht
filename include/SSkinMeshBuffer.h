@@ -317,7 +317,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	virtual void append(const IMeshBuffer* const other) {}
 
 	//! get the current hardware mapping hint
-	virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const
+	virtual E_HARDWARE_MAPPING getHardwareMappingHint() const
 	{
 		return MappingHint;
 	}
@@ -337,9 +337,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 			++ChangedID_Index;
 	}
 
-	virtual const u32 getChangedID_Vertex() const {return ChangedID_Vertex;}
+	virtual u32 getChangedID_Vertex() const {return ChangedID_Vertex;}
 
-	virtual const u32 getChangedID_Index() const {return ChangedID_Index;}
+	virtual u32 getChangedID_Index() const {return ChangedID_Index;}
 
 	u32 ChangedID_Vertex;
 	u32 ChangedID_Index;

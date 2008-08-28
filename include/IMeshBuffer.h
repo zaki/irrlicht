@@ -163,7 +163,7 @@ namespace scene
 		virtual void append(const IMeshBuffer* const other) = 0;
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const = 0;
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const = 0;
 
 		//! get the current hardware mapping hint
 		virtual const E_HARDWARE_MAPPING getHardwareMappingHint_Index() const = 0;
@@ -177,11 +177,11 @@ namespace scene
 		//to be spit into vertex and index buffers:
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
-		virtual const u32 getChangedID_Vertex() const = 0;
+		virtual u32 getChangedID_Vertex() const = 0;
 
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
-		virtual const u32 getChangedID_Index() const = 0;
+		virtual u32 getChangedID_Index() const = 0;
 	};
 
 } // end namespace scene

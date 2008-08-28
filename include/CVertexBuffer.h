@@ -175,7 +175,7 @@ namespace scene
 		}
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint() const
 		{
 			return MappingHint;
 		}
@@ -194,7 +194,7 @@ namespace scene
 
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
-		virtual const u32 getChangedID() const {return ChangedID;}
+		virtual u32 getChangedID() const {return ChangedID;}
 
 		E_HARDWARE_MAPPING MappingHint;
 		u32 ChangedID;

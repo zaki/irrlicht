@@ -34,8 +34,8 @@ namespace scene
 
 		virtual u32 size() const =0;
 		virtual void push_back (const u32 &element) =0;
-		virtual const u32 operator [](u32 index) const =0;
-		virtual const u32 getLast() =0;
+		virtual u32 operator [](u32 index) const =0;
+		virtual u32 getLast() =0;
 		virtual void setValue(u32 index, u32 value) =0;
 		virtual void set_used(u32 usedNow) =0;
 		virtual void reallocate(u32 new_size) =0;
@@ -44,7 +44,7 @@ namespace scene
 		virtual void* pointer() =0;
 
 		//! get the current hardware mapping hint
-		virtual const E_HARDWARE_MAPPING getHardwareMappingHint() const =0;
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint() const =0;
 
 		//! set the hardware mapping hint, for driver
 		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint ) =0;
@@ -54,7 +54,7 @@ namespace scene
 
 		//! Get the currently used ID for identification of changes.
 		/** This shouldn't be used for anything outside the VideoDriver. */
-		virtual const u32 getChangedID() const = 0;
+		virtual u32 getChangedID() const = 0;
 	};
 
 
