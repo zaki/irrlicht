@@ -19,7 +19,7 @@ namespace scene
 struct SSkinMeshBuffer : public IMeshBuffer
 {
 	//! Default constructor
-	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) : ChangedID_Vertex(1),ChangedID_Index(1),MappingHint(EHM_NEVER),VertexType(vt)
+	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) : ChangedID_Vertex(1),ChangedID_Index(1),MappingHint_Vertex(EHM_NEVER),MappingHint_Index(EHM_NEVER),VertexType(vt)
 	{
 		#ifdef _DEBUG
 		setDebugName("SSkinMeshBuffer");
@@ -93,6 +93,10 @@ struct SSkinMeshBuffer : public IMeshBuffer
 				return Vertices_Standard.size();
 		}
 	}
+
+	//! Get type of index data which is stored in this meshbuffer.
+	/** \return Index type of this buffer. */
+	virtual video::E_INDEX_TYPE getIndexType() const { return video::EIT_16BIT; }
 
 	//! Get pointer to index array
 	virtual const u16* getIndices() const
@@ -316,16 +320,30 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//! append the meshbuffer to the current buffer
 	virtual void append(const IMeshBuffer* const other) {}
 
-	//! get the current hardware mapping hint
-	virtual E_HARDWARE_MAPPING getHardwareMappingHint() const
+	//! get the current hardware mapping hint for vertex buffers
+	virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
 	{
-		return MappingHint;
+		return MappingHint_Vertex;
+	}
+
+	//! get the current hardware mapping hint for index buffers
+	virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+	{
+		return MappingHint_Index;
 	}
 
 	//! set the hardware mapping hint, for driver
-	virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint )
+	virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX )
 	{
-		MappingHint=NewMappingHint;
+		if (Buffer==EBT_VERTEX)
+			MappingHint_Vertex=NewMappingHint;
+		else if (Buffer==EBT_INDEX)
+			MappingHint_Index=NewMappingHint;
+		else if (Buffer==EBT_VERTEX_AND_INDEX)
+		{
+			MappingHint_Vertex=NewMappingHint;
+			MappingHint_Index=NewMappingHint;
+		}
 	}
 
 	//! flags the mesh as changed, reloads hardware buffers
@@ -345,7 +363,8 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	u32 ChangedID_Index;
 
 	// hardware mapping hint
-	E_HARDWARE_MAPPING MappingHint;
+	E_HARDWARE_MAPPING MappingHint_Vertex;
+	E_HARDWARE_MAPPING MappingHint_Index;
 
 	//ISkinnedMesh::SJoint *AttachedJoint;
 	core::matrix4 Transformation;
