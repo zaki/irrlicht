@@ -1886,12 +1886,6 @@
 						RelativePath="jpeglib\cderror.h">
 					</File>
 					<File
-						RelativePath="jpeglib\cdjpeg.c">
-					</File>
-					<File
-						RelativePath="jpeglib\cdjpeg.h">
-					</File>
-					<File
 						RelativePath="jpeglib\jcapimin.c">
 					</File>
 					<File

@@ -1940,14 +1940,6 @@ SOURCE=.\jpeglib\cderror.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\jpeglib\cdjpeg.c
-# End Source File
-# Begin Source File
-
-SOURCE=.\jpeglib\cdjpeg.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\jpeglib\jcapimin.c
 # End Source File
 # Begin Source File

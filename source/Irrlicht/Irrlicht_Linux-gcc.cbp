@@ -609,10 +609,6 @@
 		<Unit filename="glxext.h" />
 		<Unit filename="irrXML.cpp" />
 		<Unit filename="jpeglib/cderror.h" />
-		<Unit filename="jpeglib/cdjpeg.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="jpeglib/cdjpeg.h" />
 		<Unit filename="jpeglib/jcapimin.c">
 			<Option compilerVar="CC" />
 		</Unit>
