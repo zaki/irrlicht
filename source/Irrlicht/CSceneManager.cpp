@@ -1292,7 +1292,7 @@ void CSceneManager::drawAll()
 
 		u32 maxLights = core::min_ ( Driver->getMaximalDynamicLightAmount(), LightList.size() );
 		for (i=0; i< maxLights; ++i)
-			LightList[i].node->render();
+			LightList[i].Node->render();
 
 		LightList.set_used(0);
 	}
@@ -1314,7 +1314,7 @@ void CSceneManager::drawAll()
 		SolidNodeList.sort(); // sort by textures
 
 		for (i=0; i<SolidNodeList.size(); ++i)
-			SolidNodeList[i].node->render();
+			SolidNodeList[i].Node->render();
 
 		Parameters.setAttribute ( "drawn", (s32) SolidNodeList.size() );
 
@@ -1340,7 +1340,7 @@ void CSceneManager::drawAll()
 		TransparentNodeList.sort(); // sort by distance from camera
 
 		for (i=0; i<TransparentNodeList.size(); ++i)
-			TransparentNodeList[i].node->render();
+			TransparentNodeList[i].Node->render();
 
 		TransparentNodeList.set_used(0);
 	}
