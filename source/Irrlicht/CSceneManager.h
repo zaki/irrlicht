@@ -478,69 +478,63 @@ namespace scene
 
 		struct DefaultNodeEntry
 		{
-			DefaultNodeEntry() {};
-
-			DefaultNodeEntry(ISceneNode* n)
+			DefaultNodeEntry(ISceneNode* n) :
+				Node(n), TextureValue(0)
 			{
-				textureValue = 0;
-
 				if (n->getMaterialCount())
-					textureValue = (n->getMaterial(0).getTexture(0));
-
-				node = n;
+					TextureValue = (n->getMaterial(0).getTexture(0));
 			}
-
-			ISceneNode* node;
-			void* textureValue;
 
 			bool operator < (const DefaultNodeEntry& other) const
 			{
-				return (textureValue < other.textureValue);
+				return (TextureValue < other.TextureValue);
 			}
+
+			ISceneNode* Node;
+			private:
+			void* TextureValue;
 		};
 
 
 		struct TransparentNodeEntry
 		{
-			TransparentNodeEntry() : node(0), distance(0.f) {};
-
-			TransparentNodeEntry(ISceneNode* n, const core::vector3df &camera)
-				: node(n)
+			TransparentNodeEntry(ISceneNode* n, const core::vector3df& camera)
+				: Node(n)
 			{
-				distance = (f32)(node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(camera));
+				Distance = (f32)(Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(camera));
 			}
 
 			bool operator < (const TransparentNodeEntry& other) const
 			{
-				return (distance > other.distance);
+				return (Distance > other.Distance);
 			}
 
-			ISceneNode* node;
-			f32 distance;
+			ISceneNode* Node;
+			private:
+			f32 Distance;
 		};
 
 		//! sort on distance (sphere) to camera
 		struct DistanceNodeEntry
 		{
-			DistanceNodeEntry() : node(0), distance(0.) {}
-
 			DistanceNodeEntry(ISceneNode* n, f64 d)
-				: node(n), distance(d) {}
+				: Node(n), Distance(d) {}
 
-			DistanceNodeEntry(ISceneNode* n, const core::vector3df &cameraPos)
-				: node(n)
+			DistanceNodeEntry(ISceneNode* n, const core::vector3df& cameraPos)
+				: Node(n)
 			{
-				distance = node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(cameraPos);
-				distance -= node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
+				Distance = Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(cameraPos);
+				Distance -= Node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
 			}
 
 			bool operator < (const DistanceNodeEntry& other) const
 			{
-				return distance < other.distance;
+				return Distance < other.Distance;
 			}
 
-			ISceneNode* node;
-			f64 distance;
+			ISceneNode* Node;
+			private:
+			f64 Distance;
 		};
 
 		//! video driver
