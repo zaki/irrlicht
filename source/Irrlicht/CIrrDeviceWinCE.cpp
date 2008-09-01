@@ -678,6 +678,7 @@ bool CIrrDeviceWinCE::isWindowFocused() const
 //! returns if window is minimized
 bool CIrrDeviceWinCE::isWindowMinimized() const
 {
+#if 0
 	WINDOWPLACEMENT plc;
 	plc.length=sizeof(WINDOWPLACEMENT);
 	bool ret=false;
@@ -685,6 +686,8 @@ bool CIrrDeviceWinCE::isWindowMinimized() const
 		ret=(plc.showCmd & SW_SHOWMINIMIZED);
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
+#endif
+	return false;
 }
 
 
