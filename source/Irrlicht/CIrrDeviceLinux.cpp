@@ -101,8 +101,16 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		if (Context)
 		{
-			if (!glXMakeCurrent(display, None, NULL))
-				os::Printer::log("Could not release glx context.", ELL_WARNING);
+			if (glxWin)
+			{
+				if (!glXMakeContextCurrent(display, None, None, NULL))
+					os::Printer::log("Could not release glx context.", ELL_WARNING);
+			}
+			else
+			{
+				if (!glXMakeCurrent(display, None, NULL))
+					os::Printer::log("Could not release glx context.", ELL_WARNING);
+			}
 			glXDestroyContext(display, Context);
 			if (UseGLXWindow)
 				glXDestroyWindow(display, glxWin);
@@ -265,7 +273,6 @@ bool CIrrDeviceLinux::createWindow()
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-	Context=0;
 	GLXFBConfig glxFBConfig;
 	int major, minor;
 	bool isAvailableGLX=false;
@@ -541,6 +548,7 @@ bool CIrrDeviceLinux::createWindow()
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 	// connect glx context to window
+	Context=0;
 	if (isAvailableGLX && CreationParams.DriverType==video::EDT_OPENGL)
 	{
 	if (UseGLXWindow)
