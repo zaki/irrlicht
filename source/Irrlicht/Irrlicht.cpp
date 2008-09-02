@@ -39,6 +39,10 @@ namespace irr
 		return createDeviceEx(p);
 	}
 
+namespace core
+{
+	const matrix4 IdentityMatrix(matrix4::EM4CONST_IDENTITY);
+}
 } // end namespace irr
 
 
