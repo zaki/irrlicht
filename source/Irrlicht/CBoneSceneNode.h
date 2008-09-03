@@ -8,7 +8,6 @@
 // Used with SkinnedMesh and IAnimatedMeshSceneNode, for boned meshes
 
 #include "IBoneSceneNode.h"
-#include "irrString.h"
 
 namespace irr
 {
@@ -22,9 +21,6 @@ namespace scene
 		//! constructor
 		CBoneSceneNode(ISceneNode* parent, ISceneManager* mgr,
 			s32 id=-1, u32 boneIndex=0, const c8* boneName=0);
-
-		//! Returns the name of the bone
-		virtual const c8* getBoneName() const;
 
 		//! Returns the index of the bone
 		virtual u32 getBoneIndex() const;
@@ -68,7 +64,6 @@ namespace scene
 		void helper_updateAbsolutePositionOfAllChildren(ISceneNode *Node);
 
 		u32 BoneIndex;
-		core::stringc BoneName;
 
 		core::aabbox3d<f32> Box;
 
@@ -76,10 +71,9 @@ namespace scene
 		E_BONE_SKINNING_SPACE SkinningSpace;
 	};
 
+
 } // end namespace scene
 } // end namespace irr
-
-
 
 #endif
 

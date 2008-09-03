@@ -15,20 +15,13 @@ namespace scene
 //! constructor
 CBoneSceneNode::CBoneSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 	u32 boneIndex, const c8* boneName)
-: IBoneSceneNode(parent, mgr, id), BoneIndex(boneIndex), BoneName(boneName),
+: IBoneSceneNode(parent, mgr, id), BoneIndex(boneIndex),
 	AnimationMode(EBAM_AUTOMATIC), SkinningSpace(EBSS_LOCAL)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CBoneSceneNode");
 	#endif
-}
-
-
-//! Returns the name of the bone
-const c8* CBoneSceneNode::getBoneName() const
-{
-	return BoneName.c_str();
+	setName(boneName);
 }
 
 
@@ -111,8 +104,8 @@ void CBoneSceneNode::updateAbsolutePositionOfAllChildren()
 
 void CBoneSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
+	IBoneSceneNode::serializeAttributes(out, options);
 	out->addInt("BoneIndex", BoneIndex);
-	out->addString("BoneName", BoneName.c_str());
 	out->addEnum("AnimationMode", AnimationMode, BoneAnimationModeNames);
 }
 
@@ -120,8 +113,11 @@ void CBoneSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 void CBoneSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
 	BoneIndex = in->getAttributeAsInt("BoneIndex");
-	BoneName = in->getAttributeAsString("BoneName");
 	AnimationMode = (E_BONE_ANIMATION_MODE)in->getAttributeAsEnumeration("AnimationMode", BoneAnimationModeNames);
+	// for legacy files (before 1.5)
+	const core::stringc boneName = in->getAttributeAsString("BoneName");
+	setName(boneName);
+	IBoneSceneNode::deserializeAttributes(in, options);
 	// TODO: add/replace bone in parent with bone from mesh
 }
 
