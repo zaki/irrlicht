@@ -157,9 +157,11 @@ int IrrPrintXError(Display *display, XErrorEvent *event)
 	char msg[256];
 	char msg2[256];
 
+	snprintf(msg, 256, "%d", event->request_code);
+	XGetErrorDatabaseText(display, "XRequest", msg, "unknown", msg2, 256);
 	XGetErrorText(display, event->error_code, msg, 256);
-	XGetErrorDatabaseText(display, "Irrlicht", "XError", "X Error", msg2, 256);
-	os::Printer::log(msg2, msg, ELL_WARNING);
+	os::Printer::log("X Error", msg, ELL_WARNING);
+	os::Printer::log("From call ", msg2, ELL_WARNING);
 	return 0;
 }
 #endif
