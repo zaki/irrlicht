@@ -42,8 +42,13 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 #ifdef _IRR_COMPILE_WITH_X11_
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
 #endif
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+	Context(0),
+#endif
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-	Close(false), WindowHasFocus(false), WindowMinimized(false), UseXVidMode(false), UseXRandR(false), UseGLXWindow(false), AutorepeatSupport(0)
+	Close(false), WindowHasFocus(false), WindowMinimized(false),
+	UseXVidMode(false), UseXRandR(false), UseGLXWindow(false),
+	AutorepeatSupport(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceLinux");
@@ -114,7 +119,6 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 			glXDestroyContext(display, Context);
 			if (UseGLXWindow)
 				glXDestroyWindow(display, glxWin);
-			Context = 0;
 		}
 		#endif // #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -1158,6 +1162,7 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 		if (display && temporaryDisplay)
 		{
 			XCloseDisplay(display);
+			display=0;
 		}
 	}
 #endif

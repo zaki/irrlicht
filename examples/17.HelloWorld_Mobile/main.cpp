@@ -104,7 +104,8 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 int main()
 #endif
 {
-	E_DRIVER_TYPE driverType = EDT_BURNINGSVIDEO;
+	//E_DRIVER_TYPE driverType = EDT_BURNINGSVIDEO;
+	E_DRIVER_TYPE driverType = EDT_OPENGL;
 
 	// create device
 
