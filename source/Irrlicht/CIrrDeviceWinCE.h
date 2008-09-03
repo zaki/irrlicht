@@ -26,9 +26,7 @@ namespace irr
 	public:
 
 		//! constructor
-		CIrrDeviceWinCE(
-			core::dimension2d<s32> windowSize,
-			const SIrrlichtCreationParameters& params);
+		CIrrDeviceWinCE( const SIrrlichtCreationParameters& params);
 
 		//! destructor
 		virtual ~CIrrDeviceWinCE();
