@@ -142,6 +142,14 @@ namespace scene
 		}
 
 
+		//! Sets the name of the node.
+		/** \param name New name of the scene node. */
+		virtual void setName(const core::stringc& name)
+		{
+			Name = name;
+		}
+
+
 		//! Get the axis aligned, not transformed bounding box of this node.
 		/** This means that if this node is an animated 3d character,
 		moving in a room, the bounding box will always be around the
