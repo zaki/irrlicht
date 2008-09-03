@@ -155,9 +155,11 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 int IrrPrintXError(Display *display, XErrorEvent *event)
 {
 	char msg[256];
+	char msg2[256];
 
 	XGetErrorText(display, event->error_code, msg, 256);
-	os::Printer::log("XErrorEvent", msg, ELL_WARNING);
+	XGetErrorDatabaseText(display, "Irrlicht", "XError", "X Error", msg2, 256);
+	os::Printer::log(msg2, msg, ELL_WARNING);
 	return 0;
 }
 #endif
@@ -176,6 +178,7 @@ bool CIrrDeviceLinux::createWindow()
 	if (!display)
 	{
 		os::Printer::log("Error: Need running XServer to start Irrlicht Engine.", ELL_ERROR);
+		os::Printer::log("Could not open display", XDisplayName(0), ELL_ERROR);
 		return false;
 	}
 
@@ -465,12 +468,12 @@ bool CIrrDeviceLinux::createWindow()
 		int visNumber; // Return value of available visuals
 
 		visTempl.screen = screennr;
-		visTempl.depth = 32;
+		visTempl.depth = 32;//CreationParams.Bits;
 		while ((!visual) && (visTempl.depth>=16))
 		{
 			visual = XGetVisualInfo(display, VisualScreenMask|VisualDepthMask,
 				&visTempl, &visNumber);
-			visTempl.depth-=8;
+			visTempl.depth -= 8;
 		}
 	}
 
@@ -481,6 +484,10 @@ bool CIrrDeviceLinux::createWindow()
 		display=0;
 		return false;
 	}
+#ifdef _DEBUG
+	else
+		os::Printer::log("Visual chosen: ", core::stringc(static_cast<u32>(visual->visualid)).c_str(), ELL_INFORMATION);
+#endif
 
 	// create color map
 	Colormap colormap;
@@ -505,8 +512,8 @@ bool CIrrDeviceLinux::createWindow()
 				RootWindow(display, visual->screen),
 				0, 0, Width, Height, 0, visual->depth,
 				InputOutput, visual->visual,
-				CWBorderPixel | CWColormap | CWEventMask |
-				CWOverrideRedirect, &attributes);
+				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
+				&attributes);
 		CreationParams.WindowId = (void*)window;
 
 		XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
@@ -927,98 +934,39 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 	// thx to Nadav, who send me some clues of how to display the image
 	// to the X Server.
 
-	if (image->getColorFormat() != video::ECF_A1R5G5B5 &&
-		image->getColorFormat() != video::ECF_A8R8G8B8)
+	const int destwidth = SoftwareImage->width;
+	const int minWidth = core::min_(image->getDimension().Width, destwidth);
+	const int destPitch = SoftwareImage->bytes_per_line;
+
+	video::ECOLOR_FORMAT destColor;
+	switch (SoftwareImage->bits_per_pixel)
 	{
-		os::Printer::log("Internal error, can only present A1R5G5B5 and A8R8G8B8 pictures.");
-		return;
-	}
-
-	int destwidth = SoftwareImage->width;
-	int destheight = SoftwareImage->height;
-	int srcwidth = image->getDimension().Width;
-	int srcheight = image->getDimension().Height;
-	// clip images
-	srcheight = srcheight < destheight ? srcheight : destheight;
-
-	if ( image->getColorFormat() == video::ECF_A8R8G8B8 )
-	{
-		// display 24/32 bit image
-
-		s32* srcdata = (s32*)image->lock();
-
-		if ((CreationParams.Bits == 32)||(CreationParams.Bits == 24))
-		{
-			int destPitch = SoftwareImage->bytes_per_line;
-			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-
-			for (int y=0; y<srcheight; ++y)
-			{
-				video::CColorConverter::convert_A8R8G8B8toA8R8G8B8(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
-				srcdata+=srcwidth;
-				destData+=destPitch;
-			}
-		}
-		else
-		if (CreationParams.Bits == 16)
-		{
-			// convert to R5G6B6
-
-			int destPitch = SoftwareImage->bytes_per_line;
-			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-
-			for (int y=0; y<srcheight; ++y)
-			{
-				video::CColorConverter::convert_A8R8G8B8toR5G6B5(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
-				srcdata+=srcwidth;
-				destData+=destPitch;
-			}
-		}
-		else
+		case 16:
+			if (SoftwareImage->depth==16)
+				destColor = video::ECF_R5G6B5;
+			else
+				destColor = video::ECF_A1R5G5B5;
+		break;
+		case 24: destColor = video::ECF_R8G8B8; break;
+		case 32: destColor = video::ECF_A8R8G8B8; break;
+		default:
 			os::Printer::log("Unsupported screen depth.");
-
-		image->unlock();
+			return;
 	}
-	else
+
+	u8* srcdata = reinterpret_cast<u8*>(image->lock());
+	u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
+
+	const int destheight = SoftwareImage->height;
+	const int srcheight = core::min_(image->getDimension().Height, destheight);
+	const int srcPitch = image->getPitch();
+	for (int y=0; y!=srcheight; ++y)
 	{
-		// display 16 bit image
-
-		s16* srcdata = (s16*)image->lock();
-
-		if (CreationParams.Bits == 16)
-		{
-			// convert from A1R5G5B5 to R5G6B6
-
-			int destPitch = SoftwareImage->bytes_per_line;
-			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-
-			for (int y=0; y<srcheight; ++y)
-			{
-				video::CColorConverter::convert_A1R5G5B5toR5G6B5(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
-				srcdata+=srcwidth;
-				destData+=destPitch;
-			}
-		}
-		else
-		if ((CreationParams.Bits == 32)||(CreationParams.Bits == 24))
-		{
-			// convert from A1R5G5B5 to X8R8G8B8
-
-			int destPitch = SoftwareImage->bytes_per_line;
-			u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
-
-			for (int y=0; y<srcheight; ++y)
-			{
-				video::CColorConverter::convert_A1R5G5B5toA8R8G8B8(srcdata,srcwidth<destwidth?srcwidth:destwidth,destData);
-				srcdata+=srcwidth;
-				destData+=destPitch;
-			}
-		}
-		else
-			os::Printer::log("Unsupported screen depth.");
-
-		image->unlock();
+		video::CColorConverter::convert_viaFormat(srcdata,image->getColorFormat(), minWidth, destData, destColor);
+		srcdata+=srcPitch;
+		destData+=destPitch;
 	}
+	image->unlock();
 
 	GC gc = DefaultGC(display, DefaultScreen(display));
 	XPutImage(display, window, gc, SoftwareImage, 0, 0, 0, 0, destwidth, destheight);
