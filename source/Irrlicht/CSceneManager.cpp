@@ -208,7 +208,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CXMeshFileLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_OCT_LOADER_
-	MeshLoaderList.push_back(new COCTLoader(Driver));
+	MeshLoaderList.push_back(new COCTLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_CSM_LOADER_
 	MeshLoaderList.push_back(new CCSMLoader(this, FileSystem));
@@ -217,7 +217,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CLMTSMeshFileLoader(FileSystem, Driver, &Parameters));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
-	MeshLoaderList.push_back(new CMY3DMeshFileLoader(FileSystem, Driver, this));
+	MeshLoaderList.push_back(new CMY3DMeshFileLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_COLLADA_LOADER_
 	MeshLoaderList.push_back(new CColladaFileLoader(this, FileSystem));

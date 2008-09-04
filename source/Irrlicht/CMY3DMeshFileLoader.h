@@ -84,8 +84,7 @@ struct SMyMaterialHeader
 class CMY3DMeshFileLoader : public IMeshLoader
 {
 public:
-	CMY3DMeshFileLoader(
-	io::IFileSystem* fs, video::IVideoDriver* driver, ISceneManager *scmgr);
+	CMY3DMeshFileLoader(ISceneManager *scmgr, io::IFileSystem* fs);
 	virtual ~CMY3DMeshFileLoader();
 
 	virtual bool isALoadableFileExtension(const c8* fileName) const;
@@ -100,9 +99,8 @@ private:
 
 	video::ITexture* readEmbeddedLightmap(io::IReadFile* file, char* namebuf);
 
-	video::IVideoDriver* Driver;
-	io::IFileSystem* FileSystem;
 	scene::ISceneManager* SceneManager;
+	io::IFileSystem* FileSystem;
 
 	struct SMyMaterialEntry
 	{
