@@ -32,10 +32,10 @@ namespace core
 
 #ifdef IRRLICHT_FAST_MATH
 	const f32 ROUNDING_ERROR_32 = 0.00005f;
-	const f64 ROUNDING_ERROR_64 = 0.000005f;
+	const f64 ROUNDING_ERROR_64 = 0.000005;
 #else
 	const f32 ROUNDING_ERROR_32 = 0.000001f;
-	const f64 ROUNDING_ERROR_64 = 0.00000001f;
+	const f64 ROUNDING_ERROR_64 = 0.00000001;
 #endif
 
 #ifdef PI // make sure we don't collide with a define
