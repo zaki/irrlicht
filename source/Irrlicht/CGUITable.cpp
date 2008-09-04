@@ -1009,11 +1009,11 @@ void CGUITable::breakText(const core::stringw& text, core::stringw& brokenText, 
 		if (c[0] == L'\n')
 			break;
 
-		pos += font->getDimension( c ).Width;
+		pos += font->getDimension(c).Width;
 		if ( pos > maxLength )
 			break;
 
-		if ( font->getDimension( (line + c[0]).c_str() ).Width > maxLengthDots )
+		if ( font->getDimension( (line + c).c_str() ).Width > maxLengthDots )
 			lineDots = line;
 
 		line += c[0];
