@@ -146,6 +146,18 @@ namespace video
 		Texture loading can be influenced using the
 		setTextureCreationFlag() method. The texture can be in several
 		imageformats, such as BMP, JPG, TGA, PCX, PNG, and PSD.
+		\param filename Filename of the texture to be loaded.
+		\return Pointer to the texture, or 0 if the texture
+		could not be loaded. This pointer should not be dropped. See
+		IReferenceCounted::drop() for more information. */
+		virtual ITexture* getTexture(const core::stringc& filename) = 0;
+
+		//! Get access to a named texture.
+		/** Loads the texture from disk if it is not
+		already loaded and generates mipmap levels if desired.
+		Texture loading can be influenced using the
+		setTextureCreationFlag() method. The texture can be in several
+		imageformats, such as BMP, JPG, TGA, PCX, PNG, and PSD.
 		\param file Pointer to an already opened file.
 		\return Pointer to the texture, or 0 if the texture
 		could not be loaded. This pointer should not be dropped. See

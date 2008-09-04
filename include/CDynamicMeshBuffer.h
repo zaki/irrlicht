@@ -34,12 +34,12 @@ namespace scene
 				IndexBuffer->drop();
 		}
 
-		virtual IVertexBuffer &getVertexBuffer() const
+		virtual IVertexBuffer& getVertexBuffer() const
 		{
 			return *VertexBuffer;
 		}
 
-		virtual IIndexBuffer &getIndexBuffer() const
+		virtual IIndexBuffer& getIndexBuffer() const
 		{
 			return *IndexBuffer;
 		}

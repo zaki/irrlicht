@@ -61,6 +61,10 @@ namespace video
 		virtual ITexture* getTexture(const c8* filename);
 
 		//! loads a Texture
+		virtual ITexture* getTexture(const core::stringc& filename)
+		{ return getTexture(filename.c_str()); }
+
+		//! loads a Texture
 		virtual ITexture* getTexture(io::IReadFile* file);
 
 		//! Returns a texture by index
