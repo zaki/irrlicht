@@ -149,11 +149,11 @@ bool CSTLMeshWriter::writeMeshASCII(io::IWriteFile* file, scene::IMesh* mesh, s3
 
 void CSTLMeshWriter::getVectorAsStringLine(const core::vector3df& v, core::stringc& s) const
 {
-	s = v.X;
+	s = core::stringc(v.X);
 	s += " ";
-	s += v.Y;
+	s += core::stringc(v.Y);
 	s += " ";
-	s += v.Z;
+	s += core::stringc(v.Z);
 	s += "\n";
 }
 
