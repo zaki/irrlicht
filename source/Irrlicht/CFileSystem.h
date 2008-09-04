@@ -74,6 +74,12 @@ public:
 	//! determinates if a file exists and would be able to be opened.
 	virtual bool existFile(const c8* filename) const;
 
+	//! determines if a file exists and would be able to be opened.
+	bool existFile(const core::stringc& filename) const
+	{
+		return existFile(filename.c_str());
+	}
+
 	//! Creates a XML Reader from a file.
 	virtual IXMLReader* createXMLReader(const c8* filename);
 
