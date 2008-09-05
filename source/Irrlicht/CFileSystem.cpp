@@ -241,15 +241,26 @@ core::stringc CFileSystem::getFileDir(const core::stringc& filename) const
 
 //! returns the base part of a filename, i.e. all except for the directory
 //! part. If no directory path is prefixed, the full name is returned.
-core::stringc CFileSystem::getFileBasename(const core::stringc& filename) const
+core::stringc CFileSystem::getFileBasename(const core::stringc& filename, bool keepExtension) const
 {
 	// find last forward or backslash
 	s32 lastSlash = filename.findLast('/');
 	const s32 lastBackSlash = filename.findLast('\\');
-	lastSlash = lastSlash > lastBackSlash ? lastSlash : lastBackSlash;
+	lastSlash = core::max_(lastSlash, lastBackSlash);
+	s32 end = 0;
+	if (!keepExtension)
+	{
+		end = filename.findLast('.');
+		if (end == -1)
+			end=0;
+		else
+			end = filename.size()-end;
+	}
 
 	if ((u32)lastSlash < filename.size())
-		return filename.subString(lastSlash+1, filename.size()-lastSlash);
+		return filename.subString(lastSlash+1, filename.size()-lastSlash-1-end);
+	else if (end != 0)
+		return filename.subString(0, filename.size()-end);
 	else
 		return filename;
 }
