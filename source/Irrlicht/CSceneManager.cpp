@@ -103,6 +103,10 @@
 #include "CSTLMeshWriter.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_OBJ_WRITER_
+#include "COBJMeshWriter.h"
+#endif
+
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
@@ -1162,7 +1166,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	case ESNRP_SOLID:
 		if (!isCulled(node))
 		{
-			SolidNodeList.push_back( node );
+			SolidNodeList.push_back(node);
 			taken = 1;
 		}
 		break;
@@ -1196,7 +1200,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 			// not transparent, register as solid
 			if ( 0 == taken )
 			{
-				SolidNodeList.push_back( node );
+				SolidNodeList.push_back(node);
 				taken = 1;
 			}
 		}
@@ -2288,6 +2292,12 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 	case EMWT_STL:
 #ifdef _IRR_COMPILE_WITH_STL_WRITER_
 		return new CSTLMeshWriter(this);
+#else
+		return 0;
+#endif
+	case EMWT_OBJ:
+#ifdef _IRR_COMPILE_WITH_OBJ_WRITER_
+		return new COBJMeshWriter(this, FileSystem);
 #else
 		return 0;
 #endif

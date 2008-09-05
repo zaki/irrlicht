@@ -1674,6 +1674,10 @@ SOURCE=.\CSTLMeshWriter.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\COBJMeshWriter.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\CTerrainSceneNode.cpp
 # End Source File
 # Begin Source File
