@@ -470,7 +470,8 @@ bool CIrrDeviceLinux::createWindow()
 		int visNumber; // Return value of available visuals
 
 		visTempl.screen = screennr;
-		visTempl.depth = 32;//CreationParams.Bits;
+		// ARGB visuals should be avoided for usual applications
+		visTempl.depth = CreationParams.WithAlphaChannel?32:24;
 		while ((!visual) && (visTempl.depth>=16))
 		{
 			visual = XGetVisualInfo(display, VisualScreenMask|VisualDepthMask,
