@@ -492,6 +492,8 @@
 		<Unit filename="CSTLMeshFileLoader.h" />
 		<Unit filename="CSTLMeshWriter.cpp" />
 		<Unit filename="CSTLMeshWriter.h" />
+		<Unit filename="COBJMeshWriter.cpp" />
+		<Unit filename="COBJMeshWriter.h" />
 		<Unit filename="CSceneCollisionManager.cpp" />
 		<Unit filename="CSceneCollisionManager.h" />
 		<Unit filename="CSceneManager.cpp" />

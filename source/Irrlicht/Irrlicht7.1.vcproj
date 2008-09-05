@@ -1694,6 +1694,12 @@
 				<File
 					RelativePath=".\CSTLMeshWriter.h">
 				</File>
+				<File
+					RelativePath=".\COBJMeshWriter.cpp">
+				</File>
+				<File
+					RelativePath=".\COBJMeshWriter.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
