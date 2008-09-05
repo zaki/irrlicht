@@ -65,7 +65,7 @@ public:
 	//! Returns the base part of a filename, i.e. the name without the directory
 	//! part. If no directory is prefixed, the full name is returned.
 	/** \param filename: The file to get the basename from */
-	core::stringc getFileBasename(const core::stringc& filename) const;
+	core::stringc getFileBasename(const core::stringc& filename, bool keepExtension=true) const;
 
 	//! Creates a list of files and directories in the current working directory 
 	//! and returns it.

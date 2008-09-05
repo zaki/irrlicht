@@ -427,7 +427,7 @@ public:
 	{
 		if (!str)
 			return false;
-		s32 i;
+		u32 i;
 		for(i=0; array[i] && str[i] && i < n; ++i)
 			if (array[i] != str[i])
 				return false;
