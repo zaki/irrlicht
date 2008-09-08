@@ -401,14 +401,14 @@ void* COpenGLTexture::lock(bool readOnly)
 
 		// allows to read pixels in top-to-bottom order
 #ifdef GL_MESA_pack_invert
-		if (Driver->FeatureAvailable[COpenGLExtensionHandler::IRR_MESA_pack_invert])
+		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
 			glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
 #endif
 
 		glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, pPixels);
 
 #ifdef GL_MESA_pack_invert
-		if (Driver->FeatureAvailable[COpenGLExtensionHandler::IRR_MESA_pack_invert])
+		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_MESA_pack_invert))
 			glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
 		else
 #endif
