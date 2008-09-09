@@ -438,7 +438,7 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, quake3::SModifierFu
 		{
 			// wave
 			f32 f = function.evaluate( dt ) * 255.f;
-			s32 value = core::clamp( core::floor32(f), 0.f, 255.f );
+			s32 value = core::clamp( core::floor32(f), 0, 255 );
 			value |= value << 8;
 			value |= value << 16;
 
