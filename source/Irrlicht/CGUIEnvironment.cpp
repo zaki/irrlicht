@@ -367,8 +367,10 @@ void CGUIEnvironment::clear()
 bool CGUIEnvironment::OnEvent(const SEvent& event)
 {
 	bool ret = false;
-	if (UserReceiver && (event.EventType != EET_MOUSE_INPUT_EVENT) &&
-		(event.EventType != EET_GUI_EVENT || event.GUIEvent.Caller != this))
+	if (UserReceiver
+		&& (event.EventType != EET_MOUSE_INPUT_EVENT)
+		&& (event.EventType != EET_KEY_INPUT_EVENT)
+		&& (event.EventType != EET_GUI_EVENT || event.GUIEvent.Caller != this)) 
 	{
 		ret = UserReceiver->OnEvent(event);
 	}
