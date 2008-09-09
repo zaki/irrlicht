@@ -17,14 +17,18 @@ CSceneNodeAnimatorCameraMaya::CSceneNodeAnimatorCameraMaya(gui::ICursorControl* 
  :	CursorControl(cursor), Zooming(false), Rotating(false), Moving(false), Translating(false),
 	ZoomSpeed(zoom), RotateSpeed(rotate), TranslateSpeed(translate),
 	RotateStartX(0.0f), RotateStartY(0.0f), ZoomStartX(0.0f), ZoomStartY(0.0f),
-	TranslateStartX(0.0f), TranslateStartY(0.0f), CurrentZoom(70.0f), RotX(0.0f), RotY(0.0f)
+	TranslateStartX(0.0f), TranslateStartY(0.0f), CurrentZoom(70.0f), RotX(0.0f), RotY(0.0f), 
+	Target(0,0,0), OldTarget(0,0,0), MousePos(0.5f, 0.5f), OldCamera(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCameraMaya");
 	#endif
 
 	if (CursorControl)
+	{
 		CursorControl->grab();
+		MousePos = CursorControl->getRelativePosition();
+	}
 
 	allKeysUp();
 }
@@ -92,6 +96,12 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 		return;
 
 	ICameraSceneNode* camera = static_cast<ICameraSceneNode*>(node);
+
+	if (OldCamera != camera)
+	{
+		OldTarget = camera->getTarget();
+		OldCamera = camera;
+	}
 
 	Target = camera->getTarget();
 
