@@ -6,6 +6,7 @@
 #define __C_SCENE_NODE_ANIMATOR_CAMERA_MAYA_H_INCLUDED__
 
 #include "ISceneNodeAnimatorCameraMaya.h"
+#include "ICameraSceneNode.h"
 #include "vector2d.h"
 
 namespace irr
@@ -90,6 +91,7 @@ namespace scene
 		f32 CurrentZoom;
 		f32 RotX, RotY;
 		core::vector3df Target, OldTarget;
+		scene::ICameraSceneNode* OldCamera;
 
 		core::position2d<f32> MousePos;
 
