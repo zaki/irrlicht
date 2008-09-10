@@ -18,7 +18,7 @@ CSceneNodeAnimatorCameraMaya::CSceneNodeAnimatorCameraMaya(gui::ICursorControl* 
 	ZoomSpeed(zoom), RotateSpeed(rotate), TranslateSpeed(translate),
 	RotateStartX(0.0f), RotateStartY(0.0f), ZoomStartX(0.0f), ZoomStartY(0.0f),
 	TranslateStartX(0.0f), TranslateStartY(0.0f), CurrentZoom(70.0f), RotX(0.0f), RotY(0.0f), 
-	Target(0,0,0), OldTarget(0,0,0), MousePos(0.5f, 0.5f), OldCamera(0)
+	Target(0,0,0), OldTarget(0,0,0), OldCamera(0), MousePos(0.5f, 0.5f)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCameraMaya");
