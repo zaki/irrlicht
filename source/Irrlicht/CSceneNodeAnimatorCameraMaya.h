@@ -81,7 +81,10 @@ namespace scene
 
 		gui::ICursorControl *CursorControl;
 		core::vector3df Pos;
-		bool Zooming, Rotating, Moving, Translating;
+		bool Zooming;
+		bool Rotating;
+		bool Moving;
+		bool Translating;
 		f32 ZoomSpeed;
 		f32 RotateSpeed;
 		f32 TranslateSpeed;
@@ -90,11 +93,11 @@ namespace scene
 		f32 TranslateStartX, TranslateStartY;
 		f32 CurrentZoom;
 		f32 RotX, RotY;
-		core::vector3df Target, OldTarget;
+		core::vector3df Target;
+		core::vector3df OldTarget;
 		scene::ICameraSceneNode* OldCamera;
 
 		core::position2d<f32> MousePos;
-
 	};
 
 } // end namespace scene
