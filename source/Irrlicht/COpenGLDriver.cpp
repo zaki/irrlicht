@@ -319,8 +319,6 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	else
 		os::Printer::log("GLSL not available.", ELL_INFORMATION);
 
-	// We want to read the front buffer to get the latest render finished.
-	glReadBuffer(GL_FRONT);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 	// Reset The Current Viewport
@@ -2688,7 +2686,10 @@ IImage* COpenGLDriver::createScreenShot()
 		glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
 #endif
 
+	// We want to read the front buffer to get the latest render finished.
+	glReadBuffer(GL_FRONT);
 	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGB, GL_UNSIGNED_BYTE, pPixels);
+	glReadBuffer(GL_BACK);
 
 #ifdef GL_MESA_pack_invert
 	if (FeatureAvailable[IRR_MESA_pack_invert])
