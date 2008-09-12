@@ -390,7 +390,7 @@ void COpenGLDriver::createMaterialRenderers()
 	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID_2_LAYER(this));
 
 	// add the same renderer for all lightmap types
-	COpenGLMaterialRenderer_LIGHTMAP* lmr = new COpenGLMaterialRenderer_LIGHTMAP( this);
+	COpenGLMaterialRenderer_LIGHTMAP* lmr = new COpenGLMaterialRenderer_LIGHTMAP(this);
 	addMaterialRenderer(lmr); // for EMT_LIGHTMAP:
 	addMaterialRenderer(lmr); // for EMT_LIGHTMAP_ADD:
 	addMaterialRenderer(lmr); // for EMT_LIGHTMAP_M2:
@@ -457,7 +457,6 @@ bool COpenGLDriver::endScene(void* windowId, core::rect<s32>* sourceRect)
 }
 
 
-
 //! clears the zbuffer
 bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 {
@@ -477,6 +476,7 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 	if (zBuffer)
 	{
 		glDepthMask(GL_TRUE);
+		LastMaterial.ZWriteEnable=true;
 		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
@@ -485,13 +485,11 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 }
 
 
-
 //! Returns the transformation set by setTransform
 const core::matrix4& COpenGLDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Matrices[state];
 }
-
 
 
 //! sets transformation
@@ -1652,7 +1650,7 @@ void COpenGLDriver::setRenderStates3DMode()
 		// unset old material
 
 		if (LastMaterial.MaterialType != Material.MaterialType &&
-			static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
+				static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 			MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 
 		// set new material.
@@ -1875,9 +1873,9 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	}
 
 	// zwrite
-	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
+//	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable)
+		if (material.ZWriteEnable && !(DisableZWriteOnTransparent && material.isTransparent()))
 		{
 			glDepthMask(GL_TRUE);
 		}
@@ -2636,6 +2634,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	if (clearZBuffer)
 	{
 		glDepthMask(GL_TRUE);
+		LastMaterial.ZWriteEnable=true;
 		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 

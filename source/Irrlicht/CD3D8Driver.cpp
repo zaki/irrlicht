@@ -1339,9 +1339,9 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 
 
 	// zwrite
-	if (resetAllRenderstates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
+//	if (resetAllRenderstates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable)
+		if (material.ZWriteEnable && !(DisableZWriteOnTransparent && material.isTransparent()))
 			pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
 		else
 			pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE);

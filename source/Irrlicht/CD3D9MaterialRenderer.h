@@ -101,7 +101,7 @@ public:
 			E_MODULATE_FUNC modulate;
 			unpack_texureBlendFunc ( srcFact, dstFact, modulate, material.MaterialTypeParam );
 
-			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO) 
+			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO)
 			{
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 			}
@@ -240,8 +240,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
 		}
 
-		((SMaterial&)material).ZWriteEnable = false;
-
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
 
@@ -280,8 +278,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 		}
-
-		((SMaterial&)material).ZWriteEnable = false;
 
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
@@ -326,8 +322,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
-
-		((SMaterial&)material).ZWriteEnable = false;
 
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
@@ -375,8 +369,6 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
-
-		((SMaterial&)material).ZWriteEnable = false;
 
 		services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 	}
