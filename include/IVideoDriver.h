@@ -960,15 +960,20 @@ namespace video
 		it. */
 		virtual void enableClipPlane(u32 index, bool enable) = 0;
 
-		//! Sets the driver's ambient light color. Only used by the engine internally.
-		/** This color is set in the scene manager, see
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo() = 0;
+
+		//! Only used by the engine internally.
+		/** The ambient color is set in the scene manager, see
 		scene::ISceneManager::setAmbientLight().
 		\param color New color of the ambient light. */
 		virtual void setAmbientLight(const SColorf& color) = 0;
 
-		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() = 0;
-
+		//! Only used by the engine internally.
+		/** Passes the global material flag DisableZWriteOnTransparent.
+		Use the SceneManager attribute to set this value from the app.
+		\param color New color of the ambient light. */
+		virtual void setDisableZWriteOnTransparent(bool flag=true) = 0;
 	};
 
 } // end namespace video

@@ -305,7 +305,6 @@ public:
 			glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 			glEnable(GL_BLEND);
 		}
-		glDepthMask(GL_FALSE);
 	}
 
 	virtual void OnUnsetMaterial()

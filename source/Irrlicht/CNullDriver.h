@@ -496,6 +496,10 @@ namespace video
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return "Not available on this driver.";};
 
+		//! Only used by the engine internally.
+		virtual void setDisableZWriteOnTransparent(bool flag=true)
+		{ DisableZWriteOnTransparent=flag; }
+
 	protected:
 
 		//! deletes all textures
@@ -600,13 +604,15 @@ namespace video
 
 		u32 TextureCreationFlags;
 
-		bool LinearFog;
 		f32 FogStart;
 		f32 FogEnd;
 		f32 FogDensity;
+		SColor FogColor;
+		bool LinearFog;
 		bool PixelFog;
 		bool RangeFog;
-		SColor FogColor;
+
+		bool DisableZWriteOnTransparent;
 
 		SExposedVideoData ExposedData;
 	};

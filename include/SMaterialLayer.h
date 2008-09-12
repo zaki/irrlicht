@@ -6,6 +6,7 @@
 #define __S_MATERIAL_LAYER_H_INCLUDED__
 
 #include "matrix4.h"
+#include "irrAllocator.h"
 
 namespace irr
 {
@@ -40,11 +41,11 @@ namespace video
 	public:
 		//! Default constructor
 		SMaterialLayer()
-			: Texture(0), TextureMatrix(0),
+			: Texture(0),
 				TextureWrap(ETC_REPEAT),
 				BilinearFilter(true),
 				TrilinearFilter(false),
-				AnisotropicFilter(false)
+				AnisotropicFilter(false), TextureMatrix(0)
 			{}
 
 		//! Copy constructor
@@ -59,7 +60,8 @@ namespace video
 		//! Destructor
 		~SMaterialLayer()
 		{
-			delete TextureMatrix;
+			MatrixAllocator.destruct(TextureMatrix);
+			MatrixAllocator.deallocate(TextureMatrix); 
 		}
 
 		//! Assignment operator
@@ -74,14 +76,18 @@ namespace video
 					*TextureMatrix = *other.TextureMatrix;
 				else
 				{
-					delete TextureMatrix;
+					MatrixAllocator.destruct(TextureMatrix);
+					MatrixAllocator.deallocate(TextureMatrix); 
 					TextureMatrix = 0;
 				}
 			}
 			else
 			{
 				if (other.TextureMatrix)
-					TextureMatrix = new core::matrix4(*other.TextureMatrix);
+				{
+					TextureMatrix = MatrixAllocator.allocate(1);
+					MatrixAllocator.construct(TextureMatrix,*other.TextureMatrix);
+				}
 				else
 					TextureMatrix = 0;
 			}
@@ -95,11 +101,6 @@ namespace video
 
 		//! Texture
 		ITexture* Texture;
-
-		//! Texture Matrix
-		/** Do not access this element directly as the internal
-		resource management has to cope with Null pointers etc. */
-		core::matrix4* TextureMatrix;
 
 		//! Texture Clamp Mode
 		E_TEXTURE_CLAMP TextureWrap;
@@ -124,7 +125,10 @@ namespace video
 		core::matrix4& getTextureMatrix()
 		{
 			if (!TextureMatrix)
-				TextureMatrix = new core::matrix4(core::matrix4::EM4CONST_IDENTITY);
+			{
+				TextureMatrix = MatrixAllocator.allocate(1);
+				MatrixAllocator.construct(TextureMatrix,core::IdentityMatrix);
+			}
 			return *TextureMatrix;
 		}
 
@@ -143,7 +147,10 @@ namespace video
 		void setTextureMatrix(const core::matrix4& mat)
 		{
 			if (!TextureMatrix)
-				TextureMatrix = new core::matrix4(mat);
+			{
+				TextureMatrix = MatrixAllocator.allocate(1);
+				MatrixAllocator.construct(TextureMatrix,mat);
+			}
 			else
 				*TextureMatrix = mat;
 		}
@@ -173,10 +180,18 @@ namespace video
 		\return True if layers are equal, else false. */
 		inline bool operator==(const SMaterialLayer& b) const
 		{ return !(b!=*this); }
+
+	private:
+		friend class SMaterial;
+		irr::core::irrAllocator<irr::core::matrix4> MatrixAllocator;
+
+		//! Texture Matrix
+		/** Do not access this element directly as the internal
+		ressource management has to cope with Null pointers etc. */
+		core::matrix4* TextureMatrix;
 	};
 
 } // end namespace video
 } // end namespace irr
 
 #endif // __S_MATERIAL_LAYER_H_INCLUDED__
-

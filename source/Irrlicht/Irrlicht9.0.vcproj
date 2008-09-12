@@ -439,6 +439,10 @@
 					RelativePath="..\..\include\SMaterial.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\include\SMaterialLayer.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="core"
