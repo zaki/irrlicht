@@ -7,7 +7,7 @@ const int fontsizes[] = {4,6,8,9,10,11,12,14,16,18,20,22,24,26,28,36,48,56,68,72
 
 inline u32 getTextureSizeFromSurfaceSize(u32 size)
 {
-	int ts = 0x01;
+	u32 ts = 0x01;
 	while(ts < size)
 		ts <<= 1;
 

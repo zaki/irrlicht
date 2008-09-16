@@ -684,7 +684,7 @@ public:
 			if (len > used-1)
 				return -1;
 
-			for (s32 i=0; i<used-len; ++i)
+			for (u32 i=0; i<used-len; ++i)
 			{
 				u32 j=0;
 

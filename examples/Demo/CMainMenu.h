@@ -24,7 +24,7 @@ private:
 	void setTransparency();
 
 	gui::IGUIButton* startButton;
-	IrrlichtDevice *device;
+	IrrlichtDevice *MenuDevice;
 	s32 selected;
 	bool start;
 	bool fullscreen;

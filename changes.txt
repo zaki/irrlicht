@@ -211,6 +211,18 @@ Changes in version 1.5 (... 2008)
 -------------------------------------------
 Changes in version 1.4.2 (x.x.2008)
 
+ - Unified the handling of zwrite enable with transparent materials on all hw accelerated drivers. This means that all transparent materials will now disable ZWrite, ignoring the material flag.
+   There is a scene manager attribute, though, which will revert this behavior to the usual SMaterial driven way. Simply call
+   SceneManager->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true) and set the SMaterial flag as desired.
+
+ - Some changes for texture matrices in q3 shaders.
+
+ - Added BlindSide's irrAllocator patch for proper TextureMatrix release under Win32 with any CRT library.
+
+ - Added VC9 project files.
+
+ - Added getEmitter for particle system scene nodes.
+
  - Fixed rounding problem in getScreenCoordinatesFrom3DPosition
 
  - Fixed Software renderer color flicker, was a shift bug I believe.

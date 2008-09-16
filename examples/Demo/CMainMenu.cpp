@@ -1,5 +1,5 @@
-// This is a Demo of the Irrlicht Engine (c) 2005 by N.Gebhardt.
-// This file is not documentated.
+// This is a Demo of the Irrlicht Engine (c) 2005-2008 by N.Gebhardt.
+// This file is not documented.
 
 #include "CMainMenu.h"
 
@@ -68,7 +68,7 @@ private:
 
 
 CMainMenu::CMainMenu()
-: startButton(0), device(0), selected(2), start(false), fullscreen(true),
+: startButton(0), MenuDevice(0), selected(2), start(false), fullscreen(true),
 	music(true), shadows(false), additive(false), transparent(true), vsync(false)
 {
 }
@@ -78,21 +78,21 @@ CMainMenu::CMainMenu()
 bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 					bool& outAdditive, bool &outVSync, video::E_DRIVER_TYPE& outDriver)
 {
-	device = createDevice( outDriver, //Varmint: 2007/12/18 video::EDT_BURNINGSVIDEO,
+	MenuDevice = createDevice( outDriver, //Varmint: 2007/12/18 video::EDT_BURNINGSVIDEO,
 		core::dimension2d<s32>(512, 384), 16, false, false, false, this);
 
-	if (device->getFileSystem()->existFile("irrlicht.dat"))
-		device->getFileSystem()->addZipFileArchive("irrlicht.dat");
+	if (MenuDevice->getFileSystem()->existFile("irrlicht.dat"))
+		MenuDevice->getFileSystem()->addZipFileArchive("irrlicht.dat");
 	else
-		device->getFileSystem()->addZipFileArchive("../../media/irrlicht.dat");
+		MenuDevice->getFileSystem()->addZipFileArchive("../../media/irrlicht.dat");
 
-	video::IVideoDriver* driver = device->getVideoDriver();
-	scene::ISceneManager* smgr = device->getSceneManager();
-	gui::IGUIEnvironment* guienv = device->getGUIEnvironment();
+	video::IVideoDriver* driver = MenuDevice->getVideoDriver();
+	scene::ISceneManager* smgr = MenuDevice->getSceneManager();
+	gui::IGUIEnvironment* guienv = MenuDevice->getGUIEnvironment();
 
 	core::stringw str = "Irrlicht Engine Demo v";
-	str += device->getVersion();
-	device->setWindowCaption(str.c_str());
+	str += MenuDevice->getVersion();
+	MenuDevice->setWindowCaption(str.c_str());
 
 	// set new Skin
 	gui::IGUISkin* newskin = guienv->createSkin( gui::EGST_BURNING_SKIN);
@@ -156,7 +156,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	// add about text
 
 	wchar_t* text2 = L"This is the tech demo of the Irrlicht engine. To start, "\
-		L"select a device which works best with your hardware and press 'start demo'. "\
+		L"select a MenuDevice which works best with your hardware and press 'start demo'. "\
 		L"What you currently see is displayed using the Burning Software Renderer (Thomas Alten). "\
 		L"The Irrlicht Engine was written by me, Nikolaus Gebhardt. The models, "\
 		L"maps and textures were placed at my disposal by B.Collins, M.Cook and J.Marton. The music was created by "\
@@ -283,9 +283,9 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 
 	// draw all
 
-	while(device->run())
+	while(MenuDevice->run())
 	{
-		if (device->isWindowActive())
+		if (MenuDevice->isWindowActive())
 		{
 			driver->beginScene(false, true, video::SColor(0,0,0,0));
 
@@ -300,7 +300,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 		}
 	}
 
-	device->drop();
+	MenuDevice->drop();
 
 	outFullscreen = fullscreen;
 	outMusic = music;
@@ -328,10 +328,10 @@ bool CMainMenu::OnEvent(const SEvent& event)
 		event.KeyInput.Key == KEY_F9 &&
 		event.KeyInput.PressedDown == false)
 	{
-		video::IImage* image = device->getVideoDriver()->createScreenShot();
+		video::IImage* image = MenuDevice->getVideoDriver()->createScreenShot();
 		if (image)
 		{
-			device->getVideoDriver()->writeImageToFile(image, "screenshot_main.jpg");
+			MenuDevice->getVideoDriver()->writeImageToFile(image, "screenshot_main.jpg");
 			image->drop();
 		}
 	}
@@ -340,7 +340,7 @@ bool CMainMenu::OnEvent(const SEvent& event)
 		event.MouseInput.Event == EMIE_RMOUSE_LEFT_UP )
 	{
 		core::rect<s32> r(event.MouseInput.X, event.MouseInput.Y, 0, 0);
-		gui::IGUIContextMenu* menu = device->getGUIEnvironment()->addContextMenu(r, 0, 45);
+		gui::IGUIContextMenu* menu = MenuDevice->getGUIEnvironment()->addContextMenu(r, 0, 45);
 		menu->addItem(L"transparent menus", 666, transparent == false);
 		menu->addItem(L"solid menus", 666, transparent == true);
 		menu->addSeparator();
@@ -375,7 +375,7 @@ bool CMainMenu::OnEvent(const SEvent& event)
 		case 2:
 			if (event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
 			{
-				device->closeDevice();
+				MenuDevice->closeDevice();
 				start = true;
 			}
 		case 3:
@@ -407,7 +407,7 @@ bool CMainMenu::OnEvent(const SEvent& event)
 
 void CMainMenu::getOriginalSkinColor()
 {
-	irr::gui::IGUISkin * skin = device->getGUIEnvironment()->getSkin();
+	irr::gui::IGUISkin * skin = MenuDevice->getGUIEnvironment()->getSkin();
 	for (s32 i=0; i<gui::EGDC_COUNT ; ++i)
 	{
 		SkinColor [ i ] = skin->getColor ( (gui::EGUI_DEFAULT_COLOR)i );
@@ -417,10 +417,9 @@ void CMainMenu::getOriginalSkinColor()
 
 void CMainMenu::setTransparency()
 {
-	irr::gui::IGUISkin * skin = device->getGUIEnvironment()->getSkin();
+	irr::gui::IGUISkin * skin = MenuDevice->getGUIEnvironment()->getSkin();
 
-	u32 i;
-	for ( i=0; i<gui::EGDC_COUNT ; ++i)
+	for (u32 i=0; i<gui::EGDC_COUNT ; ++i)
 	{
 		video::SColor col = SkinColor [ i ];
 
@@ -430,3 +429,4 @@ void CMainMenu::setTransparency()
 		skin->setColor((gui::EGUI_DEFAULT_COLOR)i, col);
 	}
 }
+

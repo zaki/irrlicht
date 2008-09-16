@@ -1875,7 +1875,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// zwrite
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable && !(DisableZWriteOnTransparent && material.isTransparent()))
+		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
 		{
 			glDepthMask(GL_TRUE);
 		}
