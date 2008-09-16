@@ -497,8 +497,8 @@ namespace video
 		virtual core::stringc getVendorInfo() {return "Not available on this driver.";};
 
 		//! Only used by the engine internally.
-		virtual void setDisableZWriteOnTransparent(bool flag=true)
-		{ DisableZWriteOnTransparent=flag; }
+		virtual void setAllowZWriteOnTransparent(bool flag)
+		{ AllowZWriteOnTransparent=flag; }
 
 	protected:
 
@@ -612,7 +612,7 @@ namespace video
 		bool PixelFog;
 		bool RangeFog;
 
-		bool DisableZWriteOnTransparent;
+		bool AllowZWriteOnTransparent;
 
 		SExposedVideoData ExposedData;
 	};

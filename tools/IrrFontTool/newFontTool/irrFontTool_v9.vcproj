@@ -2,9 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="16.Quake3MapShader_vc9"
-	ProjectGUID="{EB3B38EA-5CE7-4983-845B-880661E69D09}"
-	RootNamespace="16.Quake3MapShader_vc9"
+	Name="Font Tool"
+	ProjectGUID="{853A396E-C031-4C26-A716-5B4E176BE11D}"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -42,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
+				AdditionalIncludeDirectories="../../../include"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -62,11 +61,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\..\bin\Win32-VisualStudio\16.Quake3MapShader.exe"
+				AdditionalOptions=" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib glu32.lib opengl32.lib gdi32.lib"
+				OutputFile="../../../bin/Win32-visualstudio/FontTool.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
+				AdditionalLibraryDirectories="../../../lib/Win32-visualstudio"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile="$(OutDir)/Quake3MapShader.pdb"
+				ProgramDatabaseFile="$(OutDir)/TestProject.pdb"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -119,16 +119,15 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				EnableIntrinsicFunctions="true"
-				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="..\..\include"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
+				Optimization="0"
+				AdditionalIncludeDirectories="../../../include"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="0"
-				BufferSecurityCheck="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="0"
-				CallingConvention="1"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -141,10 +140,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\..\bin\Win32-VisualStudio\16.Quake3MapShader.exe"
-				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
-				GenerateDebugInformation="false"
+				AdditionalOptions=" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib glu32.lib opengl32.lib gdi32.lib"
+				OutputFile="../../../bin/Win32-visualstudio/FontTool.exe"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="../../../lib/Win32-visualstudio"
+				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -178,6 +178,18 @@
 	<References>
 	</References>
 	<Files>
+		<File
+			RelativePath=".\CFontTool.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\CFontTool.h"
+			>
+		</File>
+		<File
+			RelativePath=".\CVectorFontTool.h"
+			>
+		</File>
 		<File
 			RelativePath=".\main.cpp"
 			>

@@ -167,7 +167,6 @@ int IrrPrintXError(Display *display, XErrorEvent *event)
 #endif
 
 
-
 bool CIrrDeviceLinux::createWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
@@ -1140,6 +1139,7 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_Scroll_Lock, KEY_SCROLL));
 	KeyMap.push_back(SKeyMap(XK_Sys_Req, 0)); // ???
 	KeyMap.push_back(SKeyMap(XK_Escape, KEY_ESCAPE));
+	KeyMap.push_back(SKeyMap(XK_Insert, KEY_INSERT));
 	KeyMap.push_back(SKeyMap(XK_Delete, KEY_DELETE));
 	KeyMap.push_back(SKeyMap(XK_Home, KEY_HOME));
 	KeyMap.push_back(SKeyMap(XK_Left, KEY_LEFT));

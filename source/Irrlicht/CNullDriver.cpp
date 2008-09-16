@@ -70,7 +70,7 @@ IImageWriter* createImageWriterPPM();
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
-	PrimitivesDrawn(0), TextureCreationFlags(0), DisableZWriteOnTransparent(true)
+	PrimitivesDrawn(0), TextureCreationFlags(0), AllowZWriteOnTransparent(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");

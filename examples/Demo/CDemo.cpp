@@ -1,5 +1,5 @@
-// This is a Demo of the Irrlicht Engine (c) 2005 by N.Gebhardt.
-// This file is not documentated.
+// This is a Demo of the Irrlicht Engine (c) 2005-2008 by N.Gebhardt.
+// This file is not documented.
 
 #include "CDemo.h"
 
@@ -46,7 +46,7 @@ void CDemo::run()
 	}
 
 	device = createDevice(driverType,resolution, 32, fullscreen, shadows, vsync, this);
-	if ( 0 == device )
+	if (!device)
 		return;
 
 	if (device->getFileSystem()->existFile("irrlicht.dat"))
@@ -468,8 +468,7 @@ void CDemo::loadSceneData()
 	core::array<video::ITexture*> textures;
 	for (s32 g=1; g<8; ++g)
 	{
-		core::stringc tmp;
-		tmp = "../../media/portal";
+		core::stringc tmp("../../media/portal");
 		tmp += g;
 		tmp += ".bmp";
 		video::ITexture* t = driver->getTexture( tmp.c_str () );

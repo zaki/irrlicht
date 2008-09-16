@@ -972,8 +972,8 @@ namespace video
 		//! Only used by the engine internally.
 		/** Passes the global material flag DisableZWriteOnTransparent.
 		Use the SceneManager attribute to set this value from the app.
-		\param color New color of the ambient light. */
-		virtual void setDisableZWriteOnTransparent(bool flag=true) = 0;
+		\param flag Default behavior is to disable ZWrite, i.e. false. */
+		virtual void setAllowZWriteOnTransparent(bool flag) = 0;
 	};
 
 } // end namespace video
