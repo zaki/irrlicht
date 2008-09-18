@@ -506,6 +506,24 @@ namespace scene
 
 	void CTerrainSceneNode::preRenderIndicesCalculations()
 	{
+		switch (RenderBuffer->getIndexBuffer().getType())
+		{
+			case video::EIT_16BIT:
+			{
+				preRenderIndicesCalculationsDirect<u16>((u16*)RenderBuffer->getIndexBuffer().pointer());
+				break;
+			}
+			case video::EIT_32BIT:
+			{
+				preRenderIndicesCalculationsDirect<u32>((u32*)RenderBuffer->getIndexBuffer().pointer());
+				break;
+			}
+		}
+	}
+
+	template<class INDEX_TYPE>
+	void CTerrainSceneNode::preRenderIndicesCalculationsDirect(INDEX_TYPE* IndexBuffer)
+	{
 		IndicesToRender = 0;
 		s32 index11;
 		s32 index21;
@@ -534,12 +552,12 @@ namespace scene
 						index12 = getIndex( j, i, index, x, z + step );
 						index22 = getIndex( j, i, index, x + step, z + step );
 
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index12);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++,index11);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index22);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index22);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index11);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index21);
+						IndexBuffer[IndicesToRender++]= index12;
+						IndexBuffer[IndicesToRender++]= index11;
+						IndexBuffer[IndicesToRender++]= index22;
+						IndexBuffer[IndicesToRender++]= index22;
+						IndexBuffer[IndicesToRender++]= index11;
+						IndexBuffer[IndicesToRender++]= index21;
 
 						// increment index position horizontally
 						x += step;
@@ -562,6 +580,10 @@ namespace scene
 			selector->setTriangleData ( this, -1 );
 		}
 	}
+
+
+
+
 
 
 	//! Render the scene node
