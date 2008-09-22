@@ -1227,7 +1227,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	// now draw it.
 
 	// texcoords need to be flipped horizontally for RTTs
-	const bool isRTT = Material.getTexture(0) && Material.getTexture(0)->isRenderTarget();
+	const bool isRTT = texture->isRenderTarget();
 	const core::dimension2d<s32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
@@ -1272,7 +1272,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 		return;
 
 	// texcoords need to be flipped horizontally for RTTs
-	const bool isRTT = Material.getTexture(0) && Material.getTexture(0)->isRenderTarget();
+	const bool isRTT = texture->isRenderTarget();
 	const core::dimension2d<s32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
@@ -1369,7 +1369,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	const core::dimension2d<s32>& ss = texture->getOriginalSize();
 	core::position2d<s32> targetPos(pos);
 	// texcoords need to be flipped horizontally for RTTs
-	const bool isRTT = Material.getTexture(0) && Material.getTexture(0)->isRenderTarget();
+	const bool isRTT = texture->isRenderTarget();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 
