@@ -142,7 +142,7 @@ namespace video
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		{
-			return COpenGLExtensionHandler::queryFeature(feature);
+			return FeatureEnabled[feature] && COpenGLExtensionHandler::queryFeature(feature);
 		}
 
 		//! Sets a material. All 3d drawing functions draw geometry now

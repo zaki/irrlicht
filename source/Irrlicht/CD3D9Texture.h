@@ -73,6 +73,7 @@ public:
 	IDirect3DSurface9* getRenderTargetSurface();
 
 private:
+	friend class CD3D9Driver;
 
 	void createRenderTarget();
 
