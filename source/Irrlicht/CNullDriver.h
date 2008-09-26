@@ -48,6 +48,9 @@ namespace video
 
 		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 );
 
+		//! Disable a feature of the driver.
+		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true);
+
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
@@ -81,7 +84,7 @@ namespace video
 
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-						 bool clearZBuffer, SColor color);
+						bool clearZBuffer, SColor color);
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area);
@@ -299,15 +302,16 @@ namespace video
 			bool ownForeignMemory=true, bool deleteForeignMemory = true);
 
 		//! Creates an empty software image.
-                virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
+		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
 
 
 		//! Creates a software image from another image.
-                virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy);
+		virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy);
 
 		//! Creates a software image from part of another image.
-                virtual IImage* createImage(IImage* imageToCopy,
-                        const core::position2d<s32>& pos, const core::dimension2d<s32>& size);
+		virtual IImage* createImage(IImage* imageToCopy,
+				const core::position2d<s32>& pos,
+				const core::dimension2d<s32>& size);
 
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb);
@@ -615,6 +619,8 @@ namespace video
 		bool AllowZWriteOnTransparent;
 
 		SExposedVideoData ExposedData;
+
+		bool FeatureEnabled[video::EVDF_COUNT];
 	};
 
 } // end namespace video

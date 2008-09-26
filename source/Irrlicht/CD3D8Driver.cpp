@@ -141,9 +141,9 @@ void CD3D8Driver::createMaterialRenderers()
 
 
 //! initialises the Direct3D API
-bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd,
-				u32 bits, bool fullScreen, bool pureSoftware,
-				bool highPrecisionFPU, bool vsync, bool antiAlias)
+bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
+		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
+		bool highPrecisionFPU, bool vsync, bool antiAlias)
 {
 	HRESULT hr;
 	D3DLibrary = LoadLibrary( "d3d8.dll" );
@@ -381,8 +381,6 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 }
 
 
-
-
 //! applications must call this method before performing any rendering. returns false if failed.
 bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 {
@@ -431,7 +429,6 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 }
 
 
-
 //! resets the device
 bool CD3D8Driver::reset()
 {
@@ -466,9 +463,8 @@ bool CD3D8Driver::reset()
 }
 
 
-
 //! applications must call this method after performing any rendering. returns false if failed.
-bool CD3D8Driver::endScene( void* windowId, core::rect<s32>* sourceRect )
+bool CD3D8Driver::endScene(void* windowId, core::rect<s32>* sourceRect)
 {
 	CNullDriver::endScene();
 
@@ -508,10 +504,12 @@ bool CD3D8Driver::endScene( void* windowId, core::rect<s32>* sourceRect )
 }
 
 
-
 //! queries the features of the driver, returns true if feature is available
 bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
+	if (!FeatureEnabled[feature])
+		return false;
+
 	switch (feature)
 	{
 	case EVDF_RENDER_TO_TARGET:
@@ -550,9 +548,9 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 
-
 //! sets transformation
-void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
+void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state,
+		const core::matrix4& mat)
 {
 	switch(state)
 	{
@@ -611,7 +609,6 @@ bool CD3D8Driver::setTexture(s32 stage, const video::ITexture* texture)
 }
 
 
-
 //! sets a material
 void CD3D8Driver::setMaterial(const SMaterial& material)
 {
@@ -628,14 +625,16 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface, const char* name)
+video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,
+		const char* name)
 {
 	return new CD3D8Texture(surface, this, TextureCreationFlags, name);
 }
 
 
 //! Enables or disables a texture creation flag.
-void CD3D8Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled)
+void CD3D8Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
+		bool enabled)
 {
 	if (flag == video::ETCF_CREATE_MIP_MAPS && !queryFeature(EVDF_MIP_MAP))
 		enabled = false;
@@ -646,8 +645,8 @@ void CD3D8Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enab
 
 
 //! sets a render target
-bool CD3D8Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-				bool clearZBuffer, SColor color)
+bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
+		bool clearBackBuffer, bool clearZBuffer, SColor color)
 {
 	// check for right driver type
 
@@ -745,12 +744,13 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 	return ret;
 }
 
+
 //! Creates a render target texture.
-ITexture* CD3D8Driver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CD3D8Driver::createRenderTargetTexture(
+		const core::dimension2d<s32>& size, const c8* name)
 {
 	return new CD3D8Texture(this, size, name);
 }
-
 
 
 //! sets a viewport
@@ -779,7 +779,6 @@ void CD3D8Driver::setViewPort(const core::rect<s32>& area)
 }
 
 
-
 //! gets the area of the current viewport
 const core::rect<s32>& CD3D8Driver::getViewPort() const
 {
@@ -787,11 +786,11 @@ const core::rect<s32>& CD3D8Driver::getViewPort() const
 }
 
 
-
 //! draws a vertex primitive list
-void CD3D8Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-		const void* indexList, u32 primitiveCount,
-		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+void CD3D8Driver::drawVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType)
 {
 	if (!checkPrimitiveCount(primitiveCount))
 		return;
@@ -863,12 +862,12 @@ void CD3D8Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 }
 
 
-
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& pos,
-				const core::rect<s32>& sourceRect,
-				const core::rect<s32>* clipRect, SColor color,
-				bool useAlphaChannelOfTexture)
+void CD3D8Driver::draw2DImage(const video::ITexture* texture,
+		const core::position2d<s32>& pos,
+		const core::rect<s32>& sourceRect,
+		const core::rect<s32>* clipRect, SColor color,
+		bool useAlphaChannelOfTexture)
 {
 	if (!texture)
 		return;
@@ -1004,10 +1003,12 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::positi
 }
 
 
-
-void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
-			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-			const video::SColor* const colors, bool useAlphaChannelOfTexture)
+void CD3D8Driver::draw2DImage(const video::ITexture* texture,
+		const core::rect<s32>& destRect,
+		const core::rect<s32>& sourceRect,
+		const core::rect<s32>* clipRect,
+		const video::SColor* const colors,
+		bool useAlphaChannelOfTexture)
 {
 	if(!texture)
 		return;
@@ -1089,11 +1090,10 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s
 }
 
 
-
 //!Draws an 2d rectangle with a gradient.
 void CD3D8Driver::draw2DRectangle(const core::rect<s32>& position,
-	SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
-	const core::rect<s32>* clip)
+		SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown,
+		SColor colorRightDown, const core::rect<s32>* clip)
 {
 	core::rect<s32> pos(position);
 

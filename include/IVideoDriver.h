@@ -112,6 +112,13 @@ namespace video
 		\return True if the feature is available, false if not. */
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const = 0;
 
+		//! Disable a feature of the driver.
+		/** Can also be used to enable the features again. It is not
+		possible to enable unsupported features this way, though.
+		\param feature Feature to disable.
+		\param flag When true the feature is disabled, otherwise it is enabled. */
+		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true) =0;
+
 		//! Sets transformation matrices.
 		/** \param state Transformation type to be set, e.g. view,
 		world, or projection.
