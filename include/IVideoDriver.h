@@ -88,12 +88,6 @@ namespace video
 		be cleared. It is not nesesarry to do so if only 2d drawing is
 		used.
 		\param color The color used for back buffer clearing
-		\return False if failed. */
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color) = 0;
-
-		//! Presents the rendered image to the screen.
-		/** Applications must call this method after performing any
-		rendering.
 		\param windowId Handle of another window, if you want the
 		bitmap to be displayed on another window. If this is null,
 		everything will be displayed in the default window.
@@ -103,8 +97,17 @@ namespace video
 		\param sourceRect Pointer to a rectangle defining the source
 		rectangle of the area to be presented. Set to null to present
 		everything. Note: not implemented in all devices.
+		\return False if failed. */
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0) = 0;
+
+		//! Presents the rendered image to the screen.
+		/** Applications must call this method after performing any
+		rendering.
 		\return False if failed and true if succeeded. */
-		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 ) = 0;
+		virtual bool endScene() = 0;
 
 		//! Queries the features of the driver.
 		/** Returns true if a feature is available

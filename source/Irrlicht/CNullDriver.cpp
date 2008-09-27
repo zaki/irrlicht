@@ -204,17 +204,17 @@ void CNullDriver::deleteAllTextures()
 
 
 //! applications must call this method before performing any rendering. returns false if failed.
-bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
 {
-	core::clearFPUException ();
+	core::clearFPUException();
 	PrimitivesDrawn = 0;
 	return true;
 }
 
 
-
 //! applications must call this method after performing any rendering. returns false if failed.
-bool CNullDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
+bool CNullDriver::endScene()
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
 	updateAllHardwareBuffers();

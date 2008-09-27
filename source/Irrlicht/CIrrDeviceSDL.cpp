@@ -321,7 +321,7 @@ void CIrrDeviceSDL::setWindowCaption(const wchar_t* text)
 
 
 //! presents a surface in the client area
-void CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* src)
+bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* src)
 {
 	SDL_Rect srcClip;
 	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom(
@@ -341,6 +341,7 @@ void CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 	SDL_UpdateRect(Screen, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
 	SDL_FreeSurface(sdlSurface);
 	surface->unlock();
+	return true;
 }
 
 

@@ -31,6 +31,7 @@ CD3D8Driver::CD3D8Driver(const core::dimension2d<s32>& screenSize, HWND window,
 : CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
 	ResetRenderStates(true), Transformation3DChanged(false), StencilBuffer(stencilbuffer),
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
+	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false)
 {
@@ -382,14 +383,17 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 
 
 //! applications must call this method before performing any rendering. returns false if failed.
-bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color);
-	HRESULT hr;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+	WindowId = windowId;
+	SceneSourceRect = sourceRect;
 
 	if (!pID3DDevice)
 		return false;
 
+	HRESULT hr;
 	if (DeviceLost)
 	{
 		if(FAILED(hr = pID3DDevice->TestCooperativeLevel()))
@@ -464,7 +468,7 @@ bool CD3D8Driver::reset()
 
 
 //! applications must call this method after performing any rendering. returns false if failed.
-bool CD3D8Driver::endScene(void* windowId, core::rect<s32>* sourceRect)
+bool CD3D8Driver::endScene()
 {
 	CNullDriver::endScene();
 
@@ -477,16 +481,16 @@ bool CD3D8Driver::endScene(void* windowId, core::rect<s32>* sourceRect)
 
 	RECT* srcRct = 0;
 	RECT sourceRectData;
-	if ( sourceRect)
+	if ( SceneSourceRect)
 	{
 		srcRct = &sourceRectData;
-		sourceRectData.left = sourceRect->UpperLeftCorner.X;
-		sourceRectData.top = sourceRect->UpperLeftCorner.Y;
-		sourceRectData.right = sourceRect->LowerRightCorner.X;
-		sourceRectData.bottom = sourceRect->LowerRightCorner.Y;
+		sourceRectData.left = SceneSourceRect->UpperLeftCorner.X;
+		sourceRectData.top = SceneSourceRect->UpperLeftCorner.Y;
+		sourceRectData.right = SceneSourceRect->LowerRightCorner.X;
+		sourceRectData.bottom = SceneSourceRect->LowerRightCorner.Y;
 	}
 
-	hr = pID3DDevice->Present(srcRct, NULL, (HWND)windowId, NULL);
+	hr = pID3DDevice->Present(srcRct, NULL, (HWND)WindowId, NULL);
 
 	if (hr == D3DERR_DEVICELOST)
 	{
