@@ -434,7 +434,7 @@ void COpenGLDriver::createMaterialRenderers()
 
 
 //! presents the rendered scene on the screen, returns false if failed
-bool COpenGLDriver::endScene(void* windowId, core::rect<s32>* sourceRect)
+bool COpenGLDriver::endScene()
 {
 	CNullDriver::endScene();
 
@@ -458,9 +458,10 @@ bool COpenGLDriver::endScene(void* windowId, core::rect<s32>* sourceRect)
 
 
 //! clears the zbuffer
-bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color);
+	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
 
 	GLbitfield mask = 0;
 

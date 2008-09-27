@@ -927,12 +927,12 @@ void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 
 
 //! presents a surface in the client area
-void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s32>* src )
+bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s32>* srcRect )
 {
 #ifdef _IRR_COMPILE_WITH_X11_
 	// this is only necessary for software drivers.
 	if (CreationParams.DriverType != video::EDT_SOFTWARE && CreationParams.DriverType != video::EDT_BURNINGSVIDEO)
-		return;
+		return true;
 
 	// thx to Nadav, who send me some clues of how to display the image
 	// to the X Server.
@@ -954,7 +954,7 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 		case 32: destColor = video::ECF_A8R8G8B8; break;
 		default:
 			os::Printer::log("Unsupported screen depth.");
-			return;
+			return false;
 	}
 
 	u8* srcdata = reinterpret_cast<u8*>(image->lock());
@@ -972,8 +972,12 @@ void CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 	image->unlock();
 
 	GC gc = DefaultGC(display, DefaultScreen(display));
-	XPutImage(display, window, gc, SoftwareImage, 0, 0, 0, 0, destwidth, destheight);
+	Window myWindow=window;
+	if (windowId)
+		myWindow = static_cast<Window>(windowId);
+	XPutImage(display, myWindow, gc, SoftwareImage, 0, 0, 0, 0, destwidth, destheight);
 #endif
+	return true;
 }
 
 

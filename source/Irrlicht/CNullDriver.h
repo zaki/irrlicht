@@ -44,9 +44,12 @@ namespace video
 		//! destructor
 		virtual ~CNullDriver();
 
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
 
-		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 );
+		virtual bool endScene();
 
 		//! Disable a feature of the driver.
 		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true);

@@ -618,7 +618,7 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 
 
 //! presents a surface in the client area
-void CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s32>* src)
+bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s32>* src)
 {
 	HWND hwnd = HWnd;
 	if ( windowId )
@@ -663,8 +663,8 @@ void CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 
 		ReleaseDC(hwnd, dc);
 	}
+	return true;
 }
-
 
 
 //! notifies the device that it should close itself

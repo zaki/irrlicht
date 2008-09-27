@@ -19,8 +19,8 @@ namespace video
 
 //! constructor
 CSoftwareDriver::CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
-: CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter),
-	RenderTargetTexture(0), RenderTargetSurface(0),
+: CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter), WindowId(0),
+	SceneSourceRect(0), RenderTargetTexture(0), RenderTargetSurface(0),
 	CurrentTriangleRenderer(0), ZBuffer(0), Texture(0)
 {
 	#ifdef _DEBUG
@@ -154,19 +154,6 @@ void CSoftwareDriver::selectRightTriangleRenderer()
 }
 
 
-
-
-//! presents the rendered scene on the screen, returns false if failed
-bool CSoftwareDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
-{
-	CNullDriver::endScene();
-
-	Presenter->present(BackBuffer, windowId, sourceRect );
-	return true;
-}
-
-
-
 //! queries the features of the driver, returns true if feature is available
 bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
@@ -228,17 +215,29 @@ void CSoftwareDriver::setMaterial(const SMaterial& material)
 
 
 //! clears the zbuffer
-bool CSoftwareDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CSoftwareDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color);
+	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+	WindowId=windowId;
+	SceneSourceRect = sourceRect;
 
 	if (backBuffer && BackBuffer)
-		BackBuffer->fill( color );
+		BackBuffer->fill(color);
 
 	if (ZBuffer && zBuffer)
 		ZBuffer->clear();
 
 	return true;
+}
+
+
+//! presents the rendered scene on the screen, returns false if failed
+bool CSoftwareDriver::endScene()
+{
+	CNullDriver::endScene();
+
+	return Presenter->present(BackBuffer, WindowId, SceneSourceRect);
 }
 
 

@@ -26,9 +26,6 @@ namespace video
 		//! destructor
 		virtual ~CBurningVideoDriver();
 
-		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 );
-
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
@@ -45,7 +42,13 @@ namespace video
 		virtual void setViewPort(const core::rect<s32>& area);
 
 		//! clears the zbuffer
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
+
+		//! presents the rendered scene on the screen, returns false if failed
+		virtual bool endScene();
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
@@ -157,6 +160,9 @@ namespace video
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;
+
+		void* WindowId;
+		core::rect<s32>* SceneSourceRect;
 
 		video::ITexture* RenderTargetTexture;
 		video::IImage* RenderTargetSurface;
