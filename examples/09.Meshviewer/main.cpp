@@ -1,15 +1,17 @@
-/*
- This tutorial show how to create a more complex application with the engine. We construct
- a simple mesh viewer using the user interface API and the scenemanagement of Irrlicht.
- The tutorial show how to create and use Buttons, Windows, Toolbars, Menus, ComboBoxes,
- Tabcontrols, Editboxes, Images, MessageBoxes, SkyBoxes, and how to parse XML files
- with the integrated XML reader of the engine.
+/** Example 009 Mesh Viewer
 
- We start like in most other tutorials: Include all nesessary header files, add a
- comment to let the engine be linked with the right .lib file in Visual Studio,
- and deklare some global variables. We also add two 'using namespece' statements, so
- we do not need to write the whole names of all classes. In this tutorial, we use a
- lot stuff from the gui namespace.
+This tutorial show how to create a more complex application with the engine.
+We construct a simple mesh viewer using the user interface API and the
+scene management of Irrlicht. The tutorial show how to create and use Buttons,
+Windows, Toolbars, Menus, ComboBoxes, Tabcontrols, Editboxes, Images,
+MessageBoxes, SkyBoxes, and how to parse XML files with the integrated XML
+reader of the engine.
+
+We start like in most other tutorials: Include all nesessary header files, add
+a comment to let the engine be linked with the right .lib file in Visual
+Studio, and declare some global variables. We also add two 'using namespace'
+statements, so we do not need to write the whole names of all classes. In this
+tutorial, we use a lot stuff from the gui namespace.
 */
 #include <irrlicht.h>
 #include <iostream>
@@ -21,6 +23,9 @@ using namespace gui;
 #pragma comment(lib, "Irrlicht.lib")
 
 
+/*
+Some global variables used later on
+*/
 IrrlichtDevice *Device = 0;
 core::stringc StartUpModelFile;
 core::stringw MessageText;
@@ -31,7 +36,7 @@ scene::ISceneNode* SkyBox = 0;
 scene::ICameraSceneNode* Camera[2] = { 0, 0};
 
 /*
-	toggles between various cameras
+Toggle between various cameras
 */
 void setActiveCamera ( scene::ICameraSceneNode* newActive )
 {
@@ -45,10 +50,10 @@ void setActiveCamera ( scene::ICameraSceneNode* newActive )
 }
 
 /*
-	The three following functions do several stuff used by the mesh viewer.
-	The first function showAboutText() simply displays a messagebox with a caption
-	and a message text. The texts will be stored in the MessageText and
-	Caption variables at startup.
+The three following functions do several stuff used by the mesh viewer. The
+first function showAboutText() simply displays a messagebox with a caption and
+a message text. The texts will be stored in the MessageText and Caption
+variables at startup.
 */
 void showAboutText()
 {
@@ -60,9 +65,9 @@ void showAboutText()
 
 
 /*
-	The second function loadModel() loads a model and displays it using an
-	addAnimatedMeshSceneNode and the scene manager. Nothing difficult. It also
-	displays a short message box, if the model could not be loaded.
+The second function loadModel() loads a model and displays it using an
+addAnimatedMeshSceneNode and the scene manager. Nothing difficult. It also
+displays a short message box, if the model could not be loaded.
 */
 void loadModel(const c8* fn)
 {
@@ -138,9 +143,9 @@ void loadModel(const c8* fn)
 
 
 /*
-	Finally, the third function creates a toolbox window. In this simple mesh viewer,
-	this toolbox only contains a tab control with three edit boxes for changing
-	the scale of the displayed model.
+Finally, the third function creates a toolbox window. In this simple mesh
+viewer, this toolbox only contains a tab control with three edit boxes for
+changing the scale of the displayed model.
 */
 void createToolBox()
 {
@@ -170,7 +175,7 @@ void createToolBox()
 	// add senseless checkbox
 	env->addCheckBox(true, core::rect<s32>(10,220,200,240), t1, -1, L"Senseless Checkbox");
 
-	// add undocumentated transparent control
+	// add undocumented transparent control
 	env->addStaticText(L"Transparent Control:", core::rect<s32>(10,240,150,260), true, false, t1);
 	IGUIScrollBar* scrollbar = env->addScrollBar(true, core::rect<s32>(10,260,150,275), t1, 104);
 	scrollbar->setMax(255);
@@ -183,10 +188,10 @@ void createToolBox()
 
 
 /*
-	To get all the events sent by the GUI Elements, we need to create an event
-	receiver. This one is really simple. If an event occurs, it checks the id
-	of the caller and the event type, and starts an action based on these values.
-	For example, if a menu item with id 100 was selected, if opens a file-open-dialog.
+To get all the events sent by the GUI Elements, we need to create an event
+receiver. This one is really simple. If an event occurs, it checks the id of
+the caller and the event type, and starts an action based on these values. For
+example, if a menu item with id 100 was selected, if opens a file-open-dialog.
 */
 class MyEventReceiver : public IEventReceiver
 {
@@ -411,14 +416,14 @@ public:
 
 
 /*
-	Most of the hard work is done. We only need to create the Irrlicht Engine device
-	and all the buttons, menus and toolbars.
-	We start up the engine as usual, using createDevice(). To make our application
-	catch events, we set our eventreceiver as parameter. The #ifdef WIN32 preprocessor
-	commands are not necesarry, but I included them to make the tutorial use DirectX on
-	Windows and OpenGL on all other platforms like Linux.
-	As you can see, there is also a unusual call to IrrlichtDevice::setResizeAble().
-	This makes the render window resizeable, which is quite useful for a mesh viewer.
+Most of the hard work is done. We only need to create the Irrlicht Engine
+device and all the buttons, menus and toolbars. We start up the engine as
+usual, using createDevice(). To make our application catch events, we set our
+eventreceiver as parameter. The #ifdef WIN32 preprocessor commands are not
+necessary, but I included them to make the tutorial use DirectX on Windows and
+OpenGL on all other platforms like Linux. As you can see, there is also a
+unusual call to IrrlichtDevice::setResizeAble(). This makes the render window
+resizeable, which is quite useful for a mesh viewer.
 */
 int main(int argc, char* argv[])
 {
@@ -471,33 +476,35 @@ int main(int argc, char* argv[])
 	Device->getFileSystem()->addFolderFileArchive ( "../../media/" );
 
 	/*
-		The next step is to read the configuration file. It is stored in the xml
-		format and looks a little bit like this:
+	The next step is to read the configuration file. It is stored in the xml
+	format and looks a little bit like this:
 
-		<?xml version="1.0"?>
-		<config>
-			<startUpModel file="some filename" />
-			<messageText caption="Irrlicht Engine Mesh Viewer">
-				Hello!
-			</messageText>
-		</config>
+	@verbatim
+	<?xml version="1.0"?>
+	<config>
+		<startUpModel file="some filename" />
+		<messageText caption="Irrlicht Engine Mesh Viewer">
+			Hello!
+		</messageText>
+	</config>
+	@endverbatim
 
-		We need the data stored in there to be written into the global variables
-		StartUpModelFile, MessageText and Caption. This is now done using the
-		Irrlicht Engine integrated XML parser:
+	We need the data stored in there to be written into the global variables
+	StartUpModelFile, MessageText and Caption. This is now done using the
+	Irrlicht Engine integrated XML parser:
 	*/
 
 	// read configuration from xml file
 
-	io::IXMLReader* xml = Device->getFileSystem()->createXMLReader(
-		"config.xml");
+	io::IXMLReader* xml = Device->getFileSystem()->createXMLReader("config.xml");
 
 	while(xml && xml->read())
 	{
 		switch(xml->getNodeType())
 		{
 		case io::EXN_TEXT:
-			// in this xml file, the only text which occurs is the messageText
+			// in this xml file, the only text which occurs is the
+			// messageText
 			MessageText = xml->getNodeData();
 			break;
 		case io::EXN_ELEMENT:
@@ -519,14 +526,14 @@ int main(int argc, char* argv[])
 		StartUpModelFile = argv[1];
 
 	/*
-		That wasn't difficult. Now we'll set a nicer font and create the
-		Menu. It is possible to create submenus for every menu item. The call
-		menu->addItem(L"File", -1, true, true); for example adds a new menu
-		Item with the name "File" and the id -1. The following parameter says
-		that the menu item should be enabled, and the last one says, that
-		there should be a submenu. The submenu can now be accessed with
-		menu->getSubMenu(0), because the "File" entry is the menu item with
-		index 0.
+	That wasn't difficult. Now we'll set a nicer font and create the Menu.
+	It is possible to create submenus for every menu item. The call
+	menu->addItem(L"File", -1, true, true); for example adds a new menu
+	Item with the name "File" and the id -1. The following parameter says
+	that the menu item should be enabled, and the last one says, that there
+	should be a submenu. The submenu can now be accessed with
+	menu->getSubMenu(0), because the "File" entry is the menu item with
+	index 0.
 	*/
 
 	// set a nicer font
@@ -578,9 +585,8 @@ int main(int argc, char* argv[])
 	submenu->addItem(L"About", 500);
 
 	/*
-		Below the toolbar, we want a toolbar, onto which we can place
-		colored buttons and important looking stuff like a senseless
-		combobox.
+	Below the menu we want a toolbar, onto which we can place colored
+	buttons and important looking stuff like a senseless combobox.
 	*/
 
 	// create toolbar
@@ -609,10 +615,10 @@ int main(int argc, char* argv[])
 	box->addItem(L"Isotropic");
 
 	/*
-		To make the editor look a little bit better, we disable transparent
-		gui elements, and add a Irrlicht Engine logo. In addition, a text
-		showing the current frame per second value is created and
-		the window caption is changed.
+	To make the editor look a little bit better, we disable transparent gui
+	elements, and add an Irrlicht Engine logo. In addition, a text showing
+	the current frames per second value is created and the window caption is
+	changed.
 	*/
 
 	// disable alpha
@@ -640,16 +646,16 @@ int main(int argc, char* argv[])
 	Device->setWindowCaption(Caption.c_str());
 
 	/*
-		That's nearly the whole application. We simply show the about
-		message box at start up, and load the first model. To make everything
-		look better, a skybox is created and a user controled camera,
-		to make the application a little bit more interactive. Finally,
-		everything is drawed in a standard drawing loop.
+	That's nearly the whole application. We simply show the about message
+	box at start up, and load the first model. To make everything look
+	better, a skybox is created and a user controled camera, to make the
+	application a little bit more interactive. Finally, everything is drawn
+	in a standard drawing loop.
 	*/
 
 	// show about message box and load default model
 	if (argc==1)
-		showAboutText();
+	showAboutText();
 	loadModel(StartUpModelFile.c_str());
 
 	// add skybox
@@ -704,3 +710,6 @@ int main(int argc, char* argv[])
 	Device->drop();
 	return 0;
 }
+
+/*
+**/

@@ -589,8 +589,8 @@ bool C3DSMeshFileLoader::readTrackChunk(io::IReadFile* file, ChunkData& data,
 	file->read(&vec.Z, sizeof(f32));
 #ifdef __BIG_ENDIAN__
 	vec.X = os::Byteswap::byteswap(vec.X);
-	vec.Y = os::Byteswap::byteswap(vec.X);
-	vec.Z = os::Byteswap::byteswap(vec.X);
+	vec.Y = os::Byteswap::byteswap(vec.Y);
+	vec.Z = os::Byteswap::byteswap(vec.Z);
 #endif
 	data.read += 12;
 	vec-=pivot;

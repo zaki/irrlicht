@@ -1,4 +1,5 @@
-/*
+/** Example 004 Movement
+
 This Tutorial shows how to move and animate SceneNodes. The
 basic concept of SceneNodeAnimators is shown as well as manual
 movement of nodes using the keyboard.
@@ -11,15 +12,17 @@ and tell the linker to link with the .lib file.
 
 using namespace irr;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 /*
-To receive events like mouse and keyboard input, or GUI events like 
-"the OK button has been clicked", we need an object which is derived from the 
-IEventReceiver object. There is only one method to override: OnEvent. 
-This method will be called by the engine once when an event happens. 
-What we really want to know is whether a key is being held down,
-and so we will remember the current state of each key.
+To receive events like mouse and keyboard input, or GUI events like "the OK
+button has been clicked", we need an object which is derived from the
+irr::IEventReceiver object. There is only one method to override:
+irr::IEventReceiver::OnEvent(). This method will be called by the engine once
+when an event happens. What we really want to know is whether a key is being
+held down, and so we will remember the current state of each key.
 */
 class MyEventReceiver : public IEventReceiver
 {
@@ -53,10 +56,11 @@ private:
 
 
 /*
-The event receiver for moving a scene node is ready. So lets just create
-an Irrlicht Device and the scene node we want to move. We also create some
-other additional scene nodes, to show that there are also some different 
-possibilities to move and animate scene nodes.
+The event receiver for keeping the pressed keys is ready, the actual responses
+will be made inside the render loop, right before drawing the scene. So lets
+just create an irr::IrrlichtDevice and the scene node we want to move. We also
+create some other additional scene nodes, to show that there are also some
+different possibilities to move and animate scene nodes.
 */
 int main()
 {
@@ -92,14 +96,12 @@ int main()
 	if (device == 0)
 		return 1; // could not create selected driver.
 
-
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
-
 	/*
-	Create the node for moving it with the 'W' and 'S' key. We create a
-	sphere node, which is a built in geometry primitive. We place the node
+	Create the node which will be moved with the 'W' and 'S' key. We create a
+	sphere node, which is a built-in geometry primitive. We place the node
 	at (0,0,30) and assign a texture to it to let it look a little bit more
 	interesting. Because we have no dynamic lights in this scene we disable
 	lighting for each model (otherwise the models would be black).
@@ -112,15 +114,14 @@ int main()
 		node->setMaterialFlag(video::EMF_LIGHTING, false);
 	}
 
-
-	/* 
-	Now we create another node, moving using a scene node animator. Scene
+	/*
+	Now we create another node, movable using a scene node animator. Scene
 	node animators modify scene nodes and can be attached to any scene node
 	like mesh scene nodes, billboards, lights and even camera scene nodes.
 	Scene node animators are not only able to modify the position of a
 	scene node, they can also animate the textures of an object for
-	example.  We create a cube scene node and attach a 'fly circle' scene
-	node to it, letting this node fly around our sphere scene node.
+	example. We create a cube scene node and attach a 'fly circle' scene
+	node animator to it, letting this node fly around our sphere scene node.
 	*/
 	scene::ISceneNode* n = smgr->addCubeSceneNode();
 
@@ -138,7 +139,7 @@ int main()
 	}
 
 	/*
-	The last scene node we add to show possibilities of scene node animators is 
+	The last scene node we add to show possibilities of scene node animators is
 	a md2 model, which uses a 'fly straight' animator to run between to points.
 	*/
 	scene::IAnimatedMeshSceneNode* anms = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/sydney.md2"));
@@ -146,7 +147,7 @@ int main()
 	if (anms)
 	{
 		scene::ISceneNodeAnimator* anim =
-			smgr->createFlyStraightAnimator(core::vector3df(100,0,60), 
+			smgr->createFlyStraightAnimator(core::vector3df(100,0,60),
 			core::vector3df(-100,0,60), 2500, true);
 		if (anim)
 		{
@@ -155,14 +156,16 @@ int main()
 		}
 
 		/*
-		To make to model look right we set the frames between which the animation
-		should loop, rotate the model around 180 degrees, and adjust the animation speed
-		and the texture.
-		To set the right animation (frames and speed), we would also be able to just
-		call "anms->setMD2Animation(scene::EMAT_RUN)" for the 'run' animation 
-		instead of "setFrameLoop" and "setAnimationSpeed",
-		but this only works with MD2 animations, and so you know how to start other animations.
-		but it a good advice to use not hardcoded frame-numbers...
+		To make the model look right we disable lighting, set the
+		frames between which the animation should loop, rotate the
+		model around 180 degrees, and adjust the animation speed and
+		the texture. To set the right animation (frames and speed), we
+		would also be able to just call
+		"anms->setMD2Animation(scene::EMAT_RUN)" for the 'run'
+		animation instead of "setFrameLoop" and "setAnimationSpeed",
+		but this only works with MD2 animations, and so you know how to
+		start other animations. But a good advice is to not use
+		hardcoded frame-numbers...
 		*/
 		anms->setMaterialFlag(video::EMF_LIGHTING, false);
 
@@ -228,7 +231,7 @@ int main()
 		{
 			core::stringw tmp(L"Movement Example - Irrlicht Engine [");
 			tmp += driver->getName();
-			tmp += L"] fps: "; 
+			tmp += L"] fps: ";
 			tmp += fps;
 
 			device->setWindowCaption(tmp.c_str());
@@ -244,3 +247,6 @@ int main()
 	return 0;
 }
 
+/*
+That's it. Compile and play around with the program.
+**/

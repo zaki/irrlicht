@@ -1,15 +1,18 @@
-/*
-This tutorial will briefly show how to use the terrain renderer of Irrlicht. It will also
-show the terrain renderer triangle selector to be able to do collision detection with
-terrain.
+/** Example 012 Terrain Rendering
 
-Note that the Terrain Renderer in Irrlicht is based on Spintz' GeoMipMapSceneNode, lots 
-of thanks go to him.
-DeusXL provided a new elegant simple solution for building larger area on small heightmaps
--> terrain smoothing.
-In the beginning there is nothing special. We include the needed header files and create
-an event listener to listen if the user presses the 'W' key so we can switch to wireframe
-mode and if he presses 'D' we toggle to material between solid and detail mapped.
+This tutorial will briefly show how to use the terrain renderer of Irrlicht. It
+will also show the terrain renderer triangle selector to be able to do
+collision detection with terrain.
+
+Note that the Terrain Renderer in Irrlicht is based on Spintz'
+GeoMipMapSceneNode, lots of thanks go to him. DeusXL provided a new elegant
+simple solution for building larger area on small heightmaps -> terrain
+smoothing.
+
+In the beginning there is nothing special. We include the needed header files
+and create an event listener to listen if the user presses a key: The 'W' key
+switches to wireframe mode, the 'P' key to pointcloud mode, and the 'D' key
+toggles between solid and detail mapped material.
 */
 #include <irrlicht.h>
 #include <iostream>
@@ -46,7 +49,7 @@ public:
 				return true;
 			case irr::KEY_KEY_D: // toggle detail map
 				Terrain->setMaterialType(
-					Terrain->getMaterial(0).MaterialType == video::EMT_SOLID ? 
+					Terrain->getMaterial(0).MaterialType == video::EMT_SOLID ?
 					video::EMT_DETAIL_MAP : video::EMT_SOLID);
 				return true;
 			}
@@ -101,7 +104,7 @@ int main()
 	First, we add standard stuff to the scene: A nice irrlicht engine
 	logo, a small help text, a user controlled camera, and we disable
 	the mouse cursor.
-	*/   
+	*/
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -122,7 +125,7 @@ int main()
 		core::rect<s32>(10,440,250,475), true, true, 0, -1, true);
 
 	// add camera
-	scene::ICameraSceneNode* camera = 
+	scene::ICameraSceneNode* camera =
 		smgr->addCameraSceneNodeFPS(0,100.0f,1200.f);
 
 	camera->setPosition(core::vector3df(1900*2,255*2,3700*2));
@@ -133,31 +136,34 @@ int main()
 	device->getCursorControl()->setVisible(false);
 
 	/*
-	Here comes the terrain renderer scene node: We add it just like any 
-	other scene node to the scene using ISceneManager::addTerrainSceneNode(). 
-	The only parameter we use is a file name to the heightmap we use. A heightmap
-	is simply a gray scale texture. The terrain renderer loads it and creates 
-	the 3D terrain from it.
-	To make the terrain look more big, we change the scale factor of it to (40, 4.4, 40).
-	Because we don't have any dynamic lights in the scene, we switch off the lighting,
-	and we set the file terrain-texture.jpg as texture for the terrain and 
-	detailmap3.jpg as second texture, called detail map. At last, we set
-	the scale values for the texture: The first texture will be repeated only one time over 
-	the whole terrain, and the second one (detail map) 20 times. 
+	Here comes the terrain renderer scene node: We add it just like any
+	other scene node to the scene using
+	ISceneManager::addTerrainSceneNode(). The only parameter we use is a
+	file name to the heightmap we use. A heightmap is simply a gray scale
+	texture. The terrain renderer loads it and creates the 3D terrain from
+	it.
+
+	To make the terrain look more big, we change the scale factor of
+	it to (40, 4.4, 40). Because we don't have any dynamic lights in the
+	scene, we switch off the lighting, and we set the file
+	terrain-texture.jpg as texture for the terrain and detailmap3.jpg as
+	second texture, called detail map. At last, we set the scale values for
+	the texture: The first texture will be repeated only one time over the
+	whole terrain, and the second one (detail map) 20 times.
 	*/
 
 	// add terrain scene node
-	scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode( 
+	scene::ITerrainSceneNode* terrain = smgr->addTerrainSceneNode(
 		"../../media/terrain-heightmap.bmp",
-		0,										// parent node
-		-1,										// node id
-		core::vector3df(0.f, 0.f, 0.f),			// position
-		core::vector3df(0.f, 0.f, 0.f),			// rotation
-		core::vector3df(40.f, 4.4f, 40.f),		// scale
-		video::SColor ( 255, 255, 255, 255 ),	// vertexColor,
-		5,										// maxLOD
-		scene::ETPS_17,							// patchSize
-		4										// smoothFactor
+		0,					// parent node
+		-1,					// node id
+		core::vector3df(0.f, 0.f, 0.f),		// position
+		core::vector3df(0.f, 0.f, 0.f),		// rotation
+		core::vector3df(40.f, 4.4f, 40.f),	// scale
+		video::SColor ( 255, 255, 255, 255 ),	// vertexColor
+		5,					// maxLOD
+		scene::ETPS_17,				// patchSize
+		4					// smoothFactor
 		);
 
 	terrain->setMaterialFlag(video::EMF_LIGHTING, false);
@@ -172,10 +178,10 @@ int main()
 
 	/*
 	To be able to do collision with the terrain, we create a triangle selector.
-	If you want to know what triangle selectors do, just take a look into the 
+	If you want to know what triangle selectors do, just take a look into the
 	collision tutorial. The terrain triangle selector works together with the
-	terrain. To demonstrate this, we create a collision response animator 
-	and attach it to the camera, so that the camera will not be able to fly 
+	terrain. To demonstrate this, we create a collision response animator
+	and attach it to the camera, so that the camera will not be able to fly
 	through the terrain.
 	*/
 
@@ -187,23 +193,24 @@ int main()
 	// create collision response animator and attach it to the camera
 	scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
 		selector, camera, core::vector3df(60,100,60),
-		core::vector3df(0,0,0), 
+		core::vector3df(0,0,0),
 		core::vector3df(0,50,0));
 	selector->drop();
 	camera->addAnimator(anim);
 	anim->drop();
 
 	/*
-	To make the user be able to switch between normal and wireframe mode, we create
-	an instance of the event reciever from above and let Irrlicht know about it. In 
-	addition, we add the skybox which we already used in lots of Irrlicht examples.
+	To make the user be able to switch between normal and wireframe mode,
+	we create an instance of the event reciever from above and let Irrlicht
+	know about it. In addition, we add the skybox which we already used in
+	lots of Irrlicht examples.
 	*/
 
 	// create event receiver
 	MyEventReceiver receiver(terrain);
 	device->setEventReceiver(&receiver);
 
-   	// create skybox
+	// create skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 	smgr->addSkyBoxSceneNode(
@@ -218,7 +225,7 @@ int main()
 
 
 	/*
-	That's it, draw everything. Now you know how to use terrain in Irrlicht.
+	That's it, draw everything.
 	*/
 
 	int lastFPS = -1;
@@ -256,3 +263,6 @@ int main()
 	return 0;
 }
 
+/*
+Now you know how to use terrain in Irrlicht.
+**/

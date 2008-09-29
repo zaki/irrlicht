@@ -6,7 +6,7 @@
 #define __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 //! Irrlicht SDK Version
-#define IRRLICHT_SDK_VERSION "1.4.1"
+#define IRRLICHT_SDK_VERSION "1.4.2"
 
 //! The defines for different operating system are:
 //! _IRR_XBOX_PLATFORM_ for XBox
@@ -82,7 +82,7 @@ to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
 and this to the linker settings: -ld3dx9 -ld3dx8 **/
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
-//#define _IRR_COMPILE_WITH_DIRECT3D_8_
+#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif

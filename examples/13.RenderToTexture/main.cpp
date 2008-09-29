@@ -1,10 +1,11 @@
-/*
-This tutorial shows how to render to a texture using Irrlicht. Render to texture is a feature with which
-it is possible to create nice special effects. In addition, this tutorial shows how to enable specular
-highlights.
+/** Example 013 Render To Texture
 
-In the beginning, everything as usual. Include the needed headers, ask the user for the rendering
-driver, create the Irrlicht Device:
+This tutorial shows how to render to a texture using Irrlicht. Render to
+texture is a feature with which it is possible to create nice special effects.
+In addition, this tutorial shows how to enable specular highlights.
+
+In the beginning, everything as usual. Include the needed headers, ask the user
+for the rendering driver, create the Irrlicht Device:
 */
 
 #include <irrlicht.h>
@@ -54,10 +55,10 @@ int main()
 	
 	/*
 	Now, we load an animated mesh to be displayed. As in most examples,
-	we'll take the fairy md2 model. The difference here: We set the shininess
-	of the model to a value other than 0 which is the default value. This
-	enables specular highlights on the model if dynamic lighting is on.
-	The value influences the size of the highlights.
+	we'll take the fairy md2 model. The difference here: We set the
+	shininess of the model to a value other than 0 which is the default
+	value. This enables specular highlights on the model if dynamic
+	lighting is on. The value influences the size of the highlights.
 	*/
 
 	// load and display animated fairy mesh
@@ -75,9 +76,10 @@ int main()
 	}
 	
 	/*
-	To make specular highlights appear on the model, we need a dynamic light in the scene.
-	We add one directly in vicinity of the model. In addition, to make the model not that 
-	dark, we set the ambient light to gray. 
+	To make specular highlights appear on the model, we need a dynamic
+	light in the scene. We add one directly in vicinity of the model. In
+	addition, to make the model not that dark, we set the ambient light to
+	gray.
 	*/
 
 	// add white light
@@ -88,8 +90,9 @@ int main()
 	smgr->setAmbientLight(video::SColor(0,60,60,60));
 	
 	/*
-	The next is just some standard stuff: Add a user controlled camera to the scene, disable
-	mouse cursor, and add a test cube and let it rotate to make the scene more interesting.
+	The next is just some standard stuff: Add a user controlled camera to
+	the scene, disable mouse cursor, and add a test cube and let it rotate
+	to make the scene more interesting.
 	*/
 
 	// add fps camera
@@ -115,14 +118,16 @@ int main()
 	device->setWindowCaption(L"Irrlicht Engine - Render to Texture and Specular Highlights example");
 	
 	/*
-	To test out the render to texture feature, we need a render target texture. These are not 
-	like standard textures, but need to be created first. To create one, we call 
-	IVideoDriver::createRenderTargetTexture() and specify the size of the texture. Please
-	don't use sizes bigger than the frame buffer for this, because the render target shares
-	the zbuffer with the frame buffer. And because we want to render the scene not from the
-	user camera into the texture, we add another, fixed camera to the scene. But before we
-	do all this, we check if the current running driver is able to render to textures. If 
-	it is not, we simply display a warning text.
+	To test out the render to texture feature, we need a render target
+	texture. These are not like standard textures, but need to be created
+	first. To create one, we call IVideoDriver::createRenderTargetTexture()
+	and specify the size of the texture. Please don't use sizes bigger than
+	the frame buffer for this, because the render target shares the zbuffer
+	with the frame buffer. And because we want to render the scene not from
+	the user camera into the texture, we add another fixed camera to the
+	scene. But before we do all this, we check if the current running
+	driver is able to render to textures. If it is not, we simply display a
+	warning text.
 	*/
 
 	// create render target
@@ -156,11 +161,12 @@ int main()
 	}
 	
 	/*
-	Nearly finished. Now we need to draw everything. Every frame, we draw the scene twice.
-	Once from the fixed camera into the render target texture and once as usual. When rendering
-	into the render target, we need to disable the visibilty of the test cube, because it has
-	the render target texture applied to it.
-	That's, wasn't quite complicated I hope. :)
+	Nearly finished. Now we need to draw everything. Every frame, we draw
+	the scene twice. Once from the fixed camera into the render target
+	texture and once as usual. When rendering into the render target, we
+	need to disable the visibilty of the test cube, because it has the
+	render target texture applied to it. That's it, wasn't too complicated
+	I hope. :)
 	*/
 
 	int lastFPS = -1;
@@ -175,18 +181,18 @@ int main()
 			// draw scene into render target
 			
 			// set render target texture
-			driver->setRenderTarget(rt, true, true, video::SColor(0,0,0,255));     
+			driver->setRenderTarget(rt, true, true, video::SColor(0,0,0,255));
 
 			// make cube invisible and set fixed camera as active camera
 			test->setVisible(false);
 			smgr->setActiveCamera(fixedCam);
 
 			// draw whole scene into render buffer
-			smgr->drawAll();                 
+			smgr->drawAll();
 
 			// set back old render target
 			// The buffer might have been distorted, so clear it
-			driver->setRenderTarget(0, true, true, 0);      
+			driver->setRenderTarget(0, true, true, 0);
 
 			// make the cube visible and set the user controlled camera as active one
 			test->setVisible(true);
@@ -194,7 +200,7 @@ int main()
 		}
 		
 		// draw scene normally
-		smgr->drawAll(); 
+		smgr->drawAll();
 		env->drawAll();
 
 		driver->endScene();
@@ -218,3 +224,6 @@ int main()
 	device->drop(); // drop device
 	return 0;
 }
+
+/*
+**/

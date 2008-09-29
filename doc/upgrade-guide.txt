@@ -1277,3 +1277,40 @@ New overload/missing method (completing the findLast... and find...Char methods)
 Changed signature (Added return value)
 	string<T>& trim()
 
+Changes for Version 1.4.2
+-------------------------
+This is once more a bugfix release of the 1.4 branch, and hence pretty API-consistent and backward compatible. The major reason to publish this release is the OpenGL bug, which made several OpenGL 2.x drivers run in SW emulation.
+However, we also introduced some driver consistency fixes, which might affect your application's behavior. So read through the next points thoroughly.
+
+SceneParameters.h (and general video driver behavior)
+The way Irrlicht handles zbuffer writing with transparent materials has changed. This was an issue ever since, because the default behavior in Irrlicht is to disable writing to the z-buffer for all really transparent, i.e. blending materials. This avoids problems with intersecting faces, but can also break renderings. And this is now consistent for both OpenGL and Direct3D.
+If transparent materials should use the SMaterial flag for ZWriteEnable just as other material types use the newly introduced attribute scene::ALLOW_ZWRITE_ON_TRANSPARENT like this:
+SceneManager->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
+All transparent materials will henceforth work as specified by the material flag, until the scenemanager attribute is set to false.
+
+SMaterialLayer.h
+The texture matrix now uses irrAllocator for memory handling. This shouldn't be noticeable from the user application (besides fixed heap corruptions on Windows machines), but is still mentioned for completeness.
+
+ISceneNode.h
+Documentation error. The docs said that children of a scene node are not visible if the node itself is set to visible. This is of course wrong, children inherit non-visibility of the parent and are hence invisible if the parent is. If the parent is visible, the visibility flag of the child determines its status.
+
+SColor.h
+Removed methods (use the unsigned versions and cast in your app if necessary)
+	inline s32 getRedSigned(u16 color)
+	inline s32 getGreenSigned(u16 color)
+	inline s32 getBlueSigned(u16 color)
+
+IParticleSystemSceneNode.h
+Changed default values (the old direction default was no real direction)
+ 	virtual IParticleAnimatedMeshSceneNodeEmitter* createAnimatedMeshSceneNodeEmitter(...)
+	virtual IParticleCylinderEmitter* createCylinderEmitter(...)
+ 	virtual IParticleMeshEmitter* createMeshEmitter(...)
+
+IBoneSceneNode.h
+Changed signature (Made const)
+	virtual E_BONE_SKINNING_SPACE getSkinningSpace() const=0;
+
+IrrlichtDevice.h
+Changed signature (Return value bool instead of void). Returns whether the event has been handled somewhere.
+	virtual bool postEventFromUser(const SEvent& event) = 0;
+
