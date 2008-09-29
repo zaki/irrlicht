@@ -974,7 +974,7 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 	GC gc = DefaultGC(display, DefaultScreen(display));
 	Window myWindow=window;
 	if (windowId)
-		myWindow = static_cast<Window>(windowId);
+		myWindow = reinterpret_cast<Window>(windowId);
 	XPutImage(display, myWindow, gc, SoftwareImage, 0, 0, 0, 0, destwidth, destheight);
 #endif
 	return true;
