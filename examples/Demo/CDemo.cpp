@@ -45,7 +45,7 @@ void CDemo::run()
 		resolution.Height = 480;
 	}
 
-	device = createDevice(driverType,resolution, 32, fullscreen, shadows, vsync, this);
+	device = createDevice(driverType, resolution, 32, fullscreen, shadows, vsync, this);
 	if (!device)
 		return;
 

@@ -1,5 +1,13 @@
-// this example only runs in windows and demonstrates that Irrlicht
-// can run inside a win32 window.
+/** Example 014 Win32 Window
+
+This example only runs under MS Windows and demonstrates that Irrlicht can
+render inside a win32 window. MFC and .NET Windows.Forms windows are possible,
+too.
+
+In the begining, we create a windows window using the windows API. I'm not
+going to explain this code, because it is windows specific. See the MSDN or a
+windows book for details.
+*/
 
 #include <irrlicht.h>
 #ifndef _IRR_WINDOWS_
@@ -39,9 +47,6 @@ static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
-
-
 
 
 int main()
@@ -99,6 +104,12 @@ int main()
 	HWND hIrrlichtWindow = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 			50, 80, 320, 220, hWnd, NULL, hInstance, NULL);
 
+	/*
+	So now that we have some window, we can create an Irrlicht device
+	inside of it. We use Irrlicht createEx() function for this. We only
+	need the handle (HWND) to that window, set it as windowsID parameter
+	and start up the engine as usual. That's it.
+	*/
 	// create irrlicht device in the button window
 
 	irr::SIrrlichtCreationParameters param;
@@ -141,13 +152,17 @@ int main()
 
 	// do message queue
 
-	// Instead of this, you can also simply use your own message loop
-	// using GetMessage, DispatchMessage and whatever. Calling
-	// Device->run() will cause Irrlicht to dispatch messages internally too.
-	// You need not call Device->run() if you want to do your own message
-	// dispatching loop, but Irrlicht will not be able to fetch
-	// user input then and you have to do it on your own using the window
-	// messages, DirectInput, or whatever.
+	/*
+	Now the only thing missing is the drawing loop using
+	IrrlichtDevice::run(). We do this as usual. But instead of this, there
+	is another possibility: You can also simply use your own message loop
+	using GetMessage, DispatchMessage and whatever. Calling
+	Device->run() will cause Irrlicht to dispatch messages internally too.
+	You need not call Device->run() if you want to do your own message
+	dispatching loop, but Irrlicht will not be able to fetch user input
+	then and you have to do it on your own using the window messages,
+	DirectInput, or whatever.
+	*/
 
 	while (device->run())
 	{
@@ -156,8 +171,10 @@ int main()
 		driver->endScene();
 	}
 
-	// the alternative, own message dispatching loop without Device->run() would
-	// look like this:
+	/*
+	The alternative, own message dispatching loop without Device->run()
+	would look like this:
+	*/
 
 	/*MSG msg;
 	while (true)
@@ -187,3 +204,6 @@ int main()
 }
 #endif // if windows
 
+/*
+That's it, Irrlicht now runs in your own windows window.
+**/

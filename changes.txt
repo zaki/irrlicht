@@ -1,4 +1,3 @@
-
 Changes in version 1.5 (... 2008)
 
  - WindowsCE-Bugfix
@@ -209,7 +208,7 @@ Changes in version 1.5 (... 2008)
    - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
 
 -------------------------------------------
-Changes in version 1.4.2 (x.x.2008)
+Changes in version 1.4.2 (22.9.2008)
 
  - Unified the handling of zwrite enable with transparent materials on all hw accelerated drivers. This means that all transparent materials will now disable ZWrite, ignoring the material flag.
    There is a scene manager attribute, though, which will revert this behavior to the usual SMaterial driven way. Simply call

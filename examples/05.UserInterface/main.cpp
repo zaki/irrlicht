@@ -1,8 +1,9 @@
-/*
+/** Example 005 User Interface
+
 This tutorial shows how to use the built in User Interface of
 the Irrlicht Engine. It will give a brief overview and show
-how to create and use windows, buttons, scroll bars, static 
-texts and list boxes.
+how to create and use windows, buttons, scroll bars, static
+texts, and list boxes.
 
 As always, we include the header files, and use the irrlicht
 namespaces. We also store a pointer to the Irrlicht device,
@@ -32,13 +33,13 @@ IGUIListBox* listbox = 0;
 
 /*
 The Event Receiver is not only capable of getting keyboard and
-mouse input events, but also events of the graphical user interface 
-(gui). There are events for almost everything: Button click, 
+mouse input events, but also events of the graphical user interface
+(gui). There are events for almost everything: Button click,
 Listbox selection change, events that say that a element was hovered
-and so on. To be able to react to some of these events, we create 
-an event receiver. 
+and so on. To be able to react to some of these events, we create
+an event receiver.
 We only react to gui events, and if it's such an event, we get the
-id of the caller (the gui element which caused the event) and get 
+id of the caller (the gui element which caused the event) and get
 the pointer to the gui environment.
 */
 class MyEventReceiver : public IEventReceiver
@@ -55,12 +56,12 @@ public:
 			{
 
 			/*
-			If a scrollbar changed its scroll position, and it is 'our'
-			scrollbar (the one with id 104), then we change the 
-			transparency of all gui elements. This is a very easy task:
-			There is a skin object, in which all color settings are stored.
-			We simply go through all colors stored in the skin and change
-			their alpha value.
+			If a scrollbar changed its scroll position, and it is
+			'our' scrollbar (the one with id 104), then we change
+			the transparency of all gui elements. This is a very
+			easy task: There is a skin object, in which all color
+			settings are stored. We simply go through all colors
+			stored in the skin and change their alpha value.
 			*/
 			case EGET_SCROLL_BAR_CHANGED:
 				if (id == 104)
@@ -80,7 +81,7 @@ public:
 			/*
 			If a button was clicked, it could be one of 'our'
 			three buttons. If it is the first, we shut down the engine.
-			If it is the second, we create a little window with some 
+			If it is the second, we create a little window with some
 			text on it. We also add a string to the list box to log
 			what happened. And if it is the third button, we create
 			a file open dialog, and add also this as string to the list box.
@@ -98,15 +99,15 @@ public:
 				{
 					listbox->addItem(L"Window created");
 					cnt += 30;
-					if (cnt > 200) 
+					if (cnt > 200)
 						cnt = 0;
 
 					IGUIWindow* window = env->addWindow(
-						rect<s32>(100 + cnt, 100 + cnt, 300 + cnt, 200 + cnt), 
+						rect<s32>(100 + cnt, 100 + cnt, 300 + cnt, 200 + cnt),
 						false, // modal?
 						L"Test window");
 
-					env->addStaticText(L"Please close me",  
+					env->addStaticText(L"Please close me",
 						rect<s32>(35,35,140,50),
 						true, // border?
 						false, // wordwrap?
@@ -134,9 +135,9 @@ public:
 
 
 /*
-Ok, now for the more interesting part. First, create the 
-Irrlicht device. As in some examples before, we ask the user which
-driver he wants to use for this example:
+Ok, now for the more interesting part. First, create the Irrlicht device. As in
+some examples before, we ask the user which driver he wants to use for this
+example:
 */
 int main()
 {
@@ -182,7 +183,7 @@ int main()
 
 	/*
 	To make the font a little bit nicer, we load an external font
-	and set it as the new default font in the skin. 
+	and set it as the new default font in the skin.
 	To keep the standard font for tool tip text, we set it to
 	the built-in font.
 	*/
@@ -208,7 +209,7 @@ int main()
 	/*
 	Now, we add a static text and a scrollbar, which modifies the
 	transparency of all gui elements. We set the maximum value of
-	the scrollbar to 255, because that's the maximal value for 
+	the scrollbar to 255, because that's the maximal value for
 	a color value.
 	Then we create an other static text and a list box.
 	*/
@@ -224,7 +225,9 @@ int main()
 	listbox = env->addListBox(rect<s32>(50, 140, 250, 210));
 	env->addEditBox(L"Editable Text", rect<s32>(350, 80, 550, 100));
 
-	// add the engine logo
+	/*
+	And at last, we create a nice Irrlicht Engine logo in the top left corner. 
+	*/
 	env->addImage(driver->getTexture("../../media/irrlichtlogo2.png"),
 			position2d<int>(10,10));
 
@@ -247,3 +250,6 @@ int main()
 
 	return 0;
 }
+
+/*
+**/
