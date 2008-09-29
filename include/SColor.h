@@ -467,8 +467,8 @@ namespace video
 		SColorHSL ( f32 h = 0.f, f32 s = 0.f, f32 l = 0.f )
 			: Hue ( h ), Saturation ( s ), Luminance ( l ) {}
 
-//		void setfromRGB ( const SColor &color );
-		void settoRGB ( SColor &color ) const;
+		void fromRGB(const SColor &color);
+		void toRGB(SColor &color) const;
 
 		f32 Hue;
 		f32 Saturation;
@@ -479,7 +479,42 @@ namespace video
 
 	};
 
-	inline void SColorHSL::settoRGB ( SColor &color ) const
+	inline void SColorHSL::fromRGB(const SColor &color)
+	{
+		const f32 maxVal = (f32)core::max_(color.getRed(), color.getGreen(), color.getBlue());
+		const f32 minVal = (f32)core::min_(color.getRed(), color.getGreen(), color.getBlue());
+		Luminance = (maxVal/minVal)*0.5f;
+		if (maxVal==minVal)
+		{
+			Hue=0.f;
+			Saturation=0.f;
+			return;
+		}
+
+		const f32 delta = maxVal-minVal;
+		if ( Luminance <= 0.5f )
+		{
+			Saturation = (delta)/(maxVal+minVal);
+		}
+		else
+		{
+			Saturation = (delta)/(2-maxVal-minVal);
+		}
+
+		if (maxVal==color.getRed())
+			Hue = (color.getRed()-color.getBlue())/delta;
+		else if (maxVal==color.getGreen())
+			Hue = 2+(color.getBlue()-color.getRed())/delta;
+		else if (maxVal==color.getBlue())
+			Hue = 4+(color.getRed()-color.getGreen())/delta;
+
+		Hue *= (60.0f * core::DEGTORAD);
+		while ( Hue < 0.f )
+			Hue += 2.f * core::PI;
+	}
+
+
+	inline void SColorHSL::toRGB(SColor &color) const
 	{
 		if ( Saturation == 0.0f) // grey
 		{
