@@ -289,7 +289,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 				{
 					hsl.Luminance = 0.5f;
 					hsl.Saturation = 1.f;
-					hsl.settoRGB  ( rgb );
+					hsl.toRGB(rgb);
 					*dst = rgb.color;
 				}
 
