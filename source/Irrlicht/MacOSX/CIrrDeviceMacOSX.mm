@@ -678,9 +678,10 @@ void CIrrDeviceMacOSX::setResizeAble(bool resize)
 	// todo: implement resize
 }
 
-void CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
+bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {
-	// todo: implement 
+	// todo: implement
+	return false;
 }
 
 video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
