@@ -51,11 +51,6 @@ CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
 }
 
 
-//! destructor
-CCubeSceneNode::~CCubeSceneNode()
-{
-}
-
 void CCubeSceneNode::setSize()
 {
 	// we are creating the cube mesh here. 
