@@ -980,8 +980,8 @@ namespace video
 		virtual void setAmbientLight(const SColorf& color) = 0;
 
 		//! Only used by the engine internally.
-		/** Passes the global material flag DisableZWriteOnTransparent.
-		Use the SceneManager attribute to set this value from the app.
+		/** Passes the global material flag AllowZWriteOnTransparent.
+		Use the SceneManager attribute to set this value from your app.
 		\param flag Default behavior is to disable ZWrite, i.e. false. */
 		virtual void setAllowZWriteOnTransparent(bool flag) = 0;
 	};

@@ -41,9 +41,9 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
  : CIrrDeviceStub(param),
 #ifdef _IRR_COMPILE_WITH_X11_
 	display(0), visual(0), screennr(0), window(0), StdHints(0), SoftwareImage(0),
-#endif
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 	Context(0),
+#endif
 #endif
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	Close(false), WindowHasFocus(false), WindowMinimized(false),
@@ -1012,9 +1012,11 @@ bool CIrrDeviceLinux::isWindowMinimized() const
 //! returns color format of the window.
 video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
 {
+#ifdef _IRR_COMPILE_WITH_X11_
 	if (visual && (visual->depth != 16))
 		return video::ECF_R8G8B8;
 	else
+#endif
 		return video::ECF_R5G6B5;
 }
 
