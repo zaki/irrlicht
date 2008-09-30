@@ -314,6 +314,7 @@ namespace video
 
 		IDirect3DSurface9* PrevRenderTarget;
 		core::dimension2d<s32> CurrentRendertargetSize;
+		core::dimension2d<s32> CurrentDepthBufferSize;
 
 		void* WindowId;
 		core::rect<s32>* SceneSourceRect;

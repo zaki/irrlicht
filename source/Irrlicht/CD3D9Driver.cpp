@@ -156,6 +156,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 {
 	HRESULT hr;
 	Fullscreen = fullScreen;
+	CurrentDepthBufferSize = screenSize;
 
 	if (!pID3D)
 	{
@@ -711,10 +712,10 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 		return false;
 	}
 
-	if (texture && (tex->getSize().Width > ScreenSize.Width ||
-		tex->getSize().Height > ScreenSize.Height ))
+	if (texture && (tex->getSize().Width > CurrentDepthBufferSize.Width ||
+		tex->getSize().Height > CurrentDepthBufferSize.Height))
 	{
-		os::Printer::log("Error: Tried to set a render target texture which is bigger than the screen.", ELL_ERROR);
+		os::Printer::log("Error: Tried to set a render target texture which is bigger than the depth buffer.", ELL_ERROR);
 		return false;
 	}
 
@@ -782,7 +783,7 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 void CD3D9Driver::setViewPort(const core::rect<s32>& area)
 {
 	core::rect<s32> vp = area;
-	core::rect<s32> rendert(0,0, ScreenSize.Width, ScreenSize.Height);
+	core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
 	vp.clipAgainst(rendert);
 
 	D3DVIEWPORT9 viewPort;

@@ -108,8 +108,18 @@ CD3D9Texture::~CD3D9Texture()
 
 void CD3D9Texture::createRenderTarget()
 {
-	TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
-	TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
+	// are texture size restrictions there ?
+	if(!Driver->queryFeature(EVDF_TEXTURE_NPOT))
+	{
+		TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
+		if (TextureSize.Width>1) // remove when larger RTTs are supported
+			TextureSize.Width >>= 1;
+		TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
+		if (TextureSize.Height>1) // remove when larger RTTs are supported
+			TextureSize.Height >>= 1;
+
+		os::Printer::log("RenderTarget size has to be a power of 2",ELL_WARNING);
+	}
 
 	// get backbuffer format to create the render target in the
 	// same format
@@ -152,7 +162,18 @@ void CD3D9Texture::createRenderTarget()
 	ColorFormat = getColorFormatFromD3DFormat(d3DFormat);
 
 	if (FAILED(hr))
-		os::Printer::log("Could not create render target texture");
+	{
+		if (D3DERR_INVALIDCALL == hr)
+			os::Printer::log("Could not create render target texture", "Invalid Call");
+		else
+		if (D3DERR_OUTOFVIDEOMEMORY == hr)
+			os::Printer::log("Could not create render target texture", "Out of Video Memory");
+		else
+		if (E_OUTOFMEMORY == hr)
+			os::Printer::log("Could not create render target texture", "Out of Memory");
+		else
+			os::Printer::log("Could not create render target texture");
+	}
 }
 
 
