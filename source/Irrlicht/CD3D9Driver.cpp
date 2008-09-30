@@ -2253,10 +2253,12 @@ bool CD3D9Driver::reset()
 			DeviceLost = true;
 			os::Printer::log("Resetting failed due to device lost.", ELL_WARNING);
 		}
+#ifdef D3DERR_DEVICEREMOVED
 		else if (hr == D3DERR_DEVICEREMOVED)
 		{
 			os::Printer::log("Resetting failed due to device removed.", ELL_WARNING);
 		}
+#endif
 		else if (hr == D3DERR_DRIVERINTERNALERROR)
 		{
 			os::Printer::log("Resetting failed due to internal error.", ELL_WARNING);
