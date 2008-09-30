@@ -485,14 +485,16 @@ bool CIrrDeviceMacOSX::isWindowActive() const
 
 bool CIrrDeviceMacOSX::isWindowFocused() const
 {
-	// TODO: return proper value
-	return true;
+	if (_window != NULL)
+		return [(NSWindow *)_window isKeyWindow];
+	return false;
 }
 
 
 bool CIrrDeviceMacOSX::isWindowMinimized() const
 {
-	// TODO: return proper value
+	if (_window != NULL)
+		return [(NSWindow *)_window isMiniaturized];
 	return false;
 }
 
