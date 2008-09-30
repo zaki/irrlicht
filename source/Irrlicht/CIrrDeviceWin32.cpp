@@ -602,19 +602,22 @@ void CIrrDeviceWin32::resizeIfNecessary()
 }
 
 
-
 //! sets the caption of the window
 void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 {
+	DWORD dwResult;
 	if (IsNonNTWindows)
 	{
-		core::stringc s = text;
-		SetWindowTextA(HWnd, s.c_str());
+		const core::stringc s = text;
+		SendMessageTimeout(HWnd, WM_SETTEXT, 0,
+				reinterpret_cast<LPARAM>(s.c_str()),
+				SMTO_ABORTIFHUNG, 2000, &dwResult);
 	}
 	else
-		SetWindowTextW(HWnd, text);
+		SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,
+				reinterpret_cast<LPARAM>(text),
+				SMTO_ABORTIFHUNG, 2000, &dwResult);
 }
-
 
 
 //! presents a surface in the client area
