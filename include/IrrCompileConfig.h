@@ -82,7 +82,7 @@ to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
 and this to the linker settings: -ld3dx9 -ld3dx8 **/
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
-#define _IRR_COMPILE_WITH_DIRECT3D_8_
+//#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif
@@ -116,7 +116,7 @@ define out. */
 
 //! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
 //! to remove the dependencies such that Irrlicht will compile on those systems, too.
-#if defined(_IRR_LINUX_PLATFORM_)
+#if defined(_IRR_LINUX_PLATFORM_) && defined(_IRR_COMPILE_WITH_X11_)
 #define _IRR_LINUX_X11_VIDMODE_
 //#define _IRR_LINUX_X11_RANDR_
 #endif
