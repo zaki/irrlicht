@@ -538,7 +538,6 @@ bool CIrrDeviceLinux::createWindow()
 					InputOutput, visual->visual,
 					CWBorderPixel | CWColormap | CWEventMask,
 					&attributes);
-			CreationParams.WindowId = (void*)window;
 		}
 		else
 		{
@@ -549,6 +548,7 @@ bool CIrrDeviceLinux::createWindow()
 					CWBorderPixel | CWColormap | CWEventMask,
 					&attributes);
 		}
+		CreationParams.WindowId = (void*)window;
 
 		Atom wmDelete;
 		wmDelete = XInternAtom(display, wmDeleteWindow, True);
