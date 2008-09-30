@@ -20,25 +20,30 @@
 
 - (void)orderFrontStandardAboutPanel:(id)sender
 {
-	[NSApp orderFrontStandardAboutPanel:sender];	
+	[NSApp orderFrontStandardAboutPanel:sender];
 }
 
 - (void)unhideAllApplications:(id)sender
 {
-	[NSApp unhideAllApplications:sender];	
+	[NSApp unhideAllApplications:sender];
 }
 
 - (void)hide:(id)sender
 {
-	[NSApp hide:sender];	
+	[NSApp hide:sender];
 }
 
 - (void)hideOtherApplications:(id)sender
 {
-	[NSApp hideOtherApplications:sender];	
+	[NSApp hideOtherApplications:sender];
 }
 
 - (void)terminate:(id)sender
+{
+	_quit = TRUE;
+}
+
+- (void)windowWillClose:(id)sender
 {
 	_quit = TRUE;
 }
@@ -47,7 +52,7 @@
 {
 	NSWindow	*window;
 	NSRect		frame;
-	
+
 	window = [aNotification object];
 	frame = [window frame];
 	_device->setResize((int)frame.size.width,(int)frame.size.height);

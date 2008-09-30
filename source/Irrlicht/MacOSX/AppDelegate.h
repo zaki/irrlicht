@@ -7,7 +7,7 @@
 
 @interface AppDelegate : NSObject
 {
-	BOOL					_quit;
+	BOOL			_quit;
 	irr::CIrrDeviceMacOSX	*_device;
 }
 
