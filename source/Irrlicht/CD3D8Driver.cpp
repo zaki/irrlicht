@@ -544,6 +544,8 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return Caps.PixelShaderVersion >= D3DPS_VERSION(2,0);
 	case EVDF_PIXEL_SHADER_3_0:
 		return Caps.PixelShaderVersion >= D3DPS_VERSION(3,0);
+	case EVDF_TEXTURE_NSQUARE:
+		return (Caps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY) == 0;
 	case EVDF_TEXTURE_NPOT:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
 	default:

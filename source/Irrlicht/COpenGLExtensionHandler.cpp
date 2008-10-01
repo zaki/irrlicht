@@ -466,6 +466,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_ARB_fragment_program];
 	case EVDF_ARB_GLSL:
 		return (FeatureAvailable[IRR_ARB_shading_language_100]||Version>=200);
+	case EVDF_TEXTURE_NSQUARE:
+		return true; // non-square is always supported
 	case EVDF_TEXTURE_NPOT:
 		// Some ATI cards seem to have only SW support in OpenGL 2.0
 		// drivers if the extension is not exposed, so we skip this

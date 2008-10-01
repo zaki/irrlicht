@@ -293,6 +293,7 @@ bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_RENDER_TO_TARGET:
 	case EVDF_MULTITEXTURE:
 	case EVDF_HARDWARE_TL:
+	case EVDF_TEXTURE_NSQUARE:
 		return true;
 
 	default:
