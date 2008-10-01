@@ -395,14 +395,14 @@ void CAnimatedMeshSceneNode::render()
 				if (Mesh->getMeshType() == EAMT_SKINNED)
 					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
 				driver->draw3DBox( mb->getBoundingBox(),
-						video::SColor(0,190,128,128) );
+						video::SColor(255,190,128,128) );
 			}
 			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		if ( DebugDataVisible & scene::EDS_BBOX )
-			driver->draw3DBox(Box, video::SColor(0,255,255,255));
+			driver->draw3DBox(Box, video::SColor(255,255,255,255));
 
 		// show skeleton
 		if ( DebugDataVisible & scene::EDS_SKELETON )
@@ -419,7 +419,7 @@ void CAnimatedMeshSceneNode::render()
 					{
 						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(),
 								joint->Children[n]->GlobalAnimatedMatrix.getTranslation(),
-								video::SColor(0,51,66,255));
+								video::SColor(255,51,66,255));
 					}
 				}
 			}
