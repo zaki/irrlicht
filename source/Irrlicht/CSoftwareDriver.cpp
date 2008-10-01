@@ -160,6 +160,7 @@ bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	switch (feature)
 	{
 	case EVDF_RENDER_TO_TARGET:
+	case EVDF_TEXTURE_NSQUARE:
 		return FeatureEnabled[feature];
 	default:
 		return false;

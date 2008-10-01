@@ -589,6 +589,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return Caps.PixelShaderVersion >= D3DPS_VERSION(3,0);
 	case EVDF_HLSL:
 		return Caps.VertexShaderVersion >= D3DVS_VERSION(1,1);
+	case EVDF_TEXTURE_NSQUARE:
+		return (Caps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY) == 0;
 	case EVDF_TEXTURE_NPOT:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
 	default:

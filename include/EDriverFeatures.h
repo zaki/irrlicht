@@ -73,6 +73,9 @@ namespace video
 		//! Is HLSL supported?
 		EVDF_HLSL,
 
+		//! Are non-square textures supported?
+		EVDF_TEXTURE_NSQUARE,
+
 		//! Are non-power-of-two textures supported?
 		EVDF_TEXTURE_NPOT,
 
