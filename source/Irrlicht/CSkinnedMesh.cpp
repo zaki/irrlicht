@@ -1068,10 +1068,16 @@ void CSkinnedMesh::finalize()
 		BoundingBox.reset(0,0,0);
 	else
 	{
-		BoundingBox.reset(LocalBuffers[0]->BoundingBox.MaxEdge);
-		for (u32 j=0; j<LocalBuffers.size(); ++j)
+		irr::core::aabbox3df bb(LocalBuffers[0]->BoundingBox);
+		LocalBuffers[0]->Transformation.transformBoxEx(bb);
+		BoundingBox.reset(bb);
+
+		for (u32 j=1; j<LocalBuffers.size(); ++j)
 		{
-			BoundingBox.addInternalBox(LocalBuffers[j]->BoundingBox);
+			bb = LocalBuffers[j]->BoundingBox;
+			LocalBuffers[j]->Transformation.transformBoxEx(bb);
+
+			BoundingBox.addInternalBox(bb);
 		}
 	}
 
