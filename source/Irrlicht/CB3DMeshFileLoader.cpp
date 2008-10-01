@@ -14,6 +14,9 @@
 #include "IVideoDriver.h"
 #include "os.h"
 
+#ifdef _DEBUG
+#define _B3D_READER_DEBUG
+#endif
 
 namespace irr
 {
@@ -152,6 +155,10 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *InJoint)
 {
 	const core::stringc JointName = readString();
 
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkNODE", JointName.c_str());
+#endif
+
 	f32 position[3], scale[3], rotation[4];
 
 	readFloats(position, 3);
@@ -231,6 +238,10 @@ bool CB3DMeshFileLoader::readChunkNODE(CSkinnedMesh::SJoint *InJoint)
 
 bool CB3DMeshFileLoader::readChunkMESH(CSkinnedMesh::SJoint *InJoint)
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkMESH");
+#endif
+
 	const s32 vertices_Start=BaseVertices.size(); //B3Ds have Vertex ID's local within the mesh I don't want this
 
 	s32 brush_id;
@@ -320,6 +331,10 @@ VRTS:
 */
 bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint)
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkVRTS");
+#endif
+
 	const s32 max_tex_coords = 3;
 	s32 flags, tex_coord_sets, tex_coord_set_size;
 
@@ -416,6 +431,10 @@ bool CB3DMeshFileLoader::readChunkVRTS(CSkinnedMesh::SJoint *InJoint)
 
 bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *MeshBuffer, u32 MeshBufferID, s32 vertices_Start)
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkTRIS");
+#endif
+
 	bool showVertexWarning=false;
 
 	s32 triangle_brush_id; // Note: Irrlicht can't have different brushes for each triangle (using a workaround)
@@ -528,6 +547,10 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *MeshBuffer, u32 M
 
 bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *InJoint)
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkBONE");
+#endif
+
 	if (B3dStack.getLast().length > 8)
 	{
 		while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) // this chunk repeats
@@ -564,6 +587,10 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *InJoint)
 
 bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkKEYS");
+#endif
+
 	s32 flags;
 	B3DFile->read(&flags, sizeof(flags));
 #ifdef __BIG_ENDIAN__
@@ -612,6 +639,10 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 
 bool CB3DMeshFileLoader::readChunkANIM()
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkANIM");
+#endif
+
 	s32 animFlags; //not stored\used
 	s32 animFrames;//not stored\used
 	f32 animFPS; //not stored\used
@@ -632,6 +663,10 @@ bool CB3DMeshFileLoader::readChunkANIM()
 
 bool CB3DMeshFileLoader::readChunkTEXS()
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkTEXS");
+#endif
+
 	while((B3dStack.getLast().startposition + B3dStack.getLast().length) > B3DFile->getPos()) //this chunk repeats
 	{
 		Textures.push_back(SB3dTexture());
@@ -639,6 +674,9 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 
 		B3dTexture.TextureName=readString();
 		B3dTexture.TextureName=stripPathFromString(B3DFile->getFileName(),true) + stripPathFromString(B3dTexture.TextureName,false);
+#ifdef _B3D_READER_DEBUG
+		os::Printer::log("read Texture", B3dTexture.TextureName.c_str());
+#endif
 
 		B3DFile->read(&B3dTexture.Flags, sizeof(s32));
 		B3DFile->read(&B3dTexture.Blend, sizeof(s32));
@@ -661,6 +699,10 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 
 bool CB3DMeshFileLoader::readChunkBRUS()
 {
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read ChunkBRUS");
+#endif
+
 	u32 n_texs;
 	B3DFile->read(&n_texs, sizeof(u32));
 #ifdef __BIG_ENDIAN__
@@ -676,8 +718,10 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 	{
 		// This is what blitz basic calls a brush, like a Irrlicht Material
 
-		readString(); //MaterialName not used, but still need to read it
-
+		const core::stringc name = readString();
+#ifdef _B3D_READER_DEBUG
+	os::Printer::log("read Material", name.c_str());
+#endif
 		Materials.push_back(SB3dMaterial());
 		SB3dMaterial& B3dMaterial=Materials.getLast();
 
@@ -693,6 +737,10 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 		B3dMaterial.blend = os::Byteswap::byteswap(B3dMaterial.blend);
 		B3dMaterial.fx = os::Byteswap::byteswap(B3dMaterial.fx);
 #endif
+#ifdef _B3D_READER_DEBUG
+		os::Printer::log("Blend", core::stringc(B3dMaterial.blend).c_str());
+		os::Printer::log("FX", core::stringc(B3dMaterial.fx).c_str());
+#endif
 
 		u32 i;
 		for (i=0; i<num_textures; ++i)
@@ -704,7 +752,13 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 #endif
 			//--- Get pointers to the texture, based on the IDs ---
 			if ((u32)texture_id < Textures.size())
+			{
 				B3dMaterial.Textures[i]=&Textures[texture_id];
+#ifdef _B3D_READER_DEBUG
+				os::Printer::log("Layer", core::stringc(i).c_str());
+				os::Printer::log("using texture", Textures[texture_id].TextureName.c_str());
+#endif
+			}
 			else
 				B3dMaterial.Textures[i]=0;
 		}
@@ -735,11 +789,17 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			}
 		}
 
-		//If the first texture is empty:
-		if (B3dMaterial.Textures[1] != 0 && B3dMaterial.Textures[0] == 0)
+		//If a preceeding texture slot is empty move the others down:
+		for (i=num_textures; i>0; --i)
 		{
-			B3dMaterial.Textures[0] = B3dMaterial.Textures[1];
-			B3dMaterial.Textures[1] = 0;
+			for (u32 j=i-1; j<num_textures-1; ++j)
+			{
+				if (B3dMaterial.Textures[j+1] != 0 && B3dMaterial.Textures[j] == 0)
+				{
+					B3dMaterial.Textures[j] = B3dMaterial.Textures[j+1];
+					B3dMaterial.Textures[j+1] = 0;
+				}
+			}
 		}
 
 		//------ Convert blitz flags/blend to irrlicht -------
