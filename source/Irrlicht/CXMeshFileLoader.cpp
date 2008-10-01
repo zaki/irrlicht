@@ -684,17 +684,20 @@ bool CXMeshFileLoader::parseDataObjectTransformationMatrix(core::matrix4 &mat)
 
 bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 {
-#ifdef _XREADER_DEBUG
-	os::Printer::log("CXFileReader: Reading mesh");
-#endif
-
 	core::stringc name;
 
 	if (!readHeadOfDataObject(&name))
 	{
+#ifdef _XREADER_DEBUG
+		os::Printer::log("CXFileReader: Reading mesh");
+#endif
 		os::Printer::log("No opening brace in Mesh found in x file", ELL_WARNING);
 		return false;
 	}
+
+#ifdef _XREADER_DEBUG
+	os::Printer::log("CXFileReader: Reading mesh", name.c_str());
+#endif
 
 	// read vertex count
 	const u32 nVertices = readInt();
@@ -1165,18 +1168,20 @@ bool CXMeshFileLoader::parseDataObjectMeshMaterialList(SXMesh &mesh)
 	// read non triangulated face material index count
 	const u32 nFaceIndices = readInt();
 
-	if (nFaceIndices != mesh.IndexCountPerFace.size())
-	{
-		os::Printer::log("Index count per face not equal to face material index count in x file.", ELL_WARNING);
-		return false;
-	}
+	// There seems to be a compact representation of "all faces the same material"
+	// being represented as 1;1;0;; which means 1 material, 1 face with first material
+	// all the other faces have to obey then, so check is disabled
+	//if (nFaceIndices != mesh.IndexCountPerFace.size())
+	//	os::Printer::log("Index count per face not equal to face material index count in x file.", ELL_WARNING);
 
 	// read non triangulated face indices and create triangulated ones
 	mesh.FaceMaterialIndices.set_used( mesh.Indices.size() / 3);
 	u32 triangulatedindex = 0;
-	for (u32 tfi=0; tfi<nFaceIndices; ++tfi)
+	u32 ind = 0;
+	for (u32 tfi=0; tfi<mesh.IndexCountPerFace.size(); ++tfi)
 	{
-		const u32 ind = readInt();
+		if (tfi<nFaceIndices)
+			ind = readInt();
 		const u32 fc = mesh.IndexCountPerFace[tfi]/3;
 		for (u32 k=0; k<fc; ++k)
 			mesh.FaceMaterialIndices[triangulatedindex++] = ind;
@@ -1626,7 +1631,8 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 		} // end switch
 	}
 
-	checkForOneFollowingSemicolons();
+	if (!checkForOneFollowingSemicolons())
+		--P;
 
 	if (!checkForClosingBrace())
 	{
@@ -1885,20 +1891,14 @@ void CXMeshFileLoader::findNextNoneWhiteSpaceNumber()
 	if (BinaryFormat)
 		return;
 
-	while(true)
+	while((P < End) && (P[0] != '-') && (P[0] != '.') &&
+		!( core::isdigit(P[0])))
 	{
-		while((P < End) && (P[0] != '-') && (P[0] != '.') &&
-			!( core::isdigit(P[0])))
-			++P;
-
-		if (P >= End)
-			return;
-
 		// check if this is a comment
 		if ((P[0] == '/' && P[1] == '/') || P[0] == '#')
 			readUntilEndOfLine();
 		else
-			break;
+			++P;
 	}
 }
 
