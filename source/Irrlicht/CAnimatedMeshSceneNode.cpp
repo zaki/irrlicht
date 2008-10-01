@@ -302,7 +302,6 @@ void CAnimatedMeshSceneNode::render()
 	// render original meshes
 	if ( renderMeshes )
 	{
-
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			video::IMaterialRenderer* rnd = driver->getMaterialRenderer(Materials[i].MaterialType);
@@ -330,9 +329,9 @@ void CAnimatedMeshSceneNode::render()
 	// for debug purposes only:
 	if (DebugDataVisible && PassCount==1)
 	{
-		mat.Lighting = false;
-		driver->setMaterial(mat);
-
+		video::SMaterial debug_mat;
+		debug_mat.Lighting = false;
+		driver->setMaterial(debug_mat);
 		// show normals
 		if ( DebugDataVisible & scene::EDS_NORMALS )
 		{
@@ -381,9 +380,13 @@ void CAnimatedMeshSceneNode::render()
 			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
-		mat.MaterialType = video::EMT_SOLID;
-		mat.ZBuffer = false;
-		driver->setMaterial(mat);
+		debug_mat.ZBuffer = false;
+		debug_mat.Lighting = false;
+		driver->setMaterial(debug_mat);
+
+		if ( DebugDataVisible & scene::EDS_BBOX )
+			driver->draw3DBox(Box, video::SColor(255,255,255,255));
+
 		// show bounding box
 		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
 		{
@@ -397,12 +400,7 @@ void CAnimatedMeshSceneNode::render()
 				driver->draw3DBox( mb->getBoundingBox(),
 						video::SColor(255,190,128,128) );
 			}
-			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
-
-		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		if ( DebugDataVisible & scene::EDS_BBOX )
-			driver->draw3DBox(Box, video::SColor(255,255,255,255));
 
 		// show skeleton
 		if ( DebugDataVisible & scene::EDS_SKELETON )
@@ -437,11 +435,7 @@ void CAnimatedMeshSceneNode::render()
 				{
 					arrow = SceneManager->getMesh ( "__tag_show" );
 				}
-				IMesh *arrowMesh = arrow->getMesh ( 0 );
-
-				video::SMaterial material;
-				material.Lighting = false;
-				driver->setMaterial(material);
+				IMesh *arrowMesh = arrow->getMesh(0);
 
 				core::matrix4 matr;
 
@@ -452,12 +446,12 @@ void CAnimatedMeshSceneNode::render()
 				{
 					for ( u32 ts = 0; ts != taglist->size(); ++ts )
 					{
-						(*taglist)[ts].setto ( matr );
+						(*taglist)[ts].setto(matr);
 
 						driver->setTransform(video::ETS_WORLD, matr );
 
 						for ( u32 a = 0; a != arrowMesh->getMeshBufferCount(); ++a )
-							driver->drawMeshBuffer ( arrowMesh->getMeshBuffer ( a ) );
+							driver->drawMeshBuffer(arrowMesh->getMeshBuffer(a));
 					}
 				}
 			}
@@ -466,11 +460,10 @@ void CAnimatedMeshSceneNode::render()
 		// show mesh
 		if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
 		{
-			mat.Lighting = false;
-			mat.Wireframe = true;
-			mat.ZBuffer = true;
-			driver->setMaterial(mat);
-
+			debug_mat.Lighting = false;
+			debug_mat.Wireframe = true;
+			debug_mat.ZBuffer = true;
+			driver->setMaterial(debug_mat);
 
 			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
 			{
@@ -685,10 +678,10 @@ bool CAnimatedMeshSceneNode::setMD2Animation(EMD2_ANIMATION_TYPE anim)
 	if (!Mesh || Mesh->getMeshType() != EAMT_MD2)
 		return false;
 
-	IAnimatedMeshMD2* m = (IAnimatedMeshMD2*)Mesh;
+	IAnimatedMeshMD2* md = (IAnimatedMeshMD2*)Mesh;
 
 	s32 begin, end, speed;
-	m->getFrameLoop(anim, begin, end, speed);
+	md->getFrameLoop(anim, begin, end, speed);
 
 	setAnimationSpeed( f32(speed) );
 	setFrameLoop(begin, end);
@@ -702,10 +695,10 @@ bool CAnimatedMeshSceneNode::setMD2Animation(const c8* animationName)
 	if (!Mesh || Mesh->getMeshType() != EAMT_MD2)
 		return false;
 
-	IAnimatedMeshMD2* m = (IAnimatedMeshMD2*)Mesh;
+	IAnimatedMeshMD2* md = (IAnimatedMeshMD2*)Mesh;
 
 	s32 begin, end, speed;
-	if (!m->getFrameLoop(animationName, begin, end, speed))
+	if (!md->getFrameLoop(animationName, begin, end, speed))
 		return false;
 
 	setAnimationSpeed( (f32)speed );

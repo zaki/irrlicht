@@ -141,7 +141,7 @@ void CMeshSceneNode::render()
 				mat = Materials[g];
 				mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 				driver->setMaterial(mat);
-				driver->drawMeshBuffer ( Mesh->getMeshBuffer(g) );
+				driver->drawMeshBuffer(Mesh->getMeshBuffer(g));
 			}
 			renderMeshes = false;
 		}
@@ -176,25 +176,20 @@ void CMeshSceneNode::render()
 	// for debug purposes only:
 	if ( DebugDataVisible && PassCount==1)
 	{
-		mat.Lighting = false;
-		driver->setMaterial(mat);
+		video::SMaterial m;
+		m.Lighting = false;
+		driver->setMaterial(m);
 
 		if ( DebugDataVisible & scene::EDS_BBOX )
 		{
-			video::SMaterial m;
-			m.Lighting = false;
-			driver->setMaterial(m);
 			driver->draw3DBox(Box, video::SColor(255,255,255,255));
 		}
 		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
 		{
-			video::SMaterial m;
-			m.Lighting = false;
-			driver->setMaterial(m);
 			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
 			{
 				driver->draw3DBox(
-					Mesh->getMeshBuffer(g)->getBoundingBox(), 
+					Mesh->getMeshBuffer(g)->getBoundingBox(),
 					video::SColor(255,190,128,128));
 			}
 		}
@@ -209,7 +204,7 @@ void CMeshSceneNode::render()
 			{
 				arrow = SceneManager->getMesh ( "__debugnormal" );
 			}
-			IMesh *mesh = arrow->getMesh ( 0 );
+			IMesh *mesh = arrow->getMesh(0);
 
 			// find a good scaling factor
 
@@ -231,9 +226,9 @@ void CMeshSceneNode::render()
 					m2.setTranslation(v->Pos);
 					m2*=AbsoluteTransformation;
 
-					driver->setTransform(video::ETS_WORLD, m2 );
-					for ( u32 a = 0; a != mesh->getMeshBufferCount(); ++a )
-						driver->drawMeshBuffer ( mesh->getMeshBuffer ( a ) );
+					driver->setTransform(video::ETS_WORLD, m2);
+					for (u32 a = 0; a != mesh->getMeshBufferCount(); ++a)
+						driver->drawMeshBuffer(mesh->getMeshBuffer(a));
 
 					v = (const video::S3DVertex*) ( (u8*) v + vSize );
 				}
@@ -244,9 +239,8 @@ void CMeshSceneNode::render()
 		// show mesh
 		if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
 		{
-			mat.Lighting = false;
-			mat.Wireframe = true;
-			driver->setMaterial(mat);
+			m.Wireframe = true;
+			driver->setMaterial(m);
 
 			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
 			{
