@@ -212,11 +212,16 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		os::Printer::log("Loading failed. Corrupted data found.", file->getFileName(), ELL_ERROR);
 		return false;
 	}
-#ifdef __BIG_ENDIAN__
 	for (u16 tmp=0; tmp<numVertices; ++tmp)
-		for (u16 j=0; j<3; ++j)
-			vertices[tmp].Vertex[j] = os::Byteswap::byteswap(vertices[tmp].Vertex[j]);
+	{
+#ifdef __BIG_ENDIAN__
+		vertices[tmp].Vertex[0] = os::Byteswap::byteswap(vertices[tmp].Vertex[0]);
+		vertices[tmp].Vertex[1] = os::Byteswap::byteswap(vertices[tmp].Vertex[1]);
+		vertices[tmp].Vertex[2] = -os::Byteswap::byteswap(vertices[tmp].Vertex[2]);
+#else
+		vertices[tmp].Vertex[2] = -vertices[tmp].Vertex[2];
 #endif
+	}
 
 	// triangles
 	u16 numTriangles = *(u16*)pPtr;
@@ -232,20 +237,25 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		os::Printer::log("Loading failed. Corrupted data found.", file->getFileName(), ELL_ERROR);
 		return false;
 	}
-#ifdef __BIG_ENDIAN__
 	for (u16 tmp=0; tmp<numTriangles; ++tmp)
 	{
+#ifdef __BIG_ENDIAN__
 		triangles[tmp].Flags = os::Byteswap::byteswap(triangles[tmp].Flags);
 		for (u16 j=0; j<3; ++j)
 		{
 			triangles[tmp].VertexIndices[j] = os::Byteswap::byteswap(triangles[tmp].VertexIndices[j]);
-			for (u16 k=0; k<3; ++k)
-				triangles[tmp].VertexNormals[j][k] = os::Byteswap::byteswap(triangles[tmp].VertexNormals[j][k]);
+			triangles[tmp].VertexNormals[j][0] = os::Byteswap::byteswap(triangles[tmp].VertexNormals[j][0]);
+			triangles[tmp].VertexNormals[j][1] = os::Byteswap::byteswap(triangles[tmp].VertexNormals[j][1]);
+			triangles[tmp].VertexNormals[j][2] = -os::Byteswap::byteswap(triangles[tmp].VertexNormals[j][2]);
 			triangles[tmp].S[j] = os::Byteswap::byteswap(triangles[tmp].S[j]);
 			triangles[tmp].T[j] = os::Byteswap::byteswap(triangles[tmp].T[j]);
 		}
-	}
+#else
+		triangles[tmp].VertexNormals[0][2] = -triangles[tmp].VertexNormals[0][2];
+		triangles[tmp].VertexNormals[1][2] = -triangles[tmp].VertexNormals[1][2];
+		triangles[tmp].VertexNormals[2][2] = -triangles[tmp].VertexNormals[2][2];
 #endif
+	}
 
 	// groups
 	u16 numGroups = *(u16*)pPtr;
@@ -423,9 +433,14 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		jnt->LocalMatrix.makeIdentity();
 		jnt->LocalMatrix.setRotationRadians(
 			core::vector3df(pJoint->Rotation[0], pJoint->Rotation[1], pJoint->Rotation[2]) );
+		// convert right-handed to left-handed
+		jnt->LocalMatrix[2]=-jnt->LocalMatrix[2];
+		jnt->LocalMatrix[6]=-jnt->LocalMatrix[6];
+		jnt->LocalMatrix[8]=-jnt->LocalMatrix[8];
+		jnt->LocalMatrix[9]=-jnt->LocalMatrix[9];
 
 		jnt->LocalMatrix.setTranslation(
-			core::vector3df(pJoint->Translation[0], pJoint->Translation[1], pJoint->Translation[2]) );
+			core::vector3df(pJoint->Translation[0], pJoint->Translation[1], -pJoint->Translation[2]) );
 
 		parentNames.push_back( (c8*)pJoint->ParentName );
 
@@ -459,6 +474,11 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 			tmpMatrix.setRotationRadians(
 				core::vector3df(kf->Parameter[0], kf->Parameter[1], kf->Parameter[2]) );
+			// convert right-handed to left-handed
+			tmpMatrix[2]=-tmpMatrix[2];
+			tmpMatrix[6]=-tmpMatrix[6];
+			tmpMatrix[8]=-tmpMatrix[8];
+			tmpMatrix[9]=-tmpMatrix[9];
 
 			tmpMatrix=jnt->LocalMatrix*tmpMatrix;
 
@@ -489,7 +509,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			k->position = core::vector3df
 				(kf->Parameter[0]+pJoint->Translation[0],
 				 kf->Parameter[1]+pJoint->Translation[1],
-				 kf->Parameter[2]+pJoint->Translation[2]);
+				 -kf->Parameter[2]-pJoint->Translation[2]);
 		}
 	}
 
@@ -607,8 +627,10 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		u32 tmp = groups[triangles[i].GroupIndex].MaterialIdx;
 		Vertices = &AnimatedMesh->getMeshBuffers()[tmp]->Vertices_Standard;
 
-		for (u16 j = 0; j<3; ++j)
+		for (s32 j = 2; j!=-1; --j)
 		{
+			const u32 vertidx = triangles[i].VertexIndices[j];
+
 			v.TCoords.X = triangles[i].S[j];
 			v.TCoords.Y = triangles[i].T[j];
 
@@ -616,13 +638,15 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			v.Normal.Y = triangles[i].VertexNormals[j][1];
 			v.Normal.Z = triangles[i].VertexNormals[j][2];
 
-			if(triangles[i].GroupIndex < groups.size() && groups[triangles[i].GroupIndex].MaterialIdx < AnimatedMesh->getMeshBuffers().size())
+			if(triangles[i].GroupIndex < groups.size() &&
+					groups[triangles[i].GroupIndex].MaterialIdx < AnimatedMesh->getMeshBuffers().size())
 				v.Color = AnimatedMesh->getMeshBuffers()[groups[triangles[i].GroupIndex].MaterialIdx]->Material.DiffuseColor;
 			else
 				v.Color.set(255,255,255,255);
-			v.Pos.X = vertices[triangles[i].VertexIndices[j]].Vertex[0];
-			v.Pos.Y = vertices[triangles[i].VertexIndices[j]].Vertex[1];
-			v.Pos.Z = vertices[triangles[i].VertexIndices[j]].Vertex[2];
+
+			v.Pos.X = vertices[vertidx].Vertex[0];
+			v.Pos.Y = vertices[vertidx].Vertex[1];
+			v.Pos.Z = vertices[vertidx].Vertex[2];
 
 			// check if we already have this vertex in our vertex array
 			s32 index = -1;
@@ -638,7 +662,6 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			if (index == -1)
 			{
 				index = Vertices->size();
-				const u32 vertidx = triangles[i].VertexIndices[j];
 				const u32 matidx = groups[triangles[i].GroupIndex].MaterialIdx;
 				if (vertexWeights.size()==0)
 				{
