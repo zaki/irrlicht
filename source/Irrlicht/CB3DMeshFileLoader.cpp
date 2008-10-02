@@ -588,7 +588,7 @@ bool CB3DMeshFileLoader::readChunkBONE(CSkinnedMesh::SJoint *InJoint)
 bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 {
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read ChunkKEYS");
+//	os::Printer::log("read ChunkKEYS");
 #endif
 
 	s32 flags;
@@ -683,6 +683,10 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 #ifdef __BIG_ENDIAN__
 		B3dTexture.Flags = os::Byteswap::byteswap(B3dTexture.Flags);
 		B3dTexture.Blend = os::Byteswap::byteswap(B3dTexture.Blend);
+#endif
+#ifdef _B3D_READER_DEBUG
+		os::Printer::log("Flags", core::stringc(B3dTexture.Flags).c_str());
+		os::Printer::log("Blend", core::stringc(B3dTexture.Blend).c_str());
 #endif
 		readFloats(&B3dTexture.Xpos, 1);
 		readFloats(&B3dTexture.Ypos, 1);
@@ -816,13 +820,19 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 				B3dMaterial.Material.Lighting = false;
 			}
 			else
+			{
 				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				B3dMaterial.Material.ZWriteEnable = false;
+			}
 		}
 		else if (B3dMaterial.Textures[0]) //One texture:
 		{
 			// Flags & 0x1 is usual SOLID, 0x8 is mipmap (handled before)
 			if (B3dMaterial.Textures[0]->Flags & 0x2) //(Alpha mapped)
+			{
 				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				B3dMaterial.Material.ZWriteEnable = false;
+			}
 			else if (B3dMaterial.Textures[0]->Flags & 0x4) //(Masked)
 				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF; // TODO: create color key texture
 			else if (B3dMaterial.Textures[0]->Flags & 0x40)
@@ -832,14 +842,20 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			else if (B3dMaterial.alpha == 1.f)
 				B3dMaterial.Material.MaterialType = video::EMT_SOLID;
 			else
+			{
 				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				B3dMaterial.Material.ZWriteEnable = false;
+			}
 		}
 		else //No texture:
 		{
 			if (B3dMaterial.alpha == 1.f)
 				B3dMaterial.Material.MaterialType = video::EMT_SOLID;
 			else
+			{
 				B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+				B3dMaterial.Material.ZWriteEnable = false;
+			}
 		}
 
 		B3dMaterial.Material.DiffuseColor = video::SColorf(B3dMaterial.red, B3dMaterial.green, B3dMaterial.blue, B3dMaterial.alpha).toSColor();
@@ -863,7 +879,10 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 			B3dMaterial.Material.BackfaceCulling = false;
 
 //		if (B3dMaterial.fx & 32) //force vertex alpha-blending
+//		{
 //			B3dMaterial.Material.MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+//			B3dMaterial.Material.ZWriteEnable = false;
+//		}
 
 		B3dMaterial.Material.Shininess = B3dMaterial.shininess;
 	}
