@@ -30,7 +30,7 @@ namespace video
 {
 
 //! rendertarget constructor
-CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, core::dimension2d<s32> size, const char* name)
+CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<s32>& size, const char* name)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
 	TextureSize(size), ImageSize(size), Pitch(0),
 	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true)
@@ -112,13 +112,9 @@ void CD3D9Texture::createRenderTarget()
 	if(!Driver->queryFeature(EVDF_TEXTURE_NPOT))
 	{
 		TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
-		if (TextureSize.Width>1) // remove when larger RTTs are supported
-			TextureSize.Width >>= 1;
 		TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
-		if (TextureSize.Height>1) // remove when larger RTTs are supported
-			TextureSize.Height >>= 1;
-
-		os::Printer::log("RenderTarget size has to be a power of 2",ELL_WARNING);
+		if (TextureSize != ImageSize)
+			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
 	}
 
 	// get backbuffer format to create the render target in the
