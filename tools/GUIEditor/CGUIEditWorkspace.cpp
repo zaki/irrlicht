@@ -224,39 +224,31 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 	IGUIFileOpenDialog* dialog=0;
 	switch(e.EventType)
 	{
-	case EET_USER_EVENT:
+	case (EEVENT_TYPE)ATTRIBEDIT_ATTRIB_CHANGED:
 		{
 			switch (e.UserEvent.UserData1)
 			{
-			case ATTRIBEDIT_ATTRIB_CHANGED:
+			case EGUIEDCE_ATTRIB_EDITOR:
 				{
-					switch (e.UserEvent.UserData2)
+					// update selected items attributes
+					if (SelectedElement)
 					{
-					case EGUIEDCE_ATTRIB_EDITOR:
-						{
-							// update selected items attributes
-							if (SelectedElement)
-							{
-								SelectedElement->deserializeAttributes(EditorWindow->getAttributeEditor()->getAttribs());
-							}
-							return true;
-						}
-					case EGUIEDCE_OPTION_EDITOR:
-						{
-							// update editor options
-							deserializeAttributes(EditorWindow->getOptionEditor()->getAttribs());
-							return true;
-						}
-					case EGUIEDCE_ENV_EDITOR:
-						{
-							// update environment
-							Environment->deserializeAttributes(EditorWindow->getEnvironmentEditor()->getAttribs());
-							return true;
-						}
+						SelectedElement->deserializeAttributes(EditorWindow->getAttributeEditor()->getAttribs());
 					}
+					return true;
 				}
-				break;
-
+			case EGUIEDCE_OPTION_EDITOR:
+				{
+					// update editor options
+					deserializeAttributes(EditorWindow->getOptionEditor()->getAttribs());
+					return true;
+				}
+			case EGUIEDCE_ENV_EDITOR:
+				{
+					// update environment
+					Environment->deserializeAttributes(EditorWindow->getEnvironmentEditor()->getAttribs());
+					return true;
+				}
 			}
 		}
 		break;

@@ -650,7 +650,7 @@ bool CFontTool::saveBitmapFont(const c8 *filename, const c8* format)
 		c[0] = (*it).getKey();
 		c[1] = L'\0';
 		core::stringw area, under, over, image;
-		area  = fa.rectangle.UpperLeftCorner.X;
+		area  = core::stringw(fa.rectangle.UpperLeftCorner.X);
 		area += L", ";
 		area += fa.rectangle.UpperLeftCorner.Y;
 		area += L", ";
@@ -668,7 +668,7 @@ bool CFontTool::saveBitmapFont(const c8 *filename, const c8* format)
 		// image number
 		if (fa.sourceimage != 0)
 		{
-			image = (s32) fa.sourceimage;
+			image = core::stringw(fa.sourceimage);
 			names.push_back(core::stringw(L"i"));
 			values.push_back(image);
 		}
@@ -678,13 +678,13 @@ bool CFontTool::saveBitmapFont(const c8 *filename, const c8* format)
 
 		if (fa.underhang != 0)
 		{
-			under = fa.underhang;
+			under = core::stringw(fa.underhang);
 			names.push_back(core::stringw(L"u"));
 			values.push_back(under);
 		}
 		if (fa.overhang != 0)
 		{
-			over = fa.overhang;
+			over = core::stringw(fa.overhang);
 			names.push_back(core::stringw(L"o"));
 			values.push_back(over);
 		}
