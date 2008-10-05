@@ -196,8 +196,9 @@ public:
 					chk = (IGUICheckBox*)env->getRootGUIElement()->getElementFromId(MYGUI_ANTIALIAS,true);
 					bool aa = chk->isChecked();
 
-					chk = (IGUICheckBox*)env->getRootGUIElement()->getElementFromId(MYGUI_VECTOR,true);
-					bool vec = chk->isChecked();
+					// vector fonts disabled
+					//chk = (IGUICheckBox*)env->getRootGUIElement()->getElementFromId(MYGUI_VECTOR,true);
+					bool vec = false;//chk->isChecked();
 
 					FontTool->makeBitmapFont(fontname, charset, FontTool->FontSizes[fontsize], texturesizes[texwidth], texturesizes[texheight], bold, italic, aa, alpha); 
 
@@ -254,8 +255,9 @@ public:
 					IGUIComboBox *fmt  = (IGUIComboBox*)env->getRootGUIElement()->getElementFromId(MYGUI_FORMAT,true);
 					core::stringc format = fmt->getItem(fmt->getSelected());
 
+					// vector fonts disabled
 					IGUICheckBox *chk = (IGUICheckBox*)env->getRootGUIElement()->getElementFromId(MYGUI_VECTOR,true);
-					bool vec = chk->isChecked();
+					bool vec = false; // chk->isChecked();
 
 					if (vec && VecTool)
 						VecTool->saveVectorFont(name.c_str(), format.c_str());
@@ -358,7 +360,10 @@ void createGUI(IrrlichtDevice* device, CFontTool* fc)
 	xp = xs;
 	yp += (s32)(h*1.5f);
 
+	/*
+	// vector fonts can't be loaded yet
 	env->addCheckBox(false, core::rect<s32>(xp,yp,xp+200,yp+h),win, MYGUI_VECTOR, L"Vector Font");
+	*/
 
 	yp += (s32)(h*1.5f);
 
@@ -460,10 +465,10 @@ int main()
 		}
 	}
 
-	device->drop();
-
 	// drop the font tool and resources
 	fc->drop();
+
+	device->drop();
 	
 	return 0;
 }

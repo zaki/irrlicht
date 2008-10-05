@@ -24,10 +24,9 @@ namespace gui
 	// custom events
 	enum EGUIEDIT_CUSTOM_EVENTS 
 	{
-		EGUIEDCE_ATTRIB_EDITOR=0xED17, // some number hopefully nobody else is using
-		EGUIEDCE_OPTION_EDITOR,
-		EGUIEDCE_ENV_EDITOR,
-		EGUIEDCE_COUNT
+		EGUIEDCE_ATTRIB_EDITOR = MAKE_IRR_ID('g','A','t','t'),
+		EGUIEDCE_OPTION_EDITOR = MAKE_IRR_ID('g','O','p','t'),
+		EGUIEDCE_ENV_EDITOR = MAKE_IRR_ID('g','E','n','v')
 	};
 
 	class CGUIEditWorkspace : public IGUIElement

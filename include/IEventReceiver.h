@@ -52,7 +52,12 @@ namespace irr
 			casted to s32 and used as UserData1 and UserData2.
 		MacOS: Not yet implemented
 		*/
-		EET_USER_EVENT
+		EET_USER_EVENT,
+
+		//! This enum is never used, it only forces the compiler to
+		//! compile these enumeration values to 32 bit.
+		EGUIET_FORCE_32_BIT = 0x7fffffff
+
 	};
 
 	//! Enumeration for all mouse input events

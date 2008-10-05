@@ -22,7 +22,7 @@ namespace irr
 namespace gui
 {
 
-	const u32 ATTRIBEDIT_ATTRIB_CHANGED=0xA77ED17; // hopefully nobody else is using this number
+	const u32 ATTRIBEDIT_ATTRIB_CHANGED=MAKE_IRR_ID('A','T','T','R');
 
 	class CGUIAttribute : public IGUIElement
 	{
@@ -133,10 +133,9 @@ namespace gui
 			{
 				// build event and pass to parent
 				SEvent event;
-				event.EventType = EET_USER_EVENT;
-				event.UserEvent.UserData1 = ATTRIBEDIT_ATTRIB_CHANGED;
-				event.UserEvent.UserData2 = MyParentID;
-				event.UserEvent.UserData3 = (f32)Index;
+				event.EventType = (EEVENT_TYPE)ATTRIBEDIT_ATTRIB_CHANGED;
+				event.UserEvent.UserData1 = MyParentID;
+				event.UserEvent.UserData2 = Index;
 				return Parent->OnEvent(event);
 			}
 
