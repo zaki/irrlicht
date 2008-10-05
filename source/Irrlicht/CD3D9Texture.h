@@ -30,7 +30,7 @@ public:
 		u32 flags, const char* name);
 
 	//! rendertarget constructor
-	CD3D9Texture(CD3D9Driver* driver, core::dimension2d<s32> size, const char* name);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<s32>& size, const char* name);
 
 	//! destructor
 	virtual ~CD3D9Texture();
