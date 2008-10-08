@@ -1021,6 +1021,45 @@ void CAnimatedMeshSceneNode::beginTransition()
 	TransitingBlend = 0.f;
 }
 
+ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
+{
+	if (!newParent) newParent = Parent;
+	if (!newManager) newManager = SceneManager;
+
+	CAnimatedMeshSceneNode * newNode = 
+		new CAnimatedMeshSceneNode(Mesh, newParent, newManager, ID, RelativeTranslation, 
+						 RelativeRotation, RelativeScale);
+
+	newNode->cloneMembers(this, newManager);
+
+	newNode->Materials = Materials;
+	newNode->Box = Box;
+	newNode->Mesh = Mesh;
+	newNode->BeginFrameTime = BeginFrameTime;
+	newNode->StartFrame = StartFrame;
+	newNode->EndFrame = EndFrame;
+	newNode->FramesPerSecond = FramesPerSecond;
+	newNode->CurrentFrameNr = CurrentFrameNr;
+	newNode->JointMode = JointMode;
+	newNode->JointsUsed = JointsUsed;
+	newNode->TransitionTime = TransitionTime;
+	newNode->Transiting = Transiting;
+	newNode->TransitingBlend = TransitingBlend;
+	newNode->Looping = Looping;
+	newNode->ReadOnlyMaterials = ReadOnlyMaterials;
+	newNode->LoopCallBack = LoopCallBack;
+	newNode->PassCount = PassCount;
+	newNode->Shadow = Shadow;
+	newNode->JointChildSceneNodes = JointChildSceneNodes;
+	newNode->PretransitingSave = PretransitingSave;
+	newNode->RenderFromIdentity = RenderFromIdentity;
+	newNode->MD3Special = MD3Special;
+
+	(void)newNode->drop();
+	return newNode;
+}
+
+
 
 } // end namespace scene
 } // end namespace irr

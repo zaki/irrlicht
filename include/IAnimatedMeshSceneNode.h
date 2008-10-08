@@ -211,6 +211,13 @@ namespace scene
 		//! render mesh ignoring it's transformation.
 		/** Used with ragdolls. Culling is unaffected. */
 		virtual void setRenderFromIdentity( bool On )=0;
+
+		//! Creates a clone of this scene node and its children.
+		/** \param newParent An optional new parent.
+		\param newManager An optional new scene manager.
+		\return The newly created clone of this node. */
+		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0) = 0;
+
 	};
 
 } // end namespace scene

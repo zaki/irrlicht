@@ -220,6 +220,12 @@ namespace scene
 			return Container[index];
 		}
 
+		SMD3QuaterionTagList & operator = (const SMD3QuaterionTagList & copyMe)
+		{
+			Container = copyMe.Container;
+			return *this;
+		}
+
 		core::array < SMD3QuaterionTag > Container;
 	};
 
