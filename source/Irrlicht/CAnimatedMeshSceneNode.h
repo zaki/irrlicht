@@ -153,6 +153,12 @@ namespace scene
 		//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
 		virtual void setRenderFromIdentity( bool On );
 
+		//! Creates a clone of this scene node and its children.
+		/** \param newParent An optional new parent.
+		\param newManager An optional new scene manager.
+		\return The newly created clone of this node. */
+		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
+
 	private:
 
 		f32 buildFrameNr( u32 timeMs);
@@ -194,6 +200,13 @@ namespace scene
 		{
 			core::stringc Tagname;
 			SMD3QuaterionTagList AbsoluteTagList;
+
+			SMD3Special & operator = (const SMD3Special & copyMe)
+			{
+				Tagname = copyMe.Tagname;
+				AbsoluteTagList = copyMe.AbsoluteTagList;
+				return *this;
+			}
 		};
 		SMD3Special MD3Special;
 
