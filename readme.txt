@@ -69,6 +69,8 @@ The Irrlicht Engine SDK version 1.4.2
   (libIrrlicht.so.versionNumber). Use the proper makefile target for this by
   running 'make sharedlib' in the source folder. See the Makefile for details.
 
+  For OSX you can find an XCode project file in source/Irrlicht/MacOSX. This will
+  build the libIrrlicht.a library necessary to create the apps.
 
 ==========================================================================
 3. Requirements
@@ -80,10 +82,10 @@ The Irrlicht Engine SDK version 1.4.2
 
   * gcc 3.3
   * gcc 3.4
-  * gcc 4.0.3
-  * Visual Studio 6.0
+  * gcc 4.x
   * Visual Studio.NET 2003 (7.1)
   * Visual Studio 2005 (8.0)
+  * Visual Studio 2008 (9.0)
   * Code::Blocks 1.0 (& gcc or visual studio toolkit)
   * DevC++ 5.0 & gcc (project files included)
 
@@ -91,16 +93,20 @@ The Irrlicht Engine SDK version 1.4.2
   want to use the precompiled version) you need the following:
   
   * Windows:
-  	* Needed: PlatformSDK (which usually comes with all IDEs)
-  	* Optional: DirectX 9 SDK, for D3D9 support
-  	* Optional: DirectX 8 SDK, for D3D8 support
+  	* Needed: PlatformSDK (which usually comes with all IDEs, download
+			it separately for MSVC Express 2005)
+  	* Optional: DirectX SDK, for D3D9 support
+  	* Optional: DirectX SDK prior to May 2006, for D3D8 support
   	
   * Linux:
   	* Needed: XServer with include files
-  	* Optional: OpenGL headers and libraries (libGL and libGLU), for
-                    OpenGL support
-        *           GLX + XF86VidMode extension (X11 support libraries)
+  	* Optional: OpenGL headers and libraries (libGL.so), for OpenGL support
+        *           GLX + XF86VidMode or XRandr extension (X11 support libraries,
+			the latter two for fullscreen mode)
 
+  * OSX:
+  	* Needed: XCode and Cocoa framework
+	* Needed: OpenGL headers and libraries
 
 ==========================================================================
 4. Release Notes
