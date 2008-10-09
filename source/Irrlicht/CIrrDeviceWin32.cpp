@@ -935,14 +935,14 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 	if (ExternalWindow || !getVideoDriver() || CreationParams.Fullscreen)
 		return;
 
-	LONG style = WS_POPUP;
+	LONG_PTR style = WS_POPUP;
 
 	if (!resize)
 		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	else
 		style = WS_THICKFRAME | WS_SYSMENU | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
-	if (!SetWindowLong(HWnd, GWL_STYLE, style))
+	if (!SetWindowLongPtr(HWnd, GWL_STYLE, style))
 		os::Printer::log("Could not change window style.");
 
 	RECT clientSize;
