@@ -214,17 +214,22 @@ namespace video
 		information. */
 		virtual ITexture* addTexture(const c8* name, IImage* image) = 0;
 
-		//! Creates a render target texture.
+		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
 		height should be a power of two (e.g. 64, 128, 256, 512, ...)
 		and it should not be bigger than the backbuffer, because it
 		shares the zbuffer with the screen buffer.
 		\param name An optional name for the RTT.
 		\return Pointer to the created texture or 0 if the texture
-		could not be created. If you no longer need the image, you
-		should call ITexture::drop(). See IReferenceCounted::drop()
-		for more information. */
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name = 0) = 0;
+		could not be created. This pointer should not be dropped. See
+		IReferenceCounted::drop() for more information. */
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name=0) =0;
+
+		//! Adds a new render target texture
+		/** \deprecated use addRenderTargetTexture instead. */
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name=0) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
 		/** This method can free a lot of memory!
@@ -293,7 +298,7 @@ namespace video
 		way:
 		\code
 		// create render target
-		ITexture* target = driver->createRenderTargetTexture(core::dimension2d<s32>(128,128));
+		ITexture* target = driver->addRenderTargetTexture(core::dimension2d<s32>(128,128), "rtt1");
 
 		// ...
 
@@ -311,7 +316,7 @@ namespace video
 		simple workaround for this is to flip the texture coordinates
 		of the geometry where the render target texture is displayed on.
 		\param texture New render target. Must be a texture created with
-		IVideoDriver::createRenderTargetTexture(). If set to 0, it sets
+		IVideoDriver::addRenderTargetTexture(). If set to 0, it sets
 		the previous render target which was set before the last
 		setRenderTarget() call.
 		\param clearBackBuffer Clears the backbuffer of the render

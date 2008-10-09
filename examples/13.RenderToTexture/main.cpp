@@ -120,14 +120,14 @@ int main()
 	/*
 	To test out the render to texture feature, we need a render target
 	texture. These are not like standard textures, but need to be created
-	first. To create one, we call IVideoDriver::createRenderTargetTexture()
+	first. To create one, we call IVideoDriver::addRenderTargetTexture()
 	and specify the size of the texture. Please don't use sizes bigger than
 	the frame buffer for this, because the render target shares the zbuffer
-	with the frame buffer. And because we want to render the scene not from
-	the user camera into the texture, we add another fixed camera to the
-	scene. But before we do all this, we check if the current running
-	driver is able to render to textures. If it is not, we simply display a
-	warning text.
+	with the frame buffer.
+	Because we want to render the scene not from the user camera into the
+	texture, we add another fixed camera to the scene. But before we do all
+	this, we check if the current running driver is able to render to
+	textures. If it is not, we simply display a warning text.
 	*/
 
 	// create render target
@@ -137,7 +137,7 @@ int main()
 
 	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
 	{
-		rt = driver->createRenderTargetTexture(core::dimension2d<s32>(256,256));
+		rt = driver->addRenderTargetTexture(core::dimension2d<s32>(256,256), "RTT1");
 		test->setMaterialTexture(0, rt); // set material of cube to render target
 
 		// add fixed camera
@@ -217,9 +217,6 @@ int main()
 			lastFPS = fps;
 		}
 	}
-
-	if (rt)
-		rt->drop(); // drop render target because we created if with a create() method
 
 	device->drop(); // drop device
 	return 0;

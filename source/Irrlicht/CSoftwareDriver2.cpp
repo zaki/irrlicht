@@ -1845,12 +1845,16 @@ const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE st
 
 
 //! Creates a render target texture.
-ITexture* CBurningVideoDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name)
 {
 	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
-
+	if (!name)
+		name="rt";
 	ITexture* tex = new CSoftwareTexture2(img, name, false, true);
 	img->drop();
+	addTexture(tex);
+	tex->drop();
 	return tex;
 }
 
