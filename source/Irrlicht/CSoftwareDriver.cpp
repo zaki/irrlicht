@@ -880,12 +880,17 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 	return TransformationMatrix[state];
 }
 
+
 //! Creates a render target texture.
-ITexture* CSoftwareDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
+	if (!name)
+		name="rt";
 	ITexture* tex = new CSoftwareTexture(img, name, true);
 	img->drop();
+	addTexture(tex);
+	tex->drop();
 	return tex;
 }
 

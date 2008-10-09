@@ -1,5 +1,7 @@
 Changes in version 1.5 (... 2008)
 
+ - Major API change: RTTs are now created via addRenderTargetTexture instead of createRenderTargetTexture, which allows to retrieve them from the texture cache, but also changes the way of removing the RTTs, and especially one must not drop the pointer anymore.
+ 
  - WindowsCE-Bugfix
 
  - isBetweenPoints return true now even for the begin and end points, i.e. line segments are now including their start and end.

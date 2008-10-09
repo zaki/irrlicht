@@ -2548,7 +2548,7 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 }
 
 
-ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
@@ -2560,7 +2560,11 @@ ITexture* COpenGLDriver::createRenderTargetTexture(const core::dimension2d<s32>&
 #if defined(GL_EXT_framebuffer_object)
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
+	{
 		rtt = new COpenGLTexture(size, name, this);
+		addTexture(rtt);
+		rtt->drop();
+	}
 	else
 #endif
 	{

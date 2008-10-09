@@ -1808,11 +1808,14 @@ s32 CNullDriver::addShaderMaterialFromFiles(const c8* vertexShaderProgramFileNam
 	return result;
 }
 
+
 //! Creates a render target texture.
-ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name)
 {
 	return 0;
 }
+
 
 //! Clears the ZBuffer.
 void CNullDriver::clearZBuffer()
@@ -1832,6 +1835,7 @@ IImage* CNullDriver::createScreenShot()
 {
 	return 0;
 }
+
 
 // prints renderer version
 void CNullDriver::printVersion()
@@ -1878,6 +1882,15 @@ void CNullDriver::enableClipPlane(u32 index, bool enable)
 	// not necessary
 }
 
+
+ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name)
+{
+	os::Printer::log("createRenderTargetTexture is deprecated, use addRenderTargetTexture istead");
+	ITexture* tex = addRenderTargetTexture(size, name);
+	tex->grab();
+	return tex;
+}
 
 } // end namespace
 } // end namespace
