@@ -2245,13 +2245,14 @@ void CD3D9Driver::draw3DLine(const core::vector3df& start,
 //! resets the device
 bool CD3D9Driver::reset()
 {
+	u32 i;
 	os::Printer::log("Resetting D3D9 device.", ELL_INFORMATION);
 
-	for (u32 i=0; i<Textures.size(); ++i)
+	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 		{
-			IDirect3DTexture9 tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
+			IDirect3DTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
 			if (tex)
 				tex->Release();
 		}
@@ -2259,7 +2260,7 @@ bool CD3D9Driver::reset()
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 
-	for (u32 i=0; i<Textures.size(); ++i)
+	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();

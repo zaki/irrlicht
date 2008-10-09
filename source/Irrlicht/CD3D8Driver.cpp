@@ -399,11 +399,15 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		if(FAILED(hr = pID3DDevice->TestCooperativeLevel()))
 		{
 			if (hr == D3DERR_DEVICELOST)
-				return false;
+			{
+				Sleep(100);
+				hr = pID3DDevice->TestCooperativeLevel();
+				if (hr == D3DERR_DEVICELOST)
+					return false;
+			}
 
-			if (hr == D3DERR_DEVICENOTRESET)
-				reset();
-			return false;
+			if ((hr == D3DERR_DEVICENOTRESET) && !reset())
+				return false;
 		}
 	}
 
@@ -428,40 +432,6 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		os::Printer::log("Direct3D8 begin scene failed.", ELL_WARNING);
 		return false;
 	}
-
-	return true;
-}
-
-
-//! resets the device
-bool CD3D8Driver::reset()
-{
-	// reset
-	HRESULT hr;
-	os::Printer::log("Resetting D3D8 device.", ELL_INFORMATION);
-	if (FAILED(hr = pID3DDevice->Reset(&present)))
-	{
-		if (hr == D3DERR_DEVICELOST)
-		{
-			DeviceLost = true;
-			os::Printer::log("Resetting failed due to device lost.", ELL_WARNING);
-		}
-		else
-			os::Printer::log("Resetting failed.", ELL_WARNING);
-		return false;
-	}
-
-	DeviceLost = false;
-	ResetRenderStates = true;
-	LastVertexType = (E_VERTEX_TYPE)-1;
-
-	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		CurrentTexture[i] = 0;
-
-	setVertexShader(EVT_STANDARD);
-	setRenderStates3DMode();
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
-	setAmbientLight(AmbientLight);
 
 	return true;
 }
@@ -492,17 +462,67 @@ bool CD3D8Driver::endScene()
 
 	hr = pID3DDevice->Present(srcRct, NULL, (HWND)WindowId, NULL);
 
+	if (SUCCEEDED(hr))
+		return true;
+
 	if (hr == D3DERR_DEVICELOST)
 	{
 		DeviceLost = true;
 		os::Printer::log("DIRECT3D8 device lost.", ELL_WARNING);
 	}
 	else
-	if (FAILED(hr) && hr != D3DERR_INVALIDCALL)
-	{
 		os::Printer::log("DIRECT3D8 present failed.", ELL_WARNING);
+	return false;
+}
+
+
+//! resets the device
+bool CD3D8Driver::reset()
+{
+	u32 i;
+	os::Printer::log("Resetting D3D8 device.", ELL_INFORMATION);
+
+	for (i=0; i<Textures.size(); ++i)
+	{
+		if (Textures[i].Surface->isRenderTarget())
+		{
+			IDirect3DTexture8* tex = ((CD3D8Texture*)(Textures[i].Surface))->getDX8Texture();
+			if (tex)
+				tex->Release();
+		}
+	}
+
+	HRESULT hr = pID3DDevice->Reset(&present);
+
+	for (i=0; i<Textures.size(); ++i)
+	{
+		if (Textures[i].Surface->isRenderTarget())
+			((CD3D8Texture*)(Textures[i].Surface))->createRenderTarget();
+	}
+
+	if (FAILED(hr))
+	{
+		if (hr == D3DERR_DEVICELOST)
+		{
+			DeviceLost = true;
+			os::Printer::log("Resetting failed due to device lost.", ELL_WARNING);
+		}
+		else
+			os::Printer::log("Resetting failed.", ELL_WARNING);
 		return false;
 	}
+
+	DeviceLost = false;
+	ResetRenderStates = true;
+	LastVertexType = (E_VERTEX_TYPE)-1;
+
+	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		CurrentTexture[i] = 0;
+
+	setVertexShader(EVT_STANDARD);
+	setRenderStates3DMode();
+	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setAmbientLight(AmbientLight);
 
 	return true;
 }
