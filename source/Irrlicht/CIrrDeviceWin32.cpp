@@ -940,7 +940,7 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 	if (!resize)
 		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	else
-		style = WS_THICKFRAME | WS_SYSMENU | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_MAXIMIZEBOX;
+		style = WS_THICKFRAME | WS_SYSMENU | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
 	if (!SetWindowLong(HWnd, GWL_STYLE, style))
 		os::Printer::log("Could not change window style.");

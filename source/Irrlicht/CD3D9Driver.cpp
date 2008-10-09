@@ -537,7 +537,17 @@ bool CD3D9Driver::endScene()
 	if (hr == D3DERR_DEVICELOST)
 	{
 		DeviceLost = true;
-		os::Printer::log("DIRECT3D9 device lost.", ELL_WARNING);
+		os::Printer::log("Present failed", "DIRECT3D9 device lost.", ELL_WARNING);
+	}
+#ifdef D3DERR_DEVICEREMOVED
+	else if (hr == D3DERR_DEVICEREMOVED)
+	{
+		os::Printer::log("Present failed", "Device removed.", ELL_WARNING);
+	}
+#endif
+	else if (hr == D3DERR_INVALIDCALL)
+	{
+		os::Printer::log("Present failed", "Invalid Call", ELL_WARNING);
 	}
 	else
 		os::Printer::log("DIRECT3D9 present failed.", ELL_WARNING);
