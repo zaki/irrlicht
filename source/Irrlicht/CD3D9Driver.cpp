@@ -465,14 +465,18 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	HRESULT hr;
 	if (DeviceLost)
 	{
-		if(FAILED(hr = pID3DDevice->TestCooperativeLevel()))
+		if (FAILED(hr = pID3DDevice->TestCooperativeLevel()))
 		{
 			if (hr == D3DERR_DEVICELOST)
-				return false;
+			{
+				Sleep(100);
+				hr = pID3DDevice->TestCooperativeLevel();
+				if (hr == D3DERR_DEVICELOST)
+					return false;
+			}
 
-			if (hr == D3DERR_DEVICENOTRESET)
-				reset();
-			return false;
+			if ((hr == D3DERR_DEVICENOTRESET) && !reset())
+				return false;
 		}
 	}
 
@@ -505,9 +509,6 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 //! applications must call this method after performing any rendering. returns false if failed.
 bool CD3D9Driver::endScene()
 {
-	if (DeviceLost)
-		return false;
-
 	CNullDriver::endScene();
 
 	HRESULT hr = pID3DDevice->EndScene();
@@ -530,19 +531,17 @@ bool CD3D9Driver::endScene()
 
 	hr = pID3DDevice->Present(srcRct, NULL, (HWND)WindowId, NULL);
 
+	if (SUCCEEDED(hr))
+		return true;
+
 	if (hr == D3DERR_DEVICELOST)
 	{
 		DeviceLost = true;
 		os::Printer::log("DIRECT3D9 device lost.", ELL_WARNING);
 	}
 	else
-	if (FAILED(hr) && hr != D3DERR_INVALIDCALL)
-	{
 		os::Printer::log("DIRECT3D9 present failed.", ELL_WARNING);
-		return false;
-	}
-
-	return true;
+	return false;
 }
 
 
@@ -2248,8 +2247,25 @@ bool CD3D9Driver::reset()
 {
 	os::Printer::log("Resetting D3D9 device.", ELL_INFORMATION);
 
-	HRESULT hr;
-	if (FAILED(hr = pID3DDevice->Reset(&present)))
+	for (u32 i=0; i<Textures.size(); ++i)
+	{
+		if (Textures[i].Surface->isRenderTarget())
+		{
+			IDirect3DTexture9 tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
+			if (tex)
+				tex->Release();
+		}
+	}
+
+	HRESULT hr = pID3DDevice->Reset(&present);
+
+	for (u32 i=0; i<Textures.size(); ++i)
+	{
+		if (Textures[i].Surface->isRenderTarget())
+			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
+	}
+
+	if (FAILED(hr))
 	{
 		if (hr == D3DERR_DEVICELOST)
 		{
@@ -2276,7 +2292,7 @@ bool CD3D9Driver::reset()
 		}
 		else if (hr == D3DERR_INVALIDCALL)
 		{
-			os::Printer::log("Resetting failed due to invalid call.", ELL_WARNING);
+			os::Printer::log("Resetting failed due to invalid call", "You need to release some more surfaces.", ELL_WARNING);
 		}
 		else
 		{
