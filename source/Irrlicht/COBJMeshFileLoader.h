@@ -74,9 +74,9 @@ private:
 	const c8* readTextures(const c8* bufPtr, const c8* const bufEnd, SObjMtl* currMaterial, const core::stringc& relPath);
 
 	// returns a pointer to the first printable character available in the buffer
-	const c8* goFirstWord(const c8* buf, const c8* const bufEnd);
+	const c8* goFirstWord(const c8* buf, const c8* const bufEnd, bool acrossNewlines=true);
 	// returns a pointer to the first printable character after the first non-printable
-	const c8* goNextWord(const c8* buf, const c8* const bufEnd);
+	const c8* goNextWord(const c8* buf, const c8* const bufEnd, bool acrossNewlines=true);
 	// returns a pointer to the next printable character after the first line break
 	const c8* goNextLine(const c8* buf, const c8* const bufEnd);
 	// copies the current word from the inBuf to the outBuf
