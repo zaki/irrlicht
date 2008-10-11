@@ -31,7 +31,7 @@ struct dmfHeader
 {
 	//main file header
 	f32 dmfVersion;     //!<File version
-	char dmfName[128]; //!<Scene name
+	core::stringc dmfName; //!<Scene name
 	SColor dmfAmbient; //!<Ambient color
 	f32 dmfShadow;     //!<Shadow intensity
 	u32 numObjects;    //!<Number of objects in this scene
@@ -44,16 +44,17 @@ struct dmfHeader
 };
 
 
-/** A structure rapresenting a DeleD material.
+/** A structure representing a DeleD material.
 This structure contains texture names, an ID and some flags.*/
 struct dmfMaterial
 {
 	u32 materialID;//!<This material unique ID.
+	u32 textureLayers;//!<First texture Flag (0=Normal, 1=Color).
 	u32 textureFlag;//!<First texture Flag (0=Normal, 1=Color).
 	u32 lightmapFlag;//!<Lightmap Flag (0=Normal, others not considered).
 	u32 textureBlend;//!<Texture Blend mode used to support alpha maps (4=Alpha map, others not implemented yet).
-	char textureName[64];//!<Name of first texture (only file name, no path).
-	char lightmapName[64];//!<Name of lightmap (only file name, no path).
+	core::stringc textureName;//!<Name of first texture (only file name, no path).
+	core::stringc lightmapName;//!<Name of lightmap (only file name, no path).
 };
 
 
@@ -71,13 +72,13 @@ struct dmfFace
 This structure contains vertice position coordinates and texture an lightmap UV.*/
 struct dmfVert
 {
-	f32 tc[2];//!<Texture UV coords.
-	f32 lc[2];//!<Lightmap UV coords.
-	f32 pos[3];//!<Position of vertice x,y,z
+	core::vector3df pos;//!<Position of vertice x,y,z
+	core::vector2df tc;//!<Texture UV coords.
+	core::vector2df lc;//!<Lightmap UV coords.
 };
 
 
-/** A structure rapresenting a single dynamic light.
+/** A structure representing a single dynamic light.
 This structure contains light position coordinates, diffuse colour, specular colour and maximum radius of light.*/
 struct dmfLight
 {
@@ -191,7 +192,7 @@ public:
 //This function subdivides a string in a list of strings
 /** This function subdivides strings divided by divider in a list of strings.
 \return A StringList made of all strings divided by divider.*/
-StringList SubdivideString(String str, String divider)
+StringList SubdivideString(const String& str, const String& divider)
 {
 	StringList strings; //returned StringList
 	strings.clear();    //clear returned stringlist
@@ -227,7 +228,7 @@ StringList SubdivideString(String str, String divider)
 /**This function extract a dmfHeader from a DMF file.
 You must give in input a StringList representing a DMF file loaded with LoadFromFile.
 \return true if function succeed or false on fail.*/
-bool GetDMFHeader (StringList RawFile, dmfHeader & header)
+bool GetDMFHeader(const StringList& RawFile, dmfHeader& header)
 {
 	StringList temp=SubdivideString(RawFile[0],String(";")); //file info
 
@@ -238,27 +239,16 @@ bool GetDMFHeader (StringList RawFile, dmfHeader & header)
 	temp = SubdivideString(RawFile[1],String(" "));//get version
 	StringList temp1=SubdivideString(temp[1],String(";"));
 
-	if (atof(temp1[0].c_str()) < 0.91)
+	header.dmfVersion = (float)atof(temp1[0].c_str());//save version
+	if (header.dmfVersion < 0.91)
 		return false;//not correct version
 
-	header.dmfVersion = (float)atof(temp1[0].c_str());//save version
 	temp.clear();
 	temp = SubdivideString(RawFile[2],String(";"));//get name,ambient color and shadow opacity
-	sprintf(header.dmfName,"%s",temp[0].c_str());//save name
-
-	String red=String(""), green=String(""), blue=String("");
-
-	//get color value in hex
-	blue.append((char*)&temp[1][2]);
-	blue.append((char*)&temp[1][3]);
-	green.append((char*)&temp[1][4]);
-	green.append((char*)&temp[1][5]);
-	red.append((char*)&temp[1][6]);
-	red.append((char*)&temp[1][7]);
+	header.dmfName=temp[0];//save name
 
 	//set ambient color
-	header.dmfAmbient.set(0, axtoi(red.c_str()),
-	axtoi(green.c_str()), axtoi(blue.c_str()));
+	header.dmfAmbient.set(axtoi(temp[1].c_str()));
 
 	//set Shadow intensity
 	header.dmfShadow = (float)atof(temp[2].c_str());
@@ -339,52 +329,41 @@ bool GetDMFHeader (StringList RawFile, dmfHeader & header)
 }
 
 
-
 /**This function extract an array of dmfMaterial from a DMF file.
 You must give in input a StringList representing a DMF file loaded with LoadFromFile.
+\param RawFile StringList representing a DMF file.
+\param materials Materials returned.
+\param num_material Number of materials contained in DMF file.
+\param use_material_dirs Here you can choose to use default DeleD structure for material dirs.
 \return true if function succeed or false on fail.*/
-bool GetDMFMaterials(StringList RawFile /**<StringList representing a DMF file.*/,
-			dmfMaterial materials[]/**<Materials returned.*/,
-			int num_material/**<Number of materials contained in DMF file.*/,
-			bool use_material_dirs=false/**<Here you can choose to use default DeleD structure for material dirs.*/)
+bool GetDMFMaterials(const StringList& RawFile,
+			core::array<dmfMaterial>& materials,
+			int num_material,
+			bool use_material_dirs=false)
 {
 	int offs=4;
 	StringList temp;
 	StringList temp1;
 	StringList temp2;
 
-	//Checking if this is a DeleD map File of version >= 0.91
-	temp=SubdivideString(RawFile[0],String(";"));//file info
-
-	if ( temp[0] != String("DeleD Map File") )
-		return false;//not a deled file
-
-	temp.clear();
-	temp=SubdivideString(RawFile[1],String(" "));//get version
-	temp1=SubdivideString(temp[1],String(";"));
-
-	if (atof(temp1[0].c_str()) < 0.91)
-		return false;//not correct version
-
-	//end checking
-	temp.clear();
-	temp1.clear();
-
-	for(int i=0;i<num_material; ++i)
+	materials.reallocate(num_material);
+	for(int i=0; i<num_material; ++i)
 	{
+		materials.push_back(dmfMaterial());
 		temp=SubdivideString(RawFile[offs+i],";");
 		materials[i].materialID = i;
+		materials[i].textureLayers = atoi(temp[3].c_str());
 		temp1=SubdivideString(temp[5],",");
 
 		materials[i].textureFlag = atoi(temp1[0].c_str());
-		if(!use_material_dirs)
+		if(!use_material_dirs && !materials[i].textureFlag)
 		{
 			temp2=SubdivideString(temp1[1],"\\");
 
-			sprintf(materials[i].textureName, "%s", temp2[temp2.size()-1].c_str());
+			materials[i].textureName=temp2.getLast();
 		}
 		else
-			sprintf(materials[i].textureName, "%s", temp1[1].c_str());
+			materials[i].textureName=temp1[1];
 		materials[i].textureBlend = atoi(temp1[2].c_str());
 		temp1.clear();
 		temp2.clear();
@@ -396,15 +375,15 @@ bool GetDMFMaterials(StringList RawFile /**<StringList representing a DMF file.*
 			if(!use_material_dirs)
 			{
 				temp2=SubdivideString(temp1[1],"\\");
-				sprintf(materials[i].lightmapName,"%s",temp2[temp2.size() - 1].c_str());
+				materials[i].lightmapName=temp2.getLast();
 			}
 			else
-				sprintf(materials[i].lightmapName,"%s",temp1[1].c_str());
+				materials[i].lightmapName=temp1[1];
 		}
 		else
 		{
 			materials[i].lightmapFlag=1;
-			materials[i].lightmapName[0]=0;
+			materials[i].lightmapName="";
 		}
 		temp1.clear();
 		temp2.clear();
@@ -416,8 +395,8 @@ bool GetDMFMaterials(StringList RawFile /**<StringList representing a DMF file.*
 /**This function extract an array of dmfMaterial from a DMF file considering 1st an 2nd layer for water plains.
 You must give in input a StringList representing a DMF file loaded with LoadFromFile.
 \return true if function succeed or false on fail.*/
-bool GetDMFWaterMaterials(StringList RawFile /**<StringList representing a DMF file.*/,
-		dmfMaterial materials[]/**<Materials returned.*/,
+bool GetDMFWaterMaterials(const StringList& RawFile /**<StringList representing a DMF file.*/,
+		core::array<dmfMaterial>& materials/**<Materials returned.*/,
 		int num_material/**<Number of materials contained in DMF file.*/
 		)
 {
@@ -451,7 +430,7 @@ bool GetDMFWaterMaterials(StringList RawFile /**<StringList representing a DMF f
 		materials[i].textureFlag=atoi(temp1[0].c_str());
 		temp2 = SubdivideString(temp1[1],"\\");
 
-		sprintf(materials[i].textureName,"%s",temp2[temp2.size()-1].c_str());
+		materials[i].textureName=temp2.getLast();
 		temp1.clear();
 		temp2.clear();
 		int a=temp.size();
@@ -460,12 +439,12 @@ bool GetDMFWaterMaterials(StringList RawFile /**<StringList representing a DMF f
 			temp1=SubdivideString(temp[6],",");
 			materials[i].lightmapFlag=atoi(temp1[0].c_str());
 			temp2=SubdivideString(temp1[1],"\\");
-			sprintf(materials[i].lightmapName,"%s",temp2[temp2.size() - 1].c_str());
+			materials[i].lightmapName=temp2.getLast();
 		}
 		else
 		{
 			materials[i].lightmapFlag=1;
-			sprintf(materials[i].lightmapName,"FFFFFFFF");
+			materials[i].lightmapName="FFFFFFFF";
 		}
 		temp1.clear();
 		temp2.clear();
@@ -473,83 +452,73 @@ bool GetDMFWaterMaterials(StringList RawFile /**<StringList representing a DMF f
 	return true;
 }
 
+
 /**This function extract an array of dmfVert and dmfFace from a DMF file.
 You must give in input a StringList representing a DMF file loaded with LoadFromFile and two arrays long enough.
 Please use GetDMFHeader() before this function to know number of vertices and faces.
 \return true if function succeed or false on fail.*/
-bool GetDMFVerticesFaces(StringList RawFile/**<StringList representing a DMF file.*/,
+bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a DMF file.*/,
 		dmfVert vertices[]/**<Vertices returned*/,
 		dmfFace faces[]/**Faces returned*/
 		)
 {
-	int offs=3;
-	int offs1=0;
 	StringList temp,temp1;
 
-	//Checking if this is a DeleD map File of version >= 0.91
-	temp=SubdivideString(RawFile[0],String(";"));//file info
+	// skip materials
+	s32 offs = 4 + atoi(RawFile[3].c_str());
 
-	if ( temp[0] != String("DeleD Map File") )
-		return false;//not a deled file
+	const s32 objs = atoi(RawFile[offs].c_str());
+#ifdef _IRR_DMF_DEBUG_
+	os::Printer::log("Reading objects", core::stringc(objs).c_str());
+#endif
 
-	temp.clear();
-	temp=SubdivideString(RawFile[1],String(" "));//get version
-	temp1=SubdivideString(temp[1],String(";"));
-
-	if (atof(temp1[0].c_str()) < 0.91)
-		return false;//not correct version
-
-	//end checking
-	temp.clear();
-	temp1.clear();
-	offs=offs + atoi(RawFile[offs].c_str());
+	s32 vert=0, tmp_sz=0, vert_cnt=0, face_cnt=0;
 	offs++;
 
-	s32 objs = atoi(RawFile[offs].c_str());
-	s32 fac=0, vert=0, tmp_sz=0, vert_cnt=0, face_cnt=0;
-	offs++;
-
-	for (int i=0; i<objs; i++)
+	for (int i=0; i<objs; ++i)
 	{
 		StringList wat=SubdivideString(RawFile[offs],";");
 		StringList wat1=SubdivideString(wat[0],"_");
+#ifdef _IRR_DMF_DEBUG_
+	os::Printer::log("Reading object", wat[0].c_str());
+#endif
 
 		offs++;
-		offs1=offs;
-		offs=offs + atoi(RawFile[offs].c_str());
+		const s32 vrtxPos=offs+1;
+		// skip vertices
+		offs += atoi(RawFile[offs].c_str());
 		offs++;
-		offs1++;
-		fac=atoi(RawFile[offs].c_str());
+		const s32 numFaces=atoi(RawFile[offs].c_str());
 		offs++;
 		if(!(wat1[0]==String("water") && wat[2]==String("0")))
 		{
-			for(int j=0;j<fac;j++)
+			for(s32 j=0; j<numFaces; ++j)
 			{
 				temp=SubdivideString(RawFile[offs+j],";");
 
 				//first value is vertices number for this face
-				faces[face_cnt].numVerts=atoi(temp[0].c_str());
-				vert=faces[face_cnt].numVerts;
+				vert=atoi(temp[0].c_str());
+				faces[face_cnt].numVerts=vert;
 				//second is material ID
 				faces[face_cnt].materialID=atoi(temp[1].c_str());
 				//vertices are ordined
 				faces[face_cnt].firstVert=vert_cnt;
 
 				//now we'll create vertices structure
-				for(int k=0;k<vert;k++)
+				for(s32 k=0; k<vert; ++k)
 				{
 					//get vertex position
-					temp1=SubdivideString(RawFile[offs1+atoi(temp[2+k].c_str())],";");
+					temp1=SubdivideString(RawFile[vrtxPos+atoi(temp[2+k].c_str())],";");
 					//copy x,y,z values
-					vertices[vert_cnt].pos[0] = (float)atof(temp1[0].c_str());
-					vertices[vert_cnt].pos[1] = (float)atof(temp1[1].c_str());
-					vertices[vert_cnt].pos[2] = (float)-atof(temp1[2].c_str());
+					vertices[vert_cnt].pos.set((float)atof(temp1[0].c_str()),
+							(float)atof(temp1[1].c_str()),
+							(float)-atof(temp1[2].c_str()));
 					//get uv coords for tex and light if any
-					vertices[vert_cnt].tc[0] = (float)atof(temp[2+vert+(2*k)].c_str());
-					vertices[vert_cnt].tc[1] = (float)atof(temp[2+vert+(2*k)+1].c_str());
+					vertices[vert_cnt].tc.set((float)atof(temp[2+vert+(2*k)].c_str()),
+							(float)atof(temp[2+vert+(2*k)+1].c_str()));
 					tmp_sz=temp.size();
-					vertices[vert_cnt].lc[0] = (float)atof(temp[tmp_sz-(2*vert)+(2*k)].c_str());
-					vertices[vert_cnt].lc[1] = (float)atof(temp[tmp_sz-(2*vert)+(2*k)+1].c_str());
+					vertices[vert_cnt].lc.set((float)atof(temp[tmp_sz-(2*vert)+(2*k)].c_str()),
+							(float)atof(temp[tmp_sz-(2*vert)+(2*k)+1].c_str()));
 					vert_cnt++;
 					temp1.clear();
 				}
@@ -559,7 +528,7 @@ bool GetDMFVerticesFaces(StringList RawFile/**<StringList representing a DMF fil
 			}
 		}
 
-		offs=offs+fac;
+		offs=offs+numFaces;
 	}
 
 	return true;
@@ -570,7 +539,7 @@ You must give in input a StringList representing a DMF file loaded with
 LoadFromFile and one array long enough.  Please use GetDMFHeader() before this
 function to know number of dynamic lights.
 \return true if function succeed or false on fail.*/
-bool GetDMFLights(StringList RawFile/**<StringList representing a DMF file.*/,
+bool GetDMFLights(const StringList& RawFile/**<StringList representing a DMF file.*/,
 		dmfLight lights[]/**<Lights returned.*/
 		)
 {
@@ -649,11 +618,11 @@ bool GetDMFLights(StringList RawFile/**<StringList representing a DMF file.*/,
 	return true;
 }
 
-/**This function extract an array of dmfWaterPlain,dmfVert and dmfFace from a DMF file.
+/**This function extracts an array of dmfWaterPlain,dmfVert and dmfFace from a DMF file.
 You must give in input a StringList representing a DMF file loaded with LoadFromFile and three arrays long enough.
 Please use GetDMFHeader() before this function to know number of water plains and water faces as well as water vertices.
 \return true if function succeed or false on fail.*/
-bool GetDMFWaterPlains(StringList RawFile/**<StringList representing a DMF file.*/,
+bool GetDMFWaterPlains(const StringList& RawFile/**<StringList representing a DMF file.*/,
 		dmfWaterPlain wat_planes[]/**<Water planes returned.*/,
 		dmfVert vertices[]/**<Vertices returned*/,
 		dmfFace faces[]/**Faces returned*/
@@ -762,21 +731,21 @@ bool GetDMFWaterPlains(StringList RawFile/**<StringList representing a DMF file.
 					temp1=SubdivideString(RawFile[offs1+atoi(temp[2+k].c_str())], ";");
 
 					//copy x,y,z values
-					vertices[vert_cnt].pos[0]=(float)atof(temp1[0].c_str());
-					vertices[vert_cnt].pos[1]=(float)atof(temp1[1].c_str());
-					vertices[vert_cnt].pos[2]=(float)-atof(temp1[2].c_str());
+					vertices[vert_cnt].pos.set((float)atof(temp1[0].c_str()),
+							(float)atof(temp1[1].c_str()),
+							(float)-atof(temp1[2].c_str()));
 
 					//get uv coords for tex and light if any
-					vertices[vert_cnt].tc[0]=(float)atof(temp[2+vert+(2*k)].c_str());
-					vertices[vert_cnt].tc[1]=(float)atof(temp[2+vert+(2*k)+1].c_str());
+					vertices[vert_cnt].tc.set((float)atof(temp[2+vert+(2*k)].c_str()),
+							(float)atof(temp[2+vert+(2*k)+1].c_str()));
 					tmp_sz=temp.size();
 
-					vertices[vert_cnt].lc[0]=(float)atof(temp[tmp_sz-(2*vert)+(2*k)].c_str());
-					vertices[vert_cnt].lc[1]=(float)atof(temp[tmp_sz-(2*vert)+(2*k)+1].c_str());
-					vert_cnt++;
+					vertices[vert_cnt].lc.set((float)atof(temp[tmp_sz-(2*vert)+(2*k)].c_str()),
+							(float)atof(temp[tmp_sz-(2*vert)+(2*k)+1].c_str()));
+					++vert_cnt;
 					temp1.clear();
 				}
-				face_cnt++;
+				++face_cnt;
 				temp.clear();
 			}
 		}
