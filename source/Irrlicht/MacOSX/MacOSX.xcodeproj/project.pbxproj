@@ -36,6 +36,20 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		09022C560EA0E97F00CD54EE /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E1650A484C2C0014E966 /* MainMenu.nib */; };
+		09022C570EA0E97F00CD54EE /* DemoApp-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */; };
+		09022C5B0EA0E97F00CD54EE /* libIrrlicht.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E24D0A4850120014E966 /* libIrrlicht.a */; };
+		09022C5C0EA0E97F00CD54EE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26D0A4850D60014E966 /* Cocoa.framework */; };
+		09022C5D0EA0E97F00CD54EE /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C53E26E0A4850D60014E966 /* OpenGL.framework */; };
+		09022C5E0EA0E97F00CD54EE /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0925113D0D744ADE006784D9 /* Carbon.framework */; };
+		09022C7E0EA0EA9D00CD54EE /* CGUIAttributeEditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C690EA0EA9D00CD54EE /* CGUIAttributeEditor.cpp */; };
+		09022C7F0EA0EA9D00CD54EE /* CGUIEditFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C6E0EA0EA9D00CD54EE /* CGUIEditFactory.cpp */; };
+		09022C800EA0EA9D00CD54EE /* CGUIEditWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C700EA0EA9D00CD54EE /* CGUIEditWindow.cpp */; };
+		09022C810EA0EA9D00CD54EE /* CGUIEditWorkspace.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C720EA0EA9D00CD54EE /* CGUIEditWorkspace.cpp */; };
+		09022C820EA0EA9D00CD54EE /* CGUIPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C750EA0EA9D00CD54EE /* CGUIPanel.cpp */; };
+		09022C830EA0EA9D00CD54EE /* CGUITextureCacheBrowser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C790EA0EA9D00CD54EE /* CGUITextureCacheBrowser.cpp */; };
+		09022C840EA0EA9D00CD54EE /* CMemoryReadWriteFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C7B0EA0EA9D00CD54EE /* CMemoryReadWriteFile.cpp */; };
+		09022C850EA0EA9D00CD54EE /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09022C7D0EA0EA9D00CD54EE /* main.cpp */; };
 		090FBC820D31085E0076D847 /* CVolumeLightSceneNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 090FBC800D31085E0076D847 /* CVolumeLightSceneNode.cpp */; };
 		090FBC830D31085E0076D847 /* CVolumeLightSceneNode.h in Headers */ = {isa = PBXBuildFile; fileRef = 090FBC810D31085E0076D847 /* CVolumeLightSceneNode.h */; };
 		0910B9DE0D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0910B9D90D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp */; };
@@ -516,6 +530,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		09022C540EA0E97F00CD54EE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = MacOSX;
+		};
 		09F648F60D2CDED9001E0599 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
@@ -743,6 +764,31 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		09022C620EA0E97F00CD54EE /* GUIEditor_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GUIEditor_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		09022C640EA0E98000CD54EE /* DemoApp-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "DemoApp-Info copy.plist"; sourceTree = "<group>"; };
+		09022C680EA0EA9D00CD54EE /* CGUIAttribute.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIAttribute.h; path = ../../../tools/GUIEditor/CGUIAttribute.h; sourceTree = SOURCE_ROOT; };
+		09022C690EA0EA9D00CD54EE /* CGUIAttributeEditor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CGUIAttributeEditor.cpp; path = ../../../tools/GUIEditor/CGUIAttributeEditor.cpp; sourceTree = SOURCE_ROOT; };
+		09022C6A0EA0EA9D00CD54EE /* CGUIAttributeEditor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIAttributeEditor.h; path = ../../../tools/GUIEditor/CGUIAttributeEditor.h; sourceTree = SOURCE_ROOT; };
+		09022C6B0EA0EA9D00CD54EE /* CGUIBoolAttribute.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIBoolAttribute.h; path = ../../../tools/GUIEditor/CGUIBoolAttribute.h; sourceTree = SOURCE_ROOT; };
+		09022C6C0EA0EA9D00CD54EE /* CGUIColorAttribute.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIColorAttribute.h; path = ../../../tools/GUIEditor/CGUIColorAttribute.h; sourceTree = SOURCE_ROOT; };
+		09022C6D0EA0EA9D00CD54EE /* CGUIDummyEditorStub.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIDummyEditorStub.h; path = ../../../tools/GUIEditor/CGUIDummyEditorStub.h; sourceTree = SOURCE_ROOT; };
+		09022C6E0EA0EA9D00CD54EE /* CGUIEditFactory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CGUIEditFactory.cpp; path = ../../../tools/GUIEditor/CGUIEditFactory.cpp; sourceTree = SOURCE_ROOT; };
+		09022C6F0EA0EA9D00CD54EE /* CGUIEditFactory.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIEditFactory.h; path = ../../../tools/GUIEditor/CGUIEditFactory.h; sourceTree = SOURCE_ROOT; };
+		09022C700EA0EA9D00CD54EE /* CGUIEditWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CGUIEditWindow.cpp; path = ../../../tools/GUIEditor/CGUIEditWindow.cpp; sourceTree = SOURCE_ROOT; };
+		09022C710EA0EA9D00CD54EE /* CGUIEditWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIEditWindow.h; path = ../../../tools/GUIEditor/CGUIEditWindow.h; sourceTree = SOURCE_ROOT; };
+		09022C720EA0EA9D00CD54EE /* CGUIEditWorkspace.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CGUIEditWorkspace.cpp; path = ../../../tools/GUIEditor/CGUIEditWorkspace.cpp; sourceTree = SOURCE_ROOT; };
+		09022C730EA0EA9D00CD54EE /* CGUIEditWorkspace.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIEditWorkspace.h; path = ../../../tools/GUIEditor/CGUIEditWorkspace.h; sourceTree = SOURCE_ROOT; };
+		09022C740EA0EA9D00CD54EE /* CGUIEnumAttribute.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIEnumAttribute.h; path = ../../../tools/GUIEditor/CGUIEnumAttribute.h; sourceTree = SOURCE_ROOT; };
+		09022C750EA0EA9D00CD54EE /* CGUIPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CGUIPanel.cpp; path = ../../../tools/GUIEditor/CGUIPanel.cpp; sourceTree = SOURCE_ROOT; };
+		09022C760EA0EA9D00CD54EE /* CGUIPanel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIPanel.h; path = ../../../tools/GUIEditor/CGUIPanel.h; sourceTree = SOURCE_ROOT; };
+		09022C770EA0EA9D00CD54EE /* CGUIStringAttribute.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUIStringAttribute.h; path = ../../../tools/GUIEditor/CGUIStringAttribute.h; sourceTree = SOURCE_ROOT; };
+		09022C780EA0EA9D00CD54EE /* CGUITextureAttribute.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUITextureAttribute.h; path = ../../../tools/GUIEditor/CGUITextureAttribute.h; sourceTree = SOURCE_ROOT; };
+		09022C790EA0EA9D00CD54EE /* CGUITextureCacheBrowser.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CGUITextureCacheBrowser.cpp; path = ../../../tools/GUIEditor/CGUITextureCacheBrowser.cpp; sourceTree = SOURCE_ROOT; };
+		09022C7A0EA0EA9D00CD54EE /* CGUITextureCacheBrowser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CGUITextureCacheBrowser.h; path = ../../../tools/GUIEditor/CGUITextureCacheBrowser.h; sourceTree = SOURCE_ROOT; };
+		09022C7B0EA0EA9D00CD54EE /* CMemoryReadWriteFile.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CMemoryReadWriteFile.cpp; path = ../../../tools/GUIEditor/CMemoryReadWriteFile.cpp; sourceTree = SOURCE_ROOT; };
+		09022C7C0EA0EA9D00CD54EE /* CMemoryReadWriteFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CMemoryReadWriteFile.h; path = ../../../tools/GUIEditor/CMemoryReadWriteFile.h; sourceTree = SOURCE_ROOT; };
+		09022C7D0EA0EA9D00CD54EE /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../tools/GUIEditor/main.cpp; sourceTree = SOURCE_ROOT; };
+		09022CA10EA0EB9D00CD54EE /* DemoApp-Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "DemoApp-Info copy.plist"; sourceTree = "<group>"; };
 		090FBC800D31085E0076D847 /* CVolumeLightSceneNode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CVolumeLightSceneNode.cpp; sourceTree = "<group>"; };
 		090FBC810D31085E0076D847 /* CVolumeLightSceneNode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CVolumeLightSceneNode.h; sourceTree = "<group>"; };
 		0910B9D90D1F5D4100D46B04 /* CBurningShader_Raster_Reference.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CBurningShader_Raster_Reference.cpp; sourceTree = "<group>"; };
@@ -1178,7 +1224,7 @@
 		4C53E18D0A484C2C0014E966 /* uncompr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = uncompr.c; sourceTree = "<group>"; };
 		4C53E1920A484C2C0014E966 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = zutil.c; sourceTree = "<group>"; };
 		4C53E24D0A4850120014E966 /* libIrrlicht.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libIrrlicht.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C53E2520A4850550014E966 /* Quake3Map_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quake3Map_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C53E2520A4850550014E966 /* Quake3Map_dbg.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Quake3Map_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C53E26D0A4850D60014E966 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		4C53E26E0A4850D60014E966 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "DemoApp-Info.plist"; sourceTree = "<group>"; };
@@ -1419,6 +1465,17 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		09022C5A0EA0E97F00CD54EE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09022C5B0EA0E97F00CD54EE /* libIrrlicht.a in Frameworks */,
+				09022C5C0EA0E97F00CD54EE /* Cocoa.framework in Frameworks */,
+				09022C5D0EA0E97F00CD54EE /* OpenGL.framework in Frameworks */,
+				09022C5E0EA0E97F00CD54EE /* Carbon.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09F648FC0D2CDED9001E0599 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1608,6 +1665,7 @@
 		0867D691FE84028FC02AAC07 /* MacOSX */ = {
 			isa = PBXGroup;
 			children = (
+				09022C660EA0EA6500CD54EE /* Tools */,
 				4CFA7C090A88742800B03626 /* include */,
 				4C53DEE50A484C220014E966 /* Irrlicht */,
 				4C00546D0A48470500C844C2 /* examples */,
@@ -1615,6 +1673,59 @@
 				4C53E24C0A484FED0014E966 /* Products */,
 			);
 			name = MacOSX;
+			sourceTree = "<group>";
+		};
+		09022C660EA0EA6500CD54EE /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				09022C670EA0EA7100CD54EE /* GUIEditor */,
+			);
+			name = Tools;
+			sourceTree = "<group>";
+		};
+		09022C670EA0EA7100CD54EE /* GUIEditor */ = {
+			isa = PBXGroup;
+			children = (
+				09022CA40EA0EC1900CD54EE /* source */,
+				09022CA30EA0EC0E00CD54EE /* include */,
+			);
+			name = GUIEditor;
+			sourceTree = "<group>";
+		};
+		09022CA30EA0EC0E00CD54EE /* include */ = {
+			isa = PBXGroup;
+			children = (
+				09022C680EA0EA9D00CD54EE /* CGUIAttribute.h */,
+				09022C6A0EA0EA9D00CD54EE /* CGUIAttributeEditor.h */,
+				09022C6B0EA0EA9D00CD54EE /* CGUIBoolAttribute.h */,
+				09022C6C0EA0EA9D00CD54EE /* CGUIColorAttribute.h */,
+				09022C6D0EA0EA9D00CD54EE /* CGUIDummyEditorStub.h */,
+				09022C6F0EA0EA9D00CD54EE /* CGUIEditFactory.h */,
+				09022C710EA0EA9D00CD54EE /* CGUIEditWindow.h */,
+				09022C730EA0EA9D00CD54EE /* CGUIEditWorkspace.h */,
+				09022C740EA0EA9D00CD54EE /* CGUIEnumAttribute.h */,
+				09022C760EA0EA9D00CD54EE /* CGUIPanel.h */,
+				09022C770EA0EA9D00CD54EE /* CGUIStringAttribute.h */,
+				09022C780EA0EA9D00CD54EE /* CGUITextureAttribute.h */,
+				09022C7A0EA0EA9D00CD54EE /* CGUITextureCacheBrowser.h */,
+				09022C7C0EA0EA9D00CD54EE /* CMemoryReadWriteFile.h */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		09022CA40EA0EC1900CD54EE /* source */ = {
+			isa = PBXGroup;
+			children = (
+				09022C690EA0EA9D00CD54EE /* CGUIAttributeEditor.cpp */,
+				09022C6E0EA0EA9D00CD54EE /* CGUIEditFactory.cpp */,
+				09022C700EA0EA9D00CD54EE /* CGUIEditWindow.cpp */,
+				09022C720EA0EA9D00CD54EE /* CGUIEditWorkspace.cpp */,
+				09022C750EA0EA9D00CD54EE /* CGUIPanel.cpp */,
+				09022C790EA0EA9D00CD54EE /* CGUITextureCacheBrowser.cpp */,
+				09022C7B0EA0EA9D00CD54EE /* CMemoryReadWriteFile.cpp */,
+				09022C7D0EA0EA9D00CD54EE /* main.cpp */,
+			);
+			name = source;
 			sourceTree = "<group>";
 		};
 		0910BA4D0D1F64D000D46B04 /* gui */ = {
@@ -2570,6 +2681,8 @@
 				4C53E1650A484C2C0014E966 /* MainMenu.nib */,
 				4C53E1660A484C2C0014E966 /* OSXClipboard.h */,
 				4C53E1670A484C2C0014E966 /* OSXClipboard.mm */,
+				09022C640EA0E98000CD54EE /* DemoApp-Info copy.plist */,
+				09022CA10EA0EB9D00CD54EE /* DemoApp-Info copy.plist */,
 			);
 			path = MacOSX;
 			sourceTree = "<group>";
@@ -2626,6 +2739,7 @@
 		4C53E24C0A484FED0014E966 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				09022C620EA0E97F00CD54EE /* GUIEditor_dbg.app */,
 				4C53E24D0A4850120014E966 /* libIrrlicht.a */,
 				4C53E2520A4850550014E966 /* Quake3Map_dbg.app */,
 				4CA25B980A485D9800B4E469 /* CustomSceneNode_dbg.app */,
@@ -2803,6 +2917,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		09022C520EA0E97F00CD54EE /* GUIEditor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09022C5F0EA0E97F00CD54EE /* Build configuration list for PBXNativeTarget "GUIEditor" */;
+			buildPhases = (
+				09022C550EA0E97F00CD54EE /* Resources */,
+				09022C580EA0E97F00CD54EE /* Sources */,
+				09022C5A0EA0E97F00CD54EE /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09022C530EA0E97F00CD54EE /* PBXTargetDependency */,
+			);
+			name = GUIEditor;
+			productName = DemoApp;
+			productReference = 09022C620EA0E97F00CD54EE /* GUIEditor_dbg.app */;
+			productType = "com.apple.product-type.application";
+		};
 		09F648F40D2CDED9001E0599 /* HelloWorld */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "HelloWorld" */;
@@ -3137,11 +3269,21 @@
 				09F648F40D2CDED9001E0599 /* HelloWorld */,
 				09F6492F0D2CE03E001E0599 /* LoadIrrFile */,
 				09F649560D2CE206001E0599 /* Quake3Shader */,
+				09022C520EA0E97F00CD54EE /* GUIEditor */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		09022C550EA0E97F00CD54EE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09022C560EA0E97F00CD54EE /* MainMenu.nib in Resources */,
+				09022C570EA0E97F00CD54EE /* DemoApp-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09F648F70D2CDED9001E0599 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3289,6 +3431,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		09022C580EA0E97F00CD54EE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09022C7E0EA0EA9D00CD54EE /* CGUIAttributeEditor.cpp in Sources */,
+				09022C7F0EA0EA9D00CD54EE /* CGUIEditFactory.cpp in Sources */,
+				09022C800EA0EA9D00CD54EE /* CGUIEditWindow.cpp in Sources */,
+				09022C810EA0EA9D00CD54EE /* CGUIEditWorkspace.cpp in Sources */,
+				09022C820EA0EA9D00CD54EE /* CGUIPanel.cpp in Sources */,
+				09022C830EA0EA9D00CD54EE /* CGUITextureCacheBrowser.cpp in Sources */,
+				09022C840EA0EA9D00CD54EE /* CMemoryReadWriteFile.cpp in Sources */,
+				09022C850EA0EA9D00CD54EE /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09F648FA0D2CDED9001E0599 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3715,6 +3872,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		09022C530EA0E97F00CD54EE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2AAC07D0554694100DB518D /* libIrrlicht.a */;
+			targetProxy = 09022C540EA0E97F00CD54EE /* PBXContainerItemProxy */;
+		};
 		09F648F50D2CDED9001E0599 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D2AAC07D0554694100DB518D /* libIrrlicht.a */;
@@ -3878,6 +4040,75 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		09022C600EA0E97F00CD54EE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = GUIEditor_dbg;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = YES;
+			};
+			name = Debug;
+		};
+		09022C610EA0E97F00CD54EE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = ../../../bin/MacOSX;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				INFOPLIST_FILE = "DemoApp-Info.plist";
+				INSTALL_PATH = /;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Debug\"";
+				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = GUIEditor;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		09F649010D2CDED9001E0599 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -4974,6 +5205,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		09022C5F0EA0E97F00CD54EE /* Build configuration list for PBXNativeTarget "GUIEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09022C600EA0E97F00CD54EE /* Debug */,
+				09022C610EA0E97F00CD54EE /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "HelloWorld" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
