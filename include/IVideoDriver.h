@@ -65,6 +65,17 @@ namespace video
 		ETS_COUNT
 	};
 
+	enum E_LOST_RESSOURCE
+	{
+		//! The whole device/driver is lost
+		ELR_DEVICE = 1,
+		//! All texture are lost, rare problem
+		ELR_TEXTURES = 2,
+		//! The Render Target Textures are lost, typical problem for D3D
+		ELR_RTTS = 4,
+		//! The HW buffers are lost, will be recreated automatically, but might require some more time this frame
+		ELR_HW_BUFFERS = 8
+	};
 
 	//! Interface to driver which is able to perform 2d and 3d graphics functions.
 	/** This interface is one of the most important interfaces of
@@ -121,6 +132,12 @@ namespace video
 		\param feature Feature to disable.
 		\param flag When true the feature is disabled, otherwise it is enabled. */
 		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true) =0;
+
+		//! Check if the driver was recently reset.
+		/** For d3d devices you will need to recreate the RTTs if the
+		driver was reset. Should be queried right after beginScene().
+		*/
+		virtual bool checkDriverReset() =0;
 
 		//! Sets transformation matrices.
 		/** \param state Transformation type to be set, e.g. view,
