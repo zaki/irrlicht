@@ -502,7 +502,7 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return "Not available on this driver.";};
+		virtual core::stringc getVendorInfo() {return "Not available on this driver.";}
 
 		//! Only used by the engine internally.
 		virtual void setAllowZWriteOnTransparent(bool flag)
@@ -512,6 +512,7 @@ namespace video
 		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size,
 				const c8* name=0);
 
+		virtual bool checkDriverReset() {return false;}
 	protected:
 
 		//! deletes all textures

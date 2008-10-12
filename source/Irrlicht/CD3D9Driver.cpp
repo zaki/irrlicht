@@ -33,7 +33,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<s32>& screenSize, HWND window,
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false),
-	Fullscreen(fullscreen)
+	Fullscreen(fullscreen), DriverWasReset(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Driver");
@@ -510,6 +510,7 @@ bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 bool CD3D9Driver::endScene()
 {
 	CNullDriver::endScene();
+	DriverWasReset=false;
 
 	HRESULT hr = pID3DDevice->EndScene();
 	if (FAILED(hr))
@@ -2267,6 +2268,7 @@ bool CD3D9Driver::reset()
 				tex->Release();
 		}
 	}
+	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 

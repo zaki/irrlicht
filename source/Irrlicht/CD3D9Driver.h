@@ -223,8 +223,10 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;};
+		virtual core::stringc getVendorInfo() {return vendorName;}
 
+		//! Check if the driver was recently reset.
+		virtual bool checkDriverReset() {return DriverWasReset;}
 	private:
 
 		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -330,6 +332,7 @@ namespace video
 		s32 LastSetLight;
 		bool DeviceLost;
 		bool Fullscreen;
+		bool DriverWasReset;
 
 		SColorf AmbientLight;
 

@@ -33,7 +33,8 @@ CD3D8Driver::CD3D8Driver(const core::dimension2d<s32>& screenSize, HWND window,
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
-	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false)
+	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false),
+	DriverWasReset(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D8Driver");
@@ -441,6 +442,7 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 bool CD3D8Driver::endScene()
 {
 	CNullDriver::endScene();
+	DriverWasReset=false;
 
 	HRESULT hr = pID3DDevice->EndScene();
 	if (FAILED(hr))
@@ -491,6 +493,7 @@ bool CD3D8Driver::reset()
 				tex->Release();
 		}
 	}
+	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 

@@ -202,6 +202,7 @@ namespace video
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
+		virtual bool checkDriverReset() {return DriverWasReset;}
 	private:
 
 		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -293,6 +294,7 @@ namespace video
 		f32 MaxLightDistance;
 		s32 LastSetLight;
 		bool DeviceLost;
+		bool DriverWasReset;
 
 		SColorf AmbientLight;
 	};
