@@ -30,8 +30,8 @@ This structure contains data about DeleD level file like: version, ambient colou
 struct dmfHeader
 {
 	//main file header
-	f32 dmfVersion;     //!<File version
 	core::stringc dmfName; //!<Scene name
+	f32 dmfVersion;     //!<File version
 	SColor dmfAmbient; //!<Ambient color
 	f32 dmfShadow;     //!<Shadow intensity
 	u32 numObjects;    //!<Number of objects in this scene
@@ -62,7 +62,7 @@ struct dmfMaterial
 This structure contains first vertice index, number of vertices and the material used.*/
 struct dmfFace
 {
-	u32 firstVert;//!<First vertice index.
+	u32 firstVert;//!<First vertex index.
 	u32 numVerts;//!<Number of vertices for this face.
 	u32 materialID;//!<Material used for this face.
 };
@@ -72,9 +72,9 @@ struct dmfFace
 This structure contains vertice position coordinates and texture an lightmap UV.*/
 struct dmfVert
 {
-	core::vector3df pos;//!<Position of vertice x,y,z
-	core::vector2df tc;//!<Texture UV coords.
-	core::vector2df lc;//!<Lightmap UV coords.
+	core::vector3df pos;//!<Position of vertex
+	core::vector2df tc;//!<Texture UV coords
+	core::vector2df lc;//!<Lightmap UV coords
 };
 
 
@@ -82,7 +82,7 @@ struct dmfVert
 This structure contains light position coordinates, diffuse colour, specular colour and maximum radius of light.*/
 struct dmfLight
 {
-	f32 pos[3];//!<Position of this light.
+	core::vector3df pos;//!<Position of this light.
 	SColorf diffuseColor;//!<Diffuse color.
 	SColorf specularColor;//!<Specular color.
 	f32 radius;//!<Maximum radius of light.
@@ -90,7 +90,7 @@ struct dmfLight
 
 /** A structure rapresenting a single water plane.
 This structure contains light position coordinates, diffuse colour, specular colour and maximum radius of light.*/
-struct dmfWaterPlain
+struct dmfWaterPlane
 {
 	u32 waterID;//!<ID of specified water plane.
 	u32 numFaces;//!<number of faces that make this plain.Owing to the fact that this is a rectangle you'll have 1 every time.
@@ -356,14 +356,8 @@ bool GetDMFMaterials(const StringList& RawFile,
 		temp1=SubdivideString(temp[5],",");
 
 		materials[i].textureFlag = atoi(temp1[0].c_str());
-		if(!use_material_dirs && !materials[i].textureFlag)
-		{
-			temp2=SubdivideString(temp1[1],"\\");
-
-			materials[i].textureName=temp2.getLast();
-		}
-		else
-			materials[i].textureName=temp1[1];
+		materials[i].textureName=temp1[1];
+		materials[i].textureName.replace('\\','/');
 		materials[i].textureBlend = atoi(temp1[2].c_str());
 		temp1.clear();
 		temp2.clear();
@@ -534,6 +528,7 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 	return true;
 }
 
+
 /**This function extract an array of dmfLights from a DMF file.
 You must give in input a StringList representing a DMF file loaded with
 LoadFromFile and one array long enough.  Please use GetDMFHeader() before this
@@ -596,9 +591,9 @@ bool GetDMFLights(const StringList& RawFile/**<StringList representing a DMF fil
 			if(temp1[0]==String("dynamic"))
 			{
 				lights[d_lit].radius = (float)atof(temp[4].c_str());
-				lights[d_lit].pos[0] = (float)atof(temp[5].c_str());
-				lights[d_lit].pos[1] = (float)atof(temp[6].c_str());
-				lights[d_lit].pos[2] = (float)-atof(temp[7].c_str());
+				lights[d_lit].pos.set((float)atof(temp[5].c_str()),
+						(float)atof(temp[6].c_str()),
+						(float)-atof(temp[7].c_str()));
 
 				lights[d_lit].diffuseColor = SColorf(
 						SColor(255, atoi(temp[10].c_str()), atoi(temp[11].c_str()),
@@ -618,12 +613,13 @@ bool GetDMFLights(const StringList& RawFile/**<StringList representing a DMF fil
 	return true;
 }
 
-/**This function extracts an array of dmfWaterPlain,dmfVert and dmfFace from a DMF file.
+
+/**This function extracts an array of dmfWaterPlane,dmfVert and dmfFace from a DMF file.
 You must give in input a StringList representing a DMF file loaded with LoadFromFile and three arrays long enough.
 Please use GetDMFHeader() before this function to know number of water plains and water faces as well as water vertices.
 \return true if function succeed or false on fail.*/
-bool GetDMFWaterPlains(const StringList& RawFile/**<StringList representing a DMF file.*/,
-		dmfWaterPlain wat_planes[]/**<Water planes returned.*/,
+bool GetDMFWaterPlanes(const StringList& RawFile/**<StringList representing a DMF file.*/,
+		dmfWaterPlane wat_planes[]/**<Water planes returned.*/,
 		dmfVert vertices[]/**<Vertices returned*/,
 		dmfFace faces[]/**Faces returned*/
 		)
