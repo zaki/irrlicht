@@ -81,6 +81,13 @@ void CSceneNodeAnimatorFlyStraight::deserializeAttributes(io::IAttributes* in, i
 	recalculateImidiateValues();
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorFlyStraight::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	CSceneNodeAnimatorFlyStraight * newAnimator = 
+		new CSceneNodeAnimatorFlyStraight(Start, End, TimeForWay, Loop, StartTime);
+
+	return newAnimator;
+}
 
 } // end namespace scene
 } // end namespace irr

@@ -170,6 +170,8 @@
 		0968406D0D0F1A2300333EFD /* CSTLMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */; };
 		0968406E0D0F1A2300333EFD /* CSTLMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */; };
 		0968406F0D0F1A2300333EFD /* CSTLMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840460D0F1A2300333EFD /* CSTLMeshWriter.h */; };
+		096F8E3D0EA2EFBA00907EC5 /* COBJMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F8E3B0EA2EFBA00907EC5 /* COBJMeshWriter.cpp */; };
+		096F8E3E0EA2EFBA00907EC5 /* COBJMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096F8E3C0EA2EFBA00907EC5 /* COBJMeshWriter.h */; };
 		09C638720D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09C638700D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp */; };
 		09C638730D4F1A69000B6A18 /* CLWOMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 09C638710D4F1A69000B6A18 /* CLWOMeshFileLoader.h */; };
 		09F460EB0D3223ED00D0A9B0 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F6492E0D2CE038001E0599 /* main.cpp */; };
@@ -894,6 +896,8 @@
 		096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshFileLoader.h; sourceTree = "<group>"; };
 		096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSTLMeshWriter.cpp; sourceTree = "<group>"; };
 		096840460D0F1A2300333EFD /* CSTLMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshWriter.h; sourceTree = "<group>"; };
+		096F8E3B0EA2EFBA00907EC5 /* COBJMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = COBJMeshWriter.cpp; sourceTree = "<group>"; };
+		096F8E3C0EA2EFBA00907EC5 /* COBJMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = COBJMeshWriter.h; sourceTree = "<group>"; };
 		09C638700D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CLWOMeshFileLoader.cpp; sourceTree = "<group>"; };
 		09C638710D4F1A69000B6A18 /* CLWOMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CLWOMeshFileLoader.h; sourceTree = "<group>"; };
 		09F649030D2CDED9001E0599 /* HelloWorld_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HelloWorld_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1224,7 +1228,7 @@
 		4C53E18D0A484C2C0014E966 /* uncompr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = uncompr.c; sourceTree = "<group>"; };
 		4C53E1920A484C2C0014E966 /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = zutil.c; sourceTree = "<group>"; };
 		4C53E24D0A4850120014E966 /* libIrrlicht.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libIrrlicht.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		4C53E2520A4850550014E966 /* Quake3Map_dbg.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Quake3Map_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C53E2520A4850550014E966 /* Quake3Map_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quake3Map_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C53E26D0A4850D60014E966 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		4C53E26E0A4850D60014E966 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "DemoApp-Info.plist"; sourceTree = "<group>"; };
@@ -1292,7 +1296,7 @@
 		4CA25B9A0A485D9800B4E469 /* MeshViewer_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeshViewer_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CA25B9C0A485D9800B4E469 /* RenderToTexture_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RenderToTexture_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CA25B9E0A485D9800B4E469 /* UserInterface_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UserInterface_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		4CA25BA00A485D9800B4E469 /* PerPixelLighting_dbg.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = PerPixelLighting_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CA25BA00A485D9800B4E469 /* PerPixelLighting_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PerPixelLighting_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CA25BA20A485D9800B4E469 /* Demo_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Demo_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CA25BA40A485D9800B4E469 /* Movement_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Movement_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4CA25BA60A485D9800B4E469 /* Shaders_dbg.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Shaders_dbg.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2204,6 +2208,8 @@
 		0910BA8A0D1F70B800D46B04 /* writers */ = {
 			isa = PBXGroup;
 			children = (
+				096F8E3B0EA2EFBA00907EC5 /* COBJMeshWriter.cpp */,
+				096F8E3C0EA2EFBA00907EC5 /* COBJMeshWriter.h */,
 				096840250D0F1A2300333EFD /* CColladaMeshWriter.cpp */,
 				096840260D0F1A2300333EFD /* CColladaMeshWriter.h */,
 				0968402D0D0F1A2300333EFD /* CIrrMeshWriter.cpp */,
@@ -2911,6 +2917,7 @@
 				09C638730D4F1A69000B6A18 /* CLWOMeshFileLoader.h in Headers */,
 				093973C10E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h in Headers */,
 				093973C30E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h in Headers */,
+				096F8E3E0EA2EFBA00907EC5 /* COBJMeshWriter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3866,6 +3873,7 @@
 				09C638720D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp in Sources */,
 				093973C00E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp in Sources */,
 				093973C20E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp in Sources */,
+				096F8E3D0EA2EFBA00907EC5 /* COBJMeshWriter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

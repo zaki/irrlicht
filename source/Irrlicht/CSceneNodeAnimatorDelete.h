@@ -29,6 +29,12 @@ namespace scene
 		{
 			return ESNAT_DELETION;
 		}
+		
+		//! Creates a clone of this animator.
+		/** Please note that you will have to drop
+		(IReferenceCounted::drop()) the returned pointer after calling
+		this. */
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
 	private:
 

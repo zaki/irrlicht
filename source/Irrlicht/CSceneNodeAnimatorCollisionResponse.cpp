@@ -230,7 +230,16 @@ void CSceneNodeAnimatorCollisionResponse::deserializeAttributes(io::IAttributes*
 	AnimateCameraTarget = in->getAttributeAsBool("AnimateCameraTarget");
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	if (!newManager) newManager = SceneManager;
 
+	CSceneNodeAnimatorCollisionResponse * newAnimator = 
+		new CSceneNodeAnimatorCollisionResponse(newManager, World, Object, Radius, (Gravity * 1000.0f), Translation,
+													SlidingSpeed);
+
+	return newAnimator;
+}
 
 } // end namespace scene
 } // end namespace irr

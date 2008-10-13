@@ -43,10 +43,7 @@ namespace scene
 		/** Please note that you will have to drop
 		(IReferenceCounted::drop()) the returned pointer after calling
 		this. */
-		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0)
-		{
-			return 0; // to be implemented by derived classes.
-		}
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) = 0;
 
 		//! Returns true if this animator receives events.
 		//! When attached to the an active camera, this animator will be able to respond to events

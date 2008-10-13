@@ -56,6 +56,13 @@ void CSceneNodeAnimatorRotation::deserializeAttributes(io::IAttributes* in, io::
 	Rotation = in->getAttributeAsVector3d("Rotation");
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorRotation::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	CSceneNodeAnimatorRotation * newAnimator = 
+		new CSceneNodeAnimatorRotation(StartTime, Rotation);
+
+	return newAnimator;
+}
 
 } // end namespace scene
 } // end namespace irr

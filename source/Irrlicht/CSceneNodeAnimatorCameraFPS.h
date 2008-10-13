@@ -71,6 +71,12 @@ namespace scene
 			return ESNAT_CAMERA_FPS;
 		}
 
+		//! Creates a clone of this animator.
+		/** Please note that you will have to drop
+		(IReferenceCounted::drop()) the returned pointer after calling
+		this. */
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
+
 	private:
 
 		struct SCamKeyMap
@@ -102,6 +108,9 @@ namespace scene
 
 		bool firstUpdate;
 		bool NoVerticalMovement;
+		
+		SKeyMap* KeyMapArray;
+		u32 KeyMapSize;
 	};
 
 } // end namespace scene

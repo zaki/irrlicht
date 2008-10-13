@@ -315,6 +315,12 @@ f32 CSceneNodeAnimatorCameraMaya::getZoomSpeed() const
 	return ZoomSpeed;
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorCameraMaya::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	CSceneNodeAnimatorCameraMaya * newAnimator = 
+		new CSceneNodeAnimatorCameraMaya(CursorControl, RotateSpeed, ZoomSpeed, TranslateSpeed);
+	return newAnimator;
+}
 
 } // end namespace
 } // end namespace
