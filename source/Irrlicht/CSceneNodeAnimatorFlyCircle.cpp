@@ -70,6 +70,13 @@ void CSceneNodeAnimatorFlyCircle::deserializeAttributes(io::IAttributes* in, io:
 	init();
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorFlyCircle::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	CSceneNodeAnimatorFlyCircle * newAnimator = 
+		new CSceneNodeAnimatorFlyCircle(StartTime, Center, Radius, Speed, Direction);
+
+	return newAnimator;
+}
 
 } // end namespace scene
 } // end namespace irr
