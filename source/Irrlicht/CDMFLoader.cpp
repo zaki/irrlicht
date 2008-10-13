@@ -191,10 +191,20 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			SMeshBufferLightMap* buffer = (SMeshBufferLightMap*)mesh->getMeshBuffer(i);
 
 			//Primary texture is normal
-			if ((materiali[i].textureFlag==0) || (materiali[i].textureBlend==4))
+			if (materiali[i].textureFlag==0)
 			{
-				driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
-				tex = driver->getTexture((path+materiali[i].textureName).c_str());
+				if (materiali[i].textureBlend==4)
+					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
+				if (FileSystem->existFile(path+materiali[i].textureName))
+					tex = driver->getTexture((path+materiali[i].textureName).c_str());
+				else if (FileSystem->existFile(path+FileSystem->getFileBasename(materiali[i].textureName)))
+					tex = driver->getTexture((path+FileSystem->getFileBasename(materiali[i].textureName)).c_str());
+				else if (FileSystem->existFile(materiali[i].textureName))
+					tex = driver->getTexture(materiali[i].textureName.c_str());
+				else if (FileSystem->existFile(FileSystem->getFileBasename(materiali[i].textureName)))
+					tex = driver->getTexture(FileSystem->getFileBasename(materiali[i].textureName).c_str());
+				else
+					os::Printer::log("Could not load texture", materiali[i].textureName.c_str());
 			}
 			//Primary texture is just a colour
 			else if(materiali[i].textureFlag==1)
@@ -225,7 +235,6 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				lig = driver->getTexture((path+materiali[i].lightmapName).c_str());
 			else //no lightmap
 			{
-				lig = 0;
 				buffer->Material.MaterialType = video::EMT_SOLID;
 				const f32 mult = 100.0f - header.dmfShadow;
 				buffer->Material.AmbientColor=header.dmfAmbient.getInterpolated(SColor(255,0,0,0),mult/100.f);
