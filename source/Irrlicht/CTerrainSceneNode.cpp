@@ -38,7 +38,7 @@ namespace scene
 	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(false),
 	OldCameraPosition(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
 	OldCameraRotation(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
-	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),
+	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),CameraFOVDelta(0.1f),
 	TCoordScale1(1.0f), TCoordScale2(1.0f), FileSystem(fs)
 	{
 		#ifdef _DEBUG
@@ -451,6 +451,8 @@ namespace scene
 		// Determine the camera rotation, based on the camera direction.
 		const core::vector3df cameraPosition = SceneManager->getActiveCamera()->getAbsolutePosition();
 		const core::vector3df cameraRotation = core::line3d<f32>(cameraPosition, SceneManager->getActiveCamera()->getTarget()).getVector().getHorizontalAngle();
+		const f32 CameraFOV = SceneManager->getActiveCamera()->getFOV();
+
 
 		// Only check on the Camera's Y Rotation
 		if (!ForceRecalculation)
@@ -462,13 +464,18 @@ namespace scene
 					(fabs(cameraPosition.Y - OldCameraPosition.Y) < CameraMovementDelta) &&
 					(fabs(cameraPosition.Z - OldCameraPosition.Z) < CameraMovementDelta))
 				{
-					return;
+					if (fabs(CameraFOV-OldCameraFOV) < CameraFOVDelta)
+					{
+						return;
+					}
 				}
 			}
 		}
 
 		OldCameraPosition = cameraPosition;
 		OldCameraRotation = cameraRotation;
+		OldCameraFOV = CameraFOV;
+
 		const SViewFrustum* frustum = SceneManager->getActiveCamera()->getViewFrustum();
 
 		// Determine each patches LOD based on distance from camera ( and whether or not they are in
