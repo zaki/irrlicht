@@ -324,8 +324,10 @@ namespace scene
 
 		core::vector3df	OldCameraPosition;
 		core::vector3df	OldCameraRotation;
+		f32				OldCameraFOV;
 		f32 CameraMovementDelta;
 		f32 CameraRotationDelta;
+		f32 CameraFOVDelta;
 
 		// needed for (de)serialization
 		f32 TCoordScale1;
