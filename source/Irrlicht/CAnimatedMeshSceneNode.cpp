@@ -577,7 +577,10 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(const I
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 {
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
+	{
+		os::Printer::log("No mesh, or mesh not of skinned mesh type", ELL_WARNING);
 		return 0;
+	}
 
 	checkJoints();
 
@@ -605,6 +608,14 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 //! the corresponding joint, if the mesh in this scene node is a skinned mesh.
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
 {
+	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
+	{
+		os::Printer::log("No mesh, or mesh not of skinned mesh type", ELL_WARNING);
+		return 0;
+	}
+
+	checkJoints();
+
 	if (JointChildSceneNodes.size() <= jointID)
 	{
 		os::Printer::log("Joint not loaded into node", ELL_WARNING);
@@ -1026,8 +1037,8 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	if (!newParent) newParent = Parent;
 	if (!newManager) newManager = SceneManager;
 
-	CAnimatedMeshSceneNode * newNode = 
-		new CAnimatedMeshSceneNode(Mesh, newParent, newManager, ID, RelativeTranslation, 
+	CAnimatedMeshSceneNode * newNode =
+		new CAnimatedMeshSceneNode(Mesh, newParent, newManager, ID, RelativeTranslation,
 						 RelativeRotation, RelativeScale);
 
 	newNode->cloneMembers(this, newManager);
