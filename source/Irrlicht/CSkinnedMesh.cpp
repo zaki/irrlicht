@@ -186,7 +186,6 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 				m1[9] *= joint->Animatedscale.Z;
 				m1[10] *= joint->Animatedscale.Z;
 				m1[11] *= joint->Animatedscale.Z;
-				m1[12] *= joint->Animatedscale.X;
 				// -----------------------------------
 
 			}
