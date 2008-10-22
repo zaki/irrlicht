@@ -117,7 +117,7 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 					os::Printer::log("Could not release glx context.", ELL_WARNING);
 			}
 			glXDestroyContext(display, Context);
-			if (UseGLXWindow)
+			if (glxWin)
 				glXDestroyWindow(display, glxWin);
 		}
 		#endif // #ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -138,7 +138,7 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		}
 		#endif
 
-		if (CreationParams.DriverType == video::EDT_SOFTWARE || CreationParams.DriverType == video::EDT_BURNINGSVIDEO)
+		if (SoftwareImage)
 			XDestroyImage(SoftwareImage);
 		XDestroyWindow(display,window);
 		XCloseDisplay(display);
@@ -148,7 +148,6 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 }
-
 
 
 #if defined(_IRR_COMPILE_WITH_X11_) && defined(_DEBUG)
@@ -189,6 +188,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	if (CreationParams.Fullscreen)
 	{
+		getVideoModeList();
 		#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
 		s32 eventbase, errorbase;
 		s32 bestMode = -1;
@@ -204,13 +204,7 @@ bool CIrrDeviceLinux::createWindow()
 
 			XF86VidModeGetAllModeLines(display, screennr, &modeCount, &modes);
 
-			// save current video mode
-			oldVideoMode = *modes[0];
-
 			// find fitting mode
-
-			VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
-				modes[0]->hdisplay, modes[0]->vdisplay));
 			for (s32 i = 0; i<modeCount; ++i)
 			{
 				if (bestMode==-1 && modes[i]->hdisplay >= Width && modes[i]->vdisplay >= Height)
@@ -221,8 +215,6 @@ bool CIrrDeviceLinux::createWindow()
 						modes[i]->hdisplay < modes[bestMode]->hdisplay &&
 						modes[i]->vdisplay < modes[bestMode]->vdisplay)
 					bestMode = i;
-				VideoModeList.addMode(core::dimension2d<s32>(
-					modes[i]->hdisplay, modes[i]->vdisplay), defaultDepth);
 			}
 			if (bestMode != -1)
 			{
@@ -246,10 +238,7 @@ bool CIrrDeviceLinux::createWindow()
 		{
 			s32 modeCount;
 			XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
-			oldRandrMode=XRRConfigCurrentConfiguration(config,&oldRandrRotation);
 			XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
-			VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
-				modes[oldRandrMode].width, modes[oldRandrMode].height));
 			for (s32 i = 0; i<modeCount; ++i)
 			{
 				if (bestMode==-1 && (u32)modes[i].width >= Width && (u32)modes[i].height >= Height)
@@ -260,8 +249,6 @@ bool CIrrDeviceLinux::createWindow()
 						modes[i].width < modes[bestMode].width &&
 						modes[i].height < modes[bestMode].height)
 					bestMode = i;
-				VideoModeList.addMode(core::dimension2d<s32>(
-					modes[i].width, modes[i].height), defaultDepth);
 			}
 			if (bestMode != -1)
 			{
@@ -630,7 +617,8 @@ bool CIrrDeviceLinux::createWindow()
 			BitmapPad(display), 0);
 
 		// use malloc because X will free it later on
-		SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
+		if (SoftwareImage)
+			SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
 	}
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
@@ -721,7 +709,7 @@ bool CIrrDeviceLinux::run()
 					Height = event.xconfigure.height;
 
 					// resize image data
-					if (CreationParams.DriverType == video::EDT_SOFTWARE || CreationParams.DriverType == video::EDT_BURNINGSVIDEO)
+					if (SoftwareImage)
 					{
 						XDestroyImage(SoftwareImage);
 
@@ -731,7 +719,8 @@ bool CIrrDeviceLinux::run()
 							BitmapPad(display), 0);
 
 						// use malloc because X will free it later on
-						SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
+						if (SoftwareImage)
+							SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
 					}
 
 					if (VideoDriver)
@@ -927,11 +916,11 @@ void CIrrDeviceLinux::setWindowCaption(const wchar_t* text)
 
 
 //! presents a surface in the client area
-bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s32>* srcRect )
+bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s32>* srcRect)
 {
 #ifdef _IRR_COMPILE_WITH_X11_
 	// this is only necessary for software drivers.
-	if (CreationParams.DriverType != video::EDT_SOFTWARE && CreationParams.DriverType != video::EDT_BURNINGSVIDEO)
+	if (!SoftwareImage)
 		return true;
 
 	// thx to Nadav, who send me some clues of how to display the image
