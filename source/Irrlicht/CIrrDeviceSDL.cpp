@@ -319,7 +319,6 @@ void CIrrDeviceSDL::setWindowCaption(const wchar_t* text)
 }
 
 
-
 //! presents a surface in the client area
 bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* src)
 {
@@ -328,17 +327,20 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 			surface->lock(), surface->getDimension().Width, surface->getDimension().Height,
 			surface->getBitsPerPixel(), surface->getPitch(),
 			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), 0);
+	SDL_Surface* scr = (SDL_Surface* )windowId;
+	if (!scr)
+		scr = Screen;
 	if (src)
 	{
 		srcClip.x = src->UpperLeftCorner.X;
 		srcClip.y = src->UpperLeftCorner.Y;
 		srcClip.w = src->getWidth();
 		srcClip.h = src->getHeight();
-		SDL_BlitSurface(sdlSurface, &srcClip, Screen, NULL);
+		SDL_BlitSurface(sdlSurface, &srcClip, scr, NULL);
 	}
 	else
-		SDL_BlitSurface(sdlSurface, NULL, Screen, NULL);
-	SDL_UpdateRect(Screen, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
+		SDL_BlitSurface(sdlSurface, NULL, scr, NULL);
+	SDL_UpdateRect(scr, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
 	SDL_FreeSurface(sdlSurface);
 	surface->unlock();
 	return true;
