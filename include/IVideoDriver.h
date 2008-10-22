@@ -102,9 +102,7 @@ namespace video
 		\param windowId Handle of another window, if you want the
 		bitmap to be displayed on another window. If this is null,
 		everything will be displayed in the default window.
-		Note: This does not work in fullscreen mode and is not
-		implemented for all devices (only for D3D8, D3D9, Software1 and
-		Software2, and only for Windows).
+		Note: This feature is not fully implemented for all devices.
 		\param sourceRect Pointer to a rectangle defining the source
 		rectangle of the area to be presented. Set to null to present
 		everything. Note: not implemented in all devices.
@@ -327,11 +325,7 @@ namespace video
 		render target as texture on it when you are rendering the scene
 		into this render target at the same time. It is usually only
 		possible to render into a texture between the
-		IVideoDriver::beginScene() and endScene() method calls. And
-		please also note that the scene will be rendered upside down
-		into the texture in some drivers (e.g. OpenGL vs. D3D). A
-		simple workaround for this is to flip the texture coordinates
-		of the geometry where the render target texture is displayed on.
+		IVideoDriver::beginScene() and endScene() method calls.
 		\param texture New render target. Must be a texture created with
 		IVideoDriver::addRenderTargetTexture(). If set to 0, it sets
 		the previous render target which was set before the last
@@ -339,9 +333,9 @@ namespace video
 		\param clearBackBuffer Clears the backbuffer of the render
 		target with the color parameter
 		\param clearZBuffer Clears the zBuffer of the rendertarget.
-		Note that, because the frame buffer shares the zbuffer with the
-		rendertarget, its zbuffer will be partially cleared too with
-		this.
+		Note that because the frame buffer may share the zbuffer with
+		the rendertarget, its zbuffer might be partially cleared too
+		by this.
 		\param color The background color for the render target.
 		\return True if sucessful and false if not. */
 		virtual bool setRenderTarget(video::ITexture* texture,
