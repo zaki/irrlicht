@@ -590,6 +590,11 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255)) = 0;
 
+		//! Draws a pixel.
+		/** \param position: the position of the pixel.
+		\param color: Color of the pixel to draw. */
+		virtual void drawPixel(u32 x, u32 y, const SColor & color) = 0; 
+
 		//! Draws a non filled concyclic regular 2d polyon.
 		/** This method can be used to draw circles, but also
 		triangles, tetragons, pentagons, hexagons, heptagons, octagons,

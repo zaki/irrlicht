@@ -186,6 +186,9 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
 
+		//! Draws a pixel
+		virtual void drawPixel(u32 x, u32 y, const SColor & color); 
+
 		//! Draws a non filled concyclic reqular 2d polyon.
 		virtual void draw2DPolygon(core::position2d<s32> center,
 			f32 radius, video::SColor Color, s32 vertexCount);

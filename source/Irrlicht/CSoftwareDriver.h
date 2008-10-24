@@ -83,6 +83,9 @@ namespace video
 								const core::position2d<s32>& end,
 								SColor color=SColor(255,255,255,255));
 
+		//! Draws a single pixel
+		virtual void drawPixel(u32 x, u32 y, const SColor & color); 
+
 		//! \return Returns the name of the video driver. Example: In case of the Direct3D8
 		//! driver, it would return "Direct3D8.1".
 		virtual const wchar_t* getName() const;

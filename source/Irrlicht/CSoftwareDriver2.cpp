@@ -1578,6 +1578,11 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 	((CImage*)BackBuffer)->drawLine(start, end, color );
 }
 
+//! Draws a pixel
+void CBurningVideoDriver::drawPixel(u32 x, u32 y, const SColor & color)
+{
+	((CImage*)BackBuffer)->setPixel(x, y, color);
+} 
 
 //! draw an 2d rectangle
 void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,

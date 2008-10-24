@@ -113,6 +113,9 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
 
+		//! Draws a pixel.
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
+
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
 			const core::vector3df& end, SColor color = SColor(255,255,255,255));
