@@ -203,8 +203,10 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 					tex = driver->getTexture(materiali[i].textureName.c_str());
 				else if (FileSystem->existFile(FileSystem->getFileBasename(materiali[i].textureName)))
 					tex = driver->getTexture(FileSystem->getFileBasename(materiali[i].textureName).c_str());
+#ifdef _IRR_DMF_DEBUG_
 				else
 					os::Printer::log("Could not load texture", materiali[i].textureName.c_str());
+#endif // _IRR_DMF_DEBUG_
 			}
 			//Primary texture is just a colour
 			else if(materiali[i].textureFlag==1)
