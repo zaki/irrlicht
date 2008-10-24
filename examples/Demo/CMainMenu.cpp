@@ -53,6 +53,7 @@ public:
 		l->setLightData(light);
 	}
 
+	virtual scene::ISceneNodeAnimator* createClone(scene::ISceneNode* node, scene::ISceneManager* newManager=0) {return 0;}
 private:
 
 	core::vector3df Offset;
