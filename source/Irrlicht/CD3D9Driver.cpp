@@ -2535,12 +2535,32 @@ IImage* CD3D9Driver::createScreenShot()
 	u32* dP = (u32*)newImage->lock();
 	u8 * sP = (u8 *)lockedRect.pBits;
 
-	for (s32 y = 0; y < ScreenSize.Height; ++y)
+	// If the display mode format doesn't promise anything about the Alpha value
+	// and it appears that it's not presenting 255, then we should manually 
+	// set each pixel alpha value to 255.
+	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
 	{
-		memcpy(dP, sP, ScreenSize.Width * 4);
+		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		{
+			for(s32 x = 0; x < ScreenSize.Width; ++x)
+			{
+				*dP = *((u32*)sP) | 0xFF000000;
+				dP++;
+				sP += 4;
+			}
 
-		sP += lockedRect.Pitch;
-		dP += ScreenSize.Width;
+			sP += lockedRect.Pitch - (4 * ScreenSize.Width);
+		}
+	}
+	else
+	{
+		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		{
+			memcpy(dP, sP, ScreenSize.Width * 4);
+
+			sP += lockedRect.Pitch;
+			dP += ScreenSize.Width;
+		}
 	}
 
 	newImage->unlock();

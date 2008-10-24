@@ -829,7 +829,7 @@ void CD3D8Driver::drawVertexPrimitiveList(const void* vertices,
 	if (!checkPrimitiveCount(primitiveCount))
 		return;
 
-	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType);
+	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType,iType);
 
 	if (!vertexCount || !primitiveCount)
 		return;
@@ -2109,12 +2109,28 @@ IImage* CD3D8Driver::createScreenShot()
 	IImage* newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
 
 	// d3d pads the image, so we need to copy the correct number of bytes
-	u32* pPixels = (u32*)newImage->lock();
-	if (pPixels)
-	{
-		u8 * sP = (u8 *)lockedRect.pBits;
-		u32* dP = (u32*)pPixels;
+	u32* dP = (u32*)newImage->lock();
+	u8 * sP = (u8 *)lockedRect.pBits;
 
+	// If the display mode format doesn't promise anything about the Alpha value
+	// and it appears that it's not presenting 255, then we should manually 
+	// set each pixel alpha value to 255.
+	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
+	{
+		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		{
+			for(s32 x = 0; x < ScreenSize.Width; ++x)
+			{
+				*dP = *((u32*)sP) | 0xFF000000;
+				dP++;
+				sP += 4;
+			}
+
+			sP += lockedRect.Pitch - (4 * ScreenSize.Width);
+		}
+	}
+	else
+	{
 		for (s32 y = 0; y < ScreenSize.Height; ++y)
 		{
 			memcpy(dP, sP, ScreenSize.Width * 4);
@@ -2122,9 +2138,9 @@ IImage* CD3D8Driver::createScreenShot()
 			sP += lockedRect.Pitch;
 			dP += ScreenSize.Width;
 		}
-
-		newImage->unlock();
 	}
+
+	newImage->unlock();
 
 	// we can unlock and release the surface
 	lpSurface->UnlockRect();

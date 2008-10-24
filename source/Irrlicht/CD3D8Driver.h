@@ -280,8 +280,8 @@ namespace video
 		IDirect3DSurface8* PrevRenderTarget;
 		core::dimension2d<s32> CurrentRendertargetSize;
 
-		void* WindowId,
-		core::rect<s32>* SceneSourceRect,
+		void* WindowId;
+		core::rect<s32>* SceneSourceRect;
 
 		D3DCAPS8 Caps;
 
