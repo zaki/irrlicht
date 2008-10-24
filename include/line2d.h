@@ -74,35 +74,52 @@ class line2d
 		\return True if there is an intersection, false if not. */
 		bool intersectWith(const line2d<T>& l, vector2d<T>& out) const
 		{
-			bool found=false;
+			// Uses the method given at:
+			// http://local.wasp.uwa.edu.au/~pbourke/geometry/lineline2d/ 
+			const f32 commonDenominator = (l.end.Y - l.start.Y)*(end.X - start.X) -
+											(l.end.X - l.start.X)*(end.Y - start.Y);
 
-			f32 a1,a2,b1,b2;
+			const f32 numeratorA = (l.end.X - l.start.X)*(start.Y - l.start.Y) -
+											(l.end.Y - l.start.Y)*(start.X -l.start.X);
 
-			// calculate slopes, deal with infinity
-			if (end.X-start.X == 0)
-				b1 = (f32)1e+10;
-			else
-				b1 = (end.Y-start.Y)/(end.X-start.X);
-			if (l.end.X-l.start.X == 0)
-				b2 = (f32)1e+10;
-			else
-				b2 = (l.end.Y-l.start.Y)/(l.end.X-l.start.X);
+			const f32 numeratorB = (end.X - start.X)*(start.Y - l.start.Y) -
+											(end.Y - start.Y)*(start.X -l.start.X); 
 
-			// calculate position
-			a1 = start.Y   - b1 * start.X;
-			a2 = l.start.Y - b2 * l.start.X;
-			out.X = - (a1-a2)/(b1-b2);
-			out.Y = a1 + b1*out.X;
+			if(equals(commonDenominator, 0.f))
+			{ 
+				// The lines are either coincident or parallel
+				if(equals(numeratorA, 0.f) && equals(numeratorB, 0.f))
+				{
+					// Try and find a common endpoint
+					if(l.start == start || l.end == start)
+						out = start;
+					else if(l.end == end || l.start == end)
+						out = end;
+					else
+						// one line is contained in the other, so for lack of a better
+						// answer, pick the average of both lines
+						out = ((start + end + l.start + l.end) * 0.25f);
 
-			// did the lines cross?
-			if ((start.X-out.X) *(out.X-end.X) >= -ROUNDING_ERROR_32 &&
-				(l.start.X-out.X)*(out.X-l.end.X)>= -ROUNDING_ERROR_32 &&
-				(start.Y-out.Y)  *(out.Y-end.Y)  >= -ROUNDING_ERROR_32 &&
-				(l.start.Y-out.Y)*(out.Y-l.end.Y)>= -ROUNDING_ERROR_32 )
-			{
-				found = true;
+					return true; // coincident
+				}
+
+				return false; // parallel
 			}
-			return found;
+
+			// Get the point of intersection on this line, checking that
+			// it is within the line segment.
+			const f32 uA = numeratorA / commonDenominator;
+			if(uA < 0.f || uA > 1.f)
+				return false; // Outside the line segment
+
+			const f32 uB = numeratorB / commonDenominator;
+			if(uB < 0.f || uB > 1.f)
+				return false; // Outside the line segment
+
+			// Calculate the intersection point.
+			out.X = start.X + uA * (end.X - start.X);
+			out.Y = start.Y + uA * (end.Y - start.Y);
+			return true; 
 		}
 
 		//! Get unit vector of the line.
