@@ -1513,6 +1513,28 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 					&vtx[0], sizeof(S3DVertex) );
 }
 
+//! Draws a pixel
+void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
+{
+	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	if(x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
+		return;
+
+	setRenderStates2DMode(color.getAlpha() < 255, false, false);
+	setTexture(0,0);
+
+	setVertexShader(EVT_STANDARD);
+
+	const s32 xPlus = -renderTargetSize.Width / 2;
+	const f32 xFact = 2.0f / renderTargetSize.Width;
+	const s32 yPlus = renderTargetSize.Height / 2;
+	const f32 yFact = 2.0f / renderTargetSize.Height;
+	S3DVertex vertex((f32)((s32)x + xPlus) * xFact,
+					(f32)(yPlus - (s32)y) * yFact,
+					0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
+
+	pID3DDevice->DrawPrimitiveUP(D3DPT_POINTLIST, 1, &vertex, sizeof(vertex));
+}
 
 
 //! sets right vertex shader

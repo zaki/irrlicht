@@ -688,6 +688,10 @@ void CNullDriver::draw2DLine(const core::position2d<s32>& start,
 {
 }
 
+//! Draws a pixel
+void CNullDriver::drawPixel(u32 x, u32 y, const SColor & color)
+{
+}
 
 
 //! Draws a non filled concyclic regular 2d polyon.

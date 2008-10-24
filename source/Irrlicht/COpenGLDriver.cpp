@@ -1487,7 +1487,21 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 	glEnd();
 }
 
+//! Draws a pixel
+void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
+{
+	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	if(x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
+		return;
 
+	disableTextures();
+	setRenderStates2DMode(color.getAlpha() < 255, false, false);
+
+	glBegin(GL_POINTS);
+	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	glVertex2i(x, y);
+	glEnd();
+} 
 
 bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
 {
