@@ -61,7 +61,7 @@ IAnimatedMesh* CXMeshFileLoader::createMesh(io::IReadFile* f)
 
 	AnimatedMesh = new CSkinnedMesh();
 
-	if ( load(f) )
+	if (load(f))
 	{
 		AnimatedMesh->finalize();
 	}
@@ -269,7 +269,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 			{
 				for (u32 id=i*3+0;id<=i*3+2;++id)
 				{
-					if ((verticesLinkBuffer[ mesh->Indices[id] ] != -1) && (verticesLinkBuffer[ mesh->Indices[id] ] != (s16)mesh->FaceMaterialIndices[i]))
+					if ((verticesLinkBuffer[mesh->Indices[id]] != -1) && (verticesLinkBuffer[mesh->Indices[id]] != (s16)mesh->FaceMaterialIndices[i]))
 					{
 						if (!warned)
 						{
@@ -291,14 +291,14 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				u32* vCountArray = new u32[mesh->Buffers.size()];
 				memset(vCountArray, 0, mesh->Buffers.size()*sizeof(u32));
 				// count vertices in each buffer and reallocate
-				for (i=0;i<mesh->Vertices.size();++i)
+				for (i=0; i<mesh->Vertices.size(); ++i)
 					++vCountArray[verticesLinkBuffer[i]];
 				for (i=0; i!=mesh->Buffers.size(); ++i)
 					mesh->Buffers[i]->Vertices_Standard.reallocate(vCountArray[i]);
 
 				verticesLinkIndex.set_used(mesh->Vertices.size());
 				// actually store vertices
-				for (i=0;i<mesh->Vertices.size();++i)
+				for (i=0; i<mesh->Vertices.size(); ++i)
 				{
 					scene::SSkinMeshBuffer *buffer = mesh->Buffers[ verticesLinkBuffer[i] ];
 
@@ -308,23 +308,23 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 				// count indices per buffer and reallocate
 				memset(vCountArray, 0, mesh->Buffers.size()*sizeof(u32));
-				for (i=0;i<mesh->FaceMaterialIndices.size();++i)
+				for (i=0; i<mesh->FaceMaterialIndices.size(); ++i)
 					++vCountArray[ mesh->FaceMaterialIndices[i] ];
 				for (i=0; i!=mesh->Buffers.size(); ++i)
 					mesh->Buffers[i]->Indices.reallocate(vCountArray[i]);
 				delete [] vCountArray;
 				// create indices per buffer
-				for (i=0;i<mesh->FaceMaterialIndices.size();++i)
+				for (i=0; i<mesh->FaceMaterialIndices.size(); ++i)
 				{
 					scene::SSkinMeshBuffer *buffer = mesh->Buffers[ mesh->FaceMaterialIndices[i] ];
-					for (u32 id=i*3+0;id!=i*3+3;++id)
+					for (u32 id=i*3+0; id!=i*3+3; ++id)
 					{
 						buffer->Indices.push_back( verticesLinkIndex[ mesh->Indices[id] ] );
 					}
 				}
 			}
 
-			for (u32 j=0;j<mesh->WeightJoint.size();++j)
+			for (u32 j=0; j<mesh->WeightJoint.size(); ++j)
 			{
 				ISkinnedMesh::SWeight& weight = (AnimatedMesh->getAllJoints()[mesh->WeightJoint[j]]->Weights[mesh->WeightNum[j]]);
 
@@ -467,7 +467,7 @@ bool CXMeshFileLoader::parseDataObject()
 		//mesh->Buffer=AnimatedMesh->createBuffer();
 		Meshes.push_back(mesh);
 
-		return parseDataObjectMesh ( *mesh );
+		return parseDataObjectMesh(*mesh);
 	}
 	else
 	if (objectName == "AnimationSet")
@@ -559,7 +559,7 @@ bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
 
 	if (name.size())
 	{
-		for (u32 n=0;n < AnimatedMesh->getAllJoints().size();++n)
+		for (u32 n=0; n < AnimatedMesh->getAllJoints().size(); ++n)
 		{
 			if (AnimatedMesh->getAllJoints()[n]->Name==name)
 			{
@@ -843,9 +843,136 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 			// with format type;tesselator;semantics;usageindex
 			// we want to support 2;0;6;0 == tangent
 			//                    2;0;7;0 == binormal
+			//                    2;0;3;0 == normal
+			//                  1/2;0;5;0 == 1st uv coord
 			// and              1/2;0;5;1 == 2nd uv coord
-			if (!parseUnknownDataObject())
+			// type==2 is 3xf32, type==1 is 2xf32
+			u32 j;
+			const u32 dcnt = readInt();
+			u16 size = 0;
+			s16 normalpos = -1;
+			s16 uvpos = -1;
+			s16 uv2pos = -1;
+			s16 tangentpos = -1;
+			s16 binormalpos = -1;
+			s16 normaltype = -1;
+			s16 uvtype = -1;
+			s16 uv2type = -1;
+			s16 tangenttype = -1;
+			s16 binormaltype = -1;
+			for (j=0; j<dcnt; ++j)
+			{
+				const u32 type = readInt();
+				const u32 tesselator = readInt();
+				const u32 semantics = readInt();
+				const u32 index = readInt();
+				switch (semantics)
+				{
+				case 3:
+					normalpos = size;
+					normaltype = type;
+					break;
+				case 5:
+					if (index==0)
+					{
+						uvpos = size;
+						uvtype = type;
+					}
+					else if (index==1)
+					{
+						uv2pos = size;
+						uv2type = type;
+					}
+					break;
+				case 6:
+					tangentpos = size;
+					tangenttype = type;
+					break;
+				case 7:
+					binormalpos = size;
+					binormaltype = type;
+					break;
+				default:
+					break;
+				}
+				switch (type)
+				{
+				case 0:
+					size += 4;
+					break;
+				case 1:
+					size += 8;
+					break;
+				case 2:
+					size += 12;
+					break;
+				case 3:
+					size += 16;
+					break;
+				case 4:
+				case 5:
+				case 6:
+					size += 4;
+					break;
+				case 7:
+					size += 8;
+					break;
+				case 8:
+				case 9:
+					size += 4;
+					break;
+				case 10:
+					size += 8;
+					break;
+				case 11:
+					size += 4;
+					break;
+				case 12:
+					size += 8;
+					break;
+				case 13:
+					size += 4;
+					break;
+				case 14:
+					size += 4;
+					break;
+				case 15:
+					size += 4;
+					break;
+				case 16:
+					size += 8;
+					break;
+				}
+			}
+			const u32 datasize = readInt();
+			u32* data = new u32[datasize];
+			for (j=0; j<datasize; ++j)
+				data[j]=readInt();
+
+			if (!checkForOneFollowingSemicolons())
+			{
+				os::Printer::log("No finishing semicolon in DeclData found.", ELL_WARNING);
+				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
+				delete [] data;
 				return false;
+			}
+			if (!checkForClosingBrace())
+			{
+				os::Printer::log("No closing brace in DeclData.", ELL_WARNING);
+				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
+				delete [] data;
+				return false;
+			}
+			u8* dataptr = (u8*) data;
+			for (j=0; j<mesh.Vertices.size(); ++j)
+			{
+				if ((normalpos != -1) && (normaltype == 2))
+					mesh.Vertices[j].Normal.set(*((core::vector3df*)(dataptr+normalpos)));
+				if ((uvpos != -1) && (uvtype == 1))
+					mesh.Vertices[j].TCoords.set(*((core::vector2df*)(dataptr+uvpos)));
+				dataptr += size;
+			}
+			delete [] data;
 		}
 		else
 		if (objectName == "XSkinMeshHeader")
@@ -1327,16 +1454,38 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 
 			// original name
 			if (FileSystem->existFile(TextureFileName.c_str()))
-				material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
+				material.setTexture(0, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
 			// mesh path
 			else
 			{
 				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
 				if (FileSystem->existFile(TextureFileName.c_str()))
-					material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( TextureFileName.c_str() ));
+					material.setTexture(0, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
 				// working directory
 				else
-					material.setTexture(0, SceneManager->getVideoDriver()->getTexture ( stripPathFromString(TextureFileName,false).c_str() ));
+					material.setTexture(0, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
+			}
+		}
+		else
+		if (objectName.equals_ignore_case("NormalmapFilename"))
+		{
+			// some exporters write "NormalmapFileName" instead.
+			core::stringc TextureFileName;
+			if (!parseDataObjectTextureFilename(TextureFileName))
+				return false;
+
+			// original name
+			if (FileSystem->existFile(TextureFileName.c_str()))
+				material.setTexture(1, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
+			// mesh path
+			else
+			{
+				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
+				if (FileSystem->existFile(TextureFileName.c_str()))
+					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
+				// working directory
+				else
+					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
 			}
 		}
 		else
@@ -1474,7 +1623,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		CSkinnedMesh::SJoint *joint=0;
 
 		u32 n;
-		for (n=0;n < AnimatedMesh->getAllJoints().size();++n)
+		for (n=0; n < AnimatedMesh->getAllJoints().size(); ++n)
 		{
 			if (AnimatedMesh->getAllJoints()[n]->Name==FrameName)
 			{
@@ -1493,19 +1642,19 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 		}
 
 		joint->PositionKeys.reallocate(joint->PositionKeys.size()+animationDump.PositionKeys.size());
-		for (n=0;n<animationDump.PositionKeys.size();++n)
+		for (n=0; n<animationDump.PositionKeys.size(); ++n)
 		{
 			joint->PositionKeys.push_back(animationDump.PositionKeys[n]);
 		}
 
 		joint->ScaleKeys.reallocate(joint->ScaleKeys.size()+animationDump.ScaleKeys.size());
-		for (n=0;n<animationDump.ScaleKeys.size();++n)
+		for (n=0; n<animationDump.ScaleKeys.size(); ++n)
 		{
 			joint->ScaleKeys.push_back(animationDump.ScaleKeys[n]);
 		}
 
 		joint->RotationKeys.reallocate(joint->RotationKeys.size()+animationDump.RotationKeys.size());
-		for (n=0;n<animationDump.RotationKeys.size();++n)
+		for (n=0; n<animationDump.RotationKeys.size(); ++n)
 		{
 			joint->RotationKeys.push_back(animationDump.RotationKeys[n]);
 		}
@@ -2168,7 +2317,8 @@ core::stringc CXMeshFileLoader::stripPathFromString(core::stringc string, bool r
 	s32 slashIndex=string.findLast('/'); // forward slash
 	s32 backSlash=string.findLast('\\'); // back slash
 
-	if (backSlash>slashIndex) slashIndex=backSlash;
+	if (backSlash>slashIndex)
+		slashIndex=backSlash;
 
 	if (slashIndex==-1)//no slashes found
 	{
