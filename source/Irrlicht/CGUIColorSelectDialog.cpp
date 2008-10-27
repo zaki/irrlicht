@@ -46,14 +46,15 @@ static const sTemplate Template [] =
 	{ L"L:", L"0", L"%",180,255, 0, 100 },
 };
 
+
 //! constructor
-CGUIColorSelectDialog::CGUIColorSelectDialog( const wchar_t* title, IGUIEnvironment* environment, IGUIElement* parent, s32 id)
-: IGUIColorSelectDialog(environment, parent, id,
- core::rect<s32>((parent->getAbsolutePosition().getWidth()-CSD_WIDTH)/2,
-					(parent->getAbsolutePosition().getHeight()-CSD_HEIGHT)/2,	
-					(parent->getAbsolutePosition().getWidth()-CSD_WIDTH)/2+CSD_WIDTH,
-					(parent->getAbsolutePosition().getHeight()-CSD_HEIGHT)/2+CSD_HEIGHT)),	
-  Dragging(false)
+CGUIColorSelectDialog::CGUIColorSelectDialog(const wchar_t* title, IGUIEnvironment* environment, IGUIElement* parent, s32 id)
+	: IGUIColorSelectDialog(environment, parent, id,
+		core::rect<s32>((parent->getAbsolutePosition().getWidth()-CSD_WIDTH)/2,
+			(parent->getAbsolutePosition().getHeight()-CSD_HEIGHT)/2,
+			(parent->getAbsolutePosition().getWidth()-CSD_WIDTH)/2+CSD_WIDTH,
+			(parent->getAbsolutePosition().getHeight()-CSD_HEIGHT)/2+CSD_HEIGHT)),
+	Dragging(false)
 {
 	#ifdef _DEBUG
 	IGUIElement::setDebugName("CGUIColorSelectDialog");
@@ -62,12 +63,11 @@ CGUIColorSelectDialog::CGUIColorSelectDialog( const wchar_t* title, IGUIEnvironm
 	Text = title;
 
 	IGUISkin* skin = Environment->getSkin();
-	core::rect<s32> rec;
 
-	s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
-	s32 posx = RelativeRect.getWidth() - buttonw - 4;
+	const s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	const s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
-	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), 
+	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw),
 		this, -1, L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close");
 	if (skin && skin->getSpriteBank())
 	{
@@ -77,35 +77,33 @@ CGUIColorSelectDialog::CGUIColorSelectDialog( const wchar_t* title, IGUIEnvironm
 	}
 	CloseButton->setSubElement(true);
 	CloseButton->setTabStop(false);
-	CloseButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT); 
+	CloseButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	CloseButton->grab();
 
 	OKButton = Environment->addButton(
 		core::rect<s32>(RelativeRect.getWidth()-80, 30, RelativeRect.getWidth()-10, 50),
 		this, -1, skin ? skin->getDefaultText(EGDT_MSG_BOX_OK) : L"OK");
 	OKButton->setSubElement(true);
-	OKButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT); 
+	OKButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	OKButton->grab();
 
 	CancelButton = Environment->addButton(
-		core::rect<s32>(RelativeRect.getWidth()-80, 55, RelativeRect.getWidth()-10, 75), 
+		core::rect<s32>(RelativeRect.getWidth()-80, 55, RelativeRect.getWidth()-10, 75),
 		this, -1, skin ? skin->getDefaultText(EGDT_MSG_BOX_CANCEL) : L"Cancel");
 	CancelButton->setSubElement(true);
-	CancelButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT); 
+	CancelButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	CancelButton->grab();
-
-	core::rect<s32> r;
 
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 	ColorRing.Texture = driver->getTexture ( "#colorring" );
 	if ( 0 == ColorRing.Texture )
 	{
-		buildColorRing(core::dimension2d<s32>(128, 128), 1,  
+		buildColorRing(core::dimension2d<s32>(128, 128), 1,
 			Environment->getSkin()->getColor(EGDC_3D_SHADOW).color);
 	}
 
-	r.UpperLeftCorner.X = 20;
-	r.UpperLeftCorner.Y = 20;
+	core::rect<s32> r(20,20, 0,0);
+
 	ColorRing.Control = Environment->addImage(ColorRing.Texture, r.UpperLeftCorner, true, this);
 	ColorRing.Control->setSubElement(true);
 	ColorRing.Control->grab();
@@ -118,7 +116,7 @@ CGUIColorSelectDialog::CGUIColorSelectDialog( const wchar_t* title, IGUIEnvironm
 			r.UpperLeftCorner.Y = Template[i].y;
 			r.LowerRightCorner.X = r.UpperLeftCorner.X + 15;
 			r.LowerRightCorner.Y = r.UpperLeftCorner.Y + 20;
-			IGUIElement *t = Environment->addStaticText( Template[i].pre, r, false, false, this);
+			IGUIElement *t = Environment->addStaticText(Template[i].pre, r, false, false, this);
 			t->setSubElement(true);
 		}
 
@@ -162,7 +160,6 @@ CGUIColorSelectDialog::CGUIColorSelectDialog( const wchar_t* title, IGUIEnvironm
 }
 
 
-
 //! destructor
 CGUIColorSelectDialog::~CGUIColorSelectDialog()
 {
@@ -177,46 +174,33 @@ CGUIColorSelectDialog::~CGUIColorSelectDialog()
 
 	for ( u32 i = 0; i != Battery.size ();++i )
 	{
-		Battery[i].Edit->drop ();
-		Battery[i].Scrollbar->drop ();
+		Battery[i].Edit->drop();
+		Battery[i].Scrollbar->drop();
 	}
 
-	if ( ColorRing.Control )
-	{
-		ColorRing.Control->drop ();
-	}
+	if (ColorRing.Control)
+		ColorRing.Control->drop();
 }
+
 
 //! renders a antialiased, colored ring
 void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, s32 supersample, const u32 borderColor )
 {
-	video::CImage *RawTexture;
-
-	core::dimension2d<s32> d;
-	d.Width = dim.Width * supersample;
-	d.Height = dim.Height * supersample;
-
-	RawTexture = new video::CImage ( video::ECF_A8R8G8B8, d );
+	const core::dimension2d<s32> d(dim.Width * supersample, dim.Height * supersample);
+	video::CImage *RawTexture = new video::CImage(video::ECF_A8R8G8B8, d);
 
 	RawTexture->fill ( 0x00808080 );
 
-
 	u8 * data= (u8*) RawTexture->lock();
-	const u32 pitch = RawTexture->getPitch ();
+	const u32 pitch = RawTexture->getPitch();
 
-	s32 radiusOut = ( d.Width / 2 ) - 4;
-
+	const s32 radiusOut = ( d.Width / 2 ) - 4;
 	const s32 fullR2 = radiusOut * radiusOut;
 
-
+	video::SColor rgb(0xFF000000);
 	video::SColorHSL hsl;
-	video::SColor rgb;
-
-	rgb.color = 0xFF000000;
 	hsl.Luminance = 0.5f;
 	hsl.Saturation = 1.f;
-
-	
 
 	core::position2d<s32> p;
 	u32 *dst;
@@ -237,25 +221,24 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 			{
 				// dotproduct u ( x,y ) * v ( 1, 0 ) = cosinus(a)
 
-				f32 r = (f32) sqrt ( (f32) r2 );
+				const f32 r = sqrtf((f32) r2);
 
 				// normalize, dotproduct = xnorm
-				f32 t = (f32) 1.0 / r;
-				f32 xn = -p.X * t;
+				const f32 xn = -p.X * core::reciprocal(r);
 
-				hsl.Hue = (f32) acos ( xn );
+				hsl.Hue = acosf(xn);
 				if ( p.Y > 0 )
 					hsl.Hue = (2.f * core::PI ) - hsl.Hue;
 
 				hsl.Hue -= core::PI / 2.f;
 
-				f32 rTest = r / radiusOut;
+				const f32 rTest = r / radiusOut;
 /*
 				if ( rTest < 0.25f )
 				{
 					hsl.Luminance = rTest / 0.25f;
 					hsl.Saturation = 0.f;
-					hsl.settoRGB  ( rgb );
+					hsl.toRGB  ( rgb );
 					*dst = rgb.color;
 				}
 				else
@@ -264,7 +247,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 					hsl.Saturation = ( rTest - 0.25f ) / 0.15f;
 					hsl.Luminance = 1.f - ( hsl.Saturation / 2.4f );
 					hsl.Luminance = 0.5f;
-					hsl.settoRGB  ( rgb );
+					hsl.toRGB  ( rgb );
 					// *dst = rgb.color;
 				}
 				else
@@ -272,7 +255,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 				{
 					hsl.Luminance = 0.5f;
 					hsl.Saturation = 1.f;
-					hsl.settoRGB  ( rgb );
+					hsl.toRGB  ( rgb );
 					*dst = rgb.color;
 				}
 				else
@@ -280,7 +263,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 				{
 					hsl.Luminance = 0.5f - ( ( rTest - 0.75f ) / 0.75f );
 					hsl.Saturation = 1.f;
-					hsl.settoRGB  ( rgb );
+					hsl.toRGB  ( rgb );
 					*dst = rgb.color;
 				}
 */
@@ -305,10 +288,8 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 					alpha = 255 - alpha;
 					*dst = *dst & 0x00ffffff | (alpha << 24);
 				}
-
 			}
 		}
-
 	}
 
 	RawTexture->unlock ();
@@ -316,24 +297,21 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 	if ( supersample > 1 )
 	{
 		video::CImage * filter = new video::CImage(video::ECF_A8R8G8B8, dim );
-		RawTexture->copyToScalingBoxFilter ( filter, 0 );
-		RawTexture->drop ();
+		RawTexture->copyToScalingBoxFilter(filter, 0);
+		RawTexture->drop();
 		RawTexture = filter;
 	}
-	
 
 	video::IVideoDriver* driver = Environment->getVideoDriver();
 
-	bool generateMipLevels = driver->getTextureCreationFlag( video::ETCF_CREATE_MIP_MAPS );
+	bool generateMipLevels = driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	driver->setTextureCreationFlag( video::ETCF_CREATE_MIP_MAPS, false);
 
-	ColorRing.Texture = driver->addTexture ( "#colorring", RawTexture  );
-	RawTexture->drop ();
+	ColorRing.Texture = driver->addTexture ("#colorring", RawTexture);
+	RawTexture->drop();
 
-	driver->setTextureCreationFlag( video::ETCF_CREATE_MIP_MAPS, generateMipLevels);
-
+	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, generateMipLevels);
 }
-
 
 
 //! called if an event happened.
@@ -352,10 +330,8 @@ bool CGUIColorSelectDialog::OnEvent(const SEvent& event)
 					{
 						if ( event.GUIEvent.Caller == Battery[i].Scrollbar )
 						{
-							s32 pos = Battery[i].Scrollbar->getPos ();
-							s32 value = Template[i].range_down + ( pos );
-							core::stringw s ( value );
-							Battery[i].Edit->setText ( s.c_str() );
+							const s32 value = Template[i].range_down + Battery[i].Scrollbar->getPos();
+							Battery[i].Edit->setText(core::stringw(value).c_str());
 						}
 					}
 					return true;
@@ -385,7 +361,6 @@ bool CGUIColorSelectDialog::OnEvent(const SEvent& event)
 			case EGET_LISTBOX_SELECTED_AGAIN:
 			default:
 				break;
-				
 			}
 			break;
 		case EET_MOUSE_INPUT_EVENT:
@@ -437,11 +412,8 @@ void CGUIColorSelectDialog::draw()
 		return;
 
 	IGUISkin* skin = Environment->getSkin();
-
-	core::rect<s32> rect = AbsoluteRect;
-
-	rect = skin->draw3DWindowBackground(this, true, skin->getColor(EGDC_ACTIVE_BORDER), 
-		rect, &AbsoluteClippingRect);
+	core::rect<s32> rect = skin->draw3DWindowBackground(this, true, skin->getColor(EGDC_ACTIVE_BORDER),
+		AbsoluteRect, &AbsoluteClippingRect);
 
 	if (Text.size())
 	{
@@ -450,14 +422,16 @@ void CGUIColorSelectDialog::draw()
 
 		IGUIFont* font = skin->getFont(EGDF_WINDOW);
 		if (font)
-			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true, 
+			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true,
 			&AbsoluteClippingRect);
 	}
+	IGUIFont* font = Environment->getBuiltInFont();
+	if (font)
+		font->draw(L"+", core::rect<s32>(20,20,50,50), video::SColor(), false, false,
+		&AbsoluteClippingRect);
 
 	IGUIElement::draw();
 }
-
-
 
 
 //! sends the event that the file has been selected.
@@ -471,6 +445,7 @@ void CGUIColorSelectDialog::sendSelectedEvent()
 	Parent->OnEvent(event);
 }
 
+
 //! sends the event that the file choose process has been canceld
 void CGUIColorSelectDialog::sendCancelEvent()
 {
@@ -482,7 +457,9 @@ void CGUIColorSelectDialog::sendCancelEvent()
 	Parent->OnEvent(event);
 }
 
+
 } // end namespace gui
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+
