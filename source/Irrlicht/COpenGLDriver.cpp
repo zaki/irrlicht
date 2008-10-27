@@ -70,6 +70,15 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 		0, 0, 0				// Layer Masks Ignored
 	};
 
+	// get hdc
+	if (!(HDc=GetDC(window)))
+	{
+		os::Printer::log("Cannot create a GL device context.", ELL_ERROR);
+		return false;
+	}
+
+	GLuint PixelFormat;
+
 	for (u32 i=0; i<5; ++i)
 	{
 		if (i == 1)
@@ -102,48 +111,34 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 			return false;
 		}
 
-		// get hdc
-		if (!(HDc=GetDC(window)))
-		{
-			os::Printer::log("Cannot create a GL device context.", ELL_ERROR);
-			continue;
-		}
-
-		GLuint PixelFormat;
-
 		// choose pixelformat
-		if (!(PixelFormat = ChoosePixelFormat(HDc, &pfd)))
-		{
+		if ((PixelFormat = ChoosePixelFormat(HDc, &pfd)))
+			break;
+		else
 			os::Printer::log("Cannot find a suitable pixelformat.", ELL_ERROR);
-			continue;
 		}
 
 		// set pixel format
 		if(!SetPixelFormat(HDc, PixelFormat, &pfd))
 		{
 			os::Printer::log("Cannot set the pixel format.", ELL_ERROR);
-			continue;
+		return false;
 		}
 
 		// create rendering context
 		if (!(HRc=wglCreateContext(HDc)))
 		{
 			os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
-			continue;
+		return false;
 		}
 
 		// activate rendering context
 		if(!wglMakeCurrent(HDc, HRc))
 		{
 			os::Printer::log("Cannot activate GL rendering context", ELL_ERROR);
-			continue;
+		return false;
 		}
 
-		break;
-	}
-
-	if (HDc)
-	{
 		int pf = GetPixelFormat(HDc);
 		DescribePixelFormat(HDc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
 		if (pfd.cAlphaBits != 0)
@@ -160,7 +155,6 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 			else
 				ColorFormat = ECF_R5G6B5;
 		}
-	}
 
 	genericDriverInit(screenSize, stencilBuffer);
 
@@ -2606,7 +2600,7 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 }
 
 
-//! checks triangle count and print warning if wrong
+//! set or reset render target
 bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color)
 {
@@ -2691,8 +2685,8 @@ IImage* COpenGLDriver::createScreenShot()
 {
 	IImage* newImage = new CImage(ECF_R8G8B8, ScreenSize);
 
-	u8* pPixels = static_cast<u8*>(newImage->lock());
-	if (!pPixels)
+	u8* pixels = static_cast<u8*>(newImage->lock());
+	if (!pixels)
 	{
 		newImage->drop();
 		return 0;
@@ -2706,7 +2700,7 @@ IImage* COpenGLDriver::createScreenShot()
 
 	// We want to read the front buffer to get the latest render finished.
 	glReadBuffer(GL_FRONT);
-	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGB, GL_UNSIGNED_BYTE, pPixels);
+	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 	glReadBuffer(GL_BACK);
 
 #ifdef GL_MESA_pack_invert
@@ -2717,14 +2711,14 @@ IImage* COpenGLDriver::createScreenShot()
 	{
 		// opengl images are horizontally flipped, so we have to fix that here.
 		const s32 pitch=newImage->getPitch();
-		u8* p2 = pPixels + (ScreenSize.Height - 1) * pitch;
+		u8* p2 = pixels + (ScreenSize.Height - 1) * pitch;
 		u8* tmpBuffer = new u8[pitch];
 		for (s32 i=0; i < ScreenSize.Height; i += 2)
 		{
-			memcpy(tmpBuffer, pPixels, pitch);
-			memcpy(pPixels, p2, pitch);
+			memcpy(tmpBuffer, pixels, pitch);
+			memcpy(pixels, p2, pitch);
 			memcpy(p2, tmpBuffer, pitch);
-			pPixels += pitch;
+			pixels += pitch;
 			p2 -= pitch;
 		}
 		delete [] tmpBuffer;
@@ -2743,10 +2737,6 @@ IImage* COpenGLDriver::createScreenShot()
 
 
 //! Set/unset a clipping plane.
-//! There are at least 6 clipping planes available for the user to set at will.
-//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-//! \param plane: The plane itself.
-//! \param enable: If true, enable the clipping plane else disable it.
 bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
 {
 	if (index >= MaxUserClipPlanes)
@@ -2771,9 +2761,6 @@ void COpenGLDriver::uploadClipPlane(u32 index)
 
 
 //! Enable/disable a clipping plane.
-//! There are at least 6 clipping planes available for the user to set at will.
-//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-//! \param enable: If true, enable the clipping plane else disable it.
 void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 {
 	if (index >= MaxUserClipPlanes)
