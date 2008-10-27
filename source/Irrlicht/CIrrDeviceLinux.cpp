@@ -192,7 +192,6 @@ bool CIrrDeviceLinux::createWindow()
 		#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
 		s32 eventbase, errorbase;
 		s32 bestMode = -1;
-		s32 defaultDepth=DefaultDepth(display,screennr);
 		#endif
 
 		#ifdef _IRR_LINUX_X11_VIDMODE_
