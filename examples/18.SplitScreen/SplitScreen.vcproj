@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="17.SplitScreen"
+	Name="18.SplitScreen"
 	ProjectGUID="{EB3B38EA-5CE7-4983-845B-880661E69D09}"
 	Keyword="Win32Proj">
 	<Platforms>
@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\..\bin\Win32-VisualStudio\17.SplitScreen.exe"
+				OutputFile="..\..\bin\Win32-VisualStudio\18.SplitScreen.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="TRUE"
@@ -89,7 +89,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\..\bin\Win32-VisualStudio\17.SplitScreen.exe"
+				OutputFile="..\..\bin\Win32-VisualStudio\18.SplitScreen.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"

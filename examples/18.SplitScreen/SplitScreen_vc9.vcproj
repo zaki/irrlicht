@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
-	Name="17.SplitScreen_vc8"
-	ProjectGUID="{EB3B38EA-5CE7-4983-845B-880661E69D09}"
+	Version="9,00"
+	Name="18.SplitScreen_vc9"
+	ProjectGUID="{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
+	RootNamespace="18.SplitScreen_vc9"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -47,7 +49,6 @@
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -61,12 +62,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\..\bin\Win32-VisualStudio\17.SplitScreen.exe"
+				OutputFile="..\..\bin\Win32-VisualStudio\18.SplitScreen.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/SplitScreen.pdb"
 				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -86,9 +89,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -127,7 +127,6 @@
 				BufferSecurityCheck="false"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="0"
 				CallingConvention="1"
 			/>
@@ -142,13 +141,15 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="..\..\bin\Win32-VisualStudio\17.SplitScreen.exe"
+				OutputFile="..\..\bin\Win32-VisualStudio\18.SplitScreen.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -168,9 +169,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

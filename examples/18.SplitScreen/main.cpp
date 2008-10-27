@@ -1,4 +1,4 @@
-/** Example 017 Splitscreen
+/** Example 018 Splitscreen
 
 A tutorial by Max Winkel.
 
