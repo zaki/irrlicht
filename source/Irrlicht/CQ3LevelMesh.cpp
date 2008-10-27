@@ -137,7 +137,7 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 	loadBrushes(&Lumps[kBrushes], file);			// load the brushes of the BSP
 	loadBrushSides(&Lumps[kBrushSides], file);		// load the brushsides of the BSP
 	loadLeafBrushes(&Lumps[kLeafBrushes], file);	// load the brushes of the leaf
-	loadShaders(&Lumps[kShaders], file );			// load the shaderes
+	loadShaders(&Lumps[kShaders], file );			// load the shaders
 
 	PatchTesselation = 8;
 
@@ -1540,7 +1540,7 @@ void CQ3LevelMesh::InitShader()
 }
 
 
-//!. script callback for shaders
+//! script callback for shaders
 //! i'm having troubles with the reference counting, during callback.. resorting..
 void CQ3LevelMesh::ReleaseShader()
 {
@@ -1552,6 +1552,7 @@ void CQ3LevelMesh::ReleaseShader()
 	ShaderFile.clear();
 }
 
+
 void CQ3LevelMesh::ReleaseEntity()
 {
 	for ( u32 i = 0; i!= Entity.size(); ++i )
@@ -1559,7 +1560,6 @@ void CQ3LevelMesh::ReleaseEntity()
 		Entity[i].VarGroup->drop();
 	}
 	Entity.clear();
-
 }
 
 
@@ -1570,7 +1570,6 @@ void CQ3LevelMesh::scriptcallback_entity( quake3::SVarGroupList *& grouplist )
 
 	if ( grouplist->VariableGroup.size() != 2 )
 		return;
-
 
 	element.name = grouplist->VariableGroup[1].get( "classname" );
 
@@ -1691,6 +1690,7 @@ void CQ3LevelMesh::loadTextures()
 		}
 	}
 }
+
 
 // delete all buffers without geometry in it.
 void CQ3LevelMesh::cleanMeshes()

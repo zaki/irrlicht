@@ -124,7 +124,7 @@ namespace scene
 		//! \param lookat: Position where the camera will look at. Also known as target.
 		//! \param parent: Parent scene node of the camera. Can be null. If the parent moves,
 		//! the camera will move too.
-		//! \return Returns pointer to interface to camera
+		//! \return Pointer to interface to camera
 		virtual ICameraSceneNode* addCameraSceneNode(ISceneNode* parent = 0,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& lookat = core::vector3df(0,0,0), s32 id=-1);
@@ -147,7 +147,8 @@ namespace scene
 		//! turned on. (This is the default setting in most scene nodes).
 		virtual ILightSceneNode* addLightSceneNode(ISceneNode* parent = 0,
 			const core::vector3df& position = core::vector3df(0,0,0),
-			video::SColorf color = video::SColorf(1.0f, 1.0f, 1.0f),	f32 range=100.0f, s32 id=-1);
+			video::SColorf color = video::SColorf(1.0f, 1.0f, 1.0f),
+			f32 range=100.0f, s32 id=-1);
 
 		//! Adds a billboard scene node to the scene. A billboard is like a 3d sprite: A 2d element,
 		//! which always looks to the camera. It is usually used for things like explosions, fire,
@@ -258,7 +259,7 @@ namespace scene
 		//! of all scene nodes. The root scene node is a special scene node which
 		//! only exists to manage all scene nodes. It is not rendered and cannot
 		//! be removed from the scene.
-		//! \return Returns a pointer to the root scene node.
+		//! \return Pointer to the root scene node.
 		virtual ISceneNode* getRootSceneNode();
 
 		//! Returns the current active camera.
@@ -272,7 +273,7 @@ namespace scene
 
 		//! creates a rotation animator, which rotates the attached scene node around itself.
 		//! \param rotationPerSecond: Specifies the speed of the animation
-		//! \return Returns the animator. Attach it to a scene node with ISceneNode::addAnimator()
+		//! \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
 		//! and the animator will animate it.
 		virtual ISceneNodeAnimator* createRotationAnimator(const core::vector3df& rotationPerSecond);
 

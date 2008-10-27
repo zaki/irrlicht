@@ -247,7 +247,6 @@ void CQuake3ShaderSceneNode::render()
 {
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
-
 	bool isTransparentPass =
 		SceneManager->getSceneNodeRenderPass() == scene::ESNRP_TRANSPARENT;
 
@@ -270,7 +269,7 @@ void CQuake3ShaderSceneNode::render()
 	for ( u32 stage = 0; stage < Shader->VarGroup->VariableGroup.size(); ++stage )
 	//for ( u32 stage = 2; stage < 3; ++stage )
 	{
-		SQ3Texture &q = Q3Texture [ stage];
+		SQ3Texture &q = Q3Texture[stage];
 
 		// advance current stage
 		core::matrix4 texture;
@@ -283,7 +282,7 @@ void CQuake3ShaderSceneNode::render()
 		// current stage
 		group = Shader->getGroup( stage );
 
-		material.setTexture(0, q.Texture [ q.TextureIndex ]);
+		material.setTexture(0, q.Texture[ q.TextureIndex ]);
 		material.ZBuffer = quake3::getDepthFunction( group->get( "depthfunc" ) );
 
 		if ( group->getIndex( "depthwrite" ) >= 0 )
@@ -319,7 +318,6 @@ void CQuake3ShaderSceneNode::render()
 		driver->draw3DBox( getBoundingBox(), video::SColor(0,255,255,255));
 	}
 }
-
 
 
 /*!
