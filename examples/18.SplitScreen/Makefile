@@ -1,7 +1,7 @@
 # Makefile for Irrlicht Examples
 # It's usually sufficient to change just the target name and source file list
 # and be sure that CXX is set to a valid compiler
-Target = 17.SplitScreen
+Target = 18.SplitScreen
 Sources = main.cpp
 
 # general compiler settings
