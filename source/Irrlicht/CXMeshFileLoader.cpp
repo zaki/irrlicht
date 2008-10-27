@@ -863,7 +863,8 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 			for (j=0; j<dcnt; ++j)
 			{
 				const u32 type = readInt();
-				const u32 tesselator = readInt();
+				//const u32 tesselator = readInt();
+				readInt();
 				const u32 semantics = readInt();
 				const u32 index = readInt();
 				switch (semantics)
@@ -1021,7 +1022,6 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 		os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
 		return false;
 	}
-
 
 	mesh.HasSkinning=true;
 
