@@ -695,11 +695,12 @@ namespace video
 		\return Size of render target or screen/window */
 		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const = 0;
 
-		//! Returns current frames per second value.  This value is updated 
-		//! approximately every 1.5 seconds and is only intended to provide a
-		//! rough guide to the average frame rate. It is not suitable for use in 
-		//! performing timing calculations or framerate independent movement.
-		/** \return Approximate amount of frames per second drawn. */
+		//! Returns current frames per second value.
+		/** This value is updated approximately every 1.5 seconds and
+		is only intended to provide a rough guide to the average frame
+		rate. It is not suitable for use in performing timing
+		calculations or framerate independent movement.
+		\return Approximate amount of frames per second drawn. */
 		virtual s32 getFPS() const = 0;
 
 		//! Returns amount of primitives (mostly triangles) which were drawn in the last frame.
@@ -854,8 +855,9 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-                virtual IImage* createImage(IImage* imageToCopy,
-		    const core::position2d<s32>& pos, const core::dimension2d<s32>& size) =0;
+		virtual IImage* createImage(IImage* imageToCopy,
+				const core::position2d<s32>& pos,
+				const core::dimension2d<s32>& size) =0;
 
 		//! Event handler for resize events. Only used by the engine internally.
 		/** Used to notify the driver that the window was resized.
