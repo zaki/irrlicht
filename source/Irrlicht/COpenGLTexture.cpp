@@ -20,19 +20,13 @@ namespace irr
 namespace video
 {
 
-#ifdef GL_EXT_framebuffer_object
-// helper function for render to texture
-static bool checkFBOStatus(COpenGLDriver* Driver);
-#endif
-
 //! constructor for usual textures
 COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDriver* driver)
 	: ITexture(name), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
-	ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
-	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	UseStencil(false), ReadOnlyLock(false)
+	IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	ReadOnlyLock(false)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -48,156 +42,25 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDrive
 	}
 }
 
-
-//! RTT ColorFrameBuffer constructor
-COpenGLTexture::COpenGLTexture(const core::dimension2d<s32>& size,
-                                const char* name,
-                                COpenGLDriver* driver,
-				bool useStencil)
-	: ITexture(name), ImageSize(size), Driver(driver), Image(0),
-	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
+//! constructor for basic setup (only for derived classes)
+COpenGLTexture::COpenGLTexture(const char* name, COpenGLDriver* driver)
+	: ITexture(name), Driver(driver), Image(0),
+	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
-	ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
-	HasMipMaps(false), IsRenderTarget(true), AutomaticMipmapUpdate(false),
-	UseStencil(useStencil), ReadOnlyLock(false)
+	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	ReadOnlyLock(false)
 {
 	#ifdef _DEBUG
-	setDebugName("COpenGLTexture_FBO");
+	setDebugName("COpenGLTexture");
 	#endif
-
-	if (useStencil)
-	{
-		glGenTextures(1, &DepthRenderBuffer);
-		glBindTexture(GL_TEXTURE_2D, DepthRenderBuffer);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#ifdef GL_EXT_packed_depth_stencil
-		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_EXT_packed_depth_stencil))
-		{
-			// generate packed depth stencil texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL_EXT, ImageSize.Width,
-				ImageSize.Height, 0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, 0);
-			StencilRenderBuffer = DepthRenderBuffer; // stencil is packed with depth
-		}
-		else // generate separate stencil and depth textures
-#endif
-		{
-			// generate depth texture
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, ImageSize.Width,
-				ImageSize.Height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
-
-			// we 're in trouble! the code below does not complete
-			// the FBO currently...  stencil buffer is only
-			// supported with EXT_packed_depth_stencil extension
-			// (above)
-
-//			// generate stencil texture
-//			glGenTextures(1, &StencilRenderBuffer);
-//			glBindTexture(GL_TEXTURE_2D, StencilRenderBuffer);
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//			glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX, ImageSize.Width,
-//			ImageSize.Height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 0);
-//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		}
-	}
-#ifdef GL_EXT_framebuffer_object
-	else
-	{
-		// generate depth buffer
-		Driver->extGlGenRenderbuffers(1, &DepthRenderBuffer);
-		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_EXT, DepthRenderBuffer);
-		Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_EXT,
-				GL_DEPTH_COMPONENT, ImageSize.Width,
-				ImageSize.Height);
-	}
-
-	// generate frame buffer
-	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
-
-	// generate color texture
-	glGenTextures(1, &TextureName);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
-		ImageSize.Height, 0, PixelFormat, PixelType, 0);
-
-	// attach color texture to frame buffer
-	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_COLOR_ATTACHMENT0_EXT,
-						GL_TEXTURE_2D,
-						TextureName,
-						0);
-
-	if (useStencil)
-	{
-		// attach stencil texture to stencil buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_STENCIL_ATTACHMENT_EXT,
-						GL_TEXTURE_2D,
-						StencilRenderBuffer,
-						0);
-
-		// attach depth texture to depth buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_DEPTH_ATTACHMENT_EXT,
-						GL_TEXTURE_2D,
-						DepthRenderBuffer,
-						0);
-	}
-	else
-	{
-		// attach depth renderbuffer to depth buffer
-		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT,
-						GL_DEPTH_ATTACHMENT_EXT,
-						GL_RENDERBUFFER_EXT,
-						DepthRenderBuffer);
-	}
-
-	glGetError();
-
-	// check the status
-	if (!checkFBOStatus(Driver))
-	{
-		printf("FBO=%u, Color=%u, Depth=%u, Stencil=%u\n",
-			ColorFrameBuffer, TextureName, DepthRenderBuffer, StencilRenderBuffer);
-		if (ColorFrameBuffer)
-			Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
-		if (DepthRenderBuffer)
-		{
-			if (useStencil)
-				glDeleteTextures(1, &DepthRenderBuffer);
-			else
-				Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
-		}
-		if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
-			glDeleteTextures(1, &StencilRenderBuffer);
-		ColorFrameBuffer = 0;
-		DepthRenderBuffer = 0;
-		StencilRenderBuffer = 0;
-	}
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
-#endif
 }
 
 
 //! destructor
 COpenGLTexture::~COpenGLTexture()
 {
-	if (ColorFrameBuffer)
-		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
-	if (DepthRenderBuffer && UseStencil)
-		glDeleteTextures(1, &DepthRenderBuffer);
-	else
-		Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
-	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
-		glDeleteTextures(1, &StencilRenderBuffer);
-
-	glDeleteTextures(1, &TextureName);
+	if (TextureName)
+		glDeleteTextures(1, &TextureName);
 	if (Image)
 		Image->drop();
 }
@@ -538,7 +401,7 @@ void COpenGLTexture::regenerateMipMapLevels()
 
 bool COpenGLTexture::isFrameBufferObject() const
 {
-    return ColorFrameBuffer != 0;
+    return false;
 }
 
 
@@ -558,33 +421,205 @@ void COpenGLTexture::setIsRenderTarget(bool isTarget)
 void COpenGLTexture::bindRTT()
 {
 	glViewport(0, 0, getSize().Width, getSize().Height);
-	if (isFrameBufferObject())
-	{
-#ifdef GL_EXT_framebuffer_object
-		if (ColorFrameBuffer != 0)
-			Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
-#endif
-	}
 }
 
 
 //! Unbind Render Target Texture
 void COpenGLTexture::unbindRTT()
 {
-	if (isFrameBufferObject())
-	{
+	glBindTexture(GL_TEXTURE_2D, getOpenGLTextureName());
+
+	// Copy Our ViewPort To The Texture
+	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
+}
+
+
+/* FBO Textures */
+
 #ifdef GL_EXT_framebuffer_object
-		if (ColorFrameBuffer != 0)
-			Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+// helper function for render to texture
+static bool checkFBOStatus(COpenGLDriver* Driver);
 #endif
+
+
+//! RTT ColorFrameBuffer constructor
+COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
+                                const char* name,
+                                COpenGLDriver* driver,
+				bool useStencil)
+	: COpenGLTexture(name, driver),
+	ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
+	UseStencil(useStencil)
+{
+	#ifdef _DEBUG
+	setDebugName("COpenGLTexture_FBO");
+	#endif
+
+	ImageSize = size;
+	InternalFormat = GL_RGBA;
+	PixelFormat = GL_RGBA;
+	PixelType = GL_UNSIGNED_BYTE;
+	HasMipMaps = false;
+	IsRenderTarget = true;
+
+	if (useStencil)
+	{
+		glGenTextures(1, &DepthRenderBuffer);
+		glBindTexture(GL_TEXTURE_2D, DepthRenderBuffer);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifdef GL_EXT_packed_depth_stencil
+		if (Driver->queryOpenGLFeature(COpenGLExtensionHandler::IRR_EXT_packed_depth_stencil))
+		{
+			// generate packed depth stencil texture
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL_EXT, ImageSize.Width,
+				ImageSize.Height, 0, GL_DEPTH_STENCIL_EXT, GL_UNSIGNED_INT_24_8_EXT, 0);
+			StencilRenderBuffer = DepthRenderBuffer; // stencil is packed with depth
+		}
+		else // generate separate stencil and depth textures
+#endif
+		{
+			// generate depth texture
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, ImageSize.Width,
+				ImageSize.Height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
+
+			// we 're in trouble! the code below does not complete
+			// the FBO currently...  stencil buffer is only
+			// supported with EXT_packed_depth_stencil extension
+			// (above)
+
+//			// generate stencil texture
+//			glGenTextures(1, &StencilRenderBuffer);
+//			glBindTexture(GL_TEXTURE_2D, StencilRenderBuffer);
+//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//			glTexImage2D(GL_TEXTURE_2D, 0, GL_STENCIL_INDEX, ImageSize.Width,
+//			ImageSize.Height, 0, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, 0);
+//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+	}
+#ifdef GL_EXT_framebuffer_object
+	else
+	{
+		// generate depth buffer
+		Driver->extGlGenRenderbuffers(1, &DepthRenderBuffer);
+		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_EXT, DepthRenderBuffer);
+		Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_EXT,
+				GL_DEPTH_COMPONENT, ImageSize.Width,
+				ImageSize.Height);
+	}
+
+	// generate frame buffer
+	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+
+	// generate color texture
+	glGenTextures(1, &TextureName);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
+		ImageSize.Height, 0, PixelFormat, PixelType, 0);
+
+	// attach color texture to frame buffer
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
+						GL_COLOR_ATTACHMENT0_EXT,
+						GL_TEXTURE_2D,
+						TextureName,
+						0);
+
+	if (useStencil)
+	{
+		// attach stencil texture to stencil buffer
+		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
+						GL_STENCIL_ATTACHMENT_EXT,
+						GL_TEXTURE_2D,
+						StencilRenderBuffer,
+						0);
+
+		// attach depth texture to depth buffer
+		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
+						GL_DEPTH_ATTACHMENT_EXT,
+						GL_TEXTURE_2D,
+						DepthRenderBuffer,
+						0);
 	}
 	else
 	{
-		glBindTexture(GL_TEXTURE_2D, getOpenGLTextureName());
-
-		// Copy Our ViewPort To The Texture
-		glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
+		// attach depth renderbuffer to depth buffer
+		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT,
+						GL_DEPTH_ATTACHMENT_EXT,
+						GL_RENDERBUFFER_EXT,
+						DepthRenderBuffer);
 	}
+
+	glGetError();
+
+	// check the status
+	if (!checkFBOStatus(Driver))
+	{
+		printf("FBO=%u, Color=%u, Depth=%u, Stencil=%u\n",
+			ColorFrameBuffer, TextureName, DepthRenderBuffer, StencilRenderBuffer);
+		if (ColorFrameBuffer)
+			Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
+		if (DepthRenderBuffer)
+		{
+			if (useStencil)
+				glDeleteTextures(1, &DepthRenderBuffer);
+			else
+				Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
+		}
+		if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
+			glDeleteTextures(1, &StencilRenderBuffer);
+		ColorFrameBuffer = 0;
+		DepthRenderBuffer = 0;
+		StencilRenderBuffer = 0;
+	}
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+#endif
+}
+
+
+//! destructor
+COpenGLFBOTexture::~COpenGLFBOTexture()
+{
+	if (ColorFrameBuffer)
+		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
+	if (DepthRenderBuffer && UseStencil)
+		glDeleteTextures(1, &DepthRenderBuffer);
+	else
+		Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
+	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
+		glDeleteTextures(1, &StencilRenderBuffer);
+}
+
+
+bool COpenGLFBOTexture::isFrameBufferObject() const
+{
+    return true;
+}
+
+
+//! Bind Render Target Texture
+void COpenGLFBOTexture::bindRTT()
+{
+	glViewport(0, 0, getSize().Width, getSize().Height);
+#ifdef GL_EXT_framebuffer_object
+	if (ColorFrameBuffer != 0)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+#endif
+}
+
+
+//! Unbind Render Target Texture
+void COpenGLFBOTexture::unbindRTT()
+{
+#ifdef GL_EXT_framebuffer_object
+	if (ColorFrameBuffer != 0)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+#endif
 }
 
 
