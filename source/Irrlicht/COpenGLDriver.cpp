@@ -2569,7 +2569,7 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 	{
-		rtt = new COpenGLTexture(size, name, this);
+		rtt = new COpenGLFBOTexture(size, name, this);
 		addTexture(rtt);
 		rtt->drop();
 	}

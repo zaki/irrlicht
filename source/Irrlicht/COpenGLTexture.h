@@ -49,8 +49,6 @@ public:
 
 	//! constructor
 	COpenGLTexture(IImage* surface, const char* name, COpenGLDriver* driver=0);
-	//! FrameBufferObject constructor
-	COpenGLTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
 
 	//! destructor
 	virtual ~COpenGLTexture();
@@ -90,18 +88,21 @@ public:
 	virtual bool isRenderTarget() const;
 
 	//! Is it a FrameBufferObject?
-	bool isFrameBufferObject() const;
+	virtual bool isFrameBufferObject() const;
 
 	//! Bind RenderTargetTexture
-	void bindRTT();
+	virtual void bindRTT();
 
 	//! Unbind RenderTargetTexture
-	void unbindRTT();
+	virtual void unbindRTT();
 
 	//! sets whether this texture is intended to be used as a render target.
 	void setIsRenderTarget(bool isTarget);
 
-private:
+protected:
+
+	//! protected constructor with basic setup, no GL texture name created, for derived classes
+	COpenGLTexture(const char* name, COpenGLDriver* driver);
 
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
@@ -109,7 +110,7 @@ private:
 	//! convert the image into an internal image with better properties for this driver.
 	void getImageData(IImage* image);
 
-	//! copies the the texture into an open gl texture.
+	//! copies the texture into an OpenGL texture.
 	//! \param: newTexture is true if method is called from a newly created texture for the first time. Otherwise call with false to improve memory handling.
 	void copyTexture(bool newTexture=true);
 
@@ -125,15 +126,36 @@ private:
 	GLenum PixelFormat;
 	GLenum PixelType;
 
-	GLuint ColorFrameBuffer; // for FBO path
-	GLuint DepthRenderBuffer; // for FBO path
-	GLuint StencilRenderBuffer; // for FBO path
-
 	bool HasMipMaps;
 	bool IsRenderTarget;
 	bool AutomaticMipmapUpdate;
-	bool UseStencil;
 	bool ReadOnlyLock;
+};
+
+//! OpenGL FBO texture.
+class COpenGLFBOTexture : public COpenGLTexture
+{
+public:
+
+	//! FrameBufferObject constructor
+	COpenGLFBOTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
+
+	//! destructor
+	virtual ~COpenGLFBOTexture();
+
+	//! Is it a FrameBufferObject?
+	virtual bool isFrameBufferObject() const;
+
+	//! Bind RenderTargetTexture
+	virtual void bindRTT();
+
+	//! Unbind RenderTargetTexture
+	virtual void unbindRTT();
+
+	GLuint ColorFrameBuffer; // for FBO path
+	GLuint DepthRenderBuffer; // for FBO path
+	GLuint StencilRenderBuffer; // for FBO path
+	bool UseStencil;
 };
 
 
