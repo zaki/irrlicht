@@ -227,7 +227,6 @@ namespace irr
 			core::rect<s32> ReferenceRect;
 		};
 
-
 		//! returns the win32 cursor control
 		CCursorControl* getWin32CursorControl();
 
@@ -251,7 +250,6 @@ namespace irr
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
 	};
-
 
 } // end namespace irr
 

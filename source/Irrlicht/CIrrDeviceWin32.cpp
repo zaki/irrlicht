@@ -44,7 +44,6 @@ namespace irr
 } // end namespace irr
 
 
-
 struct SEnvMapper
 {
 	HWND hWnd;
@@ -62,6 +61,7 @@ SEnvMapper* getEnvMapperFromHWnd(HWND hWnd)
 
 	return 0;
 }
+
 
 irr::CIrrDeviceWin32* getDeviceFromHWnd(HWND hWnd)
 {
@@ -85,9 +85,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	irr::CIrrDeviceWin32* dev = 0;
 	irr::SEvent event;
-	SEnvMapper* envm = 0;
-
-	BYTE allKeys[256];
 
 	static irr::s32 ClickCount=0;
 	if (GetCapture() != hWnd && ClickCount > 0)
@@ -107,12 +104,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_SETCURSOR:
-		envm = getEnvMapperFromHWnd(hWnd);
+	{
+		SEnvMapper* envm = getEnvMapperFromHWnd(hWnd);
 		if (envm && !envm->irrDev->getWin32CursorControl()->isVisible())
 		{
 			SetCursor(NULL);
 			return 0;
 		}
+	}
 		break;
 
 	case WM_MOUSEWHEEL:
@@ -230,6 +229,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 		{
+			BYTE allKeys[256];
+
 			event.EventType = irr::EET_KEY_INPUT_EVENT;
 			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
 			event.KeyInput.PressedDown = (message==WM_KEYDOWN);
@@ -282,6 +283,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
 
 namespace irr
 {
@@ -407,7 +409,6 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 }
 
 
-
 //! destructor
 CIrrDeviceWin32::~CIrrDeviceWin32()
 {
@@ -415,16 +416,17 @@ CIrrDeviceWin32::~CIrrDeviceWin32()
 
 	irr::core::list<SEnvMapper>::Iterator it = EnvMap.begin();
 	for (; it!= EnvMap.end(); ++it)
+	{
 		if ((*it).hWnd == HWnd)
 		{
 			EnvMap.erase(it);
 			break;
 		}
+	}
 
 	if (ChangedToFullScreen)
 		ChangeDisplaySettings(NULL,0);
 }
-
 
 
 //! create the driver
@@ -521,7 +523,6 @@ void CIrrDeviceWin32::createDriver()
 		break;
 	}
 }
-
 
 
 //! runs the device. Returns false if device wants to be deleted
