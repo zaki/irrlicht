@@ -757,11 +757,13 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 		// store previous target
 
 		if (!PrevRenderTarget)
+		{
 			if (FAILED(pID3DDevice->GetRenderTarget(0, &PrevRenderTarget)))
 			{
 				os::Printer::log("Could not get previous render target.", ELL_ERROR);
 				return false;
 			}
+		}
 
 		// set new render target
 

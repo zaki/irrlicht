@@ -136,7 +136,7 @@ void CD3D9Texture::createRenderTarget()
 	}
 	else
 	{
-		os::Printer::log("Could not create RenderTarget texture: could not get BackBuffer.",
+		os::Printer::log("Could not create RenderTarget texture", "could not get BackBuffer.",
 			ELL_WARNING);
 		return;
 	}
