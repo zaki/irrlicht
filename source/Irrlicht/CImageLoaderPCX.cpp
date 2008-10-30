@@ -72,7 +72,7 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 		return 0;
 
 	// return if this isn't a supported type
-	if( (header.BitsPerPixel != 8) && (header.BitsPerPixel != 24) )
+	if (header.BitsPerPixel != 8)
 	{
 		os::Printer::log("Unsupported bits per pixel in PCX file.",
 			file->getFileName(), irr::ELL_WARNING);
@@ -80,7 +80,7 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 	}
 
 	// read palette
-	if( header.BitsPerPixel == 8 )
+	if( (header.BitsPerPixel == 8) && (header.Planes == 1) )
 	{
 		// the palette indicator (usually a 0x0c is found infront of the actual palette data)
 		// is ignored because some exporters seem to forget to write it. This would result in
@@ -102,7 +102,7 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 
 		delete [] tempPalette;
 
-		file->seek( pos );
+		file->seek(pos);
 	}
 	else if( header.BitsPerPixel == 4 )
 	{
@@ -117,16 +117,16 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 	}
 
 	// read image data
-	s32 width, height, imagebytes;
-	width = header.XMax - header.XMin + 1;
-	height = header.YMax - header.YMin + 1;
-	imagebytes = header.BytesPerLine * height * header.Planes * header.BitsPerPixel / 8;
+	const s32 width = header.XMax - header.XMin + 1;
+	const s32 height = header.YMax - header.YMin + 1;
+	const s32 imagebytes = header.BytesPerLine * header.Planes * header.BitsPerPixel / 8 * height;
 	u8* PCXData = new u8[imagebytes];
 
 	u8 cnt, value;
-	for( s32 offset = 0; offset < imagebytes; )
+	s32 lineoffset=0, linestart=0, nextmode=1;
+	for(s32 offset = 0; offset < imagebytes; offset += cnt)
 	{
-		file->read( &cnt, 1 );
+		file->read(&cnt, 1);
 		if( !((cnt & 0xc0) == 0xc0) )
 		{
 			value = cnt;
@@ -135,30 +135,46 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 		else
 		{
 			cnt &= 0x3f;
-			file->read( &value, 1 );
+			file->read(&value, 1);
 		}
-		memset(PCXData+offset, value, cnt);
-		offset += cnt;
+		if (header.Planes==1)
+			memset(PCXData+offset, value, cnt);
+		else
+		{
+			for (u32 i=0; i<cnt; ++i)
+			{
+				PCXData[linestart+lineoffset]=value;
+				lineoffset += 3;
+				if (lineoffset>=3*header.BytesPerLine)
+				{
+					lineoffset=nextmode;
+					if (++nextmode==3)
+						nextmode=0;
+					if (lineoffset==0)
+						linestart += 3*header.BytesPerLine;
+				}
+			}
+		}
 	}
 
 	// create image
 	video::IImage* image = 0;
-	s32 pitch = header.BytesPerLine - width * header.Planes * header.BitsPerPixel / 8;
+	s32 pad = (header.BytesPerLine - width * header.BitsPerPixel / 8) * header.Planes;
 
-	if (pitch < 0)
-		pitch = -pitch;
+	if (pad < 0)
+		pad = -pad;
 
-	switch(header.BitsPerPixel) // TODO: Other formats
+	switch(header.Planes) // TODO: Other formats
 	{
-	case 8:
+	case 1:
 		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(width, height));
 		if (image)
-			CColorConverter::convert8BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pitch);
+			CColorConverter::convert8BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
 		break;
-	case 24:
+	case 3:
 		image = new CImage(ECF_R8G8B8, core::dimension2d<s32>(width, height));
 		if (image)
-			CColorConverter::convert24BitTo24Bit(PCXData, (u8*)image->lock(), width, height, pitch);
+			CColorConverter::convert24BitTo24Bit(PCXData, (u8*)image->lock(), width, height, pad);
 		break;
 	};
 	if (image)
