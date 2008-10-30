@@ -30,7 +30,6 @@ namespace irr
 } // end namespace irr
 
 
-
 namespace irr
 {
 
@@ -192,7 +191,6 @@ void CIrrDeviceSDL::createDriver()
 }
 
 
-
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceSDL::run()
 {
@@ -326,7 +324,51 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom(
 			surface->lock(), surface->getDimension().Width, surface->getDimension().Height,
 			surface->getBitsPerPixel(), surface->getPitch(),
-			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), 0);
+			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), surface->getAlphaMask());
+	sdlSurface->format->BitsPerPixel=surface->getBitsPerPixel();
+	sdlSurface->format->BytesPerPixel=surface->getBytesPerPixel();
+	if ((surface->getColorFormat()==video::ECF_R8G8B8) ||
+			(surface->getColorFormat()==video::ECF_A8R8G8B8))
+	{
+		sdlSurface->format->Rloss=0;
+		sdlSurface->format->Gloss=0;
+		sdlSurface->format->Bloss=0;
+		sdlSurface->format->Rshift=16;
+		sdlSurface->format->Gshift=8;
+		sdlSurface->format->Bshift=0;
+		if (surface->getColorFormat()==video::ECF_R8G8B8)
+		{
+			sdlSurface->format->Aloss=8;
+			sdlSurface->format->Ashift=32;
+		}
+		else
+		{
+			sdlSurface->format->Aloss=0;
+			sdlSurface->format->Ashift=24;
+		}
+	}
+	else if (surface->getColorFormat()==video::ECF_R5G6B5)
+	{
+		sdlSurface->format->Rloss=3;
+		sdlSurface->format->Gloss=2;
+		sdlSurface->format->Bloss=3;
+		sdlSurface->format->Aloss=8;
+		sdlSurface->format->Rshift=11;
+		sdlSurface->format->Gshift=5;
+		sdlSurface->format->Bshift=0;
+		sdlSurface->format->Ashift=32;
+	}
+	else if (surface->getColorFormat()==video::ECF_A1R5G5B5)
+	{
+		sdlSurface->format->Rloss=3;
+		sdlSurface->format->Gloss=3;
+		sdlSurface->format->Bloss=3;
+		sdlSurface->format->Aloss=7;
+		sdlSurface->format->Rshift=10;
+		sdlSurface->format->Gshift=5;
+		sdlSurface->format->Bshift=0;
+		sdlSurface->format->Ashift=15;
+	}
 	SDL_Surface* scr = (SDL_Surface* )windowId;
 	if (!scr)
 		scr = Screen;
@@ -347,13 +389,11 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 }
 
 
-
 //! notifies the device that it should close itself
 void CIrrDeviceSDL::closeDevice()
 {
 	Close = true;
 }
-
 
 
 //! \return Pointer to a list with all video modes supported
