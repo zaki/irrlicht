@@ -2287,7 +2287,7 @@ bool CD3D9Driver::reset()
 	{
 		if (Textures[i].Surface->isRenderTarget())
 		{
-			IDirect3DTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
+			IDirect3DBaseTexture9* tex = ((CD3D9Texture*)(Textures[i].Surface))->getDX9Texture();
 			if (tex)
 				tex->Release();
 		}
