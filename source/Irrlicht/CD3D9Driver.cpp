@@ -716,13 +716,13 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 
 	// check for valid render target
 
-	CD3D9Texture* tex = (CD3D9Texture*)texture;
-
-	if (texture && !tex->isRenderTarget())
+	if (texture && !texture->isRenderTarget())
 	{
 		os::Printer::log("Fatal Error: Tried to set a non render target texture as render target.", ELL_ERROR);
 		return false;
 	}
+
+	CD3D9Texture* tex = static_cast<CD3D9Texture*>(texture);
 
 	if (texture && (tex->getSize().Width > CurrentDepthBufferSize.Width ||
 		tex->getSize().Height > CurrentDepthBufferSize.Height))
@@ -1707,9 +1707,9 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 
 	if (resetAllRenderstates || (lastmaterial.FrontfaceCulling != material.FrontfaceCulling) || (lastmaterial.BackfaceCulling != material.BackfaceCulling))
 	{
-		if (material.FrontfaceCulling && material.BackfaceCulling)
-			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW|D3DCULL_CCW);
-		else
+//		if (material.FrontfaceCulling && material.BackfaceCulling)
+//			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW|D3DCULL_CCW);
+//		else
 		if (material.FrontfaceCulling)
 			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 		else
