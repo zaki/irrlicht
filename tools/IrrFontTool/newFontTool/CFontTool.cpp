@@ -17,7 +17,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 // windows specific
 #ifdef _IRR_WINDOWS_
 
-	const DWORD charsets[] = {	ANSI_CHARSET, DEFAULT_CHARSET, OEM_CHARSET, BALTIC_CHARSET, GB2312_CHARSET, CHINESEBIG5_CHARSET,
+	const DWORD charsets[] = { ANSI_CHARSET, DEFAULT_CHARSET, OEM_CHARSET, BALTIC_CHARSET, GB2312_CHARSET, CHINESEBIG5_CHARSET,
 								EASTEUROPE_CHARSET, GREEK_CHARSET, HANGUL_CHARSET, MAC_CHARSET, RUSSIAN_CHARSET,
 								SHIFTJIS_CHARSET, SYMBOL_CHARSET, TURKISH_CHARSET, VIETNAMESE_CHARSET, JOHAB_CHARSET,
 								ARABIC_CHARSET, HEBREW_CHARSET, THAI_CHARSET, 0};
@@ -116,7 +116,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 
 		GetFontUnicodeRanges( dc, glyphs);
 
-//		s32 TotalCharCount = glyphs->cGlyphsSupported;
+		// s32 TotalCharCount = glyphs->cGlyphsSupported;
 
 		s32 currentx=0, currenty=0, maxy=0;
 
@@ -132,7 +132,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 				wchar_t currentchar = ch;
 
 				if ( IsDBCSLeadByte((BYTE) ch))
-					continue;	// surragate pairs unsupported
+					continue; // surragate pairs unsupported
 
 				// get the dimensions
 				SIZE size;
@@ -149,7 +149,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 					fa.overhang   = abc.abcC;
 
 					if (abc.abcB-abc.abcA+abc.abcC<1)
-						continue;	// nothing of width 0
+						continue; // nothing of width 0
 				}
 				if (size.cy < 1)
 					continue;
@@ -252,7 +252,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 			// copy the font bitmap into a new irrlicht image
 			BITMAP b;
 			PBITMAPINFO pbmi;
-			WORD    cClrBits;
+			WORD cClrBits;
 			u32 cformat;
 
 			// Retrieve the bitmap color format, width, and height.
@@ -296,7 +296,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 			// device colors are important.
 			pbmi->bmiHeader.biClrImportant = 0;
 
-			LPBYTE lpBits;              // memory pointer
+			LPBYTE lpBits; // memory pointer
 
 			PBITMAPINFOHEADER pbih = (PBITMAPINFOHEADER) pbmi;
 			lpBits = (LPBYTE) GlobalAlloc(GMEM_FIXED, pbih->biSizeImage);
@@ -402,182 +402,279 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 
 #else
 
-	/*
-		Currently only windows is supported.
-		If anyone makes a Linux/OSX implementation, please post a patch to the tracker for inclusion :)
-	*/
-
-	CFontTool::CFontTool(IrrlichtDevice *device) : FontSizes(fontsizes),
-		Device(device), UseAlphaChannel(false)
+	CFontTool::CFontTool(IrrlichtDevice *device) : FontSizes(fontsizes), Device(device), UseAlphaChannel(false)
 	{
-		device->setWindowCaption(L"Unable to create fonts, your OS is not supported :-(");
-
-		int fontCount = 0;
-		char **fontList = XListFonts((Display*)device->getVideoDriver()->getExposedVideoData().OpenGLLinux.X11Display, "-*", 2048, &fontCount);
-
-		for (int i=0; i<fontCount; ++i)
+		if (!XftInitFtLibrary())
 		{
-			core::stringw tmp(fontList[i]);
-			tmp = tmp.subString(1, tmp.findNext(L'-', 1)-1);
-			if (!CharSets.size() || (tmp != CharSets.getLast()))
-				CharSets.push_back( tmp );
+			core::stringc logmsg = "XFT not found\n";
+			Device->getLogger()->log(logmsg.c_str());
+			exit(EXIT_FAILURE);
 		}
-		XFreeFontNames(fontList);
 
+		/* Get a list of the font foundries, storing them in a set to sort */
+		std::set<core::stringw> foundries;
+		Display* display = (Display*)Device->getVideoDriver()->getExposedVideoData().OpenGLLinux.X11Display;
+		XftFontSet* fonts = XftListFonts(display, DefaultScreen(display), 0, XFT_FOUNDRY, 0);
+		for (int i = 0; i < fonts->nfont; i++)
+		{
+			char *foundry;
+			XftPatternGetString(fonts->fonts[i], XFT_FOUNDRY, 0, &foundry);
+			core::stringw tmp(foundry);
+			foundries.insert(tmp);
+		}
+		XftFontSetDestroy(fonts);
+
+		/* Copy the sorted list into the array */
+		CharSets.clear();
+		for (std::set<core::stringw>::iterator i = foundries.begin(); i != foundries.end(); i++)
+			CharSets.push_back((*i).c_str());
 		selectCharSet(0);
 	}
 
+	/* Note: There must be some trick for using strings as pattern parameters to XftListFonts because
+	no matter how I specify a string, I end up with an intermittent segfault.  Since XftFontList is
+	just calling FcFontList, that's what I'll do too since that works OK */
 	void CFontTool::selectCharSet(u32 currentCharSet)
 	{
-		if ( currentCharSet >= CharSets.size() )
-			return;
+		/* Get a list of the font families, storing them in a set to sort */
+		char foundry[256];
+		sprintf(&foundry[0],"%ls",CharSets[currentCharSet].c_str());
+		std::set<core::stringw> families;
+		XftPattern *pattern = FcPatternCreate();
+		XftPatternAddString(pattern, FC_FOUNDRY, &foundry[0]);
+		XftObjectSet *objectset = FcObjectSetCreate();
+		XftObjectSetAdd(objectset, XFT_FOUNDRY);
+		XftObjectSetAdd(objectset, XFT_FAMILY);
+		FcFontSet *fonts = FcFontList(NULL, pattern, objectset);
 
-		FontNames.clear();
-
-		int fontCount = 0;
-		char familyName[1024];
-		snprintf(familyName, 1024, "-%ls-*", CharSets[currentCharSet].c_str());
-		char **fontList = XListFonts((Display*)Device->getVideoDriver()->getExposedVideoData().OpenGLLinux.X11Display, familyName, 2048, &fontCount);
-
-		for (int i=0; i<fontCount; ++i)
+		for (int i = 0; i < fonts->nfont; i++)
 		{
-			core::stringw tmp(fontList[i]);
-			s32 pos = tmp.findNext(L'-', 1)+1;
-			tmp = tmp.subString(pos, tmp.findNext(L'-', pos)-pos);
-			if (!FontNames.size() || (tmp != FontNames.getLast()))
-				FontNames.push_back( tmp );
+			char* ptr;
+			XftPatternGetString(fonts->fonts[i], XFT_FAMILY, 0, &ptr);
+			core::stringw family(ptr);
+			families.insert(family);
 		}
-		XFreeFontNames(fontList);
+		XftPatternDestroy(pattern);
+		FcObjectSetDestroy(objectset);
+
+		/* Copy the sorted list into the array */
+		FontNames.clear();
+		for (std::set<core::stringw>::iterator i = families.begin(); i != families.end(); i++)
+			FontNames.push_back((*i).c_str());
 	}
 
-	bool CFontTool::makeBitmapFont(	u32 fontIndex, u32 charsetIndex,
-					s32 fontSize, u32 texturewidth, u32 textureHeight,
-					bool bold, bool italic, bool aa, bool alpha)
+	bool CFontTool::makeBitmapFont(u32 fontIndex, u32 charsetIndex, s32 fontSize, u32 textureWidth, u32 textureHeight, bool bold, bool italic, bool aa, bool alpha)
 	{
 		if (fontIndex >= FontNames.size() || charsetIndex >= CharSets.size() )
 			return false;
 
-		Display* display = (Display*)Device->getVideoDriver()->getExposedVideoData().OpenGLLinux.X11Display;
+		Display *display = (Display*) Device->getVideoDriver()->getExposedVideoData().OpenGLLinux.X11Display;
+		u32 screen = DefaultScreen(display);
+		Window win = RootWindow(display, screen);
+		Visual *visual = DefaultVisual(display, screen);
 		UseAlphaChannel = alpha;
 		u32 currentImage = 0;
 
-		char familyName[1024];
-		snprintf(familyName, 1024, "-%ls-%ls-%s-%s-*", CharSets[charsetIndex].c_str(), FontNames[fontIndex].c_str(), bold?"bold":"medium", italic?"i":"r");
-		XFontStruct* fontStruct = XLoadQueryFont(display, familyName);
-		if (!fontStruct)
-			return false;
+		XftResult result;
+		XftPattern *request = XftPatternCreate();
+		char foundry[256], family[256];
+		sprintf(&foundry[0],"%ls",CharSets[charsetIndex].c_str());
+		sprintf(&family[0],"%ls",FontNames[fontIndex].c_str());
+		XftPatternAddString(request, XFT_FOUNDRY, &foundry[0]);
+		XftPatternAddString(request, XFT_FAMILY, &family[0]);
+		XftPatternAddInteger(request, XFT_PIXEL_SIZE, fontSize);
+		XftPatternAddInteger(request, XFT_WEIGHT, bold ? XFT_WEIGHT_BLACK : XFT_WEIGHT_LIGHT);
+		XftPatternAddInteger(request, XFT_SLANT, italic ? XFT_SLANT_ITALIC : XFT_SLANT_ROMAN);
+		XftPatternAddBool(request, XFT_ANTIALIAS, aa);
+
+		/* Find the closest font that matches the user choices and open it and check if the returned
+		font has anti aliasing enabled by default, even if it wasn't requested */
+		FcBool aaEnabled;
+		XftPattern *found = XftFontMatch(display, DefaultScreen(display), request, &result);
+		XftPatternGetBool(found, XFT_ANTIALIAS, 0, &aaEnabled);
+		aa = aaEnabled;
+		XftFont *font = XftFontOpenPattern(display, found);
 
 		// get rid of the current textures/images
 		for (u32 i=0; i<currentTextures.size(); ++i)
 			currentTextures[i]->drop();
 		currentTextures.clear();
-
 		for (u32 i=0; i<currentImages.size(); ++i)
 			currentImages[i]->drop();
 		currentImages.clear();
-
-		// clear current image mappings
 		CharMap.clear();
-		// clear array
 		Areas.clear();
 
-		printf("dir %u minc %u maxc %u min %u max %u, all %d def %u #prop %d asc %d desc %d\n",
-			fontStruct->direction,
-			fontStruct->min_char_or_byte2,
-			fontStruct->max_char_or_byte2,
-			fontStruct->min_byte1,
-			fontStruct->max_byte1,
-			fontStruct->all_chars_exist,
-			fontStruct->default_char,
-			fontStruct->n_properties,
-			fontStruct->ascent,
-			fontStruct->descent);
-#if 0
-			XFontProp *properties;
-			XCharStruct min_bounds;  /* minimum bounds over all existing char */
-			XCharStruct max_bounds;  /* maximum bounds over all existing char */
-			XCharStruct *per_char;   /* first_char to last_char information */
-#endif
+		/* Calculate the max height of the font.  Annoyingly, it seems that the height property of the font
+		is the maximum height of any single character, but a string of characters, aligned along their
+		baselines, can exceed this figure.  Because I don't know any better way of doing it, I'm going to
+		have to use the brute force method.
 
-#if 0
-		for (s32 ch=current->wcLow; ch< current->wcLow + current->cGlyphs; ch++)
+		Note: There will be a certain number of charters in a font, however they may not be grouped
+		consecutively, and could in fact be spread out with many gaps */
+		u32 maxY = 0;
+		u32 charsFound = 0;
+		for (FT_UInt charCode = 0; charsFound < FcCharSetCount(font->charset); charCode++)
 		{
-			wchar_t currentchar = ch;
-
-			// get the dimensions
-			SIZE size;
-			ABC abc;
-			GetTextExtentPoint32W(dc, &currentchar, 1, &size);
-			SFontArea fa;
-			fa.underhang = 0;
-			fa.overhang  = 0;
-
-			if (GetCharABCWidthsW(dc, currentchar, currentchar, &abc)) // for unicode fonts, get overhang, underhang, width
-			{
-				size.cx = abc.abcB;
-				fa.underhang  = abc.abcA;
-				fa.overhang   = abc.abcC;
-
-				if (abc.abcB-abc.abcA+abc.abcC<1)
-					continue;	// nothing of width 0
-			}
-			if (size.cy < 1)
+			if (!XftCharExists(display, font, charCode))
 				continue;
 
-			// wrap around?
-			if (currentx + size.cx > (s32) textureWidth)
-			{
-				currenty += maxy;
-				currentx = 0;
-				if ((u32)(currenty + maxy) > textureHeight)
-				{
-					currentImage++; // increase Image count
-					currenty=0;
-				}
-				maxy = 0;
-			}
-			// add this char dimension to the current map
+			charsFound++;
 
-			fa.rectangle = core::rect<s32>(currentx, currenty, currentx + size.cx, currenty + size.cy);
-			fa.sourceimage = currentImage;
+			XGlyphInfo extents;
+			XftTextExtents32(display, font, &charCode, 1, &extents);
+			if ((extents.xOff <= 0) && (extents.height <= 0))
+				continue;
 
-			CharMap.insert(currentchar, Areas.size());
-			Areas.push_back( fa );
+			/* Calculate the width and height, adding 1 extra pixel if anti aliasing is enabled */
+			u32 chWidth = extents.xOff + (aa ? 1 : 0);
+			u32 chHeight = (font->ascent - extents.y + extents.height) +  (aa ? 1 : 0);
+			if (chHeight > maxY)
+				maxY = chHeight;
 
-			currentx += size.cx +1;
-
-			if (size.cy+1 > maxy)
-				maxy = size.cy+1;
+			/* Store the character details here */
+			SFontArea fontArea;
+			fontArea.rectangle = core::rect<s32>(0, 0, chWidth, chHeight);
+			CharMap.insert(charCode, Areas.size());
+			Areas.push_back(fontArea);
 		}
-		currenty += maxy;
+		core::stringc logmsg = "Found ";
+		logmsg += (s32) (CharMap.size() + 1);
+		logmsg += " characters";
+		Device->getLogger()->log(logmsg.c_str());
 
-		u32 lastTextureHeight = getTextureSizeFromSurfaceSize(currenty);
+		/* Get the size of the chars and allocate them a position on a texture.  If the next character that
+		is added would be outside the width or height of the texture, then a new texture is added */
+		u32 currentX = 0, currentY = 0, rowY = 0;
+		for (core::map<wchar_t, u32>::Iterator it = CharMap.getIterator(); !it.atEnd(); it++)
+		{
+			s32 currentArea = (*it).getValue();
+			SFontArea *fontArea = &Areas[currentArea];
+			u32 chWidth = fontArea->rectangle.LowerRightCorner.X;
+			u32 chHeight = fontArea->rectangle.LowerRightCorner.Y;
 
-		// delete the glyph set
-		delete buf;
+			/* If the width of this char will exceed the textureWidth then start a new row */
+			if ((currentX + chWidth) > textureWidth)
+			{
+				currentY += rowY;
+				currentX = 0;
 
-		currentImages.set_used(currentImage+1);
-		currentTextures.set_used(currentImage+1);
+				/* If the new row added to the texture exceeds the textureHeight then start a new texture */
+				if ((currentY + rowY) > textureHeight)
+				{
+					currentImage++;
+					currentY = 0;
+				}
+				rowY = 0;
+			}
 
-		for (currentImage=0; currentImage < currentImages.size(); ++currentImage)
+			/* Update the area with the current x and y and texture */
+			fontArea->rectangle = core::rect<s32>(currentX, currentY, currentX + chWidth, currentY + chHeight);
+			fontArea->sourceimage = currentImage;
+			currentX += chWidth + 1;
+			if (chHeight + 1 > rowY)
+				rowY = chHeight + 1;
+		}
+
+		/* The last row of chars and the last texture weren't accounted for in the loop, so add them here */
+		currentY += rowY;
+		u32 lastTextureHeight = getTextureSizeFromSurfaceSize(currentY);
+		currentImages.set_used(currentImage + 1);
+		currentTextures.set_used(currentImage + 1);
+
+		/* Initialise colours */
+		XftColor colFore, colBack;
+		XRenderColor xFore = {0xffff, 0xffff, 0xffff, 0xffff};
+		XRenderColor xBack = {0x0000, 0x0000, 0x0000, 0xffff};
+		XftColorAllocValue(display, DefaultVisual(display, screen), DefaultColormap(display, screen), &xFore, &colFore);
+		XftColorAllocValue(display, DefaultVisual(display, screen), DefaultColormap(display, screen), &xBack, &colBack);
+
+		/* Create a pixmap that is large enough to hold any character in the font */
+		Pixmap pixmap = XCreatePixmap(display, win, textureWidth, maxY, DefaultDepth(display, screen));
+		XftDraw *draw = XftDrawCreate(display, pixmap, visual, DefaultColormap(display, screen));
+
+		/* Render the chars */
+		for (currentImage = 0; currentImage < currentImages.size(); ++currentImage)
 		{
 			core::stringc logmsg = "Creating image ";
 			logmsg += (s32) (currentImage+1);
 			logmsg += " of ";
 			logmsg += (s32) currentImages.size();
 			Device->getLogger()->log(logmsg.c_str());
-			// no need for a huge final texture
+
+			/* The last texture that is saved is vertically shrunk to fit the characters drawn on it */
 			u32 texHeight = textureHeight;
-			if (currentImage == currentImages.size()-1 )
+			if (currentImage == currentImages.size() - 1)
 				texHeight = lastTextureHeight;
 
-			// make a new bitmap
-		}
-#endif
+			/* The texture that holds this "page" of characters */
+			currentImages[currentImage] = Device->getVideoDriver()->createImage(video::ECF_A8R8G8B8, core::dimension2d<s32>(textureWidth, texHeight));
+			currentImages[currentImage]->fill(video::SColor(alpha ? 0 : 255,0,0,0));
 
-		XFreeFont(display, fontStruct);
-		Device->getLogger()->log("Your OS is unsupported! It won't work I tell you!");
-		return false;
+			for (core::map<wchar_t, u32>::Iterator it = CharMap.getIterator(); !it.atEnd(); it++)
+			{
+				FcChar32 wch = (*it).getKey();
+				s32 currentArea = (*it).getValue();
+				if (Areas[currentArea].sourceimage == currentImage)
+				{
+					SFontArea *fontArea = &Areas[currentArea];
+					u32 chWidth = fontArea->rectangle.LowerRightCorner.X - fontArea->rectangle.UpperLeftCorner.X;
+					u32 chHeight = fontArea->rectangle.LowerRightCorner.Y - fontArea->rectangle.UpperLeftCorner.Y;
+
+					/* Draw the glyph onto the pixmap */
+					XGlyphInfo extents;
+					XftDrawRect(draw, &colBack, 0, 0, chWidth, chHeight);
+					XftTextExtents32(display, font, &wch, 1, &extents);
+					XftDrawString32(draw, &colFore, font, extents.x, extents.y, &wch, 1);
+
+					/* Convert the pixmap into an image, then copy it onto the Irrlicht texture, pixel by pixel.
+					There's bound to be a faster way, but this is adequate */
+					u32 xDest = fontArea->rectangle.UpperLeftCorner.X;
+					u32 yDest = fontArea->rectangle.UpperLeftCorner.Y + font->ascent - extents.y;
+					XImage *image = XGetImage(display, pixmap, 0, 0, chWidth, chHeight, 0xffffff, XYPixmap);
+					if (image)
+					{
+						for (u32 ySrc = 0; ySrc < chHeight; ySrc++)
+							for (u32 xSrc = 0; xSrc < chWidth; xSrc++)
+							{
+								/* Get the pixel colour and break it down into rgb components */
+								u32 col = XGetPixel(image, xSrc, ySrc);
+								u32 a = 255;
+								u32 r = col & visual->red_mask;
+								u32 g = col & visual->green_mask;
+								u32 b = col & visual->blue_mask;
+								while (r > 0xff) r >>= 8;
+								while (g > 0xff) g >>= 8;
+								while (b > 0xff) b >>= 8;
+
+								/* To make the background transparent, set the colour to 100% white and the alpha to
+								the average of the three rgb colour components to maintain the anti-aliasing */
+								if (alpha)
+								{
+									a = (r + g + b) / 3;
+									r = 255;
+									g = 255;
+									b = 255;
+								}
+								currentImages[currentImage]->setPixel(xDest + xSrc,yDest + ySrc,video::SColor(a,r,g,b));
+							}
+						image->f.destroy_image(image);
+					}
+				}
+			}
+
+			/* Add the texture to the list */
+			currentTextures[currentImage] = Device->getVideoDriver()->addTexture("GUIFontImage",currentImages[currentImage]);
+			currentTextures[currentImage]->grab();
+		}
+
+		XftColorFree (display, visual, DefaultColormap(display, screen), &colFore);
+		XftColorFree (display, visual, DefaultColormap(display, screen), &colBack);
+		XftFontClose(display,font);
+		XftPatternDestroy(request);
+		XftDrawDestroy(draw);
+		XFreePixmap(display, pixmap);
+		return true;
 	}
 #endif
 
