@@ -16,6 +16,8 @@
 	#ifdef _IRR_COMPILE_WITH_X11_
 	#include <X11/Xlib.h>
 	#endif
+	#include <X11/Xft/Xft.h>
+	#include <set>
 #endif
 
 

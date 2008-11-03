@@ -1,9 +1,15 @@
 /*
-	Tool for creating Irrlicht bitmap+vector fonts, 
+	Tool for creating Irrlicht bitmap+vector fonts,
 	started by Gaz Davidson in December 2006
 
-	Due to my laziness and Microsoft's unituitive API, surragate pairs and 
+	Due to my laziness and Microsoft's unituitive API, surragate pairs and
 	nonspacing diacritical marks are not supported!
+
+	Linux bitmap font support added by Neil Burlock Oct 2008
+	Note: Xft/Freetype2 is used to render the fonts under X11.  Anti-aliasing
+	is controlled by the system and cannot be overriden by an application,
+	so fonts that are rendered will be aliased or anti-aliased depending
+	on the system that they are created on.
 
 */
 
@@ -67,9 +73,18 @@ wchar_t *helptext = L"This tool creates bitmap fonts for the Irrlicht Engine\n\n
 
 					L"That's all, have fun :-)";
 
+#ifdef _IRR_WINDOWS
+					wchar_t *completeText = L"Font created"
+#else
+					wchar_t *completeText = L"Font created\n\n"
+							L"Please note that anti-aliasing under X11 is controlled by the system "
+							L"configuration, so if your system is set to use anti-aliasing, then so "
+							L"will any fonts you create with FontTool";
+#endif
+
 enum MYGUI
 {
-	MYGUI_CHARSET  = 100,	
+	MYGUI_CHARSET  = 100,
 	MYGUI_FONTNAME,
 	MYGUI_SIZE,
 	MYGUI_TEXWIDTH,
@@ -94,7 +109,7 @@ class MyEventReceiver : public IEventReceiver
 {
 public:
 
-	MyEventReceiver(IrrlichtDevice* device, CFontTool*& fonttool, CVectorFontTool* &vectool) : 
+	MyEventReceiver(IrrlichtDevice* device, CFontTool*& fonttool, CVectorFontTool* &vectool) :
 		Device(device), FontTool(fonttool), VecTool(vectool)
 	{
 		device->setEventReceiver(this);
@@ -144,7 +159,7 @@ public:
 					{
 						// vector formats
 						for (s32 i=0; fileformats[i] != 0; ++i)
-							cbo->addItem( core::stringw(vectorfileformats[i]).c_str());	
+							cbo->addItem( core::stringw(vectorfileformats[i]).c_str());
 
 					}
 					else
@@ -155,13 +170,13 @@ public:
 						{
 							// add non-alpha formats
 							for (s32 i=0; fileformats[i] != 0; ++i)
-								cbo->addItem( core::stringw(fileformats[i]).c_str());	
+								cbo->addItem( core::stringw(fileformats[i]).c_str());
 						}
 						// add formats which support alpha
 						for (s32 i=0; alphafileformats[i] != 0; ++i)
 							cbo->addItem( core::stringw(alphafileformats[i]).c_str());
 					}
-					
+
 				}
 				break;
 
@@ -172,7 +187,7 @@ public:
 					// create the font with the params
 					IGUIComboBox* cbo = (IGUIComboBox*)env->getRootGUIElement()->getElementFromId(MYGUI_CHARSET, true);
 					int charset = cbo->getSelected();
-					
+
 					cbo = (IGUIComboBox*)env->getRootGUIElement()->getElementFromId(MYGUI_FONTNAME,true);
 					int fontname = cbo->getSelected();
 
@@ -200,7 +215,7 @@ public:
 					//chk = (IGUICheckBox*)env->getRootGUIElement()->getElementFromId(MYGUI_VECTOR,true);
 					bool vec = false;//chk->isChecked();
 
-					FontTool->makeBitmapFont(fontname, charset, FontTool->FontSizes[fontsize], texturesizes[texwidth], texturesizes[texheight], bold, italic, aa, alpha); 
+					FontTool->makeBitmapFont(fontname, charset, FontTool->FontSizes[fontsize], texturesizes[texwidth], texturesizes[texheight], bold, italic, aa, alpha);
 
 					IGUIScrollBar* scrl = (IGUIScrollBar*)env->getRootGUIElement()->getElementFromId(MYGUI_CURRENTIMAGE,true);
 					scrl->setMax(FontTool->currentTextures.size() == 0 ? 0 : FontTool->currentTextures.size()-1);
@@ -215,12 +230,12 @@ public:
 					// make sure users pick a file format that supports alpha channel
 					cbo = (IGUIComboBox*)env->getRootGUIElement()->getElementFromId(MYGUI_FORMAT,true);
 					cbo->clear();
-					
+
 					if (vec)
 					{
 						// add vector formats
 						for (s32 i=0; fileformats[i] != 0; ++i)
-							cbo->addItem( core::stringw(vectorfileformats[i]).c_str());	
+							cbo->addItem( core::stringw(vectorfileformats[i]).c_str());
 					}
 					else
 					{
@@ -228,7 +243,7 @@ public:
 						{
 							// add non-alpha formats
 							for (s32 i=0; fileformats[i] != 0; ++i)
-								cbo->addItem( core::stringw(fileformats[i]).c_str());	
+								cbo->addItem( core::stringw(fileformats[i]).c_str());
 						}
 						// add formats which support alpha
 						for (s32 i=0; alphafileformats[i] != 0; ++i)
@@ -243,6 +258,9 @@ public:
 					{
 						VecTool = new CVectorFontTool(FontTool);
 					}
+
+					/* Message box letting the user know the process is complete */
+					env->addMessageBox(L"Create", completeText);
 
 					return true;
 				}
@@ -263,7 +281,7 @@ public:
 						VecTool->saveVectorFont(name.c_str(), format.c_str());
 					else
 						FontTool->saveBitmapFont(name.c_str(), format.c_str());
-					
+
 					return true;
 				}
 
@@ -340,7 +358,7 @@ void createGUI(IrrlichtDevice* device, CFontTool* fc)
 	yp += (s32)(h*1.5f);
 
 	// bold checkbox
-	env->addCheckBox(false, core::rect<s32>(xp,yp,xp+50,yp+h),win, MYGUI_BOLD, L"Bold"); 
+	env->addCheckBox(false, core::rect<s32>(xp,yp,xp+50,yp+h),win, MYGUI_BOLD, L"Bold");
 
 	xp += 45;
 
@@ -380,7 +398,7 @@ void createGUI(IrrlichtDevice* device, CFontTool* fc)
 	yp += (s32)(h*1.5f);
 
 	env->addStaticText(L"Max Height:", core::rect<s32>(xp,yp,60,yp+h),false,false, win);
-	
+
 	xp += 60;
 
 	// texture height
@@ -453,11 +471,11 @@ int main()
 
 	createGUI(device, fc);
 
-	while(device->run()) 
+	while(device->run())
 	{
 		if (device->isWindowActive())
 		{
-			
+
 			driver->beginScene(true, true, video::SColor(0,200,200,200));
 			smgr->drawAll();
 			env->drawAll();
@@ -469,7 +487,7 @@ int main()
 	fc->drop();
 
 	device->drop();
-	
+
 	return 0;
 }
 
