@@ -2570,8 +2570,14 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 	{
 		rtt = new COpenGLFBOTexture(size, name, this);
-		addTexture(rtt);
-		rtt->drop();
+		if (rtt)
+		{
+			addTexture(rtt);
+			ITexture* tex = getDepthTexture(rtt);
+			if (tex)
+				static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
+			rtt->drop();
+		}
 	}
 	else
 #endif
@@ -2624,6 +2630,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	if (texture)
 	{
 		// we want to set a new target. so do this.
+		glViewport(0, 0, texture->getSize().Width, texture->getSize().Height);
 		RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
 		RenderTargetTexture->bindRTT();
 		CurrentRendertargetSize = texture->getSize();
@@ -2733,6 +2740,46 @@ IImage* COpenGLDriver::createScreenShot()
 	}
 
 	return newImage;
+}
+
+
+//! get depth texture for the given render target texture
+ITexture* COpenGLDriver::getDepthTexture(ITexture* texture, bool shared)
+{
+	if ((texture->getDriverType() != EDT_OPENGL) || (!texture->isRenderTarget()))
+		return 0;
+	COpenGLTexture* tex = static_cast<COpenGLTexture*>(texture);
+
+	if (!tex->isFrameBufferObject())
+		return 0;
+
+	if (shared)
+	{
+		for (u32 i=0; i<DepthTextures.size(); ++i)
+		{
+			if (DepthTextures[i]->getSize()==texture->getSize())
+			{
+				DepthTextures[i]->grab();
+				return DepthTextures[i];
+			}
+		}
+		DepthTextures.push_back(new COpenGLFBODepthTexture(texture->getSize(), "depth1", this));
+		return DepthTextures.getLast();
+	}
+	return (new COpenGLFBODepthTexture(texture->getSize(), "depth1", this));
+}
+
+
+void COpenGLDriver::removeDepthTexture(ITexture* texture)
+{
+	for (u32 i=0; i<DepthTextures.size(); ++i)
+	{
+		if (texture==DepthTextures[i])
+		{
+			DepthTextures.erase(i);
+			return;
+		}
+	}
 }
 
 

@@ -339,7 +339,10 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;};
+		virtual core::stringc getVendorInfo() {return vendorName;}
+
+		ITexture* getDepthTexture(ITexture* texture, bool shared=true);
+		void removeDepthTexture(ITexture* texture);
 
 	private:
 
@@ -390,6 +393,7 @@ namespace video
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		core::array<ITexture*> DepthTextures;
 		s32 LastSetLight;
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;
@@ -420,7 +424,4 @@ namespace video
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
 #endif
-
-
-
 
