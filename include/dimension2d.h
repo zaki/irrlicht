@@ -78,6 +78,52 @@ namespace core
 				return Width*Height;
 			}
 
+			//! Get the optimal size according to some properties
+			/** This is a function often used for texture dimension
+			calculations. The function returns the next larger or
+			smaller dimension which is a power-of-two dimension
+			(2^n,2^m) and/or square (Width=Height).
+			\param requirePowerOfTwo Forces the result to use only
+			powers of two as values.
+			\param requireSquare Makes width==height in the result
+			\param larger Choose whether the result is larger or
+			smaller than the current dimension.
+			\return The optimal dimension under the given
+			constraints. */
+			dimension2d<T> getOptimalSize(
+					bool requirePowerOfTwo=true,
+					bool requireSquare=false,
+					bool larger=true) const
+			{
+				u32 i=1;
+				u32 j=1;
+				if (requirePowerOfTwo)
+				{
+					while (i<Width)
+						i<<=1;
+					if (!larger && i!=1)
+						i>>=1;
+					while (j<Width)
+						j<<=1;
+					if (!larger && j!=1)
+						j>>=1;
+				}
+				else
+				{
+					i=Width;
+					j=Height;
+				}
+
+				if (requireSquare)
+				{
+					if ((larger && (i>j)) || (!larger && (i<j)))
+						j=i;
+					else
+						i=j;
+				}
+				return dimension2d<T>((T)i,(T)j);
+			}
+
 			//! Width of the dimension.
 			T Width;
 			//! Height of the dimension.
