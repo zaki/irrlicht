@@ -651,6 +651,11 @@
 			<Option compile="0"/>
 			<Option link="0"/>
 		</Unit>
+		<Unit filename="..\..\include\SSkinMeshBuffer.h">
+			<Option compilerVar="CPP"/>
+			<Option compile="0"/>
+			<Option link="0"/>
+		</Unit>
 		<Unit filename="..\..\include\SParticle.h">
 			<Option compilerVar="CPP"/>
 			<Option compile="0"/>
