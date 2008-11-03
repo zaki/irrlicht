@@ -752,6 +752,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\SSkinMeshBuffer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\SParticle.h"
 					>
 				</File>
