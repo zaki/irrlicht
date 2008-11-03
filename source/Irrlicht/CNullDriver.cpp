@@ -318,16 +318,19 @@ void CNullDriver::renameTexture(ITexture* texture, const c8* newName)
 //! loads a Texture
 ITexture* CNullDriver::getTexture(const c8* filename)
 {
-	ITexture* texture = findTexture(filename);
+	// Identify textures by their absolute filenames.
+	core::stringc absolutePath = FileSystem->getAbsolutePath(filename);
+
+	ITexture* texture = findTexture(absolutePath.c_str());
 
 	if (texture)
 		return texture;
 
-	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
+	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath.c_str());
 
 	if (file)
 	{
-		texture = loadTextureFromFile(file, filename);
+		texture = loadTextureFromFile(file, absolutePath.c_str());
 		file->drop();
 
 		if (texture)

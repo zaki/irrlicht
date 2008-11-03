@@ -204,7 +204,7 @@ namespace video
 
 		//! Renames a texture
 		/** \param texture Pointer to the texture to rename.
-		\param newName New name for the texture. */
+		\param newName New name for the texture. This should be a unique name. */
 		virtual void renameTexture(ITexture* texture, const c8* newName) = 0;
 
 		//! Creates an empty texture of specified size.
