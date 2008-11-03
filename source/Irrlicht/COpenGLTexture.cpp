@@ -399,12 +399,6 @@ void COpenGLTexture::regenerateMipMapLevels()
 }
 
 
-bool COpenGLTexture::isFrameBufferObject() const
-{
-    return false;
-}
-
-
 bool COpenGLTexture::isRenderTarget() const
 {
     return IsRenderTarget;
@@ -417,10 +411,15 @@ void COpenGLTexture::setIsRenderTarget(bool isTarget)
 }
 
 
+bool COpenGLTexture::isFrameBufferObject() const
+{
+	return false;
+}
+
+
 //! Bind Render Target Texture
 void COpenGLTexture::bindRTT()
 {
-	glViewport(0, 0, getSize().Width, getSize().Height);
 }
 
 
@@ -445,11 +444,8 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
                                 const char* name,
-                                COpenGLDriver* driver,
-				bool useStencil)
-	: COpenGLTexture(name, driver),
-	ColorFrameBuffer(0), DepthRenderBuffer(0), StencilRenderBuffer(0),
-	UseStencil(useStencil)
+                                COpenGLDriver* driver)
+	: COpenGLTexture(name, driver), ColorFrameBuffer(0), DepthTexture(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture_FBO");
@@ -461,6 +457,89 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
 	PixelType = GL_UNSIGNED_BYTE;
 	HasMipMaps = false;
 	IsRenderTarget = true;
+
+#ifdef GL_EXT_framebuffer_object
+	// generate frame buffer
+	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+
+	// generate color texture
+	glGenTextures(1, &TextureName);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
+		ImageSize.Height, 0, PixelFormat, PixelType, 0);
+
+	// attach color texture to frame buffer
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
+						GL_COLOR_ATTACHMENT0_EXT,
+						GL_TEXTURE_2D,
+						TextureName,
+						0);
+#endif
+	unbindRTT();
+}
+
+
+//! destructor
+COpenGLFBOTexture::~COpenGLFBOTexture()
+{
+	if (DepthTexture)
+		if (DepthTexture->drop())
+			Driver->removeDepthTexture(DepthTexture);
+	if (ColorFrameBuffer)
+		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
+}
+
+
+bool COpenGLFBOTexture::isFrameBufferObject() const
+{
+	return true;
+}
+
+
+//! Bind Render Target Texture
+void COpenGLFBOTexture::bindRTT()
+{
+#ifdef GL_EXT_framebuffer_object
+	if (ColorFrameBuffer != 0)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+#endif
+}
+
+
+//! Unbind Render Target Texture
+void COpenGLFBOTexture::unbindRTT()
+{
+#ifdef GL_EXT_framebuffer_object
+	if (ColorFrameBuffer != 0)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+#endif
+}
+
+
+/* FBO Depth Textures */
+
+//! RTT DepthBuffer constructor
+COpenGLFBODepthTexture::COpenGLFBODepthTexture(
+		const core::dimension2d<s32>& size,
+		const char* name,
+		COpenGLDriver* driver,
+		bool useStencil)
+	: COpenGLFBOTexture(size, name, driver), DepthRenderBuffer(0),
+	StencilRenderBuffer(0), UseStencil(useStencil)
+{
+#ifdef _DEBUG
+	setDebugName("COpenGLTextureFBO_Depth");
+#endif
+
+	ImageSize = size;
+	InternalFormat = GL_RGBA;
+	PixelFormat = GL_RGBA;
+	PixelType = GL_UNSIGNED_BYTE;
+	HasMipMaps = false;
 
 	if (useStencil)
 	{
@@ -509,28 +588,31 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
 				GL_DEPTH_COMPONENT, ImageSize.Width,
 				ImageSize.Height);
 	}
+#endif
+}
 
-	// generate frame buffer
-	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
 
-	// generate color texture
-	glGenTextures(1, &TextureName);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
-		ImageSize.Height, 0, PixelFormat, PixelType, 0);
+//! destructor
+COpenGLFBODepthTexture::~COpenGLFBODepthTexture()
+{
+	if (DepthRenderBuffer && UseStencil)
+		glDeleteTextures(1, &DepthRenderBuffer);
+	else
+		Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
+	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
+		glDeleteTextures(1, &StencilRenderBuffer);
+}
 
-	// attach color texture to frame buffer
-	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_COLOR_ATTACHMENT0_EXT,
-						GL_TEXTURE_2D,
-						TextureName,
-						0);
 
-	if (useStencil)
+//combine depth texture and rtt
+void COpenGLFBODepthTexture::attach(ITexture* renderTex)
+{
+	if (!renderTex)
+		return;
+	video::COpenGLFBOTexture* rtt = static_cast<video::COpenGLFBOTexture*>(renderTex);
+	rtt->bindRTT();
+#ifdef GL_EXT_framebuffer_object
+	if (UseStencil)
 	{
 		// attach stencil texture to stencil buffer
 		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
@@ -554,72 +636,25 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
 						GL_RENDERBUFFER_EXT,
 						DepthRenderBuffer);
 	}
-
-	glGetError();
-
+#endif
+	rtt->DepthTexture=this;
+	renderTex->grab();
 	// check the status
 	if (!checkFBOStatus(Driver))
-	{
-		printf("FBO=%u, Color=%u, Depth=%u, Stencil=%u\n",
-			ColorFrameBuffer, TextureName, DepthRenderBuffer, StencilRenderBuffer);
-		if (ColorFrameBuffer)
-			Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
-		if (DepthRenderBuffer)
-		{
-			if (useStencil)
-				glDeleteTextures(1, &DepthRenderBuffer);
-			else
-				Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
-		}
-		if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
-			glDeleteTextures(1, &StencilRenderBuffer);
-		ColorFrameBuffer = 0;
-		DepthRenderBuffer = 0;
-		StencilRenderBuffer = 0;
-	}
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
-#endif
-}
-
-
-//! destructor
-COpenGLFBOTexture::~COpenGLFBOTexture()
-{
-	if (ColorFrameBuffer)
-		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
-	if (DepthRenderBuffer && UseStencil)
-		glDeleteTextures(1, &DepthRenderBuffer);
-	else
-		Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
-	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
-		glDeleteTextures(1, &StencilRenderBuffer);
-}
-
-
-bool COpenGLFBOTexture::isFrameBufferObject() const
-{
-    return true;
+		os::Printer::log("FBO incomplete");
+	rtt->unbindRTT();
 }
 
 
 //! Bind Render Target Texture
-void COpenGLFBOTexture::bindRTT()
+void COpenGLFBODepthTexture::bindRTT()
 {
-	glViewport(0, 0, getSize().Width, getSize().Height);
-#ifdef GL_EXT_framebuffer_object
-	if (ColorFrameBuffer != 0)
-		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
-#endif
 }
 
 
 //! Unbind Render Target Texture
-void COpenGLFBOTexture::unbindRTT()
+void COpenGLFBODepthTexture::unbindRTT()
 {
-#ifdef GL_EXT_framebuffer_object
-	if (ColorFrameBuffer != 0)
-		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
-#endif
 }
 
 

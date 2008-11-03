@@ -138,7 +138,7 @@ class COpenGLFBOTexture : public COpenGLTexture
 public:
 
 	//! FrameBufferObject constructor
-	COpenGLFBOTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
+	COpenGLFBOTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0);
 
 	//! destructor
 	virtual ~COpenGLFBOTexture();
@@ -152,9 +152,33 @@ public:
 	//! Unbind RenderTargetTexture
 	virtual void unbindRTT();
 
-	GLuint ColorFrameBuffer; // for FBO path
-	GLuint DepthRenderBuffer; // for FBO path
-	GLuint StencilRenderBuffer; // for FBO path
+	ITexture* DepthTexture;
+protected:
+	GLuint ColorFrameBuffer;
+};
+
+
+//! OpenGL FBO depth texture.
+class COpenGLFBODepthTexture : public COpenGLFBOTexture
+{
+public:
+	//! FrameBufferObject depth constructor
+	COpenGLFBODepthTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
+
+	//! destructor
+	virtual ~COpenGLFBODepthTexture();
+
+	//! Bind RenderTargetTexture
+	virtual void bindRTT();
+
+	//! Unbind RenderTargetTexture
+	virtual void unbindRTT();
+
+	void attach(ITexture*);
+
+protected:
+	GLuint DepthRenderBuffer;
+	GLuint StencilRenderBuffer;
 	bool UseStencil;
 };
 
