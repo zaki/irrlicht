@@ -25,35 +25,26 @@
 #import <time.h>
 #import "AppDelegate.h"
 
-// some macros to make code more readable.
-#define GetModeWidth(mode) GetDictionaryLong((mode), kCGDisplayWidth)
-#define GetModeHeight(mode) GetDictionaryLong((mode), kCGDisplayHeight)
-#define GetModeRefreshRate(mode) GetDictionaryLong((mode), kCGDisplayRefreshRate)
-#define GetModeBitsPerPixel(mode) GetDictionaryLong((mode), kCGDisplayBitsPerPixel)
-
-#define GetModeSafeForHardware(mode) GetDictionaryBoolean((mode), kCGDisplayModeIsSafeForHardware)
-#define GetModeStretched(mode) GetDictionaryBoolean((mode), kCGDisplayModeIsStretched)
-
 //------------------------------------------------------------------------------------------
-Boolean GetDictionaryBoolean(CFDictionaryRef theDict, const void* key) 
+Boolean GetDictionaryBoolean(CFDictionaryRef theDict, const void* key)
 {
 	// get a boolean from the dictionary
 	Boolean value = false;
 	CFBooleanRef boolRef;
 	boolRef = (CFBooleanRef)CFDictionaryGetValue(theDict, key);
 	if (boolRef != NULL)
-		value = CFBooleanGetValue(boolRef); 	
+		value = CFBooleanGetValue(boolRef);
 	return value;
 }
 //------------------------------------------------------------------------------------------
-long GetDictionaryLong(CFDictionaryRef theDict, const void* key) 
+long GetDictionaryLong(CFDictionaryRef theDict, const void* key)
 {
 	// get a long from the dictionary
 	long value = 0;
 	CFNumberRef numRef;
-	numRef = (CFNumberRef)CFDictionaryGetValue(theDict, key); 
+	numRef = (CFNumberRef)CFDictionaryGetValue(theDict, key);
 	if (numRef != NULL)
-		CFNumberGetValue(numRef, kCFNumberLongType, &value); 	
+		CFNumberGetValue(numRef, kCFNumberLongType, &value);
 	return value;
 }
 
@@ -71,7 +62,7 @@ namespace irr
 {
 //! constructor
 CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
- : CIrrDeviceStub(param), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL)
+	: CIrrDeviceStub(param), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL)
 {
 	struct utsname name;
 	NSString	*path;
@@ -155,9 +146,9 @@ bool CIrrDeviceMacOSX::createWindow()
 	CGLPixelFormatAttribute		fullattribs[32];
 	NSOpenGLPixelFormatAttribute	windowattribs[32];
 	CFDictionaryRef			displaymode,olddisplaymode;
-	long				numPixelFormats,newSwapInterval;
+	GLint				numPixelFormats,newSwapInterval;
 	int alphaSize = CreationParams.WithAlphaChannel?4:0, depthSize = CreationParams.ZBufferBits;
-	
+
 	if (CreationParams.WithAlphaChannel && (CreationParams.Bits == 32))
 		alphaSize = 8;
 
@@ -165,7 +156,7 @@ bool CIrrDeviceMacOSX::createWindow()
 	display = CGMainDisplayID();
 	_screenWidth = (int) CGDisplayPixelsWide(display);
 	_screenHeight = (int) CGDisplayPixelsHigh(display);
-	
+
 	VideoModeList.setDesktop(CreationParams.Bits,core::dimension2d<s32>(_screenWidth, _screenHeight));
 
 	if (!CreationParams.Fullscreen)
@@ -600,6 +591,7 @@ void CIrrDeviceMacOSX::storeMouseLocation()
 	((CCursorControl *)CursorControl)->updateInternalCursorPosition(x,y);
 }
 
+
 void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 {
 	NSPoint	p;
@@ -624,14 +616,18 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 	CGWarpMouseCursorPosition(c);
 }
 
+
 void CIrrDeviceMacOSX::setCursorVisible(bool visible)
 {
-	CGDirectDisplayID		display;
+	CGDirectDisplayID	display;
 
 	display = CGMainDisplayID();
-	if (visible) CGDisplayShowCursor(display);
-	else CGDisplayHideCursor(display);
+	if (visible)
+		CGDisplayShowCursor(display);
+	else
+		CGDisplayHideCursor(display);
 }
+
 
 void CIrrDeviceMacOSX::initKeycodes()
 {
@@ -673,12 +669,13 @@ void CIrrDeviceMacOSX::initKeycodes()
 	_keycodes[0x1B] = irr::KEY_ESCAPE;
 }
 
-//! Sets if the window should be resizeable in windowed mode.
 
+//! Sets if the window should be resizeable in windowed mode.
 void CIrrDeviceMacOSX::setResizeAble(bool resize)
 {
 	// todo: implement resize
 }
+
 
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {
@@ -686,10 +683,12 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 	return false;
 }
 
+
 video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 {
-	if (!VideoModeList.getVideoModeCount()) {
-		CGDirectDisplayID		display;
+	if (!VideoModeList.getVideoModeCount())
+	{
+		CGDirectDisplayID display;
 		display = CGMainDisplayID();
 
 		CFArrayRef availableModes = CGDisplayAvailableModes(display);
@@ -698,15 +697,16 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 		{
 			// look at each mode in the available list
 			CFDictionaryRef mode = (CFDictionaryRef)CFArrayGetValueAtIndex(availableModes, i);
-			long bitsPerPixel = GetModeBitsPerPixel(mode);
-			Boolean safeForHardware = GetModeSafeForHardware(mode);
-			Boolean stretched = GetModeStretched(mode);
-			
+			long bitsPerPixel = GetDictionaryLong(mode, kCGDisplayBitsPerPixel);
+			Boolean safeForHardware = GetDictionaryBoolean(mode, kCGDisplayModeIsSafeForHardware);
+			Boolean stretched = GetDictionaryBoolean(mode, kCGDisplayModeIsStretched);
+
 			if (!safeForHardware)
 				continue;
-			
-			long width = GetModeWidth(mode);
-			long height = GetModeHeight(mode);
+
+			long width = GetDictionaryLong(mode, kCGDisplayWidth);
+			long height = GetDictionaryLong(mode, kCGDisplayHeight);
+			// long refresh = GetDictionaryLong((mode), kCGDisplayRefreshRate);
 			VideoModeList.addMode(core::dimension2d<s32>(width, height),
 				bitsPerPixel);
 		}
