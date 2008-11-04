@@ -2582,7 +2582,12 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 	else
 #endif
 	{
-		rtt = addTexture(size, name, ECF_A8R8G8B8);
+		// the simple texture is only possible for size <= screensize
+		// TODO: Needs to be checked on setRenderTarget instead, in
+		// order to cope with screen size changes
+		if ((size.Width <= ScreenSize.Width) &&
+				(size.Height<= ScreenSize.Height))
+			rtt = addTexture(size, name, ECF_A8R8G8B8);
 		if (rtt)
 		{
 			rtt->grab();
