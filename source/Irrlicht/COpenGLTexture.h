@@ -114,9 +114,6 @@ protected:
 	//! \param: newTexture is true if method is called from a newly created texture for the first time. Otherwise call with false to improve memory handling.
 	void copyTexture(bool newTexture=true);
 
-	//! returns the size of a texture which would be optimal for rendering
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
-
 	core::dimension2d<s32> ImageSize;
 	COpenGLDriver* Driver;
 	IImage* Image;
