@@ -318,19 +318,30 @@ void CNullDriver::renameTexture(ITexture* texture, const c8* newName)
 //! loads a Texture
 ITexture* CNullDriver::getTexture(const c8* filename)
 {
-	// Identify textures by their absolute filenames.
+	// Identify textures by their absolute filenames if possible.
 	core::stringc absolutePath = FileSystem->getAbsolutePath(filename);
 
 	ITexture* texture = findTexture(absolutePath.c_str());
-
 	if (texture)
 		return texture;
 
+	// Then try the raw filename, which might be in an Archive
+	texture = findTexture(filename);
+	if (texture)
+		return texture;
+
+	// Now try to open the file using the complete path.
 	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath.c_str());
+
+	if(!file)
+	{
+		// Try to open it using the raw filename.
+		file = FileSystem->createAndOpenFile(filename);
+	}
 
 	if (file)
 	{
-		texture = loadTextureFromFile(file, absolutePath.c_str());
+		texture = loadTextureFromFile(file);
 		file->drop();
 
 		if (texture)
