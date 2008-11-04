@@ -99,19 +99,19 @@ namespace core
 				u32 j=1;
 				if (requirePowerOfTwo)
 				{
-					while (i<Width)
+					while (i<(u32)Width)
 						i<<=1;
 					if (!larger && i!=1)
 						i>>=1;
-					while (j<Width)
+					while (j<(u32)Height)
 						j<<=1;
 					if (!larger && j!=1)
 						j>>=1;
 				}
 				else
 				{
-					i=Width;
-					j=Height;
+					i=(u32)Width;
+					j=(u32)Height;
 				}
 
 				if (requireSquare)
