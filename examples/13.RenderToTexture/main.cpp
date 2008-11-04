@@ -68,7 +68,8 @@ int main()
 
 	if (fairy)
 	{
-		fairy->setMaterialTexture(0, driver->getTexture("../../media/faerie2.bmp")); // set diffuse texture
+		fairy->setMaterialTexture(0,
+				driver->getTexture("../../media/faerie2.bmp")); // set diffuse texture
 		fairy->setMaterialFlag(video::EMF_LIGHTING, true); // enable dynamic lighting
 		fairy->getMaterial(0).Shininess = 20.0f; // set size of specular highlights
 		fairy->setPosition(core::vector3df(-10,0,-100));

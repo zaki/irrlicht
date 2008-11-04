@@ -46,7 +46,8 @@ class MyShaderCallBack : public video::IShaderConstantSetCallBack
 {
 public:
 
-	virtual void OnSetConstants(video::IMaterialRendererServices* services, s32 userData)
+	virtual void OnSetConstants(video::IMaterialRendererServices* services,
+			s32 userData)
 	{
 		video::IVideoDriver* driver = services->getVideoDriver();
 
@@ -89,7 +90,8 @@ public:
 		video::SColorf col(0.0f,1.0f,1.0f,0.0f);
 
 		if (UseHighLevelShaders)
-			services->setVertexShaderConstant("mLightColor", reinterpret_cast<f32*>(&col), 4);
+			services->setVertexShaderConstant("mLightColor",
+					reinterpret_cast<f32*>(&col), 4);
 		else
 			services->setVertexShaderConstant(reinterpret_cast<f32*>(&col), 9, 1);
 
@@ -416,5 +418,6 @@ int main()
 }
 
 /*
-Compile and run this, and I hope you have fun with your new little shader writing tool :).
+Compile and run this, and I hope you have fun with your new little shader
+writing tool :).
 **/

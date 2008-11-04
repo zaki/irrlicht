@@ -83,7 +83,8 @@ int main()
 	creatures) in the texture.
 	*/
 	gui::IGUIFont* font = device->getGUIEnvironment()->getBuiltInFont();
-	gui::IGUIFont* font2 = device->getGUIEnvironment()->getFont("../../media/fonthaettenschweiler.bmp");
+	gui::IGUIFont* font2 =
+		device->getGUIEnvironment()->getFont("../../media/fonthaettenschweiler.bmp");
 
 	core::rect<s32> imp1(349,15,385,78);
 	core::rect<s32> imp2(387,15,423,78);

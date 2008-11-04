@@ -1,15 +1,14 @@
 /*
-In this tutorial, I will show how to collision detection with the Irrlicht Engine. 
-I will describe 3 methods: Automatic collision detection for moving through 3d worlds
-with stair climbing and sliding, manual triangle picking and manual
-scene node picking.
+In this tutorial, I will show how to collision detection with the Irrlicht
+Engine. I will describe 3 methods: Automatic collision detection for moving
+through 3d worlds with stair climbing and sliding, manual triangle picking and
+manual scene node picking.
 
-To start, we take the program from tutorial 2, which loaded and displayed a quake 3
-level. We will use the level to walk in it and to pick triangles from it. In addition
-we'll place 3 animated models into it for scene node picking. The following code 
-starts up the engine and loads
-a quake 3 level. I will not explain it, because it should already be known from tutorial
-2.
+To start, we take the program from tutorial 2, which loaded and displayed a
+quake 3 level. We will use the level to walk in it and to pick triangles from
+it. In addition we'll place 3 animated models into it for scene node picking.
+The following code starts up the engine and loads a quake 3 level. I will not
+explain it, because it should already be known from tutorial 2.
 */
 #include <irrlicht.h>
 #include <iostream>
@@ -85,38 +84,45 @@ int main()
 	{		
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
-		selector = smgr->createOctTreeTriangleSelector(q3levelmesh->getMesh(0), q3node, 128);
+		selector = smgr->createOctTreeTriangleSelector(
+				q3levelmesh->getMesh(0), q3node, 128);
 		q3node->setTriangleSelector(selector);
 		selector->drop();
 	}
 
 
 	/*
-	We add a first person shooter camera to the scene for being able to move in the quake 3
-	level like in tutorial 2. But this, time, we add a special animator to the 
-	camera: A Collision Response animator. This thing modifies the scene node to which
-	it is attached to in that way, that it may no more move through walls and is affected
-	by gravity. The only thing we have to tell the animator is how the world looks like,
-	how big the scene node is, how gravity and so on. After the collision response animator
-	is attached to the camera, we do not have to do anything more for collision detection,
-	anything is done automaticly, all other collision detection code below is for picking.
-	And please note another cool feature: The collsion response animator can be attached
-	also to all other scene nodes, not only to cameras. And it can be mixed with other
-	scene node animators. In this way, collision detection and response in the Irrlicht
-	engine is really, really easy.
-	Now we'll take a closer look on the parameters of createCollisionResponseAnimator().
-	The first parameter is the TriangleSelector, which specifies how the world, against
-	collision detection is done looks like. The second parameter is the scene node, which
-	is the object, which is affected by collision detection, in our case it is the camera.
-	The third defines how big the object is, it is the radius of an ellipsoid. Try it out 
-	and change the radius to smaller values, the camera will be able to move closer to walls
-	after this. The next parameter is the direction and speed of gravity. You could
-	set it to (0,0,0) to disable gravity. And the last value is just a translation: Without
-	this, the ellipsoid with which collision detection is done would be around the camera,
-	and the camera would be in the middle of the ellipsoid. But as human beings, we are 
-	used to have our eyes on top of the body, with which we collide with our world, not
-	in the middle of it. So we place the scene node 50 units over the center of the 
-	ellipsoid with this parameter. And that's it, collision detection works now. 
+	We add a first person shooter camera to the scene for being able to
+	move in the quake 3 level like in tutorial 2. But this, time, we add a
+	special animator to the camera: A Collision Response animator. This
+	thing modifies the scene node to which it is attached to in that way,
+	that it may no more move through walls and is affected by gravity. The
+	only thing we have to tell the animator is how the world looks like,
+	how big the scene node is, how gravity and so on. After the collision
+	response animator is attached to the camera, we do not have to do
+	anything more for collision detection, anything is done automaticly,
+	all other collision detection code below is for picking. And please
+	note another cool feature: The collsion response animator can be
+	attached also to all other scene nodes, not only to cameras. And it can
+	be mixed with other scene node animators. In this way, collision
+	detection and response in the Irrlicht engine is really, really easy.
+	Now we'll take a closer look on the parameters of
+	createCollisionResponseAnimator().
+	The first parameter is the TriangleSelector, which specifies how the
+	world, against collision detection is done looks like. The second
+	parameter is the scene node, which is the object, which is affected by
+	collision detection, in our case it is the camera. The third defines
+	how big the object is, it is the radius of an ellipsoid. Try it out and
+	change the radius to smaller values, the camera will be able to move
+	closer to walls after this. The next parameter is the direction and
+	speed of gravity. You could set it to (0,0,0) to disable gravity. And
+	the last value is just a translation: Without this, the ellipsoid with
+	which collision detection is done would be around the camera, and the
+	camera would be in the middle of the ellipsoid. But as human beings, we
+	are used to have our eyes on top of the body, with which we collide
+	with our world, not in the middle of it. So we place the scene node 50
+	units over the center of the ellipsoid with this parameter. And that's
+	it, collision detection works now. 
 	*/
 
 	scene::ICameraSceneNode* camera = 
@@ -210,14 +216,16 @@ int main()
 		smgr->drawAll();
 
 		/*
-		After we've drawn the whole scene whit smgr->drawAll(), we'll do the first
-		picking: We want to know which triangle of the world we are looking at. In addition,
-		we want the exact point of the quake 3 level we are looking at.
-		For this, we create a 3d line starting at the position of the camera and going 
-		through the lookAt-target of it. Then we ask the collision manager if this line
-		collides with a triangle of the world stored in the triangle selector. If yes,
-		we draw the 3d triangle and set the position of the billboard to the intersection 
-		point.
+		After we've drawn the whole scene whit smgr->drawAll(), we'll
+		do the first picking: We want to know which triangle of the
+		world we are looking at. In addition, we want the exact point
+		of the quake 3 level we are looking at. For this, we create a
+		3d line starting at the position of the camera and going
+		through the lookAt-target of it. Then we ask the collision
+		manager if this line collides with a triangle of the world
+		stored in the triangle selector. If yes, we draw the 3d
+		triangle and set the position of the billboard to the
+		intersection point.
 		*/
 
 		core::line3d<f32> line;
@@ -247,7 +255,8 @@ int main()
 		billboard or the quake 3 level.
 		*/
 
-		selectedSceneNode = smgr->getSceneCollisionManager()->getSceneNodeFromCameraBB(camera);
+		selectedSceneNode =
+			smgr->getSceneCollisionManager()->getSceneNodeFromCameraBB(camera);
 
 		if (lastSelectedSceneNode)
 			lastSelectedSceneNode->setMaterialFlag(video::EMF_LIGHTING, true);
@@ -271,13 +280,14 @@ int main()
 
 		if (lastFPS != fps)
 		{
-		  core::stringw str = L"Collision detection example - Irrlicht Engine [";
-		  str += driver->getName();
-		  str += "] FPS:";
-		  str += fps;
+			core::stringw str =
+				L"Collision detection example - Irrlicht Engine [";
+			str += driver->getName();
+			str += "] FPS:";
+			str += fps;
 
-		  device->setWindowCaption(str.c_str());
-		  lastFPS = fps;
+			device->setWindowCaption(str.c_str());
+			lastFPS = fps;
 		}
 	}
 

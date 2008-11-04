@@ -91,7 +91,8 @@ void loadModel(const c8* fn)
 			extension == ".bmp"
 		)
 	{
-		video::ITexture * texture = Device->getVideoDriver()->getTexture( filename.c_str() );
+		video::ITexture * texture =
+			Device->getVideoDriver()->getTexture( filename.c_str() );
 		if ( texture && Model )
 		{
 			// always reload texture
@@ -173,11 +174,14 @@ void createToolBox()
 	env->addButton(core::rect<s32>(10,150,100,190), t1, 1101, L"set");
 
 	// add senseless checkbox
-	env->addCheckBox(true, core::rect<s32>(10,220,200,240), t1, -1, L"Senseless Checkbox");
+	env->addCheckBox(true, core::rect<s32>(10,220,200,240), t1, -1,
+			L"Senseless Checkbox");
 
 	// add undocumented transparent control
-	env->addStaticText(L"Transparent Control:", core::rect<s32>(10,240,150,260), true, false, t1);
-	IGUIScrollBar* scrollbar = env->addScrollBar(true, core::rect<s32>(10,260,150,275), t1, 104);
+	env->addStaticText(L"Transparent Control:",
+			core::rect<s32>(10,240,150,260), true, false, t1);
+	IGUIScrollBar* scrollbar = env->addScrollBar(true,
+			core::rect<s32>(10,260,150,275), t1, 104);
 	scrollbar->setMax(255);
 	scrollbar->setPos(255);
 
@@ -205,7 +209,8 @@ public:
 		{
 			if ( Device )
 			{
-				scene::ICameraSceneNode * camera = Device->getSceneManager()->getActiveCamera ();
+				scene::ICameraSceneNode * camera =
+					Device->getSceneManager()->getActiveCamera();
 				if ( camera )
 				{
 					camera->setInputReceiverEnabled ( !camera->isInputReceiverEnabled() );
@@ -471,7 +476,8 @@ int main(int argc, char* argv[])
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
 	smgr->addLightSceneNode();
-	smgr->addLightSceneNode(0, core::vector3df(50,-50,100), video::SColorf(1.0f,1.0f,1.0f),20000);
+	smgr->addLightSceneNode(0, core::vector3df(50,-50,100),
+			video::SColorf(1.0f,1.0f,1.0f),20000);
 	// add our media directory as "search path"
 	Device->getFileSystem()->addFolderFileArchive ( "../../media/" );
 
@@ -636,7 +642,8 @@ int main(int argc, char* argv[])
 
 	// create fps text
 
-	IGUIStaticText* fpstext = env->addStaticText(L"", core::rect<s32>(400,4,570,23), true, false, bar);
+	IGUIStaticText* fpstext = env->addStaticText(L"",
+			core::rect<s32>(400,4,570,23), true, false, bar);
 
 	// set window caption
 
@@ -682,7 +689,8 @@ int main(int argc, char* argv[])
 			core::position2d<s32>(10, driver->getScreenSize().Height - 128));
 
 	// lock the logo's edges to the bottom left corner of the screen
-	img->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
+	img->setAlignment(EGUIA_UPPERLEFT, EGUIA_UPPERLEFT,
+			EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 
 	// draw everything
 

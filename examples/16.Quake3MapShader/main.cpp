@@ -205,7 +205,8 @@ int IRRCALLCONV main(int argc, char* argv[])
 	IVideoDriver class). Note that this optimization with the Octree is only
 	useful when drawing huge meshes consisting of lots of geometry.
 	*/
-	scene::IQ3LevelMesh* mesh = (scene::IQ3LevelMesh*) smgr->getMesh(mapname);
+	scene::IQ3LevelMesh* mesh =
+		(scene::IQ3LevelMesh*) smgr->getMesh(mapname);
 
 	/*
 		add the geometry mesh to the Scene ( polygon & patches )
@@ -252,8 +253,10 @@ int IRRCALLCONV main(int argc, char* argv[])
 				continue;
 			}
 
-			// we can dump the shader to the console in it's original but already parsed layout
-			// in a pretty printers way.. commented out, because the console would be full...
+			// we can dump the shader to the console in it's
+			// original but already parsed layout in a pretty
+			// printers way.. commented out, because the console
+			// would be full...
 			// quake3::dumpShader ( Shader );
 
 #ifndef SHOW_SHADER_NAME
@@ -306,7 +309,8 @@ int IRRCALLCONV main(int argc, char* argv[])
 
 	/*
 		so we need a good starting Position in the level.
-		we can ask the Quake3 Loader for all entities with class_name "info_player_deathmatch"
+		we can ask the Quake3 Loader for all entities with class_name
+		"info_player_deathmatch"
 		we choose a random launch
 		
 	*/
@@ -327,7 +331,8 @@ int IRRCALLCONV main(int argc, char* argv[])
 				group = entityList[ index ].getGroup(1);
 
 				u32 parsepos = 0;
-				core::vector3df pos = quake3::getAsVector3df ( group->get ( "origin" ), parsepos );
+				core::vector3df pos =
+					quake3::getAsVector3df ( group->get ( "origin" ), parsepos );
 
 				parsepos = 0;
 				f32 angle = quake3::getAsFloat ( group->get ( "angle"), parsepos );
@@ -358,7 +363,8 @@ int IRRCALLCONV main(int argc, char* argv[])
 	device->getCursorControl()->setVisible(false);
 
 	// load the engine logo
-	gui->addImage(driver->getTexture("irrlichtlogo2.png"),core::position2d<s32>(10, 10));
+	gui->addImage(driver->getTexture("irrlichtlogo2.png"),
+			core::position2d<s32>(10, 10));
 
 	// show the driver logo
 	core::position2di pos ( videoDim.Width - 128, videoDim.Height - 64 );
@@ -366,14 +372,14 @@ int IRRCALLCONV main(int argc, char* argv[])
 	switch ( driverType )
 	{
 		case video::EDT_BURNINGSVIDEO:
-			gui->addImage(driver->getTexture("burninglogo.png"),pos );
+			gui->addImage(driver->getTexture("burninglogo.png"),pos);
 			break;
 		case video::EDT_OPENGL:
-			gui->addImage(driver->getTexture("opengllogo.png"),pos );
+			gui->addImage(driver->getTexture("opengllogo.png"),pos);
 			break;
 		case video::EDT_DIRECT3D8:
 		case video::EDT_DIRECT3D9:
-			gui->addImage(driver->getTexture("directxlogo.png"),pos );
+			gui->addImage(driver->getTexture("directxlogo.png"),pos);
 			break;
 	}
 

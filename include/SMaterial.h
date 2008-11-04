@@ -89,6 +89,10 @@ namespace video
 		/** \param other Material to copy from. */
 		SMaterial& operator=(const SMaterial& other)
 		{
+			// Check for self-assignment!
+			if (this == &other)
+				return *this;
+
 			MaterialType = other.MaterialType;
 
 			AmbientColor = other.AmbientColor;

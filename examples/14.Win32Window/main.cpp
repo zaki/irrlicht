@@ -22,7 +22,8 @@ using namespace irr;
 HWND hOKButton;
 HWND hWnd;
 
-static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK CustomWndProc(HWND hWnd, UINT message,
+		WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -101,7 +102,8 @@ int main()
 
 	// create window to put irrlicht in
 
-	HWND hIrrlichtWindow = CreateWindow("BUTTON", "", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
+	HWND hIrrlichtWindow = CreateWindow("BUTTON", "",
+			WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
 			50, 80, 320, 220, hWnd, NULL, hInstance, NULL);
 
 	/*
@@ -126,7 +128,8 @@ int main()
 	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode();
 	cam->setTarget(core::vector3df(0,0,0));
 
-	scene::ISceneNodeAnimator* anim = smgr->createFlyCircleAnimator(core::vector3df(0,15,0), 30.0f);
+	scene::ISceneNodeAnimator* anim =
+		smgr->createFlyCircleAnimator(core::vector3df(0,15,0), 30.0f);
 	cam->addAnimator(anim);
 	anim->drop();
 
