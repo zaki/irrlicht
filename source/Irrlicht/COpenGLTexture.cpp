@@ -124,14 +124,7 @@ void COpenGLTexture::getImageData(IImage* image)
 		return;
 	}
 
-	core::dimension2d<s32> nImageSize;
-	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
-		nImageSize=ImageSize;
-	else
-	{
-		nImageSize.Width = getTextureSizeFromSurfaceSize(ImageSize.Width);
-		nImageSize.Height = getTextureSizeFromSurfaceSize(ImageSize.Height);
-	}
+	const core::dimension2d<s32> nImageSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
 	ECOLOR_FORMAT destFormat = getBestColorFormat(image->getColorFormat());
 	if (ImageSize==nImageSize)
@@ -229,17 +222,6 @@ void COpenGLTexture::copyTexture(bool newTexture)
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
-}
-
-
-//! returns the size of a texture which would be the optimal size for rendering it
-inline s32 COpenGLTexture::getTextureSizeFromSurfaceSize(s32 size) const
-{
-	s32 ts = 0x01;
-	while(ts < size)
-		ts <<= 1;
-
-	return ts;
 }
 
 
