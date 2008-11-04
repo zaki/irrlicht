@@ -218,6 +218,8 @@ core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 #elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 	c8 fpath[4096];
 	p = realpath(filename.c_str(), fpath);
+	if (!p)
+		return filename;
 #endif
 
 	return core::stringc(p);
