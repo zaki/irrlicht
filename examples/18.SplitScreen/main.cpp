@@ -80,26 +80,27 @@ int main()
 	MyEventReceiver receiver;
 
 	//Initialise the engine
-	IrrlichtDevice *device = createDevice(
-			EDT_OPENGL, dimension2d<s32>(ResX,ResY), 32, fullScreen, false, false, &receiver);
+	IrrlichtDevice *device = createDevice(EDT_OPENGL,
+			dimension2d<s32>(ResX,ResY), 32, fullScreen,
+			false, false, &receiver);
 
 	ISceneManager *smgr = device->getSceneManager();
-        IVideoDriver *driver = device->getVideoDriver();
+	IVideoDriver *driver = device->getVideoDriver();
 
-        //Load model
-        IAnimatedMesh *model = smgr->getMesh("../../media/sydney.md2");
+	//Load model
+	IAnimatedMesh *model = smgr->getMesh("../../media/sydney.md2");
 	if (!model)
 		return 1;
-        IAnimatedMeshSceneNode *model_node = smgr->addAnimatedMeshSceneNode(model);
-        //Load texture
-        ITexture *texture = driver->getTexture("../../media/sydney.bmp");
-        model_node->setMaterialTexture(0,texture);
-        //Disable lighting (we've got no light)
-        model_node->setMaterialFlag(EMF_LIGHTING,false);
+	IAnimatedMeshSceneNode *model_node = smgr->addAnimatedMeshSceneNode(model);
+	//Load texture
+	ITexture *texture = driver->getTexture("../../media/sydney.bmp");
+	model_node->setMaterialTexture(0,texture);
+	//Disable lighting (we've got no light)
+	model_node->setMaterialFlag(EMF_LIGHTING,false);
 
-        //Load map
-        device->getFileSystem()->addZipFileArchive("../../media/map-20kdm2.pk3");
-        IAnimatedMesh *map = smgr->getMesh("20kdm2.bsp");
+	//Load map
+	device->getFileSystem()->addZipFileArchive("../../media/map-20kdm2.pk3");
+	IAnimatedMesh *map = smgr->getMesh("20kdm2.bsp");
 	if (map)
 	{
 		ISceneNode *map_node = smgr->addOctTreeSceneNode(map->getMesh(0));
@@ -116,11 +117,11 @@ user.
 	// Create 3 fixed and one user-controlled cameras
 	//Front
 	camera[0] = smgr->addCameraSceneNode(0, vector3df(50,0,0), vector3df(0,0,0));
-        //Top
+	//Top
 	camera[1] = smgr->addCameraSceneNode(0, vector3df(0,50,0), vector3df(0,0,0));
-        //Left
+	//Left
 	camera[2] = smgr->addCameraSceneNode(0, vector3df(0,0,50), vector3df(0,0,0));
-        //User-controlled
+	//User-controlled
 	camera[3] = smgr->addCameraSceneNodeFPS();
 
 /*
@@ -128,8 +129,8 @@ Create a variable for counting the fps and hide the mouse:
 */
 	//Hide mouse
 	device->getCursorControl()->setVisible(false);
-        //We want to count the fps
-        int lastFPS = -1;
+	//We want to count the fps
+	int lastFPS = -1;
 
 /*
 There wasn't much new stuff - till now!

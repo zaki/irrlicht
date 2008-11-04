@@ -69,6 +69,10 @@ namespace video
 		\return This material layer, updated. */
 		SMaterialLayer& operator=(const SMaterialLayer& other)
 		{
+			// Check for self-assignment!
+			if (this == &other)
+				return *this;
+
 			Texture = other.Texture;
 			if (TextureMatrix)
 			{

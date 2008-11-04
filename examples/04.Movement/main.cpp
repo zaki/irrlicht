@@ -90,8 +90,8 @@ int main()
 	// create device
 	MyEventReceiver receiver;
 
-	IrrlichtDevice* device = createDevice( driverType, core::dimension2d<s32>(640, 480),
-		16, false, false, false, &receiver);
+	IrrlichtDevice* device = createDevice(driverType,
+			core::dimension2d<s32>(640, 480), 16, false, false, false, &receiver);
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -142,7 +142,8 @@ int main()
 	The last scene node we add to show possibilities of scene node animators is
 	a md2 model, which uses a 'fly straight' animator to run between to points.
 	*/
-	scene::IAnimatedMeshSceneNode* anms = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/sydney.md2"));
+	scene::IAnimatedMeshSceneNode* anms =
+		smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/sydney.md2"));
 
 	if (anms)
 	{

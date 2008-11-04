@@ -40,11 +40,13 @@ public:
 			switch (event.KeyInput.Key)
 			{
 			case irr::KEY_KEY_W: // switch wire frame mode
-				Terrain->setMaterialFlag(video::EMF_WIREFRAME, !Terrain->getMaterial(0).Wireframe);
+				Terrain->setMaterialFlag(video::EMF_WIREFRAME,
+						!Terrain->getMaterial(0).Wireframe);
 				Terrain->setMaterialFlag(video::EMF_POINTCLOUD, false);
 				return true;
 			case irr::KEY_KEY_P: // switch wire frame mode
-				Terrain->setMaterialFlag(video::EMF_POINTCLOUD, !Terrain->getMaterial(0).PointCloud);
+				Terrain->setMaterialFlag(video::EMF_POINTCLOUD,
+						!Terrain->getMaterial(0).PointCloud);
 				Terrain->setMaterialFlag(video::EMF_WIREFRAME, false);
 				return true;
 			case irr::KEY_KEY_D: // toggle detail map
@@ -94,7 +96,8 @@ int main()
 
 	// create device
 
-	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<s32>(640, 480));
+	IrrlichtDevice* device = createDevice(driverType,
+			core::dimension2d<s32>(640, 480));
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -168,8 +171,10 @@ int main()
 
 	terrain->setMaterialFlag(video::EMF_LIGHTING, false);
 
-	terrain->setMaterialTexture(0, driver->getTexture("../../media/terrain-texture.jpg"));
-	terrain->setMaterialTexture(1, driver->getTexture("../../media/detailmap3.jpg"));
+	terrain->setMaterialTexture(0,
+			driver->getTexture("../../media/terrain-texture.jpg"));
+	terrain->setMaterialTexture(1,
+			driver->getTexture("../../media/detailmap3.jpg"));
 	
 	terrain->setMaterialType(video::EMT_DETAIL_MAP);
 
@@ -251,7 +256,8 @@ int main()
 			// Also print terrain height of current camera position
 			// We can use camera position because terrain is located at coordinate origin
 			str += " Height: ";
-			str += terrain->getHeight(camera->getAbsolutePosition().X, camera->getAbsolutePosition().Z);
+			str += terrain->getHeight(camera->getAbsolutePosition().X,
+					camera->getAbsolutePosition().Z);
 
 			device->setWindowCaption(str.c_str());
 			lastFPS = fps;

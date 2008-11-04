@@ -85,7 +85,8 @@ int main()
 	{
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
-		selector = smgr->createOctTreeTriangleSelector(q3levelmesh->getMesh(0), q3node, 128);
+		selector = smgr->createOctTreeTriangleSelector(
+				q3levelmesh->getMesh(0), q3node, 128);
 		q3node->setTriangleSelector(selector);
 	}
 
@@ -259,7 +260,8 @@ int main()
 		it is not the billboard or the quake 3 level.
 		*/
 
-		selectedSceneNode = smgr->getSceneCollisionManager()->getSceneNodeFromCameraBB(camera);
+		selectedSceneNode =
+			smgr->getSceneCollisionManager()->getSceneNodeFromCameraBB(camera);
 
 		if (lastSelectedSceneNode)
 			lastSelectedSceneNode->setMaterialFlag(video::EMF_LIGHTING, true);

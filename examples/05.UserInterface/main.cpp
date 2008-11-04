@@ -202,9 +202,12 @@ int main()
 	the button in the event receiver.
 	*/	
 
-	env->addButton(rect<s32>(10,240,110,240 + 32), 0, 101, L"Quit", L"Exits Program");
-	env->addButton(rect<s32>(10,280,110,280 + 32), 0, 102, L"New Window", L"Launches a new Window");
-	env->addButton(rect<s32>(10,320,110,320 + 32), 0, 103, L"File Open", L"Opens a file");
+	env->addButton(rect<s32>(10,240,110,240 + 32), 0, 101,
+			L"Quit", L"Exits Program");
+	env->addButton(rect<s32>(10,280,110,280 + 32), 0, 102,
+			L"New Window", L"Launches a new Window");
+	env->addButton(rect<s32>(10,320,110,320 + 32), 0, 103,
+			L"File Open", L"Opens a file");
 
 	/*
 	Now, we add a static text and a scrollbar, which modifies the
@@ -215,7 +218,8 @@ int main()
 	*/
 
 	env->addStaticText(L"Transparent Control:", rect<s32>(150,20,350,40), true);
-	IGUIScrollBar* scrollbar = env->addScrollBar(true, rect<s32>(150, 45, 350, 60), 0, 104);
+	IGUIScrollBar* scrollbar = env->addScrollBar(true,
+			rect<s32>(150, 45, 350, 60), 0, 104);
 	scrollbar->setMax(255);
 
 	// set scrollbar position to alpha value of an arbitrary element

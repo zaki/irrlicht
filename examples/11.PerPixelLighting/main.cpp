@@ -177,7 +177,8 @@ int main()
 
 	// create device
 
-	IrrlichtDevice* device = createDevice(driverType, core::dimension2d<s32>(640, 480));
+	IrrlichtDevice* device = createDevice(driverType,
+			core::dimension2d<s32>(640, 480));
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -256,8 +257,10 @@ int main()
 		to a bigger value, the map will look more rocky.
 		*/
 
-		video::ITexture* colorMap = driver->getTexture("../../media/rockwall.bmp");
-		video::ITexture* normalMap = driver->getTexture("../../media/rockwall_height.bmp");
+		video::ITexture* colorMap =
+			driver->getTexture("../../media/rockwall.bmp");
+		video::ITexture* normalMap =
+			driver->getTexture("../../media/rockwall_height.bmp");
 
 		driver->makeNormalMapTexture(normalMap, 9.0f);
 
@@ -285,7 +288,8 @@ int main()
 
 		room->setMaterialFlag(video::EMF_FOG_ENABLE, true);
 		room->setMaterialType(video::EMT_PARALLAX_MAP_SOLID);
-		room->getMaterial(0).MaterialTypeParam = 0.035f; // adjust height for parallax effect
+		// adjust height for parallax effect
+		room->getMaterial(0).MaterialTypeParam = 0.035f;
 
 		// drop mesh because we created it with a create.. call.
 		tangentMesh->drop();
@@ -392,7 +396,8 @@ int main()
 		video::SColorf(1.0f, 0.2f, 0.2f, 0.0f), 800.0f);
 
 	// add fly circle animator to light 2
-	anim = smgr->createFlyCircleAnimator (core::vector3df(0,150,0),200.0f, 0.001f, core::vector3df ( 0.2f, 0.9f, 0.f ));
+	anim = smgr->createFlyCircleAnimator(core::vector3df(0,150,0), 200.0f,
+			0.001f, core::vector3df(0.2f, 0.9f, 0.f));
 	light2->addAnimator(anim);
 	anim->drop();
 
