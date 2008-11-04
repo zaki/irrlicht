@@ -48,6 +48,14 @@ public:
 		*this = other;
 	}
 
+	//! Constructor from other string types
+	template <class B>
+	string(const string<B>& other)
+	: array(0), allocated(0), used(0)
+	{
+		*this = other;
+	}
+
 
 	//! Constructs a string from a float
 	explicit string(const double number)
@@ -192,6 +200,14 @@ public:
 		for (u32 i=0; i<used; ++i, ++p)
 			array[i] = *p;
 
+		return *this;
+	}
+
+	//! Assignment operator for other string types
+	template <class B>
+	string<T>& operator=(const string<B>& other)
+	{
+		*this = other.c_str();
 		return *this;
 	}
 
