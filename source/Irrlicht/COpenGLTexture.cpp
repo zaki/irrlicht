@@ -427,7 +427,7 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
                                 const char* name,
                                 COpenGLDriver* driver)
-	: COpenGLTexture(name, driver), ColorFrameBuffer(0), DepthTexture(0)
+	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture_FBO");
