@@ -409,6 +409,7 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 	if (!sdlSurface)
 		return false;
 	SDL_SetAlpha(sdlSurface, 0, 0);
+	SDL_SetColorKey(sdlSurface, 0, 0);
 	sdlSurface->format->BitsPerPixel=surface->getBitsPerPixel();
 	sdlSurface->format->BytesPerPixel=surface->getBytesPerPixel();
 	if ((surface->getColorFormat()==video::ECF_R8G8B8) ||
@@ -440,7 +441,7 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 		sdlSurface->format->Rshift=11;
 		sdlSurface->format->Gshift=5;
 		sdlSurface->format->Bshift=0;
-		sdlSurface->format->Ashift=32;
+		sdlSurface->format->Ashift=16;
 	}
 	else if (surface->getColorFormat()==video::ECF_A1R5G5B5)
 	{
