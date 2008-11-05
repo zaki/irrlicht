@@ -15,6 +15,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include <mmsystem.h> // For JOYCAPS
+
+
 namespace irr
 {
 	class CIrrDeviceWin32 : public CIrrDeviceStub, video::IImagePresenter
@@ -242,6 +245,9 @@ namespace irr
 
 		void resizeIfNecessary();
 
+		void initialiseJoysticks();
+		void pollJoysticks(); 
+
 		HWND HWnd;
 
 		bool ChangedToFullScreen;
@@ -249,6 +255,13 @@ namespace irr
 		bool Resized;
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
+
+		struct JoystickInfo
+		{
+			u32		Index;
+			JOYCAPS Caps;
+		};
+		core::array<JoystickInfo> ActiveJoysticks;
 	};
 
 } // end namespace irr

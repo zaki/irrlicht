@@ -352,6 +352,9 @@ precision will be lower but speed higher. currently X86 only
 	#define BURNINGVIDEO_RENDERER_CE
 #endif
 
+//! Define _IRR_COMPILE_WITH_JOYSTICK_SUPPORT_ if you want joystick events.
+#define _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 

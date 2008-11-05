@@ -20,6 +20,13 @@
 #include "SIrrCreationParameters.h"
 #include <X11/XKBlib.h>
 
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#include <fcntl.h>
+#include <linux/joystick.h>
+#include <unistd.h>
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+
 namespace irr
 {
 	namespace video
@@ -92,6 +99,8 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 		return;
 
 	createGUIAndScene();
+
+	initialiseJoysticks(); 
 }
 
 
@@ -147,6 +156,14 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		XFree(visual);
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
+
+	for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		if(ActiveJoysticks[joystick].fd >= 0)
+		{
+			close(ActiveJoysticks[joystick].fd);
+		}
+	}
 }
 
 
@@ -867,6 +884,9 @@ bool CIrrDeviceLinux::run()
 	}
 #endif //_IRR_COMPILE_WITH_X11_
 
+	if(!Close)
+		pollJoysticks();
+
 	return !Close;
 }
 
@@ -1314,6 +1334,96 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.sort();
 #endif
 }
+
+
+void CIrrDeviceLinux::initialiseJoysticks()
+{
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	u32 joystick;
+	for(joystick = 0; joystick < 32; ++joystick)
+	{
+		// The joystick device could be here...
+		core::stringc devName = "/dev/js";
+		devName += joystick;
+
+		JoystickInfo info;
+
+		info.fd = open(devName.c_str(), O_RDONLY);
+		if(-1 == info.fd)
+		{
+			// ...but Ubuntu and possibly other distros 
+			// create the devices in /dev/input
+			devName = "/dev/input/js";
+			devName += joystick;
+			info.fd = open(devName.c_str(), O_RDONLY);
+		}
+
+		if(-1 == info.fd)
+			continue;
+
+		ioctl( info.fd, JSIOCGAXES, &(info.axes) );
+		ioctl( info.fd, JSIOCGBUTTONS, &(info.buttons) );
+
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons, '",
+			joystick, info.axes, info.buttons);
+
+		ioctl( info.fd, JSIOCGNAME(80), logString + strlen(logString));
+		(void)strcat(logString, "'");
+		os::Printer::log(logString, ELL_INFORMATION);
+
+		fcntl( info.fd, F_SETFL, O_NONBLOCK );
+
+		(void)memset(&info.persistentData, 0, sizeof(info.persistentData));
+		info.persistentData.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
+		info.persistentData.JoystickEvent.Joystick = ActiveJoysticks.size();
+
+		// There's no obvious way to determine which (if any) axes represent a POV
+		// hat, so we'll just set it to "not used" and forget about it.
+		info.persistentData.JoystickEvent.POV = 65535;
+
+		ActiveJoysticks.push_back(info);
+	}
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+}
+
+void CIrrDeviceLinux::pollJoysticks()
+{
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	if(0 == ActiveJoysticks.size())
+		return;
+
+	u32 joystick;
+	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		JoystickInfo & info =  ActiveJoysticks[joystick];
+
+		struct js_event event;
+		while(sizeof(event) == read(info.fd, &event, sizeof(event)))
+		{
+			switch(event.type & ~JS_EVENT_INIT)
+			{
+			case JS_EVENT_BUTTON:
+				if (event.value)
+	        			info.persistentData.JoystickEvent.ButtonStates |= (1 << event.number);
+	   			else
+	      				info.persistentData.JoystickEvent.ButtonStates &= ~(1 << event.number);
+				break;
+
+			case JS_EVENT_AXIS:
+				info.persistentData.JoystickEvent.Axis[event.number] = event.value;
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		// Send an irrlict joystick event once per ::run() even if no new data were received.
+		(void)postEventFromUser(info.persistentData);
+	}
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+} 
 
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
