@@ -50,7 +50,11 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 
 	// Initialize SDL... Timer for sleep, video for the obvious, and
 	// noparachute prevents SDL from catching fatal errors.
-	if (SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE ) < 0)
+	if (SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+				SDL_INIT_JOYSTICK|
+#endif
+				SDL_INIT_NOPARACHUTE ) < 0)
 	{
 		os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
 		Close = 1;
@@ -284,7 +288,7 @@ bool CIrrDeviceSDL::run()
 
 	} // end while
 
-#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	// TODO: Check if the multiple open/close calls are too expensive, then
         // open/close in the constructor/destructor instead
 
@@ -396,13 +400,15 @@ void CIrrDeviceSDL::setWindowCaption(const wchar_t* text)
 
 
 //! presents a surface in the client area
-bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* src)
+bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* srcClip)
 {
-	SDL_Rect srcClip;
 	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom(
 			surface->lock(), surface->getDimension().Width, surface->getDimension().Height,
 			surface->getBitsPerPixel(), surface->getPitch(),
 			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), surface->getAlphaMask());
+	if (!sdlSurface)
+		return false;
+	SDL_SetAlpha(sdlSurface, 0, 0);
 	sdlSurface->format->BitsPerPixel=surface->getBitsPerPixel();
 	sdlSurface->format->BytesPerPixel=surface->getBytesPerPixel();
 	if ((surface->getColorFormat()==video::ECF_R8G8B8) ||
@@ -447,23 +453,29 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 		sdlSurface->format->Bshift=0;
 		sdlSurface->format->Ashift=15;
 	}
+
 	SDL_Surface* scr = (SDL_Surface* )windowId;
 	if (!scr)
 		scr = Screen;
-	if (src)
+	if (scr)
 	{
-		srcClip.x = src->UpperLeftCorner.X;
-		srcClip.y = src->UpperLeftCorner.Y;
-		srcClip.w = src->getWidth();
-		srcClip.h = src->getHeight();
-		SDL_BlitSurface(sdlSurface, &srcClip, scr, NULL);
+		if (srcClip)
+		{
+			SDL_Rect sdlsrcClip;
+			sdlsrcClip.x = srcClip->UpperLeftCorner.X;
+			sdlsrcClip.y = srcClip->UpperLeftCorner.Y;
+			sdlsrcClip.w = srcClip->getWidth();
+			sdlsrcClip.h = srcClip->getHeight();
+			SDL_BlitSurface(sdlSurface, &sdlsrcClip, scr, NULL);
+		}
+		else
+			SDL_BlitSurface(sdlSurface, NULL, scr, NULL);
+		SDL_UpdateRect(scr, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
 	}
-	else
-		SDL_BlitSurface(sdlSurface, NULL, scr, NULL);
-	SDL_UpdateRect(scr, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
+
 	SDL_FreeSurface(sdlSurface);
 	surface->unlock();
-	return true;
+	return (scr != 0);
 }
 
 
