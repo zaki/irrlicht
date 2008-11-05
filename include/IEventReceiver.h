@@ -38,7 +38,7 @@ namespace irr
 		/** Joystick events are created by polling all connected joysticks once per
 		device run() and then passing the events to IrrlichtDevice::postEventFromUser.
 		They take the same path as mouse events.
-		Windows: Implemented.
+		Windows, SDL: Implemented.
 		Linux: Implemented, with POV hat issues.
 		MacOS / Other: Not yet implemented.
 		*/
