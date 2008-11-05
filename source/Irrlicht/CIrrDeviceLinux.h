@@ -343,6 +343,7 @@ namespace irr
 
 		core::array<SKeyMap> KeyMap;
 
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 		struct JoystickInfo
 		{
 			int	fd;
@@ -354,6 +355,7 @@ namespace irr
 			JoystickInfo() : fd(-1), axes(0), buttons(0) { }
 		};
 		core::array<JoystickInfo> ActiveJoysticks;
+#endif
 	};
 
 

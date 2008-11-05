@@ -157,6 +157,7 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 	{
 		if(ActiveJoysticks[joystick].fd >= 0)
@@ -164,6 +165,7 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 			close(ActiveJoysticks[joystick].fd);
 		}
 	}
+#endif
 }
 
 
@@ -1387,6 +1389,7 @@ void CIrrDeviceLinux::initialiseJoysticks()
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 }
 
+
 void CIrrDeviceLinux::pollJoysticks()
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
@@ -1419,7 +1422,7 @@ void CIrrDeviceLinux::pollJoysticks()
 			}
 		}
 
-		// Send an irrlict joystick event once per ::run() even if no new data were received.
+		// Send an irrlicht joystick event once per ::run() even if no new data were received.
 		(void)postEventFromUser(info.persistentData);
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
