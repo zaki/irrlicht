@@ -34,6 +34,16 @@ namespace irr
 		IrrlichtDevice::postEventFromUser. They take the same path as mouse events. */
 		EET_KEY_INPUT_EVENT,
 
+		//! A joystick (joypad, gamepad) input event.
+		/** Joystick events are created by polling all connected joysticks once per
+		device run() and then passing the events to IrrlichtDevice::postEventFromUser.
+		They take the same path as mouse events.
+		Windows: Implemented.
+		Linux: Implemented, with POV hat issues.
+		MacOS / Other: Not yet implemented.
+		*/
+		EET_JOYSTICK_INPUT_EVENT, 
+
 		//! A log event
 		/** Log events are only passed to the user receiver if there is one. If they are absorbed by the
 		user receiver then no text will be sent to the console. */
@@ -229,6 +239,64 @@ struct SEvent
 		bool Control;
 	};
 
+	//! A joystick event.
+	/** Unlike other events, joystick events represent the result of polling 
+	 * each connected joystick once per run() of the device. If 
+	 * _IRR_COMPILE_WITH_JOYSTICK_EVENTS_ is defined, an event of this type 
+	 * will be generated once per joystick per device run() regardless of 
+	 * whether the state of the joystick has actually changed. */
+	struct SJoystickEvent
+	{
+		enum
+		{
+			NUMBER_OF_BUTTONS = 32,
+
+			AXIS_X = 0, // e.g. analog stick 1 left to right
+			AXIS_Y,		// e.g. analog stick 1 top to bottom
+			AXIS_Z,		// e.g. throttle, or analog 2 stick 2 left to right
+			AXIS_R,		// e.g. rudder, or analog 2 stick 2 top to bottom
+			AXIS_U,
+			AXIS_V,
+			NUMBER_OF_AXES
+		};
+
+		/** A bitmap of button states.  You can use IsButtonPressed() to
+		 ( check the state of each button from 0 to (NUMBER_OF_BUTTONS - 1) */
+		u32 ButtonStates;
+
+		/** For AXIS_X, AXIS_Y, AXIS_Z, AXIS_R, AXIS_U and AXIS_V
+		 * Values are in the range -32768 to 32767, with 0 representing
+		 * the center position. You will usually want to add a dead 
+		 * zone around this center range. Axes not supported by this
+		 * joystick will always have a value of 0.
+		 * On Linux, POV hats are represented as axes, usually the 
+		 * last two active axis.
+		 */
+		s16 Axis[NUMBER_OF_AXES];
+
+		/** The POV represents the angle of the POV hat in degrees * 100, 
+		 * from 0 to 35,900.  A value of 65535 indicates that the POV hat 
+		 * is centered (or not present).
+		 * This value is only supported on Windows.  On Linux, the POV hat
+		 * will be sent as 2 axes instead. */
+		u16 POV;
+
+		//! The ID of the joystick which generated this event.
+		/** This is an internal Irrlicht index; it does not map directly
+		 * to any particular hardware joystick. */
+		u8 Joystick;
+
+		//! A helper function to check if a button is pressed.
+		bool IsButtonPressed(u32 button) const
+		{
+			if(button >= (u32)NUMBER_OF_BUTTONS)
+				return false;
+
+			return (ButtonStates & (1 << button)) ? true : false;
+		}
+	};
+ 
+
 	//! Any kind of log event.
 	struct SLogEvent
 	{
@@ -255,6 +323,7 @@ struct SEvent
 		struct SGUIEvent GUIEvent;
 		struct SMouseInput MouseInput;
 		struct SKeyInput KeyInput;
+		struct SJoystickEvent JoystickEvent;
 		struct SLogEvent LogEvent;
 		struct SUserEvent UserEvent;
 	};

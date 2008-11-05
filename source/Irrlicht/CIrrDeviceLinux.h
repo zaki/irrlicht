@@ -99,6 +99,9 @@ namespace irr
 
 		void createKeyMap();
 
+		void initialiseJoysticks();
+		void pollJoysticks(); 
+
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
 		{
@@ -339,6 +342,18 @@ namespace irr
 		};
 
 		core::array<SKeyMap> KeyMap;
+
+		struct JoystickInfo
+		{
+			int	fd;
+			int	axes;
+			int	buttons;
+
+			SEvent persistentData;
+
+			JoystickInfo() : fd(-1), axes(0), buttons(0) { }
+		};
+		core::array<JoystickInfo> ActiveJoysticks;
 	};
 
 
