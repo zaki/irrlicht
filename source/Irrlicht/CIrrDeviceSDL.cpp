@@ -284,6 +284,84 @@ bool CIrrDeviceSDL::run()
 
 	} // end while
 
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	// TODO: Check if the multiple open/close calls are too expensive, then
+        // open/close in the constructor/destructor instead
+
+	// update joystick states manually
+	SDL_JoystickUpdate();
+	// we can name up to 256 different joysticks
+	const int numJoysticks = core::min_(SDL_NumJoysticks(), 256);
+	// we'll always send joystick input events...
+	SEvent joyevent;
+	joyevent.EventType = EET_JOYSTICK_INPUT_EVENT;
+	for (int i=0; i<numJoysticks; ++i)
+	{
+		SDL_Joystick* joystick = SDL_JoystickOpen(i);
+		if (joystick)
+		{
+			int j;
+			// query all buttons
+			const int numButtons = core::min_(SDL_JoystickNumButtons(joystick), 32);
+			joyevent.JoystickEvent.ButtonStates=0;
+			for (j=0; j<numButtons; ++j)
+				joyevent.JoystickEvent.ButtonStates |= (SDL_JoystickGetButton(joystick, j)<<j);
+
+			// query all axes, already in correct range
+			const int numAxes = core::min_(SDL_JoystickNumAxes(joystick), 6);
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_R]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V]=0;
+			for (j=0; j<numAxes; ++j)
+				joyevent.JoystickEvent.Axis[j] = SDL_JoystickGetAxis(joystick, j);
+
+			// we can only query one hat, SDL only supports 8 directions
+			if (SDL_JoystickNumHats(joystick)>0)
+			{
+				switch (SDL_JoystickGetHat(joystick, 0))
+				{
+					case SDL_HAT_UP:
+						joyevent.JoystickEvent.POV=0;
+						break;
+					case SDL_HAT_RIGHTUP:
+						joyevent.JoystickEvent.POV=4500;
+						break;
+					case SDL_HAT_RIGHT:
+						joyevent.JoystickEvent.POV=9000;
+						break;
+					case SDL_HAT_RIGHTDOWN:
+						joyevent.JoystickEvent.POV=13500;
+						break;
+					case SDL_HAT_DOWN:
+						joyevent.JoystickEvent.POV=18000;
+						break;
+					case SDL_HAT_LEFTDOWN:
+						joyevent.JoystickEvent.POV=22500;
+						break;
+					case SDL_HAT_LEFT:
+						joyevent.JoystickEvent.POV=27000;
+						break;
+					case SDL_HAT_LEFTUP:
+						joyevent.JoystickEvent.POV=31500;
+						break;
+					case SDL_HAT_CENTERED:
+					default:
+						joyevent.JoystickEvent.POV=65535;
+						break;
+				}
+			}
+			// we map the number directly
+			joyevent.JoystickEvent.Joystick=static_cast<u8>(i);
+			// now post the event
+			postEventFromUser(joyevent);
+			// and close the joystick
+			SDL_JoystickClose(joystick);
+		}
+	}
+#endif
 	return !Close;
 }
 
