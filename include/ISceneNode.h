@@ -248,6 +248,10 @@ namespace scene
 		{
 			if (child && (child != this))
 			{
+				// Change scene manager?
+				if (SceneManager != child->SceneManager)
+					child->setSceneManager(SceneManager);
+
 				child->grab();
 				child->remove(); // remove from old parent
 				Children.push_back(child);
@@ -715,6 +719,17 @@ namespace scene
 					anim->drop();
 				}
 			}
+		}
+
+		//! Sets the new scene manager for this node and all children.
+		//! Called by addChild when moving nodes between scene managers
+		void setSceneManager(ISceneManager* newManager)
+		{
+			SceneManager = newManager;
+
+			core::list<ISceneNode*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+				(*it)->setSceneManager(newManager);
 		}
 
 		//! Name of the scene node.

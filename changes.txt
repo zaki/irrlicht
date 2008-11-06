@@ -1,5 +1,7 @@
 Changes in version 1.5 (... 2008)
 
+ - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
+
  - Basic support for joystick input events on Windows, Linux and SDL devices.
 
  - Major API change: RTTs are now created via addRenderTargetTexture instead of createRenderTargetTexture, which allows to retrieve them from the texture cache, but also changes the way of removing the RTTs, and especially one must not drop the pointer anymore.
@@ -1302,7 +1304,7 @@ Changes in version 0.14.0 (30 November 2005)
 
 - Lights now draw their bounding box and radius when debugdata is set to visible for them.
 
-- Upgraded to irrXML 1.2. Thanks to some hints by Patrik Müller, irrXML, the XML parser used
+- Upgraded to irrXML 1.2. Thanks to some hints by Patrik Mller, irrXML, the XML parser used
   by the Irrlicht Engine now has CDATA support and some other useful new features.
 
 - Support for VisualC++ (Express) 2005. Added a project file and a IrrlichtPropsVC2005.vsprops
