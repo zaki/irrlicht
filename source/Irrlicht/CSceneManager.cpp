@@ -170,6 +170,9 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	ISceneNode::setDebugName("CSceneManager ISceneNode");
 	#endif
 
+	// root node's scene manager
+	SceneManager = this;
+
 	if (Driver)
 		Driver->grab();
 
