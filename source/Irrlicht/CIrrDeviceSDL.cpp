@@ -92,6 +92,22 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		createWindow();
 	}
 
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	// we can name up to 256 different joysticks
+	const int numJoysticks = core::min_(SDL_NumJoysticks(), 256);
+	Joysticks.reallocate(numJoysticks);
+	for (int i=0; i<numJoysticks; ++i)
+	{
+		Joysticks.push_back(SDL_JoystickOpen(i));
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+			i, SDL_JoystickNumAxes(Joysticks[i]),
+			SDL_JoystickNumButtons(Joysticks[i]),
+			SDL_JoystickName(i));
+		os::Printer::log(logString, ELL_INFORMATION);
+	}
+#endif
+
 	// create cursor control
 	CursorControl = new CCursorControl(this);
 
@@ -106,6 +122,12 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 //! destructor
 CIrrDeviceSDL::~CIrrDeviceSDL()
 {
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	const u32 numJoysticks = Joysticks.size();
+	for (u32 i=0; i<numJoysticks; ++i)
+		SDL_JoystickClose(Joysticks[i]);
+#endif
+
 	// only free surfaces created by us
 	if (Screen && !CreationParams.WindowId)
 		SDL_FreeSurface(Screen);
@@ -282,6 +304,19 @@ bool CIrrDeviceSDL::run()
 				WindowMinimized = (SDL_event.active.gain!=1);
 			break;
 
+		case SDL_VIDEORESIZE:
+			if ((SDL_event.resize.w != (int)Width) || (SDL_event.resize.h != (int)Height))
+			{
+				Width = SDL_event.resize.w;
+				Height = SDL_event.resize.h;
+				if (Screen)
+					SDL_FreeSurface(Screen);
+				Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+				if (VideoDriver)
+					VideoDriver->OnResize(core::dimension2d<s32>(Width, Height));
+			}
+			break;
+
 		case SDL_USEREVENT:
 			irrevent.EventType = irr::EET_USER_EVENT;
 			irrevent.UserEvent.UserData1 = reinterpret_cast<s32>(SDL_event.user.data1);
@@ -302,14 +337,12 @@ bool CIrrDeviceSDL::run()
 
 	// update joystick states manually
 	SDL_JoystickUpdate();
-	// we can name up to 256 different joysticks
-	const int numJoysticks = core::min_(SDL_NumJoysticks(), 256);
 	// we'll always send joystick input events...
 	SEvent joyevent;
 	joyevent.EventType = EET_JOYSTICK_INPUT_EVENT;
-	for (int i=0; i<numJoysticks; ++i)
+	for (u32 i=0; i<Joysticks.size(); ++i)
 	{
-		SDL_Joystick* joystick = SDL_JoystickOpen(i);
+		SDL_Joystick* joystick = Joysticks[i];
 		if (joystick)
 		{
 			int j;
@@ -370,7 +403,6 @@ bool CIrrDeviceSDL::run()
 			// now post the event
 			postEventFromUser(joyevent);
 			// and close the joystick
-			SDL_JoystickClose(joystick);
 		}
 	}
 #endif
@@ -528,7 +560,8 @@ void CIrrDeviceSDL::setResizeAble(bool resize)
 			SDL_Flags |= SDL_RESIZABLE;
 		else
 			SDL_Flags &= ~SDL_RESIZABLE;
-		SDL_FreeSurface(Screen);
+		if (Screen)
+			SDL_FreeSurface(Screen);
 		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 		Resizeable = resize;
 	}
