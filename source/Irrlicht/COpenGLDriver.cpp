@@ -2583,11 +2583,10 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 #endif
 	{
 		// the simple texture is only possible for size <= screensize
-		// TODO: Needs to be checked on setRenderTarget instead, in
-		// order to cope with screen size changes
-		if ((size.Width <= ScreenSize.Width) &&
-				(size.Height<= ScreenSize.Height))
-			rtt = addTexture(size, name, ECF_A8R8G8B8);
+		// we try to find an optimal size with the original constraints
+		core::dimension2di destSize(core::min_(size.Width,ScreenSize.Width), core::min_(size.Height,ScreenSize.Height));
+		destSize = destSize.getOptimalSize((size==size.getOptimalSize()), false, false);
+		rtt = addTexture(destSize, name, ECF_A8R8G8B8);
 		if (rtt)
 		{
 			rtt->grab();
