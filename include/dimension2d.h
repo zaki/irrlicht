@@ -87,7 +87,8 @@ namespace core
 			powers of two as values.
 			\param requireSquare Makes width==height in the result
 			\param larger Choose whether the result is larger or
-			smaller than the current dimension.
+			smaller than the current dimension. If one dimension
+			need not be changed it is kept with any value of larger.
 			\return The optimal dimension under the given
 			constraints. */
 			dimension2d<T> getOptimalSize(
@@ -101,11 +102,11 @@ namespace core
 				{
 					while (i<(u32)Width)
 						i<<=1;
-					if (!larger && i!=1)
+					if (!larger && i!=1 && i!=Width)
 						i>>=1;
 					while (j<(u32)Height)
 						j<<=1;
-					if (!larger && j!=1)
+					if (!larger && j!=1 && j!=Height)
 						j>>=1;
 				}
 				else
