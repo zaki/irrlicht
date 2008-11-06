@@ -128,6 +128,23 @@
 		0925114B0D744ADE006784D9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0925113D0D744ADE006784D9 /* Carbon.framework */; };
 		0925114C0D744ADE006784D9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0925113D0D744ADE006784D9 /* Carbon.framework */; };
 		0925114D0D744ADE006784D9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0925113D0D744ADE006784D9 /* Carbon.framework */; };
+		0930CE560EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE570EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE580EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE590EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE5A0EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE5B0EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE5C0EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE5D0EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE5E0EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE5F0EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE600EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE610EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE620EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE630EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE640EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE650EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
+		0930CE660EC39F4500D63866 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0930CE550EC39F4500D63866 /* IOKit.framework */; };
 		093973C00E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093973BC0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp */; };
 		093973C10E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h in Headers */ = {isa = PBXBuildFile; fileRef = 093973BD0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h */; };
 		093973C20E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 093973BE0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp */; };
@@ -854,6 +871,7 @@
 		09198F0E0D188481001F5EF8 /* pngwtran.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwtran.c; path = ../libpng_osx/pngwtran.c; sourceTree = "<group>"; };
 		09198F0F0D188481001F5EF8 /* pngwutil.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pngwutil.c; path = ../libpng_osx/pngwutil.c; sourceTree = "<group>"; };
 		0925113D0D744ADE006784D9 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		0930CE550EC39F4500D63866 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
 		093973BC0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneNodeAnimatorCameraFPS.cpp; sourceTree = "<group>"; };
 		093973BD0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSceneNodeAnimatorCameraFPS.h; sourceTree = "<group>"; };
 		093973BE0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneNodeAnimatorCameraMaya.cpp; sourceTree = "<group>"; };
@@ -1477,6 +1495,7 @@
 				09022C5C0EA0E97F00CD54EE /* Cocoa.framework in Frameworks */,
 				09022C5D0EA0E97F00CD54EE /* OpenGL.framework in Frameworks */,
 				09022C5E0EA0E97F00CD54EE /* Carbon.framework in Frameworks */,
+				0930CE590EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1488,6 +1507,7 @@
 				09F648FE0D2CDED9001E0599 /* Cocoa.framework in Frameworks */,
 				09F648FF0D2CDED9001E0599 /* OpenGL.framework in Frameworks */,
 				092511400D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE5C0EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1499,6 +1519,7 @@
 				09F649390D2CE03E001E0599 /* Cocoa.framework in Frameworks */,
 				09F6493A0D2CE03E001E0599 /* OpenGL.framework in Frameworks */,
 				0925113F0D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE5B0EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1510,6 +1531,7 @@
 				09F649600D2CE206001E0599 /* Cocoa.framework in Frameworks */,
 				09F649610D2CE206001E0599 /* OpenGL.framework in Frameworks */,
 				0925113E0D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE5A0EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1521,6 +1543,7 @@
 				4C53E2750A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2760A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511490D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE650EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1532,6 +1555,7 @@
 				4C53E2770A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2780A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511480D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE640EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1543,6 +1567,7 @@
 				4C53E27F0A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2800A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511440D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE600EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1554,6 +1579,7 @@
 				4C53E2810A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2820A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511430D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE5F0EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1565,6 +1591,7 @@
 				4C53E2790A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E27A0A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511470D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE630EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1576,6 +1603,7 @@
 				4C53E2730A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2740A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				0925114A0D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE660EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1587,6 +1615,7 @@
 				4C53E26F0A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2700A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				0925114C0D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE580EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1598,6 +1627,7 @@
 				4C53E2870A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2880A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				0925114D0D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE570EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1609,6 +1639,7 @@
 				4C53E27D0A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E27E0A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511450D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE610EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1620,6 +1651,7 @@
 				4C53E2710A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2720A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				0925114B0D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE560EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1631,6 +1663,7 @@
 				4C53E27B0A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E27C0A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511460D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE620EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1642,6 +1675,7 @@
 				4C53E2830A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2840A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511420D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE5E0EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1653,6 +1687,7 @@
 				4C53E2850A4850D60014E966 /* Cocoa.framework in Frameworks */,
 				4C53E2860A4850D60014E966 /* OpenGL.framework in Frameworks */,
 				092511410D744ADE006784D9 /* Carbon.framework in Frameworks */,
+				0930CE5D0EC39F4500D63866 /* IOKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2770,6 +2805,7 @@
 		4C53E2540A48505D0014E966 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				0930CE550EC39F4500D63866 /* IOKit.framework */,
 				0925113D0D744ADE006784D9 /* Carbon.framework */,
 				4C53E26D0A4850D60014E966 /* Cocoa.framework */,
 				4C53E26E0A4850D60014E966 /* OpenGL.framework */,
