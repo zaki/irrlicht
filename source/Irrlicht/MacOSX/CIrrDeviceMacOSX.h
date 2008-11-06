@@ -204,6 +204,9 @@ namespace irr
 		int			_screenWidth;
 		int			_screenHeight;
 		bool			_active;
+
+		void initialiseJoysticks();
+		void pollJoysticks();
 	};
 
 
