@@ -160,6 +160,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_EXT_copy_texture",
 	"GL_EXT_cull_vertex",
 	"GL_EXT_depth_bounds_test",
+	"GL_EXT_direct_state_access",
 	"GL_EXT_draw_buffers2",
 	"GL_EXT_draw_instanced",
 	"GL_EXT_draw_range_elements",
@@ -220,6 +221,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_EXT_timer_query",
 	"GL_EXT_transform_feedback",
 	"GL_EXT_vertex_array",
+	"GL_EXT_vertex_array_bgra",
 	"GL_EXT_vertex_shader",
 	"GL_EXT_vertex_weighting",
 	"GL_FfdMaskSGIX",
@@ -470,6 +472,7 @@ class COpenGLExtensionHandler
 		IRR_EXT_copy_texture,
 		IRR_EXT_cull_vertex,
 		IRR_EXT_depth_bounds_test,
+		IRR_EXT_direct_state_access,
 		IRR_EXT_draw_buffers2,
 		IRR_EXT_draw_instanced,
 		IRR_EXT_draw_range_elements,
@@ -530,6 +533,7 @@ class COpenGLExtensionHandler
 		IRR_EXT_timer_query,
 		IRR_EXT_transform_feedback,
 		IRR_EXT_vertex_array,
+		IRR_EXT_vertex_array_bgra,
 		IRR_EXT_vertex_shader,
 		IRR_EXT_vertex_weighting,
 		IRR_FfdMaskSGIX,
@@ -858,9 +862,6 @@ class COpenGLExtensionHandler
 		PFNGLISBUFFERARBPROC pGlIsBufferARB;
 		PFNGLGETBUFFERPARAMETERIVARBPROC pGlGetBufferParameterivARB;
 		PFNGLGETBUFFERPOINTERVARBPROC pGlGetBufferPointervARB;
-
-
-
 	#endif
 };
 
