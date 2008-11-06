@@ -18,6 +18,8 @@ namespace video
 {
 
 class CD3D9Driver;
+// forward declaration for RTT depth buffer handling
+struct SDepthSurface;
 /*!
 	interface for a Video Driver dependent Texture.
 */
@@ -107,6 +109,7 @@ private:
 	IDirect3DTexture9* Texture;
 	IDirect3DSurface9* RTTSurface;
 	CD3D9Driver* Driver;
+	SDepthSurface* DepthSurface;
 	core::dimension2d<s32> TextureSize;
 	core::dimension2d<s32> ImageSize;
 	s32 Pitch;
