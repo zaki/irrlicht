@@ -1,5 +1,7 @@
 Changes in version 1.5 (... 2008)
 
+ - Basic support for joystick input events on OSX tested with xbox 360 wireless controller using driver http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver and a logictech wired controller
+
  - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
 
  - Basic support for joystick input events on Windows, Linux and SDL devices.

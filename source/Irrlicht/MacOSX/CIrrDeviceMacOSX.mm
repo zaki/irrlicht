@@ -25,6 +25,276 @@
 #import <time.h>
 #import "AppDelegate.h"
 
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+#include <IOKit/IOKitLib.h>
+#include <IOKit/IOCFPlugIn.h>
+#ifdef MACOS_10_0_4
+#include <IOKit/hidsystem/IOHIDUsageTables.h>
+#else
+/* The header was moved here in Mac OS X 10.1 */
+#include <Kernel/IOKit/hidsystem/IOHIDUsageTables.h>
+#endif
+#include <IOKit/hid/IOHIDLib.h>
+#include <IOKit/hid/IOHIDKeys.h>
+
+struct JoystickComponent
+{
+	IOHIDElementCookie cookie;				// unique value which identifies element, will NOT change
+	long min;								// reported min value possible
+	long max;								// reported max value possible
+
+	// runtime variables used for auto-calibration
+	long minReport;							// min returned value
+	long maxReport;							// max returned value
+	
+	irr::SEvent persistentData;
+
+	JoystickComponent() : min(0), max(0), minReport(0), maxReport(0) 
+	{
+		persistentData.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
+		// There's no obvious way to determine which (if any) axes represent a POV
+		// hat, so we'll just set it to "not used" and forget about it.
+		persistentData.JoystickEvent.POV = 65535;
+	}
+};
+
+struct JoystickInfo
+{
+	irr::core::array <JoystickComponent> axisComp;
+	irr::core::array <JoystickComponent> buttonComp;
+	irr::core::array <JoystickComponent> hatComp;
+	
+	int	hats;
+	int	axes;
+	int	buttons;
+	
+	int numActiveJoysticks;
+
+	IOHIDDeviceInterface ** interface;
+	bool removed;
+	char joystickName[256];
+	long usage;								// usage page from IOUSBHID Parser.h which defines general usage
+	long usagePage;							// usage within above page from IOUSBHID Parser.h which defines specific usage
+
+	JoystickInfo() : hats(0), axes(0), buttons(0), interface(0), removed(false), usage(0), usagePage(0), numActiveJoysticks(0)
+	{
+		interface = NULL;
+		memset(joystickName, '\0', 256);
+		axisComp.clear();
+		buttonComp.clear();
+		hatComp.clear();
+	}
+};
+irr::core::array<JoystickInfo> ActiveJoysticks;
+
+//helper functions for init joystick
+static IOReturn closeJoystickDevice (JoystickInfo* joyInfo)
+{
+	IOReturn result = kIOReturnSuccess;
+	if (joyInfo && joyInfo->interface) {
+		/* close the interface */
+		result = (*(joyInfo->interface))->close (joyInfo->interface);
+		if (kIOReturnNotOpen == result)
+		{
+			/* do nothing as device was not opened, thus can't be closed */
+		}
+		else if (kIOReturnSuccess != result)
+			irr::os::Printer::log("IOHIDDeviceInterface failed to close", irr::ELL_ERROR);
+		/* release the interface */
+		result = (*(joyInfo->interface))->Release (joyInfo->interface);
+		if (kIOReturnSuccess != result)
+			irr::os::Printer::log("IOHIDDeviceInterface failed to release", irr::ELL_ERROR);
+		joyInfo->interface = NULL;
+	}
+	return result;
+}
+
+static void addComponentInfo (CFTypeRef refElement, JoystickComponent *pComponent, int numActiveJoysticks)
+{
+	long number;
+	CFTypeRef refType;
+
+	pComponent->persistentData.JoystickEvent.Joystick = numActiveJoysticks;
+
+	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementCookieKey));
+	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
+		pComponent->cookie = (IOHIDElementCookie) number;
+	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementMinKey));
+	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
+		pComponent->minReport = pComponent->min = number;
+	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementMaxKey));
+	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
+		pComponent->maxReport = pComponent->max = number;
+}
+
+static void getJoystickComponentArrayHandler (const void * value, void * parameter);
+
+static void addJoystickComponent (CFTypeRef refElement, JoystickInfo* joyInfo)
+{
+	long elementType, usagePage, usage;
+	CFTypeRef refElementType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementTypeKey));
+	CFTypeRef refUsagePage = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementUsagePageKey));
+	CFTypeRef refUsage = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementUsageKey));
+
+
+	if ((refElementType) && (CFNumberGetValue ((CFNumberRef)refElementType, kCFNumberLongType, &elementType)))
+	{
+		/* look at types of interest */
+		if ((elementType == kIOHIDElementTypeInput_Misc) || (elementType == kIOHIDElementTypeInput_Button) ||
+			(elementType == kIOHIDElementTypeInput_Axis))
+		{
+			if (refUsagePage && CFNumberGetValue ((CFNumberRef)refUsagePage, kCFNumberLongType, &usagePage) &&
+				refUsage && CFNumberGetValue ((CFNumberRef)refUsage, kCFNumberLongType, &usage))
+			{
+				switch (usagePage) /* only interested in kHIDPage_GenericDesktop and kHIDPage_Button */
+				{
+					case kHIDPage_GenericDesktop:
+						{
+							switch (usage) /* look at usage to determine function */
+							{
+								case kHIDUsage_GD_X:
+								case kHIDUsage_GD_Y:
+								case kHIDUsage_GD_Z:
+								case kHIDUsage_GD_Rx:
+								case kHIDUsage_GD_Ry:
+								case kHIDUsage_GD_Rz:
+								case kHIDUsage_GD_Slider:
+								case kHIDUsage_GD_Dial:
+								case kHIDUsage_GD_Wheel:
+								{
+									joyInfo->axes++;
+									JoystickComponent newComponent;
+									addComponentInfo(refElement, &newComponent, joyInfo->numActiveJoysticks);
+									joyInfo->axisComp.push_back(newComponent);
+								}
+								break;
+								case kHIDUsage_GD_Hatswitch:
+								{
+									joyInfo->hats++;
+									JoystickComponent newComponent;
+									addComponentInfo(refElement, &newComponent, joyInfo->numActiveJoysticks);
+									joyInfo->hatComp.push_back(newComponent);
+								}
+								break;
+							}							
+						}
+						break;
+					case kHIDPage_Button:
+						{
+							joyInfo->buttons++;
+							JoystickComponent newComponent;
+							addComponentInfo(refElement, &newComponent, joyInfo->numActiveJoysticks);
+							joyInfo->buttonComp.push_back(newComponent);
+						}
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		else if (kIOHIDElementTypeCollection == elementType) {
+			//get elements
+			CFTypeRef refElementTop = CFDictionaryGetValue ((CFMutableDictionaryRef) refElement, CFSTR(kIOHIDElementKey));
+			if (refElementTop) {
+				CFTypeID type = CFGetTypeID (refElementTop);
+				if (type == CFArrayGetTypeID()) {
+					CFRange range = {0, CFArrayGetCount ((CFArrayRef)refElementTop)};
+					CFArrayApplyFunction ((CFArrayRef)refElementTop, range, getJoystickComponentArrayHandler, joyInfo);
+				}
+			}
+		}
+	}
+
+}
+
+static void getJoystickComponentArrayHandler (const void * value, void * parameter)
+{
+	if (CFGetTypeID (value) == CFDictionaryGetTypeID ())
+		addJoystickComponent ((CFTypeRef) value, (JoystickInfo *) parameter);
+}
+
+static void joystickTopLevelElementHandler (const void * value, void * parameter)
+{
+	CFTypeRef refCF = 0;
+	if (CFGetTypeID (value) != CFDictionaryGetTypeID ())
+		return;
+	refCF = CFDictionaryGetValue ((CFDictionaryRef)value, CFSTR(kIOHIDElementUsagePageKey));
+	if (!CFNumberGetValue ((CFNumberRef)refCF, kCFNumberLongType, &((JoystickInfo *) parameter)->usagePage))
+		irr::os::Printer::log("CFNumberGetValue error retrieving JoystickInfo->usagePage", irr::ELL_ERROR);
+	refCF = CFDictionaryGetValue ((CFDictionaryRef)value, CFSTR(kIOHIDElementUsageKey));
+	if (!CFNumberGetValue ((CFNumberRef)refCF, kCFNumberLongType, &((JoystickInfo *) parameter)->usage))
+		irr::os::Printer::log("CFNumberGetValue error retrieving JoystickInfo->usage", irr::ELL_ERROR);
+}
+
+static void getJoystickDeviceInfo (io_object_t hidDevice, CFMutableDictionaryRef hidProperties, JoystickInfo *joyInfo)
+{
+	CFMutableDictionaryRef usbProperties = 0;
+	io_registry_entry_t parent1, parent2;
+	
+	/* Mac OS X currently is not mirroring all USB properties to HID page so need to look at USB device page also
+	 * get dictionary for usb properties: step up two levels and get CF dictionary for USB properties
+	 */
+	if ((KERN_SUCCESS == IORegistryEntryGetParentEntry (hidDevice, kIOServicePlane, &parent1)) &&
+		(KERN_SUCCESS == IORegistryEntryGetParentEntry (parent1, kIOServicePlane, &parent2)) &&
+		(KERN_SUCCESS == IORegistryEntryCreateCFProperties (parent2, &usbProperties, kCFAllocatorDefault, kNilOptions)))
+	{
+		if (usbProperties)
+		{
+			CFTypeRef refCF = 0;
+			/* get device info
+			 * try hid dictionary first, if fail then go to usb dictionary
+			 */
+			
+			
+			/* get joystickName name */
+			refCF = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDProductKey));
+			if (!refCF)
+				refCF = CFDictionaryGetValue (usbProperties, CFSTR("USB Product Name"));
+			if (refCF)
+			{
+				if (!CFStringGetCString ((CFStringRef)refCF, joyInfo->joystickName, 256, CFStringGetSystemEncoding ()))
+					irr::os::Printer::log("CFStringGetCString error getting joyInfo->joystickName", irr::ELL_ERROR);
+			}
+			
+			/* get usage page and usage */
+			refCF = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDPrimaryUsagePageKey));
+			if (refCF)
+			{
+				if (!CFNumberGetValue ((CFNumberRef)refCF, kCFNumberLongType, &joyInfo->usagePage))
+					irr::os::Printer::log("CFNumberGetValue error getting joyInfo->usagePage", irr::ELL_ERROR);
+				refCF = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDPrimaryUsageKey));
+				if (refCF)
+					if (!CFNumberGetValue ((CFNumberRef)refCF, kCFNumberLongType, &joyInfo->usage))
+						irr::os::Printer::log("CFNumberGetValue error getting joyInfo->usage", irr::ELL_ERROR);
+			}
+
+			if (NULL == refCF) /* get top level element HID usage page or usage */
+			{
+				/* use top level element instead */
+				CFTypeRef refCFTopElement = 0;
+				refCFTopElement = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDElementKey));
+				{
+					/* refCFTopElement points to an array of element dictionaries */
+					CFRange range = {0, CFArrayGetCount ((CFArrayRef)refCFTopElement)};
+					CFArrayApplyFunction ((CFArrayRef)refCFTopElement, range, joystickTopLevelElementHandler, joyInfo);
+				}
+			}
+
+			CFRelease (usbProperties);
+		}
+		else
+			irr::os::Printer::log("IORegistryEntryCreateCFProperties failed to create usbProperties", irr::ELL_ERROR);
+
+		if (kIOReturnSuccess != IOObjectRelease (parent2))
+			irr::os::Printer::log("IOObjectRelease failed to release parent2", irr::ELL_ERROR);
+		if (kIOReturnSuccess != IOObjectRelease (parent1))
+			irr::os::Printer::log("IOObjectRelease failed to release parent1", irr::ELL_ERROR);
+	}
+}
+
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
 //------------------------------------------------------------------------------------------
 Boolean GetDictionaryBoolean(CFDictionaryRef theDict, const void* key)
 {
@@ -95,12 +365,21 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
 	createDriver();
 	createGUIAndScene();
+	
+	initialiseJoysticks();
 }
 
 CIrrDeviceMacOSX::~CIrrDeviceMacOSX()
 {
 	SetSystemUIMode(kUIModeNormal, 0);
 	closeDevice();
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	for(u32 joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		if(ActiveJoysticks[joystick].interface)
+			closeJoystickDevice(&ActiveJoysticks[joystick]);
+	}
+#endif
 }
 
 void CIrrDeviceMacOSX::closeDevice()
@@ -423,6 +702,8 @@ bool CIrrDeviceMacOSX::run()
 		}
 	}
 
+	pollJoysticks();
+
 	return (![[NSApp delegate] isQuit] && _active);
 }
 
@@ -683,6 +964,184 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 	return false;
 }
 
+#if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+static void joystickRemovalCallback(void * target,
+                               IOReturn result,
+                               void * refcon,
+                               void * sender)
+{
+	JoystickInfo *joy = (JoystickInfo *) refcon;
+	joy->removed = 1;
+	//device->uncentered = 1;
+}
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+void CIrrDeviceMacOSX::initialiseJoysticks()
+{
+#if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	ActiveJoysticks.clear();
+
+	io_object_t hidObject = 0;
+	io_iterator_t hidIterator = 0;
+	IOReturn result = kIOReturnSuccess;
+	mach_port_t masterPort = 0;
+	CFMutableDictionaryRef hidDictionaryRef = NULL;
+
+	result = IOMasterPort (bootstrap_port, &masterPort);
+	if (kIOReturnSuccess != result) {
+		os::Printer::log("initialiseJoysticks IOMasterPort failed", ELL_ERROR);
+		return;
+	}
+
+	hidDictionaryRef = IOServiceMatching (kIOHIDDeviceKey);
+	if (!hidDictionaryRef) {
+		os::Printer::log("initialiseJoysticks IOServiceMatching failed", ELL_ERROR);
+		return;
+	}
+	result = IOServiceGetMatchingServices (masterPort, hidDictionaryRef, &hidIterator);
+
+	if (kIOReturnSuccess != result) {
+		os::Printer::log("initialiseJoysticks IOServiceGetMatchingServices failed", ELL_ERROR);
+		return;
+	}
+
+	//no joysticks just return
+	if (!hidIterator)
+		return;
+
+	while ((hidObject = IOIteratorNext (hidIterator)))
+	{
+		JoystickInfo info;
+
+		// get dictionary for HID properties
+		CFMutableDictionaryRef hidProperties = 0;
+
+		kern_return_t kern_result = IORegistryEntryCreateCFProperties (hidObject, &hidProperties, kCFAllocatorDefault, kNilOptions);
+		if ((kern_result == KERN_SUCCESS) && hidProperties) {
+			HRESULT plugInResult = S_OK;
+			SInt32 score = 0;
+			IOCFPlugInInterface ** ppPlugInInterface = NULL;
+			result = IOCreatePlugInInterfaceForService (hidObject, kIOHIDDeviceUserClientTypeID,
+													kIOCFPlugInInterfaceID, &ppPlugInInterface, &score);
+			if (kIOReturnSuccess == result) {
+				plugInResult = (*ppPlugInInterface)->QueryInterface (ppPlugInInterface,
+									CFUUIDGetUUIDBytes (kIOHIDDeviceInterfaceID), (void **) &(info.interface));
+				if (plugInResult != S_OK)
+					os::Printer::log("initialiseJoysticks query HID class device interface failed", ELL_ERROR);
+				(*ppPlugInInterface)->Release (ppPlugInInterface);
+			}
+			else
+				continue;
+
+			if (info.interface != NULL) {
+				result = (*(info.interface))->open (info.interface, 0);
+				if (result == kIOReturnSuccess) {
+					(*(info.interface))->setRemovalCallback (info.interface, joystickRemovalCallback, &info, &info);
+					getJoystickDeviceInfo(hidObject, hidProperties, &info);
+
+					//get elements
+					CFTypeRef refElementTop = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDElementKey));
+					if (refElementTop) {
+						CFTypeID type = CFGetTypeID (refElementTop);
+						if (type == CFArrayGetTypeID()) {
+							CFRange range = {0, CFArrayGetCount ((CFArrayRef)refElementTop)};
+							info.numActiveJoysticks = ActiveJoysticks.size();
+							CFArrayApplyFunction ((CFArrayRef)refElementTop, range, getJoystickComponentArrayHandler, &info);
+						}
+					}
+				} else {
+					CFRelease (hidProperties);
+					os::Printer::log("initialiseJoysticks Open interface failed", ELL_ERROR);
+					continue;				
+				}
+
+				CFRelease (hidProperties);
+
+				result = IOObjectRelease (hidObject);
+				
+				if ( (info.usagePage != kHIDPage_GenericDesktop) ||
+					 ((info.usage != kHIDUsage_GD_Joystick &&
+					  info.usage != kHIDUsage_GD_GamePad &&
+					  info.usage != kHIDUsage_GD_MultiAxisController)) ) {
+					closeJoystickDevice (&info);
+					continue;
+				}
+				ActiveJoysticks.push_back(info);
+			}
+
+		} else
+			continue;
+	}
+	result = IOObjectRelease (hidIterator);
+
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+}
+
+void CIrrDeviceMacOSX::pollJoysticks()
+{
+#if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	if(0 == ActiveJoysticks.size())
+		return;
+
+
+	u32 joystick;
+	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		if (ActiveJoysticks[joystick].removed)
+			continue;
+		
+		if (ActiveJoysticks[joystick].interface)
+		{
+			for (u32 n = 0; n < ActiveJoysticks[joystick].axisComp.size(); n++) {
+				IOReturn result = kIOReturnSuccess;
+				IOHIDEventStruct hidEvent;
+				hidEvent.value = 0;
+				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].axisComp[n].cookie, &hidEvent);
+				if (kIOReturnSuccess == result) {
+					if (ActiveJoysticks[joystick].axisComp[n].persistentData.JoystickEvent.Axis[n] != hidEvent.value) {
+						ActiveJoysticks[joystick].axisComp[n].persistentData.JoystickEvent.Axis[n] = hidEvent.value;
+						ActiveJoysticks[joystick].axisComp[n].persistentData.JoystickEvent.ButtonStates = 0;
+						postEventFromUser(ActiveJoysticks[joystick].axisComp[n].persistentData);
+					}
+
+				}
+			}//axis check
+
+			for (u32 n = 0; n < ActiveJoysticks[joystick].buttonComp.size(); n++) {
+				IOReturn result = kIOReturnSuccess;
+				IOHIDEventStruct hidEvent;
+				hidEvent.value = 0;
+				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].buttonComp[n].cookie, &hidEvent);
+				if (kIOReturnSuccess == result) {
+					u32 ButtonStates = 0;
+
+					if (hidEvent.value)
+							ButtonStates |= (1 << n);
+					else
+							ButtonStates &= ~(1 << n);
+					
+					if (ButtonStates != ActiveJoysticks[joystick].buttonComp[n].persistentData.JoystickEvent.ButtonStates) {
+						ActiveJoysticks[joystick].buttonComp[n].persistentData.JoystickEvent.ButtonStates = ButtonStates;
+						postEventFromUser(ActiveJoysticks[joystick].buttonComp[n].persistentData);
+					}
+				}
+			}//button check
+/*
+			for (u32 n = 0; n < ActiveJoysticks[joystick].hatComp.size(); n++) {
+				IOReturn result = kIOReturnSuccess;
+				IOHIDEventStruct hidEvent;
+				hidEvent.value = 0;
+				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].hatComp[n].cookie, &hidEvent);
+				if (kIOReturnSuccess == result) {
+					printf("joystick hatComp[%i]\n", hidEvent.value);
+
+				}
+			}//hat check
+*/
+		}
+	}
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+}
 
 video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 {
