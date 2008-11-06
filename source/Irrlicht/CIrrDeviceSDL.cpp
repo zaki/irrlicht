@@ -282,6 +282,14 @@ bool CIrrDeviceSDL::run()
 				WindowMinimized = (SDL_event.active.gain!=1);
 			break;
 
+		case SDL_USEREVENT:
+			irrevent.EventType = irr::EET_USER_EVENT;
+			irrevent.UserEvent.UserData1 = reinterpret_cast<s32>(SDL_event.user.data1);
+			irrevent.UserEvent.UserData2 = reinterpret_cast<s32>(SDL_event.user.data2);
+
+			postEventFromUser(irrevent);
+			break;
+
 		default:
 			break;
 		} // end switch
