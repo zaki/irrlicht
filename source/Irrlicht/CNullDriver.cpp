@@ -1904,7 +1904,7 @@ void CNullDriver::enableClipPlane(u32 index, bool enable)
 ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& size,
 		const c8* name)
 {
-	os::Printer::log("createRenderTargetTexture is deprecated, use addRenderTargetTexture istead");
+	os::Printer::log("createRenderTargetTexture is deprecated, use addRenderTargetTexture instead");
 	ITexture* tex = addRenderTargetTexture(size, name);
 	tex->grab();
 	return tex;
