@@ -568,10 +568,7 @@ private:
 
 		// add zeros at end
 
-		data8[size-1] = 0;
-		data8[size-2] = 0;
-		data8[size-3] = 0;
-		data8[size-4] = 0;
+		memset(data8+size-4, 0, 4);
 
 		char16* data16 = reinterpret_cast<char16*>(data8);
 		char32* data32 = reinterpret_cast<char32*>(data8);	
