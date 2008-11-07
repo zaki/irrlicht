@@ -618,12 +618,12 @@ void COpenGLFBODepthTexture::attach(ITexture* renderTex)
 						GL_RENDERBUFFER_EXT,
 						DepthRenderBuffer);
 	}
-#endif
-	rtt->DepthTexture=this;
-	renderTex->grab();
 	// check the status
 	if (!checkFBOStatus(Driver))
 		os::Printer::log("FBO incomplete");
+#endif
+	rtt->DepthTexture=this;
+	renderTex->grab();
 	rtt->unbindRTT();
 }
 
