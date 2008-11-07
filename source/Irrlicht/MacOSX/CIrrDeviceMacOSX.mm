@@ -44,18 +44,8 @@ struct JoystickComponent
 	long min;								// reported min value possible
 	long max;								// reported max value possible
 
-	// runtime variables used for auto-calibration
-	long minReport;							// min returned value
-	long maxReport;							// max returned value
-	
-	irr::SEvent persistentData;
-
-	JoystickComponent() : min(0), max(0), minReport(0), maxReport(0) 
+	JoystickComponent() : min(0), max(0)
 	{
-		persistentData.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
-		// There's no obvious way to determine which (if any) axes represent a POV
-		// hat, so we'll just set it to "not used" and forget about it.
-		persistentData.JoystickEvent.POV = 65535;
 	}
 };
 
@@ -71,6 +61,8 @@ struct JoystickInfo
 	
 	int numActiveJoysticks;
 
+	irr::SEvent persistentData;
+
 	IOHIDDeviceInterface ** interface;
 	bool removed;
 	char joystickName[256];
@@ -84,6 +76,12 @@ struct JoystickInfo
 		axisComp.clear();
 		buttonComp.clear();
 		hatComp.clear();
+
+		persistentData.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
+		// There's no obvious way to determine which (if any) axes represent a POV
+		// hat, so we'll just set it to "not used" and forget about it.
+		persistentData.JoystickEvent.POV = 65535;
+		persistentData.JoystickEvent.ButtonStates = 0;
 	}
 };
 irr::core::array<JoystickInfo> ActiveJoysticks;
@@ -115,17 +113,15 @@ static void addComponentInfo (CFTypeRef refElement, JoystickComponent *pComponen
 	long number;
 	CFTypeRef refType;
 
-	pComponent->persistentData.JoystickEvent.Joystick = numActiveJoysticks;
-
 	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementCookieKey));
 	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
 		pComponent->cookie = (IOHIDElementCookie) number;
 	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementMinKey));
 	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
-		pComponent->minReport = pComponent->min = number;
+		pComponent->min = number;
 	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementMaxKey));
 	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
-		pComponent->maxReport = pComponent->max = number;
+		pComponent->max = number;
 }
 
 static void getJoystickComponentArrayHandler (const void * value, void * parameter);
@@ -972,7 +968,6 @@ static void joystickRemovalCallback(void * target,
 {
 	JoystickInfo *joy = (JoystickInfo *) refcon;
 	joy->removed = 1;
-	//device->uncentered = 1;
 }
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 
@@ -1066,6 +1061,10 @@ void CIrrDeviceMacOSX::initialiseJoysticks()
 					closeJoystickDevice (&info);
 					continue;
 				}
+
+				for (u32 i = 0; i < 6; i++)
+					info.persistentData.JoystickEvent.Axis[i] = 0;
+
 				ActiveJoysticks.push_back(info);
 			}
 
@@ -1083,13 +1082,15 @@ void CIrrDeviceMacOSX::pollJoysticks()
 	if(0 == ActiveJoysticks.size())
 		return;
 
-
 	u32 joystick;
 	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
 	{
 		if (ActiveJoysticks[joystick].removed)
 			continue;
 		
+		bool found = false;
+		ActiveJoysticks[joystick].persistentData.JoystickEvent.Joystick = joystick;
+
 		if (ActiveJoysticks[joystick].interface)
 		{
 			for (u32 n = 0; n < ActiveJoysticks[joystick].axisComp.size(); n++) {
@@ -1098,11 +1099,9 @@ void CIrrDeviceMacOSX::pollJoysticks()
 				hidEvent.value = 0;
 				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].axisComp[n].cookie, &hidEvent);
 				if (kIOReturnSuccess == result) {
-					if (ActiveJoysticks[joystick].axisComp[n].persistentData.JoystickEvent.Axis[n] != hidEvent.value) {
-						ActiveJoysticks[joystick].axisComp[n].persistentData.JoystickEvent.Axis[n] = hidEvent.value;
-						ActiveJoysticks[joystick].axisComp[n].persistentData.JoystickEvent.ButtonStates = 0;
-						postEventFromUser(ActiveJoysticks[joystick].axisComp[n].persistentData);
-					}
+					if (ActiveJoysticks[joystick].persistentData.JoystickEvent.Axis[n] != (s16)hidEvent.value)
+						found = true;
+					ActiveJoysticks[joystick].persistentData.JoystickEvent.Axis[n] = (s16)hidEvent.value;
 
 				}
 			}//axis check
@@ -1115,15 +1114,15 @@ void CIrrDeviceMacOSX::pollJoysticks()
 				if (kIOReturnSuccess == result) {
 					u32 ButtonStates = 0;
 
+					if (hidEvent.value && !((ActiveJoysticks[joystick].persistentData.JoystickEvent.ButtonStates & (1 << n)) ? true : false) )
+							found = true;
+					else if (!hidEvent.value && ((ActiveJoysticks[joystick].persistentData.JoystickEvent.ButtonStates & (1 << n)) ? true : false))
+							found = true;
+
 					if (hidEvent.value)
-							ButtonStates |= (1 << n);
+							ActiveJoysticks[joystick].persistentData.JoystickEvent.ButtonStates |= (1 << n);
 					else
-							ButtonStates &= ~(1 << n);
-					
-					if (ButtonStates != ActiveJoysticks[joystick].buttonComp[n].persistentData.JoystickEvent.ButtonStates) {
-						ActiveJoysticks[joystick].buttonComp[n].persistentData.JoystickEvent.ButtonStates = ButtonStates;
-						postEventFromUser(ActiveJoysticks[joystick].buttonComp[n].persistentData);
-					}
+							ActiveJoysticks[joystick].persistentData.JoystickEvent.ButtonStates &= ~(1 << n);
 				}
 			}//button check
 /*
@@ -1139,6 +1138,9 @@ void CIrrDeviceMacOSX::pollJoysticks()
 			}//hat check
 */
 		}
+
+		if (found)
+			postEventFromUser(ActiveJoysticks[joystick].persistentData);
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 }
