@@ -102,11 +102,11 @@ namespace core
 				{
 					while (i<(u32)Width)
 						i<<=1;
-					if (!larger && i!=1 && i!=Width)
+					if (!larger && i!=1 && i!=(u32)Width)
 						i>>=1;
 					while (j<(u32)Height)
 						j<<=1;
-					if (!larger && j!=1 && j!=Height)
+					if (!larger && j!=1 && j!=(u32)Height)
 						j>>=1;
 				}
 				else
