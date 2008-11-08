@@ -49,6 +49,7 @@ COpenGLDriver::COpenGLDriver(const core::dimension2d<s32>& screenSize,
 bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 				HWND window, u32 bits, bool vsync, bool stencilBuffer)
 {
+	// Set up ixel format descriptor with desired parameters
 	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
 		1,				// Version Number
@@ -70,14 +71,14 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 		0, 0, 0				// Layer Masks Ignored
 	};
 
+	GLuint PixelFormat;
+
 	// get hdc
 	if (!(HDc=GetDC(window)))
 	{
 		os::Printer::log("Cannot create a GL device context.", ELL_ERROR);
 		return false;
 	}
-
-	GLuint PixelFormat;
 
 	for (u32 i=0; i<5; ++i)
 	{
@@ -116,45 +117,46 @@ bool COpenGLDriver::initDriver(const core::dimension2d<s32>& screenSize,
 			break;
 		else
 			os::Printer::log("Cannot find a suitable pixelformat.", ELL_ERROR);
-		}
+	}
 
-		// set pixel format
-		if(!SetPixelFormat(HDc, PixelFormat, &pfd))
-		{
-			os::Printer::log("Cannot set the pixel format.", ELL_ERROR);
+	// set pixel format
+	if(!SetPixelFormat(HDc, PixelFormat, &pfd))
+	{
+		os::Printer::log("Cannot set the pixel format.", ELL_ERROR);
 		return false;
-		}
+	}
 
-		// create rendering context
-		if (!(HRc=wglCreateContext(HDc)))
-		{
-			os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
+	// create rendering context
+	if (!(HRc=wglCreateContext(HDc)))
+	{
+		os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
 		return false;
-		}
+	}
 
-		// activate rendering context
-		if(!wglMakeCurrent(HDc, HRc))
-		{
-			os::Printer::log("Cannot activate GL rendering context", ELL_ERROR);
+	// activate rendering context
+	if(!wglMakeCurrent(HDc, HRc))
+	{
+		os::Printer::log("Cannot activate GL rendering context", ELL_ERROR);
+		wglDeleteContext(HRc);
 		return false;
-		}
+	}
 
-		int pf = GetPixelFormat(HDc);
-		DescribePixelFormat(HDc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-		if (pfd.cAlphaBits != 0)
-		{
-			if (pfd.cRedBits == 8)
-				ColorFormat = ECF_A8R8G8B8;
-			else
-				ColorFormat = ECF_A1R5G5B5;
-		}
+	int pf = GetPixelFormat(HDc);
+	DescribePixelFormat(HDc, pf, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+	if (pfd.cAlphaBits != 0)
+	{
+		if (pfd.cRedBits == 8)
+			ColorFormat = ECF_A8R8G8B8;
 		else
-		{
-			if (pfd.cRedBits == 8)
-				ColorFormat = ECF_R8G8B8;
-			else
-				ColorFormat = ECF_R5G6B5;
-		}
+			ColorFormat = ECF_A1R5G5B5;
+	}
+	else
+	{
+		if (pfd.cRedBits == 8)
+			ColorFormat = ECF_R8G8B8;
+		else
+			ColorFormat = ECF_R5G6B5;
+	}
 
 	genericDriverInit(screenSize, stencilBuffer);
 

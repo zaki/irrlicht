@@ -25,6 +25,7 @@
 #if defined(_IRR_WINDOWS_API_)
 	#include <GL/gl.h>
 	#include "glext.h"
+	#include "wglext.h"
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
 	#pragma comment(lib, "GLu32.lib")
