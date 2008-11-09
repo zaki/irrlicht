@@ -15,7 +15,8 @@ public:
 	CMainMenu();
 
 	bool run(bool& outFullscreen, bool& outMusic, bool& outShadows,
-		bool& outAdditive, bool &outVSync, video::E_DRIVER_TYPE& outDriver);
+		bool& outAdditive, bool &outVSync, bool& outAA,
+		video::E_DRIVER_TYPE& outDriver);
 
 	virtual bool OnEvent(const SEvent& event);
 
@@ -33,6 +34,7 @@ private:
 	bool additive;
 	bool transparent;
 	bool vsync;
+	bool aa;
 
 	scene::IAnimatedMesh* quakeLevel;
 	scene::ISceneNode* lightMapNode;
