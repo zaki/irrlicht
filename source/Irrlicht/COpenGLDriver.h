@@ -76,23 +76,18 @@ namespace video
 	{
 	public:
 
-		#ifdef _IRR_WINDOWS_API_
-		//! win32 constructor
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			bool stencilBuffer, io::IFileSystem* io, bool antiAlias);
-
-		//! inits the windows specific parts of the open gl driver
-		bool initDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool vsync, bool stencilBuffer);
-		#endif
-
-		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
+		#if defined(_IRR_WINDOWS_API_) || defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
 		#endif
 
 		#ifdef _IRR_USE_OSX_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io, CIrrDeviceMacOSX *device);
+		#endif
+
+		#ifdef _IRR_WINDOWS_API_
+		//! inits the windows specific parts of the open gl driver
+		bool initDriver(SIrrlichtCreationParameters params);
 		#endif
 
 		//! destructor
