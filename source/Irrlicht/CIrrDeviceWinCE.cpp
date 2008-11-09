@@ -40,9 +40,7 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool fullscreen, bool stencilBuffer, io::IFileSystem* io,
-			bool vsync, bool antiAlias);
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io);
 		#endif
 	}
 } // end namespace irr
@@ -276,7 +274,7 @@ namespace irr
 
 //! constructor
 CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
-: CIrrDeviceStub(params), HWnd(reinterpret_cast<HWND>(CreationParams.WindowId)),
+: CIrrDeviceStub(params), HWnd(0),
 	Win32CursorControl(0), ChangedToFullScreen(false), Resized(false),
 	ExternalWindow(false)
 {
@@ -292,7 +290,7 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
 	HINSTANCE hInstance = GetModuleHandle(0);
 
 	// create the window only if we do not use the null device
-	if (!HWnd && (CreationParams.DriverType != video::EDT_NULL))
+	if (!CreationParams.WindowId && (CreationParams.DriverType != video::EDT_NULL))
 	{
 		const wchar_t* ClassName = L"CIrrDeviceWinCE";
 
@@ -346,10 +344,10 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
 		// fix ugly ATI driver bugs. Thanks to ariaci
 		MoveWindow(HWnd, windowLeft, windowTop, realWidth, realHeight, TRUE);
 	}
-
-	// attach external window
-	if (CreationParams.WindowId)
+	else if (CreationParams.WindowId)
 	{
+		// attach external window
+		HWnd = static_cast<HWND>(CreationParams.WindowId);
 		RECT r;
 		GetWindowRect(HWnd, &r);
 		CreationParams.WindowSize.Width = r.right - r.left;
@@ -383,7 +381,6 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
 }
 
 
-
 //! destructor
 CIrrDeviceWinCE::~CIrrDeviceWinCE()
 {
@@ -399,10 +396,7 @@ CIrrDeviceWinCE::~CIrrDeviceWinCE()
 			EnvMap.erase(it);
 			break;
 		}
-
-
 }
-
 
 
 //! create the driver
@@ -443,8 +437,7 @@ void CIrrDeviceWinCE::createDriver()
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		if (CreationParams.Fullscreen)
 			switchToFullScreen();
-		VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, HWnd, CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer, FileSystem,
-			CreationParams.Vsync, CreationParams.AntiAlias);
+		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
 		if (!VideoDriver)
 		{
 			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);

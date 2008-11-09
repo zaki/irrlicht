@@ -35,9 +35,7 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool stencilBuffer, io::IFileSystem* io,
-			bool vsync, bool antiAlias);
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io);
 		#endif
 	}
 } // end namespace irr
@@ -293,7 +291,6 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	IsNonNTWindows(false), Resized(false),
 	ExternalWindow(false), Win32CursorControl(0)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceWin32");
 	#endif
@@ -363,6 +360,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 		HWnd = CreateWindow( ClassName, "", style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
+		CreationParams.WindowId = HWnd;
 
 		ShowWindow(HWnd, SW_SHOW);
 		UpdateWindow(HWnd);
@@ -370,10 +368,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		// fix ugly ATI driver bugs. Thanks to ariaci
 		MoveWindow(HWnd, windowLeft, windowTop, realWidth, realHeight, TRUE);
 	}
-
-	// attach external window
-	if (CreationParams.WindowId)
+	else if (CreationParams.WindowId)
 	{
+		// attach external window
 		HWnd = static_cast<HWND>(CreationParams.WindowId);
 		RECT r;
 		GetWindowRect(HWnd, &r);
@@ -478,9 +475,7 @@ void CIrrDeviceWin32::createDriver()
 		if (CreationParams.Fullscreen)
 			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
 
-		VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, HWnd, CreationParams.Bits, 
-			CreationParams.Stencilbuffer, FileSystem,
-			CreationParams.Vsync, CreationParams.AntiAlias);
+		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
 		if (!VideoDriver)
 		{
 			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
