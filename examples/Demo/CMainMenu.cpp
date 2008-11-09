@@ -65,13 +65,14 @@ private:
 
 CMainMenu::CMainMenu()
 : startButton(0), MenuDevice(0), selected(2), start(false), fullscreen(true),
-	music(true), shadows(false), additive(false), transparent(true), vsync(false)
+	music(true), shadows(false), additive(false), transparent(true), vsync(false), aa(false)
 {
 }
 
 
 bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
-			bool& outAdditive, bool &outVSync, video::E_DRIVER_TYPE& outDriver)
+			bool& outAdditive, bool& outVSync, bool& outAA,
+			video::E_DRIVER_TYPE& outDriver)
 {
 	MenuDevice = createDevice(video::EDT_BURNINGSVIDEO,
 		core::dimension2d<s32>(512, 384), 16, false, false, false, this);
@@ -129,14 +130,16 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 
 	guienv->addCheckBox(fullscreen, core::rect<int>(20,85+d,130,110+d),
 		optTab, 3, L"Fullscreen");
-	guienv->addCheckBox(music, core::rect<int>(20,110+d,130,135+d),
+	guienv->addCheckBox(music, core::rect<int>(135,85+d,245,110+d),
 		optTab, 4, L"Music & Sfx");
-	guienv->addCheckBox(shadows, core::rect<int>(20,135+d,230,160+d),
+	guienv->addCheckBox(shadows, core::rect<int>(20,110+d,135,135+d),
 		optTab, 5, L"Realtime shadows");
-	guienv->addCheckBox(additive, core::rect<int>(20,160+d,230,185+d),
+	guienv->addCheckBox(additive, core::rect<int>(20,135+d,230,160+d),
 		optTab, 6, L"Old HW compatible blending");
-	guienv->addCheckBox(vsync, core::rect<int>(20,185+d,230,210+d),
+	guienv->addCheckBox(vsync, core::rect<int>(20,160+d,230,185+d),
 		optTab, 7, L"Vertical synchronisation");
+	guienv->addCheckBox(aa, core::rect<int>(20,185+d,230,210+d),
+		optTab, 8, L"Antialiasing");
 
 	// add about text
 
@@ -286,6 +289,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	outShadows = shadows;
 	outAdditive = additive;
 	outVSync = vsync;
+	outAA = aa;
 
 	switch(selected)
 	{
@@ -375,6 +379,10 @@ bool CMainMenu::OnEvent(const SEvent& event)
 		case 7:
 			if (event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED )
 				vsync = ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
+			break;
+		case 8:
+			if (event.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED )
+				aa = ((gui::IGUICheckBox*)event.GUIEvent.Caller)->isChecked();
 			break;
 		}
 	}

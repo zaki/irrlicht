@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 	bool shadows = false;
 	bool additive = false;
 	bool vsync = false;
+	bool aa = false;
 
 #ifndef _IRR_WINDOWS_
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
@@ -36,10 +37,10 @@ int main(int argc, char* argv[])
 	CMainMenu menu;
 
 //#ifndef _DEBUG
-	if (menu.run(fullscreen, music, shadows, additive, vsync, driverType))
+	if (menu.run(fullscreen, music, shadows, additive, vsync, aa, driverType))
 //#endif
 	{
-		CDemo demo(fullscreen, music, shadows, additive, vsync, driverType);
+		CDemo demo(fullscreen, music, shadows, additive, vsync, aa, driverType);
 		demo.run();
 	}
 

@@ -36,7 +36,7 @@ class CDemo : public IEventReceiver
 {
 public:
 
-	CDemo(bool fullscreen, bool music, bool shadows, bool additive, bool vsync, video::E_DRIVER_TYPE driver);
+	CDemo(bool fullscreen, bool music, bool shadows, bool additive, bool vsync, bool aa, video::E_DRIVER_TYPE driver);
 
 	~CDemo();
 
@@ -57,6 +57,7 @@ private:
 	bool shadows;
 	bool additive;
 	bool vsync;
+	bool aa;
 	video::E_DRIVER_TYPE driverType;
 	IrrlichtDevice *device;
 

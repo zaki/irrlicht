@@ -3,8 +3,8 @@
 
 #include "CDemo.h"
 
-CDemo::CDemo(bool f, bool m, bool s, bool a, bool v, video::E_DRIVER_TYPE d)
-: fullscreen(f), music(m), shadows(s), additive(a), vsync(v),
+CDemo::CDemo(bool f, bool m, bool s, bool a, bool v, bool fsaa, video::E_DRIVER_TYPE d)
+: fullscreen(f), music(m), shadows(s), additive(a), vsync(v), aa(fsaa),
  driverType(d), device(0),
 #ifdef USE_IRRKLANG
 	irrKlang(0), ballSound(0), impactSound(0),
@@ -45,7 +45,17 @@ void CDemo::run()
 		resolution.Height = 480;
 	}
 
-	device = createDevice(driverType, resolution, 32, fullscreen, shadows, vsync, this);
+	irr::SIrrlichtCreationParameters params;
+	params.DriverType=driverType;
+	params.WindowSize=resolution;
+	params.Bits=32;
+	params.Fullscreen=fullscreen;
+	params.Stencilbuffer=shadows;
+	params.Vsync=vsync;
+	params.AntiAlias=aa;
+	params.EventReceiver=this;
+
+	device = createDeviceEx(params);
 	if (!device)
 		return;
 
@@ -161,6 +171,7 @@ bool CDemo::OnEvent(const SEvent& event)
 			device->getVideoDriver()->writeImageToFile(image, "screenshot.tga");
 			device->getVideoDriver()->writeImageToFile(image, "screenshot.ppm");
 			device->getVideoDriver()->writeImageToFile(image, "screenshot.jpg");
+			device->getVideoDriver()->writeImageToFile(image, "screenshot.pcx");
 			image->drop();
 		}
 	}
