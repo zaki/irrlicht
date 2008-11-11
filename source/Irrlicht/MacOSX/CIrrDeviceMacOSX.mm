@@ -361,8 +361,6 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
 	createDriver();
 	createGUIAndScene();
-	
-	initialiseJoysticks();
 }
 
 CIrrDeviceMacOSX::~CIrrDeviceMacOSX()
@@ -987,24 +985,24 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 	result = IOMasterPort (bootstrap_port, &masterPort);
 	if (kIOReturnSuccess != result) {
 		os::Printer::log("initialiseJoysticks IOMasterPort failed", ELL_ERROR);
-		return;
+		return false;
 	}
 
 	hidDictionaryRef = IOServiceMatching (kIOHIDDeviceKey);
 	if (!hidDictionaryRef) {
 		os::Printer::log("initialiseJoysticks IOServiceMatching failed", ELL_ERROR);
-		return;
+		return false;
 	}
 	result = IOServiceGetMatchingServices (masterPort, hidDictionaryRef, &hidIterator);
 
 	if (kIOReturnSuccess != result) {
 		os::Printer::log("initialiseJoysticks IOServiceGetMatchingServices failed", ELL_ERROR);
-		return;
+		return false;
 	}
 
 	//no joysticks just return
 	if (!hidIterator)
-		return;
+		return false;
 
 	while ((hidObject = IOIteratorNext (hidIterator)))
 	{
@@ -1071,13 +1069,14 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 				
 				SJoystickInfo returnInfo;
 				returnInfo.Axes = info.axes;
-				returnInfo.Hats = info.hats;
-				returnInfo.Buttons = info.Buttons;
+				//returnInfo.Hats = info.hats;
+				returnInfo.Buttons = info.buttons;
 				returnInfo.Name = info.joystickName;
 				returnInfo.PovHat = SJoystickInfo::POV_HAT_UNKNOWN;
 
 				joystickInfo.push_back(returnInfo);
-			
+			}
+
 		} else
 			continue;
 	}
