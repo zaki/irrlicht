@@ -107,6 +107,9 @@ namespace irr
 		//! get color format of the current window
 		virtual video::ECOLOR_FORMAT getColorFormat() const;
 
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+
 	protected:
 
 		void createGUIAndScene();

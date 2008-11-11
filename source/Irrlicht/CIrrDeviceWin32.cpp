@@ -402,8 +402,6 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	// set this as active window
 	SetActiveWindow(HWnd);
 	SetForegroundWindow(HWnd);
-
-	initialiseJoysticks(); 
 }
 
 
@@ -964,17 +962,25 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 }
 
 
-void CIrrDeviceWin32::initialiseJoysticks()
+bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	joystickInfo.clear();
+	ActiveJoysticks.clear();
+
 	const u32 numberOfJoysticks = ::joyGetNumDevs();
 	JOYINFOEX info;
 	info.dwSize = sizeof(info);
 	info.dwFlags = JOY_RETURNALL;
 
 	JoystickInfo activeJoystick;
+	SJoystickInfo returnInfo;
 
-	for(u32 joystick = 0; joystick < numberOfJoysticks; ++joystick)
+	joystickInfo.reallocate(numberOfJoysticks);
+	ActiveJoysticks.reallocate(numberOfJoysticks);
+
+	u32 joystick = 0;
+	for(; joystick < numberOfJoysticks; ++joystick)
 	{
 		if(JOYERR_NOERROR == joyGetPosEx(joystick, &info)
 			&&
@@ -985,14 +991,30 @@ void CIrrDeviceWin32::initialiseJoysticks()
 			activeJoystick.Index = joystick;
 			ActiveJoysticks.push_back(activeJoystick);
 
-			char logString[256];
-			(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
-				joystick, activeJoystick.Caps.wNumAxes, activeJoystick.Caps.wNumButtons,
-				activeJoystick.Caps.szPname);
-			os::Printer::log(logString, ELL_INFORMATION);
+			returnInfo.Joystick = joystick;
+			returnInfo.Axes = activeJoystick.Caps.wNumAxes;
+			returnInfo.Buttons = activeJoystick.Caps.wNumButtons;
+			returnInfo.Name = activeJoystick.Caps.szPname;
+			returnInfo.PovHat = ((activeJoystick.Caps.wCaps & JOYCAPS_HASPOV) == JOYCAPS_HASPOV)
+								? SJoystickInfo::POV_HAT_PRESENT : SJoystickInfo::POV_HAT_ABSENT;
+
+			joystickInfo.push_back(returnInfo);
 		}
 	}
+
+	for(joystick = 0; joystick < joystickInfo.size(); ++joystick)
+	{
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+			joystick, joystickInfo[joystick].Axes, 
+			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
+		os::Printer::log(logString, ELL_INFORMATION);
+	}
+
+	return true;
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+	return false;
 }
 
 void CIrrDeviceWin32::pollJoysticks()

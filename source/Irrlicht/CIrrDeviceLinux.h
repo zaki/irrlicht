@@ -90,6 +90,9 @@ namespace irr
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize=false);
 
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+
 	private:
 
 		//! create the driver
@@ -99,7 +102,6 @@ namespace irr
 
 		void createKeyMap();
 
-		void initialiseJoysticks();
 		void pollJoysticks(); 
 
 		//! Implementation of the linux cursor control

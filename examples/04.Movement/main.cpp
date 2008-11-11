@@ -2,8 +2,11 @@
 
 This Tutorial shows how to move and animate SceneNodes. The
 basic concept of SceneNodeAnimators is shown as well as manual
-movement of nodes using the keyboard and (optionally) the first
-connected joystick/joypad.
+movement of nodes using the keyboard.  We'll demonstrate framerate
+independent movement, which means moving by an amount dependent
+on the duration of the last run of the Irrlicht loop.
+
+Example 19.MouseAndJoystick shows how to handle those kinds of input.
 
 As always, I include the header files, use the irr namespace,
 and tell the linker to link with the .lib file.
@@ -26,8 +29,6 @@ irr::IEventReceiver object. There is only one method to override:
 irr::IEventReceiver::OnEvent(). This method will be called by the engine once
 when an event happens. What we really want to know is whether a key is being
 held down, and so we will remember the current state of each key.
-If we receive a joystick event for the first joystick (joystick 0) we will
-remember both the data, and the fact that we received it.
 */
 class MyEventReceiver : public IEventReceiver
 {
@@ -39,17 +40,6 @@ public:
 		if (event.EventType == irr::EET_KEY_INPUT_EVENT)
 			KeyIsDown[event.KeyInput.Key] = event.KeyInput.PressedDown;
 
-		// The state of each connected joystick is sent to us
-		// once every run() of the Irrlicht device.  Store the
-		// state of the first joystick, ignoring other joysticks.
-		// This is currently only supported on Windows and Linux.
-		if (event.EventType == irr::EET_JOYSTICK_INPUT_EVENT
-			&& event.JoystickEvent.Joystick == 0)
-		{
-			NewJoystickDataAvailable = true;
-			JoystickData = event.JoystickEvent;
-		}
-
 		return false;
 	}
 
@@ -59,31 +49,15 @@ public:
 		return KeyIsDown[keyCode];
 	}
 	
-	bool IsNewJoystickDataAvailable(void) const
-	{
-		return NewJoystickDataAvailable;
-	}
-
-	const SEvent::SJoystickEvent & GetJoystickData(void) const
-	{
-		NewJoystickDataAvailable = false;
-		return JoystickData;
-	}
-
 	MyEventReceiver()
 	{
 		for (u32 i=0; i<KEY_KEY_CODES_COUNT; ++i)
 			KeyIsDown[i] = false;
-
-		NewJoystickDataAvailable = false;
 	}
 
 private:
 	// We use this array to store the current state of each key
 	bool KeyIsDown[KEY_KEY_CODES_COUNT];
-
-	SEvent::SJoystickEvent JoystickData;
-	mutable bool NewJoystickDataAvailable;
 };
 
 
@@ -132,7 +106,7 @@ int main()
 	scene::ISceneManager* smgr = device->getSceneManager();
 
 	/*
-	Create the node which will be moved with the 'W' and 'S' key. We create a
+	Create the node which will be moved with the WSAD keys. We create a
 	sphere node, which is a built-in geometry primitive. We place the node
 	at (0,0,30) and assign a texture to it to let it look a little bit more
 	interesting. Because we have no dynamic lights in this scene we disable
@@ -237,87 +211,35 @@ int main()
 	*/
 	int lastFPS = -1;
 
+	// In order to do framerate independent movement, we have to know
+	// how long it was since the last frame
+	u32 then = device->getTimer()->getTime();
+
+	// This is the movemen speed in units per second.
+	const f32 MOVEMENT_SPEED = 5.f;
+
 	while(device->run())
 	{
-		f32 moveHorizontal = 0.f; // Range is -1.f for full left to +1.f for full right
-		f32 moveVertical = 0.f; // -1.f for full down to +1.f for full up.
+		// Work out a frame delta time.
+		const u32 now = device->getTimer()->getTime();
+		const f32 frameDeltaTime = (f32)(now - then) / 1000.f; // Time in seconds
+		then = now;
 
-		if(receiver.IsNewJoystickDataAvailable())
-		{
-			const SEvent::SJoystickEvent & joystickData 
-				= receiver.GetJoystickData();
-
-			// Use the analog range of the axes, and a 5% dead zone
-			moveHorizontal = 
-				(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_X] / 32767.f;
-			if(fabs(moveHorizontal) < 0.05f)
-				moveHorizontal = 0.f;
-
-			// The Y axis has its origin at the top and goes +ve downwards,
-			// but we want to reverse those directions for our movement.
-			moveVertical = 
-				(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_Y] / -32767.f;
-			if(fabs(moveVertical) < 0.05f)
-				moveVertical = 0.f;
-
-			// The explicit POV hat info is only currently supported on Windows; 
-			// on Linux the POV hat info is sent as two axes instead.
-			const u16 povDegrees = joystickData.POV / 100;
-			if(povDegrees < 360)
-			{
-				if(povDegrees > 0 && povDegrees < 180)
-					moveHorizontal = 1.f;
-				else if(povDegrees > 180)
-					moveHorizontal = -1.f;
-
-				if(povDegrees > 90 && povDegrees < 270)
-					moveVertical = -1.f;
-				else if(povDegrees > 270 || povDegrees < 90)
-					moveVertical = +1.f;
-			}
-
-			char diagnosticsText[256];
-
-			sprintf(diagnosticsText, "X=%d Y=%d Z=%d R=%d U=%d V=%d POV=%d Buttons: ",
-					joystickData.Axis[SEvent::SJoystickEvent::AXIS_X],
-					joystickData.Axis[SEvent::SJoystickEvent::AXIS_Y],
-					joystickData.Axis[SEvent::SJoystickEvent::AXIS_Z],
-					joystickData.Axis[SEvent::SJoystickEvent::AXIS_R],
-					joystickData.Axis[SEvent::SJoystickEvent::AXIS_U],
-					joystickData.Axis[SEvent::SJoystickEvent::AXIS_V],
-					joystickData.POV);
-
-			for(u32 button = 0;
-				button < SEvent::SJoystickEvent::NUMBER_OF_BUTTONS;
-				++button)
-				if(joystickData.IsButtonPressed(button))
-				{
-					char buttonText[4];
-					sprintf(buttonText, "%d ", button);
-					strcat(diagnosticsText, buttonText);
-				}
-
-			diagnostics->setText(core::stringw(diagnosticsText).c_str());
-		}
-
-		/* Check if keys W,S,A or S are being held down, and move the
-		sphere node accordingly.
-		*/
-		if(receiver.IsKeyDown(irr::KEY_KEY_A))
-			moveHorizontal = -1.f;
-		else if(receiver.IsKeyDown(irr::KEY_KEY_D))
-			moveHorizontal = +1.f;
+		/* Check if keys W, S, A or D are being held down, and move the
+		sphere node around respectively. */
+		core::vector3df nodePosition = node->getPosition();
 
 		if(receiver.IsKeyDown(irr::KEY_KEY_W))
-			moveVertical = +1.f;
+			nodePosition.Y += MOVEMENT_SPEED * frameDeltaTime;
 		else if(receiver.IsKeyDown(irr::KEY_KEY_S))
-			moveVertical = -1.f;
+			nodePosition.Y -= MOVEMENT_SPEED * frameDeltaTime;
 
-		// Now do the actual movement
-		core::vector3df v = node->getPosition();
-		v.X += moveHorizontal * 0.02f;
-		v.Y += moveVertical * 0.02f;
-		node->setPosition(v);
+		if(receiver.IsKeyDown(irr::KEY_KEY_A))
+			nodePosition.X -= MOVEMENT_SPEED * frameDeltaTime;
+		else if(receiver.IsKeyDown(irr::KEY_KEY_D))
+			nodePosition.X += MOVEMENT_SPEED * frameDeltaTime;
+
+		node->setPosition(nodePosition);
 
 		driver->beginScene(true, true, video::SColor(255,113,113,133));
 
