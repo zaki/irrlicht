@@ -971,10 +971,12 @@ static void joystickRemovalCallback(void * target,
 }
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 
-void CIrrDeviceMacOSX::initialiseJoysticks()
+
+bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 	ActiveJoysticks.clear();
+	joystickInfo.clear();
 
 	io_object_t hidObject = 0;
 	io_iterator_t hidIterator = 0;
@@ -1066,14 +1068,25 @@ void CIrrDeviceMacOSX::initialiseJoysticks()
 					info.persistentData.JoystickEvent.Axis[i] = 0;
 
 				ActiveJoysticks.push_back(info);
-			}
+				
+				SJoystickInfo returnInfo;
+				returnInfo.Axes = info.axes;
+				returnInfo.Hats = info.hats;
+				returnInfo.Buttons = info.Buttons;
+				returnInfo.Name = info.joystickName;
+				returnInfo.PovHat = SJoystickInfo::POV_HAT_UNKNOWN;
 
+				joystickInfo.push_back(returnInfo);
+			
 		} else
 			continue;
 	}
 	result = IOObjectRelease (hidIterator);
 
+	return true;
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+	return false;
 }
 
 void CIrrDeviceMacOSX::pollJoysticks()
