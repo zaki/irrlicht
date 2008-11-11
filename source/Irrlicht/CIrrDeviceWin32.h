@@ -68,6 +68,9 @@ namespace irr
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize=false);
 
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
 		{
@@ -245,7 +248,6 @@ namespace irr
 
 		void resizeIfNecessary();
 
-		void initialiseJoysticks();
 		void pollJoysticks(); 
 
 		HWND HWnd;

@@ -106,8 +106,6 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 		return;
 
 	createGUIAndScene();
-
-	initialiseJoysticks(); 
 }
 
 
@@ -1344,10 +1342,12 @@ void CIrrDeviceLinux::createKeyMap()
 #endif
 }
 
-
-void CIrrDeviceLinux::initialiseJoysticks()
+bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+
+	joystickInfo.clear();
+
 	u32 joystick;
 	for(joystick = 0; joystick < 32; ++joystick)
 	{
@@ -1355,6 +1355,7 @@ void CIrrDeviceLinux::initialiseJoysticks()
 		core::stringc devName = "/dev/js";
 		devName += joystick;
 
+		SJoystickInfo returnInfo;
 		JoystickInfo info;
 
 		info.fd = open(devName.c_str(), O_RDONLY);
@@ -1373,14 +1374,6 @@ void CIrrDeviceLinux::initialiseJoysticks()
 		ioctl( info.fd, JSIOCGAXES, &(info.axes) );
 		ioctl( info.fd, JSIOCGBUTTONS, &(info.buttons) );
 
-		char logString[256];
-		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons, '",
-			joystick, info.axes, info.buttons);
-
-		ioctl( info.fd, JSIOCGNAME(80), logString + strlen(logString));
-		(void)strcat(logString, "'");
-		os::Printer::log(logString, ELL_INFORMATION);
-
 		fcntl( info.fd, F_SETFL, O_NONBLOCK );
 
 		(void)memset(&info.persistentData, 0, sizeof(info.persistentData));
@@ -1392,8 +1385,32 @@ void CIrrDeviceLinux::initialiseJoysticks()
 		info.persistentData.JoystickEvent.POV = 65535;
 
 		ActiveJoysticks.push_back(info);
+
+		returnInfo.Joystick = joystick;
+		returnInfo.PovHat = SJoystickInfo::POV_HAT_UNKNOWN;
+		returnInfo.Axes = info.axes;
+		returnInfo.Buttons = info.buttons;
+
+		char name[80];
+		ioctl( info.fd, JSIOCGNAME(80), name);
+		returnInfo.Name = name;
+	
+		joystickInfo.push_back(returnInfo);
 	}
+
+	for(joystick = 0; joystick < joystickInfo.size(); ++joystick)
+	{
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+			joystick, joystickInfo[joystick].Axes, 
+			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
+		os::Printer::log(logString, ELL_INFORMATION);
+	}
+
+	return true;
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+	return false;
 }
 
 

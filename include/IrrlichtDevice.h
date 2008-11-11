@@ -207,6 +207,16 @@ namespace irr
 		mode.
 		\param resize Flag whether the window should be resizeable. */
 		virtual void setResizeAble(bool resize=false) = 0;
+
+		//! Activate any joysticks, and generate events for them.
+		/** Irrlicht contains support for joysticks, but does not generate joystick events by default,
+		as this would consume joystick info that 3rd party libraries might rely on. Call this method to 
+		activate joystick support in Irrlicht and to receive @ref SJoystickEvent events.
+		\param joystickInfo On return, this will contain an array of each joystick that was found and activated.
+		\return true if joysticks are supported on this device and _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+				is defined, false if joysticks are not supported or support is compiled out.
+		*/
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo) = 0;
 	};
 
 } // end namespace irr

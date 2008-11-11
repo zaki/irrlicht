@@ -19,6 +19,10 @@
 #include "SIrrCreationParameters.h"
 #include <SDL/SDL_syswm.h>
 
+#ifdef _MSC_VER
+#pragma comment(lib, "SDL.lib")
+#endif // _MSC_VER
+
 namespace irr
 {
 	namespace video
@@ -91,22 +95,6 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		// create the window, only if we do not use the null device
 		createWindow();
 	}
-
-#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
-	// we can name up to 256 different joysticks
-	const int numJoysticks = core::min_(SDL_NumJoysticks(), 256);
-	Joysticks.reallocate(numJoysticks);
-	for (int i=0; i<numJoysticks; ++i)
-	{
-		Joysticks.push_back(SDL_JoystickOpen(i));
-		char logString[256];
-		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
-			i, SDL_JoystickNumAxes(Joysticks[i]),
-			SDL_JoystickNumButtons(Joysticks[i]),
-			SDL_JoystickName(i));
-		os::Printer::log(logString, ELL_INFORMATION);
-	}
-#endif
 
 	// create cursor control
 	CursorControl = new CCursorControl(this);
@@ -398,6 +386,11 @@ bool CIrrDeviceSDL::run()
 						break;
 				}
 			}
+			else
+			{
+				joyevent.JoystickEvent.POV=65535;
+			}
+			
 			// we map the number directly
 			joyevent.JoystickEvent.Joystick=static_cast<u8>(i);
 			// now post the event
@@ -408,6 +401,50 @@ bool CIrrDeviceSDL::run()
 #endif
 	return !Close;
 }
+
+//! Activate any joysticks, and generate events for them.
+bool CIrrDeviceSDL::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
+{
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	joystickInfo.clear();
+
+	// we can name up to 256 different joysticks
+	const int numJoysticks = core::min_(SDL_NumJoysticks(), 256);
+	Joysticks.reallocate(numJoysticks);
+	joystickInfo.reallocate(numJoysticks);
+
+	int joystick = 0;
+	for (; joystick<numJoysticks; ++joystick)
+	{
+		Joysticks.push_back(SDL_JoystickOpen(joystick));
+		SJoystickInfo info;
+
+		info.Joystick = joystick;
+		info.Axes = SDL_JoystickNumAxes(Joysticks[joystick]);
+		info.Buttons = SDL_JoystickNumButtons(Joysticks[joystick]);
+		info.Name = SDL_JoystickName(joystick);
+		info.PovHat = (SDL_JoystickNumHats(Joysticks[joystick]) > 0)
+						? SJoystickInfo::POV_HAT_PRESENT : SJoystickInfo::POV_HAT_ABSENT;
+
+		joystickInfo.push_back(info);
+	}
+
+	for(joystick = 0; joystick < (int)joystickInfo.size(); ++joystick)
+	{
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+		 joystick, joystickInfo[joystick].Axes,
+   joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
+		os::Printer::log(logString, ELL_INFORMATION);
+	}
+
+	return true;
+
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+	return false;
+}
+
 
 
 //! pause execution temporarily

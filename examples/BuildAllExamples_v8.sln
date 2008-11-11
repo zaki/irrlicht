@@ -40,6 +40,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Demo_vc8", "Demo\Demo_vc8.v
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Quake3MapShader_vc8", "16.Quake3MapShader\Quake3MapShader_vc8.vcproj", "{EB3B38EA-5CE7-4983-845B-880661E69D09}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.MouseAndJoystick_vc8", "19.MouseAndJoystick\MouseAndJoystick_vc8.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
