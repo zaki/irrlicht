@@ -179,9 +179,6 @@ namespace core
 			//! Transforms a plane by this matrix
 			void transformPlane( core::plane3d<f32> &plane) const;
 
-			//! Transforms a plane by this matrix ( some problems to solve..)
-			void transformPlane_new( core::plane3d<f32> &plane) const;
-
 			//! Transforms a plane by this matrix
 			void transformPlane( const core::plane3d<f32> &in, core::plane3d<f32> &out) const;
 
@@ -928,31 +925,25 @@ namespace core
 	inline void CMatrix4<T>::transformPlane( core::plane3d<f32> &plane) const
 	{
 		vector3df member;
+		// Fully transform the plane member point, i.e. rotate, translate and scale it.
 		transformVect(member, plane.getMemberPoint());
 
-		vector3df origin(0,0,0);
-		transformVect(plane.Normal);
-		transformVect(origin);
+		vector3df normal = plane.Normal;
+		normal.normalize();
 
-		plane.Normal -= origin;
-		plane.D = - member.dotProduct(plane.Normal);
-	}
+		// The normal needs to be rotated and inverse scaled, but not translated.
+		rotateVect(normal);
+		const vector3df scale = getScale();
 
-	//! Transforms a plane by this matrix
-	template <class T>
-	inline void CMatrix4<T>::transformPlane_new( core::plane3d<f32> &plane) const
-	{
-		// rotate normal -> rotateVect ( plane.n );
-		vector3df n;
-		n.X = plane.Normal.X*M[0] + plane.Normal.Y*M[4] + plane.Normal.Z*M[8];
-		n.Y = plane.Normal.X*M[1] + plane.Normal.Y*M[5] + plane.Normal.Z*M[9];
-		n.Z = plane.Normal.X*M[2] + plane.Normal.Y*M[6] + plane.Normal.Z*M[10];
+		if(!equals(scale.X, 0.f) && !equals(scale.Y, 0.f) && !equals(scale.Z, 0.f)
+			&& (!equals(scale.X, 1.f) || !equals(scale.Y, 1.f) || !equals(scale.Z, 1.f)))
+		{
+			// Rotating the vector also applied the scale, so we have to invert it twice.
+			normal /= (scale * scale);
+		}
 
-		// compute new d. -> getTranslation(). dotproduct ( plane.n )
-		plane.D -= M[12] * n.X + M[13] * n.Y + M[14] * n.Z;
-		plane.Normal.X = n.X;
-		plane.Normal.Y = n.Y;
-		plane.Normal.Z = n.Z;
+		normal.normalize();
+		plane.setPlane(member, normal);
 	}
 
 	//! Transforms a plane by this matrix
