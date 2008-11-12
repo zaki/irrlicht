@@ -15,12 +15,13 @@
 	#include "CIrrDeviceMacOSX.h"
 #endif
 
+#include "SIrrCreationParameters.h"
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "COpenGLExtensionHandler.h"
-#include "SIrrCreationParameters.h"
 
 #if defined(_IRR_WINDOWS_API_)
 	#include <GL/gl.h>

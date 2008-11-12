@@ -8,12 +8,8 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
-#include "COpenGLTexture.h"
-#include "COpenGLMaterialRenderer.h"
-#include "COpenGLShaderMaterialRenderer.h"
-#include "COpenGLSLMaterialRenderer.h"
-#include "COpenGLNormalMapRenderer.h"
-#include "COpenGLParallaxMapRenderer.h"
+#include "COGLESTexture.h"
+#include "COGLESMaterialRenderer.h"
 #include "CImage.h"
 #include "os.h"
 
@@ -26,37 +22,82 @@ namespace irr
 namespace video
 {
 
-
 //! constructor and init code
-COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
+COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		const SExposedVideoData& data,
 		io::IFileSystem* io)
-: CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
+: CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
+#if defined(_IRR_USE_WINDOWS_DEVICE_)
+	,HDc(0)
+#endif
 {
 	#ifdef _DEBUG
 	setDebugName("COGLESDriver");
 	#endif
 	ExposedData=data;
+#if defined(_IRR_USE_WINDOWS_DEVICE_)
+	EglWindow = (NativeWindowType)data.OpenGLWin32.HWnd;
+	HDc = GetDC((HWND)EglWindow);
+	EglDisplay = eglGetDisplay((NativeDisplayType)HDc);
+#elif defined(_IRR_USE_LINUX_DEVICE_)
+	EglWindow = (NativeWindowType)ExposedData.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)ExposedData.OpenGLLinux.X11Display);
-	eglInitialize(EglDisplay, NULL, NULL);
+#endif
+	if(EglDisplay == EGL_NO_DISPLAY)
+		EglDisplay = eglGetDisplay((NativeDisplayType) EGL_DEFAULT_DISPLAY);
+	if(EglDisplay == EGL_NO_DISPLAY)
+	{
+		os::Printer::log("Could not get OpenGL-ES1 display.");
+	}
 
-	EGLint num_configs;
-	EGLConfig config;
+	EGLint majorVersion, minorVersion;
+	if (!eglInitialize(EglDisplay, &majorVersion, &minorVersion))
+	{
+		os::Printer::log("Could not initialize OpenGL-ES1 display.");
+	}
+
 	EGLint attribs[] =
 	{
-		EGL_BUFFER_SIZE, 32,
-		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
-		EGL_DEPTH_SIZE, 16,
+		EGL_RED_SIZE, 5,
+		EGL_GREEN_SIZE, 5,
+		EGL_BLUE_SIZE, 5,
+		EGL_ALPHA_SIZE, 0,
+//		EGL_BUFFER_SIZE, 16,
+		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+//		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
+//		EGL_DEPTH_SIZE, 16,
 		EGL_NONE, 0
 	};
-	eglChooseConfig(EglDisplay, attribs, &config, 1, &num_configs);
-	EglSurface = eglCreateWindowSurface(EglDisplay, config, (NativeWindowType)ExposedData.OpenGLLinux.X11Window, NULL);
-	eglBindAPI(EGL_OPENGL_ES_API);
+	EGLConfig config;
+	EGLint num_configs;
+	if (!eglChooseConfig(EglDisplay, attribs, &config, 1, &num_configs))
+	{
+		os::Printer::log("Could not get config for OpenGL-ES1 display.");
+	}
+
+	EglSurface = eglCreateWindowSurface(EglDisplay, config, EglWindow, NULL);
+	if (EGL_NO_SURFACE==EglSurface)
+		EglSurface = eglCreateWindowSurface(EglDisplay, config, NULL, NULL);
+	if (EGL_NO_SURFACE==EglSurface)
+	{
+		os::Printer::log("Could not create surface for OpenGL-ES1 display.");
+	}
+
+	//	eglBindAPI(EGL_OPENGL_ES_API);
 	EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, NULL);
+	if (testEGLError())
+	{
+		os::Printer::log("Could not create Context for OpenGL-ES1 display.");
+	}
+
 	eglMakeCurrent(EglDisplay, EglSurface, EglSurface, EglContext);
+	if (testEGLError())
+	{
+		os::Printer::log("Could not make Context current for OpenGL-ES1 display.");
+	}
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
@@ -67,52 +108,43 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 
 
 //! destructor
-COpenGLDriver::~COpenGLDriver()
+COGLES1Driver::~COGLES1Driver()
 {
 	deleteMaterialRenders();
-
-	// I get a blue screen on my laptop, when I do not delete the
-	// textures manually before releasing the dc. Oh how I love this.
-
 	deleteAllTextures();
 
 	eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 	eglDestroyContext(EglDisplay, EglContext);
 	eglDestroySurface(EglDisplay, EglSurface);
 	eglTerminate(EglDisplay);
+#if defined(_IRR_USE_WINDOWS_DEVICE_)
+	if (HDc)
+		ReleaseDC((HWND)EglWindow, HDc);
+#endif
 }
 
 // -----------------------------------------------------------------------
 // METHODS
 // -----------------------------------------------------------------------
 
-bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer)
+bool COGLES1Driver::genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer)
 {
-	Name=L"OpenGL ES ";
+	Name=L"OpenGL-ES1 ";
 	Name.append(eglQueryString(EglDisplay, EGL_VERSION));
 	printVersion();
 
-	os::Printer::log(eglQueryString(EglDisplay, EGLENSIONS));
+	os::Printer::log(eglQueryString(EglDisplay, EGL_EXTENSIONS));
 	os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
 
 	// print renderer information
 	vendorName = eglQueryString(EglDisplay, EGL_VENDOR);
-	os::Printer::log(vendorName, ELL_INFORMATION);
+	os::Printer::log(vendorName.c_str(), ELL_INFORMATION);
 
 	u32 i;
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		CurrentTexture[i]=0;
 	// load extensions
-	initExtensions(stencilBuffer);
-	if (queryFeature(EVDF_GLSL))
-	{
-		char buf[32];
-		const u32 maj = ShaderLanguageVersion/100;
-		snprintf(buf, 32, "%u.%u", maj, ShaderLanguageVersion-maj*100);
-		os::Printer::log("GLSL version", buf, ELL_INFORMATION);
-	}
-	else
-		os::Printer::log("GLSL not available.", ELL_INFORMATION);
+	initExtensions(EglDisplay, stencilBuffer);
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
@@ -130,12 +162,8 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 #endif
 // TODO ogl-es
 //	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+//	glClearDepth(1.0);
 
-// This is a fast replacement for NORMALIZE_NORMALS
-//	if ((Version>101) || FeatureAvailable[IRR_rescale_normal])
-//		glEnable(GL_RESCALE_NORMAL);
-
-	glClearDepth(1.0);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace( GL_CW );
@@ -178,15 +206,15 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 }
 
 
-void COpenGLDriver::createMaterialRenderers()
+void COGLES1Driver::createMaterialRenderers()
 {
-	// create OpenGL material renderers
+	// create OGLES1 material renderers
 
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SOLID_2_LAYER(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID_2_LAYER(this));
 
 	// add the same renderer for all lightmap types
-	COpenGLMaterialRenderer_LIGHTMAP* lmr = new COpenGLMaterialRenderer_LIGHTMAP(this);
+	COGLES1MaterialRenderer_LIGHTMAP* lmr = new COGLES1MaterialRenderer_LIGHTMAP(this);
 	addMaterialRenderer(lmr); // for EMT_LIGHTMAP:
 	addMaterialRenderer(lmr); // for EMT_LIGHTMAP_ADD:
 	addMaterialRenderer(lmr); // for EMT_LIGHTMAP_M2:
@@ -197,53 +225,59 @@ void COpenGLDriver::createMaterialRenderers()
 	lmr->drop();
 
 	// add remaining material renderer
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_DETAIL_MAP(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_SPHERE_MAP(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_REFLECTION_2_LAYER(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ADD_COLOR(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_VERTEX_ALPHA(this));
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_DETAIL_MAP(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SPHERE_MAP(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_REFLECTION_2_LAYER(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_TRANSPARENT_ADD_COLOR(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_TRANSPARENT_ALPHA_CHANNEL_REF(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_TRANSPARENT_VERTEX_ALPHA(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_TRANSPARENT_REFLECTION_2_LAYER(this));
 
 	// add normal map renderers
 	s32 tmp = 0;
 	video::IMaterialRenderer* renderer = 0;
-	renderer = new COpenGLNormalMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
-	renderer->drop();
-	renderer = new COpenGLNormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
-	renderer->drop();
-	renderer = new COpenGLNormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
-	renderer->drop();
+// TODO ogl-es
+//	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
+//	renderer->drop();
+//	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
+//	renderer->drop();
+//	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
+//	renderer->drop();
 
 	// add parallax map renderers
-	renderer = new COpenGLParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
-	renderer->drop();
-	renderer = new COpenGLParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
-	renderer->drop();
-	renderer = new COpenGLParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
-	renderer->drop();
+//	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
+//	renderer->drop();
+//	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
+//	renderer->drop();
+//	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
+//	renderer->drop();
 
 	// add basic 1 texture blending
-	addAndDropMaterialRenderer(new COpenGLMaterialRenderer_ONETEXTURE_BLEND(this));
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_ONETEXTURE_BLEND(this));
 }
 
 
 //! presents the rendered scene on the screen, returns false if failed
-bool COpenGLDriver::endScene()
+bool COGLES1Driver::endScene()
 {
 	CNullDriver::endScene();
 
 	eglSwapBuffers(EglDisplay, EglSurface);
+	if (testEGLError())
+	{
+		os::Printer::log("Could not swap buffers for OpenGL-ES1 driver.");
+	}
+
 	return true;
 }
 
 
 //! clears the zbuffer
-bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+bool COGLES1Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		void* windowId, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+	CNullDriver::beginScene(backBuffer, zBuffer, color);
 
 	GLbitfield mask = 0;
 
@@ -269,14 +303,14 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 
 
 //! Returns the transformation set by setTransform
-const core::matrix4& COpenGLDriver::getTransform(E_TRANSFORMATION_STATE state) const
+const core::matrix4& COGLES1Driver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Matrices[state];
 }
 
 
 //! sets transformation
-void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
+void COGLES1Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
 	Matrices[state] = mat;
 	Transformation3DChanged = true;
@@ -286,7 +320,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	case ETS_VIEW:
 	case ETS_WORLD:
 		{
-			// OpenGL only has a model matrix, view and world is not existent. so lets fake these two.
+			// OGLES1 only has a model matrix, view and world is not existent. so lets fake these two.
 			glMatrixMode(GL_MODELVIEW);
 			glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
 			// we have to update the clip planes to the latest view matrix
@@ -299,7 +333,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		{
 			GLfloat glmat[16];
 			createGLMatrix(glmat, mat);
-			// flip z to compensate OpenGLs right-hand coordinate system
+			// flip z to compensate OGLES1s right-hand coordinate system
 			glmat[12] *= -1.0f;
 			glMatrixMode(GL_PROJECTION);
 			glLoadMatrixf(glmat);
@@ -336,15 +370,11 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	}
 }
 
-bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
+bool COGLES1Driver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 {
 	if (!HWBuffer)
 		return false;
 
-	if (!FeatureAvailable[IRR_vertex_buffer_object])
-		return false;
-
-#if defined(GL_vertex_buffer_object)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 	const void* vertices=mb->getVertices();
 	const u32 vertexCount=mb->getVertexCount();
@@ -419,30 +449,21 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 		if (HWBuffer->Mapped_Vertex==scene::EHM_STATIC)
 			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STATIC_DRAW);
-		else if (HWBuffer->Mapped_Vertex==scene::EHM_DYNAMIC)
+		else
 			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_DYNAMIC_DRAW);
-		else //scene::EHM_STREAM
-			extGlBufferData(GL_ARRAY_BUFFER, vertexCount * vertexSize, buffer.const_pointer(), GL_STREAM_DRAW);
 	}
 
 	extGlBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	return (glGetError() == GL_NO_ERROR);
-#else
-	return false;
-#endif
 }
 
 
-bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
+bool COGLES1Driver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 {
 	if (!HWBuffer)
 		return false;
 
-	if(!FeatureAvailable[IRR_vertex_buffer_object])
-		return false;
-
-#if defined(GL_vertex_buffer_object)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
 
 	const void* indices=mb->getIndices();
@@ -493,23 +514,18 @@ bool COpenGLDriver::updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 
 		if (HWBuffer->Mapped_Index==scene::EHM_STATIC)
 			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_STATIC_DRAW);
-		else if (HWBuffer->Mapped_Index==scene::EHM_DYNAMIC)
+		else
 			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_DYNAMIC_DRAW);
-		else //scene::EHM_STREAM
-			extGlBufferData(GL_ELEMENT_ARRAY_BUFFER, indexCount * indexSize, indices, GL_STREAM_DRAW);
 	}
 
 	extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return (glGetError() == GL_NO_ERROR);
-#else
-	return false;
-#endif
 }
 
 
 //! updates hardware buffer if needed
-bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
+bool COGLES1Driver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 {
 	if (!HWBuffer)
 		return false;
@@ -545,9 +561,8 @@ bool COpenGLDriver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
 
 
 //! Create hardware buffer from meshbuffer
-COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::IMeshBuffer* mb)
+COGLES1Driver::SHWBufferLink *COGLES1Driver::createHardwareBuffer(const scene::IMeshBuffer* mb)
 {
-#if defined(GL_vertex_buffer_object)
 	if (!mb || (mb->getHardwareMappingHint_Index()==scene::EHM_NEVER && mb->getHardwareMappingHint_Vertex()==scene::EHM_NEVER))
 		return 0;
 
@@ -573,18 +588,14 @@ COpenGLDriver::SHWBufferLink *COpenGLDriver::createHardwareBuffer(const scene::I
 	}
 
 	return HWBuffer;
-#else
-	return 0;
-#endif
 }
 
 
-void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
+void COGLES1Driver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
-	if (!_HWBuffer) return;
+	if (!_HWBuffer) 
+		return;
 
-
-#if defined(GL_vertex_buffer_object)
 	SHWBufferLink_opengl *HWBuffer=(SHWBufferLink_opengl*)_HWBuffer;
 	if (HWBuffer->vbo_verticesID)
 	{
@@ -596,15 +607,13 @@ void COpenGLDriver::deleteHardwareBuffer(SHWBufferLink *_HWBuffer)
 		extGlDeleteBuffers(1, &HWBuffer->vbo_indicesID);
 		HWBuffer->vbo_indicesID=0;
 	}
-#endif
 
 	CNullDriver::deleteHardwareBuffer(_HWBuffer);
-
 }
 
 
 //! Draw hardware buffer
-void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
+void COGLES1Driver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 {
 	if (!_HWBuffer)
 		return;
@@ -615,10 +624,7 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 
 	HWBuffer->LastUsed=0;//reset count
 
-#if defined(GL_vertex_buffer_object)
 	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
-
-
 	const void *vertices=mb->getVertices();
 	const void *indexList=mb->getIndices();
 
@@ -635,17 +641,15 @@ void COpenGLDriver::drawHardwareBuffer(SHWBufferLink *_HWBuffer)
 	}
 
 
-	drawVertexPrimitiveList(vertices, mb->getVertexCount(), indexList, mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
+	drawVertexPrimitiveList(vertices, mb->getVertexCount(), indexList,
+			mb->getIndexCount()/3, mb->getVertexType(),
+			scene::EPT_TRIANGLES, mb->getIndexType());
 
 	if (HWBuffer->Mapped_Vertex!=scene::EHM_NEVER)
 		extGlBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	if (HWBuffer->Mapped_Index!=scene::EHM_NEVER)
 		extGlBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
-
-#endif
 }
 
 
@@ -657,7 +661,7 @@ static inline u8* buffer_offset(const long offset)
 
 
 //! draws a vertex primitive list
-void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+void COGLES1Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 		const void* indexList, u32 primitiveCount,
 		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
@@ -666,11 +670,11 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	setRenderStates3DMode();
 
-	drawVertexPrimitiveList2d3d(vertices, vertexCount, indexList, primitiveCount, vType, pType, true);
+	drawVertexPrimitiveList2d3d(vertices, vertexCount, (const u16*)indexList, primitiveCount, vType, pType, iType, true);
 }
 
 
-void COpenGLDriver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertexCount,
+void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertexCount,
 		const void* indexList, u32 primitiveCount,
 		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType, bool threed)
 {
@@ -841,7 +845,8 @@ void COpenGLDriver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 		}
 		case (EIT_32BIT):
 		{
-			indexSize=GL_UNSIGNED_INT;
+			// TODO ogl-es
+			indexSize=GL_UNSIGNED_SHORT;
 			break;
 		}
 	}
@@ -897,15 +902,15 @@ void COpenGLDriver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 			glDrawElements(GL_TRIANGLES, primitiveCount*3, indexSize, indexList);
 			break;
 		case scene::EPT_QUAD_STRIP:
-// todo egles
+// TODO ogl-es
 //			glDrawElements(GL_QUAD_STRIP, primitiveCount*2+2, indexSize, indexList);
 			break;
 		case scene::EPT_QUADS:
-// todo egles
+// TODO ogl-es
 //			glDrawElements(GL_QUADS, primitiveCount*4, indexSize, indexList);
 			break;
 		case scene::EPT_POLYGON:
-// todo egles
+// TODO ogl-es
 //			glDrawElements(GL_POLYGON, primitiveCount, indexSize, indexList);
 			break;
 	}
@@ -931,10 +936,8 @@ void COpenGLDriver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 }
 
 
-//! draws a 2d image, using a color and the alpha channel of the texture if
-//! desired. The image is drawn at pos, clipped against clipRect (if != 0).
-//! Only the subtexture defined by sourceRect is used.
-void COpenGLDriver::draw2DImage(const video::ITexture* texture,
+//! draws a 2d image, using a color and the alpha channel of the texture
+void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
@@ -1047,16 +1050,16 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 	u16 indices[] = {0,1,2,3};
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(poss.UpperLeftCorner.X, poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	vertices[1] = S3DVertex(poss.LowerRightCorner.X, poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	vertices[2] = S3DVertex(poss.LowerRightCorner.X, poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	vertices[3] = S3DVertex(poss.UpperLeftCorner.X, poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, false);
+	vertices[0] = S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+	vertices[1] = S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+	vertices[2] = S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+	vertices[3] = S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
+	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 }
 
 
 //! The same, but with a four element array of colors, one for each vertex
-void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+void COGLES1Driver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 		const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
@@ -1103,23 +1106,19 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 
 	u16 indices[] = {0,1,2,3};
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(destRect.UpperLeftCorner.X, destRect.UpperLeftCorner.Y, 0, 0,0,1, useColor[0], tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	vertices[1] = S3DVertex(destRect.LowerRightCorner.X, destRect.UpperLeftCorner.Y, 0, 0,0,1, useColor[3], tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	vertices[2] = S3DVertex(destRect.LowerRightCorner.X, destRect.LowerRightCorner.Y, 0, 0,0,1, useColor[2], tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	vertices[3] = S3DVertex(destRect.UpperLeftCorner.X, destRect.LowerRightCorner.Y, 0, 0,0,1, useColor[1], tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
-	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, false);
+	vertices[0] = S3DVertex((f32)destRect.UpperLeftCorner.X, (f32)destRect.UpperLeftCorner.Y, 0, 0,0,1, useColor[0], tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+	vertices[1] = S3DVertex((f32)destRect.LowerRightCorner.X, (f32)destRect.UpperLeftCorner.Y, 0, 0,0,1, useColor[3], tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+	vertices[2] = S3DVertex((f32)destRect.LowerRightCorner.X, (f32)destRect.LowerRightCorner.Y, 0, 0,0,1, useColor[2], tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+	vertices[3] = S3DVertex((f32)destRect.UpperLeftCorner.X, (f32)destRect.LowerRightCorner.Y, 0, 0,0,1, useColor[1], tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
+	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
 }
 
 
-//! draws a set of 2d images, using a color and the alpha channel of the
-//! texture if desired. The images are drawn beginning at pos and concatenated
-//! in one line. All drawings are clipped against clipRect (if != 0).
-//! The subtextures are defined by the array of sourceRects and are chosen
-//! by the indices given.
-void COpenGLDriver::draw2DImage(const video::ITexture* texture,
+//! draws a set of 2d images, using a color and the alpha channel
+void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
@@ -1170,21 +1169,21 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 		const core::rect<s32> poss(targetPos, sourceRects[currentIndex].getSize());
 
-		vertices.push_back(S3DVertex(poss.UpperLeftCorner.X, poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
-		vertices.push_back(S3DVertex(poss.LowerRightCorner.X, poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
-		vertices.push_back(S3DVertex(poss.LowerRightCorner.X, poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
-		vertices.push_back(S3DVertex(poss.UpperLeftCorner.X, poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
+		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
+		vertices.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
+		vertices.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0, 0,0,1, color, tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
 
 		targetPos.X += sourceRects[currentIndex].getWidth();
 	}
-	drawVertexPrimitiveList2d3d(vertices.pointer(), 4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, false);
+	drawVertexPrimitiveList2d3d(vertices.pointer(), 4, quadIndices.pointer(), 2*indices.size(), video::EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT, false);
 	if (clipRect)
 		glDisable(GL_SCISSOR_TEST);
 }
 
 
 //! draw a 2d rectangle
-void COpenGLDriver::draw2DRectangle(SColor color, const core::rect<s32>& position,
+void COGLES1Driver::draw2DRectangle(SColor color, const core::rect<s32>& position,
 		const core::rect<s32>* clip)
 {
 	disableTextures();
@@ -1200,16 +1199,16 @@ void COpenGLDriver::draw2DRectangle(SColor color, const core::rect<s32>& positio
 
 	u16 indices[] = {0,1,2,3};
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(pos.UpperLeftCorner.X, pos.UpperLeftCorner.Y, 0, 0,0,1, color, 0,0);
-	vertices[1] = S3DVertex(pos.LowerRightCorner.X, pos.UpperLeftCorner.Y, 0, 0,0,1, color, 0,0);
-	vertices[2] = S3DVertex(pos.LowerRightCorner.X, pos.LowerRightCorner.Y, 0, 0,0,1, color, 0,0);
-	vertices[3] = S3DVertex(pos.UpperLeftCorner.X, pos.LowerRightCorner.Y, 0, 0,0,1, color, 0,0);
-	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, false);
+	vertices[0] = S3DVertex((f32)pos.UpperLeftCorner.X, (f32)pos.UpperLeftCorner.Y, 0, 0,0,1, color, 0,0);
+	vertices[1] = S3DVertex((f32)pos.LowerRightCorner.X, (f32)pos.UpperLeftCorner.Y, 0, 0,0,1, color, 0,0);
+	vertices[2] = S3DVertex((f32)pos.LowerRightCorner.X, (f32)pos.LowerRightCorner.Y, 0, 0,0,1, color, 0,0);
+	vertices[3] = S3DVertex((f32)pos.UpperLeftCorner.X, (f32)pos.LowerRightCorner.Y, 0, 0,0,1, color, 0,0);
+	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 }
 
 
 //! draw an 2d rectangle
-void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
+void COGLES1Driver::draw2DRectangle(const core::rect<s32>& position,
 			SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
 			const core::rect<s32>* clip)
 {
@@ -1230,16 +1229,16 @@ void COpenGLDriver::draw2DRectangle(const core::rect<s32>& position,
 
 	u16 indices[] = {0,1,2,3};
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(pos.UpperLeftCorner.X, pos.UpperLeftCorner.Y, 0, 0,0,1, colorLeftUp, 0,0);
-	vertices[1] = S3DVertex(pos.LowerRightCorner.X, pos.UpperLeftCorner.Y, 0, 0,0,1, colorRightUp, 0,0);
-	vertices[2] = S3DVertex(pos.LowerRightCorner.X, pos.LowerRightCorner.Y, 0, 0,0,1, colorRightDown, 0,0);
-	vertices[3] = S3DVertex(pos.UpperLeftCorner.X, pos.LowerRightCorner.Y, 0, 0,0,1, colorLeftDown, 0,0);
-	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, false);
+	vertices[0] = S3DVertex((f32)pos.UpperLeftCorner.X, (f32)pos.UpperLeftCorner.Y, 0, 0,0,1, colorLeftUp, 0,0);
+	vertices[1] = S3DVertex((f32)pos.LowerRightCorner.X, (f32)pos.UpperLeftCorner.Y, 0, 0,0,1, colorRightUp, 0,0);
+	vertices[2] = S3DVertex((f32)pos.LowerRightCorner.X, (f32)pos.LowerRightCorner.Y, 0, 0,0,1, colorRightDown, 0,0);
+	vertices[3] = S3DVertex((f32)pos.UpperLeftCorner.X, (f32)pos.LowerRightCorner.Y, 0, 0,0,1, colorLeftDown, 0,0);
+	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 }
 
 
 //! Draws a 2d line.
-void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
+void COGLES1Driver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end,
 				SColor color)
 {
@@ -1248,14 +1247,14 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 
 	u16 indices[] = {0,1};
 	S3DVertex vertices[2];
-	vertices[0] = S3DVertex(start.X, start.Y, 0, 0,0,1, color, 0,0);
-	vertices[1] = S3DVertex(end.X, end.Y, 0, 0,0,1, color, 0,0);
-	drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES, false);
+	vertices[0] = S3DVertex((f32)start.X, (f32)start.Y, 0, 0,0,1, color, 0,0);
+	vertices[1] = S3DVertex((f32)end.X, (f32)end.Y, 0, 0,0,1, color, 1,1);
+	drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES, EIT_16BIT, false);
 }
 
 
 
-bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
+bool COGLES1Driver::setTexture(u32 stage, const video::ITexture* texture)
 {
 	if (stage >= MaxTextureUnits)
 		return false;
@@ -1284,15 +1283,14 @@ bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
 
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D,
-			static_cast<const COpenGLTexture*>(texture)->getOpenGLTextureName());
+			static_cast<const COGLES1Texture*>(texture)->getOGLES1TextureName());
 	}
 	return true;
 }
 
 
-//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
-//! Returns whether disabling was successful or not.
-bool COpenGLDriver::disableTextures(u32 fromStage)
+//! disables all textures beginning with the optional fromStage parameter.
+bool COGLES1Driver::disableTextures(u32 fromStage)
 {
 	bool result=true;
 	for (u32 i=fromStage; i<MaxTextureUnits; ++i)
@@ -1301,15 +1299,15 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 }
 
 
-//! creates a matrix in supplied GLfloat array to pass to OpenGL
-inline void COpenGLDriver::createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m)
+//! creates a matrix in supplied GLfloat array to pass to OGLES1
+inline void COGLES1Driver::createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m)
 {
 	memcpy(gl_matrix, m.pointer(), 16 * sizeof(f32));
 }
 
 
 //! creates a opengltexturematrix from a D3D style texture matrix
-inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4& m)
+inline void COGLES1Driver::createGLTextureMatrix(GLfloat *o, const core::matrix4& m)
 {
 	o[0] = m[0];
 	o[1] = m[1];
@@ -1334,16 +1332,14 @@ inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const char* name)
+video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, const char* name)
 {
-	return new COpenGLTexture(surface, name, this);
+	return new COGLES1Texture(surface, name, this);
 }
 
 
-//! Sets a material. All 3d drawing functions draw geometry now
-//! using this material.
-//! \param material: Material to be used from now on.
-void COpenGLDriver::setMaterial(const SMaterial& material)
+//! Sets a material.
+void COGLES1Driver::setMaterial(const SMaterial& material)
 {
 	Material = material;
 
@@ -1356,7 +1352,7 @@ void COpenGLDriver::setMaterial(const SMaterial& material)
 
 
 //! prints error if an error happened.
-bool COpenGLDriver::testGLError()
+bool COGLES1Driver::testGLError()
 {
 #ifdef _DEBUG
 	GLenum g = glGetError();
@@ -1376,10 +1372,6 @@ bool COpenGLDriver::testGLError()
 		os::Printer::log("GL_STACK_UNDERFLOW", ELL_ERROR); break;
 	case GL_OUT_OF_MEMORY:
 		os::Printer::log("GL_OUT_OF_MEMORY", ELL_ERROR); break;
-#if defined(GL_framebuffer_object)
-	case GL_INVALID_FRAMEBUFFER_OPERATION:
-		os::Printer::log("GL_INVALID_FRAMEBUFFER_OPERATION", ELL_ERROR); break;
-#endif
 	};
 	return true;
 #else
@@ -1388,7 +1380,7 @@ bool COpenGLDriver::testGLError()
 }
 
 
-bool COpenGLDriver::testEGLError()
+bool COGLES1Driver::testEGLError()
 {
 #ifdef _DEBUG
 	EGLint g = eglGetError();
@@ -1432,7 +1424,7 @@ bool COpenGLDriver::testEGLError()
 
 
 //! sets the needed renderstates
-void COpenGLDriver::setRenderStates3DMode()
+void COGLES1Driver::setRenderStates3DMode()
 {
 	if (CurrentRenderMode != ERM_3D)
 	{
@@ -1477,7 +1469,7 @@ void COpenGLDriver::setRenderStates3DMode()
 }
 
 
-void COpenGLDriver::setWrapMode(const SMaterial& material)
+void COGLES1Driver::setWrapMode(const SMaterial& material)
 {
 	// texture address mode
 	// Has to be checked always because it depends on the textures
@@ -1495,58 +1487,19 @@ void COpenGLDriver::setWrapMode(const SMaterial& material)
 				mode=GL_REPEAT;
 				break;
 			case ETC_CLAMP:
-				mode=GL_CLAMP;
+	// TODO ogl-es
+	//			mode=GL_CLAMP;
 				break;
 			case ETC_CLAMP_TO_EDGE:
-#ifdef GL_VERSION_1_2
-				if (Version>101)
-					mode=GL_CLAMP_TO_EDGE;
-				else
-#endif
-#ifdef GL_SGIS_texture_edge_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
-					mode=GL_CLAMP_TO_EDGE_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
+				mode=GL_CLAMP_TO_EDGE;
 				break;
 			case ETC_CLAMP_TO_BORDER:
-#ifdef GL_VERSION_1_3
-				if (Version>102)
-					mode=GL_CLAMP_TO_BORDER;
-				else
-#endif
-#ifdef GL_texture_border_clamp
-				if (FeatureAvailable[IRR_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER;
-				else
-#endif
-#ifdef GL_SGIS_texture_border_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
+	// TODO ogl-es
+	//			mode=GL_CLAMP_TO_BORDER;
 				break;
 			case ETC_MIRROR:
-#ifdef GL_VERSION_1_4
-				if (Version>103)
-					mode=GL_MIRRORED_REPEAT;
-				else
-#endif
-#ifdef GL_texture_border_clamp
-				if (FeatureAvailable[IRR_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT;
-				else
-#endif
-#ifdef GL_IBM_texture_mirrored_repeat
-				if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_IBM;
-				else
-#endif
-					mode=GL_REPEAT;
+	// TODO ogl-es
+	//			mode=GL_MIRRORED_REPEAT;
 				break;
 		}
 
@@ -1557,7 +1510,7 @@ void COpenGLDriver::setWrapMode(const SMaterial& material)
 
 
 //! Can be called by an IMaterialRenderer to make its work easier.
-void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
+void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 	bool resetAllRenderStates)
 {
 	if (resetAllRenderStates ||
@@ -1639,7 +1592,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 #endif
 	}
 
-	// TODO ogles
+// TODO ogl-es
 	// fillmode
 //	if (resetAllRenderStates || (lastmaterial.Wireframe != material.Wireframe) || (lastmaterial.PointCloud != material.PointCloud))
 //		glPolygonMode(GL_FRONT_AND_BACK, material.Wireframe ? GL_LINE : material.PointCloud? GL_POINT : GL_FILL);
@@ -1684,7 +1637,9 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// zwrite
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
+		if (material.ZWriteEnable)
+// TODO ogl-es
+//&& (AllowZWriteOnTransparent || !material.isTransparent()))
 		{
 			glDepthMask(GL_TRUE);
 		}
@@ -1750,7 +1705,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 
 
 //! sets the needed renderstates
-void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
+void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
@@ -1848,14 +1803,14 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 
 //! \return Returns the name of the video driver.
-const wchar_t* COpenGLDriver::getName() const
+const wchar_t* COGLES1Driver::getName() const
 {
 	return Name.c_str();
 }
 
 
 //! deletes all dynamic lights there are
-void COpenGLDriver::deleteAllDynamicLights()
+void COGLES1Driver::deleteAllDynamicLights()
 {
 	for (s32 i=0; i<LastSetLight+1; ++i)
 		glDisable(GL_LIGHT0 + i);
@@ -1867,7 +1822,7 @@ void COpenGLDriver::deleteAllDynamicLights()
 
 
 //! adds a dynamic light
-void COpenGLDriver::addDynamicLight(const SLight& light)
+void COGLES1Driver::addDynamicLight(const SLight& light)
 {
 	if (LastSetLight == MaxLights-1)
 		return;
@@ -1956,25 +1911,22 @@ void COpenGLDriver::addDynamicLight(const SLight& light)
 
 
 //! returns the maximal amount of dynamic lights the device can handle
-u32 COpenGLDriver::getMaximalDynamicLightAmount() const
+u32 COGLES1Driver::getMaximalDynamicLightAmount() const
 {
 	return MaxLights;
 }
 
 
-//! Sets the dynamic ambient light color. The default color is
-//! (0,0,0,0) which means it is dark.
-//! \param color: New color of the ambient light.
-void COpenGLDriver::setAmbientLight(const SColorf& color)
+//! Sets the dynamic ambient light color.
+void COGLES1Driver::setAmbientLight(const SColorf& color)
 {
 	GLfloat data[4] = {color.r, color.g, color.b, color.a};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, data);
 }
 
 
-// this code was sent in by Oliver Klems, thank you! (I modified the glViewport
-// method just a bit.
-void COpenGLDriver::setViewPort(const core::rect<s32>& area)
+// this code was sent in by Oliver Klems, thank you
+void COGLES1Driver::setViewPort(const core::rect<s32>& area)
 {
 	core::rect<s32> vp = area;
 	core::rect<s32> rendert(0,0, getCurrentRenderTargetSize().Width, getCurrentRenderTargetSize().Height);
@@ -1989,10 +1941,8 @@ void COpenGLDriver::setViewPort(const core::rect<s32>& area)
 }
 
 
-//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
-//! this: First, draw all geometry. Then use this method, to draw the shadow
-//! volume. Next use IVideoDriver::drawStencilShadow() to visualize the shadow.
-void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
+//! Draws a shadow volume into the stencil buffer.
+void COGLES1Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail)
 {
 	if (!StencilBuffer || !count)
 		return;
@@ -2005,10 +1955,10 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		ResetRenderStates = true;
 	}
 
-	// store current OpenGL state
-	const bool lightingEnabled = glIsEnabled(GL_LIGHTING);
-	const bool fogEnabled = glIsEnabled(GL_FOG);
-	const bool cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
+	// store current OGLES1 state
+	const GLboolean lightingEnabled = glIsEnabled(GL_LIGHTING);
+	const GLboolean fogEnabled = glIsEnabled(GL_FOG);
+	const GLboolean cullFaceEnabled = glIsEnabled(GL_CULL_FACE);
 	GLint cullFaceMode;
 	glGetIntegerv(GL_CULL_FACE_MODE, &cullFaceMode);
 	GLint depthFunc;
@@ -2161,7 +2111,7 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 }
 
 
-void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
+void COGLES1Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
 	if (!StencilBuffer)
@@ -2170,13 +2120,13 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	disableTextures();
 
 	// store attributes
-	const bool lightingEnabled = glIsEnabled(GL_LIGHTING);
-	const bool fogEnabled = glIsEnabled(GL_FOG);
+	const GLboolean lightingEnabled = glIsEnabled(GL_LIGHTING);
+	const GLboolean fogEnabled = glIsEnabled(GL_FOG);
 	GLboolean depthMask;
 	glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
 	GLint shadeModel;
 	glGetIntegerv(GL_SHADE_MODEL, &shadeModel);
-	const bool blendEnabled = glIsEnabled(GL_BLEND);
+	const GLboolean blendEnabled = glIsEnabled(GL_BLEND);
 	GLint blendSrc, blendDst;
 	glGetIntegerv(GL_BLEND_SRC, &blendSrc);
 	glGetIntegerv(GL_BLEND_DST, &blendDst);
@@ -2206,7 +2156,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	vertices[1] = S3DVertex(-1.1f, 1.1f,0.9f, 0,0,1, leftUpEdge, 0,0);
 	vertices[2] = S3DVertex( 1.1f, 1.1f,0.9f, 0,0,1, rightUpEdge, 0,0);
 	vertices[3] = S3DVertex( 1.1f,-1.1f,0.9f, 0,0,1, rightDownEdge, 0,0);
-	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, false);
+	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 
 	if (clearStencilBuffer)
 		glClear(GL_STENCIL_BUFFER_BIT);
@@ -2227,7 +2177,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 
 //! Sets the fog mode.
-void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
+void COGLES1Driver::setFog(SColor c, bool linearFog, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
 	CNullDriver::setFog(c, linearFog, start, end, density, pixelFog, rangeFog);
@@ -2257,9 +2207,8 @@ void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
 }
 
 
-
 //! Draws a 3d line.
-void COpenGLDriver::draw3DLine(const core::vector3df& start,
+void COGLES1Driver::draw3DLine(const core::vector3df& start,
 				const core::vector3df& end, SColor color)
 {
 	setRenderStates3DMode();
@@ -2268,14 +2217,13 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 	S3DVertex vertices[2];
 	vertices[0] = S3DVertex(start.X,start.Y,start.Z, 0,0,1, color, 0,0);
 	vertices[1] = S3DVertex(end.X,end.Y,end.Z, 0,0,1, color, 0,0);
-	drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES, false);
+	drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES, EIT_16BIT, false);
 }
-
 
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
-void COpenGLDriver::OnResize(const core::dimension2d<s32>& size)
+void COGLES1Driver::OnResize(const core::dimension2d<s32>& size)
 {
 	CNullDriver::OnResize(size);
 	glViewport(0, 0, size.Width, size.Height);
@@ -2283,21 +2231,21 @@ void COpenGLDriver::OnResize(const core::dimension2d<s32>& size)
 
 
 //! Returns type of video driver
-E_DRIVER_TYPE COpenGLDriver::getDriverType() const
+E_DRIVER_TYPE COGLES1Driver::getDriverType() const
 {
 	return EDT_OGLES1;
 }
 
 
 //! returns color format
-ECOLOR_FORMAT COpenGLDriver::getColorFormat() const
+ECOLOR_FORMAT COGLES1Driver::getColorFormat() const
 {
 	return ColorFormat;
 }
 
 
 //! Sets a vertex shader constant.
-void COpenGLDriver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
+void COGLES1Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
 #ifdef GL_vertex_program
 	for (s32 i=0; i<constantAmount; ++i)
@@ -2306,7 +2254,7 @@ void COpenGLDriver::setVertexShaderConstant(const f32* data, s32 startRegister, 
 }
 
 //! Sets a pixel shader constant.
-void COpenGLDriver::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
+void COGLES1Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
 #ifdef GL_fragment_program
 	for (s32 i=0; i<constantAmount; ++i)
@@ -2315,14 +2263,14 @@ void COpenGLDriver::setPixelShaderConstant(const f32* data, s32 startRegister, s
 }
 
 //! Sets a constant for the vertex shader based on a name.
-bool COpenGLDriver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
+bool COGLES1Driver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
 {
 	//pass this along, as in GLSL the same routine is used for both vertex and fragment shaders
 	return setPixelShaderConstant(name, floats, count);
 }
 
 //! Sets a constant for the pixel shader based on a name.
-bool COpenGLDriver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
+bool COGLES1Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
 	os::Printer::log("Error: Please call services->setPixelShaderConstant(), not VideoDriver->setPixelShaderConstant().");
 	return false;
@@ -2331,23 +2279,18 @@ bool COpenGLDriver::setPixelShaderConstant(const c8* name, const f32* floats, in
 
 //! Adds a new material renderer to the VideoDriver, using pixel and/or
 //! vertex shaders to render geometry.
-s32 COpenGLDriver::addShaderMaterial(const c8* vertexShaderProgram,
+s32 COGLES1Driver::addShaderMaterial(const c8* vertexShaderProgram,
 	const c8* pixelShaderProgram,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial, s32 userData)
 {
-	s32 nr = -1;
-	COpenGLShaderMaterialRenderer* r = new COpenGLShaderMaterialRenderer(
-		this, nr, vertexShaderProgram, pixelShaderProgram,
-		callback, getMaterialRenderer(baseMaterial), userData);
-
-	r->drop();
-	return nr;
+	os::Printer::log("No shader support.");
+	return -1;
 }
 
 
 //! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
-s32 COpenGLDriver::addHighLevelShaderMaterial(
+s32 COGLES1Driver::addHighLevelShaderMaterial(
 	const c8* vertexShaderProgram,
 	const c8* vertexShaderEntryPointName,
 	E_VERTEX_SHADER_TYPE vsCompileTarget,
@@ -2358,33 +2301,26 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 	E_MATERIAL_TYPE baseMaterial,
 	s32 userData)
 {
-	s32 nr = -1;
-
-	COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
-		this, nr, vertexShaderProgram, vertexShaderEntryPointName,
-		vsCompileTarget, pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
-		callback,getMaterialRenderer(baseMaterial), userData);
-
-	r->drop();
-	return nr;
+	os::Printer::log("No shader support.");
+	return -1;
 }
 
 //! Returns a pointer to the IVideoDriver interface. (Implementation for
 //! IMaterialRendererServices)
-IVideoDriver* COpenGLDriver::getVideoDriver()
+IVideoDriver* COGLES1Driver::getVideoDriver()
 {
 	return this;
 }
 
 
 //! Returns pointer to the IGPUProgrammingServices interface.
-IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
+IGPUProgrammingServices* COGLES1Driver::getGPUProgrammingServices()
 {
 	return this;
 }
 
 
-ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
@@ -2393,23 +2329,11 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 	video::ITexture* rtt = 0;
 	if (name==0)
 		name="rt";
-#if defined(GL_framebuffer_object)
-	// if driver supports FrameBufferObjects, use them
-	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
+	rtt = addTexture(size, name, ECF_A8R8G8B8);
+	if (rtt)
 	{
-		rtt = new COpenGLTexture(size, name, this);
-		addTexture(rtt);
-		rtt->drop();
-	}
-	else
-#endif
-	{
-		rtt = addTexture(size, name, ECF_A8R8G8B8);
-		if (rtt)
-		{
-			rtt->grab();
-			static_cast<video::COpenGLTexture*>(rtt)->setIsRenderTarget(true);
-		}
+		rtt->grab();
+		static_cast<video::COGLES1Texture*>(rtt)->setIsRenderTarget(true);
 	}
 
 	//restore mip-mapping
@@ -2419,17 +2343,15 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 }
 
 
-//! Returns the maximum amount of primitives (mostly vertices) which
-//! the device is able to render with one drawIndexedTriangleList
-//! call.
-u32 COpenGLDriver::getMaximalPrimitiveCount() const
+//! Returns the maximum amount of primitives
+u32 COGLES1Driver::getMaximalPrimitiveCount() const
 {
 	return 65535;// TODO: Fix all loaders to auto-split and then return the correct value: MaxIndices;
 }
 
 
 //! set or reset render target
-bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
+bool COGLES1Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color)
 {
 	// check for right driver type
@@ -2452,7 +2374,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	if (texture)
 	{
 		// we want to set a new target. so do this.
-		RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
+		RenderTargetTexture = static_cast<COGLES1Texture*>(texture);
 		RenderTargetTexture->bindRTT();
 		CurrentRendertargetSize = texture->getSize();
 	}
@@ -2486,7 +2408,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 
 // returns the current size of the screen or rendertarget
-const core::dimension2d<s32>& COpenGLDriver::getCurrentRenderTargetSize() const
+const core::dimension2d<s32>& COGLES1Driver::getCurrentRenderTargetSize() const
 {
 	if ( CurrentRendertargetSize.Width == 0 )
 		return ScreenSize;
@@ -2496,7 +2418,7 @@ const core::dimension2d<s32>& COpenGLDriver::getCurrentRenderTargetSize() const
 
 
 //! Clears the ZBuffer.
-void COpenGLDriver::clearZBuffer()
+void COGLES1Driver::clearZBuffer()
 {
 	GLboolean enabled = GL_TRUE;
 	glGetBooleanv(GL_DEPTH_WRITEMASK, &enabled);
@@ -2509,7 +2431,7 @@ void COpenGLDriver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
-IImage* COpenGLDriver::createScreenShot()
+IImage* COGLES1Driver::createScreenShot()
 {
 	IImage* newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
 
@@ -2520,37 +2442,26 @@ IImage* COpenGLDriver::createScreenShot()
 		return 0;
 	}
 
-	// allows to read pixels in top-to-bottom order
-#ifdef GL_MESA_pack_invert
-	if (FeatureAvailable[IRR_MESA_pack_invert])
-		glPixelStorei(GL_PACK_INVERT_MESA, GL_TRUE);
-#endif
-
 	// We want to read the front buffer to get the latest render finished.
-	glReadBuffer(GL_FRONT);
+	// TODO ogl-es
+	//	glReadBuffer(GL_FRONT);
 	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-	glReadBuffer(GL_BACK);
+	// TODO ogl-es
+	// glReadBuffer(GL_BACK);
 
-#ifdef GL_MESA_pack_invert
-	if (FeatureAvailable[IRR_MESA_pack_invert])
-		glPixelStorei(GL_PACK_INVERT_MESA, GL_FALSE);
-	else
-#endif
+	// opengl images are horizontally flipped, so we have to fix that here.
+	const s32 pitch=newImage->getPitch();
+	u8* p2 = pixels + (ScreenSize.Height - 1) * pitch;
+	u8* tmpBuffer = new u8[pitch];
+	for (s32 i=0; i < ScreenSize.Height; i += 2)
 	{
-		// opengl images are horizontally flipped, so we have to fix that here.
-		const s32 pitch=newImage->getPitch();
-		u8* p2 = pixels + (ScreenSize.Height - 1) * pitch;
-		u8* tmpBuffer = new u8[pitch];
-		for (s32 i=0; i < ScreenSize.Height; i += 2)
-		{
-			memcpy(tmpBuffer, pixels, pitch);
-			memcpy(pixels, p2, pitch);
-			memcpy(p2, tmpBuffer, pitch);
-			pixels += pitch;
-			p2 -= pitch;
-		}
-		delete [] tmpBuffer;
+		memcpy(tmpBuffer, pixels, pitch);
+		memcpy(pixels, p2, pitch);
+		memcpy(p2, tmpBuffer, pitch);
+		pixels += pitch;
+		p2 -= pitch;
 	}
+	delete [] tmpBuffer;
 
 	newImage->unlock();
 
@@ -2565,7 +2476,7 @@ IImage* COpenGLDriver::createScreenShot()
 
 
 //! Set/unset a clipping plane.
-bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
+bool COGLES1Driver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
 {
 	if (index >= MaxUserClipPlanes)
 		return false;
@@ -2576,7 +2487,7 @@ bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool en
 }
 
 
-void COpenGLDriver::uploadClipPlane(u32 index)
+void COGLES1Driver::uploadClipPlane(u32 index)
 {
 	// opengl needs an array of doubles for the plane equation
 	float clip_plane[4];
@@ -2589,7 +2500,7 @@ void COpenGLDriver::uploadClipPlane(u32 index)
 
 
 //! Enable/disable a clipping plane.
-void COpenGLDriver::enableClipPlane(u32 index, bool enable)
+void COGLES1Driver::enableClipPlane(u32 index, bool enable)
 {
 	if (index >= MaxUserClipPlanes)
 		return;
@@ -2618,59 +2529,34 @@ namespace irr
 namespace video
 {
 
-
 // -----------------------------------
 // WINDOWS VERSION
 // -----------------------------------
-#ifdef _IRR_USE_WINDOWS_DEVICE_
-IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize,
-	HWND window, u32 bits, bool stencilBuffer, io::IFileSystem* io, bool vsync, bool antiAlias)
+#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_) || defined(_IRR_USE_WINDOWS_DEVICE_)
+IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io)
 {
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-	COpenGLDriver* ogl = new COpenGLDriver(screenSize, window, stencilBuffer, io, antiAlias);
-	if (!ogl->initDriver(screenSize, window, bits, vsync, stencilBuffer))
-	{
-		ogl->drop();
-		ogl = 0;
-	}
-	return ogl;
+	return new COGLES1Driver(params, data, io);
 #else
 	return 0;
 #endif // _IRR_COMPILE_WITH_OGLES1_
 }
-#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif
 
 // -----------------------------------
 // MACOSX VERSION
 // -----------------------------------
 #if defined(_IRR_USE_OSX_DEVICE_)
-IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceMacOSX *device)
 {
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-	return new COpenGLDriver(params, io, device);
+	return new COGLES1Driver(params, io, device);
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OGLES1_
 }
 #endif // _IRR_USE_OSX_DEVICE_
 
-// -----------------------------------
-// X11/SDL VERSION
-// -----------------------------------
-#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
-IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
-{
-#ifdef _IRR_COMPILE_WITH_OGLES1_
-	return new COpenGLDriver(params, io);
-#else
-	return 0;
-#endif //  _IRR_COMPILE_WITH_OGLES1_
-}
-#endif // _IRR_USE_LINUX_DEVICE_
-
 } // end namespace
 } // end namespace
-
-

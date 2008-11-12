@@ -95,6 +95,11 @@ and this to the linker settings: -ld3dx9 -ld3dx8 **/
 define out. */
 #define _IRR_COMPILE_WITH_OPENGL_
 
+//! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
+/** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment this
+define out. */
+#define _IRR_COMPILE_WITH_OGLES1_
+
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
 /** If you do not need the software driver, or want to use Burning's Video instead,
 comment this define out */

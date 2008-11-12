@@ -17,6 +17,7 @@
 #include "dimension2d.h"
 #include <winuser.h>
 #include "irrlicht.h"
+#include "SExposedVideoData.h"
 
 namespace irr
 {
@@ -35,7 +36,11 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io);
+		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_OGLES1_
+		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io);
 		#endif
 	}
 } // end namespace irr
@@ -480,6 +485,27 @@ void CIrrDeviceWin32::createDriver()
 		}
 		#else
 		os::Printer::log("OpenGL driver was not compiled in.", ELL_ERROR);
+		#endif
+		break;
+
+	case video::EDT_OGLES1:
+		#ifdef _IRR_COMPILE_WITH_OGLES1_
+		{
+			video::SExposedVideoData data;
+			data.OpenGLWin32.HWnd=HWnd;
+
+			if (CreationParams.Fullscreen)
+				switchToFullScreen(CreationParams.WindowSize.Width,	
+					CreationParams.WindowSize.Height, CreationParams.Bits);
+
+			VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem);
+			if (!VideoDriver)
+			{
+				os::Printer::log("Could not create OpenGL-ES1 driver.", ELL_ERROR);
+			}
+		}
+		#else
+		os::Printer::log("OpenGL-ES1 driver was not compiled in.", ELL_ERROR);
 		#endif
 		break;
 

@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
-#ifndef __C_VIDEO_OPEN_GL_H_INCLUDED__
-#define __C_VIDEO_OPEN_GL_H_INCLUDED__
+#ifndef __C_OGLES_DRIVER_H_INCLUDED__
+#define __C_OGLES_DRIVER_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
 
@@ -15,11 +15,13 @@
 	#include "CIrrDeviceMacOSX.h"
 #endif
 
-#ifdef _IRR_COMPILE_WITH_OPENGL_
+#ifdef _IRR_COMPILE_WITH_OGLES1_
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
 #include "SIrrCreationParameters.h"
+#include "EDriverFeatures.h"
+#include "fast_atof.h"
 
 #include <GLES/egl.h>
 #include <GLES/gl.h>
@@ -28,33 +30,103 @@ namespace irr
 {
 namespace video
 {
-	class COpenGLTexture;
+	class COGLES1Texture;
+	class COGLES1ExtensionHandler
+	{
+	protected:
+		COGLES1ExtensionHandler() : Version(0), MaxUserClipPlanes(0),
+			MaxTextureUnits(0), MaxLights(0),
+			MultiTextureExtension(false), MultiSamplingExtension(false),
+			StencilBuffer(false)
+		{
+			for (u32 i=0; i<FeatureAvailable.size(); ++i)
+				FeatureAvailable[i]=false;
+		}
 
-	class COpenGLDriver : public CNullDriver, public IMaterialRendererServices
+		bool queryFeature(video::E_VIDEO_DRIVER_FEATURE feature) const
+		{
+			return false;
+		}
+
+		void initExtensions(EGLDisplay display, bool withStencil)
+		{
+			const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
+			Version = core::floor32(ogl_ver)*100+core::ceil32(core::fract(ogl_ver)*10.0f);
+			core::stringc extensions = eglQueryString(display, EGL_EXTENSIONS);
+			GLint val=0;
+//			glGetIntegerv(GL_MAX_TEXTURES, &val);
+			MaxTextureUnits = 2;
+			MultiTextureExtension = true;
+			glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
+			MaxUserClipPlanes=val;
+			glGetIntegerv(GL_MAX_LIGHTS, &val);
+			MaxLights = val;
+		}
+
+	public:
+		void extGlActiveTexture(GLenum texture)
+		{
+			glActiveTexture(texture);
+		}
+		void extGlClientActiveTexture(GLenum texture)
+		{
+			glClientActiveTexture(texture);
+		}
+		void extGlGenBuffers(GLsizei n, GLuint *buffers)
+		{
+			glGenBuffers(n, buffers);
+		}
+		void extGlBindBuffer(GLenum target, GLuint buffer)
+		{
+			glBindBuffer(target, buffer);
+		}
+		void extGlBufferData(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage)
+		{
+			glBufferData(target, size, data, usage);
+		}
+		void extGlBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data)
+		{
+			glBufferSubData(target, offset, size, data);
+		}
+		void extGlDeleteBuffers(GLsizei n, const GLuint *buffers)
+		{
+			glDeleteBuffers(n, buffers);
+		}
+		void extGlPointParameterf(GLint loc, GLfloat f)
+		{
+			glPointParameterf(loc, f);
+		}
+		void extGlPointParameterfv(GLint loc, const GLfloat *v)
+		{
+			glPointParameterfv(loc, v);
+		}
+		s32 Version;
+	protected:
+		core::array<bool> FeatureAvailable;
+		u32 MaxUserClipPlanes;
+		u32 MaxTextureUnits;
+		s32 MaxLights;
+		bool MultiTextureExtension;
+		bool MultiSamplingExtension;
+		bool StencilBuffer;
+	};
+
+	class COGLES1Driver : public CNullDriver, public IMaterialRendererServices, public COGLES1ExtensionHandler
 	{
 	public:
-
-		#ifdef _IRR_WINDOWS_API_
-		//! win32 constructor
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			bool stencilBuffer, io::IFileSystem* io, bool antiAlias);
-
-		//! inits the windows specific parts of the open gl driver
-		bool initDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool vsync, bool stencilBuffer);
-		#endif
-
-		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
+		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_) 		|| defined(_IRR_WINDOWS_API_)
+		COGLES1Driver(const SIrrlichtCreationParameters& params,
+				const SExposedVideoData& data,
+				io::IFileSystem* io);
 		#endif
 
 		#ifdef _IRR_USE_OSX_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params,
+		COGLES1Driver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io, CIrrDeviceMacOSX *device);
 		#endif
 
 		//! destructor
-		virtual ~COpenGLDriver();
+		virtual ~COGLES1Driver();
 
 		//! clears the zbuffer
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
@@ -101,17 +173,16 @@ namespace video
 				const void* indexList, u32 primitiveCount,
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
-		void drawVertexPrimitiveList2d3d(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, bool threed=true);
+		void drawVertexPrimitiveList2d3d(const void* vertices, u32 vertexCount, const void* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType, bool threed=true);
 
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		{
-			return FeatureEnabled[feature] && COpenGLExtensionHandler::queryFeature(feature);
+//			return FeatureEnabled[feature] && COGLES1ExtensionHandler::queryFeature(feature);
+			return COGLES1ExtensionHandler::queryFeature(feature);
 		}
 
-		//! Sets a material. All 3d drawing functions draw geometry now
-		//! using this material.
-		//! \param material: Material to be used from now on.
+		//! Sets a material.
 		virtual void setMaterial(const SMaterial& material);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
@@ -119,22 +190,7 @@ namespace video
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
 
-		//! draws a set of 2d images, using a color and the alpha
-		/** channel of the texture if desired. The images are drawn
-		beginning at pos and concatenated in one line. All drawings
-		are clipped against clipRect (if != 0).
-		The subtextures are defined by the array of sourceRects
-		and are chosen by the indices given.
-		\param texture: Texture to be drawn.
-		\param pos: Upper left 2d destination position where the image will be drawn.
-		\param sourceRects: Source rectangles of the image.
-		\param indices: List of indices which choose the actual rectangle used each time.
-		\param clipRect: Pointer to rectangle on the screen where the image is clipped to.
-		This pointer can be 0. Then the image is not clipped.
-		\param color: Color with which the image is colored.
-		Note that the alpha component is used: If alpha is other than 255, the image will be transparent.
-		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
-		used to draw the image. */
+		//! draws a set of 2d images
 		virtual void draw2DImage(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
@@ -167,8 +223,7 @@ namespace video
 					const core::vector3df& end,
 					SColor color = SColor(255,255,255,255));
 
-		//! \return Returns the name of the video driver. Example: In case of the Direct3D8
-		//! driver, it would return "Direct3D8.1".
+		//! Returns the name of the video driver.
 		virtual const wchar_t* getName() const;
 
 		//! deletes all dynamic lights there are
@@ -180,19 +235,13 @@ namespace video
 		//! returns the maximal amount of dynamic lights the device can handle
 		virtual u32 getMaximalDynamicLightAmount() const;
 
-		//! Sets the dynamic ambient light color. The default color is
-		//! (0,0,0,0) which means it is dark.
-		//! \param color: New color of the ambient light.
+		//! Sets the dynamic ambient light color.
 		virtual void setAmbientLight(const SColorf& color);
 
-		//! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
-		//! this: First, draw all geometry. Then use this method, to draw the shadow
-		//! volume. Then, use IVideoDriver::drawStencilShadow() to visualize the shadow.
+		//! Draws a shadow volume into the stencil buffer.
 		virtual void drawStencilShadowVolume(const core::vector3df* triangles, s32 count, bool zfail);
 
-		//! Fills the stencil shadow with color. After the shadow volume has been drawn
-		//! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
-		//! to draw the color of the shadow.
+		//! Fills the stencil shadow with color.
 		virtual void drawStencilShadow(bool clearStencilBuffer=false,
 			video::SColor leftUpEdge = video::SColor(0,0,0,0),
 			video::SColor rightUpEdge = video::SColor(0,0,0,0),
@@ -206,8 +255,7 @@ namespace video
 		virtual void setFog(SColor color, bool linearFog, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 
-		//! Only used by the internal engine. Used to notify the driver that
-		//! the window was resized.
+		//! Only used internally by the engine
 		virtual void OnResize(const core::dimension2d<s32>& size);
 
 		//! Returns type of video driver
@@ -236,20 +284,16 @@ namespace video
 		virtual bool setPixelShaderConstant(const c8* name, const f32* floats, int count);
 
 		//! sets the current Texture
-		//! Returns whether setting was a success or not.
 		bool setTexture(u32 stage, const video::ITexture* texture);
 
-		//! disables all textures beginning with the optional fromStage parameter. Otherwise all texture stages are disabled.
-		//! Returns whether disabling was successful or not.
+		//! disables all textures beginning with fromStage.
 		bool disableTextures(u32 fromStage=0);
 
-		//! Adds a new material renderer to the VideoDriver, using
-		//! extGLGetObjectParameteriv(shaderHandle, GL_OBJECT_COMPILE_STATUS_ARB, &status)
-		//! pixel and/or vertex shaders to render geometry.
+		//! Adds a new material renderer to the VideoDriver
 		virtual s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
 			IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);
 
-		//! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
+		//! Adds a new material renderer to the VideoDriver
 		virtual s32 addHighLevelShaderMaterial(const c8* vertexShaderProgram, const c8* vertexShaderEntryPointName,
 			E_VERTEX_SHADER_TYPE vsCompileTarget, const c8* pixelShaderProgram, const c8* pixelShaderEntryPointName,
 			E_PIXEL_SHADER_TYPE psCompileTarget, IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial,
@@ -258,13 +302,10 @@ namespace video
 		//! Returns pointer to the IGPUProgrammingServices interface.
 		virtual IGPUProgrammingServices* getGPUProgrammingServices();
 
-		//! Returns a pointer to the IVideoDriver interface. (Implementation for
-		//! IMaterialRendererServices)
+		//! Returns a pointer to the IVideoDriver interface.
 		virtual IVideoDriver* getVideoDriver();
 
-		//! Returns the maximum amount of primitives (mostly vertices) which
-		//! the device is able to render with one drawIndexedTriangleList
-		//! call.
+		//! Returns the maximum amount of primitives
 		virtual u32 getMaximalPrimitiveCount() const;
 
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
@@ -280,20 +321,15 @@ namespace video
 		virtual IImage* createScreenShot();
 
 		//! checks if an OpenGL error has happend and prints it
-		//! for performance reasons only available in debug mode
 		bool testGLError();
 
+		//! checks if an OGLES1 error has happend and prints it
+		bool testEGLError();
+
 		//! Set/unset a clipping plane.
-		//! There are at least 6 clipping planes available for the user to set at will.
-		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-		//! \param plane: The plane itself.
-		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual bool setClipPlane(u32 index, const core::plane3df& plane, bool enable=false);
 
 		//! Enable/disable a clipping plane.
-		//! There are at least 6 clipping planes available for the user to set at will.
-		//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
@@ -303,13 +339,15 @@ namespace video
 
 		void uploadClipPlane(u32 index);
 
-		//! inits the parts of the open gl driver used on all platforms
+		//! inits the opengl-es driver
 		bool genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer);
+
 		//! returns a device dependent texture from a software surface (IImage)
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
 
-		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
+		//! creates a transposed matrix in supplied GLfloat array to pass to OGLES1
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
+
 		inline void createGLTextureMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
 
 		//! Set GL pipeline to desired texture wrap modes of the material
@@ -346,7 +384,7 @@ namespace video
 		bool AntiAlias;
 
 		SMaterial Material, LastMaterial;
-		COpenGLTexture* RenderTargetTexture;
+		COGLES1Texture* RenderTargetTexture;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		s32 LastSetLight;
 		core::array<core::plane3df> UserClipPlane;
@@ -361,15 +399,10 @@ namespace video
 		//! Color buffer format
 		ECOLOR_FORMAT ColorFormat;
 
-		#ifdef _IRR_WINDOWS_API_
-			HDC HDc; // Private GDI Device Context
-			HWND Window;
-			HGLRC HRc; // Permanent Rendering Context
-		#elif defined(_IRR_USE_LINUX_DEVICE_)
-			GLXDrawable Drawable;
-		#elif defined(_IRR_USE_OSX_DEVICE_)
-			CIrrDeviceMacOSX *_device;
-		#endif
+#ifdef _IRR_USE_WINDOWS_DEVICE_
+		HDC HDc;
+#endif
+		NativeWindowType EglWindow;
 		EGLDisplay EglDisplay;
 		EGLSurface EglSurface;
 		EGLContext EglContext;
