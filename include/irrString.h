@@ -821,18 +821,16 @@ public:
 
 
 	//! trims the string.
-	/** Removes whitespace from begin and end of the string. */
-	string<T>& trim()
+	/** Removes the specified characters (by default, Latin-1 whitespace) 
+	from the begining and the end of the string. */
+	string<T>& trim(const string<T> & whitespace = " \t\n\r")
 	{
-		const c8 whitespace[] = " \t\n\r";
-		const u32 whitespacecount = 4;
-
-		// find start and end of real string without whitespace
-		const s32 begin = findFirstCharNotInList(whitespace, whitespacecount);
+		// find start and end of the substring without the specified characters
+		const s32 begin = findFirstCharNotInList(whitespace.c_str(), whitespace.used);
 		if (begin == -1)
 			return (*this="");
 
-		const s32 end = findLastCharNotInList(whitespace, whitespacecount);
+		const s32 end = findLastCharNotInList(whitespace.c_str(), whitespace.used);
 
 		return (*this = subString(begin, (end +1) - begin));
 	}
