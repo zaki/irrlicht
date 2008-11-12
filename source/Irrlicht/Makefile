@@ -124,7 +124,7 @@ install:
 	cd $(INSTALL_DIR) && ln -s libIrrlicht.so.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
 
-install:
+install_osx:
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
 	cd $(INSTALL_DIR) && ln -s libIrrlicht.dylib.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
