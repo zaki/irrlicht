@@ -32,10 +32,10 @@ namespace core
 
 #ifdef IRRLICHT_FAST_MATH
 	const f32 ROUNDING_ERROR_32 = 0.00005f;
-	const f64 ROUNDING_ERROR_64 = 0.000005f;
+	const f64 ROUNDING_ERROR_64 = 0.000005;
 #else
 	const f32 ROUNDING_ERROR_32 = 0.000001f;
-	const f64 ROUNDING_ERROR_64 = 0.00000001f;
+	const f64 ROUNDING_ERROR_64 = 0.00000001;
 #endif
 
 #ifdef PI // make sure we don't collide with a define
@@ -70,6 +70,42 @@ namespace core
 
 	//! 64bit constant for converting from radians to degrees
 	const f64 RADTODEG64 = 180.0 / PI64;
+
+	//! Utility function to convert a radian value to degrees
+	/** Provided as it can be clearer to write radToDeg(X) than RADTODEG * X
+	\param radians	The radians value to convert to degrees.
+	*/
+	inline f32 radToDeg(f32 radians)
+	{
+		return RADTODEG * radians;
+	}
+
+	//! Utility function to convert a radian value to degrees
+	/** Provided as it can be clearer to write radToDeg(X) than RADTODEG * X
+	\param radians	The radians value to convert to degrees.
+	*/
+	inline f64 radToDeg(f64 radians)
+	{
+		return RADTODEG64 * radians;
+	}
+
+	//! Utility function to convert a degrees value to radians
+	/** Provided as it can be clearer to write degToRad(X) than DEGTORAD * X
+	\param degrees	The degrees value to convert to radians.
+	*/
+	inline f32 degToRad(f32 degrees)
+	{
+		return DEGTORAD * degrees;
+	}
+
+	//! Utility function to convert a degrees value to radians
+	/** Provided as it can be clearer to write degToRad(X) than DEGTORAD * X
+	\param degrees	The degrees value to convert to radians.
+	*/
+	inline f64 degToRad(f64 degrees)
+	{
+		return DEGTORAD64 * degrees;
+	}
 
 	//! returns minimum of two values. Own implementation to get rid of the STL (VS6 problems)
 	template<class T>

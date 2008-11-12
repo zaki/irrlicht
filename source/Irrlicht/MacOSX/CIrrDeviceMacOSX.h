@@ -53,13 +53,16 @@ namespace irr
 		virtual bool isWindowMinimized() const;
 
 		//! presents a surface in the client area
-		virtual void present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0 );
+		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0 );
 
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
 
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize);
+
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
 		//! \return Returns a pointer to a list with all video modes
 		//! supported by the gfx adapter.
@@ -204,6 +207,8 @@ namespace irr
 		int			_screenWidth;
 		int			_screenHeight;
 		bool			_active;
+
+		void pollJoysticks();
 	};
 
 

@@ -307,7 +307,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"source", false, L"id", L"mesh-Pos");
 	Writer->writeLineBreak();
 
-	core::stringw vertexCountStr = (totalVertexCount*3);
+	core::stringw vertexCountStr(totalVertexCount*3);
 	Writer->writeElement(L"float_array", false, L"id", L"mesh-Pos-array",
 				L"count", vertexCountStr.c_str());
 	Writer->writeLineBreak();
@@ -387,7 +387,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"technique_common", false);
 	Writer->writeLineBreak();
 
-	vertexCountStr = totalVertexCount;
+	vertexCountStr = core::stringw(totalVertexCount);
 
 		Writer->writeElement(L"accessor", false, L"source", L"#mesh-Pos-array",
 					L"count", vertexCountStr.c_str(), L"stride", L"3");
@@ -414,7 +414,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"source", false, L"id", L"mesh-TexCoord0");
 	Writer->writeLineBreak();
 
-	vertexCountStr = (totalVertexCount*2);
+	vertexCountStr = core::stringw(totalVertexCount*2);
 	Writer->writeElement(L"float_array", false, L"id", L"mesh-TexCoord0-array",
 				L"count", vertexCountStr.c_str());
 	Writer->writeLineBreak();
@@ -488,7 +488,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"technique_common", false);
 	Writer->writeLineBreak();
 
-	vertexCountStr = totalVertexCount;
+	vertexCountStr = core::stringw(totalVertexCount);
 
 		Writer->writeElement(L"accessor", false, L"source", L"#mesh-TexCoord0-array",
 					L"count", vertexCountStr.c_str(), L"stride", L"2");
@@ -513,7 +513,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"source", false, L"id", L"mesh-Normal");
 	Writer->writeLineBreak();
 
-	vertexCountStr = (totalVertexCount*3);
+	vertexCountStr = core::stringw(totalVertexCount*3);
 	Writer->writeElement(L"float_array", false, L"id", L"mesh-Normal-array",
 				L"count", vertexCountStr.c_str());
 	Writer->writeLineBreak();
@@ -593,7 +593,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 	Writer->writeElement(L"technique_common", false);
 	Writer->writeLineBreak();
 
-	vertexCountStr = totalVertexCount;
+	vertexCountStr = core::stringw(totalVertexCount);
 
 		Writer->writeElement(L"accessor", false, L"source", L"#mesh-Normal-array",
 								L"count", vertexCountStr.c_str(), L"stride", L"3");
@@ -622,7 +622,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		Writer->writeElement(L"source", false, L"id", L"mesh-TexCoord1");
 		Writer->writeLineBreak();
 
-		vertexCountStr = (totalTCoords2Count*2);
+		vertexCountStr = core::stringw(totalTCoords2Count*2);
 		Writer->writeElement(L"float_array", false, L"id", L"mesh-TexCoord1-array",
 								L"count", vertexCountStr.c_str());
 		Writer->writeLineBreak();
@@ -671,7 +671,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		Writer->writeElement(L"technique_common", false);
 		Writer->writeLineBreak();
 
-		vertexCountStr = totalTCoords2Count;
+		vertexCountStr = core::stringw(totalTCoords2Count);
 
 			Writer->writeElement(L"accessor", false, L"source", L"#mesh-TexCoord1-array",
 									L"count", vertexCountStr.c_str(), L"stride", L"2");
@@ -714,7 +714,7 @@ bool CColladaMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32
 		scene::IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 
 		const u32 polyCount = buffer->getIndexCount() / 3;
-		core::stringw strPolyCount = polyCount;
+		core::stringw strPolyCount(polyCount);
 		core::stringw strMat = "#mat";
 		strMat += i;
 

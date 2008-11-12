@@ -18,6 +18,8 @@ namespace video
 {
 
 class CD3D9Driver;
+// forward declaration for RTT depth buffer handling
+struct SDepthSurface;
 /*!
 	interface for a Video Driver dependent Texture.
 */
@@ -30,7 +32,7 @@ public:
 		u32 flags, const char* name);
 
 	//! rendertarget constructor
-	CD3D9Texture(CD3D9Driver* driver, core::dimension2d<s32> size, const char* name);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<s32>& size, const char* name);
 
 	//! destructor
 	virtual ~CD3D9Texture();
@@ -57,7 +59,7 @@ public:
 	virtual u32 getPitch() const;
 
 	//! returns the DIRECT3D9 Texture
-	IDirect3DTexture9* getDX9Texture() const;
+	IDirect3DBaseTexture9* getDX9Texture() const;
 
 	//! returns if texture has mipmap levels
 	bool hasMipMaps() const;
@@ -73,6 +75,7 @@ public:
 	IDirect3DSurface9* getRenderTargetSurface();
 
 private:
+	friend class CD3D9Driver;
 
 	void createRenderTarget();
 
@@ -106,6 +109,7 @@ private:
 	IDirect3DTexture9* Texture;
 	IDirect3DSurface9* RTTSurface;
 	CD3D9Driver* Driver;
+	SDepthSurface* DepthSurface;
 	core::dimension2d<s32> TextureSize;
 	core::dimension2d<s32> ImageSize;
 	s32 Pitch;

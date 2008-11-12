@@ -103,6 +103,10 @@
 #include "CSTLMeshWriter.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_OBJ_WRITER_
+#include "COBJMeshWriter.h"
+#endif
+
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
@@ -166,6 +170,9 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	ISceneNode::setDebugName("CSceneManager ISceneNode");
 	#endif
 
+	// root node's scene manager
+	SceneManager = this;
+
 	if (Driver)
 		Driver->grab();
 
@@ -208,7 +215,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CXMeshFileLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_OCT_LOADER_
-	MeshLoaderList.push_back(new COCTLoader(Driver));
+	MeshLoaderList.push_back(new COCTLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_CSM_LOADER_
 	MeshLoaderList.push_back(new CCSMLoader(this, FileSystem));
@@ -217,7 +224,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new CLMTSMeshFileLoader(FileSystem, Driver, &Parameters));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
-	MeshLoaderList.push_back(new CMY3DMeshFileLoader(FileSystem, Driver, this));
+	MeshLoaderList.push_back(new CMY3DMeshFileLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_COLLADA_LOADER_
 	MeshLoaderList.push_back(new CColladaFileLoader(this, FileSystem));
@@ -1162,7 +1169,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 	case ESNRP_SOLID:
 		if (!isCulled(node))
 		{
-			SolidNodeList.push_back( node );
+			SolidNodeList.push_back(node);
 			taken = 1;
 		}
 		break;
@@ -1196,7 +1203,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 			// not transparent, register as solid
 			if ( 0 == taken )
 			{
-				SolidNodeList.push_back( node );
+				SolidNodeList.push_back(node);
 				taken = 1;
 			}
 		}
@@ -1251,6 +1258,8 @@ void CSceneManager::drawAll()
 		driver->setTransform ( video::ETS_TEXTURE_2, core::IdentityMatrix );
 		driver->setTransform ( video::ETS_TEXTURE_3, core::IdentityMatrix );
 	}
+
+	driver->setAllowZWriteOnTransparent(Parameters.getAttributeAsBool( ALLOW_ZWRITE_ON_TRANSPARENT) );
 
 	// do animations and other stuff.
 	OnAnimate(os::Timer::getTime());
@@ -2288,6 +2297,12 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 	case EMWT_STL:
 #ifdef _IRR_COMPILE_WITH_STL_WRITER_
 		return new CSTLMeshWriter(this);
+#else
+		return 0;
+#endif
+	case EMWT_OBJ:
+#ifdef _IRR_COMPILE_WITH_OBJ_WRITER_
+		return new COBJMeshWriter(this, FileSystem);
 #else
 		return 0;
 #endif

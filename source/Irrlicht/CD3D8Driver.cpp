@@ -31,8 +31,10 @@ CD3D8Driver::CD3D8Driver(const core::dimension2d<s32>& screenSize, HWND window,
 : CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
 	ResetRenderStates(true), Transformation3DChanged(false), StencilBuffer(stencilbuffer),
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
+	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
-	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false)
+	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false),
+	DriverWasReset(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D8Driver");
@@ -59,7 +61,6 @@ CD3D8Driver::CD3D8Driver(const core::dimension2d<s32>& screenSize, HWND window,
 
 	// init direct 3d is done in the factory function
 }
-
 
 
 //! destructor
@@ -142,9 +143,9 @@ void CD3D8Driver::createMaterialRenderers()
 
 
 //! initialises the Direct3D API
-bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd,
-				u32 bits, bool fullScreen, bool pureSoftware,
-				bool highPrecisionFPU, bool vsync, bool antiAlias)
+bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
+		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
+		bool highPrecisionFPU, bool vsync, bool antiAlias)
 {
 	HRESULT hr;
 	D3DLibrary = LoadLibrary( "d3d8.dll" );
@@ -382,27 +383,32 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd
 }
 
 
-
-
 //! applications must call this method before performing any rendering. returns false if failed.
-bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color);
-	HRESULT hr;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+	WindowId = windowId;
+	SceneSourceRect = sourceRect;
 
 	if (!pID3DDevice)
 		return false;
 
+	HRESULT hr;
 	if (DeviceLost)
 	{
 		if(FAILED(hr = pID3DDevice->TestCooperativeLevel()))
 		{
 			if (hr == D3DERR_DEVICELOST)
-				return false;
+			{
+				Sleep(100);
+				hr = pID3DDevice->TestCooperativeLevel();
+				if (hr == D3DERR_DEVICELOST)
+					return false;
+			}
 
-			if (hr == D3DERR_DEVICENOTRESET)
-				reset();
-			return false;
+			if ((hr == D3DERR_DEVICENOTRESET) && !reset())
+				return false;
 		}
 	}
 
@@ -432,14 +438,72 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color)
 }
 
 
+//! applications must call this method after performing any rendering. returns false if failed.
+bool CD3D8Driver::endScene()
+{
+	CNullDriver::endScene();
+	DriverWasReset=false;
+
+	HRESULT hr = pID3DDevice->EndScene();
+	if (FAILED(hr))
+	{
+		os::Printer::log("DIRECT3D8 end scene failed.", ELL_WARNING);
+		return false;
+	}
+
+	RECT* srcRct = 0;
+	RECT sourceRectData;
+	if ( SceneSourceRect)
+	{
+		srcRct = &sourceRectData;
+		sourceRectData.left = SceneSourceRect->UpperLeftCorner.X;
+		sourceRectData.top = SceneSourceRect->UpperLeftCorner.Y;
+		sourceRectData.right = SceneSourceRect->LowerRightCorner.X;
+		sourceRectData.bottom = SceneSourceRect->LowerRightCorner.Y;
+	}
+
+	hr = pID3DDevice->Present(srcRct, NULL, (HWND)WindowId, NULL);
+
+	if (SUCCEEDED(hr))
+		return true;
+
+	if (hr == D3DERR_DEVICELOST)
+	{
+		DeviceLost = true;
+		os::Printer::log("DIRECT3D8 device lost.", ELL_WARNING);
+	}
+	else
+		os::Printer::log("DIRECT3D8 present failed.", ELL_WARNING);
+	return false;
+}
+
 
 //! resets the device
 bool CD3D8Driver::reset()
 {
-	// reset
-	HRESULT hr;
+	u32 i;
 	os::Printer::log("Resetting D3D8 device.", ELL_INFORMATION);
-	if (FAILED(hr = pID3DDevice->Reset(&present)))
+
+	for (i=0; i<Textures.size(); ++i)
+	{
+		if (Textures[i].Surface->isRenderTarget())
+		{
+			IDirect3DTexture8* tex = ((CD3D8Texture*)(Textures[i].Surface))->getDX8Texture();
+			if (tex)
+				tex->Release();
+		}
+	}
+	DriverWasReset=true;
+
+	HRESULT hr = pID3DDevice->Reset(&present);
+
+	for (i=0; i<Textures.size(); ++i)
+	{
+		if (Textures[i].Surface->isRenderTarget())
+			((CD3D8Texture*)(Textures[i].Surface))->createRenderTarget();
+	}
+
+	if (FAILED(hr))
 	{
 		if (hr == D3DERR_DEVICELOST)
 		{
@@ -467,52 +531,12 @@ bool CD3D8Driver::reset()
 }
 
 
-
-//! applications must call this method after performing any rendering. returns false if failed.
-bool CD3D8Driver::endScene( void* windowId, core::rect<s32>* sourceRect )
-{
-	CNullDriver::endScene();
-
-	HRESULT hr = pID3DDevice->EndScene();
-	if (FAILED(hr))
-	{
-		os::Printer::log("DIRECT3D8 end scene failed.", ELL_WARNING);
-		return false;
-	}
-
-	RECT* srcRct = 0;
-	RECT sourceRectData;
-	if ( sourceRect)
-	{
-		srcRct = &sourceRectData;
-		sourceRectData.left = sourceRect->UpperLeftCorner.X;
-		sourceRectData.top = sourceRect->UpperLeftCorner.Y;
-		sourceRectData.right = sourceRect->LowerRightCorner.X;
-		sourceRectData.bottom = sourceRect->LowerRightCorner.Y;
-	}
-
-	hr = pID3DDevice->Present(srcRct, NULL, (HWND)windowId, NULL);
-
-	if (hr == D3DERR_DEVICELOST)
-	{
-		DeviceLost = true;
-		os::Printer::log("DIRECT3D8 device lost.", ELL_WARNING);
-	}
-	else
-	if (FAILED(hr) && hr != D3DERR_INVALIDCALL)
-	{
-		os::Printer::log("DIRECT3D8 present failed.", ELL_WARNING);
-		return false;
-	}
-
-	return true;
-}
-
-
-
 //! queries the features of the driver, returns true if feature is available
 bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
+	if (!FeatureEnabled[feature])
+		return false;
+
 	switch (feature)
 	{
 	case EVDF_RENDER_TO_TARGET:
@@ -543,6 +567,8 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return Caps.PixelShaderVersion >= D3DPS_VERSION(2,0);
 	case EVDF_PIXEL_SHADER_3_0:
 		return Caps.PixelShaderVersion >= D3DPS_VERSION(3,0);
+	case EVDF_TEXTURE_NSQUARE:
+		return (Caps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY) == 0;
 	case EVDF_TEXTURE_NPOT:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
 	default:
@@ -551,9 +577,9 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 
-
 //! sets transformation
-void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
+void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state,
+		const core::matrix4& mat)
 {
 	switch(state)
 	{
@@ -574,11 +600,8 @@ void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4
 	case ETS_TEXTURE_2:
 	case ETS_TEXTURE_3:
 		pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
-		if (mat.isIdentity())
-			pID3DDevice->SetTransform( (D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )), &UnitMatrixD3D8 );
-		else
-			pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
-				(D3DMATRIX*)((void*)mat.pointer()));
+		pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
+			(D3DMATRIX*)((void*)mat.pointer()));
 		break;
 	case ETS_COUNT:
 		break;
@@ -586,7 +609,6 @@ void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4
 
 	Matrices[state] = mat;
 }
-
 
 
 //! sets the current Texture
@@ -616,7 +638,6 @@ bool CD3D8Driver::setTexture(s32 stage, const video::ITexture* texture)
 }
 
 
-
 //! sets a material
 void CD3D8Driver::setMaterial(const SMaterial& material)
 {
@@ -633,14 +654,16 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface, const char* name)
+video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,
+		const char* name)
 {
 	return new CD3D8Texture(surface, this, TextureCreationFlags, name);
 }
 
 
 //! Enables or disables a texture creation flag.
-void CD3D8Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled)
+void CD3D8Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
+		bool enabled)
 {
 	if (flag == video::ETCF_CREATE_MIP_MAPS && !queryFeature(EVDF_MIP_MAP))
 		enabled = false;
@@ -651,8 +674,8 @@ void CD3D8Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enab
 
 
 //! sets a render target
-bool CD3D8Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-				bool clearZBuffer, SColor color)
+bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
+		bool clearBackBuffer, bool clearZBuffer, SColor color)
 {
 	// check for right driver type
 
@@ -750,12 +773,18 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 	return ret;
 }
 
-//! Creates a render target texture.
-ITexture* CD3D8Driver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
-{
-	return new CD3D8Texture(this, size, name);
-}
 
+//! Creates a render target texture.
+ITexture* CD3D8Driver::addRenderTargetTexture(
+		const core::dimension2d<s32>& size, const c8* name)
+{
+	if (!name)
+		name="rt";
+	ITexture* tex = new CD3D8Texture(this, size, name);
+	addTexture(tex);
+	tex->drop();
+	return tex;
+}
 
 
 //! sets a viewport
@@ -784,7 +813,6 @@ void CD3D8Driver::setViewPort(const core::rect<s32>& area)
 }
 
 
-
 //! gets the area of the current viewport
 const core::rect<s32>& CD3D8Driver::getViewPort() const
 {
@@ -792,16 +820,16 @@ const core::rect<s32>& CD3D8Driver::getViewPort() const
 }
 
 
-
 //! draws a vertex primitive list
-void CD3D8Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-		const void* indexList, u32 primitiveCount,
-		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+void CD3D8Driver::drawVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType)
 {
 	if (!checkPrimitiveCount(primitiveCount))
 		return;
 
-	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType);
+	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType,iType);
 
 	if (!vertexCount || !primitiveCount)
 		return;
@@ -868,12 +896,12 @@ void CD3D8Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 }
 
 
-
 //! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
-void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& pos,
-				const core::rect<s32>& sourceRect,
-				const core::rect<s32>* clipRect, SColor color,
-				bool useAlphaChannelOfTexture)
+void CD3D8Driver::draw2DImage(const video::ITexture* texture,
+		const core::position2d<s32>& pos,
+		const core::rect<s32>& sourceRect,
+		const core::rect<s32>* clipRect, SColor color,
+		bool useAlphaChannelOfTexture)
 {
 	if (!texture)
 		return;
@@ -1009,10 +1037,12 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::positi
 }
 
 
-
-void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
-			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
-			const video::SColor* const colors, bool useAlphaChannelOfTexture)
+void CD3D8Driver::draw2DImage(const video::ITexture* texture,
+		const core::rect<s32>& destRect,
+		const core::rect<s32>& sourceRect,
+		const core::rect<s32>* clipRect,
+		const video::SColor* const colors,
+		bool useAlphaChannelOfTexture)
 {
 	if(!texture)
 		return;
@@ -1094,11 +1124,10 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture, const core::rect<s
 }
 
 
-
 //!Draws an 2d rectangle with a gradient.
 void CD3D8Driver::draw2DRectangle(const core::rect<s32>& position,
-	SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
-	const core::rect<s32>* clip)
+		SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown,
+		SColor colorRightDown, const core::rect<s32>* clip)
 {
 	core::rect<s32> pos(position);
 
@@ -1180,6 +1209,29 @@ void CD3D8Driver::draw2DLine(const core::position2d<s32>& start,
 	setVertexShader(EVT_STANDARD);
 
 	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, &vtx[0], sizeof(S3DVertex));
+}
+
+//! Draws a pixel
+void CD3D8Driver::drawPixel(u32 x, u32 y, const SColor & color)
+{
+	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	if(x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
+		return;
+
+	setRenderStates2DMode(color.getAlpha() < 255, false, false);
+	setTexture(0,0);
+
+	setVertexShader(EVT_STANDARD);
+
+	const s32 xPlus = -renderTargetSize.Width / 2;
+	const f32 xFact = 2.0f / renderTargetSize.Width;
+	const s32 yPlus = renderTargetSize.Height / 2;
+	const f32 yFact = 2.0f / renderTargetSize.Height;
+	S3DVertex vertex((f32)((s32)x + xPlus) * xFact,
+					(f32)(yPlus - (s32)y) * yFact,
+					0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
+
+	pID3DDevice->DrawPrimitiveUP(D3DPT_POINTLIST, 1, &vertex, sizeof(vertex));
 }
 
 
@@ -1344,9 +1396,9 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 
 
 	// zwrite
-	if (resetAllRenderstates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
+//	if (resetAllRenderstates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable)
+		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
 			pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, TRUE);
 		else
 			pID3DDevice->SetRenderState( D3DRS_ZWRITEENABLE, FALSE);
@@ -1357,9 +1409,9 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 
 	if (resetAllRenderstates || (lastmaterial.FrontfaceCulling != material.FrontfaceCulling) || (lastmaterial.BackfaceCulling != material.BackfaceCulling))
 	{
-		if (material.FrontfaceCulling && material.BackfaceCulling)
-			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW|D3DCULL_CCW);
-		else
+//		if (material.FrontfaceCulling && material.BackfaceCulling)
+//			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW|D3DCULL_CCW);
+//		else
 		if (material.FrontfaceCulling)
 			pID3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 		else
@@ -1542,10 +1594,9 @@ void CD3D8Driver::setRenderStatesStencilFillMode(bool alpha)
 {
 	if (CurrentRenderMode != ERM_STENCIL_FILL || Transformation3DChanged)
 	{
-		core::matrix4 mat;
-		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)mat.pointer()));
-		pID3DDevice->SetTransform(D3DTS_WORLD, (D3DMATRIX*)((void*)mat.pointer()));
-		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)mat.pointer()));
+		pID3DDevice->SetTransform(D3DTS_VIEW, &UnitMatrixD3D8);
+		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D8);
+		pID3DDevice->SetTransform(D3DTS_PROJECTION, &UnitMatrixD3D8);
 
 		pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 		pID3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
@@ -1604,10 +1655,9 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
-		core::matrix4 mat;
-		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)mat.pointer()));
-		pID3DDevice->SetTransform(D3DTS_WORLD, (D3DMATRIX*)((void*)mat.pointer()));
-		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)mat.pointer()));
+		pID3DDevice->SetTransform(D3DTS_VIEW, &UnitMatrixD3D8);
+		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D8);
+		pID3DDevice->SetTransform(D3DTS_PROJECTION, &UnitMatrixD3D8);
 
 		pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
 		//pID3DDevice->SetRenderState(D3DRS_SHADEMODE, D3DSHADE_FLAT);
@@ -2082,12 +2132,28 @@ IImage* CD3D8Driver::createScreenShot()
 	IImage* newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
 
 	// d3d pads the image, so we need to copy the correct number of bytes
-	u32* pPixels = (u32*)newImage->lock();
-	if (pPixels)
-	{
-		u8 * sP = (u8 *)lockedRect.pBits;
-		u32* dP = (u32*)pPixels;
+	u32* dP = (u32*)newImage->lock();
+	u8 * sP = (u8 *)lockedRect.pBits;
 
+	// If the display mode format doesn't promise anything about the Alpha value
+	// and it appears that it's not presenting 255, then we should manually 
+	// set each pixel alpha value to 255.
+	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
+	{
+		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		{
+			for(s32 x = 0; x < ScreenSize.Width; ++x)
+			{
+				*dP = *((u32*)sP) | 0xFF000000;
+				dP++;
+				sP += 4;
+			}
+
+			sP += lockedRect.Pitch - (4 * ScreenSize.Width);
+		}
+	}
+	else
+	{
 		for (s32 y = 0; y < ScreenSize.Height; ++y)
 		{
 			memcpy(dP, sP, ScreenSize.Width * 4);
@@ -2095,9 +2161,9 @@ IImage* CD3D8Driver::createScreenShot()
 			sP += lockedRect.Pitch;
 			dP += ScreenSize.Width;
 		}
-
-		newImage->unlock();
 	}
+
+	newImage->unlock();
 
 	// we can unlock and release the surface
 	lpSurface->UnlockRect();

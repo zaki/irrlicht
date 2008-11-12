@@ -30,8 +30,8 @@ namespace video
 {
 
 //! rendertarget constructor
-CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, core::dimension2d<s32> size, const char* name)
-: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
+CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<s32>& size, const char* name)
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 	TextureSize(size), ImageSize(size), Pitch(0),
 	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true)
 {
@@ -50,7 +50,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, core::dimension2d<s32> size, con
 //! constructor
 CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 					   u32 flags, const char* name)
-: ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
+: ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 TextureSize(0,0), ImageSize(0,0), Pitch(0),
 HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
 {
@@ -101,6 +101,13 @@ CD3D9Texture::~CD3D9Texture()
 	if (RTTSurface)
 		RTTSurface->Release();
 
+	// if this texture was the last one using the depth buffer
+	// we can release the surface. We only use the value of the pointer
+	// hence it is safe to use the dropped pointer...
+	if (DepthSurface)
+		if (DepthSurface->drop())
+			Driver->removeDepthSurface(DepthSurface);
+
 	if (Device)
 		Device->Release();
 }
@@ -108,8 +115,14 @@ CD3D9Texture::~CD3D9Texture()
 
 void CD3D9Texture::createRenderTarget()
 {
-	TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
-	TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
+	// are texture size restrictions there ?
+	if(!Driver->queryFeature(EVDF_TEXTURE_NPOT))
+	{
+		TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
+		TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
+		if (TextureSize != ImageSize)
+			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
+	}
 
 	// get backbuffer format to create the render target in the
 	// same format
@@ -130,7 +143,7 @@ void CD3D9Texture::createRenderTarget()
 	}
 	else
 	{
-		os::Printer::log("Could not create RenderTarget texture: could not get BackBuffer.",
+		os::Printer::log("Could not create RenderTarget texture", "could not get BackBuffer.",
 			ELL_WARNING);
 		return;
 	}
@@ -152,7 +165,18 @@ void CD3D9Texture::createRenderTarget()
 	ColorFormat = getColorFormatFromD3DFormat(d3DFormat);
 
 	if (FAILED(hr))
-		os::Printer::log("Could not create render target texture");
+	{
+		if (D3DERR_INVALIDCALL == hr)
+			os::Printer::log("Could not create render target texture", "Invalid Call");
+		else
+		if (D3DERR_OUTOFVIDEOMEMORY == hr)
+			os::Printer::log("Could not create render target texture", "Out of Video Memory");
+		else
+		if (E_OUTOFMEMORY == hr)
+			os::Printer::log("Could not create render target texture", "Out of Memory");
+		else
+			os::Printer::log("Could not create render target texture");
+	}
 }
 
 
@@ -546,7 +570,7 @@ u32 CD3D9Texture::getPitch() const
 
 
 //! returns the DIRECT3D9 Texture
-IDirect3DTexture9* CD3D9Texture::getDX9Texture() const
+IDirect3DBaseTexture9* CD3D9Texture::getDX9Texture() const
 {
 	return Texture;
 }

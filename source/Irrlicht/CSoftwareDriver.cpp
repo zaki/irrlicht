@@ -19,8 +19,8 @@ namespace video
 
 //! constructor
 CSoftwareDriver::CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
-: CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter),
-	RenderTargetTexture(0), RenderTargetSurface(0),
+: CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter), WindowId(0),
+	SceneSourceRect(0), RenderTargetTexture(0), RenderTargetSurface(0),
 	CurrentTriangleRenderer(0), ZBuffer(0), Texture(0)
 {
 	#ifdef _DEBUG
@@ -154,26 +154,14 @@ void CSoftwareDriver::selectRightTriangleRenderer()
 }
 
 
-
-
-//! presents the rendered scene on the screen, returns false if failed
-bool CSoftwareDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
-{
-	CNullDriver::endScene();
-
-	Presenter->present(BackBuffer, windowId, sourceRect );
-	return true;
-}
-
-
-
 //! queries the features of the driver, returns true if feature is available
 bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
 	switch (feature)
 	{
 	case EVDF_RENDER_TO_TARGET:
-		return true;
+	case EVDF_TEXTURE_NSQUARE:
+		return FeatureEnabled[feature];
 	default:
 		return false;
 	};
@@ -228,17 +216,29 @@ void CSoftwareDriver::setMaterial(const SMaterial& material)
 
 
 //! clears the zbuffer
-bool CSoftwareDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CSoftwareDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color);
+	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+	WindowId=windowId;
+	SceneSourceRect = sourceRect;
 
 	if (backBuffer && BackBuffer)
-		BackBuffer->fill( color );
+		BackBuffer->fill(color);
 
 	if (ZBuffer && zBuffer)
 		ZBuffer->clear();
 
 	return true;
+}
+
+
+//! presents the rendered scene on the screen, returns false if failed
+bool CSoftwareDriver::endScene()
+{
+	CNullDriver::endScene();
+
+	return Presenter->present(BackBuffer, WindowId, SceneSourceRect);
 }
 
 
@@ -812,7 +812,12 @@ void CSoftwareDriver::draw2DLine(const core::position2d<s32>& start,
 	((CImage*)RenderTargetSurface)->drawLine(start, end, color );
 }
 
-
+//! Draws a pixel
+void CSoftwareDriver::drawPixel(u32 x, u32 y, const SColor & color)
+{
+	((CImage*)BackBuffer)->setPixel(x, y, color);
+}
+  
 
 //! draw a 2d rectangle
 void CSoftwareDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
@@ -880,12 +885,17 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 	return TransformationMatrix[state];
 }
 
+
 //! Creates a render target texture.
-ITexture* CSoftwareDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
+	if (!name)
+		name="rt";
 	ITexture* tex = new CSoftwareTexture(img, name, true);
 	img->drop();
+	addTexture(tex);
+	tex->drop();
 	return tex;
 }
 

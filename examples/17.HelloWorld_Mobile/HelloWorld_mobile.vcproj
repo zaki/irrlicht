@@ -92,9 +92,9 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio"
 				RegisterOutput="0"
-				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince|0"
+				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio|0"
 			/>
 			<DebuggerTool
 			/>
@@ -177,9 +177,9 @@
 			/>
 			<DeploymentTool
 				ForceDirty="-1"
-				RemoteDirectory="%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince"
+				RemoteDirectory="%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio"
 				RegisterOutput="0"
-				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince|0"
+				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio|0"
 			/>
 			<DebuggerTool
 			/>

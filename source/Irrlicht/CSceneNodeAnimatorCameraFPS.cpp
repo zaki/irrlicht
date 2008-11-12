@@ -20,7 +20,8 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 		SKeyMap* keyMapArray, u32 keyMapSize, bool noVerticalMovement)
 : CursorControl(cursorControl), MaxVerticalAngle(88.0f),
 	MoveSpeed(moveSpeed/1000.0f), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
-	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement)
+	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement),
+	KeyMapArray(keyMapArray), KeyMapSize(keyMapSize)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNodeAnimatorFPS");
@@ -32,7 +33,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	allKeysUp();
 
 	// create key map
-	if (!keyMapArray || !keyMapSize)
+	if (!KeyMapArray || !KeyMapSize)
 	{
 		// create default key map
 		KeyMap.push_back(SCamKeyMap(0, irr::KEY_UP));
@@ -44,7 +45,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	else
 	{
 		// create custom key map
-		setKeyMap(keyMapArray, keyMapSize);
+		setKeyMap(KeyMapArray, KeyMapSize);
 	}
 }
 
@@ -282,6 +283,13 @@ void CSceneNodeAnimatorCameraFPS::setVerticalMovement(bool allow)
 	NoVerticalMovement = !allow;
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorCameraFPS::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	CSceneNodeAnimatorCameraFPS * newAnimator = 
+		new CSceneNodeAnimatorCameraFPS(CursorControl,	RotateSpeed, (MoveSpeed * 1000.0f), JumpSpeed,
+											KeyMapArray, KeyMapSize, NoVerticalMovement);
+	return newAnimator;
+}
 
 } // namespace scene
 } // namespace irr

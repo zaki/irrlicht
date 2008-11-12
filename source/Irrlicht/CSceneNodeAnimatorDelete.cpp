@@ -40,6 +40,13 @@ void CSceneNodeAnimatorDelete::animateNode(ISceneNode* node, u32 timeMs)
 	}
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorDelete::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	CSceneNodeAnimatorDelete * newAnimator = 
+		new CSceneNodeAnimatorDelete(SceneManager, DeleteTime);
+
+	return newAnimator;
+}
 
 } // end namespace scene
 } // end namespace irr

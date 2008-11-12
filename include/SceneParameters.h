@@ -16,6 +16,19 @@ namespace irr
 {
 namespace scene
 {
+	//! Name of the parameter for changing how Irrlicht handles the ZWrite flag for transparent (blending) materials
+	/** The default behavior in Irrlicht is to disable writing to the
+	z-buffer for all really transparent, i.e. blending materials. This
+	avoids problems with intersecting faces, but can also break renderings.
+	If transparent materials should use the SMaterial flag for ZWriteEnable
+	just as other material types use this attribute.
+	Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
+	\endcode
+	**/
+	const c8* const ALLOW_ZWRITE_ON_TRANSPARENT = "Allow_ZWrite_On_Transparent";
+
 	//! Name of the parameter for changing the texture path of the built-in csm loader.
 	/** Use it like this:
 	\code

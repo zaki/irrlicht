@@ -18,14 +18,13 @@
 #include <winuser.h>
 #include "irrlicht.h"
 
-
 namespace irr
 {
 	namespace video
 	{
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 		IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool stencilbuffer, io::IFileSystem* io,
+			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
 			bool pureSoftware, bool highPrecisionFPU, bool vsync, bool antiAlias);
 		#endif
 
@@ -36,13 +35,10 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool stencilBuffer, io::IFileSystem* io,
-			bool vsync, bool antiAlias);
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io);
 		#endif
 	}
 } // end namespace irr
-
 
 
 struct SEnvMapper
@@ -62,6 +58,7 @@ SEnvMapper* getEnvMapperFromHWnd(HWND hWnd)
 
 	return 0;
 }
+
 
 irr::CIrrDeviceWin32* getDeviceFromHWnd(HWND hWnd)
 {
@@ -85,9 +82,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	irr::CIrrDeviceWin32* dev = 0;
 	irr::SEvent event;
-	SEnvMapper* envm = 0;
-
-	BYTE allKeys[256];
 
 	static irr::s32 ClickCount=0;
 	if (GetCapture() != hWnd && ClickCount > 0)
@@ -107,12 +101,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_SETCURSOR:
-		envm = getEnvMapperFromHWnd(hWnd);
+	{
+		SEnvMapper* envm = getEnvMapperFromHWnd(hWnd);
 		if (envm && !envm->irrDev->getWin32CursorControl()->isVisible())
 		{
 			SetCursor(NULL);
 			return 0;
 		}
+	}
 		break;
 
 	case WM_MOUSEWHEEL:
@@ -230,6 +226,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 		{
+			BYTE allKeys[256];
+
 			event.EventType = irr::EET_KEY_INPUT_EVENT;
 			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
 			event.KeyInput.PressedDown = (message==WM_KEYDOWN);
@@ -283,6 +281,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
+
 namespace irr
 {
 
@@ -292,7 +291,6 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	IsNonNTWindows(false), Resized(false),
 	ExternalWindow(false), Win32CursorControl(0)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceWin32");
 	#endif
@@ -362,6 +360,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 		HWnd = CreateWindow( ClassName, "", style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
+		CreationParams.WindowId = HWnd;
 
 		ShowWindow(HWnd, SW_SHOW);
 		UpdateWindow(HWnd);
@@ -369,10 +368,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		// fix ugly ATI driver bugs. Thanks to ariaci
 		MoveWindow(HWnd, windowLeft, windowTop, realWidth, realHeight, TRUE);
 	}
-
-	// attach external window
-	if (CreationParams.WindowId)
+	else if (CreationParams.WindowId)
 	{
+		// attach external window
 		HWnd = static_cast<HWND>(CreationParams.WindowId);
 		RECT r;
 		GetWindowRect(HWnd, &r);
@@ -407,7 +405,6 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 }
 
 
-
 //! destructor
 CIrrDeviceWin32::~CIrrDeviceWin32()
 {
@@ -415,16 +412,17 @@ CIrrDeviceWin32::~CIrrDeviceWin32()
 
 	irr::core::list<SEnvMapper>::Iterator it = EnvMap.begin();
 	for (; it!= EnvMap.end(); ++it)
+	{
 		if ((*it).hWnd == HWnd)
 		{
 			EnvMap.erase(it);
 			break;
 		}
+	}
 
 	if (ChangedToFullScreen)
 		ChangeDisplaySettings(NULL,0);
 }
-
 
 
 //! create the driver
@@ -475,9 +473,7 @@ void CIrrDeviceWin32::createDriver()
 		if (CreationParams.Fullscreen)
 			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
 
-		VideoDriver = video::createOpenGLDriver(CreationParams.WindowSize, HWnd, CreationParams.Bits, 
-			CreationParams.Stencilbuffer, FileSystem,
-			CreationParams.Vsync, CreationParams.AntiAlias);
+		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
 		if (!VideoDriver)
 		{
 			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
@@ -523,7 +519,6 @@ void CIrrDeviceWin32::createDriver()
 }
 
 
-
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceWin32::run()
 {
@@ -548,6 +543,9 @@ bool CIrrDeviceWin32::run()
 
 	if (!quit)
 		resizeIfNecessary();
+
+	if(!quit)
+		pollJoysticks();
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return !quit;
@@ -602,23 +600,26 @@ void CIrrDeviceWin32::resizeIfNecessary()
 }
 
 
-
 //! sets the caption of the window
 void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 {
+	DWORD dwResult;
 	if (IsNonNTWindows)
 	{
-		core::stringc s = text;
-		SetWindowTextA(HWnd, s.c_str());
+		const core::stringc s = text;
+		SendMessageTimeout(HWnd, WM_SETTEXT, 0,
+				reinterpret_cast<LPARAM>(s.c_str()),
+				SMTO_ABORTIFHUNG, 2000, &dwResult);
 	}
 	else
-		SetWindowTextW(HWnd, text);
+		SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,
+				reinterpret_cast<LPARAM>(text),
+				SMTO_ABORTIFHUNG, 2000, &dwResult);
 }
 
 
-
 //! presents a surface in the client area
-void CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s32>* src)
+bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s32>* src)
 {
 	HWND hwnd = HWnd;
 	if ( windowId )
@@ -663,8 +664,8 @@ void CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 
 		ReleaseDC(hwnd, dc);
 	}
+	return true;
 }
-
 
 
 //! notifies the device that it should close itself
@@ -932,14 +933,14 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 	if (ExternalWindow || !getVideoDriver() || CreationParams.Fullscreen)
 		return;
 
-	LONG style = WS_POPUP;
+	LONG_PTR style = WS_POPUP;
 
 	if (!resize)
 		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	else
-		style = WS_THICKFRAME | WS_SYSMENU | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_MAXIMIZEBOX;
+		style = WS_THICKFRAME | WS_SYSMENU | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
 
-	if (!SetWindowLong(HWnd, GWL_STYLE, style))
+	if (!SetWindowLongPtr(HWnd, GWL_STYLE, style))
 		os::Printer::log("Could not change window style.");
 
 	RECT clientSize;
@@ -960,6 +961,125 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 		SWP_FRAMECHANGED | SWP_NOMOVE | SWP_SHOWWINDOW);
 }
 
+
+bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
+{
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	joystickInfo.clear();
+	ActiveJoysticks.clear();
+
+	const u32 numberOfJoysticks = ::joyGetNumDevs();
+	JOYINFOEX info;
+	info.dwSize = sizeof(info);
+	info.dwFlags = JOY_RETURNALL;
+
+	JoystickInfo activeJoystick;
+	SJoystickInfo returnInfo;
+
+	joystickInfo.reallocate(numberOfJoysticks);
+	ActiveJoysticks.reallocate(numberOfJoysticks);
+
+	u32 joystick = 0;
+	for(; joystick < numberOfJoysticks; ++joystick)
+	{
+		if(JOYERR_NOERROR == joyGetPosEx(joystick, &info)
+			&&
+			JOYERR_NOERROR == joyGetDevCaps(joystick, 
+											&activeJoystick.Caps,
+											sizeof(activeJoystick.Caps)))
+		{
+			activeJoystick.Index = joystick;
+			ActiveJoysticks.push_back(activeJoystick);
+
+			returnInfo.Joystick = joystick;
+			returnInfo.Axes = activeJoystick.Caps.wNumAxes;
+			returnInfo.Buttons = activeJoystick.Caps.wNumButtons;
+			returnInfo.Name = activeJoystick.Caps.szPname;
+			returnInfo.PovHat = ((activeJoystick.Caps.wCaps & JOYCAPS_HASPOV) == JOYCAPS_HASPOV)
+								? SJoystickInfo::POV_HAT_PRESENT : SJoystickInfo::POV_HAT_ABSENT;
+
+			joystickInfo.push_back(returnInfo);
+		}
+	}
+
+	for(joystick = 0; joystick < joystickInfo.size(); ++joystick)
+	{
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+			joystick, joystickInfo[joystick].Axes, 
+			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
+		os::Printer::log(logString, ELL_INFORMATION);
+	}
+
+	return true;
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+	return false;
+}
+
+void CIrrDeviceWin32::pollJoysticks()
+{
+#if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	if(0 == ActiveJoysticks.size())
+		return;
+
+	u32 joystick;
+	JOYINFOEX info;
+	info.dwSize = sizeof(info);
+	info.dwFlags = JOY_RETURNALL;
+
+	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	{
+		if(JOYERR_NOERROR == joyGetPosEx(ActiveJoysticks[joystick].Index, &info))
+		{
+			SEvent event;
+			const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
+
+			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
+			event.JoystickEvent.Joystick = joystick;
+
+			event.JoystickEvent.POV = (u16)info.dwPOV;
+			if(event.JoystickEvent.POV > 35900)
+				event.JoystickEvent.POV = 65535;
+
+			for(int axis = 0; axis < SEvent::SJoystickEvent::NUMBER_OF_AXES; ++axis)
+				event.JoystickEvent.Axis[axis] = 0;
+
+			switch(caps.wNumAxes)
+			{
+			default:
+			case 6:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V] = 
+					(s16)((65535 * (info.dwVpos - caps.wVmin)) / (caps.wVmax - caps.wVmin) - 32768);
+
+			case 5:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U] = 
+					(s16)((65535 * (info.dwUpos - caps.wUmin)) / (caps.wUmax - caps.wUmin) - 32768);
+
+			case 4:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_R] =
+					(s16)((65535 * (info.dwRpos - caps.wRmin)) / (caps.wRmax - caps.wRmin) - 32768);
+
+			case 3:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z] = 
+					(s16)((65535 * (info.dwZpos - caps.wZmin)) / (caps.wZmax - caps.wZmin) - 32768);
+			
+			case 2:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y] =
+					(s16)((65535 * (info.dwYpos - caps.wYmin)) / (caps.wYmax - caps.wYmin) - 32768);
+
+			case 1:
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X] = 
+					(s16)((65535 * (info.dwXpos - caps.wXmin)) / (caps.wXmax - caps.wXmin) - 32768);
+			}
+			
+			event.JoystickEvent.ButtonStates = info.dwButtons;
+
+			(void)postEventFromUser(event);
+		}
+	}
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+} 
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 	const SIrrlichtCreationParameters& parameters)

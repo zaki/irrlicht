@@ -15,6 +15,9 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include <mmsystem.h> // For JOYCAPS
+
+
 namespace irr
 {
 	class CIrrDeviceWin32 : public CIrrDeviceStub, video::IImagePresenter
@@ -50,7 +53,7 @@ namespace irr
 		virtual bool isWindowMinimized() const;
 
 		//! presents a surface in the client area
-		virtual void present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0);
+		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0);
 
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
@@ -64,6 +67,9 @@ namespace irr
 
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize=false);
+
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -227,7 +233,6 @@ namespace irr
 			core::rect<s32> ReferenceRect;
 		};
 
-
 		//! returns the win32 cursor control
 		CCursorControl* getWin32CursorControl();
 
@@ -243,6 +248,8 @@ namespace irr
 
 		void resizeIfNecessary();
 
+		void pollJoysticks(); 
+
 		HWND HWnd;
 
 		bool ChangedToFullScreen;
@@ -250,8 +257,14 @@ namespace irr
 		bool Resized;
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
-	};
 
+		struct JoystickInfo
+		{
+			u32		Index;
+			JOYCAPS Caps;
+		};
+		core::array<JoystickInfo> ActiveJoysticks;
+	};
 
 } // end namespace irr
 

@@ -1,5 +1,5 @@
-// This is a Demo of the Irrlicht Engine (c) 2005 by N.Gebhardt.
-// This file is not documentated.
+// This is a Demo of the Irrlicht Engine (c) 2005-2008 by N.Gebhardt.
+// This file is not documented.
 
 #include <irrlicht.h>
 #ifdef _IRR_WINDOWS_
@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 	bool shadows = false;
 	bool additive = false;
 	bool vsync = false;
+	bool aa = false;
 
 #ifndef _IRR_WINDOWS_
 	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
@@ -36,10 +37,10 @@ int main(int argc, char* argv[])
 	CMainMenu menu;
 
 //#ifndef _DEBUG
-	if (menu.run(fullscreen, music, shadows, additive, vsync, driverType))
+	if (menu.run(fullscreen, music, shadows, additive, vsync, aa, driverType))
 //#endif
 	{
-		CDemo demo(fullscreen, music, shadows, additive, vsync, driverType);
+		CDemo demo(fullscreen, music, shadows, additive, vsync, aa, driverType);
 		demo.run();
 	}
 

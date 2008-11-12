@@ -74,6 +74,7 @@ public:
 	IDirect3DSurface8* getRenderTargetSurface();
 
 private:
+	friend class CD3D8Driver;
 
 	void createRenderTarget();
 

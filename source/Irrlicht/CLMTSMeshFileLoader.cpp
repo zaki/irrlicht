@@ -90,8 +90,8 @@ namespace irr
 namespace scene
 {
 
-CLMTSMeshFileLoader::CLMTSMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver,
-										 io::IAttributes* parameters)
+CLMTSMeshFileLoader::CLMTSMeshFileLoader(io::IFileSystem* fs,
+		video::IVideoDriver* driver, io::IAttributes* parameters)
 	: Textures(0), Subsets(0), Triangles(0),
 	Parameters(parameters), Driver(driver), FileSystem(fs)
 {
@@ -115,6 +115,7 @@ CLMTSMeshFileLoader::~CLMTSMeshFileLoader()
 	if (FileSystem)
 		FileSystem->drop();
 }
+
 
 void CLMTSMeshFileLoader::cleanup()
 {
@@ -142,6 +143,12 @@ IAnimatedMesh* CLMTSMeshFileLoader::createMesh(io::IReadFile* file)
 		os::Printer::log("LMTS ERROR: wrong header magic id!", ELL_ERROR);
 		return 0;
 	}
+
+	//Skip any User Data (additional chunk of data called MATI)
+
+	const s32 UserSize = Header.HeaderSize - sizeof(SLMTSHeader);
+	if (UserSize>0)
+		file->seek(UserSize,true);
 
 	// TEXTURES
 
@@ -223,7 +230,8 @@ void CLMTSMeshFileLoader::constructMesh(SMesh* mesh)
 	{
 		scene::SMeshBufferLightMap* meshBuffer = new scene::SMeshBufferLightMap();
 
-		meshBuffer->Material.MaterialType = video::EMT_LIGHTMAP; // EMT_LIGHTMAP_M2/EMT_LIGHTMAP_M4 also possible
+		// EMT_LIGHTMAP_M2/EMT_LIGHTMAP_M4 also possible
+		meshBuffer->Material.MaterialType = video::EMT_LIGHTMAP;
 		meshBuffer->Material.Wireframe = false;
 		meshBuffer->Material.Lighting = false;
 
@@ -272,8 +280,6 @@ void CLMTSMeshFileLoader::loadTextures(SMesh* mesh, u32 numTextures, u32 numLigh
 	if (!Driver || !FileSystem)
 		return;
 
-	core::stringc s;
-
 	// load textures
 
 	core::array<video::ITexture*> tex;
@@ -286,6 +292,7 @@ void CLMTSMeshFileLoader::loadTextures(SMesh* mesh, u32 numTextures, u32 numLigh
 	s32 lm_count = 0;
 	const core::stringc Path = Parameters->getAttributeAsString(LMTS_TEXTURE_PATH);
 
+	core::stringc s;
 	for (s32 t=0; t<Header.TextureCount; ++t)
 	{
 		video::ITexture* tmptex = 0;
@@ -295,11 +302,7 @@ void CLMTSMeshFileLoader::loadTextures(SMesh* mesh, u32 numTextures, u32 numLigh
 		if (FileSystem->existFile(s.c_str()))
 			tmptex = Driver->getTexture(s.c_str());
 		else
-		{
-			char buf[512]; // filenames may be 256 bytes long
-			sprintf(buf, "LMTS WARNING: Texture does not exist: %s", s.c_str());
-			os::Printer::log(buf, ELL_WARNING);
-		}
+			os::Printer::log("LMTS WARNING: Texture does not exist", s.c_str(), ELL_WARNING);
 
 		if (Textures[t].Flags & 1)
 			lig[lm_count++] = tmptex;

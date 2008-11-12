@@ -1,4 +1,5 @@
-/*
+/** Example 016 Quake3 Map Shader Support
+
 This Tutorial shows how to load a Quake 3 map into the
 engine, create a SceneNode for optimizing the speed of
 rendering and how to create a user controlled camera.
@@ -38,9 +39,9 @@ to ask the user for a driver type using the console.
 
 /*
 As already written in the HelloWorld example, in the Irrlicht
-Engine, everything can be found in the namespace 'irr'. 
+Engine, everything can be found in the namespace 'irr'.
 To get rid of the irr:: in front of the name of every class,
-we tell the compiler that we use that namespace from now on, 
+we tell the compiler that we use that namespace from now on,
 and we will not have to write that 'irr::'.
 There are 5 other sub namespaces 'core', 'scene', 'video',
 'io' and 'gui'. Unlike in the HelloWorld example,
@@ -53,7 +54,7 @@ using namespace irr;
 using namespace scene;
 
 /*
-Again, to be able to use the Irrlicht.DLL file, we need to link with the 
+Again, to be able to use the Irrlicht.DLL file, we need to link with the
 Irrlicht.lib. We could set this option in the project settings, but
 to make it easy, we use a pragma comment lib:
 */
@@ -109,14 +110,14 @@ private:
 
 
 /*
-Ok, lets start. 
+Ok, lets start.
 */
 
 int IRRCALLCONV main(int argc, char* argv[])
 {
 	/*
 	Like in the HelloWorld example, we create an IrrlichtDevice with
-	createDevice(). The difference now is that we ask the user to select 
+	createDevice(). The difference now is that we ask the user to select
 	which hardware accelerated driver to use. The Software device would be
 	too slow to draw a huge Quake 3 map, but just for the fun of it, we make
 	this decision possible too.
@@ -188,7 +189,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 
 
 
-	/* 
+	/*
 	Now we can load the mesh by calling getMesh(). We get a pointer returned
 	to a IAnimatedMesh. As you know, Quake 3 maps are not really animated,
 	they are only a huge chunk of static geometry with some materials
@@ -196,15 +197,16 @@ int IRRCALLCONV main(int argc, char* argv[])
 	so we get the "first frame" of the "animation", which is our quake level
 	and create an OctTree scene node with it, using addOctTreeSceneNode().
 	The OctTree optimizes the scene a little bit, trying to draw only geometry
-	which is currently visible. An alternative to the OctTree would be a 
-	AnimatedMeshSceneNode, which would draw always the complete geometry of 
+	which is currently visible. An alternative to the OctTree would be a
+	AnimatedMeshSceneNode, which would draw always the complete geometry of
 	the mesh, without optimization. Try it out: Write addAnimatedMeshSceneNode
 	instead of addOctTreeSceneNode and compare the primitives drawed by the
-	video driver. (There is a getPrimitiveCountDrawed() method in the 
+	video driver. (There is a getPrimitiveCountDrawed() method in the
 	IVideoDriver class). Note that this optimization with the Octree is only
 	useful when drawing huge meshes consisting of lots of geometry.
 	*/
-	scene::IQ3LevelMesh* mesh = (scene::IQ3LevelMesh*) smgr->getMesh(mapname);
+	scene::IQ3LevelMesh* mesh =
+		(scene::IQ3LevelMesh*) smgr->getMesh(mapname);
 
 	/*
 		add the geometry mesh to the Scene ( polygon & patches )
@@ -251,8 +253,10 @@ int IRRCALLCONV main(int argc, char* argv[])
 				continue;
 			}
 
-			// we can dump the shader to the console in it's original but already parsed layout
-			// in a pretty printers way.. commented out, because the console would be full...
+			// we can dump the shader to the console in it's
+			// original but already parsed layout in a pretty
+			// printers way.. commented out, because the console
+			// would be full...
 			// quake3::dumpShader ( Shader );
 
 #ifndef SHOW_SHADER_NAME
@@ -291,21 +295,22 @@ int IRRCALLCONV main(int argc, char* argv[])
 	}
 
 	/*
-		Now we only need a Camera to look at the Quake 3 map.
-		And we want to create a user controlled camera. There are some
-		different cameras available in the Irrlicht engine. For example the 
-		Maya Camera which can be controlled compareable to the camera in Maya:
-		Rotate with left mouse button pressed, Zoom with both buttons pressed,
-		translate with right mouse button pressed. This could be created with
-		addCameraSceneNodeMaya(). But for this example, we want to create a 
-		camera which behaves like the ones in first person shooter games (FPS).
+	Now we only need a Camera to look at the Quake 3 map. And we want to
+	create a user controlled camera. There are some different cameras
+	available in the Irrlicht engine. For example the Maya Camera which can
+	be controlled compareable to the camera in Maya: Rotate with left mouse
+	button pressed, Zoom with both buttons pressed, translate with right
+	mouse button pressed. This could be created with
+	addCameraSceneNodeMaya(). But for this example, we want to create a
+	camera which behaves like the ones in first person shooter games (FPS).
 	*/
 
 	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS();
 
 	/*
 		so we need a good starting Position in the level.
-		we can ask the Quake3 Loader for all entities with class_name "info_player_deathmatch"
+		we can ask the Quake3 Loader for all entities with class_name
+		"info_player_deathmatch"
 		we choose a random launch
 		
 	*/
@@ -326,7 +331,8 @@ int IRRCALLCONV main(int argc, char* argv[])
 				group = entityList[ index ].getGroup(1);
 
 				u32 parsepos = 0;
-				core::vector3df pos = quake3::getAsVector3df ( group->get ( "origin" ), parsepos );
+				core::vector3df pos =
+					quake3::getAsVector3df ( group->get ( "origin" ), parsepos );
 
 				parsepos = 0;
 				f32 angle = quake3::getAsFloat ( group->get ( "angle"), parsepos );
@@ -357,7 +363,8 @@ int IRRCALLCONV main(int argc, char* argv[])
 	device->getCursorControl()->setVisible(false);
 
 	// load the engine logo
-	gui->addImage(driver->getTexture("irrlichtlogo2.png"),core::position2d<s32>(10, 10));
+	gui->addImage(driver->getTexture("irrlichtlogo2.png"),
+			core::position2d<s32>(10, 10));
 
 	// show the driver logo
 	core::position2di pos ( videoDim.Width - 128, videoDim.Height - 64 );
@@ -365,22 +372,22 @@ int IRRCALLCONV main(int argc, char* argv[])
 	switch ( driverType )
 	{
 		case video::EDT_BURNINGSVIDEO:
-			gui->addImage(driver->getTexture("burninglogo.png"),pos );
+			gui->addImage(driver->getTexture("burninglogo.png"),pos);
 			break;
 		case video::EDT_OPENGL:
-			gui->addImage(driver->getTexture("opengllogo.png"),pos );
+			gui->addImage(driver->getTexture("opengllogo.png"),pos);
 			break;
 		case video::EDT_DIRECT3D8:
 		case video::EDT_DIRECT3D9:
-			gui->addImage(driver->getTexture("directxlogo.png"),pos );
+			gui->addImage(driver->getTexture("directxlogo.png"),pos);
 			break;
 	}
 
 	/*
 	We have done everything, so lets draw it. We also write the current
 	frames per second and the drawn primitives to the caption of the
-	window. The 'if (device->isWindowActive())' line is optional, but 
-	prevents the engine render to set the position of the mouse cursor 
+	window. The 'if (device->isWindowActive())' line is optional, but
+	prevents the engine render to set the position of the mouse cursor
 	after task switching when other program are active.
 	*/
 	int lastFPS = -1;
@@ -425,4 +432,5 @@ int IRRCALLCONV main(int argc, char* argv[])
 	return 0;
 }
 
-
+/*
+**/

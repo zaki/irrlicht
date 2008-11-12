@@ -1,8 +1,9 @@
-/*
+/** Example 015 Loading Scenes from .irr Files
+
 Since version 1.1, Irrlicht is able to save and load
 the full scene graph into an .irr file, an xml based
 format. There is an editor available to edit
-those files, named irrEdit on http://www.ambiera.com/irredit,
+those files, named irrEdit (http://www.ambiera.com/irredit)
 which can also be used as world and particle editor.
 This tutorial shows how to use .irr files.
 
@@ -13,7 +14,9 @@ Lets start: Create an Irrlicht device and setup the window.
 #include <iostream>
 using namespace irr;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 int main()
 {
@@ -38,7 +41,7 @@ int main()
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 1;
-	}	
+	}
 
 	// create device and exit if creation failed
 
@@ -53,30 +56,35 @@ int main()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
-	/* Now load our .irr file.
-	.irr files can store the whole scene graph including animators, materials
-	and particle systems. And there is also the possibility to store arbitrary
-	user data for every scene node in that file. To keep this 
-	example simple, we are simply loading the scene here. See the documentation
-	at ISceneManager::loadScene and ISceneManager::saveScene for more information.
-	So to load and display a complicated huge scene, we only need a single call
-	to loadScene().
+	/*
+	Now load our .irr file.
+	.irr files can store the whole scene graph including animators,
+	materials and particle systems. And there is also the possibility to
+	store arbitrary user data for every scene node in that file. To keep
+	this example simple, we are simply loading the scene here. See the
+	documentation at ISceneManager::loadScene and ISceneManager::saveScene
+	for more information. So to load and display a complicated huge scene,
+	we only need a single call to loadScene().
 	*/
 
 	// load the scene
 	smgr->loadScene("../../media/example.irr");
 
-	// Now we'll create a camera, and give it a collision response animator
-	// that's built from the mesh nodes in the scene we just loaded.
+	/*
+	Now we'll create a camera, and give it a collision response animator
+	that's built from the mesh nodes in the scene we just loaded.
+	*/
 	scene::ICameraSceneNode * camera = smgr->addCameraSceneNodeFPS(0, 50, 100);
 
 	// Create a meta triangle selector to hold several triangle selectors.
 	scene::IMetaTriangleSelector * meta = smgr->createMetaTriangleSelector();
 
-	// Now we will find all the nodes in the scene and create triangle
-	// selectors for all suitable nodes.  Typically, you would want to make a
-	// more informed decision about which nodes to performs collision checks
-	// on; you could capture that information in the node name or Id.
+	/*
+	Now we will find all the nodes in the scene and create triangle
+	selectors for all suitable nodes.  Typically, you would want to make a
+	more informed decision about which nodes to performs collision checks
+	on; you could capture that information in the node name or Id.
+	*/
 	core::array<scene::ISceneNode *> nodes;
 	smgr->getSceneNodesFromType(scene::ESNT_ANY, nodes); // Find all nodes
 
@@ -88,41 +96,44 @@ int main()
 		switch(node->getType())
 		{
 		case scene::ESNT_CUBE:
-		case scene::ESNT_ANIMATED_MESH: // Because the selector won't animate with the mesh,
-		   // and is only being used for camera collision, we'll just use an approximate
-		   // bounding box instead of ((scene::IAnimatedMeshSceneNode*)node)->getMesh(0)
-		   selector = smgr->createTriangleSelectorFromBoundingBox(node);
-		   break;
+		case scene::ESNT_ANIMATED_MESH:
+			// Because the selector won't animate with the mesh,
+			// and is only being used for camera collision, we'll just use an approximate
+			// bounding box instead of ((scene::IAnimatedMeshSceneNode*)node)->getMesh(0)
+			selector = smgr->createTriangleSelectorFromBoundingBox(node);
+		break;
 
 		case scene::ESNT_MESH:
 		case scene::ESNT_SPHERE: // Derived from IMeshSceneNode
-		   selector = smgr->createTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
-		   break;
+			selector = smgr->createTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
+			break;
 
 		case scene::ESNT_TERRAIN:
-		   selector = smgr->createTerrainTriangleSelector((scene::ITerrainSceneNode*)node);
-		   break;
+			selector = smgr->createTerrainTriangleSelector((scene::ITerrainSceneNode*)node);
+			break;
 
 		case scene::ESNT_OCT_TREE:
-		   selector = smgr->createOctTreeTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
-		   break;
+			selector = smgr->createOctTreeTriangleSelector(((scene::IMeshSceneNode*)node)->getMesh(), node);
+			break;
 
 		default:
-		   // Don't create a selector for this node type
-		   break;
+			// Don't create a selector for this node type
+			break;
 		}
 
 		if(selector)
 		{
-		   // Add it to the meta selector, which will take a reference to it
-		   meta->addTriangleSelector(selector);
-		   // And drop my reference to it, so that the meta selector owns it.
-		   selector->drop();
+			// Add it to the meta selector, which will take a reference to it
+			meta->addTriangleSelector(selector);
+			// And drop my reference to it, so that the meta selector owns it.
+			selector->drop();
 		}
 	}
 
-	// Now that the mesh scene nodes have had triangle selectors created and added
-	// to the meta selector, create a collision response animator from that meta selector.
+	/*
+	Now that the mesh scene nodes have had triangle selectors created and added
+	to the meta selector, create a collision response animator from that meta selector.
+	*/
 	scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
 		meta, camera, core::vector3df(5,5,5),
 		core::vector3df(0,0,0));
@@ -138,8 +149,10 @@ int main()
 	scene::ISceneNode * cube = smgr->getSceneNodeFromType(scene::ESNT_CUBE);
 	if(cube)
 		camera->setTarget(cube->getAbsolutePosition());
-	
-	// and draw everything.
+
+	/*
+	That's it. Draw everything and finish as usual.
+	*/
 
 	int lastFPS = -1;
 
@@ -154,19 +167,21 @@ int main()
 
 		if (lastFPS != fps)
 		{
-		  core::stringw str = L"Load Irrlicht File example - Irrlicht Engine [";
-		  str += driver->getName();
-		  str += "] FPS:";
-		  str += fps;
+			core::stringw str = L"Load Irrlicht File example - Irrlicht Engine [";
+			str += driver->getName();
+			str += "] FPS:";
+			str += fps;
 
-		  device->setWindowCaption(str.c_str());
-		  lastFPS = fps;
+			device->setWindowCaption(str.c_str());
+			lastFPS = fps;
 		}
 
 	}
 
 	device->drop();
-	
+
 	return 0;
 }
 
+/*
+**/

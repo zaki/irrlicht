@@ -144,6 +144,9 @@ void CGUIStaticText::draw()
 //! Sets another skin independent font.
 void CGUIStaticText::setOverrideFont(IGUIFont* font)
 {
+	if (OverrideFont == font)
+		return;
+
 	if (OverrideFont)
 		OverrideFont->drop();
 

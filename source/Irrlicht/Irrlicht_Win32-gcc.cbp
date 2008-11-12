@@ -651,6 +651,11 @@
 			<Option compile="0"/>
 			<Option link="0"/>
 		</Unit>
+		<Unit filename="..\..\include\SSkinMeshBuffer.h">
+			<Option compilerVar="CPP"/>
+			<Option compile="0"/>
+			<Option link="0"/>
+		</Unit>
 		<Unit filename="..\..\include\SParticle.h">
 			<Option compilerVar="CPP"/>
 			<Option compile="0"/>
@@ -1807,6 +1812,14 @@
 			<Option compilerVar="CPP"/>
 		</Unit>
 		<Unit filename="CSTLMeshWriter.h">
+			<Option compilerVar="CPP"/>
+			<Option compile="0"/>
+			<Option link="0"/>
+		</Unit>
+		<Unit filename="COBJMeshWriter.cpp">
+			<Option compilerVar="CPP"/>
+		</Unit>
+		<Unit filename="COBJMeshWriter.h">
 			<Option compilerVar="CPP"/>
 			<Option compile="0"/>
 			<Option link="0"/>

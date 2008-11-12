@@ -25,7 +25,10 @@ namespace scene
 		EMWT_COLLADA      = MAKE_IRR_ID('c','o','l','l'),
 
 		//! STL mesh writer for .stl files
-		EMWT_STL          = MAKE_IRR_ID('s','t','l',0)
+		EMWT_STL          = MAKE_IRR_ID('s','t','l',0),
+
+		//! OBJ mesh writer for .obj files
+		EMWT_OBJ          = MAKE_IRR_ID('o','b','j',0)
 	};
 
 

@@ -25,6 +25,7 @@
 #if defined(_IRR_WINDOWS_API_)
 	#include <GL/gl.h>
 	#include "glext.h"
+	#include "wglext.h"
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
 	#pragma comment(lib, "GLu32.lib")
@@ -75,17 +76,7 @@ namespace video
 	{
 	public:
 
-		#ifdef _IRR_WINDOWS_API_
-		//! win32 constructor
-		COpenGLDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			bool stencilBuffer, io::IFileSystem* io, bool antiAlias);
-
-		//! inits the windows specific parts of the open gl driver
-		bool initDriver(const core::dimension2d<s32>& screenSize, HWND window,
-			u32 bits, bool vsync, bool stencilBuffer);
-		#endif
-
-		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
+		#if defined(_IRR_WINDOWS_API_) || defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
 		#endif
 
@@ -94,14 +85,22 @@ namespace video
 				io::IFileSystem* io, CIrrDeviceMacOSX *device);
 		#endif
 
+		#ifdef _IRR_WINDOWS_API_
+		//! inits the windows specific parts of the open gl driver
+		bool initDriver(SIrrlichtCreationParameters params);
+		#endif
+
 		//! destructor
 		virtual ~COpenGLDriver();
 
 		//! clears the zbuffer
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
 
 		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene( void* windowId, core::rect<s32>* sourceRect=0 );
+		virtual bool endScene();
 
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
@@ -142,7 +141,7 @@ namespace video
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		{
-			return COpenGLExtensionHandler::queryFeature(feature);
+			return FeatureEnabled[feature] && COpenGLExtensionHandler::queryFeature(feature);
 		}
 
 		//! Sets a material. All 3d drawing functions draw geometry now
@@ -197,6 +196,9 @@ namespace video
 		virtual void draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
+
+		//! Draws a single pixel
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
 
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
@@ -303,7 +305,8 @@ namespace video
 		//! call.
 		virtual u32 getMaximalPrimitiveCount() const;
 
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name);
 
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color);
@@ -332,7 +335,10 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;};
+		virtual core::stringc getVendorInfo() {return vendorName;}
+
+		ITexture* getDepthTexture(ITexture* texture, bool shared=true);
+		void removeDepthTexture(ITexture* texture);
 
 	private:
 
@@ -383,6 +389,7 @@ namespace video
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		core::array<ITexture*> DepthTextures;
 		s32 LastSetLight;
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;
@@ -413,7 +420,4 @@ namespace video
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
 #endif
-
-
-
 

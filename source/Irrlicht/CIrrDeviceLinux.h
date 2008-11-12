@@ -78,7 +78,7 @@ namespace irr
 		virtual video::ECOLOR_FORMAT getColorFormat() const;
 
 		//! presents a surface in the client area
-		virtual void present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0 );
+		virtual bool present(video::IImage* surface, void* windowId=0, core::rect<s32>* src=0 );
 
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
@@ -90,6 +90,9 @@ namespace irr
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize=false);
 
+		//! Activate any joysticks, and generate events for them.
+		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+
 	private:
 
 		//! create the driver
@@ -98,6 +101,8 @@ namespace irr
 		bool createWindow();
 
 		void createKeyMap();
+
+		void pollJoysticks(); 
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -339,6 +344,20 @@ namespace irr
 		};
 
 		core::array<SKeyMap> KeyMap;
+
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+		struct JoystickInfo
+		{
+			int	fd;
+			int	axes;
+			int	buttons;
+
+			SEvent persistentData;
+
+			JoystickInfo() : fd(-1), axes(0), buttons(0) { }
+		};
+		core::array<JoystickInfo> ActiveJoysticks;
+#endif
 	};
 
 

@@ -43,10 +43,10 @@ public:
 	virtual void* lock()
 	{
 		return Data;
-	};
+	}
 
 	//! Unlock function.
-	virtual void unlock() {};
+	virtual void unlock() {}
 
 	//! Returns width and height of image data.
 	virtual const core::dimension2d<s32>& getDimension() const;

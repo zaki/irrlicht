@@ -1059,8 +1059,8 @@ public:
 				c[0] = chars[n];
 				c[1] = L'\0';
 				core::stringw area, under, over;
-				area  = fa.rectangle.LowerRightCorner.X-
-						fa.rectangle.UpperLeftCorner.X;
+				area  = core::stringw(fa.rectangle.LowerRightCorner.X-
+						fa.rectangle.UpperLeftCorner.X);
 				area += L", ";
 				area += fa.rectangle.LowerRightCorner.Y-
 						fa.rectangle.UpperLeftCorner.Y;
@@ -1087,13 +1087,13 @@ public:
 
 				if (fa.underhang != 0)
 				{
-					under = fa.underhang;
+					under = core::stringw(fa.underhang);
 					names.push_back(core::stringw(L"u"));
 					values.push_back(under);
 				}
 				if (fa.overhang != 0)
 				{
-					over = fa.overhang;
+					over = core::stringw(fa.overhang);
 					names.push_back(core::stringw(L"o"));
 					values.push_back(over);
 				}
@@ -1105,7 +1105,7 @@ public:
 			// write vertex data
 			core::stringw data, count;
 			data  = L"";
-			count = triangles.positions.size();
+			count = core::stringw(triangles.positions.size());
 			for (u32 i=0; i<triangles.positions.size(); ++i)
 			{
 				if (i!=0)
@@ -1119,7 +1119,7 @@ public:
 
 			// write index list
 			data  = L"";
-			count = triangles.indexes.size();
+			count = core::stringw(triangles.indexes.size());
 			for (u32 i=0; i<triangles.indexes.size(); i+=3)
 			{
 				if (i!=0)

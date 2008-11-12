@@ -70,7 +70,7 @@ IImageWriter* createImageWriterPPM();
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
-	PrimitivesDrawn(0), TextureCreationFlags(0)
+	PrimitivesDrawn(0), TextureCreationFlags(0), AllowZWriteOnTransparent(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");
@@ -140,6 +140,8 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 
 	// set ExposedData to 0
 	memset(&ExposedData, 0, sizeof(ExposedData));
+	for (u32 i=0; i<video::EVDF_COUNT; ++i)
+		FeatureEnabled[i]=true;
 }
 
 
@@ -202,17 +204,17 @@ void CNullDriver::deleteAllTextures()
 
 
 //! applications must call this method before performing any rendering. returns false if failed.
-bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CNullDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
 {
-	core::clearFPUException ();
+	core::clearFPUException();
 	PrimitivesDrawn = 0;
 	return true;
 }
 
 
-
 //! applications must call this method after performing any rendering. returns false if failed.
-bool CNullDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
+bool CNullDriver::endScene()
 {
 	FPSCounter.registerFrame(os::Timer::getRealTime(), PrimitivesDrawn);
 	updateAllHardwareBuffers();
@@ -220,6 +222,12 @@ bool CNullDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
 }
 
 
+//! Disable a feature of the driver.
+void CNullDriver::disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag)
+{
+	FeatureEnabled[feature]=!flag;
+}
+ 
 
 //! queries the features of the driver, returns true if feature is available
 bool CNullDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
@@ -310,16 +318,30 @@ void CNullDriver::renameTexture(ITexture* texture, const c8* newName)
 //! loads a Texture
 ITexture* CNullDriver::getTexture(const c8* filename)
 {
-	ITexture* texture = findTexture(filename);
+	// Identify textures by their absolute filenames if possible.
+	core::stringc absolutePath = FileSystem->getAbsolutePath(filename);
 
+	ITexture* texture = findTexture(absolutePath.c_str());
 	if (texture)
 		return texture;
 
-	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
+	// Then try the raw filename, which might be in an Archive
+	texture = findTexture(filename);
+	if (texture)
+		return texture;
+
+	// Now try to open the file using the complete path.
+	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath.c_str());
+
+	if(!file)
+	{
+		// Try to open it using the raw filename.
+		file = FileSystem->createAndOpenFile(filename);
+	}
 
 	if (file)
 	{
-		texture = loadTextureFromFile(file, filename);
+		texture = loadTextureFromFile(file);
 		file->drop();
 
 		if (texture)
@@ -680,6 +702,10 @@ void CNullDriver::draw2DLine(const core::position2d<s32>& start,
 {
 }
 
+//! Draws a pixel
+void CNullDriver::drawPixel(u32 x, u32 y, const SColor & color)
+{
+}
 
 
 //! Draws a non filled concyclic regular 2d polyon.
@@ -1423,7 +1449,7 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	core::stringc prefix="Texture";
 	u32 i;
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addTexture((prefix+(i+1)).c_str(), material.getTexture(i));
+		attr->addTexture((prefix+core::stringc(i+1)).c_str(), material.getTexture(i));
 
 	attr->addBool("Wireframe", material.Wireframe);
 	attr->addBool("GouraudShading", material.GouraudShading);
@@ -1437,16 +1463,16 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 
 	prefix = "BilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addBool((prefix+(i+1)).c_str(), material.TextureLayer[i].BilinearFilter);
+		attr->addBool((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].BilinearFilter);
 	prefix = "TrilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addBool((prefix+(i+1)).c_str(), material.TextureLayer[i].TrilinearFilter);
+		attr->addBool((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].TrilinearFilter);
 	prefix = "AnisotropicFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addBool((prefix+(i+1)).c_str(), material.TextureLayer[i].AnisotropicFilter);
+		attr->addBool((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].AnisotropicFilter);
 	prefix="TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addEnum((prefix+(i+1)).c_str(), material.TextureLayer[i].TextureWrap, aTextureClampNames);
+		attr->addEnum((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].TextureWrap, aTextureClampNames);
 
 	return attr;
 }
@@ -1479,7 +1505,7 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 
 	core::stringc prefix="Texture";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.setTexture(i, attr->getAttributeAsTexture((prefix+(i+1)).c_str()));
+		outMaterial.setTexture(i, attr->getAttributeAsTexture((prefix+core::stringc(i+1)).c_str()));
 
 	outMaterial.Wireframe = attr->getAttributeAsBool("Wireframe");
 	outMaterial.GouraudShading = attr->getAttributeAsBool("GouraudShading");
@@ -1495,25 +1521,25 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 		outMaterial.setFlag(EMF_BILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
 	else
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			outMaterial.TextureLayer[i].BilinearFilter = attr->getAttributeAsBool((prefix+(i+1)).c_str());
+			outMaterial.TextureLayer[i].BilinearFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str());
 
 	prefix = "TrilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_TRILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
 	else
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			outMaterial.TextureLayer[i].TrilinearFilter = attr->getAttributeAsBool((prefix+(i+1)).c_str());
+			outMaterial.TextureLayer[i].TrilinearFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str());
 
 	prefix = "AnisotropicFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_ANISOTROPIC_FILTER, attr->getAttributeAsBool(prefix.c_str()));
 	else
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			outMaterial.TextureLayer[i].AnisotropicFilter = attr->getAttributeAsBool((prefix+(i+1)).c_str());
+			outMaterial.TextureLayer[i].AnisotropicFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str());
 
 	prefix = "TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		outMaterial.TextureLayer[i].TextureWrap = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+(i+1)).c_str(), aTextureClampNames);
+		outMaterial.TextureLayer[i].TextureWrap = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+core::stringc(i+1)).c_str(), aTextureClampNames);
 }
 
 
@@ -1800,11 +1826,14 @@ s32 CNullDriver::addShaderMaterialFromFiles(const c8* vertexShaderProgramFileNam
 	return result;
 }
 
+
 //! Creates a render target texture.
-ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name)
 {
 	return 0;
 }
+
 
 //! Clears the ZBuffer.
 void CNullDriver::clearZBuffer()
@@ -1824,6 +1853,7 @@ IImage* CNullDriver::createScreenShot()
 {
 	return 0;
 }
+
 
 // prints renderer version
 void CNullDriver::printVersion()
@@ -1870,6 +1900,15 @@ void CNullDriver::enableClipPlane(u32 index, bool enable)
 	// not necessary
 }
 
+
+ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name)
+{
+	os::Printer::log("createRenderTargetTexture is deprecated, use addRenderTargetTexture instead");
+	ITexture* tex = addRenderTargetTexture(size, name);
+	tex->grab();
+	return tex;
+}
 
 } // end namespace
 } // end namespace

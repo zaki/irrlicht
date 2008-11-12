@@ -135,7 +135,12 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	os::Printer::log("Loaded group start",grp);
 #endif
 				if (useGroups)
-					grpName = grp;
+				{
+					if (0 != grp[0])
+						grpName = grp;
+					else
+						grpName = "default";
+				}
 			}
 			break;
 
@@ -687,24 +692,28 @@ COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const core::stringc& mt
 
 
 //! skip space characters and stop on first non-space
-const c8* COBJMeshFileLoader::goFirstWord(const c8* buf, const c8* const bufEnd)
+const c8* COBJMeshFileLoader::goFirstWord(const c8* buf, const c8* const bufEnd, bool acrossNewlines)
 {
 	// skip space characters
-	while((buf != bufEnd) && core::isspace(*buf))
-		++buf;
+	if (acrossNewlines)
+		while((buf != bufEnd) && core::isspace(*buf))
+			++buf;
+	else
+		while((buf != bufEnd) && core::isspace(*buf) && (*buf != '\n'))
+			++buf;
 
 	return buf;
 }
 
 
 //! skip current word and stop at beginning of next one
-const c8* COBJMeshFileLoader::goNextWord(const c8* buf, const c8* const bufEnd)
+const c8* COBJMeshFileLoader::goNextWord(const c8* buf, const c8* const bufEnd, bool acrossNewlines)
 {
 	// skip current word
 	while(( buf != bufEnd ) && !core::isspace(*buf))
 		++buf;
 
-	return goFirstWord(buf, bufEnd);
+	return goFirstWord(buf, bufEnd, acrossNewlines);
 }
 
 
@@ -768,7 +777,7 @@ core::stringc COBJMeshFileLoader::copyLine(const c8* inBuf, const c8* bufEnd)
 
 const c8* COBJMeshFileLoader::goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* bufEnd)
 {
-	inBuf = goNextWord(inBuf, bufEnd);
+	inBuf = goNextWord(inBuf, bufEnd, false);
 	copyWord(outBuf, inBuf, outBufLength, bufEnd);
 	return inBuf;
 }

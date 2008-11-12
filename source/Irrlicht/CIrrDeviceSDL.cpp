@@ -19,6 +19,10 @@
 #include "SIrrCreationParameters.h"
 #include <SDL/SDL_syswm.h>
 
+#ifdef _MSC_VER
+#pragma comment(lib, "SDL.lib")
+#endif // _MSC_VER
+
 namespace irr
 {
 	namespace video
@@ -28,7 +32,6 @@ namespace irr
 	} // end namespace video
 
 } // end namespace irr
-
 
 
 namespace irr
@@ -51,7 +54,11 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 
 	// Initialize SDL... Timer for sleep, video for the obvious, and
 	// noparachute prevents SDL from catching fatal errors.
-	if (SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|SDL_INIT_NOPARACHUTE ) < 0)
+	if (SDL_Init( SDL_INIT_TIMER|SDL_INIT_VIDEO|
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+				SDL_INIT_JOYSTICK|
+#endif
+				SDL_INIT_NOPARACHUTE ) < 0)
 	{
 		os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
 		Close = 1;
@@ -103,6 +110,12 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 //! destructor
 CIrrDeviceSDL::~CIrrDeviceSDL()
 {
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	const u32 numJoysticks = Joysticks.size();
+	for (u32 i=0; i<numJoysticks; ++i)
+		SDL_JoystickClose(Joysticks[i]);
+#endif
+
 	// only free surfaces created by us
 	if (Screen && !CreationParams.WindowId)
 		SDL_FreeSurface(Screen);
@@ -192,7 +205,6 @@ void CIrrDeviceSDL::createDriver()
 }
 
 
-
 //! runs the device. Returns false if device wants to be deleted
 bool CIrrDeviceSDL::run()
 {
@@ -280,14 +292,159 @@ bool CIrrDeviceSDL::run()
 				WindowMinimized = (SDL_event.active.gain!=1);
 			break;
 
+		case SDL_VIDEORESIZE:
+			if ((SDL_event.resize.w != (int)Width) || (SDL_event.resize.h != (int)Height))
+			{
+				Width = SDL_event.resize.w;
+				Height = SDL_event.resize.h;
+				if (Screen)
+					SDL_FreeSurface(Screen);
+				Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+				if (VideoDriver)
+					VideoDriver->OnResize(core::dimension2d<s32>(Width, Height));
+			}
+			break;
+
+		case SDL_USEREVENT:
+			irrevent.EventType = irr::EET_USER_EVENT;
+			irrevent.UserEvent.UserData1 = reinterpret_cast<s32>(SDL_event.user.data1);
+			irrevent.UserEvent.UserData2 = reinterpret_cast<s32>(SDL_event.user.data2);
+
+			postEventFromUser(irrevent);
+			break;
+
 		default:
 			break;
 		} // end switch
 
 	} // end while
 
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	// TODO: Check if the multiple open/close calls are too expensive, then
+        // open/close in the constructor/destructor instead
+
+	// update joystick states manually
+	SDL_JoystickUpdate();
+	// we'll always send joystick input events...
+	SEvent joyevent;
+	joyevent.EventType = EET_JOYSTICK_INPUT_EVENT;
+	for (u32 i=0; i<Joysticks.size(); ++i)
+	{
+		SDL_Joystick* joystick = Joysticks[i];
+		if (joystick)
+		{
+			int j;
+			// query all buttons
+			const int numButtons = core::min_(SDL_JoystickNumButtons(joystick), 32);
+			joyevent.JoystickEvent.ButtonStates=0;
+			for (j=0; j<numButtons; ++j)
+				joyevent.JoystickEvent.ButtonStates |= (SDL_JoystickGetButton(joystick, j)<<j);
+
+			// query all axes, already in correct range
+			const int numAxes = core::min_(SDL_JoystickNumAxes(joystick), 6);
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_R]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U]=0;
+			joyevent.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V]=0;
+			for (j=0; j<numAxes; ++j)
+				joyevent.JoystickEvent.Axis[j] = SDL_JoystickGetAxis(joystick, j);
+
+			// we can only query one hat, SDL only supports 8 directions
+			if (SDL_JoystickNumHats(joystick)>0)
+			{
+				switch (SDL_JoystickGetHat(joystick, 0))
+				{
+					case SDL_HAT_UP:
+						joyevent.JoystickEvent.POV=0;
+						break;
+					case SDL_HAT_RIGHTUP:
+						joyevent.JoystickEvent.POV=4500;
+						break;
+					case SDL_HAT_RIGHT:
+						joyevent.JoystickEvent.POV=9000;
+						break;
+					case SDL_HAT_RIGHTDOWN:
+						joyevent.JoystickEvent.POV=13500;
+						break;
+					case SDL_HAT_DOWN:
+						joyevent.JoystickEvent.POV=18000;
+						break;
+					case SDL_HAT_LEFTDOWN:
+						joyevent.JoystickEvent.POV=22500;
+						break;
+					case SDL_HAT_LEFT:
+						joyevent.JoystickEvent.POV=27000;
+						break;
+					case SDL_HAT_LEFTUP:
+						joyevent.JoystickEvent.POV=31500;
+						break;
+					case SDL_HAT_CENTERED:
+					default:
+						joyevent.JoystickEvent.POV=65535;
+						break;
+				}
+			}
+			else
+			{
+				joyevent.JoystickEvent.POV=65535;
+			}
+			
+			// we map the number directly
+			joyevent.JoystickEvent.Joystick=static_cast<u8>(i);
+			// now post the event
+			postEventFromUser(joyevent);
+			// and close the joystick
+		}
+	}
+#endif
 	return !Close;
 }
+
+//! Activate any joysticks, and generate events for them.
+bool CIrrDeviceSDL::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
+{
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
+	joystickInfo.clear();
+
+	// we can name up to 256 different joysticks
+	const int numJoysticks = core::min_(SDL_NumJoysticks(), 256);
+	Joysticks.reallocate(numJoysticks);
+	joystickInfo.reallocate(numJoysticks);
+
+	int joystick = 0;
+	for (; joystick<numJoysticks; ++joystick)
+	{
+		Joysticks.push_back(SDL_JoystickOpen(joystick));
+		SJoystickInfo info;
+
+		info.Joystick = joystick;
+		info.Axes = SDL_JoystickNumAxes(Joysticks[joystick]);
+		info.Buttons = SDL_JoystickNumButtons(Joysticks[joystick]);
+		info.Name = SDL_JoystickName(joystick);
+		info.PovHat = (SDL_JoystickNumHats(Joysticks[joystick]) > 0)
+						? SJoystickInfo::POV_HAT_PRESENT : SJoystickInfo::POV_HAT_ABSENT;
+
+		joystickInfo.push_back(info);
+	}
+
+	for(joystick = 0; joystick < (int)joystickInfo.size(); ++joystick)
+	{
+		char logString[256];
+		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
+		 joystick, joystickInfo[joystick].Axes,
+   joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
+		os::Printer::log(logString, ELL_INFORMATION);
+	}
+
+	return true;
+
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+
+	return false;
+}
+
 
 
 //! pause execution temporarily
@@ -319,30 +476,85 @@ void CIrrDeviceSDL::setWindowCaption(const wchar_t* text)
 }
 
 
-
 //! presents a surface in the client area
-void CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* src)
+bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s32>* srcClip)
 {
-	SDL_Rect srcClip;
 	SDL_Surface *sdlSurface = SDL_CreateRGBSurfaceFrom(
 			surface->lock(), surface->getDimension().Width, surface->getDimension().Height,
 			surface->getBitsPerPixel(), surface->getPitch(),
-			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), 0);
-	if (src)
+			surface->getRedMask(), surface->getGreenMask(), surface->getBlueMask(), surface->getAlphaMask());
+	if (!sdlSurface)
+		return false;
+	SDL_SetAlpha(sdlSurface, 0, 0);
+	SDL_SetColorKey(sdlSurface, 0, 0);
+	sdlSurface->format->BitsPerPixel=surface->getBitsPerPixel();
+	sdlSurface->format->BytesPerPixel=surface->getBytesPerPixel();
+	if ((surface->getColorFormat()==video::ECF_R8G8B8) ||
+			(surface->getColorFormat()==video::ECF_A8R8G8B8))
 	{
-		srcClip.x = src->UpperLeftCorner.X;
-		srcClip.y = src->UpperLeftCorner.Y;
-		srcClip.w = src->getWidth();
-		srcClip.h = src->getHeight();
-		SDL_BlitSurface(sdlSurface, &srcClip, Screen, NULL);
+		sdlSurface->format->Rloss=0;
+		sdlSurface->format->Gloss=0;
+		sdlSurface->format->Bloss=0;
+		sdlSurface->format->Rshift=16;
+		sdlSurface->format->Gshift=8;
+		sdlSurface->format->Bshift=0;
+		if (surface->getColorFormat()==video::ECF_R8G8B8)
+		{
+			sdlSurface->format->Aloss=8;
+			sdlSurface->format->Ashift=32;
+		}
+		else
+		{
+			sdlSurface->format->Aloss=0;
+			sdlSurface->format->Ashift=24;
+		}
 	}
-	else
-		SDL_BlitSurface(sdlSurface, NULL, Screen, NULL);
-	SDL_UpdateRect(Screen, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
+	else if (surface->getColorFormat()==video::ECF_R5G6B5)
+	{
+		sdlSurface->format->Rloss=3;
+		sdlSurface->format->Gloss=2;
+		sdlSurface->format->Bloss=3;
+		sdlSurface->format->Aloss=8;
+		sdlSurface->format->Rshift=11;
+		sdlSurface->format->Gshift=5;
+		sdlSurface->format->Bshift=0;
+		sdlSurface->format->Ashift=16;
+	}
+	else if (surface->getColorFormat()==video::ECF_A1R5G5B5)
+	{
+		sdlSurface->format->Rloss=3;
+		sdlSurface->format->Gloss=3;
+		sdlSurface->format->Bloss=3;
+		sdlSurface->format->Aloss=7;
+		sdlSurface->format->Rshift=10;
+		sdlSurface->format->Gshift=5;
+		sdlSurface->format->Bshift=0;
+		sdlSurface->format->Ashift=15;
+	}
+
+	SDL_Surface* scr = (SDL_Surface* )windowId;
+	if (!scr)
+		scr = Screen;
+	if (scr)
+	{
+		if (srcClip)
+		{
+			SDL_Rect sdlsrcClip;
+			sdlsrcClip.x = srcClip->UpperLeftCorner.X;
+			sdlsrcClip.y = srcClip->UpperLeftCorner.Y;
+			sdlsrcClip.w = srcClip->getWidth();
+			sdlsrcClip.h = srcClip->getHeight();
+			SDL_BlitSurface(sdlSurface, &sdlsrcClip, scr, NULL);
+		}
+		else
+			SDL_BlitSurface(sdlSurface, NULL, scr, NULL);
+		SDL_UpdateRect(scr, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
+	}
+
 	SDL_FreeSurface(sdlSurface);
 	surface->unlock();
+	return (scr != 0);
 }
-
 
 
 //! notifies the device that it should close itself
@@ -350,7 +562,6 @@ void CIrrDeviceSDL::closeDevice()
 {
 	Close = true;
 }
-
 
 
 //! \return Pointer to a list with all video modes supported
@@ -386,7 +597,8 @@ void CIrrDeviceSDL::setResizeAble(bool resize)
 			SDL_Flags |= SDL_RESIZABLE;
 		else
 			SDL_Flags &= ~SDL_RESIZABLE;
-		SDL_FreeSurface(Screen);
+		if (Screen)
+			SDL_FreeSurface(Screen);
 		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 		Resizeable = resize;
 	}

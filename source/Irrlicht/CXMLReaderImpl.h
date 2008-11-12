@@ -71,8 +71,7 @@ public:
 		// if not end reached, parse the node
 		if (P && (unsigned int)(P - TextBegin) < TextSize - 1 && *P != 0)
 		{
-			parseCurrentNode();
-			return true;
+			return parseCurrentNode();
 		}
 
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
@@ -210,7 +209,8 @@ public:
 private:
 
 	// Reads the current xml node
-	void parseCurrentNode()
+	// return false if no further node is found
+	bool parseCurrentNode()
 	{
 		char_type* start = P;
 
@@ -218,14 +218,15 @@ private:
 		while(*P != L'<' && *P)
 			++P;
 
+		// not a node, so return false
 		if (!*P)
-			return;
+			return false;
 
 		if (P - start > 0)
 		{
 			// we found some text, store it
 			if (setText(start, P))
-				return;
+				return true;
 		}
 
 		++P;
@@ -247,6 +248,7 @@ private:
 			parseOpeningXMLElement();
 			break;
 		}
+		return true;
 	}
 
 
@@ -566,10 +568,7 @@ private:
 
 		// add zeros at end
 
-		data8[size-1] = 0;
-		data8[size-2] = 0;
-		data8[size-3] = 0;
-		data8[size-4] = 0;
+		memset(data8+size-4, 0, 4);
 
 		char16* data16 = reinterpret_cast<char16*>(data8);
 		char32* data32 = reinterpret_cast<char32*>(data8);	

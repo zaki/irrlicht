@@ -27,6 +27,7 @@ namespace video
 //! constructor
 CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 : CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter),
+	WindowId(0), SceneSourceRect(0),
 	RenderTargetTexture(0), RenderTargetSurface(0), CurrentShader(0),
 	 DepthBuffer(0), CurrentOut ( 12 * 2, 128 ), Temp ( 12 * 2, 128 )
 {
@@ -276,6 +277,9 @@ void CBurningVideoDriver::setCurrentShader()
 //! queries the features of the driver, returns true if feature is available
 bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 {
+	if (!FeatureEnabled[feature])
+		return false;
+
 	switch (feature)
 	{
 #ifdef SOFTWARE_DRIVER_2_BILINEAR
@@ -289,6 +293,7 @@ bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_RENDER_TO_TARGET:
 	case EVDF_MULTITEXTURE:
 	case EVDF_HARDWARE_TL:
+	case EVDF_TEXTURE_NSQUARE:
 		return true;
 
 	default:
@@ -374,19 +379,20 @@ void CBurningVideoDriver::setMaterial(const SMaterial& material)
 				material.getTextureMatrix(i));
 	}
 
-	setCurrentShader ();
-
+	setCurrentShader();
 }
 
 
-
 //! clears the zbuffer
-bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer, SColor color)
+bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer,
+		SColor color, void* windowId, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color);
+	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+	WindowId = windowId;
+	SceneSourceRect = sourceRect;
 
 	if (backBuffer && BackBuffer)
-		BackBuffer->fill( color );
+		BackBuffer->fill(color);
 
 	if (DepthBuffer && zBuffer)
 		DepthBuffer->clear();
@@ -394,17 +400,14 @@ bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer, SColor color
 	return true;
 }
 
+
 //! presents the rendered scene on the screen, returns false if failed
-bool CBurningVideoDriver::endScene( void* windowId, core::rect<s32>* sourceRect )
+bool CBurningVideoDriver::endScene()
 {
 	CNullDriver::endScene();
 
-	Presenter->present(BackBuffer, windowId, sourceRect);
-
-	return true;
+	return Presenter->present(BackBuffer, WindowId, SceneSourceRect);
 }
-
-
 
 
 //! sets a render target
@@ -1575,6 +1578,11 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 	((CImage*)BackBuffer)->drawLine(start, end, color );
 }
 
+//! Draws a pixel
+void CBurningVideoDriver::drawPixel(u32 x, u32 y, const SColor & color)
+{
+	((CImage*)BackBuffer)->setPixel(x, y, color);
+} 
 
 //! draw an 2d rectangle
 void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
@@ -1842,12 +1850,16 @@ const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE st
 
 
 //! Creates a render target texture.
-ITexture* CBurningVideoDriver::createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name)
 {
 	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
-
+	if (!name)
+		name="rt";
 	ITexture* tex = new CSoftwareTexture2(img, name, false, true);
 	img->drop();
+	addTexture(tex);
+	tex->drop();
 	return tex;
 }
 

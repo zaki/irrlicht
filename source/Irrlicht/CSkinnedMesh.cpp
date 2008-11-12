@@ -186,7 +186,6 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 				m1[9] *= joint->Animatedscale.Z;
 				m1[10] *= joint->Animatedscale.Z;
 				m1[11] *= joint->Animatedscale.Z;
-				m1[12] *= joint->Animatedscale.X;
 				// -----------------------------------
 
 			}
@@ -849,29 +848,10 @@ void CSkinnedMesh::finalize()
 	LastSkinnedFrame=-1;
 
 	//calculate bounding box
-
 	for (i=0; i<LocalBuffers.size(); ++i)
 	{
 		LocalBuffers[i]->recalculateBoundingBox();
 	}
-
-	// Get BoundingBox...
-	if (LocalBuffers.empty())
-		BoundingBox.reset(0,0,0);
-	else
-	{
-		BoundingBox.reset(LocalBuffers[0]->BoundingBox.MaxEdge);
-		for (u32 j=0; j<LocalBuffers.size(); ++j)
-		{
-			BoundingBox.addInternalBox(LocalBuffers[j]->BoundingBox);
-		}
-	}
-
-	//add 5% padding to bounding box
-	core::vector3df Padding=BoundingBox.getExtent()*0.05f;
-	BoundingBox.MinEdge-=Padding;
-	BoundingBox.MaxEdge+=Padding;
-
 
 	if (AllJoints.size() || RootJoints.size())
 	{
@@ -1081,6 +1061,29 @@ void CSkinnedMesh::finalize()
 			Buffer->Transformation=AllJoints[i]->GlobalAnimatedMatrix;
 		}
 	}
+
+	//calculate bounding box
+	if (LocalBuffers.empty())
+		BoundingBox.reset(0,0,0);
+	else
+	{
+		irr::core::aabbox3df bb(LocalBuffers[0]->BoundingBox);
+		LocalBuffers[0]->Transformation.transformBoxEx(bb);
+		BoundingBox.reset(bb);
+
+		for (u32 j=1; j<LocalBuffers.size(); ++j)
+		{
+			bb = LocalBuffers[j]->BoundingBox;
+			LocalBuffers[j]->Transformation.transformBoxEx(bb);
+
+			BoundingBox.addInternalBox(bb);
+		}
+	}
+
+	//add 5% padding to bounding box
+	const core::vector3df Padding = BoundingBox.getExtent()*0.05f;
+	BoundingBox.MinEdge -= Padding;
+	BoundingBox.MaxEdge += Padding;
 }
 
 

@@ -6,6 +6,7 @@
 #define __C_SCENE_NODE_ANIMATOR_CAMERA_MAYA_H_INCLUDED__
 
 #include "ISceneNodeAnimatorCameraMaya.h"
+#include "ICameraSceneNode.h"
 #include "vector2d.h"
 
 namespace irr
@@ -69,6 +70,12 @@ namespace scene
 			return ESNAT_CAMERA_MAYA;
 		}
 
+		//! Creates a clone of this animator.
+		/** Please note that you will have to drop
+		(IReferenceCounted::drop()) the returned pointer after calling
+		this. */
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
+
 	private:
 
 		void allKeysUp();
@@ -80,7 +87,10 @@ namespace scene
 
 		gui::ICursorControl *CursorControl;
 		core::vector3df Pos;
-		bool Zooming, Rotating, Moving, Translating;
+		bool Zooming;
+		bool Rotating;
+		bool Moving;
+		bool Translating;
 		f32 ZoomSpeed;
 		f32 RotateSpeed;
 		f32 TranslateSpeed;
@@ -89,10 +99,11 @@ namespace scene
 		f32 TranslateStartX, TranslateStartY;
 		f32 CurrentZoom;
 		f32 RotX, RotY;
-		core::vector3df Target, OldTarget;
+		core::vector3df Target;
+		core::vector3df OldTarget;
+		scene::ICameraSceneNode* OldCamera;
 
 		core::position2d<f32> MousePos;
-
 	};
 
 } // end namespace scene

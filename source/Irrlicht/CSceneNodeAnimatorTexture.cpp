@@ -118,6 +118,13 @@ void CSceneNodeAnimatorTexture::deserializeAttributes(io::IAttributes* in, io::S
 	}
 }
 
+ISceneNodeAnimator* CSceneNodeAnimatorTexture::createClone(ISceneNode* node, ISceneManager* newManager)
+{
+	CSceneNodeAnimatorTexture * newAnimator = 
+		new CSceneNodeAnimatorTexture(Textures, TimePerFrame, Loop, StartTime);
+
+	return newAnimator;
+}
 
 } // end namespace scene
 } // end namespace irr

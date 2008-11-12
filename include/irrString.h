@@ -41,7 +41,6 @@ public:
 	}
 
 
-
 	//! Constructor
 	string(const string<T>& other)
 	: array(0), allocated(0), used(0)
@@ -49,10 +48,17 @@ public:
 		*this = other;
 	}
 
+	//! Constructor from other string types
+	template <class B>
+	string(const string<B>& other)
+	: array(0), allocated(0), used(0)
+	{
+		*this = other;
+	}
 
 
 	//! Constructs a string from a float
-	string(const double number)
+	explicit string(const double number)
 	: array(0), allocated(0), used(0)
 	{
 		c8 tmpbuf[255];
@@ -61,9 +67,8 @@ public:
 	}
 
 
-
 	//! Constructs a string from an int
-	string(int number)
+	explicit string(int number)
 	: array(0), allocated(0), used(0)
 	{
 		// store if negative and make positive
@@ -111,9 +116,8 @@ public:
 	}
 
 
-
 	//! Constructs a string from an unsigned int
-	string(unsigned int number)
+	explicit string(unsigned int number)
 	: array(0), allocated(0), used(0)
 	{
 		// temporary buffer for 16 numbers
@@ -144,7 +148,6 @@ public:
 	}
 
 
-
 	//! Constructor for copying a string from a pointer with a given length
 	template <class B>
 	string(const B* const c, u32 length)
@@ -167,7 +170,6 @@ public:
 	}
 
 
-
 	//! Constructor for unicode and ascii strings
 	template <class B>
 	string(const B* const c)
@@ -177,13 +179,11 @@ public:
 	}
 
 
-
 	//! destructor
 	~string()
 	{
 		allocator.deallocate(array); // delete [] array;
 	}
-
 
 
 	//! Assignment operator
@@ -203,6 +203,13 @@ public:
 		return *this;
 	}
 
+	//! Assignment operator for other string types
+	template <class B>
+	string<T>& operator=(const string<B>& other)
+	{
+		*this = other.c_str();
+		return *this;
+	}
 
 
 	//! Assignment operator for strings, ascii and unicode
@@ -247,7 +254,8 @@ public:
 		return *this;
 	}
 
-	//! Add operator for other strings
+
+	//! Append operator for other strings
 	string<T> operator+(const string<T>& other) const
 	{
 		string<T> str(*this);
@@ -256,7 +264,8 @@ public:
 		return str;
 	}
 
-	//! Add operator for strings, ascii and unicode
+
+	//! Append operator for strings, ascii and unicode
 	template <class B>
 	string<T> operator+(const B* const c) const
 	{
@@ -283,7 +292,7 @@ public:
 	}
 
 
-	//! Comparison operator
+	//! Equality operator
 	bool operator ==(const T* const str) const
 	{
 		if (!str)
@@ -298,8 +307,7 @@ public:
 	}
 
 
-
-	//! Comparison operator
+	//! Equality operator
 	bool operator ==(const string<T>& other) const
 	{
 		for(u32 i=0; array[i] && other.array[i]; ++i)
@@ -310,7 +318,7 @@ public:
 	}
 
 
-	//! Is smaller operator
+	//! Is smaller comparator
 	bool operator <(const string<T>& other) const
 	{
 		for(u32 i=0; array[i] && other.array[i]; ++i)
@@ -328,39 +336,34 @@ public:
 	}
 
 
-
-	//! Equals not operator
+	//! Inequality operator
 	bool operator !=(const T* const str) const
 	{
 		return !(*this == str);
 	}
 
 
-
-	//! Equals not operator
+	//! Inequality operator
 	bool operator !=(const string<T>& other) const
 	{
 		return !(*this == other);
 	}
 
 
-
 	//! Returns length of string
-	/** \return Returns length of the string in characters. */
+	/** \return Length of the string in characters. */
 	u32 size() const
 	{
 		return used-1;
 	}
 
 
-
 	//! Returns character string
-	/** \return Returns pointer to C-style zero terminated string. */
+	/** \return pointer to C-style zero terminated string. */
 	const T* c_str() const
 	{
 		return array;
 	}
-
 
 
 	//! Makes the string lower case.
@@ -369,7 +372,6 @@ public:
 		for (u32 i=0; i<used; ++i)
 			array[i] = ansi_lower ( array[i] );
 	}
-
 
 
 	//! Makes the string upper case.
@@ -387,10 +389,9 @@ public:
 	}
 
 
-
-	//! Compares the string ignoring case.
+	//! Compares the strings ignoring case.
 	/** \param other: Other string to compare.
-	\return Returns true if the string are equal ignoring case. */
+	\return True if the strings are equal ignoring case. */
 	bool equals_ignore_case(const string<T>& other) const
 	{
 		for(u32 i=0; array[i] && other[i]; ++i)
@@ -400,9 +401,10 @@ public:
 		return used == other.used;
 	}
 
-	//! Compares the string ignoring case.
+
+	//! Compares the strings ignoring case.
 	/** \param other: Other string to compare.
-	\return Returns true if the string is smaller ignoring case. */
+	\return True if this string is smaller ignoring case. */
 	bool lower_ignore_case(const string<T>& other) const
 	{
 		for(u32 i=0; array[i] && other.array[i]; ++i)
@@ -416,8 +418,10 @@ public:
 	}
 
 
-
 	//! compares the first n characters of the strings
+	/** \param other Other string to compare.
+	\param n Number of characters to compare
+	\return True if the n first characters of this string are smaller. */
 	bool equalsn(const string<T>& other, u32 n) const
 	{
 		u32 i;
@@ -432,11 +436,14 @@ public:
 
 
 	//! compares the first n characters of the strings
+	/** \param str Other string to compare.
+	\param n Number of characters to compare
+	\return True if the n first characters of this string are smaller. */
 	bool equalsn(const T* const str, u32 n) const
 	{
 		if (!str)
 			return false;
-		s32 i;
+		u32 i;
 		for(i=0; array[i] && str[i] && i < n; ++i)
 			if (array[i] != str[i])
 				return false;
@@ -459,6 +466,7 @@ public:
 		array[used-2] = character;
 		array[used-1] = 0;
 	}
+
 
 	//! Appends a char string to this string
 	/** \param other: Char string to append. */
@@ -692,7 +700,7 @@ public:
 			if (len > used-1)
 				return -1;
 
-			for (s32 i=0; i<used-len; ++i)
+			for (u32 i=0; i<used-len; ++i)
 			{
 				u32 j=0;
 
@@ -734,6 +742,8 @@ public:
 	}
 
 
+	//! Appends a character to this string
+	/** \param character: Character to append. */
 	string<T>& operator += (T c)
 	{
 		append(c);
@@ -741,6 +751,8 @@ public:
 	}
 
 
+	//! Appends a char string to this string
+	/** \param other: Char string to append. */
 	string<T>& operator += (const T* const c)
 	{
 		append(c);
@@ -748,6 +760,8 @@ public:
 	}
 
 
+	//! Appends a string to this string
+	/** \param other: String to append. */
 	string<T>& operator += (const string<T>& other)
 	{
 		append(other);
@@ -805,6 +819,7 @@ public:
 				array[i] = replaceWith;
 	}
 
+
 	//! trims the string.
 	/** Removes whitespace from begin and end of the string. */
 	string<T>& trim()
@@ -823,9 +838,10 @@ public:
 	}
 
 
-	//! Erases a character from the string. May be slow, because all elements
-	//! following after the erased element have to be copied.
-	//! \param index: Index of element to be erased.
+	//! Erases a character from the string.
+	/** May be slow, because all elements
+	following after the erased element have to be copied.
+	\param index: Index of element to be erased. */
 	void erase(u32 index)
 	{
 		_IRR_DEBUG_BREAK_IF(index>=used) // access violation

@@ -40,10 +40,13 @@ namespace video
 		virtual ~CD3D8Driver();
 
 		//! applications must call this method before performing any rendering. returns false if failed.
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
 
 		//! applications must call this method after performing any rendering. returns false if failed.
-		virtual bool endScene(void* windowId=0, core::rect<s32>* sourceRect=0);
+		virtual bool endScene();
 
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
@@ -89,6 +92,9 @@ namespace video
 		virtual void draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
+
+		//! Draws a pixel.
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
 
 		//! Draws a 3d line.
 		virtual void draw3DLine(const core::vector3df& start,
@@ -177,7 +183,8 @@ namespace video
 		virtual IVideoDriver* getVideoDriver();
 
 		//! Creates a render target texture.
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
@@ -198,6 +205,7 @@ namespace video
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
+		virtual bool checkDriverReset() {return DriverWasReset;}
 	private:
 
 		// enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -275,6 +283,9 @@ namespace video
 		IDirect3DSurface8* PrevRenderTarget;
 		core::dimension2d<s32> CurrentRendertargetSize;
 
+		void* WindowId;
+		core::rect<s32>* SceneSourceRect;
+
 		D3DCAPS8 Caps;
 
 		E_VERTEX_TYPE LastVertexType;
@@ -286,6 +297,7 @@ namespace video
 		f32 MaxLightDistance;
 		s32 LastSetLight;
 		bool DeviceLost;
+		bool DriverWasReset;
 
 		SColorf AmbientLight;
 	};

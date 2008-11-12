@@ -1,3 +1,8 @@
+/** Example 017 Helloworld mobile
+
+This example show Hello World for Windows mobile
+*/
+
 #include <irrlicht.h>
 
 #ifdef _IRR_USE_WINDOWS_CE_DEVICE_
@@ -110,7 +115,6 @@ int main()
 	// create device
 
 	IrrlichtDevice *device =
-		//createDevice(driverType, dimension2d<s32>(220, 240), 16, false );
 		createDevice(driverType, dimension2d<s32>(240, 320), 16, true );
 		
 	if (device == 0)

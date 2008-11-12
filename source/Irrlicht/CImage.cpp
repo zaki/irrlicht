@@ -1195,6 +1195,7 @@ ECOLOR_FORMAT CImage::getColorFormat() const
 	return Format;
 }
 
+
 //! draws a rectangle
 void CImage::drawRectangle(const core::rect<s32>& rect, const SColor &color)
 {
@@ -1362,7 +1363,7 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
 		sx = 0.f;
 		for ( s32 x = 0; x != destSize.Width; ++x )
 		{
-			target->setPixel( x, y, getPixelBox( core::floor32( sx ), core::floor32( sy ), fx, fy, bias ) );
+			target->setPixel( x, y, getPixelBox( core::floor32(sx), core::floor32(sy), fx, fy, bias ) );
 			sx += sourceXStep;
 		}
 		sy += sourceYStep;

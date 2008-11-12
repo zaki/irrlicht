@@ -74,6 +74,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16.Quake3MapShader", "16.Qu
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.MouseAndJoystick", "19.MouseAndJoystick\MouseAndJoystick.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug

@@ -1,10 +1,10 @@
-// This is a Demo of the Irrlicht Engine (c) 2005 by N.Gebhardt.
-// This file is not documentated.
+// This is a Demo of the Irrlicht Engine (c) 2005-2008 by N.Gebhardt.
+// This file is not documented.
 
 #include "CDemo.h"
 
-CDemo::CDemo(bool f, bool m, bool s, bool a, bool v, video::E_DRIVER_TYPE d)
-: fullscreen(f), music(m), shadows(s), additive(a), vsync(v),
+CDemo::CDemo(bool f, bool m, bool s, bool a, bool v, bool fsaa, video::E_DRIVER_TYPE d)
+: fullscreen(f), music(m), shadows(s), additive(a), vsync(v), aa(fsaa),
  driverType(d), device(0),
 #ifdef USE_IRRKLANG
 	irrKlang(0), ballSound(0), impactSound(0),
@@ -45,8 +45,18 @@ void CDemo::run()
 		resolution.Height = 480;
 	}
 
-	device = createDevice(driverType,resolution, 32, fullscreen, shadows, vsync, this);
-	if ( 0 == device )
+	irr::SIrrlichtCreationParameters params;
+	params.DriverType=driverType;
+	params.WindowSize=resolution;
+	params.Bits=32;
+	params.Fullscreen=fullscreen;
+	params.Stencilbuffer=shadows;
+	params.Vsync=vsync;
+	params.AntiAlias=aa;
+	params.EventReceiver=this;
+
+	device = createDeviceEx(params);
+	if (!device)
 		return;
 
 	if (device->getFileSystem()->existFile("irrlicht.dat"))
@@ -161,6 +171,7 @@ bool CDemo::OnEvent(const SEvent& event)
 			device->getVideoDriver()->writeImageToFile(image, "screenshot.tga");
 			device->getVideoDriver()->writeImageToFile(image, "screenshot.ppm");
 			device->getVideoDriver()->writeImageToFile(image, "screenshot.jpg");
+			device->getVideoDriver()->writeImageToFile(image, "screenshot.pcx");
 			image->drop();
 		}
 	}
@@ -468,8 +479,7 @@ void CDemo::loadSceneData()
 	core::array<video::ITexture*> textures;
 	for (s32 g=1; g<8; ++g)
 	{
-		core::stringc tmp;
-		tmp = "../../media/portal";
+		core::stringc tmp("../../media/portal");
 		tmp += g;
 		tmp += ".bmp";
 		video::ITexture* t = driver->getTexture( tmp.c_str () );

@@ -120,7 +120,7 @@ public:
 	//! Returns the base part of a filename, i.e. the name without the directory
 	//! part. If no directory is prefixed, the full name is returned.
 	/** \param filename: The file to get the basename from */
-	virtual core::stringc getFileBasename(const core::stringc& filename) const = 0;
+	virtual core::stringc getFileBasename(const core::stringc& filename, bool keepExtension=true) const = 0;
 
 	//! Creates a list of files and directories in the current working directory and returns it.
 	/** \return a Pointer to the created IFileList is returned. After the list has been used
@@ -132,6 +132,11 @@ public:
 	/** \param filename is the string identifying the file which should be tested for existence.
 	\return Returns true if file exists, and false if it does not exist or an error occured. */
 	virtual bool existFile(const c8* filename) const = 0;
+
+	//! Determines if a file exists and could be opened.
+	/** \param filename is the string identifying the file which should be tested for existence.
+	\return Returns true if file exists, and false if it does not exist or an error occured. */
+	virtual bool existFile(const core::stringc& filename) const = 0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as wide characters (wchar_t*).
 	/** Use createXMLReaderUTF8() if you prefer char* instead of wchar_t*. See IIrrXMLReader for

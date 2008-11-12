@@ -23,7 +23,7 @@ else:
 
 IRRMESHLOADER = ['CBSPMeshFileLoader.cpp', 'CMD2MeshFileLoader.cpp', 'CMD3MeshFileLoader.cpp', 'CMS3DMeshFileLoader.cpp', 'CB3DMeshFileLoader.cpp', 'C3DSMeshFileLoader.cpp', 'COgreMeshFileLoader.cpp', 'COBJMeshFileLoader.cpp', 'CColladaFileLoader.cpp', 'CCSMLoader.cpp', 'CDMFLoader.cpp', 'CLMTSMeshFileLoader.cpp', 'CMY3DMeshFileLoader.cpp', 'COCTLoader.cpp', 'CXMeshFileLoader.cpp', 'CIrrMeshFileLoader.cpp', 'CSTLMeshFileLoader.cpp', 'CLWOMeshFileLoader.cpp'];
 
-IRRMESHWRITER = ['CColladaMeshWriter.cpp', 'CIrrMeshWriter.cpp', 'CSTLMeshWriter.cpp'];
+IRRMESHWRITER = ['CColladaMeshWriter.cpp', 'CIrrMeshWriter.cpp', 'COBJMeshWriter.cpp', 'CSTLMeshWriter.cpp'];
 
 IRRMESHOBJ = IRRMESHLOADER + IRRMESHWRITER + ['CSkinnedMesh.cpp', 'CBoneSceneNode.cpp', 'CMeshSceneNode.cpp', 'CAnimatedMeshSceneNode.cpp', 'CAnimatedMeshMD2.cpp', 'CAnimatedMeshMD3.cpp', 'CQ3LevelMesh.cpp', 'CQuake3ShaderSceneNode.cpp'];
 

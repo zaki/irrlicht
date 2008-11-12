@@ -4,7 +4,7 @@
 #ifndef __C_DEMO_H_INCLUDED__
 #define __C_DEMO_H_INCLUDED__
 
-//#define USE_IRRKLANG
+#define USE_IRRKLANG
 //#define USE_SDL_MIXER
 
 #include <irrlicht.h>
@@ -36,7 +36,7 @@ class CDemo : public IEventReceiver
 {
 public:
 
-	CDemo(bool fullscreen, bool music, bool shadows, bool additive, bool vsync, video::E_DRIVER_TYPE driver);
+	CDemo(bool fullscreen, bool music, bool shadows, bool additive, bool vsync, bool aa, video::E_DRIVER_TYPE driver);
 
 	~CDemo();
 
@@ -57,6 +57,7 @@ private:
 	bool shadows;
 	bool additive;
 	bool vsync;
+	bool aa;
 	video::E_DRIVER_TYPE driverType;
 	IrrlichtDevice *device;
 

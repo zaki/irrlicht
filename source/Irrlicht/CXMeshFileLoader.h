@@ -184,6 +184,7 @@ private:
 	const c8* P;
 	c8* End;
 	c8 FloatSize;
+	u32 Line;
 	core::stringc FilePath;
 
 	CSkinnedMesh::SJoint *CurFrame;

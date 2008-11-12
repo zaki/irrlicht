@@ -38,7 +38,7 @@ namespace scene
 	OverrideDistanceThreshold(false), UseDefaultRotationPivot(true), ForceRecalculation(false),
 	OldCameraPosition(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
 	OldCameraRotation(core::vector3df(-99999.9f, -99999.9f, -99999.9f)),
-	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),
+	CameraMovementDelta(10.0f), CameraRotationDelta(1.0f),CameraFOVDelta(0.1f),
 	TCoordScale1(1.0f), TCoordScale2(1.0f), FileSystem(fs)
 	{
 		#ifdef _DEBUG
@@ -451,6 +451,8 @@ namespace scene
 		// Determine the camera rotation, based on the camera direction.
 		const core::vector3df cameraPosition = SceneManager->getActiveCamera()->getAbsolutePosition();
 		const core::vector3df cameraRotation = core::line3d<f32>(cameraPosition, SceneManager->getActiveCamera()->getTarget()).getVector().getHorizontalAngle();
+		const f32 CameraFOV = SceneManager->getActiveCamera()->getFOV();
+
 
 		// Only check on the Camera's Y Rotation
 		if (!ForceRecalculation)
@@ -462,13 +464,18 @@ namespace scene
 					(fabs(cameraPosition.Y - OldCameraPosition.Y) < CameraMovementDelta) &&
 					(fabs(cameraPosition.Z - OldCameraPosition.Z) < CameraMovementDelta))
 				{
-					return;
+					if (fabs(CameraFOV-OldCameraFOV) < CameraFOVDelta)
+					{
+						return;
+					}
 				}
 			}
 		}
 
 		OldCameraPosition = cameraPosition;
 		OldCameraRotation = cameraRotation;
+		OldCameraFOV = CameraFOV;
+
 		const SViewFrustum* frustum = SceneManager->getActiveCamera()->getViewFrustum();
 
 		// Determine each patches LOD based on distance from camera ( and whether or not they are in
@@ -506,6 +513,24 @@ namespace scene
 
 	void CTerrainSceneNode::preRenderIndicesCalculations()
 	{
+		switch (RenderBuffer->getIndexBuffer().getType())
+		{
+			case video::EIT_16BIT:
+			{
+				preRenderIndicesCalculationsDirect<u16>((u16*)RenderBuffer->getIndexBuffer().pointer());
+				break;
+			}
+			case video::EIT_32BIT:
+			{
+				preRenderIndicesCalculationsDirect<u32>((u32*)RenderBuffer->getIndexBuffer().pointer());
+				break;
+			}
+		}
+	}
+
+	template<class INDEX_TYPE>
+	void CTerrainSceneNode::preRenderIndicesCalculationsDirect(INDEX_TYPE* IndexBuffer)
+	{
 		IndicesToRender = 0;
 		s32 index11;
 		s32 index21;
@@ -534,12 +559,12 @@ namespace scene
 						index12 = getIndex( j, i, index, x, z + step );
 						index22 = getIndex( j, i, index, x + step, z + step );
 
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index12);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++,index11);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index22);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index22);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index11);
-						RenderBuffer->getIndexBuffer().setValue(IndicesToRender++, index21);
+						IndexBuffer[IndicesToRender++]= index12;
+						IndexBuffer[IndicesToRender++]= index11;
+						IndexBuffer[IndicesToRender++]= index22;
+						IndexBuffer[IndicesToRender++]= index22;
+						IndexBuffer[IndicesToRender++]= index11;
+						IndexBuffer[IndicesToRender++]= index21;
 
 						// increment index position horizontally
 						x += step;
@@ -562,6 +587,10 @@ namespace scene
 			selector->setTriangleData ( this, -1 );
 		}
 	}
+
+
+
+
 
 
 	//! Render the scene node

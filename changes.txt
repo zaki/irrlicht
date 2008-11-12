@@ -3,6 +3,16 @@ TA, 01.09.2008
 
 Changes in version 1.5 (... 2008)
 
+ - Basic support for joystick input events on OSX tested with xbox 360 wireless controller using driver http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver and a logictech wired controller
+
+ - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
+
+ - Basic support for joystick input events on Windows, Linux and SDL devices.
+
+ - Major API change: RTTs are now created via addRenderTargetTexture instead of createRenderTargetTexture, which allows to retrieve them from the texture cache, but also changes the way of removing the RTTs, and especially one must not drop the pointer anymore.
+ 
+ - WindowsCE-Bugfix
+
  - isBetweenPoints return true now even for the begin and end points, i.e. line segments are now including their start and end.
 
  - Fix XML reader creation for non-existing files and invalid callbacks.
@@ -209,7 +219,19 @@ Changes in version 1.5 (... 2008)
    - Finally added StarSonata patch with table element and TabControl additions. Table is based on MultiColor listbox by Acki, and has loads of changes by CuteAlien.
 
 -------------------------------------------
-Changes in version 1.4.2 (x.x.2008)
+Changes in version 1.4.2 (22.9.2008)
+
+ - Unified the handling of zwrite enable with transparent materials on all hw accelerated drivers. This means that all transparent materials will now disable ZWrite, ignoring the material flag.
+   There is a scene manager attribute, though, which will revert this behavior to the usual SMaterial driven way. Simply call
+   SceneManager->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true) and set the SMaterial flag as desired.
+
+ - Some changes for texture matrices in q3 shaders.
+
+ - Added BlindSide's irrAllocator patch for proper TextureMatrix release under Win32 with any CRT library.
+
+ - Added VC9 project files.
+
+ - Added getEmitter for particle system scene nodes.
 
  - Fixed rounding problem in getScreenCoordinatesFrom3DPosition
 
@@ -1287,7 +1309,7 @@ Changes in version 0.14.0 (30 November 2005)
 
 - Lights now draw their bounding box and radius when debugdata is set to visible for them.
 
-- Upgraded to irrXML 1.2. Thanks to some hints by Patrik Müller, irrXML, the XML parser used
+- Upgraded to irrXML 1.2. Thanks to some hints by Patrik Mller, irrXML, the XML parser used
   by the Irrlicht Engine now has CDATA support and some other useful new features.
 
 - Support for VisualC++ (Express) 2005. Added a project file and a IrrlichtPropsVC2005.vsprops

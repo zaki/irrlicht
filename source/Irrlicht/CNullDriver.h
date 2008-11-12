@@ -44,9 +44,15 @@ namespace video
 		//! destructor
 		virtual ~CNullDriver();
 
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
 
-		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 );
+		virtual bool endScene();
+
+		//! Disable a feature of the driver.
+		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true);
 
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
@@ -59,6 +65,10 @@ namespace video
 
 		//! loads a Texture
 		virtual ITexture* getTexture(const c8* filename);
+
+		//! loads a Texture
+		virtual ITexture* getTexture(const core::stringc& filename)
+		{ return getTexture(filename.c_str()); }
 
 		//! loads a Texture
 		virtual ITexture* getTexture(io::IReadFile* file);
@@ -77,7 +87,7 @@ namespace video
 
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
-						 bool clearZBuffer, SColor color);
+						bool clearZBuffer, SColor color);
 
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area);
@@ -176,6 +186,9 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
 
+		//! Draws a pixel
+		virtual void drawPixel(u32 x, u32 y, const SColor & color); 
+
 		//! Draws a non filled concyclic reqular 2d polyon.
 		virtual void draw2DPolygon(core::position2d<s32> center,
 			f32 radius, video::SColor Color, s32 vertexCount);
@@ -257,7 +270,8 @@ namespace video
 		virtual void removeAllTextures();
 
 		//! Creates a render target texture.
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name);
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
 		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color) const;
@@ -295,15 +309,16 @@ namespace video
 			bool ownForeignMemory=true, bool deleteForeignMemory = true);
 
 		//! Creates an empty software image.
-                virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
+		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
 
 
 		//! Creates a software image from another image.
-                virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy);
+		virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy);
 
 		//! Creates a software image from part of another image.
-                virtual IImage* createImage(IImage* imageToCopy,
-                        const core::position2d<s32>& pos, const core::dimension2d<s32>& size);
+		virtual IImage* createImage(IImage* imageToCopy,
+				const core::position2d<s32>& pos,
+				const core::dimension2d<s32>& size);
 
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb);
@@ -490,8 +505,17 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return "Not available on this driver.";};
+		virtual core::stringc getVendorInfo() {return "Not available on this driver.";}
 
+		//! Only used by the engine internally.
+		virtual void setAllowZWriteOnTransparent(bool flag)
+		{ AllowZWriteOnTransparent=flag; }
+
+		//! deprecated method
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name=0);
+
+		virtual bool checkDriverReset() {return false;}
 	protected:
 
 		//! deletes all textures
@@ -596,15 +620,19 @@ namespace video
 
 		u32 TextureCreationFlags;
 
-		bool LinearFog;
 		f32 FogStart;
 		f32 FogEnd;
 		f32 FogDensity;
+		SColor FogColor;
+		bool LinearFog;
 		bool PixelFog;
 		bool RangeFog;
-		SColor FogColor;
+
+		bool AllowZWriteOnTransparent;
 
 		SExposedVideoData ExposedData;
+
+		bool FeatureEnabled[video::EVDF_COUNT];
 	};
 
 } // end namespace video

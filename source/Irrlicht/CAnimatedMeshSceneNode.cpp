@@ -302,7 +302,6 @@ void CAnimatedMeshSceneNode::render()
 	// render original meshes
 	if ( renderMeshes )
 	{
-
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			video::IMaterialRenderer* rnd = driver->getMaterialRenderer(Materials[i].MaterialType);
@@ -330,9 +329,9 @@ void CAnimatedMeshSceneNode::render()
 	// for debug purposes only:
 	if (DebugDataVisible && PassCount==1)
 	{
-		mat.Lighting = false;
-		driver->setMaterial(mat);
-
+		video::SMaterial debug_mat;
+		debug_mat.Lighting = false;
+		driver->setMaterial(debug_mat);
 		// show normals
 		if ( DebugDataVisible & scene::EDS_NORMALS )
 		{
@@ -381,9 +380,13 @@ void CAnimatedMeshSceneNode::render()
 			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
-		mat.MaterialType = video::EMT_SOLID;
-		mat.ZBuffer = false;
-		driver->setMaterial(mat);
+		debug_mat.ZBuffer = false;
+		debug_mat.Lighting = false;
+		driver->setMaterial(debug_mat);
+
+		if ( DebugDataVisible & scene::EDS_BBOX )
+			driver->draw3DBox(Box, video::SColor(255,255,255,255));
+
 		// show bounding box
 		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
 		{
@@ -395,14 +398,9 @@ void CAnimatedMeshSceneNode::render()
 				if (Mesh->getMeshType() == EAMT_SKINNED)
 					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
 				driver->draw3DBox( mb->getBoundingBox(),
-						video::SColor(0,190,128,128) );
+						video::SColor(255,190,128,128) );
 			}
-			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
-
-		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		if ( DebugDataVisible & scene::EDS_BBOX )
-			driver->draw3DBox(Box, video::SColor(0,255,255,255));
 
 		// show skeleton
 		if ( DebugDataVisible & scene::EDS_SKELETON )
@@ -419,7 +417,7 @@ void CAnimatedMeshSceneNode::render()
 					{
 						driver->draw3DLine(joint->GlobalAnimatedMatrix.getTranslation(),
 								joint->Children[n]->GlobalAnimatedMatrix.getTranslation(),
-								video::SColor(0,51,66,255));
+								video::SColor(255,51,66,255));
 					}
 				}
 			}
@@ -437,11 +435,7 @@ void CAnimatedMeshSceneNode::render()
 				{
 					arrow = SceneManager->getMesh ( "__tag_show" );
 				}
-				IMesh *arrowMesh = arrow->getMesh ( 0 );
-
-				video::SMaterial material;
-				material.Lighting = false;
-				driver->setMaterial(material);
+				IMesh *arrowMesh = arrow->getMesh(0);
 
 				core::matrix4 matr;
 
@@ -452,12 +446,12 @@ void CAnimatedMeshSceneNode::render()
 				{
 					for ( u32 ts = 0; ts != taglist->size(); ++ts )
 					{
-						(*taglist)[ts].setto ( matr );
+						(*taglist)[ts].setto(matr);
 
 						driver->setTransform(video::ETS_WORLD, matr );
 
 						for ( u32 a = 0; a != arrowMesh->getMeshBufferCount(); ++a )
-							driver->drawMeshBuffer ( arrowMesh->getMeshBuffer ( a ) );
+							driver->drawMeshBuffer(arrowMesh->getMeshBuffer(a));
 					}
 				}
 			}
@@ -466,11 +460,10 @@ void CAnimatedMeshSceneNode::render()
 		// show mesh
 		if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
 		{
-			mat.Lighting = false;
-			mat.Wireframe = true;
-			mat.ZBuffer = true;
-			driver->setMaterial(mat);
-
+			debug_mat.Lighting = false;
+			debug_mat.Wireframe = true;
+			debug_mat.ZBuffer = true;
+			driver->setMaterial(debug_mat);
 
 			for (u32 g=0; g<m->getMeshBufferCount(); ++g)
 			{
@@ -584,7 +577,10 @@ IShadowVolumeSceneNode* CAnimatedMeshSceneNode::addShadowVolumeSceneNode(const I
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 {
 	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
+	{
+		os::Printer::log("No mesh, or mesh not of skinned mesh type", ELL_WARNING);
 		return 0;
+	}
 
 	checkJoints();
 
@@ -612,6 +608,14 @@ IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(const c8* jointName)
 //! the corresponding joint, if the mesh in this scene node is a skinned mesh.
 IBoneSceneNode* CAnimatedMeshSceneNode::getJointNode(u32 jointID)
 {
+	if (!Mesh || Mesh->getMeshType() != EAMT_SKINNED)
+	{
+		os::Printer::log("No mesh, or mesh not of skinned mesh type", ELL_WARNING);
+		return 0;
+	}
+
+	checkJoints();
+
 	if (JointChildSceneNodes.size() <= jointID)
 	{
 		os::Printer::log("Joint not loaded into node", ELL_WARNING);
@@ -685,10 +689,10 @@ bool CAnimatedMeshSceneNode::setMD2Animation(EMD2_ANIMATION_TYPE anim)
 	if (!Mesh || Mesh->getMeshType() != EAMT_MD2)
 		return false;
 
-	IAnimatedMeshMD2* m = (IAnimatedMeshMD2*)Mesh;
+	IAnimatedMeshMD2* md = (IAnimatedMeshMD2*)Mesh;
 
 	s32 begin, end, speed;
-	m->getFrameLoop(anim, begin, end, speed);
+	md->getFrameLoop(anim, begin, end, speed);
 
 	setAnimationSpeed( f32(speed) );
 	setFrameLoop(begin, end);
@@ -702,10 +706,10 @@ bool CAnimatedMeshSceneNode::setMD2Animation(const c8* animationName)
 	if (!Mesh || Mesh->getMeshType() != EAMT_MD2)
 		return false;
 
-	IAnimatedMeshMD2* m = (IAnimatedMeshMD2*)Mesh;
+	IAnimatedMeshMD2* md = (IAnimatedMeshMD2*)Mesh;
 
 	s32 begin, end, speed;
-	if (!m->getFrameLoop(animationName, begin, end, speed))
+	if (!md->getFrameLoop(animationName, begin, end, speed))
 		return false;
 
 	setAnimationSpeed( (f32)speed );
@@ -1027,6 +1031,45 @@ void CAnimatedMeshSceneNode::beginTransition()
 	}
 	TransitingBlend = 0.f;
 }
+
+ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* newManager)
+{
+	if (!newParent) newParent = Parent;
+	if (!newManager) newManager = SceneManager;
+
+	CAnimatedMeshSceneNode * newNode =
+		new CAnimatedMeshSceneNode(Mesh, newParent, newManager, ID, RelativeTranslation,
+						 RelativeRotation, RelativeScale);
+
+	newNode->cloneMembers(this, newManager);
+
+	newNode->Materials = Materials;
+	newNode->Box = Box;
+	newNode->Mesh = Mesh;
+	newNode->BeginFrameTime = BeginFrameTime;
+	newNode->StartFrame = StartFrame;
+	newNode->EndFrame = EndFrame;
+	newNode->FramesPerSecond = FramesPerSecond;
+	newNode->CurrentFrameNr = CurrentFrameNr;
+	newNode->JointMode = JointMode;
+	newNode->JointsUsed = JointsUsed;
+	newNode->TransitionTime = TransitionTime;
+	newNode->Transiting = Transiting;
+	newNode->TransitingBlend = TransitingBlend;
+	newNode->Looping = Looping;
+	newNode->ReadOnlyMaterials = ReadOnlyMaterials;
+	newNode->LoopCallBack = LoopCallBack;
+	newNode->PassCount = PassCount;
+	newNode->Shadow = Shadow;
+	newNode->JointChildSceneNodes = JointChildSceneNodes;
+	newNode->PretransitingSave = PretransitingSave;
+	newNode->RenderFromIdentity = RenderFromIdentity;
+	newNode->MD3Special = MD3Special;
+
+	(void)newNode->drop();
+	return newNode;
+}
+
 
 
 } // end namespace scene

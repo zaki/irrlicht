@@ -9,16 +9,18 @@
 //
 // See the header file for additional information including use and distribution rights.
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OCT_LOADER_
 
 #include "COCTLoader.h"
-#include "ISceneManager.h"
+#include "IVideoDriver.h"
+#include "IFileSystem.h"
 #include "os.h"
 #include "SAnimatedMesh.h"
 #include "SMeshBufferLightMap.h"
 #include "irrString.h"
 #include "CImage.h"
+#include "ISceneManager.h"
 
 namespace irr
 {
@@ -26,36 +28,34 @@ namespace scene
 {
 
 //! constructor
-COCTLoader::COCTLoader(video::IVideoDriver* driver)
-: Driver(driver)
+COCTLoader::COCTLoader(ISceneManager* smgr, io::IFileSystem* fs)
+	: SceneManager(smgr), FileSystem(fs)
 {
 	#ifdef _DEBUG
-	IReferenceCounted::setDebugName("COCTLoader");
-	#endif	
-
-	if (Driver) 
-		Driver->grab();
+	setDebugName("COCTLoader");
+	#endif
+	if (FileSystem)
+		FileSystem->grab();
 }
 
 
 //! destructor
 COCTLoader::~COCTLoader()
 {
-	if (Driver) 
-		Driver->drop();
+	if (FileSystem)
+		FileSystem->drop();
 }
 
 
-
 // Doesn't really belong here, but it's jammed in for now.
-void COCTLoader::OCTLoadLights(io::IReadFile* file, scene::ISceneManager * scene, scene::ISceneNode * parent, f32 radius, f32 intensityScale, bool rewind)
+void COCTLoader::OCTLoadLights(io::IReadFile* file, scene::ISceneNode * parent, f32 radius, f32 intensityScale, bool rewind)
 {
 	if (rewind)
 		file->seek(0);
 
 	octHeader header;
 	file->read(&header, sizeof(octHeader));
- 	
+
 	file->seek(sizeof(octVert)*header.numVerts, true);
 	file->seek(sizeof(octFace)*header.numFaces, true);
 	file->seek(sizeof(octTexture)*header.numTextures, true);
@@ -70,16 +70,10 @@ void COCTLoader::OCTLoadLights(io::IReadFile* file, scene::ISceneManager * scene
 	{
 		const f32 intensity = lights[i].intensity * intensityScale;
 
-		scene->addLightSceneNode(parent, core::vector3df(lights[i].pos[0], lights[i].pos[2], lights[i].pos[1]), 
+		SceneManager->addLightSceneNode(parent, core::vector3df(lights[i].pos[0], lights[i].pos[2], lights[i].pos[1]),
 			video::SColorf(lights[i].color[0] * intensity, lights[i].color[1] * intensity, lights[i].color[2] * intensity, 1.0f),
 			radius);
 	}
-}
-
-
-//! given three points representing a face, return a face normal
-core::vector3df COCTLoader::GetFaceNormal(f32 a[3], f32 b[3], f32 c[3]) {
-	return core::plane3df(core::vector3df(a[0],a[1],a[2]), core::vector3df(b[0],c[1],c[2]), core::vector3df(c[0],c[1],c[2])).Normal;
 }
 
 
@@ -87,7 +81,7 @@ core::vector3df COCTLoader::GetFaceNormal(f32 a[3], f32 b[3], f32 c[3]) {
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 //! See IReferenceCounted::drop() for more information.
-IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file) 
+IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 {
 	if (!file)
 		return 0;
@@ -110,7 +104,7 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		octTexture t;
 		file->read(&t, sizeof(octTexture));
 		textures[t.id] = t;
-	}	
+	}
 	for (i = 0; i < header.numLightmaps; i++) {
 		octLightmap t;
 		file->read(&t, sizeof(octLightmap));
@@ -119,7 +113,7 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 	file->read(lights, sizeof(octLight) * header.numLights);
 
 	//TODO: Now read in my extended OCT header (flexible lightmaps and vertex normals)
-	
+
 
 	// This is the method Nikolaus Gebhardt used in the Q3 loader -- create a
 	// meshbuffer for every possible combination of lightmap and texture including
@@ -137,23 +131,24 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		buffer->drop();
 	}
 
-	
+
 	// Build the mesh buffers
 	for (i = 0; i < header.numFaces; i++)
 	{
 		if (faces[i].numVerts < 3)
 			continue;
 
+		const f32* const a = verts[faces[i].firstVert].pos;
+		const f32* const b = verts[faces[i].firstVert+1].pos;
+		const f32* const c = verts[faces[i].firstVert+2].pos;
 		const core::vector3df normal =
-			GetFaceNormal(verts[faces[i].firstVert].pos,
-					verts[faces[i].firstVert+1].pos,
-					verts[faces[i].firstVert+2].pos);
+			core::plane3df(core::vector3df(a[0],a[1],a[2]), core::vector3df(b[0],c[1],c[2]), core::vector3df(c[0],c[1],c[2])).Normal;
 
 		const u32 textureID = core::min_(s32(faces[i].textureID), s32(header.numTextures - 1)) + 1;
 		const u32 lightmapID = core::min_(s32(faces[i].lightmapID),s32(header.numLightmaps - 1)) + 1;
 		SMeshBufferLightMap * meshBuffer = (SMeshBufferLightMap*)Mesh->getMeshBuffer(lightmapID * (header.numTextures + 1) + textureID);
 		const u32 base = meshBuffer->Vertices.size();
-		
+
 		// Add this face's verts
 		u32 v;
 		for (v = 0; v < faces[i].numVerts; ++v)
@@ -182,33 +177,39 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		// Now add the indices
 		// This weird loop turns convex polygons into triangle strips.
 		// I do it this way instead of a simple fan because it usually looks a lot better in wireframe, for example.
-		u32 h = faces[i].numVerts - 1, l = 0, c; // High, Low, Center
+		// High, Low
+		u32 h = faces[i].numVerts - 1;
+		u32 l = 0;
 		for (v = 0; v < faces[i].numVerts - 2; ++v)
 		{
-			if (v & 1)
-				c = h - 1;
-			else
-				c = l + 1;
+			const u32 center = (v & 1)? h - 1: l + 1;
 
 			meshBuffer->Indices.push_back(base + h);
 			meshBuffer->Indices.push_back(base + l);
-			meshBuffer->Indices.push_back(base + c);
+			meshBuffer->Indices.push_back(base + center);
 
 			if (v & 1)
 				--h;
 			else
 				++l;
 		}
-	} 
+	}
 
 	// load textures
 	core::array<video::ITexture*> tex;
-	tex.set_used(header.numTextures + 1);
-	tex[0] = 0;
-	
+	tex.reallocate(header.numTextures + 1);
+	tex.push_back(0);
+
+	const core::stringc relpath = FileSystem->getFileDir(file->getFileName())+"/";
 	for (i = 1; i < (header.numTextures + 1); i++)
 	{
-		tex[i] = Driver->getTexture(textures[i-1].fileName);
+		core::stringc path(textures[i-1].fileName);
+		path.replace('\\','/');
+		if (FileSystem->existFile(path))
+			tex.push_back(SceneManager->getVideoDriver()->getTexture(path));
+		else
+			// try to read in the relative path of the OCT file
+			tex.push_back(SceneManager->getVideoDriver()->getTexture( (relpath + path).c_str() ));
 	}
 
 	// prepare lightmaps
@@ -220,8 +221,8 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 	const u32 lightmapHeight = 128;
 	const core::dimension2d<s32> lmapsize(lightmapWidth, lightmapHeight);
 
-	bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
-	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+	bool oldMipMapState = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
+	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 	video::CImage tmpImage(video::ECF_R8G8B8, lmapsize);
 	for (i = 1; i < (header.numLightmaps + 1); ++i)
@@ -244,10 +245,9 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 			}
 		}
 
-		lig[i] = Driver->addTexture(lightmapname.c_str(), &tmpImage);
+		lig[i] = SceneManager->getVideoDriver()->addTexture(lightmapname.c_str(), &tmpImage);
 	}
-	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
-
+	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
 
 	// Free stuff
 	delete [] verts;
@@ -255,7 +255,6 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 	delete [] textures;
 	delete [] lightmaps;
 	delete [] lights;
-
 
 	// attach materials
 	for (i = 0; i < header.numLightmaps + 1; i++)
@@ -284,7 +283,6 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		}
 	}
 
-
 	// delete all buffers without geometry in it.
 	i = 0;
 	while(i < Mesh->MeshBuffers.size())
@@ -295,7 +293,7 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 		{
 			// Meshbuffer is empty -- drop it
 			Mesh->MeshBuffers[i]->drop();
-			Mesh->MeshBuffers.erase(i);		
+			Mesh->MeshBuffers.erase(i);
 		}
 		else
 		{

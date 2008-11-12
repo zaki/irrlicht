@@ -26,9 +26,6 @@ namespace video
 		//! destructor
 		virtual ~CBurningVideoDriver();
 
-		//! presents the rendered scene on the screen, returns false if failed
-		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 );
-
 		//! queries the features of the driver, returns true if feature is available
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const;
 
@@ -45,7 +42,13 @@ namespace video
 		virtual void setViewPort(const core::rect<s32>& area);
 
 		//! clears the zbuffer
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color);
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0);
+
+		//! presents the rendered scene on the screen, returns false if failed
+		virtual bool endScene();
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
@@ -96,6 +99,9 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255));
 
+		//! Draws a single pixel
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
+
 		//! \return Returns the name of the video driver. Example: In case of the DirectX8
 		//! driver, it would return "Direct3D8.1".
 		virtual const wchar_t* getName() const;
@@ -110,7 +116,7 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Creates a render target texture.
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name);
 
 		//! Clears the DepthBuffer.
 		virtual void clearZBuffer();
@@ -157,6 +163,9 @@ namespace video
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;
+
+		void* WindowId;
+		core::rect<s32>* SceneSourceRect;
 
 		video::ITexture* RenderTargetTexture;
 		video::IImage* RenderTargetSurface;

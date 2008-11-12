@@ -279,6 +279,9 @@ namespace scene
 		virtual void preRenderLODCalculations();
 		virtual void preRenderIndicesCalculations();
 
+		template<class INDEX_TYPE>
+		void preRenderIndicesCalculationsDirect(INDEX_TYPE* IndexBuffer);
+
 		//! get indices when generating index data for patches at varying levels of detail.
 		u32 getIndex(const s32 PatchX, const s32 PatchZ, const s32 PatchIndex, u32 vX, u32 vZ) const;
 
@@ -321,8 +324,10 @@ namespace scene
 
 		core::vector3df	OldCameraPosition;
 		core::vector3df	OldCameraRotation;
+		f32				OldCameraFOV;
 		f32 CameraMovementDelta;
 		f32 CameraRotationDelta;
+		f32 CameraFOVDelta;
 
 		// needed for (de)serialization
 		f32 TCoordScale1;

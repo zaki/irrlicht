@@ -1,5 +1,5 @@
-VERSION = 1.4
-# Irrlicht Engine 1.4
+VERSION = 1.4.2
+# Irrlicht Engine 1.4.2
 # Makefile for Linux
 #
 # To use, just run:
@@ -20,7 +20,7 @@ VERSION = 1.4
 
 #List of object files, separated based on engine architecture
 IRRMESHLOADER = CBSPMeshFileLoader.o CMD2MeshFileLoader.o CMD3MeshFileLoader.o CMS3DMeshFileLoader.o CB3DMeshFileLoader.o C3DSMeshFileLoader.o COgreMeshFileLoader.o COBJMeshFileLoader.o CColladaFileLoader.o CCSMLoader.o CDMFLoader.o CLMTSMeshFileLoader.o CMY3DMeshFileLoader.o COCTLoader.o CXMeshFileLoader.o CIrrMeshFileLoader.o CSTLMeshFileLoader.o CLWOMeshFileLoader.o
-IRRMESHWRITER = CColladaMeshWriter.o CIrrMeshWriter.o CSTLMeshWriter.o
+IRRMESHWRITER = CColladaMeshWriter.o CIrrMeshWriter.o CSTLMeshWriter.o COBJMeshWriter.o
 IRRMESHOBJ = $(IRRMESHLOADER) $(IRRMESHWRITER) \
 	CSkinnedMesh.o CBoneSceneNode.o CMeshSceneNode.o \
 	CAnimatedMeshSceneNode.o CAnimatedMeshMD2.o CAnimatedMeshMD3.o \
@@ -60,8 +60,8 @@ CXXFLAGS += -pg
 endif
 CFLAGS := -fexpensive-optimizations -O3 -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
 
-sharedlib : CXXFLAGS += -fpic
-sharedlib : CFLAGS += -fpic
+sharedlib sharedlib_osx: CXXFLAGS += -fpic
+sharedlib sharedlib_osx: CFLAGS += -fpic
 
 #multilib handling
 ifeq ($(HOSTTYPE), x86_64)
@@ -70,14 +70,16 @@ endif
 
 #Linux specific options
 STATIC_LIB = libIrrlicht.a
-SHARED_LIB = libIrrlicht.so
 IRRLICHT_DLL := ../../bin/Win32-gcc/Irrlicht.dll
 LIB_PATH = ../../lib/$(SYSTEM)
 INSTALL_DIR = /usr/local/lib
 staticlib sharedlib install: SYSTEM = Linux
-staticlib sharedlib : LDFLAGS = --no-export-all-symbols --add-stdcall-alias
-sharedlib : LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
-staticlib sharedlib : CXXINCS += -I/usr/X11R6/include
+staticlib_osx sharedlib_osx install_osx: SYSTEM = MacOSX
+sharedlib: SHARED_LIB = libIrrlicht.so
+sharedlib_osx: SHARED_LIB = libIrrlicht.dylib
+staticlib sharedlib staticlib_osx sharedlib_osx: LDFLAGS = --no-export-all-symbols --add-stdcall-alias
+sharedlib sharedlib_osx: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
+staticlib sharedlib staticlib_osx sharedlib_osx: CXXINCS += -I/usr/X11R6/include
 
 #Windows specific options
 sharedlib_win32 staticlib_win32: SYSTEM = Win32-gcc
@@ -99,7 +101,7 @@ $(STATIC_LIB): $(LINKOBJ)
 	$(AR) rs $@ $^
 
 # Copies static lib into /lib/Linux
-staticlib: $(STATIC_LIB)
+staticlib staticlib_osx: $(STATIC_LIB)
 	cp $^ $(LIB_PATH)
 
 # Builds Irrlicht as dll (Irrlicht.dll) into ../../bin/Win32-gcc
@@ -111,10 +113,20 @@ sharedlib_win32: $(IRRLICHT_DLL)
 staticlib_win32: $(STATIC_LIB)
 	cp $^ $(LIB_PATH)
 
+# Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/Linux
+sharedlib_osx: $(LINKOBJ)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).1 -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
+
 # Installs Irrlicht if it was created as shared lib
 install:
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
 	cd $(INSTALL_DIR) && ln -s libIrrlicht.so.$(VERSION) $(SHARED_LIB)
+	ldconfig -n $(INSTALL_DIR)
+
+install_osx:
+	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
+	cd $(INSTALL_DIR) && ln -s libIrrlicht.dylib.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
 
 # Create dependency files for automatic recompilation

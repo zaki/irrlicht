@@ -65,6 +65,17 @@ namespace video
 		ETS_COUNT
 	};
 
+	enum E_LOST_RESSOURCE
+	{
+		//! The whole device/driver is lost
+		ELR_DEVICE = 1,
+		//! All texture are lost, rare problem
+		ELR_TEXTURES = 2,
+		//! The Render Target Textures are lost, typical problem for D3D
+		ELR_RTTS = 4,
+		//! The HW buffers are lost, will be recreated automatically, but might require some more time this frame
+		ELR_HW_BUFFERS = 8
+	};
 
 	//! Interface to driver which is able to perform 2d and 3d graphics functions.
 	/** This interface is one of the most important interfaces of
@@ -88,29 +99,43 @@ namespace video
 		be cleared. It is not nesesarry to do so if only 2d drawing is
 		used.
 		\param color The color used for back buffer clearing
+		\param windowId Handle of another window, if you want the
+		bitmap to be displayed on another window. If this is null,
+		everything will be displayed in the default window.
+		Note: This feature is not fully implemented for all devices.
+		\param sourceRect Pointer to a rectangle defining the source
+		rectangle of the area to be presented. Set to null to present
+		everything. Note: not implemented in all devices.
 		\return False if failed. */
-		virtual bool beginScene(bool backBuffer, bool zBuffer, SColor color) = 0;
+		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+				SColor color=SColor(255,0,0,0),
+				void* windowId=0,
+				core::rect<s32>* sourceRect=0) = 0;
 
 		//! Presents the rendered image to the screen.
 		/** Applications must call this method after performing any
 		rendering.
-		\param windowId Handle of another window, if you want the
-		bitmap to be displayed on another window. If this is null,
-		everything will be displayed in the default window.
-		Note: This does not work in fullscreen mode and is not
-		implemented for all devices (only for D3D8, D3D9, Software1 and
-		Software2, and only for Windows).
-		\param sourceRect Pointer to a rectangle defining the source
-		rectangle of the area to be presented. Set to null to present
-		everything. Note: not implemented in all devices.
 		\return False if failed and true if succeeded. */
-		virtual bool endScene( void* windowId=0, core::rect<s32>* sourceRect=0 ) = 0;
+		virtual bool endScene() = 0;
 
 		//! Queries the features of the driver.
 		/** Returns true if a feature is available
 		\param feature Feature to query.
 		\return True if the feature is available, false if not. */
 		virtual bool queryFeature(E_VIDEO_DRIVER_FEATURE feature) const = 0;
+
+		//! Disable a feature of the driver.
+		/** Can also be used to enable the features again. It is not
+		possible to enable unsupported features this way, though.
+		\param feature Feature to disable.
+		\param flag When true the feature is disabled, otherwise it is enabled. */
+		virtual void disableFeature(E_VIDEO_DRIVER_FEATURE feature, bool flag=true) =0;
+
+		//! Check if the driver was recently reset.
+		/** For d3d devices you will need to recreate the RTTs if the
+		driver was reset. Should be queried right after beginScene().
+		*/
+		virtual bool checkDriverReset() =0;
 
 		//! Sets transformation matrices.
 		/** \param state Transformation type to be set, e.g. view,
@@ -146,6 +171,18 @@ namespace video
 		Texture loading can be influenced using the
 		setTextureCreationFlag() method. The texture can be in several
 		imageformats, such as BMP, JPG, TGA, PCX, PNG, and PSD.
+		\param filename Filename of the texture to be loaded.
+		\return Pointer to the texture, or 0 if the texture
+		could not be loaded. This pointer should not be dropped. See
+		IReferenceCounted::drop() for more information. */
+		virtual ITexture* getTexture(const core::stringc& filename) = 0;
+
+		//! Get access to a named texture.
+		/** Loads the texture from disk if it is not
+		already loaded and generates mipmap levels if desired.
+		Texture loading can be influenced using the
+		setTextureCreationFlag() method. The texture can be in several
+		imageformats, such as BMP, JPG, TGA, PCX, PNG, and PSD.
 		\param file Pointer to an already opened file.
 		\return Pointer to the texture, or 0 if the texture
 		could not be loaded. This pointer should not be dropped. See
@@ -167,7 +204,7 @@ namespace video
 
 		//! Renames a texture
 		/** \param texture Pointer to the texture to rename.
-		\param newName New name for the texture. */
+		\param newName New name for the texture. This should be a unique name. */
 		virtual void renameTexture(ITexture* texture, const c8* newName) = 0;
 
 		//! Creates an empty texture of specified size.
@@ -192,17 +229,22 @@ namespace video
 		information. */
 		virtual ITexture* addTexture(const c8* name, IImage* image) = 0;
 
-		//! Creates a render target texture.
+		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
 		height should be a power of two (e.g. 64, 128, 256, 512, ...)
 		and it should not be bigger than the backbuffer, because it
 		shares the zbuffer with the screen buffer.
 		\param name An optional name for the RTT.
 		\return Pointer to the created texture or 0 if the texture
-		could not be created. If you no longer need the image, you
-		should call ITexture::drop(). See IReferenceCounted::drop()
-		for more information. */
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name = 0) = 0;
+		could not be created. This pointer should not be dropped. See
+		IReferenceCounted::drop() for more information. */
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name=0) =0;
+
+		//! Adds a new render target texture
+		/** \deprecated use addRenderTargetTexture instead. */
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size,
+				const c8* name=0) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
 		/** This method can free a lot of memory!
@@ -271,7 +313,7 @@ namespace video
 		way:
 		\code
 		// create render target
-		ITexture* target = driver->createRenderTargetTexture(core::dimension2d<s32>(128,128));
+		ITexture* target = driver->addRenderTargetTexture(core::dimension2d<s32>(128,128), "rtt1");
 
 		// ...
 
@@ -283,21 +325,17 @@ namespace video
 		render target as texture on it when you are rendering the scene
 		into this render target at the same time. It is usually only
 		possible to render into a texture between the
-		IVideoDriver::beginScene() and endScene() method calls. And
-		please also note that the scene will be rendered upside down
-		into the texture in some drivers (e.g. OpenGL vs. D3D). A
-		simple workaround for this is to flip the texture coordinates
-		of the geometry where the render target texture is displayed on.
+		IVideoDriver::beginScene() and endScene() method calls.
 		\param texture New render target. Must be a texture created with
-		IVideoDriver::createRenderTargetTexture(). If set to 0, it sets
+		IVideoDriver::addRenderTargetTexture(). If set to 0, it sets
 		the previous render target which was set before the last
 		setRenderTarget() call.
 		\param clearBackBuffer Clears the backbuffer of the render
 		target with the color parameter
 		\param clearZBuffer Clears the zBuffer of the rendertarget.
-		Note that, because the frame buffer shares the zbuffer with the
-		rendertarget, its zbuffer will be partially cleared too with
-		this.
+		Note that because the frame buffer may share the zbuffer with
+		the rendertarget, its zbuffer might be partially cleared too
+		by this.
 		\param color The background color for the render target.
 		\return True if sucessful and false if not. */
 		virtual bool setRenderTarget(video::ITexture* texture,
@@ -552,6 +590,11 @@ namespace video
 					const core::position2d<s32>& end,
 					SColor color=SColor(255,255,255,255)) = 0;
 
+		//! Draws a pixel.
+		/** \param position: the position of the pixel.
+		\param color: Color of the pixel to draw. */
+		virtual void drawPixel(u32 x, u32 y, const SColor & color) = 0; 
+
 		//! Draws a non filled concyclic regular 2d polyon.
 		/** This method can be used to draw circles, but also
 		triangles, tetragons, pentagons, hexagons, heptagons, octagons,
@@ -653,7 +696,11 @@ namespace video
 		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const = 0;
 
 		//! Returns current frames per second value.
-		/** \return Amount of frames per second drawn. */
+		/** This value is updated approximately every 1.5 seconds and
+		is only intended to provide a rough guide to the average frame
+		rate. It is not suitable for use in performing timing
+		calculations or framerate independent movement.
+		\return Approximate amount of frames per second drawn. */
 		virtual s32 getFPS() const = 0;
 
 		//! Returns amount of primitives (mostly triangles) which were drawn in the last frame.
@@ -808,8 +855,9 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-                virtual IImage* createImage(IImage* imageToCopy,
-		    const core::position2d<s32>& pos, const core::dimension2d<s32>& size) =0;
+		virtual IImage* createImage(IImage* imageToCopy,
+				const core::position2d<s32>& pos,
+				const core::dimension2d<s32>& size) =0;
 
 		//! Event handler for resize events. Only used by the engine internally.
 		/** Used to notify the driver that the window was resized.
@@ -948,15 +996,20 @@ namespace video
 		it. */
 		virtual void enableClipPlane(u32 index, bool enable) = 0;
 
-		//! Sets the driver's ambient light color. Only used by the engine internally.
-		/** This color is set in the scene manager, see
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo() = 0;
+
+		//! Only used by the engine internally.
+		/** The ambient color is set in the scene manager, see
 		scene::ISceneManager::setAmbientLight().
 		\param color New color of the ambient light. */
 		virtual void setAmbientLight(const SColorf& color) = 0;
 
-		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() = 0;
-
+		//! Only used by the engine internally.
+		/** Passes the global material flag AllowZWriteOnTransparent.
+		Use the SceneManager attribute to set this value from your app.
+		\param flag Default behavior is to disable ZWrite, i.e. false. */
+		virtual void setAllowZWriteOnTransparent(bool flag) = 0;
 	};
 
 } // end namespace video
