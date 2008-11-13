@@ -552,7 +552,7 @@ public:
 
 	//! finds first occurrence of character in string
 	/** \param c: Character to search for.
-	\return Returns position where the character has been found,
+	\return Position where the character has been found,
 	or -1 if not found. */
 	s32 findFirst(T c) const
 	{
@@ -568,7 +568,7 @@ public:
 	should find the first occurrence of 'a' or 'b', this parameter should be "ab".
 	\param count: Amount of characters in the list. Usually,
 	this should be strlen(c)
-	\return Returns position where one of the characters has been found,
+	\return Position where one of the characters has been found,
 	or -1 if not found. */
 	s32 findFirstChar(const T* const c, u32 count) const
 	{
@@ -589,7 +589,7 @@ public:
 	should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
 	\param count: Amount of characters in the list. Usually,
 	this should be strlen(c)
-	\return Returns position where the character has been found,
+	\return Position where the character has been found,
 	or -1 if not found. */
 	template <class B>
 	s32 findFirstCharNotInList(const B* const c, u32 count) const
@@ -613,7 +613,7 @@ public:
 	should find the first occurrence of a character not 'a' or 'b', this parameter should be "ab".
 	\param count: Amount of characters in the list. Usually,
 	this should be strlen(c)
-	\return Returns position where the character has been found,
+	\return Position where the character has been found,
 	or -1 if not found. */
 	template <class B>
 	s32 findLastCharNotInList(const B* const c, u32 count) const
@@ -635,7 +635,7 @@ public:
 	//! finds next occurrence of character in string
 	/** \param c: Character to search for.
 	\param startPos: Position in string to start searching.
-	\return Returns position where the character has been found,
+	\return Position where the character has been found,
 	or -1 if not found. */
 	s32 findNext(T c, u32 startPos) const
 	{
@@ -648,10 +648,10 @@ public:
 
 
 	//! finds last occurrence of character in string
-	//! \param c: Character to search for.
-	//! \param start: start to search reverse ( default = -1, on end )
-	//! \return Returns position where the character has been found,
-	//! or -1 if not found.
+	/** \param c: Character to search for.
+	\param start: start to search reverse ( default = -1, on end )
+	\return Position where the character has been found,
+	or -1 if not found. */
 	s32 findLast(T c, s32 start = -1) const
 	{
 		start = core::clamp ( start < 0 ? (s32)(used) - 1 : start, 0, (s32)(used) - 1 );
@@ -667,7 +667,7 @@ public:
 	should find the last occurrence of 'a' or 'b', this parameter should be "ab".
 	\param count: Amount of characters in the list. Usually,
 	this should be strlen(c)
-	\return Returns position where one of the characters has been found,
+	\return Position where one of the characters has been found,
 	or -1 if not found. */
 	s32 findLastChar(const T* const c, u32 count) const
 	{
@@ -684,9 +684,9 @@ public:
 
 
 	//! finds another string in this string
-	//! \param str: Another string
-	//! \return Returns positions where the string has been found,
-	//! or -1 if not found.
+	/** \param str: Another string
+	\return Positions where the string has been found,
+	or -1 if not found. */
 	template <class B>
 	s32 find(const B* const str) const
 	{
@@ -717,8 +717,8 @@ public:
 
 
 	//! Returns a substring
-	//! \param begin: Start of substring.
-	//! \param length: Length of substring.
+	/** \param begin: Start of substring.
+	\param length: Length of substring. */
 	string<T> subString(u32 begin, s32 length) const
 	{
 		// if start after string
