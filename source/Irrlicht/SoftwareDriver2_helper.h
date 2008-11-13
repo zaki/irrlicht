@@ -118,7 +118,7 @@ REALINLINE void memcpy32_small ( void * dest, const void *source, u32 bytesize )
 // integer log2 of a float ieee 754. TODO: non ieee floating point
 static inline s32 s32_log2_f32( f32 f)
 {
-	u32 x = IR ( f );
+	u32 x = core::IR ( f );
 
 	return ((x & 0x7F800000) >> 23) - 127;
 }
@@ -133,10 +133,6 @@ static inline s32 s32_abs(s32 x)
 	s32 b = x >> 31;
 	return (x ^ b ) - b;
 }
-
-
-// TODO: don't stick on 32 Bit Pointer
-#define PointerAsValue(x) ( (u32) (u32*) (x) ) 
 
 
 //! conditional set based on mask and arithmetic shift
