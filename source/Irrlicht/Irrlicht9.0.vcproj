@@ -752,11 +752,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\SSkinMeshBuffer.h"
+					RelativePath="..\..\include\SParticle.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\SParticle.h"
+					RelativePath="..\..\include\SSkinMeshBuffer.h"
 					>
 				</File>
 				<File
@@ -1652,6 +1652,30 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="OpenGL-ES1"
+				>
+				<File
+					RelativePath=".\COGLESDriver.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\COGLESDriver.h"
+					>
+				</File>
+				<File
+					RelativePath=".\COGLESMaterialRenderer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\COGLESTexture.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\COGLESTexture.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="scene impl"
@@ -2272,19 +2296,19 @@
 					>
 				</File>
 				<File
-					RelativePath="CSTLMeshWriter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CSTLMeshWriter.h"
-					>
-				</File>
-				<File
 					RelativePath="COBJMeshWriter.cpp"
 					>
 				</File>
 				<File
 					RelativePath="COBJMeshWriter.h"
+					>
+				</File>
+				<File
+					RelativePath="CSTLMeshWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CSTLMeshWriter.h"
 					>
 				</File>
 			</Filter>

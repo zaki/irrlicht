@@ -314,7 +314,7 @@ const core::dimension2d<s32>& COGLES1Texture::getSize() const
 //! returns driver type of texture, i.e. the driver, which created the texture
 E_DRIVER_TYPE COGLES1Texture::getDriverType() const
 {
-	return EDT_OPENGL;
+	return EDT_OGLES1;
 }
 
 

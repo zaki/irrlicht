@@ -25,6 +25,9 @@
 
 #include <GLES/egl.h>
 #include <GLES/gl.h>
+#ifdef _MSC_VER
+	#pragma comment(lib, "libgles_cm.lib")
+#endif
 
 namespace irr
 {
