@@ -18,6 +18,7 @@
 #include "COSOperator.h"
 #include "CColorConverter.h"
 #include "SIrrCreationParameters.h"
+#include "SExposedVideoData.h"
 #include <X11/XKBlib.h>
 
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
@@ -39,6 +40,10 @@ namespace irr
 	namespace video
 	{
 		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+				io::IFileSystem* io);
+
+		IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
+				video::SExposedVideoData& data,
 				io::IFileSystem* io);
 	}
 } // end namespace irr
@@ -678,6 +683,19 @@ void CIrrDeviceLinux::createDriver()
 			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
 	#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
+	#endif
+		break;
+
+	case video::EDT_OGLES1:
+	#ifdef _IRR_COMPILE_WITH_OGLES1_
+		{
+			video::SExposedVideoData data;
+			data.OpenGLLinux.X11Window = window;
+			data.OpenGLLinux.X11Display = display;
+			VideoDriver = video::createOGLES1Driver(CreationParams, data, FileSystem);
+		}
+	#else
+		os::Printer::log("No OpenGL-ES1 support compiled in.", ELL_ERROR);
 	#endif
 		break;
 
