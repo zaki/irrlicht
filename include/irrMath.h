@@ -223,6 +223,8 @@ namespace core
 		in general: number = (sign ? -1:1) * 2^(exponent) * 1.(mantissa bits)
 	*/
 
+	typedef union { u32 u; s32 s; f32 f; } inttofloat;
+
 	#define F32_AS_S32(f)		(*((s32 *) &(f)))
 	#define F32_AS_U32(f)		(*((u32 *) &(f)))
 	#define F32_AS_U32_POINTER(f)	( ((u32 *) &(f)))
@@ -234,13 +236,22 @@ namespace core
 
 	//! code is taken from IceFPU
 	//! Integer representation of a floating-point value.
-	#define IR(x)				((u32&)(x))
+#ifdef IRRLICHT_FAST_MATH
+	#define IR(x)                           ((u32&)(x))
+#else
+	inline u32 IR(f32 x) {inttofloat tmp; tmp.f=x; return tmp.u;}
+#endif
 
 	//! Absolute integer representation of a floating-point value
 	#define AIR(x)				(IR(x)&0x7fffffff)
 
 	//! Floating-point representation of an integer value.
-	#define FR(x)				((f32&)(x))
+#ifdef IRRLICHT_FAST_MATH
+	#define FR(x)                           ((f32&)(x))
+#else
+	inline f32 FR(u32 x) {inttofloat tmp; tmp.u=x; return tmp.f;}
+	inline f32 FR(s32 x) {inttofloat tmp; tmp.s=x; return tmp.f;}
+#endif
 
 	//! integer representation of 1.0
 	#define IEEE_1_0			0x3f800000
@@ -300,8 +311,6 @@ namespace core
 		//s32 conmask = -condition >> 31;
 		state ^= ( ( -condition >> 31 ) ^ state ) & mask;
 	}
-
-
 
 	inline f32 round_( f32 x )
 	{
