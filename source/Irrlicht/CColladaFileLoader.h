@@ -340,6 +340,7 @@ private:
 	core::stringc FirstLoadedMeshName;
 	s32 LoadedMeshCount;
 	u32 Version;
+	bool FlipAxis;
 
 	core::array<IColladaPrefab*> Prefabs;
 	core::array<SColladaParam> ColladaParameters;
