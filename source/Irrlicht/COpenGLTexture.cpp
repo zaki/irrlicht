@@ -22,33 +22,44 @@ namespace video
 
 //! constructor for usual textures
 COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDriver* driver)
-	: ITexture(name), Driver(driver), Image(0),
+	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
 	IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false)
+	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
 	#endif
 
+	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageData(origImage);
 
-	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
-	if (Image)
+	glGenTextures(1, &TextureName);
+
+	if (ImageSize==TextureSize)
+		Image = new CImage(ColorFormat, origImage);
+	else
 	{
-		glGenTextures(1, &TextureName);
-		copyTexture();
+		Image = new CImage(ColorFormat, TextureSize);
+		// scale texture
+		origImage->copyToScaling(Image);
+	}
+	copyTexture();
+	if (!KeepImage)
+	{
+		Image->drop();
+		Image=0;
 	}
 }
 
 //! constructor for basic setup (only for derived classes)
 COpenGLTexture::COpenGLTexture(const char* name, COpenGLDriver* driver)
-	: ITexture(name), Driver(driver), Image(0),
+	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
 	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
-	ReadOnlyLock(false)
+	ReadOnlyLock(false), KeepImage(true)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLTexture");
@@ -124,34 +135,22 @@ void COpenGLTexture::getImageData(IImage* image)
 		return;
 	}
 
-	const core::dimension2d<s32> nImageSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
-	ECOLOR_FORMAT destFormat = getBestColorFormat(image->getColorFormat());
-	if (ImageSize==nImageSize)
-		Image = new CImage(destFormat, image);
-	else
-	{
-		Image = new CImage(destFormat, nImageSize);
-		// scale texture
-		image->copyToScaling(Image);
-	}
+	ColorFormat = getBestColorFormat(image->getColorFormat());
 }
 
 
 //! copies the the texture into an open gl texture.
 void COpenGLTexture::copyTexture(bool newTexture)
 {
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	if (Driver->testGLError())
-		os::Printer::log("Could not bind Texture", ELL_ERROR);
-
 	if (!Image)
 	{
 		os::Printer::log("No image for OpenGL texture to upload", ELL_ERROR);
 		return;
 	}
 
-	switch (Image->getColorFormat())
+	switch (ColorFormat)
 	{
 		case ECF_A1R5G5B5:
 			InternalFormat=GL_RGBA;
@@ -178,6 +177,10 @@ void COpenGLTexture::copyTexture(bool newTexture)
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
 			break;
 	}
+
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	if (Driver->testGLError())
+		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
 	if (newTexture)
 	{
@@ -230,10 +233,14 @@ void* COpenGLTexture::lock(bool readOnly)
 {
 	ReadOnlyLock |= readOnly;
 
-	if (!Image)
-		Image = new CImage(ECF_A8R8G8B8, ImageSize);
-	if (IsRenderTarget)
+	if (!Image || IsRenderTarget)
 	{
+		// prepare the data storage if necessary
+		if (!Image)
+			Image = new CImage(ECF_A8R8G8B8, ImageSize);
+		if (!Image)
+			return 0;
+
 		u8* pPixels = static_cast<u8*>(Image->lock());
 		if (!pPixels)
 		{
@@ -284,10 +291,17 @@ void* COpenGLTexture::lock(bool readOnly)
 //! unlock function
 void COpenGLTexture::unlock()
 {
+	if (!Image)
+		return;
 	Image->unlock();
 	if (!ReadOnlyLock)
 		copyTexture(false);
 	ReadOnlyLock = false;
+	if (!KeepImage)
+	{
+		Image->drop();
+		Image=0;
+	}
 }
 
 
@@ -301,10 +315,7 @@ const core::dimension2d<s32>& COpenGLTexture::getOriginalSize() const
 //! Returns size of the texture.
 const core::dimension2d<s32>& COpenGLTexture::getSize() const
 {
-	if (Image)
-		return Image->getDimension();
-	else
-		return ImageSize;
+	return TextureSize;
 }
 
 
@@ -318,10 +329,7 @@ E_DRIVER_TYPE COpenGLTexture::getDriverType() const
 //! returns color format of texture
 ECOLOR_FORMAT COpenGLTexture::getColorFormat() const
 {
-	if (Image)
-		return Image->getColorFormat();
-	else
-		return ECF_A8R8G8B8;
+	return ColorFormat;
 }
 
 
@@ -354,7 +362,7 @@ bool COpenGLTexture::hasMipMaps() const
 //! modifying the texture
 void COpenGLTexture::regenerateMipMapLevels()
 {
-	if (AutomaticMipmapUpdate || !HasMipMaps)
+	if (AutomaticMipmapUpdate || !HasMipMaps || !Image)
 		return;
 	if ((Image->getDimension().Width==1) && (Image->getDimension().Height==1))
 		return;
@@ -434,6 +442,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
 	#endif
 
 	ImageSize = size;
+	TextureSize = size;
 	InternalFormat = GL_RGBA;
 	PixelFormat = GL_RGBA;
 	PixelType = GL_UNSIGNED_BYTE;
@@ -518,6 +527,7 @@ COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 #endif
 
 	ImageSize = size;
+	TextureSize = size;
 	InternalFormat = GL_RGBA;
 	PixelFormat = GL_RGBA;
 	PixelType = GL_UNSIGNED_BYTE;
