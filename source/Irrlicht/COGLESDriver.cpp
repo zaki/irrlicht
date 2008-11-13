@@ -86,7 +86,9 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		os::Printer::log("Could not create surface for OpenGL-ES1 display.");
 	}
 
-	//	eglBindAPI(EGL_OPENGL_ES_API);
+#ifdef GL_OES_VERSION_1_2
+	eglBindAPI(EGL_OPENGL_ES_API);
+#endif
 	EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, NULL);
 	if (testEGLError())
 	{
@@ -103,7 +105,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 
 	// set vsync
 	if (params.Vsync)
-		eglSwapInterval(EglDisplay, 30);
+		eglSwapInterval(EglDisplay, 1);
 }
 
 
@@ -162,7 +164,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 #endif
 // TODO ogl-es
 //	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
-//	glClearDepth(1.0);
+	glClearDepthf(1.0f);
 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 	glDepthFunc(GL_LEQUAL);
