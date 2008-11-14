@@ -2049,11 +2049,11 @@
 				Name="particleSystem"
 				>
 				<File
-					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp"
+					RelativePath="CParticleAnimatedMeshSceneNodeEmitter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleAttractionAffector.cpp"
+					RelativePath="CParticleAttractionAffector.cpp"
 					>
 				</File>
 				<File
@@ -2065,7 +2065,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleCylinderEmitter.cpp"
+					RelativePath="CParticleCylinderEmitter.cpp"
 					>
 				</File>
 				<File
@@ -2085,7 +2085,23 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleMeshEmitter.cpp"
+					RelativePath="CParticleScaleAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="CParticleMeshEmitter.cpp"
 					>
 				</File>
 				<File
@@ -2097,15 +2113,15 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleRingEmitter.cpp"
+					RelativePath="CParticleRingEmitter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleRotationAffector.cpp"
+					RelativePath="CParticleRotationAffector.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleSphereEmitter.cpp"
+					RelativePath="CParticleSphereEmitter.cpp"
 					>
 				</File>
 				<File
@@ -2137,19 +2153,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneCollisionManager.cpp"
+					RelativePath="CSceneCollisionManager.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneCollisionManager.h"
+					RelativePath="CSceneCollisionManager.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CTerrainTriangleSelector.cpp"
+					RelativePath="CTerrainTriangleSelector.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CTerrainTriangleSelector.h"
+					RelativePath="CTerrainTriangleSelector.h"
 					>
 				</File>
 				<File
@@ -2173,19 +2189,19 @@
 				Name="animators"
 				>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraFPS.cpp"
+					RelativePath="CSceneNodeAnimatorCameraFPS.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraFPS.h"
+					RelativePath="CSceneNodeAnimatorCameraFPS.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraMaya.cpp"
+					RelativePath="CSceneNodeAnimatorCameraMaya.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraMaya.h"
+					RelativePath="CSceneNodeAnimatorCameraMaya.h"
 					>
 				</File>
 				<File
@@ -2205,19 +2221,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyCircle.cpp"
+					RelativePath="CSceneNodeAnimatorFlyCircle.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyCircle.h"
+					RelativePath="CSceneNodeAnimatorFlyCircle.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyStraight.cpp"
+					RelativePath="CSceneNodeAnimatorFlyStraight.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyStraight.h"
+					RelativePath="CSceneNodeAnimatorFlyStraight.h"
 					>
 				</File>
 				<File
@@ -2229,19 +2245,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorRotation.cpp"
+					RelativePath="CSceneNodeAnimatorRotation.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorRotation.h"
+					RelativePath="CSceneNodeAnimatorRotation.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorTexture.cpp"
+					RelativePath="CSceneNodeAnimatorTexture.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorTexture.h"
+					RelativePath="CSceneNodeAnimatorTexture.h"
 					>
 				</File>
 			</Filter>
@@ -2249,35 +2265,35 @@
 				Name="writers"
 				>
 				<File
-					RelativePath=".\CColladaMeshWriter.cpp"
+					RelativePath="CColladaMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CColladaMeshWriter.h"
+					RelativePath="CColladaMeshWriter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CIrrMeshWriter.cpp"
+					RelativePath="CIrrMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CIrrMeshWriter.h"
+					RelativePath="CIrrMeshWriter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSTLMeshWriter.cpp"
+					RelativePath="CSTLMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSTLMeshWriter.h"
+					RelativePath="CSTLMeshWriter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\COBJMeshWriter.cpp"
+					RelativePath="COBJMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\COBJMeshWriter.h"
+					RelativePath="COBJMeshWriter.h"
 					>
 				</File>
 			</Filter>
@@ -2286,63 +2302,63 @@
 			Name="io impl"
 			>
 			<File
-				RelativePath=".\CAttributeImpl.h"
+				RelativePath="CAttributeImpl.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CAttributes.cpp"
+				RelativePath="CAttributes.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CAttributes.h"
+				RelativePath="CAttributes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileList.cpp"
+				RelativePath="CFileList.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileList.h"
+				RelativePath="CFileList.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileSystem.cpp"
+				RelativePath="CFileSystem.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileSystem.h"
+				RelativePath="CFileSystem.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CLimitReadFile.cpp"
+				RelativePath="CLimitReadFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CLimitReadFile.h"
+				RelativePath="CLimitReadFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CMemoryReadFile.cpp"
+				RelativePath="CMemoryReadFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CMemoryReadFile.h"
+				RelativePath="CMemoryReadFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CPakReader.cpp"
+				RelativePath="CPakReader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CPakReader.h"
+				RelativePath="CPakReader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CReadFile.cpp"
+				RelativePath="CReadFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CReadFile.h"
+				RelativePath="CReadFile.h"
 				>
 			</File>
 			<File
@@ -2362,7 +2378,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CXMLReaderImpl.h"
+				RelativePath="CXMLReaderImpl.h"
 				>
 			</File>
 			<File
@@ -2374,15 +2390,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CZipReader.cpp"
+				RelativePath="CZipReader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CZipReader.h"
+				RelativePath="CZipReader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\irrXML.cpp"
+				RelativePath="irrXML.cpp"
 				>
 			</File>
 		</Filter>

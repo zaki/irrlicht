@@ -159,6 +159,9 @@ public:
 		const core::vector3df& point, f32 speed = 1.0f, bool attract = true,
 		bool affectX = true, bool affectY = true, bool affectZ = true);
 
+	//! Creates a scale particle affector.
+	virtual IParticleAffector* createScaleParticleAffector(const core::vector2df& scaleTo = core::vector2df(1.0f, 1.0f));
+
 	//! Creates a fade out particle affector.
 	virtual IParticleFadeOutAffector* createFadeOutParticleAffector(
 		const video::SColor& targetColor = video::SColor(0,0,0,0),

@@ -19,6 +19,7 @@
 #include "CParticleFadeOutAffector.h"
 #include "CParticleGravityAffector.h"
 #include "CParticleRotationAffector.h"
+#include "CParticleScaleAffector.h"
 #include "SViewFrustum.h"
 
 namespace irr
@@ -250,6 +251,12 @@ IParticleAttractionAffector* CParticleSystemSceneNode::createAttractionAffector(
 	bool affectX, bool affectY, bool affectZ )
 {
 	return new CParticleAttractionAffector( point, speed, attract, affectX, affectY, affectZ );
+}
+
+//! Creates a scale particle affector.
+IParticleAffector* CParticleSystemSceneNode::createScaleParticleAffector(const core::vector2df& scaleTo)
+{
+	return new CParticleScaleAffector(scaleTo);
 }
 
 
@@ -634,6 +641,9 @@ void CParticleSystemSceneNode::deserializeAttributes(io::IAttributes* in, io::SA
 			break;
 		case EPAT_GRAVITY:
 			aff = createGravityAffector();
+			break;
+		case EPAT_SCALE:
+			aff = createScaleParticleAffector();
 			break;
 		case EPAT_NONE:
 		default:

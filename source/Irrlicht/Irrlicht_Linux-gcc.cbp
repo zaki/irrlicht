@@ -470,6 +470,8 @@
 		<Unit filename="CParticleFadeOutAffector.h" />
 		<Unit filename="CParticleGravityAffector.cpp" />
 		<Unit filename="CParticleGravityAffector.h" />
+		<Unit filename="CParticleScaleAffector.cpp" />
+		<Unit filename="CParticleScaleAffector.h" />
 		<Unit filename="CParticleMeshEmitter.cpp" />
 		<Unit filename="CParticleMeshEmitter.h" />
 		<Unit filename="CParticlePointEmitter.cpp" />

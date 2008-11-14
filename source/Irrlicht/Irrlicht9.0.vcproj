@@ -2092,6 +2092,14 @@
 					>
 				</File>
 				<File
+					RelativePath="CParticleScaleAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.h"
+					>
+				</File>
+				<File
 					RelativePath="CParticleMeshEmitter.cpp"
 					>
 				</File>

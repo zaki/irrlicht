@@ -17,15 +17,13 @@ class IParticleFadeOutAffector : public IParticleAffector
 {
 public:
 
-	//! Sets the targetColor, i.e. the color the particles will interpolate
-	//! to over time.
+	//! Sets the targetColor, i.e. the color the particles will interpolate to over time.
 	virtual void setTargetColor( const video::SColor& targetColor ) = 0;
 
 	//! Sets the amount of time it takes for each particle to fade out.
 	virtual void setFadeOutTime( f32 fadeOutTime ) = 0;
 
-	//! Gets the targetColor, i.e. the color the particles will interpolate
-	//! to over time.
+	//! Gets the targetColor, i.e. the color the particles will interpolate to over time.
 	virtual const video::SColor& getTargetColor() const = 0;
 
 	//! Gets the amount of time it takes for each particle to fade out.
