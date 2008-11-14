@@ -433,6 +433,17 @@ public:
 		const core::vector3df& point, f32 speed = 1.0f, bool attract = true,
 		bool affectX = true, bool affectY = true, bool affectZ = true) = 0;
 
+	//! Creates a scale particle affector.
+	/** This affector scales the particle to the a multiple of its size defined
+	by the scaleTo variable.
+	\param scaleTo: multiple of the size which the particle will be scaled to until deletion
+	\return Pointer to the created particle affector.
+	To add this affector as new affector of this particle system,
+	just call addAffector(). Note that you'll have to drop() the
+	returned pointer, after you don't need it any more, see
+	IReferenceCounted::drop() for more information. */
+	virtual IParticleAffector* createScaleParticleAffector(const core::vector2df& scaleTo = core::vector2df(1.0f, 1.0f)) = 0;
+
 	//! Creates a fade out particle affector.
 	/** This affector modifies the color of every particle and and reaches
 	the final color when the particle dies. This affector looks really

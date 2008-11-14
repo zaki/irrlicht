@@ -27,8 +27,7 @@ public:
 	//! Set the amount that the normal is divided by for getting a particles direction
 	virtual void setNormalDirectionModifier( f32 normalDirectionModifier ) = 0;
 
-	//! Sets whether to emit min<->max particles for every vertex per second, or to pick
-	//! min<->max vertices every second
+	//! Sets whether to emit min<->max particles for every vertex or to pick min<->max vertices
 	virtual void setEveryMeshVertex( bool everyMeshVertex = true ) = 0;
 
 	//! Get Mesh we're emitting particles from
@@ -40,8 +39,7 @@ public:
 	//! Get the amount that the normal is divided by for getting a particles direction
 	virtual f32 getNormalDirectionModifier() const = 0;
 
-	//! Gets whether to emit min<->max particles for every vertex per second, or to pick
-	//! min<->max vertices every second
+	//! Gets whether to emit min<->max particles for every vertex or to pick min<->max vertices
 	virtual bool getEveryMeshVertex() const = 0;
 
 	//! Get emitter type
