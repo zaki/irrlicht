@@ -180,9 +180,6 @@ int main()
 
 	scene::IParticleSystemSceneNode* ps =
 		smgr->addParticleSystemSceneNode(false);
-	ps->setPosition(core::vector3df(-70,60,40));
-	ps->setScale(core::vector3df(2,2,2));
-	ps->setParticleSize(core::dimension2d<f32>(20.0f, 20.0f));
 
 	scene::IParticleEmitter* em = ps->createBoxEmitter(
 		core::aabbox3d<f32>(-7,0,-7,7,1,7), // emitter size
@@ -200,6 +197,9 @@ int main()
 	ps->addAffector(paf); // same goes for the affector
 	paf->drop();
 
+	ps->setPosition(core::vector3df(-70,60,40));
+	ps->setScale(core::vector3df(2,2,2));
+	ps->setParticleSize(core::dimension2d<f32>(20.0f, 20.0f));
 	ps->setMaterialFlag(video::EMF_LIGHTING, false);
 	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
