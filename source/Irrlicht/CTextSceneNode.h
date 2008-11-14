@@ -6,7 +6,7 @@
 #define __C_TEXT_SCENE_NODE_H_INCLUDED__
 
 #include "ITextSceneNode.h"
-#include "IBillboardSceneNode.h"
+#include "IBillboardTextSceneNode.h"
 #include "IGUIFont.h"
 #include "IGUIFontBitmap.h"
 #include "ISceneCollisionManager.h"
@@ -57,7 +57,7 @@ namespace scene
 		core::aabbox3d<f32> Box;
 	};
 
-	class CBillboardTextSceneNode : virtual public ITextSceneNode, virtual public IBillboardSceneNode
+	class CBillboardTextSceneNode : public IBillboardTextSceneNode
 	{
 	public:
 

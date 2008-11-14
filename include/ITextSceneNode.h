@@ -13,7 +13,7 @@ namespace scene
 {
 
 //! A scene node for displaying 2d text at a position in three dimensional space
-class ITextSceneNode : virtual public ISceneNode
+class ITextSceneNode : public ISceneNode
 {
 public:
 

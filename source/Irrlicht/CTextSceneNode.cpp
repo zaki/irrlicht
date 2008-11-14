@@ -22,7 +22,7 @@ CTextSceneNode::CTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			gui::IGUIFont* font, scene::ISceneCollisionManager* coll,
 			const core::vector3df& position, const wchar_t* text,
 			video::SColor color)
-	: ISceneNode(parent, mgr, id, position), ITextSceneNode(parent, mgr, id, position), Text(text), Color(color),
+	: ITextSceneNode(parent, mgr, id, position), Text(text), Color(color),
 		Font(font), Coll(coll)
 	
 {
@@ -93,7 +93,7 @@ CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManag
 	gui::IGUIFont* font,const wchar_t* text,
 	const core::vector3df& position, const core::dimension2d<f32>& size,
 	video::SColor shade_top,video::SColor shade_bottom )
-: ISceneNode(parent, mgr, id, position), ITextSceneNode(parent, mgr, id, position), IBillboardSceneNode(parent, mgr, id, position),
+: IBillboardTextSceneNode(parent, mgr, id, position),
 	Font(0), Shade_top(shade_top), Shade_bottom(shade_bottom), Mesh(0)
 {
 	#ifdef _DEBUG
