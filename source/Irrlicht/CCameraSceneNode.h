@@ -47,9 +47,18 @@ namespace scene
 		//! for changing their position, look at target or whatever. 
 		virtual bool OnEvent(const SEvent& event);
 
-		//! sets the look at target of the camera
-		//! \param pos: Look at target of the camera.
+		//! Sets the look at target of the camera
+		/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+		then calling this will also change the camera's scene node rotation to match the target.
+		\param pos: Look at target of the camera. */
 		virtual void setTarget(const core::vector3df& pos);
+
+		//! Sets the rotation of the node.
+		/** This only modifies the relative rotation of the node.
+		/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+		then calling this will also change the camera's target to match the rotation.
+		\param rotation New rotation of the node in degrees. */
+		virtual void setRotation(const core::vector3df& rotation);
 
 		//! Gets the current look at target of the camera
 		//! \return Returns the current look at target of the camera
@@ -120,11 +129,11 @@ namespace scene
 		//! Returns type of the scene node
 		virtual ESCENE_NODE_TYPE getType() const { return ESNT_CAMERA; }
 
-		//! Set the binding between the camera's rotation adn target.
-		virtual void setTargetAndRotationBinding(TargetAndRotationBinding binding);
+		//! Binds the camera scene node's rotation to its target position and vice vera, or unbinds them.
+		virtual void bindTargetAndRotation(bool bound);
 
-		//! Gets the binding between the camera's rotation and target.
-		virtual TargetAndRotationBinding getTargetAndRotationBinding(void) const;
+		//! Queries if the camera scene node's rotation and its target position are bound together.
+		virtual bool getTargetAndRotationBinding(void) const;
 
 	protected:
 
@@ -143,7 +152,7 @@ namespace scene
 
 		bool InputReceiverEnabled;
 
-		TargetAndRotationBinding Binding;
+		bool TargetAndRotationAreBound;
 	};
 
 } // end namespace
