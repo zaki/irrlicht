@@ -28,8 +28,8 @@ public:
 		u32 lifeTimeMin=2000,
 		u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Prepares an array with new particles to emitt into the system
 	//! and returns how much new particles there are.
@@ -51,10 +51,10 @@ public:
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
 	//! Set the maximum starting size for particles
-	virtual void setMaxStartSize( const core::vector2df& size ) { MaxStartSize = size; };
+	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
 
 	//! Set the minimum starting size for particles
-	virtual void setMinStartSize( const core::vector2df& size ) { MinStartSize = size; };
+	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
 
 	//! Gets direction the emitter emits particles.
 	virtual const core::vector3df& getDirection() const { return Direction; }
@@ -72,10 +72,10 @@ public:
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
 	//! Gets the maximum starting size for particles
-	virtual const core::vector2df& getMaxStartSize() const { return MaxStartSize; };
+	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; };
 
 	//! Gets the minimum starting size for particles
-	virtual const core::vector2df& getMinStartSize() const { return MinStartSize; };
+	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
 
 	//! Writes attributes of the object.
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
@@ -87,7 +87,7 @@ private:
 
 	SParticle Particle;
 	core::vector3df Direction;
-	core::vector2df MinStartSize, MaxStartSize;
+	core::dimension2df MinStartSize, MaxStartSize;
 	u32 MinParticlesPerSecond, MaxParticlesPerSecond;
 	video::SColor MinStartColor, MaxStartColor;
 	u32 MinLifeTime, MaxLifeTime;

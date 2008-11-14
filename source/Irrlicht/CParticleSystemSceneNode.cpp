@@ -127,8 +127,8 @@ CParticleSystemSceneNode::createAnimatedMeshSceneNodeEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
-	const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize )
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleAnimatedMeshSceneNodeEmitter( node,
 			useNormalDirection, direction, normalDirectionModifier,
@@ -146,8 +146,8 @@ IParticleBoxEmitter* CParticleSystemSceneNode::createBoxEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees, const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize )
+	s32 maxAngleDegrees, const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleBoxEmitter(box, direction, minParticlesPerSecond,
 		maxParticlesPerSecond, minStartColor, maxStartColor,
@@ -164,8 +164,8 @@ IParticleCylinderEmitter* CParticleSystemSceneNode::createCylinderEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees, 
-	const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize )
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleCylinderEmitter( center, radius, normal, length,
 			outlineOnly, direction,
@@ -184,8 +184,8 @@ IParticleMeshEmitter* CParticleSystemSceneNode::createMeshEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
-	const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize)
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize)
 {
 	return new CParticleMeshEmitter( mesh, useNormalDirection, direction,
 			normalDirectionModifier, mbNumber, everyMeshVertex,
@@ -201,8 +201,8 @@ IParticlePointEmitter* CParticleSystemSceneNode::createPointEmitter(
 	const core::vector3df& direction, u32 minParticlesPerSecond,
 	u32 maxParticlesPerSecond, const video::SColor& minStartColor,
 	const video::SColor& maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees, const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize )
+	s32 maxAngleDegrees, const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticlePointEmitter(direction, minParticlesPerSecond,
 		maxParticlesPerSecond, minStartColor, maxStartColor,
@@ -218,7 +218,7 @@ IParticleRingEmitter* CParticleSystemSceneNode::createRingEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
-	const core::vector2df& minStartSize, const core::vector2df& maxStartSize )
+	const core::dimension2df& minStartSize, const core::dimension2df& maxStartSize )
 {
 	return new CParticleRingEmitter( center, radius, ringThickness, direction,
 		minParticlesPerSecond, maxParticlesPerSecond, minStartColor,
@@ -233,8 +233,8 @@ IParticleSphereEmitter* CParticleSystemSceneNode::createSphereEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees, const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize )
+	s32 maxAngleDegrees, const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleSphereEmitter(center, radius, direction,
 			minParticlesPerSecond, maxParticlesPerSecond,
@@ -254,7 +254,7 @@ IParticleAttractionAffector* CParticleSystemSceneNode::createAttractionAffector(
 }
 
 //! Creates a scale particle affector.
-IParticleAffector* CParticleSystemSceneNode::createScaleParticleAffector(const core::vector2df& scaleTo)
+IParticleAffector* CParticleSystemSceneNode::createScaleParticleAffector(const core::dimension2df& scaleTo)
 {
 	return new CParticleScaleAffector(scaleTo);
 }
@@ -335,19 +335,19 @@ void CParticleSystemSceneNode::render()
 		#if 0
 			core::vector3df horizontal = camera->getUpVector().crossProduct(view);
 			horizontal.normalize();
-			horizontal *= 0.5f * particle.size.X;
+			horizontal *= 0.5f * particle.size.Width;
 
 			core::vector3df vertical = horizontal.crossProduct(view);
 			vertical.normalize();
-			vertical *= 0.5f * particle.size.Y;
+			vertical *= 0.5f * particle.size.Height;
 
 		#else
 			f32 f;
 
-			f = 0.5f * particle.size.X;
+			f = 0.5f * particle.size.Width;
 			const core::vector3df horizontal ( m[0] * f, m[4] * f, m[8] * f );
 
-			f = -0.5f * particle.size.Y;
+			f = -0.5f * particle.size.Height;
 			const core::vector3df vertical ( m[1] * f, m[5] * f, m[9] * f );
 		#endif
 
@@ -489,12 +489,12 @@ void CParticleSystemSceneNode::setParticlesAreGlobal(bool global)
 //! Sets the size of all particles.
 void CParticleSystemSceneNode::setParticleSize(const core::dimension2d<f32> &size)
 {
+	os::Printer::log("Deprecated, use setMinStartSize/setMaxStartSize in emitter.", irr::ELL_WARNING);
 	//A bit of a hack, but better here than in the particle code
-	const core::vector2df tempsize(size.Width, size.Height);
 	if (Emitter)
 	{
-		Emitter->setMinStartSize(tempsize);
-		Emitter->setMaxStartSize(tempsize);
+		Emitter->setMinStartSize(size);
+		Emitter->setMaxStartSize(size);
 	}
 	ParticleSize = size;
 }

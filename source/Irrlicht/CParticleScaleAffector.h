@@ -10,7 +10,7 @@ namespace irr
 		class CParticleScaleAffector : public IParticleAffector
 		{
 		public:
-			CParticleScaleAffector(const core::vector2df& scaleTo = core::vector2df(1.0f, 1.0f));
+			CParticleScaleAffector(const core::dimension2df& scaleTo = core::dimension2df(1.0f, 1.0f));
 
 			virtual void affect(u32 now, SParticle *particlearray, u32 count);
 
@@ -30,7 +30,7 @@ namespace irr
 			virtual E_PARTICLE_AFFECTOR_TYPE getType() const;
 
 		protected:
-			core::vector2df ScaleTo;
+			core::dimension2df ScaleTo;
 		};
 	}
 }
