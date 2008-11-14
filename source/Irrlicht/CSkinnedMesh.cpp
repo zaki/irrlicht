@@ -601,6 +601,23 @@ void CSkinnedMesh::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 }
 
 
+//! set the hardware mapping hint, for driver
+void CSkinnedMesh::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
+		E_BUFFER_TYPE buffer)
+{
+	for (u32 i=0; i<LocalBuffers.size(); ++i)
+		LocalBuffers[i]->setHardwareMappingHint(newMappingHint, buffer);
+}
+
+
+//! flags the meshbuffer as changed, reloads hardware buffers
+void CSkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
+{
+	for (u32 i=0; i<LocalBuffers.size(); ++i)
+		LocalBuffers[i]->setDirty(buffer);
+}
+
+
 //! uses animation from another mesh
 bool CSkinnedMesh::useAnimationFrom(const ISkinnedMesh *mesh)
 {

@@ -150,6 +150,20 @@ namespace scene
 				Meshes[i]->setMaterialFlag(flag, newvalue);
 		}
 
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX )
+		{
+			for (u32 i=0; i<Meshes.size(); ++i)
+				Meshes[i]->setHardwareMappingHint(newMappingHint, buffer);
+		}
+
+		//! flags the meshbuffer as changed, reloads hardware buffers
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
+		{
+			for (u32 i=0; i<Meshes.size(); ++i)
+				Meshes[i]->setDirty(buffer);
+		}
+
 		//! The bounding box of this mesh
 		core::aabbox3d<f32> Box;
 		//! All meshes defining the animated mesh

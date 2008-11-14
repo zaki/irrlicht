@@ -100,6 +100,20 @@ namespace scene
 				MeshBuffers[i]->getMaterial().setFlag(flag, newvalue);
 		}
 
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX )
+		{
+			for (u32 i=0; i<MeshBuffers.size(); ++i)
+				MeshBuffers[i]->setHardwareMappingHint(newMappingHint, buffer);
+		}
+
+		//! flags the meshbuffer as changed, reloads hardware buffers
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
+		{
+			for (u32 i=0; i<MeshBuffers.size(); ++i)
+				MeshBuffers[i]->setDirty(buffer);
+		}
+
 		//! The meshbuffers of this mesh
 		core::array<IMeshBuffer*> MeshBuffers;
 		//! The bounding box of this mesh

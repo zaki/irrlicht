@@ -96,6 +96,21 @@ void CAnimatedMeshMD3::setInterpolationShift ( u32 shift, u32 loopMode )
 }
 
 
+//! set the hardware mapping hint, for driver
+void CAnimatedMeshMD3::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
+		E_BUFFER_TYPE buffer)
+{
+	MeshIPol.setHardwareMappingHint(newMappingHint, buffer);
+}
+
+
+//! flags the meshbuffer as changed, reloads hardware buffers
+void CAnimatedMeshMD3::setDirty(E_BUFFER_TYPE buffer)
+{
+	MeshIPol.setDirty(buffer);
+}
+
+
 //! Returns the animated tag list based on a detail level. 0 is the lowest, 255 the highest detail.
 SMD3QuaterionTagList *CAnimatedMeshMD3::getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop)
 {
@@ -172,17 +187,18 @@ IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 	return &MeshIPol;
 }
 
+
 //! create a Irrlicht MeshBuffer for a MD3 MeshBuffer
-IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer ( const SMD3MeshBuffer * source )
+IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer(const SMD3MeshBuffer* source)
 {
-	SMeshBuffer * dest = new SMeshBuffer ();
-	dest->Vertices.set_used ( source->MeshHeader.numVertices );
-	dest->Indices.set_used ( source->Indices.size () );
+	SMeshBuffer * dest = new SMeshBuffer();
+	dest->Vertices.set_used( source->MeshHeader.numVertices );
+	dest->Indices.set_used( source->Indices.size () );
 
 	u32 i;
 
 	// fill in static face info
-	for ( i = 0; i < source->Indices.size (); i += 3 )
+	for ( i = 0; i < source->Indices.size(); i += 3 )
 	{
 		dest->Indices[i + 0 ] = (u16) source->Indices[i + 0];
 		dest->Indices[i + 1 ] = (u16) source->Indices[i + 1];
@@ -192,7 +208,7 @@ IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer ( const SMD3MeshBuffer * source
 	// fill in static vertex info
 	for ( i = 0; i!= (u32)source->MeshHeader.numVertices; ++i )
 	{
-		video::S3DVertex &v = dest->Vertices [ i ];
+		video::S3DVertex &v = dest->Vertices[i];
 		v.Color = 0xFFFFFFFF;
 		v.TCoords.X = source->Tex[i].u;
 		v.TCoords.Y = source->Tex[i].v;
