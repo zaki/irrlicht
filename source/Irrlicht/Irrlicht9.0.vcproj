@@ -656,7 +656,47 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IParticleAnimatedMeshSceneNodeEmitter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleAttractionAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleBoxEmitter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleCylinderEmitter.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\IParticleEmitter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleFadeOutAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleGravityAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleMeshEmitter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleRingEmitter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleRotationAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IParticleSphereEmitter.h"
 					>
 				</File>
 				<File
@@ -752,11 +792,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\SSkinMeshBuffer.h"
+					RelativePath="..\..\include\SParticle.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\SParticle.h"
+					RelativePath="..\..\include\SSkinMeshBuffer.h"
 					>
 				</File>
 				<File
@@ -2060,7 +2100,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.h"
+					>
+				</File>
+				<File
 					RelativePath="CParticleAttractionAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleAttractionAffector.h"
 					>
 				</File>
 				<File
@@ -2073,6 +2121,10 @@
 				</File>
 				<File
 					RelativePath="CParticleCylinderEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleCylinderEmitter.h"
 					>
 				</File>
 				<File
@@ -2092,15 +2144,11 @@
 					>
 				</File>
 				<File
-					RelativePath="CParticleScaleAffector.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CParticleScaleAffector.h"
-					>
-				</File>
-				<File
 					RelativePath="CParticleMeshEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleMeshEmitter.h"
 					>
 				</File>
 				<File
@@ -2116,11 +2164,31 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CParticleRingEmitter.h"
+					>
+				</File>
+				<File
 					RelativePath="CParticleRotationAffector.cpp"
 					>
 				</File>
 				<File
+					RelativePath=".\CParticleRotationAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.h"
+					>
+				</File>
+				<File
 					RelativePath="CParticleSphereEmitter.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CParticleSphereEmitter.h"
 					>
 				</File>
 				<File
@@ -2280,19 +2348,19 @@
 					>
 				</File>
 				<File
-					RelativePath="CSTLMeshWriter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CSTLMeshWriter.h"
-					>
-				</File>
-				<File
 					RelativePath="COBJMeshWriter.cpp"
 					>
 				</File>
 				<File
 					RelativePath="COBJMeshWriter.h"
+					>
+				</File>
+				<File
+					RelativePath="CSTLMeshWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CSTLMeshWriter.h"
 					>
 				</File>
 			</Filter>
