@@ -125,6 +125,28 @@ namespace scene
 			return IsOrthogonal;
 		}
 
+		//! Determines how the camera's target and its scene node rotation are bound together.
+		typedef enum _TargetAndRotationBinding
+		{
+			//! The target and scene node rotation are independent.
+			/** This is the default for most cameras. */
+			TARGET_AND_ROTATION_INDEPENDENT = 0x10000,
+
+			//! The scene node rotation will be updated so that +Z points at the target location.
+			/** This is the default for FPS camera */
+			ROTATION_FOLLOWS_TARGET,
+
+			//! The target position will be updated to be along the node's +Z axis
+			TARGET_FOLLOWS_ROTATION
+
+		} TargetAndRotationBinding;
+
+		//! Set the binding between the camera's rotation adn target.
+		virtual void setTargetAndRotationBinding(TargetAndRotationBinding binding) = 0;
+
+		//! Gets the binding between the camera's rotation and target.
+		virtual TargetAndRotationBinding getTargetAndRotationBinding(void) const = 0;
+
 	protected:
 
 		bool IsOrthogonal;
