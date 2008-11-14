@@ -620,6 +620,7 @@ void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& t
 	token = "";
 
 	file->read(&c, sizeof(c8));
+	// search for word beginning
 	while ( core::isspace(c) && (file->getPos() < file->getSize()))
 	{
 		if (noNewLine && c=='\n')
@@ -629,6 +630,7 @@ void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& t
 		}
 		file->read(&c, sizeof(c8));
 	}
+	// check if we read a string
 	if (c=='"')
 	{
 		parseString = true;
@@ -639,13 +641,30 @@ void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& t
 		if (c=='/')
 		{
 			file->read(&c, sizeof(c8));
+			// check for comments, cannot be part of strings
 			if (!parseString && (c=='/'))
-			{ // skip comments
+			{
+				// skip comments
 				while(c!='\n')
 					file->read(&c, sizeof(c8));
+				if (!token.size())
+				{
+					// if we start with a comment we need to skip
+					// following whitespaces, so restart
+					getMaterialToken(file, token, noNewLine);
+					return;
+				}
+				else
+				{
+					// else continue with next character
+					file->read(&c, sizeof(c8));
+					continue;
+				}
 			}
 			else
 			{
+				// else append first slash and check if second char
+				// ends this token
 				token.append('/');
 				if ((!parseString && core::isspace(c)) ||
 						(parseString && (c=='"')))
@@ -654,9 +673,12 @@ void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& t
 		}
 		token.append(c);
 		file->read(&c, sizeof(c8));
+		// read until a token delimiter is found
 	}
 	while (((!parseString && !core::isspace(c)) || (parseString && (c!='"'))) &&
 			(file->getPos() < file->getSize()));
+	// we want to skip the last quotes of a string , but other chars might be the next
+	// token already.
 	if (!parseString)
 		file->seek(-1, true);
 }
@@ -843,6 +865,22 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 				getMaterialToken(file, token);
 			}
 		}
+		else if (token=="shadow_caster_program_ref")
+		{
+			do
+			{
+				getMaterialToken(file, token);
+			} while (token != "}");
+			getMaterialToken(file, token);
+		}
+		else if (token=="vertex_program_ref")
+		{
+			do
+			{
+				getMaterialToken(file, token);
+			} while (token != "}");
+			getMaterialToken(file, token);
+		}
 		//fog_override, iteration, point_size_attenuation
 		//not considered yet!
 		getMaterialToken(file, token);
@@ -903,19 +941,35 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 
 	while (file->getPos() < file->getSize())
 	{
-		Materials.push_back(OgreMaterial());
-		OgreMaterial& mat = Materials.getLast();
-
-		if (token == "fragment_program")
+		if ((token == "fragment_program") || (token == "vertex_program"))
 		{
+			// skip whole block
+			u32 blocks=1;
 			do
 			{
 				getMaterialToken(file, token);
-			} while (token != "}");
+			} while (token != "{");
+			do
+			{
+				getMaterialToken(file, token);
+				if (token == "{")
+					++blocks;
+				else if (token == "}")
+					--blocks;
+			} while (blocks);
 			getMaterialToken(file, token);
+			continue;
 		}
 		if (token != "material")
-			return;
+		{
+			if (token.trim().size())
+				os::Printer::log("Unknown material group", token.c_str());
+			break;
+		}
+
+		Materials.push_back(OgreMaterial());
+		OgreMaterial& mat = Materials.getLast();
+
 		getMaterialToken(file, mat.Name);
 #ifdef IRR_OGRE_LOADER_DEBUG
 	os::Printer::log("Load Material", mat.Name.c_str());
@@ -949,8 +1003,10 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 	}
 
 	file->drop();
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Finished loading Materials");
+#endif
 }
-
 
 
 void COgreMeshFileLoader::readChunkData(io::IReadFile* file, ChunkData& data)
