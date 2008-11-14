@@ -20,7 +20,7 @@ CParticleAnimatedMeshSceneNodeEmitter::CParticleAnimatedMeshSceneNodeEmitter(
 		u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 		const video::SColor& minStartColor, const video::SColor& maxStartColor,
 		u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
-		const core::vector2df& minStartSize, const core::vector2df& maxStartSize )
+		const core::dimension2df& minStartSize, const core::dimension2df& maxStartSize )
 	: Node(0), AnimatedMesh(0), BaseMesh(0), TotalVertices(0), MBCount(0), MBNumber(mbNumber),
 	Direction(direction), NormalDirectionModifier(normalDirectionModifier),
 	MinParticlesPerSecond(minParticlesPerSecond), MaxParticlesPerSecond(maxParticlesPerSecond),

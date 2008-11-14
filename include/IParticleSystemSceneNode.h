@@ -148,8 +148,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
 		s32 maxAngleDegrees = 0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) ) = 0;
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a box particle emitter.
 	/** \param box: The box for the emitter.
@@ -187,8 +187,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) ) = 0;
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a particle emitter for emitting from a cylinder
 	/** \param center: The center of the circle at the base of the cylinder
@@ -232,8 +232,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
 		s32 maxAngleDegrees = 0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) ) = 0;
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a mesh particle emitter.
 	/** \param mesh: Pointer to mesh to emit particles from
@@ -288,8 +288,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
 		s32 maxAngleDegrees = 0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) ) = 0;
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a point particle emitter.
 	/** \param direction: Direction and speed of particle emission.
@@ -325,8 +325,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) ) = 0;
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a ring particle emitter.
 	/** \param center: Center of ring
@@ -368,8 +368,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) ) = 0;
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a sphere particle emitter.
 	/** \param center: Center of sphere
@@ -408,8 +408,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) ) = 0;
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a point attraction affector.
 	/** This affector modifies the positions of the particles and attracts
@@ -442,7 +442,7 @@ public:
 	just call addAffector(). Note that you'll have to drop() the
 	returned pointer, after you don't need it any more, see
 	IReferenceCounted::drop() for more information. */
-	virtual IParticleAffector* createScaleParticleAffector(const core::vector2df& scaleTo = core::vector2df(1.0f, 1.0f)) = 0;
+	virtual IParticleAffector* createScaleParticleAffector(const core::dimension2df& scaleTo = core::dimension2df(1.0f, 1.0f)) = 0;
 
 	//! Creates a fade out particle affector.
 	/** This affector modifies the color of every particle and and reaches

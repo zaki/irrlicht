@@ -17,8 +17,8 @@ CParticleRingEmitter::CParticleRingEmitter(
 	u32 maxParticlesPerSecond, const video::SColor& minStartColor,
 	const video::SColor& maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
 	s32 maxAngleDegrees,
-	const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize )
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 	: Center(center), Radius(radius), RingThickness(ringThickness),
 		Direction(direction),
 		MaxStartSize(maxStartSize), MinStartSize(minStartSize),

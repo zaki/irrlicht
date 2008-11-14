@@ -71,8 +71,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
 		s32 maxAngleDegrees = 0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Creates a box particle emitter.
 	virtual IParticleBoxEmitter* createBoxEmitter(
@@ -84,8 +84,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Creates a particle emitter for emitting from a cylinder
 	virtual IParticleCylinderEmitter* createCylinderEmitter(
@@ -97,8 +97,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
 		s32 maxAngleDegrees = 0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Creates a mesh particle emitter.
 	virtual IParticleMeshEmitter* createMeshEmitter(
@@ -112,8 +112,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
 		s32 maxAngleDegrees = 0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Creates a point particle emitter.
 	virtual IParticlePointEmitter* createPointEmitter(
@@ -124,8 +124,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Creates a ring particle emitter.
 	virtual IParticleRingEmitter* createRingEmitter(
@@ -137,8 +137,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Creates a sphere particle emitter.
 	virtual IParticleSphereEmitter* createSphereEmitter(
@@ -150,8 +150,8 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
 		s32 maxAngleDegrees=0,
-		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
-		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) );
 
 	//! Creates a point attraction affector. This affector modifies the positions of the
 	//! particles and attracts them to a specified point at a specified speed per second.
@@ -160,7 +160,7 @@ public:
 		bool affectX = true, bool affectY = true, bool affectZ = true);
 
 	//! Creates a scale particle affector.
-	virtual IParticleAffector* createScaleParticleAffector(const core::vector2df& scaleTo = core::vector2df(1.0f, 1.0f));
+	virtual IParticleAffector* createScaleParticleAffector(const core::dimension2df& scaleTo = core::dimension2df(1.0f, 1.0f));
 
 	//! Creates a fade out particle affector.
 	virtual IParticleFadeOutAffector* createFadeOutParticleAffector(

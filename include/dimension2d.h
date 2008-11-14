@@ -72,6 +72,20 @@ namespace core
 				return dimension2d<T>(Width*scale, Height*scale);
 			}
 
+			//! Add two dimensions
+			dimension2d<T>& operator+=(const dimension2d<T>& other)
+			{
+				Width *= other.Width;
+				Height *= other.Height;
+				return *this;
+			}
+
+			//! Add two dimensions
+			dimension2d<T> operator+(const dimension2d<T>& other) const
+			{
+				return dimension2d<T>(Width+other.Width, Height+other.Height);
+			}
+
 			//! Get area
 			T getArea() const
 			{
@@ -124,6 +138,17 @@ namespace core
 				}
 				return dimension2d<T>((T)i,(T)j);
 			}
+
+			//! Get the interpolated dimension
+			/** \param other Other dimension to interpolate with.
+			\param d Value between 0.0f and 1.0f.
+			\return Interpolated dimension. */
+			dimension2d<T> getInterpolated(const dimension2d<T>& other, f32 d) const
+			{
+				T inv = (T) (1.0f - d);
+				return dimension2d<T>(other.Width*inv + Width*d, other.Height*inv + Height*d);
+			}
+
 
 			//! Width of the dimension.
 			T Width;

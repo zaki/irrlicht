@@ -17,8 +17,8 @@ CParticlePointEmitter::CParticlePointEmitter(
 	u32 maxParticlesPerSecond, video::SColor minStartColor,
 	video::SColor maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
 	s32 maxAngleDegrees,
-	const core::vector2df& minStartSize,
-	const core::vector2df& maxStartSize)
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize)
  : Direction(direction),
 	MinStartSize(minStartSize), MaxStartSize(maxStartSize),
 	MinParticlesPerSecond(minParticlesPerSecond),

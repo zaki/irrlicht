@@ -6,7 +6,7 @@
 #define __S_PARTICLE_H_INCLUDED__
 
 #include "vector3d.h"
-#include "vector2d.h"
+#include "dimension2d.h"
 #include "SColor.h"
 
 namespace irr
@@ -41,11 +41,11 @@ namespace scene
 
 		//! Scale of the particle.
 		/** The current scale of the particle. */
-		core::vector2df size;
+		core::dimension2df size;
 
 		//! Original scale of the particle.
 		/** The scale of the particle when it was emitted. */
-		core::vector2df startSize;
+		core::dimension2df startSize;
 	};
 
 
