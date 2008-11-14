@@ -74,7 +74,7 @@ core::dimension2d<s32> CVideoModeList::getVideoModeResolution(
 	for (i=0; i<VideoModes.size(); ++i)
 	{
 		const u32 area = VideoModes[i].size.getArea();
-		const u32 dist = core::min_(abs(minArea-area), abs(maxArea-area));
+		const u32 dist = core::min_(abs(int(minArea-area)), abs(int(maxArea-area)));
 		if (dist<minDist)
 		{
 			minDist=dist;
