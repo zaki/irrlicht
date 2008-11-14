@@ -70,6 +70,12 @@ public:
 	//! Set maximum starting color for particles
 	virtual void setMaxStartColor( const video::SColor& color ) = 0;
 
+	//! Set the maximum starting size for particles
+	virtual void setMaxStartSize( const core::vector2df& size ) = 0;
+
+	//! Set the minimum starting size for particles
+	virtual void setMinStartSize( const core::vector2df& size ) = 0;
+
 	//! Get direction the emitter emits particles
 	virtual const core::vector3df& getDirection() const = 0;
 
@@ -84,6 +90,12 @@ public:
 
 	//! Get the maximum starting color for particles
 	virtual const video::SColor& getMaxStartColor() const = 0;
+
+	//! Get the maximum starting size for particles
+	virtual const core::vector2df& getMaxStartSize() const = 0;
+
+	//! Get the minimum starting size for particles
+	virtual const core::vector2df& getMinStartSize() const = 0;
 
 	//! Writes attributes of the object.
 	//! Implement this to expose the attributes of your scene node animator for
