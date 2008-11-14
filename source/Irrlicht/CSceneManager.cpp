@@ -667,8 +667,8 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
 	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl, rotateSpeed, 
 		moveSpeed, jumpSpeed, keyMapArray, keyMapSize, noVerticalMovement);
 
-	// Have the node's rotation follow its target. This is consistent with 1.4.2 and below.
-	node->setTargetAndRotationBinding(ICameraSceneNode::ROTATION_FOLLOWS_TARGET);
+	// Bind the node's rotation to its target. This is consistent with 1.4.2 and below.
+	node->bindTargetAndRotation(true);
 
 	node->addAnimator(anm);
 	anm->drop();

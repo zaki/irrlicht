@@ -58,8 +58,17 @@ namespace scene
 		virtual bool OnEvent(const SEvent& event) = 0;
 
 		//! Sets the look at target of the camera
-		/** \param pos: Look at target of the camera. */
+		/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+		then calling this will also change the camera's scene node rotation to match the target.
+		\param pos: Look at target of the camera. */
 		virtual void setTarget(const core::vector3df& pos) = 0;
+
+		//! Sets the rotation of the node.
+		/** This only modifies the relative rotation of the node.
+		/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+		then calling this will also change the camera's target to match the rotation.
+		\param rotation New rotation of the node in degrees. */
+		virtual void setRotation(const core::vector3df& rotation) = 0;
 
 		//! Gets the current look at target of the camera
 		/** \return Returns the current look at target of the camera */
@@ -125,27 +134,17 @@ namespace scene
 			return IsOrthogonal;
 		}
 
-		//! Determines how the camera's target and its scene node rotation are bound together.
-		typedef enum _TargetAndRotationBinding
-		{
-			//! The target and scene node rotation are independent.
-			/** This is the default for most cameras. */
-			TARGET_AND_ROTATION_INDEPENDENT = 0x10000,
+		//! Binds the camera scene node's rotation to its target position and vice vera, or unbinds them.
+		/** When bound, calling setRotation() will update the camera's target position to be along
+		its +Z axis, and likewise calling setTarget() will update its rotation so that its +Z axis
+		will point at the target point.  FPS camera use this binding by default; other cameras do not.
+		\param binding true to bind the camera's scene node rotation and targetting, false to unbind them.
+		@see getTargetAndRotationBinding() */
+		virtual void bindTargetAndRotation(bool bound) = 0;
 
-			//! The scene node rotation will be updated so that +Z points at the target location.
-			/** This is the default for FPS camera */
-			ROTATION_FOLLOWS_TARGET,
-
-			//! The target position will be updated to be along the node's +Z axis
-			TARGET_FOLLOWS_ROTATION
-
-		} TargetAndRotationBinding;
-
-		//! Set the binding between the camera's rotation adn target.
-		virtual void setTargetAndRotationBinding(TargetAndRotationBinding binding) = 0;
-
-		//! Gets the binding between the camera's rotation and target.
-		virtual TargetAndRotationBinding getTargetAndRotationBinding(void) const = 0;
+		//! Queries if the camera scene node's rotation and its target position are bound together.
+		/** @see bindTargetAndRotation() */
+		virtual bool getTargetAndRotationBinding(void) const = 0;
 
 	protected:
 

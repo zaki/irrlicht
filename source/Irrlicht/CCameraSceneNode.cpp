@@ -19,7 +19,7 @@ CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 i
 	: ICameraSceneNode(parent, mgr, id, position, core::vector3df(0.0f, 0.0f, 0.0f),
 			core::vector3df(1.0f, 1.0f, 1.0f)),
 	Target(lookat), UpVector(0.0f, 1.0f, 0.0f), ZNear(1.0f), ZFar(3000.0f),
-	InputReceiverEnabled(true)
+	InputReceiverEnabled(true), TargetAndRotationAreBound(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNode");
@@ -110,6 +110,26 @@ bool CCameraSceneNode::OnEvent(const SEvent& event)
 void CCameraSceneNode::setTarget(const core::vector3df& pos)
 {
 	Target = pos;
+
+	if(TargetAndRotationAreBound)
+	{
+		const core::vector3df toTarget = Target - getAbsolutePosition();
+		ISceneNode::setRotation(toTarget.getHorizontalAngle());
+	}
+}
+
+
+//! Sets the rotation of the node.
+/** This only modifies the relative rotation of the node.
+/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+then calling this will also change the camera's target to match the rotation.
+\param rotation New rotation of the node in degrees. */
+void CCameraSceneNode::setRotation(const core::vector3df& rotation)
+{
+	if(TargetAndRotationAreBound)
+		Target = getAbsolutePosition() + rotation.rotationToDirection();
+
+	ISceneNode::setRotation(rotation);
 }
 
 
@@ -203,22 +223,6 @@ void CCameraSceneNode::OnRegisterSceneNode()
 	core::vector3df tgtv = Target - pos;
 	tgtv.normalize();
 
-	switch(Binding)
-	{
-	case ROTATION_FOLLOWS_TARGET:
-		setRotation(tgtv.getHorizontalAngle());
-		break;
-
-	case TARGET_FOLLOWS_ROTATION:
-		tgtv = getRotation().rotationToDirection(); // Already normalised
-		setTarget(pos + tgtv);
-		break;
-
-	default:
-		break;
-	}
-
-
 	// if upvector and vector to the target are the same, we have a
 	// problem. so solve this problem:
 	core::vector3df up = UpVector;
@@ -286,7 +290,7 @@ void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeR
 	out->addFloat("Aspect", Aspect);
 	out->addFloat("ZNear", ZNear);
 	out->addFloat("ZFar", ZFar);
-	out->addInt("Binding", (int)Binding);
+	out->addBool("Binding", TargetAndRotationAreBound);
 }
 
 
@@ -301,10 +305,7 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	Aspect = in->getAttributeAsFloat("Aspect");
 	ZNear = in->getAttributeAsFloat("ZNear");
 	ZFar = in->getAttributeAsFloat("ZFar");
-
-	Binding = (ICameraSceneNode::TargetAndRotationBinding)in->getAttributeAsInt("Binding");
-	if(0 == Binding)
-		Binding = TARGET_AND_ROTATION_INDEPENDENT;
+	TargetAndRotationAreBound = in->getAttributeAsBool("Binding");
 
 	recalculateProjectionMatrix();
 	recalculateViewArea();	
@@ -312,15 +313,15 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 
 
 //! Set the binding between the camera's rotation adn target.
-void CCameraSceneNode::setTargetAndRotationBinding(TargetAndRotationBinding binding)
+void CCameraSceneNode::bindTargetAndRotation(bool bound)
 {
-	Binding = binding;
+	TargetAndRotationAreBound = bound;
 }
 
 //! Gets the binding between the camera's rotation and target.
-ICameraSceneNode::TargetAndRotationBinding CCameraSceneNode::getTargetAndRotationBinding(void) const
+bool CCameraSceneNode::getTargetAndRotationBinding(void) const
 {
-	return Binding;
+	return TargetAndRotationAreBound;
 }
 
 
