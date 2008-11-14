@@ -103,6 +103,7 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	if (firstUpdate)
 	{
+		camera->updateAbsolutePosition();
 		if (CursorControl && camera)
 		{
 			CursorControl->setPosition(0.5f, 0.5f);
@@ -198,7 +199,7 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	if (CursorKeys[3])
 		pos -= strafevect * timeDiff * MoveSpeed;
 
-	// jumping ( need's a gravity , else it's a fly to the World-UpVector )
+	// jumping ( needs a gravity , else it's a fly to the World-UpVector )
 	if (CursorKeys[4])
 	{
 		pos += camera->getUpVector() * timeDiff * JumpSpeed;

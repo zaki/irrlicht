@@ -199,13 +199,28 @@ void CCameraSceneNode::recalculateProjectionMatrix()
 //! prerender
 void CCameraSceneNode::OnRegisterSceneNode()
 {
-	// if upvector and vector to the target are the same, we have a
-	// problem. so solve this problem:
-
 	core::vector3df pos = getAbsolutePosition();
 	core::vector3df tgtv = Target - pos;
 	tgtv.normalize();
 
+	switch(Binding)
+	{
+	case ROTATION_FOLLOWS_TARGET:
+		setRotation(tgtv.getHorizontalAngle());
+		break;
+
+	case TARGET_FOLLOWS_ROTATION:
+		tgtv = getRotation().rotationToDirection(); // Already normalised
+		setTarget(pos + tgtv);
+		break;
+
+	default:
+		break;
+	}
+
+
+	// if upvector and vector to the target are the same, we have a
+	// problem. so solve this problem:
 	core::vector3df up = UpVector;
 	up.normalize();
 
@@ -257,14 +272,6 @@ void CCameraSceneNode::recalculateViewArea()
 {
 	ViewArea.cameraPosition = getAbsolutePosition();
 	ViewArea.setFrom ( ViewArea.Matrices [ SViewFrustum::ETS_VIEW_PROJECTION_3 ] );
-/*
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	if ( driver)
-	{
-		driver->setTransform(video::ETS_PROJECTION, ViewArea.Matrices [ video::ETS_PROJECTION ] );
-		driver->setTransform(video::ETS_VIEW, ViewArea.Matrices [ video::ETS_VIEW ] );
-	}
-*/
 }
 
 
@@ -279,6 +286,7 @@ void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeR
 	out->addFloat("Aspect", Aspect);
 	out->addFloat("ZNear", ZNear);
 	out->addFloat("ZFar", ZFar);
+	out->addInt("Binding", (int)Binding);
 }
 
 
@@ -294,8 +302,25 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	ZNear = in->getAttributeAsFloat("ZNear");
 	ZFar = in->getAttributeAsFloat("ZFar");
 
+	Binding = (ICameraSceneNode::TargetAndRotationBinding)in->getAttributeAsInt("Binding");
+	if(0 == Binding)
+		Binding = TARGET_AND_ROTATION_INDEPENDENT;
+
 	recalculateProjectionMatrix();
 	recalculateViewArea();	
+}
+
+
+//! Set the binding between the camera's rotation adn target.
+void CCameraSceneNode::setTargetAndRotationBinding(TargetAndRotationBinding binding)
+{
+	Binding = binding;
+}
+
+//! Gets the binding between the camera's rotation and target.
+ICameraSceneNode::TargetAndRotationBinding CCameraSceneNode::getTargetAndRotationBinding(void) const
+{
+	return Binding;
 }
 
 
