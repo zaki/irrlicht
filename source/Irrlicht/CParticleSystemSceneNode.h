@@ -70,7 +70,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
-		s32 maxAngleDegrees = 0 );
+		s32 maxAngleDegrees = 0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Creates a box particle emitter.
 	virtual IParticleBoxEmitter* createBoxEmitter(
@@ -81,7 +83,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0);
+		s32 maxAngleDegrees=0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Creates a particle emitter for emitting from a cylinder
 	virtual IParticleCylinderEmitter* createCylinderEmitter(
@@ -92,7 +96,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
-		s32 maxAngleDegrees = 0 );
+		s32 maxAngleDegrees = 0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Creates a mesh particle emitter.
 	virtual IParticleMeshEmitter* createMeshEmitter(
@@ -105,7 +111,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
-		s32 maxAngleDegrees = 0 );
+		s32 maxAngleDegrees = 0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Creates a point particle emitter.
 	virtual IParticlePointEmitter* createPointEmitter(
@@ -115,7 +123,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0);
+		s32 maxAngleDegrees=0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Creates a ring particle emitter.
 	virtual IParticleRingEmitter* createRingEmitter(
@@ -126,7 +136,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0);
+		s32 maxAngleDegrees=0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Creates a sphere particle emitter.
 	virtual IParticleSphereEmitter* createSphereEmitter(
@@ -137,7 +149,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0);
+		s32 maxAngleDegrees=0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Creates a point attraction affector. This affector modifies the positions of the
 	//! particles and attracts them to a specified point at a specified speed per second.

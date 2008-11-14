@@ -29,7 +29,9 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000,
 		u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0);
+		s32 maxAngleDegrees=0,
+		const core::vector2df& minStartSize = core::vector2df(5.0f,5.0f),
+		const core::vector2df& maxStartSize = core::vector2df(5.0f,5.0f) );
 
 	//! Prepares an array with new particles to emitt into the system
 	//! and returns how much new particles there are.
@@ -49,6 +51,12 @@ public:
 
 	//! Set maximum start color
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
+
+	//! Set the maximum starting size for particles
+	virtual void setMaxStartSize( const core::vector2df& size ) { MaxStartSize = size; };
+
+	//! Set the minimum starting size for particles
+	virtual void setMinStartSize( const core::vector2df& size ) { MinStartSize = size; };
 
 	//! Set the center of the sphere for particle emissions
 	virtual void setCenter( const core::vector3df& center ) { Center = center; }
@@ -71,6 +79,12 @@ public:
 	//! Get maximum start color
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
+	//! Gets the maximum starting size for particles
+	virtual const core::vector2df& getMaxStartSize() const { return MaxStartSize; };
+
+	//! Gets the minimum starting size for particles
+	virtual const core::vector2df& getMinStartSize() const { return MinStartSize; };
+
 	//! Get the center of the sphere for particle emissions
 	virtual const core::vector3df& getCenter() const { return Center; }
 
@@ -83,8 +97,9 @@ private:
 
 	core::vector3df	Center;
 	f32 Radius;
-
 	core::vector3df Direction;
+
+	core::vector2df MinStartSize, MaxStartSize;
 	u32 MinParticlesPerSecond, MaxParticlesPerSecond;
 	video::SColor MinStartColor, MaxStartColor;
 	u32 MinLifeTime, MaxLifeTime;
