@@ -526,7 +526,7 @@ const sVec4 CBurningVideoDriver::NDCPlane[6] =
 	core::setbit_cond( flag, (-v->Pos.y - v->Pos.w ) <= 0.f, 32 );
 
 */
-#ifdef _MSC_VER
+#ifdef IRRLICHT_FAST_MATH
 
 REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) const
 {
