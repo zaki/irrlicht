@@ -7,6 +7,7 @@
 
 #include "IReferenceCounted.h"
 #include "SMaterial.h"
+#include "EHardwareBufferFlags.h"
 
 namespace irr
 {
@@ -51,6 +52,12 @@ namespace scene
 		/** \param flag: Flag to set in all materials.
 		\param newvalue: New value to set in all materials. */
 		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue) = 0;
+
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX ) = 0;
+
+		//! flags the meshbuffer as changed, reloads hardware buffers
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) = 0;
 	};
 
 } // end namespace scene

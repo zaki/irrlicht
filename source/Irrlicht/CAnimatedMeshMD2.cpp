@@ -679,6 +679,22 @@ void CAnimatedMeshMD2::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalu
 }
 
 
+
+//! set the hardware mapping hint, for driver
+void CAnimatedMeshMD2::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
+		E_BUFFER_TYPE buffer)
+{
+	InterpolationBuffer->setHardwareMappingHint(newMappingHint, buffer);
+}
+
+
+//! flags the meshbuffer as changed, reloads hardware buffers
+void CAnimatedMeshMD2::setDirty(E_BUFFER_TYPE buffer)
+{
+	InterpolationBuffer->setDirty(buffer);
+}
+
+
 //! returns an axis aligned bounding box
 const core::aabbox3d<f32>& CAnimatedMeshMD2::getBoundingBox() const
 {
