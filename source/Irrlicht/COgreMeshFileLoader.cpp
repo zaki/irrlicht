@@ -14,6 +14,10 @@
 #include "fast_atof.h"
 #include "coreutil.h"
 
+#ifdef _DEBUG
+#define IRR_OGRE_LOADER_DEBUG
+#endif
+
 namespace irr
 {
 namespace scene
@@ -167,6 +171,9 @@ bool COgreMeshFileLoader::readChunk(io::IReadFile* file)
 
 bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent, OgreMesh& mesh)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Read Object Chunk");
+#endif
 	readBool(file, parent, mesh.SkeletalAnimation);
 	while ((parent.read < parent.header.length)&&(file->getPos() < file->getSize()))
 	{
@@ -213,6 +220,9 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 
 bool COgreMeshFileLoader::readGeometry(io::IReadFile* file, ChunkData& parent, OgreGeometry& geometry)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Read Geometry");
+#endif
 	readInt(file, parent, geometry.NumVertex);
 	while(parent.read < parent.header.length)
 	{
@@ -240,6 +250,9 @@ bool COgreMeshFileLoader::readGeometry(io::IReadFile* file, ChunkData& parent, O
 
 bool COgreMeshFileLoader::readVertexDeclaration(io::IReadFile* file, ChunkData& parent, OgreGeometry& geometry)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Read Vertex Declaration");
+#endif
 	NumUV = 0;
 	while(parent.read < parent.header.length)
 	{
@@ -277,6 +290,9 @@ bool COgreMeshFileLoader::readVertexDeclaration(io::IReadFile* file, ChunkData& 
 
 bool COgreMeshFileLoader::readVertexBuffer(io::IReadFile* file, ChunkData& parent, OgreGeometry& geometry)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Read Vertex Buffer");
+#endif
 	OgreVertexBuffer buf;
 	readShort(file, parent, buf.BindIndex);
 	readShort(file, parent, buf.VertexSize);
@@ -299,6 +315,9 @@ bool COgreMeshFileLoader::readVertexBuffer(io::IReadFile* file, ChunkData& paren
 
 bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, OgreSubMesh& subMesh)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Read Submesh");
+#endif
 	readString(file, parent, subMesh.Material);
 	readBool(file, parent, subMesh.SharedVertices);
 
@@ -365,7 +384,6 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 }
 
 
-
 void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, const core::stringc& materialName)
 {
 	video::SMaterial& material=mb->getMaterial();
@@ -396,7 +414,6 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 }
 
 
-
 scene::SMeshBuffer* COgreMeshFileLoader::composeMeshBuffer(const core::array<s32>& indices, const OgreGeometry& geom)
 {
 	scene::SMeshBuffer *mb=new scene::SMeshBuffer();
@@ -413,7 +430,7 @@ scene::SMeshBuffer* COgreMeshFileLoader::composeMeshBuffer(const core::array<s32
 		{
 			for (u32 j=0; j<geom.Buffers.size(); ++j)
 			{
-				if (geom.Elements[i].Index==geom.Buffers[j].BindIndex)
+				if (geom.Elements[i].Source==geom.Buffers[j].BindIndex)
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
@@ -431,7 +448,7 @@ scene::SMeshBuffer* COgreMeshFileLoader::composeMeshBuffer(const core::array<s32
 		{
 			for (u32 j=0; j<geom.Buffers.size(); ++j)
 			{
-				if (geom.Elements[i].Index==geom.Buffers[j].BindIndex)
+				if (geom.Elements[i].Source==geom.Buffers[j].BindIndex)
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
@@ -448,7 +465,7 @@ scene::SMeshBuffer* COgreMeshFileLoader::composeMeshBuffer(const core::array<s32
 		{
 			for (u32 j=0; j<geom.Buffers.size(); ++j)
 			{
-				if (geom.Elements[i].Index==geom.Buffers[j].BindIndex)
+				if (geom.Elements[i].Source==geom.Buffers[j].BindIndex)
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
@@ -463,7 +480,6 @@ scene::SMeshBuffer* COgreMeshFileLoader::composeMeshBuffer(const core::array<s32
 	}
 	return mb;
 }
-
 
 
 scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const core::array<s32>& indices, const OgreGeometry& geom)
@@ -483,7 +499,7 @@ scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const
 		{
 			for (u32 j=0; j<geom.Buffers.size(); ++j)
 			{
-				if (geom.Elements[i].Index==geom.Buffers[j].BindIndex)
+				if (geom.Elements[i].Source==geom.Buffers[j].BindIndex)
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
@@ -501,7 +517,7 @@ scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const
 		{
 			for (u32 j=0; j<geom.Buffers.size(); ++j)
 			{
-				if (geom.Elements[i].Index==geom.Buffers[j].BindIndex)
+				if (geom.Elements[i].Source==geom.Buffers[j].BindIndex)
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
@@ -518,7 +534,7 @@ scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const
 		{
 			for (u32 j=0; j<geom.Buffers.size(); ++j)
 			{
-				if (geom.Elements[i].Index==geom.Buffers[j].BindIndex)
+				if (geom.Elements[i].Source==geom.Buffers[j].BindIndex)
 				{
 					u32 eSize=geom.Buffers[j].VertexSize;
 					u32 ePos=geom.Elements[i].Offset;
@@ -536,7 +552,6 @@ scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const
 
 	return mb;
 }
-
 
 
 void COgreMeshFileLoader::composeObject(void)
@@ -600,6 +615,7 @@ core::stringc COgreMeshFileLoader::getTextureFileName(const core::stringc& textu
 
 void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& token, bool noNewLine)
 {
+	bool parseString=false;
 	c8 c=0;
 	token = "";
 
@@ -613,12 +629,17 @@ void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& t
 		}
 		file->read(&c, sizeof(c8));
 	}
+	if (c=='"')
+	{
+		parseString = true;
+		file->read(&c, sizeof(c8));
+	}
 	do
 	{
 		if (c=='/')
 		{
 			file->read(&c, sizeof(c8));
-			if (c=='/')
+			if (!parseString && (c=='/'))
 			{ // skip comments
 				while(c!='\n')
 					file->read(&c, sizeof(c8));
@@ -626,18 +647,19 @@ void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& t
 			else
 			{
 				token.append('/');
-				if (core::isspace(c))
+				if ((!parseString && core::isspace(c)) ||
+						(parseString && (c=='"')))
 					return;
 			}
 		}
 		token.append(c);
 		file->read(&c, sizeof(c8));
 	}
-	while ((!core::isspace(c)) && (file->getPos() < file->getSize()));
-	if (c == '\n' && noNewLine)
+	while (((!parseString && !core::isspace(c)) || (parseString && (c!='"'))) &&
+			(file->getPos() < file->getSize()));
+	if (!parseString)
 		file->seek(-1, true);
 }
-
 
 
 bool COgreMeshFileLoader::readColor(io::IReadFile* file, video::SColor& col)
@@ -670,6 +692,9 @@ bool COgreMeshFileLoader::readColor(io::IReadFile* file, video::SColor& col)
 
 void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Read Pass");
+#endif
 	core::stringc token;
 	technique.Passes.push_back(OgrePass());
 	OgrePass& pass=technique.Passes.getLast();
@@ -829,9 +854,11 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 }
 
 
-
 void COgreMeshFileLoader::readTechnique(io::IReadFile* file, OgreMaterial& mat)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Read Technique");
+#endif
 	core::stringc token;
 	mat.Techniques.push_back(OgreTechnique());
 	OgreTechnique& technique=mat.Techniques.getLast();
@@ -859,6 +886,9 @@ void COgreMeshFileLoader::readTechnique(io::IReadFile* file, OgreMaterial& mat)
 
 void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 {
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Load Materials");
+#endif
 	core::stringc token,filename=meshFile->getFileName();
 	core::stringc material = filename.subString(0, filename.size()-4) + "material";
 	io::IReadFile* file = FileSystem->createAndOpenFile(material.c_str());
@@ -876,9 +906,20 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 		Materials.push_back(OgreMaterial());
 		OgreMaterial& mat = Materials.getLast();
 
+		if (token == "fragment_program")
+		{
+			do
+			{
+				getMaterialToken(file, token);
+			} while (token != "}");
+			getMaterialToken(file, token);
+		}
 		if (token != "material")
 			return;
 		getMaterialToken(file, mat.Name);
+#ifdef IRR_OGRE_LOADER_DEBUG
+	os::Printer::log("Load Material", mat.Name.c_str());
+#endif
 		getMaterialToken(file, token); //open brace
 		getMaterialToken(file, token);
 		while(token != "}")
