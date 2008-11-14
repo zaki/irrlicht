@@ -178,7 +178,7 @@ namespace scene
 			s32 id=-1);
 
 		//! Adds a text scene node, which uses billboards
-		virtual ITextSceneNode* addBillboardTextSceneNode(gui::IGUIFont* font, const wchar_t* text,
+		virtual IBillboardTextSceneNode* addBillboardTextSceneNode(gui::IGUIFont* font, const wchar_t* text,
 			ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
