@@ -187,7 +187,9 @@ int main()
 		80,100,                             // emit rate
 		video::SColor(0,255,255,255),       // darkest color
 		video::SColor(0,255,255,255),       // brightest color
-		800,2000);                          // min and max age
+		800,2000,0,                         // min and max age, angle
+		core::vector2df(10.f,10.f),         // min size
+		core::vector2df(20.f,20.f));        // max size
 
 	ps->setEmitter(em); // this grabs the emitter
 	em->drop(); // so we can drop it here without deleting it
@@ -199,7 +201,6 @@ int main()
 
 	ps->setPosition(core::vector3df(-70,60,40));
 	ps->setScale(core::vector3df(2,2,2));
-	ps->setParticleSize(core::dimension2d<f32>(20.0f, 20.0f));
 	ps->setMaterialFlag(video::EMF_LIGHTING, false);
 	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
 	ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
