@@ -491,8 +491,11 @@ void CParticleSystemSceneNode::setParticleSize(const core::dimension2d<f32> &siz
 {
 	//A bit of a hack, but better here than in the particle code
 	const core::vector2df tempsize(size.Width, size.Height);
-	Emitter->setMinStartSize(tempsize);
-	Emitter->setMaxStartSize(tempsize);
+	if (Emitter)
+	{
+		Emitter->setMinStartSize(tempsize);
+		Emitter->setMaxStartSize(tempsize);
+	}
 	ParticleSize = size;
 }
 
