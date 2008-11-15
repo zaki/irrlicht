@@ -2301,6 +2301,10 @@ bool CD3D9Driver::reset()
 				tex->Release();
 		}
 	}
+
+	if(DepthBuffers[0]->Surface)
+		DepthBuffers[0]->Surface->Release();
+
 	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
@@ -2310,6 +2314,8 @@ bool CD3D9Driver::reset()
 		if (Textures[i].Surface->isRenderTarget())
 			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
 	}
+
+	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
 
 	if (FAILED(hr))
 	{
