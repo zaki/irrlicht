@@ -197,6 +197,8 @@
 		0968406D0D0F1A2300333EFD /* CSTLMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */; };
 		0968406E0D0F1A2300333EFD /* CSTLMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */; };
 		0968406F0D0F1A2300333EFD /* CSTLMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096840460D0F1A2300333EFD /* CSTLMeshWriter.h */; };
+		096CC0E00ECE65B500C81DC7 /* CParticleScaleAffector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096CC0DE0ECE65B500C81DC7 /* CParticleScaleAffector.cpp */; };
+		096CC0E10ECE65B500C81DC7 /* CParticleScaleAffector.h in Headers */ = {isa = PBXBuildFile; fileRef = 096CC0DF0ECE65B500C81DC7 /* CParticleScaleAffector.h */; };
 		096F8E3D0EA2EFBA00907EC5 /* COBJMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 096F8E3B0EA2EFBA00907EC5 /* COBJMeshWriter.cpp */; };
 		096F8E3E0EA2EFBA00907EC5 /* COBJMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 096F8E3C0EA2EFBA00907EC5 /* COBJMeshWriter.h */; };
 		09C638720D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09C638700D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp */; };
@@ -577,14 +579,14 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 0946CCA30EC99BBE00D945A5 /* MouseAndJoystick */;
+			remoteGlobalIDString = 0946CCA30EC99BBE00D945A5;
 			remoteInfo = MouseAndJoystick;
 		};
 		0946CCD80EC99D8C00D945A5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0867D690FE84028FC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 09022C520EA0E97F00CD54EE /* GUIEditor */;
+			remoteGlobalIDString = 09022C520EA0E97F00CD54EE;
 			remoteInfo = GUIEditor;
 		};
 		09F648F60D2CDED9001E0599 /* PBXContainerItemProxy */ = {
@@ -905,7 +907,7 @@
 		093973BD0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSceneNodeAnimatorCameraFPS.h; sourceTree = "<group>"; };
 		093973BE0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneNodeAnimatorCameraMaya.cpp; sourceTree = "<group>"; };
 		093973BF0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSceneNodeAnimatorCameraMaya.h; sourceTree = "<group>"; };
-		0946CCB40EC99BBE00D945A5 /* MouseAndJoystick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MouseAndJoystick.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0946CCB40EC99BBE00D945A5 /* MouseAndJoystick.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MouseAndJoystick.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0946CCCA0EC99C6E00D945A5 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = 19.MouseAndJoystick/main.cpp; sourceTree = "<group>"; };
 		0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CB3DMeshFileLoader.cpp; sourceTree = "<group>"; };
 		0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CB3DMeshFileLoader.h; sourceTree = "<group>"; };
@@ -945,6 +947,8 @@
 		096840440D0F1A2300333EFD /* CSTLMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshFileLoader.h; sourceTree = "<group>"; };
 		096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSTLMeshWriter.cpp; sourceTree = "<group>"; };
 		096840460D0F1A2300333EFD /* CSTLMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSTLMeshWriter.h; sourceTree = "<group>"; };
+		096CC0DE0ECE65B500C81DC7 /* CParticleScaleAffector.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CParticleScaleAffector.cpp; sourceTree = "<group>"; };
+		096CC0DF0ECE65B500C81DC7 /* CParticleScaleAffector.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CParticleScaleAffector.h; sourceTree = "<group>"; };
 		096F8E3B0EA2EFBA00907EC5 /* COBJMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = COBJMeshWriter.cpp; sourceTree = "<group>"; };
 		096F8E3C0EA2EFBA00907EC5 /* COBJMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = COBJMeshWriter.h; sourceTree = "<group>"; };
 		09C638700D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CLWOMeshFileLoader.cpp; sourceTree = "<group>"; };
@@ -2206,6 +2210,8 @@
 		0910BA880D1F6F1600D46B04 /* particleSystem */ = {
 			isa = PBXGroup;
 			children = (
+				096CC0DE0ECE65B500C81DC7 /* CParticleScaleAffector.cpp */,
+				096CC0DF0ECE65B500C81DC7 /* CParticleScaleAffector.h */,
 				096840330D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.cpp */,
 				096840340D0F1A2300333EFD /* CParticleAnimatedMeshSceneNodeEmitter.h */,
 				096840350D0F1A2300333EFD /* CParticleAttractionAffector.cpp */,
@@ -3005,6 +3011,7 @@
 				093973C10E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h in Headers */,
 				093973C30E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h in Headers */,
 				096F8E3E0EA2EFBA00907EC5 /* COBJMeshWriter.h in Headers */,
+				096CC0E10ECE65B500C81DC7 /* CParticleScaleAffector.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3997,6 +4004,7 @@
 				093973C00E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.cpp in Sources */,
 				093973C20E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp in Sources */,
 				096F8E3D0EA2EFBA00907EC5 /* COBJMeshWriter.cpp in Sources */,
+				096CC0E00ECE65B500C81DC7 /* CParticleScaleAffector.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

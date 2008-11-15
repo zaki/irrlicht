@@ -44,7 +44,10 @@ struct JoystickComponent
 	long min;								// reported min value possible
 	long max;								// reported max value possible
 
-	JoystickComponent() : min(0), max(0)
+	long minRead;							//min read value
+	long maxRead;							//max read value
+
+	JoystickComponent() : min(0), minRead(0), max(0), maxRead(0)
 	{
 	}
 };
@@ -78,8 +81,6 @@ struct JoystickInfo
 		hatComp.clear();
 
 		persistentData.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
-		// There's no obvious way to determine which (if any) axes represent a POV
-		// hat, so we'll just set it to "not used" and forget about it.
 		persistentData.JoystickEvent.POV = 65535;
 		persistentData.JoystickEvent.ButtonStates = 0;
 	}
@@ -118,10 +119,10 @@ static void addComponentInfo (CFTypeRef refElement, JoystickComponent *pComponen
 		pComponent->cookie = (IOHIDElementCookie) number;
 	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementMinKey));
 	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
-		pComponent->min = number;
+		pComponent->minRead = pComponent->min = number;
 	refType = CFDictionaryGetValue ((CFDictionaryRef)refElement, CFSTR(kIOHIDElementMaxKey));
 	if (refType && CFNumberGetValue ((CFNumberRef)refType, kCFNumberLongType, &number))
-		pComponent->max = number;
+		pComponent->maxRead = pComponent->max = number;
 }
 
 static void getJoystickComponentArrayHandler (const void * value, void * parameter);
@@ -1071,8 +1072,13 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 				returnInfo.Axes = info.axes;
 				//returnInfo.Hats = info.hats;
 				returnInfo.Buttons = info.buttons;
-				returnInfo.Name = info.joystickName;
-				returnInfo.PovHat = SJoystickInfo::POV_HAT_UNKNOWN;
+				returnInfo.Name    = info.joystickName;
+				returnInfo.PovHat  = SJoystickInfo::POV_HAT_UNKNOWN;
+
+				//if (info.hatComp.size())
+				//	returnInfo.PovHat = SJoystickInfo::POV_HAT_PRESENT;
+				//else
+				//	returnInfo.PovHat = SJoystickInfo::POV_HAT_ABSENT;
 
 				joystickInfo.push_back(returnInfo);
 			}
@@ -1111,10 +1117,22 @@ void CIrrDeviceMacOSX::pollJoysticks()
 				hidEvent.value = 0;
 				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].axisComp[n].cookie, &hidEvent);
 				if (kIOReturnSuccess == result) {
+					f32 min = -32768.0f;
+					f32 max = 32768.0f;
+					f32 deviceScale = max - min;
+					f32 readScale = (f32)ActiveJoysticks[joystick].axisComp[n].maxRead - (f32)ActiveJoysticks[joystick].axisComp[n].minRead;
+
+					if (hidEvent.value < ActiveJoysticks[joystick].axisComp[n].minRead)
+						ActiveJoysticks[joystick].axisComp[n].minRead = hidEvent.value;
+					if (hidEvent.value > ActiveJoysticks[joystick].axisComp[n].maxRead)
+						ActiveJoysticks[joystick].axisComp[n].maxRead = hidEvent.value;
+					
+					if (readScale != 0.0f)
+						hidEvent.value = (int)(((f32)((f32)hidEvent.value - (f32)ActiveJoysticks[joystick].axisComp[n].minRead) * deviceScale / readScale) + min);
+
 					if (ActiveJoysticks[joystick].persistentData.JoystickEvent.Axis[n] != (s16)hidEvent.value)
 						found = true;
 					ActiveJoysticks[joystick].persistentData.JoystickEvent.Axis[n] = (s16)hidEvent.value;
-
 				}
 			}//axis check
 
@@ -1137,6 +1155,7 @@ void CIrrDeviceMacOSX::pollJoysticks()
 							ActiveJoysticks[joystick].persistentData.JoystickEvent.ButtonStates &= ~(1 << n);
 				}
 			}//button check
+			//still ToDo..will be done soon :)
 /*
 			for (u32 n = 0; n < ActiveJoysticks[joystick].hatComp.size(); n++) {
 				IOReturn result = kIOReturnSuccess;
@@ -1144,8 +1163,9 @@ void CIrrDeviceMacOSX::pollJoysticks()
 				hidEvent.value = 0;
 				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].hatComp[n].cookie, &hidEvent);
 				if (kIOReturnSuccess == result) {
-					printf("joystick hatComp[%i]\n", hidEvent.value);
-
+					if (ActiveJoysticks[joystick].persistentData.JoystickEvent.POV != hidEvent.value)
+						found = true;
+					ActiveJoysticks[joystick].persistentData.JoystickEvent.POV = hidEvent.value;
 				}
 			}//hat check
 */
