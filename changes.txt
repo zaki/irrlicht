@@ -1,11 +1,12 @@
 Changes in version 1.5 (... 2008)
- - Removed VS6 .dsw / .dsp project files - VS6 is no longer supported.
 
- - Basic support for joystick input events on OSX tested with xbox 360 wireless controller using driver http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver and a logictech wired controller
+ - Camera scene node rotation and target can now be bound together so that changing one automatically changes the other (as the FPS camera has always done). See ICameraSceneNode::bindTargetAndRotation()
+
+ - Removed VS6 .dsw / .dsp project files - VS6 is no longer supported.
 
  - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
 
- - Basic support for joystick input events on Windows, Linux and SDL devices.
+ - Basic support for joystick input events on Windows, Linux, SDL and OSX.  Tested with wired Logitech and Thrustmaster wired controllers and XBox 360 wireless controller ( http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver )
 
  - Major API change: RTTs are now created via addRenderTargetTexture instead of createRenderTargetTexture, which allows to retrieve them from the texture cache, but also changes the way of removing the RTTs, and especially one must not drop the pointer anymore.
 
