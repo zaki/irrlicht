@@ -263,7 +263,7 @@ start_input_pass (j_decompress_ptr cinfo)
 
 /*
  * Finish up after inputting a compressed-data scan.
- * This is called by the coefficient controller after it's read all
+ * This is called by the coefficient controller after it has read all
  * the expected data of the scan.
  */
 

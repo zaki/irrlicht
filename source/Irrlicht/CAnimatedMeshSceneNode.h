@@ -150,7 +150,7 @@ namespace scene
 		//! updates the joint positions of this mesh
 		virtual void animateJoints(bool CalculateAbsolutePositions=true);
 
-		//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
+		//! render mesh ignoring its transformation. Used with ragdolls. (culling is unaffected)
 		virtual void setRenderFromIdentity( bool On );
 
 		//! Creates a clone of this scene node and its children.

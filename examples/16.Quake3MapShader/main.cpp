@@ -253,7 +253,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 				continue;
 			}
 
-			// we can dump the shader to the console in it's
+			// we can dump the shader to the console in its
 			// original but already parsed layout in a pretty
 			// printers way.. commented out, because the console
 			// would be full...

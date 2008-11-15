@@ -897,7 +897,7 @@ void CAnimatedMeshSceneNode::setTransitionTime(f32 time)
 	}
 }
 
-//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
+//! render mesh ignoring its transformation. Used with ragdolls. (culling is unaffected)
 void CAnimatedMeshSceneNode::setRenderFromIdentity( bool On )
 {
 	RenderFromIdentity=On;
