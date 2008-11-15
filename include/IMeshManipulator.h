@@ -174,7 +174,7 @@ namespace scene
 		//! Create a new AnimatedMesh and adds the mesh to it
 		/** \param mesh Input mesh
 		\param type The type of the animated mesh to create.
-		\return Newly created animated mesh with mesh as it's only
+		\return Newly created animated mesh with mesh as its only
 		content. When you don't need the animated mesh anymore, you
 		should call IAnimatedMesh::drop(). See
 		IReferenceCounted::drop() for more information. */

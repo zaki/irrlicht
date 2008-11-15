@@ -190,7 +190,7 @@ namespace scene
 			CameraRotationDelta = delta;
 		}
 
-		//! Sets whether or not the node should dynamically update it's associated selector when
+		//! Sets whether or not the node should dynamically update it its associated selector when
 		//! the geomipmap data changes.
 		//! param bVal: Boolean value representing whether or not to update selector dynamically.
 		//! NOTE: Temporarily disabled while working out issues with DynamicSelectorUpdate
