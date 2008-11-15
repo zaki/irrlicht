@@ -540,9 +540,13 @@ namespace scene
 			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
 			f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
 
-		//! Adds a camera scene node with an animator which provides mouse and keyboard control like in most first person shooters (FPS).
-		/** Look with the mouse, move with cursor keys. If you do not like the default
-		 key layout, you may want to specify your own. For example to make the camera
+		//! Adds a camera scene node with an animator which provides mouse and keyboard control appropriate for first person shooters (FPS).
+		/** This FPS camera is intended to provide a demonstration of a camera that behaves
+		 like a typical First Person Shooter.  It is useful for simple demos and prototyping but is not 
+		 intended to provide a full solution for a production quality game. It binds the camera scene node 
+		 rotation to the look-at target; @see ICameraSceneNode::bindTargetAndRotation().
+		 With this camera, you look with the mouse, and move with cursor keys. If you want to 
+		 change the key layout, you can specify your own keymap. For example to make the camera
 		 be controlled by the cursor keys AND the keys W,A,S, and D, do something
 		 like this:
 		 \code
