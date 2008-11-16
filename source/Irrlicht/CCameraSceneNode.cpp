@@ -16,8 +16,7 @@ namespace scene
 //! constructor
 CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, 
 	const core::vector3df& position, const core::vector3df& lookat)
-	: ICameraSceneNode(parent, mgr, id, position, core::vector3df(0.0f, 0.0f, 0.0f),
-			core::vector3df(1.0f, 1.0f, 1.0f)),
+	: ICameraSceneNode(parent, mgr, id, position),
 	Target(lookat), UpVector(0.0f, 1.0f, 0.0f), ZNear(1.0f), ZFar(3000.0f),
 	InputReceiverEnabled(true), TargetAndRotationAreBound(false)
 {
