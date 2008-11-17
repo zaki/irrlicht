@@ -46,7 +46,7 @@ public:
 	
 private:
 	void constructMesh(SMesh* mesh);
-	void loadTextures(SMesh* mesh, u32 numTextures, u32 numLightMaps, const core::array<u32>& textureIDs);
+	void loadTextures(SMesh* mesh);
 	void cleanup();
 
 // byte-align structures
@@ -112,10 +112,10 @@ private:
 	io::IAttributes* Parameters;
 	video::IVideoDriver* Driver;
 	io::IFileSystem* FileSystem;
+	bool FlipEndianess;
 };
 
 } // end namespace scene
 } // end namespace irr
 
 #endif // !defined(__C_LMTS_MESH_FILE_LOADER_H_INCLUDED__)
-
