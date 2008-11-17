@@ -1503,13 +1503,11 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	if (effect->Mat.DiffuseColor == video::SColor(0) &&
 		effect->Mat.AmbientColor != video::SColor(0))
 		effect->Mat.DiffuseColor = effect->Mat.AmbientColor;
-#if 0
-	if (effect->Transparency != 1.0f)
+	if ((effect->Transparency != 0.0f) && (effect->Transparency != 1.0f))
 	{
 		effect->Mat.MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
 		effect->Mat.ZWriteEnable = false;
 	}
-#endif
 	effect->Mat.setFlag(video::EMF_TEXTURE_WRAP, !Parameters.getAttributeAsBool("wrap_s"));
 	effect->Mat.setFlag(video::EMF_BILINEAR_FILTER, Parameters.getAttributeAsBool("bilinear"));
 	effect->Mat.setFlag(video::EMF_TRILINEAR_FILTER, Parameters.getAttributeAsBool("trilinear"));
@@ -1588,13 +1586,12 @@ void CColladaFileLoader::readBindMaterialSection(io::IXMLReaderUTF8* reader, con
 					{
 						toBind[i]->getMaterial() = material->Mat;
 						tmpmesh.addMeshBuffer(toBind[i]);
-#if 0
+
 						if ((material->Transparency!=0.0f) && (material->Transparency!=1.0f))
 						{
 							toBind[i]->getMaterial().MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
 							toBind[i]->getMaterial().ZWriteEnable = false;
 						}
-#endif
 					}
 					SceneManager->getMeshManipulator()->setVertexColors(&tmpmesh,material->Mat.DiffuseColor);
 					if ((material->Transparency!=0.0f) && (material->Transparency!=1.0f))
