@@ -23,7 +23,7 @@ namespace video
 //! based on the file extension (e.g. ".tga")
 bool CImageLoaderTGA::isALoadableFileExtension(const c8* fileName) const
 {
-	return strstr(fileName, ".tga") != 0;
+	return (strstr(fileName, ".tga") != 0) || (strstr(fileName, ".TGA") != 0);
 }
 
 
