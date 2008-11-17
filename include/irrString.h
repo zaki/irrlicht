@@ -18,10 +18,15 @@ namespace core
 {
 
 //! Very simple string class with some useful features.
-/** string<c8> and string<wchar_t> work both with unicode AND ascii,
-so you can assign unicode to string<c8> and ascii to string<wchar_t>
-(and the other way round) if your ever would want to.
-Note that the conversation between both is not done using an encoding.
+/** string<c8> and string<wchar_t> both accept Unicode AND ASCII/Latin-1,
+so you can assign Unicode to string<c8> and ASCII/Latin-1 to string<wchar_t>
+(and the other way round) if you want to.
+
+However, note that the conversation between both is not done using any encoding.
+This means that c8 strings are treated as ASCII/Latin-1, not UTF-8, and 
+are simply expanded to the equivalent wchar_t, while Unicode/wchar_t 
+characters are truncated to 8-bit ASCII/Latin-1 characters, discarding all
+other information in the wchar_t.
 
 Known bugs:
 Special characters like umlauts are ignored in the
