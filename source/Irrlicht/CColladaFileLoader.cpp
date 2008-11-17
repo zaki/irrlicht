@@ -22,7 +22,9 @@
 #include "SMeshBufferLightMap.h"
 #include "irrMap.h"
 
-//#define COLLADA_READER_DEBUG
+#ifdef _DEBUG
+#define COLLADA_READER_DEBUG
+#endif
 namespace irr
 {
 namespace scene
@@ -957,25 +959,22 @@ core::matrix4 CColladaFileLoader::readMatrixNode(io::IXMLReaderUTF8* reader)
 	// put translation into the correct place
 	if (FlipAxis)
 	{
-		core::matrix4 mat2;
-		mat2.setTranslation(core::vector3df(mat[3],mat[11],mat[7]));
-		mat2[1]=mat[2];
-		mat2[2]=mat[1];
-		mat2[4]=mat[8];
+		core::matrix4 mat2(mat, core::matrix4::EM4CONST_TRANSPOSED);
+		mat2[1]=mat[8];
+		mat2[2]=mat[4];
+		mat2[4]=mat[2];
 		mat2[5]=mat[10];
-		mat2[6]=mat[9];
-		mat2[8]=mat[4];
-		mat2[9]=mat[6];
+		mat2[6]=mat[6];
+		mat2[8]=mat[1];
+		mat2[9]=mat[9];
 		mat2[10]=mat[5];
+		mat2[12]=mat[3];
+		mat2[13]=mat[11];
+		mat2[14]=mat[7];
 		return mat2;
 	}
 	else
-	{
-		mat.setTranslation(core::vector3df(mat[3],mat[7],mat[11]));
-		mat[3]=mat[7]=mat[11]=0.f;
-	}
-
-	return mat;
+		return core::matrix4(mat, core::matrix4::EM4CONST_TRANSPOSED);
 }
 
 
@@ -1504,8 +1503,13 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 	if (effect->Mat.DiffuseColor == video::SColor(0) &&
 		effect->Mat.AmbientColor != video::SColor(0))
 		effect->Mat.DiffuseColor = effect->Mat.AmbientColor;
+#if 0
 	if (effect->Transparency != 1.0f)
+	{
 		effect->Mat.MaterialType = irr::video::EMT_TRANSPARENT_VERTEX_ALPHA;
+		effect->Mat.ZWriteEnable = false;
+	}
+#endif
 	effect->Mat.setFlag(video::EMF_TEXTURE_WRAP, !Parameters.getAttributeAsBool("wrap_s"));
 	effect->Mat.setFlag(video::EMF_BILINEAR_FILTER, Parameters.getAttributeAsBool("bilinear"));
 	effect->Mat.setFlag(video::EMF_TRILINEAR_FILTER, Parameters.getAttributeAsBool("trilinear"));
@@ -1584,8 +1588,13 @@ void CColladaFileLoader::readBindMaterialSection(io::IXMLReaderUTF8* reader, con
 					{
 						toBind[i]->getMaterial() = material->Mat;
 						tmpmesh.addMeshBuffer(toBind[i]);
+#if 0
 						if ((material->Transparency!=0.0f) && (material->Transparency!=1.0f))
+						{
 							toBind[i]->getMaterial().MaterialType = video::EMT_TRANSPARENT_VERTEX_ALPHA;
+							toBind[i]->getMaterial().ZWriteEnable = false;
+						}
+#endif
 					}
 					SceneManager->getMeshManipulator()->setVertexColors(&tmpmesh,material->Mat.DiffuseColor);
 					if ((material->Transparency!=0.0f) && (material->Transparency!=1.0f))
@@ -2136,9 +2145,9 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				{
 					if (FlipAxis)
 					{
-						mbuffer->Indices.push_back(indices[i+0]);
 						mbuffer->Indices.push_back(indices[i+2]);
 						mbuffer->Indices.push_back(indices[i+1]);
+						mbuffer->Indices.push_back(indices[i+0]);
 					}
 					else
 					{
