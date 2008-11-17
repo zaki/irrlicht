@@ -54,9 +54,10 @@ bool CCameraSceneNode::isInputReceiverEnabled() const
 }
 
 
-//! Sets the projection matrix of the camera. The core::matrix4 class has some methods
-//! to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH
-//! \param projection: The new projection matrix of the camera. 
+//! Sets the projection matrix of the camera.
+/** The core::matrix4 class has some methods
+to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH
+\param projection: The new projection matrix of the camera. */
 void CCameraSceneNode::setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal)
 {
 	IsOrthogonal = isOrthogonal;
@@ -120,7 +121,7 @@ void CCameraSceneNode::setTarget(const core::vector3df& pos)
 
 //! Sets the rotation of the node.
 /** This only modifies the relative rotation of the node.
-/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
 then calling this will also change the camera's target to match the rotation.
 \param rotation New rotation of the node in degrees. */
 void CCameraSceneNode::setRotation(const core::vector3df& rotation)
