@@ -304,6 +304,8 @@ precision will be lower but speed higher. currently X86 only
 
 #ifdef _IRR_WINDOWS_API_
 
+// To build Irrlicht as a static library, you must define _IRR_STATIC_LIB_ in both the
+// Irrlicht build, *and* in the user application, before #including <irrlicht.h>
 #ifndef _IRR_STATIC_LIB_
 #ifdef IRRLICHT_EXPORTS
 #define IRRLICHT_API __declspec(dllexport)
