@@ -2614,6 +2614,7 @@ void COpenGLDriver::OnResize(const core::dimension2d<s32>& size)
 {
 	CNullDriver::OnResize(size);
 	glViewport(0, 0, size.Width, size.Height);
+	Transformation3DChanged = true;
 }
 
 
