@@ -55,13 +55,13 @@ namespace scene
 
 		//! Sets the rotation of the node.
 		/** This only modifies the relative rotation of the node.
-		/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+		If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
 		then calling this will also change the camera's target to match the rotation.
 		\param rotation New rotation of the node in degrees. */
 		virtual void setRotation(const core::vector3df& rotation);
 
 		//! Gets the current look at target of the camera
-		//! \return Returns the current look at target of the camera
+		/** \return The current look at target of the camera */
 		virtual const core::vector3df& getTarget() const;
 
 		//! Sets the up vector of the camera.

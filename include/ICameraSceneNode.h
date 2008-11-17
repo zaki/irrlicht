@@ -42,36 +42,38 @@ namespace scene
 		virtual void setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal = false) = 0;
 
 		//! Gets the current projection matrix of the camera.
-		/** \return Returns the current projection matrix of the camera. */
+		/** \return The current projection matrix of the camera. */
 		virtual const core::matrix4& getProjectionMatrix() const = 0;
 
 		//! Gets the current view matrix of the camera.
-		/** \return Returns the current view matrix of the camera. */
+		/** \return The current view matrix of the camera. */
 		virtual const core::matrix4& getViewMatrix() const = 0;
 
 		//! It is possible to send mouse and key events to the camera.
-		/** Most cameras
-		may ignore this input, but camera scene nodes which are created for
-		example with ISceneManager::addMayaCameraSceneNode or
-		ISceneManager::addMeshViewerCameraSceneNode, may want to get this input
-		for changing their position, look at target or whatever. */
+		/** Most cameras may ignore this input, but camera scene nodes
+		which are created for example with
+		ISceneManager::addMayaCameraSceneNode or
+		ISceneManager::addMeshViewerCameraSceneNode, may want to get
+		this input for changing their position, look at target or
+		whatever. */
 		virtual bool OnEvent(const SEvent& event) = 0;
 
 		//! Sets the look at target of the camera
-		/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
-		then calling this will also change the camera's scene node rotation to match the target.
-		\param pos: Look at target of the camera. */
+		/** If the camera's target and rotation are bound ( @see
+		bindTargetAndRotation() ) then calling this will also change
+		the camera's scene node rotation to match the target.
+		\param pos Look at target of the camera. */
 		virtual void setTarget(const core::vector3df& pos) = 0;
 
 		//! Sets the rotation of the node.
 		/** This only modifies the relative rotation of the node.
-		/** If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+		If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
 		then calling this will also change the camera's target to match the rotation.
 		\param rotation New rotation of the node in degrees. */
 		virtual void setRotation(const core::vector3df& rotation) = 0;
 
 		//! Gets the current look at target of the camera
-		/** \return Returns the current look at target of the camera */
+		/** \return The current look at target of the camera */
 		virtual const core::vector3df& getTarget() const = 0;
 
 		//! Sets the up vector of the camera.
@@ -79,23 +81,23 @@ namespace scene
 		virtual void setUpVector(const core::vector3df& pos) = 0;
 
 		//! Gets the up vector of the camera.
-		/** \return Returns the up vector of the camera. */
+		/** \return The up vector of the camera. */
 		virtual const core::vector3df& getUpVector() const = 0;
 
 		//! Gets the value of the near plane of the camera.
-		/** \return Returns the value of the near plane of the camera. */
+		/** \return The value of the near plane of the camera. */
 		virtual f32 getNearValue() const = 0;
 
 		//! Gets the value of the far plane of the camera.
-		/** \return Returns the value of the far plane of the camera. */
+		/** \return The value of the far plane of the camera. */
 		virtual f32 getFarValue() const = 0;
 
 		//! Gets the aspect ratio of the camera.
-		/** \return Returns the aspect ratio of the camera. */
+		/** \return The aspect ratio of the camera. */
 		virtual f32 getAspectRatio() const = 0;
 
 		//! Gets the field of view of the camera.
-		/** \return Returns the field of view of the camera in radiants. */
+		/** \return The field of view of the camera in radiants. */
 		virtual f32 getFOV() const = 0;
 
 		//! Sets the value of the near clipping plane. (default: 1.0f)
@@ -114,9 +116,9 @@ namespace scene
 		/** \param fovy: New field of view in radiants. */
 		virtual void setFOV(f32 fovy) = 0;
 
-		//! Returns the view frustum.
+		//! Get the view frustum.
 		/** Needed sometimes by bspTree or LOD render nodes.
-		\return Returns the current view frustum. */
+		\return The current view frustum. */
 		virtual const SViewFrustum* getViewFrustum() const = 0;
 
 		//! Disables or enables the camera to get key or mouse inputs.
@@ -124,10 +126,10 @@ namespace scene
 		otherwise not. */
 		virtual void setInputReceiverEnabled(bool enabled) = 0;
 
-		//! Returns if the input receiver of the camera is currently enabled.
+		//! Checks if the input receiver of the camera is currently enabled.
 		virtual bool isInputReceiverEnabled() const = 0;
 
-		//! Returns if a camera is orthogonal.
+		//! Checks if a camera is orthogonal.
 		virtual bool isOrthogonal() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
