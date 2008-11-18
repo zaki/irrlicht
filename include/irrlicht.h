@@ -49,6 +49,7 @@
 #include "IQ3LevelMesh.h"
 #include "IAnimatedMeshSceneNode.h"
 #include "IBillboardSceneNode.h"
+#include "IBillboardTextSceneNode.h"
 #include "IBoneSceneNode.h"
 #include "ICameraSceneNode.h"
 #include "IDummyTransformationSceneNode.h"
