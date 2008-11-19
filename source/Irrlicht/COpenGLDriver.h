@@ -338,7 +338,7 @@ namespace video
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return vendorName;}
 
-		ITexture* getDepthTexture(ITexture* texture, bool shared=true);
+		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
 		void removeDepthTexture(ITexture* texture);
 
 	private:
