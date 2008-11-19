@@ -117,10 +117,12 @@ public:
 	}
 
 
-
 	//! Sets the relative rectangle of this element as a proportion of its parent's area.
-	/** \param r  The rectangle to set, interpreted as a proportion of the parent's area */
-	void setRelativePosition(const core::rect<f32>& r)
+	/** \note This method used to be 'void setRelativePosition(const core::rect<f32>& r)'
+	\param r  The rectangle to set, interpreted as a proportion of the parent's area. 
+	Meaningful values are in the range [0...1], unless you intend this element to spill
+	outside its parent. */
+	void setProportionalPosition(const core::rect<f32>& r) 
 	{
 		if (!Parent)
 			return;
@@ -137,6 +139,7 @@ public:
 
 		updateAbsolutePosition();
 	}
+
 
 	//! Gets the absolute rectangle of this element
 	core::rect<s32> getAbsolutePosition() const

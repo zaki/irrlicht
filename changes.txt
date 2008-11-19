@@ -1,5 +1,9 @@
 Changes in version 1.5 (... 2008)
 
+ - Renamed IGUIElement::setRelativePosition(const core::rect<f32>& r) to setProportionalPosition(), as it has radically different functionality from setRelativePosition(const core::rect<s32>& r)
+
+ - Added IGUIElement::setRelativePosition(const core::position2di & position) to set a new position while retaining the existing height and width.
+
  - Camera scene node rotation and target can now be bound together so that changing one automatically changes the other (as the FPS camera has always done). See ICameraSceneNode::bindTargetAndRotation()
 
  - Removed VS6 .dsw / .dsp project files - VS6 is no longer supported.
