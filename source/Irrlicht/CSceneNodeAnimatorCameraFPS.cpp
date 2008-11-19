@@ -158,7 +158,7 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	// set target
 
-	target.set(0,0,pos.getLength());
+	target.set(0,0, core::max_(1.f, pos.getLength()));
 	core::vector3df movedir = target;
 
 	core::matrix4 mat;
