@@ -2737,9 +2737,12 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 		if (rtt)
 		{
 			addTexture(rtt);
-			ITexture* tex = getDepthTexture(rtt);
+			ITexture* tex = createDepthTexture(rtt);
 			if (tex)
+			{
 				static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
+				tex->drop();
+			}
 			rtt->drop();
 		}
 	}
@@ -2753,7 +2756,6 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 		rtt = addTexture(destSize, name, ECF_A8R8G8B8);
 		if (rtt)
 		{
-			rtt->grab();
 			static_cast<video::COpenGLTexture*>(rtt)->setIsRenderTarget(true);
 		}
 	}
@@ -2912,7 +2914,7 @@ IImage* COpenGLDriver::createScreenShot()
 
 
 //! get depth texture for the given render target texture
-ITexture* COpenGLDriver::getDepthTexture(ITexture* texture, bool shared)
+ITexture* COpenGLDriver::createDepthTexture(ITexture* texture, bool shared)
 {
 	if ((texture->getDriverType() != EDT_OPENGL) || (!texture->isRenderTarget()))
 		return 0;

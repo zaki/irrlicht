@@ -633,7 +633,7 @@ void COpenGLFBODepthTexture::attach(ITexture* renderTex)
 		os::Printer::log("FBO incomplete");
 #endif
 	rtt->DepthTexture=this;
-	renderTex->grab();
+	grab(); // grab the depth buffer, not the RTT
 	rtt->unbindRTT();
 }
 
