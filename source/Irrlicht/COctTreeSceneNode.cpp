@@ -119,7 +119,7 @@ void COctTreeSceneNode::render()
 			//StdOctTree->calculatePolys(box);
 			StdOctTree->calculatePolys(frust);
 
-			const OctTree<video::S3DVertex>::SIndexData* d =  StdOctTree->getIndexData();
+			const OctTree<video::S3DVertex>::SIndexData* d = StdOctTree->getIndexData();
 
 			for (u32 i=0; i<Materials.size(); ++i)
 			{
@@ -165,7 +165,7 @@ void COctTreeSceneNode::render()
 			//LightMapOctTree->calculatePolys(box);
 			LightMapOctTree->calculatePolys(frust);
 
-			const OctTree<video::S3DVertex2TCoords>::SIndexData* d =  LightMapOctTree->getIndexData();
+			const OctTree<video::S3DVertex2TCoords>::SIndexData* d = LightMapOctTree->getIndexData();
 
 			for (u32 i=0; i<Materials.size(); ++i)
 			{
