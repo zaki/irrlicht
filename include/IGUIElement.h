@@ -122,7 +122,7 @@ public:
 	\param r  The rectangle to set, interpreted as a proportion of the parent's area. 
 	Meaningful values are in the range [0...1], unless you intend this element to spill
 	outside its parent. */
-	void setProportionalPosition(const core::rect<f32>& r) 
+	void setRelativePositionProportional(const core::rect<f32>& r) 
 	{
 		if (!Parent)
 			return;
@@ -378,7 +378,6 @@ public:
 	{
 		return AbsoluteClippingRect.isPointInside(point);
 	}
-
 
 	//! Adds a GUI element as new child of this element.
 	virtual void addChild(IGUIElement* child)
