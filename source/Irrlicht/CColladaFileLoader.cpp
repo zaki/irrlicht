@@ -1596,9 +1596,9 @@ void CColladaFileLoader::readBindMaterialSection(io::IXMLReaderUTF8* reader, con
 					SceneManager->getMeshManipulator()->setVertexColors(&tmpmesh,material->Mat.DiffuseColor);
 					if ((material->Transparency!=0.0f) && (material->Transparency!=1.0f))
 					{
-	#ifdef COLLADA_READER_DEBUG
-	os::Printer::log("COLLADA found transparency material", core::stringc(material->Transparency).c_str());
-	#endif
+						#ifdef COLLADA_READER_DEBUG
+						os::Printer::log("COLLADA found transparency material", core::stringc(material->Transparency).c_str());
+						#endif
 						SceneManager->getMeshManipulator()->setVertexColorAlpha(&tmpmesh, core::floor32(material->Transparency*255.0f));
 					}
 				}
@@ -2087,7 +2087,7 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 					case ECIS_TEXCOORD:
 					case ECIS_UV:
 						vtx.TCoords.X = Inputs[k].Data[idx+0];
-						vtx.TCoords.Y = -Inputs[k].Data[idx+1];
+						vtx.TCoords.Y = 1-Inputs[k].Data[idx+1];
 						break;
 					case ECIS_TANGENT:
 						break;
@@ -2215,12 +2215,12 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 						if (k==secondTexCoordSetIndex)
 						{
 							vtx.TCoords2.X = Inputs[k].Data[idx+0];
-							vtx.TCoords2.Y = -Inputs[k].Data[idx+1];
+							vtx.TCoords2.Y = 1-Inputs[k].Data[idx+1];
 						}
 						else
 						{
 							vtx.TCoords.X = Inputs[k].Data[idx+0];
-							vtx.TCoords.Y = -Inputs[k].Data[idx+1];
+							vtx.TCoords.Y = 1-Inputs[k].Data[idx+1];
 						}
 						break;
 					case ECIS_TANGENT:
