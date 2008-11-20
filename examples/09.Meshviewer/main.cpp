@@ -313,6 +313,7 @@ public:
 						(IGUIFileOpenDialog*)event.GUIEvent.Caller;
 					loadModel(core::stringc(dialog->getFileName()).c_str());
 				}
+				break;
 
 			case EGET_SCROLL_BAR_CHANGED:
 
