@@ -114,10 +114,6 @@ public:
 	}
 
 private:
-
-	//! returns the size of a texture which would be the optimize size for rendering it
-	s32 getTextureSizeFromSurfaceSize(s32 size) const;
-
 	core::dimension2d<s32> OrigSize;
 
 	CImage * MipMap[SOFTWARE_DRIVER_2_MIPMAPPING_MAX];
