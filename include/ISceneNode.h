@@ -488,7 +488,8 @@ namespace scene
 
 
 		//! Sets if debug data like bounding boxes should be drawn.
-		/** A bitwise OR of the types is supported.
+		/** A bitwise OR of the types from
+		irr::scene::E_DEBUG_SCENE_TYPE is supported.
 		Please note that not all scene nodes support this feature.
 		\param state The debug data visibility state to be used. */
 		virtual void setDebugDataVisible(s32 state)
@@ -497,7 +498,8 @@ namespace scene
 		}
 
 		//! Returns if debug data like bounding boxes are drawn.
-		/** \return A bitwise OR of the debug data values currently visible. */
+		/** \return A bitwise OR of the debug data values from
+		irr::scene::E_DEBUG_SCENE_TYPE which are currently enabled. */
 		s32 isDebugDataVisible() const
 		{
 			return DebugDataVisible;
