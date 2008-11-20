@@ -129,11 +129,16 @@ install_osx:
 	cd $(INSTALL_DIR) && ln -s libIrrlicht.dylib.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
 
+TAGS:
+	ctags *.cpp ../../include/*.h *.h
+
 # Create dependency files for automatic recompilation
 %.d:%.cpp
 	$(CXX) $(CPPFLAGS) -MM -MF $@ $<
 
+ifneq ($(MAKECMDGOALS),clean)
 -include $(LINKOBJ:.o=.d)
+endif
 
 help:
 	@echo "Available targets for Irrlicht"
