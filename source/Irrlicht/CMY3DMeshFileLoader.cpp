@@ -86,7 +86,10 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 
 	// working directory (from which we load the scene)
 	core::stringc filepath = FileSystem->getFileDir(file->getFileName());
-	filepath.append("/");
+	if (filepath==".")
+		filepath="";
+	else
+		filepath.append("/");
 
 	// read file into memory
 	SMyFileHeader fileHeader;
