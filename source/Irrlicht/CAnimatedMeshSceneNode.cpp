@@ -33,7 +33,8 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh, ISceneNode* 
 	CurrentFrameNr(0.f), JointMode(EJUOR_NONE), JointsUsed(false),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
 	Looping(true), ReadOnlyMaterials(false),
-	LoopCallBack(0), PassCount(0), Shadow(0), RenderFromIdentity(0)
+	LoopCallBack(0), PassCount(0), Shadow(0), RenderFromIdentity(0),
+	MeshForCurrentFrame(0), FrameWhenCurrentMeshWasGenerated(0.f)
 {
 	#ifdef _DEBUG
 	setDebugName("CAnimatedMeshSceneNode");
@@ -195,17 +196,58 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 	}
 }
 
+IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(void)
+{
+	if(MeshForCurrentFrame && core::equals(CurrentFrameNr, FrameWhenCurrentMeshWasGenerated))
+		return MeshForCurrentFrame;
+
+	if(Mesh->getMeshType() != EAMT_SKINNED)
+	{
+		MeshForCurrentFrame = Mesh->getMesh((s32)getFrameNr(), 255, StartFrame, EndFrame);
+	}
+	else
+	{
+		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
+
+		if (JointMode == EJUOR_CONTROL)//write to mesh
+			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
+		else
+			skinnedMesh->animateMesh(getFrameNr(), 1.0f);
+
+		skinnedMesh->skinMesh();
+
+		if (JointMode == EJUOR_READ)//read from mesh
+		{
+			skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
+
+			//---slow---
+			for (u32 n=0;n<JointChildSceneNodes.size();++n)
+				if (JointChildSceneNodes[n]->getParent()==this)
+				{
+					JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
+				}
+
+		}
+
+		MeshForCurrentFrame = skinnedMesh;
+	}
+
+	FrameWhenCurrentMeshWasGenerated = CurrentFrameNr;
+	return MeshForCurrentFrame;
+}
+
 
 //! OnAnimate() is called just before rendering the whole scene.
 void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
 	CurrentFrameNr = buildFrameNr ( timeMs );
 
-	if ( Mesh && (Mesh->getMeshType() != EAMT_SKINNED))
+	if ( Mesh )
 	{
-		scene::IMesh *m = Mesh->getMesh((s32)CurrentFrameNr, 255, StartFrame, EndFrame);
-		if ( m )
-			Box = m->getBoundingBox();
+		scene::IMesh * mesh = getMeshForCurrentFrame();
+		
+		if ( mesh )
+			Box = mesh->getBoundingBox();
 	}
 
 	IAnimatedMeshSceneNode::OnAnimate ( timeMs );
@@ -226,38 +268,7 @@ void CAnimatedMeshSceneNode::render()
 
 	++PassCount;
 
-	f32 frame = getFrameNr();
-
-	scene::IMesh* m;
-
-	if (Mesh->getMeshType() != EAMT_SKINNED)
-		m = Mesh->getMesh((s32)frame, 255, StartFrame, EndFrame);
-	else
-	{
-		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
-
-		if (JointMode == EJUOR_CONTROL)//write to mesh
-			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
-		else
-			skinnedMesh->animateMesh(frame, 1.0f);
-
-		skinnedMesh->skinMesh();
-
-		if (JointMode == EJUOR_READ)//read from mesh
-		{
-			skinnedMesh->recoverJointsFromMesh(JointChildSceneNodes);
-
-			//---slow---
-			for (u32 n=0;n<JointChildSceneNodes.size();++n)
-				if (JointChildSceneNodes[n]->getParent()==this)
-				{
-					JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
-				}
-
-		}
-		m=skinnedMesh;
-
-	}
+	scene::IMesh* m = getMeshForCurrentFrame();
 
 	if ( 0 == m )
 	{

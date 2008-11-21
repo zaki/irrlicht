@@ -161,6 +161,9 @@ namespace scene
 
 	private:
 
+		//! Get a static mesh for the current frame of this animated mesh
+		IMesh * getMeshForCurrentFrame(void);
+
 		f32 buildFrameNr( u32 timeMs);
 		void checkJoints();
 		void beginTransition();
@@ -168,12 +171,14 @@ namespace scene
 		core::array<video::SMaterial> Materials;
 		core::aabbox3d<f32> Box;
 		IAnimatedMesh* Mesh;
+		IMesh * MeshForCurrentFrame;
 
 		u32 BeginFrameTime;
 		s32 StartFrame;
 		s32 EndFrame;
 		f32 FramesPerSecond;
 		f32 CurrentFrameNr;
+		f32 FrameWhenCurrentMeshWasGenerated;
 
 		E_JOINT_UPDATE_ON_RENDER JointMode; //0-unused, 1-get joints only, 2-set joints only, 3-move and set
 		bool JointsUsed;
