@@ -48,7 +48,7 @@ CParticleSystemSceneNode::CParticleSystemSceneNode(bool createDefaultEmitter,
 		e->drop();
 	}
 
-	setParticleSize();
+	ParticleSize = size;
 }
 
 
@@ -489,7 +489,7 @@ void CParticleSystemSceneNode::setParticlesAreGlobal(bool global)
 //! Sets the size of all particles.
 void CParticleSystemSceneNode::setParticleSize(const core::dimension2d<f32> &size)
 {
-	os::Printer::log("Deprecated, use setMinStartSize/setMaxStartSize in emitter.", irr::ELL_WARNING);
+	os::Printer::log("setParticleSize is deprecated, use setMinStartSize/setMaxStartSize in emitter.", irr::ELL_WARNING);
 	//A bit of a hack, but better here than in the particle code
 	if (Emitter)
 	{
