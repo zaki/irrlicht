@@ -156,7 +156,7 @@ namespace scene
 		virtual IBillboardSceneNode* addBillboardSceneNode(ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
-			video::SColor shade_top = 0xFFFFFFFF, video::SColor shade_down = 0xFFFFFFFF);
+			video::SColor shadeTop = 0xFFFFFFFF, video::SColor shadeBottom = 0xFFFFFFFF);
 
 		//! Adds a skybox scene node. A skybox is a big cube with 6 textures on it and
 		//! is drawn around the camera position.
@@ -182,7 +182,7 @@ namespace scene
 			ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
-			video::SColor shade_top = 0xFFFFFFFF, video::SColor shade_down = 0xFFFFFFFF);
+			video::SColor colorTop = 0xFFFFFFFF, video::SColor colorBottom = 0xFFFFFFFF);
 
 		//! Adds a scene node, which can render a quake3 shader
 		virtual ISceneNode* addQuake3SceneNode(IMeshBuffer* meshBuffer, const quake3::SShader * shader,

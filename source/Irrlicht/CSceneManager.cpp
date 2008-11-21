@@ -429,16 +429,19 @@ IBillboardTextSceneNode* CSceneManager::addBillboardTextSceneNode(gui::IGUIFont*
 		const wchar_t* text, ISceneNode* parent,
 		const core::dimension2d<f32>& size,
 		const core::vector3df& position, s32 id,
-		video::SColor shade_top, video::SColor shade_down)
+		video::SColor colorTop, video::SColor colorBottom)
 {
-	if (!font)
+	if (!font && GUIEnvironment)
+		font = GUIEnvironment->getBuiltInFont();
+
+	if(!font)
 		return 0;
 
 	if (!parent)
 		parent = this;
 
 	IBillboardTextSceneNode* node = new CBillboardTextSceneNode(parent, this, id, font, text, position, size,
-		shade_top, shade_down);
+		colorTop, colorBottom);
 	node->drop();
 
 	return node;
@@ -702,14 +705,14 @@ ILightSceneNode* CSceneManager::addLightSceneNode(ISceneNode* parent,
 //! lensflares and things like that.
 IBillboardSceneNode* CSceneManager::addBillboardSceneNode(ISceneNode* parent,
 	const core::dimension2d<f32>& size, const core::vector3df& position, s32 id,
-	video::SColor shade_top, video::SColor shade_down
+	video::SColor colorTop, video::SColor colorBottom
 	)
 {
 	if (!parent)
 		parent = this;
 
 	IBillboardSceneNode* node = new CBillboardSceneNode(parent, this, id, position, size,
-		shade_top, shade_down);
+		colorTop, colorBottom);
 	node->drop();
 
 	return node;
