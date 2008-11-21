@@ -1,6 +1,6 @@
 Changes in version 1.5 (... 2008)
 
- - Renamed IGUIElement::setRelativePosition(const core::rect<f32>& r) to setRelativePositionProportional(), as it has radically different functionality from setRelativePosition(const core::rect<s32>& r)
+ - Renamed IGUIElement::setRelativePosition(const core::rect<f32>& r) to IGUIElement::setRelativePositionProportional(), as it has radically different functionality from setRelativePosition(const core::rect<s32>& r)
 
  - Added IGUIElement::setRelativePosition(const core::position2di & position) to set a new position while retaining the existing height and width.
 
