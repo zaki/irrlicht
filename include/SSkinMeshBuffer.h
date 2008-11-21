@@ -19,7 +19,9 @@ namespace scene
 struct SSkinMeshBuffer : public IMeshBuffer
 {
 	//! Default constructor
-	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) : ChangedID_Vertex(1),ChangedID_Index(1),MappingHint_Vertex(EHM_NEVER),MappingHint_Index(EHM_NEVER),VertexType(vt)
+	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) : 
+		ChangedID_Vertex(1),ChangedID_Index(1),MappingHint_Vertex(EHM_NEVER),
+		MappingHint_Index(EHM_NEVER),VertexType(vt),BoundingBoxNeedsRecalculated(true)
 	{
 		#ifdef _DEBUG
 		setDebugName("SSkinMeshBuffer");
@@ -131,6 +133,11 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//! Recalculate bounding box
 	virtual void recalculateBoundingBox()
 	{
+		if(!BoundingBoxNeedsRecalculated)
+			return;
+
+		BoundingBoxNeedsRecalculated = false;
+
 		switch (VertexType)
 		{
 			case video::EVT_STANDARD:
@@ -359,6 +366,9 @@ struct SSkinMeshBuffer : public IMeshBuffer
 
 	virtual u32 getChangedID_Index() const {return ChangedID_Index;}
 
+	//! Call this after changing the positions of any vertex.
+	void boundingBoxNeedsRecalculated(void) { BoundingBoxNeedsRecalculated = true; }
+
 	u32 ChangedID_Vertex;
 	u32 ChangedID_Index;
 
@@ -376,6 +386,7 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	core::array<video::S3DVertex> Vertices_Standard;
 	core::array<u16> Indices;
 	core::aabbox3d<f32> BoundingBox;
+	bool BoundingBoxNeedsRecalculated;
 };
 
 

@@ -61,7 +61,6 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 
 	animateMesh((f32)frame, 1.0f);
 	buildAll_LocalAnimatedMatrices();
-	buildAll_GlobalAnimatedMatrices();
 	skinMesh();
 	return this;
 }
@@ -127,6 +126,8 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		buildAll_LocalAnimatedMatrices();
 		//-----------------
 	}
+
+	updateBoundingBox();
 }
 
 
@@ -428,7 +429,7 @@ void CSkinnedMesh::skinMesh()
 		return;
 
 	//----------------
-	// Temp!
+	// This is marked as "Temp!".  A shiny dubloon to whomever can tell me why.
 	buildAll_GlobalAnimatedMatrices();
 	//-----------------
 
@@ -506,6 +507,8 @@ void CSkinnedMesh::SkinJoint(SJoint *joint, SJoint *parentJoint)
 
 				//*(weight._Pos) += thisVertexMove * weight.strength;
 			}
+
+			buffersUsed[weight.buffer_id]->boundingBoxNeedsRecalculated();
 		}
 	}
 
@@ -704,6 +707,7 @@ bool CSkinnedMesh::setHardwareSkinning(bool on)
 					const u32 vertex_id=joint->Weights[j].vertex_id;
 					LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos = joint->Weights[j].StaticPos;
 					LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal = joint->Weights[j].StaticNormal;
+					LocalBuffers[buffer_id]->boundingBoxNeedsRecalculated();
 				}
 			}
 
@@ -1096,11 +1100,28 @@ void CSkinnedMesh::finalize()
 			BoundingBox.addInternalBox(bb);
 		}
 	}
+}
 
-	//add 5% padding to bounding box
-	const core::vector3df Padding = BoundingBox.getExtent()*0.05f;
-	BoundingBox.MinEdge -= Padding;
-	BoundingBox.MaxEdge += Padding;
+
+void CSkinnedMesh::updateBoundingBox(void)
+{
+	if(!SkinningBuffers)
+		return;
+
+	core::array<SSkinMeshBuffer*> & buffer = *SkinningBuffers;
+	BoundingBox.reset(0,0,0);
+
+	if (!buffer.empty())
+	{
+		for (u32 j=0; j<buffer.size(); ++j)
+		{
+			buffer[j]->recalculateBoundingBox();
+			core::aabbox3df bb = buffer[j]->BoundingBox;
+			buffer[j]->Transformation.transformBoxEx(bb);
+
+			BoundingBox.addInternalBox(bb);
+		}
+	}
 }
 
 
