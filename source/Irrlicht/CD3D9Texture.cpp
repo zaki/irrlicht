@@ -124,29 +124,10 @@ void CD3D9Texture::createRenderTarget()
 			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
 	}
 
-	// get backbuffer format to create the render target in the
-	// same format
-
-	IDirect3DSurface9* bb;
-	D3DFORMAT d3DFormat = D3DFMT_A8R8G8B8;
-
-	if (!FAILED(Device->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &bb)))
-	{
-		D3DSURFACE_DESC desc;
-		bb->GetDesc(&desc);
-		d3DFormat = desc.Format;
-
-		if (d3DFormat == D3DFMT_X8R8G8B8)
-			d3DFormat = D3DFMT_A8R8G8B8;
-
-		bb->Release();
-	}
-	else
-	{
-		os::Printer::log("Could not create RenderTarget texture", "could not get BackBuffer.",
-			ELL_WARNING);
-		return;
-	}
+	// get irrlicht format from backbuffer
+	ColorFormat = Driver->getColorFormat();
+	D3DFORMAT d3dformat = Driver->getD3DColorFormat();
+	setPitch(d3dformat);
 
 	// create texture
 	HRESULT hr;
@@ -156,13 +137,10 @@ void CD3D9Texture::createRenderTarget()
 		TextureSize.Height,
 		1, // mip map level count, we don't want mipmaps here
 		D3DUSAGE_RENDERTARGET,
-		d3DFormat,
+		d3dformat,
 		D3DPOOL_DEFAULT,
 		&Texture,
 		NULL);
-
-	// get irrlicht format from D3D format
-	ColorFormat = getColorFormatFromD3DFormat(d3DFormat);
 
 	if (FAILED(hr))
 	{
@@ -269,7 +247,7 @@ bool CD3D9Texture::createMipMaps(u32 level)
 	upperSurface->Release();
 	lowerSurface->Release();
 
-	if (!result || (upperDesc.Width < 3 && upperDesc.Height < 3))
+	if (!result || (upperDesc.Width <= 3 && upperDesc.Height <= 3))
 		return result; // stop generating levels
 
 	// generate next level
@@ -366,50 +344,9 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 			0, format, D3DPOOL_MANAGED, &Texture, NULL);
 	}
 
-	ColorFormat = getColorFormatFromD3DFormat(format);
+	ColorFormat = Driver->getColorFormatFromD3DFormat(format);
+	setPitch(format);
 	return (SUCCEEDED(hr));
-}
-
-
-D3DFORMAT CD3D9Texture::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
-{
-	switch(format)
-	{
-		case ECF_A1R5G5B5:
-			return D3DFMT_A1R5G5B5;
-		case ECF_R5G6B5:
-			return D3DFMT_R5G6B5;
-		case ECF_R8G8B8:
-			return D3DFMT_R8G8B8;
-		case ECF_A8R8G8B8:
-			return D3DFMT_A8R8G8B8;
-	}
-	return D3DFMT_UNKNOWN;
-}
-
-
-ECOLOR_FORMAT CD3D9Texture::getColorFormatFromD3DFormat(D3DFORMAT format)
-{
-	switch(format)
-	{
-	case D3DFMT_X1R5G5B5:
-	case D3DFMT_A1R5G5B5:
-		Pitch = TextureSize.Width * 2;
-		return ECF_A1R5G5B5;
-	case D3DFMT_A8B8G8R8:
-	case D3DFMT_A8R8G8B8:
-	case D3DFMT_X8R8G8B8:
-		Pitch = TextureSize.Width * 4;
-		return ECF_A8R8G8B8;
-	case D3DFMT_R5G6B5:
-		Pitch = TextureSize.Width * 2;
-		return ECF_R5G6B5;
-	case D3DFMT_R8G8B8:
-		Pitch = TextureSize.Width * 3;
-		return ECF_R8G8B8;
-	default:
-		return (ECOLOR_FORMAT)0;
-	};
 }
 
 
@@ -683,6 +620,7 @@ bool CD3D9Texture::isRenderTarget() const
 	return IsRenderTarget;
 }
 
+
 //! Returns pointer to the render target surface
 IDirect3DSurface9* CD3D9Texture::getRenderTargetSurface()
 {
@@ -697,6 +635,31 @@ IDirect3DSurface9* CD3D9Texture::getRenderTargetSurface()
 		pRTTSurface->Release();
 
 	return pRTTSurface;
+}
+
+
+void CD3D9Texture::setPitch(D3DFORMAT d3dformat)
+{
+	switch(d3dformat)
+	{
+	case D3DFMT_X1R5G5B5:
+	case D3DFMT_A1R5G5B5:
+		Pitch = TextureSize.Width * 2;
+	break;
+	case D3DFMT_A8B8G8R8:
+	case D3DFMT_A8R8G8B8:
+	case D3DFMT_X8R8G8B8:
+		Pitch = TextureSize.Width * 4;
+	break;
+	case D3DFMT_R5G6B5:
+		Pitch = TextureSize.Width * 2;
+	break;
+	case D3DFMT_R8G8B8:
+		Pitch = TextureSize.Width * 3;
+	break;
+	default:
+		Pitch = 0;
+	};
 }
 
 
