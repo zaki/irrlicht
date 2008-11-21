@@ -236,6 +236,20 @@ namespace video
 		// removes the depth struct from the DepthSurface array
 		void removeDepthSurface(SDepthSurface* depth);
 
+		//! Get the current color format of the color buffer
+		/** \return Color format of the color buffer. */
+		virtual ECOLOR_FORMAT getColorFormat() const;
+
+		//! Get the current color format of the color buffer
+		/** \return Color format of the color buffer as D3D color value. */
+		D3DFORMAT getD3DColorFormat() const;
+
+		//! Get D3D color format from Irrlicht color format.
+		D3DFORMAT getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const;
+
+		//! Get Irrlicht color format from D3D color format.
+		ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format) const;
+
 	private:
 
 		//! enumeration for rendering modes such as 2d and 3d for minizing the switching of renderStates.
@@ -348,6 +362,9 @@ namespace video
 		u32 MaxUserClipPlanes;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
+
+		ECOLOR_FORMAT ColorFormat;
+		D3DFORMAT D3DColorFormat;
 		bool DeviceLost;
 		bool Fullscreen;
 		bool DriverWasReset;
@@ -359,5 +376,5 @@ namespace video
 
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
-#endif // __C_VIDEO_DIRECTX_8_H_INCLUDED__
+#endif // __C_VIDEO_DIRECTX_9_H_INCLUDED__
 

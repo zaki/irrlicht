@@ -32,7 +32,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<s32>& screenSize, HWND window,
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
-	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), DeviceLost(false),
+	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
 	Fullscreen(fullscreen), DriverWasReset(true)
 {
 	#ifdef _DEBUG
@@ -453,6 +453,21 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	DepthBuffers.push_back(new SDepthSurface());
 	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
 	DepthBuffers[0]->Size=ScreenSize;
+
+	D3DColorFormat = D3DFMT_A8R8G8B8;
+	IDirect3DSurface9* bb=0;
+	if (SUCCEEDED(pID3DDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &bb)))
+	{
+		D3DSURFACE_DESC desc;
+		bb->GetDesc(&desc);
+		D3DColorFormat = desc.Format;
+
+		if (D3DColorFormat == D3DFMT_X8R8G8B8)
+			D3DColorFormat = D3DFMT_A8R8G8B8;
+
+		bb->Release();
+	}
+	ColorFormat = getColorFormatFromD3DFormat(D3DColorFormat);
 
 	// so far so good.
 	return true;
@@ -2301,21 +2316,39 @@ bool CD3D9Driver::reset()
 				tex->Release();
 		}
 	}
-
-	if(DepthBuffers[0]->Surface)
-		DepthBuffers[0]->Surface->Release();
+	for (i=0; i<DepthBuffers.size(); ++i)
+	{
+		if(DepthBuffers[i]->Surface)
+			DepthBuffers[i]->Surface->Release();
+	}
 
 	DriverWasReset=true;
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 
+	// restore screen depthbuffer
+	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
+	D3DSURFACE_DESC desc;
+	DepthBuffers[0]->Surface->GetDesc(&desc);
+	// restore other depth buffers
+	for (i=1; i<DepthBuffers.size(); ++i)
+	{
+		HRESULT hr=pID3DDevice->CreateDepthStencilSurface(DepthBuffers[i]->Size.Width,
+				DepthBuffers[i]->Size.Height,
+				desc.Format,
+				desc.MultiSampleType,
+				desc.MultiSampleQuality,
+				TRUE,
+				&(DepthBuffers[i]->Surface),
+				NULL); 
+	}
+
+	// restore RTTs
 	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
 	}
-
-	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
 
 	if (FAILED(hr))
 	{
@@ -2620,6 +2653,20 @@ IImage* CD3D9Driver::createScreenShot()
 }
 
 
+//! returns color format
+ECOLOR_FORMAT CD3D9Driver::getColorFormat() const
+{
+	return ColorFormat;
+}
+
+
+//! returns color format
+D3DFORMAT CD3D9Driver::getD3DColorFormat() const
+{
+	return D3DColorFormat;
+}
+
+
 // returns the current size of the screen or rendertarget
 const core::dimension2d<s32>& CD3D9Driver::getCurrentRenderTargetSize() const
 {
@@ -2654,6 +2701,44 @@ void CD3D9Driver::enableClipPlane(u32 index, bool enable)
 	else
 		renderstate &= ~(1 << index);
 	pID3DDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, renderstate);
+}
+
+
+D3DFORMAT CD3D9Driver::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
+{
+	switch(format)
+	{
+		case ECF_A1R5G5B5:
+			return D3DFMT_A1R5G5B5;
+		case ECF_R5G6B5:
+			return D3DFMT_R5G6B5;
+		case ECF_R8G8B8:
+			return D3DFMT_R8G8B8;
+		case ECF_A8R8G8B8:
+			return D3DFMT_A8R8G8B8;
+	}
+	return D3DFMT_UNKNOWN;
+}
+
+
+ECOLOR_FORMAT CD3D9Driver::getColorFormatFromD3DFormat(D3DFORMAT format) const
+{
+	switch(format)
+	{
+	case D3DFMT_X1R5G5B5:
+	case D3DFMT_A1R5G5B5:
+		return ECF_A1R5G5B5;
+	case D3DFMT_A8B8G8R8:
+	case D3DFMT_A8R8G8B8:
+	case D3DFMT_X8R8G8B8:
+		return ECF_A8R8G8B8;
+	case D3DFMT_R5G6B5:
+		return ECF_R5G6B5;
+	case D3DFMT_R8G8B8:
+		return ECF_R8G8B8;
+	default:
+		return (ECOLOR_FORMAT)0;
+	};
 }
 
 

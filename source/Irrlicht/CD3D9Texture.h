@@ -88,12 +88,6 @@ private:
 	//! copies the image to the texture
 	bool copyTexture(IImage * image);
 
-	//! Get D3D color format from Irrlicht color format.
-	D3DFORMAT getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const;
-
-	//! Get Irrlicht color format from D3D color format.
-	ECOLOR_FORMAT getColorFormatFromD3DFormat(D3DFORMAT format);
-
 	//! Helper function for mipmap generation.
 	bool createMipMaps(u32 level=1);
 
@@ -104,6 +98,9 @@ private:
 	//! Helper function for mipmap generation.
 	void copy32BitMipMap(char* src, char* tgt,
 		s32 width, s32 height,  s32 pitchsrc, s32 pitchtgt) const;
+
+	//! set Pitch based on the d3d format
+	void setPitch(D3DFORMAT d3dformat);
 
 	IDirect3DDevice9* Device;
 	IDirect3DTexture9* Texture;
