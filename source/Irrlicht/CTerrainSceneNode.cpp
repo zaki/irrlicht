@@ -73,6 +73,7 @@ namespace scene
 		if( !file )
 			return false;
 
+		Mesh.MeshBuffers.clear();
 		u32 startTime = os::Timer::getRealTime();
 		video::IImage* heightMap = SceneManager->getVideoDriver()->createImageFromFile( file );
 
@@ -229,6 +230,7 @@ namespace scene
 		if( !file )
 			return false;
 
+		Mesh.MeshBuffers.clear();
 		// start reading
 		u32 startTime = os::Timer::getTime();
 
@@ -678,11 +680,11 @@ namespace scene
 		const s32 step = 1 << LOD;
 
 		// Generate the indices for all patches at the specified LOD
+		s32 index = 0;
 		for (s32 i=0; i<TerrainData.PatchCount; ++i)
 		{
 			for (s32 j=0; j<TerrainData.PatchCount; ++j)
 			{
-				s32 index = i*TerrainData.PatchCount + j;
 				s32 x = 0;
 				s32 z = 0;
 
@@ -710,6 +712,7 @@ namespace scene
 						z += step;
 					}
 				}
+				++index;
 			}
 		}
 	}
@@ -786,7 +789,7 @@ namespace scene
 		}
 
 		if ( setLODs )
-			setCurrentLODOfPatches (cLODs);
+			setCurrentLODOfPatches(cLODs);
 
 		return rv;
 	}
