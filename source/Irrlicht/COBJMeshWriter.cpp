@@ -126,7 +126,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			file->write(num.c_str(), num.size());
 			file->write("\n",1);
 
-			const u16 indexCount = buffer->getIndexCount();
+			const u32 indexCount = buffer->getIndexCount();
 			for (j=0; j<indexCount; j+=3)
 			{
 				file->write("f ",2);

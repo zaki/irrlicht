@@ -636,7 +636,7 @@ bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 		BITMAPV4HEADER bi;
 		ZeroMemory (&bi, sizeof(bi));
 		bi.bV4Size          = sizeof(BITMAPINFOHEADER);
-		bi.bV4BitCount      = image->getBitsPerPixel();
+		bi.bV4BitCount      = (WORD)image->getBitsPerPixel();
 		bi.bV4Planes        = 1;
 		bi.bV4Width         = image->getDimension().Width;
 		bi.bV4Height        = -image->getDimension().Height;
@@ -803,7 +803,8 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 	ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-	if (!(bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO*) &osvi)))
+	bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO*) &osvi);
+	if (!bOsVersionInfoEx)
 	{
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 		if (! GetVersionEx((OSVERSIONINFO *) &osvi))
@@ -991,7 +992,7 @@ bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 			activeJoystick.Index = joystick;
 			ActiveJoysticks.push_back(activeJoystick);
 
-			returnInfo.Joystick = joystick;
+			returnInfo.Joystick = (u8)joystick;
 			returnInfo.Axes = activeJoystick.Caps.wNumAxes;
 			returnInfo.Buttons = activeJoystick.Caps.wNumButtons;
 			returnInfo.Name = activeJoystick.Caps.szPname;
@@ -1012,9 +1013,9 @@ bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 	}
 
 	return true;
-#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-
+#else
 	return false;
+#endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 }
 
 void CIrrDeviceWin32::pollJoysticks()
@@ -1036,7 +1037,7 @@ void CIrrDeviceWin32::pollJoysticks()
 			const JOYCAPS & caps = ActiveJoysticks[joystick].Caps;
 
 			event.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
-			event.JoystickEvent.Joystick = joystick;
+			event.JoystickEvent.Joystick = (u8)joystick;
 
 			event.JoystickEvent.POV = (u16)info.dwPOV;
 			if(event.JoystickEvent.POV > 35900)
