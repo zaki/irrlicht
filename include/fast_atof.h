@@ -87,6 +87,9 @@ inline s32 strtol10(const char* in, const char** out=0)
 //! \return The whole positive floating point representation of the digit sequence.
 inline f32 strtof10(const char* in, const char * * out = 0)
 {
+	if(out)
+		*out = in;
+
 	if(!in)
 		return 0.f;
 
@@ -154,7 +157,7 @@ inline const char* fast_atof_move( const char * in, f32 & out)
 	{
 		++in;
 
-		const char * afterDecimal;
+		const char * afterDecimal = in;
 		f32 decimal = strtof10 ( in, &afterDecimal );
 		decimal *= fast_atof_table[afterDecimal - in];
 
