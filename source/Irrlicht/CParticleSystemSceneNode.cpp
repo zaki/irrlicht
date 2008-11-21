@@ -33,8 +33,8 @@ CParticleSystemSceneNode::CParticleSystemSceneNode(bool createDefaultEmitter,
 	const core::vector3df& position, const core::vector3df& rotation,
 	const core::vector3df& scale)
 	: IParticleSystemSceneNode(parent, mgr, id, position, rotation, scale),
-	Emitter(0), LastEmitTime(0), MaxParticles(0xffff), Buffer(0),
-	ParticlesAreGlobal(true)
+	Emitter(0), ParticleSize(core::dimension2d<f32>(5.0f, 5.0f)), LastEmitTime(0),
+	MaxParticles(0xffff), Buffer(0), ParticlesAreGlobal(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CParticleSystemSceneNode");
@@ -47,8 +47,6 @@ CParticleSystemSceneNode::CParticleSystemSceneNode(bool createDefaultEmitter,
 		setEmitter(e);
 		e->drop();
 	}
-
-	ParticleSize = size;
 }
 
 
