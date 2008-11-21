@@ -556,12 +556,12 @@ namespace scene
 						const s32 index12 = getIndex( j, i, index, x, z + step );
 						const s32 index22 = getIndex( j, i, index, x + step, z + step );
 
-						IndexBuffer[IndicesToRender++]= index12;
-						IndexBuffer[IndicesToRender++]= index11;
-						IndexBuffer[IndicesToRender++]= index22;
-						IndexBuffer[IndicesToRender++]= index22;
-						IndexBuffer[IndicesToRender++]= index11;
-						IndexBuffer[IndicesToRender++]= index21;
+						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index12);
+						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index11);
+						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index22);
+						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index22);
+						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index11);
+						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index21);
 
 						// increment index position horizontally
 						x += step;

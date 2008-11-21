@@ -210,12 +210,12 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 		buf->Vertices[firstVert+1].Color = ColorTop;
 		buf->Vertices[firstVert+2].Color = ColorTop;
 
-		buf->Indices[firstInd+0] = firstVert+0;
-		buf->Indices[firstInd+1] = firstVert+2;
-		buf->Indices[firstInd+2] = firstVert+1;
-		buf->Indices[firstInd+3] = firstVert+0;
-		buf->Indices[firstInd+4] = firstVert+3;
-		buf->Indices[firstInd+5] = firstVert+2;
+		buf->Indices[firstInd+0] = (u16)firstVert+0;
+		buf->Indices[firstInd+1] = (u16)firstVert+2;
+		buf->Indices[firstInd+2] = (u16)firstVert+1;
+		buf->Indices[firstInd+3] = (u16)firstVert+0;
+		buf->Indices[firstInd+4] = (u16)firstVert+3;
+		buf->Indices[firstInd+5] = (u16)firstVert+2;
 
 		wchar_t *tp = 0;
 		if (i>0) 

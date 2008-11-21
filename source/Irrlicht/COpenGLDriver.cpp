@@ -158,7 +158,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			}
 
 			// choose pixelformat
-			if ((PixelFormat = ChoosePixelFormat(HDc, &pfd)))
+			PixelFormat = ChoosePixelFormat(HDc, &pfd);
+			if (PixelFormat)
 				break;
 		}
 
@@ -233,7 +234,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	}
 
 	// get hdc
-	if (!(HDc=GetDC(Window)))
+	HDc=GetDC(Window);
+	if (!HDc)
 	{
 		os::Printer::log("Cannot create a GL device context.", ELL_ERROR);
 		return false;
@@ -275,7 +277,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			}
 
 			// choose pixelformat
-			if ((PixelFormat = ChoosePixelFormat(HDc, &pfd)))
+			PixelFormat = ChoosePixelFormat(HDc, &pfd);
+			if (PixelFormat)
 				break;
 		}
 	}
@@ -288,7 +291,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	}
 
 	// create rendering context
-	if (!(HRc=wglCreateContext(HDc)))
+	HRc=wglCreateContext(HDc);
+	if (!HRc)
 	{
 		os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
 		return false;

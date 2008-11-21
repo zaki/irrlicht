@@ -40,7 +40,7 @@ bool CImageWriterPPM::isAWriteableFileExtension(const c8* fileName) const
 bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param) const
 {
 	char cache[70];
-	char size;
+	int size;
 
 	const core::dimension2d<s32>& imageSize = image->getDimension();
 
@@ -69,9 +69,9 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 			for (s32 c = 0; c < imageSize.Width; ++c)
 			{
 				const video::SColor& pixel = image->getPixel(c, h);
-				const u8 r = pixel.getRed() & 0xff;
-				const u8 g = pixel.getGreen() & 0xff;
-				const u8 b = pixel.getBlue() & 0xff;
+				const u8 r = (u8)(pixel.getRed() & 0xff);
+				const u8 g = (u8)(pixel.getGreen() & 0xff);
+				const u8 b = (u8)(pixel.getBlue() & 0xff);
 				file->write(&r, 1);
 				file->write(&g, 1);
 				file->write(&b, 1);

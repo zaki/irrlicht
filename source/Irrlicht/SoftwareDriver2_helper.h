@@ -199,7 +199,7 @@ inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u32 alpha )
 	rb &= 0x7C1F;
 	xg &= 0x03E0;
 
-	return rb | xg; 
+	return (u16)(rb | xg);
 }
 
 /*!
@@ -237,7 +237,7 @@ inline u32 extractAlpha ( const u32 c )
 */
 inline u16 PixelMul16 ( const u16 c0, const u16 c1)
 {
-	return ((( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 ) |
+	return (u16)((( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 ) |
 			(( ( (c0 & 0x03E0) * (c1 & 0x03E0) ) & 0x000F8000 ) >> 10 ) |
 			(( ( (c0 & 0x001F) * (c1 & 0x001F) ) & 0x000003E0 ) >> 5 ) |
 			(c0 & 0x8000));
@@ -248,10 +248,10 @@ inline u16 PixelMul16 ( const u16 c0, const u16 c1)
 */
 inline u16 PixelMul16_2 ( u16 c0, u16 c1)
 {
-	return	( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 |
+	return	(u16)(( ( (c0 & 0x7C00) * (c1 & 0x7C00) ) & 0x3E000000 ) >> 15 |
 			( ( (c0 & 0x03E0) * (c1 & 0x03E0) ) & 0x000F8000 ) >> 10 |
 			( ( (c0 & 0x001F) * (c1 & 0x001F) ) & 0x000003E0 ) >> 5  |
-			( c0 & c1 & 0x8000);
+			( c0 & c1 & 0x8000));
 }
 
 /*
