@@ -64,7 +64,7 @@ namespace scene
 		CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
 			gui::IGUIFont* font,const wchar_t* text,
 			const core::vector3df& position, const core::dimension2d<f32>& size,
-			video::SColor shade_top, video::SColor shade_bottom);
+			video::SColor colorTop, video::SColor shade_bottom);
 
 		//! destructor
 		virtual ~CBillboardTextSceneNode();
@@ -121,8 +121,8 @@ namespace scene
 		core::aabbox3d<f32> BBox;
 		video::SMaterial Material;
 
-		video::SColor Shade_top;
-		video::SColor Shade_bottom;
+		video::SColor ColorTop;
+		video::SColor ColorBottom;
 		struct SSymbolInfo
 		{
 			u32 bufNo;

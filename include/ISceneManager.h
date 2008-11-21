@@ -624,14 +624,14 @@ namespace scene
 		 \param size: Size of the billboard. This size is 2 dimensional because a billboard only has
 		 width and height.
 		 \param id: An id of the node. This id can be used to identify the node.
-		 \param shade_top: vertex color top
-		 \param shade_down: vertex color down
+		 \param colorTop: The color of the vertices at the top of the billboard (default: white).
+		 \param colorBottom: The color of the vertices at the bottom of the billboard (default: white).
 		 \return Returns pointer to the billboard if successful, otherwise NULL.
 		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IBillboardSceneNode* addBillboardSceneNode(ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
-			video::SColor shade_top = 0xFFFFFFFF, video::SColor shade_down = 0xFFFFFFFF) = 0;
+			video::SColor colorTop = 0xFFFFFFFF, video::SColor colorBottom = 0xFFFFFFFF) = 0;
 
 		//! Adds a skybox scene node to the scene graph.
 		/** A skybox is a big cube with 6 textures on it and
@@ -828,12 +828,22 @@ namespace scene
 			ISceneNode* parent = 0, const core::vector3df& position = core::vector3df(0,0,0),
 			s32 id=-1) = 0;
 
-		//! Adds a text scene node, which uses billboards
+		//! Adds a text scene node, which uses billboards.  The node, and the text on it, will scale with distance.
+		/**
+		\param font The font to use on the billboard. Pass 0 to use the GUI environment's default font.
+		\param text The text to display on the billboard.
+		\param parent The billboard's parent.  Pass 0 to use the root scene node.
+		\param size The billboard's width and height.
+		\param position The billboards position relative to its parent.
+		\param colorTop: The color of the vertices at the top of the billboard (default: white).
+		\param colorBottom: The color of the vertices at the bottom of the billboard (default: white).
+		\return Returns pointer to the billboard if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IBillboardTextSceneNode* addBillboardTextSceneNode( gui::IGUIFont* font, const wchar_t* text,
 			ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
-			video::SColor shade_top = 0xFFFFFFFF, video::SColor shade_down = 0xFFFFFFFF) = 0;
+			video::SColor colorTop = 0xFFFFFFFF, video::SColor colorBottom = 0xFFFFFFFF) = 0;
 
 		//! Adds a Hill Plane mesh to the mesh pool.
 		/** The mesh is generated on the fly

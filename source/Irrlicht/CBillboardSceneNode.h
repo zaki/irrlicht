@@ -22,7 +22,7 @@ public:
 	//! constructor
 	CBillboardSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
 		const core::vector3df& position, const core::dimension2d<f32>& size,
-		video::SColor shade_top=video::SColor(0xFFFFFFFF),video::SColor shade_down=video::SColor(0xFFFFFFFF));
+		video::SColor colorTop=video::SColor(0xFFFFFFFF),video::SColor colorBottom=video::SColor(0xFFFFFFFF));
 
 	//! pre render event
 	virtual void OnRegisterSceneNode();
