@@ -36,11 +36,11 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	if (!KeyMapArray || !KeyMapSize)
 	{
 		// create default key map
-		KeyMap.push_back(SCamKeyMap(0, irr::KEY_UP));
-		KeyMap.push_back(SCamKeyMap(1, irr::KEY_DOWN));
-		KeyMap.push_back(SCamKeyMap(2, irr::KEY_LEFT));
-		KeyMap.push_back(SCamKeyMap(3, irr::KEY_RIGHT));
-		KeyMap.push_back(SCamKeyMap(4, irr::KEY_KEY_J));
+		KeyMap.push_back(SCamKeyMap(EKA_MOVE_FORWARD, irr::KEY_UP));
+		KeyMap.push_back(SCamKeyMap(EKA_MOVE_BACKWARD, irr::KEY_DOWN));
+		KeyMap.push_back(SCamKeyMap(EKA_STRAFE_LEFT, irr::KEY_LEFT));
+		KeyMap.push_back(SCamKeyMap(EKA_STRAFE_RIGHT, irr::KEY_RIGHT));
+		KeyMap.push_back(SCamKeyMap(EKA_JUMP_UP, irr::KEY_KEY_J));
 	}
 	else
 	{
@@ -177,10 +177,10 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	movedir.normalize();
 
-	if (CursorKeys[0])
+	if (CursorKeys[EKA_MOVE_FORWARD])
 		pos += movedir * timeDiff * MoveSpeed;
 
-	if (CursorKeys[1])
+	if (CursorKeys[EKA_MOVE_BACKWARD])
 		pos -= movedir * timeDiff * MoveSpeed;
 
 	// strafing
@@ -193,17 +193,15 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 	strafevect.normalize();
 
-	if (CursorKeys[2])
+	if (CursorKeys[EKA_STRAFE_LEFT])
 		pos += strafevect * timeDiff * MoveSpeed;
 
-	if (CursorKeys[3])
+	if (CursorKeys[EKA_STRAFE_RIGHT])
 		pos -= strafevect * timeDiff * MoveSpeed;
 
 	// jumping ( needs a gravity , else it's a fly to the World-UpVector )
-	if (CursorKeys[4])
-	{
+	if (CursorKeys[EKA_JUMP_UP])
 		pos += camera->getUpVector() * timeDiff * JumpSpeed;
-	}
 
 	// write translation
 	camera->setPosition(pos);
@@ -262,15 +260,15 @@ void CSceneNodeAnimatorCameraFPS::setKeyMap(SKeyMap *map, u32 count)
 	{
 		switch(map[i].Action)
 		{
-		case EKA_MOVE_FORWARD: KeyMap.push_back(SCamKeyMap(0, map[i].KeyCode));
+		case EKA_MOVE_FORWARD: KeyMap.push_back(SCamKeyMap(EKA_MOVE_FORWARD, map[i].KeyCode));
 			break;
-		case EKA_MOVE_BACKWARD: KeyMap.push_back(SCamKeyMap(1, map[i].KeyCode));
+		case EKA_MOVE_BACKWARD: KeyMap.push_back(SCamKeyMap(EKA_MOVE_BACKWARD, map[i].KeyCode));
 			break;
-		case EKA_STRAFE_LEFT: KeyMap.push_back(SCamKeyMap(2, map[i].KeyCode));
+		case EKA_STRAFE_LEFT: KeyMap.push_back(SCamKeyMap(EKA_STRAFE_LEFT, map[i].KeyCode));
 			break;
-		case EKA_STRAFE_RIGHT: KeyMap.push_back(SCamKeyMap(3, map[i].KeyCode));
+		case EKA_STRAFE_RIGHT: KeyMap.push_back(SCamKeyMap(EKA_STRAFE_RIGHT, map[i].KeyCode));
 			break;
-		case EKA_JUMP_UP: KeyMap.push_back(SCamKeyMap(4, map[i].KeyCode));
+		case EKA_JUMP_UP: KeyMap.push_back(SCamKeyMap(EKA_JUMP_UP, map[i].KeyCode));
 			break;
 		default:
 			break;
