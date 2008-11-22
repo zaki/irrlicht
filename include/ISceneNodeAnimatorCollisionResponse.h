@@ -63,6 +63,11 @@ namespace scene
 		//! \return Gravity vector. */
 		virtual core::vector3df getGravity() const = 0;
 
+		//! 'Jump' the animator, by adding a jump speed opposite to its gravity
+		/** \param jumpSpeed The initial speed of the jump; the velocity will be opposite
+		to this animator's gravity vector. */
+		virtual void jump(f32 jumpSpeed) = 0;
+
 		//! Set translation of the collision ellipsoid.
 		/** By default, the ellipsoid for collision detection is
 		created around the center of the scene node, which means that

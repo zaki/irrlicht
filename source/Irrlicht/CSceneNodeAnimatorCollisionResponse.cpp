@@ -21,8 +21,8 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 		const core::vector3df& gravityPerSecond,
 		const core::vector3df& ellipsoidTranslation,
 		f32 slidingSpeed)
-: Radius(ellipsoidRadius), Gravity(gravityPerSecond / 1000.0f), Translation(ellipsoidTranslation),
-	World(world), Object(object), SceneManager(scenemanager),
+: Radius(ellipsoidRadius), Gravity(gravityPerSecond), Translation(ellipsoidTranslation),
+	World(world), Object(object), SceneManager(scenemanager), FallingVelocity(0.f),
 	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false), AnimateCameraTarget(true)
 {
 
@@ -85,6 +85,13 @@ core::vector3df CSceneNodeAnimatorCollisionResponse::getGravity() const
 	return Gravity;
 }
 
+//! 'Jump' the animator, by adding a jump speed opposite to its gravity
+void CSceneNodeAnimatorCollisionResponse::jump(f32 jumpSpeed)
+{
+	FallingVelocity -= (core::vector3df(Gravity).normalize()) * jumpSpeed;
+	Falling = true;
+}
+
 
 //! Sets the translation of the ellipsoid for collision detection.
 void CSceneNodeAnimatorCollisionResponse::setEllipsoidTranslation(const core::vector3df &translation)
@@ -108,8 +115,6 @@ void CSceneNodeAnimatorCollisionResponse::setWorld(ITriangleSelector* newWorld)
 	Falling = false;
 
 	LastTime = os::Timer::getTime();
-	FallStartTime = LastTime;
-
 
 	if (World)
 		World->drop();
@@ -148,18 +153,11 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	core::vector3df pos = Object->getPosition();
 	core::vector3df vel = pos - LastPosition;
 
-	//g = Gravity * (f32)((timeMs - FallStartTime) * diff);
-
-	f32 dt = 1.f;
-	if (Falling)
-	{
-		dt = f32 ( ( timeMs - FallStartTime ) * diff );
-	}
-	core::vector3df g = Gravity * dt;
+	FallingVelocity += Gravity * (f32)diff * 0.001f;
 
 	core::triangle3df triangle = RefTriangle;
 
-	core::vector3df force = vel + g;
+	core::vector3df force = vel + FallingVelocity;
 
 	const core::vector3df nullVector ( 0.f, 0.f, 0.f );
 
@@ -170,19 +168,19 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		bool f = false;
 		pos = SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
 				World, LastPosition-Translation,
-				Radius, vel, triangle, f, SlidingSpeed, g);
+				Radius, vel, triangle, f, SlidingSpeed, FallingVelocity);
 
 		pos += Translation;
 
 		if (f)//triangle == RefTriangle)
 		{
-			if (!Falling)
-				FallStartTime = timeMs;
-
 			Falling = true;
 		}
 		else
+		{
 			Falling = false;
+			FallingVelocity.set(0, 0, 0);
+		}
 
 		Object->setPosition(pos);
 	}
@@ -209,7 +207,6 @@ void CSceneNodeAnimatorCollisionResponse::setNode(ISceneNode* node)
 	}
 
 	LastTime = os::Timer::getTime();
-	FallStartTime = LastTime;
 }
 
 //! Writes attributes of the scene node animator.
