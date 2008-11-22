@@ -1086,9 +1086,9 @@ namespace scene
 		 const core::aabbox3d<f32>& box = yourSceneNode->getBoundingBox();
 		 core::vector3df radius = box.MaxEdge - box.getCenter();
 		 \endcode
-		 \param gravityPerSecond: Sets the gravity of the environment. A good example value would be
-		 core::vector3df(0,-100.0f,0) for letting gravity affect all object to
-		 fall down. For bigger gravity, make increase the length of the vector.
+		 \param gravityPerSecond: Sets the gravity of the environment, as an acceleration in 
+		 units per second per second. If your units are equivalent to metres, then 
+		 core::vector3df(0,-10.0f,0) would give an approximately realistic gravity.
 		 You can disable gravity by setting it to core::vector3df(0,0,0).
 		 \param ellipsoidTranslation: By default, the ellipsoid for collision detection is created around
 		 the center of the scene node, which means that the ellipsoid surrounds
@@ -1102,7 +1102,7 @@ namespace scene
 		virtual ISceneNodeAnimatorCollisionResponse* createCollisionResponseAnimator(
 			ITriangleSelector* world, ISceneNode* sceneNode,
 			const core::vector3df& ellipsoidRadius = core::vector3df(30,60,30),
-			const core::vector3df& gravityPerSecond = core::vector3df(0,-100.0f,0),
+			const core::vector3df& gravityPerSecond = core::vector3df(0,-10.0f,0),
 			const core::vector3df& ellipsoidTranslation = core::vector3df(0,0,0),
 			f32 slidingValue = 0.0005f) = 0;
 

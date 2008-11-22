@@ -51,6 +51,9 @@ namespace scene
 		//! Sets the gravity of the environment.
 		virtual void setGravity(const core::vector3df& gravity);
 
+		//! 'Jump' the animator, by adding a jump speed opposite to its gravity
+		virtual void jump(f32 jumpSpeed);
+
 		//! Returns current vector of gravity.
 		virtual core::vector3df getGravity() const;
 
@@ -93,13 +96,13 @@ namespace scene
 		core::vector3df LastPosition;
 		core::vector3df Radius;
 		core::vector3df Gravity;
+		core::vector3df FallingVelocity; // In the direction of Gravity.
 		core::vector3df Translation;
 		
 		ITriangleSelector* World;
 		ISceneNode* Object;
 		ISceneManager* SceneManager;
 		u32 LastTime;
-		u32 FallStartTime;
 		f32 SlidingSpeed;
 		bool Falling;
 		bool IsCamera;

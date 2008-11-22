@@ -1,5 +1,7 @@
 Changes in version 1.5 (... 2008)
 
+ - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact.  The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
+
  - Renamed IGUIElement::setRelativePosition(const core::rect<f32>& r) to IGUIElement::setRelativePositionProportional(), as it has radically different functionality from setRelativePosition(const core::rect<s32>& r)
 
  - Added IGUIElement::setRelativePosition(const core::position2di & position) to set a new position while retaining the existing height and width.

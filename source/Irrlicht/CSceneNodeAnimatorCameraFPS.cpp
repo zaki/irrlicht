@@ -8,6 +8,7 @@
 #include "Keycodes.h"
 #include "ICursorControl.h"
 #include "ICameraSceneNode.h"
+#include "ISceneNodeAnimatorCollisionResponse.h"
 
 namespace irr
 {
@@ -199,9 +200,26 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	if (CursorKeys[EKA_STRAFE_RIGHT])
 		pos -= strafevect * timeDiff * MoveSpeed;
 
-	// jumping ( needs a gravity , else it's a fly to the World-UpVector )
+	// For jumping, we find the collision response animator attached to our camera
+	// and if it's not falling, we tell it to jump.
 	if (CursorKeys[EKA_JUMP_UP])
-		pos += camera->getUpVector() * timeDiff * JumpSpeed;
+	{
+		const core::list<ISceneNodeAnimator*> & animators = camera->getAnimators();
+		core::list<ISceneNodeAnimator*>::ConstIterator it = animators.begin();
+		while(it != animators.end())
+		{
+			if(ESNAT_COLLISION_RESPONSE == (*it)->getType())
+			{
+				ISceneNodeAnimatorCollisionResponse * collisionResponse = 
+					static_cast<ISceneNodeAnimatorCollisionResponse *>(*it);
+
+				if(!collisionResponse->isFalling())
+					collisionResponse->jump(JumpSpeed);
+			}
+
+			it++;
+		}
+	}
 
 	// write translation
 	camera->setPosition(pos);
