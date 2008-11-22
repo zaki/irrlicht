@@ -26,21 +26,26 @@ namespace scene
 
 
 //! constructor
-CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh, ISceneNode* parent, ISceneManager* mgr, s32 id,
-			const core::vector3df& position, const core::vector3df& rotation,	const core::vector3df& scale)
+CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
+		ISceneNode* parent, ISceneManager* mgr, s32 id,
+		const core::vector3df& position,
+		const core::vector3df& rotation,
+		const core::vector3df& scale)
 : IAnimatedMeshSceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
-	BeginFrameTime(0), StartFrame(0), EndFrame(0), FramesPerSecond(25.f / 1000.f ),
-	CurrentFrameNr(0.f), JointMode(EJUOR_NONE), JointsUsed(false),
+	MeshForCurrentFrame(0),
+	BeginFrameTime(0), StartFrame(0), EndFrame(0), FramesPerSecond(0.f),
+	CurrentFrameNr(0.f), FrameWhenCurrentMeshWasGenerated(0.f),
+	JointMode(EJUOR_NONE), JointsUsed(false),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
-	Looping(true), ReadOnlyMaterials(false),
-	LoopCallBack(0), PassCount(0), Shadow(0), RenderFromIdentity(0),
-	MeshForCurrentFrame(0), FrameWhenCurrentMeshWasGenerated(0.f)
+	Looping(true), ReadOnlyMaterials(false), RenderFromIdentity(0),
+	LoopCallBack(0), PassCount(0), Shadow(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CAnimatedMeshSceneNode");
 	#endif
 
 	BeginFrameTime = os::Timer::getTime();
+	FramesPerSecond = 25.f/100.f;
 
 	setMesh(mesh);
 }
