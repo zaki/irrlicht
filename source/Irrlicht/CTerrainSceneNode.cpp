@@ -20,6 +20,7 @@
 #include "IFileSystem.h"
 #include "IReadFile.h"
 #include "ITextSceneNode.h"
+#include "IAnimatedMesh.h"
 
 namespace irr
 {
@@ -629,6 +630,49 @@ namespace scene
 					driver->draw3DBox( TerrainData.Patches[j].BoundingBox, video::SColor(255,255,0,0));
 					visible += ( TerrainData.Patches[j].CurrentLOD >= 0 );
 				}
+			}
+
+			if ( DebugDataVisible & scene::EDS_NORMALS )
+			{
+				IAnimatedMesh * arrow = SceneManager->addArrowMesh (
+						"__debugnormal", 0xFFECEC00,
+						0xFF999900, 4, 8, 1.f, 0.6f, 0.05f,
+						0.3f);
+				if ( 0 == arrow )
+				{
+					arrow = SceneManager->getMesh ( "__debugnormal" );
+				}
+				IMesh *mesh = arrow->getMesh(0);
+
+				// find a good scaling factor
+
+				core::matrix4 m2;
+
+				// draw normals
+				driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+				for ( u32 i=0; i != RenderBuffer->getVertexCount(); ++i )
+				{
+					const core::vector3df& v = RenderBuffer->getNormal(i);
+					// align to v->Normal
+					if (core::vector3df(0,-1,0)==v)
+					{
+						m2.makeIdentity();
+						m2[5]=-m2[5];
+					}
+					else
+					{
+						core::quaternion quatRot;
+						m2=quatRot.rotationFromTo(v,core::vector3df(0,1,0)).getMatrix();
+					}
+
+					m2.setTranslation(RenderBuffer->getPosition(i));
+					m2=AbsoluteTransformation*m2;
+
+					driver->setTransform(video::ETS_WORLD, m2 );
+					for ( u32 a = 0; a != mesh->getMeshBufferCount(); ++a )
+						driver->drawMeshBuffer ( mesh->getMeshBuffer ( a ) );
+				}
+				driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 			}
 
 			static u32 lastTime = 0;
