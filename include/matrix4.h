@@ -709,8 +709,10 @@ namespace core
 	}
 
 
-	//! Returns the rotation, as set by setRotation(). This code was sent
-	//! in by Chev.
+	//! Returns a rotation that is equivalent to that set by setRotationDegrees(). 
+	/** This code was sent in by Chev.  Note that it does not necessarily return 
+	the *same* Euler angles as those set by setRotationDegrees(), but the rotation will
+	be equivalent, i.e. will have the same result when used to rotate a vector or node. */
 	template <class T>
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
 	{
