@@ -1,26 +1,94 @@
-Changes in version 1.5 (... 2008)
+Changes in version 1.5 (...12.2008)
+
+ - Terrain heightmap and texture were flipped in order to draw them as expected (looking onto the terrain from high above will just look like the actual texture/heightmap).
 
  - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact.  The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
+
+ - Skybox won't be culled anymore by nearplane or farplane.
+
+ - BBoxes of animated meshes (skinned meshes) are updated again.
+
+ - Lost devices (as found with D3D) are properly handled now. So the screen can be resized or minimized without crashing the app.
 
  - Renamed IGUIElement::setRelativePosition(const core::rect<f32>& r) to IGUIElement::setRelativePositionProportional(), as it has radically different functionality from setRelativePosition(const core::rect<s32>& r)
 
  - Added IGUIElement::setRelativePosition(const core::position2di & position) to set a new position while retaining the existing height and width.
 
+ - Many Collada fixes. z_up coords are supported now, texture coords are properly loaded. Transparency is supported.
+
  - Camera scene node rotation and target can now be bound together so that changing one automatically changes the other (as the FPS camera has always done). See ICameraSceneNode::bindTargetAndRotation()
 
+ - Removed the extra libpng files for OSX. OSX now also uses the default libpng.
+
+ - Enhanced PCX support with some more color formats and write support.
+
+ - Fixed LMTS problems with extra data in files.
+
  - Removed VS6 .dsw / .dsp project files - VS6 is no longer supported.
+
+ - Particles can be scaled during animations. Particle scaling needs to happen in the emitter now, instead of in the Particle system scene node. Deprecation methods will guide the user.
 
  - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
 
  - Basic support for joystick input events on Windows, Linux, SDL and OSX.  Tested with wired Logitech and Thrustmaster wired controllers and XBox 360 wireless controller ( http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver )
 
+ - Fixed scaled octree nodes being incorrectly frustum culled.
+
+ - FSAA under OpenGL and Win32 added. Now all hw drivers and platforms should support it.
+
+ - Unlimited RTT fix for D3D systems. Depth buffers are now shared if possible, otherwise a new depth buffer is generated. In order to save VidMem one should create RTTs starting with the largest one.
+
+ - Avoid RTTs with nonFBO-support under OpenGL which are larger than the screen. Since we rely on rendering into textures in this case we need to clamp the size by the screensize.
+
+ - Fixes for getAbsoluteFilename under Linux in order to return a filename instead of en empty string in case the file doesn't exist.
+
+ - Use absolute path names when creating / finding textures.
+
+ - Font tool implementation for Linux with xft, by Neil Burlock.
+
+ - Support for normals and UV coords from DeclData in .x files.
+
+ - Modified line2d<T>::intersectWith() to cover more cases.
+
+ - Added IVideoDriver::drawPixel().
+
+ - Moved the window pointer from endScene to beginScene, as this is required for OpenGL support of external window pointers.
+
+ - Fix for terrain culling.
+
+ - Added minimize button to win32 window (if resizable)
+
  - Major API change: RTTs are now created via addRenderTargetTexture instead of createRenderTargetTexture, which allows to retrieve them from the texture cache, but also changes the way of removing the RTTs, and especially one must not drop the pointer anymore.
 
  - WindowsCE-Bugfix
 
+ - disableFeature can be used to override feature support of the video driver.
+
+ - draw2DImage can now also handle RTTs under OpenGL (which were flipped before).
+
+ - Ogre mesh format fixes for proper texture support.
+
+ - Added .obj mesh writer.
+
+ - Some core::string constructors made explicit to avoid unintended conversions. Just add core::stringc() or core::stringw() around the old code to avoid warnings.
+
+ - IdentityMatrix is now a properly defined global, with external visibility on all platforms.
+
+ - Bugfix for context releases with glx 1.3 on error.
+
+ - Removed constraints for sizes of the terrain scene node.
+
+ - Support for 32bit indices in a special MeshBuffer class.
+
  - isBetweenPoints return true now even for the begin and end points, i.e. line segments are now including their start and end.
 
  - Fix XML reader creation for non-existing files and invalid callbacks.
+
+ - Changed interpretation of MaterialTypeParam==0 in transparent materials. Now it's consistent with all other values, but one has to set the value to 0.5 to get the old behavior (slightly faster rendering, but no smooth borders)
+
+ - Replaced transformBox by transformBoxEx in some internal methods to avoid major malfunction of the transformations.
+
+ - Fix use of zip file inside zip files.
 
  - Avoid loading textures which are not used by the mesh in b3d loader.
 

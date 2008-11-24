@@ -93,11 +93,13 @@ namespace scene
 
 		void setNode(ISceneNode* node);
 
-		core::vector3df LastPosition;
 		core::vector3df Radius;
 		core::vector3df Gravity;
-		core::vector3df FallingVelocity; // In the direction of Gravity.
 		core::vector3df Translation;
+		core::vector3df FallingVelocity; // In the direction of Gravity.
+
+		core::vector3df LastPosition;
+		core::triangle3df RefTriangle;
 		
 		ITriangleSelector* World;
 		ISceneNode* Object;
@@ -107,8 +109,6 @@ namespace scene
 		bool Falling;
 		bool IsCamera;
 		bool AnimateCameraTarget;
-
-		core::triangle3df RefTriangle;
 	};
 
 } // end namespace scene

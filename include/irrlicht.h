@@ -142,7 +142,7 @@
 #include "SMeshBufferTangents.h"
 #include "SViewFrustum.h"
 
-/*! \mainpage Irrlicht Engine 1.4.2 API documentation
+/*! \mainpage Irrlicht Engine 1.5.beta API documentation
  *
  * <div align="center"><img src="logobig.png" ></div>
  *

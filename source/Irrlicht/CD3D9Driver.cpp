@@ -2750,10 +2750,8 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 			!queryFeature(EVDF_TEXTURE_NPOT),
 			!queryFeature(EVDF_TEXTURE_NSQUARE), true);
 	SDepthSurface* depth=0;
-	core::dimension2di destSize=DepthBuffers[0]->Size;
-	if ((destSize.Width>=optSize.Width) && (destSize.Height>=optSize.Height))
-		depth=DepthBuffers[0];
-	for (u32 i=1; i<DepthBuffers.size(); ++i)
+	core::dimension2di destSize=(0x7fffffff, 0x7fffffff);
+	for (u32 i=0; i<DepthBuffers.size(); ++i)
 	{
 		if ((DepthBuffers[i]->Size.Width>=optSize.Width) &&
 			(DepthBuffers[i]->Size.Height>=optSize.Height))

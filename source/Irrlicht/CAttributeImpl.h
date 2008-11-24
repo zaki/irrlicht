@@ -613,7 +613,7 @@ public:
 			ret.pointB.Y = Count > 4 ? ValueF[4] : 0.0f;
 			ret.pointB.Z = Count > 5 ? ValueF[5] : 0.0f;
 			ret.pointC.X = Count > 6 ? ValueF[6] : 0.0f;
-			ret.pointC.X = Count > 7 ? ValueF[7] : 0.0f;
+			ret.pointC.Y = Count > 7 ? ValueF[7] : 0.0f;
 			ret.pointC.Z = Count > 8 ? ValueF[8] : 0.0f;
 		}
 		else
@@ -625,7 +625,7 @@ public:
 			ret.pointB.Y = Count > 4 ? (f32)ValueI[4] : 0.0f;
 			ret.pointB.Z = Count > 5 ? (f32)ValueI[5] : 0.0f;
 			ret.pointC.X = Count > 6 ? (f32)ValueI[6] : 0.0f;
-			ret.pointC.X = Count > 7 ? (f32)ValueI[7] : 0.0f;
+			ret.pointC.Y = Count > 7 ? (f32)ValueI[7] : 0.0f;
 			ret.pointC.Z = Count > 8 ? (f32)ValueI[8] : 0.0f;
 		}
 
