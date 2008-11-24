@@ -22,10 +22,10 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 		const core::vector3df& ellipsoidTranslation,
 		f32 slidingSpeed)
 : Radius(ellipsoidRadius), Gravity(gravityPerSecond), Translation(ellipsoidTranslation),
-	World(world), Object(object), SceneManager(scenemanager), FallingVelocity(0.f),
-	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false), AnimateCameraTarget(true)
+	World(world), Object(object), SceneManager(scenemanager), LastTime(0),
+	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false),
+	AnimateCameraTarget(true)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCollisionResponse");
 	#endif
@@ -35,7 +35,6 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 
 	setNode(Object);
 }
-
 
 
 //! destructor
@@ -64,6 +63,7 @@ void CSceneNodeAnimatorCollisionResponse::setEllipsoidRadius(
 	Radius = radius;
 }
 
+
 //! Returns the radius of the ellipsoid with wich the collision detection and
 //! response is done.
 core::vector3df CSceneNodeAnimatorCollisionResponse::getEllipsoidRadius() const
@@ -85,6 +85,7 @@ core::vector3df CSceneNodeAnimatorCollisionResponse::getGravity() const
 	return Gravity;
 }
 
+
 //! 'Jump' the animator, by adding a jump speed opposite to its gravity
 void CSceneNodeAnimatorCollisionResponse::jump(f32 jumpSpeed)
 {
@@ -98,7 +99,6 @@ void CSceneNodeAnimatorCollisionResponse::setEllipsoidTranslation(const core::ve
 {
 	Translation = translation;
 }
-
 
 
 //! Returns the translation of the ellipsoid for collision detection.
@@ -126,14 +126,12 @@ void CSceneNodeAnimatorCollisionResponse::setWorld(ITriangleSelector* newWorld)
 }
 
 
-
 //! Returns the current triangle selector containing all triangles for
 //! collision detection.
 ITriangleSelector* CSceneNodeAnimatorCollisionResponse::getWorld() const
 {
 	return World;
 }
-
 
 
 void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 timeMs)
@@ -196,6 +194,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	LastPosition = Object->getPosition();
 }
 
+
 void CSceneNodeAnimatorCollisionResponse::setNode(ISceneNode* node)
 {
 	Object = node;
@@ -209,6 +208,7 @@ void CSceneNodeAnimatorCollisionResponse::setNode(ISceneNode* node)
 	LastTime = os::Timer::getTime();
 }
 
+
 //! Writes attributes of the scene node animator.
 void CSceneNodeAnimatorCollisionResponse::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
@@ -218,6 +218,7 @@ void CSceneNodeAnimatorCollisionResponse::serializeAttributes(io::IAttributes* o
 	out->addBool("AnimateCameraTarget", AnimateCameraTarget);
 }
 
+
 //! Reads attributes of the scene node animator.
 void CSceneNodeAnimatorCollisionResponse::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
@@ -226,6 +227,7 @@ void CSceneNodeAnimatorCollisionResponse::deserializeAttributes(io::IAttributes*
 	Translation = in->getAttributeAsVector3d("Translation");
 	AnimateCameraTarget = in->getAttributeAsBool("AnimateCameraTarget");
 }
+
 
 ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode* node, ISceneManager* newManager)
 {
@@ -237,6 +239,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode*
 
 	return newAnimator;
 }
+
 
 } // end namespace scene
 } // end namespace irr
