@@ -162,7 +162,10 @@ namespace scene
 	private:
 
 		//! Get a static mesh for the current frame of this animated mesh
-		IMesh* getMeshForCurrentFrame(void);
+		/** \param forceRecalcOfControlJoints If the mesh is a skinned mesh with controlled joints, force
+		a recalculation even if the frame number hasn't changed. Otherwise return the cached mesh for the
+		current frame if it exists. */
+		IMesh* getMeshForCurrentFrame(bool forceRecalcOfControlJoints);
 
 		f32 buildFrameNr( u32 timeMs);
 		void checkJoints();

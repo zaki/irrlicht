@@ -174,19 +174,19 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 				*/
 
 				// -------- joint->LocalAnimatedMatrix *= scaleMatrix -----------------
-				f32 *m1 = joint->LocalAnimatedMatrix.pointer();
-				m1[0] *= joint->Animatedscale.X;
-				m1[1] *= joint->Animatedscale.X;
-				m1[2] *= joint->Animatedscale.X;
-				m1[3] *= joint->Animatedscale.X;
-				m1[4] *= joint->Animatedscale.Y;
-				m1[5] *= joint->Animatedscale.Y;
-				m1[6] *= joint->Animatedscale.Y;
-				m1[7] *= joint->Animatedscale.Y;
-				m1[8] *= joint->Animatedscale.Z;
-				m1[9] *= joint->Animatedscale.Z;
-				m1[10] *= joint->Animatedscale.Z;
-				m1[11] *= joint->Animatedscale.Z;
+				core::matrix4& mat = joint->LocalAnimatedMatrix;
+				mat[0] *= joint->Animatedscale.X;
+				mat[1] *= joint->Animatedscale.X;
+				mat[2] *= joint->Animatedscale.X;
+				mat[3] *= joint->Animatedscale.X;
+				mat[4] *= joint->Animatedscale.Y;
+				mat[5] *= joint->Animatedscale.Y;
+				mat[6] *= joint->Animatedscale.Y;
+				mat[7] *= joint->Animatedscale.Y;
+				mat[8] *= joint->Animatedscale.Z;
+				mat[9] *= joint->Animatedscale.Z;
+				mat[10] *= joint->Animatedscale.Z;
+				mat[11] *= joint->Animatedscale.Z;
 				// -----------------------------------
 
 			}

@@ -13,7 +13,9 @@ for the rendering driver, create the Irrlicht Device:
 
 using namespace irr;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 int main()
 {
@@ -84,8 +86,8 @@ int main()
 	*/
 
 	// add white light
-	scene::ILightSceneNode* light = smgr->addLightSceneNode(0,
-		core::vector3df(-15,5,-105), video::SColorf(1.0f, 1.0f, 1.0f));
+	smgr->addLightSceneNode(0, core::vector3df(-15,5,-105),
+			video::SColorf(1.0f, 1.0f, 1.0f));
 
 	// set ambient light
 	smgr->setAmbientLight(video::SColor(0,60,60,60));

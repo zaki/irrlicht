@@ -279,14 +279,14 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, 
 				if ( rTest >= 0.5f && rTest <= 0.55f )
 				{
 					u32 alpha = (s32) ( (rTest - 0.5f ) * ( 255.f / 0.05f ) );
-					*dst = *dst & 0x00ffffff | (alpha << 24);
+					*dst = (*dst & 0x00ffffff) | (alpha << 24);
 				}
 
 				if ( rTest >= 0.95f )
 				{
 					u32 alpha = (s32) ( (rTest - 0.95f ) * ( 255.f / 0.05f ) );
 					alpha = 255 - alpha;
-					*dst = *dst & 0x00ffffff | (alpha << 24);
+					*dst = (*dst & 0x00ffffff) | (alpha << 24);
 				}
 			}
 		}

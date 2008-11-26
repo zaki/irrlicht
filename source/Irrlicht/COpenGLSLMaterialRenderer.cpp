@@ -41,7 +41,6 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 	: Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 		Program(0), UserData(userData)
 {
-
 	#ifdef _DEBUG
 	setDebugName("COpenGLSLMaterialRenderer");
 	#endif
@@ -124,6 +123,7 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 	outMaterialTypeNr = Driver->addMaterialRenderer(this);
 }
 
+
 bool COpenGLSLMaterialRenderer::OnRender(IMaterialRendererServices* service,
 					E_VERTEX_TYPE vtxtype)
 {
@@ -142,7 +142,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 {
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
-		if(Program)
+		if (Program)
 			Driver->extGlUseProgramObject(Program);
 
 		if (BaseMaterial)
@@ -214,6 +214,7 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 
 	return true;
 }
+
 
 bool COpenGLSLMaterialRenderer::linkProgram()
 {
@@ -288,7 +289,6 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 	return true;
 }
-
 
 
 void COpenGLSLMaterialRenderer::setBasicRenderStates(const SMaterial& material,

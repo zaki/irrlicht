@@ -11,7 +11,7 @@ nothing to say about it)
 */
 
 #include <irrlicht.h>
-#include <stdio.h>
+#include <iostream>
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
@@ -19,11 +19,9 @@ nothing to say about it)
 
 //Namespaces for the engine
 using namespace irr;
-using namespace video;
 using namespace core;
+using namespace video;
 using namespace scene;
-using namespace io;
-using namespace gui;
 
 /*
 Now we'll define the resolution in a constant for use in
@@ -76,13 +74,36 @@ Just take care of the maps position.
 */
 int main()
 {
+	video::E_DRIVER_TYPE driverType;
+
+	printf("Please select the driver you want for this example:\n"\
+		" (a) Direct3D 9.0c\n (b) Direct3D 8.1\n (c) OpenGL 1.5\n"\
+		" (d) Software Renderer\n (e) Burning's Software Renderer\n"\
+		" (f) NullDevice\n (otherKey) exit\n\n");
+
+	char i;
+	std::cin >> i;
+
+	switch(i)
+	{
+		case 'a': driverType = video::EDT_DIRECT3D9;break;
+		case 'b': driverType = video::EDT_DIRECT3D8;break;
+		case 'c': driverType = video::EDT_OPENGL;   break;
+		case 'd': driverType = video::EDT_SOFTWARE; break;
+		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
+		case 'f': driverType = video::EDT_NULL;     break;
+		default: return 1;
+	}	
+
 	//Instance of the EventReceiver
 	MyEventReceiver receiver;
 
 	//Initialise the engine
-	IrrlichtDevice *device = createDevice(EDT_OPENGL,
+	IrrlichtDevice *device = createDevice(driverType,
 			dimension2d<s32>(ResX,ResY), 32, fullScreen,
 			false, false, &receiver);
+	if (!device)
+		return 1;
 
 	ISceneManager *smgr = device->getSceneManager();
 	IVideoDriver *driver = device->getVideoDriver();
@@ -93,10 +114,14 @@ int main()
 		return 1;
 	IAnimatedMeshSceneNode *model_node = smgr->addAnimatedMeshSceneNode(model);
 	//Load texture
-	ITexture *texture = driver->getTexture("../../media/sydney.bmp");
-	model_node->setMaterialTexture(0,texture);
-	//Disable lighting (we've got no light)
-	model_node->setMaterialFlag(EMF_LIGHTING,false);
+	if (model_node)
+	{
+		ITexture *texture = driver->getTexture("../../media/sydney.bmp");
+		model_node->setMaterialTexture(0,texture);
+		model_node->setMD2Animation(scene::EMAT_RUN);
+		//Disable lighting (we've got no light)
+		model_node->setMaterialFlag(EMF_LIGHTING,false);
+	}
 
 	//Load map
 	device->getFileSystem()->addZipFileArchive("../../media/map-20kdm2.pk3");

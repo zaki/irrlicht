@@ -186,9 +186,9 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	// move camera target
 	if (AnimateCameraTarget && IsCamera)
 	{
-		const core::vector3df diff = Object->getPosition() - LastPosition - vel;
+		const core::vector3df pdiff = Object->getPosition() - LastPosition - vel;
 		ICameraSceneNode* cam = (ICameraSceneNode*)Object;
-		cam->setTarget(cam->getTarget() + diff);
+		cam->setTarget(cam->getTarget() + pdiff);
 	}
 
 	LastPosition = Object->getPosition();

@@ -20,7 +20,9 @@ tutorial, we use a lot stuff from the gui namespace.
 using namespace irr;
 using namespace gui;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 
 /*
@@ -38,15 +40,15 @@ scene::ICameraSceneNode* Camera[2] = { 0, 0};
 /*
 Toggle between various cameras
 */
-void setActiveCamera ( scene::ICameraSceneNode* newActive )
+void setActiveCamera(scene::ICameraSceneNode* newActive)
 {
-	if ( 0 == Device )
+	if (0 == Device)
 		return;
 
-	scene::ICameraSceneNode* active = Device->getSceneManager()->getActiveCamera ();
+	Device->getSceneManager()->getActiveCamera();
 
-	newActive->setInputReceiverEnabled ( true );
-	Device->getSceneManager()->setActiveCamera ( newActive );
+	newActive->setInputReceiverEnabled(true);
+	Device->getSceneManager()->setActiveCamera(newActive);
 }
 
 /*
@@ -73,43 +75,41 @@ void loadModel(const c8* fn)
 {
 	// modify the name if it a .pk3 file
 
-	core::stringc filename ( fn );
+	core::stringc filename(fn);
 
 	core::stringc extension;
-	core::getFileNameExtension ( extension, filename );
+	core::getFileNameExtension(extension, filename);
 	extension.make_lower();
 
 	// if a texture is loaded apply it to the current model..
-	if (	extension == ".jpg" ||
-			extension == ".pcx" ||
-			extension == ".png" ||
-			extension == ".ppm" ||
-			extension == ".pgm" ||
-			extension == ".pbm" ||
-			extension == ".psd" ||
-			extension == ".tga" ||
-			extension == ".bmp"
-		)
+	if (extension == ".jpg" ||
+		extension == ".pcx" ||
+		extension == ".png" ||
+		extension == ".ppm" ||
+		extension == ".pgm" ||
+		extension == ".pbm" ||
+		extension == ".psd" ||
+		extension == ".tga" ||
+		extension == ".bmp")
 	{
 		video::ITexture * texture =
 			Device->getVideoDriver()->getTexture( filename.c_str() );
 		if ( texture && Model )
 		{
 			// always reload texture
-			Device->getVideoDriver()->removeTexture ( texture );
+			Device->getVideoDriver()->removeTexture(texture);
 			texture = Device->getVideoDriver()->getTexture( filename.c_str() );
 
-			Model->setMaterialTexture ( 0, texture );
+			Model->setMaterialTexture(0, texture);
 		}
 		return;
 	}
 
 	// if a archive is loaded add it to the FileSystems..
-	if (	extension == ".pk3" ||
-			extension == ".zip"
-		)
+	if (extension == ".pk3" ||
+		extension == ".zip")
 	{
-		Device->getFileSystem()->addZipFileArchive( filename.c_str () );
+		Device->getFileSystem()->addZipFileArchive( filename.c_str() );
 		return;
 	}
 
@@ -154,7 +154,8 @@ void createToolBox()
 	IGUIEnvironment* env = Device->getGUIEnvironment();
 	IGUIElement* root = env->getRootGUIElement();
 	IGUIElement* e = root->getElementFromId(5000, true);
-	if (e) e->remove();
+	if (e)
+		e->remove();
 
 	// create the toolbox window
 	IGUIWindow* wnd = env->addWindow(core::rect<s32>(600,25,800,480),
@@ -207,13 +208,13 @@ public:
 			event.KeyInput.Key == irr::KEY_ESCAPE &&
 			event.KeyInput.PressedDown == false)
 		{
-			if ( Device )
+			if (Device)
 			{
 				scene::ICameraSceneNode * camera =
 					Device->getSceneManager()->getActiveCamera();
-				if ( camera )
+				if (camera)
 				{
-					camera->setInputReceiverEnabled ( !camera->isInputReceiverEnabled() );
+					camera->setInputReceiverEnabled( !camera->isInputReceiverEnabled() );
 				}
 				return true;
 			}
@@ -296,10 +297,10 @@ public:
 						break;
 
 					case 1000:
-						setActiveCamera ( Camera[0] );
+						setActiveCamera(Camera[0]);
 						break;
 					case 1100:
-						setActiveCamera ( Camera[1] );
+						setActiveCamera(Camera[1]);
 						break;
 
 					}
@@ -413,6 +414,8 @@ public:
 				}
 
 				break;
+			default:
+				break;
 			}
 		}
 
@@ -480,7 +483,7 @@ int main(int argc, char* argv[])
 	smgr->addLightSceneNode(0, core::vector3df(50,-50,100),
 			video::SColorf(1.0f,1.0f,1.0f),20000);
 	// add our media directory as "search path"
-	Device->getFileSystem()->addFolderFileArchive ( "../../media/" );
+	Device->getFileSystem()->addFolderFileArchive("../../media/");
 
 	/*
 	The next step is to read the configuration file. It is stored in the xml
@@ -522,6 +525,8 @@ int main(int argc, char* argv[])
 				if (core::stringw("messageText") == xml->getNodeName())
 					Caption = xml->getAttributeValue(L"caption");
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -682,7 +687,7 @@ int main(int argc, char* argv[])
 	Camera[1] = smgr->addCameraSceneNodeFPS();
 	Camera[1]->setFarValue(20000.f);
 
-	setActiveCamera ( Camera[0] );
+	setActiveCamera(Camera[0]);
 
 	// load the irrlicht engine logo
 	IGUIImage *img =

@@ -58,7 +58,9 @@ Again, to be able to use the Irrlicht.DLL file, we need to link with the
 Irrlicht.lib. We could set this option in the project settings, but
 to make it easy, we use a pragma comment lib:
 */
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 
 //! produces a serie of screenshots
@@ -235,9 +237,11 @@ int IRRCALLCONV main(int argc, char* argv[])
 		// the additional mesh can be quite huge and is unoptimized
 		scene::IMesh * additional_mesh = mesh->getMesh ( quake3::E_Q3_MESH_ITEMS );
 
+#ifdef SHOW_SHADER_NAME
 		gui::IGUIFont *font = device->getGUIEnvironment()->getFont("../../media/fontlucida.png");
-
 		u32 count = 0;
+#endif
+
 		for ( u32 i = 0; i!= additional_mesh->getMeshBufferCount (); ++i )
 		{
 			IMeshBuffer *meshBuffer = additional_mesh->getMeshBuffer ( i );
