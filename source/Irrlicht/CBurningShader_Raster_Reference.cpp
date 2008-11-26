@@ -418,7 +418,7 @@ namespace video
 	{
 		BD3DZB_FALSE                 = 0,	// Disable depth buffering
 		BD3DZB_TRUE                  = 1,	// Enable z-buffering
-		BD3DZB_USEW                  = 2,	//Enable w-buffering.
+		BD3DZB_USEW                  = 2	//Enable w-buffering.
 	};
 
 	//! Defines the supported compare functions.
@@ -438,7 +438,7 @@ namespace video
 	{
 		BD3DMCS_MATERIAL = 0,	// Use the color from the current material. 
 		BD3DMCS_COLOR1 = 1,		// Use the diffuse vertex color. 
-		BD3DMCS_COLOR2 = 2,		// Use the specular vertex color. 
+		BD3DMCS_COLOR2 = 2		// Use the specular vertex color. 
 	};
 
 
@@ -462,7 +462,7 @@ namespace video
 		/*!	BD3DSHADE_PHONG
 			Not supported. 
 		*/
-		BD3DSHADE_PHONG = 3,
+		BD3DSHADE_PHONG = 3
 	};
 
 	/*!	Defines constants describing the fill mode
@@ -472,7 +472,7 @@ namespace video
 	{
 		BD3DFILL_POINT = 1,		// Fill points.
 		BD3DFILL_WIREFRAME = 2,	// Fill wireframes.
-		BD3DFILL_SOLID = 3,		// Fill solids.
+		BD3DFILL_SOLID = 3		// Fill solids.
 	};
 
 
@@ -485,7 +485,7 @@ namespace video
 	{
 		BD3DCULL_NONE = 1,	// Do not cull back faces. 
 		BD3DCULL_CW = 2,	// Cull back faces with clockwise vertices. 
-		BD3DCULL_CCW = 3,	// Cull back faces with counterclockwise vertices. 
+		BD3DCULL_CCW = 3	// Cull back faces with counterclockwise vertices. 
 	};
 
 	struct SShaderParam

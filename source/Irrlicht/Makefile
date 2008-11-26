@@ -41,7 +41,7 @@ JPEGLIBOBJ = jpeglib/jcapimin.o jpeglib/jcapistd.o jpeglib/jccoefct.o jpeglib/jc
 LIBPNGOBJ = libpng/png.o libpng/pngerror.o libpng/pngget.o libpng/pngmem.o libpng/pngpread.o libpng/pngread.o libpng/pngrio.o libpng/pngrtran.o libpng/pngrutil.o libpng/pngset.o libpng/pngtrans.o libpng/pngwio.o libpng/pngwrite.o libpng/pngwtran.o libpng/pngwutil.o
 # Next variable is for additional scene nodes etc. of customized Irrlicht versions
 EXTRAOBJ =
-LINKOBJ := $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
+LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
 	$(IRRVIDEOOBJ) $(IRRSWRENDEROBJ) $(IRRIOOBJ) $(IRROTHEROBJ) \
 	$(IRRGUIOBJ) $(ZLIBOBJ) $(JPEGLIBOBJ) $(LIBPNGOBJ) $(EXTRAOBJ)
 
@@ -69,17 +69,23 @@ LIBSELECT=64
 endif
 
 #Linux specific options
+staticlib sharedlib install: SYSTEM = Linux
 STATIC_LIB = libIrrlicht.a
 IRRLICHT_DLL := ../../bin/Win32-gcc/Irrlicht.dll
 LIB_PATH = ../../lib/$(SYSTEM)
 INSTALL_DIR = /usr/local/lib
-staticlib sharedlib install: SYSTEM = Linux
-staticlib_osx sharedlib_osx install_osx: SYSTEM = MacOSX
 sharedlib: SHARED_LIB = libIrrlicht.so
+staticlib sharedlib: LDFLAGS = --no-export-all-symbols --add-stdcall-alias
+sharedlib: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
+staticlib sharedlib: CXXINCS += -I/usr/X11R6/include
+
+#OSX specific options
+staticlib_osx sharedlib_osx install_osx: SYSTEM = MacOSX
+staticlib_osx sharedlib_osx: IRROTHEROBJ += MacOSX/CIrrDeviceMacOSX.o MacOSX/OSXClipboard.o MacOSX/AppDelegate.o
+staticlib_osx sharedlib_osx: CXXINCS += -IMacOSX -I/usr/X11R6/include
 sharedlib_osx: SHARED_LIB = libIrrlicht.dylib
-staticlib sharedlib staticlib_osx sharedlib_osx: LDFLAGS = --no-export-all-symbols --add-stdcall-alias
-sharedlib sharedlib_osx: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
-staticlib sharedlib staticlib_osx sharedlib_osx: CXXINCS += -I/usr/X11R6/include
+staticlib_osx sharedlib_osx: LDFLAGS = --no-export-all-symbols --add-stdcall-alias
+sharedlib_osx: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
 
 #Windows specific options
 sharedlib_win32 staticlib_win32: SYSTEM = Win32-gcc
@@ -135,6 +141,10 @@ TAGS:
 # Create dependency files for automatic recompilation
 %.d:%.cpp
 	$(CXX) $(CPPFLAGS) -MM -MF $@ $<
+
+# Create object files from objective-c code
+%.o:%.mm
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $@ $<
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(LINKOBJ:.o=.d)

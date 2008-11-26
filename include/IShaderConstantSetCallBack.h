@@ -21,10 +21,6 @@ class IShaderConstantSetCallBack : public virtual IReferenceCounted
 {
 public:
 
-	//! Destructor.
-	virtual ~IShaderConstantSetCallBack() {}
-
-
 	//! Called to let the callBack know the used material (optional method)
 	/**
 	 \code

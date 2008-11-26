@@ -72,7 +72,7 @@ protected:
 		const c8* pixelShaderProgram, E_VERTEX_TYPE type);
 
 	bool createPixelShader(const c8* pxsh);
-	bool createVertexShader(const char* vtxsh);
+	bool createVertexShader(const c8* vtxsh);
 
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;

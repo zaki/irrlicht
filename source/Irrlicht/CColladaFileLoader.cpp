@@ -2118,39 +2118,39 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				// as full tesselation is problematic
 				if (FlipAxis)
 				{
-					for (u32 i = indices.size()-3; i>0 ; --i)
+					for (u32 ind = indices.size()-3; ind>0 ; --ind)
 					{
 						mbuffer->Indices.push_back(indices[0]);
-						mbuffer->Indices.push_back(indices[i+2]);
-						mbuffer->Indices.push_back(indices[i+1]);
+						mbuffer->Indices.push_back(indices[ind+2]);
+						mbuffer->Indices.push_back(indices[ind+1]);
 					}
 				}
 				else
 				{
-					for (u32 i = 0; i+2 < indices.size(); ++i)
+					for (u32 ind = 0; i+2 < indices.size(); ++ind)
 					{
 						mbuffer->Indices.push_back(indices[0]);
-						mbuffer->Indices.push_back(indices[i+1]);
-						mbuffer->Indices.push_back(indices[i+2]);
+						mbuffer->Indices.push_back(indices[ind+1]);
+						mbuffer->Indices.push_back(indices[ind+2]);
 					}
 				}
 			}
 			else
 			{
 				// it's just triangles
-				for (u32 i = 0; i < indices.size(); i+=3)
+				for (u32 ind = 0; ind < indices.size(); ind+=3)
 				{
 					if (FlipAxis)
 					{
-						mbuffer->Indices.push_back(indices[i+2]);
-						mbuffer->Indices.push_back(indices[i+1]);
-						mbuffer->Indices.push_back(indices[i+0]);
+						mbuffer->Indices.push_back(indices[ind+2]);
+						mbuffer->Indices.push_back(indices[ind+1]);
+						mbuffer->Indices.push_back(indices[ind+0]);
 					}
 					else
 					{
-						mbuffer->Indices.push_back(indices[i+0]);
-						mbuffer->Indices.push_back(indices[i+1]);
-						mbuffer->Indices.push_back(indices[i+2]);
+						mbuffer->Indices.push_back(indices[ind+0]);
+						mbuffer->Indices.push_back(indices[ind+1]);
+						mbuffer->Indices.push_back(indices[ind+2]);
 					}
 				}
 			}

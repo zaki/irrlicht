@@ -740,7 +740,7 @@ void CDemo::createParticleImpacts()
 			#ifdef USE_IRRKLANG
 			if (irrKlang)
 			{
-				audio::ISound* sound = 
+				irrklang::ISound* sound = 
 					irrKlang->play3D(impactSound, Impacts[i].pos, false, false, true);
 
 				if (sound)
@@ -768,14 +768,14 @@ void CDemo::createParticleImpacts()
 #ifdef USE_IRRKLANG
 void CDemo::startIrrKlang()
 {
-	irrKlang = audio::createIrrKlangDevice();
+	irrKlang = irrklang::createIrrKlangDevice();
 
 	if (!irrKlang)
 		return;
 
 	// play music
 
-	audio::ISound* snd = irrKlang->play2D("../../media/IrrlichtTheme.ogg", true, false, true);
+	irrklang::ISound* snd = irrKlang->play2D("../../media/IrrlichtTheme.ogg", true, false, true);
 	if ( !snd )
 		snd = irrKlang->play2D("IrrlichtTheme.ogg", true, false, true);
 

@@ -76,8 +76,7 @@ namespace gui
 		EGTDF_ROWS = 1,
 		EGTDF_COLUMNS = 2,
 		EGTDF_ACTIVE_ROW = 4,
-
-		EGTDF_COUNT,
+		EGTDF_COUNT
 	};
 
 	class IGUIFont;
