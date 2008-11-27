@@ -28,7 +28,7 @@ static const char* const OGLESFeatureStrings[] = {
 	"GL_AMD_compressed_ATC_texture",
 	"GL_ARB_texture_env_combine",
 	"GL_ARB_texture_env_dot3",
-	"GL_EXT_multi_draw_arrays"
+	"GL_EXT_multi_draw_arrays",
 	"GL_EXT_texture_filter_anisotropic",
 	"GL_IMG_read_format",
 	"GL_IMG_texture_compression_pvrtc",
@@ -164,16 +164,16 @@ static const char* const OGLESFeatureStrings[] = {
 			core::stringc extensions = glGetString(GL_EXTENSIONS);
 			os::Printer::log(extensions.c_str());
 			{
-				c8 *str = new c8[extensions.size()+1];
+				c8* str = new c8[extensions.size()+1];
+				strncpy(str, extensions.c_str(), extensions.size()+1);
 				c8* p = str;
 
-				for (size_t i=0; i<extensions.size(); ++i)
+				for (u32 i=0; i<extensions.size(); ++i)
 				{
-					str[i] = extensions[i];
-
 					if (str[i] == ' ')
 					{
 						str[i] = 0;
+						if (*p)
 						for (u32 j=0; j<IRR_OGLES_Feature_Count; ++j)
 						{
 							if (!strcmp(OGLESFeatureStrings[j], p))
