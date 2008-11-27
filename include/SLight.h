@@ -39,9 +39,9 @@ struct SLight
 {
 	SLight() : AmbientColor(0.f,0.f,0.f), DiffuseColor(1.f,1.f,1.f),
 		SpecularColor(1.f,1.f,1.f), Attenuation(1.f,0.f,0.f),
-		Radius(100.f), OuterCone(45.f), InnerCone(0.f), Falloff(2.f),
+		OuterCone(45.f), InnerCone(0.f), Falloff(2.f),
 		Position(0.f,0.f,0.f), Direction(0.f,0.f,1.f),
-		Type(ELT_POINT), CastShadows(true)
+		Radius(100.f), Type(ELT_POINT), CastShadows(true)
 		{}
 
 	//! Ambient color emitted by the light
@@ -56,11 +56,10 @@ struct SLight
 	SColorf SpecularColor;
 
 	//! Attenuation factors (constant, linear, quadratic)
-	/** Changes the light strength fading over distance */
+	/** Changes the light strength fading over distance.
+	Can also be altered by setting the radius, Attenuation will change to
+	(0,1.f/radius,0). Can be overridden after radius was set. */
 	core::vector3df Attenuation;
-
-	//! Radius of light. Everything within this radius be be lighted.
-	f32 Radius;
 
 	//! The angle of the spot's outer cone. Ignored for other lights.
 	f32 OuterCone;
@@ -79,10 +78,13 @@ struct SLight
 	/** If Type is ELT_POINT, it is ignored. Changed via light scene node's rotation. */
 	core::vector3df Direction;
 
-	//! Type of the light. Default: ELT_POINT
+	//! Read-ONLY! Radius of light. Everything within this radius be be lighted.
+	f32 Radius;
+
+	//! Read-ONLY! Type of the light. Default: ELT_POINT
 	E_LIGHT_TYPE Type;
 
-	//! Does the light cast shadows?
+	//! Read-ONLY! Does the light cast shadows?
 	bool CastShadows;
 };
 

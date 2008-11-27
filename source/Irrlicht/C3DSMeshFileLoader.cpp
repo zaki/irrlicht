@@ -13,7 +13,9 @@
 #include "IVideoDriver.h"
 #include "IMeshManipulator.h"
 
+#ifdef _DEBUG
 #define _IRR_DEBUG_3DS_LOADER_
+#endif
 
 namespace irr
 {

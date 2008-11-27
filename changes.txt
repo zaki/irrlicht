@@ -1,5 +1,11 @@
 Changes in version 1.5 (...12.2008)
 
+ - Changed the preferred way of altering light node's radius: Use the new member methods of ILightSceneNode instead of directly modifying the SLight structure.
+
+ - Changed the initial attenuation back to (0,1/radius,0). To override this value simply change the attenuation in the SLight (lightnode->getLightData().Attenuation.set(x,y,z))
+
+ - Dirty fix for OSX device setResizable and a bug fix to do with resizing the device.
+
  - Terrain heightmap and texture were flipped in order to draw them as expected (looking onto the terrain from high above will just look like the actual texture/heightmap).
 
  - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact.  The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
