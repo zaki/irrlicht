@@ -24,8 +24,12 @@ namespace irr
 namespace video
 {
 static const char* const OGLESFeatureStrings[] = {
+	"GL_AMD_compressed_3DC_texture",
+	"GL_AMD_compressed_ATC_texture",
 	"GL_ARB_texture_env_combine",
 	"GL_ARB_texture_env_dot3",
+	"GL_EXT_multi_draw_arrays"
+	"GL_EXT_texture_filter_anisotropic",
 	"GL_IMG_read_format",
 	"GL_IMG_texture_compression_pvrtc",
 	"GL_IMG_texture_env_enhanced_fixed_function",
@@ -52,8 +56,8 @@ static const char* const OGLESFeatureStrings[] = {
 	"GL_OES_matrix_palette",
 	"GL_OES_point_size_array",
 	"GL_OES_point_sprite",
-	"GL_OES_read_format",
 	"GL_OES_query_matrix",
+	"GL_OES_read_format",
 	"GL_OES_rgb8_rgba8",
 	"GL_OES_single_precision",
 	"GL_OES_stencil1",
@@ -62,15 +66,19 @@ static const char* const OGLESFeatureStrings[] = {
 	"GL_OES_stencil_wrap",
 	"GL_OES_texture_cube_map",
 	"GL_OES_texture_env_crossbar",
-	"GL_OES_texture_mirrored_repeat",
-	"GL_EXT_multi_draw_arrays"
+	"GL_OES_texture_mirrored_repeat"
 };
 
 	class COGLES1ExtensionHandler
 	{
-	enum EOIRRESFeatures {
+	protected:
+	enum EOGLESFeatures {
+		IRR_AMD_compressed_3DC_texture,
+		IRR_AMD_compressed_ATC_texture,
 		IRR_ARB_texture_env_combine,
 		IRR_ARB_texture_env_dot3,
+		IRR_EXT_multi_draw_arrays,
+		IRR_EXT_texture_filter_anisotropic,
 		IRR_IMG_read_format,
 		IRR_IMG_texture_compression_pvrtc,
 		IRR_IMG_texture_env_enhanced_fixed_function,
@@ -108,12 +116,10 @@ static const char* const OGLESFeatureStrings[] = {
 		IRR_OES_texture_cube_map,
 		IRR_OES_texture_env_crossbar,
 		IRR_OES_texture_mirrored_repeat,
-		IRR_EXT_multi_draw_arrays,
 
 		IRR_OGLES_Feature_Count
 	};
 
-	protected:
 		COGLES1ExtensionHandler() : Version(0), MaxUserClipPlanes(0),
 			MaxTextureUnits(0), MaxLights(0),
 			MultiTextureExtension(false), MultiSamplingExtension(false),
