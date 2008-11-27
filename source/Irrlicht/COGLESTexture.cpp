@@ -149,11 +149,10 @@ void COGLES1Texture::copyTexture(bool newTexture)
 	switch (Image->getColorFormat())
 	{
 		case ECF_A1R5G5B5:
-			InternalFormat=GL_RGBA;
+			InternalFormat=GL_BGRA;
+			PixelFormat=GL_BGRA;
 	// TODO ogl-es
-	//		PixelFormat=GL_BGRA;
 	//		PixelType=GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			PixelFormat=GL_RGBA;
 			PixelType=GL_UNSIGNED_BYTE;
 			break;
 		case ECF_R5G6B5:
@@ -172,10 +171,8 @@ void COGLES1Texture::copyTexture(bool newTexture)
 			PixelType=GL_UNSIGNED_BYTE;
 			break;
 		case ECF_A8R8G8B8:
-			InternalFormat=GL_RGBA;
-	// TODO ogl-es
-	//		PixelFormat=GL_BGRA;
-			PixelFormat=GL_RGBA;
+			InternalFormat=GL_BGRA;
+			PixelFormat=GL_BGRA;
 			PixelType=GL_UNSIGNED_BYTE;
 			break;
 		default:

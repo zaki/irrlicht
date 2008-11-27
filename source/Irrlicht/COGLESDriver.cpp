@@ -8,6 +8,11 @@
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
+#ifndef GL_BGRA
+// we need to do this for the IMG_BGRA8888 extension
+int GL_BGRA=GL_RGBA;
+#endif
+
 #include "COGLESTexture.h"
 #include "COGLESMaterialRenderer.h"
 #include "CImage.h"
@@ -266,9 +271,17 @@ bool COGLES1Driver::endScene()
 	CNullDriver::endScene();
 
 	eglSwapBuffers(EglDisplay, EglSurface);
-	if (testEGLError())
+	EGLint g = eglGetError();
+	if (EGL_SUCCESS != g)
 	{
-		os::Printer::log("Could not swap buffers for OpenGL-ES1 driver.");
+		if (EGL_CONTEXT_LOST == g)
+		{
+			// o-oh, ogl-es has lost contexts...
+			os::Printer::log("Context lost, please restart your app.");
+		}
+		else
+			os::Printer::log("Could not swap buffers for OpenGL-ES1 driver.");
+		return false;
 	}
 
 	return true;
@@ -1500,8 +1513,9 @@ void COGLES1Driver::setWrapMode(const SMaterial& material)
 	//			mode=GL_CLAMP_TO_BORDER;
 				break;
 			case ETC_MIRROR:
-	// TODO ogl-es
-	//			mode=GL_MIRRORED_REPEAT;
+#ifdef GL_OES_texture_mirrored_repeat
+				mode=GL_MIRRORED_REPEAT_OES;
+#endif
 				break;
 		}
 

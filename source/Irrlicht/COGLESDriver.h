@@ -28,96 +28,18 @@
 #ifdef _MSC_VER
 	#pragma comment(lib, "libgles_cm.lib")
 #endif
+#include "COGLESExtensionHandler.h"
 
 namespace irr
 {
 namespace video
 {
 	class COGLES1Texture;
-	class COGLES1ExtensionHandler
-	{
-	protected:
-		COGLES1ExtensionHandler() : Version(0), MaxUserClipPlanes(0),
-			MaxTextureUnits(0), MaxLights(0),
-			MultiTextureExtension(false), MultiSamplingExtension(false),
-			StencilBuffer(false)
-		{
-			for (u32 i=0; i<FeatureAvailable.size(); ++i)
-				FeatureAvailable[i]=false;
-		}
-
-		bool queryFeature(video::E_VIDEO_DRIVER_FEATURE feature) const
-		{
-			return false;
-		}
-
-		void initExtensions(EGLDisplay display, bool withStencil)
-		{
-			const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
-			Version = core::floor32(ogl_ver)*100+core::ceil32(core::fract(ogl_ver)*10.0f);
-			core::stringc extensions = eglQueryString(display, EGL_EXTENSIONS);
-			GLint val=0;
-//			glGetIntegerv(GL_MAX_TEXTURES, &val);
-			MaxTextureUnits = 2;
-			MultiTextureExtension = true;
-			glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
-			MaxUserClipPlanes=val;
-			glGetIntegerv(GL_MAX_LIGHTS, &val);
-			MaxLights = val;
-		}
-
-	public:
-		void extGlActiveTexture(GLenum texture)
-		{
-			glActiveTexture(texture);
-		}
-		void extGlClientActiveTexture(GLenum texture)
-		{
-			glClientActiveTexture(texture);
-		}
-		void extGlGenBuffers(GLsizei n, GLuint *buffers)
-		{
-			glGenBuffers(n, buffers);
-		}
-		void extGlBindBuffer(GLenum target, GLuint buffer)
-		{
-			glBindBuffer(target, buffer);
-		}
-		void extGlBufferData(GLenum target, GLsizeiptr size, const GLvoid *data, GLenum usage)
-		{
-			glBufferData(target, size, data, usage);
-		}
-		void extGlBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const GLvoid *data)
-		{
-			glBufferSubData(target, offset, size, data);
-		}
-		void extGlDeleteBuffers(GLsizei n, const GLuint *buffers)
-		{
-			glDeleteBuffers(n, buffers);
-		}
-		void extGlPointParameterf(GLint loc, GLfloat f)
-		{
-			glPointParameterf(loc, f);
-		}
-		void extGlPointParameterfv(GLint loc, const GLfloat *v)
-		{
-			glPointParameterfv(loc, v);
-		}
-		s32 Version;
-	protected:
-		core::array<bool> FeatureAvailable;
-		u32 MaxUserClipPlanes;
-		u32 MaxTextureUnits;
-		s32 MaxLights;
-		bool MultiTextureExtension;
-		bool MultiSamplingExtension;
-		bool StencilBuffer;
-	};
 
 	class COGLES1Driver : public CNullDriver, public IMaterialRendererServices, public COGLES1ExtensionHandler
 	{
 	public:
-		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_) 		|| defined(_IRR_WINDOWS_API_)
+		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_)
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
 				const SExposedVideoData& data,
 				io::IFileSystem* io);
