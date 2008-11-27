@@ -871,9 +871,9 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 		case scene::EPT_POINTS:
 		case scene::EPT_POINT_SPRITES:
 		{
-#ifdef GL_point_sprite
-			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_point_sprite])
-				glEnable(GL_POINT_SPRITE);
+#ifdef GL_OES_point_sprite
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
+				glEnable(GL_POINT_SPRITE_OES);
 #endif
 			float quadratic[] = {0.0f, 0.0f, 10.01f};
 			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, quadratic);
@@ -884,16 +884,16 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 //			extGlPointParameterf(GL_POINT_SIZE_MIN,Material.Thickness);
 			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, 60.0f);
 			glPointSize(Material.Thickness);
-#ifdef GL_point_sprite
-			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_point_sprite])
-				glTexEnvf(GL_POINT_SPRITE,GL_COORD_REPLACE, GL_TRUE);
+#ifdef GL_OES_point_sprite
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
+				glTexEnvf(GL_POINT_SPRITE_OES,GL_COORD_REPLACE_OES, GL_TRUE);
 #endif
 			glDrawArrays(GL_POINTS, 0, primitiveCount);
 #ifdef GL_point_sprite
-			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_point_sprite])
+			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
 			{
-				glDisable(GL_POINT_SPRITE);
-				glTexEnvf(GL_POINT_SPRITE,GL_COORD_REPLACE, GL_FALSE);
+				glDisable(GL_POINT_SPRITE_OES);
+				glTexEnvf(GL_POINT_SPRITE_OES,GL_COORD_REPLACE_OES, GL_FALSE);
 			}
 #endif
 		}
@@ -2449,7 +2449,36 @@ void COGLES1Driver::clearZBuffer()
 //! Returns an image created from the last rendered frame.
 IImage* COGLES1Driver::createScreenShot()
 {
-	IImage* newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
+	int format=GL_RGBA;
+	int type=GL_UNSIGNED_BYTE;
+	if (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format])
+	{
+#ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
+		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, &format);
+#endif
+#ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
+		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES, &type);
+#endif
+		// there's a format we don't support ATM
+		if (GL_UNSIGNED_SHORT_4_4_4_4==type)
+			type=GL_UNSIGNED_SHORT_5_5_5_1;
+	}
+
+	IImage* newImage = 0;
+	if (GL_RGBA==format)
+	{
+		if (GL_UNSIGNED_BYTE==type)
+			newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
+		else
+			newImage = new CImage(ECF_A1R5G5B5, ScreenSize);
+	}
+	else
+	{
+		if (GL_UNSIGNED_BYTE==type)
+			newImage = new CImage(ECF_R8G8B8, ScreenSize);
+		else
+			newImage = new CImage(ECF_R5G6B5, ScreenSize);
+	}
 
 	u8* pixels = static_cast<u8*>(newImage->lock());
 	if (!pixels)
@@ -2461,7 +2490,8 @@ IImage* COGLES1Driver::createScreenShot()
 	// We want to read the front buffer to get the latest render finished.
 	// TODO ogl-es
 	//	glReadBuffer(GL_FRONT);
-	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, format, type, pixels);
 	// TODO ogl-es
 	// glReadBuffer(GL_BACK);
 
