@@ -19,7 +19,9 @@ namespace irr
 namespace scene
 {
 
+#ifdef _DEBUG
 #define LWO_READER_DEBUG
+#endif
 
 #define charsToUIntD(a, b, c, d) ((a << 24) | (b << 16) | (c << 8) | d)
 inline unsigned int charsToUInt(const char *str)

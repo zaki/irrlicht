@@ -359,6 +359,9 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	initKeycodes();
 	if (CreationParams.DriverType != video::EDT_NULL)
 		createWindow();
+	
+	setResizeAble(false);
+	
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
 	createDriver();
 	createGUIAndScene();
@@ -567,12 +570,18 @@ bool CIrrDeviceMacOSX::createWindow()
 	return (result);
 }
 
-void CIrrDeviceMacOSX::setResize(int width,int height)
-{
+void CIrrDeviceMacOSX::setResize(int width, int height)
+{	
+	// set new window size
 	_width = width;
 	_height = height;
+	
+	// update the size of the opengl rendering context
 	[(NSOpenGLContext *)_oglcontext update];
-	getVideoDriver()->OnResize(core::dimension2d<s32>(width, height));
+	
+	// resize the driver to the inner pane size
+	NSRect driverFrame = [(NSWindow*)_window contentRectForFrameRect:[(NSWindow*)_window frame]];
+	getVideoDriver()->OnResize(core::dimension2d<s32>( (s32)driverFrame.size.width, (s32)driverFrame.size.height));
 }
 
 void CIrrDeviceMacOSX::createDriver()
@@ -946,12 +955,35 @@ void CIrrDeviceMacOSX::initKeycodes()
 }
 
 
+
 //! Sets if the window should be resizeable in windowed mode.
 void CIrrDeviceMacOSX::setResizeAble(bool resize)
 {
-	// todo: implement resize
+	// todo: Hacky method, clicking the bottom right corner freezes the window.
+	// We can't set the resize flag without destroying the window, so we'll set the max size to the current size
+	
+	if (!_window)
+		return;
+	
+	NSSize s;
+	
+	if (resize)
+	{
+		s.width = 0.0f;
+		s.height = 0.0f;
+		[(NSWindow *)_window setMinSize:  s];
+		s.width = float(_screenWidth);
+		s.height = float(_screenHeight);
+		[(NSWindow *)_window setMaxSize:  s];
+	}
+	else
+	{
+		s = [(NSWindow *)_window frame].size;
+		[(NSWindow *)_window setMinSize: s];
+		[(NSWindow *)_window setMaxSize: s];
+	}
 }
-
+	
 
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {

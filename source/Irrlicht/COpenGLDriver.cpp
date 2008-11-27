@@ -1805,6 +1805,7 @@ void COpenGLDriver::setRenderStates3DMode()
 	{
 		// Reset Texture Stages
 		glDisable(GL_BLEND);
+		glDisable(GL_ALPHA_TEST);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
 		// switch back the matrices
