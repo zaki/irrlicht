@@ -133,6 +133,8 @@ static const char* const OGLESFeatureStrings[] = {
 		{
 			switch (feature)
 			{
+				case EVDF_RENDER_TO_TARGET:
+					return true;
 				case EVDF_MULTITEXTURE:
 					return MultiTextureExtension;
 				case EVDF_BILINEAR_FILTER:
