@@ -22,7 +22,7 @@ CTextSceneNode::CTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			gui::IGUIFont* font, scene::ISceneCollisionManager* coll,
 			const core::vector3df& position, const wchar_t* text,
 			video::SColor color)
-	: ISceneNode(parent, mgr, id, position), ITextSceneNode(parent, mgr, id, position), Text(text), Color(color),
+	: ITextSceneNode(parent, mgr, id, position), Text(text), Color(color),
 		Font(font), Coll(coll)
 	
 {
@@ -92,9 +92,9 @@ void CTextSceneNode::setTextColor(video::SColor color)
 CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
 	gui::IGUIFont* font,const wchar_t* text,
 	const core::vector3df& position, const core::dimension2d<f32>& size,
-	video::SColor shade_top,video::SColor shade_bottom )
-: ISceneNode(parent, mgr, id, position), ITextSceneNode(parent, mgr, id, position), IBillboardSceneNode(parent, mgr, id, position),
-	Font(0), Shade_top(shade_top), Shade_bottom(shade_bottom), Mesh(0)
+	video::SColor colorTop,video::SColor shade_bottom )
+: IBillboardTextSceneNode(parent, mgr, id, position),
+	Font(0), ColorTop(colorTop), ColorBottom(shade_bottom), Mesh(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CBillboardTextSceneNode");
@@ -205,17 +205,17 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 		buf->Vertices[firstVert+2].TCoords.set(tex[3], tex[2]);
 		buf->Vertices[firstVert+3].TCoords.set(tex[3], tex[1]);
 
-		buf->Vertices[firstVert+0].Color = Shade_bottom;
-		buf->Vertices[firstVert+3].Color = Shade_bottom;
-		buf->Vertices[firstVert+1].Color = Shade_top;
-		buf->Vertices[firstVert+2].Color = Shade_top;
+		buf->Vertices[firstVert+0].Color = ColorBottom;
+		buf->Vertices[firstVert+3].Color = ColorBottom;
+		buf->Vertices[firstVert+1].Color = ColorTop;
+		buf->Vertices[firstVert+2].Color = ColorTop;
 
-		buf->Indices[firstInd+0] = firstVert+0;
-		buf->Indices[firstInd+1] = firstVert+2;
-		buf->Indices[firstInd+2] = firstVert+1;
-		buf->Indices[firstInd+3] = firstVert+0;
-		buf->Indices[firstInd+4] = firstVert+3;
-		buf->Indices[firstInd+5] = firstVert+2;
+		buf->Indices[firstInd+0] = (u16)firstVert+0;
+		buf->Indices[firstInd+1] = (u16)firstVert+2;
+		buf->Indices[firstInd+2] = (u16)firstVert+1;
+		buf->Indices[firstInd+3] = (u16)firstVert+0;
+		buf->Indices[firstInd+4] = (u16)firstVert+3;
+		buf->Indices[firstInd+5] = (u16)firstVert+2;
 
 		wchar_t *tp = 0;
 		if (i>0) 
@@ -425,16 +425,16 @@ void CBillboardTextSceneNode::setColor(const video::SColor & overallColor)
 //! \param bottomColor: the color to set the bottom vertices
 void CBillboardTextSceneNode::setColor(const video::SColor & topColor, const video::SColor & bottomColor)
 {
-	Shade_bottom = bottomColor;
-	Shade_top = topColor;
+	ColorBottom = bottomColor;
+	ColorTop = topColor;
 	for ( u32 i = 0; i != Text.size (); ++i )
 	{
 		const SSymbolInfo &info = Symbol[i];
 		SMeshBuffer* buf = (SMeshBuffer*)Mesh->getMeshBuffer(info.bufNo);
-		buf->Vertices[info.firstVert+0].Color = Shade_bottom;
-		buf->Vertices[info.firstVert+3].Color = Shade_bottom;
-		buf->Vertices[info.firstVert+1].Color = Shade_top;
-		buf->Vertices[info.firstVert+2].Color = Shade_top;
+		buf->Vertices[info.firstVert+0].Color = ColorBottom;
+		buf->Vertices[info.firstVert+3].Color = ColorBottom;
+		buf->Vertices[info.firstVert+1].Color = ColorTop;
+		buf->Vertices[info.firstVert+2].Color = ColorTop;
 	}
 }
 
@@ -444,8 +444,8 @@ void CBillboardTextSceneNode::setColor(const video::SColor & topColor, const vid
 //! \param bottomColor: stores the color of the bottom vertices
 void CBillboardTextSceneNode::getColor(video::SColor & topColor, video::SColor & bottomColor) const
 {
-	topColor = Shade_top;
-	bottomColor = Shade_bottom;
+	topColor = ColorTop;
+	bottomColor = ColorBottom;
 }
 
 

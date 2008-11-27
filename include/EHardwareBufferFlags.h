@@ -25,6 +25,14 @@ namespace scene
 		EHM_STREAM
 	};
 
+	enum E_BUFFER_TYPE
+	{
+		EBT_NONE=0,
+		EBT_VERTEX,
+		EBT_INDEX,
+		EBT_VERTEX_AND_INDEX
+	};
+
 } // end namespace scene
 } // end namespace irr
 

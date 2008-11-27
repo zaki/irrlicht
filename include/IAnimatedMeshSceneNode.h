@@ -208,7 +208,7 @@ namespace scene
 		/** Also takes in to account transitions. */
 		virtual void animateJoints(bool CalculateAbsolutePositions=true) = 0;
 
-		//! render mesh ignoring it's transformation.
+		//! render mesh ignoring its transformation.
 		/** Used with ragdolls. Culling is unaffected. */
 		virtual void setRenderFromIdentity( bool On )=0;
 

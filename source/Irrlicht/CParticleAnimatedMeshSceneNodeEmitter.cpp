@@ -19,30 +19,21 @@ CParticleAnimatedMeshSceneNodeEmitter::CParticleAnimatedMeshSceneNodeEmitter(
 		s32 mbNumber, bool everyMeshVertex,
 		u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 		const video::SColor& minStartColor, const video::SColor& maxStartColor,
-		u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
-	: Node(node), TotalVertices(0), MBCount(0), MBNumber(mbNumber),
-	EveryMeshVertex(everyMeshVertex), UseNormalDirection(useNormalDirection),
-	NormalDirectionModifier(normalDirectionModifier), Direction(direction),
+		u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
+		const core::dimension2df& minStartSize, const core::dimension2df& maxStartSize )
+	: Node(0), AnimatedMesh(0), BaseMesh(0), TotalVertices(0), MBCount(0), MBNumber(mbNumber),
+	Direction(direction), NormalDirectionModifier(normalDirectionModifier),
 	MinParticlesPerSecond(minParticlesPerSecond), MaxParticlesPerSecond(maxParticlesPerSecond),
 	MinStartColor(minStartColor), MaxStartColor(maxStartColor),
 	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax),
-	Time(0), Emitted(0), MaxAngleDegrees(maxAngleDegrees)
+	MaxStartSize(maxStartSize), MinStartSize(minStartSize),
+	Time(0), Emitted(0), MaxAngleDegrees(maxAngleDegrees),
+	EveryMeshVertex(everyMeshVertex), UseNormalDirection(useNormalDirection)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CParticleAnimatedMeshSceneNodeEmitter");
 	#endif
-
-	AnimatedMesh = node->getMesh();
-	BaseMesh = AnimatedMesh->getMesh(0);
-
-	TotalVertices = 0;
-	MBCount = BaseMesh->getMeshBufferCount();
-	for( u32 i = 0; i < MBCount; ++i )
-	{
-		VertexPerMeshBufferList.push_back( BaseMesh->getMeshBuffer(i)->getVertexCount() );
-		TotalVertices += BaseMesh->getMeshBuffer(i)->getVertexCount();
-	}
+	setAnimatedMeshSceneNode(node);
 }
 
 
@@ -52,9 +43,9 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 {
 	Time += timeSinceLastCall;
 
-	u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
-	f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
-	f32 everyWhatMillisecond = 1000.0f / perSecond;
+	const u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
+	const f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
+	const f32 everyWhatMillisecond = 1000.0f / perSecond;
 
 	if(Time > everyWhatMillisecond)
 	{
@@ -106,6 +97,13 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 						p.startColor = p.color;
 						p.startVector = p.vector;
 
+						if (MinStartSize==MaxStartSize)
+							p.startSize = MinStartSize;
+						else
+							p.startSize = MinStartSize.getInterpolated(
+								MaxStartSize, (os::Randomizer::rand() % 100) / 100.0f);
+						p.size = p.startSize;
+
 						Particles.push_back(p);
 					}
 				}
@@ -113,15 +111,10 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 			else
 			{
 				s32 randomMB = 0;
-
 				if( MBNumber < 0 )
-				{
 					randomMB = os::Randomizer::rand() % MBCount;
-				}
 				else
-				{
 					randomMB = MBNumber;
-				}
 
 				u32 vertexNumber = frameMesh->getMeshBuffer(randomMB)->getVertexCount();
 				if (!vertexNumber)
@@ -157,6 +150,13 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 				p.startColor = p.color;
 				p.startVector = p.vector;
 
+				if (MinStartSize==MaxStartSize)
+					p.startSize = MinStartSize;
+				else
+					p.startSize = MinStartSize.getInterpolated(
+							MaxStartSize, (os::Randomizer::rand() % 100) / 100.0f);
+				p.size = p.startSize;
+
 				Particles.push_back(p);
 			}
 		}
@@ -169,6 +169,7 @@ s32 CParticleAnimatedMeshSceneNodeEmitter::emitt(u32 now, u32 timeSinceLastCall,
 	return 0;
 }
 
+
 //! Set Mesh to emit particles from
 void CParticleAnimatedMeshSceneNodeEmitter::setAnimatedMeshSceneNode( IAnimatedMeshSceneNode* node )
 {
@@ -178,6 +179,7 @@ void CParticleAnimatedMeshSceneNodeEmitter::setAnimatedMeshSceneNode( IAnimatedM
 
 	TotalVertices = 0;
 	MBCount = BaseMesh->getMeshBufferCount();
+	VertexPerMeshBufferList.reallocate(MBCount);
 	for( u32 i = 0; i < MBCount; ++i )
 	{
 		VertexPerMeshBufferList.push_back( BaseMesh->getMeshBuffer(i)->getVertexCount() );

@@ -128,6 +128,12 @@ public:
 	\param lifeTimeMax: Maximal lifetime of a particle, in milliseconds.
 	\param maxAngleDegrees: Maximal angle in degrees, the emitting
 	direction of the particle will differ from the original direction.
+	\param minStartSize: Minimal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
+	\param maxStartSize: Maximal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
 	\return Pointer to the created particle emitter. To set this emitter
 	as new emitter of this particle system, just call setEmitter(). Note
 	that you'll have to drop() the returned pointer, after you don't need
@@ -141,7 +147,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
-		s32 maxAngleDegrees = 0 ) = 0;
+		s32 maxAngleDegrees = 0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a box particle emitter.
 	/** \param box: The box for the emitter.
@@ -160,6 +168,12 @@ public:
 	\param lifeTimeMax: Maximal lifetime of a particle, in milliseconds.
 	\param maxAngleDegrees: Maximal angle in degrees, the emitting
 	direction of the particle will differ from the original direction.
+	\param minStartSize: Minimal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
+	\param maxStartSize: Maximal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
 	\return Pointer to the created particle emitter. To set this emitter
 	as new emitter of this particle system, just call setEmitter(). Note
 	that you'll have to drop() the returned pointer, after you don't need
@@ -172,7 +186,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0) = 0;
+		s32 maxAngleDegrees=0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a particle emitter for emitting from a cylinder
 	/** \param center: The center of the circle at the base of the cylinder
@@ -196,6 +212,12 @@ public:
 	\param lifeTimeMax: Maximal lifetime of a particle, in milliseconds.
 	\param maxAngleDegrees: Maximal angle in degrees, the emitting
 	direction of the particle will differ from the original direction.
+	\param minStartSize: Minimal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
+	\param maxStartSize: Maximal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
 	\return Pointer to the created particle emitter. To set this emitter
 	as new emitter of this particle system, just call setEmitter(). Note
 	that you'll have to drop() the returned pointer, after you don't need
@@ -209,7 +231,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
-		s32 maxAngleDegrees = 0 ) = 0;
+		s32 maxAngleDegrees = 0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a mesh particle emitter.
 	/** \param mesh: Pointer to mesh to emit particles from
@@ -244,6 +268,12 @@ public:
 	\param lifeTimeMax: Maximal lifetime of a particle, in milliseconds.
 	\param maxAngleDegrees: Maximal angle in degrees, the emitting
 	direction of the particle will differ from the original direction.
+	\param minStartSize: Minimal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
+	\param maxStartSize: Maximal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
 	\return Pointer to the created particle emitter. To set this emitter
 	as new emitter of this particle system, just call setEmitter(). Note
 	that you'll have to drop() the returned pointer, after you don't need
@@ -257,7 +287,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000, u32 lifeTimeMax = 4000,
-		s32 maxAngleDegrees = 0 ) = 0;
+		s32 maxAngleDegrees = 0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a point particle emitter.
 	/** \param direction: Direction and speed of particle emission.
@@ -275,6 +307,12 @@ public:
 	\param lifeTimeMax: Maximal lifetime of a particle, in milliseconds.
 	\param maxAngleDegrees: Maximal angle in degrees, the emitting
 	direction of the particle will differ from the original direction.
+	\param minStartSize: Minimal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
+	\param maxStartSize: Maximal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
 	\return Pointer to the created particle emitter. To set this emitter
 	as new emitter of this particle system, just call setEmitter(). Note
 	that you'll have to drop() the returned pointer, after you don't need
@@ -286,7 +324,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0) = 0;
+		s32 maxAngleDegrees=0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a ring particle emitter.
 	/** \param center: Center of ring
@@ -309,6 +349,12 @@ public:
 	\param lifeTimeMax: Maximal lifetime of a particle, in milliseconds.
 	\param maxAngleDegrees: Maximal angle in degrees, the emitting
 	direction of the particle will differ from the original direction.
+	\param minStartSize: Minimal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
+	\param maxStartSize: Maximal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
 	\return Pointer to the created particle emitter. To set this emitter
 	as new emitter of this particle system, just call setEmitter(). Note
 	that you'll have to drop() the returned pointer, after you don't need
@@ -321,7 +367,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0) = 0;
+		s32 maxAngleDegrees=0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a sphere particle emitter.
 	/** \param center: Center of sphere
@@ -341,6 +389,12 @@ public:
 	\param lifeTimeMax: Maximal lifetime of a particle, in milliseconds.
 	\param maxAngleDegrees: Maximal angle in degrees, the emitting
 	direction of the particle will differ from the original direction.
+	\param minStartSize: Minimal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
+	\param maxStartSize: Maximal initial start size of a particle. The
+	real size of every particle is calculated as random interpolation
+	between minStartSize and maxStartSize.
 	\return Pointer to the created particle emitter. To set this emitter
 	as new emitter of this particle system, just call setEmitter(). Note
 	that you'll have to drop() the returned pointer, after you don't need
@@ -353,7 +407,9 @@ public:
 		const video::SColor& minStartColor = video::SColor(255,0,0,0),
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000, u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0) = 0;
+		s32 maxAngleDegrees=0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) ) = 0;
 
 	//! Creates a point attraction affector.
 	/** This affector modifies the positions of the particles and attracts
@@ -376,6 +432,17 @@ public:
 	virtual IParticleAttractionAffector* createAttractionAffector(
 		const core::vector3df& point, f32 speed = 1.0f, bool attract = true,
 		bool affectX = true, bool affectY = true, bool affectZ = true) = 0;
+
+	//! Creates a scale particle affector.
+	/** This affector scales the particle to the a multiple of its size defined
+	by the scaleTo variable.
+	\param scaleTo: multiple of the size which the particle will be scaled to until deletion
+	\return Pointer to the created particle affector.
+	To add this affector as new affector of this particle system,
+	just call addAffector(). Note that you'll have to drop() the
+	returned pointer, after you don't need it any more, see
+	IReferenceCounted::drop() for more information. */
+	virtual IParticleAffector* createScaleParticleAffector(const core::dimension2df& scaleTo = core::dimension2df(1.0f, 1.0f)) = 0;
 
 	//! Creates a fade out particle affector.
 	/** This affector modifies the color of every particle and and reaches

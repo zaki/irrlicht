@@ -6,6 +6,7 @@
 #define __S_PARTICLE_H_INCLUDED__
 
 #include "vector3d.h"
+#include "dimension2d.h"
 #include "SColor.h"
 
 namespace irr
@@ -37,6 +38,14 @@ namespace scene
 		//! Original direction and speed of the particle.
 		/** The direction and speed the particle had when it was emitted. */
 		core::vector3df startVector;
+
+		//! Scale of the particle.
+		/** The current scale of the particle. */
+		core::dimension2df size;
+
+		//! Original scale of the particle.
+		/** The scale of the particle when it was emitted. */
+		core::dimension2df startSize;
 	};
 
 

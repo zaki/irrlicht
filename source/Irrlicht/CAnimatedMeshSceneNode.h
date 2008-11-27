@@ -150,7 +150,7 @@ namespace scene
 		//! updates the joint positions of this mesh
 		virtual void animateJoints(bool CalculateAbsolutePositions=true);
 
-		//! render mesh ignoring it's transformation. Used with ragdolls. (culling is unaffected)
+		//! render mesh ignoring its transformation. Used with ragdolls. (culling is unaffected)
 		virtual void setRenderFromIdentity( bool On );
 
 		//! Creates a clone of this scene node and its children.
@@ -161,6 +161,12 @@ namespace scene
 
 	private:
 
+		//! Get a static mesh for the current frame of this animated mesh
+		/** \param forceRecalcOfControlJoints If the mesh is a skinned mesh with controlled joints, force
+		a recalculation even if the frame number hasn't changed. Otherwise return the cached mesh for the
+		current frame if it exists. */
+		IMesh* getMeshForCurrentFrame(bool forceRecalcOfControlJoints);
+
 		f32 buildFrameNr( u32 timeMs);
 		void checkJoints();
 		void beginTransition();
@@ -168,23 +174,26 @@ namespace scene
 		core::array<video::SMaterial> Materials;
 		core::aabbox3d<f32> Box;
 		IAnimatedMesh* Mesh;
+		IMesh* MeshForCurrentFrame;
 
 		u32 BeginFrameTime;
 		s32 StartFrame;
 		s32 EndFrame;
 		f32 FramesPerSecond;
 		f32 CurrentFrameNr;
+		f32 FrameWhenCurrentMeshWasGenerated;
 
-		E_JOINT_UPDATE_ON_RENDER JointMode; //0-unused, 1-get joints only, 2-set joints only, 3-move and set
+		//0-unused, 1-get joints only, 2-set joints only, 3-move and set
+		E_JOINT_UPDATE_ON_RENDER JointMode;
 		bool JointsUsed;
 
 		u32 TransitionTime; //Transition time in millisecs
-
 		f32 Transiting; //is mesh transiting (plus cache of TransitionTime)
 		f32 TransitingBlend; //0-1, calculated on buildFrameNr
 
 		bool Looping;
 		bool ReadOnlyMaterials;
+		bool RenderFromIdentity;
 
 		IAnimationEndCallBack* LoopCallBack;
 		s32 PassCount;
@@ -193,8 +202,6 @@ namespace scene
 
 		core::array<IBoneSceneNode* > JointChildSceneNodes;
 		core::array<core::matrix4> PretransitingSave;
-
-		bool RenderFromIdentity;
 
 		struct SMD3Special
 		{
@@ -209,7 +216,6 @@ namespace scene
 			}
 		};
 		SMD3Special MD3Special;
-
 	};
 
 } // end namespace scene

@@ -318,6 +318,260 @@
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
+		<Configuration
+			Name="Static lib - Debug|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="0"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\..\Debug/Irrlicht.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\..\include;zlib"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;_IRR_STATIC_LIB_;_CRT_SECURE_NO_DEPRECATE"
+				ExceptionHandling="0"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="1"
+				DisableLanguageExtensions="false"
+				RuntimeTypeInfo="false"
+				PrecompiledHeaderFile=".\..\obj\IrrDebug/Irrlicht.pch"
+				AssemblerListingLocation=".\..\obj\IrrDebug/"
+				ObjectFile=".\..\obj\IrrDebug/"
+				ProgramDataBaseFileName=".\..\obj\IrrDebug/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="3079"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalDependencies="winmm.lib"
+				OutputFile="..\..\lib\Win32-visualstudio\Irrlicht.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Static lib - Release|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\..\Release/Irrlicht.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="false"
+				AdditionalIncludeDirectories="..\..\include;zlib"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_IRR_STATIC_LIB_;_CRT_SECURE_NO_DEPRECATE"
+				StringPooling="true"
+				ExceptionHandling="0"
+				RuntimeLibrary="0"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				PrecompiledHeaderFile=".\..\obj\IrrRelease/Irrlicht.pch"
+				AssemblerListingLocation=".\..\obj\IrrRelease/"
+				ObjectFile=".\..\obj\IrrRelease/"
+				ProgramDataBaseFileName=".\..\obj\IrrRelease/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="0"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="3079"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalDependencies="winmm.lib"
+				OutputFile="..\..\lib\Win32-visualstudio\Irrlicht.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Static lib - Release - Fast FPU|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\..\Release/Irrlicht.tlb"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="0"
+				OmitFramePointers="true"
+				AdditionalIncludeDirectories="..\..\include;zlib"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_IRR_STATIC_LIB_;_CRT_SECURE_NO_DEPRECATE"
+				StringPooling="true"
+				ExceptionHandling="0"
+				RuntimeLibrary="0"
+				BufferSecurityCheck="false"
+				EnableFunctionLevelLinking="true"
+				FloatingPointModel="2"
+				RuntimeTypeInfo="false"
+				PrecompiledHeaderFile=".\..\obj\IrrRelease/Irrlicht.pch"
+				AssemblerListingLocation=".\..\obj\IrrRelease/"
+				ObjectFile=".\..\obj\IrrRelease/"
+				ProgramDataBaseFileName=".\..\obj\IrrRelease/"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="0"
+				CallingConvention="1"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="3079"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				AdditionalDependencies="winmm.lib"
+				OutputFile="..\..\lib\Win32-visualstudio\Irrlicht.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -745,11 +999,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\..\..\include\SSkinMeshBuffer.h"
+					RelativePath=".\..\..\include\SParticle.h"
 					>
 				</File>
 				<File
-					RelativePath=".\..\..\include\SParticle.h"
+					RelativePath=".\..\..\include\SSkinMeshBuffer.h"
 					>
 				</File>
 				<File
@@ -2049,11 +2303,11 @@
 				Name="particleSystem"
 				>
 				<File
-					RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp"
+					RelativePath="CParticleAnimatedMeshSceneNodeEmitter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleAttractionAffector.cpp"
+					RelativePath="CParticleAttractionAffector.cpp"
 					>
 				</File>
 				<File
@@ -2065,7 +2319,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleCylinderEmitter.cpp"
+					RelativePath="CParticleCylinderEmitter.cpp"
 					>
 				</File>
 				<File
@@ -2085,7 +2339,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleMeshEmitter.cpp"
+					RelativePath="CParticleMeshEmitter.cpp"
 					>
 				</File>
 				<File
@@ -2097,15 +2351,31 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleRingEmitter.cpp"
+					RelativePath="CParticleRingEmitter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleRotationAffector.cpp"
+					RelativePath="CParticleRotationAffector.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CParticleSphereEmitter.cpp"
+					RelativePath="CParticleScaleAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="CParticleScaleAffector.h"
+					>
+				</File>
+				<File
+					RelativePath="CParticleSphereEmitter.cpp"
 					>
 				</File>
 				<File
@@ -2137,19 +2407,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneCollisionManager.cpp"
+					RelativePath="CSceneCollisionManager.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneCollisionManager.h"
+					RelativePath="CSceneCollisionManager.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CTerrainTriangleSelector.cpp"
+					RelativePath="CTerrainTriangleSelector.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CTerrainTriangleSelector.h"
+					RelativePath="CTerrainTriangleSelector.h"
 					>
 				</File>
 				<File
@@ -2173,19 +2443,19 @@
 				Name="animators"
 				>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraFPS.cpp"
+					RelativePath="CSceneNodeAnimatorCameraFPS.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraFPS.h"
+					RelativePath="CSceneNodeAnimatorCameraFPS.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraMaya.cpp"
+					RelativePath="CSceneNodeAnimatorCameraMaya.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorCameraMaya.h"
+					RelativePath="CSceneNodeAnimatorCameraMaya.h"
 					>
 				</File>
 				<File
@@ -2205,19 +2475,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyCircle.cpp"
+					RelativePath="CSceneNodeAnimatorFlyCircle.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyCircle.h"
+					RelativePath="CSceneNodeAnimatorFlyCircle.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyStraight.cpp"
+					RelativePath="CSceneNodeAnimatorFlyStraight.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorFlyStraight.h"
+					RelativePath="CSceneNodeAnimatorFlyStraight.h"
 					>
 				</File>
 				<File
@@ -2229,19 +2499,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorRotation.cpp"
+					RelativePath="CSceneNodeAnimatorRotation.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorRotation.h"
+					RelativePath="CSceneNodeAnimatorRotation.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorTexture.cpp"
+					RelativePath="CSceneNodeAnimatorTexture.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSceneNodeAnimatorTexture.h"
+					RelativePath="CSceneNodeAnimatorTexture.h"
 					>
 				</File>
 			</Filter>
@@ -2249,35 +2519,35 @@
 				Name="writers"
 				>
 				<File
-					RelativePath=".\CColladaMeshWriter.cpp"
+					RelativePath="CColladaMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CColladaMeshWriter.h"
+					RelativePath="CColladaMeshWriter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CIrrMeshWriter.cpp"
+					RelativePath="CIrrMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CIrrMeshWriter.h"
+					RelativePath="CIrrMeshWriter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\CSTLMeshWriter.cpp"
+					RelativePath="COBJMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CSTLMeshWriter.h"
+					RelativePath="COBJMeshWriter.h"
 					>
 				</File>
 				<File
-					RelativePath=".\COBJMeshWriter.cpp"
+					RelativePath="CSTLMeshWriter.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\COBJMeshWriter.h"
+					RelativePath="CSTLMeshWriter.h"
 					>
 				</File>
 			</Filter>
@@ -2286,63 +2556,63 @@
 			Name="io impl"
 			>
 			<File
-				RelativePath=".\CAttributeImpl.h"
+				RelativePath="CAttributeImpl.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CAttributes.cpp"
+				RelativePath="CAttributes.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CAttributes.h"
+				RelativePath="CAttributes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileList.cpp"
+				RelativePath="CFileList.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileList.h"
+				RelativePath="CFileList.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileSystem.cpp"
+				RelativePath="CFileSystem.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CFileSystem.h"
+				RelativePath="CFileSystem.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CLimitReadFile.cpp"
+				RelativePath="CLimitReadFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CLimitReadFile.h"
+				RelativePath="CLimitReadFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CMemoryReadFile.cpp"
+				RelativePath="CMemoryReadFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CMemoryReadFile.h"
+				RelativePath="CMemoryReadFile.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CPakReader.cpp"
+				RelativePath="CPakReader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CPakReader.h"
+				RelativePath="CPakReader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\CReadFile.cpp"
+				RelativePath="CReadFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CReadFile.h"
+				RelativePath="CReadFile.h"
 				>
 			</File>
 			<File
@@ -2362,7 +2632,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CXMLReaderImpl.h"
+				RelativePath="CXMLReaderImpl.h"
 				>
 			</File>
 			<File
@@ -2374,15 +2644,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\CZipReader.cpp"
+				RelativePath="CZipReader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CZipReader.h"
+				RelativePath="CZipReader.h"
 				>
 			</File>
 			<File
-				RelativePath=".\irrXML.cpp"
+				RelativePath="irrXML.cpp"
 				>
 			</File>
 		</Filter>

@@ -273,7 +273,7 @@ enum e4DVertexFlag
 
 	VERTEX4D_FORMAT_MASK_COLOR		= 0x00F00000,
 	VERTEX4D_FORMAT_COLOR_1			= 0x00100000,
-	VERTEX4D_FORMAT_COLOR_2			= 0x00200000,
+	VERTEX4D_FORMAT_COLOR_2			= 0x00200000
 
 };
 
@@ -344,7 +344,6 @@ struct SAlignedVertex
 	{
 		u32 byteSize = (ElementSize << SIZEOF_SVERTEX_LOG2 ) + aligned;
 		mem = new u8 [ byteSize ];
-		//data = (s4DVertex*) ((PointerAsValue ( mem ) + (aligned-1) ) & ~ ( aligned - 1 ) );
 		data = (s4DVertex*) mem;
 	}
 

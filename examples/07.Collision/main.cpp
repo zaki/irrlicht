@@ -95,14 +95,14 @@ int main()
 	We add a first person shooter camera to the scene for being able to
 	move in the quake 3 level like in tutorial 2. But this, time, we add a
 	special animator to the camera: A Collision Response animator. This
-	thing modifies the scene node to which it is attached to in that way,
-	that it may no more move through walls and is affected by gravity. The
+	animator modifies the scene node to which it is attached to in order to
+	prevent it moving through walls, and to add gravity to it. The
 	only thing we have to tell the animator is how the world looks like,
-	how big the scene node is, how gravity and so on. After the collision
-	response animator is attached to the camera, we do not have to do
-	anything more for collision detection, anything is done automaticly,
+	how big the scene node is, how much gravity to apply and so on. After the 
+	collision response animator is attached to the camera, we do not have to do
+	anything more for collision detection, anything is done automatically,
 	all other collision detection code below is for picking. And please
-	note another cool feature: The collsion response animator can be
+	note another cool feature: The collision response animator can be
 	attached also to all other scene nodes, not only to cameras. And it can
 	be mixed with other scene node animators. In this way, collision
 	detection and response in the Irrlicht engine is really, really easy.
@@ -115,26 +115,29 @@ int main()
 	case it is the camera. The third defines how big the object is, it is
 	the radius of an ellipsoid. Try it out and change the radius to smaller
 	values, the camera will be able to move closer to walls after this. The
-	next parameter is the direction and speed of gravity. You could set it
-	to (0,0,0) to disable gravity. And the last value is just a
-	translation: Without this, the ellipsoid with which collision detection
-	is done would be around the camera, and the camera would be in the
-	middle of the ellipsoid. But as human beings, we are used to have our
+	next parameter is the direction and speed of gravity.  We'll set it to 
+	(0, -10, 0), which approximates to realistic gravity, assuming that our
+	units are metres. You could set it to (0,0,0) to disable gravity. And the 
+	last value is just a translation: Without this, the ellipsoid with which 
+	collision detection is done would be around the camera, and the camera would 
+	be in the middle of the ellipsoid. But as human beings, we are used to have our
 	eyes on top of the body, with which we collide with our world, not in
 	the middle of it. So we place the scene node 50 units over the center
 	of the ellipsoid with this parameter. And that's it, collision
 	detection works now.
 	*/
 
+	// Set a jump speed of 3 units per second, which gives a fairly realistic jump
+	// when used with the gravity of (0, -10, 0) in the collision response animator.
 	scene::ICameraSceneNode* camera =
-		smgr->addCameraSceneNodeFPS(0, 100.0f, 300.0f, -1, 0, 0, true);
+		smgr->addCameraSceneNodeFPS(0, 100.0f, 300.0f, -1, 0, 0, true, 3.f);
 	camera->setPosition(core::vector3df(-100,50,-150));
 
 	if (selector)
 	{
 		scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
 			selector, camera, core::vector3df(30,50,30),
-			core::vector3df(0,-3,0),
+			core::vector3df(0,-10,0),
 			core::vector3df(0,50,0));
 		camera->addAnimator(anim);
 		anim->drop();

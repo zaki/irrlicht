@@ -27,6 +27,9 @@ namespace video
 		//! Returns the screen size of a video mode in pixels.
 		virtual core::dimension2d<s32> getVideoModeResolution(s32 modeNumber) const;
 
+		//! Returns the screen size of an optimal video mode in pixels.
+		virtual core::dimension2d<s32> getVideoModeResolution(const core::dimension2d<s32>& minSize, const core::dimension2d<s32>& maxSize) const;
+
 		//! Returns the pixel depth of a video mode in bits.
 		virtual s32 getVideoModeDepth(s32 modeNumber) const;
 

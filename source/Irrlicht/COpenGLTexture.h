@@ -115,6 +115,9 @@ protected:
 	void copyTexture(bool newTexture=true);
 
 	core::dimension2d<s32> ImageSize;
+	core::dimension2d<s32> TextureSize;
+	ECOLOR_FORMAT ColorFormat;
+	s32 Pitch;
 	COpenGLDriver* Driver;
 	IImage* Image;
 
@@ -127,6 +130,7 @@ protected:
 	bool IsRenderTarget;
 	bool AutomaticMipmapUpdate;
 	bool ReadOnlyLock;
+	bool KeepImage;
 };
 
 //! OpenGL FBO texture.

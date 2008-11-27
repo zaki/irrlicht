@@ -95,7 +95,7 @@ namespace gui
 		//! clear item color at index for given colortype
 		virtual void clearItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) = 0;
 
-		//! has the item at index it's color overwritten?
+		//! has the item at index its color overwritten?
 		virtual bool hasItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) const = 0;
 
 		//! return the overwrite color at given item index.

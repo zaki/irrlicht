@@ -16,10 +16,9 @@ namespace scene
 //! constructor
 CCameraSceneNode::CCameraSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id, 
 	const core::vector3df& position, const core::vector3df& lookat)
-	: ICameraSceneNode(parent, mgr, id, position, core::vector3df(0.0f, 0.0f, 0.0f),
-			core::vector3df(1.0f, 1.0f, 1.0f)),
+	: ICameraSceneNode(parent, mgr, id, position),
 	Target(lookat), UpVector(0.0f, 1.0f, 0.0f), ZNear(1.0f), ZFar(3000.0f),
-	InputReceiverEnabled(true)
+	InputReceiverEnabled(true), TargetAndRotationAreBound(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNode");
@@ -55,9 +54,10 @@ bool CCameraSceneNode::isInputReceiverEnabled() const
 }
 
 
-//! Sets the projection matrix of the camera. The core::matrix4 class has some methods
-//! to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH
-//! \param projection: The new projection matrix of the camera. 
+//! Sets the projection matrix of the camera.
+/** The core::matrix4 class has some methods
+to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH
+\param projection: The new projection matrix of the camera. */
 void CCameraSceneNode::setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal)
 {
 	IsOrthogonal = isOrthogonal;
@@ -110,6 +110,26 @@ bool CCameraSceneNode::OnEvent(const SEvent& event)
 void CCameraSceneNode::setTarget(const core::vector3df& pos)
 {
 	Target = pos;
+
+	if(TargetAndRotationAreBound)
+	{
+		const core::vector3df toTarget = Target - getAbsolutePosition();
+		ISceneNode::setRotation(toTarget.getHorizontalAngle());
+	}
+}
+
+
+//! Sets the rotation of the node.
+/** This only modifies the relative rotation of the node.
+If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
+then calling this will also change the camera's target to match the rotation.
+\param rotation New rotation of the node in degrees. */
+void CCameraSceneNode::setRotation(const core::vector3df& rotation)
+{
+	if(TargetAndRotationAreBound)
+		Target = getAbsolutePosition() + rotation.rotationToDirection();
+
+	ISceneNode::setRotation(rotation);
 }
 
 
@@ -199,13 +219,12 @@ void CCameraSceneNode::recalculateProjectionMatrix()
 //! prerender
 void CCameraSceneNode::OnRegisterSceneNode()
 {
-	// if upvector and vector to the target are the same, we have a
-	// problem. so solve this problem:
-
 	core::vector3df pos = getAbsolutePosition();
 	core::vector3df tgtv = Target - pos;
 	tgtv.normalize();
 
+	// if upvector and vector to the target are the same, we have a
+	// problem. so solve this problem:
 	core::vector3df up = UpVector;
 	up.normalize();
 
@@ -257,14 +276,6 @@ void CCameraSceneNode::recalculateViewArea()
 {
 	ViewArea.cameraPosition = getAbsolutePosition();
 	ViewArea.setFrom ( ViewArea.Matrices [ SViewFrustum::ETS_VIEW_PROJECTION_3 ] );
-/*
-	video::IVideoDriver* driver = SceneManager->getVideoDriver();
-	if ( driver)
-	{
-		driver->setTransform(video::ETS_PROJECTION, ViewArea.Matrices [ video::ETS_PROJECTION ] );
-		driver->setTransform(video::ETS_VIEW, ViewArea.Matrices [ video::ETS_VIEW ] );
-	}
-*/
 }
 
 
@@ -279,6 +290,7 @@ void CCameraSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeR
 	out->addFloat("Aspect", Aspect);
 	out->addFloat("ZNear", ZNear);
 	out->addFloat("ZFar", ZFar);
+	out->addBool("Binding", TargetAndRotationAreBound);
 }
 
 
@@ -293,9 +305,23 @@ void CCameraSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	Aspect = in->getAttributeAsFloat("Aspect");
 	ZNear = in->getAttributeAsFloat("ZNear");
 	ZFar = in->getAttributeAsFloat("ZFar");
+	TargetAndRotationAreBound = in->getAttributeAsBool("Binding");
 
 	recalculateProjectionMatrix();
 	recalculateViewArea();	
+}
+
+
+//! Set the binding between the camera's rotation adn target.
+void CCameraSceneNode::bindTargetAndRotation(bool bound)
+{
+	TargetAndRotationAreBound = bound;
+}
+
+//! Gets the binding between the camera's rotation and target.
+bool CCameraSceneNode::getTargetAndRotationBinding(void) const
+{
+	return TargetAndRotationAreBound;
 }
 
 

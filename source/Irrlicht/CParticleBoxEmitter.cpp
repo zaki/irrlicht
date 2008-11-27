@@ -14,22 +14,23 @@ namespace scene
 
 //! constructor
 CParticleBoxEmitter::CParticleBoxEmitter(
-	const core::aabbox3df& box,
-	const core::vector3df& direction, u32 minParticlesPerSecond,
-	u32 maxParticlesPerSecond,	video::SColor minStartColor,
-	video::SColor maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees)
- : Box(box), Direction(direction), MinParticlesPerSecond(minParticlesPerSecond),
+	const core::aabbox3df& box, const core::vector3df& direction,
+	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
+	video::SColor minStartColor, video::SColor maxStartColor,
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
+	const core::dimension2df& minStartSize, const core::dimension2df& maxStartSize)
+ : Box(box), Direction(direction),
+	MaxStartSize(maxStartSize), MinStartSize(minStartSize),
+	MinParticlesPerSecond(minParticlesPerSecond),
 	MaxParticlesPerSecond(maxParticlesPerSecond),
 	MinStartColor(minStartColor), MaxStartColor(maxStartColor),
-	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax), Time(0), Emitted(0),
-	MaxAngleDegrees(maxAngleDegrees)
+	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax),
+	Time(0), Emitted(0), MaxAngleDegrees(maxAngleDegrees)
 {
 	#ifdef _DEBUG
 	setDebugName("CParticleBoxEmitter");
 	#endif
 }
-
 
 
 //! Prepares an array with new particles to emitt into the system
@@ -38,9 +39,9 @@ s32 CParticleBoxEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outAr
 {
 	Time += timeSinceLastCall;
 
-	u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
-	f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
-	f32 everyWhatMillisecond = 1000.0f / perSecond;
+	const u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
+	const f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
+	const f32 everyWhatMillisecond = 1000.0f / perSecond;
 
 	if (Time > everyWhatMillisecond)
 	{
@@ -81,6 +82,13 @@ s32 CParticleBoxEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outAr
 
 			p.startColor = p.color;
 			p.startVector = p.vector;
+
+			if (MinStartSize==MaxStartSize)
+				p.startSize = MinStartSize;
+			else
+				p.startSize = MinStartSize.getInterpolated(
+					MaxStartSize, (os::Randomizer::rand() % 100) / 100.0f);
+			p.size = p.startSize;
 
 			Particles.push_back(p);
 		}

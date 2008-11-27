@@ -90,7 +90,7 @@ bool CSTLMeshWriter::writeMeshBinary(io::IWriteFile* file, scene::IMesh* mesh, s
 		IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		if (buffer)
 		{
-			const u16 indexCount = buffer->getIndexCount();
+			const u32 indexCount = buffer->getIndexCount();
 			const u16 attributes = 0;
 			for (u32 j=0; j<indexCount; j+=3)
 			{
@@ -126,9 +126,7 @@ bool CSTLMeshWriter::writeMeshASCII(io::IWriteFile* file, scene::IMesh* mesh, s3
 		IMeshBuffer* buffer = mesh->getMeshBuffer(i);
 		if (buffer)
 		{
-			const u16 indexCount = buffer->getIndexCount();
-
-			
+			const u32 indexCount = buffer->getIndexCount();
 			for (u32 j=0; j<indexCount; j+=3)
 			{
 				writeFace(file,

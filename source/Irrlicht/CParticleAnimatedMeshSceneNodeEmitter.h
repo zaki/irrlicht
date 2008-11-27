@@ -32,7 +32,9 @@ public:
 		const video::SColor& maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin = 2000,
 		u32 lifeTimeMax = 4000,
-		s32 maxAngleDegrees = 0
+		s32 maxAngleDegrees = 0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f)
 	);
 
 	//! Prepares an array with new particles to emitt into the system
@@ -67,6 +69,12 @@ public:
 	//! Set maximum starting color for particles
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
+	//! Set the maximum starting size for particles
+	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
+
+	//! Set the minimum starting size for particles
+	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
+
 	//! Get Mesh we're emitting particles from
 	virtual const IAnimatedMeshSceneNode* getAnimatedMeshSceneNode() const { return Node; }
 
@@ -95,28 +103,36 @@ public:
 	//! Get the maximum starting color for particles
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
+	//! Get the maximum starting size for particles
+	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; };
+
+	//! Get the minimum starting size for particles
+	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
+
 private:
 
 	IAnimatedMeshSceneNode* Node;
 	IAnimatedMesh*		AnimatedMesh;
-	const IMesh*			BaseMesh;
+	const IMesh*		BaseMesh;
 	s32			TotalVertices;
 	u32			MBCount;
 	s32			MBNumber;
 	core::array<s32>	VertexPerMeshBufferList;
 
-	bool EveryMeshVertex;
-	bool UseNormalDirection;
-	f32 NormalDirectionModifier;
 	core::array<SParticle> Particles;
 	core::vector3df Direction;
+	f32 NormalDirectionModifier;
 	u32 MinParticlesPerSecond, MaxParticlesPerSecond;
 	video::SColor MinStartColor, MaxStartColor;
 	u32 MinLifeTime, MaxLifeTime;
+	core::dimension2df MaxStartSize, MinStartSize;
 
 	u32 Time;
 	u32 Emitted;
 	s32 MaxAngleDegrees;
+
+	bool EveryMeshVertex;
+	bool UseNormalDirection;
 };
 
 } // end namespace scene

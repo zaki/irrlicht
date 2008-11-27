@@ -71,8 +71,14 @@ namespace scene
 			return;
 		}
 
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+
+		//! flags the meshbuffer as changed, reloads hardware buffers
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+
 		//! set user axis aligned bounding box
-		virtual void setBoundingBox( const core::aabbox3df& box)
+		virtual void setBoundingBox(const core::aabbox3df& box)
 		{
 			return;
 		}

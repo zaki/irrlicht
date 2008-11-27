@@ -182,7 +182,7 @@ typedef my_marker_reader * my_marker_ptr;
  * source manager's shoulders.  If we are saving the marker's contents
  * into memory, we use a slightly different convention: when forced to
  * suspend, the marker processor updates the restart point to the end of
- * what it's consumed (ie, the end of the buffer) before returning FALSE.
+ * what its consumed (ie, the end of the buffer) before returning FALSE.
  * On resumption, cinfo->unread_marker still contains the marker code,
  * but the data source will point to the next chunk of marker data.
  * The marker processor must retain internal state to deal with this.

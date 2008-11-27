@@ -171,6 +171,10 @@ int main()
 		std::cout << "Joystick support is not enabled." << std::endl;
 	}
 
+	wchar_t tmp[1024];
+	swprintf(tmp, 1024, L"Irrlicht Joystick Example (%u joysticks)", joystickInfo.size());
+	device->setWindowCaption(tmp);
+
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 

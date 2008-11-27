@@ -61,7 +61,10 @@ void CCubeSceneNode::setSize()
 	video::SColor clr(255,255,255,255);
 
 	SMeshBuffer* buf = (SMeshBuffer*)Mesh.getMeshBuffer(0);
+
 	buf->Vertices.reallocate(12);
+	// Start setting vertices from index 0 to deal with this method being called multiple times.
+	buf->Vertices.set_used(0);
 	buf->Vertices.push_back(video::S3DVertex(0,0,0, -1,-1,-1, clr, 0, 1));
 	buf->Vertices.push_back(video::S3DVertex(1,0,0,  1,-1,-1, clr, 1, 1));
 	buf->Vertices.push_back(video::S3DVertex(1,1,0,  1, 1,-1, clr, 1, 0));

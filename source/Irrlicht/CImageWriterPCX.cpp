@@ -136,11 +136,11 @@ bool CImageWriterPCX::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 					}
 					cnt=1;
 					if (j==0)
-						value=pix.getRed();
+						value=(u8)pix.getRed();
 					else if (j==1)
-						value=pix.getGreen();
+						value=(u8)pix.getGreen();
 					else if (j==2)
-						value=pix.getBlue();
+						value=(u8)pix.getBlue();
 				}
 			}
 		}

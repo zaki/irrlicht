@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="19.MouseAndJoystick_vc8"
-	ProjectGUID="{7BDBB7E8-E0C9-4A0D-83C1-D389D6140FEF}"
+	ProjectGUID="{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
 	RootNamespace="MouseAndJoystick_vc8"
 	>
 	<Platforms>

@@ -84,8 +84,7 @@ namespace scene
 
 		//! Returns pointer to a mesh buffer which fits a material
  		/** \param material: material to search for
-		\return Returns the pointer to the mesh buffer or
-		NULL if there is no such mesh buffer. */
+		\return Pointer to the mesh buffer or 0 if there is no such mesh buffer. */
 		virtual IMeshBuffer* getMeshBuffer( const video::SMaterial &material) const
 		{
 			return 0;
@@ -96,17 +95,17 @@ namespace scene
 			return;
 		}
 
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint )
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
 		{
 			return;
 		}
 
-		virtual void setDirty()
+		//! flags the meshbuffer as changed, reloads hardware buffers
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
 		{
 			return;
 		}
-
-
 
 	private:
 

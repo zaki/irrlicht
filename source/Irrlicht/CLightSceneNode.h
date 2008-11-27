@@ -54,6 +54,37 @@ public:
 	//! Creates a clone of this scene node and its children.
 	virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0); 
 
+
+	//! Sets the light's radius of influence.
+	/** Outside this radius the light won't lighten geometry and cast no
+	shadows. Setting the radius will also influence the attenuation, setting
+	it to (0,1/radius,0). If you want to override this behavior, set the
+	attenuation after the radius.
+	\param radius The new radius. */
+	virtual void setRadius(f32 radius);
+
+	//! Gets the light's radius of influence.
+	/** \return The current radius. */
+	virtual f32 getRadius() const;
+
+	//! Sets the light type.
+	/** \param type The new type. */
+	virtual void setLightType(video::E_LIGHT_TYPE type);
+
+	//! Gets the light type.
+	/** \return The current light type. */
+	virtual video::E_LIGHT_TYPE getLightType() const;
+
+	//! Sets whether this light casts shadows.
+	/** Enabling this flag won't automatically cast shadows, the meshes
+	will still need shadow scene nodes attached. But one can enable or
+	disable distinct lights for shadow casting for performance reasons.
+	\param shadow True if this light shall cast shadows. */
+	virtual void enableCastShadow(bool shadow=true);
+
+	//! Check whether this light casts shadows.
+	/** \return True if light would cast shadows, else false. */
+	virtual bool getCastShadow() const;
 private:
 
 	video::SLight LightData;

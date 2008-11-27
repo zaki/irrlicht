@@ -72,7 +72,7 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 		return 0;
 
 	// return if this isn't a supported type
-	if (header.BitsPerPixel != 8)
+	if ((header.BitsPerPixel != 8) && (header.BitsPerPixel != 4) && (header.BitsPerPixel != 1))
 	{
 		os::Printer::log("Unsupported bits per pixel in PCX file.",
 			file->getFileName(), irr::ELL_WARNING);
@@ -119,7 +119,7 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 	// read image data
 	const s32 width = header.XMax - header.XMin + 1;
 	const s32 height = header.YMax - header.YMin + 1;
-	const s32 imagebytes = header.BytesPerLine * header.Planes * header.BitsPerPixel / 8 * height;
+	const s32 imagebytes = header.BytesPerLine * header.Planes * header.BitsPerPixel * height / 8;
 	u8* PCXData = new u8[imagebytes];
 
 	u8 cnt, value;
@@ -164,19 +164,46 @@ IImage* CImageLoaderPCX::loadImage(io::IReadFile* file) const
 	if (pad < 0)
 		pad = -pad;
 
-	switch(header.Planes) // TODO: Other formats
+	if (header.BitsPerPixel==8)
 	{
-	case 1:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(width, height));
-		if (image)
-			CColorConverter::convert8BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
-		break;
-	case 3:
-		image = new CImage(ECF_R8G8B8, core::dimension2d<s32>(width, height));
-		if (image)
-			CColorConverter::convert24BitTo24Bit(PCXData, (u8*)image->lock(), width, height, pad);
-		break;
-	};
+		switch(header.Planes) // TODO: Other formats
+		{
+		case 1:
+			image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(width, height));
+			if (image)
+				CColorConverter::convert8BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
+			break;
+		case 3:
+			image = new CImage(ECF_R8G8B8, core::dimension2d<s32>(width, height));
+			if (image)
+				CColorConverter::convert24BitTo24Bit(PCXData, (u8*)image->lock(), width, height, pad);
+			break;
+		}
+	}
+	else if (header.BitsPerPixel==4)
+	{
+		if (header.Planes==1)
+		{
+			image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(width, height));
+			if (image)
+				CColorConverter::convert4BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
+		}
+	}
+	else if (header.BitsPerPixel==1)
+	{
+		if (header.Planes==4)
+		{
+			image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(width, height));
+			if (image)
+				CColorConverter::convert4BitTo16Bit(PCXData, (s16*)image->lock(), width, height, paletteData, pad);
+		}
+		else if (header.Planes==1)
+		{
+			image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(width, height));
+			if (image)
+				CColorConverter::convert1BitTo16Bit(PCXData, (s16*)image->lock(), width, height, pad);
+		}
+	}
 	if (image)
 		image->unlock();
 

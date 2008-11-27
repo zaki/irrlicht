@@ -60,9 +60,6 @@ namespace scene
 	{
 	public:
 
-		//! Destructor
-		virtual ~IAnimatedMesh() { }
-
 		//! Gets the frame count of the animated mesh.
 		/** \return Returns the amount of frames. If the amount is 1,
 		it is a static, non animated mesh. */

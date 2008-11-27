@@ -21,11 +21,11 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 		const core::vector3df& gravityPerSecond,
 		const core::vector3df& ellipsoidTranslation,
 		f32 slidingSpeed)
-: Radius(ellipsoidRadius), Gravity(gravityPerSecond / 1000.0f), Translation(ellipsoidTranslation),
-	World(world), Object(object), SceneManager(scenemanager),
-	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false), AnimateCameraTarget(true)
+: Radius(ellipsoidRadius), Gravity(gravityPerSecond), Translation(ellipsoidTranslation),
+	World(world), Object(object), SceneManager(scenemanager), LastTime(0),
+	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false),
+	AnimateCameraTarget(true)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCollisionResponse");
 	#endif
@@ -35,7 +35,6 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 
 	setNode(Object);
 }
-
 
 
 //! destructor
@@ -64,6 +63,7 @@ void CSceneNodeAnimatorCollisionResponse::setEllipsoidRadius(
 	Radius = radius;
 }
 
+
 //! Returns the radius of the ellipsoid with wich the collision detection and
 //! response is done.
 core::vector3df CSceneNodeAnimatorCollisionResponse::getEllipsoidRadius() const
@@ -86,12 +86,19 @@ core::vector3df CSceneNodeAnimatorCollisionResponse::getGravity() const
 }
 
 
+//! 'Jump' the animator, by adding a jump speed opposite to its gravity
+void CSceneNodeAnimatorCollisionResponse::jump(f32 jumpSpeed)
+{
+	FallingVelocity -= (core::vector3df(Gravity).normalize()) * jumpSpeed;
+	Falling = true;
+}
+
+
 //! Sets the translation of the ellipsoid for collision detection.
 void CSceneNodeAnimatorCollisionResponse::setEllipsoidTranslation(const core::vector3df &translation)
 {
 	Translation = translation;
 }
-
 
 
 //! Returns the translation of the ellipsoid for collision detection.
@@ -108,8 +115,6 @@ void CSceneNodeAnimatorCollisionResponse::setWorld(ITriangleSelector* newWorld)
 	Falling = false;
 
 	LastTime = os::Timer::getTime();
-	FallStartTime = LastTime;
-
 
 	if (World)
 		World->drop();
@@ -121,14 +126,12 @@ void CSceneNodeAnimatorCollisionResponse::setWorld(ITriangleSelector* newWorld)
 }
 
 
-
 //! Returns the current triangle selector containing all triangles for
 //! collision detection.
 ITriangleSelector* CSceneNodeAnimatorCollisionResponse::getWorld() const
 {
 	return World;
 }
-
 
 
 void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 timeMs)
@@ -148,18 +151,11 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	core::vector3df pos = Object->getPosition();
 	core::vector3df vel = pos - LastPosition;
 
-	//g = Gravity * (f32)((timeMs - FallStartTime) * diff);
-
-	f32 dt = 1.f;
-	if (Falling)
-	{
-		dt = f32 ( ( timeMs - FallStartTime ) * diff );
-	}
-	core::vector3df g = Gravity * dt;
+	FallingVelocity += Gravity * (f32)diff * 0.001f;
 
 	core::triangle3df triangle = RefTriangle;
 
-	core::vector3df force = vel + g;
+	core::vector3df force = vel + FallingVelocity;
 
 	const core::vector3df nullVector ( 0.f, 0.f, 0.f );
 
@@ -170,19 +166,19 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		bool f = false;
 		pos = SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
 				World, LastPosition-Translation,
-				Radius, vel, triangle, f, SlidingSpeed, g);
+				Radius, vel, triangle, f, SlidingSpeed, FallingVelocity);
 
 		pos += Translation;
 
 		if (f)//triangle == RefTriangle)
 		{
-			if (!Falling)
-				FallStartTime = timeMs;
-
 			Falling = true;
 		}
 		else
+		{
 			Falling = false;
+			FallingVelocity.set(0, 0, 0);
+		}
 
 		Object->setPosition(pos);
 	}
@@ -190,13 +186,14 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	// move camera target
 	if (AnimateCameraTarget && IsCamera)
 	{
-		const core::vector3df diff = Object->getPosition() - LastPosition - vel;
+		const core::vector3df pdiff = Object->getPosition() - LastPosition - vel;
 		ICameraSceneNode* cam = (ICameraSceneNode*)Object;
-		cam->setTarget(cam->getTarget() + diff);
+		cam->setTarget(cam->getTarget() + pdiff);
 	}
 
 	LastPosition = Object->getPosition();
 }
+
 
 void CSceneNodeAnimatorCollisionResponse::setNode(ISceneNode* node)
 {
@@ -209,8 +206,8 @@ void CSceneNodeAnimatorCollisionResponse::setNode(ISceneNode* node)
 	}
 
 	LastTime = os::Timer::getTime();
-	FallStartTime = LastTime;
 }
+
 
 //! Writes attributes of the scene node animator.
 void CSceneNodeAnimatorCollisionResponse::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
@@ -221,6 +218,7 @@ void CSceneNodeAnimatorCollisionResponse::serializeAttributes(io::IAttributes* o
 	out->addBool("AnimateCameraTarget", AnimateCameraTarget);
 }
 
+
 //! Reads attributes of the scene node animator.
 void CSceneNodeAnimatorCollisionResponse::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
@@ -229,6 +227,7 @@ void CSceneNodeAnimatorCollisionResponse::deserializeAttributes(io::IAttributes*
 	Translation = in->getAttributeAsVector3d("Translation");
 	AnimateCameraTarget = in->getAttributeAsBool("AnimateCameraTarget");
 }
+
 
 ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode* node, ISceneManager* newManager)
 {
@@ -240,6 +239,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode*
 
 	return newAnimator;
 }
+
 
 } // end namespace scene
 } // end namespace irr

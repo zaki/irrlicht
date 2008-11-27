@@ -19,6 +19,7 @@
 #include "CParticleFadeOutAffector.h"
 #include "CParticleGravityAffector.h"
 #include "CParticleRotationAffector.h"
+#include "CParticleScaleAffector.h"
 #include "SViewFrustum.h"
 
 namespace irr
@@ -32,8 +33,8 @@ CParticleSystemSceneNode::CParticleSystemSceneNode(bool createDefaultEmitter,
 	const core::vector3df& position, const core::vector3df& rotation,
 	const core::vector3df& scale)
 	: IParticleSystemSceneNode(parent, mgr, id, position, rotation, scale),
-	Emitter(0), LastEmitTime(0), MaxParticles(0xffff), Buffer(0),
-	ParticlesAreGlobal(true)
+	Emitter(0), ParticleSize(core::dimension2d<f32>(5.0f, 5.0f)), LastEmitTime(0),
+	MaxParticles(0xffff), Buffer(0), ParticlesAreGlobal(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CParticleSystemSceneNode");
@@ -46,8 +47,6 @@ CParticleSystemSceneNode::CParticleSystemSceneNode(bool createDefaultEmitter,
 		setEmitter(e);
 		e->drop();
 	}
-
-	setParticleSize();
 }
 
 
@@ -125,14 +124,17 @@ CParticleSystemSceneNode::createAnimatedMeshSceneNodeEmitter(
 	s32 mbNumber, bool everyMeshVertex,
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
-	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleAnimatedMeshSceneNodeEmitter( node,
 			useNormalDirection, direction, normalDirectionModifier,
 			mbNumber, everyMeshVertex,
 			minParticlesPerSecond, maxParticlesPerSecond,
 			minStartColor, maxStartColor,
-			lifeTimeMin, lifeTimeMax, maxAngleDegrees );
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees,
+			minStartSize, maxStartSize );
 }
 
 
@@ -142,11 +144,13 @@ IParticleBoxEmitter* CParticleSystemSceneNode::createBoxEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees)
+	s32 maxAngleDegrees, const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleBoxEmitter(box, direction, minParticlesPerSecond,
 		maxParticlesPerSecond, minStartColor, maxStartColor,
-		lifeTimeMin, lifeTimeMax, maxAngleDegrees);
+		lifeTimeMin, lifeTimeMax, maxAngleDegrees,
+			minStartSize, maxStartSize );
 }
 
 
@@ -157,13 +161,16 @@ IParticleCylinderEmitter* CParticleSystemSceneNode::createCylinderEmitter(
 	bool outlineOnly, const core::vector3df& direction,
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
-	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees, 
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleCylinderEmitter( center, radius, normal, length,
 			outlineOnly, direction,
 			minParticlesPerSecond, maxParticlesPerSecond,
 			minStartColor, maxStartColor,
-			lifeTimeMin, lifeTimeMax, maxAngleDegrees );
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees,
+			minStartSize, maxStartSize );
 }
 
 
@@ -174,13 +181,16 @@ IParticleMeshEmitter* CParticleSystemSceneNode::createMeshEmitter(
 	s32 mbNumber, bool everyMeshVertex,
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
-	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize)
 {
 	return new CParticleMeshEmitter( mesh, useNormalDirection, direction,
 			normalDirectionModifier, mbNumber, everyMeshVertex,
 			minParticlesPerSecond, maxParticlesPerSecond,
 			minStartColor, maxStartColor,
-			lifeTimeMin, lifeTimeMax, maxAngleDegrees );
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees,
+			minStartSize, maxStartSize );
 }
 
 
@@ -189,11 +199,13 @@ IParticlePointEmitter* CParticleSystemSceneNode::createPointEmitter(
 	const core::vector3df& direction, u32 minParticlesPerSecond,
 	u32 maxParticlesPerSecond, const video::SColor& minStartColor,
 	const video::SColor& maxStartColor, u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees)
+	s32 maxAngleDegrees, const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticlePointEmitter(direction, minParticlesPerSecond,
 		maxParticlesPerSecond, minStartColor, maxStartColor,
-		lifeTimeMin, lifeTimeMax, maxAngleDegrees);
+		lifeTimeMin, lifeTimeMax, maxAngleDegrees,
+			minStartSize, maxStartSize );
 }
 
 
@@ -203,11 +215,13 @@ IParticleRingEmitter* CParticleSystemSceneNode::createRingEmitter(
 	const core::vector3df& direction,
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
-	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
+	const core::dimension2df& minStartSize, const core::dimension2df& maxStartSize )
 {
 	return new CParticleRingEmitter( center, radius, ringThickness, direction,
 		minParticlesPerSecond, maxParticlesPerSecond, minStartColor,
-		maxStartColor, lifeTimeMin, lifeTimeMax, maxAngleDegrees );
+		maxStartColor, lifeTimeMin, lifeTimeMax, maxAngleDegrees,
+			minStartSize, maxStartSize );
 }
 
 
@@ -217,12 +231,14 @@ IParticleSphereEmitter* CParticleSystemSceneNode::createSphereEmitter(
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
 	u32 lifeTimeMin, u32 lifeTimeMax,
-	s32 maxAngleDegrees)
+	s32 maxAngleDegrees, const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
 {
 	return new CParticleSphereEmitter(center, radius, direction,
 			minParticlesPerSecond, maxParticlesPerSecond,
 			minStartColor, maxStartColor,
-			lifeTimeMin, lifeTimeMax, maxAngleDegrees);
+			lifeTimeMin, lifeTimeMax, maxAngleDegrees,
+			minStartSize, maxStartSize );
 }
 
 
@@ -233,6 +249,12 @@ IParticleAttractionAffector* CParticleSystemSceneNode::createAttractionAffector(
 	bool affectX, bool affectY, bool affectZ )
 {
 	return new CParticleAttractionAffector( point, speed, attract, affectX, affectY, affectZ );
+}
+
+//! Creates a scale particle affector.
+IParticleAffector* CParticleSystemSceneNode::createScaleParticleAffector(const core::dimension2df& scaleTo)
+{
+	return new CParticleScaleAffector(scaleTo);
 }
 
 
@@ -289,27 +311,11 @@ void CParticleSystemSceneNode::render()
 	core::vector3df view(camera->getTarget() - camera->getAbsolutePosition());
 	view.normalize();
 
-	core::vector3df horizontal = camera->getUpVector().crossProduct(view);
-	horizontal.normalize();
-	horizontal *= 0.5f * ParticleSize.Width;
-
-	core::vector3df vertical = horizontal.crossProduct(view);
-	vertical.normalize();
-	vertical *= 0.5f * ParticleSize.Height;
-
 	view *= -1.0f;
 
 #else
 
 	const core::matrix4 &m = camera->getViewFrustum()->Matrices [ video::ETS_VIEW ];
-
-	f32 f;
-
-	f = 0.5f * ParticleSize.Width;
-	const core::vector3df horizontal ( m[0] * f, m[4] * f, m[8] * f );
-
-	f = -0.5f * ParticleSize.Height;
-	const core::vector3df vertical ( m[1] * f, m[5] * f, m[9] * f );
 
 	const core::vector3df view ( -m[2], -m[6] , -m[10] );
 
@@ -323,6 +329,25 @@ void CParticleSystemSceneNode::render()
 	for (u32 i=0; i<Particles.size(); ++i)
 	{
 		const SParticle& particle = Particles[i];
+
+		#if 0
+			core::vector3df horizontal = camera->getUpVector().crossProduct(view);
+			horizontal.normalize();
+			horizontal *= 0.5f * particle.size.Width;
+
+			core::vector3df vertical = horizontal.crossProduct(view);
+			vertical.normalize();
+			vertical *= 0.5f * particle.size.Height;
+
+		#else
+			f32 f;
+
+			f = 0.5f * particle.size.Width;
+			const core::vector3df horizontal ( m[0] * f, m[4] * f, m[8] * f );
+
+			f = -0.5f * particle.size.Height;
+			const core::vector3df vertical ( m[1] * f, m[5] * f, m[9] * f );
+		#endif
 
 		Buffer->Vertices[0+idx].Pos = particle.pos + horizontal + vertical;
 		Buffer->Vertices[0+idx].Color = particle.color;
@@ -462,6 +487,13 @@ void CParticleSystemSceneNode::setParticlesAreGlobal(bool global)
 //! Sets the size of all particles.
 void CParticleSystemSceneNode::setParticleSize(const core::dimension2d<f32> &size)
 {
+	os::Printer::log("setParticleSize is deprecated, use setMinStartSize/setMaxStartSize in emitter.", irr::ELL_WARNING);
+	//A bit of a hack, but better here than in the particle code
+	if (Emitter)
+	{
+		Emitter->setMinStartSize(size);
+		Emitter->setMaxStartSize(size);
+	}
 	ParticleSize = size;
 }
 
@@ -492,12 +524,12 @@ void CParticleSystemSceneNode::reallocateBuffers()
 
 		for (i=oldIdxSize; i<Buffer->Indices.size(); i+=6)
 		{
-			Buffer->Indices[0+i] = 0+oldvertices;
-			Buffer->Indices[1+i] = 2+oldvertices;
-			Buffer->Indices[2+i] = 1+oldvertices;
-			Buffer->Indices[3+i] = 0+oldvertices;
-			Buffer->Indices[4+i] = 3+oldvertices;
-			Buffer->Indices[5+i] = 2+oldvertices;
+			Buffer->Indices[0+i] = (u16)0+oldvertices;
+			Buffer->Indices[1+i] = (u16)2+oldvertices;
+			Buffer->Indices[2+i] = (u16)1+oldvertices;
+			Buffer->Indices[3+i] = (u16)0+oldvertices;
+			Buffer->Indices[4+i] = (u16)3+oldvertices;
+			Buffer->Indices[5+i] = (u16)2+oldvertices;
 			oldvertices += 4;
 		}
 	}
@@ -610,6 +642,9 @@ void CParticleSystemSceneNode::deserializeAttributes(io::IAttributes* in, io::SA
 			break;
 		case EPAT_GRAVITY:
 			aff = createGravityAffector();
+			break;
+		case EPAT_SCALE:
+			aff = createScaleParticleAffector();
 			break;
 		case EPAT_NONE:
 		default:

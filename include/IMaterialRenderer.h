@@ -25,9 +25,6 @@ class IMaterialRenderer : public virtual IReferenceCounted
 {
 public:
 
-	//! Destructor
-	virtual ~IMaterialRenderer() {}
-
 	//! Called by the IVideoDriver implementation the let the renderer set its needed render states.
 	/** This is called during the IVideoDriver::setMaterial() call.
 	When overriding this, you can set some renderstates or for example a

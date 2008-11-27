@@ -190,16 +190,15 @@ namespace scene
 			CameraRotationDelta = delta;
 		}
 
-		//! Sets whether or not the node should dynamically update it's associated selector when
+		//! Sets whether or not the node should dynamically update it its associated selector when
 		//! the geomipmap data changes.
 		//! param bVal: Boolean value representing whether or not to update selector dynamically.
 		//! NOTE: Temporarily disabled while working out issues with DynamicSelectorUpdate
 		virtual void setDynamicSelectorUpdate(bool bVal ) { DynamicSelectorUpdate = false; }
-		//virtual void setDynamicSelectorUpdate ( bool bVal ) { DynamicSelectorUpdate = bVal; }
 
 		//! Override the default generation of distance thresholds for determining the LOD a patch
 		//! is rendered at. If any LOD is overridden, then the scene node will no longer apply
-		//! scaling factors to these values. If you override these distances, and then apply
+		//! scaling factors to these values. If you override these distances and then apply
 		//! a scale to the scene node, it is your responsibility to update the new distances to
 		//! work best with your new terrain size.
 		virtual bool overrideLODDistance( s32 LOD, f64 newDistance );
@@ -248,7 +247,7 @@ namespace scene
 			: Size(0), PatchSize(0), CalcPatchSize(0),
 				PatchCount(0), MaxLOD(0),
 				BoundingBox(core::aabbox3df( 99999.9f, 99999.9f, 99999.9f, -99999.9f, -99999.9f, -99999.9f)),
-				LODDistanceThreshold(0), Patches(0)
+				Patches(0)
 			{
 			}
 
@@ -257,7 +256,7 @@ namespace scene
 				PatchSize(patchSize), CalcPatchSize(patchSize-1),
 				PatchCount(0), MaxLOD(maxLOD),
 				BoundingBox(core::aabbox3df( 99999.9f, 99999.9f, 99999.9f, -99999.9f, -99999.9f, -99999.9f)),
-				LODDistanceThreshold(0), Patches(0)
+				Patches(0)
 			{
 			}
 
@@ -272,7 +271,7 @@ namespace scene
 			s32		PatchCount;
 			s32		MaxLOD;
 			core::aabbox3df	BoundingBox;
-			f64*		LODDistanceThreshold;
+			core::array<f64> LODDistanceThreshold;
 			SPatch*		Patches;
 		};
 

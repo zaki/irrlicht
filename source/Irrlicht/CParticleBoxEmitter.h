@@ -29,7 +29,10 @@ public:
 		video::SColor maxStartColor = video::SColor(255,255,255,255),
 		u32 lifeTimeMin=2000,
 		u32 lifeTimeMax=4000,
-		s32 maxAngleDegrees=0);
+		s32 maxAngleDegrees=0,
+		const core::dimension2df& minStartSize = core::dimension2df(5.0f,5.0f),
+		const core::dimension2df& maxStartSize = core::dimension2df(5.0f,5.0f) 
+		);
 
 	//! Prepares an array with new particles to emitt into the system
 	//! and returns how much new particles there are.
@@ -50,6 +53,12 @@ public:
 	//! Set maximum start color.
 	virtual void setMaxStartColor( const video::SColor& color ) { MaxStartColor = color; }
 
+	//! Set the maximum starting size for particles
+	virtual void setMaxStartSize( const core::dimension2df& size ) { MaxStartSize = size; };
+
+	//! Set the minimum starting size for particles
+	virtual void setMinStartSize( const core::dimension2df& size ) { MinStartSize = size; };
+
 	//! Set box from which the particles are emitted.
 	virtual void setBox( const core::aabbox3df& box ) { Box = box; }
 
@@ -68,6 +77,12 @@ public:
 	//! Gets maximum start color.
 	virtual const video::SColor& getMaxStartColor() const { return MaxStartColor; }
 
+	//! Gets the maximum starting size for particles
+	virtual const core::dimension2df& getMaxStartSize() const { return MaxStartSize; };
+
+	//! Gets the minimum starting size for particles
+	virtual const core::dimension2df& getMinStartSize() const { return MinStartSize; };
+
 	//! Get box from which the particles are emitted.
 	virtual const core::aabbox3df& getBox() const { return Box; }
 
@@ -82,6 +97,7 @@ private:
 	core::array<SParticle> Particles;
 	core::aabbox3df Box;
 	core::vector3df Direction;
+	core::dimension2df MaxStartSize, MinStartSize;
 	u32 MinParticlesPerSecond, MaxParticlesPerSecond;
 	video::SColor MinStartColor, MaxStartColor;
 	u32 MinLifeTime, MaxLifeTime;

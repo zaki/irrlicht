@@ -66,6 +66,12 @@ namespace scene
 		//! sets a flag of all contained materials to a new value
 		virtual void setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue);
 
+		//! set the hardware mapping hint, for driver
+		virtual void setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+
+		//! flags the meshbuffer as changed, reloads hardware buffers
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+
 		//! Returns the type of the animated mesh.
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
@@ -138,6 +144,8 @@ namespace scene
 
 		virtual SWeight *createWeight(SJoint *joint);
 
+		virtual void updateBoundingBox(void);
+
 private:
 
 		void checkForAnimation();
@@ -161,7 +169,6 @@ private:
 			core::vector3df& tangent, core::vector3df& binormal,
 			core::vector3df& vt1, core::vector3df& vt2, core::vector3df& vt3,
 			core::vector2df& tc1, core::vector2df& tc2, core::vector2df& tc3);
-
 
 		core::array<SSkinMeshBuffer*> *SkinningBuffers; //Meshbuffer to skin, default is to skin localBuffers
 

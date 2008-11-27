@@ -324,13 +324,13 @@ void CDemo::switchToNextScene()
 			keyMap[8].Action = EKA_JUMP_UP;
 			keyMap[8].KeyCode = KEY_KEY_J;
 
-			camera = sm->addCameraSceneNodeFPS(0, 100.0f, 400.0f, -1, keyMap, 9, false, 0.f);
+			camera = sm->addCameraSceneNodeFPS(0, 100.0f, 400.0f, -1, keyMap, 9, false, 3.f);
 			camera->setPosition(core::vector3df(108,140,-140));
 
 			scene::ISceneNodeAnimatorCollisionResponse* collider =
 				sm->createCollisionResponseAnimator(
 				metaSelector, camera, core::vector3df(25,50,25),
-				core::vector3df(0, quakeLevelMesh ? -2.5f : 0.0f,0),
+				core::vector3df(0, quakeLevelMesh ? -10.f : 0.0f,0),
 					core::vector3df(0,45,0), 0.005f);
 
 			camera->addAnimator(collider);
@@ -740,7 +740,7 @@ void CDemo::createParticleImpacts()
 			#ifdef USE_IRRKLANG
 			if (irrKlang)
 			{
-				audio::ISound* sound = 
+				irrklang::ISound* sound = 
 					irrKlang->play3D(impactSound, Impacts[i].pos, false, false, true);
 
 				if (sound)
@@ -768,14 +768,14 @@ void CDemo::createParticleImpacts()
 #ifdef USE_IRRKLANG
 void CDemo::startIrrKlang()
 {
-	irrKlang = audio::createIrrKlangDevice();
+	irrKlang = irrklang::createIrrKlangDevice();
 
 	if (!irrKlang)
 		return;
 
 	// play music
 
-	audio::ISound* snd = irrKlang->play2D("../../media/IrrlichtTheme.ogg", true, false, true);
+	irrklang::ISound* snd = irrKlang->play2D("../../media/IrrlichtTheme.ogg", true, false, true);
 	if ( !snd )
 		snd = irrKlang->play2D("IrrlichtTheme.ogg", true, false, true);
 

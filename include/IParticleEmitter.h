@@ -47,12 +47,11 @@ class IParticleEmitter : public virtual io::IAttributeExchangingObject
 public:
 
 	//! Prepares an array with new particles to emitt into the system
-	//! and returns how much new particles there are.
-	//! \param now: Current time.
-	//! \param timeSinceLastCall: Time elapsed since last call, in milliseconds.
-	//! \param outArray: Pointer which will point to the array with the new
-	//! particles to add into the system.
-	//! \return Returns amount of new particles in the array. Can be 0.
+	/** \param now Current time.
+	\param timeSinceLastCall Time elapsed since last call, in milliseconds.
+	\param outArray Pointer which will point to the array with the new
+	particles to add into the system.
+	\return Amount of new particles in the array. Can be 0. */
 	virtual s32 emitt(u32 now, u32 timeSinceLastCall, SParticle*& outArray) = 0;
 
 	//! Set direction the emitter emits particles
@@ -70,6 +69,12 @@ public:
 	//! Set maximum starting color for particles
 	virtual void setMaxStartColor( const video::SColor& color ) = 0;
 
+	//! Set the maximum starting size for particles
+	virtual void setMaxStartSize( const core::dimension2df& size ) = 0;
+
+	//! Set the minimum starting size for particles
+	virtual void setMinStartSize( const core::dimension2df& size ) = 0;
+
 	//! Get direction the emitter emits particles
 	virtual const core::vector3df& getDirection() const = 0;
 
@@ -85,19 +90,27 @@ public:
 	//! Get the maximum starting color for particles
 	virtual const video::SColor& getMaxStartColor() const = 0;
 
+	//! Get the maximum starting size for particles
+	virtual const core::dimension2df& getMaxStartSize() const = 0;
+
+	//! Get the minimum starting size for particles
+	virtual const core::dimension2df& getMinStartSize() const = 0;
+
 	//! Writes attributes of the object.
-	//! Implement this to expose the attributes of your scene node animator for
-	//! scripting languages, editors, debuggers or xml serialization purposes.
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const {}
+	/** Implement this to expose the attributes of your scene node animator for
+	scripting languages, editors, debuggers or xml serialization purposes. */
+	virtual void serializeAttributes(io::IAttributes* out,
+			io::SAttributeReadWriteOptions* options=0) const {}
 
 	//! Reads attributes of the object.
-	//! Implement this to set the attributes of your scene node animator for
-	//! scripting languages, editors, debuggers or xml deserialization purposes.
-	//! \param startIndex: start index where to start reading attributes.
-	//! \param in: The attributes to work with.
-	//! \param options: Additional options.
-	//! \return: returns last index of an attribute read by this affector
-	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) { return 0; }
+	/** Implement this to set the attributes of your scene node animator for
+	scripting languages, editors, debuggers or xml deserialization purposes.
+	\param startIndex start index where to start reading attributes.
+	\param in The attributes to work with.
+	\param options Additional options.
+	\return Last index of an attribute read by this affector */
+	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in,
+			io::SAttributeReadWriteOptions* options=0) { return 0; }
 
 	//! Get emitter type
 	virtual E_PARTICLE_EMITTER_TYPE getType() const { return EPET_POINT; }

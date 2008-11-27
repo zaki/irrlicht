@@ -19,7 +19,9 @@ namespace irr
 namespace scene
 {
 
+#ifdef _DEBUG
 #define LWO_READER_DEBUG
+#endif
 
 #define charsToUIntD(a, b, c, d) ((a << 24) | (b << 16) | (c << 8) | d)
 inline unsigned int charsToUInt(const char *str)
@@ -1202,9 +1204,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 						size -= readVX(mat->Envelope[21]);
 					File->read(&tmp32, 4); // skip type
 					size -= 4;
-					core::stringc name;
-					size -= readString(name, size);
-//					mat->VertexColor = getColorVMAP(name);
+					core::stringc tmpname;
+					size -= readString(tmpname, size);
+//					mat->VertexColor = getColorVMAP(tmpname);
 				}
 				break;
 			case charsToUIntD('F','L','A','G'):
@@ -1511,10 +1513,10 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				os::Printer::log("LWO loader: loading material vmap binding.");
 #endif
 				{
-					core::stringc name;
-					size -= readString(name);
-					if (VMap.find(name) != 0)
-						mat->Texture[currTexture].TCoords = &TCoords[VMap.find(name)->getValue()];
+					core::stringc tmpname;
+					size -= readString(tmpname);
+					if (VMap.find(tmpname) != 0)
+						mat->Texture[currTexture].TCoords = &TCoords[VMap.find(tmpname)->getValue()];
 				}
 				break;
 			case charsToUIntD('B','L','O','K'):

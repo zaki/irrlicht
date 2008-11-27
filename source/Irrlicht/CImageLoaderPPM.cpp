@@ -144,7 +144,7 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
-						const u32 num = core::strtol10(token.c_str());
+						const u8 num = (u8)core::strtol10(token.c_str());
 						*ptr++ = num;
 						*ptr++ = num;
 						*ptr++ = num;
@@ -186,11 +186,11 @@ IImage* CImageLoaderPPM::loadImage(io::IReadFile* file) const
 					for (u32 i=0; i<size; ++i)
 					{
 						getNextToken(file, token);
-						*ptr++ = core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtol10(token.c_str());
 						getNextToken(file, token);
-						*ptr++ = core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtol10(token.c_str());
 						getNextToken(file, token);
-						*ptr++ = core::strtol10(token.c_str());
+						*ptr++ = (u8)core::strtol10(token.c_str());
 						*ptr++ = 255;
 					}
 				}

@@ -81,7 +81,8 @@ namespace scene
 			{
 				if (sizeof(T)==sizeof(u16))
 					return video::EIT_16BIT;
-				return video::EIT_32BIT;
+				else
+					return video::EIT_32BIT;
 			}
 		};
 

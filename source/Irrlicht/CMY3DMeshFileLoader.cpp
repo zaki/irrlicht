@@ -86,7 +86,10 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 
 	// working directory (from which we load the scene)
 	core::stringc filepath = FileSystem->getFileDir(file->getFileName());
-	filepath.append("/");
+	if (filepath==".")
+		filepath="";
+	else
+		filepath.append("/");
 
 	// read file into memory
 	SMyFileHeader fileHeader;
@@ -326,7 +329,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			if (id!=MY3D_TVERTS_ID)
 			{
 				core::stringc msg="Can not find MY3D_TVERTS_ID (";
-				msg.append(tex);
+				msg.append(core::stringc(tex));
 				msg.append("texture channel), loading failed!");
 				os::Printer::log(msg.c_str(), ELL_ERROR);
 				return 0;
@@ -362,7 +365,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 			if (id!=MY3D_TFACES_ID)
 			{
 				core::stringc msg="Can not find MY3D_TFACES_ID (";
-				msg.append(tex);
+				msg.append(core::stringc(tex));
 				msg.append("texture channel), loading failed!");
 				os::Printer::log(msg.c_str(), ELL_ERROR);
 				return 0;

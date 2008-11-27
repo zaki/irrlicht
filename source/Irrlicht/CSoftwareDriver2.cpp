@@ -526,7 +526,7 @@ const sVec4 CBurningVideoDriver::NDCPlane[6] =
 	core::setbit_cond( flag, (-v->Pos.y - v->Pos.w ) <= 0.f, 32 );
 
 */
-#ifdef _MSC_VER
+#ifdef IRRLICHT_FAST_MATH
 
 REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) const
 {
@@ -701,9 +701,7 @@ inline void CBurningVideoDriver::ndc_2_dc_and_project ( s4DVertex *dest,s4DVerte
 	#endif
 
 		dest[g].Pos.w = iw;
-
 	}
-
 }
 
 
@@ -1263,6 +1261,9 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 		ndc_2_dc_and_project ( CurrentOut.data + 1, CurrentOut.data, vOut );
 
 /*
+		// TODO: don't stick on 32 Bit Pointer
+		#define PointerAsValue(x) ( (u32) (u32*) (x) ) 
+
 		// if not complete inside clipping necessary
 		if ( ( test & VERTEX4D_INSIDE ) != VERTEX4D_INSIDE )
 		{
@@ -1276,7 +1277,6 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 				v[0] ^= v[1];
 				v[1] ^= v[0];
 				v[0] ^= v[1];
-
 			}
 
 			if ( vOut < 3 )
@@ -1313,9 +1313,8 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 		{
 			// rasterize
 			CurrentShader->drawTriangle ( CurrentOut.data + 0 + 1,
-													CurrentOut.data + g + 3,
-													CurrentOut.data + g + 5
-												);
+							CurrentOut.data + g + 3,
+							CurrentOut.data + g + 5);
 		}
 
 	}

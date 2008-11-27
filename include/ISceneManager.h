@@ -108,6 +108,7 @@ namespace scene
 	class IMetaTriangleSelector;
 	class IMeshManipulator;
 	class ITextSceneNode;
+	class IBillboardTextSceneNode;
 	class IVolumeLightSceneNode;
 	class ISceneNodeFactory;
 	class ISceneNodeAnimatorFactory;
@@ -539,9 +540,13 @@ namespace scene
 			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
 			f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
 
-		//! Adds a camera scene node with an animator which provides mouse and keyboard control like in most first person shooters (FPS).
-		/** Look with the mouse, move with cursor keys. If you do not like the default
-		 key layout, you may want to specify your own. For example to make the camera
+		//! Adds a camera scene node with an animator which provides mouse and keyboard control appropriate for first person shooters (FPS).
+		/** This FPS camera is intended to provide a demonstration of a camera that behaves
+		 like a typical First Person Shooter.  It is useful for simple demos and prototyping but is not 
+		 intended to provide a full solution for a production quality game. It binds the camera scene node 
+		 rotation to the look-at target; @see ICameraSceneNode::bindTargetAndRotation().
+		 With this camera, you look with the mouse, and move with cursor keys. If you want to 
+		 change the key layout, you can specify your own keymap. For example to make the camera
 		 be controlled by the cursor keys AND the keys W,A,S, and D, do something
 		 like this:
 		 \code
@@ -619,14 +624,14 @@ namespace scene
 		 \param size: Size of the billboard. This size is 2 dimensional because a billboard only has
 		 width and height.
 		 \param id: An id of the node. This id can be used to identify the node.
-		 \param shade_top: vertex color top
-		 \param shade_down: vertex color down
+		 \param colorTop: The color of the vertices at the top of the billboard (default: white).
+		 \param colorBottom: The color of the vertices at the bottom of the billboard (default: white).
 		 \return Returns pointer to the billboard if successful, otherwise NULL.
 		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IBillboardSceneNode* addBillboardSceneNode(ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
-			video::SColor shade_top = 0xFFFFFFFF, video::SColor shade_down = 0xFFFFFFFF) = 0;
+			video::SColor colorTop = 0xFFFFFFFF, video::SColor colorBottom = 0xFFFFFFFF) = 0;
 
 		//! Adds a skybox scene node to the scene graph.
 		/** A skybox is a big cube with 6 textures on it and
@@ -823,12 +828,22 @@ namespace scene
 			ISceneNode* parent = 0, const core::vector3df& position = core::vector3df(0,0,0),
 			s32 id=-1) = 0;
 
-		//! Adds a text scene node, which uses billboards
-		virtual ITextSceneNode* addBillboardTextSceneNode( gui::IGUIFont* font, const wchar_t* text,
+		//! Adds a text scene node, which uses billboards.  The node, and the text on it, will scale with distance.
+		/**
+		\param font The font to use on the billboard. Pass 0 to use the GUI environment's default font.
+		\param text The text to display on the billboard.
+		\param parent The billboard's parent.  Pass 0 to use the root scene node.
+		\param size The billboard's width and height.
+		\param position The billboards position relative to its parent.
+		\param colorTop: The color of the vertices at the top of the billboard (default: white).
+		\param colorBottom: The color of the vertices at the bottom of the billboard (default: white).
+		\return Returns pointer to the billboard if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		virtual IBillboardTextSceneNode* addBillboardTextSceneNode( gui::IGUIFont* font, const wchar_t* text,
 			ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
-			video::SColor shade_top = 0xFFFFFFFF, video::SColor shade_down = 0xFFFFFFFF) = 0;
+			video::SColor colorTop = 0xFFFFFFFF, video::SColor colorBottom = 0xFFFFFFFF) = 0;
 
 		//! Adds a Hill Plane mesh to the mesh pool.
 		/** The mesh is generated on the fly
@@ -1071,9 +1086,9 @@ namespace scene
 		 const core::aabbox3d<f32>& box = yourSceneNode->getBoundingBox();
 		 core::vector3df radius = box.MaxEdge - box.getCenter();
 		 \endcode
-		 \param gravityPerSecond: Sets the gravity of the environment. A good example value would be
-		 core::vector3df(0,-100.0f,0) for letting gravity affect all object to
-		 fall down. For bigger gravity, make increase the length of the vector.
+		 \param gravityPerSecond: Sets the gravity of the environment, as an acceleration in 
+		 units per second per second. If your units are equivalent to metres, then 
+		 core::vector3df(0,-10.0f,0) would give an approximately realistic gravity.
 		 You can disable gravity by setting it to core::vector3df(0,0,0).
 		 \param ellipsoidTranslation: By default, the ellipsoid for collision detection is created around
 		 the center of the scene node, which means that the ellipsoid surrounds
@@ -1087,7 +1102,7 @@ namespace scene
 		virtual ISceneNodeAnimatorCollisionResponse* createCollisionResponseAnimator(
 			ITriangleSelector* world, ISceneNode* sceneNode,
 			const core::vector3df& ellipsoidRadius = core::vector3df(30,60,30),
-			const core::vector3df& gravityPerSecond = core::vector3df(0,-100.0f,0),
+			const core::vector3df& gravityPerSecond = core::vector3df(0,-10.0f,0),
 			const core::vector3df& ellipsoidTranslation = core::vector3df(0,0,0),
 			f32 slidingValue = 0.0005f) = 0;
 

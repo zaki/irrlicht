@@ -30,7 +30,7 @@ namespace irr
 		SIrrlichtCreationParameters p;
 		p.DriverType = driverType;
 		p.WindowSize = windowSize;
-		p.Bits = bits;
+		p.Bits = (u8)bits;
 		p.Fullscreen = fullscreen;
 		p.Stencilbuffer = stencilbuffer;
 		p.Vsync = vsync;

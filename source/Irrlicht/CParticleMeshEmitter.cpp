@@ -5,7 +5,6 @@
 #include "IrrCompileConfig.h"
 #include "CParticleMeshEmitter.h"
 #include "os.h"
-#include <math.h>
 
 namespace irr
 {
@@ -19,26 +18,22 @@ CParticleMeshEmitter::CParticleMeshEmitter(
 	s32 mbNumber, bool everyMeshVertex,
 	u32 minParticlesPerSecond, u32 maxParticlesPerSecond,
 	const video::SColor& minStartColor, const video::SColor& maxStartColor,
-	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees )
-	: Mesh(mesh), TotalVertices(0), MBCount(0), MBNumber(mbNumber),
-	EveryMeshVertex(everyMeshVertex), UseNormalDirection(useNormalDirection),
+	u32 lifeTimeMin, u32 lifeTimeMax, s32 maxAngleDegrees,
+	const core::dimension2df& minStartSize,
+	const core::dimension2df& maxStartSize )
+	: Mesh(0), TotalVertices(0), MBCount(0), MBNumber(mbNumber),
 	NormalDirectionModifier(normalDirectionModifier), Direction(direction),
+	MaxStartSize(maxStartSize), MinStartSize(minStartSize),
 	MinParticlesPerSecond(minParticlesPerSecond), MaxParticlesPerSecond(maxParticlesPerSecond),
 	MinStartColor(minStartColor), MaxStartColor(maxStartColor),
 	MinLifeTime(lifeTimeMin), MaxLifeTime(lifeTimeMax),
-	Time(0), Emitted(0), MaxAngleDegrees(maxAngleDegrees)
+	Time(0), Emitted(0), MaxAngleDegrees(maxAngleDegrees),
+	EveryMeshVertex(everyMeshVertex), UseNormalDirection(useNormalDirection)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CParticleMeshEmitter");
 	#endif
-
-	MBCount = Mesh->getMeshBufferCount();
-	for( u32 i = 0; i < MBCount; ++i )
-	{
-		VertexPerMeshBufferList.push_back( Mesh->getMeshBuffer(i)->getVertexCount() );
-		TotalVertices += Mesh->getMeshBuffer(i)->getVertexCount();
-	}
+	setMesh(mesh);
 }
 
 
@@ -48,9 +43,9 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 {
 	Time += timeSinceLastCall;
 
-	u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
-	f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
-	f32 everyWhatMillisecond = 1000.0f / perSecond;
+	const u32 pps = (MaxParticlesPerSecond - MinParticlesPerSecond);
+	const f32 perSecond = pps ? (f32)MinParticlesPerSecond + (os::Randomizer::rand() % pps) : MinParticlesPerSecond;
+	const f32 everyWhatMillisecond = 1000.0f / perSecond;
 
 	if(Time > everyWhatMillisecond)
 	{
@@ -98,6 +93,13 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 
 						p.startColor = p.color;
 						p.startVector = p.vector;
+
+						if (MinStartSize==MaxStartSize)
+							p.startSize = MinStartSize;
+						else
+							p.startSize = MinStartSize.getInterpolated(
+								MaxStartSize, (os::Randomizer::rand() % 100) / 100.0f);
+						p.size = p.startSize;
 
 						Particles.push_back(p);
 					}
@@ -150,6 +152,13 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 				p.startColor = p.color;
 				p.startVector = p.vector;
 
+				if (MinStartSize==MaxStartSize)
+					p.startSize = MinStartSize;
+				else
+					p.startSize = MinStartSize.getInterpolated(
+						MaxStartSize, (os::Randomizer::rand() % 100) / 100.0f);
+				p.size = p.startSize;
+
 				Particles.push_back(p);
 			}
 		}
@@ -162,13 +171,15 @@ s32 CParticleMeshEmitter::emitt(u32 now, u32 timeSinceLastCall, SParticle*& outA
 	return 0;
 }
 
+
 //! Set Mesh to emit particles from
-void CParticleMeshEmitter::setMesh( IMesh* mesh )
+void CParticleMeshEmitter::setMesh(IMesh* mesh)
 {
 	Mesh = mesh;
 
 	TotalVertices = 0;
 	MBCount = Mesh->getMeshBufferCount();
+	VertexPerMeshBufferList.reallocate(MBCount);
 	for( u32 i = 0; i < MBCount; ++i )
 	{
 		VertexPerMeshBufferList.push_back( Mesh->getMeshBuffer(i)->getVertexCount() );

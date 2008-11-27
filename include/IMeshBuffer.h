@@ -56,14 +56,6 @@ namespace scene
 		EPT_POINT_SPRITES
 	};
 
-	enum E_BUFFER_TYPE
-	{
-		EBT_NONE=0,
-		EBT_VERTEX,
-		EBT_INDEX,
-		EBT_VERTEX_AND_INDEX
-	};
-
 	//! Struct for holding a mesh with a single material
 	/** SMeshBuffer is a simple implementation of a MeshBuffer.
 
@@ -169,10 +161,10 @@ namespace scene
 		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const = 0;
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX ) = 0;
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING newMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX ) = 0;
 
 		//! flags the meshbuffer as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX) = 0;
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX) = 0;
 
 		//to be spit into vertex and index buffers:
 		//! Get the currently used ID for identification of changes.

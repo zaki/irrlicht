@@ -61,7 +61,6 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 
 	animateMesh((f32)frame, 1.0f);
 	buildAll_LocalAnimatedMatrices();
-	buildAll_GlobalAnimatedMatrices();
 	skinMesh();
 	return this;
 }
@@ -127,6 +126,8 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 		buildAll_LocalAnimatedMatrices();
 		//-----------------
 	}
+
+	updateBoundingBox();
 }
 
 
@@ -173,19 +174,19 @@ void CSkinnedMesh::buildAll_LocalAnimatedMatrices()
 				*/
 
 				// -------- joint->LocalAnimatedMatrix *= scaleMatrix -----------------
-				f32 *m1 = joint->LocalAnimatedMatrix.pointer();
-				m1[0] *= joint->Animatedscale.X;
-				m1[1] *= joint->Animatedscale.X;
-				m1[2] *= joint->Animatedscale.X;
-				m1[3] *= joint->Animatedscale.X;
-				m1[4] *= joint->Animatedscale.Y;
-				m1[5] *= joint->Animatedscale.Y;
-				m1[6] *= joint->Animatedscale.Y;
-				m1[7] *= joint->Animatedscale.Y;
-				m1[8] *= joint->Animatedscale.Z;
-				m1[9] *= joint->Animatedscale.Z;
-				m1[10] *= joint->Animatedscale.Z;
-				m1[11] *= joint->Animatedscale.Z;
+				core::matrix4& mat = joint->LocalAnimatedMatrix;
+				mat[0] *= joint->Animatedscale.X;
+				mat[1] *= joint->Animatedscale.X;
+				mat[2] *= joint->Animatedscale.X;
+				mat[3] *= joint->Animatedscale.X;
+				mat[4] *= joint->Animatedscale.Y;
+				mat[5] *= joint->Animatedscale.Y;
+				mat[6] *= joint->Animatedscale.Y;
+				mat[7] *= joint->Animatedscale.Y;
+				mat[8] *= joint->Animatedscale.Z;
+				mat[9] *= joint->Animatedscale.Z;
+				mat[10] *= joint->Animatedscale.Z;
+				mat[11] *= joint->Animatedscale.Z;
 				// -----------------------------------
 
 			}
@@ -428,7 +429,7 @@ void CSkinnedMesh::skinMesh()
 		return;
 
 	//----------------
-	// Temp!
+	// This is marked as "Temp!".  A shiny dubloon to whomever can tell me why.
 	buildAll_GlobalAnimatedMatrices();
 	//-----------------
 
@@ -506,6 +507,8 @@ void CSkinnedMesh::SkinJoint(SJoint *joint, SJoint *parentJoint)
 
 				//*(weight._Pos) += thisVertexMove * weight.strength;
 			}
+
+			buffersUsed[weight.buffer_id]->boundingBoxNeedsRecalculated();
 		}
 	}
 
@@ -601,6 +604,23 @@ void CSkinnedMesh::setMaterialFlag(video::E_MATERIAL_FLAG flag, bool newvalue)
 }
 
 
+//! set the hardware mapping hint, for driver
+void CSkinnedMesh::setHardwareMappingHint(E_HARDWARE_MAPPING newMappingHint,
+		E_BUFFER_TYPE buffer)
+{
+	for (u32 i=0; i<LocalBuffers.size(); ++i)
+		LocalBuffers[i]->setHardwareMappingHint(newMappingHint, buffer);
+}
+
+
+//! flags the meshbuffer as changed, reloads hardware buffers
+void CSkinnedMesh::setDirty(E_BUFFER_TYPE buffer)
+{
+	for (u32 i=0; i<LocalBuffers.size(); ++i)
+		LocalBuffers[i]->setDirty(buffer);
+}
+
+
 //! uses animation from another mesh
 bool CSkinnedMesh::useAnimationFrom(const ISkinnedMesh *mesh)
 {
@@ -687,6 +707,7 @@ bool CSkinnedMesh::setHardwareSkinning(bool on)
 					const u32 vertex_id=joint->Weights[j].vertex_id;
 					LocalBuffers[buffer_id]->getVertex(vertex_id)->Pos = joint->Weights[j].StaticPos;
 					LocalBuffers[buffer_id]->getVertex(vertex_id)->Normal = joint->Weights[j].StaticNormal;
+					LocalBuffers[buffer_id]->boundingBoxNeedsRecalculated();
 				}
 			}
 
@@ -1079,11 +1100,28 @@ void CSkinnedMesh::finalize()
 			BoundingBox.addInternalBox(bb);
 		}
 	}
+}
 
-	//add 5% padding to bounding box
-	const core::vector3df Padding = BoundingBox.getExtent()*0.05f;
-	BoundingBox.MinEdge -= Padding;
-	BoundingBox.MaxEdge += Padding;
+
+void CSkinnedMesh::updateBoundingBox(void)
+{
+	if(!SkinningBuffers)
+		return;
+
+	core::array<SSkinMeshBuffer*> & buffer = *SkinningBuffers;
+	BoundingBox.reset(0,0,0);
+
+	if (!buffer.empty())
+	{
+		for (u32 j=0; j<buffer.size(); ++j)
+		{
+			buffer[j]->recalculateBoundingBox();
+			core::aabbox3df bb = buffer[j]->BoundingBox;
+			buffer[j]->Transformation.transformBoxEx(bb);
+
+			BoundingBox.addInternalBox(bb);
+		}
+	}
 }
 
 

@@ -171,8 +171,8 @@ int main()
 	addShaderMaterial() instead of addShaderMaterialFromFiles().
 	*/
 	
-	c8* vsFileName = 0; // filename for the vertex shader
-	c8* psFileName = 0; // filename for the pixel shader
+	const c8* vsFileName = 0; // filename for the vertex shader
+	const c8* psFileName = 0; // filename for the pixel shader
 
 	switch(driverType)
 	{

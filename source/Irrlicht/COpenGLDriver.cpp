@@ -158,7 +158,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			}
 
 			// choose pixelformat
-			if ((PixelFormat = ChoosePixelFormat(HDc, &pfd)))
+			PixelFormat = ChoosePixelFormat(HDc, &pfd);
+			if (PixelFormat)
 				break;
 		}
 
@@ -233,7 +234,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	}
 
 	// get hdc
-	if (!(HDc=GetDC(Window)))
+	HDc=GetDC(Window);
+	if (!HDc)
 	{
 		os::Printer::log("Cannot create a GL device context.", ELL_ERROR);
 		return false;
@@ -275,7 +277,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			}
 
 			// choose pixelformat
-			if ((PixelFormat = ChoosePixelFormat(HDc, &pfd)))
+			PixelFormat = ChoosePixelFormat(HDc, &pfd);
+			if (PixelFormat)
 				break;
 		}
 	}
@@ -288,7 +291,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	}
 
 	// create rendering context
-	if (!(HRc=wglCreateContext(HDc)))
+	HRc=wglCreateContext(HDc);
+	if (!HRc)
 	{
 		os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
 		return false;
@@ -1036,7 +1040,6 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 		const void* indexList, u32 primitiveCount,
 		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
-
 	if (!primitiveCount || !vertexCount)
 		return;
 
@@ -1802,6 +1805,7 @@ void COpenGLDriver::setRenderStates3DMode()
 	{
 		// Reset Texture Stages
 		glDisable(GL_BLEND);
+		glDisable(GL_ALPHA_TEST);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
 		// switch back the matrices
@@ -2614,6 +2618,7 @@ void COpenGLDriver::OnResize(const core::dimension2d<s32>& size)
 {
 	CNullDriver::OnResize(size);
 	glViewport(0, 0, size.Width, size.Height);
+	Transformation3DChanged = true;
 }
 
 
@@ -2736,9 +2741,12 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 		if (rtt)
 		{
 			addTexture(rtt);
-			ITexture* tex = getDepthTexture(rtt);
+			ITexture* tex = createDepthTexture(rtt);
 			if (tex)
+			{
 				static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
+				tex->drop();
+			}
 			rtt->drop();
 		}
 	}
@@ -2752,7 +2760,6 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 		rtt = addTexture(destSize, name, ECF_A8R8G8B8);
 		if (rtt)
 		{
-			rtt->grab();
 			static_cast<video::COpenGLTexture*>(rtt)->setIsRenderTarget(true);
 		}
 	}
@@ -2911,7 +2918,7 @@ IImage* COpenGLDriver::createScreenShot()
 
 
 //! get depth texture for the given render target texture
-ITexture* COpenGLDriver::getDepthTexture(ITexture* texture, bool shared)
+ITexture* COpenGLDriver::createDepthTexture(ITexture* texture, bool shared)
 {
 	if ((texture->getDriverType() != EDT_OPENGL) || (!texture->isRenderTarget()))
 		return 0;

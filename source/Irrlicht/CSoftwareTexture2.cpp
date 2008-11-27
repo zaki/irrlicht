@@ -9,14 +9,11 @@
 #include "SoftwareDriver2_helper.h"
 #include "CSoftwareTexture2.h"
 #include "os.h"
-#include "CImageWriterBMP.h"
 
 namespace irr
 {
 namespace video  
 {
-
-IImageWriter* createImageWriterBMP();
 
 //! constructor
 CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool generateMipLevels, bool isRenderTarget)
@@ -34,12 +31,10 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 
 	if (image)
 	{
-		
-		core::dimension2d<s32> optSize;
 		OrigSize = image->getDimension();
 
-		optSize.Width = getTextureSizeFromSurfaceSize(OrigSize.Width);
-		optSize.Height = getTextureSizeFromSurfaceSize(OrigSize.Height);
+		core::dimension2d<s32> optSize(
+				OrigSize.getOptimalSize(true, false, false));
 		
 		if ( OrigSize == optSize )
 		{
@@ -71,22 +66,6 @@ CSoftwareTexture2::~CSoftwareTexture2()
 		if ( MipMap[i] )
 			MipMap[i]->drop();
 	}
-}
-
-
-//! returns the size of a texture which would be the optimize size for rendering it
-s32 CSoftwareTexture2::getTextureSizeFromSurfaceSize(s32 size) const
-{
-	s32 ts = 0x01;
-
-	while(ts < size)
-		ts <<= 1;
-
-	if ( ts > size )
-		ts >>= 1;
-
-	//ts = core::s32_min ( ts, 256 );
-	return ts;
 }
 
 

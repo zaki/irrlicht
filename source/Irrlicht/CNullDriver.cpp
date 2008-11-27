@@ -1511,7 +1511,7 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.GouraudShading = attr->getAttributeAsBool("GouraudShading");
 	outMaterial.Lighting = attr->getAttributeAsBool("Lighting");
 	outMaterial.ZWriteEnable = attr->getAttributeAsBool("ZWriteEnable");
-	outMaterial.ZBuffer = attr->getAttributeAsInt("ZBuffer");
+	outMaterial.ZBuffer = (char)attr->getAttributeAsInt("ZBuffer");
 	outMaterial.BackfaceCulling = attr->getAttributeAsBool("BackfaceCulling");
 	outMaterial.FrontfaceCulling = attr->getAttributeAsBool("FrontfaceCulling");
 	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable");

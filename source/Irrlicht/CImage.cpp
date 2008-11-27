@@ -354,7 +354,7 @@ static void RenderLine16_Decal(video::IImage *t,
 	run = dx;
 	while ( run )
 	{
-		*dst = argb;
+		*dst = (u16)argb;
 
 		dst = (u16*) ( (u8*) dst + xInc );	// x += xInc
 		d += m;
@@ -1150,9 +1150,9 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color )
 		case ECF_R8G8B8:
 		{
 			u8* dest = (u8*) Data + ( y * Pitch ) + ( x * 3 );
-			dest[0] = color.getRed();
-			dest[1] = color.getGreen();
-			dest[2] = color.getBlue();
+			dest[0] = (u8)color.getRed();
+			dest[1] = (u8)color.getGreen();
+			dest[2] = (u8)color.getBlue();
 		} break;
 
 		case ECF_A8R8G8B8:
