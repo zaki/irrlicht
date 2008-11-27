@@ -1664,6 +1664,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\COGLESExtensionHandler.h"
+					>
+				</File>
+				<File
 					RelativePath=".\COGLESMaterialRenderer.h"
 					>
 				</File>
