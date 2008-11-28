@@ -889,7 +889,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 				glTexEnvf(GL_POINT_SPRITE_OES,GL_COORD_REPLACE_OES, GL_TRUE);
 #endif
 			glDrawArrays(GL_POINTS, 0, primitiveCount);
-#ifdef GL_point_sprite
+#ifdef GL_OES_point_sprite
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
 			{
 				glDisable(GL_POINT_SPRITE_OES);
@@ -1653,9 +1653,7 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 	// zwrite
 //	if (resetAllRenderStates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
 	{
-		if (material.ZWriteEnable)
-// TODO ogl-es
-//&& (AllowZWriteOnTransparent || !material.isTransparent()))
+		if (material.ZWriteEnable && (AllowZWriteOnTransparent || !material.isTransparent()))
 		{
 			glDepthMask(GL_TRUE);
 		}
@@ -1998,7 +1996,7 @@ void COGLES1Driver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 
 	// The first parts are not correctly working, yet.
 #if 0
-#ifdef GL_stencil_two_side
+#if defined(GL_stencil_two_side) && defined(GL_OES_stencil_wrap)
 	if (FeatureAvailable[IRR_stencil_two_side])
 	{
 		glEnable(GL_STENCIL_TEST_TWO_SIDE);
