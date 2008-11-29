@@ -230,7 +230,7 @@ void CCameraSceneNode::OnRegisterSceneNode()
 
 	f32 dp = tgtv.dotProduct(up);
 
-	if ( core::equals ( fabs ( dp ), 1.f ) )
+	if ( core::equals(fabsf(dp), 1.f) )
 	{
 		up.X += 0.5f;
 	}

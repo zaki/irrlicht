@@ -144,7 +144,7 @@ TAGS:
 
 # Create object files from objective-c code
 %.o:%.mm
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(LINKOBJ:.o=.d)

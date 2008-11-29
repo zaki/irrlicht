@@ -167,8 +167,9 @@ namespace scene
 		//! Adds a skydome scene node. A skydome is a large (half-) sphere with a
 		//! panoramic texture on it and is drawn around the camera position.
 		virtual ISceneNode* addSkyDomeSceneNode(video::ITexture* texture,
-			u32 horiRes, u32 vertRes, f64 texturePercentage,
-			f64 spherePercentage, ISceneNode* parent=0, s32 id=-1);
+			u32 horiRes=16, u32 vertRes=8,
+			f64 texturePercentage=0.9, f64 spherePercentage=2.0,
+			ISceneNode* parent=0, s32 id=-1);
 
 		//! Adds a text scene node, which is able to display
 		//! 2d text at a position in three dimensional space

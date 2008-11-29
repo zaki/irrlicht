@@ -32,8 +32,9 @@ IrrlichtDevice *Device = 0;
 core::stringc StartUpModelFile;
 core::stringw MessageText;
 core::stringw Caption;
-scene::IAnimatedMeshSceneNode* Model = 0;
+scene::ISceneNode* Model = 0;
 scene::ISceneNode* SkyBox = 0;
+bool Octree=false;
 
 scene::ICameraSceneNode* Camera[2] = { 0, 0};
 
@@ -135,11 +136,30 @@ void loadModel(const c8* fn)
 
 	// set default material properties
 
-	Model = Device->getSceneManager()->addAnimatedMeshSceneNode(m);
+	if (Octree)
+		Model = Device->getSceneManager()->addOctTreeSceneNode(m->getMesh(0));
+	else
+	{
+		scene::IAnimatedMeshSceneNode* animModel = Device->getSceneManager()->addAnimatedMeshSceneNode(m);
+		animModel->setAnimationSpeed(30);
+		Model = animModel;
+	}
 	Model->setMaterialFlag(video::EMF_LIGHTING, false);
 //	Model->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 	Model->setDebugDataVisible(scene::EDS_OFF);
-	Model->setAnimationSpeed(30);
+
+	// we need to uncheck the menu entries. would be cool to fake a menu event, but
+	// that's not so simple. so we do it brute force
+	gui::IGUIContextMenu* menu = (gui::IGUIContextMenu*)Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(400, true);
+	if (menu)
+	{
+		menu->setItemChecked(1, false);
+		menu->setItemChecked(2, false);
+		menu->setItemChecked(3, false);
+		menu->setItemChecked(4, false);
+		menu->setItemChecked(5, false);
+		menu->setItemChecked(6, false);
+	}
 }
 
 
@@ -242,41 +262,64 @@ public:
 					case 101: // File -> Set Model Archive
 						env->addFileOpenDialog(L"Please select your game archive/directory");
 						break;
+					case 102: // File -> LoadAsOctree
+						Octree = !Octree;
+						menu->setItemChecked(menu->getSelectedItem(), Octree);
+						break;
 					case 200: // File -> Quit
 						Device->closeDevice();
 						break;
 					case 300: // View -> Skybox
+						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						SkyBox->setVisible(!SkyBox->isVisible());
 						break;
-					case 400: // View -> Debug Information
+					case 401: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem()+1, false);
+						menu->setItemChecked(menu->getSelectedItem()+2, false);
+						menu->setItemChecked(menu->getSelectedItem()+3, false);
+						menu->setItemChecked(menu->getSelectedItem()+4, false);
+						menu->setItemChecked(menu->getSelectedItem()+5, false);
+						menu->setItemChecked(menu->getSelectedItem()+6, false);
 						if (Model)
 							Model->setDebugDataVisible(scene::EDS_OFF);
 						break;
 					case 410: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX));
 						break;
 					case 420: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_NORMALS));
 						break;
 					case 430: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_SKELETON));
 						break;
 					case 440: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_MESH_WIRE_OVERLAY));
 						break;
 					case 450: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_HALF_TRANSPARENCY));
 						break;
 					case 460: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX_BUFFERS));
 						break;
 					case 499: // View -> Debug Information
+						menu->setItemChecked(menu->getSelectedItem()-1, true);
+						menu->setItemChecked(menu->getSelectedItem()-2, true);
+						menu->setItemChecked(menu->getSelectedItem()-3, true);
+						menu->setItemChecked(menu->getSelectedItem()-4, true);
+						menu->setItemChecked(menu->getSelectedItem()-5, true);
+						menu->setItemChecked(menu->getSelectedItem()-6, true);
 						if (Model)
 							Model->setDebugDataVisible(scene::EDS_FULL);
 						break;
@@ -566,16 +609,17 @@ int main(int argc, char* argv[])
 	submenu = menu->getSubMenu(0);
 	submenu->addItem(L"Open Model File & Texture...", 100);
 	submenu->addItem(L"Set Model Archive...", 101);
+	submenu->addItem(L"Load as Octree", 102);
 	submenu->addSeparator();
 	submenu->addItem(L"Quit", 200);
 
 	submenu = menu->getSubMenu(1);
-	submenu->addItem(L"toggle sky box visibility", 300);
-	submenu->addItem(L"toggle model debug information", -1, true, true);
+	submenu->addItem(L"sky box visible", 300, true, false, true);
+	submenu->addItem(L"toggle model debug information", 400, true, true);
 	submenu->addItem(L"model material", -1, true, true );
 
 	submenu = submenu->getSubMenu(1);
-	submenu->addItem(L"Off", 400);
+	submenu->addItem(L"Off", 401);
 	submenu->addItem(L"Bounding Box", 410);
 	submenu->addItem(L"Normals", 420);
 	submenu->addItem(L"Skeleton", 430);

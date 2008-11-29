@@ -321,35 +321,38 @@ namespace scene
 				{
 					case 1:
 					{
-						u8 val;
+						s8 val;
 						if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
 						{
 							os::Printer::log("Error reading heightmap RAW file.");
 							mb->drop();
 							return false;
 						}
+						vertex.Pos.Y=val;
 					}
 					break;
 					case 2:
 					{
-						u16 val;
+						s16 val;
 						if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
 						{
 							os::Printer::log("Error reading heightmap RAW file.");
 							mb->drop();
 							return false;
 						}
+						vertex.Pos.Y=val;
 					}
 					break;
 					case 4:
 					{
-						u32 val;
+						s32 val;
 						if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
 						{
 							os::Printer::log("Error reading heightmap RAW file.");
 							mb->drop();
 							return false;
 						}
+						vertex.Pos.Y=(f32)val;
 					}
 					break;
 				}
@@ -406,7 +409,7 @@ namespace scene
 		RenderBuffer->getIndexBuffer().set_used( TerrainData.PatchCount * TerrainData.PatchCount *
 			TerrainData.CalcPatchSize * TerrainData.CalcPatchSize * 6 );
 
-		u32 endTime = os::Timer::getTime();
+		const u32 endTime = os::Timer::getTime();
 
 		c8 tmp[255];
 		snprintf(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",

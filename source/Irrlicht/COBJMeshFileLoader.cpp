@@ -22,7 +22,9 @@ namespace irr
 namespace scene
 {
 
-//#define _IRR_DEBUG_OBJ_LOADER_
+#ifdef _DEBUG
+#define _IRR_DEBUG_OBJ_LOADER_
+#endif
 
 static const u32 WORD_BUFFER_LENGTH = 512;
 

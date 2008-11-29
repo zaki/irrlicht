@@ -13,6 +13,11 @@ namespace core
 {
 
 	//! 3d vector template class with lots of operators and methods.
+	/** The vector3d class is used in Irrlicht for three main purposes: 
+		1) As a direction vector (most of the methods assume this).
+		2) As a position in 3d space (which is synonymous with a direction vector from the origin to this position).
+		3) To hold three Euler rotations, where X is pitch, Y is yaw and Z is roll.
+	*/
 	template <class T>
 	class vector3d
 	{
@@ -132,17 +137,16 @@ namespace core
 		//! Normalizes the vector.
 		/** In case of the 0 vector the result is still 0, otherwise
 		the length of the vector will be 1.
-		TODO: 64 Bit template doesnt work.. need specialized template
 		\return Reference to this vector after normalization. */
 		vector3d<T>& normalize()
 		{
-			T l = X*X + Y*Y + Z*Z;
-			if (l == 0)
+			f32 length = (f32)(X*X + Y*Y + Z*Z);
+			if (core::equals(length, 0.f))
 				return *this;
-			l = (T) reciprocal_squareroot ( (f32)l );
-			X *= l;
-			Y *= l;
-			Z *= l;
+			length = core::reciprocal_squareroot ( (f32)length );
+			X = (T)(X * length);
+			Y = (T)(Y * length);
+			Z = (T)(Z * length);
 			return *this;
 		}
 
@@ -168,11 +172,11 @@ namespace core
 		void rotateXZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
-			T cs = (T)cos(degrees);
-			T sn = (T)sin(degrees);
+			f64 cs = cos(degrees);
+			f64 sn = sin(degrees);
 			X -= center.X;
 			Z -= center.Z;
-			set(X*cs - Z*sn, Y, X*sn + Z*cs);
+			set((T)(X*cs - Z*sn), Y, (T)(X*sn + Z*cs));
 			X += center.X;
 			Z += center.Z;
 		}
@@ -183,11 +187,11 @@ namespace core
 		void rotateXYBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
-			T cs = (T)cos(degrees);
-			T sn = (T)sin(degrees);
+			f64 cs = cos(degrees);
+			f64 sn = sin(degrees);
 			X -= center.X;
 			Y -= center.Y;
-			set(X*cs - Y*sn, X*sn + Y*cs, Z);
+			set((T)(X*cs - Y*sn), (T)(X*sn + Y*cs), Z);
 			X += center.X;
 			Y += center.Y;
 		}
@@ -198,45 +202,74 @@ namespace core
 		void rotateYZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
 		{
 			degrees *= DEGTORAD64;
-			T cs = (T)cos(degrees);
-			T sn = (T)sin(degrees);
+			f64 cs = cos(degrees);
+			f64 sn = sin(degrees);
 			Z -= center.Z;
 			Y -= center.Y;
-			set(X, Y*cs - Z*sn, Y*sn + Z*cs);
+			set(X, (T)(Y*cs - Z*sn), (T)(Y*sn + Z*cs));
 			Z += center.Z;
 			Y += center.Y;
 		}
 
-		//! Returns interpolated vector.
-		/** \param other Other vector to interpolate between
-		\param d Value between 0.0f and 1.0f. */
-		vector3d<T> getInterpolated(const vector3d<T>& other, const T d) const
+		//! Creates an interpolated vector between this vector and another vector.
+		/** \param other The other vector to interpolate with.
+		\param d Interpolation value between 0.0f (all the other vector) and 1.0f (all this vector).
+		Note that this is the opposite direction of interpolation to getInterpolated_quadratic()
+		\return An interpolated vector.  This vector is not modified. */
+		vector3d<T> getInterpolated(const vector3d<T>& other, f64 d) const
 		{
-			const T inv = (T) 1.0 - d;
-			return vector3d<T>(other.X*inv + X*d, other.Y*inv + Y*d, other.Z*inv + Z*d);
+			const f64 inv = 1.0 - d;
+			return vector3d<T>((T)(other.X*inv + X*d), (T)(other.Y*inv + Y*d), (T)(other.Z*inv + Z*d));
 		}
 
-		//! Returns interpolated vector. ( quadratic )
-		/** \param v2 Second vector to interpolate with
-		\param v3 Third vector to interpolate with
-		\param d Value between 0.0f and 1.0f. */
-		vector3d<T> getInterpolated_quadratic(const vector3d<T>& v2, const vector3d<T>& v3, const T d) const
+		//! Creates a quadratically interpolated vector between this and two other vectors.
+		/** \param v2 Second vector to interpolate with.
+		\param v3 Third vector to interpolate with (maximum at 1.0f)
+		\param d Interpolation value between 0.0f (all this vector) and 1.0f (all the 3rd vector).
+		Note that this is the opposite direction of interpolation to getInterpolated() and interpolate()
+		\return An interpolated vector. This vector is not modified. */
+		vector3d<T> getInterpolated_quadratic(const vector3d<T>& v2, const vector3d<T>& v3, f64 d) const
 		{
 			// this*(1-d)*(1-d) + 2 * v2 * (1-d) + v3 * d * d;
-			const T inv = (T) 1.0 - d;
-			const T mul0 = inv * inv;
-			const T mul1 = (T) 2.0 * d * inv;
-			const T mul2 = d * d;
+			const f64 inv = (T) 1.0 - d;
+			const f64 mul0 = inv * inv;
+			const f64 mul1 = (T) 2.0 * d * inv;
+			const f64 mul2 = d * d;
 
-			return vector3d<T> ( X * mul0 + v2.X * mul1 + v3.X * mul2,
-					Y * mul0 + v2.Y * mul1 + v3.Y * mul2,
-					Z * mul0 + v2.Z * mul1 + v3.Z * mul2);
+			return vector3d<T> ((T)(X * mul0 + v2.X * mul1 + v3.X * mul2),
+					(T)(Y * mul0 + v2.Y * mul1 + v3.Y * mul2),
+					(T)(Z * mul0 + v2.Z * mul1 + v3.Z * mul2));
 		}
 
-		//! Gets the Y and Z rotations of a vector.
-		/** Thanks to Arras on the Irrlicht forums for this method.
-		\return A vector representing the rotation in degrees of
-		this vector. The Z component of the vector will always be 0. */
+		//! Sets this vector to the linearly interpolated vector between a and b.
+		/** \param a first vector to interpolate with, maximum at 1.0f
+		\param b second vector to interpolate with, maximum at 0.0f
+		\param d Interpolation value between 0.0f (all vector b) and 1.0f (all vector a)
+		Note that this is the opposite direction of interpolation to getInterpolated_quadratic()
+		*/
+		vector3d<T>& interpolate(const vector3d<T>& a, const vector3d<T>& b, f64 d)
+		{
+			X = (T)((f64)b.X + ( ( a.X - b.X ) * d ));
+			Y = (T)((f64)b.Y + ( ( a.Y - b.Y ) * d ));
+			Z = (T)((f64)b.Z + ( ( a.Z - b.Z ) * d ));
+			return *this;
+		}
+
+
+		//! Get the rotations that would make a (0,0,1) direction vector point in the same direction as this direction vector.
+		/** Thanks to Arras on the Irrlicht forums for this method.  This utility method is very useful for
+		orienting scene nodes towards specific targets.  For example, if this vector represents the difference
+		between two scene nodes, then applying the result of getHorizontalAngle() to one scene node will point
+		it at the other one.
+		Example code:
+		// Where target and seeker are of type ISceneNode*
+		const vector3df toTarget(target->getAbsolutePosition() - seeker->getAbsolutePosition());
+		const vector3df requiredRotation = toTarget.getHorizontalAngle();
+		seeker->setRotation(requiredRotation); 
+
+		\return A rotation vector containing the X (pitch) and Y (raw) rotations (in degrees) that when applied to a 
+		+Z (e.g. 0, 0, 1) direction vector would make it point in the same direction as this vector. The Z (roll) rotation 
+		is always 0, since two Euler rotations are sufficient to point in any given direction. */
 		vector3d<T> getHorizontalAngle() const
 		{
 			vector3d<T> angle;
@@ -261,15 +294,13 @@ namespace core
 		}
 
 		//! Builds a direction vector from (this) rotation vector.
-		/** This vector is assumed to hold 3 Euler angle rotations, in degrees.
-		The implementation performs the same calculations as using a matrix to
-		do the rotation.
-		\param[in] forwards  The direction representing "forwards" which will be
-		rotated by this vector.  If you do not provide a
-		direction, then the positive Z axis (0, 0, 1) will
-		be assumed to be fowards.
-		\return A vector calculated by rotating the forwards direction by
-		the 3 Euler angles that this vector is assumed to represent. */
+		/** This vector is assumed to be a rotation vector composed of 3 Euler angle rotations, in degrees.
+		The implementation performs the same calculations as using a matrix to do the rotation.
+
+		\param[in] forwards  The direction representing "forwards" which will be rotated by this vector. 
+		If you do not provide a direction, then the +Z axis (0, 0, 1) will be assumed to be forwards.
+		\return A direction vector calculated by rotating the forwards direction by the 3 Euler angles 
+		(in degrees) represented by this vector. */
 		vector3d<T> rotationToDirection(const vector3d<T> & forwards = vector3d<T>(0, 0, 1)) const
 		{
 			const f64 cr = cos( core::DEGTORAD64 * X );

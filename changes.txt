@@ -1,5 +1,7 @@
 Changes in version 1.5 (...12.2008)
 
+ - Added a test suite in the /tests directory.  This can be used to perform regression tests, and should be updated with new tests to verify fixes or validate new features.
+
  - Changed the preferred way of altering light node's radius: Use the new member methods of ILightSceneNode instead of directly modifying the SLight structure.
 
  - Changed the initial attenuation back to (0,1/radius,0). To override this value simply change the attenuation in the SLight (lightnode->getLightData().Attenuation.set(x,y,z))
