@@ -16,7 +16,7 @@ namespace scene
 	struct SSharedMeshBuffer : public IMeshBuffer
 	{
 		//! constructor
-		SSharedMeshBuffer() : IMeshBuffer(), ChangedID_Vertex(1), ChangedID_Index(1), MappingHint(Never), Vertices(0)
+		SSharedMeshBuffer() : IMeshBuffer(), ChangedID_Vertex(1), ChangedID_Index(1), Vertices(0), MappingHint(EHM_NEVER)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");
@@ -141,9 +141,9 @@ namespace scene
 		//! flags the mesh as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
 		{
-			if (E_BUFFER_TYPE Buffer==EBT_VERTEX_AND_INDEX || E_BUFFER_TYPE Buffer==EBT_VERTEX)
+			if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_VERTEX)
 				++ChangedID_Vertex;
-			if (E_BUFFER_TYPE Buffer==EBT_VERTEX_AND_INDEX || E_BUFFER_TYPE Buffer==EBT_INDEX)
+			if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_INDEX)
 				++ChangedID_Index;
 		}
 

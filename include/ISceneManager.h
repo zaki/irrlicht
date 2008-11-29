@@ -47,7 +47,7 @@ namespace scene
 
 	//! Enumeration for render passes.
 	/** A parameter passed to the registerNodeForRendering() method of the ISceneManager,
-	specifying when the mode wants to be drawn in relation to the other nodes. */
+	specifying when the node wants to be drawn in relation to the other nodes. */
 	enum E_SCENE_NODE_RENDER_PASS
 	{
 		//! Camera pass. The active view is set up here. The very first pass.
@@ -670,8 +670,9 @@ namespace scene
 		 \return Returns a pointer to the sky dome if successful, otherwise NULL.
 		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSkyDomeSceneNode(video::ITexture* texture,
-			u32 horiRes, u32 vertRes, f64 texturePercentage, f64 spherePercentage,
-			ISceneNode* parent = 0, s32 id=-1) = 0;
+			u32 horiRes=16, u32 vertRes=8,
+			f64 texturePercentage=0.9, f64 spherePercentage=2.0,
+			ISceneNode* parent=0, s32 id=-1) = 0;
 
 		//! Adds a particle system scene node to the scene graph.
 		/** \param withDefaultEmitter: Creates a default working point emitter
