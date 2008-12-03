@@ -21,8 +21,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 		SKeyMap* keyMapArray, u32 keyMapSize, bool noVerticalMovement)
 : CursorControl(cursorControl), MaxVerticalAngle(88.0f),
 	MoveSpeed(moveSpeed/1000.0f), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
-	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement),
-	KeyMapArray(keyMapArray), KeyMapSize(keyMapSize)
+	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNodeAnimatorFPS");
@@ -34,7 +33,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	allKeysUp();
 
 	// create key map
-	if (!KeyMapArray || !KeyMapSize)
+	if (!keyMapArray || !keyMapSize)
 	{
 		// create default key map
 		KeyMap.push_back(SCamKeyMap(EKA_MOVE_FORWARD, irr::KEY_UP));
@@ -46,7 +45,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	else
 	{
 		// create custom key map
-		setKeyMap(KeyMapArray, KeyMapSize);
+		setKeyMap(keyMapArray, keyMapSize);
 	}
 }
 
@@ -272,7 +271,6 @@ void CSceneNodeAnimatorCameraFPS::setKeyMap(SKeyMap *map, u32 count)
 {
 	// clear the keymap
 	KeyMap.clear();
-	KeyMapArray=map;
 
 	// add actions
 	for (u32 i=0; i<count; ++i)
@@ -295,19 +293,29 @@ void CSceneNodeAnimatorCameraFPS::setKeyMap(SKeyMap *map, u32 count)
 	}
 }
 
+
 //! Sets whether vertical movement should be allowed.
 void CSceneNodeAnimatorCameraFPS::setVerticalMovement(bool allow)
 {
 	NoVerticalMovement = !allow;
 }
 
+
 ISceneNodeAnimator* CSceneNodeAnimatorCameraFPS::createClone(ISceneNode* node, ISceneManager* newManager)
 {
 	CSceneNodeAnimatorCameraFPS * newAnimator = 
 		new CSceneNodeAnimatorCameraFPS(CursorControl,	RotateSpeed, (MoveSpeed * 1000.0f), JumpSpeed,
-											KeyMapArray, KeyMapSize, NoVerticalMovement);
+											0, 0, NoVerticalMovement);
+	newAnimator->setKeyMap(KeyMap);
 	return newAnimator;
 }
+
+
+void CSceneNodeAnimatorCameraFPS::setKeyMap(const core::array<SCamKeyMap>& keymap)
+{
+	KeyMap=keymap;
+}
+
 
 } // namespace scene
 } // namespace irr

@@ -160,6 +160,9 @@ void loadModel(const c8* fn)
 		menu->setItemChecked(5, false);
 		menu->setItemChecked(6, false);
 	}
+	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(901, true)->setText(L"1.0");
+	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(902, true)->setText(L"1.0");
+	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(903, true)->setText(L"1.0");
 }
 
 
@@ -178,33 +181,42 @@ void createToolBox()
 		e->remove();
 
 	// create the toolbox window
-	IGUIWindow* wnd = env->addWindow(core::rect<s32>(600,25,800,480),
+	IGUIWindow* wnd = env->addWindow(core::rect<s32>(600,45,800,480),
 		false, L"Toolset", 0, 5000);
 
 	// create tab control and tabs
 	IGUITabControl* tab = env->addTabControl(
 		core::rect<s32>(2,20,800-602,480-7), wnd, true, true);
 
-	IGUITab* t1 = tab->addTab(L"Scale");
+	IGUITab* t1 = tab->addTab(L"Config");
 
 	// add some edit boxes and a button to tab one
-	env->addEditBox(L"1.0", core::rect<s32>(40,50,130,70), true, t1, 901);
-	env->addEditBox(L"1.0", core::rect<s32>(40,80,130,100), true, t1, 902);
-	env->addEditBox(L"1.0", core::rect<s32>(40,110,130,130), true, t1, 903);
+	env->addStaticText(L"Scale:",
+			core::rect<s32>(10,20,150,45), false, false, t1);
+	env->addStaticText(L"X:", core::rect<s32>(22,48,40,66), false, false, t1);
+	env->addEditBox(L"1.0", core::rect<s32>(40,46,130,66), true, t1, 901);
+	env->addStaticText(L"Y:", core::rect<s32>(22,82,40,100), false, false, t1);
+	env->addEditBox(L"1.0", core::rect<s32>(40,76,130,96), true, t1, 902);
+	env->addStaticText(L"Z:", core::rect<s32>(22,108,40,126), false, false, t1);
+	env->addEditBox(L"1.0", core::rect<s32>(40,106,130,126), true, t1, 903);
 
-	env->addButton(core::rect<s32>(10,150,100,190), t1, 1101, L"set");
+	env->addButton(core::rect<s32>(10,134,85,165), t1, 1101, L"Set");
 
-	// add senseless checkbox
-	env->addCheckBox(true, core::rect<s32>(10,220,200,240), t1, -1,
-			L"Senseless Checkbox");
-
-	// add undocumented transparent control
-	env->addStaticText(L"Transparent Control:",
-			core::rect<s32>(10,240,150,260), true, false, t1);
+	// add transparency control
+	env->addStaticText(L"GUI Transparency Control:",
+			core::rect<s32>(10,200,150,225), true, false, t1);
 	IGUIScrollBar* scrollbar = env->addScrollBar(true,
-			core::rect<s32>(10,260,150,275), t1, 104);
+			core::rect<s32>(10,225,150,240), t1, 104);
 	scrollbar->setMax(255);
 	scrollbar->setPos(255);
+
+	// add framerate control
+	env->addStaticText(L"Framerate:",
+			core::rect<s32>(10,240,150,265), true, false, t1);
+	scrollbar = env->addScrollBar(true,
+			core::rect<s32>(10,265,150,280), t1, 105);
+	scrollbar->setMax(1000);
+	scrollbar->setPos(30);
 
 	// bring irrlicht engine logo to front, because it
 	// now may be below the newly created toolbox
@@ -225,18 +237,29 @@ public:
 	{
 		// Escape swaps Camera Input
 		if (event.EventType == EET_KEY_INPUT_EVENT &&
-			event.KeyInput.Key == irr::KEY_ESCAPE &&
 			event.KeyInput.PressedDown == false)
 		{
-			if (Device)
+			if (event.KeyInput.Key == irr::KEY_ESCAPE)
 			{
-				scene::ICameraSceneNode * camera =
-					Device->getSceneManager()->getActiveCamera();
-				if (camera)
+				if (Device)
 				{
-					camera->setInputReceiverEnabled( !camera->isInputReceiverEnabled() );
+					scene::ICameraSceneNode * camera =
+						Device->getSceneManager()->getActiveCamera();
+					if (camera)
+					{
+						camera->setInputReceiverEnabled( !camera->isInputReceiverEnabled() );
+					}
+					return true;
 				}
-				return true;
+			}
+			else if (event.KeyInput.Key == irr::KEY_F1)
+			{
+				if (Device)
+				{
+					IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(2001);
+					if (elem)
+						elem->setVisible(!elem->isVisible());
+				}
 			}
 		}
 
@@ -364,13 +387,19 @@ public:
 				// control skin transparency
 				if (id == 104)
 				{
-					s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+					const s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
 					for (s32 i=0; i<irr::gui::EGDC_COUNT ; ++i)
 					{
 						video::SColor col = env->getSkin()->getColor((EGUI_DEFAULT_COLOR)i);
 						col.setAlpha(pos);
 						env->getSkin()->setColor((EGUI_DEFAULT_COLOR)i, col);
 					}
+				}
+				else if (id == 105)
+				{
+					const s32 pos = ((IGUIScrollBar*)event.GUIEvent.Caller)->getPos();
+					if (scene::ESNT_ANIMATED_MESH == Model->getType())
+						((scene::IAnimatedMeshSceneNode*)Model)->setAnimationSpeed((f32)pos);
 				}
 				break;
 
@@ -695,6 +724,10 @@ int main(int argc, char* argv[])
 	IGUIStaticText* fpstext = env->addStaticText(L"",
 			core::rect<s32>(400,4,570,23), true, false, bar);
 
+	IGUIStaticText* postext = env->addStaticText(L"",
+			core::rect<s32>(10,50,470,80),false, false, 0, 2001);
+	postext->setVisible(false);
+
 	// set window caption
 
 	Caption += " - [";
@@ -728,8 +761,10 @@ int main(int argc, char* argv[])
 	// add a camera scene node
 	Camera[0] = smgr->addCameraSceneNodeMaya();
 	Camera[0]->setFarValue(20000.f);
+	Camera[0]->setPosition(core::vector3df(0,0,-100));
 	Camera[1] = smgr->addCameraSceneNodeFPS();
 	Camera[1]->setFarValue(20000.f);
+	Camera[1]->setPosition(core::vector3df(0,0,-100));
 
 	setActiveCamera(Camera[0]);
 
@@ -760,6 +795,21 @@ int main(int argc, char* argv[])
 			str += L" Tris: ";
 			str.append(core::stringw(driver->getPrimitiveCountDrawn()));
 			fpstext->setText(str.c_str());
+
+			scene::ICameraSceneNode* cam = Device->getSceneManager()->getActiveCamera();
+			str = L"Pos: ";
+			str.append(core::stringw(cam->getPosition().X));
+			str += L" ";
+			str.append(core::stringw(cam->getPosition().Y));
+			str += L" ";
+			str.append(core::stringw(cam->getPosition().Z));
+			str += L" Tgt: ";
+			str.append(core::stringw(cam->getTarget().X));
+			str += L" ";
+			str.append(core::stringw(cam->getTarget().Y));
+			str += L" ";
+			str.append(core::stringw(cam->getTarget().Z));
+			postext->setText(str.c_str());
 		}
 		else
 			Device->yield();

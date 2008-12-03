@@ -1,4 +1,5 @@
-// This test validates the last frame of a non-looped MD2 animation
+// Copyright (C) 2008 Colin MacDonald
+// No rights reserved: this software is in the public domain.
 
 #include "irrlicht.h"
 #include "testUtils.h"
@@ -11,9 +12,12 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
+// Tests MD2 animations.
+/** At the moment, this just verifies that the last frame of the animation produces the expected bitmap. */
 bool md2Animation(void)
 {
-	IrrlichtDevice *device = createDevice( EDT_OPENGL, dimension2d<s32>(640, 480));
+	// Use EDT_BURNINGSVIDEO since it is not dependent on (e.g.) OpenGL driver versions.
+	IrrlichtDevice *device = createDevice( EDT_BURNINGSVIDEO, dimension2d<s32>(320, 240), 32);
 	assert(device);
 	if (!device)
 		return false;
@@ -39,26 +43,19 @@ bool md2Animation(void)
 
 			(void)smgr->addCameraSceneNode();
 
-			// We could just jump to the last frame, but where's the fun in that? 
-			// Let's watch the animation, doing the initial run() first so that we
-			// don't miss any of the fun.
-			device->run();
-
+			// Just jump to the last frame since that's all we're interested in.
 			node->setMD2Animation(EMAT_DEATH_FALLBACK);
-			const s32 endFrame = node->getEndFrame();
-
-			while((s32)node->getFrameNr() < endFrame)
-			{
-				device->run();
-				driver->beginScene(true, true, SColor(255, 255, 255, 0));
-				smgr->drawAll();
-				driver->endScene();
-			}
+			node->setCurrentFrame((f32)(node->getEndFrame()));
+			device->run();
+			driver->beginScene(true, true, SColor(255, 255, 255, 0));
+			smgr->drawAll();
+			driver->endScene();
 		}
 	}
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-md2Animation.jpg");
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-md2Animation.png");
 	device->drop();
 
 	return result;
 }
+

@@ -533,13 +533,14 @@ void CDemo::loadSceneData()
 	campFire->setPosition(core::vector3df(100,120,600));
 	campFire->setScale(core::vector3df(2,2,2));
 
-	campFire->setParticleSize(core::dimension2d<f32>(20.0f, 10.0f));
 
 	scene::IParticleEmitter* em = campFire->createBoxEmitter(
 		core::aabbox3d<f32>(-7,0,-7,7,1,7),
 		core::vector3df(0.0f,0.06f,0.0f),
 		80,100, video::SColor(0,255,255,255),video::SColor(0,255,255,255), 800,2000);
 
+	em->setMinStartSize(core::dimension2d<f32>(20.0f, 10.0f));
+	em->setMaxStartSize(core::dimension2d<f32>(20.0f, 10.0f));
 	campFire->setEmitter(em);
 	em->drop();
 

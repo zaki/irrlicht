@@ -6,7 +6,7 @@ NDEBUG = 1;
 PROFILE = 1;
 
 APPLICATION_NAME = 'Irrlicht';
-LIBRARIES = ['gdi32', 'opengl32', 'd3dx9d'];
+LIBRARIES = ['gdi32', 'opengl32', 'd3dx9d', 'winmm'];
 if USE_GCC==1 and PROFILE==1:
 	LIBRARIES += ['gmon'];
 

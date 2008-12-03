@@ -1,5 +1,7 @@
-// Test the accuracy and speed of 
+// Copyright (C) 2008 Colin MacDonald
+// No rights reserved: this software is in the public domain.
 
+#include "testUtils.h"
 #include "irrlicht.h"
 #include <assert.h>
 #include <float.h>
@@ -8,6 +10,7 @@
 using namespace irr;
 using namespace core;
 
+//! This was an older Irrlicht implementation, tested against for reference.
 static inline u32 old_strtol10(const char* in, const char** out=0)
 {
 	u32 value = 0;
@@ -22,9 +25,7 @@ static inline u32 old_strtol10(const char* in, const char** out=0)
 	return value;
 }
 
-//! Provides a fast function for converting a string into a float,
-//! about 6 times faster than atof in win32.
-// If you find any bugs, please send them to me, niko (at) irrlicht3d.org.
+//! This was an older Irrlicht implementation, tested against for reference.
 static inline const char* old_fast_atof_move( const char* c, float& out)
 {
 	bool inv = false;
@@ -75,6 +76,7 @@ static inline const char* old_fast_atof_move( const char* c, float& out)
 	return c;
 }
 
+//! This was an older Irrlicht implementation, tested against for reference.
 static inline float old_fast_atof(const char* c)
 {
 	float ret;
@@ -89,17 +91,18 @@ static bool testCalculation(const char * valueString)
 	const f32 oldFastValue = old_fast_atof(valueString);
 	const f32 atofValue = (f32)atof(valueString);
 
-	(void)printf("\n String '%s'\n New fast %.40f\n Old fast %.40f\n     atof %.40f\n",
+	logTestString("\n String '%s'\n New fast %.40f\n Old fast %.40f\n     atof %.40f\n",
 		valueString, newFastValue, oldFastValue, atofValue);
 
 	bool accurate = fabs(newFastValue - atofValue) <= fabs(oldFastValue - atofValue);
 
 	if(!accurate)
-		(void)printf("*** ERROR - less accurate than old method ***\n\n");
+		logTestString("*** ERROR - less accurate than old method ***\n\n");
 
 	return accurate;
 }
 
+//! Test both the accuracy and speed of Irrlicht's fast_atof() implementation.
 bool fast_atof(void)
 {
 	bool accurate = true;
@@ -132,7 +135,7 @@ bool fast_atof(void)
 
 	if(!accurate)
 	{
-		(void)printf("Calculation is not accurate, so the speed is irrelevant\n");
+		logTestString("Calculation is not accurate, so the speed is irrelevant\n");
 		return false;
 	}
 
@@ -161,13 +164,13 @@ bool fast_atof(void)
 		value = old_fast_atof("-340282346638528859811704183484516925440.000000");
 	const u32 oldFastAtofTime = timer->getRealTime() - then;
 
-	(void)printf("         atof time = %d\n    fast_atof Time = %d\nold fast_atof time = %d\n",
+	logTestString("         atof time = %d\n    fast_atof Time = %d\nold fast_atof time = %d\n",
 		atofTime, fastAtofTime, oldFastAtofTime);
 
 	device->drop();
 	if(fastAtofTime > atofTime)
 	{
-		(void)printf("The fast method is slower than atof()\n");
+		logTestString("The fast method is slower than atof()\n");
 		return false;
 	}
 

@@ -667,7 +667,7 @@ namespace video
 		Specifies where fog starts.
 		\param end Only used in linear fog mode (linearFog=true).
 		Specifies where fog ends.
-		\param density Only used in expotential fog mode
+		\param density Only used in exponential fog mode
 		(linearFog=false). Must be a value between 0 and 1.
 		\param pixelFog Set this to false for vertex fog, and true if
 		you want per-pixel fog.

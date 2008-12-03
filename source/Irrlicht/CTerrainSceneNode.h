@@ -55,7 +55,7 @@ namespace scene
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
 		virtual bool loadHeightMapRAW(io::IReadFile* file, s32 bitsPerPixel = 16,
-			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 );
+			bool signedData=true, bool floatVals=false, s32 width=0, video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 );
 
 		//! Returns the material based on the zero based index i. This scene node only uses
 		//! 1 material.

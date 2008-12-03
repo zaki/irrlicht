@@ -648,10 +648,10 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 		rotateSpeed, zoomSpeed, translationSpeed);
 
 	node->addAnimator(anm);
+	setActiveCamera(node);
+
 	anm->drop();
 	node->drop();
-
-	setActiveCamera(node);
 
 	return node;
 }
@@ -674,11 +674,10 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
 	node->bindTargetAndRotation(true);
 
 	node->addAnimator(anm);
-	anm->drop();
-	node->drop();
-
 	setActiveCamera(node);
 
+	anm->drop();
+	node->drop();
 
 	return node;
 }

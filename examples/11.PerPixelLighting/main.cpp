@@ -414,8 +414,6 @@ int main()
 	scene::IParticleSystemSceneNode* ps =
 		smgr->addParticleSystemSceneNode(false, light2);
 
-	ps->setParticleSize(core::dimension2d<f32>(30.0f, 40.0f));
-
 	// create and set emitter
 	scene::IParticleEmitter* em = ps->createBoxEmitter(
 		core::aabbox3d<f32>(-3,0,-3,3,1,3),
@@ -423,6 +421,9 @@ int main()
 		80,100,
 		video::SColor(0,255,255,255), video::SColor(0,255,255,255),
 		400,1100);
+	em->setMinStartSize(core::dimension2d<f32>(30.0f, 40.0f));
+	em->setMaxStartSize(core::dimension2d<f32>(30.0f, 40.0f));
+
 	ps->setEmitter(em);
 	em->drop();
 

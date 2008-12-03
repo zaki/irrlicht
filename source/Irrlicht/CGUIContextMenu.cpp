@@ -378,7 +378,7 @@ bool CGUIContextMenu::highlight(const core::position2d<s32>& p, bool canOpenSubM
 				for (s32 j=0; j<(s32)Items.size(); ++j)
 					if (Items[j].SubMenu)
 					{
-						if ( j == i && canOpenSubMenu )
+						if ( j == i && canOpenSubMenu && Items[j].Enabled )
 							Items[j].SubMenu->setVisible(true);
 						else if ( j != i )
 							Items[j].SubMenu->setVisible(false);

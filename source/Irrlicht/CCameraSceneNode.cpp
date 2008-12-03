@@ -235,8 +235,8 @@ void CCameraSceneNode::OnRegisterSceneNode()
 		up.X += 0.5f;
 	}
 
-	ViewArea.Matrices [ video::ETS_VIEW ].buildCameraLookAtMatrixLH(pos, Target, up);
-	ViewArea.setTransformState ( video::ETS_VIEW );
+	ViewArea.Matrices[video::ETS_VIEW].buildCameraLookAtMatrixLH(pos, Target, up);
+	ViewArea.setTransformState(video::ETS_VIEW);
 	recalculateViewArea();
 
 	if ( SceneManager->getActiveCamera () == this )
@@ -275,7 +275,7 @@ const SViewFrustum* CCameraSceneNode::getViewFrustum() const
 void CCameraSceneNode::recalculateViewArea()
 {
 	ViewArea.cameraPosition = getAbsolutePosition();
-	ViewArea.setFrom ( ViewArea.Matrices [ SViewFrustum::ETS_VIEW_PROJECTION_3 ] );
+	ViewArea.setFrom(ViewArea.Matrices[SViewFrustum::ETS_VIEW_PROJECTION_3]);
 }
 
 
@@ -317,6 +317,7 @@ void CCameraSceneNode::bindTargetAndRotation(bool bound)
 {
 	TargetAndRotationAreBound = bound;
 }
+
 
 //! Gets the binding between the camera's rotation and target.
 bool CCameraSceneNode::getTargetAndRotationBinding(void) const

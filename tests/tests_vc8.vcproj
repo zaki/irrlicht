@@ -178,7 +178,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\exports.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\fast_atof.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\guiDisabledMenu.cpp"
 				>
 			</File>
 			<File

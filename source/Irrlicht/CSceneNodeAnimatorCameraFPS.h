@@ -77,8 +77,6 @@ namespace scene
 		this. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
-	private:
-
 		struct SCamKeyMap
 		{
 			SCamKeyMap() {};
@@ -88,6 +86,12 @@ namespace scene
 			EKEY_CODE keycode;
 		};
 
+		//! Sets the keyboard mapping for this animator
+		/** Helper function for the clone method.
+		\param keymap the new keymap array */
+		void setKeyMap(const core::array<SCamKeyMap>& keymap);
+
+	private:
 		void allKeysUp();
 
 		gui::ICursorControl *CursorControl;
@@ -108,9 +112,6 @@ namespace scene
 
 		bool firstUpdate;
 		bool NoVerticalMovement;
-		
-		SKeyMap* KeyMapArray;
-		u32 KeyMapSize;
 	};
 
 } // end namespace scene

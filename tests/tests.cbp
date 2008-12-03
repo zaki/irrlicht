@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="tests" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="..\bin\Win32-gcc\tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="..\bin\Win32-gcc\tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output="Release\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="..\include" />
+		</Compiler>
+		<Linker>
+			<Add library="Irrlicht" />
+			<Add directory="..\bin\Win32-gcc" />
+		</Linker>
+		<Unit filename="disambiguateTextures.cpp" />
+		<Unit filename="drawPixel.cpp" />
+		<Unit filename="exports.cpp" />
+		<Unit filename="fast_atof.cpp" />
+		<Unit filename="guiDisabledMenu.cpp" />
+		<Unit filename="line2dIntersectWith.cpp" />
+		<Unit filename="main.cpp" />
+		<Unit filename="md2Animation.cpp" />
+		<Unit filename="planeMatrix.cpp" />
+		<Unit filename="testUtils.cpp" />
+		<Unit filename="testVector2d.cpp" />
+		<Unit filename="testVector3d.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
