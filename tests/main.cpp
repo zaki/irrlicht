@@ -1,8 +1,10 @@
 // This is the entry point for the Irrlicht test suite.
 #define _CRT_SECURE_NO_WARNINGS
 
+#include "testUtils.h"
 #include <stdio.h>
 #include <time.h>
+#include <assert.h>
 
 // This is an MSVC pragma to link against the Irrlicht library.
 // Other builds must link against it in the project files.
@@ -17,10 +19,11 @@
  */
 #define RUN_TEST(testEntryPoint)\
 	extern bool testEntryPoint(void);\
+	logTestString("\nStarting test '" #testEntryPoint "'\n");\
 	if(!testEntryPoint()) \
 	{\
 		(void)printf("\n\n\n******** Test failure ********\nTest '" #testEntryPoint "' failed\n"\
-		"******** Test failure ********\n\nPress return to continue\n\a\a\a");\
+		"******** Test failure ********\n\nPress return to continue\n");\
 		(void)getc(stdin);\
 		fails++;\
 	}
@@ -29,16 +32,21 @@
 /** \return The number of test that failed, i.e. 0 is success. */
 int main()
 {
+	bool logFileOpened = openTestLog();
+	assert(logFileOpened);
+
 	int fails = 0;
 
+	RUN_TEST(disambiguateTextures); // Run this first, since it validates the WD.
+	RUN_TEST(exports);
 	RUN_TEST(testVector3d);
 	RUN_TEST(testVector2d);
 	RUN_TEST(planeMatrix);
 	RUN_TEST(fast_atof);
 	RUN_TEST(line2dIntersectWith);
-	RUN_TEST(disambiguateTextures);
 	RUN_TEST(drawPixel);
 	RUN_TEST(md2Animation);
+	RUN_TEST(guiDisabledMenu);
 
 	(void)printf("\nTests finished. %d test%s failed.\n", fails, 1 == fails ? "" : "s");
 	

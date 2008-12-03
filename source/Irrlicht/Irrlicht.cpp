@@ -41,7 +41,7 @@ namespace irr
 
 namespace core
 {
-	IRRLICHT_API const matrix4 IdentityMatrix(matrix4::EM4CONST_IDENTITY);
+	const matrix4 IdentityMatrix(matrix4::EM4CONST_IDENTITY);
 }
 } // end namespace irr
 

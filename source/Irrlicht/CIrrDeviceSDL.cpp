@@ -83,6 +83,8 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	// enable key to character translation
 	SDL_EnableUNICODE(1);
 
+	(void)SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+	
 	if ( CreationParams.Fullscreen )
 		SDL_Flags |= SDL_FULLSCREEN;
 	if (CreationParams.DriverType == video::EDT_OPENGL)

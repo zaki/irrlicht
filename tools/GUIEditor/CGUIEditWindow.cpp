@@ -13,12 +13,10 @@ using namespace gui;
 
 //! constructor
 CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rectangle, IGUIElement *parent)
-		 : IGUIWindow(environment, parent, -1, rectangle),
-		 Dragging(false), Resizing(false), SelectedElement(0), 
-		 AttribEditor(0), OptionEditor(0), EnvEditor(0)
-
+		: IGUIWindow(environment, parent, -1, rectangle),
+		Dragging(false), Resizing(false), SelectedElement(0),
+		AttribEditor(0), OptionEditor(0), EnvEditor(0)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CGUIEditWindow");
 	#endif
@@ -41,7 +39,7 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	s32 th = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 
 	setRelativePosition(core::rect<s32>(50,50,250,500));
-	setMinSize( core::dimension2di(200,200));
+	setMinSize(core::dimension2di(200,200));
 
 	IGUITabControl *TabControl = environment->addTabControl(core::rect<s32>(1,th+5,199,449), this, false, true);
 	TabControl->setSubElement(true);
@@ -58,7 +56,7 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	OptionEditor = (CGUIAttributeEditor*) environment->addGUIElement("attributeEditor", EditorTab);
 	OptionEditor->grab();
 	OptionEditor->setID(EGUIEDCE_OPTION_EDITOR);
-	OptionEditor->setRelativePosition(core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
+	OptionEditor->setRelativePositionProportional(core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
 	OptionEditor->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 
 	if (Parent && Parent->getParent() == Environment->getRootGUIElement())
@@ -67,7 +65,7 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 		EnvEditor = (CGUIAttributeEditor*) environment->addGUIElement("attributeEditor", EnvTab);
 		EnvEditor->grab();
 		EnvEditor->setID(EGUIEDCE_ENV_EDITOR);
-		EnvEditor->setRelativePosition(core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
+		EnvEditor->setRelativePositionProportional(core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
 		EnvEditor->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	}
 	IGUITab* ElementTab = TabControl->addTab(L"Element");
@@ -75,9 +73,9 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	AttribEditor = (CGUIAttributeEditor*) environment->addGUIElement("attributeEditor", ElementTab);
 	AttribEditor->grab();
 	AttribEditor->setID(EGUIEDCE_ATTRIB_EDITOR);
-	AttribEditor->setRelativePosition( core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
+	AttribEditor->setRelativePositionProportional(core::rect<f32>(0.0f, 0.0f, 1.0f, 1.0f));
 	AttribEditor->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
-	
+
 	ResizeButton = environment->addButton(core::rect<s32>(199-th,449-th,199,449), this);
 	ResizeButton->setDrawBorder(false);
 	ResizeButton->setEnabled(false);
@@ -87,8 +85,8 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	ResizeButton->grab();
 	ResizeButton->setSubElement(true);
 	ResizeButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
-
 }
+
 
 //! destructor
 CGUIEditWindow::~CGUIEditWindow()
@@ -140,7 +138,6 @@ void CGUIEditWindow::setSelectedElement(IGUIElement *sel)
 		SelectedElement->serializeAttributes(Attribs);
 
 	AttribEditor->refreshAttribs();
-
 }
 
 //! draws the element and its children.
@@ -197,7 +194,7 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 		{
 		case EMIE_LMOUSE_PRESSED_DOWN:
 		{
-			
+
 			DragStart.X = event.MouseInput.X;
 			DragStart.Y = event.MouseInput.Y;
 
@@ -250,7 +247,7 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 				else if (Resizing)
 				{
 					core::position2di dp = RelativeRect.LowerRightCorner + diff;
-					setRelativePosition( core::rect<s32>(RelativeRect.UpperLeftCorner, dp));
+					setRelativePosition(core::rect<s32>(RelativeRect.UpperLeftCorner, dp));
 					DragStart += dp - RelativeRect.LowerRightCorner + diff;
 				}
 
@@ -262,10 +259,6 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 
 	return Parent ? Parent->OnEvent(event) : false;
 }
-
-
-
-
 
 
 // we're supposed to supply these if we're creating an IGUIWindow

@@ -18,7 +18,7 @@ CSceneNodeAnimatorCameraMaya::CSceneNodeAnimatorCameraMaya(gui::ICursorControl* 
 	ZoomSpeed(zoom), RotateSpeed(rotate), TranslateSpeed(translate),
 	RotateStartX(0.0f), RotateStartY(0.0f), ZoomStartX(0.0f), ZoomStartY(0.0f),
 	TranslateStartX(0.0f), TranslateStartY(0.0f), CurrentZoom(70.0f), RotX(0.0f), RotY(0.0f), 
-	Target(0,0,0), OldTarget(0,0,0), OldCamera(0), MousePos(0.5f, 0.5f)
+	OldCamera(0), MousePos(0.5f, 0.5f)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCameraMaya");
@@ -133,18 +133,14 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 				nZoom = old;
 		}
 	}
-	else
+	else if (Zooming)
 	{
-		if (Zooming)
-		{
-			f32 old = CurrentZoom;
-			CurrentZoom = CurrentZoom + (ZoomStartX - MousePos.X ) * ZoomSpeed;
-			nZoom = CurrentZoom;
+		f32 old = CurrentZoom;
+		CurrentZoom = CurrentZoom + (ZoomStartX - MousePos.X ) * ZoomSpeed;
+		nZoom = CurrentZoom;
 
-			if (nZoom < 0)
-				nZoom = CurrentZoom = old;
-		}
-
+		if (nZoom < 0)
+			nZoom = CurrentZoom = old;
 		Zooming = false;
 	}
 
@@ -175,15 +171,11 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 			              tvectY * (TranslateStartY - MousePos.Y)*TranslateSpeed;
 		}
 	}
-	else
+	else if (Translating)
 	{
-		if (Translating)
-		{
-			translate += tvectX * (TranslateStartX - MousePos.X)*TranslateSpeed + 
-			             tvectY * (TranslateStartY - MousePos.Y)*TranslateSpeed;
-			OldTarget = translate;
-		}
-
+		translate += tvectX * (TranslateStartX - MousePos.X)*TranslateSpeed + 
+		             tvectY * (TranslateStartY - MousePos.Y)*TranslateSpeed;
+		OldTarget = translate;
 		Translating = false;
 	}
 
@@ -205,16 +197,12 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 			nRotY += (RotateStartY - MousePos.Y) * RotateSpeed;
 		}
 	}
-	else
+	else if (Rotating)
 	{
-		if (Rotating)
-		{
-			RotX = RotX + (RotateStartX - MousePos.X) * RotateSpeed;
-			RotY = RotY + (RotateStartY - MousePos.Y) * RotateSpeed;
-			nRotX = RotX;
-			nRotY = RotY;
-		}
-
+		RotX = RotX + (RotateStartX - MousePos.X) * RotateSpeed;
+		RotY = RotY + (RotateStartY - MousePos.Y) * RotateSpeed;
+		nRotX = RotX;
+		nRotY = RotY;
 		Rotating = false;
 	}
 

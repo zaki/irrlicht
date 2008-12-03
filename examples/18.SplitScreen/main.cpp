@@ -148,6 +148,9 @@ user.
 	camera[2] = smgr->addCameraSceneNode(0, vector3df(0,0,50), vector3df(0,0,0));
 	//User-controlled
 	camera[3] = smgr->addCameraSceneNodeFPS();
+	// don't start at sydney's position
+	if (camera[3])
+		camera[3]->setPosition(core::vector3df(-50,0,-50));
 
 /*
 Create a variable for counting the fps and hide the mouse:

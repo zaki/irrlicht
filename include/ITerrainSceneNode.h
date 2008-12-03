@@ -152,14 +152,30 @@ namespace scene
 		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f) = 0;
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
+		/** The file must contain a loadable image of the heightmap. The heightmap
+		must be square.
+		\param file The file to read the image from. File is not rewinded.
+		\param vertexColor Color of all vertices.
+		\param smoothFactor Number of smoothing passes. */
 		virtual bool loadHeightMap(io::IReadFile* file, 
-			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 ) =0;
+			video::SColor vertexColor=video::SColor(255,255,255,255),
+			s32 smoothFactor=0) =0;
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
-		/** The data is interpreted as signed integers of the given bit size. Allowed
-		values are 8, 16, and 32. The heightmap must be square. */
-		virtual bool loadHeightMapRAW(io::IReadFile* file, s32 bitsPerPixel = 16,
-			video::SColor vertexColor = video::SColor ( 255, 255, 255, 255 ), s32 smoothFactor = 0 ) =0;
+		/** The data is interpreted as (signed) integers of the given bit size or
+		floats (with 32bits, signed). Allowed bitsizes for integers are
+		8, 16, and 32. The heightmap must be square.
+		\param file The file to read the RAW data from. File is not rewinded.
+		\param bitsPerPixel Size of data if integers used, for floats always use 32.
+		\param signedData Whether we use signed or unsigned ints, ignored for floats.
+		\param floatVals Whether the data is float or int.
+		\param width Width (and also Height, as it must be square) of the heightmap. Use 0 for autocalculating from the filesize.
+		\param vertexColor Color of all vertices.
+		\param smoothFactor Number of smoothing passes. */
+		virtual bool loadHeightMapRAW(io::IReadFile* file, s32 bitsPerPixel=16,
+			bool signedData=false, bool floatVals=false, s32 width=0,
+			video::SColor vertexColor=video::SColor(255,255,255,255),
+			s32 smoothFactor=0) =0;
 
 	};
 

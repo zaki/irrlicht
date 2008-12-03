@@ -15,7 +15,20 @@ extern bool binaryCompareFiles(const char * fileName1, const char * fileName2);
 	\fileName The unique filename suffix that will be appended to the name of the video driver.
 	\return true if the screenshot was taken and is identical to the reference image of the same name
 	in the tests/media directory, false on any error or difference. */
-bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver, const char * fileName);
+extern bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver, const char * fileName);
 
+
+//! Opens a test log file, deleting any existing contents.
+/** \param filename The filename to open
+	\return true if the test log file was opened, false on error. */
+extern bool openTestLog(const char * filename = "tests.log");
+
+//! Close the test log file opened with openTestLog()
+extern void closeTestLog();
+
+//! Log a string to the console and the test log file created by openTestLog().
+/** \param format The format string
+	\... optional parameters */
+extern void logTestString(const char * format, ...);
 
 #endif // _TEST_UTILS_H_
