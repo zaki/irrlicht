@@ -208,6 +208,14 @@ int main()
 	camera->addAnimator(anim);
 	anim->drop();
 
+	/* If you need access to the terrain data you can also do this directly via the following code fragment.
+	*/
+	scene::CDynamicMeshBuffer* buffer = new scene::CDynamicMeshBuffer(video::EVT_2TCOORDS, video::EIT_16BIT);
+	terrain->getMeshBufferForLOD(*buffer, 0);
+	video::S3DVertex2TCoords* data = (video::S3DVertex2TCoords*)buffer->getVertexBuffer().getData();
+	// Work on data or get the IndexBuffer with a similar call.
+	buffer->drop(); // When done drop the buffer again.
+
 	/*
 	To make the user be able to switch between normal and wireframe mode,
 	we create an instance of the event reciever from above and let Irrlicht

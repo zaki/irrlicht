@@ -81,7 +81,10 @@ else:
 if PROFILE:
 	CXXFLAGS += ['-pg'];
 
-CXXFLAGS += ['-DPNG_NO_MMX_CODE', '-DPNG_NO_MNG_FEATURES', '-DIRRLICHT_EXPORTS=1'];
+CXXFLAGS += ['-DPNG_NO_MMX_CODE', '-DPNG_NO_MNG_FEATURES', '-DIRRLICHT_EXPORTS=1', '-D_IRR_STATIC_LIB_'];
+if USE_GCC:
+	CXXFLAGS += ['-D__GNUWIN32__=1'];
+
 env.Append(CCFLAGS = CXXFLAGS);
 
 IrrlichtLibrary = env.SharedLibrary("Irrlicht.dll", LINKOBJ);

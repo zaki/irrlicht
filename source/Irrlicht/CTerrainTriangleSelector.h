@@ -28,29 +28,29 @@ class CTerrainTriangleSelector : public ITriangleSelector
 public:
 
 	//! Constructs a selector based on an IGeoMipMapSceneNode
-	CTerrainTriangleSelector(ITerrainSceneNode* node, s32 LOD );
+	CTerrainTriangleSelector(ITerrainSceneNode* node, s32 LOD);
 
 	//! Destructor
 	virtual ~CTerrainTriangleSelector();
 
 	//! Clears and sets triangle data
-	virtual void setTriangleData ( ITerrainSceneNode* node, s32 LOD );
+	virtual void setTriangleData (ITerrainSceneNode* node, s32 LOD);
 
 	//! Gets all triangles.
-	void getTriangles ( core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
-		const core::matrix4* transform = 0 ) const;
+	void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
+		const core::matrix4* transform=0) const;
 
 	//! Gets all triangles which lie within a specific bounding box.
-	void getTriangles ( core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
-		const core::aabbox3d<f32>& box, const core::matrix4* transform = 0 ) const;
+	void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
+		const core::aabbox3d<f32>& box, const core::matrix4* transform=0) const;
 
 	//! Gets all triangles which have or may have contact with a 3d line.
-	virtual void getTriangles ( core::triangle3df* triangles, s32 arraySize,
+	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line, 
-		const core::matrix4* transform = 0 ) const;
+		const core::matrix4* transform=0) const;
 
 	//! Returns amount of all available triangles in this selector
-	virtual s32 getTriangleCount ( ) const;
+	virtual s32 getTriangleCount() const;
 
 private:
 
@@ -65,10 +65,9 @@ private:
 
 	struct SGeoMipMapTrianglePatches
 	{
-		SGeoMipMapTrianglePatches ( )
+		SGeoMipMapTrianglePatches() :
+			NumPatches(0), TotalTriangles(0)
 		{
-			TotalTriangles = 0;
-			NumPatches = 0;
 		}
 
 		core::array<SGeoMipMapTrianglePatch>	TrianglePatchArray;

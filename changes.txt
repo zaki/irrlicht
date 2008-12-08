@@ -1,5 +1,9 @@
 Changes in version 1.5 (...12.2008)
 
+ - Construction calls for FPS camera changed to take speed in units/milliseconds, just as the setSpeed method does.
+
+ - Code::Blocks workspaces added.  C::B projects (using gcc) now output to /lib/gcc and /bin/gcc, when built on either Windows or Linux.
+
  - Added a test suite in the /tests directory.  This can be used to perform regression tests, and should be updated with new tests to verify fixes or validate new features.
 
  - Changed the preferred way of altering light node's radius: Use the new member methods of ILightSceneNode instead of directly modifying the SLight structure.

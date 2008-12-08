@@ -201,7 +201,7 @@ void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 	}
 }
 
-IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControlJoints)
+IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(void)
 {
 	if(Mesh->getMeshType() != EAMT_SKINNED)
 	{
@@ -210,20 +210,15 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 	}
 	else
 	{
+		// As multiple scene nodes may be sharing the same skinned mesh, we have to
+		// re-animated it every frame to ensure that this node gets the mesh that it needs.
+
 		CSkinnedMesh* skinnedMesh = reinterpret_cast<CSkinnedMesh*>(Mesh);
 
-		if (JointMode == EJUOR_CONTROL && forceRecalcOfControlJoints)//write to mesh
-		{
+		if (JointMode == EJUOR_CONTROL)//write to mesh
 			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
-		}
 		else 
-		{
-			// Return the mesh for the current frame if it hasn't changed, otherwise update it.
-			if(MeshForCurrentFrame && core::equals(CurrentFrameNr, FrameWhenCurrentMeshWasGenerated))
-				return MeshForCurrentFrame;
-			else
-				skinnedMesh->animateMesh(getFrameNr(), 1.0f);
-		}
+			skinnedMesh->animateMesh(getFrameNr(), 1.0f);
 
 		// Update the skinned mesh for the current joint transforms.
 		skinnedMesh->skinMesh();
@@ -239,9 +234,10 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 					JointChildSceneNodes[n]->updateAbsolutePositionOfAllChildren(); //temp, should be an option
 				}
 		}
-		else
+
+		if(JointMode == EJUOR_CONTROL)
 		{
-			// For EJUOR_READ meshes, this is done by calling animateMesh()
+			// For meshes other than EJUOR_CONTROL, this is done by calling animateMesh()
 			skinnedMesh->updateBoundingBox();
 		}
 
@@ -256,15 +252,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 //! OnAnimate() is called just before rendering the whole scene.
 void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
-	CurrentFrameNr = buildFrameNr ( timeMs );
-
-	if ( Mesh )
-	{
-		scene::IMesh * mesh = getMeshForCurrentFrame(true);
-		
-		if ( mesh )
-			Box = mesh->getBoundingBox();
-	}
+	CurrentFrameNr = buildFrameNr ( timeMs ); 
 
 	IAnimatedMeshSceneNode::OnAnimate ( timeMs );
 }
@@ -284,9 +272,13 @@ void CAnimatedMeshSceneNode::render()
 
 	++PassCount;
 
-	scene::IMesh* m = getMeshForCurrentFrame(false);
+	scene::IMesh* m = getMeshForCurrentFrame();
 
-	if ( 0 == m )
+	if(m)
+	{
+		Box = m->getBoundingBox();
+	}
+	else
 	{
 		#ifdef _DEBUG
 			os::Printer::log("Animated Mesh returned no mesh to render.", Mesh->getDebugName(), ELL_WARNING);

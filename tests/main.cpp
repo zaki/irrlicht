@@ -37,6 +37,7 @@ int main()
 
 	int fails = 0;
 
+	RUN_TEST(b3dAnimation);
 	RUN_TEST(disambiguateTextures); // Run this first, since it validates the WD.
 	RUN_TEST(exports);
 	RUN_TEST(testVector3d);

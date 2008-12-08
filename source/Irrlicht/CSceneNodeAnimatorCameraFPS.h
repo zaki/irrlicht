@@ -27,7 +27,7 @@ namespace scene
 
 		//! Constructor
 		CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl, 
-			f32 rotateSpeed = 100.0f, f32 moveSpeed = 500.0f, f32 jumpSpeed=0.f,
+			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, f32 jumpSpeed=0.f,
 			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false);
 			
 		//! Destructor
@@ -39,10 +39,10 @@ namespace scene
 		//! Event receiver
 		virtual bool OnEvent(const SEvent& event);
 
-		//! Returns the speed of movement in units per millisecond
+		//! Returns the speed of movement in units per second
 		virtual f32 getMoveSpeed() const;
 
-		//! Sets the speed of movement in units per millisecond
+		//! Sets the speed of movement in units per second
 		virtual void setMoveSpeed(f32 moveSpeed);
 
 		//! Returns the rotation speed
@@ -118,3 +118,4 @@ namespace scene
 } // end namespace irr
 
 #endif // __C_SCENE_NODE_ANIMATOR_CAMERA_FPS_H_INCLUDED__
+

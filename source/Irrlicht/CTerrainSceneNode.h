@@ -141,9 +141,9 @@ namespace scene
 		virtual IMeshBuffer* getRenderBuffer() { return RenderBuffer; }
 
 		//! Gets the meshbuffer data based on a specified Level of Detail.
-		//! \param mb: A reference to an SMeshBufferLightMap object
+		//! \param mb: A reference to an IDynamicMeshBuffer object
 		//! \param LOD: The Level Of Detail you want the indices from.
-		virtual void getMeshBufferForLOD(IDynamicMeshBuffer& mb, s32 LOD ) const;
+		virtual void getMeshBufferForLOD(IDynamicMeshBuffer& mb, s32 LOD=0) const;
 
 		//! Gets the indices for a specified patch at a specified Level of Detail.
 		//! \param indices: A reference to an array of u32 indices.
@@ -151,10 +151,10 @@ namespace scene
 		//! \param patchZ: Patch z coordinate.
 		//! \param LOD: The level of detail to get for that patch.  If -1, then get
 		//! the CurrentLOD.  If the CurrentLOD is set to -1, meaning it's not shown,
-		//! then it will retrieve the triangles at the highest LOD ( 0 ).
+		//! then it will retrieve the triangles at the highest LOD (0).
 		//! \return: Number of indices put into the buffer.
 		virtual s32 getIndicesForPatch(core::array<u32>& indices,
-			s32 patchX, s32 patchZ, s32 LOD = 0 );
+			s32 patchX, s32 patchZ, s32 LOD=0);
 
 		//! Populates an array with the CurrentLOD of each patch.
 		//! \param LODs: A reference to a core::array<s32> to hold the values
@@ -165,7 +165,7 @@ namespace scene
 		//! \param patchX: Patch x coordinate.
 		//! \param patchZ: Patch z coordinate.
 		//! \param LOD: The level of detail to set the patch to.
-		virtual void setLODOfPatch( s32 patchX, s32 patchZ, s32 LOD );
+		virtual void setLODOfPatch(s32 patchX, s32 patchZ, s32 LOD=0);
 
 		//! Returns center of terrain.
 		virtual const core::vector3df& getTerrainCenter() const

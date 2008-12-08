@@ -115,7 +115,7 @@ public:
 	/** \param degrees Amount of degrees to rotate by, anticlockwise.
 	\param center Rotation center.
 	\return This vector after transformation. */
-	vector2d<T>& rotateBy(f64 degrees, const vector2d<T>& center)
+	vector2d<T>& rotateBy(f64 degrees, const vector2d<T>& center=vector2d<T>())
 	{
 		degrees *= DEGTORAD64;
 		const f64 cs = cos(degrees);
