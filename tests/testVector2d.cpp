@@ -14,7 +14,7 @@ static bool compareVectors(const core::vector2d<T> & compare,
 {
 	if(compare != with)
 	{
-		logTestString("\nERROR: vector2d %.16f, %.16f != vector2d %.16f, %.16f\n", 
+		logTestString("\nERROR: vector2d %.16f, %.16f != vector2d %.16f, %.16f\n",
 			(f64)compare.X, (f64)compare.Y, (f64)with.X, (f64)with.Y);
 		assert(compare == with);
 		return false;
@@ -38,18 +38,17 @@ static bool doTests()
 		return false;
 	}
 
-	vector2d<T> center(0, 0);
 
-	vec.rotateBy(45, center);
+	vec.rotateBy(45); // Test implicit (0, 0) center
 	COMPARE_VECTORS(vec, vector2d<T>(0, (T)7.0710678118654755));
 
 	vec.normalize();
 	COMPARE_VECTORS(vec, vector2d<T>(0, (T)1.0000000461060017));
 
 	vec.set(10, 10);
-	center.set(5, 5);
+    vector2d<T> center(5, 5);
 	vec.rotateBy(-5, center);
-	// -5 means rotate clockwise slightly, so expect the X to increase 
+	// -5 means rotate clockwise slightly, so expect the X to increase
 	// slightly and the Y to decrease slightly.
 	COMPARE_VECTORS(vec, vector2d<T>((T)10.416752204197017, (T)9.5451947767204359));
 

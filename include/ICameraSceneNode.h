@@ -15,10 +15,10 @@ namespace scene
 	struct SViewFrustum;
 
 	//! Scene Node which is a (controlable) camera.
-	/** The whole scene will be
-	rendered from the cameras point of view. Because the ICameraScenNode
-	is a SceneNode, it can be attached to any other scene node, and will
-	follow its parents movement, rotation and so on.
+	/** The whole scene will be rendered from the cameras point of view.
+	Because the ICameraScenNode is a SceneNode, it can be attached to any
+	other scene node, and will follow its parents movement, rotation and so
+	on.
 	*/
 	class ICameraSceneNode : public ISceneNode, public IEventReceiver
 	{
@@ -32,13 +32,16 @@ namespace scene
 			: ISceneNode(parent, mgr, id, position, rotation, scale), IsOrthogonal(false) {}
 
 		//! Sets the projection matrix of the camera.
-		/** The core::matrix4 class has some methods
-		to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspectiveFovLH.
-		Note that the matrix will only stay as set by this method until one of
-		the following Methods are called: setNearValue, setFarValue, setAspectRatio, setFOV.
+		/** The core::matrix4 class has some methods to build a
+		projection matrix. e.g:
+		core::matrix4::buildProjectionMatrixPerspectiveFovLH.
+		Note that the matrix will only stay as set by this method until
+		one of the following Methods are called: setNearValue,
+		setFarValue, setAspectRatio, setFOV.
 		\param projection The new projection matrix of the camera.
 		\param isOrthogonal Set this to true if the matrix is an
-		orthogonal one (e.g. from matrix4::buildProjectionMatrixOrtho... */
+		orthogonal one (e.g. from matrix4::buildProjectionMatrixOrtho).
+		*/
 		virtual void setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal = false) = 0;
 
 		//! Gets the current projection matrix of the camera.
@@ -52,8 +55,8 @@ namespace scene
 		//! It is possible to send mouse and key events to the camera.
 		/** Most cameras may ignore this input, but camera scene nodes
 		which are created for example with
-		ISceneManager::addMayaCameraSceneNode or
-		ISceneManager::addMeshViewerCameraSceneNode, may want to get
+		ISceneManager::addCameraSceneNodeMaya or
+		ISceneManager::addCameraSceneNodeFPS, may want to get
 		this input for changing their position, look at target or
 		whatever. */
 		virtual bool OnEvent(const SEvent& event) = 0;
@@ -67,8 +70,9 @@ namespace scene
 
 		//! Sets the rotation of the node.
 		/** This only modifies the relative rotation of the node.
-		If the camera's target and rotation are bound ( @see bindTargetAndRotation() )
-		then calling this will also change the camera's target to match the rotation.
+		If the camera's target and rotation are bound ( @see
+		bindTargetAndRotation() ) then calling this will also change
+		the camera's target to match the rotation.
 		\param rotation New rotation of the node in degrees. */
 		virtual void setRotation(const core::vector3df& rotation) = 0;
 
@@ -122,8 +126,8 @@ namespace scene
 		virtual const SViewFrustum* getViewFrustum() const = 0;
 
 		//! Disables or enables the camera to get key or mouse inputs.
-		/** If this is set to true, the camera will respond to key inputs
-		otherwise not. */
+		/** If this is set to true, the camera will respond to key
+		inputs otherwise not. */
 		virtual void setInputReceiverEnabled(bool enabled) = 0;
 
 		//! Checks if the input receiver of the camera is currently enabled.
@@ -137,10 +141,13 @@ namespace scene
 		}
 
 		//! Binds the camera scene node's rotation to its target position and vice vera, or unbinds them.
-		/** When bound, calling setRotation() will update the camera's target position to be along
-		its +Z axis, and likewise calling setTarget() will update its rotation so that its +Z axis
-		will point at the target point.  FPS camera use this binding by default; other cameras do not.
-		\param binding true to bind the camera's scene node rotation and targetting, false to unbind them.
+		/** When bound, calling setRotation() will update the camera's
+		target position to be along its +Z axis, and likewise calling
+		setTarget() will update its rotation so that its +Z axis will
+		point at the target point. FPS camera use this binding by
+		default; other cameras do not.
+		\param binding true to bind the camera's scene node rotation
+		and targetting, false to unbind them.
 		@see getTargetAndRotationBinding() */
 		virtual void bindTargetAndRotation(bool bound) = 0;
 

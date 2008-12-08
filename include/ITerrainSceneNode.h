@@ -33,8 +33,8 @@ namespace scene
 	 *
 	 * This scene node is capable of very quickly loading
 	 * terrains and updating the indices at runtime to enable viewing very large terrains. It uses a
-	 * CLOD ( Continuous Level of Detail ) algorithm which updates the indices for each patch based on
-	 * a LOD ( Level of Detail ) which is determined based on a patch's distance from the camera.
+	 * CLOD (Continuous Level of Detail) algorithm which updates the indices for each patch based on
+	 * a LOD (Level of Detail) which is determined based on a patch's distance from the camera.
 	 *
 	 * The Patch Size of the terrain must always be a size of ( 2^N+1, i.e. 8+1(9), 16+1(17), etc. ).
 	 * The MaxLOD available is directly dependent on the patch size of the terrain. LOD 0 contains all
@@ -49,7 +49,6 @@ namespace scene
 	class ITerrainSceneNode : public ISceneNode
 	{
 	public:
-
 		//! Constructor
 		ITerrainSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			const core::vector3df& position = core::vector3df(0.0f, 0.0f, 0.0f),
@@ -57,34 +56,30 @@ namespace scene
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f) )
 			: ISceneNode (parent, mgr, id, position, rotation, scale) {}
 
-		//! Destructor
-		virtual ~ITerrainSceneNode() {}
-
 		//! Get the bounding box of the terrain.
 		/** \return The bounding box of the entire terrain. */
-		virtual const core::aabbox3d<f32>& getBoundingBox() const = 0;
+		virtual const core::aabbox3d<f32>& getBoundingBox() const =0;
 
 		//! Get the bounding box of a patch
 		/** \return The bounding box of the chosen patch. */
-		virtual const core::aabbox3d<f32>& getBoundingBox(s32 patchX, s32 patchZ) const = 0;
+		virtual const core::aabbox3d<f32>& getBoundingBox(s32 patchX, s32 patchZ) const =0;
 
 		//! Get the number of indices currently in the meshbuffer
 		/** \return The index count. */
-		virtual u32 getIndexCount() const = 0;
+		virtual u32 getIndexCount() const =0;
 
 		//! Get pointer to the mesh
 		/** \return Pointer to the mesh. */
-		virtual IMesh* getMesh() = 0;
+		virtual IMesh* getMesh() =0;
 
-
-		//! Returns a pointer to the buffer used by the terrain (most users will not need this)
-		virtual IMeshBuffer* getRenderBuffer() = 0;
+		//! Get pointer to the buffer used by the terrain (most users will not need this)
+		virtual IMeshBuffer* getRenderBuffer() =0;
 
 
 		//! Gets the meshbuffer data based on a specified level of detail.
-		/** \param mb A reference to an SMeshBuffer object
+		/** \param mb A reference to an IDynamicMeshBuffer object
 		\param LOD The level of detail you want the indices from. */
-		virtual void getMeshBufferForLOD(IDynamicMeshBuffer& mb, s32 LOD) const = 0;
+		virtual void getMeshBufferForLOD(IDynamicMeshBuffer& mb, s32 LOD=0) const =0;
 
 		//! Gets the indices for a specified patch at a specified Level of Detail.
 		/** \param indices A reference to an array of u32 indices.
@@ -93,42 +88,42 @@ namespace scene
 		\param LOD The level of detail to get for that patch. If -1,
 		then get the CurrentLOD. If the CurrentLOD is set to -1,
 		meaning it's not shown, then it will retrieve the triangles at
-		the highest LOD ( 0 ).
+		the highest LOD (0).
 		\return Number of indices put into the buffer. */
 		virtual s32 getIndicesForPatch(core::array<u32>& indices,
-			s32 patchX, s32 patchZ, s32 LOD = 0 ) = 0;
+			s32 patchX, s32 patchZ, s32 LOD=0) =0;
 
 		//! Populates an array with the CurrentLOD of each patch.
 		/** \param LODs A reference to a core::array<s32> to hold the
 		values
 		\return Number of elements in the array */
-		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const = 0;
+		virtual s32 getCurrentLODOfPatches(core::array<s32>& LODs) const =0;
 
 		//! Manually sets the LOD of a patch
 		/** \param patchX Patch x coordinate.
 		\param patchZ Patch z coordinate.
 		\param LOD The level of detail to set the patch to. */
-		virtual void setLODOfPatch( s32 patchX, s32 patchZ, s32 LOD ) = 0;
+		virtual void setLODOfPatch(s32 patchX, s32 patchZ, s32 LOD=0) =0;
 
 		//! Get center of terrain.
-		virtual const core::vector3df& getTerrainCenter() const = 0;
+		virtual const core::vector3df& getTerrainCenter() const =0;
 
 		//! Get height of a point of the terrain.
-		virtual f32 getHeight( f32 x, f32 y ) const = 0;
+		virtual f32 getHeight(f32 x, f32 y) const =0;
 
 		//! Sets the movement camera threshold.
 		/** It is used to determine when to recalculate
 		indices for the scene node. The default value is 10.0f. */
-		virtual void setCameraMovementDelta(f32 delta) = 0;
+		virtual void setCameraMovementDelta(f32 delta) =0;
 
 		//! Sets the rotation camera threshold.
 		/** It is used to determine when to recalculate
 		indices for the scene node. The default value is 1.0f. */
-		virtual void setCameraRotationDelta(f32 delta) = 0;
+		virtual void setCameraRotationDelta(f32 delta) =0;
 
 		//! Sets whether or not the node should dynamically update its associated selector when the geomipmap data changes.
 		/** \param bVal: Boolean value representing whether or not to update selector dynamically. */
-		virtual void setDynamicSelectorUpdate(bool bVal) = 0;
+		virtual void setDynamicSelectorUpdate(bool bVal) =0;
 
 		//! Override the default generation of distance thresholds.
 		/** For determining the LOD a patch is rendered at. If any LOD
@@ -137,7 +132,7 @@ namespace scene
 		then apply a scale to the scene node, it is your responsibility
 		to update the new distances to work best with your new terrain
 		size. */
-		virtual bool overrideLODDistance(s32 LOD, f64 newDistance) = 0;
+		virtual bool overrideLODDistance(s32 LOD, f64 newDistance) =0;
 
 		//! Scales the base texture, similar to makePlanarTextureMapping.
 		/** \param scale The scaling amount. Values above 1.0
@@ -149,7 +144,7 @@ namespace scene
 		second texture coordinate set to the same values as in the
 		first set. If this is another value than zero, it will scale
 		the second texture coordinate set by this value. */
-		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2 = 0.0f) = 0;
+		virtual void scaleTexture(f32 scale = 1.0f, f32 scale2=0.0f) =0;
 
 		//! Initializes the terrain data.  Loads the vertices from the heightMapFile.
 		/** The file must contain a loadable image of the heightmap. The heightmap

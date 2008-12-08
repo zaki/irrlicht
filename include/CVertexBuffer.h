@@ -72,12 +72,15 @@ namespace scene
 	public:
 		IVertexList *Vertices;
 
-		CVertexBuffer(video::E_VERTEX_TYPE vertexType) :Vertices(0), MappingHint(EHM_NEVER), ChangedID(1)
+		CVertexBuffer(video::E_VERTEX_TYPE vertexType) : Vertices(0),
+				MappingHint(EHM_NEVER), ChangedID(1)
 		{
 			setType(vertexType);
 		}
 
-		CVertexBuffer(const IVertexBuffer &VertexBufferCopy) :Vertices(0), MappingHint(EHM_NEVER), ChangedID(1)
+		CVertexBuffer(const IVertexBuffer &VertexBufferCopy) :
+				Vertices(0), MappingHint(EHM_NEVER),
+				ChangedID(1)
 		{
 			setType(VertexBufferCopy.getType());
 			reallocate(VertexBufferCopy.size());
@@ -91,7 +94,6 @@ namespace scene
 			delete Vertices;
 		}
 
-		//virtual void setType(video::E_VERTEX_TYPE vertexType);
 
 		virtual void setType(video::E_VERTEX_TYPE vertexType)
 		{

@@ -36,7 +36,7 @@ scene::ISceneNode* Model = 0;
 scene::ISceneNode* SkyBox = 0;
 bool Octree=false;
 
-scene::ICameraSceneNode* Camera[2] = { 0, 0};
+scene::ICameraSceneNode* Camera[2] = {0, 0};
 
 /*
 Toggle between various cameras
@@ -83,15 +83,11 @@ void loadModel(const c8* fn)
 	extension.make_lower();
 
 	// if a texture is loaded apply it to the current model..
-	if (extension == ".jpg" ||
-		extension == ".pcx" ||
-		extension == ".png" ||
-		extension == ".ppm" ||
-		extension == ".pgm" ||
-		extension == ".pbm" ||
-		extension == ".psd" ||
-		extension == ".tga" ||
-		extension == ".bmp")
+	if (extension == ".jpg" || extension == ".pcx" ||
+		extension == ".png" || extension == ".ppm" ||
+		extension == ".pgm" || extension == ".pbm" ||
+		extension == ".psd" || extension == ".tga" ||
+		extension == ".bmp" || extension == ".wal")
 	{
 		video::ITexture * texture =
 			Device->getVideoDriver()->getTexture( filename.c_str() );
@@ -105,12 +101,15 @@ void loadModel(const c8* fn)
 		}
 		return;
 	}
-
 	// if a archive is loaded add it to the FileSystems..
-	if (extension == ".pk3" ||
-		extension == ".zip")
+	else if (extension == ".pk3" || extension == ".zip")
 	{
-		Device->getFileSystem()->addZipFileArchive( filename.c_str() );
+		Device->getFileSystem()->addZipFileArchive(filename.c_str());
+		return;
+	}
+	else if (extension == ".pak")
+	{
+		Device->getFileSystem()->addPakFileArchive(filename.c_str());
 		return;
 	}
 
@@ -745,7 +744,7 @@ int main(int argc, char* argv[])
 
 	// show about message box and load default model
 	if (argc==1)
-	showAboutText();
+		showAboutText();
 	loadModel(StartUpModelFile.c_str());
 
 	// add skybox
@@ -761,10 +760,14 @@ int main(int argc, char* argv[])
 	// add a camera scene node
 	Camera[0] = smgr->addCameraSceneNodeMaya();
 	Camera[0]->setFarValue(20000.f);
-	Camera[0]->setPosition(core::vector3df(0,0,-100));
+	// Maya cameras reposition themselves relative to their target, so target the location
+	// where the mesh scene node is placed.
+	Camera[0]->setTarget(core::vector3df(0,30,0));
+
 	Camera[1] = smgr->addCameraSceneNodeFPS();
 	Camera[1]->setFarValue(20000.f);
-	Camera[1]->setPosition(core::vector3df(0,0,-100));
+	Camera[1]->setPosition(core::vector3df(0,0,-70));
+	Camera[1]->setTarget(core::vector3df(0,30,0));
 
 	setActiveCamera(Camera[0]);
 
