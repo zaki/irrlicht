@@ -293,8 +293,19 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				// count vertices in each buffer and reallocate
 				for (i=0; i<mesh->Vertices.size(); ++i)
 					++vCountArray[verticesLinkBuffer[i]];
-				for (i=0; i!=mesh->Buffers.size(); ++i)
-					mesh->Buffers[i]->Vertices_Standard.reallocate(vCountArray[i]);
+				if (mesh->TCoords2.size())
+				{
+					for (i=0; i!=mesh->Buffers.size(); ++i)
+					{
+						mesh->Buffers[i]->Vertices_2TCoords.reallocate(vCountArray[i]);
+						mesh->Buffers[i]->VertexType=video::EVT_2TCOORDS;
+					}
+				}
+				else
+				{
+					for (i=0; i!=mesh->Buffers.size(); ++i)
+						mesh->Buffers[i]->Vertices_Standard.reallocate(vCountArray[i]);
+				}
 
 				verticesLinkIndex.set_used(mesh->Vertices.size());
 				// actually store vertices
@@ -302,8 +313,17 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				{
 					scene::SSkinMeshBuffer *buffer = mesh->Buffers[ verticesLinkBuffer[i] ];
 
-					verticesLinkIndex[i] = buffer->Vertices_Standard.size();
-					buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
+					if (mesh->TCoords2.size())
+					{
+						verticesLinkIndex[i] = buffer->Vertices_2TCoords.size();
+						buffer->Vertices_2TCoords.push_back( mesh->Vertices[i] );
+						buffer->Vertices_2TCoords.getLast().TCoords2=mesh->TCoords2[i];
+					}
+					else
+					{
+						verticesLinkIndex[i] = buffer->Vertices_Standard.size();
+						buffer->Vertices_Standard.push_back( mesh->Vertices[i] );
+					}
 				}
 
 				// count indices per buffer and reallocate
@@ -531,8 +551,7 @@ bool CXMeshFileLoader::parseDataObjectTemplate()
 }
 
 
-
-bool CXMeshFileLoader::parseDataObjectFrame( CSkinnedMesh::SJoint *Parent )
+bool CXMeshFileLoader::parseDataObjectFrame(CSkinnedMesh::SJoint *Parent)
 {
 #ifdef _XREADER_DEBUG
 	os::Printer::log("CXFileReader: Reading frame");
@@ -787,10 +806,6 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 	{
 		core::stringc objectName = getNextToken();
 
-#ifdef _XREADER_DEBUG
-		os::Printer::log("debug DataObject in mesh:", objectName.c_str() );
-#endif
-
 		if (objectName.size() == 0)
 		{
 			os::Printer::log("Unexpected ending found in Mesh in x file.", ELL_WARNING);
@@ -802,7 +817,11 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		{
 			break; // mesh finished
 		}
-		else
+
+#ifdef _XREADER_DEBUG
+		os::Printer::log("debug DataObject in mesh:", objectName.c_str() );
+#endif
+
 		if (objectName == "MeshNormals")
 		{
 			if (!parseDataObjectMeshNormals(mesh))
@@ -965,14 +984,57 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 				return false;
 			}
 			u8* dataptr = (u8*) data;
+			if ((uv2pos != -1) && (uv2type == 1))
+				mesh.TCoords2.reallocate(mesh.Vertices.size());
 			for (j=0; j<mesh.Vertices.size(); ++j)
 			{
 				if ((normalpos != -1) && (normaltype == 2))
 					mesh.Vertices[j].Normal.set(*((core::vector3df*)(dataptr+normalpos)));
 				if ((uvpos != -1) && (uvtype == 1))
 					mesh.Vertices[j].TCoords.set(*((core::vector2df*)(dataptr+uvpos)));
+				if ((uv2pos != -1) && (uv2type == 1))
+					mesh.TCoords2.push_back(*((core::vector2df*)(dataptr+uv2pos)));
 				dataptr += size;
 			}
+			delete [] data;
+		}
+		else
+		if (objectName == "FVFData")
+		{
+			const u32 dataformat = readInt();
+			const u32 datasize = readInt();
+			u32* data = new u32[datasize];
+			for (u32 j=0; j<datasize; ++j)
+				data[j]=readInt();
+			if (dataformat&0x102) // 2nd uv set
+			{
+				mesh.TCoords2.reallocate(mesh.Vertices.size());
+				u8* dataptr = (u8*) data;
+				const u32 size=((dataformat>>8)&0xf)*sizeof(core::vector2df);
+				for (u32 j=0; j<mesh.Vertices.size(); ++j)
+				{
+					dataptr += size/2;
+					mesh.TCoords2.push_back(*((core::vector2df*)(dataptr)));
+				os::Printer::log(core::stringc(mesh.TCoords2.getLast().X).c_str());
+				os::Printer::log(core::stringc(mesh.TCoords2.getLast().Y).c_str());
+					dataptr += size/2;
+				}
+			}
+			if (!checkForOneFollowingSemicolons())
+			{
+				os::Printer::log("No finishing semicolon in FVFData found.", ELL_WARNING);
+				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
+				delete [] data;
+				return false;
+			}
+			if (!checkForClosingBrace())
+			{
+				os::Printer::log("No closing brace in FVFData found in x file", ELL_WARNING);
+				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
+				delete [] data;
+				return false;
+			}
+
 			delete [] data;
 		}
 		else
@@ -1429,6 +1491,7 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 	readRGB(material.EmissiveColor); checkForOneFollowingSemicolons();
 
 	// read other data objects
+	int textureLayer=0;
 	while(true)
 	{
 		core::stringc objectName = getNextToken();
@@ -1454,17 +1517,20 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 
 			// original name
 			if (FileSystem->existFile(TextureFileName.c_str()))
-				material.setTexture(0, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
+				material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
 			// mesh path
 			else
 			{
 				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
 				if (FileSystem->existFile(TextureFileName.c_str()))
-					material.setTexture(0, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
+					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
 				// working directory
 				else
-					material.setTexture(0, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
+					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
 			}
+			++textureLayer;
+			if (textureLayer==2)
+				material.MaterialType=video::EMT_LIGHTMAP;
 		}
 		else
 		if (objectName.equals_ignore_case("NormalmapFilename"))
@@ -1487,6 +1553,8 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 				else
 					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
 			}
+			if (textureLayer==1)
+				++textureLayer;
 		}
 		else
 		{
