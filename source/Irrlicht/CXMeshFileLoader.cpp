@@ -1013,11 +1013,8 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 				const u32 size=((dataformat>>8)&0xf)*sizeof(core::vector2df);
 				for (u32 j=0; j<mesh.Vertices.size(); ++j)
 				{
-					dataptr += size/2;
 					mesh.TCoords2.push_back(*((core::vector2df*)(dataptr)));
-				os::Printer::log(core::stringc(mesh.TCoords2.getLast().X).c_str());
-				os::Printer::log(core::stringc(mesh.TCoords2.getLast().Y).c_str());
-					dataptr += size/2;
+					dataptr += size;
 				}
 			}
 			if (!checkForOneFollowingSemicolons())
