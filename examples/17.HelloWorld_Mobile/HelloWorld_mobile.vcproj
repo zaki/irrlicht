@@ -149,7 +149,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,5.02"
 				OutputFile="$(OutDir)\17.HelloWorld_mobile.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				AdditionalLibraryDirectories="..\..\lib\WinCE-visualstudio\"
 				DelayLoadDLLs="$(NOINHERIT)"
 				GenerateDebugInformation="true"

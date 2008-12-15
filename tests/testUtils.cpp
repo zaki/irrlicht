@@ -99,9 +99,9 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	}
 
 	video::ECOLOR_FORMAT format1 = image1->getColorFormat();
-	if(video::ECF_A8R8G8B8 != format1 && video::ECF_R8G8B8 != format1)
+	if(video::ECF_R8G8B8 != format1)
 	{
-		logTestString("fuzzyCompareImages: image 1 must be ECF_A8R8G8B8 or ECF_R8G8B8\n");
+		logTestString("fuzzyCompareImages: image 1 must be ECF_R8G8B8\n");
 		return 0.f;
 	}
 
@@ -116,12 +116,9 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	u8 * image2Data = (u8*)image2->lock();
 
 	const u32 pixels = (image1->getPitch() * image1->getDimension().Height) / 4;
-	u32 mismatchedPixels = 0;
+	u32 mismatchedColours = 0;
 	for(u32 pixel = 0; pixel < pixels; ++pixel)
 	{
-		if(video::ECF_A8R8G8B8 == format1)
-			image1Data++;
-
 		const u8 r1 = *(image1Data++);
 		const u8 g1 = *(image1Data++);
 		const u8 b1 = *(image1Data++);
@@ -133,25 +130,43 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 		const u8 g2 = *(image2Data++);
 		const u8 b2 = *(image2Data++);
 
-		// Empirically, some OpenGL screenshots have up to 2 shades difference per pixel.
-		if(abs(r1 - r2) > 2 || abs(g1 - g2) > 2 || abs(b1 - b2) > 2)
-			++mismatchedPixels;
+		mismatchedColours += abs(r1 - r2) + abs(g1 - g2) + abs(b1 - b2);
 	}
 
 	image1->unlock();
 	image2->unlock();
-	
-	return 100.f * (pixels - mismatchedPixels) / pixels;
+
+	const u32 totalColours = pixels * 775;
+	return 100.f * (totalColours - mismatchedColours) / totalColours;
 }
 
 
-bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver, const char * fileName)
+bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
+												const char * fileName,
+												irr::f32 requiredMatch)
 {
 	irr::video::IImage * screenshot = driver->createScreenShot();
 	if(!screenshot)
 	{
 		logTestString("Failed to take screenshot\n");
+		assert(false);
 		return false;
+	}
+
+	const video::ECOLOR_FORMAT format = screenshot->getColorFormat();
+	if(format != video::ECF_R8G8B8)
+	{
+		irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot);
+		screenshot->drop();
+
+		if(!fixedScreenshot)
+		{
+			logTestString("Failed to convert screenshot to ECF_A8R8G8B8\n");
+			assert(false);
+			return false;
+		}
+
+		screenshot = fixedScreenshot;
 	}
 
 	irr::core::stringc driverName = driver->getName();
@@ -173,26 +188,39 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 	}
 
 	float match = fuzzyCompareImages(screenshot, reference);
+	logTestString("Image match: %f%%\n", match);
+
+	if(match < requiredMatch)
+	{
+		irr::core::stringc mismatchFilename = "results/";
+		mismatchFilename += driverName;
+		mismatchFilename += fileName;
+		logTestString("Writing mismatched image to '%s\n", mismatchFilename.c_str());
+		(void)driver->writeImageToFile(screenshot, mismatchFilename.c_str());
+	}
+
 
 	screenshot->drop();
 	reference->drop();
 
-	logTestString("Image match: %f%%\n", match);
-
-	return (match > 99.f); // Require a very confident match.
+	return (match >= requiredMatch);
 }
 
 static FILE * logFile = 0;
 
-bool openTestLog(const char * filename)
+bool openTestLog(bool startNewLog, const char * filename)
 {
 	closeTestLog();
 
-	logFile = fopen(filename, "w");
+	if(startNewLog)
+		logFile = fopen(filename, "w");
+	else
+		logFile = fopen(filename, "a");
+
 	assert(logFile);
 	if(!logFile)
 		logTestString("\nWARNING: unable to open the test log file %s\n", filename);
-	
+
 	return (logFile != 0);
 }
 

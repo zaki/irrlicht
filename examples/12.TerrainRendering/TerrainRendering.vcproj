@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\12.TerrainRendering.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="TRUE"
@@ -102,7 +102,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\12.TerrainRendering.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				ProgramDatabaseFile=".\Release/TerrainRendering.pdb"

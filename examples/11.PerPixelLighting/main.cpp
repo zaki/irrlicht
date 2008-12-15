@@ -208,7 +208,7 @@ int main()
 
 	// add camera
 	scene::ICameraSceneNode* camera =
-		smgr->addCameraSceneNodeFPS(0,100.0f,300.0f);
+		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f);
 	camera->setPosition(core::vector3df(-200,200,-200));
 
 	// disable mouse cursor

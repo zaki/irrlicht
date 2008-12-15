@@ -934,15 +934,16 @@ namespace core
 		normal.normalize();
 
 		// The normal needs to be rotated and inverse scaled, but not translated.
-		rotateVect(normal);
 		const vector3df scale = getScale();
 
 		if(!equals(scale.X, 0.f) && !equals(scale.Y, 0.f) && !equals(scale.Z, 0.f)
 			&& (!equals(scale.X, 1.f) || !equals(scale.Y, 1.f) || !equals(scale.Z, 1.f)))
 		{
-			// Rotating the vector also applied the scale, so we have to invert it twice.
+			// Rotating the vector will also apply the scale, so we have to invert it twice.
 			normal /= (scale * scale);
 		}
+
+		rotateVect(normal);
 
 		normal.normalize();
 		plane.setPlane(member, normal);

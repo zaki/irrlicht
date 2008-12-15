@@ -205,7 +205,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(void)
 {
 	if(Mesh->getMeshType() != EAMT_SKINNED)
 	{
-		if(!MeshForCurrentFrame || core::equals(CurrentFrameNr, FrameWhenCurrentMeshWasGenerated))
+		if(!MeshForCurrentFrame || !core::equals(CurrentFrameNr, FrameWhenCurrentMeshWasGenerated))
 			MeshForCurrentFrame = Mesh->getMesh((s32)getFrameNr(), 255, StartFrame, EndFrame);
 	}
 	else

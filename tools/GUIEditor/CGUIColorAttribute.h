@@ -16,15 +16,15 @@ namespace gui
 		//
 		CGUIColorAttribute(IGUIEnvironment* environment, IGUIElement *parent, s32 myParentID) :
 		  	CGUIAttribute(environment, parent, myParentID),
-			AttribEditBox(0), AttribSliderA(0), AttribSliderR(0), AttribSliderG(0), AttribSliderB(0),
-			AttribColor(0)
+			AttribSliderA(0), AttribSliderR(0), AttribSliderG(0), AttribSliderB(0),
+			AttribEditBox(0), AttribColor(0)
 		{
 			s32 fh = Environment->getSkin()->getFont()->getDimension(L"A").Height;
 
 			core::rect<s32> r0(getAbsolutePosition()),
-							r2(0, fh + 5, r0.getWidth() - 5, fh*2 + 10 ),
-							r3(r2), 
-							r4(r2.getWidth() - 20, 3, r2.getWidth() - 3, r2.getHeight()-3);
+					r2(0, fh + 5, r0.getWidth() - 5, fh*2 + 10 ),
+					r3(r2), 
+					r4(r2.getWidth() - 20, 3, r2.getWidth() - 3, r2.getHeight()-3);
 
 			AttribColor = Environment->addTab(r4, this, 0);
 			AttribColor->grab();
@@ -164,7 +164,7 @@ namespace gui
 		IGUIScrollBar*		AttribSliderG;
 		IGUIScrollBar*		AttribSliderB;
 		IGUIEditBox*		AttribEditBox;
-		IGUITab*			AttribColor;
+		IGUITab*		AttribColor;
 	};
 
 } // namespace gui

@@ -130,7 +130,7 @@ int main()
 	// Set a jump speed of 3 units per second, which gives a fairly realistic jump
 	// when used with the gravity of (0, -10, 0) in the collision response animator.
 	scene::ICameraSceneNode* camera =
-		smgr->addCameraSceneNodeFPS(0, 100.0f, 300.0f, -1, 0, 0, true, 3.f);
+		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, -1, 0, 0, true, 3.f);
 	camera->setPosition(core::vector3df(-100,50,-150));
 
 	if (selector)

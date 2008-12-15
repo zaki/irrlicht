@@ -12,16 +12,22 @@ extern bool binaryCompareFiles(const char * fileName1, const char * fileName2);
 
 //! Take a screenshot and compare it against a reference screenshot in the tests/media subdirectory
 /** \param driver The Irrlicht video driver.
-	\fileName The unique filename suffix that will be appended to the name of the video driver.
+	\param fileName The unique filename suffix that will be appended to the name of the video driver.
+	\param requiredMatch The degree to which the screenshot needs to match the reference image
+	in order to be considered a match.
 	\return true if the screenshot was taken and is identical to the reference image of the same name
 	in the tests/media directory, false on any error or difference. */
-extern bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver, const char * fileName);
+extern bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
+													const char * fileName,
+													irr::f32 requiredMatch = 99.f);
 
 
 //! Opens a test log file, deleting any existing contents.
-/** \param filename The filename to open
+/** \param startNewLog true to create a new log file, false to append to an
+						existing one.
+	\param filename The filename to open
 	\return true if the test log file was opened, false on error. */
-extern bool openTestLog(const char * filename = "tests.log");
+extern bool openTestLog(bool startNewLog, const char * filename = "tests.log");
 
 //! Close the test log file opened with openTestLog()
 extern void closeTestLog();

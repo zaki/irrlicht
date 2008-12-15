@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../bin/gcc/tests" prefix_auto="1" extension_auto="1" />
-				<Option object_output="Debug/" />
+				<Option output="..\bin\gcc\tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".\Debug\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -16,8 +16,8 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="../bin/gcc/tests" prefix_auto="1" extension_auto="1" />
-				<Option object_output="Release/" />
+				<Option output="..\bin\gcc\tests" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".\Release\" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
@@ -31,11 +31,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
-			<Add directory="../include" />
+			<Add directory="..\include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add directory="../lib/gcc" />
+			<Add directory="..\lib\gcc" />
 		</Linker>
 		<Unit filename="b3dAnimation.cpp" />
 		<Unit filename="disambiguateTextures.cpp" />
@@ -47,6 +47,7 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="planeMatrix.cpp" />
+		<Unit filename="softwareDevice.cpp" />
 		<Unit filename="testUtils.cpp" />
 		<Unit filename="testVector2d.cpp" />
 		<Unit filename="testVector3d.cpp" />

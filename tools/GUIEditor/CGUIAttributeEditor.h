@@ -39,9 +39,8 @@ namespace gui
 	private:
 
 		core::array<CGUIAttribute*>	AttribList;	// attributes editing controls
-		io::IAttributes*			Attribs;	// current attributes
-		CGUIPanel*					Panel;
-
+		io::IAttributes*		Attribs;	// current attributes
+		CGUIPanel*			Panel;
 	};
 
 } // end namespace gui

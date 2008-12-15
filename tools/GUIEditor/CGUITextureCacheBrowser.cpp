@@ -16,7 +16,7 @@ namespace gui
 
 CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s32 id, IGUIElement *parent) 
 :	IGUIWindow(environment, parent, id, core::rect<s32>(0,0,300,200)),
-	Dragging(false), DragStart(0,0), CloseButton(0), Images(), SelectedTexture(-1)
+	CloseButton(0), Panel(0), SelectedTexture(-1), Dragging(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIWindow");
@@ -170,7 +170,7 @@ void CGUITextureCacheBrowser::updateImageList()
 		img->setRelativePosition(pos);
 		img->setToolTipText(details.c_str());
 		img->setScaleImage(true);
-		img->setColor( SelectedTexture == i ? video::SColor(255,255,255,255) : video::SColor(128,128,128,128) );
+		img->setColor( SelectedTexture == (s32)i ? video::SColor(255,255,255,255) : video::SColor(128,128,128,128) );
 
 		pos = pos + moveDist;
 	}

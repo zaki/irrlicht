@@ -74,7 +74,7 @@ int main()
 	Now we'll create a camera, and give it a collision response animator
 	that's built from the mesh nodes in the scene we just loaded.
 	*/
-	scene::ICameraSceneNode * camera = smgr->addCameraSceneNodeFPS(0, 50, 100);
+	scene::ICameraSceneNode * camera = smgr->addCameraSceneNodeFPS(0, 50.f, 0.1f);
 
 	// Create a meta triangle selector to hold several triangle selectors.
 	scene::IMetaTriangleSelector * meta = smgr->createMetaTriangleSelector();

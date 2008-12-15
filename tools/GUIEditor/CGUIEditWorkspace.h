@@ -139,12 +139,12 @@ namespace gui
 		core::position2di	StartMovePos;
 		core::rect<s32>		SelectedArea;
 
-		bool				DrawGrid, UseGrid;
 		core::dimension2di	GridSize;
-		s32					MenuCommandStart;
+		s32			MenuCommandStart;
+		bool			DrawGrid, UseGrid;
 
-		IGUIElement			*MouseOverElement, 
-							*SelectedElement;
+		IGUIElement		*MouseOverElement, 
+					*SelectedElement;
 		CGUIEditWindow		*EditorWindow;
 
 		core::rect<s32> TLRect;
@@ -155,8 +155,6 @@ namespace gui
 		core::rect<s32> RRect;
 		core::rect<s32> BRRect;
 		core::rect<s32> BRect;
-
-
 	};
 
 
@@ -164,5 +162,4 @@ namespace gui
 } // end namespace irr
 
 #endif
-
 

@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\softwareDevice.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\testUtils.cpp"
 				>
 			</File>

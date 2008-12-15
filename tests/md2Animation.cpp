@@ -17,7 +17,7 @@ using namespace gui;
 bool md2Animation(void)
 {
 	// Use EDT_BURNINGSVIDEO since it is not dependent on (e.g.) OpenGL driver versions.
-	IrrlichtDevice *device = createDevice( EDT_BURNINGSVIDEO, dimension2d<s32>(320, 240), 32);
+	IrrlichtDevice *device = createDevice( EDT_BURNINGSVIDEO, dimension2d<s32>(160, 120), 32);
 	assert(device);
 	if (!device)
 		return false;
@@ -36,7 +36,7 @@ bool md2Animation(void)
 
 		if(node)
 		{
-			node->setPosition(vector3df(20, 0, 50));
+			node->setPosition(vector3df(20, 0, 30));
 			node->setMaterialFlag(EMF_LIGHTING, false);
 			node->setMaterialTexture(0, driver->getTexture("../media/sydney.bmp"));
 			node->setLoopMode(false);
