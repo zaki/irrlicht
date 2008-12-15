@@ -10,17 +10,18 @@ using namespace core;
 using namespace gui;
 
 // Tests that disabled GUI menu items don't cause their submenu to appear when hovered over.
-/** 
+/**
 	http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?p=178436#178436
  */
 
 bool guiDisabledMenu(void)
 {
-	IrrlichtDevice *device = createDevice( video::EDT_OPENGL, dimension2d<s32>(160, 40), 32);
+	IrrlichtDevice *device = createDevice( video::EDT_OPENGL,
+											dimension2d<s32>(160, 40), 32);
 	assert(device);
 	if (!device)
 		return false;
-	
+
 	video::IVideoDriver* driver = device->getVideoDriver();
 	gui::IGUIEnvironment* env = device->getGUIEnvironment();
 

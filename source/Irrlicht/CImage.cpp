@@ -517,6 +517,28 @@ static void executeBlit_TextureCopy_16_to_32( const SBlitJob * job )
 	}
 }
 
+static void executeBlit_TextureCopy_16_to_24( const SBlitJob * job )
+{
+	const u16 *src = (u16*) job->src;
+	u8 *dst = (u8*) job->dst;
+
+	for ( s32 dy = 0; dy != job->height; ++dy )
+	{
+		for ( s32 dx = 0; dx != job->width; ++dx )
+		{
+			u32 colour = video::A1R5G5B5toA8R8G8B8( src[dx] );
+			u8 * writeTo = &dst[dx * 3];
+			*writeTo++ = (colour >> 16)& 0xFF;
+			*writeTo++ = (colour >> 8) & 0xFF;
+			*writeTo++ = colour & 0xFF;
+		}
+
+		src = (u16*) ( (u8*) (src) + job->srcPitch );
+		dst += job->dstPitch;
+	}
+}
+
+
 /*!
 */
 static void executeBlit_TextureCopy_24_to_32( const SBlitJob * job )
@@ -537,6 +559,27 @@ static void executeBlit_TextureCopy_24_to_32( const SBlitJob * job )
 		src = (void*) ( (u8*) (src) + job->srcPitch );
 		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
 	}
+}
+
+static void executeBlit_TextureCopy_32_to_24( const SBlitJob * job )
+{
+	const u32 * src = (u32*) job->src;
+	u8 * dst = (u8*) job->dst;
+
+	for ( s32 dy = 0; dy != job->height; ++dy )
+	{
+		for ( s32 dx = 0; dx != job->width; ++dx )
+		{
+			u8 * writeTo = &dst[dx * 3];
+			*writeTo++ = (src[dx] >> 16)& 0xFF;
+			*writeTo++ = (src[dx] >> 8) & 0xFF;
+			*writeTo++ = src[dx] & 0xFF;
+		}
+
+		src = (u32*) ( (u8*) (src) + job->srcPitch );
+		dst += job->dstPitch ;
+	}
+	
 }
 
 
@@ -754,8 +797,14 @@ static tExecuteBlit getBlitter( eBlitter operation,const video::IImage * dest,co
 			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_A1R5G5B5 )
 				return executeBlit_TextureCopy_16_to_32;
 
+			if ( destFormat == video::ECF_R8G8B8 && sourceFormat == video::ECF_A1R5G5B5 )
+				return executeBlit_TextureCopy_16_to_24;
+
 			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_R8G8B8 )
 				return executeBlit_TextureCopy_24_to_32;
+
+			if ( destFormat == video::ECF_R8G8B8 && sourceFormat == video::ECF_A8R8G8B8 )
+				return executeBlit_TextureCopy_32_to_24;
 
 		} break;
 

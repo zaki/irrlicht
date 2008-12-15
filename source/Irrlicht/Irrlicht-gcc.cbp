@@ -44,7 +44,7 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="mv ../../lib/gcc/Irrlicht.dll ../../bin/gcc/Irrlicht.dll" />
+					<Add after="mv ..\..\lib\gcc\Irrlicht.dll ..\..\bin\gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Win32 - Release - accurate math - dll">
@@ -83,7 +83,7 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="mv ../../lib/gcc/Irrlicht.dll ../../bin/gcc/Irrlicht.dll" />
+					<Add after="mv ..\..\lib\gcc\Irrlicht.dll ..\..\bin\gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Win32 - Release - fast math - dll">
@@ -123,7 +123,7 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="mv ../../lib/gcc/Irrlicht.dll ../../bin/gcc/Irrlicht.dll" />
+					<Add after="mv ..\..\lib\gcc\Irrlicht.dll ..\..\bin\gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Linux - Debug - shared">

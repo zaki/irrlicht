@@ -209,15 +209,21 @@ int main()
 
 			const SEvent::SJoystickEvent & joystickData = receiver.GetJoystickState();
 
-			// Use the analog range of the axes, and a 5% dead zone
+			// We receive the full analog range of the axes, and so have to implement our
+			// own dead zone.  This is an empirical value, since some joysticks have more
+			// jitter or creep around the center point than others.  We'll use 5% of the
+			// range as the dead zone, but generally you would want to give the user the
+			// option to change this.
+			const f32 DEAD_ZONE = 0.05f;
+
 			moveHorizontal =
 				(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_X] / 32767.f;
-			if(fabs(moveHorizontal) < 0.05f)
+			if(fabs(moveHorizontal) < DEAD_ZONE)
 				moveHorizontal = 0.f;
 
 			moveVertical =
 				(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_Y] / -32767.f;
-			if(fabs(moveVertical) < 0.05f)
+			if(fabs(moveVertical) < DEAD_ZONE)
 				moveVertical = 0.f;
 
 			// POV hat info is only currently supported on Windows, but the value is

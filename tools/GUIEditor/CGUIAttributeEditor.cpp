@@ -20,7 +20,7 @@ using namespace io;
 
 CGUIAttributeEditor::CGUIAttributeEditor(IGUIEnvironment* environment, s32 id, IGUIElement *parent) :
 	CGUIPanel(environment, parent, id, rect<s32>(0, 0, 100, 100)),
-		Attribs(0)
+		Attribs(0), Panel(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIAttributeEditor");
@@ -39,13 +39,11 @@ CGUIAttributeEditor::CGUIAttributeEditor(IGUIEnvironment* environment, s32 id, I
 	core::rect<s32> r = sb->getRelativePosition();
 	r.LowerRightCorner.Y -= 16;
 	sb->setRelativePosition(r);
-
 }
 
 CGUIAttributeEditor::~CGUIAttributeEditor()
 {
-	u32 i;
-	for (i=0; i<AttribList.size(); ++i)
+	for (u32 i=0; i<AttribList.size(); ++i)
 	{
 		AttribList[i]->remove();
 		AttribList[i]->drop();
@@ -73,10 +71,9 @@ void CGUIAttributeEditor::refreshAttribs()
 	AttribList.clear();
 
 	position2di top(10, 5);
-	rect<s32> r(top.X,
-				top.Y,
-				getClientArea().getWidth() - 10,
-				5 + Environment->getSkin()->getFont()->getDimension(L"A").Height);
+	rect<s32> r(top.X, top.Y,
+			getClientArea().getWidth() - 10,
+			5 + Environment->getSkin()->getFont()->getDimension(L"A").Height);
 
 	// add attribute elements
 	u32 c = Attribs->getAttributeCount();
@@ -107,7 +104,6 @@ void CGUIAttributeEditor::refreshAttribs()
 		AttribList[i]->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 		AttribList[i]->setAttrib(Attribs, i);
 		r += position2di(0, AttribList[i]->getRelativePosition().getHeight() + 5);
-		
 	}
 }
 
@@ -119,3 +115,4 @@ void CGUIAttributeEditor::updateAttribs()
 
 } // namespace gui
 } // namespace irr
+

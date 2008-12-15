@@ -30,7 +30,7 @@ namespace gui
 		//! constructor
 		CGUIAttribute(IGUIEnvironment* environment, IGUIElement *parent, s32 myParentID) :
 			IGUIElement(EGUIET_ELEMENT, environment, parent, -1, core::rect<s32>(0, 0, 100, 100) ),
-			Attribs(0), Index(0), AttribName(0), MyParentID(myParentID)
+			AttribName(0), Attribs(0), Index(0), MyParentID(myParentID)
 		{
 
 			#ifdef _DEBUG
@@ -79,6 +79,8 @@ namespace gui
 					break;
 				case EET_KEY_INPUT_EVENT:
 					return true;
+				default:
+					break;
 				}
 			}
 
@@ -157,8 +159,8 @@ namespace gui
 	protected:
 		IGUIStaticText*		AttribName;
 		io::IAttributes*	Attribs;
-		u32					Index;
-		s32					MyParentID;
+		u32			Index;
+		s32			MyParentID;
 	};
 
 } // namespace gui

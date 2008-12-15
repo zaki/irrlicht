@@ -122,7 +122,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			case 't':       // texcoord
 				{
 					core::vector2df vec;
-					bufPtr = readVec2(bufPtr, vec, bufEnd);
+					bufPtr = readUV(bufPtr, vec, bufEnd);
 					textureCoordBuffer.push_back(vec);
 				}
 				break;
@@ -644,7 +644,7 @@ const c8* COBJMeshFileLoader::readVec3(const c8* bufPtr, core::vector3df& vec, c
 
 
 //! Read 2d vector of floats
-const c8* COBJMeshFileLoader::readVec2(const c8* bufPtr, core::vector2df& vec, const c8* const bufEnd)
+const c8* COBJMeshFileLoader::readUV(const c8* bufPtr, core::vector2df& vec, const c8* const bufEnd)
 {
 	const u32 WORD_BUFFER_LENGTH = 256;
 	c8 wordBuffer[WORD_BUFFER_LENGTH];
@@ -652,7 +652,7 @@ const c8* COBJMeshFileLoader::readVec2(const c8* bufPtr, core::vector2df& vec, c
 	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	vec.X=core::fast_atof(wordBuffer);
 	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-	vec.Y=-core::fast_atof(wordBuffer); // change handedness
+	vec.Y=1-core::fast_atof(wordBuffer); // change handedness
 	return bufPtr;
 }
 

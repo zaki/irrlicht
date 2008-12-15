@@ -269,11 +269,11 @@ struct SEvent
 
 		/** For AXIS_X, AXIS_Y, AXIS_Z, AXIS_R, AXIS_U and AXIS_V
 		 * Values are in the range -32768 to 32767, with 0 representing
-		 * the center position. You will usually want to add a dead 
-		 * zone around this center range. Axes not supported by this
-		 * joystick will always have a value of 0.
-		 * On Linux, POV hats are represented as axes, usually the 
-		 * last two active axis.
+		 * the center position.  You will receive the raw value from the 
+		 * joystick, and so will usually want to implement a dead zone around 
+		 * the center of the range. Axes not supported by this joystick will 
+		 * always have a value of 0. On Linux, POV hats are represented as axes, 
+		 * usually the last two active axis.
 		 */
 		s16 Axis[NUMBER_OF_AXES];
 

@@ -1,0 +1,34 @@
+hey guys heres all the ranges for the ninja model, 20 ranges and 300 frames....Phew!!
+
+you may need to scale or rotate the model and change animation speeds for various 3D game engines...
+
+Please check the numbers carefully cus they dont follow any order and in between ranges often skip a few frames, this as how I achieved certain moves in Character FX its not a mistake :)
+
+1-14	Walk (normal)
+15-30	Stealth Walk
+32-44	Punch and swipe sword
+45-59	Swipe and spin sword
+60-68	Overhead twohanded downswipe
+69-72	Up to block position (play backwards to lower sword if you want)
+73-83	Forward kick
+84-93	Pick up from floor (or down to crouch at frame 87)
+94-102	Jump
+103-111	Jump without height (for programmer controlled jumps)
+112-125	High jump to Sword Kill (Finish em off move??)
+126-133	Side Kick
+134-145	Spinning Sword attack (might wanna speed this up in game)
+146-158	Backflip
+159-165	Climb wall
+166-173	Death 1 - Fall back onto ground
+174-182	Death 2 - Fall forward onto ground
+184-205	Idle 1 - Breathe heavily
+206-250	Idle 2
+251-300	Idle 3
+
+Ok there it is, have fun and maybe drop by my forums hang out, ask questions, post your own work etc
+
+Feel free to use however you like, commercial etc, credits are Appreciated as a LOT of work went into this! ;-) 
+
+Psionic
+
+http://www.psionic3d.co.uk

@@ -74,7 +74,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\13.RenderToTexture.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				ProgramDatabaseFile=".\Release/RenderToTexture.pdb"
@@ -163,7 +163,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\13.RenderToTexture.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="true"

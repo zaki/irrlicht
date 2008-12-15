@@ -77,7 +77,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\Demo.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				ProgramDatabaseFile=".\Release/Demo.pdb"
@@ -170,7 +170,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\Demo.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="true"

@@ -33,7 +33,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\16.Quake3MapShader.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/Quake3MapShader.pdb"
@@ -90,7 +90,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\..\bin\Win32-VisualStudio\16.Quake3MapShader.exe"
-				LinkIncremental="1"
+				LinkIncremental="0"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\..\lib\Win32-visualstudio"
 				GenerateDebugInformation="FALSE"

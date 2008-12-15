@@ -65,7 +65,7 @@ namespace scene
 		/** If the camera's target and rotation are bound ( @see
 		bindTargetAndRotation() ) then calling this will also change
 		the camera's scene node rotation to match the target.
-		\param pos Look at target of the camera. */
+		\param pos Look at target of the camera, in world co-ordinates. */
 		virtual void setTarget(const core::vector3df& pos) = 0;
 
 		//! Sets the rotation of the node.
@@ -77,7 +77,7 @@ namespace scene
 		virtual void setRotation(const core::vector3df& rotation) = 0;
 
 		//! Gets the current look at target of the camera
-		/** \return The current look at target of the camera */
+		/** \return The current look at target of the camera, in world co-ordinates */
 		virtual const core::vector3df& getTarget() const = 0;
 
 		//! Sets the up vector of the camera.
@@ -85,7 +85,7 @@ namespace scene
 		virtual void setUpVector(const core::vector3df& pos) = 0;
 
 		//! Gets the up vector of the camera.
-		/** \return The up vector of the camera. */
+		/** \return The up vector of the camera, in world space. */
 		virtual const core::vector3df& getUpVector() const = 0;
 
 		//! Gets the value of the near plane of the camera.
