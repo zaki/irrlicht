@@ -179,6 +179,11 @@ void COGLES1Texture::copyTexture(bool newTexture)
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
 			break;
 	}
+	// Hack for iPhone SDK, which requires a different InternalFormat
+#ifdef _IRR_IPHONE_PLATFORM_
+	if (InternalFormat==GL_BGRA)
+		InternalFormat=GL_RGBA;
+#endif
 
 	if (newTexture)
 	{

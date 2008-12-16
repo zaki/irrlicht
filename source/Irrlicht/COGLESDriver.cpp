@@ -360,6 +360,8 @@ void COGLES1Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 	case ETS_TEXTURE_3:
 	{
 		const u32 i = state - ETS_TEXTURE_0;
+		if (i>= MaxTextureUnits)
+			break;
 		const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
 
 		if (MultiTextureExtension)
