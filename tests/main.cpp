@@ -54,6 +54,7 @@ int main(int argumentCount, char * arguments[])
 	extern bool md2Animation(void);
 	extern bool b3dAnimation(void);
 	extern bool guiDisabledMenu(void);
+	extern bool collisionResponseAnimator(void);
 
 	typedef struct _STest
 	{
@@ -65,7 +66,11 @@ int main(int argumentCount, char * arguments[])
 
 	static const STest tests[] =
 	{
-		TEST(disambiguateTextures), // Run this first, since it validates the WD.
+		// Note that to interactively debug a test, you will generally want to move it
+		// (temporarily) to the beginning of the list, since each test runs in its own
+		// process.
+		TEST(collisionResponseAnimator),
+		TEST(disambiguateTextures), // Normally you should run this first, since it validates the working directory.
 		TEST(exports),
 		TEST(testVector3d),
 		TEST(testVector2d),

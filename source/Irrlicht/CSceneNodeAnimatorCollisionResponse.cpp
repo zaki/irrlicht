@@ -137,12 +137,9 @@ ITriangleSelector* CSceneNodeAnimatorCollisionResponse::getWorld() const
 void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 timeMs)
 {
 	if (node != Object)
-	{
 		setNode(node);
-		return;
-	}
 
-	if (!World)
+	if(!Object || !World)
 		return;
 
 	u32 diff = timeMs - LastTime;

@@ -174,6 +174,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\collisionResponseAnimator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\disambiguateTextures.cpp"
 				>
 			</File>
@@ -206,11 +210,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\softwareDevice.cpp"
+				RelativePath=".\planeMatrix.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\planeMatrix.cpp"
+				RelativePath=".\softwareDevice.cpp"
 				>
 			</File>
 			<File

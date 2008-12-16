@@ -96,7 +96,7 @@ bool CSceneNodeAnimatorCameraFPS::OnEvent(const SEvent& evt)
 
 void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 {
-	if (node->getType() != ESNT_CAMERA)
+	if (!node || node->getType() != ESNT_CAMERA)
 		return;
 
 	ICameraSceneNode* camera = static_cast<ICameraSceneNode*>(node);

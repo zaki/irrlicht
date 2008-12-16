@@ -170,6 +170,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\collisionResponseAnimator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\disambiguateTextures.cpp"
 				>
 			</File>

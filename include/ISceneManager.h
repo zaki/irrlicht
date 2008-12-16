@@ -1082,7 +1082,9 @@ namespace scene
 		 ISceneManager::createTriangleSelector();
 		 \param sceneNode: SceneNode which should be manipulated. After you added this animator
 		 to the scene node, the scene node will not be able to move through walls and is
-		 affected by gravity.
+		 affected by gravity.  If you need to teleport the scene node to a new position without
+		 it being effected by the collision geometry, then call sceneNode->setPosition(); then
+		 animator->setTargetNode(sceneNode);
 		 \param ellipsoidRadius: Radius of the ellipsoid with which collision detection and
 		 response is done. If you have got a scene node, and you are unsure about
 		 how big the radius should be, you could use the following code to determine
@@ -1091,8 +1093,8 @@ namespace scene
 		 const core::aabbox3d<f32>& box = yourSceneNode->getBoundingBox();
 		 core::vector3df radius = box.MaxEdge - box.getCenter();
 		 \endcode
-		 \param gravityPerSecond: Sets the gravity of the environment, as an acceleration in 
-		 units per second per second. If your units are equivalent to metres, then 
+		 \param gravityPerSecond: Sets the gravity of the environment, as an acceleration in
+		 units per second per second. If your units are equivalent to metres, then
 		 core::vector3df(0,-10.0f,0) would give an approximately realistic gravity.
 		 You can disable gravity by setting it to core::vector3df(0,0,0).
 		 \param ellipsoidTranslation: By default, the ellipsoid for collision detection is created around
