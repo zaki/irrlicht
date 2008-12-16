@@ -41,7 +41,7 @@ CSceneNodeAnimatorCameraMaya::~CSceneNodeAnimatorCameraMaya()
 
 
 //! It is possible to send mouse and key events to the camera. Most cameras
-//! may ignore this input, but camera scene nodes which are created for 
+//! may ignore this input, but camera scene nodes which are created for
 //! example with scene::ISceneManager::addMayaCameraSceneNode or
 //! scene::ISceneManager::addMeshViewerCameraSceneNode, may want to get this input
 //! for changing their position, look at target or whatever.
@@ -90,7 +90,7 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 	//Alt + LM + MM = Dolly forth/back in view direction (speed % distance camera pivot - max distance to pivot)
 	//Alt + MM = Move on camera plane (Screen center is about the mouse pointer, depending on move speed)
 
-	if (node->getType() != ESNT_CAMERA)
+	if (!node || node->getType() != ESNT_CAMERA)
 		return;
 
 	ICameraSceneNode* camera = static_cast<ICameraSceneNode*>(node);
@@ -157,13 +157,13 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 		}
 		else
 		{
-			translate +=  tvectX * (TranslateStart.X - MousePos.X)*TranslateSpeed + 
+			translate +=  tvectX * (TranslateStart.X - MousePos.X)*TranslateSpeed +
 			              tvectY * (TranslateStart.Y - MousePos.Y)*TranslateSpeed;
 		}
 	}
 	else if (Translating)
 	{
-		translate += tvectX * (TranslateStart.X - MousePos.X)*TranslateSpeed + 
+		translate += tvectX * (TranslateStart.X - MousePos.X)*TranslateSpeed +
 		             tvectY * (TranslateStart.Y - MousePos.Y)*TranslateSpeed;
 		OldTarget = translate;
 		Translating = false;
@@ -235,7 +235,7 @@ void CSceneNodeAnimatorCameraMaya::allKeysUp()
 //! Sets the rotation speed
 void CSceneNodeAnimatorCameraMaya::setRotateSpeed(f32 speed)
 {
-	RotateSpeed = speed;	
+	RotateSpeed = speed;
 }
 
 
@@ -275,7 +275,7 @@ f32 CSceneNodeAnimatorCameraMaya::getZoomSpeed() const
 
 ISceneNodeAnimator* CSceneNodeAnimatorCameraMaya::createClone(ISceneNode* node, ISceneManager* newManager)
 {
-	CSceneNodeAnimatorCameraMaya * newAnimator = 
+	CSceneNodeAnimatorCameraMaya * newAnimator =
 		new CSceneNodeAnimatorCameraMaya(CursorControl, RotateSpeed, ZoomSpeed, TranslateSpeed);
 	return newAnimator;
 }

@@ -39,6 +39,7 @@
 		</Linker>
 		<Unit filename="b3dAnimation.cpp" />
 		<Unit filename="disambiguateTextures.cpp" />
+		<Unit filename="collisionResponseAnimator.cpp" />
 		<Unit filename="drawPixel.cpp" />
 		<Unit filename="exports.cpp" />
 		<Unit filename="fast_atof.cpp" />

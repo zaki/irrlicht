@@ -30,6 +30,9 @@ inline s32 CSceneNodeAnimatorFollowSpline::clamp(s32 idx, s32 size)
 //! animates a scene node
 void CSceneNodeAnimatorFollowSpline::animateNode(ISceneNode* node, u32 timeMs)
 {
+	if(!node)
+		return;
+
 	const u32 pSize = Points.size();
 	if (pSize==0)
 		return;

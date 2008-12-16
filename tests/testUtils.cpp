@@ -8,9 +8,9 @@
 #include <assert.h>
 #include <stdarg.h>
 
-#if defined(_MSC_VER) && !defined(NDEBUG)
-#include <windows.h>
-#endif // #if defined(_MSC_VER) && !defined(NDEBUG)
+#if defined(TESTING_ON_WINDOWS)
+#include <windows.h> // For OutputDebugString()
+#endif // #if defined(TESTING_ON_WINDOWS)
 
 using namespace irr;
 
@@ -247,7 +247,7 @@ void logTestString(const char * format, ...)
 		(void)fflush(logFile);
 	}
 
-#if defined(_MSC_VER) && !defined(NDEBUG)
+#if defined(TESTING_ON_WINDOWS)
 	OutputDebugStringA(logString);
-#endif // #if defined(_MSC_VER) && !defined(NDEBUG)
+#endif // #if defined(TESTING_ON_WINDOWS)
 }

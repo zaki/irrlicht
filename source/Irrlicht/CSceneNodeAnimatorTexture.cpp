@@ -53,6 +53,9 @@ void CSceneNodeAnimatorTexture::clearTextures()
 //! animates a scene node
 void CSceneNodeAnimatorTexture::animateNode(ISceneNode* node, u32 timeMs)
 {
+	if(!node)
+		return;
+
 	if (Textures.size())
 	{
 		const u32 t = (timeMs-StartTime);

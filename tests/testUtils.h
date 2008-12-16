@@ -4,6 +4,10 @@
 
 #include "irrlicht.h"
 
+#if defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64) || defined(_WIN32_WCE)
+#define TESTING_ON_WINDOWS
+#endif
+
 //! Compare two files
 /** \param fileName1 The first file for comparison.
 	\param fileName1 The second file for comparison.
