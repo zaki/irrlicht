@@ -48,6 +48,7 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="planeMatrix.cpp" />
+		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="softwareDevice.cpp" />
 		<Unit filename="testUtils.cpp" />
 		<Unit filename="testVector2d.cpp" />

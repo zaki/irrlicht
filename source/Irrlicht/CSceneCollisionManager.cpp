@@ -230,6 +230,7 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 	const core::vector3df &position, const core::vector3df& radius,
 	const core::vector3df& direction,
 	core::triangle3df& triout,
+	core::vector3df& hitPosition,
 	bool& outFalling,
 	f32 slidingSpeed,
 	const core::vector3df& gravity)
@@ -238,7 +239,7 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 		return position;
 
 	return collideEllipsoidWithWorld(selector, position,
-		radius, direction, slidingSpeed, gravity, triout, outFalling);
+		radius, direction, slidingSpeed, gravity, triout, hitPosition, outFalling);
 }
 
 
@@ -497,7 +498,9 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	const core::vector3df& radius,  const core::vector3df& velocity,
 	f32 slidingSpeed,
 	const core::vector3df& gravity,
-	core::triangle3df& triout, bool& outFalling)
+	core::triangle3df& triout, 
+	core::vector3df& hitPosition,
+	bool& outFalling)
 {
 	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
 		return position;
@@ -549,6 +552,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	}
 
 	finalPos *= colData.eRadius;
+	hitPosition = colData.intersectionPoint * colData.eRadius;
 	return finalPos;
 }
 

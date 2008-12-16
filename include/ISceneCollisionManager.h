@@ -70,6 +70,7 @@ namespace scene
 			const core::vector3df& ellipsoidRadius,
 			const core::vector3df& ellipsoidDirectionAndSpeed,
 			core::triangle3df& triout,
+			core::vector3df& hitPosition,
 			bool& outFalling,
 			f32 slidingSpeed = 0.0005f,
 			const core::vector3df& gravityDirectionAndSpeed

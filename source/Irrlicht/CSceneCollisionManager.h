@@ -52,6 +52,7 @@ namespace scene
 			const core::vector3df &ellipsoidPosition,	const core::vector3df& ellipsoidRadius, 
 			const core::vector3df& ellipsoidDirectionAndSpeed,
 			core::triangle3df& triout,
+			core::vector3df& hitPosition,
 			bool& outFalling,
 			f32 slidingSpeed,
 			const core::vector3df& gravityDirectionAndSpeed);
@@ -106,6 +107,7 @@ namespace scene
 			const core::vector3df& radius,  const core::vector3df& velocity,
 			f32 slidingSpeed,
 			const core::vector3df& gravity, core::triangle3df& triout,
+			core::vector3df& hitPosition,
 			bool& outFalling);
 
 		core::vector3df collideWithWorld(s32 recursionDepth, SCollisionData &colData,

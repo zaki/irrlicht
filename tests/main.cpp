@@ -55,6 +55,7 @@ int main(int argumentCount, char * arguments[])
 	extern bool b3dAnimation(void);
 	extern bool guiDisabledMenu(void);
 	extern bool collisionResponseAnimator(void);
+	extern bool sceneCollisionManager(void);
 
 	typedef struct _STest
 	{
@@ -69,8 +70,9 @@ int main(int argumentCount, char * arguments[])
 		// Note that to interactively debug a test, you will generally want to move it
 		// (temporarily) to the beginning of the list, since each test runs in its own
 		// process.
-		TEST(collisionResponseAnimator),
 		TEST(disambiguateTextures), // Normally you should run this first, since it validates the working directory.
+		TEST(sceneCollisionManager),
+		TEST(collisionResponseAnimator),
 		TEST(exports),
 		TEST(testVector3d),
 		TEST(testVector2d),

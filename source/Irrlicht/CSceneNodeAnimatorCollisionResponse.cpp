@@ -161,9 +161,10 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		// TODO: divide SlidingSpeed by frame time
 
 		bool f = false;
+		core::vector3df collisionPosition; // Not used.
 		pos = SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
 				World, LastPosition-Translation,
-				Radius, vel, triangle, f, SlidingSpeed, FallingVelocity);
+				Radius, vel, triangle, collisionPosition, f, SlidingSpeed, FallingVelocity);
 
 		pos += Translation;
 
