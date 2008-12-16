@@ -214,6 +214,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\sceneCollisionManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\softwareDevice.cpp"
 				>
 			</File>
