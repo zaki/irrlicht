@@ -927,25 +927,14 @@ namespace core
 	inline void CMatrix4<T>::transformPlane( core::plane3d<f32> &plane) const
 	{
 		vector3df member;
-		// Fully transform the plane member point, i.e. rotate, translate and scale it.
+		// Transform the plane member point, i.e. rotate, translate and scale it.
 		transformVect(member, plane.getMemberPoint());
 
+		// Transform the normal by the transposed inverse of the matrix
+		CMatrix4<T> transposedInverse(*this, EM4CONST_INVERSE_TRANSPOSED);
 		vector3df normal = plane.Normal;
-		normal.normalize();
+		transposedInverse.transformVect(normal);
 
-		// The normal needs to be rotated and inverse scaled, but not translated.
-		const vector3df scale = getScale();
-
-		if(!equals(scale.X, 0.f) && !equals(scale.Y, 0.f) && !equals(scale.Z, 0.f)
-			&& (!equals(scale.X, 1.f) || !equals(scale.Y, 1.f) || !equals(scale.Z, 1.f)))
-		{
-			// Rotating the vector will also apply the scale, so we have to invert it twice.
-			normal /= (scale * scale);
-		}
-
-		rotateVect(normal);
-
-		normal.normalize();
 		plane.setPlane(member, normal);
 	}
 
