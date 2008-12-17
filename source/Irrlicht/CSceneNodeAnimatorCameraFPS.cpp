@@ -146,14 +146,15 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 			{
 				relativeRotation.X = MaxVerticalAngle;
 			}
-
-			// reset cursor position
-			CursorControl->setPosition(0.5f, 0.5f);
-			CenterCursor = CursorControl->getRelativePosition();
-			// needed to avoid problems when the ecent receiver is
-			// disabled
-			CursorPos = CenterCursor;
 		}
+
+		// reset cursor position to the centre of the window. Do this unconditionally 
+		// to cope with the case where the mouse has escaped our window in a single
+		// tick, so we don't get messages for it.
+		CursorControl->setPosition(0.5f, 0.5f);
+		CenterCursor = CursorControl->getRelativePosition();
+		// needed to avoid problems when the event receiver is disabled
+		CursorPos = CenterCursor;
 	}
 
 	// set target
