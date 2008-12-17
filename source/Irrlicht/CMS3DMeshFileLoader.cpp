@@ -16,6 +16,10 @@ namespace irr
 namespace scene
 {
 
+#ifdef _DEBUG
+#define _IRR_DEBUG_MS3D_LOADER_
+#endif
+
 // byte-align structures
 #if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
@@ -195,6 +199,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		os::Printer::log("Only Milkshape3D version 3 and 4 (1.3 to 1.8) is supported. Loading failed", file->getFileName(), ELL_ERROR);
 		return false;
 	}
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+	os::Printer::log("Loaded header version", core::stringc(pHeader->Version).c_str());
+#endif
 
 	// get pointers to data
 
@@ -202,6 +209,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	u16 numVertices = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numVertices = os::Byteswap::byteswap(numVertices);
+#endif
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+	os::Printer::log("Load vertices", core::stringc(numVertices).c_str());
 #endif
 	pPtr += sizeof(u16);
 	MS3DVertex *vertices = (MS3DVertex*)pPtr;
@@ -227,6 +237,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	u16 numTriangles = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numTriangles = os::Byteswap::byteswap(numTriangles);
+#endif
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+	os::Printer::log("Load Triangles", core::stringc(numTriangles).c_str());
 #endif
 	pPtr += sizeof(u16);
 	MS3DTriangle *triangles = (MS3DTriangle*)pPtr;
@@ -261,6 +274,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	u16 numGroups = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numGroups = os::Byteswap::byteswap(numGroups);
+#endif
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+	os::Printer::log("Load Groups", core::stringc(numGroups).c_str());
 #endif
 	pPtr += sizeof(u16);
 	
@@ -313,6 +329,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	u16 numMaterials = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	numMaterials = os::Byteswap::byteswap(numMaterials);
+#endif
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+	os::Printer::log("Load Materials", core::stringc(numMaterials).c_str());
 #endif
 	pPtr += sizeof(u16);
 
@@ -379,6 +398,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 #ifdef __BIG_ENDIAN__
 	framesPerSecond = os::Byteswap::byteswap(framesPerSecond);
 #endif
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+	os::Printer::log("FPS", core::stringc(framesPerSecond).c_str());
+#endif
 	pPtr += sizeof(float) * 2; // fps and current time
 
 	if (framesPerSecond<1.f)
@@ -394,6 +416,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	u16 jointCount = *(u16*)pPtr;
 #ifdef __BIG_ENDIAN__
 	jointCount = os::Byteswap::byteswap(jointCount);
+#endif
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+	os::Printer::log("Joints", core::stringc(jointCount).c_str());
 #endif
 	pPtr += sizeof(u16);
 	if (pPtr > buffer+fileSize)
@@ -430,6 +455,11 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		ISkinnedMesh::SJoint *jnt = AnimatedMesh->createJoint();
 
 		jnt->Name = pJoint->Name;
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+		os::Printer::log("Joint", jnt->Name.c_str());
+		os::Printer::log("Rotation keyframes", core::stringc(pJoint->NumRotationKeyframes).c_str());
+		os::Printer::log("Translation keyframes", core::stringc(pJoint->NumTranslationKeyframes).c_str());
+#endif
 		jnt->LocalMatrix.makeIdentity();
 		jnt->LocalMatrix.setRotationRadians(
 			core::vector3df(pJoint->Rotation[0], pJoint->Rotation[1], pJoint->Rotation[2]) );
@@ -525,6 +555,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 
 		for (u32 j=0; j<4; ++j) // four comment groups
 		{
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+			os::Printer::log("Skipping comment group", core::stringc(j+1).c_str());
+#endif
 			u32 numComments = *(u32*)pPtr;
 #ifdef __BIG_ENDIAN__
 			numComments = os::Byteswap::byteswap(numComments);
@@ -557,6 +590,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 #endif
 			pPtr += sizeof(s32);
 
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+			os::Printer::log("Reading vertex weights");
+#endif
 			// read vertex weights, ignoring data 'extra' from 1.8.2
 			vertexWeights.reallocate(numVertices);
 			const char offset = (subVersion==1)?6:10;
@@ -582,6 +618,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 #endif
 			pPtr += sizeof(s32);
 			// skip joint colors
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+			os::Printer::log("Skip joint color");
+#endif
 			pPtr += 3*sizeof(float)*jointCount;
 
 			if (pPtr > buffer+fileSize)
@@ -599,6 +638,9 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			subVersion = os::Byteswap::byteswap(subVersion);
 #endif
 			pPtr += sizeof(s32);
+#ifdef _IRR_DEBUG_MS3D_LOADER_
+			os::Printer::log("Skip model extra information");
+#endif
 			// now the model extra information would follow
 			// we also skip this for now
 		}
