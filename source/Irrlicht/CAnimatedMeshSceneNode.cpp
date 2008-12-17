@@ -822,6 +822,9 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 
 	Mesh = mesh;
 
+	// Forget about the stored frame of any existing mesh.
+	MeshForCurrentFrame = 0;
+
 	// get materials and bounding box
 	Box = Mesh->getBoundingBox();
 
