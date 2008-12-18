@@ -6,6 +6,7 @@
 #include "ICursorControl.h"
 #include "ICameraSceneNode.h"
 #include "SViewFrustum.h"
+#include "ISceneManager.h"
 
 namespace irr
 {
@@ -94,6 +95,14 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 		return;
 
 	ICameraSceneNode* camera = static_cast<ICameraSceneNode*>(node);
+
+	// If the camera isn't the active camera, and receiving input, then don't process it.
+	if(!camera->isInputReceiverEnabled())
+		return;
+
+	scene::ISceneManager * smgr = camera->getSceneManager();
+	if(smgr && smgr->getActiveCamera() != camera)
+		return;
 
 	if (OldCamera != camera)
 	{

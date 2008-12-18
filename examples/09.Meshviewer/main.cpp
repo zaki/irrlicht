@@ -38,6 +38,48 @@ bool Octree=false;
 
 scene::ICameraSceneNode* Camera[2] = {0, 0};
 
+// Values used to identify individual GUI elements
+enum
+{
+	GUI_ID_DIALOG_ROOT_WINDOW  = 0x10000,
+
+	GUI_ID_X_SCALE,
+	GUI_ID_Y_SCALE,
+	GUI_ID_Z_SCALE,
+
+	GUI_ID_OPEN_MODEL,
+	GUI_ID_SET_MODEL_ARCHIVE,
+	GUI_ID_LOAD_AS_OCTREE,
+
+	GUI_ID_SKY_BOX_VISIBLE,
+	GUI_ID_TOGGLE_DEBUG_INFO,
+
+	GUI_ID_DEBUG_OFF,
+	GUI_ID_DEBUG_BOUNDING_BOX,
+	GUI_ID_DEBUG_NORMALS,
+	GUI_ID_DEBUG_SKELETON,
+	GUI_ID_DEBUG_WIRE_OVERLAY,
+	GUI_ID_DEBUG_HALF_TRANSPARENT,
+	GUI_ID_DEBUG_BUFFERS_BOUNDING_BOXES,
+	GUI_ID_DEBUG_ALL,
+
+	GUI_ID_MODEL_MATERIAL_SOLID,
+	GUI_ID_MODEL_MATERIAL_TRANSPARENT,
+	GUI_ID_MODEL_MATERIAL_REFLECTION,
+
+	GUI_ID_CAMERA_MAYA,
+	GUI_ID_CAMERA_FIRST_PERSON,
+
+	GUI_ID_POSITION_TEXT,
+
+	GUI_ID_ABOUT,
+	GUI_ID_QUIT,
+
+	// And some magic numbers
+	MAX_FRAMERATE = 1000,
+	DEFAULT_FRAMERATE = 30
+};
+
 /*
 Toggle between various cameras
 */
@@ -46,7 +88,8 @@ void setActiveCamera(scene::ICameraSceneNode* newActive)
 	if (0 == Device)
 		return;
 
-	Device->getSceneManager()->getActiveCamera();
+	scene::ICameraSceneNode * active = Device->getSceneManager()->getActiveCamera();
+	active->setInputReceiverEnabled(false);
 
 	newActive->setInputReceiverEnabled(true);
 	Device->getSceneManager()->setActiveCamera(newActive);
@@ -149,19 +192,13 @@ void loadModel(const c8* fn)
 
 	// we need to uncheck the menu entries. would be cool to fake a menu event, but
 	// that's not so simple. so we do it brute force
-	gui::IGUIContextMenu* menu = (gui::IGUIContextMenu*)Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(400, true);
+	gui::IGUIContextMenu* menu = (gui::IGUIContextMenu*)Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_TOGGLE_DEBUG_INFO, true);
 	if (menu)
-	{
-		menu->setItemChecked(1, false);
-		menu->setItemChecked(2, false);
-		menu->setItemChecked(3, false);
-		menu->setItemChecked(4, false);
-		menu->setItemChecked(5, false);
-		menu->setItemChecked(6, false);
-	}
-	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(901, true)->setText(L"1.0");
-	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(902, true)->setText(L"1.0");
-	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(903, true)->setText(L"1.0");
+		for(int item = 1; item < 6; ++item)
+			menu->setItemChecked(item, false);
+	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_X_SCALE, true)->setText(L"1.0");
+	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_Y_SCALE, true)->setText(L"1.0");
+	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_Z_SCALE, true)->setText(L"1.0");
 }
 
 
@@ -175,13 +212,13 @@ void createToolBox()
 	// remove tool box if already there
 	IGUIEnvironment* env = Device->getGUIEnvironment();
 	IGUIElement* root = env->getRootGUIElement();
-	IGUIElement* e = root->getElementFromId(5000, true);
+	IGUIElement* e = root->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
 	if (e)
 		e->remove();
 
 	// create the toolbox window
 	IGUIWindow* wnd = env->addWindow(core::rect<s32>(600,45,800,480),
-		false, L"Toolset", 0, 5000);
+		false, L"Toolset", 0, GUI_ID_DIALOG_ROOT_WINDOW);
 
 	// create tab control and tabs
 	IGUITabControl* tab = env->addTabControl(
@@ -193,11 +230,11 @@ void createToolBox()
 	env->addStaticText(L"Scale:",
 			core::rect<s32>(10,20,150,45), false, false, t1);
 	env->addStaticText(L"X:", core::rect<s32>(22,48,40,66), false, false, t1);
-	env->addEditBox(L"1.0", core::rect<s32>(40,46,130,66), true, t1, 901);
-	env->addStaticText(L"Y:", core::rect<s32>(22,82,40,100), false, false, t1);
-	env->addEditBox(L"1.0", core::rect<s32>(40,76,130,96), true, t1, 902);
+	env->addEditBox(L"1.0", core::rect<s32>(40,46,130,66), true, t1, GUI_ID_X_SCALE);
+	env->addStaticText(L"Y:", core::rect<s32>(22,82,40,GUI_ID_OPEN_MODEL), false, false, t1);
+	env->addEditBox(L"1.0", core::rect<s32>(40,76,130,96), true, t1, GUI_ID_Y_SCALE);
 	env->addStaticText(L"Z:", core::rect<s32>(22,108,40,126), false, false, t1);
-	env->addEditBox(L"1.0", core::rect<s32>(40,106,130,126), true, t1, 903);
+	env->addEditBox(L"1.0", core::rect<s32>(40,106,130,126), true, t1, GUI_ID_Z_SCALE);
 
 	env->addButton(core::rect<s32>(10,134,85,165), t1, 1101, L"Set");
 
@@ -214,8 +251,8 @@ void createToolBox()
 			core::rect<s32>(10,240,150,265), true, false, t1);
 	scrollbar = env->addScrollBar(true,
 			core::rect<s32>(10,265,150,280), t1, 105);
-	scrollbar->setMax(1000);
-	scrollbar->setPos(30);
+	scrollbar->setMax(MAX_FRAMERATE);
+	scrollbar->setPos(DEFAULT_FRAMERATE);
 
 	// bring irrlicht engine logo to front, because it
 	// now may be below the newly created toolbox
@@ -227,7 +264,7 @@ void createToolBox()
 To get all the events sent by the GUI Elements, we need to create an event
 receiver. This one is really simple. If an event occurs, it checks the id of
 the caller and the event type, and starts an action based on these values. For
-example, if a menu item with id 100 was selected, if opens a file-open-dialog.
+example, if a menu item with id GUI_ID_OPEN_MODEL was selected, if opens a file-open-dialog.
 */
 class MyEventReceiver : public IEventReceiver
 {
@@ -255,7 +292,7 @@ public:
 			{
 				if (Device)
 				{
-					IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(2001);
+					IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_POSITION_TEXT);
 					if (elem)
 						elem->setVisible(!elem->isVisible());
 				}
@@ -278,24 +315,24 @@ public:
 
 					switch(id)
 					{
-					case 100: // File -> Open Model
+					case GUI_ID_OPEN_MODEL: // File -> Open Model
 						env->addFileOpenDialog(L"Please select a model file to open");
 						break;
-					case 101: // File -> Set Model Archive
+					case GUI_ID_SET_MODEL_ARCHIVE: // File -> Set Model Archive
 						env->addFileOpenDialog(L"Please select your game archive/directory");
 						break;
-					case 102: // File -> LoadAsOctree
+					case GUI_ID_LOAD_AS_OCTREE: // File -> LoadAsOctree
 						Octree = !Octree;
 						menu->setItemChecked(menu->getSelectedItem(), Octree);
 						break;
-					case 200: // File -> Quit
+					case GUI_ID_QUIT: // File -> Quit
 						Device->closeDevice();
 						break;
-					case 300: // View -> Skybox
+					case GUI_ID_SKY_BOX_VISIBLE: // View -> Skybox
 						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						SkyBox->setVisible(!SkyBox->isVisible());
 						break;
-					case 401: // View -> Debug Information
+					case GUI_ID_DEBUG_OFF: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem()+1, false);
 						menu->setItemChecked(menu->getSelectedItem()+2, false);
 						menu->setItemChecked(menu->getSelectedItem()+3, false);
@@ -305,37 +342,37 @@ public:
 						if (Model)
 							Model->setDebugDataVisible(scene::EDS_OFF);
 						break;
-					case 410: // View -> Debug Information
+					case GUI_ID_DEBUG_BOUNDING_BOX: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX));
 						break;
-					case 420: // View -> Debug Information
+					case GUI_ID_DEBUG_NORMALS: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_NORMALS));
 						break;
-					case 430: // View -> Debug Information
+					case GUI_ID_DEBUG_SKELETON: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_SKELETON));
 						break;
-					case 440: // View -> Debug Information
+					case GUI_ID_DEBUG_WIRE_OVERLAY: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_MESH_WIRE_OVERLAY));
 						break;
-					case 450: // View -> Debug Information
+					case GUI_ID_DEBUG_HALF_TRANSPARENT: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_HALF_TRANSPARENCY));
 						break;
-					case 460: // View -> Debug Information
+					case GUI_ID_DEBUG_BUFFERS_BOUNDING_BOXES: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem(), !menu->isItemChecked(menu->getSelectedItem()));
 						if (Model)
 							Model->setDebugDataVisible((scene::E_DEBUG_SCENE_TYPE)(Model->isDebugDataVisible()^scene::EDS_BBOX_BUFFERS));
 						break;
-					case 499: // View -> Debug Information
+					case GUI_ID_DEBUG_ALL: // View -> Debug Information
 						menu->setItemChecked(menu->getSelectedItem()-1, true);
 						menu->setItemChecked(menu->getSelectedItem()-2, true);
 						menu->setItemChecked(menu->getSelectedItem()-3, true);
@@ -345,26 +382,26 @@ public:
 						if (Model)
 							Model->setDebugDataVisible(scene::EDS_FULL);
 						break;
-					case 500: // Help->About
+					case GUI_ID_ABOUT: // Help->About
 						showAboutText();
 						break;
-					case 610: // View -> Material -> Solid
+					case GUI_ID_MODEL_MATERIAL_SOLID: // View -> Material -> Solid
 						if (Model)
 							Model->setMaterialType(video::EMT_SOLID);
 						break;
-					case 620: // View -> Material -> Transparent
+					case GUI_ID_MODEL_MATERIAL_TRANSPARENT: // View -> Material -> Transparent
 						if (Model)
 							Model->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
 						break;
-					case 630: // View -> Material -> Reflection
+					case GUI_ID_MODEL_MATERIAL_REFLECTION: // View -> Material -> Reflection
 						if (Model)
 							Model->setMaterialType(video::EMT_SPHERE_MAP);
 						break;
 
-					case 1000:
+					case GUI_ID_CAMERA_MAYA:
 						setActiveCamera(Camera[0]);
 						break;
-					case 1100:
+					case GUI_ID_CAMERA_FIRST_PERSON:
 						setActiveCamera(Camera[1]);
 						break;
 
@@ -459,11 +496,11 @@ public:
 						core::vector3df scale;
 						core::stringc s;
 
-						s = root->getElementFromId(901, true)->getText();
+						s = root->getElementFromId(GUI_ID_X_SCALE, true)->getText();
 						scale.X = (f32)atof(s.c_str());
-						s = root->getElementFromId(902, true)->getText();
+						s = root->getElementFromId(GUI_ID_Y_SCALE, true)->getText();
 						scale.Y = (f32)atof(s.c_str());
-						s = root->getElementFromId(903, true)->getText();
+						s = root->getElementFromId(GUI_ID_Z_SCALE, true)->getText();
 						scale.Z = (f32)atof(s.c_str());
 
 						if (Model)
@@ -551,7 +588,7 @@ int main(int argc, char* argv[])
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
 	smgr->addLightSceneNode();
-	smgr->addLightSceneNode(0, core::vector3df(50,-50,100),
+	smgr->addLightSceneNode(0, core::vector3df(50,-50,GUI_ID_OPEN_MODEL),
 			video::SColorf(1.0f,1.0f,1.0f),20000);
 	// add our media directory as "search path"
 	Device->getFileSystem()->addFolderFileArchive("../../media/");
@@ -635,38 +672,38 @@ int main(int argc, char* argv[])
 
 	gui::IGUIContextMenu* submenu;
 	submenu = menu->getSubMenu(0);
-	submenu->addItem(L"Open Model File & Texture...", 100);
-	submenu->addItem(L"Set Model Archive...", 101);
-	submenu->addItem(L"Load as Octree", 102);
+	submenu->addItem(L"Open Model File & Texture...", GUI_ID_OPEN_MODEL);
+	submenu->addItem(L"Set Model Archive...", GUI_ID_SET_MODEL_ARCHIVE);
+	submenu->addItem(L"Load as Octree", GUI_ID_LOAD_AS_OCTREE);
 	submenu->addSeparator();
-	submenu->addItem(L"Quit", 200);
+	submenu->addItem(L"Quit", GUI_ID_QUIT);
 
 	submenu = menu->getSubMenu(1);
-	submenu->addItem(L"sky box visible", 300, true, false, true);
-	submenu->addItem(L"toggle model debug information", 400, true, true);
+	submenu->addItem(L"sky box visible", GUI_ID_SKY_BOX_VISIBLE, true, false, true);
+	submenu->addItem(L"toggle model debug information", GUI_ID_TOGGLE_DEBUG_INFO, true, true);
 	submenu->addItem(L"model material", -1, true, true );
 
 	submenu = submenu->getSubMenu(1);
-	submenu->addItem(L"Off", 401);
-	submenu->addItem(L"Bounding Box", 410);
-	submenu->addItem(L"Normals", 420);
-	submenu->addItem(L"Skeleton", 430);
-	submenu->addItem(L"Wire overlay", 440);
-	submenu->addItem(L"Half-Transparent", 450);
-	submenu->addItem(L"Buffers bounding boxes", 460);
-	submenu->addItem(L"All", 499);
+	submenu->addItem(L"Off", GUI_ID_DEBUG_OFF);
+	submenu->addItem(L"Bounding Box", GUI_ID_DEBUG_BOUNDING_BOX);
+	submenu->addItem(L"Normals", GUI_ID_DEBUG_NORMALS);
+	submenu->addItem(L"Skeleton", GUI_ID_DEBUG_SKELETON);
+	submenu->addItem(L"Wire overlay", GUI_ID_DEBUG_WIRE_OVERLAY);
+	submenu->addItem(L"Half-Transparent", GUI_ID_DEBUG_HALF_TRANSPARENT);
+	submenu->addItem(L"Buffers bounding boxes", GUI_ID_DEBUG_BUFFERS_BOUNDING_BOXES);
+	submenu->addItem(L"All", GUI_ID_DEBUG_ALL);
 
 	submenu = menu->getSubMenu(1)->getSubMenu(2);
-	submenu->addItem(L"Solid", 610);
-	submenu->addItem(L"Transparent", 620);
-	submenu->addItem(L"Reflection", 630);
+	submenu->addItem(L"Solid", GUI_ID_MODEL_MATERIAL_SOLID);
+	submenu->addItem(L"Transparent", GUI_ID_MODEL_MATERIAL_TRANSPARENT);
+	submenu->addItem(L"Reflection", GUI_ID_MODEL_MATERIAL_REFLECTION);
 
 	submenu = menu->getSubMenu(2);
-	submenu->addItem(L"Maya Style", 1000);
-	submenu->addItem(L"First Person", 1100);
+	submenu->addItem(L"Maya Style", GUI_ID_CAMERA_MAYA);
+	submenu->addItem(L"First Person", GUI_ID_CAMERA_FIRST_PERSON);
 
 	submenu = menu->getSubMenu(3);
-	submenu->addItem(L"About", 500);
+	submenu->addItem(L"About", GUI_ID_ABOUT);
 
 	/*
 	Below the menu we want a toolbar, onto which we can place colored
@@ -721,10 +758,10 @@ int main(int argc, char* argv[])
 	// create fps text
 
 	IGUIStaticText* fpstext = env->addStaticText(L"",
-			core::rect<s32>(400,4,570,23), true, false, bar);
+			core::rect<s32>(GUI_ID_TOGGLE_DEBUG_INFO,4,570,23), true, false, bar);
 
 	IGUIStaticText* postext = env->addStaticText(L"",
-			core::rect<s32>(10,50,470,80),false, false, 0, 2001);
+			core::rect<s32>(10,50,470,80),false, false, 0, GUI_ID_POSITION_TEXT);
 	postext->setVisible(false);
 
 	// set window caption

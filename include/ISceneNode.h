@@ -676,6 +676,10 @@ namespace scene
 			return 0; // to be implemented by derived classes
 		}
 
+		//! Retrieve the scene manager for this node.
+		/** \return The node's scene manager. */
+		virtual ISceneManager* getSceneManager(void) const { return SceneManager; }
+
 	protected:
 
 		//! A clone function for the ISceneNode members.
