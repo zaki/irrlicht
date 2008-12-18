@@ -634,6 +634,10 @@
 				Name="video"
 				>
 				<File
+					RelativePath="..\..\include\EDriverFeatures.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\EDriverTypes.h"
 					>
 				</File>
@@ -707,6 +711,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\dimension2d.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\fast_atof.h"
 					>
 				</File>
 				<File
@@ -1958,6 +1966,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\COGLESExtensionHandler.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\COGLESExtensionHandler.h"
 					>
 				</File>
@@ -1971,6 +1983,14 @@
 				</File>
 				<File
 					RelativePath=".\COGLESTexture.h"
+					>
+				</File>
+				<File
+					RelativePath=".\eglext.h"
+					>
+				</File>
+				<File
+					RelativePath=".\gles-ext.h"
 					>
 				</File>
 			</Filter>
