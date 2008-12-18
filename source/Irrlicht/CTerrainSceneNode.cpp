@@ -131,7 +131,7 @@ namespace scene
 		scene::CDynamicMeshBuffer *mb=0;
 
 		const u32 numVertices = TerrainData.Size * TerrainData.Size;
-		if (numVertices <65535)
+		if (numVertices <= 65536)
 		{
 			//small enough for 16bit buffers
 			mb=new scene::CDynamicMeshBuffer(video::EVT_2TCOORDS, video::EIT_16BIT);
@@ -298,7 +298,7 @@ namespace scene
 		// resize the vertex array for the mesh buffer one time (makes loading faster)
 		scene::CDynamicMeshBuffer *mb=0;
 		const u32 numVertices = TerrainData.Size * TerrainData.Size;
-		if (numVertices <65535)
+		if (numVertices <= 65536)
 		{
 			//small enough for 16bit buffers
 			mb=new scene::CDynamicMeshBuffer(video::EVT_2TCOORDS, video::EIT_16BIT);

@@ -4,8 +4,8 @@ Changes in version 1.6
 
  - Add a hitPosition out parameter to ISceneCollisionManager::getCollisionResultPosition() - this is a (small) API breaking change.
 
-
-Changes in version 1.5 (...12.2008)
+-----------------------------------
+Changes in version 1.5 (15.12.2008)
 
  - Construction calls for FPS camera changed to take speed in units/milliseconds, just as the setSpeed method does.
 
