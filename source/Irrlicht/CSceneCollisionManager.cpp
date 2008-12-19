@@ -88,44 +88,47 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
    {
       ISceneNode* current = *it;
 
-      if (current->isVisible() &&
-          (bNoDebugObjects ? !current->isDebugObject() : true) &&
-          (bits==0 || (bits != 0 && (current->getID() & bits))))
-      {
-         // get world to object space transform
-         core::matrix4 mat;
-         if (!current->getAbsoluteTransformation().getInverse(mat))
-            continue;
+      if (current->isVisible())
+	  {
+		  if((bNoDebugObjects ? !current->isDebugObject() : true) &&
+			(bits==0 || (bits != 0 && (current->getID() & bits))))
+		  {
+			 // get world to object space transform
+			 core::matrix4 mat;
+			 if (!current->getAbsoluteTransformation().getInverse(mat))
+				continue;
 
-         // transform vector from world space to object space
-         core::line3df line(ray);
-         mat.transformVect(line.start);
-         mat.transformVect(line.end);
+			 // transform vector from world space to object space
+			 core::line3df line(ray);
+			 mat.transformVect(line.start);
+			 mat.transformVect(line.end);
 
-         const core::aabbox3df& box = current->getBoundingBox();
+			 const core::aabbox3df& box = current->getBoundingBox();
 
-         // do intersection test in object space
-         if (box.intersectsWithLine(line))
-         {
-            box.getEdges(edges);
-            f32 distance = 0.0f;
+			 // do intersection test in object space
+			 if (box.intersectsWithLine(line))
+			 {
+				box.getEdges(edges);
+				f32 distance = 0.0f;
 
-            for (s32 e=0; e<8; ++e)
-            {
-               f32 t = edges[e].getDistanceFromSQ(line.start);
-               if (t > distance)
-                  distance = t;
-            }
+				for (s32 e=0; e<8; ++e)
+				{
+				   f32 t = edges[e].getDistanceFromSQ(line.start);
+				   if (t > distance)
+					  distance = t;
+				}
 
-            if (distance < outbestdistance)
-            {
-               outbestnode = current;
-               outbestdistance = distance;
-            }
-         }
-      }
+				if (distance < outbestdistance)
+				{
+				   outbestnode = current;
+				   outbestdistance = distance;
+				}
+			 }
+		  }
 
-      getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
+		  // Only check the children if this node is visible.
+	      getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
+	  }
    }
 } 
 
