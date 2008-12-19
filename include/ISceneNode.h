@@ -201,20 +201,34 @@ namespace scene
 		}
 
 
-		//! Returns true if the node is visible.
+		//! Returns whether the node should be visible (if all of its parents are visible).
 		/** This is only an option set by the user, but has nothing to
 		do with geometry culling
-		\return The visibility of the node, true means visible. */
+		\return The requested visibility of the node, true means visible (if all parents are also visible). */
 		virtual bool isVisible() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsVisible;
 		}
 
+		//! Returns whether the node is truly visible, taking into accounts its parents' visibility
+		/** \return true if the node and all its parents are visible, false if this or any parent node is invisible. */
+		virtual bool isTrulyVisible() const
+		{
+			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+			if(!IsVisible)
+				return false;
+
+			if(!Parent)
+				return true;
+
+			return Parent->isTrulyVisible();
+		}
 
 		//! Sets if the node should be visible or not.
 		/** All children of this node won't be visible either, when set
-		to false.
+		to false.  Invisible nodes are not valid candidates for selection by
+		collision manager bounding box methods.
 		\param isVisible If the node shall be visible. */
 		virtual void setVisible(bool isVisible)
 		{
