@@ -93,7 +93,7 @@ int main()
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 1;
-	}	
+	}
 
 	//Instance of the EventReceiver
 	MyEventReceiver receiver;
@@ -148,6 +148,9 @@ user.
 	camera[2] = smgr->addCameraSceneNode(0, vector3df(0,0,50), vector3df(0,0,0));
 	//User-controlled
 	camera[3] = smgr->addCameraSceneNodeFPS();
+	// don't start at sydney's position
+	if (camera[3])
+		camera[3]->setPosition(core::vector3df(-50,0,-50));
 
 /*
 Create a variable for counting the fps and hide the mouse:
@@ -237,10 +240,11 @@ Sounds a little complicated, but you'll see it isn't:
 		//Get and show fps
 		if (driver->getFPS() != lastFPS)
 		{
-		lastFPS = driver->getFPS();
-		wchar_t tmp[1024];
-		swprintf( tmp, 1024, L"Irrlicht SplitScreen-Example (FPS: %d)", lastFPS);
-		device->setWindowCaption(tmp);
+			lastFPS = driver->getFPS();
+			core::stringw tmp = L"Irrlicht SplitScreen-Example (FPS: ";
+			tmp += lastFPS;
+			tmp += ")";
+			device->setWindowCaption(tmp.c_str());
 		}
 	}
 	//Delete device

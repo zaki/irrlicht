@@ -13,14 +13,19 @@ namespace scene
 {
 
 	//! Special scene node animator for doing automatic collision detection and response.
-	/** This scene node animator can be attached to any scene node
-	modifying it in that way, that it cannot move through walls of the
-	world, is influenced by gravity and acceleration. This animator is
-	useful for example for first person shooter games. Attach it for
-	example to a first person shooter camera, and the camera will behave as
-	the player control in a first person shooter game: The camera stops and
-	slides at walls, walks up stairs, falls down if there is no floor under
-	it, and so on. */
+	/** This scene node animator can be attached to any single scene node
+	and will then prevent it from moving through specified collision geometry
+	(e.g. walls and floors of the) world, as well as having it fall under gravity.
+	This animator provides a simple implementation of first person shooter cameras.
+	Attach it to a camera, and the camera will behave as the player control in a
+	first person shooter game: The camera stops and slides at walls, walks up stairs,
+	falls down if there is no floor under it, and so on.
+
+	The animator will treat any change in the position of its target scene
+	node as movement, including a setPosition(), as movement.  If you want to
+	teleport the target scene node manually to a location without it being effected
+	by collision geometry, then call setTargetNode(node) after calling node->setPosition().
+	*/
 	class ISceneNodeAnimatorCollisionResponse : public ISceneNodeAnimator
 	{
 	public:
@@ -92,6 +97,17 @@ namespace scene
 
 		//! Get the current triangle selector containing all triangles for collision detection.
 		virtual ITriangleSelector* getWorld() const = 0;
+
+		//! Set the single node that this animator will act on.
+		/** \param node The new target node. Setting this will force the animator to update
+					its last target position for the node, allowing setPosition() to teleport
+					the node through collision geometry. */
+		virtual void setTargetNode(ISceneNode * node) = 0;
+
+		//! Gets the single node that this animator is acting on.
+		/** \return The node that this animator is acting on. */
+		virtual ISceneNode* getTargetNode(void) const = 0;
+
 	};
 
 

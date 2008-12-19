@@ -61,8 +61,8 @@ namespace io
 	private:
 
 		core::array<c8> Data;
-		s32 Pos;
 		core::stringc FileName;
+		long Pos;
 	};
 
 	

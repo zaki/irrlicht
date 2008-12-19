@@ -1,5 +1,5 @@
-VERSION = 1.5.beta
-# Irrlicht Engine 1.5.beta
+VERSION = 1.5
+# Irrlicht Engine 1.5
 # Makefile for Linux
 #
 # To use, just run:
@@ -91,7 +91,7 @@ sharedlib_osx: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
 
 #Windows specific options
 sharedlib_win32 staticlib_win32: SYSTEM = Win32-gcc
-sharedlib_win32: LDFLAGS = -lgdi32 -lopengl32 -ld3dx9d
+sharedlib_win32: LDFLAGS = -lgdi32 -lopengl32 -ld3dx9d -lwinmm
 sharedlib_win32 staticlib_win32: CPPFLAGS += -DIRR_COMPILE_WITH_DX9_DEV_PACK -D__GNUWIN32__ -D_WIN32 -DWIN32 -D_WINDOWS -D_MBCS -D_USRDLL
 staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 
@@ -146,7 +146,7 @@ TAGS:
 
 # Create object files from objective-c code
 %.o:%.mm
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $@ $<
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(LINKOBJ:.o=.d)

@@ -619,6 +619,9 @@ void COgreMeshFileLoader::getMaterialToken(io::IReadFile* file, core::stringc& t
 	c8 c=0;
 	token = "";
 
+	if (file->getPos() >= file->getSize())
+		return;
+
 	file->read(&c, sizeof(c8));
 	// search for word beginning
 	while ( core::isspace(c) && (file->getPos() < file->getSize()))
@@ -835,6 +838,9 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		}
 		else if (token=="texture_unit")
 		{
+#ifdef IRR_OGRE_LOADER_DEBUG
+			os::Printer::log("Read Texture unit");
+#endif
 			getMaterialToken(file, token); //open brace
 			getMaterialToken(file, token);
 			while(token != "}")
@@ -842,6 +848,9 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 				if (token=="texture")
 				{
 					getMaterialToken(file, pass.Texture.Filename);
+#ifdef IRR_OGRE_LOADER_DEBUG
+					os::Printer::log("Read Texture", pass.Texture.Filename.c_str());
+#endif
 					getMaterialToken(file, pass.Texture.CoordsType, true);
 					getMaterialToken(file, pass.Texture.MipMaps, true);
 					getMaterialToken(file, pass.Texture.Alpha, true);

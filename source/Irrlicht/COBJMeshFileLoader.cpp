@@ -22,7 +22,9 @@ namespace irr
 namespace scene
 {
 
-//#define _IRR_DEBUG_OBJ_LOADER_
+#ifdef _DEBUG
+#define _IRR_DEBUG_OBJ_LOADER_
+#endif
 
 static const u32 WORD_BUFFER_LENGTH = 512;
 
@@ -81,7 +83,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 
 	// Process obj information
 	const c8* bufPtr = buf;
-	core::stringc grpName;
+	core::stringc grpName, mtlName;
+	bool mtlChanged=false;
 	bool useGroups = !SceneManager->getParameters()->getAttributeAsBool(OBJ_LOADER_IGNORE_GROUPS);
 	while(bufPtr != bufEnd)
 	{
@@ -120,7 +123,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			case 't':       // texcoord
 				{
 					core::vector2df vec;
-					bufPtr = readVec2(bufPtr, vec, bufEnd);
+					bufPtr = readUV(bufPtr, vec, bufEnd);
 					textureCoordBuffer.push_back(vec);
 				}
 				break;
@@ -141,6 +144,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 					else
 						grpName = "default";
 				}
+				mtlChanged=true;
 			}
 			break;
 
@@ -166,11 +170,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 #ifdef _IRR_DEBUG_OBJ_LOADER_
 	os::Printer::log("Loaded material start",matName);
 #endif
-				// retrieve the material
-				SObjMtl *useMtl = findMtl(matName, grpName);
-				// only change material if we found it
-				if (useMtl)
-					currMtl = useMtl;
+				mtlName=matName;
+				mtlChanged=true;
 			}
 			break;
 
@@ -179,6 +180,15 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 			c8 vertexWord[WORD_BUFFER_LENGTH]; // for retrieving vertex data
 			video::S3DVertex v;
 			// Assign vertex color from currently active material's diffuse colour
+			if (mtlChanged)
+			{
+				// retrieve the material
+				SObjMtl *useMtl = findMtl(mtlName, grpName);
+				// only change material if we found it
+				if (useMtl)
+					currMtl = useMtl;
+				mtlChanged=false;
+			}
 			if (currMtl)
 				v.Color = currMtl->Meshbuffer->Material.DiffuseColor;
 
@@ -642,7 +652,7 @@ const c8* COBJMeshFileLoader::readVec3(const c8* bufPtr, core::vector3df& vec, c
 
 
 //! Read 2d vector of floats
-const c8* COBJMeshFileLoader::readVec2(const c8* bufPtr, core::vector2df& vec, const c8* const bufEnd)
+const c8* COBJMeshFileLoader::readUV(const c8* bufPtr, core::vector2df& vec, const c8* const bufEnd)
 {
 	const u32 WORD_BUFFER_LENGTH = 256;
 	c8 wordBuffer[WORD_BUFFER_LENGTH];
@@ -650,7 +660,7 @@ const c8* COBJMeshFileLoader::readVec2(const c8* bufPtr, core::vector2df& vec, c
 	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
 	vec.X=core::fast_atof(wordBuffer);
 	bufPtr = goAndCopyNextWord(wordBuffer, bufPtr, WORD_BUFFER_LENGTH, bufEnd);
-	vec.Y=-core::fast_atof(wordBuffer); // change handedness
+	vec.Y=1-core::fast_atof(wordBuffer); // change handedness
 	return bufPtr;
 }
 
@@ -670,6 +680,8 @@ const c8* COBJMeshFileLoader::readBool(const c8* bufPtr, bool& tf, const c8* con
 COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const core::stringc& mtlName, const core::stringc& grpName)
 {
 	COBJMeshFileLoader::SObjMtl* defMaterial = 0;
+	// search existing Materials for best match
+	// exact match does return immediately, only name match means a new group
 	for (u32 i = 0; i < Materials.size(); ++i)
 	{
 		if ( Materials[i]->Name == mtlName )
@@ -677,13 +689,20 @@ COBJMeshFileLoader::SObjMtl* COBJMeshFileLoader::findMtl(const core::stringc& mt
 			if ( Materials[i]->Group == grpName )
 				return Materials[i];
 			else
-			if ( Materials[i]->Group == "" )
 				defMaterial = Materials[i];
 		}
 	}
+	// we found a partial match
 	if (defMaterial)
 	{
 		Materials.push_back(new SObjMtl(*defMaterial));
+		Materials.getLast()->Group = grpName;
+		return Materials.getLast();
+	}
+	// we found a new group for a non-existant material
+	else if (grpName.size())
+	{
+		Materials.push_back(new SObjMtl(*Materials[0]));
 		Materials.getLast()->Group = grpName;
 		return Materials.getLast();
 	}

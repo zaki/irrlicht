@@ -13,18 +13,20 @@ namespace irr
 namespace scene
 {
 
-	//! Special scene node animator for FPS cameras
-	/** This scene node animator can be attached to a camera to make it act like a first
-	person shooter 
+	//! Special scene node animator for Maya-style cameras
+	/** This scene node animator can be attached to a camera to make it act like a 3d
+	modelling tool.
+	The camera is moving relative to the target with the mouse, by pressing either
+	of the three buttons.
 	*/
 	class ISceneNodeAnimatorCameraMaya : public ISceneNodeAnimator
 	{
 	public:
 
-		//! Returns the speed of movement in units per millisecond
+		//! Returns the speed of movement
 		virtual f32 getMoveSpeed() const = 0;
 
-		//! Sets the speed of movement in units per millisecond
+		//! Sets the speed of movement
 		virtual void setMoveSpeed(f32 moveSpeed) = 0;
 
 		//! Returns the rotation speed

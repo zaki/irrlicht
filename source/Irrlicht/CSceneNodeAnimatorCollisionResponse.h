@@ -15,7 +15,7 @@ namespace scene
 	//! Special scene node animator for doing automatic collision detection and response.
 	/** This scene node animator can be attached to any scene node modifying it in that
 	way, that it cannot move through walls of the world, is influenced by gravity and
-	acceleration. This animator is useful for example for first person shooter 
+	acceleration. This animator is useful for example for first person shooter
 	games. Attach it for example to a first person shooter camera, and the camera will
 	behave as the player control in a first person shooter game: The camera stops and
 	slides at walls, walks up stairs, falls down if there is no floor under it, and so on.
@@ -26,7 +26,7 @@ namespace scene
 
 		//! constructor
 		CSceneNodeAnimatorCollisionResponse(ISceneManager* scenemanager,
-			ITriangleSelector* world, ISceneNode* object, 
+			ITriangleSelector* world, ISceneNode* object,
 			const core::vector3df& ellipsoidRadius = core::vector3df(30,60,30),
 			const core::vector3df& gravityPerSecond = core::vector3df(0,-100.0f,0),
 			const core::vector3df& ellipsoidTranslation = core::vector3df(0,0,0),
@@ -41,7 +41,7 @@ namespace scene
 		virtual bool isFalling() const;
 
 		//! Sets the radius of the ellipsoid with which collision detection and
-		//! response is done. 
+		//! response is done.
 		virtual void setEllipsoidRadius(const core::vector3df& radius);
 
 		//! Returns the radius of the ellipsoid with which the collision detection and
@@ -82,12 +82,18 @@ namespace scene
 
 		//! Returns type of the scene node animator
 		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return ESNAT_COLLISION_RESPONSE; }
-		
+
 		//! Creates a clone of this animator.
 		/** Please note that you will have to drop
 		(IReferenceCounted::drop()) the returned pointer after calling
 		this. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
+
+		//! Set the single node that this animator will act on.
+		virtual void setTargetNode(ISceneNode * node) { setNode(node); }
+
+		//! Gets the single node that this animator is acting on.
+		virtual ISceneNode* getTargetNode(void) const { return Object; }
 
 	private:
 
@@ -100,7 +106,7 @@ namespace scene
 
 		core::vector3df LastPosition;
 		core::triangle3df RefTriangle;
-		
+
 		ITriangleSelector* World;
 		ISceneNode* Object;
 		ISceneManager* SceneManager;

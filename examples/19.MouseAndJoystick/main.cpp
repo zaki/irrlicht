@@ -123,7 +123,7 @@ int main()
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 0;
-	}	
+	}
 
 	// create device
 	MyEventReceiver receiver;
@@ -171,9 +171,10 @@ int main()
 		std::cout << "Joystick support is not enabled." << std::endl;
 	}
 
-	wchar_t tmp[1024];
-	swprintf(tmp, 1024, L"Irrlicht Joystick Example (%u joysticks)", joystickInfo.size());
-	device->setWindowCaption(tmp);
+	core::stringw tmp = L"Irrlicht Joystick Example (";
+	tmp += joystickInfo.size();
+	tmp += " joysticks)";
+	device->setWindowCaption(tmp.c_str());
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
@@ -208,15 +209,21 @@ int main()
 
 			const SEvent::SJoystickEvent & joystickData = receiver.GetJoystickState();
 
-			// Use the analog range of the axes, and a 5% dead zone
-			moveHorizontal = 
+			// We receive the full analog range of the axes, and so have to implement our
+			// own dead zone.  This is an empirical value, since some joysticks have more
+			// jitter or creep around the center point than others.  We'll use 5% of the
+			// range as the dead zone, but generally you would want to give the user the
+			// option to change this.
+			const f32 DEAD_ZONE = 0.05f;
+
+			moveHorizontal =
 				(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_X] / 32767.f;
-			if(fabs(moveHorizontal) < 0.05f)
+			if(fabs(moveHorizontal) < DEAD_ZONE)
 				moveHorizontal = 0.f;
 
-			moveVertical = 
+			moveVertical =
 				(f32)joystickData.Axis[SEvent::SJoystickEvent::AXIS_Y] / -32767.f;
-			if(fabs(moveVertical) < 0.05f)
+			if(fabs(moveVertical) < DEAD_ZONE)
 				moveVertical = 0.f;
 
 			// POV hat info is only currently supported on Windows, but the value is
@@ -267,12 +274,9 @@ int main()
 		}
 
 		node->setPosition(nodePosition);
-		
+
 		// Turn lighting on and off depending on whether the left mouse button is down.
-		if(receiver.GetMouseState().LeftButtonDown)
-			node->setMaterialFlag(video::EMF_LIGHTING, true);
-		else
-			node->setMaterialFlag(video::EMF_LIGHTING, false);
+		node->setMaterialFlag(video::EMF_LIGHTING, receiver.GetMouseState().LeftButtonDown);
 
 		driver->beginScene(true, true, video::SColor(255,113,113,133));
 		smgr->drawAll(); // draw the 3d scene
@@ -283,6 +287,6 @@ int main()
 	In the end, delete the Irrlicht device.
 	*/
 	device->drop();
-	
+
 	return 0;
 }

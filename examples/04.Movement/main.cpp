@@ -149,13 +149,13 @@ int main()
 	a md2 model, which uses a 'fly straight' animator to run between to points.
 	*/
 	scene::IAnimatedMeshSceneNode* anms =
-		smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/sydney.md2"));
+		smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"));
 
 	if (anms)
 	{
 		scene::ISceneNodeAnimator* anim =
 			smgr->createFlyStraightAnimator(core::vector3df(100,0,60),
-			core::vector3df(-100,0,60), 2500, true);
+			core::vector3df(-100,0,60), 3500, true);
 		if (anim)
 		{
 			anms->addAnimator(anim);
@@ -176,12 +176,13 @@ int main()
 		*/
 		anms->setMaterialFlag(video::EMF_LIGHTING, false);
 
-		anms->setFrameLoop(160, 183);
-		anms->setAnimationSpeed(40);
-		anms->setMD2Animation(scene::EMAT_RUN);
+		anms->setFrameLoop(0, 14);
+		anms->setAnimationSpeed(15);
+//		anms->setMD2Animation(scene::EMAT_RUN);
 
-		anms->setRotation(core::vector3df(0,180.0f,0));
-		anms->setMaterialTexture(0, driver->getTexture("../../media/sydney.bmp"));
+		anms->setScale(core::vector3df(2.f,2.f,2.f));
+		anms->setRotation(core::vector3df(0,-90,0));
+//		anms->setMaterialTexture(0, driver->getTexture("../../media/sydney.bmp"));
 
 	}
 
@@ -190,7 +191,7 @@ int main()
 	To be able to look at and move around in this scene, we create a first
 	person shooter style camera and make the mouse cursor invisible.
 	*/
-	smgr->addCameraSceneNodeFPS(0, 100.0f, 100.0f);
+	smgr->addCameraSceneNodeFPS(0, 100.0f, .1f);
 	device->getCursorControl()->setVisible(false);
 
 	/*

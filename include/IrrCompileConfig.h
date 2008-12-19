@@ -6,7 +6,7 @@
 #define __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 //! Irrlicht SDK Version
-#define IRRLICHT_SDK_VERSION "1.5.beta"
+#define IRRLICHT_SDK_VERSION "1.5"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 

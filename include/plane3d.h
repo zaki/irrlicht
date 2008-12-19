@@ -32,15 +32,21 @@ class plane3d
 		// Constructors
 
 		plane3d(): Normal(0,1,0) { recalculateD(vector3d<T>(0,0,0)); }
+		
 		plane3d(const vector3d<T>& MPoint, const vector3d<T>& Normal) : Normal(Normal) { recalculateD(MPoint); }
+		
 		plane3d(T px, T py, T pz, T nx, T ny, T nz) : Normal(nx, ny, nz) { recalculateD(vector3d<T>(px, py, pz)); }
+		
 		plane3d(const vector3d<T>& point1, const vector3d<T>& point2, const vector3d<T>& point3)
 		{ setPlane(point1, point2, point3); }
+		
+		plane3d(const vector3d<T> & normal, const T d) : Normal(normal), D(d) { }
 
 		// operators
 
-		inline bool operator==(const plane3d<T>& other) const { return (D==other.D && Normal==other.Normal);}
-		inline bool operator!=(const plane3d<T>& other) const { return !(D==other.D && Normal==other.Normal);}
+		inline bool operator==(const plane3d<T>& other) const { return (equals(D, other.D) && Normal==other.Normal);}
+
+		inline bool operator!=(const plane3d<T>& other) const { return !(*this == other);}
 
 		// functions
 

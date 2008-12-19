@@ -8,21 +8,19 @@ using namespace irr;
 using namespace io;
 
 CMemoryReadWriteFile::CMemoryReadWriteFile(const c8* filename) 
-: Pos(0), Data(), FileName(filename)
+:  Data(), FileName(filename), Pos(0)
 {
-
 }
 
 
 s32 CMemoryReadWriteFile::write(const void* buffer, u32 sizeToWrite)
 {
-
 	// no point in writing 0 bytes
 	if (sizeToWrite < 1)
 		return 0;
 
 	// expand size
-	if (Pos + sizeToWrite > (s32)Data.size())
+	if (Pos + sizeToWrite > Data.size())
 		Data.set_used(Pos+sizeToWrite);
 
 	// copy data
@@ -80,7 +78,7 @@ long CMemoryReadWriteFile::getSize() const
 s32 CMemoryReadWriteFile::read(void* buffer, u32 sizeToRead)
 {
 	// cant read past the end
-	if (Pos + sizeToRead >= (s32)Data.size())
+	if (Pos + sizeToRead >= Data.size())
 		sizeToRead = Data.size() - Pos;
 
 	// cant read 0 bytes

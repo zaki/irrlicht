@@ -582,7 +582,6 @@ void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position, video:
 
 	core::dimension2d<s32> textDimension;
 	core::position2d<s32> offset = position.UpperLeftCorner;
-	core::rect<s32> pos;
 
 	if (hcenter || vcenter || clip)
 		textDimension = getDimension(text);

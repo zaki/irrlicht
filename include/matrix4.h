@@ -179,9 +179,6 @@ namespace core
 			//! Transforms a plane by this matrix
 			void transformPlane( core::plane3d<f32> &plane) const;
 
-			//! Transforms a plane by this matrix ( some problems to solve..)
-			void transformPlane_new( core::plane3d<f32> &plane) const;
-
 			//! Transforms a plane by this matrix
 			void transformPlane( const core::plane3d<f32> &in, core::plane3d<f32> &out) const;
 
@@ -712,8 +709,8 @@ namespace core
 	}
 
 
-	//! Returns a rotation that is equivalent to that set by setRotationDegrees(). 
-	/** This code was sent in by Chev.  Note that it does not necessarily return 
+	//! Returns a rotation that is equivalent to that set by setRotationDegrees().
+	/** This code was sent in by Chev.  Note that it does not necessarily return
 	the *same* Euler angles as those set by setRotationDegrees(), but the rotation will
 	be equivalent, i.e. will have the same result when used to rotate a vector or node. */
 	template <class T>
@@ -930,31 +927,15 @@ namespace core
 	inline void CMatrix4<T>::transformPlane( core::plane3d<f32> &plane) const
 	{
 		vector3df member;
+		// Transform the plane member point, i.e. rotate, translate and scale it.
 		transformVect(member, plane.getMemberPoint());
 
-		vector3df origin(0,0,0);
-		transformVect(plane.Normal);
-		transformVect(origin);
+		// Transform the normal by the transposed inverse of the matrix
+		CMatrix4<T> transposedInverse(*this, EM4CONST_INVERSE_TRANSPOSED);
+		vector3df normal = plane.Normal;
+		transposedInverse.transformVect(normal);
 
-		plane.Normal -= origin;
-		plane.D = - member.dotProduct(plane.Normal);
-	}
-
-	//! Transforms a plane by this matrix
-	template <class T>
-	inline void CMatrix4<T>::transformPlane_new( core::plane3d<f32> &plane) const
-	{
-		// rotate normal -> rotateVect ( plane.n );
-		vector3df n;
-		n.X = plane.Normal.X*M[0] + plane.Normal.Y*M[4] + plane.Normal.Z*M[8];
-		n.Y = plane.Normal.X*M[1] + plane.Normal.Y*M[5] + plane.Normal.Z*M[9];
-		n.Z = plane.Normal.X*M[2] + plane.Normal.Y*M[6] + plane.Normal.Z*M[10];
-
-		// compute new d. -> getTranslation(). dotproduct ( plane.n )
-		plane.D -= M[12] * n.X + M[13] * n.Y + M[14] * n.Z;
-		plane.Normal.X = n.X;
-		plane.Normal.Y = n.Y;
-		plane.Normal.Z = n.Z;
+		plane.setPlane(member, normal);
 	}
 
 	//! Transforms a plane by this matrix
@@ -1735,7 +1716,7 @@ namespace core
 	//! Typedef for f32 matrix
 	typedef CMatrix4<f32> matrix4;
 	//! global const identity matrix
-	extern const matrix4 IdentityMatrix;
+	IRRLICHT_API extern const matrix4 IdentityMatrix;
 
 } // end namespace core
 } // end namespace irr

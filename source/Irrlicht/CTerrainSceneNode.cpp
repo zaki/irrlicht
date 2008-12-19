@@ -69,7 +69,8 @@ namespace scene
 
 
 	//! Initializes the terrain data. Loads the vertices from the heightMapFile
-	bool CTerrainSceneNode::loadHeightMap( io::IReadFile* file, video::SColor vertexColor, s32 smoothFactor )
+	bool CTerrainSceneNode::loadHeightMap(io::IReadFile* file, video::SColor vertexColor,
+			s32 smoothFactor)
 	{
 		if( !file )
 			return false;
@@ -130,7 +131,7 @@ namespace scene
 		scene::CDynamicMeshBuffer *mb=0;
 
 		const u32 numVertices = TerrainData.Size * TerrainData.Size;
-		if (numVertices <65535)
+		if (numVertices <= 65536)
 		{
 			//small enough for 16bit buffers
 			mb=new scene::CDynamicMeshBuffer(video::EVT_2TCOORDS, video::EIT_16BIT);
@@ -231,22 +232,33 @@ namespace scene
 
 
 	//! Initializes the terrain data. Loads the vertices from the heightMapFile
-	bool CTerrainSceneNode::loadHeightMapRAW( io::IReadFile* file, s32 bitsPerPixel, video::SColor vertexColor, s32 smoothFactor )
+	bool CTerrainSceneNode::loadHeightMapRAW( io::IReadFile* file, s32 bitsPerPixel, bool signedData, bool floatVals, s32 width, video::SColor vertexColor, s32 smoothFactor )
 	{
-		if( !file )
+		if (!file)
+			return false;
+		if (floatVals && bitsPerPixel != 32)
 			return false;
 
-		Mesh.MeshBuffers.clear();
 		// start reading
 		const u32 startTime = os::Timer::getTime();
 
-		// get file size
-		const long fileSize = file->getSize();
-		// TODO: Currently no floats are supported
+		Mesh.MeshBuffers.clear();
+
 		const s32 bytesPerPixel = bitsPerPixel / 8;
 
 		// Get the dimension of the heightmap data
-		TerrainData.Size = core::floor32(sqrtf( (f32)( fileSize / bytesPerPixel ) ));
+		const s32 filesize = file->getSize();
+		if (!width)
+			TerrainData.Size = core::floor32(sqrtf( (f32)( filesize / bytesPerPixel ) ));
+		else
+		{
+			if ((filesize-file->getPos())/bytesPerPixel>width*width)
+			{
+				os::Printer::log("Error reading heightmap RAW file", "File is too small.");
+				return false;
+			}
+			TerrainData.Size = width;
+		}
 
 		switch( TerrainData.PatchSize )
 		{
@@ -286,7 +298,7 @@ namespace scene
 		// resize the vertex array for the mesh buffer one time (makes loading faster)
 		scene::CDynamicMeshBuffer *mb=0;
 		const u32 numVertices = TerrainData.Size * TerrainData.Size;
-		if (numVertices <65535)
+		if (numVertices <= 65536)
 		{
 			//small enough for 16bit buffers
 			mb=new scene::CDynamicMeshBuffer(video::EVT_2TCOORDS, video::EIT_16BIT);
@@ -316,42 +328,78 @@ namespace scene
 			float fz2=0.f;
 			for( s32 z = 0; z < TerrainData.Size; ++z )
 			{
+				bool failure=false;
 				vertex.Pos.X = fx;
-				switch (bytesPerPixel)
+				if (floatVals)
 				{
-					case 1:
+					if( file->read( &vertex.Pos.Y, bytesPerPixel ) != bytesPerPixel )
+						failure=true;
+				}
+				else if (signedData)
+				{
+					switch (bytesPerPixel)
 					{
-						u8 val;
-						if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+						case 1:
 						{
-							os::Printer::log("Error reading heightmap RAW file.");
-							mb->drop();
-							return false;
+							s8 val;
+							if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+								failure=true;
+							vertex.Pos.Y=val;
 						}
+						break;
+						case 2:
+						{
+							s16 val;
+							if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+								failure=true;
+							vertex.Pos.Y=val/256.f;
+						}
+						break;
+						case 4:
+						{
+							s32 val;
+							if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+								failure=true;
+							vertex.Pos.Y=val/16777216.f;
+						}
+						break;
 					}
-					break;
-					case 2:
+				}
+				else
+				{
+					switch (bytesPerPixel)
 					{
-						u16 val;
-						if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+						case 1:
 						{
-							os::Printer::log("Error reading heightmap RAW file.");
-							mb->drop();
-							return false;
+							u8 val;
+							if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+								failure=true;
+							vertex.Pos.Y=val;
 						}
-					}
-					break;
-					case 4:
-					{
-						u32 val;
-						if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+						break;
+						case 2:
 						{
-							os::Printer::log("Error reading heightmap RAW file.");
-							mb->drop();
-							return false;
+							u16 val;
+							if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+								failure=true;
+							vertex.Pos.Y=val/256.f;
 						}
+						break;
+						case 4:
+						{
+							u32 val;
+							if( file->read( &val, bytesPerPixel ) != bytesPerPixel )
+								failure=true;
+							vertex.Pos.Y=val/16777216.f;
+						}
+						break;
 					}
-					break;
+				}
+				if (failure)
+				{
+					os::Printer::log("Error reading heightmap RAW file.");
+					mb->drop();
+					return false;
 				}
 				vertex.Pos.Z = fz;
 
@@ -377,7 +425,6 @@ namespace scene
 
 		// We copy the data to the renderBuffer, after the normals have been calculated.
 		RenderBuffer->getVertexBuffer().set_used( vertexCount );
-
 
 		for( u32 i = 0; i < vertexCount; i++ )
 		{
@@ -406,7 +453,7 @@ namespace scene
 		RenderBuffer->getIndexBuffer().set_used( TerrainData.PatchCount * TerrainData.PatchCount *
 			TerrainData.CalcPatchSize * TerrainData.CalcPatchSize * 6 );
 
-		u32 endTime = os::Timer::getTime();
+		const u32 endTime = os::Timer::getTime();
 
 		c8 tmp[255];
 		snprintf(tmp, 255, "Generated terrain data (%dx%d) in %.4f seconds",
@@ -426,6 +473,7 @@ namespace scene
 		ForceRecalculation = true;
 	}
 
+
 	//! Sets the rotation of the node. This only modifies
 	//! the relative rotation of the node.
 	//! \param rotation: New rotation of the node in degrees.
@@ -436,6 +484,7 @@ namespace scene
 		ForceRecalculation = true;
 	}
 
+
 	//! Sets the pivot point for rotation of this node. This is useful for the TiledTerrainManager to
 	//! rotate all terrain tiles around a global world point.
 	//! NOTE: The default for the RotationPivot will be the center of the individual tile.
@@ -445,6 +494,7 @@ namespace scene
 		TerrainData.RotationPivot = pivot;
 	}
 
+
 	//! Sets the position of the node.
 	//! \param newpos: New postition of the scene node.
 	void CTerrainSceneNode::setPosition(const core::vector3df& newpos)
@@ -453,6 +503,7 @@ namespace scene
 		applyTransformation();
 		ForceRecalculation = true;
 	}
+
 
 	//! Apply transformation changes( scale, position, rotation )
 	void CTerrainSceneNode::applyTransformation()
@@ -479,8 +530,8 @@ namespace scene
 		calculatePatchData();
 
 		RenderBuffer->setDirty(EBT_VERTEX);
-
 	}
+
 
 	//! Updates the scene nodes indices if the camera has moved or rotated by a certain
 	//! threshold, which can be changed using the SetCameraMovementDeltaThreshold and
@@ -498,16 +549,16 @@ namespace scene
 		ForceRecalculation = false;
 	}
 
+
 	void CTerrainSceneNode::preRenderLODCalculations()
 	{
-		SceneManager->registerNodeForRendering( this );
+		SceneManager->registerNodeForRendering(this);
 		// Do Not call ISceneNode::OnRegisterSceneNode(), this node should have no children
 
 		// Determine the camera rotation, based on the camera direction.
 		const core::vector3df cameraPosition = SceneManager->getActiveCamera()->getAbsolutePosition();
 		const core::vector3df cameraRotation = core::line3d<f32>(cameraPosition, SceneManager->getActiveCamera()->getTarget()).getVector().getHorizontalAngle();
 		const f32 CameraFOV = SceneManager->getActiveCamera()->getFOV();
-
 
 		// Only check on the Camera's Y Rotation
 		if (!ForceRecalculation)
@@ -572,17 +623,14 @@ namespace scene
 		switch (RenderBuffer->getIndexBuffer().getType())
 		{
 			case video::EIT_16BIT:
-			{
 				preRenderIndicesCalculationsDirect<u16>((u16*)RenderBuffer->getIndexBuffer().pointer());
 				break;
-			}
 			case video::EIT_32BIT:
-			{
 				preRenderIndicesCalculationsDirect<u32>((u32*)RenderBuffer->getIndexBuffer().pointer());
 				break;
-			}
 		}
 	}
+
 
 	template<class INDEX_TYPE>
 	void CTerrainSceneNode::preRenderIndicesCalculationsDirect(INDEX_TYPE* IndexBuffer)
@@ -640,10 +688,6 @@ namespace scene
 			selector->setTriangleData(this, -1);
 		}
 	}
-
-
-
-
 
 
 	//! Render the scene node
@@ -744,17 +788,20 @@ namespace scene
 		}
 	}
 
+
 	//! Return the bounding box of the entire terrain.
 	const core::aabbox3d<f32>& CTerrainSceneNode::getBoundingBox() const
 	{
 		return TerrainData.BoundingBox;
 	}
 
+
 	//! Return the bounding box of a patch
 	const core::aabbox3d<f32>& CTerrainSceneNode::getBoundingBox( s32 patchX, s32 patchZ ) const
 	{
 		return TerrainData.Patches[patchX * TerrainData.PatchCount + patchZ].BoundingBox;
 	}
+
 
 	//! Gets the meshbuffer data based on a specified Level of Detail.
 	//! \param mb: A reference to an SMeshBuffer object
@@ -815,6 +862,7 @@ namespace scene
 			}
 		}
 	}
+
 
 	//! Gets the indices for a specified patch at a specified Level of Detail.
 	//! \param mb: A reference to an array of u32 indices.
@@ -893,6 +941,7 @@ namespace scene
 		return rv;
 	}
 
+
 	//! Populates an array with the CurrentLOD of each patch.
 	//! \param LODs: A reference to a core::array<s32> to hold the values
 	//! \return Returns the number of elements in the array
@@ -932,6 +981,7 @@ namespace scene
 
 		return true;
 	}
+
 
 	//! Creates a planar texture mapping on the terrain
 	//! \param resolution: resolution of the planar mapping. This is the value
@@ -978,6 +1028,7 @@ namespace scene
 
 		RenderBuffer->setDirty(EBT_VERTEX);
 	}
+
 
 	//! used to get the indices when generating index data for patches at varying levels of detail.
 	u32 CTerrainSceneNode::getIndex(const s32 PatchX, const s32 PatchZ,
@@ -1035,6 +1086,7 @@ namespace scene
 			(vX + ((TerrainData.CalcPatchSize) * PatchX));
 	}
 
+
 	//! smooth the terrain
 	void CTerrainSceneNode::smoothTerrain(CDynamicMeshBuffer* mb, s32 smoothFactor)
 	{
@@ -1055,6 +1107,7 @@ namespace scene
 			}
 		}
 	}
+
 
 	//! calculate smooth normals
 	void CTerrainSceneNode::calculateNormals( CDynamicMeshBuffer* mb )
@@ -1179,6 +1232,7 @@ namespace scene
 		}
 	}
 
+
 	//! create patches, stuff that needs to be done only once for patches goes here.
 	void CTerrainSceneNode::createPatches()
 	{
@@ -1189,6 +1243,7 @@ namespace scene
 
 		TerrainData.Patches = new SPatch[TerrainData.PatchCount * TerrainData.PatchCount];
 	}
+
 
 	//! used to calculate the internal STerrainData structure both at creation and after scaling/position calls.
 	void CTerrainSceneNode::calculatePatchData()
@@ -1275,12 +1330,14 @@ namespace scene
 		}
 	}
 
+
 	void CTerrainSceneNode::setCurrentLODOfPatches(s32 lod)
 	{
 		const s32 count = TerrainData.PatchCount * TerrainData.PatchCount;
 		for (s32 i=0; i< count; ++i)
 			TerrainData.Patches[i].CurrentLOD = lod;
 	}
+
 
 	void CTerrainSceneNode::setCurrentLODOfPatches(const core::array<s32>& lodarray)
 	{
@@ -1291,7 +1348,7 @@ namespace scene
 
 
 	//! Gets the height
-	f32 CTerrainSceneNode::getHeight( f32 x, f32 z ) const
+	f32 CTerrainSceneNode::getHeight(f32 x, f32 z) const
 	{
 		if (!Mesh.getMeshBufferCount())
 			return 0;

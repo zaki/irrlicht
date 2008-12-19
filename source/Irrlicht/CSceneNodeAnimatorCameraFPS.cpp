@@ -20,9 +20,8 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 		f32 rotateSpeed, f32 moveSpeed, f32 jumpSpeed,
 		SKeyMap* keyMapArray, u32 keyMapSize, bool noVerticalMovement)
 : CursorControl(cursorControl), MaxVerticalAngle(88.0f),
-	MoveSpeed(moveSpeed/1000.0f), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
-	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement),
-	KeyMapArray(keyMapArray), KeyMapSize(keyMapSize)
+	MoveSpeed(moveSpeed), RotateSpeed(rotateSpeed), JumpSpeed(jumpSpeed),
+	LastAnimationTime(0), firstUpdate(true), NoVerticalMovement(noVerticalMovement)
 {
 	#ifdef _DEBUG
 	setDebugName("CCameraSceneNodeAnimatorFPS");
@@ -34,7 +33,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	allKeysUp();
 
 	// create key map
-	if (!KeyMapArray || !KeyMapSize)
+	if (!keyMapArray || !keyMapSize)
 	{
 		// create default key map
 		KeyMap.push_back(SCamKeyMap(EKA_MOVE_FORWARD, irr::KEY_UP));
@@ -46,7 +45,7 @@ CSceneNodeAnimatorCameraFPS::CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cu
 	else
 	{
 		// create custom key map
-		setKeyMap(KeyMapArray, KeyMapSize);
+		setKeyMap(keyMapArray, keyMapSize);
 	}
 }
 
@@ -97,7 +96,7 @@ bool CSceneNodeAnimatorCameraFPS::OnEvent(const SEvent& evt)
 
 void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 {
-	if (node->getType() != ESNT_CAMERA)
+	if (!node || node->getType() != ESNT_CAMERA)
 		return;
 
 	ICameraSceneNode* camera = static_cast<ICameraSceneNode*>(node);
@@ -115,6 +114,14 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 
 		firstUpdate = false;
 	}
+
+	// If the camera isn't the active camera, and receiving input, then don't process it.
+	if(!camera->isInputReceiverEnabled())
+		return;
+
+	scene::ISceneManager * smgr = camera->getSceneManager();
+	if(smgr && smgr->getActiveCamera() != camera)
+		return;
 
 	// get time
 	f32 timeDiff = (f32) ( timeMs - LastAnimationTime );
@@ -147,14 +154,15 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 			{
 				relativeRotation.X = MaxVerticalAngle;
 			}
-
-			// reset cursor position
-			CursorControl->setPosition(0.5f, 0.5f);
-			CenterCursor = CursorControl->getRelativePosition();
-			// needed to avoid problems when the ecent receiver is
-			// disabled
-			CursorPos = CenterCursor;
 		}
+
+		// reset cursor position to the centre of the window. Do this unconditionally 
+		// to cope with the case where the mouse has escaped our window in a single
+		// tick, so we don't get messages for it.
+		CursorControl->setPosition(0.5f, 0.5f);
+		CenterCursor = CursorControl->getRelativePosition();
+		// needed to avoid problems when the event receiver is disabled
+		CursorPos = CenterCursor;
 	}
 
 	// set target
@@ -294,19 +302,29 @@ void CSceneNodeAnimatorCameraFPS::setKeyMap(SKeyMap *map, u32 count)
 	}
 }
 
+
 //! Sets whether vertical movement should be allowed.
 void CSceneNodeAnimatorCameraFPS::setVerticalMovement(bool allow)
 {
 	NoVerticalMovement = !allow;
 }
 
+
 ISceneNodeAnimator* CSceneNodeAnimatorCameraFPS::createClone(ISceneNode* node, ISceneManager* newManager)
 {
 	CSceneNodeAnimatorCameraFPS * newAnimator = 
-		new CSceneNodeAnimatorCameraFPS(CursorControl,	RotateSpeed, (MoveSpeed * 1000.0f), JumpSpeed,
-											KeyMapArray, KeyMapSize, NoVerticalMovement);
+		new CSceneNodeAnimatorCameraFPS(CursorControl,	RotateSpeed, MoveSpeed, JumpSpeed,
+											0, 0, NoVerticalMovement);
+	newAnimator->setKeyMap(KeyMap);
 	return newAnimator;
 }
+
+
+void CSceneNodeAnimatorCameraFPS::setKeyMap(const core::array<SCamKeyMap>& keymap)
+{
+	KeyMap=keymap;
+}
+
 
 } // namespace scene
 } // namespace irr

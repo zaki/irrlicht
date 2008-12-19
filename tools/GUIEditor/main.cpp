@@ -7,7 +7,9 @@
 using namespace irr;
 using namespace gui;
 
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 int main()
 {

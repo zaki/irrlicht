@@ -127,18 +127,18 @@ namespace scene
 		//! \return Pointer to interface to camera
 		virtual ICameraSceneNode* addCameraSceneNode(ISceneNode* parent = 0,
 			const core::vector3df& position = core::vector3df(0,0,0),
-			const core::vector3df& lookat = core::vector3df(0,0,0), s32 id=-1);
+			const core::vector3df& lookat = core::vector3df(0,0,100), s32 id=-1);
 
 		//! Adds a camera scene node which is able to be controlle with the mouse similar
 		//! like in the 3D Software Maya by Alias Wavefront.
 		//! The returned pointer must not be dropped.
 		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
-			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f, f32 translationSpeed = 100.0f, s32 id=-1);
+			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f, f32 translationSpeed = 1500.0f, s32 id=-1);
 
 		//! Adds a camera scene node which is able to be controled with the mouse and keys
 		//! like in most first person shooters (FPS):
 		virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
-			f32 rotateSpeed = 1500.0f, f32 moveSpeed = 200.0f, s32 id=-1,
+			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, s32 id=-1,
 			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
 			f32 jumpSpeed = 0.f);
 
@@ -167,8 +167,9 @@ namespace scene
 		//! Adds a skydome scene node. A skydome is a large (half-) sphere with a
 		//! panoramic texture on it and is drawn around the camera position.
 		virtual ISceneNode* addSkyDomeSceneNode(video::ITexture* texture,
-			u32 horiRes, u32 vertRes, f64 texturePercentage,
-			f64 spherePercentage, ISceneNode* parent=0, s32 id=-1);
+			u32 horiRes=16, u32 vertRes=8,
+			f64 texturePercentage=0.9, f64 spherePercentage=2.0,
+			ISceneNode* parent=0, s32 id=-1);
 
 		//! Adds a text scene node, which is able to display
 		//! 2d text at a position in three dimensional space

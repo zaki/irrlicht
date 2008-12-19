@@ -380,7 +380,7 @@ int main()
 
 	// add a camera and disable the mouse cursor
 
-	scene::ICameraSceneNode* cam = smgr->addCameraSceneNodeFPS(0, 100.0f, 100.0f);
+	scene::ICameraSceneNode* cam = smgr->addCameraSceneNodeFPS(0, 100.0f, .1f);
 	cam->setPosition(core::vector3df(-100,50,100));
 	cam->setTarget(core::vector3df(0,0,0));
 	device->getCursorControl()->setVisible(false);

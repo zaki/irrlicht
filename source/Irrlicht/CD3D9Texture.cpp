@@ -365,7 +365,7 @@ bool CD3D9Texture::copyTexture(IImage * image)
 		HRESULT hr = Texture->LockRect(0, &rect, 0, 0);
 		if (FAILED(hr))
 		{
-			os::Printer::log("Could not lock D3D9 Texture.", ELL_ERROR);
+			os::Printer::log("Texture data not copied", "Could not LockRect D3D9 Texture.", ELL_ERROR);
 			return false;
 		}
 
@@ -375,7 +375,7 @@ bool CD3D9Texture::copyTexture(IImage * image)
 		hr = Texture->UnlockRect(0);
 		if (FAILED(hr))
 		{
-			os::Printer::log("Could not unlock D3D9 Texture.", ELL_ERROR);
+			os::Printer::log("Texture data not copied", "Could not UnlockRect D3D9 Texture.", ELL_ERROR);
 			return false;
 		}
 	}
@@ -395,6 +395,13 @@ void* CD3D9Texture::lock(bool readOnly)
 	if(!IsRenderTarget)
 	{
 		hr = Texture->LockRect(0, &rect, 0, readOnly?D3DLOCK_READONLY:0);
+		if (FAILED(hr))
+		{
+			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
+			return 0;
+		}
+
+		return rect.pBits;
 	}
 	else
 	{
@@ -405,7 +412,7 @@ void* CD3D9Texture::lock(bool readOnly)
 			hr = Device->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &RTTSurface, 0);
 			if (FAILED(hr))
 			{
-				os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
+				os::Printer::log("Could not lock DIRECT3D9 Texture", "Offscreen surface creation failed.", ELL_ERROR);
 				return 0;
 			}
 		}
@@ -414,31 +421,24 @@ void* CD3D9Texture::lock(bool readOnly)
 		hr = Texture->GetSurfaceLevel(0, &surface);
 		if (FAILED(hr))
 		{
-			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
+			os::Printer::log("Could not lock DIRECT3D9 Texture", "Could not get surface.", ELL_ERROR);
 			return 0;
 		}
 		hr = Device->GetRenderTargetData(surface, RTTSurface);
 		surface->Release();
 		if(FAILED(hr))
 		{
-			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
+			os::Printer::log("Could not lock DIRECT3D9 Texture", "Data copy failed.", ELL_ERROR);
 			return 0;
 		}
 		hr = RTTSurface->LockRect(&rect, 0, readOnly?D3DLOCK_READONLY:0);
 		if(FAILED(hr))
 		{
-			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
+			os::Printer::log("Could not lock DIRECT3D9 Texture", "LockRect failed.", ELL_ERROR);
 			return 0;
 		}
 		return rect.pBits;
 	}
-	if (FAILED(hr))
-	{
-		os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
-		return 0;
-	}
-
-	return rect.pBits;
 }
 
 

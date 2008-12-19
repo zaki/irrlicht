@@ -2,7 +2,7 @@ This file contains API changes between consecutive versions. You can get the
 relevant information about all changes to the public Irrlicht API needed for
 upgrading your code (esp. custom scene nodes and GUI elements) to a new Irrlicht
 version. Since all changes are incremental you should skip forward to the
-version you use right now and check all each note until you reach the desired
+version you use right now and check each note until you reach the desired
 version.
 Please note that the changes described here do not contain functional changes,
 but only syntactical ones. Also, new methods are not documented here and
@@ -1313,4 +1313,274 @@ Changed signature (Made const)
 IrrlichtDevice.h
 Changed signature (Return value bool instead of void). Returns whether the event has been handled somewhere.
 	virtual bool postEventFromUser(const SEvent& event) = 0;
+
+Changes for Version 1.5
+-----------------------
+Another major release, so expect API breaks at several places. The changes
+herein are described as a difference to Irrlicht 1.4.2.
+
+The most noticeable changes are the speed factor of the FPS camera (now units/ms
+instead of units/s, so divide the parameter by 1000.f) and the new interfaces
+of the camera nodes, based on scene node animators. Custom camera nodes should
+be adpated to this new scheme, although they might still work. Also, particle
+sizes are now set and handled by the emitters, which requires a change of the
+particle system constructor call or adaption of the setParticleSize method to
+work on the emitters. A deprecation method is issued if the old scheme is used.
+Light setting has also changed, the SLight struct is used in even less
+situations than before, instead use methods in ILightSceneNode.
+
+Other changes did change major parts of the underlying structures, but might go
+unnoticed on the user level. This includes 32bit indices and Vertex Buffer
+Objects. However, VBOs require the user to call setDirty on Meshes or
+MeshBuffers after changes to the vertex or index data. The all need only to be
+done once before the next render call, but again after subsequent changes later
+on.
+
+
+All Mesh types and MeshBuffers:
+New methods for VBO support. Once VBOs are enabled for a meshbuffer, changes
+will only be effective after a call to setDirty(). VBOs are enabled by default
+for some scene nodes.
+	virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX);
+
+All MeshBuffers:
+Due to the 32bit support, it might happen that indices are stored as 32bit integers. The actual index type can be queried from a mesh buffer.
+	virtual video::E_INDEX_TYPE getIndexType() const
+
+IrrCompileConfig.h
+Some new defines for configuring Irrlicht
+_IRR_USE_WINDOWS_CE_DEVICE_ for Windows CE API based device
+_IRR_COMPILE_WITH_JOYSTICK_EVENTS_ to enable joystick support (enabled by default)
+_IRR_COMPILE_WITH_LWO_LOADER_ to enable the LWO mesh loader (enabled by default)
+_IRR_COMPILE_WITH_OBJ_WRITER_ to enable the OBJ mesh writer (enabled by default)
+_IRR_COMPILE_WITH_WAL_LOADER_ to enable the WAL image loader (enabled by default)
+_IRR_USE_NVIDIA_PERFHUD_ for support of the PerfHUD tool (disabled by default)
+
+SceneParameters.h
+New parameter scene::OBJ_LOADER_IGNORE_GROUPS, which allows to ignore the group structure of obj files. It's disabled by default, meaning obj groups will be represented by separate meshbuffers.
+
+SColor.h
+Renamed method names of the SColorHSL class
+	void fromRGB(const SColor &color);
+	void toRGB(SColor &color) const;
+
+ITexture.h
+Added new parameter
+	virtual void* lock(bool readOnly = false) = 0;
+
+IMeshManipulator.h
+Renamed methods (the old ones still exist, but are deprecated). The new methods also work on meshbuffers, not just meshes.
+(renamed from scaleMesh)
+	virtual void scale(IMesh* mesh, const core::vector3df& factor) const = 0;
+(renamed from transformMesh)
+	virtual void transform(IMesh* mesh, const core::matrix4& m) const = 0;
+Changed signature (Added new parameters to adjust the algorithm)
+	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const = 0;
+
+IBillboardTextSceneNode.h
+New interface replacing the multiple inheritance from bliiboard and text scene node previously used by the billboard text scene node.
+
+IParticleSystemSceneNode.h
+All emitters have minStartSize and maxStartSize parameters now, since partice size is handled by the emitters now.
+Default value added
+	virtual void setParticlesAreGlobal(bool global=true) = 0;
+
+fast_atof.h
+Signature change (return value changed from u32)
+inline s32 strtol10(const char* in, const char** out=0)
+Signature change (parameter changed from float)
+inline const char* fast_atof_move( const char * in, f32 & out)
+
+IAnimatedMeshSceneNode.h
+Added new parameter (dummy node used for simplifying shadow calculation)
+	virtual IShadowVolumeSceneNode* addShadowVolumeSceneNode(const IMesh* shadowMesh=0,
+		s32 id=-1, bool zfailmethod=true, f32 infinity=10000.0f) = 0;
+ 
+ISceneManager.h
+Removed extra render passes for quake shaders
+Changed scene node from ISceneNode to IMeshSceneNode
+	virtual IMeshSceneNode* addCubeSceneNode(f32 size=10.0f, ISceneNode* parent=0, s32 id=-1, ...)
+	virtual IMeshSceneNode* addSphereSceneNode(f32 radius=5.0f, s32 polyCount=16, ...)
+Changed default value (from 256 to 512, for efficiency on common gfx hardware)
+ 	virtual ISceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+		s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
+Changed default value (from 500.f, to adapt the changed speed scale) 
+ 	virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
+		f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, s32 id=-1, ...)
+Added default values 
+ 	virtual ISceneNode* addSkyDomeSceneNode(video::ITexture* texture,
+		u32 horiRes=16, u32 vertRes=8,
+		f64 texturePercentage=0.9, f64 spherePercentage=2.0,
+		ISceneNode* parent=0, s32 id=-1) = 0;
+Changed return value (from ITextSceneNode, due to changed inheritance) 
+	virtual IBillboardTextSceneNode* addBillboardTextSceneNode( gui::IGUIFont* font, const wchar_t* text, ...)
+Changed default value (gravity, from -100.f)
+ 	virtual ISceneNodeAnimatorCollisionResponse* createCollisionResponseAnimator(
+ 		ITriangleSelector* world, ISceneNode* sceneNode,
+ 		const core::vector3df& ellipsoidRadius = core::vector3df(30,60,30),
+		const core::vector3df& gravityPerSecond = core::vector3df(0,-10.0f,0),
+ 		const core::vector3df& ellipsoidTranslation = core::vector3df(0,0,0),
+ 		f32 slidingValue = 0.0005f) = 0;
+ 
+ISceneNodeAnimator.h
+Changed inheritance (for interactive animators)
+	class ISceneNodeAnimator : public io::IAttributeExchangingObject, public IEventReceiver
+Changed to pure virtual (bug fix)
+	virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) = 0;
+
+IVideoModeList.h
+Changed return value (constification)
+	virtual const core::dimension2d<s32>& getDesktopResolution() const = 0;
+
+IBoneSceneNode.h
+Deprecation: Use getName instead.
+	virtual const c8* getBoneName() const;
+
+vector3d.h
+Changed return value (return *this)
+	vector3d<T>& set(const T nx, const T ny, const T nz) {X=nx; Y=ny; Z=nz; return *this;}
+	vector3d<T>& set(const vector3d<T>& p) {X=p.X; Y=p.Y; Z=p.Z;return *this;}
+	vector3d<T>& setLength(T newlength)
+	vector3d<T>& invert()
+Added default value
+	void rotateXZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
+	void rotateXYBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
+	void rotateYZBy(f64 degrees, const vector3d<T>& center=vector3d<T>())
+Changed parameter type (interpolation factor must not be integral)
+	vector3d<T> getInterpolated(const vector3d<T>& other, f64 d) const
+	vector3d<T> getInterpolated_quadratic(const vector3d<T>& v2, const vector3d<T>& v3, f64 d) const
+Method made const 
+	vector3d<T> getHorizontalAngle() const
+ 
+SLight.h
+Attenuation can be overridden by ILightSceneMethod setRadius() Attenuation will
+change to (0,1.f/radius,0). Can be overridden after radius was set.
+The following members are read-only now: 
+	f32 Radius;
+ 	E_LIGHT_TYPE Type;
+ 	bool CastShadows;
+
+ITerrainSceneNode.h
+Parameter type changed (diue to possible 32bit indices)
+	virtual void getMeshBufferForLOD(IDynamicMeshBuffer& mb, s32 LOD=0) const =0;
+Added dafault value (highest detail) 
+	virtual void setLODOfPatch(s32 patchX, s32 patchZ, s32 LOD=0) =0;
+
+SExposedVideoData.h
+Changed member attributes (from s32, to fix 64bit architecture problems)
+	void* HWnd;
+	void* HDc;
+	void* HRc;
+	void* HWnd;
+
+IAnimatedMeshMD3.h
+Changed return value (constification)
+	const SMD3QuaterionTag& operator[](u32 index) const
+
+IQ3Shader.h
+Changed default q3 shader values (from LIGHTMAP_M2)
+	const video::E_MATERIAL_TYPE defaultMaterialType = video::EMT_LIGHTMAP_M4;
+	const video::E_MODULATE_FUNC defaultModulate = video::EMFN_MODULATE_4X;
+
+ISceneNode.h
+Method made virtual
+	virtual const core::matrix4& getAbsoluteTransformation() const
+Changed return value (constified)
+	virtual const core::vector3df& getScale() const
+	virtual const core::vector3df& getPosition() const
+
+IEventReceiver.h
+Removed member from UserEvent
+	f32 UserData3;
+ 
+SMaterial.h
+Changed member type (from u32)
+	char ZBuffer;
+
+IGUISkin.h
+Added parameter (for alignment)
+ 	virtual void draw3DTabButton(IGUIElement* element, bool active,
+		const core::rect<s32>& rect, const core::rect<s32>* clip=0, gui::EGUI_ALIGNMENT alignment=EGUIA_UPPERLEFT) = 0;
+ 	virtual void draw3DTabBody(IGUIElement* element, bool border, bool background,
+		const core::rect<s32>& rect, const core::rect<s32>* clip=0, s32 tabHeight=-1, gui::EGUI_ALIGNMENT alignment=EGUIA_UPPERLEFT ) = 0;
+
+quaternion.h
+Renamed method (from getDotProduct)
+	inline f32 dotProduct(const quaternion& other) const;
+Changed return value (return *this)
+	quaternion& set(f32 x, f32 y, f32 z, f32 w);
+	quaternion& set(f32 x, f32 y, f32 z);
+	quaternion& set(const core::vector3df& vec);
+	quaternion& makeInverse();
+	quaternion& slerp( quaternion q1, quaternion q2, f32 interpolate );
+	quaternion& fromAngleAxis (f32 angle, const vector3df& axis);
+	quaternion& makeIdentity();
+	quaternion& rotationFromTo(const vector3df& from, const vector3df& to);
+
+IVideoDriver.h
+Added parameters (moved from endScene) and added default values
+	virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
+		SColor color=SColor(255,0,0,0), void* windowId=0,
+		core::rect<s32>* sourceRect=0) = 0;
+Removed parameter (move to beginScene)
+	virtual bool endScene() = 0;
+Renamed method (note, also affects ReferenceCount behavior!)
+Use addRenderTargetTexture instead of createRenderTargetTexture
+	virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name=0) =0;
+Changed parameters (for 32bit index support)
+ 	virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+		const void* indexList, u32 primCount, E_VERTEX_TYPE vType,
+		scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType) = 0;
+Changed parameter (colors are const pointers now) 
+ 	virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
+ 		const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
+		const video::SColor * const colors=0, bool useAlphaChannelOfTexture=false) = 0;
+
+IQ3LevelMesh.h
+Added default value
+	virtual const quake3::SShader* getShader( const c8* filename, bool fileNameIsValid=true ) = 0;
+
+ICameraSceneNode.h
+Added method parameter (required to set orthogonal together with projection to avoid inconsistencies)
+	virtual void setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal = false) = 0;
+Removed method (use new parameter in setProjectionMatrix)
+	void setIsOrthogonal( bool orthogonal )
+Constified return value 
+	virtual const core::vector3df& getTarget() const = 0;
+	virtual const core::vector3df& getUpVector() const = 0;
+ 
+matrix4.h
+Removed method (use transformPlane)
+	void transformPlane_new( core::plane3d<f32> &plane) const;
+Changed qulifications (to enable use under Win32 systems, too)
+	IRRLICHT_API extern const matrix4 IdentityMatrix;
+
+SIrrCreationParameters.h
+Changed member attribute types
+	u8 Bits;
+	const c8* const SDK_version_do_not_use;
+
+IGUIElement.h
+Renamed method from setRelativePosition (to distinguish rather different parameter interpretation)
+	void setRelativePositionProportional(const core::rect<f32>& r) 
+
+irrString.h
+Constructors made explicit (use core::stringc(var) in places where var was used before)
+	explicit string(const double number)
+	explicit string(int number)
+	explicit string(unsigned int number)
+Added parameter (allows use of method for stringw, and other things)
+	string<T>& trim(const string<T> & whitespace = " \t\n\r")
+
+vector2d.h
+Changed return value (return *this)
+	vector2d<T>& set(T nx, T ny) {X=nx; Y=ny; return *this; }
+	vector2d<T>& set(const vector2d<T>& p) { X=p.X; Y=p.Y; return *this; }
+Added default value
+	vector2d<T>& rotateBy(f64 degrees, const vector2d<T>& center=vector2d<T>())
+Changed parameter type (interpolation factor must not be int)
+	vector2d<T> getInterpolated(const vector2d<T>& other, f64 d) const
+	vector2d<T> getInterpolated_quadratic(const vector2d<T>& v2, const vector2d<T>& v3, f64 d) const
+	vector2d<T>& interpolate(const vector2d<T>& a, const vector2d<T>& b, f64 d)
 

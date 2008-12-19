@@ -27,8 +27,8 @@ namespace gui
 //! constructor
 CGUIEditWorkspace::CGUIEditWorkspace(IGUIEnvironment* environment, s32 id, IGUIElement *parent)
 : IGUIElement(EGUIET_ELEMENT, environment, parent ? parent : environment->getRootGUIElement(), id, environment->getRootGUIElement()->getAbsolutePosition()),
-	DrawGrid(false), UseGrid(true), GridSize(10,10), MenuCommandStart(0x3D17),
 	CurrentMode(EGUIEDM_SELECT), MouseOverMode(EGUIEDM_SELECT),
+	GridSize(10,10), MenuCommandStart(0x3D17), DrawGrid(false), UseGrid(true),
 	MouseOverElement(0), SelectedElement(0), EditorWindow(0)
 {
 	#ifdef _DEBUG
@@ -224,7 +224,7 @@ bool CGUIEditWorkspace::OnEvent(const SEvent &e)
 	IGUIFileOpenDialog* dialog=0;
 	switch(e.EventType)
 	{
-	case (EEVENT_TYPE)ATTRIBEDIT_ATTRIB_CHANGED:
+	case ATTRIBEDIT_ATTRIB_CHANGED:
 		{
 			switch (e.UserEvent.UserData1)
 			{

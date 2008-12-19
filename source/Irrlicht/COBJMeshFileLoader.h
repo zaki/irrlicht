@@ -96,7 +96,7 @@ private:
 	//! Read 3d vector of floats
 	const c8* readVec3(const c8* bufPtr, core::vector3df& vec, const c8* const pBufEnd);
 	//! Read 2d vector of floats
-	const c8* readVec2(const c8* bufPtr, core::vector2df& vec, const c8* const pBufEnd);
+	const c8* readUV(const c8* bufPtr, core::vector2df& vec, const c8* const pBufEnd);
 	//! Read boolean value represented as 'on' or 'off'
 	const c8* readBool(const c8* bufPtr, bool& tf, const c8* const bufEnd);
 

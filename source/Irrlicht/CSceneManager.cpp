@@ -648,10 +648,10 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 		rotateSpeed, zoomSpeed, translationSpeed);
 
 	node->addAnimator(anm);
+	setActiveCamera(node);
+
 	anm->drop();
 	node->drop();
-
-	setActiveCamera(node);
 
 	return node;
 }
@@ -667,18 +667,18 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
 		parent = this;
 
 	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
-	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl, rotateSpeed, 
-		moveSpeed, jumpSpeed, keyMapArray, keyMapSize, noVerticalMovement);
+	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl,
+			rotateSpeed, moveSpeed, jumpSpeed,
+			keyMapArray, keyMapSize, noVerticalMovement);
 
 	// Bind the node's rotation to its target. This is consistent with 1.4.2 and below.
 	node->bindTargetAndRotation(true);
 
 	node->addAnimator(anm);
-	anm->drop();
-	node->drop();
-
 	setActiveCamera(node);
 
+	anm->drop();
+	node->drop();
 
 	return node;
 }

@@ -46,8 +46,8 @@ namespace scene
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) = 0;
 
 		//! Returns true if this animator receives events.
-		/** When attached to the an active camera, this animator will be able to respond to events
-		such as mouse and keyboard events. */
+		/** When attached to an active camera, this animator will be
+		able to respond to events such as mouse and keyboard events. */
 		virtual bool isEventReceiverEnabled() const
 		{
 			return false;
