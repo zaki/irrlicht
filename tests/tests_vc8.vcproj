@@ -218,6 +218,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\sceneNodeAnimator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\softwareDevice.cpp"
 				>
 			</File>

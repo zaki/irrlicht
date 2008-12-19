@@ -1,5 +1,7 @@
 Changes in version 1.6
 
+ - ISceneNodeAnimator now has a hasFinished() method.
+
  - ISceneNodeAnimatorCollisionResponse exposes the target node. Setting the node again resets the last position, allowing the node to be teleported.
 
  - Add a hitPosition out parameter to ISceneCollisionManager::getCollisionResultPosition() - this is a (small) API breaking change.

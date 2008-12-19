@@ -64,6 +64,14 @@ namespace scene
 		{
 			return ESNAT_UNKNOWN;
 		}
+
+		//! Returns if the animator has finished.
+		/** This is only valid for non-looping animators with a discrete end state.
+			\return true if the animator has finished, false if it is still running. */
+		virtual bool hasFinished(void) const
+		{
+			return false;
+		}
 	};
 
 

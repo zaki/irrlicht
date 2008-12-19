@@ -14,17 +14,19 @@ namespace scene
 CSceneNodeAnimatorFlyStraight::CSceneNodeAnimatorFlyStraight(const core::vector3df& startPoint,
 				const core::vector3df& endPoint, u32 timeForWay,
 				bool loop, u32 now)
-: Start(startPoint), End(endPoint), WayLength(0.0f), TimeFactor(0.0f), StartTime(now), TimeForWay(timeForWay), Loop(loop)
+: ISceneNodeAnimatorFinishing(now + timeForWay),
+	Start(startPoint), End(endPoint), WayLength(0.0f), 
+	TimeFactor(0.0f), StartTime(now), TimeForWay(timeForWay), Loop(loop)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorFlyStraight");
 	#endif
 
-	recalculateImidiateValues();
+	recalculateIntermediateValues();
 }
 
 
-void CSceneNodeAnimatorFlyStraight::recalculateImidiateValues()
+void CSceneNodeAnimatorFlyStraight::recalculateIntermediateValues()
 {
 	Vector = End - Start;
 	WayLength = (f32)Vector.getLength();
@@ -53,9 +55,15 @@ void CSceneNodeAnimatorFlyStraight::animateNode(ISceneNode* node, u32 timeMs)
 	core::vector3df pos = Start;
 
 	if (!Loop && t >= TimeForWay)
+	{
 		pos = End;
+		HasFinished = true;
+	}
 	else
+	{
 		pos += Vector * (f32)fmod((f32)t, (f32)TimeForWay) * TimeFactor;
+	}
+
 	node->setPosition(pos);
 }
 
@@ -78,7 +86,7 @@ void CSceneNodeAnimatorFlyStraight::deserializeAttributes(io::IAttributes* in, i
 	TimeForWay = in->getAttributeAsInt("TimeForWay");
 	Loop = in->getAttributeAsBool("Loop");
 
-	recalculateImidiateValues();
+	recalculateIntermediateValues();
 }
 
 ISceneNodeAnimator* CSceneNodeAnimatorFlyStraight::createClone(ISceneNode* node, ISceneManager* newManager)

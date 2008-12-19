@@ -5,13 +5,13 @@
 #ifndef __C_SCENE_NODE_ANIMATOR_DELETE_H_INCLUDED__
 #define __C_SCENE_NODE_ANIMATOR_DELETE_H_INCLUDED__
 
-#include "ISceneNode.h"
+#include "ISceneNodeAnimatorFinishing.h"
 
 namespace irr
 {
 namespace scene
 {
-	class CSceneNodeAnimatorDelete : public ISceneNodeAnimator
+	class CSceneNodeAnimatorDelete : public ISceneNodeAnimatorFinishing
 	{
 	public:
 
@@ -38,7 +38,6 @@ namespace scene
 
 	private:
 
-		u32 DeleteTime;
 		ISceneManager* SceneManager;
 	};
 
