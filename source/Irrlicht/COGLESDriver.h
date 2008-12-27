@@ -15,11 +15,12 @@
 	#include "CIrrDeviceMacOSX.h"
 #endif
 
+#include "SIrrCreationParameters.h"
+
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
-#include "SIrrCreationParameters.h"
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
 
@@ -260,6 +261,9 @@ namespace video
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return vendorName;};
 
+		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
+		void removeDepthTexture(ITexture* texture);
+
 	private:
 
 		void uploadClipPlane(u32 index);
@@ -311,6 +315,7 @@ namespace video
 		SMaterial Material, LastMaterial;
 		COGLES1Texture* RenderTargetTexture;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
+		core::array<ITexture*> DepthTextures;
 		s32 LastSetLight;
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;
