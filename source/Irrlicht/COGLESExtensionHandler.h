@@ -106,9 +106,132 @@ namespace video
 		void initExtensions(EGLDisplay display, bool withStencil);
 
 	public:
+		void COGLES1ExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint framebuffer)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlBindFramebufferOES)
+				pGlBindFramebufferOES(target, framebuffer);
+#elif defined(GL_OES_framebuffer_object)
+			glBindFramebufferOES(target, framebuffer);
+#else
+			os::Printer::log("glBindFramebuffer not supported", ELL_ERROR);
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlDeleteFramebuffersOES)
+				pGlDeleteFramebuffersOES(n, framebuffers);
+#elif defined(GL_OES_framebuffer_object)
+			glDeleteFramebuffersOES(n, framebuffers);
+#else
+			os::Printer::log("glDeleteFramebuffers not supported", ELL_ERROR);
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlGenFramebuffersOES)
+				pGlGenFramebuffersOES(n, framebuffers);
+#elif defined(GL_OES_framebuffer_object)
+			glGenFramebuffersOES(n, framebuffers);
+#else
+			os::Printer::log("glGenFramebuffers not supported", ELL_ERROR);
+#endif
+		}
+
+		GLenum COGLES1ExtensionHandler::extGlCheckFramebufferStatus(GLenum target)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlCheckFramebufferStatusOES)
+				return pGlCheckFramebufferStatusOES(target);
+			else
+				return 0;
+#elif defined(GL_OES_framebuffer_object)
+			return glCheckFramebufferStatusOES(target);
+#else
+			os::Printer::log("glCheckFramebufferStatus not supported", ELL_ERROR);
+			return 0;
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlFramebufferTexture2DOES)
+				pGlFramebufferTexture2DOES(target, attachment, textarget, texture, level);
+#elif defined(GL_OES_framebuffer_object)
+			glFramebufferTexture2DOES(target, attachment, textarget, texture, level);
+#else
+			os::Printer::log("glFramebufferTexture2D not supported", ELL_ERROR);
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlBindRenderbufferOES)
+				pGlBindRenderbufferOES(target, renderbuffer);
+#elif defined(GL_OES_framebuffer_object)
+			glBindRenderbufferOES(target, renderbuffer);
+#else
+			os::Printer::log("glBindRenderbuffer not supported", ELL_ERROR);
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlDeleteRenderbuffersOES)
+				pGlDeleteRenderbuffersOES(n, renderbuffers);
+#elif defined(GL_OES_framebuffer_object)
+			glDeleteRenderbuffersOES(n, renderbuffers);
+#else
+			os::Printer::log("glDeleteRenderbuffers not supported", ELL_ERROR);
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlGenRenderbuffersOES)
+				pGlGenRenderbuffersOES(n, renderbuffers);
+#elif defined(GL_OES_framebuffer_object)
+			glGenRenderbuffersOES(n, renderbuffers);
+#else
+			os::Printer::log("glGenRenderbuffers not supported", ELL_ERROR);
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlRenderbufferStorageOES)
+				pGlRenderbufferStorageOES(target, internalformat, width, height);
+#elif defined(GL_OES_framebuffer_object)
+			glRenderbufferStorageOES(target, internalformat, width, height);
+#else
+			os::Printer::log("glRenderbufferStorage not supported", ELL_ERROR);
+#endif
+		}
+
+		void COGLES1ExtensionHandler::extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+		{
+#ifdef _IRR_OGLES1_USE_EXTPOINTER_
+			if (pGlFramebufferRenderbufferOES)
+				pGlFramebufferRenderbufferOES(target, attachment, renderbuffertarget, renderbuffer);
+#elif defined(GL_OES_framebuffer_object)
+			glFramebufferRenderbufferOES(target, attachment, renderbuffertarget, renderbuffer);
+#else
+			os::Printer::log("glFramebufferRenderbuffer not supported", ELL_ERROR);
+#endif
+		}
+
 		void extGlDrawTex(GLfloat X, GLfloat Y, GLfloat Z, GLfloat W, GLfloat H)
 		{
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 			if (pGlDrawTexfOES)
 				pGlDrawTexfOES(X, Y, Z, W, H);
 #elif defined(GL_OES_draw_texture)
@@ -120,7 +243,7 @@ namespace video
 
 		void extGlDrawTex(GLint X, GLint Y, GLint Z, GLint W, GLint H)
 		{
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 			if (pGlDrawTexiOES)
 				pGlDrawTexiOES(X, Y, Z, W, H);
 #elif defined(GL_OES_draw_texture)
@@ -132,7 +255,7 @@ namespace video
 
 		void extGlDrawTex(GLfloat* coords)
 		{
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 			if (pGlDrawTexfvOES)
 				pGlDrawTexfvOES(coords);
 #elif defined(GL_OES_draw_texture)
@@ -144,7 +267,7 @@ namespace video
 
 		void extGlDrawTex(GLint* coords)
 		{
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 			if (pGlDrawTexivOES)
 				pGlDrawTexivOES(coords);
 #elif defined(GL_OES_draw_texture)
@@ -192,16 +315,43 @@ namespace video
 			glPointParameterfv(loc, v);
 		}
 
-	private:
-#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+//	private:
+#if defined(_IRR_OGLES1_USE_EXTPOINTER_)
 		typedef void (APIENTRY * PFNGLDRAWTEXIOES) (GLint x, GLint y, GLint z, GLint width, GLint height);
 		typedef void (APIENTRY * PFNGLDRAWTEXIVOES) (const GLint* coords);
 		typedef void (APIENTRY * PFNGLDRAWTEXFOES) (GLfloat x, GLfloat y, GLfloat z, GLfloat width, GLfloat height);
 		typedef void (APIENTRY * PFNGLDRAWTEXFVOES) (const GLfloat* coords);
+		typedef GLboolean (GL_APIENTRYP PFNGLISRENDERBUFFEROES) (GLuint renderbuffer);
+		typedef void (GL_APIENTRYP PFNGLBINDRENDERBUFFEROES) (GLenum target, GLuint renderbuffer);
+		typedef void (GL_APIENTRYP PFNGLDELETERENDERBUFFERSOES) (GLsizei n, const GLuint* renderbuffers);
+		typedef void (GL_APIENTRYP PFNGLGENRENDERBUFFERSOES) (GLsizei n, GLuint* renderbuffers);
+		typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEOES) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+		typedef void (GL_APIENTRYP PFNGLGETRENDERBUFFERPARAMETERIVOES) (GLenum target, GLenum pname, GLint* params);
+		typedef GLboolean (GL_APIENTRYP PFNGLISFRAMEBUFFEROES) (GLuint framebuffer);
+		typedef void (GL_APIENTRYP PFNGLBINDFRAMEBUFFEROES) (GLenum target, GLuint framebuffer);
+		typedef void (GL_APIENTRYP PFNGLDELETEFRAMEBUFFERSOES) (GLsizei n, const GLuint* framebuffers);
+		typedef void (GL_APIENTRYP PFNGLGENFRAMEBUFFERSOES) (GLsizei n, GLuint* framebuffers);
+		typedef GLenum (GL_APIENTRYP PFNGLCHECKFRAMEBUFFERSTATUSOES) (GLenum target);
+		typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERRENDERBUFFEROES) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+		typedef void (GL_APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DOES) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+		typedef void (GL_APIENTRYP PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVOES) (GLenum target, GLenum attachment, GLenum pname, GLint* params);
+		typedef void (GL_APIENTRYP PFNGLGENERATEMIPMAPOES) (GLenum target);
+
 		PFNGLDRAWTEXIOES pGlDrawTexiOES;
 		PFNGLDRAWTEXFOES pGlDrawTexfOES;
 		PFNGLDRAWTEXIVOES pGlDrawTexivOES;
 		PFNGLDRAWTEXFVOES pGlDrawTexfvOES;
+		PFNGLBINDRENDERBUFFEROES pGlBindRenderbufferOES;
+		PFNGLDELETERENDERBUFFERSOES pGlDeleteRenderbuffersOES;
+		PFNGLGENRENDERBUFFERSOES pGlGenRenderbuffersOES;
+		PFNGLRENDERBUFFERSTORAGEOES pGlRenderbufferStorageOES;
+		PFNGLBINDFRAMEBUFFEROES pGlBindFramebufferOES;
+		PFNGLDELETEFRAMEBUFFERSOES pGlDeleteFramebuffersOES;
+		PFNGLGENFRAMEBUFFERSOES pGlGenFramebuffersOES;
+		PFNGLCHECKFRAMEBUFFERSTATUSOES pGlCheckFramebufferStatusOES;
+		PFNGLFRAMEBUFFERRENDERBUFFEROES pGlFramebufferRenderbufferOES;
+		PFNGLFRAMEBUFFERTEXTURE2DOES pGlFramebufferTexture2DOES;
+		PFNGLGENERATEMIPMAPOES pGlGenerateMipMapOES;
 #endif
 
 	protected:
@@ -219,5 +369,5 @@ namespace video
 } // end namespace irr
 
 
-#endif // _IRR_COMPILE_WITH_OPENGL_
+#endif // _IRR_COMPILE_WITH_OGLES1_
 #endif

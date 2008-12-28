@@ -63,6 +63,9 @@ public:
 	//! Is it a render target?
 	virtual bool isRenderTarget() const;
 
+	//! Is it a FrameBufferObject?
+	virtual bool isFrameBufferObject() const;
+
 	//! Bind RenderTargetTexture
 	void bindRTT();
 
@@ -72,7 +75,10 @@ public:
 	//! sets whether this texture is intended to be used as a render target.
 	void setIsRenderTarget(bool isTarget);
 
-private:
+protected:
+
+	//! protected constructor with basic setup, no GL texture name created, for derived classes
+	COGLES1Texture(const char* name, COGLES1Driver* driver);
 
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
@@ -82,9 +88,6 @@ private:
 
 	//! copies the the texture into an open gl texture.
 	void copyTexture(bool newTexture=true);
-
-	//! returns the size of a texture which would be optimal for rendering
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	core::dimension2d<s32> ImageSize;
 	COGLES1Driver* Driver;
@@ -100,6 +103,57 @@ private:
 	bool AutomaticMipmapUpdate;
 	bool UseStencil;
 	bool ReadOnlyLock;
+};
+
+
+//! OGLES1 FBO texture.
+class COGLES1FBOTexture : public COGLES1Texture
+{
+public:
+
+	//! FrameBufferObject constructor
+	COGLES1FBOTexture(const core::dimension2d<s32>& size, const char* name, COGLES1Driver* driver=0);
+
+	//! destructor
+	virtual ~COGLES1FBOTexture();
+
+	//! Is it a FrameBufferObject?
+	virtual bool isFrameBufferObject() const;
+
+	//! Bind RenderTargetTexture
+	virtual void bindRTT();
+
+	//! Unbind RenderTargetTexture
+	virtual void unbindRTT();
+
+	ITexture* DepthTexture;
+protected:
+	GLuint ColorFrameBuffer;
+};
+
+
+//! OGLES1 FBO depth texture.
+class COGLES1FBODepthTexture : public COGLES1FBOTexture
+{
+public:
+	//! FrameBufferObject depth constructor
+	COGLES1FBODepthTexture(const core::dimension2d<s32>& size, const char* name, COGLES1Driver* driver=0, bool useStencil=false);
+
+	//! destructor
+	virtual ~COGLES1FBODepthTexture();
+
+	//! Bind RenderTargetTexture
+	virtual void bindRTT();
+
+	//! Unbind RenderTargetTexture
+	virtual void unbindRTT();
+
+	void attach(ITexture*);
+
+protected:
+	GLuint DepthRenderBuffer;
+	GLuint StencilRenderBuffer;
+	bool UseStencil;
 };
 
 

@@ -34,14 +34,28 @@ COGLES1Texture::COGLES1Texture(IImage* origImage, const char* name, COGLES1Drive
 	setDebugName("COGLES1Texture");
 	#endif
 
+	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	getImageData(origImage);
 
-	HasMipMaps = Driver->getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	if (Image)
 	{
 		glGenTextures(1, &TextureName);
 		copyTexture();
 	}
+}
+
+
+//! constructor for basic setup (only for derived classes)
+COGLES1Texture::COGLES1Texture(const char* name, COGLES1Driver* driver)
+	: ITexture(name), Driver(driver), Image(0),
+	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
+	PixelType(GL_UNSIGNED_BYTE),
+	HasMipMaps(true), IsRenderTarget(false), AutomaticMipmapUpdate(false),
+	ReadOnlyLock(false)
+{
+	#ifdef _DEBUG
+	setDebugName("COGLES1Texture");
+	#endif
 }
 
 
@@ -112,16 +126,9 @@ void COGLES1Texture::getImageData(IImage* image)
 		return;
 	}
 
-	core::dimension2d<s32> nImageSize;
-	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
-		nImageSize=ImageSize;
-	else
-	{
-		nImageSize.Width = getTextureSizeFromSurfaceSize(ImageSize.Width);
-		nImageSize.Height = getTextureSizeFromSurfaceSize(ImageSize.Height);
-	}
+	const core::dimension2d<s32> nImageSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+	const ECOLOR_FORMAT destFormat = getBestColorFormat(image->getColorFormat());
 
-	ECOLOR_FORMAT destFormat = getBestColorFormat(image->getColorFormat());
 	if (ImageSize==nImageSize)
 		Image = new CImage(destFormat, image);
 	else
@@ -136,10 +143,6 @@ void COGLES1Texture::getImageData(IImage* image)
 //! copies the the texture into an open gl texture.
 void COGLES1Texture::copyTexture(bool newTexture)
 {
-	glBindTexture(GL_TEXTURE_2D, TextureName);
-	if (Driver->testGLError())
-		os::Printer::log("Could not bind Texture", ELL_ERROR);
-
 	if (!Image)
 	{
 		os::Printer::log("No image for OGLES1 texture to upload", ELL_ERROR);
@@ -185,6 +188,10 @@ void COGLES1Texture::copyTexture(bool newTexture)
 		InternalFormat=GL_RGBA;
 #endif
 
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	if (Driver->testGLError())
+		os::Printer::log("Could not bind Texture", ELL_ERROR);
+
 	if (newTexture)
 	{
 		#ifndef DISABLE_MIPMAPPING
@@ -228,17 +235,6 @@ void COGLES1Texture::copyTexture(bool newTexture)
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
-}
-
-
-//! returns the size of a texture which would be the optimal size for rendering it
-inline s32 COGLES1Texture::getTextureSizeFromSurfaceSize(s32 size) const
-{
-	s32 ts = 0x01;
-	while(ts < size)
-		ts <<= 1;
-
-	return ts;
 }
 
 
@@ -390,6 +386,12 @@ bool COGLES1Texture::isRenderTarget() const
 }
 
 
+bool COGLES1Texture::isFrameBufferObject() const
+{
+	return false;
+}
+
+
 void COGLES1Texture::setIsRenderTarget(bool isTarget)
 {
     IsRenderTarget = isTarget;
@@ -412,7 +414,278 @@ void COGLES1Texture::unbindRTT()
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
 }
 
+/* FBO Textures */
+
+#ifdef GL_OES_framebuffer_object
+// helper function for render to texture
+static bool checkFBOStatus(COGLES1Driver* Driver);
+#endif
+
+
+//! RTT ColorFrameBuffer constructor
+COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<s32>& size,
+                                const char* name,
+                                COGLES1Driver* driver)
+	: COGLES1Texture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
+{
+	#ifdef _DEBUG
+	setDebugName("COGLES1Texture_FBO");
+	#endif
+
+	ImageSize = size;
+	InternalFormat = GL_RGBA;
+	PixelFormat = GL_RGBA;
+	PixelType = GL_UNSIGNED_BYTE;
+	HasMipMaps = false;
+	IsRenderTarget = true;
+
+#ifdef GL_EXT_framebuffer_object
+	// generate frame buffer
+	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+
+	// generate color texture
+	glGenTextures(1, &TextureName);
+	glBindTexture(GL_TEXTURE_2D, TextureName);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
+		ImageSize.Height, 0, PixelFormat, PixelType, 0);
+
+	// attach color texture to frame buffer
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
+						GL_COLOR_ATTACHMENT0_EXT,
+						GL_TEXTURE_2D,
+						TextureName,
+						0);
+#endif
+	unbindRTT();
+}
+
+
+//! destructor
+COGLES1FBOTexture::~COGLES1FBOTexture()
+{
+	if (DepthTexture)
+		if (DepthTexture->drop())
+			Driver->removeDepthTexture(DepthTexture);
+	if (ColorFrameBuffer)
+		Driver->extGlDeleteFramebuffers(1, &ColorFrameBuffer);
+}
+
+
+bool COGLES1FBOTexture::isFrameBufferObject() const
+{
+	return true;
+}
+
+
+//! Bind Render Target Texture
+void COGLES1FBOTexture::bindRTT()
+{
+#ifdef GL_EXT_framebuffer_object
+	if (ColorFrameBuffer != 0)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+#endif
+}
+
+
+//! Unbind Render Target Texture
+void COGLES1FBOTexture::unbindRTT()
+{
+#ifdef GL_EXT_framebuffer_object
+	if (ColorFrameBuffer != 0)
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+#endif
+}
+
+
+/* FBO Depth Textures */
+
+//! RTT DepthBuffer constructor
+COGLES1FBODepthTexture::COGLES1FBODepthTexture(
+		const core::dimension2d<s32>& size,
+		const char* name,
+		COGLES1Driver* driver,
+		bool useStencil)
+	: COGLES1FBOTexture(size, name, driver), DepthRenderBuffer(0),
+	StencilRenderBuffer(0), UseStencil(useStencil)
+{
+#ifdef _DEBUG
+	setDebugName("COGLES1TextureFBO_Depth");
+#endif
+
+	ImageSize = size;
+#ifdef GL_OES_depth24
+	InternalFormat = GL_DEPTH_COMPONENT24_OES;
+#elif defined(GL_OES_depth32)
+	InternalFormat = GL_DEPTH_COMPONENT32_OES;
+#else
+	InternalFormat = GL_DEPTH_COMPONENT16_OES;
+#endif
+
+	PixelFormat = GL_RGBA;
+	PixelType = GL_UNSIGNED_BYTE;
+	HasMipMaps = false;
+
+	if (useStencil)
+	{
+#ifdef GL_OES_packed_depth_stencil
+		glGenTextures(1, &DepthRenderBuffer);
+		glBindTexture(GL_TEXTURE_2D, DepthRenderBuffer);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_OES_packed_depth_stencil))
+		{
+			// generate packed depth stencil texture
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_STENCIL_OES, ImageSize.Width,
+				ImageSize.Height, 0, GL_DEPTH_STENCIL_OES, GL_UNSIGNED_INT_24_8_OES, 0);
+			StencilRenderBuffer = DepthRenderBuffer; // stencil is packed with depth
+			return;
+		}
+#endif
+#ifdef GL_OES_framebuffer_object
+		// generate stencil buffer
+		Driver->extGlGenRenderbuffers(1, &StencilRenderBuffer);
+		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, StencilRenderBuffer);
+		Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES,
+				GL_STENCIL_INDEX1_OES, ImageSize.Width, ImageSize.Height);
+#endif
+	}
+#ifdef GL_OES_framebuffer_object
+	// generate depth buffer
+	Driver->extGlGenRenderbuffers(1, &DepthRenderBuffer);
+	Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, DepthRenderBuffer);
+	Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES,
+			InternalFormat, ImageSize.Width, ImageSize.Height);
+#endif
+}
+
+
+//! destructor
+COGLES1FBODepthTexture::~COGLES1FBODepthTexture()
+{
+	if (DepthRenderBuffer && UseStencil)
+		glDeleteTextures(1, &DepthRenderBuffer);
+	else
+		Driver->extGlDeleteRenderbuffers(1, &DepthRenderBuffer);
+	if (StencilRenderBuffer && StencilRenderBuffer != DepthRenderBuffer)
+		glDeleteTextures(1, &StencilRenderBuffer);
+}
+
+
+//combine depth texture and rtt
+void COGLES1FBODepthTexture::attach(ITexture* renderTex)
+{
+	if (!renderTex)
+		return;
+	video::COGLES1FBOTexture* rtt = static_cast<video::COGLES1FBOTexture*>(renderTex);
+	rtt->bindRTT();
+#ifdef GL_EXT_framebuffer_object
+	if (UseStencil)
+	{
+		// attach stencil texture to stencil buffer
+		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
+						GL_STENCIL_ATTACHMENT_EXT,
+						GL_TEXTURE_2D,
+						StencilRenderBuffer,
+						0);
+
+		// attach depth texture to depth buffer
+		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
+						GL_DEPTH_ATTACHMENT_EXT,
+						GL_TEXTURE_2D,
+						DepthRenderBuffer,
+						0);
+	}
+	else
+	{
+		// attach depth renderbuffer to depth buffer
+		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT,
+						GL_DEPTH_ATTACHMENT_EXT,
+						GL_RENDERBUFFER_EXT,
+						DepthRenderBuffer);
+	}
+	// check the status
+	if (!checkFBOStatus(Driver))
+		os::Printer::log("FBO incomplete");
+#endif
+	rtt->DepthTexture=this;
+	grab(); // grab the depth buffer, not the RTT
+	rtt->unbindRTT();
+}
+
+
+//! Bind Render Target Texture
+void COGLES1FBODepthTexture::bindRTT()
+{
+}
+
+
+//! Unbind Render Target Texture
+void COGLES1FBODepthTexture::unbindRTT()
+{
+}
+
+
+#ifdef GL_EXT_framebuffer_object
+bool checkFBOStatus(COGLES1Driver* Driver)
+{
+	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
+
+	switch (status)
+	{
+		//Our FBO is perfect, return true
+		case GL_FRAMEBUFFER_COMPLETE_EXT:
+			return true;
+
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+			os::Printer::log("FBO has invalid read buffer", ELL_ERROR);
+			break;
+
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+			os::Printer::log("FBO has invalid draw buffer", ELL_ERROR);
+			break;
+
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+			os::Printer::log("FBO has one or several incomplete image attachments", ELL_ERROR);
+			break;
+
+		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+			os::Printer::log("FBO has one or several image attachments with different internal formats", ELL_ERROR);
+			break;
+
+		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+			os::Printer::log("FBO has one or several image attachments with different dimensions", ELL_ERROR);
+			break;
+
+// not part of fbo_object anymore, but won't harm as it is just a return value
+#ifdef GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT
+		case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
+			os::Printer::log("FBO has a duplicate image attachment", ELL_ERROR);
+			break;
+#endif
+
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+			os::Printer::log("FBO missing an image attachment", ELL_ERROR);
+			break;
+
+		case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+			os::Printer::log("FBO format unsupported", ELL_ERROR);
+			break;
+
+		default:
+			break;
+	}
+	os::Printer::log("FBO error", ELL_ERROR);
+	return false;
+}
+#endif
+
 } // end namespace video
 } // end namespace irr
 
-#endif // _IRR_COMPILE_WITH_OPENGL_
+#endif // _IRR_COMPILE_WITH_OGLES1_
+

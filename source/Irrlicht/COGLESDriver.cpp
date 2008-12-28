@@ -29,8 +29,7 @@ namespace video
 
 //! constructor and init code
 COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
-		const SExposedVideoData& data,
-		io::IFileSystem* io)
+		const SExposedVideoData& data, io::IFileSystem* io)
 : CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
@@ -966,6 +965,25 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 	if (!sourceRect.isValid())
 		return;
 
+#if defined(GL_OES_draw_texture)
+	// currently disabled due to problems with the emulator.
+	if (false && FeatureAvailable[IRR_OES_draw_texture])
+	{
+		disableTextures(1);
+		if (!setTexture(0, texture))
+			return;
+		setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
+		core::rect<s32> destRect(sourceRect);
+		destRect-=destRect.UpperLeftCorner;
+		destRect+=pos;
+		if (clipRect)
+			destRect.clipAgainst(*clipRect);
+		const int crop[] = {destRect.LowerRightCorner.Y, destRect.UpperLeftCorner.X, destRect.getWidth(), destRect.getHeight()};
+		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, crop);
+		extGlDrawTex(destRect.UpperLeftCorner.X, destRect.UpperLeftCorner.Y, 0, destRect.getWidth(), destRect.getHeight());
+		return;
+	}
+#endif
 	core::position2d<s32> targetPos(pos);
 	core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner);
 	core::dimension2d<s32> sourceSize(sourceRect.getSize());
@@ -2339,17 +2357,40 @@ IGPUProgrammingServices* COGLES1Driver::getGPUProgrammingServices()
 ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
 {
 	//disable mip-mapping
-	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
+	const bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
 	video::ITexture* rtt = 0;
 	if (name==0)
 		name="rt";
-	rtt = addTexture(size, name, ECF_A8R8G8B8);
-	if (rtt)
+
+#if defined(GL_OES_framebuffer_object)
+	// if driver supports FrameBufferObjects, use them
+	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 	{
-		rtt->grab();
-		static_cast<video::COGLES1Texture*>(rtt)->setIsRenderTarget(true);
+		rtt = new COGLES1FBOTexture(size, name, this);
+		if (rtt)
+		{
+			addTexture(rtt);
+			ITexture* tex = createDepthTexture(rtt);
+			if (tex)
+			{
+				static_cast<video::COGLES1FBODepthTexture*>(tex)->attach(rtt);
+				tex->drop();
+			}
+			rtt->drop();
+		}
+	}
+	else
+#endif
+	{
+		// the simple texture is only possible for size <= screensize
+		// we try to find an optimal size with the original constraints
+		core::dimension2di destSize(core::min_(size.Width,ScreenSize.Width), core::min_(size.Height,ScreenSize.Height));
+		destSize = destSize.getOptimalSize((size==size.getOptimalSize()), false, false);
+		rtt = addTexture(destSize, name, ECF_A8R8G8B8);
+		if (rtt)
+			static_cast<video::COGLES1Texture*>(rtt)->setIsRenderTarget(true);
 	}
 
 	//restore mip-mapping
@@ -2518,6 +2559,46 @@ IImage* COGLES1Driver::createScreenShot()
 	}
 
 	return newImage;
+}
+
+
+//! get depth texture for the given render target texture
+ITexture* COGLES1Driver::createDepthTexture(ITexture* texture, bool shared)
+{
+	if ((texture->getDriverType() != EDT_OGLES1) || (!texture->isRenderTarget()))
+		return 0;
+	COGLES1Texture* tex = static_cast<COGLES1Texture*>(texture);
+
+	if (!tex->isFrameBufferObject())
+		return 0;
+
+	if (shared)
+	{
+		for (u32 i=0; i<DepthTextures.size(); ++i)
+		{
+			if (DepthTextures[i]->getSize()==texture->getSize())
+			{
+				DepthTextures[i]->grab();
+				return DepthTextures[i];
+			}
+		}
+		DepthTextures.push_back(new COGLES1FBODepthTexture(texture->getSize(), "depth1", this));
+		return DepthTextures.getLast();
+	}
+	return (new COGLES1FBODepthTexture(texture->getSize(), "depth1", this));
+}
+
+
+void COGLES1Driver::removeDepthTexture(ITexture* texture)
+{
+	for (u32 i=0; i<DepthTextures.size(); ++i)
+	{
+		if (texture==DepthTextures[i])
+		{
+			DepthTextures.erase(i);
+			return;
+		}
+	}
 }
 
 

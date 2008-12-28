@@ -68,6 +68,12 @@ COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 		pGlDrawTexiOES(0), pGlDrawTexfOES(0),
 		pGlDrawTexivOES(0), pGlDrawTexfvOES(0),
+		pGlBindRenderbufferOES(0), pGlDeleteRenderbuffersOES(0),
+		pGlGenRenderbuffersOES(0), pGlRenderbufferStorageOES(0),
+		pGlBindFramebufferOES(0), pGlDeleteFramebuffersOES(0),
+		pGlGenFramebuffersOES(0), pGlCheckFramebufferStatusOES(0),
+		pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
+		pGlGenerateMipMapOES(0),
 #endif
 	Version(0), MaxUserClipPlanes(0), MaxTextureUnits(0), MaxLights(0),
 	MultiTextureExtension(false), MultiSamplingExtension(false),
@@ -142,6 +148,21 @@ void COGLES1ExtensionHandler::initExtensions(EGLDisplay display, bool withStenci
 		pGlDrawTexfOES = (PFNGLDRAWTEXFOES) eglGetProcAddress("glDrawTexfOES");
 		pGlDrawTexivOES = (PFNGLDRAWTEXIVOES) eglGetProcAddress("glDrawTexivOES");
 		pGlDrawTexfvOES = (PFNGLDRAWTEXFVOES) eglGetProcAddress("glDrawTexfvOES");
+	}
+	if (FeatureAvailable[IRR_OES_framebuffer_object])
+	{
+		pGlBindRenderbufferOES = (PFNGLBINDRENDERBUFFEROES) eglGetProcAddress("glBindRenderbufferOES");
+		pGlDeleteRenderbuffersOES = (PFNGLDELETERENDERBUFFERSOES) eglGetProcAddress("glDeletedRenderbuffersOES");
+		pGlGenRenderbuffersOES = (PFNGLGENRENDERBUFFERSOES) eglGetProcAddress("glGenRenderbuffersOES");
+		pGlRenderbufferStorageOES = (PFNGLRENDERBUFFERSTORAGEOES) eglGetProcAddress("glRenderbufferStorageOES");
+		pGlBindFramebufferOES = (PFNGLBINDFRAMEBUFFEROES) eglGetProcAddress("glBindFramebufferOES");
+		pGlDeleteFramebuffersOES = (PFNGLDELETEFRAMEBUFFERSOES) eglGetProcAddress("glDeleteFramebuffersOES");
+		pGlGenFramebuffersOES = (PFNGLGENFRAMEBUFFERSOES) eglGetProcAddress("glGenFramebuffersOES");
+		pGlCheckFramebufferStatusOES = (PFNGLCHECKFRAMEBUFFERSTATUSOES) eglGetProcAddress("glCheckFramebufferStatusOES");
+		pGlFramebufferRenderbufferOES = (PFNGLFRAMEBUFFERRENDERBUFFEROES) eglGetProcAddress("glFramebufferRenderbufferOES");
+		pGlFramebufferTexture2DOES = (PFNGLFRAMEBUFFERTEXTURE2DOES) eglGetProcAddress("glFramebufferTexture2DOES");
+		pGlGenerateMipMapOES = (PFNGLGENERATEMIPMAPOES) eglGetProcAddress("glGenerateMipMapOES");
+
 	}
 #endif
 
