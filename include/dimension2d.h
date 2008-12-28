@@ -6,6 +6,7 @@
 #define __IRR_DIMENSION2D_H_INCLUDED__
 
 #include "irrTypes.h"
+#include "irrMath.h" // for irr::core::equals()
 
 namespace irr
 {
@@ -26,7 +27,8 @@ namespace core
 			//! Equality operator
 			bool operator==(const dimension2d<T>& other) const
 			{
-				return Width == other.Width && Height == other.Height;
+				return core::equals(Width, other.Width) &&
+						core::equals(Height, other.Height);
 			}
 
 			//! Inequality operator
@@ -72,13 +74,22 @@ namespace core
 				return dimension2d<T>(Width*scale, Height*scale);
 			}
 
-			//! Add two dimensions
+			//! Add another dimension to this one.
 			dimension2d<T>& operator+=(const dimension2d<T>& other)
 			{
-				Width *= other.Width;
-				Height *= other.Height;
+				Width += other.Width;
+				Height += other.Height;
 				return *this;
 			}
+
+			//! Subtract a dimension from this one
+			dimension2d<T>& operator-=(const dimension2d<T>& other)
+			{
+				Width -= other.Width;
+				Height -= other.Height;
+				return *this;
+			}
+
 
 			//! Add two dimensions
 			dimension2d<T> operator+(const dimension2d<T>& other) const
