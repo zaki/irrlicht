@@ -58,6 +58,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(planeMatrix);
 	TEST(fast_atof);
 	TEST(line2dIntersectWith);
+	TEST(testDimension2d);
 	TEST(drawPixel);
 	TEST(md2Animation);
 	TEST(guiDisabledMenu);
