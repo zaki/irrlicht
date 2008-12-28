@@ -17,8 +17,8 @@ namespace scene
 	public:
 
 		//! constructor
-		ISceneNodeAnimatorFinishing(u32 finishTime) 
-			: HasFinished(false), FinishTime(finishTime) { }
+		ISceneNodeAnimatorFinishing(u32 finishTime)
+			: FinishTime(finishTime), HasFinished(false) { }
 
 		//! destructor
 		virtual ~ISceneNodeAnimatorFinishing() { }

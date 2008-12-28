@@ -579,7 +579,7 @@ static void executeBlit_TextureCopy_32_to_24( const SBlitJob * job )
 		src = (u32*) ( (u8*) (src) + job->srcPitch );
 		dst += job->dstPitch ;
 	}
-	
+
 }
 
 
@@ -1311,6 +1311,8 @@ void CImage::drawLine(const core::position2d<s32>& from, const core::position2d<
 				{
 					RenderLine32_Blend( this, p[0], p[1], color.color, alpha );
 				}
+				break;
+			default:
 				break;
 		}
 	}

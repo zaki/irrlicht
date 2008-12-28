@@ -1262,7 +1262,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 
 /*
 		// TODO: don't stick on 32 Bit Pointer
-		#define PointerAsValue(x) ( (u32) (u32*) (x) ) 
+		#define PointerAsValue(x) ( (u32) (u32*) (x) )
 
 		// if not complete inside clipping necessary
 		if ( ( test & VERTEX4D_INSIDE ) != VERTEX4D_INSIDE )
@@ -1365,6 +1365,9 @@ void CBurningVideoDriver::addDynamicLight(const SLight& dl)
 		{
 			l.posEyeSpace.normalize_xyz ();
 		} break;
+
+		default:
+			break;
 	}
 
 	LightSpace.Light.push_back ( l );
@@ -1504,6 +1507,9 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source
 				lightHalf.z = vp.z - 1.f;
 				lightHalf.normalize_xyz();
 			} break;
+
+			default:
+				break;
 		}
 
 		// build diffuse reflection
@@ -1581,7 +1587,7 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 void CBurningVideoDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
 	((CImage*)BackBuffer)->setPixel(x, y, color);
-} 
+}
 
 //! draw an 2d rectangle
 void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
