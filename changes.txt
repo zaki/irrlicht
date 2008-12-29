@@ -1,5 +1,7 @@
 Changes in version 1.6
 
+ - position2d is now a synonym for vector2d.  position2d is therefore marked as deprecated, although it's unlikely to be removed.
+
  - ISceneNodeAnimator now has a hasFinished() method.
 
  - ISceneNodeAnimatorCollisionResponse exposes the target node. Setting the node again resets the last position, allowing the node to be teleported.
