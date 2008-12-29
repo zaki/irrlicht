@@ -64,7 +64,7 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(core::line3d<f32> ray,
 	ISceneNode* best = 0;
 	f32 dist = FLT_MAX;
 
-	getPickedNodeBB(SceneManager->getRootSceneNode(), ray, 
+	getPickedNodeBB(SceneManager->getRootSceneNode(), ray,
 		idBitMask, bNoDebugObjects, dist, best);
 
 	return best;
@@ -105,7 +105,8 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
 			 const core::aabbox3df& box = current->getBoundingBox();
 
-			 // do intersection test in object space
+			 // do the initial intersection test in object space, since the
+			 // object space box is more accurate.
 			 if (box.intersectsWithLine(line))
 			 {
 				box.getEdges(edges);
@@ -113,7 +114,17 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
 				for (s32 e=0; e<8; ++e)
 				{
-				   f32 t = edges[e].getDistanceFromSQ(line.start);
+				   // Transform the corner into world coordinates, to take
+				   // scaling into account.
+				   current->getAbsoluteTransformation().transformVect(edges[e]);
+
+				   // and compare it against the world space ray start position
+				   f32 t = edges[e].getDistanceFromSQ(ray.start);
+
+				   // We're looking for the furthest corner; this is a crude
+				   // test; we should be checking the actual ray/plane
+				   // intersection.
+				   // http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?p=181419
 				   if (t > distance)
 					  distance = t;
 				}
@@ -130,7 +141,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 	      getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
 	  }
    }
-} 
+}
 
 
 
@@ -501,7 +512,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	const core::vector3df& radius,  const core::vector3df& velocity,
 	f32 slidingSpeed,
 	const core::vector3df& gravity,
-	core::triangle3df& triout, 
+	core::triangle3df& triout,
 	core::vector3df& hitPosition,
 	bool& outFalling)
 {
@@ -587,7 +598,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	core::matrix4 scaleMatrix;
 	scaleMatrix.setScale(
-		core::vector3df(1.0f / colData.eRadius.X, 
+		core::vector3df(1.0f / colData.eRadius.X,
 						1.0f / colData.eRadius.Y,
 						1.0f / colData.eRadius.Z)
 					);

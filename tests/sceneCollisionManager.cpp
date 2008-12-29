@@ -21,7 +21,7 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 	vector3df hitPosition;
 	bool falling;
 
-	vector3df resultPosition = 
+	vector3df resultPosition =
 		collMgr->getCollisionResultPosition(cubeSelector,
 										vector3df(0, 50, 0),
 										vector3df(10, 20, 10),
@@ -38,14 +38,14 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 		result = false;
 	}
 
-	if(!equals(hitPosition.Y, 5.f, 0.01f))	
+	if(!equals(hitPosition.Y, 5.f, 0.01f))
 	{
 		logTestString("Unexpected collision position\n");
 		assert(false);
 		result = false;
 	}
 
-	resultPosition = 
+	resultPosition =
 		collMgr->getCollisionResultPosition(cubeSelector,
 										vector3df(-20, 0, 0),
 										vector3df(10, 20, 10),
@@ -61,7 +61,7 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 		result = false;
 	}
 
-	if(!equals(hitPosition.X, -5.f, 0.01f))	
+	if(!equals(hitPosition.X, -5.f, 0.01f))
 	{
 		logTestString("Unexpected collision position\n");
 		assert(false);
@@ -105,7 +105,7 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 		result = false;
 	}
 
-	// Make cubeNode1 the parent of cubeNode2.  
+	// Make cubeNode1 the parent of cubeNode2.
 	cubeNode2->setParent(cubeNode1);
 
 	// Check visibility.
@@ -166,6 +166,40 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 }
 
 
+static bool getScaledPickedNodeBB(IrrlichtDevice * device,
+									ISceneManager * smgr,
+									ISceneCollisionManager * collMgr)
+{
+    ISceneNode* farTarget = smgr->addCubeSceneNode(1.f);
+    farTarget->setScale(vector3df(100.f, 100.f, 10.f));
+    farTarget->setPosition(vector3df(0.f, 0.f, 500.f));
+    farTarget->updateAbsolutePosition();
+
+    ISceneNode* nearTarget = smgr->addCubeSceneNode(10.f);
+    nearTarget->setPosition(vector3df(0.f, 0.f, 100.f));
+    nearTarget->updateAbsolutePosition();
+
+	line3df ray(0.f, 0.f, 0.f, 0.f, 0.f, 500.f);
+
+	const ISceneNode * const hit = collMgr->getSceneNodeFromRayBB(ray);
+
+	bool result = (hit == nearTarget);
+
+	if(hit == 0)
+		logTestString("getSceneNodeFromRayBB() didn't hit anything.\n");
+	else if(hit == farTarget)
+		logTestString("getSceneNodeFromRayBB() hit the far (scaled) target.\n");
+
+	device->drop();
+
+	if(!result)
+		assert(false);
+
+	return result;
+}
+
+
+
 /** Test functionality of the sceneCollisionManager */
 bool sceneCollisionManager(void)
 {
@@ -178,8 +212,10 @@ bool sceneCollisionManager(void)
 	ISceneCollisionManager * collMgr = smgr->getSceneCollisionManager();
 
 	bool result = testGetCollisionResultPosition(device, smgr, collMgr);
-	
+
 	result &= testGetSceneNodeFromScreenCoordinatesBB(device, smgr, collMgr);
+
+	result &= getScaledPickedNodeBB(device, smgr, collMgr);
 
 	device->drop();
 	return result;
