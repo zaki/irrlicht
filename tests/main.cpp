@@ -49,6 +49,7 @@ int main(int argumentCount, char * arguments[])
 	// (temporarily) to the beginning of the list, since each test runs in its own
 	// process.
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
+	TEST(irrCoreEquals);
 	TEST(sceneNodeAnimator);
 	TEST(sceneCollisionManager);
 	TEST(collisionResponseAnimator);

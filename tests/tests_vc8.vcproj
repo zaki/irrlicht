@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\irrCoreEquals.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\line2dIntersectWith.cpp"
 				>
 			</File>

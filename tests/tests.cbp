@@ -43,6 +43,7 @@
 		<Unit filename="drawPixel.cpp" />
 		<Unit filename="exports.cpp" />
 		<Unit filename="fast_atof.cpp" />
+		<Unit filename="irrCoreEquals.cpp" />
 		<Unit filename="guiDisabledMenu.cpp" />
 		<Unit filename="line2dIntersectWith.cpp" />
 		<Unit filename="main.cpp" />
