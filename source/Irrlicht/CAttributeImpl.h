@@ -242,22 +242,6 @@ public:
 		ValueF.push_back(value.Z);
 	}
 
-	CNumbersAttribute(const char* name, core::position2df value) : 
-		ValueI(), ValueF(), Count(2), IsFloat(true)
-	{
-		Name = name;
-		ValueF.push_back(value.X);
-		ValueF.push_back(value.Y);
-	}
-
-	CNumbersAttribute(const char* name, core::position2di value) : 
-		ValueI(), ValueF(), Count(2), IsFloat(false)
-	{
-		Name = name;
-		ValueI.push_back(value.X);
-		ValueI.push_back(value.Y);
-	}
-
 	CNumbersAttribute(const char* name, core::rect<s32> value) : 
 		ValueI(), ValueF(), Count(4), IsFloat(false)
 	{

@@ -12,6 +12,8 @@ namespace irr
 {
 namespace core
 {
+	template <class T>
+	class vector2d;
 
 	//! Specifies a 2 dimensional size.
 	template <class T>
@@ -23,6 +25,8 @@ namespace core
 			//! Constructor with width and height
 			dimension2d(const T& width, const T& height)
 				: Width(width), Height(height) {}
+
+			dimension2d(const vector2d<T>& other); // Defined in vector2d.h
 
 			//! Equality operator
 			bool operator==(const dimension2d<T>& other) const
@@ -37,6 +41,12 @@ namespace core
 				return ! (*this == other);
 			}
 
+			bool operator==(const vector2d<T>& other) const;  // Defined in vector2d.h
+
+			bool operator!=(const vector2d<T>& other) const
+			{
+				return !(*this == other);
+			}
 
 			//! Set to new values
 			dimension2d<T>& set(const T& width, const T& height)
