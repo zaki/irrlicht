@@ -170,17 +170,30 @@ namespace core
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
-	//! returns if a equals b, taking possible rounding errors into account
-	inline bool equals(const s32 a, const s32 b, const s32 tolerance = 0)
+	//! returns if a equals b, not using any rounding tolerance
+	inline bool equals(const s32 a, const s32 b)
+	{
+		return (a == b);
+	}
+
+	//! returns if a equals b, not using any rounding tolerance
+	inline bool equals(const u32 a, const u32 b)
+	{
+		return (a == b);
+	}
+
+	//! returns if a equals b, taking an explicit rounding tolerance into account
+	inline bool equals(const s32 a, const s32 b, const s32 tolerance)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
-	//! returns if a equals b, taking possible rounding errors into account
-	inline bool equals(const u32 a, const u32 b, const u32 tolerance = 0)
+	//! returns if a equals b, taking an explicit rounding tolerance into account
+	inline bool equals(const u32 a, const u32 b, const u32 tolerance)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
+
 
 	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
