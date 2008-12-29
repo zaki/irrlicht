@@ -323,6 +323,7 @@ namespace scene
 
 		core::vector3df	OldCameraPosition;
 		core::vector3df	OldCameraRotation;
+		core::vector3df	OldCameraUp;
 		f32				OldCameraFOV;
 		f32 CameraMovementDelta;
 		f32 CameraRotationDelta;

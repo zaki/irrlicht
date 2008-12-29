@@ -52,6 +52,7 @@
 		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="sceneNodeAnimator.cpp" />
 		<Unit filename="softwareDevice.cpp" />
+		<Unit filename="terrainSceneNode.cpp" />
 		<Unit filename="testDimension2d.cpp" />
 		<Unit filename="testUtils.cpp" />
 		<Unit filename="testVector2d.cpp" />
