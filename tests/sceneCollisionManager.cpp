@@ -190,8 +190,6 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 	else if(hit == farTarget)
 		logTestString("getSceneNodeFromRayBB() hit the far (scaled) target.\n");
 
-	device->drop();
-
 	if(!result)
 		assert(false);
 
