@@ -6,6 +6,7 @@
 #define __IRR_POINT_2D_H_INCLUDED__
 
 #include "irrMath.h"
+#include "dimension2d.h"
 
 namespace irr
 {
@@ -14,6 +15,8 @@ namespace core
 
 
 //! 2d vector template class with lots of operators and methods.
+/** As of Irrlicht 1.6, this class supercedes position2d, which should
+	be considered deprecated. */
 template <class T>
 class vector2d
 {
@@ -27,21 +30,28 @@ public:
 	//! Copy constructor
 	vector2d(const vector2d<T>& other) : X(other.X), Y(other.Y) {}
 
+	vector2d(const dimension2d<T>& other) : X(other.Width), Y(other.Height) {}
+
 	// operators
 
 	vector2d<T> operator-() const { return vector2d<T>(-X, -Y); }
 
 	vector2d<T>& operator=(const vector2d<T>& other) { X = other.X; Y = other.Y; return *this; }
+	vector2d<T>& operator=(const dimension2d<T>& other) { X = other.Width; Y = other.Width; return *this; }
 
 	vector2d<T> operator+(const vector2d<T>& other) const { return vector2d<T>(X + other.X, Y + other.Y); }
+	vector2d<T> operator+(const dimension2d<T>& other) const { return vector2d<T>(X + other.Width, Y + other.Height); }
 	vector2d<T>& operator+=(const vector2d<T>& other) { X+=other.X; Y+=other.Y; return *this; }
 	vector2d<T> operator+(const T v) const { return vector2d<T>(X + v, Y + v); }
 	vector2d<T>& operator+=(const T v) { X+=v; Y+=v; return *this; }
+	vector2d<T>& operator+=(const dimension2d<T>& other) { X += other.Width; Y += other.Height; return *this;  }
 
 	vector2d<T> operator-(const vector2d<T>& other) const { return vector2d<T>(X - other.X, Y - other.Y); }
+	vector2d<T> operator-(const dimension2d<T>& other) const { return vector2d<T>(X - other.Width, Y - other.Height); }
 	vector2d<T>& operator-=(const vector2d<T>& other) { X-=other.X; Y-=other.Y; return *this; }
 	vector2d<T> operator-(const T v) const { return vector2d<T>(X - v, Y - v); }
 	vector2d<T>& operator-=(const T v) { X-=v; Y-=v; return *this; }
+	vector2d<T>& operator-=(const dimension2d<T>& other) { X -= other.Width; Y -= other.Height; return *this;  }
 
 	vector2d<T> operator*(const vector2d<T>& other) const { return vector2d<T>(X * other.X, Y * other.Y); }
 	vector2d<T>& operator*=(const vector2d<T>& other) { X*=other.X; Y*=other.Y; return *this; }
@@ -288,6 +298,13 @@ public:
 
 	template<class S, class T>
 	vector2d<T> operator*(const S scalar, const vector2d<T>& vector) { return vector*scalar; }
+
+	// These methods are declared in dimension2d, but need definitions of vector2d
+	template<class T>
+	dimension2d<T>::dimension2d(const vector2d<T>& other) : Width(other.X), Height(other.Y) { }
+
+	template<class T>
+	bool dimension2d<T>::operator==(const vector2d<T>& other) const { return Width == other.X && Height == other.Y; }
 
 } // end namespace core
 } // end namespace irr

@@ -56,6 +56,7 @@
 		<Unit filename="testUtils.cpp" />
 		<Unit filename="testVector2d.cpp" />
 		<Unit filename="testVector3d.cpp" />
+		<Unit filename="vectorPositionDimension2d.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

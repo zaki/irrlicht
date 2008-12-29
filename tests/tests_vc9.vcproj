@@ -242,6 +242,10 @@
 				RelativePath=".\testVector3d.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\vectorPositionDimension2d.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
