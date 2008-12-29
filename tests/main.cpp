@@ -48,8 +48,8 @@ int main(int argumentCount, char * arguments[])
 	// Note that to interactively debug a test, you will generally want to move it
 	// (temporarily) to the beginning of the list, since each test runs in its own
 	// process.
-	TEST(vectorPositionDimension2d);
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
+	TEST(vectorPositionDimension2d);
 	TEST(irrCoreEquals);
 	TEST(sceneNodeAnimator);
 	TEST(sceneCollisionManager);
@@ -66,6 +66,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(guiDisabledMenu);
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
+	TEST(terrainSceneNode);
 
 	const unsigned int numberOfTests = tests.size();
 
@@ -105,7 +106,7 @@ int main(int argumentCount, char * arguments[])
 	{
 		closeTestLog();
 		char runNextTest[256];
-		(void)sprintf(runNextTest, "%s %d %d", arguments[0], testToRun, fails);
+		(void)sprintf(runNextTest, "\"%s\" %d %d", arguments[0], testToRun, fails);
 		fails = system(runNextTest);
 	}
 
