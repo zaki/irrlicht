@@ -6,9 +6,7 @@
 #ifdef _IRR_COMPILE_WITH_MD2_LOADER_
 
 #include "CAnimatedMeshMD2.h"
-#include "os.h"
 #include "SColor.h"
-#include "IReadFile.h"
 #include "irrMath.h"
 
 namespace irr
@@ -16,85 +14,8 @@ namespace irr
 namespace scene
 {
 
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
-#	pragma pack( push, packing )
-#	pragma pack( 1 )
-#	define PACK_STRUCT
-#elif defined( __GNUC__ )
-#	define PACK_STRUCT	__attribute__((packed))
-#else
-#	error compiler not supported
-#endif
-
-	// structs needed to load the md2-format
-
-	const s32 MD2_MAGIC_NUMBER = 844121161;
-	const s32 MD2_VERSION		= 8;
-	const s32 MD2_MAX_VERTS		= 2048;
-
-	// TA: private
-	const s32 MD2_FRAME_SHIFT	= 2;
-	const f32 MD2_FRAME_SHIFT_RECIPROCAL = 1.f / ( 1 << MD2_FRAME_SHIFT );
-
-	struct SMD2Header
-	{
-		s32 magic;
-		s32 version;
-		s32 skinWidth;
-		s32 skinHeight;
-		s32 frameSize;
-		s32 numSkins;
-		s32 numVertices;
-		s32 numTexcoords;
-		s32 numTriangles;
-		s32 numGlCommands;
-		s32 numFrames;
-		s32 offsetSkins;
-		s32 offsetTexcoords;
-		s32 offsetTriangles;
-		s32 offsetFrames;
-		s32 offsetGlCommands;
-		s32 offsetEnd;
-	} PACK_STRUCT;
-
-	struct SMD2Vertex
-	{
-		u8 vertex[3];
-		u8 lightNormalIndex;
-	} PACK_STRUCT;
-
-	struct SMD2Frame
-	{
-		f32	scale[3];
-		f32	translate[3];
-		c8	name[16];
-		SMD2Vertex vertices[1];
-	} PACK_STRUCT;
-
-	struct SMD2Triangle
-	{
-		u16 vertexIndices[3];
-		u16 textureIndices[3];
-	} PACK_STRUCT;
-
-	struct SMD2TextureCoordinate
-	{
-		s16 s;
-		s16 t;
-	} PACK_STRUCT;
-
-	struct SMD2GLCommand
-	{
-		f32 s, t;
-		s32 vertexIndex;
-	} PACK_STRUCT;
-
-// Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
-#	pragma pack( pop, packing )
-#endif
-
-#undef PACK_STRUCT
+const s32 MD2_FRAME_SHIFT	= 2;
+const f32 MD2_FRAME_SHIFT_RECIPROCAL = 1.f / ( 1 << MD2_FRAME_SHIFT );
 
 
 const s32 Q2_VERTEX_NORMAL_TABLE_SIZE = 162;
@@ -299,7 +220,7 @@ static const SMD2AnimationType MD2AnimationTypeList[21] =
 
 //! constructor
 CAnimatedMeshMD2::CAnimatedMeshMD2()
-: InterpolationBuffer(0), FrameList(0), FrameCount(0), TriangleCount(0)
+: InterpolationBuffer(0), FrameList(0), FrameCount(0)
 {
 	#ifdef _DEBUG
 	IAnimatedMesh::setDebugName("CAnimatedMeshMD2 IAnimatedMesh");
@@ -316,7 +237,6 @@ CAnimatedMeshMD2::~CAnimatedMeshMD2()
 	if (InterpolationBuffer)
 		InterpolationBuffer->drop();
 }
-
 
 //! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
 u32 CAnimatedMeshMD2::getFrameCount() const
@@ -342,7 +262,7 @@ IMesh* CAnimatedMeshMD2::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 }
 
 
-//! returns amount of mesh buffers.
+//! returns amount of mesh buffers. MD2 meshes only have one buffer
 u32 CAnimatedMeshMD2::getMeshBufferCount() const
 {
 	return 1;
@@ -352,7 +272,10 @@ u32 CAnimatedMeshMD2::getMeshBufferCount() const
 //! returns pointer to a mesh buffer
 IMeshBuffer* CAnimatedMeshMD2::getMeshBuffer(u32 nr) const
 {
-	return InterpolationBuffer;
+	if (nr == 0)
+		return InterpolationBuffer;
+	else
+		return 0;
 }
 
 
@@ -371,6 +294,7 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 {
 	u32 firstFrame, secondFrame;
 	f32 div;
+	core::vector3df* NormalTable = (core::vector3df*)&Q2_VERTEX_NORMAL_TABLE;
 
 	// TA: resolve missing ipol in loop between end-start
 
@@ -398,16 +322,24 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 	}
 
 	video::S3DVertex* target = static_cast<video::S3DVertex*>(InterpolationBuffer->getVertices());
-	video::S3DVertex* first = FrameList[firstFrame].pointer();
-	video::S3DVertex* second = FrameList[secondFrame].pointer();
+	SMD2Vert*         first  = FrameList[firstFrame].pointer();
+	SMD2Vert*         second = FrameList[secondFrame].pointer();
 
 	// interpolate both frames
 	const u32 count = FrameList[firstFrame].size();
 	for (u32 i=0; i<count; ++i)
 	{
-		target->Pos = (second->Pos - first->Pos) * div + first->Pos;
-		target->Normal = (second->Normal - first->Normal) * div + first->Normal;
+		core::vector3df one, two;
+		one.X = f32(first->Pos.X) * FrameTransforms[firstFrame].scale.X + FrameTransforms[firstFrame].translate.X;
+		one.Y = f32(first->Pos.Y) * FrameTransforms[firstFrame].scale.Y + FrameTransforms[firstFrame].translate.Y;
+		one.Z = f32(first->Pos.Z) * FrameTransforms[firstFrame].scale.Z + FrameTransforms[firstFrame].translate.Z;
+		two.X = f32(second->Pos.X) * FrameTransforms[secondFrame].scale.X + FrameTransforms[secondFrame].translate.X;
+		two.Y = f32(second->Pos.Y) * FrameTransforms[secondFrame].scale.Y + FrameTransforms[secondFrame].translate.Y;
+		two.Z = f32(second->Pos.Z) * FrameTransforms[secondFrame].scale.Z + FrameTransforms[secondFrame].translate.Z;
+		target->Pos    = (two - one) * div + one;
 
+		target->Normal = (NormalTable[second->NormalIdx] - NormalTable[first->NormalIdx]) * div 
+			           +  NormalTable[first->NormalIdx];
 		++target;
 		++first;
 		++second;
@@ -417,242 +349,6 @@ void CAnimatedMeshMD2::updateInterpolationBuffer(s32 frame, s32 startFrameLoop, 
 	InterpolationBuffer->setBoundingBox(BoxList[secondFrame].getInterpolated(BoxList[firstFrame], div));
 	InterpolationBuffer->setDirty();
 }
-
-
-//! loads an md2 file
-bool CAnimatedMeshMD2::loadFile(io::IReadFile* file)
-{
-	if (!file)
-		return false;
-
-	SMD2Header header;
-
-	file->read(&header, sizeof(SMD2Header));
-
-#ifdef __BIG_ENDIAN__
-	header.magic = os::Byteswap::byteswap(header.magic);
-	header.version = os::Byteswap::byteswap(header.version);
-	header.skinWidth = os::Byteswap::byteswap(header.skinWidth);
-	header.skinHeight = os::Byteswap::byteswap(header.skinHeight);
-	header.frameSize = os::Byteswap::byteswap(header.frameSize);
-	header.numSkins = os::Byteswap::byteswap(header.numSkins);
-	header.numVertices = os::Byteswap::byteswap(header.numVertices);
-	header.numTexcoords = os::Byteswap::byteswap(header.numTexcoords);
-	header.numTriangles = os::Byteswap::byteswap(header.numTriangles);
-	header.numGlCommands = os::Byteswap::byteswap(header.numGlCommands);
-	header.numFrames = os::Byteswap::byteswap(header.numFrames);
-	header.offsetSkins = os::Byteswap::byteswap(header.offsetSkins);
-	header.offsetTexcoords = os::Byteswap::byteswap(header.offsetTexcoords);
-	header.offsetTriangles = os::Byteswap::byteswap(header.offsetTriangles);
-	header.offsetFrames = os::Byteswap::byteswap(header.offsetFrames);
-	header.offsetGlCommands = os::Byteswap::byteswap(header.offsetGlCommands);
-	header.offsetEnd = os::Byteswap::byteswap(header.offsetEnd);
-#endif
-
-	if (header.magic != MD2_MAGIC_NUMBER || header.version != MD2_VERSION)
-	{
-		os::Printer::log("MD2 Loader: Wrong file header", file->getFileName(), ELL_WARNING);
-		return false;
-	}
-
-	// create Memory for indices and frames
-
-	TriangleCount = header.numTriangles;
-	if (FrameList)
-		delete [] FrameList;
-	FrameList = new core::array<video::S3DVertex>[header.numFrames];
-	FrameCount = header.numFrames;
-
-	s32 i;
-
-	for (i=0; i<header.numFrames; ++i)
-		FrameList[i].reallocate(header.numVertices);
-
-	// read TextureCoords
-
-	file->seek(header.offsetTexcoords);
-	SMD2TextureCoordinate* textureCoords = new SMD2TextureCoordinate[header.numTexcoords];
-
-	if (!file->read(textureCoords, sizeof(SMD2TextureCoordinate)*header.numTexcoords))
-	{
-		os::Printer::log("MD2 Loader: Error reading TextureCoords.", file->getFileName(), ELL_ERROR);
-		return false;
-	}
-
-#ifdef __BIG_ENDIAN__
-	for (i=0; i<header.numTexcoords; ++i)
-	{
-		textureCoords[i].s = os::Byteswap::byteswap(textureCoords[i].s);
-		textureCoords[i].t = os::Byteswap::byteswap(textureCoords[i].t);
-	}
-#endif
-
-	// read Triangles
-
-	file->seek(header.offsetTriangles);
-
-	SMD2Triangle *triangles = new SMD2Triangle[header.numTriangles];
-	if (!file->read(triangles, header.numTriangles *sizeof(SMD2Triangle)))
-	{
-		os::Printer::log("MD2 Loader: Error reading triangles.", file->getFileName(), ELL_ERROR);
-		return false;
-	}
-
-#ifdef __BIG_ENDIAN__
-	for (i=0; i<header.numTriangles; ++i)
-	{
-		triangles[i].vertexIndices[0] = os::Byteswap::byteswap(triangles[i].vertexIndices[0]);
-		triangles[i].vertexIndices[1] = os::Byteswap::byteswap(triangles[i].vertexIndices[1]);
-		triangles[i].vertexIndices[2] = os::Byteswap::byteswap(triangles[i].vertexIndices[2]);
-		triangles[i].textureIndices[0] = os::Byteswap::byteswap(triangles[i].textureIndices[0]);
-		triangles[i].textureIndices[1] = os::Byteswap::byteswap(triangles[i].textureIndices[1]);
-		triangles[i].textureIndices[2] = os::Byteswap::byteswap(triangles[i].textureIndices[2]);
-	}
-#endif
-
-	// read Vertices
-
-	u8 buffer[MD2_MAX_VERTS*4+128];
-	SMD2Frame* frame = (SMD2Frame*)buffer;
-
-	core::array< core::vector3df >* vertices = new core::array< core::vector3df >[header.numFrames];
-	core::array< core::vector3df >* normals = new core::array< core::vector3df >[header.numFrames];
-
-	file->seek(header.offsetFrames);
-
-	for (i = 0; i<header.numFrames; ++i)
-	{
-		// read vertices
-
-		file->read(frame, header.frameSize);
-
-#ifdef __BIG_ENDIAN__
-		frame->scale[0] = os::Byteswap::byteswap(frame->scale[0]);
-		frame->scale[1] = os::Byteswap::byteswap(frame->scale[1]);
-		frame->scale[2] = os::Byteswap::byteswap(frame->scale[2]);
-		frame->translate[0] = os::Byteswap::byteswap(frame->translate[0]);
-		frame->translate[1] = os::Byteswap::byteswap(frame->translate[1]);
-		frame->translate[2] = os::Byteswap::byteswap(frame->translate[2]);
-#endif
-		// store frame data
-
-		SFrameData fdata;
-		fdata.begin = i;
-		fdata.end = i;
-		fdata.fps = 7;
-
-		if (frame->name[0])
-		{
-			for (s32 s = 0; frame->name[s]!=0 && (frame->name[s] < '0' ||
-				frame->name[s] > '9'); ++s)
-				fdata.name += frame->name[s];
-
-			if (!FrameData.empty() && FrameData[FrameData.size()-1].name == fdata.name)
-				++FrameData[FrameData.size()-1].end;
-			else
-				FrameData.push_back(fdata);
-		}
-
-		// add vertices
-
-		vertices[i].reallocate(header.numVertices);
-		for (s32 j=0; j<header.numVertices; ++j)
-		{
-			core::vector3df v;
-			v.X = frame->vertices[j].vertex[0] * frame->scale[0] + frame->translate[0];
-			v.Z = frame->vertices[j].vertex[1] * frame->scale[1] + frame->translate[1];
-			v.Y = frame->vertices[j].vertex[2] * frame->scale[2] + frame->translate[2];
-
-			vertices[i].push_back(v);
-
-			u8 normalidx = frame->vertices[j].lightNormalIndex;
-			if (normalidx < Q2_VERTEX_NORMAL_TABLE_SIZE)
-			{
-				v.X = Q2_VERTEX_NORMAL_TABLE[normalidx][0];
-				v.Z = Q2_VERTEX_NORMAL_TABLE[normalidx][1];
-				v.Y = Q2_VERTEX_NORMAL_TABLE[normalidx][2];
-			}
-
-			normals[i].push_back(v);
-		}
-
-		// calculate bounding boxes
-		if (header.numVertices)
-		{
-			core::aabbox3d<f32> box;
-			box.reset(vertices[i][0]);
-
-			for (s32 j=1; j<header.numVertices; ++j)
-				box.addInternalPoint(vertices[i][j]);
-
-			BoxList.push_back(box);
-		}
-
-	}
-
-	// put triangles into frame list
-
-	f32 dmaxs = 1.0f/(header.skinWidth);
-	f32 dmaxt = 1.0f/(header.skinHeight);
-
-	video::S3DVertex vtx;
-	vtx.Color = video::SColor(255,255,255,255);
-
-	for (s32 f = 0; f<header.numFrames; ++f)
-	{
-		core::array< core::vector3df >& vert = vertices[f];
-
-		for (s32 t=0; t<header.numTriangles; ++t)
-		{
-			for (s32 n=0; n<3; ++n)
-			{
-				vtx.Pos = vert[triangles[t].vertexIndices[n]];
-				vtx.Normal = normals[f].pointer()[triangles[t].vertexIndices[n]];
-				vtx.TCoords.X = (textureCoords[triangles[t].textureIndices[n]].s + 0.5f) * dmaxs;
-				vtx.TCoords.Y = (textureCoords[triangles[t].textureIndices[n]].t + 0.5f) * dmaxt;
-				FrameList[f].push_back(vtx);
-			}
-		}
-	}
-
-	// create indices
-
-	InterpolationBuffer->Indices.reallocate(header.numVertices);
-	const u32 count = TriangleCount*3;
-	for (u32 n=0; n<count; n+=3)
-	{
-		InterpolationBuffer->Indices.push_back(n);
-		InterpolationBuffer->Indices.push_back(n+1);
-		InterpolationBuffer->Indices.push_back(n+2);
-	}
-
-	// reallocate interpolate buffer
-	if (header.numFrames)
-	{
-		const u32 currCount = FrameList[0].size();
-		InterpolationBuffer->Vertices.set_used(currCount);
-
-		for (u32 num=0; num<currCount; ++num)
-		{
-			InterpolationBuffer->Vertices[num].TCoords = FrameList[0].pointer()[num].TCoords;
-			InterpolationBuffer->Vertices[num].Color = vtx.Color;
-		}
-	}
-
-	// clean up
-
-	delete [] normals;
-	delete [] vertices;
-	delete [] triangles;
-	delete [] textureCoords;
-
-	// return
-
-	calculateBoundingBox();
-
-	return true;
-}
-
 
 //! calculates the bounding box
 void CAnimatedMeshMD2::calculateBoundingBox()
@@ -666,8 +362,8 @@ void CAnimatedMeshMD2::calculateBoundingBox()
 		if (defaultFrame>=FrameCount)
 			defaultFrame = 0;
 
-		for (u32 j=0; j<FrameList[defaultFrame].size(); ++j)
-			InterpolationBuffer->BoundingBox.addInternalPoint(FrameList[defaultFrame].pointer()[j].Pos);
+//		for (u32 j=0; j<FrameList[defaultFrame].size(); ++j)
+//			InterpolationBuffer->BoundingBox.addInternalPoint(FrameList[defaultFrame].pointer()[j].Pos);
 	}
 }
 
@@ -736,14 +432,14 @@ void CAnimatedMeshMD2::getFrameLoop(EMD2_ANIMATION_TYPE l,
 bool CAnimatedMeshMD2::getFrameLoop(const c8* name,
 	s32& outBegin, s32&outEnd, s32& outFPS) const
 {
-	for (u32 i=0; i<FrameData.size(); ++i)
+	for (u32 i=0; i < AnimationData.size(); ++i)
 	{
-		if (FrameData[i].name == name)
+		if (AnimationData[i].name == name)
 		{
-			outBegin = FrameData[i].begin << MD2_FRAME_SHIFT;
-			outEnd = FrameData[i].end << MD2_FRAME_SHIFT;
+			outBegin = AnimationData[i].begin << MD2_FRAME_SHIFT;
+			outEnd = AnimationData[i].end << MD2_FRAME_SHIFT;
 			outEnd += MD2_FRAME_SHIFT == 0 ? 1 : ( 1 << MD2_FRAME_SHIFT ) - 1;
-			outFPS = FrameData[i].fps << MD2_FRAME_SHIFT;
+			outFPS = AnimationData[i].fps << MD2_FRAME_SHIFT;
 			return true;
 		}
 	}
@@ -755,17 +451,17 @@ bool CAnimatedMeshMD2::getFrameLoop(const c8* name,
 //! Returns amount of md2 animations in this file.
 s32 CAnimatedMeshMD2::getAnimationCount() const
 {
-	return FrameData.size();
+	return AnimationData.size();
 }
 
 
 //! Returns name of md2 animation.
 const c8* CAnimatedMeshMD2::getAnimationName(s32 nr) const
 {
-	if ((u32)nr >= FrameData.size())
+	if ((u32)nr >= AnimationData.size())
 		return 0;
 
-	return FrameData[nr].name.c_str();
+	return AnimationData[nr].name.c_str();
 }
 
 

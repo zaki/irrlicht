@@ -28,9 +28,6 @@ namespace scene
 		//! destructor
 		virtual ~CAnimatedMeshMD2();
 
-		//! loads an md2 file
-		virtual bool loadFile(io::IReadFile* file);
-
 		//! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
 		virtual u32 getFrameCount() const;
 
@@ -82,19 +79,16 @@ namespace scene
 		//! \param nr: Zero based index of animation.
 		virtual const c8* getAnimationName(s32 nr) const;
 
-	private:
 
-		//! updates the interpolation buffer
-		void updateInterpolationBuffer(s32 frame, s32 startFrame, s32 endFrame);
+		//
+		// exposed for loader
+		//
 
-		//! calculates the bounding box
-		virtual void calculateBoundingBox();
-
+		//! the buffer that contains the most recent animation
 		SMeshBuffer* InterpolationBuffer;
-		core::array<video::S3DVertex> *FrameList;
-		core::array<core::aabbox3d<f32> > BoxList;
 
-		struct SFrameData
+		//! named animations
+		struct SAnimationData
 		{
 			core::stringc name;
 			s32 begin;
@@ -102,10 +96,44 @@ namespace scene
 			s32 fps;
 		};
 
-		core::array< SFrameData > FrameData;
+		//! scale and translations for keyframes
+		struct SKeyFrameTransform
+		{
+			core::vector3df scale;
+			core::vector3df translate;
+		};
+
+		//! md2 vertex data
+		struct SMD2Vert
+		{
+			core::vector3d<u8> Pos;
+			u8                 NormalIdx;
+		};
+
+		//! keyframe transformations
+		core::array<SKeyFrameTransform> FrameTransforms; 
+
+		//! keyframe vertex data
+		core::array<SMD2Vert> *FrameList;
+		
+		//! bounding boxes for each keyframe
+		core::array<core::aabbox3d<f32> > BoxList;
+
+		//! named animations
+		core::array< SAnimationData > AnimationData;
+
+		//! calculates the bounding box
+		virtual void calculateBoundingBox();
 
 		u32 FrameCount;
 		s32 TriangleCount;
+
+	private:
+
+		//! updates the interpolation buffer
+		void updateInterpolationBuffer(s32 frame, s32 startFrame, s32 endFrame);
+
+
 	};
 
 } // end namespace scene
