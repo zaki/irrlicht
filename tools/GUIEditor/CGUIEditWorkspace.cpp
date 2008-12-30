@@ -860,13 +860,11 @@ void CGUIEditWorkspace::PasteXMLToSelectedElement()
 	// rewind file
 	memWrite->seek(0, false);
 
-	io::IXMLReader* xmlReader = (io::IXMLReader*) Environment->getFileSystem()->createXMLReader(memWrite);
-
 	// read xml
-	Environment->readGUIElement(xmlReader, SelectedElement);
+	Environment->loadGUI(memWrite, SelectedElement);
 
-	// drop the xml reader
-	xmlReader->drop();
+	// reset focus
+	Environment->setFocus(this);
 	
 	// drop the read file
 	memWrite->drop();

@@ -8,6 +8,11 @@ Changes in version 1.6
 
  - Add a hitPosition out parameter to ISceneCollisionManager::getCollisionResultPosition() - this is a (small) API breaking change.
 
+-------------------------------------
+Changes in version 1.5.1 (??.?? 2009)
+
+ - MD2 mesh loader: Now uses much less memory, reduced number of allocations when loading meshes.
+
 -----------------------------------
 Changes in version 1.5 (15.12.2008)
 
