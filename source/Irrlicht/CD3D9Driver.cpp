@@ -2321,6 +2321,9 @@ bool CD3D9Driver::reset()
 		if(DepthBuffers[i]->Surface)
 			DepthBuffers[i]->Surface->Release();
 	}
+	// this does not require a restore in the reset method, it's updated
+	// automatically in the next render cycle.
+	removeAllHardwareBuffers();
 
 	DriverWasReset=true;
 

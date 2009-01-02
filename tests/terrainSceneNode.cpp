@@ -69,4 +69,4 @@ bool terrainSceneNode(void)
 
     device->drop();
     return result;
-} 
+}

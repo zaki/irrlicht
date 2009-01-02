@@ -1404,12 +1404,6 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source
 		return;
 	}
 
-	if ( Lights.size () == 0 )
-	{
-		dest->Color[0] = Material.EmissiveColor;
-		return;
-	}
-
 	// eyespace
 /*
 	core::matrix4 modelview = Transformation[ETS_WORLD].m * Transformation[ETS_VIEW].m;

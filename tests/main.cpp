@@ -80,6 +80,8 @@ int main(int argumentCount, char * arguments[])
 		TEST(textureRenderStates)
 	};
 	static const unsigned int numberOfTests = sizeof tests / sizeof tests[0];
+	TEST(burningsVideo);
+	TEST(makeColorKeyTexture);
 
 	unsigned int testToRun = 0;
 	unsigned int fails = 0;

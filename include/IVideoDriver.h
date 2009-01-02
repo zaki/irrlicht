@@ -271,30 +271,41 @@ namespace video
 		//! Remove all hardware buffers
 		virtual void removeAllHardwareBuffers() = 0;
 
-		//! Creates a 1bit alpha channel of the texture based of an color key.
-		/** This makes the texture transparent at the regions where
+		//! Sets a boolean alpha channel on the texture based on a color key.
+		/** This makes the texture fully transparent at the texels where
 		this color key can be found when using for example draw2DImage
-		with useAlphachannel==true.
+		with useAlphachannel==true.  The alpha of other texels is not modified.
 		\param texture Texture whose alpha channel is modified.
-		\param color Color key color. Every pixel with this color will
-		become transparent as described above. Please note that the
+		\param color Color key color. Every texel with this color will
+		become fully transparent as described above. Please note that the
 		colors of a texture may be converted when loading it, so the
 		color values may not be exactly the same in the engine and for
 		example in picture edit programs. To avoid this problem, you
 		could use the makeColorKeyTexture method, which takes the
-		position of a pixel instead a color value. */
-		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color) const = 0;
+		position of a pixel instead a color value.
+		\param \deprecated zeroTexels If set to true, then any texels that match
+		the color key will have their color, as well as their alpha, set to zero
+		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
+		to release 1.5 and is provided for backwards compatibility only.*/
+		virtual void makeColorKeyTexture(video::ITexture* texture,
+										video::SColor color,
+										bool zeroTexels = false) const = 0;
 
-		//! Creates a 1bit alpha channel of the texture based of an color key position.
-		/** This makes the texture transparent at the regions where
-		this color key can be found when using for example draw2DImage
-		with useAlphachannel==true.
+		//! Sets a boolean alpha channel on the texture based on the color at a position.
+		/** This makes the texture fully transparent at the texels where
+		the color key can be found when using for example draw2DImage
+		with useAlphachannel==true.  The alpha of other texels is not modified.
 		\param texture Texture whose alpha channel is modified.
 		\param colorKeyPixelPos Position of a pixel with the color key
-		color. Every pixel with this color will become transparent as
-		described above. */
+		color. Every texel with this color will become fully transparent as
+		described above.
+		\param \deprecated zeroTexels If set to true, then any texels that match
+		the color key will have their color, as well as their alpha, set to zero
+		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
+		to release 1.5 and is provided for backwards compatibility only.*/
 		virtual void makeColorKeyTexture(video::ITexture* texture,
-			core::position2d<s32> colorKeyPixelPos) const = 0;
+			core::position2d<s32> colorKeyPixelPos,
+			bool zeroTexels = false) const = 0;
 
 		//! Creates a normal map from a height map texture.
 		/** If the target texture has 32 bit, the height value is
@@ -593,7 +604,7 @@ namespace video
 		//! Draws a pixel.
 		/** \param position: the position of the pixel.
 		\param color: Color of the pixel to draw. */
-		virtual void drawPixel(u32 x, u32 y, const SColor & color) = 0; 
+		virtual void drawPixel(u32 x, u32 y, const SColor & color) = 0;
 
 		//! Draws a non filled concyclic regular 2d polyon.
 		/** This method can be used to draw circles, but also

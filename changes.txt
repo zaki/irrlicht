@@ -11,6 +11,10 @@ Changes in version 1.6
 -------------------------------------
 Changes in version 1.5.1 (??.?? 2009)
 
+ - Changed behaviour of PixelBlend16() / PixelBlend16_simd() so that they treat the 1 bit alpha of the source pixel as boolean, i.e. they draw either the source pixel, or the destination pixel, rather than "blending". (Issue revealed by the fix to IVideoDriver::makeColorKeyTexture()).
+
+ - IVideoDriver::makeColorKeyTexture() bug fixed so that only alphas, not whole texel colors, are zeroed.  An optional parameter allows using the old (buggy) behaviour for backwards compatibility.
+
  - MD2 mesh loader: Now uses much less memory, reduced number of allocations when loading meshes.
 
 -----------------------------------
