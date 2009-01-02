@@ -75,9 +75,9 @@ COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 		pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
 		pGlGenerateMipMapOES(0),
 #endif
-	Version(0), MaxUserClipPlanes(0), MaxTextureUnits(0), MaxLights(0),
-	MultiTextureExtension(false), MultiSamplingExtension(false),
-	StencilBuffer(false)
+	EGLVersion(0), Version(0), MaxUserClipPlanes(0), MaxTextureUnits(0),
+	MaxLights(0), CommonProfile(false), MultiTextureExtension(false),
+	MultiSamplingExtension(false), StencilBuffer(false)
 {
 	for (u32 i=0; i<IRR_OGLES_Feature_Count; ++i)
 		FeatureAvailable[i]=false;
@@ -91,11 +91,23 @@ void COGLES1ExtensionHandler::dump() const
 }
 
 
-void COGLES1ExtensionHandler::initExtensions(EGLDisplay display, bool withStencil)
+void COGLES1ExtensionHandler::initExtensions(
+#ifdef EGL_VERSION_1_0
+		EGLDisplay display,
+#endif
+		bool withStencil)
 {
-	const f32 ogl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
-	Version = core::floor32(ogl_ver)*100+core::ceil32(core::fract(ogl_ver)*10.0f);
+#ifdef EGL_VERSION_1_0
+	const f32 egl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
+	EGLVersion = core::floor32(egl_ver)*100+core::round32(core::fract(egl_ver)*10.0f);
 	core::stringc eglExtensions = eglQueryString(display, EGL_EXTENSIONS);
+	os::Printer::log(eglExtensions.c_str());
+#endif
+	const core::stringc stringVer(glGetString(GL_VERSION));
+	CommonProfile = (stringVer[11]=='M');
+	const f32 ogl_ver = core::fast_atof(stringVer.c_str()+13);
+	Version = core::floor32(ogl_ver)*100+core::round32(core::fract(ogl_ver)*10.0f);
+	os::Printer::log(stringVer.c_str());
 	core::stringc extensions = glGetString(GL_EXTENSIONS);
 	os::Printer::log(extensions.c_str());
 	{

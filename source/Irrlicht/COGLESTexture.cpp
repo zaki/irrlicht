@@ -546,7 +546,7 @@ COGLES1FBODepthTexture::COGLES1FBODepthTexture(
 			return;
 		}
 #endif
-#ifdef GL_OES_framebuffer_object
+#if defined(GL_OES_framebuffer_object) && defined(GL_OES_stencil1)
 		// generate stencil buffer
 		Driver->extGlGenRenderbuffers(1, &StencilRenderBuffer);
 		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, StencilRenderBuffer);

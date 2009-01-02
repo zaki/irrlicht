@@ -103,7 +103,11 @@ namespace video
 
 		void dump() const;
 
-		void initExtensions(EGLDisplay display, bool withStencil);
+		void initExtensions(
+#ifdef EGL_VERSION_1_0
+				EGLDisplay display,
+#endif
+				bool withStencil);
 
 	public:
 		void COGLES1ExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint framebuffer)
@@ -356,10 +360,12 @@ namespace video
 
 	protected:
 		bool FeatureAvailable[IRR_OGLES_Feature_Count];
+		s32 EGLVersion;
 		s32 Version;
 		u32 MaxUserClipPlanes;
 		u32 MaxTextureUnits;
 		s32 MaxLights;
+		bool CommonProfile;
 		bool MultiTextureExtension;
 		bool MultiSamplingExtension;
 		bool StencilBuffer;
