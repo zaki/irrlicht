@@ -169,7 +169,7 @@ REALINLINE u32 PixelBlend32 ( const u32 c2, const u32 c1, u32 alpha )
 	rb &= 0x00FF00FF;
 	xg &= 0x0000FF00;
 
-	return rb | xg; 
+	return rb | xg;
 }
 
 /*!
@@ -220,7 +220,7 @@ inline u32 PixelLerp32 ( const u32 source, const u32 value )
 	srcXG &= 0xFF00FF00;
 	srcRB &= 0x00FF00FF;
 
-	return srcRB | srcXG; 
+	return srcRB | srcXG;
 }
 
 /*
@@ -244,7 +244,7 @@ inline u16 PixelMul16 ( const u16 c0, const u16 c1)
 }
 
 /*
-	Pixel = c0 * (c1/31). 
+	Pixel = c0 * (c1/31).
 */
 inline u16 PixelMul16_2 ( u16 c0, u16 c1)
 {
@@ -266,7 +266,7 @@ REALINLINE u32 PixelMul32 ( const u32 c0, const u32 c1)
 }
 
 /*
-	Pixel = c0 * (c1/255). 
+	Pixel = c0 * (c1/255).
 */
 REALINLINE u32 PixelMul32_2 ( const u32 c0, const u32 c1)
 {
@@ -292,31 +292,31 @@ REALINLINE u32 PixelAdd32 ( const u32 c2, const u32 c1)
 
 
 // 1 - Bit Alpha Blending
-inline u16 PixelBlend16 ( const u16 c2, const u16 c1 )
+inline u16 PixelBlend16 ( const u16 destination, const u16 source )
 {
-	u16 c = c1 & 0x8000;
-	
-	c >>= 15;
-	c += 0x7fff;
-	
-	c &= c2;
-	c |= c1;
-	
-	return c;
+   if((source & 0x8000) == 0x8000)
+      return source; // The source is visible, so use it.
+   else
+      return destination; // The source is transparent, so use the destination.
 }
 
 // 1 - Bit Alpha Blending 16Bit SIMD
-inline u32 PixelBlend16_simd ( const u32 c2, const u32 c1 )
+inline u32 PixelBlend16_simd ( const u32 destination, const u32 source )
 {
-	u32 c = c1 & 0x80008000;
-	
-	c >>= 15;
-	c += 0x7fff7fff;
-	
-	c &= c2;
-	c |= c1;
-	
-	return c;
+	switch(source & 0x80008000)
+	{
+		case 0x80008000: // Both source pixels are visible
+			return source;
+
+		case 0x80000000: // Only the first source pixel is visible
+			return (source & 0xFFFF0000) | (destination & 0x0000FFFF);
+
+		case 0x00008000: // Only the second source pixel is visible.
+			return (destination & 0xFFFF0000) | (source & 0x0000FFFF);
+
+		default: // Neither source pixel is visible.
+			return destination;
+	}
 }
 
 
@@ -362,7 +362,7 @@ inline u32 PixelBlend32 ( const u32 c2, const u32 c1 )
 	rb &= 0x00FF00FF;
 	xg &= 0x0000FF00;
 
-	return rb | xg; 
+	return rb | xg;
 }
 
 
@@ -427,7 +427,7 @@ REALINLINE f32 fix_inverse32 ( const f32 x )
 	convert float to fixpoint
 	fast convert (fistp on x86) HAS to be used..
 	hints: compileflag /QIfist for msvc7. msvc 8.0 has smth different
-	others should use their favourite assembler.. 
+	others should use their favourite assembler..
 */
 static inline int f_round2(f32 f)
 {
@@ -494,7 +494,7 @@ REALINLINE tFixPoint imulFix_tex4(const tFixPoint x, const tFixPoint y)
 */
 REALINLINE tFixPoint clampfix_maxcolor ( const tFixPoint a)
 {
-	tFixPoint c = (a - FIXPOINT_COLOR_MAX) >> 31;	
+	tFixPoint c = (a - FIXPOINT_COLOR_MAX) >> 31;
 	return (a & c) | ( FIXPOINT_COLOR_MAX & ~c);
 }
 
@@ -561,7 +561,7 @@ typedef f32 fp24;
 struct fp24
 {
 	u32 v;
-	
+
 	fp24() {}
 
 	fp24 ( const f32 f )
@@ -620,7 +620,7 @@ inline tVideoSample getTexel_plain ( const sInternalTexture * t, const tFixPoint
 }
 
 // get video sample to fix
-inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -640,7 +640,7 @@ inline void getTexel_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 }
 
 
-inline void getSample_texture_dither (	tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getSample_texture_dither (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 										const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty,
 										const u32 x, const u32 y
 								)
@@ -678,7 +678,7 @@ inline void getSample_texture_dither (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 
 // get Sample linear == getSample_fixpoint
 
-inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -695,7 +695,7 @@ inline void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 	(tFixPointu &) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
 }
 
-inline void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+inline void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b,
 						const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -717,7 +717,7 @@ inline void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFi
 #else
 
 // get sample linear
-REALINLINE void getSample_linear ( tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+REALINLINE void getSample_linear ( tFixPointu &r, tFixPointu &g, tFixPointu &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -736,7 +736,7 @@ REALINLINE void getSample_linear ( tFixPointu &r, tFixPointu &g, tFixPointu &b,
 }
 
 // get Sample bilinear
-REALINLINE void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b, 
+REALINLINE void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -781,7 +781,7 @@ REALINLINE void getSample_texture ( tFixPoint &r, tFixPoint &g, tFixPoint &b,
 
 
 // get sample linear
-REALINLINE void getSample_linear ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+REALINLINE void getSample_linear ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -801,7 +801,7 @@ REALINLINE void getSample_linear ( tFixPointu &a, tFixPointu &r, tFixPointu &g, 
 }
 
 // get Sample bilinear
-REALINLINE void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b, 
+REALINLINE void getSample_texture ( tFixPointu &a, tFixPointu &r, tFixPointu &g, tFixPointu &b,
 								const sInternalTexture * t, const tFixPointu tx, const tFixPointu ty
 								)
 {
@@ -890,5 +890,5 @@ inline s32 intervall_intersect_test( const sIntervall& a, const sIntervall& b)
 
 }	// namespace
 
-#endif 
+#endif
 

@@ -38,6 +38,7 @@
 			<Add directory="..\lib\gcc" />
 		</Linker>
 		<Unit filename="b3dAnimation.cpp" />
+		<Unit filename="burningsVideo.cpp" />
 		<Unit filename="collisionResponseAnimator.cpp" />
 		<Unit filename="disambiguateTextures.cpp" />
 		<Unit filename="drawPixel.cpp" />
@@ -47,6 +48,7 @@
 		<Unit filename="guiDisabledMenu.cpp" />
 		<Unit filename="line2dIntersectWith.cpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="makeColorKeyTexture.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="planeMatrix.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />

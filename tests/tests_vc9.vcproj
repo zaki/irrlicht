@@ -172,6 +172,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\burningsVideo.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\collisionResponseAnimator.cpp"
 				>
 			</File>
@@ -205,6 +209,10 @@
 			</File>
 			<File
 				RelativePath=".\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\makeColorKeyTexture.cpp"
 				>
 			</File>
 			<File

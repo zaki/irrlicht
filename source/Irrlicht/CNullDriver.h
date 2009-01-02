@@ -187,7 +187,7 @@ namespace video
 					SColor color=SColor(255,255,255,255));
 
 		//! Draws a pixel
-		virtual void drawPixel(u32 x, u32 y, const SColor & color); 
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
 
 		//! Draws a non filled concyclic reqular 2d polyon.
 		virtual void draw2DPolygon(core::position2d<s32> center,
@@ -274,10 +274,10 @@ namespace video
 				const c8* name);
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
-		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color) const;
+		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color, bool zeroTexels) const;
 
 		//! Creates an 1bit alpha channel of the texture based of an color key position.
-		virtual void makeColorKeyTexture(video::ITexture* texture, core::position2d<s32> colorKeyPixelPos) const;
+		virtual void makeColorKeyTexture(video::ITexture* texture, core::position2d<s32> colorKeyPixelPos, bool zeroTexels) const;
 
 		//! Creates a normal map from a height map texture.
 		//! \param amplitude: Constant value by which the height information is multiplied.
