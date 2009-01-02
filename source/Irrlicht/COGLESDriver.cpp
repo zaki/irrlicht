@@ -170,7 +170,8 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 //	glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
 	glClearDepthf(1.0f);
 
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+	glHint(GL_GENERATE_MIPMAP_HINT, GL_FASTEST);
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace( GL_CW );
 
@@ -183,7 +184,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 		glEnable(GL_LINE_SMOOTH);
 	}
 // currently disabled, because often in software, and thus very slow
-//	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
+	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 //	glEnable(GL_POINT_SMOOTH);
 
 	UserClipPlane.reallocate(MaxUserClipPlanes);
@@ -769,7 +770,6 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
 				glVertexPointer((threed?3:2), GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
 			}
-			// TODO ogles
 			else
 			{
 				glNormalPointer(GL_FLOAT, sizeof(S3DVertex), buffer_offset(12));
@@ -973,13 +973,13 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 		if (!setTexture(0, texture))
 			return;
 		setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
+		const int crop[] = {sourceRect.UpperLeftCorner.X, sourceRect.LowerRightCorner.Y, sourceRect.getWidth(), sourceRect.getHeight()};
+		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, crop);
 		core::rect<s32> destRect(sourceRect);
 		destRect-=destRect.UpperLeftCorner;
 		destRect+=pos;
 		if (clipRect)
 			destRect.clipAgainst(*clipRect);
-		const int crop[] = {destRect.LowerRightCorner.Y, destRect.UpperLeftCorner.X, destRect.getWidth(), destRect.getHeight()};
-		glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, crop);
 		extGlDrawTex(destRect.UpperLeftCorner.X, destRect.UpperLeftCorner.Y, 0, destRect.getWidth(), destRect.getHeight());
 		return;
 	}
@@ -2403,7 +2403,7 @@ ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<s32>& si
 //! Returns the maximum amount of primitives
 u32 COGLES1Driver::getMaximalPrimitiveCount() const
 {
-	return 65535;// TODO: Fix all loaders to auto-split and then return the correct value: MaxIndices;
+	return 65535;
 }
 
 
@@ -2488,6 +2488,9 @@ void COGLES1Driver::clearZBuffer()
 
 
 //! Returns an image created from the last rendered frame.
+// We want to read the front buffer to get the latest render finished.
+// This is not possible under ogl-es, though, so ne has to call this method
+// outside of the render loop only.
 IImage* COGLES1Driver::createScreenShot()
 {
 	int format=GL_RGBA;
@@ -2496,8 +2499,6 @@ IImage* COGLES1Driver::createScreenShot()
 	{
 #ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
 		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, &format);
-#endif
-#ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
 		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES, &type);
 #endif
 		// there's a format we don't support ATM
@@ -2528,13 +2529,7 @@ IImage* COGLES1Driver::createScreenShot()
 		return 0;
 	}
 
-	// We want to read the front buffer to get the latest render finished.
-	// TODO ogl-es
-	//	glReadBuffer(GL_FRONT);
-
 	glReadPixels(0, 0, ScreenSize.Width, ScreenSize.Height, format, type, pixels);
-	// TODO ogl-es
-	// glReadBuffer(GL_BACK);
 
 	// opengl images are horizontally flipped, so we have to fix that here.
 	const s32 pitch=newImage->getPitch();
