@@ -96,8 +96,12 @@ define out. */
 #define _IRR_COMPILE_WITH_OPENGL_
 
 //! Define _IRR_COMPILE_WITH_OGLES1_ to compile the Irrlicht engine with OpenGL-ES 1.x.
-/** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment this
-define out. */
+/** If you do not wish the engine to be compiled with OpenGL-ES 1.x, comment
+this define out.
+You should only use this define if you really need the OpenGL-ES driver, and
+it should be usually the only HW accelerated one. OpenGL is currently disabled
+if using this driver, to avoid problems with the ogl-es emulators.
+*/
 #define _IRR_COMPILE_WITH_OGLES1_
 
 //! Define _IRR_COMPILE_WITH_SOFTWARE_ to compile the Irrlicht engine with software driver
@@ -115,11 +119,19 @@ define out. */
 // Only used in LinuxDevice.
 #define _IRR_COMPILE_WITH_X11_
 
-//! Define _IRR_OPENGL_USE_EXTPOINTER_ if the OpenGL renderer should use OpenGL extensions via function pointers.
+//! Define _IRR_OPENGL_USE_EXTPOINTER_ if the OpenGL driver should use OpenGL extensions via function pointers.
 /** On some systems there is no support for the dynamic extension of OpenGL
 	via function pointers such that this has to be undef'ed. */
+#ifdef _IRR_COMPILE_WITH_OPENGL_
 #if !defined(_IRR_OSX_PLATFORM_) && !defined(_IRR_SOLARIS_PLATFORM_)
 #define _IRR_OPENGL_USE_EXTPOINTER_
+#endif
+#endif
+
+//! Define _IRR_OGLES1_USE_EXTPOINTER_ if the OpenGL-ES 1.x driver should use extensions via function pointers.
+/** This should usually be enabled, but also depends on the specific architecture. */
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+#define _IRR_OGLES1_USE_EXTPOINTER_
 #endif
 
 //! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
@@ -360,6 +372,11 @@ precision will be lower but speed higher. currently X86 only
 	#undef _IRR_USE_WINDOWS_DEVICE_
 	#define _IRR_USE_WINDOWS_CE_DEVICE_
 	#define BURNINGVIDEO_RENDERER_CE
+#endif
+
+// OpenGL-ES usually interferes with OpenGL
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+	#undef _IRR_COMPILE_WITH_OPENGL_
 #endif
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
