@@ -50,6 +50,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	EglWindow = (NativeWindowType)ExposedData.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)ExposedData.OpenGLLinux.X11Display);
 #endif
+#ifdef EGL_VERSION_1_0
 	if(EglDisplay == EGL_NO_DISPLAY)
 		EglDisplay = eglGetDisplay((NativeDisplayType) EGL_DEFAULT_DISPLAY);
 	if(EglDisplay == EGL_NO_DISPLAY)
@@ -73,6 +74,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
 //		EGL_COLOR_BUFFER_TYPE, EGL_RGB_BUFFER,
 //		EGL_DEPTH_SIZE, 16,
+		EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
 		EGL_NONE, 0
 	};
 	EGLConfig config;
@@ -90,7 +92,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		os::Printer::log("Could not create surface for OpenGL-ES1 display.");
 	}
 
-#ifdef GL_OES_VERSION_1_2
+#ifdef EGL_VERSION_1_2
 	eglBindAPI(EGL_OPENGL_ES_API);
 #endif
 	EglContext = eglCreateContext(EglDisplay, config, EGL_NO_CONTEXT, NULL);
@@ -110,6 +112,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	// set vsync
 	if (params.Vsync)
 		eglSwapInterval(EglDisplay, 1);
+#endif
 }
 
 
@@ -119,6 +122,7 @@ COGLES1Driver::~COGLES1Driver()
 	deleteMaterialRenders();
 	deleteAllTextures();
 
+#if defined(EGL_VERSION_1_0)
 	eglMakeCurrent(EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 	eglDestroyContext(EglDisplay, EglContext);
 	eglDestroySurface(EglDisplay, EglSurface);
@@ -126,6 +130,7 @@ COGLES1Driver::~COGLES1Driver()
 #if defined(_IRR_USE_WINDOWS_DEVICE_)
 	if (HDc)
 		ReleaseDC((HWND)EglWindow, HDc);
+#endif
 #endif
 }
 
@@ -135,22 +140,26 @@ COGLES1Driver::~COGLES1Driver()
 
 bool COGLES1Driver::genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer)
 {
-	Name=L"OpenGL-ES1 ";
-	Name.append(eglQueryString(EglDisplay, EGL_VERSION));
+	Name=glGetString(GL_VERSION);
 	printVersion();
 
-	os::Printer::log(eglQueryString(EglDisplay, EGL_EXTENSIONS));
+#if defined(EGL_VERSION_1_0)
 	os::Printer::log(eglQueryString(EglDisplay, EGL_CLIENT_APIS));
+#endif
 
 	// print renderer information
-	vendorName = eglQueryString(EglDisplay, EGL_VENDOR);
+	vendorName = glGetString(GL_VENDOR);
 	os::Printer::log(vendorName.c_str(), ELL_INFORMATION);
 
 	u32 i;
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		CurrentTexture[i]=0;
 	// load extensions
-	initExtensions(EglDisplay, stencilBuffer);
+	initExtensions(
+#if defined(EGL_VERSION_1_0)
+			EglDisplay,
+#endif
+			stencilBuffer);
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
@@ -270,6 +279,7 @@ bool COGLES1Driver::endScene()
 {
 	CNullDriver::endScene();
 
+#if defined(EGL_VERSION_1_0)
 	eglSwapBuffers(EglDisplay, EglSurface);
 	EGLint g = eglGetError();
 	if (EGL_SUCCESS != g)
@@ -283,6 +293,7 @@ bool COGLES1Driver::endScene()
 			os::Printer::log("Could not swap buffers for OpenGL-ES1 driver.");
 		return false;
 	}
+#endif
 
 	return true;
 }
@@ -1417,7 +1428,7 @@ bool COGLES1Driver::testGLError()
 
 bool COGLES1Driver::testEGLError()
 {
-#ifdef _DEBUG
+#if defined(EGL_VERSION_1_0) && defined(_DEBUG)
 	EGLint g = eglGetError();
 	switch (g)
 	{
