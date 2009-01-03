@@ -51,7 +51,7 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 	driver->endScene();
 
 	char screenshotName[256];
-	(void)sprintf(screenshotName, "-makeColorKeyTexture-%s.png",
+	(void)snprintf(screenshotName, 256, "-makeColorKeyTexture-%s.png",
 		zeroTexels? "old" : "new");
 
 	bool result = takeScreenshotAndCompareAgainstReference(driver, screenshotName);

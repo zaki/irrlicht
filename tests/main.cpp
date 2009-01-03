@@ -54,6 +54,8 @@ int main(int argumentCount, char * arguments[])
 	extern bool b3dAnimation(void);
 	extern bool guiDisabledMenu(void);
 	extern bool textureRenderStates(void);
+	extern bool burningsVideo(void);
+	extern bool makeColorKeyTexture(void);
 
 	typedef struct _STest
 	{
@@ -77,11 +79,11 @@ int main(int argumentCount, char * arguments[])
 		TEST(guiDisabledMenu),
 		TEST(softwareDevice),
 		TEST(b3dAnimation),
-		TEST(textureRenderStates)
+		TEST(textureRenderStates),
+		TEST(burningsVideo),
+		TEST(makeColorKeyTexture)
 	};
 	static const unsigned int numberOfTests = sizeof tests / sizeof tests[0];
-	TEST(burningsVideo);
-	TEST(makeColorKeyTexture);
 
 	unsigned int testToRun = 0;
 	unsigned int fails = 0;
