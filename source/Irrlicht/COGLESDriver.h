@@ -13,6 +13,8 @@
 	#include <windows.h>
 #elif defined(_IRR_USE_OSX_DEVICE_)
 	#include "CIrrDeviceMacOSX.h"
+#elif defined(_IRR_USE_IPHONE_DEVICE_)
+	#include "CIrrDeviceIPhone.h"
 #endif
 
 #include "SIrrCreationParameters.h"
@@ -24,8 +26,13 @@
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
 
+#if defined(_IRR_USE_IPHONE_DEVICE_)
+#include <OpenGLES/ES1/gl.h>
+#include <OpenGLES/ES1/glext.h>
+#else
 #include <GLES/egl.h>
 #include <GLES/gl.h>
+#endif
 #ifdef _MSC_VER
 	#pragma comment(lib, "libgles_cm.lib")
 #endif
@@ -49,6 +56,11 @@ namespace video
 		#ifdef _IRR_USE_OSX_DEVICE_
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io, CIrrDeviceMacOSX *device);
+		#endif
+	
+		#if defined(_IRR_USE_IPHONE_DEVICE_)
+		COGLES1Driver(const SIrrlichtCreationParameters& params,
+				io::IFileSystem* io, MIrrIPhoneDevice const & device);
 		#endif
 
 		//! destructor
@@ -331,11 +343,17 @@ namespace video
 
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 		HDC HDc;
-#endif
+#elif defined(_IRR_USE_IPHONE_DEVICE_)
+		MIrrIPhoneDevice Device;
+		GLuint ViewFramebuffer;
+		GLuint ViewRenderbuffer;
+		GLuint ViewDepthRenderbuffer;
+#else
 		NativeWindowType EglWindow;
 		EGLDisplay EglDisplay;
 		EGLSurface EglSurface;
 		EGLContext EglContext;
+#endif
 	};
 
 } // end namespace video

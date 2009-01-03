@@ -9,9 +9,14 @@
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OGLES1_
+#if defined(_IRR_USE_IPHONE_DEVICE_)
+#include <OpenGLES/ES1/gl.h>
+#include <OpenGLES/ES1/glext.h>
+#else
 #include <GLES/egl.h>
 #include <GLES/gl.h>
 #include "gles-ext.h"
+#endif
 #include "os.h"
 #include "EDriverFeatures.h"
 

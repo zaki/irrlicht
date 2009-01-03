@@ -17,12 +17,14 @@
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
+//! _IRR_IPHONE_PLATFORM_ for Apple iPhone OS
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! _IRR_USE_SDL_DEVICE_ for platform independent SDL framework
 //! _IRR_USE_WINDOWS_DEVICE_ for Windows API based device
 //! _IRR_USE_WINDOWS_CE_DEVICE_ for Windows CE API based device
 //! _IRR_USE_LINUX_DEVICE_ for X11 based device
 //! _IRR_USE_OSX_DEVICE_ for Cocoa native windowing on OSX
+//! _IRR_USE_IPHONE_DEVICE_ for UIKit windowing on iPhoneOS (aka embeded OSX)
 //! Note: PLATFORM defines the OS specific layer, API can groups several platforms
 //! DEVICE is the windowing system used, several PLATFORMs support more than one DEVICE
 //! Moreover, the DEVICE defined here is not directly related to the Irrlicht devices created in the app (but may depend on each other).
@@ -52,7 +54,10 @@
 #define MACOSX // legacy support
 #endif
 #define _IRR_OSX_PLATFORM_
-#if !defined(_IRR_USE_LINUX_DEVICE_) // for X11 windowing declare this
+#if defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__)
+#define _IRR_IPHONE_PLATFORM_
+#define _IRR_USE_IPHONE_DEVICE_
+#elif !defined(_IRR_USE_LINUX_DEVICE_) // for X11 windowing declare this
 #define _IRR_USE_OSX_DEVICE_
 #endif
 #endif

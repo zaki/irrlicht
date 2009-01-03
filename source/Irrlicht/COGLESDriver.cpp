@@ -28,27 +28,39 @@ namespace video
 {
 
 //! constructor and init code
+#if defined(_IRR_USE_IPHONE_DEVICE_)
+COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io, const MIrrIPhoneDevice& device)
+#else
 COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		const SExposedVideoData& data, io::IFileSystem* io)
+#endif
 : CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
 #if defined(_IRR_USE_WINDOWS_DEVICE_)
 	,HDc(0)
+#elif defined(_IRR_USE_IPHONE_DEVICE_)
+	,ViewFramebuffer(0)
+	,ViewRenderbuffer(0)
+	,ViewDepthRenderbuffer(0)
 #endif
 {
 	#ifdef _DEBUG
 	setDebugName("COGLESDriver");
 	#endif
-	ExposedData=data;
 #if defined(_IRR_USE_WINDOWS_DEVICE_)
+	ExposedData=data;
 	EglWindow = (NativeWindowType)data.OpenGLWin32.HWnd;
 	HDc = GetDC((HWND)EglWindow);
 	EglDisplay = eglGetDisplay((NativeDisplayType)HDc);
 #elif defined(_IRR_USE_LINUX_DEVICE_)
+	ExposedData=data;
 	EglWindow = (NativeWindowType)ExposedData.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)ExposedData.OpenGLLinux.X11Display);
+#elif defined(_IRR_USE_IPHONE_DEVICE_)
+	Device = device;
 #endif
 #ifdef EGL_VERSION_1_0
 	if(EglDisplay == EGL_NO_DISPLAY)
@@ -112,6 +124,36 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	// set vsync
 	if (params.Vsync)
 		eglSwapInterval(EglDisplay, 1);
+#elif defined(GL_VERSION_ES_CM_1_0)
+	glGenFramebuffersOES(1, &ViewFramebuffer);
+	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
+	
+	glGenRenderbuffersOES(1, &ViewRenderbuffer);
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
+	
+	#if defined(_IRR_USE_IPHONE_DEVICE_)
+	ExposedData.OGLESIPhone.AppDelegate = Device.DeviceM;
+	(*Device.displayInit)(&Device, &ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
+	#endif
+	
+	glFramebufferRenderbufferOES(
+		GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, ViewRenderbuffer);
+	
+	GLint backingWidth;
+	GLint backingHeight;
+	glGetRenderbufferParameterivOES(
+		GL_RENDERBUFFER_OES, GL_RENDERBUFFER_WIDTH_OES, &backingWidth);
+	glGetRenderbufferParameterivOES(
+		GL_RENDERBUFFER_OES, GL_RENDERBUFFER_HEIGHT_OES, &backingHeight);
+	
+	glGenRenderbuffersOES(1, &ViewDepthRenderbuffer);
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
+	glRenderbufferStorageOES(
+		GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight);
+	glFramebufferRenderbufferOES(
+		GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
+
+	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 #endif
 }
 
@@ -131,6 +173,22 @@ COGLES1Driver::~COGLES1Driver()
 	if (HDc)
 		ReleaseDC((HWND)EglWindow, HDc);
 #endif
+#elif defined(GL_VERSION_ES_CM_1_0)
+	if (0 != ViewFramebuffer)
+	{
+		extGlDeleteFramebuffers(1,&ViewFramebuffer);
+		ViewFramebuffer = 0;
+	}
+	if (0 != ViewRenderbuffer)
+	{
+		extGlDeleteRenderbuffers(1,&ViewRenderbuffer);
+		ViewRenderbuffer = 0;
+	}
+	if (0 != ViewDepthRenderbuffer)
+	{
+		extGlDeleteRenderbuffers(1,&ViewDepthRenderbuffer);
+		ViewDepthRenderbuffer = 0;
+	}
 #endif
 }
 
@@ -293,6 +351,12 @@ bool COGLES1Driver::endScene()
 			os::Printer::log("Could not swap buffers for OpenGL-ES1 driver.");
 		return false;
 	}
+#elif defined(GL_VERSION_ES_CM_1_0)
+	glFlush();
+	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
+	#if defined(_IRR_USE_IPHONE_DEVICE_)
+	(*Device.displayEnd)(&Device);
+	#endif
 #endif
 
 	return true;
@@ -304,6 +368,13 @@ bool COGLES1Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		void* windowId, core::rect<s32>* sourceRect)
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color);
+
+#if defined(GL_VERSION_ES_CM_1_0)
+	#if defined(_IRR_USE_IPHONE_DEVICE_)
+	(*Device.displayBegin)(&Device);
+	#endif
+	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
+#endif
 
 	GLbitfield mask = 0;
 
@@ -2690,6 +2761,21 @@ IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 #endif //  _IRR_COMPILE_WITH_OGLES1_
 }
 #endif // _IRR_USE_OSX_DEVICE_
+
+// -----------------------------------
+// IPHONE VERSION
+// -----------------------------------
+#if defined(_IRR_USE_IPHONE_DEVICE_)
+IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io, MIrrIPhoneDevice const & device)
+{
+#ifdef _IRR_COMPILE_WITH_OGLES1_
+	return new COGLES1Driver(params, io, device);
+#else
+	return 0;
+#endif // _IRR_COMPILE_WITH_OGLES1_
+}
+#endif // _IRR_USE_IPHONE_DEVICE_
 
 } // end namespace
 } // end namespace
