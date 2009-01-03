@@ -28,10 +28,11 @@ class MyEventReceiver : public IEventReceiver
 {
 public:
 
-	MyEventReceiver(scene::ISceneNode* terrain)
+	MyEventReceiver(scene::ISceneNode* terrain, scene::ISceneNode* skybox, scene::ISceneNode* skydome) :
+		Terrain(terrain), Skybox(skybox), Skydome(skydome), showBox(true)
 	{
-		// store pointer to terrain so we can change its drawing mode
-		Terrain = terrain;
+		Skybox->setVisible(true);
+		Skydome->setVisible(false);
 	}
 
 	bool OnEvent(const SEvent& event)
@@ -56,6 +57,11 @@ public:
 					Terrain->getMaterial(0).MaterialType == video::EMT_SOLID ?
 					video::EMT_DETAIL_MAP : video::EMT_SOLID);
 				return true;
+			case irr::KEY_KEY_S: // toggle skies
+				showBox=!showBox;
+				Skybox->setVisible(showBox);
+				Skydome->setVisible(!showBox);
+				return true;
 			default:
 				break;
 			}
@@ -66,6 +72,9 @@ public:
 
 private:
 	scene::ISceneNode* Terrain;
+	scene::ISceneNode* Skybox;
+	scene::ISceneNode* Skydome;
+	bool showBox;
 };
 
 
@@ -128,8 +137,8 @@ int main()
 
 	// add some help text
 	env->addStaticText(
-		L"Press 'W' to change wireframe mode\nPress 'D' to toggle detail map",
-		core::rect<s32>(10,440,250,475), true, true, 0, -1, true);
+		L"Press 'W' to change wireframe mode\nPress 'D' to toggle detail map\nPress 'S' to toggle skybox/skydome",
+		core::rect<s32>(10,421,250,475), true, true, 0, -1, true);
 
 	// add camera
 	scene::ICameraSceneNode* camera =
@@ -137,7 +146,7 @@ int main()
 
 	camera->setPosition(core::vector3df(2700*2,255*2,2600*2));
 	camera->setTarget(core::vector3df(2397*2,343*2,2700*2));
-	camera->setFarValue(12000.0f);
+	camera->setFarValue(42000.0f);
 
 	// disable mouse cursor
 	device->getCursorControl()->setVisible(false);
@@ -220,26 +229,27 @@ int main()
 	To make the user be able to switch between normal and wireframe mode,
 	we create an instance of the event reciever from above and let Irrlicht
 	know about it. In addition, we add the skybox which we already used in
-	lots of Irrlicht examples.
+	lots of Irrlicht examples and a skydome, which is shown mutually
+	exclusive with the skybox by pressing 'S'.
 	*/
 
-	// create event receiver
-	MyEventReceiver receiver(terrain);
-	device->setEventReceiver(&receiver);
-
-	// create skybox
+	// create skybox and skydome
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
-	smgr->addSkyBoxSceneNode(
+	scene::ISceneNode* skybox=smgr->addSkyBoxSceneNode(
 		driver->getTexture("../../media/irrlicht2_up.jpg"),
 		driver->getTexture("../../media/irrlicht2_dn.jpg"),
 		driver->getTexture("../../media/irrlicht2_lf.jpg"),
 		driver->getTexture("../../media/irrlicht2_rt.jpg"),
 		driver->getTexture("../../media/irrlicht2_ft.jpg"),
 		driver->getTexture("../../media/irrlicht2_bk.jpg"));
+	scene::ISceneNode* skydome=smgr->addSkyDomeSceneNode(driver->getTexture("../../media/skydome.jpg"),16,8,0.95f,2.0f);
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
+	// create event receiver
+	MyEventReceiver receiver(terrain, skybox, skydome);
+	device->setEventReceiver(&receiver);
 
 	/*
 	That's it, draw everything.

@@ -47,7 +47,8 @@ whenever the user press the S-key. All other events are sent
 to the FPS camera.
 */
 
-class MyEventReceiver : public IEventReceiver {
+class MyEventReceiver : public IEventReceiver
+{
 	public:
 		virtual bool OnEvent(const SEvent& event)
 		{
