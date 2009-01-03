@@ -130,7 +130,6 @@ void CD3D9Driver::createMaterialRenderers()
 		MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
 	renderer->drop();
 
-
 	// add parallax map renderers
 
 	renderer = new CD3D9ParallaxMapRenderer(pID3DDevice, this, tmp,
@@ -145,10 +144,8 @@ void CD3D9Driver::createMaterialRenderers()
 		MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
 	renderer->drop();
 
-
 	// add basic 1 texture blending
 	addAndDropMaterialRenderer(new CD3D9MaterialRenderer_ONETEXTURE_BLEND(pID3DDevice, this));
-
 }
 
 
@@ -251,7 +248,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	else
 	{
 		present.BackBufferFormat	= d3ddm.Format;
-		present.SwapEffect		= D3DSWAPEFFECT_COPY;
+		present.SwapEffect		= D3DSWAPEFFECT_DISCARD;
 		present.Windowed		= TRUE;
 	}
 
@@ -303,9 +300,9 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 					D3DMULTISAMPLE_NONMASKABLE, &qualityLevels)))
 		{
 			// enable non maskable multi sampling
-			present.SwapEffect		 = D3DSWAPEFFECT_DISCARD;
 			present.MultiSampleType	= D3DMULTISAMPLE_NONMASKABLE;
 			present.MultiSampleQuality = qualityLevels-1;
+			present.SwapEffect		 = D3DSWAPEFFECT_DISCARD;
 		}
 		else
 		{
