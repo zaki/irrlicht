@@ -343,7 +343,8 @@ namespace video
 
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 		HDC HDc;
-#elif defined(_IRR_USE_IPHONE_DEVICE_)
+#endif
+#if defined(_IRR_USE_IPHONE_DEVICE_)
 		MIrrIPhoneDevice Device;
 		GLuint ViewFramebuffer;
 		GLuint ViewRenderbuffer;
