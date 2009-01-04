@@ -385,7 +385,7 @@ namespace video
 		//! bool to make all renderstates reset if set to true.
 		bool ResetRenderStates;
 		bool Transformation3DChanged;
-		bool AntiAlias;
+		u8 AntiAlias;
 
 		SMaterial Material, LastMaterial;
 		COpenGLTexture* RenderTargetTexture;

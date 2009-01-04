@@ -148,10 +148,34 @@ bool CIrrDeviceSDL::createWindow()
 		}
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		if (CreationParams.AntiAlias>1)
+		{
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
+		}
+		
 	}
 
 	if ( !Screen )
 		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+	if ( !Screen && CreationParams.AntiAlias>1)
+	{
+		while (--CreationParams.AntiAlias>1)
+		{
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
+			Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+			if (Screen)
+				break;
+		}
+		if ( !Screen )
+		{
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 0 );
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, 0 );
+			Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+			if (Screen)
+				os::Printer::log("AntiAliasing disabled due to lack of support!" );
+		}
+	}
 	if ( !Screen )
 	{
 		os::Printer::log( "Could not initialize display!" );

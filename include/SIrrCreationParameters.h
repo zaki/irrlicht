@@ -25,7 +25,7 @@ namespace irr
 			Fullscreen(false),
 			Stencilbuffer(false),
 			Vsync(false),
-			AntiAlias(false),
+			AntiAlias(0),
 			WithAlphaChannel(false),
 			IgnoreInput(false),
 			HighPrecisionFPU(false),
@@ -99,9 +99,11 @@ namespace irr
 		writing a game/application with AntiAlias switched on, it would
 		be a good idea to make it possible to switch this option off
 		again by the user.
-		This is curently not supported in OpenGL under Windows.
-		Default value: false */
-		bool AntiAlias;
+		Value one is usually the same as 0 (disabled), but might be a
+		special value on some platforms. On D3D devices it maps to
+		NONMASKABLE.
+		Default value: 0 - disabled */
+		u8 AntiAlias;
 
 		//! Whether the main framebuffer uses an alpha channel.
 		/** In some situations it might be desireable to get a color
