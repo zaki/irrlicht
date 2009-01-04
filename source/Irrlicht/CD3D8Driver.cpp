@@ -144,7 +144,7 @@ void CD3D8Driver::createMaterialRenderers()
 //! initialises the Direct3D API
 bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
-		bool highPrecisionFPU, bool vsync, bool antiAlias)
+		bool highPrecisionFPU, bool vsync, u8 antiAlias)
 {
 	HRESULT hr;
 	D3DLibrary = LoadLibrary( "d3d8.dll" );
@@ -225,21 +225,26 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	#endif
 
 	// enable anti alias if possible and whished
-	if (antiAlias)
+	if (antiAlias > 0)
 	{
-		if (!FAILED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+		if(antiAlias > 16)
+			antiAlias = 16;
+
+		while(antiAlias > 0)
+		{
+			if(!FAILED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
 				devtype , present.BackBufferFormat, !fullScreen,
-				D3DMULTISAMPLE_2_SAMPLES)))
-		{
-			// enable multi sampling
-			present.SwapEffect      = D3DSWAPEFFECT_DISCARD;
-			present.MultiSampleType = D3DMULTISAMPLE_2_SAMPLES;
+				(D3DMULTISAMPLE_TYPE)antiAlias)))
+			{
+				present.MultiSampleType	= (D3DMULTISAMPLE_TYPE)antiAlias;
+				present.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
+				break;
+			}
+			--antiAlias;
 		}
-		else
-		{
+
+		if(antiAlias==0)
 			os::Printer::log("Anti aliasing disabled because hardware/driver lacks necessary caps.", ELL_WARNING);
-			antiAlias = false;
-		}
 	}
 
 	// check stencil buffer compatibility
@@ -346,7 +351,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	setVertexShader(EVT_STANDARD);
 
 	// enable antialiasing
-	if (antiAlias)
+	if (antiAlias>0)
 		pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
 	// set fog mode
@@ -2211,7 +2216,7 @@ namespace video
 IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize,
 		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
 		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-		bool vsync, bool antiAlias)
+		bool vsync, u8 antiAlias)
 {
 	CD3D8Driver* dx8 =  new CD3D8Driver(screenSize, window, fullscreen,
 					stencilbuffer, io, pureSoftware);

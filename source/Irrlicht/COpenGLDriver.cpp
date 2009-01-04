@@ -71,7 +71,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 
 	GLuint PixelFormat;
 
-	if (AntiAlias)
+	if (AntiAlias > 1)
 	{
 		// Create a window to test antialiasing support
 		const c8* ClassName = "GLCIrrDeviceWin32";
@@ -79,19 +79,19 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 
 		// Register Class
 		WNDCLASSEX wcex;
-		wcex.cbSize          = sizeof(WNDCLASSEX);
-		wcex.style          = CS_HREDRAW | CS_VREDRAW;
+		wcex.cbSize        = sizeof(WNDCLASSEX);
+		wcex.style         = CS_HREDRAW | CS_VREDRAW;
 		wcex.lpfnWndProc   = (WNDPROC)DefWindowProc;
-		wcex.cbClsExtra      = 0;
-		wcex.cbWndExtra      = 0;
-		wcex.hInstance      = lhInstance;
-		wcex.hIcon          = NULL;
-		wcex.hCursor      = LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground   = (HBRUSH)(COLOR_WINDOW+1);
-		wcex.lpszMenuName   = 0;
-		wcex.lpszClassName   = ClassName;
-		wcex.hIconSm      = 0;
-		wcex.hIcon          = 0;
+		wcex.cbClsExtra    = 0;
+		wcex.cbWndExtra    = 0;
+		wcex.hInstance     = lhInstance;
+		wcex.hIcon         = NULL;
+		wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+		wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+		wcex.lpszMenuName  = 0;
+		wcex.lpszClassName = ClassName;
+		wcex.hIconSm       = 0;
+		wcex.hIcon         = 0;
 
 		RegisterClassEx(&wcex);
 		RECT clientSize;
@@ -186,15 +186,14 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 		if(wglChoosePixelFormat_ARB)
 		{
 			// This value determines the number of samples used for antialiasing
-			// valid numbers are 2, 4, 8.  My experience is that 8 does not
-			// show a big improvement over 4, but 4 shows a big improvement over
-			// 2.
-			const s32 numSamples = 4;
-			f32 fAttributes[] =
-			{
-				0.0, 0.0
-			};
+			// My experience is that 8 does not show a big
+			// improvement over 4, but 4 shows a big improvement
+			// over 2.
 
+			if(AntiAlias > 16)
+				AntiAlias = 16;
+
+			f32 fAttributes[] = {0.0, 0.0};
 			s32 iAttributes[] =
 			{
 				WGL_DRAW_TO_WINDOW_ARB,GL_TRUE,
@@ -205,12 +204,12 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 				WGL_DEPTH_BITS_ARB,params.ZBufferBits,
 				WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
 				WGL_DOUBLE_BUFFER_ARB,GL_TRUE,
-				WGL_SAMPLE_BUFFERS_ARB,GL_TRUE,
-				WGL_SAMPLES_ARB,numSamples,
+				WGL_SAMPLE_BUFFERS_ARB, 1,
+				WGL_SAMPLES_ARB,AntiAlias,
 				0,0
 			};
-			s32 rv=0;
 
+			s32 rv=0;
 			// Try to get an acceptable pixel format
 			while(rv==0 && iAttributes[19]>1)
 			{
@@ -221,11 +220,16 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 				if(valid && numFormats>0)
 					rv = pixelFormat;
 				else
-					iAttributes[19] >>= 1;
+					iAttributes[19] -= 1;
 			}
 			if(rv)
+			{
 				PixelFormat=rv;
+				AntiAlias=iAttributes[19];
+			}
 		}
+		else
+			AntiAlias=0;
 
 		wglMakeCurrent(HDc, NULL);
 		wglDeleteContext(HRc);
@@ -242,7 +246,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	}
 
 	// search for pixel format the simple way
-	if (!AntiAlias)
+	if (AntiAlias < 2)
 	{
 		for (u32 i=0; i<5; ++i)
 		{
@@ -505,7 +509,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace( GL_CW );
 
-	if (AntiAlias)
+	if (AntiAlias >= 2)
 	{
 		if (MultiSamplingExtension)
 			glEnable(GL_MULTISAMPLE_ARB);

@@ -152,7 +152,7 @@ void CD3D9Driver::createMaterialRenderers()
 //! initialises the Direct3D API
 bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
-		bool highPrecisionFPU, bool vsync, bool antiAlias)
+		bool highPrecisionFPU, bool vsync, u8 antiAlias)
 {
 	HRESULT hr;
 	Fullscreen = fullScreen;
@@ -271,43 +271,30 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	#endif
 
 	// enable anti alias if possible and desired
-	if (antiAlias)
+	if (antiAlias > 0)
 	{
+		if(antiAlias > 16)
+			antiAlias = 16;
+
 		DWORD qualityLevels = 0;
 
-		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
+		while(antiAlias > 0)
+		{
+			if(SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
 				devtype, present.BackBufferFormat, !fullScreen,
-				D3DMULTISAMPLE_4_SAMPLES, &qualityLevels)))
-		{
-			// enable multi sampling
-			present.MultiSampleType	= D3DMULTISAMPLE_4_SAMPLES;
-			present.MultiSampleQuality = qualityLevels-1;
-			present.SwapEffect		 = D3DSWAPEFFECT_DISCARD;
+				(D3DMULTISAMPLE_TYPE)antiAlias, &qualityLevels)))
+			{
+				present.MultiSampleType	= (D3DMULTISAMPLE_TYPE)antiAlias;
+				present.MultiSampleQuality = qualityLevels-1;
+				present.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
+				break;
+			}
+			--antiAlias;
 		}
-		else
-		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
-				devtype, present.BackBufferFormat, !fullScreen,
-				D3DMULTISAMPLE_2_SAMPLES, &qualityLevels)))
-		{
-			// enable multi sampling
-			present.MultiSampleType	= D3DMULTISAMPLE_2_SAMPLES;
-			present.MultiSampleQuality = qualityLevels-1;
-			present.SwapEffect		 = D3DSWAPEFFECT_DISCARD;
-		}
-		else
-		if (SUCCEEDED(pID3D->CheckDeviceMultiSampleType(adapter,
-					devtype, present.BackBufferFormat, !fullScreen,
-					D3DMULTISAMPLE_NONMASKABLE, &qualityLevels)))
-		{
-			// enable non maskable multi sampling
-			present.MultiSampleType	= D3DMULTISAMPLE_NONMASKABLE;
-			present.MultiSampleQuality = qualityLevels-1;
-			present.SwapEffect		 = D3DSWAPEFFECT_DISCARD;
-		}
-		else
+
+		if(antiAlias==0)
 		{
 			os::Printer::log("Anti aliasing disabled because hardware/driver lacks necessary caps.", ELL_WARNING);
-			antiAlias = false;
 		}
 	}
 
@@ -418,7 +405,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	setVertexShader(EVT_STANDARD);
 
 	// enable antialiasing
-	if (antiAlias)
+	if (antiAlias!=0)
 		pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
 	// set fog mode
@@ -2834,7 +2821,7 @@ namespace video
 IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize,
 		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
 		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-		bool vsync, bool antiAlias)
+		bool vsync, u8 antiAlias)
 {
 	CD3D9Driver* dx9 = new CD3D9Driver(screenSize, window, fullscreen, stencilbuffer, io, pureSoftware);
 	if (!dx9->initDriver(screenSize, window, bits, fullscreen, pureSoftware, highPrecisionFPU, vsync, antiAlias))

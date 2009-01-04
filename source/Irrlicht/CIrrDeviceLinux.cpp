@@ -301,7 +301,6 @@ bool CIrrDeviceLinux::createWindow()
 		{
 			if (major==1 && minor>2)
 			{
-				const int MAX_SAMPLES = 16;
 				// attribute array for the draw buffer
 				int visualAttrBuffer[] =
 				{
@@ -314,13 +313,13 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_DOUBLEBUFFER, GL_TRUE,
 					GLX_STENCIL_SIZE, 1,
 					GLX_SAMPLE_BUFFERS_ARB, 1,
-					GLX_SAMPLES_ARB, MAX_SAMPLES,
+					GLX_SAMPLES_ARB, AntiAlias,
 					None
 				};
 
 				GLXFBConfig *configList=0;
 				int nitems=0;
-				if (!CreationParams.AntiAlias)
+				if (CreationParams.AntiAlias<2)
 				{
 					visualAttrBuffer[17] = 0;
 					visualAttrBuffer[19] = 0;
@@ -332,7 +331,7 @@ bool CIrrDeviceLinux::createWindow()
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
-							visualAttrBuffer[19] >>= 1;
+							visualAttrBuffer[19] -= 1;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
@@ -343,13 +342,13 @@ bool CIrrDeviceLinux::createWindow()
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=false;
+								CreationParams.AntiAlias=0;
 							}
 							else
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = MAX_SAMPLES;
+								visualAttrBuffer[19] = AntiAlias;
 							}
 						}
 					}
@@ -367,7 +366,7 @@ bool CIrrDeviceLinux::createWindow()
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
-							visualAttrBuffer[19] >>= 1;
+							visualAttrBuffer[19] -= 1;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
@@ -378,13 +377,13 @@ bool CIrrDeviceLinux::createWindow()
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=false;
+								CreationParams.AntiAlias=0;
 							}
 							else
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = MAX_SAMPLES;
+								visualAttrBuffer[19] = AntiAlias;
 							}
 						}
 					}
@@ -399,7 +398,7 @@ bool CIrrDeviceLinux::createWindow()
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
-							visualAttrBuffer[19] >>= 1;
+							visualAttrBuffer[19] -= 1;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
@@ -410,13 +409,13 @@ bool CIrrDeviceLinux::createWindow()
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=false;
+								CreationParams.AntiAlias=0;
 							}
 							else
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = MAX_SAMPLES;
+								visualAttrBuffer[19] = AntiAlias;
 							}
 						}
 					}
