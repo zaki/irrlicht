@@ -119,9 +119,6 @@ namespace video
 
 		};
 
-		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
-		bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
-
 		//! updates hardware buffer if needed
 		virtual bool updateHardwareBuffer(SHWBufferLink *HWBuffer);
 
@@ -342,6 +339,9 @@ namespace video
 		void removeDepthTexture(ITexture* texture);
 
 	private:
+
+		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
+		bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 
 		void uploadClipPlane(u32 index);
 

@@ -338,7 +338,6 @@ namespace video
 					MeshBuffer->drop();
 			}
 
-			scene::E_BUFFER_TYPE Contains;
 			const scene::IMeshBuffer *MeshBuffer;
 			u32 ChangedID_Vertex;
 			u32 ChangedID_Index;
