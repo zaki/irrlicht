@@ -49,6 +49,7 @@
 		<Unit filename="line2dIntersectWith.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />
+		<Unit filename="matrixOps.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="planeMatrix.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />

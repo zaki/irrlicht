@@ -218,6 +218,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\matrixOps.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\md2Animation.cpp"
 				>
 			</File>

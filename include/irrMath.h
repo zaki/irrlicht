@@ -196,9 +196,15 @@ namespace core
 
 
 	//! returns if a equals zero, taking rounding errors into account
+	inline bool iszero(const f64 a, const f64 tolerance = ROUNDING_ERROR_64)
+	{
+		return fabs(a) <= tolerance;
+	}
+
+	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
 	{
-		return fabsf ( a ) <= tolerance;
+		return fabsf(a) <= tolerance;
 	}
 
 	//! returns if a equals zero, taking rounding errors into account
@@ -213,21 +219,21 @@ namespace core
 		return a <= tolerance;
 	}
 
-	inline s32 s32_min ( s32 a, s32 b)
+	inline s32 s32_min(s32 a, s32 b)
 	{
-		s32 mask = (a - b) >> 31;
+		const s32 mask = (a - b) >> 31;
 		return (a & mask) | (b & ~mask);
 	}
 
-	inline s32 s32_max ( s32 a, s32 b)
+	inline s32 s32_max(s32 a, s32 b)
 	{
-		s32 mask = (a - b) >> 31;
+		const s32 mask = (a - b) >> 31;
 		return (b & mask) | (a & ~mask);
 	}
 
 	inline s32 s32_clamp (s32 value, s32 low, s32 high)
 	{
-		return s32_min (s32_max(value,low), high);
+		return s32_min(s32_max(value,low), high);
 	}
 
 	/*
