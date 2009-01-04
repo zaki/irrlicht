@@ -196,11 +196,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\irrCoreEquals.cpp"
+				RelativePath=".\guiDisabledMenu.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\guiDisabledMenu.cpp"
+				RelativePath=".\irrCoreEquals.cpp"
 				>
 			</File>
 			<File
@@ -213,6 +213,10 @@
 			</File>
 			<File
 				RelativePath=".\makeColorKeyTexture.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\matrixOps.cpp"
 				>
 			</File>
 			<File

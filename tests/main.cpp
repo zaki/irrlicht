@@ -56,6 +56,7 @@ int main(int argumentCount, char * arguments[])
 	extern bool textureRenderStates(void);
 	extern bool burningsVideo(void);
 	extern bool makeColorKeyTexture(void);
+	extern bool matrixOps(void);
 
 	typedef struct _STest
 	{
@@ -71,6 +72,7 @@ int main(int argumentCount, char * arguments[])
 		TEST(exports),
 		TEST(testVector3d),
 		TEST(testVector2d),
+		TEST(matrixOps),
 		TEST(planeMatrix),
 		TEST(fast_atof),
 		TEST(line2dIntersectWith),
