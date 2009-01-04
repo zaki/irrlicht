@@ -23,7 +23,7 @@ bool matrixOps(void)
 	}
 
 	rotationMatrix.setRotationDegrees(vector3df(90, 0, 0));
-	if (rotationMatrix.isOrthogonal())
+	if (!rotationMatrix.isOrthogonal())
 	{
 		logTestString("irr::core::matrix4::isOrthogonal() failed with rotation.\n");
 		return false;
@@ -39,7 +39,7 @@ bool matrixOps(void)
 
 	matrix4 scaleMatrix;
 	scaleMatrix.setScale(vector3df(1, 2, 3));
-	if (scaleMatrix.isOrthogonal())
+	if (!scaleMatrix.isOrthogonal())
 	{
 		logTestString("irr::core::matrix4::isOrthogonal() failed with scale.\n");
 		return false;

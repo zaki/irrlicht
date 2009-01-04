@@ -824,26 +824,26 @@ namespace core
 
 	/* Check orthogonality of matrix. */
 	template <class T>
-    inline bool CMatrix4<T>::isOrthogonal() const
-    {
-        T dp = M[0] * M[4 ] + M[1] * M[5 ] + M[2 ] * M[6 ] + M[3 ] * M[7 ];
+	inline bool CMatrix4<T>::isOrthogonal() const
+	{
+		T dp=M[0] * M[4 ] + M[1] * M[5 ] + M[2 ] * M[6 ] + M[3 ] * M[7 ];
 		if (!iszero(dp))
 			return false;
-        dp = M[0] * M[8 ] + M[1] * M[9 ] + M[2 ] * M[10] + M[3 ] * M[11];
+		dp = M[0] * M[8 ] + M[1] * M[9 ] + M[2 ] * M[10] + M[3 ] * M[11];
 		if (!iszero(dp))
 			return false;
-        dp = M[0] * M[12] + M[1] * M[13] + M[2 ] * M[14] + M[3 ] * M[15];
+		dp = M[0] * M[12] + M[1] * M[13] + M[2 ] * M[14] + M[3 ] * M[15];
 		if (!iszero(dp))
 			return false;
-        dp = M[4] * M[8 ] + M[5] * M[9 ] + M[6 ] * M[10] + M[7 ] * M[11];
+		dp = M[4] * M[8 ] + M[5] * M[9 ] + M[6 ] * M[10] + M[7 ] * M[11];
 		if (!iszero(dp))
 			return false;
-        dp = M[4] * M[12] + M[5] * M[13] + M[6 ] * M[14] + M[7 ] * M[15];
+		dp = M[4] * M[12] + M[5] * M[13] + M[6 ] * M[14] + M[7 ] * M[15];
 		if (!iszero(dp))
 			return false;
-        dp = M[8] * M[12] + M[9] * M[13] + M[10] * M[14] + M[11] * M[15];
+		dp = M[8] * M[12] + M[9] * M[13] + M[10] * M[14] + M[11] * M[15];
 		return (iszero(dp));
-    }
+	}
 
 
 	/*
