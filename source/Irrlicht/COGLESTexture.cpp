@@ -439,10 +439,10 @@ COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<s32>& size,
 	HasMipMaps = false;
 	IsRenderTarget = true;
 
-#ifdef GL_EXT_framebuffer_object
+#ifdef GL_OES_framebuffer_object
 	// generate frame buffer
 	Driver->extGlGenFramebuffers(1, &ColorFrameBuffer);
-	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+	Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_OES, ColorFrameBuffer);
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
@@ -454,8 +454,8 @@ COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<s32>& size,
 		ImageSize.Height, 0, PixelFormat, PixelType, 0);
 
 	// attach color texture to frame buffer
-	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_COLOR_ATTACHMENT0_EXT,
+	Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_OES,
+						GL_COLOR_ATTACHMENT0_OES,
 						GL_TEXTURE_2D,
 						TextureName,
 						0);
@@ -484,9 +484,9 @@ bool COGLES1FBOTexture::isFrameBufferObject() const
 //! Bind Render Target Texture
 void COGLES1FBOTexture::bindRTT()
 {
-#ifdef GL_EXT_framebuffer_object
+#ifdef GL_OES_framebuffer_object
 	if (ColorFrameBuffer != 0)
-		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, ColorFrameBuffer);
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_OES, ColorFrameBuffer);
 #endif
 }
 
@@ -494,9 +494,9 @@ void COGLES1FBOTexture::bindRTT()
 //! Unbind Render Target Texture
 void COGLES1FBOTexture::unbindRTT()
 {
-#ifdef GL_EXT_framebuffer_object
+#ifdef GL_OES_framebuffer_object
 	if (ColorFrameBuffer != 0)
-		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_EXT, 0);
+		Driver->extGlBindFramebuffer(GL_FRAMEBUFFER_OES, 0);
 #endif
 }
 
@@ -583,19 +583,19 @@ void COGLES1FBODepthTexture::attach(ITexture* renderTex)
 		return;
 	video::COGLES1FBOTexture* rtt = static_cast<video::COGLES1FBOTexture*>(renderTex);
 	rtt->bindRTT();
-#ifdef GL_EXT_framebuffer_object
+#ifdef GL_OES_framebuffer_object
 	if (UseStencil)
 	{
 		// attach stencil texture to stencil buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_STENCIL_ATTACHMENT_EXT,
+		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_OES,
+						GL_STENCIL_ATTACHMENT_OES,
 						GL_TEXTURE_2D,
 						StencilRenderBuffer,
 						0);
 
 		// attach depth texture to depth buffer
-		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT,
-						GL_DEPTH_ATTACHMENT_EXT,
+		Driver->extGlFramebufferTexture2D(GL_FRAMEBUFFER_OES,
+						GL_DEPTH_ATTACHMENT_OES,
 						GL_TEXTURE_2D,
 						DepthRenderBuffer,
 						0);
@@ -603,9 +603,9 @@ void COGLES1FBODepthTexture::attach(ITexture* renderTex)
 	else
 	{
 		// attach depth renderbuffer to depth buffer
-		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_EXT,
-						GL_DEPTH_ATTACHMENT_EXT,
-						GL_RENDERBUFFER_EXT,
+		Driver->extGlFramebufferRenderbuffer(GL_FRAMEBUFFER_OES,
+						GL_DEPTH_ATTACHMENT_OES,
+						GL_RENDERBUFFER_OES,
 						DepthRenderBuffer);
 	}
 	// check the status
@@ -630,49 +630,55 @@ void COGLES1FBODepthTexture::unbindRTT()
 }
 
 
-#ifdef GL_EXT_framebuffer_object
+#ifdef GL_OES_framebuffer_object
 bool checkFBOStatus(COGLES1Driver* Driver)
 {
-	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
+	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_OES);
 
 	switch (status)
 	{
 		//Our FBO is perfect, return true
-		case GL_FRAMEBUFFER_COMPLETE_EXT:
+		case GL_FRAMEBUFFER_COMPLETE_OES:
 			return true;
 
-		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-			os::Printer::log("FBO has invalid read buffer", ELL_ERROR);
-			break;
-
-		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-			os::Printer::log("FBO has invalid draw buffer", ELL_ERROR);
-			break;
-
-		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_OES:
 			os::Printer::log("FBO has one or several incomplete image attachments", ELL_ERROR);
 			break;
 
-		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-			os::Printer::log("FBO has one or several image attachments with different internal formats", ELL_ERROR);
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_OES:
+			os::Printer::log("FBO missing an image attachment", ELL_ERROR);
 			break;
 
-		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_OES:
 			os::Printer::log("FBO has one or several image attachments with different dimensions", ELL_ERROR);
 			break;
 
+		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_OES:
+			os::Printer::log("FBO has one or several image attachments with different internal formats", ELL_ERROR);
+			break;
+
+// not part of all implementations
+#ifdef GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_OES
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_OES:
+			os::Printer::log("FBO has invalid draw buffer", ELL_ERROR);
+			break;
+#endif
+
+// not part of all implementations
+#ifdef GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_OES
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_OES:
+			os::Printer::log("FBO has invalid read buffer", ELL_ERROR);
+			break;
+#endif
+
 // not part of fbo_object anymore, but won't harm as it is just a return value
-#ifdef GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT
-		case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_EXT:
+#ifdef GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_OES
+		case GL_FRAMEBUFFER_INCOMPLETE_DUPLICATE_ATTACHMENT_OES:
 			os::Printer::log("FBO has a duplicate image attachment", ELL_ERROR);
 			break;
 #endif
 
-		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-			os::Printer::log("FBO missing an image attachment", ELL_ERROR);
-			break;
-
-		case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+		case GL_FRAMEBUFFER_UNSUPPORTED_OES:
 			os::Printer::log("FBO format unsupported", ELL_ERROR);
 			break;
 
