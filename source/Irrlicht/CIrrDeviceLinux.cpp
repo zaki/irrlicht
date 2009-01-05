@@ -313,7 +313,7 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_DOUBLEBUFFER, GL_TRUE,
 					GLX_STENCIL_SIZE, 1,
 					GLX_SAMPLE_BUFFERS_ARB, 1,
-					GLX_SAMPLES_ARB, AntiAlias,
+					GLX_SAMPLES_ARB, CreationParams.AntiAlias,
 					None
 				};
 
@@ -348,7 +348,7 @@ bool CIrrDeviceLinux::createWindow()
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = AntiAlias;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
 							}
 						}
 					}
@@ -383,7 +383,7 @@ bool CIrrDeviceLinux::createWindow()
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = AntiAlias;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
 							}
 						}
 					}
@@ -415,7 +415,7 @@ bool CIrrDeviceLinux::createWindow()
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = AntiAlias;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
 							}
 						}
 					}
