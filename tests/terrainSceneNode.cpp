@@ -45,7 +45,8 @@ bool terrainSceneNode(void)
 	smgr->drawAll();
 	driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-terrainSceneNode-1.png");
+	// Note that this has to be a slightly fuzzier than usual compare to satisfy multiple OpenGL environments
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-terrainSceneNode-1.png", 98.3f);
 	if(!result)
 	{
 		logTestString("Small camera up rotation caused bad recalc.\n");
@@ -60,7 +61,7 @@ bool terrainSceneNode(void)
 	smgr->drawAll();
 	driver->endScene();
 
-	result &= takeScreenshotAndCompareAgainstReference(driver, "-terrainSceneNode-2.png");
+	result &= takeScreenshotAndCompareAgainstReference(driver, "-terrainSceneNode-2.png", 98.9f);
 	if(!result)
 	{
 		logTestString("Large camera up rotation caused bad recalc.\n");

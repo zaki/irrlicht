@@ -74,6 +74,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(textureRenderStates);
 	TEST(terrainSceneNode);
 	TEST(burningsVideo);
+	TEST(makeColorKeyTexture);
 
 	// Tests available on 1.6+
 	TEST(collisionResponseAnimator);

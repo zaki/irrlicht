@@ -116,7 +116,6 @@ namespace video
 
 			GLuint vbo_verticesSize; //tmp
 			GLuint vbo_indicesSize; //tmp
-
 		};
 
 		//! updates hardware buffer if needed

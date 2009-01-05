@@ -6,7 +6,11 @@ Changes in version 1.6
 
  - D3D devices use DISCARD for windowed renderbuffers now, can be faster.
 
- - position2d is now a synonym for vector2d.  position2d is therefore marked as deprecated, although it's unlikely to be removed.
+ - Changed behaviour of PixelBlend16() / PixelBlend16_simd() so that they treat the 1 bit alpha of the source pixel as boolean, i.e. they draw either the source pixel, or the destination pixel, rather than "blending". (Issue revealed by the fix to IVideoDriver::makeColorKeyTexture()).
+
+ - IVideoDriver::makeColorKeyTexture() bug fixed so that only alphas, not whole texel colors, are zeroed. An optional parameter allows using the old (buggy) behaviour for backwards compatibility.
+
+ - position2d is now a synonym for vector2d. position2d is therefore marked as deprecated, although it's unlikely to be removed.
 
  - ISceneNodeAnimator now has a hasFinished() method.
 
@@ -17,9 +21,7 @@ Changes in version 1.6
 -------------------------------------
 Changes in version 1.5.1 (??.?? 2009)
 
- - Changed behaviour of PixelBlend16() / PixelBlend16_simd() so that they treat the 1 bit alpha of the source pixel as boolean, i.e. they draw either the source pixel, or the destination pixel, rather than "blending". (Issue revealed by the fix to IVideoDriver::makeColorKeyTexture()).
-
- - IVideoDriver::makeColorKeyTexture() bug fixed so that only alphas, not whole texel colors, are zeroed.  An optional parameter allows using the old (buggy) behaviour for backwards compatibility.
+ - OSX device now supports shift and ctrl keys.
 
  - MD2 mesh loader: Now uses much less memory, reduced number of allocations when loading meshes.
 
@@ -28,9 +30,9 @@ Changes in version 1.5 (15.12.2008)
 
  - Construction calls for FPS camera changed to take speed in units/milliseconds, just as the setSpeed method does.
 
- - Code::Blocks workspaces added.  C::B projects (using gcc) now output to /lib/gcc and /bin/gcc, when built on either Windows or Linux.
+ - Code::Blocks workspaces added. C::B projects (using gcc) now output to /lib/gcc and /bin/gcc, when built on either Windows or Linux.
 
- - Added a test suite in the /tests directory.  This can be used to perform regression tests, and should be updated with new tests to verify fixes or validate new features.
+ - Added a test suite in the /tests directory. This can be used to perform regression tests, and should be updated with new tests to verify fixes or validate new features.
 
  - Changed the preferred way of altering light node's radius: Use the new member methods of ILightSceneNode instead of directly modifying the SLight structure.
 
@@ -40,7 +42,7 @@ Changes in version 1.5 (15.12.2008)
 
  - Terrain heightmap and texture were flipped in order to draw them as expected (looking onto the terrain from high above will just look like the actual texture/heightmap).
 
- - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact.  The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
+ - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact. The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
 
  - Skybox won't be culled anymore by nearplane or farplane.
 
@@ -68,7 +70,7 @@ Changes in version 1.5 (15.12.2008)
 
  - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
 
- - Basic support for joystick input events on Windows, Linux, SDL and OSX.  Tested with wired Logitech and Thrustmaster wired controllers and XBox 360 wireless controller ( http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver )
+ - Basic support for joystick input events on Windows, Linux, SDL and OSX. Tested with wired Logitech and Thrustmaster wired controllers and XBox 360 wireless controller ( http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver )
 
  - Fixed scaled octree nodes being incorrectly frustum culled.
 
