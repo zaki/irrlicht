@@ -1469,7 +1469,7 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 		attr->addBool((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].TrilinearFilter);
 	prefix = "AnisotropicFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		attr->addBool((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].AnisotropicFilter);
+		attr->addInt((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].AnisotropicFilter);
 	prefix="TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		attr->addEnum((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].TextureWrap, aTextureClampNames);
@@ -1535,7 +1535,7 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 		outMaterial.setFlag(EMF_ANISOTROPIC_FILTER, attr->getAttributeAsBool(prefix.c_str()));
 	else
 		for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-			outMaterial.TextureLayer[i].AnisotropicFilter = attr->getAttributeAsBool((prefix+core::stringc(i+1)).c_str());
+			outMaterial.TextureLayer[i].AnisotropicFilter = attr->getAttributeAsInt((prefix+core::stringc(i+1)).c_str());
 
 	prefix = "TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)

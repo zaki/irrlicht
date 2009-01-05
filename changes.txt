@@ -1,5 +1,11 @@
 Changes in version 1.6
 
+ - The Anisotropy filter can now be set to the AF value per texture layer. So no forced MAX_ANISOTROPY anymore. .irr files will probably fail, though.
+
+ - AntiAlias parameter in SIrrCreationParameters is now an u8 value specifying the multisampling level (0 for disabled, 4,6,8, and others for anti-aliasing)
+
+ - D3D devices use DISCARD for windowed renderbuffers now, can be faster.
+
  - position2d is now a synonym for vector2d.  position2d is therefore marked as deprecated, although it's unlikely to be removed.
 
  - ISceneNodeAnimator now has a hasFinished() method.

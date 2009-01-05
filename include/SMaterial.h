@@ -313,8 +313,12 @@ namespace video
 				break;
 				case EMF_ANISOTROPIC_FILTER:
 				{
-					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-						TextureLayer[i].AnisotropicFilter = value;
+					if (value)
+						for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							TextureLayer[i].AnisotropicFilter = 0xFF;
+					else
+						for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							TextureLayer[i].AnisotropicFilter = 0;
 				}
 				break;
 				case EMF_FOG_ENABLE:
@@ -360,7 +364,7 @@ namespace video
 				case EMF_TRILINEAR_FILTER:
 					return TextureLayer[0].TrilinearFilter;
 				case EMF_ANISOTROPIC_FILTER:
-					return TextureLayer[0].AnisotropicFilter;
+					return TextureLayer[0].AnisotropicFilter!=0;
 				case EMF_FOG_ENABLE:
 					return FogEnable;
 				case EMF_NORMALIZE_NORMALS:
