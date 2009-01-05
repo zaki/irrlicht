@@ -262,6 +262,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\textureRenderStates.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\vectorPositionDimension2d.cpp"
 				>
 			</File>
