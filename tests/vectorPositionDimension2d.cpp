@@ -70,3 +70,4 @@ bool vectorPositionDimension2d(void)
 
 	return result;
 }
+

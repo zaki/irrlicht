@@ -329,7 +329,8 @@ namespace irr
 {
 //! constructor
 CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
-	: CIrrDeviceStub(param), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL)
+	: CIrrDeviceStub(param), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL),
+	IsShiftDown(false), IsControlDown(false)
 {
 	struct utsname name;
 	NSString	*path;
@@ -659,6 +660,36 @@ bool CIrrDeviceMacOSX::run()
 				postKeyEvent(event,ievent,false);
 				break;
 
+			case NSFlagsChanged:
+				ievent.EventType = irr::EET_KEY_INPUT_EVENT;
+				ievent.KeyInput.Shift = ([(NSEvent *)event modifierFlags] & NSShiftKeyMask) != 0;
+				ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
+				
+				if (IsShiftDown != ievent.KeyInput.Shift)
+				{
+					ievent.KeyInput.Char = irr::KEY_SHIFT;
+					ievent.KeyInput.Key = irr::KEY_SHIFT;
+					ievent.KeyInput.PressedDown = ievent.KeyInput.Shift;
+					
+					IsShiftDown = ievent.KeyInput.Shift;
+					
+					postEventFromUser(ievent);
+				}
+				
+				if (IsControlDown != ievent.KeyInput.Control)
+				{
+					ievent.KeyInput.Char = irr::KEY_CONTROL;
+					ievent.KeyInput.Key = irr::KEY_CONTROL;
+					ievent.KeyInput.PressedDown = ievent.KeyInput.Control;
+					
+					IsControlDown = ievent.KeyInput.Control;
+					
+					postEventFromUser(ievent);
+				}
+				
+				[NSApp sendEvent:event];
+				break;				
+				
 			case NSLeftMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;

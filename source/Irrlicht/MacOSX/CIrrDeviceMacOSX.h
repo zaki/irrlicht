@@ -207,6 +207,7 @@ namespace irr
 		int			_screenWidth;
 		int			_screenHeight;
 		bool			_active;
+		bool IsShiftDown, IsControlDown;
 
 		void pollJoysticks();
 	};

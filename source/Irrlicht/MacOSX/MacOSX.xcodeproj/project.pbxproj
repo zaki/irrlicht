@@ -907,7 +907,7 @@
 		093973BD0E0458B200E0C987 /* CSceneNodeAnimatorCameraFPS.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSceneNodeAnimatorCameraFPS.h; sourceTree = "<group>"; };
 		093973BE0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CSceneNodeAnimatorCameraMaya.cpp; sourceTree = "<group>"; };
 		093973BF0E0458B200E0C987 /* CSceneNodeAnimatorCameraMaya.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CSceneNodeAnimatorCameraMaya.h; sourceTree = "<group>"; };
-		0946CCB40EC99BBE00D945A5 /* MouseAndJoystick.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MouseAndJoystick.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0946CCB40EC99BBE00D945A5 /* MouseAndJoystick.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MouseAndJoystick.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0946CCCA0EC99C6E00D945A5 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = 19.MouseAndJoystick/main.cpp; sourceTree = "<group>"; };
 		0968401E0D0F1A2300333EFD /* CB3DMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = CB3DMeshFileLoader.cpp; sourceTree = "<group>"; };
 		0968401F0D0F1A2300333EFD /* CB3DMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = CB3DMeshFileLoader.h; sourceTree = "<group>"; };
@@ -1284,7 +1284,7 @@
 		4C53E2520A4850550014E966 /* Quake3Map.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Quake3Map.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C53E26D0A4850D60014E966 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		4C53E26E0A4850D60014E966 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
-		4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; path = "DemoApp-Info.plist"; sourceTree = "<group>"; };
+		4C53E38E0A4855BA0014E966 /* DemoApp-Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = "DemoApp-Info.plist"; sourceTree = "<group>"; };
 		4C53E6F10A485CD80014E966 /* jcapimin.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = jcapimin.c; sourceTree = "<group>"; };
 		4C53E6F20A485CD80014E966 /* jcapistd.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = jcapistd.c; sourceTree = "<group>"; };
 		4C53E6F30A485CD80014E966 /* jccoefct.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = jccoefct.c; sourceTree = "<group>"; };
@@ -3364,10 +3364,12 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 1DEB922208733DC00010E9CD /* Build configuration list for PBXProject "MacOSX" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 0867D691FE84028FC02AAC07 /* MacOSX */;
 			productRefGroup = 0867D691FE84028FC02AAC07 /* MacOSX */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* libIrrlicht.a */,
 				B81CFF33097FE25F0057C06F /* Quake3Map */,

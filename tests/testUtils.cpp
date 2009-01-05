@@ -227,7 +227,10 @@ bool openTestLog(bool startNewLog, const char * filename)
 void closeTestLog(void)
 {
 	if(logFile)
+	{
 		(void)fclose(logFile);
+		logFile = 0;
+	}
 }
 
 

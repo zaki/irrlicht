@@ -1224,7 +1224,6 @@ IImage* CNullDriver::createImageFromFile(io::IReadFile* file)
 }
 
 
-
 //! Writes the provided image to disk file
 bool CNullDriver::writeImageToFile(IImage* image, const char* filename,u32 param)
 {
@@ -1244,7 +1243,6 @@ bool CNullDriver::writeImageToFile(IImage* image, const char* filename,u32 param
 	}
 	return false; // failed to write
 }
-
 
 
 //! Creates a software image from a byte array.
@@ -1307,6 +1305,7 @@ void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
 		drawVertexPrimitiveList(mb->getVertices(), mb->getVertexCount(), mb->getIndices(), mb->getIndexCount()/3, mb->getVertexType(), scene::EPT_TRIANGLES, mb->getIndexType());
 }
 
+
 CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer* mb)
 {
 	if (!mb || !isHardwareBufferRecommend(mb))
@@ -1314,10 +1313,12 @@ CNullDriver::SHWBufferLink *CNullDriver::getBufferLink(const scene::IMeshBuffer*
 
 	//search for hardware links
 	core::map< const scene::IMeshBuffer*,SHWBufferLink* >::Node* node = HWBufferMap.find(mb);
-	if (node) return node->getValue();
+	if (node)
+		return node->getValue();
 
 	return createHardwareBuffer(mb); //no hardware links, and mesh wants one, create it
 }
+
 
 //! Update all hardware buffers, remove unused ones
 void CNullDriver::updateAllHardwareBuffers()
@@ -1342,17 +1343,21 @@ void CNullDriver::updateAllHardwareBuffers()
 
 void CNullDriver::deleteHardwareBuffer(SHWBufferLink *HWBuffer)
 {
-	if (!HWBuffer) return;
-	HWBufferMap.remove( HWBuffer->MeshBuffer );
+	if (!HWBuffer)
+		return;
+	HWBufferMap.remove(HWBuffer->MeshBuffer);
 	delete HWBuffer;
 }
+
 
 //! Remove hardware buffer
 void CNullDriver::removeHardwareBuffer(const scene::IMeshBuffer* mb)
 {
 	core::map<const scene::IMeshBuffer*,SHWBufferLink*>::Node* node = HWBufferMap.find(mb);
-	if (node) deleteHardwareBuffer( node->getValue() );
+	if (node)
+		deleteHardwareBuffer(node->getValue());
 }
+
 
 //! Remove all hardware buffers
 void CNullDriver::removeAllHardwareBuffers()
@@ -1360,6 +1365,7 @@ void CNullDriver::removeAllHardwareBuffers()
 	while (HWBufferMap.size())
 		deleteHardwareBuffer(HWBufferMap.getRoot()->getValue());
 }
+
 
 bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 {
@@ -1372,6 +1378,7 @@ bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 	return true;
 }
 
+
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
 void CNullDriver::OnResize(const core::dimension2d<s32>& size)
@@ -1382,6 +1389,7 @@ void CNullDriver::OnResize(const core::dimension2d<s32>& size)
 
 	ScreenSize = size;
 }
+
 
 // adds a material renderer and drops it afterwards. To be used for internal creation
 s32 CNullDriver::addAndDropMaterialRenderer(IMaterialRenderer* m)
@@ -1556,6 +1564,7 @@ E_DRIVER_TYPE CNullDriver::getDriverType() const
 	return EDT_NULL;
 }
 
+
 //! deletes all material renderers
 void CNullDriver::deleteMaterialRenders()
 {
@@ -1601,6 +1610,7 @@ IGPUProgrammingServices* CNullDriver::getGPUProgrammingServices()
 	return 0;
 }
 
+
 //! Adds a new material renderer to the VideoDriver, based on a high level shading
 //! language. Currently only HLSL in D3D9 is supported.
 s32 CNullDriver::addHighLevelShaderMaterial(
@@ -1617,6 +1627,7 @@ s32 CNullDriver::addHighLevelShaderMaterial(
 	os::Printer::log("High level shader materials not available (yet) in this driver, sorry");
 	return -1;
 }
+
 
 //! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 //! but tries to load the programs from files.
@@ -1672,6 +1683,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 	return result;
 }
 
+
 //! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 //! but tries to load the programs from files.
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
@@ -1724,6 +1736,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 	return result;
 }
 
+
 //! Adds a new material renderer to the VideoDriver, using pixel and/or
 //! vertex shaders to render geometry.
 s32 CNullDriver::addShaderMaterial(const c8* vertexShaderProgram,
@@ -1735,6 +1748,7 @@ s32 CNullDriver::addShaderMaterial(const c8* vertexShaderProgram,
 	os::Printer::log("Shader materials not implemented yet in this driver, sorry.");
 	return -1;
 }
+
 
 //! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the
 //! programs from files.
@@ -1776,7 +1790,6 @@ s32 CNullDriver::addShaderMaterialFromFiles(io::IReadFile* vertexShaderProgram,
 
 	return result;
 }
-
 
 
 //! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the
@@ -1891,6 +1904,7 @@ bool CNullDriver::setClipPlane(u32 index, const core::plane3df& plane, bool enab
 	return false;
 }
 
+
 //! Enable/disable a clipping plane.
 //! There are at least 6 clipping planes available for the user to set at will.
 //! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
@@ -1912,5 +1926,3 @@ ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& s
 
 } // end namespace
 } // end namespace
-
-

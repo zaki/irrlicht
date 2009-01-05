@@ -758,7 +758,7 @@ int main(int argc, char* argv[])
 	// create fps text
 
 	IGUIStaticText* fpstext = env->addStaticText(L"",
-			core::rect<s32>(GUI_ID_TOGGLE_DEBUG_INFO,4,570,23), true, false, bar);
+			core::rect<s32>(400,4,570,23), true, false, bar);
 
 	IGUIStaticText* postext = env->addStaticText(L"",
 			core::rect<s32>(10,50,470,80),false, false, 0, GUI_ID_POSITION_TEXT);
