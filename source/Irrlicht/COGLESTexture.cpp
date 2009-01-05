@@ -546,12 +546,19 @@ COGLES1FBODepthTexture::COGLES1FBODepthTexture(
 			return;
 		}
 #endif
-#if defined(GL_OES_framebuffer_object) && defined(GL_OES_stencil1)
+#if defined(GL_OES_framebuffer_object) && (defined(GL_OES_stencil1) || defined(GL_OES_stencil4) || defined(GL_OES_stencil8))
 		// generate stencil buffer
 		Driver->extGlGenRenderbuffers(1, &StencilRenderBuffer);
 		Driver->extGlBindRenderbuffer(GL_RENDERBUFFER_OES, StencilRenderBuffer);
 		Driver->extGlRenderbufferStorage(GL_RENDERBUFFER_OES,
-				GL_STENCIL_INDEX1_OES, ImageSize.Width, ImageSize.Height);
+#if defined(GL_OES_stencil8)
+				GL_STENCIL_INDEX8_OES,
+#elif defined(GL_OES_stencil4)
+				GL_STENCIL_INDEX4_OES,
+#elif defined(GL_OES_stencil1)
+				GL_STENCIL_INDEX1_OES,
+#endif
+				ImageSize.Width, ImageSize.Height);
 #endif
 	}
 #ifdef GL_OES_framebuffer_object
