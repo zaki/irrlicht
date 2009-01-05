@@ -132,8 +132,6 @@ namespace irr
 			//! Sets the new position of the cursor.
 			virtual void setPosition(s32 x, s32 y)
 			{
-				RECT rect;
-
 				if (UseReferenceRect)
 				{
 					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x, 
@@ -141,6 +139,7 @@ namespace irr
 				}
 				else
 				{
+					RECT rect;
 					if (GetWindowRect(HWnd, &rect))
 						SetCursorPos(x + rect.left + BorderX, y + rect.top + BorderY);
 				}
@@ -198,7 +197,6 @@ namespace irr
 			{
 				POINT p;
 				GetCursorPos(&p);
-				RECT rect;
 
 				if (UseReferenceRect)
 				{
@@ -207,6 +205,7 @@ namespace irr
 				}
 				else
 				{
+					RECT rect;
 					if (GetWindowRect(HWnd, &rect))
 					{
 						CursorPos.X = p.x-rect.left-BorderX;
