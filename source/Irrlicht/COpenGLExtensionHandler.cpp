@@ -18,10 +18,10 @@ namespace video
 
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false),
-		MultiTextureExtension(false), MultiSamplingExtension(false), AnisotropyExtension(false),
+		MultiTextureExtension(false), MultiSamplingExtension(false),
 		TextureCompressionExtension(false),
 		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
-		MaxAnisotropy(1.0f), MaxUserClipPlanes(0),
+		MaxAnisotropy(1), MaxUserClipPlanes(0),
 		Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
@@ -103,7 +103,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	MultiTextureExtension = FeatureAvailable[IRR_ARB_multitexture];
 	MultiSamplingExtension = FeatureAvailable[IRR_ARB_multisample];
-	AnisotropyExtension = FeatureAvailable[IRR_EXT_texture_filter_anisotropic];
 	TextureCompressionExtension = FeatureAvailable[IRR_ARB_texture_compression];
 	StencilBuffer=stencilBuffer;
 
@@ -400,8 +399,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 	glGetIntegerv(GL_MAX_LIGHTS, &MaxLights);
 #ifdef GL_EXT_texture_filter_anisotropic
+	GLint maxAniso=1; // temporary for size adaption
 	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
-		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &MaxAnisotropy);
+		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAniso);
+	MaxAnisotropy=(u8)maxAniso;
 #endif
 #ifdef GL_VERSION_1_2
 	if (Version>101)

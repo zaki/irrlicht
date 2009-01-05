@@ -45,7 +45,7 @@ namespace video
 				TextureWrap(ETC_REPEAT),
 				BilinearFilter(true),
 				TrilinearFilter(false),
-				AnisotropicFilter(false), TextureMatrix(0)
+				AnisotropicFilter(0), TextureMatrix(0)
 			{}
 
 		//! Copy constructor
@@ -117,12 +117,14 @@ namespace video
 		the bilinear filtering flag is ignored. */
 		bool TrilinearFilter;
 
-		//! Is anisotropic filtering enabled? Default: false
+		//! Is anisotropic filtering enabled? Default: 0, disabled
 		/** In Irrlicht you can use anisotropic texture filtering
 		in conjunction with bilinear or trilinear texture
 		filtering to improve rendering results. Primitives
-		will look less blurry with this flag switched on. */
-		bool AnisotropicFilter;
+		will look less blurry with this flag switched on. The number gives 
+		the maximal anisotropy degree, and is often in the range 2-16. 
+		Value 1 is equivalent to 0, but should be avoided. */
+		u8 AnisotropicFilter;
 
 		//! Gets the texture transformation matrix
 		/** \return Texture matrix of this layer. */

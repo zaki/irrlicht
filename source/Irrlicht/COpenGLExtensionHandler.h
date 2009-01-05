@@ -709,7 +709,6 @@ class COpenGLExtensionHandler
 	bool StencilBuffer;
 	bool MultiTextureExtension;
 	bool MultiSamplingExtension;
-	bool AnisotropyExtension;
 	bool TextureCompressionExtension;
 
 	// Some non-boolean properties
@@ -720,7 +719,7 @@ class COpenGLExtensionHandler
 	//! Optimal number of indices per meshbuffer
 	GLint MaxIndices;
 	//! Maximal Anisotropy
-	f32 MaxAnisotropy;
+	u8 MaxAnisotropy;
 	//! Number of user clipplanes
 	u32 MaxUserClipPlanes;
 

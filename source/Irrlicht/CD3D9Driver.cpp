@@ -427,12 +427,6 @@ bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	// set the renderstates
 	setRenderStates3DMode();
 
-	// set maximal anisotropy
-	pID3DDevice->SetSamplerState(0, D3DSAMP_MAXANISOTROPY, min(16ul, Caps.MaxAnisotropy));
-	pID3DDevice->SetSamplerState(1, D3DSAMP_MAXANISOTROPY, min(16ul, Caps.MaxAnisotropy));
-	pID3DDevice->SetSamplerState(2, D3DSAMP_MAXANISOTROPY, min(16ul, Caps.MaxAnisotropy));
-	pID3DDevice->SetSamplerState(3, D3DSAMP_MAXANISOTROPY, min(16ul, Caps.MaxAnisotropy));
-
 	// store the screen's depth buffer
 	DepthBuffers.push_back(new SDepthSurface());
 	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
@@ -1794,6 +1788,8 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 						material.TextureLayer[st].AnisotropicFilter) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
 				D3DTEXTUREFILTERTYPE tftMip = material.TextureLayer[st].TrilinearFilter ? D3DTEXF_LINEAR : D3DTEXF_POINT;
 
+				if (tftMag==D3DTEXF_ANISOTROPIC || tftMin == D3DTEXF_ANISOTROPIC)
+					pID3DDevice->SetSamplerState(st, D3DSAMP_MAXANISOTROPY, core::min_((DWORD)material.TextureLayer[st].AnisotropicFilter, Caps.MaxAnisotropy));
 				pID3DDevice->SetSamplerState(st, D3DSAMP_MAGFILTER, tftMag);
 				pID3DDevice->SetSamplerState(st, D3DSAMP_MINFILTER, tftMin);
 				pID3DDevice->SetSamplerState(st, D3DSAMP_MIPFILTER, tftMip);
