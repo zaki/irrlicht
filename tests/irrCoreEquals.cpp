@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald and Christian Stehno
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -115,7 +115,7 @@ bool irrCoreEquals(void)
 		return false;
 	}
 
-	if(!irr::core::iszero(-2.0, -2.0))
+	if(!irr::core::iszero(-2.0, 2.0))
 	{
 		logTestString("irr::core::iszero(f64, f64) failed.\n");
 		return false;
