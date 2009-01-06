@@ -157,7 +157,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 				core::plane3df facePlane;
 
 				bool gotHit = false;
-				for(s32 face = 0; face < 6; ++face)
+				for(s32 face = 0; face < 6 && !gotHit; ++face)
 				{
 					facePlane.setPlane(edges[faceEdges[face][0]],
 										edges[faceEdges[face][1]],
@@ -187,6 +187,9 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 							{
 								outbestdistance = toIntersectionSq;
 								outbestnode = current;
+
+								// We can only hit one face, so stop checking now.
+								gotHit = true;
 							}
 						}
 					}
