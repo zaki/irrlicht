@@ -79,9 +79,9 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
                f32& outbestdistance,
                ISceneNode*& outbestnode)
 {
-   core::vector3df edges[8];
-
    const core::list<ISceneNode*>& children = root->getChildren();
+   core::line3df truncatedRay(ray);
+   const core::vector3df rayVector = ray.getVector().normalize();
 
    core::list<ISceneNode*>::ConstIterator it = children.begin();
    for (; it != children.end(); ++it)
@@ -99,41 +99,96 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 				continue;
 
 			 // transform vector from world space to object space
-			 core::line3df line(ray);
+			 core::line3df line(truncatedRay);
 			 mat.transformVect(line.start);
 			 mat.transformVect(line.end);
 
-			 const core::aabbox3df& box = current->getBoundingBox();
+			 core::aabbox3df box = current->getBoundingBox();
 
 			 // do the initial intersection test in object space, since the
 			 // object space box is more accurate.
-			 if (box.intersectsWithLine(line))
+
+			 if(box.isPointInside(line.start))
 			 {
+				// If the line starts inside the box, then consider the distance as being
+				// to the centre of the box.
+				const f32 toIntersectionSq = line.start.getDistanceFromSQ(box.getCenter());
+				if(toIntersectionSq < outbestdistance)
+				{
+					outbestdistance = toIntersectionSq;
+					outbestnode = current;
+
+					// And we can truncate the ray to stop us hitting further nodes.
+					truncatedRay.end = truncatedRay.start + (rayVector * sqrtf(toIntersectionSq));
+				}
+			 }
+			 else if (box.intersectsWithLine(line))
+			 {
+				// Now transform into world space, to take scaling into account.
+				current->getAbsoluteTransformation().transformBox(box);
+
+				core::vector3df edges[8];
 				box.getEdges(edges);
-				f32 distance = 0.0f;
 
-				for (s32 e=0; e<8; ++e)
+				/* We need to check against each of 6 faces, composed of these corners:
+					  /3--------/7
+					 /  |      / |
+					/   |     /  |
+					1---------5  |
+					|   2- - -| -6
+					|  /      |  /
+					|/        | /
+					0---------4/
+
+					Note that we define them as opposite pairs of faces.
+				*/
+				static const s32 faceEdges[6][3] = 
+				{ 
+					{ 0, 1, 5 }, // Front
+					{ 6, 7, 3 }, // Back
+					{ 2, 3, 1 }, // Left
+					{ 4, 5, 7 }, // Right
+					{ 1, 3, 7 }, // Top
+					{ 2, 0, 4 }  // Bottom
+				};
+
+				core::vector3df intersection;
+				core::plane3df facePlane;
+
+				bool gotHit = false;
+				for(s32 face = 0; face < 6; ++face)
 				{
-				   // Transform the corner into world coordinates, to take
-				   // scaling into account.
-				   current->getAbsoluteTransformation().transformVect(edges[e]);
+					facePlane.setPlane(edges[faceEdges[face][0]],
+										edges[faceEdges[face][1]],
+										edges[faceEdges[face][2]]);
 
-				   // and compare it against the world space ray start position
-				   f32 t = edges[e].getDistanceFromSQ(ray.start);
+					// Only consider lines that might be entering through the plane, since we know 
+					// that the start point is outside the box.
+					if(facePlane.classifyPointRelation(ray.start) != core::ISREL3D_FRONT)
+						continue;
 
-				   // We're looking for the furthest corner; this is a crude
-				   // test; we should be checking the actual ray/plane
-				   // intersection.
-				   // http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?p=181419
-				   if (t > distance)
-					  distance = t;
+					// Don't bother using a limited ray, since we already know that it should be long 
+					// enough to intersect with the box.
+					if(facePlane.getIntersectionWithLine(ray.start, rayVector, intersection))
+					{
+
+						const f32 toIntersectionSq = ray.start.getDistanceFromSQ(intersection);
+						if(toIntersectionSq < outbestdistance)
+						{
+							outbestdistance = toIntersectionSq;
+							outbestnode = current;
+						}
+					}
+
+					// If the ray is entering through the first face of a pair, then it can't
+					// also be entering through the opposite face, and so we can skip that face.
+					if(0 == (face % 2))
+						++face;
 				}
 
-				if (distance < outbestdistance)
-				{
-				   outbestnode = current;
-				   outbestdistance = distance;
-				}
+				// If we got a hit, we can now truncate the ray to stop us hitting further nodes.
+				if(gotHit)
+					truncatedRay.end = truncatedRay.start + (rayVector * sqrtf(outbestdistance));
 			 }
 		  }
 

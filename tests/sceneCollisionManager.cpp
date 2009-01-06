@@ -78,9 +78,12 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 													ISceneManager * smgr,
 													ISceneCollisionManager * collMgr)
 {
-	IMeshSceneNode * cubeNode1 = smgr->addCubeSceneNode(10.f, 0, -1, vector3df(0, 0, 20));
+	// Create 3 nodes. The nearest node actually contains the camera.
+	IMeshSceneNode * cubeNode1 = smgr->addCubeSceneNode(10.f, 0, -1, vector3df(0, 0, 4));
 	IMeshSceneNode * cubeNode2 = smgr->addCubeSceneNode(10.f, 0, -1, vector3df(0, 0, 30));
+	cubeNode2->setRotation(vector3df(90.f, 90.f, 90.f)); // Just check that rotation doesn't stop us hitting it.
 	IMeshSceneNode * cubeNode3 = smgr->addCubeSceneNode(10.f, 0, -1, vector3df(0, 0, 40));
+	cubeNode3->setRotation(vector3df(180.f, 180.f, 180.f)); // Just check that rotation doesn't stop us hitting it.
 
 	ICameraSceneNode * camera = smgr->addCameraSceneNode();
 	device->run();
@@ -88,7 +91,7 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 
 	ISceneNode * hitNode = collMgr->getSceneNodeFromScreenCoordinatesBB(position2d<s32>(80, 60));
 
-	// Expect the first node to be hit.
+	// Expect the first node to be hit, since we're starting the check from inside it.
 	bool result = true;
 	if(hitNode != cubeNode1)
 	{
@@ -175,9 +178,19 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
     farTarget->setPosition(vector3df(0.f, 0.f, 500.f));
     farTarget->updateAbsolutePosition();
 
+	// Create a node that's slightly further away than the closest node,
+	// but thinner.  Its furthest corner is closer, but the collision 
+	// position is further, so it should not be selected.
+	ISceneNode* middleTarget = smgr->addCubeSceneNode(10.f);
+    middleTarget->setPosition(vector3df(0.f, 0.f, 101.f));
+	middleTarget->setScale(vector3df(1.f, 1.f, 0.5f));
+    middleTarget->updateAbsolutePosition();
+
     ISceneNode* nearTarget = smgr->addCubeSceneNode(10.f);
     nearTarget->setPosition(vector3df(0.f, 0.f, 100.f));
     nearTarget->updateAbsolutePosition();
+	// We'll rotate this node 90 degrees to show that we can hit its side.
+	nearTarget->setRotation(vector3df(0.f, 90.f, 0.f));
 
 	line3df ray(0.f, 0.f, 0.f, 0.f, 0.f, 500.f);
 
@@ -188,6 +201,8 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 	if(hit == 0)
 		logTestString("getSceneNodeFromRayBB() didn't hit anything.\n");
 	else if(hit == farTarget)
+		logTestString("getSceneNodeFromRayBB() hit the far (scaled) target.\n");
+	else if(hit == middleTarget)
 		logTestString("getSceneNodeFromRayBB() hit the far (scaled) target.\n");
 
 	if(!result)
