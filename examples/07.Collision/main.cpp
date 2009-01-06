@@ -64,6 +64,8 @@ int main()
 	if (q3levelmesh)
 		q3node = smgr->addOctTreeSceneNode(q3levelmesh->getMesh(0));
 
+	q3node->setID(0); // Make it an invalid target for bounding box collision
+
 	/*
 	So far so good, we've loaded the quake 3 level like in tutorial 2. Now,
 	here comes something different: We create a triangle selector. A
@@ -132,6 +134,7 @@ int main()
 	scene::ICameraSceneNode* camera =
 		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, -1, 0, 0, true, 3.f);
 	camera->setPosition(core::vector3df(-100,50,-150));
+	camera->setID(0); // Make it an invalid target for bounding box collision
 
 	if (selector)
 	{
@@ -164,8 +167,11 @@ int main()
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	bill->setMaterialFlag(video::EMF_ZBUFFER, false);
 	bill->setSize(core::dimension2d<f32>(20.0f, 20.0f));
+	bill->setID(0); // Make it an invalid target for bounding box collision
 
-	// add 3 animated faeries.
+	// add 3 animated faeries.  We'll make their bounding boxes visible so
+	// that we can see the same boxes that the scene collision manager is
+	// using to perform the getSceneNodeFromCameraBB() check below.
 
 	video::SMaterial material;
 	material.setTexture(0, driver->getTexture("../../media/faerie2.bmp"));
@@ -180,16 +186,19 @@ int main()
 		node->setPosition(core::vector3df(-70,0,-90));
 		node->setMD2Animation(scene::EMAT_RUN);
 		node->getMaterial(0) = material;
-
+		node->setDebugDataVisible(scene::EDS_BBOX_ALL);
+		
 		node = smgr->addAnimatedMeshSceneNode(faerie);
 		node->setPosition(core::vector3df(-70,0,-30));
 		node->setMD2Animation(scene::EMAT_SALUTE);
 		node->getMaterial(0) = material;
+		node->setDebugDataVisible(scene::EDS_BBOX_ALL);
 
 		node = smgr->addAnimatedMeshSceneNode(faerie);
 		node->setPosition(core::vector3df(-70,0,-60));
 		node->setMD2Animation(scene::EMAT_JUMP);
 		node->getMaterial(0) = material;
+		node->setDebugDataVisible(scene::EDS_BBOX_ALL);
 	}
 
 	material.setTexture(0, 0);
@@ -197,9 +206,10 @@ int main()
 
 	// Add a light
 
-	smgr->addLightSceneNode(0, core::vector3df(-60,100,400),
+	scene::ILightSceneNode * light = smgr->addLightSceneNode(0, core::vector3df(-60,100,400),
 		video::SColorf(1.0f,1.0f,1.0f,1.0f),
 		600.0f);
+	light->setID(0); // Make it an invalid target for bounding box collision
 
 
 	/*
@@ -261,10 +271,18 @@ int main()
 		we ask the collision manager for this, and if we've got a scene
 		node, we highlight it by disabling Lighting in its material, if
 		it is not the billboard or the quake 3 level.
+		We use a collision bitmask of 1, i.e. any scene node with a scene ID
+		with bit 1 set is valid for collision.  Scene nodes ID defaults to 0xFFFFFFFF
+		so all nodes will have this bit by default. We have called setID(0) on
+		the nodes that we don't care about in order to clear this bit and make
+		them invalid targets for collision.  This makes the test a bit more
+		efficient, and also stops us from accidentally picking unexpected nodes,
+		e.g. the quake3 level, camera, light and billboard nodes.  By default,
+		these *are* valid targets for bounding box selection.
 		*/
 
 		selectedSceneNode =
-			smgr->getSceneCollisionManager()->getSceneNodeFromCameraBB(camera);
+			smgr->getSceneCollisionManager()->getSceneNodeFromCameraBB(camera, 1);
 
 		if (lastSelectedSceneNode)
 			lastSelectedSceneNode->setMaterialFlag(video::EMF_LIGHTING, true);
