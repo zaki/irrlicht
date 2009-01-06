@@ -27,12 +27,13 @@ namespace scene
 
 		//! Returns the scene node, which is currently visible under the overgiven 
 		//! screencoordinates, viewed from the currently active camera. 
-		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(core::position2d<s32> pos,
+		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32> & pos,
 			s32 idBitMask=0, bool bNoDebugObjects = false);
 
 		//! Returns the nearest scene node which collides with a 3d ray and 
 		//! which id matches a bitmask. 
-		virtual ISceneNode* getSceneNodeFromRayBB(core::line3d<f32> ray, s32 idBitMask=0, 
+		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> & ray,
+												  s32 idBitMask=0, 
 												  bool bNoDebugObjects = false);
 
 		//! Returns the scene node, at which the overgiven camera is looking at and
@@ -49,7 +50,8 @@ namespace scene
 		//! the resulting new position of the ellipsoid. 
 		virtual core::vector3df getCollisionResultPosition(
 			ITriangleSelector* selector,
-			const core::vector3df &ellipsoidPosition,	const core::vector3df& ellipsoidRadius, 
+			const core::vector3df &ellipsoidPosition,
+			const core::vector3df& ellipsoidRadius, 
 			const core::vector3df& ellipsoidDirectionAndSpeed,
 			core::triangle3df& triout,
 			core::vector3df& hitPosition,
@@ -59,17 +61,17 @@ namespace scene
 
 		//! Returns a 3d ray which would go through the 2d screen coodinates.
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			core::position2d<s32> pos, ICameraSceneNode* camera = 0);
+			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0);
 
 		//! Calculates 2d screen position from a 3d position.
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			core::vector3df pos, ICameraSceneNode* camera=0);
+			const core::vector3df & pos, ICameraSceneNode* camera=0);
 
 	private:
 
 		//! recursive method for going through all scene nodes
 		void getPickedNodeBB(ISceneNode* root,
-					   const core::line3df& ray,
+					   core::line3df& ray,
 					   s32 bits,
 					   bool bNoDebugObjects,
 					   f32& outbestdistance,

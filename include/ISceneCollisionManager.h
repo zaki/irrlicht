@@ -84,7 +84,7 @@ namespace scene
 		at a length of the far value of the camera at a position which
 		would be behind the 2d screen coodinates. */
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			core::position2d<s32> pos, ICameraSceneNode* camera = 0) = 0;
+			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0) = 0;
 
 		//! Calculates 2d screen position from a 3d position.
 		/** \param pos: 3D position in world space to be transformed
@@ -98,7 +98,7 @@ namespace scene
 		method for drawing a decorator over a 3d object, it will be
 		clipped by the screen borders. */
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			core::vector3df pos, ICameraSceneNode* camera=0) = 0;
+			const core::vector3df & pos, ICameraSceneNode* camera=0) = 0;
 
 		//! Gets the scene node, which is currently visible under the given screencoordinates, viewed from the currently active camera.
 		/** The collision tests are done using a bounding box for each
@@ -113,7 +113,7 @@ namespace scene
 		\return Visible scene node under screen coordinates with
 		matching bits in its id. If there is no scene node under this
 		position, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(core::position2d<s32> pos,
+		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32> & pos,
 			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
 
 		//! Get the nearest scene node which collides with a 3d ray and whose id matches a bitmask.
@@ -128,7 +128,7 @@ namespace scene
 		\return Scene node nearest to ray.start, which collides with
 		the ray and matches the idBitMask, if the mask is not null. If
 		no scene node is found, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromRayBB(core::line3d<f32> ray,
+		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> & ray,
 			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
 
 		//! Get the scene node, which the overgiven camera is looking at and whose id matches the bitmask.
