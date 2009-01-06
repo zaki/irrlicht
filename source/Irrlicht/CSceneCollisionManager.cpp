@@ -94,25 +94,24 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 			(bits==0 || (bits != 0 && (current->getID() & bits))))
 		  {
 			 // get world to object space transform
-			 core::matrix4 mat;
-			 if (!current->getAbsoluteTransformation().getInverse(mat))
+			 core::matrix4 worldToObject;
+			 if (!current->getAbsoluteTransformation().getInverse(worldToObject))
 				continue;
 
 			 // transform vector from world space to object space
-			 core::line3df line(truncatedRay);
-			 mat.transformVect(line.start);
-			 mat.transformVect(line.end);
+			 core::line3df objectRay(truncatedRay);
+			 worldToObject.transformVect(objectRay.start);
+			 worldToObject.transformVect(objectRay.end);
 
-			 core::aabbox3df box = current->getBoundingBox();
+			 const core::aabbox3df & objectBox = current->getBoundingBox();
 
-			 // do the initial intersection test in object space, since the
-			 // object space box is more accurate.
-
-			 if(box.isPointInside(line.start))
+			 // Do the initial intersection test in object space, since the
+			 // object space box test is more accurate.
+			 if(objectBox.isPointInside(objectRay.start))
 			 {
 				// If the line starts inside the box, then consider the distance as being
 				// to the centre of the box.
-				const f32 toIntersectionSq = line.start.getDistanceFromSQ(box.getCenter());
+				const f32 toIntersectionSq = objectRay.start.getDistanceFromSQ(objectBox.getCenter());
 				if(toIntersectionSq < outbestdistance)
 				{
 					outbestdistance = toIntersectionSq;
@@ -122,13 +121,15 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 					truncatedRay.end = truncatedRay.start + (rayVector * sqrtf(toIntersectionSq));
 				}
 			 }
-			 else if (box.intersectsWithLine(line))
+			 else if (objectBox.intersectsWithLine(objectRay))
 			 {
-				// Now transform into world space, to take scaling into account.
-				current->getAbsoluteTransformation().transformBox(box);
+				// Now transform into world space, since we need to use world space 
+				// scales and distances.
+				core::aabbox3df worldBox(objectBox);
+				current->getAbsoluteTransformation().transformBox(worldBox);
 
 				core::vector3df edges[8];
-				box.getEdges(edges);
+				worldBox.getEdges(edges);
 
 				/* We need to check against each of 6 faces, composed of these corners:
 					  /3--------/7
@@ -162,8 +163,8 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 										edges[faceEdges[face][1]],
 										edges[faceEdges[face][2]]);
 
-					// Only consider lines that might be entering through the plane, since we know 
-					// that the start point is outside the box.
+					// Only consider lines that might be entering through this face, since we 
+					// already know that the start point is outside the box.
 					if(facePlane.classifyPointRelation(ray.start) != core::ISREL3D_FRONT)
 						continue;
 
@@ -171,16 +172,26 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 					// enough to intersect with the box.
 					if(facePlane.getIntersectionWithLine(ray.start, rayVector, intersection))
 					{
-
 						const f32 toIntersectionSq = ray.start.getDistanceFromSQ(intersection);
 						if(toIntersectionSq < outbestdistance)
 						{
-							outbestdistance = toIntersectionSq;
-							outbestnode = current;
+							// We have to check that the intersection with this plane is actually
+							// on the box, so need to go back to object space again.  We also
+							// need to move the intersection very slightly closer to the centre of
+							// the box to take into account fp precision losses, since the intersection 
+							// will axiomatically be on the very edge of the box.
+							worldToObject.transformVect(intersection);
+							intersection *= 0.99f;
+
+							if(objectBox.isPointInside(intersection))
+							{
+								outbestdistance = toIntersectionSq;
+								outbestnode = current;
+							}
 						}
 					}
 
-					// If the ray is entering through the first face of a pair, then it can't
+					// If the ray could be entering through the first face of a pair, then it can't
 					// also be entering through the opposite face, and so we can skip that face.
 					if(0 == (face % 2))
 						++face;
