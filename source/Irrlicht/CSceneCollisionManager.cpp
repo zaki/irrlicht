@@ -43,7 +43,7 @@ CSceneCollisionManager::~CSceneCollisionManager()
 //! Returns the scene node, which is currently visible under the overgiven
 //! screencoordinates, viewed from the currently active camera.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
-	core::position2d<s32> pos, s32 idBitMask, bool bNoDebugObjects)
+	const core::position2d<s32> & pos, s32 idBitMask, bool bNoDebugObjects)
 {
 	core::line3d<f32> ln = getRayFromScreenCoordinates(pos, 0);
 
@@ -57,14 +57,16 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
 
 //! Returns the nearest scene node which collides with a 3d ray and
 //! which id matches a bitmask.
-ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(core::line3d<f32> ray,
+ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32> & ray,
 						s32 idBitMask,
 						bool bNoDebugObjects)
 {
 	ISceneNode* best = 0;
 	f32 dist = FLT_MAX;
 
-	getPickedNodeBB(SceneManager->getRootSceneNode(), ray,
+	core::line3d<f32> truncatableRay(ray);
+
+	getPickedNodeBB(SceneManager->getRootSceneNode(), truncatableRay,
 		idBitMask, bNoDebugObjects, dist, best);
 
 	return best;
@@ -73,14 +75,13 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(core::line3d<f32> ray,
 
 //! recursive method for going through all scene nodes
 void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
-               const core::line3df& ray,
+               core::line3df& ray,
                s32 bits,
                bool bNoDebugObjects,
                f32& outbestdistance,
                ISceneNode*& outbestnode)
 {
    const core::list<ISceneNode*>& children = root->getChildren();
-   core::line3df truncatedRay(ray);
    const core::vector3df rayVector = ray.getVector().normalize();
 
    core::list<ISceneNode*>::ConstIterator it = children.begin();
@@ -99,7 +100,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 				continue;
 
 			 // transform vector from world space to object space
-			 core::line3df objectRay(truncatedRay);
+			 core::line3df objectRay(ray);
 			 worldToObject.transformVect(objectRay.start);
 			 worldToObject.transformVect(objectRay.end);
 
@@ -118,7 +119,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 					outbestnode = current;
 
 					// And we can truncate the ray to stop us hitting further nodes.
-					truncatedRay.end = truncatedRay.start + (rayVector * sqrtf(toIntersectionSq));
+					ray.end = ray.start + (rayVector * sqrtf(toIntersectionSq));
 				}
 			 }
 			 else if (objectBox.intersectsWithLine(objectRay))
@@ -202,7 +203,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
 				// If we got a hit, we can now truncate the ray to stop us hitting further nodes.
 				if(gotHit)
-					truncatedRay.end = truncatedRay.start + (rayVector * sqrtf(outbestdistance));
+					ray.end = ray.start + (rayVector * sqrtf(outbestdistance));
 			 }
 		  }
 
@@ -727,7 +728,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 //! Returns a 3d ray which would go through the 2d screen coodinates.
 core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
-	core::position2d<s32> pos, ICameraSceneNode* camera)
+	const core::position2d<s32> & pos, ICameraSceneNode* camera)
 {
 	core::line3d<f32> ln(0,0,0,0,0,0);
 
@@ -765,7 +766,7 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 
 //! Calculates 2d screen position from a 3d position.
 core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition(
-	core::vector3df pos3d, ICameraSceneNode* camera)
+	const core::vector3df & pos3d, ICameraSceneNode* camera)
 {
 	if (!SceneManager || !Driver)
 		return core::position2d<s32>(-1000,-1000);
