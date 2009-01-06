@@ -134,9 +134,14 @@ define out. */
 #endif
 
 //! Define _IRR_OGLES1_USE_EXTPOINTER_ if the OpenGL-ES 1.x driver should use extensions via function pointers.
-/** This should usually be enabled, but also depends on the specific architecture. */
+/** This should usually be enabled, but also depends on the specific
+	architecture. You can simply uncomment the define and recompile.
+	The iPhone does not have extension pointers, so disable it there always.
+*/
 #ifdef _IRR_COMPILE_WITH_OGLES1_
+#if !defined(_IRR_IPHONE_PLATFORM_)
 #define _IRR_OGLES1_USE_EXTPOINTER_
+#endif
 #endif
 
 //! On some Linux systems the XF86 vidmode extension or X11 RandR are missing. Use these flags
