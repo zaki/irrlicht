@@ -1001,6 +1001,12 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		else
 		if (objectName == "FVFData")
 		{
+			if (!readHeadOfDataObject())
+			{
+				os::Printer::log("No starting brace in FVFData found.", ELL_WARNING);
+				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
+				return false;
+			}
 			const u32 dataformat = readInt();
 			const u32 datasize = readInt();
 			u32* data = new u32[datasize];
@@ -1017,22 +1023,19 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 					dataptr += size;
 				}
 			}
+			delete [] data;
 			if (!checkForOneFollowingSemicolons())
 			{
 				os::Printer::log("No finishing semicolon in FVFData found.", ELL_WARNING);
 				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
-				delete [] data;
 				return false;
 			}
 			if (!checkForClosingBrace())
 			{
 				os::Printer::log("No closing brace in FVFData found in x file", ELL_WARNING);
 				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
-				delete [] data;
 				return false;
 			}
-
-			delete [] data;
 		}
 		else
 		if (objectName == "XSkinMeshHeader")
