@@ -661,7 +661,7 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 //! like in most first person shooters (FPS):
 ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
 	f32 rotateSpeed, f32 moveSpeed, s32 id,
-	SKeyMap* keyMapArray, s32 keyMapSize, bool noVerticalMovement,f32 jumpSpeed)
+	SKeyMap* keyMapArray, s32 keyMapSize, bool noVerticalMovement, f32 jumpSpeed, bool invertMouseY)
 {
 	if (!parent)
 		parent = this;
@@ -669,7 +669,7 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
 	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
 	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl,
 			rotateSpeed, moveSpeed, jumpSpeed,
-			keyMapArray, keyMapSize, noVerticalMovement);
+			keyMapArray, keyMapSize, noVerticalMovement, invertMouseY);
 
 	// Bind the node's rotation to its target. This is consistent with 1.4.2 and below.
 	node->bindTargetAndRotation(true);
