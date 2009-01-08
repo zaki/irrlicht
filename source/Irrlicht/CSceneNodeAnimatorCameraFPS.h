@@ -28,7 +28,8 @@ namespace scene
 		//! Constructor
 		CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl, 
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, f32 jumpSpeed=0.f,
-			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false);
+			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false,
+			bool invertY=false);
 			
 		//! Destructor
 		virtual ~CSceneNodeAnimatorCameraFPS();
@@ -58,6 +59,11 @@ namespace scene
 
 		//! Sets whether vertical movement should be allowed.
 		virtual void setVerticalMovement(bool allow);
+
+		//! Sets whether the Y axis of the mouse should be inverted.
+		/** If enabled then moving the mouse down will cause
+		the camera to look up. It is disabled by default. */
+		virtual void setInvertMouse(bool invert);
 
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const
@@ -101,6 +107,8 @@ namespace scene
 		f32 MoveSpeed;
 		f32 RotateSpeed;
 		f32 JumpSpeed;
+		// -1.0f for inverted mouse, defaults to 1.0f
+		f32 MouseYDirection;
 
 		s32 LastAnimationTime;
 

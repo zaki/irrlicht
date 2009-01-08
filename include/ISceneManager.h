@@ -591,13 +591,16 @@ namespace scene
 		'false', with which it is possible to fly around in space, if
 		no gravity is there.
 		\param jumpSpeed: Speed with which the camera is moved when jumping.
+		\param invertMouse: Setting this to true makes the camera look up when 
+		the mouse is moved down and down when the mouse is moved up, the default 
+		is 'false' which means it will follow the movement of the mouse cursor.
 		\return Pointer to the interface of the camera if successful, otherwise 0.
 		This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, s32 id=-1,
 			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
-			f32 jumpSpeed = 0.f) = 0;
+			f32 jumpSpeed = 0.f, bool invertMouse=false) = 0;
 
 		//! Adds a dynamic light scene node to the scene graph.
 		/** The light will cast dynamic light on all

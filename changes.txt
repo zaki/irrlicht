@@ -1,5 +1,7 @@
 Changes in version 1.6
 
+ - Added a method to flip the Y movement of the FPS camera.
+
  - The Anisotropy filter can now be set to the AF value per texture layer. So no forced MAX_ANISOTROPY anymore. .irr files will probably fail, though.
 
  - AntiAlias parameter in SIrrCreationParameters is now an u8 value specifying the multisampling level (0 for disabled, 4,6,8, and others for anti-aliasing)

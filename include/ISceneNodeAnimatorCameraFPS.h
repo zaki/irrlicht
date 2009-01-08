@@ -48,6 +48,11 @@ namespace scene
 		gravity causing camera shake. Disable this if the camera has 
 		a collision animator with gravity enabled. */
 		virtual void setVerticalMovement(bool allow) = 0;
+
+		//! Sets whether the Y axis of the mouse should be inverted.
+		/** If enabled then moving the mouse down will cause
+		the camera to look up. It is disabled by default. */
+		virtual void setInvertMouse(bool invert) = 0;
 	};
 } // end namespace scene
 } // end namespace irr
