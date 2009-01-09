@@ -116,7 +116,13 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 		// default material if nothing loaded
 		if (!mesh->Materials.size())
+		{
 			mesh->Materials.push_back(video::SMaterial());
+			mesh->Materials[0].DiffuseColor.set(0xff777777);
+			mesh->Materials[0].Shininess=0.f;
+			mesh->Materials[0].SpecularColor.set(0xff777777);
+			mesh->Materials[0].EmissiveColor.set(0xff000000);
+		}
 
 		u32 i;
 
