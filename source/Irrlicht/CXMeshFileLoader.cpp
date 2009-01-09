@@ -139,6 +139,13 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 			}
 		}
 
+		if (!mesh->FaceMaterialIndices.size())
+		{
+			mesh->FaceMaterialIndices.set_used(mesh->Indices.size() / 3);
+			for (i=0; i<mesh->FaceMaterialIndices.size(); ++i)
+				mesh->FaceMaterialIndices[i]=0;
+		}
+
 		if (!mesh->HasVertexColors)
 		{
 			for (u32 j=0;j<mesh->FaceMaterialIndices.size();++j)
@@ -478,9 +485,6 @@ bool CXMeshFileLoader::parseDataObject()
 	{
 		// some meshes have no frames at all
 		//CurFrame = AnimatedMesh->createJoint(0);
-
-		//CurFrame->Meshes.push_back(SXMesh());
-		//return parseDataObjectMesh(CurFrame->Meshes.getLast());
 
 		SXMesh *mesh=new SXMesh;
 
