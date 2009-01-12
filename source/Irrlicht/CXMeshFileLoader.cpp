@@ -28,9 +28,9 @@ namespace scene
 
 //! Constructor
 CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs)
-: SceneManager(smgr), FileSystem(fs), AnimatedMesh(0), MajorVersion(0),
-	MinorVersion(0), BinaryFormat(false), BinaryNumCount(0), Buffer(0),
-	P(0), End(0), FloatSize(0), CurFrame(0)
+: SceneManager(smgr), FileSystem(fs), AnimatedMesh(0),
+	BinaryNumCount(0), Buffer(0), P(0), End(0), BinaryFormat(false),
+	CurFrame(0), MajorVersion(0), MinorVersion(0), FloatSize(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CXMeshFileLoader");
@@ -448,7 +448,7 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 	P = &Buffer[16];
 
 	readUntilEndOfLine();
-	FilePath = stripPathFromString(file->getFileName(),true);
+	FilePath = FileSystem->getFileDir(file->getFileName());
 
 	return true;
 }
@@ -780,7 +780,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 			polygonfaces.set_used(fcnt);
 			u32 triangles = (fcnt-2);
 			mesh.Indices.set_used(mesh.Indices.size() + ((triangles-1)*3));
-			mesh.IndexCountPerFace[k] = triangles * 3;
+			mesh.IndexCountPerFace[k] = (u16)(triangles * 3);
 
 			for (u32 f=0; f<fcnt; ++f)
 				polygonfaces[f] = readInt();
@@ -1526,17 +1526,17 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 				return false;
 
 			// original name
-			if (FileSystem->existFile(TextureFileName.c_str()))
-				material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
+			if (FileSystem->existFile(TextureFileName))
+				material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 			// mesh path
 			else
 			{
-				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
-				if (FileSystem->existFile(TextureFileName.c_str()))
-					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
+				TextureFileName=FilePath + FileSystem->getFileBasename(TextureFileName);
+				if (FileSystem->existFile(TextureFileName))
+					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 				// working directory
 				else
-					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
+					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(FileSystem->getFileBasename(TextureFileName)));
 			}
 			++textureLayer;
 			if (textureLayer==2)
@@ -1551,17 +1551,17 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 				return false;
 
 			// original name
-			if (FileSystem->existFile(TextureFileName.c_str()))
-				material.setTexture(1, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
+			if (FileSystem->existFile(TextureFileName))
+				material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 			// mesh path
 			else
 			{
-				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
-				if (FileSystem->existFile(TextureFileName.c_str()))
-					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
+				TextureFileName=FilePath + FileSystem->getFileBasename(TextureFileName);
+				if (FileSystem->existFile(TextureFileName))
+					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 				// working directory
 				else
-					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
+					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(FileSystem->getFileBasename(TextureFileName)));
 			}
 			if (textureLayer==1)
 				++textureLayer;
@@ -2387,29 +2387,6 @@ bool CXMeshFileLoader::readMatrix(core::matrix4& mat)
 	for (u32 i=0; i<16; ++i)
 		mat[i] = readFloat();
 	return checkForOneFollowingSemicolons();
-}
-
-
-core::stringc CXMeshFileLoader::stripPathFromString(core::stringc string, bool returnPath)
-{
-	s32 slashIndex=string.findLast('/'); // forward slash
-	s32 backSlash=string.findLast('\\'); // back slash
-
-	if (backSlash>slashIndex)
-		slashIndex=backSlash;
-
-	if (slashIndex==-1)//no slashes found
-	{
-		if (returnPath)
-			return core::stringc(); //no path to return
-		else
-			return string;
-	}
-
-	if (returnPath)
-		return string.subString(0, slashIndex + 1);
-	else
-		return string.subString(slashIndex+1, string.size() - (slashIndex+1));
 }
 
 
