@@ -40,6 +40,12 @@ public:
 	/** \return The light data. */
 	virtual video::SLight& getLightData() = 0;
 
+	//! Sets if the node should be visible or not.
+	/** All children of this node won't be visible either, when set
+	to true.
+	\param isVisible If the node shall be visible. */
+	virtual void setVisible(bool isVisible) = 0;
+
 	//! Sets the light's radius of influence.
 	/** Outside this radius the light won't lighten geometry and cast no
 	shadows. Setting the radius will also influence the attenuation, setting

@@ -863,6 +863,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\ILightManager.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\ILightSceneNode.h"
 					>
 				</File>

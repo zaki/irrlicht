@@ -17,7 +17,7 @@ namespace scene
 //! constructor
 CLightSceneNode::CLightSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, video::SColorf color, f32 radius)
-: ILightSceneNode(parent, mgr, id, position)
+: ILightSceneNode(parent, mgr, id, position), DriverLightIndex(-1), LightIsOn(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CLightSceneNode");
@@ -72,7 +72,9 @@ void CLightSceneNode::render()
 				break;
 		}
 	}
-	driver->addDynamicLight(LightData);
+
+	DriverLightIndex = driver->addDynamicLight(LightData);
+	setVisible(LightIsOn);
 }
 
 
@@ -96,6 +98,19 @@ video::SLight& CLightSceneNode::getLightData()
 	return LightData;
 }
 
+void CLightSceneNode::setVisible(bool isVisible)
+{
+	ISceneNode::setVisible(isVisible);
+
+	if(DriverLightIndex < 0)
+		return;
+	video::IVideoDriver* driver = SceneManager->getVideoDriver();
+	if (!driver)
+		return;
+
+	LightIsOn = isVisible;
+	driver->turnLightOn((u32)DriverLightIndex, LightIsOn);
+}
 
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CLightSceneNode::getBoundingBox() const

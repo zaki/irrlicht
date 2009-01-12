@@ -452,6 +452,9 @@ namespace scene
 		//! Returns ambient color of the scene
 		virtual const video::SColorf& getAmbientLight() const;
 
+		//! Register a custom callbacks manager which gets callbacks during scene rendering.
+		virtual void setLightManager(ILightManager* lightManager);
+
 	private:
 
 		//! Returns a typename from a scene node animator type or null if not found
@@ -525,13 +528,19 @@ namespace scene
 			DistanceNodeEntry(ISceneNode* n, const core::vector3df& cameraPos)
 				: Node(n)
 			{
-				Distance = Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(cameraPos);
-				Distance -= Node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
+				setNodeAndDistanceFromPosition(n, cameraPos);
 			}
 
 			bool operator < (const DistanceNodeEntry& other) const
 			{
 				return Distance < other.Distance;
+			}
+
+			void setNodeAndDistanceFromPosition(ISceneNode* n, const core::vector3df & fromPosition)
+			{
+				Node = n;
+				Distance = Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(fromPosition);
+				Distance -= Node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
 			}
 
 			ISceneNode* Node;
@@ -556,7 +565,7 @@ namespace scene
 
 		//! render pass lists
 		core::array<ISceneNode*> CameraList;
-		core::array<DistanceNodeEntry> LightList;
+		core::array<ILightSceneNode*> LightList;
 		core::array<ISceneNode*> ShadowNodeList;
 		core::array<ISceneNode*> SkyBoxList;
 		core::array<DefaultNodeEntry> SolidNodeList;
@@ -581,6 +590,10 @@ namespace scene
 		IMeshCache* MeshCache;
 
 		E_SCENE_NODE_RENDER_PASS CurrentRendertime;
+
+		//! An optional callbacks manager to allow the user app finer control 
+		//! over the scene lighting and rendering.
+		ILightManager* LightManager;
 
 		//! constants for reading and writing XML.
 		//! Not made static due to portability problems.

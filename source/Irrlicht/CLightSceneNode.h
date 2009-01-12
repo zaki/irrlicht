@@ -39,6 +39,12 @@ public:
 	//! \return Returns the light data.
 	virtual video::SLight& getLightData();
 
+	//! Sets if the node should be visible or not.
+	/** All children of this node won't be visible either, when set
+	to true.
+	\param isVisible If the node shall be visible. */
+	virtual void setVisible(bool isVisible);
+
 	//! returns the axis aligned bounding box of this node
 	virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
@@ -89,6 +95,8 @@ private:
 
 	video::SLight LightData;
 	core::aabbox3d<f32> BBox;
+	s32 DriverLightIndex;
+	bool LightIsOn;
 	void doLightRecalc();
 };
 

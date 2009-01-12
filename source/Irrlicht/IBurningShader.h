@@ -27,6 +27,7 @@ namespace video
 	struct SBurningShaderLight
 	{
 		SLight org;
+		bool LightIsOn;
 
 		sVec4 posEyeSpace;
 

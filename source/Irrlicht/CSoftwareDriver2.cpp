@@ -1340,13 +1340,11 @@ void CBurningVideoDriver::setAmbientLight(const SColorf& color)
 
 
 //! adds a dynamic light
-void CBurningVideoDriver::addDynamicLight(const SLight& dl)
+s32 CBurningVideoDriver::addDynamicLight(const SLight& dl)
 {
-	if ( LightSpace.Light.size () >= getMaximalDynamicLightAmount () )
-		return;
-
 	SBurningShaderLight l;
 	l.org = dl;
+	l.LightIsOn = true;
 
 	// light in eye space
 	Transformation[ETS_VIEW].m.transformVect ( &l.posEyeSpace.x, l.org.Position );
@@ -1371,8 +1369,19 @@ void CBurningVideoDriver::addDynamicLight(const SLight& dl)
 	}
 
 	LightSpace.Light.push_back ( l );
-	CNullDriver::addDynamicLight( l.org );
+	(void)CNullDriver::addDynamicLight( l.org );
+
+	return LightSpace.Light.size() - 1;
 }
+
+//! Turns a dynamic light on or off
+void CBurningVideoDriver::turnLightOn(s32 lightIndex, bool turnOn)
+{
+	if(lightIndex > -1 && lightIndex < (s32)LightSpace.Light.size())
+	LightSpace.Light[lightIndex].LightIsOn = turnOn;
+}
+
+
 
 //! deletes all dynamic lights there are
 void CBurningVideoDriver::deleteAllDynamicLights()
@@ -1449,6 +1458,9 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source
 	for ( i = 0; i!= LightSpace.Light.size (); ++i )
 	{
 		const SBurningShaderLight &light = LightSpace.Light[i];
+
+		if(!light.LightIsOn)
+			continue;
 
 		sVec4 vp;			// unit vector vertex to light
 		sVec4 lightHalf;		// blinn-phong reflection

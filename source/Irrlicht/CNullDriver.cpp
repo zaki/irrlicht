@@ -818,11 +818,19 @@ void CNullDriver::deleteAllDynamicLights()
 
 
 //! adds a dynamic light
-void CNullDriver::addDynamicLight(const SLight& light)
+s32 CNullDriver::addDynamicLight(const SLight& light)
 {
 	Lights.push_back(light);
+	return Lights.size() - 1;
 }
 
+//! Turns a dynamic light on or off
+//! \param lightIndex: the index returned by addDynamicLight
+//! \param turnOn: true to turn the light on, false to turn it off
+void CNullDriver::turnLightOn(s32 lightIndex, bool turnOn)
+{
+	// Do nothing
+}
 
 
 //! returns the maximal amount of dynamic lights the device can handle
