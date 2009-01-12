@@ -62,7 +62,7 @@ public:
 		u32 MaxSkinWeightsPerFace;
 		u32 BoneCount;
 
-		core::array< u32 > IndexCountPerFace; // default 3, but could be more
+		core::array<u16> IndexCountPerFace; // default 3, but could be more
 
 		core::array<scene::SSkinMeshBuffer*> Buffers;
 
@@ -75,13 +75,13 @@ public:
 
 		core::array<video::SMaterial> Materials; // material array
 
+		core::array<u32> WeightJoint;
+		core::array<u32> WeightNum;
+
 		s32 AttachedJointID;
 
 		bool HasSkinning;
 		bool HasVertexColors;
-
-		core::array<u32> WeightJoint;
-		core::array<u32> WeightNum;
 	};
 
 private:
@@ -91,7 +91,6 @@ private:
 	bool readFileIntoMemory(io::IReadFile* file);
 
 	bool parseFile();
-
 
 	bool parseDataObject();
 
@@ -156,8 +155,6 @@ private:
 
 	void readUntilEndOfLine();
 
-	core::stringc stripPathFromString(core::stringc string, bool returnPath);
-
 	u16 readBinWord();
 	u32 readBinDWord();
 	u32 readInt();
@@ -175,16 +172,11 @@ private:
 
 	CSkinnedMesh* AnimatedMesh;
 
-	u32 MajorVersion;
-	u32 MinorVersion;
-	bool BinaryFormat;
-	// counter for number arrays in binary format
-	u32 BinaryNumCount;
-
 	c8* Buffer;
 	const c8* P;
 	c8* End;
-	c8 FloatSize;
+	// counter for number arrays in binary format
+	u32 BinaryNumCount;
 	u32 Line;
 	core::stringc FilePath;
 
@@ -193,10 +185,14 @@ private:
 	core::array<SXMesh*> Meshes;
 
 	core::array<SXTemplateMaterial> TemplateMaterials;
+
+	u32 MajorVersion;
+	u32 MinorVersion;
+	bool BinaryFormat;
+	c8 FloatSize;
 };
 
 } // end namespace scene
 } // end namespace irr
 
 #endif
-
