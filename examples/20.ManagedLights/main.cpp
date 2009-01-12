@@ -79,7 +79,7 @@ public:
 	virtual ~CMyLightManager(void) { }
 
 	// The input receiver interface, which just switches light management strategy
-	bool CMyLightManager::OnEvent(const SEvent & event)
+	bool OnEvent(const SEvent & event)
 	{
 		bool handled = false;
 
