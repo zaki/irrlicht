@@ -92,6 +92,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "18.SplitScreen_vc9", "18.Sp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.MouseAndJoystick_vc9", "19.MouseAndJoystick\MouseAndJoystick_vc9.vcproj", "{FE853A36-E0D1-4AC5-A792-B643E70D2953}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20.ManagedLights_vc8", "20.ManagedLights\ManagedLights_vc8.vcproj", "{16007FE2-142B-47F8-93E1-519BA3F39E71}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32

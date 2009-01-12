@@ -1,5 +1,5 @@
 
-// Written by Colin MacDonald 
+// Written by Colin MacDonald
 // Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
@@ -14,34 +14,36 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
+#if defined(MSC_VER)
 #pragma comment(lib, "Irrlicht.lib")
+#endif // MSC_VER
 
 /*
     Normally, you are limited to 8 dynamic lights per scene: this is a hardware limit.  If you
-    want to use more dynamic lights in your scene, then you can register an optional light 
+    want to use more dynamic lights in your scene, then you can register an optional light
     manager that allows you to to turn lights on and off at specific point during rendering.
     You are still limited to 8 lights, but the limit is per scene node.
 
-    This is completely optional: if you do not register a light manager, then a default 
-    distance-based scheme will be used to prioritise hardware lights based on their distance 
+    This is completely optional: if you do not register a light manager, then a default
+    distance-based scheme will be used to prioritise hardware lights based on their distance
     from the active camera.
 
 	NO_MANAGEMENT disables the light manager and shows Irrlicht's default light behaviour.
     The 8 lights nearest to the camera will be turned on, and other lights will be turned off.
     In this example, this produces a funky looking but incoherent light display.
 
-	LIGHTS_NEAREST_NODE shows an implementation that turns on a limited number of lights 
-    per mesh scene node.  If finds the 3 lights that are nearest to the node being rendered, 
-    and turns them on, turning all other lights off.  This works, but as it operates on every 
+	LIGHTS_NEAREST_NODE shows an implementation that turns on a limited number of lights
+    per mesh scene node.  If finds the 3 lights that are nearest to the node being rendered,
+    and turns them on, turning all other lights off.  This works, but as it operates on every
     light for every node, it does not scale well with many lights.  The flickering you can see
     in this demo is due to the lights swapping their relative positions from the cubes
     (a deliberate demonstration of the limitations of this technique).
 
 	LIGHTS_IN_ZONE shows a technique for turning on lights based on a 'zone'. Each empty scene
-    node is considered to be the parent of a zone.  When nodes are rendered, they turn off all 
+    node is considered to be the parent of a zone.  When nodes are rendered, they turn off all
     lights, then find their parent 'zone' and turn on all lights that are inside that zone, i.e.
-	are  descendents of it in the scene graph.  This produces true 'local' lighting for each cube 
-    in this example.  You could use a similar technique to locally light all meshes in (e.g.) 
+	are  descendents of it in the scene graph.  This produces true 'local' lighting for each cube
+    in this example.  You could use a similar technique to locally light all meshes in (e.g.)
     a room, without the lights spilling out to other rooms.
 
 	This light manager is also an event receiver; this is purely for simplicity in this example,
@@ -69,9 +71,9 @@ class CMyLightManager : public ILightManager, public IEventReceiver
 
 public:
 	CMyLightManager(ISceneManager* sceneManager)
-		: SceneManager(sceneManager),  SceneLightList(0),
-		CurrentRenderPass(ESNRP_COUNT), CurrentSceneNode(0),
-		Mode(NO_MANAGEMENT), RequestedMode(NO_MANAGEMENT)
+		: Mode(NO_MANAGEMENT), RequestedMode(NO_MANAGEMENT),
+		SceneManager(sceneManager),  SceneLightList(0),
+		CurrentRenderPass(ESNRP_COUNT), CurrentSceneNode(0)
 	{ }
 
 	virtual ~CMyLightManager(void) { }
@@ -108,7 +110,7 @@ public:
 
 		return handled;
 	}
-	
+
 
 	// This is called before the first scene node is rendered.
 	virtual void OnPreRender(core::array<ILightSceneNode*> & lightList)
@@ -123,9 +125,9 @@ public:
 	// Called after the last scene node is rendered.
 	virtual void OnPostRender()
 	{
-		// Since light management might be switched off in the event handler, we'll turn all 
-		// lights on to ensure that they are in a consistent state. You wouldn't normally have 
-		// to do this when using a light manager, since you'd continue to do light management 
+		// Since light management might be switched off in the event handler, we'll turn all
+		// lights on to ensure that they are in a consistent state. You wouldn't normally have
+		// to do this when using a light manager, since you'd continue to do light management
 		// yourself.
 		for(u32 i = 0; i < SceneLightList->size(); i++)
 			(*SceneLightList)[i]->setVisible(true);
@@ -158,7 +160,7 @@ public:
 			return;
 
 		// And in fact for this example, I only want to consider lighting for cube scene
-		// nodes.  You will probably want to deal with lighting for (at least) mesh / 
+		// nodes.  You will probably want to deal with lighting for (at least) mesh /
 		// animated mesh scene nodes as well.
 		if(node->getType() != ESNT_CUBE)
 			return;
@@ -166,7 +168,7 @@ public:
 		if(LIGHTS_NEAREST_NODE == Mode)
 		{
 			// This is a naive implementation that prioritises every light in the scene
-			// by its proximity to the node being rendered.  This produces some flickering 
+			// by its proximity to the node being rendered.  This produces some flickering
 			// when lights orbit closer to a cube than its 'zone' lights.
 			const vector3df nodePosition = node->getAbsolutePosition();
 
@@ -179,8 +181,6 @@ public:
 			for(i = 0; i < SceneLightList->size(); ++i)
 			{
 				ILightSceneNode* lightNode = (*SceneLightList)[i];
-				SLight & lightData = lightNode->getLightData();
-
 				f64 distance = lightNode->getAbsolutePosition().getDistanceFromSQ(nodePosition);
 				sortingArray.push_back(LightDistanceElement(lightNode, distance));
 			}
@@ -196,9 +196,9 @@ public:
 		else if(LIGHTS_IN_ZONE == Mode)
 		{
 			// Empty scene nodes are used to represent 'zones'.  For each solid mesh that
-			// is being rendered, turn off all lights, then find its 'zone' parent, and turn 
+			// is being rendered, turn off all lights, then find its 'zone' parent, and turn
 			// on all lights that are found under that node in the scene graph.
-			// This is a general purpose algorithm that doesn't use any special 
+			// This is a general purpose algorithm that doesn't use any special
 			// knowledge of how this particular scene graph is organised.
 			for(u32 i = 0; i < SceneLightList->size(); ++i)
 			{
@@ -338,7 +338,7 @@ int main(int argumentCount, char * argumentValues[])
 			rotation->drop();
 
 			// And each cube has three lights attached to it.  The lights are attached to billboards so
-			// that we can see where they are.  The billboards are attached to the cube, so that the 
+			// that we can see where they are.  The billboards are attached to the cube, so that the
 			// lights are indirect descendents of the same empty scene node as the cube.
 			IBillboardSceneNode * billboard = smgr->addBillboardSceneNode(node);
 			billboard->setPosition(vector3df(0, -14, 30));

@@ -76,6 +76,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16.Quake3MapShader", "16.Qu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.MouseAndJoystick", "19.MouseAndJoystick\MouseAndJoystick.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20.ManagedLights_vc8", "20.ManagedLights\ManagedLights_vc8.vcproj", "{16007FE2-142B-47F8-93E1-519BA3F39E71}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug

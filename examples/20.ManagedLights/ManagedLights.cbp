@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Irrlicht Example 19 ManagedLights" />
+		<Option title="Irrlicht Example 20 ManagedLights" />
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
 		<Build>
