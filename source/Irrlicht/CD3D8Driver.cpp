@@ -1767,11 +1767,8 @@ void CD3D8Driver::deleteAllDynamicLights()
 
 
 //! adds a dynamic light
-void CD3D8Driver::addDynamicLight(const SLight& dl)
+s32 CD3D8Driver::addDynamicLight(const SLight& dl)
 {
-	if ((u32)LastSetLight == Caps.MaxActiveLights-1)
-		return;
-
 	CNullDriver::addDynamicLight(dl);
 
 	D3DLIGHT8 light;
@@ -1807,8 +1804,24 @@ void CD3D8Driver::addDynamicLight(const SLight& dl)
 	light.Phi = dl.OuterCone * 2.0f * core::DEGTORAD;
 
 	++LastSetLight;
-	pID3DDevice->SetLight(LastSetLight, &light);
-	pID3DDevice->LightEnable(LastSetLight, true);
+
+	if(D3D_OK == pID3DDevice->SetLight(LastSetLight, &light))
+	{
+		// I don't care if this succeeds
+		(void)pID3DDevice->LightEnable(LastSetLight, true);
+		return LastSetLight;
+	}
+
+	return -1;
+}
+
+
+void CD3D8Driver::turnLightOn(s32 lightIndex, bool turnOn)
+{
+	if(lightIndex < 0 || lightIndex > LastSetLight)
+		return;
+ 
+	(void)pID3DDevice->LightEnable(lightIndex, turnOn);
 }
 
 

@@ -14,6 +14,7 @@
 #include "IGUIEnvironment.h"
 #include "IMaterialRenderer.h"
 #include "IReadFile.h"
+#include "ILightManager.h"
 
 #include "os.h"
 
@@ -162,7 +163,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 : ISceneNode(0, 0), Driver(driver), FileSystem(fs), GUIEnvironment(gui),
 	CursorControl(cursorControl), CollisionManager(0),
 	ActiveCamera(0), ShadowColor(150,0,0,0), AmbientLight(0,0,0,0),
-	MeshCache(cache), CurrentRendertime(ESNRP_COUNT),
+	MeshCache(cache), CurrentRendertime(ESNRP_COUNT), LightManager(0),
 	IRR_XML_FORMAT_SCENE(L"irr_scene"), IRR_XML_FORMAT_NODE(L"node"), IRR_XML_FORMAT_NODE_ATTR_TYPE(L"type")
 {
 	#ifdef _DEBUG
@@ -297,6 +298,9 @@ CSceneManager::~CSceneManager()
 
 	for (i=0; i<SceneNodeAnimatorFactoryList.size(); ++i)
 		SceneNodeAnimatorFactoryList[i]->drop();
+
+	if(LightManager)
+		LightManager->drop();
 
 	// remove all nodes and animators before dropping the driver
 	// as render targets may be destroyed twice
@@ -1163,7 +1167,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 		// Lighting modell in irrlicht has to be redone..
 		//if (!isCulled(node))
 		{
-			LightList.push_back(DistanceNodeEntry(node, camWorldPos));
+			LightList.push_back(static_cast<ILightSceneNode*>(node));
 			taken = 1;
 		}
 		break;
@@ -1284,69 +1288,158 @@ void CSceneManager::drawAll()
 	// let all nodes register themselves
 	OnRegisterSceneNode();
 
+	if(LightManager)
+		LightManager->OnPreRender(LightList);
+
 	u32 i; // new ISO for scoping problem in some compilers
 
 	//render camera scenes
 	{
 		CurrentRendertime = ESNRP_CAMERA;
+
+		if(LightManager)
+			LightManager->OnRenderPassPreRender(CurrentRendertime);
+
 		for (i=0; i<CameraList.size(); ++i)
 			CameraList[i]->render();
 
 		CameraList.set_used(0);
+
+		if(LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRendertime);
 	}
 
 	//render lights scenes
 	{
 		CurrentRendertime = ESNRP_LIGHT;
 
+		if(LightManager)
+		{
+			LightManager->OnRenderPassPreRender(CurrentRendertime);
+		}
+		else
+		{
+			// Sort the lights by distance from the camera
+			core::vector3df camWorldPos(0, 0, 0);
+			if(ActiveCamera)
+				camWorldPos = ActiveCamera->getAbsolutePosition();
+
+			core::array<DistanceNodeEntry> SortedLights;
+			SortedLights.set_used(LightList.size());
+			for(s32 light = (s32)LightList.size() - 1; light >= 0; --light)
+				SortedLights[light].setNodeAndDistanceFromPosition(LightList[light], camWorldPos);
+
+			SortedLights.set_sorted(false);
+			SortedLights.sort();
+
+			for(s32 light = (s32)LightList.size() - 1; light >= 0; --light)
+				LightList[light] = static_cast<ILightSceneNode*>(SortedLights[light].Node);
+		}
+
+
 		Driver->deleteAllDynamicLights();
 
 		Driver->setAmbientLight(AmbientLight);
 
-		LightList.sort();		// on distance to camera
+		u32 maxLights = LightList.size();
+		
+		if(!LightManager)
+			maxLights = core::min_ ( Driver->getMaximalDynamicLightAmount(), maxLights);
 
-		u32 maxLights = core::min_ ( Driver->getMaximalDynamicLightAmount(), LightList.size() );
 		for (i=0; i< maxLights; ++i)
-			LightList[i].Node->render();
+			LightList[i]->render();
 
-		LightList.set_used(0);
+		if(LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRendertime);
 	}
 
 	// render skyboxes
 	{
 		CurrentRendertime = ESNRP_SKY_BOX;
-
-		for (i=0; i<SkyBoxList.size(); ++i)
-			SkyBoxList[i]->render();
+		if(LightManager)
+		{
+			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			for (i=0; i<SkyBoxList.size(); ++i)
+			{
+				ISceneNode* node = SkyBoxList[i];
+				LightManager->OnNodePreRender(node);
+				node->render();
+				LightManager->OnNodePostRender(node);
+			}
+		}
+		else
+		{
+			for (i=0; i<SkyBoxList.size(); ++i)
+				SkyBoxList[i]->render();
+		}
 
 		SkyBoxList.set_used(0);
+
+		if(LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRendertime);
 	}
 
 
 	// render default objects
 	{
 		CurrentRendertime = ESNRP_SOLID;
+
 		SolidNodeList.sort(); // sort by textures
 
-		for (i=0; i<SolidNodeList.size(); ++i)
-			SolidNodeList[i].Node->render();
+		if(LightManager)
+		{
+			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			for (i=0; i<SolidNodeList.size(); ++i)
+			{
+				ISceneNode* node = SolidNodeList[i].Node;
+				LightManager->OnNodePreRender(node);
+				node->render();
+				LightManager->OnNodePostRender(node);
+			}
+		}
+		else
+		{
+			for (i=0; i<SolidNodeList.size(); ++i)
+				SolidNodeList[i].Node->render();
+		}
 
 		Parameters.setAttribute ( "drawn", (s32) SolidNodeList.size() );
 
 		SolidNodeList.set_used(0);
+
+		if(LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRendertime);
 	}
 
 	// render shadows
 	{
 		CurrentRendertime = ESNRP_SHADOW;
-		for (i=0; i<ShadowNodeList.size(); ++i)
-			ShadowNodeList[i]->render();
+
+		if(LightManager)
+		{
+			LightManager->OnRenderPassPreRender(CurrentRendertime);
+			for (i=0; i<ShadowNodeList.size(); ++i)
+			{
+				ISceneNode* node = ShadowNodeList[i];
+				LightManager->OnNodePreRender(node);
+				node->render();
+				LightManager->OnNodePostRender(node);
+			}
+		}
+		else
+		{
+			for (i=0; i<ShadowNodeList.size(); ++i)
+				ShadowNodeList[i]->render();
+		}
 
 		if (!ShadowNodeList.empty())
 			Driver->drawStencilShadow(true,ShadowColor, ShadowColor,
 				ShadowColor, ShadowColor);
 
 		ShadowNodeList.set_used(0);
+
+		if(LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRendertime);
 	}
 
 	// render transparent objects.
@@ -1354,15 +1447,48 @@ void CSceneManager::drawAll()
 		CurrentRendertime = ESNRP_TRANSPARENT;
 		TransparentNodeList.sort(); // sort by distance from camera
 
-		for (i=0; i<TransparentNodeList.size(); ++i)
-			TransparentNodeList[i].Node->render();
+		if(LightManager)
+		{
+			LightManager->OnRenderPassPreRender(CurrentRendertime);
+
+			for (i=0; i<TransparentNodeList.size(); ++i)
+			{
+				ISceneNode* node = TransparentNodeList[i].Node;
+				LightManager->OnNodePreRender(node);
+				node->render();
+				LightManager->OnNodePostRender(node);
+			}
+		}
+		else
+		{
+			for (i=0; i<TransparentNodeList.size(); ++i)
+				TransparentNodeList[i].Node->render();
+		}
 
 		TransparentNodeList.set_used(0);
+
+		if(LightManager)
+			LightManager->OnRenderPassPostRender(CurrentRendertime);
 	}
 
+	if(LightManager)
+		LightManager->OnPostRender();
+
+	LightList.set_used(0);
 	clearDeletionList();
 
 	CurrentRendertime = ESNRP_COUNT;
+}
+
+void CSceneManager::setLightManager(ILightManager* lightManager)
+{
+	if(LightManager)
+		LightManager->drop();
+ 
+	LightManager = lightManager;
+	
+	if(LightManager)
+		LightManager->grab();
 }
 
 

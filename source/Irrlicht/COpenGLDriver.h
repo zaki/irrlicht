@@ -209,8 +209,15 @@ namespace video
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();
 
-		//! adds a dynamic light
-		virtual void addDynamicLight(const SLight& light);
+		//! adds a dynamic light, returning an index to the light
+		//! \param light: the light data to use to create the light
+		//! \return An index to the light, or -1 if an error occurs
+		virtual s32 addDynamicLight(const SLight& light);
+ 
+		//! Turns a dynamic light on or off
+		//! \param lightIndex: the index returned by addDynamicLight
+		//! \param turnOn: true to turn the light on, false to turn it off
+		virtual void turnLightOn(s32 lightIndex, bool turnOn);
 
 		//! returns the maximal amount of dynamic lights the device can handle
 		virtual u32 getMaximalDynamicLightAmount() const;
@@ -367,6 +374,10 @@ namespace video
 
 		void createMaterialRenderers();
 
+		//! Assign a hardware light to the specified requested light, if any
+		//! free hardware lights exist.
+		//! \param[in] lightIndex: the index of the requesting light
+		void assignHardwareLight(u32 lightIndex);
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -402,6 +413,19 @@ namespace video
 
 		//! Color buffer format
 		ECOLOR_FORMAT ColorFormat;
+
+		//! All the lights that have been requested; a hardware limited
+		//! number of them will be used at once.
+		struct RequestedLight
+		{
+			RequestedLight(SLight const & lightData)
+				: LightData(lightData), HardwareLightIndex(-1), DesireToBeOn(true) { }
+
+			SLight	LightData;
+			s32		HardwareLightIndex; // GL_LIGHT0 - GL_LIGHT7
+			bool	DesireToBeOn;
+		};
+		core::array<RequestedLight> RequestedLights;
 
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context

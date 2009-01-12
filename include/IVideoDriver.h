@@ -724,9 +724,10 @@ namespace video
 		//! Deletes all dynamic lights which were previously added with addDynamicLight().
 		virtual void deleteAllDynamicLights() = 0;
 
-		//! Adds a dynamic light.
-		/** \param light Data specifying the dynamic light. */
-		virtual void addDynamicLight(const SLight& light) = 0;
+		//! adds a dynamic light, returning an index to the light
+		//! \param light: the light data to use to create the light
+		//! \return An index to the light, or -1 if an error occurs
+		virtual s32 addDynamicLight(const SLight& light) = 0;
 
 		//! Returns the maximal amount of dynamic lights the device can handle
 		/** \return Maximal amount of dynamic lights. */
@@ -741,6 +742,11 @@ namespace video
 		greater and smaller than IVideoDriver()::getDynamicLightCount.
 		\return Light data. */
 		virtual const SLight& getDynamicLight(u32 idx) const = 0;
+
+		//! Turns a dynamic light on or off
+		//! \param lightIndex: the index returned by addDynamicLight
+		//! \param turnOn: true to turn the light on, false to turn it off
+		virtual void turnLightOn(s32 lightIndex, bool turnOn) = 0;
 
 		//! Gets name of this video driver.
 		/** \return Returns the name of the video driver, e.g. in case

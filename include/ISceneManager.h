@@ -113,6 +113,7 @@ namespace scene
 	class ISceneNodeFactory;
 	class ISceneNodeAnimatorFactory;
 	class ISceneUserDataSerializer;
+	class ILightManager;
 
 	namespace quake3
 	{
@@ -1368,6 +1369,11 @@ namespace scene
 
 		//! Returns ambient color of the scene
 		virtual const video::SColorf& getAmbientLight() const = 0;
+
+		//! Register a custom callbacks manager which gets callbacks during scene rendering.
+		/** \param[in] lightManager: the new callbacks manager.  You may pass 0 to remove the 
+			current callbacks manager and restore the default behaviour. */
+		virtual void setLightManager(ILightManager* lightManager) = 0;
 	};
 
 

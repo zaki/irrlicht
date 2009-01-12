@@ -1,5 +1,7 @@
 Changes in version 1.6
 
+ - Added an optional light manager to the scene manager to allow the user application to turn lights on and off during scene rendering.  This can be used to produce "zoned" lighting. See example 20.ManagedLights.
+
  - Added a method to flip the Y movement of the FPS camera.
 
  - The Anisotropy filter can now be set to the AF value per texture layer. So no forced MAX_ANISOTROPY anymore. .irr files will probably fail, though.

@@ -352,7 +352,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceMacOSX *device)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), RenderTargetTexture(0), LastSetLight(-1),
+	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8), _device(device)
 {
 	#ifdef _DEBUG
@@ -373,7 +373,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -410,7 +410,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -425,6 +425,8 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 //! destructor
 COpenGLDriver::~COpenGLDriver()
 {
+	RequestedLights.clear();
+
 	deleteMaterialRenders();
 
 	// I get a blue screen on my laptop, when I do not delete the
@@ -2227,28 +2229,50 @@ const wchar_t* COpenGLDriver::getName() const
 //! deletes all dynamic lights there are
 void COpenGLDriver::deleteAllDynamicLights()
 {
-	for (s32 i=0; i<LastSetLight+1; ++i)
+	for (s32 i=0; i<MaxLights; ++i)
 		glDisable(GL_LIGHT0 + i);
 
-	LastSetLight = -1;
+	RequestedLights.clear();
 
 	CNullDriver::deleteAllDynamicLights();
 }
 
 
 //! adds a dynamic light
-void COpenGLDriver::addDynamicLight(const SLight& light)
+s32 COpenGLDriver::addDynamicLight(const SLight& light)
 {
-	if (LastSetLight == MaxLights-1)
-		return;
+	CNullDriver::addDynamicLight(light);
+ 
+	RequestedLights.push_back(RequestedLight(light));
 
+	u32 newLightIndex = RequestedLights.size() - 1;
+
+	// Try and assign a hardware light just now, but don't worry if I can't
+	assignHardwareLight(newLightIndex);
+
+	return (s32)newLightIndex;
+}
+
+
+void COpenGLDriver::assignHardwareLight(u32 lightIndex)
+{
 	setTransform(ETS_WORLD, core::matrix4());
 
-	++LastSetLight;
-	CNullDriver::addDynamicLight(light);
+	s32 lidx;
+	for (lidx=GL_LIGHT0; lidx < GL_LIGHT0 + MaxLights; ++lidx)
+	{
+		if(!glIsEnabled(lidx))
+		{
+			RequestedLights[lightIndex].HardwareLightIndex = lidx;
+			break;
+		}
+	}
 
-	s32 lidx = GL_LIGHT0 + LastSetLight;
+	if(lidx == GL_LIGHT0 + MaxLights) // There's no room for it just now
+		return;
+
 	GLfloat data[4];
+	const SLight & light = RequestedLights[lightIndex].LightData;
 
 	switch (light.Type)
 	{
@@ -2322,6 +2346,45 @@ void COpenGLDriver::addDynamicLight(const SLight& light)
 	glLightf(lidx, GL_QUADRATIC_ATTENUATION, light.Attenuation.Z);
 
 	glEnable(lidx);
+}
+
+
+//! Turns a dynamic light on or off
+//! \param lightIndex: the index returned by addDynamicLight
+//! \param turnOn: true to turn the light on, false to turn it off
+void COpenGLDriver::turnLightOn(s32 lightIndex, bool turnOn)
+{
+	if(lightIndex < 0 || lightIndex >= (s32)RequestedLights.size())
+		return;
+
+	RequestedLight & requestedLight = RequestedLights[lightIndex];
+
+	requestedLight.DesireToBeOn = turnOn;
+
+	if(turnOn)
+	{
+		if(-1 == requestedLight.HardwareLightIndex)
+			assignHardwareLight(lightIndex);
+	}
+	else
+	{
+		if(-1 != requestedLight.HardwareLightIndex)
+		{
+			// It's currently assigned, so free up the hardware light
+			glDisable(requestedLight.HardwareLightIndex);
+			requestedLight.HardwareLightIndex = -1;
+
+			// Now let the first light that's waiting on a free hardware light grab it
+			for(u32 requested = 0; requested < RequestedLights.size(); ++requested)
+				if(RequestedLights[requested].DesireToBeOn
+					&&
+					-1 == RequestedLights[requested].HardwareLightIndex)
+				{
+					assignHardwareLight(requested);
+					break;
+				}
+		}
+	}
 }
 
 
