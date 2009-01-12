@@ -1,5 +1,5 @@
 // Written by Colin MacDonald - all rights assigned to Nikolaus Gebhardt
-// Copyright (C) 2008-2009 Nikolaus Gebhardt
+// Copyright (C) 2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,17 +15,13 @@ namespace scene
 {
 	class ILightSceneNode;
 
-	//! Provides callbacks to when the the scene graph is rendered.
-	/** ILightManager is an optional manager that the user application can 
-		register in order to receive callbacks as the scene is rendered.
-		The OnPreRender() callback provides the user application with a list of the
-		lights in the scene.  This list can be stored and used to turn lights
-		on and off as each scene node is rendered in order to provide per-node
-		or 'local' lights.
-		It is assumed that the ILightManager implementation will store any
-		data that it wishes to retain, i.e. the ISceneManager to which it is assigned, 
-		the lightList, the current render pass, and the current scene node.
-	*/
+	//! ILightManager provides an interface for user applications to manipulate the list
+	//! of lights in the scene.  The light list can be trimmed or re-ordered before device/
+	//! hardware lights are created, and/or individual lights can be switched on and off
+	//! before or after each scene node is rendered.
+	//! It is assumed that the ILightManager implementation will store any data that it wishes
+	//! to retain, i.e. the ISceneManager to which it is assigned, the lightList, the current
+	//! render pass, and the current scene node.
 	class ILightManager : public IReferenceCounted
 	{
 	public:
