@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9.00"
 	Name="20.ManagedLights_vc9"
-	ProjectGUID="{FE853A36-E0D1-4AC5-A792-B643E70D2953}"
+	ProjectGUID="{16007FE2-142B-47F8-93E1-519BA3F39E71}"
 	RootNamespace="ManagedLights_vc9"
 	TargetFrameworkVersion="131072"
 	>
@@ -72,6 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="..\..\Lib\Win32-visualstudio\Irrlicht.lib"
 				OutputFile="..\..\bin\Win32-VisualStudio\20.ManagedLights.exe"
 				LinkIncremental="0"
 				SuppressStartupBanner="true"
