@@ -165,8 +165,8 @@ private:
 	bool readRGB(video::SColor& color);
 	bool readRGBA(video::SColor& color);
 
-	ISceneManager*	SceneManager;
-	io::IFileSystem*	FileSystem;
+	ISceneManager* SceneManager;
+	io::IFileSystem* FileSystem;
 
 	core::array<CSkinnedMesh::SJoint*> *AllJoints;
 
