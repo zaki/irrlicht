@@ -79,8 +79,8 @@ namespace scene
 
 		//! Creates a clone of this animator.
 		/** Please note that you will have to drop
-		(IReferenceCounted::drop()) the returned pointer after calling
-		this. */
+		(IReferenceCounted::drop()) the returned pointer once you're
+		done with it. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
 		struct SCamKeyMap
@@ -112,7 +112,6 @@ namespace scene
 
 		s32 LastAnimationTime;
 
-		core::vector3df TargetVector;
 		core::array<SCamKeyMap> KeyMap;
 		core::position2d<f32> CenterCursor, CursorPos;
 

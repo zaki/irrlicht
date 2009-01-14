@@ -234,8 +234,6 @@ void CSceneNodeAnimatorCameraFPS::animateNode(ISceneNode* node, u32 timeMs)
 	camera->setPosition(pos);
 
 	// write right target
-
-	TargetVector = target;
 	target += pos;
 	camera->setTarget(target);
 }
