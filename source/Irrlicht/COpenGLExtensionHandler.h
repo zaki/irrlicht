@@ -713,20 +713,22 @@ class COpenGLExtensionHandler
 
 	// Some non-boolean properties
 	//! Maxmimum texture layers supported by the fixed pipeline
-	u32 MaxTextureUnits;
+	u8 MaxTextureUnits;
 	//! Maximum hardware lights supported
-	GLint MaxLights;
+	u8 MaxLights;
 	//! Optimal number of indices per meshbuffer
-	GLint MaxIndices;
+	u32 MaxIndices;
 	//! Maximal Anisotropy
 	u8 MaxAnisotropy;
 	//! Number of user clipplanes
-	u32 MaxUserClipPlanes;
+	u8 MaxUserClipPlanes;
+	//! Number of auxiliary buffers
+	u8 MaxAuxBuffers;
 
 	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
-	u32 Version;
+	u16 Version;
 	//! GLSL version as Integer: 100*Major+Minor
-	u32 ShaderLanguageVersion;
+	u16 ShaderLanguageVersion;
 
 	// public access to the (loaded) extensions.
 	// general functions
