@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -163,7 +163,7 @@ namespace video
 				SColor color=SColor(255,255,255,255),
 				bool useAlphaChannelOfTexture=false);
 
-		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
+		//! Draws a 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			SColor color=SColor(255,255,255,255), bool useAlphaChannelOfTexture=false);
@@ -173,13 +173,16 @@ namespace video
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 
-		//! draw an 2d rectangle
+		//! Draws a 2d rectangle
 		virtual void draw2DRectangle(SColor color, const core::rect<s32>& pos, const core::rect<s32>* clip = 0);
 
-		//!Draws an 2d rectangle with a gradient.
+		//! Draws a 2d rectangle with a gradient.
 		virtual void draw2DRectangle(const core::rect<s32>& pos,
 			SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
 			const core::rect<s32>* clip = 0);
+
+		//! Draws the outline of a 2d rectangle
+		virtual void draw2DRectangleOutline(const core::recti& pos, SColor color=SColor(255,255,255,255));
 
 		//! Draws a 2d line.
 		virtual void draw2DLine(const core::position2d<s32>& start,

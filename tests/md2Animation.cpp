@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "irrlicht.h"
@@ -21,7 +21,7 @@ bool md2Animation(void)
 	assert(device);
 	if (!device)
 		return false;
-	
+
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 

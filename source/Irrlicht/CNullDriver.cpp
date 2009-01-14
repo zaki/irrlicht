@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -669,7 +669,7 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s
 }
 
 
-//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
+//! Draws a 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 void CNullDriver::draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 				const core::rect<s32>& sourceRect,
 				const core::rect<s32>* clipRect, SColor color,
@@ -678,8 +678,17 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::positi
 }
 
 
+//! Draws the outline of a 2d rectangle
+void CNullDriver::draw2DRectangleOutline(const core::recti& pos, SColor color)
+{
+	draw2DLine(pos.UpperLeftCorner, core::position2di(pos.LowerRightCorner.X, pos.UpperLeftCorner.Y), color);
+	draw2DLine(core::position2di(pos.LowerRightCorner.X, pos.UpperLeftCorner.Y), pos.LowerRightCorner, color);
+	draw2DLine(pos.LowerRightCorner, core::position2di(pos.UpperLeftCorner.X, pos.LowerRightCorner.Y), color);
+	draw2DLine(core::position2di(pos.UpperLeftCorner.X, pos.LowerRightCorner.Y), pos.UpperLeftCorner, color);
+}
 
-//! draw an 2d rectangle
+
+//! Draw a 2d rectangle
 void CNullDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos, const core::rect<s32>* clip)
 {
 	draw2DRectangle(pos, color, color, color, color, clip);
@@ -687,7 +696,7 @@ void CNullDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos, cons
 
 
 
-//!Draws an 2d rectangle with a gradient.
+//! Draws a 2d rectangle with a gradient.
 void CNullDriver::draw2DRectangle(const core::rect<s32>& pos,
 	SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
 	const core::rect<s32>* clip)

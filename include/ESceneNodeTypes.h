@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -70,11 +70,11 @@ namespace scene
 		ESNT_MD3_SCENE_NODE  = MAKE_IRR_ID('m','d','3','_'),
 
 		//! Maya Camera Scene Node
-		//! Legacy, for loading version <= 1.4.x .irr files
+		/** Legacy, for loading version <= 1.4.x .irr files */
 		ESNT_CAMERA_MAYA    = MAKE_IRR_ID('c','a','m','M'),
 
 		//! First Person Shooter Camera
-		//! Legacy, for loading version <= 1.4.x .irr files
+		/** Legacy, for loading version <= 1.4.x .irr files */
 		ESNT_CAMERA_FPS     = MAKE_IRR_ID('c','a','m','F'),
 
 		//! Unknown scene node

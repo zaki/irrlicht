@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -79,4 +79,4 @@ bool disambiguateTextures(void)
 	device->drop();
 	return (changed && tex1 == tex2 && tex1 == tex3 && tex1 != tex4) ? true : false;
 }
- 	  	 
+

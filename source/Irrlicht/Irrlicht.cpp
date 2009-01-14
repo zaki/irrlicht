@@ -1,10 +1,10 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
 
-static const char* const copyright = "Irrlicht Engine (c) 2002-2008 Nikolaus Gebhardt";
+static const char* const copyright = "Irrlicht Engine (c) 2002-2009 Nikolaus Gebhardt";
 
 #ifdef _IRR_WINDOWS_
 	#include <windows.h>

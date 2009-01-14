@@ -1,4 +1,4 @@
-// Copyright 2006-2008 by Kat'Oun
+// Copyright (C) 2006-2009 by Kat'Oun
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 

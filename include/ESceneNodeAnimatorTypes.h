@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -46,8 +46,7 @@ namespace scene
 		//! Unknown scene node animator
 		ESNAT_UNKNOWN,
 
-		//! This enum is never used, it only forces the compiler to
-		//! compile these enumeration values to 32 bit.
+		//! This enum is never used, it only forces the compiler to compile this enumeration to 32 bit.
 		ESNAT_FORCE_32_BIT = 0x7fffffff
 	};
 

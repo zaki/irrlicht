@@ -1,4 +1,4 @@
-// Copyright (C) 2005-2008 Etienne Petitjean
+// Copyright (C) 2005-2009 Etienne Petitjean
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -434,7 +434,7 @@ bool CIrrDeviceMacOSX::createWindow()
 	display = CGMainDisplayID();
 	_screenWidth = (int) CGDisplayPixelsWide(display);
 	_screenHeight = (int) CGDisplayPixelsHigh(display);
-
+	
 	VideoModeList.setDesktop(CreationParams.Bits,core::dimension2d<s32>(_screenWidth, _screenHeight));
 
 	if (!CreationParams.Fullscreen)
@@ -545,8 +545,8 @@ bool CIrrDeviceMacOSX::createWindow()
 					{
 						CGLSetFullScreen(_cglcontext);
 						displayRect = CGDisplayBounds(display);
-						_width = (int)displayRect.size.width;
-						_height = (int)displayRect.size.height;
+						_screenWidth = _width = (int)displayRect.size.width;
+						_screenHeight = _height = (int)displayRect.size.height;
 						result = true;
 					}
 				}
@@ -915,6 +915,7 @@ void CIrrDeviceMacOSX::setMouseLocation(int x,int y)
 
 	if (_window != NULL)
 	{
+		// Irrlicht window exists
 		p.x = (float) x;
 		p.y = (float) (_height - y);
 		p = [(NSWindow *)_window convertBaseToScreen:p];

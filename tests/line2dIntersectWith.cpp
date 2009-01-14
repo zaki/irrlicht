@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -8,9 +8,9 @@
 using namespace irr;
 using namespace core;
 
-static bool testLines(line2df const & line1, 
-					  line2df const & line2, 
-					  bool expectedHit, 
+static bool testLines(line2df const & line1,
+					  line2df const & line2,
+					  bool expectedHit,
 					  const vector2df & expectedIntersection)
 {
 	bool gotExpectedResult = true;
@@ -224,5 +224,5 @@ bool line2dIntersectWith(void)
 		logTestString("\nFAIL!\n");
 
 	return allExpected;
-} 
+}
 

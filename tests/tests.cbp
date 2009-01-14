@@ -40,8 +40,10 @@
 		<Unit filename="b3dAnimation.cpp" />
 		<Unit filename="burningsVideo.cpp" />
 		<Unit filename="collisionResponseAnimator.cpp" />
+		<Unit filename="cursorSetVisible.cpp" />
 		<Unit filename="disambiguateTextures.cpp" />
 		<Unit filename="drawPixel.cpp" />
+		<Unit filename="drawRectOutline.cpp" />
 		<Unit filename="exports.cpp" />
 		<Unit filename="fast_atof.cpp" />
 		<Unit filename="irrCoreEquals.cpp" />
@@ -61,6 +63,7 @@
 		<Unit filename="testVector2d.cpp" />
 		<Unit filename="testVector3d.cpp" />
 		<Unit filename="textureRenderStates.cpp" />
+		<Unit filename="transparentAlphaChannelRef.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />
 		<Extensions>
 			<code_completion />

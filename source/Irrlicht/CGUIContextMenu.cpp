@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -530,8 +530,7 @@ void CGUIContextMenu::draw()
 
 void CGUIContextMenu::recalculateSize()
 {
-	IGUISkin* skin = Environment->getSkin();
-	IGUIFont* font = skin->getFont(EGDF_MENU);
+	IGUIFont* font = Environment->getSkin()->getFont(EGDF_MENU);
 
 	if (!font)
 		return;
