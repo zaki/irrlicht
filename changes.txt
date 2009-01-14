@@ -25,6 +25,8 @@ Changes in version 1.6
 -------------------------------------
 Changes in version 1.5.1 (??.?? 2009)
 
+ - Fixed OSX device bug where screen size was not set in fullscreen mode.
+
  - OSX device now supports shift and ctrl keys.
 
  - MD2 mesh loader: Now uses much less memory, reduced number of allocations when loading meshes.

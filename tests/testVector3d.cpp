@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -14,7 +14,7 @@ static bool compareVectors(const core::vector3d<T> & compare,
 {
 	if(compare != with)
 	{
-		logTestString("\nERROR: vector3d %.16f, %.16f, %.16f != vector3d %.16f, %.16f, %.16f\n", 
+		logTestString("\nERROR: vector3d %.16f, %.16f, %.16f != vector3d %.16f, %.16f, %.16f\n",
 			(f64)compare.X, (f64)compare.Y, (f64)compare.Z,
 			(f64)with.X, (f64)with.Y, (f64)with.Z);
 		assert(compare == with);
@@ -50,7 +50,7 @@ static bool doTests()
 	vec.set(10, 10, 10);
 	center.set(5, 5, 10);
 	vec.rotateXYBy(-5, center);
-	// -5 means rotate clockwise slightly, so expect the X to increase 
+	// -5 means rotate clockwise slightly, so expect the X to increase
 	// slightly and the Y to decrease slightly.
 	COMPARE_VECTORS(vec, vector3d<T>((T)10.416752204197017, (T)9.5451947767204359, 10));
 

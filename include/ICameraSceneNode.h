@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -146,7 +146,7 @@ namespace scene
 		setTarget() will update its rotation so that its +Z axis will
 		point at the target point. FPS camera use this binding by
 		default; other cameras do not.
-		\param binding true to bind the camera's scene node rotation
+		\param bound True to bind the camera's scene node rotation
 		and targetting, false to unbind them.
 		@see getTargetAndRotationBinding() */
 		virtual void bindTargetAndRotation(bool bound) = 0;

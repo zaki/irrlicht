@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -96,9 +96,12 @@ namespace irr
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
 			{
-				IsVisible = visible;
-				updateInternalCursorPosition();
-				setPosition(CursorPos.X, CursorPos.Y);
+				if(visible != IsVisible)
+				{
+					IsVisible = visible;
+					updateInternalCursorPosition();
+					setPosition(CursorPos.X, CursorPos.Y);
+				}
 			}
 
 			//! Returns if the cursor is currently visible.

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -279,11 +279,6 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 		if(minZ > triangle.pointA.Z && minZ > triangle.pointB.Z && minZ > triangle.pointC.Z)
 			continue;
 		if(maxZ < triangle.pointA.Z && maxZ < triangle.pointB.Z && maxZ < triangle.pointC.Z)
-			continue;
-
-		if(ray.start.getDistanceFromSQ(triangle.pointA) >= nearest &&
-			ray.start.getDistanceFromSQ(triangle.pointB) >= nearest &&
-			ray.start.getDistanceFromSQ(triangle.pointC) >= nearest)
 			continue;
 
 		if (triangle.getIntersectionWithLine(ray.start, linevect, intersection))

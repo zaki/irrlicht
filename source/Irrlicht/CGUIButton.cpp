@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -291,6 +291,9 @@ void CGUIButton::draw()
 //! sets another skin independent font. if this is set to zero, the button uses the font of the skin.
 void CGUIButton::setOverrideFont(IGUIFont* font)
 {
+	if (OverrideFont == font)
+		return;
+
 	if (OverrideFont)
 		OverrideFont->drop();
 

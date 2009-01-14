@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -39,8 +39,8 @@ namespace scene
 		virtual void setRotateSpeed(f32 rotateSpeed) = 0;
 
 		//! Sets the keyboard mapping for this animator
-		/** \param keymap Array of keyboard mappings, see SKeyMap
-		\param count Size of the keyboard map array */
+		/** \param map Array of keyboard mappings, see irr::SKeyMap
+		\param count Size of the keyboard map array. */
 		virtual void setKeyMap(SKeyMap *map, u32 count) = 0;
 
 		//! Sets whether vertical movement should be allowed.

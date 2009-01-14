@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -115,7 +115,10 @@ class quaternion
 		quaternion& rotationFromTo(const vector3df& from, const vector3df& to);
 
 		//! Quaternion elements.
-		f32 X, Y, Z, W;
+		f32 X; // vectorial (imaginary) part
+		f32 Y;
+		f32 Z;
+		f32 W; // real part
 };
 
 

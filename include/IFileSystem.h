@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -119,7 +119,9 @@ public:
 
 	//! Returns the base part of a filename, i.e. the name without the directory
 	//! part. If no directory is prefixed, the full name is returned.
-	/** \param filename: The file to get the basename from */
+	/** \param filename: The file to get the basename from
+	\param keepExtension True if filename with extension is returned otherwise everything
+	after the final '.' is removed as well. */
 	virtual core::stringc getFileBasename(const core::stringc& filename, bool keepExtension=true) const = 0;
 
 	//! Creates a list of files and directories in the current working directory and returns it.

@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -11,8 +11,8 @@ using namespace scene;
 using namespace video;
 
 static bool testGetCollisionResultPosition(IrrlichtDevice * device,
-										   ISceneManager * smgr,
-										   ISceneCollisionManager * collMgr)
+					   ISceneManager * smgr,
+					   ISceneCollisionManager * collMgr)
 {
 	IMeshSceneNode * cubeNode = smgr->addCubeSceneNode(10.f);
 	ITriangleSelector * cubeSelector = smgr->createTriangleSelectorFromBoundingBox(cubeNode);
@@ -23,12 +23,12 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 
 	vector3df resultPosition =
 		collMgr->getCollisionResultPosition(cubeSelector,
-										vector3df(0, 50, 0),
-										vector3df(10, 20, 10),
-										vector3df(0, -100, 0),
-										triOut,
-										hitPosition,
-										falling);
+						vector3df(0, 50, 0),
+						vector3df(10, 20, 10),
+						vector3df(0, -100, 0),
+						triOut,
+						hitPosition,
+						falling);
 
 	bool result = true;
 	if(!equals(resultPosition.Y, 25.f, 0.01f))
@@ -47,12 +47,12 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 
 	resultPosition =
 		collMgr->getCollisionResultPosition(cubeSelector,
-										vector3df(-20, 0, 0),
-										vector3df(10, 20, 10),
-										vector3df(100, 0, 0),
-										triOut,
-										hitPosition,
-										falling);
+						vector3df(-20, 0, 0),
+						vector3df(10, 20, 10),
+						vector3df(100, 0, 0),
+						triOut,
+						hitPosition,
+						falling);
 
 	if(!equals(resultPosition.X, -15.f, 0.01f))
 	{
@@ -74,9 +74,56 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 }
 
 
+// Test that getCollisionPoint() actually uses the closest point, not the closest triangle.
+static bool getCollisionPoint_ignoreTriangleVertices(IrrlichtDevice * device,
+						ISceneManager * smgr,
+						ISceneCollisionManager * collMgr)
+{
+	// Create a cube with a Z face at 5, but corners close to 0
+	ISceneNode * farSmallCube = smgr->addCubeSceneNode(10, 0, -1, vector3df(0, 0, 10));
+
+	// Create a cube with a Z face at 0, but corners far from 0
+	ISceneNode * nearBigCube = smgr->addCubeSceneNode(100, 0, -1, vector3df(0, 0, 50));
+
+	IMetaTriangleSelector * meta = smgr->createMetaTriangleSelector();
+
+	ITriangleSelector * selector = smgr->createTriangleSelectorFromBoundingBox(farSmallCube);
+	meta->addTriangleSelector(selector);
+	selector->drop();
+
+	// We should expect a hit on this cube
+	selector = smgr->createTriangleSelectorFromBoundingBox(nearBigCube);
+	meta->addTriangleSelector(selector);
+	selector->drop();
+
+	line3df ray(0, 0, -5, 0, 0, 100);
+	vector3df hitPosition;
+	triangle3df hitTriangle;
+
+	bool collision = collMgr->getCollisionPoint(ray, meta, hitPosition, hitTriangle);
+
+	meta->drop();
+
+	if(!collision)
+	{
+		logTestString("getCollisionPoint_ignoreTriangleVertices: didn't get a hit.\n");
+		return false;
+	}
+
+	if(hitPosition != vector3df(0, 0, 0))
+	{
+		logTestString("getCollisionPoint_ignoreTriangleVertices: unexpected hit position %f %f %f.\n",
+			hitPosition.X, hitPosition.Y, hitPosition.Z );
+		return false;
+	}
+
+	return true;
+}
+
+
 static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
-													ISceneManager * smgr,
-													ISceneCollisionManager * collMgr)
+						ISceneManager * smgr,
+						ISceneCollisionManager * collMgr)
 {
 	// Create 3 nodes. The nearest node actually contains the camera.
 	IMeshSceneNode * cubeNode1 = smgr->addCubeSceneNode(10.f, 0, -1, vector3df(0, 0, 4));
@@ -170,8 +217,8 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 
 
 static bool getScaledPickedNodeBB(IrrlichtDevice * device,
-									ISceneManager * smgr,
-									ISceneCollisionManager * collMgr)
+				ISceneManager * smgr,
+				ISceneCollisionManager * collMgr)
 {
     ISceneNode* farTarget = smgr->addCubeSceneNode(1.f);
     farTarget->setScale(vector3df(100.f, 100.f, 10.f));
@@ -212,7 +259,6 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 }
 
 
-
 /** Test functionality of the sceneCollisionManager */
 bool sceneCollisionManager(void)
 {
@@ -230,8 +276,9 @@ bool sceneCollisionManager(void)
 
 	result &= getScaledPickedNodeBB(device, smgr, collMgr);
 
+	result &= getCollisionPoint_ignoreTriangleVertices(device, smgr, collMgr);
+
 	device->drop();
 	return result;
 }
-
 
