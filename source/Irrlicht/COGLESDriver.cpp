@@ -1703,7 +1703,7 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
-#ifdef GL_texture_filter_anisotropic
+#ifdef GL_EXT_texture_filter_anisotropic
 		if (AnisotropyExtension)
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY,
 				material.TextureLayer[i].AnisotropicFilter ? MaxAnisotropy : 1.0f );
