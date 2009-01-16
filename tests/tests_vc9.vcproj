@@ -279,6 +279,10 @@
 				RelativePath=".\vectorPositionDimension2d.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\writeImageToFile.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

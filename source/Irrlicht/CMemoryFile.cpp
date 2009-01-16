@@ -1,8 +1,8 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2002-2008 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "CMemoryReadFile.h"
+#include "CMemoryFile.h"
 #include "irrString.h"
 
 namespace irr
@@ -11,16 +11,16 @@ namespace io
 {
 
 
-CMemoryReadFile::CMemoryReadFile(void* memory, long len, const c8* fileName, bool d)
+CMemoryFile::CMemoryFile(void* memory, long len, const c8* fileName, bool d)
 : Buffer(memory), Len(len), Pos(0), Filename(fileName), deleteMemoryWhenDropped(d)
 {
 	#ifdef _DEBUG
-	setDebugName("CMemoryReadFile");
+	setDebugName("CMemoryFile");
 	#endif
 }
 
 
-CMemoryReadFile::~CMemoryReadFile()
+CMemoryFile::~CMemoryFile()
 {
 	if (deleteMemoryWhenDropped)
 		delete [] (c8*)Buffer;
@@ -28,7 +28,7 @@ CMemoryReadFile::~CMemoryReadFile()
 
 
 //! returns how much was read
-s32 CMemoryReadFile::read(void* buffer, u32 sizeToRead)
+s32 CMemoryFile::read(void* buffer, u32 sizeToRead)
 {
 	s32 amount = static_cast<s32>(sizeToRead);
 	if (Pos + amount > Len)
@@ -45,11 +45,30 @@ s32 CMemoryReadFile::read(void* buffer, u32 sizeToRead)
 	return amount;
 }
 
+//! returns how much was written
+s32 CMemoryFile::write(const void* buffer, u32 sizeToWrite)
+{
+	s32 amount = static_cast<s32>(sizeToWrite);
+	if (Pos + amount > Len)
+		amount -= Pos + amount - Len;
+
+	if (amount <= 0)
+		return 0;
+
+	c8* p = (c8*)Buffer;
+	memcpy(p + Pos, buffer, amount);
+	
+	Pos += amount;
+
+	return amount;
+}
+
+
 
 //! changes position in file, returns true if successful
 //! if relativeMovement==true, the pos is changed relative to current pos,
 //! otherwise from begin of file
-bool CMemoryReadFile::seek(long finalPos, bool relativeMovement)
+bool CMemoryFile::seek(long finalPos, bool relativeMovement)
 {
 	if (relativeMovement)
 	{
@@ -71,21 +90,21 @@ bool CMemoryReadFile::seek(long finalPos, bool relativeMovement)
 
 
 //! returns size of file
-long CMemoryReadFile::getSize() const
+long CMemoryFile::getSize() const
 {
 	return Len;
 }
 
 
 //! returns where in the file we are.
-long CMemoryReadFile::getPos() const
+long CMemoryFile::getPos() const
 {
 	return Pos;
 }
 
 
 //! returns name of file
-const c8* CMemoryReadFile::getFileName() const
+const c8* CMemoryFile::getFileName() const
 {
 	return Filename.c_str();
 }
@@ -93,7 +112,7 @@ const c8* CMemoryReadFile::getFileName() const
 
 IReadFile* createMemoryReadFile(void* memory, long size, const c8* fileName, bool deleteMemoryWhenDropped)
 {
-	CMemoryReadFile* file = new CMemoryReadFile(memory, size, fileName, deleteMemoryWhenDropped);
+	CMemoryFile* file = new CMemoryFile(memory, size, fileName, deleteMemoryWhenDropped);
 	return file;
 }
 

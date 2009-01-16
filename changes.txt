@@ -1,5 +1,11 @@
 Changes in version 1.6
 
+ - Added IFileSystem::createMemoryWriteFile() to allow creation of an IWriteFile interface that uses an application supplied memory buffer.
+
+ - Added an IVideoDriver::writeImageToFile() overload that can take an IWriteFile interface.
+
+ - (Internal) Replaced CMemoryReadFile with CMemoryFile, that also implements an IWriteFile interface.
+
  - Added an optional light manager to the scene manager to allow the user application to turn lights on and off during scene rendering.  This can be used to produce "zoned" lighting. See example 20.ManagedLights.
 
  - Added a method to flip the Y movement of the FPS camera.

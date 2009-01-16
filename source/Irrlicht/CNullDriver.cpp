@@ -1244,18 +1244,29 @@ IImage* CNullDriver::createImageFromFile(io::IReadFile* file)
 //! Writes the provided image to disk file
 bool CNullDriver::writeImageToFile(IImage* image, const char* filename,u32 param)
 {
+	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
+	if(!file)
+		return false;
+	
+	bool result = writeImageToFile(image, file, filename, param);
+	file->drop();
+
+	return result;
+}
+
+//! Writes the provided image to a file.
+bool CNullDriver::writeImageToFile(IImage* image, io::IWriteFile * file, const c8* extension, u32 param)
+{
+	if(!file)
+		return false;
+
 	for (u32 i=0; i<SurfaceWriter.size(); ++i)
 	{
-		if (SurfaceWriter[i]->isAWriteableFileExtension(filename))
+		if (SurfaceWriter[i]->isAWriteableFileExtension(extension))
 		{
-			io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
-			if (file)
-			{
-				bool written = SurfaceWriter[i]->writeImage(file, image, param);
-				file->drop();
-				if (written)
-					return true;
-			}
+			bool written = SurfaceWriter[i]->writeImage(file, image, param);
+			if (written)
+				return true;
 		}
 	}
 	return false; // failed to write

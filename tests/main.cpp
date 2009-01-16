@@ -7,7 +7,7 @@
 // Other builds must link against it in the project files.
 #if defined(_MSC_VER)
 #pragma comment(lib, "Irrlicht.lib")
-#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS 1
 #endif // _MSC_VER
 
 #include "testUtils.h"
@@ -86,6 +86,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(matrixOps);
 	TEST(sceneNodeAnimator);
 	TEST(vectorPositionDimension2d);
+	TEST(writeImageToFile);
 
 	const unsigned int numberOfTests = tests.size();
 

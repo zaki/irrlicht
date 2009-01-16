@@ -1,7 +1,10 @@
 // Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
-#define _CRT_SECURE_NO_WARNINGS
+#if defined(_MSC_VER)
+#define _CRT_SECURE_NO_WARNINGS 1
+#endif // _MSC_VER
+
 #include "testUtils.h"
 #include <memory.h>
 #include <stdio.h>
@@ -41,9 +44,12 @@ bool binaryCompareFiles(const char * fileName1, const char * fileName2)
 
 	(void)fseek(file1, 0, SEEK_END);
 	(void)fseek(file2, 0, SEEK_END);
-	if(ftell(file1) != ftell(file2))
+	const size_t file1Size = ftell(file1);
+	const size_t file2Size = ftell(file2);
+	if(file1Size != file2Size)
 	{
-		logTestString("binaryCompareFiles: Files are different sizes\n");
+		logTestString("binaryCompareFiles: Files are different sizes: %d vs %d\n", 
+			file1Size, file2Size);
 		(void)fclose(file1);
 		(void)fclose(file2);
 		return false;

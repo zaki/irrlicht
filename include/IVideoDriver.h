@@ -25,6 +25,7 @@ namespace io
 {
 	class IAttributes;
 	class IReadFile;
+	class IWriteFile;
 } // end namespace io
 namespace scene
 {
@@ -833,6 +834,19 @@ namespace video
 		level).
 		\return True on successful write. */
 		virtual bool writeImageToFile(IImage* image, const c8* filename, u32 param = 0) = 0;
+
+		//! Writes the provided image to a file.
+		/** Requires that there is a suitable image writer registered
+		for writing the image.
+		\param image Image to write.
+		\param file  An already open io::IWriteFile object
+		\param extension A file extension that will identify the desired image 
+						writer, e.g. ".jpg"
+		\param param Control parameter for the backend (e.g. compression
+		level).
+		\return True on successful write. */
+		virtual bool writeImageToFile(IImage* image, io::IWriteFile* file,
+									const c8* extension, u32 param = 0) = 0;
 
 		//! Creates a software image from a byte array.
 		/** No hardware texture will be created for this image. This

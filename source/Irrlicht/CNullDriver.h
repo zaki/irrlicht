@@ -488,6 +488,9 @@ namespace video
 		//! Writes the provided image to disk file
 		virtual bool writeImageToFile(IImage* image, const char* filename, u32 param = 0);
 
+		//! Writes the provided image to a file.
+		virtual bool writeImageToFile(IImage* image, io::IWriteFile * file, const c8* extension, u32 param = 0);
+
 		//! Sets the name of a material renderer.
 		virtual void setMaterialRendererName(s32 idx, const char* name);
 
