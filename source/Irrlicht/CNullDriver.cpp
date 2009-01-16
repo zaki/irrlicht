@@ -1248,21 +1248,21 @@ bool CNullDriver::writeImageToFile(IImage* image, const char* filename,u32 param
 	if(!file)
 		return false;
 	
-	bool result = writeImageToFile(image, file, filename, param);
+	bool result = writeImageToFile(image, file, param);
 	file->drop();
 
 	return result;
 }
 
 //! Writes the provided image to a file.
-bool CNullDriver::writeImageToFile(IImage* image, io::IWriteFile * file, const c8* extension, u32 param)
+bool CNullDriver::writeImageToFile(IImage* image, io::IWriteFile * file, u32 param)
 {
 	if(!file)
 		return false;
 
 	for (u32 i=0; i<SurfaceWriter.size(); ++i)
 	{
-		if (SurfaceWriter[i]->isAWriteableFileExtension(extension))
+		if (SurfaceWriter[i]->isAWriteableFileExtension(file->getFileName()))
 		{
 			bool written = SurfaceWriter[i]->writeImage(file, image, param);
 			if (written)

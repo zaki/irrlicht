@@ -839,14 +839,12 @@ namespace video
 		/** Requires that there is a suitable image writer registered
 		for writing the image.
 		\param image Image to write.
-		\param file  An already open io::IWriteFile object
-		\param extension A file extension that will identify the desired image 
-						writer, e.g. ".jpg"
+		\param file  An already open io::IWriteFile object. The name will be used to determine
+					the appropriate image writer to use.
 		\param param Control parameter for the backend (e.g. compression
 		level).
 		\return True on successful write. */
-		virtual bool writeImageToFile(IImage* image, io::IWriteFile* file,
-									const c8* extension, u32 param = 0) = 0;
+		virtual bool writeImageToFile(IImage* image, io::IWriteFile* file, u32 param = 0) = 0;
 
 		//! Creates a software image from a byte array.
 		/** No hardware texture will be created for this image. This
