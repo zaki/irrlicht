@@ -79,16 +79,16 @@ bool writeImageToFile(void)
 	}
 
 	buffer = new c8[BUFFER_SIZE];
-	memoryFile = device->getFileSystem()->createMemoryWriteFile(buffer, BUFFER_SIZE, "foo", false);
-	if(!driver->writeImageToFile(screenshot, memoryFile, ".png"))
+	writtenFilename = "results" DIR_SEP_STRING "burnings video 0.39b-drawPixel.png";
+	memoryFile = device->getFileSystem()->createMemoryWriteFile(buffer, BUFFER_SIZE, writtenFilename, false);
+	if(!driver->writeImageToFile(screenshot, memoryFile))
 	{
 		logTestString("Failed to write png to memory file\n");
 		assert(false);
 		goto cleanup;
 	}
 
-	writtenFilename = "results" DIR_SEP_STRING "burnings video 0.39b-drawPixel.png";
-	writtenFile = device->getFileSystem()->createAndWriteFile(writtenFilename);
+	writtenFile = device->getFileSystem()->createAndWriteFile(memoryFile->getFileName());
 	if(!writtenFile)
 	{
 		logTestString("Can't open %s for writing.\n", writtenFilename);
