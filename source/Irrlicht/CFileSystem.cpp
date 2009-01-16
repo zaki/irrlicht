@@ -14,7 +14,7 @@
 #include "os.h"
 #include "IrrCompileConfig.h"
 #include "CAttributes.h"
-#include "CMemoryReadFile.h"
+#include "CMemoryFile.h"
 
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
@@ -97,7 +97,17 @@ IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len,
 	if (!memory)
 		return 0;
 	else
-		return new CMemoryReadFile(memory, len, fileName, deleteMemoryWhenDropped);
+		return new CMemoryFile(memory, len, fileName, deleteMemoryWhenDropped);
+}
+
+//! Creates an IReadFile interface for treating memory like a file.
+IWriteFile* CFileSystem::createMemoryWriteFile(void* memory, s32 len, 
+			const c8* fileName, bool deleteMemoryWhenDropped)
+{
+	if (!memory)
+		return 0;
+	else
+		return new CMemoryFile(memory, len, fileName, deleteMemoryWhenDropped);
 }
 
 

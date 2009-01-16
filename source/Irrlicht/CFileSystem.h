@@ -37,6 +37,9 @@ public:
 	//! Creates an IReadFile interface for accessing memory like a file.
 	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped = false);
 
+	//! Creates an IWriteFile interface for accessing memory like a file.
+	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped=false);
+
 	//! Opens a file for write access.
 	virtual IWriteFile* createAndWriteFile(const c8* filename, bool append=false);
 

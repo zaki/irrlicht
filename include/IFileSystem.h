@@ -52,6 +52,21 @@ public:
 	*/
 	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped=false) = 0;
 
+	//! Creates an IWriteFile interface for accessing memory like a file.
+	/** This allows you to use a pointer to memory where an IWriteFile is requested.
+		You are responsible for allocating enough memory.
+	\param memory: A pointer to the start of the file in memory (allocated by you)
+	\param len: The length of the memory in bytes
+	\param fileName: The name given to this file
+	\param deleteMemoryWhenDropped: True if the memory should be deleted
+	along with the IWriteFile when it is dropped.
+	\return Returns a pointer to the created file interface.
+	The returned pointer should be dropped when no longer needed.
+	See IReferenceCounted::drop() for more information.
+	*/
+	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped=false) = 0;
+
+
 	//! Opens a file for write access.
 	/** \param filename: Name of file to open.
 	\param append: If the file already exist, all write operations are

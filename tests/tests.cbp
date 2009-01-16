@@ -46,8 +46,8 @@
 		<Unit filename="drawRectOutline.cpp" />
 		<Unit filename="exports.cpp" />
 		<Unit filename="fast_atof.cpp" />
-		<Unit filename="irrCoreEquals.cpp" />
 		<Unit filename="guiDisabledMenu.cpp" />
+		<Unit filename="irrCoreEquals.cpp" />
 		<Unit filename="line2dIntersectWith.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />
@@ -65,6 +65,7 @@
 		<Unit filename="textureRenderStates.cpp" />
 		<Unit filename="transparentAlphaChannelRef.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />
+		<Unit filename="writeImageToFile.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

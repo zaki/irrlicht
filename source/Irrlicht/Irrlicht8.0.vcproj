@@ -2191,11 +2191,11 @@
 					>
 				</File>
 				<File
-					RelativePath="CDummyTransformationSceneNode.cpp"
+					RelativePath=".\CDummyTransformationSceneNode.cpp"
 					>
 				</File>
 				<File
-					RelativePath="CDummyTransformationSceneNode.h"
+					RelativePath=".\CDummyTransformationSceneNode.h"
 					>
 				</File>
 				<File
@@ -2596,11 +2596,11 @@
 				>
 			</File>
 			<File
-				RelativePath="CMemoryReadFile.cpp"
+				RelativePath=".\CMemoryFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath="CMemoryReadFile.h"
+				RelativePath=".\CMemoryFile.h"
 				>
 			</File>
 			<File
