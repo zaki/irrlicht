@@ -189,11 +189,11 @@ void COpenGLTexture::copyTexture(bool newTexture)
 		if (HasMipMaps && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
 			if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
-				glHint(GENERATE_MIPMAP_HINT_SGIS, GL_FASTEST);
+				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_FASTEST);
 			else if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_QUALITY))
-				glHint(GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
+				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
 			else
-				glHint(GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
+				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
 			// automatically generate and update mipmaps
 			glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
 			AutomaticMipmapUpdate=true;
