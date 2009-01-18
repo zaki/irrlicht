@@ -513,7 +513,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, 
 
 	if (AntiAlias >= 2)
 	{
-		if (MultiSamplingExtension)
+		if (FeatureAvailable[IRR_ARB_multisample])
 			glEnable(GL_MULTISAMPLE_ARB);
 
 		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);

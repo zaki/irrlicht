@@ -17,8 +17,7 @@ namespace video
 {
 
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
-		StencilBuffer(false),
-		MultiTextureExtension(false), MultiSamplingExtension(false),
+		StencilBuffer(false), MultiTextureExtension(false),
 		TextureCompressionExtension(false),
 		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
 		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
@@ -102,7 +101,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 
 	MultiTextureExtension = FeatureAvailable[IRR_ARB_multitexture];
-	MultiSamplingExtension = FeatureAvailable[IRR_ARB_multisample];
 	TextureCompressionExtension = FeatureAvailable[IRR_ARB_texture_compression];
 	StencilBuffer=stencilBuffer;
 

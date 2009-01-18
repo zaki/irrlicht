@@ -708,7 +708,6 @@ class COpenGLExtensionHandler
 	// Some variables for properties
 	bool StencilBuffer;
 	bool MultiTextureExtension;
-	bool MultiSamplingExtension;
 	bool TextureCompressionExtension;
 
 	// Some non-boolean properties
