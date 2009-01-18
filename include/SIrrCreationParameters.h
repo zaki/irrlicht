@@ -80,13 +80,14 @@ namespace irr
 		//! Specifies if the stencil buffer should be enabled.
 		/** Set this to true, if you want the engine be able to draw
 		stencil buffer shadows. Note that not all devices are able to
-		use the stencil buffer. If they don't no shadows will be drawn.
+		use the stencil buffer, hence it can be ignored during device
+		creation. Without the stencil buffer no shadows will be drawn.
 		Default: false. */
 		bool Stencilbuffer;
 
 		//! Specifies vertical syncronisation.
 		/** If set to true, the driver will wait for the vertical
-		retrace period, otherwise not.
+		retrace period, otherwise not. May be silently ignored.
 		Default: false */
 		bool Vsync;
 
@@ -99,6 +100,9 @@ namespace irr
 		writing a game/application with AntiAlias switched on, it would
 		be a good idea to make it possible to switch this option off
 		again by the user.
+		The value is the maximal antialiasing factor requested for
+		the device. The cretion method will automatically try smaller
+		values if no window can be created with the diven value.
 		Value one is usually the same as 0 (disabled), but might be a
 		special value on some platforms. On D3D devices it maps to
 		NONMASKABLE.
@@ -110,6 +114,9 @@ namespace irr
 		buffer with an alpha channel, e.g. when rendering into a
 		transparent window or overlay. If this flag is set the device
 		tries to create a framebuffer with alpha channel.
+		If this flag is set, only color buffers with alpha channel
+		are considered. Otherwise, it depends on the actual hardware
+		if the colorbuffer has an alpha channel or not.
 		Default value: false */
 		bool WithAlphaChannel;
 
