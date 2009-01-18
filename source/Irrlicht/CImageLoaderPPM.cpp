@@ -39,7 +39,7 @@ bool CImageLoaderPPM::isALoadableFileExtension(const c8* fileName) const
 //! returns true if the file maybe is able to be loaded by this class
 bool CImageLoaderPPM::isALoadableFileFormat(io::IReadFile* file) const
 {
-	c8 id[2];
+	c8 id[2]={0};
 	file->read(&id, 2);
 	return (id[0]=='P' && id[1]>'0' && id[1]<'7');
 }

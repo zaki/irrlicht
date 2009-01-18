@@ -175,7 +175,7 @@ public:
 	//! Unbind RenderTargetTexture
 	virtual void unbindRTT();
 
-	void attach(ITexture*);
+	bool attach(ITexture*);
 
 protected:
 	GLuint DepthRenderBuffer;

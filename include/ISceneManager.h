@@ -513,6 +513,10 @@ namespace scene
 		/** This camera does not react on user input like for example the one created with
 		addCameraSceneNodeFPS(). If you want to move or animate it, use animators or the
 		ISceneNode::setPosition(), ICameraSceneNode::setTarget() etc methods.
+		By default, a camera's look at position (set with setTarget()) and its scene node 
+		rotation (set with setRotation()) are independent.  If you want to be able to 
+		control the direction that the camera looks by using setRotation() then call 
+		ICameraSceneNode::bindTargetAndRotation(true) on it.
 		 \param position: Position of the space relative to its parent where the camera will be placed.
 		 \param lookat: Position where the camera will look at. Also known as target.
 		 \param parent: Parent scene node of the camera. Can be null. If the parent moves,
@@ -1033,7 +1037,7 @@ namespace scene
 		//! Creates a fly circle animator, which lets the attached scene node fly around a center.
 		/** \param center: Center of the circle.
 		 \param radius: Radius of the circle.
-		 \param speed: Specifies the speed of the flight.
+		 \param speed: The orbital speed, in radians per millisecond.
 		 \param direction: Specifies the upvector used for alignment of the mesh.
 		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
 		 and the animator will animate it.

@@ -2806,14 +2806,20 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 		rtt = new COpenGLFBOTexture(size, name, this);
 		if (rtt)
 		{
+			bool success = false;
 			addTexture(rtt);
 			ITexture* tex = createDepthTexture(rtt);
 			if (tex)
 			{
-				static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
+				success = static_cast<video::COpenGLFBODepthTexture*>(tex)->attach(rtt);
 				tex->drop();
 			}
 			rtt->drop();
+			if (!success)
+			{
+				removeTexture(rtt);
+				rtt=0;
+			}
 		}
 	}
 	else
