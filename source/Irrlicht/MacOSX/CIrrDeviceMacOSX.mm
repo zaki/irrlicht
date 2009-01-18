@@ -414,15 +414,12 @@ void CIrrDeviceMacOSX::closeDevice()
 
 bool CIrrDeviceMacOSX::createWindow()
 {
-	int				index;
 	CGDisplayErr			error;
 	bool				result;
-	NSOpenGLPixelFormat		*format;
 	CGDirectDisplayID		display;
 	CGLPixelFormatObj		pixelFormat;
 	CGRect				displayRect;
 	CGLPixelFormatAttribute		fullattribs[32];
-	NSOpenGLPixelFormatAttribute	windowattribs[32];
 	CFDictionaryRef			displaymode,olddisplaymode;
 	GLint				numPixelFormats,newSwapInterval;
 	int alphaSize = CreationParams.WithAlphaChannel?4:0, depthSize = CreationParams.ZBufferBits;
@@ -442,33 +439,80 @@ bool CIrrDeviceMacOSX::createWindow()
 		_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
 		if (_window != NULL)
 		{
-			index = 0;
-			windowattribs[index++] = NSOpenGLPFANoRecovery;
-			windowattribs[index++] = NSOpenGLPFADoubleBuffer;
-			windowattribs[index++] = NSOpenGLPFAAccelerated;
-			windowattribs[index++] = NSOpenGLPFADepthSize;
-			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)depthSize;
-			windowattribs[index++] = NSOpenGLPFAColorSize;
-			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)CreationParams.Bits;
-			windowattribs[index++] = NSOpenGLPFAAlphaSize;
-			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)alphaSize;
+			NSOpenGLPixelFormatAttribute windowattribs[] = {
+					NSOpenGLPFANoRecovery,
+					NSOpenGLPFAAccelerated,
+					NSOpenGLPFADepthSize, depthSize,
+					NSOpenGLPFAColorSize, CreationParams.Bits,
+					NSOpenGLPFAAlphaSize, alphaSize,
+					NSOpenGLPFASampleBuffers, 1,
+					NSOpenGLPFASamples, CreationParams.AntiAlias,
+					NSOpenGLPFAStencilSize, CreationParams.Stencilbuffer?1:0,
+					NSOpenGLPFADoubleBuffer,
+					(NSOpenGLPixelFormatAttribute)nil
+			};
 
-			if (CreationParams.AntiAlias) {
-				windowattribs[index++] = NSOpenGLPFASampleBuffers;
-				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)1;
-				windowattribs[index++] = NSOpenGLPFASamples;
-				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)2;
-			}
-
-			if (CreationParams.Stencilbuffer)
+			if (CreationParams.AntiAlias<2)
 			{
-				windowattribs[index++] = NSOpenGLPFAStencilSize;
-				windowattribs[index++] = (NSOpenGLPixelFormatAttribute)1;
+				windowattribs[9] = 0;
+				windowattribs[11] = 0;
 			}
 
-			windowattribs[index++] = (NSOpenGLPixelFormatAttribute)NULL;
+			NSOpenGLPixelFormat *format;
+			for (int i=0; i<3; ++i)
+			{
+				if (1==i)
+				{
+					// Second try without stencilbuffer
+					if (CreationParams.Stencilbuffer)
+					{
+						windowattribs[13]=0;
+					}
+					else
+						continue;
+				}
+				else if (2==i)
+				{
+					// Third try without Doublebuffer
+					os::Printer::log("No doublebuffering available.", ELL_WARNING);
+					windowattribs[14]=(NSOpenGLPixelFormatAttribute)nil;
+				}
 
-			format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+				format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+				if (format == NULL)
+				{
+					if (CreationParams.AntiAlias>1)
+					{
+						while (!format && windowattribs[12]>1)
+						{
+							windowattribs -= 1;
+							format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+						}
+						if (!format)
+						{
+							windowattribs[9] = 0;
+							windowattribs[11] = 0;
+							format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
+							if (!format)
+							{
+								// reset values for next try
+								windowattribs[9] = 1;
+								windowattribs[11] = CreationParams.AntiAlias;
+							}
+							else
+							{
+								os::Printer::log("No FSAA available.", ELL_WARNING);
+							}
+							
+						}
+					}
+				}
+				else
+					break;
+			}
+			CreationParams.AntiAlias=windowattribs[11];
+			CreationParams.Stencilbuffer=(windowattribs[13]==1);
+
 			if (format != NULL)
 			{
 				_oglcontext = [[NSOpenGLContext alloc] initWithFormat:format shareContext:NULL];
@@ -506,7 +550,7 @@ bool CIrrDeviceMacOSX::createWindow()
 					pixelFormat = NULL;
 					numPixelFormats = 0;
 
-					index = 0;
+					int index = 0;
 					fullattribs[index++] = kCGLPFAFullScreen;
 					fullattribs[index++] = kCGLPFADisplayMask;
 					fullattribs[index++] = (CGLPixelFormatAttribute)CGDisplayIDToOpenGLDisplayMask(display);
@@ -523,7 +567,7 @@ bool CIrrDeviceMacOSX::createWindow()
 						fullattribs[index++] = kCGLPFASampleBuffers;
 						fullattribs[index++] = (CGLPixelFormatAttribute)1;
 						fullattribs[index++] = kCGLPFASamples;
-						fullattribs[index++] = (CGLPixelFormatAttribute)2;
+						fullattribs[index++] = (CGLPixelFormatAttribute)CreationParams.AntiAlias;
 					}
 
 					if (CreationParams.Stencilbuffer)
