@@ -433,11 +433,8 @@ void COpenGLTexture::unbindRTT()
 
 /* FBO Textures */
 
-#ifdef GL_EXT_framebuffer_object
 // helper function for render to texture
 static bool checkFBOStatus(COpenGLDriver* Driver);
-#endif
-
 
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
@@ -605,10 +602,10 @@ COpenGLFBODepthTexture::~COpenGLFBODepthTexture()
 
 
 //combine depth texture and rtt
-void COpenGLFBODepthTexture::attach(ITexture* renderTex)
+bool COpenGLFBODepthTexture::attach(ITexture* renderTex)
 {
 	if (!renderTex)
-		return;
+		return false;
 	video::COpenGLFBOTexture* rtt = static_cast<video::COpenGLFBOTexture*>(renderTex);
 	rtt->bindRTT();
 #ifdef GL_EXT_framebuffer_object
@@ -636,13 +633,17 @@ void COpenGLFBODepthTexture::attach(ITexture* renderTex)
 						GL_RENDERBUFFER_EXT,
 						DepthRenderBuffer);
 	}
+#endif
 	// check the status
 	if (!checkFBOStatus(Driver))
+	{
 		os::Printer::log("FBO incomplete");
-#endif
+		return false;
+	}
 	rtt->DepthTexture=this;
 	grab(); // grab the depth buffer, not the RTT
 	rtt->unbindRTT();
+	return true;
 }
 
 
@@ -658,9 +659,9 @@ void COpenGLFBODepthTexture::unbindRTT()
 }
 
 
-#ifdef GL_EXT_framebuffer_object
 bool checkFBOStatus(COpenGLDriver* Driver)
 {
+#ifdef GL_EXT_framebuffer_object
 	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
 
 	switch (status)
@@ -707,10 +708,10 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 		default:
 			break;
 	}
+#endif
 	os::Printer::log("FBO error", ELL_ERROR);
 	return false;
 }
-#endif
 
 
 } // end namespace video
