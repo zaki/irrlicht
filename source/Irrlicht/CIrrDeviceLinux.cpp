@@ -468,11 +468,12 @@ bool CIrrDeviceLinux::createWindow()
 		else
 			os::Printer::log("No GLX support available. OpenGL driver will not work.", ELL_WARNING);
 	}
-
+	// don't use the XVisual with OpenGL, because it ignores all requested
+	// properties of the CreationParams
+	else if (!visual)
 #endif // _IRR_COMPILE_WITH_OPENGL_
 
 	// create visual with standard X methods
-	if (!visual)
 	{
 		XVisualInfo visTempl; //Template to hold requested values
 		int visNumber; // Return value of available visuals
