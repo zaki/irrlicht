@@ -747,28 +747,27 @@ bool CGUIEnvironment::loadGUI(io::IReadFile* file, IGUIElement* parent)
 
 
 //! reads an element
-void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* parent)
+void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* node)
 {
 	if (!reader)
 		return;
-
-	gui::IGUIElement* node = 0;
 
 	io::EXML_NODE nodeType = reader->getNodeType();
 
 	if (nodeType == io::EXN_NONE || nodeType == io::EXN_UNKNOWN || nodeType == io::EXN_ELEMENT_END)
 		return;
 
-	if (!parent && !wcscmp(IRR_XML_FORMAT_GUI_ENV, reader->getNodeName()))
+	if (!wcscmp(IRR_XML_FORMAT_GUI_ENV, reader->getNodeName()))
 	{
-		node = this; // root
+		if (!node)
+			node = this; // root
 	}
 	else if	(!wcscmp(IRR_XML_FORMAT_GUI_ELEMENT, reader->getNodeName()))
 	{
 		// find node type and create it
-		core::stringc attrName = reader->getAttributeValue(IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE);
+		const core::stringc attrName = reader->getAttributeValue(IRR_XML_FORMAT_GUI_ELEMENT_ATTR_TYPE);
 
-		node = addGUIElement(attrName.c_str(), parent);
+		node = addGUIElement(attrName.c_str(), node);
 
 		if (!node)
 			os::Printer::log("Could not create GUI element of unknown type", attrName.c_str());
