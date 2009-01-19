@@ -147,6 +147,8 @@ namespace irr
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
 			{
+				if (visible==IsVisible)
+					return;
 				IsVisible = visible;
 #ifdef _IRR_COMPILE_WITH_X11_
 				if (!Null)
