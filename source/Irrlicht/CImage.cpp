@@ -970,7 +970,7 @@ namespace video
 {
 
 //! constructor
-CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size)
+CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 :Data(0), Size(size), Format(format), DeleteMemory(true)
 {
 	initData();
@@ -978,7 +978,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size)
 
 
 //! constructor
-CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size, void* data,
+CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
 			bool ownForeignMemory, bool deleteForeignMemory)
 : Data(0), Size(size), Format(format), DeleteMemory(deleteForeignMemory)
 {
@@ -1017,7 +1017,7 @@ CImage::CImage(ECOLOR_FORMAT format, IImage* imageToCopy)
 
 //! constructor
 CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
-		const core::dimension2d<s32>& size)
+		const core::dimension2d<u32>& size)
 	: Data(0), Size(0,0), DeleteMemory(true)
 {
 	if (!imageToCopy)
@@ -1058,7 +1058,7 @@ CImage::~CImage()
 
 
 //! Returns width and height of image data.
-const core::dimension2d<s32>& CImage::getDimension() const
+const core::dimension2d<u32>& CImage::getDimension() const
 {
 	return Size;
 }
@@ -1323,7 +1323,7 @@ void CImage::drawLine(const core::position2d<s32>& from, const core::position2d<
 //! copies this surface into another, scaling it to the target image size
 // note: this is very very slow. (i didn't want to write a fast version.
 // but hopefully, nobody wants to scale surfaces every frame.
-void CImage::copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format, u32 pitch)
+void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch)
 {
 	if (!target || !width || !height)
 		return;
@@ -1344,7 +1344,7 @@ void CImage::copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT fo
 			u8* tgtpos = (u8*) target;
 			u8* dstpos = (u8*) Data;
 			const u32 bwidth = width*bpp;
-			for (s32 y=0; y<height; ++y)
+			for (u32 y=0; y<height; ++y)
 			{
 				memcpy(target, Data, height*pitch);
 				memset(tgtpos+width, 0, pitch-bwidth);
@@ -1359,10 +1359,10 @@ void CImage::copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT fo
 	const f32 sourceYStep = (f32)Size.Height / (f32)height;
 	s32 yval=0, syval=0;
 	f32 sy = 0.0f;
-	for (s32 y=0; y<height; ++y)
+	for (u32 y=0; y<height; ++y)
 	{
 		f32 sx = 0.0f;
-		for (s32 x=0; x<width; ++x)
+		for (u32 x=0; x<width; ++x)
 		{
 			CColorConverter::convert_viaFormat(((u8*)Data)+ syval + ((s32)sx)*BytesPerPixel, Format, 1, ((u8*)target)+ yval + (x*bpp), format);
 			sx+=sourceXStep;
@@ -1381,7 +1381,7 @@ void CImage::copyToScaling(IImage* target)
 	if (!target)
 		return;
 
-	const core::dimension2d<s32>& targetSize = target->getDimension();
+	const core::dimension2d<u32>& targetSize = target->getDimension();
 
 	if (targetSize==Size)
 	{
@@ -1396,7 +1396,7 @@ void CImage::copyToScaling(IImage* target)
 //! copies this surface into another, scaling it to fit it.
 void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
 {
-	const core::dimension2d<s32> destSize = target->getDimension();
+	const core::dimension2d<u32> destSize = target->getDimension();
 
 	const f32 sourceXStep = (f32) Size.Width / (f32) destSize.Width;
 	const f32 sourceYStep = (f32) Size.Height / (f32) destSize.Height;
@@ -1409,10 +1409,10 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
 	f32 sy;
 
 	sy = 0.f;
-	for ( s32 y = 0; y != destSize.Height; ++y )
+	for ( u32 y = 0; y != destSize.Height; ++y )
 	{
 		sx = 0.f;
-		for ( s32 x = 0; x != destSize.Width; ++x )
+		for ( u32 x = 0; x != destSize.Width; ++x )
 		{
 			target->setPixel( x, y, getPixelBox( core::floor32(sx), core::floor32(sy), fx, fy, bias ) );
 			sx += sourceXStep;

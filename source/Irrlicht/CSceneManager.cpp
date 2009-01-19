@@ -648,7 +648,7 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 		parent = this;
 
 	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
-	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl, 
+	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
 		rotateSpeed, zoomSpeed, translationSpeed);
 
 	node->addAnimator(anm);
@@ -919,7 +919,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const c8* name,
 	video::IImage* texture, video::IImage* heightmap,
 	const core::dimension2d<f32>& stretchSize,
 	f32 maxHeight,
-	const core::dimension2d<s32>& defaultVertexBlockSize)
+	const core::dimension2d<u32>& defaultVertexBlockSize)
 {
 	if (!name)
 		return 0;
@@ -1342,7 +1342,7 @@ void CSceneManager::drawAll()
 		Driver->setAmbientLight(AmbientLight);
 
 		u32 maxLights = LightList.size();
-		
+
 		if(!LightManager)
 			maxLights = core::min_ ( Driver->getMaximalDynamicLightAmount(), maxLights);
 
@@ -1484,9 +1484,9 @@ void CSceneManager::setLightManager(ILightManager* lightManager)
 {
 	if(LightManager)
 		LightManager->drop();
- 
+
 	LightManager = lightManager;
-	
+
 	if(LightManager)
 		LightManager->grab();
 }

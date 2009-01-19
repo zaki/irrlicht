@@ -107,7 +107,7 @@ namespace gui
 			bool IsSeparator;
 			bool Enabled;
 			bool Checked;
-			core::dimension2d<s32> Dim;
+			core::dimension2d<u32> Dim;
 			s32 PosY;
 			CGUIContextMenu* SubMenu;
 			s32 CommandId;

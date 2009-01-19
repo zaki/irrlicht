@@ -66,7 +66,7 @@ namespace gui
 
 		//! Gets the size area of the text in the edit box
 		//! \return Returns the size in pixels of the text
-		virtual core::dimension2di getTextDimension();
+		virtual core::dimension2du getTextDimension();
 
 		//! Sets text justification
 		virtual void setTextAlignment(EGUI_ALIGNMENT horizontal, EGUI_ALIGNMENT vertical);
@@ -81,14 +81,14 @@ namespace gui
 		virtual void setText(const wchar_t* text);
 
 		//! Sets the maximum amount of characters which may be entered in the box.
-		//! \param max: Maximum amount of characters. If 0, the character amount is 
+		//! \param max: Maximum amount of characters. If 0, the character amount is
 		//! infinity.
 		virtual void setMax(u32 max);
 
 		//! Returns maximum amount of characters, previously set by setMax();
 		virtual u32 getMax() const;
 
-		//! Sets whether the edit box is a password box. Setting this to true will 
+		//! Sets whether the edit box is a password box. Setting this to true will
 		/** disable MultiLine, WordWrap and the ability to copy with ctrl+c or ctrl+x
 		\param passwordBox: true to enable password, false to disable
 		\param passwordChar: the character that is displayed instead of letters */

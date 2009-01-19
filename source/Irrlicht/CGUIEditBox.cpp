@@ -880,7 +880,7 @@ bool CGUIEditBox::isAutoScrollEnabled() const
 
 //! Gets the area of the text in the edit box
 //! \return Returns the size in pixels of the text
-core::dimension2di CGUIEditBox::getTextDimension()
+core::dimension2du CGUIEditBox::getTextDimension()
 {
 	core::rect<s32> ret;
 
@@ -894,7 +894,7 @@ core::dimension2di CGUIEditBox::getTextDimension()
 		ret.addInternalPoint(CurrentTextRect.LowerRightCorner);
 	}
 
-	return ret.getSize();
+	return core::dimension2du(ret.getSize());
 }
 
 
@@ -1147,7 +1147,7 @@ void CGUIEditBox::breakText()
 
 void CGUIEditBox::setTextRect(s32 line)
 {
-	core::dimension2di d;
+	core::dimension2du d;
 	s32 lineCount = 1;
 
 	IGUIFont* font = OverrideFont;

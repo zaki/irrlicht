@@ -19,7 +19,7 @@ namespace video
 	public:
 
 		//! constructor
-		CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter);
+		CSoftwareDriver(const core::dimension2d<u32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter);
 
 		//! destructor
 		virtual ~CSoftwareDriver();
@@ -50,10 +50,10 @@ namespace video
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
-		virtual void OnResize(const core::dimension2d<s32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size);
 
 		//! returns size of the current render target
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
 		//! draws a vertex primitive list
 		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
@@ -84,7 +84,7 @@ namespace video
 								SColor color=SColor(255,255,255,255));
 
 		//! Draws a single pixel
-		virtual void drawPixel(u32 x, u32 y, const SColor & color); 
+		virtual void drawPixel(u32 x, u32 y, const SColor & color);
 
 		//! \return Returns the name of the video driver. Example: In case of the Direct3D8
 		//! driver, it would return "Direct3D8.1".
@@ -100,7 +100,7 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Creates a render target texture.
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name);
 
 		//! Clears the ZBuffer.
@@ -152,8 +152,8 @@ namespace video
 		video::ITexture* RenderTargetTexture;
 		video::IImage* RenderTargetSurface;
 		core::position2d<s32> Render2DTranslation;
-		core::dimension2d<s32> RenderTargetSize;
-		core::dimension2d<s32> ViewPortSize;
+		core::dimension2d<u32> RenderTargetSize;
+		core::dimension2d<u32> ViewPortSize;
 
 		core::matrix4 TransformationMatrix[ETS_COUNT];
 

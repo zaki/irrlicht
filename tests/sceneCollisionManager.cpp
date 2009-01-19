@@ -226,7 +226,7 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
     farTarget->updateAbsolutePosition();
 
 	// Create a node that's slightly further away than the closest node,
-	// but thinner.  Its furthest corner is closer, but the collision 
+	// but thinner.  Its furthest corner is closer, but the collision
 	// position is further, so it should not be selected.
 	ISceneNode* middleTarget = smgr->addCubeSceneNode(10.f);
     middleTarget->setPosition(vector3df(0.f, 0.f, 101.f));
@@ -262,7 +262,7 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 /** Test functionality of the sceneCollisionManager */
 bool sceneCollisionManager(void)
 {
-	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<s32>(160, 120));
+	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(160, 120));
 	assert(device);
 	if(!device)
 		return false;

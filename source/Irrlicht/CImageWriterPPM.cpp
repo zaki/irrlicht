@@ -42,7 +42,7 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 	char cache[70];
 	int size;
 
-	const core::dimension2d<s32>& imageSize = image->getDimension();
+	const core::dimension2d<u32>& imageSize = image->getDimension();
 
 	const bool binary = false;
 
@@ -64,9 +64,9 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 
 	if (binary)
 	{
-		for (s32 h = 0; h < imageSize.Height; ++h)
+		for (u32 h = 0; h < imageSize.Height; ++h)
 		{
-			for (s32 c = 0; c < imageSize.Width; ++c)
+			for (u32 c = 0; c < imageSize.Width; ++c)
 			{
 				const video::SColor& pixel = image->getPixel(c, h);
 				const u8 r = (u8)(pixel.getRed() & 0xff);
@@ -82,12 +82,12 @@ bool CImageWriterPPM::writeImage(io::IWriteFile *file, IImage *image, u32 param)
 	{
 		s32 n = 0;
 
-		for (s32 h = 0; h < imageSize.Height; ++h)
+		for (u32 h = 0; h < imageSize.Height; ++h)
 		{
-			for (s32 c = 0; c < imageSize.Width; ++c, ++n)
+			for (u32 c = 0; c < imageSize.Width; ++c, ++n)
 			{
 				const video::SColor& pixel = image->getPixel(c, h);
-				size = snprintf(cache, 70, "%.3u %.3u %.3u%s", pixel.getRed(), pixel.getGreen(), pixel.getBlue(), n % 5 == 4 ? "\n" : "  ");	
+				size = snprintf(cache, 70, "%.3u %.3u %.3u%s", pixel.getRed(), pixel.getGreen(), pixel.getBlue(), n % 5 == 4 ? "\n" : "  ");
 				if (file->write(cache, size) != size)
 					return false;
 			}

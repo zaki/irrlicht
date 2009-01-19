@@ -25,7 +25,7 @@ namespace video
 
 
 //! constructor
-CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
+CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<u32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 : CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter),
 	WindowId(0), SceneSourceRect(0),
 	RenderTargetTexture(0), RenderTargetSurface(0), CurrentShader(0),
@@ -1622,10 +1622,10 @@ void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& p
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
-void CBurningVideoDriver::OnResize(const core::dimension2d<s32>& size)
+void CBurningVideoDriver::OnResize(const core::dimension2d<u32>& size)
 {
 	// make sure width and height are multiples of 2
-	core::dimension2d<s32> realSize(size);
+	core::dimension2d<u32> realSize(size);
 
 	if (realSize.Width % 2)
 		realSize.Width += 1;
@@ -1635,10 +1635,11 @@ void CBurningVideoDriver::OnResize(const core::dimension2d<s32>& size)
 
 	if (ScreenSize != realSize)
 	{
-		if (ViewPort.getWidth() == ScreenSize.Width &&
-			ViewPort.getHeight() == ScreenSize.Height)
+		if (ViewPort.getWidth() == (s32)ScreenSize.Width &&
+			ViewPort.getHeight() == (s32)ScreenSize.Height)
 		{
-			ViewPort = core::rect<s32>(core::position2d<s32>(0,0), realSize);
+			ViewPort = core::rect<s32>(core::position2d<s32>(0,0),
+										core::dimension2di(realSize));
 		}
 
 		ScreenSize = realSize;
@@ -1656,7 +1657,7 @@ void CBurningVideoDriver::OnResize(const core::dimension2d<s32>& size)
 
 
 //! returns the current render target size
-const core::dimension2d<s32>& CBurningVideoDriver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& CBurningVideoDriver::getCurrentRenderTargetSize() const
 {
 	return RenderTargetSize;
 }
@@ -1677,9 +1678,9 @@ void CBurningVideoDriver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<s32> renderTargetSize ( ViewPort.getSize() );
+	const core::dimension2d<u32> renderTargetSize ( ViewPort.getSize() );
 
-	const s32 xPlus = -(renderTargetSize.Width>>1);
+	const s32 xPlus = -(s32)(renderTargetSize.Width>>1);
 	const f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	const s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
@@ -1861,7 +1862,7 @@ const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE st
 
 
 //! Creates a render target texture.
-ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<s32>& size,
+ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
 		const c8* name)
 {
 	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
@@ -2003,7 +2004,7 @@ namespace video
 {
 
 //! creates a video driver
-IVideoDriver* createSoftwareDriver2(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
+IVideoDriver* createSoftwareDriver2(const core::dimension2d<u32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CBurningVideoDriver(windowSize, fullscreen, io, presenter);

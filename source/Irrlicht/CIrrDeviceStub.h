@@ -19,13 +19,13 @@ namespace irr
 	namespace gui
 	{
 		class IGUIEnvironment;
-		IGUIEnvironment* createGUIEnvironment(io::IFileSystem* fs, 
+		IGUIEnvironment* createGUIEnvironment(io::IFileSystem* fs,
 			video::IVideoDriver* Driver, IOSOperator* op);
 	}
 
 	namespace scene
 	{
-		ISceneManager* createSceneManager(video::IVideoDriver* driver, 
+		ISceneManager* createSceneManager(video::IVideoDriver* driver,
 			io::IFileSystem* fs, gui::ICursorControl* cc, gui::IGUIEnvironment *gui);
 	}
 
@@ -36,13 +36,13 @@ namespace irr
 
 	namespace video
 	{
-		IVideoDriver* createSoftwareDriver(const core::dimension2d<s32>& windowSize,
+		IVideoDriver* createSoftwareDriver(const core::dimension2d<u32>& windowSize,
 				bool fullscreen, io::IFileSystem* io,
 				video::IImagePresenter* presenter);
-		IVideoDriver* createSoftwareDriver2(const core::dimension2d<s32>& windowSize,
+		IVideoDriver* createSoftwareDriver2(const core::dimension2d<u32>& windowSize,
 				bool fullscreen, io::IFileSystem* io,
 				video::IImagePresenter* presenter);
-		IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize);
+		IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize);
 	}
 
 
@@ -79,7 +79,7 @@ namespace irr
 		//! Returns a pointer to the ITimer object. With it the current Time can be received.
 		virtual ITimer* getTimer();
 
-		//! Returns the version of the engine. 
+		//! Returns the version of the engine.
 		virtual const char* getVersion() const;
 
 		//! send the event to the right receiver
@@ -91,7 +91,7 @@ namespace irr
 		//! Returns pointer to the current event receiver. Returns 0 if there is none.
 		virtual IEventReceiver* getEventReceiver();
 
-		//! Sets the input receiving scene manager. 
+		//! Sets the input receiving scene manager.
 		/** If set to null, the main scene manager (returned by GetSceneManager()) will receive the input */
 		virtual void setInputReceivingSceneManager(scene::ISceneManager* sceneManager);
 

@@ -68,7 +68,7 @@ IImageWriter* createImageWriterPPM();
 
 
 //! constructor
-CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
+CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
 	PrimitivesDrawn(0), TextureCreationFlags(0), AllowZWriteOnTransparent(false)
 {
@@ -81,7 +81,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& scre
 	setTextureCreationFlag(ETCF_ALWAYS_32_BIT, true);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, true);
 
-	ViewPort = core::rect<s32>(core::position2d<s32>(0,0), screenSize);
+	ViewPort = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(screenSize));
 
 	// create manipulator
 	MeshManipulator = new scene::CMeshManipulator();
@@ -467,7 +467,7 @@ ITexture* CNullDriver::addTexture(const c8* name, IImage* image)
 
 
 //! creates a Texture
-ITexture* CNullDriver::addTexture(const core::dimension2d<s32>& size,
+ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 				const c8* name, ECOLOR_FORMAT format)
 {
 	if (!name)
@@ -630,7 +630,8 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::positi
 	if (!texture)
 		return;
 
-	draw2DImage(texture,destPos, core::rect<s32>(core::position2d<s32>(0,0), texture->getOriginalSize()));
+	draw2DImage(texture,destPos, core::rect<s32>(core::position2d<s32>(0,0),
+												core::dimension2di(texture->getOriginalSize())));
 }
 
 
@@ -752,7 +753,7 @@ ECOLOR_FORMAT CNullDriver::getColorFormat() const
 
 
 //! returns screen size
-const core::dimension2d<s32>& CNullDriver::getScreenSize() const
+const core::dimension2d<u32>& CNullDriver::getScreenSize() const
 {
 	return ScreenSize;
 }
@@ -760,7 +761,7 @@ const core::dimension2d<s32>& CNullDriver::getScreenSize() const
 
 //! returns the current render target size,
 //! or the screen size if render targets are not implemented
-const core::dimension2d<s32>& CNullDriver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& CNullDriver::getCurrentRenderTargetSize() const
 {
 	return ScreenSize;
 }
@@ -895,7 +896,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 			return;
 		}
 
-		const core::dimension2d<s32> dim = texture->getSize();
+		const core::dimension2d<u32> dim = texture->getSize();
 		const s32 pitch = texture->getPitch() / 2;
 
 		// color with alpha disabled (i.e. fully transparent)
@@ -930,7 +931,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 			return;
 		}
 
-		core::dimension2d<s32> dim = texture->getSize();
+		core::dimension2d<u32> dim = texture->getSize();
 		s32 pitch = texture->getPitch() / 4;
 
 		// color with alpha disabled (fully transparent)
@@ -1025,7 +1026,7 @@ void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude) 
 		return;
 	}
 
-	core::dimension2d<s32> dim = texture->getSize();
+	core::dimension2d<u32> dim = texture->getSize();
 	amplitude = amplitude / 255.0f;
 	f32 vh = dim.Height / (f32)dim.Width;
 	f32 hh = dim.Width / (f32)dim.Height;
@@ -1044,13 +1045,13 @@ void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude) 
 
 		// copy texture
 
-		s32 pitch = texture->getPitch() / 4;
+		u32 pitch = texture->getPitch() / 4;
 
 		s32* in = new s32[dim.Height * pitch];
 		memcpy(in, p, dim.Height * pitch * 4);
 
-		for (s32 x=0; x<pitch; ++x)
-			for (s32 y=0; y<dim.Height; ++y)
+		for (u32 x=0; x<pitch; ++x)
+			for (u32 y=0; y<dim.Height; ++y)
 			{
 				// TODO: this could be optimized really a lot
 
@@ -1091,15 +1092,15 @@ void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude) 
 			return;
 		}
 
-		s32 pitch = texture->getPitch() / 2;
+		u32 pitch = texture->getPitch() / 2;
 
 		// copy texture
 
 		s16* in = new s16[dim.Height * pitch];
 		memcpy(in, p, dim.Height * pitch * 2);
 
-		for (s32 x=0; x<pitch; ++x)
-			for (s32 y=0; y<dim.Height; ++y)
+		for (u32 x=0; x<pitch; ++x)
+			for (u32 y=0; y<dim.Height; ++y)
 			{
 				// TODO: this could be optimized really a lot
 
@@ -1247,7 +1248,7 @@ bool CNullDriver::writeImageToFile(IImage* image, const char* filename,u32 param
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
 	if(!file)
 		return false;
-	
+
 	bool result = writeImageToFile(image, file, param);
 	file->drop();
 
@@ -1275,7 +1276,7 @@ bool CNullDriver::writeImageToFile(IImage* image, io::IWriteFile * file, u32 par
 
 //! Creates a software image from a byte array.
 IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
-					const core::dimension2d<s32>& size,
+					const core::dimension2d<u32>& size,
 					void *data, bool ownForeignMemory,
 					bool deleteMemory)
 {
@@ -1284,7 +1285,7 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 
 
 //! Creates an empty software image.
-IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size)
+IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 {
         return new CImage(format, size);
 }
@@ -1298,7 +1299,7 @@ IImage* CNullDriver::createImage(ECOLOR_FORMAT format, IImage *imageToCopy)
 
 
 //! Creates a software image from part of another image.
-IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32>& pos, const core::dimension2d<s32>& size)
+IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32>& pos, const core::dimension2d<u32>& size)
 {
         return new CImage(imageToCopy, pos, size);
 }
@@ -1409,11 +1410,12 @@ bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
-void CNullDriver::OnResize(const core::dimension2d<s32>& size)
+void CNullDriver::OnResize(const core::dimension2d<u32>& size)
 {
-	if (ViewPort.getWidth() == ScreenSize.Width &&
-		ViewPort.getHeight() == ScreenSize.Height)
-		ViewPort = core::rect<s32>(core::position2d<s32>(0,0), size);
+	if (ViewPort.getWidth() == (s32)ScreenSize.Width &&
+		ViewPort.getHeight() == (s32)ScreenSize.Height)
+		ViewPort = core::rect<s32>(core::position2d<s32>(0,0),
+									core::dimension2di(size));
 
 	ScreenSize = size;
 }
@@ -1869,7 +1871,7 @@ s32 CNullDriver::addShaderMaterialFromFiles(const c8* vertexShaderProgramFileNam
 
 
 //! Creates a render target texture.
-ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<s32>& size,
+ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
 		const c8* name)
 {
 	return 0;
@@ -1906,7 +1908,7 @@ void CNullDriver::printVersion()
 
 
 //! creates a video driver
-IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize)
+IVideoDriver* createNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 {
 	CNullDriver* nullDriver = new CNullDriver(io, screenSize);
 
@@ -1943,7 +1945,7 @@ void CNullDriver::enableClipPlane(u32 index, bool enable)
 }
 
 
-ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<s32>& size,
+ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<u32>& size,
 		const c8* name)
 {
 	os::Printer::log("createRenderTargetTexture is deprecated, use addRenderTargetTexture instead");

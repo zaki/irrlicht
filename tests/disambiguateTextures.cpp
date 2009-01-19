@@ -17,7 +17,7 @@ using namespace gui;
 bool disambiguateTextures(void)
 {
 	IrrlichtDevice *device =
-		createDevice( video::EDT_NULL, dimension2d<s32>(640, 480));
+		createDevice( video::EDT_NULL, dimension2d<u32>(640, 480));
 
 	if (!device)
 	{

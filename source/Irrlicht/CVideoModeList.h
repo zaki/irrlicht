@@ -25,30 +25,30 @@ namespace video
 		virtual s32 getVideoModeCount() const;
 
 		//! Returns the screen size of a video mode in pixels.
-		virtual core::dimension2d<s32> getVideoModeResolution(s32 modeNumber) const;
+		virtual core::dimension2d<u32> getVideoModeResolution(s32 modeNumber) const;
 
 		//! Returns the screen size of an optimal video mode in pixels.
-		virtual core::dimension2d<s32> getVideoModeResolution(const core::dimension2d<s32>& minSize, const core::dimension2d<s32>& maxSize) const;
+		virtual core::dimension2d<u32> getVideoModeResolution(const core::dimension2d<u32>& minSize, const core::dimension2d<u32>& maxSize) const;
 
 		//! Returns the pixel depth of a video mode in bits.
 		virtual s32 getVideoModeDepth(s32 modeNumber) const;
 
 		//! Returns current desktop screen resolution.
-		virtual const core::dimension2d<s32>& getDesktopResolution() const;
+		virtual const core::dimension2d<u32>& getDesktopResolution() const;
 
 		//! Returns the pixel depth of a video mode in bits.
 		virtual s32 getDesktopDepth() const;
 
 		//! adds a new mode to the list
-		void addMode(const core::dimension2d<s32>& size, s32 depth);
+		void addMode(const core::dimension2d<u32>& size, s32 depth);
 
-		void setDesktop(s32 desktopDepth, const core::dimension2d<s32>& desktopSize);
+		void setDesktop(s32 desktopDepth, const core::dimension2d<u32>& desktopSize);
 
 	private:
 
 		struct SVideoMode
 		{
-			core::dimension2d<s32> size;
+			core::dimension2d<u32> size;
 			s32 depth;
 
 			bool operator==(const SVideoMode& other) const
@@ -59,9 +59,9 @@ namespace video
 			bool operator <(const SVideoMode& other) const
 			{
 				return (size.Width < other.size.Width ||
-					(size.Width == other.size.Width && 
+					(size.Width == other.size.Width &&
 					size.Height < other.size.Height) ||
-					(size.Width == other.size.Width && 
+					(size.Width == other.size.Width &&
 					size.Height == other.size.Height &&
 					depth < other.depth));
 			}

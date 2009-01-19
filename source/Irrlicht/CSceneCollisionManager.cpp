@@ -124,7 +124,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 			 }
 			 else if (objectBox.intersectsWithLine(objectRay))
 			 {
-				// Now transform into world space, since we need to use world space 
+				// Now transform into world space, since we need to use world space
 				// scales and distances.
 				core::aabbox3df worldBox(objectBox);
 				current->getAbsoluteTransformation().transformBox(worldBox);
@@ -144,8 +144,8 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 
 					Note that we define them as opposite pairs of faces.
 				*/
-				static const s32 faceEdges[6][3] = 
-				{ 
+				static const s32 faceEdges[6][3] =
+				{
 					{ 0, 1, 5 }, // Front
 					{ 6, 7, 3 }, // Back
 					{ 2, 3, 1 }, // Left
@@ -164,12 +164,12 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 										edges[faceEdges[face][1]],
 										edges[faceEdges[face][2]]);
 
-					// Only consider lines that might be entering through this face, since we 
+					// Only consider lines that might be entering through this face, since we
 					// already know that the start point is outside the box.
 					if(facePlane.classifyPointRelation(ray.start) != core::ISREL3D_FRONT)
 						continue;
 
-					// Don't bother using a limited ray, since we already know that it should be long 
+					// Don't bother using a limited ray, since we already know that it should be long
 					// enough to intersect with the box.
 					if(facePlane.getIntersectionWithLine(ray.start, rayVector, intersection))
 					{
@@ -179,7 +179,7 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 							// We have to check that the intersection with this plane is actually
 							// on the box, so need to go back to object space again.  We also
 							// need to move the intersection very slightly closer to the centre of
-							// the box to take into account fp precision losses, since the intersection 
+							// the box to take into account fp precision losses, since the intersection
 							// will axiomatically be on the very edge of the box.
 							worldToObject.transformVect(intersection);
 							intersection *= 0.99f;
@@ -743,7 +743,7 @@ core::line3d<f32> CSceneCollisionManager::getRayFromScreenCoordinates(
 	core::vector3df uptodown = f->getFarLeftDown() - farLeftUp;
 
 	const core::rect<s32>& viewPort = Driver->getViewPort();
-	core::dimension2d<s32> screenSize(viewPort.getWidth(), viewPort.getHeight());
+	core::dimension2d<u32> screenSize(viewPort.getWidth(), viewPort.getHeight());
 
 	f32 dx = pos.X / (f32)screenSize.Width;
 	f32 dy = pos.Y / (f32)screenSize.Height;
@@ -773,7 +773,7 @@ core::position2d<s32> CSceneCollisionManager::getScreenCoordinatesFrom3DPosition
 		return core::position2d<s32>(-1000,-1000);
 
 	const core::rect<s32>& viewPort = Driver->getViewPort();
-	core::dimension2d<s32> dim(viewPort.getWidth(), viewPort.getHeight());
+	core::dimension2d<u32> dim(viewPort.getWidth(), viewPort.getHeight());
 
 	dim.Width /= 2;
 	dim.Height /= 2;

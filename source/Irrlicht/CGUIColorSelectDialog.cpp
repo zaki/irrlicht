@@ -98,7 +98,7 @@ CGUIColorSelectDialog::CGUIColorSelectDialog(const wchar_t* title, IGUIEnvironme
 	ColorRing.Texture = driver->getTexture ( "#colorring" );
 	if ( 0 == ColorRing.Texture )
 	{
-		buildColorRing(core::dimension2d<s32>(128, 128), 1,
+		buildColorRing(core::dimension2d<u32>(128, 128), 1,
 			Environment->getSkin()->getColor(EGDC_3D_SHADOW).color);
 	}
 
@@ -184,9 +184,9 @@ CGUIColorSelectDialog::~CGUIColorSelectDialog()
 
 
 //! renders a antialiased, colored ring
-void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<s32> & dim, s32 supersample, const u32 borderColor )
+void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, s32 supersample, const u32 borderColor )
 {
-	const core::dimension2d<s32> d(dim.Width * supersample, dim.Height * supersample);
+	const core::dimension2d<u32> d(dim.Width * supersample, dim.Height * supersample);
 	video::CImage *RawTexture = new video::CImage(video::ECF_A8R8G8B8, d);
 
 	RawTexture->fill ( 0x00808080 );

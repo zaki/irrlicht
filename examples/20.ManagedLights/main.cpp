@@ -14,7 +14,7 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-#if defined(MSC_VER)
+#if defined(_MSC_VER)
 #pragma comment(lib, "Irrlicht.lib")
 #endif // MSC_VER
 
@@ -299,7 +299,7 @@ int main(int argumentCount, char * argumentValues[])
 		default: return 0;
 	}
 
-	IrrlichtDevice *device = createDevice(driverType, dimension2d<s32>(640, 480), 32,
+	IrrlichtDevice *device = createDevice(driverType, dimension2d<u32>(640, 480), 32,
 										false, false, false, 0);
 	if(!device)
 		return -1;

@@ -95,7 +95,7 @@ struct dmfWaterPlane
 	u32 waterID;//!<ID of specified water plane.
 	u32 numFaces;//!<number of faces that make this plain.Owing to the fact that this is a rectangle you'll have 1 every time.
 	u32 firstFace;//!<first face of this plain.
-	core::dimension2d<s32> tileNum;//!<number of tiles of this water plain.
+	core::dimension2d<u32> tileNum;//!<number of tiles of this water plain.
 	f32 waveHeight;//!<height of waves.
 	f32 waveSpeed;//!<waves speed.
 	f32 waveLength;//!<waves length.
@@ -649,7 +649,7 @@ bool GetDMFWaterPlanes(const StringList& RawFile/**<StringList representing a DM
 	offs++;
 	s32 objs=atoi(RawFile[offs].c_str());
 	s32 fac=0,vert=0,tmp_sz=0,vert_cnt=0,face_cnt=0,wat_id=0;
-	core::dimension2d<s32> tilenum(40,40);
+	core::dimension2d<u32> tilenum(40,40);
 	f32 waveheight=3.0f;
 	f32 wavespeed=300.0f;
 	f32 wavelength=80.0f;

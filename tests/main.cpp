@@ -115,7 +115,7 @@ int main(int argumentCount, char * arguments[])
 
 	if(!success)
 	{
-		logTestString("\n\n\n******** Test failure ********\nTest %d '%s' failed\n"\
+		logTestString("\n******** Test failure ********\nTest %d '%s' failed\n"\
 		"******** Test failure ********\n",
 						testToRun + 1, tests[testToRun].testName);
 		fails++;

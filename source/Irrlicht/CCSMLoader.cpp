@@ -5,7 +5,7 @@
 // This file was written by Saurav Mohapatra and modified by Nikolaus Gebhardt.
 // See CCSMLoader.h for details.
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_CSM_LOADER_
 
 #include "CCSMLoader.h"
@@ -433,7 +433,7 @@ namespace scene
 
 			video::IImage* lmapImg = driver->createImageFromData(
 				video::ECF_A8R8G8B8,
-				core::dimension2d<s32>(lmap->getWidth(),lmap->getHeight()),
+				core::dimension2d<u32>(lmap->getWidth(),lmap->getHeight()),
 				(void *)(lmap->getPixelData()));
 
 			driver->addTexture(lmapName.c_str(), lmapImg);

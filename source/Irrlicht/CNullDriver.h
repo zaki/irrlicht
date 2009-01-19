@@ -39,7 +39,7 @@ namespace video
 	public:
 
 		//! constructor
-		CNullDriver(io::IFileSystem* io, const core::dimension2d<s32>& screenSize);
+		CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize);
 
 		//! destructor
 		virtual ~CNullDriver();
@@ -83,7 +83,7 @@ namespace video
 		virtual void renameTexture(ITexture* texture, const c8* newName);
 
 		//! creates a Texture
-		virtual ITexture* addTexture(const core::dimension2d<s32>& size, const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8);
+		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8);
 
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
@@ -204,10 +204,10 @@ namespace video
 		virtual ECOLOR_FORMAT getColorFormat() const;
 
 		//! get screen size
-		virtual const core::dimension2d<s32>& getScreenSize() const;
+		virtual const core::dimension2d<u32>& getScreenSize() const;
 
 		//! get render target size
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
 		// get current frames per second value
 		virtual s32 getFPS() const;
@@ -223,7 +223,7 @@ namespace video
 		//! \param light: the light data to use to create the light
 		//! \return An index to the light, or -1 if an error occurs
 		virtual s32 addDynamicLight(const SLight& light);
- 
+
 		//! Turns a dynamic light on or off
 		//! \param lightIndex: the index returned by addDynamicLight
 		//! \param turnOn: true to turn the light on, false to turn it off
@@ -280,7 +280,7 @@ namespace video
 		virtual void removeAllTextures();
 
 		//! Creates a render target texture.
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name);
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
@@ -315,11 +315,11 @@ namespace video
 		directly and own it from now on, which means it will also try to delete [] the
 		data when the image will be destructed. If false, the memory will by copied. */
 		virtual IImage* createImageFromData(ECOLOR_FORMAT format,
-			const core::dimension2d<s32>& size, void *data,
+			const core::dimension2d<u32>& size, void *data,
 			bool ownForeignMemory=true, bool deleteForeignMemory = true);
 
 		//! Creates an empty software image.
-		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
+		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size);
 
 
 		//! Creates a software image from another image.
@@ -328,7 +328,7 @@ namespace video
 		//! Creates a software image from part of another image.
 		virtual IImage* createImage(IImage* imageToCopy,
 				const core::position2d<s32>& pos,
-				const core::dimension2d<s32>& size);
+				const core::dimension2d<u32>& size);
 
 		//! Draws a mesh buffer
 		virtual void drawMeshBuffer(const scene::IMeshBuffer* mb);
@@ -386,7 +386,7 @@ namespace video
 	public:
 		//! Only used by the engine internally.
 		/** Used to notify the driver that the window was resized. */
-		virtual void OnResize(const core::dimension2d<s32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size);
 
 		//! Adds a new material renderer to the video device.
 		virtual s32 addMaterialRenderer(IMaterialRenderer* renderer,
@@ -524,7 +524,7 @@ namespace video
 		{ AllowZWriteOnTransparent=flag; }
 
 		//! deprecated method
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name=0);
 
 		virtual bool checkDriverReset() {return false;}
@@ -597,13 +597,13 @@ namespace video
 
 			virtual void* lock(bool readOnly = false) { return 0; };
 			virtual void unlock(){}
-			virtual const core::dimension2d<s32>& getOriginalSize() const { return size; }
-			virtual const core::dimension2d<s32>& getSize() const { return size; }
+			virtual const core::dimension2d<u32>& getOriginalSize() const { return size; }
+			virtual const core::dimension2d<u32>& getSize() const { return size; }
 			virtual E_DRIVER_TYPE getDriverType() const { return video::EDT_NULL; }
 			virtual ECOLOR_FORMAT getColorFormat() const { return video::ECF_A1R5G5B5; };
 			virtual u32 getPitch() const { return 0; }
 			virtual void regenerateMipMapLevels() {};
-			core::dimension2d<s32> size;
+			core::dimension2d<u32> size;
 		};
 
 
@@ -623,7 +623,7 @@ namespace video
 		scene::IMeshManipulator* MeshManipulator;
 
 		core::rect<s32> ViewPort;
-		core::dimension2d<s32> ScreenSize;
+		core::dimension2d<u32> ScreenSize;
 		core::matrix4 TransformationMatrix;
 
 		CFPSCounter FPSCounter;

@@ -111,7 +111,7 @@ public:
 	void setRelativePosition(const core::position2di & position)
 	{
 		const core::dimension2di mySize = RelativeRect.getSize();
-		const core::rect<s32> rectangle(position.X, position.Y, 
+		const core::rect<s32> rectangle(position.X, position.Y,
 										position.X + mySize.Width, position.Y + mySize.Height);
 		setRelativePosition(rectangle);
 	}
@@ -119,10 +119,10 @@ public:
 
 	//! Sets the relative rectangle of this element as a proportion of its parent's area.
 	/** \note This method used to be 'void setRelativePosition(const core::rect<f32>& r)'
-	\param r  The rectangle to set, interpreted as a proportion of the parent's area. 
+	\param r  The rectangle to set, interpreted as a proportion of the parent's area.
 	Meaningful values are in the range [0...1], unless you intend this element to spill
 	outside its parent. */
-	void setRelativePositionProportional(const core::rect<f32>& r) 
+	void setRelativePositionProportional(const core::rect<f32>& r)
 	{
 		if (!Parent)
 			return;
@@ -173,7 +173,7 @@ public:
 
 	//! Sets the maximum size allowed for this element
 	/** If set to 0,0, there is no maximum size */
-	void setMaxSize(core::dimension2di size)
+	void setMaxSize(core::dimension2du size)
 	{
 		MaxSize = size;
 		updateAbsolutePosition();
@@ -181,7 +181,7 @@ public:
 
 
 	//! Sets the minimum size allowed for this element
-	void setMinSize(core::dimension2di size)
+	void setMinSize(core::dimension2du size)
 	{
 		MinSize = size;
 		if (MinSize.Width < 1)
@@ -315,13 +315,13 @@ public:
 		const s32 h = RelativeRect.getHeight();
 
 		// make sure the desired rectangle is allowed
-		if (w < MinSize.Width)
+		if (w < (s32)MinSize.Width)
 			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MinSize.Width;
-		if (h < MinSize.Height)
+		if (h < (s32)MinSize.Height)
 			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MinSize.Height;
-		if (MaxSize.Width && w > MaxSize.Width)
+		if (MaxSize.Width && w > (s32)MaxSize.Width)
 			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MaxSize.Width;
-		if (MaxSize.Height && h > MaxSize.Height)
+		if (MaxSize.Height && h > (s32)MaxSize.Height)
 			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MaxSize.Height;
 
 		RelativeRect.repair();
@@ -841,10 +841,10 @@ public:
 		TabOrder = in->getAttributeAsInt("TabOrder");
 
 		core::position2di p = in->getAttributeAsPosition2d("MaxSize");
-		setMaxSize(core::dimension2di(p.X,p.Y));
+		setMaxSize(core::dimension2du(p.X,p.Y));
 
 		p = in->getAttributeAsPosition2d("MinSize");
-		setMinSize(core::dimension2di(p.X,p.Y));
+		setMinSize(core::dimension2du(p.X,p.Y));
 
 		setNotClipped(in->getAttributeAsBool("NoClip"));
 		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames),
@@ -883,7 +883,7 @@ protected:
 	core::rect<f32> ScaleRect;
 
 	//! maximum and minimum size of the element
-	core::dimension2di MaxSize, MinSize;
+	core::dimension2du MaxSize, MinSize;
 
 	//! is visible?
 	bool IsVisible;

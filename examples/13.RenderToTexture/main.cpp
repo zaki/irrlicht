@@ -45,7 +45,7 @@ int main()
 	// create device and exit if creation failed
 
 	IrrlichtDevice *device =
-		createDevice(driverType, core::dimension2d<s32>(640, 480),
+		createDevice(driverType, core::dimension2d<u32>(640, 480),
 		16, false, false);
 
 	if (device == 0)
@@ -140,7 +140,7 @@ int main()
 
 	if (driver->queryFeature(video::EVDF_RENDER_TO_TARGET))
 	{
-		rt = driver->addRenderTargetTexture(core::dimension2d<s32>(256,256), "RTT1");
+		rt = driver->addRenderTargetTexture(core::dimension2d<u32>(256,256), "RTT1");
 		test->setMaterialTexture(0, rt); // set material of cube to render target
 
 		// add fixed camera

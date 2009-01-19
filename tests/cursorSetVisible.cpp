@@ -28,7 +28,7 @@ struct TrapMouseMoves : IEventReceiver
 	only generates a mouse message when it actually changes */
 bool cursorSetVisible(void)
 {
-	IrrlichtDevice * device = createDevice(video::EDT_SOFTWARE, dimension2d<s32>(1, 1));
+	IrrlichtDevice * device = createDevice(video::EDT_SOFTWARE, dimension2d<u32>(1, 1));
 	TrapMouseMoves moveTrapper;
 	device->setEventReceiver(&moveTrapper);
 
@@ -53,7 +53,7 @@ bool cursorSetVisible(void)
 	device->run(); // Receive any messages
 
 
-	// We should get at most 3 messages: one for the setPosition(), and one for 
+	// We should get at most 3 messages: one for the setPosition(), and one for
 	// each actual change of visibility.
 	bool result = (moveTrapper.MouseMovesReceived <= 3);
 

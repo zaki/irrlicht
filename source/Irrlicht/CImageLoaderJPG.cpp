@@ -236,7 +236,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 
 	// convert image
 	IImage* image = new CImage(ECF_R8G8B8,
-		core::dimension2d<s32>(width, height), output);
+		core::dimension2d<u32>(width, height), output);
 
 	delete [] input;
 

@@ -207,7 +207,7 @@ namespace scene
 		//! Adds a terrain mesh to the mesh pool.
 		virtual IAnimatedMesh* addTerrainMesh(const c8* meshname,	video::IImage* texture, video::IImage* heightmap,
 			const core::dimension2d<f32>& stretchSize,
-			f32 maxHeight, const core::dimension2d<s32>& defaultVertexBlockSize);
+			f32 maxHeight, const core::dimension2d<u32>& defaultVertexBlockSize);
 
 		//! Add a arrow mesh to the mesh pool
 		virtual IAnimatedMesh* addArrowMesh(const c8* name,
@@ -591,7 +591,7 @@ namespace scene
 
 		E_SCENE_NODE_RENDER_PASS CurrentRendertime;
 
-		//! An optional callbacks manager to allow the user app finer control 
+		//! An optional callbacks manager to allow the user app finer control
 		//! over the scene lighting and rendering.
 		ILightManager* LightManager;
 

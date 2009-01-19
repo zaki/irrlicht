@@ -5,7 +5,7 @@ using namespace irr;
 bool drawRectOutline(void)
 {
 	IrrlichtDevice *device =
-		createDevice(video::EDT_BURNINGSVIDEO, core::dimension2di(160, 120));
+		createDevice(video::EDT_BURNINGSVIDEO, core::dimension2du(160, 120));
 	video::IVideoDriver* driver = device->getVideoDriver();
 
 	driver->beginScene(true, true, video::SColor(255,100,101,140));

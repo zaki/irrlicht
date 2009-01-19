@@ -69,7 +69,7 @@ bool CGUIToolBar::OnEvent(const SEvent& event)
 {
 	if (IsEnabled)
 	{
-		if (event.EventType == EET_MOUSE_INPUT_EVENT && 
+		if (event.EventType == EET_MOUSE_INPUT_EVENT &&
 			event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{
 			if (AbsoluteClippingRect.isPointInside(core::position2di(event.MouseInput.X, event.MouseInput.Y)))
@@ -116,7 +116,7 @@ void CGUIToolBar::updateAbsolutePosition()
 
 //! Adds a button to the tool bar
 IGUIButton* CGUIToolBar::addButton(s32 id, const wchar_t* text,const wchar_t* tooltiptext,
-	video::ITexture* img, video::ITexture* pressed, bool isPushButton, 
+	video::ITexture* img, video::ITexture* pressed, bool isPushButton,
 	bool useAlphaChannel)
 {
 	ButtonX += 3;
@@ -124,7 +124,7 @@ IGUIButton* CGUIToolBar::addButton(s32 id, const wchar_t* text,const wchar_t* to
 	core::rect<s32> rectangle(ButtonX,2,0,0);
 	if ( img )
 	{
-		const core::dimension2di &size = img->getOriginalSize();
+		const core::dimension2du &size = img->getOriginalSize();
 		rectangle.LowerRightCorner.X = rectangle.UpperLeftCorner.X + size.Width + 8;
 		rectangle.LowerRightCorner.Y = rectangle.UpperLeftCorner.Y + size.Height + 6;
 	}
@@ -151,10 +151,10 @@ IGUIButton* CGUIToolBar::addButton(s32 id, const wchar_t* text,const wchar_t* to
 
 	if (useAlphaChannel)
 		button->setUseAlphaChannel(useAlphaChannel);
-	
+
 	return button;
 }
-	
+
 } // end namespace gui
 } // end namespace irr
 

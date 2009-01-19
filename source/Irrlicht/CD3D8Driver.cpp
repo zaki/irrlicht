@@ -25,7 +25,7 @@ namespace video
 
 
 //! constructor
-CD3D8Driver::CD3D8Driver(const core::dimension2d<s32>& screenSize, HWND window,
+CD3D8Driver::CD3D8Driver(const core::dimension2d<u32>& screenSize, HWND window,
 			bool fullscreen, bool stencilbuffer,
 			io::IFileSystem* io, bool pureSoftware, bool vsync)
 : CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
@@ -142,7 +142,7 @@ void CD3D8Driver::createMaterialRenderers()
 
 
 //! initialises the Direct3D API
-bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
+bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
 		bool highPrecisionFPU, bool vsync, u8 antiAlias)
 {
@@ -715,7 +715,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 			if (dss)
 				dss->Release();
 
-			CurrentRendertargetSize = core::dimension2d<s32>(0,0);
+			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 			PrevRenderTarget->Release();
 			PrevRenderTarget = 0;
 		}
@@ -768,7 +768,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 //! Creates a render target texture.
 ITexture* CD3D8Driver::addRenderTargetTexture(
-		const core::dimension2d<s32>& size, const c8* name)
+		const core::dimension2d<u32>& size, const c8* name)
 {
 	if (!name)
 		name="rt";
@@ -906,8 +906,9 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 
 	core::position2d<s32> targetPos = pos;
 	core::position2d<s32> sourcePos = sourceRect.UpperLeftCorner;
+	// This needs to be signed as it may go negative.
 	core::dimension2d<s32> sourceSize(sourceRect.getSize());
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
 	if (clipRect)
 	{
@@ -921,7 +922,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 			targetPos.X = clipRect->UpperLeftCorner.X;
 		}
 
-		if (targetPos.X + sourceSize.Width > clipRect->LowerRightCorner.X)
+		if (targetPos.X + (s32)sourceSize.Width > clipRect->LowerRightCorner.X)
 		{
 			sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
 			if (sourceSize.Width <= 0)
@@ -938,7 +939,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 			targetPos.Y = clipRect->UpperLeftCorner.Y;
 		}
 
-		if (targetPos.Y + sourceSize.Height > clipRect->LowerRightCorner.Y)
+		if (targetPos.Y + (s32)sourceSize.Height > clipRect->LowerRightCorner.Y)
 		{
 			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
 			if (sourceSize.Height <= 0)
@@ -958,7 +959,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.X = 0;
 	}
 
-	if (targetPos.X + sourceSize.Width > renderTargetSize.Width)
+	if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
 	{
 		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
 		if (sourceSize.Width <= 0)
@@ -975,7 +976,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.Y = 0;
 	}
 
-	if (targetPos.Y + sourceSize.Height > renderTargetSize.Height)
+	if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
 	{
 		sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
 		if (sourceSize.Height <= 0)
@@ -985,20 +986,20 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 	// ok, we've clipped everything.
 	// now draw it.
 
-	s32 xPlus = -(renderTargetSize.Width>>1);
+	s32 xPlus = -(s32)(renderTargetSize.Width>>1);
 	f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
 	f32 yFact = 1.0f / (renderTargetSize.Height>>1);
 
-	const core::dimension2d<s32> sourceSurfaceSize = texture->getOriginalSize();
+	const core::dimension2d<u32> sourceSurfaceSize = texture->getOriginalSize();
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = (((f32)sourcePos.X)+0.5f) / texture->getOriginalSize().Width ;
 	tcoords.UpperLeftCorner.Y = (((f32)sourcePos.Y)+0.5f) / texture->getOriginalSize().Height;
 	tcoords.LowerRightCorner.X = (((f32)sourcePos.X +0.5f + (f32)sourceSize.Width)) / texture->getOriginalSize().Width;
 	tcoords.LowerRightCorner.Y = (((f32)sourcePos.Y +0.5f + (f32)sourceSize.Height)) / texture->getOriginalSize().Height;
 
-	core::rect<s32> poss(targetPos, sourceSize);
+	core::rect<s32> poss(targetPos, core::dimension2d<s32>(sourceSize));
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1039,7 +1040,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 	if(!texture)
 		return;
 
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = (f32)sourceRect.UpperLeftCorner.X / (f32)ss.Width;
 	tcoords.UpperLeftCorner.Y = (f32)sourceRect.UpperLeftCorner.Y / (f32)ss.Height;
@@ -1068,7 +1069,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		tcoords.LowerRightCorner.Y -= scale * tcHeight;
 	}
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 	core::rect<f32> npos;
 	f32 xFact = 2.0f / ( renderTargetSize.Width );
 	f32 yFact = 2.0f / ( renderTargetSize.Height );
@@ -1129,8 +1130,8 @@ void CD3D8Driver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	s32 xPlus = -(renderTargetSize.Width>>1);
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+	s32 xPlus = -(s32)(renderTargetSize.Width>>1);
 	f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
@@ -1170,8 +1171,8 @@ void CD3D8Driver::draw2DLine(const core::position2d<s32>& start,
 {
 	// thanks to Vash TheStampede who sent in his implementation
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = -(renderTargetSize.Width>>1);
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+	const s32 xPlus = -(s32)(renderTargetSize.Width>>1);
 	const f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	const s32 yPlus =
@@ -1205,7 +1206,7 @@ void CD3D8Driver::draw2DLine(const core::position2d<s32>& start,
 //! Draws a pixel
 void CD3D8Driver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 	if(x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
 		return;
 
@@ -1214,7 +1215,7 @@ void CD3D8Driver::drawPixel(u32 x, u32 y, const SColor & color)
 
 	setVertexShader(EVT_STANDARD);
 
-	const s32 xPlus = -renderTargetSize.Width / 2;
+	const s32 xPlus = -((s32)renderTargetSize.Width) / 2;
 	const f32 xFact = 2.0f / renderTargetSize.Width;
 	const s32 yPlus = renderTargetSize.Height / 2;
 	const f32 yFact = 2.0f / renderTargetSize.Height;
@@ -1820,7 +1821,7 @@ void CD3D8Driver::turnLightOn(s32 lightIndex, bool turnOn)
 {
 	if(lightIndex < 0 || lightIndex > LastSetLight)
 		return;
- 
+
 	(void)pID3DDevice->LightEnable(lightIndex, turnOn);
 }
 
@@ -1983,7 +1984,7 @@ void CD3D8Driver::draw3DLine(const core::vector3df& start,
 }
 
 
-void CD3D8Driver::OnResize(const core::dimension2d<s32>& size)
+void CD3D8Driver::OnResize(const core::dimension2d<u32>& size)
 {
 	if (!pID3DDevice)
 		return;
@@ -2132,13 +2133,13 @@ IImage* CD3D8Driver::createScreenShot()
 	u8 * sP = (u8 *)lockedRect.pBits;
 
 	// If the display mode format doesn't promise anything about the Alpha value
-	// and it appears that it's not presenting 255, then we should manually 
+	// and it appears that it's not presenting 255, then we should manually
 	// set each pixel alpha value to 255.
 	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
 	{
-		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < ScreenSize.Height; ++y)
 		{
-			for(s32 x = 0; x < ScreenSize.Width; ++x)
+			for(u32 x = 0; x < ScreenSize.Width; ++x)
 			{
 				*dP = *((u32*)sP) | 0xFF000000;
 				dP++;
@@ -2150,7 +2151,7 @@ IImage* CD3D8Driver::createScreenShot()
 	}
 	else
 	{
-		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < ScreenSize.Height; ++y)
 		{
 			memcpy(dP, sP, ScreenSize.Width * 4);
 
@@ -2173,7 +2174,7 @@ IImage* CD3D8Driver::createScreenShot()
 
 
 // returns the current size of the screen or rendertarget
-const core::dimension2d<s32>& CD3D8Driver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& CD3D8Driver::getCurrentRenderTargetSize() const
 {
 	if ( CurrentRendertargetSize.Width == 0 )
 		return ScreenSize;
@@ -2222,7 +2223,7 @@ namespace video
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 //! creates a video driver
-IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize,
+IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize,
 		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
 		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
 		bool vsync, u8 antiAlias)

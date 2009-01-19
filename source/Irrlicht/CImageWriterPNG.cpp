@@ -169,7 +169,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 
 	data=tmpImage;
 	// Fill array of pointers to rows in image data
-	for (s32 i=0; i<image->getDimension().Height; ++i)
+	for (u32 i=0; i<image->getDimension().Height; ++i)
 	{
 		RowPointers[i]=data;
 		data += lineWidth;

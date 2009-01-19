@@ -213,7 +213,7 @@ namespace video
 		//! \param light: the light data to use to create the light
 		//! \return An index to the light, or -1 if an error occurs
 		virtual s32 addDynamicLight(const SLight& light);
- 
+
 		//! Turns a dynamic light on or off
 		//! \param lightIndex: the index returned by addDynamicLight
 		//! \param turnOn: true to turn the light on, false to turn it off
@@ -250,7 +250,7 @@ namespace video
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
-		virtual void OnResize(const core::dimension2d<s32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size);
 
 		//! Returns type of video driver
 		virtual E_DRIVER_TYPE getDriverType() const;
@@ -309,7 +309,7 @@ namespace video
 		//! call.
 		virtual u32 getMaximalPrimitiveCount() const;
 
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name);
 
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
@@ -352,7 +352,7 @@ namespace video
 		void uploadClipPlane(u32 index);
 
 		//! inits the parts of the open gl driver used on all platforms
-		bool genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer);
+		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 		//! returns a device dependent texture from a software surface (IImage)
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
 
@@ -370,7 +370,7 @@ namespace video
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
 
 		// returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
 		void createMaterialRenderers();
 
@@ -405,7 +405,7 @@ namespace video
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;
 
-		core::dimension2d<s32> CurrentRendertargetSize;
+		core::dimension2d<u32> CurrentRendertargetSize;
 
 		core::stringc vendorName;
 

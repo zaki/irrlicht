@@ -17,7 +17,7 @@ using namespace gui;
 	can lead to rendering of the second texture in second place. */
 static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 {
-	IrrlichtDevice *device = createDevice( driverType, dimension2d<s32>(160, 120), 32);
+	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
 	if (!device)
 		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
 

@@ -23,7 +23,7 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const char* name, bool renderT
 
 	if (image)
 	{
-		core::dimension2d<s32> optSize;
+		core::dimension2d<u32> optSize;
 		OrigSize = image->getDimension();
 
 		optSize.Width = getTextureSizeFromSurfaceSize(OrigSize.Width);
@@ -80,14 +80,14 @@ void CSoftwareTexture::unlock()
 
 
 //! Returns original size of the texture.
-const core::dimension2d<s32>& CSoftwareTexture::getOriginalSize() const
+const core::dimension2d<u32>& CSoftwareTexture::getOriginalSize() const
 {
 	return OrigSize;
 }
 
 
 //! Returns (=size) of the texture.
-const core::dimension2d<s32>& CSoftwareTexture::getSize() const
+const core::dimension2d<u32>& CSoftwareTexture::getSize() const
 {
 	return Image->getDimension();
 }

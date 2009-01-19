@@ -60,10 +60,10 @@ public:
 	virtual void unlock();
 
 	//! Returns original size of the texture (image).
-	virtual const core::dimension2d<s32>& getOriginalSize() const;
+	virtual const core::dimension2d<u32>& getOriginalSize() const;
 
 	//! Returns size of the texture.
-	virtual const core::dimension2d<s32>& getSize() const;
+	virtual const core::dimension2d<u32>& getSize() const;
 
 	//! returns driver type of texture (=the driver, that created it)
 	virtual E_DRIVER_TYPE getDriverType() const;
@@ -114,8 +114,8 @@ protected:
 	//! \param: newTexture is true if method is called from a newly created texture for the first time. Otherwise call with false to improve memory handling.
 	void copyTexture(bool newTexture=true);
 
-	core::dimension2d<s32> ImageSize;
-	core::dimension2d<s32> TextureSize;
+	core::dimension2d<u32> ImageSize;
+	core::dimension2d<u32> TextureSize;
 	ECOLOR_FORMAT ColorFormat;
 	s32 Pitch;
 	COpenGLDriver* Driver;
@@ -139,7 +139,7 @@ class COpenGLFBOTexture : public COpenGLTexture
 public:
 
 	//! FrameBufferObject constructor
-	COpenGLFBOTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0);
+	COpenGLFBOTexture(const core::dimension2d<u32>& size, const char* name, COpenGLDriver* driver=0);
 
 	//! destructor
 	virtual ~COpenGLFBOTexture();
@@ -164,7 +164,7 @@ class COpenGLFBODepthTexture : public COpenGLFBOTexture
 {
 public:
 	//! FrameBufferObject depth constructor
-	COpenGLFBODepthTexture(const core::dimension2d<s32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
+	COpenGLFBODepthTexture(const core::dimension2d<u32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
 
 	//! destructor
 	virtual ~COpenGLFBODepthTexture();

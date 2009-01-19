@@ -10,7 +10,7 @@ using namespace video;
 bool terrainSceneNode(void)
 {
     IrrlichtDevice *device =
-        createDevice(video::EDT_OPENGL, dimension2di(160, 120), 32);
+        createDevice(video::EDT_OPENGL, dimension2du(160, 120), 32);
 
     IVideoDriver* driver = device->getVideoDriver();
     ISceneManager* smgr = device->getSceneManager();

@@ -37,16 +37,16 @@ namespace gui
 		//! sets another skin independent font. if this is set to zero, the button uses the font of the skin.
 		virtual void setOverrideFont(IGUIFont* font=0);
 
-		//! Sets an image which should be displayed on the button when it is in normal state. 
+		//! Sets an image which should be displayed on the button when it is in normal state.
 		virtual void setImage(video::ITexture* image);
 
-		//! Sets an image which should be displayed on the button when it is in normal state. 
+		//! Sets an image which should be displayed on the button when it is in normal state.
 		virtual void setImage(video::ITexture* image, const core::rect<s32>& pos);
 
-		//! Sets an image which should be displayed on the button when it is in pressed state. 
+		//! Sets an image which should be displayed on the button when it is in pressed state.
 		virtual void setPressedImage(video::ITexture* image);
 
-		//! Sets an image which should be displayed on the button when it is in pressed state. 
+		//! Sets an image which should be displayed on the button when it is in pressed state.
 		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos);
 
 		//! Sets the sprite bank used by the button
@@ -58,7 +58,7 @@ namespace gui
 		\param index: The sprite number from the current sprite bank
 		\param color: The color of the sprite
 		*/
-		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index, 
+		virtual void setSprite(EGUI_BUTTON_STATE state, s32 index,
 				video::SColor color=video::SColor(255,255,255,255), bool loop=false);
 
 		//! Sets if the button should behave like a push button. Which means it
@@ -74,7 +74,7 @@ namespace gui
 
 		//! Sets if the button should use the skin to draw its border
 		virtual void setDrawBorder(bool border);
-		
+
 		//! Sets if the alpha channel should be used for drawing images on the button (default is false)
 		virtual void setUseAlphaChannel(bool useAlphaChannel);
 
@@ -105,7 +105,7 @@ namespace gui
 		bool Pressed;
 		bool IsPushButton;
 		bool UseAlphaChannel;
-		
+
 		bool Border;
 
 		u32 ClickTime;

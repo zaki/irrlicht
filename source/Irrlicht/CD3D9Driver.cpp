@@ -24,7 +24,7 @@ namespace video
 {
 
 //! constructor
-CD3D9Driver::CD3D9Driver(const core::dimension2d<s32>& screenSize, HWND window,
+CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 				bool fullscreen, bool stencilbuffer,
 				io::IFileSystem* io, bool pureSoftware)
 : CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
@@ -150,7 +150,7 @@ void CD3D9Driver::createMaterialRenderers()
 
 
 //! initialises the Direct3D API
-bool CD3D9Driver::initDriver(const core::dimension2d<s32>& screenSize,
+bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
 		bool highPrecisionFPU, bool vsync, u8 antiAlias)
 {
@@ -743,7 +743,7 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 				os::Printer::log("Error: Could not set main depth buffer.", ELL_ERROR);
 			}
 
-			CurrentRendertargetSize = core::dimension2d<s32>(0,0);
+			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 			PrevRenderTarget->Release();
 			PrevRenderTarget = 0;
 		}
@@ -1222,14 +1222,14 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	if(!texture)
 		return;
 
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = (f32)sourceRect.UpperLeftCorner.X / (f32)ss.Width;
 	tcoords.UpperLeftCorner.Y = (f32)sourceRect.UpperLeftCorner.Y / (f32)ss.Height;
 	tcoords.LowerRightCorner.X = (f32)sourceRect.LowerRightCorner.X / (f32)ss.Width;
 	tcoords.LowerRightCorner.Y = (f32)sourceRect.LowerRightCorner.Y / (f32)ss.Height;
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 	core::rect<f32> npos;
 	f32 xFact = 2.0f / ( renderTargetSize.Width );
 	f32 yFact = 2.0f / ( renderTargetSize.Height );
@@ -1310,6 +1310,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 
 	core::position2d<s32> targetPos = pos;
 	core::position2d<s32> sourcePos = sourceRect.UpperLeftCorner;
+	// This needs to be signed as it may go negative.
 	core::dimension2d<s32> sourceSize(sourceRect.getSize());
 
 	if (clipRect)
@@ -1324,7 +1325,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 			targetPos.X = clipRect->UpperLeftCorner.X;
 		}
 
-		if (targetPos.X + sourceSize.Width > clipRect->LowerRightCorner.X)
+		if (targetPos.X + (s32)sourceSize.Width > clipRect->LowerRightCorner.X)
 		{
 			sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
 			if (sourceSize.Width <= 0)
@@ -1341,7 +1342,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 			targetPos.Y = clipRect->UpperLeftCorner.Y;
 		}
 
-		if (targetPos.Y + sourceSize.Height > clipRect->LowerRightCorner.Y)
+		if (targetPos.Y + (s32)sourceSize.Height > clipRect->LowerRightCorner.Y)
 		{
 			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
 			if (sourceSize.Height <= 0)
@@ -1361,9 +1362,9 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.X = 0;
 	}
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
-	if (targetPos.X + sourceSize.Width > renderTargetSize.Width)
+	if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
 	{
 		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
 		if (sourceSize.Width <= 0)
@@ -1380,7 +1381,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.Y = 0;
 	}
 
-	if (targetPos.Y + sourceSize.Height > renderTargetSize.Height)
+	if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
 	{
 		sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
 		if (sourceSize.Height <= 0)
@@ -1390,7 +1391,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	// ok, we've clipped everything.
 	// now draw it.
 
-	s32 xPlus = -renderTargetSize.Width / 2;
+	s32 xPlus = -(s32)(renderTargetSize.Width) / 2;
 	f32 xFact = 2.0f / renderTargetSize.Width;
 
 	s32 yPlus = renderTargetSize.Height / 2;
@@ -1402,7 +1403,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	tcoords.LowerRightCorner.X = (((f32)sourcePos.X +0.5f + (f32)sourceSize.Width)) / texture->getOriginalSize().Width;
 	tcoords.LowerRightCorner.Y = (((f32)sourcePos.Y +0.5f + (f32)sourceSize.Height)) / texture->getOriginalSize().Height;
 
-	core::rect<s32> poss(targetPos, sourceSize);
+	core::rect<s32> poss(targetPos, core::dimension2d<s32>(sourceSize));
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1442,9 +1443,9 @@ void CD3D9Driver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
-	s32 xPlus = -renderTargetSize.Width / 2;
+	s32 xPlus = -((s32)renderTargetSize.Width) / 2;
 	f32 xFact = 2.0f / renderTargetSize.Width;
 
 	s32 yPlus = renderTargetSize.Height / 2;
@@ -1486,8 +1487,8 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 {
 	// thanks to Vash TheStampede who sent in his implementation
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = -renderTargetSize.Width / 2;
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+	const s32 xPlus = -((s32)renderTargetSize.Width) / 2;
 	const f32 xFact = 2.0f / renderTargetSize.Width;
 
 	const s32 yPlus = renderTargetSize.Height / 2;
@@ -1520,7 +1521,7 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 //! Draws a pixel
 void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 	if(x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
 		return;
 
@@ -1529,7 +1530,7 @@ void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
 
 	setVertexShader(EVT_STANDARD);
 
-	const s32 xPlus = -renderTargetSize.Width / 2;
+	const s32 xPlus = -((s32)renderTargetSize.Width) / 2;
 	const f32 xFact = 2.0f / renderTargetSize.Width;
 	const s32 yPlus = renderTargetSize.Height / 2;
 	const f32 yFact = 2.0f / renderTargetSize.Height;
@@ -2338,7 +2339,7 @@ bool CD3D9Driver::reset()
 				desc.MultiSampleQuality,
 				TRUE,
 				&(DepthBuffers[i]->Surface),
-				NULL); 
+				NULL);
 	}
 
 	// restore RTTs
@@ -2400,7 +2401,7 @@ bool CD3D9Driver::reset()
 }
 
 
-void CD3D9Driver::OnResize(const core::dimension2d<s32>& size)
+void CD3D9Driver::OnResize(const core::dimension2d<u32>& size)
 {
 	if (!pID3DDevice)
 		return;
@@ -2534,7 +2535,7 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 
 //! Creates a render target texture.
 ITexture* CD3D9Driver::addRenderTargetTexture(
-		const core::dimension2d<s32>& size,
+		const core::dimension2d<u32>& size,
 		const c8* name)
 {
 	if (!name)
@@ -2611,13 +2612,13 @@ IImage* CD3D9Driver::createScreenShot()
 	u8 * sP = (u8 *)lockedRect.pBits;
 
 	// If the display mode format doesn't promise anything about the Alpha value
-	// and it appears that it's not presenting 255, then we should manually 
+	// and it appears that it's not presenting 255, then we should manually
 	// set each pixel alpha value to 255.
 	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
 	{
-		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < ScreenSize.Height; ++y)
 		{
-			for(s32 x = 0; x < ScreenSize.Width; ++x)
+			for(u32 x = 0; x < ScreenSize.Width; ++x)
 			{
 				*dP = *((u32*)sP) | 0xFF000000;
 				dP++;
@@ -2629,7 +2630,7 @@ IImage* CD3D9Driver::createScreenShot()
 	}
 	else
 	{
-		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < ScreenSize.Height; ++y)
 		{
 			memcpy(dP, sP, ScreenSize.Width * 4);
 
@@ -2666,7 +2667,7 @@ D3DFORMAT CD3D9Driver::getD3DColorFormat() const
 
 
 // returns the current size of the screen or rendertarget
-const core::dimension2d<s32>& CD3D9Driver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& CD3D9Driver::getCurrentRenderTargetSize() const
 {
 	if ( CurrentRendertargetSize.Width == 0 )
 		return ScreenSize;
@@ -2744,11 +2745,11 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 {
 	if (!tex)
 		return;
-	const core::dimension2di optSize = tex->getSize().getOptimalSize(
+	const core::dimension2du optSize = tex->getSize().getOptimalSize(
 			!queryFeature(EVDF_TEXTURE_NPOT),
 			!queryFeature(EVDF_TEXTURE_NSQUARE), true);
 	SDepthSurface* depth=0;
-	core::dimension2di destSize(0x7fffffff, 0x7fffffff);
+	core::dimension2du destSize(0x7fffffff, 0x7fffffff);
 	for (u32 i=0; i<DepthBuffers.size(); ++i)
 	{
 		if ((DepthBuffers[i]->Size.Width>=optSize.Width) &&
@@ -2774,7 +2775,7 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 				desc.MultiSampleQuality,
 				TRUE,
 				&(DepthBuffers.getLast()->Surface),
-				NULL); 
+				NULL);
 		if (SUCCEEDED(hr))
 		{
 			depth=DepthBuffers.getLast();
@@ -2791,7 +2792,7 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 				char buffer[128];
 				sprintf(buffer,"Could not create DepthBuffer of %ix%i",destSize.Width,destSize.Height);
 				os::Printer::log(buffer,ELL_ERROR);
-			} 
+			}
 			DepthBuffers.erase(DepthBuffers.size()-1);
 		}
 	}
@@ -2829,7 +2830,7 @@ namespace video
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 //! creates a video driver
-IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize,
+IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize,
 		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
 		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
 		bool vsync, u8 antiAlias)

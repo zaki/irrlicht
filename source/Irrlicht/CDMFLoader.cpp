@@ -13,7 +13,7 @@
   See the header file for additional information including use and distribution rights.
 */
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_DMF_LOADER_
 
 #ifdef _DEBUG
@@ -219,7 +219,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
 
 				CImage *immagine= new CImage(ECF_A8R8G8B8,
-					core::dimension2d<s32>(8,8));
+					core::dimension2d<u32>(8,8));
 				immagine->fill(color);
 				tex = driver->addTexture("", immagine);
 				immagine->drop();
@@ -252,7 +252,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			//if texture is present mirror vertically owing to DeleD representation
 			if (tex && header.dmfVersion<1.1)
 			{
-				const core::dimension2d<s32> texsize = tex->getSize();
+				const core::dimension2d<u32> texsize = tex->getSize();
 				void* pp = tex->lock();
 				if (pp)
 				{
@@ -261,8 +261,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 					{
 						s16* p = (s16*)pp;
 						s16 tmp=0;
-						for (s32 x=0; x<texsize.Width; x++)
-							for (s32 y=0; y<texsize.Height/2; y++)
+						for (u32 x=0; x<texsize.Width; x++)
+							for (u32 y=0; y<texsize.Height/2; y++)
 							{
 								tmp=p[y*texsize.Width + x];
 								p[y*texsize.Width + x] = p[(texsize.Height-y-1)*texsize.Width + x];
@@ -274,8 +274,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 					{
 						s32* p = (s32*)pp;
 						s32 tmp=0;
-						for (s32 x=0; x<texsize.Width; x++)
-							for (s32 y=0; y<texsize.Height/2; y++)
+						for (u32 x=0; x<texsize.Width; x++)
+							for (u32 y=0; y<texsize.Height/2; y++)
 							{
 								tmp=p[y*texsize.Width + x];
 								p[y*texsize.Width + x] = p[(texsize.Height-y-1)*texsize.Width + x];
@@ -290,7 +290,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			//if lightmap is present mirror vertically owing to DeleD rapresentation
 			if (lig && header.dmfVersion<1.1)
 			{
-				const core::dimension2d<s32> ligsize=lig->getSize();
+				const core::dimension2d<u32> ligsize=lig->getSize();
 				void* pp = lig->lock();
 				if (pp)
 				{
@@ -299,9 +299,9 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 					{
 						s16* p = (s16*)pp;
 						s16 tmp=0;
-						for (s32 x=0; x<ligsize.Width; x++)
+						for (u32 x=0; x<ligsize.Width; x++)
 						{
-							for (s32 y=0; y<ligsize.Height/2; y++)
+							for (u32 y=0; y<ligsize.Height/2; y++)
 							{
 								tmp=p[y*ligsize.Width + x];
 								p[y*ligsize.Width + x] = p[(ligsize.Height-y-1)*ligsize.Width + x];
@@ -313,9 +313,9 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 					{
 						s32* p = (s32*)pp;
 						s32 tmp=0;
-						for (s32 x=0; x<ligsize.Width; x++)
+						for (u32 x=0; x<ligsize.Width; x++)
 						{
-							for (s32 y=0; y<ligsize.Height/2; y++)
+							for (u32 y=0; y<ligsize.Height/2; y++)
 							{
 								tmp=p[y*ligsize.Width + x];
 								p[y*ligsize.Width + x] = p[(ligsize.Height-y-1)*ligsize.Width + x];
