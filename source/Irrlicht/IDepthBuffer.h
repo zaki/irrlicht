@@ -24,10 +24,10 @@ namespace video
 		virtual void clear() = 0;
 
 		//! sets the new size of the zbuffer
-		virtual void setSize(const core::dimension2d<s32>& size) = 0;
+		virtual void setSize(const core::dimension2d<u32>& size) = 0;
 
 		//! returns the size of the zbuffer
-		virtual const core::dimension2d<s32>& getSize() const = 0;
+		virtual const core::dimension2d<u32>& getSize() const = 0;
 
 		//! locks the zbuffer
 		virtual void* lock() = 0;
@@ -42,7 +42,7 @@ namespace video
 
 
 	//! creates a ZBuffer
-	IDepthBuffer* createDepthBuffer(const core::dimension2d<s32>& size);
+	IDepthBuffer* createDepthBuffer(const core::dimension2d<u32>& size);
 
 } // end namespace video
 } // end namespace irr

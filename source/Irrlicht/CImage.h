@@ -26,15 +26,15 @@ public:
 	//! \param useForeignMemory: If true, the image will use the data pointer
 	//! directly and own it from now on, which means it will also try to delete [] the
 	//! data when the image will be destructed. If false, the memory will by copied.
-	CImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size,
+	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size,
 		void* data, bool ownForeignMemory=true, bool deleteMemory = true);
 
 	//! constructor for empty image
-	CImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size);
+	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size);
 
 	//! constructor using a part from another image
 	CImage(IImage* imageToCopy,
-		const core::position2d<s32>& pos, const core::dimension2d<s32>& size);
+		const core::position2d<s32>& pos, const core::dimension2d<u32>& size);
 
 	//! destructor
 	virtual ~CImage();
@@ -49,7 +49,7 @@ public:
 	virtual void unlock() {}
 
 	//! Returns width and height of image data.
-	virtual const core::dimension2d<s32>& getDimension() const;
+	virtual const core::dimension2d<u32>& getDimension() const;
 
 	//! Returns bits per pixel.
 	virtual u32 getBitsPerPixel() const;
@@ -88,7 +88,7 @@ public:
 	virtual u32 getPitch() const { return Pitch; }
 
 	//! copies this surface into another, scaling it to fit.
-	virtual void copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format, u32 pitch=0);
+	virtual void copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch=0);
 
 	//! copies this surface into another, scaling it to fit.
 	virtual void copyToScaling(IImage* target);
@@ -128,7 +128,7 @@ private:
 	inline SColor getPixelBox ( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) const;
 
 	void* Data;
-	core::dimension2d<s32> Size;
+	core::dimension2d<u32> Size;
 	u32 BitsPerPixel;
 	u32 BytesPerPixel;
 	u32 Pitch;

@@ -192,7 +192,7 @@ int main()
 	// create device
 
 	IrrlichtDevice *device = createDevice(driverType,
-			core::dimension2d<s32>(640, 480), 16, false);
+			core::dimension2d<u32>(640, 480), 16, false);
 		
 	if (device == 0)
 		return 1; // could not create selected driver.

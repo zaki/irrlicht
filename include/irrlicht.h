@@ -223,7 +223,7 @@
  * {
  *	// start up the engine
  *	IrrlichtDevice *device = createDevice(video::EDT_DIRECT3D8,
- *		core::dimension2d<s32>(640,480));
+ *		core::dimension2d<u32>(640,480));
  *
  *	video::IVideoDriver* driver = device->getVideoDriver();
  *	scene::ISceneManager* scenemgr = device->getSceneManager();
@@ -318,7 +318,7 @@ namespace irr
 	IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
 		video::E_DRIVER_TYPE deviceType = video::EDT_SOFTWARE,
 		// parantheses are necessary for some compilers
-		const core::dimension2d<s32>& windowSize = (core::dimension2d<s32>(640,480)),
+		const core::dimension2d<u32>& windowSize = (core::dimension2d<u32>(640,480)),
 		u32 bits = 16,
 		bool fullscreen = false,
 		bool stencilbuffer = false,

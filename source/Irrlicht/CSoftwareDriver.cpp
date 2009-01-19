@@ -18,7 +18,7 @@ namespace video
 
 
 //! constructor
-CSoftwareDriver::CSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
+CSoftwareDriver::CSoftwareDriver(const core::dimension2d<u32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 : CNullDriver(io, windowSize), BackBuffer(0), Presenter(presenter), WindowId(0),
 	SceneSourceRect(0), RenderTargetTexture(0), RenderTargetSurface(0),
 	CurrentTriangleRenderer(0), ZBuffer(0), Texture(0)
@@ -316,7 +316,7 @@ void CSoftwareDriver::setViewPort(const core::rect<s32>& area)
 	core::rect<s32> rendert(0,0,RenderTargetSize.Width,RenderTargetSize.Height);
 	ViewPort.clipAgainst(rendert);
 
-	ViewPortSize = ViewPort.getSize();
+	ViewPortSize = core::dimension2du(ViewPort.getSize());
 	Render2DTranslation.X = (ViewPortSize.Width / 2) + ViewPort.UpperLeftCorner.X;
 	Render2DTranslation.Y = ViewPort.UpperLeftCorner.Y + ViewPortSize.Height - (ViewPortSize.Height / 2);// + ViewPort.UpperLeftCorner.Y;
 
@@ -662,7 +662,7 @@ void CSoftwareDriver::drawClippedIndexedTriangleListT(const VERTEXTYPE* vertices
 	const VERTEXTYPE* currentVertex = clippedVertices.pointer();
 	S2DVertex* tp = &TransformedPoints[0];
 
-	core::dimension2d<s32> textureSize(0,0);
+	core::dimension2d<u32> textureSize(0,0);
 	f32 zDiv;
 
 	if (Texture)
@@ -742,10 +742,10 @@ void CSoftwareDriver::clipTriangle(f32* transformedPos)
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
-void CSoftwareDriver::OnResize(const core::dimension2d<s32>& size)
+void CSoftwareDriver::OnResize(const core::dimension2d<u32>& size)
 {
 	// make sure width and height are multiples of 2
-	core::dimension2d<s32> realSize(size);
+	core::dimension2d<u32> realSize(size);
 
 	if (realSize.Width % 2)
 		realSize.Width += 1;
@@ -755,10 +755,11 @@ void CSoftwareDriver::OnResize(const core::dimension2d<s32>& size)
 
 	if (ScreenSize != realSize)
 	{
-		if (ViewPort.getWidth() == ScreenSize.Width &&
-			ViewPort.getHeight() == ScreenSize.Height)
+		if (ViewPort.getWidth() == (s32)ScreenSize.Width &&
+			ViewPort.getHeight() == (s32)ScreenSize.Height)
 		{
-			ViewPort = core::rect<s32>(core::position2d<s32>(0,0), realSize);
+			ViewPort = core::rect<s32>(core::position2d<s32>(0,0),
+										core::dimension2di(realSize));
 		}
 
 		ScreenSize = realSize;
@@ -775,7 +776,7 @@ void CSoftwareDriver::OnResize(const core::dimension2d<s32>& size)
 }
 
 //! returns the current render target size
-const core::dimension2d<s32>& CSoftwareDriver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& CSoftwareDriver::getCurrentRenderTargetSize() const
 {
 	return RenderTargetSize;
 }
@@ -889,7 +890,7 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 
 
 //! Creates a render target texture.
-ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
 	if (!name)
@@ -940,7 +941,7 @@ namespace video
 
 
 //! creates a video driver
-IVideoDriver* createSoftwareDriver(const core::dimension2d<s32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
+IVideoDriver* createSoftwareDriver(const core::dimension2d<u32>& windowSize, bool fullscreen, io::IFileSystem* io, video::IImagePresenter* presenter)
 {
 	#ifdef _IRR_COMPILE_WITH_SOFTWARE_
 	return new CSoftwareDriver(windowSize, fullscreen, io, presenter);

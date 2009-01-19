@@ -311,32 +311,32 @@ IImage* CImageLoaderBMP::loadImage(io::IReadFile* file) const
 	switch(header.BPP)
 	{
 	case 1:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
 		if (image)
 			CColorConverter::convert1BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
 		break;
 	case 4:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
 		if (image)
 			CColorConverter::convert4BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, paletteData, pitch, true);
 		break;
 	case 8:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
 		if (image)
 			CColorConverter::convert8BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, paletteData, pitch, true);
 		break;
 	case 16:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<s32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
 		if (image)
 			CColorConverter::convert16BitTo16Bit((s16*)bmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
 		break;
 	case 24:
-		image = new CImage(ECF_R8G8B8, core::dimension2d<s32>(header.Width, header.Height));
+		image = new CImage(ECF_R8G8B8, core::dimension2d<u32>(header.Width, header.Height));
 		if (image)
 			CColorConverter::convert24BitTo24Bit(bmpData, (u8*)image->lock(), header.Width, header.Height, pitch, true, true);
 		break;
 	case 32: // thx to Reinhard Ostermeier
-		image = new CImage(ECF_A8R8G8B8, core::dimension2d<s32>(header.Width, header.Height));
+		image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(header.Width, header.Height));
 		if (image)
 			CColorConverter::convert32BitTo32Bit((s32*)bmpData, (s32*)image->lock(), header.Width, header.Height, pitch, true);
 		break;

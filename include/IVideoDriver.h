@@ -218,7 +218,7 @@ namespace video
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* addTexture(const core::dimension2d<u32>& size,
 			const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
 
 		//! Creates a texture from an IImage.
@@ -239,12 +239,12 @@ namespace video
 		\return Pointer to the created texture or 0 if the texture
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name=0) =0;
 
 		//! Adds a new render target texture
 		/** \deprecated use addRenderTargetTexture instead. */
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* createRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name=0) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
@@ -613,7 +613,7 @@ namespace video
 		/** \param x The x-position of the pixel.
 		\param y The y-position of the pixel.
 		\param color Color of the pixel to draw. */
-		virtual void drawPixel(u32 x, u32 y, const SColor& color) = 0; 
+		virtual void drawPixel(u32 x, u32 y, const SColor& color) = 0;
 
 		//! Draws a non filled concyclic regular 2d polyon.
 		/** This method can be used to draw circles, but also
@@ -706,14 +706,14 @@ namespace video
 
 		//! Get the size of the screen or render window.
 		/** \return Size of screen or render window. */
-		virtual const core::dimension2d<s32>& getScreenSize() const = 0;
+		virtual const core::dimension2d<u32>& getScreenSize() const = 0;
 
 		//! Get the size of the current render target
 		/** This method will return the screen size if the driver
 		doesn't support render to texture, or if the current render
 		target is the screen.
 		\return Size of render target or screen/window */
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const = 0;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const = 0;
 
 		//! Returns current frames per second value.
 		/** This value is updated approximately every 1.5 seconds and
@@ -862,7 +862,7 @@ namespace video
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImageFromData(ECOLOR_FORMAT format,
-			const core::dimension2d<s32>& size, void *data,
+			const core::dimension2d<u32>& size, void *data,
 			bool ownForeignMemory=false,
 			bool deleteMemory = true) = 0;
 
@@ -873,7 +873,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<s32>& size) =0;
+		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) =0;
 
 		//! Creates a software image by converting it to given format from another image.
 		/**
@@ -894,12 +894,12 @@ namespace video
 		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImage(IImage* imageToCopy,
 				const core::position2d<s32>& pos,
-				const core::dimension2d<s32>& size) =0;
+				const core::dimension2d<u32>& size) =0;
 
 		//! Event handler for resize events. Only used by the engine internally.
 		/** Used to notify the driver that the window was resized.
 		Usually, there is no need to call this method. */
-		virtual void OnResize(const core::dimension2d<s32>& size) = 0;
+		virtual void OnResize(const core::dimension2d<u32>& size) = 0;
 
 		//! Adds a new material renderer to the video device.
 		/** Use this method to extend the VideoDriver with new material

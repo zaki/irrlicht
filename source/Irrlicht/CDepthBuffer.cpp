@@ -15,7 +15,7 @@ namespace video
 
 
 //! constructor
-CDepthBuffer::CDepthBuffer(const core::dimension2d<s32>& size)
+CDepthBuffer::CDepthBuffer(const core::dimension2d<u32>& size)
 : Buffer(0), Size(0,0)
 {
 	#ifdef _DEBUG
@@ -55,7 +55,7 @@ void CDepthBuffer::clear()
 
 
 //! sets the new size of the zbuffer
-void CDepthBuffer::setSize(const core::dimension2d<s32>& size)
+void CDepthBuffer::setSize(const core::dimension2d<u32>& size)
 {
 	if (size == Size)
 		return;
@@ -73,7 +73,7 @@ void CDepthBuffer::setSize(const core::dimension2d<s32>& size)
 
 
 //! returns the size of the zbuffer
-const core::dimension2d<s32>& CDepthBuffer::getSize() const
+const core::dimension2d<u32>& CDepthBuffer::getSize() const
 {
 	return Size;
 }
@@ -91,7 +91,7 @@ namespace video
 {
 
 //! creates a ZBuffer
-IDepthBuffer* createDepthBuffer(const core::dimension2d<s32>& size)
+IDepthBuffer* createDepthBuffer(const core::dimension2d<u32>& size)
 {
 	#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 	return new CDepthBuffer(size);
@@ -99,7 +99,7 @@ IDepthBuffer* createDepthBuffer(const core::dimension2d<s32>& size)
 	return 0;
 	#endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
 }
-	
+
 } // end namespace video
 } // end namespace irr
 

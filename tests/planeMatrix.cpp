@@ -51,7 +51,7 @@ static bool transformPlane(const vector3df & point, const vector3df & normal,
 static bool drawScaledOctTree(void)
 {
 	bool result = false;
-	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO, dimension2d<s32>(160, 120), 32);
+	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO, dimension2d<u32>(160, 120), 32);
 	if (!device)
 		return false;
 

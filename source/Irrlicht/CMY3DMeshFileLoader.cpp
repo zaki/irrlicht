@@ -8,7 +8,7 @@
 // This tool created by ZDimitor everyone can use it as wants
 //-----------------------------------------------------------------------------
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_MY3D_LOADER_
 
 #include "CMY3DMeshFileLoader.h"
@@ -59,7 +59,7 @@ CMY3DMeshFileLoader::CMY3DMeshFileLoader(ISceneManager* scmgr, io::IFileSystem* 
 	#ifdef _DEBUG
 	setDebugName("CMY3DMeshFileLoader");
 	#endif
-	
+
 	if (FileSystem)
 		FileSystem->grab();
 }
@@ -827,8 +827,8 @@ video::ITexture* CMY3DMeshFileLoader::readEmbeddedLightmap(io::IReadFile* file, 
 	{
 		// 24 bit lightmap format
 		light_img = SceneManager->getVideoDriver()->createImageFromData(
-		video::ECF_R8G8B8, 
-		core::dimension2d<s32>(texDataHeader.Width, texDataHeader.Height), 
+		video::ECF_R8G8B8,
+		core::dimension2d<u32>(texDataHeader.Width, texDataHeader.Height),
 			data, true);
 	}
 	else
@@ -836,7 +836,7 @@ video::ITexture* CMY3DMeshFileLoader::readEmbeddedLightmap(io::IReadFile* file, 
 		// 16 bit lightmap format
 		light_img = SceneManager->getVideoDriver()->createImageFromData(
 			video::ECF_A1R5G5B5,
-			core::dimension2d<s32>(texDataHeader.Width, texDataHeader.Height),
+			core::dimension2d<u32>(texDataHeader.Width, texDataHeader.Height),
 			data, true);
 	}
 

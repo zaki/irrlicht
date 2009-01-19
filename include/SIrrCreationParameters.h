@@ -19,7 +19,7 @@ namespace irr
 		//! Constructs a SIrrlichtCreationParameters structure with default values.
 		SIrrlichtCreationParameters() :
 			DriverType(video::EDT_BURNINGSVIDEO),
-			WindowSize(core::dimension2d<s32>(800, 600)),
+			WindowSize(core::dimension2d<u32>(800, 600)),
 			Bits(16),
 			ZBufferBits(16),
 			Fullscreen(false),
@@ -65,7 +65,7 @@ namespace irr
 		video::E_DRIVER_TYPE DriverType;
 
 		//! Size of the window or the video mode in fullscreen mode. Default: 800x600
-		core::dimension2d<s32> WindowSize;
+		core::dimension2d<u32> WindowSize;
 
 		//! Minimum Bits per pixel of the color buffer in fullscreen mode. Ignored if windowed mode. Default: 16.
 		u8 Bits;

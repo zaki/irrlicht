@@ -111,7 +111,7 @@ int main()
 	// you can add more parameters if desired, check irr::SIrrlichtCreationParameters
 	irr::SIrrlichtCreationParameters params;
 	params.DriverType=driverType;
-	params.WindowSize=core::dimension2d<s32>(640, 480);
+	params.WindowSize=core::dimension2d<u32>(640, 480);
 	IrrlichtDevice* device = createDeviceEx(params);
 
 	if (device == 0)

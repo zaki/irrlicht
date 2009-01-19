@@ -34,7 +34,7 @@ public:
 	static IMesh* createTerrainMesh(video::IImage* texture,
 		video::IImage* heightmap, const core::dimension2d<f32>& stretchSize,
 		f32 maxHeight, video::IVideoDriver* driver,
-		const core::dimension2d<s32>& defaultVertexBlockSize,
+		const core::dimension2d<u32>& defaultVertexBlockSize,
 		bool debugBorders=false);
 
 	static IMesh* createArrowMesh(const u32 tesselationCylinder,

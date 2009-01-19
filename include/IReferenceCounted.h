@@ -28,7 +28,7 @@ namespace irr
 
 	If you want to create a texture, you may want to call an imaginable method
 	IDriver::createTexture. You call
-	ITexture* texture = driver->createTexture(dimension2d<s32>(128, 128));
+	ITexture* texture = driver->createTexture(dimension2d<u32>(128, 128));
 	If you no longer need the texture, call texture->drop().
 
 	If you want to load a texture, you may want to call imaginable method
@@ -75,7 +75,7 @@ namespace irr
 
 		If you want to create a texture, you may want to call an
 		imaginable method IDriver::createTexture. You call
-		ITexture* texture = driver->createTexture(dimension2d<s32>(128, 128));
+		ITexture* texture = driver->createTexture(dimension2d<u32>(128, 128));
 		If you no longer need the texture, call texture->drop().
 		If you want to load a texture, you may want to call imaginable
 		method IDriver::loadTexture. You do this like
@@ -104,7 +104,7 @@ namespace irr
 
 		If you want to create a texture, you may want to call an
 		imaginable method IDriver::createTexture. You call
-		ITexture* texture = driver->createTexture(dimension2d<s32>(128, 128));
+		ITexture* texture = driver->createTexture(dimension2d<u32>(128, 128));
 		If you no longer need the texture, call texture->drop().
 		If you want to load a texture, you may want to call imaginable
 		method IDriver::loadTexture. You do this like

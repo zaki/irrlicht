@@ -17,7 +17,7 @@ using namespace gui;
 bool guiDisabledMenu(void)
 {
 	IrrlichtDevice *device = createDevice( video::EDT_OPENGL,
-											dimension2d<s32>(160, 40), 32);
+											dimension2d<u32>(160, 40), 32);
 	assert(device);
 	if (!device)
 		return false;

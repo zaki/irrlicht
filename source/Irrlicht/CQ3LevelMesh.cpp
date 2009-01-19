@@ -1650,7 +1650,7 @@ void CQ3LevelMesh::loadTextures()
 
 	lig[0] = 0;
 	c8 lightmapname[255];
-	core::dimension2d<s32> lmapsize(128,128);
+	core::dimension2d<u32> lmapsize(128,128);
 
 	//bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	//Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
@@ -1775,7 +1775,7 @@ void CQ3LevelMesh::loadTextures2()
 	Lightmap.set_used(NumLightMaps+1);
 
 	c8 lightmapname[255];
-	core::dimension2d<s32> lmapsize(128,128);
+	core::dimension2d<u32> lmapsize(128,128);
 
 	video::IImage* lmapImg;
 	for ( t = 0; t < NumLightMaps ; ++t)

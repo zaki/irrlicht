@@ -76,7 +76,7 @@ namespace irr
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<s32>& wsize, HWND hwnd, bool fullscreen)
+			CCursorControl(const core::dimension2d<u32>& wsize, HWND hwnd, bool fullscreen)
 				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f), IsVisible(true),
 					HWnd(hwnd), BorderX(0), BorderY(0), UseReferenceRect(false)
 			{
@@ -137,7 +137,7 @@ namespace irr
 			{
 				if (UseReferenceRect)
 				{
-					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x, 
+					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x,
 								 ReferenceRect.UpperLeftCorner.Y + y);
 				}
 				else
@@ -225,7 +225,7 @@ namespace irr
 			}
 
 			core::position2d<s32> CursorPos;
-			core::dimension2d<s32> WindowSize;
+			core::dimension2d<u32> WindowSize;
 			core::dimension2d<f32> InvWindowSize;
 			bool IsVisible;
 			HWND HWnd;
@@ -250,7 +250,7 @@ namespace irr
 
 		void resizeIfNecessary();
 
-		void pollJoysticks(); 
+		void pollJoysticks();
 
 		HWND HWnd;
 

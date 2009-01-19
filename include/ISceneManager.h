@@ -513,9 +513,9 @@ namespace scene
 		/** This camera does not react on user input like for example the one created with
 		addCameraSceneNodeFPS(). If you want to move or animate it, use animators or the
 		ISceneNode::setPosition(), ICameraSceneNode::setTarget() etc methods.
-		By default, a camera's look at position (set with setTarget()) and its scene node 
-		rotation (set with setRotation()) are independent.  If you want to be able to 
-		control the direction that the camera looks by using setRotation() then call 
+		By default, a camera's look at position (set with setTarget()) and its scene node
+		rotation (set with setRotation()) are independent.  If you want to be able to
+		control the direction that the camera looks by using setRotation() then call
 		ICameraSceneNode::bindTargetAndRotation(true) on it.
 		 \param position: Position of the space relative to its parent where the camera will be placed.
 		 \param lookat: Position where the camera will look at. Also known as target.
@@ -595,8 +595,8 @@ namespace scene
 		'false', with which it is possible to fly around in space, if
 		no gravity is there.
 		\param jumpSpeed: Speed with which the camera is moved when jumping.
-		\param invertMouse: Setting this to true makes the camera look up when 
-		the mouse is moved down and down when the mouse is moved up, the default 
+		\param invertMouse: Setting this to true makes the camera look up when
+		the mouse is moved down and down when the mouse is moved up, the default
 		is 'false' which means it will follow the movement of the mouse cursor.
 		\return Pointer to the interface of the camera if successful, otherwise 0.
 		This pointer should not be dropped. See
@@ -918,7 +918,7 @@ namespace scene
 			video::IImage* texture, video::IImage* heightmap,
 			const core::dimension2d<f32>& stretchSize = core::dimension2d<f32>(10.0f,10.0f),
 			f32 maxHeight=200.0f,
-			const core::dimension2d<s32>& defaultVertexBlockSize = core::dimension2d<s32>(64,64)) = 0;
+			const core::dimension2d<u32>& defaultVertexBlockSize = core::dimension2d<u32>(64,64)) = 0;
 
 		//! add a static arrow mesh to the meshpool
 		/** \param name Name of the mesh
@@ -1375,7 +1375,7 @@ namespace scene
 		virtual const video::SColorf& getAmbientLight() const = 0;
 
 		//! Register a custom callbacks manager which gets callbacks during scene rendering.
-		/** \param[in] lightManager: the new callbacks manager.  You may pass 0 to remove the 
+		/** \param[in] lightManager: the new callbacks manager.  You may pass 0 to remove the
 			current callbacks manager and restore the default behaviour. */
 		virtual void setLightManager(ILightManager* lightManager) = 0;
 	};

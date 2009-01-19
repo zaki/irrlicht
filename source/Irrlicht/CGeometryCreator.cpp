@@ -119,7 +119,7 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 		video::IImage* heightmap, const core::dimension2d<f32>& stretchSize,
 		f32 maxHeight, video::IVideoDriver* driver,
-		const core::dimension2d<s32>& maxVtxBlockSize,
+		const core::dimension2d<u32>& maxVtxBlockSize,
 		bool debugBorders)
 {
 	if (!texture || !heightmap)
@@ -134,17 +134,17 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 	SMesh* mesh = new SMesh();
 
 	const u32 tm = os::Timer::getRealTime()/1000;
-	const core::dimension2d<s32> hMapSize= heightmap->getDimension();
-	const core::dimension2d<s32> tMapSize= texture->getDimension();
+	const core::dimension2d<u32> hMapSize= heightmap->getDimension();
+	const core::dimension2d<u32> tMapSize= texture->getDimension();
 	const core::position2d<f32> thRel(static_cast<f32>(tMapSize.Width) / hMapSize.Width, static_cast<f32>(tMapSize.Height) / hMapSize.Height);
 	maxHeight /= 255.0f; // height step per color value
 
-	core::position2d<s32> processed(0,0);
+	core::position2d<u32> processed(0,0);
 	while (processed.Y<hMapSize.Height)
 	{
 		while(processed.X<hMapSize.Width)
 		{
-			core::dimension2d<s32> blockSize = maxVtxBlockSize;
+			core::dimension2d<u32> blockSize = maxVtxBlockSize;
 			if (processed.X + blockSize.Width > hMapSize.Width)
 				blockSize.Width = hMapSize.Width - processed.X;
 			if (processed.Y + blockSize.Height > hMapSize.Height)
@@ -154,7 +154,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 			buffer->setHardwareMappingHint(scene::EHM_STATIC);
 			buffer->Vertices.reallocate(blockSize.getArea());
 			// add vertices of vertex block
-			s32 y;
+			u32 y;
 			core::vector2df pos(0.f, processed.Y*stretchSize.Height);
 			const core::vector2df bs(1.f/blockSize.Width, 1.f/blockSize.Height);
 			core::vector2df tc(0.f, 0.5f*bs.Y);
@@ -162,7 +162,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 			{
 				pos.X=processed.X*stretchSize.Width;
 				tc.X=0.5f*bs.X;
-				for (s32 x=0; x<blockSize.Width; ++x)
+				for (u32 x=0; x<blockSize.Width; ++x)
 				{
 					const f32 height = heightmap->getPixel(x+processed.X, y+processed.Y).getAverage() * maxHeight;
 
@@ -181,7 +181,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 			s32 c1 = 0;
 			for (y=0; y<blockSize.Height-1; ++y)
 			{
-				for (s32 x=0; x<blockSize.Width-1; ++x)
+				for (u32 x=0; x<blockSize.Width-1; ++x)
 				{
 					const s32 c = c1 + x;
 
@@ -215,7 +215,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 				// create texture for this block
 				video::IImage* img = new video::CImage(texture,
 					core::position2d<s32>(core::floor32(processed.X*thRel.X), core::floor32(processed.Y*thRel.Y)),
-					core::dimension2d<s32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y)));
+					core::dimension2d<u32>(core::floor32(blockSize.Width*thRel.X), core::floor32(blockSize.Height*thRel.Y)));
 
 				sprintf(textureName, "terrain%u_%u", tm, mesh->getMeshBufferCount());
 

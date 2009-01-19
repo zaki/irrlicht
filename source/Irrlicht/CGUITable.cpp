@@ -996,7 +996,7 @@ void CGUITable::breakText(const core::stringw& text, core::stringw& brokenText, 
 	c[1] = L'\0';
 
 	const u32 maxLength = cellWidth - (CellWidthPadding * 2);
-	const s32 maxLengthDots = cellWidth - (CellWidthPadding * 2) - font->getDimension(L"...").Width;
+	const u32 maxLengthDots = cellWidth - (CellWidthPadding * 2) - font->getDimension(L"...").Width;
 	const u32 size = text.size();
 	u32 pos = 0;
 

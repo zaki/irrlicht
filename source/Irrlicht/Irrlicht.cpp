@@ -23,7 +23,7 @@ namespace irr
 {
 	//! stub for calling createDeviceEx
 	IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(video::E_DRIVER_TYPE driverType,
-			const core::dimension2d<s32>& windowSize,
+			const core::dimension2d<u32>& windowSize,
 			u32 bits, bool fullscreen,
 			bool stencilbuffer, bool vsync, IEventReceiver* res)
 	{

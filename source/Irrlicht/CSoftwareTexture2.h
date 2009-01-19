@@ -41,7 +41,7 @@ public:
 	}
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize() const
+	virtual const core::dimension2d<u32>& getOriginalSize() const
 	{
 		//return MipMap[0]->getDimension();
 		return OrigSize;
@@ -54,7 +54,7 @@ public:
 	}
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<s32>& getSize() const
+	virtual const core::dimension2d<u32>& getSize() const
 	{
 		return MipMap[MipMapLOD]->getDimension();
 	}
@@ -90,7 +90,7 @@ public:
 		return MipMap[MipMapLOD]->getPitch();
 	}
 
-	//! Regenerates the mip map levels of the texture. Useful after locking and 
+	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
 	virtual void regenerateMipMapLevels();
 
@@ -100,7 +100,7 @@ public:
 		if ( HasMipMaps )
 			MipMapLOD = lod;
 	}
-	
+
 	//! support mipmaps
 	virtual bool hasMipMaps() const
 	{
@@ -114,7 +114,7 @@ public:
 	}
 
 private:
-	core::dimension2d<s32> OrigSize;
+	core::dimension2d<u32> OrigSize;
 
 	CImage * MipMap[SOFTWARE_DRIVER_2_MIPMAPPING_MAX];
 

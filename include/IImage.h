@@ -58,7 +58,7 @@ public:
 	virtual void unlock() = 0;
 
 	//! Returns width and height of image data.
-	virtual const core::dimension2d<s32>& getDimension() const = 0;
+	virtual const core::dimension2d<u32>& getDimension() const = 0;
 
 	//! Returns bits per pixel.
 	virtual u32 getBitsPerPixel() const = 0;
@@ -97,7 +97,7 @@ public:
 	virtual u32 getPitch() const =0;
 
 	//! Copies the image into the target, scaling the image to fit
-	virtual void copyToScaling(void* target, s32 width, s32 height, ECOLOR_FORMAT format=ECF_A8R8G8B8, u32 pitch=0) =0;
+	virtual void copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format=ECF_A8R8G8B8, u32 pitch=0) =0;
 
 	//! Copies the image into the target, scaling the image to fit
 	virtual void copyToScaling(IImage* target) =0;

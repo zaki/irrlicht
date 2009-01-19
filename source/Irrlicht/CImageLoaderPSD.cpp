@@ -152,7 +152,7 @@ IImage* CImageLoaderPSD::loadImage(io::IReadFile* file) const
 	{
 		// create surface
 		image = new CImage(ECF_A8R8G8B8,
-			core::dimension2d<s32>(header.width, header.height), imageData);
+			core::dimension2d<u32>(header.width, header.height), imageData);
 	}
 
 	if (!image)

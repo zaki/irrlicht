@@ -453,7 +453,7 @@ COpenGLDriver::~COpenGLDriver()
 // METHODS
 // -----------------------------------------------------------------------
 
-bool COpenGLDriver::genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer)
+bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer)
 {
 	Name=L"OpenGL ";
 	Name.append(glGetString(GL_VERSION));
@@ -1308,6 +1308,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 	core::position2d<s32> targetPos(pos);
 	core::position2d<s32> sourcePos(sourceRect.UpperLeftCorner);
+	// This needs to be signed as it may go negative.
 	core::dimension2d<s32> sourceSize(sourceRect.getSize());
 	if (clipRect)
 	{
@@ -1358,9 +1359,9 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		targetPos.X = 0;
 	}
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
-	if (targetPos.X + sourceSize.Width > renderTargetSize.Width)
+	if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
 	{
 		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
 		if (sourceSize.Width <= 0)
@@ -1377,7 +1378,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		targetPos.Y = 0;
 	}
 
-	if (targetPos.Y + sourceSize.Height > renderTargetSize.Height)
+	if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
 	{
 		sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
 		if (sourceSize.Height <= 0)
@@ -1389,7 +1390,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 
 	// texcoords need to be flipped horizontally for RTTs
 	const bool isRTT = texture->isRenderTarget();
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 	const core::rect<f32> tcoords(
@@ -1398,7 +1399,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 			(sourcePos.X + sourceSize.Width) * invW,
 			(isRTT?sourcePos.Y:(sourcePos.Y + sourceSize.Height)) * invH);
 
-	const core::rect<s32> poss(targetPos, sourceSize);
+	const core::rect<s32> poss(targetPos, core::dimension2di(sourceSize));
 
 	disableTextures(1);
 	if (!setTexture(0, texture))
@@ -1434,7 +1435,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 
 	// texcoords need to be flipped horizontally for RTTs
 	const bool isRTT = texture->isRenderTarget();
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 	const core::rect<f32> tcoords(
@@ -1465,7 +1466,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 			return;
 
 		glEnable(GL_SCISSOR_TEST);
-		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(), clipRect->getHeight());
 	}
@@ -1522,12 +1523,12 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 			return;
 
 		glEnable(GL_SCISSOR_TEST);
-		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(),clipRect->getHeight());
 	}
 
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	core::position2d<s32> targetPos(pos);
 	// texcoords need to be flipped horizontally for RTTs
 	const bool isRTT = texture->isRenderTarget();
@@ -1650,7 +1651,7 @@ void COpenGLDriver::draw2DLine(const core::position2d<s32>& start,
 //! Draws a pixel
 void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 {
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 	if (x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
 		return;
 
@@ -1661,7 +1662,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
 	glVertex2i(x, y);
 	glEnd();
-} 
+}
 
 bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
 {
@@ -2142,9 +2143,9 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		glMatrixMode(GL_PROJECTION);
 
-		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		core::matrix4 m;
-		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-renderTargetSize.Height), -1.0, 1.0);
+		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
 		m.setTranslation(core::vector3df(-1,1,0));
 		glLoadMatrixf(m.pointer());
 
@@ -2242,7 +2243,7 @@ void COpenGLDriver::deleteAllDynamicLights()
 s32 COpenGLDriver::addDynamicLight(const SLight& light)
 {
 	CNullDriver::addDynamicLight(light);
- 
+
 	RequestedLights.push_back(RequestedLight(light));
 
 	u32 newLightIndex = RequestedLights.size() - 1;
@@ -2680,7 +2681,7 @@ void COpenGLDriver::draw3DLine(const core::vector3df& start,
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
-void COpenGLDriver::OnResize(const core::dimension2d<s32>& size)
+void COpenGLDriver::OnResize(const core::dimension2d<u32>& size)
 {
 	CNullDriver::OnResize(size);
 	glViewport(0, 0, size.Width, size.Height);
@@ -2790,7 +2791,7 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 }
 
 
-ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
@@ -2827,7 +2828,7 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<s32>& si
 	{
 		// the simple texture is only possible for size <= screensize
 		// we try to find an optimal size with the original constraints
-		core::dimension2di destSize(core::min_(size.Width,ScreenSize.Width), core::min_(size.Height,ScreenSize.Height));
+		core::dimension2du destSize(core::min_(size.Width,ScreenSize.Width), core::min_(size.Height,ScreenSize.Height));
 		destSize = destSize.getOptimalSize((size==size.getOptimalSize()), false, false);
 		rtt = addTexture(destSize, name, ECF_A8R8G8B8);
 		if (rtt)
@@ -2885,7 +2886,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	{
 		glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
 		RenderTargetTexture = 0;
-		CurrentRendertargetSize = core::dimension2d<s32>(0,0);
+		CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 	}
 
 	GLbitfield mask = 0;
@@ -2911,7 +2912,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 
 // returns the current size of the screen or rendertarget
-const core::dimension2d<s32>& COpenGLDriver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& COpenGLDriver::getCurrentRenderTargetSize() const
 {
 	if (CurrentRendertargetSize.Width == 0)
 		return ScreenSize;
@@ -2966,7 +2967,7 @@ IImage* COpenGLDriver::createScreenShot()
 		const s32 pitch=newImage->getPitch();
 		u8* p2 = pixels + (ScreenSize.Height - 1) * pitch;
 		u8* tmpBuffer = new u8[pitch];
-		for (s32 i=0; i < ScreenSize.Height; i += 2)
+		for (u32 i=0; i < ScreenSize.Height; i += 2)
 		{
 			memcpy(tmpBuffer, pixels, pitch);
 			memcpy(pixels, p2, pitch);

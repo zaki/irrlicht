@@ -24,7 +24,7 @@ CTextSceneNode::CTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 			video::SColor color)
 	: ITextSceneNode(parent, mgr, id, position), Text(text), Color(color),
 		Font(font), Coll(coll)
-	
+
 {
 	#ifdef _DEBUG
 	setDebugName("CTextSceneNode");
@@ -57,7 +57,7 @@ void CTextSceneNode::render()
 	if (!Font || !Coll)
 		return;
 
-	core::position2d<s32> pos = Coll->getScreenCoordinatesFrom3DPosition(getAbsolutePosition(), 
+	core::position2d<s32> pos = Coll->getScreenCoordinatesFrom3DPosition(getAbsolutePosition(),
 		SceneManager->getActiveCamera());
 
 	core::rect<s32> r(pos, core::dimension2d<s32>(1,1));
@@ -89,7 +89,7 @@ void CTextSceneNode::setTextColor(video::SColor color)
 
 
 //! constructor
-CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,	
+CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 	gui::IGUIFont* font,const wchar_t* text,
 	const core::vector3df& position, const core::dimension2d<f32>& size,
 	video::SColor colorTop,video::SColor shade_bottom )
@@ -199,7 +199,7 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 		tex[1] = (s.LowerRightCorner.Y * dim[1]) + 0.5f*dim[1];
 		tex[2] = (s.UpperLeftCorner.Y  * dim[1]) - 0.5f*dim[1];
 		tex[3] = (s.UpperLeftCorner.X  * dim[0]) - 0.5f*dim[0];
-		
+
 		buf->Vertices[firstVert+0].TCoords.set(tex[0], tex[1]);
 		buf->Vertices[firstVert+1].TCoords.set(tex[0], tex[2]);
 		buf->Vertices[firstVert+2].TCoords.set(tex[3], tex[2]);
@@ -218,7 +218,7 @@ void CBillboardTextSceneNode::setText(const wchar_t* text)
 		buf->Indices[firstInd+5] = (u16)firstVert+2;
 
 		wchar_t *tp = 0;
-		if (i>0) 
+		if (i>0)
 			tp = &Text[i-1];
 
 		info.Width = (f32)s.getWidth();

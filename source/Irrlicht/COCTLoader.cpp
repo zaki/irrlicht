@@ -219,7 +219,7 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 
 	const u32 lightmapWidth = 128;
 	const u32 lightmapHeight = 128;
-	const core::dimension2d<s32> lmapsize(lightmapWidth, lightmapHeight);
+	const core::dimension2d<u32> lmapsize(lightmapWidth, lightmapHeight);
 
 	bool oldMipMapState = SceneManager->getVideoDriver()->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);

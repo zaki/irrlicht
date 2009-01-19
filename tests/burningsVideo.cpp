@@ -12,7 +12,7 @@ using namespace video;
 bool burningsVideo(void)
 {
     IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO,
-										core::dimension2di(160,120), 32);
+										core::dimension2du(160,120), 32);
     if (!device)
         return false;
 

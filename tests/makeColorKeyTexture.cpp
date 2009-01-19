@@ -16,7 +16,7 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 						bool zeroTexels)
 {
 	IrrlichtDevice *device = createDevice( driverType,
-											dimension2d<s32>(160, 120), 32);
+											dimension2d<u32>(160, 120), 32);
 	if (!device)
 		return false;
 

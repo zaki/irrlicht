@@ -570,7 +570,7 @@ int main(int argc, char* argv[])
 	// create device and exit if creation failed
 
 	MyEventReceiver receiver;
-	Device = createDevice(driverType, core::dimension2d<s32>(800, 600),
+	Device = createDevice(driverType, core::dimension2d<u32>(800, 600),
 		16, false, false, false, &receiver);
 
 	if (Device == 0)

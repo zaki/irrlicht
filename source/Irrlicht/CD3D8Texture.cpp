@@ -31,7 +31,7 @@ namespace video
 {
 
 //! rendertarget constructor
-CD3D8Texture::CD3D8Texture(CD3D8Driver* driver, core::dimension2d<s32> size, const char* name)
+CD3D8Texture::CD3D8Texture(CD3D8Driver* driver, core::dimension2d<u32> size, const char* name)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver),
 	TextureSize(size), ImageSize(size), Pitch(0),
 	HasMipMaps(false), IsRenderTarget(true)
@@ -112,7 +112,7 @@ CD3D8Texture::~CD3D8Texture()
 //! creates the hardware texture
 bool CD3D8Texture::createTexture(video::IImage* image, u32 flags)
 {
-	core::dimension2d<s32> optSize;
+	core::dimension2d<u32> optSize;
 	ImageSize = image->getDimension();
 
 	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
@@ -288,14 +288,14 @@ void CD3D8Texture::unlock()
 
 
 //! Returns original size of the texture.
-const core::dimension2d<s32>& CD3D8Texture::getOriginalSize() const
+const core::dimension2d<u32>& CD3D8Texture::getOriginalSize() const
 {
 	return ImageSize;
 }
 
 
 //! Returns (=size) of the texture.
-const core::dimension2d<s32>& CD3D8Texture::getSize() const
+const core::dimension2d<u32>& CD3D8Texture::getSize() const
 {
 	return TextureSize;
 }

@@ -30,7 +30,7 @@ public:
 	//! Returns amount of attributes in this collection of attributes.
 	virtual u32 getAttributeCount() const;
 
-	//! Returns attribute name by index. 
+	//! Returns attribute name by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual const c8* getAttributeName(s32 index);
 
@@ -38,7 +38,7 @@ public:
 	//! \param attributeName: Name for the attribute
 	virtual E_ATTRIBUTE_TYPE getAttributeType(const c8* attributeName);
 
-	//! Returns attribute type by index. 
+	//! Returns attribute type by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual E_ATTRIBUTE_TYPE getAttributeType(s32 index);
 
@@ -46,7 +46,7 @@ public:
 	//! \param attributeName: String for the attribute type
 	virtual const wchar_t* getAttributeTypeString(const c8* attributeName);
 
-	//! Returns the type string of the attribute by index. 
+	//! Returns the type string of the attribute by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual const wchar_t* getAttributeTypeString(s32 index);
 
@@ -126,14 +126,14 @@ public:
 	//! Adds an attribute as string
 	virtual void addString(const c8* attributeName, const c8* value);
 
-	//! Sets an attribute value as string. 
+	//! Sets an attribute value as string.
 	//! \param attributeName: Name for the attribute
 	//! \param value: Value for the attribute. Set this to 0 to delete the attribute
 	virtual void setAttribute(const c8* attributeName, const c8* value);
 
 	//! Gets an attribute as string.
 	//! \param attributeName: Name of the attribute to get.
-	//! \return Returns value of the attribute previously set by setAttribute() 
+	//! \return Returns value of the attribute previously set by setAttribute()
 	//! or 0 if attribute is not set.
 	virtual core::stringc getAttributeAsString(const c8* attributeName);
 
@@ -142,11 +142,11 @@ public:
 	//! \param target: Buffer where the string is copied to.
 	virtual void getAttributeAsString(const c8* attributeName, c8* target);
 
-	//! Returns attribute value as string by index. 
+	//! Returns attribute value as string by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual core::stringc getAttributeAsString(s32 index);
 
-	//! Sets an attribute value as string. 
+	//! Sets an attribute value as string.
 	//! \param attributeName: Name for the attribute
 	virtual void setAttribute(s32 index, const c8* value);
 
@@ -155,14 +155,14 @@ public:
 	//! Adds an attribute as string
 	virtual void addString(const c8* attributeName, const wchar_t* value);
 
-	//! Sets an attribute value as string. 
+	//! Sets an attribute value as string.
 	//! \param attributeName: Name for the attribute
 	//! \param value: Value for the attribute. Set this to 0 to delete the attribute
 	virtual void setAttribute(const c8* attributeName, const wchar_t* value);
 
 	//! Gets an attribute as string.
 	//! \param attributeName: Name of the attribute to get.
-	//! \return Returns value of the attribute previously set by setAttribute() 
+	//! \return Returns value of the attribute previously set by setAttribute()
 	//! or 0 if attribute is not set.
 	virtual core::stringw getAttributeAsStringW(const c8* attributeName);
 
@@ -171,11 +171,11 @@ public:
 	//! \param target: Buffer where the string is copied to.
 	virtual void getAttributeAsStringW(const c8* attributeName, wchar_t* target);
 
-	//! Returns attribute value as string by index. 
+	//! Returns attribute value as string by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual core::stringw getAttributeAsStringW(s32 index);
 
-	//! Sets an attribute value as string. 
+	//! Sets an attribute value as string.
 	//! \param attributeName: Name for the attribute
 	virtual void setAttribute(s32 index, const wchar_t* value);
 
@@ -212,18 +212,18 @@ public:
 	//! Adds an attribute as wide string array
 	virtual void addArray(const c8* attributeName, core::array<core::stringw> value);
 
-	//! Sets an attribute value as a wide string array. 
+	//! Sets an attribute value as a wide string array.
 	//! \param attributeName: Name for the attribute
 	//! \param value: Value for the attribute. Set this to 0 to delete the attribute
 	virtual void setAttribute(const c8* attributeName, const core::array<core::stringw> value);
 
 	//! Gets an attribute as an array of wide strings.
 	//! \param attributeName: Name of the attribute to get.
-	//! \return Returns value of the attribute previously set by setAttribute() 
+	//! \return Returns value of the attribute previously set by setAttribute()
 	//! or 0 if attribute is not set.
 	virtual core::array<core::stringw> getAttributeAsArray(const c8* attributeName);
 
-	//! Returns attribute value as an array of wide strings by index. 
+	//! Returns attribute value as an array of wide strings by index.
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual core::array<core::stringw> getAttributeAsArray(s32 index);
 
@@ -244,7 +244,7 @@ public:
 
 	//! Gets an attribute as boolean value
 	//! \param attributeName: Name of the attribute to get.
-	//! \return Returns value of the attribute previously set by setAttribute() 
+	//! \return Returns value of the attribute previously set by setAttribute()
 	virtual bool getAttributeAsBool(const c8* attributeName);
 
 	//! Gets an attribute as boolean value
@@ -290,11 +290,11 @@ public:
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual const c8* getAttributeAsEnumeration(s32 index);
 
-	//! Gets the list of enumeration literals of an enumeration attribute 
+	//! Gets the list of enumeration literals of an enumeration attribute
 	//! \param attributeName: Name of the attribute to get.
 	virtual void getAttributeEnumerationLiteralsOfEnumeration(const c8* attributeName, core::array<core::stringc>& outLiterals);
 
-	//! Gets the list of enumeration literals of an enumeration attribute 
+	//! Gets the list of enumeration literals of an enumeration attribute
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual void getAttributeEnumerationLiteralsOfEnumeration(s32 index, core::array<core::stringc>& outLiterals);
 
@@ -371,7 +371,7 @@ public:
 	//! Gets an attribute as 3d vector
 	//! \param index: Index value, must be between 0 and getAttributeCount()-1.
 	virtual core::vector3df getAttributeAsVector3d(s32 index);
-	
+
 	//! Sets an attribute as vector
 	virtual void setAttribute(s32 index, core::vector3df v);
 
@@ -428,7 +428,7 @@ public:
 
 		matrix attribute
 
-	*/ 
+	*/
 
 	//! Adds an attribute as matrix
 	virtual void addMatrix(const c8* attributeName, const core::matrix4& v);
@@ -619,7 +619,7 @@ public:
 	virtual void setAttribute(s32 index, video::ITexture* texture);
 
 
-	
+
 	/*
 
 		User Pointer Attribute
@@ -682,7 +682,7 @@ public:
 	virtual core::line2di getLine2di()		{ return core::line2di(); }
 	virtual core::line3df getLine3d()		{ return core::line3df(); }
 	virtual core::line3di getLine3di()		{ return core::line3di(); }
-	virtual core::dimension2di getDimension2d()	{ return core::dimension2di(); }
+	virtual core::dimension2du getDimension2d()	{ return core::dimension2du(); }
 	virtual core::aabbox3d<f32> getBBox()		{ return core::aabbox3d<f32>(); }
 	virtual core::plane3df getPlane()		{ return core::plane3df(); }
 
@@ -711,7 +711,7 @@ public:
 	virtual void setLine2d(core::line2di v) {};
 	virtual void setLine3d(core::line3df v) {};
 	virtual void setLine3d(core::line3di v) {};
-	virtual void setDimension2d(core::dimension2di v) {};
+	virtual void setDimension2d(core::dimension2du v) {};
 	virtual void setBBox(core::aabbox3d<f32> v) {};
 	virtual void setPlane(core::plane3df v) {};
 	virtual void setUserPointer(void* v)	{};

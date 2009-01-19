@@ -37,7 +37,7 @@ CDemo::~CDemo()
 
 void CDemo::run()
 {
-	core::dimension2d<s32> resolution ( 800, 600 );
+	core::dimension2d<u32> resolution ( 800, 600 );
 
 	if ( driverType == video::EDT_BURNINGSVIDEO || driverType == video::EDT_SOFTWARE )
 	{
@@ -570,7 +570,7 @@ void CDemo::loadSceneData()
 
 void CDemo::createLoadingScreen()
 {
-	core::dimension2d<int> size = device->getVideoDriver()->getScreenSize();
+	core::dimension2d<u32> size = device->getVideoDriver()->getScreenSize();
 
 	device->getCursorControl()->setVisible(false);
 

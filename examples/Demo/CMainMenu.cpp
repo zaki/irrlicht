@@ -75,7 +75,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 			video::E_DRIVER_TYPE& outDriver)
 {
 	MenuDevice = createDevice(video::EDT_BURNINGSVIDEO,
-		core::dimension2d<s32>(512, 384), 16, false, false, false, this);
+		core::dimension2d<u32>(512, 384), 16, false, false, false, this);
 
 	if (MenuDevice->getFileSystem()->existFile("irrlicht.dat"))
 		MenuDevice->getFileSystem()->addZipFileArchive("irrlicht.dat");

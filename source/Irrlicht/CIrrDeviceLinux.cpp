@@ -747,7 +747,7 @@ bool CIrrDeviceLinux::run()
 					}
 
 					if (VideoDriver)
-						VideoDriver->OnResize(core::dimension2d<s32>(Width, Height));
+						VideoDriver->OnResize(core::dimension2d<u32>(Width, Height));
 				}
 				break;
 
@@ -1098,11 +1098,11 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 
 				// find fitting mode
 
-				VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
+				VideoModeList.setDesktop(defaultDepth, core::dimension2d<u32>(
 					modes[0]->hdisplay, modes[0]->vdisplay));
 				for (int i = 0; i<modeCount; ++i)
 				{
-					VideoModeList.addMode(core::dimension2d<s32>(
+					VideoModeList.addMode(core::dimension2d<u32>(
 						modes[i]->hdisplay, modes[i]->vdisplay), defaultDepth);
 				}
 				XFree(modes);
@@ -1116,11 +1116,11 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 				XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
 				oldRandrMode=XRRConfigCurrentConfiguration(config,&oldRandrRotation);
 				XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
-				VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
+				VideoModeList.setDesktop(defaultDepth, core::dimension2d<u32>(
 					modes[oldRandrMode].width, modes[oldRandrMode].height));
 				for (int i = 0; i<modeCount; ++i)
 				{
-					VideoModeList.addMode(core::dimension2d<s32>(
+					VideoModeList.addMode(core::dimension2d<u32>(
 						modes[i].width, modes[i].height), defaultDepth);
 				}
 				XRRFreeScreenConfigInfo(config);
@@ -1361,7 +1361,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		info.fd = open(devName.c_str(), O_RDONLY);
 		if(-1 == info.fd)
 		{
-			// ...but Ubuntu and possibly other distros 
+			// ...but Ubuntu and possibly other distros
 			// create the devices in /dev/input
 			devName = "/dev/input/js";
 			devName += joystick;
@@ -1394,7 +1394,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		char name[80];
 		ioctl( info.fd, JSIOCGNAME(80), name);
 		returnInfo.Name = name;
-	
+
 		joystickInfo.push_back(returnInfo);
 	}
 
@@ -1402,7 +1402,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 	{
 		char logString[256];
 		(void)sprintf(logString, "Found joystick %u, %u axes, %u buttons '%s'",
-			joystick, joystickInfo[joystick].Axes, 
+			joystick, joystickInfo[joystick].Axes,
 			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
 		os::Printer::log(logString, ELL_INFORMATION);
 	}
@@ -1450,7 +1450,7 @@ void CIrrDeviceLinux::pollJoysticks()
 		(void)postEventFromUser(info.persistentData);
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-} 
+}
 
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)

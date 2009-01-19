@@ -40,7 +40,7 @@ bool CImageWriterPCX::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 
 	u8 d1;
 	u16 d2;
-	s32 i;
+	u32 i;
 
 	d1 = 10; // Manufacturer
 	file->write(&d1, 1);
@@ -113,7 +113,7 @@ bool CImageWriterPCX::writeImage(io::IWriteFile *file, IImage *image,u32 param) 
 		value = 0;
 		for (u32 j=0; j<3; ++j) // color planes
 		{
-			for (s32 k=0; k<image->getDimension().Width; ++k)
+			for (u32 k=0; k<image->getDimension().Width; ++k)
 			{
 				const SColor pix = image->getPixel(k,i);
 				if ((cnt!=0) && (cnt<63) &&

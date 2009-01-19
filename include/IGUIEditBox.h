@@ -92,7 +92,7 @@ namespace gui
 
 		//! Gets the size area of the text in the edit box
 		//! \return Returns the size in pixels of the text
-		virtual core::dimension2di getTextDimension() = 0;
+		virtual core::dimension2du getTextDimension() = 0;
 
 		//! Sets the maximum amount of characters which may be entered in the box.
 		/** \param max: Maximum amount of characters. If 0, the character amount is

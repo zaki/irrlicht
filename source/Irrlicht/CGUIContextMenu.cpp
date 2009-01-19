@@ -537,8 +537,8 @@ void CGUIContextMenu::recalculateSize()
 
 	core::rect<s32> rect;
 	rect.UpperLeftCorner = RelativeRect.UpperLeftCorner;
-	s32 width = 100;
-	s32 height = 3;
+	u32 width = 100;
+	u32 height = 3;
 
 	u32 i;
 	for (i=0; i<Items.size(); ++i)

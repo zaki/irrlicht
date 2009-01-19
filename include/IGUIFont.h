@@ -54,7 +54,7 @@ public:
 	//! Calculates the dimension of a text.
 	/** \return Returns width and height of the area covered by the text if
 	it would be drawn. */
-	virtual core::dimension2d<s32> getDimension(const wchar_t* text) const = 0;
+	virtual core::dimension2d<u32> getDimension(const wchar_t* text) const = 0;
 
 	//! Calculates the index of the character in the text which is on a specific position.
 	/** \param text: Text string.

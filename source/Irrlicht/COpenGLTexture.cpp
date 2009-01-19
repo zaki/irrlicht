@@ -277,7 +277,7 @@ void* COpenGLTexture::lock(bool readOnly)
 			const s32 pitch=Image->getPitch();
 			u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
 			u8* tmpBuffer = new u8[pitch];
-			for (s32 i=0; i < ImageSize.Height; i += 2)
+			for (u32 i=0; i < ImageSize.Height; i += 2)
 			{
 				memcpy(tmpBuffer, pPixels, pitch);
 				memcpy(pPixels, p2, pitch);
@@ -314,14 +314,14 @@ void COpenGLTexture::unlock()
 
 
 //! Returns size of the original image.
-const core::dimension2d<s32>& COpenGLTexture::getOriginalSize() const
+const core::dimension2d<u32>& COpenGLTexture::getOriginalSize() const
 {
 	return ImageSize;
 }
 
 
 //! Returns size of the texture.
-const core::dimension2d<s32>& COpenGLTexture::getSize() const
+const core::dimension2d<u32>& COpenGLTexture::getSize() const
 {
 	return TextureSize;
 }
@@ -437,7 +437,7 @@ void COpenGLTexture::unbindRTT()
 static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! RTT ColorFrameBuffer constructor
-COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
+COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
                                 const char* name,
                                 COpenGLDriver* driver)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
@@ -520,7 +520,7 @@ void COpenGLFBOTexture::unbindRTT()
 
 //! RTT DepthBuffer constructor
 COpenGLFBODepthTexture::COpenGLFBODepthTexture(
-		const core::dimension2d<s32>& size,
+		const core::dimension2d<u32>& size,
 		const char* name,
 		COpenGLDriver* driver,
 		bool useStencil)
