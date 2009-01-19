@@ -715,14 +715,16 @@ class COpenGLExtensionHandler
 	u8 MaxTextureUnits;
 	//! Maximum hardware lights supported
 	u8 MaxLights;
-	//! Optimal number of indices per meshbuffer
-	u32 MaxIndices;
 	//! Maximal Anisotropy
 	u8 MaxAnisotropy;
 	//! Number of user clipplanes
 	u8 MaxUserClipPlanes;
 	//! Number of auxiliary buffers
 	u8 MaxAuxBuffers;
+	//! Optimal number of indices per meshbuffer
+	u32 MaxIndices;
+	//! Maximal texture dimension
+	u32 MaxTextureSize;
 
 	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
 	u16 Version;

@@ -135,6 +135,17 @@ void COpenGLTexture::getImageData(IImage* image)
 		return;
 	}
 
+	const f32 ratio = (f32)ImageSize.Width/(f32)ImageSize.Height;
+	if ((ImageSize.Width>Driver->MaxTextureSize) && (ratio >= 1.0f))
+	{
+		ImageSize.Width = Driver->MaxTextureSize;
+		ImageSize.Height = (u32)(Driver->MaxTextureSize/ratio);
+	}
+	else if (ImageSize.Height>Driver->MaxTextureSize)
+	{
+		ImageSize.Height = Driver->MaxTextureSize;
+		ImageSize.Width = (u32)(Driver->MaxTextureSize*ratio);
+	}
 	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
 	ColorFormat = getBestColorFormat(image->getColorFormat());

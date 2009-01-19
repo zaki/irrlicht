@@ -19,8 +19,8 @@ namespace video
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false), MultiTextureExtension(false),
 		TextureCompressionExtension(false),
-		MaxTextureUnits(1), MaxLights(1), MaxIndices(65535),
-		MaxAnisotropy(1), MaxUserClipPlanes(0), MaxAuxBuffers(0),
+		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1), MaxUserClipPlanes(0),
+		MaxAuxBuffers(0), MaxIndices(65535), MaxTextureSize(1),
 		Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
@@ -409,6 +409,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		MaxIndices=num;
 	}
 #endif
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
+	MaxTextureSize=static_cast<u8>(num);
 	glGetIntegerv(GL_MAX_CLIP_PLANES, &num);
 	MaxUserClipPlanes=static_cast<u8>(num);
 	glGetIntegerv(GL_AUX_BUFFERS, &num);
