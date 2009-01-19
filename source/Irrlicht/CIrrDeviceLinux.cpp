@@ -952,9 +952,9 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 	// thx to Nadav, who send me some clues of how to display the image
 	// to the X Server.
 
-	const int destwidth = SoftwareImage->width;
-	const int minWidth = core::min_(image->getDimension().Width, destwidth);
-	const int destPitch = SoftwareImage->bytes_per_line;
+	const u32 destwidth = SoftwareImage->width;
+	const u32 minWidth = core::min_(image->getDimension().Width, destwidth);
+	const u32 destPitch = SoftwareImage->bytes_per_line;
 
 	video::ECOLOR_FORMAT destColor;
 	switch (SoftwareImage->bits_per_pixel)
@@ -975,10 +975,10 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 	u8* srcdata = reinterpret_cast<u8*>(image->lock());
 	u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
 
-	const int destheight = SoftwareImage->height;
-	const int srcheight = core::min_(image->getDimension().Height, destheight);
-	const int srcPitch = image->getPitch();
-	for (int y=0; y!=srcheight; ++y)
+	const u32 destheight = SoftwareImage->height;
+	const u32 srcheight = core::min_(image->getDimension().Height, destheight);
+	const u32 srcPitch = image->getPitch();
+	for (u32 y=0; y!=srcheight; ++y)
 	{
 		video::CColorConverter::convert_viaFormat(srcdata,image->getColorFormat(), minWidth, destData, destColor);
 		srcdata+=srcPitch;
