@@ -233,7 +233,7 @@ public:
 	virtual void writeGUIElement(io::IXMLWriter* writer, IGUIElement* node);
 
 	//! reads an element
-	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* parent);
+	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* node);
 
 
 private:
