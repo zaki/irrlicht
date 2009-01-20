@@ -38,9 +38,15 @@ void CSceneNodeAnimatorFlyCircle::animateNode(ISceneNode* node, u32 timeMs)
 	if ( 0 == node )
 		return;
 
-	const f32 t = (timeMs-StartTime) * Speed;
+	f32 time;
 
-	node->setPosition(Center + Radius * ((VecU*cosf(t)) + (VecV*sinf(t))));
+	// Check for the condition where the StartTime is in the future.
+	if(StartTime > timeMs)
+		time = ((s32)timeMs - (s32)StartTime) * Speed;
+	else
+		time = (timeMs-StartTime) * Speed;
+
+	node->setPosition(Center + Radius * ((VecU*cosf(time)) + (VecV*sinf(time))));
 }
 
 
