@@ -518,14 +518,13 @@ namespace scene
 			return;
 
 		TerrainData.Position = TerrainData.Position;
-		video::S3DVertex2TCoords* meshVertices = (video::S3DVertex2TCoords*)Mesh.getMeshBuffer(0)->getVertices();
 		s32 vtxCount = Mesh.getMeshBuffer(0)->getVertexCount();
 		core::matrix4 rotMatrix;
 		rotMatrix.setRotationDegrees(TerrainData.Rotation);
 
 		for (s32 i = 0; i < vtxCount; ++i)
 		{
-			RenderBuffer->getVertexBuffer()[i].Pos = meshVertices[i].Pos * TerrainData.Scale + TerrainData.Position;
+			RenderBuffer->getVertexBuffer()[i].Pos = Mesh.getMeshBuffer(0)->getPosition(i) * TerrainData.Scale + TerrainData.Position;
 
 			RenderBuffer->getVertexBuffer()[i].Pos -= TerrainData.RotationPivot;
 			rotMatrix.inverseRotateVect(RenderBuffer->getVertexBuffer()[i].Pos);
@@ -634,29 +633,16 @@ namespace scene
 
 	void CTerrainSceneNode::preRenderIndicesCalculations()
 	{
-		switch (RenderBuffer->getIndexBuffer().getType())
-		{
-			case video::EIT_16BIT:
-				preRenderIndicesCalculationsDirect<u16>((u16*)RenderBuffer->getIndexBuffer().pointer());
-				break;
-			case video::EIT_32BIT:
-				preRenderIndicesCalculationsDirect<u32>((u32*)RenderBuffer->getIndexBuffer().pointer());
-				break;
-		}
-	}
-
-
-	template<class INDEX_TYPE>
-	void CTerrainSceneNode::preRenderIndicesCalculationsDirect(INDEX_TYPE* IndexBuffer)
-	{
+		scene::IIndexBuffer& indexBuffer = RenderBuffer->getIndexBuffer();
 		IndicesToRender = 0;
+		indexBuffer.set_used(0);
 
+		s32 index = 0;
 		// Then generate the indices for all patches that are visible.
 		for (s32 i = 0; i < TerrainData.PatchCount; ++i)
 		{
 			for (s32 j = 0; j < TerrainData.PatchCount; ++j)
 			{
-				const s32 index = i * TerrainData.PatchCount + j;
 				if (TerrainData.Patches[index].CurrentLOD >= 0)
 				{
 					s32 x = 0;
@@ -673,12 +659,13 @@ namespace scene
 						const s32 index12 = getIndex(j, i, index, x, z + step);
 						const s32 index22 = getIndex(j, i, index, x + step, z + step);
 
-						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index12);
-						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index11);
-						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index22);
-						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index22);
-						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index11);
-						IndexBuffer[IndicesToRender++]= static_cast<INDEX_TYPE>(index21);
+						indexBuffer.push_back(index12);
+						indexBuffer.push_back(index11);
+						indexBuffer.push_back(index22);
+						indexBuffer.push_back(index22);
+						indexBuffer.push_back(index11);
+						indexBuffer.push_back(index21);
+						IndicesToRender+=6; 
 
 						// increment index position horizontally
 						x += step;
@@ -691,6 +678,7 @@ namespace scene
 						}
 					}
 				}
+				++index;
 			}
 		}
 
