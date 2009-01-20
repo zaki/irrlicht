@@ -89,7 +89,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		SDL_Flags |= SDL_FULLSCREEN;
 	if (CreationParams.DriverType == video::EDT_OPENGL)
 		SDL_Flags |= SDL_OPENGL;
-	else
+	else if (CreationParams.Doublebuffer)
 		SDL_Flags |= SDL_DOUBLEBUF;
 	// create window
 	if (CreationParams.DriverType != video::EDT_NULL)
@@ -147,7 +147,10 @@ bool CIrrDeviceSDL::createWindow()
 			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel?8:0 );
 		}
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		if (CreationParams.Doublebuffer)
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		if (CreationParams.Stereobuffer)
+			SDL_GL_SetAttribute( SDL_GL_STEREO, 1 );
 		if (CreationParams.AntiAlias>1)
 		{
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
@@ -175,6 +178,12 @@ bool CIrrDeviceSDL::createWindow()
 			if (Screen)
 				os::Printer::log("AntiAliasing disabled due to lack of support!" );
 		}
+	}
+	if ( !Screen && CreationParams.Doublebuffer)
+	{
+		// Try single buffer
+		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 	}
 	if ( !Screen )
 	{

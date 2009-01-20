@@ -89,6 +89,10 @@ namespace video
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 						bool clearZBuffer, SColor color);
 
+		//! set or reset special render targets
+		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
+					bool clearZBuffer, SColor color);
+
 		//! sets a viewport
 		virtual void setViewPort(const core::rect<s32>& area);
 

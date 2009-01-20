@@ -78,6 +78,29 @@ namespace video
 		ELR_HW_BUFFERS = 8
 	};
 
+	enum E_RENDER_TARGET
+	{
+		//! Render target is the main color frame buffer
+		ERT_FRAME_BUFFER=0,
+		ERT_STEREO_LEFT_BUFFER=0,
+		//! Render target is a render texture
+		ERT_RENDER_TEXTURE,
+		//! Render target is the right color buffer (left is the main buffer)
+		ERT_STEREO_RIGHT_BUFFER,
+		//! Render to both stereo buffers at once
+		ERT_STEREO_BOTH_BUFFERS,
+		//! Auxiliary buffer 0
+		ERT_AUX_BUFFER0,
+		//! Auxiliary buffer 1
+		ERT_AUX_BUFFER1,
+		//! Auxiliary buffer 2
+		ERT_AUX_BUFFER2,
+		//! Auxiliary buffer 3
+		ERT_AUX_BUFFER3,
+		//! Auxiliary buffer 4
+		ERT_AUX_BUFFER4
+	};
+
 	//! Interface to driver which is able to perform 2d and 3d graphics functions.
 	/** This interface is one of the most important interfaces of
 	the Irrlicht Engine: All rendering and texture manipulation is done with
@@ -352,7 +375,22 @@ namespace video
 		\return True if sucessful and false if not. */
 		virtual bool setRenderTarget(video::ITexture* texture,
 			bool clearBackBuffer=true, bool clearZBuffer=true,
-			SColor color=video::SColor(0,0,0,0)) = 0;
+			SColor color=video::SColor(0,0,0,0)) =0;
+
+		//! set or reset special render targets
+		/** This method enables access to special color buffers such as
+		stereoscopic buffers or auxiliary buffers.
+		\param target Enum value for the render target
+		\param clearTarget Clears the target buffer with the color
+		parameter
+		\param clearZBuffer Clears the zBuffer of the rendertarget.
+		Note that because the main frame buffer may share the zbuffer with
+		the rendertarget, its zbuffer might be partially cleared too
+		by this.
+		\param color The background color for the render target.
+		\return True if sucessful and false if not. */
+		virtual bool setRenderTarget(E_RENDER_TARGET target, bool clearTarget,
+					bool clearZBuffer, SColor color) =0;
 
 		//! Sets a new viewport.
 		/** Every rendering operation is done into this new area.

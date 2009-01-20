@@ -498,6 +498,16 @@ ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const char*
 }
 
 
+//! set or reset special render targets
+bool CNullDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
+			bool clearZBuffer, SColor color)
+{
+	if (ERT_FRAME_BUFFER==target)
+		return setRenderTarget(0,clearTarget, clearZBuffer, color);
+	else
+		return false;
+}
+
 
 //! sets a render target
 bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
@@ -507,12 +517,10 @@ bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 }
 
 
-
 //! sets a viewport
 void CNullDriver::setViewPort(const core::rect<s32>& area)
 {
 }
-
 
 
 //! gets the area of the current viewport
@@ -522,7 +530,6 @@ const core::rect<s32>& CNullDriver::getViewPort() const
 }
 
 
-
 //! draws a vertex primitive list
 void CNullDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const void* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 {
@@ -530,13 +537,11 @@ void CNullDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 }
 
 
-
 //! draws an indexed triangle list
 inline void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
 }
-
 
 
 //! draws an indexed triangle list

@@ -36,7 +36,9 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0), LastSetLight(-1),
-	CurrentRendertargetSize(0,0),
+	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
+	CurrentTarget(ERT_FRAME_BUFFER),
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
 	HDc(0), Window(static_cast<HWND>(params.WindowId)), HRc(0)
 {
 	#ifdef _DEBUG
@@ -47,13 +49,14 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 //! inits the open gl driver
 bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 {
-	// Set up ixel format descriptor with desired parameters
+	// Set up pixel format descriptor with desired parameters
 	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
 		1,				// Version Number
 		PFD_DRAW_TO_WINDOW |		// Format Must Support Window
 		PFD_SUPPORT_OPENGL |		// Format Must Support OpenGL
-		PFD_DOUBLEBUFFER,		// Must Support Double Buffering
+		params.Doublebuffer?PFD_DOUBLEBUFFER:0 | // Must Support Double Buffering
+		params.Stereobuffer?PFD_STEREO:0 | // Must Support Stereo Buffer
 		PFD_TYPE_RGBA,			// Request An RGBA Format
 		params.Bits,				// Select Our Color Depth
 		0, 0, 0, 0, 0, 0,		// Color Bits Ignored
@@ -151,6 +154,15 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			else
 			if (i == 4)
 			{
+				// try single buffer
+				if (params.Doublebuffer)
+					pfd.dwFlags &= ~PFD_DOUBLEBUFFER;
+				else
+					continue;
+			}
+			else
+			if (i == 5)
+			{
 				os::Printer::log("Cannot create a GL device context", "No suitable format for temporary window.", ELL_ERROR);
 				ReleaseDC(temporary_wnd, HDc);
 				DestroyWindow(temporary_wnd);
@@ -190,8 +202,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			// improvement over 4, but 4 shows a big improvement
 			// over 2.
 
-			if(AntiAlias > 16)
-				AntiAlias = 16;
+			if(AntiAlias > 32)
+				AntiAlias = 32;
 
 			f32 fAttributes[] = {0.0, 0.0};
 			s32 iAttributes[] =
@@ -203,7 +215,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 				WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
 				WGL_DEPTH_BITS_ARB,params.ZBufferBits,
 				WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
-				WGL_DOUBLE_BUFFER_ARB,GL_TRUE,
+				WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
+				WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
 				WGL_SAMPLE_BUFFERS_ARB, 1,
 				WGL_SAMPLES_ARB,AntiAlias,
 				0,0
@@ -353,7 +366,10 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
-	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8), _device(device)
+	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
+	CurrentTarget(ERT_FRAME_BUFFER),
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
+	_device(device)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -373,7 +389,9 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
+	CurrentTarget(ERT_FRAME_BUFFER),
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -410,7 +428,9 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
+	CurrentTarget(ERT_FRAME_BUFFER),
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -624,14 +644,10 @@ bool COpenGLDriver::endScene()
 }
 
 
-//! clears the zbuffer
-bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		void* windowId, core::rect<s32>* sourceRect)
+//! clears the zbuffer and color buffer
+void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
-
 	GLbitfield mask = 0;
-
 	if (backBuffer)
 	{
 		const f32 inv = 1.0f / 255.0f;
@@ -648,7 +664,20 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		mask |= GL_DEPTH_BUFFER_BIT;
 	}
 
+	if (stencilBuffer)
+		mask |= GL_STENCIL_BUFFER_BIT;
+
 	glClear(mask);
+}
+
+
+//! init call for rendering start
+bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
+		void* windowId, core::rect<s32>* sourceRect)
+{
+	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+
+	clearBuffers(backBuffer, zBuffer, false, color);
 	return true;
 }
 
@@ -2622,8 +2651,7 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 	glEnd();
 
-	if (clearStencilBuffer)
-		glClear(GL_STENCIL_BUFFER_BIT);
+	clearBuffers(false, false, clearStencilBuffer, 0x0);
 
 	// restore settings
 	glPopMatrix();
@@ -2854,6 +2882,53 @@ u32 COpenGLDriver::getMaximalPrimitiveCount() const
 
 
 //! set or reset render target
+bool COpenGLDriver::setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
+					bool clearZBuffer, SColor color)
+{
+	if (target != CurrentTarget)
+		setRenderTarget(0, false, false, 0x0);
+
+	if (ERT_RENDER_TEXTURE == target)
+	{
+		os::Printer::log("Fatal Error: For render textures call setRenderTarget with the actual texture as first parameter.", ELL_ERROR);
+		return false;
+	}
+
+	if (Stereo && (ERT_STEREO_RIGHT_BUFFER == target))
+	{
+		if (Doublebuffer)
+			glDrawBuffer(GL_BACK_RIGHT);
+		else
+			glDrawBuffer(GL_FRONT_RIGHT);
+	}
+	else if (Stereo && ERT_STEREO_BOTH_BUFFERS == target)
+	{
+		if (Doublebuffer)
+			glDrawBuffer(GL_BACK);
+		else
+			glDrawBuffer(GL_FRONT);
+	}
+	else if ((target >= ERT_AUX_BUFFER0) && (target-ERT_AUX_BUFFER0 < MaxAuxBuffers))
+	{
+			glDrawBuffer(GL_AUX0+target-ERT_AUX_BUFFER0);
+	}
+	else
+	{
+		if (Doublebuffer)
+			glDrawBuffer(GL_BACK_LEFT);
+		else
+			glDrawBuffer(GL_FRONT_LEFT);
+		// exit with false, but also with working color buffer
+		if (target != ERT_FRAME_BUFFER)
+			return false;
+	}
+	CurrentTarget=target;
+	clearBuffers(clearTarget, clearZBuffer, false, color);
+	return true;
+}
+
+
+//! set or reset render target
 bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color)
 {
@@ -2881,32 +2956,17 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		RenderTargetTexture = static_cast<COpenGLTexture*>(texture);
 		RenderTargetTexture->bindRTT();
 		CurrentRendertargetSize = texture->getSize();
+		CurrentTarget=ERT_RENDER_TEXTURE;
 	}
 	else
 	{
 		glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
 		RenderTargetTexture = 0;
 		CurrentRendertargetSize = core::dimension2d<u32>(0,0);
+		CurrentTarget=ERT_FRAME_BUFFER;
 	}
 
-	GLbitfield mask = 0;
-	if (clearBackBuffer)
-	{
-		const f32 inv = 1.0f / 255.0f;
-		glClearColor(color.getRed() * inv, color.getGreen() * inv,
-				color.getBlue() * inv, color.getAlpha() * inv);
-
-		mask |= GL_COLOR_BUFFER_BIT;
-	}
-	if (clearZBuffer)
-	{
-		glDepthMask(GL_TRUE);
-		LastMaterial.ZWriteEnable=true;
-		mask |= GL_DEPTH_BUFFER_BIT;
-	}
-
-	glClear(mask);
-
+	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
 	return true;
 }
 
@@ -2924,13 +2984,7 @@ const core::dimension2d<u32>& COpenGLDriver::getCurrentRenderTargetSize() const
 //! Clears the ZBuffer.
 void COpenGLDriver::clearZBuffer()
 {
-	GLboolean enabled = GL_TRUE;
-	glGetBooleanv(GL_DEPTH_WRITEMASK, &enabled);
-
-	glDepthMask(GL_TRUE);
-	glClear(GL_DEPTH_BUFFER_BIT);
-
-	glDepthMask(enabled);
+	clearBuffers(false, true, false, 0x0);
 }
 
 

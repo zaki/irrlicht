@@ -27,7 +27,9 @@ namespace irr
 			Vsync(false),
 			AntiAlias(0),
 			WithAlphaChannel(false),
+			Doublebuffer(true),
 			IgnoreInput(false),
+			Stereobuffer(false),
 			HighPrecisionFPU(false),
 			EventReceiver(0),
 			WindowId(0),
@@ -50,7 +52,9 @@ namespace irr
 			Vsync = other.Vsync;
 			AntiAlias = other.AntiAlias;
 			WithAlphaChannel = other.WithAlphaChannel;
+			Doublebuffer = other.Doublebuffer;
 			IgnoreInput = other.IgnoreInput;
+			Stereobuffer = other.Stereobuffer;
 			HighPrecisionFPU = other.HighPrecisionFPU;
 			EventReceiver = other.EventReceiver;
 			WindowId = other.WindowId;
@@ -120,12 +124,28 @@ namespace irr
 		Default value: false */
 		bool WithAlphaChannel;
 
+		//! Whether the main framebuffer uses doublebuffering.
+		/** This should be usually enabled, in order to avoid render
+		artifacts on the visible framebuffer. However, it might be
+		useful to use only one buffer on very small devices. If no
+		doublebuffering is available, the drivers will fall back to
+		single buffers. Default value: true */
+		bool Doublebuffer;
+
 		//! Specifies if the device should ignore input events
 		/** This is only relevant when using external I/O handlers.
 		External windows need to take care of this themselves.
-		Currently only supported under X11.
+		Currently only supported by X11.
 		Default value: false */
 		bool IgnoreInput;
+
+		//! Specifies if the device should use stereo buffers
+		/** Some high-end gfx cards support two framebuffers for direct
+		support of stereoscopic output devices. If this flag is set the
+		device tries to create a stereo context.
+		Currently only supported by OpenGL.
+		Default value: false */
+		bool Stereobuffer;
 
 		//! Specifies if the device should use high precision FPU setting
 		/** This is only relevant for DirectX Devices, which switch to
