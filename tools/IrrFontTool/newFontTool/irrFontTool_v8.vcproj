@@ -140,7 +140,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				OutputFile="../../bin/Win32-visualstudio/TestProject.exe"
+				OutputFile="../../bin/Win32-visualstudio/FontTool.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="1"
