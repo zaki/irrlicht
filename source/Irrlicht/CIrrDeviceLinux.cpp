@@ -310,10 +310,11 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_DOUBLEBUFFER, GL_TRUE,
+					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
 					GLX_STENCIL_SIZE, 1,
 					GLX_SAMPLE_BUFFERS_ARB, 1,
 					GLX_SAMPLES_ARB, CreationParams.AntiAlias,
+					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
 					None
 				};
 
@@ -389,10 +390,11 @@ bool CIrrDeviceLinux::createWindow()
 					}
 				}
 				// Next try without double buffer
-				if (!configList)
+				if (!configList && CreationParams.Doublebuffer)
 				{
 					os::Printer::log("No doublebuffering available.", ELL_WARNING);
-					visualAttrBuffer[13] = GL_FALSE;
+					CreationParams.Doublebuffer=false;
+					visualAttrBuffer[13] = GLX_DONT_CARE;
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
@@ -439,8 +441,9 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_DOUBLEBUFFER, GL_TRUE,
+					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
 					GLX_STENCIL_SIZE, 1,
+					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
 					None
 				};
 
@@ -456,10 +459,11 @@ bool CIrrDeviceLinux::createWindow()
 					visualAttrBuffer[15]=0;
 
 					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
-					if (!visual)
+					if (!visual && CreationParams.Doublebuffer)
 					{
 						os::Printer::log("No doublebuffering available.", ELL_WARNING);
-						visualAttrBuffer[13] = GL_FALSE;
+						CreationParams.Doublebuffer=false;
+						visualAttrBuffer[13] = GLX_DONT_CARE;
 						visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 					}
 				}
@@ -475,6 +479,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	// create visual with standard X methods
 	{
+		os::Printer::log("Using plain X visual");
 		XVisualInfo visTempl; //Template to hold requested values
 		int visNumber; // Return value of available visuals
 

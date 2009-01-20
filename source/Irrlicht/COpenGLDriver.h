@@ -312,6 +312,11 @@ namespace video
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name);
 
+		//! set or reset render target
+		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
+					bool clearZBuffer, SColor color);
+
+		//! set or reset render target texture
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color);
 
@@ -345,6 +350,9 @@ namespace video
 		void removeDepthTexture(ITexture* texture);
 
 	private:
+
+		//! clears the zbuffer and color buffer
+		void clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuffer, SColor color);
 
 		bool updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
 		bool updateIndexHardwareBuffer(SHWBufferLink_opengl *HWBuffer);
@@ -413,6 +421,12 @@ namespace video
 
 		//! Color buffer format
 		ECOLOR_FORMAT ColorFormat;
+
+		//! Render target type for render operations
+		E_RENDER_TARGET CurrentTarget;
+
+		bool Doublebuffer;
+		bool Stereo;
 
 		//! All the lights that have been requested; a hardware limited
 		//! number of them will be used at once.
