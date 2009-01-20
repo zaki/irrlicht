@@ -24,12 +24,13 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 : Radius(ellipsoidRadius), Gravity(gravityPerSecond), Translation(ellipsoidTranslation),
 	World(world), Object(object), SceneManager(scenemanager), LastTime(0),
 	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false),
-	AnimateCameraTarget(true)
+	AnimateCameraTarget(true), CollisionOccurred(false),
+	CollisionCallback(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCollisionResponse");
 	#endif
-	
+
 	if (World)
 		World->grab();
 
@@ -42,6 +43,9 @@ CSceneNodeAnimatorCollisionResponse::~CSceneNodeAnimatorCollisionResponse()
 {
 	if (World)
 		World->drop();
+
+	if (CollisionCallback)
+		CollisionCallback->drop();
 }
 
 
@@ -136,6 +140,8 @@ ITriangleSelector* CSceneNodeAnimatorCollisionResponse::getWorld() const
 
 void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 timeMs)
 {
+	CollisionOccurred = false;
+
 	if (node != Object)
 		setNode(node);
 
@@ -150,7 +156,8 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 
 	FallingVelocity += Gravity * (f32)diff * 0.001f;
 
-	core::triangle3df triangle = RefTriangle;
+	CollisionTriangle = RefTriangle;
+	CollisionPoint = core::vector3df();
 
 	core::vector3df force = vel + FallingVelocity;
 
@@ -161,14 +168,15 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		// TODO: divide SlidingSpeed by frame time
 
 		bool f = false;
-		core::vector3df collisionPosition; // Not used.
 		pos = SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
 				World, LastPosition-Translation,
-				Radius, vel, triangle, collisionPosition, f, SlidingSpeed, FallingVelocity);
+				Radius, vel, CollisionTriangle, CollisionPoint, f, SlidingSpeed, FallingVelocity);
+
+		CollisionOccurred = (CollisionTriangle != RefTriangle);
 
 		pos += Translation;
 
-		if (f)//triangle == RefTriangle)
+		if (f)//CollisionTriangle == RefTriangle)
 		{
 			Falling = true;
 		}
@@ -178,7 +186,20 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 			FallingVelocity.set(0, 0, 0);
 		}
 
-		Object->setPosition(pos);
+		bool collisionConsumed = false;
+
+		CollisionPoint = pos;
+
+		if (CollisionOccurred)
+		{
+			CollisionPoint = pos;
+
+			if(CollisionCallback)
+				collisionConsumed = CollisionCallback->onCollision(this);
+		}
+
+		if(!collisionConsumed)
+			Object->setPosition(pos);
 	}
 
 	// move camera target
@@ -231,13 +252,23 @@ ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode*
 {
 	if (!newManager) newManager = SceneManager;
 
-	CSceneNodeAnimatorCollisionResponse * newAnimator = 
+	CSceneNodeAnimatorCollisionResponse * newAnimator =
 		new CSceneNodeAnimatorCollisionResponse(newManager, World, Object, Radius, (Gravity * 1000.0f), Translation,
 													SlidingSpeed);
 
 	return newAnimator;
 }
 
+void CSceneNodeAnimatorCollisionResponse::setCollisionCallback(ICollisionCallback* callback)
+{
+	if (CollisionCallback)
+		CollisionCallback->drop();
+
+	CollisionCallback = callback;
+
+	if (CollisionCallback)
+		CollisionCallback->grab();
+}
 
 } // end namespace scene
 } // end namespace irr

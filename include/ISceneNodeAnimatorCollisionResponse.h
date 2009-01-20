@@ -12,6 +12,30 @@ namespace irr
 namespace scene
 {
 
+	class ISceneNodeAnimatorCollisionResponse;
+
+	//! Callback interface for catching events of collisions.
+	/** Implement this interface and use
+	ISceneNodeAnimatorCollisionResponse::setCollisionCallback to be able to
+	be notified if a collision has occurred.
+	**/
+	class ICollisionCallback : public virtual IReferenceCounted
+	{
+	public:
+
+		//! Will be called when a collision occurrs.
+		/** See ISceneNodeAnimatorCollisionResponse::setCollisionCallback for more information.
+		\param animator: Collision response animator in which the collision occurred. You can call
+		this animator's methods to find the node, collisionPoint and/or collision triangle.
+		\retval true if the collision was handled in the animator. The animator's target
+		node will *not* be moved to the collision point, but will instead move directly
+		to the location that triggered the collision check.
+		\retval false if the collision was not handled in the animator. The animator's 
+		target node will be moved to the collision position.
+		*/
+		virtual bool onCollision(ISceneNodeAnimatorCollisionResponse* animator) = 0;
+	};
+
 	//! Special scene node animator for doing automatic collision detection and response.
 	/** This scene node animator can be attached to any single scene node
 	and will then prevent it from moving through specified collision geometry
@@ -107,6 +131,21 @@ namespace scene
 		//! Gets the single node that this animator is acting on.
 		/** \return The node that this animator is acting on. */
 		virtual ISceneNode* getTargetNode(void) const = 0;
+
+		//! Returns true if a collision occurred during the last animateNode()
+		virtual bool collisionOccurred() const = 0;
+
+		//! Returns the point of collision
+		virtual core::vector3df getCollisionPoint() const = 0;
+
+		//! Returns the last triangle that caused a collision
+		virtual core::triangle3df getCollisionTriangle() const = 0;
+
+		//! Sets a callback interface which will be called if a collision occurs.
+		/** \param callback: collision callback handler that will be called when a collision 
+		occurs. Set this to 0 to disable the callback.
+		*/
+		virtual void setCollisionCallback(ICollisionCallback* callback) = 0;
 
 	};
 

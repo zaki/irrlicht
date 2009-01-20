@@ -95,6 +95,21 @@ namespace scene
 		//! Gets the single node that this animator is acting on.
 		virtual ISceneNode* getTargetNode(void) const { return Object; }
 
+		//! Returns true if a collision occurred during the last animateNode()
+		virtual bool collisionOccurred() const { return CollisionOccurred; }
+
+		//! Returns the last point of collision.
+		virtual core::vector3df getCollisionPoint() const { return CollisionPoint; }
+
+		//! Returns the last triangle that caused a collision.
+		virtual core::triangle3df getCollisionTriangle() const { return CollisionTriangle; }
+
+		//! Sets a callback interface which will be called if a collision occurs.
+		/** \param callback: collision callback handler that will be called when a collision 
+		occurs. Set this to 0 to disable the callback.
+		*/
+		virtual void setCollisionCallback(ICollisionCallback* callback);
+
 	private:
 
 		void setNode(ISceneNode* node);
@@ -115,6 +130,12 @@ namespace scene
 		bool Falling;
 		bool IsCamera;
 		bool AnimateCameraTarget;
+
+		bool CollisionOccurred;
+		core::vector3df CollisionPoint;
+		core::triangle3df CollisionTriangle;
+
+		ICollisionCallback* CollisionCallback;
 	};
 
 } // end namespace scene
