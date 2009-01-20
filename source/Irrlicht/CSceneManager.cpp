@@ -1521,10 +1521,14 @@ ISceneNodeAnimator* CSceneManager::createRotationAnimator(const core::vector3df&
 //! creates a fly circle animator, which lets the attached scene node fly around a center.
 ISceneNodeAnimator* CSceneManager::createFlyCircleAnimator(
 		const core::vector3df& center, f32 radius, f32 speed,
-		const core::vector3df& direction)
+		const core::vector3df& direction,
+		f32 startPosition)
 {
+	const f32 orbitDurationMs = (core::DEGTORAD * 360.f) / speed;
+	u32 effectiveTime = os::Timer::getTime() + (u32)(orbitDurationMs * startPosition);
+
 	ISceneNodeAnimator* anim = new CSceneNodeAnimatorFlyCircle(
-			os::Timer::getTime(), center,
+			effectiveTime, center,
 			radius, speed, direction);
 	return anim;
 }

@@ -204,6 +204,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\flyCircleAnimator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\guiDisabledMenu.cpp"
 				>
 			</File>

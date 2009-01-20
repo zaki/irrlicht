@@ -87,6 +87,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(sceneNodeAnimator);
 	TEST(vectorPositionDimension2d);
 	TEST(writeImageToFile);
+	TEST(flyCircleAnimator);
 
 	const unsigned int numberOfTests = tests.size();
 
