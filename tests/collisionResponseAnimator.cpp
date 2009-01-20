@@ -10,6 +10,50 @@ using namespace core;
 using namespace scene;
 using namespace video;
 
+static bool expectedCollisionCallbackPositions = true;
+
+class CMyCollisionCallback : public ICollisionCallback
+{
+public:
+	bool onCollision(ISceneNodeAnimatorCollisionResponse* animator)
+	{
+		const vector3df & collisionPoint = animator->getCollisionPoint();
+
+		logTestString("Collision callback at %f %f %f\n",
+			collisionPoint.X, collisionPoint.Y, collisionPoint.Z);
+
+		if(collisionPoint != ExpectedCollisionPoint)
+		{
+			logTestString("*** Error: expected %f %f %f\n",
+				ExpectedCollisionPoint.X, ExpectedCollisionPoint.Y, ExpectedCollisionPoint.Z);
+			expectedCollisionCallbackPositions = false;
+			assert(false);
+		}
+
+		if(animator->getTargetNode() != ExpectedTarget)
+		{
+			logTestString("*** Error: wrong node\n");
+			expectedCollisionCallbackPositions = false;
+			assert(false);
+		}
+
+		return ConsumeCollision;
+	}
+
+	void setNextExpectedCollision(ISceneNode* target, const vector3df& point, bool consume)
+	{
+		ExpectedTarget = target;
+		ExpectedCollisionPoint = point;
+		ConsumeCollision = consume;
+	}
+
+private:
+
+	ISceneNode * ExpectedTarget;
+	vector3df ExpectedCollisionPoint;
+	bool ConsumeCollision;
+
+};
 
 /** Test that collision response animator will reset itself when removed from a
 	scene node, so that the scene node can then be moved without the animator
@@ -39,6 +83,10 @@ bool collisionResponseAnimator(void)
 												vector3df(10,10,10),
 												vector3df(0, 0, 0));
 	testNode1->addAnimator(collisionAnimator1);
+
+	CMyCollisionCallback collisionCallback;
+	collisionAnimator1->setCollisionCallback(&collisionCallback);
+
 	collisionAnimator1->drop();
 	collisionAnimator1 = 0;
 
@@ -48,6 +96,7 @@ bool collisionResponseAnimator(void)
 												vector3df(10,10,10),
 												vector3df(0, 0, 0));
 	testNode2->addAnimator(collisionAnimator2);
+	collisionAnimator2->setCollisionCallback(&collisionCallback);
 	
 	wallSelector->drop();
 	// Don't drop() collisionAnimator2 since we're going to use it.
@@ -59,6 +108,7 @@ bool collisionResponseAnimator(void)
 	// Try to move both nodes to the right of the wall.
 	// This one should be stopped by its animator.
 	testNode1->setPosition(vector3df(50, 0,0));
+	collisionCallback.setNextExpectedCollision(testNode1, vector3df(-15.004999f, 0, 0), false);
 
 	// Whereas this one, by forcing the animator to update its target node, should be
 	// able to pass through the wall. (In <=1.6 it was stopped by the wall even if
@@ -89,17 +139,38 @@ bool collisionResponseAnimator(void)
 	// Now try to move the second node back through the wall again. Now it should be
 	// stopped by the wall.
 	testNode2->setPosition(vector3df(-50, 0, 0));
+
+	// We'll consume this collision, so the node will actually move all the way through.
+	collisionCallback.setNextExpectedCollision(testNode2, vector3df(15.004999f, 0, 0), true);
+
 	device->run();
 	smgr->drawAll();
 
-	if(testNode2->getAbsolutePosition().X < 15.f)
+	if(testNode2->getAbsolutePosition().X != -50.f)
 	{
-		logTestString("collisionResponseAnimator test node 2 wasn't stopped from moving.\n");
+		logTestString("collisionResponseAnimator test node 2 was stopped from moving.\n");
 		assert(false);
 		result = false;
 	}
 
+	// Now we'll try to move it back to the right and allow it to be stopped.
+	collisionCallback.setNextExpectedCollision(testNode2, vector3df(-15.004999f, 0, 0), false);
+	testNode2->setPosition(vector3df(50, 0, 0));
+
+	device->run();
+	smgr->drawAll();
+
+	if(testNode2->getAbsolutePosition().X > -15.f)
+	{
+		logTestString("collisionResponseAnimator test node 2 moved too far.\n");
+		assert(false);
+		result = false;
+	}
+
+
 	device->drop();
+
+	result &= expectedCollisionCallbackPositions;
 	return result;
 }
 
