@@ -410,7 +410,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	}
 #endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
-	MaxTextureSize=static_cast<u8>(num);
+	MaxTextureSize=static_cast<u32>(num);
 	glGetIntegerv(GL_MAX_CLIP_PLANES, &num);
 	MaxUserClipPlanes=static_cast<u8>(num);
 	glGetIntegerv(GL_AUX_BUFFERS, &num);
