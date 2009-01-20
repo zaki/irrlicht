@@ -55,8 +55,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 		1,				// Version Number
 		PFD_DRAW_TO_WINDOW |		// Format Must Support Window
 		PFD_SUPPORT_OPENGL |		// Format Must Support OpenGL
-		params.Doublebuffer?PFD_DOUBLEBUFFER:0 | // Must Support Double Buffering
-		params.Stereobuffer?PFD_STEREO:0 | // Must Support Stereo Buffer
+		(params.Doublebuffer?PFD_DOUBLEBUFFER:0) | // Must Support Double Buffering
+		(params.Stereobuffer?PFD_STEREO:0) | // Must Support Stereo Buffer
 		PFD_TYPE_RGBA,			// Request An RGBA Format
 		params.Bits,				// Select Our Color Depth
 		0, 0, 0, 0, 0, 0,		// Color Bits Ignored
