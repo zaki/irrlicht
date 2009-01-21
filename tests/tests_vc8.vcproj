@@ -242,6 +242,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\relativeTransformations.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\sceneCollisionManager.cpp"
 				>
 			</File>

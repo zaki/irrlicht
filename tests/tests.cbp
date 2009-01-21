@@ -55,6 +55,7 @@
 		<Unit filename="matrixOps.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="planeMatrix.cpp" />
+		<Unit filename="relativeTransformations.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="sceneNodeAnimator.cpp" />
 		<Unit filename="softwareDevice.cpp" />
