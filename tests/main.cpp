@@ -16,15 +16,13 @@
 #include <assert.h>
 #include <vector>
 
-// This is an MSVC pragma to link against the Irrlicht library.
-// Other builds must link against it in the project files.
-#if defined(_MSC_VER)
-#pragma comment(lib, "Irrlicht.lib")
-#endif // _MSC_VER
-
+//! Defines a test
 typedef struct _STestDefinition
 {
+	//! The test entry point function
 	bool(*testSignature)(void);
+
+	//! A descriptive name for the test
 	const char * testName;
 } STestDefinition;
 
@@ -52,6 +50,7 @@ int main(int argumentCount, char * arguments[])
 		tests.push_back(newTest);\
 	}
 
+	// Use an STL vector so that we don't rely on Irrlicht.
 	std::vector<STestDefinition> tests;
 
 	// Note that to interactively debug a test, you will generally want to move it
@@ -88,6 +87,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(vectorPositionDimension2d);
 	TEST(writeImageToFile);
 	TEST(flyCircleAnimator);
+	TEST(relativeTransformations);
 
 	const unsigned int numberOfTests = tests.size();
 
@@ -128,7 +128,7 @@ int main(int argumentCount, char * arguments[])
 		closeTestLog();
 		char runNextTest[256];
 		(void)sprintf(runNextTest, "\"%s\" %d %d", arguments[0], testToRun, fails);
-		fails = system(runNextTest);
+		fails = system(runNextTest); // Spawn the next test in a new process.
 	}
 
 	if(1 == testToRun)
@@ -154,6 +154,8 @@ int main(int argumentCount, char * arguments[])
 			}
 		}
 		closeTestLog();
+
+		(void)system("tests.log");
 	}
 
 	return fails;
