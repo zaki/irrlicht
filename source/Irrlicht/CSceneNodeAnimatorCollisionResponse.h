@@ -99,13 +99,13 @@ namespace scene
 		virtual bool collisionOccurred() const { return CollisionOccurred; }
 
 		//! Returns the last point of collision.
-		virtual core::vector3df getCollisionPoint() const { return CollisionPoint; }
+		virtual const core::vector3df & getCollisionPoint() const { return CollisionPoint; }
 
 		//! Returns the last triangle that caused a collision.
-		virtual core::triangle3df getCollisionTriangle() const { return CollisionTriangle; }
+		virtual const core::triangle3df & getCollisionTriangle() const { return CollisionTriangle; }
 
 		//! Sets a callback interface which will be called if a collision occurs.
-		/** \param callback: collision callback handler that will be called when a collision 
+		/** \param callback: collision callback handler that will be called when a collision
 		occurs. Set this to 0 to disable the callback.
 		*/
 		virtual void setCollisionCallback(ICollisionCallback* callback);

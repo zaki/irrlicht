@@ -195,7 +195,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 			CollisionPoint = pos;
 
 			if(CollisionCallback)
-				collisionConsumed = CollisionCallback->onCollision(this);
+				collisionConsumed = CollisionCallback->onCollision(*this);
 		}
 
 		if(!collisionConsumed)
