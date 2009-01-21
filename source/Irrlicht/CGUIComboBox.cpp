@@ -343,8 +343,17 @@ void CGUIComboBox::draw()
 		LastFocus = currentFocus;
 
 		SelectedText->setBackgroundColor(skin->getColor(EGDC_HIGH_LIGHT));
-		SelectedText->setDrawBackground(HasFocus);
-		SelectedText->setOverrideColor(skin->getColor(HasFocus ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT));
+
+		if(isEnabled())
+		{
+			SelectedText->setDrawBackground(HasFocus);
+			SelectedText->setOverrideColor(skin->getColor(HasFocus ? EGDC_HIGH_LIGHT_TEXT : EGDC_BUTTON_TEXT));
+		}
+		else
+		{
+			SelectedText->setDrawBackground(false);
+			SelectedText->setOverrideColor(skin->getColor(EGDC_GRAY_TEXT)); 
+		}
 	}
 
 	core::rect<s32> frameRect(AbsoluteRect);
