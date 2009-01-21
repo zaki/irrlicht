@@ -15,9 +15,9 @@ static bool expectedCollisionCallbackPositions = true;
 class CMyCollisionCallback : public ICollisionCallback
 {
 public:
-	bool onCollision(ISceneNodeAnimatorCollisionResponse* animator)
+	bool onCollision(const ISceneNodeAnimatorCollisionResponse& animator)
 	{
-		const vector3df & collisionPoint = animator->getCollisionPoint();
+		const vector3df & collisionPoint = animator.getCollisionPoint();
 
 		logTestString("Collision callback at %f %f %f\n",
 			collisionPoint.X, collisionPoint.Y, collisionPoint.Z);
@@ -30,28 +30,28 @@ public:
 			assert(false);
 		}
 
-		if(animator->getTargetNode() != ExpectedTarget)
+		if(animator.getTargetNode() != ExpectedTarget)
 		{
 			logTestString("*** Error: wrong node\n");
 			expectedCollisionCallbackPositions = false;
 			assert(false);
 		}
 
-		return ConsumeCollision;
+		return ConsumeNextCollision;
 	}
 
 	void setNextExpectedCollision(ISceneNode* target, const vector3df& point, bool consume)
 	{
 		ExpectedTarget = target;
 		ExpectedCollisionPoint = point;
-		ConsumeCollision = consume;
+		ConsumeNextCollision = consume;
 	}
 
 private:
 
 	ISceneNode * ExpectedTarget;
 	vector3df ExpectedCollisionPoint;
-	bool ConsumeCollision;
+	bool ConsumeNextCollision;
 
 };
 
@@ -97,7 +97,7 @@ bool collisionResponseAnimator(void)
 												vector3df(0, 0, 0));
 	testNode2->addAnimator(collisionAnimator2);
 	collisionAnimator2->setCollisionCallback(&collisionCallback);
-	
+
 	wallSelector->drop();
 	// Don't drop() collisionAnimator2 since we're going to use it.
 
