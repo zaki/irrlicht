@@ -159,6 +159,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	CollisionTriangle = RefTriangle;
 	CollisionPoint = core::vector3df();
 	CollisionResultPosition = core::vector3df();
+	CollisionNode = 0;
 
 	core::vector3df force = vel + FallingVelocity;
 
@@ -172,7 +173,8 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		CollisionResultPosition
 			= SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
 				World, LastPosition-Translation,
-				Radius, vel, CollisionTriangle, CollisionPoint, f, SlidingSpeed, FallingVelocity);
+				Radius, vel, CollisionTriangle, CollisionPoint, f, 
+				CollisionNode, SlidingSpeed, FallingVelocity);
 
 		CollisionOccurred = (CollisionTriangle != RefTriangle);
 

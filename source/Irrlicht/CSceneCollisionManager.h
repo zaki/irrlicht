@@ -57,6 +57,7 @@ namespace scene
 			core::triangle3df& triout,
 			core::vector3df& hitPosition,
 			bool& outFalling,
+			const ISceneNode*& outNode,
 			f32 slidingSpeed,
 			const core::vector3df& gravityDirectionAndSpeed);
 
@@ -94,6 +95,7 @@ namespace scene
 			core::vector3df intersectionPoint;
 
 			core::triangle3df intersectionTriangle;
+			s32 triangleIndex;
 			s32 triangleHits;
 
 			f32 slidingSpeed;
@@ -101,7 +103,12 @@ namespace scene
 			ITriangleSelector* selector;
 		};
 
-		void testTriangleIntersection(SCollisionData* colData, 
+		//! Tests the current collision data against an individual triangle.
+		/**
+		\param colData: the collision data.
+		\param triangle: the triangle to test against.
+		\return true if the triangle is hit (and is the closest hit), false otherwise */
+		bool testTriangleIntersection(SCollisionData* colData, 
 			const core::triangle3df& triangle);
 
 		//! recursive method for doing collision response
@@ -111,7 +118,8 @@ namespace scene
 			f32 slidingSpeed,
 			const core::vector3df& gravity, core::triangle3df& triout,
 			core::vector3df& hitPosition,
-			bool& outFalling);
+			bool& outFalling,
+			const ISceneNode*& outNode);
 
 		core::vector3df collideWithWorld(s32 recursionDepth, SCollisionData &colData,
 			core::vector3df pos, core::vector3df vel);

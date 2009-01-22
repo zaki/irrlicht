@@ -313,6 +313,7 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 	core::triangle3df& triout,
 	core::vector3df& hitPosition,
 	bool& outFalling,
+	const ISceneNode*& outNode,
 	f32 slidingSpeed,
 	const core::vector3df& gravity)
 {
@@ -320,18 +321,18 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 		return position;
 
 	return collideEllipsoidWithWorld(selector, position,
-		radius, direction, slidingSpeed, gravity, triout, hitPosition, outFalling);
+		radius, direction, slidingSpeed, gravity, triout, hitPosition, outFalling, outNode);
 }
 
 
-void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
+bool CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 			const core::triangle3df& triangle)
 {
 	const core::plane3d<f32> trianglePlane = triangle.getPlane();
 
 	// only check front facing polygons
 	if ( !trianglePlane.isFrontFacing(colData->normalizedVelocity) )
-		return;
+		return false;
 
 	// get interval of plane intersection
 
@@ -350,7 +351,7 @@ void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 		// sphere is traveling parallel to plane
 
 		if (fabs(signedDistToTrianglePlane) >= 1.0f)
-			return; // no collision possible
+			return false; // no collision possible
 		else
 		{
 			// sphere is embedded in plane
@@ -372,7 +373,7 @@ void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 
 		// check if at least one value is within the range
 		if (t0 > 1.0f || t1 < 0.0f)
-			return; // both t values are outside 1 and 0, no collision possible
+			return false; // both t values are outside 1 and 0, no collision possible
 
 		// clamp to 0 and 1
 		t0 = core::clamp ( t0, 0.f, 1.f );
@@ -565,9 +566,11 @@ void CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 			colData->foundCollision = true;
 			colData->intersectionTriangle = triangle;
 			++colData->triangleHits;
+			return true;
 		}
-
 	}// end found collision
+
+	return false;
 }
 
 
@@ -581,7 +584,8 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	const core::vector3df& gravity,
 	core::triangle3df& triout,
 	core::vector3df& hitPosition,
-	bool& outFalling)
+	bool& outFalling,
+	const ISceneNode*& outNode)
 {
 	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
 		return position;
@@ -597,6 +601,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	colData.selector = selector;
 	colData.slidingSpeed = slidingSpeed;
 	colData.triangleHits = 0;
+	colData.triangleIndex = -1;
 
 	core::vector3df eSpacePosition = colData.R3Position / colData.eRadius;
 	core::vector3df eSpaceVelocity = colData.R3Velocity / colData.eRadius;
@@ -630,6 +635,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 		triout.pointA *= colData.eRadius;
 		triout.pointB *= colData.eRadius;
 		triout.pointC *= colData.eRadius;
+		outNode = selector->getSceneNodeForTriangle(colData.triangleIndex);
 	}
 
 	finalPos *= colData.eRadius;
@@ -672,10 +678,10 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	s32 triangleCnt = 0;
 	colData.selector->getTriangles(Triangles.pointer(), totalTriangleCnt, triangleCnt, box, &scaleMatrix);
-	//colData.selector->getTriangles(Triangles.pointer(), totalTriangleCnt, triangleCnt, &scaleMatrix);
 
 	for (s32 i=0; i<triangleCnt; ++i)
-		testTriangleIntersection(&colData, Triangles[i]);
+		if(testTriangleIntersection(&colData, Triangles[i]))
+			colData.triangleIndex = i;
 
 	//---------------- end collide with world
 
