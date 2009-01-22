@@ -151,13 +151,14 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	u32 diff = timeMs - LastTime;
 	LastTime = timeMs;
 
-	core::vector3df pos = Object->getPosition();
-	core::vector3df vel = pos - LastPosition;
+	CollisionResultPosition = Object->getPosition();
+	core::vector3df vel = CollisionResultPosition - LastPosition;
 
 	FallingVelocity += Gravity * (f32)diff * 0.001f;
 
 	CollisionTriangle = RefTriangle;
 	CollisionPoint = core::vector3df();
+	CollisionResultPosition = core::vector3df();
 
 	core::vector3df force = vel + FallingVelocity;
 
@@ -168,13 +169,14 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		// TODO: divide SlidingSpeed by frame time
 
 		bool f = false;
-		pos = SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
+		CollisionResultPosition
+			= SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
 				World, LastPosition-Translation,
 				Radius, vel, CollisionTriangle, CollisionPoint, f, SlidingSpeed, FallingVelocity);
 
 		CollisionOccurred = (CollisionTriangle != RefTriangle);
 
-		pos += Translation;
+		CollisionResultPosition += Translation;
 
 		if (f)//CollisionTriangle == RefTriangle)
 		{
@@ -192,7 +194,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 			collisionConsumed = CollisionCallback->onCollision(*this);
 
 		if(!collisionConsumed)
-			Object->setPosition(pos);
+			Object->setPosition(CollisionResultPosition);
 	}
 
 	// move camera target

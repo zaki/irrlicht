@@ -28,7 +28,7 @@ namespace scene
 		\param animator: Collision response animator in which the collision occurred. You can call
 		this animator's methods to find the node, collisionPoint and/or collision triangle.
 		\retval true if the collision was handled in the animator. The animator's target
-		node will *not* be moved to the collision point, but will instead move directly
+		node will *not* be stopped at the collision point, but will instead move fully
 		to the location that triggered the collision check.
 		\retval false if the collision was not handled in the animator. The animator's
 		target node will be moved to the collision position.
@@ -140,6 +140,13 @@ namespace scene
 
 		//! Returns the last triangle that caused a collision
 		virtual const core::triangle3df & getCollisionTriangle() const = 0;
+
+		//! Returns the position that the target node will be moved to, unless the collision is consumed in a callback).
+		/**
+		If you have a collision callback registered, and it consumes the collision, then the
+		node will ignore the collision and will not stop at this position. Instead, it will
+		move fully to the position that caused the collision to occur. */
+		virtual const core::vector3df & getCollisionResultPosition(void) const = 0;
 
 		//! Sets a callback interface which will be called if a collision occurs.
 		/** \param callback: collision callback handler that will be called when a collision
