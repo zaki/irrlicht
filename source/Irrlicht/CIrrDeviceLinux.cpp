@@ -311,7 +311,7 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
 					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
-					GLX_STENCIL_SIZE, 1,
+					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
 					GLX_SAMPLE_BUFFERS_ARB, 1,
 					GLX_SAMPLES_ARB, CreationParams.AntiAlias,
 					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
@@ -325,7 +325,7 @@ bool CIrrDeviceLinux::createWindow()
 					visualAttrBuffer[17] = 0;
 					visualAttrBuffer[19] = 0;
 				}
-				if (CreationParams.Stencilbuffer)
+				// first round with unchanged values
 				{
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
@@ -354,13 +354,16 @@ bool CIrrDeviceLinux::createWindow()
 						}
 					}
 				}
-				// Next try without stencil buffer
+				// Next try without flipped stencil buffer
+				// If the first round was with stencil flag it's now without
+				// Other way round also makes sense because some configs
+				// Only have depth buffer combined with stencil buffer
 				if (!configList)
 				{
 					if (CreationParams.Stencilbuffer)
 						os::Printer::log("No stencilbuffer available, disabling stencil shadows.", ELL_WARNING);
-					CreationParams.Stencilbuffer = false;
-					visualAttrBuffer[15]=0;
+					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
+					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
 
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
@@ -390,11 +393,13 @@ bool CIrrDeviceLinux::createWindow()
 					}
 				}
 				// Next try without double buffer
+				// Stencil is now also don't care, just to be sure
 				if (!configList && CreationParams.Doublebuffer)
 				{
 					os::Printer::log("No doublebuffering available.", ELL_WARNING);
 					CreationParams.Doublebuffer=false;
 					visualAttrBuffer[13] = GLX_DONT_CARE;
+					visualAttrBuffer[15] = GLX_DONT_CARE;
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
