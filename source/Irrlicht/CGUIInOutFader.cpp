@@ -63,13 +63,11 @@ void CGUIInOutFader::draw()
 }
 
 
-
 //! Gets the color to fade out to or to fade in from.
 video::SColor CGUIInOutFader::getColor() const
 {
 	return Color[1];
 }
-
 
 
 //! Sets the color to fade out to or to fade in from.
@@ -90,7 +88,7 @@ void CGUIInOutFader::setColor(video::SColor color)
 
 	if (Action == EFA_FADE_OUT)
 	{
-		FullColor.setAlpha(0);	
+		FullColor.setAlpha(0);
 		TransColor.setAlpha(255);
 	}
 	else
@@ -101,6 +99,7 @@ void CGUIInOutFader::setColor(video::SColor color)
 	}
 */
 }
+
 
 void CGUIInOutFader::setColor(video::SColor source, video::SColor dest)
 {
@@ -123,14 +122,13 @@ void CGUIInOutFader::setColor(video::SColor source, video::SColor dest)
 
 
 //! Returns if the fade in or out process is done.
-bool CGUIInOutFader::isReady() const 
+bool CGUIInOutFader::isReady() const
 {
 	u32 now = os::Timer::getTime();
 	bool ret = (now > EndTime);
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
 }
-
 
 
 //! Starts the fade in process.
@@ -152,6 +150,7 @@ void CGUIInOutFader::fadeOut(u32 time)
 	setColor(Color[0],Color[1]);
 }
 
+
 //! Writes attributes of the element.
 void CGUIInOutFader::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
@@ -162,6 +161,7 @@ void CGUIInOutFader::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 
 }
 
+
 //! Reads attributes of the element
 void CGUIInOutFader::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 {
@@ -170,7 +170,6 @@ void CGUIInOutFader::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 	FullColor  = in->getAttributeAsColor("FullColor");
 	TransColor = in->getAttributeAsColor("TransColor");
 }
-
 
 
 } // end namespace gui

@@ -59,12 +59,11 @@ namespace gui
 
 		u32 StartTime;
 		u32 EndTime;
-		EFadeAction Action;		
+		EFadeAction Action;
 
 		video::SColor Color[2];
 		video::SColor FullColor;
 		video::SColor TransColor;
-
 	};
 
 } // end namespace gui

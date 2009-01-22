@@ -21,9 +21,9 @@ CGUIStaticText::CGUIStaticText(const wchar_t* text, bool border,
 			IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, const core::rect<s32>& rectangle,
 			bool background)
-: IGUIStaticText(environment, parent, id, rectangle), Border(border), 
+: IGUIStaticText(environment, parent, id, rectangle),
 	HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_UPPERLEFT),
-	OverrideColorEnabled(false), WordWrap(false), Background(background),
+	Border(border), OverrideColorEnabled(false), WordWrap(false), Background(background),
 	OverrideColor(video::SColor(101,255,255,255)), BGColor(video::SColor(101,210,210,210)),
 	OverrideFont(0), LastBreakFont(0)
 {
@@ -88,12 +88,12 @@ void CGUIStaticText::draw()
 			{
 				if (VAlign == EGUIA_LOWERRIGHT)
 				{
-					frameRect.UpperLeftCorner.Y = frameRect.LowerRightCorner.Y - 
+					frameRect.UpperLeftCorner.Y = frameRect.LowerRightCorner.Y -
 						font->getDimension(L"A").Height - font->getKerningHeight();
 				}
 				if (HAlign == EGUIA_LOWERRIGHT)
 				{
-					frameRect.UpperLeftCorner.X = frameRect.LowerRightCorner.X - 
+					frameRect.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
 						font->getDimension(Text.c_str()).Width;
 				}
 
@@ -122,7 +122,7 @@ void CGUIStaticText::draw()
 				{
 					if (HAlign == EGUIA_LOWERRIGHT)
 					{
-						r.UpperLeftCorner.X = frameRect.LowerRightCorner.X - 
+						r.UpperLeftCorner.X = frameRect.LowerRightCorner.X -
 							font->getDimension(BrokenText[i].c_str()).Width;
 					}
 
@@ -348,6 +348,7 @@ void CGUIStaticText::setText(const wchar_t* text)
 	IGUIElement::setText(text);
 	breakText();
 }
+
 
 void CGUIStaticText::updateAbsolutePosition()
 {

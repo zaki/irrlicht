@@ -255,6 +255,7 @@ void CGUISpinBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWr
 	out->addInt("DecimalPlaces", DecimalPlaces);
 }
 
+
 //! Reads attributes of the element
 void CGUISpinBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {

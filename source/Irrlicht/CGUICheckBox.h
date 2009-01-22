@@ -42,9 +42,9 @@ namespace gui
 
 	private:
 
+		u32 checkTime;
 		bool Pressed;
 		bool Checked;
-		u32 checkTime;
 	};
 
 } // end namespace gui

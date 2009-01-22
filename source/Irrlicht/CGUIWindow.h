@@ -46,12 +46,12 @@ namespace gui
 
 	protected:
 
-		core::position2d<s32> DragStart;
-		bool Dragging;
-
 		IGUIButton* CloseButton;
 		IGUIButton* MinButton;
 		IGUIButton* RestoreButton;
+
+		core::position2d<s32> DragStart;
+		bool Dragging;
 	};
 
 } // end namespace gui
@@ -59,5 +59,5 @@ namespace gui
 
 #endif // _IRR_COMPILE_WITH_GUI_
 
-#endif 
+#endif
 

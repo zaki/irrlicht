@@ -514,6 +514,3 @@ namespace gui
 
 #endif
 
-
-
-

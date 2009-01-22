@@ -665,6 +665,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 	return true;
 }
 
+
 //! draws the element and its children
 void CGUIEditBox::draw()
 {
@@ -877,6 +878,7 @@ bool CGUIEditBox::isAutoScrollEnabled() const
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return AutoScroll;
 }
+
 
 //! Gets the area of the text in the edit box
 //! \return Returns the size in pixels of the text

@@ -31,7 +31,7 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 
 	IGUISpriteBank* sprites = 0;
 	video::SColor color(255,255,255,255);
-	
+
 	s32 buttonw = 15;
 	if (skin)
 	{
@@ -41,7 +41,7 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	}
 	s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
-	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
+	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close" );
 	CloseButton->setSubElement(true);
 	CloseButton->setTabStop(false);
@@ -54,7 +54,7 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	}
 	posx -= buttonw + 2;
 
-	RestoreButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
+	RestoreButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_RESTORE) : L"Restore" );
 	RestoreButton->setVisible(false);
 	RestoreButton->setSubElement(true);
@@ -68,7 +68,7 @@ CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id
 	}
 	posx -= buttonw + 2;
 
-	MinButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1, 
+	MinButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_MINIMIZE) : L"Minimize" );
 	MinButton->setVisible(false);
 	MinButton->setSubElement(true);
@@ -171,14 +171,12 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 				if (Dragging)
 				{
 					// gui window should not be dragged outside its parent
-					if (Parent)
-						if (event.MouseInput.X < Parent->getAbsolutePosition().UpperLeftCorner.X +1 ||
+					if (Parent &&
+						(event.MouseInput.X < Parent->getAbsolutePosition().UpperLeftCorner.X +1 ||
 							event.MouseInput.Y < Parent->getAbsolutePosition().UpperLeftCorner.Y +1 ||
 							event.MouseInput.X > Parent->getAbsolutePosition().LowerRightCorner.X -1 ||
-							event.MouseInput.Y > Parent->getAbsolutePosition().LowerRightCorner.Y -1)
-
-							return true;
-						
+							event.MouseInput.Y > Parent->getAbsolutePosition().LowerRightCorner.Y -1))
+						return true;
 
 					move(core::position2d<s32>(event.MouseInput.X - DragStart.X, event.MouseInput.Y - DragStart.Y));
 					DragStart.X = event.MouseInput.X;

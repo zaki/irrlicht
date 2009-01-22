@@ -61,7 +61,7 @@ namespace gui
 		virtual void setWordWrap(bool enable) = 0;
 
 		//! Checks if word wrap is enabled
-		//! \return true if word wrap is enabled, false otherwise
+		/** \return true if word wrap is enabled, false otherwise */
 		virtual bool isWordWrapEnabled() const = 0;
 
 		//! Enables or disables newlines.
@@ -70,15 +70,15 @@ namespace gui
 		virtual void setMultiLine(bool enable) = 0;
 
 		//! Checks if multi line editing is enabled
-		//! \return true if mult-line is enabled, false otherwise
+		/** \return true if mult-line is enabled, false otherwise */
 		virtual bool isMultiLineEnabled() const = 0;
 
 		//! Enables or disables automatic scrolling with cursor position
-		//! \param enable: If set to true, the text will move around with the cursor position
+		/** \param enable: If set to true, the text will move around with the cursor position */
 		virtual void setAutoScroll(bool enable) = 0;
 
 		//! Checks to see if automatic scrolling is enabled
-		//! \return true if automatic scrolling is enabled, false if not
+		/** \return true if automatic scrolling is enabled, false if not */
 		virtual bool isAutoScrollEnabled() const = 0;
 
 		//! Sets whether the edit box is a password box. Setting this to true will
@@ -91,7 +91,7 @@ namespace gui
 		virtual bool isPasswordBox() const = 0;
 
 		//! Gets the size area of the text in the edit box
-		//! \return Returns the size in pixels of the text
+		/** \return The size in pixels of the text */
 		virtual core::dimension2du getTextDimension() = 0;
 
 		//! Sets the maximum amount of characters which may be entered in the box.

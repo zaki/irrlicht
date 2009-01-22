@@ -67,8 +67,7 @@ namespace gui
 		};
 		SColorCircle ColorRing;
 
-		void buildColorRing( const core::dimension2d<u32> & dim, s32 supersample, const u32 borderColor );
-
+		void buildColorRing( const core::dimension2d<s32> & dim, s32 supersample, const u32 borderColor );
 	};
 
 
@@ -78,3 +77,4 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif // __C_GUI_COLOR_SELECT_DIALOG_H_INCLUDED__
+

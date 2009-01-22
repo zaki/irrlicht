@@ -58,56 +58,56 @@ namespace gui
 		virtual u32 getIcon(EGUI_DEFAULT_ICON icon) const;
 
 		//! Sets a default icon
-		/** Sets the sprite index used for drawing icons like arrows, 
-		close buttons and ticks in checkboxes 
+		/** Sets the sprite index used for drawing icons like arrows,
+		close buttons and ticks in checkboxes
 		\param icon: Enum specifying which icon to change
 		\param index: The sprite index used to draw this icon */
 		virtual void setIcon(EGUI_DEFAULT_ICON icon, u32 index);
 
 		//! Returns a default text.
 		/** For example for Message box button captions:
-		 "OK", "Cancel", "Yes", "No" and so on. */
+		"OK", "Cancel", "Yes", "No" and so on. */
 		virtual const wchar_t* getDefaultText(EGUI_DEFAULT_TEXT text) const;
 
-		//! Sets a default text. 
+		//! Sets a default text.
 		/** For example for Message box button captions:
-		 "OK", "Cancel", "Yes", "No" and so on. */
+		"OK", "Cancel", "Yes", "No" and so on. */
 		virtual void setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText);
 
 		//! draws a standard 3d button pane
-		/**	Used for drawing for example buttons in normal state. 
+		/** Used for drawing for example buttons in normal state.
 		It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
-		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details. 
+		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.
 		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
+		is usually not used by ISkin, but can be used for example by more complex
 		implementations to find out how to draw the part exactly. */
-		virtual void draw3DButtonPaneStandard(IGUIElement* element, 
+		virtual void draw3DButtonPaneStandard(IGUIElement* element,
 				const core::rect<s32>& rect,
 				const core::rect<s32>* clip=0);
 
 		//! draws a pressed 3d button pane
-		/**	Used for drawing for example buttons in pressed state. 
+		/** Used for drawing for example buttons in pressed state.
 		It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
-		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details. 
+		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.
 		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
+		is usually not used by ISkin, but can be used for example by more complex
 		implementations to find out how to draw the part exactly. */
-		virtual void draw3DButtonPanePressed(IGUIElement* element, 
+		virtual void draw3DButtonPanePressed(IGUIElement* element,
 				const core::rect<s32>& rect,
 				const core::rect<s32>* clip=0);
 
 		//! draws a sunken 3d pane
 		/** Used for drawing the background of edit, combo or check boxes.
 		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
-		implementations to find out how to draw the part exactly. 
+		is usually not used by ISkin, but can be used for example by more complex
+		implementations to find out how to draw the part exactly.
 		\param bgcolor: Background color.
-		\param flat: Specifies if the sunken pane should be flat or displayed as sunken 
-		 deep into the ground.
+		\param flat: Specifies if the sunken pane should be flat or displayed as sunken
+		deep into the ground.
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.	*/
 		virtual void draw3DSunkenPane(IGUIElement* element,
@@ -119,8 +119,8 @@ namespace gui
 		//! draws a window background
 		/** Used for drawing the background of dialogs and windows.
 		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
-		implementations to find out how to draw the part exactly. 
+		is usually not used by ISkin, but can be used for example by more complex
+		implementations to find out how to draw the part exactly.
 		\param titleBarColor: Title color.
 		\param drawTitleBar: True to enable title drawing.
 		\param rect: Defining area where to draw.
@@ -132,12 +132,12 @@ namespace gui
 				const core::rect<s32>* clip=0);
 
 		//! draws a standard 3d menu pane
-		/**	Used for drawing for menus and context menus. 
+		/** Used for drawing for menus and context menus.
 		It uses the colors EGDC_3D_DARK_SHADOW, EGDC_3D_HIGH_LIGHT, EGDC_3D_SHADOW and
-		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details. 
+		EGDC_3D_FACE for this. See EGUI_DEFAULT_COLOR for details.
 		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
-		implementations to find out how to draw the part exactly. 
+		is usually not used by ISkin, but can be used for example by more complex
+		implementations to find out how to draw the part exactly.
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.	*/
 		virtual void draw3DMenuPane(IGUIElement* element,
@@ -145,10 +145,10 @@ namespace gui
 				const core::rect<s32>* clip=0);
 
 		//! draws a standard 3d tool bar
-		/**	Used for drawing for toolbars and menus.
+		/** Used for drawing for toolbars and menus.
 		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
-		implementations to find out how to draw the part exactly. 
+		is usually not used by ISkin, but can be used for example by more complex
+		implementations to find out how to draw the part exactly.
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.	*/
 		virtual void draw3DToolBar(IGUIElement* element,
@@ -156,10 +156,10 @@ namespace gui
 				const core::rect<s32>* clip=0);
 
 		//! draws a tab button
-		/**	Used for drawing for tab buttons on top of tabs.
+		/** Used for drawing for tab buttons on top of tabs.
 		\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
-		implementations to find out how to draw the part exactly. 
+		is usually not used by ISkin, but can be used for example by more complex
+		implementations to find out how to draw the part exactly.
 		\param active: Specifies if the tab is currently active.
 		\param rect: Defining area where to draw.
 		\param clip: Clip area.	*/
@@ -167,9 +167,9 @@ namespace gui
 			const core::rect<s32>& rect, const core::rect<s32>* clip=0, EGUI_ALIGNMENT alignment=EGUIA_UPPERLEFT);
 
 		//! draws a tab control body
-		/**	\param element: Pointer to the element which wishes to draw this. This parameter
-		is usually not used by ISkin, but can be used for example by more complex 
-		implementations to find out how to draw the part exactly. 
+		/** \param element: Pointer to the element which wishes to draw this. This parameter
+		is usually not used by ISkin, but can be used for example by more complex
+		implementations to find out how to draw the part exactly.
 		\param border: Specifies if the border should be drawn.
 		\param background: Specifies if the background should be drawn.
 		\param rect: Defining area where to draw.
@@ -178,9 +178,9 @@ namespace gui
 			const core::rect<s32>& rect, const core::rect<s32>* clip=0, s32 tabHeight=-1, EGUI_ALIGNMENT alignment=EGUIA_UPPERLEFT);
 
 		//! draws an icon, usually from the skin's sprite bank
-		/**	\param element: Pointer to the element which wishes to draw this icon. 
-		This parameter is usually not used by IGUISkin, but can be used for example 
-		by more complex implementations to find out how to draw the part exactly. 
+		/** \param element: Pointer to the element which wishes to draw this icon.
+		This parameter is usually not used by IGUISkin, but can be used for example
+		by more complex implementations to find out how to draw the part exactly.
 		\param icon: Specifies the icon to be drawn.
 		\param position: The position to draw the icon
 		\param starttime: The time at the start of the animation
@@ -189,20 +189,20 @@ namespace gui
 		\param clip: Clip area.	*/
 		virtual void drawIcon(IGUIElement* element, EGUI_DEFAULT_ICON icon,
 				const core::position2di position,
-				u32 starttime=0, u32 currenttime=0, 
+				u32 starttime=0, u32 currenttime=0,
 				bool loop=false, const core::rect<s32>* clip=0);
 
 
 		//! draws a 2d rectangle.
-		/** \param element: Pointer to the element which wishes to draw this icon. 
-		This parameter is usually not used by IGUISkin, but can be used for example 
-		by more complex implementations to find out how to draw the part exactly. 
-		\param color: Color of the rectangle to draw. The alpha component specifies how 
+		/** \param element: Pointer to the element which wishes to draw this icon.
+		This parameter is usually not used by IGUISkin, but can be used for example
+		by more complex implementations to find out how to draw the part exactly.
+		\param color: Color of the rectangle to draw. The alpha component specifies how
 		transparent the rectangle will be.
 		\param pos: Position of the rectangle.
 		\param clip: Pointer to rectangle against which the rectangle will be clipped.
 		If the pointer is null, no clipping will be performed. */
-		virtual void draw2DRectangle(IGUIElement* element, const video::SColor &color, 
+		virtual void draw2DRectangle(IGUIElement* element, const video::SColor &color,
 				const core::rect<s32>& pos, const core::rect<s32>* clip = 0);
 
 
@@ -210,12 +210,12 @@ namespace gui
 		virtual EGUI_SKIN_TYPE getType() const;
 
 		//! Writes attributes of the object.
-		//! Implement this to expose the attributes of your scene node animator for 
+		//! Implement this to expose the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml serialization purposes.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
 
 		//! Reads attributes of the object.
-		//! Implement this to set the attributes of your scene node animator for 
+		//! Implement this to set the attributes of your scene node animator for
 		//! scripting languages, editors, debuggers or xml deserialization purposes.
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0);
 

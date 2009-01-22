@@ -48,10 +48,9 @@ namespace gui
 		virtual u32 addItem(const wchar_t* text) = 0;
 
 		//! adds an list item with an icon
-		//! \param text Text of list entry
-		//! \param icon Sprite index of the Icon within the current sprite bank. Set it to -1 if you want no icon
-		//! \return
-		//! returns the id of the new created item
+		/** \param text Text of list entry
+		\param icon Sprite index of the Icon within the current sprite bank. Set it to -1 if you want no icon
+		\return The id of the new created item */
 		virtual u32 addItem(const wchar_t* text, s32 icon) = 0;
 
 		//! Removes an item from the list
@@ -60,10 +59,11 @@ namespace gui
 		//! Returns the icon of an item
 		virtual s32 getIcon(u32 index) const = 0;
 
-		//! Sets the sprite bank which should be used to draw list icons. This font is set to the sprite bank of
-		//! the built-in-font by default. A sprite can be displayed in front of every list item.
-		//! An icon is an index within the icon sprite bank. Several default icons are available in the
-		//! skin through getIcon
+		//! Sets the sprite bank which should be used to draw list icons.
+		/** This font is set to the sprite bank of the built-in-font by
+		default. A sprite can be displayed in front of every list item.
+		An icon is an index within the icon sprite bank. Several
+		default icons are available in the skin through getIcon. */
 		virtual void setSpriteBank(IGUISpriteBank* bank) = 0;
 
 		//! clears the list, deletes all items in the listbox
@@ -75,8 +75,7 @@ namespace gui
 		//! sets the selected item. Set this to -1 if no item should be selected
 		virtual void setSelected(s32 index) = 0;
 
-		//! set whether the listbox should scroll to show a newly selected item
-		//! or a new item as it is added to the list.
+		//! set whether the listbox should scroll to new or newly selected items
 		virtual void setAutoScrollEnabled(bool scroll) = 0;
 
 		//! returns true if automatic scrolling is enabled, false if not.
@@ -107,7 +106,7 @@ namespace gui
 		virtual void setItem(u32 index, const wchar_t* text, s32 icon) = 0;
 
 		//! Insert the item at the given index
-		//! Return the index on success or -1 on failure.
+		/** \return The index on success or -1 on failure. */
 		virtual s32 insertItem(u32 index, const wchar_t* text, s32 icon) = 0;
 
 		//! Swap the items at the given indices

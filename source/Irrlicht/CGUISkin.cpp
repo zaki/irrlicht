@@ -23,9 +23,7 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	setDebugName("CGUISkin");
 	#endif
 
-	if (	(Type == EGST_WINDOWS_CLASSIC) |
-			(Type == EGST_WINDOWS_METALLIC)
-		)
+	if ((Type == EGST_WINDOWS_CLASSIC) || (Type == EGST_WINDOWS_METALLIC))
 	{
 		Colors[EGDC_3D_DARK_SHADOW]   = video::SColor(101,50,50,50);
 		Colors[EGDC_3D_SHADOW]        = video::SColor(101,130,130,130);
@@ -57,7 +55,7 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 		Sizes[EGDS_MESSAGE_BOX_HEIGHT] = 200;
 		Sizes[EGDS_BUTTON_WIDTH] = 80;
 		Sizes[EGDS_BUTTON_HEIGHT] = 30;
-	
+
 		Sizes[EGDS_TEXT_DISTANCE_X] = 2;
 		Sizes[EGDS_TEXT_DISTANCE_Y] = 0;
 	}
@@ -68,7 +66,7 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 		//Colors[EGDC_3D_FACE]		=	0xc0c9ccd4;		// tab background
 		Colors[EGDC_3D_FACE]		=	0xc0cbd2d9;		// tab background
 		Colors[EGDC_3D_SHADOW]		=	0x50e4e8f1;		// tab background, and left-top highlight
-		Colors[EGDC_3D_HIGH_LIGHT]	=	0x40c7ccdc;	
+		Colors[EGDC_3D_HIGH_LIGHT]	=	0x40c7ccdc;
 		Colors[EGDC_3D_LIGHT]		=	0x802e313a;
 		Colors[EGDC_ACTIVE_BORDER]	=	0x80404040;		// window title
 		Colors[EGDC_ACTIVE_CAPTION] =	0xf0d0d0d0;
@@ -137,8 +135,7 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 	for (u32 i=0; i<EGDF_COUNT; ++i)
 		Fonts[i] = 0;
 
-	UseGradient = (Type == EGST_WINDOWS_METALLIC) ||
-				  (Type == EGST_BURNING_SKIN) ;
+	UseGradient = (Type == EGST_WINDOWS_METALLIC) || (Type == EGST_BURNING_SKIN) ;
 }
 
 
@@ -154,7 +151,6 @@ CGUISkin::~CGUISkin()
 	if (SpriteBank)
 		SpriteBank->drop();
 }
-
 
 
 //! returns default color
@@ -193,7 +189,6 @@ void CGUISkin::setSize(EGUI_DEFAULT_SIZE which, s32 size)
 }
 
 
-
 //! returns the default font
 IGUIFont* CGUISkin::getFont(EGUI_DEFAULT_FONT which) const
 {
@@ -202,6 +197,7 @@ IGUIFont* CGUISkin::getFont(EGUI_DEFAULT_FONT which) const
 	else
 		return Fonts[EGDF_DEFAULT];
 }
+
 
 //! sets a default font
 void CGUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
@@ -248,12 +244,14 @@ u32 CGUISkin::getIcon(EGUI_DEFAULT_ICON icon) const
 		return 0;
 }
 
+
 //! Sets a default icon
 void CGUISkin::setIcon(EGUI_DEFAULT_ICON icon, u32 index)
 {
 	if ((u32)icon < EGDI_COUNT)
 		Icons[icon] = index;
 }
+
 
 //! Returns a default text. For example for Message box button captions:
 //! "OK", "Cancel", "Yes", "No" and so on.
@@ -273,6 +271,7 @@ void CGUISkin::setDefaultText(EGUI_DEFAULT_TEXT which, const wchar_t* newText)
 	if ((u32)which < EGDT_COUNT)
 		Texts[which] = newText;
 }
+
 
 //! draws a standard 3d button pane
 /**	Used for drawing for example buttons in normal state.
@@ -380,7 +379,7 @@ is usually not used by ISkin, but can be used for example by more complex
 implementations to find out how to draw the part exactly.
 \param bgcolor: Background color.
 \param flat: Specifies if the sunken pane should be flat or displayed as sunken
- deep into the ground.
+deep into the ground.
 \param rect: Defining area where to draw.
 \param clip: Clip area.	*/
 void CGUISkin::draw3DSunkenPane(IGUIElement* element, video::SColor bgcolor,
@@ -562,7 +561,7 @@ void CGUISkin::draw3DMenuPane(IGUIElement* element,
 	core::rect<s32> rect = r;
 
 	if ( Type == EGST_BURNING_SKIN )
-	{	
+	{
 		rect.UpperLeftCorner.Y -= 3;
 		draw3DButtonPaneStandard(element, rect, clip);
 		return;
@@ -693,7 +692,7 @@ void CGUISkin::draw3DTabButton(IGUIElement* element, bool active,
 		tr.LowerRightCorner.Y = tr.UpperLeftCorner.Y + 1;
 		tr.UpperLeftCorner.X += 1;
 		Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), tr, clip);
-		
+
 		// draw left highlight
 		tr = frameRect;
 		tr.LowerRightCorner.X = tr.UpperLeftCorner.X + 1;
@@ -707,17 +706,15 @@ void CGUISkin::draw3DTabButton(IGUIElement* element, bool active,
 		tr.LowerRightCorner.X -= 2;
 		Driver->draw2DRectangle(getColor(EGDC_3D_FACE), tr, clip);
 
-		
 		// draw right middle gray shadow
 		tr.LowerRightCorner.X += 1;
 		tr.UpperLeftCorner.X = tr.LowerRightCorner.X - 1;
 		Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), tr, clip);
 
-		
 		tr.LowerRightCorner.X += 1;
 		tr.UpperLeftCorner.X += 1;
 		tr.UpperLeftCorner.Y += 1;
-		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), tr, clip);		
+		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), tr, clip);
 	}
 	else
 	{
@@ -725,7 +722,7 @@ void CGUISkin::draw3DTabButton(IGUIElement* element, bool active,
 		tr.UpperLeftCorner.Y = tr.LowerRightCorner.Y - 1;
 		tr.UpperLeftCorner.X += 1;
 		Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), tr, clip);
-		
+
 		// draw left highlight
 		tr = frameRect;
 		tr.LowerRightCorner.X = tr.UpperLeftCorner.X + 1;
@@ -739,20 +736,18 @@ void CGUISkin::draw3DTabButton(IGUIElement* element, bool active,
 		tr.LowerRightCorner.X -= 2;
 		tr.LowerRightCorner.Y -= 1;
 		Driver->draw2DRectangle(getColor(EGDC_3D_FACE), tr, clip);
-		
+
 		// draw right middle gray shadow
 		tr.LowerRightCorner.X += 1;
 		tr.UpperLeftCorner.X = tr.LowerRightCorner.X - 1;
 		//tr.LowerRightCorner.Y -= 1;
 		Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), tr, clip);
 
-		
 		tr.LowerRightCorner.X += 1;
 		tr.UpperLeftCorner.X += 1;
 		tr.LowerRightCorner.Y -= 1;
-		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), tr, clip);		
+		Driver->draw2DRectangle(getColor(EGDC_3D_DARK_SHADOW), tr, clip);
 	}
-
 }
 
 
@@ -785,7 +780,6 @@ void CGUISkin::draw3DTabBody(IGUIElement* element, bool border, bool background,
 			tr.LowerRightCorner.X = tr.UpperLeftCorner.X + 1;
 			Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), tr, clip);
 
-			
 			// draw right shadow
 			tr.UpperLeftCorner.X = rect.LowerRightCorner.X - 1;
 			tr.LowerRightCorner.X = tr.UpperLeftCorner.X + 1;
@@ -795,7 +789,6 @@ void CGUISkin::draw3DTabBody(IGUIElement* element, bool border, bool background,
 			tr = rect;
 			tr.UpperLeftCorner.Y = tr.LowerRightCorner.Y - 1;
 			Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), tr, clip);
-			
 		}
 		else
 		{
@@ -803,23 +796,21 @@ void CGUISkin::draw3DTabBody(IGUIElement* element, bool border, bool background,
 			tr.LowerRightCorner.Y -= tabHeight + 2;
 			tr.LowerRightCorner.X = tr.UpperLeftCorner.X + 1;
 			Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), tr, clip);
-			
+
 			// draw right shadow
 			tr.UpperLeftCorner.X = rect.LowerRightCorner.X - 1;
 			tr.LowerRightCorner.X = tr.UpperLeftCorner.X + 1;
 			Driver->draw2DRectangle(getColor(EGDC_3D_SHADOW), tr, clip);
-			
+
 			// draw lower shadow
 			tr = rect;
 			tr.LowerRightCorner.Y = tr.UpperLeftCorner.Y + 1;
 			Driver->draw2DRectangle(getColor(EGDC_3D_HIGH_LIGHT), tr, clip);
-			
 		}
 	}
 
 	if (background)
 	{
-		
 		if ( alignment == EGUIA_UPPERLEFT )
 		{
 			tr = rect;
@@ -851,9 +842,9 @@ void CGUISkin::draw3DTabBody(IGUIElement* element, bool border, bool background,
 
 
 //! draws an icon, usually from the skin's sprite bank
-/**	\param parent: Pointer to the element which wishes to draw this icon. 
-This parameter is usually not used by IGUISkin, but can be used for example 
-by more complex implementations to find out how to draw the part exactly. 
+/**	\param parent: Pointer to the element which wishes to draw this icon.
+This parameter is usually not used by IGUISkin, but can be used for example
+by more complex implementations to find out how to draw the part exactly.
 \param icon: Specifies the icon to be drawn.
 \param position: The position to draw the icon
 \param starttime: The time at the start of the animation
@@ -862,13 +853,13 @@ by more complex implementations to find out how to draw the part exactly.
 \param clip: Clip area.	*/
 void CGUISkin::drawIcon(IGUIElement* element, EGUI_DEFAULT_ICON icon,
 			const core::position2di position,
-			u32 starttime, u32 currenttime, 
+			u32 starttime, u32 currenttime,
 			bool loop, const core::rect<s32>* clip)
 {
 	if (!SpriteBank)
 		return;
 
-	SpriteBank->draw2DSprite(Icons[icon], position, clip, 
+	SpriteBank->draw2DSprite(Icons[icon], position, clip,
 			video::SColor(255,0,0,0), starttime, currenttime, loop, true);
 }
 
@@ -889,7 +880,7 @@ void CGUISkin::draw2DRectangle(IGUIElement* element,
 
 
 //! Writes attributes of the object.
-//! Implement this to expose the attributes of your scene node animator for 
+//! Implement this to expose the attributes of your scene node animator for
 //! scripting languages, editors, debuggers or xml serialization purposes.
 void CGUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
@@ -909,7 +900,7 @@ void CGUISkin::serializeAttributes(io::IAttributes* out, io::SAttributeReadWrite
 
 
 //! Reads attributes of the object.
-//! Implement this to set the attributes of your scene node animator for 
+//! Implement this to set the attributes of your scene node animator for
 //! scripting languages, editors, debuggers or xml deserialization purposes.
 void CGUISkin::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
@@ -932,5 +923,4 @@ void CGUISkin::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWrit
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
-
 

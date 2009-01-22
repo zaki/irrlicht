@@ -32,7 +32,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2,
 					(parent->getAbsolutePosition().getWidth()-FOD_WIDTH)/2+FOD_WIDTH,
 					(parent->getAbsolutePosition().getHeight()-FOD_HEIGHT)/2+FOD_HEIGHT)),
-	Dragging(false), FileNameText(0), FileList(0)
+	FileNameText(0), FileList(0), Dragging(false)
 {
 	#ifdef _DEBUG
 	IGUIElement::setDebugName("CGUIFileOpenDialog");
@@ -49,8 +49,8 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 		color = skin->getColor(EGDC_WINDOW_SYMBOL);
 	}
 
-	s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
-	s32 posx = RelativeRect.getWidth() - buttonw - 4;
+	const s32 buttonw = environment->getSkin()->getSize(EGDS_WINDOW_BUTTON_WIDTH);
+	const s32 posx = RelativeRect.getWidth() - buttonw - 4;
 
 	CloseButton = Environment->addButton(core::rect<s32>(posx, 3, posx + buttonw, 3 + buttonw), this, -1,
 		L"", skin ? skin->getDefaultText(EGDT_WINDOW_CLOSE) : L"Close");

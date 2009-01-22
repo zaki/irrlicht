@@ -361,7 +361,6 @@ namespace scene
 		virtual gui::IGUIEnvironment* getGUIEnvironment() = 0;
 
 		//! adds Volume Lighting Scene Node.
-		//! the returned pointer must not be dropped.
 		/** Example Usage:
 			scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
 						32, 32, //Subdivide U/V
@@ -373,7 +372,8 @@ namespace scene
 				n->setScale(core::vector3df(46.0f, 45.0f, 46.0f));
 				n->getMaterial(0).setTexture(0, smgr->getVideoDriver()->getTexture("lightFalloff.png"));
 			}
-		**/
+		\return Pointer to the volumeLight if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IVolumeLightSceneNode* addVolumeLightSceneNode(ISceneNode* parent=0, s32 id=-1,
 			const u32 subdivU = 32, const u32 subdivV = 32,
 			const video::SColor foot = video::SColor(51, 0, 230, 180),
@@ -514,16 +514,16 @@ namespace scene
 		addCameraSceneNodeFPS(). If you want to move or animate it, use animators or the
 		ISceneNode::setPosition(), ICameraSceneNode::setTarget() etc methods.
 		By default, a camera's look at position (set with setTarget()) and its scene node
-		rotation (set with setRotation()) are independent.  If you want to be able to
+		rotation (set with setRotation()) are independent. If you want to be able to
 		control the direction that the camera looks by using setRotation() then call
 		ICameraSceneNode::bindTargetAndRotation(true) on it.
-		 \param position: Position of the space relative to its parent where the camera will be placed.
-		 \param lookat: Position where the camera will look at. Also known as target.
-		 \param parent: Parent scene node of the camera. Can be null. If the parent moves,
-		 the camera will move too.
-		 \param id: id of the camera. This id can be used to identify the camera.
-		 \return Pointer to interface to camera if successful, otherwise 0.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		\param position: Position of the space relative to its parent where the camera will be placed.
+		\param lookat: Position where the camera will look at. Also known as target.
+		\param parent: Parent scene node of the camera. Can be null. If the parent moves,
+		the camera will move too.
+		\param id: id of the camera. This id can be used to identify the camera.
+		\return Pointer to interface to camera if successful, otherwise 0.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNode(ISceneNode* parent = 0,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& lookat = core::vector3df(0,0,100), s32 id=-1) = 0;
@@ -929,7 +929,9 @@ namespace scene
 		\param height Total height of the arrow
 		\param cylinderHeight Total height of the cylinder, should be lesser than total height
 		\param width0 Diameter of the cylinder
-		\param width1 Diameter of the cone's base, should be not smaller than the cylinder's diameter */
+		\param width1 Diameter of the cone's base, should be not smaller than the cylinder's diameter
+		\return Pointer to the arrow mesh if successful, otherwise 0.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IAnimatedMesh* addArrowMesh(const c8* name,
 				video::SColor vtxColor0=0xFFFFFFFF,
 				video::SColor vtxColor1=0xFFFFFFFF,
@@ -941,44 +943,50 @@ namespace scene
 		/** \param name Name of the mesh
 		\param radius Radius of the sphere
 		\param polyCountX Number of quads used for the horizontal tiling
-		\param polyCountY Number of quads used for the vertical tiling */
+		\param polyCountY Number of quads used for the vertical tiling
+		\return Pointer to the sphere mesh if successful, otherwise 0.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IAnimatedMesh* addSphereMesh(const c8* name,
 				f32 radius=5.f, u32 polyCountX = 16,
 				u32 polyCountY = 16) = 0;
 
 		//! Gets the root scene node.
 		/** This is the scene node which is parent
-		 of all scene nodes. The root scene node is a special scene node which
-		 only exists to manage all scene nodes. It will not be rendered and cannot
-		 be removed from the scene.
-		 \return Pointer to the root scene node. */
+		of all scene nodes. The root scene node is a special scene node which
+		only exists to manage all scene nodes. It will not be rendered and cannot
+		be removed from the scene.
+		\return Pointer to the root scene node.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* getRootSceneNode() = 0;
 
 		//! Get the first scene node with the specified id.
 		/** \param id: The id to search for
-		 \param start: Scene node to start from. All children of this scene
-		 node are searched. If null is specified, the root scene node is
-		 taken.
-		 \return Pointer to the first scene node with this id,
-		 and null if no scene node could be found. */
+		\param start: Scene node to start from. All children of this scene
+		node are searched. If null is specified, the root scene node is
+		taken.
+		\return Pointer to the first scene node with this id,
+		and null if no scene node could be found.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* getSceneNodeFromId(s32 id, ISceneNode* start=0) = 0;
 
 		//! Get the first scene node with the specified name.
 		/** \param name: The name to search for
-		 \param start: Scene node to start from. All children of this scene
-		 node are searched. If null is specified, the root scene node is
-		 taken.
-		 \return Pointer to the first scene node with this id,
-		 and null if no scene node could be found. */
+		\param start: Scene node to start from. All children of this scene
+		node are searched. If null is specified, the root scene node is
+		taken.
+		\return Pointer to the first scene node with this id,
+		and null if no scene node could be found.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* getSceneNodeFromName(const c8* name, ISceneNode* start=0) = 0;
 
 		//! Get the first scene node with the specified type.
 		/** \param type: The type to search for
-		 \param start: Scene node to start from. All children of this scene
-		 node are searched. If null is specified, the root scene node is
-		 taken.
-		 \return Pointer to the first scene node with this type,
-		 and null if no scene node could be found. */
+		\param start: Scene node to start from. All children of this scene
+		node are searched. If null is specified, the root scene node is
+		taken.
+		\return Pointer to the first scene node with this type,
+		and null if no scene node could be found.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, ISceneNode* start=0) = 0;
 
 		//! Get scene nodes by type.
@@ -992,13 +1000,14 @@ namespace scene
 				ISceneNode* start=0) = 0;
 
 		//! Get the current active camera.
-		/** \return The active camera is returned. Note that this can be NULL, if there
-		 was no camera created yet. */
+		/** \return The active camera is returned. Note that this can
+		be NULL, if there was no camera created yet.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* getActiveCamera() = 0;
 
 		//! Sets the currently active camera.
 		/** The previous active camera will be deactivated.
-		 \param camera: The new camera which should be active. */
+		\param camera: The new camera which should be active. */
 		virtual void setActiveCamera(ICameraSceneNode* camera) = 0;
 
 		//! Sets the color of stencil buffers shadows drawn by the scene manager.
@@ -1126,11 +1135,13 @@ namespace scene
 
 		//! Creates a follow spline animator.
 		/** The animator modifies the position of
-		 the attached scene node to make it follow a hermite spline.
-		 It uses a subset of hermite splines: either cardinal splines
-		 (tightness != 0.5) or catmull-rom-splines (tightness == 0.5).
-		 The animator moves from one control point to the next in
-		 1/speed seconds. This code was sent in by Matthias Gall. */
+		the attached scene node to make it follow a hermite spline.
+		It uses a subset of hermite splines: either cardinal splines
+		(tightness != 0.5) or catmull-rom-splines (tightness == 0.5).
+		The animator moves from one control point to the next in
+		1/speed seconds. This code was sent in by Matthias Gall.
+		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createFollowSplineAnimator(s32 startTime,
 			const core::array< core::vector3df >& points,
 			f32 speed = 1.0f, f32 tightness = 0.5f) = 0;
@@ -1205,23 +1216,30 @@ namespace scene
 
 		//! Creates a triangle selector which can select triangles from a terrain scene node.
 		/** \param node: Pointer to the created terrain scene node
-		 \param LOD: Level of detail, 0 for highest detail. */
+		\param LOD: Level of detail, 0 for highest detail.
+		\return The selector, or null if not successful.
+		If you no longer need the selector, you should call ITriangleSelector::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ITriangleSelector* createTerrainTriangleSelector(
 			ITerrainSceneNode* node, s32 LOD=0) = 0;
 
 		//! Adds an external mesh loader for extending the engine with new file formats.
 		/** If you want the engine to be extended with
-		 file formats it currently is not able to load (e.g. .cob), just implement
-		 the IMeshLoader interface in your loading class and add it with this method.
-		 Using this method it is also possible to override built-in mesh loaders with
-		 newer or updated versions without the need of recompiling the engine.
-		 \param externalLoader: Implementation of a new mesh loader. */
+		file formats it currently is not able to load (e.g. .cob), just implement
+		the IMeshLoader interface in your loading class and add it with this method.
+		Using this method it is also possible to override built-in mesh loaders with
+		newer or updated versions without the need of recompiling the engine.
+		\param externalLoader: Implementation of a new mesh loader. */
 		virtual void addExternalMeshLoader(IMeshLoader* externalLoader) = 0;
 
 		//! Get pointer to the scene collision manager.
+		/** \return Pointer to the collision manager
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneCollisionManager* getSceneCollisionManager() = 0;
 
 		//! Get pointer to the mesh manipulator.
+		/** \return Pointer to the mesh manipulator
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IMeshManipulator* getMeshManipulator() = 0;
 
 		//! Adds a scene node to the deletion queue.
@@ -1262,6 +1280,8 @@ namespace scene
 		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() const = 0;
 
 		//! Get the default scene node factory which can create all built in scene nodes
+		/** \return Pointer to the default scene node factory
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeFactory* getDefaultSceneNodeFactory() = 0;
 
 		//! Adds a scene node factory to the scene manager.
@@ -1273,9 +1293,13 @@ namespace scene
 		virtual u32 getRegisteredSceneNodeFactoryCount() const = 0;
 
 		//! Get a scene node factory by index
+		/** \return Pointer to the requested scene node factory, or 0 if it does not exist.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeFactory* getSceneNodeFactory(u32 index) = 0;
 
 		//! Get the default scene node animator factory which can create all built-in scene node animators
+		/** \return Pointer to the default scene node animator factory
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimatorFactory* getDefaultSceneNodeAnimatorFactory() = 0;
 
 		//! Adds a scene node animator factory to the scene manager.
@@ -1287,12 +1311,16 @@ namespace scene
 		virtual u32 getRegisteredSceneNodeAnimatorFactoryCount() const = 0;
 
 		//! Get scene node animator factory by index
+		/** \return Pointer to the requested scene node animator factory, or 0 if it does not exist.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimatorFactory* getSceneNodeAnimatorFactory(u32 index) = 0;
 
 		//! Get typename from a scene node type or null if not found
 		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type) = 0;
 
 		//! Adds a scene node to the scene by name
+		/** \return Pointer to the scene node added by a factory
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0) = 0;
 
 		//! Creates a new scene manager.

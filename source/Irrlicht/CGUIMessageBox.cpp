@@ -397,6 +397,7 @@ bool CGUIMessageBox::OnEvent(const SEvent& event)
 	return CGUIWindow::OnEvent(event);
 }
 
+
 //! Writes attributes of the element.
 void CGUIMessageBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
@@ -409,6 +410,7 @@ void CGUIMessageBox::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 
 	out->addString	("MessageText",		MessageText.c_str());
 }
+
 
 //! Reads attributes of the element
 void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
@@ -430,7 +432,6 @@ void CGUIMessageBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 
 } // end namespace gui
 } // end namespace irr
-
 
 #endif // _IRR_COMPILE_WITH_GUI_
 

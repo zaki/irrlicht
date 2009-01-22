@@ -18,7 +18,7 @@ namespace gui
 
 //! constructor
 CGUIButton::CGUIButton(IGUIEnvironment* environment, IGUIElement* parent,
-			   s32 id, core::rect<s32> rectangle, bool noclip)
+			s32 id, core::rect<s32> rectangle, bool noclip)
 : IGUIButton(environment, parent, id, rectangle), Pressed(false),
 	IsPushButton(false), UseAlphaChannel(false), Border(true),
 	ClickTime(0), SpriteBank(0), OverrideFont(0), Image(0), PressedImage(0)
@@ -99,8 +99,7 @@ bool CGUIButton::OnEvent(const SEvent& event)
 	{
 	case EET_KEY_INPUT_EVENT:
 		if (event.KeyInput.PressedDown &&
-			(event.KeyInput.Key == KEY_RETURN ||
-			 event.KeyInput.Key == KEY_SPACE))
+			(event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE))
 		{
 			if (!IsPushButton)
 				setPressed(true);
@@ -116,8 +115,7 @@ bool CGUIButton::OnEvent(const SEvent& event)
 		}
 		else
 		if (!event.KeyInput.PressedDown && Pressed &&
-			(event.KeyInput.Key == KEY_RETURN ||
-			 event.KeyInput.Key == KEY_SPACE))
+			(event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE))
 		{
 			//Environment->removeFocus(this);
 
@@ -147,7 +145,7 @@ bool CGUIButton::OnEvent(const SEvent& event)
 		if (event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
 		{
 			if (Environment->hasFocus(this) &&
-			    !AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
+				!AbsoluteClippingRect.isPointInside(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y)))
 			{
 					Environment->removeFocus(this);
 					return false;

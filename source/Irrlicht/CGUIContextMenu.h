@@ -132,13 +132,13 @@ namespace gui
 
 		void setEventParent(IGUIElement *parent);
 
-		s32 HighLighted;
 		core::array<SItem> Items;
 		core::position2d<s32> Pos;
-		u32 ChangeTime;
 		IGUIElement* EventParent;
-		bool AllowFocus;
 		IGUIFont *LastFont;
+		s32 HighLighted;
+		u32 ChangeTime;
+		bool AllowFocus;
 	};
 
 

@@ -24,20 +24,19 @@ namespace gui
 
 //! constructor
 CGUITab::CGUITab(s32 number, IGUIEnvironment* environment,
-	IGUIElement* parent, const core::rect<s32>& rectangle, 
+	IGUIElement* parent, const core::rect<s32>& rectangle,
 	s32 id)
 	: IGUITab(environment, parent, id, rectangle), Number(number),
-		DrawBackground(false), BackColor(0,0,0,0)
+		BackColor(0,0,0,0), TextColor(255,0,0,0),
+		DrawBackground(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUITab");
 	#endif
 
-	IGUISkin* skin = environment->getSkin();
+	const IGUISkin* const skin = environment->getSkin();
 	if (skin)
 		TextColor = skin->getColor(EGDC_BUTTON_TEXT);
-	else
-		TextColor.set(255,0,0,0);
 }
 
 
@@ -84,16 +83,19 @@ void CGUITab::setBackgroundColor(video::SColor c)
 	BackColor = c;
 }
 
+
 //! sets the color of the text
 void CGUITab::setTextColor(video::SColor c)
 {
 	TextColor = c;
 }
 
+
 video::SColor CGUITab::getTextColor() const
 {
 	return TextColor;
 }
+
 
 //! returns true if the tab is drawing its background, false if not
 bool CGUITab::isDrawingBackground() const
@@ -148,7 +150,7 @@ void CGUITab::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWrite
 
 //! constructor
 CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
-	IGUIElement* parent, const core::rect<s32>& rectangle, 
+	IGUIElement* parent, const core::rect<s32>& rectangle,
 	bool fillbackground, bool border, s32 id)
 	: IGUITabControl(environment, parent, id, rectangle), ActiveTab(-1),
 	Border(border), FillBackground(fillbackground), ScrollControl(false), TabHeight(0), VerticalAlignment(EGUIA_UPPERLEFT),
@@ -156,7 +158,7 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 {
 	#ifdef _DEBUG
 	setDebugName("CGUITabControl");
-	#endif 
+	#endif
 
 	video::SColor color(255,255,255,255);
 	IGUISkin* skin = Environment->getSkin();
@@ -195,7 +197,7 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 		DownButton->setVisible(false);
 		DownButton->setSubElement(true);
 		DownButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
-		DownButton->setOverrideFont(Environment->getBuiltInFont());		
+		DownButton->setOverrideFont(Environment->getBuiltInFont());
 		DownButton->grab();
 	}
 
@@ -370,12 +372,14 @@ bool CGUITabControl::OnEvent(const SEvent& event)
 	return IGUIElement::OnEvent(event);
 }
 
+
 void CGUITabControl::scrollLeft()
 {
 	if ( CurrentScrollTabIndex > 0 )
 		--CurrentScrollTabIndex;
 	recalculateScrollBar();
 }
+
 
 void CGUITabControl::scrollRight()
 {
@@ -386,6 +390,7 @@ void CGUITabControl::scrollRight()
 	}
 	recalculateScrollBar();
 }
+
 
 bool CGUITabControl::needScrollControl(s32 startIndex, bool withScrollControl)
 {
@@ -436,6 +441,7 @@ bool CGUITabControl::needScrollControl(s32 startIndex, bool withScrollControl)
 
 	return false;
 }
+
 
 bool CGUITabControl::selectTab(core::position2d<s32> p)
 {
@@ -506,7 +512,7 @@ void CGUITabControl::draw()
 
 	if (!font)
 		return;
-	
+
 	if ( VerticalAlignment == EGUIA_UPPERLEFT )
 	{
 		frameRect.UpperLeftCorner.Y += 2;
@@ -567,7 +573,7 @@ void CGUITabControl::draw()
 
 	// draw active tab
 	if (left != 0 && right != 0 && activeTab != 0)
-	{		
+	{
 		// draw upper highlight frame
 		if ( VerticalAlignment == EGUIA_UPPERLEFT )
 		{
@@ -576,7 +582,7 @@ void CGUITabControl::draw()
 			frameRect.UpperLeftCorner.Y -= 2;
 
 			skin->draw3DTabButton(this, true, frameRect, &AbsoluteClippingRect, VerticalAlignment);
-			
+
 			// draw text
 			font->draw(activeTab->getText(), frameRect, activeTab->getTextColor(),
 				true, true, &AbsoluteClippingRect);
@@ -599,7 +605,7 @@ void CGUITabControl::draw()
 			frameRect.LowerRightCorner.Y += 2;
 
 			skin->draw3DTabButton(this, true, frameRect, &AbsoluteClippingRect, VerticalAlignment);
-			
+
 			// draw text
 			font->draw(activeTab->getText(), frameRect, activeTab->getTextColor(),
 				true, true, &AbsoluteClippingRect);
@@ -640,6 +646,7 @@ void CGUITabControl::draw()
 	IGUIElement::draw();
 }
 
+
 //! Set the height of the tabs
 void CGUITabControl::setTabHeight( s32 height )
 {
@@ -653,11 +660,13 @@ void CGUITabControl::setTabHeight( s32 height )
 	recalculateScrollBar();
 }
 
+
 //! Get the height of the tabs
 s32 CGUITabControl::getTabHeight() const
 {
 	return TabHeight;
 }
+
 
 //! Set the extra width added to tabs on each side of the text
 void CGUITabControl::setTabExtraWidth( s32 extraWidth )
@@ -670,18 +679,20 @@ void CGUITabControl::setTabExtraWidth( s32 extraWidth )
 	recalculateScrollBar();
 }
 
+
 //! Get the extra width added to tabs on each side of the text
 s32 CGUITabControl::getTabExtraWidth() const
 {
 	return TabExtraWidth;
 }
 
+
 void CGUITabControl::recalculateScrollBar()
 {
 	ScrollControl = needScrollControl() || CurrentScrollTabIndex > 0;
 
 	if (ScrollControl)
-	{	
+	{
 		UpButton->setVisible( true );
 		DownButton->setVisible( true );
 	}
@@ -694,6 +705,7 @@ void CGUITabControl::recalculateScrollBar()
 	this->bringToFront( UpButton );
 	this->bringToFront( DownButton );
 }
+
 
 //! Set the alignment of the tabs
 void CGUITabControl::setTabVerticalAlignment( EGUI_ALIGNMENT alignment )
@@ -725,7 +737,7 @@ void CGUITabControl::setTabVerticalAlignment( EGUI_ALIGNMENT alignment )
 		UpButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 		DownButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 	}
-	
+
 	UpButton->setRelativePosition(core::rect<s32>(ButtonX, ButtonY, ButtonX+ButtonSize, ButtonY+ButtonSize));
 	ButtonX += ButtonSize + 1;
 	DownButton->setRelativePosition(core::rect<s32>(ButtonX, ButtonY, ButtonX+ButtonSize, ButtonY+ButtonSize));
@@ -733,17 +745,20 @@ void CGUITabControl::setTabVerticalAlignment( EGUI_ALIGNMENT alignment )
 	recalculateScrollBar();
 }
 
+
 //! Get the alignment of the tabs
 EGUI_ALIGNMENT CGUITabControl::getTabVerticalAlignment() const
 {
 	return VerticalAlignment;
 }
 
+
 //! Returns which tab is currently active
 s32 CGUITabControl::getActiveTab() const
 {
 	return ActiveTab;
 }
+
 
 //! Brings a tab to front.
 bool CGUITabControl::setActiveTab(s32 idx)
@@ -766,11 +781,12 @@ bool CGUITabControl::setActiveTab(s32 idx)
 		event.GUIEvent.Caller = this;
 		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = EGET_TAB_CHANGED;
-		Parent->OnEvent(event);		
+		Parent->OnEvent(event);
 	}
 
 	return true;
 }
+
 
 bool CGUITabControl::setActiveTab(IGUIElement *tab)
 {
@@ -779,6 +795,7 @@ bool CGUITabControl::setActiveTab(IGUIElement *tab)
 			return setActiveTab(i);
 	return false;
 }
+
 
 //! Removes a child.
 void CGUITabControl::removeChild(IGUIElement* child)
@@ -813,12 +830,14 @@ void CGUITabControl::removeChild(IGUIElement* child)
 	recalculateScrollBar();
 }
 
+
 //! Update the position of the element, decides scroll button status
 void CGUITabControl::updateAbsolutePosition()
 {
 	IGUIElement::updateAbsolutePosition();
 	recalculateScrollBar();
 }
+
 
 //! Writes attributes of the element.
 void CGUITabControl::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
@@ -854,5 +873,4 @@ void CGUITabControl::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 } // end namespace gui
 
 #endif // _IRR_COMPILE_WITH_GUI_
-
 
