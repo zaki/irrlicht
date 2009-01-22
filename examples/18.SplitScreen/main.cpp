@@ -101,7 +101,7 @@ int main()
 
 	//Initialise the engine
 	IrrlichtDevice *device = createDevice(driverType,
-			dimension2d<s32>(ResX,ResY), 32, fullScreen,
+			dimension2du(ResX,ResY), 32, fullScreen,
 			false, false, &receiver);
 	if (!device)
 		return 1;
