@@ -108,7 +108,7 @@ bool collisionResponseAnimator(void)
 	// Try to move both nodes to the right of the wall.
 	// This one should be stopped by its animator.
 	testNode1->setPosition(vector3df(50, 0,0));
-	collisionCallback.setNextExpectedCollision(testNode1, vector3df(-15.004999f, 0, 0), false);
+	collisionCallback.setNextExpectedCollision(testNode1, vector3df(-5.005f, 0, 0), false);
 
 	// Whereas this one, by forcing the animator to update its target node, should be
 	// able to pass through the wall. (In <=1.6 it was stopped by the wall even if
@@ -141,7 +141,7 @@ bool collisionResponseAnimator(void)
 	testNode2->setPosition(vector3df(-50, 0, 0));
 
 	// We'll consume this collision, so the node will actually move all the way through.
-	collisionCallback.setNextExpectedCollision(testNode2, vector3df(15.004999f, 0, 0), true);
+	collisionCallback.setNextExpectedCollision(testNode2, vector3df(5.005f, 0, 0), true);
 
 	device->run();
 	smgr->drawAll();
@@ -154,7 +154,7 @@ bool collisionResponseAnimator(void)
 	}
 
 	// Now we'll try to move it back to the right and allow it to be stopped.
-	collisionCallback.setNextExpectedCollision(testNode2, vector3df(-15.004999f, 0, 0), false);
+	collisionCallback.setNextExpectedCollision(testNode2, vector3df(-5.005f, 0, 0), false);
 	testNode2->setPosition(vector3df(50, 0, 0));
 
 	device->run();
