@@ -922,7 +922,7 @@ void CGUIEnvironment::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 
 	RelativeRect = AbsoluteRect =
 			core::rect<s32>(core::position2d<s32>(0,0),
-					Driver ? Driver->getScreenSize() : core::dimension2d<s32>(0,0));
+			Driver ? core::dimension2di(Driver->getScreenSize()) : core::dimension2d<s32>(0,0));
 }
 
 
@@ -1265,7 +1265,7 @@ IGUIInOutFader* CGUIEnvironment::addInOutFader(const core::rect<s32>* rectangle,
 	if (rectangle)
 		rect = *rectangle;
 	else if (Driver)
-		rect = core::rect<s32>(core::position2d<s32>(0,0), Driver->getScreenSize());
+		rect = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2di(Driver->getScreenSize()));
 
 	if (!parent)
 		parent = this;
