@@ -58,6 +58,32 @@ namespace video
 		dstFact = E_BLEND_FACTOR ( ( state & 0x000000FF ) );
 	}
 
+	//! These flags are used to specify the anti-aliasing and smoothing modes
+	/** Techniques supported are multisampling, geometry smoothing, and alpha
+	to coverage.
+	Some drivers don't support a per-material setting of the anti-aliasing
+	modes. In those cases, FSAA/multisampling is defined by the device mode
+	chosen upon creation via irr::SIrrCreationParameters.
+	*/
+	enum E_ANTI_ALIASING_MODE
+	{
+		//! Use to turn off anti-aliasing for this material
+		EAAM_OFF=0,
+		//! Default anti-aliasing mode
+		EAAM_SIMPLE=1,
+		//! High-quality anti-aliasing, not always supported, automatically enables SIMPLE mode
+		EAAM_QUALITY=3,
+		//! Line smoothing
+		EAAM_LINE_SMOOTH=4,
+		//! point smoothing, often in software and slow, only with OpenGL
+		EAAM_POINT_SMOOTH=8,
+		//! All typical anti-alias and smooth modes
+		EAAM_FULL_BASIC=15,
+		//! Enhanced anti-aliasing for transparent materials
+		/** Usually used with EMT_TRANSPARENT_ALPHA_REF and multisampling. */
+		EAAM_ALPHA_TO_COVERAGE=16
+	};
+
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = 4;
 
@@ -72,7 +98,7 @@ namespace video
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
 			ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), ZBuffer(1)
+			FogEnable(false), NormalizeNormals(false), ZBuffer(1), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH)
 		{ }
 
 		//! Copy constructor
@@ -118,6 +144,7 @@ namespace video
 			FogEnable = other.FogEnable;
 			NormalizeNormals = other.NormalizeNormals;
 			ZBuffer = other.ZBuffer;
+			AntiAliasing = other.AntiAliasing;
 
 			return *this;
 		}
@@ -226,7 +253,10 @@ namespace video
 		/** Changed from bool to integer
 		(0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal)
 		*/
-		char ZBuffer;
+		u8 ZBuffer;
+
+		//! Sets the antialiasing mode
+		u8 AntiAliasing;
 
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES.
@@ -331,6 +361,8 @@ namespace video
 						TextureLayer[i].TextureWrap = (E_TEXTURE_CLAMP)value;
 				}
 				break;
+				case EMF_ANTI_ALIASING:
+					AntiAliasing = value?1:0;
 				default:
 					break;
 			}
@@ -374,6 +406,8 @@ namespace video
 							TextureLayer[1].TextureWrap ||
 							TextureLayer[2].TextureWrap ||
 							TextureLayer[3].TextureWrap);
+				case EMF_ANTI_ALIASING:
+					return (AntiAliasing==1);
 				case EMF_MATERIAL_FLAG_COUNT:
 					break;
 			}
@@ -405,7 +439,8 @@ namespace video
 				BackfaceCulling != b.BackfaceCulling ||
 				FrontfaceCulling != b.FrontfaceCulling ||
 				FogEnable != b.FogEnable ||
-				NormalizeNormals != b.NormalizeNormals;
+				NormalizeNormals != b.NormalizeNormals||
+				AntiAliasing != b.AntiAliasing;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
 			{
 				different |= (TextureLayer[i] != b.TextureLayer[i]);

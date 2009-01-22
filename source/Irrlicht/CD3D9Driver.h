@@ -235,7 +235,7 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;}
+		virtual core::stringc getVendorInfo() {return VendorName;}
 
 		//! Check if the driver was recently reset.
 		virtual bool checkDriverReset() {return DriverWasReset;}
@@ -340,6 +340,7 @@ namespace video
 		bool ResetRenderStates; // bool to make all renderstates be reseted if set.
 		bool Transformation3DChanged;
 		bool StencilBuffer;
+		u8 AntiAliasing;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		bool LastTextureMipMapsAvailable[MATERIAL_MAX_TEXTURES];
 		core::matrix4 Matrices[ETS_COUNT]; // matrizes of the 3d mode we need to restore when we switch back from the 2d mode.
@@ -361,7 +362,8 @@ namespace video
 
 		SColorf AmbientLight;
 
-		core::stringc vendorName;
+		core::stringc VendorName;
+		u16 VendorID;
 
 		core::array<SDepthSurface*> DepthBuffers;
 
@@ -375,6 +377,7 @@ namespace video
 		bool DeviceLost;
 		bool Fullscreen;
 		bool DriverWasReset;
+		bool AlphaToCoverageSupport;
 	};
 
 

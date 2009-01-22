@@ -68,6 +68,9 @@ namespace video
 		//! Access to all layers texture wrap settings. Overwrites separate layer settings.
 		EMF_TEXTURE_WRAP,
 
+		//! AntiAliasing mode
+		EMF_ANTI_ALIASING,
+
 		//! This is not a flag, but a value indicating how much flags there are.
 		EMF_MATERIAL_FLAG_COUNT
 	};

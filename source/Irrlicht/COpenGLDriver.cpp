@@ -117,7 +117,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 		const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
 		HWND temporary_wnd=CreateWindow(ClassName, "", style, windowLeft, windowTop,
-			realWidth, realHeight,   NULL, NULL, lhInstance, NULL);
+			realWidth, realHeight, NULL, NULL, lhInstance, NULL);
 
 		if (!temporary_wnd)
 		{
@@ -224,7 +224,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 
 			s32 rv=0;
 			// Try to get an acceptable pixel format
-			while(rv==0 && iAttributes[19]>1)
+			while(rv==0 && iAttributes[21]>1)
 			{
 				s32 pixelFormat=0;
 				u32 numFormats=0;
@@ -233,12 +233,12 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 				if (valid && numFormats>0)
 					rv = pixelFormat;
 				else
-					iAttributes[19] -= 1;
+					iAttributes[21] -= 1;
 			}
 			if (rv)
 			{
 				PixelFormat=rv;
-				AntiAlias=iAttributes[19];
+				AntiAlias=iAttributes[21];
 			}
 		}
 		else
@@ -528,20 +528,10 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 
 	glClearDepth(1.0);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace(GL_CW);
-
-	if (AntiAlias >= 2)
-	{
-		if (FeatureAvailable[IRR_ARB_multisample])
-			glEnable(GL_MULTISAMPLE_ARB);
-
-		glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-		glEnable(GL_LINE_SMOOTH);
-	}
-// currently disabled, because often in software, and thus very slow
-//	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
-//	glEnable(GL_POINT_SMOOTH);
 
 	UserClipPlane.reallocate(MaxUserClipPlanes);
 	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
@@ -2141,6 +2131,41 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	{
 		glPointSize(material.Thickness);
 		glLineWidth(material.Thickness);
+	}
+
+	// Anti aliasing
+	if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing)
+	{
+		if (FeatureAvailable[IRR_ARB_multisample])
+		{
+			if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
+				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE_ARB);
+			else if (lastmaterial.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
+				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE_ARB);
+
+			if ((AntiAlias >= 2) && (material.AntiAliasing & (EAAM_SIMPLE|EAAM_QUALITY)))
+			{
+				glEnable(GL_MULTISAMPLE_ARB);
+#ifdef GL_NV_multisample_filter_hint
+				if (FeatureAvailable[IRR_NV_multisample_filter_hint])
+					glHint(GL_MULTISAMPLE_FILTER_HINT_NV, (material.AntiAliasing & EAAM_QUALITY)?GL_NICEST:GL_FASTEST);
+#endif
+			}
+			else
+				glDisable(GL_MULTISAMPLE_ARB);
+		}
+		if (AntiAlias >= 2)
+		{
+			if (material.AntiAliasing & EAAM_LINE_SMOOTH)
+				glEnable(GL_LINE_SMOOTH);
+			else if (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH)
+				glDisable(GL_LINE_SMOOTH);
+			if (material.AntiAliasing & EAAM_POINT_SMOOTH)
+				// often in software, and thus very slow
+				glEnable(GL_POINT_SMOOTH);
+			else if (lastmaterial.AntiAliasing & EAAM_POINT_SMOOTH)
+				glDisable(GL_POINT_SMOOTH);
+		}
 	}
 
 	setWrapMode(material);

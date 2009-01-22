@@ -1,10 +1,18 @@
 Changes in version 1.6
 
+ - Initial support for Alpha To Coverage, needs some more fixing until it works on all supported platforms.
+
+ - Added support for Anti-Aliasing modes per material
+
  - Added an ICollisionCallback to ISceneNodeAnimatorCollisionResponse, to inform the application that a collision has occured.  Thanks to garrittg for this.
 
  - Added an startPosition parameter to createFlyCircleAnimator() to allow starting the animator at any position on the circle.
 
  - Many uses of dimension2d<s32> changed to dimension2d<u32>, including IImage, ITexture and screen dimensions.  You will have to change (at least) createDevice() calls to use dimension2d<u32>
+
+ - Added Doublebuffer flag to SIrrCreationParameters, for better finetuning
+
+ - Added Stereo-Framebuffer support for professional OpenGL cards
 
  - Added IFileSystem::createMemoryWriteFile() to allow creation of an IWriteFile interface that uses an application supplied memory buffer.
 
