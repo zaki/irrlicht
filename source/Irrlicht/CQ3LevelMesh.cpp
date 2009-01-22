@@ -615,7 +615,7 @@ s32 CQ3LevelMesh::setShaderMaterial( video::SMaterial &material, const tBSPFace 
 	material.setTexture(1, 0);
 	material.setTexture(2, 0);
 	material.setTexture(3, 0);
-	material.ZBuffer = true;
+	material.ZBuffer = video::ECFN_LESSEQUAL;
 	material.ZWriteEnable = true;
 	material.MaterialTypeParam = 0.f;
 

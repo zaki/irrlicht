@@ -625,13 +625,37 @@ void CBurningShader_Raster_Reference::setMaterial ( const SBurningShaderMaterial
 	ShaderParam.SetRenderState( BD3DRS_SPECULARMATERIALSOURCE, BD3DMCS_MATERIAL);
 
 	// depth buffer enable and compare
-	ShaderParam.SetRenderState( BD3DRS_ZENABLE, material.org.ZBuffer ? BD3DZB_USEW : BD3DZB_FALSE);
-	ShaderParam.SetRenderState( BD3DRS_ZFUNC, material.org.ZBuffer == 2 ? BD3DCMP_EQUAL : BD3DCMP_LESSEQUAL );
+	ShaderParam.SetRenderState( BD3DRS_ZENABLE, (material.org.ZBuffer==video::ECFN_NEVER) ? BD3DZB_FALSE : BD3DZB_USEW);
+	switch (material.org.ZBuffer)
+	{
+	case ECFN_NEVER:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_NEVER);
+		break;
+	case ECFN_LESSEQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_LESSEQUAL);
+		break;
+	case ECFN_EQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_EQUAL);
+		break;
+	case ECFN_LESS:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_LESSEQUAL);
+		break;
+	case ECFN_NOTEQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_NOTEQUAL);
+		break;
+	case ECFN_GREATEREQUAL:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_GREATEREQUAL);
+		break;
+	case ECFN_GREATER:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_GREATER);
+		break;
+	case ECFN_ALWAYS:
+		ShaderParam.SetRenderState(BD3DRS_ZFUNC, BD3DCMP_ALWAYS);
+		break;
+	}
 
 	// depth buffer write
 	ShaderParam.SetRenderState( BD3DRS_ZWRITEENABLE, m.ZWriteEnable );
-
-
 }
 
 /*!

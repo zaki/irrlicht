@@ -133,7 +133,7 @@ void CSoftwareDriver::selectRightTriangleRenderer()
 					renderer = ETR_TEXTURE_GOURAUD_ADD;
 				}
 				else
-				if (!Material.ZBuffer && !Material.ZWriteEnable)
+				if ((Material.ZBuffer==ECFN_NEVER) && !Material.ZWriteEnable)
 					renderer = ETR_TEXTURE_GOURAUD_NOZ;
 				else
 				{

@@ -166,7 +166,7 @@ void CBurningVideoDriver::setCurrentShader()
 
 		case EMT_TRANSPARENT_ALPHA_CHANNEL_REF:
 		case EMT_TRANSPARENT_ALPHA_CHANNEL:
-			if ( Material.org.ZBuffer )
+			if ( Material.org.ZBuffer != ECFN_NEVER )
 			{
 				shader = ETR_TEXTURE_GOURAUD_ALPHA;
 			}
@@ -178,7 +178,7 @@ void CBurningVideoDriver::setCurrentShader()
 			break;
 
 		case EMT_TRANSPARENT_ADD_COLOR:
-			if ( Material.org.ZBuffer )
+			if ( Material.org.ZBuffer != ECFN_NEVER )
 			{
 				shader = ETR_TEXTURE_GOURAUD_ADD;
 			}
@@ -226,7 +226,7 @@ void CBurningVideoDriver::setCurrentShader()
 
 	}
 
-	if ( zMaterialTest && !Material.org.ZBuffer && !Material.org.ZWriteEnable)
+	if ( zMaterialTest && (Material.org.ZBuffer==ECFN_NEVER) && !Material.org.ZWriteEnable)
 	{
 		shader = ETR_TEXTURE_GOURAUD_NOZ;
 	}

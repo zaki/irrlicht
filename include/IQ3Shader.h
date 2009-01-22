@@ -180,9 +180,9 @@ namespace quake3
 		switch ( isEqual ( string, pos, funclist, 2 ) )
 		{
 			case 0:
-				ret = 1;
+				ret = video::ECFN_LESSEQUAL;
 			case 1:
-				ret = 2;
+				ret = video::ECFN_EQUAL;
 				break;
 		}
 		return ret;

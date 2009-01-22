@@ -2059,16 +2059,36 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	{
 		switch (material.ZBuffer)
 		{
-			case 0:
+			case ECFN_NEVER:
 				glDisable(GL_DEPTH_TEST);
 				break;
-			case 1:
+			case ECFN_LESSEQUAL:
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_LEQUAL);
 				break;
-			case 2:
+			case ECFN_EQUAL:
 				glEnable(GL_DEPTH_TEST);
 				glDepthFunc(GL_EQUAL);
+				break;
+			case ECFN_LESS:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LESS);
+				break;
+			case ECFN_NOTEQUAL:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_NOTEQUAL);
+				break;
+			case ECFN_GREATEREQUAL:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_GEQUAL);
+				break;
+			case ECFN_GREATER:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_GREATER);
+				break;
+			case ECFN_ALWAYS:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_ALWAYS);
 				break;
 		}
 	}
@@ -2187,7 +2207,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			SMaterial mat;
-			mat.ZBuffer=0;
+			mat.ZBuffer=ECFN_NEVER;
 			mat.Lighting=false;
 			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);
