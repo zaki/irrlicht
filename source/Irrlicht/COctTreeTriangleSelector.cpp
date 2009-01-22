@@ -109,10 +109,11 @@ void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
 
 
 //! Gets all triangles which lie within a specific bounding box.
-void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, 
+bool COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, 
 					s32 arraySize, s32& outTriangleCount, 
 					const core::aabbox3d<f32>& box,
-					const core::matrix4* transform) const
+					const core::matrix4* transform,
+					const ISceneNode * * node) const
 {
 	core::matrix4 mat;
 	core::aabbox3d<f32> invbox = box;
@@ -139,6 +140,10 @@ void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles,
 			arraySize, invbox, &mat, triangles);
 
 	outTriangleCount = trianglesWritten;
+
+	if(node)
+		*node = SceneNode;
+	return false;
 }
 
 
@@ -173,9 +178,10 @@ void COctTreeTriangleSelector::getTrianglesFromOctTree(
 
 
 //! Gets all triangles which have or may have contact with a 3d line.
-void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
+bool COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line, 
-		const core::matrix4* transform) const
+		const core::matrix4* transform,
+		const ISceneNode * * node) const
 {
 	core::aabbox3d<f32> box(line.start);
 	box.addInternalPoint(line.end);
@@ -183,6 +189,10 @@ void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 ar
 	// TODO: Could be optimized for line a little bit more.
 	COctTreeTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount,
 		box, transform);
+
+	if(node)
+		*node = SceneNode;
+	return false;
 }
 
 

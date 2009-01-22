@@ -16,6 +16,8 @@ namespace irr
 namespace scene
 {
 
+class ISceneNode;
+
 //! Interface to return triangles with specific properties.
 /** Every ISceneNode may have a triangle selector, available with
 ISceneNode::getTriangleScelector() or ISceneManager::createTriangleSelector.
@@ -33,8 +35,13 @@ public:
 	//! Returns amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const = 0;
 
-	//! Gets all triangles.
-	/** \param triangles: Array where the resulting triangles will be
+	//! Gets the triangles for one associated node.
+	/**
+	This returns all triangles for one scene node associated with this
+	selector.  If there is more than one scene node associated (e.g. for
+	an IMetaTriangleSelector) this this function may be called multiple
+	times to retrieve all triangles.
+	\param triangles: Array where the resulting triangles will be
 	written to.
 	\param arraySize: Size of the target array.
 	\param outTriangleCount: Amount of triangles which have been written
@@ -42,13 +49,33 @@ public:
 	\param transform: Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done. */
-	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::matrix4* transform=0) const = 0;
+	transformation will be done.
+	\param node: On input, if this is 0 then all triangles for all nodes
+	will be returned.  If *node is 0, or a node that is not associated
+	with any of the triangles in this selector, then the selector will return 
+	the triangles for its first (or only) associated node.  If you pass in 
+	a node for which the selector holds triangles, then it will return
+	the triangles for the *next* node.	On output, *node will return the node 
+	that is associated with the triangles being returned.
+	\return false if the triangles and node for the last (or only) node
+	are being returned.  true if there are more nodes and triangles to 
+	return; on true, you may call this method again, passing in the same
+	node that was just returned in order to retrieve the triangles for the
+	next node.
+	*/
+	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
+		s32& outTriangleCount, const core::matrix4* transform=0,
+		const ISceneNode * * node = 0) const = 0;
 
-	//! Gets all triangles which lie within a specific bounding box.
-	/** Please note that unoptimized triangle selectors also may return
-	triangles which are not in the specific box at all.
+	//! Gets the triangles for one associated node which lie or may lie within a specific bounding box.
+	/**
+	This returns all triangles for one scene node associated with this
+	selector.  If there is more than one scene node associated (e.g. for
+	an IMetaTriangleSelector) this this function may be called multiple
+	times to retrieve all triangles.
+
+	Please note that unoptimized triangle selectors also may return
+	triangles which are not in the specified box at all.
 	\param triangles: Array where the resulting triangles will be written
 	to.
 	\param arraySize: Size of the target array.
@@ -59,13 +86,33 @@ public:
 	\param transform: Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done. */
-	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
+	transformation will be done.
+	\param node: On input, if this is 0 then all triangles for all nodes
+	will be returned.  If *node is 0, or a node that is not associated
+	with any of the triangles in this selector, then the selector will return 
+	the triangles for its first (or only) associated node.  If you pass in 
+	a node for which the selector holds triangles, then it will return
+	the triangles for the *next* node.	On output, *node will return the node 
+	that is associated with the triangles being returned.
+	\return false if the triangles and node for the last (or only) node
+	are being returned.  true if there are more nodes and triangles to 
+	return; on true, you may call this method again, passing in the same
+	node that was just returned in order to retrieve the triangles for the
+	next node.
+	*/
+	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::aabbox3d<f32>& box,
-		const core::matrix4* transform=0) const = 0;
+		const core::matrix4* transform=0,
+		const ISceneNode * * node = 0) const = 0;
 
-	//! Gets all triangles which have or may have contact with a 3d line.
-	/** Please note that unoptimized triangle selectors also may return
+	//! Gets the triangles for one associated node which have or may have contact with a 3d line.
+	/**
+	This returns all triangles for one scene node associated with this
+	selector.  If there is more than one scene node associated (e.g. for
+	an IMetaTriangleSelector) this this function may be called multiple
+	times to retrieve all triangles.
+	
+	Please note that unoptimized triangle selectors also may return
 	triangles which are not in contact at all with the 3d line.
 	\param triangles: Array where the resulting triangles will be written
 	to.
@@ -77,10 +124,27 @@ public:
 	\param transform: Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done. */
-	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
+	transformation will be done.
+	\param node: On input, if this is 0 then all triangles for all nodes
+	will be returned.  If *node is 0, or a node that is not associated
+	with any of the triangles in this selector, then the selector will return 
+	the triangles for its first (or only) associated node.  If you pass in 
+	a node for which the selector holds triangles, then it will return
+	the triangles for the *next* node.	On output, *node will return the node 
+	that is associated with the triangles being returned.
+	\return false if the triangles and node for the last (or only) node
+	are being returned.  true if there are more nodes and triangles to 
+	return; on true, you may call this method again, passing in the same
+	node that was just returned in order to retrieve the triangles for the
+	next node.
+	*/
+	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
-		const core::matrix4* transform=0) const = 0;
+		const core::matrix4* transform=0,
+		const ISceneNode * * node = 0) const = 0;
+
+	//! Gets the scene node to which this selector is associated.
+	virtual const ISceneNode* getSceneNode(void) const = 0;
 };
 
 } // end namespace scene

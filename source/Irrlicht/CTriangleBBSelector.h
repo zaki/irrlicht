@@ -21,8 +21,8 @@ public:
 	CTriangleBBSelector(const ISceneNode* node);
 
 	//! Gets all triangles.
-	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
-		const core::matrix4* transform=0) const;
+	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
+		const core::matrix4* transform=0, const ISceneNode * * node = 0) const;
 };
 
 } // end namespace scene

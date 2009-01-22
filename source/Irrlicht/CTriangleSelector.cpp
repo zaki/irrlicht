@@ -67,9 +67,10 @@ CTriangleSelector::CTriangleSelector(const core::aabbox3d<f32>& box, const IScen
 
 
 //! Gets all triangles.
-void CTriangleSelector::getTriangles(core::triangle3df* triangles,
+bool CTriangleSelector::getTriangles(core::triangle3df* triangles,
 					s32 arraySize, s32& outTriangleCount, 
-					const core::matrix4* transform) const
+					const core::matrix4* transform,
+					const ISceneNode * * node) const
 {
 	s32 cnt = Triangles.size();
 	if (cnt > arraySize)
@@ -92,29 +93,36 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 	}
 
 	outTriangleCount = cnt;
+
+	if(node)
+		*node = SceneNode;
+
+	return false;
 }
 
 
 
 //! Gets all triangles which lie within a specific bounding box.
-void CTriangleSelector::getTriangles(core::triangle3df* triangles, 
+bool CTriangleSelector::getTriangles(core::triangle3df* triangles, 
 					s32 arraySize, s32& outTriangleCount, 
 					const core::aabbox3d<f32>& box,
-					const core::matrix4* transform) const
+					const core::matrix4* transform,
+					const ISceneNode * * node) const
 {
 	// return all triangles
-	getTriangles(triangles, arraySize, outTriangleCount, transform);
+	return getTriangles(triangles, arraySize, outTriangleCount, transform, node);
 }
 
 
 //! Gets all triangles which have or may have contact with a 3d line.
-void CTriangleSelector::getTriangles(core::triangle3df* triangles,
+bool CTriangleSelector::getTriangles(core::triangle3df* triangles,
 					s32 arraySize, s32& outTriangleCount,
 					const core::line3d<f32>& line,
-					const core::matrix4* transform) const
+					const core::matrix4* transform,
+					const ISceneNode * * node) const
 {
 	// return all triangles
-	getTriangles(triangles, arraySize, outTriangleCount, transform);
+	return getTriangles(triangles, arraySize, outTriangleCount, transform, node);
 }
 
 
