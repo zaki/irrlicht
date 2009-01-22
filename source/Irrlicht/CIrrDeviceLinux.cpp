@@ -310,11 +310,11 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
+					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
 					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
 					GLX_SAMPLE_BUFFERS_ARB, 1,
 					GLX_SAMPLES_ARB, CreationParams.AntiAlias,
-					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
+					GLX_STEREO, CreationParams.Stereobuffer?True:False,
 					None
 				};
 
@@ -354,10 +354,10 @@ bool CIrrDeviceLinux::createWindow()
 						}
 					}
 				}
-				// Next try without flipped stencil buffer
+				// Next try with flipped stencil buffer value
 				// If the first round was with stencil flag it's now without
 				// Other way round also makes sense because some configs
-				// Only have depth buffer combined with stencil buffer
+				// only have depth buffer combined with stencil buffer
 				if (!configList)
 				{
 					if (CreationParams.Stencilbuffer)
@@ -393,13 +393,13 @@ bool CIrrDeviceLinux::createWindow()
 					}
 				}
 				// Next try without double buffer
-				// Stencil is now also don't care, just to be sure
 				if (!configList && CreationParams.Doublebuffer)
 				{
 					os::Printer::log("No doublebuffering available.", ELL_WARNING);
 					CreationParams.Doublebuffer=false;
 					visualAttrBuffer[13] = GLX_DONT_CARE;
-					visualAttrBuffer[15] = GLX_DONT_CARE;
+					CreationParams.Stencilbuffer = false;
+					visualAttrBuffer[15]=0;
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
@@ -447,21 +447,18 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
 					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
-					GLX_STENCIL_SIZE, 1,
+					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
 					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
 					None
 				};
 
-				if (CreationParams.Stencilbuffer)
-					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
+				visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 				if (!visual)
 				{
 					if (CreationParams.Stencilbuffer)
-					{
 						os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
-						CreationParams.Stencilbuffer = false;
-					}
-					visualAttrBuffer[15]=0;
+					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
+					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
 
 					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 					if (!visual && CreationParams.Doublebuffer)
