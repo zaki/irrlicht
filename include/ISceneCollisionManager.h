@@ -64,6 +64,7 @@ namespace scene
 		causing a collision is stored, if there is a collision.
 		\param outFalling: Is set to true if the ellipsoid is falling
 		down, caused by gravity.
+		\param outNode: the node with which the ellipoid collided (if any)
 		\param slidingSpeed: DOCUMENTATION NEEDED.
 		\param gravityDirectionAndSpeed: Direction and force of gravity.
 		\return New position of the ellipsoid. */
@@ -75,6 +76,7 @@ namespace scene
 			core::triangle3df& triout,
 			core::vector3df& hitPosition,
 			bool& outFalling,
+			const ISceneNode*& outNode,
 			f32 slidingSpeed = 0.0005f,
 			const core::vector3df& gravityDirectionAndSpeed
 			= core::vector3df(0.0f, 0.0f, 0.0f)) = 0;

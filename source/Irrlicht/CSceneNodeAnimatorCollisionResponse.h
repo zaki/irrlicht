@@ -106,6 +106,9 @@ namespace scene
 
 		virtual const core::vector3df & getCollisionResultPosition(void) const { return CollisionResultPosition; }
 
+		virtual const ISceneNode* getCollisionNode(void) const { return CollisionNode; }
+
+
 		//! Sets a callback interface which will be called if a collision occurs.
 		/** \param callback: collision callback handler that will be called when a collision
 		occurs. Set this to 0 to disable the callback.
@@ -137,6 +140,7 @@ namespace scene
 		core::vector3df CollisionPoint;
 		core::triangle3df CollisionTriangle;
 		core::vector3df CollisionResultPosition;
+		const ISceneNode * CollisionNode;
 
 		ICollisionCallback* CollisionCallback;
 	};

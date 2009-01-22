@@ -20,6 +20,7 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 	triangle3df triOut;
 	vector3df hitPosition;
 	bool falling;
+	const ISceneNode* hitNode;
 
 	vector3df resultPosition =
 		collMgr->getCollisionResultPosition(cubeSelector,
@@ -28,9 +29,18 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 						vector3df(0, -100, 0),
 						triOut,
 						hitPosition,
-						falling);
+						falling,
+						hitNode);
 
 	bool result = true;
+
+	if(hitNode != cubeNode)
+	{
+		logTestString("Unexpected collision node\n");
+		assert(false);
+		result = false;
+	}
+
 	if(!equals(resultPosition.Y, 25.f, 0.01f))
 	{
 		logTestString("Unexpected collision response position\n");
@@ -52,7 +62,15 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 						vector3df(100, 0, 0),
 						triOut,
 						hitPosition,
-						falling);
+						falling,
+						hitNode);
+
+	if(hitNode != cubeNode)
+	{
+		logTestString("Unexpected collision node\n");
+		assert(false);
+		result = false;
+	}
 
 	if(!equals(resultPosition.X, -15.f, 0.01f))
 	{
