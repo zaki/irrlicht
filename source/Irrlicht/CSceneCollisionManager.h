@@ -44,7 +44,8 @@ namespace scene
 		//! Finds the collision point of a line and lots of triangles, if there is one.
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
 			ITriangleSelector* selector, core::vector3df& outCollisionPoint,
-			core::triangle3df& outTriangle);
+			core::triangle3df& outTriangle,
+			const ISceneNode* & outNode);
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns
 		//! the resulting new position of the ellipsoid. 

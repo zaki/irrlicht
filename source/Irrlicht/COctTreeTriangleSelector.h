@@ -25,15 +25,13 @@ public:
 	virtual ~COctTreeTriangleSelector();
 
 	//! Gets all triangles which lie within a specific bounding box.
-	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
-		const core::aabbox3d<f32>& box, const core::matrix4* transform=0,
-		const ISceneNode * * node = 0) const;
+	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount, 
+		const core::aabbox3d<f32>& box, const core::matrix4* transform=0) const;
 
 	//! Gets all triangles which have or may have contact with a 3d line.
-	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
+	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line, 
-		const core::matrix4* transform=0,
-		const ISceneNode * * node = 0) const;
+		const core::matrix4* transform=0) const;
 
 private:
 

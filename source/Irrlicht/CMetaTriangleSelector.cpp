@@ -37,163 +37,58 @@ s32 CMetaTriangleSelector::getTriangleCount() const
 
 
 //! Gets all triangles.
-bool CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::matrix4* transform,
-		const ISceneNode * * node) const
+void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
+		s32& outTriangleCount, const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
-
-	if(node)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
-		if(TriangleSelectors.size() == 0)
-		{
-			*node = 0;
-			return false;
-		}
-
-		u32 selector = 0;
-
-		for (u32 i=0; i<TriangleSelectors.size(); ++i)
-			if(*node == TriangleSelectors[i]->getSceneNode())
-			{
-				selector = i;
-				break;
-			}
-
 		s32 t = 0;
-		TriangleSelectors[selector]->getTriangles(triangles + outWritten, 
-												arraySize - outWritten, t,
-												transform);
+		TriangleSelectors[i]->getTriangles(triangles + outWritten,
+											arraySize - outWritten, t,
+											transform);
 		outWritten += t;
-
-		*node = TriangleSelectors[selector]->getSceneNode();
-
-		if(selector < TriangleSelectors.size() - 1)
-			return true;	
-	}
-	else
-	{
-		for (u32 i=0; i<TriangleSelectors.size(); ++i)
-		{
-			s32 t = 0;
-			TriangleSelectors[i]->getTriangles(triangles + outWritten,
-												arraySize - outWritten, t,
-												transform);
-			outWritten += t;
-		}
-
 	}
 
 	outTriangleCount = outWritten;
-	return false;
 }
 
 
 //! Gets all triangles which lie within a specific bounding box.
-bool CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
+void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::aabbox3d<f32>& box,
-		const core::matrix4* transform,
-		const ISceneNode * * node) const
+		const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
-
-	if(node)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
-		if(TriangleSelectors.size() == 0)
-		{
-			*node = 0;
-			return false;
-		}
-
-		u32 selector = 0;
-
-		for (u32 i=0; i<TriangleSelectors.size(); ++i)
-			if(*node == TriangleSelectors[i]->getSceneNode())
-			{
-				selector = i;
-				break;
-			}
-
 		s32 t = 0;
-		TriangleSelectors[selector]->getTriangles(triangles + outWritten, 
-												arraySize - outWritten, t,
-												box, transform);
+		TriangleSelectors[i]->getTriangles(triangles + outWritten,
+											arraySize - outWritten, t, 
+											box, transform);
 		outWritten += t;
-
-		*node = TriangleSelectors[selector]->getSceneNode();
-
-		if(selector < TriangleSelectors.size() - 1)
-			return true;	
-	}
-	else
-	{
-		for (u32 i=0; i<TriangleSelectors.size(); ++i)
-		{
-			s32 t = 0;
-			TriangleSelectors[i]->getTriangles(triangles + outWritten,
-												arraySize - outWritten, t, 
-												box, transform);
-			outWritten += t;
-		}
-
 	}
 
 	outTriangleCount = outWritten;
-	return false;
 }
 
 
 //! Gets all triangles which have or may have contact with a 3d line.
-bool CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
+void CMetaTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
-		const core::matrix4* transform,
-		const ISceneNode * * node) const
+		const core::matrix4* transform) const
 {
 	s32 outWritten = 0;
-
-	if(node)
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
 	{
-		if(TriangleSelectors.size() == 0)
-		{
-			*node = 0;
-			return false;
-		}
-
-		u32 selector = 0;
-
-		for (u32 i=0; i<TriangleSelectors.size(); ++i)
-			if(*node == TriangleSelectors[i]->getSceneNode())
-			{
-				selector = i;
-				break;
-			}
-
 		s32 t = 0;
-		TriangleSelectors[selector]->getTriangles(triangles + outWritten, 
-												arraySize - outWritten, t,
-												line, transform);
+		TriangleSelectors[i]->getTriangles(triangles + outWritten, 
+											arraySize - outWritten, t,
+											line, transform);
 		outWritten += t;
-
-		*node = TriangleSelectors[selector]->getSceneNode();
-
-		if(selector < TriangleSelectors.size() - 1)
-			return true;	
-	}
-	else
-	{
-		for (u32 i=0; i<TriangleSelectors.size(); ++i)
-		{
-			s32 t = 0;
-			TriangleSelectors[i]->getTriangles(triangles + outWritten, 
-												arraySize - outWritten, t,
-												line, transform);
-			outWritten += t;
-		}
-
 	}
 
 	outTriangleCount = outWritten;
-	return false;
 }
 
 
@@ -234,6 +129,24 @@ void CMetaTriangleSelector::removeAllTriangleSelectors()
 
 	TriangleSelectors.clear();
 }
+
+//! Return the scene node associated with a given triangle.
+const ISceneNode* CMetaTriangleSelector::getSceneNodeForTriangle(u32 triangleIndex) const
+{
+	u32 totalTriangles = 0;
+
+	for (u32 i=0; i<TriangleSelectors.size(); ++i)
+	{
+		totalTriangles += TriangleSelectors[i]->getTriangleCount();
+
+		if(totalTriangles > triangleIndex)
+			return TriangleSelectors[i]->getSceneNodeForTriangle(0);
+	}
+	
+	// For lack of anything more sensible, return the first selector.
+	return TriangleSelectors[0]->getSceneNodeForTriangle(0);
+}
+
 
 
 } // end namespace scene

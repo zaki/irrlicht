@@ -38,10 +38,13 @@ namespace scene
 		contain the position of the nearest collision.
 		\param outTriangle: If a collision is detected, this will
 		contain the triangle with which the ray collided.
+		\param outNode: If a collision is detected, this will contain
+		the scene node associated with the triangle that was hit.
 		\return True if a collision was detected and false if not. */
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
 			ITriangleSelector* selector, core::vector3df& outCollisionPoint,
-			core::triangle3df& outTriangle) = 0;
+			core::triangle3df& outTriangle,
+			const ISceneNode*& outNode) = 0;
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns the resulting new position of the ellipsoid.
 		/** This can be used for moving a character in a 3d world: The

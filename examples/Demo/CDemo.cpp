@@ -635,9 +635,9 @@ void CDemo::shoot()
 	core::line3d<f32> line(start, end);
 
 	// get intersection point with map
-
+	const scene::ISceneNode* hitNode;
 	if (sm->getSceneCollisionManager()->getCollisionPoint(
-		line, mapSelector, end, triangle))
+		line, mapSelector, end, triangle, hitNode))
 	{
 		// collides with wall
 		core::vector3df out = triangle.getNormal();

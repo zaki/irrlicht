@@ -123,10 +123,10 @@ int main()
 	*/
 	IrrlichtDevice *device =
 #ifdef _IRR_OSX_PLATFORM_
-		createDevice( video::EDT_OPENGL, dimension2d<s32>(640, 480), 16,
+		createDevice( video::EDT_OPENGL, dimension2d<u32>(640, 480), 16,
 			false, false, false, 0);
 #else
-		createDevice( video::EDT_SOFTWARE, dimension2d<s32>(640, 480), 16,
+		createDevice( video::EDT_SOFTWARE, dimension2d<u32>(640, 480), 16,
 			false, false, false, 0);
 #endif
 	if (!device)
