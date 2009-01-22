@@ -24,12 +24,13 @@ CTriangleBBSelector::CTriangleBBSelector(const ISceneNode* node)
 
 
 //! Gets all triangles.
-void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
+bool CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
 					s32 arraySize, s32& outTriangleCount, 
-					const core::matrix4* transform) const
+					const core::matrix4* transform,
+					const ISceneNode * * node) const
 {
 	if (!SceneNode)
-		return;
+		return false;
 
 	// construct triangles
 	const core::aabbox3d<f32>& box = SceneNode->getBoundingBox();
@@ -56,6 +57,10 @@ void CTriangleBBSelector::getTriangles(core::triangle3df* triangles,
 
 	// call parent
 	CTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount,	transform);
+
+	if(node)
+		*node = SceneNode;
+	return false;
 }
 
 

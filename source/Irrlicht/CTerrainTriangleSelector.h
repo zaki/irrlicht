@@ -37,20 +37,26 @@ public:
 	virtual void setTriangleData (ITerrainSceneNode* node, s32 LOD);
 
 	//! Gets all triangles.
-	void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
-		const core::matrix4* transform=0) const;
+	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
+		const core::matrix4* transform=0,
+		const ISceneNode * * node = 0) const;
 
 	//! Gets all triangles which lie within a specific bounding box.
-	void getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
-		const core::aabbox3d<f32>& box, const core::matrix4* transform=0) const;
+	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize, s32& outTriangleCount,
+		const core::aabbox3d<f32>& box, const core::matrix4* transform=0,
+		const ISceneNode * * node = 0) const;
 
 	//! Gets all triangles which have or may have contact with a 3d line.
-	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
+	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line, 
-		const core::matrix4* transform=0) const;
+		const core::matrix4* transform=0,
+		const ISceneNode * * node = 0) const;
 
 	//! Returns amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const;
+
+	//! ITerrainSceneNode is an ISceneNode, we just don't know it yet.
+	virtual const ISceneNode* getSceneNode(void) const { return (ISceneNode*)SceneNode; }
 
 private:
 
