@@ -19,8 +19,8 @@ namespace gui
 
 //! constructor
 CGUIMenu::CGUIMenu(IGUIEnvironment* environment, IGUIElement* parent,
-		 s32 id, core::rect<s32> rectangle)
-		 : CGUIContextMenu(environment, parent, id, rectangle, false, true)
+		s32 id, core::rect<s32> rectangle)
+	: CGUIContextMenu(environment, parent, id, rectangle, false, true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIMenu");
@@ -42,7 +42,7 @@ void CGUIMenu::draw()
 
 	IGUISkin* skin = Environment->getSkin();
 	IGUIFont* font = skin->getFont(EGDF_MENU);
-	
+
 	if (font != LastFont)
 	{
 		if (LastFont)
@@ -87,7 +87,7 @@ void CGUIMenu::draw()
 				c = EGDC_GRAY_TEXT;
 
 			if (font)
-				font->draw(Items[i].Text.c_str(), rect, 
+				font->draw(Items[i].Text.c_str(), rect,
 					skin->getColor(c), true, true, &AbsoluteClippingRect);
 		}
 	}
@@ -135,7 +135,7 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 				}
 
 				if (Parent)
-					Parent->bringToFront(this); 
+					Parent->bringToFront(this);
 
 				core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
 				bool shouldCloseSubMenu = hasOpenSubMenu();
@@ -241,11 +241,13 @@ core::rect<s32> CGUIMenu::getHRect(const SItem& i, const core::rect<s32>& absolu
 	return r;
 }
 
+
 //! Gets drawing rect of Item
 core::rect<s32> CGUIMenu::getRect(const SItem& i, const core::rect<s32>& absolute) const
 {
 	return getHRect(i, absolute);
 }
+
 
 void CGUIMenu::updateAbsolutePosition()
 {

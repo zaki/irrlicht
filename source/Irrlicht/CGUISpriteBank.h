@@ -47,12 +47,11 @@ public:
 
 protected:
 
-	core::array<SGUISprite>  Sprites;
+	core::array<SGUISprite> Sprites;
 	core::array< core::rect<s32> > Rectangles;
 	core::array<video::ITexture*> Textures;
 	IGUIEnvironment* Environment;
 	video::IVideoDriver* Driver;
-
 };
 
 } // end namespace gui
@@ -61,5 +60,4 @@ protected:
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif // __C_GUI_SPRITE_BANK_H_INCLUDED__
-
 

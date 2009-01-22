@@ -32,9 +32,8 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
 		const core::vector3df& rotation,
 		const core::vector3df& scale)
 : IAnimatedMeshSceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
-	MeshForCurrentFrame(0),
 	BeginFrameTime(0), StartFrame(0), EndFrame(0), FramesPerSecond(0.f),
-	CurrentFrameNr(0.f), FrameWhenCurrentMeshWasGenerated(0.f),
+	CurrentFrameNr(0.f),
 	JointMode(EJUOR_NONE), JointsUsed(false),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
 	Looping(true), ReadOnlyMaterials(false), RenderFromIdentity(0),
@@ -205,8 +204,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(void)
 {
 	if(Mesh->getMeshType() != EAMT_SKINNED)
 	{
-		if(!MeshForCurrentFrame || !core::equals(CurrentFrameNr, FrameWhenCurrentMeshWasGenerated))
-			MeshForCurrentFrame = Mesh->getMesh((s32)getFrameNr(), 255, StartFrame, EndFrame);
+		return Mesh->getMesh((s32)getFrameNr(), 255, StartFrame, EndFrame);
 	}
 	else
 	{
@@ -241,11 +239,8 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(void)
 			skinnedMesh->updateBoundingBox();
 		}
 
-		MeshForCurrentFrame = skinnedMesh;
+		return skinnedMesh;
 	}
-
-	FrameWhenCurrentMeshWasGenerated = CurrentFrameNr;
-	return MeshForCurrentFrame;
 }
 
 
@@ -821,9 +816,6 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 		Mesh->drop();
 
 	Mesh = mesh;
-
-	// Forget about the stored frame of any existing mesh.
-	MeshForCurrentFrame = 0;
 
 	// get materials and bounding box
 	Box = Mesh->getBoundingBox();

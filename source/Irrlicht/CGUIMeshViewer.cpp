@@ -172,4 +172,3 @@ void CGUIMeshViewer::draw()
 
 #endif // _IRR_COMPILE_WITH_GUI_
 
-

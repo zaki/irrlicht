@@ -83,7 +83,7 @@ public:
 	virtual IGUIButton* addButton(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0,const wchar_t* tooltiptext = 0);
 
 	//! adds a window. The returned pointer must not be dropped.
-	virtual IGUIWindow* addWindow(const core::rect<s32>& rectangle, bool modal = false, 
+	virtual IGUIWindow* addWindow(const core::rect<s32>& rectangle, bool modal = false,
 		const wchar_t* text=0, IGUIElement* parent=0, s32 id=-1);
 
 	//! adds a modal screen. The returned pointer must not be dropped.
@@ -96,12 +96,12 @@ public:
 	//! adds a scrollbar. The returned pointer must not be dropped.
 	virtual IGUIScrollBar* addScrollBar(bool horizontal, const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1);
 
-	//! Adds an image element. 
+	//! Adds an image element.
 	virtual IGUIImage* addImage(video::ITexture* image, core::position2d<s32> pos,
 		bool useAlphaChannel=true, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0);
 
 	//! adds an image. The returned pointer must not be dropped.
-	virtual IGUIImage* addImage(const core::rect<s32>& rectangle, 
+	virtual IGUIImage* addImage(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0);
 
 	//! adds a checkbox
@@ -125,18 +125,18 @@ public:
 		bool border=false, bool wordWrap=true, IGUIElement* parent=0, s32 id=-1, bool drawBackground = false);
 
 	//! Adds an edit box. The returned pointer must not be dropped.
-	virtual IGUIEditBox* addEditBox(const wchar_t* text, const core::rect<s32>& rectangle, 
+	virtual IGUIEditBox* addEditBox(const wchar_t* text, const core::rect<s32>& rectangle,
 		bool border=false, IGUIElement* parent=0, s32 id=-1);
 
 	//! Adds a spin box to the environment
-	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle, 
+	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1);
 
 	//! Adds a tab control to the environment.
 	virtual IGUITabControl* addTabControl(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, bool fillbackground=false, bool border=true, s32 id=-1);
 
-	//! Adds tab to the environment. 
+	//! Adds tab to the environment.
 	virtual IGUITab* addTab(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1);
 
@@ -156,7 +156,7 @@ public:
 		IGUIElement* parent=0, s32 id=-1);
 
 	//! Adds a table element.
-	virtual IGUITable* addTable(const core::rect<s32>& rectangle, 
+	virtual IGUITable* addTable(const core::rect<s32>& rectangle,
 		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false);
 
 	//! sets the focus to an element
@@ -177,7 +177,7 @@ public:
 	//! Adds an element for fading in or out.
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1);
 
-	//! Returns the root gui element. 
+	//! Returns the root gui element.
 	virtual IGUIElement* getRootGUIElement();
 
 	virtual void OnPostRender( u32 time );
@@ -201,27 +201,27 @@ public:
 
 	//! Saves the current gui into a file.
 	/** \param filename: Name of the file.
-	\param start: The element to start saving from. 
-	if not specified, the root element will be used */ 
+	\param start: The element to start saving from.
+	if not specified, the root element will be used */
 	virtual bool saveGUI(const c8* filename, IGUIElement* start=0);
 
 	//! Saves the current gui into a file.
 	/** \param file: The file to save the GUI to.
-	\param start: The element to start saving from. 
+	\param start: The element to start saving from.
 	if not specified, the root element will be used */
 	virtual bool saveGUI(io::IWriteFile* file, IGUIElement* start=0);
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** \param filename: Name of the file.
-	\param parent: The parent of all loaded GUI elements, 
+	\param parent: The parent of all loaded GUI elements,
 	if not specified, the root element will be used */
 	virtual bool loadGUI(const c8* filename, IGUIElement* parent=0);
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** \param file: IReadFile to load the GUI from
-	\param parent: The parent of all loaded GUI elements, 
+	\param parent: The parent of all loaded GUI elements,
 	if not specified, the root element will be used */
-	virtual bool loadGUI(io::IReadFile* file, IGUIElement* parent=0);	
+	virtual bool loadGUI(io::IReadFile* file, IGUIElement* parent=0);
 
 	//! Writes attributes of the environment
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const;
@@ -234,7 +234,6 @@ public:
 
 	//! reads an element
 	virtual void readGUIElement(io::IXMLReader* reader, IGUIElement* node);
-
 
 private:
 
@@ -268,9 +267,9 @@ private:
 
 	struct SToolTip
 	{
+		IGUIStaticText* Element;
 		u32 LastTime;
 		u32 LaunchTime;
-		IGUIStaticText* Element;
 	};
 
 	SToolTip ToolTip;

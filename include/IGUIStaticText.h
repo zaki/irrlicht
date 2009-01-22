@@ -29,7 +29,7 @@ namespace gui
 		virtual void setOverrideFont(IGUIFont* font=0) = 0;
 
 		//! Gets the override font (if any)
-		//! \return The override font (may be 0)
+		/** \return The override font (may be 0) */
 		virtual IGUIFont* getOverrideFont(void) const = 0;
 
 		//! Sets another color for the text.
@@ -43,7 +43,7 @@ namespace gui
 		virtual void setOverrideColor(video::SColor color) = 0;
 
 		//! Gets the override color
-		//! \return: The override color
+		/** \return: The override color */
 		virtual video::SColor const& getOverrideColor(void) const = 0;
 
 		//! Sets if the static text should use the overide color or the color in the gui skin.
@@ -53,7 +53,7 @@ namespace gui
 		virtual void enableOverrideColor(bool enable) = 0;
 
 		//! Checks if an override color is enabled
-		//! \return true if the override color is enabled, false otherwise
+		/** \return true if the override color is enabled, false otherwise */
 		virtual bool isOverrideColorEnabled(void) const = 0;
 
 		//! Sets another color for the background.
@@ -78,7 +78,7 @@ namespace gui
 		virtual void setWordWrap(bool enable) = 0;
 
 		//! Checks if word wrap is enabled
-		//! \return true if word wrap is enabled, false otherwise
+		/** \return true if word wrap is enabled, false otherwise */
 		virtual bool isWordWrapEnabled(void) const = 0;
 
 		//! Returns the height of the text in pixels when it is drawn.

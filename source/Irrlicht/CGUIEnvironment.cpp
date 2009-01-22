@@ -327,17 +327,20 @@ video::IVideoDriver* CGUIEnvironment::getVideoDriver() const
 	return Driver;
 }
 
+
 //! returns the current file system
 io::IFileSystem* CGUIEnvironment::getFileSystem() const
 {
 	return FileSystem;
 }
 
+
 //! returns the current file system
 IOSOperator* CGUIEnvironment::getOSOperator() const
 {
 	return Operator;
 }
+
 
 //! clear all GUI elements
 void CGUIEnvironment::clear()
@@ -809,7 +812,7 @@ void CGUIEnvironment::readGUIElement(io::IXMLReader* reader, IGUIElement* node)
 			else
 			{
 				os::Printer::log("Found unknown element in irrlicht GUI file",
-								 core::stringc(reader->getNodeName()).c_str());
+						core::stringc(reader->getNodeName()).c_str());
 			}
 
 			break;
@@ -919,7 +922,7 @@ void CGUIEnvironment::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 
 	RelativeRect = AbsoluteRect =
 			core::rect<s32>(core::position2d<s32>(0,0),
-					Driver ? core::dimension2d<s32>(Driver->getScreenSize()) : core::dimension2d<s32>(0,0));
+					Driver ? Driver->getScreenSize() : core::dimension2d<s32>(0,0));
 }
 
 
@@ -1015,12 +1018,14 @@ IGUIScrollBar* CGUIEnvironment::addScrollBar(bool horizontal, const core::rect<s
 	return bar;
 }
 
+
 IGUITable* CGUIEnvironment::addTable(const core::rect<s32>& rectangle, IGUIElement* parent, s32 id, bool drawBackground)
 {
 	CGUITable* b = new CGUITable(this, parent ? parent : this, id, rectangle, true, drawBackground, false);
 	b->drop();
 	return b;
 }
+
 
 //! Adds an image element.
 IGUIImage* CGUIEnvironment::addImage(video::ITexture* image, core::position2d<s32> pos,
@@ -1091,8 +1096,7 @@ IGUICheckBox* CGUIEnvironment::addCheckBox(bool checked, const core::rect<s32>& 
 
 //! adds a list box
 IGUIListBox* CGUIEnvironment::addListBox(const core::rect<s32>& rectangle,
-					 IGUIElement* parent, s32 id,
-					 bool drawBackground)
+					IGUIElement* parent, s32 id, bool drawBackground)
 {
 	IGUIListBox* b = new CGUIListBox(this, parent ? parent : this, id, rectangle,
 		true, drawBackground, false);
@@ -1113,8 +1117,7 @@ IGUIListBox* CGUIEnvironment::addListBox(const core::rect<s32>& rectangle,
 
 //! adds a file open dialog. The returned pointer must not be dropped.
 IGUIFileOpenDialog* CGUIEnvironment::addFileOpenDialog(const wchar_t* title,
-						   bool modal,
-						   IGUIElement* parent, s32 id)
+				bool modal, IGUIElement* parent, s32 id)
 {
 	parent = parent ? parent : this;
 
@@ -1133,8 +1136,7 @@ IGUIFileOpenDialog* CGUIEnvironment::addFileOpenDialog(const wchar_t* title,
 
 //! adds a color select dialog. The returned pointer must not be dropped.
 IGUIColorSelectDialog* CGUIEnvironment::addColorSelectDialog(const wchar_t* title,
-						   bool modal,
-						   IGUIElement* parent, s32 id)
+				bool modal, IGUIElement* parent, s32 id)
 {
 	parent = parent ? parent : this;
 
@@ -1154,10 +1156,9 @@ IGUIColorSelectDialog* CGUIEnvironment::addColorSelectDialog(const wchar_t* titl
 
 //! adds a static text. The returned pointer must not be dropped.
 IGUIStaticText* CGUIEnvironment::addStaticText(const wchar_t* text,
-					   const core::rect<s32>& rectangle,
-					   bool border, bool wordWrap,
-					   IGUIElement* parent, s32 id,
-					   bool background)
+				const core::rect<s32>& rectangle,
+				bool border, bool wordWrap,
+				IGUIElement* parent, s32 id, bool background)
 {
 	IGUIStaticText* d = new CGUIStaticText(text, border, this,
 			parent ? parent : this, id, rectangle, background);
@@ -1171,9 +1172,8 @@ IGUIStaticText* CGUIEnvironment::addStaticText(const wchar_t* text,
 
 //! Adds an edit box. The returned pointer must not be dropped.
 IGUIEditBox* CGUIEnvironment::addEditBox(const wchar_t* text,
-					 const core::rect<s32>& rectangle,
-					 bool border, IGUIElement* parent,
-					 s32 id)
+			const core::rect<s32>& rectangle, bool border,
+			IGUIElement* parent, s32 id)
 {
 	IGUIEditBox* d = new CGUIEditBox(text, border, this,
 			parent ? parent : this, id, rectangle);
@@ -1185,8 +1185,8 @@ IGUIEditBox* CGUIEnvironment::addEditBox(const wchar_t* text,
 
 //! Adds a spin box to the environment
 IGUISpinBox* CGUIEnvironment::addSpinBox(const wchar_t* text,
-					 const core::rect<s32> &rectangle,
-					 IGUIElement* parent, s32 id)
+				const core::rect<s32> &rectangle,
+				IGUIElement* parent, s32 id)
 {
 	IGUISpinBox* d = new CGUISpinBox(text, this, parent ? parent : this, id, rectangle);
 
@@ -1264,9 +1264,8 @@ IGUIInOutFader* CGUIEnvironment::addInOutFader(const core::rect<s32>* rectangle,
 
 	if (rectangle)
 		rect = *rectangle;
-	else
-		if (Driver)
-			rect = core::rect<s32>(core::position2d<s32>(0,0), core::dimension2d<s32>(Driver->getScreenSize()));
+	else if (Driver)
+		rect = core::rect<s32>(core::position2d<s32>(0,0), Driver->getScreenSize());
 
 	if (!parent)
 		parent = this;
@@ -1529,5 +1528,4 @@ IGUIEnvironment* createGUIEnvironment(io::IFileSystem* fs,
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
-
 

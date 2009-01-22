@@ -52,10 +52,9 @@ namespace gui
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
-
 	private:
-		video::SColor Color;
 		video::ITexture* Texture;
+		video::SColor Color;
 		bool UseAlphaChannel;
 		bool ScaleImage;
 

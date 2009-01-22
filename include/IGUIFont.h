@@ -21,13 +21,13 @@ enum EGUI_FONT_TYPE
 	EGFT_BITMAP = 0,
 
 	//! Scalable vector fonts loaded from an XML file.
-	//! These fonts reside in system memory and use no video memory
-	//! until they are displayed. These are slower than bitmap fonts
-	//! but can be easily scaled and rotated.
+	/** These fonts reside in system memory and use no video memory
+	until they are displayed. These are slower than bitmap fonts
+	but can be easily scaled and rotated. */
 	EGFT_VECTOR,
 
 	//! A font which uses a the native API provided by the operating system.
-	//! Currently not used.
+	/** Currently not used. */
 	EGFT_OS,
 
 	//! An external font type provided by the user.
@@ -66,8 +66,10 @@ public:
 	//! Returns the type of this font
 	virtual EGUI_FONT_TYPE getType() const { return EGFT_CUSTOM; }
 
-	//! Sets global kerning for the font.
+	//! Sets global kerning width for the font.
 	virtual void setKerningWidth (s32 kerning) = 0;
+
+	//! Sets global kerning height for the font.
 	virtual void setKerningHeight (s32 kerning) = 0;
 
 	//! Gets kerning values (distance between letters) for the font. If no parameters are provided,

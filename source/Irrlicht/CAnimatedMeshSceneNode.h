@@ -171,14 +171,12 @@ namespace scene
 		core::array<video::SMaterial> Materials;
 		core::aabbox3d<f32> Box;
 		IAnimatedMesh* Mesh;
-		IMesh* MeshForCurrentFrame;
 
 		u32 BeginFrameTime;
 		s32 StartFrame;
 		s32 EndFrame;
 		f32 FramesPerSecond;
 		f32 CurrentFrameNr;
-		f32 FrameWhenCurrentMeshWasGenerated;
 
 		//0-unused, 1-get joints only, 2-set joints only, 3-move and set
 		E_JOINT_UPDATE_ON_RENDER JointMode;

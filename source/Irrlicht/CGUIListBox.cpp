@@ -25,9 +25,8 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 			bool drawBack, bool moveOverSelect)
 : IGUIListBox(environment, parent, id, rectangle), Selected(-1), ItemHeight(0),
 	TotalItemHeight(0), ItemsIconWidth(0), Font(0), IconBank(0),
-	ScrollBar(0), Selecting(false), DrawBack(drawBack),
-	MoveOverSelect(moveOverSelect), selectTime(0), AutoScroll(true),
-	KeyBuffer(), LastKeyTime(0), HighlightWhenNotFocused(true)
+	ScrollBar(0), selectTime(0), LastKeyTime(0), Selecting(false), DrawBack(drawBack),
+	MoveOverSelect(moveOverSelect), AutoScroll(true), HighlightWhenNotFocused(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIListBox");

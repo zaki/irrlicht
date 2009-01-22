@@ -87,7 +87,7 @@ namespace gui
 		virtual s32 getTabHeight() const = 0;
 
 		//! Set the alignment of the tabs
-		//! Use EGUIA_UPPERLEFT or EGUIA_LOWERRIGHT
+		/** Use EGUIA_UPPERLEFT or EGUIA_LOWERRIGHT */
 		virtual void setTabVerticalAlignment( gui::EGUI_ALIGNMENT alignment ) = 0;
 
 		//! Get the alignment of the tabs
@@ -107,8 +107,4 @@ namespace gui
 } // end namespace irr
 
 #endif
-
-
-
-
 

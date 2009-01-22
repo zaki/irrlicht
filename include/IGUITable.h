@@ -21,7 +21,7 @@ namespace gui
 		//! Do not use ordering
 		EGCO_NONE,
 
-		//! Send a EGET_TABLE_HEADER_CHANGED message when a column header is clicked. 
+		//! Send a EGET_TABLE_HEADER_CHANGED message when a column header is clicked.
 		EGCO_CUSTOM,
 
 		//! Sort it ascending by it's ascii value like: a,b,c,...
@@ -48,7 +48,7 @@ namespace gui
 		0,
 	};
 
-    enum EGUI_ORDERING_MODE
+	enum EGUI_ORDERING_MODE
 	{
 		//! No element ordering
 		EGOM_NONE,
@@ -111,14 +111,14 @@ namespace gui
 
 		//! Set the width of a column
 		virtual void setColumnWidth(u32 columnIndex, u32 width) = 0;
-		
+
 		//! columns can be resized by drag 'n drop
 		virtual void setResizableColumns(bool resizable) = 0;
-		
+
 		//! can columns be resized by dran 'n drop?
 		virtual bool hasResizableColumns() const = 0;
 
-		//! This tells the table control which ordering mode should be used when a column header is clicked. 
+		//! This tells the table control which ordering mode should be used when a column header is clicked.
 		/** \param columnIndex The index of the column header.
 		\param mode: One of the modes defined in EGUI_COLUMN_ORDERING */
 		virtual void setColumnOrdering(u32 columnIndex, EGUI_COLUMN_ORDERING mode) = 0;

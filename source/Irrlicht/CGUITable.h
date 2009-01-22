@@ -26,7 +26,7 @@ namespace gui
 	{
 	public:
 		//! constructor
-		CGUITable(IGUIEnvironment* environment, IGUIElement* parent, 
+		CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool clip=true,
 			bool drawBack=false, bool moveOverSelect=true);
 
@@ -45,7 +45,7 @@ namespace gui
 
 		//! Makes a column active. This will trigger an ordering process.
 		/** \param idx: The id of the column to make active.
-		 \return Returns true if successful. */
+		\return True if successful. */
 		virtual bool setActiveColumn(s32 columnIndex, bool doOrder=false);
 
 		//! Returns which header is currently active
@@ -56,18 +56,18 @@ namespace gui
 
 		//! set a column width
 		virtual void setColumnWidth(u32 columnIndex, u32 width);
-		
+
 		//! columns can be resized by drag 'n drop
 		virtual void setResizableColumns(bool resizable);
-		
+
 		//! can columns be resized by dran 'n drop?
 		virtual bool hasResizableColumns() const;
 
-		//! This tells the table control which ordering mode should be used when 
-		//! a column header is clicked. 
+		//! This tells the table control which ordering mode should be used when
+		//! a column header is clicked.
 		/** \param columnIndex: The index of the column header.
 		\param state: If true, a EGET_TABLE_HEADER_CHANGED message will be sent and you can order the table data as you whish.*/
-		//! \param mode: One of the modes defined in EGUI_COLUMN_ORDERING 
+		//! \param mode: One of the modes defined in EGUI_COLUMN_ORDERING
 		virtual void setColumnOrdering(u32 columnIndex, EGUI_COLUMN_ORDERING mode);
 
 		//! Returns which row is currently selected
@@ -99,7 +99,7 @@ namespace gui
 		//! a new row is added or the cells data is changed. This makes
 		//! the system more flexible and doesn't make you pay the cost
 		//! of ordering when adding a lot of rows.
-		//! \param columnIndex: When set to -1 the active column is used. 
+		//! \param columnIndex: When set to -1 the active column is used.
 		virtual void orderRows(s32 columnIndex=-1, EGUI_ORDERING_MODE mode=EGOM_NONE);
 
 

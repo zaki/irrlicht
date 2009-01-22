@@ -50,7 +50,6 @@ namespace gui
 
 		core::position2d<s32> DragStart;
 		core::stringw FileName;
-		bool Dragging;
 		IGUIButton* CloseButton;
 		IGUIButton* OKButton;
 		IGUIButton* CancelButton;
@@ -58,8 +57,8 @@ namespace gui
 		IGUIElement* FileNameText;
 		IGUIElement* EventParent;
 		io::IFileSystem* FileSystem;
-
 		io::IFileList* FileList;
+		bool Dragging;
 	};
 
 

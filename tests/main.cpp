@@ -16,7 +16,6 @@
 #include <assert.h>
 #include <vector>
 
-//! Defines a test
 typedef struct _STestDefinition
 {
 	//! The test entry point function
@@ -154,7 +153,6 @@ int main(int argumentCount, char * arguments[])
 			}
 		}
 		closeTestLog();
-
 		(void)system("tests.log");
 	}
 

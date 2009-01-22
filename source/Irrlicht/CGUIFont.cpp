@@ -112,7 +112,7 @@ bool CGUIFont::load(io::IXMLReader* xml)
 
 				// parse rectangle
 				core::stringc rectstr	= xml->getAttributeValue(L"r");
-				wchar_t ch				= xml->getAttributeValue(L"c")[0];
+				wchar_t ch		= xml->getAttributeValue(L"c")[0];
 
 				const c8 *c = rectstr.c_str();
 				s32 val;
@@ -158,7 +158,7 @@ bool CGUIFont::load(io::IXMLReader* xml)
 				CharacterMap.insert(ch,Areas.size());
 
 				// make frame
-				f.rectNumber = 	SpriteBank->getPositions().size();
+				f.rectNumber = SpriteBank->getPositions().size();
 				f.textureNumber = texno;
 
 				// add frame to sprite
@@ -481,7 +481,7 @@ core::dimension2d<u32> CGUIFont::getDimension(const wchar_t* text) const
 
 
 //! set an Pixel Offset on Drawing ( scale position on width )
-void CGUIFont::setKerningWidth ( s32 kerning )
+void CGUIFont::setKerningWidth(s32 kerning)
 {
 	GlobalKerningWidth = kerning;
 }
@@ -507,7 +507,7 @@ s32 CGUIFont::getKerningWidth(const wchar_t* thisLetter, const wchar_t* previous
 
 
 //! set an Pixel Offset on Drawing ( scale position on height )
-void CGUIFont::setKerningHeight ( s32 kerning )
+void CGUIFont::setKerningHeight(s32 kerning)
 {
 	GlobalKerningHeight = kerning;
 }
@@ -646,3 +646,4 @@ IGUISpriteBank* CGUIFont::getSpriteBank() const
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

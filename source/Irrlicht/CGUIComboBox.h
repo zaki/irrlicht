@@ -76,11 +76,11 @@ namespace gui
 		IGUIButton* ListButton;
 		IGUIStaticText* SelectedText;
 		IGUIListBox* ListBox;
+		IGUIElement *LastFocus;
 		core::array< core::stringw > Items;
 		s32 Selected;
-		bool HasFocus;
-		IGUIElement *LastFocus;
 		EGUI_ALIGNMENT HAlign, VAlign;
+		bool HasFocus;
 	};
 
 

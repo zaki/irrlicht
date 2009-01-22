@@ -23,7 +23,7 @@ namespace gui
 	{
 	public:
 		//! constructor
-		CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent, 
+		CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 			s32 id, core::rect<s32> rectangle, bool clip=true,
 			bool drawBack=false, bool moveOverSelect=false);
 
@@ -72,7 +72,7 @@ namespace gui
 		//! An icon is an index within the icon sprite bank. Several default icons are available in the
 		//! skin through getIcon
 		virtual void setSpriteBank(IGUISpriteBank* bank);
-		
+
 		//! sets if automatic scrolling is enabled or not. Default is true.
 		virtual void setAutoScrollEnabled(bool scroll);
 
@@ -97,22 +97,22 @@ namespace gui
 		//! clear all item colors at index
 		virtual void clearItemOverrideColor(u32 index);
 
-		//! clear item color at index for given colortype 
+		//! clear item color at index for given colortype
 		virtual void clearItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType);
 
 		//! has the item at index its color overwritten?
 		virtual bool hasItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) const;
 
-		//! return the overwrite color at given item index. 
+		//! return the overwrite color at given item index.
 		virtual video::SColor getItemOverrideColor(u32 index, EGUI_LISTBOX_COLOR colorType) const;
 
 		//! return the default color which is used for the given colorType
 		virtual video::SColor getItemDefaultColor(EGUI_LISTBOX_COLOR colorType) const;
 
-		//! set the item at the given index 
+		//! set the item at the given index
 		virtual void setItem(u32 index, const wchar_t* text, s32 icon);
 
-		//! Insert the item at the given index 
+		//! Insert the item at the given index
 		//! Return the index on success or -1 on failure.
 		virtual s32 insertItem(u32 index, const wchar_t* text, s32 icon);
 
@@ -123,7 +123,7 @@ namespace gui
 
 		struct ListItem
 		{
-			ListItem() : icon(-1) 
+			ListItem() : icon(-1)
 			{}
 
 			core::stringw text;
@@ -157,13 +157,13 @@ namespace gui
 		gui::IGUIFont* Font;
 		gui::IGUISpriteBank* IconBank;
 		gui::IGUIScrollBar* ScrollBar;
+		u32 selectTime;
+		u32 LastKeyTime;
+		core::stringw KeyBuffer;
 		bool Selecting;
 		bool DrawBack;
 		bool MoveOverSelect;
-		u32 selectTime;
 		bool AutoScroll;
-		core::stringw KeyBuffer;
-		u32 LastKeyTime;
 		bool HighlightWhenNotFocused;
 	};
 

@@ -33,13 +33,15 @@ namespace scene
 		//! adds a scene node to the scene graph based on its type id
 		/** \param type: Type of the scene node to add.
 		\param parent: Parent scene node of the new node, can be null to add the scene node to the root.
-		\return Returns pointer to the new scene node or null if not successful. */
+		\return Returns pointer to the new scene node or null if not successful.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSceneNode(ESCENE_NODE_TYPE type, ISceneNode* parent=0) = 0;
 
 		//! adds a scene node to the scene graph based on its type name
 		/** \param typeName: Type name of the scene node to add.
 		\param parent: Parent scene node of the new node, can be null to add the scene node to the root.
-		\return Returns pointer to the new scene node or null if not successful. */
+		\return Returns pointer to the new scene node or null if not successful.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSceneNode(const c8* typeName, ISceneNode* parent=0) = 0;
 
 		//! returns amount of scene node types this factory is able to create

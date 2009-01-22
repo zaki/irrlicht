@@ -105,7 +105,6 @@ namespace gui
 		bool Pressed;
 		bool IsPushButton;
 		bool UseAlphaChannel;
-
 		bool Border;
 
 		u32 ClickTime;

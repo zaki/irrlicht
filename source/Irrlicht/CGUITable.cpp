@@ -109,6 +109,7 @@ void CGUITable::addColumn(const wchar_t* caption, s32 columnIndex)
 	recalculateWidths();
 }
 
+
 //! remove a column from the table
 void CGUITable::removeColumn(u32 columnIndex)
 {
@@ -126,15 +127,18 @@ void CGUITable::removeColumn(u32 columnIndex)
 	recalculateWidths();
 }
 
+
 s32 CGUITable::getColumnCount() const
 {
 	return Columns.size();
 }
 
+
 s32 CGUITable::getRowCount() const
 {
 	return Rows.size();
 }
+
 
 bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 {
@@ -198,15 +202,18 @@ bool CGUITable::setActiveColumn(s32 idx, bool doOrder )
 	return true;
 }
 
+
 s32 CGUITable::getActiveColumn() const
 {
 	return ActiveTab;
 }
 
+
 EGUI_ORDERING_MODE CGUITable::getActiveColumnOrdering() const
 {
 	return CurrentOrdering;
 }
+
 
 void CGUITable::setColumnWidth(u32 columnIndex, u32 width)
 {
@@ -260,6 +267,7 @@ void CGUITable::addRow(u32 rowIndex)
 	recalculateHeights();
 }
 
+
 void CGUITable::removeRow(u32 rowIndex)
 {
 	if ( rowIndex > Rows.size() )
@@ -272,6 +280,7 @@ void CGUITable::removeRow(u32 rowIndex)
 
 	recalculateHeights();
 }
+
 
 //! adds an list item, returns id of item
 void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text)
@@ -287,6 +296,7 @@ void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text)
 	}
 }
 
+
 void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, video::SColor color)
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
@@ -297,6 +307,7 @@ void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, 
 	}
 }
 
+
 void CGUITable::setCellColor(u32 rowIndex, u32 columnIndex, video::SColor color)
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
@@ -305,6 +316,7 @@ void CGUITable::setCellColor(u32 rowIndex, u32 columnIndex, video::SColor color)
 	}
 }
 
+
 void CGUITable::setCellData(u32 rowIndex, u32 columnIndex, void *data)
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
@@ -312,6 +324,7 @@ void CGUITable::setCellData(u32 rowIndex, u32 columnIndex, void *data)
 		Rows[rowIndex].Items[columnIndex].Data = data;
 	}
 }
+
 
 const wchar_t* CGUITable::getCellText(u32 rowIndex, u32 columnIndex ) const
 {
@@ -323,6 +336,7 @@ const wchar_t* CGUITable::getCellText(u32 rowIndex, u32 columnIndex ) const
 	return 0;
 }
 
+
 void* CGUITable::getCellData(u32 rowIndex, u32 columnIndex ) const
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
@@ -332,6 +346,7 @@ void* CGUITable::getCellData(u32 rowIndex, u32 columnIndex ) const
 
 	return 0;
 }
+
 
 //! clears the list
 void CGUITable::clear()
@@ -348,6 +363,7 @@ void CGUITable::clear()
 	recalculateWidths();
 }
 
+
 void CGUITable::clearRows()
 {
 	Rows.clear();
@@ -358,10 +374,12 @@ void CGUITable::clearRows()
 	recalculateHeights();
 }
 
+
 s32 CGUITable::getSelected() const
 {
 	return Selected;
 }
+
 
 void CGUITable::recalculateWidths()
 {
@@ -372,6 +390,7 @@ void CGUITable::recalculateWidths()
 	}
 	checkScrollbars();
 }
+
 
 void CGUITable::recalculateHeights()
 {
@@ -395,6 +414,7 @@ void CGUITable::recalculateHeights()
 	TotalItemHeight = ItemHeight * Rows.size();		//  header is not counted, because we only want items
 	checkScrollbars();
 }
+
 
 // automatic enabled/disabling and resizing of scrollbars
 void CGUITable::checkScrollbars()
@@ -483,6 +503,7 @@ void CGUITable::checkScrollbars()
 		}
 	}
 }
+
 
 void CGUITable::refreshControls()
 {
@@ -657,6 +678,7 @@ void CGUITable::swapRows(u32 rowIndexA, u32 rowIndexB)
 
 }
 
+
 bool CGUITable::dragColumnStart(s32 xpos, s32 ypos)
 {
 	if ( !ResizableColumns )
@@ -691,6 +713,7 @@ bool CGUITable::dragColumnStart(s32 xpos, s32 ypos)
 	return false;
 }
 
+
 bool CGUITable::dragColumnUpdate(s32 xpos)
 {
 	if ( !ResizableColumns || CurrentResizedColumn < 0 || CurrentResizedColumn >= s32(Columns.size()) )
@@ -707,6 +730,7 @@ bool CGUITable::dragColumnUpdate(s32 xpos)
 
 	return false;
 }
+
 
 bool CGUITable::selectColumnHeader(s32 xpos, s32 ypos)
 {
@@ -734,6 +758,7 @@ bool CGUITable::selectColumnHeader(s32 xpos, s32 ypos)
 
 	return false;
 }
+
 
 void CGUITable::orderRows(s32 columnIndex, EGUI_ORDERING_MODE mode)
 {

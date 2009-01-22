@@ -19,7 +19,7 @@ namespace gui
 
 //! constructor
 CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
-: IGUICheckBox(environment, parent, id, rectangle), Pressed(false), Checked(checked), checkTime(0)
+: IGUICheckBox(environment, parent, id, rectangle), checkTime(0), Pressed(false), Checked(checked)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUICheckBox");
@@ -31,7 +31,6 @@ CGUICheckBox::CGUICheckBox(bool checked, IGUIEnvironment* environment, IGUIEleme
 }
 
 
-
 //! called if an event happened.
 bool CGUICheckBox::OnEvent(const SEvent& event)
 {
@@ -41,8 +40,7 @@ bool CGUICheckBox::OnEvent(const SEvent& event)
 		{
 		case EET_KEY_INPUT_EVENT:
 			if (event.KeyInput.PressedDown &&
-				(event.KeyInput.Key == KEY_RETURN || 
-				 event.KeyInput.Key == KEY_SPACE))
+				(event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE))
 			{
 				Pressed = true;
 				return true;
@@ -55,8 +53,7 @@ bool CGUICheckBox::OnEvent(const SEvent& event)
 			}
 			else
 			if (!event.KeyInput.PressedDown && Pressed &&
-				(event.KeyInput.Key == KEY_RETURN || 
-				 event.KeyInput.Key == KEY_SPACE))
+				(event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE))
 			{
 				Pressed = false;
 				if (Parent)
@@ -123,7 +120,6 @@ bool CGUICheckBox::OnEvent(const SEvent& event)
 }
 
 
-
 //! draws the element and its children
 void CGUICheckBox::draw()
 {
@@ -137,8 +133,8 @@ void CGUICheckBox::draw()
 	s32 height = skin->getSize(EGDS_CHECK_BOX_WIDTH);
 
 	core::rect<s32> checkRect(AbsoluteRect.UpperLeftCorner.X,
-								((AbsoluteRect.getHeight() - height) / 2) + AbsoluteRect.UpperLeftCorner.Y,
-								 0, 0);
+				((AbsoluteRect.getHeight() - height) / 2) + AbsoluteRect.UpperLeftCorner.Y,
+				0, 0);
 
 	checkRect.LowerRightCorner.X = checkRect.UpperLeftCorner.X + height;
 	checkRect.LowerRightCorner.Y = checkRect.UpperLeftCorner.Y + height;
@@ -147,7 +143,7 @@ void CGUICheckBox::draw()
 		false, true, checkRect, &AbsoluteClippingRect);
 
 	if (Checked && Environment->getSkin())
-		Environment->getSkin()->drawIcon(this, EGDI_CHECK_BOX_CHECKED, checkRect.getCenter(), 
+		Environment->getSkin()->drawIcon(this, EGDI_CHECK_BOX_CHECKED, checkRect.getCenter(),
 			checkTime, os::Timer::getTime(), false, &AbsoluteClippingRect);
 
 	if (Text.size())
@@ -157,7 +153,7 @@ void CGUICheckBox::draw()
 
 		IGUIFont* font = skin->getFont();
 		if (font)
-			font->draw(Text.c_str(), checkRect, 
+			font->draw(Text.c_str(), checkRect,
 			skin->getColor(EGDC_BUTTON_TEXT), false, true, &AbsoluteClippingRect);
 	}
 
@@ -179,12 +175,14 @@ bool CGUICheckBox::isChecked() const
 	return Checked;
 }
 
+
 //! Writes attributes of the element.
 void CGUICheckBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 {
 	IGUICheckBox::serializeAttributes(out,options);
-	out->addBool	("Checked",	Checked );
+	out->addBool("Checked",	Checked);
 }
+
 
 //! Reads attributes of the element
 void CGUICheckBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
@@ -199,3 +197,4 @@ void CGUICheckBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRead
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_GUI_
+

@@ -91,8 +91,8 @@ namespace gui
 		//! Breaks the single text line.
 		void breakText();
 
-		bool Border;
 		EGUI_ALIGNMENT HAlign, VAlign;
+		bool Border;
 		bool OverrideColorEnabled;
 		bool WordWrap;
 		bool Background;
