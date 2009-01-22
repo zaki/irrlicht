@@ -104,7 +104,7 @@ CBillboardTextSceneNode::CBillboardTextSceneNode(ISceneNode* parent, ISceneManag
 	Material.MaterialTypeParam = 1.f / 255.f;
 	Material.BackfaceCulling = false;
 	Material.Lighting = false;
-	Material.ZBuffer = true;
+	Material.ZBuffer = video::ECFN_LESSEQUAL;
 	Material.ZWriteEnable = false;
 
 	if (font)

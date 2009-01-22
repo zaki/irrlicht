@@ -42,6 +42,27 @@ namespace video
 		EMFN_MODULATE_4X	= 4
 	};
 
+	//! Comparison function, e.g. for depth buffer test
+	enum E_COMPARISON_FUNC
+	{
+		//! Test never succeeds, this equals disable
+		ECFN_NEVER=0,
+		//! <= test, default for e.g. depth test
+		ECFN_LESSEQUAL=1,
+		//! Exact equality
+		ECFN_EQUAL=2,
+		//! exclusive less comparison, i.e. <
+		ECFN_LESS,
+		//! Succeeds almost always, except for exact equality
+		ECFN_NOTEQUAL,
+		//! >= test
+		ECFN_GREATEREQUAL,
+		//! inverse of <=
+		ECFN_GREATER,
+		//! test succeeds always
+		ECFN_ALWAYS
+	};
+
 	//! EMT_ONETEXTURE_BLEND: pack srcFact & dstFact and Modulo to MaterialTypeParam
 	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate )
 	{
@@ -98,7 +119,7 @@ namespace video
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
 			ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), ZBuffer(1), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH)
+			FogEnable(false), NormalizeNormals(false), ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH)
 		{ }
 
 		//! Copy constructor
@@ -384,7 +405,7 @@ namespace video
 				case EMF_LIGHTING:
 					return Lighting;
 				case EMF_ZBUFFER:
-					return ZBuffer!=0;
+					return ZBuffer!=ECFN_NEVER;
 				case EMF_ZWRITE_ENABLE:
 					return ZWriteEnable;
 				case EMF_BACK_FACE_CULLING:
@@ -467,4 +488,3 @@ namespace video
 } // end namespace irr
 
 #endif
-
