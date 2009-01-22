@@ -1,5 +1,7 @@
 Changes in version 1.6
 
+ - Add an outNode to getCollisionPoint() that returns the scene node that was hit, as well as the triangle.
+
  - Initial support for Alpha To Coverage, needs some more fixing until it works on all supported platforms.
 
  - Added support for Anti-Aliasing modes per material

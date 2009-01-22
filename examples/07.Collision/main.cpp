@@ -251,9 +251,10 @@ int main()
 
 		core::vector3df intersection;
 		core::triangle3df tri;
+		const scene::ISceneNode* hitNode;
 
 		if (smgr->getSceneCollisionManager()->getCollisionPoint(
-			line, selector, intersection, tri))
+			line, selector, intersection, tri, hitNode))
 		{
 			bill->setPosition(intersection);
 

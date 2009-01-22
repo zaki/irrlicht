@@ -99,10 +99,17 @@ static bool getCollisionPoint_ignoreTriangleVertices(IrrlichtDevice * device,
 	line3df ray(0, 0, -5, 0, 0, 100);
 	vector3df hitPosition;
 	triangle3df hitTriangle;
+	const ISceneNode* hitNode;
 
-	bool collision = collMgr->getCollisionPoint(ray, meta, hitPosition, hitTriangle);
+	bool collision = collMgr->getCollisionPoint(ray, meta, hitPosition, hitTriangle, hitNode);
 
 	meta->drop();
+
+	if(hitNode != nearBigCube)
+	{
+		logTestString("getCollisionPoint_ignoreTriangleVertices: hit the wrong node.\n");
+		return false;
+	}
 
 	if(!collision)
 	{

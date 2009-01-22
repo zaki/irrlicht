@@ -237,7 +237,8 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
 //! Finds the collision point of a line and lots of triangles, if there is one.
 bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 	ITriangleSelector* selector, core::vector3df& outIntersection,
-	core::triangle3df& outTriangle)
+	core::triangle3df& outTriangle,
+	const ISceneNode*& outNode)
 {
 	if (!selector)
 	{
@@ -291,6 +292,7 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 				nearest = tmp;
 				outTriangle = triangle;
 				outIntersection = intersection;
+				outNode = selector->getSceneNodeForTriangle(i);
 				found = true;
 			}
 		}

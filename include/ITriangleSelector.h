@@ -49,23 +49,9 @@ public:
 	\param transform: Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done.
-	\param node: On input, if this is 0 then all triangles for all nodes
-	will be returned.  If *node is 0, or a node that is not associated
-	with any of the triangles in this selector, then the selector will return 
-	the triangles for its first (or only) associated node.  If you pass in 
-	a node for which the selector holds triangles, then it will return
-	the triangles for the *next* node.	On output, *node will return the node 
-	that is associated with the triangles being returned.
-	\return false if the triangles and node for the last (or only) node
-	are being returned.  true if there are more nodes and triangles to 
-	return; on true, you may call this method again, passing in the same
-	node that was just returned in order to retrieve the triangles for the
-	next node.
-	*/
-	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
-		s32& outTriangleCount, const core::matrix4* transform=0,
-		const ISceneNode * * node = 0) const = 0;
+	transformation will be done. */
+	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
+		s32& outTriangleCount, const core::matrix4* transform=0) const = 0;
 
 	//! Gets the triangles for one associated node which lie or may lie within a specific bounding box.
 	/**
@@ -86,24 +72,10 @@ public:
 	\param transform: Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done.
-	\param node: On input, if this is 0 then all triangles for all nodes
-	will be returned.  If *node is 0, or a node that is not associated
-	with any of the triangles in this selector, then the selector will return 
-	the triangles for its first (or only) associated node.  If you pass in 
-	a node for which the selector holds triangles, then it will return
-	the triangles for the *next* node.	On output, *node will return the node 
-	that is associated with the triangles being returned.
-	\return false if the triangles and node for the last (or only) node
-	are being returned.  true if there are more nodes and triangles to 
-	return; on true, you may call this method again, passing in the same
-	node that was just returned in order to retrieve the triangles for the
-	next node.
-	*/
-	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
+	transformation will be done. */
+	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::aabbox3d<f32>& box,
-		const core::matrix4* transform=0,
-		const ISceneNode * * node = 0) const = 0;
+		const core::matrix4* transform=0) const = 0;
 
 	//! Gets the triangles for one associated node which have or may have contact with a 3d line.
 	/**
@@ -124,27 +96,22 @@ public:
 	\param transform: Pointer to matrix for transforming the triangles
 	before they are returned. Useful for example to scale all triangles
 	down into an ellipsoid space. If this pointer is null, no
-	transformation will be done.
-	\param node: On input, if this is 0 then all triangles for all nodes
-	will be returned.  If *node is 0, or a node that is not associated
-	with any of the triangles in this selector, then the selector will return 
-	the triangles for its first (or only) associated node.  If you pass in 
-	a node for which the selector holds triangles, then it will return
-	the triangles for the *next* node.	On output, *node will return the node 
-	that is associated with the triangles being returned.
-	\return false if the triangles and node for the last (or only) node
-	are being returned.  true if there are more nodes and triangles to 
-	return; on true, you may call this method again, passing in the same
-	node that was just returned in order to retrieve the triangles for the
-	next node.
-	*/
-	virtual bool getTriangles(core::triangle3df* triangles, s32 arraySize,
+	transformation will be done. */
+	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
-		const core::matrix4* transform=0,
-		const ISceneNode * * node = 0) const = 0;
+		const core::matrix4* transform=0) const = 0;
 
-	//! Gets the scene node to which this selector is associated.
-	virtual const ISceneNode* getSceneNode(void) const = 0;
+	//! Return the scene node associated with a given triangle.
+	/**
+	This allows you to find which scene node (potentially of several) is
+	associated with a specific triangle.
+
+	\param triangleIndex: the index of the triangle for which you want to find
+	the associated scene node.
+	\return The scene node associated with that triangle.
+	*/
+	virtual const ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const = 0;
+
 };
 
 } // end namespace scene
