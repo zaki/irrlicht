@@ -28,12 +28,13 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 				bool fullscreen, bool stencilbuffer,
 				io::IFileSystem* io, bool pureSoftware)
 : CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
-	ResetRenderStates(true), Transformation3DChanged(false), StencilBuffer(stencilbuffer),
+	ResetRenderStates(true), Transformation3DChanged(false),
+	StencilBuffer(stencilbuffer), AntiAliasing(0),
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
-	MaxLightDistance(sqrtf(FLT_MAX)), LastSetLight(-1), ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
-	Fullscreen(fullscreen), DriverWasReset(true)
+	MaxLightDistance(0.f), LastSetLight(-1), ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
+	Fullscreen(fullscreen), DriverWasReset(true), AlphaToCoverageSupport(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Driver");
@@ -46,7 +47,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 		CurrentTexture[i] = 0;
 		LastTextureMipMapsAvailable[i] = false;
 	}
-
+	MaxLightDistance = sqrtf(FLT_MAX);
 	// create sphere map matrix
 
 	SphereMapMatrixD3D9._11 = 0.5f; SphereMapMatrixD3D9._12 = 0.0f;
@@ -203,15 +204,16 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		os::Printer::log(tmp, ELL_INFORMATION);
 
 		// Assign vendor name based on vendor id.
+		VendorID= static_cast<u16>(dai.VendorId);
 		switch(dai.VendorId)
 		{
-			case 0x1002 : vendorName = "ATI Technologies Inc."; break;
-			case 0x10DE : vendorName = "NVIDIA Corporation"; break;
-			case 0x102B : vendorName = "Matrox Electronic Systems Ltd."; break;
-			case 0x121A : vendorName = "3dfx Interactive Inc"; break;
-			case 0x5333 : vendorName = "S3 Graphics Co., Ltd."; break;
-			case 0x8086 : vendorName = "Intel Corporation"; break;
-			default: vendorName = "Unknown VendorId: ";vendorName += (u32)dai.VendorId; break;
+			case 0x1002 : VendorName = "ATI Technologies Inc."; break;
+			case 0x10DE : VendorName = "NVIDIA Corporation"; break;
+			case 0x102B : VendorName = "Matrox Electronic Systems Ltd."; break;
+			case 0x121A : VendorName = "3dfx Interactive Inc"; break;
+			case 0x5333 : VendorName = "S3 Graphics Co., Ltd."; break;
+			case 0x8086 : VendorName = "Intel Corporation"; break;
+			default: VendorName = "Unknown VendorId: ";VendorName += (u32)dai.VendorId; break;
 		}
 	}
 
@@ -297,6 +299,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 			os::Printer::log("Anti aliasing disabled because hardware/driver lacks necessary caps.", ELL_WARNING);
 		}
 	}
+	AntiAliasing = antiAlias;
 
 	// check stencil buffer compatibility
 	if (StencilBuffer)
@@ -404,10 +407,6 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	// set default vertex shader
 	setVertexShader(EVT_STANDARD);
 
-	// enable antialiasing
-	if (antiAlias!=0)
-		pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
-
 	// set fog mode
 	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
@@ -424,6 +423,17 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	MaxTextureUnits = core::min_((u32)Caps.MaxSimultaneousTextures, MATERIAL_MAX_TEXTURES);
 	MaxUserClipPlanes = (u32)Caps.MaxUserClipPlanes;
 
+	if (VendorID==0x10DE)//NVidia
+		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
+				(D3DFORMAT)MAKEFOURCC('A', 'T', 'O', 'C')) == S_OK);
+	else if (VendorID=0x1002)//ATI
+		AlphaToCoverageSupport = true; // TODO: Check unknown
+#if 0
+		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
+				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
+#endif	
 	// set the renderstates
 	setRenderStates3DMode();
 
@@ -1740,6 +1750,39 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	if (resetAllRenderstates || lastmaterial.NormalizeNormals != material.NormalizeNormals)
 	{
 		pID3DDevice->SetRenderState(D3DRS_NORMALIZENORMALS, material.NormalizeNormals);
+	}
+
+	// Anti Aliasing
+	if (resetAllRenderstates || lastmaterial.AntiAliasing != material.AntiAliasing)
+	{
+		if (AlphaToCoverageSupport && (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE))
+		{
+			if (VendorID==0x10DE)//NVidia
+				pID3DDevice->SetRenderState(D3DRS_ADAPTIVETESS_Y, MAKEFOURCC('A','T','O','C'));
+			// SSAA could give better results on NVidia cards
+			else if (VendorID==0x1002)//ATI
+				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, MAKEFOURCC('A','2','M','1'));
+		}
+		else if (AlphaToCoverageSupport && (lastmaterial.AntiAliasing & EAAM_ALPHA_TO_COVERAGE))
+		{
+			if (VendorID==0x10DE)
+				pID3DDevice->SetRenderState(D3DRS_ADAPTIVETESS_Y, D3DFMT_UNKNOWN);
+			else if (VendorID==0x1002)
+				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, MAKEFOURCC('A','2','M','0'));
+		}
+			
+		// enable antialiasing
+		if (AntiAliasing)
+		{
+			if (material.AntiAliasing & (EAAM_SIMPLE|EAAM_QUALITY))
+				pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
+			else if (lastmaterial.AntiAliasing & (EAAM_SIMPLE|EAAM_QUALITY))
+				pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, FALSE);
+			if (material.AntiAliasing & (EAAM_LINE_SMOOTH))
+				pID3DDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, TRUE);
+			else if (lastmaterial.AntiAliasing & (EAAM_LINE_SMOOTH))
+				pID3DDevice->SetRenderState(D3DRS_ANTIALIASEDLINEENABLE, FALSE);
+		}
 	}
 
 	// thickness
