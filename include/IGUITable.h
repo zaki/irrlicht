@@ -66,6 +66,7 @@ namespace gui
 
 	const c8* const GUIOrderingModeNames[] =
 	{
+		"none",
 		"ascending",
 		"descending",
 		0
