@@ -725,6 +725,8 @@ class COpenGLExtensionHandler
 	u32 MaxIndices;
 	//! Maximal texture dimension
 	u32 MaxTextureSize;
+	//! Maximal LOD Bias
+	f32 MaxTextureLODBias;
 
 	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
 	u16 Version;
