@@ -2146,6 +2146,16 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			glDisable(GL_NORMALIZE);
 	}
 
+	// Color Mask
+	if (resetAllRenderStates || lastmaterial.ColorMask != material.ColorMask)
+	{
+		glColorMask(
+			(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+			(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+			(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+	}
+
 	// thickness
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 	{

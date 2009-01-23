@@ -71,6 +71,9 @@ namespace video
 		//! AntiAliasing mode
 		EMF_ANTI_ALIASING,
 
+		//! ColorMask bits, for enabling the color planes
+		EMF_COLOR_MASK,
+
 		//! This is not a flag, but a value indicating how much flags there are.
 		EMF_MATERIAL_FLAG_COUNT
 	};
