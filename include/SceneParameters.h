@@ -108,11 +108,20 @@ namespace scene
 
 	//! Flag to avoid loading group structures in .obj files
 	/** Use it like this:
-	 \code
-     SceneManager->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_GROUPS, true); 
+	\code
+	SceneManager->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_GROUPS, true);
 	\endcode
-	**/ 
+	**/
 	const c8* const OBJ_LOADER_IGNORE_GROUPS = "OBJ_IgnoreGroups";
+
+
+	//! Flag to ignore the b3d file's mipmapping flag
+	/** Instead Irrlicht's texture creation flag is used. Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::B3D_LOADER_IGNORE_MIPMAP_FLAG, true);
+	\endcode
+	**/
+	const c8* const B3D_LOADER_IGNORE_MIPMAP_FLAG = "B3D_IgnoreMipmapFlag";
 
 
 	//! Flag set as parameter when the scene manager is used as editor
