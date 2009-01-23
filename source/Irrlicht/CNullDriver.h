@@ -523,6 +523,10 @@ namespace video
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return "Not available on this driver.";}
 
+		//! Set the minimum number of vertices for which a hw buffer will be created
+		/** \param count Number of vertices to set as minimum. */
+		virtual void setMinHardwareBufferVertexCount(u32 count);
+
 		//! Only used by the engine internally.
 		virtual void setAllowZWriteOnTransparent(bool flag)
 		{ AllowZWriteOnTransparent=flag; }
@@ -633,6 +637,7 @@ namespace video
 		CFPSCounter FPSCounter;
 
 		u32 PrimitivesDrawn;
+		u32 MinVertexCountForVBO;
 
 		u32 TextureCreationFlags;
 
@@ -640,13 +645,12 @@ namespace video
 		f32 FogEnd;
 		f32 FogDensity;
 		SColor FogColor;
+		SExposedVideoData ExposedData;
+
 		bool LinearFog;
 		bool PixelFog;
 		bool RangeFog;
-
 		bool AllowZWriteOnTransparent;
-
-		SExposedVideoData ExposedData;
 
 		bool FeatureEnabled[video::EVDF_COUNT];
 	};
