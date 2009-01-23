@@ -485,6 +485,10 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_EXT_framebuffer_object];
 	case EVDF_VERTEX_BUFFER_OBJECT:
 		return FeatureAvailable[IRR_ARB_vertex_buffer_object];
+	case EVDF_COLOR_MASK:
+		return true;
+	case EVDF_ALPHA_TO_COVERAGE:
+		return FeatureAvailable[IRR_ARB_multisample];
 	default:
 		return false;
 	};
@@ -495,5 +499,3 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 #endif
-
-

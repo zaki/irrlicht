@@ -63,6 +63,25 @@ namespace video
 		ECFN_ALWAYS
 	};
 
+	//! Enum values for enabling/disabling color planes for rendering
+	enum E_COLOR_PLANE
+	{
+		//! No color enabled
+		ECP_NONE=0,
+		//! Alpha enabled
+		ECP_ALPHA=1,
+		//! Red enabled
+		ECP_RED=2,
+		//! Green enabled
+		ECP_GREEN=4,
+		//! Blue enabled
+		ECP_BLUE=8,
+		//! All colors, no alpha
+		ECP_RGB=14,
+		//! All planes enabled
+		ECP_ALL=15
+	};
+
 	//! EMT_ONETEXTURE_BLEND: pack srcFact & dstFact and Modulo to MaterialTypeParam
 	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate )
 	{
@@ -119,7 +138,7 @@ namespace video
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
 			ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH)
+			FogEnable(false), NormalizeNormals(false), ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH), ColorMask(ECP_ALL)
 		{ }
 
 		//! Copy constructor
@@ -166,6 +185,7 @@ namespace video
 			NormalizeNormals = other.NormalizeNormals;
 			ZBuffer = other.ZBuffer;
 			AntiAliasing = other.AntiAliasing;
+			ColorMask = other.ColorMask;
 
 			return *this;
 		}
@@ -279,6 +299,13 @@ namespace video
 		//! Sets the antialiasing mode
 		u8 AntiAliasing;
 
+		//! Defines the enabled color planes
+		/** Values are defined as or'ed values of the E_COLOR_PLANE enum.
+		Only enabled color planes will be rendered to the current render
+		target. Typical use is to disable all colors when rendering only to
+		depth or stencil buffer, or using Red and Green for Stereo rendering.		*/
+		u8 ColorMask;
+
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES.
 		\return Texture matrix for texture level i. */
@@ -383,7 +410,11 @@ namespace video
 				}
 				break;
 				case EMF_ANTI_ALIASING:
-					AntiAliasing = value?1:0;
+					AntiAliasing = value?EAAM_SIMPLE:EAAM_OFF;
+					break;
+				case EMF_COLOR_MASK:
+					ColorMask = value?ECP_ALL:ECP_NONE;
+					break;
 				default:
 					break;
 			}
@@ -429,6 +460,8 @@ namespace video
 							TextureLayer[3].TextureWrap);
 				case EMF_ANTI_ALIASING:
 					return (AntiAliasing==1);
+				case EMF_COLOR_MASK:
+					return (ColorMask!=ECP_NONE);
 				case EMF_MATERIAL_FLAG_COUNT:
 					break;
 			}
@@ -460,8 +493,9 @@ namespace video
 				BackfaceCulling != b.BackfaceCulling ||
 				FrontfaceCulling != b.FrontfaceCulling ||
 				FogEnable != b.FogEnable ||
-				NormalizeNormals != b.NormalizeNormals||
-				AntiAliasing != b.AntiAliasing;
+				NormalizeNormals != b.NormalizeNormals ||
+				AntiAliasing != b.AntiAliasing ||
+				ColorMask != b.ColorMask;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
 			{
 				different |= (TextureLayer[i] != b.TextureLayer[i]);

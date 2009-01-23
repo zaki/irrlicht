@@ -614,6 +614,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY) == 0;
 	case EVDF_TEXTURE_NPOT:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
+	case EVDF_COLOR_MASK:
+		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) != 0;
 	default:
 		return false;
 	};
@@ -1770,6 +1772,18 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	if (resetAllRenderstates || lastmaterial.NormalizeNormals != material.NormalizeNormals)
 	{
 		pID3DDevice->SetRenderState(D3DRS_NORMALIZENORMALS, material.NormalizeNormals);
+	}
+
+	// Color Mask
+	if (queryFeature(EVDF_COLOR_MASK) &&
+		(resetAllRenderstates || lastmaterial.ColorMask != material.ColorMask))
+	{
+		const DWORD flag = 
+			((material.ColorMask & ECP_RED)?D3DCOLORWRITEENABLE_RED:0) |
+			((material.ColorMask & ECP_GREEN)?D3DCOLORWRITEENABLE_GREEN:0) |
+			((material.ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
+			((material.ColorMask & ECP_ALPHA)?D3DCOLORWRITEENABLE_ALPHA:0);
+		pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flag);
 	}
 
 	// Anti Aliasing

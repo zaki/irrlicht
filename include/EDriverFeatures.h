@@ -85,6 +85,12 @@ namespace video
 		//! Are vertex buffer objects supported?
 		EVDF_VERTEX_BUFFER_OBJECT,
 
+		//! Supports Alpha To Coverage
+		EVDF_ALPHA_TO_COVERAGE,
+
+		//! Supports Color masks (disabling color planes in output)
+		EVDF_COLOR_MASK,
+
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT
 	};

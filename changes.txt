@@ -1,5 +1,9 @@
 Changes in version 1.6
 
+ - Added ColorMask support to selectively disable color planes on rendering.
+
+ - Added support for all available depth test functions.
+
  - Add an outNode to getCollisionPoint() that returns the scene node that was hit, as well as the triangle.
 
  - Initial support for Alpha To Coverage, needs some more fixing until it works on all supported platforms.
