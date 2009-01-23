@@ -352,12 +352,12 @@ namespace scene
 
 		//! Get the video driver.
 		/** \return Pointer to the video Driver.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual video::IVideoDriver* getVideoDriver() = 0;
 
 		//! Get the active GUIEnvironment
 		/** \return Pointer to the GUIEnvironment
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual gui::IGUIEnvironment* getGUIEnvironment() = 0;
 
 		//! adds Volume Lighting Scene Node.
@@ -389,7 +389,7 @@ namespace scene
 		\param parent: Parent of the scene node. Can be NULL if no parent.
 		\param id: Id of the node. This id can be used to identify the scene node.
 		\param position: Position of the space relative to its parent where the
-		 scene node will be placed.
+		scene node will be placed.
 		\param rotation: Initital rotation of the scene node.
 		\param scale: Initial scale of the scene node.
 		\return Pointer to the created test scene node. This
@@ -407,7 +407,7 @@ namespace scene
 		\param parent: Parent of the scene node. Can be NULL if no parent.
 		\param id: Id of the node. This id can be used to identify the scene node.
 		\param position: Position of the space relative to its parent where the
-		 scene node will be placed.
+		scene node will be placed.
 		\param rotation: Initital rotation of the scene node.
 		\param scale: Initial scale of the scene node.
 		\return Pointer to the created test scene node. This
@@ -477,19 +477,19 @@ namespace scene
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
 
 
-		 //! Adds a scene node for rendering using a octtree to the scene graph.
-		 /** This a good method for rendering
-		 scenes with lots of geometry. The Octree is built on the fly from the mesh.
-		 \param mesh: The mesh containing all geometry from which the octtree will be build.
-		 If this animated mesh has more than one frames in it, the first frame is taken.
-		 \param parent: Parent node of the octtree node.
-		 \param id: id of the node. This id can be used to identify the node.
-		 \param minimalPolysPerNode: Specifies the minimal polygons contained a octree node.
-		 If a node gets less polys than this value it will not be split into
-		 smaller nodes.
+		//! Adds a scene node for rendering using a octtree to the scene graph.
+		/** This a good method for rendering
+		scenes with lots of geometry. The Octree is built on the fly from the mesh.
+		\param mesh: The mesh containing all geometry from which the octtree will be build.
+		If this animated mesh has more than one frames in it, the first frame is taken.
+		\param parent: Parent node of the octtree node.
+		\param id: id of the node. This id can be used to identify the node.
+		\param minimalPolysPerNode: Specifies the minimal polygons contained a octree node.
+		If a node gets less polys than this value it will not be split into
+		smaller nodes.
 		\param alsoAddIfMeshPointerZero: Add the scene node even if a 0 pointer is passed.
-		 \return Pointer to the OctTree if successful, otherwise 0.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		\return Pointer to the OctTree if successful, otherwise 0.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
 
@@ -608,17 +608,17 @@ namespace scene
 
 		//! Adds a dynamic light scene node to the scene graph.
 		/** The light will cast dynamic light on all
-		 other scene nodes in the scene, which have the material flag video::MTF_LIGHTING
-		 turned on. (This is the default setting in most scene nodes).
-		 \param parent: Parent scene node of the light. Can be null. If the parent moves,
-		 the light will move too.
-		 \param position: Position of the space relative to its parent where the light will be placed.
-		 \param color: Diffuse color of the light. Ambient or Specular colors can be set manually with
-		 the ILightSceneNode::getLightData() method.
-		 \param radius: Radius of the light.
-		 \param id: id of the node. This id can be used to identify the node.
-		 \return Pointer to the interface of the light if successful, otherwise NULL.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		other scene nodes in the scene, which have the material flag video::MTF_LIGHTING
+		turned on. (This is the default setting in most scene nodes).
+		\param parent: Parent scene node of the light. Can be null. If the parent moves,
+		the light will move too.
+		\param position: Position of the space relative to its parent where the light will be placed.
+		\param color: Diffuse color of the light. Ambient or Specular colors can be set manually with
+		the ILightSceneNode::getLightData() method.
+		\param radius: Radius of the light.
+		\param id: id of the node. This id can be used to identify the node.
+		\return Pointer to the interface of the light if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ILightSceneNode* addLightSceneNode(ISceneNode* parent = 0,
 			const core::vector3df& position = core::vector3df(0,0,0),
 			video::SColorf color = video::SColorf(1.0f, 1.0f, 1.0f),
@@ -626,19 +626,19 @@ namespace scene
 
 		//! Adds a billboard scene node to the scene graph.
 		/** A billboard is like a 3d sprite: A 2d element,
-		 which always looks to the camera. It is usually used for things like explosions, fire,
-		 lensflares and things like that.
-		 \param parent: Parent scene node of the billboard. Can be null. If the parent moves,
-		 the billboard will move too.
-		 \param position: Position of the space relative to its parent
-		 where the billboard will be placed.
-		 \param size: Size of the billboard. This size is 2 dimensional because a billboard only has
-		 width and height.
-		 \param id: An id of the node. This id can be used to identify the node.
-		 \param colorTop: The color of the vertices at the top of the billboard (default: white).
-		 \param colorBottom: The color of the vertices at the bottom of the billboard (default: white).
-		 \return Pointer to the billboard if successful, otherwise NULL.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		which always looks to the camera. It is usually used for things like explosions, fire,
+		lensflares and things like that.
+		\param parent: Parent scene node of the billboard. Can be null. If the parent moves,
+		the billboard will move too.
+		\param position: Position of the space relative to its parent
+		where the billboard will be placed.
+		\param size: Size of the billboard. This size is 2 dimensional because a billboard only has
+		width and height.
+		\param id: An id of the node. This id can be used to identify the node.
+		\param colorTop: The color of the vertices at the top of the billboard (default: white).
+		\param colorBottom: The color of the vertices at the bottom of the billboard (default: white).
+		\return Pointer to the billboard if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IBillboardSceneNode* addBillboardSceneNode(ISceneNode* parent = 0,
 			const core::dimension2d<f32>& size = core::dimension2d<f32>(10.0f, 10.0f),
 			const core::vector3df& position = core::vector3df(0,0,0), s32 id=-1,
@@ -646,40 +646,40 @@ namespace scene
 
 		//! Adds a skybox scene node to the scene graph.
 		/** A skybox is a big cube with 6 textures on it and
-		 is drawn around the camera position.
-		 \param top: Texture for the top plane of the box.
-		 \param bottom: Texture for the bottom plane of the box.
-		 \param left: Texture for the left plane of the box.
-		 \param right: Texture for the right plane of the box.
-		 \param front: Texture for the front plane of the box.
-		 \param back: Texture for the back plane of the box.
-		 \param parent: Parent scene node of the skybox. A skybox usually has no parent,
-		 so this should be null. Note: If a parent is set to the skybox, the box will not
-		 change how it is drawn.
-		 \param id: An id of the node. This id can be used to identify the node.
-		 \return Pointer to the sky box if successful, otherwise NULL.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		is drawn around the camera position.
+		\param top: Texture for the top plane of the box.
+		\param bottom: Texture for the bottom plane of the box.
+		\param left: Texture for the left plane of the box.
+		\param right: Texture for the right plane of the box.
+		\param front: Texture for the front plane of the box.
+		\param back: Texture for the back plane of the box.
+		\param parent: Parent scene node of the skybox. A skybox usually has no parent,
+		so this should be null. Note: If a parent is set to the skybox, the box will not
+		change how it is drawn.
+		\param id: An id of the node. This id can be used to identify the node.
+		\return Pointer to the sky box if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSkyBoxSceneNode(video::ITexture* top, video::ITexture* bottom,
 			video::ITexture* left, video::ITexture* right, video::ITexture* front,
 			video::ITexture* back, ISceneNode* parent = 0, s32 id=-1) = 0;
 
 		//! Adds a skydome scene node to the scene graph.
 		/** A skydome is a large (half-) sphere with a panoramic texture
-		 on the inside and is drawn around the camera position.
-		 \param texture: Texture for the dome.
-		 \param horiRes: Number of vertices of a horizontal layer of the sphere.
-		 \param vertRes: Number of vertices of a vertical layer of the sphere.
-		 \param texturePercentage: How much of the height of the
-		 texture is used. Should be between 0 and 1.
-		 \param spherePercentage: How much of the sphere is drawn.
-		 Value should be between 0 and 2, where 1 is an exact
-		 half-sphere and 2 is a full sphere.
-		 \param parent: Parent scene node of the dome. A dome usually has no parent,
-		 so this should be null. Note: If a parent is set, the dome will not
-		 change how it is drawn.
-		 \param id: An id of the node. This id can be used to identify the node.
-		 \return Pointer to the sky dome if successful, otherwise NULL.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		on the inside and is drawn around the camera position.
+		\param texture: Texture for the dome.
+		\param horiRes: Number of vertices of a horizontal layer of the sphere.
+		\param vertRes: Number of vertices of a vertical layer of the sphere.
+		\param texturePercentage: How much of the height of the
+		texture is used. Should be between 0 and 1.
+		\param spherePercentage: How much of the sphere is drawn.
+		Value should be between 0 and 2, where 1 is an exact
+		half-sphere and 2 is a full sphere.
+		\param parent: Parent scene node of the dome. A dome usually has no parent,
+		so this should be null. Note: If a parent is set, the dome will not
+		change how it is drawn.
+		\param id: An id of the node. This id can be used to identify the node.
+		\return Pointer to the sky dome if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSkyDomeSceneNode(video::ITexture* texture,
 			u32 horiRes=16, u32 vertRes=8,
 			f64 texturePercentage=0.9, f64 spherePercentage=2.0,
@@ -687,17 +687,17 @@ namespace scene
 
 		//! Adds a particle system scene node to the scene graph.
 		/** \param withDefaultEmitter: Creates a default working point emitter
-		 which emitts some particles. Set this to true to see a particle system
-		 in action. If set to false, you'll have to set the emitter you want by
-		 calling IParticleSystemSceneNode::setEmitter().
-		 \param parent: Parent of the scene node. Can be NULL if no parent.
-		 \param id: Id of the node. This id can be used to identify the scene node.
-		 \param position: Position of the space relative to its parent where the
-		 scene node will be placed.
-		 \param rotation: Initital rotation of the scene node.
-		 \param scale: Initial scale of the scene node.
-		 \return Pointer to the created scene node.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		which emitts some particles. Set this to true to see a particle system
+		in action. If set to false, you'll have to set the emitter you want by
+		calling IParticleSystemSceneNode::setEmitter().
+		\param parent: Parent of the scene node. Can be NULL if no parent.
+		\param id: Id of the node. This id can be used to identify the scene node.
+		\param position: Position of the space relative to its parent where the
+		scene node will be placed.
+		\param rotation: Initital rotation of the scene node.
+		\param scale: Initial scale of the scene node.
+		\return Pointer to the created scene node.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IParticleSystemSceneNode* addParticleSystemSceneNode(
 			bool withDefaultEmitter=true, ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0,0,0),
@@ -706,60 +706,60 @@ namespace scene
 
 		//! Adds a terrain scene node to the scene graph.
 		/** This node implements is a simple terrain renderer which uses
-		 a technique known as geo mip mapping
-		 for reducing the detail of triangle blocks which are far away.
-		 The code for the TerrainSceneNode is based on the terrain
-		 renderer by Soconne and the GeoMipMapSceneNode developed by
-		 Spintz. They made their code available for Irrlicht and allowed
-		 it to be distributed under this licence. I only modified some
-		 parts. A lot of thanks go to them.
+		a technique known as geo mip mapping
+		for reducing the detail of triangle blocks which are far away.
+		The code for the TerrainSceneNode is based on the terrain
+		renderer by Soconne and the GeoMipMapSceneNode developed by
+		Spintz. They made their code available for Irrlicht and allowed
+		it to be distributed under this licence. I only modified some
+		parts. A lot of thanks go to them.
 
-		 This scene node is capable of loading terrains and updating
-		 the indices at runtime to enable viewing very large terrains
-		 very quickly. It uses a CLOD (Continuous Level of Detail)
-		 algorithm which updates the indices for each patch based on
-		 a LOD (Level of Detail) which is determined based on a patch's
-		 distance from the camera.
+		This scene node is capable of loading terrains and updating
+		the indices at runtime to enable viewing very large terrains
+		very quickly. It uses a CLOD (Continuous Level of Detail)
+		algorithm which updates the indices for each patch based on
+		a LOD (Level of Detail) which is determined based on a patch's
+		distance from the camera.
 
-		 The patch size of the terrain must always be a size of 2^N+1,
-		 i.e. 8+1(9), 16+1(17), etc.
-		 The MaxLOD available is directly dependent on the patch size
-		 of the terrain. LOD 0 contains all of the indices to draw all
-		 the triangles at the max detail for a patch. As each LOD goes
-		 up by 1 the step taken, in generating indices increases by
-		 -2^LOD, so for LOD 1, the step taken is 2, for LOD 2, the step
-		 taken is 4, LOD 3 - 8, etc. The step can be no larger than
-		 the size of the patch, so having a LOD of 8, with a patch size
-		 of 17, is asking the algoritm to generate indices every 2^8 (
-		 256 ) vertices, which is not possible with a patch size of 17.
-		 The maximum LOD for a patch size of 17 is 2^4 ( 16 ). So,
-		 with a MaxLOD of 5, you'll have LOD 0 ( full detail ), LOD 1 (
-		 every 2 vertices ), LOD 2 ( every 4 vertices ), LOD 3 ( every
-		 8 vertices ) and LOD 4 ( every 16 vertices ).
-		 \param heightMapFileName: The name of the file on disk, to read vertex data from. This should
-		 be a gray scale bitmap.
-		 \param parent: Parent of the scene node. Can be 0 if no parent.
-		 \param id: Id of the node. This id can be used to identify the scene node.
-		 \param position: The absolute position of this node.
-		 \param rotation: The absolute rotation of this node. ( NOT YET IMPLEMENTED )
-		 \param scale: The scale factor for the terrain. If you're
-		 using a heightmap of size 129x129 and would like your terrain
-		 to be 12900x12900 in game units, then use a scale factor of (
-		 core::vector ( 100.0f, 100.0f, 100.0f ). If you use a Y
-		 scaling factor of 0.0f, then your terrain will be flat.
-		 \param vertexColor: The default color of all the vertices. If no texture is associated
-		 with the scene node, then all vertices will be this color. Defaults to white.
-		 \param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
-		 know what you are doing, this might lead to strange behaviour.
-		 \param patchSize: patch size of the terrain. Only change if you
-		 know what you are doing, this might lead to strange behaviour.
-		 \param smoothFactor: The number of times the vertices are smoothed.
-		 \param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
-		 \return Pointer to the created scene node. Can be null
-		 if the terrain could not be created, for example because the
-		 heightmap could not be loaded. The returned pointer should
-		 not be dropped. See IReferenceCounted::drop() for more
-		 information. */
+		The patch size of the terrain must always be a size of 2^N+1,
+		i.e. 8+1(9), 16+1(17), etc.
+		The MaxLOD available is directly dependent on the patch size
+		of the terrain. LOD 0 contains all of the indices to draw all
+		the triangles at the max detail for a patch. As each LOD goes
+		up by 1 the step taken, in generating indices increases by
+		-2^LOD, so for LOD 1, the step taken is 2, for LOD 2, the step
+		taken is 4, LOD 3 - 8, etc. The step can be no larger than
+		the size of the patch, so having a LOD of 8, with a patch size
+		of 17, is asking the algoritm to generate indices every 2^8 (
+		256 ) vertices, which is not possible with a patch size of 17.
+		The maximum LOD for a patch size of 17 is 2^4 ( 16 ). So,
+		with a MaxLOD of 5, you'll have LOD 0 ( full detail ), LOD 1 (
+		every 2 vertices ), LOD 2 ( every 4 vertices ), LOD 3 ( every
+		8 vertices ) and LOD 4 ( every 16 vertices ).
+		\param heightMapFileName: The name of the file on disk, to read vertex data from. This should
+		be a gray scale bitmap.
+		\param parent: Parent of the scene node. Can be 0 if no parent.
+		\param id: Id of the node. This id can be used to identify the scene node.
+		\param position: The absolute position of this node.
+		\param rotation: The absolute rotation of this node. ( NOT YET IMPLEMENTED )
+		\param scale: The scale factor for the terrain. If you're
+		using a heightmap of size 129x129 and would like your terrain
+		to be 12900x12900 in game units, then use a scale factor of (
+		core::vector ( 100.0f, 100.0f, 100.0f ). If you use a Y
+		scaling factor of 0.0f, then your terrain will be flat.
+		\param vertexColor: The default color of all the vertices. If no texture is associated
+		with the scene node, then all vertices will be this color. Defaults to white.
+		\param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
+		know what you are doing, this might lead to strange behaviour.
+		\param patchSize: patch size of the terrain. Only change if you
+		know what you are doing, this might lead to strange behaviour.
+		\param smoothFactor: The number of times the vertices are smoothed.
+		\param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
+		\return Pointer to the created scene node. Can be null
+		if the terrain could not be created, for example because the
+		heightmap could not be loaded. The returned pointer should
+		not be dropped. See IReferenceCounted::drop() for more
+		information. */
 		virtual ITerrainSceneNode* addTerrainSceneNode(
 				const c8* heightMapFileName,
 				ISceneNode* parent=0, s32 id=-1,
@@ -772,32 +772,32 @@ namespace scene
 
 		//! Adds a terrain scene node to the scene graph.
 		/** Just like the other addTerrainSceneNode() method, but takes an IReadFile
-		 pointer as parameter for the heightmap. For more informations take a look
-		 at the other function.
-		 \param heightMapFile: The file handle to read vertex data from. This should
-		 be a gray scale bitmap.
-		 \param parent: Parent of the scene node. Can be 0 if no parent.
-		 \param id: Id of the node. This id can be used to identify the scene node.
-		 \param position: The absolute position of this node.
-		 \param rotation: The absolute rotation of this node. ( NOT YET IMPLEMENTED )
-		 \param scale: The scale factor for the terrain. If you're
-		 using a heightmap of size 129x129 and would like your terrain
-		 to be 12900x12900 in game units, then use a scale factor of (
-		 core::vector ( 100.0f, 100.0f, 100.0f ). If you use a Y
-		 scaling factor of 0.0f, then your terrain will be flat.
-		 \param vertexColor: The default color of all the vertices. If no texture is associated
-		 with the scene node, then all vertices will be this color. Defaults to white.
-		 \param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
-		 know what you are doing, this might lead to strange behaviour.
-		 \param patchSize: patch size of the terrain. Only change if you
-		 know what you are doing, this might lead to strange behaviour.
-		 \param smoothFactor: The number of times the vertices are smoothed.
-		 \param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
-		 \return Pointer to the created scene node. Can be null
-		 if the terrain could not be created, for example because the
-		 heightmap could not be loaded. The returned pointer should
-		 not be dropped. See IReferenceCounted::drop() for more
-		 information. */
+		pointer as parameter for the heightmap. For more informations take a look
+		at the other function.
+		\param heightMapFile: The file handle to read vertex data from. This should
+		be a gray scale bitmap.
+		\param parent: Parent of the scene node. Can be 0 if no parent.
+		\param id: Id of the node. This id can be used to identify the scene node.
+		\param position: The absolute position of this node.
+		\param rotation: The absolute rotation of this node. ( NOT YET IMPLEMENTED )
+		\param scale: The scale factor for the terrain. If you're
+		using a heightmap of size 129x129 and would like your terrain
+		to be 12900x12900 in game units, then use a scale factor of (
+		core::vector ( 100.0f, 100.0f, 100.0f ). If you use a Y
+		scaling factor of 0.0f, then your terrain will be flat.
+		\param vertexColor: The default color of all the vertices. If no texture is associated
+		with the scene node, then all vertices will be this color. Defaults to white.
+		\param maxLOD: The maximum LOD (level of detail) for the node. Only change if you
+		know what you are doing, this might lead to strange behaviour.
+		\param patchSize: patch size of the terrain. Only change if you
+		know what you are doing, this might lead to strange behaviour.
+		\param smoothFactor: The number of times the vertices are smoothed.
+		\param addAlsoIfHeightmapEmpty: Add terrain node even with empty heightmap.
+		\return Pointer to the created scene node. Can be null
+		if the terrain could not be created, for example because the
+		heightmap could not be loaded. The returned pointer should
+		not be dropped. See IReferenceCounted::drop() for more
+		information. */
 		virtual ITerrainSceneNode* addTerrainSceneNode(
 			io::IReadFile* heightMapFile,
 			ISceneNode* parent=0, s32 id=-1,
@@ -810,8 +810,8 @@ namespace scene
 
 		//! Adds a quake3 scene node to the scene graph.
 		/** A Quake3 Scene renders multiple meshes for a specific HighLanguage Shader (Quake3 Style )
-		 \return Pointer to the quake3 scene node if successful, otherwise NULL.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		\return Pointer to the quake3 scene node if successful, otherwise NULL.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addQuake3SceneNode(IMeshBuffer* meshBuffer, const quake3::SShader * shader,
 												ISceneNode* parent=0, s32 id=-1
 												) = 0;
@@ -819,18 +819,18 @@ namespace scene
 
 		//! Adds an empty scene node to the scene graph.
 		/** Can be used for doing advanced transformations
-		 or structuring the scene graph.
-		 \return Pointer to the created scene node.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		or structuring the scene graph.
+		\return Pointer to the created scene node.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addEmptySceneNode(ISceneNode* parent=0, s32 id=-1) = 0;
 
 		//! Adds a dummy transformation scene node to the scene graph.
 		/** This scene node does not render itself, and does not respond to set/getPosition,
-		 set/getRotation and set/getScale. Its just a simple scene node that takes a
-		 matrix as relative transformation, making it possible to insert any transformation
-		 anywhere into the scene graph.
-		 \return Pointer to the created scene node.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		set/getRotation and set/getScale. Its just a simple scene node that takes a
+		matrix as relative transformation, making it possible to insert any transformation
+		anywhere into the scene graph.
+		\return Pointer to the created scene node.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IDummyTransformationSceneNode* addDummyTransformationSceneNode(
 			ISceneNode* parent=0, s32 id=-1) = 0;
 
@@ -860,60 +860,60 @@ namespace scene
 
 		//! Adds a Hill Plane mesh to the mesh pool.
 		/** The mesh is generated on the fly
-		 and looks like a plane with some hills on it. It is uses mostly for quick
-		 tests of the engine only. You can specify how many hills there should be
-		 on the plane and how high they should be. Also you must specify a name for
-		 the mesh, because the mesh is added to the mesh pool, and can be retrieved
-		 again using ISceneManager::getMesh() with the name as parameter.
-		 \param name: The name of this mesh which must be specified in order
-		 to be able to retrieve the mesh later with ISceneManager::getMesh().
-		 \param tileSize: Size of a tile of the mesh. (10.0f, 10.0f) would be a
-		 good value to start, for example.
-		 \param tileCount: Specifies how much tiles there will be. If you specifiy
-		 for example that a tile has the size (10.0f, 10.0f) and the tileCount is
-		 (10,10), than you get a field of 100 tiles which has the dimension 100.0fx100.0f.
-		 \param material: Material of the hill mesh.
-		 \param hillHeight: Height of the hills. If you specify a negative value
-		 you will get holes instead of hills. If the height is 0, no hills will be
-		 created.
-		 \param countHills: Amount of hills on the plane. There will be countHills.X
-		 hills along the X axis and countHills.Y along the Y axis. So in total there
-		 will be countHills.X * countHills.Y hills.
-		 \param textureRepeatCount: Defines how often the texture will be repeated in
-		 x and y direction.
-		\return Null if the creation failed. The reason could be that you
-		 specified some invalid parameters or that a mesh with that name already
-		 exists. If successful, a pointer to the mesh is returned.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		and looks like a plane with some hills on it. It is uses mostly for quick
+		tests of the engine only. You can specify how many hills there should be
+		on the plane and how high they should be. Also you must specify a name for
+		the mesh, because the mesh is added to the mesh pool, and can be retrieved
+		again using ISceneManager::getMesh() with the name as parameter.
+		\param name: The name of this mesh which must be specified in order
+		to be able to retrieve the mesh later with ISceneManager::getMesh().
+		\param tileSize: Size of a tile of the mesh. (10.0f, 10.0f) would be a
+		good value to start, for example.
+		\param tileCount: Specifies how much tiles there will be. If you specifiy
+		for example that a tile has the size (10.0f, 10.0f) and the tileCount is
+		(10,10), than you get a field of 100 tiles which has the dimension 100.0fx100.0f.
+		\param material: Material of the hill mesh.
+		\param hillHeight: Height of the hills. If you specify a negative value
+		you will get holes instead of hills. If the height is 0, no hills will be
+		created.
+		\param countHills: Amount of hills on the plane. There will be countHills.X
+		hills along the X axis and countHills.Y along the Y axis. So in total there
+		will be countHills.X * countHills.Y hills.
+		\param textureRepeatCount: Defines how often the texture will be repeated in
+		x and y direction.
+		return Null if the creation failed. The reason could be that you
+		specified some invalid parameters or that a mesh with that name already
+		exists. If successful, a pointer to the mesh is returned.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IAnimatedMesh* addHillPlaneMesh(const c8* name,
 			const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 			video::SMaterial* material = 0, f32 hillHeight = 0.0f,
 			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(0.0f, 0.0f),
 			const core::dimension2d<f32>& textureRepeatCount = core::dimension2d<f32>(1.0f, 1.0f)) = 0;
 
-		 //! Adds a static terrain mesh to the mesh pool.
-		 /** The mesh is generated on the fly
-		 from a texture file and a height map file. Both files may be huge
-		 (8000x8000 pixels would be no problem) because the generator splits the
-		 files into smaller textures if necessary.
-		 You must specify a name for the mesh, because the mesh is added to the mesh pool,
-		 and can be retrieved again using ISceneManager::getMesh() with the name as parameter.
-		 \param meshname: The name of this mesh which must be specified in order
-		 to be able to retrieve the mesh later with ISceneManager::getMesh().
-		 \param texture: Texture for the terrain. Please note that this is not a
-		 hardware texture as usual (ITexture), but an IImage software texture.
-		 You can load this texture with IVideoDriver::createImageFromFile().
-		 \param heightmap: A grayscaled heightmap image. Like the texture,
-		 it can be created with IVideoDriver::createImageFromFile(). The amount
-		 of triangles created depends on the size of this texture, so use a small
-		 heightmap to increase rendering speed.
-		 \param stretchSize: Parameter defining how big a is pixel on the heightmap.
-		 \param maxHeight: Defines how high a white pixel on the heighmap is.
-		 \param defaultVertexBlockSize: Defines the initial dimension between vertices.
-		 \return Null if the creation failed. The reason could be that you
-		 specified some invalid parameters, that a mesh with that name already
-		 exists, or that a texture could not be found. If successful, a pointer to the mesh is returned.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		//! Adds a static terrain mesh to the mesh pool.
+		/** The mesh is generated on the fly
+		from a texture file and a height map file. Both files may be huge
+		(8000x8000 pixels would be no problem) because the generator splits the
+		files into smaller textures if necessary.
+		You must specify a name for the mesh, because the mesh is added to the mesh pool,
+		and can be retrieved again using ISceneManager::getMesh() with the name as parameter.
+		\param meshname: The name of this mesh which must be specified in order
+		to be able to retrieve the mesh later with ISceneManager::getMesh().
+		\param texture: Texture for the terrain. Please note that this is not a
+		hardware texture as usual (ITexture), but an IImage software texture.
+		You can load this texture with IVideoDriver::createImageFromFile().
+		\param heightmap: A grayscaled heightmap image. Like the texture,
+		it can be created with IVideoDriver::createImageFromFile(). The amount
+		of triangles created depends on the size of this texture, so use a small
+		heightmap to increase rendering speed.
+		\param stretchSize: Parameter defining how big a is pixel on the heightmap.
+		\param maxHeight: Defines how high a white pixel on the heighmap is.
+		\param defaultVertexBlockSize: Defines the initial dimension between vertices.
+		\return Null if the creation failed. The reason could be that you
+		specified some invalid parameters, that a mesh with that name already
+		exists, or that a texture could not be found. If successful, a pointer to the mesh is returned.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual IAnimatedMesh* addTerrainMesh(const c8* meshname,
 			video::IImage* texture, video::IImage* heightmap,
 			const core::dimension2d<f32>& stretchSize = core::dimension2d<f32>(10.0f,10.0f),
@@ -1018,42 +1018,42 @@ namespace scene
 
 		//! Registers a node for rendering it at a specific time.
 		/** This method should only be used by SceneNodes when they get a
-		 ISceneNode::OnRegisterSceneNode() call.
-		 \param node: Node to register for drawing. Usually scene nodes would set 'this'
-		 as parameter here because they want to be drawn.
-		 \param pass: Specifies when the node wants to be drawn in relation to the other nodes.
-		 For example, if the node is a shadow, it usually wants to be drawn after all other nodes
-		 and will use ESNRP_SHADOW for this. See scene::E_SCENE_NODE_RENDER_PASS for details.
-		 \return scene will be rendered ( passed culling ) */
+		ISceneNode::OnRegisterSceneNode() call.
+		\param node: Node to register for drawing. Usually scene nodes would set 'this'
+		as parameter here because they want to be drawn.
+		\param pass: Specifies when the node wants to be drawn in relation to the other nodes.
+		For example, if the node is a shadow, it usually wants to be drawn after all other nodes
+		and will use ESNRP_SHADOW for this. See scene::E_SCENE_NODE_RENDER_PASS for details.
+		\return scene will be rendered ( passed culling ) */
 		virtual u32 registerNodeForRendering(ISceneNode* node,
 			E_SCENE_NODE_RENDER_PASS pass = ESNRP_AUTOMATIC) = 0;
 
 		//! Draws all the scene nodes.
 		/** This can only be invoked between
-		 IVideoDriver::beginScene() and IVideoDriver::endScene(). Please note that
-		 the scene is not only drawn when calling this, but also animated
-		 by existing scene node animators, culling of scene nodes is done, etc. */
+		IVideoDriver::beginScene() and IVideoDriver::endScene(). Please note that
+		the scene is not only drawn when calling this, but also animated
+		by existing scene node animators, culling of scene nodes is done, etc. */
 		virtual void drawAll() = 0;
 
 		//! Creates a rotation animator, which rotates the attached scene node around itself.
 		/** \param rotationPerSecond: Specifies the speed of the animation
-		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
-		 and the animator will animate it.
-		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
-		 See IReferenceCounted::drop() for more information. */
+		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
+		and the animator will animate it.
+		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createRotationAnimator(const core::vector3df& rotationPerSecond) = 0;
 
 		//! Creates a fly circle animator, which lets the attached scene node fly around a center.
 		/** \param center: Center of the circle.
-		 \param radius: Radius of the circle.
-		 \param speed: The orbital speed, in radians per millisecond.
-		 \param direction: Specifies the upvector used for alignment of the mesh.
-		 \param startPosition: The position on the circle where the animator will
-			begin. Value is in multiples  of a circle, i.e. 0.5 is half way around.
-		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
-		 and the animator will animate it.
-		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
-		 See IReferenceCounted::drop() for more information. */
+		\param radius: Radius of the circle.
+		\param speed: The orbital speed, in radians per millisecond.
+		\param direction: Specifies the upvector used for alignment of the mesh.
+		\param startPosition: The position on the circle where the animator will
+		begin. Value is in multiples  of a circle, i.e. 0.5 is half way around.
+		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
+		and the animator will animate it.
+		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createFlyCircleAnimator(
 				const core::vector3df& center=core::vector3df(0.f,0.f,0.f),
 				f32 radius=100.f, f32 speed=0.001f,
@@ -1062,70 +1062,70 @@ namespace scene
 
 		//! Creates a fly straight animator, which lets the attached scene node fly or move along a line between two points.
 		/** \param startPoint: Start point of the line.
-		 \param endPoint: End point of the line.
-		 \param timeForWay: Time in milli seconds how long the node should need to
-		 move from the start point to the end point.
-		 \param loop: If set to false, the node stops when the end point is reached.
-		 If loop is true, the node begins again at the start.
-		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
-		 and the animator will animate it.
-		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
-		 See IReferenceCounted::drop() for more information. */
+		\param endPoint: End point of the line.
+		\param timeForWay: Time in milli seconds how long the node should need to
+		move from the start point to the end point.
+		\param loop: If set to false, the node stops when the end point is reached.
+		If loop is true, the node begins again at the start.
+		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
+		and the animator will animate it.
+		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createFlyStraightAnimator(const core::vector3df& startPoint,
 			const core::vector3df& endPoint, u32 timeForWay, bool loop=false) = 0;
 
 		//! Creates a texture animator, which switches the textures of the target scene node based on a list of textures.
 		/** \param textures: List of textures to use.
-		 \param timePerFrame: Time in milliseconds, how long any texture in the list
-		 should be visible.
-		 \param loop: If set to to false, the last texture remains set, and the animation
-		 stops. If set to true, the animation restarts with the first texture.
-		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
-		 and the animator will animate it.
-		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
-		 See IReferenceCounted::drop() for more information. */
+		\param timePerFrame: Time in milliseconds, how long any texture in the list
+		should be visible.
+		\param loop: If set to to false, the last texture remains set, and the animation
+		stops. If set to true, the animation restarts with the first texture.
+		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
+		and the animator will animate it.
+		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createTextureAnimator(const core::array<video::ITexture*>& textures,
 			s32 timePerFrame, bool loop=true) = 0;
 
 		//! Creates a scene node animator, which deletes the scene node after some time automatically.
 		/** \param timeMs: Time in milliseconds, after when the node will be deleted.
-		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
-		 and the animator will animate it.
-		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
-		 See IReferenceCounted::drop() for more information. */
+		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
+		and the animator will animate it.
+		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createDeleteAnimator(u32 timeMs) = 0;
 
 		//! Creates a special scene node animator for doing automatic collision detection and response.
 		/** See ISceneNodeAnimatorCollisionResponse for details.
-		 \param world: Triangle selector holding all triangles of the world with which
-		 the scene node may collide. You can create a triangle selector with
-		 ISceneManager::createTriangleSelector();
-		 \param sceneNode: SceneNode which should be manipulated. After you added this animator
-		 to the scene node, the scene node will not be able to move through walls and is
-		 affected by gravity.  If you need to teleport the scene node to a new position without
-		 it being effected by the collision geometry, then call sceneNode->setPosition(); then
-		 animator->setTargetNode(sceneNode);
-		 \param ellipsoidRadius: Radius of the ellipsoid with which collision detection and
-		 response is done. If you have got a scene node, and you are unsure about
-		 how big the radius should be, you could use the following code to determine
-		 it:
-		 \code
-		 const core::aabbox3d<f32>& box = yourSceneNode->getBoundingBox();
-		 core::vector3df radius = box.MaxEdge - box.getCenter();
-		 \endcode
-		 \param gravityPerSecond: Sets the gravity of the environment, as an acceleration in
-		 units per second per second. If your units are equivalent to metres, then
-		 core::vector3df(0,-10.0f,0) would give an approximately realistic gravity.
-		 You can disable gravity by setting it to core::vector3df(0,0,0).
-		 \param ellipsoidTranslation: By default, the ellipsoid for collision detection is created around
-		 the center of the scene node, which means that the ellipsoid surrounds
-		 it completely. If this is not what you want, you may specify a translation
-		 for the ellipsoid.
-		 \param slidingValue: DOCUMENTATION NEEDED.
-		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
-		 and the animator will cause it to do collision detection and response.
-		 If you no longer need the animator, you should call ISceneNodeAnimator::drop().
-		 See IReferenceCounted::drop() for more information. */
+		\param world: Triangle selector holding all triangles of the world with which
+		the scene node may collide. You can create a triangle selector with
+		ISceneManager::createTriangleSelector();
+		\param sceneNode: SceneNode which should be manipulated. After you added this animator
+		to the scene node, the scene node will not be able to move through walls and is
+		affected by gravity.  If you need to teleport the scene node to a new position without
+		it being effected by the collision geometry, then call sceneNode->setPosition(); then
+		animator->setTargetNode(sceneNode);
+		\param ellipsoidRadius: Radius of the ellipsoid with which collision detection and
+		response is done. If you have got a scene node, and you are unsure about
+		how big the radius should be, you could use the following code to determine
+		it:
+		\code
+		const core::aabbox3d<f32>& box = yourSceneNode->getBoundingBox();
+		core::vector3df radius = box.MaxEdge - box.getCenter();
+		\endcode
+		\param gravityPerSecond: Sets the gravity of the environment, as an acceleration in
+		units per second per second. If your units are equivalent to metres, then
+		core::vector3df(0,-10.0f,0) would give an approximately realistic gravity.
+		You can disable gravity by setting it to core::vector3df(0,0,0).
+		\param ellipsoidTranslation: By default, the ellipsoid for collision detection is created around
+		the center of the scene node, which means that the ellipsoid surrounds
+		it completely. If this is not what you want, you may specify a translation
+		for the ellipsoid.
+		\param slidingValue: DOCUMENTATION NEEDED.
+		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
+		and the animator will cause it to do collision detection and response.
+		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimatorCollisionResponse* createCollisionResponseAnimator(
 			ITriangleSelector* world, ISceneNode* sceneNode,
 			const core::vector3df& ellipsoidRadius = core::vector3df(30,60,30),
@@ -1148,70 +1148,70 @@ namespace scene
 
 		//! Creates a simple ITriangleSelector, based on a mesh.
 		/** Triangle selectors
-		 can be used for doing collision detection. Don't use this selector
-		 for a huge amount of triangles like in Quake3 maps.
-		 Instead, use for example ISceneManager::createOctTreeTriangleSelector().
-		 Please note that the created triangle selector is not automaticly attached
-		 to the scene node. You will have to call ISceneNode::setTriangleSelector()
-		 for this. To create and attach a triangle selector is done like this:
-		 \code
-		 ITriangleSelector* s = sceneManager->createTriangleSelector(yourMesh,
+		can be used for doing collision detection. Don't use this selector
+		for a huge amount of triangles like in Quake3 maps.
+		Instead, use for example ISceneManager::createOctTreeTriangleSelector().
+		Please note that the created triangle selector is not automaticly attached
+		to the scene node. You will have to call ISceneNode::setTriangleSelector()
+		for this. To create and attach a triangle selector is done like this:
+		\code
+		ITriangleSelector* s = sceneManager->createTriangleSelector(yourMesh,
 				yourSceneNode);
-		 yourSceneNode->setTriangleSelector(s);
-		 s->drop();
-		 \endcode
-		 \param mesh: Mesh of which the triangles are taken.
-		 \param node: Scene node of which visibility and transformation is used.
-		 \return The selector, or null if not successful.
-		 If you no longer need the selector, you should call ITriangleSelector::drop().
-		 See IReferenceCounted::drop() for more information. */
+		yourSceneNode->setTriangleSelector(s);
+		s->drop();
+		\endcode
+		\param mesh: Mesh of which the triangles are taken.
+		\param node: Scene node of which visibility and transformation is used.
+		\return The selector, or null if not successful.
+		If you no longer need the selector, you should call ITriangleSelector::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node) = 0;
 
 		//! Creates a simple dynamic ITriangleSelector, based on a axis aligned bounding box.
 		/** Triangle selectors
-		 can be used for doing collision detection. Every time when triangles are
-		 queried, the triangle selector gets the bounding box of the scene node,
-		 an creates new triangles. In this way, it works good with animated scene nodes.
-		 \param node: Scene node of which the bounding box, visibility and transformation is used.
-		 \return The selector, or null if not successful.
-		 If you no longer need the selector, you should call ITriangleSelector::drop().
-		 See IReferenceCounted::drop() for more information. */
+		can be used for doing collision detection. Every time when triangles are
+		queried, the triangle selector gets the bounding box of the scene node,
+		an creates new triangles. In this way, it works good with animated scene nodes.
+		\param node: Scene node of which the bounding box, visibility and transformation is used.
+		\return The selector, or null if not successful.
+		If you no longer need the selector, you should call ITriangleSelector::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ITriangleSelector* createTriangleSelectorFromBoundingBox(ISceneNode* node) = 0;
 
 		//! Creates a Triangle Selector, optimized by an octtree.
 		/** Triangle selectors
-		 can be used for doing collision detection. This triangle selector is
-		 optimized for huge amounts of triangle, it organizes them in an octtree.
-		 Please note that the created triangle selector is not automaticly attached
-		 to the scene node. You will have to call ISceneNode::setTriangleSelector()
-		 for this. To create and attach a triangle selector is done like this:
-		 \code
-		 ITriangleSelector* s = sceneManager->createOctTreeTriangleSelector(yourMesh,
+		can be used for doing collision detection. This triangle selector is
+		optimized for huge amounts of triangle, it organizes them in an octtree.
+		Please note that the created triangle selector is not automaticly attached
+		to the scene node. You will have to call ISceneNode::setTriangleSelector()
+		for this. To create and attach a triangle selector is done like this:
+		\code
+		ITriangleSelector* s = sceneManager->createOctTreeTriangleSelector(yourMesh,
 				yourSceneNode);
-		 yourSceneNode->setTriangleSelector(s);
-		 s->drop();
-		 \endcode
-		 For more informations and examples on this, take a look at the collision
-		 tutorial in the SDK.
-		 \param mesh: Mesh of which the triangles are taken.
-		 \param node: Scene node of which visibility and transformation is used.
-		 \param minimalPolysPerNode: Specifies the minimal polygons contained a octree node.
-		 If a node gets less polys the this value, it will not be splitted into
-		 smaller nodes.
-		 \return The selector, or null if not successful.
-		 If you no longer need the selector, you should call ITriangleSelector::drop().
-		 See IReferenceCounted::drop() for more information. */
+		yourSceneNode->setTriangleSelector(s);
+		s->drop();
+		\endcode
+		For more informations and examples on this, take a look at the collision
+		tutorial in the SDK.
+		\param mesh: Mesh of which the triangles are taken.
+		\param node: Scene node of which visibility and transformation is used.
+		\param minimalPolysPerNode: Specifies the minimal polygons contained a octree node.
+		If a node gets less polys the this value, it will not be splitted into
+		smaller nodes.
+		\return The selector, or null if not successful.
+		If you no longer need the selector, you should call ITriangleSelector::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode=32) = 0;
 
 		//! Creates a meta triangle selector.
 		/** A meta triangle selector is nothing more than a
-		 collection of one or more triangle selectors providing together
-		 the interface of one triangle selector. In this way,
-		 collision tests can be done with different triangle soups in one pass.
-		 \return The selector, or null if not successful.
-		 If you no longer need the selector, you should call ITriangleSelector::drop().
-		 See IReferenceCounted::drop() for more information. */
+		collection of one or more triangle selectors providing together
+		the interface of one triangle selector. In this way,
+		collision tests can be done with different triangle soups in one pass.
+		\return The selector, or null if not successful.
+		If you no longer need the selector, you should call ITriangleSelector::drop().
+		See IReferenceCounted::drop() for more information. */
 		virtual IMetaTriangleSelector* createMetaTriangleSelector() = 0;
 
 		//! Creates a triangle selector which can select triangles from a terrain scene node.
@@ -1244,18 +1244,18 @@ namespace scene
 
 		//! Adds a scene node to the deletion queue.
 		/** The scene node is immediatly
-		 deleted when it's secure. Which means when the scene node does not
-		 execute animators and things like that. This method is for example
-		 used for deleting scene nodes by their scene node animators. In
-		 most other cases, a ISceneNode::remove() call is enough, using this
-		 deletion queue is not necessary.
-		 See ISceneManager::createDeleteAnimator() for details.
-		 \param node: Node to detete. */
+		deleted when it's secure. Which means when the scene node does not
+		execute animators and things like that. This method is for example
+		used for deleting scene nodes by their scene node animators. In
+		most other cases, a ISceneNode::remove() call is enough, using this
+		deletion queue is not necessary.
+		See ISceneManager::createDeleteAnimator() for details.
+		\param node: Node to detete. */
 		virtual void addToDeletionQueue(ISceneNode* node) = 0;
 
 		//! Posts an input event to the environment.
 		/** Usually you do not have to
-		 use this method, it is used by the internal engine. */
+		use this method, it is used by the internal engine. */
 		virtual bool postEventFromUser(const SEvent& event) = 0;
 
 		//! Clears the whole scene.
@@ -1264,19 +1264,19 @@ namespace scene
 
 		//! Get interface to the parameters set in this scene.
 		/** String parameters can be used by plugins and mesh loaders.
-		 For example the CMS and LMTS loader want a parameter named 'CSM_TexturePath'
-		 and 'LMTS_TexturePath' set to the path were attached textures can be found. See
-		 CSM_TEXTURE_PATH, LMTS_TEXTURE_PATH, MY3D_TEXTURE_PATH,
-		 COLLADA_CREATE_SCENE_INSTANCES, DMF_TEXTURE_PATH and DMF_USE_MATERIALS_DIRS*/
+		For example the CMS and LMTS loader want a parameter named 'CSM_TexturePath'
+		and 'LMTS_TexturePath' set to the path were attached textures can be found. See
+		CSM_TEXTURE_PATH, LMTS_TEXTURE_PATH, MY3D_TEXTURE_PATH,
+		COLLADA_CREATE_SCENE_INSTANCES, DMF_TEXTURE_PATH and DMF_USE_MATERIALS_DIRS*/
 		virtual io::IAttributes* getParameters() = 0;
 
 		//! Get current render pass.
 		/** All scene nodes are being rendered in a specific order.
-		 First lights, cameras, sky boxes, solid geometry, and then transparent
-		 stuff. During the rendering process, scene nodes may want to know what the scene
-		 manager is rendering currently, because for example they registered for rendering
-		 twice, once for transparent geometry and once for solid. When knowing what rendering
-		 pass currently is active they can render the correct part of their geometry. */
+		First lights, cameras, sky boxes, solid geometry, and then transparent
+		stuff. During the rendering process, scene nodes may want to know what the scene
+		manager is rendering currently, because for example they registered for rendering
+		twice, once for transparent geometry and once for solid. When knowing what rendering
+		pass currently is active they can render the correct part of their geometry. */
 		virtual E_SCENE_NODE_RENDER_PASS getSceneNodeRenderPass() const = 0;
 
 		//! Get the default scene node factory which can create all built in scene nodes

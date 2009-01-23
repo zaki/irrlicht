@@ -70,7 +70,8 @@ IImageWriter* createImageWriterPPM();
 //! constructor
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
-	PrimitivesDrawn(0), TextureCreationFlags(0), AllowZWriteOnTransparent(false)
+	PrimitivesDrawn(0), MinVertexCountForVBO(500), TextureCreationFlags(0),
+	AllowZWriteOnTransparent(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");
@@ -1406,7 +1407,7 @@ bool CNullDriver::isHardwareBufferRecommend(const scene::IMeshBuffer* mb)
 	if (!mb || (mb->getHardwareMappingHint_Index()==scene::EHM_NEVER && mb->getHardwareMappingHint_Vertex()==scene::EHM_NEVER))
 		return false;
 
-	if (mb->getVertexCount()<500) //todo: tweak and make user definable
+	if (mb->getVertexCount()<MinVertexCountForVBO)
 		return false;
 
 	return true;
@@ -1941,9 +1942,6 @@ bool CNullDriver::setClipPlane(u32 index, const core::plane3df& plane, bool enab
 
 
 //! Enable/disable a clipping plane.
-//! There are at least 6 clipping planes available for the user to set at will.
-//! \param index: The plane index. Must be between 0 and MaxUserClipPlanes.
-//! \param enable: If true, enable the clipping plane else disable it.
 void CNullDriver::enableClipPlane(u32 index, bool enable)
 {
 	// not necessary
@@ -1957,6 +1955,12 @@ ITexture* CNullDriver::createRenderTargetTexture(const core::dimension2d<u32>& s
 	ITexture* tex = addRenderTargetTexture(size, name);
 	tex->grab();
 	return tex;
+}
+
+
+void CNullDriver::setMinHardwareBufferVertexCount(u32 count)
+{
+	MinVertexCountForVBO = count;
 }
 
 } // end namespace
