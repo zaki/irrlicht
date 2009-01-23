@@ -1828,6 +1828,12 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	// texture address mode
 	for (u32 st=0; st<MaxTextureUnits; ++st)
 	{
+		if (resetAllRenderstates || lastmaterial.TextureLayer[st].LODBias != material.TextureLayer[st].LODBias)
+		{
+			const float tmp = material.TextureLayer[st].LODBias * 0.125f;
+			pID3DDevice->SetSamplerState(st, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)(&tmp));
+		}
+
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrap != material.TextureLayer[st].TextureWrap)
 		{
 			u32 mode = D3DTADDRESS_WRAP;

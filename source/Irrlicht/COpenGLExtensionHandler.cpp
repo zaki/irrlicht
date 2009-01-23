@@ -21,7 +21,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		TextureCompressionExtension(false),
 		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1), MaxUserClipPlanes(0),
 		MaxAuxBuffers(0), MaxIndices(65535), MaxTextureSize(1),
-		Version(0), ShaderLanguageVersion(0)
+		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
 	pGlGenProgramsARB(0), pGlBindProgramARB(0), pGlProgramStringARB(0),
@@ -411,6 +411,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
 	MaxTextureSize=static_cast<u32>(num);
+#ifdef EXT_texture_lod_bias
+	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
+#endif
 	glGetIntegerv(GL_MAX_CLIP_PLANES, &num);
 	MaxUserClipPlanes=static_cast<u8>(num);
 	glGetIntegerv(GL_AUX_BUFFERS, &num);
