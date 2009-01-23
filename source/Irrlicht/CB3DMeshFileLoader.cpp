@@ -907,7 +907,8 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 		SB3dTexture* B3dTexture = material.Textures[i];
 		if (B3dTexture && B3dTexture->TextureName.size() && !material.Material.getTexture(i))
 		{
-			SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, (B3dTexture->Flags & 0x8) ? true:false);
+			if (!SceneManager->getParameters()->getAttributeAsBool(B3D_LOADER_IGNORE_MIPMAP_FLAG))
+				SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, (B3dTexture->Flags & 0x8) ? true:false);
 			material.Material.setTexture(i, SceneManager->getVideoDriver()->getTexture( B3dTexture->TextureName.c_str() ));
 			if (material.Textures[i]->Flags & 0x10) // Clamp U
 				material.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;

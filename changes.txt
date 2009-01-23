@@ -1,5 +1,9 @@
 Changes in version 1.6
 
+ - New scene parameter B3D_LOADER_IGNORE_MIPMAP_FLAG to ignore the often missing mipmap flag in b3d files. If this parameter is true, the old pre Irrlicht-1.5 behavior is restored.
+
+ - Added Mipmap LOD Bias attribute to MaterialLayer.
+
  - Added ColorMask support to selectively disable color planes on rendering.
 
  - Added support for all available depth test functions.
