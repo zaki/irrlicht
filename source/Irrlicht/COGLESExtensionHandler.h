@@ -364,16 +364,17 @@ namespace video
 #endif
 
 	protected:
-		bool FeatureAvailable[IRR_OGLES_Feature_Count];
-		s32 EGLVersion;
-		s32 Version;
-		u32 MaxUserClipPlanes;
-		u32 MaxTextureUnits;
-		s32 MaxLights;
+		u16 EGLVersion;
+		u16 Version;
+		u8 MaxTextureUnits;
+		u8 MaxLights;
+		u8 MaxAnisotropy;
+		u8 MaxUserClipPlanes;
 		bool CommonProfile;
 		bool MultiTextureExtension;
 		bool MultiSamplingExtension;
 		bool StencilBuffer;
+		bool FeatureAvailable[IRR_OGLES_Feature_Count];
 	};
 
 } // end namespace video

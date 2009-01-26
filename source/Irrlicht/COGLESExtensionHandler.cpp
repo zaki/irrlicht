@@ -75,8 +75,8 @@ COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 		pGlFramebufferRenderbufferOES(0), pGlFramebufferTexture2DOES(0),
 		pGlGenerateMipMapOES(0),
 #endif
-	EGLVersion(0), Version(0), MaxUserClipPlanes(0), MaxTextureUnits(0),
-	MaxLights(0), CommonProfile(false), MultiTextureExtension(false),
+	EGLVersion(0), Version(0), MaxTextureUnits(0), MaxLights(0), MaxAnisotropy(1),
+	MaxUserClipPlanes(0), CommonProfile(false), MultiTextureExtension(false),
 	MultiSamplingExtension(false), StencilBuffer(false)
 {
 	for (u32 i=0; i<IRR_OGLES_Feature_Count; ++i)
@@ -99,14 +99,14 @@ void COGLES1ExtensionHandler::initExtensions(
 {
 #ifdef EGL_VERSION_1_0
 	const f32 egl_ver = core::fast_atof(reinterpret_cast<const c8*>(eglQueryString(display, EGL_VERSION)));
-	EGLVersion = core::floor32(egl_ver)*100+core::round32(core::fract(egl_ver)*10.0f);
+	EGLVersion = static_cast<u16>(core::floor32(egl_ver)*100+core::round32(core::fract(egl_ver)*10.0f));
 	core::stringc eglExtensions = eglQueryString(display, EGL_EXTENSIONS);
 	os::Printer::log(eglExtensions.c_str());
 #endif
 	const core::stringc stringVer(glGetString(GL_VERSION));
 	CommonProfile = (stringVer[11]=='M');
 	const f32 ogl_ver = core::fast_atof(stringVer.c_str()+13);
-	Version = core::floor32(ogl_ver)*100+core::round32(core::fract(ogl_ver)*10.0f);
+	Version = static_cast<u16>(core::floor32(ogl_ver)*100+core::round32(core::fract(ogl_ver)*10.0f));
 	core::stringc extensions = glGetString(GL_EXTENSIONS);
 	os::Printer::log(extensions.c_str());
 	{
@@ -144,13 +144,17 @@ void COGLES1ExtensionHandler::initExtensions(
 #endif
 
 	GLint val=0;
-//	glGetIntegerv(GL_MAX_TEXTURES, &val);
-	MaxTextureUnits = 2;
+	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &val);
+	MaxTextureUnits = static_cast<u8>(val);
 	MultiTextureExtension = true;
-	glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
-	MaxUserClipPlanes=val;
 	glGetIntegerv(GL_MAX_LIGHTS, &val);
-	MaxLights = val;
+	MaxLights = static_cast<u8>(val);
+#ifdef GL_EXT_texture_filter_anisotropic
+	glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
+	MaxAnisotropy = static_cast<u8>(val);
+#endif
+	glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
+	MaxUserClipPlanes = static_cast<u8>(val);
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	if (FeatureAvailable[IRR_OES_draw_texture])
