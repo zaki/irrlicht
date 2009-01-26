@@ -295,8 +295,8 @@ bool CGUIMessageBox::OnEvent(const SEvent& event)
 					{
 						// cancel press
 						if (OkButton) OkButton->setPressed(false);
-						if (YesButton) OkButton->setPressed(false);
-						if (NoButton) OkButton->setPressed(false);
+						if (YesButton) YesButton->setPressed(false);
+						if (NoButton) NoButton->setPressed(false);
 						Pressed = false;
 					}
 					else
