@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -79,10 +79,10 @@ namespace scene
 		/** \param mesh Mesh on which the operation is performed.
 		\param factor Vector which defines the scale for each axis.
 		\param level Number of texture coord, starting from 1. Support for level 2 exists for LightMap buffers. */
-		virtual void scaleTCoords(scene::IMesh* mesh, const core::vector2df& factor, u32 layer=1) const =0;
+		virtual void scaleTCoords(scene::IMesh* mesh, const core::vector2df& factor, u32 level=1) const =0;
 
 		//! Scale the texture coords of a meshbuffer.
-		/** \param mesh Mesh on which the operation is performed.
+		/** \param buffer Meshbuffer on which the operation is performed.
 		\param factor Vector which defines the scale for each axis.
 		\param level Number of texture coord, starting from 1. Support for level 2 exists for LightMap buffers. */
 		virtual void scaleTCoords(scene::IMeshBuffer* buffer, const core::vector2df& factor, u32 level=1) const =0;
@@ -106,8 +106,8 @@ namespace scene
 		//! Clones a static IMesh into a modifiable SMesh.
 		/** All meshbuffers in the returned SMesh
 		are of type SMeshBuffer or SMeshBufferLightMap.
-		\param mesh: Mesh to copy.
-		\return Returns the cloned mesh. If you no longer need the
+		\param mesh Mesh to copy.
+		\return Cloned mesh. If you no longer need the
 		cloned mesh, you should call SMesh::drop(). See
 		IReferenceCounted::drop() for more information. */
 		virtual SMesh* createMeshCopy(IMesh* mesh) const = 0;

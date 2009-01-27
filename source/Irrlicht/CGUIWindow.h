@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -46,12 +46,12 @@ namespace gui
 
 	protected:
 
-		core::position2d<s32> DragStart;
-		bool Dragging;
-
 		IGUIButton* CloseButton;
 		IGUIButton* MinButton;
 		IGUIButton* RestoreButton;
+
+		core::position2d<s32> DragStart;
+		bool Dragging;
 	};
 
 } // end namespace gui
@@ -59,5 +59,5 @@ namespace gui
 
 #endif // _IRR_COMPILE_WITH_GUI_
 
-#endif 
+#endif
 

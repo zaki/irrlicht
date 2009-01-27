@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -107,7 +107,7 @@ namespace gui
 			bool IsSeparator;
 			bool Enabled;
 			bool Checked;
-			core::dimension2d<s32> Dim;
+			core::dimension2d<u32> Dim;
 			s32 PosY;
 			CGUIContextMenu* SubMenu;
 			s32 CommandId;
@@ -132,13 +132,13 @@ namespace gui
 
 		void setEventParent(IGUIElement *parent);
 
-		s32 HighLighted;
 		core::array<SItem> Items;
 		core::position2d<s32> Pos;
-		u32 ChangeTime;
 		IGUIElement* EventParent;
-		bool AllowFocus;
 		IGUIFont *LastFont;
+		s32 HighLighted;
+		u32 ChangeTime;
+		bool AllowFocus;
 	};
 
 

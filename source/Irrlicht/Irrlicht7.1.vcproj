@@ -1995,10 +1995,10 @@
 				RelativePath=".\CLimitReadFile.h">
 			</File>
 			<File
-				RelativePath=".\CMemoryReadFile.cpp">
+				RelativePath=".\CMemoryFile.cpp">
 			</File>
 			<File
-				RelativePath=".\CMemoryReadFile.h">
+				RelativePath=".\CMemoryFile.h">
 			</File>
 			<File
 				RelativePath=".\CPakReader.cpp">

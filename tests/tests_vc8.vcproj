@@ -174,7 +174,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\burningsVideo.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\collisionResponseAnimator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cursorSetVisible.cpp"
 				>
 			</File>
 			<File
@@ -186,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\drawRectOutline.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\exports.cpp"
 				>
 			</File>
@@ -194,7 +206,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\flyCircleAnimator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\guiDisabledMenu.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\irrCoreEquals.cpp"
 				>
 			</File>
 			<File
@@ -206,6 +226,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\makeColorKeyTexture.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\matrixOps.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\md2Animation.cpp"
 				>
 			</File>
@@ -214,11 +242,27 @@
 				>
 			</File>
 			<File
+				RelativePath=".\relativeTransformations.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\sceneCollisionManager.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\sceneNodeAnimator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\softwareDevice.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\terrainSceneNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testDimension2d.cpp"
 				>
 			</File>
 			<File
@@ -231,6 +275,22 @@
 			</File>
 			<File
 				RelativePath=".\testVector3d.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\textureRenderStates.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\transparentAlphaChannelRef.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\vectorPositionDimension2d.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\writeImageToFile.cpp"
 				>
 			</File>
 		</Filter>

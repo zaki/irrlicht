@@ -38,21 +38,36 @@
 			<Add directory="..\lib\gcc" />
 		</Linker>
 		<Unit filename="b3dAnimation.cpp" />
+		<Unit filename="burningsVideo.cpp" />
 		<Unit filename="collisionResponseAnimator.cpp" />
+		<Unit filename="cursorSetVisible.cpp" />
 		<Unit filename="disambiguateTextures.cpp" />
 		<Unit filename="drawPixel.cpp" />
+		<Unit filename="drawRectOutline.cpp" />
 		<Unit filename="exports.cpp" />
 		<Unit filename="fast_atof.cpp" />
+		<Unit filename="flyCircleAnimator.cpp" />
 		<Unit filename="guiDisabledMenu.cpp" />
+		<Unit filename="irrCoreEquals.cpp" />
 		<Unit filename="line2dIntersectWith.cpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="makeColorKeyTexture.cpp" />
+		<Unit filename="matrixOps.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="planeMatrix.cpp" />
+		<Unit filename="relativeTransformations.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
+		<Unit filename="sceneNodeAnimator.cpp" />
 		<Unit filename="softwareDevice.cpp" />
+		<Unit filename="terrainSceneNode.cpp" />
+		<Unit filename="testDimension2d.cpp" />
 		<Unit filename="testUtils.cpp" />
 		<Unit filename="testVector2d.cpp" />
 		<Unit filename="testVector3d.cpp" />
+		<Unit filename="textureRenderStates.cpp" />
+		<Unit filename="transparentAlphaChannelRef.cpp" />
+		<Unit filename="vectorPositionDimension2d.cpp" />
+		<Unit filename="writeImageToFile.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

@@ -6,6 +6,7 @@
 #define __C_MEMORY_READ_FILE_H_INCLUDED__
 
 #include "IReadFile.h"
+#include "IWriteFile.h"
 #include "irrString.h"
 
 namespace irr
@@ -15,20 +16,23 @@ namespace io
 {
 
 	/*!
-		Class for reading from memory.
+		Class for reading and writing from memory.
 	*/
-	class CMemoryReadFile : public IReadFile
+	class CMemoryFile : public IReadFile, public IWriteFile
 	{
 	public:
 
 		//! Constructor
-		CMemoryReadFile(void* memory, long len, const c8* fileName, bool deleteMemoryWhenDropped);
+		CMemoryFile(void* memory, long len, const c8* fileName, bool deleteMemoryWhenDropped);
 
 		//! Destructor
-		virtual ~CMemoryReadFile();
+		virtual ~CMemoryFile();
 
 		//! returns how much was read
 		virtual s32 read(void* buffer, u32 sizeToRead);
+
+		//! returns how much was written
+		virtual s32 write(const void* buffer, u32 sizeToWrite);
 
 		//! changes position in file, returns true if successful
 		virtual bool seek(long finalPos, bool relativeMovement = false);

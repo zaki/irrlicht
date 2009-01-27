@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -135,6 +135,17 @@ void COpenGLTexture::getImageData(IImage* image)
 		return;
 	}
 
+	const f32 ratio = (f32)ImageSize.Width/(f32)ImageSize.Height;
+	if ((ImageSize.Width>Driver->MaxTextureSize) && (ratio >= 1.0f))
+	{
+		ImageSize.Width = Driver->MaxTextureSize;
+		ImageSize.Height = (u32)(Driver->MaxTextureSize/ratio);
+	}
+	else if (ImageSize.Height>Driver->MaxTextureSize)
+	{
+		ImageSize.Height = Driver->MaxTextureSize;
+		ImageSize.Width = (u32)(Driver->MaxTextureSize*ratio);
+	}
 	TextureSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 
 	ColorFormat = getBestColorFormat(image->getColorFormat());
@@ -178,20 +189,28 @@ void COpenGLTexture::copyTexture(bool newTexture)
 			break;
 	}
 
-	glBindTexture(GL_TEXTURE_2D, TextureName);
+	Driver->setTexture(0, this);
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
 	if (newTexture)
 	{
-		#ifndef DISABLE_MIPMAPPING
+#ifndef DISABLE_MIPMAPPING
+#ifdef GL_SGIS_generate_mipmap
 		if (HasMipMaps && Driver->queryFeature(EVDF_MIP_MAP_AUTO_UPDATE))
 		{
+			if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
+				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_FASTEST);
+			else if (Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_QUALITY))
+				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_NICEST);
+			else
+				glHint(GL_GENERATE_MIPMAP_HINT_SGIS, GL_DONT_CARE);
 			// automatically generate and update mipmaps
 			glTexParameteri( GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE );
 			AutomaticMipmapUpdate=true;
 		}
 		else
+#endif
 		{
 			AutomaticMipmapUpdate=false;
 			regenerateMipMapLevels();
@@ -269,7 +288,7 @@ void* COpenGLTexture::lock(bool readOnly)
 			const s32 pitch=Image->getPitch();
 			u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
 			u8* tmpBuffer = new u8[pitch];
-			for (s32 i=0; i < ImageSize.Height; i += 2)
+			for (u32 i=0; i < ImageSize.Height; i += 2)
 			{
 				memcpy(tmpBuffer, pPixels, pitch);
 				memcpy(pPixels, p2, pitch);
@@ -306,14 +325,14 @@ void COpenGLTexture::unlock()
 
 
 //! Returns size of the original image.
-const core::dimension2d<s32>& COpenGLTexture::getOriginalSize() const
+const core::dimension2d<u32>& COpenGLTexture::getOriginalSize() const
 {
 	return ImageSize;
 }
 
 
 //! Returns size of the texture.
-const core::dimension2d<s32>& COpenGLTexture::getSize() const
+const core::dimension2d<u32>& COpenGLTexture::getSize() const
 {
 	return TextureSize;
 }
@@ -416,7 +435,7 @@ void COpenGLTexture::bindRTT()
 //! Unbind Render Target Texture
 void COpenGLTexture::unbindRTT()
 {
-	glBindTexture(GL_TEXTURE_2D, getOpenGLTextureName());
+	Driver->setTexture(0, this);
 
 	// Copy Our ViewPort To The Texture
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
@@ -425,14 +444,11 @@ void COpenGLTexture::unbindRTT()
 
 /* FBO Textures */
 
-#ifdef GL_EXT_framebuffer_object
 // helper function for render to texture
 static bool checkFBOStatus(COpenGLDriver* Driver);
-#endif
-
 
 //! RTT ColorFrameBuffer constructor
-COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
+COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
                                 const char* name,
                                 COpenGLDriver* driver)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
@@ -456,7 +472,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<s32>& size,
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
-	glBindTexture(GL_TEXTURE_2D, TextureName);
+	Driver->setTexture(0, this);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -515,7 +531,7 @@ void COpenGLFBOTexture::unbindRTT()
 
 //! RTT DepthBuffer constructor
 COpenGLFBODepthTexture::COpenGLFBODepthTexture(
-		const core::dimension2d<s32>& size,
+		const core::dimension2d<u32>& size,
 		const char* name,
 		COpenGLDriver* driver,
 		bool useStencil)
@@ -597,10 +613,10 @@ COpenGLFBODepthTexture::~COpenGLFBODepthTexture()
 
 
 //combine depth texture and rtt
-void COpenGLFBODepthTexture::attach(ITexture* renderTex)
+bool COpenGLFBODepthTexture::attach(ITexture* renderTex)
 {
 	if (!renderTex)
-		return;
+		return false;
 	video::COpenGLFBOTexture* rtt = static_cast<video::COpenGLFBOTexture*>(renderTex);
 	rtt->bindRTT();
 #ifdef GL_EXT_framebuffer_object
@@ -628,13 +644,17 @@ void COpenGLFBODepthTexture::attach(ITexture* renderTex)
 						GL_RENDERBUFFER_EXT,
 						DepthRenderBuffer);
 	}
+#endif
 	// check the status
 	if (!checkFBOStatus(Driver))
+	{
 		os::Printer::log("FBO incomplete");
-#endif
+		return false;
+	}
 	rtt->DepthTexture=this;
 	grab(); // grab the depth buffer, not the RTT
 	rtt->unbindRTT();
+	return true;
 }
 
 
@@ -650,9 +670,9 @@ void COpenGLFBODepthTexture::unbindRTT()
 }
 
 
-#ifdef GL_EXT_framebuffer_object
 bool checkFBOStatus(COpenGLDriver* Driver)
 {
+#ifdef GL_EXT_framebuffer_object
 	GLenum status = Driver->extGlCheckFramebufferStatus(GL_FRAMEBUFFER_EXT);
 
 	switch (status)
@@ -699,13 +719,14 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 		default:
 			break;
 	}
+#endif
 	os::Printer::log("FBO error", ELL_ERROR);
 	return false;
 }
-#endif
 
 
 } // end namespace video
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_OPENGL_
+

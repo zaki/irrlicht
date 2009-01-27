@@ -149,7 +149,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	}	
 
 	// create device and exit if creation failed
-	const core::dimension2di videoDim ( 800,600 );
+	const core::dimension2du videoDim ( 800,600 );
 
 	IrrlichtDevice *device = createDevice(driverType, videoDim, 32, false );
 

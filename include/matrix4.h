@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -109,6 +109,9 @@ namespace core
 
 			//! Returns true if the matrix is the identity matrix
 			inline bool isIdentity() const;
+
+			//! Returns true if the matrix is orthogonal
+			inline bool isOrthogonal() const;
 
 			//! Returns true if the matrix is the identity matrix
 			bool isIdentity_integer_base () const;
@@ -662,10 +665,30 @@ namespace core
 		return *this;
 	}
 
+	//! Returns the absolute values of the scales of the matrix.
+	/** 
+	Note that this always returns the absolute (positive) values.  Unfortunately it
+	does not appear to be possible to extract any original negative values.  The best
+	that we could do would be to arbitrarily make one scale negative if one or three
+	of them were negative.
+	FIXME - return the original values.
+	*/
 	template <class T>
 	inline vector3d<T> CMatrix4<T>::getScale() const
 	{
-		return vector3d<T>(M[0],M[5],M[10]);
+		// See http://www.robertblum.com/articles/2005/02/14/decomposing-matrices
+
+		// Deal with the 0 rotation case first
+		// Prior to Irrlicht 1.6, we always returned this value.
+		if(core::iszero(M[1]) && core::iszero(M[2]) &&
+			core::iszero(M[4]) && core::iszero(M[6]) &&
+			core::iszero(M[8]) && core::iszero(M[9]))
+			return vector3d<T>(M[0], M[5], M[10]);
+
+		// We have to do the full calculation.
+		return vector3d<T>(sqrtf(M[0] * M[0] + M[1] * M[1] + M[2] * M[2]),
+							sqrtf(M[4] * M[4] + M[5] * M[5] + M[6] * M[6]),
+							sqrtf(M[8] * M[8] + M[9] * M[9] + M[10] * M[10]));
 	}
 
 	template <class T>
@@ -817,6 +840,31 @@ namespace core
 		definitelyIdentityMatrix=true;
 		return true;
 	}
+
+
+	/* Check orthogonality of matrix. */
+	template <class T>
+	inline bool CMatrix4<T>::isOrthogonal() const
+	{
+		T dp=M[0] * M[4 ] + M[1] * M[5 ] + M[2 ] * M[6 ] + M[3 ] * M[7 ];
+		if (!iszero(dp))
+			return false;
+		dp = M[0] * M[8 ] + M[1] * M[9 ] + M[2 ] * M[10] + M[3 ] * M[11];
+		if (!iszero(dp))
+			return false;
+		dp = M[0] * M[12] + M[1] * M[13] + M[2 ] * M[14] + M[3 ] * M[15];
+		if (!iszero(dp))
+			return false;
+		dp = M[4] * M[8 ] + M[5] * M[9 ] + M[6 ] * M[10] + M[7 ] * M[11];
+		if (!iszero(dp))
+			return false;
+		dp = M[4] * M[12] + M[5] * M[13] + M[6 ] * M[14] + M[7 ] * M[15];
+		if (!iszero(dp))
+			return false;
+		dp = M[8] * M[12] + M[9] * M[13] + M[10] * M[14] + M[11] * M[15];
+		return (iszero(dp));
+	}
+
 
 	/*
 		doesn't solve floating range problems..

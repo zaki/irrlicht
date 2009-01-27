@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -50,6 +50,9 @@ public:
 
 	//! Removes all triangle selectors from the collection.
 	virtual void removeAllTriangleSelectors();
+
+	//! Return the scene node associated with a given triangle.
+	virtual const ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const;
 
 private:
 

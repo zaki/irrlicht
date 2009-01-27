@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in Irrlicht.h
 
@@ -218,6 +218,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_EXT_texture_perturb_normal",
 	"GL_EXT_texture_shared_exponent",
 	"GL_EXT_texture_sRGB",
+	"GL_EXT_texture_swizzle",
 	"GL_EXT_timer_query",
 	"GL_EXT_transform_feedback",
 	"GL_EXT_vertex_array",
@@ -253,6 +254,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_NV_depth_buffer_float",
 	"GL_NV_depth_clamp",
 	"GL_NV_evaluators",
+	"GL_NV_explicit_multisample",
 	"GL_NV_fence",
 	"GL_NV_float_buffer",
 	"GL_NV_fog_distance",
@@ -286,6 +288,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_NV_texture_shader2",
 	"GL_NV_texture_shader3",
 	"GL_NV_transform_feedback",
+	"GL_NV_transform_feedback2",
 	"GL_NV_vertex_array_range",
 	"GL_NV_vertex_array_range2",
 	"GL_NV_vertex_program",
@@ -530,6 +533,7 @@ class COpenGLExtensionHandler
 		IRR_EXT_texture_perturb_normal,
 		IRR_EXT_texture_shared_exponent,
 		IRR_EXT_texture_sRGB,
+		IRR_EXT_texture_swizzle,
 		IRR_EXT_timer_query,
 		IRR_EXT_transform_feedback,
 		IRR_EXT_vertex_array,
@@ -565,6 +569,7 @@ class COpenGLExtensionHandler
 		IRR_NV_depth_buffer_float,
 		IRR_NV_depth_clamp,
 		IRR_NV_evaluators,
+		IRR_NV_explicit_multisample,
 		IRR_NV_fence,
 		IRR_NV_float_buffer,
 		IRR_NV_fog_distance,
@@ -598,6 +603,7 @@ class COpenGLExtensionHandler
 		IRR_NV_texture_shader2,
 		IRR_NV_texture_shader3,
 		IRR_NV_transform_feedback,
+		IRR_NV_transform_feedback2,
 		IRR_NV_vertex_array_range,
 		IRR_NV_vertex_array_range2,
 		IRR_NV_vertex_program,
@@ -708,26 +714,30 @@ class COpenGLExtensionHandler
 	// Some variables for properties
 	bool StencilBuffer;
 	bool MultiTextureExtension;
-	bool MultiSamplingExtension;
-	bool AnisotropyExtension;
 	bool TextureCompressionExtension;
 
 	// Some non-boolean properties
 	//! Maxmimum texture layers supported by the fixed pipeline
-	u32 MaxTextureUnits;
+	u8 MaxTextureUnits;
 	//! Maximum hardware lights supported
-	GLint MaxLights;
-	//! Optimal number of indices per meshbuffer
-	GLint MaxIndices;
+	u8 MaxLights;
 	//! Maximal Anisotropy
-	f32 MaxAnisotropy;
+	u8 MaxAnisotropy;
 	//! Number of user clipplanes
-	u32 MaxUserClipPlanes;
+	u8 MaxUserClipPlanes;
+	//! Number of auxiliary buffers
+	u8 MaxAuxBuffers;
+	//! Optimal number of indices per meshbuffer
+	u32 MaxIndices;
+	//! Maximal texture dimension
+	u32 MaxTextureSize;
+	//! Maximal LOD Bias
+	f32 MaxTextureLODBias;
 
 	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
-	u32 Version;
+	u16 Version;
 	//! GLSL version as Integer: 100*Major+Minor
-	u32 ShaderLanguageVersion;
+	u16 ShaderLanguageVersion;
 
 	// public access to the (loaded) extensions.
 	// general functions

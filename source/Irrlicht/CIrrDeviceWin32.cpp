@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -24,15 +24,15 @@ namespace irr
 	namespace video
 	{
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
-		IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWND window,
+		IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize, HWND window,
 			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, bool antiAlias);
+			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
-		IVideoDriver* createDirectX9Driver(const core::dimension2d<s32>& screenSize, HWND window,
+		IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
-			bool pureSoftware, bool highPrecisionFPU, bool vsync, bool antiAlias);
+			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -330,7 +330,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		wcex.hIconSm		= 0;
 
 		// if there is an icon, load it
-		wcex.hIcon = (HICON)LoadImage(hInstance, "irrlicht.ico", IMAGE_ICON, 0,0, LR_LOADFROMFILE); 
+		wcex.hIcon = (HICON)LoadImage(hInstance, "irrlicht.ico", IMAGE_ICON, 0,0, LR_LOADFROMFILE);
 
 		RegisterClassEx(&wcex);
 
@@ -438,9 +438,9 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_DIRECT3D8:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 
-		VideoDriver = video::createDirectX8Driver(CreationParams.WindowSize, HWnd, 
-			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer, 
-			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync, 
+		VideoDriver = video::createDirectX8Driver(CreationParams.WindowSize, HWnd,
+			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
+			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
 			CreationParams.AntiAlias);
 
 		if (!VideoDriver)
@@ -456,9 +456,9 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_DIRECT3D9:
 		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
 
-		VideoDriver = video::createDirectX9Driver(CreationParams.WindowSize, HWnd, 
-			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer, 
-			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync, 
+		VideoDriver = video::createDirectX9Driver(CreationParams.WindowSize, HWnd,
+			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
+			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
 			CreationParams.AntiAlias);
 
 		if (!VideoDriver)
@@ -530,7 +530,7 @@ void CIrrDeviceWin32::createDriver()
 		VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 		os::Printer::log("Burning's Video driver was not compiled in.", ELL_ERROR);
-		#endif 
+		#endif
 		break;
 
 	case video::EDT_NULL:
@@ -582,7 +582,7 @@ bool CIrrDeviceWin32::run()
 void CIrrDeviceWin32::yield()
 {
 	Sleep(1);
-	
+
 }
 
 //! Pause execution and let other processes to run for a specified amount of time.
@@ -591,7 +591,7 @@ void CIrrDeviceWin32::sleep(u32 timeMs, bool pauseTimer)
 	const bool wasStopped = Timer ? Timer->isStopped() : true;
 	if (pauseTimer && !wasStopped)
 		Timer->stop();
-	
+
 	Sleep(timeMs);
 
 	if (pauseTimer && !wasStopped)
@@ -619,7 +619,7 @@ void CIrrDeviceWin32::resizeIfNecessary()
 		sprintf(tmp, "Resizing window (%ld %ld)", r.right, r.bottom);
 		os::Printer::log(tmp);
 
-		getVideoDriver()->OnResize(irr::core::dimension2d<irr::s32>(r.right, r.bottom));
+		getVideoDriver()->OnResize(irr::core::dimension2du((u32)r.right, (u32)r.bottom));
 	}
 
 	Resized = false;
@@ -665,7 +665,7 @@ bool CIrrDeviceWin32::present(video::IImage* image, void* windowId, core::rect<s
 		bi.bV4BitCount      = (WORD)image->getBitsPerPixel();
 		bi.bV4Planes        = 1;
 		bi.bV4Width         = image->getDimension().Width;
-		bi.bV4Height        = -image->getDimension().Height;
+		bi.bV4Height        = -((s32)image->getDimension().Height);
 		bi.bV4V4Compression = BI_BITFIELDS;
 		bi.bV4AlphaMask     = image->getAlphaMask();
 		bi.bV4RedMask       = image->getRedMask();
@@ -802,19 +802,19 @@ video::IVideoModeList* CIrrDeviceWin32::getVideoModeList()
 		// enumerate video modes.
 		DWORD i=0;
 		DEVMODE mode;
-		memset(&mode, 0, sizeof(mode)); 
+		memset(&mode, 0, sizeof(mode));
 		mode.dmSize = sizeof(mode);
 
 		while (EnumDisplaySettings(NULL, i, &mode))
 		{
-			VideoModeList.addMode(core::dimension2d<s32>(mode.dmPelsWidth, mode.dmPelsHeight),
+			VideoModeList.addMode(core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight),
 				mode.dmBitsPerPel);
 
 			++i;
 		}
 
 		if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &mode))
-			VideoModeList.setDesktop(mode.dmBitsPerPel, core::dimension2d<s32>(mode.dmPelsWidth, mode.dmPelsHeight));
+			VideoModeList.setDesktop(mode.dmBitsPerPel, core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight));
 	}
 
 	return &VideoModeList;
@@ -1011,7 +1011,7 @@ bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 	{
 		if(JOYERR_NOERROR == joyGetPosEx(joystick, &info)
 			&&
-			JOYERR_NOERROR == joyGetDevCaps(joystick, 
+			JOYERR_NOERROR == joyGetDevCaps(joystick,
 											&activeJoystick.Caps,
 											sizeof(activeJoystick.Caps)))
 		{
@@ -1033,7 +1033,7 @@ bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 	{
 		char logString[256];
 		(void)sprintf(logString, "Found joystick %d, %d axes, %d buttons '%s'",
-			joystick, joystickInfo[joystick].Axes, 
+			joystick, joystickInfo[joystick].Axes,
 			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
 		os::Printer::log(logString, ELL_INFORMATION);
 	}
@@ -1076,11 +1076,11 @@ void CIrrDeviceWin32::pollJoysticks()
 			{
 			default:
 			case 6:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V] = 
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_V] =
 					(s16)((65535 * (info.dwVpos - caps.wVmin)) / (caps.wVmax - caps.wVmin) - 32768);
 
 			case 5:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U] = 
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_U] =
 					(s16)((65535 * (info.dwUpos - caps.wUmin)) / (caps.wUmax - caps.wUmin) - 32768);
 
 			case 4:
@@ -1088,25 +1088,25 @@ void CIrrDeviceWin32::pollJoysticks()
 					(s16)((65535 * (info.dwRpos - caps.wRmin)) / (caps.wRmax - caps.wRmin) - 32768);
 
 			case 3:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z] = 
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Z] =
 					(s16)((65535 * (info.dwZpos - caps.wZmin)) / (caps.wZmax - caps.wZmin) - 32768);
-			
+
 			case 2:
 				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_Y] =
 					(s16)((65535 * (info.dwYpos - caps.wYmin)) / (caps.wYmax - caps.wYmin) - 32768);
 
 			case 1:
-				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X] = 
+				event.JoystickEvent.Axis[SEvent::SJoystickEvent::AXIS_X] =
 					(s16)((65535 * (info.dwXpos - caps.wXmin)) / (caps.wXmax - caps.wXmin) - 32768);
 			}
-			
+
 			event.JoystickEvent.ButtonStates = info.dwButtons;
 
 			(void)postEventFromUser(event);
 		}
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-} 
+}
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 	const SIrrlichtCreationParameters& parameters)

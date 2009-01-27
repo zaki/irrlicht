@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -140,7 +140,7 @@ namespace scene
 		virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, s32 id=-1,
 			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
-			f32 jumpSpeed = 0.f);
+			f32 jumpSpeed = 0.f, bool invertMouseY=false);
 
 		//! Adds a dynamic light scene node. The light will cast dynamic light on all
 		//! other scene nodes in the scene, which have the material flag video::MTF_LIGHTING
@@ -207,7 +207,7 @@ namespace scene
 		//! Adds a terrain mesh to the mesh pool.
 		virtual IAnimatedMesh* addTerrainMesh(const c8* meshname,	video::IImage* texture, video::IImage* heightmap,
 			const core::dimension2d<f32>& stretchSize,
-			f32 maxHeight, const core::dimension2d<s32>& defaultVertexBlockSize);
+			f32 maxHeight, const core::dimension2d<u32>& defaultVertexBlockSize);
 
 		//! Add a arrow mesh to the mesh pool
 		virtual IAnimatedMesh* addArrowMesh(const c8* name,
@@ -281,13 +281,17 @@ namespace scene
 		//! creates a fly circle animator
 		/** Lets the attached scene node fly around a center.
 		\param center Center relative to node origin
-		\param speed rotation speed
-		\return Animator. Attach it to a scene node with ISceneNode::addAnimator()
-		and the animator will animate it. */
+		 \param speed: The orbital speed, in radians per millisecond.
+		 \param direction: Specifies the upvector used for alignment of the mesh.
+		 \param startPosition: The position on the circle where the animator will
+			begin. Value is in multiples  of a circle, i.e. 0.5 is half way around.
+		 \return The animator. Attach it to a scene node with ISceneNode::addAnimator()
+		 */
 		virtual ISceneNodeAnimator* createFlyCircleAnimator(
 				const core::vector3df& center=core::vector3df(0.f, 0.f, 0.f),
 				f32 radius=100.f, f32 speed=0.001f,
-				const core::vector3df& direction=core::vector3df(0.f, 1.f, 0.f));
+				const core::vector3df& direction=core::vector3df(0.f, 1.f, 0.f),
+				f32 startPosition = 0.f);
 
 		//! Creates a fly straight animator, which lets the attached scene node
 		//! fly or move along a line between two points.
@@ -452,6 +456,9 @@ namespace scene
 		//! Returns ambient color of the scene
 		virtual const video::SColorf& getAmbientLight() const;
 
+		//! Register a custom callbacks manager which gets callbacks during scene rendering.
+		virtual void setLightManager(ILightManager* lightManager);
+
 	private:
 
 		//! Returns a typename from a scene node animator type or null if not found
@@ -525,13 +532,19 @@ namespace scene
 			DistanceNodeEntry(ISceneNode* n, const core::vector3df& cameraPos)
 				: Node(n)
 			{
-				Distance = Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(cameraPos);
-				Distance -= Node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
+				setNodeAndDistanceFromPosition(n, cameraPos);
 			}
 
 			bool operator < (const DistanceNodeEntry& other) const
 			{
 				return Distance < other.Distance;
+			}
+
+			void setNodeAndDistanceFromPosition(ISceneNode* n, const core::vector3df & fromPosition)
+			{
+				Node = n;
+				Distance = Node->getAbsoluteTransformation().getTranslation().getDistanceFromSQ(fromPosition);
+				Distance -= Node->getBoundingBox().getExtent().getLengthSQ() * 0.5;
 			}
 
 			ISceneNode* Node;
@@ -556,7 +569,7 @@ namespace scene
 
 		//! render pass lists
 		core::array<ISceneNode*> CameraList;
-		core::array<DistanceNodeEntry> LightList;
+		core::array<ILightSceneNode*> LightList;
 		core::array<ISceneNode*> ShadowNodeList;
 		core::array<ISceneNode*> SkyBoxList;
 		core::array<DefaultNodeEntry> SolidNodeList;
@@ -581,6 +594,10 @@ namespace scene
 		IMeshCache* MeshCache;
 
 		E_SCENE_NODE_RENDER_PASS CurrentRendertime;
+
+		//! An optional callbacks manager to allow the user app finer control
+		//! over the scene lighting and rendering.
+		ILightManager* LightManager;
 
 		//! constants for reading and writing XML.
 		//! Not made static due to portability problems.

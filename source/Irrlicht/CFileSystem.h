@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -36,6 +36,9 @@ public:
 
 	//! Creates an IReadFile interface for accessing memory like a file.
 	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped = false);
+
+	//! Creates an IWriteFile interface for accessing memory like a file.
+	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped=false);
 
 	//! Opens a file for write access.
 	virtual IWriteFile* createAndWriteFile(const c8* filename, bool append=false);

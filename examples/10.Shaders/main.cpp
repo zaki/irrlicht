@@ -149,7 +149,7 @@ int main()
 
 	// create device
 
-	device = createDevice(driverType, core::dimension2d<s32>(640, 480));
+	device = createDevice(driverType, core::dimension2d<u32>(640, 480));
 
 	if (device == 0)
 		return 1; // could not create selected driver.

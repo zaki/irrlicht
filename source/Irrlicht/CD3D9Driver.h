@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -32,7 +32,7 @@ namespace video
 		}
 
 		IDirect3DSurface9* Surface;
-		core::dimension2di Size;
+		core::dimension2du Size;
 	};
 
 	class CD3D9Driver : public CNullDriver, IMaterialRendererServices
@@ -40,7 +40,7 @@ namespace video
 	public:
 
 		//! constructor
-		CD3D9Driver(const core::dimension2d<s32>& screenSize, HWND window, bool fullscreen,
+		CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window, bool fullscreen,
 			bool stencibuffer, io::IFileSystem* io, bool pureSoftware=false);
 
 		//! destructor
@@ -134,9 +134,9 @@ namespace video
 			const core::vector3df& end, SColor color = SColor(255,255,255,255));
 
 		//! initialises the Direct3D API
-		bool initDriver(const core::dimension2d<s32>& screenSize, HWND hwnd,
+		bool initDriver(const core::dimension2d<u32>& screenSize, HWND hwnd,
 				u32 bits, bool fullScreen, bool pureSoftware,
-				bool highPrecisionFPU, bool vsync, bool antiAlias);
+				bool highPrecisionFPU, bool vsync, u8 antiAlias);
 
 		//! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 		//! driver, it would return "Direct3D8.1".
@@ -145,8 +145,15 @@ namespace video
 		//! deletes all dynamic lights there are
 		virtual void deleteAllDynamicLights();
 
-		//! adds a dynamic light
-		virtual void addDynamicLight(const SLight& light);
+		//! adds a dynamic light, returning an index to the light
+		//! \param light: the light data to use to create the light
+		//! \return An index to the light, or -1 if an error occurs
+		virtual s32 addDynamicLight(const SLight& light);
+
+		//! Turns a dynamic light on or off
+		//! \param lightIndex: the index returned by addDynamicLight
+		//! \param turnOn: true to turn the light on, false to turn it off
+		virtual void turnLightOn(s32 lightIndex, bool turnOn);
 
 		//! returns the maximal amount of dynamic lights the device can handle
 		virtual u32 getMaximalDynamicLightAmount() const;
@@ -180,7 +187,7 @@ namespace video
 
 		//! Only used by the internal engine. Used to notify the driver that
 		//! the window was resized.
-		virtual void OnResize(const core::dimension2d<s32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size);
 
 		//! Can be called by an IMaterialRenderer to make its work easier.
 		virtual void setBasicRenderStates(const SMaterial& material, const SMaterial& lastMaterial,
@@ -212,7 +219,7 @@ namespace video
 		virtual IVideoDriver* getVideoDriver();
 
 		//! Creates a render target texture.
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name);
 
 		//! Clears the ZBuffer.
@@ -228,7 +235,7 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;}
+		virtual core::stringc getVendorInfo() {return VendorName;}
 
 		//! Check if the driver was recently reset.
 		virtual bool checkDriverReset() {return DriverWasReset;}
@@ -289,11 +296,11 @@ namespace video
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
 
 		//! returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
 		//! Check if a proper depth buffer for the RTT is available, otherwise create it.
 		void checkDepthBuffer(ITexture* tex);
-		
+
 		//! Adds a new material renderer to the VideoDriver, using pixel and/or
 		//! vertex shaders to render geometry.
 		s32 addShaderMaterial(const c8* vertexShaderProgram, const c8* pixelShaderProgram,
@@ -333,6 +340,7 @@ namespace video
 		bool ResetRenderStates; // bool to make all renderstates be reseted if set.
 		bool Transformation3DChanged;
 		bool StencilBuffer;
+		u8 AntiAliasing;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		bool LastTextureMipMapsAvailable[MATERIAL_MAX_TEXTURES];
 		core::matrix4 Matrices[ETS_COUNT]; // matrizes of the 3d mode we need to restore when we switch back from the 2d mode.
@@ -342,8 +350,8 @@ namespace video
 		IDirect3DDevice9* pID3DDevice;
 
 		IDirect3DSurface9* PrevRenderTarget;
-		core::dimension2d<s32> CurrentRendertargetSize;
-		core::dimension2d<s32> CurrentDepthBufferSize;
+		core::dimension2d<u32> CurrentRendertargetSize;
+		core::dimension2d<u32> CurrentDepthBufferSize;
 
 		void* WindowId;
 		core::rect<s32>* SceneSourceRect;
@@ -354,7 +362,8 @@ namespace video
 
 		SColorf AmbientLight;
 
-		core::stringc vendorName;
+		core::stringc VendorName;
+		u16 VendorID;
 
 		core::array<SDepthSurface*> DepthBuffers;
 
@@ -368,6 +377,7 @@ namespace video
 		bool DeviceLost;
 		bool Fullscreen;
 		bool DriverWasReset;
+		bool AlphaToCoverageSupport;
 	};
 
 

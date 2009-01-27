@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -306,7 +306,6 @@ bool CIrrDeviceLinux::createWindow()
 		{
 			if (major==1 && minor>2)
 			{
-				const int MAX_SAMPLES = 16;
 				// attribute array for the draw buffer
 				int visualAttrBuffer[] =
 				{
@@ -316,28 +315,29 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_DOUBLEBUFFER, GL_TRUE,
-					GLX_STENCIL_SIZE, 1,
+					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
+					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
 					GLX_SAMPLE_BUFFERS_ARB, 1,
-					GLX_SAMPLES_ARB, MAX_SAMPLES,
+					GLX_SAMPLES_ARB, CreationParams.AntiAlias,
+					GLX_STEREO, CreationParams.Stereobuffer?True:False,
 					None
 				};
 
 				GLXFBConfig *configList=0;
 				int nitems=0;
-				if (!CreationParams.AntiAlias)
+				if (CreationParams.AntiAlias<2)
 				{
 					visualAttrBuffer[17] = 0;
 					visualAttrBuffer[19] = 0;
 				}
-				if (CreationParams.Stencilbuffer)
+				// first round with unchanged values
 				{
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
-							visualAttrBuffer[19] >>= 1;
+							visualAttrBuffer[19] -= 1;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
@@ -348,31 +348,34 @@ bool CIrrDeviceLinux::createWindow()
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=false;
+								CreationParams.AntiAlias=0;
 							}
 							else
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = MAX_SAMPLES;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
 							}
 						}
 					}
 				}
-				// Next try without stencil buffer
+				// Next try with flipped stencil buffer value
+				// If the first round was with stencil flag it's now without
+				// Other way round also makes sense because some configs
+				// only have depth buffer combined with stencil buffer
 				if (!configList)
 				{
 					if (CreationParams.Stencilbuffer)
 						os::Printer::log("No stencilbuffer available, disabling stencil shadows.", ELL_WARNING);
-					CreationParams.Stencilbuffer = false;
-					visualAttrBuffer[15]=0;
+					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
+					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
 
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
-							visualAttrBuffer[19] >>= 1;
+							visualAttrBuffer[19] -= 1;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
@@ -383,28 +386,31 @@ bool CIrrDeviceLinux::createWindow()
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=false;
+								CreationParams.AntiAlias=0;
 							}
 							else
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = MAX_SAMPLES;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
 							}
 						}
 					}
 				}
 				// Next try without double buffer
-				if (!configList)
+				if (!configList && CreationParams.Doublebuffer)
 				{
 					os::Printer::log("No doublebuffering available.", ELL_WARNING);
-					visualAttrBuffer[13] = GL_FALSE;
+					CreationParams.Doublebuffer=false;
+					visualAttrBuffer[13] = GLX_DONT_CARE;
+					CreationParams.Stencilbuffer = false;
+					visualAttrBuffer[15]=0;
 					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
-							visualAttrBuffer[19] >>= 1;
+							visualAttrBuffer[19] -= 1;
 							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
@@ -415,13 +421,13 @@ bool CIrrDeviceLinux::createWindow()
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
-								CreationParams.AntiAlias=false;
+								CreationParams.AntiAlias=0;
 							}
 							else
 							{
 								//reenable multisampling
 								visualAttrBuffer[17] = 1;
-								visualAttrBuffer[19] = MAX_SAMPLES;
+								visualAttrBuffer[19] = CreationParams.AntiAlias;
 							}
 						}
 					}
@@ -445,27 +451,26 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_DOUBLEBUFFER, GL_TRUE,
-					GLX_STENCIL_SIZE, 1,
+					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
+					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
+					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
 					None
 				};
 
-				if (CreationParams.Stencilbuffer)
-					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
+				visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 				if (!visual)
 				{
 					if (CreationParams.Stencilbuffer)
-					{
 						os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
-						CreationParams.Stencilbuffer = false;
-					}
-					visualAttrBuffer[15]=0;
+					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
+					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
 
 					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
-					if (!visual)
+					if (!visual && CreationParams.Doublebuffer)
 					{
 						os::Printer::log("No doublebuffering available.", ELL_WARNING);
-						visualAttrBuffer[13] = GL_FALSE;
+						CreationParams.Doublebuffer=false;
+						visualAttrBuffer[13] = GLX_DONT_CARE;
 						visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 					}
 				}
@@ -474,12 +479,14 @@ bool CIrrDeviceLinux::createWindow()
 		else
 			os::Printer::log("No GLX support available. OpenGL driver will not work.", ELL_WARNING);
 	}
-
+	// don't use the XVisual with OpenGL, because it ignores all requested
+	// properties of the CreationParams
+	else if (!visual)
 #endif // _IRR_COMPILE_WITH_OPENGL_
 
 	// create visual with standard X methods
-	if (!visual)
 	{
+		os::Printer::log("Using plain X visual");
 		XVisualInfo visTempl; //Template to hold requested values
 		int visNumber; // Return value of available visuals
 
@@ -765,7 +772,7 @@ bool CIrrDeviceLinux::run()
 					}
 
 					if (VideoDriver)
-						VideoDriver->OnResize(core::dimension2d<s32>(Width, Height));
+						VideoDriver->OnResize(core::dimension2d<u32>(Width, Height));
 				}
 				break;
 
@@ -970,9 +977,9 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 	// thx to Nadav, who send me some clues of how to display the image
 	// to the X Server.
 
-	const int destwidth = SoftwareImage->width;
-	const int minWidth = core::min_(image->getDimension().Width, destwidth);
-	const int destPitch = SoftwareImage->bytes_per_line;
+	const u32 destwidth = SoftwareImage->width;
+	const u32 minWidth = core::min_(image->getDimension().Width, destwidth);
+	const u32 destPitch = SoftwareImage->bytes_per_line;
 
 	video::ECOLOR_FORMAT destColor;
 	switch (SoftwareImage->bits_per_pixel)
@@ -993,10 +1000,10 @@ bool CIrrDeviceLinux::present(video::IImage* image, void* windowId, core::rect<s
 	u8* srcdata = reinterpret_cast<u8*>(image->lock());
 	u8* destData = reinterpret_cast<u8*>(SoftwareImage->data);
 
-	const int destheight = SoftwareImage->height;
-	const int srcheight = core::min_(image->getDimension().Height, destheight);
-	const int srcPitch = image->getPitch();
-	for (int y=0; y!=srcheight; ++y)
+	const u32 destheight = SoftwareImage->height;
+	const u32 srcheight = core::min_(image->getDimension().Height, destheight);
+	const u32 srcPitch = image->getPitch();
+	for (u32 y=0; y!=srcheight; ++y)
 	{
 		video::CColorConverter::convert_viaFormat(srcdata,image->getColorFormat(), minWidth, destData, destColor);
 		srcdata+=srcPitch;
@@ -1116,11 +1123,11 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 
 				// find fitting mode
 
-				VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
+				VideoModeList.setDesktop(defaultDepth, core::dimension2d<u32>(
 					modes[0]->hdisplay, modes[0]->vdisplay));
 				for (int i = 0; i<modeCount; ++i)
 				{
-					VideoModeList.addMode(core::dimension2d<s32>(
+					VideoModeList.addMode(core::dimension2d<u32>(
 						modes[i]->hdisplay, modes[i]->vdisplay), defaultDepth);
 				}
 				XFree(modes);
@@ -1134,11 +1141,11 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 				XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
 				oldRandrMode=XRRConfigCurrentConfiguration(config,&oldRandrRotation);
 				XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
-				VideoModeList.setDesktop(defaultDepth, core::dimension2d<s32>(
+				VideoModeList.setDesktop(defaultDepth, core::dimension2d<u32>(
 					modes[oldRandrMode].width, modes[oldRandrMode].height));
 				for (int i = 0; i<modeCount; ++i)
 				{
-					VideoModeList.addMode(core::dimension2d<s32>(
+					VideoModeList.addMode(core::dimension2d<u32>(
 						modes[i].width, modes[i].height), defaultDepth);
 				}
 				XRRFreeScreenConfigInfo(config);
@@ -1379,7 +1386,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		info.fd = open(devName.c_str(), O_RDONLY);
 		if(-1 == info.fd)
 		{
-			// ...but Ubuntu and possibly other distros 
+			// ...but Ubuntu and possibly other distros
 			// create the devices in /dev/input
 			devName = "/dev/input/js";
 			devName += joystick;
@@ -1412,7 +1419,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		char name[80];
 		ioctl( info.fd, JSIOCGNAME(80), name);
 		returnInfo.Name = name;
-	
+
 		joystickInfo.push_back(returnInfo);
 	}
 
@@ -1420,7 +1427,7 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 	{
 		char logString[256];
 		(void)sprintf(logString, "Found joystick %u, %u axes, %u buttons '%s'",
-			joystick, joystickInfo[joystick].Axes, 
+			joystick, joystickInfo[joystick].Axes,
 			joystickInfo[joystick].Buttons, joystickInfo[joystick].Name.c_str());
 		os::Printer::log(logString, ELL_INFORMATION);
 	}
@@ -1468,7 +1475,7 @@ void CIrrDeviceLinux::pollJoysticks()
 		(void)postEventFromUser(info.persistentData);
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-} 
+}
 
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)

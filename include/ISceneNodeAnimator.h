@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -63,6 +63,14 @@ namespace scene
 		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const
 		{
 			return ESNAT_UNKNOWN;
+		}
+
+		//! Returns if the animator has finished.
+		/** This is only valid for non-looping animators with a discrete end state.
+			\return true if the animator has finished, false if it is still running. */
+		virtual bool hasFinished(void) const
+		{
+			return false;
 		}
 	};
 

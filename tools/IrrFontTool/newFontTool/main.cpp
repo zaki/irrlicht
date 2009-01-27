@@ -458,7 +458,7 @@ void createGUI(IrrlichtDevice* device, CFontTool* fc)
 
 int main()
 {
-	IrrlichtDevice* device =createDevice(video::EDT_OPENGL, core::dimension2d<s32>(800, 600));
+	IrrlichtDevice* device =createDevice(video::EDT_OPENGL, core::dimension2du(800, 600));
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment *env = device->getGUIEnvironment();

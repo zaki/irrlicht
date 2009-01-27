@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -11,6 +11,8 @@ namespace irr
 {
 namespace scene
 {
+	
+class CAnimatedMeshMD2;
 
 //! Meshloader capable of loading MD2 files
 class CMD2MeshFileLoader : public IMeshLoader
@@ -29,6 +31,10 @@ public:
 	//! If you no longer need the mesh, you should call IAnimatedMesh::drop().
 	//! See IReferenceCounted::drop() for more information.
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
+
+private:
+	//! Loads the file data into the mesh
+	bool loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh);
 
 };
 

@@ -537,8 +537,8 @@
 		<Unit filename="CMY3DHelper.h" />
 		<Unit filename="CMY3DMeshFileLoader.cpp" />
 		<Unit filename="CMY3DMeshFileLoader.h" />
-		<Unit filename="CMemoryReadFile.cpp" />
-		<Unit filename="CMemoryReadFile.h" />
+		<Unit filename="CMemoryFile.cpp" />
+		<Unit filename="CMemoryFile.h" />
 		<Unit filename="CMeshCache.cpp" />
 		<Unit filename="CMeshCache.h" />
 		<Unit filename="CMeshManipulator.cpp" />

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -51,6 +51,11 @@ public:
 
 	//! Returns amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const;
+
+	//! Return the scene node associated with a given triangle.
+	/** ITerrainSceneNode is an ISceneNode, we just don't know it yet. */
+	virtual const ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const
+		{ return (ISceneNode*)SceneNode; }
 
 private:
 

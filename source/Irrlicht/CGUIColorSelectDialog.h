@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -67,8 +67,7 @@ namespace gui
 		};
 		SColorCircle ColorRing;
 
-		void buildColorRing( const core::dimension2d<s32> & dim, s32 supersample, const u32 borderColor );
-		
+		void buildColorRing( const core::dimension2d<u32> & dim, s32 supersample, const u32 borderColor );
 	};
 
 
@@ -78,3 +77,4 @@ namespace gui
 #endif // _IRR_COMPILE_WITH_GUI_
 
 #endif // __C_GUI_COLOR_SELECT_DIALOG_H_INCLUDED__
+

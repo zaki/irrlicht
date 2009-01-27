@@ -608,7 +608,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 				texHeight = lastTextureHeight;
 
 			/* The texture that holds this "page" of characters */
-			currentImages[currentImage] = Device->getVideoDriver()->createImage(video::ECF_A8R8G8B8, core::dimension2d<s32>(textureWidth, texHeight));
+			currentImages[currentImage] = Device->getVideoDriver()->createImage(video::ECF_A8R8G8B8, core::dimension2du(textureWidth, texHeight));
 			currentImages[currentImage]->fill(video::SColor(alpha ? 0 : 255,0,0,0));
 
 			for (core::map<wchar_t, u32>::Iterator it = CharMap.getIterator(); !it.atEnd(); it++)

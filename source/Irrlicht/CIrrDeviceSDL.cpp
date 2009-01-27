@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -89,7 +89,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		SDL_Flags |= SDL_FULLSCREEN;
 	if (CreationParams.DriverType == video::EDT_OPENGL)
 		SDL_Flags |= SDL_OPENGL;
-	else
+	else if (CreationParams.Doublebuffer)
 		SDL_Flags |= SDL_DOUBLEBUF;
 	// create window
 	if (CreationParams.DriverType != video::EDT_NULL)
@@ -147,11 +147,44 @@ bool CIrrDeviceSDL::createWindow()
 			SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, CreationParams.WithAlphaChannel?8:0 );
 		}
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, CreationParams.ZBufferBits);
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		if (CreationParams.Doublebuffer)
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		if (CreationParams.Stereobuffer)
+			SDL_GL_SetAttribute( SDL_GL_STEREO, 1 );
+		if (CreationParams.AntiAlias>1)
+		{
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
+		}
+		
 	}
 
 	if ( !Screen )
 		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+	if ( !Screen && CreationParams.AntiAlias>1)
+	{
+		while (--CreationParams.AntiAlias>1)
+		{
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
+			Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+			if (Screen)
+				break;
+		}
+		if ( !Screen )
+		{
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 0 );
+			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, 0 );
+			Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+			if (Screen)
+				os::Printer::log("AntiAliasing disabled due to lack of support!" );
+		}
+	}
+	if ( !Screen && CreationParams.Doublebuffer)
+	{
+		// Try single buffer
+		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+	}
 	if ( !Screen )
 	{
 		os::Printer::log( "Could not initialize display!" );

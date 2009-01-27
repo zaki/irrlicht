@@ -47,7 +47,8 @@ whenever the user press the S-key. All other events are sent
 to the FPS camera.
 */
 
-class MyEventReceiver : public IEventReceiver {
+class MyEventReceiver : public IEventReceiver
+{
 	public:
 		virtual bool OnEvent(const SEvent& event)
 		{
@@ -100,7 +101,7 @@ int main()
 
 	//Initialise the engine
 	IrrlichtDevice *device = createDevice(driverType,
-			dimension2d<s32>(ResX,ResY), 32, fullScreen,
+			dimension2du(ResX,ResY), 32, fullScreen,
 			false, false, &receiver);
 	if (!device)
 		return 1;

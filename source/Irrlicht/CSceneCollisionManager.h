@@ -1,7 +1,7 @@
 #ifndef __C_SCENE_COLLISION_MANAGER_H_INCLUDED__
 #define __C_SCENE_COLLISION_MANAGER_H_INCLUDED__
 
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -27,12 +27,13 @@ namespace scene
 
 		//! Returns the scene node, which is currently visible under the overgiven 
 		//! screencoordinates, viewed from the currently active camera. 
-		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(core::position2d<s32> pos,
+		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32> & pos,
 			s32 idBitMask=0, bool bNoDebugObjects = false);
 
 		//! Returns the nearest scene node which collides with a 3d ray and 
 		//! which id matches a bitmask. 
-		virtual ISceneNode* getSceneNodeFromRayBB(core::line3d<f32> ray, s32 idBitMask=0, 
+		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> & ray,
+												  s32 idBitMask=0, 
 												  bool bNoDebugObjects = false);
 
 		//! Returns the scene node, at which the overgiven camera is looking at and
@@ -43,33 +44,36 @@ namespace scene
 		//! Finds the collision point of a line and lots of triangles, if there is one.
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
 			ITriangleSelector* selector, core::vector3df& outCollisionPoint,
-			core::triangle3df& outTriangle);
+			core::triangle3df& outTriangle,
+			const ISceneNode* & outNode);
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns
 		//! the resulting new position of the ellipsoid. 
 		virtual core::vector3df getCollisionResultPosition(
 			ITriangleSelector* selector,
-			const core::vector3df &ellipsoidPosition,	const core::vector3df& ellipsoidRadius, 
+			const core::vector3df &ellipsoidPosition,
+			const core::vector3df& ellipsoidRadius, 
 			const core::vector3df& ellipsoidDirectionAndSpeed,
 			core::triangle3df& triout,
 			core::vector3df& hitPosition,
 			bool& outFalling,
+			const ISceneNode*& outNode,
 			f32 slidingSpeed,
 			const core::vector3df& gravityDirectionAndSpeed);
 
 		//! Returns a 3d ray which would go through the 2d screen coodinates.
 		virtual core::line3d<f32> getRayFromScreenCoordinates(
-			core::position2d<s32> pos, ICameraSceneNode* camera = 0);
+			const core::position2d<s32> & pos, ICameraSceneNode* camera = 0);
 
 		//! Calculates 2d screen position from a 3d position.
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
-			core::vector3df pos, ICameraSceneNode* camera=0);
+			const core::vector3df & pos, ICameraSceneNode* camera=0);
 
 	private:
 
 		//! recursive method for going through all scene nodes
 		void getPickedNodeBB(ISceneNode* root,
-					   const core::line3df& ray,
+					   core::line3df& ray,
 					   s32 bits,
 					   bool bNoDebugObjects,
 					   f32& outbestdistance,
@@ -91,6 +95,7 @@ namespace scene
 			core::vector3df intersectionPoint;
 
 			core::triangle3df intersectionTriangle;
+			s32 triangleIndex;
 			s32 triangleHits;
 
 			f32 slidingSpeed;
@@ -98,7 +103,12 @@ namespace scene
 			ITriangleSelector* selector;
 		};
 
-		void testTriangleIntersection(SCollisionData* colData, 
+		//! Tests the current collision data against an individual triangle.
+		/**
+		\param colData: the collision data.
+		\param triangle: the triangle to test against.
+		\return true if the triangle is hit (and is the closest hit), false otherwise */
+		bool testTriangleIntersection(SCollisionData* colData, 
 			const core::triangle3df& triangle);
 
 		//! recursive method for doing collision response
@@ -108,7 +118,8 @@ namespace scene
 			f32 slidingSpeed,
 			const core::vector3df& gravity, core::triangle3df& triout,
 			core::vector3df& hitPosition,
-			bool& outFalling);
+			bool& outFalling,
+			const ISceneNode*& outNode);
 
 		core::vector3df collideWithWorld(s32 recursionDepth, SCollisionData &colData,
 			core::vector3df pos, core::vector3df vel);

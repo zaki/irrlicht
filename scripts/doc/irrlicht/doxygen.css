@@ -9,6 +9,12 @@ table.irrlicht {
 	border-width: 1px;
 	border-style: solid;
 }
+
+table.memname { 
+     background-color: #f5f5f5;
+     border: 1px solid #b0b0b0;
+} 
+
 BODY,H1,H2,H3,H4,H5,H6,P,CENTER,TD,TH,UL,DL,DIV {
 	font-family: Geneva, Arial, Helvetica, sans-serif;
 }

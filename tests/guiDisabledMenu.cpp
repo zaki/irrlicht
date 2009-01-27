@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "irrlicht.h"
@@ -17,7 +17,7 @@ using namespace gui;
 bool guiDisabledMenu(void)
 {
 	IrrlichtDevice *device = createDevice( video::EDT_OPENGL,
-											dimension2d<s32>(160, 40), 32);
+											dimension2d<u32>(160, 40), 32);
 	assert(device);
 	if (!device)
 		return false;

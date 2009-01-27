@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -6,11 +6,14 @@
 #define __IRR_DIMENSION2D_H_INCLUDED__
 
 #include "irrTypes.h"
+#include "irrMath.h" // for irr::core::equals()
 
 namespace irr
 {
 namespace core
 {
+	template <class T>
+	class vector2d;
 
 	//! Specifies a 2 dimensional size.
 	template <class T>
@@ -23,10 +26,18 @@ namespace core
 			dimension2d(const T& width, const T& height)
 				: Width(width), Height(height) {}
 
+			dimension2d(const vector2d<T>& other); // Defined in vector2d.h
+
+			//! Use this constructor only where you are sure that the conversion is valid.
+			template <class U>
+			explicit dimension2d(const dimension2d<U>& other) :
+				Width((T)other.Width), Height((T)other.Height) { }
+
 			//! Equality operator
 			bool operator==(const dimension2d<T>& other) const
 			{
-				return Width == other.Width && Height == other.Height;
+				return core::equals(Width, other.Width) &&
+						core::equals(Height, other.Height);
 			}
 
 			//! Inequality operator
@@ -35,6 +46,12 @@ namespace core
 				return ! (*this == other);
 			}
 
+			bool operator==(const vector2d<T>& other) const;  // Defined in vector2d.h
+
+			bool operator!=(const vector2d<T>& other) const
+			{
+				return !(*this == other);
+			}
 
 			//! Set to new values
 			dimension2d<T>& set(const T& width, const T& height)
@@ -72,13 +89,22 @@ namespace core
 				return dimension2d<T>(Width*scale, Height*scale);
 			}
 
-			//! Add two dimensions
+			//! Add another dimension to this one.
 			dimension2d<T>& operator+=(const dimension2d<T>& other)
 			{
-				Width *= other.Width;
-				Height *= other.Height;
+				Width += other.Width;
+				Height += other.Height;
 				return *this;
 			}
+
+			//! Subtract a dimension from this one
+			dimension2d<T>& operator-=(const dimension2d<T>& other)
+			{
+				Width -= other.Width;
+				Height -= other.Height;
+				return *this;
+			}
+
 
 			//! Add two dimensions
 			dimension2d<T> operator+(const dimension2d<T>& other) const
@@ -158,8 +184,14 @@ namespace core
 
 	//! Typedef for an f32 dimension.
 	typedef dimension2d<f32> dimension2df;
+	//! Typedef for an unsigned integer dimension.
+	typedef dimension2d<u32> dimension2du;
+
 	//! Typedef for an integer dimension.
+	/** There are few cases where negative dimensions make sense. Please consider using
+		dimension2du instead. */
 	typedef dimension2d<s32> dimension2di;
+
 
 } // end namespace core
 } // end namespace irr

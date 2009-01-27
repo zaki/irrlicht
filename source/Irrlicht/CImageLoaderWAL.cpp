@@ -1,5 +1,5 @@
 // Copyright (C) 2004 Murphy McCauley
-// Copyright (C) 2007-2008 Christian Stehno
+// Copyright (C) 2007-2009 Christian Stehno
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -123,7 +123,7 @@ IImage* CImageLoaderWAL::loadImage(irr::io::IReadFile* file) const
 	IImage* image = 0;
 
 	image = new CImage(ECF_A1R5G5B5,
-		core::dimension2d<s32>(header.ImageWidth, header.ImageHeight));
+		core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
 
 	// I wrote an 8 to 32 converter, but this works with released Irrlicht code.
 	CColorConverter::convert8BitTo16Bit(data,

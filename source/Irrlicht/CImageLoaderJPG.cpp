@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -236,7 +236,7 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 
 	// convert image
 	IImage* image = new CImage(ECF_R8G8B8,
-		core::dimension2d<s32>(width, height), output);
+		core::dimension2d<u32>(width, height), output);
 
 	delete [] input;
 

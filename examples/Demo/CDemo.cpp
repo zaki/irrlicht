@@ -1,4 +1,4 @@
-// This is a Demo of the Irrlicht Engine (c) 2005-2008 by N.Gebhardt.
+// This is a Demo of the Irrlicht Engine (c) 2005-2009 by N.Gebhardt.
 // This file is not documented.
 
 #include "CDemo.h"
@@ -37,7 +37,7 @@ CDemo::~CDemo()
 
 void CDemo::run()
 {
-	core::dimension2d<s32> resolution ( 800, 600 );
+	core::dimension2d<u32> resolution ( 800, 600 );
 
 	if ( driverType == video::EDT_BURNINGSVIDEO || driverType == video::EDT_SOFTWARE )
 	{
@@ -570,7 +570,7 @@ void CDemo::loadSceneData()
 
 void CDemo::createLoadingScreen()
 {
-	core::dimension2d<int> size = device->getVideoDriver()->getScreenSize();
+	core::dimension2d<u32> size = device->getVideoDriver()->getScreenSize();
 
 	device->getCursorControl()->setVisible(false);
 
@@ -635,9 +635,9 @@ void CDemo::shoot()
 	core::line3d<f32> line(start, end);
 
 	// get intersection point with map
-
+	const scene::ISceneNode* hitNode;
 	if (sm->getSceneCollisionManager()->getCollisionPoint(
-		line, mapSelector, end, triangle))
+		line, mapSelector, end, triangle, hitNode))
 	{
 		// collides with wall
 		core::vector3df out = triangle.getNormal();

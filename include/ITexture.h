@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -130,11 +130,11 @@ public:
 	of the original texture. Use ITexture::getSize() if you want to know
 	the real size it has now stored in the system.
 	\return Returns the original size of the texture. */
-	virtual const core::dimension2d<s32>& getOriginalSize() const = 0;
+	virtual const core::dimension2d<u32>& getOriginalSize() const = 0;
 
 	//! Returns dimension (=size) of the texture.
 	/** \return Returns the size of the texture. */
-	virtual const core::dimension2d<s32>& getSize() const = 0;
+	virtual const core::dimension2d<u32>& getSize() const = 0;
 
 	//! Returns driver type of texture.
 	/** This is the driver, which created the texture.

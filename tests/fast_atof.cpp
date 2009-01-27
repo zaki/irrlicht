@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
@@ -146,7 +146,7 @@ bool fast_atof(void)
 
 	enum { ITERATIONS = 100000 };
 	int i;
-	
+
 	f32 value;
 	u32 then = timer->getRealTime();
 	for(i = 0; i < ITERATIONS; ++i)

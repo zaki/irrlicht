@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -33,13 +33,11 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* envi
 			const core::rect<s32>& rectangle)
 : IGUIEditBox(environment, parent, id, rectangle), MouseMarking(false),
 	Border(border), OverrideColorEnabled(false), MarkBegin(0), MarkEnd(0),
-	OverrideColor(video::SColor(101,255,255,255)),
-	OverrideFont(0), LastBreakFont(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
+	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
+	Operator(0), BlinkStartTime(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
 	WordWrap(false), MultiLine(false), AutoScroll(true), PasswordBox(false),
-	PasswordChar(L'*'),
-	HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
+	PasswordChar(L'*'), HAlign(EGUIA_UPPERLEFT), VAlign(EGUIA_CENTER),
 	CurrentTextRect(0,0,1,1), FrameRect(rectangle)
-
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIEditBox");
@@ -47,7 +45,8 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* envi
 
 	Text = text;
 
-	Operator = environment->getOSOperator();
+	if (Environment)
+		Operator = Environment->getOSOperator();
 
 	if (Operator)
 		Operator->grab();
@@ -56,7 +55,9 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* envi
 	setTabStop(true);
 	setTabOrder(-1);
 
-	IGUISkin *skin = Environment->getSkin();
+	IGUISkin *skin = 0;
+	if (Environment)
+		skin = Environment->getSkin();
 	if (Border && skin)
 	{
 		FrameRect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X)+1;
@@ -84,6 +85,9 @@ CGUIEditBox::~CGUIEditBox()
 //! Sets another skin independent font.
 void CGUIEditBox::setOverrideFont(IGUIFont* font)
 {
+	if (OverrideFont == font)
+		return;
+
 	if (OverrideFont)
 		OverrideFont->drop();
 
@@ -661,6 +665,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 	return true;
 }
 
+
 //! draws the element and its children
 void CGUIEditBox::draw()
 {
@@ -874,9 +879,10 @@ bool CGUIEditBox::isAutoScrollEnabled() const
 	return AutoScroll;
 }
 
+
 //! Gets the area of the text in the edit box
 //! \return Returns the size in pixels of the text
-core::dimension2di CGUIEditBox::getTextDimension()
+core::dimension2du CGUIEditBox::getTextDimension()
 {
 	core::rect<s32> ret;
 
@@ -890,7 +896,7 @@ core::dimension2di CGUIEditBox::getTextDimension()
 		ret.addInternalPoint(CurrentTextRect.LowerRightCorner);
 	}
 
-	return ret.getSize();
+	return core::dimension2du(ret.getSize());
 }
 
 
@@ -1143,7 +1149,7 @@ void CGUIEditBox::breakText()
 
 void CGUIEditBox::setTextRect(s32 line)
 {
-	core::dimension2di d;
+	core::dimension2du d;
 	s32 lineCount = 1;
 
 	IGUIFont* font = OverrideFont;
@@ -1362,7 +1368,7 @@ void CGUIEditBox::deserializeAttributes(io::IAttributes* in, io::SAttributeReadW
 		setPasswordBox(in->getAttributeAsBool("PasswordBox"), ch[0]);
 
 	setTextAlignment( (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("HTextAlign", GUIAlignmentNames),
-                      (EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
+			(EGUI_ALIGNMENT) in->getAttributeAsEnumeration("VTextAlign", GUIAlignmentNames));
 
 	// setOverrideFont(in->getAttributeAsFont("OverrideFont"));
 }

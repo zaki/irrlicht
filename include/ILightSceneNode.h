@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -39,6 +39,12 @@ public:
 	//! Gets the light data associated with this ILightSceneNode
 	/** \return The light data. */
 	virtual video::SLight& getLightData() = 0;
+
+	//! Sets if the node should be visible or not.
+	/** All children of this node won't be visible either, when set
+	to true.
+	\param isVisible If the node shall be visible. */
+	virtual void setVisible(bool isVisible) = 0;
 
 	//! Sets the light's radius of influence.
 	/** Outside this radius the light won't lighten geometry and cast no

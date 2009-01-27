@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -169,7 +169,7 @@ bool CImageWriterPNG::writeImage(io::IWriteFile* file, IImage* image,u32 param) 
 
 	data=tmpImage;
 	// Fill array of pointers to rows in image data
-	for (s32 i=0; i<image->getDimension().Height; ++i)
+	for (u32 i=0; i<image->getDimension().Height; ++i)
 	{
 		RowPointers[i]=data;
 		data += lineWidth;

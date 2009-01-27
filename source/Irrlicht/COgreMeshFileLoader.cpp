@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // orginally written by Christian Stehno, modified by Nikolaus Gebhardt
@@ -761,7 +761,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		else if (token=="depth_check")
 		{
 			getMaterialToken(file, token);
-			pass.Material.ZBuffer=(token=="on");
+			pass.Material.ZBuffer=((token=="on")?video::ECFN_LESSEQUAL:video::ECFN_NEVER);
 		}
 		else if (token=="depth_write")
 		{

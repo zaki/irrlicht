@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -28,7 +28,8 @@ namespace scene
 		//! Constructor
 		CSceneNodeAnimatorCameraFPS(gui::ICursorControl* cursorControl, 
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, f32 jumpSpeed=0.f,
-			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false);
+			SKeyMap* keyMapArray=0, u32 keyMapSize=0, bool noVerticalMovement=false,
+			bool invertY=false);
 			
 		//! Destructor
 		virtual ~CSceneNodeAnimatorCameraFPS();
@@ -59,6 +60,11 @@ namespace scene
 		//! Sets whether vertical movement should be allowed.
 		virtual void setVerticalMovement(bool allow);
 
+		//! Sets whether the Y axis of the mouse should be inverted.
+		/** If enabled then moving the mouse down will cause
+		the camera to look up. It is disabled by default. */
+		virtual void setInvertMouse(bool invert);
+
 		//! This animator will receive events when attached to the active camera
 		virtual bool isEventReceiverEnabled() const
 		{
@@ -73,8 +79,8 @@ namespace scene
 
 		//! Creates a clone of this animator.
 		/** Please note that you will have to drop
-		(IReferenceCounted::drop()) the returned pointer after calling
-		this. */
+		(IReferenceCounted::drop()) the returned pointer once you're
+		done with it. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
 		struct SCamKeyMap
@@ -101,10 +107,11 @@ namespace scene
 		f32 MoveSpeed;
 		f32 RotateSpeed;
 		f32 JumpSpeed;
+		// -1.0f for inverted mouse, defaults to 1.0f
+		f32 MouseYDirection;
 
 		s32 LastAnimationTime;
 
-		core::vector3df TargetVector;
 		core::array<SCamKeyMap> KeyMap;
 		core::position2d<f32> CenterCursor, CursorPos;
 

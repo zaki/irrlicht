@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -47,7 +47,7 @@ namespace gui
 
 		//! sets the color of the background, if it should be drawn.
 		virtual void setBackgroundColor(video::SColor c);
-	
+
 		//! sets the color of the text
 		virtual void setTextColor(video::SColor c);
 
@@ -69,12 +69,10 @@ namespace gui
 	private:
 
 		s32 Number;
-		bool DrawBackground;
 		video::SColor BackColor;
 		video::SColor TextColor;
-
+		bool DrawBackground;
 	};
-
 
 
 	//! A standard tab control

@@ -2840,7 +2840,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit282]
-FileName=CMemoryReadFile.cpp
+FileName=CMemoryFile.cpp
 Folder=io_impl
 Compile=1
 CompileCpp=1
@@ -2850,7 +2850,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit283]
-FileName=CMemoryReadFile.h
+FileName=CMemoryFile.h
 Folder=io_impl
 Compile=1
 CompileCpp=1

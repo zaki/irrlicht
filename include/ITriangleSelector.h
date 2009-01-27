@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -15,6 +15,8 @@ namespace irr
 {
 namespace scene
 {
+
+class ISceneNode;
 
 //! Interface to return triangles with specific properties.
 /** Every ISceneNode may have a triangle selector, available with
@@ -33,8 +35,13 @@ public:
 	//! Returns amount of all available triangles in this selector
 	virtual s32 getTriangleCount() const = 0;
 
-	//! Gets all triangles.
-	/** \param triangles: Array where the resulting triangles will be
+	//! Gets the triangles for one associated node.
+	/**
+	This returns all triangles for one scene node associated with this
+	selector.  If there is more than one scene node associated (e.g. for
+	an IMetaTriangleSelector) this this function may be called multiple
+	times to retrieve all triangles.
+	\param triangles: Array where the resulting triangles will be
 	written to.
 	\param arraySize: Size of the target array.
 	\param outTriangleCount: Amount of triangles which have been written
@@ -46,9 +53,15 @@ public:
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::matrix4* transform=0) const = 0;
 
-	//! Gets all triangles which lie within a specific bounding box.
-	/** Please note that unoptimized triangle selectors also may return
-	triangles which are not in the specific box at all.
+	//! Gets the triangles for one associated node which lie or may lie within a specific bounding box.
+	/**
+	This returns all triangles for one scene node associated with this
+	selector.  If there is more than one scene node associated (e.g. for
+	an IMetaTriangleSelector) this this function may be called multiple
+	times to retrieve all triangles.
+
+	Please note that unoptimized triangle selectors also may return
+	triangles which are not in the specified box at all.
 	\param triangles: Array where the resulting triangles will be written
 	to.
 	\param arraySize: Size of the target array.
@@ -64,8 +77,14 @@ public:
 		s32& outTriangleCount, const core::aabbox3d<f32>& box,
 		const core::matrix4* transform=0) const = 0;
 
-	//! Gets all triangles which have or may have contact with a 3d line.
-	/** Please note that unoptimized triangle selectors also may return
+	//! Gets the triangles for one associated node which have or may have contact with a 3d line.
+	/**
+	This returns all triangles for one scene node associated with this
+	selector.  If there is more than one scene node associated (e.g. for
+	an IMetaTriangleSelector) this this function may be called multiple
+	times to retrieve all triangles.
+	
+	Please note that unoptimized triangle selectors also may return
 	triangles which are not in contact at all with the 3d line.
 	\param triangles: Array where the resulting triangles will be written
 	to.
@@ -81,6 +100,18 @@ public:
 	virtual void getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
 		const core::matrix4* transform=0) const = 0;
+
+	//! Return the scene node associated with a given triangle.
+	/**
+	This allows you to find which scene node (potentially of several) is
+	associated with a specific triangle.
+
+	\param triangleIndex: the index of the triangle for which you want to find
+	the associated scene node.
+	\return The scene node associated with that triangle.
+	*/
+	virtual const ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const = 0;
+
 };
 
 } // end namespace scene

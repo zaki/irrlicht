@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -84,6 +84,12 @@ namespace video
 
 		//! Are vertex buffer objects supported?
 		EVDF_VERTEX_BUFFER_OBJECT,
+
+		//! Supports Alpha To Coverage
+		EVDF_ALPHA_TO_COVERAGE,
+
+		//! Supports Color masks (disabling color planes in output)
+		EVDF_COLOR_MASK,
 
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT

@@ -830,6 +830,22 @@
 				Name="scene"
 				>
 				<File
+					RelativePath="..\..\include\CDynamicMeshBuffer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\CIndexBuffer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\CMeshBuffer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\CVertexBuffer.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\ECullingTypes.h"
 					>
 				</File>
@@ -2707,11 +2723,11 @@
 				>
 			</File>
 			<File
-				RelativePath="CMemoryReadFile.cpp"
+				RelativePath="CMemoryFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath="CMemoryReadFile.h"
+				RelativePath="CMemoryFile.h"
 				>
 			</File>
 			<File

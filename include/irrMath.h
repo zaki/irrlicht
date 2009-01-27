@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -170,22 +170,41 @@ namespace core
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
-	//! returns if a equals b, taking possible rounding errors into account
-	inline bool equals(const s32 a, const s32 b, const s32 tolerance = 0)
+	//! returns if a equals b, not using any rounding tolerance
+	inline bool equals(const s32 a, const s32 b)
+	{
+		return (a == b);
+	}
+
+	//! returns if a equals b, not using any rounding tolerance
+	inline bool equals(const u32 a, const u32 b)
+	{
+		return (a == b);
+	}
+
+	//! returns if a equals b, taking an explicit rounding tolerance into account
+	inline bool equals(const s32 a, const s32 b, const s32 tolerance)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
-	//! returns if a equals b, taking possible rounding errors into account
-	inline bool equals(const u32 a, const u32 b, const u32 tolerance = 0)
+	//! returns if a equals b, taking an explicit rounding tolerance into account
+	inline bool equals(const u32 a, const u32 b, const u32 tolerance)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
+	}
+
+
+	//! returns if a equals zero, taking rounding errors into account
+	inline bool iszero(const f64 a, const f64 tolerance = ROUNDING_ERROR_64)
+	{
+		return fabs(a) <= tolerance;
 	}
 
 	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
 	{
-		return fabsf ( a ) <= tolerance;
+		return fabsf(a) <= tolerance;
 	}
 
 	//! returns if a equals zero, taking rounding errors into account
@@ -200,21 +219,21 @@ namespace core
 		return a <= tolerance;
 	}
 
-	inline s32 s32_min ( s32 a, s32 b)
+	inline s32 s32_min(s32 a, s32 b)
 	{
-		s32 mask = (a - b) >> 31;
+		const s32 mask = (a - b) >> 31;
 		return (a & mask) | (b & ~mask);
 	}
 
-	inline s32 s32_max ( s32 a, s32 b)
+	inline s32 s32_max(s32 a, s32 b)
 	{
-		s32 mask = (a - b) >> 31;
+		const s32 mask = (a - b) >> 31;
 		return (b & mask) | (a & ~mask);
 	}
 
 	inline s32 s32_clamp (s32 value, s32 low, s32 high)
 	{
-		return s32_min (s32_max(value,low), high);
+		return s32_min(s32_max(value,low), high);
 	}
 
 	/*

@@ -1,6 +1,6 @@
 /* irrlicht.h -- interface of the 'Irrlicht Engine'
 
-  Copyright (C) 2002-2008 Nikolaus Gebhardt
+  Copyright (C) 2002-2009 Nikolaus Gebhardt
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -150,6 +150,7 @@
 #include "IWriteFile.h"
 #include "IXMLReader.h"
 #include "IXMLWriter.h"
+#include "ILightManager.h"
 #include "Keycodes.h"
 #include "line2d.h"
 #include "line3d.h"
@@ -222,7 +223,7 @@
  * {
  *	// start up the engine
  *	IrrlichtDevice *device = createDevice(video::EDT_DIRECT3D8,
- *		core::dimension2d<s32>(640,480));
+ *		core::dimension2d<u32>(640,480));
  *
  *	video::IVideoDriver* driver = device->getVideoDriver();
  *	scene::ISceneManager* scenemgr = device->getSceneManager();
@@ -317,7 +318,7 @@ namespace irr
 	IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
 		video::E_DRIVER_TYPE deviceType = video::EDT_SOFTWARE,
 		// parantheses are necessary for some compilers
-		const core::dimension2d<s32>& windowSize = (core::dimension2d<s32>(640,480)),
+		const core::dimension2d<u32>& windowSize = (core::dimension2d<u32>(640,480)),
 		u32 bits = 16,
 		bool fullscreen = false,
 		bool stencilbuffer = false,

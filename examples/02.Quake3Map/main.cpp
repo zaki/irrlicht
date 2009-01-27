@@ -55,8 +55,8 @@ int main()
 
 	printf("Please select the driver you want for this example:\n"\
 		" (a) Direct3D 9.0c\n (b) Direct3D 8.1\n (c) OpenGL 1.5\n"\
-		" (d) Software Renderer\n (e) Burning's Software Renderer\n"\
-		" (f) NullDevice\n (otherKey) exit\n\n");
+		" (d) OpenGL-ES1\n (e) Software Renderer\n (f) Burning's Software Renderer\n"\
+		" (g) NullDevice\n (otherKey) exit\n\n");
 
 	char i;
 	std::cin >> i;
@@ -66,16 +66,17 @@ int main()
 		case 'a': driverType = video::EDT_DIRECT3D9;break;
 		case 'b': driverType = video::EDT_DIRECT3D8;break;
 		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
-		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
-		case 'f': driverType = video::EDT_NULL;     break;
+		case 'd': driverType = video::EDT_OGLES1;   break;
+		case 'e': driverType = video::EDT_SOFTWARE; break;
+		case 'f': driverType = video::EDT_BURNINGSVIDEO;break;
+		case 'g': driverType = video::EDT_NULL;     break;
 		default: return 1;
 	}	
 
 	// create device and exit if creation failed
 
 	IrrlichtDevice *device =
-		createDevice(driverType, core::dimension2d<s32>(640, 480));
+		createDevice(driverType, core::dimension2d<u32>(640, 480));
 
 	if (device == 0)
 		return 1; // could not create selected driver.

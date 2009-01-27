@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Colin MacDonald
+// Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
 #include "irrlicht.h"
@@ -18,7 +18,7 @@ using namespace gui;
 	cyan 100% opaque at the top right. */
 static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 {
-	IrrlichtDevice *device = createDevice( driverType, dimension2d<s32>(160, 120), 32);
+	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
 	if (!device)
 		return true; // Treat a failure to create a driver as benign; this saves a lot of #ifdefs
 

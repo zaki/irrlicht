@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -12,7 +12,7 @@
 
 namespace irr
 {
-namespace video  
+namespace video
 {
 
 //! constructor
@@ -33,9 +33,9 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 	{
 		OrigSize = image->getDimension();
 
-		core::dimension2d<s32> optSize(
+		core::dimension2d<u32> optSize(
 				OrigSize.getOptimalSize(true, false, false));
-		
+
 		if ( OrigSize == optSize )
 		{
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, image);
@@ -69,7 +69,7 @@ CSoftwareTexture2::~CSoftwareTexture2()
 }
 
 
-//! Regenerates the mip map levels of the texture. Useful after locking and 
+//! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
 void CSoftwareTexture2::regenerateMipMapLevels()
 {
@@ -85,8 +85,8 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 			MipMap[i]->drop();
 	}
 
-	core::dimension2d<s32> newSize;
-	core::dimension2d<s32> currentSize;
+	core::dimension2d<u32> newSize;
+	core::dimension2d<u32> currentSize;
 
 	i = 1;
 	CImage * c = MipMap[0];

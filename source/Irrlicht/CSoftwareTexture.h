@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -33,10 +33,10 @@ public:
 	virtual void unlock();
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize() const;
+	virtual const core::dimension2d<u32>& getOriginalSize() const;
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<s32>& getSize() const;
+	virtual const core::dimension2d<u32>& getSize() const;
 
 	//! returns unoptimized surface
 	virtual CImage* getImage();
@@ -53,7 +53,7 @@ public:
 	//! returns pitch of texture (in bytes)
 	virtual u32 getPitch() const;
 
-	//! Regenerates the mip map levels of the texture. Useful after locking and 
+	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
 	virtual void regenerateMipMapLevels();
 
@@ -67,7 +67,7 @@ private:
 
 	CImage* Image;
 	CImage* Texture;
-	core::dimension2d<s32> OrigSize;
+	core::dimension2d<u32> OrigSize;
 	bool IsRenderTarget;
 };
 

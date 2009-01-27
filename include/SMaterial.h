@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -42,6 +42,46 @@ namespace video
 		EMFN_MODULATE_4X	= 4
 	};
 
+	//! Comparison function, e.g. for depth buffer test
+	enum E_COMPARISON_FUNC
+	{
+		//! Test never succeeds, this equals disable
+		ECFN_NEVER=0,
+		//! <= test, default for e.g. depth test
+		ECFN_LESSEQUAL=1,
+		//! Exact equality
+		ECFN_EQUAL=2,
+		//! exclusive less comparison, i.e. <
+		ECFN_LESS,
+		//! Succeeds almost always, except for exact equality
+		ECFN_NOTEQUAL,
+		//! >= test
+		ECFN_GREATEREQUAL,
+		//! inverse of <=
+		ECFN_GREATER,
+		//! test succeeds always
+		ECFN_ALWAYS
+	};
+
+	//! Enum values for enabling/disabling color planes for rendering
+	enum E_COLOR_PLANE
+	{
+		//! No color enabled
+		ECP_NONE=0,
+		//! Alpha enabled
+		ECP_ALPHA=1,
+		//! Red enabled
+		ECP_RED=2,
+		//! Green enabled
+		ECP_GREEN=4,
+		//! Blue enabled
+		ECP_BLUE=8,
+		//! All colors, no alpha
+		ECP_RGB=14,
+		//! All planes enabled
+		ECP_ALL=15
+	};
+
 	//! EMT_ONETEXTURE_BLEND: pack srcFact & dstFact and Modulo to MaterialTypeParam
 	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate )
 	{
@@ -58,6 +98,32 @@ namespace video
 		dstFact = E_BLEND_FACTOR ( ( state & 0x000000FF ) );
 	}
 
+	//! These flags are used to specify the anti-aliasing and smoothing modes
+	/** Techniques supported are multisampling, geometry smoothing, and alpha
+	to coverage.
+	Some drivers don't support a per-material setting of the anti-aliasing
+	modes. In those cases, FSAA/multisampling is defined by the device mode
+	chosen upon creation via irr::SIrrCreationParameters.
+	*/
+	enum E_ANTI_ALIASING_MODE
+	{
+		//! Use to turn off anti-aliasing for this material
+		EAAM_OFF=0,
+		//! Default anti-aliasing mode
+		EAAM_SIMPLE=1,
+		//! High-quality anti-aliasing, not always supported, automatically enables SIMPLE mode
+		EAAM_QUALITY=3,
+		//! Line smoothing
+		EAAM_LINE_SMOOTH=4,
+		//! point smoothing, often in software and slow, only with OpenGL
+		EAAM_POINT_SMOOTH=8,
+		//! All typical anti-alias and smooth modes
+		EAAM_FULL_BASIC=15,
+		//! Enhanced anti-aliasing for transparent materials
+		/** Usually used with EMT_TRANSPARENT_ALPHA_REF and multisampling. */
+		EAAM_ALPHA_TO_COVERAGE=16
+	};
+
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = 4;
 
@@ -72,7 +138,7 @@ namespace video
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
 			ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), ZBuffer(1)
+			FogEnable(false), NormalizeNormals(false), ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH), ColorMask(ECP_ALL)
 		{ }
 
 		//! Copy constructor
@@ -118,6 +184,8 @@ namespace video
 			FogEnable = other.FogEnable;
 			NormalizeNormals = other.NormalizeNormals;
 			ZBuffer = other.ZBuffer;
+			AntiAliasing = other.AntiAliasing;
+			ColorMask = other.ColorMask;
 
 			return *this;
 		}
@@ -226,7 +294,17 @@ namespace video
 		/** Changed from bool to integer
 		(0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal)
 		*/
-		char ZBuffer;
+		u8 ZBuffer;
+
+		//! Sets the antialiasing mode
+		u8 AntiAliasing;
+
+		//! Defines the enabled color planes
+		/** Values are defined as or'ed values of the E_COLOR_PLANE enum.
+		Only enabled color planes will be rendered to the current render
+		target. Typical use is to disable all colors when rendering only to
+		depth or stencil buffer, or using Red and Green for Stereo rendering.		*/
+		u8 ColorMask;
 
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES.
@@ -313,8 +391,12 @@ namespace video
 				break;
 				case EMF_ANISOTROPIC_FILTER:
 				{
-					for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-						TextureLayer[i].AnisotropicFilter = value;
+					if (value)
+						for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							TextureLayer[i].AnisotropicFilter = 0xFF;
+					else
+						for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+							TextureLayer[i].AnisotropicFilter = 0;
 				}
 				break;
 				case EMF_FOG_ENABLE:
@@ -327,6 +409,12 @@ namespace video
 						TextureLayer[i].TextureWrap = (E_TEXTURE_CLAMP)value;
 				}
 				break;
+				case EMF_ANTI_ALIASING:
+					AntiAliasing = value?EAAM_SIMPLE:EAAM_OFF;
+					break;
+				case EMF_COLOR_MASK:
+					ColorMask = value?ECP_ALL:ECP_NONE;
+					break;
 				default:
 					break;
 			}
@@ -348,7 +436,7 @@ namespace video
 				case EMF_LIGHTING:
 					return Lighting;
 				case EMF_ZBUFFER:
-					return ZBuffer!=0;
+					return ZBuffer!=ECFN_NEVER;
 				case EMF_ZWRITE_ENABLE:
 					return ZWriteEnable;
 				case EMF_BACK_FACE_CULLING:
@@ -360,7 +448,7 @@ namespace video
 				case EMF_TRILINEAR_FILTER:
 					return TextureLayer[0].TrilinearFilter;
 				case EMF_ANISOTROPIC_FILTER:
-					return TextureLayer[0].AnisotropicFilter;
+					return TextureLayer[0].AnisotropicFilter!=0;
 				case EMF_FOG_ENABLE:
 					return FogEnable;
 				case EMF_NORMALIZE_NORMALS:
@@ -370,6 +458,10 @@ namespace video
 							TextureLayer[1].TextureWrap ||
 							TextureLayer[2].TextureWrap ||
 							TextureLayer[3].TextureWrap);
+				case EMF_ANTI_ALIASING:
+					return (AntiAliasing==1);
+				case EMF_COLOR_MASK:
+					return (ColorMask!=ECP_NONE);
 				case EMF_MATERIAL_FLAG_COUNT:
 					break;
 			}
@@ -401,7 +493,9 @@ namespace video
 				BackfaceCulling != b.BackfaceCulling ||
 				FrontfaceCulling != b.FrontfaceCulling ||
 				FogEnable != b.FogEnable ||
-				NormalizeNormals != b.NormalizeNormals;
+				NormalizeNormals != b.NormalizeNormals ||
+				AntiAliasing != b.AntiAliasing ||
+				ColorMask != b.ColorMask;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
 			{
 				different |= (TextureLayer[i] != b.TextureLayer[i]);
@@ -428,4 +522,3 @@ namespace video
 } // end namespace irr
 
 #endif
-

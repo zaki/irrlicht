@@ -1,17 +1,74 @@
 Changes in version 1.6
 
+ - New scene parameter B3D_LOADER_IGNORE_MIPMAP_FLAG to ignore the often missing mipmap flag in b3d files. If this parameter is true, the old pre Irrlicht-1.5 behavior is restored.
+
+ - Added Mipmap LOD Bias attribute to MaterialLayer.
+
+ - Added ColorMask support to selectively disable color planes on rendering.
+
+ - Added support for all available depth test functions.
+
+ - Add an outNode to getCollisionPoint() that returns the scene node that was hit, as well as the triangle.
+
+ - Initial support for Alpha To Coverage, needs some more fixing until it works on all supported platforms.
+
+ - Added support for Anti-Aliasing modes per material
+
+ - Added an ICollisionCallback to ISceneNodeAnimatorCollisionResponse, to inform the application that a collision has occured.  Thanks to garrittg for this.
+
+ - Added an startPosition parameter to createFlyCircleAnimator() to allow starting the animator at any position on the circle.
+
+ - Many uses of dimension2d<s32> changed to dimension2d<u32>, including IImage, ITexture and screen dimensions.  You will have to change (at least) createDevice() calls to use dimension2d<u32>
+
+ - Added Doublebuffer flag to SIrrCreationParameters, for better finetuning
+
+ - Added Stereo-Framebuffer support for professional OpenGL cards
+
+ - Added IFileSystem::createMemoryWriteFile() to allow creation of an IWriteFile interface that uses an application supplied memory buffer.
+
+ - Added an IVideoDriver::writeImageToFile() overload that can take an IWriteFile interface.
+
+ - (Internal) Replaced CMemoryReadFile with CMemoryFile, that also implements an IWriteFile interface.
+
+ - Added an optional light manager to the scene manager to allow the user application to turn lights on and off during scene rendering.  This can be used to produce "zoned" lighting. See example 20.ManagedLights.
+
+ - Added a method to flip the Y movement of the FPS camera.
+
+ - The Anisotropy filter can now be set to the AF value per texture layer. So no forced MAX_ANISOTROPY anymore. .irr files will probably fail, though.
+
+ - AntiAlias parameter in SIrrCreationParameters is now an u8 value specifying the multisampling level (0 for disabled, 4,6,8, and others for anti-aliasing)
+
+ - D3D devices use DISCARD for windowed renderbuffers now, can be faster.
+
+ - Changed behaviour of PixelBlend16() / PixelBlend16_simd() so that they treat the 1 bit alpha of the source pixel as boolean, i.e. they draw either the source pixel, or the destination pixel, rather than "blending". (Issue revealed by the fix to IVideoDriver::makeColorKeyTexture()).
+
+ - IVideoDriver::makeColorKeyTexture() bug fixed so that only alphas, not whole texel colors, are zeroed. An optional parameter allows using the old (buggy) behaviour for backwards compatibility.
+
+ - position2d is now a synonym for vector2d. position2d is therefore marked as deprecated, although it's unlikely to be removed.
+
+ - ISceneNodeAnimator now has a hasFinished() method.
+
  - ISceneNodeAnimatorCollisionResponse exposes the target node. Setting the node again resets the last position, allowing the node to be teleported.
 
  - Add a hitPosition out parameter to ISceneCollisionManager::getCollisionResultPosition() - this is a (small) API breaking change.
+
+-------------------------------------
+Changes in version 1.5.1 (??.?? 2009)
+
+ - Fixed OSX device bug where screen size was not set in fullscreen mode.
+
+ - OSX device now supports shift and ctrl keys.
+
+ - MD2 mesh loader: Now uses much less memory, reduced number of allocations when loading meshes.
 
 -----------------------------------
 Changes in version 1.5 (15.12.2008)
 
  - Construction calls for FPS camera changed to take speed in units/milliseconds, just as the setSpeed method does.
 
- - Code::Blocks workspaces added.  C::B projects (using gcc) now output to /lib/gcc and /bin/gcc, when built on either Windows or Linux.
+ - Code::Blocks workspaces added. C::B projects (using gcc) now output to /lib/gcc and /bin/gcc, when built on either Windows or Linux.
 
- - Added a test suite in the /tests directory.  This can be used to perform regression tests, and should be updated with new tests to verify fixes or validate new features.
+ - Added a test suite in the /tests directory. This can be used to perform regression tests, and should be updated with new tests to verify fixes or validate new features.
 
  - Changed the preferred way of altering light node's radius: Use the new member methods of ILightSceneNode instead of directly modifying the SLight structure.
 
@@ -21,7 +78,7 @@ Changes in version 1.5 (15.12.2008)
 
  - Terrain heightmap and texture were flipped in order to draw them as expected (looking onto the terrain from high above will just look like the actual texture/heightmap).
 
- - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact.  The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
+ - Significant internal change to the way that FPS camera jump speed and collision response animator gravity interact. The behaviour is now much more realistic, but it will require you to adjust your jump speed and gravity.
 
  - Skybox won't be culled anymore by nearplane or farplane.
 
@@ -47,7 +104,7 @@ Changes in version 1.5 (15.12.2008)
 
  - ISceneNode::setParent and addChild now updates node SceneManager pointers if the node was from another SceneManager.
 
- - Basic support for joystick input events on Windows, Linux, SDL and OSX.  Tested with wired Logitech and Thrustmaster wired controllers and XBox 360 wireless controller ( http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver )
+ - Basic support for joystick input events on Windows, Linux, SDL and OSX. Tested with wired Logitech and Thrustmaster wired controllers and XBox 360 wireless controller ( http://tattiebogle.net/index.php/ProjectRoot/Xbox360Controller/OsxDriver )
 
  - Fixed scaled octree nodes being incorrectly frustum culled.
 

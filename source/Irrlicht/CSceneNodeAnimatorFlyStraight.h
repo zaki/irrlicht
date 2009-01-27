@@ -1,17 +1,17 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #ifndef __C_SCENE_NODE_ANIMATOR_FLY_STRAIGHT_H_INCLUDED__
 #define __C_SCENE_NODE_ANIMATOR_FLY_STRAIGHT_H_INCLUDED__
 
-#include "ISceneNode.h"
+#include "ISceneNodeAnimatorFinishing.h"
 
 namespace irr
 {
 namespace scene
 {
-	class CSceneNodeAnimatorFlyStraight : public ISceneNodeAnimator
+	class CSceneNodeAnimatorFlyStraight : public ISceneNodeAnimatorFinishing
 	{
 	public:
 
@@ -44,7 +44,7 @@ namespace scene
 
 	private:
 
-		void recalculateImidiateValues();
+		void recalculateIntermediateValues();
 
 		core::vector3df Start;
 		core::vector3df End;

@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -28,9 +28,9 @@ namespace scene
 
 //! Constructor
 CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs)
-: SceneManager(smgr), FileSystem(fs), AnimatedMesh(0), MajorVersion(0),
-	MinorVersion(0), BinaryFormat(false), BinaryNumCount(0), Buffer(0),
-	P(0), End(0), FloatSize(0), CurFrame(0)
+: SceneManager(smgr), FileSystem(fs), AllJoints(0), AnimatedMesh(0),
+	Buffer(0), P(0), End(0), BinaryNumCount(0), Line(0),
+	CurFrame(0), MajorVersion(0), MinorVersion(0), BinaryFormat(false), FloatSize(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CXMeshFileLoader");
@@ -116,7 +116,13 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 
 		// default material if nothing loaded
 		if (!mesh->Materials.size())
+		{
 			mesh->Materials.push_back(video::SMaterial());
+			mesh->Materials[0].DiffuseColor.set(0xff777777);
+			mesh->Materials[0].Shininess=0.f;
+			mesh->Materials[0].SpecularColor.set(0xff777777);
+			mesh->Materials[0].EmissiveColor.set(0xff000000);
+		}
 
 		u32 i;
 
@@ -137,6 +143,13 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 					AnimatedMesh->getAllJoints()[mesh->AttachedJointID]->AttachedMeshes.push_back( AnimatedMesh->getMeshBuffers().size()-1 );
 				}
 			}
+		}
+
+		if (!mesh->FaceMaterialIndices.size())
+		{
+			mesh->FaceMaterialIndices.set_used(mesh->Indices.size() / 3);
+			for (i=0; i<mesh->FaceMaterialIndices.size(); ++i)
+				mesh->FaceMaterialIndices[i]=0;
 		}
 
 		if (!mesh->HasVertexColors)
@@ -435,7 +448,8 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 	P = &Buffer[16];
 
 	readUntilEndOfLine();
-	FilePath = stripPathFromString(file->getFileName(),true);
+	FilePath = FileSystem->getFileDir(file->getFileName());
+	FilePath += '/';
 
 	return true;
 }
@@ -478,9 +492,6 @@ bool CXMeshFileLoader::parseDataObject()
 	{
 		// some meshes have no frames at all
 		//CurFrame = AnimatedMesh->createJoint(0);
-
-		//CurFrame->Meshes.push_back(SXMesh());
-		//return parseDataObjectMesh(CurFrame->Meshes.getLast());
 
 		SXMesh *mesh=new SXMesh;
 
@@ -770,7 +781,7 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 			polygonfaces.set_used(fcnt);
 			u32 triangles = (fcnt-2);
 			mesh.Indices.set_used(mesh.Indices.size() + ((triangles-1)*3));
-			mesh.IndexCountPerFace[k] = triangles * 3;
+			mesh.IndexCountPerFace[k] = (u16)(triangles * 3);
 
 			for (u32 f=0; f<fcnt; ++f)
 				polygonfaces[f] = readInt();
@@ -1001,6 +1012,12 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 		else
 		if (objectName == "FVFData")
 		{
+			if (!readHeadOfDataObject())
+			{
+				os::Printer::log("No starting brace in FVFData found.", ELL_WARNING);
+				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
+				return false;
+			}
 			const u32 dataformat = readInt();
 			const u32 datasize = readInt();
 			u32* data = new u32[datasize];
@@ -1017,22 +1034,19 @@ bool CXMeshFileLoader::parseDataObjectMesh(SXMesh &mesh)
 					dataptr += size;
 				}
 			}
+			delete [] data;
 			if (!checkForOneFollowingSemicolons())
 			{
 				os::Printer::log("No finishing semicolon in FVFData found.", ELL_WARNING);
 				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
-				delete [] data;
 				return false;
 			}
 			if (!checkForClosingBrace())
 			{
 				os::Printer::log("No closing brace in FVFData found in x file", ELL_WARNING);
 				os::Printer::log("Line", core::stringc(Line).c_str(), ELL_ERROR);
-				delete [] data;
 				return false;
 			}
-
-			delete [] data;
 		}
 		else
 		if (objectName == "XSkinMeshHeader")
@@ -1513,17 +1527,17 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 				return false;
 
 			// original name
-			if (FileSystem->existFile(TextureFileName.c_str()))
-				material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
+			if (FileSystem->existFile(TextureFileName))
+				material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 			// mesh path
 			else
 			{
-				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
-				if (FileSystem->existFile(TextureFileName.c_str()))
-					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
+				TextureFileName=FilePath + FileSystem->getFileBasename(TextureFileName);
+				if (FileSystem->existFile(TextureFileName))
+					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 				// working directory
 				else
-					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
+					material.setTexture(textureLayer, SceneManager->getVideoDriver()->getTexture(FileSystem->getFileBasename(TextureFileName)));
 			}
 			++textureLayer;
 			if (textureLayer==2)
@@ -1538,17 +1552,17 @@ bool CXMeshFileLoader::parseDataObjectMaterial(video::SMaterial& material)
 				return false;
 
 			// original name
-			if (FileSystem->existFile(TextureFileName.c_str()))
-				material.setTexture(1, SceneManager->getVideoDriver()->getTexture (TextureFileName.c_str()));
+			if (FileSystem->existFile(TextureFileName))
+				material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 			// mesh path
 			else
 			{
-				TextureFileName=FilePath + stripPathFromString(TextureFileName,false);
-				if (FileSystem->existFile(TextureFileName.c_str()))
-					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName.c_str()));
+				TextureFileName=FilePath + FileSystem->getFileBasename(TextureFileName);
+				if (FileSystem->existFile(TextureFileName))
+					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(TextureFileName));
 				// working directory
 				else
-					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(stripPathFromString(TextureFileName,false).c_str()));
+					material.setTexture(1, SceneManager->getVideoDriver()->getTexture(FileSystem->getFileBasename(TextureFileName)));
 			}
 			if (textureLayer==1)
 				++textureLayer;
@@ -2374,29 +2388,6 @@ bool CXMeshFileLoader::readMatrix(core::matrix4& mat)
 	for (u32 i=0; i<16; ++i)
 		mat[i] = readFloat();
 	return checkForOneFollowingSemicolons();
-}
-
-
-core::stringc CXMeshFileLoader::stripPathFromString(core::stringc string, bool returnPath)
-{
-	s32 slashIndex=string.findLast('/'); // forward slash
-	s32 backSlash=string.findLast('\\'); // back slash
-
-	if (backSlash>slashIndex)
-		slashIndex=backSlash;
-
-	if (slashIndex==-1)//no slashes found
-	{
-		if (returnPath)
-			return core::stringc(); //no path to return
-		else
-			return string;
-	}
-
-	if (returnPath)
-		return string.subString(0, slashIndex + 1);
-	else
-		return string.subString(slashIndex+1, string.size() - (slashIndex+1));
 }
 
 

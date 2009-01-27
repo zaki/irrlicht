@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -127,8 +127,8 @@ static bool writeJPEGFile(io::IWriteFile* file, IImage* image, u32 quality)
 	if ( 0 == format )
 		return false;
 
-	const core::dimension2di dim = image->getDimension();
-	
+	const core::dimension2du dim = image->getDimension();
+
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
 	cinfo.err = jpeg_std_error(&jerr);

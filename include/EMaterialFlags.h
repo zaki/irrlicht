@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -67,6 +67,12 @@ namespace video
 
 		//! Access to all layers texture wrap settings. Overwrites separate layer settings.
 		EMF_TEXTURE_WRAP,
+
+		//! AntiAliasing mode
+		EMF_ANTI_ALIASING,
+
+		//! ColorMask bits, for enabling the color planes
+		EMF_COLOR_MASK,
 
 		//! This is not a flag, but a value indicating how much flags there are.
 		EMF_MATERIAL_FLAG_COUNT

@@ -1,4 +1,4 @@
-// This is a Demo of the Irrlicht Engine (c) 2005-2008 by N.Gebhardt.
+// This is a Demo of the Irrlicht Engine (c) 2005-2009 by N.Gebhardt.
 // This file is not documented.
 
 #include "CMainMenu.h"
@@ -75,7 +75,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 			video::E_DRIVER_TYPE& outDriver)
 {
 	MenuDevice = createDevice(video::EDT_BURNINGSVIDEO,
-		core::dimension2d<s32>(512, 384), 16, false, false, false, this);
+		core::dimension2d<u32>(512, 384), 16, false, false, false, this);
 
 	if (MenuDevice->getFileSystem()->existFile("irrlicht.dat"))
 		MenuDevice->getFileSystem()->addZipFileArchive("irrlicht.dat");

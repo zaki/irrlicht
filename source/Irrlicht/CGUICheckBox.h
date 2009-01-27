@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -42,9 +42,9 @@ namespace gui
 
 	private:
 
+		u32 checkTime;
 		bool Pressed;
 		bool Checked;
-		u32 checkTime;
 	};
 
 } // end namespace gui

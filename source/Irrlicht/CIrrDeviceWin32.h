@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -76,7 +76,7 @@ namespace irr
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<s32>& wsize, HWND hwnd, bool fullscreen)
+			CCursorControl(const core::dimension2d<u32>& wsize, HWND hwnd, bool fullscreen)
 				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f), IsVisible(true),
 					HWnd(hwnd), BorderX(0), BorderY(0), UseReferenceRect(false)
 			{
@@ -96,9 +96,12 @@ namespace irr
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
 			{
-				IsVisible = visible;
-				updateInternalCursorPosition();
-				setPosition(CursorPos.X, CursorPos.Y);
+				if(visible != IsVisible)
+				{
+					IsVisible = visible;
+					updateInternalCursorPosition();
+					setPosition(CursorPos.X, CursorPos.Y);
+				}
 			}
 
 			//! Returns if the cursor is currently visible.
@@ -132,15 +135,14 @@ namespace irr
 			//! Sets the new position of the cursor.
 			virtual void setPosition(s32 x, s32 y)
 			{
-				RECT rect;
-
 				if (UseReferenceRect)
 				{
-					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x, 
+					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x,
 								 ReferenceRect.UpperLeftCorner.Y + y);
 				}
 				else
 				{
+					RECT rect;
 					if (GetWindowRect(HWnd, &rect))
 						SetCursorPos(x + rect.left + BorderX, y + rect.top + BorderY);
 				}
@@ -198,7 +200,6 @@ namespace irr
 			{
 				POINT p;
 				GetCursorPos(&p);
-				RECT rect;
 
 				if (UseReferenceRect)
 				{
@@ -207,6 +208,7 @@ namespace irr
 				}
 				else
 				{
+					RECT rect;
 					if (GetWindowRect(HWnd, &rect))
 					{
 						CursorPos.X = p.x-rect.left-BorderX;
@@ -223,7 +225,7 @@ namespace irr
 			}
 
 			core::position2d<s32> CursorPos;
-			core::dimension2d<s32> WindowSize;
+			core::dimension2d<u32> WindowSize;
 			core::dimension2d<f32> InvWindowSize;
 			bool IsVisible;
 			HWND HWnd;
@@ -248,7 +250,7 @@ namespace irr
 
 		void resizeIfNecessary();
 
-		void pollJoysticks(); 
+		void pollJoysticks();
 
 		HWND HWnd;
 

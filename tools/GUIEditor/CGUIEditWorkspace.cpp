@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt / Gaz Davidson
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Gaz Davidson
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -860,13 +860,11 @@ void CGUIEditWorkspace::PasteXMLToSelectedElement()
 	// rewind file
 	memWrite->seek(0, false);
 
-	io::IXMLReader* xmlReader = (io::IXMLReader*) Environment->getFileSystem()->createXMLReader(memWrite);
-
 	// read xml
-	Environment->readGUIElement(xmlReader, SelectedElement);
+	Environment->loadGUI(memWrite, SelectedElement);
 
-	// drop the xml reader
-	xmlReader->drop();
+	// reset focus
+	Environment->setFocus(this);
 	
 	// drop the read file
 	memWrite->drop();

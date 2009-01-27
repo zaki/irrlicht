@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -83,7 +83,7 @@ public:
 
 
 	//! Sets the relative rectangle of this element.
-	/** \param r	The absolute position to set */
+	/** \param r The absolute position to set */
 	void setRelativePosition(const core::rect<s32>& r)
 	{
 		if (Parent)
@@ -107,22 +107,22 @@ public:
 	}
 
 	//! Sets the relative rectangle of this element, maintaining its current width and height
-	/** \param position	The new relative position to set. Width and height will not be changed. */
+	/** \param position The new relative position to set. Width and height will not be changed. */
 	void setRelativePosition(const core::position2di & position)
 	{
 		const core::dimension2di mySize = RelativeRect.getSize();
-		const core::rect<s32> rectangle(position.X, position.Y, 
-										position.X + mySize.Width, position.Y + mySize.Height);
+		const core::rect<s32> rectangle(position.X, position.Y,
+						position.X + mySize.Width, position.Y + mySize.Height);
 		setRelativePosition(rectangle);
 	}
 
 
 	//! Sets the relative rectangle of this element as a proportion of its parent's area.
 	/** \note This method used to be 'void setRelativePosition(const core::rect<f32>& r)'
-	\param r  The rectangle to set, interpreted as a proportion of the parent's area. 
+	\param r  The rectangle to set, interpreted as a proportion of the parent's area.
 	Meaningful values are in the range [0...1], unless you intend this element to spill
 	outside its parent. */
-	void setRelativePositionProportional(const core::rect<f32>& r) 
+	void setRelativePositionProportional(const core::rect<f32>& r)
 	{
 		if (!Parent)
 			return;
@@ -156,7 +156,7 @@ public:
 
 
 	//! Sets whether the element will ignore its parent's clipping rectangle
-	/** \param noClip	If true, the element will not be clipped by its parent's clipping rectangle. */
+	/** \param noClip If true, the element will not be clipped by its parent's clipping rectangle. */
 	void setNotClipped(bool noClip)
 	{
 		NoClip = noClip;
@@ -173,7 +173,7 @@ public:
 
 	//! Sets the maximum size allowed for this element
 	/** If set to 0,0, there is no maximum size */
-	void setMaxSize(core::dimension2di size)
+	void setMaxSize(core::dimension2du size)
 	{
 		MaxSize = size;
 		updateAbsolutePosition();
@@ -181,7 +181,7 @@ public:
 
 
 	//! Sets the minimum size allowed for this element
-	void setMinSize(core::dimension2di size)
+	void setMinSize(core::dimension2du size)
 	{
 		MinSize = size;
 		if (MinSize.Width < 1)
@@ -222,7 +222,6 @@ public:
 	{
 		core::rect<s32> parentAbsolute(0,0,0,0);
 		core::rect<s32> parentAbsoluteClip;
-		s32 diffx, diffy;
 		f32 fw=0.f, fh=0.f;
 
 		if (Parent)
@@ -240,8 +239,8 @@ public:
 				parentAbsoluteClip = Parent->AbsoluteClippingRect;
 		}
 
-		diffx = parentAbsolute.getWidth() - LastParentRect.getWidth();
-		diffy = parentAbsolute.getHeight() - LastParentRect.getHeight();
+		const s32 diffx = parentAbsolute.getWidth() - LastParentRect.getWidth();
+		const s32 diffy = parentAbsolute.getHeight() - LastParentRect.getHeight();
 
 		if (AlignLeft == EGUIA_SCALE || AlignRight == EGUIA_SCALE)
 			fw = (f32)parentAbsolute.getWidth();
@@ -315,13 +314,13 @@ public:
 		const s32 h = RelativeRect.getHeight();
 
 		// make sure the desired rectangle is allowed
-		if (w < MinSize.Width)
+		if (w < (s32)MinSize.Width)
 			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MinSize.Width;
-		if (h < MinSize.Height)
+		if (h < (s32)MinSize.Height)
 			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MinSize.Height;
-		if (MaxSize.Width && w > MaxSize.Width)
+		if (MaxSize.Width && w > (s32)MaxSize.Width)
 			RelativeRect.LowerRightCorner.X = RelativeRect.UpperLeftCorner.X + MaxSize.Width;
-		if (MaxSize.Height && h > MaxSize.Height)
+		if (MaxSize.Height && h > (s32)MaxSize.Height)
 			RelativeRect.LowerRightCorner.Y = RelativeRect.UpperLeftCorner.Y + MaxSize.Height;
 
 		RelativeRect.repair();
@@ -345,7 +344,18 @@ public:
 	}
 
 
-	//! Returns the child element, which is at the position of the point.
+	//! Returns the topmost GUI element at the specific position.
+	/**
+	This will check this GUI element and all of its descendants, so it
+	may return this GUI element.  To check all GUI elements, call this
+	function on device->getGUIEnvironment()->getRootGUIElement(). Note
+	that the root element is the size of the screen, so doing so (with
+	an on-screen point) will always return the root element if no other
+	element is above it at that point.
+	\param point: The point at which to find a GUI element.
+	\return The topmost GUI element at that point, or 0 if there are
+	no candidate elements at this point.
+	 */
 	IGUIElement* getElementFromPoint(const core::position2d<s32>& point)
 	{
 		IGUIElement* target = 0;
@@ -356,6 +366,7 @@ public:
 		core::list<IGUIElement*>::Iterator it = Children.getLast();
 
 		if (IsVisible)
+		{
 			while(it != Children.end())
 			{
 				target = (*it)->getElementFromPoint(point);
@@ -364,6 +375,7 @@ public:
 
 				--it;
 			}
+		}
 
 		if (IsVisible && isPointInside(point))
 			target = this;
@@ -373,11 +385,12 @@ public:
 
 
 	//! Returns true if a point is within this element.
-	//! Elements with a shape other than a rectangle will override this method
+	/** Elements with a shape other than a rectangle should override this method */
 	virtual bool isPointInside(const core::position2d<s32>& point) const
 	{
 		return AbsoluteClippingRect.isPointInside(point);
 	}
+
 
 	//! Adds a GUI element as new child of this element.
 	virtual void addChild(IGUIElement* child)
@@ -470,19 +483,18 @@ public:
 	}
 
 
-	//! Sets whether this control was created as part of its parent,
-	//! for example when a scrollbar is part of a listbox.
-	//! SubElements are not saved to disk when calling guiEnvironment->saveGUI()
+	//! Sets whether this control was created as part of its parent.
+	/** For example, it is true when a scrollbar is part of a listbox.
+	SubElements are not saved to disk when calling guiEnvironment->saveGUI() */
 	virtual void setSubElement(bool subElement)
 	{
 		IsSubElement = subElement;
 	}
 
 
-	//! If set to true, the focus will visit this element when using
-	//! the tab key to cycle through elements.
-	//! If this element is a tab group (see isTabGroup/setTabGroup) then
-	//! ctrl+tab will be used instead.
+	//! If set to true, the focus will visit this element when using the tab key to cycle through elements.
+	/** If this element is a tab group (see isTabGroup/setTabGroup) then
+	ctrl+tab will be used instead. */
 	void setTabStop(bool enable)
 	{
 		IsTabStop = enable;
@@ -497,9 +509,9 @@ public:
 	}
 
 
-	//! Sets the priority of focus when using the tab key to navigate between a group
-	//! of elements. See setTabGroup, isTabGroup and getTabGroup for information on tab groups.
-	//! Elements with a lower number are focused first
+	//! Sets the priority of focus when using the tab key to navigate between a group of elements.
+	/** See setTabGroup, isTabGroup and getTabGroup for information on tab groups.
+	Elements with a lower number are focused first */
 	void setTabOrder(s32 index)
 	{
 		// negative = autonumber
@@ -534,9 +546,9 @@ public:
 	}
 
 
-	//! Sets whether this element is a container for a group of elements which
-	//! can be navigated using the tab key. For example, windows are tab groups.
-	//! Groups can be navigated using ctrl+tab, providing isTabStop is true.
+	//! Sets whether this element is a container for a group of elements which can be navigated using the tab key.
+	/** For example, windows are tab groups.
+	Groups can be navigated using ctrl+tab, providing isTabStop is true. */
 	void setTabGroup(bool isGroup)
 	{
 		IsTabGroup = isGroup;
@@ -551,8 +563,7 @@ public:
 	}
 
 
-	//! Returns the container element which holds all elements in this element's
-	//! tab group.
+	//! Returns the container element which holds all elements in this element's tab group.
 	IGUIElement* getTabGroup()
 	{
 		IGUIElement *ret=this;
@@ -629,7 +640,7 @@ public:
 
 
 	//! Brings a child to front
-	/** \return Returns true if successful, false if not. */
+	/** \return True if successful, false if not. */
 	virtual bool bringToFront(IGUIElement* element)
 	{
 		core::list<IGUIElement*>::Iterator it = Children.begin();
@@ -702,13 +713,13 @@ public:
 
 
 	//! searches elements to find the closest next element to tab to
-	//! \param startOrder: The TabOrder of the current element, -1 if none
-	//! \param reverse: true if searching for a lower number
-	//! \param group: true if searching for a higher one
-	//! \param first: element with the highest/lowest known tab order depending on search direction
-	//! \param closest: the closest match, depending on tab order and direction
-	//! \param includeInvisible: includes invisible elements in the search (default=false)
-	//! \return true if successfully found an element, false to continue searching/fail
+	/** \param startOrder: The TabOrder of the current element, -1 if none
+	\param reverse: true if searching for a lower number
+	\param group: true if searching for a higher one
+	\param first: element with the highest/lowest known tab order depending on search direction
+	\param closest: the closest match, depending on tab order and direction
+	\param includeInvisible: includes invisible elements in the search (default=false)
+	\return true if successfully found an element, false to continue searching/fail */
 	bool getNextElement(s32 startOrder, bool reverse, bool group,
 		IGUIElement*& first, IGUIElement*& closest, bool includeInvisible=false) const
 	{
@@ -805,8 +816,8 @@ public:
 
 
 	//! Writes attributes of the scene node.
-	//! Implement this to expose the attributes of your scene node for
-	//! scripting languages, editors, debuggers or xml serialization purposes.
+	/** Implement this to expose the attributes of your scene node for
+	scripting languages, editors, debuggers or xml serialization purposes. */
 	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
 	{
 		out->addInt("Id", ID );
@@ -828,8 +839,8 @@ public:
 
 
 	//! Reads attributes of the scene node.
-	//! Implement this to set the attributes of your scene node for
-	//! scripting languages, editors, debuggers or xml deserialization purposes.
+	/** Implement this to set the attributes of your scene node for
+	scripting languages, editors, debuggers or xml deserialization purposes. */
 	virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
 	{
 		setID(in->getAttributeAsInt("Id"));
@@ -841,10 +852,10 @@ public:
 		TabOrder = in->getAttributeAsInt("TabOrder");
 
 		core::position2di p = in->getAttributeAsPosition2d("MaxSize");
-		setMaxSize(core::dimension2di(p.X,p.Y));
+		setMaxSize(core::dimension2du(p.X,p.Y));
 
 		p = in->getAttributeAsPosition2d("MinSize");
-		setMinSize(core::dimension2di(p.X,p.Y));
+		setMinSize(core::dimension2du(p.X,p.Y));
 
 		setNotClipped(in->getAttributeAsBool("NoClip"));
 		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames),
@@ -883,7 +894,7 @@ protected:
 	core::rect<f32> ScaleRect;
 
 	//! maximum and minimum size of the element
-	core::dimension2di MaxSize, MinSize;
+	core::dimension2du MaxSize, MinSize;
 
 	//! is visible?
 	bool IsVisible;

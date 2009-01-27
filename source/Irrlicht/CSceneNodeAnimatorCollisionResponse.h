@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -95,6 +95,26 @@ namespace scene
 		//! Gets the single node that this animator is acting on.
 		virtual ISceneNode* getTargetNode(void) const { return Object; }
 
+		//! Returns true if a collision occurred during the last animateNode()
+		virtual bool collisionOccurred() const { return CollisionOccurred; }
+
+		//! Returns the last point of collision.
+		virtual const core::vector3df & getCollisionPoint() const { return CollisionPoint; }
+
+		//! Returns the last triangle that caused a collision.
+		virtual const core::triangle3df & getCollisionTriangle() const { return CollisionTriangle; }
+
+		virtual const core::vector3df & getCollisionResultPosition(void) const { return CollisionResultPosition; }
+
+		virtual const ISceneNode* getCollisionNode(void) const { return CollisionNode; }
+
+
+		//! Sets a callback interface which will be called if a collision occurs.
+		/** \param callback: collision callback handler that will be called when a collision
+		occurs. Set this to 0 to disable the callback.
+		*/
+		virtual void setCollisionCallback(ICollisionCallback* callback);
+
 	private:
 
 		void setNode(ISceneNode* node);
@@ -115,6 +135,14 @@ namespace scene
 		bool Falling;
 		bool IsCamera;
 		bool AnimateCameraTarget;
+
+		bool CollisionOccurred;
+		core::vector3df CollisionPoint;
+		core::triangle3df CollisionTriangle;
+		core::vector3df CollisionResultPosition;
+		const ISceneNode * CollisionNode;
+
+		ICollisionCallback* CollisionCallback;
 	};
 
 } // end namespace scene

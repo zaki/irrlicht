@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -25,7 +25,7 @@ namespace video
 
 
 //! constructor
-CD3D8Driver::CD3D8Driver(const core::dimension2d<s32>& screenSize, HWND window,
+CD3D8Driver::CD3D8Driver(const core::dimension2d<u32>& screenSize, HWND window,
 			bool fullscreen, bool stencilbuffer,
 			io::IFileSystem* io, bool pureSoftware, bool vsync)
 : CNullDriver(io, screenSize), CurrentRenderMode(ERM_NONE),
@@ -138,14 +138,13 @@ void CD3D8Driver::createMaterialRenderers()
 
 	// add basic 1 texture blending
 	addAndDropMaterialRenderer(new CD3D8MaterialRenderer_ONETEXTURE_BLEND(pID3DDevice, this));
-
 }
 
 
 //! initialises the Direct3D API
-bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
+bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		HWND hwnd, u32 bits, bool fullScreen, bool pureSoftware,
-		bool highPrecisionFPU, bool vsync, bool antiAlias)
+		bool highPrecisionFPU, bool vsync, u8 antiAlias)
 {
 	HRESULT hr;
 	D3DLibrary = LoadLibrary( "d3d8.dll" );
@@ -190,8 +189,6 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 		os::Printer::log(tmp, ELL_INFORMATION);
 	}
 
-
-
 	D3DDISPLAYMODE d3ddm;
 	hr = pID3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm);
 	if (FAILED(hr))
@@ -200,10 +197,9 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 		return false;
 	}
 
-
 	ZeroMemory(&present, sizeof(present));
 
-	present.SwapEffect		= D3DSWAPEFFECT_COPY;
+	present.SwapEffect		= D3DSWAPEFFECT_DISCARD;
 	present.Windowed		= TRUE;
 	present.BackBufferFormat	= d3ddm.Format;
 	present.EnableAutoDepthStencil	= TRUE;
@@ -229,21 +225,26 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	#endif
 
 	// enable anti alias if possible and whished
-	if (antiAlias)
+	if (antiAlias > 0)
 	{
-		if (!FAILED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+		if(antiAlias > 16)
+			antiAlias = 16;
+
+		while(antiAlias > 0)
+		{
+			if(!FAILED(pID3D->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
 				devtype , present.BackBufferFormat, !fullScreen,
-				D3DMULTISAMPLE_2_SAMPLES)))
-		{
-			// enable multi sampling
-			present.SwapEffect      = D3DSWAPEFFECT_DISCARD;
-			present.MultiSampleType = D3DMULTISAMPLE_2_SAMPLES;
+				(D3DMULTISAMPLE_TYPE)antiAlias)))
+			{
+				present.MultiSampleType	= (D3DMULTISAMPLE_TYPE)antiAlias;
+				present.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
+				break;
+			}
+			--antiAlias;
 		}
-		else
-		{
+
+		if(antiAlias==0)
 			os::Printer::log("Anti aliasing disabled because hardware/driver lacks necessary caps.", ELL_WARNING);
-			antiAlias = false;
-		}
 	}
 
 	// check stencil buffer compatibility
@@ -350,7 +351,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 	setVertexShader(EVT_STANDARD);
 
 	// enable antialiasing
-	if (antiAlias)
+	if (antiAlias>0)
 		pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
 	// set fog mode
@@ -371,12 +372,6 @@ bool CD3D8Driver::initDriver(const core::dimension2d<s32>& screenSize,
 
 	// set the renderstates
 	setRenderStates3DMode();
-
-	// set max anisotropy
-	pID3DDevice->SetTextureStageState(0, D3DTSS_MAXANISOTROPY, core::min_( (DWORD) 16, Caps.MaxAnisotropy));
-	pID3DDevice->SetTextureStageState(1, D3DTSS_MAXANISOTROPY, core::min_( (DWORD) 16, Caps.MaxAnisotropy));
-	pID3DDevice->SetTextureStageState(2, D3DTSS_MAXANISOTROPY, core::min_( (DWORD) 16, Caps.MaxAnisotropy));
-	pID3DDevice->SetTextureStageState(3, D3DTSS_MAXANISOTROPY, core::min_( (DWORD) 16, Caps.MaxAnisotropy));
 
 	// so far so good.
 	return true;
@@ -571,6 +566,8 @@ bool CD3D8Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_SQUAREONLY) == 0;
 	case EVDF_TEXTURE_NPOT:
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
+	case EVDF_COLOR_MASK:
+		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) != 0;
 	default:
 		return false;
 	};
@@ -649,7 +646,6 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 		setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}
-
 }
 
 
@@ -667,7 +663,6 @@ void CD3D8Driver::setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag,
 {
 	if (flag == video::ETCF_CREATE_MIP_MAPS && !queryFeature(EVDF_MIP_MAP))
 		enabled = false;
-
 
 	CNullDriver::setTextureCreationFlag(flag, enabled);
 }
@@ -722,7 +717,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 			if (dss)
 				dss->Release();
 
-			CurrentRendertargetSize = core::dimension2d<s32>(0,0);
+			CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 			PrevRenderTarget->Release();
 			PrevRenderTarget = 0;
 		}
@@ -733,12 +728,11 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 		// store previous target
 
-		if (!PrevRenderTarget)
-			if (FAILED(pID3DDevice->GetRenderTarget(&PrevRenderTarget)))
-			{
-				os::Printer::log("Could not get previous render target.", ELL_ERROR);
-				return false;
-			}
+		if (!PrevRenderTarget && (FAILED(pID3DDevice->GetRenderTarget(&PrevRenderTarget))))
+		{
+			os::Printer::log("Could not get previous render target.", ELL_ERROR);
+			return false;
+		}
 
 		// set new render target
 
@@ -776,7 +770,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 //! Creates a render target texture.
 ITexture* CD3D8Driver::addRenderTargetTexture(
-		const core::dimension2d<s32>& size, const c8* name)
+		const core::dimension2d<u32>& size, const c8* name)
 {
 	if (!name)
 		name="rt";
@@ -914,8 +908,9 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 
 	core::position2d<s32> targetPos = pos;
 	core::position2d<s32> sourcePos = sourceRect.UpperLeftCorner;
+	// This needs to be signed as it may go negative.
 	core::dimension2d<s32> sourceSize(sourceRect.getSize());
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
 	if (clipRect)
 	{
@@ -929,7 +924,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 			targetPos.X = clipRect->UpperLeftCorner.X;
 		}
 
-		if (targetPos.X + sourceSize.Width > clipRect->LowerRightCorner.X)
+		if (targetPos.X + (s32)sourceSize.Width > clipRect->LowerRightCorner.X)
 		{
 			sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
 			if (sourceSize.Width <= 0)
@@ -946,7 +941,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 			targetPos.Y = clipRect->UpperLeftCorner.Y;
 		}
 
-		if (targetPos.Y + sourceSize.Height > clipRect->LowerRightCorner.Y)
+		if (targetPos.Y + (s32)sourceSize.Height > clipRect->LowerRightCorner.Y)
 		{
 			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
 			if (sourceSize.Height <= 0)
@@ -966,7 +961,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.X = 0;
 	}
 
-	if (targetPos.X + sourceSize.Width > renderTargetSize.Width)
+	if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
 	{
 		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
 		if (sourceSize.Width <= 0)
@@ -983,7 +978,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.Y = 0;
 	}
 
-	if (targetPos.Y + sourceSize.Height > renderTargetSize.Height)
+	if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
 	{
 		sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
 		if (sourceSize.Height <= 0)
@@ -993,20 +988,20 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 	// ok, we've clipped everything.
 	// now draw it.
 
-	s32 xPlus = -(renderTargetSize.Width>>1);
+	s32 xPlus = -(s32)(renderTargetSize.Width>>1);
 	f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
 	f32 yFact = 1.0f / (renderTargetSize.Height>>1);
 
-	const core::dimension2d<s32> sourceSurfaceSize = texture->getOriginalSize();
+	const core::dimension2d<u32> sourceSurfaceSize = texture->getOriginalSize();
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = (((f32)sourcePos.X)+0.5f) / texture->getOriginalSize().Width ;
 	tcoords.UpperLeftCorner.Y = (((f32)sourcePos.Y)+0.5f) / texture->getOriginalSize().Height;
 	tcoords.LowerRightCorner.X = (((f32)sourcePos.X +0.5f + (f32)sourceSize.Width)) / texture->getOriginalSize().Width;
 	tcoords.LowerRightCorner.Y = (((f32)sourcePos.Y +0.5f + (f32)sourceSize.Height)) / texture->getOriginalSize().Height;
 
-	core::rect<s32> poss(targetPos, sourceSize);
+	core::rect<s32> poss(targetPos, core::dimension2d<s32>(sourceSize));
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1047,7 +1042,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 	if(!texture)
 		return;
 
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	core::rect<f32> tcoords;
 	tcoords.UpperLeftCorner.X = (f32)sourceRect.UpperLeftCorner.X / (f32)ss.Width;
 	tcoords.UpperLeftCorner.Y = (f32)sourceRect.UpperLeftCorner.Y / (f32)ss.Height;
@@ -1076,7 +1071,7 @@ void CD3D8Driver::draw2DImage(const video::ITexture* texture,
 		tcoords.LowerRightCorner.Y -= scale * tcHeight;
 	}
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 	core::rect<f32> npos;
 	f32 xFact = 2.0f / ( renderTargetSize.Width );
 	f32 yFact = 2.0f / ( renderTargetSize.Height );
@@ -1137,8 +1132,8 @@ void CD3D8Driver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	s32 xPlus = -(renderTargetSize.Width>>1);
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+	s32 xPlus = -(s32)(renderTargetSize.Width>>1);
 	f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
@@ -1168,9 +1163,7 @@ void CD3D8Driver::draw2DRectangle(const core::rect<s32>& position,
 
 	pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, 4, 2, &indices[0],
 		D3DFMT_INDEX16, &vtx[0], sizeof(S3DVertex));
-
 }
-
 
 
 //! Draws a 2d line.
@@ -1180,8 +1173,8 @@ void CD3D8Driver::draw2DLine(const core::position2d<s32>& start,
 {
 	// thanks to Vash TheStampede who sent in his implementation
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = -(renderTargetSize.Width>>1);
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+	const s32 xPlus = -(s32)(renderTargetSize.Width>>1);
 	const f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	const s32 yPlus =
@@ -1211,10 +1204,11 @@ void CD3D8Driver::draw2DLine(const core::position2d<s32>& start,
 	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1, &vtx[0], sizeof(S3DVertex));
 }
 
+
 //! Draws a pixel
 void CD3D8Driver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 	if(x > (u32)renderTargetSize.Width || y > (u32)renderTargetSize.Height)
 		return;
 
@@ -1223,7 +1217,7 @@ void CD3D8Driver::drawPixel(u32 x, u32 y, const SColor & color)
 
 	setVertexShader(EVT_STANDARD);
 
-	const s32 xPlus = -renderTargetSize.Width / 2;
+	const s32 xPlus = -((s32)renderTargetSize.Width) / 2;
 	const f32 xFact = 2.0f / renderTargetSize.Width;
 	const s32 yPlus = renderTargetSize.Height / 2;
 	const f32 yFact = 2.0f / renderTargetSize.Height;
@@ -1233,7 +1227,6 @@ void CD3D8Driver::drawPixel(u32 x, u32 y, const SColor & color)
 
 	pID3DDevice->DrawPrimitiveUP(D3DPT_POINTLIST, 1, &vertex, sizeof(vertex));
 }
-
 
 
 //! sets right vertex shader
@@ -1354,7 +1347,6 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	}
 
 	// shademode
-
 	if (resetAllRenderstates || lastmaterial.GouraudShading != material.GouraudShading)
 	{
 		if (material.GouraudShading)
@@ -1364,7 +1356,6 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	}
 
 	// lighting
-
 	if (resetAllRenderstates || lastmaterial.Lighting != material.Lighting)
 	{
 		if (material.Lighting)
@@ -1373,27 +1364,44 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 	}
 
-
 	// zbuffer
-
 	if (resetAllRenderstates || lastmaterial.ZBuffer != material.ZBuffer)
 	{
 		switch (material.ZBuffer)
 		{
-			case 0:
-				pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-				break;
-			case 1:
-				pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-				break;
-			case 2:
-				pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL);
-				break;
+		case ECFN_NEVER:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+			break;
+		case ECFN_LESSEQUAL:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+			break;
+		case ECFN_EQUAL:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_EQUAL);
+			break;
+		case ECFN_LESS:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+			break;
+		case ECFN_NOTEQUAL:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_NOTEQUAL);
+			break;
+		case ECFN_GREATEREQUAL:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATEREQUAL);
+			break;
+		case ECFN_GREATER:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_GREATER);
+			break;
+		case ECFN_ALWAYS:
+			pID3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+			break;
 		}
 	}
-
 
 	// zwrite
 //	if (resetAllRenderstates || lastmaterial.ZWriteEnable != material.ZWriteEnable)
@@ -1405,8 +1413,6 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	}
 
 	// back face culling
-
-
 	if (resetAllRenderstates || (lastmaterial.FrontfaceCulling != material.FrontfaceCulling) || (lastmaterial.BackfaceCulling != material.BackfaceCulling))
 	{
 //		if (material.FrontfaceCulling && material.BackfaceCulling)
@@ -1442,6 +1448,18 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		pID3DDevice->SetRenderState(D3DRS_NORMALIZENORMALS,  material.NormalizeNormals);
 	}
 
+	// Color Mask
+	if (queryFeature(EVDF_COLOR_MASK) &&
+		(resetAllRenderstates || lastmaterial.ColorMask != material.ColorMask))
+	{
+		const DWORD flag =
+			((material.ColorMask & ECP_RED)?D3DCOLORWRITEENABLE_RED:0) |
+			((material.ColorMask & ECP_GREEN)?D3DCOLORWRITEENABLE_GREEN:0) |
+			((material.ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
+			((material.ColorMask & ECP_ALPHA)?D3DCOLORWRITEENABLE_ALPHA:0);
+		pID3DDevice->SetRenderState(D3DRS_COLORWRITEENABLE, flag);
+	}
+
 	// thickness
 	if (resetAllRenderstates || lastmaterial.Thickness != material.Thickness)
 	{
@@ -1451,6 +1469,12 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	// texture address mode
 	for (u32 st=0; st<MaxTextureUnits; ++st)
 	{
+		if (resetAllRenderstates || lastmaterial.TextureLayer[st].LODBias != material.TextureLayer[st].LODBias)
+		{
+			const float tmp = material.TextureLayer[st].LODBias * 0.125f;
+			pID3DDevice->SetTextureStageState(st, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)(&tmp));
+		}
+
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrap != material.TextureLayer[st].TextureWrap)
 		{
 			u32 mode = D3DTADDRESS_WRAP;
@@ -1481,7 +1505,7 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			lastmaterial.TextureLayer[st].TrilinearFilter != material.TextureLayer[st].TrilinearFilter ||
 			lastmaterial.TextureLayer[st].AnisotropicFilter != material.TextureLayer[st].AnisotropicFilter )
 		{
-			if (material.TextureLayer[st].BilinearFilter || material.TextureLayer[st].TrilinearFilter || material.TextureLayer[st].AnisotropicFilter)
+			if (material.TextureLayer[st].BilinearFilter || material.TextureLayer[st].TrilinearFilter || material.TextureLayer[st].AnisotropicFilter>1)
 			{
 				D3DTEXTUREFILTERTYPE tftMag = ((Caps.TextureFilterCaps & D3DPTFILTERCAPS_MAGFANISOTROPIC) &&
 						material.TextureLayer[st].AnisotropicFilter) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
@@ -1489,6 +1513,8 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 						material.TextureLayer[st].AnisotropicFilter) ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
 				D3DTEXTUREFILTERTYPE tftMip = material.TextureLayer[st].TrilinearFilter ? D3DTEXF_LINEAR : D3DTEXF_POINT;
 
+				if (tftMag==D3DTEXF_ANISOTROPIC || tftMin == D3DTEXF_ANISOTROPIC)
+					pID3DDevice->SetTextureStageState(st, D3DTSS_MAXANISOTROPY, core::min_((DWORD)material.TextureLayer[st].AnisotropicFilter, Caps.MaxAnisotropy));
 				pID3DDevice->SetTextureStageState(st, D3DTSS_MAGFILTER, tftMag);
 				pID3DDevice->SetTextureStageState(st, D3DTSS_MINFILTER, tftMin);
 				pID3DDevice->SetTextureStageState(st, D3DTSS_MIPFILTER, tftMip);
@@ -1502,7 +1528,6 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		}
 	}
 }
-
 
 
 //! sets the needed renderstates
@@ -1588,7 +1613,6 @@ void CD3D8Driver::setRenderStatesStencilShadowMode(bool zfail)
 }
 
 
-
 //! sets the needed renderstates
 void CD3D8Driver::setRenderStatesStencilFillMode(bool alpha)
 {
@@ -1644,7 +1668,6 @@ void CD3D8Driver::setRenderStatesStencilFillMode(bool alpha)
 
 	CurrentRenderMode = ERM_STENCIL_FILL;
 }
-
 
 
 //! sets the needed renderstates
@@ -1784,13 +1807,9 @@ void CD3D8Driver::deleteAllDynamicLights()
 }
 
 
-
 //! adds a dynamic light
-void CD3D8Driver::addDynamicLight(const SLight& dl)
+s32 CD3D8Driver::addDynamicLight(const SLight& dl)
 {
-	if ((u32)LastSetLight == Caps.MaxActiveLights-1)
-		return;
-
 	CNullDriver::addDynamicLight(dl);
 
 	D3DLIGHT8 light;
@@ -1826,10 +1845,25 @@ void CD3D8Driver::addDynamicLight(const SLight& dl)
 	light.Phi = dl.OuterCone * 2.0f * core::DEGTORAD;
 
 	++LastSetLight;
-	pID3DDevice->SetLight(LastSetLight, &light);
-	pID3DDevice->LightEnable(LastSetLight, true);
+
+	if(D3D_OK == pID3DDevice->SetLight(LastSetLight, &light))
+	{
+		// I don't care if this succeeds
+		(void)pID3DDevice->LightEnable(LastSetLight, true);
+		return LastSetLight;
+	}
+
+	return -1;
 }
 
+
+void CD3D8Driver::turnLightOn(s32 lightIndex, bool turnOn)
+{
+	if(lightIndex < 0 || lightIndex > LastSetLight)
+		return;
+
+	(void)pID3DDevice->LightEnable(lightIndex, turnOn);
+}
 
 
 //! returns the maximal amount of dynamic lights the device can handle
@@ -1837,7 +1871,6 @@ u32 CD3D8Driver::getMaximalDynamicLightAmount() const
 {
 	return Caps.MaxActiveLights;
 }
-
 
 
 //! Sets the dynamic ambient light color. The default color is
@@ -1854,14 +1887,12 @@ void CD3D8Driver::setAmbientLight(const SColorf& color)
 }
 
 
-
 //! \return Returns the name of the video driver. Example: In case of the DIRECT3D8
 //! driver, it would return "Direct3D8.1".
 const wchar_t* CD3D8Driver::getName() const
 {
 	return L"Direct3D 8.1";
 }
-
 
 
 //! Draws a shadow volume into the stencil buffer. To draw a stencil shadow, do
@@ -1905,7 +1936,6 @@ void CD3D8Driver::drawStencilShadowVolume(const core::vector3df* triangles, s32 
 }
 
 
-
 //! Fills the stencil shadow with color. After the shadow volume has been drawn
 //! into the stencil buffer using IVideoDriver::drawStencilShadowVolume(), use this
 //! to draw the color of the shadow.
@@ -1939,7 +1969,6 @@ void CD3D8Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftU
 	if (clearStencilBuffer)
 		pID3DDevice->Clear( 0, NULL, D3DCLEAR_STENCIL,0, 1.0, 0);
 }
-
 
 
 //! Returns the maximum amount of primitives (mostly vertices) which
@@ -1978,6 +2007,7 @@ void CD3D8Driver::setFog(SColor color, bool linearFog, f32 start,
 		pID3DDevice->SetRenderState	(D3DRS_RANGEFOGENABLE, rangeFog);
 }
 
+
 //! Draws a 3d line.
 void CD3D8Driver::draw3DLine(const core::vector3df& start,
 	const core::vector3df& end, SColor color)
@@ -1994,7 +2024,7 @@ void CD3D8Driver::draw3DLine(const core::vector3df& start,
 }
 
 
-void CD3D8Driver::OnResize(const core::dimension2d<s32>& size)
+void CD3D8Driver::OnResize(const core::dimension2d<u32>& size)
 {
 	if (!pID3DDevice)
 		return;
@@ -2003,17 +2033,20 @@ void CD3D8Driver::OnResize(const core::dimension2d<s32>& size)
 	reset();
 }
 
+
 //! Returns type of video driver
 E_DRIVER_TYPE CD3D8Driver::getDriverType() const
 {
 	return EDT_DIRECT3D8;
 }
 
+
 //! Returns the transformation set by setTransform
 const core::matrix4& CD3D8Driver::getTransform(E_TRANSFORMATION_STATE state) const
 {
 	return Matrices[state];
 }
+
 
 //! Sets a vertex shader constant.
 void CD3D8Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
@@ -2022,12 +2055,14 @@ void CD3D8Driver::setVertexShaderConstant(const f32* data, s32 startRegister, s3
 		pID3DDevice->SetVertexShaderConstant(startRegister, data, constantAmount);
 }
 
+
 //! Sets a pixel shader constant.
 void CD3D8Driver::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
 	if (data)
 		pID3DDevice->SetPixelShaderConstant(startRegister, data, constantAmount);
 }
+
 
 //! Sets a constant for the vertex shader based on a name.
 bool CD3D8Driver::setVertexShaderConstant(const c8* name, const f32* floats, int count)
@@ -2036,12 +2071,14 @@ bool CD3D8Driver::setVertexShaderConstant(const c8* name, const f32* floats, int
 	return false;
 }
 
+
 //! Sets a constant for the pixel shader based on a name.
 bool CD3D8Driver::setPixelShaderConstant(const c8* name, const f32* floats, int count)
 {
 	os::Printer::log("Cannot set constant, no HLSL supported in D3D8");
 	return false;
 }
+
 
 //! Returns pointer to the IGPUProgrammingServices interface.
 IGPUProgrammingServices* CD3D8Driver::getGPUProgrammingServices()
@@ -2075,7 +2112,6 @@ IVideoDriver* CD3D8Driver::getVideoDriver()
 }
 
 
-
 //! Clears the ZBuffer.
 void CD3D8Driver::clearZBuffer()
 {
@@ -2084,6 +2120,7 @@ void CD3D8Driver::clearZBuffer()
 	if (FAILED(hr))
 		os::Printer::log("CD3D8Driver clearZBuffer() failed.", ELL_WARNING);
 }
+
 
 //! Returns an image created from the last rendered frame.
 IImage* CD3D8Driver::createScreenShot()
@@ -2136,13 +2173,13 @@ IImage* CD3D8Driver::createScreenShot()
 	u8 * sP = (u8 *)lockedRect.pBits;
 
 	// If the display mode format doesn't promise anything about the Alpha value
-	// and it appears that it's not presenting 255, then we should manually 
+	// and it appears that it's not presenting 255, then we should manually
 	// set each pixel alpha value to 255.
 	if(D3DFMT_X8R8G8B8 == displayMode.Format && (0xFF000000 != (*dP & 0xFF000000)))
 	{
-		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < ScreenSize.Height; ++y)
 		{
-			for(s32 x = 0; x < ScreenSize.Width; ++x)
+			for(u32 x = 0; x < ScreenSize.Width; ++x)
 			{
 				*dP = *((u32*)sP) | 0xFF000000;
 				dP++;
@@ -2154,7 +2191,7 @@ IImage* CD3D8Driver::createScreenShot()
 	}
 	else
 	{
-		for (s32 y = 0; y < ScreenSize.Height; ++y)
+		for (u32 y = 0; y < ScreenSize.Height; ++y)
 		{
 			memcpy(dP, sP, ScreenSize.Width * 4);
 
@@ -2176,16 +2213,14 @@ IImage* CD3D8Driver::createScreenShot()
 }
 
 
-
 // returns the current size of the screen or rendertarget
-const core::dimension2d<s32>& CD3D8Driver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& CD3D8Driver::getCurrentRenderTargetSize() const
 {
 	if ( CurrentRendertargetSize.Width == 0 )
 		return ScreenSize;
 	else
 		return CurrentRendertargetSize;
 }
-
 
 
 // Set/unset a clipping plane.
@@ -2228,10 +2263,10 @@ namespace video
 
 #ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
 //! creates a video driver
-IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWND window,
-				u32 bits, bool fullscreen, bool stencilbuffer,
-				io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
-				bool vsync, bool antiAlias)
+IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize,
+		HWND window, u32 bits, bool fullscreen, bool stencilbuffer,
+		io::IFileSystem* io, bool pureSoftware, bool highPrecisionFPU,
+		bool vsync, u8 antiAlias)
 {
 	CD3D8Driver* dx8 =  new CD3D8Driver(screenSize, window, fullscreen,
 					stencilbuffer, io, pureSoftware);
@@ -2249,5 +2284,4 @@ IVideoDriver* createDirectX8Driver(const core::dimension2d<s32>& screenSize, HWN
 
 } // end namespace video
 } // end namespace irr
-
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="Build all examples">
-		<Project filename="01.HelloWorld\HelloWorld.cbp" active="1" />
+		<Project filename="01.HelloWorld\HelloWorld.cbp" />
 		<Project filename="02.Quake3Map\Quake3Map.cbp" />
 		<Project filename="03.CustomSceneNode\CustomSceneNode.cbp" />
 		<Project filename="04.Movement\Movement.cbp" />
@@ -19,6 +19,7 @@
 		<Project filename="16.Quake3MapShader\Quake3MapShader.cbp" />
 		<Project filename="18.SplitScreen\SplitScreen.cbp" />
 		<Project filename="19.MouseAndJoystick\MouseAndJoystick.cbp" />
+		<Project filename="20.ManagedLights\ManagedLights.cbp" active="1" />
 		<Project filename="Demo\demo.cbp" />
 		<Project filename="..\source\Irrlicht\Irrlicht-gcc.cbp" />
 	</Workspace>

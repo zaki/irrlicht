@@ -60,7 +60,7 @@ int main()
 	*/
 
 	IrrlichtDevice *device =
-		createDevice(driverType, core::dimension2d<s32>(640, 480),
+		createDevice(driverType, core::dimension2d<u32>(640, 480),
 		16, false, shadows);
 
 	if (device == 0)

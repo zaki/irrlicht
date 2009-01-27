@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -615,7 +615,7 @@ s32 CQ3LevelMesh::setShaderMaterial( video::SMaterial &material, const tBSPFace 
 	material.setTexture(1, 0);
 	material.setTexture(2, 0);
 	material.setTexture(3, 0);
-	material.ZBuffer = true;
+	material.ZBuffer = video::ECFN_LESSEQUAL;
 	material.ZWriteEnable = true;
 	material.MaterialTypeParam = 0.f;
 
@@ -1650,7 +1650,7 @@ void CQ3LevelMesh::loadTextures()
 
 	lig[0] = 0;
 	c8 lightmapname[255];
-	core::dimension2d<s32> lmapsize(128,128);
+	core::dimension2d<u32> lmapsize(128,128);
 
 	//bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	//Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
@@ -1775,7 +1775,7 @@ void CQ3LevelMesh::loadTextures2()
 	Lightmap.set_used(NumLightMaps+1);
 
 	c8 lightmapname[255];
-	core::dimension2d<s32> lmapsize(128,128);
+	core::dimension2d<u32> lmapsize(128,128);
 
 	video::IImage* lmapImg;
 	for ( t = 0; t < NumLightMaps ; ++t)

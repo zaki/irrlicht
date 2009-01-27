@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine" and the "irrXML" project.
 // For conditions of distribution and use, see copyright notice in irrlicht.h and irrXML.h
 
@@ -184,7 +184,7 @@ public:
 	}
 
 
-	//! destructor
+	//! Destructor
 	~string()
 	{
 		allocator.deallocate(array); // delete [] array;
@@ -748,7 +748,7 @@ public:
 
 
 	//! Appends a character to this string
-	/** \param character: Character to append. */
+	/** \param c Character to append. */
 	string<T>& operator += (T c)
 	{
 		append(c);
@@ -757,7 +757,7 @@ public:
 
 
 	//! Appends a char string to this string
-	/** \param other: Char string to append. */
+	/** \param c Char string to append. */
 	string<T>& operator += (const T* const c)
 	{
 		append(c);
@@ -766,7 +766,7 @@ public:
 
 
 	//! Appends a string to this string
-	/** \param other: String to append. */
+	/** \param other String to append. */
 	string<T>& operator += (const string<T>& other)
 	{
 		append(other);
@@ -774,6 +774,8 @@ public:
 	}
 
 
+	//! Appends a string representation of a number to this string
+	/** \param i Number to append. */
 	string<T>& operator += (const int i)
 	{
 		append(string<T>(i));
@@ -781,6 +783,8 @@ public:
 	}
 
 
+	//! Appends a string representation of a number to this string
+	/** \param i Number to append. */
 	string<T>& operator += (const unsigned int i)
 	{
 		append(string<T>(i));
@@ -788,6 +792,8 @@ public:
 	}
 
 
+	//! Appends a string representation of a number to this string
+	/** \param i Number to append. */
 	string<T>& operator += (const long i)
 	{
 		append(string<T>(i));
@@ -795,6 +801,8 @@ public:
 	}
 
 
+	//! Appends a string representation of a number to this string
+	/** \param i Number to append. */
 	string<T>& operator += (const unsigned long& i)
 	{
 		append(string<T>(i));
@@ -802,6 +810,8 @@ public:
 	}
 
 
+	//! Appends a string representation of a number to this string
+	/** \param i Number to append. */
 	string<T>& operator += (const double i)
 	{
 		append(string<T>(i));
@@ -809,6 +819,8 @@ public:
 	}
 
 
+	//! Appends a string representation of a number to this string
+	/** \param i Number to append. */
 	string<T>& operator += (const float i)
 	{
 		append(string<T>(i));
@@ -816,7 +828,9 @@ public:
 	}
 
 
-	//! replaces all characters of a special type with another one
+	//! Replaces all characters of a special type with another one
+	/** \param toReplace Character to replace.
+	\param replaceWith Character replacing the old one. */
 	void replace(T toReplace, T replaceWith)
 	{
 		for (u32 i=0; i<used; ++i)
@@ -825,7 +839,7 @@ public:
 	}
 
 
-	//! trims the string.
+	//! Trims the string.
 	/** Removes the specified characters (by default, Latin-1 whitespace) 
 	from the begining and the end of the string. */
 	string<T>& trim(const string<T> & whitespace = " \t\n\r")

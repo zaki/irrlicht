@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt
+// Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -32,7 +32,7 @@ public:
 		u32 flags, const char* name);
 
 	//! rendertarget constructor
-	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<s32>& size, const char* name);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const char* name);
 
 	//! destructor
 	virtual ~CD3D9Texture();
@@ -44,10 +44,10 @@ public:
 	virtual void unlock();
 
 	//! Returns original size of the texture.
-	virtual const core::dimension2d<s32>& getOriginalSize() const;
+	virtual const core::dimension2d<u32>& getOriginalSize() const;
 
 	//! Returns (=size) of the texture.
-	virtual const core::dimension2d<s32>& getSize() const;
+	virtual const core::dimension2d<u32>& getSize() const;
 
 	//! returns driver type of texture (=the driver, who created the texture)
 	virtual E_DRIVER_TYPE getDriverType() const;
@@ -107,8 +107,8 @@ private:
 	IDirect3DSurface9* RTTSurface;
 	CD3D9Driver* Driver;
 	SDepthSurface* DepthSurface;
-	core::dimension2d<s32> TextureSize;
-	core::dimension2d<s32> ImageSize;
+	core::dimension2d<u32> TextureSize;
+	core::dimension2d<u32> ImageSize;
 	s32 Pitch;
 	ECOLOR_FORMAT ColorFormat;
 
