@@ -112,12 +112,12 @@ namespace gui
 		//! \return
 		//! returns the new node
 		virtual IGUITreeViewNode* addChildBack( 
-								const wchar_t*		text, 
-								const wchar_t*		icon = 0, 
-								s32					imageIndex = -1,
-								s32					selectedImageIndex = -1,
-								void*					data = 0,
-								IReferenceCounted*			data2 = 0 );
+				const wchar_t* text, 
+				const wchar_t* icon = 0, 
+				s32 imageIndex = -1,
+				s32 selectedImageIndex = -1,
+				void* data = 0,
+				IReferenceCounted* data2 = 0);
 
 		//! Adds a new node before the first child node.
 		//! \param text text of the new node
@@ -129,12 +129,12 @@ namespace gui
 		//! \return
 		//! returns the new node
 		virtual IGUITreeViewNode* addChildFront( 
-								const wchar_t*		text, 
-								const wchar_t*		icon = 0, 
-								s32					imageIndex = -1,
-								s32					selectedImageIndex = -1,
-								void*					data = 0,
-								IReferenceCounted*			data2 = 0 );
+				const wchar_t*		text, 
+				const wchar_t*		icon = 0, 
+				s32					imageIndex = -1,
+				s32					selectedImageIndex = -1,
+				void*					data = 0,
+				IReferenceCounted*			data2 = 0 );
 
 		//! Adds a new node behind the other node. 
 		//! The other node has also te be a child node from this node.
@@ -147,13 +147,13 @@ namespace gui
 		//! \return
 		//! returns the new node or 0 if other is no child node from this
 		virtual IGUITreeViewNode* insertChildAfter( 
-								IGUITreeViewNode*	other, 
-								const wchar_t*		text, 
-								const wchar_t*		icon = 0, 
-								s32					imageIndex = -1,
-								s32					selectedImageIndex = -1,
-								void*					data = 0,
-								IReferenceCounted*			data2 = 0 );
+				IGUITreeViewNode*	other, 
+				const wchar_t*		text, 
+				const wchar_t*		icon = 0, 
+				s32					imageIndex = -1,
+				s32					selectedImageIndex = -1,
+				void*					data = 0,
+				IReferenceCounted*			data2 = 0 );
 
 		//! Adds a new node before the other node. 
 		//! The other node has also te be a child node from this node.
@@ -166,13 +166,13 @@ namespace gui
 		//! \return
 		//! returns the new node or 0 if other is no child node from this
 		virtual IGUITreeViewNode* insertChildBefore( 
-								IGUITreeViewNode*	other, 
-								const wchar_t*		text, 
-								const wchar_t*		icon = 0, 
-								s32					imageIndex = -1,
-								s32					selectedImageIndex = -1,
-								void*					data = 0,
-								IReferenceCounted*			data2 = 0 );
+				IGUITreeViewNode*	other, 
+				const wchar_t*		text, 
+				const wchar_t*		icon = 0, 
+				s32					imageIndex = -1,
+				s32					selectedImageIndex = -1,
+				void*					data = 0,
+				IReferenceCounted*			data2 = 0 );
 
 		//! Return the first child note from this node.
 		virtual IGUITreeViewNode* getFirstChild() const;
@@ -222,15 +222,15 @@ namespace gui
 
 	private:
 	
-		CGUITreeView*						Owner;
-		CGUITreeViewNode*					Parent;
-		core::stringw						Text;
-		core::stringw						Icon;
-		s32									ImageIndex;
-		s32									SelectedImageIndex;
-		void*									Data;
-		IReferenceCounted*							Data2;
-		bool									Expanded;
+		CGUITreeView*			Owner;
+		CGUITreeViewNode*		Parent;
+		core::stringw			Text;
+		core::stringw			Icon;
+		s32				ImageIndex;
+		s32				SelectedImageIndex;
+		void*				Data;
+		IReferenceCounted*		Data2;
+		bool				Expanded;
 		core::list<CGUITreeViewNode*>	Childs;
 	};
 
@@ -306,21 +306,21 @@ namespace gui
 
 		CGUITreeViewNode*	Root;
 		IGUITreeViewNode*	Selected;
-		bool				LinesVisible;
-		s32					ItemHeight;
-		s32					IndentWidth;
-		s32					TotalItemHeight;
-		s32					TotalItemWidth;
-		IGUIFont*			Font;
-		IGUIFont*			IconFont;
-		bool				Selecting;
+		s32			ItemHeight;
+		s32			IndentWidth;
+		s32			TotalItemHeight;
+		s32			TotalItemWidth;
+		IGUIFont*		Font;
+		IGUIFont*		IconFont;
 		IGUIScrollBar*		ScrollBarH;
 		IGUIScrollBar*		ScrollBarV;
-		bool				Clip;
-		bool				DrawBack;
 		IGUIImageList*		ImageList;
-		bool				ImageLeftOfIcon;
 		IGUITreeViewNode*	LastEventNode;
+		bool			LinesVisible;
+		bool			Selecting;
+		bool			Clip;
+		bool			DrawBack;
+		bool			ImageLeftOfIcon;
 	};
 
 

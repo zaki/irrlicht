@@ -23,10 +23,9 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 		f32 slidingSpeed)
 : Radius(ellipsoidRadius), Gravity(gravityPerSecond), Translation(ellipsoidTranslation),
 	World(world), Object(object), SceneManager(scenemanager), LastTime(0),
-	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false),
-	AnimateCameraTarget(true), CollisionOccurred(false),
-	CollisionCallback(0),
-	FirstUpdate ( true )
+	SlidingSpeed(slidingSpeed), CollisionCallback(0),
+	Falling(false), IsCamera(false), AnimateCameraTarget(true), CollisionOccurred(false),
+	FirstUpdate(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCollisionResponse");

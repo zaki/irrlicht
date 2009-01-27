@@ -1660,8 +1660,8 @@ void CBurningVideoDriver::OnResize(const core::dimension2d<u32>& size)
 
 	if (ScreenSize != realSize)
 	{
-		if (ViewPort.getWidth() == ScreenSize.Width &&
-			ViewPort.getHeight() == ScreenSize.Height)
+		if (ViewPort.getWidth() == (s32)ScreenSize.Width &&
+			ViewPort.getHeight() == (s32)ScreenSize.Height)
 		{
 			ViewPort.UpperLeftCorner.X = 0;
 			ViewPort.UpperLeftCorner.Y = 0;

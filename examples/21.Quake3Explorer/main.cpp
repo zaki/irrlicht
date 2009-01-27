@@ -48,12 +48,12 @@ struct GameData
 		GammaValue = 1.f;
 
 		// default deviceParam;
-		deviceParam.DriverType = EDT_DIRECT3D9;
+		deviceParam.DriverType = EDT_OPENGL;
 		deviceParam.WindowSize.Width = 800;
 		deviceParam.WindowSize.Height = 600;
 		deviceParam.Fullscreen = false;
 		deviceParam.Bits = 32;
-		deviceParam.ZBufferBits = 32;
+		deviceParam.ZBufferBits = 24;
 		deviceParam.Vsync = false;
 		deviceParam.AntiAlias = false;
 
@@ -544,8 +544,8 @@ void CQuake3EventHandler::CreateGUI()
 	env->getSkin()->setColor ( EGDC_WINDOW, video::SColor(240,0x66,0x66,0x66) );
 
 	// minimal gui size 800x600
-	dimension2d<s32> dim ( 800, 600 );
-	dimension2d<s32> vdim ( Game->Device->getVideoDriver()->getScreenSize() );
+	dimension2d<u32> dim ( 800, 600 );
+	dimension2d<u32> vdim ( Game->Device->getVideoDriver()->getScreenSize() );
 
 	if ( vdim.Height >= dim.Height && vdim.Width >= dim.Width )
 	{
@@ -692,7 +692,7 @@ void CQuake3EventHandler::CreateGUI()
 
 
 	IGUIImageList* imageList = env->createImageList(	driver->getTexture ( "iconlist.png" ),
-										dimension2d<irr::s32>( 32, 32 ), true );
+										dimension2di( 32, 32 ), true );
 
 	if ( imageList )
 	{
@@ -1880,9 +1880,10 @@ void runGame ( GameData *game )
 
 /*!
 */
-s32 IRRCALLCONV main(int argc, char* argv[])
+int IRRCALLCONV main(int argc, char* argv[])
 {
-	GameData game ( deletePathFromPath ( core::string<c16> (argv[0]), 1 ) );
+	core::string<c16> prgname(argv[0]);
+	GameData game ( deletePathFromPath ( prgname, 1 ) );
 
 	// dynamically load irrlicht
 	const c8 * dllName = argc > 1 ? argv[1] : "irrlicht.dll";

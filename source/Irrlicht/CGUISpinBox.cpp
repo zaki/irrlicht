@@ -176,6 +176,8 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 					changeEvent = true;
 				}
 				break;
+			default:
+				break;
 			}
 			break;
 

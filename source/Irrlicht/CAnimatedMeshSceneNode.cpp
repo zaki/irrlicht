@@ -36,8 +36,8 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
 	CurrentFrameNr(0.f),
 	JointMode(EJUOR_NONE), JointsUsed(false),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
-	Looping(true), ReadOnlyMaterials(false),
-	LoopCallBack(0), PassCount(0), Shadow(0), RenderFromIdentity(0),
+	Looping(true), ReadOnlyMaterials(false), RenderFromIdentity(0),
+	LoopCallBack(0), PassCount(0), Shadow(0),
 	MD3Special ( 0 )
 {
 	#ifdef _DEBUG

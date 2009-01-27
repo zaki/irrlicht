@@ -580,7 +580,7 @@ void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
 	}
 
 	wchar_t c;
-	while( c = *text++)
+	while (( c = *text++))
 	{
 		bool lineBreak=false;
 		if ( c == L'\r') // Mac or Windows breaks

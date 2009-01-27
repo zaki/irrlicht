@@ -682,7 +682,9 @@ funcptr_createDeviceEx load_createDeviceEx ( const c8 * filename)
 #else
 
 // TODO: Dynamic Loading for other os
+#ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
+#endif
 
 funcptr_createDevice load_createDevice ( const c8 * filename)
 {

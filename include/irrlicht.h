@@ -329,7 +329,7 @@ namespace irr
 	//! typedef for Function Pointer
 	typedef IrrlichtDevice* (IRRCALLCONV *funcptr_createDevice )(
 			video::E_DRIVER_TYPE deviceType,
-			const core::dimension2d<s32>& windowSize,
+			const core::dimension2d<u32>& windowSize,
 			u32 bits,
 			bool fullscreen,
 			bool stencilbuffer,

@@ -16,13 +16,8 @@ namespace gui
 {
 
 CGUITreeViewNode::CGUITreeViewNode( CGUITreeView* owner, CGUITreeViewNode* parent )
-	:	Owner( owner ),
-	Parent( parent ),
-	ImageIndex( -1 ),
-	SelectedImageIndex( -1 ),
-	Data( 0 ),
-	Data2( 0 ),
-	Expanded( false )
+	: Owner(owner), Parent(parent), ImageIndex(-1), SelectedImageIndex(-1),
+	Data(0), Data2(0), Expanded(false)
 {
 #ifdef _DEBUG
 	setDebugName( "CGUITreeView" );
@@ -427,22 +422,22 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 	s32 id, core::rect<s32> rectangle, bool clip,
 	bool drawBack,bool scrollBarVertical, bool scrollBarHorizontal)
 	: IGUITreeView( environment, parent, id, rectangle ), 
-	Selected( 0 ),
-	ScrollBarH( 0 ),
-	ScrollBarV( 0 ),
-	LinesVisible( true ),
+	Root(0), Selected(0),
 	ItemHeight( 0 ),
 	IndentWidth( 0 ),
 	TotalItemHeight( 0 ),
 	TotalItemWidth ( 0 ),
-	Selecting( false ),
 	Font( 0 ),
 	IconFont( 0 ),
+	ScrollBarH( 0 ),
+	ScrollBarV( 0 ),
 	ImageList( 0 ),
-	ImageLeftOfIcon( true ),
 	LastEventNode( 0 ),
+	LinesVisible( true ),
+	Selecting( false ),
 	Clip( clip ),
-	DrawBack( drawBack )
+	DrawBack( drawBack ),
+	ImageLeftOfIcon( true )
 {
 #ifdef _DEBUG
 	setDebugName( "CGUITreeView" );
@@ -520,8 +515,8 @@ CGUITreeView::~CGUITreeView()
 
 void CGUITreeView::recalculateItemHeight()
 {
-	IGUISkin*				skin = Environment->getSkin();
-	IGUITreeViewNode*		node;
+	IGUISkin*		skin = Environment->getSkin();
+	IGUITreeViewNode*	node;
 
 	if( Font != skin->getFont() )
 	{
@@ -611,6 +606,8 @@ bool CGUITreeView::OnEvent( const SEvent &event )
 				return false;
 			}
 			break;
+		default:
+			break;
 		}
 		break;
 	case EET_MOUSE_INPUT_EVENT:
@@ -672,8 +669,13 @@ bool CGUITreeView::OnEvent( const SEvent &event )
 						return true;
 					}
 				}
+				break;
+			default:
+				break;
 			}
 		}
+		break;
+	default:
 		break;
 	}
 

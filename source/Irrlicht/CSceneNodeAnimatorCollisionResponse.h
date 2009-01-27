@@ -136,18 +136,18 @@ namespace scene
 		ISceneManager* SceneManager;
 		u32 LastTime;
 		f32 SlidingSpeed;
-		bool Falling;
-		bool IsCamera;
-		bool AnimateCameraTarget;
-		bool FirstUpdate;
 
-		bool CollisionOccurred;
 		core::vector3df CollisionPoint;
 		core::triangle3df CollisionTriangle;
 		core::vector3df CollisionResultPosition;
 		const ISceneNode * CollisionNode;
-
 		ICollisionCallback* CollisionCallback;
+
+		bool Falling;
+		bool IsCamera;
+		bool AnimateCameraTarget;
+		bool CollisionOccurred;
+		bool FirstUpdate;
 	};
 
 } // end namespace scene

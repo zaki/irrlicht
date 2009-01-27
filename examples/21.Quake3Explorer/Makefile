@@ -1,13 +1,13 @@
 # Makefile for Irrlicht Examples
 # It's usually sufficient to change just the target name and source file list
 # and be sure that CXX is set to a valid compiler
-Target = 16.Quake3MapShader
-Sources = main.cpp
+Target = 21.Quake3Explorer
+Sources = main.cpp sound.cpp q3factory.cpp
 
 # general compiler settings
 CPPFLAGS = -I../../include -I/usr/X11R6/include
-CXXFLAGS = -O3 -ffast-math
-#CXXFLAGS = -g -Wall
+#CXXFLAGS = -O3 -ffast-math
+CXXFLAGS = -g -Wall
 
 #default target is Linux
 all: all_linux
