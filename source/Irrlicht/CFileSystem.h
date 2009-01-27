@@ -74,8 +74,8 @@ public:
 	/** \param filename: The file to get the basename from */
 	virtual core::string<c16> getFileBasename(const core::string<c16>& filename, bool keepExtension=true) const;
 
-	//! flaten a path and file name for example: "/you/me/../." becomes "/you"
-	virtual core::string<c16>& flatenFilename( core::string<c16>& directory, const core::string<c16>& root = "/" ) const;
+	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
+	virtual core::string<c16>& flattenFilename( core::string<c16>& directory, const core::string<c16>& root = "/" ) const;
 
 	//! Creates a list of files and directories in the current working directory 
 	//! and returns it.

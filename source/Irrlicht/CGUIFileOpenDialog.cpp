@@ -135,7 +135,7 @@ const wchar_t* CGUIFileOpenDialog::getFileName() const
 //! Returns the directory of the selected file. Returns NULL, if no directory was selected.
 const core::string<c16>& CGUIFileOpenDialog::getDirectoryName()
 {
-	FileSystem->flatenFilename ( FileDirectory );
+	FileSystem->flattenFilename ( FileDirectory );
 	return FileDirectory;
 }
 

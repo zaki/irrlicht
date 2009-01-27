@@ -524,7 +524,7 @@ IFileArchive* CArchiveLoaderMount::createArchive(const core::string<c16>& filena
 
 	core::string<c16> save = FileSystem->getWorkingDirectory ();
 	core::string<c16> fullPath = FileSystem->getAbsolutePath ( filename );
-	FileSystem->flatenFilename ( fullPath );
+	FileSystem->flattenFilename ( fullPath );
 
 	if ( FileSystem->changeWorkingDirectoryTo ( fullPath ) )
 	{

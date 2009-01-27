@@ -218,8 +218,8 @@ namespace scene
 				f32 width1);
 
 		//! Adds a static sphere mesh to the mesh pool.
-		IAnimatedMesh* addSphereMesh(const c16* name,
-				f32 radius, u32 polyCountX, u32 polyCountY);
+		IAnimatedMesh* addSphereMesh(const core::string<c16>& name,
+				f32 radius=5.f, u32 polyCountX=16, u32 polyCountY=16);
 
 		//! Adds a particle system scene node.
 		virtual IParticleSystemSceneNode* addParticleSystemSceneNode(

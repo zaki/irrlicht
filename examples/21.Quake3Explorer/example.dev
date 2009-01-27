@@ -1,6 +1,6 @@
 [Project]
 FileName=example.dev
-Name=Irrlicht Example 16 Quake3 Map Shader
+Name=Irrlicht Example 21 Quake3 Explorer
 UnitCount=1
 Type=1
 Ver=1
@@ -18,7 +18,7 @@ Icon=
 ExeOutput=../../bin/Win32-gcc
 ObjectOutput=obj
 OverrideOutput=1
-OverrideOutputName=16.Quake3MapShader.exe
+OverrideOutputName=21.Quake3Explorer.exe
 HostApplication=
 Folders=
 CommandLine=
