@@ -168,7 +168,12 @@ namespace video
 		virtual void deleteAllDynamicLights();
 
 		//! adds a dynamic light
-		virtual void addDynamicLight(const SLight& light);
+		virtual s32 addDynamicLight(const SLight& light);
+
+		//! Turns a dynamic light on or off
+		//! \param lightIndex: the index returned by addDynamicLight
+		//! \param turnOn: true to turn the light on, false to turn it off
+		virtual void turnLightOn(s32 lightIndex, bool turnOn);
 
 		//! returns the maximal amount of dynamic lights the device can handle
 		virtual u32 getMaximalDynamicLightAmount() const;
@@ -194,7 +199,7 @@ namespace video
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 
 		//! Only used internally by the engine
-		virtual void OnResize(const core::dimension2d<s32>& size);
+		virtual void OnResize(const core::dimension2d<u32>& size);
 
 		//! Returns type of video driver
 		virtual E_DRIVER_TYPE getDriverType() const;
@@ -246,7 +251,7 @@ namespace video
 		//! Returns the maximum amount of primitives
 		virtual u32 getMaximalPrimitiveCount() const;
 
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<s32>& size,
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name);
 
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
@@ -281,7 +286,7 @@ namespace video
 		void uploadClipPlane(u32 index);
 
 		//! inits the opengl-es driver
-		bool genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer);
+		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
@@ -301,10 +306,14 @@ namespace video
 		void setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel);
 
 		// returns the current size of the screen or rendertarget
-		virtual const core::dimension2d<s32>& getCurrentRenderTargetSize() const;
+		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
 
 		void createMaterialRenderers();
 
+		//! Assign a hardware light to the specified requested light, if any
+		//! free hardware lights exist.
+		//! \param[in] lightIndex: the index of the requesting light
+		void assignHardwareLight(u32 lightIndex);
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -332,7 +341,7 @@ namespace video
 		core::array<core::plane3df> UserClipPlane;
 		core::array<bool> UserClipPlaneEnabled;
 
-		core::dimension2d<s32> CurrentRendertargetSize;
+		core::dimension2d<u32> CurrentRendertargetSize;
 
 		core::stringc vendorName;
 
@@ -340,6 +349,19 @@ namespace video
 
 		//! Color buffer format
 		ECOLOR_FORMAT ColorFormat;
+
+		//! All the lights that have been requested; a hardware limited
+		//! number of them will be used at once.
+		struct RequestedLight
+		{
+			RequestedLight(SLight const & lightData)
+				: LightData(lightData), HardwareLightIndex(-1), DesireToBeOn(true) { }
+
+			SLight	LightData;
+			s32		HardwareLightIndex; // GL_LIGHT0 - GL_LIGHT7
+			bool	DesireToBeOn;
+		};
+		core::array<RequestedLight> RequestedLights;
 
 #ifdef _IRR_USE_WINDOWS_DEVICE_
 		HDC HDc;

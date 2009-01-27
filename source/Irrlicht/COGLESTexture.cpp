@@ -126,7 +126,7 @@ void COGLES1Texture::getImageData(IImage* image)
 		return;
 	}
 
-	const core::dimension2d<s32> nImageSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
+	const core::dimension2d<u32> nImageSize=ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT));
 	const ECOLOR_FORMAT destFormat = getBestColorFormat(image->getColorFormat());
 
 	if (ImageSize==nImageSize)
@@ -261,10 +261,10 @@ void* COGLES1Texture::lock(bool readOnly)
 	//	glGetTexImage(GL_TEXTURE_2D, 0, GL_BGRA, GL_UNSIGNED_BYTE, pPixels);
 
 		// opengl images are horizontally flipped, so we have to fix that here.
-		const s32 pitch=Image->getPitch();
+		const u32 pitch=Image->getPitch();
 		u8* p2 = pPixels + (ImageSize.Height - 1) * pitch;
 		u8* tmpBuffer = new u8[pitch];
-		for (s32 i=0; i < ImageSize.Height; i += 2)
+		for (u32 i=0; i < ImageSize.Height; i += 2)
 		{
 			memcpy(tmpBuffer, pPixels, pitch);
 			memcpy(pPixels, p2, pitch);
@@ -293,14 +293,14 @@ void COGLES1Texture::unlock()
 
 
 //! Returns size of the original image.
-const core::dimension2d<s32>& COGLES1Texture::getOriginalSize() const
+const core::dimension2d<u32>& COGLES1Texture::getOriginalSize() const
 {
 	return ImageSize;
 }
 
 
 //! Returns size of the texture.
-const core::dimension2d<s32>& COGLES1Texture::getSize() const
+const core::dimension2d<u32>& COGLES1Texture::getSize() const
 {
 	if (Image)
 		return Image->getDimension();
@@ -423,7 +423,7 @@ static bool checkFBOStatus(COGLES1Driver* Driver);
 
 
 //! RTT ColorFrameBuffer constructor
-COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<s32>& size,
+COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<u32>& size,
                                 const char* name,
                                 COGLES1Driver* driver)
 	: COGLES1Texture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
@@ -505,7 +505,7 @@ void COGLES1FBOTexture::unbindRTT()
 
 //! RTT DepthBuffer constructor
 COGLES1FBODepthTexture::COGLES1FBODepthTexture(
-		const core::dimension2d<s32>& size,
+		const core::dimension2d<u32>& size,
 		const char* name,
 		COGLES1Driver* driver,
 		bool useStencil)

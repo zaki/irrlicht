@@ -42,10 +42,10 @@ public:
 	virtual void unlock();
 
 	//! Returns original size of the texture (image).
-	virtual const core::dimension2d<s32>& getOriginalSize() const;
+	virtual const core::dimension2d<u32>& getOriginalSize() const;
 
 	//! Returns size of the texture.
-	virtual const core::dimension2d<s32>& getSize() const;
+	virtual const core::dimension2d<u32>& getSize() const;
 
 	//! returns driver type of texture (=the driver, that created it)
 	virtual E_DRIVER_TYPE getDriverType() const;
@@ -94,7 +94,7 @@ protected:
 	//! copies the the texture into an open gl texture.
 	void copyTexture(bool newTexture=true);
 
-	core::dimension2d<s32> ImageSize;
+	core::dimension2d<u32> ImageSize;
 	COGLES1Driver* Driver;
 	IImage* Image;
 
@@ -117,7 +117,7 @@ class COGLES1FBOTexture : public COGLES1Texture
 public:
 
 	//! FrameBufferObject constructor
-	COGLES1FBOTexture(const core::dimension2d<s32>& size, const char* name, COGLES1Driver* driver=0);
+	COGLES1FBOTexture(const core::dimension2d<u32>& size, const char* name, COGLES1Driver* driver=0);
 
 	//! destructor
 	virtual ~COGLES1FBOTexture();
@@ -142,7 +142,7 @@ class COGLES1FBODepthTexture : public COGLES1FBOTexture
 {
 public:
 	//! FrameBufferObject depth constructor
-	COGLES1FBODepthTexture(const core::dimension2d<s32>& size, const char* name, COGLES1Driver* driver=0, bool useStencil=false);
+	COGLES1FBODepthTexture(const core::dimension2d<u32>& size, const char* name, COGLES1Driver* driver=0, bool useStencil=false);
 
 	//! destructor
 	virtual ~COGLES1FBODepthTexture();

@@ -196,7 +196,7 @@ COGLES1Driver::~COGLES1Driver()
 // METHODS
 // -----------------------------------------------------------------------
 
-bool COGLES1Driver::genericDriverInit(const core::dimension2d<s32>& screenSize, bool stencilBuffer)
+bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer)
 {
 	Name=glGetString(GL_VERSION);
 	printVersion();
@@ -1118,9 +1118,9 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.X = 0;
 	}
 
-	const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 
-	if (targetPos.X + sourceSize.Width > renderTargetSize.Width)
+	if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
 	{
 		sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
 		if (sourceSize.Width <= 0)
@@ -1137,7 +1137,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 		targetPos.Y = 0;
 	}
 
-	if (targetPos.Y + sourceSize.Height > renderTargetSize.Height)
+	if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
 	{
 		sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
 		if (sourceSize.Height <= 0)
@@ -1149,7 +1149,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 
 	// texcoords need to be flipped horizontally for RTTs
 	const bool isRTT = texture->isRenderTarget();
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 	const core::rect<f32> tcoords(
@@ -1185,7 +1185,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 
 	// texcoords need to be flipped horizontally for RTTs
 	const bool isRTT = texture->isRenderTarget();
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2du& ss = texture->getOriginalSize();
 	const f32 invW = 1.f / static_cast<f32>(ss.Width);
 	const f32 invH = 1.f / static_cast<f32>(ss.Height);
 	const core::rect<f32> tcoords(
@@ -1216,7 +1216,7 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture, const core::rect
 			return;
 
 		glEnable(GL_SCISSOR_TEST);
-		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(), clipRect->getHeight());
 	}
@@ -1256,12 +1256,12 @@ void COGLES1Driver::draw2DImage(const video::ITexture* texture,
 			return;
 
 		glEnable(GL_SCISSOR_TEST);
-		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		glScissor(clipRect->UpperLeftCorner.X, renderTargetSize.Height-clipRect->LowerRightCorner.Y,
 			clipRect->getWidth(),clipRect->getHeight());
 	}
 
-	const core::dimension2d<s32>& ss = texture->getOriginalSize();
+	const core::dimension2du& ss = texture->getOriginalSize();
 	core::position2d<s32> targetPos(pos);
 	// texcoords need to be flipped horizontally for RTTs
 	const bool isRTT = texture->isRenderTarget();
@@ -1841,7 +1841,7 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		glMatrixMode(GL_PROJECTION);
 
-		const core::dimension2d<s32>& renderTargetSize = getCurrentRenderTargetSize();
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		core::matrix4 m;
 		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-renderTargetSize.Height), -1.0, 1.0);
 		m.setTranslation(core::vector3df(-1,1,0));
@@ -1931,25 +1931,47 @@ void COGLES1Driver::deleteAllDynamicLights()
 	for (s32 i=0; i<LastSetLight+1; ++i)
 		glDisable(GL_LIGHT0 + i);
 
-	LastSetLight = -1;
+	RequestedLights.clear();
 
 	CNullDriver::deleteAllDynamicLights();
 }
 
 
 //! adds a dynamic light
-void COGLES1Driver::addDynamicLight(const SLight& light)
+s32 COGLES1Driver::addDynamicLight(const SLight& light)
 {
-	if (LastSetLight == MaxLights-1)
-		return;
-
-	setTransform(ETS_WORLD, core::matrix4());
-
-	++LastSetLight;
 	CNullDriver::addDynamicLight(light);
 
-	s32 lidx = GL_LIGHT0 + LastSetLight;
+	RequestedLights.push_back(RequestedLight(light));
+
+	u32 newLightIndex = RequestedLights.size() - 1;
+
+	// Try and assign a hardware light just now, but don't worry if I can't
+	assignHardwareLight(newLightIndex);
+
+	return (s32)newLightIndex;
+}
+
+
+void COGLES1Driver::assignHardwareLight(u32 lightIndex)
+{
+	setTransform(ETS_WORLD, core::matrix4());
+
+	s32 lidx;
+	for (lidx=GL_LIGHT0; lidx < GL_LIGHT0 + MaxLights; ++lidx)
+	{
+		if(!glIsEnabled(lidx))
+		{
+			RequestedLights[lightIndex].HardwareLightIndex = lidx;
+			break;
+		}
+	}
+
+	if(lidx == GL_LIGHT0 + MaxLights) // There's no room for it just now
+		return;
+
 	GLfloat data[4];
+	const SLight & light = RequestedLights[lightIndex].LightData;
 
 	switch (light.Type)
 	{
@@ -2023,6 +2045,45 @@ void COGLES1Driver::addDynamicLight(const SLight& light)
 	glLightf(lidx, GL_QUADRATIC_ATTENUATION, light.Attenuation.Z);
 
 	glEnable(lidx);
+}
+
+
+//! Turns a dynamic light on or off
+//! \param lightIndex: the index returned by addDynamicLight
+//! \param turnOn: true to turn the light on, false to turn it off
+void COGLES1Driver::turnLightOn(s32 lightIndex, bool turnOn)
+{
+	if(lightIndex < 0 || lightIndex >= (s32)RequestedLights.size())
+		return;
+
+	RequestedLight & requestedLight = RequestedLights[lightIndex];
+
+	requestedLight.DesireToBeOn = turnOn;
+
+	if(turnOn)
+	{
+		if(-1 == requestedLight.HardwareLightIndex)
+			assignHardwareLight(lightIndex);
+	}
+	else
+	{
+		if(-1 != requestedLight.HardwareLightIndex)
+		{
+			// It's currently assigned, so free up the hardware light
+			glDisable(requestedLight.HardwareLightIndex);
+			requestedLight.HardwareLightIndex = -1;
+
+			// Now let the first light that's waiting on a free hardware light grab it
+			for(u32 requested = 0; requested < RequestedLights.size(); ++requested)
+				if(RequestedLights[requested].DesireToBeOn
+					&&
+					-1 == RequestedLights[requested].HardwareLightIndex)
+				{
+					assignHardwareLight(requested);
+					break;
+				}
+		}
+	}
 }
 
 
@@ -2339,7 +2400,7 @@ void COGLES1Driver::draw3DLine(const core::vector3df& start,
 
 //! Only used by the internal engine. Used to notify the driver that
 //! the window was resized.
-void COGLES1Driver::OnResize(const core::dimension2d<s32>& size)
+void COGLES1Driver::OnResize(const core::dimension2d<u32>& size)
 {
 	CNullDriver::OnResize(size);
 	glViewport(0, 0, size.Width, size.Height);
@@ -2436,7 +2497,7 @@ IGPUProgrammingServices* COGLES1Driver::getGPUProgrammingServices()
 }
 
 
-ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<s32>& size, const c8* name)
+ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name)
 {
 	//disable mip-mapping
 	const bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
@@ -2468,7 +2529,7 @@ ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<s32>& si
 	{
 		// the simple texture is only possible for size <= screensize
 		// we try to find an optimal size with the original constraints
-		core::dimension2di destSize(core::min_(size.Width,ScreenSize.Width), core::min_(size.Height,ScreenSize.Height));
+		core::dimension2du destSize(core::min_(size.Width,ScreenSize.Width), core::min_(size.Height,ScreenSize.Height));
 		destSize = destSize.getOptimalSize((size==size.getOptimalSize()), false, false);
 		rtt = addTexture(destSize, name, ECF_A8R8G8B8);
 		if (rtt)
@@ -2521,7 +2582,7 @@ bool COGLES1Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 	{
 		glViewport(0,0,ScreenSize.Width,ScreenSize.Height);
 		RenderTargetTexture = 0;
-		CurrentRendertargetSize = core::dimension2d<s32>(0,0);
+		CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 	}
 
 	GLbitfield mask = 0;
@@ -2547,7 +2608,7 @@ bool COGLES1Driver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 
 // returns the current size of the screen or rendertarget
-const core::dimension2d<s32>& COGLES1Driver::getCurrentRenderTargetSize() const
+const core::dimension2d<u32>& COGLES1Driver::getCurrentRenderTargetSize() const
 {
 	if ( CurrentRendertargetSize.Width == 0 )
 		return ScreenSize;
@@ -2617,7 +2678,7 @@ IImage* COGLES1Driver::createScreenShot()
 	const s32 pitch=newImage->getPitch();
 	u8* p2 = pixels + (ScreenSize.Height - 1) * pitch;
 	u8* tmpBuffer = new u8[pitch];
-	for (s32 i=0; i < ScreenSize.Height; i += 2)
+	for (u32 i=0; i < ScreenSize.Height; i += 2)
 	{
 		memcpy(tmpBuffer, pixels, pitch);
 		memcpy(pixels, p2, pitch);
