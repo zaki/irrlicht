@@ -949,7 +949,7 @@ namespace scene
 		\param polyCountY Number of quads used for the vertical tiling
 		\return Pointer to the sphere mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addSphereMesh(const c16* name,
+		virtual IAnimatedMesh* addSphereMesh(const core::string<c16>& name,
 				f32 radius=5.f, u32 polyCountX = 16,
 				u32 polyCountY = 16) = 0;
 

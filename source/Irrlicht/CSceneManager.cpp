@@ -950,6 +950,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const core::string<c16>& name,
 	return animatedMesh;
 }
 
+
 //! Adds an arrow mesh to the mesh pool.
 IAnimatedMesh* CSceneManager::addArrowMesh(const core::string<c16>& name,
 		video::SColor vtxColor0, video::SColor vtxColor1,
@@ -983,14 +984,10 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const core::string<c16>& name,
 }
 
 
-
 //! Adds a static sphere mesh to the mesh pool.
-IAnimatedMesh* CSceneManager::addSphereMesh(const c16* name,
+IAnimatedMesh* CSceneManager::addSphereMesh(const core::string<c16>& name,
 		f32 radius, u32 polyCountX, u32 polyCountY)
 {
-	if (!name)
-		return 0;
-
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
@@ -1559,7 +1556,7 @@ ISceneNodeAnimator* CSceneManager::createFlyCircleAnimator(
 		f32 startPosition)
 {
 	const f32 orbitDurationMs = (core::DEGTORAD * 360.f) / speed;
-	u32 effectiveTime = os::Timer::getTime() + (u32)(orbitDurationMs * startPosition);
+	const u32 effectiveTime = os::Timer::getTime() + (u32)(orbitDurationMs * startPosition);
 
 	ISceneNodeAnimator* anim = new CSceneNodeAnimatorFlyCircle(
 			effectiveTime, center,

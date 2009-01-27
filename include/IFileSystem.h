@@ -92,10 +92,13 @@ public:
 
 	//! Adds an external archive loader to the engine.
 	virtual void addArchiveLoader(IArchiveLoader* loader) = 0;
+
 	//! return the amount of currently attached Archives
 	virtual u32 getFileArchiveCount() = 0;
+
 	//! removes an archive from the file system.
 	virtual bool unregisterFileArchive( u32 index ) = 0;
+
 	//! get the Archive number index
 	virtual IFileArchive* getFileArchive( u32 index ) = 0;
 
@@ -113,7 +116,6 @@ public:
 	{
 		return registerFileArchive ( filename, ignoreCase, ignorePaths );
 	}
-
 
 	//! Adds an unzipped archive ( or basedirectory with subdirectories..) to the file system.
 	/** Useful for handling data which will be in a zip file
@@ -164,22 +166,23 @@ public:
 	\return String containing the directory of the file. */
 	virtual core::string<c16> getFileDir(const core::string<c16>&  filename) const = 0;
 
-	//! Returns the base part of a filename, i.e. the name without the directory
-	//! part. If no directory is prefixed, the full name is returned.
-	/** \param filename: The file to get the basename from
+	//! Returns the base part of a filename, i.e. the name without the directory part.
+	/** If no directory is prefixed, the full name is returned.
+	\param filename: The file to get the basename from
 	\param keepExtension True if filename with extension is returned otherwise everything
 	after the final '.' is removed as well. */
 	virtual core::string<c16> getFileBasename(const core::string<c16>& filename, bool keepExtension=true) const = 0;
 
-	//! flaten a path and file name for example: "/you/me/../." becomes "/you"
-	virtual core::string<c16>& flatenFilename( core::string<c16>& directory, const core::string<c16>& root = "/" ) const = 0;
+	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
+	virtual core::string<c16>& flattenFilename( core::string<c16>& directory, const core::string<c16>& root = "/" ) const = 0;
 
 	//! Creates a list of files and directories in the current working directory and returns it.
 	/** \return a Pointer to the created IFileList is returned. After the list has been used
 	it has to be deleted using its IFileList::drop() method.
 	See IReferenceCounted::drop() for more information. */
-	virtual eFileSystemType setFileListSystem( eFileSystemType listType) = 0;
 	virtual IFileList* createFileList() = 0;
+
+	virtual eFileSystemType setFileListSystem( eFileSystemType listType) = 0;
 
 	//! Determines if a file exists and could be opened.
 	/** \param filename is the string identifying the file which should be tested for existence.
@@ -245,9 +248,9 @@ public:
 	virtual IAttributes* createEmptyAttributes(video::IVideoDriver* driver=0) = 0;
 };
 
+
 } // end namespace io
 } // end namespace irr
-
 
 #endif
 

@@ -151,7 +151,6 @@ namespace scene
 	//! Holding Frame Data for a Mesh
 	struct SMD3MeshBuffer : public IReferenceCounted
 	{
-		virtual ~SMD3MeshBuffer () {}
 		SMD3MeshHeader MeshHeader;
 
 		core::stringc Shader;

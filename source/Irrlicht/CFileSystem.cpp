@@ -168,6 +168,7 @@ bool CFileSystem::registerFileArchive( const core::string<c16>& filename, bool i
 
 }
 
+
 //! removes an archive to the file system.
 bool CFileSystem::unregisterFileArchive( u32 index )
 {
@@ -181,11 +182,13 @@ bool CFileSystem::unregisterFileArchive( u32 index )
 	return ret;
 }
 
+
 //! gets an archive
 u32 CFileSystem::getFileArchiveCount()
 {
 	return FileArchive.size();
 }
+
 
 IFileArchive* CFileSystem::getFileArchive( u32 index )
 {
@@ -241,7 +244,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const core::string<c16>& newDirectory
 	if ( FileSystemType != FILESYSTEM_NATIVE )
 	{
 		WorkingDirectory [ FILESYSTEM_VIRTUAL ].append ( newDirectory );
-		flatenFilename ( WorkingDirectory [ FILESYSTEM_VIRTUAL ], "" );
+		flattenFilename ( WorkingDirectory [ FILESYSTEM_VIRTUAL ], "" );
 		success = 1;
 	}
 	else
@@ -264,8 +267,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const core::string<c16>& newDirectory
 	return success;
 }
 
-/*!
-*/
+
 core::string<c16> CFileSystem::getAbsolutePath(const core::string<c16>& filename) const
 {
 	c16 *p=0;
@@ -353,7 +355,7 @@ core::string<c16> CFileSystem::getFileBasename(const core::string<c16>& filename
 
 
 //! flaten a path and file name for example: "/you/me/../." becomes "/you"
-core::string<c16>& CFileSystem::flatenFilename( core::string<c16>& directory, const core::string<c16>& root ) const
+core::string<c16>& CFileSystem::flattenFilename( core::string<c16>& directory, const core::string<c16>& root ) const
 {
 	directory.replace ( '\\', '/' );
 	if ( lastChar ( directory ) != '/' )
@@ -424,7 +426,7 @@ IFileList* CFileSystem::createFileList()
 			core::string<c16> current;
 
 			current = FileArchive[i]->getArchiveName() + WorkingDirectory [ FILESYSTEM_VIRTUAL ];
-			flatenFilename ( current );
+			flattenFilename ( current );
 
 			if ( changeWorkingDirectoryTo ( current ) )
 			{

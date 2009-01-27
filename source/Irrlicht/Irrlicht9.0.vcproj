@@ -1138,6 +1138,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IGUIImageList.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\IGUIInOutFader.h"
 					>
 				</File>
@@ -1175,6 +1179,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\IGUIToolbar.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IGUITreeView.h"
 					>
 				</File>
 				<File
@@ -1276,6 +1284,14 @@
 			</File>
 			<File
 				RelativePath="CGUIImage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUIImageList.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUIImageList.h"
 				>
 			</File>
 			<File
@@ -1388,6 +1404,14 @@
 			</File>
 			<File
 				RelativePath="CGUIToolBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUITreeView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUITreeView.h"
 				>
 			</File>
 			<File
