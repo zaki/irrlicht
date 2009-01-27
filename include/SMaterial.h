@@ -98,18 +98,6 @@ namespace video
 		dstFact = E_BLEND_FACTOR ( ( state & 0x000000FF ) );
 	}
 
-	//! These flags are used to specify the DebthBuffer Function for the Material
-	/** Usally this is set to less equal 
-	*/
-	//! DebthBuffer Function
-	enum E_DEPTHBUFFER_FUNC
-	{
-		EMDF_DEPTH_OFF			 = 0,
-		EMDF_DEPTH_LESS_EQUAL	 = 1,
-		EMDF_DEPTH_EQUAL		 = 2,
-		EMDF_DEPTH_GREATER_EQUAL = 3
-	};
-
 	//! These flags are used to specify the anti-aliasing and smoothing modes
 	/** Techniques supported are multisampling, geometry smoothing, and alpha
 	to coverage.
