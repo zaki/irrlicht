@@ -1452,10 +1452,10 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
 	f32 sy;
 
 	sy = 0.f;
-	for ( s32 y = 0; y != destSize.Height; ++y )
+	for ( u32 y = 0; y != destSize.Height; ++y )
 	{
 		sx = 0.f;
-		for ( s32 x = 0; x != destSize.Width; ++x )
+		for ( u32 x = 0; x != destSize.Width; ++x )
 		{
 			target->setPixel( x, y, getPixelBox( core::floor32(sx), core::floor32(sy), fx, fy, bias ) );
 			sx += sourceXStep;

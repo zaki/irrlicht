@@ -28,11 +28,10 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 			io::IFileSystem *fileSystem, scene::IMeshBuffer *original,
 			const IShader * shader)
 : scene::IMeshSceneNode(parent, mgr, id, 
-	core::vector3df ( 0.f, 0.f, 0.f ),
-	core::vector3df ( 0.f, 0.f, 0.f ),
-	core::vector3df ( 1.f, 1.f, 1.f )),
-Mesh ( 0 ), MeshBuffer(0), Original(0),
-Shader(shader), TimeAbs(0.f)
+		core::vector3df(0.f, 0.f, 0.f),
+		core::vector3df(0.f, 0.f, 0.f),
+		core::vector3df(1.f, 1.f, 1.f)),
+	Shader(shader), Mesh(0), Original(0), MeshBuffer(0), TimeAbs(0.f)
 {
 	#ifdef _DEBUG
 		core::stringc dName = "CQuake3ShaderSceneNode ";
@@ -904,13 +903,15 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, SModifierFunction &
 				MeshBuffer->Vertices[i].Color.color = value;
 		} break;
 		case CONSTANT:
+		{
 			//rgbgen const ( x y z )
 			video::SColorf cf( function.x, function.y, function.z );
 			u32 col = cf.toSColor ().color;
 			for ( i = 0; i != vsize; ++i )
 				MeshBuffer->Vertices[i].Color.color = col;
+		} break;
+		default:
 			break;
-
 	}
 }
 
@@ -971,6 +972,8 @@ void CQuake3ShaderSceneNode::vertextransform_alphagen( f32 dt, SModifierFunction
 			for ( i = 0; i != vsize; ++i )
 				MeshBuffer->Vertices[i].Color.setAlpha ( value );
 		} break;
+		default:
+			break;
 	}
 }
 
@@ -1071,7 +1074,8 @@ void CQuake3ShaderSceneNode::vertextransform_tcgen( f32 dt, SModifierFunction &f
 			}
 #endif
 		} break;
-
+		default:
+			break;
 	}
 }
 
@@ -1170,6 +1174,8 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 			case TCMOD:
 				m2.makeIdentity();
 				break;
+			default:
+				break;
 		}
 
 		// get the modifier function
@@ -1250,6 +1256,8 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 							function.z = getAsFloat( v.content, pos );
 							function.y = getAsFloat( v.content, pos );
 							break;
+						default:
+							break;
 					}
 				}
 
@@ -1260,6 +1268,8 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 					case WAVE:
 					case MOVE:
 						getModifierFunc( function, v.content, pos );
+						break;
+					default:
 						break;
 				}
 
@@ -1297,6 +1307,8 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 									case MOVE:
 										deformvertexes_move( TimeAbs, function );
 										break;
+									default:
+										break;
 								}
 								break;
 							case RGBGEN:
@@ -1319,7 +1331,11 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 
 								//vertextransform_alphagen( TimeAbs, function );
 								break;
+							default:
+								break;
 						}
+						break;
+					default:
 						break;
 				}
 				
@@ -1360,14 +1376,16 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 				// deformvertexes autosprite2
 				deformvertexes_autosprite2(TimeAbs, function);
 				break;
-
-
+			default:
+				break;
 		} // func
 
 		switch ( function.masterfunc0 )
 		{
 			case TCMOD:
 				texture *= m2;
+				break;
+			default:
 				break;
 		}
 

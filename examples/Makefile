@@ -1,4 +1,4 @@
-DIRS = $(wildcard [01]* Demo)
+DIRS = $(wildcard [012]* Demo)
 
 all: $(DIRS)
 

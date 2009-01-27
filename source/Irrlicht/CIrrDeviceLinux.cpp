@@ -722,7 +722,7 @@ bool CIrrDeviceLinux::run()
 	if ((CreationParams.DriverType != video::EDT_NULL) && display)
 	{
 		SEvent irrevent;
-		irrevent.MouseInput.ButtonStates = -1;
+		irrevent.MouseInput.ButtonStates = 0xffffffff;
 
 		while (XPending(display) > 0 && !Close)
 		{
@@ -1461,7 +1461,7 @@ void CIrrDeviceLinux::pollJoysticks()
 }
 
 
-IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
+extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
 	CIrrDeviceLinux* dev = new CIrrDeviceLinux(param);
 

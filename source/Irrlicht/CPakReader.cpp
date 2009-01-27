@@ -80,7 +80,7 @@ bool CArchiveLoaderPAK::isALoadableFileFormat(io::IReadFile* file) const
 	PAK Reader
 */
 CPakReader::CPakReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
-: File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths), Type ( "pak" )
+: Type("pak"), File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths)
 {
 	#ifdef _DEBUG
 	setDebugName("CPakReader");

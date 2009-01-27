@@ -47,6 +47,7 @@ static inline u32 locale_lower ( u32 x )
 	switch ( locale_current )
 	{
 		case IRR_LOCALE_GERMAN:
+		case IRR_LOCALE_ANSI:
 			break;
 	}
 	// ansi

@@ -13,7 +13,7 @@ namespace io
 
 CLimitReadFile::CLimitReadFile(IReadFile* alreadyOpenedFile, long pos, long areaSize,
 							   const core::string<c16>& name)
-: Filename(name), AreaStart(0), AreaEnd(0), File(alreadyOpenedFile), Pos ( 0 )
+: Filename(name), AreaStart(0), AreaEnd(0), Pos(0), File(alreadyOpenedFile)
 {
 	#ifdef _DEBUG
 	setDebugName("CLimitReadFile");

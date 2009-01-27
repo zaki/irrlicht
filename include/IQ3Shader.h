@@ -46,8 +46,8 @@ namespace quake3
 			cleanUnResolvedMeshes ( 1 ),
 			loadAllShaders ( 0 ),
 			loadSkyShader ( 0 ),
-			swapLump ( 0 ),
 			alpharef ( 1 ),
+			swapLump ( 0 ),
 	#ifdef __BIG_ENDIAN__
 			swapHeader ( 1 )
 	#else
@@ -65,11 +65,11 @@ namespace quake3
 		u32 endTime;
 		s32 mergeShaderBuffer;
 		s32 cleanUnResolvedMeshes;
+		s32 loadAllShaders;
+		s32 loadSkyShader;
 		s32 alpharef;
 		s32 swapLump;
 		s32 swapHeader;
-		s32 loadAllShaders;
-		s32 loadSkyShader;
 		c8 scriptDir [ 64 ];
 	};
 
@@ -492,6 +492,8 @@ namespace quake3
 					break;
 				case NOISE:
 					y = Noiser::get();
+					break;
+				default:
 					break;
 			}
 
