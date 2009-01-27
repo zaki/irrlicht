@@ -7,6 +7,7 @@
 
 #include "IReferenceCounted.h"
 #include "irrArray.h"
+#include "irrString.h"
 #include "vector3d.h"
 #include "dimension2d.h"
 #include "SColor.h"
@@ -83,6 +84,9 @@ namespace scene
 		//! Transparent scene nodes, drawn after shadow nodes. They are sorted from back to front and drawn in that order.
 		ESNRP_TRANSPARENT,
 
+		//! Transparent effect scene nodes, drawn after Transparent nodes. They are sorted from back to front and drawn in that order.
+		ESNRP_TRANSPARENT_EFFECT,
+
 		//! Never used, value specifing how much parameters there are.
 		ESNRP_COUNT
 	};
@@ -117,7 +121,7 @@ namespace scene
 
 	namespace quake3
 	{
-		class SShader;
+		struct IShader;
 	} // end namespace quake3
 
 	//! The Scene Manager manages scene nodes, mesh recources, cameras and all the other stuff.
@@ -157,7 +161,7 @@ namespace scene
 		 *  <TR>
 		 *    <TD>3D Studio (.3ds)</TD>
 		 *    <TD>Loader for 3D-Studio files which lots of 3D packages
-		 *      are able to export. Only static meshes are currently
+		 *      are able to export.  Only static meshes are currently
 		 *      supported by this importer. </TD>
 		 *  </TR>
 		 *  <TR>
@@ -171,7 +175,7 @@ namespace scene
 		 *      architecture and calculating lighting. Irrlicht can
 		 *      directly import .csm files thanks to the IrrCSM library
 		 *      created by Saurav Mohapatra which is now integrated
-		 *      directly in Irrlicht. If you are using this loader,
+		 *      directly in Irrlicht.  If you are using this loader,
 		 *      please note that you'll have to set the path of the
 		 *      textures before loading .csm files. You can do this
 		 *      using
@@ -181,51 +185,52 @@ namespace scene
 		 *  <TR>
 		 *    <TD>COLLADA (.dae, .xml)</TD>
 		 *    <TD>COLLADA is an open Digital Asset Exchange Schema for
-		 *      the interactive 3D industry. There are exporters and
-		 *      importers for this format available for most of the
-		 *      big 3d packagesat http://collada.org. Irrlicht can
-		 *      import COLLADA files by using the
-		 *      ISceneManager::getMesh() method. COLLADA files need
-		 *      not contain only one single mesh but multiple meshes
-		 *      and a whole scene setup with lights, cameras and mesh
-		 *      instances, this loader can set up a scene as
-		 *      described by the COLLADA file instead of loading and
-		 *      returning one single mesh. By default, this loader
-		 *      behaves like the other loaders and does not create
-		 *      instances, but it can be switched into this mode by
-		 *      using
-		 *      SceneManager->getParameters()->setParameter(COLLADA_CREATE_SCENE_INSTANCES, true);
-		 *      Created scene nodes will be named as the names of the
-		 *      nodes in the COLLADA file. The returned mesh is just
-		 *      a dummy object in this mode. Meshes included in the
-		 *      scene will be added into the scene manager with the
-		 *      following naming scheme:
-		 *      path/to/file/file.dea#meshname. The loading of such
-		 *      meshes is logged. Currently, this loader is able to
-		 *      create meshes (made of only polygons), lights, and
-		 *      cameras. Materials and animations are currently not
-		 *      supported but this will change with future releases.
+		 *        the interactive 3D industry.  There are exporters and
+		 *        importers for this format available for most of the
+		 *        big 3d packagesat http://collada.org. Irrlicht can
+		 *        import COLLADA files by using the
+		 *        ISceneManager::getMesh() method. COLLADA files need
+		 *        not contain only one single mesh but multiple meshes
+		 *        and a whole scene setup with lights, cameras and mesh
+		 *        instances, this loader can set up a scene as
+		 *        described by the COLLADA file instead of loading and
+		 *        returning one single mesh. By default, this loader
+		 *        behaves like the other loaders and does not create
+		 *        instances, but it can be switched into this mode by
+		 *        using
+		 *        SceneManager->getParameters()->setParameter(COLLADA_CREATE_SCENE_INSTANCES, true);
+		 *        Created scene nodes will be named as the names of the
+		 *        nodes in the COLLADA file. The returned mesh is just
+		 *        a dummy object in this mode. Meshes included in the
+		 *        scene will be added into the scene manager with the
+		 *        following naming scheme:
+		 *        path/to/file/file.dea#meshname. The loading of such
+		 *        meshes is logged.  Currently, this loader is able to
+		 *        create meshes (made of only polygons), lights, and
+		 *        cameras. Materials and animations are currently not
+		 *        supported but this will change with future releases.
 		 *    </TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>Delgine DeleD (.dmf)</TD>
 		 *    <TD>DeleD (delgine.com) is a 3D editor and level-editor
-		 *      combined into one and is specifically designed for 3D
-		 *      game-development. With this loader, it is possible to
-		 *      directly load all geometry is as well as textures and
-		 *      lightmaps from .dmf files. To set texture and
-		 *      material paths, see scene::DMF_USE_MATERIALS_DIRS and
-		 *      scene::DMF_TEXTURE_PATH. It is also possible to flip
-		 *      the alpha texture by setting
-		 *      scene::DMF_FLIP_ALPHA_TEXTURES to true and to set the
-		 *      material transparent reference value by setting
-		 *      scene::DMF_ALPHA_CHANNEL_REF to a float between 0 and
-		 *      1. The loader is based on Salvatore Russo's .dmf
-		 *      loader, I just changed some parts of it. Thanks to
-		 *      Salvatore for his work and for allowing me to use his
-		 *      code in Irrlicht and put it under Irrlicht's license.
-		 *      For newer and more enchanced versions of the loader,
-		 *      take a look at delgine.com.</TD>
+		 *        combined into one and is specifically designed for 3D
+		 *        game-development. With this loader, it is possible to
+		 *        directly load all geometry is as well as textures and
+		 *        lightmaps from .dmf files.  To set texture and
+		 *        material paths, see scene::DMF_USE_MATERIALS_DIRS and
+		 *        scene::DMF_TEXTURE_PATH. It is also possible to flip
+		 *        the alpha texture by setting
+		 *        scene::DMF_FLIP_ALPHA_TEXTURES to true and to set the
+		 *        material transparent reference value by setting
+		 *        scene::DMF_ALPHA_CHANNEL_REF to a float between 0 and
+		 *        1. The loader is based on Salvatore Russo's .dmf
+		 *        loader, I just changed some parts of it. Thanks to
+		 *        Salvatore for his work and for allowing me to use his
+		 *        code in Irrlicht and put it under Irrlicht's license.
+		 *        For newer and more enchanced versions of the loader,
+		 *        take a look at delgine.com.
+		 *    </TD>
 		 *  </TR>
 		 *  <TR>
 		 *    <TD>DirectX (.x)</TD>
@@ -234,7 +239,7 @@ namespace scene
 		 *      and there are several tools for them available, e.g.
 		 *      the Maya exporter included in the DX SDK.
 		 *      .x files can include skeletal animations and Irrlicht
-		 *      is able to play and display them. Currently, Irrlicht
+		 *      is able to play and display them.  Currently, Irrlicht
 		 *      only supports uncompressed .x files.</TD>
 		 *  </TR>
 		 *  <TR>
@@ -249,82 +254,83 @@ namespace scene
 		 *    <TD>.MS3D files contain models and sometimes skeletal
 		 *      animations from the Milkshape 3D modeling and animation
 		 *      software. This importer for Irrlicht can display and/or
-		 *      animate these files. </TD>
+		 *      animate these files.  </TD>
 		 *  </TR>
 		 *  <TR>
-		 *    <TD>My3D (.my3d)</TD>
-		 *    <TD>.my3D is a flexible 3D file format. The My3DTools
-		 *      contains plug-ins to export .my3D files from several
-		 *      3D packages. With this built-in importer, Irrlicht
-		 *      can read and display those files directly. This
-		 *      loader was written by Zhuck Dimitry who also created
-		 *      the whole My3DTools package. If you are using this
-		 *      loader, please note that you can set the path of the
-		 *      textures before loading .my3d files. You can do this
-		 *      using
-		 *      SceneManager-&gt;getParameters()-&gt;setParameter(scene::MY3D_TEXTURE_PATH,
-		 *      &quot;path/to/your/textures&quot;);</TD>
-		 *  </TR>
-		 *  <TR>
-		 *    <TD>OCT (.oct)</TD>
-		 *    <TD>The oct file format contains 3D geometry and
-		 *      lightmaps and can be loaded directly by Irrlicht. OCT
-		 *      files<br> can be created by FSRad, Paul Nette's
-		 *      radiosity processor or exported from Blender using
-		 *      OCTTools which can be found in the exporters/OCTTools
-		 *      directory of the SDK. Thanks to Murphy McCauley for
-		 *      creating all this.</TD>
-		 *  </TR>
-		 *  <TR>
-		 *    <TD>OGRE Meshes (.mesh)</TD>
-		 *    <TD>Ogre .mesh files contain 3D data for the OGRE 3D
-		 *      engine. Irrlicht can read and display them directly
-		 *      with this importer. To define materials for the mesh,
-		 *      copy a .material file named like the corresponding
-		 *      .mesh file where the .mesh file is. (For example
-		 *      ogrehead.material for ogrehead.mesh). Thanks to
-		 *      Christian Stehno who wrote and contributed this
-		 *      loader.</TD>
-		 *  </TR>
-		 *  <TR>
-		 *    <TD>Pulsar LMTools (.lmts)</TD>
-		 *    <TD>LMTools is a set of tools (Windows &amp; Linux) for
-		 *      creating lightmaps. Irrlicht can directly read .lmts
-		 *      files thanks to<br> the importer created by Jonas
-		 *      Petersen. If you are using this loader, please note
-		 *      that you can set the path of the textures before
-		 *      loading .lmts files. You can do this using
-		 *      SceneManager-&gt;getParameters()-&gt;setParameter(scene::LMTS_TEXTURE_PATH,
-		 *      &quot;path/to/your/textures&quot;);
-		 *      Notes for<br> this version of the loader:<br>
-		 *      - It does not recognise/support user data in the
-		 *        *.lmts files.<br>
-		 *      - The TGAs generated by LMTools don't work in
-		 *        Irrlicht for some reason (the textures are upside
-		 *        down). Opening and resaving them in a graphics app
-		 *        will solve the problem.</TD>
-		 *  </TR>
-		 *  <TR>
-		 *    <TD>Quake 3 levels (.bsp)</TD>
-		 *    <TD>Quake 3 is a popular game by IDSoftware, and .pk3
-		 *      files contain .bsp files and textures/lightmaps
-		 *      describing huge prelighted levels. Irrlicht can read
-		 *      .pk3 and .bsp files directly and thus render Quake 3
-		 *      levels directly. Written by Nikolaus Gebhardt
-		 *      enhanced by Dean P. Macri with the curved surfaces
-		 *      feature.</TD>
-		 *  </TR>
-		 *  <TR>
-		 *    <TD>Quake 2 models (.md2)</TD>
-		 *    <TD>Quake 2 models are characters with morph target
-		 *      animation. Irrlicht can read, display and animate
-		 *      them directly with this importer. </TD>
-		 *  </TR>
-		 * </TABLE>
+		 *  <TD>My3D (.my3d)</TD>
+		 *      <TD>.my3D is a flexible 3D file format. The My3DTools
+		 *        contains plug-ins to export .my3D files from several
+		 *        3D packages. With this built-in importer, Irrlicht
+		 *        can read and display those files directly. This
+		 *        loader was written by Zhuck Dimitry who also created
+		 *        the whole My3DTools package. If you are using this
+		 *        loader, please note that you can set the path of the
+		 *        textures before loading .my3d files.  You can do this
+		 *        using
+		 *        SceneManager-&gt;getParameters()-&gt;setParameter(scene::MY3D_TEXTURE_PATH,
+		 *        &quot;path/to/your/textures&quot;);
+		 *        </TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>OCT (.oct)</TD>
+		 *      <TD>The oct file format contains 3D geometry and
+		 *        lightmaps and can be loaded directly by Irrlicht. OCT
+		 *        files<br> can be created by FSRad, Paul Nette's
+		 *        radiosity processor or exported from Blender using
+		 *        OCTTools which can be found in the exporters/OCTTools
+		 *        directory of the SDK. Thanks to Murphy McCauley for
+		 *        creating all this.</TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>OGRE Meshes (.mesh)</TD>
+		 *      <TD>Ogre .mesh files contain 3D data for the OGRE 3D
+		 *        engine. Irrlicht can read and display them directly
+		 *        with this importer. To define materials for the mesh,
+		 *        copy a .material file named like the corresponding
+		 *        .mesh file where the .mesh file is. (For example
+		 *        ogrehead.material for ogrehead.mesh). Thanks to
+		 *        Christian Stehno who wrote and contributed this
+		 *        loader.</TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Pulsar LMTools (.lmts)</TD>
+		 *      <TD>LMTools is a set of tools (Windows &amp; Linux) for
+		 *        creating lightmaps.  Irrlicht can directly read .lmts
+		 *        files thanks to<br> the importer created by Jonas
+		 *        Petersen. If you are using this loader, please note
+		 *        that you can set the path of the textures before
+		 *        loading .lmts files.  You can do this using
+		 *        SceneManager-&gt;getParameters()-&gt;setParameter(scene::LMTS_TEXTURE_PATH,
+		 *        &quot;path/to/your/textures&quot;);
+		 *        Notes for<br> this version of the loader:<br>
+		 *        - It does not recognise/support user data in the
+		 *          *.lmts files.<br>
+		 *        - The TGAs generated by LMTools don't work in
+		 *          Irrlicht for some reason (the textures are upside
+		 *          down). Opening and resaving them in a graphics app
+		 *          will solve the problem.</TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Quake 3 levels (.bsp)</TD>
+		 *      <TD>Quake 3 is a popular game by IDSoftware, and .pk3
+		 *        files contain .bsp files and textures/lightmaps
+		 *        describing huge prelighted levels. Irrlicht can read
+		 *        .pk3 and .bsp files directly and thus render Quake 3
+		 *        levels directly. Written by Nikolaus Gebhardt
+		 *        enhanced by Dean P. Macri with the curved surfaces
+		 *        feature. </TD>
+		 *    </TR>
+		 *    <TR>
+		 *      <TD>Quake 2 models (.md2)</TD>
+		 *      <TD>Quake 2 models are characters with morph target
+		 *        animation. Irrlicht can read, display and animate
+		 *        them directly with this importer. </TD>
+		 *    </TR>
+		 *  </TABLE>
 		 *
-		 * To load and display a mesh quickly, just do this:
-		 * \code
-		 * SceneManager->addAnimatedMeshSceneNode(
+		 *  To load and display a mesh quickly, just do this:
+		 *  \code
+		 *  SceneManager->addAnimatedMeshSceneNode(
 		 *		SceneManager->getMesh("yourmesh.3ds"));
 		 * \endcode
 		 * If you would like to implement and add your own file format loader to Irrlicht,
@@ -333,13 +339,13 @@ namespace scene
 		 * \return Null if failed, otherwise pointer to the mesh.
 		 * This pointer should not be dropped. See IReferenceCounted::drop() for more information.
 		 **/
-		virtual IAnimatedMesh* getMesh(const c8* filename) = 0;
+		virtual IAnimatedMesh* getMesh(const core::string<c16>& filename) = 0;
 
 		//! Get pointer to an animateable mesh. Loads the file if not loaded already.
 		/** Works just as getMesh(const char* filename). If you want to
 		remove a loaded mesh from the cache again, use removeMesh().
 		\param file File handle of the mesh to load.
-		\return 0 if failed and pointer to the mesh if successful.
+		\return NULL if failed and pointer to the mesh if successful.
 		This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual IAnimatedMesh* getMesh(io::IReadFile* file) = 0;
@@ -364,8 +370,8 @@ namespace scene
 		/** Example Usage:
 			scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
 						32, 32, //Subdivide U/V
-						video::SColor(0, 180, 180, 180), //foot color
-						video::SColor(0, 0, 0, 0) //tail color
+						video::SColor(0, 180, 180, 180),   //foot color
+						video::SColor(0, 0, 0, 0)         //tail color
 						);
 			if (n)
 			{
@@ -529,52 +535,49 @@ namespace scene
 			const core::vector3df& lookat = core::vector3df(0,0,100), s32 id=-1) = 0;
 
 		//! Adds a maya style user controlled camera scene node to the scene graph.
-		/** This is a standard camera with an animator that provides
-		mouse control similar to camera in the 3D Software Maya.
-		\param parent: Parent scene node of the camera. Can be null.
-		\param rotateSpeed: Rotation speed of the camera.
-		\param zoomSpeed: Zoom speed of the camera.
-		\param translationSpeed: Translation speed of the camera.
-		\param id: id of the camera. This id can be used to identify the camera.
-		\return Pointer to the interface of the camera if successful, otherwise 0.
-		This pointer should not be dropped. See
-		IReferenceCounted::drop() for more information. */
+		/** This is a standard camera with an animator that provides mouse control similar
+		 to camera in the 3D Software Maya by Alias Wavefront.
+		 \param parent: Parent scene node of the camera. Can be null.
+		 \param rotateSpeed: Rotation speed of the camera.
+		 \param zoomSpeed: Zoom speed of the camera.
+		 \param translationSpeed: TranslationSpeed of the camera.
+		 \param id: id of the camera. This id can be used to identify the camera.
+		 \return Returns a pointer to the interface of the camera if successful, otherwise 0.
+		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
 			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
 			f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
 
 		//! Adds a camera scene node with an animator which provides mouse and keyboard control appropriate for first person shooters (FPS).
-		/** This FPS camera is intended to provide a demonstration of a
-		camera that behaves like a typical First Person Shooter. It is
-		useful for simple demos and prototyping but is not intended to
-		provide a full solution for a production quality game. It binds
-		the camera scene node rotation to the look-at target; @see
-		ICameraSceneNode::bindTargetAndRotation().  With this camera,
-		you look with the mouse, and move with cursor keys. If you want
-		to change the key layout, you can specify your own keymap. For
-		example to make the camera be controlled by the cursor keys AND
-		the keys W,A,S, and D, do something like this:
-		\code
-		SKeyMap keyMap[8];
-		keyMap[0].Action = EKA_MOVE_FORWARD;
-		keyMap[0].KeyCode = KEY_UP;
-		keyMap[1].Action = EKA_MOVE_FORWARD;
-		keyMap[1].KeyCode = KEY_KEY_W;
+		/** This FPS camera is intended to provide a demonstration of a camera that behaves
+		 like a typical First Person Shooter.  It is useful for simple demos and prototyping but is not 
+		 intended to provide a full solution for a production quality game. It binds the camera scene node 
+		 rotation to the look-at target; @see ICameraSceneNode::bindTargetAndRotation().
+		 With this camera, you look with the mouse, and move with cursor keys. If you want to 
+		 change the key layout, you can specify your own keymap. For example to make the camera
+		 be controlled by the cursor keys AND the keys W,A,S, and D, do something
+		 like this:
+		 \code
+		 SKeyMap keyMap[8];
+		 keyMap[0].Action = EKA_MOVE_FORWARD;
+		 keyMap[0].KeyCode = KEY_UP;
+		 keyMap[1].Action = EKA_MOVE_FORWARD;
+		 keyMap[1].KeyCode = KEY_KEY_W;
 
-		keyMap[2].Action = EKA_MOVE_BACKWARD;
-		keyMap[2].KeyCode = KEY_DOWN;
-		keyMap[3].Action = EKA_MOVE_BACKWARD;
-		keyMap[3].KeyCode = KEY_KEY_S;
+		 keyMap[2].Action = EKA_MOVE_BACKWARD;
+		 keyMap[2].KeyCode = KEY_DOWN;
+		 keyMap[3].Action = EKA_MOVE_BACKWARD;
+		 keyMap[3].KeyCode = KEY_KEY_S;
 
-		keyMap[4].Action = EKA_STRAFE_LEFT;
-		keyMap[4].KeyCode = KEY_LEFT;
-		keyMap[5].Action = EKA_STRAFE_LEFT;
-		keyMap[5].KeyCode = KEY_KEY_A;
+		 keyMap[4].Action = EKA_STRAFE_LEFT;
+		 keyMap[4].KeyCode = KEY_LEFT;
+		 keyMap[5].Action = EKA_STRAFE_LEFT;
+		 keyMap[5].KeyCode = KEY_KEY_A;
 
-		keyMap[6].Action = EKA_STRAFE_RIGHT;
-		keyMap[6].KeyCode = KEY_RIGHT;
-		keyMap[7].Action = EKA_STRAFE_RIGHT;
-		keyMap[7].KeyCode = KEY_KEY_D;
+		 keyMap[6].Action = EKA_STRAFE_RIGHT;
+		 keyMap[6].KeyCode = KEY_RIGHT;
+		 keyMap[7].Action = EKA_STRAFE_RIGHT;
+		 keyMap[7].KeyCode = KEY_KEY_D;
 
 		camera = sceneManager->addCameraSceneNodeFPS(0, 100, 500, -1, keyMap, 8);
 		\endcode
@@ -602,7 +605,7 @@ namespace scene
 		This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
-			f32 rotateSpeed = 100.0f, f32 moveSpeed = .5f, s32 id=-1,
+			f32 rotateSpeed = 100.0f, f32 moveSpeed = 0.5f, s32 id=-1,
 			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
 			f32 jumpSpeed = 0.f, bool invertMouse=false) = 0;
 
@@ -682,7 +685,7 @@ namespace scene
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ISceneNode* addSkyDomeSceneNode(video::ITexture* texture,
 			u32 horiRes=16, u32 vertRes=8,
-			f64 texturePercentage=0.9, f64 spherePercentage=2.0,
+			f32 texturePercentage=0.9, f32 spherePercentage=2.0,f32 radius = 1000.f,
 			ISceneNode* parent=0, s32 id=-1) = 0;
 
 		//! Adds a particle system scene node to the scene graph.
@@ -761,7 +764,7 @@ namespace scene
 		not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITerrainSceneNode* addTerrainSceneNode(
-				const c8* heightMapFileName,
+			const core::string<c16>& heightMapFileName,
 				ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0.0f,0.0f,0.0f),
 			const core::vector3df& rotation = core::vector3df(0.0f,0.0f,0.0f),
@@ -812,7 +815,7 @@ namespace scene
 		/** A Quake3 Scene renders multiple meshes for a specific HighLanguage Shader (Quake3 Style )
 		\return Pointer to the quake3 scene node if successful, otherwise NULL.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual ISceneNode* addQuake3SceneNode(IMeshBuffer* meshBuffer, const quake3::SShader * shader,
+		virtual IMeshSceneNode* addQuake3SceneNode(IMeshBuffer* meshBuffer, const quake3::IShader * shader,
 												ISceneNode* parent=0, s32 id=-1
 												) = 0;
 
@@ -840,11 +843,11 @@ namespace scene
 			ISceneNode* parent = 0, const core::vector3df& position = core::vector3df(0,0,0),
 			s32 id=-1) = 0;
 
-		//! Adds a text scene node, which uses billboards. The node, and the text on it, will scale with distance.
+		//! Adds a text scene node, which uses billboards.  The node, and the text on it, will scale with distance.
 		/**
 		\param font The font to use on the billboard. Pass 0 to use the GUI environment's default font.
 		\param text The text to display on the billboard.
-		\param parent The billboard's parent. Pass 0 to use the root scene node.
+		\param parent The billboard's parent.  Pass 0 to use the root scene node.
 		\param size The billboard's width and height.
 		\param position The billboards position relative to its parent.
 		\param id: An id of the node. This id can be used to identify the node.
@@ -885,7 +888,7 @@ namespace scene
 		specified some invalid parameters or that a mesh with that name already
 		exists. If successful, a pointer to the mesh is returned.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addHillPlaneMesh(const c8* name,
+		virtual IAnimatedMesh* addHillPlaneMesh(const core::string<c16>& name,
 			const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 			video::SMaterial* material = 0, f32 hillHeight = 0.0f,
 			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(0.0f, 0.0f),
@@ -914,7 +917,7 @@ namespace scene
 		specified some invalid parameters, that a mesh with that name already
 		exists, or that a texture could not be found. If successful, a pointer to the mesh is returned.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addTerrainMesh(const c8* meshname,
+		virtual IAnimatedMesh* addTerrainMesh(const core::string<c16>& meshname,
 			video::IImage* texture, video::IImage* heightmap,
 			const core::dimension2d<f32>& stretchSize = core::dimension2d<f32>(10.0f,10.0f),
 			f32 maxHeight=200.0f,
@@ -932,7 +935,7 @@ namespace scene
 		\param width1 Diameter of the cone's base, should be not smaller than the cylinder's diameter
 		\return Pointer to the arrow mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addArrowMesh(const c8* name,
+		virtual IAnimatedMesh* addArrowMesh(const core::string<c16>& name,
 				video::SColor vtxColor0=0xFFFFFFFF,
 				video::SColor vtxColor1=0xFFFFFFFF,
 				u32 tesselationCylinder=4, u32 tesselationCone=8,
@@ -946,7 +949,7 @@ namespace scene
 		\param polyCountY Number of quads used for the vertical tiling
 		\return Pointer to the sphere mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addSphereMesh(const c8* name,
+		virtual IAnimatedMesh* addSphereMesh(const c16* name,
 				f32 radius=5.f, u32 polyCountX = 16,
 				u32 polyCountY = 16) = 0;
 
@@ -1354,7 +1357,7 @@ namespace scene
 		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
 		Otherwise, simply specify 0 as this parameter.
 		\return True if successful. */
-		virtual bool saveScene(const c8* filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool saveScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
 
 		//! Saves the current scene into a file.
 		/** Scene nodes with the option isDebugObject set to true are not being saved.
@@ -1379,7 +1382,7 @@ namespace scene
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
 		\return True if successful. */
-		virtual bool loadScene(const c8* filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool loadScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can

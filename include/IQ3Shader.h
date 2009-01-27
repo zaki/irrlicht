@@ -18,7 +18,7 @@ namespace scene
 namespace quake3
 {
 
-	static const core::stringc irrEmptyStringc("");
+	static core::stringc irrEmptyStringc("");
 
 	//! Hold the different Mesh Types used for getMesh
 	enum eQ3MeshIndex
@@ -26,47 +26,63 @@ namespace quake3
 		E_Q3_MESH_GEOMETRY = 0,
 		E_Q3_MESH_ITEMS,
 		E_Q3_MESH_BILLBOARD,
+		E_Q3_MESH_FOG,
+		E_Q3_MESH_UNRESOLVED,
 		E_Q3_MESH_SIZE
 	};
 
-	// we are not using gamma, so quake3 is very dark.
-	// define the standard multiplication for lightmaps and vertex colors
-	const video::E_MATERIAL_TYPE defaultMaterialType = video::EMT_LIGHTMAP_M4;
-	const video::E_MODULATE_FUNC defaultModulate = video::EMFN_MODULATE_4X;
+	/*! used to customize Quake3 BSP Loader
+	*/
+
+	struct Q3LevelLoadParameter
+	{
+		Q3LevelLoadParameter ()
+			:defaultLightMapMaterial ( video::EMT_LIGHTMAP_M4 ),
+			defaultModulate ( video::EMFN_MODULATE_4X ),
+			patchTesselation ( 8 ),
+			verbose ( 0 ),
+			startTime ( 0 ), endTime ( 0 ),
+			mergeShaderBuffer ( 1 ),
+			cleanUnResolvedMeshes ( 1 ),
+			loadAllShaders ( 0 ),
+			loadSkyShader ( 0 ),
+			swapLump ( 0 ),
+			alpharef ( 1 ),
+	#ifdef __BIG_ENDIAN__
+			swapHeader ( 1 )
+	#else
+			swapHeader ( 0 )
+	#endif
+			{
+				memcpy ( scriptDir, "scripts\x0", 8 );
+			}
+
+		video::E_MATERIAL_TYPE defaultLightMapMaterial;
+		video::E_MODULATE_FUNC defaultModulate;
+		s32 patchTesselation;
+		s32 verbose;
+		u32 startTime;
+		u32 endTime;
+		s32 mergeShaderBuffer;
+		s32 cleanUnResolvedMeshes;
+		s32 alpharef;
+		s32 swapLump;
+		s32 swapHeader;
+		s32 loadAllShaders;
+		s32 loadSkyShader;
+		c8 scriptDir [ 64 ];
+	};
 
 	// some useful typedefs
 	typedef core::array< core::stringc > tStringList;
 	typedef core::array< video::ITexture* > tTexArray;
 
-	// name = "a b c .."
-	struct SVariable
-	{
-		core::stringc name;
-		core::stringc content;
-
-		void clear ()
-		{
-			name = "";
-			content = "";
-		}
-
-		s32 isValid () const
-		{
-			return name.size();
-		}
-
-		bool operator == ( const SVariable &other ) const
-		{
-			return name == other.name;
-		}
-	};
-
 	// string helper.. TODO: move to generic files
-	inline s32 isEqual ( const core::stringc &string, u32 &pos, const c8 *list[], u32 listSize )
+	inline s16 isEqual ( const core::stringc &string, u32 &pos, const c8 *list[], u16 listSize )
 	{
 		const char * in = string.c_str () + pos;
 
-		for ( u32 i = 0; i != listSize; ++i )
+		for ( u16 i = 0; i != listSize; ++i )
 		{
 			if (string.size() < pos)
 				return -2;
@@ -79,7 +95,7 @@ namespace quake3
 				continue;
 
 			pos += len + 1;
-			return (s32) i;
+			return (s16) i;
 		}
 		return -2;
 	}
@@ -93,6 +109,7 @@ namespace quake3
 		return value;
 	}
 
+	//! get a quake3 vector translated to irrlicht position (x,-z,y )
 	inline core::vector3df getAsVector3df ( const core::stringc &string, u32 &pos )
 	{
 		core::vector3df v;
@@ -135,31 +152,33 @@ namespace quake3
 	//! A blend function for a q3 shader.
 	struct SBlendFunc
 	{
-		SBlendFunc ()
-			: type ( video::EMT_SOLID ), modulate ( defaultModulate ), param ( 0.f ),
-			isTransparent ( false ) {}
+		SBlendFunc ( video::E_MODULATE_FUNC mod )
+			: type ( video::EMT_SOLID ), modulate ( mod ),
+				param0( 0.f ),
+			isTransparent ( 0 ) {}
 
 		video::E_MATERIAL_TYPE type;
 		video::E_MODULATE_FUNC modulate;
 
-		f32 param;
-		bool isTransparent;
+		f32 param0;
+		u32 isTransparent;
 	};
 
 	// parses the content of Variable cull
-	inline bool isDisabled ( const core::stringc &string )
+	inline bool getCullingFunction ( const core::stringc &cull )
 	{
-		if ( string.size() == 0 )
+		if ( cull.size() == 0 )
 			return true;
 
 		bool ret = true;
-		static const c8 * funclist[] = { "none", "disable" };
+		static const c8 * funclist[] = { "none", "disable", "twosided" };
 
 		u32 pos = 0;
-		switch ( isEqual ( string, pos, funclist, 2 ) )
+		switch ( isEqual ( cull, pos, funclist, 3 ) )
 		{
 			case 0:
 			case 1:
+			case 2:
 				ret = false;
 				break;
 		}
@@ -168,12 +187,13 @@ namespace quake3
 
 	// parses the content of Variable depthfunc
 	// return a z-test
-	inline u32 getDepthFunction ( const core::stringc &string )
+	inline u8 getDepthFunction ( const core::stringc &string )
 	{
-		if ( string.size() == 0 )
-			return 1;
+		u8 ret = video::EMDF_DEPTH_LESS_EQUAL;
 
-		u32 ret = 1;
+		if ( string.size() == 0 )
+			return ret;
+
 		static const c8 * funclist[] = { "lequal","equal" };
 
 		u32 pos = 0;
@@ -189,7 +209,17 @@ namespace quake3
 	}
 
 
-	// parses the content of Variable blendfunc,alphafunc
+	/*!
+		parses the content of Variable blendfunc,alphafunc
+		it also make a hint for rendering as transparent or solid node.
+
+		we assume a typical quake scene would look like this..
+		1) Big Static Mesh ( solid )
+		2) static scene item ( may use transparency ) but rendered in the solid pass
+		3) additional transparency item in the transparent pass
+
+		it's not 100% accurate! it just empirical..
+	*/
 	inline static void getBlendFunc ( const core::stringc &string, SBlendFunc &blendfunc )
 	{
 		if ( string.size() == 0 )
@@ -215,7 +245,7 @@ namespace quake3
 			"blend",
 
 			"ge128",
-			"gt0"
+			"gt0",
 		};
 
 
@@ -230,20 +260,32 @@ namespace quake3
 
 		switch ( srcFact )
 		{
+			case video::EBF_ZERO:
+				switch ( dstFact )
+				{
+					// gl_zero gl_src_color == gl_dst_color gl_zero
+					case video::EBF_SRC_COLOR:
+						blendfunc.type = video::EMT_ONETEXTURE_BLEND;
+						blendfunc.param0 = video::pack_texureBlendFunc ( video::EBF_DST_COLOR, video::EBF_ZERO, blendfunc.modulate );
+						blendfunc.isTransparent = 1;
+						resolved = 1;
+						break;
+				} break;
+
 			case video::EBF_ONE:
 				switch ( dstFact )
 				{
 					// gl_one gl_zero
 					case video::EBF_ZERO:
 						blendfunc.type = video::EMT_SOLID;
-						blendfunc.isTransparent = false;
+						blendfunc.isTransparent = 0;
 						resolved = 1;
 						break;
 
 					// gl_one gl_one
 					case video::EBF_ONE:
 						blendfunc.type = video::EMT_TRANSPARENT_ADD_COLOR;
-						blendfunc.isTransparent = true;
+						blendfunc.isTransparent = 1;
 						resolved = 1;
 						break;
 				} break;
@@ -254,8 +296,8 @@ namespace quake3
 					// gl_src_alpha gl_one_minus_src_alpha
 					case video::EBF_ONE_MINUS_SRC_ALPHA:
 						blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-						blendfunc.param = 1.f / 255.f;
-						blendfunc.isTransparent = true;
+						blendfunc.param0 = 1.f/255.f;
+						blendfunc.isTransparent = 1;
 						resolved = 1;
 						break;
 				} break;
@@ -263,74 +305,133 @@ namespace quake3
 			case 11:
 				// add
 				blendfunc.type = video::EMT_TRANSPARENT_ADD_COLOR;
-				blendfunc.isTransparent = true;
+				blendfunc.isTransparent = 1;
 				resolved = 1;
 				break;
 			case 12:
-				// filter = gl_dst_color gl_zero
+				// filter = gl_dst_color gl_zero or gl_zero gl_src_color
 				blendfunc.type = video::EMT_ONETEXTURE_BLEND;
-				blendfunc.param = video::pack_texureBlendFunc ( video::EBF_DST_COLOR, video::EBF_ZERO, defaultModulate );
-				blendfunc.isTransparent = false;
+				blendfunc.param0 = video::pack_texureBlendFunc ( video::EBF_DST_COLOR, video::EBF_ZERO, blendfunc.modulate );
+				blendfunc.isTransparent = 1;
 				resolved = 1;
 				break;
 			case 13:
-				// blend
+				// blend = gl_src_alpha gl_one_minus_src_alpha
 				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-				blendfunc.param = 1.f / 255.f;
-				blendfunc.isTransparent = true;
+				blendfunc.param0 = 1.f/255.f;
+				blendfunc.isTransparent = 1;
 				resolved = 1;
 				break;
 			case 14:
 				// alphafunc ge128
-				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-				blendfunc.param = 0.5f;
-				blendfunc.isTransparent = true;
+				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				blendfunc.param0 = 0.5f;
+				blendfunc.isTransparent = 1;
 				resolved = 1;
 				break;
 			case 15:
 				// alphafunc gt0
-				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF;
-				blendfunc.param = 1.f / 255.f;
-				blendfunc.isTransparent = true;
+				blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				blendfunc.param0 = 1.f / 255.f;
+				blendfunc.isTransparent = 1;
 				resolved = 1;
 				break;
+
 		}
 
 		// use the generic blender
 		if ( 0 == resolved )
 		{
 			blendfunc.type = video::EMT_ONETEXTURE_BLEND;
-			blendfunc.param = video::pack_texureBlendFunc (
+			blendfunc.param0 = video::pack_texureBlendFunc (
 					(video::E_BLEND_FACTOR) srcFact,
 					(video::E_BLEND_FACTOR) dstFact,
 					blendfunc.modulate);
 
-			if (srcFact == video::EBF_SRC_COLOR && dstFact == video::EBF_ZERO) 
-			{
-				blendfunc.isTransparent = 0;
-			}
-			else
-			{
-				blendfunc.isTransparent = true;
-			}
-
+			blendfunc.isTransparent = 1;
 		}
 	}
+
+	// random noise [-1;1]
+	struct Noiser
+	{
+		static f32 get ()
+		{
+			static u32 RandomSeed = 0x69666966;
+			RandomSeed = (RandomSeed * 3631 + 1);
+
+			f32 value = ( (f32) (RandomSeed & 0x7FFF ) * (1.0f / (f32)(0x7FFF >> 1) ) ) - 1.f;
+			return value;
+		}
+	};
+
+	enum eQ3ModifierFunction
+	{
+		TCMOD				= 0,
+		DEFORMVERTEXES		= 1,
+		RGBGEN				= 2,
+		TCGEN				= 3,
+		MAP					= 4,
+		ALPHAGEN			= 5,
+
+		FUNCTION2			= 0x10,
+		SCROLL				= FUNCTION2 + 1,
+		SCALE				= FUNCTION2 + 2,
+		ROTATE				= FUNCTION2 + 3,
+		STRETCH				= FUNCTION2 + 4,
+		TURBULENCE			= FUNCTION2 + 5,
+		WAVE				= FUNCTION2 + 6,
+
+		IDENTITY			= FUNCTION2 + 7,
+		VERTEX				= FUNCTION2 + 8,
+		TEXTURE				= FUNCTION2 + 9,
+		LIGHTMAP			= FUNCTION2 + 10,
+		ENVIRONMENT			= FUNCTION2 + 11,
+		$LIGHTMAP			= FUNCTION2 + 12,
+		BULGE				= FUNCTION2 + 13,
+		AUTOSPRITE			= FUNCTION2 + 14,
+		AUTOSPRITE2			= FUNCTION2 + 15,
+		TRANSFORM			= FUNCTION2 + 16,
+		EXACTVERTEX			= FUNCTION2 + 17,
+		CONSTANT			= FUNCTION2 + 18,
+		LIGHTINGSPECULAR	= FUNCTION2 + 19,
+		MOVE				= FUNCTION2 + 20,
+		NORMAL				= FUNCTION2 + 21,
+		IDENTITYLIGHTING	= FUNCTION2 + 22,
+
+		WAVE_MODIFIER_FUNCTION	= 0x30,
+		SINUS				= WAVE_MODIFIER_FUNCTION + 1,
+		COSINUS				= WAVE_MODIFIER_FUNCTION + 2,
+		SQUARE				= WAVE_MODIFIER_FUNCTION + 3,
+		TRIANGLE			= WAVE_MODIFIER_FUNCTION + 4,
+		SAWTOOTH			= WAVE_MODIFIER_FUNCTION + 5,
+		SAWTOOTH_INVERSE	= WAVE_MODIFIER_FUNCTION + 6,
+		NOISE				= WAVE_MODIFIER_FUNCTION + 7,
+
+
+		UNKNOWN				= -2
+
+	};
 
 	struct SModifierFunction
 	{
 		SModifierFunction ()
-			: masterfunc0 ( -2 ), masterfunc1(0), func ( 0 ),
-			tcgen( 8 ), base ( 0 ), amp ( 1 ), phase ( 0 ), freq ( 1 ), wave(1) {}
+			: masterfunc0 ( UNKNOWN ), masterfunc1( UNKNOWN ), func ( SINUS ),
+			tcgen( TEXTURE ), rgbgen ( IDENTITY ), alphagen ( UNKNOWN ),
+			base ( 0 ), amp ( 1 ), phase ( 0 ), frequency ( 1 ),
+			wave ( 1 ),
+			x ( 0 ), y ( 0 ), z( 0 ), count( 0 ) {}
 
 		// "tcmod","deformvertexes","rgbgen", "tcgen"
-		s32 masterfunc0;
+		eQ3ModifierFunction masterfunc0;
 		// depends
-		s32 masterfunc1;
+		eQ3ModifierFunction masterfunc1;
 		// depends
-		s32 func;
+		eQ3ModifierFunction func;
 
-		s32 tcgen;
+		eQ3ModifierFunction tcgen;
+		eQ3ModifierFunction rgbgen;
+		eQ3ModifierFunction alphagen;
 
 		union
 		{
@@ -348,43 +449,49 @@ namespace quake3
 
 		union
 		{
-			f32 freq;
+			f32 frequency;
 			f32 bulgespeed;
 		};
 
-		f32 wave;
+		union
+		{
+			f32 wave;
+			f32 div;
+		};
+
+		f32 x;
+		f32 y;
+		f32 z;
+		u32 count;
 
 		f32 evaluate ( f32 dt ) const
 		{
 			// phase in 0 and 1..
-			f32 x = core::fract( (dt + phase ) * freq );
+			f32 x = core::fract( (dt + phase ) * frequency );
 			f32 y = 0.f;
 
 			switch ( func )
 			{
-				// sin
-				case 0:
-					y = (f32) sin ( x * core::PI64 * 2.0 );
+				case SINUS:
+					y = sinf ( x * core::PI * 2.f );
 					break;
-				// cos
-				case 1:
-					y = (f32) cos ( x * core::PI64 * 2.0 );
+				case COSINUS:
+					y = cosf ( x * core::PI * 2.f );
 					break;
-				// square
-				case 2:
+				case SQUARE:
 					y = x < 0.5f ? 1.f : -1.f;
 					break;
-				// triangle
-				case 3:
-					y = x < 0.5f ? ( 2.f * x ) - 1.f : ( -2.f * x ) + 2.f;
+				case TRIANGLE:
+					y = x < 0.5f ? ( 4.f * x ) - 1.f : ( -4.f * x ) + 3.f;
 					break;
-				// sawtooth:
-				case 4:
+				case SAWTOOTH:
 					y = x;
 					break;
-				// inverse sawtooth:
-				case 5:
+				case SAWTOOTH_INVERSE:
 					y = 1.f - x;
+					break;
+				case NOISE:
+					y = Noiser::get();
 					break;
 			}
 
@@ -394,6 +501,15 @@ namespace quake3
 
 	};
 
+	inline core::vector3df getMD3Normal ( u32 i, u32 j )
+	{
+		const f32 lng = i * 2.0f * core::PI / 255.0f;
+		const f32 lat = j * 2.0f * core::PI / 255.0f;
+		return core::vector3df(cosf ( lat ) * sinf ( lng ),
+				sinf ( lat ) * sinf ( lng ),
+				cosf ( lng ));
+	}
+
 	//
 	inline void getModifierFunc ( SModifierFunction& fill, const core::stringc &string, u32 &pos )
 	{
@@ -402,64 +518,110 @@ namespace quake3
 
 		static const c8 * funclist[] =
 		{
-			"sin","cos","square", "triangle", "sawtooth","inversesawtooth"
+			"sin","cos","square",
+			"triangle", "sawtooth","inversesawtooth", "noise"
 		};
 
-		fill.func = quake3::isEqual ( string,pos, funclist,6 );
-		if ( fill.func == -2 )
-			fill.func = 0;
+		fill.func = (eQ3ModifierFunction) isEqual ( string,pos, funclist,7 );
+		fill.func = fill.func == UNKNOWN ? SINUS : (eQ3ModifierFunction) ((u32) fill.func + WAVE_MODIFIER_FUNCTION + 1);
 
-		fill.base = quake3::getAsFloat ( string, pos );
-		fill.amp = quake3::getAsFloat ( string, pos );
-		fill.phase = quake3::getAsFloat ( string, pos );
-		fill.freq = quake3::getAsFloat ( string, pos );
+		fill.base = getAsFloat ( string, pos );
+		fill.amp = getAsFloat ( string, pos );
+		fill.phase = getAsFloat ( string, pos );
+		fill.frequency = getAsFloat ( string, pos );
 	}
 
 
+	// name = "a b c .."
+	struct SVariable
+	{
+		core::stringc name;
+		core::stringc content;
 
+		SVariable ( const c8 * n, const c8 *c = 0 ) : name ( n ), content (c) {}
+		virtual ~SVariable () {}
+
+		void clear ()
+		{
+			name = "";
+			content = "";
+		}
+
+		s32 isValid () const
+		{
+			return name.size();
+		}
+
+		bool operator == ( const SVariable &other ) const
+		{
+			return 0 == strcmp ( name.c_str(), other.name.c_str () );
+		}
+
+		bool operator < ( const SVariable &other ) const
+		{
+			return 0 > strcmp ( name.c_str(), other.name.c_str () );
+		}
+
+	};
+
+
+	// string database. "a" = "Hello", "b" = "1234.6"
 	struct SVarGroup
 	{
-		// simple assoziative array
-		s32 getIndex( const c8 * name ) const
-		{
-			SVariable search;
-			search.name = name;
+		SVarGroup () {}
+		virtual ~SVarGroup () {}
 
-			return Variable.linear_search ( search );
+		u32 isDefined ( const c8 * name, const c8 * content = 0 ) const
+		{
+			for ( u32 i = 0; i != Variable.size (); ++i )
+			{
+				if ( 0 == strcmp ( Variable[i].name.c_str(), name ) &&
+					(  0 == content || strstr ( Variable[i].content.c_str(), content ) )
+					)
+				{
+					return i + 1;
+				}
+			}
+			return 0;
 		}
 
 		// searches for Variable name and returns is content
 		// if Variable is not found a reference to an Empty String is returned
 		const core::stringc &get( const c8 * name ) const
 		{
-			s32 index = getIndex ( name );
+			SVariable search ( name );
+			s32 index = Variable.linear_search ( search );
 			if ( index < 0 )
 				return irrEmptyStringc;
 
 			return Variable [ index ].content;
 		}
 
-		bool isDefined ( const c8 * name, const c8 * content = 0 ) const
+		// set the Variable name
+		void set ( const c8 * name, const c8 * content = 0 )
 		{
-			for ( u32 i = 0; i != Variable.size (); ++i )
+			u32 index = isDefined ( name, 0 );
+			if ( 0 == index )
 			{
-				if ( 0 == strcmp ( Variable[i].name.c_str(), name ) )
-				{
-					if ( 0 == content )
-						return true;
-					if ( 0 == strcmp ( Variable[i].content.c_str(), content ) )
-						return true;
-				}
+				Variable.push_back ( SVariable ( name, content ) );
 			}
-			return false;
+			else
+			{
+				Variable [ index ].content = content;
+			}
 		}
+
 
 		core::array < SVariable > Variable;
 	};
 
+	//! holding a group a variable
 	struct SVarGroupList: public IReferenceCounted
 	{
-		SVarGroupList () {}
+		SVarGroupList ()
+		{
+			VariableGroup.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE );
+		}
 		virtual ~SVarGroupList () {}
 
 		core::array < SVarGroup > VariableGroup;
@@ -467,37 +629,49 @@ namespace quake3
 
 
 	//! A Parsed Shader Holding Variables ordered in Groups
-	class SShader
+	struct IShader
 	{
-		public:
-			bool operator == (const SShader &other ) const
-			{
-				return name == other.name;
-			}
+		IShader ()
+			: id ( 0 ), VarGroup ( 0 )  {}
+		virtual ~IShader () {}
 
-			bool operator < (const SShader &other ) const
-			{
-				return name < other.name;
-			}
+		void operator = (const IShader &other )
+		{
+			id = other.id;
+			VarGroup = other.VarGroup;
+			name = other.name;
+		}
 
-			const SVarGroup * getGroup ( u32 stage ) const
-			{
-				if ( 0 == VarGroup || stage >= VarGroup->VariableGroup.size () )
-					return 0;
+		bool operator == (const IShader &other ) const
+		{
+			return 0 == strcmp ( name.c_str(), other.name.c_str () );
+			//return name == other.name;
+		}
 
-				return &VarGroup->VariableGroup [ stage ];
-			}
+		bool operator < (const IShader &other ) const
+		{
+			return strcmp ( name.c_str(), other.name.c_str () ) < 0;
+			//return name < other.name;
+		}
 
-			// id
-			s32 id;
+		const SVarGroup * getGroup ( u32 stage ) const
+		{
+			if ( 0 == VarGroup || stage >= VarGroup->VariableGroup.size () )
+				return 0;
 
-			// Shader: shader name ( also first variable in first Vargroup )
-			// Entity: classname ( variable in Group(1) )
-			core::stringc name;
-			SVarGroupList *VarGroup; // reference
+			return &VarGroup->VariableGroup [ stage ];
+		}
+
+		// id
+		s32 id;
+		SVarGroupList *VarGroup; // reference
+
+		// Shader: shader name ( also first variable in first Vargroup )
+		// Entity: classname ( variable in Group(1) )
+		core::stringc name;
 	};
 
-	typedef SShader SEntity;
+	typedef IShader SEntity;
 
 	typedef core::array < SEntity > tQ3EntityList;
 
@@ -546,16 +720,14 @@ namespace quake3
 
 	}
 
-	inline core::stringc & dumpShader ( core::stringc &dest, const SShader * shader )
+	inline core::stringc & dumpShader ( core::stringc &dest, const IShader * shader )
 	{
-		dest = "";
 		if ( 0 == shader )
 			return dest;
 
 		const SVarGroup * group;
 
 		const u32 size = shader->VarGroup->VariableGroup.size ();
-
 		for ( u32 i = 0; i != size; ++i )
 		{
 			group = &shader->VarGroup->VariableGroup[ i ];
@@ -600,15 +772,76 @@ namespace quake3
 			video::ITexture* texture = 0;
 			for ( u32 g = 0; g != 2 ; ++g )
 			{
-				core::cutFilenameExtension ( loadFile, stringList[i] ).append ( extension[g] );
+				core::cutFilenameExtension ( loadFile, stringList[i] );
 
-				if ( fileSystem->existFile ( loadFile.c_str() ) )
+				if ( loadFile == "$whiteimage" )
 				{
-					texture = driver->getTexture( loadFile.c_str () );
-					if ( texture )
+					texture = driver->getTexture( "$whiteimage" );
+					if ( 0 == texture )
 					{
-						break;
+						core::dimension2du s ( 2, 2 );
+						u32 image[4] = { 0xFFFFFFFF, 0xFFFFFFFF,0xFFFFFFFF,0xFFFFFFFF };
+						video::IImage* w = driver->createImageFromData ( video::ECF_A8R8G8B8, s,&image );
+						texture = driver->addTexture( "$whiteimage", w );
+						w->drop ();
 					}
+
+				}
+				else
+				if ( loadFile == "$redimage" )
+				{
+					texture = driver->getTexture( "$redimage" );
+					if ( 0 == texture )
+					{
+						core::dimension2du s ( 2, 2 );
+						u32 image[4] = { 0xFFFF0000, 0xFFFF0000,0xFFFF0000,0xFFFF0000 };
+						video::IImage* w = driver->createImageFromData ( video::ECF_A8R8G8B8, s,&image );
+						texture = driver->addTexture( "$redimage", w );
+						w->drop ();
+					}
+				}
+				else
+				if ( loadFile == "$blueimage" )
+				{
+					texture = driver->getTexture( "$blueimage" );
+					if ( 0 == texture )
+					{
+						core::dimension2du s ( 2, 2 );
+						u32 image[4] = { 0xFF0000FF, 0xFF0000FF,0xFF0000FF,0xFF0000FF };
+						video::IImage* w = driver->createImageFromData ( video::ECF_A8R8G8B8, s,&image );
+						texture = driver->addTexture( "$blueimage", w );
+						w->drop ();
+					}
+				}
+				else
+				if ( loadFile == "$checkerimage" )
+				{
+					texture = driver->getTexture( "$checkerimage" );
+					if ( 0 == texture )
+					{
+						core::dimension2du s ( 2, 2 );
+						u32 image[4] = { 0xFFFFFFFF, 0xFF000000,0xFF000000,0xFFFFFFFF };
+						video::IImage* w = driver->createImageFromData ( video::ECF_A8R8G8B8, s,&image );
+						texture = driver->addTexture( "$checkerimage", w );
+						w->drop ();
+					}
+				}
+				else
+				if ( loadFile == "$lightmap" )
+				{
+					texture = 0;
+				}
+				else
+				{
+					loadFile.append ( extension[g] );
+				}
+
+				if ( fileSystem->existFile ( loadFile ) )
+				{
+					texture = driver->getTexture( loadFile );
+					if ( texture )
+						break;
+					texture = 0;
 				}
 			}
 			// take 0 Texture

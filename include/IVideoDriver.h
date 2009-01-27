@@ -188,19 +188,7 @@ namespace video
 		\return Pointer to the texture, or 0 if the texture
 		could not be loaded. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
-		virtual ITexture* getTexture(const c8* filename) =0;
-
-		//! Get access to a named texture.
-		/** Loads the texture from disk if it is not
-		already loaded and generates mipmap levels if desired.
-		Texture loading can be influenced using the
-		setTextureCreationFlag() method. The texture can be in several
-		imageformats, such as BMP, JPG, TGA, PCX, PNG, and PSD.
-		\param filename Filename of the texture to be loaded.
-		\return Pointer to the texture, or 0 if the texture
-		could not be loaded. This pointer should not be dropped. See
-		IReferenceCounted::drop() for more information. */
-		virtual ITexture* getTexture(const core::stringc& filename) =0;
+		virtual ITexture* getTexture(const core::string<c16>& filename) = 0;
 
 		//! Get access to a named texture.
 		/** Loads the texture from disk if it is not
@@ -230,7 +218,7 @@ namespace video
 		//! Renames a texture
 		/** \param texture Pointer to the texture to rename.
 		\param newName New name for the texture. This should be a unique name. */
-		virtual void renameTexture(ITexture* texture, const c8* newName) =0;
+		virtual void renameTexture(ITexture* texture, const core::string<c16>& newName) = 0;
 
 		//! Creates an empty texture of specified size.
 		/** \param size: Size of the texture.
@@ -243,7 +231,7 @@ namespace video
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size,
-			const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8) =0;
+			const core::string<c16>& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
 
 		//! Creates a texture from an IImage.
 		/** \param name A name for the texture. Later calls of
@@ -252,7 +240,7 @@ namespace video
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const c8* name, IImage* image) =0;
+		virtual ITexture* addTexture(const core::string<c16>& name, IImage* image) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
@@ -264,12 +252,7 @@ namespace video
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name=0) =0;
-
-		//! Adds a new render target texture
-		/** \deprecated use addRenderTargetTexture instead. */
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name=0) =0;
+				const core::string<c16>& name = "rt" ) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
 		/** This method can free a lot of memory!
@@ -349,7 +332,7 @@ namespace video
 		way:
 		\code
 		// create render target
-		ITexture* target = driver->addRenderTargetTexture(core::dimension2d<s32>(128,128), "rtt1");
+		ITexture* target = driver->addRenderTargetTexture(core::dimension2d<u32>(128,128), "rtt1");
 
 		// ...
 
@@ -854,7 +837,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImageFromFile(const c8* filename) =0;
+		virtual IImage* createImageFromFile(const core::string<c16>& filename) = 0;
 
 		//! Creates a software image from a file.
 		/** No hardware texture will be created for this image. This
@@ -874,7 +857,7 @@ namespace video
 		\param param Control parameter for the backend (e.g. compression
 		level).
 		\return True on successful write. */
-		virtual bool writeImageToFile(IImage* image, const c8* filename, u32 param =0) =0;
+		virtual bool writeImageToFile(IImage* image, const core::string<c16>& filename, u32 param = 0) = 0;
 
 		//! Writes the provided image to a file.
 		/** Requires that there is a suitable image writer registered
@@ -1052,7 +1035,7 @@ namespace video
 		if it is not currently loaded.
 		\param filename Name of the texture.
 		\return Pointer to loaded texture, or 0 if not found. */
-		virtual video::ITexture* findTexture(const c8* filename) =0;
+		virtual video::ITexture* findTexture(const core::string<c16>& filename) = 0;
 
 		//! Set or unset a clipping plane.
 		/** There are at least 6 clipping planes available for the user
