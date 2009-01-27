@@ -21,7 +21,7 @@ class CSoftwareTexture : public ITexture
 public:
 
 	//! constructor
-	CSoftwareTexture(IImage* surface, const char* name, bool renderTarget=false);
+	CSoftwareTexture(IImage* surface, const core::string<c16>& name, bool renderTarget=false);
 
 	//! destructor
 	virtual ~CSoftwareTexture();

@@ -85,6 +85,13 @@ public:
 
 	//! Returns the distance between letters
 	virtual s32 getKerningHeight() const = 0;
+
+	//! define which characters should not be drawn by the font. for example " " would
+	// not draw any space which is usually blank in most fonts.
+	/**
+	\param invisible: string of symbols, which are not send down to the videodriver
+	*/
+	virtual void setInvisibleCharacters( const wchar_t *s ) = 0;
 };
 
 } // end namespace gui

@@ -84,9 +84,9 @@ COgreMeshFileLoader::~COgreMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool COgreMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool COgreMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".mesh")!=0;
+	return core::hasFileExtension ( filename, "mesh" );
 }
 
 
@@ -394,7 +394,7 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 			material=Materials[k].Techniques[0].Passes[0].Material;
 			if (Materials[k].Techniques[0].Passes[0].Texture.Filename.size())
 			{
-				material.setTexture(0, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename.c_str()));
+				material.setTexture(0, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename));
 				if (!material.getTexture(0))
 				{
 					// retry with relative path
@@ -405,7 +405,7 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 					idx = relative.findLast('/');
 					if (idx != -1)
 						relative = relative.subString(idx+1, relative.size()-idx-1);
-					material.setTexture(0, Driver->getTexture((CurrentlyLoadingFromPath+"/"+relative).c_str()));
+					material.setTexture(0, Driver->getTexture((CurrentlyLoadingFromPath+"/"+relative)));
 				}
 			}
 			break;
@@ -936,13 +936,13 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 #ifdef IRR_OGRE_LOADER_DEBUG
 	os::Printer::log("Load Materials");
 #endif
-	core::stringc token,filename=meshFile->getFileName();
-	core::stringc material = filename.subString(0, filename.size()-4) + "material";
-	io::IReadFile* file = FileSystem->createAndOpenFile(material.c_str());
+	core::stringc token =meshFile->getFileName();
+	core::string<c16> filename = token.subString(0, token.size()-4) + L"material";
+	io::IReadFile* file = FileSystem->createAndOpenFile(filename.c_str());
 
 	if (!file)
 	{
-		os::Printer::log("Could not load OGRE material", material.c_str());
+		os::Printer::log("Could not load OGRE material", filename.c_str());
 		return;
 	}
 

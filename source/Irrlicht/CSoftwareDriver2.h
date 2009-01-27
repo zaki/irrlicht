@@ -123,7 +123,7 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Creates a render target texture.
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name);
 
 		//! Clears the DepthBuffer.
 		virtual void clearZBuffer();
@@ -150,12 +150,10 @@ namespace video
 			video::SColor leftDownEdge = video::SColor(0,0,0,0),
 			video::SColor rightDownEdge = video::SColor(0,0,0,0));
 
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo();
+
 	protected:
-
-
-		void drawVertexPrimitiveList16(const void* vertices, u32 vertexCount,
-				const u16* indexList, u32 primitiveCount,
-				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 
 
 		//! sets a render target
@@ -166,7 +164,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;
@@ -204,13 +202,8 @@ namespace video
 			ETS2_COUNT
 		};
 
-		struct SMatrixStack
-		{
-			s32 isIdentity;
-			core::matrix4 m;
-		};
-
-		SMatrixStack Transformation[ETS2_COUNT];
+		u32 TransformationFlag[ETS2_COUNT];
+		core::matrix4 Transformation[ETS2_COUNT];
 
 		// Vertex Cache
 		static const SVSize vSize[];
@@ -218,8 +211,9 @@ namespace video
 		SVertexCache VertexCache;
 
 		void VertexCache_reset (const void* vertices, u32 vertexCount,
-					const u16* indices, u32 indexCount,
-					E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType);
+					const void* indices, u32 indexCount,
+					E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType,
+					E_INDEX_TYPE iType);
 		void VertexCache_get ( s4DVertex ** face );
 		void VertexCache_get2 ( s4DVertex ** face );
 

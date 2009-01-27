@@ -183,10 +183,10 @@ void CTRGTextureLightMap2_M4::scanline_bilinear ()
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -217,22 +217,28 @@ void CTRGTextureLightMap2_M4::scanline_bilinear ()
 #ifdef INVERSE_W
 			inversew = fix_inverse32 ( line.w[0] );
 
-			tx0 = f32_to_fixPoint ( line.t[0][0].x,inversew);
-			ty0 = f32_to_fixPoint ( line.t[0][0].y,inversew);
-			tx1 = f32_to_fixPoint ( line.t[1][0].x,inversew);
-			ty1 = f32_to_fixPoint ( line.t[1][0].y,inversew);
+			tx0 = tofix ( line.t[0][0].x,inversew);
+			ty0 = tofix ( line.t[0][0].y,inversew);
+			tx1 = tofix ( line.t[1][0].x,inversew);
+			ty1 = tofix ( line.t[1][0].y,inversew);
 
 #ifdef IPOL_C0
-			r3 = f32_to_fixPoint ( line.c[0][0].y ,inversew );
-			g3 = f32_to_fixPoint ( line.c[0][0].z ,inversew );
-			b3 = f32_to_fixPoint ( line.c[0][0].w ,inversew );
+			r3 = tofix ( line.c[0][0].y ,inversew );
+			g3 = tofix ( line.c[0][0].z ,inversew );
+			b3 = tofix ( line.c[0][0].w ,inversew );
 #endif
 
 #else
-			tx0 = f32_to_fixPoint ( line.t[0][0].x );
-			ty0 = f32_to_fixPoint ( line.t[0][0].y );
-			tx1 = f32_to_fixPoint ( line.t[1][0].x );
-			ty1 = f32_to_fixPoint ( line.t[1][0].y );
+			tx0 = tofix ( line.t[0][0].x );
+			ty0 = tofix ( line.t[0][0].y );
+			tx1 = tofix ( line.t[1][0].x );
+			ty1 = tofix ( line.t[1][0].y );
+
+#ifdef IPOL_C0
+			r3 = tofix ( line.c[0][0].y );
+			g3 = tofix ( line.c[0][0].z );
+			b3 = tofix ( line.c[0][0].w );
+#endif
 
 #endif
 			getSample_texture ( r0, g0, b0, &IT[0], tx0, ty0 );
@@ -291,8 +297,8 @@ void CTRGTextureLightMap2_M4::drawTriangle ( const s4DVertex *a,const s4DVertex 
 {
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -354,12 +360,6 @@ void CTRGTextureLightMap2_M4::drawTriangle ( const s4DVertex *a,const s4DVertex 
 #endif
 
 	// query access to TexMaps
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
-#endif
 
 #ifdef IPOL_T0
 	IT[0].data = (tVideoSample*)IT[0].Texture->lock();

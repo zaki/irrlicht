@@ -6,6 +6,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02.Quake3Map_vc8", "02.Quake3Map\Quake3Map_vc8.vcproj", "{D1A464A2-D479-458C-98A2-60965D823CD1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03.CustomSceneNode_vc8", "03.CustomSceneNode\CustomSceneNode_vc8.vcproj", "{171CCDFA-C140-4956-8EB7-F0168F4521D3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04.Movement_vc8", "04.Movement\Movement_vc8.vcproj", "{7BDBB7E8-E0C9-4A0D-83C1-D389D6140FEF}"
 EndProject
@@ -43,6 +46,16 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.MouseAndJoystick_vc8", "19.MouseAndJoystick\MouseAndJoystick_vc8.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20.ManagedLights_vc8", "20.ManagedLights\ManagedLights_vc8.vcproj", "{16007FE2-142B-47F8-93E1-519BA3F39E71}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "21.Quake3Explorer_vc8", "21.Quake3Explorer\Quake3Explorer_vc8.vcproj", "{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17. HelloWorld for Windows Mobile on PC", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v8.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -112,8 +125,8 @@ Global
 		{78C9F424-523C-49AC-94B7-823AA4A26BF9}.Release|Win32.Build.0 = Release|Win32
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E08E042A-6C45-411B-92BE-3CC31331019F}.Debug|Win32.Build.0 = Debug|Win32
-		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release|Win32.ActiveCfg = Release - Fast FPU|Win32
-		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release|Win32.Build.0 = Release - Fast FPU|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release|Win32.ActiveCfg = Release|Win32
+		{E08E042A-6C45-411B-92BE-3CC31331019F}.Release|Win32.Build.0 = Release|Win32
 		{6F076455-D955-45D4-9C68-4AD4E45F2D47}.Debug|Win32.ActiveCfg = Debug|Win32
 		{6F076455-D955-45D4-9C68-4AD4E45F2D47}.Debug|Win32.Build.0 = Debug|Win32
 		{6F076455-D955-45D4-9C68-4AD4E45F2D47}.Release|Win32.ActiveCfg = Release|Win32
@@ -130,6 +143,14 @@ Global
 		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Debug|Win32.Build.0 = Debug|Win32
 		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Release|Win32.ActiveCfg = Release|Win32
 		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Release|Win32.Build.0 = Release|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Debug|Win32.Build.0 = Debug|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Release|Win32.ActiveCfg = Release|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Release|Win32.Build.0 = Release|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Debug|Win32.Build.0 = Debug|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.ActiveCfg = Release|Win32
+		{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

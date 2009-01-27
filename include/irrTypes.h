@@ -119,6 +119,15 @@ typedef unsigned short wchar_t;
 #endif // microsoft compiler
 #endif // _IRR_WINDOWS_API_
 
+//! Should the wide character version of the FileSystem be used
+#if defined(_IRR_WCHAR_FILESYSTEM)
+	//! 16 bit character variable. Used for unicode Filesystem and unicode strings
+	typedef wchar_t c16;
+#else
+	//! 8 bit character variable. Used for ansi Filesystem and non-unicode strings
+	typedef char c16;
+#endif
+
 //! define a break macro for debugging.
 #if defined(_DEBUG)
 #if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && !defined (_WIN32_WCE)

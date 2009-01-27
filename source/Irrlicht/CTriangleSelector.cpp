@@ -85,10 +85,15 @@ void CTriangleSelector::getTriangles(core::triangle3df* triangles,
 
 	for (s32 i=0; i<cnt; ++i)
 	{
+/*
 		triangles[i] = Triangles[i];
 		mat.transformVect(triangles[i].pointA);
 		mat.transformVect(triangles[i].pointB);
 		mat.transformVect(triangles[i].pointC);
+*/
+		mat.transformVect( triangles[i].pointA, Triangles[i].pointA );
+		mat.transformVect( triangles[i].pointB, Triangles[i].pointB );
+		mat.transformVect( triangles[i].pointC, Triangles[i].pointC );
 	}
 
 	outTriangleCount = cnt;

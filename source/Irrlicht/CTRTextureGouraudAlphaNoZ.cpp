@@ -200,10 +200,10 @@ void CTRTextureGouraudAlphaNoZ::scanline_bilinear ()
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -239,20 +239,20 @@ void CTRTextureGouraudAlphaNoZ::scanline_bilinear ()
 
 		inversew = fix_inverse32 ( line.w[0] );
 
-		u32 argb = getTexel_plain ( &IT[0],	d + f32_to_fixPoint ( line.t[0][0].x,inversew), 
-											d + f32_to_fixPoint ( line.t[0][0].y,inversew)
+		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x,inversew), 
+											d + tofix ( line.t[0][0].y,inversew)
 											);
 
 #else
 
-		u32 argb = getTexel_plain ( &IT[0],	d + f32_to_fixPoint ( line.t[0][0].x), 
-											d + f32_to_fixPoint ( line.t[0][0].y)
+		u32 argb = getTexel_plain ( &IT[0],	d + tofix ( line.t[0][0].x), 
+											d + tofix ( line.t[0][0].y)
 											);
 
 #endif
 
 		const u32 alpha = ( argb >> 24 );
-		if ( alpha >= AlphaRef )
+		if ( alpha > AlphaRef )
 		{
 #ifdef WRITE_Z
 			z[i] = line.z[0];
@@ -267,15 +267,23 @@ void CTRTextureGouraudAlphaNoZ::scanline_bilinear ()
 
 #else
 
+#ifdef INVERSE_W
+
 		inversew = fix_inverse32 ( line.w[0] );
 
 		getSample_texture ( a0, r0, g0, b0, 
 							&IT[0],
-							f32_to_fixPoint ( line.t[0][0].x,inversew),
-							f32_to_fixPoint ( line.t[0][0].y,inversew)
+							tofix ( line.t[0][0].x,inversew),
+							tofix ( line.t[0][0].y,inversew)
 						);
-
-		if ( a0 >= AlphaRef )
+#else
+		getSample_texture ( a0, r0, g0, b0, 
+							&IT[0],
+							tofix ( line.t[0][0].x),
+							tofix ( line.t[0][0].y)
+						);
+#endif
+		if ( a0 > AlphaRef )
 		{
 #ifdef WRITE_Z
 			z[i] = line.z[0];
@@ -316,8 +324,8 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle ( const s4DVertex *a,const s4DVerte
 {
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -377,11 +385,6 @@ void CTRTextureGouraudAlphaNoZ::drawTriangle ( const s4DVertex *a,const s4DVerte
 	f32 subPixel;
 #endif
 
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
-#endif
 
 #ifdef IPOL_T0
 	IT[0].data = (tVideoSample*)IT[0].Texture->lock();

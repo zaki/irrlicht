@@ -94,7 +94,7 @@
 				ForceDirty="-1"
 				RemoteDirectory="%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio"
 				RegisterOutput="0"
-				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio|0"
+				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;ninja.b3d|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;nskinbl.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlichtlogo3.png|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;terrain-heightmap.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;terrain-texture.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;detailmap3.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_up.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_dn.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_lf.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_rt.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_ft.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_bk.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;skydome.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio|0"
 			/>
 			<DebuggerTool
 			/>
@@ -130,7 +130,7 @@
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 				EnableFloatingPointEmulation="true"
 			/>
 			<Tool
@@ -179,7 +179,7 @@
 				ForceDirty="-1"
 				RemoteDirectory="%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio"
 				RegisterOutput="0"
-				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio|0"
+				AdditionalFiles="sydney.md2|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;sydney.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;ninja.b3d|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;nskinbl.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlichtlogo3.png|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;terrain-heightmap.bmp|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;terrain-texture.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;detailmap3.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_up.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_dn.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_lf.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_rt.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_ft.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht2_bk.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;skydome.jpg|$(InputDir)..\..\media|%CSIDL_PROGRAM_FILES%\irrlicht\media|0;irrlicht.dll|$(InputDir)$(OutDir)|%CSIDL_PROGRAM_FILES%\irrlicht\bin\wince-visualstudio|0"
 			/>
 			<DebuggerTool
 			/>

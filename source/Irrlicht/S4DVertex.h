@@ -281,7 +281,7 @@ const u32 MATERIAL_MAX_COLORS = 1;
 const u32 BURNING_MATERIAL_MAX_TEXTURES = 2;
 
 // dummy Vertex. used for calculation vertex memory size
-struct __s4DVertex
+struct s4DVertex_proxy
 {
 	sVec4 Pos;
 
@@ -296,6 +296,9 @@ struct __s4DVertex
 #define SIZEOF_SVERTEX	64
 #define SIZEOF_SVERTEX_LOG2	6
 
+/*!
+	Internal BurningVideo Vertex
+*/
 struct s4DVertex
 {
 	sVec4 Pos;
@@ -308,7 +311,7 @@ struct s4DVertex
 
 	u32 flag;
 
-	u8 fill [ SIZEOF_SVERTEX - sizeof (__s4DVertex) ];
+	u8 fill [ SIZEOF_SVERTEX - sizeof (s4DVertex_proxy) ];
 
 	// f = a * t + b * ( 1 - t )
 	void interpolate(const s4DVertex& b, const s4DVertex& a, const f32 t)
@@ -391,7 +394,7 @@ struct SVertexCache
 	const void* vertices;
 	u32 vertexCount;
 
-	const u16* indices;
+	const void* indices;
 	u32 indexCount;
 	u32 indicesIndex;
 
@@ -402,12 +405,13 @@ struct SVertexCache
 
 	u32 vType;		//E_VERTEX_TYPE
 	u32 pType;		//scene::E_PRIMITIVE_TYPE
+	u32 iType;		//E_INDEX_TYPE iType
 
 };
 
 
 // swap 2 pointer
-inline void swapVertexPointer(const s4DVertex** v1, const s4DVertex** v2)
+REALINLINE void swapVertexPointer(const s4DVertex** v1, const s4DVertex** v2)
 {
 	const s4DVertex* b = *v1;
 	*v1 = *v2;
@@ -484,9 +488,9 @@ inline void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 							const sVec4 &v
 							)
 {
-	r = f32_to_fixPoint ( v.y );
-	g = f32_to_fixPoint ( v.z );
-	b = f32_to_fixPoint ( v.w );
+	r = tofix ( v.y );
+	g = tofix ( v.z );
+	b = tofix ( v.w );
 }
 
 /*
@@ -496,22 +500,31 @@ inline void getSample_color (	tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoin
 							const sVec4 &v
 							)
 {
-	a = f32_to_fixPoint ( v.x );
-	r = f32_to_fixPoint ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
-	g = f32_to_fixPoint ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
-	b = f32_to_fixPoint ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
+	a = tofix ( v.x );
+	r = tofix ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
+	g = tofix ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
+	b = tofix ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
 }
 
 /*
 	load a color value
 */
-inline void getSample_color (	tFixPoint &r, tFixPoint &g, tFixPoint &b, 
-							const sVec4 &v
-							)
+inline void getSample_color ( tFixPoint &r, tFixPoint &g, tFixPoint &b,const sVec4 &v )
 {
-	r = f32_to_fixPoint ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
-	g = f32_to_fixPoint ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
-	b = f32_to_fixPoint ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
+	r = tofix ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
+	g = tofix ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
+	b = tofix ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
+}
+
+/*
+	load a color value
+*/
+inline void getSample_color (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
+								const sVec4 &v, const f32 mulby )
+{
+	r = tofix ( v.y, mulby);
+	g = tofix ( v.z, mulby);
+	b = tofix ( v.w, mulby);
 }
 
 

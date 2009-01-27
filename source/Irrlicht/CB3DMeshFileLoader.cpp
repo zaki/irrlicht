@@ -36,9 +36,9 @@ CB3DMeshFileLoader::CB3DMeshFileLoader(scene::ISceneManager* smgr)
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CB3DMeshFileLoader::isALoadableFileExtension(const c8* fileName) const
+bool CB3DMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".b3d") != 0;
+	return core::hasFileExtension ( filename, "b3d" );
 }
 
 
@@ -722,9 +722,9 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 	{
 		// This is what blitz basic calls a brush, like a Irrlicht Material
 
-		const core::stringc name = readString();
 #ifdef _B3D_READER_DEBUG
-	os::Printer::log("read Material", name.c_str());
+		const core::stringc name = readString();
+		os::Printer::log("read Material", name.c_str());
 #endif
 		Materials.push_back(SB3dMaterial());
 		SB3dMaterial& B3dMaterial=Materials.getLast();
@@ -909,7 +909,7 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 		{
 			if (!SceneManager->getParameters()->getAttributeAsBool(B3D_LOADER_IGNORE_MIPMAP_FLAG))
 				SceneManager->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, (B3dTexture->Flags & 0x8) ? true:false);
-			material.Material.setTexture(i, SceneManager->getVideoDriver()->getTexture( B3dTexture->TextureName.c_str() ));
+			material.Material.setTexture(i, SceneManager->getVideoDriver()->getTexture( B3dTexture->TextureName ));
 			if (material.Textures[i]->Flags & 0x10) // Clamp U
 				material.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;
 			if (material.Textures[i]->Flags & 0x20) // Clamp V

@@ -19,7 +19,7 @@ namespace gui
 {
 
 //! constructor
-CGUIFont::CGUIFont(IGUIEnvironment *env, const c8* filename)
+CGUIFont::CGUIFont(IGUIEnvironment *env, const core::string<c16>& filename)
 : Driver(0), SpriteBank(0), Environment(env), WrongCharacter(0),
 	MaxHeight(0), GlobalKerningWidth(0), GlobalKerningHeight(0)
 {
@@ -39,6 +39,8 @@ CGUIFont::CGUIFont(IGUIEnvironment *env, const c8* filename)
 
 	if (Driver)
 		Driver->grab();
+
+	setInvisibleCharacters ( L" " );
 }
 
 
@@ -78,7 +80,7 @@ bool CGUIFont::load(io::IXMLReader* xml)
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
 				// load texture
-				SpriteBank->setTexture(i, Driver->getTexture(fn.c_str()));
+				SpriteBank->setTexture(i, Driver->getTexture(fn));
 
 				// set previous mip-map+filter state
 				Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, mipmap);
@@ -216,7 +218,7 @@ bool CGUIFont::load(io::IReadFile* file)
 
 
 //! loads a font file, native file needed, for texture parsing
-bool CGUIFont::load(const c8* filename)
+bool CGUIFont::load(const core::string<c16>& filename)
 {
 	if (!Driver)
 		return false;
@@ -226,7 +228,7 @@ bool CGUIFont::load(const c8* filename)
 
 
 //! load & prepare font from ITexture
-bool CGUIFont::loadTexture(video::IImage* image, const c8* name)
+bool CGUIFont::loadTexture(video::IImage* image, const core::string<c16>& name)
 {
 	if (!image)
 		return false;
@@ -265,7 +267,12 @@ bool CGUIFont::loadTexture(video::IImage* image, const c8* name)
 
 	if ( ret )
 	{
+		bool current = Driver->getTextureCreationFlag ( video::ETCF_ALLOW_NON_POWER_2 );
+		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, true);
+
 		SpriteBank->addTexture(Driver->addTexture(name, tmpImage));
+
+		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, current );
 	}
 	if (deleteTmpImage)
 		tmpImage->drop();
@@ -438,46 +445,6 @@ void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions
 }
 
 
-//! returns the dimension of text
-core::dimension2d<u32> CGUIFont::getDimension(const wchar_t* text) const
-{
-	core::dimension2d<u32> dim(0, 0);
-	core::dimension2d<u32> thisLine(0, MaxHeight);
-
-	for (const wchar_t* p = text; *p; ++p)
-	{
-		bool lineBreak=false;
-		if (*p == L'\r') // Mac or Windows breaks
-		{
-			lineBreak = true;
-			if (p[1] == L'\n') // Windows breaks
-				++p;
-		}
-		else if (*p == L'\n') // Unix breaks
-		{
-			lineBreak = true;
-		}
-		if (lineBreak)
-		{
-			dim.Height += thisLine.Height;
-			if (dim.Width < thisLine.Width)
-				dim.Width = thisLine.Width;
-			thisLine.Width = 0;
-			continue;
-		}
-
-		const SFontArea &area = Areas[getAreaFromCharacter(*p)];
-
-		thisLine.Width += area.underhang;
-		thisLine.Width += area.width + area.overhang + GlobalKerningWidth;
-	}
-
-	dim.Height += thisLine.Height;
-	if (dim.Width < thisLine.Width)
-		dim.Width = thisLine.Width;
-
-	return dim;
-}
 
 
 //! set an Pixel Offset on Drawing ( scale position on width )
@@ -536,81 +503,117 @@ s32 CGUIFont::getAreaFromCharacter(const wchar_t c) const
 		return WrongCharacter;
 }
 
-
-/*
-//! draws an text and clips it to the specified rectangle if wanted
-void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
+void CGUIFont::setInvisibleCharacters( const wchar_t *s )
 {
-	if (!Driver)
-		return;
-
-	core::dimension2d<u32> textDimension;
-	core::position2d<s32> offset = position.UpperLeftCorner;
-
-	if (hcenter || vcenter)
-	{
-		textDimension = getDimension(text);
-
-		if (hcenter)
-			offset.X = ((position.getWidth() - textDimension.Width)>>1) + offset.X;
-
-		if (vcenter)
-			offset.Y = ((position.getHeight() - textDimension.Height)>>1) + offset.Y;
-	}
-
-	core::array<s32> indices;
-	indices.reallocate(core::stringw(text).size());
-	u32 n;
-	while(*text)
-	{
-		n = (*text) - 32;
-		if ( n > Positions.size())
-			n = WrongCharacter;
-		indices.push_back(n);
-		++text;
-	}
-	Driver->draw2DImage(Texture, offset, Positions, indices, GlobalKerningWidth, clip, color, true);
+	Invisible = s;
 }
-*/
 
+
+//! returns the dimension of text
+core::dimension2d<u32> CGUIFont::getDimension(const wchar_t* text) const
+{
+	core::dimension2d<u32> dim(0, 0);
+	core::dimension2d<u32> thisLine(0, MaxHeight);
+
+	for (const wchar_t* p = text; *p; ++p)
+	{
+		bool lineBreak=false;
+		if (*p == L'\r') // Mac or Windows breaks
+		{
+			lineBreak = true;
+			if (p[1] == L'\n') // Windows breaks
+				++p;
+		}
+		else if (*p == L'\n') // Unix breaks
+		{
+			lineBreak = true;
+		}
+		if (lineBreak)
+		{
+			dim.Height += thisLine.Height;
+			if (dim.Width < thisLine.Width)
+				dim.Width = thisLine.Width;
+			thisLine.Width = 0;
+			continue;
+		}
+
+		const SFontArea &area = Areas[getAreaFromCharacter(*p)];
+
+		thisLine.Width += area.underhang;
+		thisLine.Width += area.width + area.overhang + GlobalKerningWidth;
+	}
+
+	dim.Height += thisLine.Height;
+	if (dim.Width < thisLine.Width)
+		dim.Width = thisLine.Width;
+
+	return dim;
+}
 
 //! draws some text and clips it to the specified rectangle if wanted
-void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position, video::SColor color, bool hcenter, bool vcenter, const core::rect<s32>* clip)
+void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
+					video::SColor color,
+					bool hcenter, bool vcenter, const core::rect<s32>* clip
+				)
 {
 	if (!Driver)
 		return;
 
-	core::dimension2d<u32> textDimension;
+	core::dimension2d<s32> textDimension;
 	core::position2d<s32> offset = position.UpperLeftCorner;
 
 	if (hcenter || vcenter || clip)
 		textDimension = getDimension(text);
 
 	if (hcenter)
-		offset.X = ((position.getWidth() - textDimension.Width)>>1) + offset.X;
+		offset.X += (position.getWidth() - textDimension.Width) >> 1;
 
 	if (vcenter)
-		offset.Y = ((position.getHeight() - textDimension.Height)>>1) + offset.Y;
+		offset.Y += (position.getHeight() - textDimension.Height) >> 1;
 
 	if (clip)
 	{
-		core::rect<s32> clippedRect(offset, core::dimension2d<s32>(textDimension));
+		core::rect<s32> clippedRect(offset, textDimension);
 		clippedRect.clipAgainst(*clip);
 		if (!clippedRect.isValid())
 			return;
 	}
 
-	while(*text)
+	wchar_t c;
+	while( c = *text++)
 	{
-		SFontArea& area = Areas[getAreaFromCharacter(*text)];
+		bool lineBreak=false;
+		if ( c == L'\r') // Mac or Windows breaks
+		{
+			lineBreak = true;
+			if ( *text == L'\n') // Windows breaks
+				++text;
+		}
+		else if ( c == L'\n') // Unix breaks
+		{
+			lineBreak = true;
+		}
+
+		if (lineBreak)
+		{
+			offset.Y += MaxHeight;
+			offset.X = position.UpperLeftCorner.X;
+
+			if ( hcenter )
+			{
+				core::dimension2d<u32> lineDim = getDimension(text);
+				offset.X += (position.getWidth() - lineDim.Width) >> 1;
+			}
+			continue;
+		}
+
+		SFontArea& area = Areas[getAreaFromCharacter(c)];
 
 		offset.X += area.underhang;
-
-		SpriteBank->draw2DSprite(area.spriteno, offset, clip, color);
-
+		if ( Invisible.findFirst ( c ) < 0 )
+			SpriteBank->draw2DSprite(area.spriteno, offset, clip, color);
 		offset.X += area.width + area.overhang + GlobalKerningWidth;
 
-		++text;
 	}
 }
 

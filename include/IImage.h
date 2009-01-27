@@ -113,6 +113,9 @@ public:
 			const core::rect<s32>& sourceRect, const SColor &color,
 			const core::rect<s32>* clipRect = 0) =0;
 
+	//! copies this surface into another, scaling it to fit, appyling a box filter
+	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0) = 0;
+
 	//! fills the surface with black or white
 	virtual void fill(const SColor &color) =0;
 

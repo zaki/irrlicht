@@ -48,7 +48,7 @@ class COpenGLTexture : public ITexture
 public:
 
 	//! constructor
-	COpenGLTexture(IImage* surface, const char* name, COpenGLDriver* driver=0);
+	COpenGLTexture(IImage* surface, const core::string<c16>& name, COpenGLDriver* driver=0);
 
 	//! destructor
 	virtual ~COpenGLTexture();
@@ -102,7 +102,7 @@ public:
 protected:
 
 	//! protected constructor with basic setup, no GL texture name created, for derived classes
-	COpenGLTexture(const char* name, COpenGLDriver* driver);
+	COpenGLTexture(const core::string<c16>& name, COpenGLDriver* driver);
 
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
@@ -139,7 +139,7 @@ class COpenGLFBOTexture : public COpenGLTexture
 public:
 
 	//! FrameBufferObject constructor
-	COpenGLFBOTexture(const core::dimension2d<u32>& size, const char* name, COpenGLDriver* driver=0);
+	COpenGLFBOTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, COpenGLDriver* driver=0);
 
 	//! destructor
 	virtual ~COpenGLFBOTexture();
@@ -164,7 +164,7 @@ class COpenGLFBODepthTexture : public COpenGLFBOTexture
 {
 public:
 	//! FrameBufferObject depth constructor
-	COpenGLFBODepthTexture(const core::dimension2d<u32>& size, const char* name, COpenGLDriver* driver=0, bool useStencil=false);
+	COpenGLFBODepthTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, COpenGLDriver* driver=0, bool useStencil=false);
 
 	//! destructor
 	virtual ~COpenGLFBODepthTexture();

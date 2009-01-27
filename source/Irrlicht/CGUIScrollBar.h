@@ -34,11 +34,20 @@ namespace gui
 		//! draws the element and its children
 		virtual void draw();
 
+		virtual void OnPostRender(u32 timeMs);
+
+
 		//! gets the maximum value of the scrollbar.
 		virtual s32 getMax() const;
 
 		//! sets the maximum value of the scrollbar.
 		virtual void setMax(s32 max);
+
+		//! gets the minimum value of the scrollbar.
+		virtual s32 getMin() const;
+
+		//! sets the minimum value of the scrollbar.
+		virtual void setMin(s32 max);
 
 		//! gets the small step value
 		virtual s32 getSmallStep() const;
@@ -70,7 +79,7 @@ namespace gui
 	private:
 
 		void refreshControls();
-		s32 getPosFromMousePos(s32 x, s32 y) const;
+		s32 getPosFromMousePos(const core::position2di &p) const;
 
 		IGUIButton* UpButton;
 		IGUIButton* DownButton;
@@ -84,11 +93,14 @@ namespace gui
 		s32 Pos;
 		s32 DrawPos;
 		s32 DrawHeight;
+		s32 Min;
 		s32 Max;
 		s32 SmallStep;
 		s32 LargeStep;
 		s32 DesiredPos;
 		u32 LastChange;
+
+		f32 range () const { return (f32) ( Max - Min ); }
 	};
 
 } // end namespace gui

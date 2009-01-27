@@ -62,6 +62,11 @@ private:
 			const core::matrix4* transform,
 			core::triangle3df* triangles) const;
 
+	void getTrianglesFromOctTree(SOctTreeNode* node, s32& trianglesWritten,
+			s32 maximumSize, const core::line3d<f32>& line,
+			const core::matrix4* transform,
+			core::triangle3df* triangles) const;
+
 	SOctTreeNode* Root;
 	s32 NodeCount;
 	s32 MinimalPolysPerNode;

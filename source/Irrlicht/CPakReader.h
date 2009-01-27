@@ -9,6 +9,7 @@
 #include "IReadFile.h"
 #include "irrArray.h"
 #include "irrString.h"
+#include "IFileSystem.h"
 
 namespace irr
 {
@@ -22,28 +23,50 @@ namespace io
 	};
 
 
-	struct SPakFileEntry
+	struct SPakFileEntry: public IFileArchiveEntry
 	{
-		core::stringc pakFileName;
-		core::stringc simpleFileName;
-		core::stringc path;
+		core::string<c16> pakFileName;
 		u32 pos;
 		u32 length;
+	};
 
-		bool operator < (const SPakFileEntry& other) const
-		{
-			return simpleFileName < other.simpleFileName;
-		}
+	//! Archiveloader capable of loading ZIP Archives
+	class CArchiveLoaderPAK : public IArchiveLoader
+	{
+	public:
 
+		//! Constructor
+		CArchiveLoaderPAK(io::IFileSystem* fs);
 
-		bool operator == (const SPakFileEntry& other) const
-		{
-			return simpleFileName == other.simpleFileName;
-		}
+		//! destructor
+		virtual ~CArchiveLoaderPAK();
+
+		//! returns true if the file maybe is able to be loaded by this class
+		//! based on the file extension (e.g. ".zip")
+		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
+
+		//! Creates an archive from the filename
+		/** \param file File handle to check.
+		\return Pointer to newly created archive, or 0 upon error. */
+		virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const;
+
+		//! Check if the file might be loaded by this class
+		/** Check might look into the file.
+		\param file File handle to check.
+		\return True if file seems to be loadable. */
+		virtual bool isALoadableFileFormat(io::IReadFile* file) const;
+
+		//! creates/loads an archive from the file.
+		//! \return Pointer to the created archive. Returns 0 if loading failed.
+		virtual io::IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
+
+	private:
+		io::IFileSystem* FileSystem;
 	};
 
 
-	class CPakReader : public IReferenceCounted
+	//! reads from pak
+	class CPakReader : public IFileArchive
 	{
 	public:
 
@@ -51,30 +74,40 @@ namespace io
 		virtual ~CPakReader();
 
 		//! opens a file by file name
-		virtual IReadFile* openFile(const c8* filename);
+		virtual IReadFile* openFile(const core::string<c16>& filename);
 
 		//! opens a file by index
 		IReadFile* openFile(s32 index);
 
 		//! returns count of files in archive
-		s32 getFileCount();
+		virtual u32 getFileCount();
 
 		//! returns data of file
-		const SPakFileEntry* getFileInfo(s32 index) const;
+		virtual const IFileArchiveEntry* getFileInfo(u32 index);
 
 		//! returns fileindex
-		s32 findFile(const c8* filename);
+		virtual s32 findFile(const core::string<c16>& filename);
+
+		//! get the class Type
+		virtual const core::string<c16>& getArchiveType() { return Type; }
+
+		//! return the id of the file Archive
+		virtual const core::string<c16>& getArchiveName ()
+		{ 
+			return File->getFileName();
+		}
+
 
 	private:
 		
+		core::string<c16> Type;
+
 		//! scans for a local header, returns false if there is no more local file header.
 		bool scanLocalHeader();
 
 		//! splits filename from zip file into useful filenames and paths
 		void extractFilename(SPakFileEntry* entry);
 
-		//! deletes the path from a filename
-		void deletePathFromFilename(core::stringc& filename);
 
 		IReadFile* File;
 

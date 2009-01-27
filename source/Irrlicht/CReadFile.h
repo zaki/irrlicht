@@ -22,8 +22,7 @@ namespace io
 	{
 	public:
 
-		CReadFile(const wchar_t* fileName);
-		CReadFile(const c8* fileName);
+		CReadFile(const core::string<c16>& fileName);
 
 		virtual ~CReadFile();
 
@@ -46,7 +45,7 @@ namespace io
 		virtual long getPos() const;
 
 		//! returns name of file
-		virtual const c8* getFileName() const;
+		virtual const core::string<c16>& getFileName() const;
 
 	private:
 
@@ -55,7 +54,7 @@ namespace io
 
 		FILE* File;
 		long FileSize;
-		core::stringc Filename;
+		core::string<c16> Filename;
 	};
 
 } // end namespace io

@@ -7,6 +7,10 @@
 
 #include "IrrCompileConfig.h"
 
+#include "SIrrCreationParameters.h"
+
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+
 #if defined(_IRR_WINDOWS_API_)
 	// include windows headers for HWND
 	#define WIN32_LEAN_AND_MEAN
@@ -15,9 +19,6 @@
 	#include "CIrrDeviceMacOSX.h"
 #endif
 
-#include "SIrrCreationParameters.h"
-
-#ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"
@@ -310,7 +311,7 @@ namespace video
 		virtual u32 getMaximalPrimitiveCount() const;
 
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name);
+				const core::string<c16>& name);
 
 		//! set or reset render target
 		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
@@ -362,7 +363,7 @@ namespace video
 		//! inits the parts of the open gl driver used on all platforms
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);

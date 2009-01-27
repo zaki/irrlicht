@@ -235,6 +235,12 @@ bool CGUIEditBox::processKey(const SEvent& event)
 
 	if (event.KeyInput.Control)
 	{
+		// german backlash '\' entered with control + '?'
+		if ( event.KeyInput.Char == '\\' )
+		{
+			inputChar(event.KeyInput.Char);
+		}
+
 		switch(event.KeyInput.Key)
 		{
 		case KEY_KEY_A:

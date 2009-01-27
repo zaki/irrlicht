@@ -25,7 +25,8 @@ CSceneNodeAnimatorCollisionResponse::CSceneNodeAnimatorCollisionResponse(
 	World(world), Object(object), SceneManager(scenemanager), LastTime(0),
 	SlidingSpeed(slidingSpeed), Falling(false), IsCamera(false),
 	AnimateCameraTarget(true), CollisionOccurred(false),
-	CollisionCallback(0)
+	CollisionCallback(0),
+	FirstUpdate ( true )
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorCollisionResponse");
@@ -65,6 +66,7 @@ void CSceneNodeAnimatorCollisionResponse::setEllipsoidRadius(
 	const core::vector3df& radius)
 {
 	Radius = radius;
+	FirstUpdate = true;
 }
 
 
@@ -80,6 +82,7 @@ core::vector3df CSceneNodeAnimatorCollisionResponse::getEllipsoidRadius() const
 void CSceneNodeAnimatorCollisionResponse::setGravity(const core::vector3df& gravity)
 {
 	Gravity = gravity;
+	FirstUpdate = true;
 }
 
 
@@ -116,16 +119,14 @@ core::vector3df CSceneNodeAnimatorCollisionResponse::getEllipsoidTranslation() c
 //! the scene node may collide.
 void CSceneNodeAnimatorCollisionResponse::setWorld(ITriangleSelector* newWorld)
 {
-	Falling = false;
-
-	LastTime = os::Timer::getTime();
-
 	if (World)
 		World->drop();
 
 	World = newWorld;
 	if (World)
 		World->grab();
+
+	FirstUpdate = true;
 
 }
 
@@ -148,6 +149,23 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 	if(!Object || !World)
 		return;
 
+	// trigger reset
+	if ( timeMs == 0 )
+	{
+		FirstUpdate = true;
+		timeMs = LastTime;
+	}
+
+	if ( FirstUpdate )
+	{
+		LastPosition = Object->getPosition();
+		Falling = false;
+		LastTime = timeMs;
+		FallingVelocity.set ( 0, 0, 0 );
+
+		FirstUpdate = false;
+	}
+
 	u32 diff = timeMs - LastTime;
 	LastTime = timeMs;
 
@@ -163,9 +181,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 
 	core::vector3df force = vel + FallingVelocity;
 
-	const core::vector3df nullVector ( 0.f, 0.f, 0.f );
-
-	if ( force != nullVector )
+	if ( AnimateCameraTarget )
 	{
 		// TODO: divide SlidingSpeed by frame time
 
@@ -265,6 +281,19 @@ void CSceneNodeAnimatorCollisionResponse::setCollisionCallback(ICollisionCallbac
 
 	if (CollisionCallback)
 		CollisionCallback->grab();
+}
+
+//! Should the Target react on collision ( default = true )
+void CSceneNodeAnimatorCollisionResponse::setAnimateTarget ( bool enable )
+{
+	AnimateCameraTarget = enable;
+	FirstUpdate = true;
+}
+
+//! Should the Target react on collision ( default = true )
+bool CSceneNodeAnimatorCollisionResponse::getAnimateTarget () const
+{
+	return AnimateCameraTarget;
 }
 
 } // end namespace scene

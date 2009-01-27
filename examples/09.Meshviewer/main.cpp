@@ -133,18 +133,18 @@ void loadModel(const c8* fn)
 		extension == ".bmp" || extension == ".wal")
 	{
 		video::ITexture * texture =
-			Device->getVideoDriver()->getTexture( filename.c_str() );
+			Device->getVideoDriver()->getTexture( filename );
 		if ( texture && Model )
 		{
 			// always reload texture
 			Device->getVideoDriver()->removeTexture(texture);
-			texture = Device->getVideoDriver()->getTexture( filename.c_str() );
+			texture = Device->getVideoDriver()->getTexture( filename );
 
 			Model->setMaterialTexture(0, texture);
 		}
 		return;
 	}
-	// if a archive is loaded add it to the FileSystems..
+	// if a archive is loaded add it to the FileArchive..
 	else if (extension == ".pk3" || extension == ".zip")
 	{
 		Device->getFileSystem()->addZipFileArchive(filename.c_str());
@@ -614,7 +614,7 @@ int main(int argc, char* argv[])
 
 	// read configuration from xml file
 
-	io::IXMLReader* xml = Device->getFileSystem()->createXMLReader("config.xml");
+	io::IXMLReader* xml = Device->getFileSystem()->createXMLReader( L"config.xml");
 
 	while(xml && xml->read())
 	{

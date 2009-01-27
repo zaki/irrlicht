@@ -328,9 +328,9 @@ CColladaFileLoader::~CColladaFileLoader()
 
 //! Returns true if the file maybe is able to be loaded by this class.
 /** This decision should be based only on the file extension (e.g. ".cob") */
-bool CColladaFileLoader::isALoadableFileExtension(const c8* fileName) const
+bool CColladaFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".xml") || strstr(fileName, ".dae");
+	return core::hasFileExtension ( filename, "xml", "dae" );
 }
 
 
@@ -1774,7 +1774,7 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 	amesh->recalculateBoundingBox();
 
 	// create virtual file name
-	core::stringc filename = CurrentlyLoadingMesh;
+	core::string<c16> filename = CurrentlyLoadingMesh;
 	filename += '#';
 	filename += id;
 
@@ -2696,9 +2696,9 @@ video::ITexture* CColladaFileLoader::getTextureFromImage(core::stringc uri)
 			{
 				if (Images[i].Source.size() && Images[i].SourceIsFilename)
 				{
-					if (FileSystem->existFile(Images[i].Source.c_str()))
-						return driver->getTexture(Images[i].Source.c_str());
-					return driver->getTexture((FileSystem->getFileDir(CurrentlyLoadingMesh)+"/"+Images[i].Source).c_str());
+					if (FileSystem->existFile(Images[i].Source))
+						return driver->getTexture(Images[i].Source);
+					return driver->getTexture((FileSystem->getFileDir(CurrentlyLoadingMesh)+"/"+Images[i].Source));
 				}
 				else
 				if (Images[i].Source.size())

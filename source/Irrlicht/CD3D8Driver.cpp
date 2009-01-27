@@ -147,6 +147,11 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		bool highPrecisionFPU, bool vsync, u8 antiAlias)
 {
 	HRESULT hr;
+	typedef IDirect3D8 * (__stdcall *D3DCREATETYPE)(UINT);
+
+#if defined( _IRR_XBOX_PLATFORM_)
+	D3DCREATETYPE d3dCreate = (D3DCREATETYPE) &Direct3DCreate8;
+#else
 	D3DLibrary = LoadLibrary( "d3d8.dll" );
 
 	if (!D3DLibrary)
@@ -155,7 +160,6 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		return false;
 	}
 
-	typedef IDirect3D8 * (__stdcall *D3DCREATETYPE)(UINT);
 	D3DCREATETYPE d3dCreate = (D3DCREATETYPE) GetProcAddress(D3DLibrary, "Direct3DCreate8");
 
 	if (!d3dCreate)
@@ -163,6 +167,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		os::Printer::log("Error, could not get proc adress of Direct3DCreate8.", ELL_ERROR);
 		return false;
 	}
+#endif
 
 	//just like pID3D = Direct3DCreate8(D3D_SDK_VERSION);
 	pID3D = (*d3dCreate)(D3D_SDK_VERSION);
@@ -255,6 +260,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
+#if !defined( _IRR_XBOX_PLATFORM_)
 			present.AutoDepthStencilFormat = D3DFMT_D24X4S4;
 			if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
@@ -269,6 +275,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 					StencilBuffer = false;
 				}
 			}
+#endif
 		}
 		else
 		if(FAILED(pID3D->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, devtype,
@@ -281,6 +288,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	// do not use else here to cope with flag change in previous block
 	if (!StencilBuffer)
 	{
+#if !defined( _IRR_XBOX_PLATFORM_)
 		present.AutoDepthStencilFormat = D3DFMT_D32;
 		if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
@@ -301,11 +309,24 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 				}
 			}
 		}
+#else
+		present.AutoDepthStencilFormat = D3DFMT_D16;
+		if(FAILED(pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, devtype,
+			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
+			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
+		{
+			os::Printer::log("Device does not support required depth buffer.", ELL_WARNING);
+			return false;
+		}
+#endif
 	}
 
 	// create device
-
+#if defined( _IRR_XBOX_PLATFORM_)
+	DWORD fpuPrecision = 0;
+#else
 	DWORD fpuPrecision = highPrecisionFPU ? D3DCREATE_FPU_PRESERVE : 0;
+#endif
 	if (pureSoftware)
 	{
 		hr = pID3D->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_REF, hwnd,
@@ -392,6 +413,8 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	HRESULT hr;
 	if (DeviceLost)
 	{
+#if defined( _IRR_XBOX_PLATFORM_)
+#else
 		if(FAILED(hr = pID3DDevice->TestCooperativeLevel()))
 		{
 			if (hr == D3DERR_DEVICELOST)
@@ -405,6 +428,7 @@ bool CD3D8Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 			if ((hr == D3DERR_DEVICENOTRESET) && !reset())
 				return false;
 		}
+#endif
 	}
 
 	DWORD flags = 0;
@@ -650,8 +674,7 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,
-		const char* name)
+video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const core::string<c16>& name)
 {
 	return new CD3D8Texture(surface, this, TextureCreationFlags, name);
 }
@@ -769,11 +792,8 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 
 //! Creates a render target texture.
-ITexture* CD3D8Driver::addRenderTargetTexture(
-		const core::dimension2d<u32>& size, const c8* name)
+ITexture* CD3D8Driver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
 {
-	if (!name)
-		name="rt";
 	ITexture* tex = new CD3D8Texture(this, size, name);
 	addTexture(tex);
 	tex->drop();
@@ -1472,9 +1492,12 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].LODBias != material.TextureLayer[st].LODBias)
 		{
 			const float tmp = material.TextureLayer[st].LODBias * 0.125f;
-			pID3DDevice->SetTextureStageState(st, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)(&tmp));
-		}
 
+			//!TA D3DSAMP_MIPMAPLODBIAS doesn't compile!
+/*
+			pID3DDevice->SetTextureStageState(st, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)(&tmp));
+*/
+		}
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrap != material.TextureLayer[st].TextureWrap)
 		{
 			u32 mode = D3DTADDRESS_WRAP;
@@ -1991,9 +2014,16 @@ void CD3D8Driver::setFog(SColor color, bool linearFog, f32 start,
 
 	pID3DDevice->SetRenderState(D3DRS_FOGCOLOR, color.color);
 
+#if defined( _IRR_XBOX_PLATFORM_)
+	pID3DDevice->SetRenderState(
+		pixelFog  ? D3DRS_FOGTABLEMODE : D3DRS_FOGTABLEMODE,
+		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
+
+#else
 	pID3DDevice->SetRenderState(
 		pixelFog  ? D3DRS_FOGTABLEMODE : D3DRS_FOGVERTEXMODE,
 		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
+#endif
 
 	if(linearFog)
 	{
@@ -2125,6 +2155,9 @@ void CD3D8Driver::clearZBuffer()
 //! Returns an image created from the last rendered frame.
 IImage* CD3D8Driver::createScreenShot()
 {
+#if defined( _IRR_XBOX_PLATFORM_)
+	return 0;
+#else
 	HRESULT hr;
 
 	// query the screen dimensions of the current adapter
@@ -2210,6 +2243,7 @@ IImage* CD3D8Driver::createScreenShot()
 
 	// return status of save operation to caller
 	return newImage;
+#endif
 }
 
 
@@ -2226,18 +2260,24 @@ const core::dimension2d<u32>& CD3D8Driver::getCurrentRenderTargetSize() const
 // Set/unset a clipping plane.
 bool CD3D8Driver::setClipPlane(u32 index, const core::plane3df& plane, bool enable)
 {
+#if defined( _IRR_XBOX_PLATFORM_)
+	return false;
+#else
 	if (index >= MaxUserClipPlanes)
 		return false;
-
 	pID3DDevice->SetClipPlane(index, (const float*)&plane);
 	enableClipPlane(index, enable);
 	return true;
+#endif
 }
 
 
 // Enable/disable a clipping plane.
 void CD3D8Driver::enableClipPlane(u32 index, bool enable)
 {
+#if defined( _IRR_XBOX_PLATFORM_)
+	return;
+#else
 	if (index >= MaxUserClipPlanes)
 		return;
 	DWORD renderstate;
@@ -2247,6 +2287,7 @@ void CD3D8Driver::enableClipPlane(u32 index, bool enable)
 	else
 		renderstate &= ~(1 << index);
 	pID3DDevice->SetRenderState(D3DRS_CLIPPLANEENABLE, renderstate);
+#endif
 }
 
 

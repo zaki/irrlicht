@@ -184,7 +184,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".cob")
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -337,7 +337,7 @@ private:
 	core::stringc CurrentlyLoadingMesh;
 
 	scene::IAnimatedMesh* FirstLoadedMesh;
-	core::stringc FirstLoadedMeshName;
+	core::string<c16> FirstLoadedMeshName;
 	s32 LoadedMeshCount;
 	u32 Version;
 	bool FlipAxis;

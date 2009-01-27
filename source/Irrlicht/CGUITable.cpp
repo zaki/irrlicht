@@ -246,10 +246,12 @@ bool CGUITable::hasResizableColumns() const
 }
 
 
-void CGUITable::addRow(u32 rowIndex)
+u32 CGUITable::addRow(u32 rowIndex)
 {
 	if ( rowIndex > Rows.size() )
-		return;
+	{
+		rowIndex = Rows.size();
+	}
 
 	Row row;
 
@@ -265,6 +267,7 @@ void CGUITable::addRow(u32 rowIndex)
 	}
 
 	recalculateHeights();
+	return rowIndex;
 }
 
 
@@ -283,7 +286,7 @@ void CGUITable::removeRow(u32 rowIndex)
 
 
 //! adds an list item, returns id of item
-void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text)
+void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text)
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
@@ -296,8 +299,7 @@ void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text)
 	}
 }
 
-
-void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, video::SColor color)
+void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text, video::SColor color)
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
@@ -687,7 +689,7 @@ bool CGUITable::dragColumnStart(s32 xpos, s32 ypos)
 	if ( ypos > ( AbsoluteRect.UpperLeftCorner.Y + ItemHeight ) )
 		return false;
 
-	const s32 CLICK_AREA = 3;	// to left and right of line which can be dragged
+	const s32 CLICK_AREA = 12;	// to left and right of line which can be dragged
 	s32 pos = AbsoluteRect.UpperLeftCorner.X+1;
 
 	if ( HorizontalScrollBar && HorizontalScrollBar->isVisible() )

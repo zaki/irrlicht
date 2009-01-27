@@ -51,6 +51,7 @@ CDefaultSceneNodeFactory::CDefaultSceneNodeFactory(ISceneManager* mgr)
 	// legacy, for version <= 1.4.x irr files
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_CAMERA_MAYA, "cameraMaya"));
 	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_CAMERA_FPS, "cameraFPS"));
+	SupportedSceneNodeTypes.push_back(SSceneNodeTypePair(ESNT_Q3SHADER_SCENE_NODE, "quake3Shader"));
 }
 
 
@@ -68,7 +69,7 @@ ISceneNode* CDefaultSceneNodeFactory::addSceneNode(ESCENE_NODE_TYPE type, IScene
 	case ESNT_WATER_SURFACE:
 		return Manager->addWaterSurfaceSceneNode(0, 2.0f, 300.0f, 10.0f, parent);
 	case ESNT_TERRAIN:
-		return Manager->addTerrainSceneNode((const char*)0, parent, -1, 
+		return Manager->addTerrainSceneNode((const c16*)0, parent, -1, 
 							core::vector3df(0.0f,0.0f,0.0f),
 							core::vector3df(0.0f,0.0f,0.0f),
 							core::vector3df(1.0f,1.0f,1.0f),

@@ -77,7 +77,7 @@ void CGUISpriteBank::addTexture(video::ITexture* texture)
 
 void CGUISpriteBank::setTexture(u32 index, video::ITexture* texture)
 {
-	while (index > Textures.size())
+	while (index >= Textures.size())
 		Textures.push_back(0);
 
 	if (Textures[index])
@@ -95,7 +95,7 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 		const core::rect<s32>* clip, const video::SColor& color,
 		u32 starttime, u32 currenttime, bool loop, bool center)
 {
-	if (Sprites[index].Frames.empty() || index >= Sprites.size())
+	if (index >= Sprites.size() || Sprites[index].Frames.empty() )
 		return;
 
 	// work out frame number

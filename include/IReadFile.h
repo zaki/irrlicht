@@ -6,6 +6,7 @@
 #define __I_READ_FILE_H_INCLUDED__
 
 #include "IReferenceCounted.h"
+#include "coreutil.h"
 
 namespace irr
 {
@@ -40,15 +41,15 @@ namespace io
 
 		//! Get name of file.
 		/** \return File name as zero terminated character string. */
-		virtual const c8* getFileName() const = 0;
+		virtual const core::string<c16>& getFileName() const = 0;
 	};
 
 	//! Internal function, please do not use.
-	IReadFile* createReadFile(const c8* fileName);
+	IReadFile* createReadFile(const core::string<c16>& fileName);
 	//! Internal function, please do not use.
-	IReadFile* createLimitReadFile(const c8* fileName, IReadFile* alreadyOpenedFile, long areaSize);
+	IReadFile* createLimitReadFile(const core::string<c16>& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize);
 	//! Internal function, please do not use.
-	IReadFile* createMemoryReadFile(void* memory, long size, const c8* fileName, bool deleteMemoryWhenDropped);
+	IReadFile* createMemoryReadFile(void* memory, long size, const core::string<c16>& fileName, bool deleteMemoryWhenDropped);
 
 } // end namespace io
 } // end namespace irr

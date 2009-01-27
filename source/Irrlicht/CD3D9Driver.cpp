@@ -70,6 +70,7 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 CD3D9Driver::~CD3D9Driver()
 {
 	deleteMaterialRenders();
+	deleteAllTextures();
 
 	// drop the main depth buffer
 	DepthBuffers[0]->drop();
@@ -427,7 +428,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A', 'T', 'O', 'C')) == S_OK);
-	else if (VendorID=0x1002)//ATI
+	else if (VendorID==0x1002)//ATI
 		AlphaToCoverageSupport = true; // TODO: Check unknown
 #if 0
 		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
@@ -697,8 +698,7 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,
-		const char* name)
+video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const core::string<c16>& name)
 {
 	return new CD3D9Texture(surface, this, TextureCreationFlags, name);
 }
@@ -840,12 +840,12 @@ const core::rect<s32>& CD3D9Driver::getViewPort() const
 }
 
 
-bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
+bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 {
-	if (!HWBuffer)
+	if (!hwBuffer)
 		return false;
 
-	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
+	const scene::IMeshBuffer* mb = hwBuffer->MeshBuffer;
 	const void* vertices=mb->getVertices();
 	const u32 vertexCount=mb->getVertexCount();
 	const E_VERTEX_TYPE vType=mb->getVertexType();
@@ -853,7 +853,7 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
 
 	void* pLockedBuffer = 0;
 
-	if (!HWBuffer->vertexBuffer || vertexSize * vertexCount > HWBuffer->vertexBufferSize)
+	if (!hwBuffer->vertexBuffer || vertexSize * vertexCount > hwBuffer->vertexBufferSize)
 	{
 		DWORD flags = 0;
 
@@ -880,41 +880,41 @@ bool CD3D9Driver::updateVertexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
 		}
 
 		flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
-		if(HWBuffer->Mapped_Vertex != scene::EHM_STATIC)
+		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC;
 
-		pID3DDevice->CreateVertexBuffer(vertexCount * vertexSize, flags, FVF, D3DPOOL_DEFAULT, &HWBuffer->vertexBuffer, NULL);
+		pID3DDevice->CreateVertexBuffer(vertexCount * vertexSize, flags, FVF, D3DPOOL_DEFAULT, &hwBuffer->vertexBuffer, NULL);
 
-		if(!HWBuffer->vertexBuffer)
+		if(!hwBuffer->vertexBuffer)
 			return false;
 
 		flags = 0; // SIO2: Reset flags before Lock
-		if(HWBuffer->Mapped_Vertex != scene::EHM_STATIC)
+		if(hwBuffer->Mapped_Vertex != scene::EHM_STATIC)
 			flags = D3DLOCK_DISCARD;
 
-		HWBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, flags);
+		hwBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, flags);
 		memcpy(pLockedBuffer, vertices, vertexCount * vertexSize);
-		HWBuffer->vertexBuffer->Unlock();
+		hwBuffer->vertexBuffer->Unlock();
 
-		HWBuffer->vertexBufferSize = vertexCount * vertexSize;
+		hwBuffer->vertexBufferSize = vertexCount * vertexSize;
 	}
 	else
 	{
-		HWBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, D3DLOCK_DISCARD);
+		hwBuffer->vertexBuffer->Lock(0, vertexCount * vertexSize, (void**)&pLockedBuffer, D3DLOCK_DISCARD);
 		memcpy(pLockedBuffer, vertices, vertexCount * vertexSize);
-		HWBuffer->vertexBuffer->Unlock();
+		hwBuffer->vertexBuffer->Unlock();
 	}
 
 	return true;
 }
 
 
-bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
+bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *hwBuffer)
 {
-	if (!HWBuffer)
+	if (!hwBuffer)
 		return false;
 
-	const scene::IMeshBuffer* mb = HWBuffer->MeshBuffer;
+	const scene::IMeshBuffer* mb = hwBuffer->MeshBuffer;
 	const u16* indices=mb->getIndices();
 	const u32 indexCount=mb->getIndexCount();
 	u32 indexSize = 2;
@@ -935,38 +935,38 @@ bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
 		}
 	}
 
-	if (!HWBuffer->indexBuffer || indexSize * indexCount > HWBuffer->indexBufferSize)
+	if (!hwBuffer->indexBuffer || indexSize * indexCount > hwBuffer->indexBufferSize)
 	{
 		DWORD flags = 0;
 
 		flags = D3DUSAGE_WRITEONLY; // SIO2: Default to D3DUSAGE_WRITEONLY
-		if(HWBuffer->Mapped_Index != scene::EHM_STATIC)
+		if(hwBuffer->Mapped_Index != scene::EHM_STATIC)
 			flags |= D3DUSAGE_DYNAMIC; // SIO2: Add DYNAMIC flag for dynamic buffer data
 
-		if(FAILED(pID3DDevice->CreateIndexBuffer( indexCount * indexSize, flags, indexType, D3DPOOL_DEFAULT, &HWBuffer->indexBuffer, NULL)))
+		if(FAILED(pID3DDevice->CreateIndexBuffer( indexCount * indexSize, flags, indexType, D3DPOOL_DEFAULT, &hwBuffer->indexBuffer, NULL)))
 			return false;
 
 		void* pIndices = 0;
 
 		flags = 0; // SIO2: Reset flags before Lock
-		if(HWBuffer->Mapped_Index != scene::EHM_STATIC)
+		if(hwBuffer->Mapped_Index != scene::EHM_STATIC)
 			flags = D3DLOCK_DISCARD;
 
-		if(FAILED(HWBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, flags)))
+		if(FAILED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, flags)))
 			return false;
 
 		memcpy(pIndices, indices, indexCount * indexSize);
-		HWBuffer->indexBuffer->Unlock();
+		hwBuffer->indexBuffer->Unlock();
 
-		HWBuffer->indexBufferSize = indexCount * indexSize;
+		hwBuffer->indexBufferSize = indexCount * indexSize;
 	}
 	else
 	{
 		void* pIndices = 0;
-		if( SUCCEEDED(HWBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, D3DLOCK_DISCARD)))
+		if( SUCCEEDED(hwBuffer->indexBuffer->Lock( 0, 0, (void**)&pIndices, D3DLOCK_DISCARD)))
 		{
 			memcpy(pIndices, indices, indexCount * indexSize);
-			HWBuffer->indexBuffer->Unlock();
+			hwBuffer->indexBuffer->Unlock();
 		}
 	}
 
@@ -975,33 +975,33 @@ bool CD3D9Driver::updateIndexHardwareBuffer(SHWBufferLink_d3d9 *HWBuffer)
 
 
 //! updates hardware buffer if needed
-bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *HWBuffer)
+bool CD3D9Driver::updateHardwareBuffer(SHWBufferLink *hwBuffer)
 {
-	if (!HWBuffer)
+	if (!hwBuffer)
 		return false;
 
-	if (HWBuffer->Mapped_Vertex!=scene::EHM_NEVER)
+	if (hwBuffer->Mapped_Vertex!=scene::EHM_NEVER)
 	{
-		if (HWBuffer->ChangedID_Vertex != HWBuffer->MeshBuffer->getChangedID_Vertex()
-			|| !((SHWBufferLink_d3d9*)HWBuffer)->vertexBuffer)
+		if (hwBuffer->ChangedID_Vertex != hwBuffer->MeshBuffer->getChangedID_Vertex()
+			|| !((SHWBufferLink_d3d9*)hwBuffer)->vertexBuffer)
 		{
 
-			HWBuffer->ChangedID_Vertex = HWBuffer->MeshBuffer->getChangedID_Vertex();
+			hwBuffer->ChangedID_Vertex = hwBuffer->MeshBuffer->getChangedID_Vertex();
 
-			if (!updateVertexHardwareBuffer((SHWBufferLink_d3d9*)HWBuffer))
+			if (!updateVertexHardwareBuffer((SHWBufferLink_d3d9*)hwBuffer))
 				return false;
 		}
 	}
 
-	if (HWBuffer->Mapped_Index!=scene::EHM_NEVER)
+	if (hwBuffer->Mapped_Index!=scene::EHM_NEVER)
 	{
-		if (HWBuffer->ChangedID_Index != HWBuffer->MeshBuffer->getChangedID_Index()
-			|| !((SHWBufferLink_d3d9*)HWBuffer)->indexBuffer)
+		if (hwBuffer->ChangedID_Index != hwBuffer->MeshBuffer->getChangedID_Index()
+			|| !((SHWBufferLink_d3d9*)hwBuffer)->indexBuffer)
 		{
 
-			HWBuffer->ChangedID_Index = HWBuffer->MeshBuffer->getChangedID_Index();
+			hwBuffer->ChangedID_Index = hwBuffer->MeshBuffer->getChangedID_Index();
 
-			if (!updateIndexHardwareBuffer((SHWBufferLink_d3d9*)HWBuffer))
+			if (!updateIndexHardwareBuffer((SHWBufferLink_d3d9*)hwBuffer))
 				return false;
 		}
 	}
@@ -1016,28 +1016,28 @@ CD3D9Driver::SHWBufferLink *CD3D9Driver::createHardwareBuffer(const scene::IMesh
 	if (!mb || (mb->getHardwareMappingHint_Index()==scene::EHM_NEVER && mb->getHardwareMappingHint_Vertex()==scene::EHM_NEVER))
 		return 0;
 
-	SHWBufferLink_d3d9 *HWBuffer=new SHWBufferLink_d3d9(mb);
+	SHWBufferLink_d3d9 *hwBuffer=new SHWBufferLink_d3d9(mb);
 
 	//add to map
-	HWBufferMap.insert(HWBuffer->MeshBuffer, HWBuffer);
+	HWBufferMap.insert(hwBuffer->MeshBuffer, hwBuffer);
 
-	HWBuffer->ChangedID_Vertex=HWBuffer->MeshBuffer->getChangedID_Vertex();
-	HWBuffer->ChangedID_Index=HWBuffer->MeshBuffer->getChangedID_Index();
-	HWBuffer->Mapped_Vertex=mb->getHardwareMappingHint_Vertex();
-	HWBuffer->Mapped_Index=mb->getHardwareMappingHint_Index();
-	HWBuffer->LastUsed=0;
-	HWBuffer->vertexBuffer=0;
-	HWBuffer->indexBuffer=0;
-	HWBuffer->vertexBufferSize=0;
-	HWBuffer->indexBufferSize=0;
+	hwBuffer->ChangedID_Vertex=hwBuffer->MeshBuffer->getChangedID_Vertex();
+	hwBuffer->ChangedID_Index=hwBuffer->MeshBuffer->getChangedID_Index();
+	hwBuffer->Mapped_Vertex=mb->getHardwareMappingHint_Vertex();
+	hwBuffer->Mapped_Index=mb->getHardwareMappingHint_Index();
+	hwBuffer->LastUsed=0;
+	hwBuffer->vertexBuffer=0;
+	hwBuffer->indexBuffer=0;
+	hwBuffer->vertexBufferSize=0;
+	hwBuffer->indexBufferSize=0;
 
-	if (!updateHardwareBuffer(HWBuffer))
+	if (!updateHardwareBuffer(hwBuffer))
 	{
-		deleteHardwareBuffer(HWBuffer);
+		deleteHardwareBuffer(hwBuffer);
 		return 0;
 	}
 
-	return HWBuffer;
+	return hwBuffer;
 }
 
 
@@ -2619,10 +2619,8 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 //! Creates a render target texture.
 ITexture* CD3D9Driver::addRenderTargetTexture(
 		const core::dimension2d<u32>& size,
-		const c8* name)
+		const core::string<c16>& name)
 {
-	if (!name)
-		name="rt";
 	ITexture* tex = new CD3D9Texture(this, size, name);
 	if (tex)
 	{

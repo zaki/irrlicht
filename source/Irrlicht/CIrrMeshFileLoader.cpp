@@ -36,10 +36,9 @@ CIrrMeshFileLoader::CIrrMeshFileLoader(scene::ISceneManager* smgr,
 
 //! Returns true if the file maybe is able to be loaded by this class.
 /** This decision should be based only on the file extension (e.g. ".cob") */
-bool CIrrMeshFileLoader::isALoadableFileExtension(const c8* fileName) const
+bool CIrrMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".xml") ||
-			strstr(fileName, ".irrmesh");
+	return core::hasFileExtension ( filename, "xml", "irrmesh" );
 }
 
 

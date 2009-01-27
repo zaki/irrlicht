@@ -125,9 +125,9 @@ CMS3DMeshFileLoader::CMS3DMeshFileLoader(video::IVideoDriver *driver)
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CMS3DMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CMS3DMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".ms3d")!=0;
+	return core::hasFileExtension ( filename, "ms3d" );
 }
 
 
@@ -381,14 +381,14 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 		if (TexturePath.trim()!="")
 		{
 			TexturePath=stripPathFromString(file->getFileName(),true) + stripPathFromString(TexturePath,false);
-			tmpBuffer->Material.setTexture(0, Driver->getTexture(TexturePath.c_str()) );
+			tmpBuffer->Material.setTexture(0, Driver->getTexture(TexturePath) );
 		}
 
 		core::stringc AlphamapPath=(const c8*)material->Alphamap;
 		if (AlphamapPath.trim()!="")
 		{
 			AlphamapPath=stripPathFromString(file->getFileName(),true) + stripPathFromString(AlphamapPath,false);
-			tmpBuffer->Material.setTexture(2, Driver->getTexture(AlphamapPath.c_str()) );
+			tmpBuffer->Material.setTexture(2, Driver->getTexture(AlphamapPath) );
 		}
 
 	}

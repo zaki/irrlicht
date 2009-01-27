@@ -35,9 +35,9 @@ CImageLoaderJPG::~CImageLoaderJPG()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderJPG::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderJPG::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".jpg") != 0;
+	return core::hasFileExtension ( filename, "jpg", "jpeg" );
 }
 
 

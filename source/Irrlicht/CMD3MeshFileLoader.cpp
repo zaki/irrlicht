@@ -16,9 +16,9 @@ namespace scene
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CMD3MeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CMD3MeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".md3") != 0;
+	return core::hasFileExtension ( filename, "md3" );
 }
 
 

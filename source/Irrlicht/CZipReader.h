@@ -10,6 +10,7 @@
 #include "irrArray.h"
 #include "irrString.h"
 #include "IFileSystem.h"
+#include "IFileList.h"
 
 namespace irr
 {
@@ -34,14 +35,14 @@ namespace io
 
 	struct SZIPFileDataDescriptor
 	{
-		s32 CRC32;
-		s32 CompressedSize;
-		s32 UncompressedSize;
+		u32 CRC32;
+		u32 CompressedSize;
+		u32 UncompressedSize;
 	} PACK_STRUCT;
 
 	struct SZIPFileHeader
 	{
-		s32 Sig;
+		u32 Sig;				// 'PK0304' little endian (0x04034b50)
 		s16 VersionToExtract;
 		s16 GeneralBitFlag;
 		s16 CompressionMethod;
@@ -50,6 +51,47 @@ namespace io
 		SZIPFileDataDescriptor DataDescriptor;
 		s16 FilenameLength;
 		s16 ExtraFieldLength;
+		// filename (variable size)
+		// extra field (variable size )
+	} PACK_STRUCT;
+
+	struct SZIPFileCentralDirFileHeader
+	{
+		u32 central_file_header_signature;	// 'PK0102' (0x02014b50)
+		u16 version_made_by;
+		u16 version_needed_to_extract;
+		u16 general_purpose_bit_flag;
+		u16 compression_method;
+		u16 last_mod_file_time;
+		u16 last_mod_file_date;
+		u32 crc_32;
+		u32 compressed_size;
+		u32 uncompressed_size;
+		u16 filename_length;
+		u16 extra_field_length;
+		u16 file_comment_length;
+		u16 disk_number_start;
+		u16 internal_file_attributes;
+		u32 external_file_attributes;
+		u32 relative_offset_of_local_header;
+
+		// filename (variable size)
+		// extra field (variable size)
+		// file comment (variable size)
+
+	} PACK_STRUCT;
+
+	struct SZIPFileCentralDirEnd
+	{
+		u32 sig;			// 'PK0506' end_of central dir signature			// (0x06054b50)
+		u16 numberDisk;		// number of this disk
+		u16 numberStart;	// number of the disk with the start of the central directory
+		u16 totalDisk;		// total number of entries in the central dir on this disk
+		u16 totalEntries;	// total number of entries in the central dir
+		u32 size;			// size of the central directory
+		u32 offset;			// offset of start of centraldirectory with respect to the starting disk number
+		u16 comment_length;	// zipfile comment length
+		// zipfile comment (variable size)
 	} PACK_STRUCT;
 
 // Default alignment
@@ -60,34 +102,56 @@ namespace io
 #undef PACK_STRUCT
 
 
-	struct SZipFileEntry
+	struct SZipFileEntry : public IFileArchiveEntry
 	{
-		core::stringc zipFileName;
-		core::stringc simpleFileName;
-		core::stringc path;
+		SZipFileEntry () {}
+
+		core::string<c16> zipFileName;
 		s32 fileDataPosition; // position of compressed data in file
 		SZIPFileHeader header;
-
-		bool operator < (const SZipFileEntry& other) const
-		{
-			return simpleFileName < other.simpleFileName;
-		}
-
-
-		bool operator == (const SZipFileEntry& other) const
-		{
-			return simpleFileName == other.simpleFileName;
-		}
 	};
 
 
+	//! Archiveloader capable of loading ZIP Archives
+	class CArchiveLoaderZIP : public IArchiveLoader
+	{
+	public:
+
+		//! Constructor
+		CArchiveLoaderZIP(io::IFileSystem* fs);
+
+		//! destructor
+		virtual ~CArchiveLoaderZIP();
+
+		//! returns true if the file maybe is able to be loaded by this class
+		//! based on the file extension (e.g. ".zip")
+		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
+
+		//! Creates an archive from the filename
+		/** \param file File handle to check.
+		\return Pointer to newly created archive, or 0 upon error. */
+		virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const;
+
+		//! Check if the file might be loaded by this class
+		/** Check might look into the file.
+		\param file File handle to check.
+		\return True if file seems to be loadable. */
+		virtual bool isALoadableFileFormat(io::IReadFile* file) const;
+
+		//! creates/loads an archive from the file.
+		//! \return Pointer to the created archive. Returns 0 if loading failed.
+		virtual io::IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
+
+	private:
+		io::IFileSystem* FileSystem;
+	};
 
 /*!
 	Zip file Reader written April 2002 by N.Gebhardt.
 	Doesn't decompress data, only reads the file and is able to
 	open uncompressed entries.
 */
-	class CZipReader : public virtual IReferenceCounted
+	class CZipReader : public IFileArchive
 	{
 	public:
 
@@ -95,61 +159,102 @@ namespace io
 		virtual ~CZipReader();
 
 		//! opens a file by file name
-		virtual IReadFile* openFile(const c8* filename);
+		virtual IReadFile* openFile(const core::string<c16>& filename);
 
 		//! opens a file by index
-		IReadFile* openFile(s32 index);
+		virtual IReadFile* openFile(s32 index);
 
 		//! returns count of files in archive
-		s32 getFileCount();
+		virtual u32 getFileCount();
 
 		//! returns data of file
-		const SZipFileEntry* getFileInfo(s32 index) const;
+		virtual const IFileArchiveEntry* getFileInfo(u32 index);
 
 		//! returns fileindex
-		s32 findFile(const c8* filename);
+		virtual s32 findFile(const core::string<c16>& filename);
+
+		//! return the id of the file Archive
+		virtual const core::string<c16>& getArchiveName ();
+
+		//! get the class Type
+		virtual const core::string<c16>& getArchiveType() { return Type; }
 
 	private:
 		
 		//! scans for a local header, returns false if there is no more
 		//! local file header.
 		bool scanLocalHeader();
+		bool scanLocalHeader2();
 		IReadFile* File;
-
+		SZipFileEntry temp;
 	protected:
 
 		//! splits filename from zip file into useful filenames and paths
 		void extractFilename(SZipFileEntry* entry);
 
-		//! deletes the path from a filename
-		void deletePathFromFilename(core::stringc& filename);
-
 
 		bool IgnoreCase;
 		bool IgnorePaths;
 		core::array<SZipFileEntry> FileList;
+
+		core::string<c16> Type;
+		core::string<c16> Base;
 	};
 
 
-	class CUnZipReader : public CZipReader
+	//! Archiveloader capable of loading MountPoint Archives
+	class CArchiveLoaderMount : public IArchiveLoader
 	{
 	public:
 
-		CUnZipReader(IFileSystem *parent, const c8* basename,
+		//! Constructor
+		CArchiveLoaderMount(io::IFileSystem* fs);
+
+		//! destructor
+		virtual ~CArchiveLoaderMount();
+
+		//! returns true if the file maybe is able to be loaded by this class
+		//! based on the file extension (e.g. ".zip")
+		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
+
+		//! Creates an archive from the filename
+		/** \param file File handle to check.
+		\return Pointer to newly created archive, or 0 upon error. */
+		virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const;
+
+		//! Check if the file might be loaded by this class
+		/** Check might look into the file.
+		\param file File handle to check.
+		\return True if file seems to be loadable. */
+		virtual bool isALoadableFileFormat(io::IReadFile* file) const;
+
+		//! creates/loads an archive from the file.
+		//! \return Pointer to the created archive. Returns 0 if loading failed.
+		virtual IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
+
+	private:
+		io::IFileSystem* FileSystem;
+	};
+
+	//! A File Archive whichs uses a a mountpoint
+	class CMountPointReader : public CZipReader
+	{
+	public:
+
+		CMountPointReader(IFileSystem *parent, const core::string<c16>& basename,
 				bool ignoreCase, bool ignorePaths);
 
 		//! opens a file by file name
-		virtual IReadFile* openFile(const c8* filename);
+		virtual IReadFile* openFile(const core::string<c16>& filename);
 
 		//! returns fileindex
-		s32 findFile(const c8* filename);
+		virtual s32 findFile(const core::string<c16>& filename);
 
 	private:
 
 		IFileSystem *Parent;
 		void buildDirectory ();
 
-		core::stringc Base;
 	};
 
 } // end namespace io

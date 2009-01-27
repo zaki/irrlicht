@@ -95,6 +95,7 @@
 #include "IGUITable.h"
 #include "IGUIToolbar.h"
 #include "IGUIWindow.h"
+#include "IGUITreeView.h"
 #include "IImage.h"
 #include "IImageLoader.h"
 #include "IImageWriter.h"
@@ -315,7 +316,7 @@ namespace irr
 	\return Returns pointer to the created IrrlichtDevice or null if the
 	device could not be created.
 	*/
-	IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
+	extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
 		video::E_DRIVER_TYPE deviceType = video::EDT_SOFTWARE,
 		// parantheses are necessary for some compilers
 		const core::dimension2d<u32>& windowSize = (core::dimension2d<u32>(640,480)),
@@ -325,6 +326,17 @@ namespace irr
 		bool vsync = false,
 		IEventReceiver* receiver = 0);
 
+	//! typedef for Function Pointer
+	typedef IrrlichtDevice* (IRRCALLCONV *funcptr_createDevice )(
+			video::E_DRIVER_TYPE deviceType,
+			const core::dimension2d<s32>& windowSize,
+			u32 bits,
+			bool fullscreen,
+			bool stencilbuffer,
+			bool vsync,
+			IEventReceiver* receiver);
+
+
 	//! Creates an Irrlicht device with the option to specify advanced parameters.
 	/** Usually you should used createDevice() for creating an Irrlicht Engine device.
 	Use this function only if you wish to specify advanced parameters like a window
@@ -333,8 +345,11 @@ namespace irr
 	See irr::SIrrlichtCreationParameters for details.
 	\return Returns pointer to the created IrrlichtDevice or null if the
 	device could not be created. */
-	IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
+	extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 		const SIrrlichtCreationParameters& parameters);
+
+	//! typedef for Function Pointer
+	typedef IrrlichtDevice* (IRRCALLCONV *funcptr_createDeviceEx )( const SIrrlichtCreationParameters& parameters );
 
 
 	// THE FOLLOWING IS AN EMPTY LIST OF ALL SUB NAMESPACES

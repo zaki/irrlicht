@@ -31,6 +31,7 @@ namespace gui
 
 		//! Returns pointer to the maximize button
 		virtual IGUIButton* getMaximizeButton() const = 0;
+
 	};
 
 

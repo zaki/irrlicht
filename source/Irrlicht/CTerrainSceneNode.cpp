@@ -741,7 +741,7 @@ namespace scene
 						0.3f);
 				if (0 == arrow)
 				{
-					arrow = SceneManager->getMesh("__debugnormal");
+					arrow = SceneManager->getMesh( "__debugnormal");
 				}
 				IMesh *mesh = arrow->getMesh(0);
 
@@ -1410,7 +1410,7 @@ namespace scene
 	void CTerrainSceneNode::deserializeAttributes(io::IAttributes* in,
 			io::SAttributeReadWriteOptions* options)
 	{
-		core::stringc newHeightmap = in->getAttributeAsString("Heightmap");
+		core::string<c16> newHeightmap = in->getAttributeAsString("Heightmap");
 		f32 tcoordScale1 = in->getAttributeAsFloat("TextureScale1");
 		f32 tcoordScale2 = in->getAttributeAsFloat("TextureScale2");
 

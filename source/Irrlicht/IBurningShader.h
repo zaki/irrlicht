@@ -16,6 +16,7 @@
 #include "irrArray.h"
 #include "SLight.h"
 #include "SMaterial.h"
+#include "os.h"
 
 
 namespace irr
@@ -74,15 +75,14 @@ namespace video
 
 		ETR_TEXTURE_GOURAUD_VERTEX_ALPHA,
 
-		ETR_TEXTURE_GOURAUD_LIGHTMAP,
+		ETR_TEXTURE_GOURAUD_LIGHTMAP_M1,
 		ETR_TEXTURE_GOURAUD_LIGHTMAP_M2,
-		ETR_TEXTURE_LIGHTMAP_M4,
 		ETR_TEXTURE_GOURAUD_LIGHTMAP_M4,
-
-		ETR_TEXTURE_GOURAUD_LIGHTMAP_ADD,
+		ETR_TEXTURE_LIGHTMAP_M4,
 
 		ETR_TEXTURE_GOURAUD_DETAIL_MAP,
-
+		ETR_TEXTURE_GOURAUD_LIGHTMAP_ADD,
+	
 		ETR_GOURAUD_ALPHA,
 		ETR_GOURAUD_ALPHA_NOZ,
 
@@ -120,11 +120,8 @@ namespace video
 
 	protected:
 
-		video::IImage* RenderTarget;
+		video::CImage* RenderTarget;
 		IDepthBuffer* DepthBuffer;
-
-		fp24* lockedDepthBuffer;
-		tVideoSample* lockedSurface;
 
 		sInternalTexture IT[ BURNING_MATERIAL_MAX_TEXTURES ];
 

@@ -217,6 +217,17 @@ namespace irr
 				is defined, false if joysticks are not supported or support is compiled out.
 		*/
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo) = 0;
+
+		//! Set the current Gamma Value for the Display
+		/** Gamma in
+		*/
+		virtual bool setGammaRamp(	f32 red, f32 green, f32 blue,
+									f32 relativebrightness, f32 relativecontrast ) = 0;
+
+		//! Get the current Gamma Value for the Display
+		virtual bool getGammaRamp(	f32 &red, f32 &green, f32 &blue,
+									f32 &brightness, f32 &contrast ) = 0;
+
 	};
 
 } // end namespace irr

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="Irrlicht"
 	ProjectGUID="{E08E042A-6C45-411B-92BE-3CC31331019F}"
 	RootNamespace="Irrlicht"
@@ -252,15 +252,18 @@
 				FavorSizeOrSpeed="0"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="..\..\include;zlib"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;IRRLICHT_EXPORTS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;IRRLICHT_EXPORTS;_CRT_SECURE_NO_DEPRECATE;"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="true"
+				EnableEnhancedInstructionSet="1"
 				FloatingPointModel="2"
 				RuntimeTypeInfo="false"
 				PrecompiledHeaderFile=".\..\obj\IrrReleaseFastFPU/Irrlicht.pch"
+				ExpandAttributedSource="true"
+				AssemblerOutput="4"
 				AssemblerListingLocation=".\..\obj\IrrReleaseFastFPU/"
 				ObjectFile=".\..\obj\IrrReleaseFastFPU/"
 				ProgramDataBaseFileName=".\..\obj\IrrReleaseFastFPU/"
@@ -608,10 +611,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\..\..\include\irrTypes.h"
-				>
-			</File>
-			<File
 				RelativePath=".\..\..\include\ITimer.h"
 				>
 			</File>
@@ -699,6 +698,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\coreutil.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\dimension2d.h"
 					>
 				</File>
@@ -728,6 +731,10 @@
 				</File>
 				<File
 					RelativePath=".\..\..\include\irrString.h"
+					>
+				</File>
+				<File
+					RelativePath=".\..\..\include\irrTypes.h"
 					>
 				</File>
 				<File
@@ -780,6 +787,10 @@
 				</File>
 				<File
 					RelativePath=".\..\..\include\IAttributes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IFileArchive.h"
 					>
 				</File>
 				<File
@@ -843,6 +854,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IAnimatedMeshMD3.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\IAnimatedMeshMS3D.h"
 					>
 				</File>
@@ -903,19 +918,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\..\..\include\IParticleAffector.h"
-					>
-				</File>
-				<File
-					RelativePath=".\..\..\include\IParticleEmitter.h"
-					>
-				</File>
-				<File
-					RelativePath=".\..\..\include\IParticleSystemSceneNode.h"
-					>
-				</File>
-				<File
 					RelativePath=".\..\..\include\IQ3LevelMesh.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IQ3Shader.h"
 					>
 				</File>
 				<File
@@ -1003,7 +1010,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\..\..\include\SParticle.h"
+					RelativePath="..\..\include\SSharedMeshBuffer.h"
 					>
 				</File>
 				<File
@@ -1014,6 +1021,66 @@
 					RelativePath=".\..\..\include\SViewFrustum.h"
 					>
 				</File>
+				<Filter
+					Name="particle"
+					>
+					<File
+						RelativePath=".\..\..\include\IParticleAffector.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleAnimatedMeshSceneNodeEmitter.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleAttractionAffector.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleBoxEmitter.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleCylinderEmitter.h"
+						>
+					</File>
+					<File
+						RelativePath=".\..\..\include\IParticleEmitter.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleFadeOutAffector.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleGravityAffector.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleMeshEmitter.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleRingEmitter.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleRotationAffector.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\include\IParticleSphereEmitter.h"
+						>
+					</File>
+					<File
+						RelativePath=".\..\..\include\IParticleSystemSceneNode.h"
+						>
+					</File>
+					<File
+						RelativePath=".\..\..\include\SParticle.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="gui"
@@ -1079,6 +1146,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IGUIImageList.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\IGUIInOutFader.h"
 					>
 				</File>
@@ -1116,6 +1187,10 @@
 				</File>
 				<File
 					RelativePath=".\..\..\include\IGUIToolbar.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IGUITreeView.h"
 					>
 				</File>
 				<File
@@ -1217,6 +1292,14 @@
 			</File>
 			<File
 				RelativePath=".\CGUIImage.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUIImageList.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUIImageList.h"
 				>
 			</File>
 			<File
@@ -1329,6 +1412,14 @@
 			</File>
 			<File
 				RelativePath="CGUIToolBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUITreeView.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CGUITreeView.h"
 				>
 			</File>
 			<File
@@ -1955,10 +2046,6 @@
 				RelativePath=".\CSceneManager.h"
 				>
 			</File>
-			<File
-				RelativePath=".\OctTree.h"
-				>
-			</File>
 			<Filter
 				Name="loaders"
 				>
@@ -2440,6 +2527,10 @@
 				</File>
 				<File
 					RelativePath="CTriangleSelector.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OctTree.h"
 					>
 				</File>
 			</Filter>

@@ -9,6 +9,13 @@
 #include "S3DVertex.h"
 #include "aabbox3d.h"
 #include "irrArray.h"
+#include "CMeshBuffer.h"
+
+/*!
+	if defined OCTTREE_USE_HARDWARE octree uses interally a derived scene::CMeshBuffer
+*/
+#define OCTTREE_USE_HARDWARE
+#define OCTTREE_PARENTTEST
 
 namespace irr
 {
@@ -21,12 +28,31 @@ class OctTree
 {
 public:
 
+#if defined (OCTTREE_USE_HARDWARE)
+	struct SMeshChunk : public scene::CMeshBuffer<T>
+	{
+		SMeshChunk ()
+			:scene::CMeshBuffer<T>()
+		{
+			grab ();
+		}
+
+		virtual ~SMeshChunk ()
+		{
+			//removeAllHardwareBuffers
+			MaterialId = 0;
+		}
+
+		s32 MaterialId;
+	};
+#else
 	struct SMeshChunk
 	{
 		core::array<T> Vertices;
 		core::array<u16> Indices;
 		s32 MaterialId;
 	};
+#endif
 
 	struct SIndexChunk
 	{
@@ -290,27 +316,36 @@ private:
 		{
 			u32 i; // new ISO for scoping problem in some compilers
 			
-			// not fully inside
-			//if ( parentTest != 2 )
+			// if parent is fully inside, no further check for the children is needed
+#if defined (OCTTREE_PARENTTEST )
+			if ( parentTest != 2 )
+#endif
 			{
 				core::vector3df edges[8];
 				Box.getEdges(edges);
 
 				for (i=0; i!=scene::SViewFrustum::VF_PLANE_COUNT; ++i)
 				{
-					bool boxInFrustum=false;
+					u32 boxInFrustum=0;
 
 					for (u32 j=0; j!=8; ++j)
 					{
 						if (frustum.planes[i].classifyPointRelation(edges[j]) != core::ISREL3D_FRONT)
 						{
-							boxInFrustum=true;
+							boxInFrustum += 1;
+#if !defined (OCTTREE_PARENTTEST )
 							break;
+#endif
 						}
 					}
 
-					if (!boxInFrustum) // all edges outside
+					if ( 0  == boxInFrustum) // all edges outside
 						return;
+
+#if defined (OCTTREE_PARENTTEST )
+					if ( 8  == boxInFrustum) // all edges in, all children in
+						parentTest = 2;
+#endif
 				}
 			}
 

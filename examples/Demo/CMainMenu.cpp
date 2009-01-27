@@ -1,4 +1,4 @@
-// This is a Demo of the Irrlicht Engine (c) 2005-2009 by N.Gebhardt.
+// This is a Demo of the Irrlicht Engine (c) 2005-2008 by N.Gebhardt.
 // This file is not documented.
 
 #include "CMainMenu.h"
@@ -116,7 +116,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	box->addItem(L"OpenGL 1.5");
 	box->addItem(L"Direct3D 8.1");
 	box->addItem(L"Direct3D 9.0c");
-	box->addItem(L"Burning's Video 0.39");
+	box->addItem(L"Burning's Video 0.40");
 	box->addItem(L"Irrlicht Software Renderer 1.0");
 	box->setSelected(selected);
 

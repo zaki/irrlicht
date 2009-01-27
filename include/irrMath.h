@@ -22,6 +22,7 @@
 	#define powf(X,Y) (f32)pow((f64)(X),(f64)(Y))
 	#define fmodf(X,Y) (f32)fmod((f64)(X),(f64)(Y))
 	#define fabsf(X) (f32)fabs((f64)(X))
+	#define logf(X) (f32)log((f64)(X))
 #endif
 
 namespace irr
@@ -31,20 +32,15 @@ namespace core
 
 	//! Rounding error constant often used when comparing f32 values.
 
-#ifdef IRRLICHT_FAST_MATH
-	const f32 ROUNDING_ERROR_32 = 0.00005f;
-	const f64 ROUNDING_ERROR_64 = 0.000005;
-#else
 	const f32 ROUNDING_ERROR_32 = 0.000001f;
 	const f64 ROUNDING_ERROR_64 = 0.00000001;
-#endif
 
 #ifdef PI // make sure we don't collide with a define
 #undef PI
 #endif
 	//! Constant for PI.
 	const f32 PI		= 3.14159265359f;
-
+						
 	//! Constant for reciprocal of PI.
 	const f32 RECIPROCAL_PI	= 1.0f/PI;
 
@@ -207,6 +203,12 @@ namespace core
 		return fabsf(a) <= tolerance;
 	}
 
+	//! returns if a equals not zero, taking rounding errors into account
+	inline bool isnotzero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
+	{
+		return fabsf(a) > tolerance;
+	}
+
 	//! returns if a equals zero, taking rounding errors into account
 	inline bool iszero(const s32 a, const s32 tolerance = 0)
 	{
@@ -323,6 +325,12 @@ namespace core
 	}
 
 	//! conditional set based on mask and arithmetic shift
+	REALINLINE u16 if_c_a_else_b ( const s16 condition, const s16 a, const s16 b )
+	{
+		return ( ( -condition >> 15 ) & ( a ^ b ) ) ^ b;
+	}
+
+	//! conditional set based on mask and arithmetic shift
 	REALINLINE u32 if_c_a_else_0 ( const s32 condition, const u32 a )
 	{
 		return ( -condition >> 31 ) & a;
@@ -346,6 +354,7 @@ namespace core
 	REALINLINE void clearFPUException ()
 	{
 #ifdef IRRLICHT_FAST_MATH
+		return;
 #ifdef feclearexcept
 		feclearexcept(FE_ALL_EXCEPT);
 #elif defined(_MSC_VER)
@@ -358,55 +367,107 @@ namespace core
 #endif
 	}
 
-	REALINLINE f32 reciprocal_squareroot(const f32 x)
+	// calculate: 1 / sqrt ( x )
+	REALINLINE f64 reciprocal_squareroot(const f64 x)
 	{
-#ifdef IRRLICHT_FAST_MATH
+		return 1.0 / sqrt ( x );
+	}
+
+	// calculate: 1 / sqrt ( x )
+	REALINLINE f32 reciprocal_squareroot(const f32 f)
+	{
+#if defined ( IRRLICHT_FAST_MATH )
+	#if defined(_MSC_VER)
+		// SSE reciprocal square root estimate, accurate to 12 significant
+		// bits of the mantissa
+		f32 recsqrt;
+		__asm rsqrtss xmm0, f           // xmm0 = rsqrtss(f)
+		__asm movss recsqrt, xmm0       // return xmm0
+		return recsqrt;
+
+/*
 		// comes from Nvidia
-#if 1
 		u32 tmp = (u32(IEEE_1_0 << 1) + IEEE_1_0 - *(u32*)&x) >> 1;
 		f32 y = *(f32*)&tmp;
 		return y * (1.47f - 0.47f * x * y * y);
-#elif defined(_MSC_VER)
-		// an sse2 version
-		__asm
-		{
-			movss	xmm0, x
-			rsqrtss	xmm0, xmm0
-			movss	x, xmm0
-		}
-		return x;
-#endif
+*/
+	#else
+		return 1.f / sqrtf ( f );
+	#endif
 #else // no fast math
-		return 1.f / sqrtf ( x );
+		return 1.f / sqrtf ( f );
 #endif
 	}
 
-
-
+	// calculate: 1 / x
 	REALINLINE f32 reciprocal ( const f32 f )
 	{
-#ifdef IRRLICHT_FAST_MATH
+#if defined (IRRLICHT_FAST_MATH)
+
+		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
+		// bi ts of the mantissa
+		// One Newtown-Raphson Iteration:
+		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
+		f32 rec;
+		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
+		__asm movss xmm1, f               // xmm1 = f
+		__asm mulss xmm1, xmm0            // xmm1 = f * rcpss(f)
+		__asm mulss xmm1, xmm0            // xmm2 = f * rcpss(f) * rcpss(f)
+		__asm addss xmm0, xmm0            // xmm0 = 2 * rcpss(f)
+		__asm subss xmm0, xmm1            // xmm0 = 2 * rcpss(f) 
+										  //        - f * rcpss(f) * rcpss(f)
+		__asm movss rec, xmm0             // return xmm0
+		return rec;
+
+
 		//! i do not divide through 0.. (fpu expection)
 		// instead set f to a high value to get a return value near zero..
 		// -1000000000000.f.. is use minus to stay negative..
 		// must test's here (plane.normal dot anything ) checks on <= 0.f
-		return 1.f / f;
 		//u32 x = (-(AIR(f) != 0 ) >> 31 ) & ( IR(f) ^ 0xd368d4a5 ) ^ 0xd368d4a5;
 		//return 1.f / FR ( x );
+
 #else // no fast math
 		return 1.f / f;
 #endif
 	}
 
 
-	REALINLINE f32 reciprocal_approxim ( const f32 p )
+	// calculate: 1 / x, low precision allowed
+	REALINLINE f32 reciprocal_approxim ( const f32 f )
 	{
-#ifdef IRRLICHT_FAST_MATH
+#if defined( IRRLICHT_FAST_MATH)
+
+		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
+		// bi ts of the mantissa
+		// One Newtown-Raphson Iteration:
+		// f(i+1) = 2 * rcpss(f) - f * rcpss(f) * rcpss(f)
+		f32 rec;
+		__asm rcpss xmm0, f               // xmm0 = rcpss(f)
+		__asm movss xmm1, f               // xmm1 = f
+		__asm mulss xmm1, xmm0            // xmm1 = f * rcpss(f)
+		__asm mulss xmm1, xmm0            // xmm2 = f * rcpss(f) * rcpss(f)
+		__asm addss xmm0, xmm0            // xmm0 = 2 * rcpss(f)
+		__asm subss xmm0, xmm1            // xmm0 = 2 * rcpss(f) 
+										  //        - f * rcpss(f) * rcpss(f)
+		__asm movss rec, xmm0             // return xmm0
+		return rec;
+
+
+/*
+		// SSE reciprocal estimate, accurate to 12 significant bits of
+		f32 rec;
+		__asm rcpss xmm0, f             // xmm0 = rcpss(f)
+		__asm movss rec , xmm0          // return xmm0
+		return rec;
+*/
+/*
 		register u32 x = 0x7F000000 - IR ( p );
 		const f32 r = FR ( x );
 		return r * (2.0f - p * r);
+*/
 #else // no fast math
-		return 1.f / p;
+		return 1.f / f;
 #endif
 	}
 

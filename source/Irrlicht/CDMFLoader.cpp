@@ -196,16 +196,16 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				if (materiali[i].textureBlend==4)
 					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
 				if (FileSystem->existFile(path+materiali[i].textureName))
-					tex = driver->getTexture((path+materiali[i].textureName).c_str());
+					tex = driver->getTexture((path+materiali[i].textureName));
 				else if (FileSystem->existFile(path+FileSystem->getFileBasename(materiali[i].textureName)))
-					tex = driver->getTexture((path+FileSystem->getFileBasename(materiali[i].textureName)).c_str());
+					tex = driver->getTexture((path+FileSystem->getFileBasename(materiali[i].textureName)));
 				else if (FileSystem->existFile(materiali[i].textureName))
 					tex = driver->getTexture(materiali[i].textureName.c_str());
 				else if (FileSystem->existFile(FileSystem->getFileBasename(materiali[i].textureName)))
-					tex = driver->getTexture(FileSystem->getFileBasename(materiali[i].textureName).c_str());
+					tex = driver->getTexture(FileSystem->getFileBasename(materiali[i].textureName));
 #ifdef _IRR_DMF_DEBUG_
 				else
-					os::Printer::log("Could not load texture", materiali[i].textureName.c_str());
+					os::Printer::log("Could not load texture", materiali[i].textureName);
 #endif // _IRR_DMF_DEBUG_
 			}
 			//Primary texture is just a colour
@@ -234,7 +234,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 
 			//Lightmap is present
 			if (materiali[i].lightmapFlag == 0)
-				lig = driver->getTexture((path+materiali[i].lightmapName).c_str());
+				lig = driver->getTexture((path+materiali[i].lightmapName));
 			else //no lightmap
 			{
 				buffer->Material.MaterialType = video::EMT_SOLID;
@@ -377,9 +377,9 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 /** \brief Tell us if this file is able to be loaded by this class
  based on the file extension (e.g. ".bsp")
  \return true if file is loadable.*/
-bool CDMFLoader::isALoadableFileExtension(const c8* filename) const
+bool CDMFLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".dmf") != 0;
+	return core::hasFileExtension ( filename, "dmf" );
 }
 
 

@@ -52,7 +52,7 @@ namespace video
 class CImageLoaderWAL : public irr::video::IImageLoader
 {
 public:
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
 

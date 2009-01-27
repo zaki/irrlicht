@@ -373,7 +373,7 @@ namespace scene
 		\return The material at that index. */
 		virtual video::SMaterial& getMaterial(u32 num)
 		{
-			return *((video::SMaterial*)0);
+			return video::IdentityMaterial;
 		}
 
 

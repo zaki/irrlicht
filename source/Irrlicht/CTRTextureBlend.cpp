@@ -33,7 +33,7 @@
 #define CMP_W
 #define WRITE_W
 
-//#define IPOL_C0
+#define IPOL_C0
 #define IPOL_T0
 //#define IPOL_T1
 
@@ -87,15 +87,27 @@ public:
 	virtual void drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c );
 
 	virtual void setZCompareFunc ( u32 func);
+	virtual void setParam ( u32 index, f32 value);
+
 
 private:
-	void scanline_bilinear ();
+	// fragment shader
+	typedef void (CTRTextureBlend::*tFragmentShader) ();
+	void fragment_dst_color_zero ();
+	void fragment_dst_color_one ();
+	void fragment_dst_color_src_alpha ();
+	void fragment_dst_color_one_minus_dst_alpha ();
+	void fragment_zero_one_minus_scr_color ();
+	void fragment_src_color_src_alpha ();
+	void fragment_one_one_minus_src_alpha ();
+	void fragment_one_minus_dst_alpha_one();
+	void fragment_src_alpha_one();
 
+	tFragmentShader fragmentShader;
 	sScanConvertData scan;
 	sScanLineData line;
 
 	u32 ZCompare;
-
 };
 
 //! constructor
@@ -109,7 +121,8 @@ CTRTextureBlend::CTRTextureBlend(IDepthBuffer* zbuffer)
 	ZCompare = 1;
 }
 
-
+/*!
+*/
 void CTRTextureBlend::setZCompareFunc ( u32 func)
 {
 	ZCompare = func;
@@ -117,7 +130,95 @@ void CTRTextureBlend::setZCompareFunc ( u32 func)
 
 /*!
 */
-void CTRTextureBlend::scanline_bilinear ()
+void CTRTextureBlend::setParam ( u32 index, f32 value)
+{
+	u8 showname = 0;
+
+	E_BLEND_FACTOR srcFact,dstFact;
+	E_MODULATE_FUNC modulate;
+	unpack_texureBlendFunc ( srcFact, dstFact, modulate, value );
+
+	fragmentShader = 0;
+
+	if ( srcFact == EBF_DST_COLOR && dstFact == EBF_ZERO )
+	{
+		fragmentShader = &CTRTextureBlend::fragment_dst_color_zero;
+	}
+	else
+	if ( srcFact == EBF_DST_COLOR && dstFact == EBF_ONE )
+	{
+		fragmentShader = &CTRTextureBlend::fragment_dst_color_one;
+	}
+	else
+	if ( srcFact == EBF_DST_COLOR && dstFact == EBF_SRC_ALPHA)
+	{
+		fragmentShader = &CTRTextureBlend::fragment_dst_color_src_alpha;
+	}
+	else
+	if ( srcFact == EBF_DST_COLOR && dstFact == EBF_ONE_MINUS_DST_ALPHA)
+	{
+		fragmentShader = &CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha;
+	}
+	else
+	if ( srcFact == EBF_ZERO && dstFact == EBF_ONE_MINUS_SRC_COLOR )
+	{
+		fragmentShader = &CTRTextureBlend::fragment_zero_one_minus_scr_color;
+	}
+	else
+	if ( srcFact == EBF_ONE && dstFact == EBF_ONE_MINUS_SRC_ALPHA)
+	{
+		fragmentShader = &CTRTextureBlend::fragment_one_one_minus_src_alpha;
+	}
+	else
+	if ( srcFact == EBF_ONE_MINUS_DST_ALPHA && dstFact == EBF_ONE )
+	{
+		fragmentShader = &CTRTextureBlend::fragment_one_minus_dst_alpha_one;
+	}
+	else
+	if ( srcFact == EBF_SRC_ALPHA && dstFact == EBF_ONE )
+	{
+		fragmentShader = &CTRTextureBlend::fragment_src_alpha_one;
+	}
+	else
+	{
+		showname = 1;
+		fragmentShader = &CTRTextureBlend::fragment_dst_color_zero;
+	}
+
+	static const c8 *n[] = 
+	{ 
+		"gl_zero",
+		"gl_one",
+		"gl_dst_color",
+		"gl_one_minus_dst_color",
+		"gl_src_color",
+		"gl_one_minus_src_color",
+		"gl_src_alpha",
+		"gl_one_minus_src_alpha",
+		"gl_dst_alpha",
+		"gl_one_minus_dst_alpha",
+		"gl_src_alpha_saturate"
+	};
+
+	static E_BLEND_FACTOR lsrcFact = EBF_ZERO;
+	static E_BLEND_FACTOR ldstFact = EBF_ZERO;
+
+	if ( showname && ( lsrcFact != srcFact || ldstFact != dstFact ) )
+	{
+		char buf[128];
+		snprintf ( buf, 128, "missing shader: %s %s",n[srcFact], n[dstFact] );
+		os::Printer::log( buf, ELL_INFORMATION );
+
+		lsrcFact = srcFact;
+		ldstFact = dstFact;
+	}
+
+}
+
+
+/*!
+*/
+void CTRTextureBlend::fragment_dst_color_src_alpha ()
 {
 	tVideoSample *dst;
 
@@ -141,7 +242,7 @@ void CTRTextureBlend::scanline_bilinear ()
 	fp24 slopeW;
 #endif
 #ifdef IPOL_C0
-	sVec4 slopeC;
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
 #endif
 #ifdef IPOL_T0
 	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
@@ -166,7 +267,7 @@ void CTRTextureBlend::scanline_bilinear ()
 	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
 #endif
 #ifdef IPOL_C0
-	slopeC = (line.c[1] - line.c[0]) * invDeltaX;
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
 #endif
 #ifdef IPOL_T0
 	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
@@ -184,7 +285,7 @@ void CTRTextureBlend::scanline_bilinear ()
 	line.w[0] += slopeW * subPixel;
 #endif
 #ifdef IPOL_C0
-	line.c[0] += slopeC * subPixel;
+	line.c[0][0] += slopeC[0] * subPixel;
 #endif
 #ifdef IPOL_T0
 	line.t[0][0] += slopeT[0] * subPixel;
@@ -194,17 +295,17 @@ void CTRTextureBlend::scanline_bilinear ()
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
-	f32 inversew = 	FIX_POINT_F32_MUL;
+	f32 iw = 	FIX_POINT_F32_MUL;
 
-	tFixPoint r0, g0, b0;
-	tFixPoint r1, g1, b1;
+	tFixPoint a0, r0, g0, b0;
+	tFixPoint     r1, g1, b1;
 
 	s32 i;
 
@@ -223,21 +324,21 @@ void CTRTextureBlend::scanline_bilinear ()
 			z[i] = line.w[0];
 #endif
 
-#ifdef INVERSEW
-		inversew = fix_inverse32 ( line.w[0] );
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
 #endif
 
-		getSample_texture ( r0, g0, b0, 
+		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
 							&IT[0],
-							f32_to_fixPoint ( line.t[0][0].x,inversew),
-							f32_to_fixPoint ( line.t[0][0].y,inversew)
+							tofix ( line.t[0][0].x,iw),
+							tofix ( line.t[0][0].y,iw)
 						);
-
+	
 		color_to_fix ( r1, g1, b1, dst[i] );
 
-		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex4 ( r0, r1 ) ),
-								clampfix_maxcolor ( imulFix_tex4 ( g0, g1 ) ),
-								clampfix_maxcolor ( imulFix_tex4 ( b0, b1 ) )
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( b0, b1 ) )
 							);
 		}
 
@@ -246,6 +347,9 @@ void CTRTextureBlend::scanline_bilinear ()
 #endif
 #ifdef IPOL_T0
 		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
 #endif
 	}
 	break;
@@ -263,20 +367,162 @@ void CTRTextureBlend::scanline_bilinear ()
 			z[i] = line.w[0];
 #endif
 
-#ifdef INVERSEW
-		inversew = fix_inverse32 ( line.w[0] );
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
 #endif
-		getSample_texture ( r0, g0, b0, 
-							&IT[0],
-							f32_to_fixPoint ( line.t[0][0].x,inversew),
-							f32_to_fixPoint ( line.t[0][0].y,inversew)
-						);
 
+		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+							&IT[0],
+							tofix ( line.t[0][0].x,iw),
+							tofix ( line.t[0][0].y,iw)
+						);
+	
 		color_to_fix ( r1, g1, b1, dst[i] );
 
-		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex4 ( r0, r1 ) ),
-								clampfix_maxcolor ( imulFix_tex4 ( g0, g1 ) ),
-								clampfix_maxcolor ( imulFix_tex4 ( b0, b1 ) )
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( b0, b1 ) )
+							);
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+/*!
+*/
+void CTRTextureBlend::fragment_src_color_src_alpha ()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = 	FIX_POINT_F32_MUL;
+
+	tFixPoint a0, r0, g0, b0;
+	tFixPoint     r1, g1, b1;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+							&IT[0],
+							tofix ( line.t[0][0].x,iw),
+							tofix ( line.t[0][0].y,iw)
+						);
+	
+		color_to_fix ( r1, g1, b1, dst[i] );
+
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( b0, b1 ) )
 							);
 		}
 
@@ -286,17 +532,1471 @@ void CTRTextureBlend::scanline_bilinear ()
 #ifdef IPOL_T0
 		line.t[0][0] += slopeT[0];
 #endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
+							&IT[0],
+							tofix ( line.t[0][0].x,iw),
+							tofix ( line.t[0][0].y,iw)
+						);
+	
+		color_to_fix ( r1, g1, b1, dst[i] );
+
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
+								clampfix_maxcolor ( imulFix_tex2 ( b0, b1 ) )
+							);
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
 	}break;
 	} // zcompare
 
 }
 
+/*!
+*/
+void CTRTextureBlend::fragment_one_one_minus_src_alpha()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = FIX_POINT_F32_MUL;
+
+	tFixPointu a0,r0, g0, b0;
+	tFixPoint	 r1, g1, b1;
+	tFixPoint	 r2, g2, b2;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( a0, r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		a0 = FIX_POINT_ONE - a0;
+
+		color_to_fix1 ( r1, g1, b1, dst[i] );
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( imulFix ( r0 + imulFix ( r1, a0 ), r2 ),
+								imulFix ( g0 + imulFix ( g1, a0 ), g2 ),
+								imulFix ( b0 + imulFix ( b1, a0 ), b2 )
+							);
+#else
+		dst[i] = fix_to_color ( r0 + imulFix ( r1, a0 ),
+								g0 + imulFix ( g1, a0 ),
+								b0 + imulFix ( b1, a0 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+		getSample_texture ( a0, r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		a0 = FIX_POINT_ONE - a0;
+
+		color_to_fix1 ( r1, g1, b1, dst[i] );
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( imulFix ( r0 + imulFix ( r1, a0 ), r2 ),
+								imulFix ( g0 + imulFix ( g1, a0 ), g2 ),
+								imulFix ( b0 + imulFix ( b1, a0 ), b2 )
+							);
+#else
+		dst[i] = fix_to_color ( r0 + imulFix ( r1, a0 ),
+								g0 + imulFix ( g1, a0 ),
+								b0 + imulFix ( b1, a0 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+/*!
+*/
+void CTRTextureBlend::fragment_one_minus_dst_alpha_one ()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = FIX_POINT_F32_MUL;
+
+	tFixPoint r0, g0, b0;
+	tFixPoint a1, r1, g1, b1;
+	tFixPoint r2, g2, b2;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		a1 = FIX_POINT_ONE - a1;
+		dst[i] = fix_to_color ( imulFix ( imulFix ( r0, a1 ) + r1, r2 ),
+								imulFix ( imulFix ( g0, a1 ) + g1, g2 ),
+								imulFix ( imulFix ( b0, a1 ) + b1, b2 )
+							);
+#else
+		dst[i] = fix_to_color ( imulFix ( r0, a1) + r0,
+								imulFix ( g0, a1) + g0,
+								imulFix ( b0, a1) + b0
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		a1 = FIX_POINT_ONE - a1;
+		dst[i] = fix_to_color ( imulFix ( imulFix ( r0, a1 ) + r1, r2 ),
+								imulFix ( imulFix ( g0, a1 ) + g1, g2 ),
+								imulFix ( imulFix ( b0, a1 ) + b1, b2 )
+							);
+#else
+		dst[i] = fix_to_color ( imulFix ( r0, a1) + r0,
+								imulFix ( g0, a1) + g0,
+								imulFix ( b0, a1) + b0
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+/*!
+*/
+void CTRTextureBlend::fragment_src_alpha_one ()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = FIX_POINT_F32_MUL;
+
+	tFixPointu a0, r0, g0, b0;
+	tFixPoint r1, g1, b1;
+	tFixPoint r2, g2, b2;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( a0, r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		if ( a0 > 0 )
+		{
+		a0 >>= 8;
+
+		color_to_fix ( r1, g1, b1, dst[i] );
+
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix4_to_color ( a0,
+								 clampfix_maxcolor ( imulFix (r0,a0 ) + r1),
+								 clampfix_maxcolor ( imulFix (g0,a0 ) + g1),
+								 clampfix_maxcolor ( imulFix (b0,a0 ) + b1)
+								);
+
+/*
+		a0 >>= 8;
+		dst[i] = fix4_to_color ( a0,
+								imulFix ( imulFix ( r0, a0 ) + r1, r2 ),
+								imulFix ( imulFix ( g0, a0 ) + g1, g2 ),
+								imulFix ( imulFix ( b0, a0 ) + b1, b2 )
+							);
+*/
+#else
+		dst[i] = fix4_to_color ( a0,
+								 clampfix_maxcolor ( imulFix (r0,a0 ) + r1 ),
+								 clampfix_maxcolor ( imulFix (g0,a0 ) + g1 ),
+								 clampfix_maxcolor ( imulFix (b0,a0 ) + b1 )
+								);
+
+#endif
+
+#ifdef WRITE_W
+			//z[i] = line.w[0];
+#endif
+		}
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+		{
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( a0, r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		if ( a0 > 0 )
+		{
+		a0 >>= 8;
+
+		color_to_fix ( r1, g1, b1, dst[i] );
+
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix4_to_color ( a0,
+								 clampfix_maxcolor ( imulFix ( imulFix (r0,a0 ) + r1, r2 ) ),
+								 clampfix_maxcolor ( imulFix ( imulFix (g0,a0 ) + g1, g2 ) ),
+								 clampfix_maxcolor ( imulFix ( imulFix (b0,a0 ) + b1, b2 ) )
+								);
+
+/*
+		a0 >>= 8;
+		dst[i] = fix4_to_color ( a0,
+								imulFix ( imulFix ( r0, a0 ) + r1, r2 ),
+								imulFix ( imulFix ( g0, a0 ) + g1, g2 ),
+								imulFix ( imulFix ( b0, a0 ) + b1, b2 )
+							);
+*/
+#else
+		dst[i] = fix4_to_color ( a0,
+								 clampfix_maxcolor ( imulFix (r0,a0 ) + r1 ),
+								 clampfix_maxcolor ( imulFix (g0,a0 ) + g1 ),
+								 clampfix_maxcolor ( imulFix (b0,a0 ) + b1 )
+								);
+
+#endif
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+		}
+		}
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+
+/*!
+*/
+void CTRTextureBlend::fragment_dst_color_one_minus_dst_alpha ()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = FIX_POINT_F32_MUL;
+
+	tFixPoint r0, g0, b0;
+	tFixPoint a1, r1, g1, b1;
+	tFixPoint r2, g2, b2;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		a1 = FIX_POINT_ONE - a1;
+		dst[i] = fix_to_color ( imulFix ( imulFix ( r1, r0 + a1 ), r2 ),
+								imulFix ( imulFix ( g1, g0 + a1 ), g2 ),
+								imulFix ( imulFix ( b1, b0 + a1 ), b2 )
+							);
+#else
+		dst[i] = fix_to_color ( imulFix ( r1, r0 + a1 ),
+								imulFix ( g1, g0 + a1 ),
+								imulFix ( b1, b0 + a1 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( a1, r1, g1, b1, dst[i] );
+
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		a1 = FIX_POINT_ONE - a1;
+		dst[i] = fix_to_color ( imulFix ( imulFix ( r1, r0 + a1 ), r2 ),
+								imulFix ( imulFix ( g1, g0 + a1 ), g2 ),
+								imulFix ( imulFix ( b1, b0 + a1 ), b2 )
+							);
+#else
+		dst[i] = fix_to_color ( imulFix ( r1, r0 + a1 ),
+								imulFix ( g1, g0 + a1 ),
+								imulFix ( b1, b0 + a1 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+/*!
+*/
+void CTRTextureBlend::fragment_dst_color_zero ()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = FIX_POINT_F32_MUL;
+
+	tFixPoint r0, g0, b0;
+	tFixPoint r1, g1, b1;
+	tFixPoint r2, g2, b2;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( r1, g1, b1, dst[i] );
+
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( imulFix ( imulFix ( r0, r1 ), r2 ),
+								imulFix ( imulFix ( g0, g1 ), g2 ),
+								imulFix ( imulFix ( b0, b1 ), b2 ) );
+#else
+		dst[i] = fix_to_color ( imulFix ( r0, r1 ),
+								imulFix ( g0, g1 ),
+								imulFix ( b0, b1 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( r1, g1, b1, dst[i] );
+
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( imulFix ( imulFix ( r0, r1 ), r2 ),
+								imulFix ( imulFix ( g0, g1 ), g2 ),
+								imulFix ( imulFix ( b0, b1 ), b2 )
+							);
+#else
+		dst[i] = fix_to_color ( imulFix ( r0, r1 ),
+								imulFix ( g0, g1 ),
+								imulFix ( b0, b1 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+/*!
+*/
+void CTRTextureBlend::fragment_dst_color_one ()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = FIX_POINT_F32_MUL;
+
+	tFixPoint r0, g0, b0;
+	tFixPoint r1, g1, b1;
+	tFixPoint r2, g2, b2;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix ( r1, g1, b1, dst[i] );
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex1 ( r0, r1 ) + r1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( g0, g1 ) + g1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( b0, b1 ) + b1 )
+							);
+
+#else
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex1 ( r0, r1 ) + r1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( g0, g1 ) + g1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( b0, b1 ) + b1 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix ( r1, g1, b1, dst[i] );
+
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex1 ( r0, r1 ) + r1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( g0, g1 ) + g1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( b0, b1 ) + b1 )
+							);
+
+#else
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex1 ( r0, r1 ) + r1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( g0, g1 ) + g1 ),
+								clampfix_maxcolor ( imulFix_tex1 ( b0, b1 ) + b1 )
+							);
+
+#endif
+
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+/*!
+*/
+void CTRTextureBlend::fragment_zero_one_minus_scr_color ()
+{
+	tVideoSample *dst;
+
+#ifdef USE_ZBUFFER
+	fp24 *z;
+#endif
+
+	s32 xStart;
+	s32 xEnd;
+	s32 dx;
+
+
+#ifdef SUBTEXEL
+	f32 subPixel;
+#endif
+
+#ifdef IPOL_Z
+	f32 slopeZ;
+#endif
+#ifdef IPOL_W
+	fp24 slopeW;
+#endif
+#ifdef IPOL_C0
+	sVec4 slopeC[MATERIAL_MAX_COLORS];
+#endif
+#ifdef IPOL_T0
+	sVec2 slopeT[BURNING_MATERIAL_MAX_TEXTURES];
+#endif
+
+	// apply top-left fill-convention, left
+	xStart = core::ceil32( line.x[0] );
+	xEnd = core::ceil32( line.x[1] ) - 1;
+
+	dx = xEnd - xStart;
+
+	if ( dx < 0 )
+		return;
+
+	// slopes
+	const f32 invDeltaX = core::reciprocal_approxim ( line.x[1] - line.x[0] );
+
+#ifdef IPOL_Z
+	slopeZ = (line.z[1] - line.z[0]) * invDeltaX;
+#endif
+#ifdef IPOL_W
+	slopeW = (line.w[1] - line.w[0]) * invDeltaX;
+#endif
+#ifdef IPOL_C0
+	slopeC[0] = (line.c[0][1] - line.c[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T0
+	slopeT[0] = (line.t[0][1] - line.t[0][0]) * invDeltaX;
+#endif
+#ifdef IPOL_T1
+	slopeT[1] = (line.t[1][1] - line.t[1][0]) * invDeltaX;
+#endif
+
+#ifdef SUBTEXEL
+	subPixel = ( (f32) xStart ) - line.x[0];
+#ifdef IPOL_Z
+	line.z[0] += slopeZ * subPixel;
+#endif
+#ifdef IPOL_W
+	line.w[0] += slopeW * subPixel;
+#endif
+#ifdef IPOL_C0
+	line.c[0][0] += slopeC[0] * subPixel;
+#endif
+#ifdef IPOL_T0
+	line.t[0][0] += slopeT[0] * subPixel;
+#endif
+#ifdef IPOL_T1
+	line.t[1][0] += slopeT[1] * subPixel;
+#endif
+#endif
+
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#endif
+
+
+	f32 iw = FIX_POINT_F32_MUL;
+
+	tFixPoint r0, g0, b0;
+	tFixPoint r1, g1, b1;
+	tFixPoint r2, g2, b2;
+
+	s32 i;
+
+	switch ( ZCompare )
+	{
+	case 1:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( r1, g1, b1, dst[i] );
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( imulFix ( FIX_POINT_ONE - r0, r1 ),
+								imulFix ( FIX_POINT_ONE - g0, g1 ),
+								imulFix ( FIX_POINT_ONE - b0, b1 )
+							);
+
+#else
+		dst[i] = fix_to_color ( imulFix ( FIX_POINT_ONE - r0, r1 ),
+								imulFix ( FIX_POINT_ONE - g0, g1 ),
+								imulFix ( FIX_POINT_ONE - b0, b1 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}
+	break;
+
+	case 2:
+	for ( i = 0; i <= dx; ++i )
+	{
+#ifdef CMP_W
+		if ( line.w[0] == z[i] )
+#endif
+
+		{
+
+#ifdef WRITE_W
+			z[i] = line.w[0];
+#endif
+
+#ifdef INVERSE_W
+		iw = fix_inverse32 ( line.w[0] );
+#endif
+		getSample_texture ( r0, g0, b0, IT + 0, tofix ( line.t[0][0].x,iw),tofix ( line.t[0][0].y,iw) );
+		color_to_fix1 ( r1, g1, b1, dst[i] );
+#ifdef IPOL_C0
+		getSample_color ( r2, g2, b2, line.c[0][0],iw );
+
+		dst[i] = fix_to_color ( imulFix ( FIX_POINT_ONE - r0, r1 ),
+								imulFix ( FIX_POINT_ONE - g0, g1 ),
+								imulFix ( FIX_POINT_ONE - b0, b1 )
+							);
+
+#else
+		dst[i] = fix_to_color ( imulFix ( FIX_POINT_ONE - r0, r1 ),
+								imulFix ( FIX_POINT_ONE - g0, g1 ),
+								imulFix ( FIX_POINT_ONE - b0, b1 )
+							);
+
+#endif
+
+		}
+
+#ifdef IPOL_W
+		line.w[0] += slopeW;
+#endif
+#ifdef IPOL_T0
+		line.t[0][0] += slopeT[0];
+#endif
+#ifdef IPOL_C0
+		line.c[0][0] += slopeC[0];
+#endif
+	}break;
+	} // zcompare
+
+}
+
+
+
 void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4DVertex *c )
 {
+	if ( 0 == fragmentShader )
+		return;
+
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -334,8 +2034,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-	scan.slopeC[0] = (c->Color[0] - a->Color[0]) * scan.invDeltaY[0];
-	scan.c[0] = a->Color[0];
+	scan.slopeC[0][0] = (c->Color[0] - a->Color[0]) * scan.invDeltaY[0];
+	scan.c[0][0] = a->Color[0];
 #endif
 
 #ifdef IPOL_T0
@@ -354,12 +2054,6 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 
 #ifdef SUBTEXEL
 	f32 subPixel;
-#endif
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 #ifdef IPOL_T0
@@ -388,8 +2082,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-		scan.slopeC[1] = (b->Color[0] - a->Color[0]) * scan.invDeltaY[1];
-		scan.c[1] = a->Color[0];
+		scan.slopeC[0][1] = (b->Color[0] - a->Color[0]) * scan.invDeltaY[1];
+		scan.c[0][1] = a->Color[0];
 #endif
 
 #ifdef IPOL_T0
@@ -424,8 +2118,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-		scan.c[0] += scan.slopeC[0] * subPixel;
-		scan.c[1] += scan.slopeC[1] * subPixel;		
+		scan.c[0][0] += scan.slopeC[0][0] * subPixel;
+		scan.c[0][1] += scan.slopeC[0][1] * subPixel;		
 #endif
 
 #ifdef IPOL_T0
@@ -457,8 +2151,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-			line.c[scan.left] = scan.c[0];
-			line.c[scan.right] = scan.c[1];
+			line.c[0][scan.left] = scan.c[0][0];
+			line.c[0][scan.right] = scan.c[0][1];
 #endif
 
 #ifdef IPOL_T0
@@ -472,7 +2166,7 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 			// render a scanline
-			scanline_bilinear ( );
+			(this->*fragmentShader) ();
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];
@@ -488,8 +2182,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-			scan.c[0] += scan.slopeC[0];
-			scan.c[1] += scan.slopeC[1];
+			scan.c[0][0] += scan.slopeC[0][0];
+			scan.c[0][1] += scan.slopeC[0][1];
 #endif
 
 #ifdef IPOL_T0
@@ -521,7 +2215,7 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 			scan.w[0] = a->Pos.w + scan.slopeW[0] * temp[0];
 #endif
 #ifdef IPOL_C0
-			scan.c[0] = a->Color[0] + scan.slopeC[0] * temp[0];
+			scan.c[0][0] = a->Color[0] + scan.slopeC[0][0] * temp[0];
 #endif
 #ifdef IPOL_T0
 			scan.t[0][0] = a->Tex[0] + scan.slopeT[0][0] * temp[0];
@@ -547,8 +2241,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-		scan.slopeC[1] = (c->Color[0] - b->Color[0]) * scan.invDeltaY[2];
-		scan.c[1] = b->Color[0];
+		scan.slopeC[0][1] = (c->Color[0] - b->Color[0]) * scan.invDeltaY[2];
+		scan.c[0][1] = b->Color[0];
 #endif
 
 #ifdef IPOL_T0
@@ -584,8 +2278,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-		scan.c[0] += scan.slopeC[0] * subPixel;
-		scan.c[1] += scan.slopeC[1] * subPixel;		
+		scan.c[0][0] += scan.slopeC[0][0] * subPixel;
+		scan.c[0][1] += scan.slopeC[0][1] * subPixel;		
 #endif
 
 #ifdef IPOL_T0
@@ -617,8 +2311,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-			line.c[scan.left] = scan.c[0];
-			line.c[scan.right] = scan.c[1];
+			line.c[0][scan.left] = scan.c[0][0];
+			line.c[0][scan.right] = scan.c[0][1];
 #endif
 
 #ifdef IPOL_T0
@@ -632,7 +2326,7 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 			// render a scanline
-			scanline_bilinear ( );
+			(this->*fragmentShader) ();
 
 			scan.x[0] += scan.slopeX[0];
 			scan.x[1] += scan.slopeX[1];
@@ -648,8 +2342,8 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 #ifdef IPOL_C0
-			scan.c[0] += scan.slopeC[0];
-			scan.c[1] += scan.slopeC[1];
+			scan.c[0][0] += scan.slopeC[0][0];
+			scan.c[0][1] += scan.slopeC[0][1];
 #endif
 
 #ifdef IPOL_T0
@@ -680,6 +2374,7 @@ void CTRTextureBlend::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 #endif
 
 }
+
 
 
 } // end namespace video

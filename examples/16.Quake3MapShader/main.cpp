@@ -191,6 +191,9 @@ int IRRCALLCONV main(int argc, char* argv[])
 
 
 
+	// Quake3 Shader controls Z-Writing
+	smgr->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
+
 	/*
 	Now we can load the mesh by calling getMesh(). We get a pointer returned
 	to a IAnimatedMesh. As you know, Quake 3 maps are not really animated,
@@ -251,7 +254,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 			s32 shaderIndex = (s32) material.MaterialTypeParam2;
 
 			// the meshbuffer can be rendered without additional support, or it has no shader
-			const quake3::SShader *shader = mesh->getShader ( shaderIndex );
+			const quake3::IShader *shader = mesh->getShader ( shaderIndex );
 			if ( 0 == shader )
 			{
 				continue;
@@ -294,8 +297,6 @@ int IRRCALLCONV main(int argc, char* argv[])
 		}
 
 
-		// original mesh is not needed anymore
-		mesh->releaseMesh ( quake3::E_Q3_MESH_ITEMS );
 	}
 
 	/*
@@ -422,6 +423,12 @@ int IRRCALLCONV main(int argc, char* argv[])
 			str += calls;
 			str += "/";
 			str += culled;
+			str += " Draw: ";
+			str += attr->getAttributeAsInt ( "drawn_solid" );
+			str += "/";
+			str += attr->getAttributeAsInt ( "drawn_transparent" );
+			str += "/";
+			str += attr->getAttributeAsInt ( "drawn_transparent_effect" );
 
 			device->setWindowCaption(str.c_str());
 			lastFPS = fps;

@@ -102,9 +102,9 @@ CMD2MeshFileLoader::CMD2MeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CMD2MeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CMD2MeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".md2")!=0;
+	return core::hasFileExtension ( filename, "md2" );
 }
 
 
