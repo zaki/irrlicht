@@ -74,21 +74,23 @@ public:
 
 	//! Gets kerning values (distance between letters) for the font. If no parameters are provided,
 	/** the global kerning distance is returned.
-	\param thisLetter: If this parameter is provided, the left side kerning for this letter is added
-	to the global kerning value. For example, a space might only be one pixel wide, but it may
-	be displayed as several pixels.
-	\param previousLetter: If provided, kerning is calculated for both letters and added to the global
-	kerning value. For example, in a font which supports kerning pairs a string such as 'Wo' may have
-	the 'o' tucked neatly under the 'W'.
+	\param thisLetter: If this parameter is provided, the left side kerning
+	for this letter is added to the global kerning value. For example, a
+	space might only be one pixel wide, but it may be displayed as several
+	pixels.
+	\param previousLetter: If provided, kerning is calculated for both
+	letters and added to the global kerning value. For example, in a font
+	which supports kerning pairs a string such as 'Wo' may have the 'o'
+	tucked neatly under the 'W'.
 	*/
 	virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const = 0;
 
 	//! Returns the distance between letters
 	virtual s32 getKerningHeight() const = 0;
 
-	//! define which characters should not be drawn by the font. for example " " would
-	// not draw any space which is usually blank in most fonts.
-	/**
+	//! Define which characters should not be drawn by the font.
+	/** For example " " would not draw any space which is usually blank in
+	most fonts.
 	\param invisible: string of symbols, which are not send down to the videodriver
 	*/
 	virtual void setInvisibleCharacters( const wchar_t *s ) = 0;

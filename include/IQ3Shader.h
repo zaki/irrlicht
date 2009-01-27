@@ -189,7 +189,7 @@ namespace quake3
 	// return a z-test
 	inline u8 getDepthFunction ( const core::stringc &string )
 	{
-		u8 ret = video::EMDF_DEPTH_LESS_EQUAL;
+		u8 ret = video::ECFN_LESSEQUAL;
 
 		if ( string.size() == 0 )
 			return ret;

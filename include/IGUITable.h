@@ -127,7 +127,7 @@ namespace gui
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const = 0;
 
-		//! Returns amount of rows in the tabcontrol
+		//! Get amount of rows in the tabcontrol
 		virtual s32 getRowCount() const = 0;
 
 		//! adds a row to the table
@@ -137,7 +137,7 @@ namespace gui
 		number of row by more than one, it won't be created.  Note that
 		if you create a row that's not at the end, there might be
 		performance issues. 
-		\returns: index of inteserted row*/
+		\return index of inserted row. */
 		virtual u32 addRow(u32 rowIndex) = 0;
 
 		//! Remove a row from the table
