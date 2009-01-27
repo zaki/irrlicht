@@ -188,10 +188,10 @@ void CTRGouraudAlpha2::scanline_bilinear ()
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -269,8 +269,8 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 {
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -328,12 +328,6 @@ void CTRGouraudAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,cons
 
 #ifdef SUBTEXEL
 	f32 subPixel;
-#endif
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 #ifdef IPOL_T0

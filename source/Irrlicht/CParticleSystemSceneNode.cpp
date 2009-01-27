@@ -613,10 +613,15 @@ void CParticleSystemSceneNode::deserializeAttributes(io::IAttributes* in, io::SA
 
 	u32 idx = 0;
 
+#if 0
 	if (Emitter)
 		idx = Emitter->deserializeAttributes(idx, in);
 
 	++idx;
+#else
+	if (Emitter)
+		Emitter->deserializeAttributes(in);
+#endif
 
 	// read affectors
 
@@ -655,8 +660,13 @@ void CParticleSystemSceneNode::deserializeAttributes(io::IAttributes* in, io::SA
 
 		if (aff)
 		{
+#if 0
 			idx = aff->deserializeAttributes(idx, in, options);
 			++idx;
+#else
+			aff->deserializeAttributes(in, options);
+#endif
+
 			addAffector(aff);
 			aff->drop();
 		}

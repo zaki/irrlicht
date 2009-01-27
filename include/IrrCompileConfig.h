@@ -42,9 +42,12 @@
 
 // XBox only suppots the native Window stuff
 #if defined(_XBOX)
-#define _IRR_XBOX_PLATFORM_
-#define _IRR_WINDOWS_API_
-#define _IRR_USE_WINDOWS_DEVICE_
+	#undef _IRR_WINDOWS_
+	#define _IRR_XBOX_PLATFORM_
+	#define _IRR_WINDOWS_API_
+	//#define _IRR_USE_WINDOWS_DEVICE_
+	#undef _IRR_USE_WINDOWS_DEVICE_
+	//#define _IRR_USE_SDL_DEVICE_
 #endif
 
 #if defined(__APPLE__) || defined(MACOSX)
@@ -85,7 +88,7 @@ to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
 and this to the linker settings: -ld3dx9 -ld3dx8 **/
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
-//#define _IRR_COMPILE_WITH_DIRECT3D_8_
+#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif
@@ -128,6 +131,13 @@ define out. */
 /** Disable this if you are using an external library to draw the GUI. If you disable this then
 you will not be able to use anything provided by the GUI Environment, including loading fonts. */
 #define _IRR_COMPILE_WITH_GUI_
+
+
+//! Define _IRR_WCHAR_FILESYSTEM to enable unicode filesystem support for the engine.
+/** This enables the engine to read/write from unicode filesystem. If you
+disable this feature, the engine behave as before ( ansi)
+ones. */
+//#define _IRR_WCHAR_FILESYSTEM
 
 //! Define _IRR_COMPILE_WITH_ZLIB_ to enable compiling the engine using zlib.
 /** This enables the engine to read from compressed .zip archives. If you
@@ -201,7 +211,7 @@ tool <http://developer.nvidia.com/object/nvperfhud_home.html>. */
 #define BURNINGVIDEO_RENDERER_BEAUTIFUL
 //#define BURNINGVIDEO_RENDERER_FAST
 //#define BURNINGVIDEO_RENDERER_ULTRA_FAST
-
+//#define BURNINGVIDEO_RENDERER_CE
 
 //! Define _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_ if you want to use bone based
 /** animated meshes. If you compile without this, you will be unable to load
@@ -341,24 +351,64 @@ precision will be lower but speed higher. currently X86 only
 
 // XBox does not have OpenGL or DirectX9
 #if defined(_IRR_XBOX_PLATFORM_)
-#undef _IRR_COMPILE_WITH_OPENGL_
-#undef _IRR_COMPILE_WITH_DIRECT3D_9_
+	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
 #endif
 
-// WinCE does not have OpenGL or DirectX9
+//! WinCE does not have OpenGL or DirectX9. use minimal loaders
 #if defined(_WIN32_WCE)
 	#undef _IRR_COMPILE_WITH_OPENGL_
 	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
 	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
-	#undef _IRR_COMPILE_WITH_SOFTWARE_
+
 	#undef BURNINGVIDEO_RENDERER_BEAUTIFUL
+	#undef BURNINGVIDEO_RENDERER_FAST
+	#undef BURNINGVIDEO_RENDERER_ULTRA_FAST
+	#define BURNINGVIDEO_RENDERER_CE
+
 	#undef _IRR_USE_WINDOWS_DEVICE_
 	#define _IRR_USE_WINDOWS_CE_DEVICE_
-	#define BURNINGVIDEO_RENDERER_CE
+	//#define _IRR_WCHAR_FILESYSTEM
+
+	#undef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
+	//#undef _IRR_COMPILE_WITH_MD2_LOADER_
+	#undef _IRR_COMPILE_WITH_MD3_LOADER_
+	#undef _IRR_COMPILE_WITH_3DS_LOADER_
+	#undef _IRR_COMPILE_WITH_COLLADA_LOADER_
+	#undef _IRR_COMPILE_WITH_CSM_LOADER_
+	#undef _IRR_COMPILE_WITH_BSP_LOADER_
+	#undef _IRR_COMPILE_WITH_DMF_LOADER_
+	#undef _IRR_COMPILE_WITH_LMTS_LOADER_
+	#undef _IRR_COMPILE_WITH_MY3D_LOADER_
+	#undef _IRR_COMPILE_WITH_OBJ_LOADER_
+	#undef _IRR_COMPILE_WITH_OCT_LOADER_
+	#undef _IRR_COMPILE_WITH_OGRE_LOADER_
+	#undef _IRR_COMPILE_WITH_LWO_LOADER_
+	#undef _IRR_COMPILE_WITH_STL_LOADER_
+	#undef _IRR_COMPILE_WITH_IRR_WRITER_
+	#undef _IRR_COMPILE_WITH_COLLADA_WRITER_
+	#undef _IRR_COMPILE_WITH_STL_WRITER_
+	#undef _IRR_COMPILE_WITH_OBJ_WRITER_
+	//#undef _IRR_COMPILE_WITH_BMP_LOADER_
+	//#undef _IRR_COMPILE_WITH_JPG_LOADER_
+	#undef _IRR_COMPILE_WITH_PCX_LOADER_
+	//#undef _IRR_COMPILE_WITH_PNG_LOADER_
+	#undef _IRR_COMPILE_WITH_PPM_LOADER_
+	#undef _IRR_COMPILE_WITH_PSD_LOADER_
+	//#undef _IRR_COMPILE_WITH_TGA_LOADER_
+	#undef _IRR_COMPILE_WITH_WAL_LOADER_
+	#undef _IRR_COMPILE_WITH_BMP_WRITER_
+	#undef _IRR_COMPILE_WITH_JPG_WRITER_
+	#undef _IRR_COMPILE_WITH_PCX_WRITER_
+	#undef _IRR_COMPILE_WITH_PNG_WRITER_
+	#undef _IRR_COMPILE_WITH_PPM_WRITER_
+	#undef _IRR_COMPILE_WITH_PSD_WRITER_
+	#undef _IRR_COMPILE_WITH_TGA_WRITER_
+
 #endif
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
-#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__

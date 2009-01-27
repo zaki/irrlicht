@@ -3,19 +3,84 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // Code contributed by skreamz
 
+#include "IrrCompileConfig.h"
 #include "CPakReader.h"
 #include "os.h"
-
-#include "IrrCompileConfig.h"
+#include "coreutil.h"
 
 namespace irr
 {
 namespace io
 {
 
+//! Constructor
+CArchiveLoaderPAK::CArchiveLoaderPAK( io::IFileSystem* fs)
+: FileSystem(fs)
+{
+	#ifdef _DEBUG
+	setDebugName("CArchiveLoaderPAK");
+	#endif
+}
 
+
+//! destructor
+CArchiveLoaderPAK::~CArchiveLoaderPAK()
+{
+}
+
+
+//! returns true if the file maybe is able to be loaded by this class
+bool CArchiveLoaderPAK::isALoadableFileFormat(const core::string<c16>& filename) const
+{
+	return core::hasFileExtension ( filename, "zip", "pk3" );
+}
+
+
+//! Creates an archive from the filename
+/** \param file File handle to check.
+\return Pointer to newly created archive, or 0 upon error. */
+IFileArchive* CArchiveLoaderPAK::createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const
+{
+	IFileArchive *archive = 0;
+	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
+
+	if (file)
+	{
+		archive = createArchive ( file, ignoreCase, ignorePaths );
+		file->drop ();
+	}
+	
+	return archive;
+}
+
+//! creates/loads an archive from the file.
+//! \return Pointer to the created archive. Returns 0 if loading failed.
+IFileArchive* CArchiveLoaderPAK::createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const
+{
+	IFileArchive *archive = 0;
+	if ( file )
+	{
+		file->seek ( 0 );
+		archive = new CPakReader(file, ignoreCase, ignorePaths);
+	}
+	return archive;
+}
+
+//! Check if the file might be loaded by this class
+/** Check might look into the file.
+\param file File handle to check.
+\return True if file seems to be loadable. */
+bool CArchiveLoaderPAK::isALoadableFileFormat(io::IReadFile* file) const
+{
+	return false;
+}
+
+
+/*!
+	PAK Reader
+*/
 CPakReader::CPakReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
-: File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths)
+: File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths), Type ( "pak" )
 {
 	#ifdef _DEBUG
 	setDebugName("CPakReader");
@@ -52,7 +117,7 @@ void CPakReader::extractFilename(SPakFileEntry* entry)
 	if (IgnoreCase)
 		entry->pakFileName.make_lower();
 
-	const c8* p = entry->pakFileName.c_str() + lorfn;
+	const c16* p = entry->pakFileName.c_str() + lorfn;
 	
 	// suche ein slash oder den anfang.
 
@@ -131,7 +196,7 @@ bool CPakReader::scanLocalHeader()
 
 
 //! opens a file by file name
-IReadFile* CPakReader::openFile(const c8* filename)
+IReadFile* CPakReader::openFile(const core::string<c16>& filename)
 {
 	s32 index = findFile(filename);
 
@@ -146,14 +211,13 @@ IReadFile* CPakReader::openFile(const c8* filename)
 //! opens a file by index
 IReadFile* CPakReader::openFile(s32 index)
 {
-	File->seek(FileList[index].pos);
-	return createLimitReadFile(FileList[index].simpleFileName.c_str(), File, FileList[index].length);
+	return createLimitReadFile(FileList[index].simpleFileName, File, FileList[index].pos, FileList[index].length);
 }
 
 
 
 //! returns count of files in archive
-s32 CPakReader::getFileCount()
+u32 CPakReader::getFileCount()
 {
 	return FileList.size();
 }
@@ -161,44 +225,24 @@ s32 CPakReader::getFileCount()
 
 
 //! returns data of file
-const SPakFileEntry* CPakReader::getFileInfo(s32 index) const
+const IFileArchiveEntry* CPakReader::getFileInfo(u32 index)
 {
 	return &FileList[index];
 }
 
 
 
-//! deletes the path from a filename
-void CPakReader::deletePathFromFilename(core::stringc& filename)
-{
-	// delete path from filename
-	const c8* p = filename.c_str() + filename.size();
-
-	// search for path separator or beginning
-
-	while (*p!='/' && *p!='\\' && p!=filename.c_str())
-		--p;
-
-	if (p != filename.c_str())
-	{
-		++p;
-		filename = p;
-	}
-}
-
-
-
 //! returns fileindex
-s32 CPakReader::findFile(const c8* simpleFilename)
+s32 CPakReader::findFile(const core::string<c16>& filename)
 {
 	SPakFileEntry entry;
-	entry.simpleFileName = simpleFilename;
+	entry.simpleFileName = filename;
 
 	if (IgnoreCase)
 		entry.simpleFileName.make_lower();
 
 	if (IgnorePaths)
-		deletePathFromFilename(entry.simpleFileName);
+		core::deletePathFromFilename(entry.simpleFileName);
 
 	s32 res = FileList.binary_search(entry);
 

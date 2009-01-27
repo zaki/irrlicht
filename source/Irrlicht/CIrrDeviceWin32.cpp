@@ -87,6 +87,74 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	if (GetCapture() != hWnd && ClickCount > 0)
 		ClickCount = 0;
 
+
+	struct messageMap
+	{
+		irr::s32 group;
+		UINT winMessage;
+		irr::s32 irrMessage;
+	};
+
+	static messageMap mouseMap[] =
+	{
+		0, WM_LBUTTONDOWN,irr::EMIE_LMOUSE_PRESSED_DOWN,
+		1, WM_LBUTTONUP,irr::EMIE_LMOUSE_LEFT_UP,
+		0, WM_RBUTTONDOWN,irr::EMIE_RMOUSE_PRESSED_DOWN,
+		1, WM_RBUTTONUP,irr::EMIE_RMOUSE_LEFT_UP,
+		0, WM_MBUTTONDOWN, irr::EMIE_MMOUSE_PRESSED_DOWN,
+		1, WM_MBUTTONUP,irr::EMIE_MMOUSE_LEFT_UP,
+		2, WM_MOUSEMOVE,irr::EMIE_MOUSE_MOVED,
+		3, WM_MOUSEWHEEL,irr::EMIE_MOUSE_WHEEL,
+		-1,0,0
+	};
+
+	// handle grouped events
+	messageMap * m = mouseMap;
+	while ( m->group >=0 && m->winMessage != message )
+		m += 1;
+
+	if ( m->group >= 0 )
+	{
+		if ( m->group == 0 )	// down
+		{
+			ClickCount++;
+			SetCapture(hWnd);
+		}
+		else
+		if ( m->group == 1 )	// up
+		{
+			ClickCount--;
+			if (ClickCount<1)
+			{
+				ClickCount=0;
+				ReleaseCapture();
+			}
+		}
+
+		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
+		event.MouseInput.Event = (irr::EMOUSE_INPUT_EVENT) m->irrMessage;
+		event.MouseInput.X = (short)LOWORD(lParam);
+		event.MouseInput.Y = (short)HIWORD(lParam);
+		event.MouseInput.ButtonStates = wParam & ( MK_LBUTTON | MK_RBUTTON | MK_MBUTTON );
+		event.MouseInput.Wheel = 0.f;
+
+		// wheel
+		if ( m->group == 3 )
+		{
+			POINT p; // fixed by jox
+			p.x = 0; p.y = 0;
+			ClientToScreen(hWnd, &p);
+			event.MouseInput.X -= p.x;
+			event.MouseInput.Y -= p.y;
+			event.MouseInput.Wheel = ((irr::f32)((short)HIWORD(wParam))) / (irr::f32)WHEEL_DELTA;
+		}
+
+		dev = getDeviceFromHWnd(hWnd);
+		if (dev)
+			dev->postEventFromUser(event);
+		return 0;
+	}
+
 	switch (message)
 	{
 	case WM_PAINT:
@@ -108,120 +176,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetCursor(NULL);
 			return 0;
 		}
-	}
-		break;
-
-	case WM_MOUSEWHEEL:
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Wheel = ((irr::f32)((short)HIWORD(wParam))) / (irr::f32)WHEEL_DELTA;
-		event.MouseInput.Event = irr::EMIE_MOUSE_WHEEL;
-
-		POINT p; // fixed by jox
-		p.x = 0; p.y = 0;
-		ClientToScreen(hWnd, &p);
-		event.MouseInput.X = LOWORD(lParam) - p.x;
-		event.MouseInput.Y = HIWORD(lParam) - p.y;
-
-		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
-			dev->postEventFromUser(event);
-		break;
-
-	case WM_LBUTTONDOWN:
-		ClickCount++;
-		SetCapture(hWnd);
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
-		event.MouseInput.X = (short)LOWORD(lParam);
-		event.MouseInput.Y = (short)HIWORD(lParam);
-		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
-			dev->postEventFromUser(event);
-		return 0;
-
-	case WM_LBUTTONUP:
-		ClickCount--;
-		if (ClickCount<1)
-		{
-			ClickCount=0;
-			ReleaseCapture();
-		}
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
-		event.MouseInput.X = (short)LOWORD(lParam);
-		event.MouseInput.Y = (short)HIWORD(lParam);
-		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
-			dev->postEventFromUser(event);
-		return 0;
-
-	case WM_RBUTTONDOWN:
-		ClickCount++;
-		SetCapture(hWnd);
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
-		event.MouseInput.X = (short)LOWORD(lParam);
-		event.MouseInput.Y = (short)HIWORD(lParam);
-		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
-			dev->postEventFromUser(event);
-		return 0;
-
-	case WM_RBUTTONUP:
-		ClickCount--;
-		if (ClickCount<1)
-		{
-			ClickCount=0;
-			ReleaseCapture();
-		}
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
-		event.MouseInput.X = (short)LOWORD(lParam);
-		event.MouseInput.Y = (short)HIWORD(lParam);
-		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
-			dev->postEventFromUser(event);
-		return 0;
-
-	case WM_MBUTTONDOWN:
-		ClickCount++;
-		SetCapture(hWnd);
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Event = irr::EMIE_MMOUSE_PRESSED_DOWN;
-		event.MouseInput.X = (short)LOWORD(lParam);
-		event.MouseInput.Y = (short)HIWORD(lParam);
-		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
-			dev->postEventFromUser(event);
-		return 0;
-
-	case WM_MBUTTONUP:
-		ClickCount--;
-		if (ClickCount<1)
-		{
-			ClickCount=0;
-			ReleaseCapture();
-		}
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Event = irr::EMIE_MMOUSE_LEFT_UP;
-		event.MouseInput.X = (short)LOWORD(lParam);
-		event.MouseInput.Y = (short)HIWORD(lParam);
-		dev = getDeviceFromHWnd(hWnd);
-		if (dev)
-			dev->postEventFromUser(event);
-		return 0;
-
-	case WM_MOUSEMOVE:
-		event.EventType = irr::EET_MOUSE_INPUT_EVENT;
-		event.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
-		event.MouseInput.X = (short)LOWORD(lParam);
-		event.MouseInput.Y = (short)HIWORD(lParam);
-		dev = getDeviceFromHWnd(hWnd);
-
-		if (dev)
-			dev->postEventFromUser(event);
-
-		return 0;
+	} break;
 
 	case WM_KEYDOWN:
 	case WM_KEYUP:
@@ -1080,6 +1035,46 @@ void CIrrDeviceWin32::pollJoysticks()
 		}
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+}
+
+//! Set the current Gamma Value for the Display
+bool CIrrDeviceWin32::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast )
+{
+	bool r;
+	u16 ramp[3][256];
+
+	calculateGammaRamp( ramp[0], red, brightness, contrast );
+	calculateGammaRamp( ramp[1], green, brightness, contrast );
+	calculateGammaRamp( ramp[2], blue, brightness, contrast );
+
+	HDC dc = GetDC(0);
+	r = SetDeviceGammaRamp ( dc, ramp ) == TRUE;
+	ReleaseDC(HWnd, dc);
+	return r;
+}
+
+//! Get the current Gamma Value for the Display
+bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast )
+{
+	bool r;
+	u16 ramp[3][256];
+
+	HDC dc = GetDC(0);
+	r = GetDeviceGammaRamp ( dc, ramp ) == TRUE;
+	ReleaseDC(HWnd, dc);
+
+	if ( r )
+	{
+		calculateGammaFromRamp(red, ramp[0]);
+		calculateGammaFromRamp(green, ramp[1]);
+		calculateGammaFromRamp(blue, ramp[2]);
+	}
+
+	brightness = 0.f;
+	contrast = 0.f;
+
+	return r;
+
 }
 
 IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(

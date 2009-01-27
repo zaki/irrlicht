@@ -183,10 +183,10 @@ void CTRTextureGouraud2::scanline_bilinear ()
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -226,18 +226,18 @@ void CTRTextureGouraud2::scanline_bilinear ()
 
 #ifdef INVERSE_W
 			inversew = fix_inverse32 ( line.w[0] );
-			tx0 = f32_to_fixPoint ( line.t[0][0].x, inversew);
-			ty0 = f32_to_fixPoint ( line.t[0][0].y, inversew);
+			tx0 = tofix ( line.t[0][0].x, inversew);
+			ty0 = tofix ( line.t[0][0].y, inversew);
 
 #ifdef IPOL_C0
-			r1 = f32_to_fixPoint ( line.c[0][0].y ,inversew );
-			g1 = f32_to_fixPoint ( line.c[0][0].z ,inversew );
-			b1 = f32_to_fixPoint ( line.c[0][0].w ,inversew );
+			r1 = tofix ( line.c[0][0].y ,inversew );
+			g1 = tofix ( line.c[0][0].z ,inversew );
+			b1 = tofix ( line.c[0][0].w ,inversew );
 #endif
 
 #else
-			tx0 = f32_to_fixPoint ( line.t[0][0].x );
-			ty0 = f32_to_fixPoint ( line.t[0][0].y );
+			tx0 = tofix ( line.t[0][0].x );
+			ty0 = tofix ( line.t[0][0].y );
 #ifdef IPOL_C0
 			getTexel_plain2 ( r1, g1, b1, line.c[0][0] );
 #endif
@@ -287,8 +287,8 @@ void CTRTextureGouraud2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,co
 {
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -346,12 +346,6 @@ void CTRTextureGouraud2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,co
 
 #ifdef SUBTEXEL
 	f32 subPixel;
-#endif
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 #ifdef IPOL_T0

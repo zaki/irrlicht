@@ -94,7 +94,27 @@ const wchar_t* CGUIComboBox::getItem(u32 idx) const
 	if (idx >= Items.size())
 		return 0;
 
-	return Items[idx].c_str();
+	return Items[idx].Name.c_str();
+}
+
+//! returns string of an item. the idx may be a value from 0 to itemCount-1
+u32 CGUIComboBox::getItemData(u32 idx) const
+{
+	if (idx >= Items.size())
+		return 0;
+
+	return Items[idx].Data;
+}
+
+//! Returns index based on item data
+s32 CGUIComboBox::getIndexForItemData(u32 data ) const
+{
+	for ( u32 i = 0; i < Items.size (); ++i )
+	{
+		if ( Items[i].Data == data )
+			return i;
+	}
+	return -1;
 }
 
 
@@ -119,9 +139,9 @@ const wchar_t* CGUIComboBox::getText() const
 
 
 //! adds an item and returns the index of it
-u32 CGUIComboBox::addItem(const wchar_t* text)
+u32 CGUIComboBox::addItem(const wchar_t* text, u32 data)
 {
-	Items.push_back(core::stringw(text));
+	Items.push_back( SComboData ( text, data ) );
 
 	if (Selected == -1)
 		setSelected(0);
@@ -155,7 +175,7 @@ void CGUIComboBox::setSelected(s32 idx)
 	if (Selected == -1)
 		SelectedText->setText(L"");
 	else
-		SelectedText->setText(Items[Selected].c_str());
+		SelectedText->setText(Items[Selected].Name.c_str());
 }
 
 
@@ -402,7 +422,7 @@ void CGUIComboBox::openCloseMenu()
 		ListBox->drop();
 
 		for (s32 i=0; i<(s32)Items.size(); ++i)
-			ListBox->addItem(Items[i].c_str());
+			ListBox->addItem(Items[i].Name.c_str());
 
 		ListBox->setSelected(Selected);
 
@@ -427,7 +447,7 @@ void CGUIComboBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadW
 		core::stringc s = "Item";
 		s += i;
 		s += "Text";
-		out->addString(s.c_str(), Items[i].c_str());
+		out->addString(s.c_str(), Items[i].Name.c_str());
 	}
 }
 
@@ -450,7 +470,7 @@ void CGUIComboBox::deserializeAttributes(io::IAttributes* in, io::SAttributeRead
 		core::stringc s = "Item";
 		s += i;
 		s += "Text";
-		addItem(in->getAttributeAsStringW(s.c_str()).c_str());
+		addItem(in->getAttributeAsStringW(s.c_str()).c_str(), 0);
 	}
 
 	setSelected(in->getAttributeAsInt("Selected"));

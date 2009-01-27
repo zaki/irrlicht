@@ -37,7 +37,8 @@ public:
 	vector2d<T> operator-() const { return vector2d<T>(-X, -Y); }
 
 	vector2d<T>& operator=(const vector2d<T>& other) { X = other.X; Y = other.Y; return *this; }
-	vector2d<T>& operator=(const dimension2d<T>& other) { X = other.Width; Y = other.Width; return *this; }
+
+	vector2d<T>& operator=(const dimension2d<T>& other) { X = other.Width; Y = other.Height; return *this; }
 
 	vector2d<T> operator+(const vector2d<T>& other) const { return vector2d<T>(X + other.X, Y + other.Y); }
 	vector2d<T> operator+(const dimension2d<T>& other) const { return vector2d<T>(X + other.Width, Y + other.Height); }

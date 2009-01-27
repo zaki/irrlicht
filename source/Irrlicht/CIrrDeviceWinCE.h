@@ -74,7 +74,7 @@ namespace irr
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<s32>& wsize, HWND hwnd, bool fullscreen)
+			CCursorControl(const core::dimension2d<u32>& wsize, HWND hwnd, bool fullscreen)
 				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f), IsVisible(true),
 					HWnd(hwnd), BorderX(0), BorderY(0), UseReferenceRect(false)
 			{

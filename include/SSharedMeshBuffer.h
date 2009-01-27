@@ -133,10 +133,11 @@ namespace scene
 		}
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint )
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX )
 		{
 			MappingHint=NewMappingHint;
 		}
+
 
 		//! flags the mesh as changed, reloads hardware buffers
 		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)

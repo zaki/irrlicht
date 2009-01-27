@@ -133,9 +133,9 @@ CLWOMeshFileLoader::~CLWOMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CLWOMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CLWOMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".lwo")!=0;
+	return core::hasFileExtension ( filename, "lwo" );
 }
 
 
@@ -1754,8 +1754,8 @@ video::ITexture* CLWOMeshFileLoader::loadTexture(const core::stringc& file)
 {
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
-	if (FileSystem->existFile(file.c_str()))
-		return driver->getTexture(file.c_str());
+	if (FileSystem->existFile(file))
+		return driver->getTexture(file);
 
 	core::stringc strippedName;
 	s32 stringPos = file.findLast('/');
@@ -1764,8 +1764,8 @@ video::ITexture* CLWOMeshFileLoader::loadTexture(const core::stringc& file)
 	if (stringPos != -1)
 	{
 		strippedName = file.subString(stringPos+1, file.size()-stringPos);
-		if (FileSystem->existFile(strippedName.c_str()))
-			return driver->getTexture(strippedName.c_str());
+		if (FileSystem->existFile(strippedName))
+			return driver->getTexture(strippedName);
 	}
 	else
 		strippedName = file;
@@ -1777,8 +1777,8 @@ video::ITexture* CLWOMeshFileLoader::loadTexture(const core::stringc& file)
 	{
 		newpath = newpath.subString(0,stringPos+1);
 		newpath.append(strippedName);
-		if (FileSystem->existFile(newpath.c_str()))
-			return driver->getTexture(newpath.c_str());
+		if (FileSystem->existFile(newpath))
+			return driver->getTexture(newpath);
 	}
 	os::Printer::log("Could not load texture", file.c_str(), ELL_WARNING);
 

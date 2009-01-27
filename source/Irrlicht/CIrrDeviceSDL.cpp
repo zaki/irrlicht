@@ -246,6 +246,7 @@ bool CIrrDeviceSDL::run()
 	os::Timer::tick();
 
 	SEvent irrevent;
+	irrevent.MouseInput.ButtonStates = -1;
 	SDL_Event SDL_event;
 
 	while ( !Close && SDL_PollEvent( &SDL_event ) )
@@ -305,8 +306,8 @@ bool CIrrDeviceSDL::run()
 					irrevent.KeyInput.Char = SDL_event.key.keysym.unicode;
 					irrevent.KeyInput.Key = (EKEY_CODE)KeyMap[idx].Win32Key;
 					irrevent.KeyInput.PressedDown = (SDL_event.type == SDL_KEYDOWN);
-					irrevent.KeyInput.Shift = SDL_event.key.keysym.mod & KMOD_SHIFT;
-					irrevent.KeyInput.Control = SDL_event.key.keysym.mod & KMOD_CTRL;
+					irrevent.KeyInput.Shift = (SDL_event.key.keysym.mod & KMOD_SHIFT) != 0;
+					irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL ) != 0;
 					postEventFromUser(irrevent);
 				}
 				else
@@ -336,7 +337,7 @@ bool CIrrDeviceSDL::run()
 					SDL_FreeSurface(Screen);
 				Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 				if (VideoDriver)
-					VideoDriver->OnResize(core::dimension2d<s32>(Width, Height));
+					VideoDriver->OnResize(core::dimension2d<u32>(Width, Height));
 			}
 			break;
 
@@ -614,7 +615,7 @@ video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 			else
 			{
 				for (u32 i=0; modes[i]; ++i)
-					VideoModeList.addMode(core::dimension2d<s32>(modes[i]->w, modes[i]->h), vi->vfmt->BitsPerPixel);
+					VideoModeList.addMode(core::dimension2d<u32>(modes[i]->w, modes[i]->h), vi->vfmt->BitsPerPixel);
 			}
 		}
 	}

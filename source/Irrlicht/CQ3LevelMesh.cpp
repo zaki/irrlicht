@@ -12,32 +12,36 @@
 #include "irrString.h"
 #include "ILightSceneNode.h"
 #include "IQ3Shader.h"
+#include "IFileList.h"
+
+//#define TJUNCTION_SOLVER_ROUND
+//#define TJUNCTION_SOLVER_0125
 
 namespace irr
 {
 namespace scene
 {
 
+	using namespace quake3;
 
 //! constructor
-CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr)
+CQ3LevelMesh::CQ3LevelMesh(	io::IFileSystem* fs, 
+							scene::ISceneManager* smgr,
+							const Q3LevelLoadParameter &loadParam)
 : Textures(0), LightMaps(0),
  Vertices(0), Faces(0),	Planes(0), Nodes(0), Leafs(0), LeafFaces(0),
-	MeshVerts(0), Brushes(0), FileSystem(fs), SceneManager(smgr)
+	MeshVerts(0), Brushes(0), FileSystem(fs), SceneManager(smgr),LoadParam (loadParam)
 {
 	#ifdef _DEBUG
 	IReferenceCounted::setDebugName("CQ3LevelMesh");
 	#endif
 
-	for ( s32 i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
+	for ( s32 i = 0; i!= E_Q3_MESH_SIZE; ++i )
 	{
 		Mesh[i] = 0;
 	}
 
-	if (smgr)
-		Driver = smgr->getVideoDriver();
-	else
-		Driver = 0;
+	Driver = smgr ? smgr->getVideoDriver() : 0;
 	if (Driver)
 		Driver->grab();
 
@@ -52,16 +56,7 @@ CQ3LevelMesh::CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr)
 //! destructor
 CQ3LevelMesh::~CQ3LevelMesh()
 {
-	delete [] Textures;
-	delete [] LightMaps;
-	delete [] Vertices;
-	delete [] Faces;
-	delete [] Planes;
-	delete [] Nodes;
-	delete [] Leafs;
-	delete [] LeafFaces;
-	delete [] MeshVerts;
-	delete [] Brushes;
+	cleanLoader ();
 
 	if (Driver)
 		Driver->drop();
@@ -69,10 +64,13 @@ CQ3LevelMesh::~CQ3LevelMesh()
 	if (FileSystem)
 		FileSystem->drop();
 
-	for ( s32 i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
+	for ( s32 i = 0; i!= E_Q3_MESH_SIZE; ++i )
 	{
-		if (Mesh[i])
+		if ( Mesh[i] )
+		{
 			Mesh[i]->drop();
+			Mesh[i] = 0;
+		}
 	}
 
 	ReleaseShader();
@@ -88,7 +86,6 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 
 	LevelName = file->getFileName();
 
-	tBSPHeader header;
 	file->read(&header, sizeof(tBSPHeader));
 
 	#ifdef __BIG_ENDIAN__
@@ -96,33 +93,50 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 		header.version = os::Byteswap::byteswap(header.version);
 	#endif
 
-	if (header.strID != 0x50534249 || header.version != 0x2e)
+	if (	(header.strID != 0x50534249 ||			// IBSP
+				(	header.version != 0x2e			// quake3
+				&& header.version != 0x2f			// rtcw
+				)
+			)
+			&&
+			( header.strID != 0x50534252 || header.version != 1 ) // RBSP, starwars jedi, sof
+		)
 	{
 		os::Printer::log("Could not load .bsp file, unknown header.", file->getFileName(), ELL_ERROR);
 		return false;
 	}
 
-	// now read lumps
+#if 0
+	if ( header.strID == 0x50534252 )	// RBSP Raven
+	{
+		LoadParam.swapHeader = 1;
+	}
+#endif
 
+	// now read lumps
 	file->read(&Lumps[0], sizeof(tBSPLump)*kMaxLumps);
 
-	#ifdef __BIG_ENDIAN__
-	for (int i=0;i<kMaxLumps;++i)
-	{
-		Lumps[i].offset = os::Byteswap::byteswap(Lumps[i].offset);
-		Lumps[i].length = os::Byteswap::byteswap(Lumps[i].length);
-	}
-	#endif
 
-	for ( s32 i = 0; i!= quake3::E_Q3_MESH_SIZE; ++i )
+	s32 i;
+	if ( LoadParam.swapHeader )
+	{
+		for ( i=0; i< kMaxLumps;++i)
+		{
+			Lumps[i].offset = os::Byteswap::byteswap(Lumps[i].offset);
+			Lumps[i].length = os::Byteswap::byteswap(Lumps[i].length);
+		}
+	}
+
+	for ( i = 0; i!= E_Q3_MESH_SIZE; ++i )
 	{
 		Mesh[i] = new SMesh();
 	}
+
 	ReleaseEntity();
 
 	// load everything
-
-	loadTextures(&Lumps[kTextures], file);			// Load the textures
+	loadEntities(&Lumps[kEntities], file);			// load the entities
+	loadTextures(&Lumps[kShaders], file);			// Load the textures
 	loadLightmaps(&Lumps[kLightmaps], file);		// Load the lightmaps
 	loadVerts(&Lumps[kVertices], file);				// Load the vertices
 	loadFaces(&Lumps[kFaces], file);				// Load the faces
@@ -131,44 +145,48 @@ bool CQ3LevelMesh::loadFile(io::IReadFile* file)
 	loadLeafs(&Lumps[kLeafs], file);				// load the Leafs of the BSP
 	loadLeafFaces(&Lumps[kLeafFaces], file);		// load the Faces of the Leafs of the BSP
 	loadVisData(&Lumps[kVisData], file);			// load the visibility data of the clusters
-	loadEntities(&Lumps[kEntities], file);			// load the entities
 	loadModels(&Lumps[kModels], file);				// load the models
 	loadMeshVerts(&Lumps[kMeshVerts], file);		// load the mesh vertices
 	loadBrushes(&Lumps[kBrushes], file);			// load the brushes of the BSP
 	loadBrushSides(&Lumps[kBrushSides], file);		// load the brushsides of the BSP
 	loadLeafBrushes(&Lumps[kLeafBrushes], file);	// load the brushes of the leaf
-	loadShaders(&Lumps[kShaders], file );			// load the shaders
+	loadFogs(&Lumps[kFogs], file );					// load the fogs
+	
 
-	PatchTesselation = 8;
-
-	//constructMesh();
-	//loadTextures();
-
-
-	loadTextures2();
-	constructMesh2();
+	loadTextures();
+	constructMesh();
+	solveTJunction ();
 
 	cleanMeshes();
 	calcBoundingBoxes();
+	cleanLoader ();
 
 	return true;
 }
 
+/*!
+*/
+void CQ3LevelMesh::cleanLoader ()
+{
+	delete [] Textures; Textures = 0;
+	delete [] LightMaps; LightMaps = 0;
+	delete [] Vertices; Vertices = 0;
+	delete [] Faces; Faces = 0;
+	delete [] Planes; Planes = 0;
+	delete [] Nodes; Nodes = 0;
+	delete [] Leafs; Leafs = 0;
+	delete [] LeafFaces; LeafFaces = 0;
+	delete [] MeshVerts; MeshVerts = 0;
+	delete [] Brushes; Brushes = 0;
+
+	Lightmap.clear ();
+	Tex.clear ();
+}
 
 //! returns the amount of frames in milliseconds. If the amount is 1, it is a static (=non animated) mesh.
 u32 CQ3LevelMesh::getFrameCount() const
 {
 	return 1;
-}
-
-
-void CQ3LevelMesh::releaseMesh( s32 index )
-{
-	if ( Mesh[index] )
-	{
-		Mesh[index]->drop();
-		Mesh[index] = 0;
-	}
 }
 
 
@@ -187,13 +205,14 @@ void CQ3LevelMesh::loadTextures(tBSPLump* l, io::IReadFile* file)
 	file->seek(l->offset);
 	file->read(Textures, l->length);
 
-	for (s32 i=0;i<NumTextures;++i)
+	if ( LoadParam.swapHeader )
 	{
-	#ifdef __BIG_ENDIAN__
-		Textures[i].flags = os::Byteswap::byteswap(Textures[i].flags);
-		Textures[i].contents = os::Byteswap::byteswap(Textures[i].contents);
-	#endif
-		os::Printer::log("Loaded texture", Textures[i].strName, ELL_INFORMATION);
+		for (s32 i=0;i<NumTextures;++i)
+		{
+			Textures[i].flags = os::Byteswap::byteswap(Textures[i].flags);
+			Textures[i].contents = os::Byteswap::byteswap(Textures[i].contents);
+			//os::Printer::log("Loaded texture", Textures[i].strName, ELL_INFORMATION);
+		}
 	}
 }
 
@@ -207,7 +226,8 @@ void CQ3LevelMesh::loadLightmaps(tBSPLump* l, io::IReadFile* file)
 	file->read(LightMaps, l->length);
 }
 
-
+/*!
+*/
 void CQ3LevelMesh::loadVerts(tBSPLump* l, io::IReadFile* file)
 {
 	NumVertices = l->length / sizeof(tBSPVertex);
@@ -216,7 +236,7 @@ void CQ3LevelMesh::loadVerts(tBSPLump* l, io::IReadFile* file)
 	file->seek(l->offset);
 	file->read(Vertices, l->length);
 
-	#ifdef __BIG_ENDIAN__
+	if ( LoadParam.swapHeader )
 	for (s32 i=0;i<NumVertices;i++)
 	{
 		Vertices[i].vPosition[0] = os::Byteswap::byteswap(Vertices[i].vPosition[0]);
@@ -230,10 +250,11 @@ void CQ3LevelMesh::loadVerts(tBSPLump* l, io::IReadFile* file)
 		Vertices[i].vNormal[1] = os::Byteswap::byteswap(Vertices[i].vNormal[1]);
 		Vertices[i].vNormal[2] = os::Byteswap::byteswap(Vertices[i].vNormal[2]);
 	}
-	#endif
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::loadFaces(tBSPLump* l, io::IReadFile* file)
 {
 	NumFaces = l->length / sizeof(tBSPFace);
@@ -242,70 +263,83 @@ void CQ3LevelMesh::loadFaces(tBSPLump* l, io::IReadFile* file)
 	file->seek(l->offset);
 	file->read(Faces, l->length);
 
-	#ifdef __BIG_ENDIAN__
-	for ( s32 i=0;i<NumFaces;i++)
+	if ( LoadParam.swapHeader )
 	{
-		Faces[i].textureID = os::Byteswap::byteswap(Faces[i].textureID);
-		Faces[i].effect = os::Byteswap::byteswap(Faces[i].effect);
-		Faces[i].type = os::Byteswap::byteswap(Faces[i].type);
-		Faces[i].vertexIndex = os::Byteswap::byteswap(Faces[i].vertexIndex);
-		Faces[i].numOfVerts = os::Byteswap::byteswap(Faces[i].numOfVerts);
-		Faces[i].meshVertIndex = os::Byteswap::byteswap(Faces[i].meshVertIndex);
-		Faces[i].numMeshVerts = os::Byteswap::byteswap(Faces[i].numMeshVerts);
-		Faces[i].lightmapID = os::Byteswap::byteswap(Faces[i].lightmapID);
-		Faces[i].lMapCorner[0] = os::Byteswap::byteswap(Faces[i].lMapCorner[0]);
-		Faces[i].lMapCorner[1] = os::Byteswap::byteswap(Faces[i].lMapCorner[1]);
-		Faces[i].lMapSize[0] = os::Byteswap::byteswap(Faces[i].lMapSize[0]);
-		Faces[i].lMapSize[1] = os::Byteswap::byteswap(Faces[i].lMapSize[1]);
-		Faces[i].lMapPos[0] = os::Byteswap::byteswap(Faces[i].lMapPos[0]);
-		Faces[i].lMapPos[1] = os::Byteswap::byteswap(Faces[i].lMapPos[1]);
-		Faces[i].lMapPos[2] = os::Byteswap::byteswap(Faces[i].lMapPos[2]);
-		Faces[i].lMapBitsets[0][0] = os::Byteswap::byteswap(Faces[i].lMapBitsets[0][0]);
-		Faces[i].lMapBitsets[0][1] = os::Byteswap::byteswap(Faces[i].lMapBitsets[0][1]);
-		Faces[i].lMapBitsets[0][2] = os::Byteswap::byteswap(Faces[i].lMapBitsets[0][2]);
-		Faces[i].lMapBitsets[1][0] = os::Byteswap::byteswap(Faces[i].lMapBitsets[1][0]);
-		Faces[i].lMapBitsets[1][1] = os::Byteswap::byteswap(Faces[i].lMapBitsets[1][1]);
-		Faces[i].lMapBitsets[1][2] = os::Byteswap::byteswap(Faces[i].lMapBitsets[1][2]);
-		Faces[i].vNormal[0] = os::Byteswap::byteswap(Faces[i].vNormal[0]);
-		Faces[i].vNormal[1] = os::Byteswap::byteswap(Faces[i].vNormal[1]);
-		Faces[i].vNormal[2] = os::Byteswap::byteswap(Faces[i].vNormal[2]);
-		Faces[i].size[0] = os::Byteswap::byteswap(Faces[i].size[0]);
-		Faces[i].size[1] = os::Byteswap::byteswap(Faces[i].size[1]);
+		for ( s32 i=0;i<NumFaces;i++)
+		{
+			Faces[i].textureID = os::Byteswap::byteswap(Faces[i].textureID);
+			Faces[i].fogNum = os::Byteswap::byteswap(Faces[i].fogNum);
+			Faces[i].type = os::Byteswap::byteswap(Faces[i].type);
+			Faces[i].vertexIndex = os::Byteswap::byteswap(Faces[i].vertexIndex);
+			Faces[i].numOfVerts = os::Byteswap::byteswap(Faces[i].numOfVerts);
+			Faces[i].meshVertIndex = os::Byteswap::byteswap(Faces[i].meshVertIndex);
+			Faces[i].numMeshVerts = os::Byteswap::byteswap(Faces[i].numMeshVerts);
+			Faces[i].lightmapID = os::Byteswap::byteswap(Faces[i].lightmapID);
+			Faces[i].lMapCorner[0] = os::Byteswap::byteswap(Faces[i].lMapCorner[0]);
+			Faces[i].lMapCorner[1] = os::Byteswap::byteswap(Faces[i].lMapCorner[1]);
+			Faces[i].lMapSize[0] = os::Byteswap::byteswap(Faces[i].lMapSize[0]);
+			Faces[i].lMapSize[1] = os::Byteswap::byteswap(Faces[i].lMapSize[1]);
+			Faces[i].lMapPos[0] = os::Byteswap::byteswap(Faces[i].lMapPos[0]);
+			Faces[i].lMapPos[1] = os::Byteswap::byteswap(Faces[i].lMapPos[1]);
+			Faces[i].lMapPos[2] = os::Byteswap::byteswap(Faces[i].lMapPos[2]);
+			Faces[i].lMapBitsets[0][0] = os::Byteswap::byteswap(Faces[i].lMapBitsets[0][0]);
+			Faces[i].lMapBitsets[0][1] = os::Byteswap::byteswap(Faces[i].lMapBitsets[0][1]);
+			Faces[i].lMapBitsets[0][2] = os::Byteswap::byteswap(Faces[i].lMapBitsets[0][2]);
+			Faces[i].lMapBitsets[1][0] = os::Byteswap::byteswap(Faces[i].lMapBitsets[1][0]);
+			Faces[i].lMapBitsets[1][1] = os::Byteswap::byteswap(Faces[i].lMapBitsets[1][1]);
+			Faces[i].lMapBitsets[1][2] = os::Byteswap::byteswap(Faces[i].lMapBitsets[1][2]);
+			Faces[i].vNormal[0] = os::Byteswap::byteswap(Faces[i].vNormal[0]);
+			Faces[i].vNormal[1] = os::Byteswap::byteswap(Faces[i].vNormal[1]);
+			Faces[i].vNormal[2] = os::Byteswap::byteswap(Faces[i].vNormal[2]);
+			Faces[i].size[0] = os::Byteswap::byteswap(Faces[i].size[0]);
+			Faces[i].size[1] = os::Byteswap::byteswap(Faces[i].size[1]);
+		}
 	}
-	#endif
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::loadPlanes(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::loadNodes(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::loadLeafs(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::loadLeafFaces(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::loadVisData(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::loadEntities(tBSPLump* l, io::IReadFile* file)
 {
 	core::array<u8> entity;
@@ -319,28 +353,48 @@ void CQ3LevelMesh::loadEntities(tBSPLump* l, io::IReadFile* file)
 }
 
 
-// load shaders named in bsp
-void CQ3LevelMesh::loadShaders(tBSPLump* l, io::IReadFile* file)
+/*!
+	load fog brushes
+*/
+void CQ3LevelMesh::loadFogs(tBSPLump* l, io::IReadFile* file)
 {
-	u32 files = l->length / sizeof(tBSPShader);
+	u32 files = l->length / sizeof(tBSPFog);
 
 	file->seek( l->offset );
-
-	tBSPShader def;
+	tBSPFog fog;
+	const IShader *shader;
+	STexShader t;
 	for ( u32 i = 0; i!= files; ++i )
 	{
-		file->read( &def, sizeof( def ) );
-		getShader(def.strName);
+		file->read( &fog, sizeof( fog ) );
+
+		shader = getShader( fog.shader );
+		t.Texture = 0;
+		t.ShaderID = shader ? shader->id : -1;
+
+		FogMap.push_back ( t );
 	}
 }
 
 
+/*!
+	load models named in bsp
+*/
 void CQ3LevelMesh::loadModels(tBSPLump* l, io::IReadFile* file)
 {
-	// ignore
+	u32 files = l->length / sizeof(tBSPModel);
+	file->seek( l->offset );
+
+	tBSPModel def;
+	for ( u32 i = 0; i!= files; ++i )
+	{
+		file->read( &def, sizeof( def ) );
+	}
+
 }
 
-
+/*!
+*/
 void CQ3LevelMesh::loadMeshVerts(tBSPLump* l, io::IReadFile* file)
 {
 	NumMeshVerts = l->length / sizeof(s32);
@@ -349,37 +403,43 @@ void CQ3LevelMesh::loadMeshVerts(tBSPLump* l, io::IReadFile* file)
 	file->seek(l->offset);
 	file->read(MeshVerts, l->length);
 
-	#ifdef __BIG_ENDIAN__
-	for (int i=0;i<NumMeshVerts;i++)
-		MeshVerts[i] = os::Byteswap::byteswap(MeshVerts[i]);
-	#endif
+	if ( LoadParam.swapHeader )
+	{
+		for (int i=0;i<NumMeshVerts;i++)
+			MeshVerts[i] = os::Byteswap::byteswap(MeshVerts[i]);
+	}
 }
 
-
+/*!
+*/
 void CQ3LevelMesh::loadBrushes(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
-
+/*!
+*/
 void CQ3LevelMesh::loadBrushSides(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
-
+/*!
+*/
 void CQ3LevelMesh::loadLeafBrushes(tBSPLump* l, io::IReadFile* file)
 {
 	// ignore
 }
 
-
+/*!
+*/
 inline bool isQ3WhiteSpace( const u8 symbol )
 {
 	return symbol == ' ' || symbol == '\t' || symbol == '\r';
 }
 
-
+/*!
+*/
 void CQ3LevelMesh::parser_nextToken()
 {
 	u8 symbol;
@@ -513,16 +573,16 @@ void CQ3LevelMesh::parser_parse( const void * data, const u32 size, CQ3LevelMesh
 	Parser.sourcesize = size;
 	Parser.index = 0;
 
-	quake3::SVarGroupList *groupList;
+	SVarGroupList *groupList;
 
 	s32 active;
 	s32 last;
 
-	quake3::SVariable entity;
+	SVariable entity ( "" );
 
-	groupList = new quake3::SVarGroupList();
+	groupList = new SVarGroupList();
 
-	groupList->VariableGroup.push_back( quake3::SVarGroup() );
+	groupList->VariableGroup.push_back( SVarGroup() );
 	active = last = 0;
 
 	do
@@ -535,7 +595,7 @@ void CQ3LevelMesh::parser_parse( const void * data, const u32 size, CQ3LevelMesh
 			{
 				//stack = core::min_( stack + 1, 7 );
 
-				groupList->VariableGroup.push_back( quake3::SVarGroup() );
+				groupList->VariableGroup.push_back( SVarGroup() );
 				last = active;
 				active = groupList->VariableGroup.size() - 1;
 				entity.clear();
@@ -584,8 +644,8 @@ void CQ3LevelMesh::parser_parse( const void * data, const u32 size, CQ3LevelMesh
 
 					// new group
 					groupList->drop();
-					groupList = new quake3::SVarGroupList();
-					groupList->VariableGroup.push_back( quake3::SVarGroup() );
+					groupList = new SVarGroupList();
+					groupList->VariableGroup.push_back( SVarGroup() );
 					last = 0;
 				}
 
@@ -602,6 +662,34 @@ void CQ3LevelMesh::parser_parse( const void * data, const u32 size, CQ3LevelMesh
 }
 
 
+/*
+	this loader applies only textures for stage 1 & 2
+*/
+s32 CQ3LevelMesh::setShaderFogMaterial( video::SMaterial &material, const tBSPFace * face ) const
+{
+	material.MaterialType = video::EMT_SOLID;
+	material.Wireframe = false;
+	material.Lighting = false;
+	material.BackfaceCulling = false;
+	material.setTexture(0, 0);
+	material.setTexture(1, 0);
+	material.setTexture(2, 0);
+	material.setTexture(3, 0);
+	material.ZBuffer = video::EMDF_DEPTH_LESS_EQUAL;
+	material.ZWriteEnable = false;
+	material.MaterialTypeParam = 0.f;
+
+	s32 shaderState = -1;
+
+	if ( (u32) face->fogNum < FogMap.size() )
+	{
+		material.setTexture(0, FogMap [ face->fogNum ].Texture);
+		shaderState = FogMap [ face->fogNum ].ShaderID;
+	}
+
+	return shaderState;
+
+}
 /*
 	this loader applies only textures for stage 1 & 2
 */
@@ -630,25 +718,27 @@ s32 CQ3LevelMesh::setShaderMaterial( video::SMaterial &material, const tBSPFace 
 	if ( face->lightmapID >= 0 )
 	{
 		material.setTexture(1, Lightmap [ face->lightmapID ]);
-		material.MaterialType = quake3::defaultMaterialType;
+		material.MaterialType = LoadParam.defaultLightMapMaterial;
 	}
 
 	// store shader ID
 	material.MaterialTypeParam2 = (f32) shaderState;
 
-	const quake3::SShader *shader = getShader(shaderState);
+	const IShader *shader = getShader(shaderState);
 	if ( 0 == shader )
 		return shaderState;
 
-	const quake3::SVarGroup *group;
+	return shaderState;
 
-	s32 index;
+#if 0
+	const SVarGroup *group;
+
 
 	// generic
 	group = shader->getGroup( 1 );
 	if ( group )
 	{
-		material.BackfaceCulling = quake3::isDisabled( group->get( "cull" ) );
+		material.BackfaceCulling = getCullingFunction( group->get( "cull" ) );
 
 		if ( group->isDefined( "surfaceparm", "nolightmap" ) )
 		{
@@ -670,18 +760,27 @@ s32 CQ3LevelMesh::setShaderMaterial( video::SMaterial &material, const tBSPFace 
 
 		startPos = 0;
 
-		index = group->getIndex( "depthwrite" );
-		if ( index >= 0 )
+		if ( group->isDefined( "depthwrite" ) )
 		{
 			material.ZWriteEnable = true;
 		}
 
-		quake3::SBlendFunc blendfunc;
-		quake3::getBlendFunc( group->get( "blendfunc" ), blendfunc );
-		quake3::getBlendFunc( group->get( "alphafunc" ), blendfunc );
+		SBlendFunc blendfunc ( LoadParam.defaultModulate );
+		getBlendFunc( group->get( "blendfunc" ), blendfunc );
+		getBlendFunc( group->get( "alphafunc" ), blendfunc );
+
+		if ( 0 == LoadParam.alpharef &&
+			(	blendfunc.type == video::EMT_TRANSPARENT_ALPHA_CHANNEL ||
+				blendfunc.type == video::EMT_TRANSPARENT_ALPHA_CHANNEL_REF
+			)
+			)
+		{
+			blendfunc.type = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+			blendfunc.param0 = 0.f;
+		}
 
 		material.MaterialType = blendfunc.type;
-		material.MaterialTypeParam = blendfunc.param;
+		material.MaterialTypeParam = blendfunc.param0;
 
 		// try if we can match better
 		shaderState |= (material.MaterialType == video::EMT_SOLID ) ? 0x00020000 : 0;
@@ -696,42 +795,67 @@ s32 CQ3LevelMesh::setShaderMaterial( video::SMaterial &material, const tBSPFace 
 
 	material.MaterialTypeParam2 = (f32) shaderState;
 	return shaderState;
+#endif
 }
 
-//! constructs a mesh from the quake 3 level file.
-void CQ3LevelMesh::constructMesh2()
+
+/*!
+*/
+void CQ3LevelMesh::solveTJunction()
 {
-	s32 i, j, k;
+}
+
+/*!
+	constructs a mesh from the quake 3 level file.
+*/
+void CQ3LevelMesh::constructMesh()
+{
+	if ( LoadParam.verbose > 0 )
+	{
+		LoadParam.startTime = os::Timer::getRealTime();
+
+		if ( LoadParam.verbose > 1 )
+		{
+			snprintf( buf, sizeof ( buf ),
+				"quake3::constructMesh start to create %d faces, %d vertices,%d mesh vertices", 
+				NumFaces,
+				NumVertices,
+				NumMeshVerts
+				);
+			os::Printer::log(buf, ELL_INFORMATION);
+		}
+
+	}
+
+	s32 i, j, k,s;
 
 	s32 *index;
 
 	video::S3DVertex2TCoords temp[3];
-
 	video::SMaterial material;
+	video::SMaterial material2;
+	
+	SToBuffer item [ E_Q3_MESH_SIZE ];
+	u32 itemSize;
 
-	SToBuffer item;
-
-	core::array < SToBuffer > toBuffer;
-
-	const s32 mesh0size = (NumTextures+1) * (NumLightMaps+1);
-	for ( i=0; i < mesh0size; ++i)
+	for ( i=0; i < NumFaces; ++i)
 	{
-		scene::SMeshBufferLightMap* buffer = new scene::SMeshBufferLightMap();
-
-		Mesh[quake3::E_Q3_MESH_GEOMETRY]->addMeshBuffer(buffer);
-		buffer->drop();
-	}
-
-	for ( i=0; i<NumFaces; ++i)
-	{
-		const tBSPFace * face = &Faces [i];
+		const tBSPFace * face = Faces + i;
 
 		s32 shaderState = setShaderMaterial( material, face );
-		toBuffer.clear();
+		itemSize = 0;
 
-		const quake3::SShader *shader = getShader(shaderState);
+		const IShader *shader = getShader(shaderState);
 
-		switch( Faces[i].type )
+		if ( face->fogNum >= 0 )
+		{
+			setShaderFogMaterial ( material2, face );
+			item[itemSize].index = E_Q3_MESH_FOG;
+			item[itemSize].takeVertexColor = 1;
+			itemSize += 1;
+		}
+
+		switch( face->type )
 		{
 			case 1: // normal polygons
 			case 2: // patches
@@ -739,117 +863,81 @@ void CQ3LevelMesh::constructMesh2()
 				{
 					if ( 0 == shader )
 					{
-						item.takeVertexColor = material.getTexture(0) == 0 || material.getTexture(1) == 0;
-						item.index = quake3::E_Q3_MESH_GEOMETRY;
-						toBuffer.push_back( item );
+						if ( LoadParam.cleanUnResolvedMeshes || material.getTexture(0) )
+						{
+							item[itemSize].takeVertexColor = 1;
+							item[itemSize].index = E_Q3_MESH_GEOMETRY;
+							itemSize += 1;
+						}
+						else
+						{
+							item[itemSize].takeVertexColor = 1;
+							item[itemSize].index = E_Q3_MESH_UNRESOLVED;
+							itemSize += 1;
+						}
 					}
 					else
 					{
-						item.takeVertexColor = 1;
-						item.index = quake3::E_Q3_MESH_ITEMS;
-						toBuffer.push_back( item );
+						item[itemSize].takeVertexColor = 1;
+						item[itemSize].index = E_Q3_MESH_ITEMS;
+						itemSize += 1;
 					}
 
 				} break;
 
-/*
-			case 1: // normal polygons
-			case 2: // patches
-				if ( material.Textures[0] && 0 == shader )
-				{
-					item.takeVertexColor = material.Textures[1] == 0;
-					item.index = quake3::E_Q3_MESH_GEOMETRY;
-					toBuffer.push_back( item );
-				}
-				else
-				if ( material.Textures[0] )
-				{
-					item.takeVertexColor = material.Textures[1] == 0;
-					item.index = quake3::E_Q3_MESH_GEOMETRY;
-					toBuffer.push_back( item );
-					if ( 0 == (shaderState & 0xFFFF0000 ) )
-					{
-						item.takeVertexColor = 1;
-						item.index = quake3::E_Q3_MESH_ITEMS;
-						toBuffer.push_back( item );
-					}
-				}
-				else
-				{
-					item.takeVertexColor = 1;
-					item.index = quake3::E_Q3_MESH_ITEMS;
-					toBuffer.push_back( item );
-				}
+			case 4: // billboards
+				//item[itemSize].takeVertexColor = 1;
+				//item[itemSize].index = E_Q3_MESH_ITEMS;
+				//itemSize += 1;
 				break;
 
-			case 3: // mesh vertices
-				if ( material.Textures[0] && ( shaderState & 0xFFFF0000 ) == 0x00030000 )
-				{
-					item.takeVertexColor = material.Textures[1] == 0;
-					item.index = quake3::E_Q3_MESH_GEOMETRY;
-					toBuffer.push_back( item );
-				}
-				else
-				{
-					item.takeVertexColor = 1;
-					item.index = quake3::E_Q3_MESH_ITEMS;
-					toBuffer.push_back( item );
-				}
-				break;
-*/
-			case 4: // billboards
-				item.takeVertexColor = 1;
-				item.index = quake3::E_Q3_MESH_ITEMS;
-				toBuffer.push_back( item );
-				break;
 		}
 
-		for ( u32 g = 0; g!= toBuffer.size(); ++g )
+		for ( u32 g = 0; g != itemSize; ++g )
 		{
-			scene::SMeshBufferLightMap* buffer;
+			scene::SMeshBufferLightMap* buffer = 0;
 
-			if ( toBuffer[g].index == quake3::E_Q3_MESH_GEOMETRY )
+			if ( item[g].index == E_Q3_MESH_GEOMETRY )
 			{
-				if ( 0 == toBuffer[g].takeVertexColor )
+				if ( 0 == item[g].takeVertexColor )
 				{
-					toBuffer[g].takeVertexColor = material.getTexture(0) == 0 || material.getTexture(1) == 0;
+					item[g].takeVertexColor = material.getTexture(0) == 0 || material.getTexture(1) == 0;
 				}
+
 				if (Faces[i].lightmapID < -1 || Faces[i].lightmapID > NumLightMaps-1)
 				{
 					Faces[i].lightmapID = -1;
 				}
 
+#if 0
 				// there are lightmapsids and textureid with -1
 				const s32 tmp_index = ((Faces[i].lightmapID+1) * (NumTextures+1)) + (Faces[i].textureID+1);
-				buffer = (SMeshBufferLightMap*) Mesh[quake3::E_Q3_MESH_GEOMETRY]->getMeshBuffer(tmp_index);
+				buffer = (SMeshBufferLightMap*) Mesh[E_Q3_MESH_GEOMETRY]->getMeshBuffer(tmp_index);
+				buffer->setHardwareMappingHint ( EHM_STATIC );
 				buffer->getMaterial() = material;
-			}
-			else
-			{
-				// Construct a unique mesh for each shader or combine meshbuffers for same shader
-#if 0
-				buffer = 0;
-				if ( shader )
-				{
-					const quake3::SVarGroup *group = shader->getGroup( 1 );
-					if ( group )
-					{
-						if ( group->getIndex( "deformvertexes" ) >= 0 )
-						{
-							buffer = (SMeshBufferLightMap*) Mesh[ toBuffer[g].index ]->getMeshBuffer( material );
-						}
-					}
-
-				}
-#else
-				buffer = (SMeshBufferLightMap*) Mesh[ toBuffer[g].index ]->getMeshBuffer( material );
 #endif
+			}
+
+			// Construct a unique mesh for each shader or combine meshbuffers for same shader
+			if ( 0 == buffer )
+			{
+
+				if ( LoadParam.mergeShaderBuffer == 1 )
+				{
+					// combine
+					buffer = (SMeshBufferLightMap*) Mesh[ item[g].index ]->getMeshBuffer( 
+						item[g].index != E_Q3_MESH_FOG ? material : material2 );
+				}
+
+				// create a seperate mesh buffer
 				if ( 0 == buffer )
 				{
 					buffer = new scene::SMeshBufferLightMap();
-					Mesh[ toBuffer[g].index ]->addMeshBuffer( buffer );
+					Mesh[ item[g].index ]->addMeshBuffer( buffer );
 					buffer->drop();
-					buffer->getMaterial() = material;
+					buffer->getMaterial() = item[g].index != E_Q3_MESH_FOG ? material : material2;
+					if ( item[g].index == E_Q3_MESH_GEOMETRY )
+						buffer->setHardwareMappingHint ( EHM_STATIC );
 				}
 			}
 
@@ -859,25 +947,49 @@ void CQ3LevelMesh::constructMesh2()
 				case 4: // billboards
 					break;
 				case 2: // patches
-					createCurvedSurface2(buffer, i, PatchTesselation,toBuffer[g].takeVertexColor);
+					createCurvedSurface_bezier(	buffer, i, 
+												LoadParam.patchTesselation,
+												item[g].takeVertexColor
+											);
 					break;
 
 				case 1: // normal polygons
 				case 3: // mesh vertices
-
 					index = MeshVerts + face->meshVertIndex;
 					k = buffer->getVertexCount();
 
-					buffer->Indices.reallocate(buffer->getIndexCount()+face->numMeshVerts);
+					// reallocate better if many small meshes are used
+					s = buffer->getIndexCount()+face->numMeshVerts;
+					if ( buffer->Indices.allocated_size () < (u32) s )
+					{
+						if (	buffer->Indices.allocated_size () > 0 &&
+								face->numMeshVerts < 20 && NumFaces > 1000
+							)
+						{
+							s = buffer->getIndexCount() + (NumFaces >> 3 * face->numMeshVerts );
+						}
+						buffer->Indices.reallocate( s);
+					}
+
 					for ( j = 0; j < face->numMeshVerts; ++j )
 					{
 						buffer->Indices.push_back( k + index [j] );
 					}
 
-					buffer->Vertices.reallocate(k+face->numOfVerts);
+					s = k+face->numOfVerts;
+					if ( buffer->Vertices.allocated_size () < (u32) s )
+					{
+						if (	buffer->Indices.allocated_size () > 0 &&
+								face->numOfVerts < 20 && NumFaces > 1000
+							)
+						{
+							s = buffer->getIndexCount() + (NumFaces >> 3 * face->numOfVerts );
+						}
+						buffer->Vertices.reallocate( s);
+					}
 					for ( j = 0; j != face->numOfVerts; ++j )
 					{
-						copy( &temp[0], &Vertices[ j + face->vertexIndex ], toBuffer[g].takeVertexColor );
+						copy( &temp[0], &Vertices[ j + face->vertexIndex ], item[g].takeVertexColor );
 						buffer->Vertices.push_back( temp[0] );
 					}
 					break;
@@ -885,118 +997,42 @@ void CQ3LevelMesh::constructMesh2()
 			} // end switch
 		}
 	}
+
+	if ( LoadParam.verbose > 0 )
+	{
+		LoadParam.endTime = os::Timer::getRealTime();
+
+		snprintf( buf, sizeof ( buf ),
+			"quake3::constructMesh needed %04d ms to create %d faces, %d vertices,%d mesh vertices", 
+			LoadParam.endTime - LoadParam.startTime, 
+			NumFaces,
+			NumVertices,
+			NumMeshVerts
+			);
+		os::Printer::log(buf, ELL_INFORMATION);
+	}
+
 }
 
 
-//! constructs a mesh from the quake 3 level file.
-void CQ3LevelMesh::constructMesh()
+
+
+
+void CQ3LevelMesh::S3DVertex2TCoords_64::copy( video::S3DVertex2TCoords &dest ) const
 {
-	// reserve buffer.
-	s32 i; // new ISO for scoping problem with some compilers
-
-	for (i=0; i<(NumTextures+1) * (NumLightMaps+1); ++i)
-	{
-		scene::SMeshBufferLightMap* buffer = new scene::SMeshBufferLightMap();
-
-		buffer->Material.MaterialType = video::EMT_LIGHTMAP_M4;
-		buffer->Material.Wireframe = false;
-		buffer->Material.Lighting = false;
-
-		Mesh[0]->addMeshBuffer(buffer);
-
-		buffer->drop();
-	}
-
-	// go through all faces and add them to the buffer.
-
-	video::S3DVertex2TCoords temp[3];
-
-	for (i=0; i<NumFaces; ++i)
-	{
-		if (Faces[i].lightmapID < -1)
-			Faces[i].lightmapID = -1;
-
-		if (Faces[i].lightmapID > NumLightMaps-1)
-			Faces[i].lightmapID = -1;
-
-		// there are lightmapsids and textureid with -1
-		s32 meshBufferIndex = ((Faces[i].lightmapID+1) * (NumTextures+1)) + (Faces[i].textureID+1);
-		SMeshBufferLightMap* meshBuffer = ((SMeshBufferLightMap*)Mesh[0]->getMeshBuffer(meshBufferIndex));
-
-		switch(Faces[i].type)
-		{
-			//case 3: // mesh vertices
-			case 1: // normal polygons
-				{
-					meshBuffer->Vertices.reallocate(meshBuffer->getVertexCount()+3*Faces[i].numMeshVerts);
-					meshBuffer->Indices.reallocate(meshBuffer->getIndexCount()+3*Faces[i].numMeshVerts);
-					for (s32 tf=0; tf<Faces[i].numMeshVerts; tf+=3)
-					{
-						const s32 idx = meshBuffer->getVertexCount();
-						s32 vidxes[3];
-
-						vidxes[0] = MeshVerts[Faces[i].meshVertIndex + tf +0]
-							+ Faces[i].vertexIndex;
-						vidxes[1] = MeshVerts[Faces[i].meshVertIndex + tf +1]
-							+ Faces[i].vertexIndex;
-						vidxes[2] = MeshVerts[Faces[i].meshVertIndex + tf +2]
-							+ Faces[i].vertexIndex;
-
-						// add all three vertices
-						copy( &temp[0], &Vertices[ vidxes[0] ], 0 );
-						copy( &temp[1], &Vertices[ vidxes[1] ], 0 );
-						copy( &temp[2], &Vertices[ vidxes[2] ], 0 );
-
-						meshBuffer->Vertices.push_back( temp[0] );
-						meshBuffer->Vertices.push_back( temp[1] );
-						meshBuffer->Vertices.push_back( temp[2] );
-
-						// add indexes
-
-						meshBuffer->Indices.push_back(idx);
-						meshBuffer->Indices.push_back(idx+1);
-						meshBuffer->Indices.push_back(idx+2);
-					}
-				}
-				break;
-			case 2: // curved surfaces
-				createCurvedSurface(meshBuffer, i);
-				break;
-
-			case 4: // billboards
-				break;
-		} // end switch
-	}
-}
-
-
-// helper method for creating curved surfaces, sent in by Dean P. Macri.
-inline f32 CQ3LevelMesh::Blend( const f64 s[3], const f64 t[3], const tBSPVertex *v[9], int offset)
-{
-	f64 res = 0.0;
-	f32 *ptr;
-
-	for( int i=0; i<3; ++i )
-	{
-		for( int j=0; j<3; ++j )
-		{
-			ptr = (f32 *)( (char*)v[i*3+j] + offset );
-			res += s[i] * t[j] *  (*ptr);
-		}
-	}
-
-	return (f32) res;
-}
-
-
-void CQ3LevelMesh::S3DVertex2TCoords_64::copyto( video::S3DVertex2TCoords &dest ) const
-{
+#if defined (TJUNCTION_SOLVER_ROUND)
 	dest.Pos.X = core::round_( (f32) Pos.X );
 	dest.Pos.Y = core::round_( (f32) Pos.Y );
 	dest.Pos.Z = core::round_( (f32) Pos.Z );
-	//dest.Pos.X = (f32) Pos.X;
-	//dest.Pos.Y = (f32) Pos.Y;
-	//dest.Pos.Z = (f32) Pos.Z;
+#elif defined (TJUNCTION_SOLVER_0125)
+	dest.Pos.X = (f32) ( floor ( Pos.X * 8.f + 0.5 ) * 0.125 );
+	dest.Pos.Y = (f32) ( floor ( Pos.Y * 8.f + 0.5 ) * 0.125 );
+	dest.Pos.Z = (f32) ( floor ( Pos.Z * 8.f + 0.5 ) * 0.125 );
+#else
+	dest.Pos.X = (f32) Pos.X;
+	dest.Pos.Y = (f32) Pos.Y;
+	dest.Pos.Z = (f32) Pos.Z;
+#endif
 
 	dest.Normal.X = (f32) Normal.X;
 	dest.Normal.Y = (f32) Normal.Y;
@@ -1015,12 +1051,19 @@ void CQ3LevelMesh::S3DVertex2TCoords_64::copyto( video::S3DVertex2TCoords &dest 
 
 void CQ3LevelMesh::copy( S3DVertex2TCoords_64 * dest, const tBSPVertex * source, s32 vertexcolor ) const
 {
-	//dest->Pos.X = core::round( source->vPosition[0] );
-	//dest->Pos.Y = core::round( source->vPosition[2] );
-	//dest->Pos.Z = core::round( source->vPosition[1] );
+#if defined (TJUNCTION_SOLVER_ROUND)
+	dest->Pos.X = core::round_( source->vPosition[0] );
+	dest->Pos.Y = core::round_( source->vPosition[2] );
+	dest->Pos.Z = core::round_( source->vPosition[1] );
+#elif defined (TJUNCTION_SOLVER_0125)
+	dest->Pos.X = (f32) ( floor ( source->vPosition[0] * 8.f + 0.5 ) * 0.125 );
+	dest->Pos.Y = (f32) ( floor ( source->vPosition[2] * 8.f + 0.5 ) * 0.125 );
+	dest->Pos.Z = (f32) ( floor ( source->vPosition[1] * 8.f + 0.5 ) * 0.125 );
+#else
 	dest->Pos.X = source->vPosition[0];
 	dest->Pos.Y = source->vPosition[2];
 	dest->Pos.Z = source->vPosition[1];
+#endif
 
 	dest->Normal.X = source->vNormal[0];
 	dest->Normal.Y = source->vNormal[2];
@@ -1034,10 +1077,11 @@ void CQ3LevelMesh::copy( S3DVertex2TCoords_64 * dest, const tBSPVertex * source,
 
 	if ( vertexcolor )
 	{
-		u32 a = core::s32_min( source->color[3] * quake3::defaultModulate, 255 );
-		u32 r = core::s32_min( source->color[0] * quake3::defaultModulate, 255 );
-		u32 g = core::s32_min( source->color[1] * quake3::defaultModulate, 255 );
-		u32 b = core::s32_min( source->color[2] * quake3::defaultModulate, 255 );
+		//u32 a = core::s32_min( source->color[3] * LoadParam.defaultModulate, 255 );
+		u32 a = source->color[3];
+		u32 r = core::s32_min( source->color[0] * LoadParam.defaultModulate, 255 );
+		u32 g = core::s32_min( source->color[1] * LoadParam.defaultModulate, 255 );
+		u32 b = core::s32_min( source->color[2] * LoadParam.defaultModulate, 255 );
 
 		dest->Color.set(a * 1.f/255.f, r * 1.f/255.f,
 				g * 1.f/255.f, b * 1.f/255.f);
@@ -1051,13 +1095,19 @@ void CQ3LevelMesh::copy( S3DVertex2TCoords_64 * dest, const tBSPVertex * source,
 
 inline void CQ3LevelMesh::copy( video::S3DVertex2TCoords * dest, const tBSPVertex * source, s32 vertexcolor ) const
 {
+#if defined (TJUNCTION_SOLVER_ROUND)
 	dest->Pos.X = core::round_( source->vPosition[0] );
 	dest->Pos.Y = core::round_( source->vPosition[2] );
 	dest->Pos.Z = core::round_( source->vPosition[1] );
-
-	//dest->Pos.X = source->vPosition[0];
-	//dest->Pos.Y = source->vPosition[2];
-	//dest->Pos.Z = source->vPosition[1];
+#elif defined (TJUNCTION_SOLVER_0125)
+	dest->Pos.X = (f32) ( floor ( source->vPosition[0] * 8.f + 0.5 ) * 0.125 );
+	dest->Pos.Y = (f32) ( floor ( source->vPosition[2] * 8.f + 0.5 ) * 0.125 );
+	dest->Pos.Z = (f32) ( floor ( source->vPosition[1] * 8.f + 0.5 ) * 0.125 );
+#else
+	dest->Pos.X = source->vPosition[0];
+	dest->Pos.Y = source->vPosition[2];
+	dest->Pos.Z = source->vPosition[1];
+#endif
 
 	dest->Normal.X = source->vNormal[0];
 	dest->Normal.Y = source->vNormal[2];
@@ -1071,10 +1121,11 @@ inline void CQ3LevelMesh::copy( video::S3DVertex2TCoords * dest, const tBSPVerte
 
 	if ( vertexcolor )
 	{
-		u32 a = core::s32_min( source->color[3] * quake3::defaultModulate, 255 );
-		u32 r = core::s32_min( source->color[0] * quake3::defaultModulate, 255 );
-		u32 g = core::s32_min( source->color[1] * quake3::defaultModulate, 255 );
-		u32 b = core::s32_min( source->color[2] * quake3::defaultModulate, 255 );
+		//u32 a = core::s32_min( source->color[3] * LoadParam.defaultModulate, 255 );
+		u32 a = source->color[3];
+		u32 r = core::s32_min( source->color[0] * LoadParam.defaultModulate, 255 );
+		u32 g = core::s32_min( source->color[1] * LoadParam.defaultModulate, 255 );
+		u32 b = core::s32_min( source->color[2] * LoadParam.defaultModulate, 255 );
 
 		dest->Color.color = a << 24 | r << 16 | g << 8 | b;
 	}
@@ -1094,7 +1145,7 @@ void CQ3LevelMesh::SBezier::tesselate( s32 level )
 	column[1].set_used( level + 1 );
 	column[2].set_used( level + 1 );
 
-	const f64 w = 0.0 + core::reciprocal( (f32) level );
+	const f64 w = 0.0 + (1.0 / (f64) level );
 
 	//Tesselate along the columns
 	for( j = 0; j <= level; ++j)
@@ -1116,7 +1167,7 @@ void CQ3LevelMesh::SBezier::tesselate( s32 level )
 		for( k = 0; k <= level; ++k)
 		{
 			f = column[0][j].getInterpolated_quadratic(column[1][j], column[2][j], w * (f64) k);
-			f.copyto( v );
+			f.copy( v );
 			Patch->Vertices.push_back( v );
 		}
 	}
@@ -1136,6 +1187,7 @@ void CQ3LevelMesh::SBezier::tesselate( s32 level )
 			Patch->Indices.push_back( inx + 0 );
 			Patch->Indices.push_back( inx + (level + 1 ) + 1 );
 			Patch->Indices.push_back( inx + 1 );
+
 		}
 	}
 }
@@ -1144,7 +1196,7 @@ void CQ3LevelMesh::SBezier::tesselate( s32 level )
 /*!
 	no subdivision
 */
-void CQ3LevelMesh::createCurvedSurface3(SMeshBufferLightMap* meshBuffer,
+void CQ3LevelMesh::createCurvedSurface_nosubdivision(SMeshBufferLightMap* meshBuffer,
 					s32 faceIndex,
 					s32 patchTesselation,
 					s32 storevertexcolor)
@@ -1155,6 +1207,8 @@ void CQ3LevelMesh::createCurvedSurface3(SMeshBufferLightMap* meshBuffer,
 	// number of control points across & up
 	const u32 controlWidth = face->size[0];
 	const u32 controlHeight = face->size[1];
+	if ( 0 == controlWidth || 0 == controlHeight )
+		return;
 
 	video::S3DVertex2TCoords v;
 
@@ -1186,11 +1240,12 @@ void CQ3LevelMesh::createCurvedSurface3(SMeshBufferLightMap* meshBuffer,
 
 /*!
 */
-void CQ3LevelMesh::createCurvedSurface2(SMeshBufferLightMap* meshBuffer,
+void CQ3LevelMesh::createCurvedSurface_bezier(SMeshBufferLightMap* meshBuffer,
 					s32 faceIndex,
 					s32 patchTesselation,
 					s32 storevertexcolor)
 {
+
 	tBSPFace * face = &Faces[faceIndex];
 	u32 j,k;
 
@@ -1198,9 +1253,17 @@ void CQ3LevelMesh::createCurvedSurface2(SMeshBufferLightMap* meshBuffer,
 	const u32 controlWidth = face->size[0];
 	const u32 controlHeight = face->size[1];
 
+	if ( 0 == controlWidth || 0 == controlHeight )
+		return;
+
 	// number of biquadratic patches
 	const u32 biquadWidth = (controlWidth - 1)/2;
 	const u32 biquadHeight = (controlHeight -1)/2;
+
+	if ( LoadParam.verbose > 1 )
+	{
+		LoadParam.startTime = os::Timer::getRealTime();
+	}
 
 	// Create space for a temporary array of the patch's control points
 	core::array<S3DVertex2TCoords_64> controlPoint;
@@ -1274,159 +1337,41 @@ void CQ3LevelMesh::createCurvedSurface2(SMeshBufferLightMap* meshBuffer,
 	}
 
 	delete Bezier.Patch;
-}
 
-
-void CQ3LevelMesh::createCurvedSurface(SMeshBufferLightMap* meshBuffer, s32 i)
-{
-	// this implementation for loading curved surfaces was
-	// sent in by Dean P. Macri. It was a little bit modified
-	// by me afterwards.
-	s32 idx;
-	s32 cpidx[9];
-
-	const tBSPVertex *v[9];
-	video::S3DVertex2TCoords currentVertex[4];
-
-	for( s32 row=0; row<Faces[i].size[1]-2; row+=2 )
+	if ( LoadParam.verbose > 1 )
 	{
-		for( s32 col=0; col<Faces[i].size[0]-2; col+=2 )
-		{
-			cpidx[0] = (row * Faces[i].size[0] + col) + Faces[i].vertexIndex;
-			cpidx[1] = (row * Faces[i].size[0] + col + 1) + Faces[i].vertexIndex;
-			cpidx[2] = (row * Faces[i].size[0] + col + 2) + Faces[i].vertexIndex;
-			cpidx[3] = ((row+1) * Faces[i].size[0] + col) + Faces[i].vertexIndex;
-			cpidx[4] = ((row+1) * Faces[i].size[0] + col + 1) + Faces[i].vertexIndex;
-			cpidx[5] = ((row+1) * Faces[i].size[0] + col + 2) + Faces[i].vertexIndex;
-			cpidx[6] = ((row+2) * Faces[i].size[0] + col) + Faces[i].vertexIndex;
-			cpidx[7] = ((row+2) * Faces[i].size[0] + col + 1) + Faces[i].vertexIndex;
-			cpidx[8] = ((row+2) * Faces[i].size[0] + col + 2) + Faces[i].vertexIndex;
+		LoadParam.endTime = os::Timer::getRealTime();
 
-			// For some reason if we tesselate more than this (3x3),
-			// some of the patches don't show up!
-
-			f64 s;
-			f64 t;
-			f64 cs[3], ct[3], nxs[3], nxt[3];
-
-			s32 srun = 3;
-			s32 trun = 3;
-			const f64 sstep = 1.0 / (f64) srun;
-			const f64 tstep = 1.0 / (f64) trun;
-
-			v[0] = &Vertices[cpidx[0]];
-			v[1] = &Vertices[cpidx[1]];
-			v[2] = &Vertices[cpidx[2]];
-			v[3] = &Vertices[cpidx[3]];
-			v[4] = &Vertices[cpidx[4]];
-			v[5] = &Vertices[cpidx[5]];
-			v[6] = &Vertices[cpidx[6]];
-			v[7] = &Vertices[cpidx[7]];
-			v[8] = &Vertices[cpidx[8]];
-
-
-			s32 dos;
-			s32 dot;
-			for( dos = 0, s = 0; dos != srun; dos +=1,  s+= sstep )
-			{
-				cs[0] = (1.0-s)*(1.0-s);
-				cs[1] = 2.0 * (1.0 - s) * s;
-				cs[2] = s * s;
-				nxs[0] = (1.0-s-sstep)*(1.0-s-sstep);
-				nxs[1] = 2.0 * (1.0 - s -sstep) * (s+sstep);
-				nxs[2] = (s+sstep) * (s+sstep);
-
-				for( dot = 0, t = 0; dot != trun; dot += 1, t += tstep )
-				{
-					idx = meshBuffer->getVertexCount();
-					ct[0] = (1.0-t)*(1.0-t);
-					ct[1] = 2.0 * (1.0 - t) * t;
-					ct[2] = t * t;
-					nxt[0] = (1.0-t-tstep)*(1.0-t-tstep);
-					nxt[1] = 2.0 * (1.0 - t - tstep) * (t+tstep);
-					nxt[2] = (t+tstep) * (t+tstep);
-
-					// Vert 1
-					currentVertex[0].Color.set(255,255,255,255);
-					currentVertex[0].Pos.X = floorf( Blend( cs, ct, v, (char*)&v[0]->vPosition[0] - (char*)v[0])+ 0.5f);
-					currentVertex[0].Pos.Y = floorf( Blend( cs, ct, v, (char*)&v[0]->vPosition[2] - (char*)v[0])+ 0.5f);
-					currentVertex[0].Pos.Z = floorf( Blend( cs, ct, v, (char*)&v[0]->vPosition[1] - (char*)v[0])+ 0.5f);
-					currentVertex[0].Normal.X = Blend( cs, ct, v, (char*)&v[0]->vNormal[0] - (char*)v[0]);
-					currentVertex[0].Normal.Y = Blend( cs, ct, v, (char*)&v[0]->vNormal[2] - (char*)v[0]);
-					currentVertex[0].Normal.Z = Blend( cs, ct, v, (char*)&v[0]->vNormal[1] - (char*)v[0]);
-					currentVertex[0].TCoords.X = Blend( cs, ct, v, (char*)&v[0]->vTextureCoord[0] - (char*)v[0]);
-					currentVertex[0].TCoords.Y = Blend( cs, ct, v, (char*)&v[0]->vTextureCoord[1] - (char*)v[0]);
-					currentVertex[0].TCoords2.X = Blend( cs, ct, v, (char*)&v[0]->vLightmapCoord[0] - (char*)v[0]);
-					currentVertex[0].TCoords2.Y = Blend( cs, ct, v, (char*)&v[0]->vLightmapCoord[1] - (char*)v[0]);
-					// Vert 2
-					currentVertex[1].Color.set(255,255,255,255);
-					currentVertex[1].Pos.X = floorf( Blend( cs, nxt, v, (char*)&v[0]->vPosition[0] - (char*)v[0])+ 0.5f);
-					currentVertex[1].Pos.Y = floorf( Blend( cs, nxt, v, (char*)&v[0]->vPosition[2] - (char*)v[0])+ 0.5f);
-					currentVertex[1].Pos.Z = floorf( Blend( cs, nxt, v, (char*)&v[0]->vPosition[1] - (char*)v[0])+ 0.5f);
-					currentVertex[1].Normal.X = Blend( cs, nxt, v, (char*)&v[0]->vNormal[0] - (char*)v[0]);
-					currentVertex[1].Normal.Y = Blend( cs, nxt, v, (char*)&v[0]->vNormal[2] - (char*)v[0]);
-					currentVertex[1].Normal.Z = Blend( cs, nxt, v, (char*)&v[0]->vNormal[1] - (char*)v[0]);
-					currentVertex[1].TCoords.X = Blend( cs, nxt, v, (char*)&v[0]->vTextureCoord[0] - (char*)v[0]);
-					currentVertex[1].TCoords.Y = Blend( cs, nxt, v, (char*)&v[0]->vTextureCoord[1] - (char*)v[0]);
-					currentVertex[1].TCoords2.X = Blend( cs, nxt, v, (char*)&v[0]->vLightmapCoord[0] - (char*)v[0]);
-					currentVertex[1].TCoords2.Y = Blend( cs, nxt, v, (char*)&v[0]->vLightmapCoord[1] - (char*)v[0]);
-					// Vert 3
-					currentVertex[2].Color.set(255,255,255,255);
-					currentVertex[2].Pos.X = floorf( Blend( nxs, ct, v, (char*)&v[0]->vPosition[0] - (char*)v[0])+ 0.5f);
-					currentVertex[2].Pos.Y = floorf( Blend( nxs, ct, v, (char*)&v[0]->vPosition[2] - (char*)v[0])+ 0.5f);
-					currentVertex[2].Pos.Z = floorf( Blend( nxs, ct, v, (char*)&v[0]->vPosition[1] - (char*)v[0])+ 0.5f);
-					currentVertex[2].Normal.X = Blend( nxs, ct, v, (char*)&v[0]->vNormal[0] - (char*)v[0]);
-					currentVertex[2].Normal.Y = Blend( nxs, ct, v, (char*)&v[0]->vNormal[2] - (char*)v[0]);
-					currentVertex[2].Normal.Z = Blend( nxs, ct, v, (char*)&v[0]->vNormal[1] - (char*)v[0]);
-					currentVertex[2].TCoords.X = Blend( nxs, ct, v, (char*)&v[0]->vTextureCoord[0] - (char*)v[0]);
-					currentVertex[2].TCoords.Y = Blend( nxs, ct, v, (char*)&v[0]->vTextureCoord[1] - (char*)v[0]);
-					currentVertex[2].TCoords2.X = Blend( nxs, ct, v, (char*)&v[0]->vLightmapCoord[0] - (char*)v[0]);
-					currentVertex[2].TCoords2.Y = Blend( nxs, ct, v, (char*)&v[0]->vLightmapCoord[1] - (char*)v[0]);
-					// Vert 4
-					currentVertex[3].Color.set(255,255,255,255);
-					currentVertex[3].Pos.X = floorf(Blend( nxs, nxt, v, (char*)&v[0]->vPosition[0] - (char*)v[0])+ 0.5f);
-					currentVertex[3].Pos.Y = floorf(Blend( nxs, nxt, v, (char*)&v[0]->vPosition[2] - (char*)v[0])+ 0.5f);
-					currentVertex[3].Pos.Z = floorf(Blend( nxs, nxt, v, (char*)&v[0]->vPosition[1] - (char*)v[0])+ 0.5f);
-					currentVertex[3].Normal.X = Blend( nxs, nxt, v, (char*)&v[0]->vNormal[0] - (char*)v[0]);
-					currentVertex[3].Normal.Y = Blend( nxs, nxt, v, (char*)&v[0]->vNormal[2] - (char*)v[0]);
-					currentVertex[3].Normal.Z = Blend( nxs, nxt, v, (char*)&v[0]->vNormal[1] - (char*)v[0]);
-					currentVertex[3].TCoords.X = Blend( nxs, nxt, v, (char*)&v[0]->vTextureCoord[0] - (char*)v[0]);
-					currentVertex[3].TCoords.Y = Blend( nxs, nxt, v, (char*)&v[0]->vTextureCoord[1] - (char*)v[0]);
-					currentVertex[3].TCoords2.X = Blend( nxs, nxt, v, (char*)&v[0]->vLightmapCoord[0] - (char*)v[0]);
-					currentVertex[3].TCoords2.Y = Blend( nxs, nxt, v, (char*)&v[0]->vLightmapCoord[1] - (char*)v[0]);
-					// Put the vertices in the mesh buffer
-					meshBuffer->Vertices.push_back(currentVertex[0]);
-					meshBuffer->Vertices.push_back(currentVertex[2]);
-					meshBuffer->Vertices.push_back(currentVertex[1]);
-
-					meshBuffer->Vertices.push_back(currentVertex[3]);
-
-					// add indexes
-					meshBuffer->Indices.push_back(idx);
-					meshBuffer->Indices.push_back(idx+1);
-					meshBuffer->Indices.push_back(idx+2);
-					// add indexes
-					meshBuffer->Indices.push_back(idx+2);
-					meshBuffer->Indices.push_back(idx+1);
-					meshBuffer->Indices.push_back(idx+3);
-				}
-			}
-		}
+		snprintf( buf, sizeof ( buf ),
+			"quake3::createCurvedSurface_bezier needed %04d ms to create bezier patch.(%dx%d)", 
+			LoadParam.endTime - LoadParam.startTime, 
+			biquadWidth,
+			biquadHeight
+			);
+		os::Printer::log(buf, ELL_INFORMATION);
 	}
+
 }
+
+
 
 
 //! get's an interface to the entities
-const quake3::tQ3EntityList & CQ3LevelMesh::getEntityList()
+tQ3EntityList & CQ3LevelMesh::getEntityList( const c8 * fileName )
 {
+	if ( fileName )
+	{
+	}
+
 	Entity.sort();
+
 	return Entity;
 }
 
 
 /*!
 */
-const quake3::SShader * CQ3LevelMesh::getShader(u32 index) const
+const IShader * CQ3LevelMesh::getShader(u32 index) const
 {
 	index &= 0xFFFF;
 
@@ -1439,23 +1384,36 @@ const quake3::SShader * CQ3LevelMesh::getShader(u32 index) const
 }
 
 
-//! loads the shader definition
-const quake3::SShader * CQ3LevelMesh::getShader( const c8 * filename, bool fileNameIsValid )
+/*!
+	loads the shader definition
+*/
+const IShader* CQ3LevelMesh::getShader( const c8 * filename, bool fileNameIsValid )
 {
-	quake3::SShader search;
-	search.name = filename;
-	search.name.replace( '\\', '/' );
+	core::stringc searchName ( filename );
 
+	IShader search;
+	search.name = searchName;
+	search.name.replace( '\\', '/' );
+	search.name.make_lower();
+
+
+	core::stringc message;
 	s32 index;
 
 	//! is Shader already in cache?
 	index = Shader.linear_search( search );
 	if ( index >= 0 )
 	{
+		if ( LoadParam.verbose > 1 )
+		{
+			message = searchName + " found " + Shader[index].name;
+			os::Printer::log("quake3:getShader", message.c_str(), ELL_INFORMATION);
+		}
+
 		return &Shader[index];
 	}
 
-	core::stringc loadFile;
+	core::string<c16> loadFile;
 
 	if ( !fileNameIsValid )
 	{
@@ -1466,7 +1424,7 @@ const quake3::SShader * CQ3LevelMesh::getShader( const c8 * filename, bool fileN
 		s32 end = cut.findLast( '/' );
 		s32 start = cut.findLast( '/', end - 1 );
 
-		loadFile = "scripts";
+		loadFile = LoadParam.scriptDir;
 		loadFile.append( cut.subString( start, end - start ) );
 		loadFile.append( ".shader" );
 	}
@@ -1484,26 +1442,36 @@ const quake3::SShader * CQ3LevelMesh::getShader( const c8 * filename, bool fileN
 	ShaderFile.push_back( loadFile );
 
 	if ( !FileSystem->existFile( loadFile.c_str() ) )
+	{
+		if ( LoadParam.verbose > 1 )
+		{
+			message = loadFile + " for " + searchName + " failed ";
+			os::Printer::log("quake3:getShader", message.c_str(), ELL_INFORMATION);
+		}
 		return 0;
+	}
 
 	io::IReadFile *file = FileSystem->createAndOpenFile( loadFile.c_str() );
 	if ( 0 == file )
 		return 0;
 
-	core::stringc message;
-	message = loadFile + " for " + core::stringc( filename );
-	os::Printer::log("Loaded shader", message.c_str(), ELL_INFORMATION);
+	if ( LoadParam.verbose )
+	{
+		message = loadFile + " for " + searchName;
+		os::Printer::log("quake3:getShader Load shader", message.c_str(), ELL_INFORMATION);
+	}
 
 	// load script
 	core::array<u8> script;
 	const long len = file->getSize();
 
 	script.set_used( len + 2 );
-	script[ len + 1 ] = 0;
 
 	file->seek( 0 );
 	file->read( script.pointer(), len );
 	file->drop();
+
+	script[ len + 1 ] = 0;
 
 	// start a parser instance
 	parser_parse( script.pointer(), len, &CQ3LevelMesh::scriptcallback_shader );
@@ -1511,7 +1479,15 @@ const quake3::SShader * CQ3LevelMesh::getShader( const c8 * filename, bool fileN
 	// search again
 	index = Shader.linear_search( search );
 	if ( index >= 0 )
+	{
+		if ( LoadParam.verbose > 1 )
+		{
+			message = searchName + " found " + Shader[index].name;
+			os::Printer::log("quake3:getShader", message.c_str(), ELL_INFORMATION);
+		}
+
 		return &Shader[index];
+	}
 
 	return 0;
 }
@@ -1522,21 +1498,52 @@ void CQ3LevelMesh::InitShader()
 {
 	ReleaseShader();
 
-	quake3::SShader element;
+	IShader element;
 
-	quake3::SVarGroup group;
-	quake3::SVariable variable;
+	SVarGroup group;
+	SVariable variable ( "noshader" );
 
-	variable.name = "noshader";
 	group.Variable.push_back( variable );
 
-	element.VarGroup = new quake3::SVarGroupList();
+	element.VarGroup = new SVarGroupList();
 	element.VarGroup->VariableGroup.push_back( group );
-	element.name = element.VarGroup->VariableGroup[0].Variable[0].name.c_str();
+	element.VarGroup->VariableGroup.push_back( SVarGroup() );
+	element.name = element.VarGroup->VariableGroup[0].Variable[0].name;
+	element.id = Shader.size();
 	Shader.push_back( element );
 
-	// load common named shader
-	getShader("scripts/common.shader");
+	if ( LoadParam.loadAllShaders )
+	{
+		io::eFileSystemType current = FileSystem->setFileListSystem ( io::FILESYSTEM_VIRTUAL );
+		core::string<c16> save = FileSystem->getWorkingDirectory();
+
+		core::string<c16> newDir;
+		newDir = "/";
+		newDir += LoadParam.scriptDir;
+		newDir += "/";
+		FileSystem->changeWorkingDirectoryTo ( newDir.c_str() );
+
+		core::stringc s;
+		io::IFileList *fileList = FileSystem->createFileList ();
+		for (u32 i=0; i< fileList->getFileCount(); ++i)
+		{
+			s = fileList->getFullFileName(i);
+			if ( s.find ( ".shader" ) >= 0 )
+			{
+				if ( 0 == LoadParam.loadSkyShader && s.find ( "sky.shader" ) >= 0 )
+				{
+				}
+				else
+				{
+					getShader ( s.c_str () );
+				}
+			}
+		}
+		fileList->drop ();
+
+		FileSystem->changeWorkingDirectoryTo ( save );
+		FileSystem->setFileListSystem ( current );
+	}
 }
 
 
@@ -1553,6 +1560,8 @@ void CQ3LevelMesh::ReleaseShader()
 }
 
 
+/*!
+*/
 void CQ3LevelMesh::ReleaseEntity()
 {
 	for ( u32 i = 0; i!= Entity.size(); ++i )
@@ -1564,165 +1573,165 @@ void CQ3LevelMesh::ReleaseEntity()
 
 
 // entity only has only one valid level.. and no assoziative name..
-void CQ3LevelMesh::scriptcallback_entity( quake3::SVarGroupList *& grouplist )
+void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist )
 {
-	quake3::SEntity element;
-
 	if ( grouplist->VariableGroup.size() != 2 )
 		return;
 
+	grouplist->grab();
+
+	SEntity element;
+	element.VarGroup = grouplist;
+	element.id = Entity.size();
 	element.name = grouplist->VariableGroup[1].get( "classname" );
 
-	grouplist->grab();
-	element.VarGroup = grouplist;
-	element.id = Shader.size();
 
 	Entity.push_back( element );
 }
 
 
 //!. script callback for shaders
-void CQ3LevelMesh::scriptcallback_shader( quake3::SVarGroupList *& grouplist )
+void CQ3LevelMesh::scriptcallback_shader( SVarGroupList *& grouplist )
 {
-	quake3::SShader element;
-
 	// TODO: There might be something wrong with this fix, but it avoids a core dump...
 	if (grouplist->VariableGroup[0].Variable.size()==0)
 		return;
 	// end fix
 
-	grouplist->grab();
+	IShader element;
 
+	grouplist->grab();
 	element.VarGroup = grouplist;
-	element.name = element.VarGroup->VariableGroup[0].Variable[0].name.c_str();
+	element.name = element.VarGroup->VariableGroup[0].Variable[0].name;
 	element.id = Shader.size();
 
 	Shader.push_back( element );
 }
 
 
-//! loads the textures
-void CQ3LevelMesh::loadTextures()
-{
-	if (!Driver)
-		return;
-
-	core::stringc s;
-	core::stringc extensions[2];
-	extensions[0] = ".jpg";
-	extensions[1] = ".tga";
-
-	// load textures
-
-	core::array<video::ITexture*> tex;
-	tex.set_used(NumTextures+1);
-
-	tex[0] = 0;
-
-	s32 t;// new ISO for scoping problem with some compilers
-
-	for (t=1; t<(NumTextures+1); ++t)
-	{
-		tex[t] = 0;
-
-		if ( !tex[t] )
-		{
-			for (s32 e=0; e<2; ++e)
-			{
-				s = Textures[t-1].strName;
-				s.append(extensions[e]);
-				if (FileSystem->existFile(s.c_str()))
-				{
-					tex[t] = Driver->getTexture(s.c_str());
-					break;
-				}
-			}
-		}
-		if (!tex[t])
-		{
-			os::Printer::log("Q3: no texmap for texturename ", Textures[t-1].strName, ELL_WARNING);
-		}
-	}
-
-	// load lightmaps.
-	core::array<video::ITexture*> lig;
-	lig.set_used(NumLightMaps+1);
-
-	lig[0] = 0;
-	c8 lightmapname[255];
-	core::dimension2d<u32> lmapsize(128,128);
-
-	//bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
-	//Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-
-	video::IImage* lmapImg;
-	for (t=1; t<(NumLightMaps+1); ++t)
-	{
-		sprintf(lightmapname, "%s.lightmap.%d", LevelName.c_str(), t);
-
-		// lightmap is a CTexture::R8G8B8 format
-		lmapImg = Driver->createImageFromData(
-			video::ECF_R8G8B8,
-			lmapsize,
-			LightMaps[t-1].imageBits, true, false );
-
-		lig[t] = Driver->addTexture( lightmapname, lmapImg );
-		lmapImg->drop();
-
-	}
-	//Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
-
-
-	// attach textures to materials.
-	for (s32 l=0; l<NumLightMaps+1; ++l)
-	{
-		for (t=0; t<NumTextures+1; ++t)
-		{
-			SMeshBufferLightMap* b = (SMeshBufferLightMap*)Mesh[0]->getMeshBuffer(l*(NumTextures+1) + t);
-			b->Material.setTexture(1, lig[l]);
-			b->Material.setTexture(0, tex[t]);
-
-			if (!b->Material.getTexture(1))
-				b->Material.MaterialType = video::EMT_SOLID;
-
-			if (!b->Material.getTexture(0))
-				b->Material.MaterialType = video::EMT_SOLID;
-		}
-	}
-}
-
-
-// delete all buffers without geometry in it.
+/*!
+	delete all buffers without geometry in it.
+*/
 void CQ3LevelMesh::cleanMeshes()
 {
+	if ( 0 == LoadParam.cleanUnResolvedMeshes )
+		return;
+
 	// delete all buffers without geometry in it.
-	for ( u32 g = 0; g < quake3::E_Q3_MESH_SIZE; ++g )
+	u32 run = 0;
+	u32 remove = 0;
+
+	irr::scene::SMesh *m;
+	IMeshBuffer *b;
+	for ( u32 g = 0; g < E_Q3_MESH_SIZE; ++g )
 	{
-		u32 i = 0;
 		bool texture0important = ( g == 0 );
-		while(i < Mesh[g]->MeshBuffers.size())
+
+		run = 0;
+		remove = 0;
+		m = Mesh[g];
+		if ( LoadParam.verbose > 0 )
 		{
-			if (Mesh[g]->MeshBuffers[i]->getVertexCount() == 0 ||
-				Mesh[g]->MeshBuffers[i]->getIndexCount() == 0 ||
-				( texture0important && Mesh[g]->MeshBuffers[i]->getMaterial().getTexture(0) == 0 )
+			LoadParam.startTime = os::Timer::getRealTime();
+			if ( LoadParam.verbose > 1 )
+			{
+				snprintf( buf, sizeof ( buf ),
+					"quake3::cleanMeshes%d start for %d meshes",
+					g,
+					m->MeshBuffers.size()
+					);
+				os::Printer::log(buf, ELL_INFORMATION);
+			}
+		}
+
+		u32 i = 0;
+		s32 blockstart = -1;
+		s32 blockcount;
+
+		while( i < m->MeshBuffers.size())
+		{
+			run += 1;
+
+			b = m->MeshBuffers[i];
+			
+			if ( b->getVertexCount() == 0 || b->getIndexCount() == 0 ||
+				( texture0important && b->getMaterial().getTexture(0) == 0 )
 				)
 			{
+				if ( blockstart < 0 )
+				{
+					blockstart = i;
+					blockcount = 0;
+				}
+				blockcount += 1;
+				i += 1;
+
 				// delete Meshbuffer
-				Mesh[g]->MeshBuffers[i]->drop();
-				Mesh[g]->MeshBuffers.erase(i);
+				i -= 1;
+				remove += 1;
+				b->drop();
+				m->MeshBuffers.erase(i);
 			}
 			else
-				++i;
+			{
+				// clean blockwise
+				if ( blockstart >= 0 )
+				{
+					if ( LoadParam.verbose > 1 )
+					{
+						snprintf( buf, sizeof ( buf ),
+							"quake3::cleanMeshes%d cleaning mesh %d %d size", 
+							g,
+							blockstart,
+							blockcount
+							);
+						os::Printer::log(buf, ELL_INFORMATION);
+					}
+					blockstart = -1;
+				}
+				i += 1;
+			}
 		}
+
+		if ( LoadParam.verbose > 0 )
+		{
+			LoadParam.endTime = os::Timer::getRealTime();
+			snprintf( buf, sizeof ( buf ),
+				"quake3::cleanMeshes%d needed %04d ms to clean %d of %d meshes", 
+				g,
+				LoadParam.endTime - LoadParam.startTime, 
+				remove,
+				run
+				);
+			os::Printer::log(buf, ELL_INFORMATION);
+		}
+
 	}
+
 }
 
 
 // recalculate bounding boxes
 void CQ3LevelMesh::calcBoundingBoxes()
 {
+	if ( LoadParam.verbose > 0 )
+	{
+		LoadParam.startTime = os::Timer::getRealTime();
+
+		if ( LoadParam.verbose > 1 )
+		{
+			snprintf( buf, sizeof ( buf ),
+				"quake3::calcBoundingBoxes start create %d textures and %d lightmaps", 
+				NumTextures,
+				NumLightMaps
+				);
+			os::Printer::log(buf, ELL_INFORMATION);
+		}
+
+	}
+
 	// create bounding box
-	for ( u32 g = 0; g != quake3::E_Q3_MESH_SIZE; ++g )
+	for ( u32 g = 0; g != E_Q3_MESH_SIZE; ++g )
 	{
 		for ( u32 j=0; j < Mesh[g]->MeshBuffers.size(); ++j)
 		{
@@ -1732,49 +1741,54 @@ void CQ3LevelMesh::calcBoundingBoxes()
 		Mesh[g]->recalculateBoundingBox();
 	}
 
-}
-
-/*
-//! loads a texture
-video::ITexture* CQ3LevelMesh::loadTexture( const tStringList &stringList )
-{
-	static const char * extension[2] =
+	if ( LoadParam.verbose > 0 )
 	{
-		".jpg",
-		".tga"
-	};
+		LoadParam.endTime = os::Timer::getRealTime();
 
-	core::stringc loadFile;
-	for ( u32 i = 0; i!= stringList.size(); ++i )
-	{
-		for ( u32 g = 0; g != 2 ; ++g )
-		{
-			cutFilenameExtension( loadFile, stringList[i] ).append( extension[g] );
-
-			if ( FileSystem->existFile( loadFile.c_str() ) )
-			{
-				video::ITexture* t = Driver->getTexture( loadFile.c_str() );
-				if ( t )
-					return t;
-			}
-		}
+		snprintf( buf, sizeof ( buf ),
+			"quake3::calcBoundingBoxes needed %04d ms to create %d textures and %d lightmaps", 
+			LoadParam.endTime - LoadParam.startTime, 
+			NumTextures,
+			NumLightMaps
+			);
+		os::Printer::log( buf, ELL_INFORMATION);
 	}
-	return 0;
+
 }
-*/
+
 
 //! loads the textures
-void CQ3LevelMesh::loadTextures2()
+void CQ3LevelMesh::loadTextures()
 {
 	if (!Driver)
 		return;
 
+	if ( LoadParam.verbose > 0 )
+	{
+		LoadParam.startTime = os::Timer::getRealTime();
+
+		if ( LoadParam.verbose > 1 )
+		{
+			snprintf( buf, sizeof ( buf ),
+				"quake3::loadTextures start create %d textures and %d lightmaps", 
+				NumTextures,
+				NumLightMaps
+				);
+			os::Printer::log( buf, ELL_INFORMATION);
+		}
+
+	}
+
+	c8 lightmapname[255];
 	s32 t;
 
 	// load lightmaps.
 	Lightmap.set_used(NumLightMaps+1);
 
-	c8 lightmapname[255];
+/*
+	bool oldMipMapState = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
+	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+*/
 	core::dimension2d<u32> lmapsize(128,128);
 
 	video::IImage* lmapImg;
@@ -1786,21 +1800,23 @@ void CQ3LevelMesh::loadTextures2()
 		lmapImg = Driver->createImageFromData(
 			video::ECF_R8G8B8,
 			lmapsize,
-			LightMaps[t].imageBits, true, false );
+			LightMaps[t].imageBits, false, true );
 
 		Lightmap[t] = Driver->addTexture( lightmapname, lmapImg );
 		lmapImg->drop();
 
 	}
 
+//	Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
+
 	// load textures
 	Tex.set_used( NumTextures+1 );
 
-	const quake3::SShader * shader;
+	const IShader * shader;
 
 	core::stringc list;
 	core::stringc check;
-	quake3::tTexArray textureArray;
+	tTexArray textureArray;
 
 	// pre-load shaders
 	for ( t=0; t< NumTextures; ++t)
@@ -1822,7 +1838,7 @@ void CQ3LevelMesh::loadTextures2()
 			Tex[t].ShaderID = shader->id;
 
 			// if texture name == stage1 Texture map
-			const quake3::SVarGroup * group;
+			const SVarGroup * group;
 
 			group = shader->getGroup( 2 );
 			if ( group )
@@ -1848,10 +1864,24 @@ void CQ3LevelMesh::loadTextures2()
 		}
 
 		u32 pos = 0;
-		quake3::getTextures( textureArray, list, pos, FileSystem, Driver );
+		getTextures( textureArray, list, pos, FileSystem, Driver );
 
 		Tex[t].Texture = textureArray[0];
 	}
+
+	if ( LoadParam.verbose > 0 )
+	{
+		LoadParam.endTime = os::Timer::getRealTime();
+
+		snprintf( buf, sizeof ( buf ),
+			"quake3::loadTextures needed %04d ms to create %d textures and %d lightmaps", 
+			LoadParam.endTime - LoadParam.startTime, 
+			NumTextures,
+			NumLightMaps
+			);
+		os::Printer::log( buf, ELL_INFORMATION);
+	}
+
 }
 
 

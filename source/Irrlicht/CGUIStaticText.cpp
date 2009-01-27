@@ -274,17 +274,17 @@ void CGUIStaticText::breakText()
 		if (c == L'\r') // Mac or Windows breaks
 		{
 			lineBreak = true;
-			c = ' ';
 			if (Text[i+1] == L'\n') // Windows breaks
 			{
 				Text.erase(i+1);
 				--size;
 			}
+			c = '\0';
 		}
 		else if (c == L'\n') // Unix breaks
 		{
 			lineBreak = true;
-			c = ' ';
+			c = '\0';
 		}
 
 		if (c == L' ' || c == 0 || i == (size-1))

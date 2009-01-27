@@ -169,9 +169,9 @@ void CTRTextureWire2::renderLine ( const s4DVertex *a,const s4DVertex *b ) const
 	if ( 0 == dx )
 		return;
 
-	dst = (tVideoSample*) ( (u8*) lockedSurface + ( aposy * pitch0 ) + (aposx << VIDEO_SAMPLE_GRANULARITY ) );
+	dst = (tVideoSample*) ( (u8*) (tVideoSample*)RenderTarget->lock() + ( aposy * pitch0 ) + (aposx << VIDEO_SAMPLE_GRANULARITY ) );
 #ifdef USE_ZBUFFER
-	z = (fp24*) ( (u8*) lockedDepthBuffer + ( aposy * pitch1 ) + (aposx << 2 ) );
+	z = (fp24*) ( (u8*) (fp24*) DepthBuffer->lock() + ( aposy * pitch1 ) + (aposx << 2 ) );
 #endif
 
 	c = dx << 1;
@@ -247,15 +247,8 @@ void CTRTextureWire2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
-
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
-#endif
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 	renderLine ( a, b );
 	renderLine ( b, c );
@@ -277,12 +270,6 @@ void CTRTextureWire2::drawLine ( const s4DVertex *a,const s4DVertex *b)
 
 	// sort on height, y
 	if ( a->Pos.y > b->Pos.y ) swapVertexPointer(&a, &b);
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
-#endif
 
 	renderLine ( a, b );
 	RenderTarget->unlock();

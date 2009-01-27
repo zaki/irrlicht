@@ -156,10 +156,10 @@ public:
 	then printed to the error log and can be catched with a custom event
 	receiver. */
 	virtual s32 addHighLevelShaderMaterialFromFiles(
-		const c8* vertexShaderProgram,
+		const core::string<c16>& vertexShaderProgramFileName,
 		const c8* vertexShaderEntryPointName = "main",
 		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
-		const c8* pixelShaderProgram = 0,
+		const core::string<c16>& pixelShaderProgramFileName = "",
 		const c8* pixelShaderEntryPointName = "main",
 		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 		IShaderConstantSetCallBack* callback = 0,
@@ -293,8 +293,8 @@ public:
 	error occured. -1 is returned for example if a vertex or pixel shader
 	program could not be compiled, the error strings are then printed out
 	into the error log, and can be catched with a custom event receiver. */
-	virtual s32 addShaderMaterialFromFiles(const c8* vertexShaderProgramFileName,
-		const c8* pixelShaderProgramFileName,
+	virtual s32 addShaderMaterialFromFiles(const core::string<c16>& vertexShaderProgramFileName,
+		const core::string<c16>& pixelShaderProgramFileName,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 		s32 userData = 0) = 0;

@@ -2,6 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include "IrrCompileConfig.h"
+
 #include "CFileSystem.h"
 #include "IReadFile.h"
 #include "IWriteFile.h"
@@ -12,7 +14,6 @@
 #include "CXMLWriter.h"
 #include "stdio.h"
 #include "os.h"
-#include "IrrCompileConfig.h"
 #include "CAttributes.h"
 #include "CMemoryFile.h"
 
@@ -32,12 +33,21 @@ namespace io
 {
 
 
+
+
 //! constructor
 CFileSystem::CFileSystem()
 {
 	#ifdef _DEBUG
 	setDebugName("CFileSystem");
 	#endif
+
+	setFileListSystem ( FILESYSTEM_NATIVE );
+
+	addArchiveLoader ( new CArchiveLoaderZIP ( this ) ); 
+	addArchiveLoader ( new CArchiveLoaderMount ( this ) ); 
+	addArchiveLoader ( new CArchiveLoaderPAK ( this ) ); 
+	
 }
 
 
@@ -46,53 +56,41 @@ CFileSystem::~CFileSystem()
 {
 	u32 i;
 
-	for ( i=0; i<ZipFileSystems.size(); ++i)
-		ZipFileSystems[i]->drop();
+	for ( i=0; i < FileArchive.size(); ++i)
+	{
+		FileArchive[i]->drop ();
+	}
 
-	for ( i=0; i<PakFileSystems.size(); ++i)
-		PakFileSystems[i]->drop();
+	for ( i=0; i < ArchiveLoader.size(); ++i)
+	{
+		ArchiveLoader[i]->drop ();
+	}
 
-	for ( i= 0; i<UnZipFileSystems.size(); ++i)
-		UnZipFileSystems[i]->drop();
 }
 
 
 //! opens a file for read access
-IReadFile* CFileSystem::createAndOpenFile(const c8* filename)
+IReadFile* CFileSystem::createAndOpenFile( const core::string<c16>& filename)
 {
 	IReadFile* file = 0;
 	u32 i;
 
-	for ( i=0; i<ZipFileSystems.size(); ++i)
+	for ( i=0; i< FileArchive.size(); ++i)
 	{
-		file = ZipFileSystems[i]->openFile(filename);
-		if (file)
-			return file;
-	}
-
-	for ( i = 0; i<PakFileSystems.size(); ++i)
-	{
-		file = PakFileSystems[i]->openFile(filename);
-		if (file)
-			return file;
-	}
-
-	for ( i = 0; i<UnZipFileSystems.size(); ++i)
-	{
-		file = UnZipFileSystems[i]->openFile(filename);
+		file = FileArchive[i]->openFile(filename);
 		if (file)
 			return file;
 	}
 
 	// Create the file using an absolute path so that it matches
 	// the scheme used by CNullDriver::getTexture().
-	return createReadFile(getAbsolutePath(filename).c_str());
+	return createReadFile(getAbsolutePath(filename));
 }
 
 
 //! Creates an IReadFile interface for treating memory like a file.
 IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len, 
-			const c8* fileName, bool deleteMemoryWhenDropped)
+			const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
 {
 	if (!memory)
 		return 0;
@@ -102,7 +100,7 @@ IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len,
 
 //! Creates an IReadFile interface for treating memory like a file.
 IWriteFile* CFileSystem::createMemoryWriteFile(void* memory, s32 len, 
-			const c8* fileName, bool deleteMemoryWhenDropped)
+	   const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
 {
 	if (!memory)
 		return 0;
@@ -112,115 +110,178 @@ IWriteFile* CFileSystem::createMemoryWriteFile(void* memory, s32 len,
 
 
 //! Opens a file for write access.
-IWriteFile* CFileSystem::createAndWriteFile(const c8* filename, bool append)
+IWriteFile* CFileSystem::createAndWriteFile(const core::string<c16>& filename, bool append)
 {
 	return createWriteFile(filename, append);
 }
 
 
-bool CFileSystem::addFolderFileArchive(const c8* filename, bool ignoreCase, bool ignorePaths)
-{
-	CUnZipReader* zr = new CUnZipReader(this, filename, ignoreCase, ignorePaths);
-	if (zr)
-		UnZipFileSystems.push_back(zr);
-	#ifdef _DEBUG
-	else
-	{
-		os::Printer::log("Could not open file. Folderfile not added", filename, ELL_ERROR);
-	}
-	#endif
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return (zr!=0);
+//! Adds an external archive loader to the engine.
+void CFileSystem::addArchiveLoader(IArchiveLoader* loader)
+{
+	if (!loader)
+		return;
+
+	//loader->grab();
+	ArchiveLoader.push_back ( loader );
 }
 
 
-//! adds an zip archive to the filesystem
-bool CFileSystem::addZipFileArchive(const c8* filename, bool ignoreCase, bool ignorePaths)
+//! Adds an archive to the file system.
+bool CFileSystem::registerFileArchive( const core::string<c16>& filename, bool ignoreCase, bool ignorePaths, s32 index )
 {
-	CZipReader* zr = 0;
-	IReadFile* file = createAndOpenFile(filename);
-	if (file)
+	IFileArchive* archive = 0;
+	bool ret = false;
+	u32 i;
+
+	// try to load arhive based on file name
+	for ( i = 0; i < ArchiveLoader.size(); ++i)
 	{
-		zr = new CZipReader(file, ignoreCase, ignorePaths);
-		if (zr)
-			ZipFileSystems.push_back(zr);
-
-		file->drop();
+		if ( ArchiveLoader[i]->isALoadableFileFormat( filename ) )
+		{
+			archive = ArchiveLoader[i]->createArchive( filename, ignoreCase, ignorePaths );
+			if (archive)
+				break;
+		}
 	}
-	#ifdef _DEBUG
-	else
-		os::Printer::log("Could not open file. Zipfile not added", filename, ELL_ERROR);
-	#endif
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return (zr != 0);
+	if ( archive )
+	{
+		if ( index < 0 )
+			FileArchive.push_back ( archive );
+		else
+			FileArchive.insert ( archive, index );
+
+		ret = true;
+	}
+	else
+	{
+		char buf[256];
+
+		core::stringw showName ( filename );
+		snprintf ( buf, sizeof (buf), "Could not create archive for: %ls\n", showName.c_str() );
+		os::Printer::log( buf ,ELL_ERROR);
+	}
+
+	return ret;
+
 }
 
-
-//! adds an pak archive to the filesystem
-bool CFileSystem::addPakFileArchive(const c8* filename, bool ignoreCase, bool ignorePaths)
+//! removes an archive to the file system.
+bool CFileSystem::unregisterFileArchive( u32 index )
 {
-	CPakReader* zr = 0;
-	IReadFile* file = createAndOpenFile(filename);
-	if (file)
+	bool ret = false;
+	if ( index < FileArchive.size () )
 	{
-		zr = new CPakReader(file, ignoreCase, ignorePaths);
-		if (zr)
-			PakFileSystems.push_back(zr);
-
-		file->drop();
+		FileArchive[index]->drop();
+		FileArchive.erase ( index );
+		ret = true;
 	}
-	#ifdef _DEBUG
-	else
-		os::Printer::log("Could not open file. Pakfile not added", filename, ELL_ERROR);
-	#endif
+	return ret;
+}
 
-	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return (zr != 0);
+//! gets an archive
+u32 CFileSystem::getFileArchiveCount()
+{
+	return FileArchive.size();
+}
+
+IFileArchive* CFileSystem::getFileArchive( u32 index )
+{
+	return index < getFileArchiveCount () ? FileArchive [ index ] : 0;
 }
 
 
 //! Returns the string of the current working directory
-const c8* CFileSystem::getWorkingDirectory()
+const core::string<c16>& CFileSystem::getWorkingDirectory()
 {
-#ifdef _IRR_WINDOWS_API_
-	#if !defined ( _WIN32_WCE )
-		_getcwd(WorkingDirectory, FILE_SYSTEM_MAX_PATH);
-	#endif
-#endif
+	eFileSystemType type = FileSystemType;
 
-#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
-	getcwd(WorkingDirectory, (size_t)FILE_SYSTEM_MAX_PATH);
-#endif
-	return WorkingDirectory;
+	if ( type != FILESYSTEM_NATIVE )
+	{
+		type = FILESYSTEM_VIRTUAL;
+	}
+	else
+	{
+		const s32 FILE_SYSTEM_MAX_PATH = 1024;
+		WorkingDirectory [ type ].reserve ( FILE_SYSTEM_MAX_PATH );
+		c16* r = (c16*) WorkingDirectory [ type ].c_str();
+
+		#if defined( _IRR_USE_WINDOWS_CE_DEVICE_)
+		#elif defined( _IRR_WINDOWS_API_)
+			#if defined ( _IRR_WCHAR_FILESYSTEM )
+				_wgetcwd ( r, FILE_SYSTEM_MAX_PATH );
+			#else
+				_getcwd(r, FILE_SYSTEM_MAX_PATH);
+			#endif
+		#endif
+
+		#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
+
+			#if defined ( _IRR_WCHAR_FILESYSTEM )
+				wgetcwd ( r, FILE_SYSTEM_MAX_PATH );
+			#else
+				getcwd(r, (size_t)FILE_SYSTEM_MAX_PATH);
+			#endif		
+		#endif
+
+		WorkingDirectory [ type ].verify();
+	}
+
+	return WorkingDirectory [ type ];
 }
 
 
 //! Changes the current Working Directory to the given string.
-bool CFileSystem::changeWorkingDirectoryTo(const c8* newDirectory)
+bool CFileSystem::changeWorkingDirectoryTo(const core::string<c16>& newDirectory)
 {
 	bool success=false;
-#ifdef _MSC_VER
-	#if !defined ( _WIN32_WCE )
-		success=(_chdir(newDirectory) == 0);
+
+	if ( FileSystemType != FILESYSTEM_NATIVE )
+	{
+		WorkingDirectory [ FILESYSTEM_VIRTUAL ].append ( newDirectory );
+		flatenFilename ( WorkingDirectory [ FILESYSTEM_VIRTUAL ], "" );
+		success = 1;
+	}
+	else
+	{
+		WorkingDirectory [ FILESYSTEM_NATIVE ] = newDirectory;
+
+#if defined( _IRR_USE_WINDOWS_CE_DEVICE_)
+		success = true;
+#elif defined( _MSC_VER)
+	#if defined ( _IRR_WCHAR_FILESYSTEM )
+		success=(_wchdir(newDirectory.c_str()) == 0);
+	#else
+		success=(_chdir(newDirectory.c_str()) == 0);
 	#endif
 #else
-	success=(chdir(newDirectory) == 0);
+		success=(chdir(newDirectory.c_str()) == 0);
 #endif
+	}
+
 	return success;
 }
 
-
-core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
+/*!
+*/
+core::string<c16> CFileSystem::getAbsolutePath(const core::string<c16>& filename) const
 {
-	c8 *p=0;
+	c16 *p=0;
 
-#ifdef _IRR_WINDOWS_API_
-	#if !defined ( _WIN32_WCE )
-	c8 fpath[_MAX_PATH];
-	p = _fullpath( fpath, filename.c_str(), _MAX_PATH);
+#if defined( _IRR_USE_WINDOWS_CE_DEVICE_)
+	return filename;
+#elif defined( _IRR_WINDOWS_API_)
+
+	#if defined ( _IRR_WCHAR_FILESYSTEM )
+		c16 fpath[_MAX_PATH];
+		p = _wfullpath( fpath, filename.c_str(), _MAX_PATH);
+	#else
+		c8 fpath[_MAX_PATH];
+		p = _fullpath( fpath, filename.c_str(), _MAX_PATH);
 	#endif
+
 
 #elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 	c8 fpath[4096];
@@ -238,19 +299,19 @@ core::stringc CFileSystem::getAbsolutePath(const core::stringc& filename) const
 				return filename;
 		}
 		else
-			return core::stringc(fpath);
+			return core::string<c16>(fpath);
 	}
 
 #endif
 
-	return core::stringc(p);
+	return core::string<c16>(p);
 }
 
 
 //! returns the directory part of a filename, i.e. all until the first
 //! slash or backslash, excluding it. If no directory path is prefixed, a '.'
 //! is returned.
-core::stringc CFileSystem::getFileDir(const core::stringc& filename) const
+core::string<c16> CFileSystem::getFileDir(const core::string<c16>& filename) const
 {
 	// find last forward or backslash
 	s32 lastSlash = filename.findLast('/');
@@ -266,7 +327,7 @@ core::stringc CFileSystem::getFileDir(const core::stringc& filename) const
 
 //! returns the base part of a filename, i.e. all except for the directory
 //! part. If no directory path is prefixed, the full name is returned.
-core::stringc CFileSystem::getFileBasename(const core::stringc& filename, bool keepExtension) const
+core::string<c16> CFileSystem::getFileBasename(const core::string<c16>& filename, bool keepExtension) const
 {
 	// find last forward or backslash
 	s32 lastSlash = filename.findLast('/');
@@ -291,31 +352,171 @@ core::stringc CFileSystem::getFileBasename(const core::stringc& filename, bool k
 }
 
 
-//! Creates a list of files and directories in the current working directory 
-IFileList* CFileSystem::createFileList() const
+//! flaten a path and file name for example: "/you/me/../." becomes "/you"
+core::string<c16>& CFileSystem::flatenFilename( core::string<c16>& directory, const core::string<c16>& root ) const
 {
-	return new CFileList();
+	directory.replace ( '\\', '/' );
+	if ( lastChar ( directory ) != '/' )
+		directory.append ( '/' );
+
+	core::string<c16> dir;
+	core::string<c16> subdir;
+
+	s32 lastpos = 0;
+	s32 pos = 0;
+
+	while ( ( pos = directory.findNext ( '/', lastpos ) ) >= 0 )
+	{
+		subdir = directory.subString ( lastpos, pos - lastpos + 1 );
+
+		if ( subdir == "../" )
+		{
+			deletePathFromPath ( dir, 2 );
+		}
+		else
+		if ( subdir == "/" )
+		{
+			dir = root;
+		}
+		else
+		if ( subdir != "./" )
+		{
+			dir.append ( subdir );
+		}
+
+		lastpos = pos + 1;
+	}
+	directory = dir;
+	return directory;
+}
+
+//! Creates a list of files and directories in the current working directory 
+eFileSystemType CFileSystem::setFileListSystem( eFileSystemType listType)
+{
+	eFileSystemType current = FileSystemType;
+	FileSystemType = listType;
+	return current;
+}
+
+
+//! Creates a list of files and directories in the current working directory 
+IFileList* CFileSystem::createFileList() 
+{
+	FileEntry e2;
+	FileEntry e3;
+
+	if ( FileSystemType == FILESYSTEM_NATIVE )
+		return new CFileList();
+
+	CFileList* r = new CFileList( "virtual" );
+	r->Path = WorkingDirectory [ FILESYSTEM_VIRTUAL ];
+
+	for ( u32 i = 0; i != FileArchive.size(); ++i)
+	{
+		CFileList* flist[2] = { 0, 0 };
+
+		//! merge relative folder file archives
+		if ( FileArchive[i]->getArchiveType() == "mount" )
+		{
+			eFileSystemType currentType = setFileListSystem ( FILESYSTEM_NATIVE );
+
+			core::string<c16> save ( getWorkingDirectory () );
+			core::string<c16> current;
+
+			current = FileArchive[i]->getArchiveName() + WorkingDirectory [ FILESYSTEM_VIRTUAL ];
+			flatenFilename ( current );
+
+			if ( changeWorkingDirectoryTo ( current ) )
+			{
+				flist[0] = new CFileList( "mountpoint" );
+				flist[0]->constructNative ();
+				changeWorkingDirectoryTo ( save );
+			}
+
+			setFileListSystem ( currentType );
+		}
+		else
+		if ( FileArchive[i]->getArchiveType() == "zip" )
+		{
+			flist[0] = new CFileList( "zip" );
+			flist[1] = new CFileList( "zip directory" );
+
+			// add relative navigation
+			e2.isDirectory = 1;
+			e2.Name = ".";
+			e2.FullName = r->Path + e2.Name;
+			e2.Size = 0;
+			flist[1]->Files.push_back ( e2 );
+
+			e2.Name = "..";
+			e2.FullName = r->Path + e2.Name;
+			flist[1]->Files.push_back ( e2 );
+
+			for ( u32 g = 0; g < FileArchive[i]->getFileCount(); ++g)
+			{
+				const SZipFileEntry *e = (SZipFileEntry*) FileArchive[i]->getFileInfo ( g );
+				s32 test = isInSameDirectory ( r->Path, e->zipFileName );
+				if ( test < 0 || test > 1 )
+					continue;
+
+				e2.Size = e->header.DataDescriptor.UncompressedSize;
+				e2.isDirectory = e2.Size == 0;
+
+				// check missing directories
+				if ( !e2.isDirectory && test == 1 )
+				{
+					e3.Size = 0;
+					e3.isDirectory = 1;
+					e3.FullName = e->path;
+					e3.Name = e->path.subString ( r->Path.size(), e->path.size() - r->Path.size() - 1 );
+
+					if ( flist[1]->Files.binary_search ( e3 ) < 0 )
+						flist[1]->Files.push_back ( e3 );
+				}
+				else
+				{
+					e2.FullName = e->zipFileName;
+					e2.Name = e->simpleFileName;
+
+					if ( !e2.isDirectory )
+						core::deletePathFromFilename ( e2.Name );
+					flist[0]->Files.push_back ( e2 );
+				}
+			}
+		}
+
+		// add file to virtual directory
+		for ( u32 g = 0; g < 2; ++g )
+		{
+			if ( !flist[g] )
+				continue;
+			for ( u32 j = 0; j != flist[g]->Files.size(); ++j )
+				r->Files.push_back ( flist[g]->Files[j] );
+
+			flist[g]->drop();
+		}
+	}
+
+	r->Files.sort();
+	return r;
 }
 
 
 //! determines if a file exists and would be able to be opened.
-bool CFileSystem::existFile(const c8* filename) const
+bool CFileSystem::existFile(const core::string<c16>& filename) const
 {
 	u32 i;
 
-	for (i=0; i<ZipFileSystems.size(); ++i)
-		if (ZipFileSystems[i]->findFile(filename)!=-1)
+	for (i=0; i < FileArchive.size(); ++i)
+		if ( FileArchive[i]->findFile(filename)!=-1)
 			return true;
 
-	for (i=0; i<PakFileSystems.size(); ++i)
-		if (PakFileSystems[i]->findFile(filename)!=-1)
-			return true;
+#if defined ( _IRR_WCHAR_FILESYSTEM )
+	FILE* f = _wfopen(filename.c_str(), L"rb");
+#else
+	FILE* f = fopen(filename.c_str(), "rb");
+#endif
 
-	for (i=0; i<UnZipFileSystems.size(); ++i)
-		if (UnZipFileSystems[i]->findFile(filename)!=-1)
-			return true;
-
-	FILE* f = fopen(filename, "rb");
 	if (f) 
 	{
 		fclose(f);
@@ -328,7 +529,7 @@ bool CFileSystem::existFile(const c8* filename) const
 
 
 //! Creates a XML Reader from a file.
-IXMLReader* CFileSystem::createXMLReader(const c8* filename)
+IXMLReader* CFileSystem::createXMLReader(const core::string<c16>& filename)
 {
 	IReadFile* file = createAndOpenFile(filename);
 	if (!file)
@@ -351,7 +552,7 @@ IXMLReader* CFileSystem::createXMLReader(IReadFile* file)
 
 
 //! Creates a XML Reader from a file.
-IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(const c8* filename)
+IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(const core::string<c16>& filename)
 {
 	IReadFile* file = createAndOpenFile(filename);
 	if (!file)
@@ -374,7 +575,7 @@ IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(IReadFile* file)
 
 
 //! Creates a XML Writer from a file.
-IXMLWriter* CFileSystem::createXMLWriter(const c8* filename)
+IXMLWriter* CFileSystem::createXMLWriter(const core::string<c16>& filename)
 {
 	IWriteFile* file = createAndWriteFile(filename);
 	IXMLWriter* writer = createXMLWriter(file);

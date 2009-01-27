@@ -68,7 +68,7 @@ int main()
 	*/
 
 	// load the scene
-	smgr->loadScene("../../media/example.irr");
+	smgr->loadScene( "../../media/example.irr");
 
 	/*
 	Now we'll create a camera, and give it a collision response animator

@@ -140,10 +140,15 @@ namespace core
 		\return Reference to this vector after normalization. */
 		vector3d<T>& normalize()
 		{
+#if 0
 			f32 length = (f32)(X*X + Y*Y + Z*Z);
 			if (core::equals(length, 0.f))
 				return *this;
 			length = core::reciprocal_squareroot ( (f32)length );
+#else
+			const T length = core::reciprocal_squareroot ( (X*X + Y*Y + Z*Z) );
+#endif
+			
 			X = (T)(X * length);
 			Y = (T)(Y * length);
 			Z = (T)(Z * length);

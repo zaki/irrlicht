@@ -134,7 +134,7 @@ namespace scene
 
 		// returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
 		// or the absolutetransformation if it's a normal scenenode
-		const SMD3QuaterionTag& getMD3TagTransformation( const core::stringc & tagname);
+		const SMD3QuaternionTag* getMD3TagTransformation( const core::stringc & tagname);
 
 		//! updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePosition();
@@ -162,7 +162,7 @@ namespace scene
 	private:
 
 		//! Get a static mesh for the current frame of this animated mesh
-		IMesh* getMeshForCurrentFrame(void);
+		IMesh* getMeshForCurrentFrame(bool forceRecalcOfControlJoints);
 
 		f32 buildFrameNr( u32 timeMs);
 		void checkJoints();
@@ -198,10 +198,14 @@ namespace scene
 		core::array<IBoneSceneNode* > JointChildSceneNodes;
 		core::array<core::matrix4> PretransitingSave;
 
-		struct SMD3Special
+		// Quake3 Model
+		struct SMD3Special : public virtual IReferenceCounted
 		{
+			virtual ~SMD3Special ()
+			{
+			}
 			core::stringc Tagname;
-			SMD3QuaterionTagList AbsoluteTagList;
+			SMD3QuaternionTagList AbsoluteTagList;
 
 			SMD3Special & operator = (const SMD3Special & copyMe)
 			{
@@ -210,7 +214,7 @@ namespace scene
 				return *this;
 			}
 		};
-		SMD3Special MD3Special;
+		SMD3Special *MD3Special;
 	};
 
 } // end namespace scene

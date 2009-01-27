@@ -83,7 +83,26 @@ class quaternion
 		matrix4 getMatrix() const;
 
 		//! Creates a matrix from this quaternion
-		void getMatrix( matrix4 &dest ) const;
+		void getMatrix( matrix4 &dest, const vector3df &translation ) const;
+
+		/*!
+			Creates a matrix from this quaternion
+			Rotate about a center point
+			shortcut for
+			core::quaternion q;
+			q.rotationFromTo ( vin[i].Normal, forward );
+			q.getMatrixCenter ( lookat, center, newPos );
+
+			core::matrix4 m2;
+			m2.setInverseTranslation ( center );
+			lookat *= m2;
+
+			core::matrix4 m3;
+			m2.setTranslation ( newPos );
+			lookat *= m3;
+
+		*/
+		void getMatrixCenter( matrix4 &dest, const vector3df &center, const vector3df &translation ) const;
 
 		//! Creates a matrix from this quaternion
 		inline void getMatrix_transposed( matrix4 &dest ) const;
@@ -275,28 +294,74 @@ inline matrix4 quaternion::getMatrix() const
 }
 
 
-// Creates a matrix from this quaternion
-inline void quaternion::getMatrix( matrix4 &dest ) const
+/*!
+	Creates a matrix from this quaternion
+*/
+inline void quaternion::getMatrix( matrix4 &dest, const core::vector3df &center ) const
 {
-	dest[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
-	dest[1] = 2.0f*X*Y + 2.0f*Z*W;
-	dest[2] = 2.0f*X*Z - 2.0f*Y*W;
-	dest[3] = 0.0f;
+	f32 * m = dest.pointer();
 
-	dest[4] = 2.0f*X*Y - 2.0f*Z*W;
-	dest[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
-	dest[6] = 2.0f*Z*Y + 2.0f*X*W;
-	dest[7] = 0.0f;
+	m[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
+	m[1] = 2.0f*X*Y + 2.0f*Z*W;
+	m[2] = 2.0f*X*Z - 2.0f*Y*W;
+	m[3] = 0.0f;
 
-	dest[8] = 2.0f*X*Z + 2.0f*Y*W;
-	dest[9] = 2.0f*Z*Y - 2.0f*X*W;
-	dest[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
-	dest[11] = 0.0f;
+	m[4] = 2.0f*X*Y - 2.0f*Z*W;
+	m[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
+	m[6] = 2.0f*Z*Y + 2.0f*X*W;
+	m[7] = 0.0f;
 
-	dest[12] = 0.f;
-	dest[13] = 0.f;
-	dest[14] = 0.f;
-	dest[15] = 1.f;
+	m[8] = 2.0f*X*Z + 2.0f*Y*W;
+	m[9] = 2.0f*Z*Y - 2.0f*X*W;
+	m[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
+	m[11] = 0.0f;
+
+	m[12] = center.X;
+	m[13] = center.Y;
+	m[14] = center.Z;
+	m[15] = 1.f;
+
+	//dest.setDefinitelyIdentityMatrix ( matrix4::BIT_IS_NOT_IDENTITY );
+	dest.setDefinitelyIdentityMatrix ( false );
+}
+
+
+
+/*!
+	Creates a matrix from this quaternion
+	Rotate about a center point
+	shortcut for
+	core::quaternion q;
+	q.rotationFromTo ( vin[i].Normal, forward );
+	q.getMatrix ( lookat, center );
+
+	core::matrix4 m2;
+	m2.setInverseTranslation ( center );
+	lookat *= m2;
+*/
+inline void quaternion::getMatrixCenter(	matrix4 &dest, 
+											const core::vector3df &center,
+											const core::vector3df &translation
+											) const
+{
+	f32 * m = dest.pointer();
+
+	m[0] = 1.0f - 2.0f*Y*Y - 2.0f*Z*Z;
+	m[1] = 2.0f*X*Y + 2.0f*Z*W;
+	m[2] = 2.0f*X*Z - 2.0f*Y*W;
+	m[3] = 0.0f;
+
+	m[4] = 2.0f*X*Y - 2.0f*Z*W;
+	m[5] = 1.0f - 2.0f*X*X - 2.0f*Z*Z;
+	m[6] = 2.0f*Z*Y + 2.0f*X*W;
+	m[7] = 0.0f;
+
+	m[8] = 2.0f*X*Z + 2.0f*Y*W;
+	m[9] = 2.0f*Z*Y - 2.0f*X*W;
+	m[10] = 1.0f - 2.0f*X*X - 2.0f*Y*Y;
+	m[11] = 0.0f;
+
+	dest.setRotationCenter ( center, translation );
 }
 
 // Creates a matrix from this quaternion
@@ -321,6 +386,8 @@ inline void quaternion::getMatrix_transposed( matrix4 &dest ) const
 	dest[7] = 0.f;
 	dest[11] = 0.f;
 	dest[15] = 1.f;
+	//dest.setDefinitelyIdentityMatrix ( matrix4::BIT_IS_NOT_IDENTITY );
+	dest.setDefinitelyIdentityMatrix ( false );
 }
 
 
@@ -534,7 +601,6 @@ inline core::quaternion& quaternion::rotationFromTo(const vector3df& from, const
 	const f32 s = sqrtf( (1+d)*2 ); // optimize inv_sqrt
 	const f32 invs = 1.f / s;
 	const vector3df c = v0.crossProduct(v1)*invs;
-
 	X = c.X;
 	Y = c.Y;
 	Z = c.Z;

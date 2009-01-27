@@ -30,9 +30,9 @@ CImageLoaderPPM::CImageLoaderPPM()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderPPM::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderPPM::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".ppm") || strstr(fileName, ".pgm") || strstr(fileName, ".pbm");
+	return core::hasFileExtension ( filename, "ppm", "pgm", "pbm" );
 }
 
 

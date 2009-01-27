@@ -1,3 +1,466 @@
+Changes in version 1.6, TA
+
+- FileSystem 2.0 SUPER MASTER MAJOR API CHANGE !!!
+
+	The FileSystem is know build internally like for e.q the texture-, and the meshloaders.
+	There exists a known list of ArchiveLoader, which know how to produce a Archive.
+	The Loaders and the Archive can be attached/detached on runtime.
+	
+	The FileNames are now stored as core::string<c16>. where c16 is toggled between char/wchar
+	with the #define flag _IRR_WCHAR_FILESYSTEM, to supported unicode backends (default:off)
+	I replaced all (const c8* filename) to string references.
+
+	Basically the FileSystem is divided into two regions. Native and Virtual.
+		Native means using the backend OS.
+		Virtual means only use currently attach IArchives.
+	
+	Browsing
+		each FileSystem has it's own workdirectory and it's own methods to
+			- create a FileTree
+			- add/remove files & directory ( to be done )
+				Hint: store a savegame in a zip archive...
+				
+		 basic browsing for all archives is implemented.
+		 Example 21. Quake3Explorer shows this
+		 
+	 TODO:
+		- a file filter should be implemented.
+		- The IArchive should have a function to create a filetree
+			for now CFileList is used.
+				
+	Class Hiarchy:
+	
+	IArchiveLoader: is able to produce a IFileArchive
+		- ZipLoader
+		- PakLoader
+		- MountPointReader ( formaly known as CUnzipReader )
+
+	IFileArchive: 
+		-ZipArchive
+		-PakArchive
+		-MountPoint (known as FolderFile)
+		
+	IFileSystem
+		- addArchiveLoader
+
+	- changed implementation of isALoadableFileExtension in all loaders
+		to have consistent behavior
+	- added a parameter to IFileList * createFileList	
+		setFileListSystem
+		allows to query files in any of the game archives
+		standard behavior listtype = SYSTEM ( default)
+	
+	- CLimitReadFile
+		added multiple file random-access support.
+		solved problems with mixed compressed & uncompressed files in a zip
+
+	TODO:
+		- Big Big Testing!!
+		- Linux Version ( minor )
+		- remove all double loader interfaces where only the filename differs
+			(IReadFile/const char *filename). This blows up the the interface
+		- many loaders use their own private filesearching
+			we should rework this
+		- there are a lot of helper function ( getAbsolutePath, getFileDir )
+		  which should be adapted to the virtual filesystem
+		
+- IrrlichtDevice
+	added:
+		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast ) = 0;
+		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue ) = 0;
+
+	and calculating methods to DeviceStub.
+	implemented in Win32, TODO: other Devices
+	
+	-	irrlicht.h
+		changed exported irrlicht.dll routines createDevice, createDeviceEx, IdentityMatrix
+		to extern "C" name mangling.
+		
+		for easier dynamically loading the irrlicht library and different versions
+
+ - ParticleSystem
+		removed the private (old?,wrong?) interface from the ParticleEffectors
+		to match the parent class irr::io::IAttributeExchangingObject::deserializeAttributes
+		TODO:
+			please test if the serialization works!
+		
+- Generic
+	- vector3d<T>& normalize()
+		#if 0
+			f32 length = (f32)(X*X + Y*Y + Z*Z);
+			if (core::equals(length, 0.f))
+				return *this;
+			length = core::reciprocal_squareroot ( (f32)length );
+		#else
+			const T length = core::reciprocal_squareroot ( (X*X + Y*Y + Z*Z) );
+		#endif
+	
+		Weak checking on zero?!?! just to avoid a sqrt?. mhm, maybe not;-)
+		added reciprocal_squareroot for f64
+	
+	- dimension2d
+		added operator dimension2d<T>& operator=(const dimension2d<U>& other)
+		to cast between different types
+	- vector2d
+			bugfix:
+			vector2d<T>& operator+=(const dimension2d<T>& other) { X += other.Width; Y += other.Width; return *this;  }
+			to
+			vector2d<T>& operator+=(const dimension2d<T>& other) { X += other.Width; Y += other.Height; return *this;  }
+
+	- C3DMeshLoader renamed chunks const u16 to a enum
+		removing "variable declared but never used warning"
+	- added a global const identity Material
+		changed all references *((video::SMaterial*)0) to point to IdentityMaterial
+		removed warning: "a NULL reference is not allowed"
+
+	- modified IRRLICHT_MATH to not support reciprocal stuff
+		but to use faster float-to-int conversion.
+		gcc troubles may they are. i'm using intel-compiler..;-)
+	- core::matrix4
+			USE_MATRIX_TEST	
+
+			i tried to optimize the identity-check ( in means of performance)
+			i didn't succeed so well, so i made a define for the matrix isIdentity -check
+			for now it's sometimes faster to always calculate versus identity-check
+			but if there are a lot of scenenodes/ particles one can profit from the
+			fast_inverse matrix, when no scaling is used. further approvement could
+			be done on inverse for just tranlastion! ( many static scenenodes are not rotated,
+			they are just placed somewhere in the world)
+			one thing to take in account is that sizeof(matrix) is 64 byte and
+			with the additional bool/u32 makes it 66 byte which is not really cache-friendly..
+
+		- added	buildRotateFromTo
+				Builds a matrix that rotates from one vector to another
+				
+	- irr::array. changed allocating routine in push_back
+
+		okt, 2008. it's only allowed to alloc one element, if 
+		default constructor has to be called.
+		
+		removes existing crashes. ( MD3 Mesh ) and possible others ones.
+		
+		A new list template should be made.
+		one with constructor/destructor calls ( safe_array ) and
+		one without. like the array since the beginning of irrlicht.
+		currently the array/string is extremly slow..
+		
+		also a hint for the user has to be done, so that a struct T of
+		array<T> must have a copy constructor of type T ( const T&other ).
+		
+		i needed hours to track that down...
+		
+		added a new method setAllocStrategy, 
+		safe ( used + 1 ), double ( used * 2 + 1)
+		
+		better default strategies will be implemented
+		
+		- removed binary_search_const
+			i added it quite a long time ago, but it doesnt make real sense
+			a call to a sort method should happen always. i just wanted to safe
+			a few cycles..
+		- added binary_search_multi
+			searches for a multi-set ( more than 1 entry in the sorted array)
+			returns start and end-index
+
+	- changed some identity matrix settings to use core::IdentityMatrix	
+	-	added deletePathFromFilename to generic string functions in coreutil.h and
+		removed from CZipReader and CPakReader
+		
+	- s32 deserializeAttributes used instead of virtual void deserializeAttributes in
+		ParticleSystem ( wrong virtual was used)
+
+- strings & Locale
+	- started to add locale support
+	- added verify to string
+	- added some helper functions
+	
+
+- XBOX
+	i have access to a XBOX development machine now. I started to compile
+	for the XBOX. Question: Who did the previous implementation?. There
+	is no XBOX-Device inhere. maybe it's forbidden because of using the offical
+	Microsoft XDK. I will implement a native or sdl device based on opendk.
+	irrlicht compiles without errors on the xbox but can't be used.
+	
+	TODO:
+		- native XBOX Device
+- Windows Mobile
+		reworked a little. added the mobile example to the windows solution for 
+		cross development.
+		added maximal 128x128 texture size for windows mobile ( memory issues )
+- Collision	Speed Up
+
+	The Collision Speed Up greatly improves with many small static child-nodes
+	
+	- added COctTreeTriangleSelector::getTriangles for 3dline from user Piraaate
+	- modified createOctTreeTriangleSelector and createTriangleSelector
+		to allow node == 0, to be added to a meta selector
+	- CSceneNodeAnimatorCollisionResponse has the same problem as CSceneNodeAnimatorFPS
+		on first update:
+		Problem. you start setting the map. (setWorld). First update cames 4000 ms later.
+		The Animator applies the missing force... big problem...
+		changed to react on first update like camera.
+		
+		-	add Variable FirstUpdate. if set to true ( on all changes )
+			then position, lasttime, and falling are initialized
+
+	-added #define OCTTREE_USE_HARDWARE in Octree.h
+	
+		if defined octtree uses internally a derived scene::MeshBuffer which has
+		the possibility to use the Hardware Vertex Buffer for static vertices and
+		dirty indices;-)
+		
+		if defined OCTTREE_USE_HARDWARE octree uses internally a derived scene::CMeshBuffer
+		so it's not just a replacement inside the octree. It also in the OctTreeSceneNode.
+		#if defined (OCTTREE_USE_HARDWARE)
+			driver->drawMeshBuffer ( &LightMapMeshes[i] );
+		#else
+			driver->drawIndexedTriangleList( &LightMapMeshes[i].Vertices[0], LightMapMeshes[i].Vertices.size(),
+				d[i].Indices, d[i].CurrentSize / 3);
+		#endif
+		#define OCTTREE_PARENTTEST is also used. It's skip testing on fully outside and takes everything on fully inside
+
+
+	- virtual void ISceneNode::updateAbsolutePosition()
+		-	changed 
+			inline CMatrix4<T> CMatrix4<T>::operator*(const CMatrix4<T>& m2) const
+
+			all two matrices have to be checked by isIdentity()
+			to let the isIdentity work always
+
+	-changed inline bool CMatrix4<T>::isIdentity() const
+
+		on full identityCheck->
+		to look first on Translation, because this is the most challenging element
+		which will likely not to be identity..
+			
+	-	virtual core::matrix4 getRelativeTransformation() const
+
+		Hiarchy on Identity-Check
+			1) ->getRelativeTransform -> 9 floating point checks to be passed as Identity
+			2) ->isIdentity () -> 16 floating point checks to be passed as Identity
+			
+	- inline void CMatrix4<T>::transformBoxEx(core::aabbox3d<f32>& box) const
+		added isIdentity() check
+
+		
+- changed CSceneNodeAnimatorCollisionResponse		
+	- added CSceneNodeAnimatorCollisionResponse::setGravity
+		needed to set the differents Forces for the Animator. for eq. water..
+	- added CSceneNodeAnimatorCollisionResponse::setAnimateTarget
+	- added CSceneNodeAnimatorCollisionResponse::getAnimateTarget
+	- changed CSceneNodeAnimatorCollisionResponse::animateNode to react on FirstUpdate
+	- changad Gravity to
+	- TODO: set Gravity to Physically frame independent values..
+		current response uses an frame depdended acceleration vector.
+		~9.81 m/s^2 was achieved at around 50 fps with a setting of -0.03
+		may effect existing application..
+	
+- SceneNodes
+	- CSkyDomeSceneNode
+		moved radius ( default 1000 ) to constructor
+		added Normals
+		added DebugInfo
+		added Material.ZBuffer, added SceneMaanager
+			
+	- CVolumeLightSceneNode:
+		changed default blending OneTextureBlendgl_src_color gl_src_alpha to
+			EMT_TRANSPARENT_ADD_COLOR ( gl_src_color gl_one )
+		which gives the same effect on non-transparent-materials.
+		Following the unspoken guide-line, lowest effect as default
+	- added LensFlareSceneNode (from forum user gammaray, modified to work )
+		showing in example special fx
+	- changed SceneNode Skydome f64 to f32, 
+	- AnimatedMesh
+		-Debug Data: 
+			mesh normals didn't rotate with the scenenode fixed ( matrix-multiplication order)
+	- Camera SceneNode setPosition
+		Camera now finally allow to change position and target and updates all
+		effected animators..
+		
+		a call to OnAnimate ( ) lastime < time or OnAnimate ( 0 ) will reset the
+		camera and fr. the collision animator to a new position
+			
+- Device:
+		added the current mousebutton state to the Mouse Event
+		so i need to get the current mouse state from the OS
+		
+		-a dded to CIrrDeviceWin32
+		TODO:		
+		- Linux and SDL Device
+- GUI
+
+	- CGUIFont:
+		- added virtual void setInvisibleCharacters( const wchar_t *s ) = 0;
+		
+		define which characters should not be drawn ( send to driver) by the font.
+		for example " " would not draw any space which is usually blank in most fonts
+		and saves rendering of ususally full blank alpha-sprites.
+		This saves a lot of rendering...
+		
+		default:
+			setInvisibleCharacters ( L" " );
+			
+		- added MultiLine rendering
+			should avoid to us CStaticText breaking text in future
+	- CGUIListBox
+		- changed Scrollbar LargeStepSize to ItemHeight
+		  which easy enables to scroll line by line
+		  
+	- CGUIScrollBar
+			bug: 
+				Create a Window and inside a listbox with a scrollbar or
+				a windowed irrlicht application
+				
+				Click & hold Scrollbar Slider. move outside it's region.
+				Release Mouse. Go Back to Scrollbar.. it's moving always...
+				
+				it's generally missing the event PRESSED_MOVED, which
+				leads to problem when an element is dragging, has a focus, or position loose
+				and gets focus back again. ( think of a drunken mouse sliding left&right during tracking )
+
+			so added the mouse Input Buttonstates on every mouse event
+				IrrDeviceWin32:
+				 added 	event.MouseInput.ButtonStates = wParam & ( MK_LBUTTON | MK_RBUTTON | MK_MBUTTON );
+				 TODO:
+					Linux & SDL
+
+				so now i can do this
+				case irr::EMIE_MOUSE_MOVED:				 
+			 	if ( !event.MouseInput.isLeftPressed () )
+				{
+					Dragging = false;
+				}
+
+			- bug:
+				Scrollbar notifyListBox notify when the scrollbar is clicked. 
+
+			- changed timed event in draw to OnPostRender
+				Why the hell is a gui element firing a timed event
+				in a draw routine!!!!!. This should be corrected for all gui-elements.
+			
+		
+	-	added GUI Image List from Reinhard Ostermeier, modified to work
+		added GUI Tree View from Reinhard Ostermeier, modified to work	
+		shown in the Quake3MapShader Example
+		TODO: Spritebanks
+
+		
+	- FileOpenDialog
+		changed the static text for the filename to an edit box.
+	- changed the interface for addEditBox to match with addStaticText
+	- changed the interface for addSpinBox to match with addEditBox
+	- added MouseWheel to Spinbox
+	- changed CGUITable CLICK_AREA from 3 to 12 to enable clicking on the visible marker
+	- CGUISpritebank
+		removed some crashes with empty Sprite banks		
+	- IGUIScrollBar
+		added SetMin before min was always 0
+		changed ScrollWheel Direction on horizontal to move right on wheel up, left on wheel down
+		
+	- IComboBox
+		-added ItemData
+	- removed IsVisbile check in IGUIElement::draw
+
+
+- Image Loaders
+	- added TGA file type 2 ( grayscale uncompressed )
+	- added TGA file type (1) 8 Bit indexed color uncompressed
+	
+	ColorConverter:
+		- added convert_B8G8R8toA8R8G8B8
+		- added convert_B8G8R8A8toA8R8G8B8
+		
+- Media Files
+	- added missing shaders and textures to map-20kdm2.
+		Taken from free implementation	
+	- ball.wav. adjusted DC-Offset, amplified to -4dB, trim cross-zero
+	- impact.wav clip-restoration, trim cross-zero
+	- added gun.md2, gun.pcx to media-files
+		copyright issues!. i don't know from where this file came from...		
+		i hope this is not from original quake2..
+	- added new irrlicht logo irrlicht3.png
+		i've taken the new layout. i should ask niko to use it.
+	- added Skydome picture to media files (skydome2.jpg) half/sphere
+
+- OctTree
+	-added
+		#define OCTTREE_PARENTTEST ( default: disabled )
+		used to leave-out children test if the parent passed a complete frustum.
+		plus: leaves out children test
+		minus: all edges have to be checked
+	- added MesBuffer Hardware Hint Vertex to octtree
+	
+- CQuake3ShaderSceneNode:
+	- removed function releaseMesh
+		Shader doesn't copy the original mesh anymore ( saving memory )
+		so therefore this (for others often misleading ) function was removed
+	- changed constructor to take a (shared) destination meshbuffer for rendering
+		reducing vertex-memory to a half
+	- don't copy the original vertices anymore
+	- added deformvertexes autosprite
+	- added deformvertexes move
+	- added support for RTCW and Raven BSPs ( qmap2 )
+	- added polygonoffset (TODO: not perfect)
+	- added added nomipmaps
+	- added rgbgen const
+	- added alphagen
+	- added MesBuffer Hardware Hint Vertex/Index to Quake3: static geometry, dynamic indices
+	- added Quake3Explorer examples
+	- added wave noise
+	- added tcmod transform
+	- added whiteimage
+	- added collision to Quake3Explorer
+	- renamed SMD3QuaterionTag* to SMD3QuaternionTag* ( typo )	
+	- updated quake3:blendfunc
+	- added crouch to Quake3Explorer
+		(modifying the ellipsiodRadius of the camera animator )
+		added crouch to CSceneNodeAnimatorCameraFPS
+		still problems with stand up and collision
+	- Quake3MapLoader
+		modified memory allocation for faster loading
+	- Quake3LoadParam
+		added Parameter to the Mesh-Loader	
+	- added
+		The still existing missing caulking of curved surfaces.
+		using round in the coordinates doesn't solve the problem.
+		but for the demo bsp mesh it solves the problem... (luck)
+		so for now it's switchable.
+		TJUNCTION_SOLVER_ROUND
+		default:off
+		
+- BurningVideo
+	- pushed BurningsVideo to 0.40
+	- added blendfunc gl_one_minus_dst_alpha gl_one
+	- added blendfunc gl_dst_color gl_zero
+	- added blendfunc gl_dst_color src_alpha
+	- modified AlphaChannel_Ref renderer to support alpha test lessequal
+	- addded 32 Bit Index Buffer
+	- added sourceRect/destRect check to 2D-Blitter ( slower, but resolves crash )
+	- added setTextureCreationFlag video::ETCF_ALLOW_NON_POWER_2
+		Burning checks this flag and when set, it bypasses the power2 size check, 
+		which is necessary on 3D but can be avoided on 2D.
+		used on fonts automatically.
+	- added Support for Destination Alpha
+	
+- OpenGL	
+	- Fixed a bug in COpenGLExtensenionHandler where a glint was downcasted to u8!!!!!!
+		MaxTextureSize=static_cast<u32>(num);
+
+	- TODO: COpenGLMaterialRenderer_ONETEXTURE_BLEND to work as expected
+
+- Direct3D8
+	- compile and links again
+	- added 32 Bit Index Buffer
+	- D3DSAMP_MIPMAPLODBIAS doesnt compile!. it is d3d9 i think.
+	- compile for XBOX 
+- Direc3D9
+	- fixed crash on RTT Textures DepthBuffer freed twice.
+		added deleteAllTextures to destuctor
+- NullDriver
+	- removeallTextures. added setMaterial ( SMaterial() ) to clean pointers for freed textures	
+-------------------------------------------------------------------------------
+
 Changes in version 1.6
 
  - New scene parameter B3D_LOADER_IGNORE_MIPMAP_FLAG to ignore the often missing mipmap flag in b3d files. If this parameter is true, the old pre Irrlicht-1.5 behavior is restored.

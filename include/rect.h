@@ -35,7 +35,8 @@ namespace core
 		rect(const position2d<T>& upperLeft, const position2d<T>& lowerRight)
 			: UpperLeftCorner(upperLeft), LowerRightCorner(lowerRight) {}
 
-		rect(const position2d<T>& pos, const dimension2d<T>& size)
+		template <class U>
+		rect(const position2d<T>& pos, const dimension2d<U>& size)
 			: UpperLeftCorner(pos), LowerRightCorner(pos.X + size.Width, pos.Y + size.Height) {}
 
 

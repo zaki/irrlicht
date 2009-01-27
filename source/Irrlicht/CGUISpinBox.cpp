@@ -19,7 +19,7 @@ namespace gui
 {
 
 //! constructor
-CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
+CGUISpinBox::CGUISpinBox(const wchar_t* text, bool border,IGUIEnvironment* environment,
 			IGUIElement* parent, s32 id, const core::rect<s32>& rectangle)
 : IGUISpinBox(environment, parent, id, rectangle),
 	EditBox(0), ButtonSpinUp(0), ButtonSpinDown(0), StepSize(1.f),
@@ -66,7 +66,7 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, IGUIEnvironment* environment,
 	}
 
 	const core::rect<s32> rectEdit(0, 0, rectangle.getWidth() - ButtonWidth - 1, rectangle.getHeight());
-	EditBox = Environment->addEditBox(text, rectEdit, true, this, -1);
+	EditBox = Environment->addEditBox(text, rectEdit, border, this, -1);
 	EditBox->grab();
 	EditBox->setSubElement(true);
 	EditBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
@@ -166,6 +166,19 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 		bool changeEvent = false;
 		switch(event.EventType)
 		{
+		case EET_MOUSE_INPUT_EVENT:
+			switch(event.MouseInput.Event)
+			{
+			case EMIE_MOUSE_WHEEL:
+				{
+					f32 val = getValue() + (StepSize * event.MouseInput.Wheel);
+					setValue(val);
+					changeEvent = true;
+				}
+				break;
+			}
+			break;
+
 		case EET_GUI_EVENT:
 			if (event.GUIEvent.EventType == EGET_BUTTON_CLICKED)
 			{

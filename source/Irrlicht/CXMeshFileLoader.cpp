@@ -40,9 +40,9 @@ CXMeshFileLoader::CXMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* 
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CXMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CXMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strncmp(&filename[strlen(filename)-2], ".x", 2) == 0;
+	return core::hasFileExtension ( filename, "x" );
 }
 
 
@@ -448,7 +448,7 @@ bool CXMeshFileLoader::readFileIntoMemory(io::IReadFile* file)
 	P = &Buffer[16];
 
 	readUntilEndOfLine();
-	FilePath = FileSystem->getFileDir(file->getFileName());
+	FilePath = FileSystem->getFileDir(file->getFileName()) + "/";
 	FilePath += '/';
 
 	return true;

@@ -149,6 +149,9 @@ namespace irr
 			//! A file has been selected in the file dialog
 			EGET_FILE_SELECTED,
 
+			//! A directory has been selected in the file dialog
+			EGET_DIRECTORY_SELECTED,
+
 			//! A file open dialog has been closed without choosing a file
 			EGET_FILE_CHOOSE_DIALOG_CANCELLED,
 
@@ -181,7 +184,19 @@ namespace irr
 			//! A table has changed
 			EGET_TABLE_CHANGED,
 			EGET_TABLE_HEADER_CHANGED,
-			EGET_TABLE_SELECTED_AGAIN
+			EGET_TABLE_SELECTED_AGAIN,
+
+			//! A tree view node lost selection. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_DESELECT,
+			
+			//! A tree view node was selected. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_SELECT,
+			
+			//! A tree view node was expanded. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_EXPAND,
+			
+			//! A tree view node was collapsed. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_COLLAPS,
 
 		};
 	} // end namespace gui
@@ -216,6 +231,13 @@ struct SEvent
 		//! mouse wheel delta, usually 1.0 or -1.0.
 		/** Only valid if event was EMIE_MOUSE_WHEEL */
 		f32 Wheel;
+
+		//! A bitmap of button states.  You can use IsButtonPressed() to
+		/** Only valid if event was EMIE_MOUSE_MOVED */
+		u32 ButtonStates;
+		bool isLeftPressed () const { return 0 != ( ButtonStates & 0x0001 ); }
+		bool isRightPressed () const { return 0 != ( ButtonStates & 0x0002 ); }
+		bool isMiddlePressed () const { return 0 != ( ButtonStates & 0x0010 ); }
 
 		//! Type of mouse event
 		EMOUSE_INPUT_EVENT Event;

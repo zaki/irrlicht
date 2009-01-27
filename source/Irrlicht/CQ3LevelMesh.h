@@ -24,7 +24,10 @@ namespace scene
 	public:
 
 		//! constructor
-		CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr);
+		CQ3LevelMesh(	io::IFileSystem* fs, 
+						scene::ISceneManager* smgr,
+						const quake3::Q3LevelLoadParameter &loadParam
+						);
 
 		//! destructor
 		virtual ~CQ3LevelMesh();
@@ -43,8 +46,6 @@ namespace scene
 		virtual IMesh* getMesh(s32 frameInMs, s32 detailLevel=255,
 				s32 startFrameLoop=-1, s32 endFrameLoop=-1);
 
-		virtual void releaseMesh( s32 index );
-
 		//! Returns an axis aligned bounding box of the mesh.
 		//! \return A bounding box of this mesh is returned.
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
@@ -56,15 +57,14 @@ namespace scene
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
 		//! loads the shader definition
-		virtual const quake3::SShader * getShader( const c8 * filename, bool fileNameIsValid=true );
+		virtual const quake3::IShader * getShader( const c8 * filename, bool fileNameIsValid=true );
 
 		//! returns a already loaded Shader
-		virtual const quake3::SShader * getShader( u32 index  ) const;
+		virtual const quake3::IShader * getShader( u32 index  ) const;
 
 
 		//! get's an interface to the entities
-		virtual const quake3::tQ3EntityList & getEntityList();
-
+		virtual quake3::tQ3EntityList & getEntityList( const c8 * fileName );
 
 
 		//Link to held meshes? ...
@@ -109,15 +109,10 @@ namespace scene
 
 	private:
 
-		//! constructs a mesh from the quake 3 level file.
+
 		void constructMesh();
-
-		//! loads the textures
+		void solveTJunction();
 		void loadTextures();
-
-		void constructMesh2();
-
-		void loadTextures2();
 
 		struct STexShader
 		{
@@ -130,30 +125,36 @@ namespace scene
 
 		enum eLumps
 		{
-			kEntities = 0,     // Stores player/object positions, etc...
-			kTextures,         // Stores texture information
-			kPlanes,           // Stores the splitting planes
-			kNodes,            // Stores the BSP nodes
-			kLeafs,            // Stores the leafs of the nodes
-			kLeafFaces,        // Stores the leaf's indices into the faces
-			kLeafBrushes,      // Stores the leaf's indices into the brushes
-			kModels,           // Stores the info of world models
-			kBrushes,          // Stores the brushes info (for collision)
-			kBrushSides,       // Stores the brush surfaces info
-			kVertices,         // Stores the level vertices
-			kMeshVerts,        // Stores the model vertices offsets
-			kShaders,          // Stores the shader files (blending, anims..)
-			kFaces,            // Stores the faces for the level
-			kLightmaps,        // Stores the lightmaps for the level
-			kLightVolumes,     // Stores extra world lighting information
-			kVisData,          // Stores PVS and cluster info (visibility)
-			kMaxLumps          // A constant to store the number of lumps
+			kEntities		= 0,	// Stores player/object positions, etc...
+			kShaders		= 1,	// Stores texture information
+			kPlanes			= 2,	// Stores the splitting planes
+			kNodes			= 3,	// Stores the BSP nodes
+			kLeafs			= 4,	// Stores the leafs of the nodes
+			kLeafFaces		= 5,	// Stores the leaf's indices into the faces
+			kLeafBrushes	= 6,	// Stores the leaf's indices into the brushes
+			kModels			= 7,	// Stores the info of world models
+			kBrushes		= 8,	// Stores the brushes info (for collision)
+			kBrushSides		= 9,	// Stores the brush surfaces info
+			kVertices		= 10,	// Stores the level vertices
+			kMeshVerts		= 11,	// Stores the model vertices offsets
+			kFogs			= 12,	// Stores the shader files (blending, anims..)
+			kFaces			= 13,	// Stores the faces for the level
+			kLightmaps		= 14,	// Stores the lightmaps for the level
+			kLightGrid		= 15,	// Stores extra world lighting information
+			kVisData		= 16,	// Stores PVS and cluster info (visibility)
+			kLightArray		= 17,	// RBSP
+			kMaxLumps				// A constant to store the number of lumps
 		};
 
-		struct tBSPLump
+		enum eBspSurfaceType
 		{
-			s32 offset;
-			s32 length;
+			BSP_MST_BAD,
+			BSP_MST_PLANAR,
+			BSP_MST_PATCH,
+			BSP_MST_TRIANGLE_SOUP,
+			BSP_MST_FLARE,
+			BSP_MST_FOLIAGE
+
 		};
 
 		struct tBSPHeader
@@ -161,6 +162,14 @@ namespace scene
 			s32 strID;     // This should always be 'IBSP'
 			s32 version;       // This should be 0x2e for Quake 3 files
 		};
+		tBSPHeader header;
+
+		struct tBSPLump
+		{
+			s32 offset;
+			s32 length;
+		};
+
 
 		struct tBSPVertex
 		{
@@ -174,7 +183,7 @@ namespace scene
 		struct tBSPFace
 		{
 			s32 textureID;        // The index into the texture array
-			s32 effect;           // The index for the effects (or -1 = n/a)
+			s32 fogNum;           // The index for the effects (or -1 = n/a)
 			s32 type;             // 1=polygon, 2=patch, 3=mesh, 4=billboard
 			s32 vertexIndex;      // The index into this face's first vertex
 			s32 numOfVerts;       // The number of vertices for this face
@@ -258,12 +267,13 @@ namespace scene
 			s32 numOfBrushes;       // The number brushes for the model
 		};
 
-		struct tBSPShader
+		struct tBSPFog
 		{
-			c8 strName[64];     // The name of the shader file
-			s32 brushIndex;       // The brush index for this shader
-			s32 unknown;          // This is 99% of the time 5
+			c8 shader[64];		// The name of the shader file
+			s32 brushIndex;		// The brush index for this shader
+			s32 visibleSide;	// the brush side that ray tests need to clip against (-1 == none
 		};
+		core::array < STexShader > FogMap;
 
 		struct tBSPLights
 		{
@@ -287,19 +297,14 @@ namespace scene
 		void loadBrushes    (tBSPLump* l, io::IReadFile* file); // load the brushes of the BSP
 		void loadBrushSides (tBSPLump* l, io::IReadFile* file); // load the brushsides of the BSP
 		void loadLeafBrushes(tBSPLump* l, io::IReadFile* file); // load the brushes of the leaf
-		void loadShaders    (tBSPLump* l, io::IReadFile* file); // load the shaders
-
-		// second parameter i is the zero based index of the current face.
-		void createCurvedSurface(SMeshBufferLightMap* meshBuffer, s32 i);
+		void loadFogs    (tBSPLump* l, io::IReadFile* file); // load the shaders
 
 		//bi-quadratic bezier patches
-		void createCurvedSurface2(SMeshBufferLightMap* meshBuffer,
+		void createCurvedSurface_bezier(SMeshBufferLightMap* meshBuffer,
 				s32 faceIndex, s32 patchTesselation, s32 storevertexcolor);
 
-		void createCurvedSurface3(SMeshBufferLightMap* meshBuffer,
+		void createCurvedSurface_nosubdivision(SMeshBufferLightMap* meshBuffer,
 				s32 faceIndex, s32 patchTesselation, s32 storevertexcolor);
-
-		f32 Blend( const f64 s[3], const f64 t[3], const tBSPVertex *v[9], int offset);
 
 		struct S3DVertex2TCoords_64
 		{
@@ -309,7 +314,7 @@ namespace scene
 			core::vector2d<f64> TCoords;
 			core::vector2d<f64> TCoords2;
 
-			void copyto( video::S3DVertex2TCoords &dest ) const;
+			void copy( video::S3DVertex2TCoords &dest ) const;
 
 			S3DVertex2TCoords_64() {}
 			S3DVertex2TCoords_64(const core::vector3d<f64>& pos, const core::vector3d<f64>& normal, const video::SColorf& color,
@@ -348,7 +353,7 @@ namespace scene
 		};
 		SBezier Bezier;
 
-		s32 PatchTesselation;
+		quake3::Q3LevelLoadParameter LoadParam;
 
 		tBSPLump Lumps[kMaxLumps];
 
@@ -421,10 +426,10 @@ namespace scene
 		void dumpVarGroup( const quake3::SVarGroup * group, s32 stack ) const;
 
 		void scriptcallback_entity( quake3::SVarGroupList *& grouplist );
-		quake3::tQ3EntityList Entity;
+		core::array < quake3::IShader > Entity;		//quake3::tQ3EntityList Entity;
 
 		void scriptcallback_shader( quake3::SVarGroupList *& grouplist );
-		core::array < quake3::SShader > Shader;
+		core::array < quake3::IShader > Shader;
 		quake3::tStringList ShaderFile;
 		void InitShader();
 		void ReleaseShader();
@@ -432,6 +437,7 @@ namespace scene
 
 
 		s32 setShaderMaterial( video::SMaterial & material, const tBSPFace * face ) const;
+		s32 setShaderFogMaterial( video::SMaterial &material, const tBSPFace * face ) const;
 
 		struct SToBuffer
 		{
@@ -440,8 +446,9 @@ namespace scene
 		};
 
 		void cleanMeshes();
+		void cleanLoader ();
 		void calcBoundingBoxes();
-
+		c8 buf[128];
 	};
 
 } // end namespace scene

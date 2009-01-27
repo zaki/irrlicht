@@ -101,7 +101,7 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name);
+				const core::string<c16>& name);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();

@@ -26,6 +26,7 @@
 #include "IGUITable.h"
 #include "IGUIToolbar.h"
 #include "IGUIWindow.h"
+#include "IGUITreeView.h"
 
 namespace irr
 {
@@ -92,7 +93,9 @@ IGUIElement* CDefaultGUIElementFactory::addGUIElement(EGUI_ELEMENT_TYPE type, IG
 		case EGUIET_WINDOW:
 			return Environment->addWindow(core::rect<s32>(0,0,100,100),false,0,parent);
 		case EGUIET_SPIN_BOX:
-			return Environment->addSpinBox(L"0.0", core::rect<s32>(0,0,100,100), parent);
+			return Environment->addSpinBox(L"0.0", core::rect<s32>(0,0,100,100), true, parent);
+		case EGUIET_TREE_VIEW:
+			return Environment->addTreeView(core::rect<s32>(0,0,100,100),parent);
 		default:
  			return 0;
 	}

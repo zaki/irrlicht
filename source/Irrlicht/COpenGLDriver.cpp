@@ -721,7 +721,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			extGlActiveTexture(GL_TEXTURE0_ARB + i);
 
 		glMatrixMode(GL_TEXTURE);
-		if (mat.isIdentity() && !isRTT)
+		if (!isRTT && mat.isIdentity() )
 			glLoadIdentity();
 		else
 		{
@@ -1762,7 +1762,7 @@ inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const char* name)
+video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
 {
 	return new COpenGLTexture(surface, name, this);
 }
@@ -2887,15 +2887,13 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 }
 
 
-ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name)
+ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
 	video::ITexture* rtt = 0;
-	if (name==0)
-		name="rt";
 #if defined(GL_EXT_framebuffer_object)
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
@@ -3211,7 +3209,7 @@ namespace video
 // WINDOWS VERSION
 // -----------------------------------
 #ifdef _IRR_USE_WINDOWS_DEVICE_
-IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
+IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 	io::IFileSystem* io)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_

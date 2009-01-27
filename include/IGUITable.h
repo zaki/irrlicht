@@ -136,8 +136,9 @@ namespace gui
 		will be placed after it. If the row is larger than the actual
 		number of row by more than one, it won't be created.  Note that
 		if you create a row that's not at the end, there might be
-		performance issues. */
-		virtual void addRow(u32 rowIndex) = 0;
+		performance issues. 
+		\returns: index of inteserted row*/
+		virtual u32 addRow(u32 rowIndex) = 0;
 
 		//! Remove a row from the table
 		virtual void removeRow(u32 rowIndex) = 0;
@@ -158,10 +159,10 @@ namespace gui
 		virtual void orderRows(s32 columnIndex=-1, EGUI_ORDERING_MODE mode=EGOM_NONE) = 0;
 
 		//! Set the text of a cell
-		virtual void setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text) = 0;
+		virtual void setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text) = 0;
 
 		//! Set the text of a cell, and set a color of this cell.
-		virtual void setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, video::SColor color) = 0;
+		virtual void setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text, video::SColor color) = 0;
 
 		//! Set the data of a cell
 		virtual void setCellData(u32 rowIndex, u32 columnIndex, void *data) = 0;

@@ -23,7 +23,7 @@ public:
 	CImageWriterPNG();
 
 	//! return true if this writer can write a file with the given extension
-	virtual bool isAWriteableFileExtension(const c8* fileName) const;
+	virtual bool isAWriteableFileExtension(const core::string<c16>& filename) const;
 
 	//! write image to file
 	virtual bool writeImage(io::IWriteFile *file, IImage *image, u32 param) const;

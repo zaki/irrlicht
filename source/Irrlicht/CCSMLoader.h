@@ -60,7 +60,7 @@ namespace scene
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".bsp")
-		virtual bool isALoadableFileExtension(const c8* fileName) const;
+		virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 		//! creates/loads an animated mesh from the file.
 		virtual IAnimatedMesh* createMesh(io::IReadFile* file);

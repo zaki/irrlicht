@@ -25,7 +25,7 @@ namespace video
 	struct SDepthSurface : public IReferenceCounted
 	{
 		SDepthSurface() : Surface(0) {}
-		~SDepthSurface()
+		virtual ~SDepthSurface()
 		{
 			if (Surface)
 				Surface->Release();
@@ -77,7 +77,10 @@ namespace video
 
 		struct SHWBufferLink_d3d9 : public SHWBufferLink
 		{
-			SHWBufferLink_d3d9(const scene::IMeshBuffer *_MeshBuffer): SHWBufferLink(_MeshBuffer), vertexBuffer(0), indexBuffer(0){}
+			SHWBufferLink_d3d9(const scene::IMeshBuffer *_MeshBuffer):
+				SHWBufferLink(_MeshBuffer),
+					vertexBuffer(0), indexBuffer(0),
+					vertexBufferSize(0), indexBufferSize(0) {}
 
 			IDirect3DVertexBuffer9* vertexBuffer;
 			IDirect3DIndexBuffer9* indexBuffer;
@@ -220,7 +223,7 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name);
+				const core::string<c16>& name);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
@@ -293,7 +296,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
 		//! returns the current size of the screen or rendertarget
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;

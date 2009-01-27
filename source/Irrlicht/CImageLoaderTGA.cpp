@@ -21,9 +21,9 @@ namespace video
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderTGA::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderTGA::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return (strstr(fileName, ".tga") != 0) || (strstr(fileName, ".TGA") != 0);
+	return core::hasFileExtension ( filename, "tga" );
 }
 
 
@@ -96,7 +96,7 @@ bool CImageLoaderTGA::isALoadableFileFormat(io::IReadFile* file) const
 IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 {
 	STGAHeader header;
-	u8* colorMap = 0;
+	u32 *palette = 0;
 
 	file->read(&header, sizeof(STGAHeader));
 
@@ -112,16 +112,37 @@ IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 
 	if (header.ColorMapType)
 	{
+		// create 32 bit palette
+		palette = new u32[ header.ColorMapLength];
+
 		// read color map
-		colorMap = new u8[header.ColorMapEntrySize/8 * header.ColorMapLength];
+		u8 * colorMap = new u8[header.ColorMapEntrySize/8 * header.ColorMapLength];
 		file->read(colorMap,header.ColorMapEntrySize/8 * header.ColorMapLength);
+
+		// convert to 32-bit palette
+		switch ( header.ColorMapEntrySize )
+		{
+			case 16:
+				CColorConverter::convert_A1R5G5B5toA8R8G8B8(colorMap, header.ColorMapLength, palette);
+				break;
+			case 24:
+				CColorConverter::convert_B8G8R8toA8R8G8B8(colorMap, header.ColorMapLength, palette);
+				break;
+			case 32:
+				CColorConverter::convert_B8G8R8A8toA8R8G8B8(colorMap, header.ColorMapLength, palette);
+				break;
+		}
+		delete [] colorMap;
 	}
 
 	// read image
 
 	u8* data = 0;
 
-	if (header.ImageType == 2)
+	if (	header.ImageType == 1 || // Uncompressed, color-mapped images.
+			header.ImageType == 2 || // Uncompressed, RGB images
+			header.ImageType == 3 // Uncompressed, black and white images
+		)
 	{
 		const s32 imageSize = header.ImageHeight * header.ImageWidth * header.PixelDepth/8;
 		data = new u8[imageSize];
@@ -129,12 +150,14 @@ IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 	}
 	else
 	if(header.ImageType == 10)
+	{
+		// Runlength encoded RGB images
 		data = loadCompressedImage(file, header);
+	}
 	else
 	{
 		os::Printer::log("Unsupported TGA file type", file->getFileName(), ELL_ERROR);
-		if (colorMap)
-			delete [] colorMap;
+		delete [] palette;
 		return 0;
 	}
 
@@ -142,32 +165,37 @@ IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 
 	switch(header.PixelDepth)
 	{
+	case 8:
+		image = new CImage(ECF_A1R5G5B5,
+			core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
+		if (image)
+			CColorConverter::convert8BitTo16Bit((u8*)data,
+				(s16*)image->lock(), 
+				header.ImageWidth,header.ImageHeight,
+				header.ImageType == 3 ? 0 : (s32*) palette,
+				0,
+				(header.ImageDescriptor&0x20)==0);
+		break;
 	case 16:
-		{
-			image = new CImage(ECF_A1R5G5B5,
-				core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
-			if (image)
-				CColorConverter::convert16BitTo16Bit((s16*)data,
-					(s16*)image->lock(), header.ImageWidth,	header.ImageHeight, 0, (header.ImageDescriptor&0x20)==0);
-		}
+		image = new CImage(ECF_A1R5G5B5,
+			core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
+		if (image)
+			CColorConverter::convert16BitTo16Bit((s16*)data,
+				(s16*)image->lock(), header.ImageWidth,	header.ImageHeight, 0, (header.ImageDescriptor&0x20)==0);
 		break;
 	case 24:
-		{
 			image = new CImage(ECF_R8G8B8,
 				core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
 			if (image)
 				CColorConverter::convert24BitTo24Bit(
 					(u8*)data, (u8*)image->lock(), header.ImageWidth, header.ImageHeight, 0, (header.ImageDescriptor&0x20)==0, true);
-		}
 		break;
 	case 32:
-		{
 			image = new CImage(ECF_A8R8G8B8,
 				core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
 			if (image)
 				CColorConverter::convert32BitTo32Bit((s32*)data,
 					(s32*)image->lock(), header.ImageWidth, header.ImageHeight, 0, (header.ImageDescriptor&0x20)==0);
-		}
 		break;
 	default:
 		os::Printer::log("Unsupported TGA format", file->getFileName(), ELL_ERROR);
@@ -175,13 +203,12 @@ IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 	}
 	if (image)
 		image->unlock();
+
 	delete [] data;
-	if (colorMap)
-		delete [] colorMap;
+	delete [] palette;
 
 	return image;
 }
-
 
 
 //! creates a loader which is able to load tgas

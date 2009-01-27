@@ -168,6 +168,9 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 				Dragging = false;
 				return true;
 			case EMIE_MOUSE_MOVED:
+				if ( !event.MouseInput.isLeftPressed () )
+					Dragging = false;
+
 				if (Dragging)
 				{
 					// gui window should not be dragged outside its parent
@@ -206,27 +209,29 @@ void CGUIWindow::updateAbsolutePosition()
 //! draws the element and its children
 void CGUIWindow::draw()
 {
-	if (!IsVisible)
-		return;
-
-	IGUISkin* skin = Environment->getSkin();
-
-	core::rect<s32> rect = AbsoluteRect;
-	core::rect<s32> *cl = &AbsoluteClippingRect;
-
-	// draw body fast
-	rect = skin->draw3DWindowBackground(this, true, skin->getColor(EGDC_ACTIVE_BORDER),
-		AbsoluteRect, &AbsoluteClippingRect);
-
-	if (Text.size())
+	if ( IsVisible )
 	{
-		rect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
-		rect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y);
-		rect.LowerRightCorner.X -= skin->getSize(EGDS_WINDOW_BUTTON_WIDTH) + 5;
+		IGUISkin* skin = Environment->getSkin();
 
-		IGUIFont* font = skin->getFont(EGDF_WINDOW);
-		if (font)
-			font->draw(Text.c_str(), rect, skin->getColor(EGDC_ACTIVE_CAPTION), false, true, cl);
+		core::rect<s32> rect = AbsoluteRect;
+
+		// draw body fast
+		rect = skin->draw3DWindowBackground(this, true, skin->getColor(EGDC_ACTIVE_BORDER),
+			AbsoluteRect, &AbsoluteClippingRect);
+
+		if (Text.size())
+		{
+			rect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
+			rect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y);
+			rect.LowerRightCorner.X -= skin->getSize(EGDS_WINDOW_BUTTON_WIDTH) + 5;
+
+			IGUIFont* font = skin->getFont(EGDF_WINDOW);
+			if (font)
+			{
+				font->draw(Text.c_str(), rect,
+					skin->getColor(EGDC_ACTIVE_CAPTION), false, true, &AbsoluteClippingRect);
+			}
+		}
 	}
 
 	IGUIElement::draw();

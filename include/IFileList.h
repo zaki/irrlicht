@@ -6,6 +6,7 @@
 #define __I_FILE_LIST_H_INCLUDED__
 
 #include "IReferenceCounted.h"
+#include "irrString.h"
 
 namespace irr
 {
@@ -25,13 +26,13 @@ public:
 	\param index is the zero based index of the file which name should
 	be returned. The index has to be smaller than the amount getFileCount() returns.
 	\return File name of the file. Returns 0, if an error occured. */
-	virtual const c8* getFileName(u32 index) const = 0;
+	virtual const core::string<c16>& getFileName(u32 index) const = 0;
 
 	//! Gets the full name of a file in the list, path included, based on an index.
 	/** \param index is the zero based index of the file which name should
 	be returned. The index has to be smaller than the amount getFileCount() returns.
 	\return File name of the file. Returns 0, if an error occured. */
-	virtual const c8* getFullFileName(u32 index) = 0;
+	virtual const core::string<c16>& getFullFileName(u32 index) = 0;
 
 	//! Check if the file is a directory
 	/** \param index The zero based index of the file whose name shall

@@ -48,6 +48,9 @@ namespace gui
 		//! sets the selected item. Set this to -1 if no item should be selected
 		virtual void setSelected(s32 id);
 
+		//! sets the selected item. Set this to -1 if no item should be selected
+		virtual void setSelected(const wchar_t *item);
+
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
 
@@ -119,6 +122,9 @@ namespace gui
 		//! Swap the items at the given indices
 		virtual void swapItems(u32 index1, u32 index2);
 
+		//! set global itemHeight
+		virtual void setItemHeight( s32 height );
+
 	private:
 
 		struct ListItem
@@ -152,6 +158,7 @@ namespace gui
 		core::array< ListItem > Items;
 		s32 Selected;
 		s32 ItemHeight;
+		s32 ItemHeightOverride;
 		s32 TotalItemHeight;
 		s32 ItemsIconWidth;
 		gui::IGUIFont* Font;

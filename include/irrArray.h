@@ -26,7 +26,7 @@ public:
 	//! Default constructor for empty array.
 	array()
 		: data(0), allocated(0), used(0),
-			free_when_destroyed(true), is_sorted(true)
+			free_when_destroyed(true), is_sorted(true),strategy ( ALLOC_STRATEGY_DOUBLE )
 	{
 	}
 
@@ -34,7 +34,7 @@ public:
 	/** \param start_count Amount of elements to pre-allocate. */
 	array(u32 start_count)
 		: data(0), allocated(0), used(0),
-			free_when_destroyed(true), is_sorted(true)
+			free_when_destroyed(true), is_sorted(true),strategy ( ALLOC_STRATEGY_DOUBLE )
 	{
 		reallocate(start_count);
 	}
@@ -93,6 +93,15 @@ public:
 	}
 
 
+	//! set a new allocation strategy
+	/** if the maximum size of the array is unknown, you can define how big the
+	allocation should happen.
+	\param element: newStratgey to applay to this array. */
+	void setAllocStrategy ( eAllocStrategy newStrategy = ALLOC_STRATEGY_DOUBLE )
+	{
+		strategy = newStrategy;
+	}
+
 	//! Adds an element at back of array.
 	/** If the array is too small to add this new element it is made bigger.
 	\param element: Element to add at the back of the array. */
@@ -100,14 +109,31 @@ public:
 	{
 		if (used + 1 > allocated)
 		{
-			// reallocate(used * 2 +1);
 			// this doesn't work if the element is in the same array. So
 			// we'll copy the element first to be sure we'll get no data
 			// corruption
 
 			T e(element);
-			reallocate(used * 2 +1); // increase data block
+			//reallocate(used * 2 +1); // increase data block
+			// TA: okt, 2008. it's only allowed to alloc one element, if 
+			// default constructor has to be called
 
+			// increase data block
+			u32 newAlloc;
+			switch ( strategy )
+			{
+				case ALLOC_STRATEGY_DOUBLE:
+					newAlloc = used + 1 + (allocated < 500 ?
+							(allocated < 5 ? 5 : used) : used >> 2);
+					break;
+				default:
+				case ALLOC_STRATEGY_SAFE:
+					newAlloc = used + 1;
+					break;
+			}
+			reallocate( newAlloc);
+			// construct new element
+			// Attention!. in missing default constructors for faster alloc methods
 			allocator.construct(&data[used++], e); // data[used++] = e; // push_back
 		}
 		else
@@ -215,6 +241,8 @@ public:
 	//! Assignment operator
 	void operator=(const array<T>& other)
 	{
+		strategy = other.strategy;
+
 		if (data)
 		{
 			for (u32 i=0; i<used; ++i)
@@ -408,6 +436,38 @@ public:
 	}
 
 
+	//! Performs a binary search for an element, returns -1 if not found.
+	//! it is used for searching a multiset
+	/** The array will be sorted before the binary search if it is not
+	already sorted.
+	\param element	Element to search for.
+	\param &last	return lastIndex of equal elements
+	\return Position of the first searched element if it was found,
+	otherwise -1 is returned. */
+	s32 binary_search_multi(const T& element, s32 &last)
+	{
+		sort();
+		s32 index = binary_search(element, 0, used-1);
+		if ( index < 0 )
+			return index;
+
+		// The search can be somewhere in the middle of the set
+		// look linear previous and past the index
+		last = index;
+
+		while ( index > 0 && !(element < data[index - 1]) && !(data[index - 1] < element) )
+		{
+			index -= 1;
+		}
+		// look linear up
+		while ( last < (s32) used - 1 && !(element < data[last + 1]) && !(data[last + 1] < element) )
+		{
+			last += 1;
+		}
+
+		return index;
+	}
+
 	//! Finds an element in linear time, which is very slow.
 	/** Use binary_search for faster finding. Only works if ==operator is
 	implemented.
@@ -501,6 +561,7 @@ public:
 		u32 used;
 		bool free_when_destroyed;
 		bool is_sorted;
+		eAllocStrategy strategy;
 		TAlloc allocator;
 };
 

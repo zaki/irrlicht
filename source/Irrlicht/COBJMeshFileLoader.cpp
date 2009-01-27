@@ -47,9 +47,9 @@ COBJMeshFileLoader::~COBJMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool COBJMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool COBJMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".obj")!=0;
+	return core::hasFileExtension ( filename, "obj" );
 }
 
 
@@ -73,8 +73,8 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 	Materials.push_back(currMtl);
 	u32 smoothingGroup=0;
 
-	const core::stringc fullName = file->getFileName();
-	const core::stringc relPath = FileSystem->getFileDir(fullName)+"/";
+	const core::string<c16> fullName = file->getFileName();
+	const core::string<c16> relPath = FileSystem->getFileDir(fullName)+"/";
 
 	c8* buf = new c8[filesize];
 	memset(buf, 0, filesize);
@@ -311,7 +311,7 @@ IAnimatedMesh* COBJMeshFileLoader::createMesh(io::IReadFile* file)
 }
 
 
-const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const bufEnd, SObjMtl* currMaterial, const core::stringc& relPath)
+const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const bufEnd, SObjMtl* currMaterial, const core::string<c16>& relPath)
 {
 	u8 type=0; // map_Kd - diffuse color texture map
 	// map_Ks - specular color texture map
@@ -410,15 +410,15 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 	if (clamp)
 		currMaterial->Meshbuffer->Material.setFlag(video::EMF_TEXTURE_WRAP, video::ETC_CLAMP);
 
-	core::stringc texname(textureNameBuf);
+	core::string<c16> texname(textureNameBuf);
 	texname.replace('\\', '/');
 
 	video::ITexture * texture = 0;
-	if (FileSystem->existFile(texname.c_str()))
-		texture = SceneManager->getVideoDriver()->getTexture(texname.c_str());
+	if (FileSystem->existFile(texname))
+		texture = SceneManager->getVideoDriver()->getTexture(texname);
 	else
 		// try to read in the relative path, the .obj is loaded from
-		texture = SceneManager->getVideoDriver()->getTexture( (relPath + texname).c_str() );
+		texture = SceneManager->getVideoDriver()->getTexture( relPath + texname );
 	if ( texture )
 	{
 		if (type==0)
@@ -450,14 +450,20 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 }
 
 
-void COBJMeshFileLoader::readMTL(const c8* fileName, const core::stringc& relPath)
+void COBJMeshFileLoader::readMTL(const c8* fileName, const core::string<c16>& relPath)
 {
 	io::IReadFile * mtlReader;
-	if (FileSystem->existFile(fileName))
-		mtlReader = FileSystem->createAndOpenFile(fileName);
+
+	core::string<c16> realFile ( fileName );
+
+	if (FileSystem->existFile(realFile))
+		mtlReader = FileSystem->createAndOpenFile(realFile.c_str() );
 	else
+	{
 		// try to read in the relative path, the .obj is loaded from
-		mtlReader = FileSystem->createAndOpenFile((relPath + fileName).c_str());
+		core::string<c16> r2 = relPath + realFile;
+		mtlReader = FileSystem->createAndOpenFile(r2.c_str());
+	}
 	if (!mtlReader)	// fail to open and read file
 		return;
 

@@ -30,9 +30,9 @@ CImageLoaderBMP::CImageLoaderBMP()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderBMP::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderBMP::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".bmp") != 0;
+	return core::hasFileExtension ( filename, "bmp" );
 }
 
 
@@ -307,36 +307,41 @@ IImage* CImageLoaderBMP::loadImage(io::IReadFile* file) const
 
 	// create surface
 
+	// no default constructor from packed area! ARM problem!
+	core::dimension2d<u32> dim;
+	dim.Width = header.Width;
+	dim.Height = header.Height;
+
 	IImage* image = 0;
 	switch(header.BPP)
 	{
 	case 1:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, dim);
 		if (image)
 			CColorConverter::convert1BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
 		break;
 	case 4:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, dim);
 		if (image)
 			CColorConverter::convert4BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, paletteData, pitch, true);
 		break;
 	case 8:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, dim);
 		if (image)
 			CColorConverter::convert8BitTo16Bit(bmpData, (s16*)image->lock(), header.Width, header.Height, paletteData, pitch, true);
 		break;
 	case 16:
-		image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(header.Width, header.Height));
+		image = new CImage(ECF_A1R5G5B5, dim);
 		if (image)
 			CColorConverter::convert16BitTo16Bit((s16*)bmpData, (s16*)image->lock(), header.Width, header.Height, pitch, true);
 		break;
 	case 24:
-		image = new CImage(ECF_R8G8B8, core::dimension2d<u32>(header.Width, header.Height));
+		image = new CImage(ECF_R8G8B8, dim);
 		if (image)
 			CColorConverter::convert24BitTo24Bit(bmpData, (u8*)image->lock(), header.Width, header.Height, pitch, true, true);
 		break;
 	case 32: // thx to Reinhard Ostermeier
-		image = new CImage(ECF_A8R8G8B8, core::dimension2d<u32>(header.Width, header.Height));
+		image = new CImage(ECF_A8R8G8B8, dim);
 		if (image)
 			CColorConverter::convert32BitTo32Bit((s32*)bmpData, (s32*)image->lock(), header.Width, header.Height, pitch, true);
 		break;

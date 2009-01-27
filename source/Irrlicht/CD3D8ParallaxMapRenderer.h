@@ -33,9 +33,10 @@ public:
 	//! material renderer should be set.
 	virtual void OnSetConstants(IMaterialRendererServices* services, s32 userData);
 
-	bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
+	virtual bool OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype);
 
-	void OnSetMaterial(const video::SMaterial& material,
+	virtual void OnSetMaterial(const SMaterial& material) { }
+	virtual void OnSetMaterial(const video::SMaterial& material,
 		const video::SMaterial& lastMaterial,
 		bool resetAllRenderstates, video::IMaterialRendererServices* services);
 

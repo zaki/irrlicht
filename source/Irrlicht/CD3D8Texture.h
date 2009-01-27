@@ -10,6 +10,10 @@
 
 #include "ITexture.h"
 #include "IImage.h"
+
+#ifdef _IRR_XBOX_PLATFORM_
+	#include <xtl.h>
+#endif
 #include <d3d8.h>
 
 namespace irr
@@ -28,10 +32,10 @@ public:
 
 	//! constructor
 	CD3D8Texture(IImage* image, CD3D8Driver* driver,
-		u32 flags, const char* name);
+		u32 flags, const core::string<c16>& name);
 
 	//! rendertarget constructor
-	CD3D8Texture(CD3D8Driver* driver, core::dimension2d<u32> size, const char* name);
+	CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name);
 
 	//! destructor
 	virtual ~CD3D8Texture();

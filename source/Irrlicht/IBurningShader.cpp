@@ -61,14 +61,14 @@ namespace video
 		if (RenderTarget)
 			RenderTarget->drop();
 
-		RenderTarget = surface;
+		RenderTarget = (video::CImage* ) surface;
 
 		if (RenderTarget)
 		{
 			RenderTarget->grab();
 
-			//lockedSurface = (tVideoSample*)RenderTarget->lock();
-			//lockedDepthBuffer = DepthBuffer->lock();
+			//(tVideoSample*)RenderTarget->lock() = (tVideoSample*)RenderTarget->lock();
+			//(fp24*) DepthBuffer->lock() = DepthBuffer->lock();
 		}
 
 	}

@@ -84,7 +84,7 @@ CGUIFileOpenDialog::CGUIFileOpenDialog(const wchar_t* title,
 	FileBox->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	FileBox->grab();
 
-	FileNameText = Environment->addStaticText(0, core::rect<s32>(10, 30, RelativeRect.getWidth()-90, 50), true, false, this);
+	FileNameText = Environment->addEditBox(0, core::rect<s32>(10, 30, RelativeRect.getWidth()-90, 50), true, this);
 	FileNameText->setSubElement(true);
 	FileNameText->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	FileNameText->grab();
@@ -132,6 +132,13 @@ const wchar_t* CGUIFileOpenDialog::getFileName() const
 	return FileName.c_str();
 }
 
+//! Returns the directory of the selected file. Returns NULL, if no directory was selected.
+const core::string<c16>& CGUIFileOpenDialog::getDirectoryName()
+{
+	FileSystem->flatenFilename ( FileDirectory );
+	return FileDirectory;
+}
+
 
 //! called if an event happened.
 bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
@@ -155,11 +162,18 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 					return true;
 				}
 				else
-				if (event.GUIEvent.Caller == OKButton && FileName != L"")
+				if (event.GUIEvent.Caller == OKButton )
 				{
-					sendSelectedEvent();
-					remove();
-					return true;
+					if ( FileDirectory != L"" )
+					{
+						sendSelectedEvent( EGET_DIRECTORY_SELECTED );
+					}
+					if ( FileName != L"" )
+					{
+						sendSelectedEvent( EGET_FILE_SELECTED );
+						remove();
+						return true;
+					}
 				}
 				break;
 
@@ -169,9 +183,15 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 					if (FileList && FileSystem)
 					{
 						if (FileList->isDirectory(selected))
+						{
 							FileName = L"";
+							FileDirectory = FileList->getFullFileName(selected);
+						}
 						else
+						{
+							FileDirectory = L"";
 							FileName = FileList->getFullFileName(selected);
+						}
 					}
 				}
 				break;
@@ -183,9 +203,10 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 					{
 						if (FileList->isDirectory(selected))
 						{
+							FileDirectory = FileList->getFullFileName(selected);
 							FileSystem->changeWorkingDirectoryTo(FileList->getFileName(selected));
 							fillListBox();
-							FileName = L"";
+							FileName = "";
 						}
 						else
 						{
@@ -195,6 +216,18 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 					}
 				}
 				break;
+			case EGET_EDITBOX_ENTER:
+				if (event.GUIEvent.Caller == FileNameText)
+				{
+					core::string<c16> dir( FileNameText->getText () );
+					if ( FileSystem->changeWorkingDirectoryTo( dir ) )
+					{
+						fillListBox();
+						FileName = L"";
+					}
+					return true;
+				}
+			break;
 			default:
 				break;
 			}
@@ -214,6 +247,10 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 				Dragging = false;
 				return true;
 			case EMIE_MOUSE_MOVED:
+
+				if ( !event.MouseInput.isLeftPressed () )
+					Dragging = false;
+
 				if (Dragging)
 				{
 					// gui window should not be dragged outside its parent
@@ -297,19 +334,20 @@ void CGUIFileOpenDialog::fillListBox()
 	if (FileNameText)
 	{
 		s = FileSystem->getWorkingDirectory();
+		FileDirectory = s;
 		FileNameText->setText(s.c_str());
 	}
 }
 
 
 //! sends the event that the file has been selected.
-void CGUIFileOpenDialog::sendSelectedEvent()
+void CGUIFileOpenDialog::sendSelectedEvent( EGUI_EVENT_TYPE type)
 {
 	SEvent event;
 	event.EventType = EET_GUI_EVENT;
 	event.GUIEvent.Caller = this;
 	event.GUIEvent.Element = 0;
-	event.GUIEvent.EventType = EGET_FILE_SELECTED;
+	event.GUIEvent.EventType = type;
 	Parent->OnEvent(event);
 }
 

@@ -104,7 +104,7 @@ int main()
 	want to.
 	*/
 
-	mesh = smgr->addHillPlaneMesh("myHill",
+	mesh = smgr->addHillPlaneMesh( "myHill",
 		core::dimension2d<f32>(20,20),
 		core::dimension2d<u32>(40,40), 0, 0,
 		core::dimension2d<f32>(0,0),

@@ -17,14 +17,14 @@ namespace irr
 			//! Writes attributes of the object.
 			//! Implement this to expose the attributes of your scene node animator for
 			//! scripting languages, editors, debuggers or xml serialization purposes.
-			virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options);
+			virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
 
 			//! Reads attributes of the object.
 			//! Implement this to set the attributes of your scene node animator for
 			//! scripting languages, editors, debuggers or xml deserialization purposes.
 			//! \param startIndex: start index where to start reading attributes.
 			//! \return: returns last index of an attribute read by this affector
-			virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+			virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
 
 			//! Get emitter type
 			virtual E_PARTICLE_AFFECTOR_TYPE getType() const;

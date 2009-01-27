@@ -432,24 +432,24 @@ public:
 	//! Draws the element and its children.
 	virtual void draw()
 	{
-		if (!IsVisible)
-			return;
-
-		core::list<IGUIElement*>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			(*it)->draw();
+		if ( IsVisible )
+		{
+			core::list<IGUIElement*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+				(*it)->draw();
+		}
 	}
 
 
 	//! animate the element and its children.
 	virtual void OnPostRender(u32 timeMs)
 	{
-		if (!IsVisible)
-			return;
-
-		core::list<IGUIElement*>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			(*it)->OnPostRender( timeMs );
+		if ( IsVisible )
+		{
+			core::list<IGUIElement*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+				(*it)->OnPostRender( timeMs );
+		}
 	}
 
 

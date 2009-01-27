@@ -25,7 +25,7 @@ namespace io
 	{
 	public:
 
-		CLimitReadFile(IReadFile* alreadyOpenedFile, long areaSize, const c8* name);
+		CLimitReadFile(IReadFile* alreadyOpenedFile, long pos, long areaSize, const core::string<c16>& name);
 
 		virtual ~CLimitReadFile();
 
@@ -44,16 +44,14 @@ namespace io
 		virtual long getPos() const;
 
 		//! returns name of file
-		virtual const c8* getFileName() const;
+		virtual const core::string<c16>& getFileName() const;
 
 	private:
 
-		void init();
-
-		core::stringc Filename;
-		long AreaSize;
+		core::string<c16> Filename;
 		long AreaStart;
 		long AreaEnd;
+		long Pos;
 		IReadFile* File;
 	};
 

@@ -722,6 +722,7 @@ bool CIrrDeviceLinux::run()
 	if ((CreationParams.DriverType != video::EDT_NULL) && display)
 	{
 		SEvent irrevent;
+		irrevent.MouseInput.ButtonStates = -1;
 
 		while (XPending(display) > 0 && !Close)
 		{

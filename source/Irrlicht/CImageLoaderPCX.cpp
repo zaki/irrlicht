@@ -31,9 +31,9 @@ CImageLoaderPCX::CImageLoaderPCX()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderPCX::isALoadableFileExtension(const c8* fileName) const
+bool CImageLoaderPCX::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return (strstr(fileName, ".PCX") != 0) || (strstr(fileName, ".pcx") != 0);
+	return core::hasFileExtension ( filename, "pcx" );
 }
 
 

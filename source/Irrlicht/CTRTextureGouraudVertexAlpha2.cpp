@@ -182,10 +182,10 @@ void CTRTextureVertexAlpha2::scanline_bilinear (  )
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -228,8 +228,8 @@ void CTRTextureVertexAlpha2::scanline_bilinear (  )
 
 			dst[i] = PixelAdd32 (
 						dst[i],
-					getTexel_plain ( &IT[0],	f32_to_fixPoint ( line.t[0][0].x,inversew), 
-												f32_to_fixPoint ( line.t[0][0].y,inversew) )
+					getTexel_plain ( &IT[0],	tofix ( line.t[0][0].x,inversew), 
+												tofix ( line.t[0][0].y,inversew) )
 												  );
 
 #else
@@ -237,19 +237,19 @@ void CTRTextureVertexAlpha2::scanline_bilinear (  )
 #ifdef INVERSE_W
 			inversew = fix_inverse32 ( line.w[0] );
 
-			tx0 = f32_to_fixPoint ( line.t[0][0].x,inversew);
-			ty0 = f32_to_fixPoint ( line.t[0][0].y,inversew);
+			tx0 = tofix ( line.t[0][0].x,inversew);
+			ty0 = tofix ( line.t[0][0].y,inversew);
 
 #ifdef IPOL_C0
-			a3 = f32_to_fixPoint ( line.c[0][0].y,inversew );
+			a3 = tofix ( line.c[0][0].y,inversew );
 #endif
 
 #else
-			tx0 = f32_to_fixPoint ( line.t[0][0].x );
-			ty0 = f32_to_fixPoint ( line.t[0][0].y );
+			tx0 = tofix ( line.t[0][0].x );
+			ty0 = tofix ( line.t[0][0].y );
 
 #ifdef IPOL_C0
-			a3 = f32_to_fixPoint ( line.c[0][0].y );
+			a3 = tofix ( line.c[0][0].y );
 #endif
 
 
@@ -302,8 +302,8 @@ void CTRTextureVertexAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *
 {
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -361,12 +361,6 @@ void CTRTextureVertexAlpha2::drawTriangle ( const s4DVertex *a,const s4DVertex *
 
 #ifdef SUBTEXEL
 	f32 subPixel;
-#endif
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
 #endif
 
 #ifdef IPOL_T0

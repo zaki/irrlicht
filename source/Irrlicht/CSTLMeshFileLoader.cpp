@@ -23,9 +23,9 @@ namespace scene
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CSTLMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CSTLMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".stl")!=0;
+	return core::hasFileExtension ( filename, "stl" );
 }
 
 

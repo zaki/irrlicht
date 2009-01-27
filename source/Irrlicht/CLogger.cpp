@@ -81,6 +81,16 @@ namespace irr
 		log(s1.c_str(), s2.c_str(), ll);
 	}
 
+	//! Prints out a text into the log
+	void CLogger::log(const c8* text, const wchar_t* hint, ELOG_LEVEL ll)
+	{
+		if (ll < LogLevel)
+			return;
+
+		core::stringc s2 = hint;
+		log( text, s2.c_str(), ll);
+	}
+
 	//! Sets a new event receiver
 	void CLogger::setReceiver(IEventReceiver* r)
 	{

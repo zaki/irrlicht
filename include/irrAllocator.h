@@ -107,6 +107,14 @@ public:
 #define DEBUG_CLIENTBLOCK new( _CLIENT_BLOCK, __FILE__, __LINE__)
 #endif
 
+//! defines an allocation strategy
+enum eAllocStrategy
+{
+	ALLOC_STRATEGY_SAFE		= 0,
+	ALLOC_STRATEGY_DOUBLE	= 1,
+	ALLOC_STRATEGY_SQRT		= 2,
+};
+
 
 } // end namespace core
 } // end namespace irr

@@ -110,6 +110,12 @@ namespace irr
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
+		//! Set the current Gamma Value for the Display
+		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast );
+
+		//! Get the current Gamma Value for the Display
+		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
+
 	protected:
 
 		void createGUIAndScene();
@@ -129,6 +135,10 @@ namespace irr
 		scene::ISceneManager* InputReceivingSceneManager;
 		video::CVideoModeList VideoModeList;
 		SIrrlichtCreationParameters CreationParams;
+
+		void calculateGammaRamp ( u16 *ramp, f32 gamma, f32 relativebrightness, f32 relativecontrast );
+		void calculateGammaFromRamp ( f32 &gamma, const u16 *ramp );
+
 	};
 
 } // end namespace irr

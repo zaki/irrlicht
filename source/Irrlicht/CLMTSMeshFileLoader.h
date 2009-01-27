@@ -40,7 +40,7 @@ public:
 
 	virtual ~CLMTSMeshFileLoader();
 
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 	

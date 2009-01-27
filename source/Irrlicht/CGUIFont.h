@@ -34,13 +34,13 @@ class CGUIFont : public IGUIFontBitmap
 public:
 
 	//! constructor
-	CGUIFont(IGUIEnvironment* env, const c8* filename);
+	CGUIFont(IGUIEnvironment* env, const core::string<c16>& filename);
 
 	//! destructor
 	virtual ~CGUIFont();
 
 	//! loads a font from a texture file
-	bool load(const c8* filename);
+	bool load(const core::string<c16>& filename);
 
 	//! loads a font from a texture file
 	bool load(io::IReadFile* file);
@@ -76,6 +76,8 @@ public:
 	//! returns the sprite number from a given character
 	virtual u32 getSpriteNoFromChar(const wchar_t *c) const;
 
+	virtual void setInvisibleCharacters( const wchar_t *s );
+
 private:
 
 	struct SFontArea
@@ -88,7 +90,7 @@ private:
 	};
 
 	//! load & prepare font from ITexture
-	bool loadTexture(video::IImage * image, const c8* name);
+	bool loadTexture(video::IImage * image, const core::string<c16>& name);
 
 	void readPositions16bit(video::IImage* texture, s32& lowerRightPositions);
 	void readPositions32bit(video::IImage* texture, s32& lowerRightPositions);
@@ -104,6 +106,8 @@ private:
 	u32				WrongCharacter;
 	s32				MaxHeight;
 	s32				GlobalKerningWidth, GlobalKerningHeight;
+
+	core::stringw Invisible;
 };
 
 } // end namespace gui

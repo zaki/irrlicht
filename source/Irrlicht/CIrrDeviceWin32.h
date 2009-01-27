@@ -13,9 +13,10 @@
 #include "IImagePresenter.h"
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
-#include <mmsystem.h> // For JOYCAPS
+#if !defined(_IRR_XBOX_PLATFORM_)
+	#include <windows.h>
+	#include <mmsystem.h> // For JOYCAPS
+#endif
 
 
 namespace irr
@@ -70,6 +71,12 @@ namespace irr
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+
+		//! Set the current Gamma Value for the Display
+		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast );
+
+		//! Get the current Gamma Value for the Display
+		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
 
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -260,12 +267,14 @@ namespace irr
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
 
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 		struct JoystickInfo
 		{
 			u32		Index;
 			JOYCAPS Caps;
 		};
 		core::array<JoystickInfo> ActiveJoysticks;
+#endif
 	};
 
 } // end namespace irr

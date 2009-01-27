@@ -89,15 +89,15 @@ namespace scene
 	struct SMD3Header
 	{
 		c8	headerID[4];	//id of file, always "IDP3"
-		s32	Version;	//this is a version number, always 15
+		s32	Version;		//this is a version number, always 15
 		s8	fileName[68];	//sometimes left Blank... 65 chars, 32bit aligned == 68 chars
-		s32	numFrames;	//number of KeyFrames
-		s32	numTags;	//number of 'tags' per frame
-		s32	numMeshes;	//number of meshes/skins
-		s32	numMaxSkins;	//maximum number of unique skins used in md3 file
-		s32	headerSize;	//always equal to the length of this header
-		s32	tagStart;	//starting position of tag-structures
-		s32	tagEnd;		//ending position of tag-structures/starting position of mesh-structures
+		s32	numFrames;		//number of KeyFrames
+		s32	numTags;		//number of 'tags' per frame
+		s32	numMeshes;		//number of meshes/skins
+		s32	numMaxSkins;	//maximum number of unique skins used in md3 file. artefact md2
+		s32	frameStart;		//starting position of frame-structur
+		s32	tagStart;		//starting position of tag-structures
+		s32	tagEnd;			//ending position of tag-structures/starting position of mesh-structures
 		s32	fileSize;
 	};
 
@@ -151,9 +151,10 @@ namespace scene
 	//! Holding Frame Data for a Mesh
 	struct SMD3MeshBuffer : public IReferenceCounted
 	{
+		virtual ~SMD3MeshBuffer () {}
 		SMD3MeshHeader MeshHeader;
 
-		core::array < core::stringc > Shader;
+		core::stringc Shader;
 		core::array < s32 > Indices;
 		core::array < SMD3Vertex > Vertices;
 		core::array < SMD3TexCoord > Tex;
@@ -161,31 +162,48 @@ namespace scene
 
 	//! hold a tag info for connecting meshes
 	/** Basically its an alternate way to describe a transformation. */
-	struct SMD3QuaterionTag
+	struct SMD3QuaternionTag
 	{
-		SMD3QuaterionTag() {}
+		virtual ~SMD3QuaternionTag()
+		{
+			position.X = 0.f;
+		}
 
-		SMD3QuaterionTag( const core::stringc& name )
+		// construct copy constructor
+		SMD3QuaternionTag( const SMD3QuaternionTag & copyMe )
+		{
+			*this = copyMe;
+		}
+
+		// construct for searching
+		SMD3QuaternionTag( const core::stringc& name )
 			: Name ( name ) {}
 
 		// construct from a matrix
-		SMD3QuaterionTag ( const core::stringc& name, const core::matrix4 &m ) : Name(name), position(m.getTranslation()), rotation(m)
-		{ }
+		SMD3QuaternionTag ( const core::stringc& name, const core::matrix4 &m )
+			: Name(name), position(m.getTranslation()), rotation(m) {}
 
 		// construct from a position and euler angles in degrees
-		SMD3QuaterionTag ( const core::vector3df &pos, const core::vector3df &angle ) : position(pos), rotation(angle * core::DEGTORAD)
-		{ }
+		SMD3QuaternionTag ( const core::vector3df &pos, const core::vector3df &angle )
+			: position(pos), rotation(angle * core::DEGTORAD) {}
 
 		// set to matrix
 		void setto ( core::matrix4 &m )
 		{
-			rotation.getMatrix ( m );
-			m.setTranslation ( position );
+			rotation.getMatrix ( m, position );
 		}
 
-		bool operator == ( const SMD3QuaterionTag &other ) const
+		bool operator == ( const SMD3QuaternionTag &other ) const
 		{
 			return Name == other.Name;
+		}
+
+		SMD3QuaternionTag & operator=( const SMD3QuaternionTag & copyMe )
+		{
+			Name = copyMe.Name;
+			position = copyMe.position;
+			rotation = copyMe.rotation;
+			return *this;
 		}
 
 		core::stringc Name;
@@ -194,11 +212,24 @@ namespace scene
 	};
 
 	//! holds a associative list of named quaternions
-	struct SMD3QuaterionTagList : public virtual IReferenceCounted
+	struct SMD3QuaternionTagList
 	{
-		SMD3QuaterionTag* get ( const core::stringc& name )
+		SMD3QuaternionTagList ()
 		{
-			SMD3QuaterionTag search ( name );
+			Container.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE );
+		}
+
+		// construct copy constructor
+		SMD3QuaternionTagList( const SMD3QuaternionTagList & copyMe )
+		{
+			*this = copyMe;
+		}
+
+		virtual ~SMD3QuaternionTagList () {}
+
+		SMD3QuaternionTag* get ( const core::stringc& name )
+		{
+			SMD3QuaternionTag search ( name );
 			s32 index = Container.linear_search ( search );
 			if ( index >= 0 )
 				return &Container[index];
@@ -210,39 +241,61 @@ namespace scene
 			return Container.size();
 		}
 
-		const SMD3QuaterionTag& operator[](u32 index) const
+		void set_used ( u32 new_size)
+		{
+			s32 diff = (s32) new_size - (s32) Container.allocated_size ();
+			if ( diff > 0 )
+			{
+				SMD3QuaternionTag e ( "" );
+				for ( s32 i = 0; i < diff; ++i )
+					Container.push_back ( e );
+			}
+		}
+
+		const SMD3QuaternionTag& operator[](u32 index) const
 		{
 			return Container[index];
 		}
 
-		SMD3QuaterionTag& operator[](u32 index)
+		SMD3QuaternionTag& operator[](u32 index)
 		{
 			return Container[index];
 		}
 
-		SMD3QuaterionTagList & operator = (const SMD3QuaterionTagList & copyMe)
+		void push_back ( const SMD3QuaternionTag& other )
+		{
+			Container.push_back ( other );
+		}
+
+		SMD3QuaternionTagList& operator = (const SMD3QuaternionTagList & copyMe)
 		{
 			Container = copyMe.Container;
 			return *this;
 		}
 
-		core::array < SMD3QuaterionTag > Container;
+	private:
+		core::array < SMD3QuaternionTag > Container;
 	};
 
 
 	//! Holding Frames Buffers and Tag Infos
 	struct SMD3Mesh: public IReferenceCounted
 	{
-		~SMD3Mesh()
+		SMD3Mesh ()
+		{
+			MD3Header.numFrames = 0;
+		}
+
+		virtual ~SMD3Mesh()
 		{
 			for (u32 i=0; i<Buffer.size(); ++i)
 				Buffer[i]->drop();
 		}
 
-		SMD3Header MD3Header;
 		core::stringc Name;
 		core::array < SMD3MeshBuffer * > Buffer;
-		SMD3QuaterionTagList TagList;
+		SMD3QuaternionTagList TagList;
+		SMD3Header MD3Header;
 	};
 
 
@@ -255,7 +308,7 @@ namespace scene
 		virtual void setInterpolationShift ( u32 shift, u32 loopMode ) = 0;
 
 		//! get the tag list of the mesh.
-		virtual SMD3QuaterionTagList *getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) = 0;
+		virtual SMD3QuaternionTagList *getTagList(s32 frame, s32 detailLevel, s32 startFrameLoop, s32 endFrameLoop) = 0;
 
 		//! get the original md3 mesh.
 		virtual SMD3Mesh * getOriginalMesh () = 0;

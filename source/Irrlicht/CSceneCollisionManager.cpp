@@ -317,9 +317,6 @@ core::vector3df CSceneCollisionManager::getCollisionResultPosition(
 	f32 slidingSpeed,
 	const core::vector3df& gravity)
 {
-	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
-		return position;
-
 	return collideEllipsoidWithWorld(selector, position,
 		radius, direction, slidingSpeed, gravity, triout, hitPosition, outFalling, outNode);
 }
@@ -397,7 +394,7 @@ bool CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 			(colData->basePoint - trianglePlane.Normal)
 			+ (colData->velocity * t0);
 
-		if (triangle.isPointInsideFast(planeIntersectionPoint))
+		if (triangle.isPointInside(planeIntersectionPoint))
 		{
 			foundCollision = true;
 			t = t0;

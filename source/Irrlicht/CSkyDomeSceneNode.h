@@ -18,7 +18,7 @@ class CSkyDomeSceneNode : public ISceneNode
 {
 	public:
 		CSkyDomeSceneNode(video::ITexture* texture, u32 horiRes, u32 vertRes,
-			f64 texturePercentage, f64 spherePercentage,
+			f32 texturePercentage, f32 spherePercentage, f32 radius,
 			ISceneNode* root, ISceneManager* smgr, s32 id);
 		virtual ~CSkyDomeSceneNode();
 		virtual void OnRegisterSceneNode();

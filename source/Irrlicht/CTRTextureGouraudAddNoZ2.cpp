@@ -28,9 +28,9 @@
 #define SUBTEXEL
 #define INVERSE_W
 
-//#define USE_ZBUFFER
+#define USE_ZBUFFER
 #define IPOL_W
-//#define CMP_W
+#define CMP_W
 //#define WRITE_W
 
 //#define IPOL_C0
@@ -110,7 +110,7 @@ void CTRTextureGouraudAddNoZ2::scanline_bilinear ()
 {
 	tVideoSample *dst;
 
-#ifdef IPOL_Z
+#ifdef USE_ZBUFFER
 	fp24 *z;
 #endif
 
@@ -183,10 +183,10 @@ void CTRTextureGouraudAddNoZ2::scanline_bilinear ()
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
-#ifdef IPOL_Z
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+#ifdef USE_ZBUFFER
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -207,15 +207,18 @@ void CTRTextureGouraudAddNoZ2::scanline_bilinear ()
 #ifdef CMP_Z
 		if ( line.z[0] < z[i] )
 #endif
+#ifdef CMP_W
+		if ( line.w[0] >= z[i] )
+#endif
 		{
 #ifdef IPOL_W
 			inversew = fix_inverse32 ( line.w[0] );
 
-			tx0 = f32_to_fixPoint ( line.t[0][0].x,inversew);
-			ty0 = f32_to_fixPoint ( line.t[0][0].y,inversew);
+			tx0 = tofix ( line.t[0][0].x,inversew);
+			ty0 = tofix ( line.t[0][0].y,inversew);
 #else
-			tx0 = f32_to_fixPoint ( line.t[0][0].x );
-			ty0 = f32_to_fixPoint ( line.t[0][0].y );
+			tx0 = tofix ( line.t[0][0].x );
+			ty0 = tofix ( line.t[0][0].y );
 #endif
 
 			getSample_texture ( r0, g0, b0, &IT[0], tx0,ty0 );
@@ -231,6 +234,9 @@ void CTRTextureGouraudAddNoZ2::scanline_bilinear ()
 
 #ifdef WRITE_Z
 			z[i] = line.z[0];
+#endif
+#ifdef WRITE_W
+			z[i] = line.w[0];
 #endif
 		}
 
@@ -257,8 +263,8 @@ void CTRTextureGouraudAddNoZ2::drawTriangle ( const s4DVertex *a,const s4DVertex
 {
 	// sort on height, y
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
-	if ( F32_A_GREATER_B ( a->Pos.y , c->Pos.y ) ) swapVertexPointer(&a, &c);
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
+	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
 
 	// calculate delta y of the edges
@@ -315,12 +321,6 @@ void CTRTextureGouraudAddNoZ2::drawTriangle ( const s4DVertex *a,const s4DVertex
 
 #ifdef SUBTEXEL
 	f32 subPixel;
-#endif
-
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef IPOL_Z
-	lockedDepthBuffer = DepthBuffer->lock();
 #endif
 
 #ifdef IPOL_T0
@@ -628,7 +628,7 @@ void CTRTextureGouraudAddNoZ2::drawTriangle ( const s4DVertex *a,const s4DVertex
 
 	RenderTarget->unlock();
 
-#ifdef IPOL_Z
+#ifdef USE_ZBUFFER
 	DepthBuffer->unlock();
 #endif
 

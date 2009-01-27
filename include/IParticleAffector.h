@@ -57,20 +57,6 @@ public:
 	//! Gets whether or not the affector is currently enabled.
 	virtual bool getEnabled() const { return Enabled; }
 
-	//! Writes attributes of the object.
-	/** Implement this to expose the attributes of your scene node animator for
-	scripting languages, editors, debuggers or xml serialization purposes. */
-	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const {}
-
-	//! Reads attributes of the object.
-	/** Implement this to set the attributes of your scene node animator for
-	scripting languages, editors, debuggers or xml deserialization purposes.
-	\param startIndex start index where to start reading attributes.
-	\param in The attributes to work with.
-	\param options Additional options.
-	\return Last index of an attribute read by this affector */
-	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) { return 0; }
-
 	//! Get emitter type
 	virtual E_PARTICLE_AFFECTOR_TYPE getType() const = 0;
 
