@@ -11,9 +11,6 @@
 #include "ITexture.h"
 #include "IImage.h"
 
-#ifdef _IRR_XBOX_PLATFORM_
-	#include <xtl.h>
-#endif
 #include <d3d8.h>
 
 namespace irr

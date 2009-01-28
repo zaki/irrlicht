@@ -14,10 +14,6 @@
 	#include <windows.h>
 #endif
 
-#ifdef _IRR_XBOX_PLATFORM_
-	#include <xtl.h>
-#endif
-
 // always included for static createDriver function
 #include "CNullDriver.h"
 #include "IMaterialRendererServices.h"

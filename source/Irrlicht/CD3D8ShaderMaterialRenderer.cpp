@@ -172,6 +172,9 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 	if (!pxsh)
 		return true;
 
+#if defined( _IRR_XBOX_PLATFORM_)
+	return false;
+#else
 	// compile shader
 
 	LPD3DXBUFFER code = 0;
@@ -198,9 +201,7 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		fclose(f);
 
 		D3DXAssembleShaderFromFile(tmp, D3DXASM_DEBUG, 0, &code, &errors);
-
 	#endif
-
 	if (errors)
 	{
 		// print out compilation errors.
@@ -223,6 +224,8 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 
 	code->Release();
 	return true;
+#endif
+
 }
 
 
@@ -233,6 +236,9 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 		return true;
 
 	// compile shader
+#if defined( _IRR_XBOX_PLATFORM_)
+	return false;
+#else
 
 	LPD3DXBUFFER code = 0;
 	LPD3DXBUFFER errors = 0;
@@ -314,6 +320,7 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 
 	code->Release();
 	return true;
+#endif
 }
 
 
