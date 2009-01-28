@@ -79,7 +79,7 @@ bool writeImageToFile(void)
 	}
 
 	buffer = new c8[BUFFER_SIZE];
-	writtenFilename = "results" DIR_SEP_STRING "burnings video 0.39b-drawPixel.png";
+	writtenFilename = "results" DIR_SEP_STRING "burnings video 0.40b-drawPixel.png";
 	memoryFile = device->getFileSystem()->createMemoryWriteFile(buffer, BUFFER_SIZE, writtenFilename, false);
 	if(!driver->writeImageToFile(screenshot, memoryFile))
 	{
@@ -106,7 +106,7 @@ bool writeImageToFile(void)
 	writtenFile->drop();
 	writtenFile = 0;
 
-	referenceFilename = "media" DIR_SEP_STRING "burnings video 0.39b-drawPixel.png";
+	referenceFilename = "media" DIR_SEP_STRING "burnings video 0.40b-drawPixel.png";
 	if(!binaryCompareFiles(writtenFilename, referenceFilename))
 	{
 		logTestString("File written from memory is not the same as the reference file.\n");
