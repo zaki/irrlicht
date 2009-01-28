@@ -201,9 +201,6 @@ namespace scene
 		// Quake3 Model
 		struct SMD3Special : public virtual IReferenceCounted
 		{
-			virtual ~SMD3Special ()
-			{
-			}
 			core::stringc Tagname;
 			SMD3QuaternionTagList AbsoluteTagList;
 

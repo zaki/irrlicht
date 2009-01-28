@@ -722,9 +722,9 @@ bool CB3DMeshFileLoader::readChunkBRUS()
 	{
 		// This is what blitz basic calls a brush, like a Irrlicht Material
 
+		readString(); //name
 #ifdef _B3D_READER_DEBUG
-		const core::stringc name = readString();
-		os::Printer::log("read Material", name.c_str());
+		os::Printer::log("read Material");
 #endif
 		Materials.push_back(SB3dMaterial());
 		SB3dMaterial& B3dMaterial=Materials.getLast();
