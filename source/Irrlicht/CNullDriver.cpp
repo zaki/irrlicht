@@ -1502,6 +1502,8 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	attr->addBool("FrontfaceCulling", material.FrontfaceCulling);
 	attr->addBool("FogEnable", material.FogEnable);
 	attr->addBool("NormalizeNormals", material.NormalizeNormals);
+	attr->addInt("AntiAliasing", material.AntiAliasing);
+	attr->addInt("ColorMask", material.ColorMask);
 
 	prefix = "BilinearFilter";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
@@ -1515,6 +1517,9 @@ io::IAttributes* CNullDriver::createAttributesFromMaterial(const video::SMateria
 	prefix="TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		attr->addEnum((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].TextureWrap, aTextureClampNames);
+	prefix="LODBias";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		attr->addInt((prefix+core::stringc(i+1)).c_str(), material.TextureLayer[i].LODBias);
 
 	return attr;
 }
@@ -1558,6 +1563,8 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.FrontfaceCulling = attr->getAttributeAsBool("FrontfaceCulling");
 	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable");
 	outMaterial.NormalizeNormals = attr->getAttributeAsBool("NormalizeNormals");
+	outMaterial.AntiAliasing = attr->getAttributeAsInt("AntiAliasing");
+	outMaterial.ColorMask = attr->getAttributeAsInt("ColorMask");
 	prefix = "BilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_BILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
@@ -1582,6 +1589,10 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	prefix = "TextureWrap";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		outMaterial.TextureLayer[i].TextureWrap = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+core::stringc(i+1)).c_str(), aTextureClampNames);
+
+	prefix="LODBias";
+	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
+		outMaterial.TextureLayer[i].LODBias = attr->getAttributeAsInt((prefix+core::stringc(i+1)).c_str());
 }
 
 
