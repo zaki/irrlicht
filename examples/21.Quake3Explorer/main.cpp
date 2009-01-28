@@ -28,52 +28,9 @@ Copyright 2006-2009 Burningwater, Thomas Alten
 */
 struct GameData
 {
-	GameData ( const string<c16> &startupDir)
-	{
-		retVal = 0;
-		createExDevice = 0;
-		Device = 0;
-		StartupDir = startupDir;
-		setDefault ();
-	}
-
-	void setDefault ()
-	{
-		debugState = EDS_OFF;
-		gravityState = 1;
-		flyTroughState = 0;
-		wireFrame = 0;
-		guiActive = 1;
-		guiInputActive = 0;
-		GammaValue = 1.f;
-
-		// default deviceParam;
-		deviceParam.DriverType = EDT_OPENGL;
-		deviceParam.WindowSize.Width = 800;
-		deviceParam.WindowSize.Height = 600;
-		deviceParam.Fullscreen = false;
-		deviceParam.Bits = 32;
-		deviceParam.ZBufferBits = 24;
-		deviceParam.Vsync = false;
-		deviceParam.AntiAlias = false;
-
-		// default Quake3 loadParam
-		loadParam.defaultLightMapMaterial = EMT_LIGHTMAP;
-		loadParam.defaultModulate = EMFN_MODULATE_1X;
-		loadParam.verbose = 1;
-		loadParam.mergeShaderBuffer = 1;
-		loadParam.cleanUnResolvedMeshes = 1;	// should unresolved meshes be cleaned. otherwise blue texture
-		loadParam.loadAllShaders = 1;			// load all scripts in the script directory
-		loadParam.loadSkyShader = 0;			// load sky Shader
-		loadParam.alpharef = 1;
-
-		sound = 0;
-
-		CurrentMapName = "";
-		CurrentArchiveList.clear ();
-		CurrentArchiveList.push_back ( StartupDir + "../../media/" );
-		CurrentArchiveList.push_back ( StartupDir + "../../media/map-20kdm2.pk3" );
-	}
+	GameData ( const string<c16> &startupDir);
+	void setDefault ();
+	s32 save ();
 
 	s32 debugState;
 	s32 gravityState;
@@ -85,9 +42,12 @@ struct GameData
 	s32 retVal;
 	s32 sound;
 
-	core::string<c16> StartupDir;
+	string<c16> StartupDir;
 	stringw CurrentMapName;
-	array < core::string<c16> > CurrentArchiveList;
+	array < string<c16> > CurrentArchiveList;
+
+	vector3df PlayerPosition;
+	vector3df PlayerRotation;
 
 	Q3LevelLoadParameter loadParam;
 	SIrrlichtCreationParameters deviceParam;
@@ -95,6 +55,87 @@ struct GameData
 	IrrlichtDevice *Device;
 };
 
+/*!
+*/
+GameData::GameData ( const string<c16> &startupDir)
+{
+	retVal = 0;
+	createExDevice = 0;
+	Device = 0;
+	StartupDir = startupDir;
+	setDefault ();
+}
+
+/*!
+	set default settings
+*/
+void GameData::setDefault ()
+{
+	debugState = EDS_OFF;
+	gravityState = 1;
+	flyTroughState = 0;
+	wireFrame = 0;
+	guiActive = 1;
+	guiInputActive = 0;
+	GammaValue = 1.f;
+
+	// default deviceParam;
+	deviceParam.DriverType = EDT_DIRECT3D9;
+	deviceParam.WindowSize.Width = 800;
+	deviceParam.WindowSize.Height = 600;
+	deviceParam.Fullscreen = false;
+	deviceParam.Bits = 32;
+	deviceParam.ZBufferBits = 32;
+	deviceParam.Vsync = false;
+	deviceParam.AntiAlias = false;
+
+	// default Quake3 loadParam
+	loadParam.defaultLightMapMaterial = EMT_LIGHTMAP;
+	loadParam.defaultModulate = EMFN_MODULATE_1X;
+	loadParam.verbose = 1;
+	loadParam.mergeShaderBuffer = 1;
+	loadParam.cleanUnResolvedMeshes = 1;	// should unresolved meshes be cleaned. otherwise blue texture
+	loadParam.loadAllShaders = 1;			// load all scripts in the script directory
+	loadParam.loadSkyShader = 0;			// load sky Shader
+	loadParam.alpharef = 1;
+
+	sound = 0;
+
+	CurrentMapName = "";
+	CurrentArchiveList.clear ();
+	CurrentArchiveList.push_back ( StartupDir + "../../media/" );
+	CurrentArchiveList.push_back ( StartupDir + "../../media/map-20kdm2.pk3" );
+
+}
+
+/*!
+	Store the current game State
+*/
+s32 GameData::save ()
+{
+	if ( 0 == Device )
+		return 0;
+
+	u32 i;
+
+	// Store current Archive for restart
+	CurrentArchiveList.clear();
+	io::IFileSystem *fs = Device->getFileSystem();
+	for ( i = 0; i != fs->getFileArchiveCount(); ++i )
+	{
+		CurrentArchiveList.push_back ( fs->getFileArchive ( i )->getArchiveName() );
+	}
+
+	// Store Player Position
+	ICameraSceneNode * camera = Device->getSceneManager()->getActiveCamera ();
+	if ( camera )
+	{
+		PlayerPosition = camera->getPosition ();
+		PlayerRotation = camera->getRotation ();
+	}
+
+	return 1;
+}
 
 /*!
 	Representing a player
@@ -108,6 +149,8 @@ struct Q3Player : public IAnimationEndCallBack
 		memset(Anim, 0, sizeof(TimeFire)*4);
 	}
 
+	virtual void OnAnimationEnd(IAnimatedMeshSceneNode* node);
+
 	void create (	IrrlichtDevice *device, 
 					IQ3LevelMesh* mesh,
 					ISceneNode *mapNode,
@@ -116,7 +159,7 @@ struct Q3Player : public IAnimationEndCallBack
 	void shutdown ();
 	void setAnim ( const c8 *name );
 	void respawn ();
-	virtual void OnAnimationEnd(IAnimatedMeshSceneNode* node);
+	void setpos ( const vector3df &pos, const vector3df& rotation );
 
 	ISceneNodeAnimatorCollisionResponse * cam() { return camCollisionResponse ( Device ); }
 
@@ -267,6 +310,22 @@ void Q3Player::respawn ()
 	}
 }
 
+/*
+	set Player position from saved coordinates
+*/
+void Q3Player::setpos ( const vector3df &pos, const vector3df &rotation )
+{
+	Device->getLogger()->log( "setpos" );
+
+	ICameraSceneNode* camera = Device->getSceneManager()->getActiveCamera();
+	if ( camera )
+	{
+		camera->setPosition ( pos );
+		camera->setRotation ( rotation );
+		//! New. FPSCamera and animators catches reset on animate 0
+		camera->OnAnimate ( 0 );
+	}
+}
 
 /*!
 */
@@ -384,6 +443,7 @@ public:
 	void LoadMap ( const stringw& mapName, s32 collision );
 	void CreatePlayers();
 	void AddSky( u32 dome, const c8 *texture );
+	Q3Player *GetPlayer ( u32 index ) { return &Player[index]; }
 
 	void CreateGUI();
 	void SetGUIActive( s32 command);
@@ -455,6 +515,8 @@ CQuake3EventHandler::~CQuake3EventHandler ()
 {
 	Player[0].shutdown ();
 	sound_shutdown ();
+
+	Game->save();
 
 	Game->Device->drop();
 }
@@ -721,10 +783,10 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 		if ( !exists )
 		{
 			fs->registerFileArchive ( archiveName, true, false );
-			Game->CurrentMapName = "";
 		}
 	}
 
+	// store the current archives in game data
 	// show the attached Archive in proper order
 	if ( gui.ArchiveList )
 	{
@@ -738,9 +800,7 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 
 			gui.ArchiveList->setCellText ( index, 0, archive->getArchiveType () );
 			gui.ArchiveList->setCellText ( index, 1, archive->getArchiveName () );
-
 		}
-
 	}
 
 
@@ -1158,8 +1218,9 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 					printf ( "Loading map %ls\n", loadMap.c_str() );
 					LoadMap ( loadMap , 1 );
 					if ( 0 == Game->loadParam.loadSkyShader )
+					{
 						AddSky ( 1, "skydome2" );
-					//AddSky ( 0, "env/ssky" );
+					}
 					CreatePlayers ();
 					CreateGUI ();
 					SetGUIActive ( 0 );
@@ -1474,25 +1535,6 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 					gui.Visible_Unresolved->setChecked ( v );
 			}
 		}
-/*
-		else
-		if (eve.KeyInput.Key == KEY_KEY_P)
-		{
-			ICameraSceneNode* camera = Device->getSceneManager()->getActiveCamera();
-			const core::vector3df &p = camera->getPosition();
-			const core::vector3df &r = camera->getRotation();
-			printf ( "core::vector3df (%ff,%ff,%ff)\ncore::vector3df (%ff,%ff,%ff)\n", p.X, p.Y, p.Z, r.X, r.Y, r.Z );
-		}
-		else
-		if (eve.KeyInput.Key == KEY_KEY_G)
-		{
-			ICameraSceneNode* camera = Device->getSceneManager()->getActiveCamera();
-
-			camera->setPosition ( core::vector3df ( 635.673767f,79.271515f,159.270813f ) );
-			camera->setRotation ( core::vector3df ( 349.166565f,126.624962f,0.000000f ) );
-			camera->OnAnimate ( 0 );
-		}
-*/
 	}
 
 	// check if user presses the key C ( for crouch)
@@ -1836,18 +1878,39 @@ void runGame ( GameData *game )
 		eventHandler->AddArchive ( game->CurrentArchiveList[i] );
 	}
 
-	eventHandler->AddSky ( 1, "skydome2" );
-	eventHandler->CreatePlayers ();
-	eventHandler->CreateGUI ();
-	eventHandler->SetGUIActive ( 1 );
-	background_music ( "IrrlichtTheme.ogg" );
+	// Load a Map or startup to the GUI
+	if ( game->CurrentMapName.size () )
+	{
+		eventHandler->LoadMap ( game->CurrentMapName, 1 );
+		if ( 0 == game->loadParam.loadSkyShader )
+			eventHandler->AddSky ( 1, "skydome2" );
+		eventHandler->CreatePlayers ();
+		eventHandler->CreateGUI ();
+		eventHandler->SetGUIActive ( 0 );
+
+		// set player to last position on restart
+		if ( game->retVal == 2 )
+		{
+			eventHandler->GetPlayer( 0 )->setpos ( game->PlayerPosition, game->PlayerRotation );
+		}
+	}
+	else
+	{
+		// start up empty
+		eventHandler->AddSky ( 1, "skydome2" );
+		eventHandler->CreatePlayers ();
+		eventHandler->CreateGUI ();
+		eventHandler->SetGUIActive ( 1 );
+		background_music ( "IrrlichtTheme.ogg" );
+	}
+
 
 	game->retVal = 3;
 	while( game->Device->run() )
 	{
 		eventHandler->Animate ();
 		eventHandler->Render ();
-		if (! game->Device->isWindowActive())
+		if ( !game->Device->isWindowActive() )
 			game->Device->yield();
 	}
 

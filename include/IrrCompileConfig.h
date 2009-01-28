@@ -48,6 +48,8 @@
 	//#define _IRR_USE_WINDOWS_DEVICE_
 	#undef _IRR_USE_WINDOWS_DEVICE_
 	//#define _IRR_USE_SDL_DEVICE_
+
+	#include <xtl.h>
 #endif
 
 #if defined(__APPLE__) || defined(MACOSX)

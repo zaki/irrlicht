@@ -13,9 +13,6 @@ static const char* const copyright = "Irrlicht Engine (c) 2002-2009 Nikolaus Geb
 	#endif // _DEBUG
 #endif
 
-#ifdef _IRR_XBOX_PLATFORM_
-	#include <xtl.h>
-#endif
 
 #include "irrlicht.h"
 
