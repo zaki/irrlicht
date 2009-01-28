@@ -260,10 +260,10 @@ u32 CGUITable::addRow(u32 rowIndex)
 	else
 		Rows.insert(row, rowIndex);
 
+	Rows[rowIndex].Items.reallocate(Columns.size());
 	for ( u32 i = 0 ; i < Columns.size() ; ++i )
 	{
-		Cell cell;
-		Rows[rowIndex].Items.push_back(cell);
+		Rows[rowIndex].Items.push_back(Cell());
 	}
 
 	recalculateHeights();

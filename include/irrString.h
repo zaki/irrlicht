@@ -60,6 +60,7 @@ static inline u32 locale_upper ( u32 x )
 	switch ( locale_current )
 	{
 		case IRR_LOCALE_GERMAN:
+		case IRR_LOCALE_ANSI:
 			break;
 	}
 
