@@ -1492,12 +1492,9 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].LODBias != material.TextureLayer[st].LODBias)
 		{
 			const float tmp = material.TextureLayer[st].LODBias * 0.125f;
-
-			//!TA D3DSAMP_MIPMAPLODBIAS doesn't compile!
-/*
-			pID3DDevice->SetTextureStageState(st, D3DSAMP_MIPMAPLODBIAS, *(DWORD*)(&tmp));
-*/
+			pID3DDevice->SetTextureStageState(st, D3DTSS_MIPMAPLODBIAS, *(DWORD*)(&tmp));
 		}
+
 		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrap != material.TextureLayer[st].TextureWrap)
 		{
 			u32 mode = D3DTADDRESS_WRAP;
