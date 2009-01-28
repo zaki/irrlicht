@@ -146,7 +146,7 @@ namespace core
 				return *this;
 			length = core::reciprocal_squareroot ( (f32)length );
 #else
-			const T length = core::reciprocal_squareroot ( (X*X + Y*Y + Z*Z) );
+			const f32 length = core::reciprocal_squareroot ( (f32)(X*X + Y*Y + Z*Z) );
 #endif
 			
 			X = (T)(X * length);
