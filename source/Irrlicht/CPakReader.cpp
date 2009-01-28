@@ -32,7 +32,7 @@ CArchiveLoaderPAK::~CArchiveLoaderPAK()
 //! returns true if the file maybe is able to be loaded by this class
 bool CArchiveLoaderPAK::isALoadableFileFormat(const core::string<c16>& filename) const
 {
-	return core::hasFileExtension ( filename, "zip", "pk3" );
+	return core::hasFileExtension ( filename, "pak" );
 }
 
 
@@ -66,6 +66,7 @@ IFileArchive* CArchiveLoaderPAK::createArchive(io::IReadFile* file, bool ignoreC
 	return archive;
 }
 
+
 //! Check if the file might be loaded by this class
 /** Check might look into the file.
 \param file File handle to check.
@@ -98,6 +99,7 @@ CPakReader::CPakReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
 	}
 }
 
+
 CPakReader::~CPakReader()
 {
 	if (File)
@@ -105,8 +107,7 @@ CPakReader::~CPakReader()
 }
 
 
-
-//! splits filename from zip file into useful filenames and paths
+//! splits filename into useful filenames and paths
 void CPakReader::extractFilename(SPakFileEntry* entry)
 {
 	s32 lorfn = 56; // length of real file name
@@ -194,7 +195,6 @@ bool CPakReader::scanLocalHeader()
 }
 
 
-
 //! opens a file by file name
 IReadFile* CPakReader::openFile(const core::string<c16>& filename)
 {
@@ -207,13 +207,11 @@ IReadFile* CPakReader::openFile(const core::string<c16>& filename)
 }
 
 
-
 //! opens a file by index
 IReadFile* CPakReader::openFile(s32 index)
 {
 	return createLimitReadFile(FileList[index].simpleFileName, File, FileList[index].pos, FileList[index].length);
 }
-
 
 
 //! returns count of files in archive
@@ -223,13 +221,11 @@ u32 CPakReader::getFileCount()
 }
 
 
-
 //! returns data of file
 const IFileArchiveEntry* CPakReader::getFileInfo(u32 index)
 {
 	return &FileList[index];
 }
-
 
 
 //! returns fileindex
@@ -260,7 +256,6 @@ s32 CPakReader::findFile(const core::string<c16>& filename)
 
 	return res;
 }
-
 
 
 } // end namespace io
