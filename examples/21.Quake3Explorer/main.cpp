@@ -102,9 +102,10 @@ struct GameData
 struct Q3Player : public IAnimationEndCallBack
 {
 	Q3Player ()
-	: WeaponNode ( 0 ), StartPositionCurrent ( 0 ), Mesh ( 0 ), Device ( 0 )
+	: Device(0), MapParent(0), Mesh(0), WeaponNode(0), StartPositionCurrent(0)
 	{
 		animation[0] = 0;
+		memset(Anim, 0, sizeof(TimeFire)*4);
 	}
 
 	void create (	IrrlichtDevice *device, 
@@ -123,12 +124,10 @@ struct Q3Player : public IAnimationEndCallBack
 	ISceneNode* MapParent;
 	IQ3LevelMesh* Mesh;
 	IAnimatedMeshSceneNode* WeaponNode;
-	c8 animation[64];
 	s32 StartPositionCurrent;
-	c8 buf[64];
-
 	TimeFire Anim[4];
-
+	c8 animation[64];
+	c8 buf[64];
 };
 
 
@@ -343,27 +342,27 @@ struct GUI
 	IGUICheckBox* FullScreen;
 	IGUICheckBox* Bit32;
 	IGUIScrollBar* MultiSample;
-	IGUIButton *SetVideoMode;
+	IGUIButton* SetVideoMode;
 
 	IGUIScrollBar* Tesselation;
 	IGUIScrollBar* Gamma;
 	IGUICheckBox* Collision;
-	IGUICheckBox * Visible_Map;
-	IGUICheckBox * Visible_Shader;
-	IGUICheckBox * Visible_Fog;
-	IGUICheckBox * Visible_Unresolved;
-	IGUIButton * Respawn;
+	IGUICheckBox* Visible_Map;
+	IGUICheckBox* Visible_Shader;
+	IGUICheckBox* Visible_Fog;
+	IGUICheckBox* Visible_Unresolved;
+	IGUIButton* Respawn;
 
-	IGUITable*	ArchiveList;
+	IGUITable* ArchiveList;
 	IGUIButton* ArchiveAdd;
 	IGUIButton* ArchiveRemove;
 	IGUIFileOpenDialog* ArchiveFileOpen;
 
-	IGUIListBox *MapList;
+	IGUIListBox* MapList;
 	IGUITreeView* SceneTree;
 	IGUIStaticText* StatusLine;
-	IGUIImage * Logo;
-	IGUIWindow * Window;
+	IGUIImage* Logo;
+	IGUIWindow* Window;
 
 };
 
@@ -410,7 +409,6 @@ private:
 
 	Q3Player Player[2];
 
-
 	struct SParticleImpact
 	{
 		u32 when;
@@ -431,19 +429,10 @@ private:
 /*!
 */
 CQuake3EventHandler::CQuake3EventHandler( GameData *game )
-: Game ( game )
+: Game(game), Mesh(0), MapParent(0), ShaderParent(0), ItemParent(0), UnresolvedParent(0),
+	BulletParent(0), FogParent(0), SkyNode(0), Meta(0)
 {
-	MapParent = 0;
-	ShaderParent = 0;
-	ItemParent = 0;
-	UnresolvedParent = 0;
-	FogParent = 0;
-	BulletParent = 0;
-	Meta = 0;
-	Mesh = 0;
-	SkyNode = 0;
-
-	
+	buf[0]=0;
 	//! Also use 16 Bit Textures for 16 Bit RenderDevice
 	if ( Game->deviceParam.Bits == 16 )
 	{
@@ -481,8 +470,8 @@ void CQuake3EventHandler::createTextures ()
 	video::ITexture* texture;
 	video::IImage* image;
 	u32 i;
-	s32 x;
-	s32 y;
+	u32 x;
+	u32 y;
 	u32 * data;
 	for ( i = 0; i != 8; ++i )
 	{
@@ -531,7 +520,6 @@ void CQuake3EventHandler::CreateGUI()
 {
 
 	IGUIEnvironment *env = Game->Device->getGUIEnvironment();
-	ISceneManager *smgr = Game->Device->getSceneManager ();
 	IVideoDriver * driver = Game->Device->getVideoDriver();
 
 	gui.drop();
@@ -746,7 +734,7 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 		{
 			io::IFileArchive * archive = fs->getFileArchive ( i );
 
-			u32 index = gui.ArchiveList->addRow ( -1 );
+			u32 index = gui.ArchiveList->addRow(0xffffffff);
 
 			gui.ArchiveList->setCellText ( index, 0, archive->getArchiveType () );
 			gui.ArchiveList->setCellText ( index, 1, archive->getArchiveName () );
@@ -761,14 +749,13 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 	{
 		gui.MapList->clear ();
 
-		IGUISpriteBank *bank = Game->Device->getGUIEnvironment()->getSpriteBank ( "sprite_q3map" );
+		IGUISpriteBank *bank = Game->Device->getGUIEnvironment()->getSpriteBank("sprite_q3map");
 		if ( 0 == bank )
-			bank = Game->Device->getGUIEnvironment()->addEmptySpriteBank ( "sprite_q3map" );
+			bank = Game->Device->getGUIEnvironment()->addEmptySpriteBank("sprite_q3map");
 
 		SGUISprite sprite;
 		SGUISpriteFrame frame;
 		core::rect<s32> r;
-
 
 		bank->getSprites().clear();
 		bank->getPositions().clear ();
@@ -782,7 +769,6 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 		fs->changeWorkingDirectoryTo ( "/maps/" );
 		io::IFileList *fileList = fs->createFileList ();
 		fs->setFileListSystem ( io::FILESYSTEM_NATIVE );
-
 
 		for ( i=0; i< fileList->getFileCount(); ++i)
 		{
@@ -924,8 +910,6 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 
 	Game->CurrentMapName = mapName;
 
-	IMeshBuffer *b0 = geometry->getMeshBuffer(0);
-
 	//create a collision list
 	Meta = 0;
 
@@ -933,6 +917,7 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	if (collision)
 		Meta = smgr->createMetaTriangleSelector(); 
 
+	//IMeshBuffer *b0 = geometry->getMeshBuffer(0);
 	//s32 minimalNodes = b0 ? core::s32_max ( 2048, b0->getVertexCount() / 32 ) : 2048;
 	s32 minimalNodes = 2048;
 
@@ -997,7 +982,7 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 void CQuake3EventHandler::addSceneTreeItem( ISceneNode * parent, IGUITreeViewNode* nodeParent)
 {
 	IGUITreeViewNode* node;
-	wchar_t *msg = (wchar_t*) buf;
+	wchar_t msg[128];
 
 	s32 imageIndex;
 	list<ISceneNode*>::ConstIterator it = parent->getChildren().begin();
@@ -1777,7 +1762,6 @@ void CQuake3EventHandler::Animate()
 {
 	u32 now = Game->Device->getTimer()->getTime();
 
-
 	Q3Player * player = Player + 0;
 
 	checkTimeFire ( player->Anim, 4, now );
@@ -1786,7 +1770,7 @@ void CQuake3EventHandler::Animate()
 	if ( player->Anim[0].flags & FIRED )
 	{
 		ISceneManager *smgr = Game->Device->getSceneManager ();
-		wchar_t *msg = (wchar_t*) buf;
+		wchar_t msg[128];
 		IVideoDriver * driver = Game->Device->getVideoDriver();
 
 		io::IAttributes * attr = smgr->getParameters();
@@ -1842,9 +1826,6 @@ void runGame ( GameData *game )
 		game->retVal = 0;
 		return; 
 	}
-
-	// these files are needed to run the explorer
-	io::IFileSystem *fs = game->Device->getFileSystem();
 
 	// create an event receiver based on current game data
 	CQuake3EventHandler *eventHandler = new CQuake3EventHandler( game );

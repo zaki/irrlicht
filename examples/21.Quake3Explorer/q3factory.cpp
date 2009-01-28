@@ -388,7 +388,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 					vector3df(0, 10, 0),
 					sceneNodeID
 					);
-			snprintf ( buf, 64, "%hs:%d", node->getName(),node->getID() );
+			snprintf ( buf, 64, "%s:%d", node->getName(),node->getID() );
 			//node2->setName ( buf );
 			sceneNodeID += 1;
 		}
