@@ -373,8 +373,9 @@ namespace video
 		by this.
 		\param color The background color for the render target.
 		\return True if sucessful and false if not. */
-		virtual bool setRenderTarget(E_RENDER_TARGET target, bool clearTarget,
-					bool clearZBuffer, SColor color) =0;
+		virtual bool setRenderTarget(E_RENDER_TARGET target, bool clearTarget=true,
+					bool clearZBuffer=true,
+					SColor color=video::SColor(0,0,0,0)) =0;
 
 		//! Sets a new viewport.
 		/** Every rendering operation is done into this new area.
