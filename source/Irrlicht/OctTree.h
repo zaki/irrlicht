@@ -32,9 +32,9 @@ public:
 	struct SMeshChunk : public scene::CMeshBuffer<T>
 	{
 		SMeshChunk ()
-			:scene::CMeshBuffer<T>()
+			: scene::CMeshBuffer<T>()
 		{
-			grab ();
+			scene::CMeshBuffer<T>::grab();
 		}
 
 		virtual ~SMeshChunk ()
