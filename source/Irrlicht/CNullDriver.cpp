@@ -321,9 +321,9 @@ void CNullDriver::renameTexture(ITexture* texture, const core::string<c16>& newN
 ITexture* CNullDriver::getTexture(const core::string<c16>& filename)
 {
 	// Identify textures by their absolute filenames if possible.
-	core::string<c16> absolutePath = FileSystem->getAbsolutePath(filename);
+	const core::string<c16> absolutePath = FileSystem->getAbsolutePath(filename);
 
-	ITexture* texture = findTexture(absolutePath );
+	ITexture* texture = findTexture(absolutePath);
 	if (texture)
 		return texture;
 
@@ -333,7 +333,7 @@ ITexture* CNullDriver::getTexture(const core::string<c16>& filename)
 		return texture;
 
 	// Now try to open the file using the complete path.
-	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath );
+	io::IReadFile* file = FileSystem->createAndOpenFile(absolutePath);
 
 	if(!file)
 	{
