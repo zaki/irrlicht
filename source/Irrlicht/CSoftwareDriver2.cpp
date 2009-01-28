@@ -1,4 +1,4 @@
-// Copyright (C) 2002-2008 Nikolaus Gebhardt / Thomas Alten
+// Copyright (C) 2002-2009 Nikolaus Gebhardt / Thomas Alten
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
@@ -1944,7 +1944,7 @@ u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 //! Returns the graphics card vendor name.
 core::stringc CBurningVideoDriver::getVendorInfo()
 {
-	return "Burningsvideo: Ing. Thomas Alten (c) 2006-2008";
+	return "Burningsvideo: Ing. Thomas Alten (c) 2006-2009";
 }
 
 

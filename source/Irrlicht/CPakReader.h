@@ -30,7 +30,7 @@ namespace io
 		u32 length;
 	};
 
-	//! Archiveloader capable of loading ZIP Archives
+	//! Archiveloader capable of loading PAK Archives
 	class CArchiveLoaderPAK : public IArchiveLoader
 	{
 	public:
