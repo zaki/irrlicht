@@ -674,7 +674,7 @@ s32 CQ3LevelMesh::setShaderFogMaterial( video::SMaterial &material, const tBSPFa
 	material.setTexture(1, 0);
 	material.setTexture(2, 0);
 	material.setTexture(3, 0);
-	material.ZBuffer = video::EMDF_DEPTH_LESS_EQUAL;
+	material.ZBuffer = video::ECFN_LESSEQUAL;
 	material.ZWriteEnable = false;
 	material.MaterialTypeParam = 0.f;
 
