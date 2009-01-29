@@ -216,7 +216,6 @@ private:
 	void readPass(io::IReadFile* file, OgreTechnique& technique);
 	void loadMaterials(io::IReadFile* file);
 	core::stringc getTextureFileName(const core::stringc& texture, core::stringc& model);
-	void setCurrentlyLoadingPath(io::IReadFile* file);
 	void clearMeshes();
 
 	io::IFileSystem* FileSystem;
@@ -225,7 +224,7 @@ private:
 	core::stringc Version;
 	bool SwapEndian;
 	core::array<OgreMesh> Meshes;
-	core::stringc CurrentlyLoadingFromPath;
+	core::string<c16> CurrentlyLoadingFromPath;
 
 	core::array<OgreMaterial> Materials;
 
