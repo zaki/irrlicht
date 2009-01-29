@@ -804,9 +804,6 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				}
 				break;
 			case charsToUIntD('T','R','A','N'):
-#ifdef LWO_READER_DEBUG
-				os::Printer::log("LWO loader: loading transparency.");
-#endif
 				{
 					if (FormatVersion==2)
 					{
@@ -828,12 +825,12 @@ void CLWOMeshFileLoader::readMat(u32 size)
 						size -= 2;
 						subsize -= 2;
 					}
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading transparency", core::stringc(mat->Transparency).c_str());
+#endif
 				}
 				break;
 			case charsToUIntD('V','T','R','N'):
-#ifdef LWO_READER_DEBUG
-				os::Printer::log("LWO loader: loading transparency.");
-#endif
 				{
 					File->read(&mat->Transparency, 4);
 #ifndef __BIG_ENDIAN__
@@ -841,6 +838,9 @@ void CLWOMeshFileLoader::readMat(u32 size)
 #endif
 					size -= 4;
 				}
+#ifdef LWO_READER_DEBUG
+				os::Printer::log("LWO loader: loading transparency", core::stringc(mat->Transparency).c_str());
+#endif
 				break;
 			case charsToUIntD('T','R','N','L'):
 #ifdef LWO_READER_DEBUG
@@ -928,7 +928,7 @@ void CLWOMeshFileLoader::readMat(u32 size)
 #endif
 					if (tmp16==1)
 						irrMat->BackfaceCulling=true;
-					if (tmp16==3)
+					else if (tmp16==3)
 						irrMat->BackfaceCulling=false;
 					size -= 2;
 				}
@@ -1572,8 +1572,15 @@ void CLWOMeshFileLoader::readMat(u32 size)
 						mat->Texture[currTexture].Map=Images[index-1];
 				}
 				break;
+			case charsToUIntD('P','R','O','J'): // define the projection type
+			case charsToUIntD('A','X','I','S'): // for cylindrical and spherical projections
+			case charsToUIntD('W','R','P','W'): // for cylindrical and spherical projections
+			case charsToUIntD('W','R','P','H'): // for cylindrical and spherical projections
 			default:
 				{
+#ifdef LWO_READER_DEBUG
+					os::Printer::log("LWO loader: skipping ", core::stringc((char*)&uiType, 4));
+#endif
 					File->seek(subsize, true);
 					size -= subsize;
 				}
@@ -1610,6 +1617,10 @@ void CLWOMeshFileLoader::readMat(u32 size)
 //			SceneManager->getVideoDriver()->makeNormalMapTexture(irrMat->getTexture(1));
 			irrMat->MaterialType=video::EMT_NORMAL_MAP_SOLID;
 		}
+	}
+	if (mat->Transparency != 0.f)
+	{
+		irrMat->MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
 	}
 }
 
