@@ -252,7 +252,6 @@ namespace video
 		SBurningShaderMaterial Material;
 
 		static const sVec4 NDCPlane[6];
-
 	};
 
 } // end namespace video
@@ -260,5 +259,4 @@ namespace video
 
 
 #endif
-
 

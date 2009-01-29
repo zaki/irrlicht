@@ -3,10 +3,10 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "IrrCompileConfig.h"
+#include "CSoftwareDriver2.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
-#include "CSoftwareDriver2.h"
 #include "SoftwareDriver2_helper.h"
 #include "CSoftwareTexture2.h"
 #include "CSoftware2MaterialRenderer.h"
