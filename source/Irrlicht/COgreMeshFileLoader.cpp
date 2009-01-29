@@ -23,31 +23,33 @@ namespace irr
 namespace scene
 {
 
-// Main Chunks
-const u16 COGRE_HEADER= 0x1000;
-const u16 COGRE_MESH= 0x3000;
+	enum OGRE_CHUNKS
+	{
+		// Main Chunks
+		COGRE_HEADER= 0x1000,
+		COGRE_MESH= 0x3000,
 
-// sub chunks of COGRE_MESH
-const u16 COGRE_SUBMESH= 0x4000;
-const u16 COGRE_GEOMETRY= 0x5000;
-const u16 COGRE_SKELETON_LINK= 0x6000;
-const u16 COGRE_BONE_ASSIGNMENT= 0x7000;
-const u16 COGRE_MESH_LOD= 0x8000;
-const u16 COGRE_MESH_BOUNDS= 0x9000;
-const u16 COGRE_MESH_SUBMESH_NAME_TABLE= 0xA000;
-const u16 COGRE_MESH_EDGE_LISTS= 0xB000;
+		// sub chunks of COGRE_MESH
+		COGRE_SUBMESH= 0x4000,
+		COGRE_GEOMETRY= 0x5000,
+		COGRE_SKELETON_LINK= 0x6000,
+		COGRE_BONE_ASSIGNMENT= 0x7000,
+		COGRE_MESH_LOD= 0x8000,
+		COGRE_MESH_BOUNDS= 0x9000,
+		COGRE_MESH_SUBMESH_NAME_TABLE= 0xA000,
+		COGRE_MESH_EDGE_LISTS= 0xB000,
 
-// sub chunks of COGRE_GEOMETRY
-const u16 COGRE_GEOMETRY_VERTEX_DECLARATION= 0x5100;
-const u16 COGRE_GEOMETRY_VERTEX_ELEMENT= 0x5110;
-const u16 COGRE_GEOMETRY_VERTEX_BUFFER= 0x5200;
-const u16 COGRE_GEOMETRY_VERTEX_BUFFER_DATA= 0x5210;
+		// sub chunks of COGRE_SUBMESH
+		COGRE_SUBMESH_OPERATION= 0x4010,
+		COGRE_SUBMESH_BONE_ASSIGNMENT= 0x4100,
+		COGRE_SUBMESH_TEXTURE_ALIAS= 0x4200,
 
-// sub chunks of COGRE_SUBMESH
-const u16 COGRE_SUBMESH_OPERATION= 0x4010;
-const u16 COGRE_SUBMESH_BONE_ASSIGNMENT= 0x4100;
-const u16 COGRE_SUBMESH_TEXTURE_ALIAS= 0x4200;
-
+		// sub chunks of COGRE_GEOMETRY
+		COGRE_GEOMETRY_VERTEX_DECLARATION= 0x5100,
+		COGRE_GEOMETRY_VERTEX_ELEMENT= 0x5110,
+		COGRE_GEOMETRY_VERTEX_BUFFER= 0x5200,
+		COGRE_GEOMETRY_VERTEX_BUFFER_DATA= 0x5210
+	};
 
 //! Constructor
 COgreMeshFileLoader::COgreMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver)
@@ -115,10 +117,10 @@ IAnimatedMesh* COgreMeshFileLoader::createMesh(io::IReadFile* file)
 	if (Mesh)
 		Mesh->drop();
 
-	Mesh = new SMesh();
-	setCurrentlyLoadingPath(file);
+	CurrentlyLoadingFromPath = FileSystem->getFileDir(file->getFileName());
 	loadMaterials(file);
 
+	Mesh = new SMesh();
 	if (readChunk(file))
 	{
 		// success
@@ -936,7 +938,7 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 #ifdef IRR_OGRE_LOADER_DEBUG
 	os::Printer::log("Load Materials");
 #endif
-	core::stringc token =meshFile->getFileName();
+	core::stringc token = meshFile->getFileName();
 	core::string<c16> filename = token.subString(0, token.size()-4) + L"material";
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename.c_str());
 
@@ -1105,23 +1107,6 @@ void COgreMeshFileLoader::readVector(io::IReadFile* file, ChunkData& data, core:
 	readFloat(file, data, out.Z);
 }
 
-void COgreMeshFileLoader::setCurrentlyLoadingPath(io::IReadFile* file)
-{
-	CurrentlyLoadingFromPath = file->getFileName();
-	int idx = CurrentlyLoadingFromPath.findLast('/');
-
-	if (idx != -1)
-	{
-		CurrentlyLoadingFromPath = CurrentlyLoadingFromPath.subString(0, idx);
-	}
-	else
-	{
-		idx = CurrentlyLoadingFromPath.findLast('\\');
-
-		if (idx != -1)
-			CurrentlyLoadingFromPath = CurrentlyLoadingFromPath.subString(0, idx);
-	}
-}
 
 void COgreMeshFileLoader::clearMeshes()
 {
