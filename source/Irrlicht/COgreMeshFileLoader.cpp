@@ -732,20 +732,21 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 
 	getMaterialToken(file, token);
 	u32 inBlocks=1;
+	u32 textureUnit=0;
 	while(inBlocks)
 	{
 		if (token=="ambient")
 			pass.AmbientTokenColor=readColor(file, pass.Material.AmbientColor);
 		else if (token=="diffuse")
-			pass.DiffuseTokenColor=readColor(file, pass.Material.AmbientColor);
+			pass.DiffuseTokenColor=readColor(file, pass.Material.DiffuseColor);
 		else if (token=="specular")
 		{
-			pass.SpecularTokenColor=readColor(file, pass.Material.AmbientColor);
+			pass.SpecularTokenColor=readColor(file, pass.Material.SpecularColor);
 			getMaterialToken(file, token);
 			pass.Material.Shininess=core::fast_atof(token.c_str());
 		}
 		else if (token=="emissive")
-			pass.EmissiveTokenColor=readColor(file, pass.Material.AmbientColor);
+			pass.EmissiveTokenColor=readColor(file, pass.Material.EmissiveColor);
 		else if (token=="scene_blend")
 		{ // TODO: Choose correct values
 			getMaterialToken(file, token);
@@ -763,7 +764,8 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		else if (token=="depth_check")
 		{
 			getMaterialToken(file, token);
-			pass.Material.ZBuffer=((token=="on")?video::ECFN_LESSEQUAL:video::ECFN_NEVER);
+			if (token!="on")
+				pass.Material.ZBuffer=video::ECFN_NEVER;
 		}
 		else if (token=="depth_write")
 		{
@@ -773,6 +775,27 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		else if (token=="depth_func")
 		{
 			getMaterialToken(file, token); // Function name
+			if (token=="always_fail")
+				pass.Material.ZBuffer=video::ECFN_NEVER;
+			else if (token=="always_pass")
+				pass.Material.ZBuffer=video::ECFN_ALWAYS;
+			else if (token=="equal")
+				pass.Material.ZBuffer=video::ECFN_EQUAL;
+			else if (token=="greater")
+				pass.Material.ZBuffer=video::ECFN_GREATER;
+			else if (token=="greater_equal")
+				pass.Material.ZBuffer=video::ECFN_GREATEREQUAL;
+			else if (token=="less")
+				pass.Material.ZBuffer=video::ECFN_LESS;
+			else if (token=="less_equal")
+				pass.Material.ZBuffer=video::ECFN_LESSEQUAL;
+			else if (token=="not_equal")
+				pass.Material.ZBuffer=video::ECFN_NOTEQUAL;
+		}
+		else if (token=="normalise_normals")
+		{
+			getMaterialToken(file, token);
+			pass.Material.NormalizeNormals=(token=="on");
 		}
 		else if (token=="depth_bias")
 		{
@@ -782,6 +805,18 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		{
 			getMaterialToken(file, token); // function name
 			getMaterialToken(file, token); // value
+			pass.Material.MaterialTypeParam=core::fast_atof(token.c_str());
+		}
+		else if (token=="alpha_to_coverage")
+		{
+			getMaterialToken(file, token);
+			if (token=="on")
+				pass.Material.AntiAliasing |= video::EAAM_ALPHA_TO_COVERAGE;
+		}
+		else if (token=="colour_write")
+		{
+			getMaterialToken(file, token);
+			pass.Material.ColorMask = (token=="on")?video::ECP_ALL:video::ECP_NONE;
 		}
 		else if (token=="cull_hardware")
 		{
@@ -805,13 +840,8 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 		else if (token=="polygon_mode")
 		{
 			getMaterialToken(file, token);
-			// We take points as wireframe
-			pass.Material.Wireframe=(token!="solid");
-		}
-		else if (token=="colour_write")
-		{
-			getMaterialToken(file, token);
-			pass.ColorWrite=(token=="on");
+			pass.Material.Wireframe=(token=="wireframe");
+			pass.Material.PointCloud=(token=="points");
 		}
 		else if (token=="max_lights")
 		{
@@ -857,8 +887,54 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 					getMaterialToken(file, pass.Texture.MipMaps, true);
 					getMaterialToken(file, pass.Texture.Alpha, true);
 				}
+				else if (token=="filtering")
+				{
+					getMaterialToken(file, token);
+					pass.Material.TextureLayer[textureUnit].AnisotropicFilter=0;
+					if (token=="point")
+					{
+						pass.Material.TextureLayer[textureUnit].BilinearFilter=false;
+						pass.Material.TextureLayer[textureUnit].TrilinearFilter=false;
+						getMaterialToken(file, token);
+						getMaterialToken(file, token);
+					}
+					else if (token=="linear")
+					{
+						getMaterialToken(file, token);
+						if (token=="point")
+						{
+							pass.Material.TextureLayer[textureUnit].BilinearFilter=false;
+							pass.Material.TextureLayer[textureUnit].TrilinearFilter=false;
+							getMaterialToken(file, token);
+						}
+						else
+						{
+							pass.Material.TextureLayer[textureUnit].BilinearFilter=true;
+							getMaterialToken(file, token);
+							pass.Material.TextureLayer[textureUnit].TrilinearFilter=(token=="linear");
+						}
+					}
+					else
+					{
+						pass.Material.TextureLayer[textureUnit].BilinearFilter=(token=="bilinear");
+						pass.Material.TextureLayer[textureUnit].TrilinearFilter=(token=="trilinear");
+						pass.Material.TextureLayer[textureUnit].AnisotropicFilter=(token=="anisotropic")?2:1;
+					}
+				}
+				else if (token=="max_anisotropy")
+				{
+					getMaterialToken(file, token);
+					pass.Material.TextureLayer[textureUnit].AnisotropicFilter=(u8)core::strtol10(token.c_str());
+				}
 				else if (token=="texture_alias")
+				{
 					getMaterialToken(file, pass.Texture.Alias);
+				}
+				else if (token=="mipmap_bias")
+				{
+					getMaterialToken(file, token);
+					pass.Material.TextureLayer[textureUnit].LODBias=(s8)core::fast_atof(token.c_str());
+				}
 				else if (token=="colour_op")
 				{ // TODO: Choose correct values
 					getMaterialToken(file, token);
@@ -875,6 +951,7 @@ void COgreMeshFileLoader::readPass(io::IReadFile* file, OgreTechnique& technique
 				}
 				getMaterialToken(file, token);
 			}
+			++textureUnit;
 		}
 		else if (token=="shadow_caster_program_ref")
 		{
