@@ -153,7 +153,11 @@ int main(int argumentCount, char * arguments[])
 			}
 		}
 		closeTestLog();
+#ifdef _IRR_WINDOWS_
 		(void)system("tests.log");
+#else
+		(void)system("more tests.log");
+#endif
 	}
 
 	return fails;
