@@ -92,7 +92,7 @@ private:
 	{
 		OgrePass() : AmbientTokenColor(false),
 			DiffuseTokenColor(false), SpecularTokenColor(false),
-			EmissiveTokenColor(false), ColorWrite(true),
+			EmissiveTokenColor(false),
 			MaxLights(8), PointSize(1.0f), PointSprites(false),
 			PointSizeMin(0), PointSizeMax(0) {}
 
@@ -102,7 +102,6 @@ private:
 		bool DiffuseTokenColor;
 		bool SpecularTokenColor;
 		bool EmissiveTokenColor;
-		bool ColorWrite;
 		u32 MaxLights;
 		f32 PointSize;
 		bool PointSprites;
