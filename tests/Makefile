@@ -37,3 +37,12 @@ clean_linux clean_win32:
 	@$(RM) $(DESTPATH)
 
 .PHONY: all all_win32 clean clean_linux clean_win32
+
+# Create dependency files for automatic recompilation
+%.d:%.cpp
+	$(CXX) $(CPPFLAGS) -MM -MF $@ $<
+
+ifneq ($(MAKECMDGOALS),clean)
+-include $(OBJ:.o=.d)
+endif
+
