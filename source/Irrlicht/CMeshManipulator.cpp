@@ -387,10 +387,6 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 
 
 //! Creates a planar texture mapping on the mesh
-//! \param mesh: Mesh on which the operation is performed.
-//! \param resolution: resolution of the planar mapping. This is the value
-//! specifying which is the releation between world space and
-//! texture coordinate space.
 void CMeshManipulator::makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution=0.01f) const
 {
 	if (!mesh)
@@ -399,42 +395,48 @@ void CMeshManipulator::makePlanarTextureMapping(scene::IMesh* mesh, f32 resoluti
 	const u32 bcount = mesh->getMeshBufferCount();
 	for ( u32 b=0; b<bcount; ++b)
 	{
-		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		u32 idxcnt = buffer->getIndexCount();
-		u16* idx = buffer->getIndices();
+		makePlanarTextureMapping(mesh->getMeshBuffer(b), resolution);
+	}
+}
 
-		for (u32 i=0; i<idxcnt; i+=3)
+
+//! Creates a planar texture mapping on the meshbuffer
+void CMeshManipulator::makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolution) const
+{
+	u32 idxcnt = buffer->getIndexCount();
+	u16* idx = buffer->getIndices();
+
+	for (u32 i=0; i<idxcnt; i+=3)
+	{
+		core::plane3df p(buffer->getPosition(idx[i+0]), buffer->getPosition(idx[i+1]), buffer->getPosition(idx[i+2]));
+		p.Normal.X = fabsf(p.Normal.X);
+		p.Normal.Y = fabsf(p.Normal.Y);
+		p.Normal.Z = fabsf(p.Normal.Z);
+		// calculate planar mapping worldspace coordinates
+
+		if (p.Normal.X > p.Normal.Y && p.Normal.X > p.Normal.Z)
 		{
-			core::plane3df p(buffer->getPosition(idx[i+0]), buffer->getPosition(idx[i+1]), buffer->getPosition(idx[i+2]));
-			p.Normal.X = fabsf(p.Normal.X);
-			p.Normal.Y = fabsf(p.Normal.Y);
-			p.Normal.Z = fabsf(p.Normal.Z);
-			// calculate planar mapping worldspace coordinates
-
-			if (p.Normal.X > p.Normal.Y && p.Normal.X > p.Normal.Z)
+			for (u32 o=0; o!=3; ++o)
 			{
-				for (u32 o=0; o!=3; ++o)
-				{
-					buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).Y * resolution;
-					buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Z * resolution;
-				}
+				buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).Y * resolution;
+				buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Z * resolution;
 			}
-			else
-			if (p.Normal.Y > p.Normal.X && p.Normal.Y > p.Normal.Z)
+		}
+		else
+		if (p.Normal.Y > p.Normal.X && p.Normal.Y > p.Normal.Z)
+		{
+			for (u32 o=0; o!=3; ++o)
 			{
-				for (u32 o=0; o!=3; ++o)
-				{
-					buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).X * resolution;
-					buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Z * resolution;
-				}
+				buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).X * resolution;
+				buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Z * resolution;
 			}
-			else
+		}
+		else
+		{
+			for (u32 o=0; o!=3; ++o)
 			{
-				for (u32 o=0; o!=3; ++o)
-				{
-					buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).X * resolution;
-					buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Y * resolution;
-				}
+				buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).X * resolution;
+				buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Y * resolution;
 			}
 		}
 	}

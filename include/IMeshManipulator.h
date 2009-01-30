@@ -119,6 +119,13 @@ namespace scene
 		and texture coordinate space. */
 		virtual void makePlanarTextureMapping(IMesh* mesh, f32 resolution=0.001f) const = 0;
 
+		//! Creates a planar texture mapping on the meshbuffer
+		/** \param meshbuffer: Buffer on which the operation is performed.
+		\param resolution: resolution of the planar mapping. This is
+		the value specifying which is the relation between world space
+		and texture coordinate space. */
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const = 0;
+
 		//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 		/** This is useful if you want to draw tangent space normal
 		mapped geometry because it calculates the tangent and binormal
