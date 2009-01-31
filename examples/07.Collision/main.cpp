@@ -59,7 +59,7 @@ int main()
 	device->getFileSystem()->addZipFileArchive("../../media/map-20kdm2.pk3");
 
 	scene::IAnimatedMesh* q3levelmesh = smgr->getMesh("20kdm2.bsp");
-	scene::ISceneNode* q3node = 0;
+	scene::IMeshSceneNode* q3node = 0;
 
 	if (q3levelmesh)
 		q3node = smgr->addOctTreeSceneNode(q3levelmesh->getMesh(0));
@@ -88,7 +88,7 @@ int main()
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
 		selector = smgr->createOctTreeTriangleSelector(
-				q3levelmesh->getMesh(0), q3node, 128);
+				q3node->getMesh(), q3node, 128);
 		q3node->setTriangleSelector(selector);
 	}
 
