@@ -71,6 +71,8 @@ namespace scene
 		virtual video::SColor getFootColour () const { return FootColour; }
 		virtual video::SColor getTailColour () const { return TailColour; }
 
+		virtual IMeshBuffer * getMeshBuffer(void) const { return Buffer; } 
+
 	private:
 		void addToBuffer(const video::S3DVertex& v);
 		void constructLight();

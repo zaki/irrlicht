@@ -13,6 +13,8 @@ namespace irr
 {
 namespace scene
 {
+	class IMeshBuffer;
+
 	class IVolumeLightSceneNode : public ISceneNode
 	{
 	public:
@@ -38,6 +40,8 @@ namespace scene
 
 		virtual video::SColor getFootColour () const =0;
 		virtual video::SColor getTailColour () const =0;
+
+		virtual IMeshBuffer * getMeshBuffer(void) const =0; 
 	};
 
 } // end namespace scene
