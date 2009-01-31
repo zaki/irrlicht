@@ -199,6 +199,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\enumerateImageManipulators.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\exports.cpp"
 				>
 			</File>

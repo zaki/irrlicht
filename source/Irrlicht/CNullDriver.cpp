@@ -193,6 +193,38 @@ void CNullDriver::addExternalImageWriter(IImageWriter* writer)
 }
 
 
+//! Retrieve the number of image loaders
+u32 CNullDriver::getImageLoaderCount() const
+{
+	return SurfaceLoader.size();
+}
+
+
+//! Retrieve the given image loader
+IImageLoader* CNullDriver::getImageLoader(u32 n)
+{
+	if(n < SurfaceLoader.size())
+		return SurfaceLoader[n];
+	return 0;
+}
+
+
+//! Retrieve the number of image writers
+u32 CNullDriver::getImageWriterCount() const
+{
+	return SurfaceWriter.size();
+}
+
+
+//! Retrieve the given image writer
+IImageWriter* CNullDriver::getImageWriter(u32 n)
+{
+	if(n < SurfaceWriter.size())
+		return SurfaceWriter[n];
+	return 0;
+}
+
+
 //! deletes all textures
 void CNullDriver::deleteAllTextures()
 {
@@ -1291,21 +1323,21 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 //! Creates an empty software image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 {
-        return new CImage(format, size);
+		return new CImage(format, size);
 }
 
 
 //! Creates a software image from another image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, IImage *imageToCopy)
 {
-        return new CImage(format, imageToCopy);
+		return new CImage(format, imageToCopy);
 }
 
 
 //! Creates a software image from part of another image.
 IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32>& pos, const core::dimension2d<u32>& size)
 {
-        return new CImage(imageToCopy, pos, size);
+		return new CImage(imageToCopy, pos, size);
 }
 
 

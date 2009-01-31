@@ -173,6 +173,26 @@ namespace video
 		\return Matrix describing the transformation. */
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const =0;
 
+		//! Retrieve the number of image loaders
+		/** \return Number of image loaders */
+		virtual u32 getImageLoaderCount() const = 0;
+
+		//! Retrieve the given image loader
+		/** \param n The index of the loader to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified loader, 0 if the index is uncorrect. */
+		virtual IImageLoader* getImageLoader(u32 n) = 0;
+
+		//! Retrieve the number of image writers
+		/** \return Number of image writers */
+		virtual u32 getImageWriterCount() const = 0;
+
+		//! Retrieve the given image writer
+		/** \param n The index of the writer to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified writer, 0 if the index is uncorrect. */
+		virtual IImageWriter* getImageWriter(u32 n) = 0;
+
 		//! Sets a material.
 		/** All 3d drawing functions will draw geometry using this material thereafter.
 		\param material: Material to be used from now on. */

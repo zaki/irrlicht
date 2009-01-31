@@ -60,6 +60,18 @@ namespace video
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
 
+		//! Retrieve the number of image loaders
+		virtual u32 getImageLoaderCount() const;
+
+		//! Retrieve the given image loader
+		virtual IImageLoader* getImageLoader(u32 n);
+
+		//! Retrieve the number of image writers
+		virtual u32 getImageWriterCount() const;
+
+		//! Retrieve the given image writer
+		virtual IImageWriter* getImageWriter(u32 n);
+
 		//! sets a material
 		virtual void setMaterial(const SMaterial& material);
 
