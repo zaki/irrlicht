@@ -22,8 +22,8 @@ namespace scene
 //! constructor
 COctTreeSceneNode::COctTreeSceneNode(ISceneNode* parent, ISceneManager* mgr,
 					 s32 id, s32 minimalPolysPerNode)
-: ISceneNode(parent, mgr, id), StdOctTree(0), LightMapOctTree(0), TangentsOctTree(0),
-	MinimalPolysPerNode(minimalPolysPerNode)
+: IMeshSceneNode(parent, mgr, id), StdOctTree(0), LightMapOctTree(0), TangentsOctTree(0),
+	MinimalPolysPerNode(minimalPolysPerNode), Mesh(0)
 {
 #ifdef _DEBUG
 	setDebugName("COctTreeSceneNode");
@@ -279,6 +279,9 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 
 	deleteTree();
 
+	Mesh = mesh;
+	Mesh->grab();
+
 	u32 beginTime = os::Timer::getRealTime();
 
 	u32 nodeCount = 0;
@@ -486,7 +489,31 @@ void COctTreeSceneNode::deleteTree()
 	TangentsMeshes.clear();
 
 	Materials.clear();
+
+	if(Mesh)
+		Mesh->drop();
 }
+
+void COctTreeSceneNode::setMesh(IMesh* mesh)
+{
+	createTree(mesh);
+}
+
+IMesh* COctTreeSceneNode::getMesh(void)
+{
+	return Mesh;
+}
+
+void COctTreeSceneNode::setReadOnlyMaterials(bool readonly)
+{
+	// Do nothing
+}
+
+bool COctTreeSceneNode::isReadOnlyMaterials() const
+{
+	return false;
+}
+
 
 } // end namespace scene
 } // end namespace irr

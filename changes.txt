@@ -463,6 +463,8 @@ Changes in version 1.6, TA
 
 Changes in version 1.6
 
+ - Octtree scene nodes are now IMeshSceneNodes rather than ISceneNodes, and so you can call getMesh() on them.
+
  - New scene parameter B3D_LOADER_IGNORE_MIPMAP_FLAG to ignore the often missing mipmap flag in b3d files. If this parameter is true, the old pre Irrlicht-1.5 behavior is restored.
 
  - Added Mipmap LOD Bias attribute to MaterialLayer.

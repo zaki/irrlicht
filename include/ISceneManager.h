@@ -496,7 +496,7 @@ namespace scene
 		\param alsoAddIfMeshPointerZero: Add the scene node even if a 0 pointer is passed.
 		\return Pointer to the OctTree if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual ISceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+		virtual IMeshSceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
 
 		//! Adds a scene node for rendering using a octtree to the scene graph.
@@ -512,7 +512,7 @@ namespace scene
 		\param alsoAddIfMeshPointerZero: Add the scene node even if a 0 pointer is passed.
 		\return Pointer to the octtree if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual ISceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
+		virtual IMeshSceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
 
 		//! Adds a camera scene node to the scene graph and sets it as active camera.
