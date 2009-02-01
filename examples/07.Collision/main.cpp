@@ -148,14 +148,15 @@ int main()
 	// when used with the gravity of (0, -10, 0) in the collision response animator.
 	scene::ICameraSceneNode* camera =
 		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, ID_IsNotPickable, 0, 0, true, 3.f);
-	camera->setPosition(core::vector3df(-100,50,-150));
+	camera->setPosition(core::vector3df(50,50,-60));
+	camera->setTarget(core::vector3df(-70,30,-60));
 
 	if (selector)
 	{
 		scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
 			selector, camera, core::vector3df(30,50,30),
 			core::vector3df(0,-10,0),
-			core::vector3df(0,50,0));
+			core::vector3df(0,30,0));
 		selector->drop(); // As soon as we're done with the selector, drop it.
 		camera->addAnimator(anim);
 		anim->drop();  // And likewise, drop the animator when we're done referring to it.
