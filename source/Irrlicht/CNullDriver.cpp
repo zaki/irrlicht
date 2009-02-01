@@ -1595,8 +1595,10 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	outMaterial.FrontfaceCulling = attr->getAttributeAsBool("FrontfaceCulling");
 	outMaterial.FogEnable = attr->getAttributeAsBool("FogEnable");
 	outMaterial.NormalizeNormals = attr->getAttributeAsBool("NormalizeNormals");
+	// default 0 is ok
 	outMaterial.AntiAliasing = attr->getAttributeAsInt("AntiAliasing");
-	outMaterial.ColorMask = attr->getAttributeAsInt("ColorMask");
+	if (attr->existsAttribute("ColorMask"))
+		outMaterial.ColorMask = attr->getAttributeAsInt("ColorMask");
 	prefix = "BilinearFilter";
 	if (attr->existsAttribute(prefix.c_str())) // legacy
 		outMaterial.setFlag(EMF_BILINEAR_FILTER, attr->getAttributeAsBool(prefix.c_str()));
@@ -1622,6 +1624,7 @@ void CNullDriver::fillMaterialStructureFromAttributes(video::SMaterial& outMater
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		outMaterial.TextureLayer[i].TextureWrap = (E_TEXTURE_CLAMP)attr->getAttributeAsEnumeration((prefix+core::stringc(i+1)).c_str(), aTextureClampNames);
 
+	// default 0 is ok
 	prefix="LODBias";
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		outMaterial.TextureLayer[i].LODBias = attr->getAttributeAsInt((prefix+core::stringc(i+1)).c_str());
