@@ -463,6 +463,10 @@ Changes in version 1.6, TA
 
 Changes in version 1.6
 
+ - ISceneCollisionManager::getSceneNodeAndCollisionPointFromRay() allows selection by BB and triangle on a heirarchy of scene nodes.
+
+ - Triangle selectors created from animated mesh scene nodes will update themselves as required to stay in sync with the node.
+
  - IVideoDriver has methods to enumerate the available image loaders and writers.
 
  - Octtree scene nodes are now IMeshSceneNodes rather than ISceneNodes, and so you can call getMesh() on them.

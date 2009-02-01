@@ -1662,6 +1662,16 @@ ITriangleSelector* CSceneManager::createTriangleSelector(IMesh* mesh, ISceneNode
 }
 
 
+//! Creates a simple and updatable ITriangleSelector, based on a the mesh owned by an
+//! animated scene node
+ITriangleSelector* CSceneManager::createTriangleSelector(IAnimatedMeshSceneNode* node)
+{
+	if(!node || !node->getMesh())
+		return 0;
+
+	return new CTriangleSelector(node);
+}
+
 //! Creates a simple dynamic ITriangleSelector, based on a axis aligned bounding box.
 ITriangleSelector* CSceneManager::createTriangleSelectorFromBoundingBox(ISceneNode* node)
 {
