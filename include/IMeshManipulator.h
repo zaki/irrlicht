@@ -117,14 +117,23 @@ namespace scene
 		\param resolution: resolution of the planar mapping. This is
 		the value specifying which is the relation between world space
 		and texture coordinate space. */
-		virtual void makePlanarTextureMapping(IMesh* mesh, f32 resolution=0.001f) const = 0;
+		virtual void makePlanarTextureMapping(IMesh* mesh, f32 resolution=0.001f) const =0;
 
 		//! Creates a planar texture mapping on the meshbuffer
 		/** \param meshbuffer: Buffer on which the operation is performed.
 		\param resolution: resolution of the planar mapping. This is
 		the value specifying which is the relation between world space
 		and texture coordinate space. */
-		virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const = 0;
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const =0;
+
+		//! Creates a planar texture mapping on the meshbuffer
+		/** This method is currently implemented towards the LWO planar mapping. A more general biasing might be required.
+		\param meshbuffer Buffer on which the operation is performed.
+		\param resolutionS Resolution of the planar mapping in horizontal direction. This is the ratio between object space and texture space.
+		\param resolutionT Resolution of the planar mapping in vertical direction. This is the ratio between object space and texture space.
+		\param axis The axis along which the texture is projected. The allowed values are 0 (X), 1(Y), and 2(Z).
+		*/
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis) const =0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 		/** This is useful if you want to draw tangent space normal

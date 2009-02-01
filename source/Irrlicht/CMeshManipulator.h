@@ -88,6 +88,9 @@ public:
 	//! Creates a planar texture mapping on the meshbuffer
 	virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const;
 
+	//! Creates a planar texture mapping on the meshbuffer
+	void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis) const;
+
 	//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const;
 
