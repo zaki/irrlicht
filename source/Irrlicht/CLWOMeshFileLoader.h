@@ -8,7 +8,6 @@
 #include "IMeshLoader.h"
 #include "SMeshBuffer.h"
 #include "irrString.h"
-#include "irrMap.h"
 
 namespace irr
 {
@@ -53,6 +52,7 @@ private:
 	void readObj1(u32 size);
 	void readTagMapping(u32 size);
 	void readVertexMapping(u32 size);
+	void readDiscVertexMapping (u32 size);
 	void readObj2(u32 size);
 	void readMat(u32 size);
 	u32 readString(core::stringc& name, u32 size=0);
@@ -68,8 +68,13 @@ private:
 
 	core::array<core::vector3df> Points;
 	core::array<core::array<u32> > Indices;
+	core::array<core::stringc> UvName;
+	core::array<core::array<u32> > UvIndex;
+	core::array<core::stringc> DUvName;
+	core::array<core::array<u32> > VmPolyPointsIndex;
+	core::array<core::array<core::vector2df> > VmCoordsIndex;
+		
 	core::array<u16> MaterialMapping;
-	core::map<core::stringc, u32> VMap;
 	core::array<core::array<core::vector2df> > TCoords;
 	core::array<tLWOMaterial*> Materials;
 	core::array<core::stringc> Images;
