@@ -443,6 +443,43 @@ void CMeshManipulator::makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 
 }
 
 
+//! Creates a planar texture mapping on the meshbuffer
+void CMeshManipulator::makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis) const
+{
+	u32 idxcnt = buffer->getIndexCount();
+	u16* idx = buffer->getIndices();
+
+	for (u32 i=0; i<idxcnt; i+=3)
+	{
+		// calculate planar mapping worldspace coordinates
+		if (axis==0)
+		{
+			for (u32 o=0; o!=3; ++o)
+			{
+				buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).Z * resolutionS;
+				buffer->getTCoords(idx[i+o]).Y = 0.5f+buffer->getPosition(idx[i+o]).Y * resolutionT;
+			}
+		}
+		else if (axis==1)
+		{
+			for (u32 o=0; o!=3; ++o)
+			{
+				buffer->getTCoords(idx[i+o]).X = 0.5f+buffer->getPosition(idx[i+o]).X * resolutionS;
+				buffer->getTCoords(idx[i+o]).Y = 0.5f+buffer->getPosition(idx[i+o]).Z * resolutionT;
+			}
+		}
+		else if (axis==2)
+		{
+			for (u32 o=0; o!=3; ++o)
+			{
+				buffer->getTCoords(idx[i+o]).X = 0.5f+buffer->getPosition(idx[i+o]).X * resolutionS;
+				buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Y * resolutionT;
+			}
+		}
+	}
+}
+
+
 //! Creates a copy of the mesh, which will only consist of unique primitives
 IMesh* CMeshManipulator::createMeshUniquePrimitives(IMesh* mesh) const
 {
