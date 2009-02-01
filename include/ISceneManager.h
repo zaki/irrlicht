@@ -1170,6 +1170,14 @@ namespace scene
 		See IReferenceCounted::drop() for more information. */
 		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node) = 0;
 
+		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
+		//! Details of the mesh associated with the node will be extracted internally.
+		//! Call ITriangleSelector::update() to have the triangle selector updated based
+		//! on the current frame of the animated mesh scene node.
+		//! \param: The animated mesh scene node from which to build the selector
+		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node) = 0;
+
+
 		//! Creates a simple dynamic ITriangleSelector, based on a axis aligned bounding box.
 		/** Triangle selectors
 		can be used for doing collision detection. Every time when triangles are

@@ -327,6 +327,13 @@ namespace scene
 		//! Creates a simple ITriangleSelector, based on a mesh.
 		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node);
 
+		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
+		//! Details of the mesh associated with the node will be extracted internally.
+		//! Call ITriangleSelector::update() to have the triangle selector updated based
+		//! on the current frame of the animated mesh scene node.
+		//! \param: The animated mesh scene node from which to build the selector
+		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node);
+
 		//! Creates a simple ITriangleSelector, based on a mesh.
 		virtual ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode);

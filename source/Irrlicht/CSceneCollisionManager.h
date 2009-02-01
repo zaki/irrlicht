@@ -32,9 +32,8 @@ namespace scene
 
 		//! Returns the nearest scene node which collides with a 3d ray and 
 		//! which id matches a bitmask. 
-		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> & ray,
-												  s32 idBitMask=0, 
-												  bool bNoDebugObjects = false);
+		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> ray,	
+										s32 idBitMask=0, bool bNoDebugObjects = false);
 
 		//! Returns the scene node, at which the overgiven camera is looking at and
 		//! which id matches the bitmask.
@@ -69,6 +68,17 @@ namespace scene
 		virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
 			const core::vector3df & pos, ICameraSceneNode* camera=0);
 
+		//! Gets the scene node and nearest collision point for a ray based on
+		//! the nodes' id bitmasks, bounding boxes and triangle selectors.
+		virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(
+								core::line3df ray,
+								core::vector3df & outCollisionPoint,
+								core::triangle3df & outTriangle,
+								s32 idBitMask = 0,
+								ISceneNode * collisionRootNode = 0,
+								bool noDebugObjects = false);
+
+
 	private:
 
 		//! recursive method for going through all scene nodes
@@ -78,6 +88,17 @@ namespace scene
 					   bool bNoDebugObjects,
 					   f32& outbestdistance,
 					   ISceneNode*& outbestnode);
+
+		//! recursive method for going through all scene nodes
+		void getPickedNodeFromBBAndSelector(ISceneNode * root,
+						const core::line3df & ray,
+						s32 bits,
+						bool noDebugObjects,
+						f32 & outBestDistanceSquared,
+						ISceneNode * & outBestNode,
+						core::vector3df & outBestCollisionPoint,
+						core::triangle3df & outBestTriangle);
+
 
 		struct SCollisionData
 		{

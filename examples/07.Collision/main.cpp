@@ -1,15 +1,14 @@
 /** Example 007 Collision
 
-In this tutorial, I will show how to detect collisions with the Irrlicht Engine.
-I will describe 3 methods: Automatic collision detection for moving through 3d
-worlds with stair climbing and sliding, manual triangle picking, and manual
-scene node picking.
+We will describe 2 methods: Automatic collision detection for moving through 3d worlds
+with stair climbing and sliding, and manual scene node and triangle picking using a
+ray.  In this case, we will use a ray coming out from the camera, but you can use
+any ray.
 
 To start, we take the program from tutorial 2, which loads and displays a quake
-3 level. We will use the level to walk in it and to pick triangles from it. In
-addition we'll place 3 animated models into it for scene node picking. The
-following code starts up the engine and loads a quake 3 level. I will not
-explain it, because it should already be known from tutorial 2.
+3 level. We will use the level to walk in it and to pick triangles from. In
+addition we'll place 3 animated models into it for triangle picking. The
+following code starts up the engine and loads a quake 3 level, as per tutorial 2.
 */
 #include <irrlicht.h>
 #include <iostream>
@@ -19,6 +18,22 @@ using namespace irr;
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
 #endif
+
+enum
+{
+	// I use this ISceneNode ID to indicate a scene node that is
+	// not pickable by getSceneNodeAndCollisionPointFromRay()
+	ID_IsNotPickable = 0,
+
+	// I use this flag in ISceneNode IDs to indicate that the
+	// scene node can be picked by ray selection.
+	IDFlag_IsPickable = 1 << 0,
+
+	// I use this flag in ISceneNode IDs to indicate that the
+	// scene node can be highlighted.  In this example, the 
+	// homonids can be highlighted, but the level mesh can't.
+	IDFlag_IsHighlightable = 1 << 1
+};
 
 int main()
 {
@@ -61,10 +76,9 @@ int main()
 	scene::IAnimatedMesh* q3levelmesh = smgr->getMesh("20kdm2.bsp");
 	scene::IMeshSceneNode* q3node = 0;
 
+	// The Quake mesh is pickable, but doesn't get highlighted.
 	if (q3levelmesh)
-		q3node = smgr->addOctTreeSceneNode(q3levelmesh->getMesh(0));
-
-	q3node->setID(0); // Make it an invalid target for bounding box collision
+		q3node = smgr->addOctTreeSceneNode(q3levelmesh->getMesh(0), 0, IDFlag_IsPickable);
 
 	/*
 	So far so good, we've loaded the quake 3 level like in tutorial 2. Now,
@@ -90,11 +104,12 @@ int main()
 		selector = smgr->createOctTreeTriangleSelector(
 				q3node->getMesh(), q3node, 128);
 		q3node->setTriangleSelector(selector);
+		// We're not done with this selector yet, so don't drop it.
 	}
 
 
 	/*
-	We add a first person shooter camera to the scene for being able to
+	We add a first person shooter camera to the scene so that we can see and
 	move in the quake 3 level like in tutorial 2. But this, time, we add a
 	special animator to the camera: A Collision Response animator. This
 	animator modifies the scene node to which it is attached to in order to
@@ -102,12 +117,12 @@ int main()
 	only thing we have to tell the animator is how the world looks like,
 	how big the scene node is, how much gravity to apply and so on. After the 
 	collision response animator is attached to the camera, we do not have to do
-	anything more for collision detection, anything is done automatically,
-	all other collision detection code below is for picking. And please
+	anything more for collision detection, anything is done automatically.
+	The rest of the collision detection code below is for picking. And please
 	note another cool feature: The collision response animator can be
 	attached also to all other scene nodes, not only to cameras. And it can
 	be mixed with other scene node animators. In this way, collision
-	detection and response in the Irrlicht engine is really, really easy.
+	detection and response in the Irrlicht engine is really easy.
 
 	Now we'll take a closer look on the parameters of
 	createCollisionResponseAnimator(). The first parameter is the
@@ -132,9 +147,8 @@ int main()
 	// Set a jump speed of 3 units per second, which gives a fairly realistic jump
 	// when used with the gravity of (0, -10, 0) in the collision response animator.
 	scene::ICameraSceneNode* camera =
-		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, -1, 0, 0, true, 3.f);
+		smgr->addCameraSceneNodeFPS(0, 100.0f, .3f, ID_IsNotPickable, 0, 0, true, 3.f);
 	camera->setPosition(core::vector3df(-100,50,-150));
-	camera->setID(0); // Make it an invalid target for bounding box collision
 
 	if (selector)
 	{
@@ -142,165 +156,154 @@ int main()
 			selector, camera, core::vector3df(30,50,30),
 			core::vector3df(0,-10,0),
 			core::vector3df(0,50,0));
+		selector->drop(); // As soon as we're done with the selector, drop it.
 		camera->addAnimator(anim);
-		anim->drop();
+		anim->drop();  // And likewise, drop the animator when we're done referring to it.
 	}
 
-	/*
-	Because collision detection is no big deal in irrlicht, I'll describe how to
-	do two different types of picking in the next section. But before this,
-	I'll prepare the scene a little. I need three animated characters which we
-	could pick later, a dynamic light for lighting them,
-	a billboard for drawing where we found an intersection,	and, yes, I need to
-	get rid of this mouse cursor. :)
-	*/
+	// Now I create three animated characters which we can pick, a dynamic light for
+	// lighting them, and a billboard for drawing where we found an intersection.
 
-	// disable mouse cursor
-
+	// First, let's get rid of the mouse cursor.  We'll use a billboard to show 
+	// what we're looking at.
 	device->getCursorControl()->setVisible(false);
 
-	// add billboard
-
+	// Add the billboard.
 	scene::IBillboardSceneNode * bill = smgr->addBillboardSceneNode();
 	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR );
 	bill->setMaterialTexture(0, driver->getTexture("../../media/particle.bmp"));
 	bill->setMaterialFlag(video::EMF_LIGHTING, false);
 	bill->setMaterialFlag(video::EMF_ZBUFFER, false);
 	bill->setSize(core::dimension2d<f32>(20.0f, 20.0f));
-	bill->setID(0); // Make it an invalid target for bounding box collision
+	bill->setID(ID_IsNotPickable); // This ensures that we don't accidentally ray-pick it
 
-	// add 3 animated faeries.  We'll make their bounding boxes visible so
-	// that we can see the same boxes that the scene collision manager is
-	// using to perform the getSceneNodeFromCameraBB() check below.
+	// Add 3 animated hominids, which we can pick using a ray-triangle intersection.
+	// They all animate quite slowly, to make it easier to see that accurate triangle
+	// selection is being performed.
+	scene::IAnimatedMeshSceneNode* node = 0;
 
+	// Add an MD2 node, which uses vertex-based animation.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/faerie.md2"),
+											0,
+											IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setPosition(core::vector3df(-70,-25,-120)); // Put its feet on the floor.
+	node->setScale(core::vector3df(2, 2, 2)); // Make it appear realistically scaled
+	node->setMD2Animation(scene::EMAT_RUN);
+	node->setAnimationSpeed(20.f);
 	video::SMaterial material;
 	material.setTexture(0, driver->getTexture("../../media/faerie2.bmp"));
 	material.Lighting = true;
+	node->getMaterial(0) = material;
 
-	scene::IAnimatedMeshSceneNode* node = 0;
-	scene::IAnimatedMesh* faerie = smgr->getMesh("../../media/faerie.md2");
+	// Now create a triangle selector for it.  The selector will know that it
+	// is associated with an animated node, and will update itself as necessary.
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop(); // We're done with this selector, so drop it now.
 
-	if (faerie)
-	{
-		node = smgr->addAnimatedMeshSceneNode(faerie);
-		node->setPosition(core::vector3df(-70,0,-90));
-		node->setMD2Animation(scene::EMAT_RUN);
-		node->getMaterial(0) = material;
-		node->setDebugDataVisible(scene::EDS_BBOX_ALL);
-		
-		node = smgr->addAnimatedMeshSceneNode(faerie);
-		node->setPosition(core::vector3df(-70,0,-30));
-		node->setMD2Animation(scene::EMAT_SALUTE);
-		node->getMaterial(0) = material;
-		node->setDebugDataVisible(scene::EDS_BBOX_ALL);
+	// This X files uses skeletal animation, but without skinning.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/dwarf.x"),
+											0,
+											IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setPosition(core::vector3df(-70,-66,0)); // Put its feet on the floor.
+	node->setRotation(core::vector3df(0,-90,0)); // And turn it towards the camera.
+	node->setAnimationSpeed(20.f);
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop();
 
-		node = smgr->addAnimatedMeshSceneNode(faerie);
-		node->setPosition(core::vector3df(-70,0,-60));
-		node->setMD2Animation(scene::EMAT_JUMP);
-		node->getMaterial(0) = material;
-		node->setDebugDataVisible(scene::EDS_BBOX_ALL);
-	}
+	// And this B3D file uses skinned skeletal animation.
+	node = smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"),
+											0,
+											IDFlag_IsPickable | IDFlag_IsHighlightable);
+	node->setScale(core::vector3df(10, 10, 10));
+	node->setPosition(core::vector3df(-70,-66,-60));
+	node->setRotation(core::vector3df(0,90,0));
+	node->setAnimationSpeed(10.f);
+	// Just do the same as we did above.
+	selector = smgr->createTriangleSelector(node);
+	node->setTriangleSelector(selector);
+	selector->drop();
 
 	material.setTexture(0, 0);
 	material.Lighting = false;
 
-	// Add a light
-
+	// Add a light, so that the unselected nodes aren't completely dark.
 	scene::ILightSceneNode * light = smgr->addLightSceneNode(0, core::vector3df(-60,100,400),
 		video::SColorf(1.0f,1.0f,1.0f,1.0f),
 		600.0f);
-	light->setID(0); // Make it an invalid target for bounding box collision
+	light->setID(ID_IsNotPickable); // Make it an invalid target for selection.
 
-
-	/*
-	For not making it to complicated, I'm doing picking inside the drawing
-	loop. We take two pointers for storing the current and the last
-	selected scene node and start the loop.
-	*/
-
-
-	scene::ISceneNode* selectedSceneNode = 0;
-	scene::ISceneNode* lastSelectedSceneNode = 0;
-
-
+	// Remember which scene node is highlighted
+	scene::ISceneNode* highlightedSceneNode = 0;
+	scene::ISceneCollisionManager* collMan = smgr->getSceneCollisionManager();
 	int lastFPS = -1;
 
 	while(device->run())
 	if (device->isWindowActive())
 	{
 		driver->beginScene(true, true, 0);
-
 		smgr->drawAll();
 
-		/*
-		After we've drawn the whole scene with smgr->drawAll(), we'll
-		do the first picking: We want to know which triangle of the
-		world we are looking at. In addition, we want the exact point
-		of the quake 3 level we are looking at. For this, we create a
-		3d line starting at the position of the camera and going
-		through the lookAt-target of it. Then we ask the collision
-		manager if this line collides with a triangle of the world
-		stored in the triangle selector. If yes, we draw the 3d
-		triangle and set the position of the billboard to the
-		intersection point.
-		*/
-
-		core::line3d<f32> line;
-		line.start = camera->getPosition();
-		line.end = line.start + (camera->getTarget() - line.start).normalize() * 1000.0f;
-
-		core::vector3df intersection;
-		core::triangle3df tri;
-		const scene::ISceneNode* hitNode;
-
-		if (smgr->getSceneCollisionManager()->getCollisionPoint(
-			line, selector, intersection, tri, hitNode))
+		// Unlight any currently highlighted scene node
+		if (highlightedSceneNode)
 		{
-			bill->setPosition(intersection);
-
-			driver->setTransform(video::ETS_WORLD, core::matrix4());
-			driver->setMaterial(material);
-			driver->draw3DTriangle(tri, video::SColor(0,255,0,0));
+			highlightedSceneNode->setMaterialFlag(video::EMF_LIGHTING, true);
+			highlightedSceneNode = 0;
 		}
 
+		// All intersections in this example are done with a ray cast out from the camera to 
+		// a distance of 1000.  You can easily modify this to check (e.g.) a bullet
+		// trajectory or a sword's position, or create a ray from a mouse click position using
+		// ISceneCollisionManager::getRayFromScreenCoordinates()
+		core::line3d<f32> ray;
+		ray.start = camera->getPosition();
+		ray.end = ray.start + (camera->getTarget() - ray.start).normalize() * 1000.0f;
 
-		/*
-		Another type of picking supported by the Irrlicht Engine is
-		scene node picking based on bounding boxes. Every scene node has
-		got a bounding box, and because of that, it's very fast for
-		example to get the scene node which the camera looks at. Again,
-		we ask the collision manager for this, and if we've got a scene
-		node, we highlight it by disabling Lighting in its material, if
-		it is not the billboard or the quake 3 level.
-		We use a collision bitmask of 1, i.e. any scene node with a scene ID
-		with bit 1 set is valid for collision.  Scene nodes ID defaults to 0xFFFFFFFF
-		so all nodes will have this bit by default. We have called setID(0) on
-		the nodes that we don't care about in order to clear this bit and make
-		them invalid targets for collision.  This makes the test a bit more
-		efficient, and also stops us from accidentally picking unexpected nodes,
-		e.g. the quake3 level, camera, light and billboard nodes.  By default,
-		these *are* valid targets for bounding box selection.
-		*/
+		// Tracks the current intersection point with the level or a mesh
+		core::vector3df intersection; 
+		// Used to show with triangle has been hit
+		core::triangle3df hitTriangle;
 
-		selectedSceneNode =
-			smgr->getSceneCollisionManager()->getSceneNodeFromCameraBB(camera, 1);
+		// This call is all you need to perform ray/triangle collision on every scene node
+		// that has a triangle selector, including the Quake level mesh.  It finds the nearest 
+		// collision point/triangle, and returns the scene node containing that point.
+		// Irrlicht provides other types of selection, including ray/triangle selector,
+		// ray/box and ellipse/triangle selector, plus associated helpers.
+		// See the methods of ISceneCollisionManager
+		scene::ISceneNode * selectedSceneNode = collMan->getSceneNodeAndCollisionPointFromRay(
+								ray,
+								intersection, // This will be the position of the collision
+								hitTriangle, // This will be the triangle hit in the collision
+								IDFlag_IsPickable, // This ensures that only nodes that we have
+													// set up to be pickable are considered
+								0 // Check the entire scene (this is actually the implicit default)
+								);
 
-		if (lastSelectedSceneNode)
-			lastSelectedSceneNode->setMaterialFlag(video::EMF_LIGHTING, true);
+		// If the ray hit anything, move the billboard to the collision position and draw
+		// the triangle that was hit.
+		if(selectedSceneNode)
+		{
+ 			bill->setPosition(intersection);
 
-		if (selectedSceneNode == q3node || selectedSceneNode == bill)
-			selectedSceneNode = 0;
+			// We need to reset the transform before doing our own rendering.
+ 			driver->setTransform(video::ETS_WORLD, core::matrix4());
+ 			driver->setMaterial(material);
+			driver->draw3DTriangle(hitTriangle, video::SColor(0,255,0,0));
+ 
+			// We can check the flags for the scene node that was hit to see if it should be
+			// highlighted.  The animated nodes can be highlighted, but not the Quake level mesh
+			if((selectedSceneNode->getID() & IDFlag_IsHighlightable) == IDFlag_IsHighlightable)
+			{
+				highlightedSceneNode = selectedSceneNode;
+ 
+				// Highlighting in this case means turning lighting OFF for this node,
+				// which means that it will be drawn with full brightness.
+				highlightedSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
+			}
+		}
 
-		if (selectedSceneNode)
-			selectedSceneNode->setMaterialFlag(video::EMF_LIGHTING, false);
-
-		lastSelectedSceneNode = selectedSceneNode;
-
-
-		/*
-		That's it, we just have to finish drawing.
-		*/
-
+		// We're all done drawing, so end the scene.
 		driver->endScene();
 
 		int fps = driver->getFPS();
@@ -317,7 +320,6 @@ int main()
 		}
 	}
 
-	selector->drop();
 	device->drop();
 
 	return 0;

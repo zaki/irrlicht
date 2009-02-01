@@ -57,9 +57,9 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
 
 //! Returns the nearest scene node which collides with a 3d ray and
 //! which id matches a bitmask.
-ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32> & ray,
-						s32 idBitMask,
-						bool bNoDebugObjects)
+ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32> ray,	
+															s32 idBitMask,
+															bool bNoDebugObjects)
 {
 	ISceneNode* best = 0;
 	f32 dist = FLT_MAX;
@@ -213,6 +213,122 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
    }
 }
 
+
+ISceneNode* CSceneCollisionManager::getSceneNodeAndCollisionPointFromRay(
+						core::line3df ray,
+						core::vector3df & outCollisionPoint,
+						core::triangle3df & outTriangle,
+						s32 idBitMask,
+						ISceneNode * collisionRootNode,
+						bool noDebugObjects)
+{
+	ISceneNode* bestNode = 0;
+	f32 bestDistanceSquared = FLT_MAX;
+ 
+	if(0 == collisionRootNode)
+		collisionRootNode = SceneManager->getRootSceneNode();
+ 
+	// We don't try to do anything too clever, like sorting the candidate
+	// nodes by distance to bounding-box. In the example below, we could do the 
+	// triangle collision check with node A first, but we'd have to check node B 
+	// anyway, as the actual collision point could be (and is) closer than the 
+	// collision point in node A.
+	//
+	//    ray end
+	//       |
+	//   AAAAAAAAAA
+	//   A   |
+	//   A   |  B
+	//   A   |  B
+	//   A  BBBBB
+	//   A   |
+	//   A   |
+	//       |
+	//       |
+	//    ray start
+	//
+	// We therefore have to do a full BB and triangle collision on every scene
+	// node in order to find the nearest collision point, so sorting them by 
+	// bounding box would be pointless.
+
+	getPickedNodeFromBBAndSelector(collisionRootNode,
+									ray,
+									idBitMask,
+									noDebugObjects,
+									bestDistanceSquared,
+									bestNode,
+									outCollisionPoint,
+									outTriangle);
+	return bestNode;
+}
+
+
+
+void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
+				ISceneNode * root,
+				const core::line3df & ray,
+				s32 bits,
+				bool noDebugObjects,
+				f32 & outBestDistanceSquared,
+				ISceneNode * & outBestNode,
+				core::vector3df & outBestCollisionPoint,
+				core::triangle3df & outBestTriangle)
+{
+   const core::list<ISceneNode*>& children = root->getChildren();
+
+   core::list<ISceneNode*>::ConstIterator it = children.begin();
+   for (; it != children.end(); ++it)
+   {
+	  ISceneNode* current = *it;
+	  ITriangleSelector * selector = current->getTriangleSelector();
+
+	  if (selector && current->isVisible() &&
+		  (noDebugObjects ? !current->isDebugObject() : true) &&
+		  (bits==0 || (bits != 0 && (current->getID() & bits))))
+	  {
+		// get world to object space transform
+		core::matrix4 mat;
+		if (!current->getAbsoluteTransformation().getInverse(mat))
+		continue;
+
+		// transform vector from world space to object space
+		core::line3df line(ray);
+		mat.transformVect(line.start);
+		mat.transformVect(line.end);
+
+		const core::aabbox3df& box = current->getBoundingBox();
+
+		core::vector3df candidateCollisionPoint;
+		core::triangle3df candidateTriangle;
+
+		// do intersection test in object space
+		const ISceneNode * hitNode = 0;
+		if (box.intersectsWithLine(line)
+			&&
+			getCollisionPoint(ray, selector, candidateCollisionPoint, candidateTriangle, hitNode))
+		 {
+			 const f32 distanceSquared = (candidateCollisionPoint - ray.start).getLengthSQ();
+
+			 if(distanceSquared < outBestDistanceSquared)
+			 {
+				outBestDistanceSquared = distanceSquared;
+				outBestNode = current;
+				outBestCollisionPoint = candidateCollisionPoint;
+				outBestTriangle = candidateTriangle;
+			 }
+		 }
+	  }
+
+	  getPickedNodeFromBBAndSelector(current, 
+									ray, 
+									bits, 
+									noDebugObjects, 
+									outBestDistanceSquared, 
+									outBestNode, 
+									outBestCollisionPoint, 
+									outBestTriangle);
+   }
+}
 
 
 //! Returns the scene node, at which the overgiven camera is looking at and

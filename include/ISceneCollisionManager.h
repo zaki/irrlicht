@@ -121,29 +121,29 @@ namespace scene
 		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32> & pos,
 			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
 
-		//! Get the nearest scene node which collides with a 3d ray and whose id matches a bitmask.
-		/** The collision tests are done using a bounding box for each
-		scene node.
+		//! Returns the nearest scene node which collides with a 3d ray and whose id matches a bitmask.
+		/** The collision tests are done using a bounding box for each scene node.
 		\param ray: Line with witch collisions are tested.
-		\param idBitMask: Only scene nodes with an id with bits set
-		like in this mask will be tested. If the BitMask is 0, this
-		feature is disabled.
-		\param bNoDebugObjects: Doesn't take debug objects into account
-		when true. These are scene nodes with IsDebugObject() = true.
-		\return Scene node nearest to ray.start, which collides with
-		the ray and matches the idBitMask, if the mask is not null. If
-		no scene node is found, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> & ray,
-			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
+		\param idBitMask: Only scene nodes with an id which matches at least one of the 
+		bits contained in this mask will be tested. However, if this parameter is 0, then 
+		all nodes are checked.
+		\param bNoDebugObjects: Doesn't take debug objects into account when true. These
+		are scene nodes with IsDebugObject() = true.
+		\return Returns the scene node nearest to ray.start, which collides with the
+		ray and matches the idBitMask, if the mask is not null. If no scene
+		node is found, 0 is returned. */
+		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> ray,	
+										s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
 
-		//! Get the scene node, which the overgiven camera is looking at and whose id matches the bitmask.
+		//! Get the scene node, which the given camera is looking at and whose id matches the bitmask.
 		/** A ray is simply casted from the position of the camera to
 		the view target position, and all scene nodes are tested
 		against this ray. The collision tests are done using a bounding
 		box for each scene node.
 		\param camera: Camera from which the ray is casted.
-		\param idBitMask: Only scene nodes with an id with bits set
-		like in this mask will be tested. If the BitMask is 0, this
+		\param idBitMask: Only scene nodes with an id which matches at least one of the 
+		bits contained in this mask will be tested. However, if this parameter is 0, then 
+		all nodes are checked.
 		feature is disabled.
 		\param bNoDebugObjects: Doesn't take debug objects into account
 		when true. These are scene nodes with IsDebugObject() = true.
@@ -152,6 +152,41 @@ namespace scene
 		no scene node is found, 0 is returned. */
 		virtual ISceneNode* getSceneNodeFromCameraBB(ICameraSceneNode* camera,
 			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
+
+		//! Perform a ray/box and ray/triangle collision check on a heirarchy of scene nodes.
+		/** This checks all scene nodes under the specified one, first by ray/bounding 
+		box, and then by accurate ray/triangle collision, finding the nearest collision,
+		and the scene node containg it.  It returns the node hit, and (via output 
+		parameters) the position of the collision, and the triangle that was hit.
+
+		All scene nodes in the hierarchy tree under the specified node are checked. Only
+		notes that are visible, with an ID that matches at least one bit in the supplied 
+		bitmask, and which have a triangle selector are considered as candidates for being hit.
+		You do not have to build a meta triangle selector; the individual triangle selectors 
+		of each candidate scene node are used automatically.
+		
+		\param ray: Line with which collisions are tested.
+		\param outCollisionPoint: If a collision is detected, this will contain the
+		position of the nearest collision.
+		\param outTriangle: If a collision is detected, this will contain the triangle
+		with which the ray collided.
+		\param idBitMask: Only scene nodes with an id which matches at least one of the 
+		bits contained in this mask will be tested. However, if this parameter is 0, then 
+		all nodes are checked.
+		\param collisionRootNode: the scene node at which to begin checking. Only this
+		node and its children will be checked. If you want to check the entire scene, 
+		pass 0, and the root scene node will be used (this is the default).
+		\param noDebugObjects: when true, debug objects are not considered viable targets.
+		Debug objects are scene nodes with IsDebugObject() = true.
+		\return Returns the scene node containing the hit triangle nearest to ray.start.
+		If no collision is detected, then 0 is returned. */
+		virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(								
+								core::line3df ray,
+								core::vector3df & outCollisionPoint,
+								core::triangle3df & outTriangle,
+								s32 idBitMask = 0,
+								ISceneNode * collisionRootNode = 0,
+								bool noDebugObjects = false) = 0;
 	};
 
 
