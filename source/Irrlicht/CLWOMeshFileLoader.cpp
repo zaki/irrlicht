@@ -178,7 +178,7 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 						break;
 					}
 				}
-				for (uvTag=0; uvTag<UvName.size(); ++uvTag)
+				for (uvTag=0; uvTag<DUvName.size(); ++uvTag)
 				{
 					if (Materials[i]->Texture[j].UVname == DUvName[uvTag])
 					{
@@ -199,7 +199,7 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		vertexCount.reallocate(Materials.size());
 		for (i=0; i<Materials.size(); ++i)
 			vertexCount.push_back(0);
-		for (u32 polyIndex=0; polyIndex<MaterialMapping.size(); ++polyIndex)
+		for (u32 polyIndex=0; polyIndex<Indices.size(); ++polyIndex)
 			vertexCount[MaterialMapping[polyIndex]] += Indices[polyIndex].size();
 		for (i=0; i<Materials.size(); ++i)
 		{
@@ -208,7 +208,7 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		}
 	}
 	// create actual geometry for lwo2
-	for (u32 polyIndex=0; polyIndex<MaterialMapping.size(); ++polyIndex)
+	for (u32 polyIndex=0; polyIndex<Indices.size(); ++polyIndex)
 	{
 		const u16 tag = MaterialMapping[polyIndex];
 		scene::SMeshBuffer *mb=Materials[tag]->Meshbuffer;
