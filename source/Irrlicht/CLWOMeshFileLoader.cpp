@@ -217,10 +217,10 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		const u16 uvTag = Materials[tag]->Texture[0].UVTag;
 		const u16 duvTag = Materials[tag]->Texture[0].DUVTag;
 		video::S3DVertex vertex;
-		const s32 vertCount=mb->Vertices.size();
+		const u32 vertCount=mb->Vertices.size();
 		for (u32 i=0; i<polySize; ++i)
 		{
-			const s32 j=poly[i];
+			const u32 j=poly[i];
 			vertex.Pos=Points[j];
 			if (uvTag<UvIndex.size())
 			{
