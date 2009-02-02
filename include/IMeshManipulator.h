@@ -132,8 +132,9 @@ namespace scene
 		\param resolutionS Resolution of the planar mapping in horizontal direction. This is the ratio between object space and texture space.
 		\param resolutionT Resolution of the planar mapping in vertical direction. This is the ratio between object space and texture space.
 		\param axis The axis along which the texture is projected. The allowed values are 0 (X), 1(Y), and 2(Z).
+		\param offset Vector added to the vertex positions (in object coordinates).
 		*/
-		virtual void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis) const =0;
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const =0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 		/** This is useful if you want to draw tangent space normal
