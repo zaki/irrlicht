@@ -2069,6 +2069,7 @@ video::ITexture* CLWOMeshFileLoader::loadTexture(const core::stringc& file)
 	if (FileSystem->existFile(strippedName))
 		return driver->getTexture(strippedName);
 	core::stringc newpath = FileSystem->getFileDir(File->getFileName());
+	newpath.append("/");
 	newpath.append(strippedName);
 	if (FileSystem->existFile(newpath))
 		return driver->getTexture(newpath);
