@@ -266,9 +266,51 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		os::Printer::log("LWO loader: Material name", Materials[i]->Name);
 		os::Printer::log("LWO loader: Vertex count", core::stringc(Materials[i]->Meshbuffer->Vertices.size()));
 #endif
+		if (!Materials[i]->Meshbuffer->Vertices.size())
+			continue;
 		for (u32 j=0; j<Materials[i]->Meshbuffer->Vertices.size(); ++j)
 			Materials[i]->Meshbuffer->Vertices[j].Color=Materials[i]->Meshbuffer->Material.DiffuseColor;
 		Materials[i]->Meshbuffer->recalculateBoundingBox();
+
+		// load textures
+		video::SMaterial& irrMat=Materials[i]->Meshbuffer->Material;
+		if (Materials[i]->Texture[0].Map != "") // diffuse
+			irrMat.setTexture(0,loadTexture(Materials[i]->Texture[0].Map));
+		if (Materials[i]->Texture[3].Map != "") // reflection
+		{
+#ifdef LWO_READER_DEBUG
+			os::Printer::log("LWO loader: loading reflection texture.");
+#endif
+			video::ITexture* reflTexture = loadTexture(Materials[i]->Texture[3].Map);
+			if (reflTexture && irrMat.getTexture(0))
+				irrMat.setTexture(1, irrMat.getTexture(0));
+			irrMat.setTexture(0, reflTexture);
+			irrMat.MaterialType=video::EMT_REFLECTION_2_LAYER;
+		}
+		if (Materials[i]->Texture[4].Map != "") // transparency
+		{
+#ifdef LWO_READER_DEBUG
+			os::Printer::log("LWO loader: loading transparency texture.");
+#endif
+			video::ITexture* transTexture = loadTexture(Materials[i]->Texture[4].Map);
+			if (transTexture && irrMat.getTexture(0))
+				irrMat.setTexture(1, irrMat.getTexture(0));
+			irrMat.setTexture(0, transTexture);
+			irrMat.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
+		}
+		if (Materials[i]->Texture[6].Map != "") // bump
+		{
+#ifdef LWO_READER_DEBUG
+			os::Printer::log("LWO loader: loading bump texture.");
+#endif
+			const u8 pos = irrMat.getTexture(0)?1:0;
+			irrMat.setTexture(pos, loadTexture(Materials[i]->Texture[6].Map));
+			if (irrMat.getTexture(pos))
+			{
+	//			SceneManager->getVideoDriver()->makeNormalMapTexture(irrMat.getTexture(1));
+	//			irrMat.MaterialType=video::EMT_NORMAL_MAP_SOLID;
+			}
+		}
 
 		// cope with planar mapping texture coords
 		if (Materials[i]->Texture[0].Projection != 5)
@@ -1878,43 +1920,6 @@ void CLWOMeshFileLoader::readMat(u32 size)
 		}
 	}
 
-	if (mat->Texture[0].Map != "") // diffuse
-		irrMat.setTexture(0,loadTexture(mat->Texture[0].Map));
-	if (mat->Texture[3].Map != "") // reflection
-	{
-#ifdef LWO_READER_DEBUG
-		os::Printer::log("LWO loader: loading reflection texture.");
-#endif
-		video::ITexture* reflTexture = loadTexture(mat->Texture[3].Map);
-		if (reflTexture && irrMat.getTexture(0))
-			irrMat.setTexture(1, irrMat.getTexture(0));
-		irrMat.setTexture(0, reflTexture);
-		irrMat.MaterialType=video::EMT_REFLECTION_2_LAYER;
-	}
-	if (mat->Texture[4].Map != "") // transparency
-	{
-#ifdef LWO_READER_DEBUG
-		os::Printer::log("LWO loader: loading transparency texture.");
-#endif
-		video::ITexture* transTexture = loadTexture(mat->Texture[4].Map);
-		if (transTexture && irrMat.getTexture(0))
-			irrMat.setTexture(1, irrMat.getTexture(0));
-		irrMat.setTexture(0, transTexture);
-		irrMat.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
-	}
-	if (mat->Texture[6].Map != "") // bump
-	{
-#ifdef LWO_READER_DEBUG
-		os::Printer::log("LWO loader: loading bump texture.");
-#endif
-		const u8 pos = irrMat.getTexture(0)?1:0;
-		irrMat.setTexture(pos, loadTexture(mat->Texture[6].Map));
-		if (irrMat.getTexture(pos))
-		{
-//			SceneManager->getVideoDriver()->makeNormalMapTexture(irrMat.getTexture(1));
-//			irrMat.MaterialType=video::EMT_NORMAL_MAP_SOLID;
-		}
-	}
 	if (mat->Transparency != 0.f)
 	{
 		irrMat.MaterialType=video::EMT_TRANSPARENT_ADD_COLOR;
