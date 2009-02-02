@@ -343,20 +343,20 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 				}
 			}
 			// get the resolution for this axis
-			f32 resolutionS = 1.f/Materials[i]->Meshbuffer->getBoundingBox().getExtent().Y;
-			f32 resolutionT = -1.f/Materials[i]->Meshbuffer->getBoundingBox().getExtent().Z;
+			f32 resolutionS = 1.f/Materials[i]->Texture[0].Size.Z;
+			f32 resolutionT = 1.f/Materials[i]->Texture[0].Size.Y;
 			if (Materials[i]->Texture[0].Axis==1)
 			{
-				resolutionS = 1.f/Materials[i]->Meshbuffer->getBoundingBox().getExtent().X;
-				resolutionT = -1.f/Materials[i]->Meshbuffer->getBoundingBox().getExtent().Z;
+				resolutionS = 1.f/Materials[i]->Texture[0].Size.X;
+				resolutionT = 1.f/Materials[i]->Texture[0].Size.Z;
 			}
 			else if (Materials[i]->Texture[0].Axis==2)
 			{
-				resolutionS = 1.f/Materials[i]->Meshbuffer->getBoundingBox().getExtent().X;
-				resolutionT = -1.f/Materials[i]->Meshbuffer->getBoundingBox().getExtent().Y;
+				resolutionS = 1.f/Materials[i]->Texture[0].Size.X;
+				resolutionT = 1.f/Materials[i]->Texture[0].Size.Y;
 			}
 			// use the two-way planar mapping
-			SceneManager->getMeshManipulator()->makePlanarTextureMapping(Materials[i]->Meshbuffer, resolutionS, resolutionT, Materials[i]->Texture[0].Axis);
+			SceneManager->getMeshManipulator()->makePlanarTextureMapping(Materials[i]->Meshbuffer, resolutionS, resolutionT, Materials[i]->Texture[0].Axis, Materials[i]->Texture[0].Center);
 		}
 
 		// add bump maps
