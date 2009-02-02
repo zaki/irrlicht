@@ -273,8 +273,17 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		// cope with planar mapping texture coords
 		if (Materials[i]->Texture[0].Projection != 5)
 		{
+			if (FormatVersion!=2)
+			{
+				if (Materials[i]->Texture[0].Flags&1)
+					Materials[i]->Texture[0].Axis=0;
+				else if (Materials[i]->Texture[0].Flags&2)
+					Materials[i]->Texture[0].Axis=1;
+				else if (Materials[i]->Texture[0].Flags&4)
+					Materials[i]->Texture[0].Axis=2;
+			}
 			// if no axis given choose the dominant one
-			if (Materials[i]->Texture[0].Axis>2)
+			else if (Materials[i]->Texture[0].Axis>2)
 			{
 				if (Materials[i]->Meshbuffer->getBoundingBox().getExtent().Y<Materials[i]->Meshbuffer->getBoundingBox().getExtent().X)
 				{
@@ -1614,11 +1623,6 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				{
 					core::vector3df& center=mat->Texture[currTexture].Center;
 					size -= readVec(center);
-#ifndef __BIG_ENDIAN__
-					center.X=os::Byteswap::byteswap(center.X);
-					center.Y=os::Byteswap::byteswap(center.Y);
-					center.Z=os::Byteswap::byteswap(center.Z);
-#endif
 					if (FormatVersion==2)
 						size -= readVX(mat->Envelope[22]);
 #ifdef LWO_READER_DEBUG
@@ -1631,11 +1635,6 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				{
 					core::vector3df& tsize=mat->Texture[currTexture].Size;
 					size -= readVec(tsize);
-#ifndef __BIG_ENDIAN__
-					tsize.X=os::Byteswap::byteswap(tsize.X);
-					tsize.Y=os::Byteswap::byteswap(tsize.Y);
-					tsize.Z=os::Byteswap::byteswap(tsize.Z);
-#endif
 					if (FormatVersion==2)
 						size -= readVX(mat->Envelope[22]);
 #ifdef LWO_READER_DEBUG
@@ -1647,11 +1646,6 @@ void CLWOMeshFileLoader::readMat(u32 size)
 				{
 					core::vector3df rotation;
 					size -= readVec(rotation);
-#ifndef __BIG_ENDIAN__
-					rotation.X=os::Byteswap::byteswap(rotation.X);
-					rotation.Y=os::Byteswap::byteswap(rotation.Y);
-					rotation.Z=os::Byteswap::byteswap(rotation.Z);
-#endif
 					if (FormatVersion==2)
 						size -= readVX(mat->Envelope[22]);
 #ifdef LWO_READER_DEBUG
@@ -1683,11 +1677,6 @@ void CLWOMeshFileLoader::readMat(u32 size)
 
 					core::vector3df& falloff=mat->Texture[currTexture].Falloff;
 					size -= readVec(falloff);
-#ifndef __BIG_ENDIAN__
-					falloff.X=os::Byteswap::byteswap(falloff.X);
-					falloff.Y=os::Byteswap::byteswap(falloff.Y);
-					falloff.Z=os::Byteswap::byteswap(falloff.Z);
-#endif
 					if (FormatVersion==2)
 						size -= readVX(mat->Envelope[22]);
 #ifdef LWO_READER_DEBUG
