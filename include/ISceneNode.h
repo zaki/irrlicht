@@ -590,12 +590,15 @@ namespace scene
 		\param selector New triangle selector for this scene node. */
 		virtual void setTriangleSelector(ITriangleSelector* selector)
 		{
-			if (TriangleSelector)
-				TriangleSelector->drop();
+			if (TriangleSelector != selector)
+			{
+				if (TriangleSelector)
+					TriangleSelector->drop();
 
-			TriangleSelector = selector;
-			if (TriangleSelector)
-				TriangleSelector->grab();
+				TriangleSelector = selector;
+				if (TriangleSelector)
+					TriangleSelector->grab();
+			}
 		}
 
 
