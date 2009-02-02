@@ -444,7 +444,7 @@ void CMeshManipulator::makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 
 
 
 //! Creates a planar texture mapping on the meshbuffer
-void CMeshManipulator::makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis) const
+void CMeshManipulator::makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const
 {
 	u32 idxcnt = buffer->getIndexCount();
 	u16* idx = buffer->getIndices();
@@ -456,24 +456,24 @@ void CMeshManipulator::makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 
 		{
 			for (u32 o=0; o!=3; ++o)
 			{
-				buffer->getTCoords(idx[i+o]).X = buffer->getPosition(idx[i+o]).Z * resolutionS;
-				buffer->getTCoords(idx[i+o]).Y = 0.5f+buffer->getPosition(idx[i+o]).Y * resolutionT;
+				buffer->getTCoords(idx[i+o]).X = 0.5f+(buffer->getPosition(idx[i+o]).Z + offset.Z) * resolutionS;
+				buffer->getTCoords(idx[i+o]).Y = 0.5f-(buffer->getPosition(idx[i+o]).Y + offset.Y) * resolutionT;
 			}
 		}
 		else if (axis==1)
 		{
 			for (u32 o=0; o!=3; ++o)
 			{
-				buffer->getTCoords(idx[i+o]).X = 0.5f+buffer->getPosition(idx[i+o]).X * resolutionS;
-				buffer->getTCoords(idx[i+o]).Y = 0.5f+buffer->getPosition(idx[i+o]).Z * resolutionT;
+				buffer->getTCoords(idx[i+o]).X = 0.5f+(buffer->getPosition(idx[i+o]).X + offset.X) * resolutionS;
+				buffer->getTCoords(idx[i+o]).Y = 1.f-(buffer->getPosition(idx[i+o]).Z + offset.Z) * resolutionT;
 			}
 		}
 		else if (axis==2)
 		{
 			for (u32 o=0; o!=3; ++o)
 			{
-				buffer->getTCoords(idx[i+o]).X = 0.5f+buffer->getPosition(idx[i+o]).X * resolutionS;
-				buffer->getTCoords(idx[i+o]).Y = buffer->getPosition(idx[i+o]).Y * resolutionT;
+				buffer->getTCoords(idx[i+o]).X = 0.5f+(buffer->getPosition(idx[i+o]).X + offset.X) * resolutionS;
+				buffer->getTCoords(idx[i+o]).Y = 0.5f-(buffer->getPosition(idx[i+o]).Y + offset.Y) * resolutionT;
 			}
 		}
 	}
