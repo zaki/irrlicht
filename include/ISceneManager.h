@@ -51,14 +51,17 @@ namespace scene
 	specifying when the node wants to be drawn in relation to the other nodes. */
 	enum E_SCENE_NODE_RENDER_PASS
 	{
+		//! No pass currently active
+		ESNRP_NONE =0,
+
 		//! Camera pass. The active view is set up here. The very first pass.
-		ESNRP_CAMERA,
+		ESNRP_CAMERA =1,
 
 		//! In this pass, lights are transformed into camera space and added to the driver
-		ESNRP_LIGHT,
+		ESNRP_LIGHT =2,
 
 		//! This is used for sky boxes.
-		ESNRP_SKY_BOX,
+		ESNRP_SKY_BOX =4,
 
 		//! All normal objects can use this for registering themselves.
 		/** This value will never be returned by
@@ -73,22 +76,19 @@ namespace scene
 		render() method call getSceneNodeRenderPass() to find out the
 		current render pass and render only the corresponding parts of
 		the node. */
-		ESNRP_AUTOMATIC,
+		ESNRP_AUTOMATIC =24,
 
 		//! Solid scene nodes or special scene nodes without materials.
-		ESNRP_SOLID,
+		ESNRP_SOLID =8,
 
-		//! Drawn after the transparent nodes, the time for drawing shadow volumes
-		ESNRP_SHADOW,
-
-		//! Transparent scene nodes, drawn after shadow nodes. They are sorted from back to front and drawn in that order.
-		ESNRP_TRANSPARENT,
+		//! Transparent scene nodes, drawn after solid nodes. They are sorted from back to front and drawn in that order.
+		ESNRP_TRANSPARENT =16,
 
 		//! Transparent effect scene nodes, drawn after Transparent nodes. They are sorted from back to front and drawn in that order.
-		ESNRP_TRANSPARENT_EFFECT,
+		ESNRP_TRANSPARENT_EFFECT =32,
 
-		//! Never used, value specifing how much parameters there are.
-		ESNRP_COUNT
+		//! Drawn after the transparent nodes, the time for drawing shadow volumes
+		ESNRP_SHADOW =64
 	};
 
 	class IMesh;
