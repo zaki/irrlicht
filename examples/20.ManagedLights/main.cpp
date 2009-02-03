@@ -73,7 +73,7 @@ public:
 	CMyLightManager(ISceneManager* sceneManager)
 		: Mode(NO_MANAGEMENT), RequestedMode(NO_MANAGEMENT),
 		SceneManager(sceneManager),  SceneLightList(0),
-		CurrentRenderPass(ESNRP_COUNT), CurrentSceneNode(0)
+		CurrentRenderPass(0), CurrentSceneNode(0)
 	{ }
 
 	virtual ~CMyLightManager(void) { }
