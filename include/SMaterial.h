@@ -462,8 +462,6 @@ namespace video
 					return (AntiAliasing==1);
 				case EMF_COLOR_MASK:
 					return (ColorMask!=ECP_NONE);
-				case EMF_MATERIAL_FLAG_COUNT:
-					break;
 			}
 
 			return false;
