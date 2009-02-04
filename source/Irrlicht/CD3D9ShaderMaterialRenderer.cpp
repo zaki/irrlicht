@@ -29,7 +29,6 @@ CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3dde
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 	VertexShader(0), OldVertexShader(0), PixelShader(0), UserData(userData)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CD3D9ShaderMaterialRenderer");
 	#endif
@@ -44,18 +43,15 @@ CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3dde
 }
 
 
-
 //! constructor only for use by derived classes who want to
 //! create a fall back material for example.
 CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3ddev,
-						video::IVideoDriver* driver,
-						IShaderConstantSetCallBack* callback,
-						IMaterialRenderer* baseMaterial,
-						s32 userData)
+			video::IVideoDriver* driver,
+			IShaderConstantSetCallBack* callback,
+			IMaterialRenderer* baseMaterial, s32 userData)
 : pID3DDevice(d3ddev), Driver(driver), CallBack(callback), BaseMaterial(baseMaterial),
 	VertexShader(0), OldVertexShader(0), PixelShader(0), UserData(userData)
 {
-
 	#ifdef _DEBUG
 	setDebugName("CD3D9ShaderMaterialRenderer");
 	#endif
@@ -68,8 +64,8 @@ CD3D9ShaderMaterialRenderer::CD3D9ShaderMaterialRenderer(IDirect3DDevice9* d3dde
 }
 
 
-void CD3D9ShaderMaterialRenderer::init(s32& outMaterialTypeNr, const c8* vertexShaderProgram,
-					const c8* pixelShaderProgram)
+void CD3D9ShaderMaterialRenderer::init(s32& outMaterialTypeNr,
+		const c8* vertexShaderProgram, const c8* pixelShaderProgram)
 {
 	outMaterialTypeNr = -1;
 
@@ -86,7 +82,6 @@ void CD3D9ShaderMaterialRenderer::init(s32& outMaterialTypeNr, const c8* vertexS
 }
 
 
-
 //! Destructor
 CD3D9ShaderMaterialRenderer::~CD3D9ShaderMaterialRenderer()
 {
@@ -100,8 +95,9 @@ CD3D9ShaderMaterialRenderer::~CD3D9ShaderMaterialRenderer()
 		PixelShader->Release();
 
 	if (BaseMaterial)
-		BaseMaterial->drop ();
+		BaseMaterial->drop();
 }
+
 
 bool CD3D9ShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E_VERTEX_TYPE vtxtype)
 {
@@ -111,6 +107,7 @@ bool CD3D9ShaderMaterialRenderer::OnRender(IMaterialRendererServices* service, E
 
 	return true;
 }
+
 
 void CD3D9ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material, const video::SMaterial& lastMaterial,
 	bool resetAllRenderstates, video::IMaterialRendererServices* services)
@@ -145,6 +142,7 @@ void CD3D9ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material
 	services->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 
+
 void CD3D9ShaderMaterialRenderer::OnUnsetMaterial()
 {
 	if (VertexShader)
@@ -164,6 +162,7 @@ bool CD3D9ShaderMaterialRenderer::isTransparent() const
 {
 	return BaseMaterial ? BaseMaterial->isTransparent() : false;
 }
+
 
 bool CD3D9ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 {
@@ -224,7 +223,6 @@ bool CD3D9ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 }
 
 
-
 bool CD3D9ShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 {
 	if (!vtxsh)
@@ -259,7 +257,6 @@ bool CD3D9ShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 
 	#endif
 
-
 	if (errors)
 	{
 		// print out compilation errors.
@@ -285,10 +282,11 @@ bool CD3D9ShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 	return true;
 }
 
-HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader(LPCSTR pSrcData,  UINT SrcDataLen,
-								   CONST D3DXMACRO* pDefines, LPD3DXINCLUDE pInclude,
-								   DWORD Flags, LPD3DXBUFFER* ppShader,
-								   LPD3DXBUFFER* ppErrorMsgs)
+
+HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader(LPCSTR pSrcData,
+		UINT SrcDataLen, CONST D3DXMACRO* pDefines,
+		LPD3DXINCLUDE pInclude, DWORD Flags, LPD3DXBUFFER* ppShader,
+		LPD3DXBUFFER* ppErrorMsgs)
 {
 	// Because Irrlicht needs to be able to start up even without installed d3d dlls, it
 	// needs to load external d3d dlls manually. examples for the dlls are:
@@ -310,16 +308,16 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader(LPCSTR pSrcData,  UI
 
 		// invoke static linked function
 		return D3DXAssembleShader(pSrcData, SrcDataLen, pDefines, pInclude,
-								  Flags, ppShader, ppErrorMsgs);
+						  Flags, ppShader, ppErrorMsgs);
 	#else
 	{
 		// try to load shader functions from the dll and print error if failed.
 
 		// D3DXAssembleShader signature
 		typedef HRESULT (WINAPI *AssembleShaderFunction)(LPCSTR pSrcData,  UINT SrcDataLen,
-									CONST D3DXMACRO* pDefines, LPD3DXINCLUDE pInclude,
-									DWORD Flags, LPD3DXBUFFER* ppShader,
-									LPD3DXBUFFER* ppErrorMsgs);
+					CONST D3DXMACRO* pDefines, LPD3DXINCLUDE pInclude,
+					DWORD Flags, LPD3DXBUFFER* ppShader,
+					LPD3DXBUFFER* ppErrorMsgs);
 
 		static bool LoadFailed = false;
 		static AssembleShaderFunction pFn = 0;
@@ -354,9 +352,10 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader(LPCSTR pSrcData,  UI
 	return 0;
 }
 
+
 HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShaderFromFile(LPCSTR pSrcFile,
-				        CONST D3DXMACRO* pDefines, LPD3DXINCLUDE  pInclude, DWORD Flags,
-						LPD3DXBUFFER* ppShader, LPD3DXBUFFER* ppErrorMsgs)
+		        CONST D3DXMACRO* pDefines, LPD3DXINCLUDE  pInclude, DWORD Flags,
+			LPD3DXBUFFER* ppShader, LPD3DXBUFFER* ppErrorMsgs)
 {
 	// wondering what I'm doing here?
 	// see comment in CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader()
@@ -377,8 +376,8 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShaderFromFile(LPCSTR pSrcF
 
 		// D3DXAssembleShaderFromFileA signature
 		typedef HRESULT (WINAPI *AssembleShaderFromFileFunction)(LPCSTR pSrcFile,
-									CONST D3DXMACRO* pDefines, LPD3DXINCLUDE pInclude, DWORD Flags,
-									LPD3DXBUFFER* ppShader, LPD3DXBUFFER* ppErrorMsgs);
+				CONST D3DXMACRO* pDefines, LPD3DXINCLUDE pInclude, DWORD Flags,
+				LPD3DXBUFFER* ppShader, LPD3DXBUFFER* ppErrorMsgs);
 
 		static bool LoadFailed = false;
 		static AssembleShaderFromFileFunction pFn = 0;
@@ -415,9 +414,9 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShaderFromFile(LPCSTR pSrcF
 
 
 HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShader(LPCSTR pSrcData, UINT SrcDataLen, CONST D3DXMACRO* pDefines,
-								LPD3DXINCLUDE pInclude, LPCSTR pFunctionName,
-								LPCSTR pProfile, DWORD Flags, LPD3DXBUFFER* ppShader,
-								LPD3DXBUFFER* ppErrorMsgs, LPD3DXCONSTANTTABLE* ppConstantTable)
+				LPD3DXINCLUDE pInclude, LPCSTR pFunctionName,
+				LPCSTR pProfile, DWORD Flags, LPD3DXBUFFER* ppShader,
+				LPD3DXBUFFER* ppErrorMsgs, LPD3DXCONSTANTTABLE* ppConstantTable)
 {
 	// wondering what I'm doing here?
 	// see comment in CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader()
@@ -437,9 +436,9 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShader(LPCSTR pSrcData, UINT
 
 		// D3DXCompileShader
 		typedef HRESULT (WINAPI *D3DXCompileShaderFunction)(LPCSTR pSrcData, UINT SrcDataLen, CONST D3DXMACRO* pDefines,
-								LPD3DXINCLUDE pInclude, LPCSTR pFunctionName,
-								LPCSTR pProfile, DWORD Flags, LPD3DXBUFFER* ppShader,
-								LPD3DXBUFFER* ppErrorMsgs, LPD3DXCONSTANTTABLE* ppConstantTable);
+				LPD3DXINCLUDE pInclude, LPCSTR pFunctionName,
+				LPCSTR pProfile, DWORD Flags, LPD3DXBUFFER* ppShader,
+				LPD3DXBUFFER* ppErrorMsgs, LPD3DXCONSTANTTABLE* ppConstantTable);
 
 		static bool LoadFailed = false;
 		static D3DXCompileShaderFunction pFn = 0;
@@ -475,9 +474,9 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShader(LPCSTR pSrcData, UINT
 }
 
 HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShaderFromFile(LPCSTR pSrcFile, CONST D3DXMACRO* pDefines,
-								LPD3DXINCLUDE pInclude, LPCSTR pFunctionName,
-								LPCSTR pProfile, DWORD Flags, LPD3DXBUFFER* ppShader, LPD3DXBUFFER* ppErrorMsgs,
-								LPD3DXCONSTANTTABLE* ppConstantTable)
+				LPD3DXINCLUDE pInclude, LPCSTR pFunctionName,
+				LPCSTR pProfile, DWORD Flags, LPD3DXBUFFER* ppShader, LPD3DXBUFFER* ppErrorMsgs,
+				LPD3DXCONSTANTTABLE* ppConstantTable)
 {
 	// wondering what I'm doing here?
 	// see comment in CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader()
@@ -539,4 +538,3 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShaderFromFile(LPCSTR pSrcFi
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
-

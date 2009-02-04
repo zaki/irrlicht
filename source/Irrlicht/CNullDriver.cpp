@@ -2006,5 +2006,11 @@ void CNullDriver::setMinHardwareBufferVertexCount(u32 count)
 	MinVertexCountForVBO = count;
 }
 
+
+SOverrideMaterial& CNullDriver::getOverrideMaterial()
+{
+	return OverrideMaterial;
+}
+
 } // end namespace
 } // end namespace

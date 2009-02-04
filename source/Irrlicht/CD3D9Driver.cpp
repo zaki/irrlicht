@@ -692,6 +692,7 @@ bool CD3D9Driver::setTexture(s32 stage, const video::ITexture* texture)
 void CD3D9Driver::setMaterial(const SMaterial& material)
 {
 	Material = material;
+	OverrideMaterial.apply(Material);
 
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
