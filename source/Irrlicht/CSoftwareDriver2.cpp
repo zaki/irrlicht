@@ -363,6 +363,7 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 void CBurningVideoDriver::setMaterial(const SMaterial& material)
 {
 	Material.org = material;
+	OverrideMaterial.apply(Material.org);
 
 	Material.AmbientColor.setA8R8G8B8 ( Material.org.AmbientColor.color );
 	Material.DiffuseColor.setA8R8G8B8 ( Material.org.DiffuseColor.color );

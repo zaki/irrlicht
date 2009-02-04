@@ -538,6 +538,12 @@ namespace video
 		/** \param count Number of vertices to set as minimum. */
 		virtual void setMinHardwareBufferVertexCount(u32 count);
 
+		//! Get the global Material, which might override local materials.
+		/** Depending on the enable flags, values from this Material
+		are used to override those of local materials of some
+		meshbuffer being rendered. */
+		virtual SOverrideMaterial& getOverrideMaterial();
+
 		//! Only used by the engine internally.
 		virtual void setAllowZWriteOnTransparent(bool flag)
 		{ AllowZWriteOnTransparent=flag; }
@@ -657,6 +663,8 @@ namespace video
 		f32 FogDensity;
 		SColor FogColor;
 		SExposedVideoData ExposedData;
+
+		SOverrideMaterial OverrideMaterial;
 
 		bool LinearFog;
 		bool PixelFog;

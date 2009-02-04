@@ -168,14 +168,11 @@ bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 
-
 //! sets transformation
 void CSoftwareDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
 	TransformationMatrix[state] = mat;
 }
-
-
 
 
 //! sets the current Texture
@@ -200,11 +197,11 @@ bool CSoftwareDriver::setTexture(video::ITexture* texture)
 }
 
 
-
 //! sets a material
 void CSoftwareDriver::setMaterial(const SMaterial& material)
 {
 	Material = material;
+	OverrideMaterial.apply(Material);
 
 	for (u32 i = 0; i < 1; ++i)
 	{
@@ -305,7 +302,6 @@ void CSoftwareDriver::setRenderTarget(video::CImage* image)
 }
 
 
-
 //! sets a viewport
 void CSoftwareDriver::setViewPort(const core::rect<s32>& area)
 {
@@ -323,6 +319,7 @@ void CSoftwareDriver::setViewPort(const core::rect<s32>& area)
 	if (CurrentTriangleRenderer)
 		CurrentTriangleRenderer->setRenderTarget(RenderTargetSurface, ViewPort);
 }
+
 
 void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
@@ -345,6 +342,7 @@ void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 
 }
+
 
 //! draws a vertex primitive list
 void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
@@ -469,7 +467,6 @@ void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertex
 			break;
 	}
 }
-
 
 
 template<class VERTEXTYPE>

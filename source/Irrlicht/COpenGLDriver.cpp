@@ -1768,17 +1768,16 @@ video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, co
 }
 
 
-//! Sets a material. All 3d drawing functions draw geometry now
-//! using this material.
-//! \param material: Material to be used from now on.
+//! Sets a material. All 3d drawing functions draw geometry now using this material.
 void COpenGLDriver::setMaterial(const SMaterial& material)
 {
 	Material = material;
+	OverrideMaterial.apply(Material);
 
 	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
 	{
 		setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
-				material.getTextureMatrix(i));
+				Material.getTextureMatrix(i));
 	}
 }
 
