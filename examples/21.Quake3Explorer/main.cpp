@@ -30,7 +30,8 @@ struct GameData
 {
 	GameData ( const string<c16> &startupDir);
 	void setDefault ();
-	s32 save ();
+	s32 save ( const string<c16> filename );
+	s32 load ( const string<c16> filename );
 
 	s32 debugState;
 	s32 gravityState;
@@ -93,7 +94,7 @@ void GameData::setDefault ()
 	loadParam.defaultLightMapMaterial = EMT_LIGHTMAP;
 	loadParam.defaultModulate = EMFN_MODULATE_1X;
 	loadParam.verbose = 1;
-	loadParam.mergeShaderBuffer = 1;
+	loadParam.mergeShaderBuffer = 1;		// merge meshbuffers with same material
 	loadParam.cleanUnResolvedMeshes = 1;	// should unresolved meshes be cleaned. otherwise blue texture
 	loadParam.loadAllShaders = 1;			// load all scripts in the script directory
 	loadParam.loadSkyShader = 0;			// load sky Shader
@@ -104,14 +105,29 @@ void GameData::setDefault ()
 	CurrentMapName = "";
 	CurrentArchiveList.clear ();
 	CurrentArchiveList.push_back ( StartupDir + "../../media/" );
+	CurrentArchiveList.push_back ( "/q/baseq3/" );
 	CurrentArchiveList.push_back ( StartupDir + "../../media/map-20kdm2.pk3" );
 
 }
 
 /*!
+	Load the current game State
+*/
+s32 GameData::load ( const string<c16> filename )
+{
+	if ( 0 == Device )
+		return 0;
+
+	//! the quake3 mesh loader can also handle *.shader and *.cfg file
+	IQ3LevelMesh* mesh = (IQ3LevelMesh*) Device->getSceneManager()->getMesh ( filename );
+
+	return 1;
+}
+
+/*!
 	Store the current game State
 */
-s32 GameData::save ()
+s32 GameData::save ( const string<c16> filename )
 {
 	if ( 0 == Device )
 		return 0;
@@ -120,7 +136,7 @@ s32 GameData::save ()
 
 	// Store current Archive for restart
 	CurrentArchiveList.clear();
-	io::IFileSystem *fs = Device->getFileSystem();
+	IFileSystem *fs = Device->getFileSystem();
 	for ( i = 0; i != fs->getFileArchiveCount(); ++i )
 	{
 		CurrentArchiveList.push_back ( fs->getFileArchive ( i )->getArchiveName() );
@@ -133,7 +149,17 @@ s32 GameData::save ()
 		PlayerPosition = camera->getPosition ();
 		PlayerRotation = camera->getRotation ();
 	}
+	
+	IWriteFile *file = fs->createAndWriteFile ( filename );
+	if ( 0 == file )
+		return 0;
 
+	c8 buf[128];
+	snprintf ( buf, 128, "playerposition %.f %.f %.f\nplayerrotation %.f %.f %.f\n",
+			PlayerPosition.X, PlayerPosition.Y, PlayerPosition.Z,
+			PlayerRotation.X, PlayerRotation.Y, PlayerRotation.Z);
+	file->write ( buf, (s32) strlen ( buf ) );
+	file->drop ();
 	return 1;
 }
 
@@ -365,29 +391,7 @@ struct GUI
 {
 	GUI ()
 	{
-		Window = 0;
-		SetVideoMode = 0;
-		Bit32 = 0;
-		MultiSample = 0;
-		FullScreen = 0;
-		VideoMode = 0;
-		VideoDriver = 0;
-		StatusLine = 0;
-		SceneTree = 0;
-		Tesselation = 0;
-		Gamma = 0;
-		Collision = 0;
-		Visible_Map = 0;
-		Visible_Shader = 0;
-		Visible_Fog = 0;
-		Visible_Unresolved = 0;
-		Respawn = 0;
-		MapList = 0;
-		Logo = 0;
-		ArchiveList = 0;
-		ArchiveAdd = 0;
-		ArchiveRemove = 0;
-		ArchiveFileOpen = 0;
+		memset ( this, 0, sizeof ( *this ) );
 	}
 
 	void drop()
@@ -410,12 +414,15 @@ struct GUI
 	IGUICheckBox* Visible_Shader;
 	IGUICheckBox* Visible_Fog;
 	IGUICheckBox* Visible_Unresolved;
+	IGUICheckBox* Visible_Skydome;
 	IGUIButton* Respawn;
 
 	IGUITable* ArchiveList;
 	IGUIButton* ArchiveAdd;
 	IGUIButton* ArchiveRemove;
 	IGUIFileOpenDialog* ArchiveFileOpen;
+	IGUIButton* ArchiveUp;
+	IGUIButton* ArchiveDown;
 
 	IGUIListBox* MapList;
 	IGUITreeView* SceneTree;
@@ -516,7 +523,7 @@ CQuake3EventHandler::~CQuake3EventHandler ()
 	Player[0].shutdown ();
 	sound_shutdown ();
 
-	Game->save();
+	Game->save( "explorer.cfg" );
 
 	Game->Device->drop();
 }
@@ -709,14 +716,21 @@ void CQuake3EventHandler::CreateGUI()
 	gui.Visible_Fog->setToolTipText ( L"Show or not show the Fog Nodes. \nPress F5 on your Keyboard" );
 	gui.Visible_Unresolved = env->addCheckBox ( true, rect<s32>( dim.Width - 110, 150, dim.Width - 10, 166 ), gui.Window,-1, L"Unresolved" );
 	gui.Visible_Unresolved->setToolTipText ( L"Show the or not show the Nodes the Engine can't handle. \nPress F6 on your Keyboard" );
+	gui.Visible_Skydome = env->addCheckBox ( true, rect<s32>( dim.Width - 110, 180, dim.Width - 10, 196 ), gui.Window,-1, L"Skydome" );
+	gui.Visible_Skydome->setToolTipText ( L"Show the or not show the Skydome." );
 
 	//Respawn = env->addButton ( rect<s32>( dim.Width - 260, 90, dim.Width - 10, 106 ), 0,-1, L"Respawn" );
 
 	env->addStaticText ( L"Archives:", rect<s32>( 5, dim.Height - 530, dim.Width - 600,dim.Height - 514 ),false, false, gui.Window, -1, false );
-	gui.ArchiveAdd = env->addButton ( rect<s32>( dim.Width - 700, dim.Height - 530, dim.Width - 620, dim.Height - 514 ), gui.Window,-1, L"add" );
-	gui.ArchiveAdd->setToolTipText ( L"Add an archive, usally packed zip-archives (*.pk3) to the Filesystem" );
-	gui.ArchiveRemove = env->addButton ( rect<s32>( dim.Width - 600, dim.Height - 530, dim.Width - 520, dim.Height - 514 ), gui.Window,-1, L"del" );
+
+	gui.ArchiveAdd = env->addButton ( rect<s32>( dim.Width - 725, dim.Height - 530, dim.Width - 665, dim.Height - 514 ), gui.Window,-1, L"add" );
+	gui.ArchiveAdd->setToolTipText ( L"Add an archive, usually packed zip-archives (*.pk3) to the Filesystem" );
+	gui.ArchiveRemove = env->addButton ( rect<s32>( dim.Width - 660, dim.Height - 530, dim.Width - 600, dim.Height - 514 ), gui.Window,-1, L"del" );
 	gui.ArchiveRemove->setToolTipText ( L"Remove the selected archive from the FileSystem." );
+	gui.ArchiveUp = env->addButton ( rect<s32>( dim.Width - 575, dim.Height - 530, dim.Width - 515, dim.Height - 514 ), gui.Window,-1, L"up" );
+	gui.ArchiveUp->setToolTipText ( L"Arrange Archive Look-up Hirachy. Move the selected Archive up" );
+	gui.ArchiveDown = env->addButton ( rect<s32>( dim.Width - 510, dim.Height - 530, dim.Width - 440, dim.Height - 514 ), gui.Window,-1, L"down" );
+	gui.ArchiveDown->setToolTipText ( L"Arrange Archive Look-up Hirachy. Move the selected Archive down" );
 
 
 	gui.ArchiveList = env->addTable ( rect<s32>( 5,dim.Height - 510, dim.Width - 450,dim.Height - 410 ), gui.Window  );
@@ -765,7 +779,7 @@ void CQuake3EventHandler::CreateGUI()
 */
 void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 {
-	io::IFileSystem *fs = Game->Device->getFileSystem();
+	IFileSystem *fs = Game->Device->getFileSystem();
 	u32 i;
 
 	if ( archiveName.size () )
@@ -794,9 +808,9 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 
 		for ( i = 0; i != fs->getFileArchiveCount(); ++i )
 		{
-			io::IFileArchive * archive = fs->getFileArchive ( i );
+			IFileArchive * archive = fs->getFileArchive ( i );
 
-			u32 index = gui.ArchiveList->addRow(0xffffffff);
+			u32 index = gui.ArchiveList->addRow(i);
 
 			gui.ArchiveList->setCellText ( index, 0, archive->getArchiveType () );
 			gui.ArchiveList->setCellText ( index, 1, archive->getArchiveName () );
@@ -825,10 +839,10 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 		core::stringw s;
 
 		//! browse the attached file system
-		fs->setFileListSystem ( io::FILESYSTEM_VIRTUAL );
+		fs->setFileListSystem ( FILESYSTEM_VIRTUAL );
 		fs->changeWorkingDirectoryTo ( "/maps/" );
-		io::IFileList *fileList = fs->createFileList ();
-		fs->setFileListSystem ( io::FILESYSTEM_NATIVE );
+		IFileList *fileList = fs->createFileList ();
+		fs->setFileListSystem ( FILESYSTEM_NATIVE );
 
 		for ( i=0; i< fileList->getFileCount(); ++i)
 		{
@@ -848,11 +862,13 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 				string<c16> filename;
 
 				filename = c + ".jpg";
-				image = driver->createImageFromFile( filename );
+				if ( fs->existFile ( filename ) )
+					image = driver->createImageFromFile( filename );
 				if ( 0 == image )
 				{
 					filename = c + ".tga";
-					image = driver->createImageFromFile( filename );
+					if ( fs->existFile ( filename ) )
+						image = driver->createImageFromFile( filename );
 				}
 
 				if ( image )
@@ -930,11 +946,11 @@ void CQuake3EventHandler::dropMap ()
 	dropElement ( MapParent );
 	dropElement ( SkyNode );
 
-	if ( Mesh )
-	{
-		Game->Device->getSceneManager ()->getMeshCache()->removeMesh ( Mesh );
-		Mesh = 0;
-	}
+	// clean out meshes, because textures are invalid
+	// TODO: better texture handling;-)
+	IMeshCache *cache = Game->Device->getSceneManager ()->getMeshCache();
+	cache->clear ();
+	Mesh = 0;
 }
 
 /*!
@@ -946,10 +962,10 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 
 	dropMap ();
 
-	io::IFileSystem *fs = Game->Device->getFileSystem();
+	IFileSystem *fs = Game->Device->getFileSystem();
 	ISceneManager *smgr = Game->Device->getSceneManager ();
 
-	io::IReadFile* file = fs->createMemoryReadFile ( &Game->loadParam, sizeof ( Game->loadParam ),
+	IReadFile* file = fs->createMemoryReadFile ( &Game->loadParam, sizeof ( Game->loadParam ),
 													L"levelparameter.cfg", false);
 
 	smgr->getMesh( file );
@@ -1075,8 +1091,33 @@ void CQuake3EventHandler::addSceneTreeItem( ISceneNode * parent, IGUITreeViewNod
 			swprintf ( msg, 128, L"%hs",(*it)->getName() );
 		}
 
-
 		node = nodeParent->addChildBack( msg, 0, imageIndex );
+
+		// Add all Animators
+		list<ISceneNodeAnimator*>::ConstIterator ait = (*it)->getAnimators().begin();
+		for (; ait != (*it)->getAnimators().end(); ++ait)
+		{
+			imageIndex = -1;
+			swprintf ( msg, 128, L"%hs",
+				Game->Device->getSceneManager ()->getAnimatorTypeName ( (*ait)->getType () )
+				);
+
+			switch ( (*ait)->getType () )
+			{
+				case ESNAT_FLY_CIRCLE:
+				case ESNAT_FLY_STRAIGHT:
+				case ESNAT_FOLLOW_SPLINE:
+				case ESNAT_ROTATION:
+				case ESNAT_TEXTURE:
+				case ESNAT_DELETION:
+				case ESNAT_COLLISION_RESPONSE:
+				case ESNAT_CAMERA_FPS:
+				case ESNAT_CAMERA_MAYA:
+					break;
+			}
+			node->addChildBack( msg, 0, imageIndex );
+		}
+
 		addSceneTreeItem ( *it, node );
 	}
 
@@ -1240,7 +1281,7 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 		{
 			if ( 0 == gui.ArchiveFileOpen )
 			{
-				Game->Device->getFileSystem()->setFileListSystem ( io::FILESYSTEM_NATIVE );
+				Game->Device->getFileSystem()->setFileListSystem ( FILESYSTEM_NATIVE );
 				gui.ArchiveFileOpen = Game->Device->getGUIEnvironment()->addFileOpenDialog ( L"Add Game Archive" , false,gui.Window  );
 			}
 		}
@@ -1259,6 +1300,19 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 		if ( eve.GUIEvent.Caller == gui.ArchiveFileOpen && eve.GUIEvent.EventType == gui::EGET_FILE_CHOOSE_DIALOG_CANCELLED )
 		{
 			gui.ArchiveFileOpen = 0;
+		}
+		else
+		if ( ( eve.GUIEvent.Caller == gui.ArchiveUp || eve.GUIEvent.Caller == gui.ArchiveDown ) &&
+			eve.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
+		{
+			s32 rel = eve.GUIEvent.Caller == gui.ArchiveUp ? -1 : 1;
+			if ( Game->Device->getFileSystem()->moveFileArchive ( gui.ArchiveList->getSelected (), rel ) )
+			{
+				s32 newIndex = core::s32_clamp ( gui.ArchiveList->getSelected() + rel, 0, gui.ArchiveList->getRowCount() - 1 );
+				AddArchive ( "" );
+				gui.ArchiveList->setSelected ( newIndex );
+				Game->CurrentMapName = "";
+			}
 		}
 		else
 		if ( eve.GUIEvent.Caller == gui.VideoDriver && eve.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED )
@@ -1338,6 +1392,16 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 			{
 				printf ( "shader node set visible %d\n",v );
 				ShaderParent->setVisible ( v );
+			}
+		}
+		else
+		if ( eve.GUIEvent.Caller == gui.Visible_Skydome && eve.GUIEvent.EventType == gui::EGET_CHECKBOX_CHANGED )
+		{
+			if ( SkyNode )
+			{
+				bool v = !SkyNode->isVisible();
+				printf ( "skynode set visible %d\n",v );
+				SkyNode->setVisible ( v );
 			}
 		}
 		else
@@ -1429,6 +1493,15 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 				EDS_NORMALS | EDS_MESH_WIRE_OVERLAY | EDS_BBOX_ALL:
 				EDS_OFF;
 */
+			if ( ItemParent )
+			{
+				list<ISceneNode*>::ConstIterator it = ItemParent->getChildren().begin();
+				for (; it != ItemParent->getChildren().end(); ++it)
+				{
+					(*it)->setDebugDataVisible ( value );
+				}
+			}
+
 			if ( ShaderParent )
 			{
 				list<ISceneNode*>::ConstIterator it = ShaderParent->getChildren().begin();
@@ -1815,7 +1888,7 @@ void CQuake3EventHandler::Animate()
 		wchar_t msg[128];
 		IVideoDriver * driver = Game->Device->getVideoDriver();
 
-		io::IAttributes * attr = smgr->getParameters();
+		IAttributes * attr = smgr->getParameters();
 		swprintf ( msg, 128, 
 			L"Q3 %s [%s], FPS:%03d Tri:%.03fm Cull %d/%d nodes (%d,%d,%d)",
 			Game->CurrentMapName.c_str(),
@@ -1872,6 +1945,9 @@ void runGame ( GameData *game )
 	// create an event receiver based on current game data
 	CQuake3EventHandler *eventHandler = new CQuake3EventHandler( game );
 
+	//! load stored config
+	game->load ( "explorer.cfg" );
+
 	//! add our media directory and archive to the file system
 	for ( u32 i = 0; i < game->CurrentArchiveList.size(); ++i )
 	{
@@ -1910,7 +1986,7 @@ void runGame ( GameData *game )
 	{
 		eventHandler->Animate ();
 		eventHandler->Render ();
-		if ( !game->Device->isWindowActive() )
+		//if ( !game->Device->isWindowActive() )
 			game->Device->yield();
 	}
 

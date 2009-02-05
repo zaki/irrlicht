@@ -19,7 +19,7 @@ namespace scene
 		CSceneNodeAnimatorFlyStraight(const core::vector3df& startPoint,
 						const core::vector3df& endPoint,
 						u32 timeForWay,
-						bool loop, u32 now);
+						bool loop, u32 now, bool pingpong);
 
 		//! destructor
 		virtual ~CSceneNodeAnimatorFlyStraight();
@@ -54,6 +54,7 @@ namespace scene
 		u32 StartTime;
 		u32 TimeForWay;
 		bool Loop;
+		bool PingPong;
 	};
 
 

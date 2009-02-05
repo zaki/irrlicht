@@ -377,9 +377,19 @@ void CGUITable::clearRows()
 }
 
 
+/*!
+*/
 s32 CGUITable::getSelected() const
 {
 	return Selected;
+}
+
+//! set wich row is currently selected
+void CGUITable::setSelected( s32 index )
+{
+	Selected = -1;
+	if ( index >= 0 && index < (s32) Rows.size() )
+		Selected = index;
 }
 
 

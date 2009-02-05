@@ -88,7 +88,7 @@ public:
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
 	\return Returns true if the archive was added successful, false if not. */
-	virtual bool registerFileArchive( const core::string<c16>& filename, bool ignoreCase = true, bool ignorePaths = true, s32 index = -1) = 0;
+	virtual bool registerFileArchive( const core::string<c16>& filename, bool ignoreCase = true, bool ignorePaths = true) = 0;
 
 	//! Adds an external archive loader to the engine.
 	virtual void addArchiveLoader(IArchiveLoader* loader) = 0;
@@ -98,6 +98,9 @@ public:
 
 	//! removes an archive from the file system.
 	virtual bool unregisterFileArchive( u32 index ) = 0;
+
+	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
+	virtual bool moveFileArchive( u32 sourceIndex, s32 relative ) = 0;
 
 	//! get the Archive number index
 	virtual IFileArchive* getFileArchive( u32 index ) = 0;

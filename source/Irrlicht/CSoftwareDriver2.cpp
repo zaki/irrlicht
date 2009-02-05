@@ -113,13 +113,12 @@ CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<u32>& windowSiz
 	umr->drop ();
 
 	// select render target
-
 	setRenderTarget(BackBuffer);
 
-	LightSpace.Global_AmbientLight.set ( 0.f, 0.f, 0.f, 0.f );
+	//reset Lightspace
+	LightSpace.reset ();
 
 	// select the right renderer
-	//CurrentShader = BurningShader[ETR_REFERENCE];
 	setCurrentShader();
 }
 
@@ -150,42 +149,37 @@ CBurningVideoDriver::~CBurningVideoDriver()
 }
 
 
-//! void selects the right triangle renderer based on the render states.
+/*!
+	selects the right triangle renderer based on the render states.
+*/
 void CBurningVideoDriver::setCurrentShader()
 {
-	EBurningFFShader shader = ETR_TEXTURE_GOURAUD;
+	ITexture *texture0 = Material.org.getTexture(0);
+	ITexture *texture1 = Material.org.getTexture(1);
 
-	bool zMaterialTest = true;
+	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER && 
+							Material.org.ZWriteEnable &&
+							( AllowZWriteOnTransparent || !Material.org.isTransparent() );
+
+	EBurningFFShader shader = zMaterialTest ? ETR_TEXTURE_GOURAUD : ETR_TEXTURE_GOURAUD_NOZ;
+
 	switch ( Material.org.MaterialType )
 	{
 		case EMT_ONETEXTURE_BLEND:
 			shader = ETR_TEXTURE_BLEND;
-			zMaterialTest = false;
 			break;
 
 		case EMT_TRANSPARENT_ALPHA_CHANNEL_REF:
 		case EMT_TRANSPARENT_ALPHA_CHANNEL:
-			if ( Material.org.ZBuffer != ECFN_NEVER )
+			if ( texture0 && texture0->hasAlpha () )
 			{
-				shader = ETR_TEXTURE_GOURAUD_ALPHA;
+				shader = zMaterialTest ? ETR_TEXTURE_GOURAUD_ALPHA : ETR_TEXTURE_GOURAUD_ALPHA_NOZ;
+				break;
 			}
-			else
-			{
-				shader = ETR_TEXTURE_GOURAUD_ALPHA_NOZ;
-			}
-			zMaterialTest = false;
-			break;
+			// fall through
 
 		case EMT_TRANSPARENT_ADD_COLOR:
-			if ( Material.org.ZBuffer != ECFN_NEVER )
-			{
-				shader = ETR_TEXTURE_GOURAUD_ADD;
-			}
-			else
-			{
-				shader = ETR_TEXTURE_GOURAUD_ADD_NO_Z;
-			}
-			zMaterialTest = false;
+			shader = zMaterialTest ? ETR_TEXTURE_GOURAUD_ADD : ETR_TEXTURE_GOURAUD_ADD_NO_Z;
 			break;
 
 		case EMT_TRANSPARENT_VERTEX_ALPHA:
@@ -203,16 +197,16 @@ void CBurningVideoDriver::setCurrentShader()
 			break;
 
 		case EMT_LIGHTMAP_LIGHTING_M4:
-			if ( Material.org.getTexture(1) )
+			if ( texture1 )
 				shader = ETR_TEXTURE_GOURAUD_LIGHTMAP_M4;
 			break;
 		case EMT_LIGHTMAP_M4:
-			if ( Material.org.getTexture(1) )
+			if ( texture1 )
 				shader = ETR_TEXTURE_LIGHTMAP_M4;
 			break;
 
 		case EMT_LIGHTMAP_ADD:
-			if ( Material.org.getTexture(1) )
+			if ( texture1 )
 				shader = ETR_TEXTURE_GOURAUD_LIGHTMAP_ADD;
 			break;
 
@@ -229,12 +223,7 @@ void CBurningVideoDriver::setCurrentShader()
 
 	}
 
-	if ( zMaterialTest && (Material.org.ZBuffer==ECFN_NEVER) && !Material.org.ZWriteEnable)
-	{
-		shader = ETR_TEXTURE_GOURAUD_NOZ;
-	}
-
-	if ( 0 == Material.org.getTexture(0) )
+	if ( !texture0 )
 	{
 		shader = ETR_GOURAUD;
 	}
@@ -264,11 +253,6 @@ void CBurningVideoDriver::setCurrentShader()
 			default:
 			break;
 		}
-	}
-
-	if ( shader != ETR_TEXTURE_BLEND )
-	{
-		//CurrentShader = 0;
 	}
 
 }
@@ -317,6 +301,7 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 				Transformation[ETS_PROJECTION],
 				Transformation[ETS_VIEW]
 			);
+			TransformationFlag [ ETS_VIEW_INVERSE ] = 0;
 			break;
 
 		case ETS_WORLD:
@@ -332,55 +317,10 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 				);
 			}
 			TransformationFlag[ETS_CURRENT] = 0;
-
-#ifdef SOFTWARE_DRIVER_2_LIGHTING
-			if ( Material.org.Lighting )
-			{
-				if ( TransformationFlag[state] )
-				{
-					Transformation[ETS_WORLD_VIEW] = Transformation[ETS_VIEW];
-				}
-				else
-				{
-					Transformation[ETS_WORLD_VIEW].setbyproduct_nocheck (
-						Transformation[ETS_VIEW],
-						Transformation[ETS_WORLD]
-					);
-				}
-				core::matrix4 m2 ( Transformation[ETS_WORLD_VIEW] );
-				m2.makeInverse ();
-				m2.getTransposed ( Transformation[ETS_WORLD_VIEW_INVERSE_TRANSPOSED] );
-			}
-#endif
 			break;
 		default:
 			break;
 	}
-}
-
-
-//! sets a material
-void CBurningVideoDriver::setMaterial(const SMaterial& material)
-{
-	Material.org = material;
-	OverrideMaterial.apply(Material.org);
-
-	Material.AmbientColor.setA8R8G8B8 ( Material.org.AmbientColor.color );
-	Material.DiffuseColor.setA8R8G8B8 ( Material.org.DiffuseColor.color );
-	Material.EmissiveColor.setA8R8G8B8 ( Material.org.EmissiveColor.color );
-	Material.SpecularColor.setA8R8G8B8 ( Material.org.SpecularColor.color );
-
-	Material.SpecularEnabled = Material.org.Shininess != 0.f;
-	if (Material.SpecularEnabled)
-		Material.org.NormalizeNormals = true;
-
-	for (u32 i = 0; i < 2; ++i)
-	{
-		setTransform((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
-				material.getTextureMatrix(i));
-	}
-
-	setCurrentShader();
 }
 
 
@@ -891,7 +831,6 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 	Transformation [ ETS_CURRENT].transformVect ( &dest->Pos.x, ((S3DVertex*) source )->Pos );
 
 #ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
-
 	// light Vertex
 	#ifdef SOFTWARE_DRIVER_2_LIGHTING
 		lightVertex ( dest, ((S3DVertex*) source ) );
@@ -1374,13 +1313,6 @@ s32 CBurningVideoDriver::addDynamicLight(const SLight& dl)
 	l.org = dl;
 	l.LightIsOn = true;
 
-	// light in eye space
-	Transformation[ETS_VIEW].transformVect ( &l.posEyeSpace.x, l.org.Position );
-
-	l.constantAttenuation = l.org.Attenuation.X;
-	l.linearAttenuation = l.org.Attenuation.Y;
-	l.quadraticAttenuation = l.org.Attenuation.Z;
-
 	l.AmbientColor.setColorf ( l.org.AmbientColor );
 	l.DiffuseColor.setColorf ( l.org.DiffuseColor );
 	l.SpecularColor.setColorf ( l.org.SpecularColor );
@@ -1388,9 +1320,22 @@ s32 CBurningVideoDriver::addDynamicLight(const SLight& dl)
 	switch ( dl.Type )
 	{
 		case video::ELT_DIRECTIONAL:
-		{
-			l.posEyeSpace.normalize_xyz ();
-		} break;
+			l.posLightSpace.x = -l.org.Direction.X;
+			l.posLightSpace.y = -l.org.Direction.Y;
+			l.posLightSpace.z = -l.org.Direction.Z;
+			l.posLightSpace.w = 1.f;
+			break;
+		case ELT_POINT:
+		case ELT_SPOT:
+			LightSpace.Flags |= POINTLIGHT;
+			l.posLightSpace.x = l.org.Position.X;
+			l.posLightSpace.y = l.org.Position.Y;
+			l.posLightSpace.z = l.org.Position.Z;
+			l.posLightSpace.w = 1.f;
+			l.constantAttenuation = l.org.Attenuation.X;
+			l.linearAttenuation = l.org.Attenuation.Y;
+			l.quadraticAttenuation = l.org.Attenuation.Z;
+			break;
 	}
 
 	LightSpace.Light.push_back ( l );
@@ -1408,7 +1353,7 @@ void CBurningVideoDriver::turnLightOn(s32 lightIndex, bool turnOn)
 //! deletes all dynamic lights there are
 void CBurningVideoDriver::deleteAllDynamicLights()
 {
-	LightSpace.Light.set_used ( 0 );
+	LightSpace.reset ();
 	CNullDriver::deleteAllDynamicLights();
 
 }
@@ -1420,15 +1365,52 @@ u32 CBurningVideoDriver::getMaximalDynamicLightAmount() const
 }
 
 
+//! sets a material
+void CBurningVideoDriver::setMaterial(const SMaterial& material)
+{
+	Material.org = material;
+
+#ifdef SOFTWARE_DRIVER_2_TEXTURE_TRANSFORM
+	for (u32 i = 0; i < 2; ++i)
+	{
+		setTransform((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
+				material.getTextureMatrix(i));
+	}
+#endif
 
 #ifdef SOFTWARE_DRIVER_2_LIGHTING
+	Material.AmbientColor.setA8R8G8B8 ( Material.org.AmbientColor.color );
+	Material.DiffuseColor.setA8R8G8B8 ( Material.org.DiffuseColor.color );
+	Material.EmissiveColor.setA8R8G8B8 ( Material.org.EmissiveColor.color );
+	Material.SpecularColor.setA8R8G8B8 ( Material.org.SpecularColor.color );
+
+	core::setbit_cond ( LightSpace.Flags, Material.org.Shininess != 0.f, SPECULAR );
+	core::setbit_cond ( LightSpace.Flags, Material.org.FogEnable, FOG );
+	core::setbit_cond ( LightSpace.Flags, Material.org.NormalizeNormals, NORMALIZE );
+#endif
+
+	setCurrentShader();
+}
+
+
+
+#ifdef SOFTWARE_DRIVER_2_LIGHTING
+
+//! Sets the fog mode.
+void CBurningVideoDriver::setFog(SColor color, bool linearFog, f32 start,
+	f32 end, f32 density, bool pixelFog, bool rangeFog)
+{
+	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
+	LightSpace.FogColor.setA8R8G8B8 ( color.color );
+}
+
 
 /*!
 */
 void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source )
 {
 	// apply lighting model
-	if ( false == Material.org.Lighting )
+	if ( !Material.org.Lighting )
 	{
 		// should use the DiffuseColor but using pre-lit vertex color
 		dest->Color[0].setA8R8G8B8 ( source->Color.color );
@@ -1437,44 +1419,51 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source
 
 	sVec4 dColor;
 
+	dColor = LightSpace.Global_AmbientLight;
+	dColor += Material.EmissiveColor;
+
 	if ( Lights.size () == 0 )
 	{
-		dColor = LightSpace.Global_AmbientLight;
-		dColor += Material.EmissiveColor;
 		dColor.saturate();
-
 		dest->Color[0] = dColor;
 		return;
 	}
 
-	// eyespace
-/*
-	core::matrix4 modelview = Transformation[ETS_WORLD].m * Transformation[ETS_VIEW].m;
+	sVec4 vertexLightSpace;
+	sVec4 normalLightSpace;
+	sVec4 eyeLightSpace;
 
-	core::matrix4 m2 ( modelview );
-	m2.makeInverse ();
-	core::matrix4 modelviewinversetransposed ( m2.getTransposed() );
-*/
+	// vertex normal in light space
+	Transformation[ETS_WORLD].rotateVect ( &normalLightSpace.x, source->Normal );
+	if ( LightSpace.Flags & NORMALIZE )
+		normalLightSpace.normalize_xyz();
 
-	sVec4 vertexEyeSpace;
-	sVec4 normalEyeSpace;
-	sVec4 vertexEyeSpaceUnit;
+	// vertex in light space
+	if ( LightSpace.Flags & ( POINTLIGHT | FOG | SPECULAR ) )
+		Transformation[ETS_WORLD].transformVect ( &vertexLightSpace.x, source->Pos );
 
-	// vertex in eye space
-	Transformation[ETS_WORLD_VIEW].transformVect ( &vertexEyeSpace.x, source->Pos );
-	vertexEyeSpace.project_xyz ();
-
-	vertexEyeSpaceUnit = vertexEyeSpace;
-	vertexEyeSpaceUnit.normalize_xyz();
-
-	// vertex normal in eye-space
-	//modelviewinversetransposed.transformVect ( &normalEyeSpace.x, source->Normal );
-	Transformation[ETS_WORLD_VIEW_INVERSE_TRANSPOSED].rotateVect ( &normalEyeSpace.x, source->Normal );
-	if ( Material.org.NormalizeNormals )
+	// eye in in light space
+	if ( LightSpace.Flags & ( FOG | SPECULAR ) )
 	{
-		normalEyeSpace.normalize_xyz();
-	}
+		if ( !TransformationFlag [ETS_VIEW_INVERSE] )
+		{
+			Transformation[ETS_VIEW_INVERSE] = Transformation[ ETS_VIEW ];
+			Transformation[ETS_VIEW_INVERSE].makeInverse ();
+			TransformationFlag[ETS_VIEW_INVERSE] = 1;
+		}
+		const f32 *M = Transformation[ETS_VIEW_INVERSE].pointer ();
 
+		/*	The  viewpoint is at (0., 0., 0.) in eye space.
+			Turning this into a vector [0 0 0 1] and multiply it by
+			the inverse of the view matrix, the resulting vector is the
+			object space location of the camera.
+		*/
+
+		eyeLightSpace.x = M[12];
+		eyeLightSpace.y = M[13];
+		eyeLightSpace.z = M[14];
+		eyeLightSpace.w = 1.f;
+	}
 
 	sVec4 ambient;
 	sVec4 diffuse;
@@ -1486,91 +1475,96 @@ void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source
 	diffuse.set ( 0.f, 0.f, 0.f, 0.f );
 	specular.set ( 0.f, 0.f, 0.f, 0.f );
 
-	f32 attenuation = 1.f;
 
 	u32 i;
+	f32 dot;
+	f32 len;
+	f32 attenuation;
+	sVec4 vp;			// unit vector vertex to light
+	sVec4 lightHalf;	// blinn-phong reflection
+
 	for ( i = 0; i!= LightSpace.Light.size (); ++i )
 	{
 		const SBurningShaderLight &light = LightSpace.Light[i];
 
-		sVec4 vp;			// unit vector vertex to light
-		sVec4 lightHalf;		// blinn-phong reflection
-
-
 		switch ( light.org.Type )
 		{
+			case video::ELT_SPOT:
 			case video::ELT_POINT:
-			{
 				// surface to light
-				vp.x = light.posEyeSpace.x - vertexEyeSpace.x;
-				vp.y = light.posEyeSpace.y - vertexEyeSpace.y;
-				vp.z = light.posEyeSpace.z - vertexEyeSpace.z;
+				vp.x = light.posLightSpace.x - vertexLightSpace.x;
+				vp.y = light.posLightSpace.y - vertexLightSpace.y;
+				vp.z = light.posLightSpace.z - vertexLightSpace.z;
 
-				// irrlicht attenuation model
-#if 0
-				const f32 d = vp.get_inverse_length_xyz();
+				len = vp.get_length_xyz_square();
+				if ( light.org.Radius * light.org.Radius < len )
+					continue;
 
-				vp.x *= d;
-				vp.y *= d;
-				vp.z *= d;
-				attenuation = light.org.Radius * d;
+				len = core::squareroot ( len );
+				attenuation = light.constantAttenuation +
+							( 1.f - (len * light.linearAttenuation) );
 
-#else
-				const f32 d = vp.get_length_xyz();
-				attenuation = core::reciprocal (light.constantAttenuation +
-									light.linearAttenuation * d +
-									light.quadraticAttenuation * d * d
-								);
+/*
+				attenuation = light.constantAttenuation +
+									light.linearAttenuation * attenuation +
+									light.quadraticAttenuation * attenuation * attenuation;
+*/
+				// accumulate ambient
+				ambient += light.AmbientColor * attenuation;
 
-				// normalize surface to light
-				vp.normalize_xyz();
-#endif
 
-				lightHalf.x = vp.x - vertexEyeSpaceUnit.x;
-				lightHalf.y = vp.y - vertexEyeSpaceUnit.y;
-				lightHalf.z = vp.z - vertexEyeSpaceUnit.z;
+				// build diffuse reflection
+
+				//angle between normal and light vector
+				vp *= core::reciprocal ( len );
+				dot = normalLightSpace.dot_xyz ( vp );
+				if ( dot < 0.f )
+					continue;
+
+				// diffuse component
+				diffuse += light.DiffuseColor * ( dot * attenuation );
+
+				if ( !(LightSpace.Flags & SPECULAR) )
+					continue;
+
+				// build specular
+				// surface to view
+				lightHalf.x = eyeLightSpace.x - vertexLightSpace.x;
+				lightHalf.y = eyeLightSpace.y - vertexLightSpace.y;
+				lightHalf.z = eyeLightSpace.z - vertexLightSpace.z;
+				lightHalf.normalize_xyz();
+				lightHalf += vp;
 				lightHalf.normalize_xyz();
 
-			} break;
+				// specular
+				dot = normalLightSpace.dot_xyz ( lightHalf );
+				if ( dot < 0.f )
+					continue;
+
+				//specular += light.SpecularColor * ( powf ( Material.org.Shininess ,dot ) * attenuation );
+				specular += light.SpecularColor * ( dot * attenuation );
+				break;
 
 			case video::ELT_DIRECTIONAL:
-			{
-				attenuation = 1.f;
-				vp = light.posEyeSpace;
 
-				// half angle = lightvector + eye vector ( 0, 0, 1 )
-				lightHalf.x = vp.x;
-				lightHalf.y = vp.y;
-				lightHalf.z = vp.z - 1.f;
-				lightHalf.normalize_xyz();
-			} break;
+				// accumulate ambient
+				ambient += light.AmbientColor;
+
+				//angle between normal and light vector
+				dot = normalLightSpace.dot_xyz ( light.posLightSpace );
+				if ( dot < 0.f )
+					continue;
+
+				// diffuse component
+				diffuse += light.DiffuseColor * dot;
+				if ( !(LightSpace.Flags & SPECULAR) )
+					continue;
+				break;
 		}
-
-		// build diffuse reflection
-
-		//angle between normal and light vector
-		f32 dotVP = core::max_ ( 0.f, normalEyeSpace.dot_xyz ( vp ) );
-		f32 dotHV = core::max_ ( 0.f, normalEyeSpace.dot_xyz ( lightHalf ) );
-
-		f32 pf;
-		if ( dotVP == 0.0 )
-		{
-			pf = 0.f;
-		}
-		else
-		{
-			pf = (f32)pow(dotHV, Material.org.Shininess );
-		}
-
-		// accumulate ambient
-		ambient += light.AmbientColor * attenuation;
-		diffuse += light.DiffuseColor * ( dotVP * attenuation );
-		specular += light.SpecularColor * ( pf * attenuation );
 
 	}
 
-	dColor = LightSpace.Global_AmbientLight;
-	dColor += Material.EmissiveColor;
+	// sum up lights
 	dColor += ambient * Material.AmbientColor;
 	dColor += diffuse * Material.DiffuseColor;
 	dColor += specular * Material.SpecularColor;
@@ -1857,13 +1851,13 @@ void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 const wchar_t* CBurningVideoDriver::getName() const
 {
 #ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	return L"burnings video 0.40b";
+	return L"Burning's Video 0.42 beautiful";
 #elif defined ( BURNINGVIDEO_RENDERER_ULTRA_FAST )
-	return L"burnings video 0.40uf";
+	return L"Burning's Video 0.42 ultra fast";
 #elif defined ( BURNINGVIDEO_RENDERER_FAST )
-	return L"burnings video 0.40f";
+	return L"Burning's Video 0.42 fast";
 #else
-	return L"burnings video 0.40";
+	return L"Burning's Video 0.42";
 #endif
 }
 

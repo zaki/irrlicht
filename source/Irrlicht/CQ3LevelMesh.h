@@ -57,14 +57,19 @@ namespace scene
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
 		//! loads the shader definition
+		virtual void getShader( io::IReadFile* file );
+
+		//! loads the shader definition
 		virtual const quake3::IShader * getShader( const c8 * filename, bool fileNameIsValid=true );
 
 		//! returns a already loaded Shader
 		virtual const quake3::IShader * getShader( u32 index  ) const;
 
 
+		//! loads a configuration file
+		virtual void getConfiguration( io::IReadFile* file );
 		//! get's an interface to the entities
-		virtual quake3::tQ3EntityList & getEntityList( const c8 * fileName );
+		virtual quake3::tQ3EntityList & getEntityList();
 
 
 		//Link to held meshes? ...
@@ -419,17 +424,20 @@ namespace scene
 		SQ3Parser Parser;
 
 
-		typedef void( CQ3LevelMesh::*tParserCallback ) ( quake3::SVarGroupList *& groupList );
+		typedef void( CQ3LevelMesh::*tParserCallback ) ( quake3::SVarGroupList *& groupList, eToken token );
 		void parser_parse( const void * data, u32 size, tParserCallback callback );
 		void parser_nextToken();
 
 		void dumpVarGroup( const quake3::SVarGroup * group, s32 stack ) const;
 
-		void scriptcallback_entity( quake3::SVarGroupList *& grouplist );
+		void scriptcallback_entity( quake3::SVarGroupList *& grouplist, eToken token );
+		void scriptcallback_shader( quake3::SVarGroupList *& grouplist, eToken token );
+		void scriptcallback_config( quake3::SVarGroupList *& grouplist, eToken token );
+
+		core::array < quake3::IShader > Shader;
 		core::array < quake3::IShader > Entity;		//quake3::tQ3EntityList Entity;
 
-		void scriptcallback_shader( quake3::SVarGroupList *& grouplist );
-		core::array < quake3::IShader > Shader;
+
 		quake3::tStringList ShaderFile;
 		void InitShader();
 		void ReleaseShader();

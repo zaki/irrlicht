@@ -12,10 +12,11 @@
 #include "CMeshBuffer.h"
 
 /*!
-	if defined OCTTREE_USE_HARDWARE octree uses interally a derived scene::CMeshBuffer
+	Flags for Octtree
 */
-#define OCTTREE_USE_HARDWARE
-#define OCTTREE_PARENTTEST
+#define OCTTREE_USE_HARDWARE	// use meshbuffer for drawing, enables hardware acceleration
+#define OCTTREE_PARENTTEST		// bypass full invisible/visible test
+#define OCTTREE_BOX_BASED		// use bounding box or frustum for calculate polys
 
 namespace irr
 {
@@ -276,6 +277,7 @@ private:
 		// by this bounding box.
 		void getPolys(const core::aabbox3d<f32>& box, SIndexData* idxdata, u32 parentTest ) const
 		{
+#if defined (OCTTREE_PARENTTEST )
 			// if not full inside
 			if ( parentTest != 2 )
 			{
@@ -286,8 +288,9 @@ private:
 				// fully inside ?
 				parentTest = Box.isFullInside(box)?2:1;
 			}
-
-			//if (Box.intersectsWithBox(box))
+#else
+			if (Box.intersectsWithBox(box))
+#endif
 			{
 				const u32 cnt = IndexData->size();
 				u32 i; // new ISO for scoping problem in some compilers

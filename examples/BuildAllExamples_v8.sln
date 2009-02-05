@@ -19,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "07.Collision_vc8", "07.Collision\Collision_vc8.vcproj", "{3E30297B-5BE3-4A5C-B31E-08A28ADDB29E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "08.SpecialFX_vc8", "08.SpecialFX\SpecialFX_vc8.vcproj", "{C869BF55-B9D6-4980-BC92-60FA0CF8411A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "09.Meshviewer_vc8", "09.Meshviewer\Meshviewer_vc8.vcproj", "{2AE24484-22FC-481B-9A40-7CD0DA5C8E06}"
 EndProject
@@ -29,10 +32,16 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "12.TerrainRendering_vc8", "12.TerrainRendering\TerrainRendering_vc8.vcproj", "{3A5B74E5-6390-43B0-A459-2793B81FFD31}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "13.RenderToTexture_vc8", "13.RenderToTexture\RenderToTexture_vc8.vcproj", "{0914E5C8-5352-467B-8421-C9EB35BD5596}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "14.Win32Window_vc8", "14.Win32Window\Win32Window_vc8.vcproj", "{772FBE05-D05A-467B-9842-BEC409EEA8D0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "15.LoadIrrFile_vc8", "15.LoadIrrFile\LoadIrrFile_vc8.vcproj", "{78C9F424-523C-49AC-94B7-823AA4A26BF9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Irrlicht", "..\source\Irrlicht\Irrlicht8.0.vcproj", "{E08E042A-6C45-411B-92BE-3CC31331019F}"
 EndProject

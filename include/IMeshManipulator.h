@@ -162,6 +162,14 @@ namespace scene
 		information. */
 		virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const = 0;
 
+		//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
+		/** \param mesh Input mesh
+		\return Mesh consisting only of S3DVertex vertices. If
+		you no longer need the cloned mesh, you should call
+		IMesh::drop(). See IReferenceCounted::drop() for more
+		information. */
+		virtual IMesh* createMeshWith1TCoords(IMesh* mesh) const = 0;
+
 		//! Creates a copy of a mesh with all vertices unwelded
 		/** \param mesh Input mesh
 		\return Mesh consisting only of unique faces. All vertices

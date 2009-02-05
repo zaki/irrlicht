@@ -25,16 +25,12 @@ namespace scene
 		\param fileNameIsValid Specifies whether the filename is valid in the current situation. */
 		virtual const quake3::IShader* getShader( const c8* filename, bool fileNameIsValid=true ) = 0;
 
-		virtual const quake3::IShader* getShader( const core::string<c16>& filename,bool fileNameIsValid=true )
-		{
-			return getShader ( core::stringc ( filename ).c_str(), fileNameIsValid );
-		}
-
 		//! returns a already loaded Shader
 		virtual const quake3::IShader* getShader(u32 index) const = 0;
 
 		//! get's an interface to the entities
-		virtual quake3::tQ3EntityList& getEntityList( const c8 * filename = 0) = 0;
+		virtual quake3::tQ3EntityList& getEntityList() = 0;
+
 	};
 
 } // end namespace scene

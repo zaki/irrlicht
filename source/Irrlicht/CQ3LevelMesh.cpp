@@ -439,6 +439,16 @@ inline bool isQ3WhiteSpace( const u8 symbol )
 
 /*!
 */
+inline bool isQ3ValidName( const u8 symbol )
+{
+	return	(symbol >= 'a' && symbol <= 'z' ) ||
+			(symbol >= 'A' && symbol <= 'Z' ) ||
+			(symbol >= '0' && symbol <= '9' ) ||
+			(symbol == '/' || symbol == '_' || symbol == '.' );
+}
+
+/*!
+*/
 void CQ3LevelMesh::parser_nextToken()
 {
 	u8 symbol;
@@ -537,7 +547,7 @@ void CQ3LevelMesh::parser_nextToken()
 	Parser.token.append( symbol );
 
 	// continue till whitespace
-	bool notisWhite = true;
+	bool validName = true;
 	do
 	{
 		if ( Parser.index >= Parser.sourcesize )
@@ -547,15 +557,13 @@ void CQ3LevelMesh::parser_nextToken()
 		}
 		symbol = Parser.source [ Parser.index ];
 
-		notisWhite = ! isQ3WhiteSpace( symbol );
-		if ( notisWhite )
+		validName = isQ3ValidName( symbol );
+		if ( validName )
 		{
 			Parser.token.append( symbol );
+			Parser.index += 1;
 		}
-
-		Parser.index += 1;
-
-	} while ( notisWhite );
+	} while ( validName );
 
 	Parser.tokenresult = Q3_TOKEN_TOKEN;
 	return;
@@ -639,7 +647,7 @@ void CQ3LevelMesh::parser_parse( const void * data, const u32 size, CQ3LevelMesh
 				// close tag for first
 				if ( active == 1 )
 				{
-					(this->*callback)( groupList );
+					(this->*callback)( groupList, Q3_TOKEN_END_LIST );
 
 					// new group
 					groupList->drop();
@@ -656,6 +664,8 @@ void CQ3LevelMesh::parser_parse( const void * data, const u32 size, CQ3LevelMesh
 		}
 
 	} while ( Parser.tokenresult != Q3_TOKEN_EOF );
+
+	(this->*callback)( groupList, Q3_TOKEN_EOF );
 
 	groupList->drop();
 }
@@ -1354,16 +1364,49 @@ void CQ3LevelMesh::createCurvedSurface_bezier(SMeshBufferLightMap* meshBuffer,
 
 
 
+/*!
+	Loads entities from file
+*/
+void CQ3LevelMesh::getConfiguration( io::IReadFile* file )
+{
+	tBSPLump l;
+	l.offset = file->getPos();
+	l.length = file->getSize ();
+
+	core::array<u8> entity;
+	entity.set_used( l.length + 2 );
+	entity[l.length + 1 ] = 0;
+
+	file->seek(l.offset);
+	file->read( entity.pointer(), l.length);
+
+	parser_parse( entity.pointer(), l.length, &CQ3LevelMesh::scriptcallback_config );
+
+	if ( Entity.size () )
+		Entity.getLast().name = file->getFileName();
+}
+
+// entity only has only one valid level.. and no assoziative name..
+void CQ3LevelMesh::scriptcallback_config( SVarGroupList *& grouplist, eToken token )
+{
+	if ( token == Q3_TOKEN_END_LIST || 0 == grouplist->VariableGroup[0].Variable.size () )
+		return;
+
+	grouplist->grab();
+
+	SEntity element;
+	element.VarGroup = grouplist;
+	element.id = Entity.size();
+	element.name = "configuration";
+
+	Entity.push_back( element );
+}
+
 
 //! get's an interface to the entities
-tQ3EntityList & CQ3LevelMesh::getEntityList( const c8 * fileName )
+tQ3EntityList & CQ3LevelMesh::getEntityList()
 {
-	if ( fileName )
-	{
-	}
-
-	Entity.sort();
-
+//	Entity.sort();
 	return Entity;
 }
 
@@ -1450,15 +1493,38 @@ const IShader* CQ3LevelMesh::getShader( const c8 * filename, bool fileNameIsVali
 		return 0;
 	}
 
-	io::IReadFile *file = FileSystem->createAndOpenFile( loadFile.c_str() );
-	if ( 0 == file )
-		return 0;
-
 	if ( LoadParam.verbose )
 	{
 		message = loadFile + " for " + searchName;
 		os::Printer::log("quake3:getShader Load shader", message.c_str(), ELL_INFORMATION);
 	}
+
+
+	io::IReadFile *file = FileSystem->createAndOpenFile( loadFile.c_str() );
+	if ( file )
+	{
+		getShader ( file );
+		if ( LoadParam.verbose > 1 )
+		{
+			message = searchName + " found " + Shader[index].name;
+			os::Printer::log("quake3:getShader", message.c_str(), ELL_INFORMATION);
+		}
+		file->drop ();
+	}
+
+
+	// search again
+	index = Shader.linear_search( search );
+	return index >= 0 ? &Shader[index] : 0;
+}
+
+/*!
+	loads the shader definition
+*/
+void CQ3LevelMesh::getShader( io::IReadFile* file )
+{
+	if ( 0 == file )
+		return;
 
 	// load script
 	core::array<u8> script;
@@ -1468,27 +1534,10 @@ const IShader* CQ3LevelMesh::getShader( const c8 * filename, bool fileNameIsVali
 
 	file->seek( 0 );
 	file->read( script.pointer(), len );
-	file->drop();
-
 	script[ len + 1 ] = 0;
 
 	// start a parser instance
 	parser_parse( script.pointer(), len, &CQ3LevelMesh::scriptcallback_shader );
-
-	// search again
-	index = Shader.linear_search( search );
-	if ( index >= 0 )
-	{
-		if ( LoadParam.verbose > 1 )
-		{
-			message = searchName + " found " + Shader[index].name;
-			os::Printer::log("quake3:getShader", message.c_str(), ELL_INFORMATION);
-		}
-
-		return &Shader[index];
-	}
-
-	return 0;
 }
 
 
@@ -1572,9 +1621,9 @@ void CQ3LevelMesh::ReleaseEntity()
 
 
 // entity only has only one valid level.. and no assoziative name..
-void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist )
+void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist, eToken token )
 {
-	if ( grouplist->VariableGroup.size() != 2 )
+	if ( token != Q3_TOKEN_END_LIST || grouplist->VariableGroup.size() != 2 )
 		return;
 
 	grouplist->grab();
@@ -1590,8 +1639,11 @@ void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist )
 
 
 //!. script callback for shaders
-void CQ3LevelMesh::scriptcallback_shader( SVarGroupList *& grouplist )
+void CQ3LevelMesh::scriptcallback_shader( SVarGroupList *& grouplist,eToken token )
 {
+	if ( token != Q3_TOKEN_END_LIST )
+		return;
+
 	// TODO: There might be something wrong with this fix, but it avoids a core dump...
 	if (grouplist->VariableGroup[0].Variable.size()==0)
 		return;
@@ -1603,7 +1655,11 @@ void CQ3LevelMesh::scriptcallback_shader( SVarGroupList *& grouplist )
 	element.VarGroup = grouplist;
 	element.name = element.VarGroup->VariableGroup[0].Variable[0].name;
 	element.id = Shader.size();
-
+/*
+	core::stringc s;
+	dumpShader ( s, &element );
+	printf ( s.c_str () );
+*/
 	Shader.push_back( element );
 }
 

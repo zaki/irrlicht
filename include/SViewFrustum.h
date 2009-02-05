@@ -42,14 +42,6 @@ namespace scene
 			VF_PLANE_COUNT
 		};
 
-		//! Hold a copy of important transform matrices
-		enum E_TRANSFORMATION_STATE_3
-		{
-			ETS_VIEW_PROJECTION_3 = video::ETS_PROJECTION + 1,
-			ETS_VIEW_MODEL_INVERSE_3,
-			ETS_CURRENT_3,
-			ETS_COUNT_3
-		};
 
 		//! Default Constructor
 		SViewFrustum() {}
@@ -85,8 +77,11 @@ namespace scene
 		//! recalculates the bounding box member based on the planes
 		inline void recalculateBoundingBox();
 
-		//! update the given state's matrix
-		void setTransformState( video::E_TRANSFORMATION_STATE state);
+		//! update the given state's matrix based on video::E_TRANSFORMATION_STATE
+		core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state);
+
+		//! get the given state's matrix based on frustum E_TRANSFORMATION_STATE_FRUSTUM
+		const core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state) const;
 
 		//! the position of the camera
 		core::vector3df cameraPosition;
@@ -97,11 +92,23 @@ namespace scene
 		//! bounding box around the view frustum
 		core::aabbox3d<f32> boundingBox;
 
+	private:
 		//! Hold a copy of important transform matrices
-		core::matrix4 Matrices[ETS_COUNT_3];
+		enum E_TRANSFORMATION_STATE_FRUSTUM
+		{
+			ETS_VIEW = 0,
+			ETS_PROJECTION = 1,
+			ETS_COUNT_FRUSTUM
+		};
+
+		//! Hold a copy of important transform matrices
+		core::matrix4 Matrices[ETS_COUNT_FRUSTUM];
 	};
 
 
+	/*!
+		Copy constructor ViewFrustum
+	*/
 	inline SViewFrustum::SViewFrustum(const SViewFrustum& other)
 	{
 		cameraPosition=other.cameraPosition;
@@ -111,7 +118,7 @@ namespace scene
 		for (i=0; i<VF_PLANE_COUNT; ++i)
 			planes[i]=other.planes[i];
 
-		for (i=0; i<VF_PLANE_COUNT; ++i)
+		for (i=0; i<ETS_COUNT_FRUSTUM; ++i)
 			Matrices[i]=other.Matrices[i];
 	}
 
@@ -186,61 +193,8 @@ namespace scene
 		boundingBox.addInternalPoint(getFarRightDown());
 	}
 
-/*
 	//! This constructor creates a view frustum based on a projection
 	//! and/or view matrix.
-	inline void SViewFrustum::setFrom(const core::matrix4& mat)
-	{
-		// left clipping plane
-		planes[SViewFrustum::VF_LEFT_PLANE].Normal.X = -(mat(0,3) + mat(0,0));
-		planes[SViewFrustum::VF_LEFT_PLANE].Normal.Y = -(mat(1,3) + mat(1,0));
-		planes[SViewFrustum::VF_LEFT_PLANE].Normal.Z = -(mat(2,3) + mat(2,0));
-		planes[SViewFrustum::VF_LEFT_PLANE].D = -(mat(3,3) + mat(3,0));
-
-		// right clipping plane
-		planes[SViewFrustum::VF_RIGHT_PLANE].Normal.X = -(mat(0,3) - mat(0,0));
-		planes[SViewFrustum::VF_RIGHT_PLANE].Normal.Y = -(mat(1,3) - mat(1,0));
-		planes[SViewFrustum::VF_RIGHT_PLANE].Normal.Z = -(mat(2,3) - mat(2,0));
-		planes[SViewFrustum::VF_RIGHT_PLANE].D =        -(mat(3,3) - mat(3,0));
-
-		// top clipping plane
-		planes[SViewFrustum::VF_TOP_PLANE].Normal.X = -(mat(0,3) - mat(0,1));
-		planes[SViewFrustum::VF_TOP_PLANE].Normal.Y = -(mat(1,3) - mat(1,1));
-		planes[SViewFrustum::VF_TOP_PLANE].Normal.Z = -(mat(2,3) - mat(2,1));
-		planes[SViewFrustum::VF_TOP_PLANE].D =        -(mat(3,3) - mat(3,1));
-
-		// bottom clipping plane
-		planes[SViewFrustum::VF_BOTTOM_PLANE].Normal.X = -(mat(0,3) + mat(0,1));
-		planes[SViewFrustum::VF_BOTTOM_PLANE].Normal.Y = -(mat(1,3) + mat(1,1));
-		planes[SViewFrustum::VF_BOTTOM_PLANE].Normal.Z = -(mat(2,3) + mat(2,1));
-		planes[SViewFrustum::VF_BOTTOM_PLANE].D =        -(mat(3,3) + mat(3,1));
-
-		// near clipping plane
-		planes[SViewFrustum::VF_NEAR_PLANE].Normal.X = -mat(0,2);
-		planes[SViewFrustum::VF_NEAR_PLANE].Normal.Y = -mat(1,2);
-		planes[SViewFrustum::VF_NEAR_PLANE].Normal.Z = -mat(2,2);
-		planes[SViewFrustum::VF_NEAR_PLANE].D =        -mat(3,2);
-
-		// far clipping plane
-		planes[SViewFrustum::VF_FAR_PLANE].Normal.X = -(mat(0,3) - mat(0,2));
-		planes[SViewFrustum::VF_FAR_PLANE].Normal.Y = -(mat(1,3) - mat(1,2));
-		planes[SViewFrustum::VF_FAR_PLANE].Normal.Z = -(mat(2,3) - mat(2,2));
-		planes[SViewFrustum::VF_FAR_PLANE].D =        -(mat(3,3) - mat(3,2));
-		// normalize normals
-
-		for (s32 i=0; i<6; ++i)
-		{
-			const f32 len = core::reciprocal_squareroot(
-					planes[i].Normal.getLengthSQ() );
-			planes[i].Normal *= len;
-			planes[i].D *= len;
-		}
-
-		// make bounding box
-		recalculateBoundingBox();
-	}
-*/
-
 	inline void SViewFrustum::setFrom(const core::matrix4& mat)
 	{
 		// left clipping plane
@@ -293,26 +247,32 @@ namespace scene
 		recalculateBoundingBox();
 	}
 
-	inline void SViewFrustum::setTransformState(video::E_TRANSFORMATION_STATE state)
+	/*!
+		View Frustum depends on Projection & View Matrix
+	*/
+	inline core::matrix4& SViewFrustum::getTransform(video::E_TRANSFORMATION_STATE state )
 	{
+		u32 index = 0;
 		switch ( state )
 		{
-			case video::ETS_VIEW:
-				Matrices[ETS_VIEW_PROJECTION_3].setbyproduct_nocheck(
-						Matrices[video::ETS_PROJECTION],
-						Matrices[video::ETS_VIEW]);
-				Matrices[ETS_VIEW_MODEL_INVERSE_3] = Matrices[video::ETS_VIEW];
-				Matrices[ETS_VIEW_MODEL_INVERSE_3].makeInverse();
-				break;
-
-			case video::ETS_WORLD:
-				Matrices[ETS_CURRENT_3].setbyproduct(
-						Matrices[ETS_VIEW_PROJECTION_3 ],
-						Matrices[video::ETS_WORLD]);
-				break;
-			default:
-				break;
+			case video::ETS_PROJECTION: index = SViewFrustum::ETS_PROJECTION; break;
+			case video::ETS_VIEW: index = SViewFrustum::ETS_VIEW; break;
 		}
+		return Matrices [ index ];
+	}
+
+	/*!
+		View Frustum depends on Projection & View Matrix
+	*/
+	inline const core::matrix4& SViewFrustum::getTransform(video::E_TRANSFORMATION_STATE state ) const
+	{
+		u32 index = 0;
+		switch ( state )
+		{
+			case video::ETS_PROJECTION: index = SViewFrustum::ETS_PROJECTION; break;
+			case video::ETS_VIEW: index = SViewFrustum::ETS_VIEW; break;
+		}
+		return Matrices [ index ];
 	}
 
 

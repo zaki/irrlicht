@@ -152,6 +152,7 @@ public:
 	/** \return Returns the color format of texture. */
 	virtual ECOLOR_FORMAT getColorFormat() const = 0;
 
+
 	//! Returns pitch of texture (in bytes).
 	/** The pitch is the amount of bytes
 	used for a row of pixels in a texture.
@@ -161,6 +162,11 @@ public:
 	//! Returns whether the texture has MipMaps
 	/** \return Returns true if texture has MipMaps, else false. */
 	virtual bool hasMipMaps() const { return false; }
+
+	//! Returns if the texture has an alpha channel
+	virtual bool hasAlpha() const { 
+		return getColorFormat () == video::ECF_A8R8G8B8 || getColorFormat () == video::ECF_A1R5G5B5;
+	}
 
 	//! Regenerates the mip map levels of the texture.
 	/** Required after locking and modifying the texture */

@@ -98,7 +98,7 @@ public:
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-			if ( getTexelAlpha ( srcFact ) + getTexelAlpha ( dstFact ) )
+			if ( textureBlendFunc_hasAlpha ( srcFact ) + textureBlendFunc_hasAlpha ( dstFact ) )
 			{
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
@@ -134,20 +134,6 @@ public:
 				case EBF_DST_ALPHA:				r = D3DBLEND_DESTALPHA; break;
 				case EBF_ONE_MINUS_DST_ALPHA:	r = D3DBLEND_INVDESTALPHA; break;
 				case EBF_SRC_ALPHA_SATURATE:	r = D3DBLEND_SRCALPHASAT; break;
-			}
-			return r;
-		}
-
-		u32 getTexelAlpha ( E_BLEND_FACTOR factor ) const
-		{
-			u32 r = 0;
-		switch ( factor )
-			{
-				case EBF_SRC_ALPHA:				r = 1; break;
-				case EBF_ONE_MINUS_SRC_ALPHA:	r = 1; break;
-				case EBF_DST_ALPHA:				r = 1; break;
-				case EBF_ONE_MINUS_DST_ALPHA:	r = 1; break;
-				case EBF_SRC_ALPHA_SATURATE:	r = 1; break;
 			}
 			return r;
 		}

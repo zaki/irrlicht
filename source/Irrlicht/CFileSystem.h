@@ -43,7 +43,10 @@ public:
 	virtual IWriteFile* createAndWriteFile(const core::string<c16>& filename, bool append=false);
 
 	//! Adds an archive to the file system.
-	virtual bool registerFileArchive( const core::string<c16>& filename, bool ignoreCase = true, bool ignorePaths = true, s32 index = -1);
+	virtual bool registerFileArchive( const core::string<c16>& filename, bool ignoreCase = true, bool ignorePaths = true);
+
+	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
+	virtual bool moveFileArchive( u32 sourceIndex, s32 relative );
 
 	//! Adds an external archive loader to the engine.
 	virtual void addArchiveLoader(IArchiveLoader* loader);

@@ -390,17 +390,6 @@ public:
 
 
 	//! Performs a binary search for an element, returns -1 if not found.
-	/** The array must be sorted prior
-	\param element Element to search for.
-	\return Position of the searched element if it was found, otherwise -1
-	is returned. */
-	s32 binary_search_const(const T& element) const
-	{
-		return binary_search(element, 0, used-1);
-	}
-
-
-	//! Performs a binary search for an element, returns -1 if not found.
 	/** \param element: Element to search for.
 	\param left First left index
 	\param right Last right index.

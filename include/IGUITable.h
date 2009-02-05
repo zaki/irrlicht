@@ -127,6 +127,9 @@ namespace gui
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const = 0;
 
+		//! set wich row is currently selected
+		virtual void setSelected( s32 index ) = 0;
+
 		//! Get amount of rows in the tabcontrol
 		virtual s32 getRowCount() const = 0;
 

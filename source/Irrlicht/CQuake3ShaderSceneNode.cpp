@@ -23,6 +23,8 @@ namespace scene
 // who, if not you..
 using namespace quake3;
 
+/*!
+*/
 CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 			scene::ISceneNode* parent, scene::ISceneManager* mgr,s32 id,
 			io::IFileSystem *fileSystem, scene::IMeshBuffer *original,
@@ -55,8 +57,9 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 	Original->grab();
 
 	// clone meshbuffer to modifiable buffer
-	cloneBuffer( (scene::SMeshBufferLightMap*) original );
-
+	cloneBuffer( MeshBuffer, (scene::SMeshBufferLightMap*) original, 
+							original->getMaterial().ColorMask != 0
+						);
 
 	// load all Textures in all stages
 	loadTextures( fileSystem );
@@ -65,7 +68,8 @@ CQuake3ShaderSceneNode::CQuake3ShaderSceneNode(
 
 }
 
-
+/*!
+*/
 CQuake3ShaderSceneNode::~CQuake3ShaderSceneNode()
 {
 	if (Mesh)
@@ -80,112 +84,48 @@ CQuake3ShaderSceneNode::~CQuake3ShaderSceneNode()
 /*
 	create single copies
 */
-void CQuake3ShaderSceneNode::cloneBuffer( scene::SMeshBufferLightMap * buffer )
+void CQuake3ShaderSceneNode::cloneBuffer( scene::SMeshBuffer *dest, scene::SMeshBufferLightMap * buffer, bool translateCenter )
 {
-	MeshBuffer->Material = buffer->Material;
-	MeshBuffer->Indices = buffer->Indices;
-
-	video::S3DVertex dst;
-	core::aabbox3df bbox;
+	dest->Material = buffer->Material;
+	dest->Indices = buffer->Indices;
 
 	const u32 vsize = buffer->Vertices.size();
 
-	MeshBuffer->Vertices.reallocate( vsize );
+	dest->Vertices.set_used( vsize );
 	for ( u32 i = 0; i!= vsize; ++i )
 	{
 		const video::S3DVertex2TCoords& src = buffer->Vertices[i];
+		video::S3DVertex &dst = dest->Vertices[i];
 
 		dst.Pos = src.Pos;
 		dst.Normal = src.Normal;
 		dst.Color = 0xFFFFFFFF;
 		dst.TCoords = src.TCoords;
-		MeshBuffer->Vertices.push_back( dst );
 
 		if ( i == 0 )
-			bbox.reset ( src.Pos );
+			dest->BoundingBox.reset ( src.Pos );
 		else
-			bbox.addInternalPoint ( src.Pos );
+			dest->BoundingBox.addInternalPoint ( src.Pos );
 	}
 
 	// move the (temp) Mesh to a ScenePosititon
 	// set Scene Node Position
-	setPosition( bbox.getCenter() );
 
-	core::matrix4 m;
-	m.setTranslation( -bbox.getCenter() );
-	SceneManager->getMeshManipulator()->transform( MeshBuffer, m );
-
-	// No Texture!. Use Shader-Pointer for sorting
-	MeshBuffer->Material.setTexture(0, (video::ITexture*) Shader);
-}
-
-#if 0
-/*
-	create single copies
-*/
-void CQuake3ShaderSceneNode::cloneBuffer( scene::SMeshBufferLightMap * buffer )
-{
-	Original->Material = buffer->Material;
-	MeshBuffer->Material = buffer->Material;
-
-	Original->Indices = buffer->Indices;
-	MeshBuffer->Indices = buffer->Indices;
-
-	video::S3DVertex dst;
-	core::aabbox3df bbox;
-
-	const u32 vsize = buffer->Vertices.size();
-
-	Original->Vertices.reallocate( vsize );
-	MeshBuffer->Vertices.reallocate( vsize );
-	for ( u32 i = 0; i!= vsize; ++i )
+	if ( translateCenter )
 	{
-		const video::S3DVertex2TCoords& src = buffer->Vertices[i];
-
-		// Original has same Vertex Format
-		Original->Vertices.push_back(src);
-
-		// we have a different vertex format
-#if 0
-		// automatic downcast to S3DVertex
-		MeshBuffer->Vertices.push_back(src);
-		MeshBuffer->Vertices.getLast().Color=0xFFFFFFFF;
-#else
-		dst.Pos = src.Pos;
-		dst.Normal = src.Normal;
-		dst.Color = 0xFFFFFFFF;
-		dst.TCoords = src.TCoords;
-		MeshBuffer->Vertices.push_back( dst );
-#endif
-
-		if ( i == 0 )
-			bbox.reset ( src.Pos );
-		else
-			bbox.addInternalPoint ( src.Pos );
-	}
-
-	//MeshBuffer->recalculateBoundingBox();
-
-	// move the (temp) Mesh to a ScenePosititon
-	// this is necessary for sorting transparent nodes
-	// this is necessary if you plane to attach child nodes
-	{
-		// original bounding box
-		//const core::aabbox3df& bbox = MeshBuffer->getBoundingBox();
-
-		// set Scene Node Position
-		setPosition( bbox.getCenter() );
+		MeshOffset = dest->BoundingBox.getCenter();
+		setPosition( MeshOffset );
 
 		core::matrix4 m;
-		m.setTranslation( -bbox.getCenter() );
-		SceneManager->getMeshManipulator()->transform( Original, m );
-		SceneManager->getMeshManipulator()->transform( MeshBuffer, m );
+		m.setTranslation( -MeshOffset );
+		SceneManager->getMeshManipulator()->transform( dest, m );
 	}
+	
 
 	// No Texture!. Use Shader-Pointer for sorting
-	MeshBuffer->Material.setTexture(0, (video::ITexture*) Shader);
+	dest->Material.setTexture(0, (video::ITexture*) Shader);
 }
-#endif
+
 
 /*
 	load the textures for all stages
@@ -195,7 +135,7 @@ void CQuake3ShaderSceneNode::loadTextures( io::IFileSystem * fileSystem )
 	const SVarGroup *group;
 	u32 i;
 
-	video::IVideoDriver *driver =	SceneManager->getVideoDriver();
+	video::IVideoDriver *driver = SceneManager->getVideoDriver();
 
 	// generic stage
 	u32 mipmap = 0;
@@ -308,13 +248,21 @@ E_SCENE_NODE_RENDER_PASS CQuake3ShaderSceneNode::getRenderStage() const
 	}
 	else
 */	
-	if (	strstr ( Shader->name.c_str(), "flame" )
-		)
+	if ( group->isDefined( "sort", "opaque" ) )
 	{
-		ret = ESNRP_TRANSPARENT_EFFECT;
+		ret = ESNRP_SOLID;
 	}
 	else
-	if ( group->isDefined( "surfaceparm", "water" ) )
+	if ( group->isDefined( "sort", "additive" ) )
+	{
+		ret = ESNRP_TRANSPARENT;
+	}
+	else
+	if (	strstr ( Shader->name.c_str(), "flame" ) ||
+			group->isDefined( "surfaceparm", "water" ) ||
+			group->isDefined( "sort", "underwater" ) ||
+			group->isDefined( "sort", "underwater" )
+		)
 	{
 		ret = ESNRP_TRANSPARENT_EFFECT;
 	}
@@ -360,10 +308,6 @@ void CQuake3ShaderSceneNode::render()
 	material.setTexture(1, 0);
 	material.NormalizeNormals = false;
 
-/*
-	if ( 0 == strstr ( Shader->name.c_str(), "chapthroatooz" ) )
-		return;
-*/
 	// generic stage
 	group = Shader->getGroup( 1 );
 	material.BackfaceCulling = getCullingFunction( group->get( "cull" ) );
@@ -371,10 +315,6 @@ void CQuake3ShaderSceneNode::render()
 	u32 pushProjection = 0;
 	core::matrix4 projection ( core::matrix4::EM4CONST_NOTHING );
 
-/*
-	if ( !group->isDefined ( "deformvertexes", "autosprite2" ) )
-		return;
-*/
 	// decal ( solve z-fighting )
 	if ( group->isDefined( "polygonoffset" ) )
 	{
@@ -400,7 +340,6 @@ void CQuake3ShaderSceneNode::render()
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation );
 
 	//! render all stages
-	//u32 drawCount = group->isDefined( "surfaceparm", "trans" );
 	u32 drawCount = (pass == ESNRP_TRANSPARENT_EFFECT) ? 1 : 0;
 	core::matrix4 textureMatrix ( core::matrix4::EM4CONST_NOTHING );
 	for ( u32 stage = 1; stage < Shader->VarGroup->VariableGroup.size(); ++stage )
@@ -564,16 +503,14 @@ void CQuake3ShaderSceneNode::deformvertexes_wave( f32 dt, SModifierFunction &fun
 
 	const f32 phase = function.phase;
 
-	const u32 vsize = MeshBuffer->Vertices.size();
+	const u32 vsize = Original->Vertices.size();
 	for ( u32 i = 0; i != vsize; ++i )
 	{
 		const video::S3DVertex2TCoords &src = Original->Vertices[i];
 		video::S3DVertex &dst = MeshBuffer->Vertices[i];
 
 		if ( 0 == function.count )
-		{
-			dst.Pos = src.Pos - getPosition ();
-		}
+			dst.Pos = src.Pos - MeshOffset;
 
 		const f32 wavephase = (dst.Pos.X + dst.Pos.Y + dst.Pos.Z) * function.wave;
 		function.phase = phase + wavephase;
@@ -613,22 +550,19 @@ void CQuake3ShaderSceneNode::deformvertexes_wave( f32 dt, SModifierFunction &fun
 	If an object is made up of surfaces with different shaders, all must have 
 	matching deformVertexes move values or the object will appear to tear itself apart.
 */
-
 void CQuake3ShaderSceneNode::deformvertexes_move( f32 dt, SModifierFunction &function )
 {
 	function.wave = core::reciprocal( function.wave );
 	const f32 f = function.evaluate( dt );
 
-	const u32 vsize = MeshBuffer->Vertices.size();
+	const u32 vsize = Original->Vertices.size();
 	for ( u32 i = 0; i != vsize; ++i )
 	{
 		const video::S3DVertex2TCoords &src = Original->Vertices[i];
 		video::S3DVertex &dst = MeshBuffer->Vertices[i];
 
 		if ( 0 == function.count )
-		{
-			dst.Pos = src.Pos - getPosition ();
-		}
+			dst.Pos = src.Pos - MeshOffset;
 
 		dst.Pos.X += f * function.x;
 		dst.Pos.Y += f * function.y;
@@ -657,7 +591,7 @@ void CQuake3ShaderSceneNode::deformvertexes_move( f32 dt, SModifierFunction &fun
 void CQuake3ShaderSceneNode::deformvertexes_normal( f32 dt, SModifierFunction &function )
 {
 	function.func = SINUS;
-	const u32 vsize = MeshBuffer->Vertices.size();
+	const u32 vsize = Original->Vertices.size();
 	for ( u32 i = 0; i != vsize; ++i )
 	{
 		const video::S3DVertex2TCoords &src = Original->Vertices[i];
@@ -733,7 +667,7 @@ void CQuake3ShaderSceneNode::deformvertexes_bulge( f32 dt, SModifierFunction &fu
 	dt *= function.bulgespeed * 0.1f;
 	const f32 phase = function.phase;
 
-	const u32 vsize = MeshBuffer->Vertices.size();
+	const u32 vsize = Original->Vertices.size();
 	for ( u32 i = 0; i != vsize; ++i )
 	{
 		const video::S3DVertex2TCoords &src = Original->Vertices[i];
@@ -745,9 +679,7 @@ void CQuake3ShaderSceneNode::deformvertexes_bulge( f32 dt, SModifierFunction &fu
 		const f32 f = function.evaluate( dt );
 
 		if ( 0 == function.count )
-		{
-			dst.Pos = src.Pos - getPosition ();
-		}
+			dst.Pos = src.Pos - MeshOffset;
 
 		dst.Pos.X += f * src.Normal.X;
 		dst.Pos.Y += f * src.Normal.Y;
@@ -777,7 +709,7 @@ void CQuake3ShaderSceneNode::deformvertexes_bulge( f32 dt, SModifierFunction &fu
 */
 void CQuake3ShaderSceneNode::deformvertexes_autosprite( f32 dt, SModifierFunction &function )
 {
-	u32 vsize = MeshBuffer->Vertices.size();
+	u32 vsize = Original->Vertices.size();
 	u32 g;
 	u32 i;
 
@@ -795,7 +727,7 @@ void CQuake3ShaderSceneNode::deformvertexes_autosprite( f32 dt, SModifierFunctio
 		core::vector3df forward = camPos - center;
 
 		q.rotationFromTo ( vin[i].Normal, forward );
-		q.getMatrixCenter ( lookat, center, getPosition () );
+		q.getMatrixCenter ( lookat, center, MeshOffset );
 
 		for ( g = 0; g < 4; ++g )
 		{
@@ -823,10 +755,11 @@ struct sortaxis
 		return v.getLengthSQ () < other.v.getLengthSQ ();
 	}
 };
-
+/*!
+*/
 void CQuake3ShaderSceneNode::deformvertexes_autosprite2( f32 dt, SModifierFunction &function )
 {
-	u32 vsize = MeshBuffer->Vertices.size();
+	u32 vsize = Original->Vertices.size();
 	u32 g;
 	u32 i;
 
@@ -852,7 +785,7 @@ void CQuake3ShaderSceneNode::deformvertexes_autosprite2( f32 dt, SModifierFuncti
 		axis.set_sorted ( false );
 		axis.sort ();
 
-		lookat.buildAxisAlignedBillboard ( camPos, center, getPosition (), axis[1].v, vin[i+0].Normal );
+		lookat.buildAxisAlignedBillboard ( camPos, center, MeshOffset, axis[1].v, vin[i+0].Normal );
 
 		for ( g = 0; g < 4; ++g )
 		{
@@ -869,7 +802,7 @@ void CQuake3ShaderSceneNode::deformvertexes_autosprite2( f32 dt, SModifierFuncti
 void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, SModifierFunction &function )
 {
 	u32 i;
-	const u32 vsize = MeshBuffer->Vertices.size();
+	const u32 vsize = Original->Vertices.size();
 
 	switch ( function.rgbgen )
 	{
@@ -921,7 +854,7 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, SModifierFunction &
 void CQuake3ShaderSceneNode::vertextransform_alphagen( f32 dt, SModifierFunction &function )
 {
 	u32 i;
-	const u32 vsize = MeshBuffer->Vertices.size();
+	const u32 vsize = Original->Vertices.size();
 
 	switch ( function.alphagen )
 	{
@@ -950,7 +883,7 @@ void CQuake3ShaderSceneNode::vertextransform_alphagen( f32 dt, SModifierFunction
 		{
 			// alphagen lightingspecular TODO!!!
 			const SViewFrustum *frustum = SceneManager->getActiveCamera()->getViewFrustum();
-			const core::matrix4 &view = frustum->Matrices [ video::ETS_VIEW ];
+			const core::matrix4 &view = frustum->getTransform ( video::ETS_VIEW );
 
 			const f32 *m = view.pointer();
 
@@ -985,7 +918,7 @@ void CQuake3ShaderSceneNode::vertextransform_alphagen( f32 dt, SModifierFunction
 void CQuake3ShaderSceneNode::vertextransform_tcgen( f32 dt, SModifierFunction &function )
 {
 	u32 i;
-	const u32 vsize = MeshBuffer->Vertices.size();
+	const u32 vsize = Original->Vertices.size();
 
 	switch ( function.tcgen )
 	{
@@ -1026,7 +959,7 @@ void CQuake3ShaderSceneNode::vertextransform_tcgen( f32 dt, SModifierFunction &f
 		{
 			// tcgen environment
 			const SViewFrustum *frustum = SceneManager->getActiveCamera()->getViewFrustum();
-			const core::matrix4 &view = frustum->Matrices [ video::ETS_VIEW ];
+			const core::matrix4 &view = frustum->getTransform ( video::ETS_VIEW );
 
 			const f32 *m = view.pointer();
 
@@ -1044,35 +977,6 @@ void CQuake3ShaderSceneNode::vertextransform_tcgen( f32 dt, SModifierFunction &f
 				MeshBuffer->Vertices[i].TCoords.Y = 0.5f*(1.f+(n.X*m[4]+n.Y*m[5]+n.Z*m[6])); 
 			}
 
-#if 0
-			// tcgen environment
-			// using eye linear, sphere map may be cooler;-)
-			// modelmatrix is identity
-			const SViewFrustum *frustum = SceneManager->getActiveCamera()->getViewFrustum();
-			const core::matrix4 &view = frustum->Matrices [ video::ETS_VIEW ];
-			const core::matrix4 &viewinverse = frustum->Matrices [ SViewFrustum::ETS_VIEW_MODEL_INVERSE_3 ];
-
-			// eyePlane
-			core::vector3df eyePlaneS;
-			core::vector3df eyePlaneT;
-
-			viewinverse.rotateVect( eyePlaneS, core::vector3df(1.f, 0.f, 0.f) );
-			viewinverse.rotateVect( eyePlaneT, core::vector3df(0.f, 1.f, 0.f) );
-
-			eyePlaneS.normalize();
-			eyePlaneT.normalize();
-
-			core::vector3df v;
-			for ( i = 0; i != vsize; ++i )
-			{
-				// vertex in eye space
-				view.rotateVect( v, Original->Vertices[i].Pos );
-				v.normalize();
-
-				MeshBuffer->Vertices[i].TCoords.X = ( (1.f + eyePlaneS.dotProduct(v) ) * 0.5f );
-				MeshBuffer->Vertices[i].TCoords.Y = ( (1.f - eyePlaneT.dotProduct(v) ) * 0.5f );
-			}
-#endif
 		} break;
 		default:
 			break;

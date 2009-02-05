@@ -143,6 +143,8 @@ bool CGUIScrollBar::OnEvent(const SEvent& event)
 				if (Environment->hasFocus(this))
 				{ 
 					// thanks to a bug report by REAPER
+					// thanks to tommi by tommi for another bugfix
+					// everybody needs a little thanking. hallo niko!;-)
 					setPos(	getPos() + 
 							( (s32)event.MouseInput.Wheel * SmallStep * (Horizontal ? 1 : -1 ) )
 							);

@@ -52,7 +52,12 @@ namespace scene
 		//! returns the video driver
 		virtual video::IVideoDriver* getVideoDriver();
 
+		//! return the gui environment
 		virtual gui::IGUIEnvironment* getGUIEnvironment();
+
+		//! return the filesystem
+		virtual io::IFileSystem* CSceneManager::getFileSystem();
+
 
 		//! adds Volume Lighting Scene Node.
 		//! the returned pointer must not be dropped.
@@ -292,12 +297,13 @@ namespace scene
 				const core::vector3df& center=core::vector3df(0.f, 0.f, 0.f),
 				f32 radius=100.f, f32 speed=0.001f,
 				const core::vector3df& direction=core::vector3df(0.f, 1.f, 0.f),
-				f32 startPosition = 0.f);
+				f32 startPosition = 0.f,
+				f32 radiusEllipsoid = 0.f);
 
 		//! Creates a fly straight animator, which lets the attached scene node
 		//! fly or move along a line between two points.
 		virtual ISceneNodeAnimator* createFlyStraightAnimator(const core::vector3df& startPoint,
-			const core::vector3df& endPoint, u32 timeForWay, bool loop=false);
+			const core::vector3df& endPoint, u32 timeForWay, bool loop=false,bool pingpong = false);
 
 		//! Creates a texture animator, which switches the textures of the target scene
 		//! node based on a list of textures.
@@ -420,6 +426,9 @@ namespace scene
 		//! Returns a typename from a scene node type or null if not found
 		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type);
 
+		//! Returns a typename from a scene node animator type or null if not found
+		virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type);
+
 		//! Adds a scene node to the scene by name
 		virtual ISceneNode* addSceneNode(const char* sceneNodeTypeName, ISceneNode* parent=0);
 
@@ -468,9 +477,6 @@ namespace scene
 		virtual void setLightManager(ILightManager* lightManager);
 
 	private:
-
-		//! Returns a typename from a scene node animator type or null if not found
-		virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const;
 
 		//! returns if node is culled
 		bool isCulled(const ISceneNode* node);

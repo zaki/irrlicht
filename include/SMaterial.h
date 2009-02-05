@@ -98,6 +98,22 @@ namespace video
 		dstFact = E_BLEND_FACTOR ( ( state & 0x000000FF ) );
 	}
 
+	//! EMT_ONETEXTURE_BLEND: has BlendFactor Alphablending
+	inline bool textureBlendFunc_hasAlpha ( const E_BLEND_FACTOR factor )
+	{
+		switch ( factor )
+		{
+			case EBF_SRC_ALPHA:
+			case EBF_ONE_MINUS_SRC_ALPHA:
+			case EBF_DST_ALPHA:
+			case EBF_ONE_MINUS_DST_ALPHA:
+			case EBF_SRC_ALPHA_SATURATE:
+				return true;
+		}
+		return false;
+	}
+
+
 	//! These flags are used to specify the anti-aliasing and smoothing modes
 	/** Techniques supported are multisampling, geometry smoothing, and alpha
 	to coverage.
@@ -138,7 +154,8 @@ namespace video
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
 			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
 			ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH), ColorMask(ECP_ALL)
+			FogEnable(false), NormalizeNormals(false), ZBuffer(ECFN_LESSEQUAL),
+			AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH), ColorMask(ECP_ALL)
 		{ }
 
 		//! Copy constructor

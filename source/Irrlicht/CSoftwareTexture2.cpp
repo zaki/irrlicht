@@ -33,6 +33,12 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const core::string<c16>& nam
 	{
 		OrigSize = image->getDimension();
 
+		core::setbit_cond ( Flags,
+							image->getColorFormat () == video::ECF_A8R8G8B8 || 
+							image->getColorFormat () == video::ECF_A1R5G5B5,
+							HAS_ALPHA
+						);
+	
 		core::dimension2d<u32> optSize(
 				OrigSize.getOptimalSize( 0 != ( Flags & NP2_SIZE ),
 				false, false,

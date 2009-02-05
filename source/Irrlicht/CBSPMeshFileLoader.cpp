@@ -51,7 +51,7 @@ bool CBSPMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filen
 IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 {
 	s32 type = core::isFileExtension ( file->getFileName(), "bsp", "shader", "cfg" );
-	IQ3LevelMesh* q = 0;
+	CQ3LevelMesh* q = 0;
 
 	switch ( type )
 	{
@@ -70,7 +70,7 @@ IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 				//q->getShader("scripts/sky.shader");
 			}
 
-			if ( ((CQ3LevelMesh*)q)->loadFile(file) )
+			if ( q->loadFile(file) )
 				return q;
 
 			q->drop();
@@ -78,14 +78,21 @@ IAnimatedMesh* CBSPMeshFileLoader::createMesh(io::IReadFile* file)
 
 		case 2:
 			q = new CQ3LevelMesh(FileSystem, SceneManager,LoadParam);
-			q->getShader( file->getFileName() );
+			q->getShader( file );
 			return q;
 			break;
+
 		case 3:
 			// load quake 3 loading parameter
 			if ( file->getFileName() == "levelparameter.cfg" )
 			{
 				file->read ( &LoadParam, sizeof ( LoadParam ) );
+			}
+			else
+			{
+				q = new CQ3LevelMesh(FileSystem, SceneManager,LoadParam);
+				q->getConfiguration( file );
+				return q;
 			}
 			break;
 	}

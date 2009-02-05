@@ -812,13 +812,16 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNor
 		for (u32 i=0; i<idxCnt; ++i)
 			buffer->Indices[i] = i;
 
-		buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
+		//buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
+		buffer->recalculateBoundingBox ();
+
 		// add new buffer
 		clone->addMeshBuffer(buffer);
 		buffer->drop();
 	}
 
-	clone->BoundingBox = mesh->getBoundingBox();
+	clone->recalculateBoundingBox ();
+	//clone->BoundingBox = mesh->getBoundingBox();
 
 	// now calculate tangents
 	for (b=0; b<meshBufferCount; ++b)
@@ -1009,7 +1012,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(
 						video::S3DVertex2TCoords(
-							v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
 			}
 			break;
 		case video::EVT_2TCOORDS:
@@ -1028,7 +1031,7 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 
 				for (u32 i=0; i<idxCnt; ++i)
 					buffer->Vertices.push_back(video::S3DVertex2TCoords(
-						v[idx[i]].Pos, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
+						v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords, v[idx[i]].TCoords));
 			}
 			break;
 		}
@@ -1039,13 +1042,96 @@ IMesh* CMeshManipulator::createMeshWith2TCoords(IMesh* mesh) const
 		for (u32 i=0; i<idxCnt; ++i)
 			buffer->Indices[i] = i;
 
-		buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
+		//buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
+		buffer->recalculateBoundingBox ();
+
 		// add new buffer
 		clone->addMeshBuffer(buffer);
 		buffer->drop();
 	}
 
-	clone->BoundingBox = mesh->getBoundingBox();
+	clone->recalculateBoundingBox ();
+	//clone->BoundingBox = mesh->getBoundingBox();
+
+	return clone;
+}
+
+//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
+IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
+{
+	if (!mesh)
+		return 0;
+
+	// copy mesh and fill data into SMeshBuffer
+	SMesh* clone = new SMesh();
+	const u32 meshBufferCount = mesh->getMeshBufferCount();
+	u32 b;
+
+	for (b=0; b<meshBufferCount; ++b)
+	{
+		const u32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
+		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
+
+		SMeshBuffer* buffer = new SMeshBuffer();
+		buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+		buffer->Material.MaterialType = video::EMT_SOLID;
+
+		// copy vertices
+
+		buffer->Vertices.reallocate(idxCnt);
+		switch(mesh->getMeshBuffer(b)->getVertexType())
+		{
+		case video::EVT_STANDARD:
+			{
+				video::S3DVertex* v =
+					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
+
+				for (u32 i=0; i<idxCnt; ++i)
+					buffer->Vertices.push_back(v[idx[i]]);
+
+			}
+			break;
+		case video::EVT_2TCOORDS:
+			{
+				video::S3DVertex2TCoords* v =
+					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
+
+				for (u32 i=0; i<idxCnt; ++i)
+					buffer->Vertices.push_back(
+						video::S3DVertex(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
+
+			}
+			break;
+		case video::EVT_TANGENTS:
+			{
+				video::S3DVertexTangents* v =
+					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
+
+				for (u32 i=0; i<idxCnt; ++i)
+					buffer->Vertices.push_back(
+						video::S3DVertex(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
+			}
+			break;
+		}
+
+		// create new indices
+
+		buffer->Indices.set_used(idxCnt);
+		for (u32 i=0; i<idxCnt; ++i)
+			buffer->Indices[i] = i;
+
+		//buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
+		buffer->recalculateBoundingBox ();
+
+		// add new buffer
+		clone->addMeshBuffer(buffer);
+		buffer->drop();
+	}
+
+	clone->recalculateBoundingBox ();
+	//clone->BoundingBox = mesh->getBoundingBox();
 
 	return clone;
 }

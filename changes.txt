@@ -1,4 +1,79 @@
-Changes in version 1.6
+Changes in 1.6 TA
+	- fixed createMeshWith2TCoords
+		normals were missing during copy. 
+	- addded
+		//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
+		IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
+
+	- added io::IFileSystem* CSceneManager::getFileSystem()
+		for preparing to remove the (mostly) unnecessary double member variables
+		in many loaders
+
+	-	added virtual const c8* ISceneManager::getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type);
+		to the SceneManger Interface. just like getTypeName is public
+	
+	- added CSceneNodeAnimatorFlyCircle::radiusEllipsoid.
+		if radiusEllipsoid == 0 the default circle animation is done
+		else radiusEllipsoid forms the b-axe of the ellipsoid.
+		
+		-> gummiball bouncing
+		
+	- added ISceneManager::createFlyStraightAnimator variable bool ping-pong
+		used in loop mode to device if start from beginning ( default ) or make ping-pong
+		
+		-> straight bouncing
+
+	- changed IFileSystem::registerFileArchive
+		remove the index of the hiarchy and added a new interface method
+	
+		//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
+		virtual bool moveFileArchive( u32 sourceIndex, s32 relative ) = 0;
+	
+	 	
+	- bugfix and changes in
+		SViewFrustum::SViewFrustum
+		wrong size of Matrices copy. This bug must be ages old... (typo)
+		detected during resizing the Matrices. removed obsolute Matrices
+		renamed E_TRANSFORMATION_STATE_2 to E_TRANSFORMATION_STATE_FRUSTUM
+		
+		therefore also changed SViewFrustum::setTransformState to not tap
+		in the pitfall again of wrong memory...
+		and renamed it to getTransform, like in the driver
+		and Matrices private
+		
+	- OpenGL:
+		Specular 
+	- moved
+		//! EMT_ONETEXTURE_BLEND: has BlendFactor Alphablending
+		inline bool textureBlendFunc_hasAlpha ( E_BLEND_FACTOR factor ) const
+		from the material renderes ( 3x declared ) to SMaterial.h
+
+	- updated managed light example to use standard driver selection
+	- BurningsVideo
+		- LightModel reworked.
+			Point Light & Direction Light works for Diffuse Color as aspected
+			Specular and Fog still have problems ( needs new pixel shader )
+			pushed burningsvideo to 0.42 for this major step
+
+		-	removed obsolete matrix transformations
+			renamed E_TRANSFORMATION_STATE_2 to E_TRANSFORMATION_STATE_BURNING
+
+			
+	- cleaned line3d.h vector3d.h template behavior.
+		many mixed f32/f64 implementations are here. i'm not sure if this should be
+		the default behavior to use f64 for example for 1.0/x value, because they
+		benefit from more precisions, but in my point of view the user is responsible
+		of choosing a vector3d<f32> or vector3d<f64>.
+	- added core::squareroot to irrmath.h
+		-> for having candidates for faster math in the same file
+	- added AllowZWriteOnTransparent from SceneManager to burningsvideo	
+		Following SceneManger guideline
+	-added hasAlpha() to ITexture
+		This info can be used for e.q to downgrade a transparent alpha channel blit
+		to add if the texture has no alpha channel.
+	
+--------------------------------------------------------------
+Changes in version 1.6, TA
 
 - FileSystem 2.0 SUPER MASTER MAJOR API CHANGE !!!
 

@@ -14,6 +14,17 @@ namespace irr
 namespace scene
 {
 
+//! Constructor
+CMD3MeshFileLoader::CMD3MeshFileLoader( scene::ISceneManager* smgr)
+: SceneManager(smgr)
+{
+}
+
+//! destructor
+CMD3MeshFileLoader::~CMD3MeshFileLoader()
+{
+}
+
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
 bool CMD3MeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
@@ -26,7 +37,7 @@ IAnimatedMesh* CMD3MeshFileLoader::createMesh(io::IReadFile* file)
 {
 	CAnimatedMeshMD3 * mesh = new CAnimatedMeshMD3();
 
-	if ( mesh->loadModelFile ( 0, file ) )
+	if ( mesh->loadModelFile ( 0, file, SceneManager->getFileSystem(), SceneManager->getVideoDriver() ) )
 		return mesh;
 	
 	mesh->drop ();
