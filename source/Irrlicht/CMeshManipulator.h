@@ -97,6 +97,9 @@ public:
 	//! Creates a copy of the mesh, which will only consist of S3D2TCoords vertices.
 	virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const;
 
+	//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
+	virtual IMesh* createMeshWith1TCoords(IMesh* mesh) const;
+
 	//! Creates a copy of the mesh, which will only consist of unique triangles, i.e. no vertices are shared.
 	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const;
 

@@ -16,6 +16,7 @@ using namespace gui;
 using namespace video;
 using namespace core;
 using namespace quake3;
+using namespace io;
 
 
 
@@ -48,6 +49,15 @@ enum eItemSubGroup
 	CHAINGUN,
 };
 
+//! aplly a special effect to the shader
+enum eItemSpecialEffect
+{
+	SPECIAL_SFX_NONE		= 0,
+	SPECIAL_SFX_ROTATE		= 1,
+	SPECIAL_SFX_BOUNCE		= 2,
+	SPECIAL_SFX_ROTATE_1	= 4,
+};
+
 // a List for defining a model
 struct SItemElement
 {
@@ -59,12 +69,11 @@ struct SItemElement
 	s32 value;
 	eItemGroup group;
 	eItemSubGroup sub;
+	u32 special;
 };
 
 
-/*!
-	Get's an entity based on it's key
-*/
+//! Get's an entity based on it's key
 const SItemElement * getItemElement ( const stringc& key );
 
 /*!

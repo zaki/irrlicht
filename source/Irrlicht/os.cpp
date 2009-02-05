@@ -73,7 +73,7 @@ namespace os
 		tmp += L"\n";
 		OutputDebugStringW( tmp.c_str() );
 #else
-		c8* tmp = new c8[strlen(message) + 2];
+		c8* tmp = new c8[strlen(message) + 4];
 		sprintf(tmp, "%s\n", message);
 		OutputDebugString(tmp);
 		printf(tmp);

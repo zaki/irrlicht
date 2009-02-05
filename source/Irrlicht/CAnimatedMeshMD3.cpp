@@ -63,8 +63,7 @@ struct SMD3Shader
 
 //! Constructor
 CAnimatedMeshMD3::CAnimatedMeshMD3()
-// TODO: Correct initial values needed
-: Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f)
+:Mesh(0), IPolShift(0), LoopMode(0), Scaling(1.f)
 {
 #ifdef _DEBUG
 	setDebugName("CAnimatedMeshMD3");
@@ -73,6 +72,7 @@ CAnimatedMeshMD3::CAnimatedMeshMD3()
 	Mesh = new SMD3Mesh();
 
 	setInterpolationShift ( 0, 0 );
+
 }
 
 
@@ -192,7 +192,8 @@ IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 
 
 //! create a Irrlicht MeshBuffer for a MD3 MeshBuffer
-IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer(const SMD3MeshBuffer* source)
+IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer(const SMD3MeshBuffer* source,
+												 io::IFileSystem* fs, video::IVideoDriver * driver)
 {
 	SMeshBufferLightMap * dest = new SMeshBufferLightMap();
 	dest->Vertices.set_used( source->MeshHeader.numVertices );
@@ -218,6 +219,15 @@ IMeshBuffer * CAnimatedMeshMD3::createMeshBuffer(const SMD3MeshBuffer* source)
 		v.TCoords2.X = 0.f;
 		v.TCoords2.Y = 0.f;
 	}
+
+	// load static texture
+	u32 pos = 0;
+	quake3::tTexArray textureArray;
+	quake3::getTextures( textureArray, source->Shader, pos, fs, driver );
+	dest->Material.MaterialType = video::EMT_SOLID;
+	dest->Material.setTexture ( 0, textureArray[0] );
+	dest->Material.Lighting = false;
+
 	return dest;
 }
 
@@ -284,7 +294,8 @@ void CAnimatedMeshMD3::buildTagArray ( u32 frameA, u32 frameB, f32 interpolate )
 /*!
 	loads a model
 */
-bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
+bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file,
+									 io::IFileSystem* fs, video::IVideoDriver * driver)
 {
 	if (!file)
 		return false;
@@ -364,7 +375,7 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 		buf->Indices.set_used ( meshHeader.numTriangles * 3 );
 		buf->Tex.set_used ( meshHeader.numVertices );
 
-		//! read skins (shaders)
+		//! read skins (shaders). should be 1 per meshbuffer
 		SMD3Shader skin;
 		file->seek( offset + buf->MeshHeader.offset_shaders );
 		for ( s32 g = 0; g != buf->MeshHeader.numShader; ++g )
@@ -398,10 +409,11 @@ bool CAnimatedMeshMD3::loadModelFile( u32 modelIndex, io::IReadFile* file)
 	// Init Mesh Interpolation
 	for ( i = 0; i != Mesh->Buffer.size (); ++i )
 	{
-		IMeshBuffer * buffer = createMeshBuffer ( Mesh->Buffer[i] );
+		IMeshBuffer * buffer = createMeshBuffer ( Mesh->Buffer[i], fs, driver );
 		MeshIPol.addMeshBuffer ( buffer );
 		buffer->drop ();
 	}
+	MeshIPol.recalculateBoundingBox ();
 
 	// Init Tag Interpolation
 	for (i = 0; i != (u32)Mesh->MD3Header.numTags; ++i )

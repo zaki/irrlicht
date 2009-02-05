@@ -269,18 +269,6 @@ int IRRCALLCONV main(int argc, char* argv[])
 #ifndef SHOW_SHADER_NAME
 			smgr->addQuake3SceneNode ( meshBuffer, shader );
 #else
-			// Now add the MeshBuffer(s) with the current Shader to the Manager
-#if 0
-			if (	shader->name != "textures/cf/window-decal"
-				)
-				continue;
-#endif
-			if ( 0 == count )
-			{
-				core::stringc s;
-				//quake3::dumpShader ( s, shader );
-				printf ( s.c_str () );
-			}
 			count += 1;
 
 			node = smgr->addQuake3SceneNode ( meshBuffer, shader );
@@ -321,12 +309,12 @@ int IRRCALLCONV main(int argc, char* argv[])
 	*/
 	if ( mesh )
 	{
-		const quake3::tQ3EntityList &entityList = mesh->getEntityList ();
+		quake3::tQ3EntityList &entityList = mesh->getEntityList ();
 
 		quake3::SEntity search;
 		search.name = "info_player_deathmatch";
 
-		s32 index = entityList.binary_search_const ( search );
+		s32 index = entityList.binary_search ( search );
 		if ( index >= 0 )
 		{
 			const quake3::SVarGroup *group;

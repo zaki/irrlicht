@@ -689,6 +689,10 @@
 					RelativePath=".\..\..\include\SMaterial.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\include\SMaterialLayer.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="core"
@@ -1110,6 +1114,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IGUIColorSelectDialog.h"
+					>
+				</File>
+				<File
 					RelativePath=".\..\..\include\IGUIComboBox.h"
 					>
 				</File>
@@ -1139,6 +1147,10 @@
 				</File>
 				<File
 					RelativePath=".\..\..\include\IGUIFont.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IGUIFontBitmap.h"
 					>
 				</File>
 				<File
@@ -1183,6 +1195,10 @@
 				</File>
 				<File
 					RelativePath=".\..\..\include\IGUITabControl.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\IGUITable.h"
 					>
 				</File>
 				<File

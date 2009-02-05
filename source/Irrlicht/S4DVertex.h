@@ -141,10 +141,16 @@ struct sVec4
 
 	void saturate ()
 	{
+		x = core::min_ ( x, 1.f );
+		y = core::min_ ( y, 1.f );
+		z = core::min_ ( z, 1.f );
+		w = core::min_ ( w, 1.f );
+/*
 		x = core::clamp ( x, 0.f, 1.f );
 		y = core::clamp ( y, 0.f, 1.f );
 		z = core::clamp ( z, 0.f, 1.f );
 		w = core::clamp ( w, 0.f, 1.f );
+*/
 	}
 
 	// f = a * t + b * ( 1 - t )
@@ -167,9 +173,14 @@ struct sVec4
 		return x*other.x + y*other.y + z*other.z;
 	}
 
+	f32 get_length_xyz_square () const
+	{
+		return x * x + y * y + z * z;
+	}
+
 	f32 get_length_xyz () const
 	{
-		return sqrtf ( x * x + y * y + z * z );
+		return core::squareroot ( x * x + y * y + z * z );
 	}
 
 	f32 get_inverse_length_xyz () const

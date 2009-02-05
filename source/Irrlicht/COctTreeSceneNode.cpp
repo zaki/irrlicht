@@ -109,16 +109,20 @@ void COctTreeSceneNode::render()
 		core::matrix4 invTrans(AbsoluteTransformation, core::matrix4::EM4CONST_INVERSE);
 		frust.transform(invTrans);
 	}
-	/*
-	//const core::aabbox3d<float> &box = frust.getBoundingBox();
-	*/
+
+#if defined ( OCTTREE_BOX_BASED )
+	const core::aabbox3d<float> &box = frust.getBoundingBox();
+#endif
 
 	switch(vertexType)
 	{
 	case video::EVT_STANDARD:
 		{
-			//StdOctTree->calculatePolys(box);
+#if defined ( OCTTREE_BOX_BASED )
+			StdOctTree->calculatePolys(box);
+#else
 			StdOctTree->calculatePolys(frust);
+#endif
 
 			const OctTree<video::S3DVertex>::SIndexData* d = StdOctTree->getIndexData();
 
@@ -163,9 +167,11 @@ void COctTreeSceneNode::render()
 		break;
 	case video::EVT_2TCOORDS:
 		{
-			//LightMapOctTree->calculatePolys(box);
+#if defined ( OCTTREE_BOX_BASED )
+			LightMapOctTree->calculatePolys(box);
+#else
 			LightMapOctTree->calculatePolys(frust);
-
+#endif
 			const OctTree<video::S3DVertex2TCoords>::SIndexData* d = LightMapOctTree->getIndexData();
 
 			for (u32 i=0; i<Materials.size(); ++i)
@@ -214,8 +220,11 @@ void COctTreeSceneNode::render()
 		break;
 	case video::EVT_TANGENTS:
 		{
-			//TangentsOctTree->calculatePolys(box);
+#if defined ( OCTTREE_BOX_BASED )
+			TangentsOctTree->calculatePolys(box);
+#else
 			TangentsOctTree->calculatePolys(frust);
+#endif
 
 			const OctTree<video::S3DVertexTangents>::SIndexData* d =  TangentsOctTree->getIndexData();
 

@@ -27,7 +27,8 @@ public:
 	{
 		GEN_MIPMAP		= 1,
 		IS_RENDERTARGET	= 2,
-		NP2_SIZE		= 4
+		NP2_SIZE		= 4,
+		HAS_ALPHA		= 8
 	};
 	CSoftwareTexture2( IImage* surface, const core::string<c16>& name, u32 flags );
 
@@ -110,7 +111,13 @@ public:
 	//! support mipmaps
 	virtual bool hasMipMaps() const
 	{
-		return Flags & GEN_MIPMAP;
+		return (Flags & GEN_MIPMAP ) != 0;
+	}
+
+	//! Returns if the texture has an alpha channel
+	virtual bool hasAlpha() const
+	{ 
+		return (Flags & HAS_ALPHA ) != 0;
 	}
 
 	//! is a render target

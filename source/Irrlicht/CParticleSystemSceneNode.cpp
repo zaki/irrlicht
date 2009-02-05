@@ -315,7 +315,7 @@ void CParticleSystemSceneNode::render()
 
 #else
 
-	const core::matrix4 &m = camera->getViewFrustum()->Matrices [ video::ETS_VIEW ];
+	const core::matrix4 &m = camera->getViewFrustum()->getTransform( video::ETS_VIEW );
 
 	const core::vector3df view ( -m[2], -m[6] , -m[10] );
 

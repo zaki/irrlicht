@@ -367,6 +367,18 @@ namespace core
 #endif
 	}
 
+	// calculate: sqrt ( x )
+	REALINLINE f32 squareroot(const f32 f)
+	{
+		return sqrtf ( f );
+	}
+
+	// calculate: sqrt ( x )
+	REALINLINE f64 squareroot(const f64 f)
+	{
+		return sqrt ( f );
+	}
+
 	// calculate: 1 / sqrt ( x )
 	REALINLINE f64 reciprocal_squareroot(const f64 x)
 	{

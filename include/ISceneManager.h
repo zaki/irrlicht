@@ -13,6 +13,7 @@
 #include "SColor.h"
 #include "ETerrainElements.h"
 #include "ESceneNodeTypes.h"
+#include "ESceneNodeAnimatorTypes.h"
 #include "EMeshWriterEnums.h"
 #include "SceneParameters.h"
 
@@ -26,6 +27,7 @@ namespace io
 	class IReadFile;
 	class IAttributes;
 	class IWriteFile;
+	class IFileSystem;
 } // end namespace io
 
 namespace gui
@@ -365,6 +367,11 @@ namespace scene
 		/** \return Pointer to the GUIEnvironment
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual gui::IGUIEnvironment* getGUIEnvironment() = 0;
+
+		//! Get the active FileSystem
+		/** \return Pointer to the FileSystem
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		virtual io::IFileSystem* getFileSystem() = 0;
 
 		//! adds Volume Lighting Scene Node.
 		/** Example Usage:
@@ -1052,7 +1059,9 @@ namespace scene
 		\param speed: The orbital speed, in radians per millisecond.
 		\param direction: Specifies the upvector used for alignment of the mesh.
 		\param startPosition: The position on the circle where the animator will
-		begin. Value is in multiples  of a circle, i.e. 0.5 is half way around.
+		begin. Value is in multiples  of a circle, i.e. 0.5 is half way around. (phase)
+		\param radiusEllipsoid: if radiusEllipsoid != 0 then radius2 froms a ellipsoid
+		begin. Value is in multiples  of a circle, i.e. 0.5 is half way around. (phase)
 		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
 		and the animator will animate it.
 		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
@@ -1061,7 +1070,8 @@ namespace scene
 				const core::vector3df& center=core::vector3df(0.f,0.f,0.f),
 				f32 radius=100.f, f32 speed=0.001f,
 				const core::vector3df& direction=core::vector3df(0.f, 1.f, 0.f),
-				f32 startPosition = 0.f) = 0;
+				f32 startPosition = 0.f,
+				f32 radiusEllipsoid = 0.f) = 0;
 
 		//! Creates a fly straight animator, which lets the attached scene node fly or move along a line between two points.
 		/** \param startPoint: Start point of the line.
@@ -1075,7 +1085,7 @@ namespace scene
 		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
 		See IReferenceCounted::drop() for more information. */
 		virtual ISceneNodeAnimator* createFlyStraightAnimator(const core::vector3df& startPoint,
-			const core::vector3df& endPoint, u32 timeForWay, bool loop=false) = 0;
+			const core::vector3df& endPoint, u32 timeForWay, bool loop=false, bool pingpong = false) = 0;
 
 		//! Creates a texture animator, which switches the textures of the target scene node based on a list of textures.
 		/** \param textures: List of textures to use.
@@ -1328,6 +1338,9 @@ namespace scene
 
 		//! Get typename from a scene node type or null if not found
 		virtual const c8* getSceneNodeTypeName(ESCENE_NODE_TYPE type) = 0;
+
+		//! Returns a typename from a scene node animator type or null if not found
+		virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) = 0;
 
 		//! Adds a scene node to the scene by name
 		/** \return Pointer to the scene node added by a factory

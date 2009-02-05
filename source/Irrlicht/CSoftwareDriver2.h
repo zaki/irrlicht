@@ -191,19 +191,18 @@ namespace video
 			-> combined CameraProjectionWorld
 			-> ClipScale from NDC to DC Space
 		*/
-		enum E_TRANSFORMATION_STATE_2
+		enum E_TRANSFORMATION_STATE_BURNING_VIDEO
 		{
 			ETS_VIEW_PROJECTION = ETS_COUNT,
-			ETS_WORLD_VIEW,
-			ETS_WORLD_VIEW_INVERSE_TRANSPOSED,
 			ETS_CURRENT,
 			ETS_CLIPSCALE,
+			ETS_VIEW_INVERSE,
 
-			ETS2_COUNT
+			ETS_COUNT_BURNING
 		};
 
-		u32 TransformationFlag[ETS2_COUNT];
-		core::matrix4 Transformation[ETS2_COUNT];
+		u32 TransformationFlag[ETS_COUNT_BURNING];
+		core::matrix4 Transformation[ETS_COUNT_BURNING];
 
 		// Vertex Cache
 		static const SVSize vSize[];
@@ -229,6 +228,9 @@ namespace video
 
 #ifdef SOFTWARE_DRIVER_2_LIGHTING
 		void lightVertex ( s4DVertex *dest, const S3DVertex *source );
+		//! Sets the fog mode.
+		virtual void setFog(SColor color, bool linearFog, f32 start,
+			f32 end, f32 density, bool pixelFog, bool rangeFog);
 #endif
 
 

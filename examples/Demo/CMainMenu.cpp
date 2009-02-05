@@ -4,64 +4,6 @@
 #include "CMainMenu.h"
 
 
-//! we want the lights follow the model when it's moving
-class CSceneNodeAnimatorFollowBoundingBox : public irr::scene::ISceneNodeAnimator
-{
-public:
-
-	//! constructor
-	CSceneNodeAnimatorFollowBoundingBox(irr::scene::ISceneNode* tofollow,
-			const core::vector3df &offset, u32 frequency, s32 phase)
-		: Offset(offset), ToFollow(tofollow), Frequency(frequency), Phase(phase)
-	{
-		if (ToFollow)
-			ToFollow->grab();
-	}
-
-	//! destructor
-	virtual ~CSceneNodeAnimatorFollowBoundingBox()
-	{
-		if (ToFollow)
-			ToFollow->drop();
-	}
-
-	//! animates a scene node
-	virtual void animateNode(irr::scene::ISceneNode* node, u32 timeMs)
-	{
-		if (0 == node || node->getType() != irr::scene::ESNT_LIGHT)
-			return;
-
-		irr::scene::ILightSceneNode* l = (irr::scene::ILightSceneNode*) node;
-
-		if (ToFollow)
-		{
-			core::vector3df now = l->getPosition();
-			now += ToFollow->getBoundingBox().getCenter();
-			now += Offset;
-			l->setPosition(now);
-		}
-
-		irr::video::SColorHSL color;
-		irr::video::SColor rgb(0);
-		color.Hue = ( (timeMs + Phase) % Frequency  ) * ( 2.f * irr::core::PI / Frequency );
-		color.Saturation = 1.f;
-		color.Luminance = 0.5f;
-		color.toRGB(rgb);
-
-		video::SLight light = l->getLightData();
-		light.DiffuseColor = rgb;
-		l->setLightData(light);
-	}
-
-	virtual scene::ISceneNodeAnimator* createClone(scene::ISceneNode* node, scene::ISceneManager* newManager=0) {return 0;}
-private:
-
-	core::vector3df Offset;
-	irr::scene::ISceneNode* ToFollow;
-	s32 Frequency;
-	s32 Phase;
-};
-
 
 CMainMenu::CMainMenu()
 : startButton(0), MenuDevice(0), selected(2), start(false), fullscreen(true),
@@ -74,7 +16,12 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 			bool& outAdditive, bool& outVSync, bool& outAA,
 			video::E_DRIVER_TYPE& outDriver)
 {
-	MenuDevice = createDevice(video::EDT_BURNINGSVIDEO,
+	//video::E_DRIVER_TYPE driverType = video::EDT_DIRECT3D9;
+	//video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;
+	video::E_DRIVER_TYPE driverType = video::EDT_BURNINGSVIDEO;
+	//video::E_DRIVER_TYPE driverType = video::EDT_SOFTWARE;
+
+	MenuDevice = createDevice(driverType,
 		core::dimension2d<u32>(512, 384), 16, false, false, false, this);
 
 	if (MenuDevice->getFileSystem()->existFile("irrlicht.dat"))
@@ -116,7 +63,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	box->addItem(L"OpenGL 1.5");
 	box->addItem(L"Direct3D 8.1");
 	box->addItem(L"Direct3D 9.0c");
-	box->addItem(L"Burning's Video 0.40");
+	box->addItem(L"Burning's Video 0.42");
 	box->addItem(L"Irrlicht Software Renderer 1.0");
 	box->setSelected(selected);
 
@@ -163,95 +110,105 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 		modelNode->setPosition( core::vector3df(0.f, 0.f, -5.f) );
 		modelNode->setMaterialTexture(0, driver->getTexture("../../media/faerie2.bmp"));
 		modelNode->setMaterialFlag(video::EMF_LIGHTING, true);
-		modelNode->getMaterial(0).Shininess = 28.f;
-		modelNode->getMaterial(0).NormalizeNormals = true;
+		modelNode->getMaterial(0).Shininess = 50.f;
+		//modelNode->getMaterial(0).NormalizeNormals = true;
 		modelNode->setMD2Animation(scene::EMAT_STAND);
 	}
 
 	// set ambient light (no sun light in the catacombs)
-	smgr->setAmbientLight( video::SColorf(0.f, 0.f, 0.f) );
+	smgr->setAmbientLight( video::SColorf(0.2f, 0.2f, 0.2f) );
 
+	scene::ILightSceneNode *light;
 	scene::ISceneNodeAnimator* anim;
 	scene::ISceneNode* bill;
 
-	// add light 1 (sunset orange)
-	scene::ILightSceneNode* light1 =
-		smgr->addLightSceneNode(0, core::vector3df(10.f,10.f,0),
-		video::SColorf(0.86f, 0.38f, 0.05f), 200.0f);
-
-	// add fly circle animator to light 1
-	anim = smgr->createFlyCircleAnimator(core::vector3df(0,0,0),30.0f, -0.004f, core::vector3df(0.41f, 0.4f, 0.0f));
-	light1->addAnimator(anim);
-	anim->drop();
-
-	// let the lights follow the model...
-	anim = new CSceneNodeAnimatorFollowBoundingBox(modelNode, core::vector3df(0,16,0), 4000, 0);
-	//light1->addAnimator(anim);
-	anim->drop();
-
-	// attach billboard to the light
-	bill = smgr->addBillboardSceneNode(light1, core::dimension2d<f32>(10, 10));
-	bill->setMaterialFlag(video::EMF_LIGHTING, false);
-	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-	bill->setMaterialTexture(0, driver->getTexture("../../media/particlered.bmp"));
-
-#if 1
-	// add light 2 (nearly red)
-	scene::ILightSceneNode* light2 =
-		smgr->addLightSceneNode(0, core::vector3df(0,1,0),
-		video::SColorf(0.9f, 1.0f, 0.f, 0.0f), 200.0f);
-
-	// add fly circle animator to light 1
-	anim = smgr->createFlyCircleAnimator(core::vector3df(0,0,0),30.0f, 0.004f, core::vector3df(0.41f, 0.4f, 0.0f));
-	light2->addAnimator(anim);
-	anim->drop();
-
-	// let the lights follow the model...
-	anim = new CSceneNodeAnimatorFollowBoundingBox( modelNode, core::vector3df(0,-8,0), 2000, 0 );
-	//light2->addAnimator(anim);
-	anim->drop();
-
-
-	// attach billboard to the light
-	bill = smgr->addBillboardSceneNode(light2, core::dimension2d<f32>(10, 10));
-	bill->setMaterialFlag(video::EMF_LIGHTING, false);
-	bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-	bill->setMaterialTexture(0, driver->getTexture("../../media/particlered.bmp"));
-
-	// add light 3 (nearly blue)
-	scene::ILightSceneNode* light3 =
-		smgr->addLightSceneNode(0, core::vector3df(0,-1,0),
-		video::SColorf(0.f, 0.0f, 0.9f, 0.0f), 40.0f);
-
-	// add fly circle animator to light 2
-	anim = smgr->createFlyCircleAnimator(core::vector3df(0,0,0),40.0f, 0.004f, core::vector3df(-0.41f, -0.4f, 0.0f));
-	light3->addAnimator(anim);
-	anim->drop();
-
-	// let the lights follow the model...
-	anim = new CSceneNodeAnimatorFollowBoundingBox(modelNode, core::vector3df(0,8,0), 8000, 0);
-	//light3->addAnimator(anim);
-	anim->drop();
-
-	// attach billboard to the light
-	bill = smgr->addBillboardSceneNode(light3, core::dimension2d<f32>(10, 10));
-	if (bill)
+	enum eLightParticle
 	{
-		bill->setMaterialFlag(video::EMF_LIGHTING, false);
-		bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-		bill->setMaterialTexture(0, driver->getTexture("../../media/portal1.bmp"));
+		LIGHT_NONE,
+		LIGHT_GLOBAL,
+		LIGHT_RED,
+		LIGHT_BLUE
+	};
+	core::vector3df lightDir[2] = {
+		core::vector3df(0.f, 0.1f, 0.4f),
+		core::vector3df(0.f, 0.1f, -0.4f),
+	};
+
+	struct SLightParticle
+	{
+		eLightParticle type;
+		u32 dir;
+	};
+	const SLightParticle lightParticle[] =
+	{
+		//LIGHT_GLOBAL,0,
+		LIGHT_RED,0,
+		LIGHT_BLUE,0,
+		LIGHT_RED,1,
+		LIGHT_BLUE,1,
+		LIGHT_NONE,0
+	};
+
+	const SLightParticle *l = lightParticle;
+	while ( l->type != LIGHT_NONE )
+	{
+		switch ( l->type )
+		{
+			case LIGHT_GLOBAL:
+				// add illumination from the background
+				light = smgr->addLightSceneNode(0, core::vector3df(10.f,40.f,-5.f),
+					video::SColorf(0.2f, 0.2f, 0.2f), 90.f);
+				break;
+			case LIGHT_RED:
+				// add light nearly red
+				light = smgr->addLightSceneNode(0, core::vector3df(0,1,0),
+					video::SColorf(0.8f, 0.f, 0.f, 0.0f), 30.0f);
+				// attach red billboard to the light
+				bill = smgr->addBillboardSceneNode(light, core::dimension2d<f32>(10, 10));
+				if ( bill )
+				{
+					bill->setMaterialFlag(video::EMF_LIGHTING, false);
+					bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+					bill->setMaterialTexture(0, driver->getTexture("../../media/particlered.bmp"));
+				}
+				// add fly circle animator to the light
+				anim = smgr->createFlyCircleAnimator(core::vector3df(0.f,0.f,-5.f),20.f,
+					0.002f, lightDir [l->dir] );
+				light->addAnimator(anim);
+				anim->drop();
+				break;
+			case LIGHT_BLUE:
+				// add light nearly blue
+				light = smgr->addLightSceneNode(0, core::vector3df(0,1,0),
+					video::SColorf(0.f, 0.0f, 0.8f, 0.0f), 30.0f);
+				// attach blue billboard to the light
+				bill = smgr->addBillboardSceneNode(light, core::dimension2d<f32>(10, 10));
+				if (bill)
+				{
+					bill->setMaterialFlag(video::EMF_LIGHTING, false);
+					bill->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+					bill->setMaterialTexture(0, driver->getTexture("../../media/portal1.bmp"));
+				}
+				// add fly circle animator to the light
+				anim = smgr->createFlyCircleAnimator(core::vector3df(0.f,0.f,-5.f),20.f,
+					-0.002f, lightDir [l->dir], 0.5f);
+				light->addAnimator(anim);
+				anim->drop();
+				break;
+		}
+		l += 1;
 	}
-#endif
 
 	// create a fixed camera
-	smgr->addCameraSceneNode(0, core::vector3df(45,0,0), core::vector3df(0,0,10));
+	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode(0, core::vector3df(45,0,0), core::vector3df(0,0,10));
+
 
 	// irrlicht logo and background
 	// add irrlicht logo
 	bool oldMipMapState = driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
-	guienv->addImage(driver->getTexture("../../media/irrlichtlogo2.png"),
+	guienv->addImage(driver->getTexture("../../media/irrlichtlogo3.png"),
 		core::position2d<s32>(5,5));
 
 	video::ITexture* irrlichtBack = driver->getTexture("../../media/demoback.jpg");

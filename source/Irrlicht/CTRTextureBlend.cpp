@@ -180,6 +180,11 @@ void CTRTextureBlend::setParam ( u32 index, f32 value)
 		fragmentShader = &CTRTextureBlend::fragment_src_alpha_one;
 	}
 	else
+	if ( srcFact == EBF_SRC_COLOR && dstFact == EBF_SRC_ALPHA )
+	{
+		fragmentShader = &CTRTextureBlend::fragment_src_color_src_alpha;
+	}
+	else
 	{
 		showname = 1;
 		fragmentShader = &CTRTextureBlend::fragment_dst_color_zero;
@@ -488,7 +493,7 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 
 	f32 iw = 	FIX_POINT_F32_MUL;
 
-	tFixPoint a0, r0, g0, b0;
+	tFixPointu a0, r0, g0, b0;
 	tFixPoint     r1, g1, b1;
 
 	s32 i;
@@ -512,17 +517,13 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 		iw = fix_inverse32 ( line.w[0] );
 #endif
 
-		getSample_texture ( (tFixPointu&) a0, (tFixPointu&)r0, (tFixPointu&)g0, (tFixPointu&)b0, 
-							&IT[0],
-							tofix ( line.t[0][0].x,iw),
-							tofix ( line.t[0][0].y,iw)
-						);
-	
+		getSample_texture ( a0, r0, g0, b0, &IT[0],	tofix ( line.t[0][0].x,iw),	tofix ( line.t[0][0].y,iw) );
 		color_to_fix ( r1, g1, b1, dst[i] );
 
-		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex2 ( r0, r1 ) ),
-								clampfix_maxcolor ( imulFix_tex2 ( g0, g1 ) ),
-								clampfix_maxcolor ( imulFix_tex2 ( b0, b1 ) )
+		u32 check = imulFix_tex1( r0, r1 );
+		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex1( r0, r1 ) + imulFix_tex1( r1, a0 ) ),
+								clampfix_maxcolor ( imulFix_tex1( g0, g1 ) + imulFix_tex1( g1, a0 ) ),
+								clampfix_maxcolor ( imulFix_tex1( b0, b1 ) + imulFix_tex1( b1, a0 ) )
 							);
 		}
 

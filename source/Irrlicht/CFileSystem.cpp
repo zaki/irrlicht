@@ -128,14 +128,36 @@ void CFileSystem::addArchiveLoader(IArchiveLoader* loader)
 }
 
 
+//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
+bool CFileSystem::moveFileArchive( u32 sourceIndex, s32 relative )
+{
+	bool r = false;
+	const s32 dest = (s32) sourceIndex + relative;
+	const s32 dir = relative < 0 ? -1 : 1;
+	const s32 sourceEnd = ((s32) FileArchive.size() ) - 1;
+	IFileArchive *t;
+
+	for ( s32 s = (s32) sourceIndex;s != dest; s += dir )
+	{
+		if ( s < 0 || s > sourceEnd || s + dir < 0 || s + dir > sourceEnd )
+			continue;
+			
+		t = FileArchive [ s + dir ];
+		FileArchive [ s + dir ] = FileArchive [ s ];
+		FileArchive [ s ] = t;
+		r = true;
+	}
+	return r;
+}
+
 //! Adds an archive to the file system.
-bool CFileSystem::registerFileArchive( const core::string<c16>& filename, bool ignoreCase, bool ignorePaths, s32 index )
+bool CFileSystem::registerFileArchive( const core::string<c16>& filename, bool ignoreCase, bool ignorePaths )
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
 	u32 i;
 
-	// try to load arhive based on file name
+	// try to load archive based on file name
 	for ( i = 0; i < ArchiveLoader.size(); ++i)
 	{
 		if ( ArchiveLoader[i]->isALoadableFileFormat( filename ) )
@@ -148,11 +170,7 @@ bool CFileSystem::registerFileArchive( const core::string<c16>& filename, bool i
 
 	if ( archive )
 	{
-		if ( index < 0 )
-			FileArchive.push_back ( archive );
-		else
-			FileArchive.insert ( archive, index );
-
+		FileArchive.push_back ( archive );
 		ret = true;
 	}
 	else

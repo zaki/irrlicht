@@ -89,7 +89,7 @@ public:
 
 	//! Gets the length of the vector.
 	/** \return The length of the vector. */
-	T getLength() const { return (T)sqrt((f64)(X*X + Y*Y)); }
+	T getLength() const { return core::squareroot( X*X + Y*Y ); }
 
 	//! Get the squared length of this vector
 	/** This is useful because it is much faster than getLength().
@@ -191,7 +191,7 @@ public:
 			return Y < 0 ? 90 : 270;
 
 		f64 tmp = Y / getLength();
-		tmp = atan(sqrt(1 - tmp*tmp) / tmp) * RADTODEG64;
+		tmp = atan( core::squareroot(1 - tmp*tmp) / tmp) * RADTODEG64;
 
 		if (X>0 && Y>0)
 			return tmp + 270;
@@ -218,7 +218,7 @@ public:
 		if (tmp == 0.0)
 			return 90.0;
 
-		tmp = tmp / sqrt((f64)((X*X + Y*Y) * (b.X*b.X + b.Y*b.Y)));
+		tmp = tmp / core::squareroot((f64)((X*X + Y*Y) * (b.X*b.X + b.Y*b.Y)));
 		if (tmp < 0.0)
 			tmp = -tmp;
 

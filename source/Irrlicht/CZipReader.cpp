@@ -41,7 +41,7 @@ CArchiveLoaderZIP::~CArchiveLoaderZIP()
 //! returns true if the file maybe is able to be loaded by this class
 bool CArchiveLoaderZIP::isALoadableFileFormat(const core::string<c16>& filename) const
 {
-	return core::hasFileExtension ( filename, "zip", "pk3" );
+	return core::hasFileExtension ( filename, "zip", "pk3", "dat" );
 }
 
 
@@ -582,12 +582,8 @@ CMountPointReader::CMountPointReader( IFileSystem * parent, const core::string<c
 :CZipReader ( 0, ignoreCase, ignorePaths ), Parent ( parent )
 {
 	Base = basename;
-	u16 last = Base.size() ? Base [ Base.size() - 1 ] : 0;
-
-	if ( last != '\\' && last != '/' )
-	{
-		Base += '/';
-	}
+	if ( core::lastChar ( Base ) != '/' )
+		Base.append ( '/' );
 	Type = "mount";
 }
 

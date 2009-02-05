@@ -25,7 +25,8 @@ static const SItemElement Quake3ItemElement [] = {
 	"25 Health",
 	25,
 	HEALTH,
-	SUB_NONE
+	SUB_NONE,
+	SPECIAL_SFX_BOUNCE | SPECIAL_SFX_ROTATE_1
 },
 {	"item_health_large",
 	"models/powerups/health/large_cross.md3", 
@@ -35,7 +36,8 @@ static const SItemElement Quake3ItemElement [] = {
 	"50 Health",
 	50,
 	HEALTH,
-	SUB_NONE
+	SUB_NONE,
+	SPECIAL_SFX_BOUNCE | SPECIAL_SFX_ROTATE_1
 },
 {
 	"item_health_mega",
@@ -47,6 +49,7 @@ static const SItemElement Quake3ItemElement [] = {
 	100,
 	HEALTH,
 	SUB_NONE,
+	SPECIAL_SFX_BOUNCE | SPECIAL_SFX_ROTATE_1
 },
 {
 	"item_health_small",
@@ -58,6 +61,7 @@ static const SItemElement Quake3ItemElement [] = {
 	5,
 	HEALTH,
 	SUB_NONE,
+	SPECIAL_SFX_BOUNCE | SPECIAL_SFX_ROTATE_1
 },
 {	"ammo_bullets",
 	"models/powerups/ammo/machinegunam.md3", 
@@ -67,7 +71,8 @@ static const SItemElement Quake3ItemElement [] = {
 	"Bullets",
 	50,
 	AMMO,
-	MACHINEGUN
+	MACHINEGUN,
+	SPECIAL_SFX_BOUNCE,
 },
 {
 	"ammo_cells",
@@ -79,6 +84,7 @@ static const SItemElement Quake3ItemElement [] = {
 	30,
 	AMMO,
 	PLASMAGUN,
+	SPECIAL_SFX_BOUNCE
 },
 {	"ammo_rockets",
 	"models/powerups/ammo/rocketam.md3",
@@ -89,6 +95,7 @@ static const SItemElement Quake3ItemElement [] = {
 	5,
 	AMMO,
 	ROCKET_LAUNCHER,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"ammo_shells",
@@ -100,6 +107,7 @@ static const SItemElement Quake3ItemElement [] = {
 	10,
 	AMMO,
 	SHOTGUN,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"ammo_slugs",
@@ -111,6 +119,7 @@ static const SItemElement Quake3ItemElement [] = {
 	10,
 	AMMO,
 	RAILGUN,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"item_armor_body", 
@@ -122,6 +131,7 @@ static const SItemElement Quake3ItemElement [] = {
 	100,
 	ARMOR,
 	SUB_NONE,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"item_armor_combat", 
@@ -133,6 +143,7 @@ static const SItemElement Quake3ItemElement [] = {
 	50,
 	ARMOR,
 	SUB_NONE,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"item_armor_shard", 
@@ -140,10 +151,11 @@ static const SItemElement Quake3ItemElement [] = {
 	"",
 	"sound/misc/ar1_pkup.wav",
 	"icons/iconr_shard",
-	"Armor Shard",
+	"Armor Shared",
 	5,
 	ARMOR,
 	SUB_NONE,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_gauntlet", 
@@ -155,6 +167,7 @@ static const SItemElement Quake3ItemElement [] = {
 	0,
 	WEAPON,
 	GAUNTLET,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_shotgun", 
@@ -166,6 +179,7 @@ static const SItemElement Quake3ItemElement [] = {
 	10,
 	WEAPON,
 	SHOTGUN,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_machinegun", 
@@ -177,6 +191,7 @@ static const SItemElement Quake3ItemElement [] = {
 	40,
 	WEAPON,
 	MACHINEGUN,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_grenadelauncher",
@@ -188,6 +203,7 @@ static const SItemElement Quake3ItemElement [] = {
 	10,
 	WEAPON,
 	GRENADE_LAUNCHER,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_rocketlauncher",
@@ -199,6 +215,7 @@ static const SItemElement Quake3ItemElement [] = {
 	10,
 	WEAPON,
 	ROCKET_LAUNCHER,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_lightning", 
@@ -210,6 +227,7 @@ static const SItemElement Quake3ItemElement [] = {
 	100,
 	WEAPON,
 	LIGHTNING,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_railgun", 
@@ -221,6 +239,7 @@ static const SItemElement Quake3ItemElement [] = {
 	10,
 	WEAPON,
 	RAILGUN,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_plasmagun", 
@@ -232,6 +251,7 @@ static const SItemElement Quake3ItemElement [] = {
 	50,
 	WEAPON,
 	PLASMAGUN,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_bfg",
@@ -243,6 +263,7 @@ static const SItemElement Quake3ItemElement [] = {
 	20,
 	WEAPON,
 	BFG,
+	SPECIAL_SFX_ROTATE
 },
 {
 	"weapon_grapplinghook",
@@ -254,12 +275,14 @@ static const SItemElement Quake3ItemElement [] = {
 	0,
 	WEAPON,
 	GRAPPLING_HOOK,
+	SPECIAL_SFX_ROTATE
 },
 {
 	""
 }
 
 };
+
 
 /*!
 */
@@ -432,7 +455,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 
 			if ( takeOriginal )
 			{
-				m = new SMesh;
+				m = new SMesh ();
 				((SMesh*) m )->addMeshBuffer (meshBuffer);
 			}
 			else
@@ -476,6 +499,7 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 
 
 /*!
+	create Items from Entity
 */
 void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 						IrrlichtDevice *device, 
@@ -513,10 +537,17 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 	SMD3Mesh * mesh;
 	const SMD3MeshBuffer *meshBuffer;
 	IMeshSceneNode* node;
+	ISceneNodeAnimator* anim;
 	const IShader *shader;
 	u32 pos;
 	vector3df p;
+	u32 nodeCount = 0;
+	tTexArray textureArray;
 
+	bool showShaderName = true;
+	IGUIFont *font = 0;
+	if ( showShaderName )
+		font = device->getGUIEnvironment()->getFont("fontlucida.png");
 
 	const SItemElement *itemElement;
 
@@ -530,6 +561,8 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 		pos = 0;
 		p = getAsVector3df ( entity[index].getGroup(1)->get ( "origin" ), pos );
 
+		nodeCount += 1;
+		showShaderName = true;
 		for ( u32 g = 0; g < 2; ++g )
 		{
 			if ( 0 == itemElement->model[g] || itemElement->model[g][0] == 0 )
@@ -545,22 +578,79 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 				if ( 0 == meshBuffer )
 					continue;
 
-				shader = masterMesh->getShader ( meshBuffer->Shader, false );
-				if ( 0 == shader )
+				shader = masterMesh->getShader ( meshBuffer->Shader.c_str(), false );
+				IMeshBuffer *final = model->getMesh(0)->getMeshBuffer(j);
+				if ( shader )
+				{
+					//!TODO: Hack don't modify the vertexbuffer. make it better;-)
+					final->getMaterial().ColorMask = 0;
+					node = smgr->addQuake3SceneNode ( final, shader, parent );
+					final->getMaterial().ColorMask = 15;
+				}
+				else
+				{
+					// clone mesh
+					SMesh * m = new SMesh ();
+					m->addMeshBuffer ( final );
+					node = smgr->addMeshSceneNode ( m,  parent );
+					m->drop();
+				}
+
+				if ( 0 == node )
 				{
 					snprintf ( buf, 128, "q3ModelFactory shader %s failed", meshBuffer->Shader.c_str() );
 					device->getLogger()->log ( buf );
 					continue;
 				}
 
-				node = smgr->addQuake3SceneNode ( model->getMesh(0)->getMeshBuffer(j), shader, parent );
-				if ( 0 == node )
-					continue;
-
-				node->setName ( shader->name.c_str () );
+				// node was maybe centered by shaderscenenode
 				node->setPosition ( p );
+				node->setName ( meshBuffer->Shader );
+				node->setAutomaticCulling ( scene::EAC_BOX );
+
+				// add special effects to node
+				if (	itemElement->special & SPECIAL_SFX_ROTATE ||
+						(g == 0 && itemElement->special & SPECIAL_SFX_ROTATE_1)
+					)
+				{
+					anim = smgr->createRotationAnimator ( vector3df ( 0.f,
+						2.f, 0.f ) );
+					node->addAnimator ( anim );
+					anim->drop ();
+				}
+				continue;
+				if ( itemElement->special & SPECIAL_SFX_BOUNCE )
+				{
+					//anim = smgr->createFlyStraightAnimator ( 
+					//	p, p + vector3df ( 0.f, 60.f, 0.f ), 1000, true, true );
+					anim = smgr->createFlyCircleAnimator (
+						p + vector3df( 0.f, 20.f, 0.f ),
+						20.f,
+						0.005f,
+						vector3df ( 1.f, 0.f, 0.f ),
+						core::fract ( nodeCount * 0.05f ),
+						1.f
+						);
+					node->addAnimator ( anim );
+					anim->drop ();
+				}
 			}
 		}
+		// show name
+		if ( showShaderName )
+		{
+			IBillboardTextSceneNode* node2 = 0;
+			swprintf ( (wchar_t*) buf, sizeof(buf) / 2, L"%hs", itemElement->key );
+			node2 = smgr->addBillboardTextSceneNode(
+					font,
+					(wchar_t*) buf,
+					parent,
+					dimension2d<f32>(80.0f, 8.0f),
+					p + vector3df(0, 30, 0),
+					0
+					);
+		}
+
 	}
 
 	// music

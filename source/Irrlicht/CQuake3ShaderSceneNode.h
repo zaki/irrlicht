@@ -52,6 +52,7 @@ private:
 	SMesh *Mesh;
 	SMeshBufferLightMap* Original;
 	SMeshBuffer* MeshBuffer;
+	core::vector3df MeshOffset;
 
 	struct SQ3Texture
 	{
@@ -74,7 +75,7 @@ private:
 
 	void loadTextures ( io::IFileSystem * fileSystem );
 	void addBuffer ( scene::SMeshBufferLightMap * buffer );
-	void cloneBuffer ( scene::SMeshBufferLightMap * buffer );
+	void cloneBuffer ( scene::SMeshBuffer *dest, scene::SMeshBufferLightMap * buffer, bool translateCenter );
 
 	void deformvertexes_wave ( f32 dt, quake3::SModifierFunction &function );
 	void deformvertexes_move ( f32 dt, quake3::SModifierFunction &function );

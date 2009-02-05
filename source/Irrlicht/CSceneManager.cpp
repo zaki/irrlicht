@@ -239,7 +239,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	MeshLoaderList.push_back(new COBJMeshFileLoader(this, FileSystem));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_MD3_LOADER_
-	MeshLoaderList.push_back(new CMD3MeshFileLoader());
+	MeshLoaderList.push_back(new CMD3MeshFileLoader( this));
 	#endif
 	#ifdef _IRR_COMPILE_WITH_B3D_LOADER_
 	MeshLoaderList.push_back(new CB3DMeshFileLoader(this));
@@ -411,6 +411,15 @@ gui::IGUIEnvironment* CSceneManager::getGUIEnvironment()
 {
 	return GUIEnvironment;
 }
+
+//! Get the active FileSystem
+/** \return Pointer to the FileSystem
+This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+io::IFileSystem* CSceneManager::getFileSystem()
+{
+	return FileSystem;
+}
+
 
 
 //! Adds a text scene node, which is able to display
@@ -1097,8 +1106,8 @@ bool CSceneManager::isCulled(const ISceneNode* node)
 			SViewFrustum frust = *cam->getViewFrustum();
 
 			//transform the frustum to the node's current absolute transformation
-			core::matrix4 invTrans(node->getAbsoluteTransformation());
-			invTrans.makeInverse();
+			core::matrix4 invTrans(node->getAbsoluteTransformation(), core::matrix4::EM4CONST_INVERSE);
+			//invTrans.makeInverse();
 			frust.transform(invTrans);
 
 			core::vector3df edges[8];
@@ -1560,14 +1569,15 @@ ISceneNodeAnimator* CSceneManager::createRotationAnimator(const core::vector3df&
 ISceneNodeAnimator* CSceneManager::createFlyCircleAnimator(
 		const core::vector3df& center, f32 radius, f32 speed,
 		const core::vector3df& direction,
-		f32 startPosition)
+		f32 startPosition,
+		f32 radiusEllipsoid)
 {
 	const f32 orbitDurationMs = (core::DEGTORAD * 360.f) / speed;
 	const u32 effectiveTime = os::Timer::getTime() + (u32)(orbitDurationMs * startPosition);
 
 	ISceneNodeAnimator* anim = new CSceneNodeAnimatorFlyCircle(
 			effectiveTime, center,
-			radius, speed, direction);
+			radius, speed, direction,radiusEllipsoid);
 	return anim;
 }
 
@@ -1575,10 +1585,10 @@ ISceneNodeAnimator* CSceneManager::createFlyCircleAnimator(
 //! Creates a fly straight animator, which lets the attached scene node
 //! fly or move along a line between two points.
 ISceneNodeAnimator* CSceneManager::createFlyStraightAnimator(const core::vector3df& startPoint,
-					const core::vector3df& endPoint, u32 timeForWay, bool loop)
+					const core::vector3df& endPoint, u32 timeForWay, bool loop,bool pingpong)
 {
 	ISceneNodeAnimator* anim = new CSceneNodeAnimatorFlyStraight(startPoint,
-		endPoint, timeForWay, loop, os::Timer::getTime());
+		endPoint, timeForWay, loop, os::Timer::getTime(), pingpong);
 
 	return anim;
 }
@@ -2409,7 +2419,7 @@ ISceneNode* CSceneManager::addSceneNode(const char* sceneNodeTypeName, ISceneNod
 
 
 //! Returns a typename from a scene node animator type or null if not found
-const c8* CSceneManager::getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) const
+const c8* CSceneManager::getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type)
 {
 	const char* name = 0;
 

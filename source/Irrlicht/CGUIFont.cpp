@@ -267,12 +267,17 @@ bool CGUIFont::loadTexture(video::IImage* image, const core::string<c16>& name)
 
 	if ( ret )
 	{
-		bool current = Driver->getTextureCreationFlag ( video::ETCF_ALLOW_NON_POWER_2 );
+		bool flag[2];
+		flag[0] = Driver->getTextureCreationFlag ( video::ETCF_ALLOW_NON_POWER_2 );
+		flag[1] = Driver->getTextureCreationFlag ( video::ETCF_CREATE_MIP_MAPS );
+
 		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, true);
+		Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false );
 
 		SpriteBank->addTexture(Driver->addTexture(name, tmpImage));
 
-		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, current );
+		Driver->setTextureCreationFlag(video::ETCF_ALLOW_NON_POWER_2, flag[0] );
+		Driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, flag[1] );
 	}
 	if (deleteTmpImage)
 		tmpImage->drop();

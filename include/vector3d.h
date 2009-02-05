@@ -87,7 +87,7 @@ namespace core
 		vector3d<T>& set(const vector3d<T>& p) {X=p.X; Y=p.Y; Z=p.Z;return *this;}
 
 		//! Get length of the vector.
-		T getLength() const { return (T) sqrt((f64)(X*X + Y*Y + Z*Z)); }
+		T getLength() const { return core::squareroot( X*X + Y*Y + Z*Z ); }
 
 		//! Get squared length of the vector.
 		/** This is useful because it is much faster than getLength().
@@ -146,7 +146,7 @@ namespace core
 				return *this;
 			length = core::reciprocal_squareroot ( (f32)length );
 #else
-			const f32 length = core::reciprocal_squareroot ( (f32)(X*X + Y*Y + Z*Z) );
+			const T length = core::reciprocal_squareroot ( (T) (X*X + Y*Y + Z*Z) );
 #endif
 			
 			X = (T)(X * length);
@@ -279,21 +279,21 @@ namespace core
 		{
 			vector3d<T> angle;
 
-			angle.Y = (T)(atan2(X, Z) * RADTODEG64);
+			angle.Y = (T)(atan2(X, Z) * (T) RADTODEG64);
 
 			if (angle.Y < 0.0f)
 				angle.Y += 360.0f;
 			if (angle.Y >= 360.0f)
 				angle.Y -= 360.0f;
 
-			const f64 z1 = sqrt(X*X + Z*Z);
+			const T z1 = core::squareroot(X*X + Z*Z);
 
-			angle.X = (T)(atan2(z1, (f64)Y) * RADTODEG64 - 90.0);
+			angle.X = (T)(atan2(z1, (T)Y) * (T) RADTODEG64 - (T) 90.0);
 
-			if (angle.X < 0.0f)
-				angle.X += 360.0f;
-			if (angle.X >= 360.0f)
-				angle.X -= 360.0f;
+			if (angle.X < (T) 0.0)
+				angle.X += (T) 360.0;
+			if (angle.X >= (T) 360.0)
+				angle.X -= (T) 360.0;
 
 			return angle;
 		}
