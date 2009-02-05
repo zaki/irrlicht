@@ -446,9 +446,12 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
 					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
-					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
+					// The following attributes have no flags, but are
+					// either present or not. As a no-op we use
+					// GLX_USE_GL, which is silently ignored by glXChooseVisual
+					CreationParams.Doublebuffer?GLX_DOUBLEBUFFER:GLX_USE_GL,
+					CreationParams.Stereobuffer?GLX_STEREO:GLX_USE_GL,
 					None
 				};
 
@@ -458,14 +461,14 @@ bool CIrrDeviceLinux::createWindow()
 					if (CreationParams.Stencilbuffer)
 						os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
 					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
-					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
+					visualAttrBuffer[13]=CreationParams.Stencilbuffer?1:0;
 
 					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 					if (!visual && CreationParams.Doublebuffer)
 					{
 						os::Printer::log("No doublebuffering available.", ELL_WARNING);
 						CreationParams.Doublebuffer=false;
-						visualAttrBuffer[13] = GLX_DONT_CARE;
+						visualAttrBuffer[14] = GLX_USE_GL;
 						visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 					}
 				}
