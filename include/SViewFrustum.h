@@ -255,8 +255,12 @@ namespace scene
 		u32 index = 0;
 		switch ( state )
 		{
-			case video::ETS_PROJECTION: index = SViewFrustum::ETS_PROJECTION; break;
-			case video::ETS_VIEW: index = SViewFrustum::ETS_VIEW; break;
+			case video::ETS_PROJECTION:
+				index = SViewFrustum::ETS_PROJECTION; break;
+			case video::ETS_VIEW:
+				index = SViewFrustum::ETS_VIEW; break;
+			default:
+				break;
 		}
 		return Matrices [ index ];
 	}
@@ -269,8 +273,12 @@ namespace scene
 		u32 index = 0;
 		switch ( state )
 		{
-			case video::ETS_PROJECTION: index = SViewFrustum::ETS_PROJECTION; break;
-			case video::ETS_VIEW: index = SViewFrustum::ETS_VIEW; break;
+			case video::ETS_PROJECTION:
+				index = SViewFrustum::ETS_PROJECTION; break;
+			case video::ETS_VIEW:
+				index = SViewFrustum::ETS_VIEW; break;
+			default:
+				break;
 		}
 		return Matrices [ index ];
 	}

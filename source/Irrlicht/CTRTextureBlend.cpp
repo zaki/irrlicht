@@ -520,7 +520,7 @@ void CTRTextureBlend::fragment_src_color_src_alpha ()
 		getSample_texture ( a0, r0, g0, b0, &IT[0],	tofix ( line.t[0][0].x,iw),	tofix ( line.t[0][0].y,iw) );
 		color_to_fix ( r1, g1, b1, dst[i] );
 
-		u32 check = imulFix_tex1( r0, r1 );
+//		u32 check = imulFix_tex1( r0, r1 );
 		dst[i] = fix_to_color ( clampfix_maxcolor ( imulFix_tex1( r0, r1 ) + imulFix_tex1( r1, a0 ) ),
 								clampfix_maxcolor ( imulFix_tex1( g0, g1 ) + imulFix_tex1( g1, a0 ) ),
 								clampfix_maxcolor ( imulFix_tex1( b0, b1 ) + imulFix_tex1( b1, a0 ) )
