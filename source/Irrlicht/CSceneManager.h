@@ -56,8 +56,7 @@ namespace scene
 		virtual gui::IGUIEnvironment* getGUIEnvironment();
 
 		//! return the filesystem
-		virtual io::IFileSystem* CSceneManager::getFileSystem();
-
+		virtual io::IFileSystem* getFileSystem();
 
 		//! adds Volume Lighting Scene Node.
 		//! the returned pointer must not be dropped.

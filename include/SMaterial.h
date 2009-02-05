@@ -109,8 +109,9 @@ namespace video
 			case EBF_ONE_MINUS_DST_ALPHA:
 			case EBF_SRC_ALPHA_SATURATE:
 				return true;
+			default:
+				return false;
 		}
-		return false;
 	}
 
 
