@@ -757,6 +757,9 @@ void CAnimatedMeshSceneNode::setLoopMode(bool playAnimationLooped)
 //! playback has ended. Set this to 0 to disable the callback again.
 void CAnimatedMeshSceneNode::setAnimationEndCallback(IAnimationEndCallBack* callback)
 {
+	if (callback == LoopCallBack)
+		return;
+
 	if (LoopCallBack)
 		LoopCallBack->drop();
 
@@ -825,10 +828,16 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 	if (!mesh)
 		return; // won't set null mesh
 
-	if (Mesh)
-		Mesh->drop();
+	if (Mesh != mesh)
+	{
+		if (Mesh)
+			Mesh->drop();
 
-	Mesh = mesh;
+		Mesh = mesh;
+
+		// grab the mesh (it's non-null!)
+		Mesh->grab();
+	}
 
 	// get materials and bounding box
 	Box = Mesh->getBoundingBox();
@@ -837,24 +846,20 @@ void CAnimatedMeshSceneNode::setMesh(IAnimatedMesh* mesh)
 	if (m)
 	{
 		Materials.clear();
+		Materials.reallocate(m->getMeshBufferCount());
 
-		video::SMaterial mat;
 		for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 		{
 			IMeshBuffer* mb = m->getMeshBuffer(i);
 			if (mb)
-				mat = mb->getMaterial();
-
-			Materials.push_back(mat);
+				Materials.push_back(mb->getMaterial());
+			else
+				Materials.push_back(video::SMaterial());
 		}
 	}
 
 	// get start and begin time
 	setFrameLoop ( 0, Mesh->getFrameCount() );
-
-	// grab the mesh
-	if (Mesh)
-		Mesh->grab();
 }
 
 
