@@ -87,6 +87,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(writeImageToFile);
 	TEST(flyCircleAnimator);
 	TEST(enumerateImageManipulators);
+	TEST(testGeometryCreator);
 
 	const unsigned int numberOfTests = tests.size();
 
