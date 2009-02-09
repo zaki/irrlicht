@@ -5,49 +5,45 @@
 #ifndef __C_GEOMETRY_CREATOR_H_INCLUDED__
 #define __C_GEOMETRY_CREATOR_H_INCLUDED__
 
-#include "IMesh.h"
-#include "IImage.h"
-
-
+#include "IGeometryCreator.h"
 
 namespace irr
 {
-namespace video
-{
-	class IVideoDriver;
-	class SMaterial;
-}
 
 namespace scene
 {
 
 //! class for creating geometry on the fly
-class CGeometryCreator
+class CGeometryCreator : public IGeometryCreator
 {
 public:
 
-	static IMesh* createHillPlaneMesh(
+	IMesh* createHillPlaneMesh(
 		const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 		video::SMaterial* material, f32 hillHeight, const core::dimension2d<f32>& countHills,
-		const core::dimension2d<f32>& textureRepeatCount);
+		const core::dimension2d<f32>& textureRepeatCount) const;
 
-	static IMesh* createTerrainMesh(video::IImage* texture,
+	IMesh* createTerrainMesh(video::IImage* texture,
 		video::IImage* heightmap, const core::dimension2d<f32>& stretchSize,
 		f32 maxHeight, video::IVideoDriver* driver,
 		const core::dimension2d<u32>& defaultVertexBlockSize,
-		bool debugBorders=false);
+		bool debugBorders=false) const;
 
-	static IMesh* createArrowMesh(const u32 tesselationCylinder,
+	IMesh* createArrowMesh(const u32 tesselationCylinder,
 			const u32 tesselationCone, const f32 height,
 			const f32 cylinderHeight, const f32 width0,
 			const f32 width1, const video::SColor vtxColor0,
-			const video::SColor vtxColor1);
+			const video::SColor vtxColor1) const;
 
-	static IMesh* createSphereMesh(f32 radius, u32 polyCountX, u32 polyCountY);
+	IMesh* createSphereMesh(f32 radius, u32 polyCountX, u32 polyCountY) const;
 
-	static IMesh* createCylinderMesh(f32 radius, f32 length, u32 tesselation, const video::SColor& color=video::SColor(0xffffffff), bool closeTop=true, f32 oblique=0.f);
+	IMesh* createCylinderMesh(f32 radius, f32 length, u32 tesselation, 
+							const video::SColor& color=video::SColor(0xffffffff), 
+							bool closeTop=true, f32 oblique=0.f) const;
 
-	static IMesh* createConeMesh(f32 radius, f32 length, u32 tesselation, const video::SColor& colorTop=video::SColor(0xffffffff), const video::SColor& colorBottom=video::SColor(0xffffffff), f32 oblique=0.f);
+	IMesh* createConeMesh(f32 radius, f32 length, u32 tesselation, 
+						const video::SColor& colorTop=video::SColor(0xffffffff), 
+						const video::SColor& colorBottom=video::SColor(0xffffffff), f32 oblique=0.f) const;
 };
 
 

@@ -62,6 +62,7 @@
 		<Unit filename="softwareDevice.cpp" />
 		<Unit filename="terrainSceneNode.cpp" />
 		<Unit filename="testDimension2d.cpp" />
+		<Unit filename="testGeometryCreator.cpp" />
 		<Unit filename="testUtils.cpp" />
 		<Unit filename="testVector2d.cpp" />
 		<Unit filename="testVector3d.cpp" />

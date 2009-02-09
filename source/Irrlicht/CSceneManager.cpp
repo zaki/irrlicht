@@ -17,8 +17,6 @@
 
 #include "os.h"
 
-#include "CGeometryCreator.h"
-
 #ifdef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
 #include "CIrrMeshFileLoader.h"
 #endif
@@ -902,7 +900,7 @@ IAnimatedMesh* CSceneManager::addHillPlaneMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = CGeometryCreator::createHillPlaneMesh(tileSize,
+	IMesh* mesh = GeometryCreator.createHillPlaneMesh(tileSize,
 			tileCount, material, hillHeight, countHills,
 			textureRepeatCount);
 	if (!mesh)
@@ -936,7 +934,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = CGeometryCreator::createTerrainMesh(texture, heightmap,
+	IMesh* mesh = GeometryCreator.createTerrainMesh(texture, heightmap,
 			stretchSize, maxHeight, getVideoDriver(),
 			defaultVertexBlockSize);
 	if (!mesh)
@@ -969,7 +967,7 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = CGeometryCreator::createArrowMesh( tesselationCylinder,
+	IMesh* mesh = GeometryCreator.createArrowMesh( tesselationCylinder,
 			tesselationCone, height, cylinderHeight, width0,width1,
 			vtxColor0, vtxColor1);
 	if (!mesh)
@@ -1000,7 +998,7 @@ IAnimatedMesh* CSceneManager::addSphereMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = CGeometryCreator::createSphereMesh(radius, polyCountX, polyCountY);
+	IMesh* mesh = GeometryCreator.createSphereMesh(radius, polyCountX, polyCountY);
 	if (!mesh)
 		return 0;
 

@@ -21,7 +21,7 @@ IMesh* CGeometryCreator::createHillPlaneMesh(
 		const core::dimension2d<f32>& tileSize,
 		const core::dimension2d<u32>& tc, video::SMaterial* material,
 		f32 hillHeight, const core::dimension2d<f32>& ch,
-		const core::dimension2d<f32>& textureRepeatCount)
+		const core::dimension2d<f32>& textureRepeatCount) const
 {
 	core::dimension2d<u32> tileCount = tc;
 	core::dimension2d<f32> countHills = ch;
@@ -120,7 +120,7 @@ IMesh* CGeometryCreator::createTerrainMesh(video::IImage* texture,
 		video::IImage* heightmap, const core::dimension2d<f32>& stretchSize,
 		f32 maxHeight, video::IVideoDriver* driver,
 		const core::dimension2d<u32>& maxVtxBlockSize,
-		bool debugBorders)
+		bool debugBorders) const
 {
 	if (!texture || !heightmap)
 		return 0;
@@ -265,7 +265,7 @@ IMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 						const f32 width0,
 						const f32 width1,
 						const video::SColor vtxColor0,
-						const video::SColor vtxColor1)
+						const video::SColor vtxColor1) const
 {
 	SMesh* mesh = (SMesh*)createCylinderMesh(width0, cylinderHeight, tesselationCylinder, vtxColor0, false);
 
@@ -284,7 +284,7 @@ IMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 
 
 /* A sphere with proper normals and texture coords */
-IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCountY)
+IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCountY) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 
@@ -456,7 +456,9 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 
 
 /* A cylinder with proper normals and texture coords */
-IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length, u32 tesselation, const video::SColor& color, bool closeTop, f32 oblique)
+IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length, 
+											u32 tesselation, const video::SColor& color, 
+											bool closeTop, f32 oblique) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 
@@ -589,7 +591,9 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length, u32 tesselat
 
 
 /* A cone with proper normals and texture coords */
-IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation, const video::SColor& colorTop, const video::SColor& colorBottom, f32 oblique)
+IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation, 
+										const video::SColor& colorTop, 
+										const video::SColor& colorBottom, f32 oblique) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 

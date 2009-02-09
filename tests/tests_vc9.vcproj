@@ -267,6 +267,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\testGeometryCreator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\testUtils.cpp"
 				>
 			</File>

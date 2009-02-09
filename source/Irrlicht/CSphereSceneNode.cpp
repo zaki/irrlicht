@@ -5,7 +5,6 @@
 #include "CSphereSceneNode.h"
 #include "IVideoDriver.h"
 #include "ISceneManager.h"
-#include "CGeometryCreator.h"
 #include "S3DVertex.h"
 #include "os.h"
 
@@ -24,7 +23,7 @@ CSphereSceneNode::CSphereSceneNode(f32 radius, u32 polyCountX, u32 polyCountY, I
 	setDebugName("CSphereSceneNode");
 	#endif
 
-	Mesh = CGeometryCreator::createSphereMesh(radius, polyCountX, polyCountY);
+	Mesh = SceneManager->getGeometryCreator()->createSphereMesh(radius, polyCountX, polyCountY);
 }
 
 
@@ -128,7 +127,7 @@ void CSphereSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribute
 	{
 		if (Mesh)
 			Mesh->drop();
-		Mesh = CGeometryCreator::createSphereMesh(Radius, PolyCountX, PolyCountY);
+		Mesh = SceneManager->getGeometryCreator()->createSphereMesh(Radius, PolyCountX, PolyCountY);
 	}
 
 	ISceneNode::deserializeAttributes(in, options);

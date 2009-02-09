@@ -13,6 +13,7 @@
 #include "IMeshLoader.h"
 #include "CAttributes.h"
 #include "ILightManager.h"
+#include "CGeometryCreator.h"
 
 namespace irr
 {
@@ -475,6 +476,9 @@ namespace scene
 		//! Register a custom callbacks manager which gets callbacks during scene rendering.
 		virtual void setLightManager(ILightManager* lightManager);
 
+		//! Get an instance of a geometry creator.
+		virtual const IGeometryCreator* getGeometryCreator(void) const { return &GeometryCreator; }
+
 	private:
 
 		//! returns if node is culled
@@ -618,6 +622,8 @@ namespace scene
 		const core::stringw IRR_XML_FORMAT_SCENE;
 		const core::stringw IRR_XML_FORMAT_NODE;
 		const core::stringw IRR_XML_FORMAT_NODE_ATTR_TYPE;
+
+		CGeometryCreator GeometryCreator;
 	};
 
 } // end namespace video

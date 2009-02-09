@@ -16,6 +16,7 @@
 #include "ESceneNodeAnimatorTypes.h"
 #include "EMeshWriterEnums.h"
 #include "SceneParameters.h"
+#include "IGeometryCreator.h"
 
 namespace irr
 {
@@ -1433,6 +1434,11 @@ namespace scene
 		/** \param[in] lightManager: the new callbacks manager.  You may pass 0 to remove the
 			current callbacks manager and restore the default behaviour. */
 		virtual void setLightManager(ILightManager* lightManager) = 0;
+
+		//! Get an instance of a geometry creator.
+		/** The geometry creator provides some helper methods to create various types of
+		basic geometry.  This can be useful for custom scene nodes. */
+		virtual const IGeometryCreator* getGeometryCreator(void) const = 0;
 	};
 
 
