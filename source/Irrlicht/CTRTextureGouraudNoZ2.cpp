@@ -320,14 +320,6 @@ void CTRTextureGouraudNoZ2::drawTriangle ( const s4DVertex *a,const s4DVertex *b
 	f32 subPixel;
 #endif
 
-#ifdef IPOL_T0
-	IT[0].data = (tVideoSample*)IT[0].Texture->lock();
-#endif
-
-#ifdef IPOL_T1
-	IT[1].data = (tVideoSample*)IT[1].Texture->lock();
-#endif
-
 	// rasterize upper sub-triangle
 	if ( (f32) 0.0 != scan.invDeltaY[1]  )
 	{
@@ -622,20 +614,6 @@ void CTRTextureGouraudNoZ2::drawTriangle ( const s4DVertex *a,const s4DVertex *b
 
 		}
 	}
-
-	RenderTarget->unlock();
-
-#ifdef USE_ZBUFFER
-	DepthBuffer->unlock();
-#endif
-
-#ifdef IPOL_T0
-	IT[0].Texture->unlock();
-#endif
-
-#ifdef IPOL_T1
-	IT[1].Texture->unlock();
-#endif
 
 }
 

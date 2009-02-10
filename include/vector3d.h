@@ -76,7 +76,7 @@ namespace core
 		// functions
 
 		//! returns if this vector equals the other one, taking floating point rounding errors into account
-		bool equals(const vector3d<T>& other, const T tolerance = (T)ROUNDING_ERROR_32 ) const
+		bool equals(const vector3d<T>& other, const T tolerance = (T)ROUNDING_ERROR_f32 ) const
 		{
 			return core::equals(X, other.X, tolerance) &&
 				core::equals(Y, other.Y, tolerance) &&
@@ -140,14 +140,7 @@ namespace core
 		\return Reference to this vector after normalization. */
 		vector3d<T>& normalize()
 		{
-#if 0
-			f32 length = (f32)(X*X + Y*Y + Z*Z);
-			if (core::equals(length, 0.f))
-				return *this;
-			length = core::reciprocal_squareroot ( (f32)length );
-#else
-			const T length = core::reciprocal_squareroot ( (T) (X*X + Y*Y + Z*Z) );
-#endif
+			const f64 length = core::reciprocal_squareroot ( (f64) (X*X + Y*Y + Z*Z) );
 			
 			X = (T)(X * length);
 			Y = (T)(Y * length);

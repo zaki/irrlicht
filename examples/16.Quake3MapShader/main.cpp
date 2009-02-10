@@ -311,7 +311,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	{
 		quake3::tQ3EntityList &entityList = mesh->getEntityList ();
 
-		quake3::SEntity search;
+		quake3::IEntity search;
 		search.name = "info_player_deathmatch";
 
 		s32 index = entityList.binary_search ( search );

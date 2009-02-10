@@ -504,7 +504,8 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 						IrrlichtDevice *device, 
 						IQ3LevelMesh* masterMesh, 
-						ISceneNode *parent
+						ISceneNode *parent,
+						bool showShaderName
 						)
 {
 	if ( 0 == masterMesh )
@@ -516,7 +517,7 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 
 	char buf[128];
 	const SVarGroup *group;
-	SEntity search;
+	IEntity search;
 	s32 index;
 	s32 lastIndex;
 
@@ -526,7 +527,7 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 	f = fopen ( "entity.txt", "wb" );
 	for ( index = 0; (u32) index < entityList.size (); ++index )
 	{
-		const SEntity *entity = &entityList[ index ];
+		const IEntity *entity = &entityList[ index ];
 		s = entity->name;
 		dumpShader ( s, entity );
 		fwrite ( s.c_str(), 1, s.size(), f );
@@ -544,7 +545,6 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 	u32 nodeCount = 0;
 	tTexArray textureArray;
 
-	bool showShaderName = true;
 	IGUIFont *font = 0;
 	if ( showShaderName )
 		font = device->getGUIEnvironment()->getFont("fontlucida.png");
@@ -562,7 +562,6 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 		p = getAsVector3df ( entity[index].getGroup(1)->get ( "origin" ), pos );
 
 		nodeCount += 1;
-		showShaderName = true;
 		for ( u32 g = 0; g < 2; ++g )
 		{
 			if ( 0 == itemElement->model[g] || itemElement->model[g][0] == 0 )
@@ -618,7 +617,7 @@ void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 					node->addAnimator ( anim );
 					anim->drop ();
 				}
-				continue;
+
 				if ( itemElement->special & SPECIAL_SFX_BOUNCE )
 				{
 					//anim = smgr->createFlyStraightAnimator ( 
@@ -693,7 +692,7 @@ s32 Q3StartPosition (	IQ3LevelMesh* mesh,
 
 	tQ3EntityList &entityList = mesh->getEntityList ();
 
-	SEntity search;
+	IEntity search;
 	search.name = "info_player_start";	// "info_player_deathmatch";
 
 	// find all entities in the multi-list

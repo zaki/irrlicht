@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="17. HelloWorld for Windows Mobile on PC"
+	Name="17.HelloWorld for Windows Mobile on PC"
 	ProjectGUID="{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
 	RootNamespace="My17HelloWorldforWindowsMobileonPC"
 	Keyword="Win32Proj"

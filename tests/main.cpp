@@ -55,8 +55,11 @@ int main(int argumentCount, char * arguments[])
 	// Note that to interactively debug a test, you will generally want to move it
 	// (temporarily) to the beginning of the list, since each test runs in its own
 	// process.
+
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	TEST(exports);
+
+#if 1
 	TEST(sceneCollisionManager);
 	TEST(testVector3d);
 	TEST(testVector2d);
@@ -72,7 +75,6 @@ int main(int argumentCount, char * arguments[])
 	TEST(textureRenderStates);
 	TEST(terrainSceneNode);
 	TEST(burningsVideo);
-	TEST(makeColorKeyTexture);
 	TEST(cursorSetVisible);
 	TEST(transparentAlphaChannelRef);
 	TEST(drawRectOutline);
@@ -86,8 +88,13 @@ int main(int argumentCount, char * arguments[])
 	TEST(vectorPositionDimension2d);
 	TEST(writeImageToFile);
 	TEST(flyCircleAnimator);
-	TEST(enumerateImageManipulators);
-	TEST(testGeometryCreator);
+	//TEST(enumerateImageManipulators);
+	//TEST(testGeometryCreator);
+
+#else
+	TEST(makeColorKeyTexture);
+	tests[2].testSignature();
+#endif
 
 	const unsigned int numberOfTests = tests.size();
 

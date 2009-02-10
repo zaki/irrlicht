@@ -79,7 +79,7 @@ public:
 	virtual SColor getPixel(u32 x, u32 y) const;
 
 	//! sets a pixel
-	virtual void setPixel(u32 x, u32 y, const SColor &color );
+	virtual void setPixel(u32 x, u32 y, const SColor &color, bool blend = false );
 
 	//! returns the color format
 	virtual ECOLOR_FORMAT getColorFormat() const;
@@ -105,7 +105,7 @@ public:
 			const core::rect<s32>* clipRect = 0);
 
 	//! copies this surface into another, scaling it to fit, appyling a box filter
-	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0);
+	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false);
 
 	//! fills the surface with black or white
 	virtual void fill(const SColor &color);

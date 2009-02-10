@@ -30,8 +30,8 @@ struct GameData
 {
 	GameData ( const string<c16> &startupDir);
 	void setDefault ();
-	s32 save ( const string<c16> filename );
-	s32 load ( const string<c16> filename );
+	s32 save ( const string<c16> &filename );
+	s32 load ( const string<c16> &filename );
 
 	s32 debugState;
 	s32 gravityState;
@@ -49,6 +49,8 @@ struct GameData
 
 	vector3df PlayerPosition;
 	vector3df PlayerRotation;
+
+	tQ3EntityList Variable;
 
 	Q3LevelLoadParameter loadParam;
 	SIrrlichtCreationParameters deviceParam;
@@ -81,7 +83,11 @@ void GameData::setDefault ()
 	GammaValue = 1.f;
 
 	// default deviceParam;
+#if defined ( _IRR_WINDOWS_ )
 	deviceParam.DriverType = EDT_DIRECT3D9;
+#else
+	deviceParam.DriverType = EDT_OPENGL;
+#endif
 	deviceParam.WindowSize.Width = 800;
 	deviceParam.WindowSize.Height = 600;
 	deviceParam.Fullscreen = false;
@@ -93,6 +99,7 @@ void GameData::setDefault ()
 	// default Quake3 loadParam
 	loadParam.defaultLightMapMaterial = EMT_LIGHTMAP;
 	loadParam.defaultModulate = EMFN_MODULATE_1X;
+	loadParam.defaultFilter = EMF_ANISOTROPIC_FILTER;
 	loadParam.verbose = 1;
 	loadParam.mergeShaderBuffer = 1;		// merge meshbuffers with same material
 	loadParam.cleanUnResolvedMeshes = 1;	// should unresolved meshes be cleaned. otherwise blue texture
@@ -111,27 +118,62 @@ void GameData::setDefault ()
 }
 
 /*!
-	Load the current game State
+	Load the current game State from a typical quake3 cfg file
 */
-s32 GameData::load ( const string<c16> filename )
+s32 GameData::load ( const string<c16> &filename )
 {
 	if ( 0 == Device )
 		return 0;
 
 	//! the quake3 mesh loader can also handle *.shader and *.cfg file
 	IQ3LevelMesh* mesh = (IQ3LevelMesh*) Device->getSceneManager()->getMesh ( filename );
+	if ( 0 == mesh )
+		return 0;
+
+	tQ3EntityList &entityList = mesh->getEntityList ();
+
+	stringc s;
+	u32 pos;
+
+	for ( u32 e = 0; e != entityList.size (); ++e )
+	{
+		//dumpShader ( s, &entityList[e], false );
+		//printf ( s.c_str () );
+
+		for ( u32 g = 0; g != entityList[e].getGroupSize (); ++g )
+		{
+			const SVarGroup *group = entityList[e].getGroup ( g );
+
+			for ( u32 index = 0; index < group->Variable.size (); ++index )
+			{
+				const SVariable &v = group->Variable[index];
+				pos = 0;
+				if ( v.name == "playerposition" )
+				{
+					PlayerPosition = getAsVector3df ( v.content, pos );
+				}
+				else
+				if ( v.name == "playerrotation" )
+				{
+					PlayerRotation = getAsVector3df ( v.content, pos );
+				}
+			}
+		}
+	}
 
 	return 1;
 }
 
 /*!
-	Store the current game State
+	Store the current game State in a quake3 configuration file
 */
-s32 GameData::save ( const string<c16> filename )
+s32 GameData::save ( const string<c16> &filename )
 {
+	return 0;
 	if ( 0 == Device )
 		return 0;
 
+	c8 buf[128];
 	u32 i;
 
 	// Store current Archive for restart
@@ -142,7 +184,7 @@ s32 GameData::save ( const string<c16> filename )
 		CurrentArchiveList.push_back ( fs->getFileArchive ( i )->getArchiveName() );
 	}
 
-	// Store Player Position
+	// Store Player Position and Rotation
 	ICameraSceneNode * camera = Device->getSceneManager()->getActiveCamera ();
 	if ( camera )
 	{
@@ -154,11 +196,16 @@ s32 GameData::save ( const string<c16> filename )
 	if ( 0 == file )
 		return 0;
 
-	c8 buf[128];
 	snprintf ( buf, 128, "playerposition %.f %.f %.f\nplayerrotation %.f %.f %.f\n",
-			PlayerPosition.X, PlayerPosition.Y, PlayerPosition.Z,
-			PlayerRotation.X, PlayerRotation.Y, PlayerRotation.Z);
+			PlayerPosition.X, PlayerPosition.Z, PlayerPosition.Y,
+			PlayerRotation.X, PlayerRotation.Z, PlayerRotation.Y);
 	file->write ( buf, (s32) strlen ( buf ) );
+	for ( i = 0; i != fs->getFileArchiveCount(); ++i )
+	{
+		snprintf ( buf, 128, "archive %s\n",stringc ( fs->getFileArchive ( i )->getArchiveName() ).c_str () );
+		file->write ( buf, (s32) strlen ( buf ) );
+	}
+
 	file->drop ();
 	return 1;
 }
@@ -1045,7 +1092,7 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	/*
 		Now construct Models from Entity List
 	*/
-	Q3ModelFactory ( Game->loadParam, Game->Device, Mesh, ItemParent );
+	Q3ModelFactory ( Game->loadParam, Game->Device, Mesh, ItemParent, false );
 
 }
 

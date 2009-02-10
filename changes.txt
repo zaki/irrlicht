@@ -1,4 +1,65 @@
 Changes in 1.6 TA
+	- PixelBlend16 and PixelBlend16_simd are working for the new rules;-)
+	- bugfix. CLightSceneNode didn't correctly update it's attributes
+	
+		Lighting Linear Attenuation.	= 1.f / radius
+		
+		The Example loadirr files set the lightscene radius to 1000.f but
+		stays on the previous default attentuation with the older radius 100 -> 1.f / 100
+		so the examples looks golden-brown.
+		
+		Now the radius is correctly!! set to the attenuation of 1.f/1000.f because the
+		file doesn't have special attenuation. and now it looks more yellow.
+		can anybody show me a correct screenshot for this file;-)? Niko?
+		
+		Or is this behavior the default lighting?. then it would be
+		a fixed constant linear attenuation of 0.01f;-). Please clearify
+		For now i didn't fixed it
+		
+		
+		I encountered this behavior because i ( burning video ) used the original radius
+		for calculations and so i've found that radius != 1.f / linearAttenuation but
+		in the LightSceneNode this formula was used.. confused;-)
+		
+
+	- vector template and equals tests
+		as working with the test suits i cleaned the template behavior (mixed types are
+		used in the templates) and added all missing special math function with their coressponding type
+		I also set the equal test for s32 to behave like the f32 routine.
+
+		The function equals always implements a weak test.		
+		that means a tolerance MUST always be used if you use the equal function. default is 1.
+		you can set it to zero a==b-> equals ( a, b, 0 ) but do it explicit like you have to
+		for floating compare. This is important when irrlicht is going to use special hardware
+		math acceleration on a per function base, like sse2, or the other way round fixpoint.
+	
+	- VideoDriver drawPixel
+		The HW renderes are using the alpha components for blending.
+		The Software Renderes and image loaders are using CImage::setPixel copy. 
+		so setPixel is engaged to either blends or copy the pixel
+		default: false
+	- Burningvideo
+		added RenderMaterial EMT_SPHERE_MAP
+			pushed burningsvideo to 0.43
+		added RenderMaterial EMT_REFLECTION_2_LAYER
+			pushed burningsvideo to 0.44
+		set	EMT_TRANSPARENT_ALPHA_CHANNEL_REF
+			to use AlphaRef 0.5 like Direct3D
+			
+		One Note: in OpenGL there is know difference between sphere_map and reflection layer
+		both using GL_TEXTURE_GEN_MODE GL_SPHERE_MAP, whereas in d3d one time using camera_normal
+		on sphere and reflection on refletcion_layer.
+		
+		The visual difference is that on sphere map the "image is not moving" when you rotate the 
+		viewer. For Buring i took the opengl visual. always moving
+				
+
+	- rename quake3 SEntity to IEntity to be confom with IShader
+		even IShader and IEntity are none pure virtual interfaces
+		like most irrlicht objects
+--------------------------------------------------------------
+
+Changes in 1.6 TA
 	- fixed createMeshWith2TCoords
 		normals were missing during copy. 
 	- addded
@@ -1533,7 +1594,7 @@ Font improvements:
   Texture scaling bugfix, support for alpha blending, new option to normalise weights,
   animation code optimization, fixed memory leak
 
-- ROUNDING_ERROR is now ROUNDING_ERROR_32 or ROUNDING_ERROR_64
+- ROUNDING_ERROR is now ROUNDING_ERROR_f32 or ROUNDING_ERROR_f64
 
 - Material ZBuffer flag changed to a u32 value
   Reason: change ( off or on ) to , off, lequal, equal

@@ -63,7 +63,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	box->addItem(L"OpenGL 1.5");
 	box->addItem(L"Direct3D 8.1");
 	box->addItem(L"Direct3D 9.0c");
-	box->addItem(L"Burning's Video 0.42");
+	box->addItem(L"Burning's Video 0.44");
 	box->addItem(L"Irrlicht Software Renderer 1.0");
 	box->setSelected(selected);
 
@@ -111,7 +111,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 		modelNode->setMaterialTexture(0, driver->getTexture("../../media/faerie2.bmp"));
 		modelNode->setMaterialFlag(video::EMF_LIGHTING, true);
 		modelNode->getMaterial(0).Shininess = 50.f;
-		//modelNode->getMaterial(0).NormalizeNormals = true;
+		modelNode->getMaterial(0).NormalizeNormals = true;
 		modelNode->setMD2Animation(scene::EMAT_STAND);
 	}
 

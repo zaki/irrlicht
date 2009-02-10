@@ -184,7 +184,7 @@ namespace scene
 		\return Mesh without redundant vertices. If you no longer need
 		the cloned mesh, you should call IMesh::drop(). See
 		IReferenceCounted::drop() for more information. */
-		virtual IMesh* createMeshWelded(IMesh* mesh, f32 tolerance=core::ROUNDING_ERROR_32) const = 0;
+		virtual IMesh* createMeshWelded(IMesh* mesh, f32 tolerance=core::ROUNDING_ERROR_f32) const = 0;
 
 		//! Get amount of polygons in mesh.
 		/** \param mesh Input mesh

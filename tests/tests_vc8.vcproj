@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="tests"
 	ProjectGUID="{2A1DE18B-F678-4A94-A996-E848E20B2983}"
 	RootNamespace="tests"
@@ -42,7 +42,7 @@
 				AdditionalIncludeDirectories="..\include"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -58,6 +58,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\bin\Win32-VisualStudio\$(ProjectName).exe"
+				AdditionalLibraryDirectories="..\lib\Win32-visualstudio"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -113,7 +114,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				RuntimeLibrary="2"
+				AdditionalIncludeDirectories="..\include"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
 				DebugInformationFormat="3"
@@ -130,6 +132,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				OutputFile="..\bin\Win32-VisualStudio\$(ProjectName).exe"
+				AdditionalLibraryDirectories="..\lib\Win32-visualstudio"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -198,10 +201,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\enumerateImageManipulators.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\exports.cpp"
 				>
 			</File>
@@ -246,10 +245,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\relativeTransformations.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\sceneCollisionManager.cpp"
 				>
 			</File>
@@ -267,10 +262,6 @@
 			</File>
 			<File
 				RelativePath=".\testDimension2d.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\testGeometryCreator.cpp"
 				>
 			</File>
 			<File

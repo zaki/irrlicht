@@ -1220,7 +1220,7 @@ u32 CImage::getBitsPerPixelFromFormat(ECOLOR_FORMAT format)
 }
 
 //! sets a pixel
-void CImage::setPixel(u32 x, u32 y, const SColor &color )
+void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 {
 	if (x >= (u32)Size.Width || y >= (u32)Size.Height)
 		return;
@@ -1250,7 +1250,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color )
 		case ECF_A8R8G8B8:
 		{
 			u32 * dest = (u32*) ((u8*) Data + ( y * Pitch ) + ( x << 2 ));
-			*dest = color.color;
+			*dest = blend ? PixelBlend32 ( *dest, color.color ) : color.color;
 		} break;
 	}
 }
@@ -1437,7 +1437,7 @@ void CImage::copyToScaling(IImage* target)
 }
 
 //! copies this surface into another, scaling it to fit it.
-void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
+void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 {
 	const core::dimension2d<u32> destSize = target->getDimension();
 
@@ -1457,7 +1457,8 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
 		sx = 0.f;
 		for ( u32 x = 0; x != destSize.Width; ++x )
 		{
-			target->setPixel( x, y, getPixelBox( core::floor32(sx), core::floor32(sy), fx, fy, bias ) );
+			target->setPixel( x, y,
+				getPixelBox( core::floor32(sx), core::floor32(sy), fx, fy, bias ), blend );
 			sx += sourceXStep;
 		}
 		sy += sourceYStep;
@@ -1504,13 +1505,16 @@ inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) cons
 	{
 		for ( s32 dy = 0; dy != fy; ++dy )
 		{
-			c = getPixel( x + dx , y + dy );
+			c = getPixel(	core::s32_min ( x + dx, Size.Width - 1 ) ,
+							core::s32_min ( y + dy, Size.Height - 1 )
+						);
 
 			a += c.getAlpha();
 			r += c.getRed();
 			g += c.getGreen();
 			b += c.getBlue();
 		}
+
 	}
 
 	s32 sdiv = s32_log2_s32(fx * fy);

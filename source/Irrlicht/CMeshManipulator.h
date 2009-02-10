@@ -104,7 +104,7 @@ public:
 	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const;
 
 	//! Creates a copy of the mesh, which will have all duplicated vertices removed, i.e. maximal amount of vertices are shared via indexing.
-	virtual IMesh* createMeshWelded(IMesh *mesh, f32 tolerance=core::ROUNDING_ERROR_32) const;
+	virtual IMesh* createMeshWelded(IMesh *mesh, f32 tolerance=core::ROUNDING_ERROR_f32) const;
 
 	//! Returns amount of polygons in mesh.
 	virtual s32 getPolyCount(scene::IMesh* mesh) const;

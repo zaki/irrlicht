@@ -62,10 +62,12 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const core::string<c16>& nam
 			OrigSize = optSize;
 			os::Printer::log ( buf, ELL_WARNING );
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
+			MipMap[0]->fill ( 0 );
+
 
 			// temporary CImage needed
 			CImage * temp = new CImage ( BURNINGSHADER_COLOR_FORMAT, image );
-			temp->copyToScalingBoxFilter ( MipMap[0], 0 );
+			temp->copyToScalingBoxFilter ( MipMap[0],0, false );
 			//temp->copyToScaling(MipMap[0]);
 			temp->drop ();
 		}
@@ -97,7 +99,7 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 	s32 i;
 
 	// release
-	for ( i = 1; i!= SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i )
+	for ( i = 1; i < SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i )
 	{
 		if ( MipMap[i] )
 			MipMap[i]->drop();
@@ -115,7 +117,8 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 		newSize.Height = core::s32_max ( 1, currentSize.Height >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
 
 		MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
-		MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0 );
+		MipMap[i]->fill ( 0 );
+		MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0, false );
 		c = MipMap[i];
 		++i;
 	}

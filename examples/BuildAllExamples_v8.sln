@@ -64,7 +64,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "21.Quake3Explorer_vc8", "21
 		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17. HelloWorld for Windows Mobile on PC", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v8.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "17.HelloWorld for Windows Mobile on PC", "17.HelloWorld_Mobile\17. HelloWorld for Windows Mobile on PC_v8.vcproj", "{2A29B6B1-AFC4-46C7-9944-7052AAE66F7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

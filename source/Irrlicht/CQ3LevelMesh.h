@@ -419,7 +419,7 @@ namespace scene
 			u32 sourcesize;
 			u32 index;
 			core::stringc token;
-			u32 tokenresult;
+			eToken tokenresult;
 		};
 		SQ3Parser Parser;
 
