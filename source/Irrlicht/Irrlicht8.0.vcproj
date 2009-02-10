@@ -882,6 +882,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\IGeometryCreator.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\ILightManager.h"
 					>
 				</File>

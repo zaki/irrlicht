@@ -99,6 +99,7 @@ CZipReader::CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
 		File->grab();
 
 		Base = File->getFileName();
+		Base.replace ( '\\', '/' );
 
 		// scan local headers
 		while (scanLocalHeader());
@@ -582,6 +583,7 @@ CMountPointReader::CMountPointReader( IFileSystem * parent, const core::string<c
 :CZipReader ( 0, ignoreCase, ignorePaths ), Parent ( parent )
 {
 	Base = basename;
+	Base.replace ( '\\', '/' );
 	if ( core::lastChar ( Base ) != '/' )
 		Base.append ( '/' );
 	Type = "mount";

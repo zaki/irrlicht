@@ -1386,22 +1386,6 @@ void CQ3LevelMesh::getConfiguration( io::IReadFile* file )
 		Entity.getLast().name = file->getFileName();
 }
 
-// entity only has only one valid level.. and no assoziative name..
-void CQ3LevelMesh::scriptcallback_config( SVarGroupList *& grouplist, eToken token )
-{
-	if ( token == Q3_TOKEN_END_LIST || 0 == grouplist->VariableGroup[0].Variable.size () )
-		return;
-
-	grouplist->grab();
-
-	SEntity element;
-	element.VarGroup = grouplist;
-	element.id = Entity.size();
-	element.name = "configuration";
-
-	Entity.push_back( element );
-}
-
 
 //! get's an interface to the entities
 tQ3EntityList & CQ3LevelMesh::getEntityList()
@@ -1620,6 +1604,33 @@ void CQ3LevelMesh::ReleaseEntity()
 }
 
 
+// config in simple (quake3) and advanced style
+void CQ3LevelMesh::scriptcallback_config( SVarGroupList *& grouplist, eToken token )
+{
+	IShader element;
+
+	if ( token == Q3_TOKEN_END_LIST )
+	{
+		if ( 0 == grouplist->VariableGroup[0].Variable.size() )
+			return;
+
+		element.name = grouplist->VariableGroup[0].Variable[0].name;
+	}
+	else
+	{
+		if ( grouplist->VariableGroup.size() != 2 )
+			return;
+
+		element.name = "configuration";
+	}
+
+	grouplist->grab();
+	element.VarGroup = grouplist;
+	element.id = Entity.size();
+	Entity.push_back( element );
+}
+
+
 // entity only has only one valid level.. and no assoziative name..
 void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist, eToken token )
 {
@@ -1628,7 +1639,7 @@ void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist, eToken tok
 
 	grouplist->grab();
 
-	SEntity element;
+	IEntity element;
 	element.VarGroup = grouplist;
 	element.id = Entity.size();
 	element.name = grouplist->VariableGroup[1].get( "classname" );
@@ -1641,13 +1652,9 @@ void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist, eToken tok
 //!. script callback for shaders
 void CQ3LevelMesh::scriptcallback_shader( SVarGroupList *& grouplist,eToken token )
 {
-	if ( token != Q3_TOKEN_END_LIST )
+	if ( token != Q3_TOKEN_END_LIST || grouplist->VariableGroup[0].Variable.size()==0)
 		return;
 
-	// TODO: There might be something wrong with this fix, but it avoids a core dump...
-	if (grouplist->VariableGroup[0].Variable.size()==0)
-		return;
-	// end fix
 
 	IShader element;
 

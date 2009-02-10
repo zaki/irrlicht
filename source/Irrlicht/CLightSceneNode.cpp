@@ -28,7 +28,6 @@ CLightSceneNode::CLightSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
 	LightData.SpecularColor = color.getInterpolated(video::SColor(255,255,255,255),0.7f);
 
 	setRadius(radius);
-	doLightRecalc();
 }
 
 
@@ -129,6 +128,7 @@ void CLightSceneNode::setRadius(f32 radius)
 {
 	LightData.Radius=radius;
 	LightData.Attenuation.set(0.f, 1.f/radius, 0.f);
+	doLightRecalc();
 }
 
 
@@ -177,7 +177,6 @@ bool CLightSceneNode::getCastShadow() const
 
 void CLightSceneNode::doLightRecalc()
 {
-	//LightData.Type = video::ELT_DIRECTIONAL;
 	if ((LightData.Type == video::ELT_SPOT) || (LightData.Type == video::ELT_DIRECTIONAL))
 	{
 		LightData.Direction = core::vector3df(.0f,.0f,1.0f);
@@ -223,17 +222,27 @@ void CLightSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	LightData.AmbientColor =	in->getAttributeAsColorf("AmbientColor");
 	LightData.DiffuseColor =	in->getAttributeAsColorf("DiffuseColor");
 	LightData.SpecularColor =	in->getAttributeAsColorf("SpecularColor");
+
+	//TODO: clearify Radius and Linear Attenuation
+#if 0
+	setRadius ( in->getAttributeAsFloat("Radius") );
+#else
+	LightData.Radius = in->getAttributeAsFloat("Radius");
+#endif
+
 	if (in->existsAttribute("Attenuation")) // might not exist in older files
 		LightData.Attenuation =	in->getAttributeAsVector3d("Attenuation");
+
 	if (in->existsAttribute("OuterCone")) // might not exist in older files
 		LightData.OuterCone =	in->getAttributeAsFloat("OuterCone");
 	if (in->existsAttribute("InnerCone")) // might not exist in older files
 		LightData.InnerCone =	in->getAttributeAsFloat("InnerCone");
 	if (in->existsAttribute("Falloff")) // might not exist in older files
 		LightData.Falloff =	in->getAttributeAsFloat("Falloff");
-	LightData.Radius =		in->getAttributeAsFloat("Radius");
 	LightData.CastShadows =		in->getAttributeAsBool("CastShadows");
 	LightData.Type =		(video::E_LIGHT_TYPE)in->getAttributeAsEnumeration("LightType", video::LightTypeNames);
+
+	doLightRecalc ();
 
 	ILightSceneNode::deserializeAttributes(in, options);
 }

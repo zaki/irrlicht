@@ -27,19 +27,19 @@ namespace video
 
 	struct SBurningShaderLight
 	{
-		SLight org;
+		//SLight org;
 		bool LightIsOn;
 
-		E_LIGHT_TYPE type;
-		sVec4 posLightSpace;
-
-		f32 constantAttenuation;
+		E_LIGHT_TYPE Type;
+		f32 radius;
 		f32 linearAttenuation;
+		f32 constantAttenuation;
 		f32 quadraticAttenuation;
+		sVec4 pos;
 
-		sVec4 AmbientColor;
-		sVec4 DiffuseColor;
-		sVec4 SpecularColor;
+		sVec3 AmbientColor;
+		sVec3 DiffuseColor;
+		sVec3 SpecularColor;
 	};
 
 	enum eLightFlags
@@ -49,6 +49,7 @@ namespace video
 		SPECULAR	= 0x04,
 		FOG			= 0x08,
 		NORMALIZE	= 0x10,
+		VERTEXTRANSFORM	= 0x20,
 	};
 
 	struct SBurningShaderLightSpace
@@ -56,12 +57,15 @@ namespace video
 		void reset ()
 		{
 			Light.set_used ( 0 );
-			Global_AmbientLight.set ( 0.f, 0.f, 0.f, 0.f );
+			Global_AmbientLight.set ( 0.f, 0.f, 0.f );
 			Flags = 0;
 		}
 		core::array<SBurningShaderLight> Light;
-		sVec4 Global_AmbientLight;
+		sVec3 Global_AmbientLight;
 		sVec4 FogColor;
+		sVec4 campos;
+		sVec4 vertex;
+		sVec4 normal;
 		u32 Flags;
 	};
 
@@ -69,10 +73,10 @@ namespace video
 	{
 		SMaterial org;
 
-		sVec4 AmbientColor;
-		sVec4 DiffuseColor;
-		sVec4 SpecularColor;
-		sVec4 EmissiveColor;
+		sVec3 AmbientColor;
+		sVec3 DiffuseColor;
+		sVec3 SpecularColor;
+		sVec3 EmissiveColor;
 
 	};
 

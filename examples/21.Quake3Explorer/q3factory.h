@@ -96,7 +96,8 @@ void Q3ShaderFactory (	Q3LevelLoadParameter &loadParam,
 void Q3ModelFactory (	Q3LevelLoadParameter &loadParam,
 						IrrlichtDevice *device, 
 						IQ3LevelMesh* masterMesh, 
-						ISceneNode *parent
+						ISceneNode *parent,
+						bool showShaderName
 					);
 
 /*!

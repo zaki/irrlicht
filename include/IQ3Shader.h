@@ -39,6 +39,7 @@ namespace quake3
 		Q3LevelLoadParameter ()
 			:defaultLightMapMaterial ( video::EMT_LIGHTMAP_M4 ),
 			defaultModulate ( video::EMFN_MODULATE_4X ),
+			defaultFilter ( video::EMF_BILINEAR_FILTER ),
 			patchTesselation ( 8 ),
 			verbose ( 0 ),
 			startTime ( 0 ), endTime ( 0 ),
@@ -59,6 +60,7 @@ namespace quake3
 
 		video::E_MATERIAL_TYPE defaultLightMapMaterial;
 		video::E_MODULATE_FUNC defaultModulate;
+		video::E_MATERIAL_FLAG defaultFilter;
 		s32 patchTesselation;
 		s32 verbose;
 		u32 startTime;
@@ -120,6 +122,7 @@ namespace quake3
 
 		return v;
 	}
+
 
 	/*
 		extract substrings
@@ -570,7 +573,7 @@ namespace quake3
 	// string database. "a" = "Hello", "b" = "1234.6"
 	struct SVarGroup
 	{
-		SVarGroup () {}
+		SVarGroup () { Variable.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE ); }
 		virtual ~SVarGroup () {}
 
 		u32 isDefined ( const c8 * name, const c8 * content = 0 ) const
@@ -656,6 +659,13 @@ namespace quake3
 			//return name < other.name;
 		}
 
+		const u32 getGroupSize () const
+		{
+			if ( 0 == VarGroup )
+				return 0;
+			return VarGroup->VariableGroup.size ();
+		}
+
 		const SVarGroup * getGroup ( u32 stage ) const
 		{
 			if ( 0 == VarGroup || stage >= VarGroup->VariableGroup.size () )
@@ -673,9 +683,9 @@ namespace quake3
 		core::stringc name;
 	};
 
-	typedef IShader SEntity;
+	typedef IShader IEntity;
 
-	typedef core::array < SEntity > tQ3EntityList;
+	typedef core::array < IEntity > tQ3EntityList;
 
 	/*
 		dump shader like original layout, regardless of internal data holding
@@ -722,7 +732,10 @@ namespace quake3
 
 	}
 
-	inline core::stringc & dumpShader ( core::stringc &dest, const IShader * shader )
+	/*!
+		dump a Shader or an Entity
+	*/
+	inline core::stringc & dumpShader ( core::stringc &dest, const IShader * shader, bool entity = false )
 	{
 		if ( 0 == shader )
 			return dest;
@@ -736,15 +749,16 @@ namespace quake3
 			dumpVarGroup ( dest, group, core::clamp( (int)i, 0, 2 ) );
 		}
 
-		if ( size <= 1 )
+		if ( !entity )
 		{
-			dest.append ( "{\n" );
+			if ( size <= 1 )
+			{
+				dest.append ( "{\n" );
+			}
+			dest.append ( "}\n" );
 		}
-
-		dest.append ( "}\n" );
 		return dest;
 	}
-
 
 
 	/*

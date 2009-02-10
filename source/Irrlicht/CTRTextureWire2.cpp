@@ -254,12 +254,6 @@ void CTRTextureWire2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const
 	renderLine ( b, c );
 	renderLine ( a, c );
 
-	RenderTarget->unlock();
-
-#ifdef USE_ZBUFFER
-	DepthBuffer->unlock();
-#endif
-
 }
 
 
@@ -272,11 +266,6 @@ void CTRTextureWire2::drawLine ( const s4DVertex *a,const s4DVertex *b)
 	if ( a->Pos.y > b->Pos.y ) swapVertexPointer(&a, &b);
 
 	renderLine ( a, b );
-	RenderTarget->unlock();
-
-#ifdef USE_ZBUFFER
-	DepthBuffer->unlock();
-#endif
 
 }
 

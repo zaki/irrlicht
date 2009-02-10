@@ -297,7 +297,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, 
 	if ( supersample > 1 )
 	{
 		video::CImage * filter = new video::CImage(video::ECF_A8R8G8B8, dim );
-		RawTexture->copyToScalingBoxFilter(filter, 0);
+		RawTexture->copyToScalingBoxFilter(filter);
 		RawTexture->drop();
 		RawTexture = filter;
 	}

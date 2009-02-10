@@ -295,7 +295,7 @@ REALINLINE u32 PixelAdd32 ( const u32 c2, const u32 c1)
 	return modulo | clamp;
 }
 
-#if 1
+#if 0
 
 // 1 - Bit Alpha Blending
 inline u16 PixelBlend16 ( const u16 destination, const u16 source )
@@ -329,30 +329,15 @@ inline u32 PixelBlend16_simd ( const u32 destination, const u32 source )
 // 1 - Bit Alpha Blending
 inline u16 PixelBlend16 ( const u16 c2, const u16 c1 )
 {
-	return core::if_c_a_else_b ( c1 & 0x8000, c1, c2 );
-/*
-	u16 c = c1 & 0x8000;
-	
-	c >>= 15;
-	c += 0x7fff;
-
-	return (c & c2 ) | c1;
-*/
+	u16 mask = ((c1 & 0x8000) >> 15 ) + 0x7fff;
+	return (c2 & mask ) | ( c1 & ~mask );
 }
 
 // 1 - Bit Alpha Blending 16Bit SIMD
 inline u32 PixelBlend16_simd ( const u32 c2, const u32 c1 )
 {
-	return core::if_c_a_else_b ( c1 & 0x80008000, c1, c2 );
-
-/*
-	u32 c = c1 & 0x80008000;
-	
-	c >>= 15;
-	c += 0x7fff7fff;
-
-	return (c & c2 ) | c1;
-*/
+	u32 mask = ((c1 & 0x80008000) >> 15 ) + 0x7fff7fff;
+	return (c2 & mask ) | ( c1 & ~mask );
 }
 
 #endif

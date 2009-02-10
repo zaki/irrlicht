@@ -201,8 +201,17 @@ namespace video
 			ETS_COUNT_BURNING
 		};
 
+		enum E_TRANSFORMATION_FLAG
+		{
+			ETF_IDENTITY = 1,
+			ETF_TEXGEN_CAMERA_NORMAL = 2,
+			ETF_TEXGEN_CAMERA_REFLECTION = 4,
+		};
 		u32 TransformationFlag[ETS_COUNT_BURNING];
 		core::matrix4 Transformation[ETS_COUNT_BURNING];
+		
+		void getCameraPosWorldSpace ();
+
 
 		// Vertex Cache
 		static const SVSize vSize[];
@@ -214,7 +223,7 @@ namespace video
 					E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType,
 					E_INDEX_TYPE iType);
 		void VertexCache_get ( s4DVertex ** face );
-		void VertexCache_get2 ( s4DVertex ** face );
+		void VertexCache_getbypass ( s4DVertex ** face );
 
 		void VertexCache_fill ( const u32 sourceIndex,const u32 destIndex );
 		s4DVertex * VertexCache_getVertex ( const u32 sourceIndex );
@@ -227,7 +236,8 @@ namespace video
 
 
 #ifdef SOFTWARE_DRIVER_2_LIGHTING
-		void lightVertex ( s4DVertex *dest, const S3DVertex *source );
+
+		void lightVertex ( s4DVertex *dest, u32 vertexargb );
 		//! Sets the fog mode.
 		virtual void setFog(SColor color, bool linearFog, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
@@ -240,14 +250,14 @@ namespace video
 
 		void ndc_2_dc_and_project ( s4DVertex *dest,s4DVertex *source, u32 vIn ) const;
 		f32 screenarea ( const s4DVertex *v0 ) const;
-		void select_polygon_mipmap ( s4DVertex *source, u32 vIn, s32 tex );
+		void select_polygon_mipmap ( s4DVertex *source, u32 vIn, u32 tex, const core::dimension2du& texSize );
 		f32 texelarea ( const s4DVertex *v0, int tex ) const;
 
 
 		void ndc_2_dc_and_project2 ( const s4DVertex **v, const u32 size ) const;
 		f32 screenarea2 ( const s4DVertex **v ) const;
 		f32 texelarea2 ( const s4DVertex **v, int tex ) const;
-		void select_polygon_mipmap2 ( s4DVertex **source, s32 tex ) const;
+		void select_polygon_mipmap2 ( s4DVertex **source, u32 tex, const core::dimension2du& texSize ) const;
 
 
 		SBurningShaderLightSpace LightSpace;

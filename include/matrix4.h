@@ -848,7 +848,7 @@ namespace core
 
 		f64 rotx, roty, X, Z;
 
-		if (fabs(C)>ROUNDING_ERROR_64)
+		if (fabs(C)>ROUNDING_ERROR_f64)
 		{
 			const T invC = (T)(1.0/C);
 			rotx = mat(2,2) * invC;

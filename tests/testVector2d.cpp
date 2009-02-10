@@ -123,7 +123,7 @@ bool testVector2d(void)
 	else
 		logTestString("\n*** vector2d<f64> tests failed ***\n\n");
 
-	bool s32Success = true; // doTests<s32>(); Currently broken: see vector3d<T>& normalize() and const T length = core::reciprocal_squareroot ( (T) (X*X + Y*Y + Z*Z) );
+	bool s32Success = doTests<s32>();
 	if(s32Success)
 		logTestString("vector2di tests passed\n\n");
 	else

@@ -32,8 +32,9 @@ namespace core
 
 	//! Rounding error constant often used when comparing f32 values.
 
-	const f32 ROUNDING_ERROR_32 = 0.000001f;
-	const f64 ROUNDING_ERROR_64 = 0.00000001;
+	const s32 ROUNDING_ERROR_S32 = 1;
+	const f32 ROUNDING_ERROR_f32 = 0.000001f;
+	const f64 ROUNDING_ERROR_f64 = 0.00000001;
 
 #ifdef PI // make sure we don't collide with a define
 #undef PI
@@ -155,17 +156,17 @@ namespace core
 	}
 
 	//! returns if a equals b, taking possible rounding errors into account
-	inline bool equals(const f64 a, const f64 b, const f64 tolerance = ROUNDING_ERROR_64)
+	inline bool equals(const f64 a, const f64 b, const f64 tolerance = ROUNDING_ERROR_f64)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
 	//! returns if a equals b, taking possible rounding errors into account
-	inline bool equals(const f32 a, const f32 b, const f32 tolerance = ROUNDING_ERROR_32)
+	inline bool equals(const f32 a, const f32 b, const f32 tolerance = ROUNDING_ERROR_f32)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
-
+#if 0
 	//! returns if a equals b, not using any rounding tolerance
 	inline bool equals(const s32 a, const s32 b)
 	{
@@ -177,34 +178,34 @@ namespace core
 	{
 		return (a == b);
 	}
-
+#endif
 	//! returns if a equals b, taking an explicit rounding tolerance into account
-	inline bool equals(const s32 a, const s32 b, const s32 tolerance)
+	inline bool equals(const s32 a, const s32 b, const s32 tolerance = ROUNDING_ERROR_S32)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
 	//! returns if a equals b, taking an explicit rounding tolerance into account
-	inline bool equals(const u32 a, const u32 b, const u32 tolerance)
+	inline bool equals(const u32 a, const u32 b, const s32 tolerance = ROUNDING_ERROR_S32)
 	{
 		return (a + tolerance >= b) && (a - tolerance <= b);
 	}
 
 
 	//! returns if a equals zero, taking rounding errors into account
-	inline bool iszero(const f64 a, const f64 tolerance = ROUNDING_ERROR_64)
+	inline bool iszero(const f64 a, const f64 tolerance = ROUNDING_ERROR_f64)
 	{
 		return fabs(a) <= tolerance;
 	}
 
 	//! returns if a equals zero, taking rounding errors into account
-	inline bool iszero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
+	inline bool iszero(const f32 a, const f32 tolerance = ROUNDING_ERROR_f32)
 	{
 		return fabsf(a) <= tolerance;
 	}
 
 	//! returns if a equals not zero, taking rounding errors into account
-	inline bool isnotzero(const f32 a, const f32 tolerance = ROUNDING_ERROR_32)
+	inline bool isnotzero(const f32 a, const f32 tolerance = ROUNDING_ERROR_f32)
 	{
 		return fabsf(a) > tolerance;
 	}
@@ -325,7 +326,7 @@ namespace core
 	}
 
 	//! conditional set based on mask and arithmetic shift
-	REALINLINE u16 if_c_a_else_b ( const s16 condition, const s16 a, const s16 b )
+	REALINLINE u16 if_c_a_else_b ( const s16 condition, const u16 a, const u16 b )
 	{
 		return ( ( -condition >> 15 ) & ( a ^ b ) ) ^ b;
 	}
@@ -379,6 +380,12 @@ namespace core
 		return sqrt ( f );
 	}
 
+	// calculate: sqrt ( x )
+	REALINLINE s32 squareroot(const s32 f)
+	{
+		return (s32) sqrt ( (f32) f );
+	}
+
 	// calculate: 1 / sqrt ( x )
 	REALINLINE f64 reciprocal_squareroot(const f64 x)
 	{
@@ -409,6 +416,12 @@ namespace core
 #else // no fast math
 		return 1.f / sqrtf ( f );
 #endif
+	}
+
+	// calculate: 1 / sqrt ( x )
+	REALINLINE s32 reciprocal_squareroot(const s32 s)
+	{
+		return (s32) ( 1.f / sqrtf ( (f32) s ) );
 	}
 
 	// calculate: 1 / x
@@ -442,6 +455,12 @@ namespace core
 #else // no fast math
 		return 1.f / f;
 #endif
+	}
+
+	// calculate: 1 / x
+	REALINLINE f64 reciprocal ( const f64 f )
+	{
+		return 1.0 / f;
 	}
 
 
