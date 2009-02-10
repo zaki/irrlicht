@@ -58,8 +58,6 @@ int main(int argumentCount, char * arguments[])
 
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	TEST(exports);
-
-#if 1
 	TEST(sceneCollisionManager);
 	TEST(testVector3d);
 	TEST(testVector2d);
@@ -88,13 +86,9 @@ int main(int argumentCount, char * arguments[])
 	TEST(vectorPositionDimension2d);
 	TEST(writeImageToFile);
 	TEST(flyCircleAnimator);
-	//TEST(enumerateImageManipulators);
-	//TEST(testGeometryCreator);
-
-#else
+	TEST(enumerateImageManipulators);
+	TEST(testGeometryCreator);
 	TEST(makeColorKeyTexture);
-	tests[2].testSignature();
-#endif
 
 	const unsigned int numberOfTests = tests.size();
 
