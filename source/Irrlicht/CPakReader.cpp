@@ -73,7 +73,11 @@ IFileArchive* CArchiveLoaderPAK::createArchive(io::IReadFile* file, bool ignoreC
 \return True if file seems to be loadable. */
 bool CArchiveLoaderPAK::isALoadableFileFormat(io::IReadFile* file) const
 {
-	return false;
+	SPAKFileHeader header;
+
+	file->read( &header.tag, 4 );
+
+	return header.tag[0] == 'P' && header.tag[1] == 'A';
 }
 
 
