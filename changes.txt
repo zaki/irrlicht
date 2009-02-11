@@ -1,5 +1,7 @@
 Changes in 1.6 TA
-	- PixelBlend16 and PixelBlend16_simd are working for the new rules;-)
+	- implemented isALoadableFileFormat ( File *file ) for the Archive Loader
+Changes in 1.6 TA
+	- PixelBlend16 and PixelBlend16_simd are working for the new rules.
 	- bugfix. CLightSceneNode didn't correctly update it's attributes
 	
 		Lighting Linear Attenuation.	= 1.f / radius
@@ -148,7 +150,7 @@ Changes in version 1.6, TA
 
 	Basically the FileSystem is divided into two regions. Native and Virtual.
 		Native means using the backend OS.
-		Virtual means only use currently attach IArchives.
+		Virtual means only use currently attached IArchives.
 	
 	Browsing
 		each FileSystem has it's own workdirectory and it's own methods to

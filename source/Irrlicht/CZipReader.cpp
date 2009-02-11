@@ -81,7 +81,13 @@ IFileArchive* CArchiveLoaderZIP::createArchive(io::IReadFile* file, bool ignoreC
 \return True if file seems to be loadable. */
 bool CArchiveLoaderZIP::isALoadableFileFormat(io::IReadFile* file) const
 {
-	return false;
+	SZIPFileHeader header;
+
+	file->read( &header.Sig, 4 );
+#ifdef __BIG_ENDIAN__
+	os::Byteswap::byteswap(header.Sig);
+#endif
+	return header.Sig == 0x04034b50;
 }
 
 /*
@@ -186,6 +192,11 @@ bool CZipReader::scanLocalHeader2()
 	c8 *c;
 
 	File->read( &temp.header.Sig, 4 );
+
+#ifdef __BIG_ENDIAN__
+	os::Byteswap::byteswap(temp.header.Sig);
+#endif
+
 	sprintf ( buf, "sig: %08x,%s,", temp.header.Sig, sigName ( temp.header.Sig ) );
 	OutputDebugStringA ( buf );
 

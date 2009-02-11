@@ -168,6 +168,27 @@ bool CFileSystem::registerFileArchive( const core::string<c16>& filename, bool i
 		}
 	}
 
+	// try to load archive based on content
+	if ( 0 == archive )
+	{
+		io::IReadFile* file = createAndOpenFile(filename);
+		if ( file )
+		{
+			for ( i = 0; i < ArchiveLoader.size(); ++i)
+			{
+				file->seek ( 0 );
+				if ( ArchiveLoader[i]->isALoadableFileFormat( file ) )
+				{
+					file->seek ( 0 );
+					archive = ArchiveLoader[i]->createArchive( file, ignoreCase, ignorePaths );
+					if (archive)
+						break;
+				}
+			}
+			file->drop ();
+		}
+	}
+
 	if ( archive )
 	{
 		FileArchive.push_back ( archive );

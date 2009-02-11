@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\enumerateImageManipulators.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\exports.cpp"
 				>
 			</File>
@@ -262,6 +266,10 @@
 			</File>
 			<File
 				RelativePath=".\testDimension2d.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\testGeometryCreator.cpp"
 				>
 			</File>
 			<File
