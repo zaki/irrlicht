@@ -100,7 +100,7 @@ void GameData::setDefault ()
 	loadParam.defaultLightMapMaterial = EMT_LIGHTMAP;
 	loadParam.defaultModulate = EMFN_MODULATE_1X;
 	loadParam.defaultFilter = EMF_ANISOTROPIC_FILTER;
-	loadParam.verbose = 1;
+	loadParam.verbose = 2;
 	loadParam.mergeShaderBuffer = 1;		// merge meshbuffers with same material
 	loadParam.cleanUnResolvedMeshes = 1;	// should unresolved meshes be cleaned. otherwise blue texture
 	loadParam.loadAllShaders = 1;			// load all scripts in the script directory
@@ -111,8 +111,15 @@ void GameData::setDefault ()
 
 	CurrentMapName = "";
 	CurrentArchiveList.clear ();
+
+	//! Explorer Media directory
 	CurrentArchiveList.push_back ( StartupDir + "../../media/" );
+
+	//! Add the original quake3 files before you load your custom map
+	//! Most mods are using the original shaders, models&items&weapons
 	CurrentArchiveList.push_back ( "/q/baseq3/" );
+
+
 	CurrentArchiveList.push_back ( StartupDir + "../../media/map-20kdm2.pk3" );
 
 }
@@ -1086,7 +1093,7 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	*/
 	Q3ShaderFactory ( Game->loadParam, Game->Device, Mesh, E_Q3_MESH_ITEMS,ShaderParent, Meta, false );
 	Q3ShaderFactory ( Game->loadParam, Game->Device, Mesh, E_Q3_MESH_FOG,FogParent, 0, false );
-	Q3ShaderFactory ( Game->loadParam, Game->Device, Mesh, E_Q3_MESH_UNRESOLVED,UnresolvedParent, 0, true );
+	Q3ShaderFactory ( Game->loadParam, Game->Device, Mesh, E_Q3_MESH_UNRESOLVED,UnresolvedParent, Meta, true );
 
 
 	/*

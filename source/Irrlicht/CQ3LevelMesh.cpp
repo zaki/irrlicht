@@ -1488,11 +1488,6 @@ const IShader* CQ3LevelMesh::getShader( const c8 * filename, bool fileNameIsVali
 	if ( file )
 	{
 		getShader ( file );
-		if ( LoadParam.verbose > 1 )
-		{
-			message = searchName + " found " + Shader[index].name;
-			os::Printer::log("quake3:getShader", message.c_str(), ELL_INFORMATION);
-		}
 		file->drop ();
 	}
 
