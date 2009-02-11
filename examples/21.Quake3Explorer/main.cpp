@@ -2052,6 +2052,7 @@ void runGame ( GameData *game )
 	#pragma comment(linker, "/subsystem:windows /ENTRY:mainCRTStartup")
 #endif
 
+
 /*!
 */
 int IRRCALLCONV main(int argc, char* argv[])

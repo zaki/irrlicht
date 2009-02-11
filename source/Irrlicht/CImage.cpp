@@ -287,9 +287,10 @@ static void RenderLine32_Blend(video::IImage *t,
 	m = dy << 1;
 
 	run = dx;
+	const u32 packA = packAlpha ( alpha );
 	while ( run )
 	{
-		*dst = PixelBlend32( *dst, argb, alpha );
+		*dst = packA | PixelBlend32( *dst, argb, alpha );
 
 		dst = (u32*) ( (u8*) dst + xInc );	// x += xInc
 		d += m;
@@ -374,8 +375,8 @@ static void RenderLine16_Decal(video::IImage *t,
 static void RenderLine16_Blend(video::IImage *t,
 				const core::position2d<s32> &p0,
 				const core::position2d<s32> &p1,
-				u32 argb,
-				u32 alpha)
+				u16 argb,
+				u16 alpha)
 {
 	s32 dx = p1.X - p0.X;
 	s32 dy = p1.Y - p0.Y;
@@ -418,9 +419,10 @@ static void RenderLine16_Blend(video::IImage *t,
 	m = dy << 1;
 
 	run = dx;
+	const u16 packA = alpha ? 0x8000 : 0;
 	while ( run )
 	{
-		*dst = PixelBlend16( *dst, argb, alpha );
+		*dst = packA | PixelBlend16( *dst, argb, alpha );
 
 		dst = (u16*) ( (u8*) dst + xInc );	// x += xInc
 		d += m;
@@ -724,14 +726,16 @@ static void executeBlit_ColorAlpha_16_to_16( const SBlitJob * job )
 {
 	u16 *dst = (u16*) job->dst;
 
-	const u32 alpha = extractAlpha( job->argb ) >> 3;
+	const u16 alpha = extractAlpha( job->argb ) >> 3;
+	if ( 0 == alpha )
+		return;
 	const u32 src = video::A8R8G8B8toA1R5G5B5( job->argb );
 
 	for ( s32 dy = 0; dy != job->height; ++dy )
 	{
 		for ( s32 dx = 0; dx != job->width; ++dx )
 		{
-			dst[dx] = PixelBlend16( dst[dx], src, alpha );
+			dst[dx] = 0x8000 | PixelBlend16( dst[dx], src, alpha );
 		}
 		dst = (u16*) ( (u8*) (dst) + job->dstPitch );
 	}
@@ -750,7 +754,7 @@ static void executeBlit_ColorAlpha_32_to_32( const SBlitJob * job )
 	{
 		for ( s32 dx = 0; dx != job->width; ++dx )
 		{
-			dst[dx] = PixelBlend32( dst[dx], src, alpha );
+			dst[dx] = (job->argb & 0xFF000000 ) | PixelBlend32( dst[dx], src, alpha );
 		}
 		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
 	}
