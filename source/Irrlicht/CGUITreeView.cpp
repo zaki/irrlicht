@@ -3,6 +3,9 @@
 // expaned by burningwater
 
 #include "CGUITreeView.h"
+
+#ifdef _IRR_COMPILE_WITH_GUI_
+
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
@@ -1082,3 +1085,6 @@ void CGUITreeView::setImageList( IGUIImageList* imageList )
 
 } // end namespace gui
 } // end namespace irr
+
+
+#endif // _IRR_COMPILE_WITH_GUI_
