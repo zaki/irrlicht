@@ -7,6 +7,7 @@
 
 #include "plane3d.h"
 #include "vector3d.h"
+#include "line3d.h"
 #include "aabbox3d.h"
 #include "matrix4.h"
 #include "IVideoDriver.h"
@@ -82,6 +83,10 @@ namespace scene
 
 		//! get the given state's matrix based on frustum E_TRANSFORMATION_STATE_FRUSTUM
 		const core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state) const;
+
+		//! clips a line to the view frustum.
+		//! \Return: Returns true if the line was clipped, false if not
+		bool clipLine(core::line3d<f32>& line) const;
 
 		//! the position of the camera
 		core::vector3df cameraPosition;
@@ -281,6 +286,28 @@ namespace scene
 				break;
 		}
 		return Matrices [ index ];
+	}
+
+	//! Clips a line to the frustum
+	inline bool SViewFrustum::clipLine(core::line3d<f32>& line) const
+	{
+		bool wasClipped = false;
+		for (u32 i=0; i < VF_PLANE_COUNT; ++i)
+		{
+			if (planes[i].classifyPointRelation(line.start) == core::ISREL3D_FRONT)
+			{
+				line.start = line.start.getInterpolated(line.end, 
+						planes[i].getKnownIntersectionWithLine(line.start, line.end));
+				wasClipped = true;
+			}
+			if (planes[i].classifyPointRelation(line.end) == core::ISREL3D_FRONT)
+			{
+				line.end = line.start.getInterpolated(line.end, 
+						planes[i].getKnownIntersectionWithLine(line.start, line.end));
+				wasClipped = true;
+			}
+		}
+		return wasClipped;
 	}
 
 
