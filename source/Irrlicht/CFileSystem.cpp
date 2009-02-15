@@ -268,7 +268,7 @@ const core::string<c16>& CFileSystem::getWorkingDirectory()
 			#endif		
 		#endif
 
-		WorkingDirectory [ type ].verify();
+		WorkingDirectory [ type ].validate();
 	}
 
 	return WorkingDirectory [ type ];

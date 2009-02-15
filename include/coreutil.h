@@ -131,7 +131,7 @@ inline core::string<c16>& deletePathFromPath(core::string<c16>& filename, s32 pa
 	if ( i )
 	{
 		filename [ i + 1 ] = 0;
-		filename.verify();
+		filename.validate();
 	}
 	return filename;
 }
