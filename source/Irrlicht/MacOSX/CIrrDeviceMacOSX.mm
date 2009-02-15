@@ -432,30 +432,31 @@ bool CIrrDeviceMacOSX::createWindow()
 	_screenWidth = (int) CGDisplayPixelsWide(display);
 	_screenHeight = (int) CGDisplayPixelsHigh(display);
 	
-	VideoModeList.setDesktop(CreationParams.Bits,core::dimension2d<s32>(_screenWidth, _screenHeight));
+	VideoModeList.setDesktop(CreationParams.Bits, core::dimension2d<u32>(_screenWidth, _screenHeight));
 
 	if (!CreationParams.Fullscreen)
 	{
 		_window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
 		if (_window != NULL)
 		{
-			NSOpenGLPixelFormatAttribute windowattribs[] = {
+			NSOpenGLPixelFormatAttribute windowattribs[] = 
+			{
 					NSOpenGLPFANoRecovery,
 					NSOpenGLPFAAccelerated,
-					NSOpenGLPFADepthSize, depthSize,
-					NSOpenGLPFAColorSize, CreationParams.Bits,
-					NSOpenGLPFAAlphaSize, alphaSize,
-					NSOpenGLPFASampleBuffers, 1,
-					NSOpenGLPFASamples, CreationParams.AntiAlias,
-					NSOpenGLPFAStencilSize, CreationParams.Stencilbuffer?1:0,
+					NSOpenGLPFADepthSize, (NSOpenGLPixelFormatAttribute)depthSize,
+					NSOpenGLPFAColorSize, (NSOpenGLPixelFormatAttribute)CreationParams.Bits,
+					NSOpenGLPFAAlphaSize, (NSOpenGLPixelFormatAttribute)alphaSize,
+					NSOpenGLPFASampleBuffers, (NSOpenGLPixelFormatAttribute)1,
+					NSOpenGLPFASamples, (NSOpenGLPixelFormatAttribute)CreationParams.AntiAlias,
+					NSOpenGLPFAStencilSize, (NSOpenGLPixelFormatAttribute)(CreationParams.Stencilbuffer?1:0),
 					NSOpenGLPFADoubleBuffer,
 					(NSOpenGLPixelFormatAttribute)nil
 			};
 
 			if (CreationParams.AntiAlias<2)
 			{
-				windowattribs[9] = 0;
-				windowattribs[11] = 0;
+				windowattribs[9] = (NSOpenGLPixelFormatAttribute)0;
+				windowattribs[11] = (NSOpenGLPixelFormatAttribute)0;
 			}
 
 			NSOpenGLPixelFormat *format;
@@ -466,7 +467,7 @@ bool CIrrDeviceMacOSX::createWindow()
 					// Second try without stencilbuffer
 					if (CreationParams.Stencilbuffer)
 					{
-						windowattribs[13]=0;
+						windowattribs[13]=(NSOpenGLPixelFormatAttribute)0;
 					}
 					else
 						continue;
@@ -485,19 +486,19 @@ bool CIrrDeviceMacOSX::createWindow()
 					{
 						while (!format && windowattribs[12]>1)
 						{
-							windowattribs -= 1;
+							windowattribs[12] = (NSOpenGLPixelFormatAttribute)((int)windowattribs[12]-1);
 							format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
 						}
 						if (!format)
 						{
-							windowattribs[9] = 0;
-							windowattribs[11] = 0;
+							windowattribs[9] = (NSOpenGLPixelFormatAttribute)0;
+							windowattribs[11] = (NSOpenGLPixelFormatAttribute)0;
 							format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
 							if (!format)
 							{
 								// reset values for next try
-								windowattribs[9] = 1;
-								windowattribs[11] = CreationParams.AntiAlias;
+								windowattribs[9] = (NSOpenGLPixelFormatAttribute)1;
+								windowattribs[11] = (NSOpenGLPixelFormatAttribute)CreationParams.AntiAlias;
 							}
 							else
 							{
@@ -626,7 +627,7 @@ void CIrrDeviceMacOSX::setResize(int width, int height)
 	
 	// resize the driver to the inner pane size
 	NSRect driverFrame = [(NSWindow*)_window contentRectForFrameRect:[(NSWindow*)_window frame]];
-	getVideoDriver()->OnResize(core::dimension2d<s32>( (s32)driverFrame.size.width, (s32)driverFrame.size.height));
+	getVideoDriver()->OnResize(core::dimension2d<u32>( (s32)driverFrame.size.width, (s32)driverFrame.size.height));
 }
 
 void CIrrDeviceMacOSX::createDriver()
@@ -1308,7 +1309,7 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 			long width = GetDictionaryLong(mode, kCGDisplayWidth);
 			long height = GetDictionaryLong(mode, kCGDisplayHeight);
 			// long refresh = GetDictionaryLong((mode), kCGDisplayRefreshRate);
-			VideoModeList.addMode(core::dimension2d<s32>(width, height),
+			VideoModeList.addMode(core::dimension2d<u32>(width, height),
 				bitsPerPixel);
 		}
 	}

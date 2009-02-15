@@ -637,12 +637,12 @@ namespace quake3
 	struct IShader
 	{
 		IShader ()
-			: id ( 0 ), VarGroup ( 0 )  {}
+			: ID ( 0 ), VarGroup ( 0 )  {}
 		virtual ~IShader () {}
 
 		void operator = (const IShader &other )
 		{
-			id = other.id;
+			ID = other.ID;
 			VarGroup = other.VarGroup;
 			name = other.name;
 		}
@@ -675,7 +675,7 @@ namespace quake3
 		}
 
 		// id
-		s32 id;
+		s32 ID;
 		SVarGroupList *VarGroup; // reference
 
 		// Shader: shader name ( also first variable in first Vargroup )

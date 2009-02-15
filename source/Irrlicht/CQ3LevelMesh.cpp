@@ -369,7 +369,7 @@ void CQ3LevelMesh::loadFogs(tBSPLump* l, io::IReadFile* file)
 
 		shader = getShader( fog.shader );
 		t.Texture = 0;
-		t.ShaderID = shader ? shader->id : -1;
+		t.ShaderID = shader ? shader->ID : -1;
 
 		FogMap.push_back ( t );
 	}
@@ -1536,7 +1536,7 @@ void CQ3LevelMesh::InitShader()
 	element.VarGroup->VariableGroup.push_back( group );
 	element.VarGroup->VariableGroup.push_back( SVarGroup() );
 	element.name = element.VarGroup->VariableGroup[0].Variable[0].name;
-	element.id = Shader.size();
+	element.ID = Shader.size();
 	Shader.push_back( element );
 
 	if ( LoadParam.loadAllShaders )
@@ -1621,7 +1621,7 @@ void CQ3LevelMesh::scriptcallback_config( SVarGroupList *& grouplist, eToken tok
 
 	grouplist->grab();
 	element.VarGroup = grouplist;
-	element.id = Entity.size();
+	element.ID = Entity.size();
 	Entity.push_back( element );
 }
 
@@ -1636,7 +1636,7 @@ void CQ3LevelMesh::scriptcallback_entity( SVarGroupList *& grouplist, eToken tok
 
 	IEntity element;
 	element.VarGroup = grouplist;
-	element.id = Entity.size();
+	element.ID = Entity.size();
 	element.name = grouplist->VariableGroup[1].get( "classname" );
 
 
@@ -1656,7 +1656,7 @@ void CQ3LevelMesh::scriptcallback_shader( SVarGroupList *& grouplist,eToken toke
 	grouplist->grab();
 	element.VarGroup = grouplist;
 	element.name = element.VarGroup->VariableGroup[0].Variable[0].name;
-	element.id = Shader.size();
+	element.ID = Shader.size();
 /*
 	core::stringc s;
 	dumpShader ( s, &element );
@@ -1892,7 +1892,7 @@ void CQ3LevelMesh::loadTextures()
 		shader = getShader( Textures[t].strName, false);
 		if ( shader )
 		{
-			Tex[t].ShaderID = shader->id;
+			Tex[t].ShaderID = shader->ID;
 
 			// if texture name == stage1 Texture map
 			const SVarGroup * group;

@@ -917,7 +917,7 @@ public:
 	}
 
 	//! verify the existing string.
-	void verify()
+	void validate()
 	{
 		// terminate on existing null
 		for (u32 i=0; i<allocated; ++i)

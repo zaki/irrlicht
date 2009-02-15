@@ -83,7 +83,7 @@ namespace irr
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<s32>& wsize, CIrrDeviceMacOSX *device) : WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), _device(device), UseReferenceRect(false)
+			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device) : WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), _device(device), UseReferenceRect(false)
 			{
 				CursorPos.X = CursorPos.Y = 0;
 				if (WindowSize.Width!=0) InvWindowSize.Width = 1.0f / WindowSize.Width;
