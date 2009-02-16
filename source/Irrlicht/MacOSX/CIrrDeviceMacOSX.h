@@ -198,16 +198,18 @@ namespace irr
 		void postMouseEvent(void *event,irr::SEvent &ievent);
 		void postKeyEvent(void *event,irr::SEvent &ievent,bool pressed);
 
-		void			*_window;
-		CGLContextObj		_cglcontext;
-		void			*_oglcontext;
-		int			_width;
-		int			_height;
+		void                *_window;
+		CGLContextObj        _cglcontext;
+		void                *_oglcontext;
+		int	                _width,
+		                    _height;
 		std::map<int,int>	_keycodes;
-		int			_screenWidth;
-		int			_screenHeight;
-		bool			_active;
-		bool IsShiftDown, IsControlDown;
+		int                 _screenWidth,
+		                    _screenHeight;
+		bool                _active;
+		bool                IsShiftDown,
+		                    IsControlDown;
+		u32 MouseButtonStates;
 
 		void pollJoysticks();
 	};

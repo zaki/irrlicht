@@ -168,7 +168,7 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 				Dragging = false;
 				return true;
 			case EMIE_MOUSE_MOVED:
-				if ( !event.MouseInput.isLeftPressed () )
+				if ( !event.MouseInput.isLeftPressed() )
 					Dragging = false;
 
 				if (Dragging)
