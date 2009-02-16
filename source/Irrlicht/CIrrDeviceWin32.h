@@ -279,6 +279,6 @@ namespace irr
 
 } // end namespace irr
 
-#endif
-#endif
+#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif // __C_IRR_DEVICE_WIN32_H_INCLUDED__
 
