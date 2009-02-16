@@ -177,6 +177,7 @@ namespace irr
 #endif
 
 		s32 MouseX, MouseY;
+		u32 MouseButtonStates;
 		
 		u32 Width, Height;
 

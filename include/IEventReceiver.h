@@ -103,6 +103,18 @@ namespace irr
 		EMIE_COUNT
 	};
 
+	//! Masks for mouse button states
+	enum E_MOUSE_BUTTON_STATE_MASK
+	{
+		EMBSM_LEFT    = 0x01,
+		EMBSM_RIGHT   = 0x02,
+		EMBSM_MIDDLE  = 0x04,
+		EMBSM_EXTRA1  = 0x08,
+		EMBSM_EXTRA2  = 0x10,
+
+		EMBSM_FORCE_32_BIT = 0x7fffffff
+	};
+
 	namespace gui
 	{
 
@@ -232,12 +244,19 @@ struct SEvent
 		/** Only valid if event was EMIE_MOUSE_WHEEL */
 		f32 Wheel;
 
-		//! A bitmap of button states.  You can use IsButtonPressed() to
-		/** Only valid if event was EMIE_MOUSE_MOVED */
+		//! A bitmap of button states. You can use isButtonPressed() to determine
+		//! if a button is pressed or not.
+		//! Currently only valid if the event was EMIE_MOUSE_MOVED
 		u32 ButtonStates;
-		bool isLeftPressed () const { return 0 != ( ButtonStates & 0x0001 ); }
-		bool isRightPressed () const { return 0 != ( ButtonStates & 0x0002 ); }
-		bool isMiddlePressed () const { return 0 != ( ButtonStates & 0x0010 ); }
+
+		//! Is the left button pressed down?
+		bool isLeftPressed() const { return 0 != ( ButtonStates & EMBSM_LEFT ); }
+
+		//! Is the right button pressed down?
+		bool isRightPressed() const { return 0 != ( ButtonStates & EMBSM_RIGHT ); }
+
+		//! Is the middle button pressed down?
+		bool isMiddlePressed() const { return 0 != ( ButtonStates & EMBSM_MIDDLE ); }
 
 		//! Type of mouse event
 		EMOUSE_INPUT_EVENT Event;

@@ -309,7 +309,7 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 			case EMIE_MOUSE_WHEEL:
 				{
 					s32 oldSelected = Selected;
-					setSelected( Selected +(event.MouseInput.Wheel < 0) ? 1 : -1);
+					setSelected( Selected + ((event.MouseInput.Wheel < 0) ? 1 : -1));
 
 					if (Selected <0)
 						setSelected(0);

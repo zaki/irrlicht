@@ -43,7 +43,7 @@ const char* wmDeleteWindow = "WM_DELETE_WINDOW";
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param),
 	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_HWSURFACE|SDL_ANYFORMAT),
-	MouseX(0), MouseY(0),
+	MouseX(0), MouseY(0), MouseButtonStates(0),
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	Close(0), Resizeable(false),
 	WindowHasFocus(false), WindowMinimized(false)
@@ -246,7 +246,6 @@ bool CIrrDeviceSDL::run()
 	os::Timer::tick();
 
 	SEvent irrevent;
-	irrevent.MouseInput.ButtonStates = -1;
 	SDL_Event SDL_event;
 
 	while ( !Close && SDL_PollEvent( &SDL_event ) )
@@ -258,6 +257,7 @@ bool CIrrDeviceSDL::run()
 			irrevent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 			MouseX = irrevent.MouseInput.X = SDL_event.motion.x;
 			MouseY = irrevent.MouseInput.Y = SDL_event.motion.y;
+			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 
 			postEventFromUser(irrevent);
 			break;
@@ -273,21 +273,57 @@ bool CIrrDeviceSDL::run()
 
 			switch(SDL_event.button.button)
 			{
-			case  1:
-				irrevent.MouseInput.Event =
-					(SDL_event.type == SDL_MOUSEBUTTONDOWN) ? irr::EMIE_LMOUSE_PRESSED_DOWN : irr::EMIE_LMOUSE_LEFT_UP;
+			case SDL_BUTTON_LEFT:
+				if (SDL_event.type == SDL_MOUSEBUTTONDOWN)
+				{
+					irrevent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+					MouseButtonStates |= irr::EMBSM_LEFT;
+				}
+				else
+				{
+					irrevent.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
+					MouseButtonStates &= !irr::EMBSM_LEFT;
+				}
 				break;
 
-			case  2:
-				irrevent.MouseInput.Event =
-					(SDL_event.type == SDL_MOUSEBUTTONDOWN) ? irr::EMIE_RMOUSE_PRESSED_DOWN : irr::EMIE_RMOUSE_LEFT_UP;
+			case SDL_BUTTON_RIGHT:
+				if (SDL_event.type == SDL_MOUSEBUTTONDOWN)
+				{
+					irrevent.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
+					MouseButtonStates |= irr::EMBSM_RIGHT;
+				}
+				else
+				{
+					irrevent.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
+					MouseButtonStates &= !irr::EMBSM_RIGHT;
+				}
 				break;
 
-			case  3:
-				irrevent.MouseInput.Event =
-					(SDL_event.type == SDL_MOUSEBUTTONDOWN) ? irr::EMIE_MMOUSE_PRESSED_DOWN : irr::EMIE_MMOUSE_LEFT_UP;
+			case SDL_BUTTON_MIDDLE:
+				if (SDL_event.type == SDL_MOUSEBUTTONDOWN)
+				{
+					irrevent.MouseInput.Event = irr::EMIE_MMOUSE_PRESSED_DOWN;
+					MouseButtonStates |= irr::EMBSM_MIDDLE;
+				}
+				else
+				{
+					irrevent.MouseInput.Event = irr::EMIE_MMOUSE_LEFT_UP;
+					MouseButtonStates &= !irr::EMBSM_MIDDLE;
+				}
+				break;
+
+			case SDL_BUTTON_WHEELUP:
+				irrevent.MouseInput.Event = irr::EMIE_MOUSE_WHEEL;
+				irrevent.MouseInput.Wheel = 1.0f;
+				break;
+
+			case SDL_BUTTON_WHEELDOWN:
+				irrevent.MouseInput.Event = irr::EMIE_MOUSE_WHEEL;
+				irrevent.MouseInput.Wheel = -1.0f;
 				break;
 			}
+
+			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 
 			if (irrevent.MouseInput.Event != irr::EMIE_MOUSE_MOVED)
 				postEventFromUser(irrevent);
@@ -828,7 +864,7 @@ void CIrrDeviceSDL::createKeyMap()
 	KeyMap.sort();
 }
 
-IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
+extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
 	CIrrDeviceSDL* dev = new CIrrDeviceSDL(param);
 
