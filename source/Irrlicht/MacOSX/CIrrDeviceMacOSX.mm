@@ -743,22 +743,39 @@ bool CIrrDeviceMacOSX::run()
 			case NSLeftMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
-				MouseButtonStates |= 1;
+				MouseButtonStates |= irr::EMBSM_LEFT;
 				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
 
 			case NSLeftMouseUp:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
-				MouseButtonStates &= !1;
+				MouseButtonStates &= !irr::EMBSM_LEFT;
 				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				ievent.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
+				postMouseEvent(event,ievent);
+				break;
+				
+			case NSOtherMouseDown:
+				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+				ievent.MouseInput.Event = irr::EMIE_MMOUSE_PRESSED_DOWN;
+				MouseButtonStates |= irr::EMBSM_MIDDLE;
+				ievent.MouseInput.ButtonStates = MouseButtonStates;
+				postMouseEvent(event,ievent);
+				break;
+				
+			case NSOtherMouseUp:
+				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+				MouseButtonStates &= !irr::EMBSM_MIDDLE;
+				ievent.MouseInput.ButtonStates = MouseButtonStates;
+				ievent.MouseInput.Event = irr::EMIE_MMOUSE_LEFT_UP;
 				postMouseEvent(event,ievent);
 				break;
 
 			case NSMouseMoved:
 			case NSLeftMouseDragged:
 			case NSRightMouseDragged:
+			case NSOtherMouseDragged:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 				ievent.MouseInput.ButtonStates = MouseButtonStates;
@@ -768,7 +785,7 @@ bool CIrrDeviceMacOSX::run()
 			case NSRightMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
-				MouseButtonStates |= 2;
+				MouseButtonStates |= irr::EMBSM_RIGHT;
 				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
@@ -776,7 +793,7 @@ bool CIrrDeviceMacOSX::run()
 			case NSRightMouseUp:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
-				MouseButtonStates &= !2;
+				MouseButtonStates &= !irr::EMBSM_RIGHT;
 				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
