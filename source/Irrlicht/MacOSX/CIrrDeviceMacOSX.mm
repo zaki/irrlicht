@@ -91,7 +91,8 @@ irr::core::array<JoystickInfo> ActiveJoysticks;
 static IOReturn closeJoystickDevice (JoystickInfo* joyInfo)
 {
 	IOReturn result = kIOReturnSuccess;
-	if (joyInfo && joyInfo->interface) {
+	if (joyInfo && joyInfo->interface)
+	{
 		/* close the interface */
 		result = (*(joyInfo->interface))->close (joyInfo->interface);
 		if (kIOReturnNotOpen == result)
@@ -190,12 +191,15 @@ static void addJoystickComponent (CFTypeRef refElement, JoystickInfo* joyInfo)
 				}
 			}
 		}
-		else if (kIOHIDElementTypeCollection == elementType) {
+		else if (kIOHIDElementTypeCollection == elementType)
+		{
 			//get elements
 			CFTypeRef refElementTop = CFDictionaryGetValue ((CFMutableDictionaryRef) refElement, CFSTR(kIOHIDElementKey));
-			if (refElementTop) {
+			if (refElementTop)
+			{
 				CFTypeID type = CFGetTypeID (refElementTop);
-				if (type == CFArrayGetTypeID()) {
+				if (type == CFArrayGetTypeID())
+				{
 					CFRange range = {0, CFArrayGetCount ((CFArrayRef)refElementTop)};
 					CFArrayApplyFunction ((CFArrayRef)refElementTop, range, getJoystickComponentArrayHandler, joyInfo);
 				}
@@ -330,7 +334,7 @@ namespace irr
 //! constructor
 CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param), _window(NULL), _active(true), _oglcontext(NULL), _cglcontext(NULL),
-	IsShiftDown(false), IsControlDown(false)
+	IsShiftDown(false), IsControlDown(false), MouseButtonStates(0)
 {
 	struct utsname name;
 	NSString	*path;
@@ -564,7 +568,8 @@ bool CIrrDeviceMacOSX::createWindow()
 					fullattribs[index++] = kCGLPFAAlphaSize;
 					fullattribs[index++] = (CGLPixelFormatAttribute)alphaSize;
 
-					if (CreationParams.AntiAlias) {
+					if (CreationParams.AntiAlias)
+					{
 						fullattribs[index++] = kCGLPFASampleBuffers;
 						fullattribs[index++] = (CGLPixelFormatAttribute)1;
 						fullattribs[index++] = kCGLPFASamples;
@@ -738,11 +743,15 @@ bool CIrrDeviceMacOSX::run()
 			case NSLeftMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
+				MouseButtonStates |= 1;
+				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
 
 			case NSLeftMouseUp:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
+				MouseButtonStates &= !1;
+				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				ievent.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
 				postMouseEvent(event,ievent);
 				break;
@@ -752,18 +761,23 @@ bool CIrrDeviceMacOSX::run()
 			case NSRightMouseDragged:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
+				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
 
 			case NSRightMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_RMOUSE_PRESSED_DOWN;
+				MouseButtonStates |= 2;
+				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
 
 			case NSRightMouseUp:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_RMOUSE_LEFT_UP;
+				MouseButtonStates &= !2;
+				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
 
@@ -911,13 +925,15 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 
 void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 {
-	BOOL	post = true;
+	bool post = true;
 
 	if (_window != NULL)
 	{
 		ievent.MouseInput.X = (int)[(NSEvent *)event locationInWindow].x;
 		ievent.MouseInput.Y = _height - (int)[(NSEvent *)event locationInWindow].y;
-		if (ievent.MouseInput.Y < 0) post = false;
+		
+		if (ievent.MouseInput.Y < 0) 
+			post = false;
 	}
 	else
 	{
@@ -925,7 +941,9 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 		ievent.MouseInput.Y = _height - (int)[NSEvent mouseLocation].y;
 	}
 
-	if (post) postEventFromUser(ievent);
+	if (post)
+		postEventFromUser(ievent);
+	
 	[NSApp sendEvent:(NSEvent *)event];
 }
 
@@ -1093,19 +1111,22 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 	CFMutableDictionaryRef hidDictionaryRef = NULL;
 
 	result = IOMasterPort (bootstrap_port, &masterPort);
-	if (kIOReturnSuccess != result) {
+	if (kIOReturnSuccess != result)
+	{
 		os::Printer::log("initialiseJoysticks IOMasterPort failed", ELL_ERROR);
 		return false;
 	}
 
 	hidDictionaryRef = IOServiceMatching (kIOHIDDeviceKey);
-	if (!hidDictionaryRef) {
+	if (!hidDictionaryRef)
+	{
 		os::Printer::log("initialiseJoysticks IOServiceMatching failed", ELL_ERROR);
 		return false;
 	}
 	result = IOServiceGetMatchingServices (masterPort, hidDictionaryRef, &hidIterator);
 
-	if (kIOReturnSuccess != result) {
+	if (kIOReturnSuccess != result)
+	{
 		os::Printer::log("initialiseJoysticks IOServiceGetMatchingServices failed", ELL_ERROR);
 		return false;
 	}
@@ -1122,39 +1143,47 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 		CFMutableDictionaryRef hidProperties = 0;
 
 		kern_return_t kern_result = IORegistryEntryCreateCFProperties (hidObject, &hidProperties, kCFAllocatorDefault, kNilOptions);
-		if ((kern_result == KERN_SUCCESS) && hidProperties) {
+		if ((kern_result == KERN_SUCCESS) && hidProperties)
+		{
 			HRESULT plugInResult = S_OK;
 			SInt32 score = 0;
 			IOCFPlugInInterface ** ppPlugInInterface = NULL;
 			result = IOCreatePlugInInterfaceForService (hidObject, kIOHIDDeviceUserClientTypeID,
 													kIOCFPlugInInterfaceID, &ppPlugInInterface, &score);
-			if (kIOReturnSuccess == result) {
+			if (kIOReturnSuccess == result)
+			{
 				plugInResult = (*ppPlugInInterface)->QueryInterface (ppPlugInInterface,
 									CFUUIDGetUUIDBytes (kIOHIDDeviceInterfaceID), (void **) &(info.interface));
 				if (plugInResult != S_OK)
 					os::Printer::log("initialiseJoysticks query HID class device interface failed", ELL_ERROR);
-				(*ppPlugInInterface)->Release (ppPlugInInterface);
+				(*ppPlugInInterface)->Release(ppPlugInInterface);
 			}
 			else
 				continue;
 
-			if (info.interface != NULL) {
+			if (info.interface != NULL)
+			{
 				result = (*(info.interface))->open (info.interface, 0);
-				if (result == kIOReturnSuccess) {
+				if (result == kIOReturnSuccess)
+				{
 					(*(info.interface))->setRemovalCallback (info.interface, joystickRemovalCallback, &info, &info);
 					getJoystickDeviceInfo(hidObject, hidProperties, &info);
 
 					//get elements
 					CFTypeRef refElementTop = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDElementKey));
-					if (refElementTop) {
+					if (refElementTop)
+					{
 						CFTypeID type = CFGetTypeID (refElementTop);
-						if (type == CFArrayGetTypeID()) {
+						if (type == CFArrayGetTypeID())
+						{
 							CFRange range = {0, CFArrayGetCount ((CFArrayRef)refElementTop)};
 							info.numActiveJoysticks = ActiveJoysticks.size();
 							CFArrayApplyFunction ((CFArrayRef)refElementTop, range, getJoystickComponentArrayHandler, &info);
 						}
 					}
-				} else {
+				}
+				else
+				{
 					CFRelease (hidProperties);
 					os::Printer::log("initialiseJoysticks Open interface failed", ELL_ERROR);
 					continue;				
@@ -1167,7 +1196,8 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 				if ( (info.usagePage != kHIDPage_GenericDesktop) ||
 					 ((info.usage != kHIDUsage_GD_Joystick &&
 					  info.usage != kHIDUsage_GD_GamePad &&
-					  info.usage != kHIDUsage_GD_MultiAxisController)) ) {
+					  info.usage != kHIDUsage_GD_MultiAxisController)) ) 
+				{
 					closeJoystickDevice (&info);
 					continue;
 				}
@@ -1192,8 +1222,11 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 				joystickInfo.push_back(returnInfo);
 			}
 
-		} else
+		}
+		else
+		{
 			continue;
+		}
 	}
 	result = IOObjectRelease (hidIterator);
 
@@ -1220,12 +1253,14 @@ void CIrrDeviceMacOSX::pollJoysticks()
 
 		if (ActiveJoysticks[joystick].interface)
 		{
-			for (u32 n = 0; n < ActiveJoysticks[joystick].axisComp.size(); n++) {
+			for (u32 n = 0; n < ActiveJoysticks[joystick].axisComp.size(); n++)
+			{
 				IOReturn result = kIOReturnSuccess;
 				IOHIDEventStruct hidEvent;
 				hidEvent.value = 0;
 				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].axisComp[n].cookie, &hidEvent);
-				if (kIOReturnSuccess == result) {
+				if (kIOReturnSuccess == result)
+				{
 					f32 min = -32768.0f;
 					f32 max = 32768.0f;
 					f32 deviceScale = max - min;
@@ -1245,12 +1280,14 @@ void CIrrDeviceMacOSX::pollJoysticks()
 				}
 			}//axis check
 
-			for (u32 n = 0; n < ActiveJoysticks[joystick].buttonComp.size(); n++) {
+			for (u32 n = 0; n < ActiveJoysticks[joystick].buttonComp.size(); n++)
+			{
 				IOReturn result = kIOReturnSuccess;
 				IOHIDEventStruct hidEvent;
 				hidEvent.value = 0;
 				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].buttonComp[n].cookie, &hidEvent);
-				if (kIOReturnSuccess == result) {
+				if (kIOReturnSuccess == result)
+				{
 					u32 ButtonStates = 0;
 
 					if (hidEvent.value && !((ActiveJoysticks[joystick].persistentData.JoystickEvent.ButtonStates & (1 << n)) ? true : false) )
@@ -1266,12 +1303,14 @@ void CIrrDeviceMacOSX::pollJoysticks()
 			}//button check
 			//still ToDo..will be done soon :)
 /*
-			for (u32 n = 0; n < ActiveJoysticks[joystick].hatComp.size(); n++) {
+			for (u32 n = 0; n < ActiveJoysticks[joystick].hatComp.size(); n++)
+			{
 				IOReturn result = kIOReturnSuccess;
 				IOHIDEventStruct hidEvent;
 				hidEvent.value = 0;
 				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].hatComp[n].cookie, &hidEvent);
-				if (kIOReturnSuccess == result) {
+				if (kIOReturnSuccess == result)
+				{
 					if (ActiveJoysticks[joystick].persistentData.JoystickEvent.POV != hidEvent.value)
 						found = true;
 					ActiveJoysticks[joystick].persistentData.JoystickEvent.POV = hidEvent.value;
