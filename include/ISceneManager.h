@@ -182,7 +182,7 @@ namespace scene
 		 *      please note that you'll have to set the path of the
 		 *      textures before loading .csm files. You can do this
 		 *      using
-		 *      SceneManager-&gt;getParameters()-&gt;setParameter(scene::CSM_TEXTURE_PATH,
+		 *      SceneManager-&gt;getParameters()-&gt;setAttribute(scene::CSM_TEXTURE_PATH,
 		 *      &quot;path/to/your/textures&quot;);</TD>
 		 *  </TR>
 		 *  <TR>
@@ -201,7 +201,7 @@ namespace scene
 		 *        behaves like the other loaders and does not create
 		 *        instances, but it can be switched into this mode by
 		 *        using
-		 *        SceneManager->getParameters()->setParameter(COLLADA_CREATE_SCENE_INSTANCES, true);
+		 *        SceneManager->getParameters()->setAttribute(COLLADA_CREATE_SCENE_INSTANCES, true);
 		 *        Created scene nodes will be named as the names of the
 		 *        nodes in the COLLADA file. The returned mesh is just
 		 *        a dummy object in this mode. Meshes included in the
@@ -270,7 +270,7 @@ namespace scene
 		 *        loader, please note that you can set the path of the
 		 *        textures before loading .my3d files.  You can do this
 		 *        using
-		 *        SceneManager-&gt;getParameters()-&gt;setParameter(scene::MY3D_TEXTURE_PATH,
+		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(scene::MY3D_TEXTURE_PATH,
 		 *        &quot;path/to/your/textures&quot;);
 		 *        </TD>
 		 *    </TR>
@@ -303,7 +303,7 @@ namespace scene
 		 *        Petersen. If you are using this loader, please note
 		 *        that you can set the path of the textures before
 		 *        loading .lmts files.  You can do this using
-		 *        SceneManager-&gt;getParameters()-&gt;setParameter(scene::LMTS_TEXTURE_PATH,
+		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(scene::LMTS_TEXTURE_PATH,
 		 *        &quot;path/to/your/textures&quot;);
 		 *        Notes for<br> this version of the loader:<br>
 		 *        - It does not recognise/support user data in the
