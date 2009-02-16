@@ -667,6 +667,12 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
 
+#if defined(_IRR_USE_SDL_DEVICE_)
+	// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
+	// it would be better if this was fixed elsewhere. 
+	glFrontFace(GL_CW);
+#endif
+
 	clearBuffers(backBuffer, zBuffer, false, color);
 	return true;
 }
