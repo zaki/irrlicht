@@ -140,11 +140,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// middle and extra buttons
 		if (wParam & MK_MBUTTON)
 			event.MouseInput.ButtonStates |= irr::EMBSM_MIDDLE;
+#if(_WIN32_WINNT >= 0x0500)
 		if (wParam & MK_XBUTTON1)
 			event.MouseInput.ButtonStates |= irr::EMBSM_EXTRA1;
 		if (wParam & MK_XBUTTON2)
 			event.MouseInput.ButtonStates |= irr::EMBSM_EXTRA2;
-
+#endif
 		event.MouseInput.Wheel = 0.f;
 
 		// wheel
