@@ -53,7 +53,7 @@ namespace io
 
 		//! Returns name of file.
 		//! \return Returns the file name as zero terminated character string.
-		virtual const c8* getFileName() const;
+		virtual const core::string<c16>& getFileName() const;
 
 		//! Returns file data as an array
 		core::array<c8>& getData();
