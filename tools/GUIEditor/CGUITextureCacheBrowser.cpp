@@ -141,8 +141,8 @@ void CGUITextureCacheBrowser::updateImageList()
 			details += L"Unknown\n";
 		}
 
-		core::dimension2di osize = tex->getOriginalSize();
-		core::dimension2di size = tex->getOriginalSize();
+		core::dimension2du osize = tex->getOriginalSize();
+		core::dimension2du size = tex->getOriginalSize();
 
 		details += "Size: ";
 		details += size.Width;

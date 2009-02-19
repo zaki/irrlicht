@@ -39,7 +39,7 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	s32 th = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 
 	setRelativePosition(core::rect<s32>(50,50,250,500));
-	setMinSize(core::dimension2di(200,200));
+	setMinSize(core::dimension2du(200,200));
 
 	IGUITabControl *TabControl = environment->addTabControl(core::rect<s32>(1,th+5,199,449), this, false, true);
 	TabControl->setSubElement(true);
