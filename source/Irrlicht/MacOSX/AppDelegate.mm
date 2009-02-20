@@ -48,6 +48,14 @@
 	_quit = TRUE;
 }
 
+- (NSSize)windowWillResize:(NSWindow *)window toSize:(NSSize)proposedFrameSize
+{
+	if (_device->isResizeAble())
+		return proposedFrameSize;
+	else
+		return [window frame].size;
+}
+
 - (void)windowDidResize:(NSNotification *)aNotification
 {
 	NSWindow	*window;
