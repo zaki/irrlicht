@@ -1047,12 +1047,12 @@ namespace scene
 		virtual void drawAll() = 0;
 
 		//! Creates a rotation animator, which rotates the attached scene node around itself.
-		/** \param rotationPerSecond: Specifies the speed of the animation
+		/** \param rotationSpeed Specifies the speed of the animation in degree per 10 milliseconds.
 		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
 		and the animator will animate it.
 		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual ISceneNodeAnimator* createRotationAnimator(const core::vector3df& rotationPerSecond) = 0;
+		virtual ISceneNodeAnimator* createRotationAnimator(const core::vector3df& rotationSpeed) = 0;
 
 		//! Creates a fly circle animator, which lets the attached scene node fly around a center.
 		/** \param center: Center of the circle.
