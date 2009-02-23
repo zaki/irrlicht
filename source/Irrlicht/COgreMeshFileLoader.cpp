@@ -197,7 +197,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 			{
 				readVector(file, data, mesh.BBoxMinEdge);
 				readVector(file, data, mesh.BBoxMaxEdge);
-				readFloat(file, data, mesh.BBoxRadius);
+				readFloat(file, data, &mesh.BBoxRadius);
 			}
 			break;
 			case COGRE_SKELETON_LINK: 
@@ -225,7 +225,7 @@ bool COgreMeshFileLoader::readGeometry(io::IReadFile* file, ChunkData& parent, O
 #ifdef IRR_OGRE_LOADER_DEBUG
 	os::Printer::log("Read Geometry");
 #endif
-	readInt(file, parent, geometry.NumVertex);
+	readInt(file, parent, &geometry.NumVertex);
 	while(parent.read < parent.header.length)
 	{
 		ChunkData data;
@@ -265,18 +265,18 @@ bool COgreMeshFileLoader::readVertexDeclaration(io::IReadFile* file, ChunkData& 
 		{
 		case COGRE_GEOMETRY_VERTEX_ELEMENT:
 		{
-			OgreVertexElement elem;
-			readShort(file, data, elem.Source);
-			readShort(file, data, elem.Type);
-			readShort(file, data, elem.Semantic);
+			geometry.Elements.push_back(OgreVertexElement());
+			OgreVertexElement& elem = geometry.Elements.getLast();
+			readShort(file, data, &elem.Source);
+			readShort(file, data, &elem.Type);
+			readShort(file, data, &elem.Semantic);
 			if (elem.Semantic == 7) //Tex coords
 			{
 				++NumUV;
 			}
-			readShort(file, data, elem.Offset);
+			readShort(file, data, &elem.Offset);
 			elem.Offset /= sizeof(f32);
-			readShort(file, data, elem.Index);
-			geometry.Elements.push_back(elem);
+			readShort(file, data, &elem.Index);
 		}
 			break;
 		default:
@@ -296,17 +296,16 @@ bool COgreMeshFileLoader::readVertexBuffer(io::IReadFile* file, ChunkData& paren
 	os::Printer::log("Read Vertex Buffer");
 #endif
 	OgreVertexBuffer buf;
-	readShort(file, parent, buf.BindIndex);
-	readShort(file, parent, buf.VertexSize);
+	readShort(file, parent, &buf.BindIndex);
+	readShort(file, parent, &buf.VertexSize);
 	buf.VertexSize /= sizeof(f32);
 	ChunkData data;
 	readChunkData(file, data);
 
 	if (data.header.id == COGRE_GEOMETRY_VERTEX_BUFFER_DATA)
 	{
-		buf.Data = new f32[geometry.NumVertex*buf.VertexSize];
-		for (s32 i=0; i<geometry.NumVertex*buf.VertexSize; ++i)
-			readFloat(file, data, buf.Data[i]);
+		buf.Data.set_used(geometry.NumVertex*buf.VertexSize);
+		readFloat(file, data, buf.Data.pointer(), geometry.NumVertex*buf.VertexSize);
 	}
 
 	geometry.Buffers.push_back(buf);
@@ -324,19 +323,18 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 	readBool(file, parent, subMesh.SharedVertices);
 
 	s32 numIndices;
-	readInt(file, parent, numIndices);
+	readInt(file, parent, &numIndices);
 	subMesh.Indices.set_used(numIndices);
 
 	readBool(file, parent, subMesh.Indices32Bit);
 
 	if (subMesh.Indices32Bit)
-		for (s32 i=0; i<numIndices; ++i)
-			readInt(file, parent, subMesh.Indices[i]);
+		readInt(file, parent, subMesh.Indices.pointer(), numIndices);
 	else
 		for (s32 i=0; i<numIndices; ++i)
 		{
 			u16 num;
-			readShort(file, parent, num);
+			readShort(file, parent, &num);
 			subMesh.Indices[i]=num;
 		}
 
@@ -360,7 +358,7 @@ bool COgreMeshFileLoader::readSubMesh(io::IReadFile* file, ChunkData& parent, Og
 		switch(data.header.id)
 		{
 		case COGRE_SUBMESH_OPERATION:
-			readShort(file, data, subMesh.Operation);
+			readShort(file, data, &subMesh.Operation);
 			break;
 		case COGRE_SUBMESH_TEXTURE_ALIAS:
 		{
@@ -1135,53 +1133,50 @@ void COgreMeshFileLoader::readBool(io::IReadFile* file, ChunkData& data, bool& o
 }
 
 
-void COgreMeshFileLoader::readInt(io::IReadFile* file, ChunkData& data, s32& out)
+void COgreMeshFileLoader::readInt(io::IReadFile* file, ChunkData& data, s32* out, u32 num)
 {
 	// normal C type because we read a bit string
-	int tmp;
-	file->read(&tmp, sizeof(int));
+	file->read(out, sizeof(int));
 	if (SwapEndian)
 	{
-		tmp = os::Byteswap::byteswap(tmp);
+		for (u32 i=0; i<num; ++i)
+			out[i] = os::Byteswap::byteswap(out[i]);
 	}
-	out=tmp;
-	data.read+=sizeof(int);
+	data.read+=sizeof(int)*num;
 }
 
 
-void COgreMeshFileLoader::readShort(io::IReadFile* file, ChunkData& data, u16& out)
+void COgreMeshFileLoader::readShort(io::IReadFile* file, ChunkData& data, u16* out, u32 num)
 {
 	// normal C type because we read a bit string
-	short tmp;
-	file->read(&tmp, sizeof(short));
+	file->read(out, sizeof(short)*num);
 	if (SwapEndian)
 	{
-		tmp = os::Byteswap::byteswap(tmp);
+		for (u32 i=0; i<num; ++i)
+			out[i] = os::Byteswap::byteswap(out[i]);
 	}
-	out=tmp;
-	data.read+=sizeof(short);
+	data.read+=sizeof(short)*num;
 }
 
 
-void COgreMeshFileLoader::readFloat(io::IReadFile* file, ChunkData& data, f32& out)
+void COgreMeshFileLoader::readFloat(io::IReadFile* file, ChunkData& data, f32* out, u32 num)
 {
 	// normal C type because we read a bit string
-	float tmp;
-	file->read(&tmp, sizeof(float));
+	file->read(out, sizeof(float)*num);
 	if (SwapEndian)
 	{
-		tmp = os::Byteswap::byteswap(tmp);
+		for (u32 i=0; i<num; ++i)
+			out[i] = os::Byteswap::byteswap(out[i]);
 	}
-	out=tmp;
-	data.read+=sizeof(float);
+	data.read+=sizeof(float)*num;
 }
 
 
 void COgreMeshFileLoader::readVector(io::IReadFile* file, ChunkData& data, core::vector3df& out)
 {
-	readFloat(file, data, out.X);
-	readFloat(file, data, out.Y);
-	readFloat(file, data, out.Z);
+	readFloat(file, data, &out.X);
+	readFloat(file, data, &out.Y);
+	readFloat(file, data, &out.Z);
 }
 
 
@@ -1190,12 +1185,12 @@ void COgreMeshFileLoader::clearMeshes()
 	for (u32 i=0; i<Meshes.size(); ++i)
 	{
 		for (int k=0; k<(int)Meshes[i].Geometry.Buffers.size(); ++k)
-			Meshes[i].Geometry.Buffers[k].destroy();
+			Meshes[i].Geometry.Buffers[k].Data.clear();
 
 		for (u32 j=0; j<Meshes[i].SubMeshes.size(); ++j)
 		{
 			for (int h=0; h<(int)Meshes[i].SubMeshes[j].Geometry.Buffers.size(); ++h)
-				Meshes[i].SubMeshes[j].Geometry.Buffers[h].destroy();
+				Meshes[i].SubMeshes[j].Geometry.Buffers[h].Data.clear();
 		}
 	}
 
