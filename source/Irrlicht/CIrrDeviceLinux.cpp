@@ -202,7 +202,10 @@ bool CIrrDeviceLinux::createWindow()
 	if (!display)
 	{
 		os::Printer::log("Error: Need running XServer to start Irrlicht Engine.", ELL_ERROR);
-		os::Printer::log("Could not open display", XDisplayName(0), ELL_ERROR);
+		if (XDisplayName(0)[0])
+			os::Printer::log("Could not open display", XDisplayName(0), ELL_ERROR);
+		else
+			os::Printer::log("Could not open display, set DISPLAY variable", ELL_ERROR);
 		return false;
 	}
 
