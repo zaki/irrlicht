@@ -115,7 +115,7 @@ namespace video
 				bool withStencil);
 
 	public:
-		void COGLES1ExtensionHandler::extGlBindFramebuffer(GLenum target, GLuint framebuffer)
+		void extGlBindFramebuffer(GLenum target, GLuint framebuffer)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlBindFramebufferOES)
@@ -127,7 +127,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
+		void extGlDeleteFramebuffers(GLsizei n, const GLuint *framebuffers)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlDeleteFramebuffersOES)
@@ -139,7 +139,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
+		void extGlGenFramebuffers(GLsizei n, GLuint *framebuffers)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlGenFramebuffersOES)
@@ -151,7 +151,7 @@ namespace video
 #endif
 		}
 
-		GLenum COGLES1ExtensionHandler::extGlCheckFramebufferStatus(GLenum target)
+		GLenum extGlCheckFramebufferStatus(GLenum target)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlCheckFramebufferStatusOES)
@@ -166,7 +166,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
+		void extGlFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlFramebufferTexture2DOES)
@@ -178,7 +178,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
+		void extGlBindRenderbuffer(GLenum target, GLuint renderbuffer)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlBindRenderbufferOES)
@@ -190,7 +190,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
+		void extGlDeleteRenderbuffers(GLsizei n, const GLuint *renderbuffers)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlDeleteRenderbuffersOES)
@@ -202,7 +202,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
+		void extGlGenRenderbuffers(GLsizei n, GLuint *renderbuffers)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlGenRenderbuffersOES)
@@ -214,7 +214,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
+		void extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlRenderbufferStorageOES)
@@ -226,7 +226,7 @@ namespace video
 #endif
 		}
 
-		void COGLES1ExtensionHandler::extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
+		void extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
 		{
 #ifdef _IRR_OGLES1_USE_EXTPOINTER_
 			if (pGlFramebufferRenderbufferOES)
