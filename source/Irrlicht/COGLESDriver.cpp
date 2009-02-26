@@ -242,7 +242,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace( GL_CW );
 
-	if (AntiAlias)
+	if (AntiAlias>1)
 	{
 		if (MultiSamplingExtension)
 			glEnable(GL_MULTISAMPLE);
@@ -1843,7 +1843,7 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
 		core::matrix4 m;
-		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-renderTargetSize.Height), -1.0, 1.0);
+		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
 		m.setTranslation(core::vector3df(-1,1,0));
 		glLoadMatrixf(m.pointer());
 
