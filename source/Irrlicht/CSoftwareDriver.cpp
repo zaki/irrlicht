@@ -858,7 +858,7 @@ void CSoftwareDriver::draw2DRectangle(const core::rect<s32>& pos,
 //! driver, it would return "Direct3D8.1".
 const wchar_t* CSoftwareDriver::getName() const
 {
-	return L"Irrlicht Software Device 1.0";
+	return L"Irrlicht Software Driver 1.0";
 }
 
 

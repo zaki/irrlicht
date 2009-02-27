@@ -1158,10 +1158,14 @@ void CGUIEditBox::setTextRect(s32 line)
 	core::dimension2du d;
 	s32 lineCount = 1;
 
-	IGUIFont* font = OverrideFont;
 	IGUISkin* skin = Environment->getSkin();
+	if (!skin)
+		return;
+
+	IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
+
 	if (!font)
-		font = skin->getFont();
+		return;
 
 	// get text dimension
 	if (WordWrap || MultiLine)
@@ -1295,10 +1299,12 @@ void CGUIEditBox::calculateScrollPos()
 	if (!WordWrap)
 	{
 		// get cursor position
-		IGUIFont* font = OverrideFont;
 		IGUISkin* skin = Environment->getSkin();
+		if (!skin)
+			return;
+		IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
 		if (!OverrideFont)
-			font = skin->getFont();
+			return;
 
 		core::stringw *txtLine = MultiLine ? &BrokenText[cursLine] : &Text;
 		s32 cPos = MultiLine ? CursorPos - BrokenTextPositions[cursLine] : CursorPos;
