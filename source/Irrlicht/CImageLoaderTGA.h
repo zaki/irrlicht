@@ -7,8 +7,6 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_COMPILE_WITH_TGA_LOADER_
-
 #include "IImageLoader.h"
 
 
@@ -17,6 +15,7 @@ namespace irr
 namespace video
 {
 
+#if defined(_IRR_COMPILE_WITH_TGA_LOADER_) || defined(_IRR_COMPILE_WITH_TGA_WRITER_)
 
 // byte-align structures
 #if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
@@ -59,6 +58,10 @@ namespace video
 
 #undef PACK_STRUCT
 
+#endif // compiled with loader or reader
+
+#ifdef _IRR_COMPILE_WITH_TGA_LOADER_
+
 /*!
 	Surface Loader for targa images
 */
@@ -82,10 +85,10 @@ private:
 	u8* loadCompressedImage(io::IReadFile *file, const STGAHeader& header) const;
 };
 
+#endif // compiled with loader
 
 } // end namespace video
 } // end namespace irr
 
-#endif
 #endif
 
