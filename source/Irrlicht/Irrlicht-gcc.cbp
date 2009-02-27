@@ -444,6 +444,8 @@
 		<Unit filename="CGUIFont.h" />
 		<Unit filename="CGUIImage.cpp" />
 		<Unit filename="CGUIImage.h" />
+		<Unit filename="CGUIImageList.cpp" />
+		<Unit filename="CGUIImageList.h" />
 		<Unit filename="CGUIInOutFader.cpp" />
 		<Unit filename="CGUIInOutFader.h" />
 		<Unit filename="CGUIListBox.cpp" />
@@ -472,6 +474,8 @@
 		<Unit filename="CGUITable.h" />
 		<Unit filename="CGUIToolBar.cpp" />
 		<Unit filename="CGUIToolBar.h" />
+		<Unit filename="CGUITreeView.cpp" />
+		<Unit filename="CGUITreeView.h" />
 		<Unit filename="CGUIWindow.cpp" />
 		<Unit filename="CGUIWindow.h" />
 		<Unit filename="CGeometryCreator.cpp" />
@@ -508,6 +512,8 @@
 		<Unit filename="CImageWriterPSD.h" />
 		<Unit filename="CImageWriterTGA.cpp" />
 		<Unit filename="CImageWriterTGA.h" />
+		<Unit filename="CIrrDeviceConsole.cpp" />
+		<Unit filename="CIrrDeviceConsole.h" />
 		<Unit filename="CIrrDeviceLinux.cpp" />
 		<Unit filename="CIrrDeviceLinux.h" />
 		<Unit filename="CIrrDeviceStub.cpp" />

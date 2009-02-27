@@ -1,3 +1,7 @@
+Changes in 1.6
+ - Added generic console device. You can now use Irrlicht to create and manipuate graphics on a shell where no graphics hardware 
+   or windowing system is available. To enable it uncomment #define _IRR_USE_CONSOLE_DEVICE_ in IrrCompileConfig.h
+
 Changes in 1.6 TA
 	- implemented isALoadableFileFormat ( File *file ) for the Archive Loader
 Changes in 1.6 TA

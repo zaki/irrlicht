@@ -943,6 +943,14 @@
 				RelativePath=".\CGeometryCreator.h">
 			</File>
 			<File
+				RelativePath=".\CIrrDeviceConsole.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\CIrrDeviceConsole.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CIrrDeviceLinux.cpp">
 			</File>
 			<File
