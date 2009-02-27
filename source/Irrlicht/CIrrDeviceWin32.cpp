@@ -521,7 +521,6 @@ bool CIrrDeviceWin32::run()
 void CIrrDeviceWin32::yield()
 {
 	Sleep(1);
-
 }
 
 //! Pause execution and let other processes to run for a specified amount of time.

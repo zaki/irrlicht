@@ -2414,6 +2414,14 @@
 			Name="irr impl"
 			>
 			<File
+				RelativePath="CIrrDeviceConsole.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CIrrDeviceConsole.h"
+				>
+			</File>
+			<File
 				RelativePath="CIrrDeviceLinux.cpp"
 				>
 			</File>

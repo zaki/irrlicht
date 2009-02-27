@@ -19,6 +19,7 @@
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! _IRR_USE_SDL_DEVICE_ for platform independent SDL framework
+//! _IRR_USE_CONSOLE_DEVICE_ for no windowing system, like for running as a service
 //! _IRR_USE_WINDOWS_DEVICE_ for Windows API based device
 //! _IRR_USE_WINDOWS_CE_DEVICE_ for Windows CE API based device
 //! _IRR_USE_LINUX_DEVICE_ for X11 based device
@@ -27,7 +28,11 @@
 //! DEVICE is the windowing system used, several PLATFORMs support more than one DEVICE
 //! Moreover, the DEVICE defined here is not directly related to the Irrlicht devices created in the app (but may depend on each other).
 
-//#define _IRR_USE_SDL_DEVICE_ 1
+//! Uncomment this line to compile with the SDL device instead of platform specific devices
+//#define _IRR_USE_SDL_DEVICE_
+
+//! Uncomment this line to compile as a console application with no windowing system. Hardware drivers will be disabled.
+//#define _IRR_USE_CONSOLE_DEVICE_
 
 //! WIN32 for Windows32
 //! WIN64 for Windows64
@@ -35,7 +40,7 @@
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64) || defined(_WIN32_WCE)
 #define _IRR_WINDOWS_
 #define _IRR_WINDOWS_API_
-#ifndef _IRR_USE_SDL_DEVICE_
+#if !defined(_IRR_USE_SDL_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
 #define _IRR_USE_WINDOWS_DEVICE_
 #endif
 #endif
@@ -57,7 +62,7 @@
 #define MACOSX // legacy support
 #endif
 #define _IRR_OSX_PLATFORM_
-#if !defined(_IRR_USE_LINUX_DEVICE_) // for X11 windowing declare this
+#if !defined(_IRR_USE_LINUX_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
 #define _IRR_USE_OSX_DEVICE_
 #endif
 #endif
@@ -71,7 +76,7 @@
 #endif
 #define _IRR_POSIX_API_
 
-#ifndef _IRR_USE_SDL_DEVICE_
+#if !defined(_IRR_USE_SDL_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
 #define _IRR_USE_LINUX_DEVICE_
 #endif
 #endif
@@ -90,7 +95,7 @@ to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
 and this to the linker settings: -ld3dx9 -ld3dx8 **/
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
-#define _IRR_COMPILE_WITH_DIRECT3D_8_
+//#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif
@@ -411,6 +416,14 @@ precision will be lower but speed higher. currently X86 only
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
 	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#endif
+
+//! Remove joystick support and hardware drivers when compiling as a service
+#if defined(_IRR_USE_CONSOLE_DEVICE_)
+	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__
