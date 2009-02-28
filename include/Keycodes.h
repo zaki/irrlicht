@@ -91,7 +91,7 @@ namespace irr
 		KEY_KEY_Z            = 0x5A,  // Z key
 		KEY_LWIN             = 0x5B,  // Left Windows key (Microsoft® Natural® keyboard)
 		KEY_RWIN             = 0x5C,  // Right Windows key (Natural keyboard)
-		KEY_APPS             = 0x5D,  //Applications key (Natural keyboard)
+		KEY_APPS             = 0x5D,  // Applications key (Natural keyboard)
 		KEY_SLEEP            = 0x5F,  // Computer Sleep key
 		KEY_NUMPAD0          = 0x60,  // Numeric keypad 0 key
 		KEY_NUMPAD1          = 0x61,  // Numeric keypad 1 key

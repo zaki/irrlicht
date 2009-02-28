@@ -227,6 +227,8 @@
 		3484C4EF0F48D3A100C81F60 /* CGUITreeView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3484C4ED0F48D3A100C81F60 /* CGUITreeView.cpp */; };
 		3484C4FD0F48D4CB00C81F60 /* CMemoryFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 3484C4FB0F48D4CB00C81F60 /* CMemoryFile.h */; };
 		3484C4FE0F48D4CB00C81F60 /* CMemoryFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3484C4FC0F48D4CB00C81F60 /* CMemoryFile.cpp */; };
+		34EC243C0F59272E0037BC3A /* CIrrDeviceConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */; };
+		34EC243D0F59272E0037BC3A /* CIrrDeviceConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */; };
 		4C364EA40A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C364EA20A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp */; };
 		4C43EEC00A74A5C800F942FC /* CPakReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */; };
 		4C53E2500A48504D0014E966 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C0054770A48470500C844C2 /* main.cpp */; };
@@ -969,6 +971,8 @@
 		3484C4ED0F48D3A100C81F60 /* CGUITreeView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGUITreeView.cpp; sourceTree = "<group>"; };
 		3484C4FB0F48D4CB00C81F60 /* CMemoryFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMemoryFile.h; sourceTree = "<group>"; };
 		3484C4FC0F48D4CB00C81F60 /* CMemoryFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMemoryFile.cpp; sourceTree = "<group>"; };
+		34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceConsole.h; sourceTree = "<group>"; };
+		34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceConsole.cpp; sourceTree = "<group>"; };
 		4C0054710A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C0054770A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C00547D0A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -2087,6 +2091,8 @@
 		0910BA830D1F6CA600D46B04 /* irr */ = {
 			isa = PBXGroup;
 			children = (
+				34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */,
+				34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */,
 				4C53DF660A484C230014E966 /* CIrrDeviceLinux.cpp */,
 				4C53DF670A484C230014E966 /* CIrrDeviceLinux.h */,
 				5DD480C40C7DA66800728AA9 /* CIrrDeviceSDL.cpp */,
@@ -3027,6 +3033,7 @@
 				3484C4E10F48D1B000C81F60 /* CGUIImageList.h in Headers */,
 				3484C4EE0F48D3A100C81F60 /* CGUITreeView.h in Headers */,
 				3484C4FD0F48D4CB00C81F60 /* CMemoryFile.h in Headers */,
+				34EC243C0F59272E0037BC3A /* CIrrDeviceConsole.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4024,6 +4031,7 @@
 				3484C4E20F48D1B000C81F60 /* CGUIImageList.cpp in Sources */,
 				3484C4EF0F48D3A100C81F60 /* CGUITreeView.cpp in Sources */,
 				3484C4FE0F48D4CB00C81F60 /* CMemoryFile.cpp in Sources */,
+				34EC243D0F59272E0037BC3A /* CIrrDeviceConsole.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

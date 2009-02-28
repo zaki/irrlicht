@@ -912,7 +912,8 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 		c = [str characterAtIndex:0];
 
 		iter = KeyCodes.find(c);
-		if (iter != KeyCodes.end()) mkey = (*iter).second;
+		if (iter != KeyCodes.end()) 
+			mkey = (*iter).second;
 		else
 		{
 			// workaround for period character
@@ -945,7 +946,7 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 		ievent.KeyInput.PressedDown = pressed;
 		ievent.KeyInput.Shift = ([(NSEvent *)event modifierFlags] & NSShiftKeyMask) != 0;
 		ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
-		ievent.KeyInput.Char = (irr::EKEY_CODE)mchar;
+		ievent.KeyInput.Char = mchar;
 
 		if (skipCommand)
 			ievent.KeyInput.Control = true;
