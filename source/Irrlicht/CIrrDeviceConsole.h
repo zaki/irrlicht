@@ -9,11 +9,13 @@
 #include "IrrCompileConfig.h"
 #ifdef _IRR_USE_CONSOLE_DEVICE_
 
+#define _IRR_USE_CONSOLE_FONT_
+
 #include "SIrrCreationParameters.h"
 #include "CIrrDeviceStub.h"
 #include "IImagePresenter.h"
-
-//#undef _IRR_WINDOWS_API_
+// for console font
+#include "IGUIFont.h"
 
 #ifdef _IRR_WINDOWS_API_
 #define WIN32_LEAN_AND_MEAN
@@ -34,6 +36,7 @@
 
 namespace irr
 {
+
 	class CIrrDeviceConsole : public CIrrDeviceStub, video::IImagePresenter
 	{
 	public:
@@ -75,7 +78,9 @@ namespace irr
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize=false);
 
-		//! Implementation of the win32 cursor control
+		void addPostPresentText(s16 X, s16 Y, const wchar_t *text);
+
+		//! Implementation of the win32 console mouse cursor
 		class CCursorControl : public gui::ICursorControl
 		{
 		public:
@@ -194,21 +199,95 @@ namespace irr
 
 	private:
 
+		//! Set the position of the text caret
 		void setTextCursorPos(s16 x, s16 y);
-		void setMouseCursorPos(s32 x, s32 y);
 
-		core::position2di getMouseCursorPos();
+		// text to be added after drawing the screen 
+		struct SPostPresentText
+		{
+			core::position2d<s16> Pos;
+			core::stringc         Text;
+		};
 
 		bool IsDeviceRunning,
 		     IsWindowFocused;
 
-		core::stringc   OutputLine;
+		core::array<core::stringc> OutputBuffer;
+		gui::IGUIFont  *ConsoleFont;
+		core::array<SPostPresentText> Text;
 
 #ifdef _IRR_WINDOWS_NT_CONSOLE_
 		HANDLE WindowsSTDIn, WindowsSTDOut;
 		u32 MouseButtonStates;
 #endif
 	};
+
+#ifdef _IRR_USE_CONSOLE_FONT_
+
+namespace gui
+{
+	class CGUIConsoleFont : public IGUIFont
+	{
+	public:
+
+		CGUIConsoleFont(CIrrDeviceConsole* device) : Device(device) { }
+
+		//! Draws some text and clips it to the specified rectangle if wanted.
+		virtual void draw(const wchar_t* text, const core::rect<s32>& position,
+			video::SColor color, bool hcenter=false, bool vcenter=false,
+			const core::rect<s32>* clip=0)
+		{
+			core::rect<s32> Area = clip ? *clip : position;
+			core::position2d<s16> pos;
+
+			// centre vertically
+			pos.Y = vcenter ? (Area.UpperLeftCorner.Y + Area.LowerRightCorner.Y) / 2 : Area.UpperLeftCorner.Y;
+			
+			// nothing to display?
+			if (pos.Y < Area.UpperLeftCorner.Y || pos.Y > Area.LowerRightCorner.Y)
+				return;
+
+			tempText = text;
+
+			// centre horizontally
+			pos.X = hcenter ? Area.getCenter().X - ( tempText.size() / 2) : Area.UpperLeftCorner.X;
+			
+			// clip
+			//if (pos.X < Area.UpperLeftCorner.X)
+			//{
+				// nothing to display?
+			//	if (pos.X
+			//}
+
+			// todo: clip, centre
+			Device->addPostPresentText(pos.X, pos.Y, text);
+		}
+
+		//! Calculates the dimension of some text.
+		virtual core::dimension2d<u32> getDimension(const wchar_t* text) const
+		{
+			return core::dimension2d<u32>(wcslen(text),1);
+		}
+
+		//! Calculates the index of the character in the text which is on a specific position.
+		virtual s32 getCharacterFromPos(const wchar_t* text, s32 pixel_x) const { return pixel_x; };
+
+		//! No kerning
+		virtual void setKerningWidth (s32 kerning) { }
+		virtual void setKerningHeight (s32 kerning) { }
+		virtual s32 getKerningWidth(const wchar_t* thisLetter=0, const wchar_t* previousLetter=0) const {return 0;}
+		virtual s32 getKerningHeight() const  { return 0;}
+		virtual void setInvisibleCharacters( const wchar_t *s ) { }
+		// I guess this is an OS specific font
+		virtual EGUI_FONT_TYPE getType() const { return EGFT_OS; }
+	private:
+		CIrrDeviceConsole* Device;
+		core::stringw tempText;
+	};
+
+} // end namespace gui
+
+#endif // _IRR_USE_CONSOLE_FONT_
 
 } // end namespace irr
 
