@@ -441,7 +441,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			e.GUIEvent.Caller = this;
 			e.GUIEvent.Element = 0;
 			e.GUIEvent.EventType = EGET_EDITBOX_ENTER;
-			Parent->OnEvent(e);
+			if (Parent)
+				Parent->OnEvent(e);
 		}
 		break;
 	case KEY_LEFT:
