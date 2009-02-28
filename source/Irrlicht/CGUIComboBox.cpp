@@ -423,6 +423,10 @@ void CGUIComboBox::openCloseMenu()
 		ListBox->setSubElement(true);
 		ListBox->drop();
 
+		// ensure that list box is always completely visible
+		if (ListBox->getAbsolutePosition().LowerRightCorner.Y > Environment->getRootGUIElement()->getAbsolutePosition().getHeight())
+			ListBox->setRelativePosition( core::rect<s32>(0, -AbsoluteRect.getHeight(), AbsoluteRect.getWidth(), 0) );
+
 		for (s32 i=0; i<(s32)Items.size(); ++i)
 			ListBox->addItem(Items[i].Name.c_str());
 
