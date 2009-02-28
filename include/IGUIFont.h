@@ -39,7 +39,7 @@ class IGUIFont : public virtual IReferenceCounted
 {
 public:
 
-	//! Draws an text and clips it to the specified rectangle if wanted.
+	//! Draws some text and clips it to the specified rectangle if wanted.
 	/** \param text: Text to draw
 	\param position: Rectangle specifying position where to draw the text.
 	\param color: Color of the text
@@ -51,7 +51,7 @@ public:
 		video::SColor color, bool hcenter=false, bool vcenter=false,
 		const core::rect<s32>* clip=0) = 0;
 
-	//! Calculates the dimension of a text.
+	//! Calculates the width and height of a given string of text.
 	/** \return Returns width and height of the area covered by the text if
 	it would be drawn. */
 	virtual core::dimension2d<u32> getDimension(const wchar_t* text) const = 0;

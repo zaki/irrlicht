@@ -7,6 +7,8 @@
 #ifdef _IRR_USE_CONSOLE_DEVICE_
 
 #include "os.h"
+#include "IGUISkin.h"
+#include "IGUIEnvironment.h"
 
 // to close the device on terminate signal
 irr::CIrrDeviceConsole *DeviceToClose;
@@ -62,7 +64,7 @@ const u16 ASCIIArtCharsCount = 32;
 
 //! constructor
 CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
-  : CIrrDeviceStub(params), IsDeviceRunning(true), IsWindowFocused(true)
+  : CIrrDeviceStub(params), IsDeviceRunning(true), IsWindowFocused(true), ConsoleFont(0)
 {
 	DeviceToClose = this;
 
@@ -133,12 +135,34 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 		break;
 	}
 
+	// set up output buffer
+	for (u32 y=0; y<CreationParams.WindowSize.Height; ++y)
+	{
+		core::stringc str;
+		str.reserve(CreationParams.WindowSize.Width);
+		for (u32 x=0; x<CreationParams.WindowSize.Width; ++x)
+			str += " ";
+		OutputBuffer.push_back(str);
+	}
+
+
 #ifdef _IRR_WINDOWS_NT_CONSOLE_
 	CursorControl = new CCursorControl(CreationParams.WindowSize);
 #endif 
 
 	if (VideoDriver)
+	{
 		createGUIAndScene();
+#ifdef _IRR_USE_CONSOLE_FONT_
+		ConsoleFont = new gui::CGUIConsoleFont(this);
+		gui::IGUISkin *skin = GUIEnvironment->getSkin();
+		if (skin)
+		{
+			for (u32 i=0; i < gui::EGDF_COUNT; ++i)
+				skin->setFont(ConsoleFont, gui::EGUI_DEFAULT_FONT(i));
+		}
+#endif
+	}
 }
 
 //! destructor
@@ -149,6 +173,11 @@ CIrrDeviceConsole::~CIrrDeviceConsole()
 	{
 		CursorControl->drop();
 		CursorControl = 0;
+	}
+	if (ConsoleFont)
+	{
+		ConsoleFont->drop();
+		ConsoleFont = 0;
 	}
 #ifdef _IRR_VT100_CONSOLE_
 	// reset terminal 
@@ -263,7 +292,7 @@ bool CIrrDeviceConsole::run()
 	// set input mode
 	SetConsoleMode(WindowsSTDIn, oldMode);
 #else
-	// todo: process terminal keyboard input
+	// todo: keyboard input from terminal in raw mode
 #endif
 	
 	return IsDeviceRunning;
@@ -334,27 +363,40 @@ bool CIrrDeviceConsole::isWindowMinimized() const
 //! presents a surface in the client area
 bool CIrrDeviceConsole::present(video::IImage* surface, void* windowId, core::rect<s32>* src)
 {
+
 	if (surface)
 	{
-		OutputLine.reserve(surface->getDimension().Width + 1);
-
 		for (u32 y=0; y < surface->getDimension().Height; ++y)
 		{
-			setTextCursorPos(0,y);
-
 			for (u32 x=0; x< surface->getDimension().Width; ++x)
 			{
 				// get average pixel
 				u32 avg = surface->getPixel(x,y).getAverage() * (ASCIIArtCharsCount-1);
 				avg /= 255;
-				OutputLine += ASCIIArtChars[avg];
+				OutputBuffer[y] [x] = ASCIIArtChars[avg];
 			}
-			printf("%s", OutputLine.c_str());
-			OutputLine = "";
 		}
 	}
+#ifdef _IRR_USE_CONSOLE_FONT_
+	for (u32 i=0; i< Text.size(); ++i)
+	{
+		s32 y = Text[i].Pos.Y;
 
-	return true;
+		if ( y < (s32)OutputBuffer.size() && y > 0)
+			for (u32 c=0; c < Text[i].Text.size() && c + Text[i].Pos.X < OutputBuffer[y].size(); ++c)
+				//if (Text[i].Text[c] != ' ')
+				OutputBuffer[y] [c+Text[i].Pos.X] = Text[i].Text[c];
+	}
+	Text.clear();
+#endif
+
+	// draw output
+	for (u32 y=0; y<OutputBuffer.size(); ++y)
+	{
+		setTextCursorPos(0,y);
+		printf("%s", OutputBuffer[y].c_str());
+	}
+	return surface != 0;
 }
 
 //! notifies the device that it should close itself
@@ -384,6 +426,15 @@ void CIrrDeviceConsole::setTextCursorPos(s16 x, s16 y)
 #else
 	// not implemented
 #endif
+}
+
+void CIrrDeviceConsole::addPostPresentText(s16 X, s16 Y, const wchar_t *text)
+{
+	SPostPresentText p;
+	p.Text = text;
+	p.Pos.X = X;
+	p.Pos.Y = Y;
+	Text.push_back(p);
 }
 
 extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
