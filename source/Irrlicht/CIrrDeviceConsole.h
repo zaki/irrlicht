@@ -13,6 +13,24 @@
 #include "CIrrDeviceStub.h"
 #include "IImagePresenter.h"
 
+//#undef _IRR_WINDOWS_API_
+
+#ifdef _IRR_WINDOWS_API_
+#define WIN32_LEAN_AND_MEAN
+#if !defined(_IRR_XBOX_PLATFORM_)
+	#include <windows.h>
+#endif
+#if(_WIN32_WINNT >= 0x0500)
+#define _IRR_WINDOWS_NT_CONSOLE_
+#endif
+#else
+#include <time.h>
+#endif
+
+// for now we assume all other terminal types are VT100
+#ifndef _IRR_WINDOWS_NT_CONSOLE_
+#define _IRR_VT100_CONSOLE_
+#endif
 
 namespace irr
 {
@@ -57,9 +75,139 @@ namespace irr
 		//! Sets if the window should be resizeable in windowed mode.
 		virtual void setResizeAble(bool resize=false);
 
-	private:
-		bool IsDeviceRunning;
+		//! Implementation of the win32 cursor control
+		class CCursorControl : public gui::ICursorControl
+		{
+		public:
 
+			CCursorControl(const core::dimension2d<u32>& wsize)
+				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f), IsVisible(true), UseReferenceRect(false)
+			{
+				if (WindowSize.Width!=0)
+					InvWindowSize.Width = 1.0f / WindowSize.Width;
+
+				if (WindowSize.Height!=0)
+					InvWindowSize.Height = 1.0f / WindowSize.Height;
+			}
+
+			//! Changes the visible state of the mouse cursor.
+			virtual void setVisible(bool visible)
+			{
+				if(visible != IsVisible)
+				{
+					IsVisible = visible;
+					setPosition(CursorPos.X, CursorPos.Y);
+				}
+			}
+
+			//! Returns if the cursor is currently visible.
+			virtual bool isVisible() const
+			{
+				return IsVisible;
+			}
+
+			//! Sets the new position of the cursor.
+			virtual void setPosition(const core::position2d<f32> &pos)
+			{
+				setPosition(pos.X, pos.Y);
+			}
+
+			//! Sets the new position of the cursor.
+			virtual void setPosition(f32 x, f32 y)
+			{
+				if (!UseReferenceRect)
+					setPosition((s32)(x*WindowSize.Width), (s32)(y*WindowSize.Height));
+				else
+					setPosition((s32)(x*ReferenceRect.getWidth()), (s32)(y*ReferenceRect.getHeight()));
+			}
+
+			//! Sets the new position of the cursor.
+			virtual void setPosition(const core::position2d<s32> &pos)
+			{
+				setPosition(pos.X, pos.Y);
+			}
+
+			//! Sets the new position of the cursor.
+			virtual void setPosition(s32 x, s32 y)
+			{
+				setInternalCursorPosition(core::position2di(x,y));
+			}
+
+			//! Returns the current position of the mouse cursor.
+			virtual core::position2d<s32> getPosition()
+			{
+				return CursorPos;
+			}
+
+			//! Returns the current position of the mouse cursor.
+			virtual core::position2d<f32> getRelativePosition()
+			{
+				if (!UseReferenceRect)
+				{
+					return core::position2d<f32>(CursorPos.X * InvWindowSize.Width,
+						CursorPos.Y * InvWindowSize.Height);
+				}
+
+				return core::position2d<f32>(CursorPos.X / (f32)ReferenceRect.getWidth(),
+						CursorPos.Y / (f32)ReferenceRect.getHeight());
+			}
+
+			//! Sets an absolute reference rect for calculating the cursor position.
+			virtual void setReferenceRect(core::rect<s32>* rect=0)
+			{
+				if (rect)
+				{
+					ReferenceRect = *rect;
+					UseReferenceRect = true;
+
+					// prevent division through zero and uneven sizes
+
+					if (!ReferenceRect.getHeight() || ReferenceRect.getHeight()%2)
+						ReferenceRect.LowerRightCorner.Y += 1;
+
+					if (!ReferenceRect.getWidth() || ReferenceRect.getWidth()%2)
+						ReferenceRect.LowerRightCorner.X += 1;
+				}
+				else
+					UseReferenceRect = false;
+			}
+
+			
+			//! Updates the internal cursor position
+			void setInternalCursorPosition(const core::position2di &pos)
+			{
+				CursorPos = pos;
+
+				if (UseReferenceRect)
+					CursorPos -= ReferenceRect.UpperLeftCorner;
+			}
+
+		private:
+
+			core::position2d<s32>  CursorPos;
+			core::dimension2d<u32> WindowSize;
+			core::dimension2d<f32> InvWindowSize;
+			bool                   IsVisible, 
+			                       UseReferenceRect;
+			core::rect<s32>        ReferenceRect;
+		};
+
+	private:
+
+		void setTextCursorPos(s16 x, s16 y);
+		void setMouseCursorPos(s32 x, s32 y);
+
+		core::position2di getMouseCursorPos();
+
+		bool IsDeviceRunning,
+		     IsWindowFocused;
+
+		core::stringc   OutputLine;
+
+#ifdef _IRR_WINDOWS_NT_CONSOLE_
+		HANDLE WindowsSTDIn, WindowsSTDOut;
+		u32 MouseButtonStates;
+#endif
 	};
 
 } // end namespace irr
