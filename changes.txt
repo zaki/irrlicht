@@ -1,5 +1,10 @@
 Changes in 1.6
- - Fixed a bug in the edit box where events are sometimes sent to a null parent, reported by Sudi
+
+ - EGDS_MESSAGE_BOX_HEIGHT is now honoured, bug reported by Spkka
+
+ - Fixed a bug in the edit box where events are sometimes sent to a null parent, reported by Sudi.
+
+ - Coordinate system fix for OpenGL in SDL device
 
  - Added generic console device. You can now use Irrlicht to create and manipuate graphics on a shell where no graphics hardware 
    or windowing system is available. To enable it uncomment #define _IRR_USE_CONSOLE_DEVICE_ in IrrCompileConfig.h
