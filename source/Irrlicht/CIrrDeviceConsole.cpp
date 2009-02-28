@@ -378,7 +378,7 @@ void CIrrDeviceConsole::setTextCursorPos(s16 x, s16 y)
     Position.X = x;
     Position.Y = y;
     SetConsoleCursorPosition(WindowsSTDOut, Position);
-#elif _IRR_VT100_CONSOLE_
+#elif defined(_IRR_VT100_CONSOLE_)
 	// send escape code
 	printf("%c[%d;%dH", 27, y, x);
 #else
