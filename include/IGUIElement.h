@@ -160,6 +160,7 @@ public:
 	void setNotClipped(bool noClip)
 	{
 		NoClip = noClip;
+		updateAbsolutePosition();
 	}
 
 
@@ -825,7 +826,6 @@ public:
 		out->addRect("Rect", DesiredRect);
 		out->addPosition2d("MinSize", core::position2di(MinSize.Width, MinSize.Height));
 		out->addPosition2d("MaxSize", core::position2di(MaxSize.Width, MaxSize.Height));
-		out->addBool("NoClip", NoClip);
 		out->addEnum("LeftAlign", AlignLeft, GUIAlignmentNames);
 		out->addEnum("RightAlign", AlignRight, GUIAlignmentNames);
 		out->addEnum("TopAlign", AlignTop, GUIAlignmentNames);
@@ -835,6 +835,7 @@ public:
 		out->addBool("TabStop", IsTabStop);
 		out->addBool("TabGroup", IsTabGroup);
 		out->addInt("TabOrder", TabOrder);
+		out->addBool("NoClip", NoClip);
 	}
 
 
@@ -857,13 +858,14 @@ public:
 		p = in->getAttributeAsPosition2d("MinSize");
 		setMinSize(core::dimension2du(p.X,p.Y));
 
-		setNotClipped(in->getAttributeAsBool("NoClip"));
 		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("RightAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("TopAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("BottomAlign", GUIAlignmentNames));
 
 		setRelativePosition(in->getAttributeAsRect("Rect"));
+
+		setNotClipped(in->getAttributeAsBool("NoClip"));
 	}
 
 protected:
