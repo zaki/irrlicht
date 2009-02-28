@@ -63,6 +63,8 @@ CGUIComboBox::CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 	SelectedText->setSubElement(true);
 	SelectedText->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	SelectedText->setTextAlignment(EGUIA_UPPERLEFT, EGUIA_CENTER);
+	if (skin)
+		SelectedText->setOverrideColor(skin->getColor(EGDC_BUTTON_TEXT)); 
 	SelectedText->enableOverrideColor(true);
 
 	setNotClipped(true);
