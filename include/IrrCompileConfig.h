@@ -62,7 +62,7 @@
 #define MACOSX // legacy support
 #endif
 #define _IRR_OSX_PLATFORM_
-#if !defined(_IRR_USE_LINUX_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
+#if !defined(_IRR_USE_LINUX_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_) && !defined(_IRR_USE_SDL_DEVICE_)
 #define _IRR_USE_OSX_DEVICE_
 #endif
 #endif

@@ -4,6 +4,8 @@
 
 #import "AppDelegate.h"
 
+#ifdef _IRR_USE_OSX_DEVICE_
+
 @implementation AppDelegate
 
 - (id)initWithDevice:(irr::CIrrDeviceMacOSX *)device
@@ -72,3 +74,5 @@
 }
 
 @end
+
+#endif // _IRR_USE_OSX_DEVICE_

@@ -2123,6 +2123,7 @@
 				0910BA890D1F6F6600D46B04 /* sceneNodes */,
 				0910BA8A0D1F70B800D46B04 /* writers */,
 				4C53DF1D0A484C230014E966 /* CDefaultSceneNodeAnimatorFactory.h */,
+				4C53DF1C0A484C230014E966 /* CDefaultSceneNodeAnimatorFactory.cpp */,
 				4C53DF1E0A484C230014E966 /* CDefaultSceneNodeFactory.cpp */,
 				4C53DF1F0A484C230014E966 /* CDefaultSceneNodeFactory.h */,
 				4C53DF2C0A484C230014E966 /* CGeometryCreator.cpp */,
@@ -2162,11 +2163,14 @@
 		0910BA860D1F6D2600D46B04 /* collision */ = {
 			isa = PBXGroup;
 			children = (
+				4C53DF880A484C240014E966 /* COctTreeTriangleSelector.cpp */,
+				4C53DF890A484C240014E966 /* COctTreeTriangleSelector.h */,
 				4C53DF7C0A484C230014E966 /* CMetaTriangleSelector.cpp */,
 				4C53DF7D0A484C230014E966 /* CMetaTriangleSelector.h */,
 				4C53DFA90A484C240014E966 /* CSceneCollisionManager.cpp */,
 				4C53DFAA0A484C240014E966 /* CSceneCollisionManager.h */,
 				4C53DFCC0A484C240014E966 /* CTerrainTriangleSelector.cpp */,
+				4C53DFCD0A484C240014E966 /* CTerrainTriangleSelector.h */,
 				4C53DFD80A484C240014E966 /* CTriangleBBSelector.cpp */,
 				4C53DFD90A484C250014E966 /* CTriangleBBSelector.h */,
 				4C53DFDA0A484C250014E966 /* CTriangleSelector.cpp */,
@@ -2178,6 +2182,8 @@
 		0910BA870D1F6D7500D46B04 /* loaders */ = {
 			isa = PBXGroup;
 			children = (
+				096840220D0F1A2300333EFD /* CBSPMeshFileLoader.cpp */,
+				096840230D0F1A2300333EFD /* CBSPMeshFileLoader.h */,
 				09C638700D4F1A69000B6A18 /* CLWOMeshFileLoader.cpp */,
 				09C638710D4F1A69000B6A18 /* CLWOMeshFileLoader.h */,
 				4C53DEE70A484C220014E966 /* C3DSMeshFileLoader.cpp */,
@@ -2896,12 +2902,6 @@
 				0910BA830D1F6CA600D46B04 /* irr */,
 				0910BA840D1F6D0200D46B04 /* scene */,
 				0910BA8B0D1F71D600D46B04 /* video */,
-				096840220D0F1A2300333EFD /* CBSPMeshFileLoader.cpp */,
-				096840230D0F1A2300333EFD /* CBSPMeshFileLoader.h */,
-				4C53DF1C0A484C230014E966 /* CDefaultSceneNodeAnimatorFactory.cpp */,
-				4C53DF880A484C240014E966 /* COctTreeTriangleSelector.cpp */,
-				4C53DF890A484C240014E966 /* COctTreeTriangleSelector.h */,
-				4C53DFCD0A484C240014E966 /* CTerrainTriangleSelector.h */,
 				4C53E0070A484C250014E966 /* glext.h */,
 				5DD480700C7D94AC00728AA9 /* glxext.h */,
 			);
@@ -3058,9 +3058,9 @@
 			productReference = 09022C620EA0E97F00CD54EE /* GUIEditor_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0946CCA30EC99BBE00D945A5 /* MouseAndJoystick */ = {
+		0946CCA30EC99BBE00D945A5 /* 19.MouseAndJoystick */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0946CCB10EC99BBE00D945A5 /* Build configuration list for PBXNativeTarget "MouseAndJoystick" */;
+			buildConfigurationList = 0946CCB10EC99BBE00D945A5 /* Build configuration list for PBXNativeTarget "19.MouseAndJoystick" */;
 			buildPhases = (
 				0946CCA60EC99BBE00D945A5 /* Resources */,
 				0946CCA90EC99BBE00D945A5 /* Sources */,
@@ -3071,14 +3071,14 @@
 			dependencies = (
 				0946CCA40EC99BBE00D945A5 /* PBXTargetDependency */,
 			);
-			name = MouseAndJoystick;
+			name = 19.MouseAndJoystick;
 			productName = DemoApp;
 			productReference = 0946CCB40EC99BBE00D945A5 /* MouseAndJoystick_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		09F648F40D2CDED9001E0599 /* HelloWorld */ = {
+		09F648F40D2CDED9001E0599 /* 01.HelloWorld */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "HelloWorld" */;
+			buildConfigurationList = 09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "01.HelloWorld" */;
 			buildPhases = (
 				09F648F70D2CDED9001E0599 /* Resources */,
 				09F648FA0D2CDED9001E0599 /* Sources */,
@@ -3089,14 +3089,14 @@
 			dependencies = (
 				09F648F50D2CDED9001E0599 /* PBXTargetDependency */,
 			);
-			name = HelloWorld;
+			name = 01.HelloWorld;
 			productName = DemoApp;
 			productReference = 09F649030D2CDED9001E0599 /* HelloWorld_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		09F6492F0D2CE03E001E0599 /* LoadIrrFile */ = {
+		09F6492F0D2CE03E001E0599 /* 15.LoadIrrFile */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 09F6493B0D2CE03E001E0599 /* Build configuration list for PBXNativeTarget "LoadIrrFile" */;
+			buildConfigurationList = 09F6493B0D2CE03E001E0599 /* Build configuration list for PBXNativeTarget "15.LoadIrrFile" */;
 			buildPhases = (
 				09F649320D2CE03E001E0599 /* Resources */,
 				09F649350D2CE03E001E0599 /* Sources */,
@@ -3107,14 +3107,14 @@
 			dependencies = (
 				09F649300D2CE03E001E0599 /* PBXTargetDependency */,
 			);
-			name = LoadIrrFile;
+			name = 15.LoadIrrFile;
 			productName = DemoApp;
 			productReference = 09F6493E0D2CE03E001E0599 /* LoadIrrFile_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		09F649560D2CE206001E0599 /* Quake3Shader */ = {
+		09F649560D2CE206001E0599 /* 16.Quake3Shader */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 09F649620D2CE206001E0599 /* Build configuration list for PBXNativeTarget "Quake3Shader" */;
+			buildConfigurationList = 09F649620D2CE206001E0599 /* Build configuration list for PBXNativeTarget "16.Quake3Shader" */;
 			buildPhases = (
 				09F649590D2CE206001E0599 /* Resources */,
 				09F6495C0D2CE206001E0599 /* Sources */,
@@ -3125,14 +3125,14 @@
 			dependencies = (
 				09F649570D2CE206001E0599 /* PBXTargetDependency */,
 			);
-			name = Quake3Shader;
+			name = 16.Quake3Shader;
 			productName = DemoApp;
 			productReference = 09F649650D2CE206001E0599 /* Quake3Shader_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFDFE097FD9F50057C06F /* 2DGraphics */ = {
+		B81CFDFE097FD9F50057C06F /* 06.2DGraphics */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFE0C097FD9F50057C06F /* Build configuration list for PBXNativeTarget "2DGraphics" */;
+			buildConfigurationList = B81CFE0C097FD9F50057C06F /* Build configuration list for PBXNativeTarget "06.2DGraphics" */;
 			buildPhases = (
 				B81CFE01097FD9F50057C06F /* Resources */,
 				B81CFE03097FD9F50057C06F /* Sources */,
@@ -3143,14 +3143,14 @@
 			dependencies = (
 				B81CFDFF097FD9F50057C06F /* PBXTargetDependency */,
 			);
-			name = 2DGraphics;
+			name = 06.2DGraphics;
 			productName = DemoApp;
 			productReference = 4CA25BAC0A485D9800B4E469 /* 2DGraphics_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFE82097FDDE20057C06F /* Collision */ = {
+		B81CFE82097FDDE20057C06F /* 07.Collision */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFE8D097FDDE20057C06F /* Build configuration list for PBXNativeTarget "Collision" */;
+			buildConfigurationList = B81CFE8D097FDDE20057C06F /* Build configuration list for PBXNativeTarget "07.Collision" */;
 			buildPhases = (
 				B81CFE85097FDDE20057C06F /* Resources */,
 				B81CFE87097FDDE20057C06F /* Sources */,
@@ -3161,14 +3161,14 @@
 			dependencies = (
 				B81CFE83097FDDE20057C06F /* PBXTargetDependency */,
 			);
-			name = Collision;
+			name = 07.Collision;
 			productName = DemoApp;
 			productReference = 4CA25BAE0A485D9800B4E469 /* Collision_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFEA4097FDE900057C06F /* PerPixelLightning */ = {
+		B81CFEA4097FDE900057C06F /* 11.PerPixelLightning */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFEAF097FDE900057C06F /* Build configuration list for PBXNativeTarget "PerPixelLightning" */;
+			buildConfigurationList = B81CFEAF097FDE900057C06F /* Build configuration list for PBXNativeTarget "11.PerPixelLightning" */;
 			buildPhases = (
 				B81CFEA7097FDE900057C06F /* Resources */,
 				B81CFEA9097FDE900057C06F /* Sources */,
@@ -3179,14 +3179,14 @@
 			dependencies = (
 				B81CFEA5097FDE900057C06F /* PBXTargetDependency */,
 			);
-			name = PerPixelLightning;
+			name = 11.PerPixelLightning;
 			productName = DemoApp;
 			productReference = 4CA25BA00A485D9800B4E469 /* PerPixelLighting_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFEC2097FDF020057C06F /* TerrainRendering */ = {
+		B81CFEC2097FDF020057C06F /* 12.TerrainRendering */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFECD097FDF020057C06F /* Build configuration list for PBXNativeTarget "TerrainRendering" */;
+			buildConfigurationList = B81CFECD097FDF020057C06F /* Build configuration list for PBXNativeTarget "12.TerrainRendering" */;
 			buildPhases = (
 				B81CFEC5097FDF020057C06F /* Resources */,
 				B81CFEC7097FDF020057C06F /* Sources */,
@@ -3197,14 +3197,14 @@
 			dependencies = (
 				B81CFEC3097FDF020057C06F /* PBXTargetDependency */,
 			);
-			name = TerrainRendering;
+			name = 12.TerrainRendering;
 			productName = DemoApp;
 			productReference = 4CA25BAA0A485D9800B4E469 /* TerrainRendering_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFEE8097FE05F0057C06F /* SpecialFx */ = {
+		B81CFEE8097FE05F0057C06F /* 08.SpecialFx */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFEF3097FE05F0057C06F /* Build configuration list for PBXNativeTarget "SpecialFx" */;
+			buildConfigurationList = B81CFEF3097FE05F0057C06F /* Build configuration list for PBXNativeTarget "08.SpecialFx" */;
 			buildPhases = (
 				B81CFEEB097FE05F0057C06F /* Resources */,
 				B81CFEED097FE05F0057C06F /* Sources */,
@@ -3215,14 +3215,14 @@
 			dependencies = (
 				B81CFEE9097FE05F0057C06F /* PBXTargetDependency */,
 			);
-			name = SpecialFx;
+			name = 08.SpecialFx;
 			productName = DemoApp;
 			productReference = 4CA25BA80A485D9800B4E469 /* SpecialFx_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFF07097FE13E0057C06F /* UserInterface */ = {
+		B81CFF07097FE13E0057C06F /* 05.UserInterface */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFF12097FE13E0057C06F /* Build configuration list for PBXNativeTarget "UserInterface" */;
+			buildConfigurationList = B81CFF12097FE13E0057C06F /* Build configuration list for PBXNativeTarget "05.UserInterface" */;
 			buildPhases = (
 				B81CFF0A097FE13E0057C06F /* Resources */,
 				B81CFF0C097FE13E0057C06F /* Sources */,
@@ -3233,14 +3233,14 @@
 			dependencies = (
 				B81CFF08097FE13E0057C06F /* PBXTargetDependency */,
 			);
-			name = UserInterface;
+			name = 05.UserInterface;
 			productName = DemoApp;
 			productReference = 4CA25B9E0A485D9800B4E469 /* UserInterface_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFF1E097FE1E00057C06F /* CustomSceneNode */ = {
+		B81CFF1E097FE1E00057C06F /* 03.CustomSceneNode */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFF29097FE1E00057C06F /* Build configuration list for PBXNativeTarget "CustomSceneNode" */;
+			buildConfigurationList = B81CFF29097FE1E00057C06F /* Build configuration list for PBXNativeTarget "03.CustomSceneNode" */;
 			buildPhases = (
 				B81CFF21097FE1E00057C06F /* Resources */,
 				B81CFF23097FE1E00057C06F /* Sources */,
@@ -3251,14 +3251,14 @@
 			dependencies = (
 				B81CFF1F097FE1E00057C06F /* PBXTargetDependency */,
 			);
-			name = CustomSceneNode;
+			name = 03.CustomSceneNode;
 			productName = DemoApp;
 			productReference = 4CA25B980A485D9800B4E469 /* CustomSceneNode_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFF33097FE25F0057C06F /* Quake3Map */ = {
+		B81CFF33097FE25F0057C06F /* 02.Quake3Map */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFF3E097FE25F0057C06F /* Build configuration list for PBXNativeTarget "Quake3Map" */;
+			buildConfigurationList = B81CFF3E097FE25F0057C06F /* Build configuration list for PBXNativeTarget "02.Quake3Map" */;
 			buildPhases = (
 				B81CFF36097FE25F0057C06F /* Resources */,
 				B81CFF38097FE25F0057C06F /* Sources */,
@@ -3269,14 +3269,14 @@
 			dependencies = (
 				B81CFF34097FE25F0057C06F /* PBXTargetDependency */,
 			);
-			name = Quake3Map;
+			name = 02.Quake3Map;
 			productName = DemoApp;
 			productReference = 4C53E2520A4850550014E966 /* Quake3Map_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFF4A097FE3050057C06F /* Shaders */ = {
+		B81CFF4A097FE3050057C06F /* 10.Shaders */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFF55097FE3050057C06F /* Build configuration list for PBXNativeTarget "Shaders" */;
+			buildConfigurationList = B81CFF55097FE3050057C06F /* Build configuration list for PBXNativeTarget "10.Shaders" */;
 			buildPhases = (
 				B81CFF4D097FE3050057C06F /* Resources */,
 				B81CFF4F097FE3050057C06F /* Sources */,
@@ -3287,14 +3287,14 @@
 			dependencies = (
 				B81CFF4B097FE3050057C06F /* PBXTargetDependency */,
 			);
-			name = Shaders;
+			name = 10.Shaders;
 			productName = DemoApp;
 			productReference = 4CA25BA60A485D9800B4E469 /* Shaders_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFF78097FE3DC0057C06F /* Movement */ = {
+		B81CFF78097FE3DC0057C06F /* 04.Movement */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFF83097FE3DC0057C06F /* Build configuration list for PBXNativeTarget "Movement" */;
+			buildConfigurationList = B81CFF83097FE3DC0057C06F /* Build configuration list for PBXNativeTarget "04.Movement" */;
 			buildPhases = (
 				B81CFF7B097FE3DC0057C06F /* Resources */,
 				B81CFF7D097FE3DC0057C06F /* Sources */,
@@ -3305,14 +3305,14 @@
 			dependencies = (
 				B81CFF79097FE3DC0057C06F /* PBXTargetDependency */,
 			);
-			name = Movement;
+			name = 04.Movement;
 			productName = DemoApp;
 			productReference = 4CA25BA40A485D9800B4E469 /* Movement_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFF91097FE45E0057C06F /* MeshViewer */ = {
+		B81CFF91097FE45E0057C06F /* 09.MeshViewer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFF9C097FE45E0057C06F /* Build configuration list for PBXNativeTarget "MeshViewer" */;
+			buildConfigurationList = B81CFF9C097FE45E0057C06F /* Build configuration list for PBXNativeTarget "09.MeshViewer" */;
 			buildPhases = (
 				B81CFF94097FE45E0057C06F /* Resources */,
 				B81CFF96097FE45E0057C06F /* Sources */,
@@ -3323,14 +3323,14 @@
 			dependencies = (
 				B81CFF92097FE45E0057C06F /* PBXTargetDependency */,
 			);
-			name = MeshViewer;
+			name = 09.MeshViewer;
 			productName = DemoApp;
 			productReference = 4CA25B9A0A485D9800B4E469 /* MeshViewer_dbg.app */;
 			productType = "com.apple.product-type.application";
 		};
-		B81CFFAF097FE5F80057C06F /* RenderToTexture */ = {
+		B81CFFAF097FE5F80057C06F /* 13.RenderToTexture */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B81CFFBA097FE5F80057C06F /* Build configuration list for PBXNativeTarget "RenderToTexture" */;
+			buildConfigurationList = B81CFFBA097FE5F80057C06F /* Build configuration list for PBXNativeTarget "13.RenderToTexture" */;
 			buildPhases = (
 				B81CFFB2097FE5F80057C06F /* Resources */,
 				B81CFFB4097FE5F80057C06F /* Sources */,
@@ -3341,7 +3341,7 @@
 			dependencies = (
 				B81CFFB0097FE5F80057C06F /* PBXTargetDependency */,
 			);
-			name = RenderToTexture;
+			name = 13.RenderToTexture;
 			productName = DemoApp;
 			productReference = 4CA25B9C0A485D9800B4E469 /* RenderToTexture_dbg.app */;
 			productType = "com.apple.product-type.application";
@@ -3395,25 +3395,25 @@
 			projectRoot = "";
 			targets = (
 				D2AAC07D0554694100DB518D /* libIrrlicht.a */,
-				B81CFF33097FE25F0057C06F /* Quake3Map */,
-				B81CFF1E097FE1E00057C06F /* CustomSceneNode */,
-				B81CFF78097FE3DC0057C06F /* Movement */,
-				B81CFF07097FE13E0057C06F /* UserInterface */,
-				B81CFDFE097FD9F50057C06F /* 2DGraphics */,
-				B81CFE82097FDDE20057C06F /* Collision */,
-				B81CFEE8097FE05F0057C06F /* SpecialFx */,
-				B81CFF91097FE45E0057C06F /* MeshViewer */,
-				B81CFF4A097FE3050057C06F /* Shaders */,
-				B81CFEA4097FDE900057C06F /* PerPixelLightning */,
-				B81CFEC2097FDF020057C06F /* TerrainRendering */,
-				B81CFFAF097FE5F80057C06F /* RenderToTexture */,
+				09F648F40D2CDED9001E0599 /* 01.HelloWorld */,
+				B81CFF33097FE25F0057C06F /* 02.Quake3Map */,
+				B81CFF1E097FE1E00057C06F /* 03.CustomSceneNode */,
+				B81CFF78097FE3DC0057C06F /* 04.Movement */,
+				B81CFF07097FE13E0057C06F /* 05.UserInterface */,
+				B81CFDFE097FD9F50057C06F /* 06.2DGraphics */,
+				B81CFE82097FDDE20057C06F /* 07.Collision */,
+				B81CFEE8097FE05F0057C06F /* 08.SpecialFx */,
+				B81CFF91097FE45E0057C06F /* 09.MeshViewer */,
+				B81CFF4A097FE3050057C06F /* 10.Shaders */,
+				B81CFEA4097FDE900057C06F /* 11.PerPixelLightning */,
+				B81CFEC2097FDF020057C06F /* 12.TerrainRendering */,
+				B81CFFAF097FE5F80057C06F /* 13.RenderToTexture */,
+				09F6492F0D2CE03E001E0599 /* 15.LoadIrrFile */,
+				09F649560D2CE206001E0599 /* 16.Quake3Shader */,
+				0946CCA30EC99BBE00D945A5 /* 19.MouseAndJoystick */,
 				B8DEF35C0950229200FDEA7E /* Demo */,
-				B81CFFC6097FE9980057C06F /* All */,
-				09F648F40D2CDED9001E0599 /* HelloWorld */,
-				09F6492F0D2CE03E001E0599 /* LoadIrrFile */,
-				09F649560D2CE206001E0599 /* Quake3Shader */,
 				09022C520EA0E97F00CD54EE /* GUIEditor */,
-				0946CCA30EC99BBE00D945A5 /* MouseAndJoystick */,
+				B81CFFC6097FE9980057C06F /* All */,
 			);
 		};
 /* End PBXProject section */
@@ -4050,7 +4050,7 @@
 		};
 		0946CCD60EC99D8200D945A5 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0946CCA30EC99BBE00D945A5 /* MouseAndJoystick */;
+			target = 0946CCA30EC99BBE00D945A5 /* 19.MouseAndJoystick */;
 			targetProxy = 0946CCD50EC99D8200D945A5 /* PBXContainerItemProxy */;
 		};
 		0946CCD90EC99D8C00D945A5 /* PBXTargetDependency */ = {
@@ -4065,7 +4065,7 @@
 		};
 		09F649210D2CDFF0001E0599 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 09F648F40D2CDED9001E0599 /* HelloWorld */;
+			target = 09F648F40D2CDED9001E0599 /* 01.HelloWorld */;
 			targetProxy = 09F649200D2CDFF0001E0599 /* PBXContainerItemProxy */;
 		};
 		09F649300D2CE03E001E0599 /* PBXTargetDependency */ = {
@@ -4075,7 +4075,7 @@
 		};
 		09F649450D2CE100001E0599 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 09F6492F0D2CE03E001E0599 /* LoadIrrFile */;
+			target = 09F6492F0D2CE03E001E0599 /* 15.LoadIrrFile */;
 			targetProxy = 09F649440D2CE100001E0599 /* PBXContainerItemProxy */;
 		};
 		09F649570D2CE206001E0599 /* PBXTargetDependency */ = {
@@ -4085,7 +4085,7 @@
 		};
 		09F649720D2CE2A1001E0599 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 09F649560D2CE206001E0599 /* Quake3Shader */;
+			target = 09F649560D2CE206001E0599 /* 16.Quake3Shader */;
 			targetProxy = 09F649710D2CE2A1001E0599 /* PBXContainerItemProxy */;
 		};
 		4CA5CB820A4868B500ADB3D7 /* PBXTargetDependency */ = {
@@ -4095,62 +4095,62 @@
 		};
 		4CA5CB840A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFFAF097FE5F80057C06F /* RenderToTexture */;
+			target = B81CFFAF097FE5F80057C06F /* 13.RenderToTexture */;
 			targetProxy = 4CA5CB830A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB860A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFEC2097FDF020057C06F /* TerrainRendering */;
+			target = B81CFEC2097FDF020057C06F /* 12.TerrainRendering */;
 			targetProxy = 4CA5CB850A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB880A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFEA4097FDE900057C06F /* PerPixelLightning */;
+			target = B81CFEA4097FDE900057C06F /* 11.PerPixelLightning */;
 			targetProxy = 4CA5CB870A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB8A0A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFF4A097FE3050057C06F /* Shaders */;
+			target = B81CFF4A097FE3050057C06F /* 10.Shaders */;
 			targetProxy = 4CA5CB890A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB8C0A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFF91097FE45E0057C06F /* MeshViewer */;
+			target = B81CFF91097FE45E0057C06F /* 09.MeshViewer */;
 			targetProxy = 4CA5CB8B0A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB8E0A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFEE8097FE05F0057C06F /* SpecialFx */;
+			target = B81CFEE8097FE05F0057C06F /* 08.SpecialFx */;
 			targetProxy = 4CA5CB8D0A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB900A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFE82097FDDE20057C06F /* Collision */;
+			target = B81CFE82097FDDE20057C06F /* 07.Collision */;
 			targetProxy = 4CA5CB8F0A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB920A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFDFE097FD9F50057C06F /* 2DGraphics */;
+			target = B81CFDFE097FD9F50057C06F /* 06.2DGraphics */;
 			targetProxy = 4CA5CB910A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB940A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFF07097FE13E0057C06F /* UserInterface */;
+			target = B81CFF07097FE13E0057C06F /* 05.UserInterface */;
 			targetProxy = 4CA5CB930A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB960A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFF78097FE3DC0057C06F /* Movement */;
+			target = B81CFF78097FE3DC0057C06F /* 04.Movement */;
 			targetProxy = 4CA5CB950A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB980A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFF1E097FE1E00057C06F /* CustomSceneNode */;
+			target = B81CFF1E097FE1E00057C06F /* 03.CustomSceneNode */;
 			targetProxy = 4CA5CB970A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		4CA5CB9A0A4868B500ADB3D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = B81CFF33097FE25F0057C06F /* Quake3Map */;
+			target = B81CFF33097FE25F0057C06F /* 02.Quake3Map */;
 			targetProxy = 4CA5CB990A4868B500ADB3D7 /* PBXContainerItemProxy */;
 		};
 		B81CFDFF097FD9F50057C06F /* PBXTargetDependency */ = {
@@ -5462,7 +5462,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0946CCB10EC99BBE00D945A5 /* Build configuration list for PBXNativeTarget "MouseAndJoystick" */ = {
+		0946CCB10EC99BBE00D945A5 /* Build configuration list for PBXNativeTarget "19.MouseAndJoystick" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0946CCB20EC99BBE00D945A5 /* Debug */,
@@ -5471,7 +5471,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "HelloWorld" */ = {
+		09F649000D2CDED9001E0599 /* Build configuration list for PBXNativeTarget "01.HelloWorld" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				09F649010D2CDED9001E0599 /* Debug */,
@@ -5480,7 +5480,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		09F6493B0D2CE03E001E0599 /* Build configuration list for PBXNativeTarget "LoadIrrFile" */ = {
+		09F6493B0D2CE03E001E0599 /* Build configuration list for PBXNativeTarget "15.LoadIrrFile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				09F6493C0D2CE03E001E0599 /* Debug */,
@@ -5489,7 +5489,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		09F649620D2CE206001E0599 /* Build configuration list for PBXNativeTarget "Quake3Shader" */ = {
+		09F649620D2CE206001E0599 /* Build configuration list for PBXNativeTarget "16.Quake3Shader" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				09F649630D2CE206001E0599 /* Debug */,
@@ -5516,7 +5516,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFE0C097FD9F50057C06F /* Build configuration list for PBXNativeTarget "2DGraphics" */ = {
+		B81CFE0C097FD9F50057C06F /* Build configuration list for PBXNativeTarget "06.2DGraphics" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFE0D097FD9F50057C06F /* Debug */,
@@ -5525,7 +5525,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFE8D097FDDE20057C06F /* Build configuration list for PBXNativeTarget "Collision" */ = {
+		B81CFE8D097FDDE20057C06F /* Build configuration list for PBXNativeTarget "07.Collision" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFE8E097FDDE20057C06F /* Debug */,
@@ -5534,7 +5534,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFEAF097FDE900057C06F /* Build configuration list for PBXNativeTarget "PerPixelLightning" */ = {
+		B81CFEAF097FDE900057C06F /* Build configuration list for PBXNativeTarget "11.PerPixelLightning" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFEB0097FDE900057C06F /* Debug */,
@@ -5543,7 +5543,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFECD097FDF020057C06F /* Build configuration list for PBXNativeTarget "TerrainRendering" */ = {
+		B81CFECD097FDF020057C06F /* Build configuration list for PBXNativeTarget "12.TerrainRendering" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFECE097FDF020057C06F /* Debug */,
@@ -5552,7 +5552,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFEF3097FE05F0057C06F /* Build configuration list for PBXNativeTarget "SpecialFx" */ = {
+		B81CFEF3097FE05F0057C06F /* Build configuration list for PBXNativeTarget "08.SpecialFx" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFEF4097FE05F0057C06F /* Debug */,
@@ -5561,7 +5561,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFF12097FE13E0057C06F /* Build configuration list for PBXNativeTarget "UserInterface" */ = {
+		B81CFF12097FE13E0057C06F /* Build configuration list for PBXNativeTarget "05.UserInterface" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFF13097FE13E0057C06F /* Debug */,
@@ -5570,7 +5570,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFF29097FE1E00057C06F /* Build configuration list for PBXNativeTarget "CustomSceneNode" */ = {
+		B81CFF29097FE1E00057C06F /* Build configuration list for PBXNativeTarget "03.CustomSceneNode" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFF2A097FE1E00057C06F /* Debug */,
@@ -5579,7 +5579,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFF3E097FE25F0057C06F /* Build configuration list for PBXNativeTarget "Quake3Map" */ = {
+		B81CFF3E097FE25F0057C06F /* Build configuration list for PBXNativeTarget "02.Quake3Map" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFF3F097FE25F0057C06F /* Debug */,
@@ -5588,7 +5588,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFF55097FE3050057C06F /* Build configuration list for PBXNativeTarget "Shaders" */ = {
+		B81CFF55097FE3050057C06F /* Build configuration list for PBXNativeTarget "10.Shaders" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFF56097FE3050057C06F /* Debug */,
@@ -5597,7 +5597,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFF83097FE3DC0057C06F /* Build configuration list for PBXNativeTarget "Movement" */ = {
+		B81CFF83097FE3DC0057C06F /* Build configuration list for PBXNativeTarget "04.Movement" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFF84097FE3DC0057C06F /* Debug */,
@@ -5606,7 +5606,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFF9C097FE45E0057C06F /* Build configuration list for PBXNativeTarget "MeshViewer" */ = {
+		B81CFF9C097FE45E0057C06F /* Build configuration list for PBXNativeTarget "09.MeshViewer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFF9D097FE45E0057C06F /* Debug */,
@@ -5615,7 +5615,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B81CFFBA097FE5F80057C06F /* Build configuration list for PBXNativeTarget "RenderToTexture" */ = {
+		B81CFFBA097FE5F80057C06F /* Build configuration list for PBXNativeTarget "13.RenderToTexture" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B81CFFBB097FE5F80057C06F /* Debug */,
