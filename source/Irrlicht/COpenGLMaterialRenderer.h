@@ -10,7 +10,7 @@
 
 #include "COpenGLDriver.h"
 #include "IMaterialRenderer.h"
-#if defined(_IRR_USE_OSX_DEVICE_)
+#if defined(_IRR_OSX_PLATFORM_)
 	#define GL_COMBINE_EXT                    0x8570
 	#define GL_COMBINE_RGB_EXT                0x8571
 	#define GL_COMBINE_ALPHA_EXT              0x8572
