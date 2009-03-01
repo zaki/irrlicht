@@ -1830,7 +1830,9 @@
 		0910BA4D0D1F64D000D46B04 /* gui */ = {
 			isa = PBXGroup;
 			children = (
+				0910BA070D1F64B300D46B04 /* EMessageBoxFlags.h */,
 				4CFA7C0D0A88742800B03626 /* EGUIElementTypes.h */,
+				0910BA020D1F64B300D46B04 /* EGUIAlignment.h */,
 				4CFA7C1B0A88742900B03626 /* ICursorControl.h */,
 				4CFA7C210A88742900B03626 /* IGUIButton.h */,
 				4CFA7C220A88742900B03626 /* IGUICheckBox.h */,
@@ -1864,6 +1866,7 @@
 		0910BA4E0D1F652100D46B04 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				4CFA7C500A88742900B03626 /* irrTypes.h */,
 				0910B9FE0D1F64B300D46B04 /* coreutil.h */,
 				4CFA7C5F0A88742900B03626 /* ITimer.h */,
 				4CFA7C670A88742900B03626 /* Keycodes.h */,
@@ -1894,6 +1897,8 @@
 		0910BA4F0D1F65A300D46B04 /* io */ = {
 			isa = PBXGroup;
 			children = (
+				4CFA7C360A88742900B03626 /* IImageWriter.h */,
+				0910BA110D1F64B300D46B04 /* IMeshWriter.h */,
 				4CFA7C170A88742900B03626 /* IAttributeExchangingObject.h */,
 				4CFA7C180A88742900B03626 /* IAttributes.h */,
 				4CFA7C1E0A88742900B03626 /* IFileList.h */,
@@ -1910,6 +1915,11 @@
 		0910BA500D1F660300D46B04 /* scene */ = {
 			isa = PBXGroup;
 			children = (
+				0910BA220D1F64B300D46B04 /* SSkinMeshBuffer.h */,
+				0910BA210D1F64B300D46B04 /* SSharedMeshBuffer.h */,
+				0910BA0A0D1F64B300D46B04 /* IBoneSceneNode.h */,
+				0910BA080D1F64B300D46B04 /* ETerrainElements.h */,
+				0910BA030D1F64B300D46B04 /* EHardwareBufferFlags.h */,
 				4CFA7C590A88742900B03626 /* ISceneUserDataSerializer.h */,
 				0910B9FF0D1F64B300D46B04 /* ECullingTypes.h */,
 				0910BA000D1F64B300D46B04 /* EDebugSceneTypes.h */,
@@ -1965,6 +1975,7 @@
 				4CFA7C7A0A88742900B03626 /* SMeshBufferLightMap.h */,
 				4CFA7C7B0A88742900B03626 /* SMeshBufferTangents.h */,
 				4CFA7C7C0A88742900B03626 /* SParticle.h */,
+				0910B9FD0D1F64B300D46B04 /* CMeshBuffer.h */,
 				0910BA230D1F64B300D46B04 /* SViewFrustum.h */,
 			);
 			name = scene;
@@ -1973,6 +1984,9 @@
 		0910BA800D1F6ADA00D46B04 /* video */ = {
 			isa = PBXGroup;
 			children = (
+				0910BA200D1F64B300D46B04 /* SMaterialLayer.h */,
+				0910BA050D1F64B300D46B04 /* EMaterialTypes.h */,
+				0910BA040D1F64B300D46B04 /* EMaterialFlags.h */,
 				0910BA010D1F64B300D46B04 /* EDriverFeatures.h */,
 				4CFA7C200A88742900B03626 /* IGPUProgrammingServices.h */,
 				4CFA7C340A88742900B03626 /* IImage.h */,
@@ -2458,6 +2472,8 @@
 		0910BA910D1F738100D46B04 /* OpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				5DD480700C7D94AC00728AA9 /* glxext.h */,
+				4C53E0070A484C250014E966 /* glext.h */,
 				5DD480C10C7DA66800728AA9 /* COpenGLExtensionHandler.h */,
 				5DD480C50C7DA66800728AA9 /* COpenGLExtensionHandler.cpp */,
 				4C53DF8C0A484C240014E966 /* COpenGLDriver.cpp */,
@@ -2902,8 +2918,6 @@
 				0910BA830D1F6CA600D46B04 /* irr */,
 				0910BA840D1F6D0200D46B04 /* scene */,
 				0910BA8B0D1F71D600D46B04 /* video */,
-				4C53E0070A484C250014E966 /* glext.h */,
-				5DD480700C7D94AC00728AA9 /* glxext.h */,
 			);
 			name = Engine;
 			sourceTree = "<group>";
@@ -2916,28 +2930,14 @@
 				0910BA4F0D1F65A300D46B04 /* io */,
 				0910BA500D1F660300D46B04 /* scene */,
 				0910BA800D1F6ADA00D46B04 /* video */,
-				0910B9FD0D1F64B300D46B04 /* CMeshBuffer.h */,
-				0910BA020D1F64B300D46B04 /* EGUIAlignment.h */,
-				0910BA030D1F64B300D46B04 /* EHardwareBufferFlags.h */,
-				0910BA040D1F64B300D46B04 /* EMaterialFlags.h */,
-				0910BA050D1F64B300D46B04 /* EMaterialTypes.h */,
-				0910BA070D1F64B300D46B04 /* EMessageBoxFlags.h */,
-				0910BA080D1F64B300D46B04 /* ETerrainElements.h */,
-				0910BA0A0D1F64B300D46B04 /* IBoneSceneNode.h */,
-				0910BA110D1F64B300D46B04 /* IMeshWriter.h */,
 				0910BA1D0D1F64B300D46B04 /* IReferenceCounted.h */,
-				0910BA200D1F64B300D46B04 /* SMaterialLayer.h */,
-				0910BA210D1F64B300D46B04 /* SSharedMeshBuffer.h */,
-				0910BA220D1F64B300D46B04 /* SSkinMeshBuffer.h */,
 				4CFA7C0C0A88742800B03626 /* EDriverTypes.h */,
 				4CFA7C1D0A88742900B03626 /* IEventReceiver.h */,
-				4CFA7C360A88742900B03626 /* IImageWriter.h */,
-				4CFA7C380A88742900B03626 /* ILogger.h */,
 				4CFA7C420A88742900B03626 /* IOSOperator.h */,
+				4CFA7C380A88742900B03626 /* ILogger.h */,
 				4CFA7C4A0A88742900B03626 /* IrrCompileConfig.h */,
 				4CFA7C4B0A88742900B03626 /* irrlicht.h */,
 				4CFA7C4C0A88742900B03626 /* IrrlichtDevice.h */,
-				4CFA7C500A88742900B03626 /* irrTypes.h */,
 				4CFA7C740A88742900B03626 /* SIrrCreationParameters.h */,
 			);
 			name = include;
