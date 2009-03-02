@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIR
 Includes=..\..\include;zlib
 Linker=-lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lwinmm -lopengl32_@@_
 Libs=
-UnitCount=613
+UnitCount=615
 Folders=doc,gui_impl,include,include/core,include/gui,include/io,include/scene,include/video,io_impl,other_impl,other_impl/extern,other_impl/extern/jpeglib,other_impl/extern/libpng,other_impl/extern/zlib,scene_impl,scene_impl/animators,scene_impl/collision,scene_impl/mesh,scene_impl/mesh/loaders,scene_impl/mesh/writers,scene_impl/nodes,scene_impl/nodes/particles,video_impl,"video_impl/Burning Video",video_impl/DirectX8,video_impl/DirectX9,video_impl/Null,video_impl/OpenGL,video_impl/Software
 ObjFiles=
 PrivateResource=
@@ -6171,6 +6171,26 @@ BuildCmd=
 FileName=CIrrDeviceConsole.h
 CompileCpp=1
 Folder=other_impl
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit614]
+FileName=CPLYMeshWriter.cpp
+CompileCpp=1
+Folder=scene_impl/mesh/writers
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit615]
+FileName=CPLYMeshWriter.h
+CompileCpp=1
+Folder=scene_impl/mesh/writers
 Compile=1
 Link=1
 Priority=1000

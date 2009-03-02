@@ -943,12 +943,10 @@
 				RelativePath=".\CGeometryCreator.h">
 			</File>
 			<File
-				RelativePath=".\CIrrDeviceConsole.cpp"
-				>
+				RelativePath=".\CIrrDeviceConsole.cpp">
 			</File>
 			<File
-				RelativePath=".\CIrrDeviceConsole.h"
-				>
+				RelativePath=".\CIrrDeviceConsole.h">
 			</File>
 			<File
 				RelativePath=".\CIrrDeviceLinux.cpp">
@@ -1090,6 +1088,13 @@
 			</File>
 			<File
 				RelativePath=".\COBJMeshWriter.h">
+			</File>
+			<File
+
+				RelativePath=".\CPLYMeshWriter.cpp">
+			</File>
+			<File
+				RelativePath="CPLYMeshWriter.h">
 			</File>
 			<File
 				RelativePath=".\COCTLoader.cpp">

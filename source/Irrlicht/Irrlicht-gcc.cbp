@@ -584,6 +584,8 @@
 		<Unit filename="COpenGLShaderMaterialRenderer.h" />
 		<Unit filename="COpenGLTexture.cpp" />
 		<Unit filename="COpenGLTexture.h" />
+		<Unit filename="CPLYMeshWriter.cpp" />
+		<Unit filename="CPLYMeshWriter.h" />
 		<Unit filename="CPakReader.cpp" />
 		<Unit filename="CPakReader.h" />
 		<Unit filename="CParticleAnimatedMeshSceneNodeEmitter.cpp" />

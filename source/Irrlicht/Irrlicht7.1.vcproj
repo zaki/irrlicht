@@ -1906,16 +1906,22 @@
 					RelativePath="CIrrMeshWriter.h">
 				</File>
 				<File
-					RelativePath=".\COBJMeshWriter.cpp">
+					RelativePath="COBJMeshWriter.cpp">
 				</File>
 				<File
-					RelativePath=".\COBJMeshWriter.h">
+					RelativePath="COBJMeshWriter.h">
 				</File>
 				<File
-					RelativePath=".\CSTLMeshWriter.cpp">
+					RelativePath="CPLYMeshWriter.cpp">
 				</File>
 				<File
-					RelativePath=".\CSTLMeshWriter.h">
+					RelativePath="CPLYMeshWriter.h">
+				</File>
+				<File
+					RelativePath="CSTLMeshWriter.cpp">
+				</File>
+				<File
+					RelativePath="CSTLMeshWriter.h">
 				</File>
 			</Filter>
 		</Filter>
@@ -2000,12 +2006,10 @@
 		<Filter
 			Name="irr impl">
 			<File
-				RelativePath="CIrrDeviceConsole.cpp"
-				>
+				RelativePath="CIrrDeviceConsole.cpp">
 			</File>
 			<File
-				RelativePath="CIrrDeviceConsole.h"
-				>
+				RelativePath="CIrrDeviceConsole.h">
 			</File>
 			<File
 				RelativePath="CIrrDeviceLinux.cpp">

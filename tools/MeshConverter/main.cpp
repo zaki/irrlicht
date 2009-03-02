@@ -18,7 +18,7 @@ void usage(const char* name)
 	std::cerr << "Usage: " << name << " [options] <srcFile> <destFile>" << std::endl;
 	std::cerr << "  where options are" << std::endl;
 	std::cerr << " --createTangents: convert to tangents mesh is possible." << std::endl;
-	std::cerr << " --format=[irrmesh|collada|stl|obj]: Choose target format" << std::endl;
+	std::cerr << " --format=[irrmesh|collada|stl|obj|ply]: Choose target format" << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -31,9 +31,9 @@ int main(int argc, char* argv[])
 	}
 
 	IrrlichtDevice *device = createDevice( video::EDT_NULL,
-			dimension2d<s32>(800, 600), 32, false, false, false, 0);
+			dimension2d<u32>(800, 600), 32, false, false, false, 0);
 
-	device->setWindowCaption(L"Image Converter");
+	device->setWindowCaption(L"Mesh Converter");
 
 	scene::EMESH_WRITER_TYPE type = EMWT_IRR_MESH;
 	u32 i=1;
@@ -52,6 +52,8 @@ int main(int argc, char* argv[])
 					type = EMWT_STL;
 				else if (format=="obj")
 					type = EMWT_OBJ;
+				else if (format=="ply")
+					type = EMWT_PLY;
 				else
 					type = EMWT_IRR_MESH;
 			}
@@ -96,9 +98,10 @@ int main(int argc, char* argv[])
 	IMeshWriter* mw = device->getSceneManager()->createMeshWriter(type);
 	IWriteFile* file = device->getFileSystem()->createAndWriteFile(argv[destmesh]);
 	mw->writeMesh(file, mesh);
-	mesh->drop();
+	
 	file->drop();
 	mw->drop();
+	device->drop();
 
 	return 0;
 }

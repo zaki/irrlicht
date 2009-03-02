@@ -1,5 +1,11 @@
 Changes in 1.6
 
+ - Added PLY mesh writer
+
+ - Ensure ListBox on combo box doesn't hang off the bottom of the GUI root, by Matthias Specht
+
+ - Made IGUIElements recalculate clipping rectangle after setNotClipped, reported by Aelis440
+
  - Bug fix for the combo box where it showed white text instead of skin colour before being focused, fix posted by drewbacca
 
  - EGDS_MESSAGE_BOX_HEIGHT is now honoured, bug reported by Spkka

@@ -105,6 +105,10 @@
 #include "COBJMeshWriter.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_PLY_WRITER_
+#include "CPLYMeshWriter.h"
+#endif
+
 #include "CCubeSceneNode.h"
 #include "CSphereSceneNode.h"
 #include "CAnimatedMeshSceneNode.h"
@@ -2495,6 +2499,13 @@ IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 	case EMWT_OBJ:
 #ifdef _IRR_COMPILE_WITH_OBJ_WRITER_
 		return new COBJMeshWriter(this, FileSystem);
+#else
+		return 0;
+#endif
+
+	case EMWT_PLY:
+#ifdef _IRR_COMPILE_WITH_PLY_WRITER_
+		return new CPLYMeshWriter();
 #else
 		return 0;
 #endif
