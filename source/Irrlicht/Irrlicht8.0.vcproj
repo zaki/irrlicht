@@ -2658,6 +2658,14 @@
 					>
 				</File>
 				<File
+					RelativePath="CPLYMeshWriter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CPLYMeshWriter.h"
+					>
+				</File>
+				<File
 					RelativePath="CSTLMeshWriter.cpp"
 					>
 				</File>
