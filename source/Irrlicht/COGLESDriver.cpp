@@ -218,6 +218,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 			EglDisplay,
 #endif
 			stencilBuffer);
+	Stencilbuffer=stencilBuffer;
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
