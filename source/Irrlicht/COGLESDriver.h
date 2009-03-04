@@ -12,7 +12,7 @@
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 #elif defined(_IRR_USE_OSX_DEVICE_)
-	#include "CIrrDeviceMacOSX.h"
+	#include "MacOSX/CIrrDeviceMacOSX.h"
 #elif defined(_IRR_USE_IPHONE_DEVICE_)
 	#include "CIrrDeviceIPhone.h"
 #endif
