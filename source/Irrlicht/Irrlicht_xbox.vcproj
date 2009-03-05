@@ -1115,6 +1115,12 @@
 				RelativePath=".\COgreMeshFileLoader.h">
 			</File>
 			<File
+				RelativePath=".\CPLYMeshFileLoader.cpp">
+			</File>
+			<File
+				RelativePath=".\CPLYMeshFileLoader.h">
+			</File>
+			<File
 				RelativePath=".\COSOperator.cpp">
 			</File>
 			<File

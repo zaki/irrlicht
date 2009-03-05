@@ -2214,6 +2214,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\CPLYMeshFileLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\CPLYMeshFileLoader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\COgreMeshFileLoader.h"
 					>
 				</File>
