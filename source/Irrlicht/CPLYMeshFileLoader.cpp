@@ -47,7 +47,7 @@ CPLYMeshFileLoader::~CPLYMeshFileLoader()
 //! returns true if the file maybe is able to be loaded by this class
 bool CPLYMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return core::hasFileExtension(filename, "ply" );
+	return core::hasFileExtension(filename, "ply");
 }
 
 
@@ -243,9 +243,11 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 			mb->recalculateBoundingBox();
 			SMesh* m = new SMesh();
 			m->addMeshBuffer(mb);
+			m->recalculateBoundingBox();
 			mb->drop();
 			animMesh = new SAnimatedMesh();
 			animMesh->addMesh(m);
+			animMesh->recalculateBoundingBox();
 			m->drop();
 		}
 	}
@@ -552,7 +554,7 @@ c8* CPLYMeshFileLoader::getNextLine()
 	if (pos >= EndPointer)
 	{
 		// get data from the file
-		if (File->getPos() < File->getSize())
+		if (!EndOfFile)
 		{
 			fillBuffer();
 			// reset line end pointer
@@ -568,6 +570,7 @@ c8* CPLYMeshFileLoader::getNextLine()
 			// EOF
 			StartPointer = EndPointer-1;
 			*StartPointer = '\0';
+			return StartPointer;
 		}
 	}
 	else
@@ -626,7 +629,7 @@ f32 CPLYMeshFileLoader::getFloat(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 				StartPointer += 2;
 				break;
 			case EPLYPT_INT32:
-				retVal = *(reinterpret_cast<s32*>(StartPointer));
+				retVal = f32(*(reinterpret_cast<s32*>(StartPointer)));
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT32:
@@ -634,7 +637,7 @@ f32 CPLYMeshFileLoader::getFloat(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT64:
-				retVal = *(reinterpret_cast<f64*>(StartPointer));
+				retVal = f32(*(reinterpret_cast<f64*>(StartPointer)));
 				StartPointer += 8;
 				break;
 			case EPLYPT_LIST:
@@ -645,7 +648,7 @@ f32 CPLYMeshFileLoader::getFloat(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 			}
 		}
 		else
-			return 0.0f;
+			retVal = 0.0f;
 	}
 	else
 	{
@@ -659,7 +662,7 @@ f32 CPLYMeshFileLoader::getFloat(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 			break;
 		case EPLYPT_FLOAT32:
 		case EPLYPT_FLOAT64:
-			retVal = atof(word);
+			retVal = f32(atof(word));
 			break;
 		case EPLYPT_LIST:
 		case EPLYPT_UNKNOWN:
@@ -696,22 +699,22 @@ u32 CPLYMeshFileLoader::getInt(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT32:
-				retVal = *(reinterpret_cast<f32*>(StartPointer));
+				retVal = (u32)(*(reinterpret_cast<f32*>(StartPointer)));
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT64:
-				retVal = *(reinterpret_cast<f64*>(StartPointer));
+				retVal = (u32)(*(reinterpret_cast<f64*>(StartPointer)));
 				StartPointer += 8;
 				break;
 			case EPLYPT_LIST:
 			case EPLYPT_UNKNOWN:
 			default:
-				retVal = 0.0f;
+				retVal = 0;
 				StartPointer++; // ouch!
 			}
 		}
 		else
-			return 0;
+			retVal = 0;
 	}
 	else
 	{
