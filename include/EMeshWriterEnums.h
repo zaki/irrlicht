@@ -45,7 +45,10 @@ namespace scene
 		EMWF_WRITE_LIGHTMAPS = 0x1,
 
 		//! write in a way that consumes less disk space
-		EMWF_WRITE_COMPRESSED = 0x2
+		EMWF_WRITE_COMPRESSED = 0x2,
+
+		//! write in binary format rather than text
+		EMWF_WRITE_BINARY = 0x4
 	};
 
 } // end namespace scene

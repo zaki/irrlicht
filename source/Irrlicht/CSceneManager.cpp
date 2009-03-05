@@ -89,6 +89,10 @@
 #include "CSTLMeshFileLoader.h"
 #endif
 
+#ifdef _IRR_COMPILE_WITH_PLY_LOADER_
+#include "CPLYMeshFileLoader.h"
+#endif
+
 #ifdef _IRR_COMPILE_WITH_COLLADA_WRITER_
 #include "CColladaMeshWriter.h"
 #endif
@@ -251,6 +255,9 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	#endif
 	#ifdef _IRR_COMPILE_WITH_STL_LOADER_
 	MeshLoaderList.push_back(new CSTLMeshFileLoader());
+	#endif
+	#ifdef _IRR_COMPILE_WITH_PLY_LOADER_
+	MeshLoaderList.push_back(new CPLYMeshFileLoader());
 	#endif
 
 	// factories

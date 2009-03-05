@@ -1584,6 +1584,12 @@
 					RelativePath=".\COgreMeshFileLoader.h">
 				</File>
 				<File
+					RelativePath=".\CPLYMeshFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\CPLYMeshFileLoader.h">
+				</File>
+				<File
 					RelativePath=".\CQ3LevelMesh.cpp">
 				</File>
 				<File

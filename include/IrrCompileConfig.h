@@ -264,10 +264,12 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_OGRE_LOADER_
 //! Define _IRR_COMPILE_WITH_LWO_LOADER_ if you want to load Lightwave3D files
 #define _IRR_COMPILE_WITH_LWO_LOADER_
-//! Define _IRR_COMPILE_WITH_STL_LOADER_ if you want to load .stl files
+//! Define _IRR_COMPILE_WITH_STL_LOADER_ if you want to load stereolithography files
 #define _IRR_COMPILE_WITH_STL_LOADER_
+//! Define _IRR_COMPILE_WITH_PLY_LOADER_ if you want to load Polygon (Stanford Triangle) files
+#define _IRR_COMPILE_WITH_PLY_LOADER_
 
-//! Define _IRR_COMPILE_WITH_IRR_WRITER_ if you want to write static .irr files
+//! Define _IRR_COMPILE_WITH_IRR_WRITER_ if you want to write static .irrMesh files
 #define _IRR_COMPILE_WITH_IRR_WRITER_
 //! Define _IRR_COMPILE_WITH_COLLADA_WRITER_ if you want to write Collada files
 #define _IRR_COMPILE_WITH_COLLADA_WRITER_

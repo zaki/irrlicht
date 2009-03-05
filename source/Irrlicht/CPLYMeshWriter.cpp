@@ -123,9 +123,9 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			snprintf(outLine, 1024, 
 				"%f %f %f %f %f %f\n",// %u %u %u %u %f %f\n", 
 				pos.X, pos.Z, pos.Y, // Y and Z are flipped
-				n.X, n.Z, n.Y, 
-				col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha(), 
-				tc.X, tc.Y);
+				n.X, n.Z, n.Y); 
+				/*col.getRed(), col.getGreen(), col.getBlue(), col.getAlpha(), 
+				tc.X, tc.Y);*/
 
 			// write the line
 			file->write(outLine, strlen(outLine));
@@ -179,5 +179,5 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 } // end namespace
 } // end namespace
 
-#endif
+#endif // _IRR_COMPILE_WITH_PLY_WRITER_
 
