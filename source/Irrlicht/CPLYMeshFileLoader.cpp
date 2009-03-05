@@ -229,6 +229,8 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 		{
 			// create a mesh buffer
 			CDynamicMeshBuffer *mb = new CDynamicMeshBuffer(video::EVT_STANDARD, vertCount > 65565 ? video::EIT_32BIT : video::EIT_16BIT);
+			mb->getVertexBuffer().reallocate(vertCount);
+			mb->getIndexBuffer().reallocate(vertCount);
 			mb->setHardwareMappingHint(EHM_STATIC);
 
 			// loop through each of the elements 
@@ -614,8 +616,13 @@ c8* CPLYMeshFileLoader::getNextWord()
 	while (*pos && pos < LineEndPointer && pos < EndPointer && *pos != ' ' && *pos != '\t')
 		++pos;
 
-	// null terminate the string in place
-	*pos = '\0';
+	while(*pos && pos < LineEndPointer && pos < EndPointer && (*pos == ' ' || *pos == '\t') )
+	{
+		// null terminate the string in place
+		*pos = '\0';
+		++pos;
+	}
+	--pos;
 	WordLength = pos-StartPointer;
 	// return pointer to the start of the word
 	return StartPointer;
