@@ -70,6 +70,7 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 
 	// start with empty mesh
 	SAnimatedMesh* animMesh = 0;
+	u32 vertCount=0;
 
 	// Currently only supports ASCII meshes
 	if (strcmp(getNextLine(), "ply"))
@@ -193,6 +194,10 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 				el->IsFixedWidth = true;
 				el->KnownSize = 0;
 				ElementList.push_back(el);
+
+				if (el->Name == "vertex")
+					vertCount = el->Count;
+
 			}
 			else if (strcmp(word, "end_header") == 0)
 			{
@@ -223,7 +228,7 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 		if (continueReading)
 		{
 			// create a mesh buffer
-			CDynamicMeshBuffer *mb = new CDynamicMeshBuffer(video::EVT_STANDARD, video::EIT_32BIT);
+			CDynamicMeshBuffer *mb = new CDynamicMeshBuffer(video::EVT_STANDARD, vertCount > 65565 ? video::EIT_32BIT : video::EIT_16BIT);
 			mb->setHardwareMappingHint(EHM_STATIC);
 
 			// loop through each of the elements 
