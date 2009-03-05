@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - SkyDome is now serialized correctly
+
  - Added PLY mesh reader and writer
 
  - Ensure ListBox on combo box doesn't hang off the bottom of the GUI root, by Matthias Specht
