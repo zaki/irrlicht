@@ -104,12 +104,17 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 				if      (strcmp(word, "binary_little_endian") == 0)
 				{
 					IsBinaryFile = true;
-					// todo: endian swap
+#ifdef __BIG_ENDIAN__
+					IsWrongEndian = true;
+#endif
+
 				}
 				else if (strcmp(word, "binary_big_endian") == 0)
 				{
 					IsBinaryFile = true;
-					// todo: endian swap
+#ifndef __BIG_ENDIAN__
+					IsWrongEndian = true;
+#endif
 				}
 				else if (strcmp(word, "ascii"))
 				{
@@ -192,6 +197,10 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 			else if (strcmp(word, "end_header") == 0)
 			{
 				readingHeader = false;
+				if (IsBinaryFile)
+				{
+					StartPointer = LineEndPointer + 1;
+				}
 			}
 			else if (strcmp(word, "comment") == 0)
 			{
@@ -487,8 +496,7 @@ CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE CPLYMeshFileLoader::getPropertyType(cons
 	{
 		return EPLYPT_INT8;
 	}
-	else if (strcmp(typeString, "int")    == 0 ||
-	         strcmp(typeString, "uint")   == 0 ||
+	else if (strcmp(typeString, "uint")   == 0 ||
 	         strcmp(typeString, "int16")  == 0 ||
 	         strcmp(typeString, "uint16") == 0 ||
 	         strcmp(typeString, "short")  == 0 ||
@@ -496,7 +504,8 @@ CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE CPLYMeshFileLoader::getPropertyType(cons
 	{
 		return EPLYPT_INT16;
 	}
-	else if (strcmp(typeString, "long")   == 0 ||
+	else if (strcmp(typeString, "int")    == 0 ||
+	         strcmp(typeString, "long")   == 0 ||
 	         strcmp(typeString, "ulong")  == 0 ||
 	         strcmp(typeString, "int32")  == 0 ||
 	         strcmp(typeString, "uint32") == 0)
@@ -625,18 +634,28 @@ f32 CPLYMeshFileLoader::getFloat(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 				StartPointer++;
 				break;
 			case EPLYPT_INT16:
-				retVal = *(reinterpret_cast<s16*>(StartPointer));
+				if (IsWrongEndian)
+					retVal = os::Byteswap::byteswap(*(reinterpret_cast<s16*>(StartPointer)));
+				else
+					retVal = *(reinterpret_cast<s16*>(StartPointer));
 				StartPointer += 2;
 				break;
 			case EPLYPT_INT32:
-				retVal = f32(*(reinterpret_cast<s32*>(StartPointer)));
+				if (IsWrongEndian)
+					retVal = f32(os::Byteswap::byteswap(*(reinterpret_cast<s32*>(StartPointer))));
+				else
+					retVal = f32(*(reinterpret_cast<s32*>(StartPointer)));
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT32:
-				retVal = *(reinterpret_cast<f32*>(StartPointer));
+				if (IsWrongEndian)
+					retVal = os::Byteswap::byteswap(*(reinterpret_cast<f32*>(StartPointer)));
+				else
+					retVal = *(reinterpret_cast<f32*>(StartPointer));
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT64:
+				// todo: byteswap 64-bit
 				retVal = f32(*(reinterpret_cast<f64*>(StartPointer)));
 				StartPointer += 8;
 				break;
@@ -691,18 +710,28 @@ u32 CPLYMeshFileLoader::getInt(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 				StartPointer++;
 				break;
 			case EPLYPT_INT16:
-				retVal = *(reinterpret_cast<u16*>(StartPointer));
+				if (IsWrongEndian)
+					retVal = os::Byteswap::byteswap(*(reinterpret_cast<u16*>(StartPointer)));
+				else
+					retVal = *(reinterpret_cast<u16*>(StartPointer));
 				StartPointer += 2;
 				break;
 			case EPLYPT_INT32:
-				retVal = *(reinterpret_cast<u32*>(StartPointer));
+				if (IsWrongEndian)
+					retVal = os::Byteswap::byteswap(*(reinterpret_cast<s32*>(StartPointer)));
+				else
+					retVal = *(reinterpret_cast<s32*>(StartPointer));
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT32:
-				retVal = (u32)(*(reinterpret_cast<f32*>(StartPointer)));
+				if (IsWrongEndian)
+					retVal = (u32)os::Byteswap::byteswap(*(reinterpret_cast<f32*>(StartPointer)));
+				else
+					retVal = (u32)(*(reinterpret_cast<f32*>(StartPointer)));
 				StartPointer += 4;
 				break;
 			case EPLYPT_FLOAT64:
+				// todo: byteswap 64-bit
 				retVal = (u32)(*(reinterpret_cast<f64*>(StartPointer)));
 				StartPointer += 8;
 				break;
