@@ -36,6 +36,9 @@ namespace scene
 		//! Sky Box Scene Node
 		ESNT_SKY_BOX        = MAKE_IRR_ID('s','k','y','_'),
 
+		//! Sky Dome Scene Node
+		ESNT_SKY_DOME       = MAKE_IRR_ID('s','k','y','d'),
+
 		//! Shadow Volume Scene Node
 		ESNT_SHADOW_VOLUME  = MAKE_IRR_ID('s','h','d','w'),
 
