@@ -1051,7 +1051,7 @@ video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
 
 
 //! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceLinux::setResizeAble(bool resize)
+void CIrrDeviceLinux::setResizeable(bool resize)
 {
 #ifdef _IRR_COMPILE_WITH_X11_
 	if (CreationParams.DriverType == video::EDT_NULL)
@@ -1154,6 +1154,15 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 #endif
 
 	return &VideoModeList;
+}
+
+
+//! Return pointer to a list with all video modes supported by the gfx adapter.
+void CIrrDeviceLinux::minimizeWindow()
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+	XUnmapWindow(display, window);
+#endif
 }
 
 

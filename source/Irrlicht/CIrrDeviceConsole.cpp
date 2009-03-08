@@ -407,7 +407,13 @@ void CIrrDeviceConsole::closeDevice()
 }
 
 //! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceConsole::setResizeAble(bool resize)
+void CIrrDeviceConsole::setResizeable(bool resize)
+{
+	// do nothing
+}
+
+//! Minimize the window.
+void CIrrDeviceConsole::minimizeWindow()
 {
 	// do nothing
 }

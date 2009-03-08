@@ -67,7 +67,10 @@ namespace irr
 		void OnResized();
 
 		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		virtual void setResizeable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
 
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
