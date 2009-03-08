@@ -297,6 +297,11 @@ public:
 						elem->setVisible(!elem->isVisible());
 				}
 			}
+			else if (event.KeyInput.Key == irr::KEY_KEY_M)
+			{
+				if (Device)
+					Device->minimizeWindow();
+			}
 		}
 
 		if (event.EventType == EET_GUI_EVENT)
@@ -576,7 +581,7 @@ int main(int argc, char* argv[])
 	if (Device == 0)
 		return 1; // could not create selected driver.
 
-	Device->setResizeAble(true);
+	Device->setResizeable(true);
 
 	Device->setWindowCaption(L"Irrlicht Engine - Loading...");
 
@@ -589,7 +594,7 @@ int main(int argc, char* argv[])
 
 	smgr->addLightSceneNode();
 	smgr->addLightSceneNode(0, core::vector3df(50,-50,GUI_ID_OPEN_MODEL),
-			video::SColorf(1.0f,1.0f,1.0f),20000);
+		video::SColorf(1.0f,1.0f,1.0f),2000)->setPosition(core::vector3df(200,200,200));
 	// add our media directory as "search path"
 	Device->getFileSystem()->addFolderFileArchive("../../media/");
 

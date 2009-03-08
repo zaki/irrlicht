@@ -893,7 +893,7 @@ void CIrrDeviceWin32::OnResized()
 }
 
 //! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceWin32::setResizeAble(bool resize)
+void CIrrDeviceWin32::setResizeable(bool resize)
 {
 	if (ExternalWindow || !getVideoDriver() || CreationParams.Fullscreen)
 		return;
@@ -924,6 +924,17 @@ void CIrrDeviceWin32::setResizeAble(bool resize)
 
 	SetWindowPos(HWnd, HWND_TOP, windowLeft, windowTop, realWidth, realHeight,
 		SWP_FRAMECHANGED | SWP_NOMOVE | SWP_SHOWWINDOW);
+}
+
+
+//! Minimizes the window.
+void CIrrDeviceWin32::minimizeWindow()
+{
+	WINDOWPLACEMENT wndpl;
+	wndpl.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(HWnd, &wndpl);
+	wndpl.showCmd = SW_SHOWMINNOACTIVE;
+	SetWindowPlacement(HWnd, &wndpl);
 }
 
 

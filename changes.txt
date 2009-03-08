@@ -1,5 +1,9 @@
 Changes in 1.6
 
+ - Renamed setResizeAble to setResizeable
+
+ - Added new device method minimizeWindow which minimizes the window (just as if the minimize button has been clicked).
+
  - SkyDome is now serialized correctly
 
  - Added PLY mesh reader and writer

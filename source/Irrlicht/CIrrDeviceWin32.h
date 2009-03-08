@@ -67,7 +67,10 @@ namespace irr
 		void OnResized();
 
 		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		virtual void setResizeable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);

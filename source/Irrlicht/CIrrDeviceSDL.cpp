@@ -661,7 +661,7 @@ video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 
 
 //! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceSDL::setResizeAble(bool resize)
+void CIrrDeviceSDL::setResizeable(bool resize)
 {
 	if (resize != Resizeable)
 	{
@@ -674,6 +674,13 @@ void CIrrDeviceSDL::setResizeAble(bool resize)
 		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 		Resizeable = resize;
 	}
+}
+
+
+//! Minimizes window if possible
+void CIrrDeviceSDL::minimizeWindow()
+{
+	SDL_WM_IconifyWindow();
 }
 
 

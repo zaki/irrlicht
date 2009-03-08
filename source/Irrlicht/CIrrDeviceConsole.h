@@ -76,7 +76,10 @@ namespace irr
 		virtual void closeDevice();
 
 		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		virtual void setResizeable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
 
 		void addPostPresentText(s16 X, s16 Y, const wchar_t *text);
 
