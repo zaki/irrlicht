@@ -1738,6 +1738,14 @@
 					>
 				</File>
 				<File
+					RelativePath="CImageLoaderRGB.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CImageLoaderRGB.h"
+					>
+				</File>
+				<File
 					RelativePath="CImageLoaderTGA.cpp"
 					>
 				</File>

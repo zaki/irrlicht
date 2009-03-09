@@ -23,6 +23,9 @@ namespace os
 		static u32 byteswap(u32 num);
 		static s32 byteswap(s32 num);
 		static f32 byteswap(f32 num);
+		// prevent accidental swapping of chars
+		static u8  byteswap(u8  num);
+		static c8  byteswap(c8  num);
 	};
 
 	class Printer

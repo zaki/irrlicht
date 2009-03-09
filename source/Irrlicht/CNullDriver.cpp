@@ -44,27 +44,30 @@ IImageLoader* createImageLoaderWAL();
 //! creates a loader which is able to load ppm/pgm/pbm images
 IImageLoader* createImageLoaderPPM();
 
-//! creates a loader which is able to load bmp images
+//! creates a loader which is able to load rgb images
+IImageLoader* createImageLoaderRGB();
+
+
+//! creates a writer which is able to save bmp images
 IImageWriter* createImageWriterBMP();
 
-//! creates a loader which is able to load jpg images
+//! creates a writer which is able to save jpg images
 IImageWriter* createImageWriterJPG();
 
-//! creates a loader which is able to load tga images
+//! creates a writer which is able to save tga images
 IImageWriter* createImageWriterTGA();
 
-//! creates a loader which is able to load psd images
+//! creates a writer which is able to save psd images
 IImageWriter* createImageWriterPSD();
 
-//! creates a loader which is able to load pcx images
+//! creates a writer which is able to save pcx images
 IImageWriter* createImageWriterPCX();
 
-//! creates a loader which is able to load png images
+//! creates a writer which is able to save png images
 IImageWriter* createImageWriterPNG();
 
-//! creates a loader which is able to load ppm images
+//! creates a writer which is able to save ppm images
 IImageWriter* createImageWriterPPM();
-
 
 
 //! constructor
@@ -116,6 +119,10 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 #ifdef _IRR_COMPILE_WITH_PPM_LOADER_
 	SurfaceLoader.push_back(video::createImageLoaderPPM());
 #endif
+#ifdef _IRR_COMPILE_WITH_RGB_LOADER_
+	SurfaceLoader.push_back(video::createImageLoaderRGB());
+#endif
+
 
 #ifdef _IRR_COMPILE_WITH_BMP_WRITER_
 	SurfaceWriter.push_back(video::createImageWriterBMP());
