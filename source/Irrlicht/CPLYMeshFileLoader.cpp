@@ -466,7 +466,7 @@ void CPLYMeshFileLoader::fillBuffer()
 	else
 	{
 		// read data from the file
-		s32 count = File->read(EndPointer, PLY_INPUT_BUFFER_SIZE - length);
+		u32 count = File->read(EndPointer, PLY_INPUT_BUFFER_SIZE - length);
 
 		// increment the end pointer by the number of bytes read
 		EndPointer = EndPointer + count;

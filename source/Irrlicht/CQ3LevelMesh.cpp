@@ -661,6 +661,8 @@ void CQ3LevelMesh::parser_parse( const void * data, const u32 size, CQ3LevelMesh
 
 			} break;
 
+			default:
+			break;
 		}
 
 	} while ( Parser.tokenresult != Q3_TOKEN_EOF );
