@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - Added SGI RGB file reader by Gary Conway, for loading Silicon Graphics .rgb, .rgba, .sgi, .int and .inta textures
+
  - Renamed setResizeAble to setResizeable
 
  - Added new device method minimizeWindow which minimizes the window (just as if the minimize button has been clicked).

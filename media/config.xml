@@ -22,8 +22,8 @@ Supported formats are:
 - Pulsar LMTools (.lmts)
 - Quake 3 levels (.bsp)
 - Quake 2 models (.md2)
+- Stanford Triangle (.ply)
 - Stereolithography format (.stl)
 
-Please note that this program is also a demo of the user interface capabilities of the engine, so for example the combo box in the toolbar has no function.
 </messageText>
 </config>
