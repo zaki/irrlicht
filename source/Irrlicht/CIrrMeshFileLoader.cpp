@@ -13,6 +13,7 @@
 #include "IReadFile.h"
 #include "IAttributes.h"
 #include "IMeshSceneNode.h"
+#include "CDynamicMeshBuffer.h"
 #include "SMeshBufferLightMap.h"
 
 namespace irr
@@ -138,10 +139,7 @@ IAnimatedMesh* CIrrMeshFileLoader::readMesh(io::IXMLReader* reader)
 //! reads a mesh sections and creates a mesh buffer from it
 IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 {
-	IMeshBuffer* buffer = 0;
-	SMeshBuffer* sbuffer1 = 0;
-	SMeshBufferLightMap* sbuffer2 = 0;
-	SMeshBufferTangents* sbuffer3 = 0;
+	CDynamicMeshBuffer* buffer = 0;
 
 	core::stringc verticesSectionName = "vertices";
 	core::stringc bbSectionName = "boundingBox";
@@ -184,38 +182,33 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 			{
 				// vertices section
 
-				core::stringc vertexTypeName1 = "standard";
-				core::stringc vertexTypeName2 = "2tcoords";
-				core::stringc vertexTypeName3 = "tangents";
+				const core::stringc vertexTypeName1 = "standard";
+				const core::stringc vertexTypeName2 = "2tcoords";
+				const core::stringc vertexTypeName3 = "tangents";
 
 				const wchar_t* vertexType = reader->getAttributeValue(L"type");
 				vertexCount = reader->getAttributeValueAsInt(L"vertexCount");
 
 				insideVertexSection = true;
 
+				video::E_INDEX_TYPE itype = (vertexCount > 65536)?irr::video::EIT_32BIT:irr::video::EIT_16BIT;
 				if (vertexTypeName1 == vertexType)
 				{
-					sbuffer1 = new SMeshBuffer();
-					sbuffer1->Vertices.reallocate(vertexCount);
-					sbuffer1->Material = material;
-					buffer = sbuffer1;
+					buffer = new CDynamicMeshBuffer(irr::video::EVT_STANDARD, itype);
+						
 				}
 				else
 				if (vertexTypeName2 == vertexType)
 				{
-					sbuffer2 = new SMeshBufferLightMap();
-					sbuffer2->Vertices.reallocate(vertexCount);
-					sbuffer2->Material = material;
-					buffer = sbuffer2;
+					buffer = new CDynamicMeshBuffer(irr::video::EVT_2TCOORDS, itype);
 				}
 				else
 				if (vertexTypeName3 == vertexType)
 				{
-					sbuffer3 = new SMeshBufferTangents();
-					sbuffer3->Vertices.reallocate(vertexCount);
-					sbuffer3->Material = material;
-					buffer = sbuffer3;
+					buffer = new CDynamicMeshBuffer(irr::video::EVT_TANGENTS, itype);
 				}
+				buffer->getVertexBuffer().reallocate(vertexCount);
+				buffer->Material = material;
 			}
 			else
 			if (indicesSectionName == nodeName)
@@ -233,30 +226,14 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 			// read vertex data
 			if (insideVertexSection)
 			{
-				if (sbuffer1)
-					readMeshBuffer(reader, vertexCount, sbuffer1);
-				else
-				if (sbuffer2)
-					readMeshBuffer(reader, vertexCount, sbuffer2);
-				else
-				if (sbuffer3)
-					readMeshBuffer(reader, vertexCount, sbuffer3);
-
+				readMeshBuffer(reader, vertexCount, buffer);
 				insideVertexSection = false;
 
 			} // end reading vertex array
 			else
 			if (insideIndexSection)
 			{
-				if (sbuffer1)
-					readIndices(reader, indexCount, sbuffer1->Indices);
-				else
-				if (sbuffer2)
-					readIndices(reader, indexCount, sbuffer2->Indices);
-				else
-				if (sbuffer3)
-					readIndices(reader, indexCount, sbuffer3->Indices);
-
+				readIndices(reader, indexCount, buffer->getIndexBuffer());
 				insideIndexSection = false;
 			}
 
@@ -280,7 +257,7 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 
 
 //! read indices
-void CIrrMeshFileLoader::readIndices(io::IXMLReader* reader, int indexCount, core::array<u16>& indices)
+void CIrrMeshFileLoader::readIndices(io::IXMLReader* reader, int indexCount, IIndexBuffer& indices)
 {
 	indices.reallocate(indexCount);
 
@@ -290,175 +267,163 @@ void CIrrMeshFileLoader::readIndices(io::IXMLReader* reader, int indexCount, cor
 	for (int i=0; i<indexCount && *p; ++i)
 	{
 		findNextNoneWhiteSpace(&p);
-		indices.push_back((u16)readInt(&p));
+		indices.push_back(readInt(&p));
 	}
 }
 
 
-void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount, SMeshBuffer* sbuffer)
+void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount, CDynamicMeshBuffer* sbuffer)
 {
 	core::stringc data = reader->getNodeData();
 	const c8* p = &data[0];
+	scene::IVertexBuffer& Vertices = sbuffer->getVertexBuffer();
+	video::E_VERTEX_TYPE vType = Vertices.getType();
 
 	if (sbuffer)
 	{
-		video::S3DVertex vtx;
-
 		for (int i=0; i<vertexCount && *p; ++i)
 		{
-			// position
+			switch(vType) 
+			{
+			case video::EVT_STANDARD:
+			{
+				video::S3DVertex vtx;
+				// position
 
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Z = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.Z = readFloat(&p);
 
-			// normal
+				// normal
 
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Z = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.Z = readFloat(&p);
 
-			// color
+				// color
 
-			findNextNoneWhiteSpace(&p);
-			sscanf(p, "%08x", &vtx.Color.color);
-			skipCurrentNoneWhiteSpace(&p);
+				findNextNoneWhiteSpace(&p);
+				sscanf(p, "%08x", &vtx.Color.color);
+				skipCurrentNoneWhiteSpace(&p);
 
-			// tcoord1
+				// tcoord1
 
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords.Y = readFloat(&p);
 
-			sbuffer->Vertices.push_back(vtx);
-		}
-	}
-}
+				Vertices.push_back(vtx);
+			}
+			break;
+			case video::EVT_2TCOORDS:
+			{
+				video::S3DVertex2TCoords vtx;
+				// position
 
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.Z = readFloat(&p);
 
-void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount, SMeshBufferLightMap* sbuffer)
-{
-	core::stringc data = reader->getNodeData();
-	const c8* p = &data[0];
+				// normal
 
-	if (sbuffer)
-	{
-		video::S3DVertex2TCoords vtx;
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.Z = readFloat(&p);
 
-		for (int i=0; i<vertexCount && *p; ++i)
-		{
-			// position
+				// color
 
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Z = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				sscanf(p, "%08x", &vtx.Color.color);
+				skipCurrentNoneWhiteSpace(&p);
 
-			// normal
+				// tcoord1
 
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Z = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords.Y = readFloat(&p);
 
-			// color
+				// tcoord2
 
-			findNextNoneWhiteSpace(&p);
-			sscanf(p, "%08x", &vtx.Color.color);
-			skipCurrentNoneWhiteSpace(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords2.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords2.Y = readFloat(&p);
 
-			// tcoord1
+				Vertices.push_back(vtx);
+			}
+			break;
 
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.Y = readFloat(&p);
+			case video::EVT_TANGENTS:
+			{
+				video::S3DVertexTangents vtx;
+				// position
 
-			// tcoord2
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Pos.Z = readFloat(&p);
 
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords2.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords2.Y = readFloat(&p);
+				// normal
 
-			sbuffer->Vertices.push_back(vtx);
-		}
-	}
-}
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Normal.Z = readFloat(&p);
 
+				// color
 
-void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount, SMeshBufferTangents* sbuffer)
-{
-	core::stringc data = reader->getNodeData();
-	const c8* p = &data[0];
+				findNextNoneWhiteSpace(&p);
+				sscanf(p, "%08x", &vtx.Color.color);
+				skipCurrentNoneWhiteSpace(&p);
 
-	if (sbuffer)
-	{
-		video::S3DVertexTangents vtx;
+				// tcoord1
 
-		for (int i=0; i<vertexCount && *p; ++i)
-		{
-			// position
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.TCoords.Y = readFloat(&p);
 
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Pos.Z = readFloat(&p);
+				// tangent
 
-			// normal
+				findNextNoneWhiteSpace(&p);
+				vtx.Tangent.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Tangent.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Tangent.Z = readFloat(&p);
 
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Normal.Z = readFloat(&p);
+				// binormal
 
-			// color
+				findNextNoneWhiteSpace(&p);
+				vtx.Binormal.X = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Binormal.Y = readFloat(&p);
+				findNextNoneWhiteSpace(&p);
+				vtx.Binormal.Z = readFloat(&p);
 
-			findNextNoneWhiteSpace(&p);
-			sscanf(p, "%08x", &vtx.Color.color);
-			skipCurrentNoneWhiteSpace(&p);
+				Vertices.push_back(vtx);
+			}
+			break;
+			};
 
-			// tcoord1
-
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.TCoords.Y = readFloat(&p);
-
-			// tangent
-
-			findNextNoneWhiteSpace(&p);
-			vtx.Tangent.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Tangent.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Tangent.Z = readFloat(&p);
-
-			// binormal
-
-			findNextNoneWhiteSpace(&p);
-			vtx.Binormal.X = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Binormal.Y = readFloat(&p);
-			findNextNoneWhiteSpace(&p);
-			vtx.Binormal.Z = readFloat(&p);
-
-			sbuffer->Vertices.push_back(vtx);
 		}
 	}
 }

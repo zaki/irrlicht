@@ -252,13 +252,25 @@ void CIrrMeshWriter::writeMeshBuffer(const scene::IMeshBuffer* buffer)
 	Writer->writeLineBreak();
 
 	int indexCount = (int)buffer->getIndexCount();
-	const u16* idx = buffer->getIndices();
+
+	video::E_INDEX_TYPE iType = buffer->getIndexType();
+
+	const u16* idx16 = buffer->getIndices();
+	const u32* idx32 = (u32*) buffer->getIndices();
 	const int maxIndicesPerLine = 25;
 
 	for (int i=0; i<indexCount; ++i)
 	{
-		core::stringw str((int)idx[i]);
-		Writer->writeText(str.c_str());
+		if(iType == video::EIT_16BIT)
+		{
+			core::stringw str((int)idx16[i]);
+			Writer->writeText(str.c_str());
+		}
+		else
+		{
+			core::stringw str((int)idx32[i]);
+			Writer->writeText(str.c_str());
+		}
 
 		if (i % maxIndicesPerLine != maxIndicesPerLine)
 		{
