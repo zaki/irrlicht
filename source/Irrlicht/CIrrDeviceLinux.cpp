@@ -1161,7 +1161,7 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 void CIrrDeviceLinux::minimizeWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
-	XUnmapWindow(display, window);
+	XIconifyWindow(display, window, screennr);
 #endif
 }
 

@@ -102,7 +102,7 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 		{
 			const core::vector3df& pos = mb->getPosition(j);
 			const core::vector3df& n   = mb->getNormal(j);
-			const core::vector2df& tc  = mb->getTCoords(j);
+//			const core::vector2df& tc  = mb->getTCoords(j);
 
 			u8 *buf  = (u8*)mb->getVertices();
 			switch(mb->getVertexType())
@@ -117,7 +117,7 @@ bool CPLYMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 				buf += sizeof(video::S3DVertexTangents)*j;
 				break;
 			}
-			video::SColor &col = ( (video::S3DVertex*)buf )->Color;
+//			video::SColor &col = ( (video::S3DVertex*)buf )->Color;
 
 			// x y z nx ny nz red green blue alpha u v [u1 v1 | tx ty tz]\n
 			snprintf(outLine, 1024, 
