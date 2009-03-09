@@ -12,6 +12,17 @@
 				<Option compiler="gcc" />
 				<Option projectResourceIncludeDirsRelation="1" />
 			</Target>
+			<Target title="Linux">
+				<Option output="MeshViewer" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="Irrlicht" />
+					<Add library="GL" />
+					<Add directory="../../lib/gcc" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
 			<Add alias="All" targets="default;" />
