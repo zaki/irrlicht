@@ -6,6 +6,17 @@
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
 		<Build>
+			<Target title="Linux">
+				<Option output="HelloWorld" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="Irrlicht" />
+					<Add library="GL" />
+					<Add directory="../../lib/Linux" />
+				</Linker>
+			</Target>
 			<Target title="default">
 				<Option output="..\..\bin\gcc\HelloWorld" prefix_auto="0" extension_auto="1" />
 				<Option type="1" />
@@ -23,11 +34,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-g" />
-			<Add directory="..\..\include" />
+			<Add directory="../../include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add directory="..\..\lib\gcc" />
+			<Add directory="../../lib/gcc" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
