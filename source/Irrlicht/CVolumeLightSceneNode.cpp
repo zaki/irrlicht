@@ -1,8 +1,6 @@
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
+// Copyright (C) 2007-2009 Dean Wadsworth
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
-//
-// created by Dean Wadsworth aka Varmint Dec 31 2007
 
 #include "CVolumeLightSceneNode.h"
 #include "IVideoDriver.h"
