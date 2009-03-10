@@ -689,6 +689,9 @@ s32 CGUITabControl::getTabExtraWidth() const
 
 void CGUITabControl::recalculateScrollBar()
 {
+	if (!UpButton || !DownButton)
+		return;
+
 	ScrollControl = needScrollControl() || CurrentScrollTabIndex > 0;
 
 	if (ScrollControl)
@@ -702,8 +705,8 @@ void CGUITabControl::recalculateScrollBar()
 		DownButton->setVisible( false );
 	}
 
-	this->bringToFront( UpButton );
-	this->bringToFront( DownButton );
+	bringToFront( UpButton );
+	bringToFront( DownButton );
 }
 
 

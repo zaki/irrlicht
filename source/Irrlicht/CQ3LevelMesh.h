@@ -24,10 +24,8 @@ namespace scene
 	public:
 
 		//! constructor
-		CQ3LevelMesh(	io::IFileSystem* fs, 
-						scene::ISceneManager* smgr,
-						const quake3::Q3LevelLoadParameter &loadParam
-						);
+		CQ3LevelMesh(io::IFileSystem* fs, scene::ISceneManager* smgr,
+		             const quake3::Q3LevelLoadParameter &loadParam);
 
 		//! destructor
 		virtual ~CQ3LevelMesh();
