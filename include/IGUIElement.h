@@ -44,14 +44,6 @@ public:
 		if (parent)
 			parent->addChild(this);
 
-		// if we succeeded in becoming a child
-		if (Parent)
-		{
-			LastParentRect = Parent->getAbsolutePosition();
-			AbsoluteRect += LastParentRect.UpperLeftCorner;
-			AbsoluteClippingRect = AbsoluteRect;
-			AbsoluteClippingRect.clipAgainst(Parent->AbsoluteClippingRect);
-		}
 	}
 
 
@@ -398,14 +390,14 @@ public:
 	{
 		if (child)
 		{
-			child->grab();
+			child->grab(); // prevent destruction when removed
 			child->remove(); // remove from old parent
 			child->LastParentRect = getAbsolutePosition();
 			child->Parent = this;
 			Children.push_back(child);
+			child->updateAbsolutePosition();
 		}
 	}
-
 
 	//! Removes a child.
 	virtual void removeChild(IGUIElement* child)
