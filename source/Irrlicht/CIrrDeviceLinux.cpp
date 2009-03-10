@@ -1050,8 +1050,8 @@ video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
 }
 
 
-//! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceLinux::setResizeable(bool resize)
+//! Sets if the window should be resizable in windowed mode.
+void CIrrDeviceLinux::setResizable(bool resize)
 {
 #ifdef _IRR_COMPILE_WITH_X11_
 	if (CreationParams.DriverType == video::EDT_NULL)

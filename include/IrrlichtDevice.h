@@ -202,11 +202,11 @@ namespace irr
 		\param sceneManager New scene manager to be used. */
 		virtual void setInputReceivingSceneManager(scene::ISceneManager* sceneManager) = 0;
 
-		//! Sets if the window should be resizeable in windowed mode.
+		//! Sets if the window should be resizable in windowed mode.
 		/** The default is false. This method only works in windowed
 		mode.
-		\param resize Flag whether the window should be resizeable. */
-		virtual void setResizeable(bool resize=false) = 0;
+		\param resize Flag whether the window should be resizable. */
+		virtual void setResizable(bool resize=false) = 0;
 
 		//! Minimizes the window if possible.
 		virtual void minimizeWindow() =0;

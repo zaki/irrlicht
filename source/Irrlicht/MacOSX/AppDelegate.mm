@@ -52,7 +52,7 @@
 
 - (NSSize)windowWillResize:(NSWindow *)window toSize:(NSSize)proposedFrameSize
 {
-	if (_device->isResizeAble())
+	if (_device->isResizable())
 		return proposedFrameSize;
 	else
 		return [window frame].size;

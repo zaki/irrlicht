@@ -182,21 +182,19 @@ private:
 
 	bool readHeader(io::IReadFile* file, rgbStruct* rgb) const;
 	void readRGBrow( u8 *buf, int y, int z, io::IReadFile* file, rgbStruct* rgb) const;
-	void convertLong(u32 *array, long length) const;
-	void convertShort(u16 *array, long length) const;
 	void processFile(rgbStruct *rgb, io::IReadFile *file) const;
 	bool checkFormat(io::IReadFile *file, rgbStruct *rgb) const;
 	bool readOffsetTables(io::IReadFile* file, rgbStruct *rgb) const;
 	void converttoARGB(u8* in, rgbStruct *rgb) const;
+	
+#ifndef __BIG_ENDIAN__
+	void convertLong(u32 *array, long length) const;
+	void convertShort(u16 *array, long length) const;
+#endif
 };
-
-
-
-
 
 } // end namespace video
 } // end namespace irr
 
-
-#endif
-#endif
+#endif // _IRR_COMPILE_WITH_RGB_LOADER_
+#endif // __C_IMAGE_LOADER_RGB_H_INCLUDED__

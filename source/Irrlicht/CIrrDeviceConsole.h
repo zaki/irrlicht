@@ -75,8 +75,8 @@ namespace irr
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
 
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeable(bool resize=false);
+		//! Sets if the window should be resizable in windowed mode.
+		virtual void setResizable(bool resize=false);
 
 		//! Minimizes the window.
 		virtual void minimizeWindow();

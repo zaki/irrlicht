@@ -741,8 +741,8 @@ void CIrrDeviceWinCE::OnResized()
 }
 
 
-//! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceWinCE::setResizeable(bool resize)
+//! Sets if the window should be resizable in windowed mode.
+void CIrrDeviceWinCE::setResizable(bool resize)
 {
 	if (ExternalWindow || !getVideoDriver() || CreationParams.Fullscreen)
 		return;

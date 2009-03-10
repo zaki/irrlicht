@@ -231,10 +231,10 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 
 			Complete Alpha blending computation
 			The actual resulting merged color is computed this way: 
-			(image color × alpha) + (background color × (100% - alpha)).
+			(image color â—Š alpha) + (background color â—Š (100% - alpha)).
 
 			Using precomputed blending
-			(image color) + (background color × (100% - alpha)).
+			(image color) + (background color â—Š (100% - alpha)).
 
 			Alternatively, the RGB files could use another blending technique entirely
 
@@ -583,10 +583,12 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 			tempShort++;
 			iPtr = (u8 *) tempShort;
 		}
-            
+
+#ifndef __BIG_ENDIAN__
 		if (rgb->header.BPC != 1)
 			convertShort(&pixel, 1);
-
+#endif
+		
 		count = (int)(pixel & 0x7F);
             
 		// limit the count value to the remiaing row size
@@ -616,9 +618,9 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 					pixel = *tempShort;
 					tempShort++;
 					iPtr = (u8 *) (tempShort);
-                        
+#ifndef __BIG_ENDIAN__
 					convertShort(&pixel, 1);
-
+#endif
 					tempShort = (u16 *) (oPtr);
 					*tempShort = pixel;
 					tempShort++;
@@ -640,9 +642,11 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 				iPtr = (u8 *) (tempShort);
 			}
 
+#ifndef __BIG_ENDIAN__
 			if (rgb->header.BPC != 1)
 				convertShort(&pixel, 1);
-
+#endif
+			
 			while (count--)
 			{
 				if(rgb->header.BPC == 1)
@@ -730,7 +734,7 @@ void CImageLoaderRGB::converttoARGB(u8* in, rgbStruct *rgb) const
 {
 	u32 cnt=0;
 	u8 tmp;
-	//			(image color × alpha) + (background color × (100% - alpha)).
+	//			(image color â—Š alpha) + (background color â—Š (100% - alpha)).
 
 	for ( int y=0; y < rgb->header.Ysize; y++)
 	{

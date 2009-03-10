@@ -63,10 +63,13 @@ namespace irr
 		virtual void closeDevice();
 
 		//! Sets if the window should be resizable in windowed mode.
-		virtual void setResizeAble(bool resize);
+		virtual void setResizable(bool resize);
 		
 		//! Returns true if the window is resizable, false if not
-		virtual bool isResizeAble() const;
+		virtual bool isResizable() const;
+		
+		//! Minimizes the window if possible
+		virtual void minimizeWindow();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
@@ -76,8 +79,8 @@ namespace irr
 		virtual video::IVideoModeList* getVideoModeList();
 
 		void flush();
-		void setMouseLocation(int x,int y);
-		void setResize(int width,int height);
+		void setMouseLocation(int x, int y);
+		void setResize(int width, int height);
 		void setCursorVisible(bool visible);
 
 	private:
