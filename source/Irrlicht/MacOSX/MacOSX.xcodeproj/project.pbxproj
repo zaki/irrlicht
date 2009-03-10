@@ -2021,63 +2021,16 @@
 		0910BA810D1F6BB800D46B04 /* gui */ = {
 			isa = PBXGroup;
 			children = (
+				34FFD9CB0F6601AC00420884 /* element */,
 				4C53DEE60A484C220014E966 /* BuiltInFont.h */,
 				5DD480580C7D945800728AA9 /* CDefaultGUIElementFactory.cpp */,
 				5DD480590C7D945800728AA9 /* CDefaultGUIElementFactory.h */,
-				4C53DF2E0A484C230014E966 /* CGUIButton.cpp */,
-				4C53DF2F0A484C230014E966 /* CGUIButton.h */,
-				4C53DF300A484C230014E966 /* CGUICheckBox.cpp */,
-				4C53DF310A484C230014E966 /* CGUICheckBox.h */,
-				5DD4805E0C7D947B00728AA9 /* CGUIColorSelectDialog.cpp */,
-				5DD4805F0C7D947B00728AA9 /* CGUIColorSelectDialog.h */,
-				4C53DF320A484C230014E966 /* CGUIComboBox.cpp */,
-				4C53DF330A484C230014E966 /* CGUIComboBox.h */,
-				4C53DF340A484C230014E966 /* CGUIContextMenu.cpp */,
-				4C53DF350A484C230014E966 /* CGUIContextMenu.h */,
-				4C53DF360A484C230014E966 /* CGUIEditBox.cpp */,
-				4C53DF370A484C230014E966 /* CGUIEditBox.h */,
-				4C53DF380A484C230014E966 /* CGUIEnvironment.cpp */,
-				4C53DF390A484C230014E966 /* CGUIEnvironment.h */,
-				4C53DF3A0A484C230014E966 /* CGUIFileOpenDialog.cpp */,
-				4C53DF3B0A484C230014E966 /* CGUIFileOpenDialog.h */,
 				4C53DF3C0A484C230014E966 /* CGUIFont.cpp */,
 				4C53DF3D0A484C230014E966 /* CGUIFont.h */,
-				4C53DF3E0A484C230014E966 /* CGUIImage.cpp */,
-				4C53DF3F0A484C230014E966 /* CGUIImage.h */,
-				3484C4DF0F48D1B000C81F60 /* CGUIImageList.h */,
-				3484C4E00F48D1B000C81F60 /* CGUIImageList.cpp */,
-				4C53DF400A484C230014E966 /* CGUIInOutFader.cpp */,
-				4C53DF410A484C230014E966 /* CGUIInOutFader.h */,
-				4C53DF420A484C230014E966 /* CGUIListBox.cpp */,
-				4C53DF430A484C230014E966 /* CGUIListBox.h */,
-				4C53DF440A484C230014E966 /* CGUIMenu.cpp */,
-				4C53DF450A484C230014E966 /* CGUIMenu.h */,
-				4C53DF460A484C230014E966 /* CGUIMeshViewer.cpp */,
-				4C53DF470A484C230014E966 /* CGUIMeshViewer.h */,
-				4C53DF480A484C230014E966 /* CGUIMessageBox.cpp */,
-				4C53DF490A484C230014E966 /* CGUIMessageBox.h */,
-				4C53DF4A0A484C230014E966 /* CGUIModalScreen.cpp */,
-				4C53DF4B0A484C230014E966 /* CGUIModalScreen.h */,
-				4C53DF4C0A484C230014E966 /* CGUIScrollBar.cpp */,
-				4C53DF4D0A484C230014E966 /* CGUIScrollBar.h */,
 				4C53DF4E0A484C230014E966 /* CGUISkin.cpp */,
 				4C53DF4F0A484C230014E966 /* CGUISkin.h */,
-				5DD480600C7D947B00728AA9 /* CGUISpinBox.cpp */,
-				5DD480610C7D947B00728AA9 /* CGUISpinBox.h */,
 				5DD480620C7D947B00728AA9 /* CGUISpriteBank.cpp */,
 				5DD480630C7D947B00728AA9 /* CGUISpriteBank.h */,
-				4C53DF500A484C230014E966 /* CGUIStaticText.cpp */,
-				4C53DF510A484C230014E966 /* CGUIStaticText.h */,
-				4C53DF520A484C230014E966 /* CGUITabControl.cpp */,
-				4C53DF530A484C230014E966 /* CGUITabControl.h */,
-				0910B9DA0D1F5D4100D46B04 /* CGUITable.cpp */,
-				0910B9DB0D1F5D4100D46B04 /* CGUITable.h */,
-				4C53DF540A484C230014E966 /* CGUIToolBar.cpp */,
-				4C53DF550A484C230014E966 /* CGUIToolBar.h */,
-				3484C4EC0F48D3A100C81F60 /* CGUITreeView.h */,
-				3484C4ED0F48D3A100C81F60 /* CGUITreeView.cpp */,
-				4C53DF560A484C230014E966 /* CGUIWindow.cpp */,
-				4C53DF570A484C230014E966 /* CGUIWindow.h */,
 			);
 			name = gui;
 			sourceTree = "<group>";
@@ -2085,31 +2038,14 @@
 		0910BA820D1F6C3900D46B04 /* io */ = {
 			isa = PBXGroup;
 			children = (
-				4C53E0030A484C250014E966 /* CZipReader.cpp */,
-				4C53E0040A484C250014E966 /* CZipReader.h */,
-				4C53DEEF0A484C220014E966 /* CAttributeImpl.h */,
-				4C53DEF00A484C220014E966 /* CAttributes.cpp */,
-				4C53DEF10A484C220014E966 /* CAttributes.h */,
+				34FFD9CA0F66018500420884 /* xml */,
+				34FFD9C90F66014200420884 /* file */,
+				34FFD9C80F66012D00420884 /* attributes */,
+				34FFD9C70F66011C00420884 /* archive */,
 				4C53DF260A484C230014E966 /* CFileList.cpp */,
 				4C53DF270A484C230014E966 /* CFileList.h */,
 				4C53DF280A484C230014E966 /* CFileSystem.cpp */,
 				4C53DF290A484C230014E966 /* CFileSystem.h */,
-				4C53DF6E0A484C230014E966 /* CLimitReadFile.cpp */,
-				4C53DF6F0A484C230014E966 /* CLimitReadFile.h */,
-				3484C4FB0F48D4CB00C81F60 /* CMemoryFile.h */,
-				3484C4FC0F48D4CB00C81F60 /* CMemoryFile.cpp */,
-				4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */,
-				4C43EEBF0A74A5C800F942FC /* CPakReader.h */,
-				4C53DFA70A484C240014E966 /* CReadFile.cpp */,
-				4C53DFA80A484C240014E966 /* CReadFile.h */,
-				4C53DFF20A484C250014E966 /* CWriteFile.cpp */,
-				4C53DFF30A484C250014E966 /* CWriteFile.h */,
-				4C53DFFA0A484C250014E966 /* CXMLReader.cpp */,
-				4C53DFFB0A484C250014E966 /* CXMLReader.h */,
-				4C53DFFC0A484C250014E966 /* CXMLReaderImpl.h */,
-				4C53DFFD0A484C250014E966 /* CXMLWriter.cpp */,
-				4C53DFFE0A484C250014E966 /* CXMLWriter.h */,
-				4C53E00E0A484C250014E966 /* irrXML.cpp */,
 			);
 			name = io;
 			sourceTree = "<group>";
@@ -2117,16 +2053,7 @@
 		0910BA830D1F6CA600D46B04 /* irr */ = {
 			isa = PBXGroup;
 			children = (
-				34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */,
-				34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */,
-				4C53DF660A484C230014E966 /* CIrrDeviceLinux.cpp */,
-				4C53DF670A484C230014E966 /* CIrrDeviceLinux.h */,
-				5DD480C40C7DA66800728AA9 /* CIrrDeviceSDL.cpp */,
-				5DD480C30C7DA66800728AA9 /* CIrrDeviceSDL.h */,
-				4C53DF680A484C230014E966 /* CIrrDeviceStub.cpp */,
-				4C53DF690A484C230014E966 /* CIrrDeviceStub.h */,
-				4C53DF6A0A484C230014E966 /* CIrrDeviceWin32.cpp */,
-				4C53DF6B0A484C230014E966 /* CIrrDeviceWin32.h */,
+				34FFD9C60F6600DA00420884 /* device */,
 				4C53DF720A484C230014E966 /* CLogger.cpp */,
 				4C53DF730A484C230014E966 /* CLogger.h */,
 				4C53DF990A484C240014E966 /* COSOperator.cpp */,
@@ -2613,6 +2540,138 @@
 			name = loader;
 			sourceTree = "<group>";
 		};
+		34FFD9C50F6600A900420884 /* libraries */ = {
+			isa = PBXGroup;
+			children = (
+				4C53E1710A484C2C0014E966 /* zlib */,
+				4C53E0130A484C250014E966 /* jpeglib */,
+				09293C2B0ED31FF8003B8C9C /* libpng */,
+			);
+			name = libraries;
+			sourceTree = "<group>";
+		};
+		34FFD9C60F6600DA00420884 /* device */ = {
+			isa = PBXGroup;
+			children = (
+				4C53E14A0A484C2C0014E966 /* MacOSX */,
+				34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */,
+				34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */,
+				4C53DF660A484C230014E966 /* CIrrDeviceLinux.cpp */,
+				4C53DF670A484C230014E966 /* CIrrDeviceLinux.h */,
+				5DD480C40C7DA66800728AA9 /* CIrrDeviceSDL.cpp */,
+				5DD480C30C7DA66800728AA9 /* CIrrDeviceSDL.h */,
+				4C53DF680A484C230014E966 /* CIrrDeviceStub.cpp */,
+				4C53DF690A484C230014E966 /* CIrrDeviceStub.h */,
+				4C53DF6A0A484C230014E966 /* CIrrDeviceWin32.cpp */,
+				4C53DF6B0A484C230014E966 /* CIrrDeviceWin32.h */,
+			);
+			name = device;
+			sourceTree = "<group>";
+		};
+		34FFD9C70F66011C00420884 /* archive */ = {
+			isa = PBXGroup;
+			children = (
+				4C53E0030A484C250014E966 /* CZipReader.cpp */,
+				4C53E0040A484C250014E966 /* CZipReader.h */,
+				4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */,
+				4C43EEBF0A74A5C800F942FC /* CPakReader.h */,
+			);
+			name = archive;
+			sourceTree = "<group>";
+		};
+		34FFD9C80F66012D00420884 /* attributes */ = {
+			isa = PBXGroup;
+			children = (
+				4C53DEEF0A484C220014E966 /* CAttributeImpl.h */,
+				4C53DEF00A484C220014E966 /* CAttributes.cpp */,
+				4C53DEF10A484C220014E966 /* CAttributes.h */,
+			);
+			name = attributes;
+			sourceTree = "<group>";
+		};
+		34FFD9C90F66014200420884 /* file */ = {
+			isa = PBXGroup;
+			children = (
+				4C53DFA70A484C240014E966 /* CReadFile.cpp */,
+				4C53DFA80A484C240014E966 /* CReadFile.h */,
+				4C53DFF20A484C250014E966 /* CWriteFile.cpp */,
+				4C53DFF30A484C250014E966 /* CWriteFile.h */,
+				4C53DF6E0A484C230014E966 /* CLimitReadFile.cpp */,
+				4C53DF6F0A484C230014E966 /* CLimitReadFile.h */,
+				3484C4FB0F48D4CB00C81F60 /* CMemoryFile.h */,
+				3484C4FC0F48D4CB00C81F60 /* CMemoryFile.cpp */,
+			);
+			name = file;
+			sourceTree = "<group>";
+		};
+		34FFD9CA0F66018500420884 /* xml */ = {
+			isa = PBXGroup;
+			children = (
+				4C53DFFA0A484C250014E966 /* CXMLReader.cpp */,
+				4C53DFFB0A484C250014E966 /* CXMLReader.h */,
+				4C53DFFC0A484C250014E966 /* CXMLReaderImpl.h */,
+				4C53DFFD0A484C250014E966 /* CXMLWriter.cpp */,
+				4C53DFFE0A484C250014E966 /* CXMLWriter.h */,
+				4C53E00E0A484C250014E966 /* irrXML.cpp */,
+			);
+			name = xml;
+			sourceTree = "<group>";
+		};
+		34FFD9CB0F6601AC00420884 /* element */ = {
+			isa = PBXGroup;
+			children = (
+				4C53DF2E0A484C230014E966 /* CGUIButton.cpp */,
+				4C53DF2F0A484C230014E966 /* CGUIButton.h */,
+				4C53DF300A484C230014E966 /* CGUICheckBox.cpp */,
+				4C53DF310A484C230014E966 /* CGUICheckBox.h */,
+				5DD4805E0C7D947B00728AA9 /* CGUIColorSelectDialog.cpp */,
+				5DD4805F0C7D947B00728AA9 /* CGUIColorSelectDialog.h */,
+				4C53DF320A484C230014E966 /* CGUIComboBox.cpp */,
+				4C53DF330A484C230014E966 /* CGUIComboBox.h */,
+				4C53DF340A484C230014E966 /* CGUIContextMenu.cpp */,
+				4C53DF350A484C230014E966 /* CGUIContextMenu.h */,
+				4C53DF360A484C230014E966 /* CGUIEditBox.cpp */,
+				4C53DF370A484C230014E966 /* CGUIEditBox.h */,
+				4C53DF380A484C230014E966 /* CGUIEnvironment.cpp */,
+				4C53DF390A484C230014E966 /* CGUIEnvironment.h */,
+				4C53DF3A0A484C230014E966 /* CGUIFileOpenDialog.cpp */,
+				4C53DF3B0A484C230014E966 /* CGUIFileOpenDialog.h */,
+				4C53DF3E0A484C230014E966 /* CGUIImage.cpp */,
+				4C53DF3F0A484C230014E966 /* CGUIImage.h */,
+				3484C4DF0F48D1B000C81F60 /* CGUIImageList.h */,
+				3484C4E00F48D1B000C81F60 /* CGUIImageList.cpp */,
+				4C53DF400A484C230014E966 /* CGUIInOutFader.cpp */,
+				4C53DF410A484C230014E966 /* CGUIInOutFader.h */,
+				4C53DF420A484C230014E966 /* CGUIListBox.cpp */,
+				4C53DF430A484C230014E966 /* CGUIListBox.h */,
+				4C53DF440A484C230014E966 /* CGUIMenu.cpp */,
+				4C53DF450A484C230014E966 /* CGUIMenu.h */,
+				4C53DF460A484C230014E966 /* CGUIMeshViewer.cpp */,
+				4C53DF470A484C230014E966 /* CGUIMeshViewer.h */,
+				4C53DF480A484C230014E966 /* CGUIMessageBox.cpp */,
+				4C53DF490A484C230014E966 /* CGUIMessageBox.h */,
+				4C53DF4A0A484C230014E966 /* CGUIModalScreen.cpp */,
+				4C53DF4B0A484C230014E966 /* CGUIModalScreen.h */,
+				4C53DF4C0A484C230014E966 /* CGUIScrollBar.cpp */,
+				4C53DF4D0A484C230014E966 /* CGUIScrollBar.h */,
+				5DD480600C7D947B00728AA9 /* CGUISpinBox.cpp */,
+				5DD480610C7D947B00728AA9 /* CGUISpinBox.h */,
+				4C53DF500A484C230014E966 /* CGUIStaticText.cpp */,
+				4C53DF510A484C230014E966 /* CGUIStaticText.h */,
+				4C53DF520A484C230014E966 /* CGUITabControl.cpp */,
+				4C53DF530A484C230014E966 /* CGUITabControl.h */,
+				0910B9DA0D1F5D4100D46B04 /* CGUITable.cpp */,
+				0910B9DB0D1F5D4100D46B04 /* CGUITable.h */,
+				4C53DF540A484C230014E966 /* CGUIToolBar.cpp */,
+				4C53DF550A484C230014E966 /* CGUIToolBar.h */,
+				3484C4EC0F48D3A100C81F60 /* CGUITreeView.h */,
+				3484C4ED0F48D3A100C81F60 /* CGUITreeView.cpp */,
+				4C53DF560A484C230014E966 /* CGUIWindow.cpp */,
+				4C53DF570A484C230014E966 /* CGUIWindow.h */,
+			);
+			name = element;
+			sourceTree = "<group>";
+		};
 		4C00546D0A48470500C844C2 /* examples */ = {
 			isa = PBXGroup;
 			children = (
@@ -2757,11 +2816,8 @@
 		4C53DEE50A484C220014E966 /* Irrlicht */ = {
 			isa = PBXGroup;
 			children = (
-				09293C2B0ED31FF8003B8C9C /* libpng */,
+				34FFD9C50F6600A900420884 /* libraries */,
 				4C6DC9960A486B110017A6E5 /* Engine */,
-				4C53E14A0A484C2C0014E966 /* MacOSX */,
-				4C53E0130A484C250014E966 /* jpeglib */,
-				4C53E1710A484C2C0014E966 /* zlib */,
 			);
 			name = Irrlicht;
 			path = ..;

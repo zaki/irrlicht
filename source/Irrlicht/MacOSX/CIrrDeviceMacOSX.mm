@@ -369,7 +369,7 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	if (CreationParams.DriverType != video::EDT_NULL)
 		createWindow();
 	
-	setResizeAble(false);
+	setResizable(false);
 	
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
 	createDriver();
@@ -1085,17 +1085,21 @@ void CIrrDeviceMacOSX::initKeycodes()
 
 
 
-//! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceMacOSX::setResizeAble(bool resize)
+//! Sets if the window should be resizable in windowed mode.
+void CIrrDeviceMacOSX::setResizable(bool resize)
 {
 	IsResizable = resize;
 }
 	
-bool CIrrDeviceMacOSX::isResizeAble() const
+bool CIrrDeviceMacOSX::isResizable() const
 {
 	return IsResizable;
 }
-	
+
+void CIrrDeviceMacOSX::minimizeWindow()
+{
+	// todo: implement
+}
 
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {

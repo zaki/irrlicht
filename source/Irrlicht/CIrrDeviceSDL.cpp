@@ -45,7 +45,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_HWSURFACE|SDL_ANYFORMAT),
 	MouseX(0), MouseY(0), MouseButtonStates(0),
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-	Close(0), Resizeable(false),
+	Close(0), Resizable(false),
 	WindowHasFocus(false), WindowMinimized(false)
 {
 	#ifdef _DEBUG
@@ -660,10 +660,10 @@ video::IVideoModeList* CIrrDeviceSDL::getVideoModeList()
 }
 
 
-//! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceSDL::setResizeable(bool resize)
+//! Sets if the window should be resizable in windowed mode.
+void CIrrDeviceSDL::setResizable(bool resize)
 {
-	if (resize != Resizeable)
+	if (resize != Resizable)
 	{
 		if (resize)
 			SDL_Flags |= SDL_RESIZABLE;
@@ -672,7 +672,7 @@ void CIrrDeviceSDL::setResizeable(bool resize)
 		if (Screen)
 			SDL_FreeSurface(Screen);
 		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
-		Resizeable = resize;
+		Resizable = resize;
 	}
 }
 
