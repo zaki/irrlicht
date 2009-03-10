@@ -229,6 +229,12 @@
 		3484C4FE0F48D4CB00C81F60 /* CMemoryFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3484C4FC0F48D4CB00C81F60 /* CMemoryFile.cpp */; };
 		34EC243C0F59272E0037BC3A /* CIrrDeviceConsole.h in Headers */ = {isa = PBXBuildFile; fileRef = 34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */; };
 		34EC243D0F59272E0037BC3A /* CIrrDeviceConsole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */; };
+		34EF91D20F65FCA6000B5651 /* CImageLoaderRGB.h in Headers */ = {isa = PBXBuildFile; fileRef = 34EF91D00F65FCA6000B5651 /* CImageLoaderRGB.h */; };
+		34EF91D30F65FCA6000B5651 /* CImageLoaderRGB.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34EF91D10F65FCA6000B5651 /* CImageLoaderRGB.cpp */; };
+		34EF91D70F65FCF6000B5651 /* CPLYMeshFileLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 34EF91D50F65FCF6000B5651 /* CPLYMeshFileLoader.h */; };
+		34EF91D80F65FCF6000B5651 /* CPLYMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34EF91D60F65FCF6000B5651 /* CPLYMeshFileLoader.cpp */; };
+		34EF91DC0F65FD14000B5651 /* CPLYMeshWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 34EF91DA0F65FD14000B5651 /* CPLYMeshWriter.h */; };
+		34EF91DD0F65FD14000B5651 /* CPLYMeshWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 34EF91DB0F65FD14000B5651 /* CPLYMeshWriter.cpp */; };
 		4C364EA40A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C364EA20A6C6DC2004CFBB4 /* COBJMeshFileLoader.cpp */; };
 		4C43EEC00A74A5C800F942FC /* CPakReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C43EEBE0A74A5C800F942FC /* CPakReader.cpp */; };
 		4C53E2500A48504D0014E966 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4C0054770A48470500C844C2 /* main.cpp */; };
@@ -973,6 +979,12 @@
 		3484C4FC0F48D4CB00C81F60 /* CMemoryFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMemoryFile.cpp; sourceTree = "<group>"; };
 		34EC243A0F59272E0037BC3A /* CIrrDeviceConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIrrDeviceConsole.h; sourceTree = "<group>"; };
 		34EC243B0F59272E0037BC3A /* CIrrDeviceConsole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CIrrDeviceConsole.cpp; sourceTree = "<group>"; };
+		34EF91D00F65FCA6000B5651 /* CImageLoaderRGB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CImageLoaderRGB.h; sourceTree = "<group>"; };
+		34EF91D10F65FCA6000B5651 /* CImageLoaderRGB.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CImageLoaderRGB.cpp; sourceTree = "<group>"; };
+		34EF91D50F65FCF6000B5651 /* CPLYMeshFileLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPLYMeshFileLoader.h; sourceTree = "<group>"; };
+		34EF91D60F65FCF6000B5651 /* CPLYMeshFileLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPLYMeshFileLoader.cpp; sourceTree = "<group>"; };
+		34EF91DA0F65FD14000B5651 /* CPLYMeshWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPLYMeshWriter.h; sourceTree = "<group>"; };
+		34EF91DB0F65FD14000B5651 /* CPLYMeshWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CPLYMeshWriter.cpp; sourceTree = "<group>"; };
 		4C0054710A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C0054770A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		4C00547D0A48470500C844C2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
@@ -2233,6 +2245,8 @@
 				4C53DF850A484C240014E966 /* COCTLoader.h */,
 				4C53DF8A0A484C240014E966 /* COgreMeshFileLoader.cpp */,
 				4C53DF8B0A484C240014E966 /* COgreMeshFileLoader.h */,
+				34EF91D50F65FCF6000B5651 /* CPLYMeshFileLoader.h */,
+				34EF91D60F65FCF6000B5651 /* CPLYMeshFileLoader.cpp */,
 				4C53DFA50A484C240014E966 /* CQ3LevelMesh.cpp */,
 				4C53DFA60A484C240014E966 /* CQ3LevelMesh.h */,
 				096840410D0F1A2300333EFD /* CSkinnedMesh.cpp */,
@@ -2331,12 +2345,14 @@
 		0910BA8A0D1F70B800D46B04 /* writers */ = {
 			isa = PBXGroup;
 			children = (
-				096F8E3B0EA2EFBA00907EC5 /* COBJMeshWriter.cpp */,
-				096F8E3C0EA2EFBA00907EC5 /* COBJMeshWriter.h */,
 				096840250D0F1A2300333EFD /* CColladaMeshWriter.cpp */,
 				096840260D0F1A2300333EFD /* CColladaMeshWriter.h */,
 				0968402D0D0F1A2300333EFD /* CIrrMeshWriter.cpp */,
 				0968402E0D0F1A2300333EFD /* CIrrMeshWriter.h */,
+				096F8E3B0EA2EFBA00907EC5 /* COBJMeshWriter.cpp */,
+				096F8E3C0EA2EFBA00907EC5 /* COBJMeshWriter.h */,
+				34EF91DA0F65FD14000B5651 /* CPLYMeshWriter.h */,
+				34EF91DB0F65FD14000B5651 /* CPLYMeshWriter.cpp */,
 				096840450D0F1A2300333EFD /* CSTLMeshWriter.cpp */,
 				096840460D0F1A2300333EFD /* CSTLMeshWriter.h */,
 			);
@@ -2418,32 +2434,17 @@
 		0910BA8F0D1F731900D46B04 /* Null */ = {
 			isa = PBXGroup;
 			children = (
+				34EF91900F65F9AD000B5651 /* loader */,
 				0910BA900D1F733100D46B04 /* writer */,
-				096840270D0F1A2300333EFD /* CImageLoaderPPM.cpp */,
-				096840280D0F1A2300333EFD /* CImageLoaderPPM.h */,
-				4CFA7BDC0A88735900B03626 /* CImageLoaderBMP.cpp */,
-				4CFA7BDD0A88735900B03626 /* CImageLoaderBMP.h */,
 				4C53DEFC0A484C220014E966 /* CColorConverter.cpp */,
 				4C53DEFD0A484C220014E966 /* CColorConverter.h */,
 				4C53DF2A0A484C230014E966 /* CFPSCounter.cpp */,
 				4C53DF2B0A484C230014E966 /* CFPSCounter.h */,
 				4C53DF580A484C230014E966 /* CImage.cpp */,
 				4C53DF590A484C230014E966 /* CImage.h */,
-				4C53DF5C0A484C230014E966 /* CImageLoaderJPG.cpp */,
-				4C53DF5D0A484C230014E966 /* CImageLoaderJPG.h */,
-				4C53DF5E0A484C230014E966 /* CImageLoaderPCX.cpp */,
-				4C53DF5F0A484C230014E966 /* CImageLoaderPCX.h */,
-				4C53DF600A484C230014E966 /* CImageLoaderPNG.cpp */,
-				4C53DF610A484C230014E966 /* CImageLoaderPNG.h */,
-				4C53DF620A484C230014E966 /* CImageLoaderPSD.cpp */,
-				4C53DF630A484C230014E966 /* CImageLoaderPSD.h */,
-				4C53DF640A484C230014E966 /* CImageLoaderTGA.cpp */,
-				4C53DF650A484C230014E966 /* CImageLoaderTGA.h */,
 				4C53DF820A484C240014E966 /* CNullDriver.cpp */,
 				4C53DF830A484C240014E966 /* CNullDriver.h */,
 				4C53E0090A484C250014E966 /* IImagePresenter.h */,
-				0910B9DC0D1F5D4100D46B04 /* CImageLoaderWAL.cpp */,
-				0910B9DD0D1F5D4100D46B04 /* CImageLoaderWAL.h */,
 			);
 			name = Null;
 			sourceTree = "<group>";
@@ -2585,6 +2586,31 @@
 				09F649730D2CE2D0001E0599 /* main.cpp */,
 			);
 			name = 16.Quake3Shader;
+			sourceTree = "<group>";
+		};
+		34EF91900F65F9AD000B5651 /* loader */ = {
+			isa = PBXGroup;
+			children = (
+				4CFA7BDC0A88735900B03626 /* CImageLoaderBMP.cpp */,
+				4CFA7BDD0A88735900B03626 /* CImageLoaderBMP.h */,
+				4C53DF5C0A484C230014E966 /* CImageLoaderJPG.cpp */,
+				4C53DF5D0A484C230014E966 /* CImageLoaderJPG.h */,
+				4C53DF5E0A484C230014E966 /* CImageLoaderPCX.cpp */,
+				4C53DF5F0A484C230014E966 /* CImageLoaderPCX.h */,
+				4C53DF600A484C230014E966 /* CImageLoaderPNG.cpp */,
+				4C53DF610A484C230014E966 /* CImageLoaderPNG.h */,
+				096840270D0F1A2300333EFD /* CImageLoaderPPM.cpp */,
+				096840280D0F1A2300333EFD /* CImageLoaderPPM.h */,
+				4C53DF620A484C230014E966 /* CImageLoaderPSD.cpp */,
+				4C53DF630A484C230014E966 /* CImageLoaderPSD.h */,
+				34EF91D00F65FCA6000B5651 /* CImageLoaderRGB.h */,
+				34EF91D10F65FCA6000B5651 /* CImageLoaderRGB.cpp */,
+				4C53DF640A484C230014E966 /* CImageLoaderTGA.cpp */,
+				4C53DF650A484C230014E966 /* CImageLoaderTGA.h */,
+				0910B9DC0D1F5D4100D46B04 /* CImageLoaderWAL.cpp */,
+				0910B9DD0D1F5D4100D46B04 /* CImageLoaderWAL.h */,
+			);
+			name = loader;
 			sourceTree = "<group>";
 		};
 		4C00546D0A48470500C844C2 /* examples */ = {
@@ -3034,6 +3060,9 @@
 				3484C4EE0F48D3A100C81F60 /* CGUITreeView.h in Headers */,
 				3484C4FD0F48D4CB00C81F60 /* CMemoryFile.h in Headers */,
 				34EC243C0F59272E0037BC3A /* CIrrDeviceConsole.h in Headers */,
+				34EF91D20F65FCA6000B5651 /* CImageLoaderRGB.h in Headers */,
+				34EF91D70F65FCF6000B5651 /* CPLYMeshFileLoader.h in Headers */,
+				34EF91DC0F65FD14000B5651 /* CPLYMeshWriter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4032,6 +4061,9 @@
 				3484C4EF0F48D3A100C81F60 /* CGUITreeView.cpp in Sources */,
 				3484C4FE0F48D4CB00C81F60 /* CMemoryFile.cpp in Sources */,
 				34EC243D0F59272E0037BC3A /* CIrrDeviceConsole.cpp in Sources */,
+				34EF91D30F65FCA6000B5651 /* CImageLoaderRGB.cpp in Sources */,
+				34EF91D80F65FCF6000B5651 /* CPLYMeshFileLoader.cpp in Sources */,
+				34EF91DD0F65FD14000B5651 /* CPLYMeshWriter.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
