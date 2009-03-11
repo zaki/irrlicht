@@ -67,8 +67,6 @@ CGUIComboBox::CGUIComboBox(IGUIEnvironment* environment, IGUIElement* parent,
 		SelectedText->setOverrideColor(skin->getColor(EGDC_BUTTON_TEXT)); 
 	SelectedText->enableOverrideColor(true);
 
-	setNotClipped(true);
-
 	// this element can be tabbed to
 	setTabStop(true);
 	setTabOrder(-1);
@@ -421,11 +419,12 @@ void CGUIComboBox::openCloseMenu()
 
 		ListBox = new CGUIListBox(Environment, this, -1, r, false, true, true);
 		ListBox->setSubElement(true);
+		ListBox->setNotClipped(true);
 		ListBox->drop();
 
 		// ensure that list box is always completely visible
 		if (ListBox->getAbsolutePosition().LowerRightCorner.Y > Environment->getRootGUIElement()->getAbsolutePosition().getHeight())
-			ListBox->setRelativePosition( core::rect<s32>(0, -AbsoluteRect.getHeight(), AbsoluteRect.getWidth(), 0) );
+			ListBox->setRelativePosition( core::rect<s32>(0, -ListBox->getAbsolutePosition().getHeight(), AbsoluteRect.getWidth(), 0) );
 
 		for (s32 i=0; i<(s32)Items.size(); ++i)
 			ListBox->addItem(Items[i].Name.c_str());
