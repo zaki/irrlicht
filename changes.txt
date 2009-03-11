@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - Added IGUIWindow::setDraggable and IGUIWindow::isDraggable, by Nox
+
  - Added SGI RGB file reader by Gary Conway, for loading Silicon Graphics .rgb, .rgba, .sgi, .int and .inta textures
 
  - Renamed setResizeAble to setResizable
