@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - irrList now uses irrAllocator, fixed by Nox
+
  - Added IGUIWindow::setDraggable and IGUIWindow::isDraggable, by Nox
 
  - Added SGI RGB file reader by Gary Conway, for loading Silicon Graphics .rgb, .rgba, .sgi, .int and .inta textures
@@ -25,7 +27,9 @@ Changes in 1.6
  - Coordinate system fix for OpenGL in SDL device
 
  - Added generic console device. You can now use Irrlicht to create and manipuate graphics on a shell where no graphics hardware 
-   or windowing system is available. To enable it uncomment #define _IRR_USE_CONSOLE_DEVICE_ in IrrCompileConfig.h
+   or windowing system is available. To enable it uncomment #define _IRR_USE_CONSOLE_DEVICE_ in IrrCompileConfig.h
+   - The console device can now present images from the software drivers and display them as ASCII art in the console
+   - By default it replaces the default font in the skin, to prevent fonts from being huge.
 
 Changes in 1.6 TA
 	- implemented isALoadableFileFormat ( File *file ) for the Archive Loader

@@ -6,6 +6,7 @@
 #define __IRR_LIST_H_INCLUDED__
 
 #include "irrTypes.h"
+#include "irrAllocator.h"
 
 namespace irr
 {
@@ -22,7 +23,7 @@ private:
 	//! List element node with pointer to previous and next element in the list.
 	struct SKListNode
 	{
-		SKListNode() : Next(0), Prev(0) {}
+		SKListNode(const T& e) : Next(0), Prev(0), Element(e) {}
 
 		SKListNode* Next;
 		SKListNode* Prev;
@@ -181,7 +182,8 @@ public:
 		while(First)
 		{
 			SKListNode * next = First->Next;
-			delete First;
+			allocator.destruct(First);
+			allocator.deallocate(First);
 			First = next;
 		}
 
@@ -203,8 +205,8 @@ public:
 	/** \param element Element to add to the list. */
 	void push_back(const T& element)
 	{
-		SKListNode* node = new SKListNode;
-		node->Element = element;
+		SKListNode* node = allocator.allocate(1);
+		allocator.construct(node, element);
 
 		++Size;
 
@@ -224,8 +226,8 @@ public:
 	/** \param element: Element to add to the list. */
 	void push_front(const T& element)
 	{
-		SKListNode* node = new SKListNode;
-		node->Element = element;
+		SKListNode* node = allocator.allocate(1);
+		allocator.construct(node, element);
 
 		++Size;
 
@@ -298,8 +300,8 @@ public:
 	*/
 	void insert_after(const Iterator& it, const T& element)
 	{
-		SKListNode* node = new SKListNode;
-		node->Element = element;
+		SKListNode* node = allocator.allocate(1);
+		allocator.construct(node, element);
 
 		node->Next = it.Current->Next;
 
@@ -322,8 +324,8 @@ public:
 	*/
 	void insert_before(const Iterator& it, const T& element)
 	{
-		SKListNode* node = new SKListNode;
-		node->Element = element;
+		SKListNode* node = allocator.allocate(1);
+		allocator.construct(node, element);
 
 		node->Prev = it.Current->Prev;
 
@@ -368,7 +370,8 @@ public:
 			it.Current->Next->Prev = it.Current->Prev;
 		}
 
-		delete it.Current;
+		allocator.destruct(it.Current);
+		allocator.deallocate(it.Current);
 		it.Current = 0;
 		--Size;
 
@@ -376,7 +379,8 @@ public:
 	}
 
 private:
-
+	
+	irrAllocator<SKListNode> allocator;
 	SKListNode* First;
 	SKListNode* Last;
 	u32 Size;
