@@ -14,7 +14,7 @@ using namespace gui;
 //! constructor
 CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rectangle, IGUIElement *parent)
 		: IGUIWindow(environment, parent, -1, rectangle),
-		Dragging(false), Resizing(false), SelectedElement(0),
+		Dragging(false), IsDraggable(true), Resizing(false), SelectedElement(0),
 		AttribEditor(0), OptionEditor(0), EnvEditor(0)
 {
 	#ifdef _DEBUG
@@ -202,7 +202,7 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 
 			if (clickedElement == this)
 			{
-				Dragging = true;
+				Dragging = IsDraggable;
 				//Environment->setFocus(this);
 				if (Parent)
 					Parent->bringToFront(this);
@@ -260,9 +260,23 @@ bool CGUIEditWindow::OnEvent(const SEvent &event)
 	return Parent ? Parent->OnEvent(event) : false;
 }
 
+bool CGUIEditWindow::isDraggable() const
+{
+	return IsDraggable;
+}
+
+void CGUIEditWindow::setDraggable(bool draggable)
+{
+	IsDraggable = draggable;
+
+	if (Dragging && !IsDraggable)
+		Dragging = false;
+}
+
 
 // we're supposed to supply these if we're creating an IGUIWindow
 // but we don't need them so we'll just return null
 IGUIButton* CGUIEditWindow::getCloseButton() const     {return 0;}
 IGUIButton* CGUIEditWindow::getMinimizeButton() const  {return 0;}
 IGUIButton* CGUIEditWindow::getMaximizeButton() const  {return 0;}
+

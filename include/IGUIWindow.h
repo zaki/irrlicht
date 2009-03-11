@@ -31,6 +31,13 @@ namespace gui
 
 		//! Returns pointer to the maximize button
 		virtual IGUIButton* getMaximizeButton() const = 0;
+
+		//! Returns true if the window can be dragged with the mouse, false if not
+		virtual bool isDraggable() const = 0;
+
+		//! Sets whether the window can be dragged by the mouse
+		virtual void setDraggable(bool draggable) = 0;
+
 	};
 
 

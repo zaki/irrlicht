@@ -19,7 +19,7 @@ namespace gui
 
 //! constructor
 CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
-: IGUIWindow(environment, parent, id, rectangle), Dragging(false)
+: IGUIWindow(environment, parent, id, rectangle), Dragging(false), IsDraggable(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIWindow");
@@ -160,7 +160,7 @@ bool CGUIWindow::OnEvent(const SEvent& event)
 			case EMIE_LMOUSE_PRESSED_DOWN:
 				DragStart.X = event.MouseInput.X;
 				DragStart.Y = event.MouseInput.Y;
-				Dragging = true;
+				Dragging = IsDraggable;
 				if (Parent)
 					Parent->bringToFront(this);
 				return true;
@@ -257,6 +257,22 @@ IGUIButton* CGUIWindow::getMaximizeButton() const
 {
 	return RestoreButton;
 }
+
+//! Returns true if the window is draggable, false if not
+bool CGUIWindow::isDraggable() const
+{
+	return IsDraggable;
+}
+
+//! Sets whether the window is draggable
+void CGUIWindow::setDraggable(bool draggable)
+{
+	IsDraggable = draggable;
+
+	if (Dragging && !IsDraggable)
+		Dragging = false;
+}
+
 
 
 } // end namespace gui

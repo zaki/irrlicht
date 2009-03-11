@@ -16,7 +16,7 @@ namespace gui
 
 CGUITextureCacheBrowser::CGUITextureCacheBrowser(IGUIEnvironment* environment, s32 id, IGUIElement *parent) 
 :	IGUIWindow(environment, parent, id, core::rect<s32>(0,0,300,200)),
-	CloseButton(0), Panel(0), SelectedTexture(-1), Dragging(false)
+	CloseButton(0), Panel(0), SelectedTexture(-1), Dragging(false), IsDraggable(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIWindow");
@@ -215,7 +215,7 @@ bool CGUITextureCacheBrowser::OnEvent(const SEvent &event)
 			{
 				if (!Environment->hasFocus(this))
 				{
-					Dragging = true;
+					Dragging = IsDraggable;
 					//Environment->setFocus(this);
 					if (Parent)
 						Parent->bringToFront(this);
@@ -306,6 +306,21 @@ void CGUITextureCacheBrowser::draw()
 
 	IGUIElement::draw();
 }
+
+
+bool CGUITextureCacheBrowser::isDraggable() const
+{
+	return IsDraggable;
+}
+
+void CGUITextureCacheBrowser::setDraggable(bool draggable)
+{
+	IsDraggable = draggable;
+
+	if (Dragging && !IsDraggable)
+		Dragging = false;
+}
+
 
 } // namespace gui
 } // namespace irr
