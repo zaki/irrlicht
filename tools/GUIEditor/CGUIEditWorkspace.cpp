@@ -38,6 +38,9 @@ CGUIEditWorkspace::CGUIEditWorkspace(IGUIEnvironment* environment, s32 id, IGUIE
 	// this element is never saved.
 	setSubElement(true);
 
+	// it resizes to fit a resizing window
+	setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
+
 	EditorWindow = (CGUIEditWindow*) Environment->addGUIElement("GUIEditWindow", this);
 	if (EditorWindow)
 	{
