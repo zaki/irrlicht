@@ -288,12 +288,14 @@ public:
 
 	//! X coordinate of vector.
 	T X;
+
 	//! Y coordinate of vector.
 	T Y;
 };
 
 	//! Typedef for f32 2d vector.
 	typedef vector2d<f32> vector2df;
+
 	//! Typedef for integer 2d vector.
 	typedef vector2d<s32> vector2di;
 

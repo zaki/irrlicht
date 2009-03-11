@@ -316,6 +316,7 @@ class aabbox3d
 
 		//! The near edge
 		vector3d<T> MinEdge;
+
 		//! The far edge
 		vector3d<T> MaxEdge;
 };

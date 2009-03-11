@@ -156,10 +156,12 @@ namespace irr
 		}
 
 	private:
-		//! The reference counter. Mutable to do reference counting on const objects.
-		mutable s32 ReferenceCounter;
+
 		//! The debug name.
 		const c8* DebugName;
+
+		//! The reference counter. Mutable to do reference counting on const objects.
+		mutable s32 ReferenceCounter;
 	};
 
 } // end namespace irr

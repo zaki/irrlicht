@@ -369,24 +369,26 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//! Call this after changing the positions of any vertex.
 	void boundingBoxNeedsRecalculated(void) { BoundingBoxNeedsRecalculated = true; }
 
+	core::array<video::S3DVertexTangents> Vertices_Tangents;
+	core::array<video::S3DVertex2TCoords> Vertices_2TCoords;
+	core::array<video::S3DVertex> Vertices_Standard;
+	core::array<u16> Indices;
+
 	u32 ChangedID_Vertex;
 	u32 ChangedID_Index;
-
-	// hardware mapping hint
-	E_HARDWARE_MAPPING MappingHint_Vertex;
-	E_HARDWARE_MAPPING MappingHint_Index;
 
 	//ISkinnedMesh::SJoint *AttachedJoint;
 	core::matrix4 Transformation;
 
 	video::SMaterial Material;
 	video::E_VERTEX_TYPE VertexType;
-	core::array<video::S3DVertexTangents> Vertices_Tangents;
-	core::array<video::S3DVertex2TCoords> Vertices_2TCoords;
-	core::array<video::S3DVertex> Vertices_Standard;
-	core::array<u16> Indices;
+
+	// hardware mapping hint
+	E_HARDWARE_MAPPING MappingHint_Vertex;
+	E_HARDWARE_MAPPING MappingHint_Index;
+
 	core::aabbox3d<f32> BoundingBox;
-	bool BoundingBoxNeedsRecalculated;
+	bool BoundingBoxNeedsRecalculated:1;
 };
 
 

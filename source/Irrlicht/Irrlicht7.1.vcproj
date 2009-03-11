@@ -570,7 +570,7 @@
 					RelativePath=".\..\..\include\IFileSystem.h">
 				</File>
 				<File
-					RelativePath=".\..\..\include\IReadFile.H">
+					RelativePath=".\..\..\include\IReadFile.h">
 				</File>
 				<File
 					RelativePath=".\..\..\include\irrXML.h">

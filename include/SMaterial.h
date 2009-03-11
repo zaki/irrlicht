@@ -208,6 +208,9 @@ namespace video
 			return *this;
 		}
 
+		//! Texture layer array.
+		SMaterialLayer TextureLayer[MATERIAL_MAX_TEXTURES];
+
 		//! Type of the material. Specifies how everything is blended together
 		E_MATERIAL_TYPE MaterialType;
 
@@ -273,41 +276,6 @@ namespace video
 		//! Thickness of non-3dimensional elements such as lines and points.
 		f32 Thickness;
 
-		//! Texture layer array.
-		SMaterialLayer TextureLayer[MATERIAL_MAX_TEXTURES];
-
-		//! Draw as wireframe or filled triangles? Default: false
-		/** The user can access a material flag using
-		\code material.Wireframe=true \endcode
-		or \code material.setFlag(EMF_WIREFRAME, true); \endcode */
-		bool Wireframe;
-
-		//! Draw as point cloud or filled triangles? Default: false
-		bool PointCloud;
-
-		//! Flat or Gouraud shading? Default: true
-		bool GouraudShading;
-
-		//! Will this material be lighted? Default: true
-		bool Lighting;
-
-		//! Is the zbuffer writeable or is it read-only. Default: true.
-		/** This flag is ignored if the MaterialType is a transparent
-		type. */
-		bool ZWriteEnable;
-
-		//! Is backface culling enabled? Default: true
-		bool BackfaceCulling;
-
-		//! Is frontface culling enabled? Default: false
-		bool FrontfaceCulling;
-
-		//! Is fog enabled? Default: false
-		bool FogEnable;
-
-		//! Should normals be normalized? Default: false
-		bool NormalizeNormals;
-
 		//! Is the ZBuffer enabled? Default: 1
 		/** Changed from bool to integer
 		(0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal)
@@ -323,6 +291,38 @@ namespace video
 		target. Typical use is to disable all colors when rendering only to
 		depth or stencil buffer, or using Red and Green for Stereo rendering.		*/
 		u8 ColorMask;
+
+		//! Draw as wireframe or filled triangles? Default: false
+		/** The user can access a material flag using
+		\code material.Wireframe=true \endcode
+		or \code material.setFlag(EMF_WIREFRAME, true); \endcode */
+		bool Wireframe:1;
+
+		//! Draw as point cloud or filled triangles? Default: false
+		bool PointCloud:1;
+
+		//! Flat or Gouraud shading? Default: true
+		bool GouraudShading:1;
+
+		//! Will this material be lighted? Default: true
+		bool Lighting:1;
+
+		//! Is the zbuffer writeable or is it read-only. Default: true.
+		/** This flag is ignored if the MaterialType is a transparent
+		type. */
+		bool ZWriteEnable:1;
+
+		//! Is backface culling enabled? Default: true
+		bool BackfaceCulling:1;
+
+		//! Is frontface culling enabled? Default: false
+		bool FrontfaceCulling:1;
+
+		//! Is fog enabled? Default: false
+		bool FogEnable:1;
+
+		//! Should normals be normalized? Default: false
+		bool NormalizeNormals:1;
 
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES.

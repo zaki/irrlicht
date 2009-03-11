@@ -116,6 +116,7 @@ namespace scene
 
 		//! The meshbuffers of this mesh
 		core::array<IMeshBuffer*> MeshBuffers;
+
 		//! The bounding box of this mesh
 		core::aabbox3d<f32> BoundingBox;
 	};
