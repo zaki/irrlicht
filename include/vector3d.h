@@ -341,8 +341,10 @@ namespace core
 
 		//! X coordinate of the vector
 		T X;
+
 		//! Y coordinate of the vector
 		T Y;
+
 		//! Z coordinate of the vector
 		T Z;
 	};
@@ -350,6 +352,7 @@ namespace core
 
 	//! Typedef for a f32 3d vector.
 	typedef vector3d<f32> vector3df;
+
 	//! Typedef for an integer 3d vector.
 	typedef vector3d<s32> vector3di;
 

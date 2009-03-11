@@ -193,6 +193,7 @@ namespace irr
 
 			//! The value of a spin box has changed
 			EGET_SPINBOX_CHANGED,
+
 			//! A table has changed
 			EGET_TABLE_CHANGED,
 			EGET_TABLE_HEADER_CHANGED,
@@ -272,13 +273,13 @@ struct SEvent
 		EKEY_CODE Key;
 
 		//! If not true, then the key was left up
-		bool PressedDown;
+		bool PressedDown:1;
 
 		//! True if shift was also pressed
-		bool Shift;
+		bool Shift:1;
 
 		//! True if ctrl was also pressed
-		bool Control;
+		bool Control:1;
 	};
 
 	//! A joystick event.

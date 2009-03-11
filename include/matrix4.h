@@ -2082,6 +2082,7 @@ namespace core
 
 	//! Typedef for f32 matrix
 	typedef CMatrix4<f32> matrix4;
+
 	//! global const identity matrix
 	IRRLICHT_API extern const matrix4 IdentityMatrix;
 

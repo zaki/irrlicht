@@ -110,9 +110,9 @@ public:
 //! defines an allocation strategy
 enum eAllocStrategy
 {
-	ALLOC_STRATEGY_SAFE		= 0,
-	ALLOC_STRATEGY_DOUBLE	= 1,
-	ALLOC_STRATEGY_SQRT		= 2,
+	ALLOC_STRATEGY_SAFE    = 0,
+	ALLOC_STRATEGY_DOUBLE  = 1,
+	ALLOC_STRATEGY_SQRT    = 2,
 };
 
 

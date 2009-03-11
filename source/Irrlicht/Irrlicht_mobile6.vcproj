@@ -537,7 +537,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\IReadFile.H"
+					RelativePath="..\..\include\IReadFile.h"
 					>
 				</File>
 				<File

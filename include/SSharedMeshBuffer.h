@@ -156,20 +156,24 @@ namespace scene
 		/** This shouldn't be used for anything outside the VideoDriver. */
 		virtual u32 getChangedID_Index() const {return ChangedID_Index;}
 
+		//! Material of this meshBuffer
+		video::SMaterial Material;
+
+		//! Shared Array of vertices
+		core::array<video::S3DVertex> *Vertices;
+
+		//! Array of Indices
+		core::array<u16> Indices;
+
 		//! ID used for hardware buffer management
 		u32 ChangedID_Vertex;
 
 		//! ID used for hardware buffer management
 		u32 ChangedID_Index;
 
-		//! Material of this meshBuffer
-		video::SMaterial Material;
-		//! Shared Array of vertices
-		core::array<video::S3DVertex> *Vertices;
-		//! Array of Indices
-		core::array<u16> Indices;
 		//! Bounding box
 		core::aabbox3df BoundingBox;
+
 		//! hardware mapping hint
 		E_HARDWARE_MAPPING MappingHint;
 

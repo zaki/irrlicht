@@ -221,6 +221,7 @@ class plane3d
 
 		//! Normal vector of the plane.
 		vector3d<T> Normal;
+
 		//! Distance from origin.
 		T D;
 };
@@ -228,6 +229,7 @@ class plane3d
 
 //! Typedef for a f32 3d plane.
 typedef plane3d<f32> plane3df;
+
 //! Typedef for an integer 3d plane.
 typedef plane3d<s32> plane3di;
 
