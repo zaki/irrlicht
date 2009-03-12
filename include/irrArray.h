@@ -26,15 +26,15 @@ public:
 	//! Default constructor for empty array.
 	array()
 		: data(0), allocated(0), used(0),
-			free_when_destroyed(true), is_sorted(true),strategy ( ALLOC_STRATEGY_DOUBLE )
+			strategy(ALLOC_STRATEGY_DOUBLE), free_when_destroyed(true), is_sorted(true)
 	{
 	}
 
 	//! Constructs an array and allocates an initial chunk of memory.
 	/** \param start_count Amount of elements to pre-allocate. */
 	array(u32 start_count)
-		: data(0), allocated(0), used(0),
-			free_when_destroyed(true), is_sorted(true),strategy ( ALLOC_STRATEGY_DOUBLE )
+      : data(0), allocated(0), used(0),
+        strategy(ALLOC_STRATEGY_DOUBLE), free_when_destroyed(true), is_sorted(true)
 	{
 		reallocate(start_count);
 	}
@@ -115,7 +115,7 @@ public:
 
 			T e(element);
 			//reallocate(used * 2 +1); // increase data block
-			// TA: okt, 2008. it's only allowed to alloc one element, if 
+			// TA: okt, 2008. it's only allowed to alloc one element, if
 			// default constructor has to be called
 
 			// increase data block
