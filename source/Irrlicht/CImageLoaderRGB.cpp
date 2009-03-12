@@ -3,7 +3,7 @@
 //! For conditions of distribution and use, see copyright notice in irrlicht.h
 
 /*
-	Author:	Gary Conway (Viper) - co-author of the ZIP file format, Feb 1989, 
+	Author:	Gary Conway (Viper) - co-author of the ZIP file format, Feb 1989,
 						 see the story at http://www.idcnet.us/ziphistory.html
 	Website:	http://idcnet.us
 	Email:		codeslinger@vipergc.com
@@ -11,7 +11,7 @@
 	Version:	1.0
 	Updated:
 
-	This module will load SGI .rgb files (along with the other extensions). The module complies 
+	This module will load SGI .rgb files (along with the other extensions). The module complies
 	with version 1.0 of the SGI Image File Format by Paul Haeberli of Silicon Graphics Computer Systems
 	The module handles BW, RGB and RGBA images.
 
@@ -31,21 +31,21 @@ For non- run length encoded files, this is the structure
  	The Header
  	The Image Data
 
-If the image is run length encoded, this is the structure: 
+If the image is run length encoded, this is the structure:
  	The Header
  	The Offset Tables
  	The Image Data
 
-The header consists of the following: 
+The header consists of the following:
 
-        Size  | Type   | Name      | Description   
- 
+        Size  | Type   | Name      | Description
+
       2 bytes | short  | MAGIC     | IRIS image file magic number
       1 byte  | char   | STORAGE   | Storage format
-      1 byte  | char   | BPC       | Number of bytes per pixel channel 
+      1 byte  | char   | BPC       | Number of bytes per pixel channel
       2 bytes | ushort | DIMENSION | Number of dimensions
-      2 bytes | ushort | XSIZE     | X size in pixels 
-      2 bytes | ushort | YSIZE     | Y size in pixels 
+      2 bytes | ushort | XSIZE     | X size in pixels
+      2 bytes | ushort | YSIZE     | Y size in pixels
       2 bytes | ushort | ZSIZE     | Number of channels
       4 bytes | long   | PIXMIN    | Minimum pixel value
       4 bytes | long   | PIXMAX    | Maximum pixel value
@@ -54,71 +54,71 @@ The header consists of the following:
       4 bytes | long   | COLORMAP  | Colormap ID
     404 bytes | char   | DUMMY     | Ignored
 
-Here is a description of each field in the image file header: 
+Here is a description of each field in the image file header:
 
-MAGIC - This is the decimal value 474 saved as a short. This identifies the file as an SGI image file. 
+MAGIC - This is the decimal value 474 saved as a short. This identifies the file as an SGI image file.
 
-STORAGE -	specifies whether the image is stored using run length encoding (RLE) or not (VERBATIM). 
-			If RLE is used, the value of this byte will be 1. Otherwise the value of this byte will 
-			be 0. The only allowed values for this field are 0 or 1. 
+STORAGE -	specifies whether the image is stored using run length encoding (RLE) or not (VERBATIM).
+			If RLE is used, the value of this byte will be 1. Otherwise the value of this byte will
+			be 0. The only allowed values for this field are 0 or 1.
 
-BPC -		describes the precision that is used to store each channel of an image. This is the number of 
-			bytes per pixel component. The majority of SGI image files use 1 byte per pixel component, 
-			giving 256 levels. Some SGI image files use 2 bytes per component. The only allowed values 
-			for this field are 1 or 2. 
+BPC -		describes the precision that is used to store each channel of an image. This is the number of
+			bytes per pixel component. The majority of SGI image files use 1 byte per pixel component,
+			giving 256 levels. Some SGI image files use 2 bytes per component. The only allowed values
+			for this field are 1 or 2.
 
-DIMENSION - described the number of dimensions in the data stored in the image file. 
-			The only allowed values are 1, 2, or 3. If this value is 1, the image file 
-			consists of only 1 channel and only 1 scanline (row). The length of this 
-			scanline is given by the value of XSIZE below. If this value is 2, the file 
-			consists of a single channel with a number of scanlines. The width and height 
-			of the image are given by the values of XSIZE and YSIZE below. 
-			If this value is 3, the file consists of a number of channels. 
-			The width and height of the image are given by the values of XSIZE and YSIZE below. 
-			The number of channels is given by the value of ZSIZE below. 
+DIMENSION - described the number of dimensions in the data stored in the image file.
+			The only allowed values are 1, 2, or 3. If this value is 1, the image file
+			consists of only 1 channel and only 1 scanline (row). The length of this
+			scanline is given by the value of XSIZE below. If this value is 2, the file
+			consists of a single channel with a number of scanlines. The width and height
+			of the image are given by the values of XSIZE and YSIZE below.
+			If this value is 3, the file consists of a number of channels.
+			The width and height of the image are given by the values of XSIZE and YSIZE below.
+			The number of channels is given by the value of ZSIZE below.
 
-XSIZE -		The width of the image in pixels 
+XSIZE -		The width of the image in pixels
 
-YSIZE -		The height of the image in pixels 
+YSIZE -		The height of the image in pixels
 
-ZSIZE -		The number of channels in the image. B/W (greyscale) images are stored as 2 dimensional 
-			images with a ZSIZE of 1. RGB color images are stored as 3 dimensional images with a 
-			ZSIZE of 3. An RGB image with an ALPHA channel is stored as a 3 dimensional image with 
-			a ZSIZE of 4. There are no inherent limitations in the SGI image file format that would 
-			preclude the creation of image files with more than 4 channels. 
+ZSIZE -		The number of channels in the image. B/W (greyscale) images are stored as 2 dimensional
+			images with a ZSIZE of 1. RGB color images are stored as 3 dimensional images with a
+			ZSIZE of 3. An RGB image with an ALPHA channel is stored as a 3 dimensional image with
+			a ZSIZE of 4. There are no inherent limitations in the SGI image file format that would
+			preclude the creation of image files with more than 4 channels.
 
-PINMIN -	The minimum pixel value in the image. The value of 0 may be used if no pixel has a value 
-			that is smaller than 0. 
+PINMIN -	The minimum pixel value in the image. The value of 0 may be used if no pixel has a value
+			that is smaller than 0.
 
-PINMAX -	The maximum pixel value in the image. The value of 255 may be used if no pixel has a 
-			value that is greater than 255. This is the value that is considered to be full 
-			brightness in the image. 
+PINMAX -	The maximum pixel value in the image. The value of 255 may be used if no pixel has a
+			value that is greater than 255. This is the value that is considered to be full
+			brightness in the image.
 
-DUMMY -		This 4 bytes of data should be set to 0. 
+DUMMY -		This 4 bytes of data should be set to 0.
 
-IMAGENAME - An null terminated ascii string of up to 79 characters terminated by a null may be 
-			included here. This is not commonly used. 
+IMAGENAME - An null terminated ascii string of up to 79 characters terminated by a null may be
+			included here. This is not commonly used.
 
-COLORMAP -	This controls how the pixel values in the file should be interpreted. It can have one 
-			of these four values: 
+COLORMAP -	This controls how the pixel values in the file should be interpreted. It can have one
+			of these four values:
 
-0: NORMAL - The data in the channels represent B/W values for images with 1 channel, RGB values 
-			for images with 3 channels, and RGBA values for images with 4 channels. Almost all 
-			the SGI image files are of this type. 
+0: NORMAL - The data in the channels represent B/W values for images with 1 channel, RGB values
+			for images with 3 channels, and RGBA values for images with 4 channels. Almost all
+			the SGI image files are of this type.
 
-1: DITHERED - The image will have only 1 channel of data. For each pixel, RGB data is packed 
-			into one 8 bit value. 3 bits are used for red and green, while blue uses 2 bits. 
-			Red data is found in bits[2..0], green data in bits[5..3], and blue data in 
-			bits[7..6]. This format is obsolete. 
+1: DITHERED - The image will have only 1 channel of data. For each pixel, RGB data is packed
+			into one 8 bit value. 3 bits are used for red and green, while blue uses 2 bits.
+			Red data is found in bits[2..0], green data in bits[5..3], and blue data in
+			bits[7..6]. This format is obsolete.
 
-2: SCREEN - The image will have only 1 channel of data. This format was used to store 
-			color-indexed pixels. To convert the pixel values into RGB values a colormap 
-			must be used. The appropriate color map varies from image to image. This format is obsolete. 
+2: SCREEN - The image will have only 1 channel of data. This format was used to store
+			color-indexed pixels. To convert the pixel values into RGB values a colormap
+			must be used. The appropriate color map varies from image to image. This format is obsolete.
 
-3: COLORMAP - The image is used to store a color map from an SGI machine. In this case the 
-			image is not displayable in the conventional sense. 
+3: COLORMAP - The image is used to store a color map from an SGI machine. In this case the
+			image is not displayable in the conventional sense.
 
-DUMMY -		This 404 bytes of data should be set to 0. This makes the header exactly 512 bytes. 
+DUMMY -		This 404 bytes of data should be set to 0. This makes the header exactly 512 bytes.
 */
 
 #include "CImageLoaderRGB.h"
@@ -152,7 +152,7 @@ CImageLoaderRGB::CImageLoaderRGB()
 //! based on the file extensions listed here
 bool CImageLoaderRGB::isALoadableFileExtension(const irr::core::stringc &fileName) const
 {
-	return core::hasFileExtension( fileName, "rgb", "rgba", "sgi" ) || 
+	return core::hasFileExtension( fileName, "rgb", "rgba", "sgi" ) ||
 	       core::hasFileExtension( fileName, "int", "inta", "bw" );
 }
 
@@ -220,7 +220,7 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 
 			When the Alpha channel is present, I am not sure with RGB files if
 			it's a precomputed RGB color or it needs to be completely calculated. My guess
-			would be that it's not precomputed for two reasons. 
+			would be that it's not precomputed for two reasons.
 
 			1. the loss of precision when calculating the fraction, then storing the result as an int
 			2. the loss of the original color data when the image might be composited with another. Yes
@@ -230,7 +230,7 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 			Pixmin and Pixmax are apparently the min and max alpha blend values (0-100%)
 
 			Complete Alpha blending computation
-			The actual resulting merged color is computed this way: 
+			The actual resulting merged color is computed this way:
 			(image color ◊ alpha) + (background color ◊ (100% - alpha)).
 
 			Using precomputed blending
@@ -245,7 +245,7 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 			case 1:
 				// BW (grayscale) image
 				paletteData = new s32[256];
-				for (int n=0; n<256; n++) 
+				for (int n=0; n<256; n++)
 					paletteData[n] = n;
 
 				image = new CImage(ECF_A1R5G5B5, core::dimension2d<u32>(rgb->header.Xsize, rgb->header.Ysize));
@@ -253,7 +253,7 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 					CColorConverter::convert8BitTo16Bit(rgb->rgbData, (s16*)image->lock(), rgb->header.Xsize, rgb->header.Ysize, paletteData, 0, true);
 				break;
 			case 3:
-				// RGB image 
+				// RGB image
 				// one byte per COLOR VALUE, eg, 24bpp
 				image = new CImage(ECF_R8G8B8, core::dimension2d<u32>(rgb->header.Xsize, rgb->header.Ysize));
 				if (image)
@@ -295,7 +295,7 @@ IImage* CImageLoaderRGB::loadImage(io::IReadFile* file) const
 // returns true on success
 bool CImageLoaderRGB::readHeader(io::IReadFile* file, rgbStruct* rgb) const
 {
-	if ( file->read(&rgb->header, sizeof(rgb->header)) < sizeof(rgb->header) )
+	if ( file->read(&rgb->header, sizeof(rgb->header)) < s32(sizeof(rgb->header)) )
 		return false;
 
 	// test for INTEL or BIG ENDIAN processor
@@ -337,21 +337,21 @@ bool CImageLoaderRGB::checkFormat(io::IReadFile* file, rgbStruct* rgb) const
 }
 
 /*
-If the image is stored using run length encoding, offset tables follow the header that 
-describe what the file offsets are to the RLE for each scanline. This information only 
-applies if the value for STORAGE above is 1. 
+If the image is stored using run length encoding, offset tables follow the header that
+describe what the file offsets are to the RLE for each scanline. This information only
+applies if the value for STORAGE above is 1.
 
-         Size  | Type   | Name      | Description   
+         Size  | Type   | Name      | Description
 
   tablen longs | long   | STARTTAB  | Start table
   tablen longs | long   | LENGTHTAB | Length table
 
-One entry in each table is needed for each scanline of RLE data. The total number of scanlines in the image (tablen) is determined by the product of the YSIZE and ZSIZE. There are two tables of longs that are written. Each consists of tablen longs of data. The first table has the file offsets to the RLE data for each scanline in the image. In a file with more than 1 channel (ZSIZE > 1) this table first has all the offsets for the scanlines in the first channel, followed be offsets for the scanlines in the second channel, etc. The second table has the RLE data length for each scanline in the image. In a file with more than 1 channel (ZSIZE > 1) this table first has all the RLE data lengths for the scanlines in the first channel, followed be RLE data lengths for the scanlines in the second channel, etc. 
+One entry in each table is needed for each scanline of RLE data. The total number of scanlines in the image (tablen) is determined by the product of the YSIZE and ZSIZE. There are two tables of longs that are written. Each consists of tablen longs of data. The first table has the file offsets to the RLE data for each scanline in the image. In a file with more than 1 channel (ZSIZE > 1) this table first has all the offsets for the scanlines in the first channel, followed be offsets for the scanlines in the second channel, etc. The second table has the RLE data length for each scanline in the image. In a file with more than 1 channel (ZSIZE > 1) this table first has all the RLE data lengths for the scanlines in the first channel, followed be RLE data lengths for the scanlines in the second channel, etc.
 
-To find the the file offset, and the number of bytes in the RLE data for a particular scanline, these 
-two arrays may be read in and indexed as follows: 
+To find the the file offset, and the number of bytes in the RLE data for a particular scanline, these
+two arrays may be read in and indexed as follows:
 
-To read in the tables: 
+To read in the tables:
 
     unsigned long *starttab, *lengthtab;
 
@@ -362,24 +362,24 @@ To read in the tables:
     readlongtab(rgb->inf,starttab);
     readlongtab(rgb->inf,lengthtab);
 
-To find the file offset and RLE data length for a scanline: 
+To find the file offset and RLE data length for a scanline:
 
-rowno is an integer in the range 0 to YSIZE-1 channo is an integer in the range 0 to ZSIZE-1 
+rowno is an integer in the range 0 to YSIZE-1 channo is an integer in the range 0 to ZSIZE-1
 
     rleoffset = starttab[rowno+channo*YSIZE]
     rlelength = lengthtab[rowno+channo*YSIZE]
 
-It is possible for two identical rows (scanlines) to share compressed data. A completely 
-white image could be written as a single compressed row and having all table entries point 
-to that row. Another little hack that should work is if you are writing out a RGB RLE file, 
-and a particular scanline is achromatic (greyscale), you could just make the r, g and b rows 
-point to the same data!! 
+It is possible for two identical rows (scanlines) to share compressed data. A completely
+white image could be written as a single compressed row and having all table entries point
+to that row. Another little hack that should work is if you are writing out a RGB RLE file,
+and a particular scanline is achromatic (greyscale), you could just make the r, g and b rows
+point to the same data!!
 
 
 
   RETURNS:	on success true, else returns false
 
-*/	
+*/
 
 bool CImageLoaderRGB::readOffsetTables(io::IReadFile* file, rgbStruct *rgb) const
 {
@@ -388,9 +388,9 @@ bool CImageLoaderRGB::readOffsetTables(io::IReadFile* file, rgbStruct *rgb) cons
 	rgb->TableLen = rgb->header.Ysize * rgb->header.Zsize ;		// calc size of tables
 
 	// return error if unable to allocate tables
-	if ( !(rgb->StartTable = new u32[rgb->TableLen]) ) 
+	if ( !(rgb->StartTable = new u32[rgb->TableLen]) )
 		return false;
-	if ( !(rgb->LengthTable = new u32[rgb->TableLen]) ) 
+	if ( !(rgb->LengthTable = new u32[rgb->TableLen]) )
 		return false;
 
 	file->seek(512);
@@ -501,33 +501,33 @@ void CImageLoaderRGB::processFile(rgbStruct *rgb, io::IReadFile* file) const
 
 
 /*
-	This information only applies if the value for STORAGE is 1. If the image is 
-	stored using run length encoding, the image data follows the offset/length tables. 
-	The RLE data is not in any particular order. The offset tables are used to 
-	locate the rle data for any scanline. 
+	This information only applies if the value for STORAGE is 1. If the image is
+	stored using run length encoding, the image data follows the offset/length tables.
+	The RLE data is not in any particular order. The offset tables are used to
+	locate the rle data for any scanline.
 
-	The RLE data must be read in from the file and expanded into pixel data in the following manner: 
+	The RLE data must be read in from the file and expanded into pixel data in the following manner:
 
-	If BPC is 1, then there is one byte per pixel. In this case the RLE data should be 
-	read into an array of chars. To expand data, the low order seven bits of the first 
-	byte: bits[6..0] are used to form a count. If the high order bit of the first byte 
-	is 1: bit[7], then the count is used to specify how many bytes to copy from the RLE 
-	data buffer to the destination. Otherwise, if the high order bit of the first byte 
-	is 0: bit[7], then the count is used to specify how many times to repeat the value 
-	of the following byte, in the destination. This process continues until a count 
-	of 0 is found. This should decompress exactly XSIZE pixels. 
+	If BPC is 1, then there is one byte per pixel. In this case the RLE data should be
+	read into an array of chars. To expand data, the low order seven bits of the first
+	byte: bits[6..0] are used to form a count. If the high order bit of the first byte
+	is 1: bit[7], then the count is used to specify how many bytes to copy from the RLE
+	data buffer to the destination. Otherwise, if the high order bit of the first byte
+	is 0: bit[7], then the count is used to specify how many times to repeat the value
+	of the following byte, in the destination. This process continues until a count
+	of 0 is found. This should decompress exactly XSIZE pixels.
 
 
-	One entry in each table is needed for each scanline of RLE data. The total number of 
-	scanlines in the image (tablen) is determined by the product of the YSIZE and ZSIZE. 
-	There are two tables of longs that are written. Each consists of tablen longs of data. 
-	The first table has the file offsets to the RLE data for each scanline in the image. In 
-	a file with more than 1 channel (ZSIZE > 1) this table first has all the offsets for the 
-	scanlines in the first channel, followed be offsets for the scanlines in the second 
-	channel, etc. The second table has the RLE data length for each scanline in the image. 
-	In a file with more than 1 channel (ZSIZE > 1) this table first has all the RLE data 
-	lengths for the scanlines in the first channel, followed be RLE data lengths for the 
-	scanlines in the second channel, etc. 
+	One entry in each table is needed for each scanline of RLE data. The total number of
+	scanlines in the image (tablen) is determined by the product of the YSIZE and ZSIZE.
+	There are two tables of longs that are written. Each consists of tablen longs of data.
+	The first table has the file offsets to the RLE data for each scanline in the image. In
+	a file with more than 1 channel (ZSIZE > 1) this table first has all the offsets for the
+	scanlines in the first channel, followed be offsets for the scanlines in the second
+	channel, etc. The second table has the RLE data length for each scanline in the image.
+	In a file with more than 1 channel (ZSIZE > 1) this table first has all the RLE data
+	lengths for the scanlines in the first channel, followed be RLE data lengths for the
+	scanlines in the second channel, etc.
 
 	Return a row of data, expanding RLE compression if necessary
 */
@@ -553,7 +553,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 		return;
 
 	}
-		
+
 
 	// the file is stored as Run Length Encoding (RLE)
 	// each sequence is stored as 0x80  NumRepeats ByteToRepeat
@@ -588,15 +588,15 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 		if (rgb->header.BPC != 1)
 			convertShort(&pixel, 1);
 #endif
-		
+
 		count = (int)(pixel & 0x7F);
-            
+
 		// limit the count value to the remiaing row size
 		if (oPtr + count*rgb->header.BPC > buf + rgb->header.Xsize * rgb->header.BPC)
 		{
 			count = ( (buf + rgb->header.Xsize * rgb->header.BPC) - oPtr ) / rgb->header.BPC;
 		}
-                
+
 		if (count<=0)
 		{
 			done = true;
@@ -646,7 +646,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 			if (rgb->header.BPC != 1)
 				convertShort(&pixel, 1);
 #endif
-			
+
 			while (count--)
 			{
 				if(rgb->header.BPC == 1)
@@ -674,12 +674,12 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 //todo: replace with os::byteswap
 
 /*
-	In the following description a notation like bits[7..0] is used to denote a 
-	range of bits in a binary value. Bit 0 is the lowest order bit in the value. 
+	In the following description a notation like bits[7..0] is used to denote a
+	range of bits in a binary value. Bit 0 is the lowest order bit in the value.
 
-	All short values are represented by 2 bytes. The first byte stores the 
-	high order 8 bits of the value: bits[15..8]. The second byte stores the 
-	low order 8 bits of the value: bits[7..0]. 
+	All short values are represented by 2 bytes. The first byte stores the
+	high order 8 bits of the value: bits[15..8]. The second byte stores the
+	low order 8 bits of the value: bits[7..0].
 */
 
 void CImageLoaderRGB::convertShort(u16 *array, long length) const
@@ -699,12 +699,12 @@ void CImageLoaderRGB::convertShort(u16 *array, long length) const
 
 
 /*
-	All long values are represented by 4 bytes. The first byte stores the 
-	high order 8 bits of the value: bits[31..24]. The second byte stores 
-	bits[23..16]. The third byte stores bits[15..8]. The forth byte stores 
-	the low order 8 bits of the value: bits[7..0]. 
+	All long values are represented by 4 bytes. The first byte stores the
+	high order 8 bits of the value: bits[31..24]. The second byte stores
+	bits[23..16]. The third byte stores bits[15..8]. The forth byte stores
+	the low order 8 bits of the value: bits[7..0].
 
-	And this function will read a long value from the file: 
+	And this function will read a long value from the file:
 */
 void CImageLoaderRGB::convertLong(u32 *array, long length) const
 {

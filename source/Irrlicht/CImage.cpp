@@ -787,7 +787,7 @@ static const blitterTable blitTable[] =
 	{ BLITTER_COLOR, video::ECF_A8R8G8B8, -1, executeBlit_Color_32_to_32 },
 	{ BLITTER_COLOR_ALPHA, video::ECF_A1R5G5B5, -1, executeBlit_ColorAlpha_16_to_16 },
 	{ BLITTER_COLOR_ALPHA, video::ECF_A8R8G8B8, -1, executeBlit_ColorAlpha_32_to_32 },
-	{ BLITTER_INVALID }
+	{ BLITTER_INVALID, -1, -1, 0 }
 };
 
 static inline tExecuteBlit getBlitter2( eBlitter operation,const video::IImage * dest,const video::IImage * source )
@@ -824,7 +824,7 @@ static tExecuteBlit getBlitter( eBlitter operation,const video::IImage * dest,co
 
 	if ( dest )
 		destFormat = dest->getColorFormat();
-	
+
 	switch ( operation )
 	{
 		case BLITTER_TEXTURE:
