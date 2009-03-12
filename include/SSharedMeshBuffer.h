@@ -16,7 +16,7 @@ namespace scene
 	struct SSharedMeshBuffer : public IMeshBuffer
 	{
 		//! constructor
-		SSharedMeshBuffer() : IMeshBuffer(), ChangedID_Vertex(1), ChangedID_Index(1), Vertices(0), MappingHint(EHM_NEVER)
+		SSharedMeshBuffer() : IMeshBuffer(), Vertices(0), ChangedID_Vertex(1), ChangedID_Index(1), MappingHint(EHM_NEVER)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");

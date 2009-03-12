@@ -44,7 +44,7 @@ namespace irr
 
 		//! Constructor.
 		IReferenceCounted()
-			: ReferenceCounter(1), DebugName(0)
+			: DebugName(0), ReferenceCounter(1)
 		{
 		}
 
