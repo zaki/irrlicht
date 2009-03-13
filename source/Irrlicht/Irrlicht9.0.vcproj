@@ -2474,46 +2474,6 @@
 				Name="irr"
 				>
 				<File
-					RelativePath=".\CIrrDeviceConsole.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\CIrrDeviceConsole.h"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceLinux.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceLinux.h"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceSDL.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceSDL.h"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceStub.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceStub.h"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceWin32.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CIrrDeviceWin32.h"
-					>
-				</File>
-				<File
 					RelativePath="CLogger.cpp"
 					>
 				</File>
@@ -2936,6 +2896,50 @@
 							>
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="device"
+					>
+					<File
+						RelativePath=".\CIrrDeviceConsole.cpp"
+						>
+					</File>
+					<File
+						RelativePath=".\CIrrDeviceConsole.h"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceLinux.cpp"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceLinux.h"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceSDL.cpp"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceSDL.h"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceStub.cpp"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceStub.h"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceWin32.cpp"
+						>
+					</File>
+					<File
+						RelativePath="CIrrDeviceWin32.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
