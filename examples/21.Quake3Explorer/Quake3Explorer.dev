@@ -1,7 +1,7 @@
 [Project]
-FileName=example.dev
+FileName=Quake3Explorer.dev
 Name=Irrlicht Example 21 Quake3 Explorer
-UnitCount=1
+UnitCount=5
 Type=1
 Ver=1
 ObjFiles=
@@ -56,4 +56,44 @@ OriginalFilename=
 ProductName=
 ProductVersion=
 AutoIncBuildNr=0
+
+[Unit2]
+FileName=q3factory.cpp
+CompileCpp=1
+Folder=Irrlicht Example 21 Quake3 Explorer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit3]
+FileName=q3factory.h
+CompileCpp=1
+Folder=Irrlicht Example 21 Quake3 Explorer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit4]
+FileName=sound.cpp
+CompileCpp=1
+Folder=Irrlicht Example 21 Quake3 Explorer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit5]
+FileName=sound.h
+CompileCpp=1
+Folder=Irrlicht Example 21 Quake3 Explorer
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
 

@@ -8,7 +8,7 @@
 		<Build>
 			<Target title="Win32 - Debug - dll">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="..\obj\win32-gcc-debug-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -27,6 +27,7 @@
 					<Add option="-D_USRDLL" />
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
 					<Add directory="..\..\include" />
 					<Add directory="zlib" />
 				</Compiler>
@@ -45,12 +46,12 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="mv ..\..\lib\gcc\Irrlicht.dll ..\..\bin\gcc\Irrlicht.dll" />
+					<Add after="move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Win32 - Release - accurate math - dll">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="..\obj\win32-gcc-release-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -67,6 +68,7 @@
 					<Add option="-D_USRDLL" />
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
 					<Add directory="..\..\include" />
 					<Add directory="zlib" />
 				</Compiler>
@@ -85,12 +87,12 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="mv ..\..\lib\gcc\Irrlicht.dll ..\..\bin\gcc\Irrlicht.dll" />
+					<Add after="move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Win32 - Release - fast math - dll">
 				<Option platforms="Windows;" />
-				<Option output="..\..\lib\gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\Win32-gcc\Irrlicht" prefix_auto="1" extension_auto="1" />
 				<Option object_output="..\obj\win32-gcc-release-fast-dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -108,6 +110,7 @@
 					<Add option="-D_USRDLL" />
 					<Add option="-DIRRLICHT_EXPORTS" />
 					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
 					<Add directory="..\..\include" />
 					<Add directory="zlib" />
 				</Compiler>
@@ -126,8 +129,128 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="mv ..\..\lib\gcc\Irrlicht.dll ..\..\bin\gcc\Irrlicht.dll" />
+					<Add after="move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
 				</ExtraCommands>
+			</Target>
+			<Target title="Win32 - Debug - static">
+				<Option platforms="Windows;" />
+				<Option output="..\..\lib\Win32-gcc\libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\obj\win32-gcc-debug-static" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-Wextra" />
+					<Add option="-Wno-unused-parameter" />
+					<Add option="-DWIN32" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
+					<Add directory="..\..\include" />
+					<Add directory="zlib" />
+				</Compiler>
+				<Linker>
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="opengl32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
+			<Target title="Win32 - Release - accurate math - static">
+				<Option platforms="Windows;" />
+				<Option output="..\..\lib\Win32-gcc\libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\obj\win32-gcc-release-dll" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-O2" />
+					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-Wno-unused-parameter" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-DIRRLICHT_EXPORTS" />
+					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
+					<Add directory="..\..\include" />
+					<Add directory="zlib" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="opengl32" />
+					<Add library="winmm" />
+				</Linker>
+			</Target>
+			<Target title="Win32 - Release - fast math - static">
+				<Option platforms="Windows;" />
+				<Option output="..\..\lib\Win32-gcc\libIrrlicht" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\obj\win32-gcc-release-fast-static" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-ffast-math" />
+					<Add option="-Wno-unused-parameter" />
+					<Add option="-DWIN32" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_WINDOWS" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-D_CRT_SECURE_NO_DEPRECATE" />
+					<Add option="-D__GNUWIN32__" />
+					<Add directory="..\..\include" />
+					<Add directory="zlib" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="kernel32" />
+					<Add library="user32" />
+					<Add library="gdi32" />
+					<Add library="winspool" />
+					<Add library="comdlg32" />
+					<Add library="advapi32" />
+					<Add library="shell32" />
+					<Add library="ole32" />
+					<Add library="oleaut32" />
+					<Add library="uuid" />
+					<Add library="opengl32" />
+					<Add library="winmm" />
+				</Linker>
 			</Target>
 			<Target title="Linux - Debug - shared">
 				<Option platforms="Unix;" />
@@ -149,7 +272,6 @@
 					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
-					<Add library="GLU" />
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
 					<Add directory="\usr\X11R6\lib" />
@@ -174,7 +296,6 @@
 					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
-					<Add library="GLU" />
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
 					<Add directory="\usr\X11R6\lib" />
@@ -200,7 +321,84 @@
 					<Add directory="libpng" />
 				</Compiler>
 				<Linker>
-					<Add library="GLU" />
+					<Add library="GL" />
+					<Add library="Xxf86vm" />
+					<Add directory="\usr\X11R6\lib" />
+					<Add directory="\usr\local\lib" />
+				</Linker>
+			</Target>
+			<Target title="Linux - Debug - static">
+				<Option platforms="Unix;" />
+				<Option output="..\..\lib\gcc\libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option object_output="..\obj\linux-gcc-debug-shared" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add option="-Wextra" />
+					<Add option="-Wno-unused-parameter" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add directory="..\..\include" />
+					<Add directory="zlib" />
+					<Add directory="libpng" />
+				</Compiler>
+				<Linker>
+					<Add library="GL" />
+					<Add library="Xxf86vm" />
+					<Add directory="\usr\X11R6\lib" />
+					<Add directory="\usr\local\lib" />
+				</Linker>
+			</Target>
+			<Target title="Linux - Release - accurate math - static">
+				<Option platforms="Unix;" />
+				<Option output="..\..\lib\gcc\libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option object_output="..\obj\linux-gcc-release-shared" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-W" />
+					<Add option="-Wextra" />
+					<Add option="-Wno-unused-parameter" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add directory="..\..\include" />
+					<Add directory="zlib" />
+					<Add directory="libpng" />
+				</Compiler>
+				<Linker>
+					<Add library="GL" />
+					<Add library="Xxf86vm" />
+					<Add directory="\usr\X11R6\lib" />
+					<Add directory="\usr\local\lib" />
+				</Linker>
+			</Target>
+			<Target title="Linux - Release - fast math - static">
+				<Option platforms="Unix;" />
+				<Option output="..\..\lib\gcc\libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option object_output="..\obj\linux-gcc-release-fast-shared" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-W" />
+					<Add option="-Wextra" />
+					<Add option="-Wno-unused-parameter" />
+					<Add option="-ffast-math" />
+					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add directory="..\..\include" />
+					<Add directory="zlib" />
+					<Add directory="libpng" />
+				</Compiler>
+				<Linker>
 					<Add library="GL" />
 					<Add library="Xxf86vm" />
 					<Add directory="\usr\X11R6\lib" />
@@ -209,11 +407,8 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Win32 - Debug - dll;Win32 - Release - accurate math - dll;Win32 - Release - fast math - dll;Linux - Debug - shared;Linux - Release - accurate math - shared;Linux - Release - fast math - shared;" />
+			<Add alias="All" targets="Win32 - Debug - dll;Win32 - Release - accurate math - dll;Win32 - Release - fast math - dll;" />
 		</VirtualTargets>
-		<Compiler>
-			<Add option="-D__GNUWIN32__" />
-		</Compiler>
 		<Unit filename="..\..\changes.txt" />
 		<Unit filename="..\..\include\ECullingTypes.h" />
 		<Unit filename="..\..\include\EDebugSceneTypes.h" />
