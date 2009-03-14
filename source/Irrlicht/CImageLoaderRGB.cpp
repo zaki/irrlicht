@@ -383,8 +383,6 @@ point to the same data!!
 
 bool CImageLoaderRGB::readOffsetTables(io::IReadFile* file, rgbStruct *rgb) const
 {
-	u32 x;
-
 	rgb->TableLen = rgb->header.Ysize * rgb->header.Zsize ;		// calc size of tables
 
 	// return error if unable to allocate tables
@@ -399,9 +397,12 @@ bool CImageLoaderRGB::readOffsetTables(io::IReadFile* file, rgbStruct *rgb) cons
 
 	// if we are on an INTEL platform, swap the bytes
 #ifndef __BIG_ENDIAN__
-	x= rgb->TableLen * sizeof(u32);
-	convertLong(rgb->StartTable, (long) (x/sizeof(u32)));
-	convertLong((u32 *)rgb->LengthTable, (long) (x/sizeof(u32)));
+	const u32 length = rgb->TableLen;
+	for (u32 i=0; i<length; ++i)
+	{
+		rgb->StartTable[i] = os::ByteSwap::byteswap(rgb->StartTable[i]);
+		rgb->LengthTable[i] = os::ByteSwap::byteswap(rgb->LengthTable[i]);
+	}
 #endif
 
 	return true;
@@ -548,12 +549,16 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 
 #ifndef __BIG_ENDIAN__
 		if (rgb->header.BPC != 1)
-			convertShort( (u16 *)(buf), rgb->header.Xsize);
+		{
+			u16* tmpbuf = reinterpret_cast<u16*>(buf);
+			for (u32 i=0; i<rgb->header.Xsize; ++i)
+			{
+				tmpbuf[i] = os::ByteSwap::byteswap(tmpbuf[i]);
+			}
+		}
 #endif
 		return;
-
 	}
-
 
 	// the file is stored as Run Length Encoding (RLE)
 	// each sequence is stored as 0x80  NumRepeats ByteToRepeat
@@ -586,7 +591,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 
 #ifndef __BIG_ENDIAN__
 		if (rgb->header.BPC != 1)
-			convertShort(&pixel, 1);
+			pixel = os::ByteSwap::byteswap(pixel);
 #endif
 
 		count = (int)(pixel & 0x7F);
@@ -619,7 +624,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 					tempShort++;
 					iPtr = (u8 *) (tempShort);
 #ifndef __BIG_ENDIAN__
-					convertShort(&pixel, 1);
+					pixel = os::ByteSwap::byteswap(pixel);
 #endif
 					tempShort = (u16 *) (oPtr);
 					*tempShort = pixel;
@@ -644,7 +649,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 
 #ifndef __BIG_ENDIAN__
 			if (rgb->header.BPC != 1)
-				convertShort(&pixel, 1);
+				pixel = os::ByteSwap::byteswap(pixel);
 #endif
 
 			while (count--)
@@ -664,65 +669,8 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 
 		} // else if (pixel & 0x80)
 	} // while (!done)
-
 }
 
-
-
-
-#ifndef __BIG_ENDIAN__
-//todo: replace with os::byteswap
-
-/*
-	In the following description a notation like bits[7..0] is used to denote a
-	range of bits in a binary value. Bit 0 is the lowest order bit in the value.
-
-	All short values are represented by 2 bytes. The first byte stores the
-	high order 8 bits of the value: bits[15..8]. The second byte stores the
-	low order 8 bits of the value: bits[7..0].
-*/
-
-void CImageLoaderRGB::convertShort(u16 *array, long length) const
-{
-	unsigned long b1, b2;
-	unsigned char *ptr;
-
-	ptr = (unsigned char *)array;
-	while (length--)
-	{
-		b1 = *ptr++;
-		b2 = *ptr++;
-		*array++ = (u16) ((b1 << 8) | (b2));
-	}
-}
-
-
-
-/*
-	All long values are represented by 4 bytes. The first byte stores the
-	high order 8 bits of the value: bits[31..24]. The second byte stores
-	bits[23..16]. The third byte stores bits[15..8]. The forth byte stores
-	the low order 8 bits of the value: bits[7..0].
-
-	And this function will read a long value from the file:
-*/
-void CImageLoaderRGB::convertLong(u32 *array, long length) const
-{
-	unsigned long b1, b2, b3, b4;
-	unsigned char *ptr;
-
-	ptr = (unsigned char *)array;
-	while (length--)
-	{
-		b1 = *ptr++;
-		b2 = *ptr++;
-		b3 = *ptr++;
-		b4 = *ptr++;
-		*array++ = (b1 << 24) | (b2 << 16) | (b3 << 8) | (b4);
-	}
-}
-
-#endif
 
 // we have 1 byte per COLOR VALUE, eg 24bpp and 1 alpha channel
 // calculate the color values based on the alpha values
