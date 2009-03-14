@@ -16,7 +16,6 @@
 #include "CD3D9NormalMapRenderer.h"
 #include "CD3D9ParallaxMapRenderer.h"
 #include "CD3D9HLSLMaterialRenderer.h"
-#include <float.h>
 
 namespace irr
 {
@@ -1113,11 +1112,7 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices,
 
 	const u32 stride = getVertexPitchFromType(vType);
 
-
 	D3DFORMAT indexType=D3DFMT_UNKNOWN;
-
-
-
 	switch (iType)
 	{
 		case (EIT_16BIT):
@@ -1497,7 +1492,6 @@ void CD3D9Driver::draw2DRectangle(const core::rect<s32>& position,
 }
 
 
-
 //! Draws a 2d line.
 void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 				const core::position2d<s32>& end,
@@ -1535,6 +1529,7 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 	pID3DDevice->DrawPrimitiveUP(D3DPT_LINELIST, 1,
 					&vtx[0], sizeof(S3DVertex) );
 }
+
 
 //! Draws a pixel
 void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
@@ -1592,7 +1587,6 @@ void CD3D9Driver::setVertexShader(E_VERTEX_TYPE newType)
 		}
 	}
 }
-
 
 
 //! sets the needed renderstates
@@ -2049,11 +2043,15 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-			setBasicRenderStates(SMaterial(), SMaterial(), true);
-			// everything that is wrongly set by SMaterial default
-			pID3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
-			pID3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
+			SMaterial mat;
+			mat.ZBuffer=ECFN_NEVER;
+			mat.Lighting=false;
+			mat.FrontfaceCulling=false;
+			mat.BackfaceCulling=true;
+			mat.TextureLayer[0].TextureWrap=ETC_REPEAT;
+			mat.TextureLayer[0].BilinearFilter=false;
+			setBasicRenderStates(mat, mat, true);
+			// fix everything that is wrongly set by SMaterial default
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -2063,14 +2061,8 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 			pID3DDevice->SetRenderState( D3DRS_STENCILENABLE, FALSE );
 
-			pID3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_CCW );
-
-			pID3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP );
-			pID3DDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP );
-
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
+			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);
-			pID3DDevice->SetTransform( D3DTS_TEXTURE0, &UnitMatrixD3D9 );
 		}
 
 		pID3DDevice->SetTransform(D3DTS_VIEW, &UnitMatrixD3D9);
@@ -2082,26 +2074,21 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 	if (texture)
 	{
-		pID3DDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-		pID3DDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
-		pID3DDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-
 		if (alphaChannel)
 		{
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+			pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 
 			if (alpha)
 			{
 				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
 			}
 			else
 			{
 				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 			}
 
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -2110,10 +2097,10 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		}
 		else
 		{
+			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 			if (alpha)
 			{
 				pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-				pID3DDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
@@ -2122,7 +2109,6 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 			{
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 			}
@@ -2130,11 +2116,11 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 	}
 	else
 	{
+		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 		if (alpha)
 		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
@@ -2143,9 +2129,6 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		}
 		else
 		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 		}
