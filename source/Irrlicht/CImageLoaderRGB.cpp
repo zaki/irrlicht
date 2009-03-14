@@ -400,8 +400,8 @@ bool CImageLoaderRGB::readOffsetTables(io::IReadFile* file, rgbStruct *rgb) cons
 	const u32 length = rgb->TableLen;
 	for (u32 i=0; i<length; ++i)
 	{
-		rgb->StartTable[i] = os::ByteSwap::byteswap(rgb->StartTable[i]);
-		rgb->LengthTable[i] = os::ByteSwap::byteswap(rgb->LengthTable[i]);
+		rgb->StartTable[i] = os::Byteswap::byteswap(rgb->StartTable[i]);
+		rgb->LengthTable[i] = os::Byteswap::byteswap(rgb->LengthTable[i]);
 	}
 #endif
 
@@ -553,7 +553,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 			u16* tmpbuf = reinterpret_cast<u16*>(buf);
 			for (u32 i=0; i<rgb->header.Xsize; ++i)
 			{
-				tmpbuf[i] = os::ByteSwap::byteswap(tmpbuf[i]);
+				tmpbuf[i] = os::Byteswap::byteswap(tmpbuf[i]);
 			}
 		}
 #endif
@@ -591,7 +591,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 
 #ifndef __BIG_ENDIAN__
 		if (rgb->header.BPC != 1)
-			pixel = os::ByteSwap::byteswap(pixel);
+			pixel = os::Byteswap::byteswap(pixel);
 #endif
 
 		count = (int)(pixel & 0x7F);
@@ -624,7 +624,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 					tempShort++;
 					iPtr = (u8 *) (tempShort);
 #ifndef __BIG_ENDIAN__
-					pixel = os::ByteSwap::byteswap(pixel);
+					pixel = os::Byteswap::byteswap(pixel);
 #endif
 					tempShort = (u16 *) (oPtr);
 					*tempShort = pixel;
@@ -649,7 +649,7 @@ void CImageLoaderRGB::readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgb
 
 #ifndef __BIG_ENDIAN__
 			if (rgb->header.BPC != 1)
-				pixel = os::ByteSwap::byteswap(pixel);
+				pixel = os::Byteswap::byteswap(pixel);
 #endif
 
 			while (count--)
