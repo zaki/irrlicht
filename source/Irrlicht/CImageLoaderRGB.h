@@ -186,11 +186,6 @@ private:
 	bool checkFormat(io::IReadFile *file, rgbStruct *rgb) const;
 	bool readOffsetTables(io::IReadFile* file, rgbStruct *rgb) const;
 	void converttoARGB(u8* in, rgbStruct *rgb) const;
-	
-#ifndef __BIG_ENDIAN__
-	void convertLong(u32 *array, long length) const;
-	void convertShort(u16 *array, long length) const;
-#endif
 };
 
 } // end namespace video
