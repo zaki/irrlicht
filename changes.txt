@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - Use setWindowTextA in Windows device for WIN64 platform, posted by veegun
+
  - ELL_ERROR log events are now created when shaders fail to compile or link, reported by Halan
 
  - irrList now uses irrAllocator, fixed by Nox

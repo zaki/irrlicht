@@ -571,14 +571,24 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 	if (IsNonNTWindows)
 	{
 		const core::stringc s = text;
+#ifdef WIN64 
+		SetWindowTextA(HWnd, s.c_str()); 
+#else
 		SendMessageTimeout(HWnd, WM_SETTEXT, 0,
 				reinterpret_cast<LPARAM>(s.c_str()),
 				SMTO_ABORTIFHUNG, 2000, &dwResult);
+#endif
 	}
 	else
+	{
+#ifdef WIN64 
+		SetWindowTextW(HWnd, text); 
+#else 
 		SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,
 				reinterpret_cast<LPARAM>(text),
 				SMTO_ABORTIFHUNG, 2000, &dwResult);
+#endif
+	}
 }
 
 
