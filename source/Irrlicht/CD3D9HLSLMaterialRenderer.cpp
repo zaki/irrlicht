@@ -48,7 +48,7 @@ CD3D9HLSLMaterialRenderer::CD3D9HLSLMaterialRenderer(IDirect3DDevice9* d3ddev,
 
 	if (vsCompileTarget < 0 || vsCompileTarget > EVST_COUNT)
 	{
-		os::Printer::log("Invalid HLSL vertex shader compilation target");
+		os::Printer::log("Invalid HLSL vertex shader compilation target", ELL_ERROR);
 		return;
 	}
 
@@ -131,10 +131,10 @@ bool CD3D9HLSLMaterialRenderer::createHLSLVertexShader(const char* vertexShaderP
 
 	if (FAILED(h))
 	{
-		os::Printer::log("HLSL vertex shader compilation failed:");
+		os::Printer::log("HLSL vertex shader compilation failed:", ELL_ERROR);
 		if (errors)
 		{
-			os::Printer::log((c8*)errors->GetBufferPointer());
+			os::Printer::log((c8*)errors->GetBufferPointer(), ELL_ERROR);
 			errors->Release();
 			if (buffer)
 				buffer->Release();
@@ -150,7 +150,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLVertexShader(const char* vertexShaderP
 		if (FAILED(pID3DDevice->CreateVertexShader((DWORD*)buffer->GetBufferPointer(),
 			&VertexShader)))
 		{
-			os::Printer::log("Could not create hlsl vertex shader.");
+			os::Printer::log("Could not create hlsl vertex shader.", ELL_ERROR);
 			buffer->Release();
 			return false;
 		}
@@ -218,10 +218,10 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 
 	if (FAILED(h))
 	{
-		os::Printer::log("HLSL pixel shader compilation failed:");
+		os::Printer::log("HLSL pixel shader compilation failed:", ELL_ERROR);
 		if (errors)
 		{
-			os::Printer::log((c8*)errors->GetBufferPointer());
+			os::Printer::log((c8*)errors->GetBufferPointer(), ELL_ERROR);
 			errors->Release();
 			if (buffer)
 				buffer->Release();
@@ -237,7 +237,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 		if (FAILED(pID3DDevice->CreatePixelShader((DWORD*)buffer->GetBufferPointer(),
 			&PixelShader)))
 		{
-			os::Printer::log("Could not create hlsl pixel shader.");
+			os::Printer::log("Could not create hlsl pixel shader.", ELL_ERROR);
 			buffer->Release();
 			return false;
 		}
