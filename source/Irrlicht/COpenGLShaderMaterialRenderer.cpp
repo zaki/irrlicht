@@ -193,7 +193,7 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 
 		char tmp[2048];
 		sprintf(tmp, "Pixel shader compilation failed at position %d:\n%s", errPos, errString);
-		os::Printer::log(tmp);
+		os::Printer::log(tmp, ELL_ERROR);
 
 		Driver->extGlDeletePrograms(1, &PixelShader);
 		PixelShader=0;
@@ -235,7 +235,7 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const c8* vtxsh)
 
 		char tmp[2048];
 		sprintf(tmp, "Vertex shader compilation failed at position %d:\n%s", errPos, errString);
-		os::Printer::log(tmp);
+		os::Printer::log(tmp, ELL_ERROR);
 
 		Driver->extGlDeletePrograms(1, &VertexShader);
 		VertexShader=0;

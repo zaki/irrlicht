@@ -194,7 +194,7 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 
 	if (!status)
 	{
-		os::Printer::log("GLSL shader failed to compile");
+		os::Printer::log("GLSL shader failed to compile", ELL_ERROR);
 		// check error message and log it
 		int maxLength=0;
 		GLsizei length;
@@ -204,7 +204,7 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 #endif
 		GLcharARB *pInfoLog = new GLcharARB[maxLength];
 		Driver->extGlGetInfoLog(shaderHandle, maxLength, &length, pInfoLog);
-		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog));
+		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog), ELL_ERROR);
 		delete [] pInfoLog;
 
 		return false;
@@ -228,7 +228,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 	if (!status)
 	{
-		os::Printer::log("GLSL shader program failed to link");
+		os::Printer::log("GLSL shader program failed to link", ELL_ERROR);
 		// check error message and log it
 		int maxLength=0;
 		GLsizei length;
@@ -238,7 +238,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 #endif
 		GLcharARB *pInfoLog = new GLcharARB[maxLength];
 		Driver->extGlGetInfoLog(Program, maxLength, &length, pInfoLog);
-		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog));
+		os::Printer::log(reinterpret_cast<const c8*>(pInfoLog), ELL_ERROR);
 		delete [] pInfoLog;
 
 		return false;
@@ -264,7 +264,7 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 
 	if (maxlen == 0)
 	{
-		os::Printer::log("GLSL: failed to retrieve uniform information");
+		os::Printer::log("GLSL: failed to retrieve uniform information", ELL_ERROR);
 		return false;
 	}
 
@@ -308,7 +308,7 @@ bool COpenGLSLMaterialRenderer::setVertexShaderConstant(const c8* name, const f3
 
 void COpenGLSLMaterialRenderer::setVertexShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
-	os::Printer::log("Cannot set constant, please use high level shader call instead.");
+	os::Printer::log("Cannot set constant, please use high level shader call instead.", ELL_WARNING);
 }
 
 bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32* floats, int count)
@@ -361,7 +361,7 @@ bool COpenGLSLMaterialRenderer::setPixelShaderConstant(const c8* name, const f32
 
 void COpenGLSLMaterialRenderer::setPixelShaderConstant(const f32* data, s32 startRegister, s32 constantAmount)
 {
-	os::Printer::log("Cannot set constant, use high level shader call.");
+	os::Printer::log("Cannot set constant, use high level shader call.", ELL_WARNING);
 }
 
 IVideoDriver* COpenGLSLMaterialRenderer::getVideoDriver()
