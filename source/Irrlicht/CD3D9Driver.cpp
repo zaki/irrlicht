@@ -304,23 +304,29 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	// check stencil buffer compatibility
 	if (StencilBuffer)
 	{
-		present.AutoDepthStencilFormat = D3DFMT_D24S8;
+		present.AutoDepthStencilFormat = D3DFMT_D24FS8;
 		if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
-			present.AutoDepthStencilFormat = D3DFMT_D24X4S4;
+			present.AutoDepthStencilFormat = D3DFMT_D24S8;
 			if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
-				present.AutoDepthStencilFormat = D3DFMT_D15S1;
+				present.AutoDepthStencilFormat = D3DFMT_D24X4S4;
 				if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
-					os::Printer::log("Device does not support stencilbuffer, disabling stencil buffer.", ELL_WARNING);
-					StencilBuffer = false;
+					present.AutoDepthStencilFormat = D3DFMT_D15S1;
+					if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
+						present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
+						D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
+					{
+						os::Printer::log("Device does not support stencilbuffer, disabling stencil buffer.", ELL_WARNING);
+						StencilBuffer = false;
+					}
 				}
 			}
 		}
@@ -335,23 +341,29 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	// do not use else here to cope with flag change in previous block
 	if (!StencilBuffer)
 	{
-		present.AutoDepthStencilFormat = D3DFMT_D32;
+		present.AutoDepthStencilFormat = D3DFMT_D32F_LOCKABLE;
 		if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 			present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 			D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 		{
-			present.AutoDepthStencilFormat = D3DFMT_D24X8;
+			present.AutoDepthStencilFormat = D3DFMT_D32;
 			if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 				present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 				D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 			{
-				present.AutoDepthStencilFormat = D3DFMT_D16;
+				present.AutoDepthStencilFormat = D3DFMT_D24X8;
 				if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
 					present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
 					D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
 				{
-					os::Printer::log("Device does not support required depth buffer.", ELL_WARNING);
-					return false;
+					present.AutoDepthStencilFormat = D3DFMT_D16;
+					if(FAILED(pID3D->CheckDeviceFormat(adapter, devtype,
+						present.BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
+						D3DRTYPE_SURFACE, present.AutoDepthStencilFormat)))
+					{
+						os::Printer::log("Device does not support required depth buffer.", ELL_WARNING);
+						return false;
+					}
 				}
 			}
 		}
