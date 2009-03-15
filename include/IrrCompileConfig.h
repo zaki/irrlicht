@@ -45,6 +45,10 @@
 #endif
 #endif
 
+#if defined(_MSC_VER) && (_MSC_VER < 1400) 
+#  error "Only Microsoft Visual Studio 7.0 and later are supported." 
+#endif 
+
 // XBox only suppots the native Window stuff
 #if defined(_XBOX)
 	#undef _IRR_WINDOWS_
@@ -228,7 +232,7 @@ B3D, MS3D or X meshes */
 #ifdef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
 //! Define _IRR_COMPILE_WITH_B3D_LOADER_ if you want to use Blitz3D files
 #define _IRR_COMPILE_WITH_B3D_LOADER_
-//! Define _IRR_COMPILE_WITH_B3D_LOADER_ if you want to Milkshape files
+//! Define _IRR_COMPILE_WITH_MS3D_LOADER_ if you want to Milkshape files
 #define _IRR_COMPILE_WITH_MS3D_LOADER_
 //! Define _IRR_COMPILE_WITH_X_LOADER_ if you want to use Microsoft X files
 #define _IRR_COMPILE_WITH_X_LOADER_
