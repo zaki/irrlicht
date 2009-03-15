@@ -51,25 +51,25 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 {
 	// Set up pixel format descriptor with desired parameters
 	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
-		1,				// Version Number
-		PFD_DRAW_TO_WINDOW |		// Format Must Support Window
-		PFD_SUPPORT_OPENGL |		// Format Must Support OpenGL
+		sizeof(PIXELFORMATDESCRIPTOR),             // Size Of This Pixel Format Descriptor
+		1,                                         // Version Number
+		PFD_DRAW_TO_WINDOW |                       // Format Must Support Window
+		PFD_SUPPORT_OPENGL |                       // Format Must Support OpenGL
 		(params.Doublebuffer?PFD_DOUBLEBUFFER:0) | // Must Support Double Buffering
-		(params.Stereobuffer?PFD_STEREO:0) | // Must Support Stereo Buffer
-		PFD_TYPE_RGBA,			// Request An RGBA Format
-		params.Bits,				// Select Our Color Depth
-		0, 0, 0, 0, 0, 0,		// Color Bits Ignored
-		0,				// No Alpha Buffer
-		0,				// Shift Bit Ignored
-		0,				// No Accumulation Buffer
-		0, 0, 0, 0,			// Accumulation Bits Ignored
-		24,				// Z-Buffer (Depth Buffer)
-		params.Stencilbuffer ? 1 : 0,	// Stencil Buffer Depth
-		0,				// No Auxiliary Buffer
-		PFD_MAIN_PLANE,			// Main Drawing Layer
-		0,				// Reserved
-		0, 0, 0				// Layer Masks Ignored
+		(params.Stereobuffer?PFD_STEREO:0),        // Must Support Stereo Buffer
+		PFD_TYPE_RGBA,                             // Request An RGBA Format
+		params.Bits,                               // Select Our Color Depth
+		0, 0, 0, 0, 0, 0,                          // Color Bits Ignored
+		0,                                         // No Alpha Buffer
+		0,                                         // Shift Bit Ignored
+		0,                                         // No Accumulation Buffer
+		0, 0, 0, 0,	                               // Accumulation Bits Ignored
+		24,                                        // Z-Buffer (Depth Buffer)
+		params.Stencilbuffer ? 1 : 0,              // Stencil Buffer Depth
+		0,                                         // No Auxiliary Buffer
+		PFD_MAIN_PLANE,                            // Main Drawing Layer
+		0,                                         // Reserved
+		0, 0, 0                                    // Layer Masks Ignored
 	};
 
 	GLuint PixelFormat;
