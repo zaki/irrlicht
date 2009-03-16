@@ -13,6 +13,17 @@ namespace irr
 namespace scene
 {
 
+enum E_PLY_PROPERTY_TYPE
+{
+	EPLYPT_INT8  = 0,
+	EPLYPT_INT16,
+	EPLYPT_INT32,
+	EPLYPT_FLOAT32,
+	EPLYPT_FLOAT64,
+	EPLYPT_LIST,
+	EPLYPT_UNKNOWN
+};
+
 //! Meshloader capable of loading obj meshes.
 class CPLYMeshFileLoader : public IMeshLoader
 {
@@ -32,17 +43,6 @@ public:
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 private:
-
-	enum E_PLY_PROPERTY_TYPE
-	{
-		EPLYPT_INT8  = 0,
-		EPLYPT_INT16,
-		EPLYPT_INT32,
-		EPLYPT_FLOAT32,
-		EPLYPT_FLOAT64,
-		EPLYPT_LIST,
-		EPLYPT_UNKNOWN
-	};
 
 	struct SPLYProperty
 	{

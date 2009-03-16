@@ -318,6 +318,22 @@ namespace core
 	#endif
 #endif
 
+#if defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
+
+	// 8-bit bools in borland builder
+
+	//! conditional set based on mask and arithmetic shift
+	REALINLINE u32 if_c_a_else_b ( const c8 condition, const u32 a, const u32 b )
+	{
+		return ( ( -condition >> 7 ) & ( a ^ b ) ) ^ b;
+	}
+
+	//! conditional set based on mask and arithmetic shift
+	REALINLINE u32 if_c_a_else_0 ( const c8 condition, const u32 a )
+	{
+		return ( -condition >> 31 ) & a;
+	}
+#else
 
 	//! conditional set based on mask and arithmetic shift
 	REALINLINE u32 if_c_a_else_b ( const s32 condition, const u32 a, const u32 b )
@@ -336,6 +352,7 @@ namespace core
 	{
 		return ( -condition >> 31 ) & a;
 	}
+#endif
 
 	/*
 		if (condition) state |= m; else state &= ~m;

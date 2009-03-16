@@ -1252,7 +1252,7 @@ void CQuake3ShaderSceneNode::animate( u32 stage,core::matrix4 &texture )
 				// "texture","lightmap","environment"
 				function.tcgen = function.masterfunc1;
 				break;
-			case $LIGHTMAP:
+			case DOLLAR_LIGHTMAP:
 				// map == lightmap, tcgen == lightmap
 				function.tcgen = LIGHTMAP;
 				break;
