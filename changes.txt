@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - ALT+F4 keypress now closes Windows SDL device
+
  - Allow Direct3D drivers in SDL, patch by Halifax
 
  - Added compiler error when attempting to compile with VC6.
