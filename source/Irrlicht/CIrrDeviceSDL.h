@@ -17,6 +17,7 @@
 #include "ICursorControl.h"
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_syswm.h>
 
 namespace irr
 {
@@ -207,6 +208,7 @@ namespace irr
 		};
 
 		core::array<SKeyMap> KeyMap;
+		SDL_SysWMinfo Info;
 	};
 
 } // end namespace irr

@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - Allow Direct3D drivers in SDL, patch by Halifax
+
  - Added compiler error when attempting to compile with VC6.
 
  - Use setWindowTextA in Windows device for WIN64 platform, posted by veegun

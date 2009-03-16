@@ -27,8 +27,23 @@ namespace irr
 {
 	namespace video
 	{
+
+		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
+		IVideoDriver* createDirectX8Driver(const core::dimension2d<u32>& screenSize, HWND window,
+			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
+			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
+		IVideoDriver* createDirectX9Driver(const core::dimension2d<u32>& screenSize, HWND window,
+			u32 bits, bool fullscreen, bool stencilbuffer, io::IFileSystem* io,
+			bool pureSoftware, bool highPrecisionFPU, bool vsync, u8 antiAlias);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io);
+		#endif
 	} // end namespace video
 
 } // end namespace irr
@@ -64,16 +79,15 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		Close = 1;
 	}
 
-	SDL_SysWMinfo info;
-	SDL_VERSION(&info.version);
+	SDL_VERSION(&Info.version);
 
-	SDL_GetWMInfo(&info);
+	SDL_GetWMInfo(&Info);
 	core::stringc sdlversion = "SDL Version ";
-	sdlversion += info.version.major;
+	sdlversion += Info.version.major;
 	sdlversion += ".";
-	sdlversion += info.version.minor;
+	sdlversion += Info.version.minor;
 	sdlversion += ".";
-	sdlversion += info.version.patch;
+	sdlversion += Info.version.patch;
 
 	Operator = new COSOperator(sdlversion.c_str());
 	os::Printer::log(sdlversion.c_str(), ELL_INFORMATION);
@@ -201,8 +215,39 @@ void CIrrDeviceSDL::createDriver()
 	switch(CreationParams.DriverType)
 	{
 	case video::EDT_DIRECT3D8:
+		#ifdef _IRR_COMPILE_WITH_DIRECT3D_8_
+
+		VideoDriver = video::createDirectX8Driver(CreationParams.WindowSize, Info.window,
+			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
+			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
+			CreationParams.AntiAlias);
+
+		if (!VideoDriver)
+		{
+			os::Printer::log("Could not create DIRECT3D8 Driver.", ELL_ERROR);
+		}
+		#else
+		os::Printer::log("DIRECT3D8 Driver was not compiled into this dll. Try another one.", ELL_ERROR);
+		#endif // _IRR_COMPILE_WITH_DIRECT3D_8_
+
+		break;
+
 	case video::EDT_DIRECT3D9:
-		os::Printer::log("This driver is not available in SDL.", ELL_ERROR);
+		#ifdef _IRR_COMPILE_WITH_DIRECT3D_9_
+
+		VideoDriver = video::createDirectX9Driver(CreationParams.WindowSize, Info.window,
+			CreationParams.Bits, CreationParams.Fullscreen, CreationParams.Stencilbuffer,
+			FileSystem, false, CreationParams.HighPrecisionFPU, CreationParams.Vsync,
+			CreationParams.AntiAlias);
+
+		if (!VideoDriver)
+		{
+			os::Printer::log("Could not create DIRECT3D9 Driver.", ELL_ERROR);
+		}
+		#else
+		os::Printer::log("DIRECT3D9 Driver was not compiled into this dll. Try another one.", ELL_ERROR);
+		#endif // _IRR_COMPILE_WITH_DIRECT3D_9_
+
 		break;
 
 	case video::EDT_SOFTWARE:
