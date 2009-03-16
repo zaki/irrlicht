@@ -494,7 +494,7 @@ void CPLYMeshFileLoader::moveForward(u32 bytes)
 		StartPointer = EndPointer;
 }
 
-CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE CPLYMeshFileLoader::getPropertyType(const c8* typeString) const
+E_PLY_PROPERTY_TYPE CPLYMeshFileLoader::getPropertyType(const c8* typeString) const
 {
 	if      (strcmp(typeString, "char")   == 0 ||
 	         strcmp(typeString, "uchar")  == 0 ||
@@ -628,7 +628,7 @@ c8* CPLYMeshFileLoader::getNextWord()
 	return StartPointer;
 }
 // read the next float from the file and move the start pointer along
-f32 CPLYMeshFileLoader::getFloat(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
+f32 CPLYMeshFileLoader::getFloat(E_PLY_PROPERTY_TYPE t)
 {
 	f32 retVal = 0.0f;
 
@@ -704,7 +704,7 @@ f32 CPLYMeshFileLoader::getFloat(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
 	return retVal;
 }
 // read the next int from the file and move the start pointer along
-u32 CPLYMeshFileLoader::getInt(CPLYMeshFileLoader::E_PLY_PROPERTY_TYPE t)
+u32 CPLYMeshFileLoader::getInt(E_PLY_PROPERTY_TYPE t)
 {
 	u32 retVal = 0;
 

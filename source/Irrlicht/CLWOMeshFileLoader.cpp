@@ -153,10 +153,10 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 	Mesh = new SMesh();
 
 	if (!readFileHeader())
-		return false;
+		return 0;
 
 	if (!readChunks())
-		return false;
+		return 0;
 
 #ifdef LWO_READER_DEBUG
 	os::Printer::log("LWO loader: Creating geometry.");

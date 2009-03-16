@@ -382,7 +382,7 @@ bool CGUITreeViewNode::getSelected() const
 {
 	if( Owner )
 	{
-		return Owner->Selected == this;
+		return Owner->Selected == (IGUITreeViewNode*)this;
 	}
 	else
 	{
