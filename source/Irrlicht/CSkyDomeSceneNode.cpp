@@ -31,17 +31,18 @@ namespace scene
 	parameters stretches the image to fit the chosen "sphere-size". */
 
 CSkyDomeSceneNode::CSkyDomeSceneNode(video::ITexture* sky, u32 horiRes, u32 vertRes,
-			f32 texturePercentage, f32 spherePercentage, f32 radius,
-			ISceneNode* parent, ISceneManager* mgr, s32 id)
-: ISceneNode(parent, mgr, id), Buffer(0), 
-  HorizontalResolution(horiRes), VerticalResolution(vertRes), TexturePercentage(texturePercentage), 
-  SpherePercentage(spherePercentage), Radius(radius)
+		f32 texturePercentage, f32 spherePercentage, f32 radius,
+		ISceneNode* parent, ISceneManager* mgr, s32 id)
+	: ISceneNode(parent, mgr, id), Buffer(0), 
+	  HorizontalResolution(horiRes), VerticalResolution(vertRes),
+	  TexturePercentage(texturePercentage),
+	  SpherePercentage(spherePercentage), Radius(radius)
 {
 	#ifdef _DEBUG
 	setDebugName("CSkyDomeSceneNode");
 	#endif
 
-	setAutomaticCulling ( scene::EAC_OFF );
+	setAutomaticCulling(scene::EAC_OFF);
 
 	Buffer = new SMeshBuffer();
 	Buffer->Material.Lighting = false;
@@ -53,6 +54,9 @@ CSkyDomeSceneNode::CSkyDomeSceneNode(video::ITexture* sky, u32 horiRes, u32 vert
 
 	Buffer->Vertices.clear();
 	Buffer->Indices.clear();
+
+	// regenerate the mesh
+	generateMesh();
 }
 
 
@@ -62,38 +66,37 @@ CSkyDomeSceneNode::~CSkyDomeSceneNode()
 		Buffer->drop();
 }
 
+
 void CSkyDomeSceneNode::generateMesh()
 {
-	f32 azimuth, azimuth_step;
-	f32 elevation, elevation_step;
+	f32 azimuth;
 	u32 k;
 
-	video::S3DVertex vtx;
-
-	azimuth_step = (core::PI * 2.f ) / HorizontalResolution;
+	const f32 azimuth_step = (core::PI * 2.f) / HorizontalResolution;
 	if (SpherePercentage < 0.f)
 		SpherePercentage = -SpherePercentage;
 	if (SpherePercentage > 2.f)
 		SpherePercentage = 2.f;
-	elevation_step = SpherePercentage * core::HALF_PI / (f32)VerticalResolution;
+	const f32 elevation_step = SpherePercentage * core::HALF_PI / (f32)VerticalResolution;
 
 	Buffer->Vertices.reallocate( (HorizontalResolution + 1) * (VerticalResolution + 1) );
 	Buffer->Indices.reallocate(3 * (2*VerticalResolution - 1) * HorizontalResolution);
 
+	video::S3DVertex vtx;
 	vtx.Color.set(255,255,255,255);
 	vtx.Normal.set(0.0f,-1.f,0.0f);
 
 	const f32 tcV = TexturePercentage / VerticalResolution;
 	for (k = 0, azimuth = 0; k <= HorizontalResolution; ++k)
 	{
-		elevation = core::HALF_PI;
+		f32 elevation = core::HALF_PI;
 		const f32 tcU = (f32)k / (f32)HorizontalResolution;
 		const f32 sinA = sinf(azimuth);
 		const f32 cosA = cosf(azimuth);
 		for (u32 j = 0; j <= VerticalResolution; ++j)
 		{
 			const f32 cosEr = Radius * cosf(elevation);
-			vtx.Pos.set(cosEr*sinA, Radius*sinf(elevation)+0.0f, cosEr*cosA);
+			vtx.Pos.set(cosEr*sinA, Radius*sinf(elevation), cosEr*cosA);
 			vtx.TCoords.set(tcU, j*tcV);
 
 			vtx.Normal = -vtx.Pos;
@@ -194,10 +197,9 @@ void CSkyDomeSceneNode::render()
 			m.Wireframe = true;
 			driver->setMaterial(m);
 
-			driver->drawMeshBuffer( Buffer );
+			driver->drawMeshBuffer(Buffer);
 		}
 	}
-
 }
 
 
@@ -236,6 +238,7 @@ u32 CSkyDomeSceneNode::getMaterialCount() const
 	return 1;
 }
 
+
 //! Writes attributes of the scene node.
 void CSkyDomeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const
 {
@@ -247,6 +250,7 @@ void CSkyDomeSceneNode::serializeAttributes(io::IAttributes* out, io::SAttribute
 	out->addFloat("SpherePercentage",     SpherePercentage);
 	out->addFloat("Radius",               Radius);
 }
+
 
 //! Reads attributes of the scene node.
 void CSkyDomeSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
