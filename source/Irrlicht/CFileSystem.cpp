@@ -323,7 +323,6 @@ core::string<c16> CFileSystem::getAbsolutePath(const core::string<c16>& filename
 		p = _fullpath( fpath, filename.c_str(), _MAX_PATH);
 	#endif
 
-
 #elif (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 	c8 fpath[4096];
 	fpath[0]=0;
