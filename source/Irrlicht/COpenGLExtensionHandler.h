@@ -733,6 +733,8 @@ class COpenGLExtensionHandler
 	u32 MaxTextureSize;
 	//! Maximal LOD Bias
 	f32 MaxTextureLODBias;
+	//! Number of rendertargets available as MRTs
+	u8 MaxMultipleRenderTargets;
 
 	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
 	u16 Version;
@@ -790,6 +792,7 @@ class COpenGLExtensionHandler
 	void extGlRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
 	void extGlFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 	void extGlActiveStencilFace(GLenum face);
+	void extGlDrawBuffers(GLsizei n, const GLenum *bufs);
 
 	// vertex buffer object
 	void extGlGenBuffers(GLsizei n, GLuint *buffers);
@@ -861,6 +864,8 @@ class COpenGLExtensionHandler
 		PFNGLRENDERBUFFERSTORAGEEXTPROC pGlRenderbufferStorageEXT;
 		PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC pGlFramebufferRenderbufferEXT;
 		PFNGLACTIVESTENCILFACEEXTPROC pGlActiveStencilFaceEXT;
+		PFNGLDRAWBUFFERSARBPROC pGlDrawBuffersARB;
+		PFNGLDRAWBUFFERSATIPROC pGlDrawBuffersATI;
 		PFNGLGENBUFFERSARBPROC pGlGenBuffersARB;
 		PFNGLBINDBUFFERARBPROC pGlBindBufferARB;
 		PFNGLBUFFERDATAARBPROC pGlBufferDataARB;
@@ -1401,6 +1406,22 @@ inline void COpenGLExtensionHandler::extGlActiveStencilFace(GLenum face)
 	glActiveStencilFaceEXT(face);
 #else
 	os::Printer::log("glActiveStencilFace not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlDrawBuffers(GLsizei n, const GLenum *bufs)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlDrawBuffersARB)
+		pGlDrawBuffersARB(n, bufs);
+	else if (pGlDrawBuffersATI)
+		pGlDrawBuffersATI(n, bufs);
+#elif defined(GL_ARB_draw_buffers)
+	glDrawBuffersARB(n, bufs);
+#elif defined(GL_ATI_draw_buffers)
+	glDrawBuffersATI(n, bufs);
+#else
+	os::Printer::log("glDrawBuffers not supported", ELL_ERROR);
 #endif
 }
 

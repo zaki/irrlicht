@@ -247,6 +247,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\removeCustomAnimator.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\sceneCollisionManager.cpp"
 				>
 			</File>

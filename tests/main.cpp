@@ -76,6 +76,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(cursorSetVisible);
 	TEST(transparentAlphaChannelRef);
 	TEST(drawRectOutline);
+	TEST(removeCustomAnimator);
 
 	// Tests available on 1.6+
 	TEST(collisionResponseAnimator);
