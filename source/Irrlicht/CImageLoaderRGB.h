@@ -26,13 +26,12 @@
 
 #include "IImageLoader.h"
 
-
 namespace irr
 {
 namespace video
 {
 
-	// byte-align structures
+// byte-align structures
 #if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
@@ -47,7 +46,7 @@ namespace video
 
 	struct SRGBHeader
 	{
-		u16	Magic;							//	IRIS image file magic number
+		u16	Magic;							// IRIS image file magic number
 		u8  Storage;						// Storage format
 		u8  BPC;							// Number of bytes per pixel channel
 		u16 Dimension;						// Number of dimensions
@@ -59,8 +58,7 @@ namespace video
 		u32 Dummy1;							// ignored
 		char Imagename[80];					// Image name
 		u32 Colormap;						// Colormap ID
-		char Dummy2[404];					// Ignored
-
+//		char Dummy2[404];					// Ignored
 	} PACK_STRUCT;
 
 // Default alignment
@@ -81,13 +79,11 @@ namespace video
 		   *tmpA;
 
 
-		u32 *StartTable;								// compressed data table, holds file offsets
-		u32 *LengthTable;								// length for the above data, hold lengths for above
-		u32 TableLen;									// len of above tables
+		u32 *StartTable;	// compressed data table, holds file offsets
+		u32 *LengthTable;	// length for the above data, hold lengths for above
+		u32 TableLen;		// len of above tables
 
-		//bool swapFlag;
-
-		SRGBHeader header;								// define the .rgb file header
+		SRGBHeader Header;	// define the .rgb file header
 		u32 ImageSize;
 		u8 *rgbData;
 
@@ -99,65 +95,46 @@ namespace video
 
 		~_RGBdata()
 		{
-			if (tmp)  delete [] tmp;
-			if (tmpR) delete [] tmpR;
-			if (tmpG) delete [] tmpG;
-			if (tmpB) delete [] tmpB;
-			if (tmpA) delete [] tmpA;
-			if (StartTable)  delete [] StartTable;
-			if (LengthTable) delete [] LengthTable;
-			if (rgbData)     delete [] rgbData;
+			delete [] tmp;
+			delete [] tmpR;
+			delete [] tmpG;
+			delete [] tmpB;
+			delete [] tmpA;
+			delete [] StartTable;
+			delete [] LengthTable;
+			delete [] rgbData;
 		}
 
 		bool allocateTemps()
 		{
 			tmp = tmpR = tmpG = tmpB = tmpA = 0;
-			tmp = new u8 [header.Xsize * 256 * header.BPC];
+			tmp = new u8 [Header.Xsize * 256 * Header.BPC];
 			if (!tmp)
 				return false;
 
-			if (header.Zsize >= 1)
+			if (Header.Zsize >= 1)
 			{
-				if ( !(tmpR = new u8 [header.Xsize * header.BPC]) )
+				if ( !(tmpR = new u8 [Header.Xsize * Header.BPC]) )
 					return false;
 			}
-			if (header.Zsize >= 2)
+			if (Header.Zsize >= 2)
 			{
-				if ( !(tmpG = new u8 [header.Xsize * header.BPC]) )
+				if ( !(tmpG = new u8 [Header.Xsize * Header.BPC]) )
 					return false;
 			}
-			if (header.Zsize >= 3)
+			if (Header.Zsize >= 3)
 			{
-				if ( !(tmpB = new u8 [header.Xsize * header.BPC]) )
+				if ( !(tmpB = new u8 [Header.Xsize * Header.BPC]) )
 					return false;
 			}
-			if (header.Zsize >= 4)
+			if (Header.Zsize >= 4)
 			{
-				if ( !(tmpA = new u8 [header.Xsize * header.BPC]) )
+				if ( !(tmpA = new u8 [Header.Xsize * Header.BPC]) )
 					return false;
 			}
 			return true;
 		}
-
-		//typedef unsigned char * BytePtr;
-
-		/*
-		template <class T>
-		inline void swapBytes( T &s )
-		{
-			if( sizeof( T ) == 1 )
-				return;
-
-			T d = s;
-			BytePtr sptr = (BytePtr)&s;
-			BytePtr dptr = &(((BytePtr)&d)[sizeof(T)-1]);
-
-			for( unsigned int i = 0; i < sizeof(T); i++ )
-				*(sptr++) = *(dptr--);
-		}
-		*/
 	} rgbStruct;
-
 
 
 //! Surface Loader for Silicon Graphics RGB files
@@ -180,12 +157,12 @@ public:
 
 private:
 
-	bool readHeader(io::IReadFile* file, rgbStruct* rgb) const;
-	void readRGBrow( u8 *buf, int y, int z, io::IReadFile* file, rgbStruct* rgb) const;
-	void processFile(rgbStruct *rgb, io::IReadFile *file) const;
-	bool checkFormat(io::IReadFile *file, rgbStruct *rgb) const;
-	bool readOffsetTables(io::IReadFile* file, rgbStruct *rgb) const;
-	void converttoARGB(u8* in, rgbStruct *rgb) const;
+	bool readHeader(io::IReadFile* file, rgbStruct& rgb) const;
+	void readRGBrow(u8 *buf, int y, int z, io::IReadFile* file, rgbStruct& rgb) const;
+	void processFile(io::IReadFile *file, rgbStruct& rgb) const;
+	bool checkFormat(io::IReadFile *file, rgbStruct& rgb) const;
+	bool readOffsetTables(io::IReadFile* file, rgbStruct& rgb) const;
+	void converttoARGB(u32* in, const u32 size) const;
 };
 
 } // end namespace video
