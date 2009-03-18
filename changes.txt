@@ -662,6 +662,8 @@ Changes in version 1.6, TA
 -------------------------------------
 Changes in version 1.5.1 (??.?? 2009)
 
+ - Update to libpng 1.2.35
+
  - Fixed OSX device bug where screen size was not set in fullscreen mode.
 
  - OSX device now supports shift and ctrl keys.
