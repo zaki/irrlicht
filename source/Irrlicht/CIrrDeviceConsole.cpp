@@ -131,6 +131,9 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 	case video::EDT_OPENGL:
 		os::Printer::log("The console device cannot use hardware drivers", ELL_ERROR);
 		break;
+	case video::EDT_NULL:
+		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
+		break;
 	default:
 		break;
 	}
@@ -154,12 +157,15 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 	{
 		createGUIAndScene();
 #ifdef _IRR_USE_CONSOLE_FONT_
-		ConsoleFont = new gui::CGUIConsoleFont(this);
-		gui::IGUISkin *skin = GUIEnvironment->getSkin();
-		if (skin)
+		if (GUIEnvironment)
 		{
-			for (u32 i=0; i < gui::EGDF_COUNT; ++i)
-				skin->setFont(ConsoleFont, gui::EGUI_DEFAULT_FONT(i));
+			ConsoleFont = new gui::CGUIConsoleFont(this);
+			gui::IGUISkin *skin = GUIEnvironment->getSkin();
+			if (skin)
+			{
+				for (u32 i=0; i < gui::EGDF_COUNT; ++i)
+					skin->setFont(ConsoleFont, gui::EGUI_DEFAULT_FONT(i));
+			}
 		}
 #endif
 	}
