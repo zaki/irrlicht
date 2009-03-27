@@ -5,6 +5,7 @@
 #ifndef __I_GEOMETRY_CREATOR_H_INCLUDED__
 #define __I_GEOMETRY_CREATOR_H_INCLUDED__
 
+#include "IReferenceCounted.h"
 #include "IMesh.h"
 #include "IImage.h"
 
@@ -21,7 +22,7 @@ namespace scene
 
 //! Helper class for creating geometry on the fly. 
 /** You can get an instance of this class through ISceneManager::getGeometryCreator() */
-class IGeometryCreator
+class IGeometryCreator : public IReferenceCounted
 {
 public:
 
