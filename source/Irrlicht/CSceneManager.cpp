@@ -152,6 +152,7 @@
 
 #include "CQuake3ShaderSceneNode.h"
 #include "CVolumeLightSceneNode.h"
+#include "CGeometryCreator.h"
 
 //! Enable debug features
 #define SCENEMANAGER_DEBUG
@@ -199,6 +200,9 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 
 	// create collision manager
 	CollisionManager = new CSceneCollisionManager(this, Driver);
+
+	// create geometry creator
+	GeometryCreator = new CGeometryCreator();
 
 	// add file format loaders
 
@@ -268,9 +272,7 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	ISceneNodeAnimatorFactory* animatorFactory = new CDefaultSceneNodeAnimatorFactory(this, CursorControl);
 	registerSceneNodeAnimatorFactory(animatorFactory);
 	animatorFactory->drop();
-
 }
-
 
 
 //! destructor
@@ -286,6 +288,9 @@ CSceneManager::~CSceneManager()
 
 	if (CollisionManager)
 		CollisionManager->drop();
+
+	if (GeometryCreator)
+		GeometryCreator->drop();
 
 	if (GUIEnvironment)
 		GUIEnvironment->drop();
@@ -911,7 +916,7 @@ IAnimatedMesh* CSceneManager::addHillPlaneMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = GeometryCreator.createHillPlaneMesh(tileSize,
+	IMesh* mesh = GeometryCreator->createHillPlaneMesh(tileSize,
 			tileCount, material, hillHeight, countHills,
 			textureRepeatCount);
 	if (!mesh)
@@ -945,7 +950,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = GeometryCreator.createTerrainMesh(texture, heightmap,
+	IMesh* mesh = GeometryCreator->createTerrainMesh(texture, heightmap,
 			stretchSize, maxHeight, getVideoDriver(),
 			defaultVertexBlockSize);
 	if (!mesh)
@@ -978,7 +983,7 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = GeometryCreator.createArrowMesh( tesselationCylinder,
+	IMesh* mesh = GeometryCreator->createArrowMesh( tesselationCylinder,
 			tesselationCone, height, cylinderHeight, width0,width1,
 			vtxColor0, vtxColor1);
 	if (!mesh)
@@ -1009,7 +1014,7 @@ IAnimatedMesh* CSceneManager::addSphereMesh(const core::string<c16>& name,
 	if (MeshCache->isMeshLoaded(name))
 		return MeshCache->getMeshByFilename(name);
 
-	IMesh* mesh = GeometryCreator.createSphereMesh(radius, polyCountX, polyCountY);
+	IMesh* mesh = GeometryCreator->createSphereMesh(radius, polyCountX, polyCountY);
 	if (!mesh)
 		return 0;
 

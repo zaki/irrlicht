@@ -13,7 +13,6 @@
 #include "IMeshLoader.h"
 #include "CAttributes.h"
 #include "ILightManager.h"
-#include "CGeometryCreator.h"
 
 namespace irr
 {
@@ -25,6 +24,7 @@ namespace io
 namespace scene
 {
 	class IMeshCache;
+	class IGeometryCreator;
 
 	/*!
 		The Scene Manager manages scene nodes, mesh recources, cameras and all the other stuff.
@@ -477,7 +477,7 @@ namespace scene
 		virtual void setLightManager(ILightManager* lightManager);
 
 		//! Get an instance of a geometry creator.
-		virtual const IGeometryCreator* getGeometryCreator(void) const { return &GeometryCreator; }
+		virtual const IGeometryCreator* getGeometryCreator(void) const { return GeometryCreator; }
 
 	private:
 
@@ -623,7 +623,7 @@ namespace scene
 		const core::stringw IRR_XML_FORMAT_NODE;
 		const core::stringw IRR_XML_FORMAT_NODE_ATTR_TYPE;
 
-		CGeometryCreator GeometryCreator;
+		IGeometryCreator* GeometryCreator;
 	};
 
 } // end namespace video
