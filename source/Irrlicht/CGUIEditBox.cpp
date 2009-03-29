@@ -28,10 +28,10 @@ namespace gui
 {
 
 //! constructor
-CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border, IGUIEnvironment* environment,
-			IGUIElement* parent, s32 id,
-			const core::rect<s32>& rectangle)
-: IGUIEditBox(environment, parent, id, rectangle), MouseMarking(false),
+CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border,
+		IGUIEnvironment* environment, IGUIElement* parent, s32 id,
+		const core::rect<s32>& rectangle)
+	: IGUIEditBox(environment, parent, id, rectangle), MouseMarking(false),
 	Border(border), OverrideColorEnabled(false), MarkBegin(0), MarkEnd(0),
 	OverrideColor(video::SColor(101,255,255,255)), OverrideFont(0), LastBreakFont(0),
 	Operator(0), BlinkStartTime(0), CursorPos(0), HScrollPos(0), VScrollPos(0), Max(0),
@@ -252,8 +252,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			// copy to clipboard
 			if (!PasswordBox && Operator && MarkBegin != MarkEnd)
 			{
-				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
 				core::stringc s;
 				s = Text.subString(realmbgn, realmend - realmbgn).c_str();
@@ -264,8 +264,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			// cut to the clipboard
 			if (!PasswordBox && Operator && MarkBegin != MarkEnd)
 			{
-				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
 				// copy
 				core::stringc sc;
@@ -294,8 +294,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			// paste from the clipboard
 			if (Operator)
 			{
-				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
 				// add new character
 				const c8* p = Operator->getTextFromClipboard();
@@ -561,8 +561,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if (MarkBegin != MarkEnd)
 			{
 				// delete marked text
-				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
 				s = Text.subString(0, realmbgn);
 				s.append( Text.subString(realmend, Text.size()-realmend) );
@@ -601,8 +601,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if (MarkBegin != MarkEnd)
 			{
 				// delete marked text
-				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
 				s = Text.subString(0, realmbgn);
 				s.append( Text.subString(realmend, Text.size()-realmend) );
@@ -679,7 +679,7 @@ void CGUIEditBox::draw()
 	if (!IsVisible)
 		return;
 
-	bool focus = Environment->hasFocus(this);
+	const bool focus = Environment->hasFocus(this);
 
 	IGUISkin* skin = Environment->getSkin();
 	if (!skin)
@@ -724,17 +724,17 @@ void CGUIEditBox::draw()
 		core::stringw s, s2;
 
 		// get mark position
-		bool ml = (!PasswordBox && (WordWrap || MultiLine));
-		s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-		s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
-		s32 hlineStart = ml ? getLineFromPos(realmbgn) : 0;
-		s32 hlineCount = ml ? getLineFromPos(realmend) - hlineStart + 1 : 1;
-		s32 lineCount  = ml ? BrokenText.size() : 1;
+		const bool ml = (!PasswordBox && (WordWrap || MultiLine));
+		const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+		const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+		const s32 hlineStart = ml ? getLineFromPos(realmbgn) : 0;
+		const s32 hlineCount = ml ? getLineFromPos(realmend) - hlineStart + 1 : 1;
+		const s32 lineCount = ml ? BrokenText.size() : 1;
 
 		// Save the override color information.
 		// Then, alter it if the edit box is disabled.
-		bool prevOver = OverrideColorEnabled;
-		video::SColor prevColor = OverrideColor;
+		const bool prevOver = OverrideColorEnabled;
+		const video::SColor prevColor = OverrideColor;
 
 		if (Text.size())
 		{
@@ -999,10 +999,7 @@ s32 CGUIEditBox::getCursorPos(s32 x, s32 y)
 	if (!OverrideFont)
 		font = skin->getFont();
 
-	u32 lineCount = 1;
-
-	if (WordWrap || MultiLine)
-		lineCount = BrokenText.size();
+	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 
 	core::stringw *txtLine=0;
 	s32 startPos=0;
@@ -1157,7 +1154,6 @@ void CGUIEditBox::breakText()
 void CGUIEditBox::setTextRect(s32 line)
 {
 	core::dimension2du d;
-	s32 lineCount = 1;
 
 	IGUISkin* skin = Environment->getSkin();
 	if (!skin)
@@ -1169,9 +1165,9 @@ void CGUIEditBox::setTextRect(s32 line)
 		return;
 
 	// get text dimension
+	const u32 lineCount = (WordWrap || MultiLine) ? BrokenText.size() : 1;
 	if (WordWrap || MultiLine)
 	{
-		lineCount = BrokenText.size();
 		d = font->getDimension(BrokenText[line].c_str());
 	}
 	else
@@ -1259,8 +1255,8 @@ void CGUIEditBox::inputChar(wchar_t c)
 			if (MarkBegin != MarkEnd)
 			{
 				// replace marked text
-				s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
-				s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
+				const s32 realmbgn = MarkBegin < MarkEnd ? MarkBegin : MarkEnd;
+				const s32 realmend = MarkBegin < MarkEnd ? MarkEnd : MarkBegin;
 
 				s = Text.subString(0, realmbgn);
 				s.append(c);
@@ -1304,7 +1300,7 @@ void CGUIEditBox::calculateScrollPos()
 		if (!skin)
 			return;
 		IGUIFont* font = OverrideFont ? OverrideFont : skin->getFont();
-		if (!OverrideFont)
+		if (!font)
 			return;
 
 		core::stringw *txtLine = MultiLine ? &BrokenText[cursLine] : &Text;
@@ -1323,7 +1319,6 @@ void CGUIEditBox::calculateScrollPos()
 			HScrollPos = 0;
 
 		// todo: adjust scrollbar
-
 	}
 
 	// vertical scroll position
