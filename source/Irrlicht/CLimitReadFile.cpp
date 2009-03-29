@@ -11,9 +11,10 @@ namespace io
 {
 
 
-CLimitReadFile::CLimitReadFile(IReadFile* alreadyOpenedFile, long pos, long areaSize,
-							   const core::string<c16>& name)
-: Filename(name), AreaStart(0), AreaEnd(0), Pos(0), File(alreadyOpenedFile)
+CLimitReadFile::CLimitReadFile(IReadFile* alreadyOpenedFile, long pos,
+		long areaSize, const core::string<c16>& name)
+	: Filename(name), AreaStart(0), AreaEnd(0), Pos(0),
+	File(alreadyOpenedFile)
 {
 	#ifdef _DEBUG
 	setDebugName("CLimitReadFile");
@@ -35,19 +36,18 @@ CLimitReadFile::~CLimitReadFile()
 }
 
 
-
 //! returns how much was read
 s32 CLimitReadFile::read(void* buffer, u32 sizeToRead)
 {
 #if 1
-	if ( 0 == File )
+	if (0 == File)
 		return 0;
 
 	s32 r = AreaStart + Pos;
-	s32 toRead = core::s32_min( AreaEnd, r + sizeToRead ) - core::s32_max( AreaStart, r );
-	if ( toRead < 0 )
+	s32 toRead = core::s32_min(AreaEnd, r + sizeToRead) - core::s32_max(AreaStart, r);
+	if (toRead < 0)
 		return 0;
-	File->seek ( r );
+	File->seek(r);
 	r = File->read(buffer, toRead);
 	Pos += r;
 	return r;
@@ -65,14 +65,11 @@ s32 CLimitReadFile::read(void* buffer, u32 sizeToRead)
 }
 
 
-
 //! changes position in file, returns true if successful
-//! if relativeMovement==true, the pos is changed relative to current pos,
-//! otherwise from begin of file
 bool CLimitReadFile::seek(long finalPos, bool relativeMovement)
 {
 #if 1
-	Pos = core::s32_clamp ( finalPos + (relativeMovement ? Pos : 0 ), 0, AreaEnd - AreaStart );
+	Pos = core::s32_clamp(finalPos + (relativeMovement ? Pos : 0 ), 0, AreaEnd - AreaStart);
 	return true;
 #else
 	const long pos = File->getPos();
@@ -101,7 +98,6 @@ long CLimitReadFile::getSize() const
 }
 
 
-
 //! returns where in the file we are.
 long CLimitReadFile::getPos() const
 {
@@ -111,7 +107,6 @@ long CLimitReadFile::getPos() const
 	return File->getPos() - AreaStart;
 #endif
 }
-
 
 
 //! returns name of file
