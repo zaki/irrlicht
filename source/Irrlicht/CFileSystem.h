@@ -36,6 +36,9 @@ public:
 	//! Creates an IReadFile interface for accessing memory like a file.
 	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped = false);
 
+	//! Creates an IReadFile interface for accessing files inside files
+	virtual IReadFile* createLimitReadFile(const core::string<c16>& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize);
+
 	//! Creates an IWriteFile interface for accessing memory like a file.
 	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped=false);
 

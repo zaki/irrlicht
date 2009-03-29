@@ -16,6 +16,7 @@
 #include "os.h"
 #include "CAttributes.h"
 #include "CMemoryFile.h"
+#include "CLimitReadFile.h"
 
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
@@ -85,13 +86,25 @@ IReadFile* CFileSystem::createAndOpenFile(const core::string<c16>& filename)
 
 //! Creates an IReadFile interface for treating memory like a file.
 IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len,
-			const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
+		const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
 {
 	if (!memory)
 		return 0;
 	else
 		return new CMemoryFile(memory, len, fileName, deleteMemoryWhenDropped);
 }
+
+
+//! Creates an IReadFile interface for reading files inside files
+IReadFile* CFileSystem::createLimitReadFile(const core::string<c16>& fileName,
+		IReadFile* alreadyOpenedFile, long pos, long areaSize)
+{
+	if (!alreadyOpenedFile)
+		return 0;
+	else
+		return new CLimitReadFile(alreadyOpenedFile, pos, areaSize, fileName);
+}
+
 
 //! Creates an IReadFile interface for treating memory like a file.
 IWriteFile* CFileSystem::createMemoryWriteFile(void* memory, s32 len,

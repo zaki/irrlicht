@@ -53,6 +53,19 @@ public:
 	*/
 	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped=false) =0;
 
+	//! Creates an IReadFile interface for accessing files inside files.
+	/** This is useful e.g. for archives.
+	\param fileName: The name given to this file
+	\param alreadyOpenedFile: Pointer to the enclosing file
+	\param pos: Start of the file inside alreadyOpenedFile
+	\param areaSize: The length of the file
+	\return A pointer to the created file interface.
+	The returned pointer should be dropped when no longer needed.
+	See IReferenceCounted::drop() for more information.
+	*/
+	virtual IReadFile* createLimitReadFile(const core::string<c16>& fileName,
+			IReadFile* alreadyOpenedFile, long pos, long areaSize) =0;
+
 	//! Creates an IWriteFile interface for accessing memory like a file.
 	/** This allows you to use a pointer to memory where an IWriteFile is requested.
 		You are responsible for allocating enough memory.
