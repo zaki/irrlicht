@@ -1543,7 +1543,7 @@ void CQ3LevelMesh::InitShader()
 
 	if ( LoadParam.loadAllShaders )
 	{
-		io::eFileSystemType current = FileSystem->setFileListSystem ( io::FILESYSTEM_VIRTUAL );
+		io::EFileSystemType current = FileSystem->setFileListSystem ( io::FILESYSTEM_VIRTUAL );
 		core::string<c16> save = FileSystem->getWorkingDirectory();
 
 		core::string<c16> newDir;

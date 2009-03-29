@@ -328,7 +328,6 @@ bool CZipReader::scanLocalHeader()
 }
 
 
-
 //! opens a file by file name
 IReadFile* CZipReader::openFile(const core::string<c16>& filename)
 {
@@ -339,7 +338,6 @@ IReadFile* CZipReader::openFile(const core::string<c16>& filename)
 
 	return 0;
 }
-
 
 
 //! opens a file by index
@@ -440,13 +438,11 @@ IReadFile* CZipReader::openFile(s32 index)
 }
 
 
-
 //! returns count of files in archive
-u32 CZipReader::getFileCount()
+u32 CZipReader::getFileCount() const
 {
 	return FileList.size();
 }
-
 
 
 //! returns data of file
@@ -532,7 +528,7 @@ IFileArchive* CArchiveLoaderMount::createArchive(const core::string<c16>& filena
 {
 	IFileArchive *archive = 0;
 
-	eFileSystemType current = FileSystem->setFileListSystem ( FILESYSTEM_NATIVE );
+	EFileSystemType current = FileSystem->setFileListSystem ( FILESYSTEM_NATIVE );
 
 	core::string<c16> save = FileSystem->getWorkingDirectory ();
 	core::string<c16> fullPath = FileSystem->getAbsolutePath ( filename );

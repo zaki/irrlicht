@@ -23,12 +23,6 @@ CArchiveLoaderPAK::CArchiveLoaderPAK( io::IFileSystem* fs)
 }
 
 
-//! destructor
-CArchiveLoaderPAK::~CArchiveLoaderPAK()
-{
-}
-
-
 //! returns true if the file maybe is able to be loaded by this class
 bool CArchiveLoaderPAK::isALoadableFileFormat(const core::string<c16>& filename) const
 {
@@ -219,7 +213,7 @@ IReadFile* CPakReader::openFile(s32 index)
 
 
 //! returns count of files in archive
-u32 CPakReader::getFileCount()
+u32 CPakReader::getFileCount() const
 {
 	return FileList.size();
 }
