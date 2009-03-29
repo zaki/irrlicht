@@ -38,9 +38,6 @@ namespace io
 		//! Constructor
 		CArchiveLoaderPAK(io::IFileSystem* fs);
 
-		//! destructor
-		virtual ~CArchiveLoaderPAK();
-
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".zip")
 		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
@@ -77,10 +74,10 @@ namespace io
 		virtual IReadFile* openFile(const core::string<c16>& filename);
 
 		//! opens a file by index
-		IReadFile* openFile(s32 index);
+		virtual IReadFile* openFile(s32 index);
 
 		//! returns count of files in archive
-		virtual u32 getFileCount();
+		virtual u32 getFileCount() const;
 
 		//! returns data of file
 		virtual const IFileArchiveEntry* getFileInfo(u32 index);

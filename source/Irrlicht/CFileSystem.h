@@ -51,11 +51,17 @@ public:
 	//! Adds an external archive loader to the engine.
 	virtual void addArchiveLoader(IArchiveLoader* loader);
 
+	//! gets the file archive count
+	virtual u32 getFileArchiveCount() const;
+
 	//! gets an archive
-	virtual u32 getFileArchiveCount();
-	virtual IFileArchive* getFileArchive( u32 index );
-	//! removes an archive to the file system.
-	virtual bool unregisterFileArchive( u32 index );
+	virtual IFileArchive* getFileArchive(u32 index);
+
+	//! removes an archive from the file system.
+	virtual bool unregisterFileArchive(u32 index);
+
+	//! removes an archive from the file system.
+	virtual bool unregisterFileArchive(const core::string<c16>& filename);
 
 	//! Returns the string of the current working directory
 	virtual const core::string<c16>& getWorkingDirectory();
@@ -80,12 +86,13 @@ public:
 	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
 	virtual core::string<c16>& flattenFilename( core::string<c16>& directory, const core::string<c16>& root = "/" ) const;
 
+	virtual EFileSystemType setFileListSystem(EFileSystemType listType);
+
 	//! Creates a list of files and directories in the current working directory 
 	//! and returns it.
-	virtual eFileSystemType setFileListSystem( eFileSystemType listType);
 	virtual IFileList* createFileList();
 
-	//! determinates if a file exists and would be able to be opened.
+	//! determines if a file exists and would be able to be opened.
 	virtual bool existFile(const core::string<c16>& filename) const;
 
 	//! Creates a XML Reader from a file.
@@ -111,12 +118,10 @@ public:
 
 private:
 
-	eFileSystemType FileSystemType;					// Currently used FileSystemType
-	core::string<c16> WorkingDirectory [2];			// WorkingDirectory for Native/Virtual
-
-	core::array< IArchiveLoader* > ArchiveLoader;	// currently attached ArchiveLoaders
-	core::array< IFileArchive*> FileArchive;		// currently attached Archives
-
+	EFileSystemType FileSystemType;			// Currently used FileSystemType
+	core::string<c16> WorkingDirectory [2];		// WorkingDirectory for Native/Virtual
+	core::array<IArchiveLoader*> ArchiveLoader;	// currently attached ArchiveLoaders
+	core::array<IFileArchive*> FileArchives;	// currently attached Archives
 };
 
 

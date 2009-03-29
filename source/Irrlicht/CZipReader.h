@@ -165,7 +165,7 @@ namespace io
 		virtual IReadFile* openFile(s32 index);
 
 		//! returns count of files in archive
-		virtual u32 getFileCount();
+		virtual u32 getFileCount() const;
 
 		//! returns data of file
 		virtual const IFileArchiveEntry* getFileInfo(u32 index);
@@ -253,7 +253,7 @@ namespace io
 	private:
 
 		IFileSystem *Parent;
-		void buildDirectory ();
+		void buildDirectory();
 
 	};
 
