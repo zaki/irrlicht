@@ -1398,7 +1398,7 @@ void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 	else
 	if (element == L"string")
 	{
-		addString(name.c_str(), "");
+		addString(name.c_str(), L"");
 		Attributes.getLast()->setString(reader->getAttributeValue(L"value"));
 	}
 	else
