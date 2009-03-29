@@ -152,6 +152,13 @@ bool CFileSystem::registerFileArchive(const core::string<c16>& filename, bool ig
 	bool ret = false;
 	u32 i;
 
+	// check if the archive was already loaded
+	for (i = 0; i < FileArchives.size(); ++i)
+	{
+		if (filename == FileArchives[i]->getArchiveName())
+			return true;
+	}
+
 	// try to load archive based on file name
 	for (i = 0; i < ArchiveLoader.size(); ++i)
 	{
