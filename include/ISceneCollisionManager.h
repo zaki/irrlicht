@@ -42,9 +42,8 @@ namespace scene
 		the scene node associated with the triangle that was hit.
 		\return True if a collision was detected and false if not. */
 		virtual bool getCollisionPoint(const core::line3d<f32>& ray,
-			ITriangleSelector* selector, core::vector3df& outCollisionPoint,
-			core::triangle3df& outTriangle,
-			const ISceneNode*& outNode) = 0;
+				ITriangleSelector* selector, core::vector3df& outCollisionPoint,
+				core::triangle3df& outTriangle, const ISceneNode*& outNode) =0;
 
 		//! Collides a moving ellipsoid with a 3d world with gravity and returns the resulting new position of the ellipsoid.
 		/** This can be used for moving a character in a 3d world: The
@@ -132,8 +131,8 @@ namespace scene
 		\return Returns the scene node nearest to ray.start, which collides with the
 		ray and matches the idBitMask, if the mask is not null. If no scene
 		node is found, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32> ray,	
-										s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
+		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32>& ray,	
+							s32 idBitMask=0, bool bNoDebugObjects = false) =0;
 
 		//! Get the scene node, which the given camera is looking at and whose id matches the bitmask.
 		/** A ray is simply casted from the position of the camera to

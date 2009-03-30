@@ -30,7 +30,6 @@ CSceneCollisionManager::CSceneCollisionManager(ISceneManager* smanager, video::I
 }
 
 
-
 //! destructor
 CSceneCollisionManager::~CSceneCollisionManager()
 {
@@ -39,13 +38,12 @@ CSceneCollisionManager::~CSceneCollisionManager()
 }
 
 
-
 //! Returns the scene node, which is currently visible under the overgiven
 //! screencoordinates, viewed from the currently active camera.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
 	const core::position2d<s32> & pos, s32 idBitMask, bool bNoDebugObjects)
 {
-	core::line3d<f32> ln = getRayFromScreenCoordinates(pos, 0);
+	const core::line3d<f32> ln = getRayFromScreenCoordinates(pos, 0);
 
 	if ( ln.start == ln.end )
 		return 0;
@@ -54,12 +52,10 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
 }
 
 
-
 //! Returns the nearest scene node which collides with a 3d ray and
 //! which id matches a bitmask.
-ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32> ray,	
-															s32 idBitMask,
-															bool bNoDebugObjects)
+ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32>& ray,
+						s32 idBitMask, bool bNoDebugObjects)
 {
 	ISceneNode* best = 0;
 	f32 dist = FLT_MAX;
@@ -74,143 +70,140 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32
 
 
 //! recursive method for going through all scene nodes
-void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
-               core::line3df& ray,
-               s32 bits,
-               bool bNoDebugObjects,
-               f32& outbestdistance,
-               ISceneNode*& outbestnode)
+void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root, core::line3df& ray,
+			s32 bits, bool bNoDebugObjects,
+			f32& outbestdistance, ISceneNode*& outbestnode)
 {
-   const core::list<ISceneNode*>& children = root->getChildren();
-   const core::vector3df rayVector = ray.getVector().normalize();
+	const core::list<ISceneNode*>& children = root->getChildren();
+	const core::vector3df rayVector = ray.getVector().normalize();
 
-   core::list<ISceneNode*>::ConstIterator it = children.begin();
-   for (; it != children.end(); ++it)
-   {
-      ISceneNode* current = *it;
+	core::list<ISceneNode*>::ConstIterator it = children.begin();
+	for (; it != children.end(); ++it)
+	{
+		ISceneNode* current = *it;
 
-      if (current->isVisible())
-	  {
-		  if((bNoDebugObjects ? !current->isDebugObject() : true) &&
-			(bits==0 || (bits != 0 && (current->getID() & bits))))
-		  {
-			 // get world to object space transform
-			 core::matrix4 worldToObject;
-			 if (!current->getAbsoluteTransformation().getInverse(worldToObject))
-				continue;
+		if (current->isVisible())
+		{
+			if((bNoDebugObjects ? !current->isDebugObject() : true) &&
+				(bits==0 || (bits != 0 && (current->getID() & bits))))
+			{
+				// get world to object space transform
+				core::matrix4 worldToObject;
+				if (!current->getAbsoluteTransformation().getInverse(worldToObject))
+					continue;
 
-			 // transform vector from world space to object space
-			 core::line3df objectRay(ray);
-			 worldToObject.transformVect(objectRay.start);
-			 worldToObject.transformVect(objectRay.end);
+				// transform vector from world space to object space
+				core::line3df objectRay(ray);
+				worldToObject.transformVect(objectRay.start);
+				worldToObject.transformVect(objectRay.end);
 
-			 const core::aabbox3df & objectBox = current->getBoundingBox();
+				const core::aabbox3df & objectBox = current->getBoundingBox();
 
-			 // Do the initial intersection test in object space, since the
-			 // object space box test is more accurate.
-			 if(objectBox.isPointInside(objectRay.start))
-			 {
-				// If the line starts inside the box, then consider the distance as being
-				// to the centre of the box.
-				const f32 toIntersectionSq = objectRay.start.getDistanceFromSQ(objectBox.getCenter());
-				if(toIntersectionSq < outbestdistance)
+				// Do the initial intersection test in object space, since the
+				// object space box test is more accurate.
+				if(objectBox.isPointInside(objectRay.start))
 				{
-					outbestdistance = toIntersectionSq;
-					outbestnode = current;
-
-					// And we can truncate the ray to stop us hitting further nodes.
-					ray.end = ray.start + (rayVector * sqrtf(toIntersectionSq));
-				}
-			 }
-			 else if (objectBox.intersectsWithLine(objectRay))
-			 {
-				// Now transform into world space, since we need to use world space
-				// scales and distances.
-				core::aabbox3df worldBox(objectBox);
-				current->getAbsoluteTransformation().transformBox(worldBox);
-
-				core::vector3df edges[8];
-				worldBox.getEdges(edges);
-
-				/* We need to check against each of 6 faces, composed of these corners:
-					  /3--------/7
-					 /  |      / |
-					/   |     /  |
-					1---------5  |
-					|   2- - -| -6
-					|  /      |  /
-					|/        | /
-					0---------4/
-
-					Note that we define them as opposite pairs of faces.
-				*/
-				static const s32 faceEdges[6][3] =
-				{
-					{ 0, 1, 5 }, // Front
-					{ 6, 7, 3 }, // Back
-					{ 2, 3, 1 }, // Left
-					{ 4, 5, 7 }, // Right
-					{ 1, 3, 7 }, // Top
-					{ 2, 0, 4 }  // Bottom
-				};
-
-				core::vector3df intersection;
-				core::plane3df facePlane;
-
-				bool gotHit = false;
-				for(s32 face = 0; face < 6 && !gotHit; ++face)
-				{
-					facePlane.setPlane(edges[faceEdges[face][0]],
-										edges[faceEdges[face][1]],
-										edges[faceEdges[face][2]]);
-
-					// Only consider lines that might be entering through this face, since we
-					// already know that the start point is outside the box.
-					if(facePlane.classifyPointRelation(ray.start) != core::ISREL3D_FRONT)
-						continue;
-
-					// Don't bother using a limited ray, since we already know that it should be long
-					// enough to intersect with the box.
-					if(facePlane.getIntersectionWithLine(ray.start, rayVector, intersection))
+					// If the line starts inside the box, then consider the distance as being
+					// to the centre of the box.
+					const f32 toIntersectionSq = objectRay.start.getDistanceFromSQ(objectBox.getCenter());
+					if(toIntersectionSq < outbestdistance)
 					{
-						const f32 toIntersectionSq = ray.start.getDistanceFromSQ(intersection);
-						if(toIntersectionSq < outbestdistance)
+						outbestdistance = toIntersectionSq;
+						outbestnode = current;
+
+						// And we can truncate the ray to stop us hitting further nodes.
+						ray.end = ray.start + (rayVector * sqrtf(toIntersectionSq));
+					}
+				}
+				else if (objectBox.intersectsWithLine(objectRay))
+				{
+					// Now transform into world space, since we need to use world space
+					// scales and distances.
+					core::aabbox3df worldBox(objectBox);
+					current->getAbsoluteTransformation().transformBox(worldBox);
+
+					core::vector3df edges[8];
+					worldBox.getEdges(edges);
+
+					/* We need to check against each of 6 faces, composed of these corners:
+						  /3--------/7
+						 /  |      / |
+						/   |     /  |
+						1---------5  |
+						|   2- - -| -6
+						|  /      |  /
+						|/        | /
+						0---------4/
+
+						Note that we define them as opposite pairs of faces.
+					*/
+					static const s32 faceEdges[6][3] =
+					{
+						{ 0, 1, 5 }, // Front
+						{ 6, 7, 3 }, // Back
+						{ 2, 3, 1 }, // Left
+						{ 4, 5, 7 }, // Right
+						{ 1, 3, 7 }, // Top
+						{ 2, 0, 4 }  // Bottom
+					};
+
+					core::vector3df intersection;
+					core::plane3df facePlane;
+
+					bool gotHit = false;
+					for(s32 face = 0; face < 6 && !gotHit; ++face)
+					{
+						facePlane.setPlane(edges[faceEdges[face][0]],
+											edges[faceEdges[face][1]],
+											edges[faceEdges[face][2]]);
+
+						// Only consider lines that might be entering through this face, since we
+						// already know that the start point is outside the box.
+						if(facePlane.classifyPointRelation(ray.start) != core::ISREL3D_FRONT)
+							continue;
+
+						// Don't bother using a limited ray, since we already know that it should be long
+						// enough to intersect with the box.
+						if(facePlane.getIntersectionWithLine(ray.start, rayVector, intersection))
 						{
-							// We have to check that the intersection with this plane is actually
-							// on the box, so need to go back to object space again.  We also
-							// need to move the intersection very slightly closer to the centre of
-							// the box to take into account fp precision losses, since the intersection
-							// will axiomatically be on the very edge of the box.
-							worldToObject.transformVect(intersection);
-							intersection *= 0.99f;
-
-							if(objectBox.isPointInside(intersection))
+							const f32 toIntersectionSq = ray.start.getDistanceFromSQ(intersection);
+							if(toIntersectionSq < outbestdistance)
 							{
-								outbestdistance = toIntersectionSq;
-								outbestnode = current;
+								// We have to check that the intersection with this plane is actually
+								// on the box, so need to go back to object space again.  We also
+								// need to move the intersection very slightly closer to the centre of
+								// the box to take into account fp precision losses, since the intersection
+								// will axiomatically be on the very edge of the box.
+								worldToObject.transformVect(intersection);
+								intersection *= 0.99f;
 
-								// We can only hit one face, so stop checking now.
-								gotHit = true;
+								if(objectBox.isPointInside(intersection))
+								{
+									outbestdistance = toIntersectionSq;
+									outbestnode = current;
+
+									// We can only hit one face, so stop checking now.
+									gotHit = true;
+								}
 							}
 						}
+
+						// If the ray could be entering through the first face of a pair, then it can't
+						// also be entering through the opposite face, and so we can skip that face.
+						if(0 == (face % 2))
+							++face;
 					}
 
-					// If the ray could be entering through the first face of a pair, then it can't
-					// also be entering through the opposite face, and so we can skip that face.
-					if(0 == (face % 2))
-						++face;
+					// If we got a hit, we can now truncate the ray to stop us hitting further nodes.
+					if (gotHit)
+						ray.end = ray.start + (rayVector * sqrtf(outbestdistance));
 				}
+			}
 
-				// If we got a hit, we can now truncate the ray to stop us hitting further nodes.
-				if(gotHit)
-					ray.end = ray.start + (rayVector * sqrtf(outbestdistance));
-			 }
-		  }
-
-		  // Only check the children if this node is visible.
-	      getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
-	  }
-   }
+			// Only check the children if this node is visible.
+			getPickedNodeBB(current, ray, bits, bNoDebugObjects, outbestdistance, outbestnode);
+		}
+	}
 }
 
 
@@ -224,14 +217,14 @@ ISceneNode* CSceneCollisionManager::getSceneNodeAndCollisionPointFromRay(
 {
 	ISceneNode* bestNode = 0;
 	f32 bestDistanceSquared = FLT_MAX;
- 
+
 	if(0 == collisionRootNode)
 		collisionRootNode = SceneManager->getRootSceneNode();
- 
+
 	// We don't try to do anything too clever, like sorting the candidate
-	// nodes by distance to bounding-box. In the example below, we could do the 
-	// triangle collision check with node A first, but we'd have to check node B 
-	// anyway, as the actual collision point could be (and is) closer than the 
+	// nodes by distance to bounding-box. In the example below, we could do the
+	// triangle collision check with node A first, but we'd have to check node B
+	// anyway, as the actual collision point could be (and is) closer than the
 	// collision point in node A.
 	//
 	//    ray end
@@ -248,20 +241,14 @@ ISceneNode* CSceneCollisionManager::getSceneNodeAndCollisionPointFromRay(
 	//    ray start
 	//
 	// We therefore have to do a full BB and triangle collision on every scene
-	// node in order to find the nearest collision point, so sorting them by 
+	// node in order to find the nearest collision point, so sorting them by
 	// bounding box would be pointless.
 
-	getPickedNodeFromBBAndSelector(collisionRootNode,
-									ray,
-									idBitMask,
-									noDebugObjects,
-									bestDistanceSquared,
-									bestNode,
-									outCollisionPoint,
-									outTriangle);
+	getPickedNodeFromBBAndSelector(collisionRootNode, ray, idBitMask,
+					noDebugObjects, bestDistanceSquared, bestNode,
+					outCollisionPoint, outTriangle);
 	return bestNode;
 }
-
 
 
 void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
@@ -274,60 +261,54 @@ void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 				core::vector3df & outBestCollisionPoint,
 				core::triangle3df & outBestTriangle)
 {
-   const core::list<ISceneNode*>& children = root->getChildren();
+	const core::list<ISceneNode*>& children = root->getChildren();
 
-   core::list<ISceneNode*>::ConstIterator it = children.begin();
-   for (; it != children.end(); ++it)
-   {
-	  ISceneNode* current = *it;
-	  ITriangleSelector * selector = current->getTriangleSelector();
+	core::list<ISceneNode*>::ConstIterator it = children.begin();
+	for (; it != children.end(); ++it)
+	{
+		ISceneNode* current = *it;
+		ITriangleSelector * selector = current->getTriangleSelector();
 
-	  if (selector && current->isVisible() &&
-		  (noDebugObjects ? !current->isDebugObject() : true) &&
-		  (bits==0 || (bits != 0 && (current->getID() & bits))))
-	  {
-		// get world to object space transform
-		core::matrix4 mat;
-		if (!current->getAbsoluteTransformation().getInverse(mat))
-		continue;
+		if (selector && current->isVisible() &&
+			(noDebugObjects ? !current->isDebugObject() : true) &&
+			(bits==0 || (bits != 0 && (current->getID() & bits))))
+		{
+			// get world to object space transform
+			core::matrix4 mat;
+			if (!current->getAbsoluteTransformation().getInverse(mat))
+			continue;
 
-		// transform vector from world space to object space
-		core::line3df line(ray);
-		mat.transformVect(line.start);
-		mat.transformVect(line.end);
+			// transform vector from world space to object space
+			core::line3df line(ray);
+			mat.transformVect(line.start);
+			mat.transformVect(line.end);
 
-		const core::aabbox3df& box = current->getBoundingBox();
+			const core::aabbox3df& box = current->getBoundingBox();
 
-		core::vector3df candidateCollisionPoint;
-		core::triangle3df candidateTriangle;
+			core::vector3df candidateCollisionPoint;
+			core::triangle3df candidateTriangle;
 
-		// do intersection test in object space
-		const ISceneNode * hitNode = 0;
-		if (box.intersectsWithLine(line)
-			&&
-			getCollisionPoint(ray, selector, candidateCollisionPoint, candidateTriangle, hitNode))
-		 {
-			 const f32 distanceSquared = (candidateCollisionPoint - ray.start).getLengthSQ();
+			// do intersection test in object space
+			const ISceneNode * hitNode = 0;
+			if (box.intersectsWithLine(line) &&
+				getCollisionPoint(ray, selector, candidateCollisionPoint, candidateTriangle, hitNode))
+			{
+				const f32 distanceSquared = (candidateCollisionPoint - ray.start).getLengthSQ();
 
-			 if(distanceSquared < outBestDistanceSquared)
-			 {
-				outBestDistanceSquared = distanceSquared;
-				outBestNode = current;
-				outBestCollisionPoint = candidateCollisionPoint;
-				outBestTriangle = candidateTriangle;
-			 }
-		 }
-	  }
+				if(distanceSquared < outBestDistanceSquared)
+				{
+					outBestDistanceSquared = distanceSquared;
+					outBestNode = current;
+					outBestCollisionPoint = candidateCollisionPoint;
+					outBestTriangle = candidateTriangle;
+				}
+			}
+		}
 
-	  getPickedNodeFromBBAndSelector(current, 
-									ray, 
-									bits, 
-									noDebugObjects, 
-									outBestDistanceSquared, 
-									outBestNode, 
-									outBestCollisionPoint, 
-									outBestTriangle);
-   }
+		getPickedNodeFromBBAndSelector(current, ray, bits, noDebugObjects,
+						outBestDistanceSquared, outBestNode,
+						outBestCollisionPoint, outBestTriangle);
+	}
 }
 
 
@@ -339,22 +320,20 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromCameraBB(
 	if (!camera)
 		return 0;
 
-	core::vector3df start = camera->getAbsolutePosition();
+	const core::vector3df start = camera->getAbsolutePosition();
 	core::vector3df end = camera->getTarget();
 
 	end = start + ((end - start).normalize() * camera->getFarValue());
-	core::line3d<f32> line(start, end);
 
-	return getSceneNodeFromRayBB(line, idBitMask, bNoDebugObjects);
+	return getSceneNodeFromRayBB(core::line3d<f32>(start, end), idBitMask, bNoDebugObjects);
 }
-
 
 
 //! Finds the collision point of a line and lots of triangles, if there is one.
 bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
-	ITriangleSelector* selector, core::vector3df& outIntersection,
-	core::triangle3df& outTriangle,
-	const ISceneNode*& outNode)
+		ITriangleSelector* selector, core::vector3df& outIntersection,
+		core::triangle3df& outTriangle,
+		const ISceneNode*& outNode)
 {
 	if (!selector)
 	{
@@ -419,19 +398,18 @@ bool CSceneCollisionManager::getCollisionPoint(const core::line3d<f32>& ray,
 }
 
 
-
 //! Collides a moving ellipsoid with a 3d world with gravity and returns
 //! the resulting new position of the ellipsoid.
 core::vector3df CSceneCollisionManager::getCollisionResultPosition(
-	ITriangleSelector* selector,
-	const core::vector3df &position, const core::vector3df& radius,
-	const core::vector3df& direction,
-	core::triangle3df& triout,
-	core::vector3df& hitPosition,
-	bool& outFalling,
-	const ISceneNode*& outNode,
-	f32 slidingSpeed,
-	const core::vector3df& gravity)
+		ITriangleSelector* selector,
+		const core::vector3df &position, const core::vector3df& radius,
+		const core::vector3df& direction,
+		core::triangle3df& triout,
+		core::vector3df& hitPosition,
+		bool& outFalling,
+		const ISceneNode*& outNode,
+		f32 slidingSpeed,
+		const core::vector3df& gravity)
 {
 	return collideEllipsoidWithWorld(selector, position,
 		radius, direction, slidingSpeed, gravity, triout, hitPosition, outFalling, outNode);
@@ -687,18 +665,17 @@ bool CSceneCollisionManager::testTriangleIntersection(SCollisionData* colData,
 }
 
 
-
 //! Collides a moving ellipsoid with a 3d world with gravity and returns
 //! the resulting new position of the ellipsoid.
 core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
-	ITriangleSelector* selector, const core::vector3df &position,
-	const core::vector3df& radius,  const core::vector3df& velocity,
-	f32 slidingSpeed,
-	const core::vector3df& gravity,
-	core::triangle3df& triout,
-	core::vector3df& hitPosition,
-	bool& outFalling,
-	const ISceneNode*& outNode)
+		ITriangleSelector* selector, const core::vector3df &position,
+		const core::vector3df& radius,  const core::vector3df& velocity,
+		f32 slidingSpeed,
+		const core::vector3df& gravity,
+		core::triangle3df& triout,
+		core::vector3df& hitPosition,
+		bool& outFalling,
+		const ISceneNode*& outNode)
 {
 	if (!selector || radius.X == 0.0f || radius.Y == 0.0f || radius.Z == 0.0f)
 		return position;
@@ -756,6 +733,7 @@ core::vector3df CSceneCollisionManager::collideEllipsoidWithWorld(
 	return finalPos;
 }
 
+
 core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 	SCollisionData &colData, core::vector3df pos, core::vector3df vel)
 {
@@ -784,10 +762,9 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	core::matrix4 scaleMatrix;
 	scaleMatrix.setScale(
-		core::vector3df(1.0f / colData.eRadius.X,
-						1.0f / colData.eRadius.Y,
-						1.0f / colData.eRadius.Z)
-					);
+			core::vector3df(1.0f / colData.eRadius.X,
+					1.0f / colData.eRadius.Y,
+					1.0f / colData.eRadius.Z));
 
 	s32 triangleCnt = 0;
 	colData.selector->getTriangles(Triangles.pointer(), totalTriangleCnt, triangleCnt, box, &scaleMatrix);
@@ -958,5 +935,4 @@ inline bool CSceneCollisionManager::getLowestRoot(f32 a, f32 b, f32 c, f32 maxR,
 
 } // end namespace scene
 } // end namespace irr
-
 

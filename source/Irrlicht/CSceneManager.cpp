@@ -1161,8 +1161,8 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 
 	switch(time)
 	{
-		// take camera if it doesn't exists
-		case ESNRP_CAMERA:
+		// take camera if it is not already registered
+	case ESNRP_CAMERA:
 		{
 			taken = 1;
 			for ( u32 i = 0; i != CameraList.size(); ++i )
@@ -1177,11 +1177,12 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 			{
 				CameraList.push_back(node);
 			}
-		}break;
+		}
+		break;
 
 	case ESNRP_LIGHT:
 		// TODO: Point Light culling..
-		// Lighting modell in irrlicht has to be redone..
+		// Lighting model in irrlicht has to be redone..
 		//if (!isCulled(node))
 		{
 			LightList.push_back(static_cast<ILightSceneNode*>(node));
@@ -1267,6 +1268,7 @@ u32 CSceneManager::registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDE
 
 	return taken;
 }
+
 
 //! This method is called just before the rendering process of the whole scene.
 //! draws all scene nodes
