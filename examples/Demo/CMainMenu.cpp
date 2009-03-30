@@ -195,12 +195,14 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 				light->addAnimator(anim);
 				anim->drop();
 				break;
+			case LIGHT_NONE:
+				break;
 		}
 		l += 1;
 	}
 
 	// create a fixed camera
-	scene::ICameraSceneNode* cam = smgr->addCameraSceneNode(0, core::vector3df(45,0,0), core::vector3df(0,0,10));
+	smgr->addCameraSceneNode(0, core::vector3df(45,0,0), core::vector3df(0,0,10));
 
 
 	// irrlicht logo and background
