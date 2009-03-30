@@ -18,9 +18,6 @@ namespace scene
 		//! constructor
 		CSceneNodeAnimatorDelete(ISceneManager* manager, u32 when);
 
-		//! destructor
-		virtual ~CSceneNodeAnimatorDelete();
-
 		//! animates a scene node
 		virtual void animateNode(ISceneNode* node, u32 timeMs);
 

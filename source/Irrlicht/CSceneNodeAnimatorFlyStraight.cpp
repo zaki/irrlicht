@@ -36,14 +36,6 @@ void CSceneNodeAnimatorFlyStraight::recalculateIntermediateValues()
 }
 
 
-
-//! destructor
-CSceneNodeAnimatorFlyStraight::~CSceneNodeAnimatorFlyStraight()
-{
-}
-
-
-
 //! animates a scene node
 void CSceneNodeAnimatorFlyStraight::animateNode(ISceneNode* node, u32 timeMs)
 {
@@ -101,6 +93,7 @@ void CSceneNodeAnimatorFlyStraight::deserializeAttributes(io::IAttributes* in, i
 	recalculateIntermediateValues();
 }
 
+
 ISceneNodeAnimator* CSceneNodeAnimatorFlyStraight::createClone(ISceneNode* node, ISceneManager* newManager)
 {
 	CSceneNodeAnimatorFlyStraight * newAnimator = 
@@ -108,6 +101,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorFlyStraight::createClone(ISceneNode* node,
 
 	return newAnimator;
 }
+
 
 } // end namespace scene
 } // end namespace irr

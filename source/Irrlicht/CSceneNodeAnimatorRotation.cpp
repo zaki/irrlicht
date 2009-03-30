@@ -9,6 +9,7 @@ namespace irr
 namespace scene
 {
 
+
 //! constructor
 CSceneNodeAnimatorRotation::CSceneNodeAnimatorRotation(u32 time, const core::vector3df& rotation)
 : Rotation(rotation), StartTime(time)

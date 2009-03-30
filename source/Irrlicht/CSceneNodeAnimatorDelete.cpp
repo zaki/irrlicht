@@ -21,14 +21,6 @@ CSceneNodeAnimatorDelete::CSceneNodeAnimatorDelete(ISceneManager* manager, u32 t
 }
 
 
-
-//! destructor
-CSceneNodeAnimatorDelete::~CSceneNodeAnimatorDelete()
-{
-}
-
-
-
 //! animates a scene node
 void CSceneNodeAnimatorDelete::animateNode(ISceneNode* node, u32 timeMs)
 {
@@ -44,6 +36,7 @@ void CSceneNodeAnimatorDelete::animateNode(ISceneNode* node, u32 timeMs)
 	}
 }
 
+
 ISceneNodeAnimator* CSceneNodeAnimatorDelete::createClone(ISceneNode* node, ISceneManager* newManager)
 {
 	CSceneNodeAnimatorDelete * newAnimator = 
@@ -51,6 +44,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorDelete::createClone(ISceneNode* node, ISce
 
 	return newAnimator;
 }
+
 
 } // end namespace scene
 } // end namespace irr
