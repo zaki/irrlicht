@@ -166,33 +166,36 @@ bool CIrrDeviceSDL::createWindow()
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
 			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
 		}
-		
-	}
-
-	if ( !Screen )
-		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
-	if ( !Screen && CreationParams.AntiAlias>1)
-	{
-		while (--CreationParams.AntiAlias>1)
-		{
-			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
-			Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
-			if (Screen)
-				break;
-		}
 		if ( !Screen )
-		{
-			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 0 );
-			SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, 0 );
 			Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
-			if (Screen)
-				os::Printer::log("AntiAliasing disabled due to lack of support!" );
+		if ( !Screen && CreationParams.AntiAlias>1)
+		{
+			while (--CreationParams.AntiAlias>1)
+			{
+				SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, CreationParams.AntiAlias );
+				Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+				if (Screen)
+					break;
+			}
+			if ( !Screen )
+			{
+				SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 0 );
+				SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, 0 );
+				Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+				if (Screen)
+					os::Printer::log("AntiAliasing disabled due to lack of support!" );
+			}
 		}
 	}
+	else if ( !Screen )
+		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+
 	if ( !Screen && CreationParams.Doublebuffer)
 	{
 		// Try single buffer
-		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		if (CreationParams.DriverType == video::EDT_OPENGL)
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+		SDL_Flags &= ~SDL_DOUBLEBUF;
 		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
 	}
 	if ( !Screen )
@@ -377,28 +380,27 @@ bool CIrrDeviceSDL::run()
 				mp.SDLKey = SDL_event.key.keysym.sym;
 				s32 idx = KeyMap.binary_search(mp);
 
-				if (idx != -1)
-				{
-					EKEY_CODE key = (EKEY_CODE)KeyMap[idx].Win32Key;
+				EKEY_CODE key;
+				if (idx == -1)
+					key = (EKEY_CODE)0;
+				else
+					key = (EKEY_CODE)KeyMap[idx].Win32Key;
 
 #ifdef _IRR_WINDOWS_API_
-					// handle alt+f4 in Windows, because SDL seems not to
-					if ( (SDL_event.key.keysym.mod & KMOD_LALT) && key == KEY_F4)
-					{
-						Close = true;
-						break;
-					}
-#endif
-					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
-					irrevent.KeyInput.Char = SDL_event.key.keysym.unicode;
-					irrevent.KeyInput.Key = key;
-					irrevent.KeyInput.PressedDown = (SDL_event.type == SDL_KEYDOWN);
-					irrevent.KeyInput.Shift = (SDL_event.key.keysym.mod & KMOD_SHIFT) != 0;
-					irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL ) != 0;
-					postEventFromUser(irrevent);
+				// handle alt+f4 in Windows, because SDL seems not to
+				if ( (SDL_event.key.keysym.mod & KMOD_LALT) && key == KEY_F4)
+				{
+					Close = true;
+					break;
 				}
-				else
-					os::Printer::log("Could not find win32 key for SDL key.");
+#endif
+				irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
+				irrevent.KeyInput.Char = SDL_event.key.keysym.unicode;
+				irrevent.KeyInput.Key = key;
+				irrevent.KeyInput.PressedDown = (SDL_event.type == SDL_KEYDOWN);
+				irrevent.KeyInput.Shift = (SDL_event.key.keysym.mod & KMOD_SHIFT) != 0;
+				irrevent.KeyInput.Control = (SDL_event.key.keysym.mod & KMOD_CTRL ) != 0;
+				postEventFromUser(irrevent);
 			}
 			break;
 
@@ -420,7 +422,7 @@ bool CIrrDeviceSDL::run()
 			{
 				Width = SDL_event.resize.w;
 				Height = SDL_event.resize.h;
-				Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+				Screen = SDL_SetVideoMode( Width, Height, 0, SDL_Flags );
 				if (VideoDriver)
 					VideoDriver->OnResize(core::dimension2d<u32>(Width, Height));
 			}
@@ -718,7 +720,7 @@ void CIrrDeviceSDL::setResizable(bool resize)
 			SDL_Flags |= SDL_RESIZABLE;
 		else
 			SDL_Flags &= ~SDL_RESIZABLE;
-		Screen = SDL_SetVideoMode( Width, Height, CreationParams.Bits, SDL_Flags );
+		Screen = SDL_SetVideoMode( 0, 0, 0, SDL_Flags );
 		Resizable = resize;
 	}
 }
