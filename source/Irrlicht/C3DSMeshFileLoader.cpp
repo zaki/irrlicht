@@ -1340,18 +1340,19 @@ void C3DSMeshFileLoader::readVertices(io::IReadFile* file, ChunkData& data)
 #endif
 	data.read += sizeof(CountVertices);
 
-	s32 vertexBufferByteSize = CountVertices * sizeof(f32) * 3;
+	const s32 vertexBufferByteSize = CountVertices * sizeof(f32) * 3;
 
 	if (data.header.length - data.read != vertexBufferByteSize)
 	{
-		os::Printer::log("Invalid size of vertices found in 3ds file.", ELL_WARNING);
+		os::Printer::log("Invalid size of vertices found in 3ds file", core::stringc(CountVertices), ELL_ERROR);
 		return;
 	}
 
 	Vertices = new f32[CountVertices * 3];
 	file->read(Vertices, vertexBufferByteSize);
 #ifdef __BIG_ENDIAN__
-	for (int i=0;i<CountVertices*3;i++) Vertices[i] = os::Byteswap::byteswap(Vertices[i]);
+	for (int i=0;i<CountVertices*3;i++)
+		Vertices[i] = os::Byteswap::byteswap(Vertices[i]);
 #endif
 	data.read += vertexBufferByteSize;
 }
