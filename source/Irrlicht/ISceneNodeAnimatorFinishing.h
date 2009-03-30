@@ -20,12 +20,6 @@ namespace scene
 		ISceneNodeAnimatorFinishing(u32 finishTime)
 			: FinishTime(finishTime), HasFinished(false) { }
 
-		//! destructor
-		virtual ~ISceneNodeAnimatorFinishing() { }
-
-		//! This is a pure virtual class, so it can't be cloned directly.
-		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) = 0;
-
 		virtual bool hasFinished(void) const { return HasFinished; }
 
 	protected:

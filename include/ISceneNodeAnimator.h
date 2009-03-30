@@ -30,20 +30,16 @@ namespace scene
 	class ISceneNodeAnimator : public io::IAttributeExchangingObject, public IEventReceiver
 	{
 	public:
-
-		//! Destructor
-		virtual ~ISceneNodeAnimator() {}
-
 		//! Animates a scene node.
 		/** \param node Node to animate.
 		\param timeMs Current time in milli seconds. */
-		virtual void animateNode(ISceneNode* node, u32 timeMs) = 0;
+		virtual void animateNode(ISceneNode* node, u32 timeMs) =0;
 
 		//! Creates a clone of this animator.
 		/** Please note that you will have to drop
-		(IReferenceCounted::drop()) the returned pointer after calling
-		this. */
-		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0) = 0;
+		(IReferenceCounted::drop()) the returned pointer after calling this. */
+		virtual ISceneNodeAnimator* createClone(ISceneNode* node,
+				ISceneManager* newManager=0) =0;
 
 		//! Returns true if this animator receives events.
 		/** When attached to an active camera, this animator will be
@@ -67,7 +63,7 @@ namespace scene
 
 		//! Returns if the animator has finished.
 		/** This is only valid for non-looping animators with a discrete end state.
-			\return true if the animator has finished, false if it is still running. */
+		\return true if the animator has finished, false if it is still running. */
 		virtual bool hasFinished(void) const
 		{
 			return false;

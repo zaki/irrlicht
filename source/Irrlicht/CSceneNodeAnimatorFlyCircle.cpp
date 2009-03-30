@@ -9,11 +9,13 @@ namespace irr
 namespace scene
 {
 
+
 //! constructor
-CSceneNodeAnimatorFlyCircle::CSceneNodeAnimatorFlyCircle(u32 time, const core::vector3df& center, f32 radius,
-														 f32 speed, const core::vector3df& direction,
-														 f32 radiusEllipsoid)
-: Center(center), Direction(direction), Radius(radius), RadiusEllipsoid (radiusEllipsoid), Speed(speed), StartTime(time)
+CSceneNodeAnimatorFlyCircle::CSceneNodeAnimatorFlyCircle(u32 time,
+		const core::vector3df& center, f32 radius, f32 speed,
+		const core::vector3df& direction, f32 radiusEllipsoid)
+	: Center(center), Direction(direction), Radius(radius),
+	RadiusEllipsoid(radiusEllipsoid), Speed(speed), StartTime(time)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorFlyCircle");
@@ -83,6 +85,7 @@ void CSceneNodeAnimatorFlyCircle::deserializeAttributes(io::IAttributes* in, io:
 	init();
 }
 
+
 ISceneNodeAnimator* CSceneNodeAnimatorFlyCircle::createClone(ISceneNode* node, ISceneManager* newManager)
 {
 	CSceneNodeAnimatorFlyCircle * newAnimator = 
@@ -90,6 +93,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorFlyCircle::createClone(ISceneNode* node, I
 
 	return newAnimator;
 }
+
 
 } // end namespace scene
 } // end namespace irr
