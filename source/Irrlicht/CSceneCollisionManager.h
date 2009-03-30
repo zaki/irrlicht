@@ -28,12 +28,13 @@ namespace scene
 		//! Returns the scene node, which is currently visible at the given
 		//! screen coordinates, viewed from the currently active camera.
 		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32>& pos,
-						s32 idBitMask=0, bool bNoDebugObjects = false);
+				s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0);
 
 		//! Returns the nearest scene node which collides with a 3d ray and
-		//! which id matches a bitmask.
+		//! whose id matches a bitmask.
 		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32>& ray,
-						s32 idBitMask=0, bool bNoDebugObjects = false);
+						s32 idBitMask=0, bool bNoDebugObjects=false,
+						ISceneNode* root=0);
 
 		//! Returns the scene node, at which the overgiven camera is looking at and
 		//! which id matches the bitmask.
