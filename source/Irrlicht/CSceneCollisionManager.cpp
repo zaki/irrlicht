@@ -38,31 +38,31 @@ CSceneCollisionManager::~CSceneCollisionManager()
 }
 
 
-//! Returns the scene node, which is currently visible under the overgiven
-//! screencoordinates, viewed from the currently active camera.
+//! Returns the scene node, which is currently visible at the given
+//! screen coordinates, viewed from the currently active camera.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromScreenCoordinatesBB(
-	const core::position2d<s32> & pos, s32 idBitMask, bool bNoDebugObjects)
+		const core::position2d<s32>& pos, s32 idBitMask, bool bNoDebugObjects, scene::ISceneNode* root)
 {
 	const core::line3d<f32> ln = getRayFromScreenCoordinates(pos, 0);
 
 	if ( ln.start == ln.end )
 		return 0;
 
-	return getSceneNodeFromRayBB(ln, idBitMask, bNoDebugObjects);
+	return getSceneNodeFromRayBB(ln, idBitMask, bNoDebugObjects, root);
 }
 
 
 //! Returns the nearest scene node which collides with a 3d ray and
 //! which id matches a bitmask.
 ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32>& ray,
-						s32 idBitMask, bool bNoDebugObjects)
+						s32 idBitMask, bool bNoDebugObjects, scene::ISceneNode* root)
 {
 	ISceneNode* best = 0;
 	f32 dist = FLT_MAX;
 
 	core::line3d<f32> truncatableRay(ray);
 
-	getPickedNodeBB(SceneManager->getRootSceneNode(), truncatableRay,
+	getPickedNodeBB((root==0)?SceneManager->getRootSceneNode():root, truncatableRay,
 		idBitMask, bNoDebugObjects, dist, best);
 
 	return best;

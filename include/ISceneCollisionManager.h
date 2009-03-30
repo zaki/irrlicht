@@ -106,7 +106,7 @@ namespace scene
 
 		//! Gets the scene node, which is currently visible under the given screencoordinates, viewed from the currently active camera.
 		/** The collision tests are done using a bounding box for each
-		scene node.
+		scene node. You can limit the recursive search so just all children of the specified root are tested.
 		\param pos: Position in pixel screen coordinates, under which
 		the returned scene node will be.
 		\param idBitMask: Only scene nodes with an id with bits set
@@ -114,25 +114,28 @@ namespace scene
 		feature is disabled.
 		\param bNoDebugObjects: Doesn't take debug objects into account
 		when true. These are scene nodes with IsDebugObject() = true.
+		\param root If different from 0, the search is limited to the children of this node.
 		\return Visible scene node under screen coordinates with
 		matching bits in its id. If there is no scene node under this
 		position, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32> & pos,
-			s32 idBitMask=0, bool bNoDebugObjects = false) = 0;
+		virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32>& pos,
+				s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) =0;
 
 		//! Returns the nearest scene node which collides with a 3d ray and whose id matches a bitmask.
-		/** The collision tests are done using a bounding box for each scene node.
-		\param ray: Line with witch collisions are tested.
-		\param idBitMask: Only scene nodes with an id which matches at least one of the 
-		bits contained in this mask will be tested. However, if this parameter is 0, then 
-		all nodes are checked.
+		/** The collision tests are done using a bounding box for each
+		scene node. The recursive search can be limited be specifying a scene node.
+		\param ray Line with which collisions are tested.
+		\param idBitMask Only scene nodes with an id which matches at
+		least one of the bits contained in this mask will be tested.
+		However, if this parameter is 0, then all nodes are checked.
 		\param bNoDebugObjects: Doesn't take debug objects into account when true. These
 		are scene nodes with IsDebugObject() = true.
-		\return Returns the scene node nearest to ray.start, which collides with the
-		ray and matches the idBitMask, if the mask is not null. If no scene
-		node is found, 0 is returned. */
-		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32>& ray,	
-							s32 idBitMask=0, bool bNoDebugObjects = false) =0;
+		\param root If different from 0, the search is limited to the children of this node.
+		\return Scene node nearest to ray.start, which collides with
+		the ray and matches the idBitMask, if the mask is not null. If
+		no scene node is found, 0 is returned. */
+		virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32>& ray,
+							s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) =0;
 
 		//! Get the scene node, which the given camera is looking at and whose id matches the bitmask.
 		/** A ray is simply casted from the position of the camera to
