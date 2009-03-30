@@ -1167,6 +1167,7 @@ void CQuake3EventHandler::addSceneTreeItem( ISceneNode * parent, IGUITreeViewNod
 				case ESNAT_COLLISION_RESPONSE:
 				case ESNAT_CAMERA_FPS:
 				case ESNAT_CAMERA_MAYA:
+				default:
 					break;
 			}
 			node->addChildBack( msg, 0, imageIndex );
