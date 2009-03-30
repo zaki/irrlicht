@@ -57,7 +57,7 @@ const char* wmDeleteWindow = "WM_DELETE_WINDOW";
 //! constructor
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	: CIrrDeviceStub(param),
-	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_HWSURFACE|SDL_ANYFORMAT),
+	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_ANYFORMAT),
 	MouseX(0), MouseY(0), MouseButtonStates(0),
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	Close(0), Resizable(false),
@@ -78,6 +78,15 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 		os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
 		Close = 1;
 	}
+
+#if defined(_IRR_WINDOWS_)
+	SDL_putenv("SDL_VIDEODRIVER=directx");
+#elif defined(_IRR_OSX_PLATFORM_)
+	SDL_putenv("SDL_VIDEODRIVER=Quartz");
+#else
+	SDL_putenv("SDL_VIDEODRIVER=x11");
+#endif
+//	SDL_putenv("SDL_WINDOWID=");
 
 	SDL_VERSION(&Info.version);
 
