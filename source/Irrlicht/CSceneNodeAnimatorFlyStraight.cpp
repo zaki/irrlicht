@@ -15,8 +15,8 @@ CSceneNodeAnimatorFlyStraight::CSceneNodeAnimatorFlyStraight(const core::vector3
 				const core::vector3df& endPoint, u32 timeForWay,
 				bool loop, u32 now, bool pingpong)
 : ISceneNodeAnimatorFinishing(now + timeForWay),
-	Start(startPoint), End(endPoint), WayLength(0.0f), 
-	TimeFactor(0.0f), StartTime(now), TimeForWay(timeForWay), Loop(loop), PingPong ( pingpong )
+	Start(startPoint), End(endPoint), TimeFactor(0.0f), StartTime(now),
+	TimeForWay(timeForWay), Loop(loop), PingPong(pingpong)
 {
 	#ifdef _DEBUG
 	setDebugName("CSceneNodeAnimatorFlyStraight");
@@ -29,10 +29,8 @@ CSceneNodeAnimatorFlyStraight::CSceneNodeAnimatorFlyStraight(const core::vector3
 void CSceneNodeAnimatorFlyStraight::recalculateIntermediateValues()
 {
 	Vector = End - Start;
-	WayLength = (f32)Vector.getLength();
+	TimeFactor = (f32)Vector.getLength() / TimeForWay;
 	Vector.normalize();
-
-	TimeFactor = WayLength / TimeForWay;
 }
 
 
@@ -96,7 +94,7 @@ void CSceneNodeAnimatorFlyStraight::deserializeAttributes(io::IAttributes* in, i
 
 ISceneNodeAnimator* CSceneNodeAnimatorFlyStraight::createClone(ISceneNode* node, ISceneManager* newManager)
 {
-	CSceneNodeAnimatorFlyStraight * newAnimator = 
+	CSceneNodeAnimatorFlyStraight * newAnimator =
 		new CSceneNodeAnimatorFlyStraight(Start, End, TimeForWay, Loop, StartTime, PingPong);
 
 	return newAnimator;
