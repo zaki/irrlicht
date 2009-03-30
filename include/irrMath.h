@@ -388,28 +388,28 @@ namespace core
 	// calculate: sqrt ( x )
 	REALINLINE f32 squareroot(const f32 f)
 	{
-		return sqrtf ( f );
+		return sqrtf(f);
 	}
 
 	// calculate: sqrt ( x )
 	REALINLINE f64 squareroot(const f64 f)
 	{
-		return sqrt ( f );
+		return sqrt(f);
 	}
 
 	// calculate: sqrt ( x )
 	REALINLINE s32 squareroot(const s32 f)
 	{
-		return (s32) sqrt ( (f32) f );
+		return static_cast<s32>(squareroot(static_cast<f32>(f)));
 	}
 
 	// calculate: 1 / sqrt ( x )
 	REALINLINE f64 reciprocal_squareroot(const f64 x)
 	{
-		return 1.0 / sqrt ( x );
+		return 1.0 / sqrt(x);
 	}
 
-	// calculate: 1 / sqrt ( x )
+	// calculate: 1 / sqrtf ( x )
 	REALINLINE f32 reciprocal_squareroot(const f32 f)
 	{
 #if defined ( IRRLICHT_FAST_MATH )
@@ -428,21 +428,21 @@ namespace core
 		return y * (1.47f - 0.47f * x * y * y);
 */
 	#else
-		return 1.f / sqrtf ( f );
+		return 1.f / sqrtf(f);
 	#endif
 #else // no fast math
-		return 1.f / sqrtf ( f );
+		return 1.f / sqrtf(f);
 #endif
 	}
 
-	// calculate: 1 / sqrt ( x )
-	REALINLINE s32 reciprocal_squareroot(const s32 s)
+	// calculate: 1 / sqrtf( x )
+	REALINLINE s32 reciprocal_squareroot(const s32 x)
 	{
-		return (s32) ( 1.f / sqrtf ( (f32) s ) );
+		return static_cast<s32>(reciprocal_squareroot(static_cast<f32>(x)));
 	}
 
 	// calculate: 1 / x
-	REALINLINE f32 reciprocal ( const f32 f )
+	REALINLINE f32 reciprocal( const f32 f )
 	{
 #if defined (IRRLICHT_FAST_MATH)
 
