@@ -32,7 +32,7 @@ namespace scene
 
 		//! Returns type of the scene node animator
 		virtual ESCENE_NODE_ANIMATOR_TYPE getType() const { return ESNAT_FLY_STRAIGHT; }
-		
+
 		//! Creates a clone of this animator.
 		/** Please note that you will have to drop
 		(IReferenceCounted::drop()) the returned pointer after calling this. */
@@ -45,7 +45,6 @@ namespace scene
 		core::vector3df Start;
 		core::vector3df End;
 		core::vector3df Vector;
-		f32 WayLength;
 		f32 TimeFactor;
 		u32 StartTime;
 		u32 TimeForWay;
