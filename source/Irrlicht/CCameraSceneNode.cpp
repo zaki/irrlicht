@@ -81,6 +81,23 @@ const core::matrix4& CCameraSceneNode::getViewMatrix() const
 }
 
 
+//! Sets a custom view matrix affector. The matrix passed here, will be
+//! multiplied with the view matrix when it gets updated.
+//! This allows for custom camera setups like, for example, a reflection camera.
+/** \param affector: The affector matrix. */
+void CCameraSceneNode::setViewMatrixAffector(const core::matrix4& affector)
+{
+	Affector = affector;
+}
+
+
+//! Gets the custom view matrix affector.
+const core::matrix4& CCameraSceneNode::getViewMatrixAffector() const
+{
+	return Affector;
+}
+
+
 //! It is possible to send mouse and key events to the camera. Most cameras
 //! may ignore this input, but camera scene nodes which are created for 
 //! example with scene::ISceneManager::addMayaCameraSceneNode or
@@ -233,7 +250,8 @@ void CCameraSceneNode::OnRegisterSceneNode()
 		up.X += 0.5f;
 	}
 
-	ViewArea.getTransform( video::ETS_VIEW ).buildCameraLookAtMatrixLH(pos, Target, up);
+	ViewArea.getTransform(video::ETS_VIEW).buildCameraLookAtMatrixLH(pos, Target, up);
+	ViewArea.getTransform(video::ETS_VIEW) *= Affector;
 	recalculateViewArea();
 
 	if ( SceneManager->getActiveCamera () == this )
@@ -273,10 +291,9 @@ void CCameraSceneNode::recalculateViewArea()
 {
 	ViewArea.cameraPosition = getAbsolutePosition();
 
-	core::matrix4 m ( core::matrix4::EM4CONST_NOTHING );
-	m.setbyproduct_nocheck (	ViewArea.getTransform (video::ETS_PROJECTION),
-								ViewArea.getTransform (video::ETS_VIEW)
-							);
+	core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
+	m.setbyproduct_nocheck(ViewArea.getTransform(video::ETS_PROJECTION),
+						ViewArea.getTransform(video::ETS_VIEW));
 	ViewArea.setFrom(m);
 }
 
