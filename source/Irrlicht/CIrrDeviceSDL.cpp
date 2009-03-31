@@ -680,7 +680,7 @@ bool CIrrDeviceSDL::present(video::IImage* surface, void* windowId, core::rect<s
 		}
 		else
 			SDL_BlitSurface(sdlSurface, NULL, scr, NULL);
-		SDL_UpdateRect(scr, 0, 0, surface->getDimension().Width, surface->getDimension().Height);
+		SDL_Flip(scr);
 	}
 
 	SDL_FreeSurface(sdlSurface);
