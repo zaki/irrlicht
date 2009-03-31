@@ -662,13 +662,35 @@ Changes in version 1.6, TA
 -------------------------------------
 Changes in version 1.5.1 (??.?? 2009)
 
- - Update to libpng 1.2.35
+ - Fix loading of Collada files from irrEdit 1.2
+
+ - Update to libpng 1.2.35, fixed issues on 64bit machines with system's libpng.
+
+ - Remove texture pointers after texture clear.
+
+ - Fix ALPHA_CHANNEL_REF to a fixed check for alpha==127 as expected.
 
  - Fixed OSX device bug where screen size was not set in fullscreen mode.
 
+ - OpenGL version calculation fixed.
+
  - OSX device now supports shift and ctrl keys.
 
+ - Fixed ambient light issues in bruningsvideo.
+
+ - device reset for d3d fixed when using VBOs.
+
  - MD2 mesh loader: Now uses much less memory, reduced number of allocations when loading meshes.
+
+ - OpenGL render state (texture wrongly cached) fixed.
+
+ - Fixed animator removal.
+
+ - Fix terrain to use 32bit only when necessary, make terrain use hw buffers. Heightmap loading and height calculation fixed.
+
+ - Some mem leaks fixed
+
+ - FPS camera resets the cursor better
 
 -----------------------------------
 Changes in version 1.5 (15.12.2008)
