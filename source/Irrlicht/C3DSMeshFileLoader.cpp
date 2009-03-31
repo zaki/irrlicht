@@ -372,6 +372,7 @@ bool C3DSMeshFileLoader::readMaterialChunk(io::IReadFile* file, ChunkData* paren
 			break;
 		case C3DS_MATSHININESS:
 			readPercentageChunk(file, &data, CurrentMaterial.Material.Shininess);
+			CurrentMaterial.Material.Shininess = (1.f-CurrentMaterial.Material.Shininess)*128.f;
 			break;
 		case C3DS_TRANSPARENCY:
 			{

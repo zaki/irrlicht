@@ -118,6 +118,7 @@ namespace scene
 	const core::stringc falloffExponentNodeName = "falloff_exponent";
 
 	const core::stringc profileCOMMONSectionName = "profile_COMMON";
+	const core::stringc profileCOMMONAttributeName = "COMMON";
 
 	const char* const inputSemanticNames[] = {"POSITION", "VERTEX", "NORMAL", "TEXCOORD",
 		"UV", "TANGENT", "IMAGE", "TEXTURE", 0};
@@ -367,13 +368,15 @@ IAnimatedMesh* CColladaFileLoader::createMesh(io::IReadFile* file)
 	if (!Version)
 		return 0;
 
-
 	// because this loader loads and creates a complete scene instead of
 	// a single mesh, return an empty dummy mesh to make the scene manager
 	// know that everything went well.
 	if (!DummyMesh)
 		DummyMesh = new SAnimatedMesh();
 	scene::IAnimatedMesh* returnMesh = DummyMesh;
+
+	if (Version < 10400)
+		instantiateNode(SceneManager->getRootSceneNode());
 
 	// add the first loaded mesh into the mesh cache too, if more than one
 	// meshes have been loaded from the file
@@ -422,7 +425,7 @@ void CColladaFileLoader::skipSection(io::IXMLReaderUTF8* reader, bool reportSkip
 		{
 			#ifdef COLLADA_READER_DEBUG
 			if (reportSkipping)
-				os::Printer::log("Skipping COLLADA unknown element:", core::stringc(reader->getNodeName()).c_str());
+				os::Printer::log("Skipping COLLADA unknown element", core::stringc(reader->getNodeName()).c_str());
 			#endif // COLLADA_READER_DEBUG
 
 			++tagCounter;
@@ -441,7 +444,7 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 		return;
 
 	const f32 version = core::fast_atof(core::stringc(reader->getAttributeValue("version")).c_str());
-	Version = core::floor32(version)*10000+core::ceil32(core::fract(version)*1000.0f);
+	Version = core::floor32(version)*10000+core::floor32(core::fract(version)*1000.0f);
 	// Version 1.4 can be checked for by if (Version >= 10400)
 
 	while(reader->read())
@@ -1074,9 +1077,9 @@ core::matrix4 CColladaFileLoader::readTranslateNode(io::IXMLReaderUTF8* reader)
 }
 
 
-//! reads any kind of <instance*> node and creates a scene node from it
-void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent,
-	scene::ISceneNode** outNode, CScenePrefab* p)
+//! reads any kind of <instance*> node
+void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader,
+		scene::ISceneNode* parent, scene::ISceneNode** outNode, CScenePrefab* p)
 {
 	#ifdef COLLADA_READER_DEBUG
 	os::Printer::log("COLLADA reading instance");
@@ -1103,10 +1106,20 @@ void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISc
 				break;
 		}
 	}
+	instantiateNode(parent, outNode, p, url);
+}
+
+
+void CColladaFileLoader::instantiateNode(scene::ISceneNode* parent,
+		scene::ISceneNode** outNode, CScenePrefab* p, const core::stringc& url)
+{
+	#ifdef COLLADA_READER_DEBUG
+	os::Printer::log("COLLADA instantiate node");
+	#endif
 
 	for (u32 i=0; i<Prefabs.size(); ++i)
 	{
-		if (url == Prefabs[i]->getId())
+		if (url == "" || url == Prefabs[i]->getId())
 		{
 			if (p)
 				p->Childs.push_back(Prefabs[i]);
@@ -1119,7 +1132,7 @@ void CColladaFileLoader::readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISc
 				{
 					*outNode = newNode;
 					if (*outNode)
-						(*outNode)->setName(readId(reader));
+						(*outNode)->setName(url);
 				}
 			}
 			return;
@@ -1724,12 +1737,15 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 			}
 			else
 			// trifans, and tristrips missing
-			if (extraNodeName == reader->getNodeName())
+			if (extraNodeName == nodeName)
 				skipSection(reader, false);
 			else
-			if (techniqueCommonSectionName != nodeName) // techniqueCommon must not be skipped
+			 // techniqueCommon or 'technique profile=common' must not be skipped
+			if ((techniqueCommonSectionName != nodeName) // Collada 1.4+
+				&& ((techniqueNodeName != nodeName) ||
+					(profileCOMMONAttributeName != reader->getAttributeValue("profile")))) // Collada 1.2/1.3
 			{
-//				os::Printer::log("COLLADA loader warning: Wrong tag usage found", reader->getNodeName(), ELL_WARNING);
+				os::Printer::log("COLLADA loader warning: Wrong tag usage found in geometry", reader->getNodeName(), ELL_WARNING);
 				skipSection(reader, true); // ignore all other sections
 			}
 		} // end if node type is element
@@ -1957,10 +1973,9 @@ void CColladaFileLoader::readPolygonSection(io::IXMLReaderUTF8* reader,
 				}
 				else
 				{
-
 					for (u32 i = 0; i < vCounts.size(); i++)
 					{
-						int polyVCount = vCounts[i];
+						const int polyVCount = vCounts[i];
 
 						core::array<int> polyCorners;
 
@@ -2395,7 +2410,10 @@ void CColladaFileLoader::readColladaInput(io::IXMLReaderUTF8* reader)
 
 	// get source
 	p.Source = reader->getAttributeValue("source");
-	p.Offset = (u32)reader->getAttributeValueAsInt("offset");
+	if (reader->getAttributeValue("offset")) // Collada 1.4+
+		p.Offset = (u32)reader->getAttributeValueAsInt("offset");
+	else // Collada 1.2/1.3
+		p.Offset = (u32)reader->getAttributeValueAsInt("idx");
 	p.Set = (u32)reader->getAttributeValueAsInt("set");
 
 	// add input
