@@ -231,6 +231,9 @@ tool <http://developer.nvidia.com/object/nvperfhud_home.html>. */
 //#define BURNINGVIDEO_RENDERER_ULTRA_FAST
 //#define BURNINGVIDEO_RENDERER_CE
 
+//! Uncomment the following line if you want to ignore the deprecated warnings
+//#define IGNORE_DEPRECATED_WARNING
+
 //! Define _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_ if you want to use bone based
 /** animated meshes. If you compile without this, you will be unable to load
 B3D, MS3D or X meshes */
