@@ -264,12 +264,14 @@
 					<Add option="-W" />
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-D_DEBUG" />
 					<Add option="-O0" />
 					<Add option="-Wextra" />
 					<Add option="-Wno-unused-parameter" />
 					<Add directory="..\..\include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
+					<Add directory="jpeglib" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
@@ -294,6 +296,7 @@
 					<Add directory="..\..\include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
+					<Add directory="jpeglib" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
@@ -319,6 +322,7 @@
 					<Add directory="..\..\include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
+					<Add directory="jpeglib" />
 				</Compiler>
 				<Linker>
 					<Add library="GL" />
