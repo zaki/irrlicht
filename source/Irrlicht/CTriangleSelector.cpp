@@ -14,7 +14,7 @@ namespace scene
 
 //! constructor
 CTriangleSelector::CTriangleSelector(const ISceneNode* node)
-: SceneNode(node), AnimatedNode(0)
+: SceneNode(node), AnimatedNode(0), LastMeshFrame(-1)
 {
 	#ifdef _DEBUG
 	setDebugName("CTriangleSelector");
@@ -40,16 +40,16 @@ CTriangleSelector::CTriangleSelector(IAnimatedMeshSceneNode* node)
 	setDebugName("CTriangleSelector");
 	#endif
 
-	if(!AnimatedNode)
+	if (!AnimatedNode)
 		return;
 
 	IAnimatedMesh * animatedMesh = AnimatedNode->getMesh();
-	if(!animatedMesh)
+	if (!animatedMesh)
 		return;
 
 	IMesh * mesh = animatedMesh->getMesh((s32)AnimatedNode->getFrameNr());
 
-	if(mesh)
+	if (mesh)
 		createFromMesh(mesh);
 }
 
@@ -81,7 +81,7 @@ void CTriangleSelector::createFromMesh(const IMesh * mesh)
 
 void CTriangleSelector::updateFromMesh(const IMesh* mesh) const
 {
-	if(!mesh)
+	if (!mesh)
 		return;
 
 	u32 meshBuffers = mesh->getMeshBufferCount();
@@ -151,21 +151,21 @@ CTriangleSelector::CTriangleSelector(const core::aabbox3d<f32>& box, const IScen
 
 void CTriangleSelector::update(void) const
 {
-	if(!AnimatedNode)
+	if (!AnimatedNode)
 		return; //< harmless no-op
 
 	s32 currentFrame = (s32)AnimatedNode->getFrameNr();
-	if(currentFrame == LastMeshFrame)
+	if (currentFrame == LastMeshFrame)
 		return; //< Nothing to do
 
 	LastMeshFrame = currentFrame;
 	IAnimatedMesh * animatedMesh = AnimatedNode->getMesh();
 
-	if(animatedMesh)
+	if (animatedMesh)
 	{
 		IMesh * mesh = animatedMesh->getMesh(LastMeshFrame);
 
-		if(mesh)
+		if (mesh)
 			updateFromMesh(mesh);
 	}
 }
