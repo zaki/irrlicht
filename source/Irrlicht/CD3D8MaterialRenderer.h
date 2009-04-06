@@ -116,6 +116,12 @@ public:
 
 	}
 
+	//! Returns if the material is transparent.
+	virtual bool isTransparent() const
+	{
+		return true;
+	}
+
 	private:
 
 		u32 getD3DBlend ( E_BLEND_FACTOR factor ) const

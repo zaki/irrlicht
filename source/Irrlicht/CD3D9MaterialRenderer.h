@@ -134,6 +134,16 @@ public:
 
 	}
 
+	//! Returns if the material is transparent.
+	/** The scene management needs to know this for being able to sort the
+	materials by opaque and transparent.
+	The return value could be optimized, but we'd need to know the
+	MaterialTypeParam for it. */
+	virtual bool isTransparent() const
+	{
+		return true;
+	}
+
 	private:
 
 		u32 getD3DBlend ( E_BLEND_FACTOR factor ) const
