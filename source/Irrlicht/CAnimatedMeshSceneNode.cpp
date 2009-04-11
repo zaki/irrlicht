@@ -33,9 +33,9 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
 		const core::vector3df& scale)
 : IAnimatedMeshSceneNode(parent, mgr, id, position, rotation, scale), Mesh(0),
 	BeginFrameTime(0), StartFrame(0), EndFrame(0), FramesPerSecond(0.f),
-	CurrentFrameNr(0.f),
-	JointMode(EJUOR_NONE), JointsUsed(false),
+	CurrentFrameNr(0.f), LastTimeMs(0),
 	TransitionTime(0), Transiting(0.f), TransitingBlend(0.f),
+	JointMode(EJUOR_NONE), JointsUsed(false),
 	Looping(true), ReadOnlyMaterials(false), RenderFromIdentity(0),
 	LoopCallBack(0), PassCount(0), Shadow(0),
 	MD3Special ( 0 )
@@ -45,7 +45,7 @@ CAnimatedMeshSceneNode::CAnimatedMeshSceneNode(IAnimatedMesh* mesh,
 	#endif
 
 	BeginFrameTime = os::Timer::getTime();
-	FramesPerSecond = 25.f/100.f;
+	FramesPerSecond = 25.f/1000.f;
 
 	setMesh(mesh);
 }
@@ -95,11 +95,11 @@ f32 CAnimatedMeshSceneNode::getFrameNr() const
 }
 
 
-f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
+void CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 {
 	if (Transiting!=0.f)
 	{
-		TransitingBlend = (f32)(timeMs-BeginFrameTime) * Transiting;
+		TransitingBlend += (f32)(timeMs) * Transiting;
 		if (TransitingBlend > 1.f)
 		{
 			Transiting=0.f;
@@ -107,65 +107,52 @@ f32 CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		}
 	}
 
-	if (StartFrame==EndFrame)
-		return (f32)StartFrame; //Support for non animated meshes
-	if (FramesPerSecond==0.f)
-		return (f32)StartFrame;
-
-	if (Looping)
+	if ((StartFrame==EndFrame) || (FramesPerSecond==0.f))
+	{
+		CurrentFrameNr = (f32)StartFrame; //Support for non animated meshes
+	}
+	else if (Looping)
 	{
 		// play animation looped
-
-		const s32 lenInMs = abs(s32( (EndFrame - StartFrame) / FramesPerSecond));
+		CurrentFrameNr += timeMs * FramesPerSecond;
 		if (FramesPerSecond > 0.f) //forwards...
 		{
-			return StartFrame + ( (timeMs - BeginFrameTime) % lenInMs) * FramesPerSecond;
+			if (CurrentFrameNr > EndFrame)
+				CurrentFrameNr -= (EndFrame-StartFrame);
 		}
 		else //backwards...
 		{
-			return EndFrame - ( (timeMs - BeginFrameTime) % lenInMs)* -FramesPerSecond;
+			if (CurrentFrameNr < StartFrame)
+				CurrentFrameNr += (EndFrame-StartFrame);
 		}
 	}
 	else
 	{
 		// play animation non looped
 
-		f32 frame;
-
+		CurrentFrameNr += timeMs * FramesPerSecond;
 		if (FramesPerSecond > 0.f) //forwards...
 		{
-			const f32 deltaFrame = ( timeMs - BeginFrameTime ) * FramesPerSecond;
-
-			frame = StartFrame + deltaFrame;
-
-			if (frame > (f32)EndFrame)
+			if (CurrentFrameNr > (f32)EndFrame)
 			{
-				frame = (f32)EndFrame;
+				CurrentFrameNr = (f32)EndFrame;
 				if (LoopCallBack)
 					LoopCallBack->OnAnimationEnd(this);
 			}
 		}
-		else //backwards... (untested)
+		else //backwards...
 		{
-			const f32 deltaFrame = ( timeMs - BeginFrameTime ) * -FramesPerSecond;
-
-			frame = EndFrame - deltaFrame;
-
-			if (frame < (f32)StartFrame)
+			if (CurrentFrameNr < (f32)StartFrame)
 			{
-				frame = (f32)StartFrame;
+				CurrentFrameNr = (f32)StartFrame;
 				if (LoopCallBack)
 					LoopCallBack->OnAnimationEnd(this);
 			}
-
 		}
-
-		return frame;
 	}
 }
 
 
-//! frame
 void CAnimatedMeshSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
@@ -255,7 +242,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 //! OnAnimate() is called just before rendering the whole scene.
 void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
-	CurrentFrameNr = buildFrameNr ( timeMs ); 
+	buildFrameNr(timeMs-LastTimeMs); 
 
 	if ( Mesh )
 	{
@@ -264,6 +251,7 @@ void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 		if ( mesh )
 			Box = mesh->getBoundingBox();
 	}
+	LastTimeMs = timeMs;
 
 	IAnimatedMeshSceneNode::OnAnimate ( timeMs );
 }
@@ -540,9 +528,9 @@ bool CAnimatedMeshSceneNode::setFrameLoop(s32 begin, s32 end)
 		EndFrame = core::s32_clamp(end, StartFrame, maxFrameCount);
 	}
 	if (FramesPerSecond < 0)
-		setCurrentFrame ( (f32)EndFrame );
+		setCurrentFrame((f32)EndFrame);
 	else
-		setCurrentFrame ( (f32)StartFrame );
+		setCurrentFrame((f32)StartFrame);
 
 	return true;
 }
@@ -916,6 +904,7 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 	}
 }
 
+
 //! Set the joint update mode (0-unused, 1-get joints only, 2-set joints only, 3-move and set)
 void CAnimatedMeshSceneNode::setJointMode(E_JOINT_UPDATE_ON_RENDER mode)
 {
@@ -940,12 +929,12 @@ void CAnimatedMeshSceneNode::setTransitionTime(f32 time)
 	}
 }
 
+
 //! render mesh ignoring its transformation. Used with ragdolls. (culling is unaffected)
 void CAnimatedMeshSceneNode::setRenderFromIdentity( bool On )
 {
 	RenderFromIdentity=On;
 }
-
 
 
 //! updates the joint positions of this mesh
@@ -1015,8 +1004,6 @@ void CAnimatedMeshSceneNode::animateJoints(bool CalculateAbsolutePositions)
 				}
 			}
 
-
-
 			if (CalculateAbsolutePositions)
 			{
 				//---slow---
@@ -1052,6 +1039,7 @@ void CAnimatedMeshSceneNode::checkJoints()
 	}
 }
 
+
 /*!
 */
 void CAnimatedMeshSceneNode::beginTransition()
@@ -1077,6 +1065,7 @@ void CAnimatedMeshSceneNode::beginTransition()
 	}
 	TransitingBlend = 0.f;
 }
+
 
 /*!
 */
@@ -1117,7 +1106,6 @@ ISceneNode* CAnimatedMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* 
 	(void)newNode->drop();
 	return newNode;
 }
-
 
 
 } // end namespace scene
