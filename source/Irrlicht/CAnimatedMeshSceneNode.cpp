@@ -78,7 +78,11 @@ void CAnimatedMeshSceneNode::setCurrentFrame(f32 frame)
 	// if you pass an out of range value, we just clamp it
 	CurrentFrameNr = core::clamp ( frame, (f32)StartFrame, (f32)EndFrame );
 
-	BeginFrameTime = os::Timer::getTime() - (s32)((CurrentFrameNr - StartFrame) / FramesPerSecond);
+	BeginFrameTime = os::Timer::getTime();
+	if (FramesPerSecond > 0)
+		BeginFrameTime += (s32)((CurrentFrameNr - StartFrame) / FramesPerSecond);
+	else if (FramesPerSecond < 0)
+		BeginFrameTime += (s32)((CurrentFrameNr - EndFrame) / -FramesPerSecond);
 
 	beginTransition(); //transit to this frame if enabled
 }
@@ -535,7 +539,10 @@ bool CAnimatedMeshSceneNode::setFrameLoop(s32 begin, s32 end)
 		StartFrame = core::s32_clamp(begin, 0, maxFrameCount);
 		EndFrame = core::s32_clamp(end, StartFrame, maxFrameCount);
 	}
-	setCurrentFrame ( (f32)StartFrame );
+	if (FramesPerSecond < 0)
+		setCurrentFrame ( (f32)EndFrame );
+	else
+		setCurrentFrame ( (f32)StartFrame );
 
 	return true;
 }
