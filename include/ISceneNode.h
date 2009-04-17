@@ -211,15 +211,17 @@ namespace scene
 		//! Returns whether the node should be visible (if all of its parents are visible).
 		/** This is only an option set by the user, but has nothing to
 		do with geometry culling
-		\return The requested visibility of the node, true means visible (if all parents are also visible). */
+		\return The requested visibility of the node, true means
+		visible (if all parents are also visible). */
 		virtual bool isVisible() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return IsVisible;
 		}
 
-		//! Returns whether the node is truly visible, taking into accounts its parents' visibility
-		/** \return true if the node and all its parents are visible, false if this or any parent node is invisible. */
+		//! Check whether the node is truly visible, taking into accounts its parents' visibility
+		/** \return true if the node and all its parents are visible,
+		false if this or any parent node is invisible. */
 		virtual bool isTrulyVisible() const
 		{
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
@@ -234,7 +236,7 @@ namespace scene
 
 		//! Sets if the node should be visible or not.
 		/** All children of this node won't be visible either, when set
-		to false.  Invisible nodes are not valid candidates for selection by
+		to false. Invisible nodes are not valid candidates for selection by
 		collision manager bounding box methods.
 		\param isVisible If the node shall be visible. */
 		virtual void setVisible(bool isVisible)
@@ -429,9 +431,9 @@ namespace scene
 
 		//! Gets the scale of the scene node relative to its parent.
 		/** This is the scale of this node relative to its parent. 
-        If you want the absolute scale, use 
-        getAbsoluteTransformation().getScale()
-        \return The scale of the scene node. */
+		If you want the absolute scale, use 
+		getAbsoluteTransformation().getScale()
+		\return The scale of the scene node. */
 		virtual const core::vector3df& getScale() const
 		{
 			return RelativeScale;
@@ -448,8 +450,8 @@ namespace scene
 
 		//! Gets the rotation of the node relative to its parent.
 		/** Note that this is the relative rotation of the node.
-        If you want the absolute rotation, use
-        getAbsoluteTransformation().getRotation()
+		If you want the absolute rotation, use
+		getAbsoluteTransformation().getRotation()
 		\return Current relative rotation of the scene node. */
 		virtual const core::vector3df& getRotation() const
 		{
@@ -468,7 +470,7 @@ namespace scene
 
 		//! Gets the position of the node relative to its parent.
 		/** Note that the position is relative to the parent. If you want
-        the position in world coordinates, use getAbsolutePosition() instead.
+		the position in world coordinates, use getAbsolutePosition() instead.
 		\return The current position of the node relative to the parent. */
 		virtual const core::vector3df& getPosition() const
 		{
@@ -487,8 +489,8 @@ namespace scene
 
 		//! Gets the absolute position of the node in world coordinates.
 		/** If you want the position of the node relative to its parent,
-        use getPosition() instead.
-        \return The current absolute position of the scene node. */
+		use getPosition() instead.
+		\return The current absolute position of the scene node. */
 		virtual core::vector3df getAbsolutePosition() const
 		{
 			return AbsoluteTransformation.getTranslation();
