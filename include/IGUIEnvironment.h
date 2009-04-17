@@ -153,7 +153,7 @@ public:
 	\return Pointer to the font. Returns 0 if the font could not be loaded.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
-	virtual IGUIImageList* createImageList( video::ITexture* texture, 
+	virtual IGUIImageList* createImageList( video::ITexture* texture,
 					core::dimension2d<s32>	imageSize, bool useAlphaChannel ) = 0;
 
 	//! Returns pointer to the font with the specified filename.
@@ -194,7 +194,7 @@ public:
 	virtual IGUIElement* getRootGUIElement() = 0;
 
 	//! Adds a button element.
-	/** \param rectangle Position and dimension of the button.
+	/** \param rectangle Rectangle specifying the borders of the button.
 	\param parent Parent gui element of the button.
 	\param id Id with which the gui element can be identified.
 	\param text Text displayed on the button.
@@ -206,7 +206,7 @@ public:
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0, const wchar_t* tooltiptext = 0) = 0;
 
 	//! Adds an empty window element.
-	/** \param rectangle Position and dimension of the window.
+	/** \param rectangle Rectangle specifying the borders of the window.
 	\param modal Defines if the dialog is modal. This means, that all other
 	gui elements which were created before the window cannot be used until
 	it is removed.
@@ -248,7 +248,7 @@ public:
 	//! Adds a scrollbar.
 	/** \param horizontal Specifies if the scroll bar is drawn horizontal
 	or vertical.
-	\param rectangle Position and dimension of the scroll bar.
+	\param rectangle Rectangle specifying the borders of the scrollbar.
 	\param parent Parent gui element of the scroll bar.
 	\param id Id to identify the gui element.
 	\return Pointer to the created scrollbar. Returns 0 if an error
@@ -274,7 +274,7 @@ public:
 
 	//! Adds an image element.
 	/** Use IGUIImage::setImage later to set the image to be displayed.
-	\param rectangle Position and dimension of the image.
+	\param rectangle Rectangle specifying the borders of the image.
 	\param parent Parent gui element of the image.
 	\param id Id to identify the gui element.
 	\param text Title text of the image.
@@ -286,7 +286,7 @@ public:
 
 	//! Adds a checkbox element.
 	/** \param checked Define the initial state of the check box.
-	\param rectangle Position and dimension of check box.
+	\param rectangle Rectangle specifying the borders of the check box.
 	\param parent Parent gui element of the check box.
 	\param id Id to identify the gui element.
 	\param text Title text of the check box.
@@ -297,7 +297,7 @@ public:
 		IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0) = 0;
 
 	//! Adds a list box element.
-	/** \param rectangle Position and dimension of list box.
+	/** \param rectangle Rectangle specifying the borders of the list box.
 	\param parent Parent gui element of the list box.
 	\param id Id to identify the gui element.
 	\param drawBackground Flag whether the background should be drawn.
@@ -320,7 +320,7 @@ public:
 		bool scrollBarVertical = true, bool scrollBarHorizontal = false) = 0;
 
 	//! Adds a mesh viewer. Not 100% implemented yet.
-	/** \param rectangle Position and dimension of mesh viewer.
+	/** \param rectangle Rectangle specifying the borders of the mesh viewer.
 	\param parent Parent gui element of the mesh viewer.
 	\param id Id to identify the gui element.
 	\param text Title text of the mesh viewer.
@@ -358,7 +358,7 @@ public:
 
 	//! Adds a static text.
 	/** \param text Text to be displayed. Can be altered after creation by SetText().
-	\param rectangle Position and dimension of the static text.
+	\param rectangle Rectangle specifying the borders of the static text
 	\param border Set to true if the static text should have a 3d border.
 	\param wordWrap Enable if the text should wrap into multiple lines.
 	\param parent Parent item of the element, e.g. a window.
@@ -379,7 +379,7 @@ public:
 	ctrl+X, ctrl+V, ctrl+C, shift+Left, shift+Right, Home, End, and so on.
 	\param text Text to be displayed. Can be altered after creation
 	by setText().
-	\param rectangle Position and dimension of the edit box.
+	\param rectangle Rectangle specifying the borders of the edit box.
 	\param border Set to true if the edit box should have a 3d border.
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the edit box directly in the environment.
@@ -393,7 +393,7 @@ public:
 	//! Adds a spin box.
 	/** An edit box with up and down buttons
 	\param text Text to be displayed. Can be altered after creation by setText().
-	\param rectangle Position and dimension of the spin box.
+	\param rectangle Rectangle specifying the borders of the spin box.
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the spin box directly in the environment.
 	\param id The ID of the element.
@@ -404,7 +404,7 @@ public:
 		bool border=true,IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds an element for fading in or out.
-	/* \param rectangle Rectangle specifying the borders of the element.
+	/** \param rectangle Rectangle specifying the borders of the fader.
 	If the pointer is NULL, the whole screen is used.
 	\param parent Parent item of the element, e.g. a window.
 	\param id An identifier for the fader.
@@ -414,7 +414,7 @@ public:
 	virtual IGUIInOutFader* addInOutFader(const core::rect<s32>* rectangle=0, IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a tab control to the environment.
-	/** \param rectangle Position and dimension of the tab control.
+	/** \param rectangle Rectangle specifying the borders of the tab control.
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the tab control directly in the environment.
 	\param fillbackground Specifies if the background of the tab control
@@ -434,7 +434,7 @@ public:
 	/** You can use this element to group other elements. This is not used
 	for creating tabs on tab controls, please use IGUITabControl::addTab()
 	for this instead.
-	\param rectangle Position and dimension of the tab.
+	\param rectangle Rectangle specifying the borders of the tab.
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the tab directly in the environment.
 	\param id An identifier for the tab.
@@ -445,8 +445,8 @@ public:
 		IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a context menu to the environment.
-	/** \param rectangle Position and dimension of the menu. Note that the
-	menu is resizing itself based on what items you add.
+	/** \param rectangle Rectangle specifying the borders of the menu.
+	Note that the menu is resizing itself based on what items you add.
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the menu directly in the environment.
 	\param id An identifier for the menu.
@@ -479,7 +479,7 @@ public:
 	virtual IGUIToolBar* addToolBar(IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a combo box to the environment.
-	/** \param rectangle Position and dimension of the combo box.
+	/** \param rectangle Rectangle specifying the borders of the combo box.
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the combo box directly in the environment.
 	\param id An identifier for the combo box.
@@ -490,7 +490,7 @@ public:
 		IGUIElement* parent=0, s32 id=-1) = 0;
 
 	//! Adds a table to the environment
-	/** \param rectangle Position and dimension of the table.
+	/** \param rectangle Rectangle specifying the borders of the table.
 	\param parent Parent item of the element, e.g. a window. Set it to 0
 	to place the element directly in the environment.
 	\param id An identifier for the table.
@@ -499,9 +499,9 @@ public:
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
 	virtual IGUITable* addTable(const core::rect<s32>& rectangle,
-		IGUIElement* parent=0, s32 id=-1, bool drawBackground = false) = 0;
+		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false) =0;
 
-	//! Returns the default element factory which can create all built in elements
+	//! Get the default element factory which can create all built-in elements
 	/** \return Pointer to the factory.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
@@ -514,34 +514,45 @@ public:
 	\param factoryToAdd Pointer to new factory. */
 	virtual void registerGUIElementFactory(IGUIElementFactory* factoryToAdd) = 0;
 
-	//! Returns amount of registered gui element factories.
+	//! Get amount of registered gui element factories.
 	/** \return Amount of registered gui element factories. */
 	virtual u32 getRegisteredGUIElementFactoryCount() const = 0;
 
-	//! Returns a gui element factory by index
+	//! Get a gui element factory by index
+	/** \param index Index of the factory.
+	\return Factory at given index, or 0 if no such factory exists. */
 	virtual IGUIElementFactory* getGUIElementFactory(u32 index) const = 0;
 
-	//! Adds a GUI Element by its name
+	//! Adds a GUI element by its name
+	/** Each factory is checked if it can create an element of the given
+	name. The first match will be created.
+	\param elementName Name of the element to be created.
+	\param parent Parent of the new element, if not 0.
+	\return New GUI element, or 0 if no such element exists. */
 	virtual IGUIElement* addGUIElement(const c8* elementName, IGUIElement* parent=0) = 0;
 
 	//! Saves the current gui into a file.
 	/** \param filename Name of the file.
-	\param start The GUIElement to start with. Root if 0. */
+	\param start The GUIElement to start with. Root if 0.
+	\return True if saving succeeded, else false. */
 	virtual bool saveGUI(const core::string<c16>& filename, IGUIElement* start=0) = 0;
 
 	//! Saves the current gui into a file.
 	/** \param file The file to write to.
-	\param start The GUIElement to start with. Root if 0. */
+	\param start The GUIElement to start with. Root if 0.
+	\return True if saving succeeded, else false. */
 	virtual bool saveGUI(io::IWriteFile* file, IGUIElement* start=0) = 0;
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** \param filename Name of the file.
-	\param parent Parent for the loaded GUI, root if 0. */
+	\param parent Parent for the loaded GUI, root if 0.
+	\return True if loading succeeded, else false. */
 	virtual bool loadGUI(const c16* filename, IGUIElement* parent=0) = 0;
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** \param file The file to load from.
-	\param parent Parent for the loaded GUI, root if 0. */
+	\param parent Parent for the loaded GUI, root if 0.
+	\return True if loading succeeded, else false. */
 	virtual bool loadGUI(io::IReadFile* file, IGUIElement* parent=0) = 0;
 
 	//! Writes attributes of the gui environment
