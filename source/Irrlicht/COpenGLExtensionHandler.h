@@ -16,8 +16,14 @@
 	// include windows headers for HWND
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
+	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+		#define GL_GLEXT_LEGACY 1
+	#endif
 	#include <GL/gl.h>
-	#include "glext.h"
+	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+		#include "glext.h"
+	#endif
+	#include "wglext.h"
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
 #endif
