@@ -11,27 +11,28 @@
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
+#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+	#define GL_GLEXT_LEGACY 1
+#endif
 #ifdef _IRR_WINDOWS_API_
 	// include windows headers for HWND
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#include <GL/gl.h>
-	#include "glext.h"
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
-	#pragma comment(lib, "GLu32.lib")
 #endif
+#elif defined(_IRR_USE_OSX_DEVICE_)
+	#include <OpenGL/gl.h>
+#elif defined(_IRR_USE_SDL_DEVICE_)
+	#define NO_SDL_GLEXT
+	#include <SDL/SDL_video.h>
+	#include <SDL/SDL_opengl.h>
 #else
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#define GL_GLEXT_LEGACY 1
-	#endif
 	#if defined(_IRR_OSX_PLATFORM_)
 		#include <OpenGL/gl.h>
 	#else
 		#include <GL/gl.h>
-	#endif
-	#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
-		#include "glext.h"
 	#endif
 #endif
 

@@ -35,7 +35,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 		io::IFileSystem* io)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), RenderTargetTexture(0), LastSetLight(-1),
+	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
