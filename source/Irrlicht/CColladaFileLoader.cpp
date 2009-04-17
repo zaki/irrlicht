@@ -444,7 +444,7 @@ void CColladaFileLoader::readColladaSection(io::IXMLReaderUTF8* reader)
 		return;
 
 	const f32 version = core::fast_atof(core::stringc(reader->getAttributeValue("version")).c_str());
-	Version = core::floor32(version)*10000+core::floor32(core::fract(version)*1000.0f);
+	Version = core::floor32(version)*10000+core::round32(core::fract(version)*1000.0f);
 	// Version 1.4 can be checked for by if (Version >= 10400)
 
 	while(reader->read())
