@@ -1487,6 +1487,10 @@ void CColladaFileLoader::readEffect(io::IXMLReaderUTF8* reader, SColladaEffect *
 				readIntsInsideElement(reader,&doubleSided,1);
 				if (doubleSided)
 				{
+					#ifdef COLLADA_READER_DEBUG
+					os::Printer::log("Setting double sided flag for effect.");
+					#endif
+
 					effect->Mat.setFlag(irr::video::EMF_BACK_FACE_CULLING,false);
 				}
 			}
@@ -1737,13 +1741,24 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 			}
 			else
 			// trifans, and tristrips missing
-			if (extraNodeName == nodeName)
-				skipSection(reader, false);
+			if (doubleSidedNodeName == reader->getNodeName())
+			{
+				// read the extra flag for double sided polys
+				s32 doubleSided = 0;
+				readIntsInsideElement(reader,&doubleSided,1);
+				if (doubleSided)
+				{
+					#ifdef COLLADA_READER_DEBUG
+					os::Printer::log("Setting double sided flag for mesh.");
+					#endif
+					amesh->setMaterialFlag(irr::video::EMF_BACK_FACE_CULLING,false);
+				}
+			}
 			else
 			 // techniqueCommon or 'technique profile=common' must not be skipped
-			if ((techniqueCommonSectionName != nodeName) // Collada 1.4+
-				&& ((techniqueNodeName != nodeName) ||
-					(profileCOMMONAttributeName != reader->getAttributeValue("profile")))) // Collada 1.2/1.3
+			if ((techniqueCommonSectionName != nodeName) // Collada 1.2/1.3
+				&& (techniqueNodeName != nodeName) // Collada 1.4+
+				&& (extraNodeName != nodeName))
 			{
 				os::Printer::log("COLLADA loader warning: Wrong tag usage found in geometry", reader->getNodeName(), ELL_WARNING);
 				skipSection(reader, true); // ignore all other sections
