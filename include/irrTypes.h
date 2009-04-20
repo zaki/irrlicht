@@ -209,7 +209,5 @@ code like 'code', but some generate warnings so we use this macro here */
 		((u32)(u8)(c0) | ((u32)(u8)(c1) << 8) | \
 		((u32)(u8)(c2) << 16) | ((u32)(u8)(c3) << 24 ))
 
-
 #endif // __IRR_TYPES_H_INCLUDED__
-
 

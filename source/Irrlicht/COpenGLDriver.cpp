@@ -1424,7 +1424,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 			(sourcePos.X + sourceSize.Width) * invW,
 			(isRTT?sourcePos.Y:(sourcePos.Y + sourceSize.Height)) * invH);
 
-	const core::rect<s32> poss(targetPos, core::dimension2di(sourceSize));
+	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
 	if (!setTexture(0, texture))
