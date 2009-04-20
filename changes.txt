@@ -1,6 +1,6 @@
 Changes in 1.6
 
- - Direct3D9 now also uses screen coordinates in 2d mode, just like OpenGL. This means that screen coords are going from 0..ScreenWidth and 0..ScreenHeight instead of -1..1.
+ - Direct3D now also uses screen coordinates in 2d mode, just like OpenGL. This means that screen coords are going from 0..ScreenWidth and 0..ScreenHeight instead of -1..1.
 
  - ALT+F4 keypress now closes Windows SDL device
 
