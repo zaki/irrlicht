@@ -1243,13 +1243,6 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	tcoords.LowerRightCorner.Y = (f32)sourceRect.LowerRightCorner.Y / (f32)ss.Height;
 
 	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-	core::rect<f32> npos;
-	f32 xFact = 2.0f / ( renderTargetSize.Width );
-	f32 yFact = 2.0f / ( renderTargetSize.Height );
-	npos.UpperLeftCorner.X = ( destRect.UpperLeftCorner.X * xFact ) - 1.0f;
-	npos.UpperLeftCorner.Y = 1.0f - ( destRect.UpperLeftCorner.Y * yFact );
-	npos.LowerRightCorner.X = ( destRect.LowerRightCorner.X * xFact ) - 1.0f;
-	npos.LowerRightCorner.Y = 1.0f - ( destRect.LowerRightCorner.Y * yFact );
 
 	const video::SColor temp[4] =
 	{
@@ -1262,16 +1255,16 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	S3DVertex vtx[4]; // clock wise
-	vtx[0] = S3DVertex(npos.UpperLeftCorner.X, npos.UpperLeftCorner.Y, 0.0f,
+	vtx[0] = S3DVertex((f32)destRect.UpperLeftCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[0],
 			tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[1] = S3DVertex(npos.LowerRightCorner.X, npos.UpperLeftCorner.Y, 0.0f,
+	vtx[1] = S3DVertex((f32)destRect.LowerRightCorner.X, (f32)destRect.UpperLeftCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[3],
 			tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[2] = S3DVertex(npos.LowerRightCorner.X, npos.LowerRightCorner.Y, 0.0f,
+	vtx[2] = S3DVertex((f32)destRect.LowerRightCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[2],
 			tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	vtx[3] = S3DVertex(npos.UpperLeftCorner.X, npos.LowerRightCorner.Y, 0.0f,
+	vtx[3] = S3DVertex((f32)destRect.UpperLeftCorner.X, (f32)destRect.LowerRightCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, useColor[1],
 			tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 
@@ -1404,33 +1397,27 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	// ok, we've clipped everything.
 	// now draw it.
 
-	s32 xPlus = -(s32)(renderTargetSize.Width) / 2;
-	f32 xFact = 2.0f / renderTargetSize.Width;
-
-	s32 yPlus = renderTargetSize.Height / 2;
-	f32 yFact = 2.0f / renderTargetSize.Height;
-
 	core::rect<f32> tcoords;
-	tcoords.UpperLeftCorner.X = (((f32)sourcePos.X)+0.5f) / texture->getOriginalSize().Width ;
-	tcoords.UpperLeftCorner.Y = (((f32)sourcePos.Y)+0.5f) / texture->getOriginalSize().Height;
-	tcoords.LowerRightCorner.X = (((f32)sourcePos.X +0.5f + (f32)sourceSize.Width)) / texture->getOriginalSize().Width;
-	tcoords.LowerRightCorner.Y = (((f32)sourcePos.Y +0.5f + (f32)sourceSize.Height)) / texture->getOriginalSize().Height;
+	tcoords.UpperLeftCorner.X = (((f32)sourcePos.X)) / texture->getOriginalSize().Width ;
+	tcoords.UpperLeftCorner.Y = (((f32)sourcePos.Y)) / texture->getOriginalSize().Height;
+	tcoords.LowerRightCorner.X = tcoords.UpperLeftCorner.X + ((f32)(sourceSize.Width) / texture->getOriginalSize().Width);
+	tcoords.LowerRightCorner.Y = tcoords.UpperLeftCorner.Y + ((f32)(sourceSize.Height) / texture->getOriginalSize().Height);
 
-	core::rect<s32> poss(targetPos, core::dimension2d<s32>(sourceSize));
+	const core::rect<s32> poss(targetPos, sourceSize);
 
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
 	S3DVertex vtx[4];
-	vtx[0] = S3DVertex((f32)(poss.UpperLeftCorner.X+xPlus) * xFact, (f32)(yPlus-poss.UpperLeftCorner.Y ) * yFact, 0.0f,
+	vtx[0] = S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[1] = S3DVertex((f32)(poss.LowerRightCorner.X+xPlus) * xFact, (f32)(yPlus- poss.UpperLeftCorner.Y) * yFact, 0.0f,
+	vtx[1] = S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
-	vtx[2] = S3DVertex((f32)(poss.LowerRightCorner.X+xPlus) * xFact, (f32)(yPlus-poss.LowerRightCorner.Y) * yFact, 0.0f,
+	vtx[2] = S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
-	vtx[3] = S3DVertex((f32)(poss.UpperLeftCorner.X+xPlus) * xFact, (f32)(yPlus-poss.LowerRightCorner.Y) * yFact, 0.0f,
+	vtx[3] = S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, color,
 			tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
 
@@ -1456,22 +1443,14 @@ void CD3D9Driver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-
-	s32 xPlus = -((s32)renderTargetSize.Width) / 2;
-	f32 xFact = 2.0f / renderTargetSize.Width;
-
-	s32 yPlus = renderTargetSize.Height / 2;
-	f32 yFact = 2.0f / renderTargetSize.Height;
-
 	S3DVertex vtx[4];
-	vtx[0] = S3DVertex((f32)(pos.UpperLeftCorner.X+xPlus) * xFact, (f32)(yPlus-pos.UpperLeftCorner.Y) * yFact, 0.0f,
+	vtx[0] = S3DVertex((f32)pos.UpperLeftCorner.X, (f32)pos.UpperLeftCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, colorLeftUp, 0.0f, 0.0f);
-	vtx[1] = S3DVertex((f32)(pos.LowerRightCorner.X+xPlus) * xFact, (f32)(yPlus- pos.UpperLeftCorner.Y) * yFact, 0.0f,
+	vtx[1] = S3DVertex((f32)pos.LowerRightCorner.X, (f32)pos.UpperLeftCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, colorRightUp, 0.0f, 1.0f);
-	vtx[2] = S3DVertex((f32)(pos.LowerRightCorner.X+xPlus) * xFact, (f32)(yPlus-pos.LowerRightCorner.Y) * yFact, 0.0f,
+	vtx[2] = S3DVertex((f32)pos.LowerRightCorner.X, (f32)pos.LowerRightCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, colorRightDown, 1.0f, 0.0f);
-	vtx[3] = S3DVertex((f32)(pos.UpperLeftCorner.X+xPlus) * xFact, (f32)(yPlus-pos.LowerRightCorner.Y) * yFact, 0.0f,
+	vtx[3] = S3DVertex((f32)pos.UpperLeftCorner.X, (f32)pos.LowerRightCorner.Y, 0.0f,
 			0.0f, 0.0f, 0.0f, colorLeftDown, 1.0f, 1.0f);
 
 	s16 indices[6] = {0,1,2,0,2,3};
@@ -1488,7 +1467,6 @@ void CD3D9Driver::draw2DRectangle(const core::rect<s32>& position,
 
 	pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, 4, 2, &indices[0],
 		D3DFMT_INDEX16, &vtx[0], sizeof(S3DVertex));
-
 }
 
 
@@ -1498,28 +1476,14 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 				SColor color)
 {
 	// thanks to Vash TheStampede who sent in his implementation
-
-	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-	const s32 xPlus = -((s32)renderTargetSize.Width) / 2;
-	const f32 xFact = 2.0f / renderTargetSize.Width;
-
-	const s32 yPlus = renderTargetSize.Height / 2;
-	const f32 yFact = 2.0f / renderTargetSize.Height;
-
 	S3DVertex vtx[2];
-	vtx[0] = S3DVertex((f32)(start.X + xPlus) * xFact,
-						(f32)(yPlus - start.Y) * yFact,
-						0.0f, // z
+	vtx[0] = S3DVertex((f32)start.X, (f32)start.Y, 0.0f,
 						0.0f, 0.0f, 0.0f, // normal
-						color,
-						0.0f, 0.0f); // texture
+						color, 0.0f, 0.0f); // texture
 
-	vtx[1] = S3DVertex((f32)(end.X+xPlus) * xFact,
-						(f32)(yPlus- end.Y) * yFact,
-						0.0f,
+	vtx[1] = S3DVertex((f32)end.X, (f32)end.Y, 0.0f,
 						0.0f, 0.0f, 0.0f,
-						color,
-						0.0f, 0.0f);
+						color, 0.0f, 0.0f);
 
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
 	setTexture(0,0);
@@ -1543,13 +1507,7 @@ void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
 
 	setVertexShader(EVT_STANDARD);
 
-	const s32 xPlus = -((s32)renderTargetSize.Width) / 2;
-	const f32 xFact = 2.0f / renderTargetSize.Width;
-	const s32 yPlus = renderTargetSize.Height / 2;
-	const f32 yFact = 2.0f / renderTargetSize.Height;
-	S3DVertex vertex((f32)((s32)x + xPlus) * xFact,
-					(f32)(yPlus - (s32)y) * yFact,
-					0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
+	S3DVertex vertex((f32)x, (f32)y, 0.f, 0.f, 0.f, 0.f, color, 0.f, 0.f);
 
 	pID3DDevice->DrawPrimitiveUP(D3DPT_POINTLIST, 1, &vertex, sizeof(vertex));
 }
@@ -2065,9 +2023,16 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 			pID3DDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);
 		}
 
-		pID3DDevice->SetTransform(D3DTS_VIEW, &UnitMatrixD3D9);
 		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D9);
-		pID3DDevice->SetTransform(D3DTS_PROJECTION, &UnitMatrixD3D9);
+
+		core::matrix4 m;
+		m.setTranslation(core::vector3df(-0.5f,-0.5f,0));
+		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)m.pointer()));
+
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
+		m.setTranslation(core::vector3df(-1,1,0));
+		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)m.pointer()));
 
 		Transformation3DChanged = false;
 	}
