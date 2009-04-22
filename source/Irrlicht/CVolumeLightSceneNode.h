@@ -8,7 +8,7 @@
 #define __VOLUME_LIGHT_SCENE_NODE_H_INCLUDED__
 
 #include "IVolumeLightSceneNode.h"
-#include "SMeshBuffer.h"
+#include "IMesh.h"
 
 namespace irr
 {
@@ -37,11 +37,7 @@ namespace scene
 		//! returns the axis aligned bounding box of this node
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
-		//! returns the material based on the zero based index i. To get the amount
-		//! of materials used by this scene node, use getMaterialCount().
-		//! This function is needed for inserting the node into the scene hirachy on a
-		//! optimal position for minimizing renderstate changes, but can also be used
-		//! to directly modify the material of a scene node.
+		//! returns the material based on the zero based index i.
 		virtual video::SMaterial& getMaterial(u32 i);
 
 		//! returns amount of materials used by this scene node.
@@ -59,25 +55,22 @@ namespace scene
 		//! Creates a clone of this scene node and its children.
 		virtual ISceneNode* clone(ISceneNode* newParent=0, ISceneManager* newManager=0);
 
-		virtual void setSubDivideU (const u32 inU);
-		virtual void setSubDivideV (const u32 inV);
+		virtual void setSubDivideU(const u32 inU);
+		virtual void setSubDivideV(const u32 inV);
 
-		virtual u32 getSubDivideU () const { return SubdivideU; }
-		virtual u32 getSubDivideV () const { return SubdivideV; }
+		virtual u32 getSubDivideU() const { return SubdivideU; }
+		virtual u32 getSubDivideV() const { return SubdivideV; }
 
-		virtual void setFootColour(const video::SColor inColouf);
-		virtual void setTailColour(const video::SColor inColouf);
+		virtual void setFootColour(const video::SColor inColor);
+		virtual void setTailColour(const video::SColor inColor);
 
-		virtual video::SColor getFootColour () const { return FootColour; }
-		virtual video::SColor getTailColour () const { return TailColour; }
-
-		virtual IMeshBuffer * getMeshBuffer(void) const { return Buffer; } 
+		virtual video::SColor getFootColour() const { return FootColor; }
+		virtual video::SColor getTailColour() const { return TailColor; }
 
 	private:
-		void addToBuffer(const video::S3DVertex& v);
 		void constructLight();
 
-		SMeshBuffer* Buffer;
+		IMesh* Mesh;
 
 		f32  LPDistance;		// Distance to hypothetical lightsource point -- affects fov angle
 
@@ -86,8 +79,8 @@ namespace scene
 		// NOTE : Total number of polygons = 2 + ((SubdivideU + 1) + (SubdivideV + 1)) * 2
 		// Each slice being a quad plus the rectangular plane at the bottom.
 
-		video::SColor FootColour;		// Color at the source
-		video::SColor TailColour;		// Color at the end.
+		video::SColor FootColor;	// Color at the source
+		video::SColor TailColor;	// Color at the end.
 
 		core::vector3df LightDimensions; // LightDimensions.Y Distance of shooting -- Length of beams
 										 // LightDimensions.X and LightDimensions.Z determine the size/dimension of the plane

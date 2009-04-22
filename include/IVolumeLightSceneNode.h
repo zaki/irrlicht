@@ -27,21 +27,20 @@ namespace scene
 			: ISceneNode(parent, mgr, id, position, rotation, scale) {};
 
 		//! Returns type of the scene node
-		virtual ESCENE_NODE_TYPE getType() const { return ESNT_CUBE; }
+		virtual ESCENE_NODE_TYPE getType() const { return ESNT_VOLUME_LIGHT; }
 
-		virtual void setSubDivideU (const u32 inU) =0;
-		virtual void setSubDivideV (const u32 inV) =0;
+		virtual void setSubDivideU(const u32 inU) =0;
+		virtual void setSubDivideV(const u32 inV) =0;
 
-		virtual u32 getSubDivideU () const =0;
-		virtual u32 getSubDivideV () const =0;
+		virtual u32 getSubDivideU() const =0;
+		virtual u32 getSubDivideV() const =0;
 
 		virtual void setFootColour(const video::SColor inColour) =0;
 		virtual void setTailColour(const video::SColor inColour) =0;
 
-		virtual video::SColor getFootColour () const =0;
-		virtual video::SColor getTailColour () const =0;
+		virtual video::SColor getFootColour() const =0;
+		virtual video::SColor getTailColour() const =0;
 
-		virtual IMeshBuffer * getMeshBuffer(void) const =0; 
 	};
 
 } // end namespace scene

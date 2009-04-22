@@ -75,6 +75,9 @@ namespace scene
 		//! Quake3 Model Scene Node ( has tag to link to )
 		ESNT_MD3_SCENE_NODE  = MAKE_IRR_ID('m','d','3','_'),
 
+		//! Volume Light Scene Node
+		ESNT_VOLUME_LIGHT  = MAKE_IRR_ID('v','o','l','l'),
+
 		//! Maya Camera Scene Node
 		/** Legacy, for loading version <= 1.4.x .irr files */
 		ESNT_CAMERA_MAYA    = MAKE_IRR_ID('c','a','m','M'),
