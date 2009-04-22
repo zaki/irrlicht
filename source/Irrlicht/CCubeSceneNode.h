@@ -2,8 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#ifndef __C_TEST_SCENE_NODE_H_INCLUDED__
-#define __C_TEST_SCENE_NODE_H_INCLUDED__
+#ifndef __C_CUBE_SCENE_NODE_H_INCLUDED__
+#define __C_CUBE_SCENE_NODE_H_INCLUDED__
 
 #include "IMeshSceneNode.h"
 #include "SMesh.h"
@@ -56,7 +56,7 @@ namespace scene
 		virtual void setMesh(IMesh* mesh) {}
 
 		//! Returns the current mesh
-		virtual IMesh* getMesh(void) { return &Mesh; }
+		virtual IMesh* getMesh(void) { return Mesh; }
 
 		//! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
 		/* In this way it is possible to change the materials a mesh causing all mesh scene nodes 
@@ -69,7 +69,7 @@ namespace scene
 	private:
 		void setSize();
 
-		SMesh Mesh;
+		IMesh* Mesh;
 		f32 Size;
 	};
 

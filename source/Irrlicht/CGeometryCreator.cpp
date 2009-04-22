@@ -16,6 +16,58 @@ namespace irr
 namespace scene
 {
 
+IMesh* CGeometryCreator::createCubeMesh(f32 size) const
+{
+	SMeshBuffer* buffer = new SMeshBuffer();
+
+	// Create indices
+	const u16 u[36] = {   0,2,1,   0,3,2,   1,5,4,   1,2,5,   4,6,7,   4,5,6, 
+            7,3,0,   7,6,3,   9,5,2,   9,8,5,   0,11,10,   0,10,7};
+
+	buffer->Indices.set_used(36);
+
+	for (u32 i=0; i<36; ++i)
+		buffer->Indices[i] = u[i];
+
+
+	// Create vertices
+	video::SColor clr(255,255,255,255);
+
+	buffer->Vertices.reallocate(12);
+	buffer->Vertices.set_used(0);
+
+	buffer->Vertices.push_back(video::S3DVertex(0,0,0, -1,-1,-1, clr, 0, 1));
+	buffer->Vertices.push_back(video::S3DVertex(1,0,0,  1,-1,-1, clr, 1, 1));
+	buffer->Vertices.push_back(video::S3DVertex(1,1,0,  1, 1,-1, clr, 1, 0));
+	buffer->Vertices.push_back(video::S3DVertex(0,1,0, -1, 1,-1, clr, 0, 0));
+	buffer->Vertices.push_back(video::S3DVertex(1,0,1,  1,-1, 1, clr, 0, 1));
+	buffer->Vertices.push_back(video::S3DVertex(1,1,1,  1, 1, 1, clr, 0, 0));
+	buffer->Vertices.push_back(video::S3DVertex(0,1,1, -1, 1, 1, clr, 1, 0));
+	buffer->Vertices.push_back(video::S3DVertex(0,0,1, -1,-1, 1, clr, 1, 1));
+	buffer->Vertices.push_back(video::S3DVertex(0,1,1, -1, 1, 1, clr, 0, 1));
+	buffer->Vertices.push_back(video::S3DVertex(0,1,0, -1, 1,-1, clr, 1, 1));
+	buffer->Vertices.push_back(video::S3DVertex(1,0,1,  1,-1, 1, clr, 1, 0));
+	buffer->Vertices.push_back(video::S3DVertex(1,0,0,  1,-1,-1, clr, 0, 0));
+
+	// Recalculate bounding box
+	buffer->BoundingBox.reset(0,0,0);
+
+	for (u32 i=0; i<12; ++i)
+	{
+		buffer->Vertices[i].Pos -= core::vector3df(0.5f, 0.5f, 0.5f);
+		buffer->Vertices[i].Pos *= size;
+		buffer->BoundingBox.addInternalPoint(buffer->Vertices[i].Pos);
+	}
+
+	SMesh* mesh = new SMesh;
+	mesh->addMeshBuffer(buffer);
+	buffer->drop();
+
+	mesh->recalculateBoundingBox();
+	return mesh;
+}
+
+
 // creates a hill plane
 IMesh* CGeometryCreator::createHillPlaneMesh(
 		const core::dimension2d<f32>& tileSize,
