@@ -45,7 +45,7 @@ void CVolumeLightSceneNode::constructLight()
 {
 	if (Mesh)
 		Mesh->drop();
-	Mesh = SceneManager->getGeometryCreator()->createVolumeLightMesh(SubdivideU, SubdivideV, FootColor, TailColor);
+	Mesh = SceneManager->getGeometryCreator()->createVolumeLightMesh(SubdivideU, SubdivideV, FootColor, TailColor, LPDistance, LightDimensions);
 }
 
 

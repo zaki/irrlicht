@@ -697,37 +697,36 @@ void CGeometryCreator::addToBuffer(const video::S3DVertex& v, SMeshBuffer* Buffe
 
 
 IMesh* CGeometryCreator::createVolumeLightMesh(
-		const u32 SubdivideU, const u32 SubdivideV,
-		const video::SColor FootColor, const video::SColor TailColor) const
+		const u32 subdivideU, const u32 subdivideV,
+		const video::SColor footColor, const video::SColor tailColor,
+		const f32 lpDistance, const core::vector3df& lightDim) const
 {
-	const f32 LPDistance = 8.0f;
-	const core::vector3df LightDimensions = core::vector3df(1.0f, 1.2f, 1.0f) ;
 	SMeshBuffer* Buffer = new SMeshBuffer();
 	Buffer->setHardwareMappingHint(EHM_STATIC);
 
-	const core::vector3df lightPoint(0, -(LPDistance*LightDimensions.Y), 0);
-	const f32 ax = LightDimensions.X * 0.5f; // X Axis
-	const f32 az = LightDimensions.Z * 0.5f; // Z Axis
+	const core::vector3df lightPoint(0, -(lpDistance*lightDim.Y), 0);
+	const f32 ax = lightDim.X * 0.5f; // X Axis
+	const f32 az = lightDim.Z * 0.5f; // Z Axis
 
 	Buffer->Vertices.clear();
-	Buffer->Vertices.reallocate(6+12*(SubdivideU+SubdivideV));
+	Buffer->Vertices.reallocate(6+12*(subdivideU+subdivideV));
 	Buffer->Indices.clear();
-	Buffer->Indices.reallocate(6+12*(SubdivideU+SubdivideV));
+	Buffer->Indices.reallocate(6+12*(subdivideU+subdivideV));
 	//draw the bottom foot.. the glowing region
-	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, FootColor, 0, 1),Buffer);
-	addToBuffer(video::S3DVertex( ax, 0, az,  0,0,0, FootColor, 1, 1),Buffer);
-	addToBuffer(video::S3DVertex( ax, 0,-az,  0,0,0, FootColor, 1, 0),Buffer);
+	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, footColor, 0, 1),Buffer);
+	addToBuffer(video::S3DVertex( ax, 0, az,  0,0,0, footColor, 1, 1),Buffer);
+	addToBuffer(video::S3DVertex( ax, 0,-az,  0,0,0, footColor, 1, 0),Buffer);
 
-	addToBuffer(video::S3DVertex( ax, 0,-az,  0,0,0, FootColor, 1, 0),Buffer);
-	addToBuffer(video::S3DVertex(-ax, 0,-az,  0,0,0, FootColor, 0, 0),Buffer);
-	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, FootColor, 0, 1),Buffer);
+	addToBuffer(video::S3DVertex( ax, 0,-az,  0,0,0, footColor, 1, 0),Buffer);
+	addToBuffer(video::S3DVertex(-ax, 0,-az,  0,0,0, footColor, 0, 0),Buffer);
+	addToBuffer(video::S3DVertex(-ax, 0, az,  0,0,0, footColor, 0, 1),Buffer);
 
 	f32 tu = 0.f;
-	const f32 tuStep = 1.f/SubdivideU;
+	const f32 tuStep = 1.f/subdivideU;
 	f32 bx = -ax;
-	const f32 bxStep = LightDimensions.X * tuStep;
+	const f32 bxStep = lightDim.X * tuStep;
 	// Slices in X/U space
-	for (u32 i = 0; i <= SubdivideU; ++i)
+	for (u32 i = 0; i <= subdivideU; ++i)
 	{
 		// These are the two endpoints for a slice at the foot
 		core::vector3df end1(bx, 0.0f, -az);
@@ -735,7 +734,7 @@ IMesh* CGeometryCreator::createVolumeLightMesh(
 
 		end1 -= lightPoint;		// get a vector from point to lightsource
 		end1.normalize();		// normalize vector
-		end1 *= LightDimensions.Y;	// multiply it out by shootlength
+		end1 *= lightDim.Y;	// multiply it out by shootlength
 
 		end1.X += bx;			// Add the original point location to the vector
 		end1.Z -= az;
@@ -743,37 +742,37 @@ IMesh* CGeometryCreator::createVolumeLightMesh(
 		// Do it again for the other point.
 		end2 -= lightPoint;
 		end2.normalize();
-		end2 *= LightDimensions.Y;
+		end2 *= lightDim.Y;
 
 		end2.X += bx;
 		end2.Z += az;
 
-		addToBuffer(video::S3DVertex(bx , 0,  az,  0,0,0, FootColor, tu, 1),Buffer);
-		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, FootColor, tu, 0),Buffer);
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColor, tu, 1),Buffer);
+		addToBuffer(video::S3DVertex(bx , 0,  az,  0,0,0, footColor, tu, 1),Buffer);
+		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, footColor, tu, 0),Buffer);
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, tailColor, tu, 1),Buffer);
 
-		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, FootColor, tu, 0),Buffer);
-		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, TailColor, tu, 0),Buffer);
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColor, tu, 1),Buffer);
+		addToBuffer(video::S3DVertex(bx , 0, -az,  0,0,0, footColor, tu, 0),Buffer);
+		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, tailColor, tu, 0),Buffer);
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, tailColor, tu, 1),Buffer);
 
 		//back side
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColor, tu, 1),Buffer);
-		addToBuffer(video::S3DVertex(-bx , 0,  -az,  0,0,0, FootColor, tu, 1),Buffer);
-		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, FootColor, tu, 0),Buffer);
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, tailColor, tu, 1),Buffer);
+		addToBuffer(video::S3DVertex(-bx , 0,  -az,  0,0,0, footColor, tu, 1),Buffer);
+		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, footColor, tu, 0),Buffer);
 
-		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, FootColor, tu, 0),Buffer);
-		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, TailColor, tu, 0),Buffer);
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColor, tu, 1),Buffer);
+		addToBuffer(video::S3DVertex(-bx , 0, az,  0,0,0, footColor, tu, 0),Buffer);
+		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, tailColor, tu, 0),Buffer);
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, tailColor, tu, 1),Buffer);
 		tu += tuStep;
 		bx += bxStep;
 	}
 
 	f32 tv = 0.f;
-	const f32 tvStep = 1.f/SubdivideV;
+	const f32 tvStep = 1.f/subdivideV;
 	f32 bz = -az;
-	const f32 bzStep = LightDimensions.Z * tvStep;
+	const f32 bzStep = lightDim.Z * tvStep;
 	// Slices in Z/V space
-	for(u32 i = 0; i <= SubdivideV; ++i)
+	for(u32 i = 0; i <= subdivideV; ++i)
 	{
 		// These are the two endpoints for a slice at the foot
 		core::vector3df end1(-ax, 0.0f, bz);
@@ -781,7 +780,7 @@ IMesh* CGeometryCreator::createVolumeLightMesh(
 
 		end1 -= lightPoint;		// get a vector from point to lightsource
 		end1.normalize();		// normalize vector
-		end1 *= LightDimensions.Y;	// multiply it out by shootlength
+		end1 *= lightDim.Y;	// multiply it out by shootlength
 
 		end1.X -= ax;			// Add the original point location to the vector
 		end1.Z += bz;
@@ -789,27 +788,27 @@ IMesh* CGeometryCreator::createVolumeLightMesh(
 		// Do it again for the other point.
 		end2 -= lightPoint;
 		end2.normalize();
-		end2 *= LightDimensions.Y;
+		end2 *= lightDim.Y;
 
 		end2.X += ax;
 		end2.Z += bz;
 
-		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, FootColor, 0, tv),Buffer);
-		addToBuffer(video::S3DVertex(ax , 0,  bz,  0,0,0, FootColor, 1, tv),Buffer);
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColor, 1, tv),Buffer);
+		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, footColor, 0, tv),Buffer);
+		addToBuffer(video::S3DVertex(ax , 0,  bz,  0,0,0, footColor, 1, tv),Buffer);
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, tailColor, 1, tv),Buffer);
 
-		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, TailColor, 1, tv),Buffer);
-		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, TailColor, 0, tv),Buffer);
-		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, FootColor, 0, tv),Buffer);
+		addToBuffer(video::S3DVertex(end2.X , end2.Y, end2.Z,  0,0,0, tailColor, 1, tv),Buffer);
+		addToBuffer(video::S3DVertex(end1.X , end1.Y, end1.Z,  0,0,0, tailColor, 0, tv),Buffer);
+		addToBuffer(video::S3DVertex(-ax , 0, bz,  0,0,0, footColor, 0, tv),Buffer);
 
 		//back side
-		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, FootColor, 0, tv),Buffer);
-		addToBuffer(video::S3DVertex(-ax , 0,  -bz,  0,0,0, FootColor, 1, tv),Buffer);
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColor, 1, tv),Buffer);
+		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, footColor, 0, tv),Buffer);
+		addToBuffer(video::S3DVertex(-ax , 0,  -bz,  0,0,0, footColor, 1, tv),Buffer);
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, tailColor, 1, tv),Buffer);
 
-		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, TailColor, 1, tv),Buffer);
-		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, TailColor, 0, tv),Buffer);
-		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, FootColor, 0, tv),Buffer);
+		addToBuffer(video::S3DVertex(-end2.X , end2.Y, -end2.Z,  0,0,0, tailColor, 1, tv),Buffer);
+		addToBuffer(video::S3DVertex(-end1.X , end1.Y, -end1.Z,  0,0,0, tailColor, 0, tv),Buffer);
+		addToBuffer(video::S3DVertex(ax , 0, -bz,  0,0,0, footColor, 0, tv),Buffer);
 		tv += tvStep;
 		bz += bzStep;
 	}
