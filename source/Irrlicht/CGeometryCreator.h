@@ -19,7 +19,7 @@ class CGeometryCreator : public IGeometryCreator
 {
 	void addToBuffer(const video::S3DVertex& v, SMeshBuffer* Buffer) const;
 public:
-	IMesh* createCubeMesh(f32 size) const;
+	IMesh* createCubeMesh(const core::vector3df& size) const;
 
 	IMesh* createHillPlaneMesh(
 		const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
