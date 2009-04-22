@@ -504,12 +504,14 @@ IMeshSceneNode* CSceneManager::addQuake3SceneNode(IMeshBuffer* meshBuffer,
 #endif
 }
 
+
 //! adds Volume Lighting Scene Node.
 //! the returned pointer must not be dropped.
-IVolumeLightSceneNode* CSceneManager::addVolumeLightSceneNode(ISceneNode* parent, s32 id,
-	const u32 subdivU, const u32 subdivV,
-	const video::SColor foot, const video::SColor tail,
-	const core::vector3df& position, const core::vector3df& rotation, const core::vector3df& scale)
+IVolumeLightSceneNode* CSceneManager::addVolumeLightSceneNode(
+		ISceneNode* parent, s32 id,
+		const u32 subdivU, const u32 subdivV,
+		const video::SColor foot, const video::SColor tail,
+		const core::vector3df& position, const core::vector3df& rotation, const core::vector3df& scale)
 {
 	if (!parent)
 		parent = this;
@@ -519,6 +521,7 @@ IVolumeLightSceneNode* CSceneManager::addVolumeLightSceneNode(ISceneNode* parent
 
 	return node;
 }
+
 
 //! adds a test scene node for test purposes to the scene. It is a simple cube of (1,1,1) size.
 //! the returned pointer must not be dropped.
@@ -1035,6 +1038,36 @@ IAnimatedMesh* CSceneManager::addSphereMesh(const core::string<c16>& name,
 	return animatedMesh;
 }
 
+
+
+//! Adds a static volume light mesh to the mesh pool.
+IAnimatedMesh* CSceneManager::addVolumeLightMesh(const core::string<c16>& name,
+		const u32 SubdivideU, const u32 SubdivideV,
+		const video::SColor FootColor, const video::SColor TailColor)
+{
+	if (MeshCache->isMeshLoaded(name))
+		return MeshCache->getMeshByFilename(name);
+
+	IMesh* mesh = GeometryCreator->createVolumeLightMesh(SubdivideU, SubdivideV, FootColor, TailColor);
+	if (!mesh)
+		return 0;
+
+	SAnimatedMesh* animatedMesh = new SAnimatedMesh();
+	if (!animatedMesh)
+	{
+		mesh->drop();
+		return 0;
+	}
+
+	animatedMesh->addMesh(mesh);
+	mesh->drop();
+	animatedMesh->recalculateBoundingBox();
+
+	MeshCache->addMesh(name, animatedMesh);
+	animatedMesh->drop();
+
+	return animatedMesh;
+}
 
 
 //! Returns the root scene node. This is the scene node wich is parent

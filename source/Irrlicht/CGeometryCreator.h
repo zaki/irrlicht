@@ -6,6 +6,7 @@
 #define __C_GEOMETRY_CREATOR_H_INCLUDED__
 
 #include "IGeometryCreator.h"
+#include "SMeshBuffer.h"
 
 namespace irr
 {
@@ -16,6 +17,7 @@ namespace scene
 //! class for creating geometry on the fly
 class CGeometryCreator : public IGeometryCreator
 {
+	void addToBuffer(const video::S3DVertex& v, SMeshBuffer* Buffer) const;
 public:
 
 	IMesh* createHillPlaneMesh(
@@ -44,6 +46,10 @@ public:
 	IMesh* createConeMesh(f32 radius, f32 length, u32 tesselation, 
 						const video::SColor& colorTop=video::SColor(0xffffffff), 
 						const video::SColor& colorBottom=video::SColor(0xffffffff), f32 oblique=0.f) const;
+
+	IMesh* createVolumeLightMesh(const u32 SubdivideU, const u32 SubdivideV,
+			const video::SColor FootColor,
+			const video::SColor TailColor) const;
 };
 
 
