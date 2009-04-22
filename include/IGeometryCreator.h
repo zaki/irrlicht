@@ -26,7 +26,14 @@ class IGeometryCreator : public IReferenceCounted
 {
 public:
 
-	//! Create a psuedo-random mesh representing a hilly terrain.
+	//! Creates a simple cube mesh.
+	/**
+	\param size Size of the cube.
+	\return Generated mesh.
+	*/
+	virtual IMesh* createCubeMesh(f32 size=5.f) const =0;
+
+	//! Create a pseudo-random mesh representing a hilly terrain.
 	/**
 	\param tileSize The size of each time.
 	\param tileCount The number of tiles in each dimension.
@@ -34,6 +41,7 @@ public:
 	\param hillHeight The maximum height of the hills.
 	\param countHills The number of hills along each dimension.
 	\param textureRepeatCount The number of times to repeat the material texture along each dimension.
+	\return Generated mesh.
 	*/
 	virtual IMesh* createHillPlaneMesh(
 			const core::dimension2d<f32>& tileSize,
@@ -56,6 +64,7 @@ public:
 	\param driver The current video driver.
 	\param defaultVertexBlockSize (to be documented)
 	\param debugBorders (to be documented)
+	\return Generated mesh.
 	*/
 	virtual IMesh* createTerrainMesh(video::IImage* texture,
 			video::IImage* heightmap,
@@ -76,6 +85,7 @@ public:
 	than the cylinder's diameter
 	\param colorCylinder color of the cylinder
 	\param colorCone color of the cone
+	\return Generated mesh.
 	*/
 	virtual IMesh* createArrowMesh(const u32 tesselationCylinder = 4,
 			const u32 tesselationCone = 8, const f32 height = 1.f,
@@ -89,6 +99,7 @@ public:
 	\param radius Radius of the sphere
 	\param polyCountX Number of quads used for the horizontal tiling
 	\param polyCountY Number of quads used for the vertical tiling
+	\return Generated mesh.
 	*/
 	virtual IMesh* createSphereMesh(f32 radius = 5.f,
 			u32 polyCountX = 16, u32 polyCountY = 16) const =0;
@@ -101,6 +112,7 @@ public:
 	\param color The color of the cylinder.
 	\param closeTop If true, close the ends of the cylinder, otherwise leave them open.
 	\param oblique (to be documented)
+	\return Generated mesh.
 	*/
 	virtual IMesh* createCylinderMesh(f32 radius, f32 length,
 			u32 tesselation,
@@ -115,6 +127,7 @@ public:
 	\param colorTop The color of the top of the cone.
 	\param colorBottom The color of the bottom of the cone.
 	\param oblique (to be documented)
+	\return Generated mesh.
 	*/
 	virtual IMesh* createConeMesh(f32 radius, f32 length, u32 tesselation,
 			const video::SColor& colorTop=video::SColor(0xffffffff),
@@ -129,6 +142,7 @@ public:
 	\param tailColor Color at the mid of the light.
 	\param lpDistance Virtual distance of the light point for normals.
 	\param lightDim Dimensions of the light.
+	\return Generated mesh.
 	*/
 	virtual IMesh* createVolumeLightMesh(
 			const u32 subdivideU=32, const u32 subdivideV=32,
