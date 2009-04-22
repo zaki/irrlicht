@@ -371,10 +371,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			return false;
 		}
 	}
-
 	// default keyboard handling
-
-	if (!event.KeyInput.Control)
+	else
 	switch(event.KeyInput.Key)
 	{
 	case KEY_END:
