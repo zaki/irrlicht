@@ -39,17 +39,21 @@ public:
 
 	IMesh* createSphereMesh(f32 radius, u32 polyCountX, u32 polyCountY) const;
 
-	IMesh* createCylinderMesh(f32 radius, f32 length, u32 tesselation, 
-							const video::SColor& color=video::SColor(0xffffffff), 
-							bool closeTop=true, f32 oblique=0.f) const;
+	IMesh* createCylinderMesh(f32 radius, f32 length, u32 tesselation,
+				const video::SColor& color=0xffffffff,
+				bool closeTop=true, f32 oblique=0.f) const;
 
-	IMesh* createConeMesh(f32 radius, f32 length, u32 tesselation, 
-						const video::SColor& colorTop=video::SColor(0xffffffff), 
-						const video::SColor& colorBottom=video::SColor(0xffffffff), f32 oblique=0.f) const;
+	IMesh* createConeMesh(f32 radius, f32 length, u32 tesselation,
+				const video::SColor& colorTop=0xffffffff,
+				const video::SColor& colorBottom=0xffffffff,
+				f32 oblique=0.f) const;
 
-	IMesh* createVolumeLightMesh(const u32 SubdivideU, const u32 SubdivideV,
-			const video::SColor FootColor,
-			const video::SColor TailColor) const;
+	IMesh* createVolumeLightMesh(
+			const u32 subdivideU=32, const u32 subdivideV=32,
+			const video::SColor footColor=0xffffffff,
+			const video::SColor tailColor=0xffffffff,
+			const f32 lpDistance = 8.f,
+			const core::vector3df& lightDim = core::vector3df(1.f,1.2f,1.f)) const;
 };
 
 

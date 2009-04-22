@@ -123,14 +123,19 @@ public:
 
 	//! Create a volume light mesh.
 	/**
-	\param SubdivideU Horizontal patch count.
-	\param SubdivideV Vertical patch count.
-	\param FootColor Color at the bottom of the light.
-	\param TailColor Color at the mid of the light.
+	\param subdivideU Horizontal patch count.
+	\param subdivideV Vertical patch count.
+	\param footColor Color at the bottom of the light.
+	\param tailColor Color at the mid of the light.
+	\param lpDistance Virtual distance of the light point for normals.
+	\param lightDim Dimensions of the light.
 	*/
-	virtual IMesh* createVolumeLightMesh(const u32 SubdivideU, const u32 SubdivideV,
-			const video::SColor FootColor,
-			const video::SColor TailColor) const =0;
+	virtual IMesh* createVolumeLightMesh(
+			const u32 subdivideU=32, const u32 subdivideV=32,
+			const video::SColor footColor = 0xffffffff,
+			const video::SColor tailColor = 0xffffffff,
+			const f32 lpDistance = 8.f,
+			const core::vector3df& lightDim = core::vector3df(1.f,1.2f,1.f)) const =0;
 };
 
 
