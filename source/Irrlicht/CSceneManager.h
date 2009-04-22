@@ -226,6 +226,12 @@ namespace scene
 		IAnimatedMesh* addSphereMesh(const core::string<c16>& name,
 				f32 radius=5.f, u32 polyCountX=16, u32 polyCountY=16);
 
+		//! Adds a static volume light mesh to the mesh pool.
+		IAnimatedMesh* addVolumeLightMesh(const core::string<c16>& name, 
+			const u32 SubdivideU = 32, const u32 SubdivideV = 32,
+			const video::SColor FootColor = video::SColor(51, 0, 230, 180),
+			const video::SColor TailColor = video::SColor(0, 0, 0, 0));
+
 		//! Adds a particle system scene node.
 		virtual IParticleSystemSceneNode* addParticleSystemSceneNode(
 			bool withDefaultEmitter=true, ISceneNode* parent=0, s32 id=-1,

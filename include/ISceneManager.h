@@ -164,7 +164,7 @@ namespace scene
 		 *  <TR>
 		 *    <TD>3D Studio (.3ds)</TD>
 		 *    <TD>Loader for 3D-Studio files which lots of 3D packages
-		 *      are able to export.  Only static meshes are currently
+		 *      are able to export. Only static meshes are currently
 		 *      supported by this importer. </TD>
 		 *  </TR>
 		 *  <TR>
@@ -178,7 +178,7 @@ namespace scene
 		 *      architecture and calculating lighting. Irrlicht can
 		 *      directly import .csm files thanks to the IrrCSM library
 		 *      created by Saurav Mohapatra which is now integrated
-		 *      directly in Irrlicht.  If you are using this loader,
+		 *      directly in Irrlicht. If you are using this loader,
 		 *      please note that you'll have to set the path of the
 		 *      textures before loading .csm files. You can do this
 		 *      using
@@ -188,7 +188,7 @@ namespace scene
 		 *  <TR>
 		 *    <TD>COLLADA (.dae, .xml)</TD>
 		 *    <TD>COLLADA is an open Digital Asset Exchange Schema for
-		 *        the interactive 3D industry.  There are exporters and
+		 *        the interactive 3D industry. There are exporters and
 		 *        importers for this format available for most of the
 		 *        big 3d packagesat http://collada.org. Irrlicht can
 		 *        import COLLADA files by using the
@@ -208,7 +208,7 @@ namespace scene
 		 *        scene will be added into the scene manager with the
 		 *        following naming scheme:
 		 *        path/to/file/file.dea#meshname. The loading of such
-		 *        meshes is logged.  Currently, this loader is able to
+		 *        meshes is logged. Currently, this loader is able to
 		 *        create meshes (made of only polygons), lights, and
 		 *        cameras. Materials and animations are currently not
 		 *        supported but this will change with future releases.
@@ -220,7 +220,7 @@ namespace scene
 		 *        combined into one and is specifically designed for 3D
 		 *        game-development. With this loader, it is possible to
 		 *        directly load all geometry is as well as textures and
-		 *        lightmaps from .dmf files.  To set texture and
+		 *        lightmaps from .dmf files. To set texture and
 		 *        material paths, see scene::DMF_USE_MATERIALS_DIRS and
 		 *        scene::DMF_TEXTURE_PATH. It is also possible to flip
 		 *        the alpha texture by setting
@@ -242,7 +242,7 @@ namespace scene
 		 *      and there are several tools for them available, e.g.
 		 *      the Maya exporter included in the DX SDK.
 		 *      .x files can include skeletal animations and Irrlicht
-		 *      is able to play and display them.  Currently, Irrlicht
+		 *      is able to play and display them. Currently, Irrlicht
 		 *      only supports uncompressed .x files.</TD>
 		 *  </TR>
 		 *  <TR>
@@ -257,7 +257,7 @@ namespace scene
 		 *    <TD>.MS3D files contain models and sometimes skeletal
 		 *      animations from the Milkshape 3D modeling and animation
 		 *      software. This importer for Irrlicht can display and/or
-		 *      animate these files.  </TD>
+		 *      animate these files. </TD>
 		 *  </TR>
 		 *  <TR>
 		 *  <TD>My3D (.my3d)</TD>
@@ -268,7 +268,7 @@ namespace scene
 		 *        loader was written by Zhuck Dimitry who also created
 		 *        the whole My3DTools package. If you are using this
 		 *        loader, please note that you can set the path of the
-		 *        textures before loading .my3d files.  You can do this
+		 *        textures before loading .my3d files. You can do this
 		 *        using
 		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(scene::MY3D_TEXTURE_PATH,
 		 *        &quot;path/to/your/textures&quot;);
@@ -298,11 +298,11 @@ namespace scene
 		 *    <TR>
 		 *      <TD>Pulsar LMTools (.lmts)</TD>
 		 *      <TD>LMTools is a set of tools (Windows &amp; Linux) for
-		 *        creating lightmaps.  Irrlicht can directly read .lmts
+		 *        creating lightmaps. Irrlicht can directly read .lmts
 		 *        files thanks to<br> the importer created by Jonas
 		 *        Petersen. If you are using this loader, please note
 		 *        that you can set the path of the textures before
-		 *        loading .lmts files.  You can do this using
+		 *        loading .lmts files. You can do this using
 		 *        SceneManager-&gt;getParameters()-&gt;setAttribute(scene::LMTS_TEXTURE_PATH,
 		 *        &quot;path/to/your/textures&quot;);
 		 *        Notes for<br> this version of the loader:<br>
@@ -376,10 +376,10 @@ namespace scene
 
 		//! adds Volume Lighting Scene Node.
 		/** Example Usage:
-			scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(NULL, -1,
+			scene::IVolumeLightSceneNode * n = smgr->addVolumeLightSceneNode(0, -1,
 						32, 32, //Subdivide U/V
-						video::SColor(0, 180, 180, 180),   //foot color
-						video::SColor(0, 0, 0, 0)         //tail color
+						video::SColor(0, 180, 180, 180), //foot color
+						video::SColor(0, 0, 0, 0) //tail color
 						);
 			if (n)
 			{
@@ -395,7 +395,6 @@ namespace scene
 			const core::vector3df& position = core::vector3df(0,0,0),
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
-
 
 		//! Adds a test scene node for test purposes to the scene.
 		/** It is a simple cube of (1,1,1) size.
@@ -557,15 +556,17 @@ namespace scene
 			f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
 
 		//! Adds a camera scene node with an animator which provides mouse and keyboard control appropriate for first person shooters (FPS).
-		/** This FPS camera is intended to provide a demonstration of a camera that behaves
-		 like a typical First Person Shooter.  It is useful for simple demos and prototyping but is not 
-		 intended to provide a full solution for a production quality game. It binds the camera scene node 
-		 rotation to the look-at target; @see ICameraSceneNode::bindTargetAndRotation().
-		 With this camera, you look with the mouse, and move with cursor keys. If you want to 
-		 change the key layout, you can specify your own keymap. For example to make the camera
-		 be controlled by the cursor keys AND the keys W,A,S, and D, do something
-		 like this:
-		 \code
+		/** This FPS camera is intended to provide a demonstration of a
+		camera that behaves like a typical First Person Shooter. It is
+		useful for simple demos and prototyping but is not intended to
+		provide a full solution for a production quality game. It binds
+		the camera scene node rotation to the look-at target; @see
+		ICameraSceneNode::bindTargetAndRotation(). With this camera,
+		you look with the mouse, and move with cursor keys. If you want
+		to change the key layout, you can specify your own keymap. For
+		example to make the camera be controlled by the cursor keys AND
+		the keys W,A,S, and D, do something like this:
+		\code
 		 SKeyMap keyMap[8];
 		 keyMap[0].Action = EKA_MOVE_FORWARD;
 		 keyMap[0].KeyCode = KEY_UP;
@@ -594,23 +595,27 @@ namespace scene
 		rotated. This can be done only with the mouse.
 		\param moveSpeed: Speed in units per millisecond with which
 		the camera is moved. Movement is done with the cursor keys.
-		\param id: id of the camera. This id can be used to identify the camera.
-		\param keyMapArray: Optional pointer to an array of a keymap, specifying what
-		keys should be used to move the camera. If this is null, the default keymap
-		is used. You can define actions more then one time in the array, to bind
-		multiple keys to the same action.
+		\param id: id of the camera. This id can be used to identify
+		the camera.
+		\param keyMapArray: Optional pointer to an array of a keymap,
+		specifying what keys should be used to move the camera. If this
+		is null, the default keymap is used. You can define actions
+		more then one time in the array, to bind multiple keys to the
+		same action.
 		\param keyMapSize: Amount of items in the keymap array.
 		\param noVerticalMovement: Setting this to true makes the
 		camera only move within a horizontal plane, and disables
 		vertical movement as known from most ego shooters. Default is
 		'false', with which it is possible to fly around in space, if
 		no gravity is there.
-		\param jumpSpeed: Speed with which the camera is moved when jumping.
-		\param invertMouse: Setting this to true makes the camera look up when
-		the mouse is moved down and down when the mouse is moved up, the default
-		is 'false' which means it will follow the movement of the mouse cursor.
-		\return Pointer to the interface of the camera if successful, otherwise 0.
-		This pointer should not be dropped. See
+		\param jumpSpeed: Speed with which the camera is moved when
+		jumping.
+		\param invertMouse: Setting this to true makes the camera look
+		up when the mouse is moved down and down when the mouse is
+		moved up, the default is 'false' which means it will follow the
+		movement of the mouse cursor.
+		\return Pointer to the interface of the camera if successful,
+		otherwise 0. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = 0.5f, s32 id=-1,
@@ -851,11 +856,11 @@ namespace scene
 			ISceneNode* parent = 0, const core::vector3df& position = core::vector3df(0,0,0),
 			s32 id=-1) = 0;
 
-		//! Adds a text scene node, which uses billboards.  The node, and the text on it, will scale with distance.
+		//! Adds a text scene node, which uses billboards. The node, and the text on it, will scale with distance.
 		/**
 		\param font The font to use on the billboard. Pass 0 to use the GUI environment's default font.
 		\param text The text to display on the billboard.
-		\param parent The billboard's parent.  Pass 0 to use the root scene node.
+		\param parent The billboard's parent. Pass 0 to use the root scene node.
 		\param size The billboard's width and height.
 		\param position The billboards position relative to its parent.
 		\param id: An id of the node. This id can be used to identify the node.
@@ -961,6 +966,16 @@ namespace scene
 				f32 radius=5.f, u32 polyCountX = 16,
 				u32 polyCountY = 16) = 0;
 
+		//! Add a volume light mesh to the meshpool
+		/** \param name Name of the mesh
+		\return Pointer to the volume light mesh if successful, otherwise 0.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information.
+		*/
+		virtual IAnimatedMesh* addVolumeLightMesh(const core::string<c16>& name,
+				const u32 SubdivideU = 32, const u32 SubdivideV = 32,
+				const video::SColor FootColor = video::SColor(51, 0, 230, 180),
+				const video::SColor TailColor = video::SColor(0, 0, 0, 0)) = 0;
+
 		//! Gets the root scene node.
 		/** This is the scene node which is parent
 		of all scene nodes. The root scene node is a special scene node which
@@ -1060,9 +1075,9 @@ namespace scene
 		\param speed: The orbital speed, in radians per millisecond.
 		\param direction: Specifies the upvector used for alignment of the mesh.
 		\param startPosition: The position on the circle where the animator will
-		begin. Value is in multiples  of a circle, i.e. 0.5 is half way around. (phase)
+		begin. Value is in multiples of a circle, i.e. 0.5 is half way around. (phase)
 		\param radiusEllipsoid: if radiusEllipsoid != 0 then radius2 froms a ellipsoid
-		begin. Value is in multiples  of a circle, i.e. 0.5 is half way around. (phase)
+		begin. Value is in multiples of a circle, i.e. 0.5 is half way around. (phase)
 		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
 		and the animator will animate it.
 		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
@@ -1116,7 +1131,7 @@ namespace scene
 		ISceneManager::createTriangleSelector();
 		\param sceneNode: SceneNode which should be manipulated. After you added this animator
 		to the scene node, the scene node will not be able to move through walls and is
-		affected by gravity.  If you need to teleport the scene node to a new position without
+		affected by gravity. If you need to teleport the scene node to a new position without
 		it being effected by the collision geometry, then call sceneNode->setPosition(); then
 		animator->setTargetNode(sceneNode);
 		\param ellipsoidRadius: Radius of the ellipsoid with which collision detection and
@@ -1431,13 +1446,13 @@ namespace scene
 		virtual const video::SColorf& getAmbientLight() const = 0;
 
 		//! Register a custom callbacks manager which gets callbacks during scene rendering.
-		/** \param[in] lightManager: the new callbacks manager.  You may pass 0 to remove the
+		/** \param[in] lightManager: the new callbacks manager. You may pass 0 to remove the
 			current callbacks manager and restore the default behaviour. */
 		virtual void setLightManager(ILightManager* lightManager) = 0;
 
 		//! Get an instance of a geometry creator.
 		/** The geometry creator provides some helper methods to create various types of
-		basic geometry.  This can be useful for custom scene nodes. */
+		basic geometry. This can be useful for custom scene nodes. */
 		virtual const IGeometryCreator* getGeometryCreator(void) const = 0;
 	};
 
