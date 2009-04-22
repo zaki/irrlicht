@@ -28,10 +28,10 @@ public:
 
 	//! Creates a simple cube mesh.
 	/**
-	\param size Size of the cube.
+	\param size Dimensions of the cube.
 	\return Generated mesh.
 	*/
-	virtual IMesh* createCubeMesh(f32 size=5.f) const =0;
+	virtual IMesh* createCubeMesh(const core::vector3df& size=core::vector3df(5.f,5.f,5.f)) const =0;
 
 	//! Create a pseudo-random mesh representing a hilly terrain.
 	/**

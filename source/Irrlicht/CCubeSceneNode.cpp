@@ -46,7 +46,7 @@ void CCubeSceneNode::setSize()
 {
 	if (Mesh)
 		Mesh->drop();
-	Mesh = SceneManager->getGeometryCreator()->createCubeMesh(Size);
+	Mesh = SceneManager->getGeometryCreator()->createCubeMesh(core::vector3df(Size));
 }
 
 

@@ -16,7 +16,7 @@ namespace irr
 namespace scene
 {
 
-IMesh* CGeometryCreator::createCubeMesh(f32 size) const
+IMesh* CGeometryCreator::createCubeMesh(const core::vector3df& size) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 
@@ -34,7 +34,6 @@ IMesh* CGeometryCreator::createCubeMesh(f32 size) const
 	video::SColor clr(255,255,255,255);
 
 	buffer->Vertices.reallocate(12);
-	buffer->Vertices.set_used(0);
 
 	buffer->Vertices.push_back(video::S3DVertex(0,0,0, -1,-1,-1, clr, 0, 1));
 	buffer->Vertices.push_back(video::S3DVertex(1,0,0,  1,-1,-1, clr, 1, 1));
@@ -565,22 +564,22 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 	const u32 nonWrappedSize = ( tesselation* 4 ) - 2;
 	for ( i = 0; i != nonWrappedSize; i += 2 )
 	{
-		buffer->Indices.push_back ( i + 2 );
-		buffer->Indices.push_back ( i + 0 );
-		buffer->Indices.push_back ( i + 1 );
+		buffer->Indices.push_back(i + 2);
+		buffer->Indices.push_back(i + 0);
+		buffer->Indices.push_back(i + 1);
 
-		buffer->Indices.push_back ( i + 2 );
-		buffer->Indices.push_back ( i + 1 );
-		buffer->Indices.push_back ( i + 3 );
+		buffer->Indices.push_back(i + 2);
+		buffer->Indices.push_back(i + 1);
+		buffer->Indices.push_back(i + 3);
 	}
 
-	buffer->Indices.push_back ( 0 );
-	buffer->Indices.push_back ( i + 0 );
-	buffer->Indices.push_back ( i + 1 );
+	buffer->Indices.push_back(0);
+	buffer->Indices.push_back(i + 0);
+	buffer->Indices.push_back(i + 1);
 
-	buffer->Indices.push_back ( 0 );
-	buffer->Indices.push_back ( i + 1 );
-	buffer->Indices.push_back ( 1 );
+	buffer->Indices.push_back(0);
+	buffer->Indices.push_back(i + 1);
+	buffer->Indices.push_back(1);
 
 	// close down
 	v.Pos.X = 0.f;
@@ -591,20 +590,20 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 	v.Normal.Z = 0.f;
 	v.TCoords.X = 1.f;
 	v.TCoords.Y = 1.f;
-	buffer->Vertices.push_back ( v );
+	buffer->Vertices.push_back(v);
 
-	u32 index = buffer->Vertices.size () - 1;
+	u32 index = buffer->Vertices.size() - 1;
 
 	for ( i = 0; i != nonWrappedSize; i += 2 )
 	{
-		buffer->Indices.push_back ( index );
-		buffer->Indices.push_back ( i + 0 );
-		buffer->Indices.push_back ( i + 2 );
+		buffer->Indices.push_back(index);
+		buffer->Indices.push_back(i + 0);
+		buffer->Indices.push_back(i + 2);
 	}
 
-	buffer->Indices.push_back ( index );
-	buffer->Indices.push_back ( i + 0 );
-	buffer->Indices.push_back ( 0 );
+	buffer->Indices.push_back(index);
+	buffer->Indices.push_back(i + 0);
+	buffer->Indices.push_back(0);
 
 	if (closeTop)
 	{
@@ -617,20 +616,20 @@ IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length,
 		v.Normal.Z = 0.f;
 		v.TCoords.X = 0.f;
 		v.TCoords.Y = 0.f;
-		buffer->Vertices.push_back ( v );
+		buffer->Vertices.push_back(v);
 
-		index = buffer->Vertices.size () - 1;
+		index = buffer->Vertices.size() - 1;
 
 		for ( i = 0; i != nonWrappedSize; i += 2 )
 		{
-			buffer->Indices.push_back ( i + 1 );
-			buffer->Indices.push_back ( index );
-			buffer->Indices.push_back ( i + 3 );
+			buffer->Indices.push_back(i + 1);
+			buffer->Indices.push_back(index);
+			buffer->Indices.push_back(i + 3);
 		}
 
-		buffer->Indices.push_back ( i + 1 );
-		buffer->Indices.push_back ( index );
-		buffer->Indices.push_back ( 1 );
+		buffer->Indices.push_back(i + 1);
+		buffer->Indices.push_back(index);
+		buffer->Indices.push_back(1);
 	}
 
 	buffer->recalculateBoundingBox();
@@ -690,9 +689,9 @@ IMesh* CGeometryCreator::createConeMesh(f32 radius, f32 length, u32 tesselation,
 
 	for ( i = 0; i != nonWrappedSize; i += 1 )
 	{
-		buffer->Indices.push_back ( i + 0 );
-		buffer->Indices.push_back ( index );
-		buffer->Indices.push_back ( i + 1 );
+		buffer->Indices.push_back(i + 0);
+		buffer->Indices.push_back(index);
+		buffer->Indices.push_back(i + 1);
 	}
 
 	buffer->Indices.push_back(i + 0);
