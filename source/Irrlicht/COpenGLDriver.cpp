@@ -1958,43 +1958,85 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	bool resetAllRenderStates)
 {
 	if (resetAllRenderStates ||
+		lastmaterial.ColorMaterial != material.ColorMaterial)
+	{
+		if (material.ColorMaterial != ECM_NONE)
+			glEnable(GL_COLOR_MATERIAL);
+		switch (material.ColorMaterial)
+		{
+		case ECM_NONE:
+			glDisable(GL_COLOR_MATERIAL);
+			break;
+		case ECM_DIFFUSE:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+			break;
+		case ECM_AMBIENT:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT);
+			break;
+		case ECM_EMISSIVE:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
+			break;
+		case ECM_SPECULAR:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_SPECULAR);
+			break;
+		case ECM_DIFFUSE_AND_AMBIENT:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+			break;
+		}
+	}
+
+	if (resetAllRenderStates ||
 		lastmaterial.AmbientColor != material.AmbientColor ||
 		lastmaterial.DiffuseColor != material.DiffuseColor ||
-		lastmaterial.EmissiveColor != material.EmissiveColor)
+		lastmaterial.EmissiveColor != material.EmissiveColor ||
+		lastmaterial.ColorMaterial != material.ColorMaterial)
 	{
 		GLfloat color[4];
 
 		const f32 inv = 1.0f / 255.0f;
 
-		color[0] = material.AmbientColor.getRed() * inv;
-		color[1] = material.AmbientColor.getGreen() * inv;
-		color[2] = material.AmbientColor.getBlue() * inv;
-		color[3] = material.AmbientColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+		if ((material.ColorMaterial != video::ECM_AMBIENT) &&
+			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+		{
+			color[0] = material.AmbientColor.getRed() * inv;
+			color[1] = material.AmbientColor.getGreen() * inv;
+			color[2] = material.AmbientColor.getBlue() * inv;
+			color[3] = material.AmbientColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+		}
 
-		color[0] = material.DiffuseColor.getRed() * inv;
-		color[1] = material.DiffuseColor.getGreen() * inv;
-		color[2] = material.DiffuseColor.getBlue() * inv;
-		color[3] = material.DiffuseColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+		if ((material.ColorMaterial != video::ECM_DIFFUSE) &&
+			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+		{
+			color[0] = material.DiffuseColor.getRed() * inv;
+			color[1] = material.DiffuseColor.getGreen() * inv;
+			color[2] = material.DiffuseColor.getBlue() * inv;
+			color[3] = material.DiffuseColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+		}
 
-		color[0] = material.EmissiveColor.getRed() * inv;
-		color[1] = material.EmissiveColor.getGreen() * inv;
-		color[2] = material.EmissiveColor.getBlue() * inv;
-		color[3] = material.EmissiveColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
+		if (material.ColorMaterial != video::ECM_EMISSIVE)
+		{
+			color[0] = material.EmissiveColor.getRed() * inv;
+			color[1] = material.EmissiveColor.getGreen() * inv;
+			color[2] = material.EmissiveColor.getBlue() * inv;
+			color[3] = material.EmissiveColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
+		}
 	}
 
 	if (resetAllRenderStates ||
 		lastmaterial.SpecularColor != material.SpecularColor ||
-		lastmaterial.Shininess != material.Shininess)
+		lastmaterial.Shininess != material.Shininess ||
+		lastmaterial.ColorMaterial != material.ColorMaterial)
 	{
 		GLfloat color[4]={0.f,0.f,0.f,1.f};
 		const f32 inv = 1.0f / 255.0f;
 
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material.Shininess);
 		// disable Specular colors if no shininess is set
-		if (material.Shininess != 0.0f)
+		if ((material.Shininess != 0.0f) &&
+			(material.ColorMaterial != video::ECM_SPECULAR))
 		{
 #ifdef GL_EXT_separate_specular_color
 			if (FeatureAvailable[IRR_EXT_separate_specular_color])
