@@ -439,8 +439,17 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	// store the screen's depth buffer
 	DepthBuffers.push_back(new SDepthSurface());
-	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
-	DepthBuffers[0]->Size=ScreenSize;
+	if (SUCCEEDED(pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface))))
+	{
+		D3DSURFACE_DESC desc;
+		DepthBuffers[0]->Surface->GetDesc(&desc);
+		DepthBuffers[0]->Size.set(desc.Width, desc.Height);
+	}
+	else
+	{
+		os::Printer::log("Was not able to get main depth buffer.", ELL_ERROR);
+		return false;
+	}
 
 	D3DColorFormat = D3DFMT_A8R8G8B8;
 	IDirect3DSurface9* bb=0;
@@ -2814,7 +2823,8 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 		if (SUCCEEDED(hr))
 		{
 			depth=DepthBuffers.getLast();
-			depth->Size=optSize;
+			depth->Surface->GetDesc(&desc);
+			depth->Size.set(desc.Width, desc.Height);
 		}
 		else
 		{
