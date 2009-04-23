@@ -22,6 +22,8 @@ namespace scene
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f));
 
+		virtual ~CCubeSceneNode();
+
 		virtual void OnRegisterSceneNode();
 
 		//! renders the node.
