@@ -297,7 +297,7 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
 		// Register Class
 		WNDCLASS wc;
 		wc.style		= CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc		= (WNDPROC)WndProc;
+		wc.lpfnWndProc		= WndProc;
 		wc.cbClsExtra		= 0;
 		wc.cbWndExtra		= 0;
 		wc.hInstance		= hInstance;

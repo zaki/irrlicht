@@ -24,7 +24,12 @@ namespace video
 {
 	struct SDepthSurface : public IReferenceCounted
 	{
-		SDepthSurface() : Surface(0) {}
+		SDepthSurface() : Surface(0)
+		{
+			#ifdef _DEBUG
+			setDebugName("SDepthSurface");
+			#endif
+		}
 		virtual ~SDepthSurface()
 		{
 			if (Surface)

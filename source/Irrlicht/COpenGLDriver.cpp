@@ -555,6 +555,10 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// create matrix for flipping textures
 	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
 
+	// We need to reset once more at the beginning of the first rendering.
+	// This fixes problems with intermediate changes to the material during texture load.
+	ResetRenderStates = true;
+
 	return true;
 }
 
@@ -2707,26 +2711,31 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
 
 	glBegin(GL_QUADS);
 
 	glColor4ub(leftDownEdge.getRed(), leftDownEdge.getGreen(), leftDownEdge.getBlue(), leftDownEdge.getAlpha());
-	glVertex3f(-1.1f,-1.1f,0.9f);
+	glVertex3f(-1.f,-1.f,-0.9f);
 
 	glColor4ub(leftUpEdge.getRed(), leftUpEdge.getGreen(), leftUpEdge.getBlue(), leftUpEdge.getAlpha());
-	glVertex3f(-1.1f, 1.1f,0.9f);
+	glVertex3f(-1.f, 1.f,-0.9f);
 
 	glColor4ub(rightUpEdge.getRed(), rightUpEdge.getGreen(), rightUpEdge.getBlue(), rightUpEdge.getAlpha());
-	glVertex3f(1.1f, 1.1f,0.9f);
+	glVertex3f(1.f, 1.f,-0.9f);
 
 	glColor4ub(rightDownEdge.getRed(), rightDownEdge.getGreen(), rightDownEdge.getBlue(), rightDownEdge.getAlpha());
-	glVertex3f(1.1f,-1.1f,0.9f);
+	glVertex3f(1.f,-1.f,-0.9f);
 
 	glEnd();
 
 	clearBuffers(false, false, clearStencilBuffer, 0x0);
 
 	// restore settings
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glPopAttrib();
 }
