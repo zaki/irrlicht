@@ -72,7 +72,10 @@ namespace video
 		EMF_ANTI_ALIASING = 0x4000,
 
 		//! ColorMask bits, for enabling the color planes
-		EMF_COLOR_MASK = 0x8000
+		EMF_COLOR_MASK = 0x8000,
+
+		//! ColorMaterial enum for vertex color interpretation
+		EMF_COLOR_MATERIAL = 0x10000
 	};
 
 } // end namespace video

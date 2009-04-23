@@ -1624,6 +1624,21 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 		pID3DDevice->SetMaterial(&mat);
 	}
 
+	if (lastmaterial.ColorMaterial != material.ColorMaterial)
+	{
+		pID3DDevice->SetRenderState(D3DRS_COLORVERTEX, (material.ColorMaterial != ECM_NONE));
+		pID3DDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE,
+			((material.ColorMaterial == ECM_DIFFUSE)||
+			(material.ColorMaterial == ECM_DIFFUSE_AND_AMBIENT))?D3DMCS_COLOR1:D3DMCS_MATERIAL);
+		pID3DDevice->SetRenderState(D3DRS_AMBIENTMATERIALSOURCE,
+			((material.ColorMaterial == ECM_AMBIENT)||
+			(material.ColorMaterial == ECM_DIFFUSE_AND_AMBIENT))?D3DMCS_COLOR1:D3DMCS_MATERIAL);
+		pID3DDevice->SetRenderState(D3DRS_EMISSIVEMATERIALSOURCE,
+			(material.ColorMaterial == ECM_EMISSIVE)?D3DMCS_COLOR1:D3DMCS_MATERIAL);
+		pID3DDevice->SetRenderState(D3DRS_SPECULARMATERIALSOURCE,
+			(material.ColorMaterial == ECM_SPECULAR)?D3DMCS_COLOR1:D3DMCS_MATERIAL);
+	}
+
 	// fillmode
 	if (resetAllRenderstates || lastmaterial.Wireframe != material.Wireframe || lastmaterial.PointCloud != material.PointCloud)
 	{
