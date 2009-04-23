@@ -42,6 +42,13 @@ CCubeSceneNode::CCubeSceneNode(f32 size, ISceneNode* parent, ISceneManager* mgr,
 }
 
 
+CCubeSceneNode::~CCubeSceneNode()
+{
+	if (Mesh)
+		Mesh->drop();
+}
+
+
 void CCubeSceneNode::setSize()
 {
 	if (Mesh)
