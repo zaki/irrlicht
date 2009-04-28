@@ -384,11 +384,12 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	video::SMaterial Material;
 	video::E_VERTEX_TYPE VertexType;
 
-	// hardware mapping hint
-	E_HARDWARE_MAPPING MappingHint_Vertex;
-	E_HARDWARE_MAPPING MappingHint_Index;
-
 	core::aabbox3d<f32> BoundingBox;
+
+	// hardware mapping hint
+	E_HARDWARE_MAPPING MappingHint_Vertex:3;
+	E_HARDWARE_MAPPING MappingHint_Index:3;
+
 	bool BoundingBoxNeedsRecalculated:1;
 };
 
