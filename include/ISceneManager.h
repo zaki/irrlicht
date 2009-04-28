@@ -1029,7 +1029,7 @@ namespace scene
 		/** \return The active camera is returned. Note that this can
 		be NULL, if there was no camera created yet.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual ICameraSceneNode* getActiveCamera() = 0;
+		virtual ICameraSceneNode* getActiveCamera() const =0;
 
 		//! Sets the currently active camera.
 		/** The previous active camera will be deactivated.
@@ -1454,6 +1454,17 @@ namespace scene
 		/** The geometry creator provides some helper methods to create various types of
 		basic geometry. This can be useful for custom scene nodes. */
 		virtual const IGeometryCreator* getGeometryCreator(void) const = 0;
+
+		//! Check if node is culled in current view frustum
+		/** Please note that depending on the used culling method this
+		check can be rather coarse, or slow. A positive result is
+		correct, though, i.e. if this method returns true the node is
+		positively not visible. The node might still be invisible even
+		if this method returns false.
+		\param node The scene node which is checked for culling.
+		\return True if node is not visible in the current scene, else
+		false. */
+		virtual bool isCulled(const ISceneNode* node) const =0;
 	};
 
 
