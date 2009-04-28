@@ -358,21 +358,51 @@ SMesh* CMeshManipulator::createMeshCopy(scene::IMesh* mesh) const
 		{
 		case video::EVT_STANDARD:
 			{
-				SMeshBuffer* buffer = new SMeshBuffer(*(SMeshBuffer*)mesh->getMeshBuffer(b));
+				SMeshBuffer* buffer = new SMeshBuffer();
+				const u32 vcount = mesh->getMeshBuffer(b)->getVertexCount();
+				buffer->Vertices.reallocate(vcount);
+				video::S3DVertex* vertices = (video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
+				for (u32 i=0; i < vcount; ++i)
+					buffer->Vertices.push_back(vertices[i]);
+				const u32 icount = mesh->getMeshBuffer(b)->getIndexCount();
+				buffer->Indices.reallocate(icount);
+				u16* indices = mesh->getMeshBuffer(b)->getIndices();
+				for (u32 i=0; i < icount; ++i)
+					buffer->Indices.push_back(indices[i]);
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
 			break;
 		case video::EVT_2TCOORDS:
 			{
-				SMeshBufferLightMap* buffer = new SMeshBufferLightMap(*(SMeshBufferLightMap*)mesh->getMeshBuffer(b));
+				SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
+				const u32 vcount = mesh->getMeshBuffer(b)->getVertexCount();
+				buffer->Vertices.reallocate(vcount);
+				video::S3DVertex2TCoords* vertices = (video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
+				for (u32 i=0; i < vcount; ++i)
+					buffer->Vertices.push_back(vertices[i]);
+				const u32 icount = mesh->getMeshBuffer(b)->getIndexCount();
+				buffer->Indices.reallocate(icount);
+				u16* indices = mesh->getMeshBuffer(b)->getIndices();
+				for (u32 i=0; i < icount; ++i)
+					buffer->Indices.push_back(indices[i]);
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
 			break;
 		case video::EVT_TANGENTS:
 			{
-				SMeshBufferTangents* buffer = new SMeshBufferTangents(*(SMeshBufferTangents*)mesh->getMeshBuffer(b));
+				SMeshBufferTangents* buffer = new SMeshBufferTangents();
+				const u32 vcount = mesh->getMeshBuffer(b)->getVertexCount();
+				buffer->Vertices.reallocate(vcount);
+				video::S3DVertexTangents* vertices = (video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
+				for (u32 i=0; i < vcount; ++i)
+					buffer->Vertices.push_back(vertices[i]);
+				const u32 icount = mesh->getMeshBuffer(b)->getIndexCount();
+				buffer->Indices.reallocate(icount);
+				u16* indices = mesh->getMeshBuffer(b)->getIndices();
+				for (u32 i=0; i < icount; ++i)
+					buffer->Indices.push_back(indices[i]);
 				clone->addMeshBuffer(buffer);
 				buffer->drop();
 			}
