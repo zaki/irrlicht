@@ -1084,7 +1084,7 @@ ISceneNode* CSceneManager::getRootSceneNode()
 //! Returns the current active camera.
 //! \return The active camera is returned. Note that this can be NULL, if there
 //! was no camera created yet.
-ICameraSceneNode* CSceneManager::getActiveCamera()
+ICameraSceneNode* CSceneManager::getActiveCamera() const
 {
 	return ActiveCamera;
 }
@@ -1121,7 +1121,7 @@ const core::aabbox3d<f32>& CSceneManager::getBoundingBox() const
 
 
 //! returns if node is culled
-bool CSceneManager::isCulled(const ISceneNode* node)
+bool CSceneManager::isCulled(const ISceneNode* node) const
 {
 	const ICameraSceneNode* cam = getActiveCamera();
 	if (!cam)

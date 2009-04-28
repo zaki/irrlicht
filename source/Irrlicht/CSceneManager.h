@@ -278,7 +278,7 @@ namespace scene
 		//! Returns the current active camera.
 		//! \return The active camera is returned. Note that this can be NULL, if there
 		//! was no camera created yet.
-		virtual ICameraSceneNode* getActiveCamera();
+		virtual ICameraSceneNode* getActiveCamera() const;
 
 		//! Sets the active camera. The previous active camera will be deactivated.
 		//! \param camera: The new camera which should be active.
@@ -485,10 +485,10 @@ namespace scene
 		//! Get an instance of a geometry creator.
 		virtual const IGeometryCreator* getGeometryCreator(void) const { return GeometryCreator; }
 
-	private:
-
 		//! returns if node is culled
-		bool isCulled(const ISceneNode* node);
+		virtual bool isCulled(const ISceneNode* node) const;
+
+	private:
 
 		//! clears the deletion list
 		void clearDeletionList();
