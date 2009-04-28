@@ -16,7 +16,6 @@
 #include "COSOperator.h"
 #include "dimension2d.h"
 #include <winuser.h>
-#include "irrlicht.h"
 
 namespace irr
 {
@@ -1107,7 +1106,7 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 
 }
 
-IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
+extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 	const SIrrlichtCreationParameters& parameters)
 {
 	CIrrDeviceWin32* dev = new CIrrDeviceWin32(parameters);
