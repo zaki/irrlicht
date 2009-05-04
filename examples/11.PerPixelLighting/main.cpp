@@ -258,12 +258,11 @@ int main()
 		to a bigger value, the map will look more rocky.
 		*/
 
-		video::ITexture* colorMap =
-			driver->getTexture("../../media/rockwall.bmp");
 		video::ITexture* normalMap =
 			driver->getTexture("../../media/rockwall_height.bmp");
 
-		driver->makeNormalMapTexture(normalMap, 9.0f);
+		if (normalMap)
+			driver->makeNormalMapTexture(normalMap, 9.0f);
 
 		/*
 		But just setting color and normal map is not everything. The
@@ -282,7 +281,8 @@ int main()
 			roomMesh->getMesh(0));
 
 		room = smgr->addMeshSceneNode(tangentMesh);
-		room->setMaterialTexture(0, colorMap);
+		room->setMaterialTexture(0,
+				driver->getTexture("../../media/rockwall.jpg"));
 		room->setMaterialTexture(1, normalMap);
 
 		room->getMaterial(0).SpecularColor.set(0,0,0,0);
@@ -331,13 +331,16 @@ int main()
 		sphere->setPosition(core::vector3df(-70,130,45));
 
 		// load heightmap, create normal map from it and set it
-		video::ITexture* earthNormalMap = driver->getTexture("../../media/earthbump.bmp");
-		driver->makeNormalMapTexture(earthNormalMap, 20.0f);
-		sphere->setMaterialTexture(1, earthNormalMap);
+		video::ITexture* earthNormalMap = driver->getTexture("../../media/earthbump.jpg");
+		if (earthNormalMap)
+		{
+			driver->makeNormalMapTexture(earthNormalMap, 20.0f);
+			sphere->setMaterialTexture(1, earthNormalMap);
+			sphere->setMaterialType(video::EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA);
+		}
 
 		// adjust material settings
 		sphere->setMaterialFlag(video::EMF_FOG_ENABLE, true);
-		sphere->setMaterialType(video::EMT_NORMAL_MAP_TRANSPARENT_VERTEX_ALPHA);
 
 		// add rotation animator
 		scene::ISceneNodeAnimator* anim =

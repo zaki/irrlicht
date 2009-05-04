@@ -9764,7 +9764,7 @@ Frame base
 
             MeshMaterialList
             {
-                3;
+                2;
                 1896;
                 1,
                 1,
@@ -11689,18 +11689,6 @@ Frame base
                     }
                 }
 
-                Material Material2
-                {
-                    0.800000;0.800000;0.800000;1.000000;;
-                    0.000000;
-                    0.000000;0.000000;0.000000;;
-                    0.317647;0.317647;0.317647;;
-
-                    TextureFileName
-                    {
-                        "dwarf2.jpg";
-                    }
-                }
             }
 
             XSkinMeshHeader

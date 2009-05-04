@@ -61,7 +61,7 @@ int main()
 
 	/*
 	All 2d graphics in this example are put together into one texture,
-	2ddemo.bmp. Because we want to draw colorkey based sprites, we need to
+	2ddemo.png. Because we want to draw colorkey based sprites, we need to
 	load this texture and tell the engine, which part of it should be
 	transparent based on a colorkey.
 
@@ -72,7 +72,7 @@ int main()
 	e.g. all black pixels transparent. Please note that
 	makeColorKeyTexture just creates an alpha channel based on the color.
 	*/
-	video::ITexture* images = driver->getTexture("../../media/2ddemo.bmp");
+	video::ITexture* images = driver->getTexture("../../media/2ddemo.png");
 	driver->makeColorKeyTexture(images, core::position2d<s32>(0,0));
 
 	/*
