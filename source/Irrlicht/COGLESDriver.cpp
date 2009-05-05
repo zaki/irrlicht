@@ -1779,16 +1779,36 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 	{
 		switch (material.ZBuffer)
 		{
-			case 0:
+			case ECFN_NEVER:
 				glDisable(GL_DEPTH_TEST);
 				break;
-			case 1:
+			case ECFN_LESSEQUAL:
 				glEnable(GL_DEPTH_TEST);
-				glDepthFunc ( GL_LEQUAL );
+				glDepthFunc(GL_LEQUAL);
 				break;
-			case 2:
+			case ECFN_EQUAL:
 				glEnable(GL_DEPTH_TEST);
-				glDepthFunc ( GL_EQUAL );
+				glDepthFunc(GL_EQUAL);
+				break;
+			case ECFN_LESS:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_LESS);
+				break;
+			case ECFN_NOTEQUAL:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_NOTEQUAL);
+				break;
+			case ECFN_GREATEREQUAL:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_GEQUAL);
+				break;
+			case ECFN_GREATER:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_GREATER);
+				break;
+			case ECFN_ALWAYS:
+				glEnable(GL_DEPTH_TEST);
+				glDepthFunc(GL_ALWAYS);
 				break;
 		}
 	}
@@ -1846,11 +1866,50 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			glDisable(GL_NORMALIZE);
 	}
 
+	// Color Mask
+	if (resetAllRenderStates || lastmaterial.ColorMask != material.ColorMask)
+	{
+		glColorMask(
+			(material.ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+			(material.ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+			(material.ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+			(material.ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+	}
+ 
 	// thickness
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 	{
 		glPointSize(material.Thickness);
 		glLineWidth(material.Thickness);
+	}
+
+	// Anti aliasing
+	if (resetAllRenderStates || lastmaterial.AntiAliasing != material.AntiAliasing)
+	{
+//		if (FeatureAvailable[IRR_ARB_multisample])
+		{
+			if (material.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
+				glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+			else if (lastmaterial.AntiAliasing & EAAM_ALPHA_TO_COVERAGE)
+				glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+
+			if ((AntiAlias >= 2) && (material.AntiAliasing & (EAAM_SIMPLE|EAAM_QUALITY)))
+				glEnable(GL_MULTISAMPLE);
+			else
+				glDisable(GL_MULTISAMPLE);
+		}
+		if (AntiAlias >= 2)
+		{
+			if (material.AntiAliasing & EAAM_LINE_SMOOTH)
+				glEnable(GL_LINE_SMOOTH);
+			else if (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH)
+				glDisable(GL_LINE_SMOOTH);
+			if (material.AntiAliasing & EAAM_POINT_SMOOTH)
+				// often in software, and thus very slow
+				glEnable(GL_POINT_SMOOTH);
+			else if (lastmaterial.AntiAliasing & EAAM_POINT_SMOOTH)
+				glDisable(GL_POINT_SMOOTH);
+		}
 	}
 
 	setWrapMode(material);
