@@ -21,7 +21,7 @@ namespace video
 {
 
 //! constructor for usual textures
-COGLES1Texture::COGLES1Texture(IImage* origImage, const char* name, COGLES1Driver* driver)
+COGLES1Texture::COGLES1Texture(IImage* origImage, const core::string<c16>& name, COGLES1Driver* driver)
 	: ITexture(name), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	// TODO ogl-es

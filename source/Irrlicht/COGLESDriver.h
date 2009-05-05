@@ -289,7 +289,7 @@ namespace video
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OGLES1
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);

@@ -218,7 +218,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 			EglDisplay,
 #endif
 			stencilBuffer);
-	Stencilbuffer=stencilBuffer;
+	StencilBuffer=stencilBuffer;
 
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
@@ -1450,7 +1450,7 @@ inline void COGLES1Driver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, const char* name)
+video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
 {
 	return new COGLES1Texture(surface, name, this);
 }

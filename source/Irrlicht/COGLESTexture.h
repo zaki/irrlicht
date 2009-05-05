@@ -30,7 +30,7 @@ class COGLES1Texture : public ITexture
 public:
 
 	//! constructor
-	COGLES1Texture(IImage* surface, const char* name, COGLES1Driver* driver=0);
+	COGLES1Texture(IImage* surface, const core::string<c16>& name, COGLES1Driver* driver=0);
 
 	//! destructor
 	virtual ~COGLES1Texture();

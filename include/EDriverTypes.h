@@ -51,6 +51,8 @@ namespace video
 		/** Performs hardware accelerated rendering of 3D and 2D
 		primitives. */
 		EDT_OPENGL,
+
+		//! OpenGL-ES device, for embedded and mobile systems
 		EDT_OGLES1
 	};
 
@@ -59,4 +61,3 @@ namespace video
 
 
 #endif
-
