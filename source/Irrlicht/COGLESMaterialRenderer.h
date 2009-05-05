@@ -92,7 +92,7 @@ public:
 			glAlphaFunc(GL_GREATER, 0.f);
 			glEnable(GL_BLEND);
 
-			if ( getTexelAlpha(srcFact) || getTexelAlpha(dstFact) )
+			if ( textureBlendFunc_hasAlpha(srcFact) || textureBlendFunc_hasAlpha(dstFact) )
 			{
 				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_REPLACE);
 				glTexEnvf(GL_TEXTURE_ENV, GL_SRC0_ALPHA, GL_TEXTURE);
@@ -110,6 +110,13 @@ public:
 
 		glDisable(GL_BLEND);
 		glDisable(GL_ALPHA_TEST);
+	}
+
+	//! Returns if the material is transparent.
+	/** Is not always transparent, but mostly. */
+	virtual bool isTransparent() const
+	{
+		return true;
 	}
 
 	private:
@@ -130,21 +137,6 @@ public:
 				case EBF_DST_ALPHA:		r = GL_DST_ALPHA; break;
 				case EBF_ONE_MINUS_DST_ALPHA:	r = GL_ONE_MINUS_DST_ALPHA; break;
 				case EBF_SRC_ALPHA_SATURATE:	r = GL_SRC_ALPHA_SATURATE; break;
-			}
-			return r;
-		}
-
-		u32 getTexelAlpha ( E_BLEND_FACTOR factor ) const
-		{
-			u32 r;
-			switch ( factor )
-			{
-				case EBF_SRC_ALPHA:		r = 1; break;
-				case EBF_ONE_MINUS_SRC_ALPHA:	r = 1; break;
-				case EBF_DST_ALPHA:		r = 1; break;
-				case EBF_ONE_MINUS_DST_ALPHA:	r = 1; break;
-				case EBF_SRC_ALPHA_SATURATE:	r = 1; break;
-				default:			r = 0; break;
 			}
 			return r;
 		}

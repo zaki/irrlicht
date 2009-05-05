@@ -46,7 +46,7 @@ COGLES1Texture::COGLES1Texture(IImage* origImage, const core::string<c16>& name,
 
 
 //! constructor for basic setup (only for derived classes)
-COGLES1Texture::COGLES1Texture(const char* name, COGLES1Driver* driver)
+COGLES1Texture::COGLES1Texture(const core::string<c16>& name, COGLES1Driver* driver)
 	: ITexture(name), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_RGBA),
 	PixelType(GL_UNSIGNED_BYTE),
@@ -424,7 +424,7 @@ static bool checkFBOStatus(COGLES1Driver* Driver);
 
 //! RTT ColorFrameBuffer constructor
 COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<u32>& size,
-                                const char* name,
+                                const core::string<c16>& name,
                                 COGLES1Driver* driver)
 	: COGLES1Texture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
@@ -506,7 +506,7 @@ void COGLES1FBOTexture::unbindRTT()
 //! RTT DepthBuffer constructor
 COGLES1FBODepthTexture::COGLES1FBODepthTexture(
 		const core::dimension2d<u32>& size,
-		const char* name,
+		const core::string<c16>& name,
 		COGLES1Driver* driver,
 		bool useStencil)
 	: COGLES1FBOTexture(size, name, driver), DepthRenderBuffer(0),

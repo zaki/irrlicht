@@ -38,7 +38,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 : CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
-	RenderTargetTexture(0), LastSetLight(-1), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
+	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
 #if defined(_IRR_USE_WINDOWS_DEVICE_)
 	,HDc(0)
 #elif defined(_IRR_USE_IPHONE_DEVICE_)
@@ -277,6 +277,10 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// create matrix for flipping textures
 	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
 
+	// We need to reset once more at the beginning of the first rendering.
+	// This fixes problems with intermediate changes to the material during texture load.
+	ResetRenderStates = true;
+
 	return true;
 }
 
@@ -451,7 +455,7 @@ void COGLES1Driver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			extGlActiveTexture(GL_TEXTURE0 + i);
 
 		glMatrixMode(GL_TEXTURE);
-		if (mat.isIdentity() && !isRTT)
+		if (!isRTT && mat.isIdentity())
 			glLoadIdentity();
 		else
 		{
@@ -1460,11 +1464,12 @@ video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, co
 void COGLES1Driver::setMaterial(const SMaterial& material)
 {
 	Material = material;
+	OverrideMaterial.apply(Material);
 
 	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
 	{
 		setTransform ((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
-				material.getTextureMatrix(i));
+				Material.getTextureMatrix(i));
 	}
 }
 
@@ -1633,30 +1638,65 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 	bool resetAllRenderStates)
 {
 	if (resetAllRenderStates ||
+		lastmaterial.ColorMaterial != material.ColorMaterial)
+	{
+		// we only have diffuse_and_ambient in ogl-es
+		if (material.ColorMaterial == ECM_DIFFUSE_AND_AMBIENT)
+			glEnable(GL_COLOR_MATERIAL);
+		else
+			glDisable(GL_COLOR_MATERIAL);
+	}
+
+	if (resetAllRenderStates ||
 		lastmaterial.AmbientColor != material.AmbientColor ||
 		lastmaterial.DiffuseColor != material.DiffuseColor ||
-		lastmaterial.SpecularColor != material.SpecularColor ||
 		lastmaterial.EmissiveColor != material.EmissiveColor ||
-		lastmaterial.Shininess != material.Shininess)
+		lastmaterial.ColorMaterial != material.ColorMaterial)
 	{
 		GLfloat color[4];
 
 		const f32 inv = 1.0f / 255.0f;
 
-		color[0] = material.AmbientColor.getRed() * inv;
-		color[1] = material.AmbientColor.getGreen() * inv;
-		color[2] = material.AmbientColor.getBlue() * inv;
-		color[3] = material.AmbientColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+		if ((material.ColorMaterial != video::ECM_AMBIENT) &&
+			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+		{
+			color[0] = material.AmbientColor.getRed() * inv;
+			color[1] = material.AmbientColor.getGreen() * inv;
+			color[2] = material.AmbientColor.getBlue() * inv;
+			color[3] = material.AmbientColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+		}
 
-		color[0] = material.DiffuseColor.getRed() * inv;
-		color[1] = material.DiffuseColor.getGreen() * inv;
-		color[2] = material.DiffuseColor.getBlue() * inv;
-		color[3] = material.DiffuseColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+		if ((material.ColorMaterial != video::ECM_DIFFUSE) &&
+			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+		{
+			color[0] = material.DiffuseColor.getRed() * inv;
+			color[1] = material.DiffuseColor.getGreen() * inv;
+			color[2] = material.DiffuseColor.getBlue() * inv;
+			color[3] = material.DiffuseColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+		}
+
+		if (material.ColorMaterial != video::ECM_EMISSIVE)
+		{
+			color[0] = material.EmissiveColor.getRed() * inv;
+			color[1] = material.EmissiveColor.getGreen() * inv;
+			color[2] = material.EmissiveColor.getBlue() * inv;
+			color[3] = material.EmissiveColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
+		}
+	}
+
+	if (resetAllRenderStates ||
+		lastmaterial.SpecularColor != material.SpecularColor ||
+		lastmaterial.Shininess != material.Shininess)
+	{
+		GLfloat color[]={0.f,0.f,0.f,1.f};
+		const f32 inv = 1.0f / 255.0f;
 
 		// disable Specular colors if no shininess is set
-		if (material.Shininess != 0.0f)
+		if ((material.Shininess != 0.0f) &&
+			(material.ColorMaterial != video::ECM_SPECULAR))
 		{
 #ifdef GL_separate_specular_color
 			if (FeatureAvailable[IRR_separate_specular_color])
@@ -1674,12 +1714,6 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			if (FeatureAvailable[IRR_separate_specular_color])
 				glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL, GL_SINGLE_COLOR);
 #endif
-
-		color[0] = material.EmissiveColor.getRed() * inv;
-		color[1] = material.EmissiveColor.getGreen() * inv;
-		color[2] = material.EmissiveColor.getBlue() * inv;
-		color[3] = material.EmissiveColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
 	}
 
 	// Texture filter
@@ -1929,7 +1963,7 @@ const wchar_t* COGLES1Driver::getName() const
 //! deletes all dynamic lights there are
 void COGLES1Driver::deleteAllDynamicLights()
 {
-	for (s32 i=0; i<LastSetLight+1; ++i)
+	for (s32 i=0; i<MaxLights; ++i)
 		glDisable(GL_LIGHT0 + i);
 
 	RequestedLights.clear();
@@ -2327,19 +2361,24 @@ void COGLES1Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
 
 	u16 indices[] = {0,1,2,3};
 	S3DVertex vertices[4];
-	vertices[0] = S3DVertex(-1.1f,-1.1f,0.9f, 0,0,1, leftDownEdge, 0,0);
-	vertices[1] = S3DVertex(-1.1f, 1.1f,0.9f, 0,0,1, leftUpEdge, 0,0);
-	vertices[2] = S3DVertex( 1.1f, 1.1f,0.9f, 0,0,1, rightUpEdge, 0,0);
-	vertices[3] = S3DVertex( 1.1f,-1.1f,0.9f, 0,0,1, rightDownEdge, 0,0);
+	vertices[0] = S3DVertex(-1.f,-1.f,0.9f, 0,0,1, leftDownEdge, 0,0);
+	vertices[1] = S3DVertex(-1.f, 1.f,0.9f, 0,0,1, leftUpEdge, 0,0);
+	vertices[2] = S3DVertex( 1.f, 1.f,0.9f, 0,0,1, rightUpEdge, 0,0);
+	vertices[3] = S3DVertex( 1.f,-1.f,0.9f, 0,0,1, rightDownEdge, 0,0);
 	drawVertexPrimitiveList2d3d(vertices, 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT, false);
 
 	if (clearStencilBuffer)
 		glClear(GL_STENCIL_BUFFER_BIT);
 
 	// restore settings
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glDisable(GL_STENCIL_TEST);
 	if (lightingEnabled)
@@ -2498,15 +2537,13 @@ IGPUProgrammingServices* COGLES1Driver::getGPUProgrammingServices()
 }
 
 
-ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name)
+ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
 {
 	//disable mip-mapping
 	const bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
 	video::ITexture* rtt = 0;
-	if (name==0)
-		name="rt";
 
 #if defined(GL_OES_framebuffer_object)
 	// if driver supports FrameBufferObjects, use them

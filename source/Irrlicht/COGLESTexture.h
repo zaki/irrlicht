@@ -83,7 +83,7 @@ public:
 protected:
 
 	//! protected constructor with basic setup, no GL texture name created, for derived classes
-	COGLES1Texture(const char* name, COGLES1Driver* driver);
+	COGLES1Texture(const core::string<c16>& name, COGLES1Driver* driver);
 
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
@@ -117,7 +117,7 @@ class COGLES1FBOTexture : public COGLES1Texture
 public:
 
 	//! FrameBufferObject constructor
-	COGLES1FBOTexture(const core::dimension2d<u32>& size, const char* name, COGLES1Driver* driver=0);
+	COGLES1FBOTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, COGLES1Driver* driver=0);
 
 	//! destructor
 	virtual ~COGLES1FBOTexture();
@@ -142,7 +142,7 @@ class COGLES1FBODepthTexture : public COGLES1FBOTexture
 {
 public:
 	//! FrameBufferObject depth constructor
-	COGLES1FBODepthTexture(const core::dimension2d<u32>& size, const char* name, COGLES1Driver* driver=0, bool useStencil=false);
+	COGLES1FBODepthTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, COGLES1Driver* driver=0, bool useStencil=false);
 
 	//! destructor
 	virtual ~COGLES1FBODepthTexture();
