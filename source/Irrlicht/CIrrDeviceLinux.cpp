@@ -207,7 +207,10 @@ bool CIrrDeviceLinux::createWindow()
 	if (!display)
 	{
 		os::Printer::log("Error: Need running XServer to start Irrlicht Engine.", ELL_ERROR);
-		os::Printer::log("Could not open display", XDisplayName(0), ELL_ERROR);
+		if (XDisplayName(0)[0])
+			os::Printer::log("Could not open display", XDisplayName(0), ELL_ERROR);
+		else
+			os::Printer::log("Could not open display, set DISPLAY variable", ELL_ERROR);
 		return false;
 	}
 
@@ -451,9 +454,12 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?GL_TRUE:GL_FALSE,
 					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
-					GLX_STEREO, CreationParams.Stereobuffer?GL_TRUE:GL_FALSE,
+					// The following attributes have no flags, but are
+					// either present or not. As a no-op we use
+					// GLX_USE_GL, which is silently ignored by glXChooseVisual
+					CreationParams.Doublebuffer?GLX_DOUBLEBUFFER:GLX_USE_GL,
+					CreationParams.Stereobuffer?GLX_STEREO:GLX_USE_GL,
 					None
 				};
 
@@ -463,14 +469,14 @@ bool CIrrDeviceLinux::createWindow()
 					if (CreationParams.Stencilbuffer)
 						os::Printer::log("No stencilbuffer available, disabling.", ELL_WARNING);
 					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
-					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
+					visualAttrBuffer[13]=CreationParams.Stencilbuffer?1:0;
 
 					visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 					if (!visual && CreationParams.Doublebuffer)
 					{
 						os::Printer::log("No doublebuffering available.", ELL_WARNING);
 						CreationParams.Doublebuffer=false;
-						visualAttrBuffer[13] = GLX_DONT_CARE;
+						visualAttrBuffer[14] = GLX_USE_GL;
 						visual=glXChooseVisual(display, screennr, visualAttrBuffer);
 					}
 				}
@@ -740,6 +746,7 @@ bool CIrrDeviceLinux::run()
 	if ((CreationParams.DriverType != video::EDT_NULL) && display)
 	{
 		SEvent irrevent;
+		irrevent.MouseInput.ButtonStates = 0xffffffff;
 
 		while (XPending(display) > 0 && !Close)
 		{
@@ -1061,8 +1068,8 @@ video::ECOLOR_FORMAT CIrrDeviceLinux::getColorFormat() const
 }
 
 
-//! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceLinux::setResizeAble(bool resize)
+//! Sets if the window should be resizable in windowed mode.
+void CIrrDeviceLinux::setResizable(bool resize)
 {
 #ifdef _IRR_COMPILE_WITH_X11_
 	if (CreationParams.DriverType == video::EDT_NULL)
@@ -1165,6 +1172,15 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 #endif
 
 	return &VideoModeList;
+}
+
+
+//! Return pointer to a list with all video modes supported by the gfx adapter.
+void CIrrDeviceLinux::minimizeWindow()
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+	XIconifyWindow(display, window, screennr);
+#endif
 }
 
 
@@ -1478,7 +1494,7 @@ void CIrrDeviceLinux::pollJoysticks()
 }
 
 
-IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
+extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
 	CIrrDeviceLinux* dev = new CIrrDeviceLinux(param);
 

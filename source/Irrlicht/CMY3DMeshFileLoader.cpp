@@ -72,9 +72,9 @@ CMY3DMeshFileLoader::~CMY3DMeshFileLoader()
 }
 
 
-bool CMY3DMeshFileLoader::isALoadableFileExtension(const c8* filename) const
+bool CMY3DMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(filename, ".my3d") != 0;
+	return core::hasFileExtension ( filename, "my3d" );
 }
 
 
@@ -195,7 +195,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				me.Texture2FileName.append(name);
 
 				if (name.size())
-					me.Texture2 = SceneManager->getVideoDriver()->getTexture(me.Texture2FileName.c_str());
+					me.Texture2 = SceneManager->getVideoDriver()->getTexture(me.Texture2FileName);
 
 				me.MaterialType = video::EMT_LIGHTMAP_M2;
 				gotLightMap = true;
@@ -209,7 +209,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				me.Texture2FileName.append(name);
 
 				if (name.size())
-					me.Texture2 = SceneManager->getVideoDriver()->getTexture(me.Texture2FileName.c_str());
+					me.Texture2 = SceneManager->getVideoDriver()->getTexture(me.Texture2FileName);
 
 				me.MaterialType = video::EMT_REFLECTION_2_LAYER;
 			}
@@ -219,7 +219,7 @@ IAnimatedMesh* CMY3DMeshFileLoader::createMesh(io::IReadFile* file)
 				me.Texture1FileName = filepath;
 				me.Texture1FileName.append(name);
 				if (name.size())
-					me.Texture1 = SceneManager->getVideoDriver()->getTexture(me.Texture1FileName.c_str());
+					me.Texture1 = SceneManager->getVideoDriver()->getTexture(me.Texture1FileName);
 
 				gotMainMap = true;
 				me.MaterialType = video::EMT_SOLID;

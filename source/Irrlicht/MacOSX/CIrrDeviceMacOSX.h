@@ -18,6 +18,10 @@
 #include <OpenGL/OpenGL.h>
 #include <map>
 
+class NSWindow;
+class NSOpenGLContext;
+class NSBitmapImageRep;
+
 namespace irr
 {
 	class CIrrDeviceMacOSX : public CIrrDeviceStub, video::IImagePresenter
@@ -58,8 +62,14 @@ namespace irr
 		//! notifies the device that it should close itself
 		virtual void closeDevice();
 
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize);
+		//! Sets if the window should be resizable in windowed mode.
+		virtual void setResizable(bool resize);
+		
+		//! Returns true if the window is resizable, false if not
+		virtual bool isResizable() const;
+		
+		//! Minimizes the window if possible
+		virtual void minimizeWindow();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
@@ -69,8 +79,8 @@ namespace irr
 		virtual video::IVideoModeList* getVideoModeList();
 
 		void flush();
-		void setMouseLocation(int x,int y);
-		void setResize(int width,int height);
+		void setMouseLocation(int x, int y);
+		void setResize(int width, int height);
 		void setCursorVisible(bool visible);
 
 	private:
@@ -83,18 +93,21 @@ namespace irr
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<s32>& wsize, CIrrDeviceMacOSX *device) : WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), _device(device), UseReferenceRect(false)
+			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device) 
+				: WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), Device(device), UseReferenceRect(false)
 			{
 				CursorPos.X = CursorPos.Y = 0;
-				if (WindowSize.Width!=0) InvWindowSize.Width = 1.0f / WindowSize.Width;
-				if (WindowSize.Height!=0) InvWindowSize.Height = 1.0f / WindowSize.Height;
+				if (WindowSize.Width!=0) 
+					InvWindowSize.Width = 1.0f / WindowSize.Width;
+				if (WindowSize.Height!=0) 
+					InvWindowSize.Height = 1.0f / WindowSize.Height;
 			}
 
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
 			{
 				IsVisible = visible;
-				_device->setCursorVisible(visible);
+				Device->setCursorVisible(visible);
 			}
 
 			//! Returns if the cursor is currently visible.
@@ -127,11 +140,11 @@ namespace irr
 			{
 				if (UseReferenceRect)
 				{
-					_device->setMouseLocation(ReferenceRect.UpperLeftCorner.X + x, ReferenceRect.UpperLeftCorner.Y + y);
+					Device->setMouseLocation(ReferenceRect.UpperLeftCorner.X + x, ReferenceRect.UpperLeftCorner.Y + y);
 				}
 				else
 				{
-					_device->setMouseLocation(x,y);
+					Device->setMouseLocation(x,y);
 				}
 			}
 
@@ -187,7 +200,7 @@ namespace irr
 			core::dimension2d<s32> WindowSize;
 			core::dimension2d<float> InvWindowSize;
 			core::rect<s32> ReferenceRect;
-			CIrrDeviceMacOSX *_device;
+			CIrrDeviceMacOSX *Device;
 			bool IsVisible;
 			bool UseReferenceRect;
 		};
@@ -195,21 +208,25 @@ namespace irr
 		bool createWindow();
 		void initKeycodes();
 		void storeMouseLocation();
-		void postMouseEvent(void *event,irr::SEvent &ievent);
-		void postKeyEvent(void *event,irr::SEvent &ievent,bool pressed);
-
-		void			*_window;
-		CGLContextObj		_cglcontext;
-		void			*_oglcontext;
-		int			_width;
-		int			_height;
-		std::map<int,int>	_keycodes;
-		int			_screenWidth;
-		int			_screenHeight;
-		bool			_active;
-		bool IsShiftDown, IsControlDown;
-
+		void postMouseEvent(void *event, irr::SEvent &ievent);
+		void postKeyEvent(void *event, irr::SEvent &ievent, bool pressed);
 		void pollJoysticks();
+
+		NSWindow           *Window;
+		CGLContextObj       CGLContext;
+		NSOpenGLContext    *OGLContext;
+		int	                DeviceWidth,
+		                    DeviceHeight;
+		std::map<int,int>	KeyCodes;
+		int                 ScreenWidth,
+		                    ScreenHeight;
+		bool                IsActive;
+		NSBitmapImageRep   *SoftwareDriverTarget;
+		bool                IsSoftwareRenderer, 
+		                    IsShiftDown,
+		                    IsControlDown,
+		                    IsResizable;
+		u32                 MouseButtonStates;
 	};
 
 

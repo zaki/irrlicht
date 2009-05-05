@@ -54,6 +54,10 @@ namespace scene
 		//! 'Jump' the animator, by adding a jump speed opposite to its gravity
 		virtual void jump(f32 jumpSpeed);
 
+		//! Should the Target react on collision ( default = true )
+		virtual void setAnimateTarget ( bool enable );
+		virtual bool getAnimateTarget () const;
+
 		//! Returns current vector of gravity.
 		virtual core::vector3df getGravity() const;
 
@@ -132,17 +136,18 @@ namespace scene
 		ISceneManager* SceneManager;
 		u32 LastTime;
 		f32 SlidingSpeed;
-		bool Falling;
-		bool IsCamera;
-		bool AnimateCameraTarget;
 
-		bool CollisionOccurred;
 		core::vector3df CollisionPoint;
 		core::triangle3df CollisionTriangle;
 		core::vector3df CollisionResultPosition;
 		const ISceneNode * CollisionNode;
-
 		ICollisionCallback* CollisionCallback;
+
+		bool Falling;
+		bool IsCamera;
+		bool AnimateCameraTarget;
+		bool CollisionOccurred;
+		bool FirstUpdate;
 	};
 
 } // end namespace scene

@@ -21,7 +21,7 @@ namespace video
 {
 
 //! constructor for usual textures
-COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDriver* driver)
+COpenGLTexture::COpenGLTexture(IImage* origImage, const core::string<c16>& name, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
@@ -54,7 +54,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const char* name, COpenGLDrive
 }
 
 //! constructor for basic setup (only for derived classes)
-COpenGLTexture::COpenGLTexture(const char* name, COpenGLDriver* driver)
+COpenGLTexture::COpenGLTexture(const core::string<c16>& name, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
@@ -449,7 +449,7 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
-                                const char* name,
+                                const core::string<c16>& name,
                                 COpenGLDriver* driver)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
@@ -532,7 +532,7 @@ void COpenGLFBOTexture::unbindRTT()
 //! RTT DepthBuffer constructor
 COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 		const core::dimension2d<u32>& size,
-		const char* name,
+		const core::string<c16>& name,
 		COpenGLDriver* driver,
 		bool useStencil)
 	: COpenGLFBOTexture(size, name, driver), DepthRenderBuffer(0),

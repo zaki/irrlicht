@@ -22,8 +22,8 @@ namespace scene
 //! constructor
 COctTreeSceneNode::COctTreeSceneNode(ISceneNode* parent, ISceneManager* mgr,
 					 s32 id, s32 minimalPolysPerNode)
-: ISceneNode(parent, mgr, id), StdOctTree(0), LightMapOctTree(0), TangentsOctTree(0),
-	MinimalPolysPerNode(minimalPolysPerNode)
+: IMeshSceneNode(parent, mgr, id), StdOctTree(0), LightMapOctTree(0), TangentsOctTree(0),
+	MinimalPolysPerNode(minimalPolysPerNode), Mesh(0)
 {
 #ifdef _DEBUG
 	setDebugName("COctTreeSceneNode");
@@ -104,20 +104,25 @@ void COctTreeSceneNode::render()
 	SViewFrustum frust = *camera->getViewFrustum();
 
 	//transform the frustum to the current absolute transformation
-	core::matrix4 invTrans(AbsoluteTransformation);
-	invTrans.makeInverse();
+	if ( !AbsoluteTransformation.isIdentity() )
+	{
+		core::matrix4 invTrans(AbsoluteTransformation, core::matrix4::EM4CONST_INVERSE);
+		frust.transform(invTrans);
+	}
 
-	frust.transform(invTrans);
-	/*
-	//const core::aabbox3d<float> &box = frust.getBoundingBox();
-	*/
+#if defined ( OCTTREE_BOX_BASED )
+	const core::aabbox3d<float> &box = frust.getBoundingBox();
+#endif
 
 	switch(vertexType)
 	{
 	case video::EVT_STANDARD:
 		{
-			//StdOctTree->calculatePolys(box);
+#if defined ( OCTTREE_BOX_BASED )
+			StdOctTree->calculatePolys(box);
+#else
 			StdOctTree->calculatePolys(frust);
+#endif
 
 			const OctTree<video::S3DVertex>::SIndexData* d = StdOctTree->getIndexData();
 
@@ -162,9 +167,11 @@ void COctTreeSceneNode::render()
 		break;
 	case video::EVT_2TCOORDS:
 		{
-			//LightMapOctTree->calculatePolys(box);
+#if defined ( OCTTREE_BOX_BASED )
+			LightMapOctTree->calculatePolys(box);
+#else
 			LightMapOctTree->calculatePolys(frust);
-
+#endif
 			const OctTree<video::S3DVertex2TCoords>::SIndexData* d = LightMapOctTree->getIndexData();
 
 			for (u32 i=0; i<Materials.size(); ++i)
@@ -180,9 +187,14 @@ void COctTreeSceneNode::render()
 				if (transparent == isTransparentPass)
 				{
 					driver->setMaterial(Materials[i]);
+#if defined (OCTTREE_USE_HARDWARE)
+					driver->drawMeshBuffer ( &LightMapMeshes[i] );
+
+#else
 					driver->drawIndexedTriangleList(
 						&LightMapMeshes[i].Vertices[0], LightMapMeshes[i].Vertices.size(),
 						d[i].Indices, d[i].CurrentSize / 3);
+#endif
 				}
 			}
 
@@ -208,8 +220,11 @@ void COctTreeSceneNode::render()
 		break;
 	case video::EVT_TANGENTS:
 		{
-			//TangentsOctTree->calculatePolys(box);
+#if defined ( OCTTREE_BOX_BASED )
+			TangentsOctTree->calculatePolys(box);
+#else
 			TangentsOctTree->calculatePolys(frust);
+#endif
 
 			const OctTree<video::S3DVertexTangents>::SIndexData* d =  TangentsOctTree->getIndexData();
 
@@ -273,10 +288,14 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 
 	deleteTree();
 
+	Mesh = mesh;
+	Mesh->grab();
+
 	u32 beginTime = os::Timer::getRealTime();
 
 	u32 nodeCount = 0;
 	u32 polyCount = 0;
+	u32 i;
 
 	Box = mesh->getBoundingBox();
 
@@ -288,9 +307,10 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 		{
 		case video::EVT_STANDARD:
 			{
-				for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
+				for (i=0; i<mesh->getMeshBufferCount(); ++i)
 				{
 					IMeshBuffer* b = mesh->getMeshBuffer(i);
+
 					if (b->getVertexCount() && b->getIndexCount()) 
 					{
 						Materials.push_back(b->getMaterial());
@@ -318,9 +338,22 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 			break;
 		case video::EVT_2TCOORDS:
 			{
-				for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
+				IMeshBuffer* b;
+				u32 meshReserve = 0;
+				for ( i=0; i < mesh->getMeshBufferCount(); ++i)
 				{
-					IMeshBuffer* b = mesh->getMeshBuffer(i);
+					b = mesh->getMeshBuffer(i);
+					if (b->getVertexCount() && b->getIndexCount()) 
+					{
+						meshReserve += 1;
+					}
+
+				}
+				LightMapMeshes.reallocate ( LightMapMeshes.size() + meshReserve );
+
+				for ( i=0; i < mesh->getMeshBufferCount(); ++i)
+				{
+					b = mesh->getMeshBuffer(i);
 
 					if (b->getVertexCount() && b->getIndexCount()) 
 					{
@@ -328,6 +361,10 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 						LightMapMeshes.push_back(OctTree<video::S3DVertex2TCoords>::SMeshChunk());
 						OctTree<video::S3DVertex2TCoords>::SMeshChunk& nchunk = LightMapMeshes.getLast();
 						nchunk.MaterialId = Materials.size() - 1;
+
+#if defined (OCTTREE_USE_HARDWARE)
+						nchunk.setHardwareMappingHint ( b->getHardwareMappingHint_Vertex() );
+#endif
 
 						u32 v;
 						nchunk.Vertices.reallocate(b->getVertexCount());
@@ -424,7 +461,7 @@ void COctTreeSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribut
 	const s32 oldMinimal = MinimalPolysPerNode;
 
 	MinimalPolysPerNode = in->getAttributeAsInt("MinimalPolysPerNode");
-	core::stringc newMeshStr = in->getAttributeAsString("Mesh");
+	core::string<c16> newMeshStr = in->getAttributeAsString("Mesh");
 
 	IMesh* newMesh = 0;
 
@@ -461,7 +498,31 @@ void COctTreeSceneNode::deleteTree()
 	TangentsMeshes.clear();
 
 	Materials.clear();
+
+	if(Mesh)
+		Mesh->drop();
 }
+
+void COctTreeSceneNode::setMesh(IMesh* mesh)
+{
+	createTree(mesh);
+}
+
+IMesh* COctTreeSceneNode::getMesh(void)
+{
+	return Mesh;
+}
+
+void COctTreeSceneNode::setReadOnlyMaterials(bool readonly)
+{
+	// Do nothing
+}
+
+bool COctTreeSceneNode::isReadOnlyMaterials() const
+{
+	return false;
+}
+
 
 } // end namespace scene
 } // end namespace irr

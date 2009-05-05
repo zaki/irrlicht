@@ -372,9 +372,9 @@ namespace scene
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	bool CCSMLoader::isALoadableFileExtension(const c8* fileName) const
+	bool CCSMLoader::isALoadableFileExtension(const core::string<c16>& filename) const
 	{
-		return strstr(fileName, ".csm")!=0;
+		return core::hasFileExtension ( filename, "csm" );
 	}
 
 	//! creates/loads an animated mesh from the file.
@@ -409,7 +409,7 @@ namespace scene
 
 			scene::IMesh* pMesh = createIrrlichtMesh(&csmFile,
 				SceneManager->getParameters()->getAttributeAsString(CSM_TEXTURE_PATH),
-				file->getFileName());
+				core::stringc ( file->getFileName() ).c_str() );
 			return pMesh;
 		}
 
@@ -453,7 +453,7 @@ namespace scene
 				texName+= "/";
 				texName+= surface->getTextureName();
 
-				video::ITexture* texture = driver->getTexture(texName.c_str());
+				video::ITexture* texture = driver->getTexture(texName);
 				scene::SMeshBufferLightMap *buffer = new scene::SMeshBufferLightMap();
 
 				//material
@@ -462,7 +462,7 @@ namespace scene
 				lmapName += (int)surface->getLightMapId();
 
 				buffer->Material.setTexture(0, texture);
-				buffer->Material.setTexture(1, driver->getTexture(lmapName.c_str()));
+				buffer->Material.setTexture(1, driver->getTexture(lmapName));
 				buffer->Material.Lighting = false;
 				buffer->Material.MaterialType = video::EMT_LIGHTMAP_M4;
 

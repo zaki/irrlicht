@@ -73,6 +73,9 @@ namespace gui
 		//! Returns which row is currently selected
 		virtual s32 getSelected() const;
 
+		//! set wich row is currently selected
+		virtual void setSelected( s32 index );
+
 		//! Returns amount of rows in the tabcontrol
 		virtual s32 getRowCount() const;
 
@@ -83,7 +86,7 @@ namespace gui
 			than the actual number of rows by more than one, it
 			won't be created. Note that if you create a row that is
 			not at the end, there might be performance issues*/
-		virtual void addRow(u32 rowIndex);
+		virtual u32 addRow(u32 rowIndex);
 
 		//! Remove a row from the table
 		virtual void removeRow(u32 rowIndex);
@@ -104,10 +107,10 @@ namespace gui
 
 
 		//! Set the text of a cell
-		virtual void setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text);
+		virtual void setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text);
 
 		//! Set the text of a cell, and set a color of this cell.
-		virtual void setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, video::SColor color);
+		virtual void setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text, video::SColor color);
 
 		//! Set the data of a cell
 		//! data will not be serialized.

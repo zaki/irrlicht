@@ -18,7 +18,7 @@ namespace irr
 namespace video
 {
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -43,7 +43,7 @@ namespace video
 		u32	Value;		// light
     } PACK_STRUCT;
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
 #	pragma pack( pop, packing )
 #endif
 #undef PACK_STRUCT
@@ -52,7 +52,7 @@ namespace video
 class CImageLoaderWAL : public irr::video::IImageLoader
 {
 public:
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
 

@@ -33,13 +33,11 @@ CSceneNodeAnimatorTexture::CSceneNodeAnimatorTexture(const core::array<video::IT
 }
 
 
-
 //! destructor
 CSceneNodeAnimatorTexture::~CSceneNodeAnimatorTexture()
 {
 	clearTextures();
 }
-
 
 
 void CSceneNodeAnimatorTexture::clearTextures()
@@ -48,7 +46,6 @@ void CSceneNodeAnimatorTexture::clearTextures()
 		if (Textures[i])
 			Textures[i]->drop();
 }
-
 
 
 //! animates a scene node
@@ -100,6 +97,7 @@ void CSceneNodeAnimatorTexture::serializeAttributes(io::IAttributes* out, io::SA
 	}
 }
 
+
 //! Reads attributes of the scene node animator.
 void CSceneNodeAnimatorTexture::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
@@ -127,6 +125,7 @@ void CSceneNodeAnimatorTexture::deserializeAttributes(io::IAttributes* in, io::S
 	}
 }
 
+
 ISceneNodeAnimator* CSceneNodeAnimatorTexture::createClone(ISceneNode* node, ISceneManager* newManager)
 {
 	CSceneNodeAnimatorTexture * newAnimator = 
@@ -134,6 +133,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorTexture::createClone(ISceneNode* node, ISc
 
 	return newAnimator;
 }
+
 
 } // end namespace scene
 } // end namespace irr

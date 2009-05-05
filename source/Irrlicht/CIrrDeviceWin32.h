@@ -13,9 +13,10 @@
 #include "IImagePresenter.h"
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-
-#include <mmsystem.h> // For JOYCAPS
+#if !defined(_IRR_XBOX_PLATFORM_)
+	#include <windows.h>
+	#include <mmsystem.h> // For JOYCAPS
+#endif
 
 
 namespace irr
@@ -65,11 +66,20 @@ namespace irr
 		//! Notifies the device, that it has been resized
 		void OnResized();
 
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		//! Sets if the window should be resizable in windowed mode.
+		virtual void setResizable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+
+		//! Set the current Gamma Value for the Display
+		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast );
+
+		//! Get the current Gamma Value for the Display
+		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
 
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -260,16 +270,18 @@ namespace irr
 		bool ExternalWindow;
 		CCursorControl* Win32CursorControl;
 
+#if defined(_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 		struct JoystickInfo
 		{
 			u32		Index;
 			JOYCAPS Caps;
 		};
 		core::array<JoystickInfo> ActiveJoysticks;
+#endif
 	};
 
 } // end namespace irr
 
-#endif
-#endif
+#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif // __C_IRR_DEVICE_WIN32_H_INCLUDED__
 

@@ -131,10 +131,10 @@ class plane3d
 		{
 			const T d = Normal.dotProduct(point) + D;
 
-			if (d < -ROUNDING_ERROR_32)
+			if (d < -ROUNDING_ERROR_f32)
 				return ISREL3D_BACK;
 
-			if (d > ROUNDING_ERROR_32)
+			if (d > ROUNDING_ERROR_f32)
 				return ISREL3D_FRONT;
 
 			return ISREL3D_PLANAR;
@@ -157,7 +157,7 @@ class plane3d
 		bool existsIntersection(const plane3d<T>& other) const
 		{
 			vector3d<T> cross = other.Normal.crossProduct(Normal);
-			return cross.getLength() > core::ROUNDING_ERROR_32;
+			return cross.getLength() > core::ROUNDING_ERROR_f32;
 		}
 
 		//! Intersects this plane with another.
@@ -174,7 +174,7 @@ class plane3d
 			const T fn11 = other.Normal.getLength();
 			const f64 det = fn00*fn11 - fn01*fn01;
 
-			if (fabs(det) < ROUNDING_ERROR_64 )
+			if (fabs(det) < ROUNDING_ERROR_f64 )
 				return false;
 
 			const f64 invdet = 1.0 / det;
@@ -221,6 +221,7 @@ class plane3d
 
 		//! Normal vector of the plane.
 		vector3d<T> Normal;
+
 		//! Distance from origin.
 		T D;
 };
@@ -228,6 +229,7 @@ class plane3d
 
 //! Typedef for a f32 3d plane.
 typedef plane3d<f32> plane3df;
+
 //! Typedef for an integer 3d plane.
 typedef plane3d<s32> plane3di;
 

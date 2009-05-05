@@ -66,15 +66,18 @@ namespace irr
 		//! Notifies the device, that it has been resized
 		void OnResized();
 
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		//! Sets if the window should be resizable in windowed mode.
+		virtual void setResizable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
 
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<s32>& wsize, HWND hwnd, bool fullscreen)
+			CCursorControl(const core::dimension2d<u32>& wsize, HWND hwnd, bool fullscreen)
 				: WindowSize(wsize), InvWindowSize(0.0f, 0.0f), IsVisible(true),
 					HWnd(hwnd), BorderX(0), BorderY(0), UseReferenceRect(false)
 			{

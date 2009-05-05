@@ -46,6 +46,9 @@ namespace os
 	u32 Byteswap::byteswap(u32 num) {return bswap_32(num);}
 	s32 Byteswap::byteswap(s32 num) {return bswap_32(num);}
 	f32 Byteswap::byteswap(f32 num) {u32 tmp=bswap_32(*((u32*)&num)); return *((f32*)&tmp);}
+	// prevent accidental byte swapping of chars
+	u8  Byteswap::byteswap(u8 num)  {return num;}
+	c8  Byteswap::byteswap(c8 num)  {return num;}
 }
 }
 
@@ -68,12 +71,14 @@ namespace os
 	//! prints a debuginfo string
 	void Printer::print(const c8* message)
 	{
-#if !defined (_WIN32_WCE )
-		c8* tmp = new c8[strlen(message) + 2];
-		sprintf(tmp, "%s\n", message);
-		OutputDebugString(tmp);
-		printf(tmp);
-		delete [] tmp;
+#if defined (_WIN32_WCE )
+		core::stringw tmp(message);
+		tmp += L"\n";
+		OutputDebugStringW(tmp.c_str());
+#else
+		OutputDebugString(message);
+		OutputDebugString("\n");
+		printf("%s\n", message);
 #endif
 	}
 
@@ -83,7 +88,7 @@ namespace os
 
 	void Timer::initTimer()
 	{
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
 		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
@@ -97,7 +102,7 @@ namespace os
 	{
 		if (HighPerformanceTimerSupport)
 		{
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
 			// Avoid potential timing inaccuracies across multiple cores by 
 			// temporarily setting the affinity of this process to one core.
 			DWORD_PTR affinityMask;
@@ -107,7 +112,7 @@ namespace os
 			LARGE_INTEGER nTime;
 			BOOL queriedOK = QueryPerformanceCounter(&nTime);
 
-#if !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)  && !defined (_IRR_XBOX_PLATFORM_)
 			// Restore the true affinity.
 			if(MultiCore)
 				(void)SetThreadAffinityMask(GetCurrentThread(), affinityMask);
@@ -173,10 +178,14 @@ namespace os
 
 	void Printer::log(const c8* message, const c8* hint, ELOG_LEVEL ll)
 	{
-		if (!Logger)
-			return;
+		if (Logger)
+			Logger->log(message, hint, ll);
+	}
 
-		Logger->log(message, hint, ll);
+	void Printer::log(const c8* message, const core::string<c16>& hint, ELOG_LEVEL ll)
+	{
+		if (Logger)
+			Logger->log(message, hint.c_str(), ll);
 	}
 
 	void Printer::log(const wchar_t* message, ELOG_LEVEL ll)

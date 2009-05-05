@@ -55,6 +55,7 @@ int main(int argumentCount, char * arguments[])
 	// Note that to interactively debug a test, you will generally want to move it
 	// (temporarily) to the beginning of the list, since each test runs in its own
 	// process.
+
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	TEST(exports);
 	TEST(sceneCollisionManager);
@@ -72,10 +73,10 @@ int main(int argumentCount, char * arguments[])
 	TEST(textureRenderStates);
 	TEST(terrainSceneNode);
 	TEST(burningsVideo);
-	TEST(makeColorKeyTexture);
 	TEST(cursorSetVisible);
 	TEST(transparentAlphaChannelRef);
 	TEST(drawRectOutline);
+	TEST(removeCustomAnimator);
 
 	// Tests available on 1.6+
 	TEST(collisionResponseAnimator);
@@ -86,7 +87,9 @@ int main(int argumentCount, char * arguments[])
 	TEST(vectorPositionDimension2d);
 	TEST(writeImageToFile);
 	TEST(flyCircleAnimator);
-	TEST(relativeTransformations);
+	TEST(enumerateImageManipulators);
+	TEST(testGeometryCreator);
+	TEST(makeColorKeyTexture);
 
 	const unsigned int numberOfTests = tests.size();
 
@@ -153,7 +156,11 @@ int main(int argumentCount, char * arguments[])
 			}
 		}
 		closeTestLog();
+#ifdef _IRR_WINDOWS_
 		(void)system("tests.log");
+#else
+		(void)system("more tests.log");
+#endif
 	}
 
 	return fails;

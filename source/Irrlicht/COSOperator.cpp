@@ -6,7 +6,10 @@
 #include "IrrCompileConfig.h"
 
 #ifdef _IRR_WINDOWS_API_
+#ifdef _IRR_XBOX_PLATFORM_
+#else
 #include <windows.h>
+#endif
 #else
 #include <string.h>
 #include <unistd.h>
@@ -46,7 +49,8 @@ void COSOperator::copyToClipboard(const c8* text) const
 		return;
 
 // Windows version
-#if defined(_IRR_WINDOWS_API_)
+#if defined(_IRR_XBOX_PLATFORM_)
+#elif defined(_IRR_WINDOWS_API_)
 	if (!OpenClipboard(NULL) || text == 0)
 		return;
 
@@ -79,7 +83,9 @@ void COSOperator::copyToClipboard(const c8* text) const
 //! \return Returns 0 if no string is in there.
 c8* COSOperator::getTextFromClipboard() const
 {
-#if defined(_IRR_WINDOWS_API_)
+#if defined(_IRR_XBOX_PLATFORM_)
+		return 0;
+#elif defined(_IRR_WINDOWS_API_)
 	if (!OpenClipboard(NULL))
 		return 0;
 	
@@ -104,7 +110,7 @@ c8* COSOperator::getTextFromClipboard() const
 
 bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 {
-#if defined(_IRR_WINDOWS_API_) && !defined(_WIN32_WCE )
+#if defined(_IRR_WINDOWS_API_) && !defined(_WIN32_WCE ) && !defined (_IRR_XBOX_PLATFORM_)
 	LONG Error;
 	
 	HKEY Key;
@@ -146,7 +152,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 
 bool COSOperator::getSystemMemory(u32* Total, u32* Avail) const
 {
-#if defined(_IRR_WINDOWS_API_)
+#if defined(_IRR_WINDOWS_API_) && !defined (_IRR_XBOX_PLATFORM_)
 	MEMORYSTATUS MemoryStatus;
 	MemoryStatus.dwLength = sizeof(MEMORYSTATUS);
 

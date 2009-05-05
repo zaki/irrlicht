@@ -9,6 +9,7 @@ namespace irr
 namespace scene
 {
 
+
 //! constructor
 CSceneNodeAnimatorFollowSpline::CSceneNodeAnimatorFollowSpline(u32 time,
 	const core::array<core::vector3df>& points, f32 speed,
@@ -121,6 +122,7 @@ void CSceneNodeAnimatorFollowSpline::deserializeAttributes(io::IAttributes* in, 
 	}
 }
 
+
 ISceneNodeAnimator* CSceneNodeAnimatorFollowSpline::createClone(ISceneNode* node, ISceneManager* newManager)
 {
 	CSceneNodeAnimatorFollowSpline * newAnimator = 
@@ -128,6 +130,7 @@ ISceneNodeAnimator* CSceneNodeAnimatorFollowSpline::createClone(ISceneNode* node
 
 	return newAnimator;
 }
+
 
 } // end namespace scene
 } // end namespace irr

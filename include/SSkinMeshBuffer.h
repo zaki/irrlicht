@@ -19,9 +19,10 @@ namespace scene
 struct SSkinMeshBuffer : public IMeshBuffer
 {
 	//! Default constructor
-	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) : 
-		ChangedID_Vertex(1),ChangedID_Index(1),MappingHint_Vertex(EHM_NEVER),
-		MappingHint_Index(EHM_NEVER),VertexType(vt),BoundingBoxNeedsRecalculated(true)
+	SSkinMeshBuffer(video::E_VERTEX_TYPE vt=video::EVT_STANDARD) :
+		ChangedID_Vertex(1), ChangedID_Index(1), VertexType(vt),
+		MappingHint_Vertex(EHM_NEVER), MappingHint_Index(EHM_NEVER),
+		BoundingBoxNeedsRecalculated(true)
 	{
 		#ifdef _DEBUG
 		setDebugName("SSkinMeshBuffer");
@@ -369,24 +370,27 @@ struct SSkinMeshBuffer : public IMeshBuffer
 	//! Call this after changing the positions of any vertex.
 	void boundingBoxNeedsRecalculated(void) { BoundingBoxNeedsRecalculated = true; }
 
+	core::array<video::S3DVertexTangents> Vertices_Tangents;
+	core::array<video::S3DVertex2TCoords> Vertices_2TCoords;
+	core::array<video::S3DVertex> Vertices_Standard;
+	core::array<u16> Indices;
+
 	u32 ChangedID_Vertex;
 	u32 ChangedID_Index;
-
-	// hardware mapping hint
-	E_HARDWARE_MAPPING MappingHint_Vertex;
-	E_HARDWARE_MAPPING MappingHint_Index;
 
 	//ISkinnedMesh::SJoint *AttachedJoint;
 	core::matrix4 Transformation;
 
 	video::SMaterial Material;
 	video::E_VERTEX_TYPE VertexType;
-	core::array<video::S3DVertexTangents> Vertices_Tangents;
-	core::array<video::S3DVertex2TCoords> Vertices_2TCoords;
-	core::array<video::S3DVertex> Vertices_Standard;
-	core::array<u16> Indices;
+
 	core::aabbox3d<f32> BoundingBox;
-	bool BoundingBoxNeedsRecalculated;
+
+	// hardware mapping hint
+	E_HARDWARE_MAPPING MappingHint_Vertex:3;
+	E_HARDWARE_MAPPING MappingHint_Index:3;
+
+	bool BoundingBoxNeedsRecalculated:1;
 };
 
 

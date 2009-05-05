@@ -76,7 +76,7 @@ namespace core
 		// functions
 
 		//! returns if this vector equals the other one, taking floating point rounding errors into account
-		bool equals(const vector3d<T>& other, const T tolerance = (T)ROUNDING_ERROR_32 ) const
+		bool equals(const vector3d<T>& other, const T tolerance = (T)ROUNDING_ERROR_f32 ) const
 		{
 			return core::equals(X, other.X, tolerance) &&
 				core::equals(Y, other.Y, tolerance) &&
@@ -87,7 +87,7 @@ namespace core
 		vector3d<T>& set(const vector3d<T>& p) {X=p.X; Y=p.Y; Z=p.Z;return *this;}
 
 		//! Get length of the vector.
-		T getLength() const { return (T) sqrt((f64)(X*X + Y*Y + Z*Z)); }
+		T getLength() const { return core::squareroot( X*X + Y*Y + Z*Z ); }
 
 		//! Get squared length of the vector.
 		/** This is useful because it is much faster than getLength().
@@ -140,10 +140,8 @@ namespace core
 		\return Reference to this vector after normalization. */
 		vector3d<T>& normalize()
 		{
-			f32 length = (f32)(X*X + Y*Y + Z*Z);
-			if (core::equals(length, 0.f))
-				return *this;
-			length = core::reciprocal_squareroot ( (f32)length );
+			const f64 length = core::reciprocal_squareroot ( (f64) (X*X + Y*Y + Z*Z) );
+			
 			X = (T)(X * length);
 			Y = (T)(Y * length);
 			Z = (T)(Z * length);
@@ -274,21 +272,21 @@ namespace core
 		{
 			vector3d<T> angle;
 
-			angle.Y = (T)(atan2(X, Z) * RADTODEG64);
+			angle.Y = (T)(atan2(X, Z) * (T) RADTODEG64);
 
 			if (angle.Y < 0.0f)
 				angle.Y += 360.0f;
 			if (angle.Y >= 360.0f)
 				angle.Y -= 360.0f;
 
-			const f64 z1 = sqrt(X*X + Z*Z);
+			const T z1 = core::squareroot(X*X + Z*Z);
 
-			angle.X = (T)(atan2(z1, (f64)Y) * RADTODEG64 - 90.0);
+			angle.X = (T)(atan2(z1, (T)Y) * (T) RADTODEG64 - (T) 90.0);
 
-			if (angle.X < 0.0f)
-				angle.X += 360.0f;
-			if (angle.X >= 360.0f)
-				angle.X -= 360.0f;
+			if (angle.X < (T) 0.0)
+				angle.X += (T) 360.0;
+			if (angle.X >= (T) 360.0)
+				angle.X -= (T) 360.0;
 
 			return angle;
 		}
@@ -343,8 +341,10 @@ namespace core
 
 		//! X coordinate of the vector
 		T X;
+
 		//! Y coordinate of the vector
 		T Y;
+
 		//! Z coordinate of the vector
 		T Z;
 	};
@@ -352,6 +352,7 @@ namespace core
 
 	//! Typedef for a f32 3d vector.
 	typedef vector3d<f32> vector3df;
+
 	//! Typedef for an integer 3d vector.
 	typedef vector3d<s32> vector3di;
 

@@ -18,7 +18,7 @@ namespace scene
 	name clashes with external mesh writers.*/
 	enum EMESH_WRITER_TYPE
 	{
-		//! Irrlicht Native mesh writer, for static .irrmesh files.
+		//! Irrlicht native mesh writer, for static .irrmesh files.
 		EMWT_IRR_MESH     = MAKE_IRR_ID('i','r','r','m'),
 
 		//! COLLADA mesh writer for .dae and .xml files
@@ -28,7 +28,10 @@ namespace scene
 		EMWT_STL          = MAKE_IRR_ID('s','t','l',0),
 
 		//! OBJ mesh writer for .obj files
-		EMWT_OBJ          = MAKE_IRR_ID('o','b','j',0)
+		EMWT_OBJ          = MAKE_IRR_ID('o','b','j',0),
+
+		//! PLY mesh writer for .ply files
+		EMWT_PLY          = MAKE_IRR_ID('p','l','y',0)
 	};
 
 
@@ -41,8 +44,11 @@ namespace scene
 		//! write lightmap textures out if possible
 		EMWF_WRITE_LIGHTMAPS = 0x1,
 
-		//! write in a way that does consume less disk space
-		EMWF_WRITE_COMPRESSED = 0x2
+		//! write in a way that consumes less disk space
+		EMWF_WRITE_COMPRESSED = 0x2,
+
+		//! write in binary format rather than text
+		EMWF_WRITE_BINARY = 0x4
 	};
 
 } // end namespace scene

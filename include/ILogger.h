@@ -66,6 +66,7 @@ public:
 	filtered with these levels. If you want to be a text displayed,
 	independent on what level filter is set, use ELL_NONE. */
 	virtual void log(const c8* text, const c8* hint, ELOG_LEVEL ll=ELL_INFORMATION) = 0;
+	virtual void log(const c8* text, const wchar_t* hint, ELOG_LEVEL ll=ELL_INFORMATION) = 0;
 
 	//! Prints out a text into the log
 	/** \param text: Text to print out.

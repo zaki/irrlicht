@@ -36,6 +36,9 @@ namespace scene
 		//! Sky Box Scene Node
 		ESNT_SKY_BOX        = MAKE_IRR_ID('s','k','y','_'),
 
+		//! Sky Dome Scene Node
+		ESNT_SKY_DOME       = MAKE_IRR_ID('s','k','y','d'),
+
 		//! Shadow Volume Scene Node
 		ESNT_SHADOW_VOLUME  = MAKE_IRR_ID('s','h','d','w'),
 
@@ -66,8 +69,14 @@ namespace scene
 		//! Particle System Scene Node
 		ESNT_PARTICLE_SYSTEM = MAKE_IRR_ID('p','t','c','l'),
 
+		//! Quake3 Shader Scene Node
+		ESNT_Q3SHADER_SCENE_NODE  = MAKE_IRR_ID('q','3','s','h'),
+
 		//! Quake3 Model Scene Node ( has tag to link to )
 		ESNT_MD3_SCENE_NODE  = MAKE_IRR_ID('m','d','3','_'),
+
+		//! Volume Light Scene Node
+		ESNT_VOLUME_LIGHT  = MAKE_IRR_ID('v','o','l','l'),
 
 		//! Maya Camera Scene Node
 		/** Legacy, for loading version <= 1.4.x .irr files */

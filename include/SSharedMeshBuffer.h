@@ -16,7 +16,7 @@ namespace scene
 	struct SSharedMeshBuffer : public IMeshBuffer
 	{
 		//! constructor
-		SSharedMeshBuffer() : IMeshBuffer(), ChangedID_Vertex(1), ChangedID_Index(1), Vertices(0), MappingHint(EHM_NEVER)
+		SSharedMeshBuffer() : IMeshBuffer(), Vertices(0), ChangedID_Vertex(1), ChangedID_Index(1), MappingHintVertex(EHM_NEVER), MappingHintIndex(EHM_NEVER)
 		{
 			#ifdef _DEBUG
 			setDebugName("SSharedMeshBuffer");
@@ -127,23 +127,33 @@ namespace scene
 
 
 		//! get the current hardware mapping hint
-		virtual E_HARDWARE_MAPPING getHardwareMappingHint() const
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
 		{
-			return MappingHint;
+			return MappingHintVertex;
+		}
+
+		//! get the current hardware mapping hint
+		virtual E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+		{
+			return MappingHintIndex;
 		}
 
 		//! set the hardware mapping hint, for driver
-		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint )
+		virtual void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX )
 		{
-			MappingHint=NewMappingHint;
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_VERTEX)
+				MappingHintVertex=NewMappingHint;
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_INDEX)
+				MappingHintIndex=NewMappingHint;
 		}
 
+
 		//! flags the mesh as changed, reloads hardware buffers
-		virtual void setDirty(E_BUFFER_TYPE Buffer=EBT_VERTEX_AND_INDEX)
+		virtual void setDirty(E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX)
 		{
-			if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_VERTEX)
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_VERTEX)
 				++ChangedID_Vertex;
-			if (Buffer==EBT_VERTEX_AND_INDEX || Buffer==EBT_INDEX)
+			if (buffer==EBT_VERTEX_AND_INDEX || buffer==EBT_INDEX)
 				++ChangedID_Index;
 		}
 
@@ -155,22 +165,27 @@ namespace scene
 		/** This shouldn't be used for anything outside the VideoDriver. */
 		virtual u32 getChangedID_Index() const {return ChangedID_Index;}
 
+		//! Material of this meshBuffer
+		video::SMaterial Material;
+
+		//! Shared Array of vertices
+		core::array<video::S3DVertex> *Vertices;
+
+		//! Array of Indices
+		core::array<u16> Indices;
+
 		//! ID used for hardware buffer management
 		u32 ChangedID_Vertex;
 
 		//! ID used for hardware buffer management
 		u32 ChangedID_Index;
 
-		//! Material of this meshBuffer
-		video::SMaterial Material;
-		//! Shared Array of vertices
-		core::array<video::S3DVertex> *Vertices;
-		//! Array of Indices
-		core::array<u16> Indices;
 		//! Bounding box
 		core::aabbox3df BoundingBox;
+
 		//! hardware mapping hint
-		E_HARDWARE_MAPPING MappingHint;
+		E_HARDWARE_MAPPING MappingHintVertex;
+		E_HARDWARE_MAPPING MappingHintIndex;
 
 	};
 

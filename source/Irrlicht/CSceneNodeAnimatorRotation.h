@@ -18,9 +18,6 @@ namespace scene
 		//! constructor
 		CSceneNodeAnimatorRotation(u32 time, const core::vector3df& rotation);
 
-		//! destructor
-		virtual ~CSceneNodeAnimatorRotation();
-
 		//! animates a scene node
 		virtual void animateNode(ISceneNode* node, u32 timeMs);
 
@@ -35,8 +32,7 @@ namespace scene
 		
 		//! Creates a clone of this animator.
 		/** Please note that you will have to drop
-		(IReferenceCounted::drop()) the returned pointer after calling
-		this. */
+		(IReferenceCounted::drop()) the returned pointer after calling this. */
 		virtual ISceneNodeAnimator* createClone(ISceneNode* node, ISceneManager* newManager=0);
 
 	private:

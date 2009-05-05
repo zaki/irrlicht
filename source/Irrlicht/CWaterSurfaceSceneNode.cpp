@@ -20,8 +20,9 @@ CWaterSurfaceSceneNode::CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f3
 		IMesh* mesh, ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, const core::vector3df& rotation,
 		const core::vector3df& scale)
-: CMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale), WaveLength(waveLength),
-	WaveSpeed(waveSpeed), WaveHeight(waveHeight), OriginalMesh(0)
+	: CMeshSceneNode(mesh, parent, mgr, id, position, rotation, scale),
+	WaveLength(waveLength), WaveSpeed(waveSpeed), WaveHeight(waveHeight),
+	OriginalMesh(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CWaterSurfaceSceneNode");
@@ -38,7 +39,6 @@ CWaterSurfaceSceneNode::CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f3
 }
 
 
-
 //! destructor
 CWaterSurfaceSceneNode::~CWaterSurfaceSceneNode()
 {
@@ -48,43 +48,47 @@ CWaterSurfaceSceneNode::~CWaterSurfaceSceneNode()
 }
 
 
-
 //! frame
 void CWaterSurfaceSceneNode::OnRegisterSceneNode()
 {
-	if (IsVisible)
-	{
-		SceneManager->registerNodeForRendering(this);
-
-		animateWaterSurface();
-
-		CMeshSceneNode::OnRegisterSceneNode();
-	}
+	CMeshSceneNode::OnRegisterSceneNode();
 }
 
 
-
-void CWaterSurfaceSceneNode::animateWaterSurface()
+void CWaterSurfaceSceneNode::OnAnimate(u32 timeMs)
 {
-	if (!Mesh)
-		return;
-
-	u32 meshBufferCount = Mesh->getMeshBufferCount();
-	f32 time = os::Timer::getTime() / WaveSpeed;
-
-	for (u32 b=0; b<meshBufferCount; ++b)
+	if (Mesh && IsVisible)
 	{
-		const u32 vtxCnt = Mesh->getMeshBuffer(b)->getVertexCount();
+		const u32 meshBufferCount = Mesh->getMeshBufferCount();
+		const f32 time = timeMs / WaveSpeed;
 
-		for (u32 i=0; i<vtxCnt; ++i)
-			addWave(Mesh->getMeshBuffer(b)->getPosition(i),
-				OriginalMesh->getMeshBuffer(b)->getPosition(i),
-				time);
-	}// end for all mesh buffers
+		for (u32 b=0; b<meshBufferCount; ++b)
+		{
+			const u32 vtxCnt = Mesh->getMeshBuffer(b)->getVertexCount();
 
-	SceneManager->getMeshManipulator()->recalculateNormals(Mesh);
+			for (u32 i=0; i<vtxCnt; ++i)
+				addWave(Mesh->getMeshBuffer(b)->getPosition(i),
+					OriginalMesh->getMeshBuffer(b)->getPosition(i),
+					time);
+		}// end for all mesh buffers
+
+		SceneManager->getMeshManipulator()->recalculateNormals(Mesh);
+	}
+	CMeshSceneNode::OnAnimate(timeMs);
 }
 
+
+void CWaterSurfaceSceneNode::setMesh(IMesh* mesh)
+{
+	CMeshSceneNode::setMesh(mesh);
+	if (!mesh)
+		return;
+	if (OriginalMesh)
+		OriginalMesh->drop();
+	IMesh* clone = SceneManager->getMeshManipulator()->createMeshCopy(mesh);
+	OriginalMesh = mesh;
+	Mesh = clone;
+}
 
 
 //! Writes attributes of the scene node.
@@ -122,6 +126,14 @@ void CWaterSurfaceSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 		OriginalMesh = Mesh;
 		Mesh = clone;
 	}
+}
+
+
+void CWaterSurfaceSceneNode::addWave(core::vector3df& dest, const core::vector3df &source, f32 time) const
+{
+	dest.Y = source.Y +
+	(sinf(((source.X/WaveLength) + time)) * WaveHeight) +
+	(cosf(((source.Z/WaveLength) + time)) * WaveHeight);
 }
 
 } // end namespace scene

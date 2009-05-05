@@ -117,7 +117,24 @@ namespace scene
 		\param resolution: resolution of the planar mapping. This is
 		the value specifying which is the relation between world space
 		and texture coordinate space. */
-		virtual void makePlanarTextureMapping(IMesh* mesh, f32 resolution=0.001f) const = 0;
+		virtual void makePlanarTextureMapping(IMesh* mesh, f32 resolution=0.001f) const =0;
+
+		//! Creates a planar texture mapping on the meshbuffer
+		/** \param meshbuffer: Buffer on which the operation is performed.
+		\param resolution: resolution of the planar mapping. This is
+		the value specifying which is the relation between world space
+		and texture coordinate space. */
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const =0;
+
+		//! Creates a planar texture mapping on the meshbuffer
+		/** This method is currently implemented towards the LWO planar mapping. A more general biasing might be required.
+		\param meshbuffer Buffer on which the operation is performed.
+		\param resolutionS Resolution of the planar mapping in horizontal direction. This is the ratio between object space and texture space.
+		\param resolutionT Resolution of the planar mapping in vertical direction. This is the ratio between object space and texture space.
+		\param axis The axis along which the texture is projected. The allowed values are 0 (X), 1(Y), and 2(Z).
+		\param offset Vector added to the vertex positions (in object coordinates).
+		*/
+		virtual void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const =0;
 
 		//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 		/** This is useful if you want to draw tangent space normal
@@ -145,6 +162,14 @@ namespace scene
 		information. */
 		virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const = 0;
 
+		//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
+		/** \param mesh Input mesh
+		\return Mesh consisting only of S3DVertex vertices. If
+		you no longer need the cloned mesh, you should call
+		IMesh::drop(). See IReferenceCounted::drop() for more
+		information. */
+		virtual IMesh* createMeshWith1TCoords(IMesh* mesh) const = 0;
+
 		//! Creates a copy of a mesh with all vertices unwelded
 		/** \param mesh Input mesh
 		\return Mesh consisting only of unique faces. All vertices
@@ -159,7 +184,7 @@ namespace scene
 		\return Mesh without redundant vertices. If you no longer need
 		the cloned mesh, you should call IMesh::drop(). See
 		IReferenceCounted::drop() for more information. */
-		virtual IMesh* createMeshWelded(IMesh* mesh, f32 tolerance=core::ROUNDING_ERROR_32) const = 0;
+		virtual IMesh* createMeshWelded(IMesh* mesh, f32 tolerance=core::ROUNDING_ERROR_f32) const = 0;
 
 		//! Get amount of polygons in mesh.
 		/** \param mesh Input mesh

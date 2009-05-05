@@ -60,15 +60,23 @@ namespace video
 		//! sets transformation
 		virtual void setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat);
 
+		//! Retrieve the number of image loaders
+		virtual u32 getImageLoaderCount() const;
+
+		//! Retrieve the given image loader
+		virtual IImageLoader* getImageLoader(u32 n);
+
+		//! Retrieve the number of image writers
+		virtual u32 getImageWriterCount() const;
+
+		//! Retrieve the given image writer
+		virtual IImageWriter* getImageWriter(u32 n);
+
 		//! sets a material
 		virtual void setMaterial(const SMaterial& material);
 
 		//! loads a Texture
-		virtual ITexture* getTexture(const c8* filename);
-
-		//! loads a Texture
-		virtual ITexture* getTexture(const core::stringc& filename)
-		{ return getTexture(filename.c_str()); }
+		virtual ITexture* getTexture(const core::string<c16>& filename);
 
 		//! loads a Texture
 		virtual ITexture* getTexture(io::IReadFile* file);
@@ -80,10 +88,10 @@ namespace video
 		virtual u32 getTextureCount() const;
 
 		//! Renames a texture
-		virtual void renameTexture(ITexture* texture, const c8* newName);
+		virtual void renameTexture(ITexture* texture, const core::string<c16>& newName);
 
 		//! creates a Texture
-		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8);
+		virtual ITexture* addTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, ECOLOR_FORMAT format = ECF_A8R8G8B8);
 
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
@@ -285,7 +293,7 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name);
+			const core::string<c16>& name);
 
 		//! Creates an 1bit alpha channel of the texture based of an color key.
 		virtual void makeColorKeyTexture(video::ITexture* texture, video::SColor color, bool zeroTexels) const;
@@ -309,7 +317,7 @@ namespace video
 		virtual bool getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const;
 
 		//! Creates a software image from a file.
-		virtual IImage* createImageFromFile(const char* filename);
+		virtual IImage* createImageFromFile(const core::string<c16>& filename);
 
 		//! Creates a software image from a file.
 		virtual IImage* createImageFromFile(io::IReadFile* file);
@@ -340,7 +348,10 @@ namespace video
 	protected:
 		struct SHWBufferLink
 		{
-			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer):MeshBuffer(_MeshBuffer),ChangedID_Vertex(0),ChangedID_Index(0),LastUsed(0),Mapped_Vertex(scene::EHM_NEVER),Mapped_Index(scene::EHM_NEVER)
+			SHWBufferLink(const scene::IMeshBuffer *_MeshBuffer)
+				:MeshBuffer(_MeshBuffer),
+				ChangedID_Vertex(0),ChangedID_Index(0),LastUsed(0),
+				Mapped_Vertex(scene::EHM_NEVER),Mapped_Index(scene::EHM_NEVER)
 			{
 				if (MeshBuffer)
 					MeshBuffer->grab();
@@ -426,8 +437,8 @@ namespace video
 
 		//! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the
 		//! programs from files.
-		virtual s32 addShaderMaterialFromFiles(const c8* vertexShaderProgramFileName = 0,
-			const c8* pixelShaderProgramFileName = 0,
+		virtual s32 addShaderMaterialFromFiles(const core::string<c16>& vertexShaderProgramFileName,
+			const core::string<c16>& pixelShaderProgramFileName,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -457,10 +468,10 @@ namespace video
 		//! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 		//! but tries to load the programs from files.
 		virtual s32 addHighLevelShaderMaterialFromFiles(
-			const c8* vertexShaderProgram,
+			const core::string<c16>& vertexShaderProgramFile,
 			const c8* vertexShaderEntryPointName = "main",
 			E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
-			const c8* pixelShaderProgram = 0,
+			const core::string<c16>& pixelShaderProgramFile = "",
 			const c8* pixelShaderEntryPointName = "main",
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
 			IShaderConstantSetCallBack* callback = 0,
@@ -490,7 +501,7 @@ namespace video
 		virtual IImage* createScreenShot();
 
 		//! Writes the provided image to disk file
-		virtual bool writeImageToFile(IImage* image, const char* filename, u32 param = 0);
+		virtual bool writeImageToFile(IImage* image, const core::string<c16>& filename, u32 param = 0);
 
 		//! Writes the provided image to a file.
 		virtual bool writeImageToFile(IImage* image, io::IWriteFile * file, u32 param = 0);
@@ -505,7 +516,7 @@ namespace video
 		virtual void fillMaterialStructureFromAttributes(video::SMaterial& outMaterial, io::IAttributes* attributes);
 
 		//! looks if the image is already loaded
-		virtual video::ITexture* findTexture(const c8* filename);
+		virtual video::ITexture* findTexture(const core::string<c16>& filename);
 
 		//! Set/unset a clipping plane.
 		//! There are at least 6 clipping planes available for the user to set at will.
@@ -527,6 +538,12 @@ namespace video
 		/** \param count Number of vertices to set as minimum. */
 		virtual void setMinHardwareBufferVertexCount(u32 count);
 
+		//! Get the global Material, which might override local materials.
+		/** Depending on the enable flags, values from this Material
+		are used to override those of local materials of some
+		meshbuffer being rendered. */
+		virtual SOverrideMaterial& getOverrideMaterial();
+
 		//! Only used by the engine internally.
 		virtual void setAllowZWriteOnTransparent(bool flag)
 		{ AllowZWriteOnTransparent=flag; }
@@ -542,17 +559,17 @@ namespace video
 		void deleteAllTextures();
 
 		//! opens the file and loads it into the surface
-		video::ITexture* loadTextureFromFile(io::IReadFile* file, const c8* hashName = 0);
+		video::ITexture* loadTextureFromFile(io::IReadFile* file, const core::string<c16>& hashName = "");
 
 		//! adds a surface, not loaded or created by the Irrlicht Engine
 		void addTexture(video::ITexture* surface);
 
 		//! Creates a texture from a loaded IImage.
-		virtual ITexture* addTexture(const c8* name, IImage* image);
+		virtual ITexture* addTexture(const core::string<c16>& name, IImage* image);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
@@ -601,7 +618,7 @@ namespace video
 
 		struct SDummyTexture : public ITexture
 		{
-			SDummyTexture(const char* name) : ITexture(name), size(0,0) {};
+			SDummyTexture(const core::string<c16>& name) : ITexture(name), size(0,0) {};
 
 			virtual void* lock(bool readOnly = false) { return 0; };
 			virtual void unlock(){}
@@ -646,6 +663,8 @@ namespace video
 		f32 FogDensity;
 		SColor FogColor;
 		SExposedVideoData ExposedData;
+
+		SOverrideMaterial OverrideMaterial;
 
 		bool LinearFog;
 		bool PixelFog;

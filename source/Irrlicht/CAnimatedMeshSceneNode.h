@@ -134,7 +134,7 @@ namespace scene
 
 		// returns the absolute transformation for a special MD3 Tag if the mesh is a md3 mesh,
 		// or the absolutetransformation if it's a normal scenenode
-		const SMD3QuaterionTag& getMD3TagTransformation( const core::stringc & tagname);
+		const SMD3QuaternionTag* getMD3TagTransformation( const core::stringc & tagname);
 
 		//! updates the absolute position based on the relative and the parents position
 		virtual void updateAbsolutePosition();
@@ -162,9 +162,9 @@ namespace scene
 	private:
 
 		//! Get a static mesh for the current frame of this animated mesh
-		IMesh* getMeshForCurrentFrame(void);
+		IMesh* getMeshForCurrentFrame(bool forceRecalcOfControlJoints);
 
-		f32 buildFrameNr( u32 timeMs);
+		void buildFrameNr(u32 timeMs);
 		void checkJoints();
 		void beginTransition();
 
@@ -178,13 +178,14 @@ namespace scene
 		f32 FramesPerSecond;
 		f32 CurrentFrameNr;
 
-		//0-unused, 1-get joints only, 2-set joints only, 3-move and set
-		E_JOINT_UPDATE_ON_RENDER JointMode;
-		bool JointsUsed;
-
+		u32 LastTimeMs;
 		u32 TransitionTime; //Transition time in millisecs
 		f32 Transiting; //is mesh transiting (plus cache of TransitionTime)
 		f32 TransitingBlend; //0-1, calculated on buildFrameNr
+
+		//0-unused, 1-get joints only, 2-set joints only, 3-move and set
+		E_JOINT_UPDATE_ON_RENDER JointMode;
+		bool JointsUsed;
 
 		bool Looping;
 		bool ReadOnlyMaterials;
@@ -198,10 +199,11 @@ namespace scene
 		core::array<IBoneSceneNode* > JointChildSceneNodes;
 		core::array<core::matrix4> PretransitingSave;
 
-		struct SMD3Special
+		// Quake3 Model
+		struct SMD3Special : public virtual IReferenceCounted
 		{
 			core::stringc Tagname;
-			SMD3QuaterionTagList AbsoluteTagList;
+			SMD3QuaternionTagList AbsoluteTagList;
 
 			SMD3Special & operator = (const SMD3Special & copyMe)
 			{
@@ -210,7 +212,7 @@ namespace scene
 				return *this;
 			}
 		};
-		SMD3Special MD3Special;
+		SMD3Special *MD3Special;
 	};
 
 } // end namespace scene

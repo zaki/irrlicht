@@ -164,10 +164,12 @@ namespace scene
 				Meshes[i]->setDirty(buffer);
 		}
 
-		//! The bounding box of this mesh
-		core::aabbox3d<f32> Box;
 		//! All meshes defining the animated mesh
 		core::array<IMesh*> Meshes;
+
+		//! The bounding box of this mesh
+		core::aabbox3d<f32> Box;
+
 		//! Tyhe type fo the mesh.
 		E_ANIMATED_MESH_TYPE Type;
 	};

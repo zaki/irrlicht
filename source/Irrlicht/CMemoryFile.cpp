@@ -11,7 +11,7 @@ namespace io
 {
 
 
-CMemoryFile::CMemoryFile(void* memory, long len, const c8* fileName, bool d)
+CMemoryFile::CMemoryFile(void* memory, long len, const core::string<c16>& fileName, bool d)
 : Buffer(memory), Len(len), Pos(0), Filename(fileName), deleteMemoryWhenDropped(d)
 {
 	#ifdef _DEBUG
@@ -104,13 +104,13 @@ long CMemoryFile::getPos() const
 
 
 //! returns name of file
-const c8* CMemoryFile::getFileName() const
+const core::string<c16>& CMemoryFile::getFileName() const
 {
-	return Filename.c_str();
+	return Filename;
 }
 
 
-IReadFile* createMemoryReadFile(void* memory, long size, const c8* fileName, bool deleteMemoryWhenDropped)
+IReadFile* createMemoryReadFile(void* memory, long size, const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
 {
 	CMemoryFile* file = new CMemoryFile(memory, size, fileName, deleteMemoryWhenDropped);
 	return file;

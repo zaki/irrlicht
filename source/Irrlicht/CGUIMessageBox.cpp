@@ -72,15 +72,15 @@ void CGUIMessageBox::refreshControls()
 	const IGUISkin* skin = Environment->getSkin();
 	IGUIElement* focusMe = 0;
 
-	const s32 buttonHeight = skin->getSize(EGDS_BUTTON_HEIGHT);
-	const s32 buttonWidth = skin->getSize(EGDS_BUTTON_WIDTH);
-	const s32 titleHeight = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH)+2;
+	const s32 buttonHeight   = skin->getSize(EGDS_BUTTON_HEIGHT);
+	const s32 buttonWidth    = skin->getSize(EGDS_BUTTON_WIDTH);
+	const s32 titleHeight    = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH)+2;
 	const s32 buttonDistance = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
 
 	// add static multiline text
 
 	core::dimension2d<s32> dim(AbsoluteClippingRect.getWidth() - buttonWidth,
-		AbsoluteClippingRect.getHeight() - (buttonHeight * 3));
+		AbsoluteClippingRect.getHeight() - (buttonHeight * 2));
 	const core::position2d<s32> pos((AbsoluteClippingRect.getWidth() - dim.Width) / 2,
 		buttonHeight / 2 + titleHeight);
 
@@ -100,20 +100,21 @@ void CGUIMessageBox::refreshControls()
 
 	// adjust static text height
 
-	const s32 textHeight = StaticText->getTextHeight();
-	core::rect<s32> tmp = StaticText->getRelativePosition();
+	const s32 textHeight   = StaticText->getTextHeight();
+	core::rect<s32> tmp    = StaticText->getRelativePosition();
 	tmp.LowerRightCorner.Y = tmp.UpperLeftCorner.Y + textHeight;
 	StaticText->setRelativePosition(tmp);
-	dim.Height = textHeight;
+	dim.Height = dim.Height - buttonHeight < tmp.getHeight() ? tmp.getHeight() : dim.Height - buttonHeight;
 
-	// adjust message box height
+	// adjust message box height if required
 
 	tmp = getRelativePosition();
 	s32 msgBoxHeight = textHeight +	core::floor32(2.5f * buttonHeight) + titleHeight;
+	msgBoxHeight     = tmp.getHeight() < msgBoxHeight ? msgBoxHeight : tmp.getHeight();
 
 	// adjust message box position
 
-	tmp.UpperLeftCorner.Y = (Parent->getAbsolutePosition().getHeight() - msgBoxHeight) / 2;
+	tmp.UpperLeftCorner.Y  = (Parent->getAbsolutePosition().getHeight() - msgBoxHeight) / 2;
 	tmp.LowerRightCorner.Y = tmp.UpperLeftCorner.Y + msgBoxHeight;
 	setRelativePosition(tmp);
 
@@ -130,10 +131,11 @@ void CGUIMessageBox::refreshControls()
 		++countButtons;
 
 	core::rect<s32> btnRect;
-	btnRect.UpperLeftCorner.Y = pos.Y + dim.Height + buttonHeight / 2;
+	btnRect.UpperLeftCorner.Y  = pos.Y + dim.Height + buttonHeight / 2;
 	btnRect.LowerRightCorner.Y = btnRect.UpperLeftCorner.Y + buttonHeight;
-	btnRect.UpperLeftCorner.X = (AbsoluteClippingRect.getWidth() -
-		((buttonWidth + buttonDistance)*countButtons)) / 2;
+	btnRect.UpperLeftCorner.X  = (AbsoluteClippingRect.getWidth() -
+		(buttonWidth*countButtons + (buttonDistance*countButtons+1))) / 2 + 
+		buttonDistance / 2;
 	btnRect.LowerRightCorner.X = btnRect.UpperLeftCorner.X + buttonWidth;
 
 	// add/remove ok button
@@ -151,7 +153,7 @@ void CGUIMessageBox::refreshControls()
 		OkButton->setText(skin->getDefaultText(EGDT_MSG_BOX_OK));
 
 		btnRect.LowerRightCorner.X += buttonWidth + buttonDistance;
-		btnRect.UpperLeftCorner.X += buttonWidth + buttonDistance;
+		btnRect.UpperLeftCorner.X  += buttonWidth + buttonDistance;
 
 		focusMe = OkButton;
 	}

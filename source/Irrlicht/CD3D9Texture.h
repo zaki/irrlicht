@@ -29,10 +29,10 @@ public:
 
 	//! constructor
 	CD3D9Texture(IImage* image, CD3D9Driver* driver,
-		u32 flags, const char* name);
+		u32 flags, const core::string<c16>& name);
 
 	//! rendertarget constructor
-	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const char* name);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name);
 
 	//! destructor
 	virtual ~CD3D9Texture();

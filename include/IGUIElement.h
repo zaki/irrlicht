@@ -44,14 +44,6 @@ public:
 		if (parent)
 			parent->addChild(this);
 
-		// if we succeeded in becoming a child
-		if (Parent)
-		{
-			LastParentRect = Parent->getAbsolutePosition();
-			AbsoluteRect += LastParentRect.UpperLeftCorner;
-			AbsoluteClippingRect = AbsoluteRect;
-			AbsoluteClippingRect.clipAgainst(Parent->AbsoluteClippingRect);
-		}
 	}
 
 
@@ -160,6 +152,7 @@ public:
 	void setNotClipped(bool noClip)
 	{
 		NoClip = noClip;
+		updateAbsolutePosition();
 	}
 
 
@@ -397,14 +390,14 @@ public:
 	{
 		if (child)
 		{
-			child->grab();
+			child->grab(); // prevent destruction when removed
 			child->remove(); // remove from old parent
 			child->LastParentRect = getAbsolutePosition();
 			child->Parent = this;
 			Children.push_back(child);
+			child->updateAbsolutePosition();
 		}
 	}
-
 
 	//! Removes a child.
 	virtual void removeChild(IGUIElement* child)
@@ -432,24 +425,24 @@ public:
 	//! Draws the element and its children.
 	virtual void draw()
 	{
-		if (!IsVisible)
-			return;
-
-		core::list<IGUIElement*>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			(*it)->draw();
+		if ( IsVisible )
+		{
+			core::list<IGUIElement*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+				(*it)->draw();
+		}
 	}
 
 
 	//! animate the element and its children.
 	virtual void OnPostRender(u32 timeMs)
 	{
-		if (!IsVisible)
-			return;
-
-		core::list<IGUIElement*>::Iterator it = Children.begin();
-		for (; it != Children.end(); ++it)
-			(*it)->OnPostRender( timeMs );
+		if ( IsVisible )
+		{
+			core::list<IGUIElement*>::Iterator it = Children.begin();
+			for (; it != Children.end(); ++it)
+				(*it)->OnPostRender( timeMs );
+		}
 	}
 
 
@@ -825,7 +818,6 @@ public:
 		out->addRect("Rect", DesiredRect);
 		out->addPosition2d("MinSize", core::position2di(MinSize.Width, MinSize.Height));
 		out->addPosition2d("MaxSize", core::position2di(MaxSize.Width, MaxSize.Height));
-		out->addBool("NoClip", NoClip);
 		out->addEnum("LeftAlign", AlignLeft, GUIAlignmentNames);
 		out->addEnum("RightAlign", AlignRight, GUIAlignmentNames);
 		out->addEnum("TopAlign", AlignTop, GUIAlignmentNames);
@@ -835,6 +827,7 @@ public:
 		out->addBool("TabStop", IsTabStop);
 		out->addBool("TabGroup", IsTabGroup);
 		out->addInt("TabOrder", TabOrder);
+		out->addBool("NoClip", NoClip);
 	}
 
 
@@ -857,13 +850,14 @@ public:
 		p = in->getAttributeAsPosition2d("MinSize");
 		setMinSize(core::dimension2du(p.X,p.Y));
 
-		setNotClipped(in->getAttributeAsBool("NoClip"));
 		setAlignment((EGUI_ALIGNMENT) in->getAttributeAsEnumeration("LeftAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("RightAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("TopAlign", GUIAlignmentNames),
 			(EGUI_ALIGNMENT)in->getAttributeAsEnumeration("BottomAlign", GUIAlignmentNames));
 
 		setRelativePosition(in->getAttributeAsRect("Rect"));
+
+		setNotClipped(in->getAttributeAsBool("NoClip"));
 	}
 
 protected:

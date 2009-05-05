@@ -6,7 +6,7 @@
 #define __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 //! Irrlicht SDK Version
-#define IRRLICHT_SDK_VERSION "1.5"
+#define IRRLICHT_SDK_VERSION "1.6 SVN"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -20,6 +20,7 @@
 //! _IRR_IPHONE_PLATFORM_ for Apple iPhone OS
 //! _IRR_POSIX_API_ for Posix compatible systems
 //! _IRR_USE_SDL_DEVICE_ for platform independent SDL framework
+//! _IRR_USE_CONSOLE_DEVICE_ for no windowing system, like for running as a service
 //! _IRR_USE_WINDOWS_DEVICE_ for Windows API based device
 //! _IRR_USE_WINDOWS_CE_DEVICE_ for Windows CE API based device
 //! _IRR_USE_LINUX_DEVICE_ for X11 based device
@@ -29,7 +30,11 @@
 //! DEVICE is the windowing system used, several PLATFORMs support more than one DEVICE
 //! Moreover, the DEVICE defined here is not directly related to the Irrlicht devices created in the app (but may depend on each other).
 
-//#define _IRR_USE_SDL_DEVICE_ 1
+//! Uncomment this line to compile with the SDL device instead of platform specific devices
+//#define _IRR_USE_SDL_DEVICE_
+
+//! Uncomment this line to compile as a console application with no windowing system. Hardware drivers will be disabled.
+//#define _IRR_USE_CONSOLE_DEVICE_
 
 //! WIN32 for Windows32
 //! WIN64 for Windows64
@@ -37,16 +42,25 @@
 #if defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64) || defined(_WIN32_WCE)
 #define _IRR_WINDOWS_
 #define _IRR_WINDOWS_API_
-#ifndef _IRR_USE_SDL_DEVICE_
+#if !defined(_IRR_USE_SDL_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
 #define _IRR_USE_WINDOWS_DEVICE_
 #endif
 #endif
 
+#if defined(_MSC_VER) && (_MSC_VER < 1300) 
+#  error "Only Microsoft Visual Studio 7.0 and later are supported." 
+#endif 
+
 // XBox only suppots the native Window stuff
 #if defined(_XBOX)
-#define _IRR_XBOX_PLATFORM_
-#define _IRR_WINDOWS_API_
-#define _IRR_USE_WINDOWS_DEVICE_
+	#undef _IRR_WINDOWS_
+	#define _IRR_XBOX_PLATFORM_
+	#define _IRR_WINDOWS_API_
+	//#define _IRR_USE_WINDOWS_DEVICE_
+	#undef _IRR_USE_WINDOWS_DEVICE_
+	//#define _IRR_USE_SDL_DEVICE_
+
+	#include <xtl.h>
 #endif
 
 #if defined(__APPLE__) || defined(MACOSX)
@@ -57,7 +71,7 @@
 #if defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__)
 #define _IRR_IPHONE_PLATFORM_
 #define _IRR_USE_IPHONE_DEVICE_
-#elif !defined(_IRR_USE_LINUX_DEVICE_) // for X11 windowing declare this
+#if !defined(_IRR_USE_LINUX_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_) && !defined(_IRR_USE_SDL_DEVICE_)
 #define _IRR_USE_OSX_DEVICE_
 #endif
 #endif
@@ -71,7 +85,7 @@
 #endif
 #define _IRR_POSIX_API_
 
-#ifndef _IRR_USE_SDL_DEVICE_
+#if !defined(_IRR_USE_SDL_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
 #define _IRR_USE_LINUX_DEVICE_
 #endif
 #endif
@@ -87,9 +101,16 @@ directX header files, and directX is only available on windows platforms. If you
 are using Dev-Cpp, and want to compile this using a DX dev pack, you can define
 _IRR_COMPILE_WITH_DX9_DEV_PACK_. So you simply need to add something like this
 to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
-and this to the linker settings: -ld3dx9 -ld3dx8 **/
+and this to the linker settings: -ld3dx9 -ld3dx8
+
+Microsoft have chosen to remove D3D8 headers from their recent DXSDKs, and 
+so D3D8 support is now disabled by default.  If you really want to build 
+with D3D8 support, then you will have to source a DXSDK with the appropriate 
+headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
+*/
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
+//! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004 
 //#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
@@ -155,6 +176,13 @@ define out. */
 /** Disable this if you are using an external library to draw the GUI. If you disable this then
 you will not be able to use anything provided by the GUI Environment, including loading fonts. */
 #define _IRR_COMPILE_WITH_GUI_
+
+
+//! Define _IRR_WCHAR_FILESYSTEM to enable unicode filesystem support for the engine.
+/** This enables the engine to read/write from unicode filesystem. If you
+disable this feature, the engine behave as before ( ansi)
+ones. */
+//#define _IRR_WCHAR_FILESYSTEM
 
 //! Define _IRR_COMPILE_WITH_ZLIB_ to enable compiling the engine using zlib.
 /** This enables the engine to read from compressed .zip archives. If you
@@ -228,7 +256,10 @@ tool <http://developer.nvidia.com/object/nvperfhud_home.html>. */
 #define BURNINGVIDEO_RENDERER_BEAUTIFUL
 //#define BURNINGVIDEO_RENDERER_FAST
 //#define BURNINGVIDEO_RENDERER_ULTRA_FAST
+//#define BURNINGVIDEO_RENDERER_CE
 
+//! Uncomment the following line if you want to ignore the deprecated warnings
+//#define IGNORE_DEPRECATED_WARNING
 
 //! Define _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_ if you want to use bone based
 /** animated meshes. If you compile without this, you will be unable to load
@@ -238,7 +269,7 @@ B3D, MS3D or X meshes */
 #ifdef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
 //! Define _IRR_COMPILE_WITH_B3D_LOADER_ if you want to use Blitz3D files
 #define _IRR_COMPILE_WITH_B3D_LOADER_
-//! Define _IRR_COMPILE_WITH_B3D_LOADER_ if you want to Milkshape files
+//! Define _IRR_COMPILE_WITH_MS3D_LOADER_ if you want to Milkshape files
 #define _IRR_COMPILE_WITH_MS3D_LOADER_
 //! Define _IRR_COMPILE_WITH_X_LOADER_ if you want to use Microsoft X files
 #define _IRR_COMPILE_WITH_X_LOADER_
@@ -274,10 +305,12 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_OGRE_LOADER_
 //! Define _IRR_COMPILE_WITH_LWO_LOADER_ if you want to load Lightwave3D files
 #define _IRR_COMPILE_WITH_LWO_LOADER_
-//! Define _IRR_COMPILE_WITH_STL_LOADER_ if you want to load .stl files
+//! Define _IRR_COMPILE_WITH_STL_LOADER_ if you want to load stereolithography files
 #define _IRR_COMPILE_WITH_STL_LOADER_
+//! Define _IRR_COMPILE_WITH_PLY_LOADER_ if you want to load Polygon (Stanford Triangle) files
+#define _IRR_COMPILE_WITH_PLY_LOADER_
 
-//! Define _IRR_COMPILE_WITH_IRR_WRITER_ if you want to write static .irr files
+//! Define _IRR_COMPILE_WITH_IRR_WRITER_ if you want to write static .irrMesh files
 #define _IRR_COMPILE_WITH_IRR_WRITER_
 //! Define _IRR_COMPILE_WITH_COLLADA_WRITER_ if you want to write Collada files
 #define _IRR_COMPILE_WITH_COLLADA_WRITER_
@@ -285,6 +318,8 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_STL_WRITER_
 //! Define _IRR_COMPILE_WITH_OBJ_WRITER_ if you want to write .obj files
 #define _IRR_COMPILE_WITH_OBJ_WRITER_
+//! Define _IRR_COMPILE_WITH_PLY_WRITER_ if you want to write .ply files
+#define _IRR_COMPILE_WITH_PLY_WRITER_
 
 //! Define _IRR_COMPILE_WITH_BMP_LOADER_ if you want to load .bmp files
 //! Disabling this loader will also disable the built-in font
@@ -303,6 +338,8 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_TGA_LOADER_
 //! Define _IRR_COMPILE_WITH_WAL_LOADER_ if you want to load .wal files
 #define _IRR_COMPILE_WITH_WAL_LOADER_
+//! Define _IRR_COMPILE_WITH_RGB_LOADER_ if you want to load Silicon Graphics .rgb/.rgba/.sgi/.int/.inta/.bw files
+#define _IRR_COMPILE_WITH_RGB_LOADER_
 
 //! Define _IRR_COMPILE_WITH_BMP_WRITER_ if you want to write .bmp files
 #define _IRR_COMPILE_WITH_BMP_WRITER_
@@ -368,20 +405,60 @@ precision will be lower but speed higher. currently X86 only
 
 // XBox does not have OpenGL or DirectX9
 #if defined(_IRR_XBOX_PLATFORM_)
-#undef _IRR_COMPILE_WITH_OPENGL_
-#undef _IRR_COMPILE_WITH_DIRECT3D_9_
+	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
 #endif
 
-// WinCE does not have OpenGL or DirectX9
+//! WinCE does not have OpenGL or DirectX9. use minimal loaders
 #if defined(_WIN32_WCE)
 	#undef _IRR_COMPILE_WITH_OPENGL_
 	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
 	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
-	#undef _IRR_COMPILE_WITH_SOFTWARE_
+
 	#undef BURNINGVIDEO_RENDERER_BEAUTIFUL
+	#undef BURNINGVIDEO_RENDERER_FAST
+	#undef BURNINGVIDEO_RENDERER_ULTRA_FAST
+	#define BURNINGVIDEO_RENDERER_CE
+
 	#undef _IRR_USE_WINDOWS_DEVICE_
 	#define _IRR_USE_WINDOWS_CE_DEVICE_
-	#define BURNINGVIDEO_RENDERER_CE
+	//#define _IRR_WCHAR_FILESYSTEM
+
+	#undef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
+	//#undef _IRR_COMPILE_WITH_MD2_LOADER_
+	#undef _IRR_COMPILE_WITH_MD3_LOADER_
+	#undef _IRR_COMPILE_WITH_3DS_LOADER_
+	#undef _IRR_COMPILE_WITH_COLLADA_LOADER_
+	#undef _IRR_COMPILE_WITH_CSM_LOADER_
+	#undef _IRR_COMPILE_WITH_BSP_LOADER_
+	#undef _IRR_COMPILE_WITH_DMF_LOADER_
+	#undef _IRR_COMPILE_WITH_LMTS_LOADER_
+	#undef _IRR_COMPILE_WITH_MY3D_LOADER_
+	#undef _IRR_COMPILE_WITH_OBJ_LOADER_
+	#undef _IRR_COMPILE_WITH_OCT_LOADER_
+	#undef _IRR_COMPILE_WITH_OGRE_LOADER_
+	#undef _IRR_COMPILE_WITH_LWO_LOADER_
+	#undef _IRR_COMPILE_WITH_STL_LOADER_
+	#undef _IRR_COMPILE_WITH_IRR_WRITER_
+	#undef _IRR_COMPILE_WITH_COLLADA_WRITER_
+	#undef _IRR_COMPILE_WITH_STL_WRITER_
+	#undef _IRR_COMPILE_WITH_OBJ_WRITER_
+	//#undef _IRR_COMPILE_WITH_BMP_LOADER_
+	//#undef _IRR_COMPILE_WITH_JPG_LOADER_
+	#undef _IRR_COMPILE_WITH_PCX_LOADER_
+	//#undef _IRR_COMPILE_WITH_PNG_LOADER_
+	#undef _IRR_COMPILE_WITH_PPM_LOADER_
+	#undef _IRR_COMPILE_WITH_PSD_LOADER_
+	//#undef _IRR_COMPILE_WITH_TGA_LOADER_
+	#undef _IRR_COMPILE_WITH_WAL_LOADER_
+	#undef _IRR_COMPILE_WITH_BMP_WRITER_
+	#undef _IRR_COMPILE_WITH_JPG_WRITER_
+	#undef _IRR_COMPILE_WITH_PCX_WRITER_
+	#undef _IRR_COMPILE_WITH_PNG_WRITER_
+	#undef _IRR_COMPILE_WITH_PPM_WRITER_
+	#undef _IRR_COMPILE_WITH_PSD_WRITER_
+	#undef _IRR_COMPILE_WITH_TGA_WRITER_
+
 #endif
 
 // OpenGL-ES usually interferes with OpenGL
@@ -390,7 +467,15 @@ precision will be lower but speed higher. currently X86 only
 #endif
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
-#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+#endif
+
+//! Remove joystick support and hardware drivers when compiling as a service
+#if defined(_IRR_USE_CONSOLE_DEVICE_)
+	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+	#undef _IRR_COMPILE_WITH_OPENGL_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
+	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__

@@ -133,18 +133,18 @@ void loadModel(const c8* fn)
 		extension == ".bmp" || extension == ".wal")
 	{
 		video::ITexture * texture =
-			Device->getVideoDriver()->getTexture( filename.c_str() );
+			Device->getVideoDriver()->getTexture( filename );
 		if ( texture && Model )
 		{
 			// always reload texture
 			Device->getVideoDriver()->removeTexture(texture);
-			texture = Device->getVideoDriver()->getTexture( filename.c_str() );
+			texture = Device->getVideoDriver()->getTexture( filename );
 
 			Model->setMaterialTexture(0, texture);
 		}
 		return;
 	}
-	// if a archive is loaded add it to the FileSystems..
+	// if a archive is loaded add it to the FileArchive..
 	else if (extension == ".pk3" || extension == ".zip")
 	{
 		Device->getFileSystem()->addZipFileArchive(filename.c_str());
@@ -296,6 +296,11 @@ public:
 					if (elem)
 						elem->setVisible(!elem->isVisible());
 				}
+			}
+			else if (event.KeyInput.Key == irr::KEY_KEY_M)
+			{
+				if (Device)
+					Device->minimizeWindow();
 			}
 		}
 
@@ -576,7 +581,7 @@ int main(int argc, char* argv[])
 	if (Device == 0)
 		return 1; // could not create selected driver.
 
-	Device->setResizeAble(true);
+	Device->setResizable(true);
 
 	Device->setWindowCaption(L"Irrlicht Engine - Loading...");
 
@@ -589,7 +594,7 @@ int main(int argc, char* argv[])
 
 	smgr->addLightSceneNode();
 	smgr->addLightSceneNode(0, core::vector3df(50,-50,GUI_ID_OPEN_MODEL),
-			video::SColorf(1.0f,1.0f,1.0f),20000);
+		video::SColorf(1.0f,1.0f,1.0f),2000)->setPosition(core::vector3df(200,200,200));
 	// add our media directory as "search path"
 	Device->getFileSystem()->addFolderFileArchive("../../media/");
 
@@ -614,7 +619,7 @@ int main(int argc, char* argv[])
 
 	// read configuration from xml file
 
-	io::IXMLReader* xml = Device->getFileSystem()->createXMLReader("config.xml");
+	io::IXMLReader* xml = Device->getFileSystem()->createXMLReader( L"config.xml");
 
 	while(xml && xml->read())
 	{

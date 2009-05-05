@@ -28,9 +28,9 @@ CImageWriterPCX::CImageWriterPCX()
 #endif
 }
 
-bool CImageWriterPCX::isAWriteableFileExtension(const c8* fileName) const
+bool CImageWriterPCX::isAWriteableFileExtension(const core::string<c16>& filename) const
 {
-	return strstr(fileName, ".pcx") != 0;
+	return core::hasFileExtension ( filename, "pcx" );
 }
 
 bool CImageWriterPCX::writeImage(io::IWriteFile *file, IImage *image,u32 param) const

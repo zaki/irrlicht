@@ -103,6 +103,18 @@ namespace irr
 		EMIE_COUNT
 	};
 
+	//! Masks for mouse button states
+	enum E_MOUSE_BUTTON_STATE_MASK
+	{
+		EMBSM_LEFT    = 0x01,
+		EMBSM_RIGHT   = 0x02,
+		EMBSM_MIDDLE  = 0x04,
+		EMBSM_EXTRA1  = 0x08,
+		EMBSM_EXTRA2  = 0x10,
+
+		EMBSM_FORCE_32_BIT = 0x7fffffff
+	};
+
 	namespace gui
 	{
 
@@ -149,6 +161,9 @@ namespace irr
 			//! A file has been selected in the file dialog
 			EGET_FILE_SELECTED,
 
+			//! A directory has been selected in the file dialog
+			EGET_DIRECTORY_SELECTED,
+
 			//! A file open dialog has been closed without choosing a file
 			EGET_FILE_CHOOSE_DIALOG_CANCELLED,
 
@@ -178,10 +193,23 @@ namespace irr
 
 			//! The value of a spin box has changed
 			EGET_SPINBOX_CHANGED,
+
 			//! A table has changed
 			EGET_TABLE_CHANGED,
 			EGET_TABLE_HEADER_CHANGED,
-			EGET_TABLE_SELECTED_AGAIN
+			EGET_TABLE_SELECTED_AGAIN,
+
+			//! A tree view node lost selection. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_DESELECT,
+			
+			//! A tree view node was selected. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_SELECT,
+			
+			//! A tree view node was expanded. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_EXPAND,
+			
+			//! A tree view node was collapsed. See IGUITreeView::getLastEventNode().
+			EGET_TREEVIEW_NODE_COLLAPS,
 
 		};
 	} // end namespace gui
@@ -217,6 +245,20 @@ struct SEvent
 		/** Only valid if event was EMIE_MOUSE_WHEEL */
 		f32 Wheel;
 
+		//! A bitmap of button states. You can use isButtonPressed() to determine
+		//! if a button is pressed or not.
+		//! Currently only valid if the event was EMIE_MOUSE_MOVED
+		u32 ButtonStates;
+
+		//! Is the left button pressed down?
+		bool isLeftPressed() const { return 0 != ( ButtonStates & EMBSM_LEFT ); }
+
+		//! Is the right button pressed down?
+		bool isRightPressed() const { return 0 != ( ButtonStates & EMBSM_RIGHT ); }
+
+		//! Is the middle button pressed down?
+		bool isMiddlePressed() const { return 0 != ( ButtonStates & EMBSM_MIDDLE ); }
+
 		//! Type of mouse event
 		EMOUSE_INPUT_EVENT Event;
 	};
@@ -231,13 +273,13 @@ struct SEvent
 		EKEY_CODE Key;
 
 		//! If not true, then the key was left up
-		bool PressedDown;
+		bool PressedDown:1;
 
 		//! True if shift was also pressed
-		bool Shift;
+		bool Shift:1;
 
 		//! True if ctrl was also pressed
-		bool Control;
+		bool Control:1;
 	};
 
 	//! A joystick event.

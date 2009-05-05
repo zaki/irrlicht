@@ -117,7 +117,7 @@ namespace gui
 				if (y < (*it)->getRelativePosition().LowerRightCorner.Y)
 					y = (*it)->getRelativePosition().LowerRightCorner.Y;
 			}
-			setMinSize( core::dimension2di(0, y+5));
+			setMinSize( core::dimension2du(0, y+5));
 
 			updateAttrib(false);
 		}

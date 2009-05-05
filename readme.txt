@@ -28,10 +28,6 @@ The Irrlicht Engine SDK version 1.5
   \doc         Documentation of the Irrlicht Engine.
   \examples    Examples and tutorials showing how to use the engine with
                C++.
-  \example.net Examples and tutorials showing how to use the engine with
-               .NET languages.
-  \exporters   Exporters and tools for various 3D modelling packages. There
-               is a readme file with more details in the directory.
   \include     Header files to include when programming with the engine.
   \lib         Libs to link with your programs when using the engine.
   \media       Graphics and sound resources for the demo applications and

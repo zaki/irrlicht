@@ -329,7 +329,7 @@ namespace scene
 		// needed for (de)serialization
 		f32 TCoordScale1;
 		f32 TCoordScale2;
-		core::stringc HeightmapFile;
+		core::string<c16> HeightmapFile;
 		io::IFileSystem* FileSystem;
 	};
 

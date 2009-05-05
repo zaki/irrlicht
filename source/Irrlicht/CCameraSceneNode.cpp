@@ -61,8 +61,7 @@ to build a projection matrix. e.g: core::matrix4::buildProjectionMatrixPerspecti
 void CCameraSceneNode::setProjectionMatrix(const core::matrix4& projection, bool isOrthogonal)
 {
 	IsOrthogonal = isOrthogonal;
-	ViewArea.Matrices [ video::ETS_PROJECTION ] = projection;
-	ViewArea.setTransformState ( video::ETS_PROJECTION );
+	ViewArea.getTransform ( video::ETS_PROJECTION ) = projection;
 }
 
 
@@ -70,7 +69,7 @@ void CCameraSceneNode::setProjectionMatrix(const core::matrix4& projection, bool
 //! \return Returns the current projection matrix of the camera.
 const core::matrix4& CCameraSceneNode::getProjectionMatrix() const
 {
-	return ViewArea.Matrices [ video::ETS_PROJECTION ];
+	return ViewArea.getTransform ( video::ETS_PROJECTION );
 }
 
 
@@ -78,7 +77,24 @@ const core::matrix4& CCameraSceneNode::getProjectionMatrix() const
 //! \return Returns the current view matrix of the camera.
 const core::matrix4& CCameraSceneNode::getViewMatrix() const
 {
-	return ViewArea.Matrices [ video::ETS_VIEW ];
+	return ViewArea.getTransform ( video::ETS_VIEW );
+}
+
+
+//! Sets a custom view matrix affector. The matrix passed here, will be
+//! multiplied with the view matrix when it gets updated.
+//! This allows for custom camera setups like, for example, a reflection camera.
+/** \param affector: The affector matrix. */
+void CCameraSceneNode::setViewMatrixAffector(const core::matrix4& affector)
+{
+	Affector = affector;
+}
+
+
+//! Gets the custom view matrix affector.
+const core::matrix4& CCameraSceneNode::getViewMatrixAffector() const
+{
+	return Affector;
 }
 
 
@@ -211,8 +227,7 @@ void CCameraSceneNode::setFOV(f32 f)
 
 void CCameraSceneNode::recalculateProjectionMatrix()
 {
-	ViewArea.Matrices [ video::ETS_PROJECTION ].buildProjectionMatrixPerspectiveFovLH(Fovy, Aspect, ZNear, ZFar);
-	ViewArea.setTransformState ( video::ETS_PROJECTION );
+	ViewArea.getTransform ( video::ETS_PROJECTION ).buildProjectionMatrixPerspectiveFovLH(Fovy, Aspect, ZNear, ZFar);
 }
 
 
@@ -235,8 +250,8 @@ void CCameraSceneNode::OnRegisterSceneNode()
 		up.X += 0.5f;
 	}
 
-	ViewArea.Matrices[video::ETS_VIEW].buildCameraLookAtMatrixLH(pos, Target, up);
-	ViewArea.setTransformState(video::ETS_VIEW);
+	ViewArea.getTransform(video::ETS_VIEW).buildCameraLookAtMatrixLH(pos, Target, up);
+	ViewArea.getTransform(video::ETS_VIEW) *= Affector;
 	recalculateViewArea();
 
 	if ( SceneManager->getActiveCamera () == this )
@@ -252,8 +267,8 @@ void CCameraSceneNode::render()
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	if ( driver)
 	{
-		driver->setTransform(video::ETS_PROJECTION, ViewArea.Matrices [ video::ETS_PROJECTION ] );
-		driver->setTransform(video::ETS_VIEW, ViewArea.Matrices [ video::ETS_VIEW ] );
+		driver->setTransform(video::ETS_PROJECTION, ViewArea.getTransform ( video::ETS_PROJECTION) );
+		driver->setTransform(video::ETS_VIEW, ViewArea.getTransform ( video::ETS_VIEW) );
 	}
 }
 
@@ -275,7 +290,11 @@ const SViewFrustum* CCameraSceneNode::getViewFrustum() const
 void CCameraSceneNode::recalculateViewArea()
 {
 	ViewArea.cameraPosition = getAbsolutePosition();
-	ViewArea.setFrom(ViewArea.Matrices[SViewFrustum::ETS_VIEW_PROJECTION_3]);
+
+	core::matrix4 m(core::matrix4::EM4CONST_NOTHING);
+	m.setbyproduct_nocheck(ViewArea.getTransform(video::ETS_PROJECTION),
+						ViewArea.getTransform(video::ETS_VIEW));
+	ViewArea.setFrom(m);
 }
 
 

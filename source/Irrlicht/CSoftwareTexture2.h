@@ -23,7 +23,14 @@ class CSoftwareTexture2 : public ITexture
 public:
 
 	//! constructor
-	CSoftwareTexture2(IImage* surface, const char* name, bool generateMipLevels, bool isRenderTarget=false);
+	enum eTex2Flags
+	{
+		GEN_MIPMAP		= 1,
+		IS_RENDERTARGET	= 2,
+		NP2_SIZE		= 4,
+		HAS_ALPHA		= 8
+	};
+	CSoftwareTexture2( IImage* surface, const core::string<c16>& name, u32 flags );
 
 	//! destructor
 	virtual ~CSoftwareTexture2();
@@ -97,20 +104,26 @@ public:
 	//! Select a Mipmap Level
 	virtual void setCurrentMipMapLOD ( s32 lod )
 	{
-		if ( HasMipMaps )
+		if ( Flags & GEN_MIPMAP )
 			MipMapLOD = lod;
 	}
 
 	//! support mipmaps
 	virtual bool hasMipMaps() const
 	{
-		return HasMipMaps;
+		return (Flags & GEN_MIPMAP ) != 0;
+	}
+
+	//! Returns if the texture has an alpha channel
+	virtual bool hasAlpha() const
+	{ 
+		return (Flags & HAS_ALPHA ) != 0;
 	}
 
 	//! is a render target
 	virtual bool isRenderTarget() const
 	{
-		return IsRenderTarget;
+		return (Flags & IS_RENDERTARGET) != 0;
 	}
 
 private:
@@ -119,7 +132,7 @@ private:
 	CImage * MipMap[SOFTWARE_DRIVER_2_MIPMAPPING_MAX];
 
 	s32 MipMapLOD;
-	bool HasMipMaps, IsRenderTarget;
+	u32 Flags;
 };
 
 

@@ -36,7 +36,6 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 	device->getVideoDriver()->makeColorKeyTexture(Texture,
 												  position2d<s32>(64,64),
 												  zeroTexels);
-
 	(void)smgr->addCameraSceneNode();
 
 	driver->beginScene(true, true, SColor(255,100,101,140));
@@ -63,10 +62,23 @@ static bool doTestWith(E_DRIVER_TYPE driverType,
 
 bool makeColorKeyTexture(void)
 {
+	bool result = true;
+	
+	//result &= doTestWith(EDT_DIRECT3D9, false);
+	//result &= doTestWith(EDT_BURNINGSVIDEO, false);
+	result &= doTestWith(EDT_SOFTWARE, false);
+	//result &= doTestWith(EDT_OPENGL, false);
+
+	//result &= doTestWith(EDT_DIRECT3D9, true);
+	//result &= doTestWith(EDT_BURNINGSVIDEO, true);
+	result &= doTestWith(EDT_SOFTWARE, true);
+	//result &= doTestWith(EDT_OPENGL, true);
+
+/*
 	bool result = doTestWith(EDT_SOFTWARE, false);
 	result &= doTestWith(EDT_BURNINGSVIDEO, false);
 	result &= doTestWith(EDT_SOFTWARE, true);
 	result &= doTestWith(EDT_BURNINGSVIDEO, true);
-
+*/
 	return result;
 }

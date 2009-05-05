@@ -2,9 +2,9 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
+#include "IrrCompileConfig.h"
 #include "CSoftwareDriver.h"
 
-#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_SOFTWARE_
 
 #include "CSoftwareTexture.h"
@@ -168,14 +168,11 @@ bool CSoftwareDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 }
 
 
-
 //! sets transformation
 void CSoftwareDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
 	TransformationMatrix[state] = mat;
 }
-
-
 
 
 //! sets the current Texture
@@ -200,11 +197,11 @@ bool CSoftwareDriver::setTexture(video::ITexture* texture)
 }
 
 
-
 //! sets a material
 void CSoftwareDriver::setMaterial(const SMaterial& material)
 {
 	Material = material;
+	OverrideMaterial.apply(Material);
 
 	for (u32 i = 0; i < 1; ++i)
 	{
@@ -305,7 +302,6 @@ void CSoftwareDriver::setRenderTarget(video::CImage* image)
 }
 
 
-
 //! sets a viewport
 void CSoftwareDriver::setViewPort(const core::rect<s32>& area)
 {
@@ -323,6 +319,7 @@ void CSoftwareDriver::setViewPort(const core::rect<s32>& area)
 	if (CurrentTriangleRenderer)
 		CurrentTriangleRenderer->setRenderTarget(RenderTargetSurface, ViewPort);
 }
+
 
 void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
@@ -345,6 +342,7 @@ void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 
 }
+
 
 //! draws a vertex primitive list
 void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
@@ -469,7 +467,6 @@ void CSoftwareDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertex
 			break;
 	}
 }
-
 
 
 template<class VERTEXTYPE>
@@ -818,7 +815,7 @@ void CSoftwareDriver::draw2DLine(const core::position2d<s32>& start,
 //! Draws a pixel
 void CSoftwareDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	((CImage*)BackBuffer)->setPixel(x, y, color);
+	((CImage*)BackBuffer)->setPixel(x, y, color, true);
 }
 
 
@@ -861,7 +858,7 @@ void CSoftwareDriver::draw2DRectangle(const core::rect<s32>& pos,
 //! driver, it would return "Direct3D8.1".
 const wchar_t* CSoftwareDriver::getName() const
 {
-	return L"Irrlicht Software Device 1.0";
+	return L"Irrlicht Software Driver 1.0";
 }
 
 
@@ -890,11 +887,9 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 
 
 //! Creates a render target texture.
-ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name)
+ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
-	if (!name)
-		name="rt";
 	ITexture* tex = new CSoftwareTexture(img, name, true);
 	img->drop();
 	addTexture(tex);

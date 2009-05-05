@@ -17,6 +17,7 @@
 #include "ICursorControl.h"
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_syswm.h>
 
 namespace irr
 {
@@ -64,8 +65,11 @@ namespace irr
 		//! \return Returns a pointer to a list with all video modes supported
 		video::IVideoModeList* getVideoModeList();
 
-		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		//! Sets if the window should be resizable in windowed mode.
+		virtual void setResizable(bool resize=false);
+
+		//! Minimizes the window.
+		virtual void minimizeWindow();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
@@ -177,11 +181,12 @@ namespace irr
 #endif
 
 		s32 MouseX, MouseY;
+		u32 MouseButtonStates;
 		
 		u32 Width, Height;
 
 		bool Close;
-		bool Resizeable;
+		bool Resizable;
 		bool WindowHasFocus;
 		bool WindowMinimized;
 
@@ -203,6 +208,7 @@ namespace irr
 		};
 
 		core::array<SKeyMap> KeyMap;
+		SDL_SysWMinfo Info;
 	};
 
 } // end namespace irr

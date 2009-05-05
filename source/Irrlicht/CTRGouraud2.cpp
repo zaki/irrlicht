@@ -185,10 +185,10 @@ void CTRGouraud2::scanline_bilinear ()
 #endif
 #endif
 
-	dst = lockedSurface + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	dst = (tVideoSample*)RenderTarget->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 
 #ifdef USE_ZBUFFER
-	z = lockedDepthBuffer + ( line.y * RenderTarget->getDimension().Width ) + xStart;
+	z = (fp24*) DepthBuffer->lock() + ( line.y * RenderTarget->getDimension().Width ) + xStart;
 #endif
 
 
@@ -318,19 +318,6 @@ void CTRGouraud2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4D
 	f32 subPixel;
 #endif
 
-	lockedSurface = (tVideoSample*)RenderTarget->lock();
-
-#ifdef USE_ZBUFFER
-	lockedDepthBuffer = (fp24*) DepthBuffer->lock();
-#endif
-
-#ifdef IPOL_T0
-	IT[0].data = (tVideoSample*)IT[0].Texture->lock();
-#endif
-
-#ifdef IPOL_T1
-	IT[1].data = (tVideoSample*)IT[1].Texture->lock();
-#endif
 
 	// rasterize upper sub-triangle
 	if ( (f32) 0.0 != scan.invDeltaY[1]  )
@@ -627,19 +614,6 @@ void CTRGouraud2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,const s4D
 		}
 	}
 
-	RenderTarget->unlock();
-
-#ifdef USE_ZBUFFER
-	DepthBuffer->unlock();
-#endif
-
-#ifdef IPOL_T0
-	IT[0].Texture->unlock();
-#endif
-
-#ifdef IPOL_T1
-	IT[1].Texture->unlock();
-#endif
 
 }
 

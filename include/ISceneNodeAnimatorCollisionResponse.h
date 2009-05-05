@@ -97,6 +97,10 @@ namespace scene
 		to this animator's gravity vector. */
 		virtual void jump(f32 jumpSpeed) = 0;
 
+		//! Should the Target react on collision ( default = true )
+		virtual void setAnimateTarget ( bool enable ) = 0;
+		virtual bool getAnimateTarget () const = 0;
+
 		//! Set translation of the collision ellipsoid.
 		/** By default, the ellipsoid for collision detection is
 		created around the center of the scene node, which means that

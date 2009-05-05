@@ -119,6 +119,15 @@ typedef unsigned short wchar_t;
 #endif // microsoft compiler
 #endif // _IRR_WINDOWS_API_
 
+//! Should the wide character version of the FileSystem be used
+#if defined(_IRR_WCHAR_FILESYSTEM)
+	//! 16 bit character variable. Used for unicode Filesystem and unicode strings
+	typedef wchar_t c16;
+#else
+	//! 8 bit character variable. Used for ansi Filesystem and non-unicode strings
+	typedef char c16;
+#endif
+
 //! define a break macro for debugging.
 #if defined(_DEBUG)
 #if defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && !defined (_WIN32_WCE)
@@ -134,6 +143,23 @@ typedef unsigned short wchar_t;
 #endif
 #else
 #define _IRR_DEBUG_BREAK_IF( _CONDITION_ )
+#endif
+
+//! Defines a deprecated macro which generates a warning at compile time
+/** The usage is simple
+For typedef:		typedef _IRR_DEPRECATED_ int test1;
+For classes/structs:	class _IRR_DEPRECATED_ test2 { ... };
+For methods:		class test3 { _IRR_DEPRECATED_ virtual void foo() {} };
+For functions:		template<class T> _IRR_DEPRECATED_ void test4(void) {}
+**/
+#if defined(IGNORE_DEPRECATED_WARNING)
+#define _IRR_DEPRECATED_
+#elif _MSC_VER >= 1310 //vs 2003 or higher
+#define _IRR_DEPRECATED_ __declspec(deprecated)
+#elif (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)) // all versions above 3.0 should support this feature
+#define _IRR_DEPRECATED_  __attribute__ ((deprecated))
+#else
+#define _IRR_DEPRECATED_
 #endif
 
 //! Defines a small statement to work around a microsoft compiler bug.
@@ -183,7 +209,5 @@ code like 'code', but some generate warnings so we use this macro here */
 		((u32)(u8)(c0) | ((u32)(u8)(c1) << 8) | \
 		((u32)(u8)(c2) << 16) | ((u32)(u8)(c3) << 24 ))
 
-
 #endif // __IRR_TYPES_H_INCLUDED__
-
 

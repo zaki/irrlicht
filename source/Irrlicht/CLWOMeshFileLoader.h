@@ -8,7 +8,6 @@
 #include "IMeshLoader.h"
 #include "SMeshBuffer.h"
 #include "irrString.h"
-#include "irrMap.h"
 
 namespace irr
 {
@@ -36,7 +35,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -53,6 +52,7 @@ private:
 	void readObj1(u32 size);
 	void readTagMapping(u32 size);
 	void readVertexMapping(u32 size);
+	void readDiscVertexMapping (u32 size);
 	void readObj2(u32 size);
 	void readMat(u32 size);
 	u32 readString(core::stringc& name, u32 size=0);
@@ -68,8 +68,13 @@ private:
 
 	core::array<core::vector3df> Points;
 	core::array<core::array<u32> > Indices;
+	core::array<core::stringc> UvName;
+	core::array<core::array<u32> > UvIndex;
+	core::array<core::stringc> DUvName;
+	core::array<core::array<u32> > VmPolyPointsIndex;
+	core::array<core::array<core::vector2df> > VmCoordsIndex;
+		
 	core::array<u16> MaterialMapping;
-	core::map<core::stringc, u32> VMap;
 	core::array<core::array<core::vector2df> > TCoords;
 	core::array<tLWOMaterial*> Materials;
 	core::array<core::stringc> Images;

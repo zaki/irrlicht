@@ -98,6 +98,23 @@ namespace video
 		dstFact = E_BLEND_FACTOR ( ( state & 0x000000FF ) );
 	}
 
+	//! EMT_ONETEXTURE_BLEND: has BlendFactor Alphablending
+	inline bool textureBlendFunc_hasAlpha ( const E_BLEND_FACTOR factor )
+	{
+		switch ( factor )
+		{
+			case EBF_SRC_ALPHA:
+			case EBF_ONE_MINUS_SRC_ALPHA:
+			case EBF_DST_ALPHA:
+			case EBF_ONE_MINUS_DST_ALPHA:
+			case EBF_SRC_ALPHA_SATURATE:
+				return true;
+			default:
+				return false;
+		}
+	}
+
+
 	//! These flags are used to specify the anti-aliasing and smoothing modes
 	/** Techniques supported are multisampling, geometry smoothing, and alpha
 	to coverage.
@@ -124,6 +141,29 @@ namespace video
 		EAAM_ALPHA_TO_COVERAGE=16
 	};
 
+	//! These flags allow to define the interpretation of vertex color when lighting is enabled
+	/** Without lighting being enabled the vertex color is the only value defining the fragment color.
+	Once lighting is enabled, the four values for diffuse, ambient, emissive, and specular take over.
+	With these flags it is possible to define which lighting factor shall be defined by the vertex color
+	instead of the lighting factor which is the same for all faces of that material.
+	The default is to use vertex color for the diffuse value, another pretty common value is to use
+	vertex color for both diffuse and ambient factor. */
+	enum E_COLOR_MATERIAL
+	{
+		//! Don't use vertex color for lighting
+		ECM_NONE=0,
+		//! Use vertex color for diffuse light, this is default
+		ECM_DIFFUSE,
+		//! Use vertex color for ambient light
+		ECM_AMBIENT,
+		//! Use vertex color for emissive light
+		ECM_EMISSIVE,
+		//! Use vertex color for specular light
+		ECM_SPECULAR,
+		//! Use vertex color for both diffuse and ambient light
+		ECM_DIFFUSE_AND_AMBIENT
+	};
+
 	//! Maximum number of texture an SMaterial can have.
 	const u32 MATERIAL_MAX_TEXTURES = 4;
 
@@ -136,9 +176,10 @@ namespace video
 		: MaterialType(EMT_SOLID), AmbientColor(255,255,255,255), DiffuseColor(255,255,255,255),
 			EmissiveColor(0,0,0,0), SpecularColor(255,255,255,255),
 			Shininess(0.0f), MaterialTypeParam(0.0f), MaterialTypeParam2(0.0f), Thickness(1.0f),
-			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true),
-			ZWriteEnable(true), BackfaceCulling(true), FrontfaceCulling(false),
-			FogEnable(false), NormalizeNormals(false), ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH), ColorMask(ECP_ALL)
+			ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE|EAAM_LINE_SMOOTH), ColorMask(ECP_ALL),
+			ColorMaterial(ECM_DIFFUSE),
+			Wireframe(false), PointCloud(false), GouraudShading(true), Lighting(true), ZWriteEnable(true),
+			BackfaceCulling(true), FrontfaceCulling(false), FogEnable(false), NormalizeNormals(false)
 		{ }
 
 		//! Copy constructor
@@ -186,9 +227,13 @@ namespace video
 			ZBuffer = other.ZBuffer;
 			AntiAliasing = other.AntiAliasing;
 			ColorMask = other.ColorMask;
+			ColorMaterial = other.ColorMaterial;
 
 			return *this;
 		}
+
+		//! Texture layer array.
+		SMaterialLayer TextureLayer[MATERIAL_MAX_TEXTURES];
 
 		//! Type of the material. Specifies how everything is blended together
 		E_MATERIAL_TYPE MaterialType;
@@ -255,41 +300,6 @@ namespace video
 		//! Thickness of non-3dimensional elements such as lines and points.
 		f32 Thickness;
 
-		//! Texture layer array.
-		SMaterialLayer TextureLayer[MATERIAL_MAX_TEXTURES];
-
-		//! Draw as wireframe or filled triangles? Default: false
-		/** The user can access a material flag using
-		\code material.Wireframe=true \endcode
-		or \code material.setFlag(EMF_WIREFRAME, true); \endcode */
-		bool Wireframe;
-
-		//! Draw as point cloud or filled triangles? Default: false
-		bool PointCloud;
-
-		//! Flat or Gouraud shading? Default: true
-		bool GouraudShading;
-
-		//! Will this material be lighted? Default: true
-		bool Lighting;
-
-		//! Is the zbuffer writeable or is it read-only. Default: true.
-		/** This flag is ignored if the MaterialType is a transparent
-		type. */
-		bool ZWriteEnable;
-
-		//! Is backface culling enabled? Default: true
-		bool BackfaceCulling;
-
-		//! Is frontface culling enabled? Default: false
-		bool FrontfaceCulling;
-
-		//! Is fog enabled? Default: false
-		bool FogEnable;
-
-		//! Should normals be normalized? Default: false
-		bool NormalizeNormals;
-
 		//! Is the ZBuffer enabled? Default: 1
 		/** Changed from bool to integer
 		(0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal)
@@ -303,8 +313,48 @@ namespace video
 		/** Values are defined as or'ed values of the E_COLOR_PLANE enum.
 		Only enabled color planes will be rendered to the current render
 		target. Typical use is to disable all colors when rendering only to
-		depth or stencil buffer, or using Red and Green for Stereo rendering.		*/
+		depth or stencil buffer, or using Red and Green for Stereo rendering. */
 		u8 ColorMask;
+
+		//! Defines the interpretation of vertex color in the lighting equation
+		/** Values should be chosen from E_COLOR_MATERIAL.
+		When lighting is enabled, vertex color can be used instead of the 
+		material values for light modulation. This allows to easily change e.g. the
+		diffuse light behavior of each face. The default, ECM_DIFFUSE, will result in
+		a very similar rendering as with lighting turned off, just with light shading. */
+		u8 ColorMaterial;
+
+		//! Draw as wireframe or filled triangles? Default: false
+		/** The user can access a material flag using
+		\code material.Wireframe=true \endcode
+		or \code material.setFlag(EMF_WIREFRAME, true); \endcode */
+		bool Wireframe:1;
+
+		//! Draw as point cloud or filled triangles? Default: false
+		bool PointCloud:1;
+
+		//! Flat or Gouraud shading? Default: true
+		bool GouraudShading:1;
+
+		//! Will this material be lighted? Default: true
+		bool Lighting:1;
+
+		//! Is the zbuffer writeable or is it read-only. Default: true.
+		/** This flag is ignored if the MaterialType is a transparent
+		type. */
+		bool ZWriteEnable:1;
+
+		//! Is backface culling enabled? Default: true
+		bool BackfaceCulling:1;
+
+		//! Is frontface culling enabled? Default: false
+		bool FrontfaceCulling:1;
+
+		//! Is fog enabled? Default: false
+		bool FogEnable:1;
+
+		//! Should normals be normalized? Default: false
+		bool NormalizeNormals:1;
 
 		//! Gets the texture transformation matrix for level i
 		/** \param i The desired level. Must not be larger than MATERIAL_MAX_TEXTURES.
@@ -415,6 +465,9 @@ namespace video
 				case EMF_COLOR_MASK:
 					ColorMask = value?ECP_ALL:ECP_NONE;
 					break;
+				case EMF_COLOR_MATERIAL:
+					ColorMaterial = value?ECM_DIFFUSE:ECM_NONE;
+					break;
 				default:
 					break;
 			}
@@ -462,8 +515,8 @@ namespace video
 					return (AntiAliasing==1);
 				case EMF_COLOR_MASK:
 					return (ColorMask!=ECP_NONE);
-				case EMF_MATERIAL_FLAG_COUNT:
-					break;
+				case EMF_COLOR_MATERIAL:
+					return (ColorMaterial != ECM_NONE);
 			}
 
 			return false;
@@ -495,7 +548,8 @@ namespace video
 				FogEnable != b.FogEnable ||
 				NormalizeNormals != b.NormalizeNormals ||
 				AntiAliasing != b.AntiAliasing ||
-				ColorMask != b.ColorMask;
+				ColorMask != b.ColorMask ||
+				ColorMaterial != b.ColorMaterial;
 			for (u32 i=0; (i<MATERIAL_MAX_TEXTURES) && !different; ++i)
 			{
 				different |= (TextureLayer[i] != b.TextureLayer[i]);
@@ -517,6 +571,9 @@ namespace video
 				MaterialType==EMT_TRANSPARENT_REFLECTION_2_LAYER;
 		}
 	};
+
+	//! global const identity Material
+	IRRLICHT_API extern SMaterial IdentityMaterial;
 
 } // end namespace video
 } // end namespace irr

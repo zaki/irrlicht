@@ -11,7 +11,7 @@ namespace io
 {
 
 
-CWriteFile::CWriteFile(const c8* fileName, bool append)
+CWriteFile::CWriteFile(const core::string<c16>& fileName, bool append)
 : FileSize(0)
 {
 	#ifdef _DEBUG
@@ -81,7 +81,11 @@ void CWriteFile::openFile(bool append)
 		return; 
 	}
 
+#if defined(_IRR_WCHAR_FILESYSTEM)
+	File = _wfopen(Filename.c_str(), append ? L"ab" : L"wb");
+#else
 	File = fopen(Filename.c_str(), append ? "ab" : "wb");
+#endif
 
 	if (File)
 	{
@@ -96,14 +100,14 @@ void CWriteFile::openFile(bool append)
 
 
 //! returns name of file
-const c8* CWriteFile::getFileName() const
+const core::string<c16>& CWriteFile::getFileName() const
 {
-	return Filename.c_str();
+	return Filename;
 }
 
 
 
-IWriteFile* createWriteFile(const c8* fileName, bool append)
+IWriteFile* createWriteFile(const core::string<c16>& fileName, bool append)
 {
 	CWriteFile* file = new CWriteFile(fileName, append);
 	if (file->isOpen())

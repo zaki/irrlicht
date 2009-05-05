@@ -2,9 +2,8 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "CSoftwareDriver2.h"
-
 #include "IrrCompileConfig.h"
+#include "CSoftwareDriver2.h"
 
 #ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 
@@ -57,7 +56,7 @@ CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<u32>& windowSiz
 	//BurningShader[ETR_TEXTURE_FLAT] = createTriangleRendererTextureFlat2(DepthBuffer);
 	//BurningShader[ETR_TEXTURE_FLAT_WIRE] = createTriangleRendererTextureFlatWire2(DepthBuffer);
 	BurningShader[ETR_TEXTURE_GOURAUD] = createTriangleRendererTextureGouraud2(DepthBuffer);
-	BurningShader[ETR_TEXTURE_GOURAUD_LIGHTMAP] = createTriangleRendererTextureLightMap2_M1(DepthBuffer);
+	BurningShader[ETR_TEXTURE_GOURAUD_LIGHTMAP_M1] = createTriangleRendererTextureLightMap2_M1(DepthBuffer);
 	BurningShader[ETR_TEXTURE_GOURAUD_LIGHTMAP_M2] = createTriangleRendererTextureLightMap2_M2(DepthBuffer);
 	BurningShader[ETR_TEXTURE_GOURAUD_LIGHTMAP_M4] = createTriangleRendererGTextureLightMap2_M4(DepthBuffer);
 	BurningShader[ETR_TEXTURE_LIGHTMAP_M4] = createTriangleRendererTextureLightMap2_M4(DepthBuffer);
@@ -114,13 +113,12 @@ CBurningVideoDriver::CBurningVideoDriver(const core::dimension2d<u32>& windowSiz
 	umr->drop ();
 
 	// select render target
-
 	setRenderTarget(BackBuffer);
 
-	LightSpace.Global_AmbientLight.set ( 0.f, 0.f, 0.f, 0.f );
+	//reset Lightspace
+	LightSpace.reset ();
 
 	// select the right renderer
-	//CurrentShader = BurningShader[ETR_REFERENCE];
 	setCurrentShader();
 }
 
@@ -151,42 +149,42 @@ CBurningVideoDriver::~CBurningVideoDriver()
 }
 
 
-//! void selects the right triangle renderer based on the render states.
+/*!
+	selects the right triangle renderer based on the render states.
+*/
 void CBurningVideoDriver::setCurrentShader()
 {
-	EBurningFFShader shader = ETR_TEXTURE_GOURAUD;
+	ITexture *texture0 = Material.org.getTexture(0);
+	ITexture *texture1 = Material.org.getTexture(1);
 
-	bool zMaterialTest = true;
+	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER && 
+							Material.org.ZWriteEnable &&
+							( AllowZWriteOnTransparent || !Material.org.isTransparent() );
+
+	EBurningFFShader shader = zMaterialTest ? ETR_TEXTURE_GOURAUD : ETR_TEXTURE_GOURAUD_NOZ;
+
+	TransformationFlag[ ETS_TEXTURE_0] &= ~(ETF_TEXGEN_CAMERA_NORMAL|ETF_TEXGEN_CAMERA_REFLECTION);
+	LightSpace.Flags &= ~VERTEXTRANSFORM;
+
 	switch ( Material.org.MaterialType )
 	{
 		case EMT_ONETEXTURE_BLEND:
 			shader = ETR_TEXTURE_BLEND;
-			zMaterialTest = false;
 			break;
 
 		case EMT_TRANSPARENT_ALPHA_CHANNEL_REF:
+			Material.org.MaterialTypeParam = 0.5f;
+			// fall through
 		case EMT_TRANSPARENT_ALPHA_CHANNEL:
-			if ( Material.org.ZBuffer != ECFN_NEVER )
+			if ( texture0 && texture0->hasAlpha () )
 			{
-				shader = ETR_TEXTURE_GOURAUD_ALPHA;
+				shader = zMaterialTest ? ETR_TEXTURE_GOURAUD_ALPHA : ETR_TEXTURE_GOURAUD_ALPHA_NOZ;
+				break;
 			}
-			else
-			{
-				shader = ETR_TEXTURE_GOURAUD_ALPHA_NOZ;
-			}
-			zMaterialTest = false;
-			break;
+			// fall through
 
 		case EMT_TRANSPARENT_ADD_COLOR:
-			if ( Material.org.ZBuffer != ECFN_NEVER )
-			{
-				shader = ETR_TEXTURE_GOURAUD_ADD;
-			}
-			else
-			{
-				shader = ETR_TEXTURE_GOURAUD_ADD_NO_Z;
-			}
-			zMaterialTest = false;
+			shader = zMaterialTest ? ETR_TEXTURE_GOURAUD_ADD : ETR_TEXTURE_GOURAUD_ADD_NO_Z;
 			break;
 
 		case EMT_TRANSPARENT_VERTEX_ALPHA:
@@ -195,7 +193,7 @@ void CBurningVideoDriver::setCurrentShader()
 
 		case EMT_LIGHTMAP:
 		case EMT_LIGHTMAP_LIGHTING:
-			shader = ETR_TEXTURE_GOURAUD_LIGHTMAP;
+			shader = ETR_TEXTURE_GOURAUD_LIGHTMAP_M1;
 			break;
 
 		case EMT_LIGHTMAP_M2:
@@ -204,16 +202,16 @@ void CBurningVideoDriver::setCurrentShader()
 			break;
 
 		case EMT_LIGHTMAP_LIGHTING_M4:
-			if ( Material.org.getTexture(1) )
+			if ( texture1 )
 				shader = ETR_TEXTURE_GOURAUD_LIGHTMAP_M4;
 			break;
 		case EMT_LIGHTMAP_M4:
-			if ( Material.org.getTexture(1) )
+			if ( texture1 )
 				shader = ETR_TEXTURE_LIGHTMAP_M4;
 			break;
 
 		case EMT_LIGHTMAP_ADD:
-			if ( Material.org.getTexture(1) )
+			if ( texture1 )
 				shader = ETR_TEXTURE_GOURAUD_LIGHTMAP_ADD;
 			break;
 
@@ -221,17 +219,22 @@ void CBurningVideoDriver::setCurrentShader()
 			shader = ETR_TEXTURE_GOURAUD_DETAIL_MAP;
 			break;
 
+		case EMT_SPHERE_MAP:
+			TransformationFlag[ ETS_TEXTURE_0] |= ETF_TEXGEN_CAMERA_REFLECTION; // ETF_TEXGEN_CAMERA_NORMAL;
+			LightSpace.Flags |= VERTEXTRANSFORM;
+			break;
+		case EMT_REFLECTION_2_LAYER:
+			shader = ETR_TEXTURE_GOURAUD_LIGHTMAP_M1;
+			TransformationFlag[ ETS_TEXTURE_1] |= ETF_TEXGEN_CAMERA_REFLECTION;
+			LightSpace.Flags |= VERTEXTRANSFORM;
+			break;
+
 		default:
 			break;
 
 	}
 
-	if ( zMaterialTest && (Material.org.ZBuffer==ECFN_NEVER) && !Material.org.ZWriteEnable)
-	{
-		shader = ETR_TEXTURE_GOURAUD_NOZ;
-	}
-
-	if ( 0 == Material.org.getTexture(0) )
+	if ( !texture0 )
 	{
 		shader = ETR_GOURAUD;
 	}
@@ -248,28 +251,21 @@ void CBurningVideoDriver::setCurrentShader()
 	if ( CurrentShader )
 	{
 		CurrentShader->setZCompareFunc ( Material.org.ZBuffer );
+		CurrentShader->setRenderTarget(RenderTargetSurface, ViewPort);
+		CurrentShader->setMaterial ( Material );
+
 		switch ( shader )
 		{
 			case ETR_TEXTURE_GOURAUD_ALPHA:
 			case ETR_TEXTURE_GOURAUD_ALPHA_NOZ:
+			case ETR_TEXTURE_BLEND:
 				CurrentShader->setParam ( 0, Material.org.MaterialTypeParam );
 				break;
-
-			case EMT_ONETEXTURE_BLEND:
-			{
-				E_BLEND_FACTOR srcFact,dstFact;
-				E_MODULATE_FUNC modulate;
-				unpack_texureBlendFunc ( srcFact, dstFact, modulate, Material.org.MaterialTypeParam );
-				CurrentShader->setParam ( 0, Material.org.MaterialTypeParam );
-			}
-			break;
 			default:
 			break;
 		}
-
-		CurrentShader->setRenderTarget(RenderTargetSurface, ViewPort);
-		CurrentShader->setMaterial ( Material );
 	}
+
 }
 
 
@@ -306,80 +302,42 @@ bool CBurningVideoDriver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 //! sets transformation
 void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matrix4& mat)
 {
-	Transformation[state].m = mat;
-	Transformation[state].isIdentity = mat.isIdentity();
+	Transformation[state] = mat;
+	core::setbit_cond ( TransformationFlag[state], mat.isIdentity(), ETF_IDENTITY );
 
 	switch ( state )
 	{
 		case ETS_VIEW:
-			Transformation[ETS_VIEW_PROJECTION].m.setbyproduct_nocheck (
-				Transformation[ETS_PROJECTION].m,
-				Transformation[ETS_VIEW].m
+			Transformation[ETS_VIEW_PROJECTION].setbyproduct_nocheck (
+				Transformation[ETS_PROJECTION],
+				Transformation[ETS_VIEW]
 			);
+			getCameraPosWorldSpace ();
 			break;
 
 		case ETS_WORLD:
-			if ( Transformation[state].isIdentity )
+			if ( TransformationFlag[state] & ETF_IDENTITY )
 			{
 				Transformation[ETS_CURRENT] = Transformation[ETS_VIEW_PROJECTION];
 			}
 			else
 			{
-				Transformation[ETS_CURRENT].m.setbyproduct_nocheck (
-					Transformation[ETS_VIEW_PROJECTION].m,
-					Transformation[ETS_WORLD].m
+				Transformation[ETS_CURRENT].setbyproduct_nocheck (
+					Transformation[ETS_VIEW_PROJECTION],
+					Transformation[ETS_WORLD]
 				);
 			}
-			Transformation[ETS_CURRENT].isIdentity = 0;
-
-#ifdef SOFTWARE_DRIVER_2_LIGHTING
-			if ( Material.org.Lighting )
-			{
-				if ( Transformation[state].isIdentity )
-				{
-					Transformation[ETS_WORLD_VIEW] = Transformation[ETS_VIEW];
-				}
-				else
-				{
-					Transformation[ETS_WORLD_VIEW].m.setbyproduct_nocheck (
-						Transformation[ETS_VIEW].m,
-						Transformation[ETS_WORLD].m
-					);
-				}
-
-				core::matrix4 m2 ( Transformation[ETS_WORLD_VIEW].m );
-				m2.makeInverse ();
-				m2.getTransposed ( Transformation[ETS_WORLD_VIEW_INVERSE_TRANSPOSED].m );
-			}
-#endif
+			TransformationFlag[ETS_CURRENT] = 0;
 			break;
+		case ETS_TEXTURE_0:
+		case ETS_TEXTURE_1:
+		case ETS_TEXTURE_2:
+		case ETS_TEXTURE_3:
+			if ( 0 == (TransformationFlag[state] & ETF_IDENTITY ) )
+				LightSpace.Flags |= VERTEXTRANSFORM;
 		default:
 			break;
 	}
-}
-
-
-//! sets a material
-void CBurningVideoDriver::setMaterial(const SMaterial& material)
-{
-	Material.org = material;
-
-	Material.AmbientColor.setA8R8G8B8 ( Material.org.AmbientColor.color );
-	Material.DiffuseColor.setA8R8G8B8 ( Material.org.DiffuseColor.color );
-	Material.EmissiveColor.setA8R8G8B8 ( Material.org.EmissiveColor.color );
-	Material.SpecularColor.setA8R8G8B8 ( Material.org.SpecularColor.color );
-
-	Material.SpecularEnabled = Material.org.Shininess != 0.f;
-	if (Material.SpecularEnabled)
-		Material.org.NormalizeNormals = true;
-
-	for (u32 i = 0; i < 2; ++i)
-	{
-		setTransform((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
-				material.getTextureMatrix(i));
-	}
-
-	setCurrentShader();
 }
 
 
@@ -394,9 +352,10 @@ bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer,
 	if (backBuffer && BackBuffer)
 		BackBuffer->fill(color);
 
-	if (DepthBuffer && zBuffer)
+	if (zBuffer && DepthBuffer)
 		DepthBuffer->clear();
 
+	memset ( TransformationFlag, 0, sizeof ( TransformationFlag ) );
 	return true;
 }
 
@@ -480,7 +439,7 @@ void CBurningVideoDriver::setViewPort(const core::rect<s32>& area)
 	core::rect<s32> rendert(0,0,RenderTargetSize.Width,RenderTargetSize.Height);
 	ViewPort.clipAgainst(rendert);
 
-	Transformation [ ETS_CLIPSCALE ].m.buildNDCToDCMatrix ( ViewPort, 1 );
+	Transformation [ ETS_CLIPSCALE ].buildNDCToDCMatrix ( ViewPort, 1 );
 
 
 	if (CurrentShader)
@@ -569,10 +528,22 @@ REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) c
 REALINLINE u32 CBurningVideoDriver::clipToFrustumTest ( const s4DVertex * v  ) const
 {
 	u32 flag = 0;
+
+	if ( v->Pos.z <= v->Pos.w ) flag |= 1;
+	if (-v->Pos.z <= v->Pos.w ) flag |= 2;
+
+	if ( v->Pos.x <= v->Pos.w ) flag |= 4;
+	if (-v->Pos.x <= v->Pos.w ) flag |= 8;
+
+	if ( v->Pos.y <= v->Pos.w ) flag |= 16;
+	if (-v->Pos.y <= v->Pos.w ) flag |= 32;
+
+/*
 	for ( u32 i = 0; i!= 6; ++i )
 	{
 		core::setbit_cond( flag, v->Pos.dotProduct ( NDCPlane[i] ) <= 0.f, 1 << i );
 	}
+*/
 	return flag;
 }
 
@@ -684,8 +655,8 @@ inline void CBurningVideoDriver::ndc_2_dc_and_project ( s4DVertex *dest,s4DVerte
 		const f32 iw = core::reciprocal ( w );
 
 		// to device coordinates
-		dest[g].Pos.x = iw * ( source[g].Pos.x * Transformation [ ETS_CLIPSCALE ].m[ 0] + w * Transformation [ ETS_CLIPSCALE ].m[12] );
-		dest[g].Pos.y = iw * ( source[g].Pos.y * Transformation [ ETS_CLIPSCALE ].m[ 5] + w * Transformation [ ETS_CLIPSCALE ].m[13] );
+		dest[g].Pos.x = iw * ( source[g].Pos.x * Transformation [ ETS_CLIPSCALE ][ 0] + w * Transformation [ ETS_CLIPSCALE ][12] );
+		dest[g].Pos.y = iw * ( source[g].Pos.y * Transformation [ ETS_CLIPSCALE ][ 5] + w * Transformation [ ETS_CLIPSCALE ][13] );
 
 #ifndef SOFTWARE_DRIVER_2_USE_WBUFFER
 		dest[g].Pos.z = iw * source[g].Pos.z;
@@ -723,8 +694,9 @@ inline void CBurningVideoDriver::ndc_2_dc_and_project2 ( const s4DVertex **v, co
 		const f32 iw = core::reciprocal ( w );
 
 		// to device coordinates
-		a[1].Pos.x = iw * ( a->Pos.x * Transformation [ ETS_CLIPSCALE ].m[ 0] + w * Transformation [ ETS_CLIPSCALE ].m[12] );
-		a[1].Pos.y = iw * ( a->Pos.y * Transformation [ ETS_CLIPSCALE ].m[ 5] + w * Transformation [ ETS_CLIPSCALE ].m[13] );
+		const f32 * p = Transformation [ ETS_CLIPSCALE ].pointer();
+		a[1].Pos.x = iw * ( a->Pos.x * p[ 0] + w * p[12] );
+		a[1].Pos.y = iw * ( a->Pos.y * p[ 5] + w * p[13] );
 
 #ifndef SOFTWARE_DRIVER_2_USE_WBUFFER
 		a[1].Pos.z = a->Pos.z * iw;
@@ -790,12 +762,12 @@ inline f32 CBurningVideoDriver::texelarea2 ( const s4DVertex **v, s32 tex ) cons
 
 /*!
 */
-inline void CBurningVideoDriver::select_polygon_mipmap ( s4DVertex *v, u32 vIn, s32 tex )
+inline void CBurningVideoDriver::select_polygon_mipmap ( s4DVertex *v, u32 vIn, u32 tex, const core::dimension2du& texSize )
 {
 	f32 f[2];
 
-	f[0] = (f32) MAT_TEXTURE ( tex )->getSize().Width;
-	f[1] = (f32) MAT_TEXTURE ( tex )->getSize().Height;
+	f[0] = (f32) texSize.Width - 0.25f;
+	f[1] = (f32) texSize.Height - 0.25f;
 
 #ifdef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
 	for ( u32 g = 0; g != vIn; g += 2 )
@@ -812,12 +784,12 @@ inline void CBurningVideoDriver::select_polygon_mipmap ( s4DVertex *v, u32 vIn, 
 #endif
 }
 
-inline void CBurningVideoDriver::select_polygon_mipmap2 ( s4DVertex **v, s32 tex ) const
+inline void CBurningVideoDriver::select_polygon_mipmap2 ( s4DVertex **v, u32 tex, const core::dimension2du& texSize ) const
 {
 	f32 f[2];
 
-	f[0] = (f32) MAT_TEXTURE ( tex )->getSize().Width;
-	f[1] = (f32) MAT_TEXTURE ( tex )->getSize().Height;
+	f[0] = (f32) texSize.Width - 0.25f;
+	f[1] = (f32) texSize.Height - 0.25f;
 
 #ifdef SOFTWARE_DRIVER_2_PERSPECTIVE_CORRECT
 	(v[0] + 1 )->Tex[tex].x	= v[0]->Tex[tex].x * ( v[0] + 1 )->Pos.w * f[0];
@@ -846,7 +818,8 @@ const SVSize CBurningVideoDriver::vSize[] =
 {
 	{ VERTEX4D_FORMAT_TEXTURE_1 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex), 1 },
 	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex2TCoords),2 },
-	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertexTangents),2 }
+	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertexTangents),2 },
+	{ VERTEX4D_FORMAT_TEXTURE_2 | VERTEX4D_FORMAT_COLOR_1, sizeof(S3DVertex), 2 },
 };
 
 
@@ -874,25 +847,61 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 	dest = (s4DVertex *) ( (u8*) VertexCache.mem.data + ( destIndex << ( SIZEOF_SVERTEX_LOG2 + 1  ) ) );
 
 	// transform Model * World * Camera * Projection * NDCSpace matrix
-	Transformation [ ETS_CURRENT].m.transformVect ( &dest->Pos.x, ((S3DVertex*) source )->Pos );
+	const S3DVertex *base = ((S3DVertex*) source );
+	Transformation [ ETS_CURRENT].transformVect ( &dest->Pos.x, base->Pos );
 
-#ifdef SOFTWARE_DRIVER_2_USE_VERTEX_COLOR
 
-	// light Vertex
-	#ifdef SOFTWARE_DRIVER_2_LIGHTING
-		lightVertex ( dest, ((S3DVertex*) source ) );
+#if defined (SOFTWARE_DRIVER_2_LIGHTING) || defined ( SOFTWARE_DRIVER_2_TEXTURE_TRANSFORM )
+
+	// vertex normal in light space
+	if ( Material.org.Lighting || (LightSpace.Flags & VERTEXTRANSFORM) )
+	{
+		if ( TransformationFlag[ETS_WORLD] & ETF_IDENTITY )
+		{
+			LightSpace.normal.set ( base->Normal.X, base->Normal.Y, base->Normal.Z, 1.f );
+			LightSpace.vertex.set ( base->Pos.X, base->Pos.Y, base->Pos.Z, 1.f );
+		}
+		else
+		{
+			Transformation[ETS_WORLD].rotateVect ( &LightSpace.normal.x, base->Normal );
+			if ( LightSpace.Flags & NORMALIZE )
+				LightSpace.normal.normalize_xyz();
+
+			// vertex in light space
+			if ( LightSpace.Flags & ( POINTLIGHT | FOG | SPECULAR | VERTEXTRANSFORM) )
+				Transformation[ETS_WORLD].transformVect ( &LightSpace.vertex.x, base->Pos );
+		}
+
+	}
+#endif
+
+#if defined ( SOFTWARE_DRIVER_2_USE_VERTEX_COLOR )
+	// apply lighting model
+	#if defined (SOFTWARE_DRIVER_2_LIGHTING)
+		if ( Material.org.Lighting )
+		{
+			lightVertex ( dest, base->Color.color );
+		}
+		else
+		{
+			dest->Color[0].setA8R8G8B8 ( base->Color.color );
+		}
 	#else
-		dest->Color[0].setA8R8G8B8 ( ((S3DVertex*) source )->Color.color );
+		dest->Color[0].setA8R8G8B8 ( base->Color.color );
 	#endif
 #endif
 
-	// transfer texture coordinates
-	if ( Transformation [ ETS_TEXTURE_0 ].isIdentity )
+	// Texture Transform
+#if !defined ( SOFTWARE_DRIVER_2_TEXTURE_TRANSFORM )
+	irr::memcpy32_small ( &dest->Tex[0],&base->TCoords,
+					vSize[VertexCache.vType].TexSize << 3 //  * ( sizeof ( f32 ) * 2 )
+				);
+#else
+
+	if ( 0 == (LightSpace.Flags & VERTEXTRANSFORM) )
 	{
-		// only look on first transform
-		irr::memcpy32_small ( &dest->Tex[0],
-						&((S3DVertex*) source )->TCoords,
-						vSize[VertexCache.vType].TexSize * ( sizeof ( f32 ) * 2 )
+		irr::memcpy32_small ( &dest->Tex[0],&base->TCoords,
+						vSize[VertexCache.vType].TexSize << 3 //  * ( sizeof ( f32 ) * 2 )
 					);
 	}
 	else
@@ -908,33 +917,62 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 				Uw  Vw  0  0
 	*/
 
-		const core::vector2d<f32> *src = &((S3DVertex*) source )->TCoords;
 		u32 t;
+		sVec4 n;
+		sVec2 srcT;
 
 		for ( t = 0; t != vSize[VertexCache.vType].TexSize; ++t )
 		{
-			const core::matrix4& M = Transformation [ ETS_TEXTURE_0 + t ].m;
-			if ( Material.org.TextureLayer[t].TextureWrap==ETC_REPEAT )
+			const core::matrix4& M = Transformation [ ETS_TEXTURE_0 + t ];
+
+			// texgen
+			if ( TransformationFlag [ ETS_TEXTURE_0 + t ] & (ETF_TEXGEN_CAMERA_NORMAL|ETF_TEXGEN_CAMERA_REFLECTION) )
 			{
-				dest->Tex[t].x = M[0] * src[t].X + M[4] * src[t].Y + M[8];
-				dest->Tex[t].y = M[1] * src[t].X + M[5] * src[t].Y + M[9];
+				n.x = LightSpace.campos.x - LightSpace.vertex.x;
+				n.y = LightSpace.campos.x - LightSpace.vertex.y;
+				n.z = LightSpace.campos.x - LightSpace.vertex.z;
+				n.normalize_xyz();
+				n.x += LightSpace.normal.x;
+				n.y += LightSpace.normal.y;
+				n.z += LightSpace.normal.z;
+				n.normalize_xyz();
+
+				const f32 *view = Transformation[ETS_VIEW].pointer();
+
+				if ( TransformationFlag [ ETS_TEXTURE_0 + t ] & ETF_TEXGEN_CAMERA_REFLECTION )
+				{
+					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[4] + n.z * view[8] )); 
+					srcT.y = 0.5f * ( 1.f + (n.x * view[1] + n.y * view[5] + n.z * view[9] ));
+				}
+				else
+				{
+					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[1] + n.z * view[2] )); 
+					srcT.y = 0.5f * ( 1.f + (n.x * view[4] + n.y * view[5] + n.z * view[6] ));
+				}
 			}
 			else
 			{
-				f32 tx1, ty1;
+				irr::memcpy32_small ( &srcT,(&base->TCoords) + t,
+					sizeof ( f32 ) * 2 );
+			}
 
-				tx1 = M[0] * src[t].X + M[4] * src[t].Y + M[8];
-				ty1 = M[1] * src[t].X + M[5] * src[t].Y + M[9];
-
-				dest->Tex[t].x = tx1 <= 0.f ? 0.f : tx1 >= 1.f ? 1.f : tx1;
-				dest->Tex[t].y = ty1 <= 0.f ? 0.f : ty1 >= 1.f ? 1.f : ty1;
-
-				//dest->Tex[t].x = core::clamp ( M[0] * src[t].X + M[4] * src[t].Y + M[8], 0.f, 1.f );
-				//dest->Tex[t].y = core::clamp ( M[1] * src[t].X + M[5] * src[t].Y + M[9], 0.f, 1.f );
+			switch ( Material.org.TextureLayer[t].TextureWrap )
+			{
+				case ETC_REPEAT:
+				default:
+					dest->Tex[t].x = M[0] * srcT.x + M[4] * srcT.y + M[8];
+					dest->Tex[t].y = M[1] * srcT.x + M[5] * srcT.y + M[9];
+					break;
+				case ETC_CLAMP:
+				case ETC_CLAMP_TO_EDGE:
+					dest->Tex[t].x = core::clamp ( (f32) ( M[0] * srcT.x + M[4] * srcT.y + M[8] ), 0.f, 1.f );
+					dest->Tex[t].y = core::clamp ( (f32) ( M[1] * srcT.x + M[5] * srcT.y + M[9] ), 0.f, 1.f );
+					break;
 			}
 		}
 
 	}
+#endif
 
 	dest[0].flag = dest[1].flag = vSize[VertexCache.vType].Format;
 
@@ -988,12 +1026,18 @@ REALINLINE void CBurningVideoDriver::VertexCache_get ( s4DVertex ** face )
 		u32 fillIndex = 0;
 		u32 dIndex;
 		u32 i;
+		u32 sourceIndex;
 
 		while ( VertexCache.indicesIndex < VertexCache.indexCount &&
 				fillIndex < VERTEXCACHE_ELEMENT
 				)
 		{
-			u32 sourceIndex = VertexCache.indices [ VertexCache.indicesIndex++ ];
+			sourceIndex = VertexCache.iType == 1 ?
+			((u16*)VertexCache.indices) [ VertexCache.indicesIndex ] :
+			((u32*)VertexCache.indices) [ VertexCache.indicesIndex ];
+
+
+			VertexCache.indicesIndex += 1;
 
 			// if not exist, push back
 			s32 exist = 0;
@@ -1053,20 +1097,44 @@ REALINLINE void CBurningVideoDriver::VertexCache_get ( s4DVertex ** face )
 
 	const u32 i0 = core::if_c_a_else_0 ( VertexCache.pType != scene::EPT_TRIANGLE_FAN, VertexCache.indicesRun );
 
-	face[0] = VertexCache_getVertex ( VertexCache.indices[ i0    ] );
-	face[1] = VertexCache_getVertex ( VertexCache.indices[ VertexCache.indicesRun + 1] );
-	face[2] = VertexCache_getVertex ( VertexCache.indices[ VertexCache.indicesRun + 2] );
+	if ( VertexCache.iType == 1 )
+	{
+		const u16 *p = (const u16 *) VertexCache.indices;
+		face[0] = VertexCache_getVertex ( p[ i0    ] );
+		face[1] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 1] );
+		face[2] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 2] );
+	}
+	else
+	{
+		const u32 *p = (const u32 *) VertexCache.indices;
+		face[0] = VertexCache_getVertex ( p[ i0    ] );
+		face[1] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 1] );
+		face[2] = VertexCache_getVertex ( p[ VertexCache.indicesRun + 2] );
+	}
 
 	VertexCache.indicesRun += VertexCache.primitivePitch;
 }
 
-REALINLINE void CBurningVideoDriver::VertexCache_get2 ( s4DVertex ** face )
+/*!
+*/
+REALINLINE void CBurningVideoDriver::VertexCache_getbypass ( s4DVertex ** face )
 {
 	const u32 i0 = core::if_c_a_else_0 ( VertexCache.pType != scene::EPT_TRIANGLE_FAN, VertexCache.indicesRun );
 
-	VertexCache_fill ( VertexCache.indices[ i0    ], 0 );
-	VertexCache_fill ( VertexCache.indices[ VertexCache.indicesRun + 1], 1 );
-	VertexCache_fill ( VertexCache.indices[ VertexCache.indicesRun + 2], 2 );
+	if ( VertexCache.iType == 1 )
+	{
+		const u16 *p = (const u16 *) VertexCache.indices;
+		VertexCache_fill ( p[ i0    ], 0 );
+		VertexCache_fill ( p[ VertexCache.indicesRun + 1], 1 );
+		VertexCache_fill ( p[ VertexCache.indicesRun + 2], 2 );
+	}
+	else
+	{
+		const u32 *p = (const u32 *) VertexCache.indices;
+		VertexCache_fill ( p[ i0    ], 0 );
+		VertexCache_fill ( p[ VertexCache.indicesRun + 1], 1 );
+		VertexCache_fill ( p[ VertexCache.indicesRun + 2], 2 );
+	}
 
 	VertexCache.indicesRun += VertexCache.primitivePitch;
 
@@ -1076,9 +1144,12 @@ REALINLINE void CBurningVideoDriver::VertexCache_get2 ( s4DVertex ** face )
 
 }
 
+/*!
+*/
 void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCount,
-											const u16* indices, u32 primitiveCount,
-											E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType )
+											const void* indices, u32 primitiveCount,
+											E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType,
+											E_INDEX_TYPE iType)
 {
 	VertexCache.vertices = vertices;
 	VertexCache.vertexCount = vertexCount;
@@ -1087,8 +1158,12 @@ void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCo
 	VertexCache.indicesIndex = 0;
 	VertexCache.indicesRun = 0;
 
-	VertexCache.vType = vType;
+	if ( Material.org.MaterialType == video::EMT_REFLECTION_2_LAYER )
+		VertexCache.vType = 3;
+	else
+		VertexCache.vType = vType;
 	VertexCache.pType = pType;
+	VertexCache.iType = iType == EIT_16BIT ? 1 : 2;
 
 	switch ( VertexCache.pType )
 	{
@@ -1112,38 +1187,15 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
 
 {
-	switch (iType)
-	{
-		case (EIT_16BIT):
-		{
-			drawVertexPrimitiveList16(vertices, vertexCount, (const u16*) indexList, primitiveCount, vType, pType);
-			break;
-		}
-		case (EIT_32BIT):
-		{
-			os::Printer::log("Software driver can not render 32bit buffers", ELL_ERROR);
-			break;
-		}
-	}
-
-
-}
-
-
-
-//! draws a vertex primitive list
-void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 vertexCount, const u16* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType)
-{
 	if (!checkPrimitiveCount(primitiveCount))
 		return;
 
-	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, EIT_16BIT);
+	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 	if ( 0 == CurrentShader )
 		return;
 
-
-	VertexCache_reset ( vertices, vertexCount, indexList, primitiveCount, vType, pType );
+	VertexCache_reset ( vertices, vertexCount, indexList, primitiveCount, vType, pType, iType );
 
 	const s4DVertex * face[3];
 
@@ -1151,6 +1203,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 	s32 lodLevel;
 	u32 i;
 	u32 g;
+	video::CSoftwareTexture2* tex;
 
 	for ( i = 0; i < (u32) primitiveCount; ++i )
 	{
@@ -1178,15 +1231,15 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 			for ( g = 0; g != vSize[VertexCache.vType].TexSize; ++g )
 			//for ( g = 0; g != BURNING_MATERIAL_MAX_TEXTURES; ++g )
 			{
-				if ( 0 == MAT_TEXTURE ( g ) )
+				if ( 0 == (tex = MAT_TEXTURE ( g )) )
 				{
 					CurrentShader->setTextureParam(g, 0, 0);
 					continue;
 				}
 
 				lodLevel = s32_log2_f32 ( texelarea2 ( face, g ) * dc_area );
-				CurrentShader->setTextureParam(g, MAT_TEXTURE ( g ), lodLevel);
-				select_polygon_mipmap2 ( (s4DVertex**) face, g );
+				CurrentShader->setTextureParam(g, tex, lodLevel);
+				select_polygon_mipmap2 ( (s4DVertex**) face, g, tex->getSize() );
 
 			}
 
@@ -1262,7 +1315,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 
 /*
 		// TODO: don't stick on 32 Bit Pointer
-		#define PointerAsValue(x) ( (u32) (u32*) (x) )
+		#define PointerAsValue(x) ( (u32) (u32*) (x) ) 
 
 		// if not complete inside clipping necessary
 		if ( ( test & VERTEX4D_INSIDE ) != VERTEX4D_INSIDE )
@@ -1296,16 +1349,15 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 		//for ( g = 0; g != BURNING_MATERIAL_MAX_TEXTURES; ++g )
 		for ( g = 0; g != vSize[VertexCache.vType].TexSize; ++g )
 		{
-			if ( 0 == MAT_TEXTURE ( g ) )
+			if ( 0 == (tex = MAT_TEXTURE ( g )) )
 			{
 				CurrentShader->setTextureParam(g, 0, 0);
 				continue;
 			}
 
 			lodLevel = s32_log2_f32 ( texelarea ( CurrentOut.data, g ) / dc_area );
-
-			CurrentShader->setTextureParam(g, MAT_TEXTURE ( g ), lodLevel);
-			select_polygon_mipmap ( CurrentOut.data, vOut, g );
+			CurrentShader->setTextureParam(g, tex, lodLevel);
+			select_polygon_mipmap ( CurrentOut.data, vOut, g, tex->getSize() );
 		}
 
 		// re-tesselate ( triangle-fan, 0-1-2,0-2-3.. )
@@ -1328,7 +1380,9 @@ void CBurningVideoDriver::drawVertexPrimitiveList16(const void* vertices, u32 ve
 				);
 	os::Printer::print ( buf );
 */
+
 }
+
 
 //! Sets the dynamic ambient light color. The default color is
 //! (0,0,0,0) which means it is dark.
@@ -1342,35 +1396,47 @@ void CBurningVideoDriver::setAmbientLight(const SColorf& color)
 //! adds a dynamic light
 s32 CBurningVideoDriver::addDynamicLight(const SLight& dl)
 {
+	(void) CNullDriver::addDynamicLight( dl );
+
 	SBurningShaderLight l;
-	l.org = dl;
+//	l.org = dl;
+	l.Type = dl.Type;
 	l.LightIsOn = true;
 
-	// light in eye space
-	Transformation[ETS_VIEW].m.transformVect ( &l.posEyeSpace.x, l.org.Position );
-
-	l.constantAttenuation = l.org.Attenuation.X;
-	l.linearAttenuation = l.org.Attenuation.Y;
-	l.quadraticAttenuation = l.org.Attenuation.Z;
-
-	l.AmbientColor.setColorf ( l.org.AmbientColor );
-	l.DiffuseColor.setColorf ( l.org.DiffuseColor );
-	l.SpecularColor.setColorf ( l.org.SpecularColor );
+	l.AmbientColor.setColorf ( dl.AmbientColor );
+	l.DiffuseColor.setColorf ( dl.DiffuseColor );
+	l.SpecularColor.setColorf ( dl.SpecularColor );
 
 	switch ( dl.Type )
 	{
 		case video::ELT_DIRECTIONAL:
-		{
-			l.posEyeSpace.normalize_xyz ();
-		} break;
+			l.pos.x = -dl.Direction.X;
+			l.pos.y = -dl.Direction.Y;
+			l.pos.z = -dl.Direction.Z;
+			l.pos.w = 1.f;
+			break;
+		case ELT_POINT:
+		case ELT_SPOT:
+			LightSpace.Flags |= POINTLIGHT;
+			l.pos.x = dl.Position.X;
+			l.pos.y = dl.Position.Y;
+			l.pos.z = dl.Position.Z;
+			l.pos.w = 1.f;
+/*
+			l.radius = (1.f / dl.Attenuation.Y) * (1.f / dl.Attenuation.Y);
+			l.constantAttenuation = dl.Attenuation.X;
+			l.linearAttenuation = dl.Attenuation.Y;
+			l.quadraticAttenuation = dl.Attenuation.Z;
+*/
+			l.radius = dl.Radius * dl.Radius;
+			l.constantAttenuation = dl.Attenuation.X;
+			l.linearAttenuation = 1.f / dl.Radius;
+			l.quadraticAttenuation = dl.Attenuation.Z;
 
-		default:
 			break;
 	}
 
 	LightSpace.Light.push_back ( l );
-	(void)CNullDriver::addDynamicLight( l.org );
-
 	return LightSpace.Light.size() - 1;
 }
 
@@ -1381,12 +1447,10 @@ void CBurningVideoDriver::turnLightOn(s32 lightIndex, bool turnOn)
 	LightSpace.Light[lightIndex].LightIsOn = turnOn;
 }
 
-
-
 //! deletes all dynamic lights there are
 void CBurningVideoDriver::deleteAllDynamicLights()
 {
-	LightSpace.Light.set_used ( 0 );
+	LightSpace.reset ();
 	CNullDriver::deleteAllDynamicLights();
 
 }
@@ -1398,159 +1462,178 @@ u32 CBurningVideoDriver::getMaximalDynamicLightAmount() const
 }
 
 
+//! sets a material
+void CBurningVideoDriver::setMaterial(const SMaterial& material)
+{
+	Material.org = material;
+
+#ifdef SOFTWARE_DRIVER_2_TEXTURE_TRANSFORM
+	for (u32 i = 0; i < 2; ++i)
+	{
+		setTransform((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
+				material.getTextureMatrix(i));
+	}
+#endif
+
+#ifdef SOFTWARE_DRIVER_2_LIGHTING
+	Material.AmbientColor.setR8G8B8 ( Material.org.AmbientColor.color );
+	Material.DiffuseColor.setR8G8B8 ( Material.org.DiffuseColor.color );
+	Material.EmissiveColor.setR8G8B8 ( Material.org.EmissiveColor.color );
+	Material.SpecularColor.setR8G8B8 ( Material.org.SpecularColor.color );
+
+	core::setbit_cond ( LightSpace.Flags, Material.org.Shininess != 0.f, SPECULAR );
+	core::setbit_cond ( LightSpace.Flags, Material.org.FogEnable, FOG );
+	core::setbit_cond ( LightSpace.Flags, Material.org.NormalizeNormals, NORMALIZE );
+#endif
+
+	setCurrentShader();
+}
+
+
 
 #ifdef SOFTWARE_DRIVER_2_LIGHTING
 
-/*!
-*/
-void CBurningVideoDriver::lightVertex ( s4DVertex *dest, const S3DVertex *source )
+//! Sets the fog mode.
+void CBurningVideoDriver::setFog(SColor color, bool linearFog, f32 start,
+	f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	// apply lighting model
-	if ( false == Material.org.Lighting )
+	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
+	LightSpace.FogColor.setA8R8G8B8 ( color.color );
+}
+
+/*!
+	Camera Position in World Space
+*/
+void CBurningVideoDriver::getCameraPosWorldSpace ()
+{
+	Transformation[ETS_VIEW_INVERSE] = Transformation[ ETS_VIEW ];
+	Transformation[ETS_VIEW_INVERSE].makeInverse ();
+	TransformationFlag[ETS_VIEW_INVERSE] = 0;
+
+	const f32 *M = Transformation[ETS_VIEW_INVERSE].pointer ();
+
+	/*	The  viewpoint is at (0., 0., 0.) in eye space.
+		Turning this into a vector [0 0 0 1] and multiply it by
+		the inverse of the view matrix, the resulting vector is the
+		object space location of the camera.
+	*/
+
+	LightSpace.campos.x = M[12];
+	LightSpace.campos.y = M[13];
+	LightSpace.campos.z = M[14];
+	LightSpace.campos.w = 1.f;
+}
+
+/*!
+	applies lighting model
+*/
+void CBurningVideoDriver::lightVertex ( s4DVertex *dest, u32 vertexargb )
+{
+	sVec3 dColor;
+
+	dColor = LightSpace.Global_AmbientLight;
+	dColor.add ( Material.EmissiveColor );
+
+	if ( Lights.size () == 0 )
 	{
-		// should use the DiffuseColor but using pre-lit vertex color
-		dest->Color[0].setA8R8G8B8 ( source->Color.color );
+		dColor.saturate( dest->Color[0], vertexargb);
 		return;
 	}
 
-	// eyespace
-/*
-	core::matrix4 modelview = Transformation[ETS_WORLD].m * Transformation[ETS_VIEW].m;
-
-	core::matrix4 m2 ( modelview );
-	m2.makeInverse ();
-	core::matrix4 modelviewinversetransposed ( m2.getTransposed() );
-*/
-
-	sVec4 vertexEyeSpace;
-	sVec4 normalEyeSpace;
-	sVec4 vertexEyeSpaceUnit;
-
-	// vertex in eye space
-	Transformation[ETS_WORLD_VIEW].m.transformVect ( &vertexEyeSpace.x, source->Pos );
-	vertexEyeSpace.project_xyz ();
-
-	vertexEyeSpaceUnit = vertexEyeSpace;
-	vertexEyeSpaceUnit.normalize_xyz();
-
-	// vertex normal in eye-space
-	//modelviewinversetransposed.transformVect ( &normalEyeSpace.x, source->Normal );
-	Transformation[ETS_WORLD_VIEW_INVERSE_TRANSPOSED].m.rotateVect ( &normalEyeSpace.x, source->Normal );
-	if ( Material.org.NormalizeNormals )
-	{
-		normalEyeSpace.normalize_xyz();
-	}
-
-
-	sVec4 ambient;
-	sVec4 diffuse;
-	sVec4 specular;
+	sVec3 ambient;
+	sVec3 diffuse;
+	sVec3 specular;
 
 
 	// the universe started in darkness..
-	ambient.set ( 0.f, 0.f, 0.f, 0.f );
-	diffuse.set ( 0.f, 0.f, 0.f, 0.f );
-	specular.set ( 0.f, 0.f, 0.f, 0.f );
+	ambient.set ( 0.f, 0.f, 0.f );
+	diffuse.set ( 0.f, 0.f, 0.f );
+	specular.set ( 0.f, 0.f, 0.f );
 
-	f32 attenuation = 1.f;
 
 	u32 i;
+	f32 dot;
+	f32 len;
+	f32 attenuation;
+	sVec4 vp;			// unit vector vertex to light
+	sVec4 lightHalf;	// blinn-phong reflection
+
 	for ( i = 0; i!= LightSpace.Light.size (); ++i )
 	{
 		const SBurningShaderLight &light = LightSpace.Light[i];
 
-		if(!light.LightIsOn)
-			continue;
+		// accumulate ambient
+		ambient.add ( light.AmbientColor );
 
-		sVec4 vp;			// unit vector vertex to light
-		sVec4 lightHalf;		// blinn-phong reflection
-
-
-		switch ( light.org.Type )
+		switch ( light.Type )
 		{
+			case video::ELT_SPOT:
 			case video::ELT_POINT:
-			{
 				// surface to light
-				vp.x = light.posEyeSpace.x - vertexEyeSpace.x;
-				vp.y = light.posEyeSpace.y - vertexEyeSpace.y;
-				vp.z = light.posEyeSpace.z - vertexEyeSpace.z;
+				vp.x = light.pos.x - LightSpace.vertex.x;
+				vp.y = light.pos.y - LightSpace.vertex.y;
+				vp.z = light.pos.z - LightSpace.vertex.z;
 
-				// irrlicht attenuation model
-#if 0
-				const f32 d = vp.get_inverse_length_xyz();
+				len = vp.get_length_xyz_square();
+				if ( light.radius < len )
+					continue;
 
-				vp.x *= d;
-				vp.y *= d;
-				vp.z *= d;
-				attenuation = light.org.Radius * d;
+				len = core::squareroot ( len );
 
-#else
-				const f32 d = vp.get_length_xyz();
-				attenuation = core::reciprocal (light.constantAttenuation +
-									light.linearAttenuation * d +
-									light.quadraticAttenuation * d * d
-								);
+				attenuation = light.constantAttenuation + ( 1.f - ( len * light.linearAttenuation ) );
 
-				// normalize surface to light
-				vp.normalize_xyz();
-#endif
+				// build diffuse reflection
 
-				lightHalf.x = vp.x - vertexEyeSpaceUnit.x;
-				lightHalf.y = vp.y - vertexEyeSpaceUnit.y;
-				lightHalf.z = vp.z - vertexEyeSpaceUnit.z;
+				//angle between normal and light vector
+				vp.mulReciprocal ( len );
+				dot = LightSpace.normal.dot_xyz ( vp );
+				if ( dot < 0.f )
+					continue;
+
+				// diffuse component
+				diffuse.mulAdd ( light.DiffuseColor, dot * attenuation );
+
+				if ( !(LightSpace.Flags & SPECULAR) )
+					continue;
+
+				// build specular
+				// surface to view
+				lightHalf.x = LightSpace.campos.x - LightSpace.vertex.x;
+				lightHalf.y = LightSpace.campos.y - LightSpace.vertex.y;
+				lightHalf.z = LightSpace.campos.z - LightSpace.vertex.z;
+				lightHalf.normalize_xyz();
+				lightHalf += vp;
 				lightHalf.normalize_xyz();
 
-			} break;
+				// specular
+				dot = LightSpace.normal.dot_xyz ( lightHalf );
+				if ( dot < 0.f )
+					continue;
+
+				//specular += light.SpecularColor * ( powf ( Material.org.Shininess ,dot ) * attenuation );
+				specular.mulAdd ( light.SpecularColor, dot * attenuation );
+				break;
 
 			case video::ELT_DIRECTIONAL:
-			{
-				attenuation = 1.f;
-				vp = light.posEyeSpace;
 
-				// half angle = lightvector + eye vector ( 0, 0, 1 )
-				lightHalf.x = vp.x;
-				lightHalf.y = vp.y;
-				lightHalf.z = vp.z - 1.f;
-				lightHalf.normalize_xyz();
-			} break;
+				//angle between normal and light vector
+				dot = LightSpace.normal.dot_xyz ( light.pos );
+				if ( dot < 0.f )
+					continue;
 
-			default:
+				// diffuse component
+				diffuse.mulAdd ( light.DiffuseColor, dot );
 				break;
 		}
 
-		// build diffuse reflection
-
-		//angle between normal and light vector
-		f32 dotVP = core::max_ ( 0.f, normalEyeSpace.dot_xyz ( vp ) );
-		f32 dotHV = core::max_ ( 0.f, normalEyeSpace.dot_xyz ( lightHalf ) );
-
-		f32 pf;
-		if ( dotVP == 0.0 )
-		{
-			pf = 0.f;
-		}
-		else
-		{
-			pf = (f32)pow(dotHV, Material.org.Shininess );
-		}
-
-		// accumulate ambient
-		ambient += light.AmbientColor * attenuation;
-		diffuse += light.DiffuseColor * ( dotVP * attenuation );
-		specular += light.SpecularColor * ( pf * attenuation );
-
 	}
 
-	sVec4 dColor;
+	// sum up lights
+	dColor.mulAdd (ambient, Material.AmbientColor );
+	dColor.mulAdd (diffuse, Material.DiffuseColor);
+	dColor.mulAdd (specular, Material.SpecularColor);
 
-	dColor = LightSpace.Global_AmbientLight;
-	dColor += Material.EmissiveColor;
-	dColor += ambient * Material.AmbientColor;
-	dColor += diffuse * Material.DiffuseColor;
-	dColor += specular * Material.SpecularColor;
-	dColor.saturate();
-
-	dest->Color[0] = dColor;
+	dColor.saturate ( dest->Color[0], vertexargb );
 }
 
 #endif
@@ -1592,8 +1675,8 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 //! Draws a pixel
 void CBurningVideoDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	((CImage*)BackBuffer)->setPixel(x, y, color);
-}
+	((CImage*)BackBuffer)->setPixel(x, y, color, true);
+} 
 
 //! draw an 2d rectangle
 void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
@@ -1638,8 +1721,10 @@ void CBurningVideoDriver::OnResize(const core::dimension2d<u32>& size)
 		if (ViewPort.getWidth() == (s32)ScreenSize.Width &&
 			ViewPort.getHeight() == (s32)ScreenSize.Height)
 		{
-			ViewPort = core::rect<s32>(core::position2d<s32>(0,0),
-										core::dimension2di(realSize));
+			ViewPort.UpperLeftCorner.X = 0;
+			ViewPort.UpperLeftCorner.Y = 0;
+			ViewPort.LowerRightCorner.X = realSize.Width;
+			ViewPort.LowerRightCorner.X = realSize.Height;
 		}
 
 		ScreenSize = realSize;
@@ -1678,9 +1763,9 @@ void CBurningVideoDriver::draw2DRectangle(const core::rect<s32>& position,
 	if (!pos.isValid())
 		return;
 
-	const core::dimension2d<u32> renderTargetSize ( ViewPort.getSize() );
+	const core::dimension2d<s32> renderTargetSize ( ViewPort.getSize() );
 
-	const s32 xPlus = -(s32)(renderTargetSize.Width>>1);
+	const s32 xPlus = -(renderTargetSize.Width>>1);
 	const f32 xFact = 1.0f / (renderTargetSize.Width>>1);
 
 	const s32 yPlus = renderTargetSize.Height-(renderTargetSize.Height>>1);
@@ -1780,8 +1865,8 @@ void CBurningVideoDriver::draw2DRectangle(const core::rect<s32>& position,
 void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 	const core::vector3df& end, SColor color)
 {
-	Transformation [ ETS_CURRENT].m.transformVect ( &CurrentOut.data[0].Pos.x, start );
-	Transformation [ ETS_CURRENT].m.transformVect ( &CurrentOut.data[2].Pos.x, end );
+	Transformation [ ETS_CURRENT].transformVect ( &CurrentOut.data[0].Pos.x, start );
+	Transformation [ ETS_CURRENT].transformVect ( &CurrentOut.data[2].Pos.x, end );
 
 	u32 g;
 	u32 vOut;
@@ -1829,14 +1914,20 @@ void CBurningVideoDriver::draw3DLine(const core::vector3df& start,
 const wchar_t* CBurningVideoDriver::getName() const
 {
 #ifdef BURNINGVIDEO_RENDERER_BEAUTIFUL
-	return L"burnings video 0.39b";
+	return L"Burning's Video 0.44 beautiful";
 #elif defined ( BURNINGVIDEO_RENDERER_ULTRA_FAST )
-	return L"burnings video 0.39uf";
+	return L"Burning's Video 0.44 ultra fast";
 #elif defined ( BURNINGVIDEO_RENDERER_FAST )
-	return L"burnings video 0.39f";
+	return L"Burning's Video 0.44 fast";
 #else
-	return L"burnings video 0.39";
+	return L"Burning's Video 0.44";
 #endif
+}
+
+//! Returns the graphics card vendor name.
+core::stringc CBurningVideoDriver::getVendorInfo()
+{
+	return "Burning's Video: Ing. Thomas Alten (c) 2006-2009";
 }
 
 
@@ -1857,18 +1948,16 @@ ECOLOR_FORMAT CBurningVideoDriver::getColorFormat() const
 //! Returns the transformation set by setTransform
 const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE state) const
 {
-	return Transformation[state].m;
+	return Transformation[state];
 }
 
 
 //! Creates a render target texture.
 ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-		const c8* name)
+		const core::string<c16>& name)
 {
 	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
-	if (!name)
-		name="rt";
-	ITexture* tex = new CSoftwareTexture2(img, name, false, true);
+	ITexture* tex = new CSoftwareTexture2(img, name, CSoftwareTexture2::IS_RENDERTARGET );
 	img->drop();
 	addTexture(tex);
 	tex->drop();
@@ -1891,14 +1980,19 @@ IImage* CBurningVideoDriver::createScreenShot()
 		return new CImage(BackBuffer->getColorFormat(), BackBuffer);
 	else
 		return 0;
+
 }
 
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const char* name)
+ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
 {
-	return new CSoftwareTexture2(surface, name, getTextureCreationFlag(ETCF_CREATE_MIP_MAPS));
+	return new CSoftwareTexture2(
+		surface, name, 
+		(getTextureCreationFlag(ETCF_CREATE_MIP_MAPS) ? CSoftwareTexture2::GEN_MIPMAP : 0 ) |
+		(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE )
+	);
 
 }
 
@@ -1908,7 +2002,7 @@ ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, con
 //! call.
 u32 CBurningVideoDriver::getMaximalPrimitiveCount() const
 {
-	return 0x00800000;
+	return 0xFFFFFFFF;
 }
 
 

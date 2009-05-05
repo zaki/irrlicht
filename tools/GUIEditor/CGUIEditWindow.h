@@ -31,6 +31,12 @@ namespace gui
 		//! change selection
 		virtual void setSelectedElement(IGUIElement *sel);
 
+		//! get draggable
+		virtual bool isDraggable() const;
+
+		//! get draggable
+		virtual void setDraggable(bool draggable);
+
 		// not used
 		virtual IGUIButton* getCloseButton() const;
 		virtual IGUIButton* getMinimizeButton() const;
@@ -48,6 +54,7 @@ namespace gui
 
 		// for dragging the window
 		bool                    Dragging;
+		bool                    IsDraggable;
 		bool                    Resizing;
 		core::position2d<s32>   DragStart;
 

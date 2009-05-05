@@ -123,7 +123,7 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Creates a render target texture.
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name);
 
 		//! Clears the DepthBuffer.
 		virtual void clearZBuffer();
@@ -150,12 +150,10 @@ namespace video
 			video::SColor leftDownEdge = video::SColor(0,0,0,0),
 			video::SColor rightDownEdge = video::SColor(0,0,0,0));
 
+		//! Returns the graphics card vendor name.
+		virtual core::stringc getVendorInfo();
+
 	protected:
-
-
-		void drawVertexPrimitiveList16(const void* vertices, u32 vertexCount,
-				const u16* indexList, u32 primitiveCount,
-				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType);
 
 
 		//! sets a render target
@@ -166,7 +164,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const char* name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;
@@ -193,24 +191,27 @@ namespace video
 			-> combined CameraProjectionWorld
 			-> ClipScale from NDC to DC Space
 		*/
-		enum E_TRANSFORMATION_STATE_2
+		enum E_TRANSFORMATION_STATE_BURNING_VIDEO
 		{
 			ETS_VIEW_PROJECTION = ETS_COUNT,
-			ETS_WORLD_VIEW,
-			ETS_WORLD_VIEW_INVERSE_TRANSPOSED,
 			ETS_CURRENT,
 			ETS_CLIPSCALE,
+			ETS_VIEW_INVERSE,
 
-			ETS2_COUNT
+			ETS_COUNT_BURNING
 		};
 
-		struct SMatrixStack
+		enum E_TRANSFORMATION_FLAG
 		{
-			s32 isIdentity;
-			core::matrix4 m;
+			ETF_IDENTITY = 1,
+			ETF_TEXGEN_CAMERA_NORMAL = 2,
+			ETF_TEXGEN_CAMERA_REFLECTION = 4,
 		};
+		u32 TransformationFlag[ETS_COUNT_BURNING];
+		core::matrix4 Transformation[ETS_COUNT_BURNING];
+		
+		void getCameraPosWorldSpace ();
 
-		SMatrixStack Transformation[ETS2_COUNT];
 
 		// Vertex Cache
 		static const SVSize vSize[];
@@ -218,10 +219,11 @@ namespace video
 		SVertexCache VertexCache;
 
 		void VertexCache_reset (const void* vertices, u32 vertexCount,
-					const u16* indices, u32 indexCount,
-					E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType);
+					const void* indices, u32 indexCount,
+					E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType,
+					E_INDEX_TYPE iType);
 		void VertexCache_get ( s4DVertex ** face );
-		void VertexCache_get2 ( s4DVertex ** face );
+		void VertexCache_getbypass ( s4DVertex ** face );
 
 		void VertexCache_fill ( const u32 sourceIndex,const u32 destIndex );
 		s4DVertex * VertexCache_getVertex ( const u32 sourceIndex );
@@ -234,7 +236,11 @@ namespace video
 
 
 #ifdef SOFTWARE_DRIVER_2_LIGHTING
-		void lightVertex ( s4DVertex *dest, const S3DVertex *source );
+
+		void lightVertex ( s4DVertex *dest, u32 vertexargb );
+		//! Sets the fog mode.
+		virtual void setFog(SColor color, bool linearFog, f32 start,
+			f32 end, f32 density, bool pixelFog, bool rangeFog);
 #endif
 
 
@@ -244,21 +250,20 @@ namespace video
 
 		void ndc_2_dc_and_project ( s4DVertex *dest,s4DVertex *source, u32 vIn ) const;
 		f32 screenarea ( const s4DVertex *v0 ) const;
-		void select_polygon_mipmap ( s4DVertex *source, u32 vIn, s32 tex );
+		void select_polygon_mipmap ( s4DVertex *source, u32 vIn, u32 tex, const core::dimension2du& texSize );
 		f32 texelarea ( const s4DVertex *v0, int tex ) const;
 
 
 		void ndc_2_dc_and_project2 ( const s4DVertex **v, const u32 size ) const;
 		f32 screenarea2 ( const s4DVertex **v ) const;
 		f32 texelarea2 ( const s4DVertex **v, int tex ) const;
-		void select_polygon_mipmap2 ( s4DVertex **source, s32 tex ) const;
+		void select_polygon_mipmap2 ( s4DVertex **source, u32 tex, const core::dimension2du& texSize ) const;
 
 
 		SBurningShaderLightSpace LightSpace;
 		SBurningShaderMaterial Material;
 
 		static const sVec4 NDCPlane[6];
-
 	};
 
 } // end namespace video
@@ -266,5 +271,4 @@ namespace video
 
 
 #endif
-
 

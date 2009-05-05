@@ -35,7 +35,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 		io::IFileSystem* io)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
-	AntiAlias(params.AntiAlias), RenderTargetTexture(0), LastSetLight(-1),
+	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
@@ -51,25 +51,25 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 {
 	// Set up pixel format descriptor with desired parameters
 	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),	// Size Of This Pixel Format Descriptor
-		1,				// Version Number
-		PFD_DRAW_TO_WINDOW |		// Format Must Support Window
-		PFD_SUPPORT_OPENGL |		// Format Must Support OpenGL
+		sizeof(PIXELFORMATDESCRIPTOR),             // Size Of This Pixel Format Descriptor
+		1,                                         // Version Number
+		PFD_DRAW_TO_WINDOW |                       // Format Must Support Window
+		PFD_SUPPORT_OPENGL |                       // Format Must Support OpenGL
 		(params.Doublebuffer?PFD_DOUBLEBUFFER:0) | // Must Support Double Buffering
-		(params.Stereobuffer?PFD_STEREO:0) | // Must Support Stereo Buffer
-		PFD_TYPE_RGBA,			// Request An RGBA Format
-		params.Bits,				// Select Our Color Depth
-		0, 0, 0, 0, 0, 0,		// Color Bits Ignored
-		0,				// No Alpha Buffer
-		0,				// Shift Bit Ignored
-		0,				// No Accumulation Buffer
-		0, 0, 0, 0,			// Accumulation Bits Ignored
-		24,				// Z-Buffer (Depth Buffer)
-		params.Stencilbuffer ? 1 : 0,	// Stencil Buffer Depth
-		0,				// No Auxiliary Buffer
-		PFD_MAIN_PLANE,			// Main Drawing Layer
-		0,				// Reserved
-		0, 0, 0				// Layer Masks Ignored
+		(params.Stereobuffer?PFD_STEREO:0),        // Must Support Stereo Buffer
+		PFD_TYPE_RGBA,                             // Request An RGBA Format
+		params.Bits,                               // Select Our Color Depth
+		0, 0, 0, 0, 0, 0,                          // Color Bits Ignored
+		0,                                         // No Alpha Buffer
+		0,                                         // Shift Bit Ignored
+		0,                                         // No Accumulation Buffer
+		0, 0, 0, 0,	                               // Accumulation Bits Ignored
+		24,                                        // Z-Buffer (Depth Buffer)
+		params.Stencilbuffer ? 1 : 0,              // Stencil Buffer Depth
+		0,                                         // No Auxiliary Buffer
+		PFD_MAIN_PLANE,                            // Main Drawing Layer
+		0,                                         // Reserved
+		0, 0, 0                                    // Layer Masks Ignored
 	};
 
 	GLuint PixelFormat;
@@ -555,6 +555,10 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// create matrix for flipping textures
 	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
 
+	// We need to reset once more at the beginning of the first rendering.
+	// This fixes problems with intermediate changes to the material during texture load.
+	ResetRenderStates = true;
+
 	return true;
 }
 
@@ -667,6 +671,12 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
 
+#if defined(_IRR_USE_SDL_DEVICE_)
+	// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
+	// it would be better if this was fixed elsewhere. 
+	glFrontFace(GL_CW);
+#endif
+
 	clearBuffers(backBuffer, zBuffer, false, color);
 	return true;
 }
@@ -721,7 +731,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			extGlActiveTexture(GL_TEXTURE0_ARB + i);
 
 		glMatrixMode(GL_TEXTURE);
-		if (mat.isIdentity() && !isRTT)
+		if (!isRTT && mat.isIdentity() )
 			glLoadIdentity();
 		else
 		{
@@ -1418,7 +1428,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 			(sourcePos.X + sourceSize.Width) * invW,
 			(isRTT?sourcePos.Y:(sourcePos.Y + sourceSize.Height)) * invH);
 
-	const core::rect<s32> poss(targetPos, core::dimension2di(sourceSize));
+	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
 	if (!setTexture(0, texture))
@@ -1762,23 +1772,22 @@ inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const char* name)
+video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
 {
 	return new COpenGLTexture(surface, name, this);
 }
 
 
-//! Sets a material. All 3d drawing functions draw geometry now
-//! using this material.
-//! \param material: Material to be used from now on.
+//! Sets a material. All 3d drawing functions draw geometry now using this material.
 void COpenGLDriver::setMaterial(const SMaterial& material)
 {
 	Material = material;
+	OverrideMaterial.apply(Material);
 
 	for (s32 i = MaxTextureUnits-1; i>= 0; --i)
 	{
 		setTransform ((E_TRANSFORMATION_STATE) (ETS_TEXTURE_0 + i),
-				material.getTextureMatrix(i));
+				Material.getTextureMatrix(i));
 	}
 }
 
@@ -1949,43 +1958,85 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	bool resetAllRenderStates)
 {
 	if (resetAllRenderStates ||
+		lastmaterial.ColorMaterial != material.ColorMaterial)
+	{
+		if (material.ColorMaterial != ECM_NONE)
+			glEnable(GL_COLOR_MATERIAL);
+		switch (material.ColorMaterial)
+		{
+		case ECM_NONE:
+			glDisable(GL_COLOR_MATERIAL);
+			break;
+		case ECM_DIFFUSE:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+			break;
+		case ECM_AMBIENT:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT);
+			break;
+		case ECM_EMISSIVE:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_EMISSION);
+			break;
+		case ECM_SPECULAR:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_SPECULAR);
+			break;
+		case ECM_DIFFUSE_AND_AMBIENT:
+			glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+			break;
+		}
+	}
+
+	if (resetAllRenderStates ||
 		lastmaterial.AmbientColor != material.AmbientColor ||
 		lastmaterial.DiffuseColor != material.DiffuseColor ||
-		lastmaterial.EmissiveColor != material.EmissiveColor)
+		lastmaterial.EmissiveColor != material.EmissiveColor ||
+		lastmaterial.ColorMaterial != material.ColorMaterial)
 	{
 		GLfloat color[4];
 
 		const f32 inv = 1.0f / 255.0f;
 
-		color[0] = material.AmbientColor.getRed() * inv;
-		color[1] = material.AmbientColor.getGreen() * inv;
-		color[2] = material.AmbientColor.getBlue() * inv;
-		color[3] = material.AmbientColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+		if ((material.ColorMaterial != video::ECM_AMBIENT) &&
+			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+		{
+			color[0] = material.AmbientColor.getRed() * inv;
+			color[1] = material.AmbientColor.getGreen() * inv;
+			color[2] = material.AmbientColor.getBlue() * inv;
+			color[3] = material.AmbientColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, color);
+		}
 
-		color[0] = material.DiffuseColor.getRed() * inv;
-		color[1] = material.DiffuseColor.getGreen() * inv;
-		color[2] = material.DiffuseColor.getBlue() * inv;
-		color[3] = material.DiffuseColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+		if ((material.ColorMaterial != video::ECM_DIFFUSE) &&
+			(material.ColorMaterial != video::ECM_DIFFUSE_AND_AMBIENT))
+		{
+			color[0] = material.DiffuseColor.getRed() * inv;
+			color[1] = material.DiffuseColor.getGreen() * inv;
+			color[2] = material.DiffuseColor.getBlue() * inv;
+			color[3] = material.DiffuseColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, color);
+		}
 
-		color[0] = material.EmissiveColor.getRed() * inv;
-		color[1] = material.EmissiveColor.getGreen() * inv;
-		color[2] = material.EmissiveColor.getBlue() * inv;
-		color[3] = material.EmissiveColor.getAlpha() * inv;
-		glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
+		if (material.ColorMaterial != video::ECM_EMISSIVE)
+		{
+			color[0] = material.EmissiveColor.getRed() * inv;
+			color[1] = material.EmissiveColor.getGreen() * inv;
+			color[2] = material.EmissiveColor.getBlue() * inv;
+			color[3] = material.EmissiveColor.getAlpha() * inv;
+			glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, color);
+		}
 	}
 
 	if (resetAllRenderStates ||
 		lastmaterial.SpecularColor != material.SpecularColor ||
-		lastmaterial.Shininess != material.Shininess)
+		lastmaterial.Shininess != material.Shininess ||
+		lastmaterial.ColorMaterial != material.ColorMaterial)
 	{
 		GLfloat color[4]={0.f,0.f,0.f,1.f};
 		const f32 inv = 1.0f / 255.0f;
 
 		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, material.Shininess);
 		// disable Specular colors if no shininess is set
-		if (material.Shininess != 0.0f)
+		if ((material.Shininess != 0.0f) &&
+			(material.ColorMaterial != video::ECM_SPECULAR))
 		{
 #ifdef GL_EXT_separate_specular_color
 			if (FeatureAvailable[IRR_EXT_separate_specular_color])
@@ -2702,26 +2753,31 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
 
 	glBegin(GL_QUADS);
 
 	glColor4ub(leftDownEdge.getRed(), leftDownEdge.getGreen(), leftDownEdge.getBlue(), leftDownEdge.getAlpha());
-	glVertex3f(-1.1f,-1.1f,0.9f);
+	glVertex3f(-1.f,-1.f,-0.9f);
 
 	glColor4ub(leftUpEdge.getRed(), leftUpEdge.getGreen(), leftUpEdge.getBlue(), leftUpEdge.getAlpha());
-	glVertex3f(-1.1f, 1.1f,0.9f);
+	glVertex3f(-1.f, 1.f,-0.9f);
 
 	glColor4ub(rightUpEdge.getRed(), rightUpEdge.getGreen(), rightUpEdge.getBlue(), rightUpEdge.getAlpha());
-	glVertex3f(1.1f, 1.1f,0.9f);
+	glVertex3f(1.f, 1.f,-0.9f);
 
 	glColor4ub(rightDownEdge.getRed(), rightDownEdge.getGreen(), rightDownEdge.getBlue(), rightDownEdge.getAlpha());
-	glVertex3f(1.1f,-1.1f,0.9f);
+	glVertex3f(1.f,-1.f,-0.9f);
 
 	glEnd();
 
 	clearBuffers(false, false, clearStencilBuffer, 0x0);
 
 	// restore settings
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 	glPopAttrib();
 }
@@ -2887,15 +2943,13 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 }
 
 
-ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const c8* name)
+ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
 	setTextureCreationFlag(ETCF_CREATE_MIP_MAPS, false);
 
 	video::ITexture* rtt = 0;
-	if (name==0)
-		name="rt";
 #if defined(GL_EXT_framebuffer_object)
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
@@ -3211,7 +3265,7 @@ namespace video
 // WINDOWS VERSION
 // -----------------------------------
 #ifdef _IRR_USE_WINDOWS_DEVICE_
-IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
+IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 	io::IFileSystem* io)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_

@@ -351,6 +351,9 @@ void CDemo::loadSceneData()
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* sm = device->getSceneManager();
 
+	// Quake3 Shader controls Z-Writing
+	sm->getParameters()->setAttribute(scene::ALLOW_ZWRITE_ON_TRANSPARENT, true);
+
 	quakeLevelMesh = (scene::IQ3LevelMesh*) sm->getMesh("maps/20kdm2.bsp");
 
 	if (quakeLevelMesh)
@@ -399,7 +402,7 @@ void CDemo::loadSceneData()
 			s32 shaderIndex = (s32) material.MaterialTypeParam2;
 
 			// the meshbuffer can be rendered without additional support, or it has no shader
-			const scene::quake3::SShader *shader = quakeLevelMesh->getShader ( shaderIndex );
+			const scene::quake3::IShader *shader = quakeLevelMesh->getShader ( shaderIndex );
 			if ( 0 == shader )
 			{
 				continue;
@@ -407,9 +410,6 @@ void CDemo::loadSceneData()
 			// Now add the MeshBuffer(s) with the current Shader to the Manager
 			sm->addQuake3SceneNode ( meshBuffer, shader );
 		}
-
-		// original mesh is not needed anymore
-		quakeLevelMesh->releaseMesh ( scene::quake3::E_Q3_MESH_ITEMS );
 
 	}
 
@@ -482,7 +482,7 @@ void CDemo::loadSceneData()
 		core::stringc tmp("../../media/portal");
 		tmp += g;
 		tmp += ".bmp";
-		video::ITexture* t = driver->getTexture( tmp.c_str () );
+		video::ITexture* t = driver->getTexture( tmp );
 		textures.push_back(t);
 	}
 

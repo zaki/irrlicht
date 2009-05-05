@@ -9,10 +9,33 @@
 #include "irrString.h"
 #include "irrArray.h"
 
+
 namespace irr
 {
 namespace io
 {
+
+/*!
+	FileSystem, which manages where files are, so that modules which
+	use the the io do not need to know where every file is located.
+	local FileEntry
+*/
+struct FileEntry
+{
+	core::string<c16> Name;
+	core::string<c16> FullName;
+	long Size;
+	bool isDirectory;
+
+	bool operator <(const struct FileEntry& other) const
+	{
+		if ( isDirectory ^ other.isDirectory )
+			return isDirectory;
+
+		return Name.lower_ignore_case ( other.Name );
+	}
+};
+
 
 /*!
 	FileSystem, which manages where files are, so that modules which
@@ -23,7 +46,9 @@ class CFileList : public IFileList
 public:
 
 	//! constructor
-	CFileList();
+	CFileList( const c8 *param = 0);
+
+	virtual ~CFileList();
 
 	//! Returns the amount of files in the filelist.
 	/** \return Amount of files and directories in the file list. */
@@ -33,10 +58,10 @@ public:
 	/** \param index is the zero based index of the file which name should
 	be returned. The index has to be smaller than the amount getFileCount() returns.
 	\return The file name of the file. Returns 0, if an error occured. */
-	virtual const c8* getFileName(u32 index) const;
+	virtual const core::string<c16>& getFileName(u32 index) const;
 
 	//! Gets the full name of a file in the list, path included, based on an index.
-	virtual const c8* getFullFileName(u32 index);
+	virtual const core::string<c16>& getFullFileName(u32 index);
 
 	//! Returns of the file is a directory
 	/** \param index is the zero based index of the file which name should
@@ -44,27 +69,14 @@ public:
 	\return True if the file is a directory, else false. */
 	virtual bool isDirectory(u32 index) const;
 
-private:
+//protected:
 
-	struct FileEntry
-	{
-		core::stringc Name;
-		core::stringc FullName;
-		long Size;
-		bool isDirectory;
-
-		bool operator <(const struct FileEntry& other) const
-		{
-			if ( isDirectory ^ other.isDirectory )
-				return isDirectory;
-
-			return Name.lower_ignore_case ( other.Name );
-		}
-	};
-
-	core::stringc Path;
+	core::string<c16> Path;
 	core::array< FileEntry > Files;
+
+	void constructNative ();
 };
+
 
 } // end namespace irr
 } // end namespace io

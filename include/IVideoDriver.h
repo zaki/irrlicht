@@ -102,6 +102,60 @@ namespace video
 		ERT_AUX_BUFFER4
 	};
 
+	struct SOverrideMaterial
+	{
+		//! The Material values
+		SMaterial Material;
+		//! Which values are taken for override
+		/** OR'ed values from E_MATERIAL_FLAGS. */
+		u32 EnableFlags;
+		//! Set in which render passes the material override is active.
+		/** OR'ed values from E_SCENE_NODE_RENDER_PASS. */
+		u16 EnablePasses;
+		//! Global enable flag, overwritten by the SceneManager in each pass
+		/** The Scenemanager uses the EnablePass array and sets Enabled to
+		true if the Override material is enabled in the current pass. */
+		bool Enabled;
+
+		//! Default constructor
+		SOverrideMaterial() : EnableFlags(0), EnablePasses(0), Enabled(false) {}
+
+		//! Apply the enabled overrides
+		void apply(SMaterial& material)
+		{
+			if (Enabled)
+			{
+				for (u32 i=0; i<32; ++i)
+				{
+					const u32 num=(1<<i);
+					if (EnableFlags & num)
+					{
+						switch (num)
+						{
+						case EMF_WIREFRAME: material.Wireframe = Material.Wireframe; break;
+						case EMF_POINTCLOUD: material.PointCloud = Material.PointCloud; break;
+						case EMF_GOURAUD_SHADING: material.GouraudShading = Material.GouraudShading; break;
+						case EMF_LIGHTING: material.Lighting = Material.Lighting; break;
+						case EMF_ZBUFFER: material.ZBuffer = Material.ZBuffer; break;
+						case EMF_ZWRITE_ENABLE: material.ZWriteEnable = Material.ZWriteEnable; break;
+						case EMF_BACK_FACE_CULLING: material.BackfaceCulling = Material.BackfaceCulling; break;
+						case EMF_FRONT_FACE_CULLING: material.FrontfaceCulling = Material.FrontfaceCulling; break;
+						case EMF_FOG_ENABLE: material.FogEnable = Material.FogEnable; break;
+						case EMF_NORMALIZE_NORMALS: material.NormalizeNormals = Material.NormalizeNormals; break;
+						case EMF_ANTI_ALIASING: material.AntiAliasing = Material.AntiAliasing; break;
+						case EMF_COLOR_MASK: material.ColorMask = Material.ColorMask; break;
+						case EMF_BILINEAR_FILTER: material.TextureLayer[0].BilinearFilter = Material.TextureLayer[0].BilinearFilter; break;
+						case EMF_TRILINEAR_FILTER: material.TextureLayer[0].TrilinearFilter = Material.TextureLayer[0].TrilinearFilter; break;
+						case EMF_ANISOTROPIC_FILTER: material.TextureLayer[0].AnisotropicFilter = Material.TextureLayer[0].AnisotropicFilter; break;
+						case EMF_TEXTURE_WRAP: material.TextureLayer[0].TextureWrap = Material.TextureLayer[0].TextureWrap; break;
+						}
+					}
+				}
+			}
+		}
+
+	};
+
 	//! Interface to driver which is able to perform 2d and 3d graphics functions.
 	/** This interface is one of the most important interfaces of
 	the Irrlicht Engine: All rendering and texture manipulation is done with
@@ -173,6 +227,26 @@ namespace video
 		\return Matrix describing the transformation. */
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const =0;
 
+		//! Retrieve the number of image loaders
+		/** \return Number of image loaders */
+		virtual u32 getImageLoaderCount() const = 0;
+
+		//! Retrieve the given image loader
+		/** \param n The index of the loader to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified loader, 0 if the index is uncorrect. */
+		virtual IImageLoader* getImageLoader(u32 n) = 0;
+
+		//! Retrieve the number of image writers
+		/** \return Number of image writers */
+		virtual u32 getImageWriterCount() const = 0;
+
+		//! Retrieve the given image writer
+		/** \param n The index of the writer to retrieve. This parameter is an 0-based
+		array index.
+		\return A pointer to the specified writer, 0 if the index is uncorrect. */
+		virtual IImageWriter* getImageWriter(u32 n) = 0;
+
 		//! Sets a material.
 		/** All 3d drawing functions will draw geometry using this material thereafter.
 		\param material: Material to be used from now on. */
@@ -188,19 +262,7 @@ namespace video
 		\return Pointer to the texture, or 0 if the texture
 		could not be loaded. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
-		virtual ITexture* getTexture(const c8* filename) =0;
-
-		//! Get access to a named texture.
-		/** Loads the texture from disk if it is not
-		already loaded and generates mipmap levels if desired.
-		Texture loading can be influenced using the
-		setTextureCreationFlag() method. The texture can be in several
-		imageformats, such as BMP, JPG, TGA, PCX, PNG, and PSD.
-		\param filename Filename of the texture to be loaded.
-		\return Pointer to the texture, or 0 if the texture
-		could not be loaded. This pointer should not be dropped. See
-		IReferenceCounted::drop() for more information. */
-		virtual ITexture* getTexture(const core::stringc& filename) =0;
+		virtual ITexture* getTexture(const core::string<c16>& filename) = 0;
 
 		//! Get access to a named texture.
 		/** Loads the texture from disk if it is not
@@ -230,7 +292,7 @@ namespace video
 		//! Renames a texture
 		/** \param texture Pointer to the texture to rename.
 		\param newName New name for the texture. This should be a unique name. */
-		virtual void renameTexture(ITexture* texture, const c8* newName) =0;
+		virtual void renameTexture(ITexture* texture, const core::string<c16>& newName) = 0;
 
 		//! Creates an empty texture of specified size.
 		/** \param size: Size of the texture.
@@ -243,7 +305,7 @@ namespace video
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size,
-			const c8* name, ECOLOR_FORMAT format = ECF_A8R8G8B8) =0;
+			const core::string<c16>& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
 
 		//! Creates a texture from an IImage.
 		/** \param name A name for the texture. Later calls of
@@ -252,7 +314,7 @@ namespace video
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const c8* name, IImage* image) =0;
+		virtual ITexture* addTexture(const core::string<c16>& name, IImage* image) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
@@ -264,12 +326,7 @@ namespace video
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name=0) =0;
-
-		//! Adds a new render target texture
-		/** \deprecated use addRenderTargetTexture instead. */
-		virtual ITexture* createRenderTargetTexture(const core::dimension2d<u32>& size,
-				const c8* name=0) =0;
+				const core::string<c16>& name = "rt" ) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
 		/** This method can free a lot of memory!
@@ -349,7 +406,7 @@ namespace video
 		way:
 		\code
 		// create render target
-		ITexture* target = driver->addRenderTargetTexture(core::dimension2d<s32>(128,128), "rtt1");
+		ITexture* target = driver->addRenderTargetTexture(core::dimension2d<u32>(128,128), "rtt1");
 
 		// ...
 
@@ -855,7 +912,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImageFromFile(const c8* filename) =0;
+		virtual IImage* createImageFromFile(const core::string<c16>& filename) = 0;
 
 		//! Creates a software image from a file.
 		/** No hardware texture will be created for this image. This
@@ -875,7 +932,7 @@ namespace video
 		\param param Control parameter for the backend (e.g. compression
 		level).
 		\return True on successful write. */
-		virtual bool writeImageToFile(IImage* image, const c8* filename, u32 param =0) =0;
+		virtual bool writeImageToFile(IImage* image, const core::string<c16>& filename, u32 param = 0) = 0;
 
 		//! Writes the provided image to a file.
 		/** Requires that there is a suitable image writer registered
@@ -1053,7 +1110,7 @@ namespace video
 		if it is not currently loaded.
 		\param filename Name of the texture.
 		\return Pointer to loaded texture, or 0 if not found. */
-		virtual video::ITexture* findTexture(const c8* filename) =0;
+		virtual video::ITexture* findTexture(const core::string<c16>& filename) = 0;
 
 		//! Set or unset a clipping plane.
 		/** There are at least 6 clipping planes available for the user
@@ -1078,6 +1135,13 @@ namespace video
 		//! Set the minimum number of vertices for which a hw buffer will be created
 		/** \param count Number of vertices to set as minimum. */
 		virtual void setMinHardwareBufferVertexCount(u32 count) =0;
+
+		//! Get the global Material, which might override local materials.
+		/** Depending on the enable flags, values from this Material
+		are used to override those of local materials of some
+		meshbuffer being rendered.
+		\return Reference to the Override Material. */
+		virtual SOverrideMaterial& getOverrideMaterial() =0;
 
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() =0;

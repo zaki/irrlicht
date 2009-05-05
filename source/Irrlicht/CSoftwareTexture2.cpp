@@ -16,15 +16,15 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool generateMipLevels, bool isRenderTarget)
-: ITexture(name), MipMapLOD(0), HasMipMaps(generateMipLevels), IsRenderTarget(isRenderTarget)
+CSoftwareTexture2::CSoftwareTexture2(IImage* image, const core::string<c16>& name, u32 flags )
+: ITexture(name), MipMapLOD(0), Flags ( flags )
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture2");
 	#endif
 
 	#ifndef SOFTWARE_DRIVER_2_MIPMAPPING
-		HasMipMaps = false;
+		Flags &= ~GEN_MIPMAP;
 	#endif
 
 	memset32 ( MipMap, 0, sizeof ( MipMap ) );
@@ -33,8 +33,17 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 	{
 		OrigSize = image->getDimension();
 
+		core::setbit_cond ( Flags,
+							image->getColorFormat () == video::ECF_A8R8G8B8 || 
+							image->getColorFormat () == video::ECF_A1R5G5B5,
+							HAS_ALPHA
+						);
+	
 		core::dimension2d<u32> optSize(
-				OrigSize.getOptimalSize(true, false, false));
+				OrigSize.getOptimalSize( 0 != ( Flags & NP2_SIZE ),
+				false, false,
+				( Flags & NP2_SIZE ) ? SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE : 0)
+			);
 
 		if ( OrigSize == optSize )
 		{
@@ -42,12 +51,23 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const char* name, bool gener
 		}
 		else
 		{
-			//os::Printer::log ( "Burningvideo: Warning Texture reformat", ELL_WARNING );
+			char buf[256];
+			core::stringw showName ( name );
+			snprintf ( buf, 256, "Burningvideo: Warning Texture %ls reformat %dx%d -> %dx%d,%d",
+							showName.c_str(),
+							OrigSize.Width, OrigSize.Height, optSize.Width, optSize.Height, 
+							BURNINGSHADER_COLOR_FORMAT
+						);
+
+			OrigSize = optSize;
+			os::Printer::log ( buf, ELL_WARNING );
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
+			MipMap[0]->fill ( 0 );
+
 
 			// temporary CImage needed
 			CImage * temp = new CImage ( BURNINGSHADER_COLOR_FORMAT, image );
-			temp->copyToScalingBoxFilter ( MipMap[0], 0 );
+			temp->copyToScalingBoxFilter ( MipMap[0],0, false );
 			//temp->copyToScaling(MipMap[0]);
 			temp->drop ();
 		}
@@ -73,13 +93,13 @@ CSoftwareTexture2::~CSoftwareTexture2()
 //! modifying the texture
 void CSoftwareTexture2::regenerateMipMapLevels()
 {
-	if ( !HasMipMaps )
+	if ( !hasMipMaps () )
 		return;
 
 	s32 i;
 
 	// release
-	for ( i = 1; i!= SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i )
+	for ( i = 1; i < SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i )
 	{
 		if ( MipMap[i] )
 			MipMap[i]->drop();
@@ -97,7 +117,8 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 		newSize.Height = core::s32_max ( 1, currentSize.Height >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
 
 		MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
-		MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0 );
+		MipMap[i]->fill ( 0 );
+		MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0, false );
 		c = MipMap[i];
 		++i;
 	}

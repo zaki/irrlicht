@@ -53,9 +53,9 @@ bool CMemoryReadWriteFile::seek(long finalPos, bool relativeMovement)
 
 }
 
-const c8* CMemoryReadWriteFile::getFileName() const
+const core::string<c16>& CMemoryReadWriteFile::getFileName() const
 {
-	return FileName.c_str();
+	return FileName;
 }
 
 long CMemoryReadWriteFile::getPos() const

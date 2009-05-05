@@ -27,20 +27,22 @@ int main()
 
 	switch(i)
 	{
-		case 'a': driverType = video::EDT_DIRECT3D9;break;
-		case 'b': driverType = video::EDT_DIRECT3D8;break;
-		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
-		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
-		case 'f': driverType = video::EDT_NULL;     break;
+		case 'a': driverType = video::EDT_DIRECT3D9;     break;
+		case 'b': driverType = video::EDT_DIRECT3D8;     break;
+		case 'c': driverType = video::EDT_OPENGL;        break;
+		case 'd': driverType = video::EDT_SOFTWARE;      break;
+		case 'e': driverType = video::EDT_BURNINGSVIDEO; break;
+		case 'f': driverType = video::EDT_NULL;          break;
 		default: return 1;
 	}	
 
 
-	IrrlichtDevice *device =createDevice(driverType, core::dimension2d<s32>(800, 600));
+	IrrlichtDevice *device =createDevice(driverType, core::dimension2du(800, 600));
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment *env = device->getGUIEnvironment();
+
+	device->setResizable(true);
 
 	/*
 		first we create the factory which can make new GUI elements

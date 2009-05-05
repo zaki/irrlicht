@@ -85,17 +85,26 @@ public:
 	texture coordinate space. */
 	virtual void makePlanarTextureMapping(scene::IMesh* mesh, f32 resolution) const;
 
+	//! Creates a planar texture mapping on the meshbuffer
+	virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const;
+
+	//! Creates a planar texture mapping on the meshbuffer
+	void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const;
+
 	//! Creates a copy of the mesh, which will only consist of S3DVertexTangents vertices.
 	virtual IMesh* createMeshWithTangents(IMesh* mesh, bool recalculateNormals=false, bool smooth=false, bool angleWeighted=false) const;
 
 	//! Creates a copy of the mesh, which will only consist of S3D2TCoords vertices.
 	virtual IMesh* createMeshWith2TCoords(IMesh* mesh) const;
 
+	//! Creates a copy of the mesh, which will only consist of S3DVertex vertices.
+	virtual IMesh* createMeshWith1TCoords(IMesh* mesh) const;
+
 	//! Creates a copy of the mesh, which will only consist of unique triangles, i.e. no vertices are shared.
 	virtual IMesh* createMeshUniquePrimitives(IMesh* mesh) const;
 
 	//! Creates a copy of the mesh, which will have all duplicated vertices removed, i.e. maximal amount of vertices are shared via indexing.
-	virtual IMesh* createMeshWelded(IMesh *mesh, f32 tolerance=core::ROUNDING_ERROR_32) const;
+	virtual IMesh* createMeshWelded(IMesh *mesh, f32 tolerance=core::ROUNDING_ERROR_f32) const;
 
 	//! Returns amount of polygons in mesh.
 	virtual s32 getPolyCount(scene::IMesh* mesh) const;

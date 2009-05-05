@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="20.ManagedLights_vc8"
 	ProjectGUID="{16007FE2-142B-47F8-93E1-519BA3F39E71}"
 	RootNamespace="ManagedLights_vc8"

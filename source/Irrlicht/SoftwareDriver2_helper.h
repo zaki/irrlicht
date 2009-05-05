@@ -36,6 +36,7 @@ namespace irr
 	#define	SHIFT_B	0
 
 	#define	COLOR_MAX					0xFF
+	#define	COLOR_MAX_LOG2				8
 	#define	COLOR_BRIGHT_WHITE			0xFFFFFFFF
 
 	#define VIDEO_SAMPLE_GRANULARITY	2
@@ -54,6 +55,7 @@ namespace irr
 	#define	SHIFT_B	0
 
 	#define	COLOR_MAX					0x1F
+	#define	COLOR_MAX_LOG2				5
 	#define	COLOR_BRIGHT_WHITE			0xFFFF
 	#define VIDEO_SAMPLE_GRANULARITY	1
 
@@ -118,7 +120,11 @@ REALINLINE void memcpy32_small ( void * dest, const void *source, u32 bytesize )
 // integer log2 of a float ieee 754. TODO: non ieee floating point
 static inline s32 s32_log2_f32( f32 f)
 {
+#ifdef IRRLICHT_FAST_MATH
+	u32 x = IR ( f );
+#else
 	u32 x = core::IR ( f );
+#endif
 
 	return ((x & 0x7F800000) >> 23) - 127;
 }
@@ -176,17 +182,17 @@ REALINLINE u32 PixelBlend32 ( const u32 c2, const u32 c1, u32 alpha )
 	Pixel = dest * ( 1 - alpha ) + source * alpha
 	alpha [0;32]
 */
-inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u32 alpha )
+inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u16 alpha )
 {
-	u32 srcRB = c1 & 0x7C1F;
-	u32 srcXG = c1 & 0x03E0;
+	u16 srcRB = c1 & 0x7C1F;
+	u16 srcXG = c1 & 0x03E0;
 
-	u32 dstRB = c2 & 0x7C1F;
-	u32 dstXG = c2 & 0x03E0;
+	u16 dstRB = c2 & 0x7C1F;
+	u16 dstXG = c2 & 0x03E0;
 
 
-	u32 rb = srcRB - dstRB;
-	u32 xg = srcXG - dstXG;
+	u16 rb = srcRB - dstRB;
+	u16 xg = srcXG - dstXG;
 
 	rb *= alpha;
 	xg *= alpha;
@@ -224,12 +230,21 @@ inline u32 PixelLerp32 ( const u32 source, const u32 value )
 }
 
 /*
-	return alpha in [0;256] Granularity
-	 add highbit alpha ( alpha > 127 ? + 1 )
+	return alpha in [0;256] Granularity rom 32-Bit ARGB
+	add highbit alpha ( alpha > 127 ? + 1 )
 */
 inline u32 extractAlpha ( const u32 c )
 {
 	return ( c >> 24 ) + ( c >> 31 );
+}
+
+/*
+	return alpha in [0;255] Granularity and 32-Bit ARGB
+	add highbit alpha ( alpha > 127 ? + 1 )
+*/
+inline u32 packAlpha ( const u32 c )
+{
+	return (c > 127 ? c - 1 : c) << 24;
 }
 
 /*
@@ -289,7 +304,7 @@ REALINLINE u32 PixelAdd32 ( const u32 c2, const u32 c1)
 	return modulo | clamp;
 }
 
-
+#if 0
 
 // 1 - Bit Alpha Blending
 inline u16 PixelBlend16 ( const u16 destination, const u16 source )
@@ -318,7 +333,23 @@ inline u32 PixelBlend16_simd ( const u32 destination, const u32 source )
 			return destination;
 	}
 }
+#else
 
+// 1 - Bit Alpha Blending
+inline u16 PixelBlend16 ( const u16 c2, const u16 c1 )
+{
+	u16 mask = ((c1 & 0x8000) >> 15 ) + 0x7fff;
+	return (c2 & mask ) | ( c1 & ~mask );
+}
+
+// 1 - Bit Alpha Blending 16Bit SIMD
+inline u32 PixelBlend16_simd ( const u32 c2, const u32 c1 )
+{
+	u32 mask = ((c1 & 0x80008000) >> 15 ) + 0x7fff7fff;
+	return (c2 & mask ) | ( c1 & ~mask );
+}
+
+#endif
 
 /*!
 	Pixel = dest * ( 1 - SourceAlpha ) + source * SourceAlpha
@@ -362,7 +393,7 @@ inline u32 PixelBlend32 ( const u32 c2, const u32 c1 )
 	rb &= 0x00FF00FF;
 	xg &= 0x0000FF00;
 
-	return rb | xg;
+	return (c1 & 0xFF000000) | rb | xg;
 }
 
 
@@ -439,7 +470,7 @@ static inline int f_round2(f32 f)
 	convert f32 to Fix Point.
 	multiply is needed anyway, so scale mulby
 */
-REALINLINE tFixPoint f32_to_fixPoint (const f32 x, const f32 mulby = FIX_POINT_F32_MUL )
+REALINLINE tFixPoint tofix (const f32 x, const f32 mulby = FIX_POINT_F32_MUL )
 {
 	return (tFixPoint) (x * mulby);
 }
@@ -462,11 +493,20 @@ REALINLINE tFixPoint imulFix(const tFixPoint x, const tFixPoint y)
 }
 
 /*
+	Fix Point , Fix Point Multiply x * y * 2
+*/
+REALINLINE tFixPoint imulFix2(const tFixPoint x, const tFixPoint y)
+{
+	return ( x * y) >> ( FIX_POINT_PRE -1 );
+}
+
+
+/*
 	Multiply x * y * 1
 */
 REALINLINE tFixPoint imulFix_tex1(const tFixPoint x, const tFixPoint y)
 {
-	return ( ( (tFixPointu) x >> 2 ) * ( (tFixPointu) y >> 2 ) ) >> (tFixPointu) ( FIX_POINT_PRE + 1 );
+	return ( ( (tFixPointu) x >> 2 ) * ( (tFixPointu) y >> 2 ) ) >> (tFixPointu) ( FIX_POINT_PRE + 4 );
 }
 
 /*
@@ -528,29 +568,80 @@ inline s32 f32_to_23Bits(const f32 x)
 REALINLINE tVideoSample fix_to_color ( const tFixPoint r, const tFixPoint g, const tFixPoint b )
 {
 #ifdef __BIG_ENDIAN__
-	return	( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
+	return	FIXPOINT_COLOR_MAX |
+			( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
 			( g & FIXPOINT_COLOR_MAX) << ( 16 - FIX_POINT_PRE ) |
-			//( g & FIXPOINT_COLOR_MAX) << ( SHIFT_G - FIX_POINT_PRE ) |
 			( b & FIXPOINT_COLOR_MAX) << ( 24 - FIX_POINT_PRE );
 #else
-	return	( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
+	return	( FIXPOINT_COLOR_MAX & FIXPOINT_COLOR_MAX) << ( SHIFT_A - FIX_POINT_PRE ) |
+			( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
 			( g & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_G ) |
-			//( g & FIXPOINT_COLOR_MAX) << ( SHIFT_G - FIX_POINT_PRE ) |
 			( b & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_B );
 #endif
 }
 
 
 /*!
-	return fixpoint from VideoSample
+	return VideoSample from fixpoint
+*/
+REALINLINE tVideoSample fix4_to_color ( const tFixPoint a, const tFixPoint r, const tFixPoint g, const tFixPoint b )
+{
+#ifdef __BIG_ENDIAN__
+	return	( a & (FIX_POINT_FRACT_MASK - 1 )) >> ( FIX_POINT_PRE ) |
+			( r & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - 8) |
+			( g & FIXPOINT_COLOR_MAX) << ( 16 - FIX_POINT_PRE ) |
+			( b & FIXPOINT_COLOR_MAX) << ( 24 - FIX_POINT_PRE );
+#else
+	return	( a & (FIX_POINT_FRACT_MASK - 1 )) << ( SHIFT_A - 1 ) |
+			( r & FIXPOINT_COLOR_MAX) << ( SHIFT_R - FIX_POINT_PRE ) |
+			( g & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_G ) |
+			( b & FIXPOINT_COLOR_MAX) >> ( FIX_POINT_PRE - SHIFT_B );
+#endif
+
+}
+
+/*!
+	return fixpoint from VideoSample granularity COLOR_MAX
 */
 inline void color_to_fix ( tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
 {
-	r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE );
-	//g	 =	(t00 & MASK_G) >> ( SHIFT_G - FIX_POINT_PRE );
-	g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
-	b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
 }
+
+/*!
+	return fixpoint from VideoSample granularity COLOR_MAX
+*/
+inline void color_to_fix ( tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
+{
+	(tFixPointu&) a	 =	(t00 & MASK_A) >> ( SHIFT_A - FIX_POINT_PRE );
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) << ( FIX_POINT_PRE - SHIFT_G );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - SHIFT_B );
+}
+
+/*!
+	return fixpoint from VideoSample granularity 0..FIX_POINT_ONE
+*/
+inline void color_to_fix1 ( tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
+{
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) >> ( SHIFT_G + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - COLOR_MAX_LOG2 );
+}
+
+/*!
+	return fixpoint from VideoSample granularity 0..FIX_POINT_ONE
+*/
+inline void color_to_fix1 ( tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoint &b, const tVideoSample t00 )
+{
+	(tFixPointu&) a	 =	(t00 & MASK_A) >> ( SHIFT_A + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) r	 =	(t00 & MASK_R) >> ( SHIFT_R + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) g	 =	(t00 & MASK_G) >> ( SHIFT_G + COLOR_MAX_LOG2 - FIX_POINT_PRE );
+	(tFixPointu&) b	 =	(t00 & MASK_B) << ( FIX_POINT_PRE - COLOR_MAX_LOG2 );
+}
+
 
 
 // ----- FP24 ---- floating point z-buffer
@@ -861,17 +952,14 @@ struct AbsRectangle
 	s32 y1;
 };
 
-inline void intersect ( AbsRectangle &dest, const AbsRectangle& a, const AbsRectangle& b)
+//! 2D Intersection test
+inline bool intersect ( AbsRectangle &dest, const AbsRectangle& a, const AbsRectangle& b)
 {
 	dest.x0 = core::s32_max( a.x0, b.x0 );
 	dest.y0 = core::s32_max( a.y0, b.y0 );
 	dest.x1 = core::s32_min( a.x1, b.x1 );
 	dest.y1 = core::s32_min( a.y1, b.y1 );
-}
-
-inline bool isValid (const AbsRectangle& a)
-{
-	return a.x0 < a.x1 && a.y0 < a.y1;
+	return dest.x0 < dest.x1 && dest.y0 < dest.y1;
 }
 
 // some 1D defines

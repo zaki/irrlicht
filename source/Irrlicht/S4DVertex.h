@@ -139,13 +139,6 @@ struct sVec4
 		w = color.b;
 	}
 
-	void saturate ()
-	{
-		x = core::clamp ( x, 0.f, 1.f );
-		y = core::clamp ( y, 0.f, 1.f );
-		z = core::clamp ( z, 0.f, 1.f );
-		w = core::clamp ( w, 0.f, 1.f );
-	}
 
 	// f = a * t + b * ( 1 - t )
 	void interpolate(const sVec4& a, const sVec4& b, const f32 t)
@@ -167,16 +160,15 @@ struct sVec4
 		return x*other.x + y*other.y + z*other.z;
 	}
 
+	f32 get_length_xyz_square () const
+	{
+		return x * x + y * y + z * z;
+	}
+
 	f32 get_length_xyz () const
 	{
-		return sqrtf ( x * x + y * y + z * z );
+		return core::squareroot ( x * x + y * y + z * z );
 	}
-
-	f32 get_inverse_length_xyz () const
-	{
-		return core::reciprocal_squareroot ( x * x + y * y + z * z );
-	}
-
 
 	void normalize_xyz ()
 	{
@@ -223,6 +215,15 @@ struct sVec4
 		return sVec4(x * other.x , y * other.y, z * other.z,w * other.w);
 	}
 
+	void mulReciprocal ( f32 s )
+	{
+		const f32 i = core::reciprocal ( s );
+		x = (f32) ( x * i );
+		y = (f32) ( y * i );
+		z = (f32) ( z * i );
+		w = (f32) ( w * i );
+	}
+/*
 	void operator*=(f32 s)
 	{
 		x *= s;
@@ -230,7 +231,7 @@ struct sVec4
 		z *= s;
 		w *= s;
 	}
-
+*/
 	void operator*=(const sVec4 &other)
 	{
 		x *= other.x;
@@ -247,6 +248,64 @@ struct sVec4
 		w = other.w;
 	}
 };
+
+struct sVec3
+{
+	f32 r, g, b;
+
+	void set ( f32 _r, f32 _g, f32 _b )
+	{
+		r = _r;
+		g = _g;
+		b = _b;
+	}
+
+	void setR8G8B8 ( u32 argb )
+	{
+		r = ( ( argb & 0x00FF0000 ) >> 16 ) * ( 1.f / 255.f );
+		g = ( ( argb & 0x0000FF00 ) >>  8 ) * ( 1.f / 255.f );
+		b = ( ( argb & 0x000000FF )       ) * ( 1.f / 255.f );
+	}
+
+	void setColorf ( const video::SColorf & color )
+	{
+		r = color.r;
+		g = color.g;
+		b = color.b;
+	}
+
+	void add (const sVec3& other)
+	{
+		r += other.r;
+		g += other.g;
+		b += other.b;
+	}
+
+	void mulAdd(const sVec3& other, const f32 v)
+	{
+		r += other.r * v;
+		g += other.g * v;
+		b += other.b * v;
+	}
+
+	void mulAdd(const sVec3& v0, const sVec3& v1)
+	{
+		r += v0.r * v1.r;
+		g += v0.g * v1.g;
+		b += v0.b * v1.b;
+	}
+
+	void saturate ( sVec4 &dest, u32 argb )
+	{
+		dest.x = ( ( argb & 0xFF000000 ) >> 24 ) * ( 1.f / 255.f );
+		dest.y = core::min_ ( r, 1.f );
+		dest.z = core::min_ ( g, 1.f );
+		dest.w = core::min_ ( b, 1.f );
+	}
+
+};
+
+
 
 inline void sCompressedVec4::setVec4 ( const sVec4 & v )
 {
@@ -281,7 +340,7 @@ const u32 MATERIAL_MAX_COLORS = 1;
 const u32 BURNING_MATERIAL_MAX_TEXTURES = 2;
 
 // dummy Vertex. used for calculation vertex memory size
-struct __s4DVertex
+struct s4DVertex_proxy
 {
 	sVec4 Pos;
 
@@ -296,6 +355,9 @@ struct __s4DVertex
 #define SIZEOF_SVERTEX	64
 #define SIZEOF_SVERTEX_LOG2	6
 
+/*!
+	Internal BurningVideo Vertex
+*/
 struct s4DVertex
 {
 	sVec4 Pos;
@@ -308,7 +370,7 @@ struct s4DVertex
 
 	u32 flag;
 
-	u8 fill [ SIZEOF_SVERTEX - sizeof (__s4DVertex) ];
+	u8 fill [ SIZEOF_SVERTEX - sizeof (s4DVertex_proxy) ];
 
 	// f = a * t + b * ( 1 - t )
 	void interpolate(const s4DVertex& b, const s4DVertex& a, const f32 t)
@@ -391,7 +453,7 @@ struct SVertexCache
 	const void* vertices;
 	u32 vertexCount;
 
-	const u16* indices;
+	const void* indices;
 	u32 indexCount;
 	u32 indicesIndex;
 
@@ -402,12 +464,13 @@ struct SVertexCache
 
 	u32 vType;		//E_VERTEX_TYPE
 	u32 pType;		//scene::E_PRIMITIVE_TYPE
+	u32 iType;		//E_INDEX_TYPE iType
 
 };
 
 
 // swap 2 pointer
-inline void swapVertexPointer(const s4DVertex** v1, const s4DVertex** v2)
+REALINLINE void swapVertexPointer(const s4DVertex** v1, const s4DVertex** v2)
 {
 	const s4DVertex* b = *v1;
 	*v1 = *v2;
@@ -484,9 +547,9 @@ inline void getTexel_plain2 (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
 							const sVec4 &v
 							)
 {
-	r = f32_to_fixPoint ( v.y );
-	g = f32_to_fixPoint ( v.z );
-	b = f32_to_fixPoint ( v.w );
+	r = tofix ( v.y );
+	g = tofix ( v.z );
+	b = tofix ( v.w );
 }
 
 /*
@@ -496,22 +559,31 @@ inline void getSample_color (	tFixPoint &a, tFixPoint &r, tFixPoint &g, tFixPoin
 							const sVec4 &v
 							)
 {
-	a = f32_to_fixPoint ( v.x );
-	r = f32_to_fixPoint ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
-	g = f32_to_fixPoint ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
-	b = f32_to_fixPoint ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
+	a = tofix ( v.x );
+	r = tofix ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
+	g = tofix ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
+	b = tofix ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
 }
 
 /*
 	load a color value
 */
-inline void getSample_color (	tFixPoint &r, tFixPoint &g, tFixPoint &b, 
-							const sVec4 &v
-							)
+inline void getSample_color ( tFixPoint &r, tFixPoint &g, tFixPoint &b,const sVec4 &v )
 {
-	r = f32_to_fixPoint ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
-	g = f32_to_fixPoint ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
-	b = f32_to_fixPoint ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
+	r = tofix ( v.y, COLOR_MAX * FIX_POINT_F32_MUL);
+	g = tofix ( v.z, COLOR_MAX * FIX_POINT_F32_MUL);
+	b = tofix ( v.w, COLOR_MAX * FIX_POINT_F32_MUL);
+}
+
+/*
+	load a color value
+*/
+inline void getSample_color (	tFixPoint &r, tFixPoint &g, tFixPoint &b,
+								const sVec4 &v, const f32 mulby )
+{
+	r = tofix ( v.y, mulby);
+	g = tofix ( v.z, mulby);
+	b = tofix ( v.w, mulby);
 }
 
 

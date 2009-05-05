@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="default">
-				<Option output="..\..\bin\gcc\LoadIrrFile" prefix_auto="0" extension_auto="1" />
+				<Option output="../../bin/gcc/LoadIrrFile" prefix_auto="0" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option projectResourceIncludeDirsRelation="1" />
@@ -16,6 +16,18 @@
 					<Add option="-g" />
 				</Compiler>
 			</Target>
+			<Target title="Linux">
+				<Option output="LoadIrrFile" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Linker>
+					<Add library="Xxf86vm" />
+					<Add library="Irrlicht" />
+					<Add library="GL" />
+					<Add directory="../../lib/gcc" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
 			<Add alias="All" targets="default;" />
@@ -23,11 +35,11 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-g" />
-			<Add directory="..\..\include" />
+			<Add directory="../../include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add directory="..\..\lib\gcc" />
+			<Add directory="../../lib/gcc" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>

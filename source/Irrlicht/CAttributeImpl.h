@@ -1831,14 +1831,6 @@ public:
 		return Value ? Value->getName() : core::stringc();
 	}
 
-	virtual void getString(char* target)
-	{
-		if (Value)
-			strcpy(target, Value->getName().c_str());
-		else
-			target[0] = 0x0;
-	}
-
 	virtual void setString(const char* text)
 	{
 		if (Driver)
@@ -1934,9 +1926,12 @@ public:
 		return (Value != 0);
 	}
 
-	virtual void getString(char* target)
+	virtual core::stringw getStringW()
 	{
-		sprintf(target, "0x%x", *(int*)(&Value));
+		wchar_t buf[32];
+		swprintf(buf, 32, L"0x%x", *(int*)(&Value));
+
+		return core::stringw(buf);
 	}
 
 	virtual void setString(const char* text)

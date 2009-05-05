@@ -6,6 +6,8 @@
 #define _I_IMAGE_WRITER_H_INCLUDED__
 
 #include "IReferenceCounted.h"
+#include "irrString.h"
+#include "coreutil.h"
 
 namespace irr
 {
@@ -26,7 +28,7 @@ public:
 	//! Check if this writer can write a file with the given extension
 	/** \param fileName Name of the file to check.
 	\return True if file extension specifies a writable type. */
-	virtual bool isAWriteableFileExtension(const c8* fileName) const = 0;
+	virtual bool isAWriteableFileExtension(const core::string<c16>& filename) const = 0;
 
 	//! Write image to file
 	/** \param file File handle to write to.

@@ -297,7 +297,7 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
 		// Register Class
 		WNDCLASS wc;
 		wc.style		= CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc		= (WNDPROC)WndProc;
+		wc.lpfnWndProc		= WndProc;
 		wc.cbClsExtra		= 0;
 		wc.cbWndExtra		= 0;
 		wc.hInstance		= hInstance;
@@ -552,7 +552,7 @@ void CIrrDeviceWinCE::resizeIfNecessary()
 		sprintf(tmp, "Resizing window (%ld %ld)", r.right, r.bottom);
 		os::Printer::log(tmp);
 
-		getVideoDriver()->OnResize(irr::core::dimension2d<irr::s32>(r.right, r.bottom));
+		getVideoDriver()->OnResize(irr::core::dimension2d<irr::u32>(r.right, r.bottom));
 	}
 
 	Resized = false;
@@ -610,7 +610,7 @@ bool CIrrDeviceWinCE::present(video::IImage* image, void* windowId, core::rect<s
 		bi.bV4BitCount      = image->getBitsPerPixel();
 		bi.bV4Planes        = 1;
 		bi.bV4Width         = image->getDimension().Width;
-		bi.bV4Height        = -image->getDimension().Height;
+		bi.bV4Height        = 0 - image->getDimension().Height;
 		bi.bV4V4Compression = BI_BITFIELDS;
 		bi.bV4AlphaMask     = image->getAlphaMask ();
 		bi.bV4RedMask       = image->getRedMask ();
@@ -714,14 +714,14 @@ video::IVideoModeList* CIrrDeviceWinCE::getVideoModeList()
 
 		while (EnumDisplaySettings(NULL, i, &mode))
 		{
-			VideoModeList.addMode(core::dimension2d<s32>(mode.dmPelsWidth, mode.dmPelsHeight),
+			VideoModeList.addMode(core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight),
 				mode.dmBitsPerPel);
 
 			++i;
 		}
 
 		if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &mode))
-			VideoModeList.setDesktop(mode.dmBitsPerPel, core::dimension2d<s32>(mode.dmPelsWidth, mode.dmPelsHeight));
+			VideoModeList.setDesktop(mode.dmBitsPerPel, core::dimension2d<u32>(mode.dmPelsWidth, mode.dmPelsHeight));
 	}
 
 	return &VideoModeList;
@@ -741,8 +741,8 @@ void CIrrDeviceWinCE::OnResized()
 }
 
 
-//! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceWinCE::setResizeAble(bool resize)
+//! Sets if the window should be resizable in windowed mode.
+void CIrrDeviceWinCE::setResizable(bool resize)
 {
 	if (ExternalWindow || !getVideoDriver() || CreationParams.Fullscreen)
 		return;
@@ -773,6 +773,12 @@ void CIrrDeviceWinCE::setResizeAble(bool resize)
 
 	SetWindowPos(HWnd, HWND_TOP, windowLeft, windowTop, realWidth, realHeight,
 		SWP_FRAMECHANGED | SWP_NOMOVE | SWP_SHOWWINDOW);
+}
+
+
+//! Minimizes the window.
+void CIrrDeviceWinCE::minimizeWindow()
+{
 }
 
 

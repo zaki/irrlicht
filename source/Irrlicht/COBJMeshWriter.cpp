@@ -164,7 +164,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 	if (mat.size() == 0)
 		return true;
 
-	file = FileSystem->createAndWriteFile((name).c_str());
+	file = FileSystem->createAndWriteFile( name );
 	if (file)
 	{
 		os::Printer::log("Writing material", file->getFileName());

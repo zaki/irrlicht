@@ -15,8 +15,7 @@ namespace io
 
 	class CZipReader;
 	class CPakReader;
-	class CUnZipReader;
-	const s32 FILE_SYSTEM_MAX_PATH = 1024;
+	class CMountPointReader;
 
 /*!
 	FileSystem which uses normal files and one zipfile
@@ -32,71 +31,87 @@ public:
 	virtual ~CFileSystem();
 
 	//! opens a file for read access
-	virtual IReadFile* createAndOpenFile(const c8* filename);
+	virtual IReadFile* createAndOpenFile(const core::string<c16>& filename);
 
 	//! Creates an IReadFile interface for accessing memory like a file.
-	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped = false);
+	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped = false);
+
+	//! Creates an IReadFile interface for accessing files inside files
+	virtual IReadFile* createLimitReadFile(const core::string<c16>& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize);
 
 	//! Creates an IWriteFile interface for accessing memory like a file.
-	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const c8* fileName, bool deleteMemoryWhenDropped=false);
+	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped=false);
 
 	//! Opens a file for write access.
-	virtual IWriteFile* createAndWriteFile(const c8* filename, bool append=false);
+	virtual IWriteFile* createAndWriteFile(const core::string<c16>& filename, bool append=false);
 
-	//! adds an zip archive to the filesystem
-	virtual bool addZipFileArchive(const c8* filename, bool ignoreCase = true, bool ignorePaths = true);
-	virtual bool addFolderFileArchive(const c8* filename, bool ignoreCase = true, bool ignorePaths = true);
+	//! Adds an archive to the file system.
+	virtual bool registerFileArchive( const core::string<c16>& filename, bool ignoreCase = true, bool ignorePaths = true);
 
-	//! adds an pak archive to the filesystem
-	virtual bool addPakFileArchive(const c8* filename, bool ignoreCase = true, bool ignorePaths = true);
+	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
+	virtual bool moveFileArchive( u32 sourceIndex, s32 relative );
+
+	//! Adds an external archive loader to the engine.
+	virtual void addArchiveLoader(IArchiveLoader* loader);
+
+	//! gets the file archive count
+	virtual u32 getFileArchiveCount() const;
+
+	//! gets an archive
+	virtual IFileArchive* getFileArchive(u32 index);
+
+	//! removes an archive from the file system.
+	virtual bool unregisterFileArchive(u32 index);
+
+	//! removes an archive from the file system.
+	virtual bool unregisterFileArchive(const core::string<c16>& filename);
 
 	//! Returns the string of the current working directory
-	virtual const c8* getWorkingDirectory();
+	virtual const core::string<c16>& getWorkingDirectory();
 
 	//! Changes the current Working Directory to the string given.
 	//! The string is operating system dependent. Under Windows it will look
 	//! like this: "drive:\directory\sudirectory\"
-	virtual bool changeWorkingDirectoryTo(const c8* newDirectory);
+	virtual bool changeWorkingDirectoryTo(const core::string<c16>& newDirectory);
 
 	//! Converts a relative path to an absolute (unique) path, resolving symbolic links
-	virtual core::stringc getAbsolutePath(const core::stringc& filename) const;
+	virtual core::string<c16> getAbsolutePath(const core::string<c16>& filename) const;
 
 	//! Returns the directory a file is located in.
 	/** \param filename: The file to get the directory from */
-	virtual core::stringc getFileDir(const core::stringc& filename) const;
+	virtual core::string<c16> getFileDir(const core::string<c16>& filename) const;
 
 	//! Returns the base part of a filename, i.e. the name without the directory
 	//! part. If no directory is prefixed, the full name is returned.
 	/** \param filename: The file to get the basename from */
-	core::stringc getFileBasename(const core::stringc& filename, bool keepExtension=true) const;
+	virtual core::string<c16> getFileBasename(const core::string<c16>& filename, bool keepExtension=true) const;
+
+	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
+	virtual core::string<c16>& flattenFilename( core::string<c16>& directory, const core::string<c16>& root = "/" ) const;
+
+	virtual EFileSystemType setFileListSystem(EFileSystemType listType);
 
 	//! Creates a list of files and directories in the current working directory 
 	//! and returns it.
-	virtual IFileList* createFileList() const;
-
-	//! determinates if a file exists and would be able to be opened.
-	virtual bool existFile(const c8* filename) const;
+	virtual IFileList* createFileList();
 
 	//! determines if a file exists and would be able to be opened.
-	bool existFile(const core::stringc& filename) const
-	{
-		return existFile(filename.c_str());
-	}
+	virtual bool existFile(const core::string<c16>& filename) const;
 
 	//! Creates a XML Reader from a file.
-	virtual IXMLReader* createXMLReader(const c8* filename);
+	virtual IXMLReader* createXMLReader(const core::string<c16>& filename);
 
 	//! Creates a XML Reader from a file.
 	virtual IXMLReader* createXMLReader(IReadFile* file);
 
 	//! Creates a XML Reader from a file.
-	virtual IXMLReaderUTF8* createXMLReaderUTF8(const c8* filename);
+	virtual IXMLReaderUTF8* createXMLReaderUTF8(const core::string<c16>& filename);
 
 	//! Creates a XML Reader from a file.
 	virtual IXMLReaderUTF8* createXMLReaderUTF8(IReadFile* file);
 
 	//! Creates a XML Writer from a file.
-	virtual IXMLWriter* createXMLWriter(const c8* filename);
+	virtual IXMLWriter* createXMLWriter(const core::string<c16>& filename);
 
 	//! Creates a XML Writer from a file.
 	virtual IXMLWriter* createXMLWriter(IWriteFile* file);
@@ -106,10 +121,10 @@ public:
 
 private:
 
-	core::array<CZipReader*> ZipFileSystems;
-	core::array<CPakReader*> PakFileSystems;
-	core::array<CUnZipReader*> UnZipFileSystems;
-	c8 WorkingDirectory[FILE_SYSTEM_MAX_PATH];
+	EFileSystemType FileSystemType;			// Currently used FileSystemType
+	core::string<c16> WorkingDirectory [2];		// WorkingDirectory for Native/Virtual
+	core::array<IArchiveLoader*> ArchiveLoader;	// currently attached ArchiveLoaders
+	core::array<IFileArchive*> FileArchives;	// currently attached Archives
 };
 
 

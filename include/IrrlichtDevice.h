@@ -202,11 +202,14 @@ namespace irr
 		\param sceneManager New scene manager to be used. */
 		virtual void setInputReceivingSceneManager(scene::ISceneManager* sceneManager) = 0;
 
-		//! Sets if the window should be resizeable in windowed mode.
+		//! Sets if the window should be resizable in windowed mode.
 		/** The default is false. This method only works in windowed
 		mode.
-		\param resize Flag whether the window should be resizeable. */
-		virtual void setResizeAble(bool resize=false) = 0;
+		\param resize Flag whether the window should be resizable. */
+		virtual void setResizable(bool resize=false) = 0;
+
+		//! Minimizes the window if possible.
+		virtual void minimizeWindow() =0;
 
 		//! Activate any joysticks, and generate events for them.
 		/** Irrlicht contains support for joysticks, but does not generate joystick events by default,
@@ -216,7 +219,16 @@ namespace irr
 		\return true if joysticks are supported on this device and _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 				is defined, false if joysticks are not supported or support is compiled out.
 		*/
-		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo) = 0;
+		virtual bool activateJoysticks(core::array<SJoystickInfo>& joystickInfo) =0;
+
+		//! Set the current Gamma Value for the Display
+		virtual bool setGammaRamp(f32 red, f32 green, f32 blue,
+					f32 relativebrightness, f32 relativecontrast) =0;
+
+		//! Get the current Gamma Value for the Display
+		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
+					f32 &brightness, f32 &contrast) =0;
+
 	};
 
 } // end namespace irr

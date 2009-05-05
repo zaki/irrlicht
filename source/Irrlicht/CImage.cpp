@@ -287,9 +287,10 @@ static void RenderLine32_Blend(video::IImage *t,
 	m = dy << 1;
 
 	run = dx;
+	const u32 packA = packAlpha ( alpha );
 	while ( run )
 	{
-		*dst = PixelBlend32( *dst, argb, alpha );
+		*dst = packA | PixelBlend32( *dst, argb, alpha );
 
 		dst = (u32*) ( (u8*) dst + xInc );	// x += xInc
 		d += m;
@@ -374,8 +375,8 @@ static void RenderLine16_Decal(video::IImage *t,
 static void RenderLine16_Blend(video::IImage *t,
 				const core::position2d<s32> &p0,
 				const core::position2d<s32> &p1,
-				u32 argb,
-				u32 alpha)
+				u16 argb,
+				u16 alpha)
 {
 	s32 dx = p1.X - p0.X;
 	s32 dy = p1.Y - p0.Y;
@@ -418,9 +419,10 @@ static void RenderLine16_Blend(video::IImage *t,
 	m = dy << 1;
 
 	run = dx;
+	const u16 packA = alpha ? 0x8000 : 0;
 	while ( run )
 	{
-		*dst = PixelBlend16( *dst, argb, alpha );
+		*dst = packA | PixelBlend16( *dst, argb, alpha );
 
 		dst = (u16*) ( (u8*) dst + xInc );	// x += xInc
 		d += m;
@@ -598,35 +600,20 @@ static void executeBlit_TextureBlend_16_to_16( const SBlitJob * job )
 	const u32 off = core::if_c_a_else_b( job->width & 1 ,job->width - 1, 0 );
 
 
-	if ( 0 == off )
+	for ( dy = 0; dy != job->height; ++dy )
 	{
-		for ( dy = 0; dy != job->height; ++dy )
+		for ( dx = 0; dx != rdx; ++dx )
 		{
-			for ( dx = 0; dx != rdx; ++dx )
-			{
-				dst[dx] = PixelBlend16_simd( dst[dx], src[dx] );
-			}
-
-			src = (u32*) ( (u8*) (src) + job->srcPitch );
-			dst = (u32*) ( (u8*) (dst) + job->dstPitch );
+			dst[dx] = PixelBlend16_simd( dst[dx], src[dx] );
 		}
 
-	}
-	else
-	{
-		for ( dy = 0; dy != job->height; ++dy )
+		if ( off )
 		{
-			for ( dx = 0; dx != rdx; ++dx )
-			{
-				dst[dx] = PixelBlend16_simd( dst[dx], src[dx] );
-			}
-
 			((u16*) dst)[off] = PixelBlend16( ((u16*) dst)[off], ((u16*) src)[off] );
-
-			src = (u32*) ( (u8*) (src) + job->srcPitch );
-			dst = (u32*) ( (u8*) (dst) + job->dstPitch );
 		}
 
+		src = (u32*) ( (u8*) (src) + job->srcPitch );
+		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
 	}
 }
 
@@ -660,7 +647,10 @@ static void executeBlit_TextureBlendColor_16_to_16( const SBlitJob * job )
 	{
 		for ( s32 dx = 0; dx != job->width; ++dx )
 		{
-			dst[dx] = PixelBlend16( dst[dx], PixelMul16_2( src[dx], blend ) );
+			if ( 0 == (src[dx] & 0x8000) )
+				continue;
+
+			dst[dx] = PixelMul16_2( src[dx], blend );
 		}
 		src = (u16*) ( (u8*) (src) + job->srcPitch );
 		dst = (u16*) ( (u8*) (dst) + job->dstPitch );
@@ -736,14 +726,16 @@ static void executeBlit_ColorAlpha_16_to_16( const SBlitJob * job )
 {
 	u16 *dst = (u16*) job->dst;
 
-	const u32 alpha = extractAlpha( job->argb ) >> 3;
+	const u16 alpha = extractAlpha( job->argb ) >> 3;
+	if ( 0 == alpha )
+		return;
 	const u32 src = video::A8R8G8B8toA1R5G5B5( job->argb );
 
 	for ( s32 dy = 0; dy != job->height; ++dy )
 	{
 		for ( s32 dx = 0; dx != job->width; ++dx )
 		{
-			dst[dx] = PixelBlend16( dst[dx], src, alpha );
+			dst[dx] = 0x8000 | PixelBlend16( dst[dx], src, alpha );
 		}
 		dst = (u16*) ( (u8*) (dst) + job->dstPitch );
 	}
@@ -762,7 +754,7 @@ static void executeBlit_ColorAlpha_32_to_32( const SBlitJob * job )
 	{
 		for ( s32 dx = 0; dx != job->width; ++dx )
 		{
-			dst[dx] = PixelBlend32( dst[dx], src, alpha );
+			dst[dx] = (job->argb & 0xFF000000 ) | PixelBlend32( dst[dx], src, alpha );
 		}
 		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
 	}
@@ -770,13 +762,65 @@ static void executeBlit_ColorAlpha_32_to_32( const SBlitJob * job )
 
 /*!
 */
+struct blitterTable
+{
+	eBlitter operation;
+	s32 destFormat;
+	s32 sourceFormat;
+	tExecuteBlit func;
+};
+
+static const blitterTable blitTable[] =
+{
+	{ BLITTER_TEXTURE, -2, -2, executeBlit_TextureCopy_x_to_x },
+	{ BLITTER_TEXTURE, video::ECF_A1R5G5B5, video::ECF_A8R8G8B8, executeBlit_TextureCopy_32_to_16 },
+	{ BLITTER_TEXTURE, video::ECF_A1R5G5B5, video::ECF_R8G8B8, executeBlit_TextureCopy_24_to_16 },
+	{ BLITTER_TEXTURE, video::ECF_A8R8G8B8, video::ECF_A1R5G5B5, executeBlit_TextureCopy_16_to_32 },
+	{ BLITTER_TEXTURE, video::ECF_A8R8G8B8, video::ECF_R8G8B8, executeBlit_TextureCopy_24_to_32 },
+	{ BLITTER_TEXTURE, video::ECF_R8G8B8, video::ECF_A1R5G5B5, executeBlit_TextureCopy_16_to_24 },
+	{ BLITTER_TEXTURE, video::ECF_R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureCopy_32_to_24 },
+	{ BLITTER_TEXTURE_ALPHA_BLEND, video::ECF_A1R5G5B5, video::ECF_A1R5G5B5, executeBlit_TextureBlend_16_to_16 },
+	{ BLITTER_TEXTURE_ALPHA_BLEND, video::ECF_A8R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureBlend_32_to_32 },
+	{ BLITTER_TEXTURE_ALPHA_COLOR_BLEND, video::ECF_A1R5G5B5, video::ECF_A1R5G5B5, executeBlit_TextureBlendColor_16_to_16 },
+	{ BLITTER_TEXTURE_ALPHA_COLOR_BLEND, video::ECF_A8R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureBlendColor_32_to_32 },
+	{ BLITTER_COLOR, video::ECF_A1R5G5B5, -1, executeBlit_Color_16_to_16 },
+	{ BLITTER_COLOR, video::ECF_A8R8G8B8, -1, executeBlit_Color_32_to_32 },
+	{ BLITTER_COLOR_ALPHA, video::ECF_A1R5G5B5, -1, executeBlit_ColorAlpha_16_to_16 },
+	{ BLITTER_COLOR_ALPHA, video::ECF_A8R8G8B8, -1, executeBlit_ColorAlpha_32_to_32 },
+	{ BLITTER_INVALID, -1, -1, 0 }
+};
+
+static inline tExecuteBlit getBlitter2( eBlitter operation,const video::IImage * dest,const video::IImage * source )
+{
+	video::ECOLOR_FORMAT sourceFormat = (video::ECOLOR_FORMAT) ( source ? source->getColorFormat() : -1 );
+	video::ECOLOR_FORMAT destFormat = (video::ECOLOR_FORMAT) ( dest ? dest->getColorFormat() : -1 );
+
+	const blitterTable * b = blitTable;
+
+	while ( b->operation != BLITTER_INVALID )
+	{
+		if ( b->operation == operation )
+		{
+			if (( b->destFormat == -1 || b->destFormat == destFormat ) &&
+				( b->sourceFormat == -1 || b->sourceFormat == sourceFormat ) )
+					return b->func;
+			else
+			if ( b->destFormat == -2 && ( sourceFormat == destFormat ) )
+					return b->func;
+		}
+		b += 1;
+	}
+	return 0;
+}
+
+#if 0
 static tExecuteBlit getBlitter( eBlitter operation,const video::IImage * dest,const video::IImage * source )
 {
 	video::ECOLOR_FORMAT sourceFormat = (video::ECOLOR_FORMAT) -1;
 	video::ECOLOR_FORMAT destFormat = (video::ECOLOR_FORMAT) -1;
 
 	if ( source )
-		sourceFormat = source->getColorFormat();
+		sourceFormat = source->getColorFormat ();
 
 	if ( dest )
 		destFormat = dest->getColorFormat();
@@ -857,8 +901,39 @@ static tExecuteBlit getBlitter( eBlitter operation,const video::IImage * dest,co
 	return 0;
 
 }
+#endif
 
+// bounce clipping to texture
+inline void setClip ( AbsRectangle &out, const core::rect<s32> *clip,
+					 const video::IImage * tex, s32 passnative )
+{
+	if ( clip && 0 == tex && passnative )
+	{
+		out.x0 = clip->UpperLeftCorner.X;
+		out.x1 = clip->LowerRightCorner.X;
+		out.y0 = clip->UpperLeftCorner.Y;
+		out.y1 = clip->LowerRightCorner.Y;
+		return;
+	}
 
+	const s32 w = tex ? tex->getDimension().Width : 0;
+	const s32 h = tex ? tex->getDimension().Height : 0;
+	if ( clip )
+	{
+		out.x0 = core::s32_clamp ( clip->UpperLeftCorner.X, 0, w );
+		out.x1 = core::s32_clamp ( clip->LowerRightCorner.X, out.x0, w );
+		out.y0 = core::s32_clamp ( clip->UpperLeftCorner.Y, 0, h );
+		out.y1 = core::s32_clamp ( clip->LowerRightCorner.Y, out.y0, h );
+	}
+	else
+	{
+		out.x0 = 0;
+		out.y0 = 0;
+		out.x1 = w;
+		out.y1 = h;
+	}
+
+}
 
 /*!
 	a generic 2D Blitter
@@ -871,7 +946,7 @@ static s32 Blit(eBlitter operation,
 		const core::rect<s32> *sourceClipping,
 		u32 argb)
 {
-	tExecuteBlit blitter = getBlitter( operation, dest, source );
+	tExecuteBlit blitter = getBlitter2( operation, dest, source );
 	if ( 0 == blitter )
 	{
 		return 0;
@@ -884,43 +959,15 @@ static s32 Blit(eBlitter operation,
 
 	SBlitJob job;
 
-	if ( sourceClipping )
-	{
-		sourceClip.x0 = sourceClipping->UpperLeftCorner.X;
-		sourceClip.y0 = sourceClipping->UpperLeftCorner.Y;
-		sourceClip.x1 = sourceClipping->LowerRightCorner.X;
-		sourceClip.y1 = sourceClipping->LowerRightCorner.Y;
-	}
-	else
-	{
-		sourceClip.x0 = 0;
-		sourceClip.y0 = 0;
-		sourceClip.x1 = source ? source->getDimension().Width : 0;
-		sourceClip.y1 = source ? source->getDimension().Height : 0;
-	}
-
-	if ( destClipping )
-	{
-		destClip.x0 = destClipping->UpperLeftCorner.X;
-		destClip.y0 = destClipping->UpperLeftCorner.Y;
-		destClip.x1 = destClipping->LowerRightCorner.X;
-		destClip.y1 = destClipping->LowerRightCorner.Y;
-	}
-	else
-	{
-		destClip.x0 = 0;
-		destClip.y0 = 0;
-		destClip.x1 = dest ? dest->getDimension().Width : 0;
-		destClip.y1 = dest ? dest->getDimension().Height : 0;
-	}
+	setClip ( sourceClip, sourceClipping, source, 1 );
+	setClip ( destClip, destClipping, dest, 0 );
 
 	v.x0 = destPos ? destPos->X : 0;
 	v.y0 = destPos ? destPos->Y : 0;
 	v.x1 = v.x0 + ( sourceClip.x1 - sourceClip.x0 );
 	v.y1 = v.y0 + ( sourceClip.y1 - sourceClip.y0 );
 
-	intersect( job.Dest, destClip, v );
-	if ( !isValid( job.Dest ) )
+	if ( !intersect( job.Dest, destClip, v ) )
 		return 0;
 
 	job.width = job.Dest.x1 - job.Dest.x0;
@@ -1177,7 +1224,7 @@ u32 CImage::getBitsPerPixelFromFormat(ECOLOR_FORMAT format)
 }
 
 //! sets a pixel
-void CImage::setPixel(u32 x, u32 y, const SColor &color )
+void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 {
 	if (x >= (u32)Size.Width || y >= (u32)Size.Height)
 		return;
@@ -1207,7 +1254,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color )
 		case ECF_A8R8G8B8:
 		{
 			u32 * dest = (u32*) ((u8*) Data + ( y * Pitch ) + ( x << 2 ));
-			*dest = color.color;
+			*dest = blend ? PixelBlend32 ( *dest, color.color ) : color.color;
 		} break;
 	}
 }
@@ -1394,7 +1441,7 @@ void CImage::copyToScaling(IImage* target)
 }
 
 //! copies this surface into another, scaling it to fit it.
-void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
+void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
 {
 	const core::dimension2d<u32> destSize = target->getDimension();
 
@@ -1414,7 +1461,8 @@ void CImage::copyToScalingBoxFilter(IImage* target, s32 bias)
 		sx = 0.f;
 		for ( u32 x = 0; x != destSize.Width; ++x )
 		{
-			target->setPixel( x, y, getPixelBox( core::floor32(sx), core::floor32(sy), fx, fy, bias ) );
+			target->setPixel( x, y,
+				getPixelBox( core::floor32(sx), core::floor32(sy), fx, fy, bias ), blend );
 			sx += sourceXStep;
 		}
 		sy += sourceYStep;
@@ -1461,13 +1509,16 @@ inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) cons
 	{
 		for ( s32 dy = 0; dy != fy; ++dy )
 		{
-			c = getPixel( x + dx , y + dy );
+			c = getPixel(	core::s32_min ( x + dx, Size.Width - 1 ) ,
+							core::s32_min ( y + dy, Size.Height - 1 )
+						);
 
 			a += c.getAlpha();
 			r += c.getRed();
 			g += c.getGreen();
 			b += c.getBlue();
 		}
+
 	}
 
 	s32 sdiv = s32_log2_s32(fx * fy);
@@ -1484,4 +1535,3 @@ inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) cons
 
 } // end namespace video
 } // end namespace irr
-

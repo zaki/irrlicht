@@ -46,12 +46,6 @@ bool irrCoreEquals(void)
 		return false;
 	}
 
-	if(irr::core::equals(99, 98))
-	{
-		logTestString("irr::core::equals(s32, s32 (,default)) failed.\n");
-		return false;
-	}
-
 	if(irr::core::equals(99, 98, 0))
 	{
 		logTestString("irr::core::equals(s32, s32, 0) failed.\n");
@@ -67,12 +61,6 @@ bool irrCoreEquals(void)
 	if(!irr::core::equals(-99, -98, 1))
 	{
 		logTestString("irr::core::equals(s32, s32, s32) failed.\n");
-		return false;
-	}
-
-	if(irr::core::equals(-99, -98))
-	{
-		logTestString("irr::core::equals(s32, s32 (,default)) failed.\n");
 		return false;
 	}
 

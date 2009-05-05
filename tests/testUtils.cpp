@@ -176,9 +176,14 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 	}
 
 	irr::core::stringc driverName = driver->getName();
-	// For OpenGL (only), chop the version number out. Other drivers have more stable version numbers.
+	
+	// For OpenGL and Burning, chop the version number out. Other drivers have more stable version numbers.
+	// TA: Sorry Rogerborg. burnings video also has the version number inside;-)
+	//     maybe you sould take the getDriverType Info for this
 	if(driverName.find("OpenGL") > -1)
 		driverName = "OpenGL";
+	else if(driverName.find("Burning's Video") > -1)
+		driverName = "Burning's Video";
 
 	irr::core::stringc referenceFilename = "media/";
 	referenceFilename += driverName;

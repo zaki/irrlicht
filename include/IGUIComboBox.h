@@ -27,8 +27,14 @@ namespace gui
 		//! Returns string of an item. the idx may be a value from 0 to itemCount-1
 		virtual const wchar_t* getItem(u32 idx) const = 0;
 
+		//! Returns item data of an item. the idx may be a value from 0 to itemCount-1
+		virtual u32 getItemData(u32 idx) const = 0;
+
+		//! Returns index based on item data
+		virtual s32 getIndexForItemData(u32 data ) const = 0;
+
 		//! Adds an item and returns the index of it
-		virtual u32 addItem(const wchar_t* text) = 0;
+		virtual u32 addItem(const wchar_t* text, u32 data = 0) = 0;
 
 		//! Removes an item from the combo box.
 		/** Warning. This will change the index of all following items */

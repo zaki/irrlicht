@@ -28,7 +28,7 @@ namespace gui
 			setDebugName("CGUIDummyEditorStub");
 			#endif
 
-			core::dimension2di d = Environment->getSkin()->getFont()->getDimension(L"A");
+			core::dimension2du d = Environment->getSkin()->getFont()->getDimension(L"A");
 			s32 h = d.Height / 2;
 			s32 w = d.Width / 2;
 

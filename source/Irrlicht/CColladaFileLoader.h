@@ -184,7 +184,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".cob")
-	virtual bool isALoadableFileExtension(const c8* fileName) const;
+	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -246,9 +246,13 @@ private:
 	//! reads a <float> element
 	f32 readFloatNode(io::IXMLReaderUTF8* reader);
 
-	//! reads a <instance> node and creates a scene node from it
+	//! reads a <instance> node
 	void readInstanceNode(io::IXMLReaderUTF8* reader, scene::ISceneNode* parent,
 		scene::ISceneNode** outNode, CScenePrefab* p=0);
+
+	//! creates a scene node from Prefabs (with name given in 'url')
+	void instantiateNode(scene::ISceneNode* parent, scene::ISceneNode** outNode=0,
+			CScenePrefab* p=0, const core::stringc& url="");
 
 	//! reads a <light> element and stores it as prefab
 	void readLightPrefab(io::IXMLReaderUTF8* reader);
@@ -337,7 +341,7 @@ private:
 	core::stringc CurrentlyLoadingMesh;
 
 	scene::IAnimatedMesh* FirstLoadedMesh;
-	core::stringc FirstLoadedMeshName;
+	core::string<c16> FirstLoadedMeshName;
 	s32 LoadedMeshCount;
 	u32 Version;
 	bool FlipAxis;

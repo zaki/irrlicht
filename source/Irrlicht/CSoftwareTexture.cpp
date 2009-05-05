@@ -14,7 +14,7 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture::CSoftwareTexture(IImage* image, const char* name, bool renderTarget)
+CSoftwareTexture::CSoftwareTexture(IImage* image, const core::string<c16>& name, bool renderTarget)
 : ITexture(name), Texture(0), IsRenderTarget(renderTarget)
 {
 	#ifdef _DEBUG

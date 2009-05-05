@@ -44,6 +44,12 @@ namespace gui
 		//! Returns pointer to the maximize button
 		virtual IGUIButton* getMaximizeButton() const;
 
+		//! Returns true if the window is draggable, false if not
+		virtual bool isDraggable() const;
+
+		//! Sets whether the window is draggable
+		virtual void setDraggable(bool draggable);
+
 	protected:
 
 		IGUIButton* CloseButton;
@@ -51,7 +57,7 @@ namespace gui
 		IGUIButton* RestoreButton;
 
 		core::position2d<s32> DragStart;
-		bool Dragging;
+		bool Dragging, IsDraggable;
 	};
 
 } // end namespace gui

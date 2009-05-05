@@ -257,5 +257,60 @@ bool CIrrDeviceStub::activateJoysticks(core::array<SJoystickInfo> & joystickInfo
 	return false;
 }
 
+/*!
+*/
+void CIrrDeviceStub::calculateGammaRamp ( u16 *ramp, f32 gamma, f32 relativebrightness, f32 relativecontrast )
+{
+	s32 i;
+	s32 value;
+	s32 rbright = (s32) ( relativebrightness * (65535.f / 4 ) );
+	f32 rcontrast = 1.f / (255.f - ( relativecontrast * 127.5f ) );
+
+	gamma = gamma > 0.f ? 1.0f / gamma : 0.f;
+
+	for ( i = 0; i < 256; ++i )
+	{
+		value = (s32)(powf( rcontrast * i, gamma)*65535.f + 0.5f );
+		ramp[i] = (u16) core::s32_clamp ( value + rbright, 0, 65535 );
+	}
+
+}
+
+void CIrrDeviceStub::calculateGammaFromRamp ( f32 &gamma, const u16 *ramp )
+{
+	/* The following is adapted from a post by Garrett Bass on OpenGL
+	Gamedev list, March 4, 2000.
+	*/
+	f32 sum = 0.0;
+	s32 i, count = 0;
+
+	gamma = 1.0;
+	for ( i = 1; i < 256; ++i ) {
+		if ( (ramp[i] != 0) && (ramp[i] != 65535) ) {
+			f32 B = (f32)i / 256.f;
+			f32 A = ramp[i] / 65535.f;
+			sum += (f32) ( logf(A) / logf(B) );
+			count++;
+		}
+	}
+	if ( count && sum ) {
+		gamma = 1.0f / (sum / count);
+	}
+
+}
+
+//! Set the current Gamma Value for the Display
+bool CIrrDeviceStub::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast )
+{
+	return false;
+}
+
+//! Get the current Gamma Value for the Display
+bool CIrrDeviceStub::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast )
+{
+	return false;
+}
+
+
 } // end namespace irr
 

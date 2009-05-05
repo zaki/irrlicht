@@ -75,8 +75,17 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "16.Quake3MapShader", "16.Qu
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "19.MouseAndJoystick", "19.MouseAndJoystick\MouseAndJoystick.vcproj", "{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20.ManagedLights_vc8", "20.ManagedLights\ManagedLights_vc8.vcproj", "{16007FE2-142B-47F8-93E1-519BA3F39E71}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "20.ManagedLights", "20.ManagedLights\ManagedLights_vc7.vcproj", "{16007FE2-142B-47F8-93E1-519BA3F39E71}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "21.Quake3Explorer", "21.Quake3Explorer\Quake3Explorer_vc7.vcproj", "{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E08E042A-6C45-411B-92BE-3CC31331019F} = {E08E042A-6C45-411B-92BE-3CC31331019F}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
@@ -156,6 +165,16 @@ Global
 		{EB3B38EA-5CE7-4983-845B-880661E69D09}.Debug.Build.0 = Debug|Win32
 		{EB3B38EA-5CE7-4983-845B-880661E69D09}.Release.ActiveCfg = Release|Win32
 		{EB3B38EA-5CE7-4983-845B-880661E69D09}.Release.Build.0 = Release|Win32
+		{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}.Debug.ActiveCfg = Debug|Win32
+		{1AB9413E-4F53-42A3-8CB2-CB4BE22336D0}.Release.ActiveCfg = Release|Win32
+		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Debug.ActiveCfg = Debug|Win32
+		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Debug.Build.0 = Debug|Win32
+		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Release.ActiveCfg = Release|Win32
+		{16007FE2-142B-47F8-93E1-519BA3F39E71}.Release.Build.0 = Release|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Debug.ActiveCfg = Debug|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Debug.Build.0 = Debug|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Release.ActiveCfg = Release|Win32
+		{CDC4AAA9-72E1-4FFA-A04D-7EF59D8B97CD}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

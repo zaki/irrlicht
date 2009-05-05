@@ -19,14 +19,12 @@ CMeshCache::~CMeshCache()
 
 
 //! adds a mesh to the list
-void CMeshCache::addMesh(const c8* filename, IAnimatedMesh* mesh)
+void CMeshCache::addMesh(const core::string<c16>& filename, IAnimatedMesh* mesh)
 {
 	mesh->grab();
 
-	MeshEntry e;
+	MeshEntry e ( filename );
 	e.Mesh = mesh;
-	e.Name = filename;
-	e.Name.make_lower();
 
 	Meshes.push_back(e);
 }
@@ -109,18 +107,16 @@ IAnimatedMesh* CMeshCache::getMeshByIndex(u32 number)
 
 
 //! Returns a mesh based on its file name.
-IAnimatedMesh* CMeshCache::getMeshByFilename(const c8* filename)
+IAnimatedMesh* CMeshCache::getMeshByFilename(const core::string<c16>& filename)
 {
-	MeshEntry e;
-	e.Name = filename;
-	e.Name.make_lower();
+	MeshEntry e ( filename );
 	s32 id = Meshes.binary_search(e);
 	return (id != -1) ? Meshes[id].Mesh : 0;
 }
 
 
 //! Returns name of a mesh based on its index number
-const c8* CMeshCache::getMeshFilename(u32 number) const
+const c16* CMeshCache::getMeshFilename(u32 number) const
 {
 	if (number >= Meshes.size())
 		return 0;
@@ -131,7 +127,7 @@ const c8* CMeshCache::getMeshFilename(u32 number) const
 
 
 //! Returns the filename of a loaded mesh, if there is any. Returns 0 if there is none.
-const c8* CMeshCache::getMeshFilename(const IAnimatedMesh* const mesh) const
+const c16* CMeshCache::getMeshFilename(const IAnimatedMesh* const mesh) const
 {
 	if(!mesh)
 		return 0;
@@ -147,7 +143,7 @@ const c8* CMeshCache::getMeshFilename(const IAnimatedMesh* const mesh) const
 
 
 //! Returns the filename of a loaded mesh, if there is any. Returns 0 if there is none.
-const c8* CMeshCache::getMeshFilename(const IMesh* const mesh) const
+const c16* CMeshCache::getMeshFilename(const IMesh* const mesh) const
 {
 	if(!mesh)
 		return 0;
@@ -166,7 +162,7 @@ const c8* CMeshCache::getMeshFilename(const IMesh* const mesh) const
 
 
 //! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(u32 index, const c8* filename)
+bool CMeshCache::setMeshFilename(u32 index, const c16* filename)
 {
 	if (index >= Meshes.size())
 		return false;
@@ -178,7 +174,7 @@ bool CMeshCache::setMeshFilename(u32 index, const c8* filename)
 
 
 //! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(const IAnimatedMesh* const mesh, const c8* filename)
+bool CMeshCache::setMeshFilename(const IAnimatedMesh* const mesh, const c16* filename)
 {
 	for (u32 i=0; i<Meshes.size(); ++i)
 	{
@@ -195,7 +191,7 @@ bool CMeshCache::setMeshFilename(const IAnimatedMesh* const mesh, const c8* file
 
 
 //! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(const IMesh* const mesh, const c8* filename)
+bool CMeshCache::setMeshFilename(const IMesh* const mesh, const c16* filename)
 {
 	for (u32 i=0; i<Meshes.size(); ++i)
 	{
@@ -212,7 +208,7 @@ bool CMeshCache::setMeshFilename(const IMesh* const mesh, const c8* filename)
 
 
 //! returns if a mesh already was loaded
-bool CMeshCache::isMeshLoaded(const c8* filename)
+bool CMeshCache::isMeshLoaded(const core::string<c16>& filename)
 {
 	return getMeshByFilename(filename) != 0;
 }

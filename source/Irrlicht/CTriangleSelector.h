@@ -15,6 +15,7 @@ namespace scene
 {
 
 class ISceneNode;
+class IAnimatedMeshSceneNode;
 
 //! Stupid triangle selector without optimization
 class CTriangleSelector : public ITriangleSelector
@@ -26,6 +27,10 @@ public:
 
 	//! Constructs a selector based on a mesh
 	CTriangleSelector(const IMesh* mesh, const ISceneNode* node);
+
+	//! Constructs a selector based on an animated mesh scene node
+	//!\param node An animated mesh scene node, which must have a valid mesh
+	CTriangleSelector(IAnimatedMeshSceneNode* node);
 
 	//! Constructs a selector based on a bounding box
 	CTriangleSelector(const core::aabbox3d<f32>& box, const ISceneNode* node);
@@ -50,9 +55,22 @@ public:
 	virtual const ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const { return SceneNode; }
 
 protected:
+	//! Create from a mesh
+	virtual void createFromMesh(const IMesh* mesh); 
+
+	//! Update when the mesh has changed
+	virtual void updateFromMesh(const IMesh* mesh) const; 
+
+	//! Update the triangle selector, which will only have an effect if it
+	//! was built from an animated mesh and that mesh's frame has changed 
+	//! since the last time it was updated.
+	virtual void update(void) const;
 
 	const ISceneNode* SceneNode;
 	mutable core::array<core::triangle3df> Triangles;
+
+	IAnimatedMeshSceneNode* AnimatedNode;
+	mutable s32 LastMeshFrame;
 };
 
 } // end namespace scene

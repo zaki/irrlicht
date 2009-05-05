@@ -246,10 +246,12 @@ bool CGUITable::hasResizableColumns() const
 }
 
 
-void CGUITable::addRow(u32 rowIndex)
+u32 CGUITable::addRow(u32 rowIndex)
 {
 	if ( rowIndex > Rows.size() )
-		return;
+	{
+		rowIndex = Rows.size();
+	}
 
 	Row row;
 
@@ -258,13 +260,14 @@ void CGUITable::addRow(u32 rowIndex)
 	else
 		Rows.insert(row, rowIndex);
 
+	Rows[rowIndex].Items.reallocate(Columns.size());
 	for ( u32 i = 0 ; i < Columns.size() ; ++i )
 	{
-		Cell cell;
-		Rows[rowIndex].Items.push_back(cell);
+		Rows[rowIndex].Items.push_back(Cell());
 	}
 
 	recalculateHeights();
+	return rowIndex;
 }
 
 
@@ -283,7 +286,7 @@ void CGUITable::removeRow(u32 rowIndex)
 
 
 //! adds an list item, returns id of item
-void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text)
+void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text)
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
@@ -296,8 +299,7 @@ void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text)
 	}
 }
 
-
-void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const wchar_t* text, video::SColor color)
+void CGUITable::setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text, video::SColor color)
 {
 	if ( rowIndex < Rows.size() && columnIndex < Columns.size() )
 	{
@@ -375,9 +377,19 @@ void CGUITable::clearRows()
 }
 
 
+/*!
+*/
 s32 CGUITable::getSelected() const
 {
 	return Selected;
+}
+
+//! set wich row is currently selected
+void CGUITable::setSelected( s32 index )
+{
+	Selected = -1;
+	if ( index >= 0 && index < (s32) Rows.size() )
+		Selected = index;
 }
 
 
@@ -687,7 +699,7 @@ bool CGUITable::dragColumnStart(s32 xpos, s32 ypos)
 	if ( ypos > ( AbsoluteRect.UpperLeftCorner.Y + ItemHeight ) )
 		return false;
 
-	const s32 CLICK_AREA = 3;	// to left and right of line which can be dragged
+	const s32 CLICK_AREA = 12;	// to left and right of line which can be dragged
 	s32 pos = AbsoluteRect.UpperLeftCorner.X+1;
 
 	if ( HorizontalScrollBar && HorizontalScrollBar->isVisible() )

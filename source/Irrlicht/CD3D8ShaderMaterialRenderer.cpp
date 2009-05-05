@@ -123,14 +123,14 @@ void CD3D8ShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& material
 
 			// set new vertex shader
 			if (FAILED(pID3DDevice->SetVertexShader(VertexShader)))
-				os::Printer::log("Could not set vertex shader.");
+				os::Printer::log("Could not set vertex shader.", ELL_ERROR);
 		}
 
 		// set new pixel shader
 		if (PixelShader)
 		{
 			if (FAILED(pID3DDevice->SetPixelShader(PixelShader)))
-				os::Printer::log("Could not set pixel shader.");
+				os::Printer::log("Could not set pixel shader.", ELL_ERROR);
 		}
 
 		if (BaseMaterial)
@@ -172,6 +172,9 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 	if (!pxsh)
 		return true;
 
+#if defined( _IRR_XBOX_PLATFORM_)
+	return false;
+#else
 	// compile shader
 
 	LPD3DXBUFFER code = 0;
@@ -198,14 +201,12 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		fclose(f);
 
 		D3DXAssembleShaderFromFile(tmp, D3DXASM_DEBUG, 0, &code, &errors);
-
 	#endif
-
 	if (errors)
 	{
 		// print out compilation errors.
-		os::Printer::log("Pixel shader compilation failed:");
-		os::Printer::log((c8*)errors->GetBufferPointer());
+		os::Printer::log("Pixel shader compilation failed:", ELL_ERROR);
+		os::Printer::log((c8*)errors->GetBufferPointer(), ELL_ERROR);
 
 		if (code)
 			code->Release();
@@ -216,13 +217,15 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 
 	if (FAILED(pID3DDevice->CreatePixelShader((DWORD*)code->GetBufferPointer(), &PixelShader)))
 	{
-		os::Printer::log("Could not create pixel shader.");
+		os::Printer::log("Could not create pixel shader.", ELL_ERROR);
 		code->Release();
 		return false;
 	}
 
 	code->Release();
 	return true;
+#endif
+
 }
 
 
@@ -233,6 +236,9 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 		return true;
 
 	// compile shader
+#if defined( _IRR_XBOX_PLATFORM_)
+	return false;
+#else
 
 	LPD3DXBUFFER code = 0;
 	LPD3DXBUFFER errors = 0;
@@ -264,8 +270,8 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 	if (errors)
 	{
 		// print out compilation errors.
-		os::Printer::log("Vertex shader compilation failed:");
-		os::Printer::log((c8*)errors->GetBufferPointer());
+		os::Printer::log("Vertex shader compilation failed:", ELL_ERROR);
+		os::Printer::log((c8*)errors->GetBufferPointer(), ELL_ERROR);
 
 		if (code)
 			code->Release();
@@ -307,13 +313,14 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 	if (FAILED(pID3DDevice->CreateVertexShader(decl,
 		(DWORD*)code->GetBufferPointer(), &VertexShader, 0)))
 	{
-		os::Printer::log("Could not create vertex shader.");
+		os::Printer::log("Could not create vertex shader.", ELL_ERROR);
 		code->Release();
 		return false;
 	}
 
 	code->Release();
 	return true;
+#endif
 }
 
 

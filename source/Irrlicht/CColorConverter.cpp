@@ -415,6 +415,38 @@ void CColorConverter::convert_R8G8B8toA1R5G5B5(const void* sP, s32 sN, void* dP)
 	}
 }
 
+void CColorConverter::convert_B8G8R8toA8R8G8B8(const void* sP, s32 sN, void* dP)
+{
+	u8*  sB = (u8* )sP;
+	u32* dB = (u32*)dP;
+
+	for (s32 x = 0; x < sN; ++x)
+	{
+		*dB = 0xff000000 | (sB[2]<<16) | (sB[1]<<8) | sB[0];
+
+		sB += 3;
+		++dB;
+	}
+}
+
+void CColorConverter::convert_B8G8R8A8toA8R8G8B8(const void* sP, s32 sN, void* dP)
+{
+	u8* sB = (u8*)sP;
+	u8* dB = (u8*)dP;
+
+	for (s32 x = 0; x < sN; ++x)
+	{
+		dB[0] = sB[3];
+		dB[1] = sB[2];
+		dB[2] = sB[1];
+		dB[3] = sB[0];
+
+		sB += 4;
+		dB += 4;
+	}
+
+}
+
 void CColorConverter::convert_R8G8B8toR5G6B5(const void* sP, s32 sN, void* dP)
 {
 	u8 * sB = (u8 *)sP;

@@ -203,10 +203,9 @@ CImageWriterJPG::CImageWriterJPG()
 }
 
 
-bool CImageWriterJPG::isAWriteableFileExtension(const c8* fileName) const
+bool CImageWriterJPG::isAWriteableFileExtension(const core::string<c16>& filename) const
 {
-	const char* dot = strrchr (fileName, '.');
-	return dot && (!strcmp (dot, ".jpg") || !strcmp (dot, ".jpeg"));
+	return core::hasFileExtension ( filename, "jpg", "jpeg" );
 }
 
 
