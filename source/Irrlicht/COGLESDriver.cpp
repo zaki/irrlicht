@@ -317,18 +317,24 @@ void COGLES1Driver::createMaterialRenderers()
 	s32 tmp = 0;
 	video::IMaterialRenderer* renderer = 0;
 // TODO ogl-es
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
 //	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
 //	renderer->drop();
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
 //	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
 //	renderer->drop();
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
 //	renderer = new COGLES1NormalMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
 //	renderer->drop();
 
 	// add parallax map renderers
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
 //	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_SOLID].Renderer);
 //	renderer->drop();
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
 //	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_ADD_COLOR].Renderer);
 //	renderer->drop();
+	addAndDropMaterialRenderer(new COGLES1MaterialRenderer_SOLID(this));
 //	renderer = new COGLES1ParallaxMapRenderer(this, tmp, MaterialRenderers[EMT_TRANSPARENT_VERTEX_ALPHA].Renderer);
 //	renderer->drop();
 
