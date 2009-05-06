@@ -29,7 +29,7 @@ namespace irr
 {
 namespace video
 {
-
+	class COGLES1Driver;
 	class COGLES1ExtensionHandler
 	{
 	protected:
@@ -108,7 +108,7 @@ namespace video
 
 		void dump() const;
 
-		void initExtensions(
+		void initExtensions(COGLES1Driver* driver,
 #ifdef EGL_VERSION_1_0
 				EGLDisplay display,
 #endif

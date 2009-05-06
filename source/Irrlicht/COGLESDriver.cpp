@@ -213,7 +213,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	for (i=0; i<MATERIAL_MAX_TEXTURES; ++i)
 		CurrentTexture[i]=0;
 	// load extensions
-	initExtensions(
+	initExtensions(this,
 #if defined(EGL_VERSION_1_0)
 			EglDisplay,
 #endif
@@ -1502,6 +1502,7 @@ bool COGLES1Driver::testGLError()
 	case GL_OUT_OF_MEMORY:
 		os::Printer::log("GL_OUT_OF_MEMORY", ELL_ERROR); break;
 	};
+//	_IRR_DEBUG_BREAK_IF(true);
 	return true;
 #else
 	return false;
@@ -1559,6 +1560,7 @@ void COGLES1Driver::setRenderStates3DMode()
 	{
 		// Reset Texture Stages
 		glDisable(GL_BLEND);
+		glDisable(GL_ALPHA_TEST);
 		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
 
 		// switch back the matrices
@@ -1931,7 +1933,7 @@ void COGLES1Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
 			SMaterial mat;
-			mat.ZBuffer=0;
+			mat.ZBuffer=ECFN_NEVER;
 			mat.Lighting=false;
 			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);

@@ -8,6 +8,7 @@
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 
 #include "COGLESExtensionHandler.h"
+#include "COGLESDriver.h"
 #include "fast_atof.h"
 #include "irrString.h"
 
@@ -91,7 +92,7 @@ void COGLES1ExtensionHandler::dump() const
 }
 
 
-void COGLES1ExtensionHandler::initExtensions(
+void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 #ifdef EGL_VERSION_1_0
 		EGLDisplay display,
 #endif
@@ -150,11 +151,17 @@ void COGLES1ExtensionHandler::initExtensions(
 	glGetIntegerv(GL_MAX_LIGHTS, &val);
 	MaxLights = static_cast<u8>(val);
 #ifdef GL_EXT_texture_filter_anisotropic
-	glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
-	MaxAnisotropy = static_cast<u8>(val);
+	if (FeatureAvailable[GL_EXT_texture_filter_anisotropic])
+	{
+		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
+		MaxAnisotropy = static_cast<u8>(val);
+	}
 #endif
-	glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
-	MaxUserClipPlanes = static_cast<u8>(val);
+	if (FeatureAvailable[IRR_IMG_user_clip_planes])
+	{
+		glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
+		MaxUserClipPlanes = static_cast<u8>(val);
+	}
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	if (FeatureAvailable[IRR_OES_draw_texture])
@@ -179,7 +186,6 @@ void COGLES1ExtensionHandler::initExtensions(
 		pGlGenerateMipMapOES = (PFNGLGENERATEMIPMAPOES) eglGetProcAddress("glGenerateMipMapOES");
 	}
 #endif
-
 }
 
 } // end namespace video
