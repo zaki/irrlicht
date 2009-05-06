@@ -17,20 +17,26 @@ namespace irr
 namespace video
 {
 
-static const char* const OGLESFeatureStrings[] =
+static const char* const OGLESFeatureStrings[COGLES1ExtensionHandler::IRR_OGLES_Feature_Count] =
 {
 	"GL_AMD_compressed_3DC_texture",
 	"GL_AMD_compressed_ATC_texture",
+	"GL_AMD_performance_monitor",
+	"GL_AMD_program_binary_Z400",
 	"GL_ARB_texture_env_combine",
 	"GL_ARB_texture_env_dot3",
 	"GL_EXT_multi_draw_arrays",
+	"GL_EXT_texture_compression_dxt1",
 	"GL_EXT_texture_filter_anisotropic",
+	"GL_EXT_texture_format_BGRA8888",
+	"GL_EXT_texture_type_2_10_10_10_REV",
 	"GL_IMG_read_format",
 	"GL_IMG_texture_compression_pvrtc",
 	"GL_IMG_texture_env_enhanced_fixed_function",
 	"GL_IMG_texture_format_BGRA8888",
 	"GL_IMG_user_clip_planes",
 	"GL_IMG_vertex_program",
+	"GL_NV_fence",
 	"GL_OES_blend_equation_separate",
 	"GL_OES_blend_func_separate",
 	"GL_OES_blend_subtract",
@@ -39,29 +45,44 @@ static const char* const OGLESFeatureStrings[] =
 	"GL_OES_compressed_paletted_texture",
 	"GL_OES_depth24",
 	"GL_OES_depth32",
+	"GL_OES_depth_texture",
 	"GL_OES_draw_texture",
 	"GL_OES_EGL_image",
 	"GL_OES_element_index_uint",
 	"GL_OES_extended_matrix_palette",
 	"GL_OES_fbo_render_mipmap",
 	"GL_OES_fixed_point",
+	"GL_OES_fragment_precision_high",
 	"GL_OES_framebuffer_object",
+	"GL_OES_get_program_binary",
 	"GL_OES_mapbuffer",
 	"GL_OES_matrix_get",
 	"GL_OES_matrix_palette",
+	"GL_OES_packed_depth_stencil",
 	"GL_OES_point_size_array",
 	"GL_OES_point_sprite",
 	"GL_OES_query_matrix",
 	"GL_OES_read_format",
 	"GL_OES_rgb8_rgba8",
 	"GL_OES_single_precision",
+	"GL_OES_standard_derivatives",
 	"GL_OES_stencil1",
 	"GL_OES_stencil4",
 	"GL_OES_stencil8",
 	"GL_OES_stencil_wrap",
+	"GL_OES_texture_3D",
 	"GL_OES_texture_cube_map",
 	"GL_OES_texture_env_crossbar",
-	"GL_OES_texture_mirrored_repeat"
+	"GL_OES_texture_float",
+	"GL_OES_texture_float_linear",
+	"GL_OES_texture_half_float",
+	"GL_OES_texture_half_float_linear",
+	"GL_OES_texture_mirrored_repeat",
+	"GL_OES_texture_npot",
+	"GL_OES_vertex_half_float",
+	"GL_OES_vertex_type_10_10_10_2",
+	"GL_QCOM_driver_control",
+	"GL_QCOM_performance_monitor_global_mode"
 };
 
 
@@ -157,7 +178,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 		MaxAnisotropy = static_cast<u8>(val);
 	}
 #endif
-	if (FeatureAvailable[IRR_IMG_user_clip_planes])
+	if ((Version>100) || FeatureAvailable[IRR_IMG_user_clip_planes])
 	{
 		glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
 		MaxUserClipPlanes = static_cast<u8>(val);
