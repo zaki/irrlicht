@@ -383,8 +383,8 @@ bool COGLES1Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 #if defined(GL_VERSION_ES_CM_1_0)
 	#if defined(_IRR_USE_IPHONE_DEVICE_)
 	(*Device.displayBegin)(&Device);
-	#endif
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
+	#endif
 #endif
 
 	GLbitfield mask = 0;

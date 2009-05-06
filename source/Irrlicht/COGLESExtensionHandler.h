@@ -34,7 +34,7 @@ namespace video
 	{
 	public:
 	enum EOGLESFeatures {
-		IRR_AMD_compressed_3DC_texture, //39
+		IRR_AMD_compressed_3DC_texture=0, //39
 		IRR_AMD_compressed_ATC_texture, //40
 		IRR_AMD_performance_monitor, //50
 		IRR_AMD_program_binary_Z400, //48

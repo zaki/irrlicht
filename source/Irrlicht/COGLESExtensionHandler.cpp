@@ -132,11 +132,13 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 	core::stringc extensions = glGetString(GL_EXTENSIONS);
 	os::Printer::log(extensions.c_str());
 	{
-		c8* str = new c8[extensions.size()+1];
-		strncpy(str, extensions.c_str(), extensions.size()+1);
+		const u32 size = extensions.size()+1;
+		c8* str = new c8[size];
+		strncpy(str, extensions.c_str(), extensions.size());
+		str[extensions.size()]=' ';
 		c8* p = str;
 
-		for (u32 i=0; i<extensions.size(); ++i)
+		for (u32 i=0; i<size; ++i)
 		{
 			if (str[i] == ' ')
 			{
@@ -159,7 +161,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 	}
 #ifndef GL_BGRA
 	// whoa, pretty badly implemented extension...
-	if (FeatureAvailable[IRR_IMG_texture_format_BGRA8888])
+	if (FeatureAvailable[IRR_IMG_texture_format_BGRA8888] || FeatureAvailable[IRR_EXT_texture_format_BGRA8888])
 		GL_BGRA=0x80E1;
 	else
 		GL_BGRA=GL_RGBA;
