@@ -224,14 +224,30 @@ void COGLES1Texture::copyTexture(bool newTexture)
 		}
 	}
 
-	void* source = Image->lock();
+	void* source = 0;
+	IImage* tmpImage=0;
+	source = Image->lock();
+	if (!Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888) && !Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
+	{
+		tmpImage = new CImage(ECF_A8R8G8B8, ImageSize);
+		void* dest = tmpImage->lock();
+		CColorConverter::convert_A8R8G8B8toA8B8G8R8(source, Image->getDimension().getArea(), dest);
+		Image->unlock();
+		source = dest;
+	}
 	if (newTexture)
 		glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Image->getDimension().Width,
 			Image->getDimension().Height, 0, PixelFormat, PixelType, source);
 	else
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Image->getDimension().Width,
 			Image->getDimension().Height, PixelFormat, PixelType, source);
-	Image->unlock();
+	if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888) || Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
+		Image->unlock();
+	else
+	{
+		tmpImage->unlock();
+		tmpImage->drop();
+	}
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);

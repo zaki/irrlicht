@@ -102,6 +102,13 @@ namespace video
 		IRR_OGLES_Feature_Count
 	};
 
+	//! queries the features of the driver, returns true if feature is available
+	bool queryOpenGLFeature(EOGLESFeatures feature) const
+	{
+		return FeatureAvailable[feature];
+	}
+
+
 	protected:
 		COGLES1ExtensionHandler();
 

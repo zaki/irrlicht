@@ -779,7 +779,7 @@ void COGLES1Driver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 
 	setRenderStates3DMode();
 
-	drawVertexPrimitiveList2d3d(vertices, vertexCount, (const u16*)indexList, primitiveCount, vType, pType, iType, true);
+	drawVertexPrimitiveList2d3d(vertices, vertexCount, (const u16*)indexList, primitiveCount, vType, pType, iType);
 }
 
 
@@ -2503,7 +2503,7 @@ void COGLES1Driver::draw3DLine(const core::vector3df& start,
 	S3DVertex vertices[2];
 	vertices[0] = S3DVertex(start.X,start.Y,start.Z, 0,0,1, color, 0,0);
 	vertices[1] = S3DVertex(end.X,end.Y,end.Z, 0,0,1, color, 0,0);
-	drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES, EIT_16BIT, true);
+	drawVertexPrimitiveList2d3d(vertices, 2, indices, 1, video::EVT_STANDARD, scene::EPT_LINES);
 }
 
 
