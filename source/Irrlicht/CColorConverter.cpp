@@ -271,6 +271,18 @@ void CColorConverter::convert_A1R5G5B5toB8G8R8(const void* sP, s32 sN, void* dP)
 	}
 }
 
+void CColorConverter::convert_A1R5G5B5toR5G5B5A1(const void* sP, s32 sN, void* dP)
+{
+	const u16* sB = (const u16*)sP;
+	u16* dB = (u16*)dP;
+
+	for (s32 x = 0; x < sN; ++x)
+	{
+		*dB = (*sB<<1)|(*sB>>15);
+		++sB; ++dB;
+	}
+}
+
 void CColorConverter::convert_A1R5G5B5toA8R8G8B8(const void* sP, s32 sN, void* dP)
 {
 	u16* sB = (u16*)sP;
@@ -464,6 +476,22 @@ void CColorConverter::convert_B8G8R8A8toA8R8G8B8(const void* sP, s32 sN, void* d
 		++sB;
 	}
 
+}
+
+void CColorConverter::convert_R8G8B8toB8G8R8(const void* sP, s32 sN, void* dP)
+{
+	u8* sB = (u8*)sP;
+	u8* dB = (u8*)dP;
+
+	for (s32 x = 0; x < sN; ++x)
+	{
+		dB[2] = sB[0];
+		dB[1] = sB[1];
+		dB[0] = sB[2];
+
+		sB += 3;
+		dB += 3;
+	}
 }
 
 void CColorConverter::convert_R8G8B8toR5G6B5(const void* sP, s32 sN, void* dP)

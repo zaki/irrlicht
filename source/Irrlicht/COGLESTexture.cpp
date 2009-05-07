@@ -149,34 +149,39 @@ void COGLES1Texture::copyTexture(bool newTexture)
 		return;
 	}
 
+	void(*convert)(const void*, s32, void*)=0;
 	switch (Image->getColorFormat())
 	{
 		case ECF_A1R5G5B5:
-			InternalFormat=GL_BGRA;
-			PixelFormat=GL_BGRA;
-	// TODO ogl-es
-	//		PixelType=GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			PixelType=GL_UNSIGNED_BYTE;
+			InternalFormat=GL_RGBA;
+			PixelFormat=GL_RGBA;
+			PixelType=GL_UNSIGNED_SHORT_5_5_5_1;
+			convert=CColorConverter::convert_A1R5G5B5toR5G5B5A1;
 			break;
 		case ECF_R5G6B5:
 			InternalFormat=GL_RGB;
-	// TODO ogl-es
-	//		PixelFormat=GL_BGR;
-	//		PixelType=GL_UNSIGNED_SHORT_5_6_5_REV;
 			PixelFormat=GL_RGB;
-			PixelType=GL_UNSIGNED_BYTE;
+			PixelType=GL_UNSIGNED_SHORT_5_6_5;
 			break;
 		case ECF_R8G8B8:
 			InternalFormat=GL_RGB;
-	// TODO ogl-es
-	//		PixelFormat=GL_BGR;
 			PixelFormat=GL_RGB;
 			PixelType=GL_UNSIGNED_BYTE;
+			convert=CColorConverter::convert_R8G8B8toB8G8R8;
 			break;
 		case ECF_A8R8G8B8:
-			InternalFormat=GL_BGRA;
-			PixelFormat=GL_BGRA;
 			PixelType=GL_UNSIGNED_BYTE;
+			if (!Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888) && !Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
+			{
+				convert=CColorConverter::convert_A8R8G8B8toA8B8G8R8;
+				InternalFormat=GL_RGBA;
+				PixelFormat=GL_RGBA;
+			}
+			else
+			{
+				InternalFormat=GL_BGRA;
+				PixelFormat=GL_BGRA;
+			}
 			break;
 		default:
 			os::Printer::log("Unsupported texture format", ELL_ERROR);
@@ -227,11 +232,11 @@ void COGLES1Texture::copyTexture(bool newTexture)
 	void* source = 0;
 	IImage* tmpImage=0;
 	source = Image->lock();
-	if (!Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888) && !Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
+	if (convert)
 	{
-		tmpImage = new CImage(ECF_A8R8G8B8, ImageSize);
+		tmpImage = new CImage(Image->getColorFormat(), Image->getDimension());
 		void* dest = tmpImage->lock();
-		CColorConverter::convert_A8R8G8B8toA8B8G8R8(source, Image->getDimension().getArea(), dest);
+		convert(source, Image->getDimension().getArea(), dest);
 		Image->unlock();
 		source = dest;
 	}
@@ -241,13 +246,13 @@ void COGLES1Texture::copyTexture(bool newTexture)
 	else
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, Image->getDimension().Width,
 			Image->getDimension().Height, PixelFormat, PixelType, source);
-	if (Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_IMG_texture_format_BGRA8888) || Driver->queryOpenGLFeature(COGLES1ExtensionHandler::IRR_EXT_texture_format_BGRA8888))
-		Image->unlock();
-	else
+	if (convert)
 	{
 		tmpImage->unlock();
 		tmpImage->drop();
 	}
+	else
+		Image->unlock();
 
 	if (Driver->testGLError())
 		os::Printer::log("Could not glTexImage2D", ELL_ERROR);
