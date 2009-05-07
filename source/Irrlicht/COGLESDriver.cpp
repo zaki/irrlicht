@@ -126,19 +126,14 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 		eglSwapInterval(EglDisplay, 1);
 #elif defined(GL_VERSION_ES_CM_1_0)
 	glGenFramebuffersOES(1, &ViewFramebuffer);
-	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
-	
 	glGenRenderbuffersOES(1, &ViewRenderbuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
-	
+
 	#if defined(_IRR_USE_IPHONE_DEVICE_)
 	ExposedData.OGLESIPhone.AppDelegate = Device.DeviceM;
 	(*Device.displayInit)(&Device, &ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
 	#endif
-	
-	glFramebufferRenderbufferOES(
-		GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, ViewRenderbuffer);
-	
+
 	GLint backingWidth;
 	GLint backingHeight;
 	glGetRenderbufferParameterivOES(
@@ -150,6 +145,10 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
 	glRenderbufferStorageOES(
 		GL_RENDERBUFFER_OES, GL_DEPTH_COMPONENT16_OES, backingWidth, backingHeight);
+
+	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
+	glFramebufferRenderbufferOES(
+		GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, ViewRenderbuffer);
 	glFramebufferRenderbufferOES(
 		GL_FRAMEBUFFER_OES, GL_DEPTH_ATTACHMENT_OES, GL_RENDERBUFFER_OES, ViewDepthRenderbuffer);
 
@@ -1008,7 +1007,10 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 			glDrawElements(GL_TRIANGLE_FAN, primitiveCount+2, indexSize, indexList);
 			break;
 		case scene::EPT_TRIANGLES:
-			glDrawElements(GL_TRIANGLES, primitiveCount*3, indexSize, indexList);
+			if (LastMaterial.Wireframe)
+				glDrawElements(GL_LINES, primitiveCount*3, indexSize, indexList);
+			else
+				glDrawElements(GL_TRIANGLES, primitiveCount*3, indexSize, indexList);
 			break;
 		case scene::EPT_QUAD_STRIP:
 // TODO ogl-es
@@ -2737,7 +2739,7 @@ void COGLES1Driver::clearZBuffer()
 
 //! Returns an image created from the last rendered frame.
 // We want to read the front buffer to get the latest render finished.
-// This is not possible under ogl-es, though, so ne has to call this method
+// This is not possible under ogl-es, though, so one has to call this method
 // outside of the render loop only.
 IImage* COGLES1Driver::createScreenShot()
 {
