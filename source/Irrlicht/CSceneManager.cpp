@@ -641,10 +641,11 @@ IMeshSceneNode* CSceneManager::addOctTreeSceneNode(IMesh* mesh, ISceneNode* pare
 
 	COctTreeSceneNode* node = new COctTreeSceneNode(parent, this, id, minimalPolysPerNode);
 
-	if (mesh)
-		node->createTree(mesh);
-
-	node->drop();
+	if (node)
+	{
+		node->setMesh(mesh);
+		node->drop();
+	}
 
 	return node;
 }
