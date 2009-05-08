@@ -1024,7 +1024,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 
 	if (texture->getColorFormat() == ECF_A1R5G5B5)
 	{
-		u16 *p = (u16*)texture->lock();
+		u16 *p = (u16*)texture->lock(true);
 
 		if (!p)
 		{
@@ -1040,7 +1040,7 @@ void CNullDriver::makeColorKeyTexture(video::ITexture* texture,
 	}
 	else
 	{
-		u32 *p = (u32*)texture->lock();
+		u32 *p = (u32*)texture->lock(true);
 
 		if (!p)
 		{
