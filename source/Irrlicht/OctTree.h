@@ -15,8 +15,8 @@
 	Flags for Octtree
 */
 #define OCTTREE_USE_HARDWARE	// use meshbuffer for drawing, enables hardware acceleration
-#define OCTTREE_PARENTTEST		// bypass full invisible/visible test
-#define OCTTREE_BOX_BASED		// use bounding box or frustum for calculate polys
+#define OCTTREE_PARENTTEST	// bypass full invisible/visible test
+#define OCTTREE_BOX_BASED	// use bounding box or frustum for calculate polys
 
 namespace irr
 {
@@ -33,7 +33,7 @@ public:
 	struct SMeshChunk : public scene::CMeshBuffer<T>
 	{
 		SMeshChunk ()
-			: scene::CMeshBuffer<T>()
+			: scene::CMeshBuffer<T>(), MaterialId(0)
 		{
 			scene::CMeshBuffer<T>::grab();
 		}
@@ -41,7 +41,6 @@ public:
 		virtual ~SMeshChunk ()
 		{
 			//removeAllHardwareBuffers
-			MaterialId = 0;
 		}
 
 		s32 MaterialId;
