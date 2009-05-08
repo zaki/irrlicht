@@ -1748,7 +1748,7 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 #ifdef GL_EXT_texture_filter_anisotropic
 		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
+				static_cast<GLfloat>(material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1));
 #endif
 	}
 
