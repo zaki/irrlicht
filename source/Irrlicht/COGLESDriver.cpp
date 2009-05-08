@@ -1007,10 +1007,7 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 			glDrawElements(GL_TRIANGLE_FAN, primitiveCount+2, indexSize, indexList);
 			break;
 		case scene::EPT_TRIANGLES:
-			if (LastMaterial.Wireframe)
-				glDrawElements(GL_LINES, primitiveCount*3, indexSize, indexList);
-			else
-				glDrawElements(GL_TRIANGLES, primitiveCount*3, indexSize, indexList);
+			glDrawElements((LastMaterial.Wireframe)?GL_LINES:(LastMaterial.PointCloud)?GL_POINTS:GL_TRIANGLES, primitiveCount*3, indexSize, indexList);
 			break;
 		case scene::EPT_QUAD_STRIP:
 // TODO ogl-es
@@ -1751,7 +1748,7 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 #ifdef GL_EXT_texture_filter_anisotropic
 		if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT,
-				material.TextureLayer[i].AnisotropicFilter ? MaxAnisotropy : 1.0f );
+				material.TextureLayer[i].AnisotropicFilter>1 ? core::min_(MaxAnisotropy, material.TextureLayer[i].AnisotropicFilter) : 1);
 #endif
 	}
 
