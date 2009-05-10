@@ -453,10 +453,35 @@ COGLES1FBOTexture::COGLES1FBOTexture(const core::dimension2d<u32>& size,
 	setDebugName("COGLES1Texture_FBO");
 	#endif
 
-	ImageSize = size;
-	InternalFormat = GL_RGBA;
+	ECOLOR_FORMAT col = getBestColorFormat(ECF_A8R8G8B8);
+	switch (col)
+	{
+	case ECF_A8R8G8B8:
+#ifdef GL_OES_rgb8_rgba8
+		if (driver->queryOpenGLFeature(video::COGLES1ExtensionHandler::IRR_OES_rgb8_rgba8))
+			InternalFormat = GL_RGBA8_OES;
+		else
+#endif
+		InternalFormat = GL_RGB5_A1_OES;
+		break;
+	case ECF_R8G8B8:
+#ifdef GL_OES_rgb8_rgba8
+		if (driver->queryOpenGLFeature(video::COGLES1ExtensionHandler::IRR_OES_rgb8_rgba8))
+			InternalFormat = GL_RGB8_OES;
+		else
+#endif
+		InternalFormat = GL_RGB565_OES;
+		break;
+	case ECF_A1R5G5B5:
+		InternalFormat = GL_RGB5_A1_OES;
+		break;
+	case ECF_R5G6B5:
+		InternalFormat = GL_RGB565_OES;
+		break;
+	}
 	PixelFormat = GL_RGBA;
 	PixelType = GL_UNSIGNED_BYTE;
+	ImageSize = size;
 	HasMipMaps = false;
 	IsRenderTarget = true;
 
