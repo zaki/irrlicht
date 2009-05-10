@@ -1617,20 +1617,23 @@ void COGLES1Driver::setWrapMode(const SMaterial& material)
 				mode=GL_REPEAT;
 				break;
 			case ETC_CLAMP:
-	// TODO ogl-es
-	//			mode=GL_CLAMP;
+				//	mode=GL_CLAMP; not supported in ogl-es
+				mode = GL_CLAMP_TO_EDGE;
 				break;
 			case ETC_CLAMP_TO_EDGE:
 				mode=GL_CLAMP_TO_EDGE;
 				break;
 			case ETC_CLAMP_TO_BORDER:
-	// TODO ogl-es
-	//			mode=GL_CLAMP_TO_BORDER;
+				//	mode=GL_CLAMP_TO_BORDER; not supported in ogl-es
+				mode = GL_CLAMP_TO_EDGE;
 				break;
 			case ETC_MIRROR:
 #ifdef GL_OES_texture_mirrored_repeat
-				mode=GL_MIRRORED_REPEAT_OES;
+				if (FeatureAvailable[IRR_OES_texture_mirrored_repeat])
+					mode=GL_MIRRORED_REPEAT_OES;
+				else
 #endif
+				mode = GL_REPEAT;
 				break;
 		}
 
