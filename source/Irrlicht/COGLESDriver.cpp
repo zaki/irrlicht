@@ -954,6 +954,9 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 		case (EIT_32BIT):
 		{
 #ifdef GL_OES_element_index_uint
+#ifndef GL_UNSIGNED_INT
+#define GL_UNSIGNED_INT                   0x1405
+#endif
 			if (FeatureAvailable[IRR_OES_element_index_uint])
 				indexSize=GL_UNSIGNED_INT;
 			else
