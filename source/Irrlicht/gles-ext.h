@@ -1,45 +1,16 @@
 #ifndef __glext_h_
 #define __glext_h_
 
-/* $Revision: 6252 $ on $Date:: 2008-08-06 16:35:08 -0700 #$ */
+/* $Revision: 8160 $ on $Date:: 2009-05-08 11:18:30 -0700 #$ */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*
-** License Applicability. Except to the extent portions of this file are
-** made subject to an alternative license as permitted in the SGI Free
-** Software License B, Version 1.0 (the "License"), the contents of this
-** file are subject only to the provisions of the License. You may not use
-** this file except in compliance with the License. You may obtain a copy
-** of the License at Silicon Graphics, Inc., attn: Legal Services, 1600
-** Amphitheatre Parkway, Mountain View, CA 94043-1351, or at:
-**
-** http://oss.sgi.com/projects/FreeB
-**
-** Note that, as provided in the License, the Software is distributed on an
-** "AS IS" basis, with ALL EXPRESS AND IMPLIED WARRANTIES AND CONDITIONS
-** DISCLAIMED, INCLUDING, WITHOUT LIMITATION, ANY IMPLIED WARRANTIES AND
-** CONDITIONS OF MERCHANTABILITY, SATISFACTORY QUALITY, FITNESS FOR A
-** PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
-**
-** Original Code. The Original Code is: OpenGL Sample Implementation,
-** Version 1.2.1, released January 26, 2000, developed by Silicon Graphics,
-** Inc. The Original Code is Copyright (c) 1991-2000 Silicon Graphics, Inc.
-** Copyright in any portions created by third parties is as indicated
-** elsewhere herein. All Rights Reserved.
-**
-** Additional Notice Provisions: The application programming interfaces
-** established by SGI in conjunction with the Original Code are The
-** OpenGL(R) Graphics System: A Specification (Version 1.2.1), released
-** April 1, 1999; The OpenGL(R) Graphics System Utility Library (Version
-** 1.3), released November 4, 1998; and OpenGL(R) Graphics with the X
-** Window System(R) (Version 1.3), released October 19, 1998. This software
-** was created using the OpenGL(R) version 1.2.1 Sample Implementation
-** published by SGI, but has not been independently verified as being
-** compliant with the OpenGL(R) version 1.2.1 Specification.
-*/
+ * This document is licensed under the SGI Free Software B License Version
+ * 2.0. For details, see http://oss.sgi.com/projects/FreeB/ .
+ */
 
 #ifndef GL_APIENTRYP
 #   define GL_APIENTRYP GL_APIENTRY*
@@ -77,17 +48,32 @@ extern "C" {
 #define GL_ETC1_RGB8_OES                                        0x8D64
 #endif
 
-/* OES_draw_texture */
+/* GL_OES_depth24 */
+#ifndef GL_OES_depth24
+#define GL_DEPTH_COMPONENT24_OES                                0x81A6
+#endif
+
+/* GL_OES_depth32 */
+#ifndef GL_OES_depth32
+#define GL_DEPTH_COMPONENT32_OES                                0x81A7
+#endif
+
+/* GL_OES_draw_texture */
 #ifndef GL_OES_draw_texture
 #define GL_TEXTURE_CROP_RECT_OES                                0x8B9D
 #endif
 
-/* OES_fixed_point */
+/* GL_OES_EGL_image */
+#ifndef GL_OES_EGL_image
+typedef void* GLeglImageOES;
+#endif
+
+/* GL_OES_fixed_point */
 #ifndef GL_OES_fixed_point
 #define GL_FIXED_OES                                            0x140C
 #endif
 
-/* OES_framebuffer_object */
+/* GL_OES_framebuffer_object */
 #ifndef GL_OES_framebuffer_object
 #define GL_NONE_OES                                             0
 #define GL_FRAMEBUFFER_OES                                      0x8D40
@@ -124,14 +110,22 @@ extern "C" {
 #define GL_INVALID_FRAMEBUFFER_OPERATION_OES                    0x0506
 #endif
 
-/* OES_matrix_get */
+/* GL_OES_mapbuffer */
+#ifndef GL_OES_mapbuffer
+#define GL_WRITE_ONLY_OES                                       0x88B9
+#define GL_BUFFER_ACCESS_OES                                    0x88BB
+#define GL_BUFFER_MAPPED_OES                                    0x88BC
+#define GL_BUFFER_MAP_POINTER_OES                               0x88BD
+#endif
+
+/* GL_OES_matrix_get */
 #ifndef GL_OES_matrix_get
 #define GL_MODELVIEW_MATRIX_FLOAT_AS_INT_BITS_OES               0x898D
 #define GL_PROJECTION_MATRIX_FLOAT_AS_INT_BITS_OES              0x898E
 #define GL_TEXTURE_MATRIX_FLOAT_AS_INT_BITS_OES                 0x898F
 #endif
 
-/* OES_matrix_palette */
+/* GL_OES_matrix_palette */
 #ifndef GL_OES_matrix_palette
 #define GL_MAX_VERTEX_UNITS_OES                                 0x86A4
 #define GL_MAX_PALETTE_MATRICES_OES                             0x8842
@@ -149,6 +143,34 @@ extern "C" {
 #define GL_WEIGHT_ARRAY_STRIDE_OES                              0x86AA
 #define GL_WEIGHT_ARRAY_POINTER_OES                             0x86AC
 #define GL_WEIGHT_ARRAY_BUFFER_BINDING_OES                      0x889E
+#endif
+
+/* GL_OES_packed_depth_stencil */
+#ifndef GL_OES_packed_depth_stencil
+#define GL_DEPTH_STENCIL_OES                                    0x84F9
+#define GL_UNSIGNED_INT_24_8_OES                                0x84FA
+#define GL_DEPTH24_STENCIL8_OES                                 0x88F0
+#endif
+
+/* GL_OES_rgb8_rgba8 */
+#ifndef GL_OES_rgb8_rgba8
+#define GL_RGB8_OES                                             0x8051
+#define GL_RGBA8_OES                                            0x8058
+#endif
+
+/* GL_OES_stencil1 */
+#ifndef GL_OES_stencil1
+#define GL_STENCIL_INDEX1_OES                                   0x8D46
+#endif
+
+/* GL_OES_stencil4 */
+#ifndef GL_OES_stencil4
+#define GL_STENCIL_INDEX4_OES                                   0x8D47
+#endif
+
+/* GL_OES_stencil8 */
+#ifndef GL_OES_stencil8
+#define GL_STENCIL_INDEX8_OES                                   0x8D48
 #endif
 
 /* GL_OES_stencil_wrap */
@@ -179,49 +201,9 @@ extern "C" {
 #define GL_MIRRORED_REPEAT_OES                                  0x8370
 #endif
 
-/* GL_OES_EGL_image */
-#ifndef GL_OES_EGL_image
-typedef void* GLeglImageOES;
-#endif
-
-/* GL_OES_depth24 */
-#ifndef GL_OES_depth24
-#define GL_DEPTH_COMPONENT24_OES                                0x81A6
-#endif
-
-/* GL_OES_depth32 */
-#ifndef GL_OES_depth32
-#define GL_DEPTH_COMPONENT32_OES                                0x81A7
-#endif
-
-/* GL_OES_mapbuffer */
-#ifndef GL_OES_mapbuffer
-#define GL_WRITE_ONLY_OES                                       0x88B9
-#define GL_BUFFER_ACCESS_OES                                    0x88BB
-#define GL_BUFFER_MAPPED_OES                                    0x88BC
-#define GL_BUFFER_MAP_POINTER_OES                               0x88BD
-#endif
-
-/* GL_OES_rgb8_rgba8 */
-#ifndef GL_OES_rgb8_rgba8
-#define GL_RGB8_OES                                             0x8051
-#define GL_RGBA8_OES                                            0x8058
-#endif
-
-/* GL_OES_stencil1 */
-#ifndef GL_OES_stencil1
-#define GL_STENCIL_INDEX1_OES                                   0x8D46
-#endif
-
-/* GL_OES_stencil4 */
-#ifndef GL_OES_stencil4
-#define GL_STENCIL_INDEX4_OES                                   0x8D47
-#endif
-
-/* GL_OES_stencil8 */
-#ifndef GL_OES_stencil8
-#define GL_STENCIL_INDEX8_OES                                   0x8D48
-#endif
+/*------------------------------------------------------------------------*
+ * AMD extension tokens
+ *------------------------------------------------------------------------*/
 
 /* GL_AMD_compressed_3DC_texture */
 #ifndef GL_AMD_compressed_3DC_texture
@@ -236,11 +218,65 @@ typedef void* GLeglImageOES;
 #define GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD                      0x87EE
 #endif
 
+/*------------------------------------------------------------------------*
+ * EXT extension tokens
+ *------------------------------------------------------------------------*/
+
 /* GL_EXT_texture_filter_anisotropic */
 #ifndef GL_EXT_texture_filter_anisotropic
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT                           0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT                       0x84FF
 #endif
+
+/* GL_EXT_texture_format_BGRA8888 */
+#ifndef GL_EXT_texture_format_BGRA8888
+#define GL_BGRA                                                 0x80E1
+#endif
+
+/*------------------------------------------------------------------------*
+ * IMG extension tokens
+ *------------------------------------------------------------------------*/
+
+/* GL_IMG_read_format */
+#ifndef GL_IMG_read_format
+#define GL_BGRA_IMG                                             0x80E1
+#define GL_UNSIGNED_SHORT_4_4_4_4_REV_IMG                       0x8365
+#endif
+
+/* GL_IMG_texture_compression_pvrtc */
+#ifndef GL_IMG_texture_compression_pvrtc
+#define COMPRESSED_RGB_PVRTC_4BPPV1_IMG                         0x8C00
+#define COMPRESSED_RGB_PVRTC_2BPPV1_IMG                         0x8C01
+#define COMPRESSED_RGBA_PVRTC_4BPPV1_IMG                        0x8C02
+#define COMPRESSED_RGBA_PVRTC_2BPPV1_IMG                        0x8C03
+#endif
+
+/*------------------------------------------------------------------------*
+ * NV extension tokens
+ *------------------------------------------------------------------------*/
+
+/* GL_NV_fence */
+#ifndef GL_NV_fence
+#define GL_ALL_COMPLETED_NV                                     0x84F2
+#define GL_FENCE_STATUS_NV                                      0x84F3
+#define GL_FENCE_CONDITION_NV                                   0x84F4
+#endif
+
+/*------------------------------------------------------------------------*
+ * QCOM extension tokens
+ *------------------------------------------------------------------------*/
+
+/* GL_QCOM_driver_control */
+/* No new tokens introduced by this extension. */
+
+/* GL_QCOM_perfmon_global_mode */
+#ifndef GL_QCOM_perfmon_global_mode
+#define GL_PERFMON_GLOBAL_MODE_QCOM                             0x8FA0
+#endif
+
+/*------------------------------------------------------------------------*
+ * End of extension tokens, start of corresponding extension functions
+ *------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------*
  * OES extension functions
@@ -283,6 +319,16 @@ typedef void (GL_APIENTRYP PFNGLBLENDEQUATIONOESPROC) (GLenum mode);
 #define GL_OES_compressed_ETC1_RGB8_texture 1
 #endif
 
+/* GL_OES_depth24 */
+#ifndef GL_OES_depth24
+#define GL_OES_depth24 1
+#endif
+
+/* GL_OES_depth32 */
+#ifndef GL_OES_depth32
+#define GL_OES_depth32 1
+#endif
+
 /* GL_OES_draw_texture */
 #ifndef GL_OES_draw_texture
 #define GL_OES_draw_texture 1
@@ -306,9 +352,30 @@ typedef void (GL_APIENTRYP PFNGLDRAWTEXFOESPROC) (GLfloat x, GLfloat y, GLfloat 
 typedef void (GL_APIENTRYP PFNGLDRAWTEXFVOESPROC) (const GLfloat *coords);
 #endif
 
+/* GL_OES_EGL_image */
+#ifndef GL_OES_EGL_image
+#define GL_OES_EGL_image 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void GL_APIENTRY glEGLImageTargetTexture2DOES (GLenum target, GLeglImageOES image);
+GL_API void GL_APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum target, GLeglImageOES image);
+#endif
+typedef void (GL_APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, GLeglImageOES image);
+typedef void (GL_APIENTRYP PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC) (GLenum target, GLeglImageOES image);
+#endif
+
+/* GL_OES_element_index_uint */
+#ifndef GL_OES_element_index_uint
+#define GL_OES_element_index_uint 1
+#endif
+
 /* GL_OES_extended_matrix_palette */
 #ifndef GL_OES_extended_matrix_palette
 #define GL_OES_extended_matrix_palette 1
+#endif
+
+/* GL_OES_fbo_render_mipmap */
+#ifndef GL_OES_fbo_render_mipmap
+#define GL_OES_fbo_render_mipmap 1
 #endif
 
 /* GL_OES_fixed_point */
@@ -433,6 +500,19 @@ typedef void (GL_APIENTRYP PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVOESPROC) (GLe
 typedef void (GL_APIENTRYP PFNGLGENERATEMIPMAPOESPROC) (GLenum target);
 #endif
 
+/* GL_OES_mapbuffer */
+#ifndef GL_OES_mapbuffer
+#define GL_OES_mapbuffer 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void* GL_APIENTRY glMapBufferOES (GLenum target, GLenum access);
+GL_API GLboolean GL_APIENTRY glUnmapBufferOES (GLenum target);
+GL_API void GL_APIENTRY glGetBufferPointervOES (GLenum target, GLenum pname, void** params);
+#endif
+typedef void* (GL_APIENTRYP PFNGLMAPBUFFEROESPROC) (GLenum target, GLenum access);
+typedef GLboolean (GL_APIENTRYP PFNGLUNMAPBUFFEROESPROC) (GLenum target);
+typedef void (GL_APIENTRYP PFNGLGETBUFFERPOINTERVOESPROC) (GLenum target, GLenum pname, void** params);
+#endif
+
 /* GL_OES_matrix_get */
 #ifndef GL_OES_matrix_get
 #define GL_OES_matrix_get 1
@@ -453,6 +533,11 @@ typedef void (GL_APIENTRYP PFNGLMATRIXINDEXPOINTEROESPROC) (GLint size, GLenum t
 typedef void (GL_APIENTRYP PFNGLWEIGHTPOINTEROESPROC) (GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 #endif
 
+/* GL_OES_packed_depth_stencil */
+#ifndef GL_OES_packed_depth_stencil
+#define GL_OES_packed_depth_stencil 1
+#endif
+
 /* GL_OES_query_matrix */
 #ifndef GL_OES_query_matrix
 #define GL_OES_query_matrix 1
@@ -460,6 +545,11 @@ typedef void (GL_APIENTRYP PFNGLWEIGHTPOINTEROESPROC) (GLint size, GLenum type, 
 GL_API GLbitfield GL_APIENTRY glQueryMatrixxOES (GLfixed mantissa[16], GLint exponent[16]);
 #endif
 typedef GLbitfield (GL_APIENTRYP PFNGLQUERYMATRIXXOESPROC) (GLfixed mantissa[16], GLint exponent[16]);
+#endif
+
+/* GL_OES_rgb8_rgba8 */
+#ifndef GL_OES_rgb8_rgba8
+#define GL_OES_rgb8_rgba8 1
 #endif
 
 /* GL_OES_single_precision */
@@ -479,6 +569,21 @@ typedef void (GL_APIENTRYP PFNGLORTHOFOESPROC) (GLfloat left, GLfloat right, GLf
 typedef void (GL_APIENTRYP PFNGLCLIPPLANEFOESPROC) (GLenum plane, const GLfloat *equation);
 typedef void (GL_APIENTRYP PFNGLGETCLIPPLANEFOESPROC) (GLenum pname, GLfloat eqn[4]);
 typedef void (GL_APIENTRYP PFNGLCLEARDEPTHFOESPROC) (GLclampf depth);
+#endif
+
+/* GL_OES_stencil1 */
+#ifndef GL_OES_stencil1
+#define GL_OES_stencil1 1
+#endif
+
+/* GL_OES_stencil4 */
+#ifndef GL_OES_stencil4
+#define GL_OES_stencil4 1
+#endif
+
+/* GL_OES_stencil8 */
+#ifndef GL_OES_stencil8
+#define GL_OES_stencil8 1
 #endif
 
 /* GL_OES_stencil_wrap */
@@ -521,69 +626,9 @@ typedef void (GL_APIENTRYP PFNGLGETTEXGENXVOESPROC) (GLenum coord, GLenum pname,
 #define GL_OES_texture_mirrored_repeat 1
 #endif
 
-/* GL_OES_EGL_image */
-#ifndef GL_OES_EGL_image
-#define GL_OES_EGL_image 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_API void GL_APIENTRY glEGLImageTargetTexture2DOES (GLenum target, GLeglImageOES image);
-GL_API void GL_APIENTRY glEGLImageTargetRenderbufferStorageOES (GLenum target, GLeglImageOES image);
-#endif
-typedef void (GL_APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, GLeglImageOES image);
-typedef void (GL_APIENTRYP PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC) (GLenum target, GLeglImageOES image);
-#endif
-
-/* GL_OES_depth24 */
-#ifndef GL_OES_depth24
-#define GL_OES_depth24 1
-#endif
-
-/* GL_OES_depth32 */
-#ifndef GL_OES_depth32
-#define GL_OES_depth32 1
-#endif
-
-/* GL_OES_element_index_uint */
-#ifndef GL_OES_element_index_uint
-#define GL_OES_element_index_uint 1
-#endif
-
-/* GL_OES_fbo_render_mipmap */
-#ifndef GL_OES_fbo_render_mipmap
-#define GL_OES_fbo_render_mipmap 1
-#endif
-
-/* GL_OES_mapbuffer */
-#ifndef GL_OES_mapbuffer
-#define GL_OES_mapbuffer 1
-#ifdef GL_GLEXT_PROTOTYPES
-GL_API void* GL_APIENTRY glMapBufferOES (GLenum target, GLenum access);
-GL_API GLboolean GL_APIENTRY glUnmapBufferOES (GLenum target);
-GL_API void GL_APIENTRY glGetBufferPointervOES (GLenum target, GLenum pname, void** params);
-#endif
-typedef void* (GL_APIENTRYP PFNGLMAPBUFFEROESPROC) (GLenum target, GLenum access);
-typedef GLboolean (GL_APIENTRYP PFNGLUNMAPBUFFEROESPROC) (GLenum target);
-typedef void (GL_APIENTRYP PFNGLGETBUFFERPOINTERVOESPROC) (GLenum target, GLenum pname, void** params);
-#endif
-
-/* GL_OES_rgb8_rgba8 */
-#ifndef GL_OES_rgb8_rgba8
-#define GL_OES_rgb8_rgba8 1
-#endif
-
-/* GL_OES_stencil1 */
-#ifndef GL_OES_stencil1
-#define GL_OES_stencil1 1
-#endif
-
-/* GL_OES_stencil4 */
-#ifndef GL_OES_stencil4
-#define GL_OES_stencil4 1
-#endif
-
-/* GL_OES_stencil8 */
-#ifndef GL_OES_stencil8
-#define GL_OES_stencil8 1
-#endif
+/*------------------------------------------------------------------------*
+ * AMD extension functions
+ *------------------------------------------------------------------------*/
 
 /* GL_AMD_compressed_3DC_texture */
 #ifndef GL_AMD_compressed_3DC_texture
@@ -595,9 +640,81 @@ typedef void (GL_APIENTRYP PFNGLGETBUFFERPOINTERVOESPROC) (GLenum target, GLenum
 #define GL_AMD_compressed_ATC_texture 1
 #endif
 
+/*------------------------------------------------------------------------*
+ * EXT extension functions
+ *------------------------------------------------------------------------*/
+
 /* GL_EXT_texture_filter_anisotropic */
 #ifndef GL_EXT_texture_filter_anisotropic
 #define GL_EXT_texture_filter_anisotropic 1
+#endif
+
+/* GL_EXT_texture_format_BGRA8888 */
+#ifndef GL_EXT_texture_format_BGRA8888
+#define GL_EXT_texture_format_BGRA8888 1
+#endif
+
+/*------------------------------------------------------------------------*
+ * IMG extension functions
+ *------------------------------------------------------------------------*/
+
+/* GL_IMG_read_format */
+#ifndef GL_IMG_read_format
+#define GL_IMG_read_format 1
+#endif
+
+/* GL_IMG_texture_compression_pvrtc */
+#ifndef GL_IMG_texture_compression_pvrtc
+#define GL_IMG_texture_compression_pvrtc 1
+#endif
+
+/*------------------------------------------------------------------------*
+ * NV extension functions
+ *------------------------------------------------------------------------*/
+
+/* NV_fence */
+#ifndef GL_NV_fence
+#define GL_NV_fence 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void GL_APIENTRY glDeleteFencesNV (GLsizei, const GLuint *);
+GL_API void GL_APIENTRY glGenFencesNV (GLsizei, GLuint *);
+GL_API GLboolean GL_APIENTRY glIsFenceNV (GLuint);
+GL_API GLboolean GL_APIENTRY glTestFenceNV (GLuint);
+GL_API void GL_APIENTRY glGetFenceivNV (GLuint, GLenum, GLint *);
+GL_API void GL_APIENTRY glFinishFenceNV (GLuint);
+GL_API void GL_APIENTRY glSetFenceNV (GLuint, GLenum);
+#endif
+typedef void (GL_APIENTRYP PFNGLDELETEFENCESNVPROC) (GLsizei n, const GLuint *fences);
+typedef void (GL_APIENTRYP PFNGLGENFENCESNVPROC) (GLsizei n, GLuint *fences);
+typedef GLboolean (GL_APIENTRYP PFNGLISFENCENVPROC) (GLuint fence);
+typedef GLboolean (GL_APIENTRYP PFNGLTESTFENCENVPROC) (GLuint fence);
+typedef void (GL_APIENTRYP PFNGLGETFENCEIVNVPROC) (GLuint fence, GLenum pname, GLint *params);
+typedef void (GL_APIENTRYP PFNGLFINISHFENCENVPROC) (GLuint fence);
+typedef void (GL_APIENTRYP PFNGLSETFENCENVPROC) (GLuint fence, GLenum condition);
+#endif
+
+/*------------------------------------------------------------------------*
+ * QCOM extension functions
+ *------------------------------------------------------------------------*/
+
+/* GL_QCOM_driver_control */
+#ifndef GL_QCOM_driver_control
+#define GL_QCOM_driver_control 1
+#ifdef GL_GLEXT_PROTOTYPES
+GL_API void GL_APIENTRY glGetDriverControlsQCOM (GLint *num, GLsizei size, GLuint *driverControls);
+GL_API void GL_APIENTRY glGetDriverControlStringQCOM (GLuint driverControl, GLsizei bufSize, GLsizei *length, char *driverControlString);
+GL_API void GL_APIENTRY glEnableDriverControlQCOM (GLuint driverControl);
+GL_API void GL_APIENTRY glDisableDriverControlQCOM (GLuint driverControl);
+#endif
+typedef void (GL_APIENTRYP PFNGLGETDRIVERCONTROLSQCOMPROC) (GLint *num, GLsizei size, GLuint *driverControls);
+typedef void (GL_APIENTRYP PFNGLGETDRIVERCONTROLSTRINGQCOMPROC) (GLuint driverControl, GLsizei bufSize, GLsizei *length, char *driverControlString);
+typedef void (GL_APIENTRYP PFNGLENABLEDRIVERCONTROLQCOMPROC) (GLuint driverControl);
+typedef void (GL_APIENTRYP PFNGLDISABLEDRIVERCONTROLQCOMPROC) (GLuint driverControl);
+#endif
+
+/* GL_QCOM_perfmon_global_mode */
+#ifndef GL_QCOM_perfmon_global_mode
+#define GL_QCOM_perfmon_global_mode 1
 #endif
 
 #ifdef __cplusplus
