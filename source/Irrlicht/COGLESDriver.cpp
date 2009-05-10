@@ -953,7 +953,11 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 		}
 		case (EIT_32BIT):
 		{
-			// TODO ogl-es
+#ifdef GL_OES_element_index_uint
+			if (FeatureAvailable[IRR_OES_element_index_uint])
+				indexSize=GL_UNSIGNED_INT;
+			else
+#endif
 			indexSize=GL_UNSIGNED_SHORT;
 			break;
 		}
