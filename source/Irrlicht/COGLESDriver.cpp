@@ -2288,118 +2288,39 @@ void COGLES1Driver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
 
-	// The first parts are not correctly working, yet.
-#if 0
-#if defined(GL_stencil_two_side) && defined(GL_OES_stencil_wrap)
-	if (FeatureAvailable[IRR_stencil_two_side])
+	GLenum decr = GL_DECR;
+	GLenum incr = GL_INCR;
+#if 0 //defined(GL_OES_stencil_wrap)
+	if (FeatureAvailable[IRR_OES_stencil_wrap])
 	{
-		glEnable(GL_STENCIL_TEST_TWO_SIDE);
-#ifdef GL_NV_depth_clamp
-		if (FeatureAvailable[IRR_NV_depth_clamp])
-			glEnable(GL_DEPTH_CLAMP_NV);
+		decr = GL_DECR_WRAP_OES;
+		incr = GL_INCR_WRAP_OES;
+	}
 #endif
-		glDisable(GL_CULL_FACE);
-		if (!zfail)
-		{
-			// ZPASS Method
+	glEnable(GL_CULL_FACE);
+	if (!zfail)
+	{
+		// ZPASS Method
 
-			extGlActiveStencilFace(GL_BACK);
-			if (FeatureAvailable[IRR_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP);
-			else
-				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-			glStencilMask(~0);
-			glStencilFunc(GL_ALWAYS, 0, ~0);
+		glCullFace(GL_BACK);
+		glStencilOp(GL_KEEP, GL_KEEP, incr);
+		glDrawArrays(GL_TRIANGLES,0,count);
 
-			extGlActiveStencilFace(GL_FRONT);
-			if (FeatureAvailable[IRR_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-			else
-				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-			glStencilMask(~0);
-			glStencilFunc(GL_ALWAYS, 0, ~0);
-
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		else
-		{
-			// ZFAIL Method
-
-			extGlActiveStencilFace(GL_BACK);
-			if (FeatureAvailable[IRR_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_INCR_WRAP, GL_KEEP);
-			else
-				glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
-			glStencilMask(~0);
-			glStencilFunc(GL_ALWAYS, 0, ~0);
-
-			extGlActiveStencilFace(GL_FRONT);
-			if (FeatureAvailable[IRR_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_DECR_WRAP, GL_KEEP);
-			else
-				glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
-			glStencilMask(~0);
-			glStencilFunc(GL_ALWAYS, 0, ~0);
-
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		glDisable(GL_STENCIL_TEST_TWO_SIDE);
+		glCullFace(GL_FRONT);
+		glStencilOp(GL_KEEP, GL_KEEP, decr);
+		glDrawArrays(GL_TRIANGLES,0,count);
 	}
 	else
-#endif
-	if (FeatureAvailable[IRR_ATI_separate_stencil])
 	{
-		glDisable(GL_CULL_FACE);
-		if (!zfail)
-		{
-			// ZPASS Method
+		// ZFAIL Method
 
-			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, GL_DECR);
-			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR);
-			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
-			glStencilMask(~0);
+		glStencilOp(GL_KEEP, incr, GL_KEEP);
+		glCullFace(GL_FRONT);
+		glDrawArrays(GL_TRIANGLES,0,count);
 
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		else
-		{
-			// ZFAIL Method
-
-			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
-			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
-			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
-
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-	}
-	else
-#endif
-	{
-		glEnable(GL_CULL_FACE);
-		if (!zfail)
-		{
-			// ZPASS Method
-
-			glCullFace(GL_BACK);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-			glDrawArrays(GL_TRIANGLES,0,count);
-
-			glCullFace(GL_FRONT);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
-		else
-		{
-			// ZFAIL Method
-
-			glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
-			glCullFace(GL_FRONT);
-			glDrawArrays(GL_TRIANGLES,0,count);
-
-			glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
-			glCullFace(GL_BACK);
-			glDrawArrays(GL_TRIANGLES,0,count);
-		}
+		glStencilOp(GL_KEEP, decr, GL_KEEP);
+		glCullFace(GL_BACK);
+		glDrawArrays(GL_TRIANGLES,0,count);
 	}
 
 	glDisableClientState(GL_VERTEX_ARRAY);
