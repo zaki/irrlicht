@@ -987,15 +987,19 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
 				glEnable(GL_POINT_SPRITE_OES);
 #endif
-			float quadratic[] = {0.0f, 0.0f, 10.01f};
-			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, quadratic);
-			float maxParticleSize=1.0f;
-			glGetFloatv(GL_POINT_SIZE_MAX, &maxParticleSize);
-//			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
-//			extGlPointParameterf(GL_POINT_SIZE_MAX,maxParticleSize);
-//			extGlPointParameterf(GL_POINT_SIZE_MIN,Material.Thickness);
-			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, 60.0f);
-			glPointSize(Material.Thickness);
+			// if ==0 we use the point size array
+			if (Material.Thickness!=0.f)
+			{
+				float quadratic[] = {0.0f, 0.0f, 10.01f};
+				extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, quadratic);
+				float maxParticleSize=1.0f;
+				glGetFloatv(GL_POINT_SIZE_MAX, &maxParticleSize);
+//				maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
+//				extGlPointParameterf(GL_POINT_SIZE_MAX,maxParticleSize);
+//				extGlPointParameterf(GL_POINT_SIZE_MIN,Material.Thickness);
+				extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, 60.0f);
+				glPointSize(Material.Thickness);
+			}
 #ifdef GL_OES_point_sprite
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_OES_point_sprite])
 				glTexEnvf(GL_POINT_SPRITE_OES,GL_COORD_REPLACE_OES, GL_TRUE);
