@@ -2290,7 +2290,7 @@ void COGLES1Driver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 
 	GLenum decr = GL_DECR;
 	GLenum incr = GL_INCR;
-#if 0 //defined(GL_OES_stencil_wrap)
+#if defined(GL_OES_stencil_wrap)
 	if (FeatureAvailable[IRR_OES_stencil_wrap])
 	{
 		decr = GL_DECR_WRAP_OES;
