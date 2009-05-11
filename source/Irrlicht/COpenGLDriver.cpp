@@ -2605,6 +2605,16 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
 
+	GLenum incr = GL_INCR;
+	GLenum decr = GL_DECR;
+#ifdef GL_EXT_stencil_wrap
+	if (FeatureAvailable[IRR_EXT_stencil_wrap])
+	{
+		incr = GL_INCR_WRAP_EXT;
+		decr = GL_DECR_WRAP_EXT;
+	}
+#endif
+
 	// The first parts are not correctly working, yet.
 #if 0
 #ifdef GL_EXT_stencil_two_side
@@ -2621,18 +2631,12 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZPASS Method
 
 			extGlActiveStencilFace(GL_BACK);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT);
-			else
-				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+				glStencilOp(GL_KEEP, GL_KEEP, decr);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
 			extGlActiveStencilFace(GL_FRONT);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT);
-			else
-				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+			glStencilOp(GL_KEEP, GL_KEEP, incr);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
@@ -2643,18 +2647,12 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZFAIL Method
 
 			extGlActiveStencilFace(GL_BACK);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP);
-			else
-				glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+			glStencilOp(GL_KEEP, incr, GL_KEEP);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
 			extGlActiveStencilFace(GL_FRONT);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP);
-			else
-				glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+			glStencilOp(GL_KEEP, decr, GL_KEEP);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
@@ -2670,8 +2668,8 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		{
 			// ZPASS Method
 
-			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, GL_DECR);
-			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR);
+			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, decr);
+			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, incr);
 			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
 			glStencilMask(~0);
 
@@ -2681,8 +2679,8 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		{
 			// ZFAIL Method
 
-			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
-			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
+			extGlStencilOpSeparate(GL_BACK, GL_KEEP, incr, GL_KEEP);
+			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, decr, GL_KEEP);
 			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
 
 			glDrawArrays(GL_TRIANGLES,0,count);
@@ -2697,22 +2695,22 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZPASS Method
 
 			glCullFace(GL_BACK);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+			glStencilOp(GL_KEEP, GL_KEEP, incr);
 			glDrawArrays(GL_TRIANGLES,0,count);
 
 			glCullFace(GL_FRONT);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+			glStencilOp(GL_KEEP, GL_KEEP, decr);
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
 		else
 		{
 			// ZFAIL Method
 
-			glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+			glStencilOp(GL_KEEP, incr, GL_KEEP);
 			glCullFace(GL_FRONT);
 			glDrawArrays(GL_TRIANGLES,0,count);
 
-			glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+			glStencilOp(GL_KEEP, decr, GL_KEEP);
 			glCullFace(GL_BACK);
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
