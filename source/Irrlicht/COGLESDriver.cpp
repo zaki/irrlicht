@@ -846,6 +846,10 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 	glEnableClientState(GL_VERTEX_ARRAY);
 	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+#ifdef GL_OES_point_size_array
+	else if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness==0.0f))
+		glEnableClientState(GL_POINT_SIZE_ARRAY_OES);
+#endif
 	if (threed && (pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
 		glEnableClientState(GL_NORMAL_ARRAY);
 
@@ -857,6 +861,14 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 		case EVT_STANDARD:
 			if (vertices)
 			{
+#ifdef GL_OES_point_size_array
+				if ((pType==scene::EPT_POINTS) || (pType==scene::EPT_POINT_SPRITES))
+				{
+					if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness==0.0f))
+						glPointSizePointerOES(GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Normal.X);
+				}
+				else
+#endif
 				if (threed)
 					glNormalPointer(GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Normal);
 				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
@@ -1044,6 +1056,10 @@ void COGLES1Driver::drawVertexPrimitiveList2d3d(const void* vertices, u32 vertex
 		}
 		extGlClientActiveTexture(GL_TEXTURE0);
 	}
+#ifdef GL_OES_point_size_array
+	if (FeatureAvailable[IRR_OES_point_size_array] && (Material.Thickness==0.0f))
+		glDisableClientState(GL_POINT_SIZE_ARRAY_OES);
+#endif
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
