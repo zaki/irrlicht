@@ -543,6 +543,10 @@ public:
 	{
 		Driver->disableTextures(1);
 		Driver->setTexture(0, material.getTexture(0));
+		// texture needs to be flipped for OpenGL
+		core::matrix4 tmp = Driver->getTransform(ETS_TEXTURE_0);
+		tmp[5]*=-1;
+		Driver->setTransform(ETS_TEXTURE_0, tmp);
 		Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
