@@ -23,11 +23,8 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const core::string<c16>& name,
 
 	if (image)
 	{
-		core::dimension2d<u32> optSize;
 		OrigSize = image->getDimension();
-
-		optSize.Width = getTextureSizeFromSurfaceSize(OrigSize.Width);
-		optSize.Height = getTextureSizeFromSurfaceSize(OrigSize.Height);
+		core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
 
 		Image = new CImage(ECF_A1R5G5B5, image);
 
@@ -105,18 +102,6 @@ CImage* CSoftwareTexture::getImage()
 CImage* CSoftwareTexture::getTexture()
 {
 	return Texture;
-}
-
-
-
-//! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CSoftwareTexture::getTextureSizeFromSurfaceSize(s32 size) const
-{
-	s32 ts = 0x01;
-	while(ts < size)
-		ts <<= 1;
-
-	return ts;
 }
 
 
