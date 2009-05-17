@@ -3,7 +3,6 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CNullDriver.h"
-#include "CSoftwareTexture.h"
 #include "os.h"
 #include "CImage.h"
 #include "CAttributes.h"
@@ -529,11 +528,7 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
 ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
 {
-	#ifdef _IRR_COMPILE_WITH_SOFTWARE_
-	return new CSoftwareTexture(surface, name);
-	#else
-	return 0;
-	#endif
+	return new SDummyTexture(name);
 }
 
 
