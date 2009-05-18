@@ -259,7 +259,7 @@ namespace video
 		//! Value affecting the size of specular highlights.
 		/** A value of 20 is common. If set to 0, no specular
 		highlights are being used. To activate, simply set the
-		shininess of a material to a value other than 0:
+		shininess of a material to a value in the range [0.5;128]:
 		\code
 		sceneNode->getMaterial(0).Shininess = 20.0f;
 		\endcode
@@ -300,13 +300,14 @@ namespace video
 		//! Thickness of non-3dimensional elements such as lines and points.
 		f32 Thickness;
 
-		//! Is the ZBuffer enabled? Default: 1
-		/** Changed from bool to integer
-		(0 == ZBuffer Off, 1 == ZBuffer LessEqual, 2 == ZBuffer Equal)
-		*/
+		//! Is the ZBuffer enabled? Default: ECFN_LESSEQUAL
+		/** Values are from E_COMPARISON_FUNC. */
 		u8 ZBuffer;
 
 		//! Sets the antialiasing mode
+		/** Values are chosen from E_ANTI_ALIASING_MODE. Default is 
+		EAAM_SIMPLE|EAAM_LINE_SMOOTH, i.e. simple multi-sample
+		anti-aliasing and lime smoothing is enabled. */
 		u8 AntiAliasing;
 
 		//! Defines the enabled color planes
@@ -314,7 +315,7 @@ namespace video
 		Only enabled color planes will be rendered to the current render
 		target. Typical use is to disable all colors when rendering only to
 		depth or stencil buffer, or using Red and Green for Stereo rendering. */
-		u8 ColorMask;
+		u8 ColorMask:4;
 
 		//! Defines the interpretation of vertex color in the lighting equation
 		/** Values should be chosen from E_COLOR_MATERIAL.
@@ -322,7 +323,7 @@ namespace video
 		material values for light modulation. This allows to easily change e.g. the
 		diffuse light behavior of each face. The default, ECM_DIFFUSE, will result in
 		a very similar rendering as with lighting turned off, just with light shading. */
-		u8 ColorMaterial;
+		u8 ColorMaterial:3;
 
 		//! Draw as wireframe or filled triangles? Default: false
 		/** The user can access a material flag using
@@ -340,8 +341,9 @@ namespace video
 		bool Lighting:1;
 
 		//! Is the zbuffer writeable or is it read-only. Default: true.
-		/** This flag is ignored if the MaterialType is a transparent
-		type. */
+		/** This flag is forced to false if the MaterialType is a
+		transparent type and the scene parameter
+		ALLOW_ZWRITE_ON_TRANSPARENT is not set. */
 		bool ZWriteEnable:1;
 
 		//! Is backface culling enabled? Default: true
@@ -353,7 +355,8 @@ namespace video
 		//! Is fog enabled? Default: false
 		bool FogEnable:1;
 
-		//! Should normals be normalized? Default: false
+		//! Should normals be normalized?
+		/** Always use this if the mesh lit and scaled. Default: false */
 		bool NormalizeNormals:1;
 
 		//! Gets the texture transformation matrix for level i
