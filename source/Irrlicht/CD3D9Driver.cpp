@@ -2595,11 +2595,11 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 
 
 //! Creates a render target texture.
-ITexture* CD3D9Driver::addRenderTargetTexture(
-		const core::dimension2d<u32>& size,
-		const core::string<c16>& name)
+ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
+											  const core::string<c16>& name,
+											  const ECOLOR_FORMAT format)
 {
-	ITexture* tex = new CD3D9Texture(this, size, name);
+	ITexture* tex = new CD3D9Texture(this, size, name, format);
 	if (tex)
 	{
 		checkDepthBuffer(tex);
@@ -2774,6 +2774,20 @@ D3DFORMAT CD3D9Driver::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
 			return D3DFMT_R8G8B8;
 		case ECF_A8R8G8B8:
 			return D3DFMT_A8R8G8B8;
+
+		// Floating Point formats. Thanks to Patryk "Nadro" Nadrowski.
+		case ECF_R16F:
+			return D3DFMT_R16F;
+		case ECF_G16R16F:
+			return D3DFMT_G16R16F;
+		case ECF_A16B16G16R16F:
+			return D3DFMT_A16B16G16R16F;
+		case ECF_R32F:
+			return D3DFMT_R32F;
+		case ECF_G32R32F:
+			return D3DFMT_G32R32F;
+		case ECF_A32B32G32R32F:
+			return D3DFMT_A32B32G32R32F;
 	}
 	return D3DFMT_UNKNOWN;
 }
@@ -2783,19 +2797,33 @@ ECOLOR_FORMAT CD3D9Driver::getColorFormatFromD3DFormat(D3DFORMAT format) const
 {
 	switch(format)
 	{
-	case D3DFMT_X1R5G5B5:
-	case D3DFMT_A1R5G5B5:
-		return ECF_A1R5G5B5;
-	case D3DFMT_A8B8G8R8:
-	case D3DFMT_A8R8G8B8:
-	case D3DFMT_X8R8G8B8:
-		return ECF_A8R8G8B8;
-	case D3DFMT_R5G6B5:
-		return ECF_R5G6B5;
-	case D3DFMT_R8G8B8:
-		return ECF_R8G8B8;
-	default:
-		return (ECOLOR_FORMAT)0;
+		case D3DFMT_X1R5G5B5:
+		case D3DFMT_A1R5G5B5:
+			return ECF_A1R5G5B5;
+		case D3DFMT_A8B8G8R8:
+		case D3DFMT_A8R8G8B8:
+		case D3DFMT_X8R8G8B8:
+			return ECF_A8R8G8B8;
+		case D3DFMT_R5G6B5:
+			return ECF_R5G6B5;
+		case D3DFMT_R8G8B8:
+			return ECF_R8G8B8;
+
+		// Floating Point formats. Thanks to Patryk "Nadro" Nadrowski.
+		case D3DFMT_R16F:
+			return ECF_R16F;
+		case D3DFMT_G16R16F:
+			return ECF_G16R16F;
+		case D3DFMT_A16B16G16R16F:
+			return ECF_A16B16G16R16F;
+		case D3DFMT_R32F:
+			return ECF_R32F;
+		case D3DFMT_G32R32F:
+			return ECF_G32R32F;
+		case D3DFMT_A32B32G32R32F:
+			return ECF_A32B32G32R32F;
+		default:
+			return (ECOLOR_FORMAT)0;
 	};
 }
 
