@@ -106,13 +106,34 @@ namespace irr
 			//! Changes the visible state of the mouse cursor.
 			virtual void setVisible(bool visible)
 			{
-				if(visible != IsVisible)
+				CURSORINFO info;
+				info.cbSize = sizeof(CURSORINFO);
+
+				if ( visible )
 				{
-					IsVisible = visible;
-					updateInternalCursorPosition();
-					setPosition(CursorPos.X, CursorPos.Y);
+					while ( GetCursorInfo(&info) )
+					{
+						if ( info.flags == CURSOR_SHOWING )
+						{
+							IsVisible = visible;
+							break;
+						}
+						ShowCursor(true);   // this only increases an internal display counter in windows, so it might have to be called some more
+					}
 				}
-			}
+				else
+				{
+					while ( GetCursorInfo(&info) )
+					{
+						if ( info.flags == 0 )  // cursor hidden
+						{
+							IsVisible = visible;
+							break;
+						}
+						ShowCursor(false);   // this only decreases an internal display counter in windows, so it might have to be called some more
+					}
+				}
+			} 
 
 			//! Returns if the cursor is currently visible.
 			virtual bool isVisible() const
