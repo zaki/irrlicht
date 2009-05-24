@@ -177,16 +177,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_ERASEBKGND:
 		return 0;
 
-	case WM_SETCURSOR:
-	{
-		SEnvMapper* envm = getEnvMapperFromHWnd(hWnd);
-		if (envm && !envm->irrDev->getWin32CursorControl()->isVisible())
-		{
-			SetCursor(NULL);
-			return 0;
-		}
-	} break;
-
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 		{
