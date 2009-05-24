@@ -508,6 +508,12 @@ ITexture* CNullDriver::addTexture(const core::string<c16>& name, IImage* image)
 ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 								  const core::string<c16>& name, ECOLOR_FORMAT format)
 {
+	if(getRenderTargetOnlyFormat(format))
+	{
+		os::Printer::log("Could not create ITexture, format only supported for render target textures.", ELL_WARNING);
+		return 0;
+	}
+
 	if ( 0 == name.size () )
 		return 0;
 
@@ -1321,6 +1327,12 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 					void *data, bool ownForeignMemory,
 					bool deleteMemory)
 {
+	if(getRenderTargetOnlyFormat(format))
+	{
+		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
+		return 0;
+	}
+
 	return new CImage(format, size, data, ownForeignMemory, deleteMemory);
 }
 
@@ -1328,14 +1340,26 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 //! Creates an empty software image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 {
-		return new CImage(format, size);
+	if(getRenderTargetOnlyFormat(format))
+	{
+		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
+		return 0;
+	}
+
+	return new CImage(format, size);
 }
 
 
 //! Creates a software image from another image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, IImage *imageToCopy)
 {
-		return new CImage(format, imageToCopy);
+	if(getRenderTargetOnlyFormat(format))
+	{
+		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
+		return 0;
+	}
+
+	return new CImage(format, imageToCopy);
 }
 
 
@@ -1927,7 +1951,7 @@ s32 CNullDriver::addShaderMaterialFromFiles(const core::string<c16>& vertexShade
 
 //! Creates a render target texture.
 ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-		const core::string<c16>&name)
+		const core::string<c16>&name, const ECOLOR_FORMAT format)
 {
 	return 0;
 }

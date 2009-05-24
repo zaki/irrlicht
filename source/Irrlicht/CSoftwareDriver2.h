@@ -123,7 +123,8 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Creates a render target texture.
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size, 
+			const core::string<c16>& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! Clears the DepthBuffer.
 		virtual void clearZBuffer();

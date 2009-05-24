@@ -450,7 +450,8 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
                                 const core::string<c16>& name,
-                                COpenGLDriver* driver)
+                                COpenGLDriver* driver,
+								const ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG
@@ -459,9 +460,10 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	ImageSize = size;
 	TextureSize = size;
-	InternalFormat = GL_RGBA;
-	PixelFormat = GL_RGBA;
-	PixelType = GL_UNSIGNED_BYTE;
+
+	GLint FilteringType;
+	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
+
 	HasMipMaps = false;
 	IsRenderTarget = true;
 
@@ -473,7 +475,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 	// generate color texture
 	glGenTextures(1, &TextureName);
 	Driver->setTexture(0, this);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
@@ -488,6 +490,73 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 #endif
 	unbindRTT();
 }
+
+GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT format, 
+																	 GLint& filtering, 
+																	 GLenum& colorformat, 
+																	 GLenum& type)
+{
+   switch(format)
+   {
+      // Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
+      case ECF_R16F:
+      {         
+         filtering = GL_NEAREST;
+         colorformat = GL_RED;
+         type = GL_FLOAT;
+
+         return GL_RGB16F_ARB;
+      }
+      case ECF_G16R16F:
+      {
+         // We haven't got support for this type specifically, so we should use RGB for a close match.
+         filtering = GL_NEAREST;
+         colorformat = GL_RGB;
+         type = GL_FLOAT;
+
+         return GL_RGB16F_ARB;
+      }
+      case ECF_A16B16G16R16F:
+      {
+         filtering = GL_NEAREST;
+         colorformat = GL_RGBA;
+         type = GL_FLOAT;
+
+         return GL_RGBA16F_ARB;
+      }
+      case ECF_R32F:
+      {         
+         filtering = GL_NEAREST;
+         colorformat = GL_RED;
+         type = GL_FLOAT;
+
+         return GL_RGB32F_ARB;
+      }
+      case ECF_G32R32F:
+      {
+         // We haven't got support for this type specifically, so we should use RGB for a close match.
+         filtering = GL_NEAREST;
+         colorformat = GL_RGB;
+         type = GL_FLOAT;
+
+         return GL_RGB32F_ARB;
+      }
+      case ECF_A32B32G32R32F:
+      {
+         filtering = GL_NEAREST;
+         colorformat = GL_RGBA;
+         type = GL_FLOAT;
+
+         return GL_RGBA32F_ARB;
+      }
+   }
+
+   filtering = GL_LINEAR;
+   colorformat = GL_RGBA;
+   type = GL_UNSIGNED_BYTE;
+
+   return GL_RGBA8;
+} 
 
 
 //! destructor

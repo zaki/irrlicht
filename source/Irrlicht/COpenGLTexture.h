@@ -140,7 +140,8 @@ class COpenGLFBOTexture : public COpenGLTexture
 public:
 
 	//! FrameBufferObject constructor
-	COpenGLFBOTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, COpenGLDriver* driver=0);
+	COpenGLFBOTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, 
+		COpenGLDriver* driver = 0, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! destructor
 	virtual ~COpenGLFBOTexture();
@@ -156,6 +157,9 @@ public:
 
 	ITexture* DepthTexture;
 protected:
+	GLint getOpenGLFormatAndParametersFromColorFormat(
+		ECOLOR_FORMAT format, GLint& filtering, GLenum& colorformat, GLenum& type);
+
 	GLuint ColorFrameBuffer;
 };
 

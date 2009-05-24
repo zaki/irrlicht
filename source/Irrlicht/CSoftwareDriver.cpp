@@ -895,7 +895,9 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 
 
 //! Creates a render target texture.
-ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
+ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
+												  const core::string<c16>& name,
+												  const ECOLOR_FORMAT format)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
 	ITexture* tex = new CSoftwareTexture(img, name, true);
