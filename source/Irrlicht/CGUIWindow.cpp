@@ -19,7 +19,7 @@ namespace gui
 
 //! constructor
 CGUIWindow::CGUIWindow(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
-: IGUIWindow(environment, parent, id, rectangle), Dragging(false), IsDraggable(true)
+: IGUIWindow(environment, parent, id, rectangle), Dragging(false), IsDraggable(true), DrawBackground(true), DrawTitlebar(true)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIWindow");
@@ -216,22 +216,25 @@ void CGUIWindow::draw()
 		core::rect<s32> rect = AbsoluteRect;
 
 		// draw body fast
-		rect = skin->draw3DWindowBackground(this, true, skin->getColor(EGDC_ACTIVE_BORDER),
-			AbsoluteRect, &AbsoluteClippingRect);
+        if ( DrawBackground )
+        {
+            rect = skin->draw3DWindowBackground(this, DrawTitlebar, skin->getColor(EGDC_ACTIVE_BORDER),
+                AbsoluteRect, &AbsoluteClippingRect);
 
-		if (Text.size())
-		{
-			rect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
-			rect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y);
-			rect.LowerRightCorner.X -= skin->getSize(EGDS_WINDOW_BUTTON_WIDTH) + 5;
+            if (DrawTitlebar && Text.size())
+            {
+                rect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
+                rect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y);
+                rect.LowerRightCorner.X -= skin->getSize(EGDS_WINDOW_BUTTON_WIDTH) + 5;
 
-			IGUIFont* font = skin->getFont(EGDF_WINDOW);
-			if (font)
-			{
-				font->draw(Text.c_str(), rect,
-					skin->getColor(EGDC_ACTIVE_CAPTION), false, true, &AbsoluteClippingRect);
-			}
-		}
+                IGUIFont* font = skin->getFont(EGDF_WINDOW);
+                if (font)
+                {
+                    font->draw(Text.c_str(), rect,
+                        skin->getColor(EGDC_ACTIVE_CAPTION), false, true, &AbsoluteClippingRect);
+                }
+            }
+        }
 	}
 
 	IGUIElement::draw();
@@ -273,7 +276,65 @@ void CGUIWindow::setDraggable(bool draggable)
 		Dragging = false;
 }
 
+//! Set if the window background will be drawn
+void CGUIWindow::setDrawBackground(bool draw)
+{
+    DrawBackground = draw;
+}
 
+//! Get if the window background will be drawn
+bool CGUIWindow::getDrawBackground() const
+{
+    return DrawBackground;
+}
+
+//! Set if the window titlebar will be drawn
+void CGUIWindow::setDrawTitlebar(bool draw)
+{
+    DrawTitlebar = draw;
+}
+
+//! Get if the window titlebar will be drawn
+bool CGUIWindow::getDrawTitlebar() const
+{
+    return DrawTitlebar;
+}
+
+//! Writes attributes of the element.
+void CGUIWindow::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
+{
+	IGUIWindow::serializeAttributes(out,options);
+
+    out->addBool("IsDraggable",	    IsDraggable);
+    out->addBool("DrawBackground",	DrawBackground);
+    out->addBool("DrawTitlebar",	DrawTitlebar);
+
+    // Currently we can't just serialize attributes of sub-elements.
+    // To do this we either
+    // a) allow further serialization after attribute serialiation (second function, callback or event)
+    // b) add an IGUIElement attribute
+    // c) extend the attribute system to allow attributes to have sub-attributes
+    // We just serialize the most important info for now until we can do one of the above solutions.
+    out->addBool("IsCloseVisible", CloseButton->isVisible());
+    out->addBool("IsMinVisible", MinButton->isVisible());
+    out->addBool("IsRestoreVisible", RestoreButton->isVisible());
+}
+
+
+//! Reads attributes of the element
+void CGUIWindow::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options=0)
+{
+	IGUIWindow::deserializeAttributes(in,options);
+
+    Dragging = false;
+    IsDraggable = in->getAttributeAsBool("IsDraggable");
+    DrawBackground = in->getAttributeAsBool("DrawBackground");
+    DrawTitlebar = in->getAttributeAsBool("DrawTitlebar");
+
+    CloseButton->setVisible( in->getAttributeAsBool("IsCloseVisible") );
+    MinButton->setVisible( in->getAttributeAsBool("IsMinVisible") );
+    RestoreButton->setVisible( in->getAttributeAsBool("IsRestoreVisible") );
+}
 
 } // end namespace gui
 } // end namespace irr
