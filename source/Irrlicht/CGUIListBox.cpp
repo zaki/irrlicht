@@ -884,6 +884,13 @@ void CGUIListBox::setItemHeight( s32 height )
 }
 
 
+//! Sets whether to draw the background
+void CGUIListBox::setDrawBackground(bool draw)
+{
+    DrawBack = draw;
+}
+
+
 } // end namespace gui
 } // end namespace irr
 
