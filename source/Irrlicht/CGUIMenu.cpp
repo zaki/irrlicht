@@ -142,19 +142,35 @@ bool CGUIMenu::OnEvent(const SEvent& event)
 				if (!AbsoluteClippingRect.isPointInside(p))
 				{
 					shouldCloseSubMenu = false;
+				}
+				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
+				if ( shouldCloseSubMenu )
+				{
+                    Environment->removeFocus(this);
+				}
+
+				return true;
+			}
+			case EMIE_LMOUSE_LEFT_UP:
+			{
+                core::position2d<s32> p(event.MouseInput.X, event.MouseInput.Y);
+				if (!AbsoluteClippingRect.isPointInside(p))
+				{
 					s32 t = sendClick(p);
 					if ((t==0 || t==1) && Environment->hasFocus(this))
 						Environment->removeFocus(this);
 				}
-				highlight(core::position2d<s32>(event.MouseInput.X,	event.MouseInput.Y), true);
-				if ( shouldCloseSubMenu )
-					closeAllSubMenus();
-				
-				return true;
+
+			    return true;
 			}
 			case EMIE_MOUSE_MOVED:
-				if (Environment->hasFocus(this))
-					highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), hasOpenSubMenu());
+				if (Environment->hasFocus(this) && HighLighted >= 0)
+				{
+				    s32 oldHighLighted = HighLighted;
+					highlight(core::position2d<s32>(event.MouseInput.X, event.MouseInput.Y), true);
+					if ( HighLighted < 0 )
+                        HighLighted = oldHighLighted;   // keep last hightlight active when moving outside the area
+				}
 				return true;
 			default:
 				break;
