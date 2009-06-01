@@ -786,6 +786,15 @@ bool CIrrDeviceLinux::run()
 				irrevent.MouseInput.Event = irr::EMIE_MOUSE_MOVED;
 				irrevent.MouseInput.X = event.xbutton.x;
 				irrevent.MouseInput.Y = event.xbutton.y;
+				irrevent.MouseInput.Control = (event.xkey.state & ControlMask) != 0;
+				irrevent.MouseInput.Shift = (event.xkey.state & ShiftMask) != 0;
+
+                // mouse button states
+                irrevent.MouseInput.ButtonStates = (event.xbutton.state & Button1Mask) ? irr::EMBSM_LEFT : 0;
+                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button3Mask) ? irr::EMBSM_RIGHT : 0;
+                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button2Mask) ? irr::EMBSM_MIDDLE : 0;
+                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button4Mask) ? irr::EMBSM_EXTRA1 : 0;
+                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button5Mask) ? irr::EMBSM_EXTRA2 : 0;
 
 				postEventFromUser(irrevent);
 				break;
@@ -796,6 +805,16 @@ bool CIrrDeviceLinux::run()
 				irrevent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				irrevent.MouseInput.X = event.xbutton.x;
 				irrevent.MouseInput.Y = event.xbutton.y;
+				irrevent.MouseInput.Control = (event.xkey.state & ControlMask) != 0;
+				irrevent.MouseInput.Shift = (event.xkey.state & ShiftMask) != 0;
+
+                // mouse button states
+                // This sets the state which the buttons had _prior_ to the event.
+                // So unlike on Windows the button which just got changed has still the old state here.
+                // We handle that below by flipping the corresponding bit later.
+                irrevent.MouseInput.ButtonStates = (event.xbutton.state & Button1Mask) ? irr::EMBSM_LEFT : 0;
+                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button3Mask) ? irr::EMBSM_RIGHT : 0;
+                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button2Mask) ? irr::EMBSM_MIDDLE : 0;
 
 				irrevent.MouseInput.Event = irr::EMIE_COUNT;
 
@@ -804,16 +823,19 @@ bool CIrrDeviceLinux::run()
 				case  Button1:
 					irrevent.MouseInput.Event =
 						(event.type == ButtonPress) ? irr::EMIE_LMOUSE_PRESSED_DOWN : irr::EMIE_LMOUSE_LEFT_UP;
+                    irrevent.MouseInput.ButtonStates ^= irr::EMBSM_LEFT;
 					break;
 
 				case  Button3:
 					irrevent.MouseInput.Event =
 						(event.type == ButtonPress) ? irr::EMIE_RMOUSE_PRESSED_DOWN : irr::EMIE_RMOUSE_LEFT_UP;
+                    irrevent.MouseInput.ButtonStates ^= irr::EMBSM_RIGHT;
 					break;
 
 				case  Button2:
 					irrevent.MouseInput.Event =
 						(event.type == ButtonPress) ? irr::EMIE_MMOUSE_PRESSED_DOWN : irr::EMIE_MMOUSE_LEFT_UP;
+                    irrevent.MouseInput.ButtonStates ^= irr::EMBSM_MIDDLE;
 					break;
 
 				case  Button4:

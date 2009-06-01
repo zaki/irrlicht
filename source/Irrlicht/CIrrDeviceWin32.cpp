@@ -134,6 +134,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		event.MouseInput.Event = (irr::EMOUSE_INPUT_EVENT) m->irrMessage;
 		event.MouseInput.X = (short)LOWORD(lParam);
 		event.MouseInput.Y = (short)HIWORD(lParam);
+		event.MouseInput.Shift = ((LOWORD(wParam) & MK_SHIFT) != 0);
+		event.MouseInput.Control = ((LOWORD(wParam) & MK_CONTROL) != 0);
 		// left and right mouse buttons
 		event.MouseInput.ButtonStates = wParam & ( MK_LBUTTON | MK_RBUTTON);
 		// middle and extra buttons
@@ -560,8 +562,8 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 	if (IsNonNTWindows)
 	{
 		const core::stringc s = text;
-#ifdef WIN64 
-		SetWindowTextA(HWnd, s.c_str()); 
+#ifdef WIN64
+		SetWindowTextA(HWnd, s.c_str());
 #else
 		SendMessageTimeout(HWnd, WM_SETTEXT, 0,
 				reinterpret_cast<LPARAM>(s.c_str()),
@@ -570,9 +572,9 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 	}
 	else
 	{
-#ifdef WIN64 
-		SetWindowTextW(HWnd, text); 
-#else 
+#ifdef WIN64
+		SetWindowTextW(HWnd, text);
+#else
 		SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,
 				reinterpret_cast<LPARAM>(text),
 				SMTO_ABORTIFHUNG, 2000, &dwResult);
