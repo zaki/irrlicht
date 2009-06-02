@@ -109,7 +109,11 @@ namespace irr
 		EMBSM_LEFT    = 0x01,
 		EMBSM_RIGHT   = 0x02,
 		EMBSM_MIDDLE  = 0x04,
+
+		//! currently only on windows
 		EMBSM_EXTRA1  = 0x08,
+
+		//! currently only on windows
 		EMBSM_EXTRA2  = 0x10,
 
 		EMBSM_FORCE_32_BIT = 0x7fffffff
