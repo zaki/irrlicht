@@ -793,8 +793,6 @@ bool CIrrDeviceLinux::run()
                 irrevent.MouseInput.ButtonStates = (event.xbutton.state & Button1Mask) ? irr::EMBSM_LEFT : 0;
                 irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button3Mask) ? irr::EMBSM_RIGHT : 0;
                 irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button2Mask) ? irr::EMBSM_MIDDLE : 0;
-                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button4Mask) ? irr::EMBSM_EXTRA1 : 0;
-                irrevent.MouseInput.ButtonStates |= (event.xbutton.state & Button5Mask) ? irr::EMBSM_EXTRA2 : 0;
 
 				postEventFromUser(irrevent);
 				break;
