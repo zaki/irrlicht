@@ -358,7 +358,7 @@ public:
 
 		core::list<IGUIElement*>::Iterator it = Children.getLast();
 
-		if (IsVisible)
+		if (isVisible())
 		{
 			while(it != Children.end())
 			{
@@ -370,7 +370,7 @@ public:
 			}
 		}
 
-		if (IsVisible && isPointInside(point))
+		if (isVisible() && isPointInside(point))
 			target = this;
 
 		return target;
@@ -425,7 +425,7 @@ public:
 	//! Draws the element and its children.
 	virtual void draw()
 	{
-		if ( IsVisible )
+		if ( isVisible() )
 		{
 			core::list<IGUIElement*>::Iterator it = Children.begin();
 			for (; it != Children.end(); ++it)
@@ -437,7 +437,7 @@ public:
 	//! animate the element and its children.
 	virtual void OnPostRender(u32 timeMs)
 	{
-		if ( IsVisible )
+		if ( isVisible() )
 		{
 			core::list<IGUIElement*>::Iterator it = Children.begin();
 			for (; it != Children.end(); ++it)
