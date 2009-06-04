@@ -335,6 +335,10 @@ namespace video
 	class SColorf
 	{
 	public:
+		//! Default constructor for SColorf.
+		/** Sets red, green and blue to 0.0f and alpha to 1.0f. */
+		SColorf() : r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
+
 		//! Constructs a color from up to four color values: red, green, blue, and alpha.
 		/** \param r: Red color component. Should be a value between
 		0.0f meaning no red and 1.0f, meaning full red.
@@ -346,7 +350,7 @@ namespace video
 		component defines how transparent a color should be. Has to be
 		a value between 0.0f and 1.0f, 1.0f means not transparent
 		(opaque), 0.0f means fully transparent. */
-		SColorf(f32 r=0.f, f32 g=0.f, f32 b=0.f, f32 a=1.f) : r(r), g(g), b(b), a(a) {}
+		SColorf(f32 r, f32 g, f32 b, f32 a = 1.0f) : r(r), g(g), b(b), a(a) {}
 
 		//! Constructs a color from 32 bit Color.
 		/** \param c: 32 bit color from which this SColorf class is
