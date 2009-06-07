@@ -199,7 +199,7 @@ bool CGUISpinBox::OnEvent(const SEvent& event)
 					changeEvent = true;
 				}
 			}
-			if ( event.GUIEvent.EventType == EGET_EDITBOX_ENTER )
+			if ( event.GUIEvent.EventType == EGET_EDITBOX_CHANGED )
 			{
 				if (event.GUIEvent.Caller == EditBox)
 				{
