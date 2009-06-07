@@ -183,8 +183,14 @@ namespace irr
 			//! 'Cancel' was clicked on a messagebox
 			EGET_MESSAGEBOX_CANCEL,
 
-			//! In an editbox was pressed 'ENTER'
+			//! In an editbox 'ENTER' was pressed
 			EGET_EDITBOX_ENTER,
+
+			//! The text in an editbox was changed. This does not include automatic changes in text-breaking.
+			EGET_EDITBOX_CHANGED,
+
+            //! The marked area in an editbox was changed.
+			EGET_EDITBOX_MARKING_CHANGED,
 
 			//! The tab was changed in an tab control
 			EGET_TAB_CHANGED,

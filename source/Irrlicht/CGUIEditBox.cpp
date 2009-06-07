@@ -67,6 +67,10 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border,
 	}
 
 	breakText();
+
+	if ( Text.size() )
+        sendGuiEvent(EGET_EDITBOX_CHANGED);
+
 	calculateScrollPos();
 }
 
@@ -132,8 +136,12 @@ void CGUIEditBox::setWordWrap(bool enable)
 
 void CGUIEditBox::updateAbsolutePosition()
 {
+    core::rect<s32> oldAbsoluteRect(AbsoluteRect);
 	IGUIElement::updateAbsolutePosition();
-	breakText();
+	if ( oldAbsoluteRect != AbsoluteRect )
+	{
+        breakText();
+	}
 }
 
 
@@ -202,8 +210,7 @@ bool CGUIEditBox::OnEvent(const SEvent& event)
 				if (event.GUIEvent.Caller == this)
 				{
 					MouseMarking = false;
-					MarkBegin = 0;
-					MarkEnd = 0;
+					setTextMarkers(0,0);
 				}
 			}
 			break;
@@ -230,6 +237,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		return false;
 
 	bool textChanged = false;
+	s32 newMarkBegin = MarkBegin;
+	s32 newMarkEnd = MarkEnd;
 
 	// control shortcut handling
 
@@ -245,8 +254,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		{
 		case KEY_KEY_A:
 			// select all
-			MarkBegin = 0;
-			MarkEnd = Text.size();
+			newMarkBegin = 0;
+			newMarkEnd = Text.size();
 			break;
 		case KEY_KEY_C:
 			// copy to clipboard
@@ -281,8 +290,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 					Text = s;
 
 					CursorPos = realmbgn;
-					MarkBegin = 0;
-					MarkEnd = 0;
+					newMarkBegin = 0;
+					newMarkEnd = 0;
 					textChanged = true;
 				}
 			}
@@ -332,8 +341,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 					}
 				}
 
-				MarkBegin = 0;
-				MarkEnd = 0;
+				newMarkBegin = 0;
+				newMarkEnd = 0;
 				textChanged = true;
 			}
 			break;
@@ -341,30 +350,30 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			// move/highlight to start of text
 			if (event.KeyInput.Shift)
 			{
-				MarkEnd = CursorPos;
-				MarkBegin = 0;
+				newMarkEnd = CursorPos;
+				newMarkBegin = 0;
 				CursorPos = 0;
 			}
 			else
 			{
 				CursorPos = 0;
-				MarkBegin = 0;
-				MarkEnd = 0;
+				newMarkBegin = 0;
+				newMarkEnd = 0;
 			}
 			break;
 		case KEY_END:
 			// move/highlight to end of text
 			if (event.KeyInput.Shift)
 			{
-				MarkBegin = CursorPos;
-				MarkEnd = Text.size();
+				newMarkBegin = CursorPos;
+				newMarkEnd = Text.size();
 				CursorPos = 0;
 			}
 			else
 			{
 				CursorPos = Text.size();
-				MarkBegin = 0;
-				MarkEnd = 0;
+				newMarkBegin = 0;
+				newMarkEnd = 0;
 			}
 			break;
 		default:
@@ -389,14 +398,14 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if (event.KeyInput.Shift)
 			{
 				if (MarkBegin == MarkEnd)
-					MarkBegin = CursorPos;
+					newMarkBegin = CursorPos;
 
-				MarkEnd = p;
+				newMarkEnd = p;
 			}
 			else
 			{
-				MarkBegin = 0;
-				MarkEnd = 0;
+				newMarkBegin = 0;
+				newMarkEnd = 0;
 			}
 			CursorPos = p;
 			BlinkStartTime = os::Timer::getTime();
@@ -415,13 +424,13 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if (event.KeyInput.Shift)
 			{
 				if (MarkBegin == MarkEnd)
-					MarkBegin = CursorPos;
-				MarkEnd = p;
+					newMarkBegin = CursorPos;
+				newMarkEnd = p;
 			}
 			else
 			{
-				MarkBegin = 0;
-				MarkEnd = 0;
+				newMarkBegin = 0;
+				newMarkEnd = 0;
 			}
 			CursorPos = p;
 			BlinkStartTime = os::Timer::getTime();
@@ -434,13 +443,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		}
 		else
 		{
-			SEvent e;
-			e.EventType = EET_GUI_EVENT;
-			e.GUIEvent.Caller = this;
-			e.GUIEvent.Element = 0;
-			e.GUIEvent.EventType = EGET_EDITBOX_ENTER;
-			if (Parent)
-				Parent->OnEvent(e);
+		    sendGuiEvent( EGET_EDITBOX_ENTER );
 		}
 		break;
 	case KEY_LEFT:
@@ -450,15 +453,15 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if (CursorPos > 0)
 			{
 				if (MarkBegin == MarkEnd)
-					MarkBegin = CursorPos;
+					newMarkBegin = CursorPos;
 
-				MarkEnd = CursorPos-1;
+				newMarkEnd = CursorPos-1;
 			}
 		}
 		else
 		{
-			MarkBegin = 0;
-			MarkEnd = 0;
+			newMarkBegin = 0;
+			newMarkEnd = 0;
 		}
 
 		if (CursorPos > 0) CursorPos--;
@@ -471,15 +474,15 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if (Text.size() > (u32)CursorPos)
 			{
 				if (MarkBegin == MarkEnd)
-					MarkBegin = CursorPos;
+					newMarkBegin = CursorPos;
 
-				MarkEnd = CursorPos+1;
+				newMarkEnd = CursorPos+1;
 			}
 		}
 		else
 		{
-			MarkBegin = 0;
-			MarkEnd = 0;
+			newMarkBegin = 0;
+			newMarkEnd = 0;
 		}
 
 		if (Text.size() > (u32)CursorPos) CursorPos++;
@@ -501,13 +504,13 @@ bool CGUIEditBox::processKey(const SEvent& event)
 
 			if (event.KeyInput.Shift)
 			{
-				MarkBegin = mb;
-				MarkEnd = CursorPos;
+				newMarkBegin = mb;
+				newMarkEnd = CursorPos;
 			}
 			else
 			{
-				MarkBegin = 0;
-				MarkEnd = 0;
+				newMarkBegin = 0;
+				newMarkEnd = 0;
 			}
 
 		}
@@ -532,13 +535,13 @@ bool CGUIEditBox::processKey(const SEvent& event)
 
 			if (event.KeyInput.Shift)
 			{
-				MarkBegin = mb;
-				MarkEnd = CursorPos;
+				newMarkBegin = mb;
+				newMarkEnd = CursorPos;
 			}
 			else
 			{
-				MarkBegin = 0;
-				MarkEnd = 0;
+				newMarkBegin = 0;
+				newMarkEnd = 0;
 			}
 
 		}
@@ -583,8 +586,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 			if (CursorPos < 0)
 				CursorPos = 0;
 			BlinkStartTime = os::Timer::getTime();
-			MarkBegin = 0;
-			MarkEnd = 0;
+			newMarkBegin = 0;
+			newMarkEnd = 0;
 			textChanged = true;
 		}
 		break;
@@ -620,8 +623,8 @@ bool CGUIEditBox::processKey(const SEvent& event)
 				CursorPos = (s32)Text.size();
 
 			BlinkStartTime = os::Timer::getTime();
-			MarkBegin = 0;
-			MarkEnd = 0;
+			newMarkBegin = 0;
+			newMarkEnd = 0;
 			textChanged = true;
 		}
 		break;
@@ -661,9 +664,15 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		break;
 	}
 
+    // Set new text markers
+    setTextMarkers( newMarkBegin, newMarkEnd );
+
 	// break the text if it has changed
 	if (textChanged)
+	{
 		breakText();
+		sendGuiEvent(EGET_EDITBOX_CHANGED);
+	}
 
 	calculateScrollPos();
 
@@ -712,7 +721,9 @@ void CGUIEditBox::draw()
 	if (font)
 	{
 		if (LastBreakFont != font)
+		{
 			breakText();
+		}
 
 		// calculate cursor pos
 
@@ -862,9 +873,9 @@ void CGUIEditBox::setText(const wchar_t* text)
 	Text = text;
 	CursorPos = 0;
 	HScrollPos = 0;
-	MarkBegin = 0;
-	MarkEnd = 0;
+	setTextMarkers(0, 0);
 	breakText();
+	sendGuiEvent(EGET_EDITBOX_CHANGED);
 }
 
 
@@ -933,7 +944,9 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 		{
 			CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 			if (MouseMarking)
-				MarkEnd = CursorPos;
+			{
+			    setTextMarkers( MarkBegin, CursorPos );
+			}
 			MouseMarking = false;
 			calculateScrollPos();
 			return true;
@@ -944,7 +957,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 			if (MouseMarking)
 			{
 				CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-				MarkEnd = CursorPos;
+				setTextMarkers( MarkBegin, CursorPos );
 				calculateScrollPos();
 				return true;
 			}
@@ -956,8 +969,7 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 			BlinkStartTime = os::Timer::getTime();
 			MouseMarking = true;
 			CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
-			MarkBegin = CursorPos;
-			MarkEnd = CursorPos;
+			setTextMarkers(CursorPos, CursorPos );
 			calculateScrollPos();
 			return true;
 		}
@@ -973,11 +985,12 @@ bool CGUIEditBox::processMouse(const SEvent& event)
 				// move cursor
 				CursorPos = getCursorPos(event.MouseInput.X, event.MouseInput.Y);
 
+                s32 newMarkBegin = MarkBegin;
 				if (!MouseMarking)
-					MarkBegin = CursorPos;
+					newMarkBegin = CursorPos;
 
 				MouseMarking = true;
-				MarkEnd = CursorPos;
+				setTextMarkers( newMarkBegin, CursorPos);
 				calculateScrollPos();
 				return true;
 			}
@@ -1273,11 +1286,11 @@ void CGUIEditBox::inputChar(wchar_t c)
 			}
 
 			BlinkStartTime = os::Timer::getTime();
-			MarkBegin = 0;
-			MarkEnd = 0;
+			setTextMarkers(0, 0);
 		}
 	}
 	breakText();
+	sendGuiEvent(EGET_EDITBOX_CHANGED);
 }
 
 
@@ -1331,6 +1344,31 @@ void CGUIEditBox::calculateScrollPos()
 	// todo: adjust scrollbar
 }
 
+//! set text markers
+void CGUIEditBox::setTextMarkers(s32 begin, s32 end)
+{
+    if ( begin != MarkBegin || end != MarkEnd )
+    {
+        MarkBegin = begin;
+        MarkEnd = end;
+        sendGuiEvent(EGET_EDITBOX_MARKING_CHANGED);
+    }
+}
+
+//! send some gui event to parent
+void CGUIEditBox::sendGuiEvent(EGUI_EVENT_TYPE type)
+{
+	if ( Parent )
+	{
+        SEvent e;
+        e.EventType = EET_GUI_EVENT;
+        e.GUIEvent.Caller = this;
+        e.GUIEvent.Element = 0;
+        e.GUIEvent.EventType = type;
+
+        Parent->OnEvent(e);
+	}
+}
 
 //! Writes attributes of the element.
 void CGUIEditBox::serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const
