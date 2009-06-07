@@ -68,9 +68,6 @@ CGUIEditBox::CGUIEditBox(const wchar_t* text, bool border,
 
 	breakText();
 
-	if ( Text.size() )
-        sendGuiEvent(EGET_EDITBOX_CHANGED);
-
 	calculateScrollPos();
 }
 
@@ -873,9 +870,7 @@ void CGUIEditBox::setText(const wchar_t* text)
 	Text = text;
 	CursorPos = 0;
 	HScrollPos = 0;
-	setTextMarkers(0, 0);
 	breakText();
-	sendGuiEvent(EGET_EDITBOX_CHANGED);
 }
 
 
