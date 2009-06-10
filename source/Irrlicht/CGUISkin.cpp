@@ -205,13 +205,12 @@ void CGUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
 	if ((u32)which >= EGDS_COUNT)
 		return;
 
+    if (font)
+        font->grab();
 	if (Fonts[which])
 		Fonts[which]->drop();
 
 	Fonts[which] = font;
-
-	if (Fonts[which])
-		Fonts[which]->grab();
 }
 
 
@@ -225,11 +224,11 @@ IGUISpriteBank* CGUISkin::getSpriteBank() const
 //! set a new sprite bank or remove one by passing 0
 void CGUISkin::setSpriteBank(IGUISpriteBank* bank)
 {
-	if (SpriteBank)
-		SpriteBank->drop();
-
 	if (bank)
 		bank->grab();
+
+	if (SpriteBank)
+		SpriteBank->drop();
 
 	SpriteBank = bank;
 }

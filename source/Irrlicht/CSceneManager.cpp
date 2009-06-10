@@ -493,8 +493,8 @@ IMeshSceneNode* CSceneManager::addQuake3SceneNode(IMeshBuffer* meshBuffer,
 	if (!parent)
 		parent = this;
 
-	CQuake3ShaderSceneNode* node = new CQuake3ShaderSceneNode( parent, 
-		this, id, FileSystem, 
+	CQuake3ShaderSceneNode* node = new CQuake3ShaderSceneNode( parent,
+		this, id, FileSystem,
 		meshBuffer, shader );
 	node->drop();
 
@@ -1095,13 +1095,12 @@ ICameraSceneNode* CSceneManager::getActiveCamera() const
 //! \param camera: The new camera which should be active.
 void CSceneManager::setActiveCamera(ICameraSceneNode* camera)
 {
+    if (camera)
+        camera->grab();
 	if (ActiveCamera)
 		ActiveCamera->drop();
 
 	ActiveCamera = camera;
-
-	if (ActiveCamera)
-		ActiveCamera->grab();
 }
 
 
@@ -1579,13 +1578,12 @@ void CSceneManager::drawAll()
 
 void CSceneManager::setLightManager(ILightManager* lightManager)
 {
+    if ( lightManager )
+        lightManager->grab();
 	if(LightManager)
 		LightManager->drop();
 
 	LightManager = lightManager;
-
-	if(LightManager)
-		LightManager->grab();
 }
 
 

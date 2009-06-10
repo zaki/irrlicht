@@ -74,8 +74,8 @@ void CGUITreeViewNode::clearChilds()
 }
 
 IGUITreeViewNode* CGUITreeViewNode::addChildBack(
-	const wchar_t*		text, 
-	const wchar_t*		icon /*= 0*/, 
+	const wchar_t*		text,
+	const wchar_t*		icon /*= 0*/,
 	s32					imageIndex /*= -1*/,
 	s32					selectedImageIndex /*= -1*/,
 	void*					data /*= 0*/,
@@ -97,9 +97,9 @@ IGUITreeViewNode* CGUITreeViewNode::addChildBack(
 	return newChild;
 }
 
-IGUITreeViewNode* CGUITreeViewNode::addChildFront( 
-	const wchar_t*		text, 
-	const wchar_t*		icon /*= 0*/, 
+IGUITreeViewNode* CGUITreeViewNode::addChildFront(
+	const wchar_t*		text,
+	const wchar_t*		icon /*= 0*/,
 	s32					imageIndex /*= -1*/,
 	s32					selectedImageIndex /*= -1*/,
 	void*					data /*= 0*/,
@@ -121,10 +121,10 @@ IGUITreeViewNode* CGUITreeViewNode::addChildFront(
 	return newChild;
 }
 
-IGUITreeViewNode* CGUITreeViewNode::insertChildAfter( 
-	IGUITreeViewNode*	other, 
-	const wchar_t*		text, 
-	const wchar_t*		icon /*= 0*/, 
+IGUITreeViewNode* CGUITreeViewNode::insertChildAfter(
+	IGUITreeViewNode*	other,
+	const wchar_t*		text,
+	const wchar_t*		icon /*= 0*/,
 	s32					imageIndex /*= -1*/,
 	s32					selectedImageIndex /*= -1*/,
 	void*					data /*= 0*/,
@@ -155,10 +155,10 @@ IGUITreeViewNode* CGUITreeViewNode::insertChildAfter(
 	return newChild;
 }
 
-IGUITreeViewNode* CGUITreeViewNode::insertChildBefore( 
-	IGUITreeViewNode*	other, 
-	const wchar_t*		text, 
-	const wchar_t*		icon /*= 0*/, 
+IGUITreeViewNode* CGUITreeViewNode::insertChildBefore(
+	IGUITreeViewNode*	other,
+	const wchar_t*		text,
+	const wchar_t*		icon /*= 0*/,
 	s32					imageIndex /*= -1*/,
 	s32					selectedImageIndex /*= -1*/,
 	void*					data /*= 0*/,
@@ -421,10 +421,10 @@ bool CGUITreeViewNode::isVisible() const
 
 
 //! constructor
-CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent, 
+CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 	s32 id, core::rect<s32> rectangle, bool clip,
 	bool drawBack,bool scrollBarVertical, bool scrollBarHorizontal)
-	: IGUITreeView( environment, parent, id, rectangle ), 
+	: IGUITreeView( environment, parent, id, rectangle ),
 	Root(0), Selected(0),
 	ItemHeight( 0 ),
 	IndentWidth( 0 ),
@@ -452,7 +452,7 @@ CGUITreeView::CGUITreeView(IGUIEnvironment* environment, IGUIElement* parent,
 	if ( scrollBarVertical )
 	{
 		ScrollBarV = new CGUIScrollBar( false, Environment, this, 0,
-			core::rect<s32>(	RelativeRect.getWidth() - s, 
+			core::rect<s32>(	RelativeRect.getWidth() - s,
 			0,
 			RelativeRect.getWidth(),
 			RelativeRect.getHeight() - (scrollBarHorizontal ? s : 0 )
@@ -539,7 +539,7 @@ void CGUITreeView::recalculateItemHeight()
 
 		if( IconFont )
 		{
-			s32 height = IconFont->getDimension( L" " ).Height;	
+			s32 height = IconFont->getDimension( L" " ).Height;
 			if( height > ItemHeight )
 			{
 				ItemHeight = height;
@@ -658,7 +658,7 @@ bool CGUITreeView::OnEvent( const SEvent &event )
 				}
 
 				Selecting = false;
-				Environment->removeFocus( this );			
+				Environment->removeFocus( this );
 				mouseAction( event.MouseInput.X, event.MouseInput.Y );
 				return true;
 				break;
@@ -728,7 +728,7 @@ void CGUITreeView::mouseAction( s32 xpos, s32 ypos, bool onlyHover /*= false*/ )
 		Selected = hitNode;
 	}
 
-	if( hitNode && !onlyHover 
+	if( hitNode && !onlyHover
 		&& xpos < hitNode->getLevel() * IndentWidth
 		&& xpos > ( hitNode->getLevel() - 1 ) * IndentWidth
 		&& hitNode->hasChilds() )
@@ -804,7 +804,7 @@ void CGUITreeView::draw()
 			clipRect );
 	}
 
-	// draw the border	
+	// draw the border
 	frameRect.LowerRightCorner.Y = frameRect.UpperLeftCorner.Y + 1;
 	driver->draw2DRectangle( skin->getColor( EGDC_3D_SHADOW ), frameRect,
 		clipRect );
@@ -953,10 +953,10 @@ void CGUITreeView::draw()
 							index = node->getImageIndex();
 						}
 						ImageList->draw(
-							index, 
-							core::position2d<s32>( 
-							textRect.UpperLeftCorner.X, 
-							textRect.UpperLeftCorner.Y + ( ( textRect.getHeight() - ImageList->getImageSize().Height ) >> 1 ) ), 
+							index,
+							core::position2d<s32>(
+							textRect.UpperLeftCorner.X,
+							textRect.UpperLeftCorner.Y + ( ( textRect.getHeight() - ImageList->getImageSize().Height ) >> 1 ) ),
 							&clientClip );
 						iconWidth += ImageList->getImageSize().Width + 3;
 						textRect.UpperLeftCorner.X += ImageList->getImageSize().Width + 3;
@@ -976,7 +976,7 @@ void CGUITreeView::draw()
 				textRect.UpperLeftCorner.X -= iconWidth;
 			}
 
-			// draw the lines if neccessary			
+			// draw the lines if neccessary
 			if( LinesVisible )
 			{
 				core::rect<s32> rc;
@@ -997,7 +997,7 @@ void CGUITreeView::draw()
 					clipRect );
 
 				if( node->getParent() != Root )
-				{	
+				{
 					// vertical line
 					if( node == node->getParent()->getFirstChild() )
 					{
@@ -1012,7 +1012,7 @@ void CGUITreeView::draw()
 						clipRect );
 
 					// the vertical lines of all parents
-					IGUITreeViewNode* nodeTmp = node->getParent();		
+					IGUITreeViewNode* nodeTmp = node->getParent();
 					rc.UpperLeftCorner.Y = frameRect.UpperLeftCorner.Y - ( frameRect.getHeight() >> 1 );
 					for( s32 n = 0; n < node->getLevel() - 2; ++n )
 					{
@@ -1046,7 +1046,9 @@ void CGUITreeView::setIconFont( IGUIFont* font )
 {
 	s32	height;
 
-	if( IconFont )
+    if ( font )
+        font->grab();
+	if ( IconFont )
 	{
 		IconFont->drop();
 	}
@@ -1054,12 +1056,11 @@ void CGUITreeView::setIconFont( IGUIFont* font )
 	IconFont = font;
 	if( IconFont )
 	{
-		height = IconFont->getDimension( L" " ).Height;	
+		height = IconFont->getDimension( L" " ).Height;
 		if( height > ItemHeight )
 		{
 			ItemHeight = height;
 		}
-		IconFont->grab();
 	}
 }
 
@@ -1067,6 +1068,8 @@ void CGUITreeView::setIconFont( IGUIFont* font )
 //! The default is 0 (no images).
 void CGUITreeView::setImageList( IGUIImageList* imageList )
 {
+    if (imageList )
+        imageList->grab();
 	if( ImageList )
 	{
 		ImageList->drop();
@@ -1079,7 +1082,6 @@ void CGUITreeView::setImageList( IGUIImageList* imageList )
 		{
 			ItemHeight = ImageList->getImageSize().Height + 1;
 		}
-		ImageList->grab();
 	}
 }
 
