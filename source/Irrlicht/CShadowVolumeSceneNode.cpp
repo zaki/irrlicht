@@ -253,6 +253,8 @@ void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
 
 void CShadowVolumeSceneNode::setShadowMesh(const IMesh* mesh)
 {
+    if ( ShadowMesh == mesh )
+        return;
 	if (ShadowMesh)
 		ShadowMesh->drop();
 	ShadowMesh = mesh;

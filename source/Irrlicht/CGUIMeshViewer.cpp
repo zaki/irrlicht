@@ -40,14 +40,12 @@ CGUIMeshViewer::~CGUIMeshViewer()
 //! sets the mesh to be shown
 void CGUIMeshViewer::setMesh(scene::IAnimatedMesh* mesh)
 {
+    if (mesh)
+        mesh->grab();
 	if (Mesh)
 		Mesh->drop();
 
 	Mesh = mesh;
-	if (!Mesh)
-		return;
-	else
-		Mesh->grab();
 
 	/* This might be used for proper transformation etc.
 	core::vector3df center(0.0f,0.0f,0.0f);

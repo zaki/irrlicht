@@ -48,8 +48,8 @@ void CMeshSceneNode::OnRegisterSceneNode()
 {
 	if (IsVisible)
 	{
-		// because this node supports rendering of mixed mode meshes consisting of 
-		// transparent and solid material at the same time, we need to go through all 
+		// because this node supports rendering of mixed mode meshes consisting of
+		// transparent and solid material at the same time, we need to go through all
 		// materials, check of what type they are and register this node for the right
 		// render pass according to that.
 
@@ -62,16 +62,16 @@ void CMeshSceneNode::OnRegisterSceneNode()
 		// count transparent and solid materials in this scene node
 		if (ReadOnlyMaterials && Mesh)
 		{
-			// count mesh materials 
+			// count mesh materials
 
 			for (u32 i=0; i<Mesh->getMeshBufferCount(); ++i)
 			{
 				scene::IMeshBuffer* mb = Mesh->getMeshBuffer(i);
 				video::IMaterialRenderer* rnd = mb ? driver->getMaterialRenderer(mb->getMaterial().MaterialType) : 0;
 
-				if (rnd && rnd->isTransparent()) 
+				if (rnd && rnd->isTransparent())
 					++transparentCount;
-				else 
+				else
 					++solidCount;
 
 				if (solidCount && transparentCount)
@@ -80,21 +80,21 @@ void CMeshSceneNode::OnRegisterSceneNode()
 		}
 		else
 		{
-			// count copied materials 
+			// count copied materials
 
 			for (u32 i=0; i<Materials.size(); ++i)
 			{
-				video::IMaterialRenderer* rnd = 
+				video::IMaterialRenderer* rnd =
 					driver->getMaterialRenderer(Materials[i].MaterialType);
 
-				if (rnd && rnd->isTransparent()) 
+				if (rnd && rnd->isTransparent())
 					++transparentCount;
-				else 
+				else
 					++solidCount;
 
 				if (solidCount && transparentCount)
 					break;
-			}	
+			}
 		}
 
 		// register according to material types counted
@@ -119,7 +119,7 @@ void CMeshSceneNode::render()
 	if (!Mesh || !driver)
 		return;
 
-	bool isTransparentPass = 
+	bool isTransparentPass =
 		SceneManager->getSceneNodeRenderPass() == scene::ESNRP_TRANSPARENT;
 
 	++PassCount;
@@ -162,7 +162,7 @@ void CMeshSceneNode::render()
 
 				// only render transparent buffer if this is the transparent render pass
 				// and solid only in solid pass
-				if (transparent == isTransparentPass) 
+				if (transparent == isTransparentPass)
 				{
 					driver->setMaterial(material);
 					driver->drawMeshBuffer(mb);
@@ -295,14 +295,12 @@ void CMeshSceneNode::setMesh(IMesh* mesh)
 	if (!mesh)
 		return; // won't set null mesh
 
+    mesh->grab();
 	if (Mesh)
 		Mesh->drop();
 
 	Mesh = mesh;
 	copyMaterials();
-
-	if (Mesh)
-		Mesh->grab();
 }
 
 
@@ -358,7 +356,7 @@ void CMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeRe
 }
 
 //! Sets if the scene node should not copy the materials of the mesh but use them in a read only style.
-/* In this way it is possible to change the materials a mesh causing all mesh scene nodes 
+/* In this way it is possible to change the materials a mesh causing all mesh scene nodes
 referencing this mesh to change too. */
 void CMeshSceneNode::setReadOnlyMaterials(bool readonly)
 {
@@ -378,7 +376,7 @@ ISceneNode* CMeshSceneNode::clone(ISceneNode* newParent, ISceneManager* newManag
 	if (!newParent) newParent = Parent;
 	if (!newManager) newManager = SceneManager;
 
-	CMeshSceneNode* nb = new CMeshSceneNode(Mesh, newParent, 
+	CMeshSceneNode* nb = new CMeshSceneNode(Mesh, newParent,
 		newManager, ID, RelativeTranslation, RelativeRotation, RelativeScale);
 
 	nb->cloneMembers(this, newManager);
