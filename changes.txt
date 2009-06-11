@@ -43,6 +43,50 @@ Changes in 1.6
    - The console device can now present images from the software drivers and display them as ASCII art in the console
    - By default it replaces the default font in the skin, to prevent fonts from being huge.
 
+ - Fixed problems with changing cursor visibility while mouse is pressed on windows 
+
+ - Allow control of background drawing in listbox
+
+ - Allow control of drawing background and titlebar in windows
+
+ - Improved window serialization
+
+ - bugfix (2796207): menu acted (wrongly) on left-click down instead of left-click up.
+
+ - Fixed problem with highlighting menus when mouse was outside sub-menu area. 
+
+ - Set "ButtonStates" for mouse events also on Linux (was only for Windows formerly)
+
+ - Add Shift+Control states to mouse event
+
+ - bugfix (2003238): serialize modal screens
+
+ - allow stacking modal screens
+
+ - allowing hiding modals
+
+ - replace many IsVisible checks with virtual isVisible() checks in IGUIElement 
+
+ - bugfix: reset selected row when clearing CGUITable
+
+ - adding events EGET_EDITBOX_CHANGED and EGET_EDITBOX_MARKING_CHANGED
+
+ - prevent editbox from recalculating its textbreaking each frame
+
+ - let spinbox react on each textchange without waiting for enter to prevent getting value changes without corresponding EGET_SPINBOX_CHANGED events.
+
+ - new test for zipreader
+
+ - prevent dropping objects accidentally in many set functions
+
+ - Reversed change in vector3d::normalize. 
+   Works now again as documented and a corresponding test has been added.
+   Does fix bug 2770709 (https://sourceforge.net/tracker/?func=detail&aid=2770709&group_id=74339&atid=540676)
+
+ - Animations can now be paused by setting the fps to 0.
+
+ - Avoid fp-precision problem in getPickedNodeBB (see also http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=33838&highlight=). 
+   This change might also fix the problem with picking nodes found by aanderse (http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=32890&highlight=)
 
 Changes in 1.6 TA
 	- implemented isALoadableFileFormat ( File *file ) for the Archive Loader
