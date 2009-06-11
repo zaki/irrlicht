@@ -13,7 +13,7 @@ namespace core
 {
 
 	//! 3d vector template class with lots of operators and methods.
-	/** The vector3d class is used in Irrlicht for three main purposes: 
+	/** The vector3d class is used in Irrlicht for three main purposes:
 		1) As a direction vector (most of the methods assume this).
 		2) As a position in 3d space (which is synonymous with a direction vector from the origin to this position).
 		3) To hold three Euler rotations, where X is pitch, Y is yaw and Z is roll.
@@ -140,8 +140,11 @@ namespace core
 		\return Reference to this vector after normalization. */
 		vector3d<T>& normalize()
 		{
-			const f64 length = core::reciprocal_squareroot ( (f64) (X*X + Y*Y + Z*Z) );
-			
+		    f64 length = (f32)(X*X + Y*Y + Z*Z);
+			if (core::equals(length, 0.0)) // this check isn't an optimization but prevents getting NAN in the sqrt.
+				return *this;
+			length = core::reciprocal_squareroot ( (f64) (X*X + Y*Y + Z*Z) );
+
 			X = (T)(X * length);
 			Y = (T)(Y * length);
 			Z = (T)(Z * length);
@@ -263,10 +266,10 @@ namespace core
 		// Where target and seeker are of type ISceneNode*
 		const vector3df toTarget(target->getAbsolutePosition() - seeker->getAbsolutePosition());
 		const vector3df requiredRotation = toTarget.getHorizontalAngle();
-		seeker->setRotation(requiredRotation); 
+		seeker->setRotation(requiredRotation);
 
-		\return A rotation vector containing the X (pitch) and Y (raw) rotations (in degrees) that when applied to a 
-		+Z (e.g. 0, 0, 1) direction vector would make it point in the same direction as this vector. The Z (roll) rotation 
+		\return A rotation vector containing the X (pitch) and Y (raw) rotations (in degrees) that when applied to a
+		+Z (e.g. 0, 0, 1) direction vector would make it point in the same direction as this vector. The Z (roll) rotation
 		is always 0, since two Euler rotations are sufficient to point in any given direction. */
 		vector3d<T> getHorizontalAngle() const
 		{
@@ -295,9 +298,9 @@ namespace core
 		/** This vector is assumed to be a rotation vector composed of 3 Euler angle rotations, in degrees.
 		The implementation performs the same calculations as using a matrix to do the rotation.
 
-		\param[in] forwards  The direction representing "forwards" which will be rotated by this vector. 
+		\param[in] forwards  The direction representing "forwards" which will be rotated by this vector.
 		If you do not provide a direction, then the +Z axis (0, 0, 1) will be assumed to be forwards.
-		\return A direction vector calculated by rotating the forwards direction by the 3 Euler angles 
+		\return A direction vector calculated by rotating the forwards direction by the 3 Euler angles
 		(in degrees) represented by this vector. */
 		vector3d<T> rotationToDirection(const vector3d<T> & forwards = vector3d<T>(0, 0, 1)) const
 		{
