@@ -13,7 +13,7 @@
     #ifndef _IRR_USE_NON_SYSTEM_ZLIB_
     #include <zlib.h> // use system lib
     #else // _IRR_USE_NON_SYSTEM_ZLIB_
-    #include "zlib/zlib.h" 
+    #include "zlib/zlib.h"
     #endif // _IRR_USE_NON_SYSTEM_ZLIB_
 #endif // _IRR_COMPILE_WITH_ZLIB_
 
@@ -58,7 +58,7 @@ IFileArchive* CArchiveLoaderZIP::createArchive(const core::string<c16>& filename
 		archive = createArchive ( file, ignoreCase, ignorePaths );
 		file->drop ();
 	}
-	
+
 	return archive;
 }
 
@@ -108,7 +108,7 @@ CZipReader::CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
 		Base.replace ( '\\', '/' );
 
 		// scan local headers
-		while (scanLocalHeader());
+		while (scanLocalHeader()) ;
 		//while (scanLocalHeader2());
 
 		// prepare file index for binary search
@@ -136,7 +136,7 @@ void CZipReader::extractFilename(SZipFileEntry* entry)
 		entry->zipFileName.make_lower();
 
 	const c16* p = entry->zipFileName.c_str() + lorfn;
-	
+
 	// suche ein slash oder den anfang.
 
 	while (*p!='/' && p!=entry->zipFileName.c_str())
@@ -161,7 +161,7 @@ void CZipReader::extractFilename(SZipFileEntry* entry)
 	if (thereIsAPath)
 	{
 		lorfn = (s32)(p - entry->zipFileName.c_str());
-		
+
 		entry->path = entry->zipFileName.subString ( 0, lorfn );
 
 		//entry->path.append(entry->zipFileName, lorfn);
@@ -366,8 +366,8 @@ IReadFile* CZipReader::openFile(s32 index)
 	case 8:
 		{
   			#ifdef _IRR_COMPILE_WITH_ZLIB_
-			
-			const u32 uncompressedSize = e.header.DataDescriptor.UncompressedSize;			
+
+			const u32 uncompressedSize = e.header.DataDescriptor.UncompressedSize;
 			const u32 compressedSize = e.header.DataDescriptor.CompressedSize;
 
 			void* pBuf = new c8[ uncompressedSize ];
@@ -389,7 +389,7 @@ IReadFile* CZipReader::openFile(s32 index)
 			//memset(pcData, 0, compressedSize );
 			File->seek( e.fileDataPosition );
 			File->read(pcData, compressedSize );
-			
+
 			// Setup the inflate stream.
 			z_stream stream;
 			s32 err;
@@ -415,7 +415,7 @@ IReadFile* CZipReader::openFile(s32 index)
 
 
 			delete[] pcData;
-			
+
 			if (err != Z_OK)
 			{
 				swprintf ( buf, 64, L"Error decompressing %s", e.simpleFileName.c_str() );
@@ -425,7 +425,7 @@ IReadFile* CZipReader::openFile(s32 index)
 			}
 			else
 				return io::createMemoryReadFile(pBuf, uncompressedSize, e.zipFileName, true);
-			
+
 			#else
 			return 0; // zlib not compiled, we cannot decompress the data.
 			#endif
@@ -454,7 +454,7 @@ const IFileArchiveEntry* CZipReader::getFileInfo(u32 index)
 
 //! return the id of the file Archive
 const core::string<c16>& CZipReader::getArchiveName ()
-{ 
+{
 	return Base;
 }
 
@@ -603,6 +603,9 @@ void CMountPointReader::buildDirectory ( )
 //! opens a file by file name
 IReadFile* CMountPointReader::openFile(const core::string<c16>& filename)
 {
+    if ( !filename.size() )
+        return 0;
+
 	core::string<c16> fname ( Base );
 	fname += filename;
 
@@ -629,7 +632,7 @@ s32 CMountPointReader::findFile(const core::string<c16>& filename)
 #else
 
 //! compatible Folder Archticture
-// 
+//
 CMountPointReader::CMountPointReader( IFileSystem * parent, const core::string<c16>& basename, bool ignoreCase, bool ignorePaths)
 	: CZipReader( 0, ignoreCase, ignorePaths ), Parent ( parent )
 {
