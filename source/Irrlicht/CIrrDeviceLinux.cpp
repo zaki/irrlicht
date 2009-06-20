@@ -579,7 +579,8 @@ bool CIrrDeviceLinux::createWindow()
 		XMapRaised(display, window);
 	}
 	WindowMinimized=false;
-	XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);
+ 	// Currently broken in X, see Bug ID 2795321
+ 	// XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);	
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -856,7 +857,7 @@ bool CIrrDeviceLinux::run()
 				break;
 
 			case KeyRelease:
-				if (0 == AutorepeatSupport)
+				if (0 == AutorepeatSupport && (XPending( display ) > 0) )
 				{
 					// check for Autorepeat manually
 					// We'll do the same as Windows does: Only send KeyPressed
