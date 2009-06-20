@@ -1,4 +1,7 @@
 Changes in 1.6
+
+ - bugfix for 2795321 found by egrath: Don't rely anymore on broken XkbSetDetectableAutoRepeat.
+
  - bugfix: Use make_lower throughout for spritebank filenames (found and patched by Ion Dune)
 
  - bugfix: CMountPointReader::openFile no longer returns true for empty files. Corresponding test added.
