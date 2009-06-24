@@ -7,9 +7,12 @@
 
 #include "IOSOperator.h"
 #include "irrString.h"
+#include "IrrCompileConfig.h"
 
 namespace irr
 {
+
+class CIrrDeviceLinux;
 
 //! The Operating system operator provides operation system specific methods and informations.
 class COSOperator : public IOSOperator
@@ -17,7 +20,11 @@ class COSOperator : public IOSOperator
 public:
 
 	// constructor
-	COSOperator(const c8* osversion);
+#if defined(_IRR_USE_LINUX_DEVICE_)
+    COSOperator(const c8* osversion, CIrrDeviceLinux* device);
+#else
+ 	COSOperator(const c8* osversion);
+#endif
 
 	//! returns the current operation system version as string.
 	virtual const wchar_t* getOperationSystemVersion() const;
@@ -27,7 +34,7 @@ public:
 
 	//! gets text from the clipboard
 	//! \return Returns 0 if no string is in there.
-	virtual c8* getTextFromClipboard() const;
+	virtual const c8* getTextFromClipboard() const;
 
 	//! gets the processor speed in megahertz
 	//! \param Mhz:
@@ -43,6 +50,11 @@ public:
 private:
 
 	core::stringw OperatingSystem;
+
+#if defined(_IRR_USE_LINUX_DEVICE_)
+    CIrrDeviceLinux * IrrDeviceLinux;
+#endif
+
 };
 
 } // end namespace

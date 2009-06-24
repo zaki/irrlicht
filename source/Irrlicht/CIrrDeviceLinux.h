@@ -96,6 +96,14 @@ namespace irr
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
+        //! gets text from the clipboard
+        //! \return Returns 0 if no string is in there.
+		virtual const c8* getTextFromClipboard() const;
+
+        //! copies text to the clipboard
+        //! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
+        virtual void copyToClipboard(const c8* text) const;
+
 	private:
 
 		//! create the driver
@@ -105,7 +113,9 @@ namespace irr
 
 		void createKeyMap();
 
-		void pollJoysticks(); 
+		void pollJoysticks();
+
+        void initXAtoms();
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -310,6 +320,7 @@ namespace irr
 		XSetWindowAttributes attributes;
 		XSizeHints* StdHints;
 		XImage* SoftwareImage;
+		mutable core::stringc Clipboard;
 		#ifdef _IRR_LINUX_X11_VIDMODE_
 		XF86VidModeModeInfo oldVideoMode;
 		#endif

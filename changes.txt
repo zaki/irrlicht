@@ -1,5 +1,9 @@
 Changes in 1.6
 
+ - IOSOperator::getTextFromClipboard returns now const c8* instead of c8* 
+
+ - Support for copy&paste on linux (X11) added (fixing bug 2804014 found by Pan)
+
  - bugfix for 2795321 found by egrath: Don't rely anymore on broken XkbSetDetectableAutoRepeat.
 
  - bugfix: Use make_lower throughout for spritebank filenames (found and patched by Ion Dune)
