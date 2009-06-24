@@ -931,7 +931,6 @@ bool CIrrDeviceLinux::run()
                 {
                     XEvent respond;
                     XSelectionRequestEvent *req = &(event.xselectionrequest);
-                    Atom target = req->target;  // debugging
                     if (  req->target == XA_STRING)
                     {
                         XChangeProperty (display,
@@ -958,9 +957,6 @@ bool CIrrDeviceLinux::run()
                     }
                     else
                     {
-                        char * name = XGetAtomName(display, req->target);   // debugging
-                        XFree(name);
-
                         respond.xselection.property= None;
                     }
                     respond.xselection.type= SelectionNotify;
