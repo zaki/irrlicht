@@ -322,8 +322,13 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
 					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
 					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
+#ifdef GLX_ARB_multisample
 					GLX_SAMPLE_BUFFERS_ARB, 1,
 					GLX_SAMPLES_ARB, CreationParams.AntiAlias,
+#elif defined(GLX_SAMPLE_BUFFERS)
+					GLX_SAMPLE_BUFFERS, 1,
+					GLX_SAMPLES, CreationParams.AntiAlias,
+#endif
 					GLX_STEREO, CreationParams.Stereobuffer?True:False,
 					None
 				};
