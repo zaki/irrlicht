@@ -19,6 +19,7 @@
 #include "CColorConverter.h"
 #include "SIrrCreationParameters.h"
 #include <X11/XKBlib.h>
+#include <X11/Xatom.h>
 
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 #include <fcntl.h>
@@ -43,7 +44,13 @@ namespace irr
 	}
 } // end namespace irr
 
-
+namespace
+{
+    Atom X_ATOM_CLIPBOARD;
+    Atom X_ATOM_TARGETS;
+    Atom X_ATOM_UTF8_STRING;
+    Atom X_ATOM_TEXT;
+};
 
 namespace irr
 {
@@ -82,7 +89,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	linuxversion += " ";
 	linuxversion += LinuxInfo.machine;
 
-	Operator = new COSOperator(linuxversion.c_str());
+	Operator = new COSOperator(linuxversion.c_str(), this);
 	os::Printer::log(linuxversion.c_str(), ELL_INFORMATION);
 
 	// create keymap
@@ -580,7 +587,7 @@ bool CIrrDeviceLinux::createWindow()
 	}
 	WindowMinimized=false;
  	// Currently broken in X, see Bug ID 2795321
- 	// XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);	
+ 	// XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -657,6 +664,8 @@ bool CIrrDeviceLinux::createWindow()
 		if (SoftwareImage)
 			SoftwareImage->data = (char*) malloc(SoftwareImage->bytes_per_line * SoftwareImage->height * sizeof(char));
 	}
+
+    initXAtoms();
 
 #endif // #ifdef _IRR_COMPILE_WITH_X11_
 	return true;
@@ -917,6 +926,53 @@ bool CIrrDeviceLinux::run()
 					XFree(atom);
 				}
 				break;
+
+            case SelectionRequest:
+                {
+                    XEvent respond;
+                    XSelectionRequestEvent *req = &(event.xselectionrequest);
+                    Atom target = req->target;  // debugging
+                    if (  req->target == XA_STRING)
+                    {
+                        XChangeProperty (display,
+                                        req->requestor,
+                                        req->property, req->target,
+                                        8,      // format
+                                        PropModeReplace,
+                                        (unsigned char*) Clipboard.c_str(),
+                                        Clipboard.size());
+                        respond.xselection.property = req->property;
+                    }
+                    else if ( req->target == X_ATOM_TARGETS )
+                    {
+                        long data[2];
+
+                        data[0] = X_ATOM_TEXT;
+                        data[1] = XA_STRING;
+
+                        XChangeProperty (display, req->requestor,
+                                        req->property, req->target,
+                                        8, PropModeReplace, (unsigned char *) &data,
+                                        sizeof (data));
+                        respond.xselection.property = req->property;
+                    }
+                    else
+                    {
+                        char * name = XGetAtomName(display, req->target);   // debugging
+                        XFree(name);
+
+                        respond.xselection.property= None;
+                    }
+                    respond.xselection.type= SelectionNotify;
+                    respond.xselection.display= req->display;
+                    respond.xselection.requestor= req->requestor;
+                    respond.xselection.selection=req->selection;
+                    respond.xselection.target= req->target;
+                    respond.xselection.time = req->time;
+                    XSendEvent (display, req->requestor,0,0,&respond);
+                    XFlush (display);
+                }
+                break;
 
 			default:
 				break;
@@ -1494,6 +1550,79 @@ void CIrrDeviceLinux::pollJoysticks()
 		(void)postEventFromUser(info.persistentData);
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
+}
+
+//! gets text from the clipboard
+//! \return Returns 0 if no string is in there.
+const c8* CIrrDeviceLinux::getTextFromClipboard() const
+{
+#if defined(_IRR_COMPILE_WITH_X11_)
+    Window ownerWindow = XGetSelectionOwner (display, X_ATOM_CLIPBOARD);
+    if ( ownerWindow ==  window )
+    {
+        return Clipboard.c_str();
+    }
+    Clipboard = "";
+    if (ownerWindow != None )
+    {
+        XConvertSelection (display, X_ATOM_CLIPBOARD, XA_STRING, None, ownerWindow, CurrentTime);
+        XFlush (display);
+
+        // check for data
+        Atom type;
+        int format;
+        unsigned long numItems, bytesLeft, dummy;
+        unsigned char *data;
+        XGetWindowProperty (display, ownerWindow,
+                XA_STRING, 	  // property name
+				0,         // offset
+				0,	  	  // length (we only check for data, so 0)
+				0, 	 	  // Delete 0==false
+				AnyPropertyType,  // AnyPropertyType or property identifier
+				&type,		  // return type
+				&format,	  // return format
+				&numItems,   // number items
+				&bytesLeft,  // remaining bytes for partial reads
+				&data);        // data
+        if ( bytesLeft > 0 )
+        {
+            // there is some data to get
+            int result = XGetWindowProperty (display, ownerWindow, XA_STRING, 0,
+                                        bytesLeft, 0, AnyPropertyType, &type, &format,
+                                        &numItems, &dummy, &data);
+            if (result == Success)
+                Clipboard = (irr::c8*)data;
+            XFree (data);
+        }
+    }
+
+    return Clipboard.c_str();
+
+#else
+    return 0;
+#endif
+}
+
+//! copies text to the clipboard
+void CIrrDeviceLinux::copyToClipboard(const c8* text) const
+{
+#if defined(_IRR_COMPILE_WITH_X11_)
+    // Actually there is no clipboard on X but applications just say they own the clipboard and return text when asked.
+    // Which btw. also means that on X you lose clipboard content when closing applications.
+    Clipboard = text;
+    XSetSelectionOwner (display, X_ATOM_CLIPBOARD, window, CurrentTime);
+    XFlush (display);
+#endif
+}
+
+void CIrrDeviceLinux::initXAtoms()
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+    X_ATOM_CLIPBOARD = XInternAtom(display, "CLIPBOARD", False);
+    X_ATOM_TARGETS = XInternAtom(display, "TARGETS", False);
+    X_ATOM_UTF8_STRING = XInternAtom (display, "UTF8_STRING", False);
+    X_ATOM_TEXT = XInternAtom (display, "TEXT", False);
+#endif
 }
 
 
