@@ -99,6 +99,7 @@ ECOLOR_FORMAT COpenGLTexture::getBestColorFormat(ECOLOR_FORMAT format)
 			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
 					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
 				destFormat = ECF_A1R5G5B5;
+		default:
 		break;
 	}
 	if (Driver->getTextureCreationFlag(ETCF_NO_ALPHA_CHANNEL))
@@ -410,13 +411,13 @@ void COpenGLTexture::regenerateMipMapLevels()
 
 bool COpenGLTexture::isRenderTarget() const
 {
-    return IsRenderTarget;
+	 return IsRenderTarget;
 }
 
 
 void COpenGLTexture::setIsRenderTarget(bool isTarget)
 {
-    IsRenderTarget = isTarget;
+	 IsRenderTarget = isTarget;
 }
 
 
@@ -449,8 +450,8 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
-                                const core::string<c16>& name,
-                                COpenGLDriver* driver,
+										  const core::string<c16>& name,
+										  COpenGLDriver* driver,
 								const ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
@@ -491,72 +492,99 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 	unbindRTT();
 }
 
-GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT format, 
-																	 GLint& filtering, 
-																	 GLenum& colorformat, 
-																	 GLenum& type)
+GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT format,
+				GLint& filtering,
+				GLenum& colorformat,
+				GLenum& type)
 {
-   switch(format)
-   {
-      // Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
-      case ECF_R16F:
-      {         
-         filtering = GL_NEAREST;
-         colorformat = GL_RED;
-         type = GL_FLOAT;
+	// default
+	filtering = GL_LINEAR;
+	colorformat = GL_RGBA;
+	type = GL_UNSIGNED_BYTE;
 
-         return GL_RGB16F_ARB;
-      }
-      case ECF_G16R16F:
-      {
-         // We haven't got support for this type specifically, so we should use RGB for a close match.
-         filtering = GL_NEAREST;
-         colorformat = GL_RGB;
-         type = GL_FLOAT;
+	switch(format)
+	{
+		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
+		case ECF_R16F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RED;
+			type = GL_FLOAT;
 
-         return GL_RGB16F_ARB;
-      }
-      case ECF_A16B16G16R16F:
-      {
-         filtering = GL_NEAREST;
-         colorformat = GL_RGBA;
-         type = GL_FLOAT;
+			return GL_RGB16F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_G16R16F:
+		{
+#ifdef GL_ARB_texture_float
+			// We haven't got support for this type specifically, so we should use RGB for a close match.
+			filtering = GL_NEAREST;
+			colorformat = GL_RGB;
+			type = GL_FLOAT;
 
-         return GL_RGBA16F_ARB;
-      }
-      case ECF_R32F:
-      {         
-         filtering = GL_NEAREST;
-         colorformat = GL_RED;
-         type = GL_FLOAT;
+			return GL_RGB16F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_A16B16G16R16F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RGBA;
+			type = GL_FLOAT;
 
-         return GL_RGB32F_ARB;
-      }
-      case ECF_G32R32F:
-      {
-         // We haven't got support for this type specifically, so we should use RGB for a close match.
-         filtering = GL_NEAREST;
-         colorformat = GL_RGB;
-         type = GL_FLOAT;
+			return GL_RGBA16F_ARB;
+#else
+			return GL_RGBA8;
+#endif
+		}
+		case ECF_R32F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RED;
+			type = GL_FLOAT;
 
-         return GL_RGB32F_ARB;
-      }
-      case ECF_A32B32G32R32F:
-      {
-         filtering = GL_NEAREST;
-         colorformat = GL_RGBA;
-         type = GL_FLOAT;
+			return GL_RGB32F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_G32R32F:
+		{
+#ifdef GL_ARB_texture_float
+			// We haven't got support for this type specifically, so we should use RGB for a close match.
+			filtering = GL_NEAREST;
+			colorformat = GL_RGB;
+			type = GL_FLOAT;
 
-         return GL_RGBA32F_ARB;
-      }
-   }
+			return GL_RGB32F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_A32B32G32R32F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RGBA;
+			type = GL_FLOAT;
 
-   filtering = GL_LINEAR;
-   colorformat = GL_RGBA;
-   type = GL_UNSIGNED_BYTE;
-
-   return GL_RGBA8;
-} 
+			return GL_RGBA32F_ARB;
+#else
+			return GL_RGBA8;
+#endif
+		}
+		default:
+		{
+			return GL_RGBA8;
+		}
+	}
+}
 
 
 //! destructor

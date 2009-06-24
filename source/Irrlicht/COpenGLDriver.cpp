@@ -673,7 +673,7 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 
 #if defined(_IRR_USE_SDL_DEVICE_)
 	// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
-	// it would be better if this was fixed elsewhere. 
+	// it would be better if this was fixed elsewhere.
 	glFrontFace(GL_CW);
 #endif
 
@@ -2942,8 +2942,8 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 
 
 ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-												const core::string<c16>& name, 
-												const ECOLOR_FORMAT format)
+					const core::string<c16>& name,
+					const ECOLOR_FORMAT format)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
