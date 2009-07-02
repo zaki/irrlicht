@@ -1410,14 +1410,17 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 		else
 		{
 			u8* tgtpos = (u8*) target;
-			u8* dstpos = (u8*) Data;
+			u8* srcpos = (u8*) Data;
 			const u32 bwidth = width*bpp;
+			const u32 rest = pitch-bwidth;
 			for (u32 y=0; y<height; ++y)
 			{
-				memcpy(target, Data, height*pitch);
-				memset(tgtpos+width, 0, pitch-bwidth);
+				// copy scanline
+				memcpy(tgtpos, srcpos, bwidth);
+				// clear pitch
+				memset(tgtpos+bwidth, 0, rest);
 				tgtpos += pitch;
-				dstpos += Pitch;
+				srcpos += Pitch;
 			}
 			return;
 		}

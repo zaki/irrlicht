@@ -140,13 +140,16 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* file)
 		video::SColor color(0xffffffff);
 		if (attrib & 0x8000)
 			color = video::A1R5G5B5toA8R8G8B8(attrib);
-		mb->Vertices.push_back(video::S3DVertex(vertex[0],normal,color, core::vector2df()));
-		mb->Vertices.push_back(video::S3DVertex(vertex[1],normal,color, core::vector2df()));
+		if (normal==core::vector3df())
+			normal=core::plane3df(vertex[2],vertex[1],vertex[0]).Normal;
 		mb->Vertices.push_back(video::S3DVertex(vertex[2],normal,color, core::vector2df()));
+		mb->Vertices.push_back(video::S3DVertex(vertex[1],normal,color, core::vector2df()));
+		mb->Vertices.push_back(video::S3DVertex(vertex[0],normal,color, core::vector2df()));
 		mb->Indices.push_back(vCount);
 		mb->Indices.push_back(vCount+1);
 		mb->Indices.push_back(vCount+2);
 	}	// end while (file->getPos() < filesize)
+	mesh->getMeshBuffer(0)->recalculateBoundingBox();
 
 	// Create the Animated mesh if there's anything in the mesh
 	SAnimatedMesh* pAM = 0;
@@ -205,6 +208,7 @@ void CSTLMeshFileLoader::getNextVector(io::IReadFile* file, core::vector3df& vec
 		getNextToken(file, tmp);
 		core::fast_atof_move(tmp.c_str(), vec.Z);
 	}
+	vec.X=-vec.X;
 }
 
 
