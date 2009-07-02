@@ -61,11 +61,11 @@ namespace scene
 		virtual u32 getSubDivideU() const { return SubdivideU; }
 		virtual u32 getSubDivideV() const { return SubdivideV; }
 
-		virtual void setFootColour(const video::SColor inColor);
-		virtual void setTailColour(const video::SColor inColor);
+		virtual void setFootColor(const video::SColor inColor);
+		virtual void setTailColor(const video::SColor inColor);
 
-		virtual video::SColor getFootColour() const { return FootColor; }
-		virtual video::SColor getTailColour() const { return TailColor; }
+		virtual video::SColor getFootColor() const { return FootColor; }
+		virtual video::SColor getTailColor() const { return TailColor; }
 
 	private:
 		void constructLight();
