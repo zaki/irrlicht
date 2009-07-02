@@ -670,7 +670,7 @@ void CD3D9Driver::setTransform(E_TRANSFORMATION_STATE state,
 
 
 //! sets the current Texture
-bool CD3D9Driver::setTexture(s32 stage, const video::ITexture* texture)
+bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
 	if (CurrentTexture[stage] == texture)
 		return true;
@@ -704,7 +704,7 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
-		setTexture(i, Material.getTexture(i));
+		setActiveTexture(i, Material.getTexture(i));
 		setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}
@@ -1283,7 +1283,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
 
-	setTexture(0, const_cast<video::ITexture*>(texture));
+	setActiveTexture(0, const_cast<video::ITexture*>(texture));
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1320,7 +1320,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	if (!sourceRect.isValid())
 		return;
 
-	if (!setTexture(0, const_cast<video::ITexture*>(texture)))
+	if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
 		return;
 
 	core::position2d<s32> targetPos = pos;
@@ -1470,7 +1470,7 @@ void CD3D9Driver::draw2DRectangle(const core::rect<s32>& position,
 		colorLeftDown.getAlpha() < 255 ||
 		colorRightDown.getAlpha() < 255, false, false);
 
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1495,7 +1495,7 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 						color, 0.0f, 0.0f);
 
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1512,7 +1512,7 @@ void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
 		return;
 
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1885,10 +1885,10 @@ void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail)
 
 		Transformation3DChanged = false;
 
-		setTexture(0,0);
-		setTexture(1,0);
-		setTexture(2,0);
-		setTexture(3,0);
+		setActiveTexture(0,0);
+		setActiveTexture(1,0);
+		setActiveTexture(2,0);
+		setActiveTexture(3,0);
 
 		pID3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
@@ -2293,7 +2293,7 @@ void CD3D9Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftU
 		leftDownEdge.getAlpha() < 255 ||
 		rightDownEdge.getAlpha() < 255);
 
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
