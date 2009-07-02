@@ -124,7 +124,7 @@ namespace video
 		void setRenderTarget(video::CImage* image);
 
 		//! sets the current Texture
-		bool setTexture(video::ITexture* texture);
+		bool setActiveTexture(u32 stage, video::ITexture* texture);
 
 		//! switches to a triangle renderer
 		void switchToTriangleRenderer(ETriangleRenderer renderer);

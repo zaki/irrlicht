@@ -190,7 +190,7 @@ void COpenGLTexture::copyTexture(bool newTexture)
 			break;
 	}
 
-	Driver->setTexture(0, this);
+	Driver->setActiveTexture(0, this);
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
@@ -436,7 +436,7 @@ void COpenGLTexture::bindRTT()
 //! Unbind Render Target Texture
 void COpenGLTexture::unbindRTT()
 {
-	Driver->setTexture(0, this);
+	Driver->setActiveTexture(0, this);
 
 	// Copy Our ViewPort To The Texture
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
@@ -475,7 +475,7 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
-	Driver->setTexture(0, this);
+	Driver->setActiveTexture(0, this);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);

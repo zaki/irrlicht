@@ -1431,7 +1431,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
-	if (!setTexture(0, texture))
+	if (!setActiveTexture(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1484,7 +1484,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	disableTextures(1);
-	setTexture(0, texture);
+	setActiveTexture(0, texture);
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
@@ -1541,7 +1541,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		return;
 
 	disableTextures(1);
-	if (!setTexture(0, texture))
+	if (!setActiveTexture(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1693,7 +1693,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 	glEnd();
 }
 
-bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
+bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
 	if (stage >= MaxTextureUnits)
 		return false;
@@ -1734,7 +1734,7 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 {
 	bool result=true;
 	for (u32 i=fromStage; i<MaxTextureUnits; ++i)
-		result &= setTexture(i, 0);
+		result &= setActiveTexture(i, 0);
 	return result;
 }
 
@@ -3064,7 +3064,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	// check if we should set the previous RT back
 
-	setTexture(0, 0);
+	setActiveTexture(0, 0);
 	ResetRenderStates=true;
 	if (RenderTargetTexture!=0)
 	{

@@ -176,7 +176,7 @@ void CSoftwareDriver::setTransform(E_TRANSFORMATION_STATE state, const core::mat
 
 
 //! sets the current Texture
-bool CSoftwareDriver::setTexture(video::ITexture* texture)
+bool CSoftwareDriver::setActiveTexture(u32 stage, video::ITexture* texture)
 {
 	if (texture && texture->getDriverType() != EDT_SOFTWARE)
 	{
@@ -205,7 +205,7 @@ void CSoftwareDriver::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < 1; ++i)
 	{
-		setTexture(Material.getTexture(i));
+		setActiveTexture(i, Material.getTexture(i));
 		setTransform ((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}
