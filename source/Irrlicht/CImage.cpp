@@ -1038,6 +1038,9 @@ namespace video
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 :Data(0), Size(size), Format(format), DeleteMemory(true)
 {
+	#ifdef _DEBUG
+	setDebugName("CImage");
+	#endif
 	initData();
 }
 

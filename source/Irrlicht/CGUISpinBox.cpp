@@ -26,6 +26,10 @@ CGUISpinBox::CGUISpinBox(const wchar_t* text, bool border,IGUIEnvironment* envir
 	RangeMin(-FLT_MAX), RangeMax(FLT_MAX), FormatString(L"%f"),
 	DecimalPlaces(-1)
 {
+	#ifdef _DEBUG
+	setDebugName("CGUISpinBox");
+	#endif
+
 	s32 ButtonWidth = 16;
 	IGUISpriteBank *sb = 0;
 	if (environment && environment->getSkin())

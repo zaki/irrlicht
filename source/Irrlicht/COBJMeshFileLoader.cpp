@@ -32,6 +32,10 @@ static const u32 WORD_BUFFER_LENGTH = 512;
 COBJMeshFileLoader::COBJMeshFileLoader(scene::ISceneManager* smgr, io::IFileSystem* fs)
 : SceneManager(smgr), FileSystem(fs)
 {
+	#ifdef _DEBUG
+	setDebugName("COBJMeshFileLoader");
+	#endif
+
 	if (FileSystem)
 		FileSystem->grab();
 }
