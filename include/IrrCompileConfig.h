@@ -6,7 +6,13 @@
 #define __IRR_COMPILE_CONFIG_H_INCLUDED__
 
 //! Irrlicht SDK Version
-#define IRRLICHT_SDK_VERSION "1.6 SVN"
+#define IRRLICHT_VERSION_MAJOR 1
+#define IRRLICHT_VERSION_MINOR 6
+#define IRRLICHT_VERSION_REVISION 0
+// This flag will be defined only in SVN, the official release code will have
+// it undefined
+#define IRRLICHT_VERSION_SVN
+#define IRRLICHT_SDK_VERSION "1.6-SVN"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -112,7 +118,7 @@ headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
 #endif
 
 //! Define _IRR_COMPILE_WITH_OPENGL_ to compile the Irrlicht engine with OpenGL.
-/** If you do not wish the engine to be compiled with OpengGL, comment this
+/** If you do not wish the engine to be compiled with OpenGL, comment this
 define out. */
 #define _IRR_COMPILE_WITH_OPENGL_
 

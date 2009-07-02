@@ -70,9 +70,9 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32
 
 
 //! recursive method for going through all scene nodes
-void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root, core::line3df& ray,
-			s32 bits, bool bNoDebugObjects,
-			f32& outbestdistance, ISceneNode*& outbestnode)
+void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
+		core::line3df& ray, s32 bits, bool bNoDebugObjects,
+		f32& outbestdistance, ISceneNode*& outbestnode)
 {
 	const core::list<ISceneNode*>& children = root->getChildren();
 	const core::vector3df rayVector = ray.getVector().normalize();
@@ -782,7 +782,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 		return pos + vel;
 
 	// original destination point
-	core::vector3df destinationPoint = pos + vel;
+	const core::vector3df destinationPoint = pos + vel;
 	core::vector3df newBasePoint = pos;
 
 	// only update if we are not already very close
@@ -800,9 +800,8 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	// calculate sliding plane
 
-	core::vector3df slidePlaneOrigin = colData.intersectionPoint;
-	core::vector3df slidePlaneNormal = newBasePoint - colData.intersectionPoint;
-	slidePlaneNormal.normalize();
+	const core::vector3df slidePlaneOrigin = colData.intersectionPoint;
+	const core::vector3df slidePlaneNormal = (newBasePoint - colData.intersectionPoint).normalize();
 	core::plane3d<f32> slidingPlane(slidePlaneOrigin, slidePlaneNormal);
 
 	core::vector3df newDestinationPoint =
@@ -811,7 +810,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	// generate slide vector
 
-	core::vector3df newVelocityVector = newDestinationPoint -
+	const core::vector3df newVelocityVector = newDestinationPoint -
 		colData.intersectionPoint;
 
 	if (newVelocityVector.getLength() < veryCloseDistance)

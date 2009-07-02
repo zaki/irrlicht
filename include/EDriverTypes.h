@@ -19,9 +19,9 @@ namespace video
 		EDT_NULL,
 
 		//! The Irrlicht Engine Software renderer.
-		/** Runs on all platforms, with every hardware. It should only be used for
-		2d graphics, but it can also perform some primitive 3d
-		functions. These 3d drawing functions are quite fast, but
+		/** Runs on all platforms, with every hardware. It should only
+		be used for 2d graphics, but it can also perform some primitive
+		3d functions. These 3d drawing functions are quite fast, but
 		very inaccurate, and don't even support clipping in 3D mode. */
 		EDT_SOFTWARE,
 
