@@ -10,11 +10,11 @@
 
 #include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_ZLIB_
-    #ifndef _IRR_USE_NON_SYSTEM_ZLIB_
-    #include <zlib.h> // use system lib
-    #else // _IRR_USE_NON_SYSTEM_ZLIB_
-    #include "zlib/zlib.h"
-    #endif // _IRR_USE_NON_SYSTEM_ZLIB_
+	#ifndef _IRR_USE_NON_SYSTEM_ZLIB_
+	#include <zlib.h> // use system lib
+	#else // _IRR_USE_NON_SYSTEM_ZLIB_
+	#include "zlib/zlib.h"
+	#endif // _IRR_USE_NON_SYSTEM_ZLIB_
 #endif // _IRR_COMPILE_WITH_ZLIB_
 
 namespace irr
@@ -603,8 +603,8 @@ void CMountPointReader::buildDirectory ( )
 //! opens a file by file name
 IReadFile* CMountPointReader::openFile(const core::string<c16>& filename)
 {
-    if ( !filename.size() )
-        return 0;
+	if ( !filename.size() )
+		return 0;
 
 	core::string<c16> fname ( Base );
 	fname += filename;

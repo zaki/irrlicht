@@ -2257,9 +2257,11 @@ void CXMeshFileLoader::readUntilEndOfLine()
 
 u16 CXMeshFileLoader::readBinWord()
 {
-	u8 *Q = (u8 *)P;
-	u16 tmp = 0;
-	tmp = Q[0] + (Q[1] << 8);
+#ifdef __BIG_ENDIAN__
+	const u16 tmp = os::Byteswap::byteswap(*(u16 *)P);
+#else
+	const u16 tmp = *(u16 *)P;
+#endif
 	P += 2;
 	return tmp;
 }
@@ -2267,9 +2269,11 @@ u16 CXMeshFileLoader::readBinWord()
 
 u32 CXMeshFileLoader::readBinDWord()
 {
-	u8 *Q = (u8 *)P;
-	u32 tmp = 0;
-	tmp = Q[0] + (Q[1] << 8) + (Q[2] << 16) + (Q[3] << 24);
+#ifdef __BIG_ENDIAN__
+	const u32 tmp = os::Byteswap::byteswap(*(u32 *)P);
+#else
+	const u32 tmp = *(u32 *)P;
+#endif
 	P += 4;
 	return tmp;
 }
@@ -2281,7 +2285,7 @@ u32 CXMeshFileLoader::readInt()
 	{
 		if (!BinaryNumCount)
 		{
-			u16 tmp = readBinWord(); // 0x06 or 0x03
+			const u16 tmp = readBinWord(); // 0x06 or 0x03
 			if (tmp == 0x06)
 				BinaryNumCount = readBinDWord();
 			else
@@ -2304,7 +2308,7 @@ f32 CXMeshFileLoader::readFloat()
 	{
 		if (!BinaryNumCount)
 		{
-			u16 tmp = readBinWord(); // 0x07 or 0x42
+			const u16 tmp = readBinWord(); // 0x07 or 0x42
 			if (tmp == 0x07)
 				BinaryNumCount = readBinDWord();
 			else
@@ -2313,17 +2317,26 @@ f32 CXMeshFileLoader::readFloat()
 		--BinaryNumCount;
 		if (FloatSize == 8)
 		{
-			char tmp[8];
-			memcpy(tmp, P, 8);
+#ifdef __BIG_ENDIAN__
+			c8 ctmp[8];
+			*((f32*)(ctmp+4)) = os::Byteswap::byteswap(*(f32 *)P);
+			*((f32*)(ctmp)) = os::Byteswap::byteswap(*(f32 *)P+4);
+			const f32 tmp = (f32)(*(f64 *)ctmp);
+#else
+			const f32 tmp = (f32)(*(f64 *)P);
+#endif
 			P += 8;
-			return (f32)(*(f64 *)tmp);
+			return tmp;
 		}
 		else
 		{
-			char tmp[4];
-			memcpy(tmp, P, 4);
+#ifdef __BIG_ENDIAN__
+			const f32 tmp = os::Byteswap::byteswap(*(f32 *)P);
+#else
+			const f32 tmp = *(f32 *)P;
+#endif
 			P += 4;
-			return *(f32 *)tmp;
+			return tmp;
 		}
 	}
 	findNextNoneWhiteSpaceNumber();
