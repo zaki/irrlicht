@@ -21,7 +21,7 @@
 #include <sys/utsname.h>
 #include "COSOperator.h"
 #include "CColorConverter.h"
-#include "Irrlicht.h"
+#include "irrlicht.h"
 
 
 #import <wchar.h>
@@ -358,7 +358,7 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 		[NSApp finishLaunching];
 
 		path = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
-		chdir([path cString]);
+		chdir([path fileSystemRepresentation]);
 	}
 
 	uname(&name);
@@ -1436,7 +1436,7 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 	return &VideoModeList;
 }
 
-IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
+extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
 {
 	CIrrDeviceMacOSX* dev = new CIrrDeviceMacOSX(param);
 
@@ -1449,7 +1449,6 @@ IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationP
 	return dev;
 }
 
-}
+} // end namespace
 
 #endif // _IRR_USE_OSX_DEVICE_
-
