@@ -30,10 +30,11 @@ namespace video
 {
 
 //! rendertarget constructor
-CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name)
+CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size,
+						   const core::string<c16>& name, const ECOLOR_FORMAT format)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 	TextureSize(size), ImageSize(size), Pitch(0),
-	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true)
+	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true), ColorFormat(ECF_UNKNOWN)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Texture");
@@ -43,7 +44,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 	if (Device)
 		Device->AddRef();
 
-	createRenderTarget();
+	createRenderTarget(format);
 }
 
 
@@ -115,7 +116,7 @@ CD3D9Texture::~CD3D9Texture()
 }
 
 
-void CD3D9Texture::createRenderTarget()
+void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 {
 	// are texture size restrictions there ?
 	if(!Driver->queryFeature(EVDF_TEXTURE_NPOT))
@@ -126,10 +127,27 @@ void CD3D9Texture::createRenderTarget()
 			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
 	}
 
-	// get irrlicht format from backbuffer
-	ColorFormat = Driver->getColorFormat();
 	D3DFORMAT d3dformat = Driver->getD3DColorFormat();
-	setPitch(d3dformat);
+
+	if(ColorFormat == ECF_UNKNOWN)
+	{
+		// get irrlicht format from backbuffer
+		// (This will get overwritten by the custom format if it is provided, else kept.)
+		ColorFormat = Driver->getColorFormat();
+		setPitch(d3dformat);
+
+		// Use color format if provided.
+		if(format != ECF_UNKNOWN)
+		{
+			ColorFormat = format;
+			d3dformat = Driver->getD3DFormatFromColorFormat(format);
+			setPitch(d3dformat); // This will likely set pitch to 0 for now.
+		}
+	}
+	else
+	{
+		d3dformat = Driver->getD3DFormatFromColorFormat(ColorFormat);
+	}
 
 	// create texture
 	HRESULT hr;

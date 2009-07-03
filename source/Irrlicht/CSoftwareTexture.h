@@ -61,10 +61,6 @@ public:
 	virtual bool isRenderTarget() const;
 
 private:
-
-	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
-
 	CImage* Image;
 	CImage* Texture;
 	core::dimension2d<u32> OrigSize;

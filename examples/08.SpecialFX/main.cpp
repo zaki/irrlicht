@@ -48,7 +48,7 @@ int main()
 		case 'a': driverType = video::EDT_DIRECT3D9;break;
 		case 'b': driverType = video::EDT_DIRECT3D8;break;
 		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
+		case 'd': driverType = video::EDT_OGLES1; break;
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 1;
@@ -68,6 +68,7 @@ int main()
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
+	scene::ISceneNode* node = 0;
 
 	/*
 	For our environment, we load a .3ds file. It is a small room I modelled
@@ -84,14 +85,18 @@ int main()
 	*/
 
 	scene::IAnimatedMesh* mesh = smgr->getMesh("../../media/room.3ds");
+	if (mesh)
+	{
+		smgr->getMeshManipulator()->makePlanarTextureMapping(mesh->getMesh(0), 0.004f);
 
-	smgr->getMeshManipulator()->makePlanarTextureMapping(mesh->getMesh(0), 0.004f);
-
-	scene::ISceneNode* node = 0;
-
-	node = smgr->addAnimatedMeshSceneNode(mesh);
-	node->setMaterialTexture(0, driver->getTexture("../../media/wall.jpg"));
-	node->getMaterial(0).SpecularColor.set(0,0,0,0);
+		node = smgr->addAnimatedMeshSceneNode(mesh);
+		if (node)
+		{
+			((scene::IAnimatedMeshSceneNode*)node)->addShadowVolumeSceneNode();
+			node->setMaterialTexture(0, driver->getTexture("../../media/wall.jpg"));
+			node->getMaterial(0).SpecularColor.set(0,0,0,0);
+		}
+	}
 
 	/*
 	Now, for the first special effect: Animated water. It works like this:
@@ -104,19 +109,25 @@ int main()
 	want to.
 	*/
 
-	mesh = smgr->addHillPlaneMesh( "myHill",
-		core::dimension2d<f32>(20,20),
-		core::dimension2d<u32>(40,40), 0, 0,
-		core::dimension2d<f32>(0,0),
-		core::dimension2d<f32>(10,10));
+	mesh = 0;//smgr->addHillPlaneMesh( "myHill",
+//		core::dimension2d<f32>(20,20),
+//		core::dimension2d<u32>(40,40), 0, 0,
+//		core::dimension2d<f32>(0,0),
+//		core::dimension2d<f32>(10,10));
 
-	node = smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
-	node->setPosition(core::vector3df(0,7,0));
+	if (mesh)
+	{
+		node = smgr->addWaterSurfaceSceneNode(mesh->getMesh(0), 3.0f, 300.0f, 30.0f);
+		if (node)
+		{
+			node->setPosition(core::vector3df(0,7,0));
 
-	node->setMaterialTexture(0, driver->getTexture("../../media/stones.jpg"));
-	node->setMaterialTexture(1, driver->getTexture("../../media/water.jpg"));
+			node->setMaterialTexture(0, driver->getTexture("../../media/stones.jpg"));
+			node->setMaterialTexture(1, driver->getTexture("../../media/water.jpg"));
 
-	node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
+			node->setMaterialType(video::EMT_REFLECTION_2_LAYER);
+		}
+	}
 
 	/*
 	The second special effect is very basic, I bet you saw it already in
@@ -129,82 +140,23 @@ int main()
 
 	node = smgr->addLightSceneNode(0, core::vector3df(0,0,0),
 		video::SColorf(1.0f, 0.6f, 0.7f, 1.0f), 800.0f);
-	scene::ISceneNodeAnimator* anim = 0;
-	anim = smgr->createFlyCircleAnimator (core::vector3df(0,150,0),250.0f);
-	node->addAnimator(anim);
-	anim->drop();
+	if (node)
+	{
+		scene::ISceneNodeAnimator* anim = 0;
+		anim = smgr->createFlyCircleAnimator (core::vector3df(0,150,0),250.0f);
+		node->addAnimator(anim);
+		anim->drop();
+	}
 
 	// attach billboard to light
 
 	node = smgr->addBillboardSceneNode(node, core::dimension2d<f32>(50, 50));
-	node->setMaterialFlag(video::EMF_LIGHTING, false);
-	node->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
-	node->setMaterialTexture(0, driver->getTexture("../../media/particlewhite.bmp"));
-
-	/*
-	The next special effect is a lot more interesting: A particle system.
-	The particle system in the Irrlicht Engine is quite modular and
-	extensible, but yet easy to use. There is a particle system scene node
-	into which you can put a particle emitter, which makes particles come out
-	of nothing. These emitters are quite flexible and usually have lots of
-	parameters like direction, amount, and color of the particles they
-	create.
-
-	There are different emitters, for example a point emitter which lets
-	particles pop out at a fixed point. If the particle emitters available
-	in the engine are not enough for you, you can easily create your own
-	ones, you'll simply have to create a class derived from the
-	IParticleEmitter interface and attach it to the particle system using
-	setEmitter(). In this example we create a box particle emitter, which
-	creates particles randomly inside a box. The parameters define the box,
-	direction of the particles, minimal and maximal new particles per
-	second, color, and minimal and maximal lifetime of the particles.
-
-	Because only with emitters particle system would be a little bit
-	boring, there are particle affectors which modify particles while
-	they fly around. Affectors can be added to a particle system for
-	simulating additional effects like gravity or wind.
-	The particle affector we use in this example is an affector which
-	modifies the color of the particles: It lets them fade out. Like the
-	particle emitters, additional particle affectors can also be
-	implemented by you, simply derive a class from IParticleAffector and
-	add it with addAffector().
-
-	After we set a nice material to the particle system, we have a cool
-	looking camp fire. By adjusting material, texture, particle emitter,
-	and affector parameters, it is also easily possible to create smoke,
-	rain, explosions, snow, and so on.
-	*/
-
-	// create a particle system
-
-	scene::IParticleSystemSceneNode* ps =
-		smgr->addParticleSystemSceneNode(false);
-
-	scene::IParticleEmitter* em = ps->createBoxEmitter(
-		core::aabbox3d<f32>(-7,0,-7,7,1,7), // emitter size
-		core::vector3df(0.0f,0.06f,0.0f),   // initial direction
-		80,100,                             // emit rate
-		video::SColor(0,255,255,255),       // darkest color
-		video::SColor(0,255,255,255),       // brightest color
-		800,2000,0,                         // min and max age, angle
-		core::dimension2df(10.f,10.f),         // min size
-		core::dimension2df(20.f,20.f));        // max size
-
-	ps->setEmitter(em); // this grabs the emitter
-	em->drop(); // so we can drop it here without deleting it
-
-	scene::IParticleAffector* paf = ps->createFadeOutParticleAffector();
-
-	ps->addAffector(paf); // same goes for the affector
-	paf->drop();
-
-	ps->setPosition(core::vector3df(-70,60,40));
-	ps->setScale(core::vector3df(2,2,2));
-	ps->setMaterialFlag(video::EMF_LIGHTING, false);
-	ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
-	ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
-	ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
+	if (node)
+	{
+		node->setMaterialFlag(video::EMF_LIGHTING, false);
+		node->setMaterialType(video::EMT_TRANSPARENT_ADD_COLOR);
+		node->setMaterialTexture(0, driver->getTexture("../../media/particlewhite.bmp"));
+	}
 
 	/*
 	Next we add a volumetric light node, which adds a glowing fake area light to
@@ -243,6 +195,80 @@ int main()
 
 		// drop the animator because it was created with a create() function
 		glow->drop();
+	}
+
+	/*
+	The next special effect is a lot more interesting: A particle system.
+	The particle system in the Irrlicht Engine is quite modular and
+	extensible, but yet easy to use. There is a particle system scene node
+	into which you can put a particle emitter, which makes particles come out
+	of nothing. These emitters are quite flexible and usually have lots of
+	parameters like direction, amount, and color of the particles they
+	create.
+
+	There are different emitters, for example a point emitter which lets
+	particles pop out at a fixed point. If the particle emitters available
+	in the engine are not enough for you, you can easily create your own
+	ones, you'll simply have to create a class derived from the
+	IParticleEmitter interface and attach it to the particle system using
+	setEmitter(). In this example we create a box particle emitter, which
+	creates particles randomly inside a box. The parameters define the box,
+	direction of the particles, minimal and maximal new particles per
+	second, color, and minimal and maximal lifetime of the particles.
+
+	Because only with emitters particle system would be a little bit
+	boring, there are particle affectors which modify particles while
+	they fly around. Affectors can be added to a particle system for
+	simulating additional effects like gravity or wind.
+	The particle affector we use in this example is an affector which
+	modifies the color of the particles: It lets them fade out. Like the
+	particle emitters, additional particle affectors can also be
+	implemented by you, simply derive a class from IParticleAffector and
+	add it with addAffector().
+
+	After we set a nice material to the particle system, we have a cool
+	looking camp fire. By adjusting material, texture, particle emitter,
+	and affector parameters, it is also easily possible to create smoke,
+	rain, explosions, snow, and so on.
+	*/
+
+	// create a particle system
+
+	scene::IParticleSystemSceneNode* ps = 
+		smgr->addParticleSystemSceneNode(false);
+
+	if (ps)
+	{
+		scene::IParticleEmitter* em = ps->createBoxEmitter(
+			core::aabbox3d<f32>(-7,0,-7,7,1,7), // emitter size
+			core::vector3df(0.0f,0.06f,0.0f),   // initial direction
+			80,100,                             // emit rate
+			video::SColor(0,255,255,255),       // darkest color
+			video::SColor(0,255,255,255),       // brightest color
+			800,2000,0,                         // min and max age, angle
+			core::dimension2df(10.f,10.f),         // min size
+			core::dimension2df(20.f,20.f));        // max size
+
+		if (em)
+		{
+			ps->setEmitter(em); // this grabs the emitter
+			em->drop(); // so we can drop it here without deleting it
+		}
+
+		scene::IParticleAffector* paf = ps->createFadeOutParticleAffector();
+
+		if (paf)
+		{
+			ps->addAffector(paf); // same goes for the affector
+			paf->drop();
+		}
+
+		ps->setPosition(core::vector3df(-70,60,40));
+		ps->setScale(core::vector3df(2,2,2));
+		ps->setMaterialFlag(video::EMF_LIGHTING, false);
+//		ps->setMaterialFlag(video::EMF_ZWRITE_ENABLE, false);
+		ps->setMaterialTexture(0, driver->getTexture("../../media/fire.bmp"));
+		ps->setMaterialType(video::EMT_TRANSPARENT_VERTEX_ALPHA);
 	}
 
 	/*

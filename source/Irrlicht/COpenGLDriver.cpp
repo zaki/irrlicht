@@ -673,7 +673,7 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 
 #if defined(_IRR_USE_SDL_DEVICE_)
 	// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
-	// it would be better if this was fixed elsewhere. 
+	// it would be better if this was fixed elsewhere.
 	glFrontFace(GL_CW);
 #endif
 
@@ -1431,7 +1431,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 	const core::rect<s32> poss(targetPos, sourceSize);
 
 	disableTextures(1);
-	if (!setTexture(0, texture))
+	if (!setActiveTexture(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1484,7 +1484,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture, const core::rect
 	const video::SColor* const useColor = colors ? colors : temp;
 
 	disableTextures(1);
-	setTexture(0, texture);
+	setActiveTexture(0, texture);
 	setRenderStates2DMode(useColor[0].getAlpha()<255 || useColor[1].getAlpha()<255 ||
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
@@ -1541,7 +1541,7 @@ void COpenGLDriver::draw2DImage(const video::ITexture* texture,
 		return;
 
 	disableTextures(1);
-	if (!setTexture(0, texture))
+	if (!setActiveTexture(0, texture))
 		return;
 	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
 
@@ -1693,7 +1693,7 @@ void COpenGLDriver::drawPixel(u32 x, u32 y, const SColor &color)
 	glEnd();
 }
 
-bool COpenGLDriver::setTexture(u32 stage, const video::ITexture* texture)
+bool COpenGLDriver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
 	if (stage >= MaxTextureUnits)
 		return false;
@@ -1734,7 +1734,7 @@ bool COpenGLDriver::disableTextures(u32 fromStage)
 {
 	bool result=true;
 	for (u32 i=fromStage; i<MaxTextureUnits; ++i)
-		result &= setTexture(i, 0);
+		result &= setActiveTexture(i, 0);
 	return result;
 }
 
@@ -2605,6 +2605,16 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 	glStencilMask(~0);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
 
+	GLenum incr = GL_INCR;
+	GLenum decr = GL_DECR;
+#ifdef GL_EXT_stencil_wrap
+	if (FeatureAvailable[IRR_EXT_stencil_wrap])
+	{
+		incr = GL_INCR_WRAP_EXT;
+		decr = GL_DECR_WRAP_EXT;
+	}
+#endif
+
 	// The first parts are not correctly working, yet.
 #if 0
 #ifdef GL_EXT_stencil_two_side
@@ -2621,18 +2631,12 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZPASS Method
 
 			extGlActiveStencilFace(GL_BACK);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR_WRAP_EXT);
-			else
-				glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+				glStencilOp(GL_KEEP, GL_KEEP, decr);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
 			extGlActiveStencilFace(GL_FRONT);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP_EXT);
-			else
-				glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+			glStencilOp(GL_KEEP, GL_KEEP, incr);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
@@ -2643,18 +2647,12 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZFAIL Method
 
 			extGlActiveStencilFace(GL_BACK);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_INCR_WRAP_EXT, GL_KEEP);
-			else
-				glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+			glStencilOp(GL_KEEP, incr, GL_KEEP);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
 			extGlActiveStencilFace(GL_FRONT);
-			if (FeatureAvailable[IRR_EXT_stencil_wrap])
-				glStencilOp(GL_KEEP, GL_DECR_WRAP_EXT, GL_KEEP);
-			else
-				glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+			glStencilOp(GL_KEEP, decr, GL_KEEP);
 			glStencilMask(~0);
 			glStencilFunc(GL_ALWAYS, 0, ~0);
 
@@ -2670,8 +2668,8 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		{
 			// ZPASS Method
 
-			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, GL_DECR);
-			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, GL_INCR);
+			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_KEEP, decr);
+			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_KEEP, incr);
 			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
 			glStencilMask(~0);
 
@@ -2681,8 +2679,8 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 		{
 			// ZFAIL Method
 
-			extGlStencilOpSeparate(GL_BACK, GL_KEEP, GL_INCR, GL_KEEP);
-			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, GL_DECR, GL_KEEP);
+			extGlStencilOpSeparate(GL_BACK, GL_KEEP, incr, GL_KEEP);
+			extGlStencilOpSeparate(GL_FRONT, GL_KEEP, decr, GL_KEEP);
 			extGlStencilFuncSeparate(GL_FRONT_AND_BACK, GL_ALWAYS, 0, ~0);
 
 			glDrawArrays(GL_TRIANGLES,0,count);
@@ -2697,22 +2695,22 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 			// ZPASS Method
 
 			glCullFace(GL_BACK);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+			glStencilOp(GL_KEEP, GL_KEEP, incr);
 			glDrawArrays(GL_TRIANGLES,0,count);
 
 			glCullFace(GL_FRONT);
-			glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+			glStencilOp(GL_KEEP, GL_KEEP, decr);
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
 		else
 		{
 			// ZFAIL Method
 
-			glStencilOp(GL_KEEP, GL_INCR, GL_KEEP);
+			glStencilOp(GL_KEEP, incr, GL_KEEP);
 			glCullFace(GL_FRONT);
 			glDrawArrays(GL_TRIANGLES,0,count);
 
-			glStencilOp(GL_KEEP, GL_DECR, GL_KEEP);
+			glStencilOp(GL_KEEP, decr, GL_KEEP);
 			glCullFace(GL_BACK);
 			glDrawArrays(GL_TRIANGLES,0,count);
 		}
@@ -2943,7 +2941,9 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 }
 
 
-ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
+ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
+					const core::string<c16>& name,
+					const ECOLOR_FORMAT format)
 {
 	//disable mip-mapping
 	bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
@@ -2954,7 +2954,7 @@ ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& si
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 	{
-		rtt = new COpenGLFBOTexture(size, name, this);
+		rtt = new COpenGLFBOTexture(size, name, this, format);
 		if (rtt)
 		{
 			bool success = false;
@@ -3064,7 +3064,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 
 	// check if we should set the previous RT back
 
-	setTexture(0, 0);
+	setActiveTexture(0, 0);
 	ResetRenderStates=true;
 	if (RenderTargetTexture!=0)
 	{

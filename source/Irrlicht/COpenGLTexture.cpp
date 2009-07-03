@@ -99,6 +99,7 @@ ECOLOR_FORMAT COpenGLTexture::getBestColorFormat(ECOLOR_FORMAT format)
 			if (Driver->getTextureCreationFlag(ETCF_ALWAYS_16_BIT) ||
 					Driver->getTextureCreationFlag(ETCF_OPTIMIZED_FOR_SPEED))
 				destFormat = ECF_A1R5G5B5;
+		default:
 		break;
 	}
 	if (Driver->getTextureCreationFlag(ETCF_NO_ALPHA_CHANNEL))
@@ -189,7 +190,7 @@ void COpenGLTexture::copyTexture(bool newTexture)
 			break;
 	}
 
-	Driver->setTexture(0, this);
+	Driver->setActiveTexture(0, this);
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
 
@@ -410,13 +411,13 @@ void COpenGLTexture::regenerateMipMapLevels()
 
 bool COpenGLTexture::isRenderTarget() const
 {
-    return IsRenderTarget;
+	 return IsRenderTarget;
 }
 
 
 void COpenGLTexture::setIsRenderTarget(bool isTarget)
 {
-    IsRenderTarget = isTarget;
+	 IsRenderTarget = isTarget;
 }
 
 
@@ -435,7 +436,7 @@ void COpenGLTexture::bindRTT()
 //! Unbind Render Target Texture
 void COpenGLTexture::unbindRTT()
 {
-	Driver->setTexture(0, this);
+	Driver->setActiveTexture(0, this);
 
 	// Copy Our ViewPort To The Texture
 	glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, getSize().Width, getSize().Height);
@@ -449,8 +450,9 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
-                                const core::string<c16>& name,
-                                COpenGLDriver* driver)
+										  const core::string<c16>& name,
+										  COpenGLDriver* driver,
+								const ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG
@@ -459,9 +461,10 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	ImageSize = size;
 	TextureSize = size;
-	InternalFormat = GL_RGBA;
-	PixelFormat = GL_RGBA;
-	PixelType = GL_UNSIGNED_BYTE;
+
+	GLint FilteringType;
+	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(format, FilteringType, PixelFormat, PixelType);
+
 	HasMipMaps = false;
 	IsRenderTarget = true;
 
@@ -472,8 +475,8 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 
 	// generate color texture
 	glGenTextures(1, &TextureName);
-	Driver->setTexture(0, this);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	Driver->setActiveTexture(0, this);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, FilteringType);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, ImageSize.Width,
@@ -487,6 +490,100 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 						0);
 #endif
 	unbindRTT();
+}
+
+GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT format,
+				GLint& filtering,
+				GLenum& colorformat,
+				GLenum& type)
+{
+	// default
+	filtering = GL_LINEAR;
+	colorformat = GL_RGBA;
+	type = GL_UNSIGNED_BYTE;
+
+	switch(format)
+	{
+		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
+		case ECF_R16F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RED;
+			type = GL_FLOAT;
+
+			return GL_RGB16F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_G16R16F:
+		{
+#ifdef GL_ARB_texture_float
+			// We haven't got support for this type specifically, so we should use RGB for a close match.
+			filtering = GL_NEAREST;
+			colorformat = GL_RGB;
+			type = GL_FLOAT;
+
+			return GL_RGB16F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_A16B16G16R16F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RGBA;
+			type = GL_FLOAT;
+
+			return GL_RGBA16F_ARB;
+#else
+			return GL_RGBA8;
+#endif
+		}
+		case ECF_R32F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RED;
+			type = GL_FLOAT;
+
+			return GL_RGB32F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_G32R32F:
+		{
+#ifdef GL_ARB_texture_float
+			// We haven't got support for this type specifically, so we should use RGB for a close match.
+			filtering = GL_NEAREST;
+			colorformat = GL_RGB;
+			type = GL_FLOAT;
+
+			return GL_RGB32F_ARB;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_A32B32G32R32F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RGBA;
+			type = GL_FLOAT;
+
+			return GL_RGBA32F_ARB;
+#else
+			return GL_RGBA8;
+#endif
+		}
+		default:
+		{
+			return GL_RGBA8;
+		}
+	}
 }
 
 

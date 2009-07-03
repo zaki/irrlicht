@@ -322,11 +322,12 @@ namespace video
 		and it should not be bigger than the backbuffer, because it
 		shares the zbuffer with the screen buffer.
 		\param name An optional name for the RTT.
+		\param format The color format of the render target. Floating point formats are supported.
 		\return Pointer to the created texture or 0 if the texture
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name = "rt" ) =0;
+				const core::string<c16>& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
 		/** This method can free a lot of memory!

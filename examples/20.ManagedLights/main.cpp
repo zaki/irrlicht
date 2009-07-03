@@ -297,7 +297,7 @@ int main(int argumentCount, char * argumentValues[])
 		case 'a': driverType = video::EDT_DIRECT3D9;break;
 		case 'b': driverType = video::EDT_DIRECT3D8;break;
 		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
+		case 'd': driverType = video::EDT_OGLES1; break;
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 0;

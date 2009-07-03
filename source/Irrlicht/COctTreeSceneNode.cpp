@@ -286,10 +286,10 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 
 	MeshName = SceneManager->getMeshCache()->getMeshFilename( mesh );
 
+    mesh->grab();
 	deleteTree();
 
 	Mesh = mesh;
-	Mesh->grab();
 
 	u32 beginTime = os::Timer::getRealTime();
 
@@ -311,7 +311,7 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 				{
 					IMeshBuffer* b = mesh->getMeshBuffer(i);
 
-					if (b->getVertexCount() && b->getIndexCount()) 
+					if (b->getVertexCount() && b->getIndexCount())
 					{
 						Materials.push_back(b->getMaterial());
 
@@ -343,7 +343,7 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 				for ( i=0; i < mesh->getMeshBufferCount(); ++i)
 				{
 					b = mesh->getMeshBuffer(i);
-					if (b->getVertexCount() && b->getIndexCount()) 
+					if (b->getVertexCount() && b->getIndexCount())
 					{
 						meshReserve += 1;
 					}
@@ -355,7 +355,7 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 				{
 					b = mesh->getMeshBuffer(i);
 
-					if (b->getVertexCount() && b->getIndexCount()) 
+					if (b->getVertexCount() && b->getIndexCount())
 					{
 						Materials.push_back(b->getMaterial());
 						LightMapMeshes.push_back(OctTree<video::S3DVertex2TCoords>::SMeshChunk());
@@ -388,7 +388,7 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 				{
 					IMeshBuffer* b = mesh->getMeshBuffer(i);
 
-					if (b->getVertexCount() && b->getIndexCount()) 
+					if (b->getVertexCount() && b->getIndexCount())
 					{
 						Materials.push_back(b->getMaterial());
 						TangentsMeshes.push_back(OctTree<video::S3DVertexTangents>::SMeshChunk());

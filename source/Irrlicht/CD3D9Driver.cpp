@@ -670,7 +670,7 @@ void CD3D9Driver::setTransform(E_TRANSFORMATION_STATE state,
 
 
 //! sets the current Texture
-bool CD3D9Driver::setTexture(s32 stage, const video::ITexture* texture)
+bool CD3D9Driver::setActiveTexture(u32 stage, const video::ITexture* texture)
 {
 	if (CurrentTexture[stage] == texture)
 		return true;
@@ -704,7 +704,7 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 	for (u32 i=0; i<MaxTextureUnits; ++i)
 	{
-		setTexture(i, Material.getTexture(i));
+		setActiveTexture(i, Material.getTexture(i));
 		setTransform((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}
@@ -1283,7 +1283,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 			useColor[2].getAlpha()<255 || useColor[3].getAlpha()<255,
 			true, useAlphaChannelOfTexture);
 
-	setTexture(0, const_cast<video::ITexture*>(texture));
+	setActiveTexture(0, const_cast<video::ITexture*>(texture));
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1320,7 +1320,7 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 	if (!sourceRect.isValid())
 		return;
 
-	if (!setTexture(0, const_cast<video::ITexture*>(texture)))
+	if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
 		return;
 
 	core::position2d<s32> targetPos = pos;
@@ -1470,7 +1470,7 @@ void CD3D9Driver::draw2DRectangle(const core::rect<s32>& position,
 		colorLeftDown.getAlpha() < 255 ||
 		colorRightDown.getAlpha() < 255, false, false);
 
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1495,7 +1495,7 @@ void CD3D9Driver::draw2DLine(const core::position2d<s32>& start,
 						color, 0.0f, 0.0f);
 
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1512,7 +1512,7 @@ void CD3D9Driver::drawPixel(u32 x, u32 y, const SColor & color)
 		return;
 
 	setRenderStates2DMode(color.getAlpha() < 255, false, false);
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
@@ -1885,10 +1885,10 @@ void CD3D9Driver::setRenderStatesStencilShadowMode(bool zfail)
 
 		Transformation3DChanged = false;
 
-		setTexture(0,0);
-		setTexture(1,0);
-		setTexture(2,0);
-		setTexture(3,0);
+		setActiveTexture(0,0);
+		setActiveTexture(1,0);
+		setActiveTexture(2,0);
+		setActiveTexture(3,0);
 
 		pID3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_DISABLE);
 		pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
@@ -2293,7 +2293,7 @@ void CD3D9Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftU
 		leftDownEdge.getAlpha() < 255 ||
 		rightDownEdge.getAlpha() < 255);
 
-	setTexture(0,0);
+	setActiveTexture(0,0);
 
 	setVertexShader(EVT_STANDARD);
 
@@ -2595,11 +2595,11 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 
 
 //! Creates a render target texture.
-ITexture* CD3D9Driver::addRenderTargetTexture(
-		const core::dimension2d<u32>& size,
-		const core::string<c16>& name)
+ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
+											  const core::string<c16>& name,
+											  const ECOLOR_FORMAT format)
 {
-	ITexture* tex = new CD3D9Texture(this, size, name);
+	ITexture* tex = new CD3D9Texture(this, size, name, format);
 	if (tex)
 	{
 		checkDepthBuffer(tex);
@@ -2774,6 +2774,20 @@ D3DFORMAT CD3D9Driver::getD3DFormatFromColorFormat(ECOLOR_FORMAT format) const
 			return D3DFMT_R8G8B8;
 		case ECF_A8R8G8B8:
 			return D3DFMT_A8R8G8B8;
+
+		// Floating Point formats. Thanks to Patryk "Nadro" Nadrowski.
+		case ECF_R16F:
+			return D3DFMT_R16F;
+		case ECF_G16R16F:
+			return D3DFMT_G16R16F;
+		case ECF_A16B16G16R16F:
+			return D3DFMT_A16B16G16R16F;
+		case ECF_R32F:
+			return D3DFMT_R32F;
+		case ECF_G32R32F:
+			return D3DFMT_G32R32F;
+		case ECF_A32B32G32R32F:
+			return D3DFMT_A32B32G32R32F;
 	}
 	return D3DFMT_UNKNOWN;
 }
@@ -2783,19 +2797,33 @@ ECOLOR_FORMAT CD3D9Driver::getColorFormatFromD3DFormat(D3DFORMAT format) const
 {
 	switch(format)
 	{
-	case D3DFMT_X1R5G5B5:
-	case D3DFMT_A1R5G5B5:
-		return ECF_A1R5G5B5;
-	case D3DFMT_A8B8G8R8:
-	case D3DFMT_A8R8G8B8:
-	case D3DFMT_X8R8G8B8:
-		return ECF_A8R8G8B8;
-	case D3DFMT_R5G6B5:
-		return ECF_R5G6B5;
-	case D3DFMT_R8G8B8:
-		return ECF_R8G8B8;
-	default:
-		return (ECOLOR_FORMAT)0;
+		case D3DFMT_X1R5G5B5:
+		case D3DFMT_A1R5G5B5:
+			return ECF_A1R5G5B5;
+		case D3DFMT_A8B8G8R8:
+		case D3DFMT_A8R8G8B8:
+		case D3DFMT_X8R8G8B8:
+			return ECF_A8R8G8B8;
+		case D3DFMT_R5G6B5:
+			return ECF_R5G6B5;
+		case D3DFMT_R8G8B8:
+			return ECF_R8G8B8;
+
+		// Floating Point formats. Thanks to Patryk "Nadro" Nadrowski.
+		case D3DFMT_R16F:
+			return ECF_R16F;
+		case D3DFMT_G16R16F:
+			return ECF_G16R16F;
+		case D3DFMT_A16B16G16R16F:
+			return ECF_A16B16G16R16F;
+		case D3DFMT_R32F:
+			return ECF_R32F;
+		case D3DFMT_G32R32F:
+			return ECF_G32R32F;
+		case D3DFMT_A32B32G32R32F:
+			return ECF_A32B32G32R32F;
+		default:
+			return (ECOLOR_FORMAT)0;
 	};
 }
 

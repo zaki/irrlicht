@@ -18,7 +18,7 @@ namespace irr
 
 //! constructor
 CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
-: IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0), 
+: IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0),
 	Timer(0), CursorControl(0), UserReceiver(params.EventReceiver), Logger(0), Operator(0),
 	FileSystem(0), InputReceivingSceneManager(0), CreationParams(params)
 {
@@ -82,7 +82,7 @@ void CIrrDeviceStub::createGUIAndScene()
 	#ifdef _IRR_COMPILE_WITH_GUI_
 	// create gui environment
 	GUIEnvironment = gui::createGUIEnvironment(FileSystem, VideoDriver, Operator);
-	#endif 
+	#endif
 
 	// create Scene manager
 	SceneManager = scene::createSceneManager(VideoDriver, FileSystem, CursorControl, GUIEnvironment);
@@ -130,7 +130,7 @@ ITimer* CIrrDeviceStub::getTimer()
 }
 
 
-//! Returns the version of the engine. 
+//! Returns the version of the engine.
 const char* CIrrDeviceStub::getVersion() const
 {
 	return IRRLICHT_SDK_VERSION;
@@ -225,16 +225,15 @@ IOSOperator* CIrrDeviceStub::getOSOperator()
 }
 
 
-//! Sets the input receiving scene manager. 
+//! Sets the input receiving scene manager.
 void CIrrDeviceStub::setInputReceivingSceneManager(scene::ISceneManager* sceneManager)
 {
+    if (sceneManager)
+        sceneManager->grab();
 	if (InputReceivingSceneManager)
 		InputReceivingSceneManager->drop();
 
 	InputReceivingSceneManager = sceneManager;
-
-	if (InputReceivingSceneManager)
-		InputReceivingSceneManager->grab();
 }
 
 

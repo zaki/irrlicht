@@ -26,7 +26,7 @@ public:
 
 	//! Get text from the clipboard
 	/** \return Returns 0 if no string is in there. */
-	virtual c8* getTextFromClipboard() const = 0;
+	virtual const c8* getTextFromClipboard() const = 0;
 
 	//! Get the processor speed in megahertz
 	/** \param MHz The integer variable to store the speed in.

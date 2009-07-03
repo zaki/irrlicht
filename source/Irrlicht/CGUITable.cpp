@@ -353,6 +353,7 @@ void* CGUITable::getCellData(u32 rowIndex, u32 columnIndex ) const
 //! clears the list
 void CGUITable::clear()
 {
+    Selected = -1;
 	Rows.clear();
 	Columns.clear();
 
@@ -368,6 +369,7 @@ void CGUITable::clear()
 
 void CGUITable::clearRows()
 {
+    Selected = -1;
 	Rows.clear();
 
 	if (VerticalScrollBar)

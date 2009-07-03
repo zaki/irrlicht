@@ -107,7 +107,7 @@ void CAnimatedMeshSceneNode::buildFrameNr(u32 timeMs)
 		}
 	}
 
-	if ((StartFrame==EndFrame) || (FramesPerSecond==0.f))
+	if ((StartFrame==EndFrame))
 	{
 		CurrentFrameNr = (f32)StartFrame; //Support for non animated meshes
 	}
@@ -210,7 +210,7 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 
 		if (JointMode == EJUOR_CONTROL)//write to mesh
 			skinnedMesh->transferJointsToMesh(JointChildSceneNodes);
-		else 
+		else
 			skinnedMesh->animateMesh(getFrameNr(), 1.0f);
 
 		// Update the skinned mesh for the current joint transforms.
@@ -242,12 +242,12 @@ IMesh * CAnimatedMeshSceneNode::getMeshForCurrentFrame(bool forceRecalcOfControl
 //! OnAnimate() is called just before rendering the whole scene.
 void CAnimatedMeshSceneNode::OnAnimate(u32 timeMs)
 {
-	buildFrameNr(timeMs-LastTimeMs); 
+	buildFrameNr(timeMs-LastTimeMs);
 
 	if ( Mesh )
 	{
 		scene::IMesh * mesh = getMeshForCurrentFrame( true );
-		
+
 		if ( mesh )
 			Box = mesh->getBoundingBox();
 	}
@@ -886,7 +886,7 @@ void CAnimatedMeshSceneNode::updateAbsolutePosition()
 		SMD3QuaternionTag parent ( MD3Special->Tagname );
 		if ( Parent && Parent->getType () == ESNT_ANIMATED_MESH)
 		{
-			const SMD3QuaternionTag * p = ((IAnimatedMeshSceneNode*) Parent)->getMD3TagTransformation 
+			const SMD3QuaternionTag * p = ((IAnimatedMeshSceneNode*) Parent)->getMD3TagTransformation
 									( MD3Special->Tagname );
 
 			if ( p )

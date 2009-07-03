@@ -681,7 +681,7 @@ void CQuake3EventHandler::CreateGUI()
 	gui.VideoDriver->addItem(L"Direct3D 9.0c", EDT_DIRECT3D9 );
 	gui.VideoDriver->addItem(L"Direct3D 8.1", EDT_DIRECT3D8 );
 	gui.VideoDriver->addItem(L"OpenGL 1.5", EDT_OPENGL);
-	gui.VideoDriver->addItem(L"Software Renderer", EDT_SOFTWARE);
+	gui.VideoDriver->addItem(L"Software Renderer", EDT_OGLES1);
 	gui.VideoDriver->addItem(L"Burning's Video (TM) Thomas Alten", EDT_BURNINGSVIDEO);
 	gui.VideoDriver->setSelected ( gui.VideoDriver->getIndexForItemData ( Game->deviceParam.DriverType ) );
 	gui.VideoDriver->setToolTipText ( L"Use a VideoDriver" );
@@ -2092,7 +2092,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 				case 'a': game.deviceParam.DriverType = EDT_DIRECT3D9;break;
 				case 'b': game.deviceParam.DriverType = EDT_DIRECT3D8;break;
 				case 'c': game.deviceParam.DriverType = EDT_OPENGL;   break;
-				case 'd': game.deviceParam.DriverType = EDT_SOFTWARE; break;
+				case 'd': game.deviceParam.DriverType = EDT_OGLES1; break;
 				case 'e': game.deviceParam.DriverType = EDT_BURNINGSVIDEO;break;
 				default: game.retVal = 3; break;
 			}	

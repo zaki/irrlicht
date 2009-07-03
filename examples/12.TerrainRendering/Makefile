@@ -6,8 +6,8 @@ Sources = main.cpp
 
 # general compiler settings
 CPPFLAGS = -I../../include -I/usr/X11R6/include
-CXXFLAGS = -O3 -ffast-math
-#CXXFLAGS = -g -Wall
+#CXXFLAGS = -O3 -ffast-math
+CXXFLAGS = -g -Wall
 
 #default target is Linux
 all: all_linux
@@ -16,8 +16,9 @@ ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
 endif
 
+OGLESLIBS := -L$(HOME)/irrlicht/SDKPackage-ogles1/Builds/OGLES/LinuxPC/Lib -lGLES_CM
 # target specific settings
-all_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L../../lib/Linux -lIrrlicht -lGL -lXxf86vm -lXext -lX11
+all_linux: LDFLAGS = -L/usr/X11R6/lib$(LIBSELECT) -L../../lib/Linux -lIrrlicht $(OGLESLIBS) -lXxf86vm -lXext -lX11
 all_linux clean_linux: SYSTEM=Linux
 all_win32: LDFLAGS = -L../../lib/Win32-gcc -lIrrlicht -lopengl32 -lm
 all_win32 clean_win32: SYSTEM=Win32-gcc

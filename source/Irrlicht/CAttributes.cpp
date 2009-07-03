@@ -1366,6 +1366,12 @@ void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 		Attributes.getLast()->setString(reader->getAttributeValue(L"value"));
 	}
 	else
+	if (element == L"binary")
+	{
+		addBinary(name.c_str(), 0, 0);
+		Attributes.getLast()->setString(reader->getAttributeValue(L"value"));
+	}
+	else
 	if (element == L"color")
 	{
 		addColor(name.c_str(), video::SColor());

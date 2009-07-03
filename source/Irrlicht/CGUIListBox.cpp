@@ -597,6 +597,8 @@ u32 CGUIListBox::addItem(const wchar_t* text, s32 icon)
 
 void CGUIListBox::setSpriteBank(IGUISpriteBank* bank)
 {
+    if ( bank == IconBank )
+        return;
 	if (IconBank)
 		IconBank->drop();
 
@@ -881,6 +883,13 @@ void CGUIListBox::setItemHeight( s32 height )
 {
 	ItemHeight = height;
 	ItemHeightOverride = 1;
+}
+
+
+//! Sets whether to draw the background
+void CGUIListBox::setDrawBackground(bool draw)
+{
+    DrawBack = draw;
 }
 
 

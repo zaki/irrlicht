@@ -154,7 +154,7 @@ void COpenGLSLMaterialRenderer::OnSetMaterial(const video::SMaterial& material,
 		CallBack->OnSetMaterial(material);
 
 	for (u32 i=0; i<MATERIAL_MAX_TEXTURES; ++i)
-		Driver->setTexture(i, material.getTexture(i));
+		Driver->setActiveTexture(i, material.getTexture(i));
 	Driver->setBasicRenderStates(material, lastMaterial, resetAllRenderstates);
 }
 

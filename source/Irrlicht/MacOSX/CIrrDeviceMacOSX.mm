@@ -1342,10 +1342,10 @@ void CIrrDeviceMacOSX::pollJoysticks()
 				result = (*(ActiveJoysticks[joystick].interface))->getElementValue(ActiveJoysticks[joystick].interface, ActiveJoysticks[joystick].axisComp[n].cookie, &hidEvent);
 				if (kIOReturnSuccess == result)
 				{
-					f32 min = -32768.0f;
-					f32 max = 32768.0f;
-					f32 deviceScale = max - min;
-					f32 readScale = (f32)ActiveJoysticks[joystick].axisComp[n].maxRead - (f32)ActiveJoysticks[joystick].axisComp[n].minRead;
+					const f32 min = -32768.0f;
+					const f32 max = 32767.0f;
+					const f32 deviceScale = max - min;
+					const f32 readScale = (f32)ActiveJoysticks[joystick].axisComp[n].maxRead - (f32)ActiveJoysticks[joystick].axisComp[n].minRead;
 
 					if (hidEvent.value < ActiveJoysticks[joystick].axisComp[n].minRead)
 						ActiveJoysticks[joystick].axisComp[n].minRead = hidEvent.value;

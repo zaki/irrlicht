@@ -32,7 +32,8 @@ public:
 		u32 flags, const core::string<c16>& name);
 
 	//! rendertarget constructor
-	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name);
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name,
+		const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! destructor
 	virtual ~CD3D9Texture();
@@ -77,7 +78,7 @@ public:
 private:
 	friend class CD3D9Driver;
 
-	void createRenderTarget();
+	void createRenderTarget(const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! returns the size of a texture which would be the optimize size for rendering it
 	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;

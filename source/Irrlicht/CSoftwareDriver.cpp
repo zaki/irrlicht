@@ -176,7 +176,7 @@ void CSoftwareDriver::setTransform(E_TRANSFORMATION_STATE state, const core::mat
 
 
 //! sets the current Texture
-bool CSoftwareDriver::setTexture(video::ITexture* texture)
+bool CSoftwareDriver::setActiveTexture(u32 stage, video::ITexture* texture)
 {
 	if (texture && texture->getDriverType() != EDT_SOFTWARE)
 	{
@@ -205,7 +205,7 @@ void CSoftwareDriver::setMaterial(const SMaterial& material)
 
 	for (u32 i = 0; i < 1; ++i)
 	{
-		setTexture(Material.getTexture(i));
+		setActiveTexture(i, Material.getTexture(i));
 		setTransform ((E_TRANSFORMATION_STATE) ( ETS_TEXTURE_0 + i ),
 				material.getTextureMatrix(i));
 	}
@@ -236,6 +236,14 @@ bool CSoftwareDriver::endScene()
 	CNullDriver::endScene();
 
 	return Presenter->present(BackBuffer, WindowId, SceneSourceRect);
+}
+
+
+//! returns a device dependent texture from a software surface (IImage)
+//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
+ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+{
+	return new CSoftwareTexture(surface, name);
 }
 
 
@@ -887,7 +895,9 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 
 
 //! Creates a render target texture.
-ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
+ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
+												  const core::string<c16>& name,
+												  const ECOLOR_FORMAT format)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
 	ITexture* tex = new CSoftwareTexture(img, name, true);

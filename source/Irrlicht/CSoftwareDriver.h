@@ -99,9 +99,13 @@ namespace video
 		//! Returns the transformation set by setTransform
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
+		//! returns a device dependent texture from a software surface (IImage)
+		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
+
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name);
+				const core::string<c16>& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
@@ -120,7 +124,7 @@ namespace video
 		void setRenderTarget(video::CImage* image);
 
 		//! sets the current Texture
-		bool setTexture(video::ITexture* texture);
+		bool setActiveTexture(u32 stage, video::ITexture* texture);
 
 		//! switches to a triangle renderer
 		void switchToTriangleRenderer(ETriangleRenderer renderer);

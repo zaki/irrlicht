@@ -90,6 +90,8 @@ void CGUIContextMenu::setSubMenu(u32 index, CGUIContextMenu* menu)
 	if (index >= Items.size())
 		return;
 
+    if (menu)
+        menu->grab();
 	if (Items[index].SubMenu)
 		Items[index].SubMenu->drop();
 
@@ -98,7 +100,6 @@ void CGUIContextMenu::setSubMenu(u32 index, CGUIContextMenu* menu)
 
 	if (Items[index].SubMenu)
 	{
-		menu->grab();
 		menu->AllowFocus = false;
 		if ( Environment->getFocus() == menu )
 		{

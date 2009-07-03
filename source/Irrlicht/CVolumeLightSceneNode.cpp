@@ -118,7 +118,7 @@ void CVolumeLightSceneNode::setSubDivideV (const u32 inV)
 }
 
 
-void CVolumeLightSceneNode::setFootColour(const video::SColor inColor)
+void CVolumeLightSceneNode::setFootColor(const video::SColor inColor)
 {
 	if (inColor != FootColor)
 	{
@@ -128,7 +128,7 @@ void CVolumeLightSceneNode::setFootColour(const video::SColor inColor)
 }
 
 
-void CVolumeLightSceneNode::setTailColour(const video::SColor inColor)
+void CVolumeLightSceneNode::setTailColor(const video::SColor inColor)
 {
 	if (inColor != TailColor)
 	{
@@ -147,8 +147,8 @@ void CVolumeLightSceneNode::serializeAttributes(io::IAttributes* out, io::SAttri
 	out->addInt("subDivideU", SubdivideU);
 	out->addInt("subDivideV", SubdivideV);
 
-	out->addColor("footColour", FootColor);
-	out->addColor("tailColour", TailColor);
+	out->addColor("footColor", FootColor);
+	out->addColor("tailColor", TailColor);
 
 	out->addVector3d("lightDimension", LightDimensions);
 }
@@ -166,8 +166,8 @@ void CVolumeLightSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttr
 	SubdivideV = in->getAttributeAsInt("subDivideV");
 	SubdivideV = core::max_(SubdivideV, 1u);
 
-	FootColor = in->getAttributeAsColor("footColour");
-	TailColor = in->getAttributeAsColor("tailColour");
+	FootColor = in->getAttributeAsColor("footColor");
+	TailColor = in->getAttributeAsColor("tailColor");
 
 	LightDimensions = in->getAttributeAsVector3d("lightDimension");
 

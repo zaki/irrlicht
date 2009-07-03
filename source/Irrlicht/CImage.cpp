@@ -174,6 +174,24 @@ inline void GetClip(AbsRectangle &clipping, video::IImage * t)
 }
 
 /*
+	return alpha in [0;256] Granularity from 32-Bit ARGB
+	add highbit alpha ( alpha > 127 ? + 1 )
+*/
+static inline u32 extractAlpha ( const u32 c )
+{
+	return ( c >> 24 ) + ( c >> 31 );
+}
+
+/*
+	return alpha in [0;255] Granularity and 32-Bit ARGB
+	add highbit alpha ( alpha > 127 ? + 1 )
+*/
+static inline u32 packAlpha ( const u32 c )
+{
+	return (c > 127 ? c - 1 : c) << 24;
+}
+
+/*
 */
 static void RenderLine32_Decal(video::IImage *t,
 				const core::position2d<s32> &p0,
@@ -1020,6 +1038,9 @@ namespace video
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 :Data(0), Size(size), Format(format), DeleteMemory(true)
 {
+	#ifdef _DEBUG
+	setDebugName("CImage");
+	#endif
 	initData();
 }
 
@@ -1389,14 +1410,17 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 		else
 		{
 			u8* tgtpos = (u8*) target;
-			u8* dstpos = (u8*) Data;
+			u8* srcpos = (u8*) Data;
 			const u32 bwidth = width*bpp;
+			const u32 rest = pitch-bwidth;
 			for (u32 y=0; y<height; ++y)
 			{
-				memcpy(target, Data, height*pitch);
-				memset(tgtpos+width, 0, pitch-bwidth);
+				// copy scanline
+				memcpy(tgtpos, srcpos, bwidth);
+				// clear pitch
+				memset(tgtpos+bwidth, 0, rest);
 				tgtpos += pitch;
-				dstpos += Pitch;
+				srcpos += Pitch;
 			}
 			return;
 		}

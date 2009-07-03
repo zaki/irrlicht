@@ -230,24 +230,6 @@ inline u32 PixelLerp32 ( const u32 source, const u32 value )
 }
 
 /*
-	return alpha in [0;256] Granularity rom 32-Bit ARGB
-	add highbit alpha ( alpha > 127 ? + 1 )
-*/
-inline u32 extractAlpha ( const u32 c )
-{
-	return ( c >> 24 ) + ( c >> 31 );
-}
-
-/*
-	return alpha in [0;255] Granularity and 32-Bit ARGB
-	add highbit alpha ( alpha > 127 ? + 1 )
-*/
-inline u32 packAlpha ( const u32 c )
-{
-	return (c > 127 ? c - 1 : c) << 24;
-}
-
-/*
 	Pixel = c0 * (c1/31). c0 Alpha retain
 */
 inline u16 PixelMul16 ( const u16 c0, const u16 c1)

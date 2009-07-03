@@ -118,15 +118,15 @@ core::vector3df CSceneNodeAnimatorCollisionResponse::getEllipsoidTranslation() c
 //! the scene node may collide.
 void CSceneNodeAnimatorCollisionResponse::setWorld(ITriangleSelector* newWorld)
 {
+	if (newWorld)
+		newWorld->grab();
+
 	if (World)
 		World->drop();
 
 	World = newWorld;
-	if (World)
-		World->grab();
 
 	FirstUpdate = true;
-
 }
 
 
@@ -188,7 +188,7 @@ void CSceneNodeAnimatorCollisionResponse::animateNode(ISceneNode* node, u32 time
 		CollisionResultPosition
 			= SceneManager->getSceneCollisionManager()->getCollisionResultPosition(
 				World, LastPosition-Translation,
-				Radius, vel, CollisionTriangle, CollisionPoint, f, 
+				Radius, vel, CollisionTriangle, CollisionPoint, f,
 				CollisionNode, SlidingSpeed, FallingVelocity);
 
 		CollisionOccurred = (CollisionTriangle != RefTriangle);
@@ -265,14 +265,17 @@ ISceneNodeAnimator* CSceneNodeAnimatorCollisionResponse::createClone(ISceneNode*
 	if (!newManager) newManager = SceneManager;
 
 	CSceneNodeAnimatorCollisionResponse * newAnimator =
-		new CSceneNodeAnimatorCollisionResponse(newManager, World, Object, Radius, (Gravity * 1000.0f), Translation,
-													SlidingSpeed);
+		new CSceneNodeAnimatorCollisionResponse(newManager, World, Object, Radius,
+				(Gravity * 1000.0f), Translation, SlidingSpeed);
 
 	return newAnimator;
 }
 
 void CSceneNodeAnimatorCollisionResponse::setCollisionCallback(ICollisionCallback* callback)
 {
+	if ( CollisionCallback == callback )
+		return;
+
 	if (CollisionCallback)
 		CollisionCallback->drop();
 

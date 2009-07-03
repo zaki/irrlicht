@@ -74,8 +74,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	{
 		const char* t = reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS));
-		const size_t len = strlen(t);
-		c8 *str = new c8[len+1];
+		size_t len = 0;
+		c8 *str = 0;
+		if (t)
+		{
+			len = strlen(t);
+			str = new c8[len+1];
+		}
 		c8* p = str;
 
 		for (size_t i=0; i<len; ++i)
@@ -199,8 +204,9 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	#ifndef _IRR_GETPROCADDRESS_WORKAROUND_
 	__GLXextFuncPtr (*IRR_OGL_LOAD_EXTENSION)(const GLubyte*)=0;
 	#ifdef GLX_VERSION_1_4
-		int major,minor;
-		glXQueryVersion(glXGetCurrentDisplay(), &major, &minor);
+		int major=0,minor=0;
+		if (glXGetCurrentDisplay())
+			glXQueryVersion(glXGetCurrentDisplay(), &major, &minor);
 		if ((major>1) || (minor>3))
 			IRR_OGL_LOAD_EXTENSION=glXGetProcAddress;
 		else

@@ -70,9 +70,9 @@ ISceneNode* CSceneCollisionManager::getSceneNodeFromRayBB(const core::line3d<f32
 
 
 //! recursive method for going through all scene nodes
-void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root, core::line3df& ray,
-			s32 bits, bool bNoDebugObjects,
-			f32& outbestdistance, ISceneNode*& outbestnode)
+void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
+		core::line3df& ray, s32 bits, bool bNoDebugObjects,
+		f32& outbestdistance, ISceneNode*& outbestnode)
 {
 	const core::list<ISceneNode*>& children = root->getChildren();
 	const core::vector3df rayVector = ray.getVector().normalize();
@@ -149,9 +149,10 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root, core::line3df& ra
 
 					core::vector3df intersection;
 					core::plane3df facePlane;
+					f32 bestDistToBoxBorder = FLT_MAX;
+					f32 bestToIntersectionSq = FLT_MAX;
 
-					bool gotHit = false;
-					for(s32 face = 0; face < 6 && !gotHit; ++face)
+                    for(s32 face = 0; face < 6; ++face)
 					{
 						facePlane.setPlane(edges[faceEdges[face][0]],
 											edges[faceEdges[face][1]],
@@ -170,21 +171,18 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root, core::line3df& ra
 							if(toIntersectionSq < outbestdistance)
 							{
 								// We have to check that the intersection with this plane is actually
-								// on the box, so need to go back to object space again.  We also
-								// need to move the intersection very slightly closer to the centre of
-								// the box to take into account fp precision losses, since the intersection
-								// will axiomatically be on the very edge of the box.
+								// on the box, so need to go back to object space again.
 								worldToObject.transformVect(intersection);
-								intersection *= 0.99f;
 
-								if(objectBox.isPointInside(intersection))
-								{
-									outbestdistance = toIntersectionSq;
-									outbestnode = current;
-
-									// We can only hit one face, so stop checking now.
-									gotHit = true;
-								}
+                                // find the closes point on the box borders. Have to do this as exact checks will fail due to floating point problems.
+								f32 distToBorder = core::max_ ( core::min_ (core::abs_(objectBox.MinEdge.X-intersection.X), core::abs_(objectBox.MaxEdge.X-intersection.X)),
+                                                                core::min_ (core::abs_(objectBox.MinEdge.Y-intersection.Y), core::abs_(objectBox.MaxEdge.Y-intersection.Y)),
+                                                                core::min_ (core::abs_(objectBox.MinEdge.Z-intersection.Z), core::abs_(objectBox.MaxEdge.Z-intersection.Z)) );
+                                if ( distToBorder < bestDistToBoxBorder )
+                                {
+                                    bestDistToBoxBorder = distToBorder;
+                                    bestToIntersectionSq = toIntersectionSq;
+                                }
 							}
 						}
 
@@ -194,9 +192,14 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root, core::line3df& ra
 							++face;
 					}
 
-					// If we got a hit, we can now truncate the ray to stop us hitting further nodes.
-					if (gotHit)
-						ray.end = ray.start + (rayVector * sqrtf(outbestdistance));
+					if ( bestDistToBoxBorder < FLT_MAX )
+					{
+                        outbestdistance = bestToIntersectionSq;
+						outbestnode = current;
+
+                        // If we got a hit, we can now truncate the ray to stop us hitting further nodes.
+                        ray.end = ray.start + (rayVector * sqrtf(outbestdistance));
+					}
 				}
 			}
 
@@ -779,7 +782,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 		return pos + vel;
 
 	// original destination point
-	core::vector3df destinationPoint = pos + vel;
+	const core::vector3df destinationPoint = pos + vel;
 	core::vector3df newBasePoint = pos;
 
 	// only update if we are not already very close
@@ -797,9 +800,8 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	// calculate sliding plane
 
-	core::vector3df slidePlaneOrigin = colData.intersectionPoint;
-	core::vector3df slidePlaneNormal = newBasePoint - colData.intersectionPoint;
-	slidePlaneNormal.normalize();
+	const core::vector3df slidePlaneOrigin = colData.intersectionPoint;
+	const core::vector3df slidePlaneNormal = (newBasePoint - colData.intersectionPoint).normalize();
 	core::plane3d<f32> slidingPlane(slidePlaneOrigin, slidePlaneNormal);
 
 	core::vector3df newDestinationPoint =
@@ -808,7 +810,7 @@ core::vector3df CSceneCollisionManager::collideWithWorld(s32 recursionDepth,
 
 	// generate slide vector
 
-	core::vector3df newVelocityVector = newDestinationPoint -
+	const core::vector3df newVelocityVector = newDestinationPoint -
 		colData.intersectionPoint;
 
 	if (newVelocityVector.getLength() < veryCloseDistance)

@@ -11,30 +11,23 @@
 	#include <SDL/SDL_endian.h>
 	#define bswap_16(X) SDL_Swap16(X)
 	#define bswap_32(X) SDL_Swap32(X)
-#elif defined(_IRR_WINDOWS_API_)
-	#if (defined(_MSC_VER) && (_MSC_VER > 1298))
-		#include <stdlib.h>
-		#define bswap_16(X) _byteswap_ushort(X)
-		#define bswap_32(X) _byteswap_ulong(X)
-	#else
-		#define bswap_16(X) ((((X)&0xFF) << 8) | (((X)&=0xFF00) >> 8))
-		#define bswap_32(X) ( (((X)&0x000000FF)<<24) | (((X)&0xFF000000) >> 24) | (((X)&0x0000FF00) << 8) | (((X) &0x00FF0000) >> 8))
-	#endif
+#elif defined(_IRR_WINDOWS_API_) && defined(_MSC_VER) && (_MSC_VER > 1298)
+	#include <stdlib.h>
+	#define bswap_16(X) _byteswap_ushort(X)
+	#define bswap_32(X) _byteswap_ulong(X)
+#elif defined(_IRR_OSX_PLATFORM_)
+	#include <libkern/OSByteOrder.h>
+	#define bswap_16(X) OSReadSwapInt16(&X,0)
+	#define bswap_32(X) OSReadSwapInt32(&X,0)
+#elif defined(__FreeBSD__)
+	#include <sys/endian.h>
+	#define bswap_16(X) bswap16(X)
+	#define bswap_32(X) bswap32(X)
+#elif !defined(_IRR_SOLARIS_PLATFORM_) && !defined(__PPC__) && !defined(_IRR_WINDOWS_API_)
+	#include <byteswap.h>
 #else
-	#if defined(_IRR_OSX_PLATFORM_)
-		#include <libkern/OSByteOrder.h>
-		#define bswap_16(X) OSReadSwapInt16(&X,0)
-		#define bswap_32(X) OSReadSwapInt32(&X,0)
-	#elif defined(__FreeBSD__)
-		#include <sys/endian.h>
-		#define bswap_16(X) bswap16(X)
-		#define bswap_32(X) bswap32(X)
-	#elif !defined(_IRR_SOLARIS_PLATFORM_) && !defined(__PPC__)
-		#include <byteswap.h>
-	#else
-		#define bswap_16(X) ((((X)&0xFF) << 8) | (((X)&=0xFF00) >> 8))
-		#define bswap_32(X) ( (((X)&0x000000FF)<<24) | (((X)&0xFF000000) >> 24) | (((X)&0x0000FF00) << 8) | (((X) &0x00FF0000) >> 8))
-	#endif
+	#define bswap_16(X) ((((X)&0xFF) << 8) | (((X)&0xFF00) >> 8))
+	#define bswap_32(X) ( (((X)&0x000000FF)<<24) | (((X)&0xFF000000) >> 24) | (((X)&0x0000FF00) << 8) | (((X) &0x00FF0000) >> 8))
 #endif
 
 namespace irr

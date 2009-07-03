@@ -57,6 +57,8 @@ int main(int argumentCount, char * arguments[])
 	// process.
 
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
+	TEST(filesystem);
+	TEST(zipReader);
 	TEST(exports);
 	TEST(sceneCollisionManager);
 	TEST(testVector3d);

@@ -46,7 +46,7 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
+					<Add after="cmd /c move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Win32 - Release - accurate math - dll">
@@ -87,7 +87,7 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
+					<Add after="cmd /c move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Win32 - Release - fast math - dll">
@@ -129,7 +129,7 @@
 					<Add library="winmm" />
 				</Linker>
 				<ExtraCommands>
-					<Add after="move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
+					<Add after="cmd /c move ..\..\lib\Win32-gcc\Irrlicht.dll ..\..\bin\Win32-gcc\Irrlicht.dll" />
 				</ExtraCommands>
 			</Target>
 			<Target title="Win32 - Debug - static">

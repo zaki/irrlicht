@@ -141,12 +141,12 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	};
 	const SLightParticle lightParticle[] =
 	{
-		//LIGHT_GLOBAL,0,
-		LIGHT_RED,0,
-		LIGHT_BLUE,0,
-		LIGHT_RED,1,
-		LIGHT_BLUE,1,
-		LIGHT_NONE,0
+		//{LIGHT_GLOBAL,0,
+		{LIGHT_RED,0},
+		{LIGHT_BLUE,0},
+		{LIGHT_RED,1},
+		{LIGHT_BLUE,1},
+		{LIGHT_NONE,0}
 	};
 
 	const SLightParticle *l = lightParticle;
@@ -256,7 +256,7 @@ bool CMainMenu::run(bool& outFullscreen, bool& outMusic, bool& outShadows,
 	case 1:	outDriver = video::EDT_DIRECT3D8; break;
 	case 2:	outDriver = video::EDT_DIRECT3D9; break;
 	case 3:	outDriver = video::EDT_BURNINGSVIDEO; break;
-	case 4:	outDriver = video::EDT_SOFTWARE; break;
+	case 4:	outDriver = video::EDT_OGLES1; break;
 	}
 
 	return start;

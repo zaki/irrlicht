@@ -117,6 +117,10 @@ namespace gui
 		void inputChar(wchar_t c);
 		//! calculates the current scroll position
 		void calculateScrollPos();
+		//! send some gui event to parent
+		void sendGuiEvent(EGUI_EVENT_TYPE type);
+		//! set text markers
+		void setTextMarkers(s32 begin, s32 end);
 
 		bool processKey(const SEvent& event);
 		bool processMouse(const SEvent& event);

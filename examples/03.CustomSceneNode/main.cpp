@@ -70,14 +70,15 @@ public:
 	{
 		Material.Wireframe = false;
 		Material.Lighting = false;
+		Material.Thickness=0.f;
 
-		Vertices[0] = video::S3DVertex(0,0,10, 1,1,0,
+		Vertices[0] = video::S3DVertex(0,0,10, 5,1,0,
 				video::SColor(255,0,255,255), 0, 1);
-		Vertices[1] = video::S3DVertex(10,0,-10, 1,0,0,
+		Vertices[1] = video::S3DVertex(10,0,-10, 10,0,0,
 				video::SColor(255,255,0,255), 1, 1);
-		Vertices[2] = video::S3DVertex(0,20,0, 0,1,1,
+		Vertices[2] = video::S3DVertex(0,20,0, 20,1,1,
 				video::SColor(255,255,255,0), 1, 0);
-		Vertices[3] = video::S3DVertex(-10,0,-10, 0,0,1,
+		Vertices[3] = video::S3DVertex(-10,0,-10, 40,0,1,
 				video::SColor(255,0,255,0), 0, 0);
 
 	/*
@@ -131,7 +132,7 @@ public:
 
 		driver->setMaterial(Material);
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
-		driver->drawIndexedTriangleList(&Vertices[0], 4, &indices[0], 4);
+		driver->drawVertexPrimitiveList(&Vertices[0], 4, &indices[0], 4, video::EVT_STANDARD, scene::EPT_POINTS);
 	}
 
 	/*
@@ -183,7 +184,7 @@ int main()
 		case 'a': driverType = video::EDT_DIRECT3D9;break;
 		case 'b': driverType = video::EDT_DIRECT3D8;break;
 		case 'c': driverType = video::EDT_OPENGL;   break;
-		case 'd': driverType = video::EDT_SOFTWARE; break;
+		case 'd': driverType = video::EDT_OGLES1; break;
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 0;
