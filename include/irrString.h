@@ -473,7 +473,7 @@ public:
 	//! compares the first n characters of the strings
 	/** \param other Other string to compare.
 	\param n Number of characters to compare
-	\return True if the n first characters of this string are smaller. */
+	\return True if the n first characters of both strings are equal. */
 	bool equalsn(const string<T>& other, u32 n) const
 	{
 		u32 i;
@@ -490,7 +490,7 @@ public:
 	//! compares the first n characters of the strings
 	/** \param str Other string to compare.
 	\param n Number of characters to compare
-	\return True if the n first characters of this string are smaller. */
+	\return True if the n first characters of both strings are equal. */
 	bool equalsn(const T* const str, u32 n) const
 	{
 		if (!str)
