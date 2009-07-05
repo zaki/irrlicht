@@ -245,6 +245,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		if ( event.KeyInput.Char == '\\' )
 		{
 			inputChar(event.KeyInput.Char);
+			return true;
 		}
 
 		switch(event.KeyInput.Key)
@@ -437,6 +438,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		if (MultiLine)
 		{
 			inputChar(L'\n');
+			return true;
 		}
 		else
 		{
@@ -658,7 +660,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 
 	default:
 		inputChar(event.KeyInput.Char);
-		break;
+		return true;
 	}
 
     // Set new text markers
@@ -1293,6 +1295,7 @@ void CGUIEditBox::inputChar(wchar_t c)
 	}
 	breakText();
 	sendGuiEvent(EGET_EDITBOX_CHANGED);
+	calculateScrollPos();
 }
 
 
