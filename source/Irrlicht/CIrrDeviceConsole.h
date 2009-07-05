@@ -241,10 +241,17 @@ namespace gui
 			const core::rect<s32>* clip=0)
 		{
 			core::rect<s32> Area = clip ? *clip : position;
+			
+			if (Area.UpperLeftCorner.X < 0)
+				Area.UpperLeftCorner.X = 0;
+
+			if (Area.UpperLeftCorner.Y < 0)
+				Area.UpperLeftCorner.Y = 0;
+
 			core::position2d<s16> pos;
 
 			// centre vertically
-			pos.Y = vcenter ? (Area.UpperLeftCorner.Y + Area.LowerRightCorner.Y) / 2 : Area.UpperLeftCorner.Y;
+			pos.Y = vcenter ? (position.UpperLeftCorner.Y + position.LowerRightCorner.Y) / 2 : position.UpperLeftCorner.Y;
 			
 			// nothing to display?
 			if (pos.Y < Area.UpperLeftCorner.Y || pos.Y > Area.LowerRightCorner.Y)
@@ -253,17 +260,29 @@ namespace gui
 			tempText = text;
 
 			// centre horizontally
-			pos.X = hcenter ? Area.getCenter().X - ( tempText.size() / 2) : Area.UpperLeftCorner.X;
+			pos.X = hcenter ? position.getCenter().X - ( tempText.size() / 2) : position.UpperLeftCorner.X;
 			
 			// clip
-			//if (pos.X < Area.UpperLeftCorner.X)
-			//{
-				// nothing to display?
-			//	if (pos.X
-			//}
+			u32 xlclip = 0,
+				xrclip = 0;
 
-			// todo: clip, centre
-			Device->addPostPresentText(pos.X, pos.Y, text);
+			// get right clip
+			if (pos.X + (s32)tempText.size() > Area.LowerRightCorner.X)
+				xrclip = Area.LowerRightCorner.X - pos.X;
+
+			// get left clip
+			if (pos.X < Area.UpperLeftCorner.X)
+				xlclip = Area.UpperLeftCorner.X - pos.X;
+
+			// totally clipped?
+			if ((s32)tempText.size() - xlclip - xrclip < 0)
+				return;
+
+			// null terminate the string
+			if (xrclip > 0)
+				tempText[xrclip] = L'\0';
+
+			Device->addPostPresentText(pos.X + xlclip, pos.Y, &(tempText.c_str()[xlclip]));
 		}
 
 		//! Calculates the dimension of some text.
