@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - Fix highlighting in IGUIEditBox where kerning pairs are used in the font. For example in future italic, OS or other custom fonts.
+
  - IOSOperator::getTextFromClipboard returns now const c8* instead of c8* 
 
  - Support for copy&paste on linux (X11) added (fixing bug 2804014 found by Pan)

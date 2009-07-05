@@ -803,6 +803,12 @@ void CGUIEditBox::draw()
 						// highlight start is on this line
 						s = txtLine->subString(0, realmbgn - startPos);
 						mbegin = font->getDimension(s.c_str()).Width;
+
+						// deal with kerning
+						mbegin += font->getKerningWidth( 
+							&((*txtLine)[realmbgn - startPos]), 
+							realmbgn - startPos > 0 ? &((*txtLine)[realmbgn - startPos - 1]) : 0);   
+
 						lineStartPos = realmbgn - startPos;
 					}
 					if (i == hlineStart + hlineCount - 1)
@@ -846,7 +852,8 @@ void CGUIEditBox::draw()
 			startPos = BrokenTextPositions[cursorLine];
 		}
 		s = txtLine->subString(0,CursorPos-startPos);
-		charcursorpos = font->getDimension(s.c_str()).Width;
+		charcursorpos = font->getDimension(s.c_str()).Width + 
+			font->getKerningWidth(L"_", CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
 
 		if (focus && (os::Timer::getTime() - BlinkStartTime) % 700 < 350)
 		{
