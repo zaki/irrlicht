@@ -364,7 +364,7 @@ inline u32 getTextureSizeFromSurfaceSize(u32 size)
 			{
 				// turn mip-mapping off
 				bool b = Device->getVideoDriver()->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
-				currentImages[currentImage] = Device->getVideoDriver()->createImageFromData((video::ECOLOR_FORMAT)cformat, core::dimension2d<s32>(textureWidth,texHeight), (void*)lpBits);
+				currentImages[currentImage] = Device->getVideoDriver()->createImageFromData((video::ECOLOR_FORMAT)cformat, core::dimension2d<u32>(textureWidth,texHeight), (void*)lpBits);
 				Device->getVideoDriver()->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS,b);
 			}
 			else
