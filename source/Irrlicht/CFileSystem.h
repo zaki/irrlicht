@@ -46,7 +46,8 @@ public:
 	virtual IWriteFile* createAndWriteFile(const core::string<c16>& filename, bool append=false);
 
 	//! Adds an archive to the file system.
-	virtual bool registerFileArchive( const core::string<c16>& filename, bool ignoreCase = true, bool ignorePaths = true);
+	virtual bool addFileArchive(const core::string<c16>& filename, bool ignoreCase = true, 
+		bool ignorePaths = true, E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN);
 
 	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
 	virtual bool moveFileArchive( u32 sourceIndex, s32 relative );
@@ -61,10 +62,10 @@ public:
 	virtual IFileArchive* getFileArchive(u32 index);
 
 	//! removes an archive from the file system.
-	virtual bool unregisterFileArchive(u32 index);
+	virtual bool removeFileArchive(u32 index);
 
 	//! removes an archive from the file system.
-	virtual bool unregisterFileArchive(const core::string<c16>& filename);
+	virtual bool removeFileArchive(const core::string<c16>& filename);
 
 	//! Returns the string of the current working directory
 	virtual const core::string<c16>& getWorkingDirectory();

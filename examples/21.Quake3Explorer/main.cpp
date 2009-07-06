@@ -848,9 +848,9 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 			}
 		}
 
-		if ( !exists )
+		if (!exists)
 		{
-			fs->registerFileArchive ( archiveName, true, false );
+			fs->addFileArchive(archiveName, true, false);
 		}
 	}
 
@@ -866,7 +866,26 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 
 			u32 index = gui.ArchiveList->addRow(i);
 
-			gui.ArchiveList->setCellText ( index, 0, archive->getArchiveType () );
+			core::stringw typeName;
+			switch(archive->getType())
+			{
+			case io::EFAT_ZIP:
+				typeName = "ZIP";
+				break;
+			case io::EFAT_FOLDER:
+				typeName = "Mount";
+				break;
+			case io::EFAT_PAK:
+				typeName = "PAK";
+				break;
+			case io::EFAT_TAR:
+				typeName = "TAR";
+				break;
+			default:
+				typeName = "archive";
+			}
+
+			gui.ArchiveList->setCellText ( index, 0, typeName );
 			gui.ArchiveList->setCellText ( index, 1, archive->getArchiveName () );
 		}
 	}
@@ -1327,7 +1346,7 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 		else
 		if ( eve.GUIEvent.Caller == gui.ArchiveRemove && eve.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
 		{
-			Game->Device->getFileSystem()->unregisterFileArchive ( gui.ArchiveList->getSelected () );
+			Game->Device->getFileSystem()->removeFileArchive( gui.ArchiveList->getSelected() );
 			Game->CurrentMapName = "";
 			AddArchive ( "" );
 		}

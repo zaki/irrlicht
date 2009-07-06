@@ -30,7 +30,7 @@ namespace irr
 namespace io
 {
 
-CFileList::CFileList( const c8 * param)
+CFileList::CFileList(const c8 * param)
 {
 	#ifdef _DEBUG
 	setDebugName("CFileList");
@@ -43,11 +43,11 @@ CFileList::CFileList( const c8 * param)
 
 CFileList::~CFileList()
 {
-	Files.clear ();
+	Files.clear();
 }
 
 
-void CFileList::constructNative ()
+void CFileList::constructNative()
 {
 	// --------------------------------------------
 	// Windows version

@@ -142,6 +142,9 @@ namespace io
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
 		virtual io::IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
 
+		//! Returns the type of archive created by this loader
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_ZIP; }
+
 	private:
 		io::IFileSystem* FileSystem;
 	};
@@ -159,10 +162,10 @@ namespace io
 		virtual ~CZipReader();
 
 		//! opens a file by file name
-		virtual IReadFile* openFile(const core::string<c16>& filename);
+		virtual IReadFile* createAndOpenFile(const core::string<c16>& filename);
 
 		//! opens a file by index
-		virtual IReadFile* openFile(s32 index);
+		virtual IReadFile* createAndOpenFile(u32 index);
 
 		//! returns count of files in archive
 		virtual u32 getFileCount() const;
@@ -177,7 +180,7 @@ namespace io
 		virtual const core::string<c16>& getArchiveName ();
 
 		//! get the class Type
-		virtual const core::string<c16>& getArchiveType() { return Type; }
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_ZIP; }
 
 	private:
 		
@@ -197,7 +200,6 @@ namespace io
 		bool IgnorePaths;
 		core::array<SZipFileEntry> FileList;
 
-		core::string<c16> Type;
 		core::string<c16> Base;
 	};
 
@@ -232,6 +234,9 @@ namespace io
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
 		virtual IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
 
+		//! Returns the type of archive created by this loader
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_FOLDER; }
+
 	private:
 		io::IFileSystem* FileSystem;
 	};
@@ -245,10 +250,13 @@ namespace io
 				bool ignoreCase, bool ignorePaths);
 
 		//! opens a file by file name
-		virtual IReadFile* openFile(const core::string<c16>& filename);
+		virtual IReadFile* createAndOpenFile(const core::string<c16>& filename);
 
 		//! returns fileindex
 		virtual s32 findFile(const core::string<c16>& filename);
+
+		//! get the class Type
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_FOLDER; }
 
 	private:
 

@@ -20,6 +20,25 @@ enum EFileSystemType
 	FILESYSTEM_VIRTUAL,	// Virtual FileSystem
 };
 
+//! Contains the different types of archives
+enum E_FILE_ARCHIVE_TYPE
+{
+	//! A ZIP archive
+	EFAT_ZIP     = MAKE_IRR_ID('Z','I','P', 0),
+
+	//! A virtual directory
+	EFAT_FOLDER  = MAKE_IRR_ID('f','l','d','r'),
+
+	//! A Windows PAK file
+	EFAT_PAK     = MAKE_IRR_ID('P','A','K', 0),
+	
+	//! A Tape ARchive file
+	EFAT_TAR     = MAKE_IRR_ID('T','A','R', 0),
+
+	//! The type of this archive is unknown
+	EFAT_UNKNOWN = MAKE_IRR_ID('u','n','k','n')
+};
+
 
 //! Base Info which all File archives must support on browsing
 struct IFileArchiveEntry
@@ -50,14 +69,14 @@ struct IFileArchive : public virtual IReferenceCounted
 	//! return the id of the file Archive
 	virtual const core::string<c16>& getArchiveName() =0;
 
-	//! get the class Type
-	virtual const core::string<c16>& getArchiveType() =0;
+	//! get the archive type
+	virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_UNKNOWN; }
 
 	//! opens a file by file name
-	virtual IReadFile* openFile(const core::string<c16>& filename) =0;
+	virtual IReadFile* createAndOpenFile(const core::string<c16>& filename) =0;
 
 	//! opens a file by position
-	virtual IReadFile* openFile(s32 index) =0;
+	virtual IReadFile* createAndOpenFile(u32 index) =0;
 
 	//! returns fileindex
 	virtual s32 findFile(const core::string<c16>& filename) =0;
@@ -98,6 +117,11 @@ struct IArchiveLoader : public virtual IReferenceCounted
 	/** \param file File handle to check.
 	\return Pointer to newly created archive, or 0 upon error. */
 	virtual IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const =0;
+
+	//! Returns the type of archive created by this loader
+	/** When creating your own archive loaders you must specifiy a new unique type identifier. 
+	You can use the MAKE_IRR_ID macro to generate an identifier based on a four character code */
+	virtual E_FILE_ARCHIVE_TYPE getType() const =0;
 };
 
 

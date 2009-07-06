@@ -194,21 +194,24 @@ bool CPakReader::scanLocalHeader()
 
 
 //! opens a file by file name
-IReadFile* CPakReader::openFile(const core::string<c16>& filename)
+IReadFile* CPakReader::createAndOpenFile(const core::string<c16>& filename)
 {
 	s32 index = findFile(filename);
 
 	if (index != -1)
-		return openFile(index);
+		return createAndOpenFile(index);
 
 	return 0;
 }
 
 
 //! opens a file by index
-IReadFile* CPakReader::openFile(s32 index)
+IReadFile* CPakReader::createAndOpenFile(u32 index)
 {
-	return createLimitReadFile(FileList[index].simpleFileName, File, FileList[index].pos, FileList[index].length);
+	if (index < FileList.size())
+		return createLimitReadFile(FileList[index].simpleFileName, File, FileList[index].pos, FileList[index].length);
+	else
+		return 0;
 }
 
 
