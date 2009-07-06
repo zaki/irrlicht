@@ -19,7 +19,7 @@ namespace io
 		so that it may only start from a certain file position
 		and may only read until a certain file position.
 		This can be useful, for example for reading uncompressed files
-		in an archive (zip).
+		in an archive (zip, tar).
 	!*/
 	class CLimitReadFile : public IReadFile
 	{

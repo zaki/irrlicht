@@ -57,6 +57,9 @@ namespace io
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
 		virtual io::IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
 
+		//! Returns the type of archive created by this loader
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_PAK; }
+
 	private:
 		io::IFileSystem* FileSystem;
 	};
@@ -71,10 +74,10 @@ namespace io
 		virtual ~CPakReader();
 
 		//! opens a file by file name
-		virtual IReadFile* openFile(const core::string<c16>& filename);
+		virtual IReadFile* createAndOpenFile(const core::string<c16>& filename);
 
 		//! opens a file by index
-		virtual IReadFile* openFile(s32 index);
+		virtual IReadFile* createAndOpenFile(u32 index);
 
 		//! returns count of files in archive
 		virtual u32 getFileCount() const;
@@ -86,8 +89,8 @@ namespace io
 		virtual s32 findFile(const core::string<c16>& filename);
 
 		//! get the class Type
-		virtual const core::string<c16>& getArchiveType() { return Type; }
-
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_PAK; }
+		
 		//! return the id of the file Archive
 		virtual const core::string<c16>& getArchiveName ()
 		{ 

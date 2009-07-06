@@ -9,6 +9,7 @@
 #include "IWriteFile.h"
 #include "CZipReader.h"
 #include "CPakReader.h"
+#include "CTarReader.h"
 #include "CFileList.h"
 #include "CXMLReader.h"
 #include "CXMLWriter.h"
@@ -41,10 +42,11 @@ CFileSystem::CFileSystem()
 	#endif
 
 	setFileListSystem(FILESYSTEM_NATIVE);
-
-	addArchiveLoader(new CArchiveLoaderZIP(this));
-	addArchiveLoader(new CArchiveLoaderMount(this));
-	addArchiveLoader(new CArchiveLoaderPAK(this));
+	
+	ArchiveLoader.push_back(new CArchiveLoaderZIP(this));
+	ArchiveLoader.push_back(new CArchiveLoaderMount(this));
+	ArchiveLoader.push_back(new CArchiveLoaderPAK(this));
+	ArchiveLoader.push_back(new CArchiveLoaderTAR(this));
 }
 
 
@@ -73,7 +75,7 @@ IReadFile* CFileSystem::createAndOpenFile(const core::string<c16>& filename)
 
 	for (i=0; i< FileArchives.size(); ++i)
 	{
-		file = FileArchives[i]->openFile(filename);
+		file = FileArchives[i]->createAndOpenFile(filename);
 		if (file)
 			return file;
 	}
@@ -130,7 +132,7 @@ void CFileSystem::addArchiveLoader(IArchiveLoader* loader)
 	if (!loader)
 		return;
 
-	//loader->grab();
+	loader->grab();
 	ArchiveLoader.push_back(loader);
 }
 
@@ -159,7 +161,8 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 
 
 //! Adds an archive to the file system.
-bool CFileSystem::registerFileArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths)
+bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreCase, 
+									  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
@@ -172,36 +175,79 @@ bool CFileSystem::registerFileArchive(const core::string<c16>& filename, bool ig
 			return true;
 	}
 
-	// try to load archive based on file name
-	for (i = 0; i < ArchiveLoader.size(); ++i)
+	// do we know what type it should be?
+	if (archiveType == EFAT_UNKNOWN)
 	{
-		if (ArchiveLoader[i]->isALoadableFileFormat(filename))
+		// try to load archive based on file name
+		for (i = 0; i < ArchiveLoader.size(); ++i)
 		{
-			archive = ArchiveLoader[i]->createArchive(filename, ignoreCase, ignorePaths);
-			if (archive)
-				break;
-		}
-	}
-
-	// try to load archive based on content
-	if (0 == archive)
-	{
-		io::IReadFile* file = createAndOpenFile(filename);
-		if (file)
-		{
-			for (i = 0; i < ArchiveLoader.size(); ++i)
+			if (ArchiveLoader[i]->isALoadableFileFormat(filename))
 			{
-				file->seek(0);
-				if (ArchiveLoader[i]->isALoadableFileFormat(file))
+				archive = ArchiveLoader[i]->createArchive(filename, ignoreCase, ignorePaths);
+				if (archive)
+					break;
+			}
+		}
+
+		// try to load archive based on content
+		if (!archive)
+		{
+			io::IReadFile* file = createAndOpenFile(filename);
+			if (file)
+			{
+				for (i = 0; i < ArchiveLoader.size(); ++i)
 				{
 					file->seek(0);
-					archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
-					if (archive)
-						break;
+					if (ArchiveLoader[i]->isALoadableFileFormat(file))
+					{
+						file->seek(0);
+						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
+						if (archive)
+							break;
+					}
+				}
+				file->drop();
+			}
+		}
+	}
+	else
+	{
+		// try to open archive based on archive loader type
+
+		io::IReadFile* file = 0; 
+
+		for (i = 0; i < ArchiveLoader.size(); ++i)
+		{
+			if (ArchiveLoader[i]->getType() == archiveType)
+			{
+				// attempt to open file
+				if (!file)
+					file = createAndOpenFile(filename);
+
+				// is the file open?
+				if (file)
+				{
+					// attempt to open archive
+					file->seek(0);
+					if (ArchiveLoader[i]->isALoadableFileFormat(file))
+					{
+						file->seek(0);
+						archive = ArchiveLoader[i]->createArchive(file, ignoreCase, ignorePaths);
+						if (archive)
+							break;
+					}
+				}
+				else
+				{
+					// couldn't open file
+					break;
 				}
 			}
-			file->drop ();
 		}
+
+		// if open, close the file
+		if (file)
+			file->drop();
 	}
 
 	if (archive)
@@ -220,7 +266,7 @@ bool CFileSystem::registerFileArchive(const core::string<c16>& filename, bool ig
 
 
 //! removes an archive from the file system.
-bool CFileSystem::unregisterFileArchive(u32 index)
+bool CFileSystem::removeFileArchive(u32 index)
 {
 	bool ret = false;
 	if (index < FileArchives.size())
@@ -235,12 +281,12 @@ bool CFileSystem::unregisterFileArchive(u32 index)
 
 
 //! removes an archive from the file system.
-bool CFileSystem::unregisterFileArchive(const core::string<c16>& filename)
+bool CFileSystem::removeFileArchive(const core::string<c16>& filename)
 {
 	for (u32 i=0; i < FileArchives.size(); ++i)
 	{
 		if (filename == FileArchives[i]->getArchiveName())
-			return unregisterFileArchive(i);
+			return removeFileArchive(i);
 	}
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return false;
@@ -484,7 +530,7 @@ IFileList* CFileSystem::createFileList()
 		CFileList* flist[2] = { 0, 0 };
 
 		//! merge relative folder file archives
-		if ( FileArchives[i]->getArchiveType() == "mount" )
+		if ( FileArchives[i]->getType() == EFAT_FOLDER)
 		{
 			EFileSystemType currentType = setFileListSystem ( FILESYSTEM_NATIVE );
 
@@ -504,7 +550,7 @@ IFileList* CFileSystem::createFileList()
 			setFileListSystem ( currentType );
 		}
 		else
-		if ( FileArchives[i]->getArchiveType() == "zip" )
+		if ( FileArchives[i]->getType() == EFAT_ZIP )
 		{
 			flist[0] = new CFileList( "zip" );
 			flist[1] = new CFileList( "zip directory" );

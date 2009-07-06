@@ -1133,6 +1133,12 @@
 				RelativePath=".\CPakReader.h">
 			</File>
 			<File
+				RelativePath=".\CTarReader.cpp">
+			</File>
+			<File
+				RelativePath=".\CTarReader.h">
+			</File>
+			<File
 				RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp">
 			</File>
 			<File

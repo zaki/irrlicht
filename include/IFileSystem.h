@@ -92,52 +92,75 @@ public:
 	virtual IWriteFile* createAndWriteFile(const core::string<c16>& filename, bool append=false) =0;
 
 	//! Adds an archive to the file system.
-	/** After calling this, the Irrlicht Engine will search and open files directly from this archive too.
+	/** After calling this, the Irrlicht Engine will also search and open files directly from this archive.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
-	access for example Quake3 .pk3 files, which are nothing different than .zip files.
-	\param filename: Filename of the zip archive to add to the file system.
+	access for example Quake3 .pk3 files, which are no different than .zip files.
+	By default Irrlicht supports ZIP, PAK, TAR and directories as archives. You can provide your own archive
+	types by implementing IArchiveLoader and passing an instance to addArchiveLoader.
+	\param filename: Filename of the archive to add to the file system.
 	\param ignoreCase: If set to true, files in the archive can be accessed without
 	writing all letters in the right case.
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
-	\return Returns true if the archive was added successful, false if not. */
-	virtual bool registerFileArchive(const core::string<c16>& filename, bool ignoreCase=true, bool ignorePaths=true) =0;
+	\param archiveType: If no specific E_FILE_ARCHIVE_TYPE is selected then the type of archive will depend on 
+	the extension of the file name. If you use a different extension then you can use this parameter to force
+	a specific type of archive.
+	\return Returns true if the archive was added successfully, false if not. */
+	virtual bool addFileArchive(const core::string<c16>& filename, bool ignoreCase=true, bool ignorePaths=true, 
+		E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN) =0;
 
 	//! Adds an external archive loader to the engine.
+	/** Use this function to add support for new archive types to the engine, for example propiatrary or 
+	encyrpted file storage. */
 	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
 
-	//! return the amount of currently attached Archives
+	//! Returns the number of archives currently attached to the file system
 	virtual u32 getFileArchiveCount() const =0;
 
-	//! removes an archive from the file system.
-	virtual bool unregisterFileArchive(u32 index) =0;
+	//! Removes an archive from the file system.
+	/** This will close the archive and free any file handles, but will not close resources which have already
+	been loaded and are now cached, for example textures and meshes. 
+	\param index: The index of the archive to remove
+	\return Returns true on success, false on failure */
+	virtual bool removeFileArchive(u32 index) =0;
 
-	//! removes an archive from the file system.
-	virtual bool unregisterFileArchive(const core::string<c16>& filename) =0;
+	//! Removes an archive from the file system.
+	/** This will close the archive and free any file handles, but will not close resources which have already
+	been loaded and are now cached, for example textures and meshes. 
+	\param index: The index of the archive to remove
+	\return Returns true on success, false on failure */
+	virtual bool removeFileArchive(const core::string<c16>& filename) =0;
 
-	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
+	//! Changes the search order of attached archives.
+	/** 
+	\param sourceIndex: The index of the archive to change
+	\param relative: The relative change in position, archives with a lower index are searched first */
 	virtual bool moveFileArchive(u32 sourceIndex, s32 relative) =0;
 
-	//! get the Archive number index
+	//! Returns the archive at a given index.
 	virtual IFileArchive* getFileArchive(u32 index) =0;
 
-	//! Adds an zip archive to the file system.
-	/** After calling this, the Irrlicht Engine will search and open files directly from this archive too.
+	//! Adds a zip archive to the file system. Deprecated! This function is provided for compatibility
+	/** with older versions of Irrlicht and may be removed in future versions, you should use 
+	addFileArchive instead.
+	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
-	access for example Quake3 .pk3 files, which are nothing different than .zip files.
+	access for example Quake3 .pk3 files, which are no different than .zip files.
 	\param filename: Filename of the zip archive to add to the file system.
 	\param ignoreCase: If set to true, files in the archive can be accessed without
 	writing all letters in the right case.
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
-	\return Returns true if the archive was added successful, false if not. */
+	\return Returns true if the archive was added successfully, false if not. */
 	virtual bool addZipFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
-		return registerFileArchive(filename, ignoreCase, ignorePaths);
+		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_ZIP);
 	}
 
 	//! Adds an unzipped archive (or basedirectory with subdirectories..) to the file system.
-	/** Useful for handling data which will be in a zip file
+	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht 
+	and may be removed in future versions, you should use addFileArchive instead. 
+	Useful for handling data which will be in a zip file 
 	\param filename: Filename of the unzipped zip archive base directory to add to the file system.
 	\param ignoreCase: If set to true, files in the archive can be accessed without
 	writing all letters in the right case.
@@ -146,11 +169,13 @@ public:
 	\return Returns true if the archive was added successful, false if not. */
 	virtual bool addFolderFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
-		return registerFileArchive(filename, ignoreCase, ignorePaths);
+		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_FOLDER);
 	}
 
-	//! Adds an pak archive to the file system.
-	/** After calling this, the Irrlicht Engine will search and open files directly from this archive too.
+	//! Adds a pak archive to the file system.
+	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht 
+	and may be removed in future versions, you should use addFileArchive instead.
+	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
 	access for example Quake2/KingPin/Hexen2 .pak files
 	\param filename: Filename of the pak archive to add to the file system.
@@ -161,7 +186,7 @@ public:
 	\return Returns true if the archive was added successful, false if not. */
 	virtual bool addPakFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
 	{
-		return registerFileArchive(filename, ignoreCase, ignorePaths);
+		return addFileArchive(filename, ignoreCase, ignorePaths, EFAT_PAK);
 	}
 
 	//! Get the current working directory.
@@ -176,7 +201,7 @@ public:
 	virtual bool changeWorkingDirectoryTo(const core::string<c16>& newDirectory) =0;
 
 	//! Converts a relative path to an absolute (unique) path, resolving symbolic links if required
-	/** \param filename Possibly relative filename begin queried.
+	/** \param filename Possibly relative file or directory name to query.
 	\result Absolute filename which points to the same file. */
 	virtual core::string<c16> getAbsolutePath(const core::string<c16>& filename) const =0;
 

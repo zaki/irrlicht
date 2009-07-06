@@ -94,7 +94,7 @@ bool CArchiveLoaderZIP::isALoadableFileFormat(io::IReadFile* file) const
 	ZIP Archive
 */
 CZipReader::CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
-: File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths), Type ( "zip" )
+: File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths)
 {
 	#ifdef _DEBUG
 	setDebugName("CZipReader");
@@ -329,19 +329,19 @@ bool CZipReader::scanLocalHeader()
 
 
 //! opens a file by file name
-IReadFile* CZipReader::openFile(const core::string<c16>& filename)
+IReadFile* CZipReader::createAndOpenFile(const core::string<c16>& filename)
 {
 	s32 index = findFile(filename);
 
 	if (index != -1)
-		return openFile(index);
+		return createAndOpenFile(index);
 
 	return 0;
 }
 
 
 //! opens a file by index
-IReadFile* CZipReader::openFile(s32 index)
+IReadFile* CZipReader::createAndOpenFile(u32 index)
 {
 	//0 - The file is stored (no compression)
 	//1 - The file is Shrunk
@@ -593,7 +593,6 @@ CMountPointReader::CMountPointReader( IFileSystem * parent, const core::string<c
 	Base.replace ( '\\', '/' );
 	if ( core::lastChar ( Base ) != '/' )
 		Base.append ( '/' );
-	Type = "mount";
 }
 
 void CMountPointReader::buildDirectory ( )
@@ -601,31 +600,29 @@ void CMountPointReader::buildDirectory ( )
 }
 
 //! opens a file by file name
-IReadFile* CMountPointReader::openFile(const core::string<c16>& filename)
+IReadFile* CMountPointReader::createAndOpenFile(const core::string<c16>& filename)
 {
-	if ( !filename.size() )
+	if (!filename.size())
 		return 0;
 
-	core::string<c16> fname ( Base );
+	core::string<c16> fname(Base);
 	fname += filename;
 
-
-	CMountPointReadFile* file = new CMountPointReadFile( fname, filename);
+	CMountPointReadFile* file = new CMountPointReadFile(fname, filename);
 	if (file->isOpen())
 		return file;
 
 	file->drop();
 	return 0;
-
 }
 
 //! returns fileindex
 s32 CMountPointReader::findFile(const core::string<c16>& filename)
 {
-	IReadFile *file = openFile ( filename );
-	if ( 0 == file )
+	IReadFile *file = createAndOpenFile(filename);
+	if (!file)
 		return -1;
-	file->drop ();
+	file->drop();
 	return 1;
 }
 
@@ -636,7 +633,7 @@ s32 CMountPointReader::findFile(const core::string<c16>& filename)
 CMountPointReader::CMountPointReader( IFileSystem * parent, const core::string<c16>& basename, bool ignoreCase, bool ignorePaths)
 	: CZipReader( 0, ignoreCase, ignorePaths ), Parent ( parent )
 {
-	Type = "mount";
+	//Type = "mount";
 	core::string<c16> work = Parent->getWorkingDirectory ();
 
 	Parent->changeWorkingDirectoryTo ( basename );
@@ -685,7 +682,7 @@ s32 CMountPointReader::findFile(const core::string<c16>& simpleFilename)
 }
 
 //! opens a file by file name
-IReadFile* CMountPointReader::openFile(const core::string<c16>& filename)
+IReadFile* CMountPointReader::createAndOpenFile(const core::string<c16>& filename)
 {
 	s32 index = -1;
 
