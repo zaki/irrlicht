@@ -1097,8 +1097,8 @@ void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude) 
 		s32* in = new s32[dim.Height * pitch];
 		memcpy(in, p, dim.Height * pitch * 4);
 
-		for (u32 x=0; x<pitch; ++x)
-			for (u32 y=0; y<dim.Height; ++y)
+		for (s32 x=0; x < s32(pitch); ++x)
+			for (s32 y=0; y < s32(dim.Height); ++y)
 			{
 				// TODO: this could be optimized really a lot
 
@@ -1146,8 +1146,8 @@ void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude) 
 		s16* in = new s16[dim.Height * pitch];
 		memcpy(in, p, dim.Height * pitch * 2);
 
-		for (u32 x=0; x<pitch; ++x)
-			for (u32 y=0; y<dim.Height; ++y)
+		for (s32 x=0; x < s32(pitch); ++x)
+			for (s32 y=0; y < s32(dim.Height); ++y)
 			{
 				// TODO: this could be optimized really a lot
 
