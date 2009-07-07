@@ -23,16 +23,16 @@ enum EFileSystemType
 //! Contains the different types of archives
 enum E_FILE_ARCHIVE_TYPE
 {
-	//! A ZIP archive
+	//! A PKZIP or gzip archive
 	EFAT_ZIP     = MAKE_IRR_ID('Z','I','P', 0),
 
 	//! A virtual directory
 	EFAT_FOLDER  = MAKE_IRR_ID('f','l','d','r'),
 
-	//! A Windows PAK file
+	//! An ID Software PAK archive
 	EFAT_PAK     = MAKE_IRR_ID('P','A','K', 0),
 	
-	//! A Tape ARchive file
+	//! A Tape ARchive
 	EFAT_TAR     = MAKE_IRR_ID('T','A','R', 0),
 
 	//! The type of this archive is unknown
