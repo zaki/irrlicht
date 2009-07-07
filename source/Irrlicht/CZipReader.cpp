@@ -22,8 +22,13 @@ namespace irr
 namespace io
 {
 
+
+// -----------------------------------------------------------------------------
+// zip loader
+// -----------------------------------------------------------------------------
+
 //! Constructor
-CArchiveLoaderZIP::CArchiveLoaderZIP( io::IFileSystem* fs)
+CArchiveLoaderZIP::CArchiveLoaderZIP(io::IFileSystem* fs)
 : FileSystem(fs)
 {
 	#ifdef _DEBUG
@@ -31,17 +36,10 @@ CArchiveLoaderZIP::CArchiveLoaderZIP( io::IFileSystem* fs)
 	#endif
 }
 
-
-//! destructor
-CArchiveLoaderZIP::~CArchiveLoaderZIP()
-{
-}
-
-
 //! returns true if the file maybe is able to be loaded by this class
 bool CArchiveLoaderZIP::isALoadableFileFormat(const core::string<c16>& filename) const
 {
-	return core::hasFileExtension ( filename, "zip", "pk3", "dat" );
+	return core::hasFileExtension(filename, "zip", "pk3");
 }
 
 
@@ -55,8 +53,8 @@ IFileArchive* CArchiveLoaderZIP::createArchive(const core::string<c16>& filename
 
 	if (file)
 	{
-		archive = createArchive ( file, ignoreCase, ignorePaths );
-		file->drop ();
+		archive = createArchive(file, ignoreCase, ignorePaths);
+		file->drop();
 	}
 
 	return archive;
@@ -67,10 +65,22 @@ IFileArchive* CArchiveLoaderZIP::createArchive(const core::string<c16>& filename
 IFileArchive* CArchiveLoaderZIP::createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const
 {
 	IFileArchive *archive = 0;
-	if ( file )
+	if (file)
 	{
-		file->seek ( 0 );
-		archive = new CZipReader(file, ignoreCase, ignorePaths);
+		file->seek(0);
+
+		u16 sig;
+		file->read(&sig, 2);
+
+#ifdef __BIG_ENDIAN__
+		os::Byteswap::byteswap(sig);
+#endif
+
+		file->seek(0);
+
+		bool isGZip = (sig == 0x8b1f);
+
+		archive = new CZipReader(file, ignoreCase, ignorePaths, isGZip);
 	}
 	return archive;
 }
@@ -87,14 +97,17 @@ bool CArchiveLoaderZIP::isALoadableFileFormat(io::IReadFile* file) const
 #ifdef __BIG_ENDIAN__
 	os::Byteswap::byteswap(header.Sig);
 #endif
-	return header.Sig == 0x04034b50;
+	
+	return header.Sig == 0x04034b50 || // ZIP
+		   *((u16*)(&header.Sig)) == 0x8b1f; // gzip
 }
 
-/*
-	ZIP Archive
-*/
-CZipReader::CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
-: File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths)
+// -----------------------------------------------------------------------------
+// zip archive
+// -----------------------------------------------------------------------------
+
+CZipReader::CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths, bool isGZip)
+ : File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths), IsGZip(isGZip)
 {
 	#ifdef _DEBUG
 	setDebugName("CZipReader");
@@ -107,9 +120,11 @@ CZipReader::CZipReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
 		Base = File->getFileName();
 		Base.replace ( '\\', '/' );
 
-		// scan local headers
-		while (scanLocalHeader()) ;
-		//while (scanLocalHeader2());
+		// load file entries
+		if (IsGZip)
+			while (scanGZipHeader()) { }
+		else
+			while (scanZipHeader()) { }
 
 		// prepare file index for binary search
 		FileList.sort();
@@ -121,8 +136,6 @@ CZipReader::~CZipReader()
 	if (File)
 		File->drop();
 }
-
-
 
 //! splits filename from zip file into useful filenames and paths
 void CZipReader::extractFilename(SZipFileEntry* entry)
@@ -219,7 +232,7 @@ bool CZipReader::scanLocalHeader2()
 			File->seek( temp.header.ExtraFieldLength, true);
 		}
 
-		if (temp.header.GeneralBitFlag & ZIP_INFO_IN_DATA_DESCRITOR)
+		if (temp.header.GeneralBitFlag & ZIP_INFO_IN_DATA_DESCRIPTOR)
 		{
 			// read data descriptor
 			File->seek(sizeof(SZIPFileDataDescriptor), true );
@@ -258,7 +271,98 @@ bool CZipReader::scanLocalHeader2()
 #endif
 
 //! scans for a local header, returns false if there is no more local file header.
-bool CZipReader::scanLocalHeader()
+//! The gzip file format seems to think that there can be multiple files in a gzip file
+//! but none
+bool CZipReader::scanGZipHeader()
+{
+	SZipFileEntry entry;
+	entry.fileDataPosition = 0;
+	memset(&entry.header, 0, sizeof(SZIPFileHeader));
+
+	// read header
+	SGZIPMemberHeader header;
+	if (File->read(&header, sizeof(SGZIPMemberHeader)) == sizeof(SGZIPMemberHeader))
+	{
+
+#ifdef __BIG_ENDIAN__
+		os::Byteswap::byteswap(header.sig);
+		os::Byteswap::byteswap(header.time);
+#endif
+
+		// check header value
+		if (header.sig != 0x8b1f)
+			return false;
+
+		// now get the file info
+		if (header.flags & EGZF_EXTRA_FIELDS)
+		{
+			// read lenth of extra data
+			u16 dataLen;
+
+			File->read(&dataLen, 2);
+
+#ifdef __BIG_ENDIAN__
+			os::Byteswap::byteswap(dataLen);
+#endif
+
+			// skip it
+			File->seek(dataLen, true);
+		}
+
+		if (header.flags & EGZF_FILE_NAME)
+		{
+			c8 c;
+			entry.zipFileName = "";
+			File->read(&c, 1);
+			while (c)
+			{
+				entry.zipFileName.append(c);
+				File->read(&c, 1);
+			}
+		}
+
+		if (header.flags & EGZF_COMMENT)
+		{
+			c8 c='a';
+			while (c)
+				File->read(&c, 1);
+		}
+
+		if (header.flags & EGZF_CRC16)
+			File->seek(2, true);
+
+		// we are now at the start of the data blocks
+		entry.fileDataPosition = File->getPos();
+
+		entry.header.FilenameLength = entry.zipFileName.size();
+		entry.simpleFileName = entry.zipFileName;
+
+		entry.header.CompressionMethod = header.compressionMethod;
+		entry.header.DataDescriptor.CompressedSize = (File->getSize() - 8) - File->getPos();
+
+		// seek to file end
+		File->seek(entry.header.DataDescriptor.CompressedSize, true);
+
+		// read CRC
+		File->read(&entry.header.DataDescriptor.CRC32, 4);
+		// read uncompressed size
+		File->read(&entry.header.DataDescriptor.UncompressedSize, 4);
+
+#ifdef __BIG_ENDIAN__
+		os::Byteswap::byteswap(entry.header.DataDescriptor.CRC32);
+		os::Byteswap::byteswap(entry.header.DataDescriptor.UncompressedSize);
+#endif
+
+		// now we've filled all the fields, this is just a standard deflate block
+		// and can be read as usual
+		FileList.push_back(entry);
+	}
+	// there's only one block of data in a gzip file
+	return false;
+}
+
+//! scans for a local header, returns false if there is no more local file header.
+bool CZipReader::scanZipHeader()
 {
 	//c8 tmp[1024];
 
@@ -302,7 +406,7 @@ bool CZipReader::scanLocalHeader()
 		File->seek(entry.header.ExtraFieldLength, true);
 
 	// if bit 3 was set, read DataDescriptor, following after the compressed data
-	if (entry.header.GeneralBitFlag & ZIP_INFO_IN_DATA_DESCRITOR)
+	if (entry.header.GeneralBitFlag & ZIP_INFO_IN_DATA_DESCRIPTOR)
 	{
 		// read data descriptor
 		File->read(&entry.header.DataDescriptor, sizeof(entry.header.DataDescriptor));
@@ -361,7 +465,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 	{
 	case 0: // no compression
 		{
-			return createLimitReadFile( e.simpleFileName, File, e.fileDataPosition, e.header.DataDescriptor.CompressedSize);
+			return createLimitReadFile(e.simpleFileName, File, e.fileDataPosition, e.header.DataDescriptor.CompressedSize);
 		}
 	case 8:
 		{
@@ -413,7 +517,6 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 				inflateEnd(&stream);
 			}
 
-
 			delete[] pcData;
 
 			if (err != Z_OK)
@@ -453,7 +556,7 @@ const IFileArchiveEntry* CZipReader::getFileInfo(u32 index)
 
 
 //! return the id of the file Archive
-const core::string<c16>& CZipReader::getArchiveName ()
+const core::string<c16>& CZipReader::getArchiveName()
 {
 	return Base;
 }
@@ -488,7 +591,8 @@ s32 CZipReader::findFile( const core::string<c16>& simpleFilename)
 	return res;
 }
 
-
+// -----------------------------------------------------------------------------
+// mount archive loader
 // -----------------------------------------------------------------------------
 
 //! Constructor
@@ -511,10 +615,10 @@ CArchiveLoaderMount::~CArchiveLoaderMount()
 bool CArchiveLoaderMount::isALoadableFileFormat(const core::string<c16>& filename) const
 {
 	bool ret = false;
-	core::string<c16> fname ( filename );
-	deletePathFromFilename ( fname );
+	core::string<c16> fname(filename);
+	deletePathFromFilename(fname);
 
-	if ( 0 == fname.size() )
+	if (!fname.size())
 	{
 		ret = true;
 	}
@@ -528,19 +632,19 @@ IFileArchive* CArchiveLoaderMount::createArchive(const core::string<c16>& filena
 {
 	IFileArchive *archive = 0;
 
-	EFileSystemType current = FileSystem->setFileListSystem ( FILESYSTEM_NATIVE );
+	EFileSystemType current = FileSystem->setFileListSystem(FILESYSTEM_NATIVE);
 
-	core::string<c16> save = FileSystem->getWorkingDirectory ();
-	core::string<c16> fullPath = FileSystem->getAbsolutePath ( filename );
-	FileSystem->flattenFilename ( fullPath );
+	core::string<c16> save = FileSystem->getWorkingDirectory();
+	core::string<c16> fullPath = FileSystem->getAbsolutePath(filename);
+	FileSystem->flattenFilename(fullPath);
 
 	if ( FileSystem->changeWorkingDirectoryTo ( fullPath ) )
 	{
 		archive = new CMountPointReader(FileSystem, fullPath, ignoreCase, ignorePaths);
 	}
 
-	FileSystem->changeWorkingDirectoryTo ( save );
-	FileSystem->setFileListSystem ( current );
+	FileSystem->changeWorkingDirectoryTo(save);
+	FileSystem->setFileListSystem(current);
 
 	return archive;
 }
@@ -562,6 +666,10 @@ IFileArchive* CArchiveLoaderMount::createArchive(io::IReadFile* file, bool ignor
 }
 
 #if 1
+
+// -----------------------------------------------------------------------------
+// mount point reader
+// -----------------------------------------------------------------------------
 
 //! simple Reader ( does not handle ignorecase and ignorePath )
 // its more a simple wrapper for handling relative directories
@@ -595,7 +703,7 @@ CMountPointReader::CMountPointReader( IFileSystem * parent, const core::string<c
 		Base.append ( '/' );
 }
 
-void CMountPointReader::buildDirectory ( )
+void CMountPointReader::buildDirectory()
 {
 }
 

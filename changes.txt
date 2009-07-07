@@ -2,8 +2,6 @@ Changes in 1.6
 
  - IFileSystem changes:
    
-   - Added TAR archive loader.
-   
    - Renamed the following functions-
       IFileArchive::getArchiveType to getType
       IFileSystem::registerFileArchive to addFileArchive
@@ -13,6 +11,13 @@ Changes in 1.6
    - New enum, E_FILE_ARCHIVE_TYPE. getType on IArchiveLoader and IFileArchive now both return this.
    
    - IFileSystem::addFileArchive takes a parameter to specify the archive type rather always using the file extension. IFileSystem::addZipFileArchive, addFolderFileArchive and addPakFileArchive now use this but these functions are now marked as deprecated. Users should now use addFileArchive instead.
+
+   - Added TAR archive loader.
+
+   - The ZIP archive loader can now load gzip files, combined with the TAR loader this means Irrlicht now has native support for .tar.gz 
+     Currently this must be done in two calls, for example:
+       fileSystem->addFileArchive("path/to/myArchive.tar.gz");
+       fileSystem->addFileArchive("myArchive.tar");
 
  - Fix highlighting in IGUIEditBox where kerning pairs are used in the font. For example in future italic, OS or other custom fonts.
 
