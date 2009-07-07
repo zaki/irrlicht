@@ -96,7 +96,10 @@ namespace irr
 		virtual void closeDevice();
 
 		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeAble(bool resize=false);
+		virtual void setResizeable(bool resize=false);
+		
+		//! Minimizes the window
+		virtual void minimizeWindow();
 		
 		//! De/activates the window. When not active no rendering takes place.
 		void setWindowActive(bool);

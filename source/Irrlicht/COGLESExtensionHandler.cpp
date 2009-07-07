@@ -169,7 +169,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 
 	GLint val=0;
 	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &val);
-	MaxTextureUnits = static_cast<u8>(val);
+	MaxTextureUnits = core::min_(MATERIAL_MAX_TEXTURES, static_cast<u32>(val));
 	MultiTextureExtension = true;
 	glGetIntegerv(GL_MAX_LIGHTS, &val);
 	MaxLights = static_cast<u8>(val);
