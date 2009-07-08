@@ -36,8 +36,6 @@ namespace video
 
 namespace irr
 {
-namespace base
-{
 
 //! constructor
 CIrrDeviceIPhone::CIrrDeviceIPhone(const SIrrlichtCreationParameters& params)
@@ -266,7 +264,6 @@ void CIrrDeviceIPhone::onWindowActive(MIrrIPhoneDevice * dev, int active)
 }
 
 
-} // end namespace
 } // end namespace
 
 namespace irr
