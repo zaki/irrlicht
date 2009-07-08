@@ -272,8 +272,8 @@ void CIrrDeviceIPhone::onWindowActive(MIrrIPhoneDevice * dev, int active)
 namespace irr
 {
 
-IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
-	const SIrrlichtCreationParameters& parameters)
+extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
+		const SIrrlichtCreationParameters& parameters)
 {
 	irr::CIrrDeviceIPhone* dev = new irr::CIrrDeviceIPhone(parameters);
 	
