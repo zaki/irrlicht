@@ -176,7 +176,7 @@ bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreC
 	}
 
 	// do we know what type it should be?
-	if (archiveType == EFAT_UNKNOWN)
+	if (archiveType == EFAT_UNKNOWN || archiveType == EFAT_FOLDER)
 	{
 		// try to load archive based on file name
 		for (i = 0; i < ArchiveLoader.size(); ++i)
