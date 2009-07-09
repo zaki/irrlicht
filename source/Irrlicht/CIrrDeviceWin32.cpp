@@ -202,7 +202,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (dev)
 				dev->postEventFromUser(event);
 
-			return 0;
+			if (message == WM_SYSKEYDOWN || message == WM_SYSKEYUP)
+				return DefWindowProc(hWnd, message, wParam, lParam);
+			else
+				return 0;
 		}
 
 	case WM_SIZE:
