@@ -41,6 +41,10 @@ namespace gui
 		virtual IGUIButton* getCloseButton() const;
 		virtual IGUIButton* getMinimizeButton() const;
 		virtual IGUIButton* getMaximizeButton() const;
+        virtual void setDrawBackground(bool draw)  { }
+		virtual bool getDrawBackground() const { return true; }
+		virtual void setDrawTitlebar(bool draw) { }
+		virtual bool getDrawTitlebar() const { return true; }
 
 		CGUIAttributeEditor* getAttributeEditor() const;
 		CGUIAttributeEditor* getOptionEditor() const;
