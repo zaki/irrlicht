@@ -69,7 +69,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
 	Close(false), WindowHasFocus(false), WindowMinimized(false),
 	UseXVidMode(false), UseXRandR(false), UseGLXWindow(false),
-	AutorepeatSupport(0)
+	ExternalWindow(false), AutorepeatSupport(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceLinux");
@@ -161,8 +161,12 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 
 		if (SoftwareImage)
 			XDestroyImage(SoftwareImage);
-		XDestroyWindow(display,window);
-		XCloseDisplay(display);
+
+		if (!ExternalWindow)
+		{
+			XDestroyWindow(display,window);
+			XCloseDisplay(display);
+		}
 	}
 	if (visual)
 		XFree(visual);
@@ -539,57 +543,61 @@ bool CIrrDeviceLinux::createWindow()
 		attributes.event_mask |= PointerMotionMask |
 				ButtonPressMask | KeyPressMask |
 				ButtonReleaseMask | KeyReleaseMask;
-
-	// create Window, either for Fullscreen or windowed mode
-	if (CreationParams.Fullscreen)
+	
+	if (!CreationParams.WindowId)
 	{
-		attributes.override_redirect = True;
-
-		window = XCreateWindow(display,
-				RootWindow(display, visual->screen),
-				0, 0, Width, Height, 0, visual->depth,
-				InputOutput, visual->visual,
-				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
-				&attributes);
-		CreationParams.WindowId = (void*)window;
-
-		XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
-		XMapRaised(display, window);
-		XGrabKeyboard(display, window, True, GrabModeAsync,
-			GrabModeAsync, CurrentTime);
-		XGrabPointer(display, window, True, ButtonPressMask,
-			GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
-	}
-	else
-	{ // we want windowed mode
-		attributes.event_mask |= ExposureMask;
-		attributes.event_mask |= FocusChangeMask;
-
-		if(!CreationParams.WindowId)
+		// create Window, either for Fullscreen or windowed mode
+		if (CreationParams.Fullscreen)
 		{
+			attributes.override_redirect = True;
+
+			window = XCreateWindow(display,
+					RootWindow(display, visual->screen),
+					0, 0, Width, Height, 0, visual->depth,
+					InputOutput, visual->visual,
+					CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
+					&attributes);
+			CreationParams.WindowId = (void*)window;
+
+			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
+			XMapRaised(display, window);
+			XGrabKeyboard(display, window, True, GrabModeAsync,
+				GrabModeAsync, CurrentTime);
+			XGrabPointer(display, window, True, ButtonPressMask,
+				GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
+		}
+		else
+		{ // we want windowed mode
+			attributes.event_mask |= ExposureMask;
+			attributes.event_mask |= FocusChangeMask;
+
 			window = XCreateWindow(display,
 					RootWindow(display, visual->screen),
 					0, 0, Width, Height, 0, visual->depth,
 					InputOutput, visual->visual,
 					CWBorderPixel | CWColormap | CWEventMask,
 					&attributes);
-		}
-		else
-		{
-			window = XCreateWindow(display,
-					(Window)CreationParams.WindowId,
-					0, 0, Width, Height, 0, visual->depth,
-					InputOutput, visual->visual,
-					CWBorderPixel | CWColormap | CWEventMask,
-					&attributes);
-		}
-		CreationParams.WindowId = (void*)window;
+			
+			CreationParams.WindowId = (void*)window;
 
-		Atom wmDelete;
-		wmDelete = XInternAtom(display, wmDeleteWindow, True);
-		XSetWMProtocols(display, window, &wmDelete, 1);
-		XMapRaised(display, window);
+			Atom wmDelete;
+			wmDelete = XInternAtom(display, wmDeleteWindow, True);
+			XSetWMProtocols(display, window, &wmDelete, 1);
+			XMapRaised(display, window);
+		}
 	}
+	else
+	{
+		// attach external window
+		window = (Window)CreationParams.WindowId;
+		XWindowAttributes wa;
+		XGetWindowAttributes(display, window, &wa);
+		CreationParams.WindowSize.Width = wa.width;
+		CreationParams.WindowSize.Height = wa.height;
+		CreationParams.Fullscreen = false; 
+		ExternalWindow = true;
+	}
+
 	WindowMinimized=false;
  	// Currently broken in X, see Bug ID 2795321
  	// XkbSetDetectableAutoRepeat(display, True, &AutorepeatSupport);

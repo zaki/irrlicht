@@ -340,6 +340,7 @@ namespace irr
 		bool UseXVidMode;
 		bool UseXRandR;
 		bool UseGLXWindow;
+		bool ExternalWindow;
 		int AutorepeatSupport;
 
 		struct SKeyMap
