@@ -13,7 +13,12 @@
 #include "rect.h"
 #include "irrString.h"
 
+// enable this to keep track of changes to the matrix
+// and make simpler identity check for seldomly changing matrices
+// otherwise identity check will always compare the elements
 //#define USE_MATRIX_TEST
+
+// this is only for debugging purposes
 //#define USE_MATRIX_TEST_DEBUG
 
 #if defined( USE_MATRIX_TEST_DEBUG )
