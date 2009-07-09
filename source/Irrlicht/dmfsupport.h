@@ -20,10 +20,12 @@
 #ifndef __DMF_SUPPORT_H_INCLUDED__
 #define __DMF_SUPPORT_H_INCLUDED__
 
-using namespace irr;
-using namespace video;
-
 #include "irrString.h"
+
+namespace irr
+{
+namespace scene
+{
 
 /** A structure representing some DeleD infos.
 This structure contains data about DeleD level file like: version, ambient colour, number of objects etc...*/
@@ -32,7 +34,7 @@ struct dmfHeader
 	//main file header
 	core::stringc dmfName; //!<Scene name
 	f32 dmfVersion;     //!<File version
-	SColor dmfAmbient; //!<Ambient color
+	video::SColor dmfAmbient; //!<Ambient color
 	f32 dmfShadow;     //!<Shadow intensity
 	u32 numObjects;    //!<Number of objects in this scene
 	u32 numMaterials;  //!<Number of materials in this scene
@@ -83,8 +85,8 @@ This structure contains light position coordinates, diffuse colour, specular col
 struct dmfLight
 {
 	core::vector3df pos;//!<Position of this light.
-	SColorf diffuseColor;//!<Diffuse color.
-	SColorf specularColor;//!<Specular color.
+	video::SColorf diffuseColor;//!<Diffuse color.
+	video::SColorf specularColor;//!<Specular color.
 	f32 radius;//!<Maximum radius of light.
 };
 
@@ -595,12 +597,12 @@ bool GetDMFLights(const StringList& RawFile/**<StringList representing a DMF fil
 						(float)atof(temp[6].c_str()),
 						(float)-atof(temp[7].c_str()));
 
-				lights[d_lit].diffuseColor = SColorf(
-						SColor(255, atoi(temp[10].c_str()), atoi(temp[11].c_str()),
+				lights[d_lit].diffuseColor = video::SColorf(
+						video::SColor(255, atoi(temp[10].c_str()), atoi(temp[11].c_str()),
 						atoi(temp[12].c_str())));
 
-				lights[d_lit].specularColor = SColorf(
-						SColor(255, atoi(temp[13].c_str()), atoi(temp[14].c_str()),
+				lights[d_lit].specularColor = video::SColorf(
+						video::SColor(255, atoi(temp[13].c_str()), atoi(temp[14].c_str()),
 						atoi(temp[15].c_str())));
 
 				d_lit++;
@@ -750,6 +752,9 @@ bool GetDMFWaterPlanes(const StringList& RawFile/**<StringList representing a DM
 
 	return true;
 }
+
+} // end namespace
+} // end namespace
 
 #endif /* __DMF_SUPPORT_H__ */
 
