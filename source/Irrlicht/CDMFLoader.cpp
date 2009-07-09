@@ -184,8 +184,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			path += ('/');
 
 			//texture and lightmap
-			ITexture *tex = 0;
-			ITexture *lig = 0;
+			video::ITexture *tex = 0;
+			video::ITexture *lig = 0;
 
 			//current buffer to apply material
 			SMeshBufferLightMap* buffer = (SMeshBufferLightMap*)mesh->getMeshBuffer(i);
@@ -194,7 +194,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			if (materiali[i].textureFlag==0)
 			{
 				if (materiali[i].textureBlend==4)
-					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
+					driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT,true);
 				if (FileSystem->existFile(path+materiali[i].textureName))
 					tex = driver->getTexture((path+materiali[i].textureName));
 				else if (FileSystem->existFile(path+FileSystem->getFileBasename(materiali[i].textureName)))
@@ -211,14 +211,14 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			//Primary texture is just a colour
 			else if(materiali[i].textureFlag==1)
 			{
-				SColor color(axtoi(materiali[i].textureName.c_str()));
+				video::SColor color(axtoi(materiali[i].textureName.c_str()));
 
 				//just for compatibility with older Irrlicht versions
 				//to support transparent materials
 				if (color.getAlpha()!=255 && materiali[i].textureBlend==4)
-					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
+					driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT,true);
 
-				CImage *immagine= new CImage(ECF_A8R8G8B8,
+				video::CImage *immagine= new video::CImage(video::ECF_A8R8G8B8,
 					core::dimension2d<u32>(8,8));
 				immagine->fill(color);
 				tex = driver->addTexture("", immagine);
@@ -239,7 +239,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			{
 				buffer->Material.MaterialType = video::EMT_SOLID;
 				const f32 mult = 100.0f - header.dmfShadow;
-				buffer->Material.AmbientColor=header.dmfAmbient.getInterpolated(SColor(255,0,0,0),mult/100.f);
+				buffer->Material.AmbientColor=header.dmfAmbient.getInterpolated(video::SColor(255,0,0,0),mult/100.f);
 			}
 
 			if (materiali[i].textureBlend==4)
