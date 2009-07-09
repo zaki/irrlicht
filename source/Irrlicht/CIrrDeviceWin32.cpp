@@ -179,6 +179,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_ERASEBKGND:
 		return 0;
 
+	case WM_SYSKEYDOWN:
+	case WM_SYSKEYUP:
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 		{
@@ -186,7 +188,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			event.EventType = irr::EET_KEY_INPUT_EVENT;
 			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
-			event.KeyInput.PressedDown = (message==WM_KEYDOWN);
+			event.KeyInput.PressedDown = (message==WM_KEYDOWN || message == WM_SYSKEYDOWN);
 			dev = getDeviceFromHWnd(hWnd);
 
 			WORD KeyAsc=0;
