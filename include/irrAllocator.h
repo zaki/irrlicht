@@ -7,6 +7,7 @@
 
 #include "irrTypes.h"
 #include <new>
+// necessary for older compilers
 #include <memory.h>
 
 namespace irr
