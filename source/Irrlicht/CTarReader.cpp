@@ -7,6 +7,7 @@
 #include "CLimitReadFile.h"
 #include "os.h"
 #include "coreutil.h"
+#include "errno.h"
 
 #include "IrrCompileConfig.h"
 
@@ -22,12 +23,6 @@ CArchiveLoaderTAR::CArchiveLoaderTAR(io::IFileSystem* fs)
 	#ifdef _DEBUG
 	setDebugName("CArchiveLoaderTAR");
 	#endif
-}
-
-
-//! destructor
-CArchiveLoaderTAR::~CArchiveLoaderTAR()
-{
 }
 
 
@@ -54,6 +49,7 @@ IFileArchive* CArchiveLoaderTAR::createArchive(const core::string<c16>& filename
 
 	return archive;
 }
+
 
 //! creates/loads an archive from the file.
 //! \return Pointer to the created archive. Returns 0 if loading failed.
@@ -86,8 +82,7 @@ bool CArchiveLoaderTAR::isALoadableFileFormat(io::IReadFile* file) const
 	file->read(&fHead, sizeof(STarHeader));
 
 	u32 checksum = 0;
-	sscanf(fHead.Checksum, "%lo", &checksum);
-
+	sscanf(fHead.Checksum, "%o", &checksum);
 
 	// verify checksum
 
@@ -98,8 +93,7 @@ bool CArchiveLoaderTAR::isALoadableFileFormat(io::IReadFile* file) const
 	s32 checksum2=0;
 
 	// remember to blank the checksum field!
-	for (u32 i=0; i<8;++i)
-		fHead.Checksum[i] = ' ';
+	memset(fHead.Checksum, ' ', 8);
 
 	// old header
 	for (u8* p = (u8*)(&fHead); p < (u8*)(&fHead.Magic[0]); ++p)
@@ -141,12 +135,14 @@ CTarReader::CTarReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
 	}
 }
 
+
 CTarReader::~CTarReader()
 {
 	if (File)
 		File->drop();
 
 }
+
 
 u32 CTarReader::populateFileList()
 {
@@ -189,7 +185,7 @@ u32 CTarReader::populateFileList()
 			}
 
 			fullPath.replace('\\', '/');
-			s32 lastSlash = fullPath.findLast('/');
+			const s32 lastSlash = fullPath.findLast('/');
 
 			if (IgnoreCase)
 				fullPath.make_lower();
@@ -218,7 +214,9 @@ u32 CTarReader::populateFileList()
 				np++;
 			}
 			
-			sscanf(sSize.c_str(), "%lo", &entry.size);
+			entry.size=strtoul(sSize.c_str(), NULL, 8);
+			if (errno==ERANGE)
+				os::Printer::log("File too large", fullPath, ELL_WARNING);
 
 			// save start position
 			entry.startPos = pos + 512;
@@ -246,7 +244,7 @@ u32 CTarReader::populateFileList()
 //! opens a file by file name
 IReadFile* CTarReader::createAndOpenFile(const core::string<c16>& filename)
 {
-	s32 index = findFile(filename);
+	const s32 index = findFile(filename);
 
 	if (index != -1)
 		return createAndOpenFile(index);
@@ -285,6 +283,7 @@ const core::string<c16>& CTarReader::getArchiveName()
 	return Base;
 }
 
+
 //! returns fileindex
 s32 CTarReader::findFile(const core::string<c16>& simpleFilename)
 {
@@ -297,9 +296,7 @@ s32 CTarReader::findFile(const core::string<c16>& simpleFilename)
 	if (IgnorePaths)
 		core::deletePathFromFilename(entry.simpleFileName);
 
-	s32 res = FileList.binary_search(entry);
-
-	return res;
+	return FileList.binary_search(entry);
 }
 
 } // end namespace io

@@ -75,9 +75,6 @@ namespace io
 		//! Constructor
 		CArchiveLoaderTAR(io::IFileSystem* fs);
 
-		//! destructor
-		virtual ~CArchiveLoaderTAR();
-
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".tar")
 		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
