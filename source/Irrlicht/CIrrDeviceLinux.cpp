@@ -765,7 +765,7 @@ bool CIrrDeviceLinux::run()
 		while (XPending(display) > 0 && !Close)
 		{
 			XEvent event;
-			XWindowEvent(display, window, -1, &event);
+			XNextEvent(display, &event);
 
 			switch (event.type)
 			{
