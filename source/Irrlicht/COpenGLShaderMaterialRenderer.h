@@ -67,18 +67,22 @@ protected:
 					IShaderConstantSetCallBack* callback,
 					IMaterialRenderer* baseMaterial, s32 userData=0);
 
+	// must not be called more than once!
 	void init(s32& outMaterialTypeNr, const c8* vertexShaderProgram,
 		const c8* pixelShaderProgram, E_VERTEX_TYPE type);
 
 	bool createPixelShader(const c8* pxsh);
 	bool createVertexShader(const c8* vtxsh);
+	bool checkError(const irr::c8* type);
 
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
 	IMaterialRenderer* BaseMaterial;
 
 	GLuint VertexShader;
-	GLuint PixelShader;
+	// We have 4 values here, [0] is the non-fog version, the other three are
+	// ARB_fog_linear, ARB_fog_exp, and ARB_fog_exp2 in that order
+	core::array<GLuint> PixelShader;
 	s32 UserData;
 };
 
