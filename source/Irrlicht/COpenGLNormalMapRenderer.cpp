@@ -58,8 +58,10 @@ const char OPENGL_NORMAL_MAP_VSH[] =
 	"# transform position to clip space \n"\
 	"DP4 OutPos.x, MVP[0], InPos;\n"\
 	"DP4 OutPos.y, MVP[1], InPos;\n"\
-	"DP4 OutPos.z, MVP[2], InPos;\n"\
+	"DP4 Temp.z, MVP[2], InPos;\n"\
 	"DP4 OutPos.w, MVP[3], InPos;\n"\
+	"MOV OutPos.z, Temp.z;\n"\
+	"MOV result.fogcoord.x, Temp.z;\n"\
 	"\n"\
 	"# transform normal \n"\
 	"DP3 TempNormal.x, InNormal.x, program.local[0];\n"\
@@ -136,6 +138,7 @@ const char OPENGL_NORMAL_MAP_VSH[] =
 // transfered it 1:1 to OpenGL
 const char OPENGL_NORMAL_MAP_PSH[] =
 	"!!ARBfp1.0\n"\
+	"#_IRR_FOG_MODE_\n"\
 	"\n"\
 	"#Input\n"\
 	"ATTRIB inTexCoord = fragment.texcoord[0];   \n"\
@@ -236,7 +239,7 @@ COpenGLNormalMapRenderer::~COpenGLNormalMapRenderer()
 	{
 		// prevent this from deleting shaders we did not create
 		VertexShader = 0;
-		PixelShader = 0;
+		PixelShader.clear();
 	}
 }
 
