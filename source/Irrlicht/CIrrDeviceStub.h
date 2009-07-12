@@ -116,12 +116,23 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
 
+		//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behaviour.
+		//! When set to 0 no double- and tripleclicks will be generated.
+		virtual void setDoubleClickTime( u32 timeMs );
+
+		//! Get the maximal elapsed time between 2 clicks to generate double- and tripleclicks for the mouse.
+		virtual u32 getDoubleClickTime() const;
+
 	protected:
 
 		void createGUIAndScene();
 
 		//! checks version of SDK and prints warning if there might be a problem
 		bool checkVersion(const char* version);
+
+		//! Compares to the last call of this function to return double and triple clicks.
+		//! \return Returns only 1,2 or 3. A 4th click will start with 1 again.
+		virtual u32 checkSuccessiveClicks(s32 mouseX, s32 mouseY);
 
 		video::IVideoDriver* VideoDriver;
 		gui::IGUIEnvironment* GUIEnvironment;
@@ -135,6 +146,19 @@ namespace irr
 		scene::ISceneManager* InputReceivingSceneManager;
 		video::CVideoModeList VideoModeList;
 		SIrrlichtCreationParameters CreationParams;
+
+		struct SMouseMultiClicks
+		{
+			SMouseMultiClicks()
+				: DoubleClickTime(500), CountSuccessiveClicks(0), LastClickTime(0)
+			{}
+
+			u32 DoubleClickTime;
+			u32 CountSuccessiveClicks;
+			u32 LastClickTime;
+			core::position2di LastClick;
+		};
+		SMouseMultiClicks MouseMultiClicks;
 
 		void calculateGammaRamp ( u16 *ramp, f32 gamma, f32 relativebrightness, f32 relativecontrast );
 		void calculateGammaFromRamp ( f32 &gamma, const u16 *ramp );

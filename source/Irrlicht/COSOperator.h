@@ -22,9 +22,8 @@ public:
 	// constructor
 #if defined(_IRR_USE_LINUX_DEVICE_)
     COSOperator(const c8* osversion, CIrrDeviceLinux* device);
-#else
- 	COSOperator(const c8* osversion);
 #endif
+ 	COSOperator(const c8* osversion);
 
 	//! returns the current operation system version as string.
 	virtual const wchar_t* getOperationSystemVersion() const;

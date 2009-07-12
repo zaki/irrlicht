@@ -15,7 +15,6 @@
 
 namespace irr
 {
-
 //! constructor
 CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 : IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0),
@@ -171,6 +170,33 @@ bool CIrrDeviceStub::checkVersion(const char* version)
 }
 
 
+//! Compares to the last call of this function to return double and triple clicks.
+u32 CIrrDeviceStub::checkSuccessiveClicks(s32 mouseX, s32 mouseY)
+{
+	const s32 MAX_MOUSEMOVE = 3;
+
+	irr::u32 clickTime = getTimer()->getRealTime();
+
+	if ( (clickTime-MouseMultiClicks.LastClickTime) < MouseMultiClicks.DoubleClickTime
+		&& core::abs_(MouseMultiClicks.LastClick.X - mouseX ) <= MAX_MOUSEMOVE
+		&& core::abs_(MouseMultiClicks.LastClick.Y - mouseY ) <= MAX_MOUSEMOVE
+		&& MouseMultiClicks.CountSuccessiveClicks < 3 )
+	{
+		++MouseMultiClicks.CountSuccessiveClicks;
+	}
+	else
+	{
+		MouseMultiClicks.CountSuccessiveClicks = 1;
+	}
+
+	MouseMultiClicks.LastClickTime = clickTime;
+	MouseMultiClicks.LastClick.X = mouseX;
+	MouseMultiClicks.LastClick.Y = mouseY;
+
+	return MouseMultiClicks.CountSuccessiveClicks;
+}
+
+
 //! send the event to the right receiver
 bool CIrrDeviceStub::postEventFromUser(const SEvent& event)
 {
@@ -308,6 +334,18 @@ bool CIrrDeviceStub::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness,
 bool CIrrDeviceStub::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast )
 {
 	return false;
+}
+
+//! Set the maximal elapsed time between 2 clicks to generate doubleclicks for the mouse. It also affects tripleclick behaviour.
+void CIrrDeviceStub::setDoubleClickTime( u32 timeMs )
+{
+	MouseMultiClicks.DoubleClickTime = timeMs;
+}
+
+//! Get the maximal elapsed time between 2 clicks to generate double- and tripleclicks for the mouse.
+u32 CIrrDeviceStub::getDoubleClickTime() const
+{
+	return MouseMultiClicks.DoubleClickTime;
 }
 
 
