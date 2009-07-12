@@ -379,7 +379,24 @@ bool CIrrDeviceSDL::run()
 			irrevent.MouseInput.ButtonStates = MouseButtonStates;
 
 			if (irrevent.MouseInput.Event != irr::EMIE_MOUSE_MOVED)
+			{
 				postEventFromUser(irrevent);
+				
+				if ( irrevent.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN )
+				{
+					u32 clicks = checkSuccessiveClicks(irrevent.MouseInput.X, irrevent.MouseInput.Y);
+					if ( clicks == 2 )
+					{
+						irrevent.MouseInput.Event = EMIE_MOUSE_DOUBLE_CLICK;
+						postEventFromUser(irrevent);
+					}
+					else if ( clicks == 3 )
+					{
+						irrevent.MouseInput.Event = EMIE_MOUSE_TRIPLE_CLICK;
+						postEventFromUser(irrevent);
+					}
+				}
+			}
 			break;
 
 		case SDL_KEYDOWN:

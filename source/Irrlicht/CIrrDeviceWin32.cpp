@@ -162,7 +162,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
+		{
 			dev->postEventFromUser(event);
+
+			if ( event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN )
+			{
+				irr::u32 clicks = dev->checkSuccessiveClicks(event.MouseInput.X, event.MouseInput.Y);
+				if ( clicks == 2 )
+				{
+					event.MouseInput.Event = irr::EMIE_MOUSE_DOUBLE_CLICK;
+					dev->postEventFromUser(event);
+				}
+				else if ( clicks == 3 )
+				{
+					event.MouseInput.Event = irr::EMIE_MOUSE_TRIPLE_CLICK;
+					dev->postEventFromUser(event);
+				}
+			}
+		}
 		return 0;
 	}
 
@@ -345,6 +362,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 	Win32CursorControl = new CCursorControl(CreationParams.WindowSize, HWnd, CreationParams.Fullscreen);
 	CursorControl = Win32CursorControl;
+
+	// initialize doubleclicks with system values
+	MouseMultiClicks.DoubleClickTime = GetDoubleClickTime();
 
 	// create driver
 

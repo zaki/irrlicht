@@ -34,8 +34,8 @@ COSOperator::COSOperator(const c8* osversion, CIrrDeviceLinux* device)
 : IrrDeviceLinux(device)
 {
 }
+#endif
 
-#else   // not linux
 // constructor
 COSOperator::COSOperator(const c8* osVersion) : OperatingSystem(osVersion)
 {
@@ -43,7 +43,7 @@ COSOperator::COSOperator(const c8* osVersion) : OperatingSystem(osVersion)
 	setDebugName("COSOperator");
 	#endif
 }
-#endif
+
 
 //! returns the current operating system version as string.
 const wchar_t* COSOperator::getOperationSystemVersion() const

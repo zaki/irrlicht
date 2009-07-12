@@ -81,6 +81,14 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
 
+		//! Compares to the last call of this function to return double and triple clicks.
+		//! \return Returns only 1,2 or 3. A 4th click will start with 1 again.
+		virtual u32 checkSuccessiveClicks(s32 mouseX, s32 mouseY)
+		{
+			// we just have to make it public 
+			return CIrrDeviceStub::checkSuccessiveClicks(mouseX, mouseY);
+		}
+
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
 		{

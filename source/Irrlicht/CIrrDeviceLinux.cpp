@@ -543,7 +543,7 @@ bool CIrrDeviceLinux::createWindow()
 		attributes.event_mask |= PointerMotionMask |
 				ButtonPressMask | KeyPressMask |
 				ButtonReleaseMask | KeyReleaseMask;
-	
+
 	if (!CreationParams.WindowId)
 	{
 		// create Window, either for Fullscreen or windowed mode
@@ -577,7 +577,7 @@ bool CIrrDeviceLinux::createWindow()
 					InputOutput, visual->visual,
 					CWBorderPixel | CWColormap | CWEventMask,
 					&attributes);
-			
+
 			CreationParams.WindowId = (void*)window;
 
 			Atom wmDelete;
@@ -592,18 +592,18 @@ bool CIrrDeviceLinux::createWindow()
 		window = (Window)CreationParams.WindowId;
 		if (!CreationParams.IgnoreInput)
 		{
-			XCreateWindow(display, 	 
+			XCreateWindow(display,
 					window,
-					0, 0, Width, Height, 0, visual->depth, 	 
-					InputOutput, visual->visual, 	 
-					CWBorderPixel | CWColormap | CWEventMask, 	 
+					0, 0, Width, Height, 0, visual->depth,
+					InputOutput, visual->visual,
+					CWBorderPixel | CWColormap | CWEventMask,
 					&attributes);
 		}
 		XWindowAttributes wa;
 		XGetWindowAttributes(display, window, &wa);
 		CreationParams.WindowSize.Width = wa.width;
 		CreationParams.WindowSize.Height = wa.height;
-		CreationParams.Fullscreen = false; 
+		CreationParams.Fullscreen = false;
 		ExternalWindow = true;
 	}
 
@@ -880,7 +880,24 @@ bool CIrrDeviceLinux::run()
 				}
 
 				if (irrevent.MouseInput.Event != irr::EMIE_COUNT)
+				{
 					postEventFromUser(irrevent);
+
+					if ( irrevent.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN )
+					{
+						u32 clicks = checkSuccessiveClicks(irrevent.MouseInput.X, irrevent.MouseInput.Y);
+						if ( clicks == 2 )
+						{
+							irrevent.MouseInput.Event = EMIE_MOUSE_DOUBLE_CLICK;
+							postEventFromUser(irrevent);
+						}
+						else if ( clicks == 3 )
+						{
+							irrevent.MouseInput.Event = EMIE_MOUSE_TRIPLE_CLICK;
+							postEventFromUser(irrevent);
+						}
+					}
+				}
 				break;
 
 			case MappingNotify:
