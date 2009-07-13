@@ -49,7 +49,7 @@ LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
 #Compiler flags
 CXXINCS = -I../../include -Izlib -Ijpeglib -Ilibpng
 CPPFLAGS = $(CXXINCS) -DIRRLICHT_EXPORTS=1
-CXXFLAGS = -Wall -pipe
+CXXFLAGS = -Wall -pipe -fno-exceptions -fno-rtti
 ifndef NDEBUG
 CXXFLAGS += -g -D_DEBUG
 else
