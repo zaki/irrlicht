@@ -105,8 +105,7 @@ private:
 
 	void loadTextures(SB3dMaterial& material) const;
 
-	core::stringc readString();
-	core::stringc stripPathFromString(const core::stringc& string, bool returnPath=false) const;
+	void readString(core::stringc& newstring);
 	void readFloats(f32* vec, u32 count);
 
 	core::array<SB3dChunk> B3dStack;
