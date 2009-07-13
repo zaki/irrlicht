@@ -16,7 +16,7 @@
   Welcome to the irrXML API documentation.
   Here you'll find any information you'll need to develop applications with
   irrXML. If you look for a tutorial on how to start, take a look at the \ref irrxmlexample,
-  at the homepage of irrXML at <A HREF="http://xml.irrlicht3d.org" >xml.irrlicht3d.org</A>
+  at the homepage of irrXML at <A HREF="http://www.ambiera.com/irrxml/">www.ambiera.com/irrxml/</A>
   or into the SDK in the directory \example.
 
   irrXML is intended to be a high speed and easy-to-use XML Parser for C++, and

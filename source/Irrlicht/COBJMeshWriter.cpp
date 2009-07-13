@@ -186,7 +186,9 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			getColorAsStringLine(mat[i]->EmissiveColor, "Ke", num);
 			file->write(num.c_str(),num.size());
 			num = core::stringc(mat[i]->Shininess/0.128f);
+			file->write("Ns ", 3);
 			file->write(num.c_str(),num.size());
+			file->write("\n", 1);
 			if (mat[i]->getTexture(0))
 			{
 				file->write("map_Kd ", 7);
