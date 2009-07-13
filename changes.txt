@@ -86,6 +86,8 @@ Changes in 1.6
 
  - Fixed problem with highlighting menus when mouse was outside sub-menu area. 
 
+ - Add mouse events EMIE_MOUSE_DOUBLE_CLICK and EMIE_MOUSE_TRIPLE_CLICK (thx to Ulf for patch proposal)
+
  - Set "ButtonStates" for mouse events also on Linux (was only for Windows formerly)
 
  - Add Shift+Control states to mouse event
