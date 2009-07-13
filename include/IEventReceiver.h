@@ -99,6 +99,14 @@ namespace irr
 		//! in what direction and how fast.
 		EMIE_MOUSE_WHEEL,
 
+		//! Mouse double click.
+		//! This event is generated after the second EMIE_LMOUSE_PRESSED_DOWN event.
+		EMIE_MOUSE_DOUBLE_CLICK,
+
+		//! Mouse triple click.
+		//! This event is generated after the third EMIE_LMOUSE_PRESSED_DOWN event.
+		EMIE_MOUSE_TRIPLE_CLICK,
+
 		//! No real event. Just for convenience to get number of events
 		EMIE_COUNT
 	};
