@@ -75,6 +75,8 @@ bool CSceneNodeAnimatorCameraMaya::OnEvent(const SEvent& event)
 		MousePos = CursorControl->getRelativePosition();
 		break;
 	case EMIE_MOUSE_WHEEL:
+	case EMIE_MOUSE_DOUBLE_CLICK:
+	case EMIE_MOUSE_TRIPLE_CLICK:
 	case EMIE_COUNT:
 		return false;
 	}
