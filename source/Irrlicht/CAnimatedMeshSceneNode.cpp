@@ -684,7 +684,6 @@ bool CAnimatedMeshSceneNode::removeChild(ISceneNode* child)
 	{
 		Shadow->drop();
 		Shadow = 0;
-		return true;
 	}
 
 	if (ISceneNode::removeChild(child))
