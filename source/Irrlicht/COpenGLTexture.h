@@ -13,6 +13,8 @@
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	#define GL_GLEXT_LEGACY 1
+#else
+	#define GL_GLEXT_PROTOTYPES 1
 #endif
 #ifdef _IRR_WINDOWS_API_
 	// include windows headers for HWND
