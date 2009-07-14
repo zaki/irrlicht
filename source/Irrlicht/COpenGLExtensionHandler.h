@@ -892,7 +892,12 @@ inline void COpenGLExtensionHandler::extGlActiveTexture(GLenum texture)
 	if (MultiTextureExtension && pGlActiveTextureARB)
 		pGlActiveTextureARB(texture);
 #else
-	if (MultiTextureExtension) glActiveTextureARB(texture);
+	if (MultiTextureExtension)
+#ifdef GL_ARB_multitexture
+		glActiveTextureARB(texture);
+#else
+		glActiveTexture(texture);
+#endif
 #endif
 }
 
@@ -902,7 +907,8 @@ inline void COpenGLExtensionHandler::extGlClientActiveTexture(GLenum texture)
 	if (MultiTextureExtension && pGlClientActiveTextureARB)
 		pGlClientActiveTextureARB(texture);
 #else
-	if (MultiTextureExtension) glClientActiveTextureARB(texture);
+	if (MultiTextureExtension)
+		glClientActiveTextureARB(texture);
 #endif
 }
 
