@@ -375,7 +375,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
 	// set fog mode
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
 	// set exposed data
 	ExposedData.D3D8.D3D8 = pID3D;
@@ -542,7 +542,7 @@ bool CD3D8Driver::reset()
 
 	setVertexShader(EVT_STANDARD);
 	setRenderStates3DMode();
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 	setAmbientLight(AmbientLight);
 
 	return true;
