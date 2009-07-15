@@ -408,7 +408,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	setVertexShader(EVT_STANDARD);
 
 	// set fog mode
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
 	// set exposed data
 	ExposedData.D3D9.D3D9 = pID3D;
@@ -2455,7 +2455,7 @@ bool CD3D9Driver::reset()
 
 	setVertexShader(EVT_STANDARD);
 	setRenderStates3DMode();
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 	setAmbientLight(AmbientLight);
 
 	return true;
