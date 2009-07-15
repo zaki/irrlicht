@@ -82,6 +82,10 @@ namespace video
 		ETS_COUNT
 	};
 
+	//! enumeration for signalling ressources which were lost after the last render cycle
+	/** These values can be signalled by the driver, telling the app that some ressources
+	were lost and need to be recreated. Irrlicht will sometimes recreate the actual objects,
+	but the content needs to be recreated by the application. */
 	enum E_LOST_RESSOURCE
 	{
 		//! The whole device/driver is lost
@@ -94,6 +98,8 @@ namespace video
 		ELR_HW_BUFFERS = 8
 	};
 
+	//! Special render targets, which usually map to dedicated hardware
+	/** These render targets (besides 0 and 1) need not be supported by gfx cards */
 	enum E_RENDER_TARGET
 	{
 		//! Render target is the main color frame buffer
@@ -116,6 +122,14 @@ namespace video
 		ERT_AUX_BUFFER3,
 		//! Auxiliary buffer 4
 		ERT_AUX_BUFFER4
+	};
+
+	//! Enum for the types of fog distributions to choose from
+	enum E_FOG_TYPE
+	{
+		EFT_FOG_EXP=0,
+		EFT_FOG_LINEAR,
+		EFT_FOG_EXP2
 	};
 
 	struct SOverrideMaterial
@@ -812,8 +826,8 @@ namespace video
 		not the z-coordinate. This is better, but slower. This is only
 		available with D3D and vertex fog. */
 		virtual void setFog(SColor color=SColor(0,255,255,255),
-				bool linearFog=true, f32 start=50.0f, f32 end=100.0f,
-				f32 density=0.01f,
+				E_FOG_TYPE fogType=EFT_FOG_LINEAR,
+				f32 start=50.0f, f32 end=100.0f, f32 density=0.01f,
 				bool pixelFog=false, bool rangeFog=false) =0;
 
 		//! Get the current color format of the color buffer

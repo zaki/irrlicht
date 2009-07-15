@@ -31,6 +31,7 @@
 // doesn't actually seem to be necessary except to pull in sys/ioctl.h.
 #define _INPUT_H
 #include <sys/ioctl.h> // Would normally be included in linux/input.h
+#define BITS_PER_LONG 32
 #include <linux/joystick.h>
 #undef _INPUT_H
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_

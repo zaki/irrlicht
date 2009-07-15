@@ -1964,28 +1964,25 @@ u32 CD3D8Driver::getMaximalPrimitiveCount() const
 
 
 //! Sets the fog mode.
-void CD3D8Driver::setFog(SColor color, bool linearFog, f32 start,
+void CD3D8Driver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 	f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
 
 	if (!pID3DDevice)
 		return;
 
 	pID3DDevice->SetRenderState(D3DRS_FOGCOLOR, color.color);
 
+	pID3DDevice->SetRenderState(
 #if defined( _IRR_XBOX_PLATFORM_)
-	pID3DDevice->SetRenderState(
-		pixelFog ? D3DRS_FOGTABLEMODE : D3DRS_FOGTABLEMODE,
-		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
-
+		D3DRS_FOGTABLEMODE,
 #else
-	pID3DDevice->SetRenderState(
 		pixelFog ? D3DRS_FOGTABLEMODE : D3DRS_FOGVERTEXMODE,
-		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
 #endif
+		(fogType==EFT_FOG_LINEAR)? D3DFOG_LINEAR : (fogType==EFT_FOG_EXP)?D3DFOG_EXP:D3DFOG_EXP2);
 
-	if(linearFog)
+	if (fogType==EFT_FOG_LINEAR)
 	{
 		pID3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&start));
 		pID3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&end));
@@ -1994,7 +1991,7 @@ void CD3D8Driver::setFog(SColor color, bool linearFog, f32 start,
 		pID3DDevice->SetRenderState(D3DRS_FOGDENSITY, *(DWORD*)(&density));
 
 	if(!pixelFog)
-		pID3DDevice->SetRenderState	(D3DRS_RANGEFOGENABLE, rangeFog);
+		pID3DDevice->SetRenderState(D3DRS_RANGEFOGENABLE, rangeFog);
 }
 
 

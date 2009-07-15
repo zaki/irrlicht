@@ -240,7 +240,7 @@ namespace video
 
 		void lightVertex ( s4DVertex *dest, u32 vertexargb );
 		//! Sets the fog mode.
-		virtual void setFog(SColor color, bool linearFog, f32 start,
+		virtual void setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 #endif
 

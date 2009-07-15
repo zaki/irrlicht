@@ -550,7 +550,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	glAlphaFunc(GL_GREATER, 0.f);
 
 	// set fog mode
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
 	// create matrix for flipping textures
 	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
@@ -2782,18 +2782,18 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 
 //! Sets the fog mode.
-void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
+void COpenGLDriver::setFog(SColor c, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(c, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(c, fogType, start, end, density, pixelFog, rangeFog);
 
-	glFogf(GL_FOG_MODE, GLfloat(linearFog ? GL_LINEAR : GL_EXP));
+	glFogf(GL_FOG_MODE, GLfloat((fogType==EFT_FOG_LINEAR)? GL_LINEAR : (fogType==EFT_FOG_EXP)?GL_EXP:GL_EXP2));
 #ifdef GL_EXT_fog_coord
 	if (FeatureAvailable[IRR_EXT_fog_coord])
 		glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);
 #endif
 
-	if (linearFog)
+	if (fogType==EFT_FOG_LINEAR)
 	{
 		glFogf(GL_FOG_START, start);
 		glFogf(GL_FOG_END, end);
