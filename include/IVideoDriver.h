@@ -62,6 +62,22 @@ namespace video
 		ETS_TEXTURE_2,
 		//! Texture transformation
 		ETS_TEXTURE_3,
+#if _IRR_MATERIAL_MAX_TEXTURES_>4
+		//! Texture transformation
+		ETS_TEXTURE_4,
+#if _IRR_MATERIAL_MAX_TEXTURES_>5
+		//! Texture transformation
+		ETS_TEXTURE_5,
+#if _IRR_MATERIAL_MAX_TEXTURES_>6
+		//! Texture transformation
+		ETS_TEXTURE_6,
+#if _IRR_MATERIAL_MAX_TEXTURES_>7
+		//! Texture transformation
+		ETS_TEXTURE_7,
+#endif
+#endif
+#endif
+#endif
 		//! Not used
 		ETS_COUNT
 	};

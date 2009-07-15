@@ -165,7 +165,7 @@ namespace video
 	};
 
 	//! Maximum number of texture an SMaterial can have.
-	const u32 MATERIAL_MAX_TEXTURES = 4;
+	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;
 
 	//! Struct for holding parameters for a material renderer
 	class SMaterial
