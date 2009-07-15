@@ -208,9 +208,10 @@ namespace video
 		virtual void draw2DPolygon(core::position2d<s32> center,
 			f32 radius, video::SColor Color, s32 vertexCount);
 
-		virtual void setFog(SColor color=SColor(0,255,255,255), bool linearFog=true,
-			f32 start=50.0f, f32 end=100.0f,
-			f32 density=0.01f, bool pixelFog=false, bool rangeFog=false);
+		virtual void setFog(SColor color=SColor(0,255,255,255),
+				E_FOG_TYPE fogType=EFT_FOG_LINEAR,
+				f32 start=50.0f, f32 end=100.0f, f32 density=0.01f,
+				bool pixelFog=false, bool rangeFog=false);
 
 		//! get color format of the current color buffer
 		virtual ECOLOR_FORMAT getColorFormat() const;
@@ -680,7 +681,7 @@ namespace video
 
 		SOverrideMaterial OverrideMaterial;
 
-		bool LinearFog;
+		E_FOG_TYPE FogType;
 		bool PixelFog;
 		bool RangeFog;
 		bool AllowZWriteOnTransparent;

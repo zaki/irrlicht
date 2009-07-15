@@ -1494,10 +1494,10 @@ void CBurningVideoDriver::setMaterial(const SMaterial& material)
 #ifdef SOFTWARE_DRIVER_2_LIGHTING
 
 //! Sets the fog mode.
-void CBurningVideoDriver::setFog(SColor color, bool linearFog, f32 start,
+void CBurningVideoDriver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 	f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
 	LightSpace.FogColor.setA8R8G8B8 ( color.color );
 }
 

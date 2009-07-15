@@ -1371,11 +1371,11 @@ IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32
 
 
 //! Sets the fog mode.
-void CNullDriver::setFog(SColor color, bool linearFog, f32 start, f32 end,
+void CNullDriver::setFog(SColor color, E_FOG_TYPE fogType, f32 start, f32 end,
 		f32 density, bool pixelFog, bool rangeFog)
 {
 	FogColor = color;
-	LinearFog = linearFog;
+	FogType = fogType;
 	FogStart = start;
 	FogEnd = end;
 	FogDensity = density;

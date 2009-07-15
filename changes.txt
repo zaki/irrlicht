@@ -1,5 +1,7 @@
 Changes in 1.6
 
+ - Added support for EXP2 fog distribution. This required a change in the setFog parameters where now an enum value instead of the bool linear is given.
+
  - IFileSystem changes:
    
    - Renamed the following functions-

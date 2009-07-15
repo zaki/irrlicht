@@ -2315,10 +2315,10 @@ u32 CD3D9Driver::getMaximalPrimitiveCount() const
 
 
 //! Sets the fog mode.
-void CD3D9Driver::setFog(SColor color, bool linearFog, f32 start,
+void CD3D9Driver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 	f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
 
 	if (!pID3DDevice)
 		return;
@@ -2327,9 +2327,9 @@ void CD3D9Driver::setFog(SColor color, bool linearFog, f32 start,
 
 	pID3DDevice->SetRenderState(
 		pixelFog ? D3DRS_FOGTABLEMODE : D3DRS_FOGVERTEXMODE,
-		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
+		(fogType==EFT_FOG_LINEAR)? D3DFOG_LINEAR : (fogType==EFT_FOG_EXP)?D3DFOG_EXP:D3DFOG_EXP2);
 
-	if(linearFog)
+	if (fogType==EFT_FOG_LINEAR)
 	{
 		pID3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&start));
 		pID3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&end));
