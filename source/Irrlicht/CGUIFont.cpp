@@ -633,7 +633,7 @@ s32 CGUIFont::getCharacterFromPos(const wchar_t* text, s32 pixel_x) const
 	{
 		const SFontArea& a = Areas[getAreaFromCharacter(text[idx])];
 
-		x += a.width + a.overhang + a.underhang;
+		x += a.width + a.overhang + a.underhang + GlobalKerningWidth;
 
 		if (x >= pixel_x)
 			return idx;
