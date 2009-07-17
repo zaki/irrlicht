@@ -168,20 +168,6 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* file)
 }
 
 
-//! Read RGB color
-const c8* CSTLMeshFileLoader::readColor(const c8* bufPtr, video::SColor& color, const c8* const pBufEnd) const
-{
-	const u32 COLOR_BUFFER_LENGTH = 16;
-	c8 colStr[COLOR_BUFFER_LENGTH];
-
-	color.setAlpha(255);
-	color.setRed((s32)(core::fast_atof(colStr) * 255.0f));
-	color.setGreen((s32)(core::fast_atof(colStr) * 255.0f));
-	color.setBlue((s32)(core::fast_atof(colStr) * 255.0f));
-	return bufPtr;
-}
-
-
 //! Read 3d vector of floats
 void CSTLMeshFileLoader::getNextVector(io::IReadFile* file, core::vector3df& vec, bool binary) const
 {

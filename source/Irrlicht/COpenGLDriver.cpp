@@ -2721,7 +2721,6 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 }
 
 
-
 void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
@@ -2788,9 +2787,19 @@ void COpenGLDriver::setFog(SColor c, E_FOG_TYPE fogType, f32 start,
 	CNullDriver::setFog(c, fogType, start, end, density, pixelFog, rangeFog);
 
 	glFogf(GL_FOG_MODE, GLfloat((fogType==EFT_FOG_LINEAR)? GL_LINEAR : (fogType==EFT_FOG_EXP)?GL_EXP:GL_EXP2));
+
 #ifdef GL_EXT_fog_coord
 	if (FeatureAvailable[IRR_EXT_fog_coord])
 		glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);
+#endif
+#ifdef GL_NV_fog_distance
+	if (FeatureAvailable[IRR_NV_fog_distance])
+	{
+		if (rangeFog)
+			glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
+		else
+			glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
+	}
 #endif
 
 	if (fogType==EFT_FOG_LINEAR)
@@ -2810,7 +2819,6 @@ void COpenGLDriver::setFog(SColor c, E_FOG_TYPE fogType, f32 start,
 	GLfloat data[4] = {color.r, color.g, color.b, color.a};
 	glFogfv(GL_FOG_COLOR, data);
 }
-
 
 
 //! Draws a 3d line.
