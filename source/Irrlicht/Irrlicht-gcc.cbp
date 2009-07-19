@@ -895,6 +895,8 @@
 		<Unit filename="CTRTextureLightMap2_M4.cpp" />
 		<Unit filename="CTRTextureLightMapGouraud2_M4.cpp" />
 		<Unit filename="CTRTextureWire2.cpp" />
+		<Unit filename="CTarReader.cpp" />
+		<Unit filename="CTarReader.h" />
 		<Unit filename="CTerrainSceneNode.cpp" />
 		<Unit filename="CTerrainSceneNode.h" />
 		<Unit filename="CTerrainTriangleSelector.cpp" />
