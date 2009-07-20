@@ -80,12 +80,10 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 		dmfFace *faces=new dmfFace[header.numFaces];
 
 		//let's get the materials
-		const bool use_mat_dirs=SceneMgr->getParameters()->getAttributeAsBool(DMF_USE_MATERIALS_DIRS);
-
 #ifdef _IRR_DMF_DEBUG_
 		os::Printer::log("Loading materials", core::stringc(header.numMaterials).c_str());
 #endif
-		GetDMFMaterials(dmfRawFile, materiali, header.numMaterials, use_mat_dirs);
+		GetDMFMaterials(dmfRawFile, materiali, header.numMaterials);
 
 		//let's get vertices and faces
 #ifdef _IRR_DMF_DEBUG_
@@ -115,7 +113,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 		for (i = 0; i < header.numFaces; i++)
 		{
 #ifdef _IRR_DMF_DEBUG_
-		os::Printer::log("Polygon with #vertices", core::stringc(faces[i].numVerts).c_str());
+//		os::Printer::log("Polygon with #vertices", core::stringc(faces[i].numVerts).c_str());
 #endif
 			if (faces[i].numVerts < 3)
 				continue;
@@ -174,15 +172,17 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 #ifdef _IRR_DMF_DEBUG_
 		os::Printer::log("Loading textures.");
 #endif
+		const bool use_mat_dirs=!SceneMgr->getParameters()->getAttributeAsBool(DMF_IGNORE_MATERIALS_DIRS);
+
+		core::stringc path;
+		if ( SceneMgr->getParameters()->existsAttribute(DMF_TEXTURE_PATH) )
+			path = SceneMgr->getParameters()->getAttributeAsString(DMF_TEXTURE_PATH);
+		else
+			path = FileSystem->getFileDir(file->getFileName());
+		path += ('/');
+
 		for (i=0; i<header.numMaterials; i++)
 		{
-			core::stringc path;
-			if ( SceneMgr->getParameters()->existsAttribute(DMF_TEXTURE_PATH) )
-				path = SceneMgr->getParameters()->getAttributeAsString(DMF_TEXTURE_PATH);
-			else
-				path = FileSystem->getFileDir(file->getFileName());
-			path += ('/');
-
 			//texture and lightmap
 			video::ITexture *tex = 0;
 			video::ITexture *lig = 0;
@@ -195,12 +195,28 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			{
 				if (materiali[i].textureBlend==4)
 					driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT,true);
-				if (FileSystem->existFile(path+materiali[i].textureName))
+				// path + texpath + full name
+				if (use_mat_dirs && FileSystem->existFile(path+materiali[i].pathName+materiali[i].textureName))
+					tex = driver->getTexture((path+materiali[i].pathName+materiali[i].textureName));
+				// path + full name
+				else if (FileSystem->existFile(path+materiali[i].textureName))
 					tex = driver->getTexture((path+materiali[i].textureName));
+				// path + texpath + base name
+				else if (use_mat_dirs && FileSystem->existFile(path+materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)))
+					tex = driver->getTexture((path+materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)));
+				// path + base name
 				else if (FileSystem->existFile(path+FileSystem->getFileBasename(materiali[i].textureName)))
 					tex = driver->getTexture((path+FileSystem->getFileBasename(materiali[i].textureName)));
+				// texpath + full name
+				else if (use_mat_dirs && FileSystem->existFile(materiali[i].pathName+materiali[i].textureName))
+					tex = driver->getTexture(materiali[i].pathName+materiali[i].textureName.c_str());
+				// full name
 				else if (FileSystem->existFile(materiali[i].textureName))
 					tex = driver->getTexture(materiali[i].textureName.c_str());
+				// texpath + base name
+				else if (use_mat_dirs && FileSystem->existFile(materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)))
+					tex = driver->getTexture(materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName));
+				// base name
 				else if (FileSystem->existFile(FileSystem->getFileBasename(materiali[i].textureName)))
 					tex = driver->getTexture(FileSystem->getFileBasename(materiali[i].textureName));
 #ifdef _IRR_DMF_DEBUG_

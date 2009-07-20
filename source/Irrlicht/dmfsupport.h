@@ -21,6 +21,7 @@
 #define __DMF_SUPPORT_H_INCLUDED__
 
 #include "irrString.h"
+#include "fast_atof.h"
 
 namespace irr
 {
@@ -55,12 +56,13 @@ struct dmfMaterial
 	u32 textureFlag;//!<First texture Flag (0=Normal, 1=Color).
 	u32 lightmapFlag;//!<Lightmap Flag (0=Normal, others not considered).
 	u32 textureBlend;//!<Texture Blend mode used to support alpha maps (4=Alpha map, others not implemented yet).
+	core::stringc pathName;//!<Name of path defined in path element.
 	core::stringc textureName;//!<Name of first texture (only file name, no path).
 	core::stringc lightmapName;//!<Name of lightmap (only file name, no path).
 };
 
 
-/** A structure rapresenting a single face.
+/** A structure representing a single face.
 This structure contains first vertice index, number of vertices and the material used.*/
 struct dmfFace
 {
@@ -340,49 +342,49 @@ You must give in input a StringList representing a DMF file loaded with LoadFrom
 \return true if function succeed or false on fail.*/
 bool GetDMFMaterials(const StringList& RawFile,
 			core::array<dmfMaterial>& materials,
-			int num_material,
-			bool use_material_dirs=false)
+			int num_material)
 {
-	int offs=4;
+	// offset for already handled lines
+	const int offs=4;
+
 	StringList temp;
 	StringList temp1;
-	StringList temp2;
 
+	// The number of materials is predetermined
 	materials.reallocate(num_material);
 	for(int i=0; i<num_material; ++i)
 	{
 		materials.push_back(dmfMaterial());
+		// get all tokens
 		temp=SubdivideString(RawFile[offs+i],";");
+		// should be equal to first token
 		materials[i].materialID = i;
-		materials[i].textureLayers = atoi(temp[3].c_str());
+		// The path used for the texture
+		materials[i].pathName = temp[2];
+		materials[i].pathName.replace('\\','/');
+		materials[i].pathName += "/";
+		// can be negative! Maybe the wrong field?
+		materials[i].textureLayers = core::strtol10(temp[3].c_str());
+		// Three values are separated by commas
 		temp1=SubdivideString(temp[5],",");
 
 		materials[i].textureFlag = atoi(temp1[0].c_str());
 		materials[i].textureName=temp1[1];
 		materials[i].textureName.replace('\\','/');
 		materials[i].textureBlend = atoi(temp1[2].c_str());
-		temp1.clear();
-		temp2.clear();
 		int a=temp.size();
 		if(a>=9)
 		{
 			temp1=SubdivideString(temp[temp.size() - 1],",");
 			materials[i].lightmapFlag=atoi(temp1[0].c_str());
-			if(!use_material_dirs)
-			{
-				temp2=SubdivideString(temp1[1],"\\");
-				materials[i].lightmapName=temp2.getLast();
-			}
-			else
-				materials[i].lightmapName=temp1[1];
+			materials[i].lightmapName=temp1[1];
+			materials[i].lightmapName.replace('\\','/');
 		}
 		else
 		{
 			materials[i].lightmapFlag=1;
 			materials[i].lightmapName="";
 		}
-		temp1.clear();
-		temp2.clear();
 	}
 	return true;
 }
