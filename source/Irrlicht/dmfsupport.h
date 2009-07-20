@@ -59,6 +59,7 @@ struct dmfMaterial
 	core::stringc pathName;//!<Name of path defined in path element.
 	core::stringc textureName;//!<Name of first texture (only file name, no path).
 	core::stringc lightmapName;//!<Name of lightmap (only file name, no path).
+	u32 lightmapBlend;//!<Blend mode used to support alpha maps (not implemented yet).
 };
 
 
@@ -363,8 +364,8 @@ bool GetDMFMaterials(const StringList& RawFile,
 		materials[i].pathName = temp[2];
 		materials[i].pathName.replace('\\','/');
 		materials[i].pathName += "/";
-		// can be negative! Maybe the wrong field?
-		materials[i].textureLayers = core::strtol10(temp[3].c_str());
+		// temp[3] is reserved, temp[4] is the number of texture layers
+		materials[i].textureLayers = core::strtol10(temp[4].c_str());
 		// Three values are separated by commas
 		temp1=SubdivideString(temp[5],",");
 
@@ -372,13 +373,13 @@ bool GetDMFMaterials(const StringList& RawFile,
 		materials[i].textureName=temp1[1];
 		materials[i].textureName.replace('\\','/');
 		materials[i].textureBlend = atoi(temp1[2].c_str());
-		int a=temp.size();
-		if(a>=9)
+		if(temp.size()>=9)
 		{
 			temp1=SubdivideString(temp[temp.size() - 1],",");
 			materials[i].lightmapFlag=atoi(temp1[0].c_str());
 			materials[i].lightmapName=temp1[1];
 			materials[i].lightmapName.replace('\\','/');
+			materials[i].lightmapBlend = atoi(temp1[2].c_str());
 		}
 		else
 		{
@@ -466,13 +467,12 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 	s32 offs = 4 + atoi(RawFile[3].c_str());
 
 	const s32 objs = atoi(RawFile[offs].c_str());
+	offs++;
 #ifdef _IRR_DMF_DEBUG_
 	os::Printer::log("Reading objects", core::stringc(objs).c_str());
 #endif
 
-	s32 vert=0, tmp_sz=0, vert_cnt=0, face_cnt=0;
-	offs++;
-
+	s32 vert_cnt=0, face_cnt=0;
 	for (int i=0; i<objs; ++i)
 	{
 		StringList wat=SubdivideString(RawFile[offs],";");
@@ -482,10 +482,20 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 #endif
 
 		offs++;
-		const s32 vrtxPos=offs+1;
-		// skip vertices
-		offs += atoi(RawFile[offs].c_str());
-		offs++;
+		// load vertices
+		core::array<core::vector3df> pos;
+		const u32 posCount = core::strtol10(RawFile[offs].c_str());
+		++offs;
+		pos.reallocate(posCount);
+		for (u32 i=0; i<posCount; ++i)
+		{
+			temp1=SubdivideString(RawFile[offs].c_str(),";");
+			pos.push_back(core::vector3df(core::fast_atof(temp1[0].c_str()),
+					core::fast_atof(temp1[1].c_str()),
+					-core::fast_atof(temp1[2].c_str())));
+			++offs;
+		}
+
 		const s32 numFaces=atoi(RawFile[offs].c_str());
 		offs++;
 		if(!(wat1[0]==String("water") && wat[2]==String("0")))
@@ -495,7 +505,7 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 				temp=SubdivideString(RawFile[offs+j],";");
 
 				//first value is vertices number for this face
-				vert=atoi(temp[0].c_str());
+				const s32 vert=core::strtol10(temp[0].c_str());
 				faces[face_cnt].numVerts=vert;
 				//second is material ID
 				faces[face_cnt].materialID=atoi(temp[1].c_str());
@@ -505,28 +515,22 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 				//now we'll create vertices structure
 				for(s32 k=0; k<vert; ++k)
 				{
-					//get vertex position
-					temp1=SubdivideString(RawFile[vrtxPos+atoi(temp[2+k].c_str())],";");
-					//copy x,y,z values
-					vertices[vert_cnt].pos.set((float)atof(temp1[0].c_str()),
-							(float)atof(temp1[1].c_str()),
-							(float)-atof(temp1[2].c_str()));
+					//copy position
+					vertices[vert_cnt].pos.set(pos[core::strtol10(temp[2+k].c_str())]);
 					//get uv coords for tex and light if any
-					vertices[vert_cnt].tc.set((float)atof(temp[2+vert+(2*k)].c_str()),
-							(float)atof(temp[2+vert+(2*k)+1].c_str()));
-					tmp_sz=temp.size();
-					vertices[vert_cnt].lc.set((float)atof(temp[tmp_sz-(2*vert)+(2*k)].c_str()),
-							(float)atof(temp[tmp_sz-(2*vert)+(2*k)+1].c_str()));
+					vertices[vert_cnt].tc.set(core::fast_atof(temp[2+vert+(2*k)].c_str()),
+							core::fast_atof(temp[2+vert+(2*k)+1].c_str()));
+					const u32 tmp_sz=temp.size();
+					vertices[vert_cnt].lc.set(core::fast_atof(temp[tmp_sz-(2*vert)+(2*k)].c_str()),
+							core::fast_atof(temp[tmp_sz-(2*vert)+(2*k)+1].c_str()));
 					vert_cnt++;
-					temp1.clear();
 				}
 
 				face_cnt++;
-				temp.clear();
 			}
 		}
 
-		offs=offs+numFaces;
+		offs+=numFaces;
 	}
 
 	return true;
@@ -759,4 +763,3 @@ bool GetDMFWaterPlanes(const StringList& RawFile/**<StringList representing a DM
 } // end namespace
 
 #endif /* __DMF_SUPPORT_H__ */
-
