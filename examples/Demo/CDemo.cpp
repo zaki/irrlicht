@@ -113,7 +113,7 @@ void CDemo::run()
 			static s32 lastfps = 0;
 			s32 nowfps = driver->getFPS();
 
-			swprintf(tmp, 255, L"%ls fps:%3d triangles:%0.3f mio", 
+			swprintf(tmp, 255, L"%ls fps:%3d triangles:%0.3f mio",
 								driver->getName(),
 								driver->getFPS(),
 								(f32) driver->getPrimitiveCountDrawn( 1 ) * ( 1.f / 1000000.f )
@@ -369,7 +369,7 @@ void CDemo::loadSceneData()
 			sm->getMeshManipulator()->transformMesh ( quakeLevelMesh->getMesh(i), m );
 		}
 
-		quakeLevelNode = sm->addOctTreeSceneNode( 
+		quakeLevelNode = sm->addOctTreeSceneNode(
 			quakeLevelMesh->getMesh( scene::quake3::E_Q3_MESH_GEOMETRY)
 									);
 		if (quakeLevelNode)
@@ -741,7 +741,7 @@ void CDemo::createParticleImpacts()
 			#ifdef USE_IRRKLANG
 			if (irrKlang)
 			{
-				irrklang::ISound* sound = 
+				irrklang::ISound* sound =
 					irrKlang->play3D(impactSound, Impacts[i].pos, false, false, true);
 
 				if (sound)

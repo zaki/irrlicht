@@ -9,7 +9,7 @@
 		<Build>
 			<Target title="Windows">
 				<Option platforms="Windows;" />
-				<Option output="..\..\bin\Win32-gcc\Win32Window" prefix_auto="0" extension_auto="1" />
+				<Option output="../../bin/Win32-gcc/Win32Window" prefix_auto="0" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option projectResourceIncludeDirsRelation="1" />
@@ -18,7 +18,7 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add directory="..\..\lib\Win32-gcc" />
+					<Add directory="../../lib/Win32-gcc" />
 				</Linker>
 			</Target>
 		</Build>
@@ -26,13 +26,12 @@
 			<Add alias="All" targets="Windows;" />
 		</VirtualTargets>
 		<Compiler>
-			<Add option="-Wall" />
+			<Add option="-W" />
 			<Add option="-g" />
-			<Add directory="..\..\include" />
+			<Add directory="../../include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add directory="..\..\lib\gcc" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
