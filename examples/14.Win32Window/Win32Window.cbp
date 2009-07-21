@@ -7,15 +7,23 @@
 		<Option pch_mode="0" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="default">
-				<Option output="..\..\bin\gcc\Win32Window" prefix_auto="0" extension_auto="1" />
+			<Target title="Windows">
+				<Option platforms="Windows;" />
+				<Option output="..\..\bin\Win32-gcc\Win32Window" prefix_auto="0" extension_auto="1" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option projectResourceIncludeDirsRelation="1" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add directory="..\..\lib\Win32-gcc" />
+				</Linker>
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="default;" />
+			<Add alias="All" targets="Windows;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
