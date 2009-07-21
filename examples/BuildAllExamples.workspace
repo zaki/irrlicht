@@ -19,8 +19,8 @@
 		<Project filename="16.Quake3MapShader/Quake3MapShader.cbp" />
 		<Project filename="18.SplitScreen/SplitScreen.cbp" />
 		<Project filename="19.MouseAndJoystick/MouseAndJoystick.cbp" />
-		<Project filename="20.ManagedLights/ManagedLights.cbp" />
-		<Project filename="Demo/demo.cbp" active="1" />
+		<Project filename="20.ManagedLights/ManagedLights.cbp" active="1" />
+		<Project filename="Demo/demo.cbp" />
 		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>

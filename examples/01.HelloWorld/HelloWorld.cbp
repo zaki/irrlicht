@@ -18,7 +18,6 @@
 				</Compiler>
 				<Linker>
 					<Add library="Xxf86vm" />
-					<Add library="Irrlicht" />
 					<Add library="GL" />
 					<Add directory="../../lib/Linux" />
 				</Linker>
@@ -35,7 +34,6 @@
 					<Add directory="../../lib/Win32-gcc" />
 				</Compiler>
 				<Linker>
-					<Add library="Irrlicht" />
 					<Add directory="../../lib/Win32-gcc/" />
 				</Linker>
 			</Target>
@@ -44,13 +42,12 @@
 			<Add alias="All" targets="Windows;" />
 		</VirtualTargets>
 		<Compiler>
-			<Add option="-Wall" />
+			<Add option="-W" />
 			<Add option="-g" />
 			<Add directory="../../include" />
 		</Compiler>
 		<Linker>
 			<Add library="Irrlicht" />
-			<Add directory="../../lib/gcc" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions>
