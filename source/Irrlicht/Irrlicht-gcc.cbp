@@ -254,7 +254,7 @@
 			</Target>
 			<Target title="Linux - Debug - shared">
 				<Option platforms="Unix;" />
-				<Option output="../../lib/gcc/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option object_output="../obj/linux-gcc-debug-shared" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -283,7 +283,7 @@
 			</Target>
 			<Target title="Linux - Release - accurate math - shared">
 				<Option platforms="Unix;" />
-				<Option output="../../lib/gcc/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option object_output="../obj/linux-gcc-release-shared" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -309,7 +309,7 @@
 			</Target>
 			<Target title="Linux - Release - fast math - shared">
 				<Option platforms="Unix;" />
-				<Option output="../../lib/gcc/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
 				<Option object_output="../obj/linux-gcc-release-fast-shared" />
 				<Option type="3" />
 				<Option compiler="gcc" />
@@ -335,12 +335,12 @@
 			</Target>
 			<Target title="Linux - Debug - static">
 				<Option platforms="Unix;" />
-				<Option output="../../lib/gcc/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
 				<Option object_output="../obj/linux-gcc-debug-shared" />
-				<Option type="3" />
+				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-W" />
 					<Add option="-Wall" />
@@ -350,6 +350,7 @@
 					<Add option="-Wno-unused-parameter" />
 					<Add option="-fPIC" />
 					<Add option="-D_IRR_STATIC_LIB_" />
+					<Add option="-D_DEBUG" />
 					<Add directory="../../include" />
 					<Add directory="zlib" />
 					<Add directory="libpng" />
@@ -363,12 +364,12 @@
 			</Target>
 			<Target title="Linux - Release - accurate math - static">
 				<Option platforms="Unix;" />
-				<Option output="../../lib/gcc/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
 				<Option object_output="../obj/linux-gcc-release-shared" />
-				<Option type="3" />
+				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-W" />
@@ -389,12 +390,12 @@
 			</Target>
 			<Target title="Linux - Release - fast math - static">
 				<Option platforms="Unix;" />
-				<Option output="../../lib/gcc/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option output="../../lib/Linux/libIrrlicht" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
 				<Option object_output="../obj/linux-gcc-release-fast-shared" />
-				<Option type="3" />
+				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-W" />
