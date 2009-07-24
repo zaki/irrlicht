@@ -181,6 +181,9 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 		// instead they'll siliently compile 1_x as 2_x when using this flag
 		flags |= D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY;
 #endif
+#if defined(_IRR_D3D_USE_LEGACY_HLSL_COMPILER) && defined(D3DXSHADER_USE_LEGACY_D3DX9_31_DLL)
+	flags |= D3DXSHADER_USE_LEGACY_D3DX9_31_DLL;
+#endif
 
 #ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 

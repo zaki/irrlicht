@@ -212,6 +212,13 @@ watch registers, variables etc. This works with ASM, HLSL, and both with pixel a
 Note that the engine will run in D3D REF for this, which is a lot slower than HAL. */
 #define _IRR_D3D_NO_SHADER_DEBUGGING
 
+//! Define _IRR_D3D_USE_LEGACY_HLSL_COMPILER to enable the old HLSL compiler in recent DX SDKs
+/** This enables support for ps_1_x shaders for recent DX SDKs. Otherwise, support 
+for this shader model is not available anymore in SDKs after Oct2006. You need to
+distribute the OCT2006_d3dx9_31_x86.cab or OCT2006_d3dx9_31_x64.cab though, in order
+to provide the user with the proper DLL. That's why it's disabled by default. */
+//#define _IRR_D3D_USE_LEGACY_HLSL_COMPILER
+
 //! Define _IRR_USE_NVIDIA_PERFHUD_ to opt-in to using the nVidia PerHUD tool
 /** Enable, by opting-in, to use the nVidia PerfHUD performance analysis driver
 tool <http://developer.nvidia.com/object/nvperfhud_home.html>. */
