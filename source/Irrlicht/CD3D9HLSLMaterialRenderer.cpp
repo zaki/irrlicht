@@ -173,6 +173,15 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 	LPD3DXBUFFER buffer = 0;
 	LPD3DXBUFFER errors = 0;
 
+	DWORD flags = 0;
+
+#ifdef D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY
+	if (Driver->queryFeature(video::EVDF_VERTEX_SHADER_2_0) || Driver->queryFeature(video::EVDF_VERTEX_SHADER_3_0))
+		// this one's for newer DX SDKs which don't support ps_1_x anymore
+		// instead they'll siliently compile 1_x as 2_x when using this flag
+		flags |= D3DXSHADER_ENABLE_BACKWARDS_COMPATIBILITY;
+#endif
+
 #ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 
 	// compile without debug info
@@ -183,7 +192,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 		0, // no includes
 		shaderEntryPointName,
 		shaderTargetName,
-		0, // no flags (D3DXSHADER_DEBUG)
+		flags,
 		&buffer,
 		&errors,
 		&PSConstantsTable);
@@ -209,7 +218,7 @@ bool CD3D9HLSLMaterialRenderer::createHLSLPixelShader(const char* pixelShaderPro
 		0, // no includes
 		shaderEntryPointName,
 		shaderTargetName,
-		D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION,
+		flags | D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION,
 		&buffer,
 		&errors,
 		&PSConstantsTable);
