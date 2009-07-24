@@ -99,7 +99,8 @@ public:
 
 			E_BLEND_FACTOR srcFact,dstFact;
 			E_MODULATE_FUNC modulate;
-			unpack_texureBlendFunc ( srcFact, dstFact, modulate, material.MaterialTypeParam );
+			u32 alphaSource;
+			unpack_texureBlendFunc ( srcFact, dstFact, modulate, alphaSource, material.MaterialTypeParam );
 
 			if (srcFact == EBF_SRC_COLOR && dstFact == EBF_ZERO)
 			{
@@ -116,10 +117,24 @@ public:
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 			pID3DDevice->SetTextureStageState (0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-			if ( textureBlendFunc_hasAlpha ( srcFact ) + textureBlendFunc_hasAlpha ( dstFact ) )
+			if ( textureBlendFunc_hasAlpha ( srcFact ) || textureBlendFunc_hasAlpha ( dstFact ) )
 			{
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+				if (alphaSource==EAS_VERTEX_COLOR)
+				{
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
+				}
+				else if (alphaSource==EAS_TEXTURE)
+				{
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+				}
+				else
+				{
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+				}
 			}
 			else
 			{
