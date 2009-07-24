@@ -1227,23 +1227,6 @@ void CImage::setBitMasks()
 }
 
 
-u32 CImage::getBitsPerPixelFromFormat(ECOLOR_FORMAT format)
-{
-	switch(format)
-	{
-	case ECF_A1R5G5B5:
-		return 16;
-	case ECF_R5G6B5:
-		return 16;
-	case ECF_R8G8B8:
-		return 24;
-	case ECF_A8R8G8B8:
-		return 32;
-	}
-
-	return 0;
-}
-
 //! sets a pixel
 void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 {

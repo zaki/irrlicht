@@ -142,6 +142,35 @@ public:
 	//! fills the surface with black or white
 	virtual void fill(const SColor &color) =0;
 
+	static u32 getBitsPerPixelFromFormat(ECOLOR_FORMAT format)
+	{
+		switch(format)
+		{
+		case ECF_A1R5G5B5:
+			return 16;
+		case ECF_R5G6B5:
+			return 16;
+		case ECF_R8G8B8:
+			return 24;
+		case ECF_A8R8G8B8:
+			return 32;
+		case ECF_R16F:
+			return 16;
+		case ECF_G16R16F:
+			return 32;
+		case ECF_A16B16G16R16F:
+			return 64;
+		case ECF_R32F:
+			return 32;
+		case ECF_G32R32F:
+			return 64;
+		case ECF_A32B32G32R32F:
+			return 128;
+		default:
+			return 0;
+		}
+	}
+
 };
 
 } // end namespace video
