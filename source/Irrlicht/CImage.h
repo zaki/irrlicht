@@ -116,8 +116,6 @@ public:
 	//! draws a line from to
 	void drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color);
 
-	static u32 getBitsPerPixelFromFormat(ECOLOR_FORMAT format);
-
 private:
 
 	//! assumes format and size has been set and creates the rest
