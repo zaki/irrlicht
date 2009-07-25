@@ -1016,13 +1016,25 @@ namespace video
 
 		//! Creates a software image from a part of another image.
 		/**
-		\param imageToCopy Image to copy the the new image in part.
+		\param imageToCopy Image to copy to the new image in part.
 		\param pos Position of rectangle to copy.
 		\param size Extents of rectangle to copy.
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImage(IImage* imageToCopy,
+				const core::position2d<s32>& pos,
+				const core::dimension2d<u32>& size) =0;
+
+		//! Creates a software image from a part of a texture.
+		/**
+		\param texture Texture to copy to the new image in part.
+		\param pos Position of rectangle to copy.
+		\param size Extents of rectangle to copy.
+		\return The created image.
+		If you no longer need the image, you should call IImage::drop().
+		See IReferenceCounted::drop() for more information. */
+		virtual IImage* createImage(ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::dimension2d<u32>& size) =0;
 

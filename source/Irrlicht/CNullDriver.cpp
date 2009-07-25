@@ -12,6 +12,7 @@
 #include "IImageWriter.h"
 #include "IMaterialRenderer.h"
 #include "CMeshManipulator.h"
+#include "CColorConverter.h"
 
 
 namespace irr
@@ -1367,6 +1368,38 @@ IImage* CNullDriver::createImage(ECOLOR_FORMAT format, IImage *imageToCopy)
 IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32>& pos, const core::dimension2d<u32>& size)
 {
 		return new CImage(imageToCopy, pos, size);
+}
+
+
+//! Creates a software image from part of a texture.
+IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>& pos, const core::dimension2d<u32>& size)
+{
+	if (pos==core::position2di(0,0) && size == texture->getSize())
+	{
+		IImage* image = new CImage(texture->getColorFormat(), size, texture->lock(true), false);
+		texture->unlock();
+		return image;
+	}
+	else
+	{
+		// make sure to avoid buffer overruns
+		const core::rect<u32> clamped(core::vector2d<u32>(core::clamp(static_cast<u32>(pos.X), 0u, texture->getSize().Width),
+					core::clamp(static_cast<u32>(pos.Y), 0u, texture->getSize().Height)),
+					core::dimension2du(core::clamp(static_cast<u32>(size.Width), 0u, texture->getSize().Width),
+					core::clamp(static_cast<u32>(size.Height), 0u, texture->getSize().Height)));
+		if (!clamped.isValid())
+			return 0;
+		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
+		void* src = texture->lock(true);
+		void* dst = image->lock();
+		for (u32 i=clamped.UpperLeftCorner.X; i<clamped.getHeight(); ++i)
+		{
+			video::CColorConverter::convert_viaFormat(src, texture->getColorFormat(), clamped.getWidth(), dst, image->getColorFormat());
+		}
+		image->unlock();
+		texture->unlock();
+		return image;
+	}
 }
 
 
