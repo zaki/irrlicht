@@ -82,14 +82,21 @@ namespace video
 		ECP_ALL=15
 	};
 
+	//! Source of the alpha value to take
+	/** This is currently only supported in EMT_ONETEXTURE_BLEND. You can use an
+	or'ed combination of values. Alpha values are modulated (multiplicated). */
 	enum E_ALPHA_SOURCE
 	{
+		//! Use no alpha, somewhat redundant with other settings
 		EAS_NONE=0,
+		//! Use vertex color alpha
 		EAS_VERTEX_COLOR,
+		//! Use texture alpha channel
 		EAS_TEXTURE
 	};
 
 	//! EMT_ONETEXTURE_BLEND: pack srcFact, dstFact, Modulate and alpha source to MaterialTypeParam
+	/** alpha source can be an OR'ed combination of E_ALPHA_SOURCE values. */
 	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
 	{
 		return (f32)((alphaSource << 24) | (modulate << 16) | (srcFact << 8) | dstFact);
