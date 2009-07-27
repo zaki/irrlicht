@@ -1166,7 +1166,7 @@ void CNullDriver::makeNormalMapTexture(video::ITexture* texture, f32 amplitude) 
 				n += core::vector3df(0.5f,0.5f,0.5f); // now between 0 and 1
 				n *= 255.0f;
 
-				p[y*pitch + x] = video::RGB16((s32)n.X, (s32)n.Z, (s32)n.Y);
+				p[y*pitch + x] = video::RGBA16((u32)n.X, (u32)n.Z, (u32)n.Y);
 			}
 
 		delete [] in;
