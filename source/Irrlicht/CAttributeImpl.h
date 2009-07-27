@@ -1237,15 +1237,15 @@ public:
 	virtual core::stringw getStringW()
 	{
 		char tmp[10];
-		video::SColor c = getColor();
-		sprintf(tmp, "%08x", c.color);
+		const video::SColor c = getColor();
+		sprintf(tmp, "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getBlue(), c.getGreen());
 		return core::stringw(tmp);
 	}
 
 	virtual void setString(const char* text)
 	{
-		video::SColor c;
-		sscanf(text, "%08x", &c.color);
+		u32 c;
+		sscanf(text, "%08x", &c);
 		setColor(c);
 	}
 

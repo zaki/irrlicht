@@ -67,7 +67,7 @@ namespace gui
 		};
 		SColorCircle ColorRing;
 
-		void buildColorRing( const core::dimension2d<u32> & dim, s32 supersample, const u32 borderColor );
+		void buildColorRing( const core::dimension2d<u32> & dim, s32 supersample, const video::SColor& borderColor );
 	};
 
 
