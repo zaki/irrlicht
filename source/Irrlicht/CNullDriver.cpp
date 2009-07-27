@@ -1383,14 +1383,18 @@ IImage* CNullDriver::createImage(ITexture* texture, const core::position2d<s32>&
 	else
 	{
 		// make sure to avoid buffer overruns
-		const core::rect<u32> clamped(core::vector2d<u32>(core::clamp(static_cast<u32>(pos.X), 0u, texture->getSize().Width),
-					core::clamp(static_cast<u32>(pos.Y), 0u, texture->getSize().Height)),
+		// make the vector a separate variable for g++ 3.x
+		const core::vector2d<u32> leftUpper(core::clamp(static_cast<u32>(pos.X), 0u, texture->getSize().Width),
+					core::clamp(static_cast<u32>(pos.Y), 0u, texture->getSize().Height));
+		const core::rect<u32> clamped(leftUpper,
 					core::dimension2du(core::clamp(static_cast<u32>(size.Width), 0u, texture->getSize().Width),
 					core::clamp(static_cast<u32>(size.Height), 0u, texture->getSize().Height)));
 		if (!clamped.isValid())
 			return 0;
-		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
 		void* src = texture->lock(true);
+		if (!src)
+			return 0;
+		IImage* image = new CImage(texture->getColorFormat(), clamped.getSize());
 		void* dst = image->lock();
 		for (u32 i=clamped.UpperLeftCorner.X; i<clamped.getHeight(); ++i)
 		{
