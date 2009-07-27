@@ -5,6 +5,8 @@
 #ifndef _C_BLIT_H_INCLUDED_
 #define _C_BLIT_H_INCLUDED_
 
+#include "SoftwareDriver2_helper.h"
+
 namespace irr
 {
 
