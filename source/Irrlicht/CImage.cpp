@@ -4,7 +4,6 @@
 
 #include "CImage.h"
 #include "irrString.h"
-#include "SoftwareDriver2_helper.h"
 #include "CColorConverter.h"
 #include "CBlit.h"
 
@@ -84,9 +83,7 @@ CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
 //! assumes format and size has been set and creates the rest
 void CImage::initData()
 {
-	setBitMasks();
-	BitsPerPixel = getBitsPerPixelFromFormat(Format);
-	BytesPerPixel = BitsPerPixel / 8;
+	BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
 
 	// Pitch should be aligned...
 	Pitch = BytesPerPixel * Size.Width;
@@ -115,7 +112,7 @@ const core::dimension2d<u32>& CImage::getDimension() const
 //! Returns bits per pixel.
 u32 CImage::getBitsPerPixel() const
 {
-	return BitsPerPixel;
+	return getBitsPerPixelFromFormat(Format);
 }
 
 
@@ -142,66 +139,78 @@ u32 CImage::getImageDataSizeInPixels() const
 }
 
 
-
 //! returns mask for red value of a pixel
 u32 CImage::getRedMask() const
 {
-	return RedMask;
+	switch(Format)
+	{
+	case ECF_A1R5G5B5:
+		return 0x1F<<10;
+	case ECF_R5G6B5:
+		return 0x1F<<11;
+	case ECF_R8G8B8:
+		return 0x00FF0000;
+	case ECF_A8R8G8B8:
+		return 0x00FF0000;
+	default:
+		return 0x0;
+	}
 }
-
 
 
 //! returns mask for green value of a pixel
 u32 CImage::getGreenMask() const
 {
-	return GreenMask;
+	switch(Format)
+	{
+	case ECF_A1R5G5B5:
+		return 0x1F<<5;
+	case ECF_R5G6B5:
+		return 0x3F<<5;
+	case ECF_R8G8B8:
+		return 0x0000FF00;
+	case ECF_A8R8G8B8:
+		return 0x0000FF00;
+	default:
+		return 0x0;
+	}
 }
-
 
 
 //! returns mask for blue value of a pixel
 u32 CImage::getBlueMask() const
 {
-	return BlueMask;
+	switch(Format)
+	{
+	case ECF_A1R5G5B5:
+		return 0x1F;
+	case ECF_R5G6B5:
+		return 0x1F;
+	case ECF_R8G8B8:
+		return 0x000000FF;
+	case ECF_A8R8G8B8:
+		return 0x000000FF;
+	default:
+		return 0x0;
+	}
 }
-
 
 
 //! returns mask for alpha value of a pixel
 u32 CImage::getAlphaMask() const
 {
-	return AlphaMask;
-}
-
-
-void CImage::setBitMasks()
-{
 	switch(Format)
 	{
 	case ECF_A1R5G5B5:
-		AlphaMask = 0x1<<15;
-		RedMask = 0x1F<<10;
-		GreenMask = 0x1F<<5;
-		BlueMask = 0x1F;
-	break;
+		return 0x1<<15;
 	case ECF_R5G6B5:
-		AlphaMask = 0x0;
-		RedMask = 0x1F<<11;
-		GreenMask = 0x3F<<5;
-		BlueMask = 0x1F;
-	break;
+		return 0x0;
 	case ECF_R8G8B8:
-		AlphaMask = 0x0;
-		RedMask   = 0x00FF0000;
-		GreenMask = 0x0000FF00;
-		BlueMask  = 0x000000FF;
-	break;
+		return 0x0;
 	case ECF_A8R8G8B8:
-		AlphaMask = 0xFF000000;
-		RedMask   = 0x00FF0000;
-		GreenMask = 0x0000FF00;
-		BlueMask  = 0x000000FF;
-	break;
+		return 0xFF000000;
+	default:
+		return 0x0;
 	}
 }
 

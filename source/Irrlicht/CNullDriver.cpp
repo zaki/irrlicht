@@ -507,7 +507,7 @@ ITexture* CNullDriver::addTexture(const core::string<c16>& name, IImage* image)
 
 //! creates a Texture
 ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
-								  const core::string<c16>& name, ECOLOR_FORMAT format)
+				  const core::string<c16>& name, ECOLOR_FORMAT format)
 {
 	if(getRenderTargetOnlyFormat(format))
 	{
