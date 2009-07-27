@@ -456,10 +456,10 @@ void CQuake3ShaderSceneNode::render()
 */
 			switch ( i )
 			{
-				case 0: deb_m.EmissiveColor = 0xFFFFFFFF; break;
-				case 1: deb_m.EmissiveColor = 0xFFFF0000; break;
-				case 2: deb_m.EmissiveColor = 0xFF00FF00; break;
-				case 3: deb_m.EmissiveColor = 0xFF0000FF; break;
+				case 0: deb_m.EmissiveColor.set(0xFFFFFFFF); break;
+				case 1: deb_m.EmissiveColor.set(0xFFFF0000); break;
+				case 2: deb_m.EmissiveColor.set(0xFF00FF00); break;
+				case 3: deb_m.EmissiveColor.set(0xFF0000FF); break;
 				default:
 					deb_m.EmissiveColor = v->Color; break;
 			}
@@ -811,13 +811,13 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, SModifierFunction &
 		case IDENTITY:
 			//rgbgen identity
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer->Vertices[i].Color.color = 0xFFFFFFFF;
+				MeshBuffer->Vertices[i].Color.set(0xFFFFFFFF);
 			break;
 
 		case IDENTITYLIGHTING:
 			// rgbgen identitylighting TODO: overbright
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer->Vertices[i].Color.color = 0xFF7F7F7F;
+				MeshBuffer->Vertices[i].Color.set(0xFF7F7F7F);
 			break;
 
 		case EXACTVERTEX:		
@@ -825,7 +825,7 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, SModifierFunction &
 		case VERTEX:
 			// rgbgen vertex
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer->Vertices[i].Color.color = Original->Vertices[i].Color.color;
+				MeshBuffer->Vertices[i].Color=Original->Vertices[i].Color;
 			break;
 		case WAVE:
 		{
@@ -835,15 +835,15 @@ void CQuake3ShaderSceneNode::vertextransform_rgbgen( f32 dt, SModifierFunction &
 			value = 0xFF000000 | value << 16 | value << 8 | value;
 
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer->Vertices[i].Color.color = value;
+				MeshBuffer->Vertices[i].Color.set(value);
 		} break;
 		case CONSTANT:
 		{
 			//rgbgen const ( x y z )
 			video::SColorf cf( function.x, function.y, function.z );
-			u32 col = cf.toSColor ().color;
+			video::SColor col = cf.toSColor();
 			for ( i = 0; i != vsize; ++i )
-				MeshBuffer->Vertices[i].Color.color = col;
+				MeshBuffer->Vertices[i].Color=col;
 		} break;
 		default:
 			break;

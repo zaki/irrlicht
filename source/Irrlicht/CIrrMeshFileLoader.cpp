@@ -308,8 +308,10 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 				// color
 
+				u32 col;
 				findNextNoneWhiteSpace(&p);
-				sscanf(p, "%08x", &vtx.Color.color);
+				sscanf(p, "%08x", &col);
+				vtx.Color.set(col);
 				skipCurrentNoneWhiteSpace(&p);
 
 				// tcoord1
@@ -345,8 +347,10 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 				// color
 
+				u32 col;
 				findNextNoneWhiteSpace(&p);
-				sscanf(p, "%08x", &vtx.Color.color);
+				sscanf(p, "%08x", &col);
+				vtx.Color.set(col);
 				skipCurrentNoneWhiteSpace(&p);
 
 				// tcoord1
@@ -390,8 +394,10 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 				// color
 
+				u32 col;
 				findNextNoneWhiteSpace(&p);
-				sscanf(p, "%08x", &vtx.Color.color);
+				sscanf(p, "%08x", &col);
+				vtx.Color.set(col);
 				skipCurrentNoneWhiteSpace(&p);
 
 				// tcoord1
