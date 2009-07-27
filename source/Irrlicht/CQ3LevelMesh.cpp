@@ -1138,11 +1138,11 @@ inline void CQ3LevelMesh::copy( video::S3DVertex2TCoords * dest, const tBSPVerte
 		u32 g = core::s32_min( source->color[1] * LoadParam.defaultModulate, 255 );
 		u32 b = core::s32_min( source->color[2] * LoadParam.defaultModulate, 255 );
 
-		dest->Color.color = a << 24 | r << 16 | g << 8 | b;
+		dest->Color.set(a << 24 | r << 16 | g << 8 | b);
 	}
 	else
 	{
-		dest->Color.color = 0xFFFFFFFF;
+		dest->Color.set(0xFFFFFFFF);
 	}
 }
 
