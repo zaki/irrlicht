@@ -485,10 +485,10 @@ void CImage::fill(const SColor &color)
 		case ECF_A8R8G8B8:
 			c = color.color;
 			break;
-		default:
-//			os::Printer::log("CImage::Format not supported", ELL_ERROR);
-			return;
 	}
+	if (Format != ECF_A1R5G5B5 && Format != ECF_R5G6B5 &&
+			Format != ECF_A8R8G8B8)
+		return;
 
 	memset32( Data, c, getImageDataSizeInBytes() );
 }
