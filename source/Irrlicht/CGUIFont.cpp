@@ -222,6 +222,7 @@ bool CGUIFont::load(const core::string<c16>& filename)
 {
 	if (!Driver)
 		return false;
+
 	return loadTexture(Driver->createImageFromFile( filename ),
 				filename);
 }
@@ -242,16 +243,16 @@ bool CGUIFont::loadTexture(video::IImage* image, const core::string<c16>& name)
 	case video::ECF_R5G6B5:
 		tmpImage =  new video::CImage(video::ECF_A1R5G5B5,image);
 		deleteTmpImage=true;
+		break;
 	case video::ECF_A1R5G5B5:
-		readPositions16bit(tmpImage, lowerRightPositions);
+	case video::ECF_A8R8G8B8:
 		break;
 	case video::ECF_R8G8B8:
 		tmpImage = new video::CImage(video::ECF_A8R8G8B8,image);
 		deleteTmpImage=true;
-	case video::ECF_A8R8G8B8:
-		readPositions32bit (tmpImage, lowerRightPositions);
 		break;
 	}
+	readPositions(tmpImage, lowerRightPositions);
 
 	WrongCharacter = getAreaFromCharacter(L' ');
 
@@ -263,7 +264,6 @@ bool CGUIFont::loadTexture(video::IImage* image, const core::string<c16>& name)
 		os::Printer::log("The amount of upper corner pixels and the lower corner pixels is not equal, font file may be corrupted.", ELL_ERROR);
 
 	bool ret = ( !SpriteBank->getSprites().empty() && lowerRightPositions );
-
 
 	if ( ret )
 	{
@@ -289,26 +289,17 @@ bool CGUIFont::loadTexture(video::IImage* image, const core::string<c16>& name)
 }
 
 
-void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions)
+void CGUIFont::readPositions(video::IImage* image, s32& lowerRightPositions)
 {
-	const core::dimension2d<u32>& size = image->getDimension();
+	const core::dimension2d<u32> size = image->getDimension();
 
-	s32* p = (s32*)image->lock();
-	if (!p)
-	{
-		os::Printer::log("Could not lock texture while preparing texture for a font.", ELL_ERROR);
-		return;
-	}
+	video::SColor colorTopLeft = image->getPixel(0,0);
+	colorTopLeft.setAlpha(255);
+	video::SColor colorLowerRight = image->getPixel(1,0);
+	video::SColor colorBackGround = image->getPixel(2,0);
+	video::SColor colorBackGroundTransparent = 0; // 0x7FFF & colorBackGround;
 
-	// fix half alpha of top left pixel in some font textures
-	p[0] |= 0xFF000000;
-
-	s32 colorTopLeft = p[0];
-	s32 colorLowerRight = *(p+1);
-	s32 colorBackGround = *(p+2);
-	s32 colorBackGroundTransparent = 0; // 0x00FFFFFF & colorBackGround;
-
-	*(p+1) = colorBackGround;
+	image->setPixel(1,0,colorBackGround);
 
 	// start parsing
 
@@ -317,104 +308,23 @@ void CGUIFont::readPositions32bit(video::IImage* image, s32& lowerRightPositions
 	{
 		for (pos.X=0; pos.X<(s32)size.Width; ++pos.X)
 		{
-			if ( *p == colorTopLeft)
+			const video::SColor c = image->getPixel(pos.X, pos.Y);
+			if (c == colorTopLeft)
 			{
-				*p = colorBackGroundTransparent;
+				image->setPixel(pos.X, pos.Y, colorBackGroundTransparent);
 				SpriteBank->getPositions().push_back(core::rect<s32>(pos, pos));
 			}
 			else
-			if (*p == colorLowerRight)
-			{
-				if (SpriteBank->getPositions().size()<=(u32)lowerRightPositions)
-				{
-					image->unlock();
-					lowerRightPositions = 0;
-					return;
-				}
-
-				*p = colorBackGroundTransparent;
-				SpriteBank->getPositions()[lowerRightPositions].LowerRightCorner = pos;
-				// add frame to sprite bank
-				SGUISpriteFrame f;
-				f.rectNumber = lowerRightPositions;
-				f.textureNumber = 0;
-				SGUISprite s;
-				s.Frames.push_back(f);
-				s.frameTime = 0;
-				SpriteBank->getSprites().push_back(s);
-				// add character to font
-				SFontArea a;
-				a.overhang = 0;
-				a.underhang = 0;
-				a.spriteno = lowerRightPositions;
-				a.width = SpriteBank->getPositions()[lowerRightPositions].getWidth();
-				Areas.push_back(a);
-				// map letter to character
-				wchar_t ch = (wchar_t)(lowerRightPositions + 32);
-				CharacterMap.set(ch, lowerRightPositions);
-
-				++lowerRightPositions;
-			}
-			else
-			if (*p == colorBackGround)
-			{
-				*p = colorBackGroundTransparent;
-			}
-			++p;
-		}
-	}
-
-	// Positions parsed.
-
-	image->unlock();
-}
-
-
-void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions)
-{
-	core::dimension2d<u32> size = image->getDimension();
-
-	s16* p = (s16*)image->lock();
-	if (!p)
-	{
-		os::Printer::log("Could not lock texture while preparing texture for a font.", ELL_ERROR);
-		return;
-	}
-
-	// fix half alpha of top left pixel in some font textures
-	p[0] |= 0x8000;
-
-	s16 colorTopLeft = p[0];
-	s16 colorLowerRight = *(p+1);
-	s16 colorBackGround = *(p+2);
-	s16 colorBackGroundTransparent = 0; // 0x7FFF & colorBackGround;
-
-	*(p+1) = colorBackGround;
-
-	// start parsing
-
-	core::position2d<s32> pos(0,0);
-	for (pos.Y=0; pos.Y<(s32)size.Height; ++pos.Y)
-	{
-		for (pos.X=0; pos.X<(s32)size.Width; ++pos.X)
-		{
-			if (*p == colorTopLeft)
-			{
-				*p = colorBackGroundTransparent;
-				SpriteBank->getPositions().push_back(core::rect<s32>(pos, pos));
-			}
-			else
-			if (*p == colorLowerRight)
+			if (c == colorLowerRight)
 			{
 				// too many lower right points
 				if (SpriteBank->getPositions().size()<=(u32)lowerRightPositions)
 				{
-					image->unlock();
 					lowerRightPositions = 0;
 					return;
 				}
 
-				*p = colorBackGroundTransparent;
+				image->setPixel(pos.X, pos.Y, colorBackGroundTransparent);
 				SpriteBank->getPositions()[lowerRightPositions].LowerRightCorner = pos;
 				// add frame to sprite bank
 				SGUISpriteFrame f;
@@ -438,18 +348,11 @@ void CGUIFont::readPositions16bit(video::IImage* image, s32& lowerRightPositions
 				++lowerRightPositions;
 			}
 			else
-			if (*p == colorBackGround)
-				*p = colorBackGroundTransparent;
-			++p;
+			if (c == colorBackGround)
+				image->setPixel(pos.X, pos.Y, colorBackGroundTransparent);
 		}
 	}
-
-	// Positions parsed.
-
-	image->unlock();
 }
-
-
 
 
 //! set an Pixel Offset on Drawing ( scale position on width )

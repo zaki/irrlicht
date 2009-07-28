@@ -92,8 +92,7 @@ private:
 	//! load & prepare font from ITexture
 	bool loadTexture(video::IImage * image, const core::string<c16>& name);
 
-	void readPositions16bit(video::IImage* texture, s32& lowerRightPositions);
-	void readPositions32bit(video::IImage* texture, s32& lowerRightPositions);
+	void readPositions(video::IImage* texture, s32& lowerRightPositions);
 
 	s32 getAreaFromCharacter (const wchar_t c) const;
 	void setMaxHeight();
