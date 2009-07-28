@@ -30,19 +30,6 @@ namespace irr
 		u32 dstPixelMul;
 	};
 
-	// Blitter Operation
-	enum eBlitter
-	{
-		BLITTER_INVALID = 0,
-		BLITTER_COLOR,
-		BLITTER_COLOR_ALPHA,
-		BLITTER_TEXTURE,
-		BLITTER_TEXTURE_ALPHA_BLEND,
-		BLITTER_TEXTURE_ALPHA_COLOR_BLEND
-	};
-
-	typedef void (*tExecuteBlit) ( const SBlitJob * job );
-
 
 	// Bitfields Cohen Sutherland
 	enum eClipCode
@@ -801,6 +788,20 @@ static void executeBlit_ColorAlpha_32_to_32( const SBlitJob * job )
 	}
 }
 
+// Blitter Operation
+enum eBlitter
+{
+	BLITTER_INVALID = 0,
+	BLITTER_COLOR,
+	BLITTER_COLOR_ALPHA,
+	BLITTER_TEXTURE,
+	BLITTER_TEXTURE_ALPHA_BLEND,
+	BLITTER_TEXTURE_ALPHA_COLOR_BLEND
+};
+
+typedef void (*tExecuteBlit) ( const SBlitJob * job );
+
+
 /*!
 */
 struct blitterTable
@@ -831,6 +832,7 @@ static const blitterTable blitTable[] =
 	{ BLITTER_INVALID, -1, -1, 0 }
 };
 
+
 static inline tExecuteBlit getBlitter2( eBlitter operation,const video::IImage * dest,const video::IImage * source )
 {
 	video::ECOLOR_FORMAT sourceFormat = (video::ECOLOR_FORMAT) ( source ? source->getColorFormat() : -1 );
@@ -854,95 +856,6 @@ static inline tExecuteBlit getBlitter2( eBlitter operation,const video::IImage *
 	return 0;
 }
 
-#if 0
-static tExecuteBlit getBlitter( eBlitter operation,const video::IImage * dest,const video::IImage * source )
-{
-	video::ECOLOR_FORMAT sourceFormat = (video::ECOLOR_FORMAT) -1;
-	video::ECOLOR_FORMAT destFormat = (video::ECOLOR_FORMAT) -1;
-
-	if ( source )
-		sourceFormat = source->getColorFormat ();
-
-	if ( dest )
-		destFormat = dest->getColorFormat();
-
-	switch ( operation )
-	{
-		case BLITTER_TEXTURE:
-		{
-			if ( sourceFormat == destFormat )
-				return executeBlit_TextureCopy_x_to_x;
-
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureCopy_32_to_16;
-
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_R8G8B8 )
-				return executeBlit_TextureCopy_24_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureCopy_16_to_32;
-
-			if ( destFormat == video::ECF_R8G8B8 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureCopy_16_to_24;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_R8G8B8 )
-				return executeBlit_TextureCopy_24_to_32;
-
-			if ( destFormat == video::ECF_R8G8B8 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureCopy_32_to_24;
-
-		} break;
-
-		case BLITTER_TEXTURE_ALPHA_BLEND:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureBlend_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureBlend_32_to_32;
-
-		} break;
-
-		case BLITTER_TEXTURE_ALPHA_COLOR_BLEND:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureBlendColor_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureBlendColor_32_to_32;
-		} break;
-
-		case BLITTER_COLOR:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_Color_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_Color_32_to_32;
-		} break;
-
-		case BLITTER_COLOR_ALPHA:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_ColorAlpha_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_ColorAlpha_32_to_32;
-
-		} break;
-
-		case BLITTER_INVALID:
-		break;
-	}
-/*
-	char buf[64];
-	sprintf( buf, "Blit: %d %d->%d unsupported",operation,sourceFormat,destFormat );
-	os::Printer::log(buf );
-*/
-	return 0;
-
-}
-#endif
 
 // bounce clipping to texture
 inline void setClip ( AbsRectangle &out, const core::rect<s32> *clip,
