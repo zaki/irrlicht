@@ -208,27 +208,6 @@ inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u16 alpha )
 	return (u16)(rb | xg);
 }
 
-/*!
-	Scale Color by (1/value)
-	value 0 - 256 ( alpha )
-*/
-inline u32 PixelLerp32 ( const u32 source, const u32 value )
-{
-	u32 srcRB = source & 0x00FF00FF;
-	u32 srcXG = (source & 0xFF00FF00) >> 8;
-
-	srcRB *= value;
-	srcXG *= value;
-
-	srcRB >>= 8;
-	//srcXG >>= 8;
-
-	srcXG &= 0xFF00FF00;
-	srcRB &= 0x00FF00FF;
-
-	return srcRB | srcXG;
-}
-
 /*
 	Pixel = c0 * (c1/31). c0 Alpha retain
 */
