@@ -9,6 +9,7 @@
 #include "dimension2d.h"
 #include "IVideoDriver.h"
 #include "EDriverTypes.h"
+#include "EDeviceTypes.h"
 #include "IEventReceiver.h"
 #include "ICursorControl.h"
 #include "IVideoModeList.h"
@@ -230,10 +231,14 @@ namespace irr
 		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
 					f32 &brightness, f32 &contrast) =0;
 
+		//! Get the type of the device.
+		/** This allows the user to check which windowing system is currently being
+		used. */
+		virtual E_DEVICE_TYPE getType() const = 0;
 
-		//! Allows to check which drivers are supported by the engine.
-		/** Even if true is returned the driver needs not be available
-		for an actual configuration requested upon device creation. */
+		//! Check if a driver type is supported by the engine.
+		/** Even if true is returned the driver may not be available
+		for a configuration requested when creating the device. */
 		static bool isDriverSupported(video::E_DRIVER_TYPE driver)
 		{
 			switch (driver)

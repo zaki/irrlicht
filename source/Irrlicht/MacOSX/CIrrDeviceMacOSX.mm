@@ -1436,19 +1436,6 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 	return &VideoModeList;
 }
 
-extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
-{
-	CIrrDeviceMacOSX* dev = new CIrrDeviceMacOSX(param);
-
-	if (dev && !dev->getVideoDriver() && param.DriverType != video::EDT_NULL)
-	{
-		dev->drop();
-		dev = 0;
-	}
-
-	return dev;
-}
-
 } // end namespace
 
 #endif // _IRR_USE_OSX_DEVICE_

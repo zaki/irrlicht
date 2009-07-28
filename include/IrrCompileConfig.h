@@ -19,50 +19,59 @@
 //! The defines for different operating system are:
 //! _IRR_XBOX_PLATFORM_ for XBox
 //! _IRR_WINDOWS_ for all irrlicht supported Windows versions
+//! _IRR_WINDOWS_CE_PLATFORM_ for Windows CE
 //! _IRR_WINDOWS_API_ for Windows or XBox
 //! _IRR_LINUX_PLATFORM_ for Linux (it is defined here if no other os is defined)
 //! _IRR_SOLARIS_PLATFORM_ for Solaris
 //! _IRR_OSX_PLATFORM_ for Apple systems running OSX
 //! _IRR_POSIX_API_ for Posix compatible systems
-//! _IRR_USE_SDL_DEVICE_ for platform independent SDL framework
-//! _IRR_USE_CONSOLE_DEVICE_ for no windowing system, like for running as a service
-//! _IRR_USE_WINDOWS_DEVICE_ for Windows API based device
-//! _IRR_USE_WINDOWS_CE_DEVICE_ for Windows CE API based device
-//! _IRR_USE_LINUX_DEVICE_ for X11 based device
-//! _IRR_USE_OSX_DEVICE_ for Cocoa native windowing on OSX
-//! Note: PLATFORM defines the OS specific layer, API can groups several platforms
+//! Note: PLATFORM defines the OS specific layer, API can group several platforms
+
 //! DEVICE is the windowing system used, several PLATFORMs support more than one DEVICE
-//! Moreover, the DEVICE defined here is not directly related to the Irrlicht devices created in the app (but may depend on each other).
+//! Irrlicht can be compiled with more than one device
+//! _IRR_COMPILE_WITH_WINDOWS_DEVICE_ for Windows API based device
+//! _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_ for Windows CE API based device
+//! _IRR_COMPILE_WITH_OSX_DEVICE_ for Cocoa native windowing on OSX
+//! _IRR_COMPILE_WITH_X11_DEVICE_ for Linux X11 based device
+//! _IRR_COMPILE_WITH_SDL_DEVICE_ for platform independent SDL framework
+//! _IRR_COMPILE_WITH_CONSOLE_DEVICE_ for no windowing system, used as a fallback
 
-//! Uncomment this line to compile with the SDL device instead of platform specific devices
-//#define _IRR_USE_SDL_DEVICE_
 
-//! Uncomment this line to compile as a console application with no windowing system. Hardware drivers will be disabled.
-//#define _IRR_USE_CONSOLE_DEVICE_
+//! Uncomment this line to compile with the SDL device
+//#define _IRR_COMPILE_WITH_SDL_DEVICE_
+
+//! Comment this line to compile without the fallback console device.
+#define _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 
 //! WIN32 for Windows32
 //! WIN64 for Windows64
 // The windows platform and API support SDL and WINDOW device
-#if defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN64) || defined(WIN32) || defined(WIN64)
 #define _IRR_WINDOWS_
 #define _IRR_WINDOWS_API_
-#if !defined(_IRR_USE_SDL_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
-#define _IRR_USE_WINDOWS_DEVICE_
-#endif
+#define _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #endif
 
-#if defined(_MSC_VER) && (_MSC_VER < 1300) 
-#  error "Only Microsoft Visual Studio 7.0 and later are supported." 
-#endif 
+//
+#if defined(_WIN32_WCE)
+#define _IRR_WINDOWS_
+#define _IRR_WINDOWS_API_
+#define _IRR_WINDOWS_CE_PLATFORM_
+#define _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
+#endif
+
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+#  error "Only Microsoft Visual Studio 7.0 and later are supported."
+#endif
 
 // XBox only suppots the native Window stuff
 #if defined(_XBOX)
 	#undef _IRR_WINDOWS_
 	#define _IRR_XBOX_PLATFORM_
 	#define _IRR_WINDOWS_API_
-	//#define _IRR_USE_WINDOWS_DEVICE_
-	#undef _IRR_USE_WINDOWS_DEVICE_
-	//#define _IRR_USE_SDL_DEVICE_
+	//#define _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	#undef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	//#define _IRR_COMPILE_WITH_SDL_DEVICE_
 
 	#include <xtl.h>
 #endif
@@ -72,9 +81,7 @@
 #define MACOSX // legacy support
 #endif
 #define _IRR_OSX_PLATFORM_
-#if !defined(_IRR_USE_LINUX_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_) && !defined(_IRR_USE_SDL_DEVICE_)
-#define _IRR_USE_OSX_DEVICE_
-#endif
+#define _IRR_COMPILE_WITH_OSX_DEVICE_
 #endif
 
 #if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_)
@@ -85,10 +92,7 @@
 #define _IRR_LINUX_PLATFORM_
 #endif
 #define _IRR_POSIX_API_
-
-#if !defined(_IRR_USE_SDL_DEVICE_) && !defined(_IRR_USE_CONSOLE_DEVICE_)
-#define _IRR_USE_LINUX_DEVICE_
-#endif
+#define _IRR_COMPILE_WITH_X11_DEVICE_
 #endif
 
 //! Define _IRR_COMPILE_WITH_JOYSTICK_SUPPORT_ if you want joystick events.
@@ -107,14 +111,14 @@ _IRR_COMPILE_WITH_DX9_DEV_PACK_. So you simply need to add something like this
 to the compiler settings: -DIRR_COMPILE_WITH_DX9_DEV_PACK
 and this to the linker settings: -ld3dx9 -ld3dx8
 
-Microsoft have chosen to remove D3D8 headers from their recent DXSDKs, and 
-so D3D8 support is now disabled by default.  If you really want to build 
-with D3D8 support, then you will have to source a DXSDK with the appropriate 
+Microsoft have chosen to remove D3D8 headers from their recent DXSDKs, and
+so D3D8 support is now disabled by default.  If you really want to build
+with D3D8 support, then you will have to source a DXSDK with the appropriate
 headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
 */
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
-//! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004 
+//! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004
 //#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
@@ -213,7 +217,7 @@ Note that the engine will run in D3D REF for this, which is a lot slower than HA
 #define _IRR_D3D_NO_SHADER_DEBUGGING
 
 //! Define _IRR_D3D_USE_LEGACY_HLSL_COMPILER to enable the old HLSL compiler in recent DX SDKs
-/** This enables support for ps_1_x shaders for recent DX SDKs. Otherwise, support 
+/** This enables support for ps_1_x shaders for recent DX SDKs. Otherwise, support
 for this shader model is not available anymore in SDKs after Oct2006. You need to
 distribute the OCT2006_d3dx9_31_x86.cab or OCT2006_d3dx9_31_x64.cab though, in order
 to provide the user with the proper DLL. That's why it's disabled by default. */
@@ -409,8 +413,8 @@ precision will be lower but speed higher. currently X86 only
 	#undef BURNINGVIDEO_RENDERER_ULTRA_FAST
 	#define BURNINGVIDEO_RENDERER_CE
 
-	#undef _IRR_USE_WINDOWS_DEVICE_
-	#define _IRR_USE_WINDOWS_CE_DEVICE_
+	#undef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	#define _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
 	//#define _IRR_WCHAR_FILESYSTEM
 
 	#undef _IRR_COMPILE_WITH_IRR_MESH_LOADER_
@@ -452,14 +456,6 @@ precision will be lower but speed higher. currently X86 only
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
 	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-#endif
-
-//! Remove joystick support and hardware drivers when compiling as a service
-#if defined(_IRR_USE_CONSOLE_DEVICE_)
-	#undef _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
-	#undef _IRR_COMPILE_WITH_OPENGL_
-	#undef _IRR_COMPILE_WITH_DIRECT3D_8_
-	#undef _IRR_COMPILE_WITH_DIRECT3D_9_
 #endif
 
 #endif // __IRR_COMPILE_CONFIG_H_INCLUDED__

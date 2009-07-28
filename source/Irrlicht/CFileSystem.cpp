@@ -42,7 +42,7 @@ CFileSystem::CFileSystem()
 	#endif
 
 	setFileListSystem(FILESYSTEM_NATIVE);
-	
+
 	ArchiveLoader.push_back(new CArchiveLoaderZIP(this));
 	ArchiveLoader.push_back(new CArchiveLoaderMount(this));
 	ArchiveLoader.push_back(new CArchiveLoaderPAK(this));
@@ -161,7 +161,7 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 
 
 //! Adds an archive to the file system.
-bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreCase, 
+bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreCase,
 									  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
 {
 	IFileArchive* archive = 0;
@@ -214,7 +214,7 @@ bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreC
 	{
 		// try to open archive based on archive loader type
 
-		io::IReadFile* file = 0; 
+		io::IReadFile* file = 0;
 
 		for (i = 0; i < ArchiveLoader.size(); ++i)
 		{
@@ -321,7 +321,7 @@ const core::string<c16>& CFileSystem::getWorkingDirectory()
 		WorkingDirectory[type].reserve(FILE_SYSTEM_MAX_PATH);
 		c16* r = (c16*) WorkingDirectory[type].c_str();
 
-		#if defined(_IRR_USE_WINDOWS_CE_DEVICE_)
+		#if defined(_IRR_WINDOWS_CE_PLATFORM_)
 		#elif defined(_IRR_WINDOWS_API_)
 			#if defined(_IRR_WCHAR_FILESYSTEM )
 				_wgetcwd(r, FILE_SYSTEM_MAX_PATH);
@@ -361,7 +361,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const core::string<c16>& newDirectory
 	{
 		WorkingDirectory[FILESYSTEM_NATIVE] = newDirectory;
 
-#if defined(_IRR_USE_WINDOWS_CE_DEVICE_)
+#if defined(_IRR_WINDOWS_CE_PLATFORM_)
 		success = true;
 #elif defined(_MSC_VER)
 	#if defined(_IRR_WCHAR_FILESYSTEM)
@@ -382,7 +382,7 @@ core::string<c16> CFileSystem::getAbsolutePath(const core::string<c16>& filename
 {
 	c16 *p=0;
 
-#if defined(_IRR_USE_WINDOWS_CE_DEVICE_)
+#if defined(_IRR_WINDOWS_CE_PLATFORM_)
 	return filename;
 #elif defined(_IRR_WINDOWS_API_)
 

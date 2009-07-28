@@ -12,7 +12,7 @@
 #else
 #include <string.h>
 #include <unistd.h>
-#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 #include "MacOSX/OSXClipboard.h"
 #endif
 #ifdef _IRR_OSX_PLATFORM_
@@ -21,14 +21,14 @@
 #endif
 #endif
 
-#if defined(_IRR_USE_LINUX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 #include "CIrrDeviceLinux.h"
 #endif
 
 namespace irr
 {
 
-#if defined(_IRR_USE_LINUX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 // constructor  linux
 COSOperator::COSOperator(const c8* osversion, CIrrDeviceLinux* device)
 : IrrDeviceLinux(device)
@@ -79,11 +79,11 @@ void COSOperator::copyToClipboard(const c8* text) const
 	CloseClipboard();
 
 // MacOSX version
-#elif defined(_IRR_USE_OSX_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 
 	OSXCopyToClipboard(text);
 
-#elif defined(_IRR_USE_LINUX_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     if ( IrrDeviceLinux )
         IrrDeviceLinux->copyToClipboard(text);
 #else
@@ -110,10 +110,10 @@ const c8* COSOperator::getTextFromClipboard() const
 	CloseClipboard();
 	return buffer;
 
-#elif defined(_IRR_USE_OSX_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 	return (OSXCopyFromClipboard());
 
-#elif defined(_IRR_USE_LINUX_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     if ( IrrDeviceLinux )
         return IrrDeviceLinux->getTextFromClipboard();
     return 0;

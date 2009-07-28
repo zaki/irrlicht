@@ -20,7 +20,7 @@ class COSOperator : public IOSOperator
 public:
 
 	// constructor
-#if defined(_IRR_USE_LINUX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     COSOperator(const c8* osversion, CIrrDeviceLinux* device);
 #endif
  	COSOperator(const c8* osversion);
@@ -50,7 +50,7 @@ private:
 
 	core::stringw OperatingSystem;
 
-#if defined(_IRR_USE_LINUX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_)
     CIrrDeviceLinux * IrrDeviceLinux;
 #endif
 

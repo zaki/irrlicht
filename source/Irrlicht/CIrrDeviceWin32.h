@@ -6,7 +6,7 @@
 #define __C_IRR_DEVICE_WIN32_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
@@ -81,11 +81,17 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
 
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_WIN32;
+		}
+
 		//! Compares to the last call of this function to return double and triple clicks.
 		//! \return Returns only 1,2 or 3. A 4th click will start with 1 again.
 		virtual u32 checkSuccessiveClicks(s32 mouseX, s32 mouseY)
 		{
-			// we just have to make it public 
+			// we just have to make it public
 			return CIrrDeviceStub::checkSuccessiveClicks(mouseX, mouseY);
 		}
 
@@ -141,7 +147,7 @@ namespace irr
 						ShowCursor(false);   // this only decreases an internal display counter in windows, so it might have to be called some more
 					}
 				}
-			} 
+			}
 
 			//! Returns if the cursor is currently visible.
 			virtual bool isVisible() const
@@ -311,6 +317,6 @@ namespace irr
 
 } // end namespace irr
 
-#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #endif // __C_IRR_DEVICE_WIN32_H_INCLUDED__
 

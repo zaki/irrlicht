@@ -9,7 +9,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 
 #include "IrrlichtDevice.h"
 #include "CIrrDeviceStub.h"
@@ -52,7 +52,7 @@ namespace irr
 
 		//! returns if window is minimized.
 		bool isWindowMinimized() const;
-			
+
 		//! returns color format of the window.
 		video::ECOLOR_FORMAT getColorFormat() const;
 
@@ -73,6 +73,12 @@ namespace irr
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_CONSOLE;
+		}
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -149,7 +155,7 @@ namespace irr
 			{
 				CursorPos.X = Device->MouseX;
 				CursorPos.Y = Device->MouseY;
-			
+
 				if (CursorPos.X < 0)
 					CursorPos.X = 0;
 				if (CursorPos.X > (s32)Device->Width)
@@ -182,7 +188,7 @@ namespace irr
 
 		s32 MouseX, MouseY;
 		u32 MouseButtonStates;
-		
+
 		u32 Width, Height;
 
 		bool Close;
@@ -213,6 +219,6 @@ namespace irr
 
 } // end namespace irr
 
-#endif // _IRR_USE_SDL_DEVICE_
+#endif // _IRR_COMPILE_WITH_SDL_DEVICE_
 #endif // __C_IRR_DEVICE_SDL_H_INCLUDED__
 

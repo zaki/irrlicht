@@ -17,7 +17,7 @@
 #include "CImage.h"
 #include "os.h"
 
-#ifdef _IRR_USE_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 #include <SDL/SDL.h>
 #endif
 
@@ -29,17 +29,17 @@ namespace video
 // -----------------------------------------------------------------------
 // WINDOWS CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceWin32* device)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
-	HDc(0), Window(static_cast<HWND>(params.WindowId)), HRc(0)
+	HDc(0), Window(static_cast<HWND>(params.WindowId)), HRc(0), DeviceType(EIDT_WIN32)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -354,12 +354,12 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	return true;
 }
 
-#endif //IRR_USE_WINDOWS_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
 // -----------------------------------------------------------------------
 // MacOSX CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceMacOSX *device)
@@ -369,7 +369,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
-	_device(device)
+	_device(device), DeviceType(EIDT_OSX)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -382,16 +382,16 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 // -----------------------------------------------------------------------
 // LINUX CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_LINUX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 //! Linux constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceLinux* device)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer)
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer), DeviceType(EIDT_X11)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -415,22 +415,22 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 #endif
 }
 
-#endif // _IRR_USE_LINUX_DEVICE_
+#endif // _IRR_COMPILE_WITH_X11_DEVICE_
 
 
 // -----------------------------------------------------------------------
 // SDL CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 //! SDL constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceSDL* device)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer)
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer), DeviceType(EIDT_SDL)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -439,7 +439,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 }
 
-#endif // _IRR_USE_SDL_DEVICE_
+#endif // _IRR_COMPILE_WITH_SDL_DEVICE_
 
 
 //! destructor
@@ -454,18 +454,22 @@ COpenGLDriver::~COpenGLDriver()
 
 	deleteAllTextures();
 
-#ifdef _IRR_USE_WINDOWS_DEVICE_
-	if (HRc)
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	if (DeviceType == EIDT_WIN32)
 	{
-		if (!wglMakeCurrent(0, 0))
-			os::Printer::log("Release of dc and rc failed.", ELL_WARNING);
 
-		if (!wglDeleteContext(HRc))
-			os::Printer::log("Release of rendering context failed.", ELL_WARNING);
+		if (HRc)
+		{
+			if (!wglMakeCurrent(0, 0))
+				os::Printer::log("Release of dc and rc failed.", ELL_WARNING);
+
+			if (!wglDeleteContext(HRc))
+				os::Printer::log("Release of rendering context failed.", ELL_WARNING);
+		}
+
+		if (HDc)
+			ReleaseDC(Window, HDc);
 	}
-
-	if (HDc)
-		ReleaseDC(Window, HDc);
 #endif
 }
 
@@ -621,20 +625,38 @@ bool COpenGLDriver::endScene()
 
 	glFlush();
 
-#ifdef _IRR_USE_WINDOWS_DEVICE_
-	return SwapBuffers(HDc) == TRUE;
-#elif defined(_IRR_USE_LINUX_DEVICE_)
-	glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, Drawable);
-	return true;
-#elif defined(_IRR_USE_OSX_DEVICE_)
-	_device->flush();
-	return true;
-#elif defined(_IRR_USE_SDL_DEVICE_)
-	SDL_GL_SwapBuffers();
-	return true;
-#else
-	return false;
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	if (DeviceType == EIDT_WIN32)
+		return SwapBuffers(HDc) == TRUE;
 #endif
+
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+	if (DeviceType == EIDT_X11)
+	{
+		glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, Drawable);
+		return true;
+	}
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+	if (DeviceType == EIDT_OSX)
+	{
+		_device->flush();
+		return true;
+	}
+#endif
+
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+	if (DeviceType == EIDT_SDL)
+	{
+		SDL_GL_SwapBuffers();
+		return true;
+	}
+#endif
+
+	// todo: console device present
+
+	return false;
 }
 
 
@@ -671,10 +693,13 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
 
-#if defined(_IRR_USE_SDL_DEVICE_)
-	// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
-	// it would be better if this was fixed elsewhere.
-	glFrontFace(GL_CW);
+#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+	if (DeviceType == EIDT_SDL)
+	{
+		// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
+		// it would be better if this was fixed elsewhere.
+		glFrontFace(GL_CW);
+	}
 #endif
 
 	clearBuffers(backBuffer, zBuffer, false, color);
@@ -3272,12 +3297,12 @@ namespace video
 // -----------------------------------
 // WINDOWS VERSION
 // -----------------------------------
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-	io::IFileSystem* io)
+	io::IFileSystem* io, CIrrDeviceWin32* device)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	COpenGLDriver* ogl =  new COpenGLDriver(params, io);
+	COpenGLDriver* ogl =  new COpenGLDriver(params, io, device);
 	if (!ogl->initDriver(params))
 	{
 		ogl->drop();
@@ -3288,12 +3313,12 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 	return 0;
 #endif // _IRR_COMPILE_WITH_OPENGL_
 }
-#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
 // -----------------------------------
 // MACOSX VERSION
 // -----------------------------------
-#if defined(_IRR_USE_OSX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceMacOSX *device)
 {
@@ -3303,22 +3328,38 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_
 }
-#endif // _IRR_USE_OSX_DEVICE_
+#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
 
 // -----------------------------------
-// X11/SDL VERSION
+// X11 VERSION
 // -----------------------------------
-#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceLinux* device)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	return new COpenGLDriver(params, io);
+	return new COpenGLDriver(params, io, device);
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_
 }
-#endif // _IRR_USE_LINUX_DEVICE_
+#endif // _IRR_COMPILE_WITH_X11_DEVICE_
+
+
+// -----------------------------------
+// SDL VERSION
+// -----------------------------------
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io, CIrrDeviceSDL* device)
+{
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+	return new COpenGLDriver(params, io, device);
+#else
+	return 0;
+#endif //  _IRR_COMPILE_WITH_OPENGL_
+}
+#endif // _IRR_COMPILE_WITH_SDL_DEVICE_
 
 } // end namespace
 } // end namespace

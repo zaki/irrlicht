@@ -7,9 +7,9 @@
 #define __C_IRR_DEVICE_CONSOLE_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
-#ifdef _IRR_USE_CONSOLE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 
-#define _IRR_USE_CONSOLE_FONT_
+//#define _IRR_USE_CONSOLE_FONT_
 
 #include "SIrrCreationParameters.h"
 #include "CIrrDeviceStub.h"
@@ -80,6 +80,12 @@ namespace irr
 
 		//! Minimizes the window.
 		virtual void minimizeWindow();
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_CONSOLE;
+		}
 
 		void addPostPresentText(s16 X, s16 Y, const wchar_t *text);
 
@@ -180,7 +186,7 @@ namespace irr
 					UseReferenceRect = false;
 			}
 
-			
+
 			//! Updates the internal cursor position
 			void setInternalCursorPosition(const core::position2di &pos)
 			{
@@ -195,7 +201,7 @@ namespace irr
 			core::position2d<s32>  CursorPos;
 			core::dimension2d<u32> WindowSize;
 			core::dimension2d<f32> InvWindowSize;
-			bool                   IsVisible, 
+			bool                   IsVisible,
 			                       UseReferenceRect;
 			core::rect<s32>        ReferenceRect;
 		};
@@ -205,7 +211,7 @@ namespace irr
 		//! Set the position of the text caret
 		void setTextCursorPos(s16 x, s16 y);
 
-		// text to be added after drawing the screen 
+		// text to be added after drawing the screen
 		struct SPostPresentText
 		{
 			core::position2d<s16> Pos;
@@ -241,7 +247,7 @@ namespace gui
 			const core::rect<s32>* clip=0)
 		{
 			core::rect<s32> Area = clip ? *clip : position;
-			
+
 			if (Area.UpperLeftCorner.X < 0)
 				Area.UpperLeftCorner.X = 0;
 
@@ -252,7 +258,7 @@ namespace gui
 
 			// centre vertically
 			pos.Y = vcenter ? (position.UpperLeftCorner.Y + position.LowerRightCorner.Y) / 2 : position.UpperLeftCorner.Y;
-			
+
 			// nothing to display?
 			if (pos.Y < Area.UpperLeftCorner.Y || pos.Y > Area.LowerRightCorner.Y)
 				return;
@@ -261,7 +267,7 @@ namespace gui
 
 			// centre horizontally
 			pos.X = hcenter ? position.getCenter().X - ( tempText.size() / 2) : position.UpperLeftCorner.X;
-			
+
 			// clip
 			u32 xlclip = 0,
 				xrclip = 0;
@@ -313,7 +319,5 @@ namespace gui
 
 } // end namespace irr
 
-
-
-#endif // _IRR_USE_CONSOLE_DEVICE_
+#endif // _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 #endif // __C_IRR_DEVICE_CONSOLE_H_INCLUDED__
