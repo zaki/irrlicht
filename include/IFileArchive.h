@@ -64,8 +64,10 @@ struct IFileArchiveEntry
 /** It manages where files are, so that modules which use the the IO do not
 need to know where every file is located. A file could be in a .zip-Archive or
 as file on disk, using the IFileSystem makes no difference to this. */
-struct IFileArchive : public virtual IReferenceCounted
+class IFileArchive : public virtual IReferenceCounted
 {
+public:
+
 	//! return the id of the file Archive
 	virtual const core::string<c16>& getArchiveName() =0;
 
@@ -94,8 +96,9 @@ struct IFileArchive : public virtual IReferenceCounted
 currently unsupported file formats (e.g .wad), then implement
 this and add your new Archive loader with
 IFileSystem::addArchiveLoader() to the engine. */
-struct IArchiveLoader : public virtual IReferenceCounted
+class IArchiveLoader : public virtual IReferenceCounted
 {
+public:
 	//! Check if the file might be loaded by this class
 	/** Check is based on the file extension (e.g. ".zip")
 	\param fileName Name of file to check.
