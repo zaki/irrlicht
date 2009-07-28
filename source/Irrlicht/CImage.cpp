@@ -12,7 +12,7 @@ namespace irr
 namespace video
 {
 
-//! constructor
+//! Constructor of empty image
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 :Data(0), Size(size), Format(format), DeleteMemory(true)
 {
@@ -23,7 +23,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 }
 
 
-//! constructor
+//! Constructor from raw data
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
 			bool ownForeignMemory, bool deleteForeignMemory)
 : Data(0), Size(size), Format(format), DeleteMemory(deleteForeignMemory)
@@ -43,8 +43,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 }
 
 
-
-//! constructor
+//! Constructor from other image, with color conversion
 CImage::CImage(ECOLOR_FORMAT format, IImage* imageToCopy)
 : Data(0), Format(format), DeleteMemory(true)
 {
@@ -55,13 +54,11 @@ CImage::CImage(ECOLOR_FORMAT format, IImage* imageToCopy)
 	initData();
 
 	// now copy data from other image
-
 	Blit ( BLITTER_TEXTURE, this, 0, 0, imageToCopy, 0,0 );
 }
 
 
-
-//! constructor
+//! Constructor from other image, partially
 CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
 		const core::dimension2d<u32>& size)
 	: Data(0), Size(0,0), DeleteMemory(true)
@@ -77,7 +74,6 @@ CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
 	core::rect<s32> sClip( pos.X, pos.Y, pos.X + size.Width,pos.Y + size.Height );
 	Blit (BLITTER_TEXTURE, this, 0, 0, imageToCopy, &sClip, 0);
 }
-
 
 
 //! assumes format and size has been set and creates the rest
@@ -108,7 +104,6 @@ const core::dimension2d<u32>& CImage::getDimension() const
 }
 
 
-
 //! Returns bits per pixel.
 u32 CImage::getBitsPerPixel() const
 {
@@ -123,13 +118,11 @@ u32 CImage::getBytesPerPixel() const
 }
 
 
-
 //! Returns image data size in bytes
 u32 CImage::getImageDataSizeInBytes() const
 {
 	return Pitch * Size.Height;
 }
-
 
 
 //! Returns image data size in pixels
@@ -216,9 +209,9 @@ u32 CImage::getAlphaMask() const
 
 
 //! sets a pixel
-void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
+void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend)
 {
-	if (x >= (u32)Size.Width || y >= (u32)Size.Height)
+	if (x >= Size.Width || y >= Size.Height)
 		return;
 
 	switch(Format)
@@ -255,7 +248,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 //! returns a pixel
 SColor CImage::getPixel(u32 x, u32 y) const
 {
-	if (x >= (u32)Size.Width || y >= (u32)Size.Height)
+	if (x >= Size.Width || y >= Size.Height)
 		return SColor(0);
 
 	switch(Format)
@@ -284,30 +277,21 @@ ECOLOR_FORMAT CImage::getColorFormat() const
 }
 
 
-//! draws a rectangle
-void CImage::drawRectangle(const core::rect<s32>& rect, const SColor &color)
-{
-	Blit(color.getAlpha() == 0xFF ? BLITTER_COLOR : BLITTER_COLOR_ALPHA,
-			this, 0, &rect.UpperLeftCorner, 0, &rect, color.color);
-}
-
-
-//! copies this surface into another
+//! copies this surface into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos)
 {
 	Blit(BLITTER_TEXTURE, target, 0, &pos, this, 0, 0);
 }
 
 
-//! copies this surface into another
+//! copies this surface partially into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect)
 {
 	Blit(BLITTER_TEXTURE, target, clipRect, &pos, this, &sourceRect, 0);
 }
 
 
-
-//! copies this surface into another, using the alpha mask, an cliprect and a color to add with
+//! copies this surface into another, using the alpha mask, a cliprect and a color to add with
 void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const SColor &color, const core::rect<s32>* clipRect)
 {
 	// color blend only necessary on not full spectrum aka. color.color != 0xFFFFFFFF
@@ -316,52 +300,8 @@ void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, c
 }
 
 
-
-//! draws a line from to with color
-void CImage::drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color)
-{
-	AbsRectangle clip;
-	GetClip( clip, this );
-
-	core::position2d<s32> p[2];
-
-	if ( ClipLine( clip, p[0], p[1], from, to ) )
-	{
-		u32 alpha = extractAlpha( color.color );
-
-		switch ( Format )
-		{
-			case ECF_A1R5G5B5:
-				if ( alpha == 256 )
-				{
-					RenderLine16_Decal( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ) );
-				}
-				else
-				{
-					RenderLine16_Blend( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ), alpha >> 3 );
-				}
-				break;
-			case ECF_A8R8G8B8:
-				if ( alpha == 256 )
-				{
-					RenderLine32_Decal( this, p[0], p[1], color.color );
-				}
-				else
-				{
-					RenderLine32_Blend( this, p[0], p[1], color.color, alpha );
-				}
-				break;
-			default:
-				break;
-		}
-	}
-}
-
-
-
 //! copies this surface into another, scaling it to the target image size
-// note: this is very very slow. (i didn't want to write a fast version.
-// but hopefully, nobody wants to scale surfaces every frame.
+// note: this is very very slow.
 void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch)
 {
 	if (!target || !width || !height)
@@ -415,9 +355,9 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 	}
 }
 
+
 //! copies this surface into another, scaling it to the target image size
-// note: this is very very slow. (i didn't want to write a fast version.
-// but hopefully, nobody wants to scale surfaces every frame.
+// note: this is very very slow.
 void CImage::copyToScaling(IImage* target)
 {
 	if (!target)
@@ -434,6 +374,7 @@ void CImage::copyToScaling(IImage* target)
 	copyToScaling(target->lock(), targetSize.Width, targetSize.Height, target->getColorFormat());
 	target->unlock();
 }
+
 
 //! copies this surface into another, scaling it to fit it.
 void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
@@ -537,6 +478,56 @@ inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) cons
 
 	c.set( a, r, g, b );
 	return c;
+}
+
+
+// Methods for Software drivers, non-virtual and not necessary to copy into other image classes
+//! draws a rectangle
+void CImage::drawRectangle(const core::rect<s32>& rect, const SColor &color)
+{
+	Blit(color.getAlpha() == 0xFF ? BLITTER_COLOR : BLITTER_COLOR_ALPHA,
+			this, 0, &rect.UpperLeftCorner, 0, &rect, color.color);
+}
+
+
+//! draws a line from to with color
+void CImage::drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color)
+{
+	AbsRectangle clip;
+	GetClip( clip, this );
+
+	core::position2d<s32> p[2];
+
+	if ( ClipLine( clip, p[0], p[1], from, to ) )
+	{
+		u32 alpha = extractAlpha( color.color );
+
+		switch ( Format )
+		{
+			case ECF_A1R5G5B5:
+				if ( alpha == 256 )
+				{
+					RenderLine16_Decal( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ) );
+				}
+				else
+				{
+					RenderLine16_Blend( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ), alpha >> 3 );
+				}
+				break;
+			case ECF_A8R8G8B8:
+				if ( alpha == 256 )
+				{
+					RenderLine32_Decal( this, p[0], p[1], color.color );
+				}
+				else
+				{
+					RenderLine32_Blend( this, p[0], p[1], color.color, alpha );
+				}
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 
