@@ -30,9 +30,9 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 {
 	if (ownForeignMemory)
 	{
-		Data = (void*)0xbadf00d;
+		Data = (u8*)0xbadf00d;
 		initData();
-		Data = data;
+		Data = (u8*)data;
 	}
 	else
 	{
@@ -89,7 +89,7 @@ void CImage::initData()
 	Pitch = BytesPerPixel * Size.Width;
 
 	if (!Data)
-		Data = new s8[Size.Height * Pitch];
+		Data = new u8[Size.Height * Pitch];
 }
 
 
@@ -97,7 +97,7 @@ void CImage::initData()
 CImage::~CImage()
 {
 	if ( DeleteMemory )
-		delete [] (s8*)Data;
+		delete [] Data;
 }
 
 
@@ -225,19 +225,19 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 	{
 		case ECF_A1R5G5B5:
 		{
-			u16 * dest = (u16*) ((u8*) Data + ( y * Pitch ) + ( x << 1 ));
+			u16 * dest = (u16*) (Data + ( y * Pitch ) + ( x << 1 ));
 			*dest = video::A8R8G8B8toA1R5G5B5( color.color );
 		} break;
 
 		case ECF_R5G6B5:
 		{
-			u16 * dest = (u16*) ((u8*) Data + ( y * Pitch ) + ( x << 1 ));
+			u16 * dest = (u16*) (Data + ( y * Pitch ) + ( x << 1 ));
 			*dest = video::A8R8G8B8toR5G6B5( color.color );
 		} break;
 
 		case ECF_R8G8B8:
 		{
-			u8* dest = (u8*) Data + ( y * Pitch ) + ( x * 3 );
+			u8* dest = Data + ( y * Pitch ) + ( x * 3 );
 			dest[0] = (u8)color.getRed();
 			dest[1] = (u8)color.getGreen();
 			dest[2] = (u8)color.getBlue();
@@ -245,7 +245,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 
 		case ECF_A8R8G8B8:
 		{
-			u32 * dest = (u32*) ((u8*) Data + ( y * Pitch ) + ( x << 2 ));
+			u32 * dest = (u32*) (Data + ( y * Pitch ) + ( x << 2 ));
 			*dest = blend ? PixelBlend32 ( *dest, color.color ) : color.color;
 		} break;
 	}
@@ -268,7 +268,7 @@ SColor CImage::getPixel(u32 x, u32 y) const
 		return ((u32*)Data)[y*Size.Width + x];
 	case ECF_R8G8B8:
 		{
-			u8* p = &((u8*)Data)[(y*3)*Size.Width + (x*3)];
+			u8* p = Data+(y*3)*Size.Width + (x*3);
 			return SColor(255,p[0],p[1],p[2]);
 		}
 	}
@@ -381,7 +381,7 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 		else
 		{
 			u8* tgtpos = (u8*) target;
-			u8* srcpos = (u8*) Data;
+			u8* srcpos = Data;
 			const u32 bwidth = width*bpp;
 			const u32 rest = pitch-bwidth;
 			for (u32 y=0; y<height; ++y)
@@ -406,7 +406,7 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 		f32 sx = 0.0f;
 		for (u32 x=0; x<width; ++x)
 		{
-			CColorConverter::convert_viaFormat(((u8*)Data)+ syval + ((s32)sx)*BytesPerPixel, Format, 1, ((u8*)target)+ yval + (x*bpp), format);
+			CColorConverter::convert_viaFormat(Data+ syval + ((s32)sx)*BytesPerPixel, Format, 1, ((u8*)target)+ yval + (x*bpp), format);
 			sx+=sourceXStep;
 		}
 		sy+=sourceYStep;
@@ -475,7 +475,7 @@ void CImage::fill(const SColor &color)
 	switch ( Format )
 	{
 		case ECF_A1R5G5B5:
-			c = video::A8R8G8B8toA1R5G5B5( color.color );
+			c = color.toA1R5G5B5();
 			c |= c << 16;
 			break;
 		case ECF_R5G6B5:
@@ -485,6 +485,18 @@ void CImage::fill(const SColor &color)
 		case ECF_A8R8G8B8:
 			c = color.color;
 			break;
+		case ECF_R8G8B8:
+		{
+			u8 rgb[3];
+			CColorConverter::convert_A8R8G8B8toR8G8B8(&color, 1, rgb);
+			const u32 size = getImageDataSizeInBytes();
+			for (u32 i=0; i<size; i+=3)
+			{
+				memcpy(Data+i, rgb, 3);
+			}
+			return;
+		}
+		break;
 	}
 	if (Format != ECF_A1R5G5B5 && Format != ECF_R5G6B5 &&
 			Format != ECF_A8R8G8B8)

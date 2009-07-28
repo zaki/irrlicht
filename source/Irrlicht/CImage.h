@@ -123,7 +123,7 @@ private:
 
 	inline SColor getPixelBox ( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) const;
 
-	void* Data;
+	u8* Data;
 	core::dimension2d<u32> Size;
 	u32 BytesPerPixel;
 	u32 Pitch;
