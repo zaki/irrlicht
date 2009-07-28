@@ -154,7 +154,7 @@ namespace video
 		core::array<S2DVertex> TransformedPoints;
 
 		video::ITexture* RenderTargetTexture;
-		video::IImage* RenderTargetSurface;
+		video::CImage* RenderTargetSurface;
 		core::position2d<s32> Render2DTranslation;
 		core::dimension2d<u32> RenderTargetSize;
 		core::dimension2d<u32> ViewPortSize;

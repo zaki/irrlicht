@@ -400,7 +400,7 @@ bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBa
 			DepthBuffer->clear();
 
 		if (clearBackBuffer)
-			((video::CImage*)RenderTargetSurface)->fill( color );
+			RenderTargetSurface->fill( color );
 	}
 
 	return true;
@@ -1669,13 +1669,13 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color)
 {
-	((CImage*)BackBuffer)->drawLine(start, end, color );
+	BackBuffer->drawLine(start, end, color );
 }
 
 //! Draws a pixel
 void CBurningVideoDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	((CImage*)BackBuffer)->setPixel(x, y, color, true);
+	BackBuffer->setPixel(x, y, color, true);
 } 
 
 //! draw an 2d rectangle

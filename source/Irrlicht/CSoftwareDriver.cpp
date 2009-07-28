@@ -803,10 +803,10 @@ void CSoftwareDriver::draw2DImage(const video::ITexture* texture, const core::po
 
 		if (useAlphaChannelOfTexture)
 			((CSoftwareTexture*)texture)->getImage()->copyToWithAlpha(
-				((CImage*)RenderTargetSurface), destPos, sourceRect, color, clipRect);
+				RenderTargetSurface, destPos, sourceRect, color, clipRect);
 		else
 			((CSoftwareTexture*)texture)->getImage()->copyTo(
-				((CImage*)RenderTargetSurface), destPos, sourceRect, clipRect);
+				RenderTargetSurface, destPos, sourceRect, clipRect);
 	}
 }
 
@@ -814,16 +814,17 @@ void CSoftwareDriver::draw2DImage(const video::ITexture* texture, const core::po
 
 //! Draws a 2d line.
 void CSoftwareDriver::draw2DLine(const core::position2d<s32>& start,
-								const core::position2d<s32>& end,
-								SColor color)
+				const core::position2d<s32>& end,
+				SColor color)
 {
-	((CImage*)RenderTargetSurface)->drawLine(start, end, color );
+	RenderTargetSurface->drawLine(start, end, color );
 }
+
 
 //! Draws a pixel
 void CSoftwareDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	((CImage*)BackBuffer)->setPixel(x, y, color, true);
+	BackBuffer->setPixel(x, y, color, true);
 }
 
 
@@ -840,14 +841,14 @@ void CSoftwareDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 		if(!p.isValid())
 			return;
 
-		((CImage*)RenderTargetSurface)->drawRectangle(p, color);
+		RenderTargetSurface->drawRectangle(p, color);
 	}
 	else
 	{
 		if(!pos.isValid())
 			return;
 
-		((CImage*)RenderTargetSurface)->drawRectangle(pos, color);
+		RenderTargetSurface->drawRectangle(pos, color);
 	}
 }
 
