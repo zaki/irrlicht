@@ -779,7 +779,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			const S3DVertex* po = static_cast<const S3DVertex*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
 			}
 		}
 		break;
@@ -789,7 +789,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			const S3DVertex2TCoords* po = static_cast<const S3DVertex2TCoords*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
 			}
 		}
 		break;
@@ -799,7 +799,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			const S3DVertexTangents* po = static_cast<const S3DVertexTangents*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
 			}
 		}
 		break;

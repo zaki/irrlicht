@@ -152,6 +152,7 @@ namespace video
 	This class is used by most parts of the Irrlicht Engine
 	to specify a color. Another way is using the class SColorf, which
 	stores the color values in 4 floats.
+	This class must consist of only one u32 and must not use virtual functions.
 	*/
 	class SColor
 	{
