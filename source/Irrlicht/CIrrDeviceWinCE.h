@@ -6,7 +6,7 @@
 #define __C_IRR_DEVICE_WINCE_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
-#ifdef _IRR_USE_WINDOWS_CE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
 
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
@@ -72,6 +72,12 @@ namespace irr
 		//! Minimizes the window.
 		virtual void minimizeWindow();
 
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_WINCE;
+		}
+
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
 		{
@@ -135,7 +141,7 @@ namespace irr
 
 				if (UseReferenceRect)
 				{
-					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x, 
+					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x,
 								 ReferenceRect.UpperLeftCorner.Y + y);
 				}
 				else
@@ -259,6 +265,5 @@ namespace irr
 
 } // end namespace irr
 
-#endif
-#endif
-
+#endif // _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
+#endif // __C_IRR_DEVICE_WINCE_H_INCLUDED__

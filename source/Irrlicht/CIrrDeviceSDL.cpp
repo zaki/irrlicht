@@ -4,7 +4,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 
 #include "CIrrDeviceSDL.h"
 #include "IEventReceiver.h"
@@ -42,7 +42,7 @@ namespace irr
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io);
+				io::IFileSystem* io, CIrrDeviceSDL* device);
 		#endif
 	} // end namespace video
 
@@ -51,8 +51,6 @@ namespace irr
 
 namespace irr
 {
-
-const char* wmDeleteWindow = "WM_DELETE_WINDOW";
 
 //! constructor
 CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
@@ -107,7 +105,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	SDL_EnableUNICODE(1);
 
 	(void)SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-	
+
 	if ( CreationParams.Fullscreen )
 		SDL_Flags |= SDL_FULLSCREEN;
 	if (CreationParams.DriverType == video::EDT_OPENGL)
@@ -265,7 +263,7 @@ void CIrrDeviceSDL::createDriver()
 		os::Printer::log("No Software driver support compiled in.", ELL_ERROR);
 		#endif
 		break;
-		
+
 	case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
 		VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
@@ -275,11 +273,11 @@ void CIrrDeviceSDL::createDriver()
 		break;
 
 	case video::EDT_OPENGL:
-	#ifdef _IRR_COMPILE_WITH_OPENGL_
-		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
-	#else
+		#ifdef _IRR_COMPILE_WITH_OPENGL_
+		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
+		#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
-	#endif
+		#endif
 		break;
 
 	case video::EDT_NULL:
@@ -381,7 +379,7 @@ bool CIrrDeviceSDL::run()
 			if (irrevent.MouseInput.Event != irr::EMIE_MOUSE_MOVED)
 			{
 				postEventFromUser(irrevent);
-				
+
 				if ( irrevent.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN )
 				{
 					u32 clicks = checkSuccessiveClicks(irrevent.MouseInput.X, irrevent.MouseInput.Y);
@@ -456,8 +454,8 @@ bool CIrrDeviceSDL::run()
 
 		case SDL_USEREVENT:
 			irrevent.EventType = irr::EET_USER_EVENT;
-			irrevent.UserEvent.UserData1 = reinterpret_cast<s32>(SDL_event.user.data1);
-			irrevent.UserEvent.UserData2 = reinterpret_cast<s32>(SDL_event.user.data2);
+			irrevent.UserEvent.UserData1 = *(reinterpret_cast<s32*>(&SDL_event.user.data1));
+			irrevent.UserEvent.UserData2 = *(reinterpret_cast<s32*>(&SDL_event.user.data2));
 
 			postEventFromUser(irrevent);
 			break;
@@ -539,7 +537,7 @@ bool CIrrDeviceSDL::run()
 			{
 				joyevent.JoystickEvent.POV=65535;
 			}
-			
+
 			// we map the number directly
 			joyevent.JoystickEvent.Joystick=static_cast<u8>(i);
 			// now post the event
@@ -609,7 +607,7 @@ void CIrrDeviceSDL::sleep(u32 timeMs, bool pauseTimer)
 	const bool wasStopped = Timer ? Timer->isStopped() : true;
 	if (pauseTimer && !wasStopped)
 		Timer->stop();
-	
+
 	SDL_Delay(timeMs);
 
 	if (pauseTimer && !wasStopped)
@@ -946,21 +944,7 @@ void CIrrDeviceSDL::createKeyMap()
 	KeyMap.sort();
 }
 
-extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
-{
-	CIrrDeviceSDL* dev = new CIrrDeviceSDL(param);
-
-	if (dev && !dev->getVideoDriver() && param.DriverType != video::EDT_NULL)
-	{
-		dev->drop();
-		dev = 0;
-	}
-
-	return dev;
-}
-
-
 } // end namespace irr
 
-#endif // _IRR_USE_SDL_DEVICE_
+#endif // _IRR_COMPILE_WITH_SDL_DEVICE_
 

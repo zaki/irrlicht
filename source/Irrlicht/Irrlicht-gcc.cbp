@@ -723,10 +723,14 @@
 		<Unit filename="CIrrDeviceConsole.h" />
 		<Unit filename="CIrrDeviceLinux.cpp" />
 		<Unit filename="CIrrDeviceLinux.h" />
+		<Unit filename="CIrrDeviceSDL.cpp" />
+		<Unit filename="CIrrDeviceSDL.h" />
 		<Unit filename="CIrrDeviceStub.cpp" />
 		<Unit filename="CIrrDeviceStub.h" />
 		<Unit filename="CIrrDeviceWin32.cpp" />
 		<Unit filename="CIrrDeviceWin32.h" />
+		<Unit filename="CIrrDeviceWinCE.cpp" />
+		<Unit filename="CIrrDeviceWinCE.h" />
 		<Unit filename="CIrrMeshFileLoader.cpp" />
 		<Unit filename="CIrrMeshFileLoader.h" />
 		<Unit filename="CIrrMeshWriter.cpp" />
@@ -935,6 +939,8 @@
 		<Unit filename="ITriangleRenderer.h" />
 		<Unit filename="IZBuffer.h" />
 		<Unit filename="Irrlicht.cpp" />
+		<Unit filename="MacOSX/CIrrDeviceMacOSX.h" />
+		<Unit filename="MacOSX/CIrrDeviceMacOSX.mm" />
 		<Unit filename="OctTree.h" />
 		<Unit filename="S2DVertex.h" />
 		<Unit filename="S4DVertex.h" />

@@ -35,7 +35,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
 	pGlCompressedTexImage2D(0),
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 	wglSwapIntervalEXT(0),
 #elif defined(GLX_SGI_swap_control)
 	glxSwapIntervalSGI(0),
@@ -186,10 +186,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	// vsync extension
 	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC) wglGetProcAddress("wglSwapIntervalEXT");
 
-#elif defined(_IRR_USE_LINUX_DEVICE_) || defined (_IRR_USE_SDL_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#ifdef _IRR_OPENGL_USE_EXTPOINTER_
 
-	#ifdef _IRR_USE_SDL_DEVICE_
+	#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_) && !defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 		#define IRR_OGL_LOAD_EXTENSION(x) SDL_GL_GetProcAddress(reinterpret_cast<const char*>(x))
 	#else
 	// Accessing the correct function is quite complex
@@ -322,7 +322,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompressedTexImage2D"));
 
-	#if defined(GLX_SGI_swap_control) && !defined(_IRR_USE_SDL_DEVICE_)
+	#if defined(GLX_SGI_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 		// get vsync extension
 		glxSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glXSwapIntervalSGI"));
 	#endif

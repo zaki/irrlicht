@@ -4,7 +4,7 @@
 
 #include "CIrrDeviceLinux.h"
 
-#ifdef _IRR_USE_LINUX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +41,7 @@ namespace irr
 	namespace video
 	{
 		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io);
+				io::IFileSystem* io, CIrrDeviceLinux* device);
 	}
 } // end namespace irr
 
@@ -719,12 +719,12 @@ void CIrrDeviceLinux::createDriver()
 		break;
 
 	case video::EDT_OPENGL:
-	#ifdef _IRR_COMPILE_WITH_OPENGL_
+		#ifdef _IRR_COMPILE_WITH_OPENGL_
 		if (Context)
-			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
-	#else
+			VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
+		#else
 		os::Printer::log("No OpenGL support compiled in.", ELL_ERROR);
-	#endif
+		#endif
 		break;
 
 	case video::EDT_DIRECT3D8:
@@ -1662,22 +1662,7 @@ void CIrrDeviceLinux::initXAtoms()
 #endif
 }
 
-
-extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
-{
-	CIrrDeviceLinux* dev = new CIrrDeviceLinux(param);
-
-	if (dev && !dev->getVideoDriver() && param.DriverType != video::EDT_NULL)
-	{
-		dev->drop();
-		dev = 0;
-	}
-
-	return dev;
-}
-
-
 } // end namespace
 
-#endif // _IRR_USE_LINUX_DEVICE_
+#endif // _IRR_COMPILE_WITH_X11_DEVICE_
 

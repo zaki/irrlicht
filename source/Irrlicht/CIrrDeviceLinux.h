@@ -7,7 +7,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_LINUX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
@@ -103,6 +103,12 @@ namespace irr
         //! copies text to the clipboard
         //! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
         virtual void copyToClipboard(const c8* text) const;
+
+        //! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_X11;
+		}
 
 	private:
 
@@ -380,6 +386,6 @@ namespace irr
 
 } // end namespace irr
 
-#endif // _IRR_USE_LINUX_DEVICE_
+#endif // _IRR_COMPILE_WITH_X11_DEVICE_
 #endif // __C_IRR_DEVICE_LINUX_H_INCLUDED__
 

@@ -4,7 +4,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_WINDOWS_CE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
 
 #include "CIrrDeviceWinCE.h"
 #include "IEventReceiver.h"
@@ -40,7 +40,7 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io);
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, io::IFileSystem* io, this);
 		#endif
 	}
 } // end namespace irr
@@ -310,7 +310,7 @@ CIrrDeviceWinCE::CIrrDeviceWinCE(const SIrrlichtCreationParameters& params)
 		wc.lpszClassName	= ClassName;
 
 		// if there is an icon, load it
-		wc.hIcon = (HICON)LoadImageW(hInstance, L"irrlicht.ico", IMAGE_ICON, 0,0, 0); 
+		wc.hIcon = (HICON)LoadImageW(hInstance, L"irrlicht.ico", IMAGE_ICON, 0,0, 0);
 
 		RegisterClass(&wc);
 
@@ -468,7 +468,7 @@ void CIrrDeviceWinCE::createDriver()
 		VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
 		os::Printer::log("Burning's Video driver was not compiled in.", ELL_ERROR);
-		#endif 
+		#endif
 		break;
 
 	case video::EDT_NULL:
@@ -526,7 +526,7 @@ void CIrrDeviceWinCE::sleep(u32 timeMs, bool pauseTimer)
 	const bool wasStopped = Timer ? Timer->isStopped() : true;
 	if (pauseTimer && !wasStopped)
 		Timer->stop();
-	
+
 	Sleep(timeMs);
 
 	if (pauseTimer && !wasStopped)
@@ -587,7 +587,7 @@ typedef struct {
   DWORD        bV4AlphaMask;
   DWORD        bV4CSType;
   DWORD			un[9];
-} BITMAPV4HEADER, *PBITMAPV4HEADER; 
+} BITMAPV4HEADER, *PBITMAPV4HEADER;
 #endif
 
 
@@ -711,7 +711,7 @@ video::IVideoModeList* CIrrDeviceWinCE::getVideoModeList()
 		// enumerate video modes.
 		DWORD i=0;
 		DEVMODE mode;
-		memset(&mode, 0, sizeof(mode)); 
+		memset(&mode, 0, sizeof(mode));
 		mode.dmSize = sizeof(mode);
 
 		while (EnumDisplaySettings(NULL, i, &mode))
@@ -783,25 +783,7 @@ void CIrrDeviceWinCE::minimizeWindow()
 {
 }
 
-
-IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
-		const SIrrlichtCreationParameters& parameters)
-{
-	CIrrDeviceWinCE* dev = new CIrrDeviceWinCE(parameters);
-
-	if (dev && !dev->getVideoDriver() && parameters.DriverType != video::EDT_NULL)
-	{
-		dev->closeDevice(); // destroy window
-		dev->run(); // consume quit message
-		dev->drop();
-		dev = 0;
-	}
-
-	return dev;
-}
-
-
 } // end namespace
 
-#endif // _IRR_USE_WINDOWS_CE_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
 

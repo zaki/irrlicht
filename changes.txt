@@ -1,5 +1,7 @@
 Changes in 1.6 (??.??.2009)
 
+ - Irrlicht can now come with multiple device types compiled in, the device to use is selected by SIrrlichtCreationParameters.DeviceType. This defaults to EIDT_BEST which automatically select the best device available starting with native, then X11, SDL and finally the console.
+
  - Added support for EXP2 fog distribution. This required a change in the setFog parameters where now an enum value instead of the bool linear is given.
 
  - IFileSystem changes:

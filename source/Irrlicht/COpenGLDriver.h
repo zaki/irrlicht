@@ -18,6 +18,11 @@
 
 namespace irr
 {
+	class CIrrDeviceWin32;
+	class CIrrDeviceLinux;
+	class CIrrDeviceSDL;
+	class CIrrDeviceMacOSX;
+
 namespace video
 {
 	class COpenGLTexture;
@@ -26,13 +31,20 @@ namespace video
 	{
 	public:
 
-		#if defined(_IRR_WINDOWS_API_) || defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
+		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device);
 		#endif
 
-		#ifdef _IRR_USE_OSX_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io, CIrrDeviceMacOSX *device);
+		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceLinux* device);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceSDL* device);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device);
 		#endif
 
 		#ifdef _IRR_WINDOWS_API_
@@ -393,11 +405,15 @@ namespace video
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
 			HGLRC HRc; // Permanent Rendering Context
-		#elif defined(_IRR_USE_LINUX_DEVICE_)
+		#endif
+		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 			GLXDrawable Drawable;
-		#elif defined(_IRR_USE_OSX_DEVICE_)
+		#endif
+		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 			CIrrDeviceMacOSX *_device;
 		#endif
+
+		E_DEVICE_TYPE DeviceType;
 	};
 
 } // end namespace video

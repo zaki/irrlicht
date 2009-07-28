@@ -24,9 +24,9 @@
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
 #endif
-#elif defined(_IRR_USE_OSX_DEVICE_)
+#elif defined(_IRR_OSX_PLATFORM_)
 	#include <OpenGL/gl.h>
-#elif defined(_IRR_USE_SDL_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#define NO_SDL_GLEXT
 	#include <SDL/SDL_video.h>
 	#include <SDL/SDL_opengl.h>
@@ -142,7 +142,7 @@ class COpenGLFBOTexture : public COpenGLTexture
 public:
 
 	//! FrameBufferObject constructor
-	COpenGLFBOTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, 
+	COpenGLFBOTexture(const core::dimension2d<u32>& size, const core::string<c16>& name,
 		COpenGLDriver* driver = 0, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! destructor

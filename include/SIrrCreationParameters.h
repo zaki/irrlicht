@@ -6,6 +6,7 @@
 #define __I_IRRLICHT_CREATION_PARAMETERS_H_INCLUDED__
 
 #include "EDriverTypes.h"
+#include "EDeviceTypes.h"
 #include "dimension2d.h"
 
 namespace irr
@@ -18,6 +19,7 @@ namespace irr
 	{
 		//! Constructs a SIrrlichtCreationParameters structure with default values.
 		SIrrlichtCreationParameters() :
+			DeviceType(EIDT_BEST),
 			DriverType(video::EDT_BURNINGSVIDEO),
 			WindowSize(core::dimension2d<u32>(800, 600)),
 			Bits(16),
@@ -43,6 +45,7 @@ namespace irr
 
 		SIrrlichtCreationParameters& operator=(const SIrrlichtCreationParameters& other)
 		{
+			DeviceType = other.DeviceType;
 			DriverType = other.DriverType;
 			WindowSize = other.WindowSize;
 			Bits = other.Bits;
@@ -62,6 +65,19 @@ namespace irr
 		}
 
 		//! Type of the device.
+		/** This setting decides the windowing system used by the device, most device types are native
+		to a specific operating system and so may not be available. 
+		EIDT_WIN32 is only available on Windows desktops,
+		EIDT_WINCE is only available on Windows mobile devices,
+		EIDT_COCOA is only available on Mac OSX,
+		EIDT_X11 is available on Linux, Solaris, BSD and other operating systems which use X11, 
+		EIDT_SDL is available on most systems if compiled in, 
+		EIDT_CONSOLE is usually available but can only render to text, 
+		EIDT_BEST will select the best available device for your operating system.
+		Default: EIDT_BEST. */
+		E_DEVICE_TYPE DeviceType;
+
+		//! Type of video driver used to render graphics.
 		/** This can currently be video::EDT_NULL, video::EDT_SOFTWARE,
 		video::EDT_BURNINGSVIDEO, video::EDT_DIRECT3D8,
 		video::EDT_DIRECT3D9, and video::EDT_OPENGL.
@@ -83,7 +99,7 @@ namespace irr
 
 		//! Specifies if the stencil buffer should be enabled.
 		/** Set this to true, if you want the engine be able to draw
-		stencil buffer shadows. Note that not all devices are able to
+		stencil buffer shadows. Note that not all drivers are able to
 		use the stencil buffer, hence it can be ignored during device
 		creation. Without the stencil buffer no shadows will be drawn.
 		Default: false. */

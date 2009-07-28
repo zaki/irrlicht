@@ -64,10 +64,10 @@ namespace irr
 
 		//! Sets if the window should be resizable in windowed mode.
 		virtual void setResizable(bool resize);
-		
+
 		//! Returns true if the window is resizable, false if not
 		virtual bool isResizable() const;
-		
+
 		//! Minimizes the window if possible
 		virtual void minimizeWindow();
 
@@ -77,6 +77,12 @@ namespace irr
 		//! \return Returns a pointer to a list with all video modes
 		//! supported by the gfx adapter.
 		virtual video::IVideoModeList* getVideoModeList();
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_OSX;
+		}
 
 		void flush();
 		void setMouseLocation(int x, int y);
@@ -93,13 +99,13 @@ namespace irr
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device) 
+			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device)
 				: WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), Device(device), UseReferenceRect(false)
 			{
 				CursorPos.X = CursorPos.Y = 0;
-				if (WindowSize.Width!=0) 
+				if (WindowSize.Width!=0)
 					InvWindowSize.Width = 1.0f / WindowSize.Width;
-				if (WindowSize.Height!=0) 
+				if (WindowSize.Height!=0)
 					InvWindowSize.Height = 1.0f / WindowSize.Height;
 			}
 
@@ -222,7 +228,7 @@ namespace irr
 		                    ScreenHeight;
 		bool                IsActive;
 		NSBitmapImageRep   *SoftwareDriverTarget;
-		bool                IsSoftwareRenderer, 
+		bool                IsSoftwareRenderer,
 		                    IsShiftDown,
 		                    IsControlDown,
 		                    IsResizable;

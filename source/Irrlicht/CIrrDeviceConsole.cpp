@@ -4,7 +4,7 @@
 
 #include "CIrrDeviceConsole.h"
 
-#ifdef _IRR_USE_CONSOLE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 
 #include "os.h"
 #include "IGUISkin.h"
@@ -90,7 +90,7 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 		ConsoleSize.X = CreationParams.WindowSize.Height;
 		SetConsoleScreenBufferSize(WindowsSTDOut, ConsoleSize);
 	}
-	
+
 	// catch windows close/break signals
 	SetConsoleCtrlHandler((PHANDLER_ROUTINE)ConsoleHandler, TRUE);
 
@@ -129,7 +129,7 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 	case video::EDT_DIRECT3D8:
 	case video::EDT_DIRECT3D9:
 	case video::EDT_OPENGL:
-		os::Printer::log("The console device cannot use hardware drivers", ELL_ERROR);
+		os::Printer::log("The console device cannot use hardware drivers yet.", ELL_ERROR);
 		break;
 	case video::EDT_NULL:
 		VideoDriver = video::createNullDriver(FileSystem, CreationParams.WindowSize);
@@ -151,7 +151,7 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
 
 #ifdef _IRR_WINDOWS_NT_CONSOLE_
 	CursorControl = new CCursorControl(CreationParams.WindowSize);
-#endif 
+#endif
 
 	if (VideoDriver)
 	{
@@ -186,7 +186,7 @@ CIrrDeviceConsole::~CIrrDeviceConsole()
 		ConsoleFont = 0;
 	}
 #ifdef _IRR_VT100_CONSOLE_
-	// reset terminal 
+	// reset terminal
 	printf("%cc", 27);
 #endif
 }
@@ -197,7 +197,7 @@ bool CIrrDeviceConsole::run()
 	// increment timer
 	os::Timer::tick();
 
-	// process Windows console input 
+	// process Windows console input
 #ifdef _IRR_WINDOWS_NT_CONSOLE_
 
 	INPUT_RECORD in;
@@ -235,13 +235,13 @@ bool CIrrDeviceConsole::run()
 			e.MouseInput.X     = in.Event.MouseEvent.dwMousePosition.X;
 			e.MouseInput.Y     = in.Event.MouseEvent.dwMousePosition.Y;
 			e.MouseInput.Wheel = 0.f;
-			e.MouseInput.ButtonStates = 
+			e.MouseInput.ButtonStates =
 				( (in.Event.MouseEvent.dwButtonState & FROM_LEFT_1ST_BUTTON_PRESSED) ? EMBSM_LEFT   : 0 ) |
 				( (in.Event.MouseEvent.dwButtonState & RIGHTMOST_BUTTON_PRESSED)     ? EMBSM_RIGHT  : 0 ) |
 				( (in.Event.MouseEvent.dwButtonState & FROM_LEFT_2ND_BUTTON_PRESSED) ? EMBSM_MIDDLE : 0 ) |
 				( (in.Event.MouseEvent.dwButtonState & FROM_LEFT_3RD_BUTTON_PRESSED) ? EMBSM_EXTRA1 : 0 ) |
 				( (in.Event.MouseEvent.dwButtonState & FROM_LEFT_4TH_BUTTON_PRESSED) ? EMBSM_EXTRA2 : 0 );
-			
+
 			if (in.Event.MouseEvent.dwEventFlags & MOUSE_MOVED)
 			{
 				CursorControl->setPosition(core::position2di(e.MouseInput.X, e.MouseInput.Y));
@@ -281,9 +281,9 @@ bool CIrrDeviceConsole::run()
 
 			break;
 		}
-		case WINDOW_BUFFER_SIZE_EVENT: 
+		case WINDOW_BUFFER_SIZE_EVENT:
 			VideoDriver->OnResize(
-				core::dimension2d<u32>(in.Event.WindowBufferSizeEvent.dwSize.X, 
+				core::dimension2d<u32>(in.Event.WindowBufferSizeEvent.dwSize.X,
 				                       in.Event.WindowBufferSizeEvent.dwSize.Y));
 			break;
 		case FOCUS_EVENT:
@@ -300,7 +300,7 @@ bool CIrrDeviceConsole::run()
 #else
 	// todo: keyboard input from terminal in raw mode
 #endif
-	
+
 	return IsDeviceRunning;
 }
 
@@ -449,23 +449,6 @@ void CIrrDeviceConsole::addPostPresentText(s16 X, s16 Y, const wchar_t *text)
 	Text.push_back(p);
 }
 
-extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
-	const SIrrlichtCreationParameters& parameters)
-{
-	CIrrDeviceConsole* dev = new CIrrDeviceConsole(parameters);
-
-	if (dev && !dev->getVideoDriver() && parameters.DriverType != video::EDT_NULL)
-	{
-		dev->closeDevice(); // close device
-		dev->run(); // consume quit message
-		dev->drop();
-		dev = 0;
-	}
-
-	return dev;
-}
-
-
 } // end namespace irr
 
-#endif // _IRR_USE_CONSOLE_DEVICE_
+#endif // _IRR_COMPILE_WITH_CONSOLE_DEVICE_
