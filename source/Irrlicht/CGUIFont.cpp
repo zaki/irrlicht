@@ -295,9 +295,10 @@ void CGUIFont::readPositions(video::IImage* image, s32& lowerRightPositions)
 
 	video::SColor colorTopLeft = image->getPixel(0,0);
 	colorTopLeft.setAlpha(255);
+	image->setPixel(0,0,colorTopLeft);
 	video::SColor colorLowerRight = image->getPixel(1,0);
 	video::SColor colorBackGround = image->getPixel(2,0);
-	video::SColor colorBackGroundTransparent = 0; // 0x7FFF & colorBackGround;
+	video::SColor colorBackGroundTransparent = 0;
 
 	image->setPixel(1,0,colorBackGround);
 
