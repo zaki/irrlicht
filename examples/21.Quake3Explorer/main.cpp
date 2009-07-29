@@ -648,7 +648,9 @@ void CQuake3EventHandler::CreateGUI()
 	gui.drop();
 
 	// set skin font
-	env->getSkin()->setFont(env->getFont("fontlucida.png"));
+	IGUIFont* font = env->getFont("fontlucida.png");
+	if (font)
+		env->getSkin()->setFont(font);
 	env->getSkin()->setColor ( EGDC_BUTTON_TEXT, video::SColor(240,0xAA,0xAA,0xAA) );
 	env->getSkin()->setColor ( EGDC_3D_HIGH_LIGHT, video::SColor(240,0x22,0x22,0x22) );
 	env->getSkin()->setColor ( EGDC_3D_FACE, video::SColor(240,0x44,0x44,0x44) );
