@@ -66,13 +66,13 @@ namespace irr
 
 		//! Type of the device.
 		/** This setting decides the windowing system used by the device, most device types are native
-		to a specific operating system and so may not be available. 
+		to a specific operating system and so may not be available.
 		EIDT_WIN32 is only available on Windows desktops,
 		EIDT_WINCE is only available on Windows mobile devices,
 		EIDT_COCOA is only available on Mac OSX,
-		EIDT_X11 is available on Linux, Solaris, BSD and other operating systems which use X11, 
-		EIDT_SDL is available on most systems if compiled in, 
-		EIDT_CONSOLE is usually available but can only render to text, 
+		EIDT_X11 is available on Linux, Solaris, BSD and other operating systems which use X11,
+		EIDT_SDL is available on most systems if compiled in,
+		EIDT_CONSOLE is usually available but can only render to text,
 		EIDT_BEST will select the best available device for your operating system.
 		Default: EIDT_BEST. */
 		E_DEVICE_TYPE DeviceType;
