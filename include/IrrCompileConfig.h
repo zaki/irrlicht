@@ -52,7 +52,7 @@
 #define _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #endif
 
-//
+//! WINCE is a very restricted environment for mobile devices
 #if defined(_WIN32_WCE)
 #define _IRR_WINDOWS_
 #define _IRR_WINDOWS_API_
