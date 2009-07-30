@@ -913,8 +913,8 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 				io::IFileSystem* fs = SceneManager->getFileSystem();
 				if (fs->existFile(B3dTexture->TextureName))
 					tex = SceneManager->getVideoDriver()->getTexture(B3dTexture->TextureName);
-				else if (fs->existFile(fs->getFileDir(B3DFile->getFileName()) + fs->getFileBasename(B3dTexture->TextureName)))
-					tex = SceneManager->getVideoDriver()->getTexture(fs->getFileDir(B3DFile->getFileName()) + fs->getFileBasename(B3dTexture->TextureName));
+				else if (fs->existFile(fs->getFileDir(B3DFile->getFileName()) +"/"+ fs->getFileBasename(B3dTexture->TextureName)))
+					tex = SceneManager->getVideoDriver()->getTexture(fs->getFileDir(B3DFile->getFileName()) +"/"+ fs->getFileBasename(B3dTexture->TextureName));
 				else
 					tex = SceneManager->getVideoDriver()->getTexture(fs->getFileBasename(B3dTexture->TextureName));
 
