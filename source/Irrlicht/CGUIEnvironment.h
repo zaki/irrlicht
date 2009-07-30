@@ -71,8 +71,8 @@ public:
 	virtual IGUISkin* createSkin(EGUI_SKIN_TYPE type);
 
 	//! Creates the image list from the given texture.
-	virtual IGUIImageList* createImageList( video::ITexture* texture, 
-					core::dimension2d<s32>	imageSize, bool useAlphaChannel );
+	virtual IGUIImageList* createImageList( video::ITexture* texture,
+					core::dimension2d<s32> imageSize, bool useAlphaChannel );
 
 	//! returns the font
 	virtual IGUIFont* getFont(const core::string<c16>& filename);
