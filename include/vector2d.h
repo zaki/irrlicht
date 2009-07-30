@@ -157,16 +157,16 @@ public:
 	}
 
 	//! Calculates the angle of this vector in degrees in the trigonometric sense.
-	/** 0 is to the left (9 o'clock), values increase clockwise.
+	/** 0 is to the right (3 o'clock), values increase counter-clockwise.
 	This method has been suggested by Pr3t3nd3r.
 	\return Returns a value between 0 and 360. */
 	f64 getAngleTrig() const
 	{
-		if (X == 0)
-			return Y < 0 ? 270 : 90;
-		else
 		if (Y == 0)
 			return X < 0 ? 180 : 0;
+		else
+		if (X == 0)
+			return Y < 0 ? 270 : 90;
 
 		if ( Y > 0)
 			if (X > 0)
@@ -181,7 +181,7 @@ public:
 	}
 
 	//! Calculates the angle of this vector in degrees in the counter trigonometric sense.
-	/** 0 is to the right (3 o'clock), values increase counter-clockwise.
+	/** 0 is to the right (3 o'clock), values increase clockwise.
 	\return Returns a value between 0 and 360. */
 	inline f64 getAngle() const
 	{
@@ -190,7 +190,8 @@ public:
 		else if (X == 0)
 			return Y < 0 ? 90 : 270;
 
-		f64 tmp = Y / getLength();
+		// don't use getLength here to avoid precision loss with s32 vectors
+		f64 tmp = Y / sqrt((f64)(X*X + Y*Y));
 		tmp = atan( core::squareroot(1 - tmp*tmp) / tmp) * RADTODEG64;
 
 		if (X>0 && Y>0)

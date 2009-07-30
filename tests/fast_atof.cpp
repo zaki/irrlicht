@@ -168,7 +168,7 @@ bool fast_atof(void)
 		atofTime, fastAtofTime, oldFastAtofTime);
 
 	device->drop();
-	if(fastAtofTime > atofTime)
+	if(fastAtofTime > (1.2f*atofTime))
 	{
 		logTestString("The fast method is slower than atof()\n");
 		return false;
