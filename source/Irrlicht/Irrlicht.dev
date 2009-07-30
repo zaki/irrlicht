@@ -9,7 +9,7 @@ CppCompiler=-D__GNUWIN32__ -W -DWIN32 -DNDEBUG -D_WINDOWS -D_MBCS -D_USRDLL -DIR
 Includes=..\..\include;zlib
 Linker=-lkernel32 -luser32 -lgdi32 -lwinspool -lcomdlg32 -ladvapi32 -lshell32 -lole32 -loleaut32 -luuid -lwinmm -lopengl32_@@_
 Libs=
-UnitCount=621
+UnitCount=623
 Folders=doc,include,include/core,include/gui,include/io,include/scene,include/video,Irrlicht,Irrlicht/extern,Irrlicht/extern/jpeglib,Irrlicht/extern/libpng,Irrlicht/extern/zlib,Irrlicht/gui,Irrlicht/io,Irrlicht/io/archive,Irrlicht/io/attributes,Irrlicht/io/file,Irrlicht/io/xml,Irrlicht/irr,Irrlicht/irr/IrrlichtDevice,Irrlicht/scene,Irrlicht/scene/animators,Irrlicht/scene/collision,Irrlicht/scene/mesh,Irrlicht/scene/mesh/loaders,Irrlicht/scene/mesh/writers,Irrlicht/scene/nodes,Irrlicht/scene/nodes/particles,Irrlicht/video,"Irrlicht/video/Burning Video",Irrlicht/video/DirectX8,Irrlicht/video/DirectX9,Irrlicht/video/Null,Irrlicht/video/Null/Loader,Irrlicht/video/Null/Writer,Irrlicht/video/OpenGL,Irrlicht/video/Software
 ObjFiles=
 PrivateResource=
@@ -6252,6 +6252,26 @@ FileName=CImageLoaderRGB.h
 CompileCpp=1
 Folder=Irrlicht/video/Null/Loader
 Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit622]
+FileName=CTarReader.cpp
+Folder=Irrlicht/io/archive
+Compile=1
+CompileCpp=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit623]
+FileName=CTarReader.h
+Folder=Irrlicht/io/archive
+Compile=1
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
