@@ -205,12 +205,14 @@ void CGUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
 	if ((u32)which >= EGDS_COUNT)
 		return;
 
-    if (font)
-        font->grab();
-	if (Fonts[which])
-		Fonts[which]->drop();
+	if (font)
+	{
+		font->grab();
+		if (Fonts[which])
+			Fonts[which]->drop();
 
-	Fonts[which] = font;
+		Fonts[which] = font;
+	}
 }
 
 

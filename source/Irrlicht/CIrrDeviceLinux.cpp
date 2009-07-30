@@ -913,8 +913,8 @@ bool CIrrDeviceLinux::run()
 					XEvent next_event;
 					XPeekEvent (event.xkey.display, &next_event);
 					if ((next_event.type == KeyPress) &&
-					    (next_event.xkey.keycode == event.xkey.keycode) &&
-					    (next_event.xkey.time - event.xkey.time) < 2)	// usually same time, but on some systems a difference of 1 is possible
+						(next_event.xkey.keycode == event.xkey.keycode) &&
+						(next_event.xkey.time - event.xkey.time) < 2)	// usually same time, but on some systems a difference of 1 is possible
 					{
 						/* Ignore the key release event */
 						break;

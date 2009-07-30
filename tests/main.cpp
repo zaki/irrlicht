@@ -134,8 +134,7 @@ int main(int argumentCount, char * arguments[])
 		(void)sprintf(runNextTest, "\"%s\" %d %d", arguments[0], testToRun, fails);
 		fails = system(runNextTest); // Spawn the next test in a new process.
 	}
-
-	if(1 == testToRun)
+	else
 	{
 		(void)openTestLog(false);
 		const int passed = numberOfTests - fails;
@@ -161,7 +160,7 @@ int main(int argumentCount, char * arguments[])
 #ifdef _IRR_WINDOWS_
 		(void)system("tests.log");
 #else
-		(void)system("more tests.log");
+		(void)system("$PAGER tests.log");
 #endif
 	}
 

@@ -46,7 +46,7 @@ static bool doTests()
 	COMPARE_VECTORS(vec, vector2d<T>(0, (T)1.0000000461060017));
 
 	vec.set(10, 10);
-    vector2d<T> center(5, 5);
+	vector2d<T> center(5, 5);
 	vec.rotateBy(-5, center);
 	// -5 means rotate clockwise slightly, so expect the X to increase
 	// slightly and the Y to decrease slightly.
@@ -59,6 +59,7 @@ static bool doTests()
 	vec.set(5, 5);
 	otherVec.set(10, 20);
 
+	logTestString("vector2df interpolation\n");
 	vector2d<T> interpolated;
 	(void)interpolated.interpolate(vec, otherVec, 0.f);
 	COMPARE_VECTORS(interpolated, otherVec); // 0.f means all the second vector
@@ -86,6 +87,7 @@ static bool doTests()
 	COMPARE_VECTORS(interpolated, vec); // 1.f means all the first vector
 
 
+	logTestString("vector2df quadratic interpolation\n");
 	vector2d<T> thirdVec(20, 10);
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 0.f);
 	COMPARE_VECTORS(interpolated, vec); // 0.f means all the 1st vector
@@ -101,6 +103,66 @@ static bool doTests()
 
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 1.f);
 	COMPARE_VECTORS(interpolated, thirdVec); // 1.f means all the 3rd vector
+
+	// check if getAngle returns values matching those of the double precision version
+	logTestString("vector2df getAngle\n");
+	for (s32 i=0; i<200; ++i)
+	{
+		core::vector2d<T> tmp(-1, -100+i);
+		core::vector2d<f64> ref(-1, -100+i);
+		if (!equals(tmp.getAngle(),ref.getAngle(), 0.0003))
+		{
+			logTestString("\nERROR: angle %.16f != angle %.16f\n",
+				tmp.getAngle(), ref.getAngle());
+			return false;
+		}
+		f32 val = atan2f(tmp.Y, tmp.X)*core::RADTODEG;
+		if (val<=0)
+			val=-val;
+		else
+			val=360-val;
+		if (!equals((f32)tmp.getAngle(),val, 0.5f))
+		{
+			logTestString("\nERROR: angle %.16f != atan2 %.16f\n vector %.16f, %.16f\n",
+				tmp.getAngle(), val, tmp.X, tmp.Y);
+			return false;
+		}
+		tmp = core::vector2d<T>(1, -100+i);
+		ref = core::vector2d<f64>(1, -100+i);
+		if (!equals(tmp.getAngle(),ref.getAngle(), 0.0003))
+		{
+			logTestString("\nERROR: angle %.16f != angle %.16f\n",
+				tmp.getAngle(), ref.getAngle());
+			return false;
+		}
+		val = atan2f(tmp.Y, tmp.X)*core::RADTODEG;
+		if (val<=0)
+			val=-val;
+		else
+			val=360-val;
+		if (!equals((f32)tmp.getAngle(),val, 0.5f))
+		{
+			logTestString("\nERROR: angle %.16f != atan2 %.16f\n vector %.16f, %.16f\n",
+				tmp.getAngle(), val, tmp.X, tmp.Y);
+			return false;
+		}
+	}
+	core::vector2d<T> tmp(0, -100);
+	core::vector2d<f64> ref(0, -100);
+	if (!equals(tmp.getAngle(),ref.getAngle()))
+	{
+		logTestString("\nERROR: angle %.16f != angle %.16f\n",
+			tmp.getAngle(), ref.getAngle());
+		return false;
+	}
+	tmp = core::vector2d<T>(0, 100);
+	ref = core::vector2d<f64>(0, 100);
+	if (!equals(tmp.getAngle(),ref.getAngle()))
+	{
+		logTestString("\nERROR: angle %.16f != angle %.16f\n",
+			tmp.getAngle(), ref.getAngle());
+		return false;
+	}
 
 	return true;
 }
