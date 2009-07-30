@@ -2,7 +2,6 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-
 #ifndef __C_IRR_DEVICE_CONSOLE_H_INCLUDED__
 #define __C_IRR_DEVICE_CONSOLE_H_INCLUDED__
 
@@ -224,6 +223,8 @@ namespace irr
 		core::array<core::stringc> OutputBuffer;
 		gui::IGUIFont  *ConsoleFont;
 		core::array<SPostPresentText> Text;
+
+		FILE *OutFile;
 
 #ifdef _IRR_WINDOWS_NT_CONSOLE_
 		HANDLE WindowsSTDIn, WindowsSTDOut;

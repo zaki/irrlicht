@@ -64,7 +64,7 @@ const u16 ASCIIArtCharsCount = 32;
 
 //! constructor
 CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
-  : CIrrDeviceStub(params), IsDeviceRunning(true), IsWindowFocused(true), ConsoleFont(0)
+  : CIrrDeviceStub(params), IsDeviceRunning(true), IsWindowFocused(true), ConsoleFont(0), OutFile(stdout)
 {
 	DeviceToClose = this;
 
@@ -99,13 +99,17 @@ CIrrDeviceConsole::CIrrDeviceConsole(const SIrrlichtCreationParameters& params)
     signal(SIGABRT, &sighandler);
 	signal(SIGTERM, &sighandler);
 	signal(SIGINT,  &sighandler);
+
+	// set output stream
+	if (params.WindowId)
+		OutFile = (FILE*)(params.WindowId);
 #endif
 
 #ifdef _IRR_VT100_CONSOLE_
 	// reset terminal
-	printf("%cc", 27);
+	fprintf(OutFile, "%cc", 27);
 	// disable line wrapping
-	printf("%c[7l", 27);
+	fprintf(OutFile, "%c[7l", 27);
 #endif
 
 	switch (params.DriverType)
@@ -187,7 +191,7 @@ CIrrDeviceConsole::~CIrrDeviceConsole()
 	}
 #ifdef _IRR_VT100_CONSOLE_
 	// reset terminal
-	printf("%cc", 27);
+	fprintf(OutFile, "%cc", 27);
 #endif
 }
 
@@ -400,7 +404,7 @@ bool CIrrDeviceConsole::present(video::IImage* surface, void* windowId, core::re
 	for (u32 y=0; y<OutputBuffer.size(); ++y)
 	{
 		setTextCursorPos(0,y);
-		printf("%s", OutputBuffer[y].c_str());
+		fprintf(OutFile, "%s", OutputBuffer[y].c_str());
 	}
 	return surface != 0;
 }
@@ -434,7 +438,7 @@ void CIrrDeviceConsole::setTextCursorPos(s16 x, s16 y)
     SetConsoleCursorPosition(WindowsSTDOut, Position);
 #elif defined(_IRR_VT100_CONSOLE_)
 	// send escape code
-	printf("%c[%d;%dH", 27, y, x);
+	fprintf(OutFile, "%c[%d;%dH", 27, y, x);
 #else
 	// not implemented
 #endif
