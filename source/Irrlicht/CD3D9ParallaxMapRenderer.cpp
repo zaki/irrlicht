@@ -151,7 +151,7 @@ namespace video
 
 	// Irrlicht Engine D3D9 render path normal map pixel shader version 2.0
 	const char D3D9_PARALLAX_MAP_PSH_20[] =
-		";Irrlicht Engine 0.10 D3D9 render path parallax mapping pixel shader \n"\
+		";Irrlicht Engine D3D9 render path parallax mapping pixel shader \n"\
 		";Input:  \n"\
 		" \n"\
 		";t0: color map texture coord  \n"\

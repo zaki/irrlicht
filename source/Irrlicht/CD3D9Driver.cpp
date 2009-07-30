@@ -1143,16 +1143,17 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices,
 			case scene::EPT_POINT_SPRITES:
 			case scene::EPT_POINTS:
 			{
+				f32 tmp=Material.Thickness/getScreenSize().Height;
 				if (pType==scene::EPT_POINT_SPRITES)
 					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
 				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&Material.Thickness));
-				f32 tmp=1.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
-				tmp=0.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
+				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&tmp));
+				tmp=1.0f;
 				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
 				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
+				pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
+				tmp=0.0f;
+				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
 
 				if (!vertices)
 				{
