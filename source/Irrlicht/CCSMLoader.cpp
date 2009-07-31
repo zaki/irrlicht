@@ -45,10 +45,8 @@ namespace scene
 	//
 	//	A Binary File Reader
 	//
-	class BinaryFileReader
+	struct BinaryFileReader
 	{
-	public:
-
 		BinaryFileReader(io::IReadFile* pFile) : file(pFile) { }
 
 		s32 readBuffer(void* buffer, s32 len)
@@ -63,8 +61,6 @@ namespace scene
 		void readVec3f(core::vector3df* v);
 		void readVec2f(core::vector2df* v);
 		void readColorRGB(color_rgb_t* color);
-
-	private:
 
 		io::IReadFile *file;
 	};
@@ -161,7 +157,7 @@ namespace scene
 		void load(BinaryFileReader* pReader);
 		s32 getWidth() const{ return width; }
 		s32 getHeight() const{ return height; }
-		const s32* getPixelData() const{ return pixelData; }
+		s32* getPixelData() const{ return pixelData; }
 
 	private:
 
@@ -191,11 +187,11 @@ namespace scene
 		void clear();
 		void load(BinaryFileReader* pReader);
 
-		const core::vector3df* getPosition() const { return &position; }
-		const core::vector3df* getNormal() const { return &normal; }
+		const core::vector3df& getPosition() const { return position; }
+		const core::vector3df& getNormal() const { return normal; }
 		video::SColor getColor() const { return color.toSColor(); }
-		const core::vector3df* getTextureCoordinates() const { return &texCoords; }
-		const core::vector3df* getLightMapCoordinates() const { return &lmapCoords; }
+		const core::vector3df& getTextureCoordinates() const { return texCoords; }
+		const core::vector3df& getLightMapCoordinates() const { return lmapCoords; }
 
 	private:
 
@@ -225,9 +221,9 @@ namespace scene
 		f32 getUVRotation() const{ return uvRotation; }
 
 		u32 getVertexCount() const{ return vertices.size(); }
-		const Vertex* getVertexAt(const s32 index) const{ return vertices[index]; }
+		const Vertex& getVertexAt(const s32 index) const{ return vertices[index]; }
 
-		s32 getTriangleCount() const{ return triangles.size(); }
+		u32 getTriangleCount() const{ return triangles.size(); }
 		const Triangle& getTriangleAt(const s32 index) const{ return triangles[index]; }
 
 	private:
@@ -238,7 +234,7 @@ namespace scene
 		core::vector2df uvOffset;
 		core::vector2df uvScale;
 		f32 uvRotation;
-		core::array<Vertex*> vertices;
+		core::array<Vertex> vertices;
 		core::array<Triangle> triangles;
 		core::array<Line> lines;
 	};
@@ -428,7 +424,7 @@ namespace scene
 			video::IImage* lmapImg = driver->createImageFromData(
 				video::ECF_A8R8G8B8,
 				core::dimension2d<u32>(lmap->getWidth(),lmap->getHeight()),
-				(void *)(lmap->getPixelData()));
+				lmap->getPixelData());
 
 			driver->addTexture(lmapName.c_str(), lmapImg);
 			lmapImg->drop();
@@ -461,37 +457,42 @@ namespace scene
 					driver->getTexture(FileSystem->getFileDir(lmprefix)+"/"+surface->getTextureName());
 				else
 					driver->getTexture(FileSystem->getFileDir(lmprefix)+"/"+FileSystem->getFileBasename(surface->getTextureName()));
-				scene::SMeshBufferLightMap *buffer = new scene::SMeshBufferLightMap();
 
 				//material
 				core::string<c16> lmapName = lmprefix;
 				lmapName += "LMAP_";
 				lmapName += core::string<c16>(surface->getLightMapId());
 
+				scene::SMeshBufferLightMap *buffer = new scene::SMeshBufferLightMap();
 				buffer->Material.setTexture(0, texture);
-				buffer->Material.setTexture(1, driver->getTexture(lmapName));
-				buffer->Material.Lighting = false;
-				buffer->Material.MaterialType = video::EMT_LIGHTMAP_M4;
-
-				for(u32 v = 0; v < surface->getVertexCount(); v++)
+				if (surface->getLightMapId())
 				{
-					const Vertex *vtxPtr = surface->getVertexAt(v);
+					buffer->Material.setTexture(1, driver->getTexture(lmapName));
+					buffer->Material.Lighting = false;
+					buffer->Material.MaterialType = video::EMT_LIGHTMAP_ADD;
+				}
+
+				buffer->Vertices.reallocate(surface->getVertexCount());
+				for(u32 v = 0; v < surface->getVertexCount(); ++v)
+				{
+					const Vertex& vtxPtr = surface->getVertexAt(v);
 					video::S3DVertex2TCoords vtx;
-					vtx.Pos = *(vtxPtr->getPosition());
-					vtx.Normal = *(vtxPtr->getPosition());
-					vtx.Color=vtxPtr->getColor();
-					vtx.TCoords.set(vtxPtr->getTextureCoordinates()->X,vtxPtr->getTextureCoordinates()->Y);
-					vtx.TCoords2.set(vtxPtr->getLightMapCoordinates()->X,0.0f - vtxPtr->getLightMapCoordinates()->Y);
+					vtx.Pos = vtxPtr.getPosition();
+					vtx.Normal = vtxPtr.getPosition();
+					vtx.Color=vtxPtr.getColor();
+					vtx.TCoords.set(vtxPtr.getTextureCoordinates().X, vtxPtr.getTextureCoordinates().Y);
+					vtx.TCoords2.set(vtxPtr.getLightMapCoordinates().X, 1.f-vtxPtr.getLightMapCoordinates().Y);
 
 					buffer->Vertices.push_back(vtx);
 				}
 
-				for(s32 t = 0; t < surface->getTriangleCount(); t++)
+				buffer->Indices.reallocate(surface->getTriangleCount()*3);
+				for(u32 t = 0; t < surface->getTriangleCount(); ++t)
 				{
 					const Triangle& tri = surface->getTriangleAt(t);
-					buffer->Indices.push_back(tri.a);
 					buffer->Indices.push_back(tri.c);
 					buffer->Indices.push_back(tri.b);
+					buffer->Indices.push_back(tri.a);
 				}
 
 				buffer->recalculateBoundingBox();
@@ -525,7 +526,6 @@ namespace scene
 		color.clear();
 		flags = 0;
 		name = "";
-
 	}
 
 	void VisGroup::load(BinaryFileReader* pReader)
@@ -598,10 +598,6 @@ namespace scene
 		uvRotation = 0.0f;
 		triangles.clear();
 		lines.clear();
-
-		for(u32 v = 0; v < vertices.size(); v++)
-			delete vertices[v];
-
 		vertices.clear();
 	}
 
@@ -621,9 +617,8 @@ namespace scene
 
 		for(s32 v = 0; v < vtxCount; v++)
 		{
-			Vertex *vtx = new Vertex();
-			vtx->load(pReader);
-			vertices.push_back(vtx);
+			vertices.push_back(Vertex());
+			vertices.getLast().load(pReader);
 		}
 
 		for(s32 t = 0; t < triCount; t++)
@@ -822,14 +817,20 @@ namespace scene
 	{
 		int ret = 0;
 		readBuffer(&ret,sizeof(int));
-		return (s32)ret;
+#ifdef __BIG_ENDIAN__
+		ret = os::Byteswap::byteswap(ret);
+#endif
+		return ret;
 	}
 
 	f32 BinaryFileReader::readFloat()
 	{
 		float ret = 0;
 		readBuffer(&ret,sizeof(float));
-		return (f32)ret;
+#ifdef __BIG_ENDIAN__
+		ret = os::Byteswap::byteswap(ret);
+#endif
+		return ret;
 	}
 
 	void BinaryFileReader::readString(core::stringc &str)
