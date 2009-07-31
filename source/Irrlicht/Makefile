@@ -130,7 +130,7 @@ install:
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
 	cp -r ../../include $(INSTALL_DIR)/../include/irrlicht
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
-	cd $(INSTALL_DIR) && ln -s libIrrlicht.so.$(VERSION) $(SHARED_LIB)
+	cd $(INSTALL_DIR) && ln -s -f libIrrlicht.so.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
 
 install_osx:
