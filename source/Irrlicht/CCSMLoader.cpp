@@ -420,7 +420,7 @@ namespace scene
 		{
 			const LightMap* lmap = csmFile->getLightMapAt(l);
 
-			core::stringc<c16> lmapName = lmprefix;
+			core::string<c16> lmapName = lmprefix;
 			lmapName += "LMAP_";
 			lmapName += core::string<c16>(l+1);
 			os::Printer::log("CCSMLoader loading light map", lmapName.c_str());
