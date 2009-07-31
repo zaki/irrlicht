@@ -4,7 +4,7 @@
 
 #import "AppDelegate.h"
 
-#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 
 @implementation AppDelegate
 
@@ -75,4 +75,4 @@
 
 @end
 
-#endif // _IRR_USE_OSX_DEVICE_
+#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
