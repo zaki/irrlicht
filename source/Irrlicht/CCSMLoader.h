@@ -56,7 +56,6 @@ namespace scene
 	public:
 
 		CCSMLoader(ISceneManager* manager, io::IFileSystem* fs);
-		virtual ~CCSMLoader();
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".bsp")
@@ -70,7 +69,7 @@ namespace scene
 		scene::IMesh* createCSMMesh(io::IReadFile* file);
 
 		scene::IMesh* createIrrlichtMesh(const CSMFile* csmFile,
-			core::stringc textureRoot, const c8* lmprefix);
+			const core::stringc& textureRoot, const core::string<c16>& lmprefix);
 
 		io::IFileSystem* FileSystem;
 		scene::ISceneManager* SceneManager;
