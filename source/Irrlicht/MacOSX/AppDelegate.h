@@ -4,7 +4,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 
 #import <Cocoa/Cocoa.h>
 #import "CIrrDeviceMacOSX.h"
@@ -20,4 +20,4 @@
 
 @end
 
-#endif // _IRR_USE_OSX_DEVICE_
+#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
