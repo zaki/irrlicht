@@ -447,16 +447,19 @@ namespace scene
 				texName+= surface->getTextureName();
 
 				video::ITexture* texture = 0;
-				if (FileSystem->existFile(texName))
-					driver->getTexture(texName);
-				else if (FileSystem->existFile(surface->getTextureName()))
-					driver->getTexture(surface->getTextureName());
-				else if (FileSystem->existFile(FileSystem->getFileBasename(surface->getTextureName())))
-					driver->getTexture(FileSystem->getFileBasename(surface->getTextureName()));
-				else if (FileSystem->existFile(FileSystem->getFileDir(lmprefix)+"/"+surface->getTextureName()))
-					driver->getTexture(FileSystem->getFileDir(lmprefix)+"/"+surface->getTextureName());
-				else
-					driver->getTexture(FileSystem->getFileDir(lmprefix)+"/"+FileSystem->getFileBasename(surface->getTextureName()));
+				if (texName.size())
+				{
+					if (FileSystem->existFile(texName))
+						texture = driver->getTexture(texName);
+					else if (FileSystem->existFile(surface->getTextureName()))
+						texture = driver->getTexture(surface->getTextureName());
+					else if (FileSystem->existFile(FileSystem->getFileBasename(surface->getTextureName())))
+						texture = driver->getTexture(FileSystem->getFileBasename(surface->getTextureName()));
+					else if (FileSystem->existFile(FileSystem->getFileDir(lmprefix)+"/"+surface->getTextureName()))
+						texture = driver->getTexture(FileSystem->getFileDir(lmprefix)+"/"+surface->getTextureName());
+					else
+						texture = driver->getTexture(FileSystem->getFileDir(lmprefix)+"/"+FileSystem->getFileBasename(surface->getTextureName()));
+				}
 
 				//material
 				core::string<c16> lmapName = lmprefix;
