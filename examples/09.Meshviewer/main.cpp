@@ -196,9 +196,13 @@ void loadModel(const c8* fn)
 	if (menu)
 		for(int item = 1; item < 6; ++item)
 			menu->setItemChecked(item, false);
-	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_X_SCALE, true)->setText(L"1.0");
-	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_Y_SCALE, true)->setText(L"1.0");
-	Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_Z_SCALE, true)->setText(L"1.0");
+	IGUIElement* toolboxWnd = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
+	if ( toolboxWnd )
+	{
+		toolboxWnd->getElementFromId(GUI_ID_X_SCALE, true)->setText(L"1.0");
+		toolboxWnd->getElementFromId(GUI_ID_Y_SCALE, true)->setText(L"1.0");
+		toolboxWnd->getElementFromId(GUI_ID_Z_SCALE, true)->setText(L"1.0");
+	}
 }
 
 
