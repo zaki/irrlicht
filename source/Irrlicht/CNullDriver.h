@@ -166,12 +166,35 @@ namespace video
 		Note that the alpha component is used: If alpha is other than 255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of the texture is
 		used to draw the image. */
-		virtual void draw2DImage(const video::ITexture* texture,
+		virtual void draw2DImageBatch(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
 				s32 kerningWidth = 0,
 				const core::rect<s32>* clipRect = 0,
+				SColor color=SColor(255,255,255,255),
+				bool useAlphaChannelOfTexture=false);
+
+		//! Draws a set of 2d images, using a color and the alpha channel of the texture.
+		/** All drawings are clipped against clipRect (if != 0).
+		The subtextures are defined by the array of sourceRects and are
+		positioned using the array of positions.
+		\param texture Texture to be drawn.
+		\param pos Array of upper left 2d destinations where the images
+		will be drawn.
+		\param sourceRects Source rectangles of the image.
+		\param clipRect Pointer to rectangle on the screen where the
+		images are clipped to.
+		If this pointer is 0 then the image is not clipped.
+		\param color Color with which the image is drawn.
+		Note that the alpha component is used. If alpha is other than
+		255, the image will be transparent.
+		\param useAlphaChannelOfTexture: If true, the alpha channel of
+		the texture is used to draw the image. */
+		virtual void draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect=0,
 				SColor color=SColor(255,255,255,255),
 				bool useAlphaChannelOfTexture=false);
 

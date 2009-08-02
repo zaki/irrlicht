@@ -460,7 +460,7 @@ core::dimension2d<u32> CGUIFont::getDimension(const wchar_t* text) const
 }
 
 //! draws some text and clips it to the specified rectangle if wanted
-void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
+void CGUIFont::draw(const core::stringw& text, const core::rect<s32>& position,
 					video::SColor color,
 					bool hcenter, bool vcenter, const core::rect<s32>* clip
 				)
@@ -472,7 +472,7 @@ void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
 	core::position2d<s32> offset = position.UpperLeftCorner;
 
 	if (hcenter || vcenter || clip)
-		textDimension = getDimension(text);
+		textDimension = getDimension(text.c_str());
 
 	if (hcenter)
 		offset.X += (position.getWidth() - textDimension.Width) >> 1;
@@ -488,15 +488,19 @@ void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
 			return;
 	}
 
-	wchar_t c;
-	while (( c = *text++))
+	core::array<u32> indices(text.size());
+	core::array<core::position2di> offsets(text.size());
+
+	for(u32 i = 0;i < text.size();i++)
 	{
+		wchar_t c = text[i];
+
 		bool lineBreak=false;
 		if ( c == L'\r') // Mac or Windows breaks
 		{
 			lineBreak = true;
-			if ( *text == L'\n') // Windows breaks
-				++text;
+			if ( text[i + 1] == L'\n') // Windows breaks
+				c = text[++i];
 		}
 		else if ( c == L'\n') // Unix breaks
 		{
@@ -510,7 +514,7 @@ void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
 
 			if ( hcenter )
 			{
-				core::dimension2d<u32> lineDim = getDimension(text);
+				core::dimension2d<u32> lineDim = getDimension(text.c_str());
 				offset.X += (position.getWidth() - lineDim.Width) >> 1;
 			}
 			continue;
@@ -520,10 +524,15 @@ void CGUIFont::draw(const wchar_t* text, const core::rect<s32>& position,
 
 		offset.X += area.underhang;
 		if ( Invisible.findFirst ( c ) < 0 )
-			SpriteBank->draw2DSprite(area.spriteno, offset, clip, color);
-		offset.X += area.width + area.overhang + GlobalKerningWidth;
+		{
+			indices.push_back(area.spriteno);
+			offsets.push_back(offset);
+		}
 
+		offset.X += area.width + area.overhang + GlobalKerningWidth;
 	}
+
+	SpriteBank->draw2DSpriteBatch(indices, offsets, clip, color);
 }
 
 
