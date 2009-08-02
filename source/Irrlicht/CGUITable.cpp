@@ -24,7 +24,7 @@ namespace gui
 
 //! constructor
 CGUITable::CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
-						s32 id, core::rect<s32> rectangle, bool clip,
+						s32 id, const core::rect<s32>& rectangle, bool clip,
 						bool drawBack, bool moveOverSelect)
 : IGUITable(environment, parent, id, rectangle), Font(0),
 	VerticalScrollBar(0), HorizontalScrollBar(0),

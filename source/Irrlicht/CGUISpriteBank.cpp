@@ -136,6 +136,81 @@ void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 }
 
 
+void CGUISpriteBank::draw2DSpriteBatch(	const core::array<u32>& indices,
+										const core::array<core::position2di>& pos,
+										const core::rect<s32>* clip,
+										const video::SColor& color,
+										u32 starttime, u32 currenttime,
+										bool loop, bool center)
+{
+	const irr::u32 drawCount = core::min_<u32>(indices.size(), pos.size());
+
+	struct SDrawBatch
+	{
+		core::array<core::position2di> positions;
+		core::array<core::recti> sourceRects;
+		u32 textureNumber;
+	};
+	
+	core::array<SDrawBatch> drawBatches(Textures.size());
+	for(u32 i = 0;i < Textures.size();i++)
+	{
+		drawBatches.push_back(SDrawBatch());
+		drawBatches[i].positions.reallocate(drawCount);
+		drawBatches[i].sourceRects.reallocate(drawCount);
+	}
+
+	for(u32 i = 0;i < drawCount;i++)
+	{
+		const u32 index = indices[i];
+
+		if (index >= Sprites.size() || Sprites[index].Frames.empty() )
+			continue;
+
+		// work out frame number
+		u32 frame = 0;
+		if (Sprites[index].frameTime)
+		{
+			u32 f = ((currenttime - starttime) / Sprites[index].frameTime);
+			if (loop)
+				frame = f % Sprites[index].Frames.size();
+			else
+				frame = (f >= Sprites[index].Frames.size()) ? Sprites[index].Frames.size()-1 : f;
+		}
+
+		const u32 texNum = Sprites[index].Frames[frame].textureNumber;
+
+		SDrawBatch& currentBatch = drawBatches[texNum];
+
+		const u32 rn = Sprites[index].Frames[frame].rectNumber;
+		if (rn >= Rectangles.size())
+			return;
+
+		const core::rect<s32>& r = Rectangles[rn];
+
+		if (center)
+		{
+			core::position2di p = pos[i];
+			p -= r.getSize() / 2;
+
+			currentBatch.positions.push_back(p);
+			currentBatch.sourceRects.push_back(r);
+		}
+		else
+		{
+			currentBatch.positions.push_back(pos[i]);
+			currentBatch.sourceRects.push_back(r);
+		}
+	}
+
+	for(u32 i = 0;i < drawBatches.size();i++)
+	{
+		if(!drawBatches[i].positions.empty() && !drawBatches[i].sourceRects.empty())
+			Driver->draw2DImageBatch(Textures[i], drawBatches[i].positions, 
+				drawBatches[i].sourceRects, clip, color, true);
+	}
+}
+
 } // namespace gui
 } // namespace irr
 

@@ -33,7 +33,8 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 	WindowId(0), SceneSourceRect(0),
 	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
 	MaxLightDistance(0.f), LastSetLight(-1), ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
-	Fullscreen(fullscreen), DriverWasReset(true), AlphaToCoverageSupport(false)
+	Fullscreen(fullscreen), DriverWasReset(true), AlphaToCoverageSupport(false),
+	Cached2DModeSignature(0)
 {
 	#ifdef _DEBUG
 	setDebugName("CD3D9Driver");
@@ -1307,6 +1308,148 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 }
 
 
+void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect,
+				SColor color,
+				bool useAlphaChannelOfTexture)
+{
+	if (!texture)
+		return;
+
+	if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
+		return;
+
+	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
+
+	core::array<S3DVertex> vtx(drawCount * 4);
+	core::array<u16> indices(drawCount * 6);
+
+	for(u32 i = 0;i < drawCount;i++)
+	{
+		core::position2d<s32> targetPos = positions[i];
+		core::position2d<s32> sourcePos = sourceRects[i].UpperLeftCorner;
+		// This needs to be signed as it may go negative.
+		core::dimension2d<s32> sourceSize(sourceRects[i].getSize());
+
+		if (clipRect)
+		{
+			if (targetPos.X < clipRect->UpperLeftCorner.X)
+			{
+				sourceSize.Width += targetPos.X - clipRect->UpperLeftCorner.X;
+				if (sourceSize.Width <= 0)
+					return;
+
+				sourcePos.X -= targetPos.X - clipRect->UpperLeftCorner.X;
+				targetPos.X = clipRect->UpperLeftCorner.X;
+			}
+
+			if (targetPos.X + (s32)sourceSize.Width > clipRect->LowerRightCorner.X)
+			{
+				sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
+				if (sourceSize.Width <= 0)
+					return;
+			}
+
+			if (targetPos.Y < clipRect->UpperLeftCorner.Y)
+			{
+				sourceSize.Height += targetPos.Y - clipRect->UpperLeftCorner.Y;
+				if (sourceSize.Height <= 0)
+					return;
+
+				sourcePos.Y -= targetPos.Y - clipRect->UpperLeftCorner.Y;
+				targetPos.Y = clipRect->UpperLeftCorner.Y;
+			}
+
+			if (targetPos.Y + (s32)sourceSize.Height > clipRect->LowerRightCorner.Y)
+			{
+				sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
+				if (sourceSize.Height <= 0)
+					return;
+			}
+		}
+
+		// clip these coordinates
+
+		if (targetPos.X<0)
+		{
+			sourceSize.Width += targetPos.X;
+			if (sourceSize.Width <= 0)
+				return;
+
+			sourcePos.X -= targetPos.X;
+			targetPos.X = 0;
+		}
+
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+
+		if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
+		{
+			sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
+			if (sourceSize.Width <= 0)
+				return;
+		}
+
+		if (targetPos.Y<0)
+		{
+			sourceSize.Height += targetPos.Y;
+			if (sourceSize.Height <= 0)
+				return;
+
+			sourcePos.Y -= targetPos.Y;
+			targetPos.Y = 0;
+		}
+
+		if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
+		{
+			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
+			if (sourceSize.Height <= 0)
+				return;
+		}
+
+		// ok, we've clipped everything.
+		// now draw it.
+
+		core::rect<f32> tcoords;
+		tcoords.UpperLeftCorner.X = (((f32)sourcePos.X)) / texture->getOriginalSize().Width ;
+		tcoords.UpperLeftCorner.Y = (((f32)sourcePos.Y)) / texture->getOriginalSize().Height;
+		tcoords.LowerRightCorner.X = tcoords.UpperLeftCorner.X + ((f32)(sourceSize.Width) / texture->getOriginalSize().Width);
+		tcoords.LowerRightCorner.Y = tcoords.UpperLeftCorner.Y + ((f32)(sourceSize.Height) / texture->getOriginalSize().Height);
+
+		const core::rect<s32> poss(targetPos, sourceSize);
+
+		setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
+
+		vtx.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
+		vtx.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
+		vtx.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
+		vtx.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+
+		indices.push_back(0+i*4);
+		indices.push_back(1+i*4);
+		indices.push_back(2+i*4);
+
+		indices.push_back(0+i*4);
+		indices.push_back(2+i*4);
+		indices.push_back(3+i*4);	
+	}
+
+	setVertexShader(EVT_STANDARD);
+
+	pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vtx.size(), indices.size() / 3, indices.pointer(),
+		D3DFMT_INDEX16,vtx.pointer(), sizeof(S3DVertex));
+}
+
+
 //! draws a 2d image, using a color and the alpha channel of the texture if
 //! desired. The image is drawn at pos and clipped against clipRect (if != 0).
 void CD3D9Driver::draw2DImage(const video::ITexture* texture,
@@ -2062,69 +2205,78 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		Transformation3DChanged = false;
 	}
 
-	if (texture)
+	u32 current2DSignature = 0;
+	current2DSignature |= alpha ? EC2D_ALPHA : 0;
+	current2DSignature |= texture ? EC2D_TEXTURE : 0;
+	current2DSignature |= alphaChannel ? EC2D_ALPHA_CHANNEL : 0;
+
+	if(CurrentRenderMode != ERM_2D || current2DSignature != Cached2DModeSignature)
 	{
-		if (alphaChannel)
+		if (texture)
 		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-			pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+			if (alphaChannel)
+			{
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 
-			if (alpha)
-			{
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-			}
-			else
-			{
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
-			}
+				if (alpha)
+				{
+					pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
+					pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+				}
+				else
+				{
+					pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
+				}
 
-			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		}
-		else
-		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-			if (alpha)
-			{
-				pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			}
 			else
 			{
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+				if (alpha)
+				{
+					pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+					pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+					pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+					pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+				}
+				else
+				{
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+					pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+				}
+			}
+		}
+		else
+		{
+			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+			if (alpha)
+			{
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
+				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			}
+			else
+			{
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 			}
 		}
 	}
-	else
-	{
-		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-		if (alpha)
-		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
-			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		}
-		else
-		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-		}
-	}
 
 	CurrentRenderMode = ERM_2D;
+	Cached2DModeSignature = current2DSignature;
 }
 
 

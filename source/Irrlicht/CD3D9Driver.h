@@ -124,6 +124,14 @@ namespace video
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
 
+		//! Draws a set of 2d images, using a color and the alpha channel of the texture.
+		virtual void draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect=0,
+				SColor color=SColor(255,255,255,255),
+				bool useAlphaChannelOfTexture=false);
+
 		//!Draws an 2d rectangle with a gradient.
 		virtual void draw2DRectangle(const core::rect<s32>& pos,
 			SColor colorLeftUp, SColor colorRightUp, SColor colorLeftDown, SColor colorRightDown,
@@ -379,6 +387,15 @@ namespace video
 		u32 MaxUserClipPlanes;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
+
+		enum E_CACHE_2D_ATTRIBUTES
+		{
+			EC2D_ALPHA = 0x1,
+			EC2D_TEXTURE = 0x2,
+			EC2D_ALPHA_CHANNEL = 0x4
+		};
+
+		u32 Cached2DModeSignature;
 
 		ECOLOR_FORMAT ColorFormat;
 		D3DFORMAT D3DColorFormat;
