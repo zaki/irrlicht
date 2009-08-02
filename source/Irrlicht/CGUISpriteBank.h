@@ -54,11 +54,19 @@ public:
 
 protected:
 
+	struct SDrawBatch
+	{
+		core::array<core::position2di> positions;
+		core::array<core::recti> sourceRects;
+		u32 textureNumber;
+	};
+
 	core::array<SGUISprite> Sprites;
 	core::array< core::rect<s32> > Rectangles;
 	core::array<video::ITexture*> Textures;
 	IGUIEnvironment* Environment;
 	video::IVideoDriver* Driver;
+
 };
 
 } // end namespace gui

@@ -145,13 +145,6 @@ void CGUISpriteBank::draw2DSpriteBatch(	const core::array<u32>& indices,
 {
 	const irr::u32 drawCount = core::min_<u32>(indices.size(), pos.size());
 
-	struct SDrawBatch
-	{
-		core::array<core::position2di> positions;
-		core::array<core::recti> sourceRects;
-		u32 textureNumber;
-	};
-	
 	core::array<SDrawBatch> drawBatches(Textures.size());
 	for(u32 i = 0;i < Textures.size();i++)
 	{
@@ -206,7 +199,7 @@ void CGUISpriteBank::draw2DSpriteBatch(	const core::array<u32>& indices,
 	for(u32 i = 0;i < drawBatches.size();i++)
 	{
 		if(!drawBatches[i].positions.empty() && !drawBatches[i].sourceRects.empty())
-			Driver->draw2DImageBatch(Textures[i], drawBatches[i].positions, 
+			Driver->draw2DImageBatch(Textures[i], drawBatches[i].positions,
 				drawBatches[i].sourceRects, clip, color, true);
 	}
 }
