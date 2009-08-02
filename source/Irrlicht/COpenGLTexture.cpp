@@ -512,7 +512,7 @@ GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORM
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_RGB16F_ARB;
+			return GL_R16F;
 #else
 			return GL_RGB8;
 #endif
@@ -520,12 +520,11 @@ GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORM
 		case ECF_G16R16F:
 		{
 #ifdef GL_ARB_texture_float
-			// We haven't got support for this type specifically, so we should use RGB for a close match.
 			filtering = GL_NEAREST;
-			colorformat = GL_RGB;
+			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RGB16F_ARB;
+			return GL_RG16F;
 #else
 			return GL_RGB8;
 #endif
@@ -549,7 +548,7 @@ GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORM
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_RGB32F_ARB;
+			return GL_R32F;
 #else
 			return GL_RGB8;
 #endif
@@ -557,12 +556,11 @@ GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORM
 		case ECF_G32R32F:
 		{
 #ifdef GL_ARB_texture_float
-			// We haven't got support for this type specifically, so we should use RGB for a close match.
 			filtering = GL_NEAREST;
-			colorformat = GL_RGB;
+			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RGB32F_ARB;
+			return GL_RG32F;
 #else
 			return GL_RGB8;
 #endif
