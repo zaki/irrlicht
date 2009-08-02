@@ -46,7 +46,7 @@ namespace scene
 
 	private:
 
-		inline void addWave(core::vector3df& dest, const core::vector3df &source, f32 time) const;
+		inline f32 addWave(const core::vector3df &source, f32 time) const;
 
 		f32 WaveLength;
 		f32 WaveSpeed;
