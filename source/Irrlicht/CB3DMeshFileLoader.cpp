@@ -672,6 +672,7 @@ bool CB3DMeshFileLoader::readChunkTEXS()
 		SB3dTexture& B3dTexture = Textures.getLast();
 
 		readString(B3dTexture.TextureName);
+		B3dTexture.TextureName.replace('\\','/');
 #ifdef _B3D_READER_DEBUG
 		os::Printer::log("read Texture", B3dTexture.TextureName.c_str());
 #endif
