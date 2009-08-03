@@ -600,20 +600,6 @@ namespace video
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
 		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
 
-		virtual bool getRenderTargetOnlyFormat(const ECOLOR_FORMAT format) const
-		{
-			switch(format)
-			{
-				case ECF_A1R5G5B5:
-				case ECF_R5G6B5:
-				case ECF_R8G8B8:
-				case ECF_A8R8G8B8:
-					return false;
-				default:
-					return true;
-			}
-		}
-
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
 
