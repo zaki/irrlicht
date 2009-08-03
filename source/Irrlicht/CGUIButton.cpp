@@ -278,8 +278,8 @@ void CGUIButton::draw()
 
 		if (font)
 			font->draw(Text.c_str(), rect,
-				skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT), true, true,
-					&AbsoluteClippingRect);
+				skin->getColor(IsEnabled ? EGDC_BUTTON_TEXT : EGDC_GRAY_TEXT),
+				true, true, &AbsoluteClippingRect);
 	}
 
 	IGUIElement::draw();
@@ -312,10 +312,7 @@ void CGUIButton::setImage(video::ITexture* image)
 
 	Image = image;
 	if (image)
-	{
-		core::dimension2di signedSize(image->getOriginalSize());
-		ImageRect = core::rect<s32>(core::position2d<s32>(0,0), signedSize);
-	}
+		ImageRect = core::rect<s32>(core::position2d<s32>(0,0), image->getOriginalSize());
 
 	if (!PressedImage)
 		setPressedImage(Image);
@@ -325,16 +322,8 @@ void CGUIButton::setImage(video::ITexture* image)
 //! Sets the image which should be displayed on the button when it is in its normal state.
 void CGUIButton::setImage(video::ITexture* image, const core::rect<s32>& pos)
 {
-	if (image)
-		image->grab();
-	if (Image)
-		Image->drop();
-
-	Image = image;
+	setImage(image);
 	ImageRect = pos;
-
-	if (!PressedImage)
-		setPressedImage(Image, pos);
 }
 
 
@@ -349,22 +338,14 @@ void CGUIButton::setPressedImage(video::ITexture* image)
 
 	PressedImage = image;
 	if (image)
-	{
-		const core::dimension2di signedSize(image->getOriginalSize());
-		PressedImageRect = core::rect<s32>(core::position2d<s32>(0,0), signedSize);
-	}
+		PressedImageRect = core::rect<s32>(core::position2d<s32>(0,0), image->getOriginalSize());
 }
 
 
 //! Sets the image which should be displayed on the button when it is in its pressed state.
 void CGUIButton::setPressedImage(video::ITexture* image, const core::rect<s32>& pos)
 {
-	if (image)
-		image->grab();
-	if (PressedImage)
-		PressedImage->drop();
-
-	PressedImage = image;
+	setPressedImage(image);
 	PressedImageRect = pos;
 }
 
