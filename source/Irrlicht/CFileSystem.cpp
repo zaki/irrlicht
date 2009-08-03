@@ -23,6 +23,7 @@
 	#if !defined ( _WIN32_WCE )
 		#include <direct.h> // for _chdir
 	#endif
+	#include <io.h> // for _access
 #else
 	#include <unistd.h>
 	#include <limits.h>
@@ -623,20 +624,14 @@ bool CFileSystem::existFile(const core::string<c16>& filename) const
 		if ( FileArchives[i]->findFile(filename)!=-1)
 			return true;
 
-#if defined ( _IRR_WCHAR_FILESYSTEM )
-	FILE* f = _wfopen(filename.c_str(), L"rb");
-#else
-	FILE* f = fopen(filename.c_str(), "rb");
-#endif
-
-	if (f)
-	{
-		fclose(f);
-		return true;
-	}
-
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return false;
+#if defined ( _IRR_WCHAR_FILESYSTEM )
+	return (_waccess(filename.c_str(), 0) != -1);
+#elif defined(_MSC_VER)
+	return (_access(filename.c_str(), 0) != -1);
+#else
+	return (access(filename.c_str(), F_OK) != -1);
+#endif
 }
 
 
