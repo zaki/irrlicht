@@ -449,7 +449,6 @@ video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const cor
 }
 
 
-
 //! adds a surface, not loaded or created by the Irrlicht Engine
 void CNullDriver::addTexture(video::ITexture* texture)
 {
@@ -471,7 +470,6 @@ void CNullDriver::addTexture(video::ITexture* texture)
 }
 
 
-
 //! looks if the image is already loaded
 video::ITexture* CNullDriver::findTexture(const core::string<c16>& filename)
 {
@@ -485,7 +483,6 @@ video::ITexture* CNullDriver::findTexture(const core::string<c16>& filename)
 
 	return 0;
 }
-
 
 
 //! Creates a texture from a loaded IImage.
@@ -504,12 +501,11 @@ ITexture* CNullDriver::addTexture(const core::string<c16>& name, IImage* image)
 }
 
 
-
 //! creates a Texture
 ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 				  const core::string<c16>& name, ECOLOR_FORMAT format)
 {
-	if(getRenderTargetOnlyFormat(format))
+	if(IImage::isRenderTargetOnlyFormat(format))
 	{
 		os::Printer::log("Could not create ITexture, format only supported for render target textures.", ELL_WARNING);
 		return 0;
@@ -1345,7 +1341,7 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 					void *data, bool ownForeignMemory,
 					bool deleteMemory)
 {
-	if(getRenderTargetOnlyFormat(format))
+	if(IImage::isRenderTargetOnlyFormat(format))
 	{
 		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
 		return 0;
@@ -1358,7 +1354,7 @@ IImage* CNullDriver::createImageFromData(ECOLOR_FORMAT format,
 //! Creates an empty software image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 {
-	if(getRenderTargetOnlyFormat(format))
+	if(IImage::isRenderTargetOnlyFormat(format))
 	{
 		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
 		return 0;
@@ -1371,7 +1367,7 @@ IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<u
 //! Creates a software image from another image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, IImage *imageToCopy)
 {
-	if(getRenderTargetOnlyFormat(format))
+	if(IImage::isRenderTargetOnlyFormat(format))
 	{
 		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
 		return 0;

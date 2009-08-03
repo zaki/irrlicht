@@ -142,7 +142,8 @@ public:
 	//! fills the surface with black or white
 	virtual void fill(const SColor &color) =0;
 
-	static u32 getBitsPerPixelFromFormat(ECOLOR_FORMAT format)
+	//! get the amount of Bits per Pixel of the given color format
+	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)
 	{
 		switch(format)
 		{
@@ -168,6 +169,24 @@ public:
 			return 128;
 		default:
 			return 0;
+		}
+	}
+
+	//! test if the color format is only viable for RenderTarget textures
+	/** Since we don't have support for e.g. floating point iimage formats
+	one should test if the color format can be used for arbitrary usage, or
+	if it is restricted to RTTs. */
+	static bool isRenderTargetOnlyFormat(const ECOLOR_FORMAT format)
+	{
+		switch(format)
+		{
+			case ECF_A1R5G5B5:
+			case ECF_R5G6B5:
+			case ECF_R8G8B8:
+			case ECF_A8R8G8B8:
+				return false;
+			default:
+				return true;
 		}
 	}
 
