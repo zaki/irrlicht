@@ -1339,7 +1339,7 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 			{
 				sourceSize.Width += targetPos.X - clipRect->UpperLeftCorner.X;
 				if (sourceSize.Width <= 0)
-					return;
+					continue;
 
 				sourcePos.X -= targetPos.X - clipRect->UpperLeftCorner.X;
 				targetPos.X = clipRect->UpperLeftCorner.X;
@@ -1349,14 +1349,14 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 			{
 				sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
 				if (sourceSize.Width <= 0)
-					return;
+					continue;
 			}
 
 			if (targetPos.Y < clipRect->UpperLeftCorner.Y)
 			{
 				sourceSize.Height += targetPos.Y - clipRect->UpperLeftCorner.Y;
 				if (sourceSize.Height <= 0)
-					return;
+					continue;
 
 				sourcePos.Y -= targetPos.Y - clipRect->UpperLeftCorner.Y;
 				targetPos.Y = clipRect->UpperLeftCorner.Y;
@@ -1366,7 +1366,7 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 			{
 				sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
 				if (sourceSize.Height <= 0)
-					return;
+					continue;
 			}
 		}
 
@@ -1376,7 +1376,7 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 		{
 			sourceSize.Width += targetPos.X;
 			if (sourceSize.Width <= 0)
-				return;
+				continue;
 
 			sourcePos.X -= targetPos.X;
 			targetPos.X = 0;
@@ -1388,14 +1388,14 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 		{
 			sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
 			if (sourceSize.Width <= 0)
-				return;
+				continue;
 		}
 
 		if (targetPos.Y<0)
 		{
 			sourceSize.Height += targetPos.Y;
 			if (sourceSize.Height <= 0)
-				return;
+				continue;
 
 			sourcePos.Y -= targetPos.Y;
 			targetPos.Y = 0;
@@ -1405,7 +1405,7 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 		{
 			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
 			if (sourceSize.Height <= 0)
-				return;
+				continue;
 		}
 
 		// ok, we've clipped everything.
