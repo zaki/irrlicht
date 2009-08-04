@@ -131,7 +131,6 @@ bool CMS3DMeshFileLoader::isALoadableFileExtension(const core::string<c16>& file
 }
 
 
-
 //! creates/loads an animated mesh from the file.
 //! \return Pointer to the created mesh. Returns 0 if loading failed.
 //! If you no longer need the mesh, you should call IAnimatedMesh::drop().
@@ -498,7 +497,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			}
 
 			ISkinnedMesh::SRotationKey *k=AnimatedMesh->createRotationKey(jnt);
-			k->frame = kf->Time * framesPerSecond;
+			k->frame = kf->Time * framesPerSecond-1;
 
 			core::matrix4 tmpMatrix;
 
@@ -534,7 +533,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			}
 
 			ISkinnedMesh::SPositionKey *k=AnimatedMesh->createPositionKey(jnt);
-			k->frame = kf->Time * framesPerSecond;
+			k->frame = kf->Time * framesPerSecond-1;
 
 			k->position = core::vector3df
 				(kf->Parameter[0]+pJoint->Translation[0],
