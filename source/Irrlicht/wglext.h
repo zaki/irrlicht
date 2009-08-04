@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 /*
-** Copyright (c) 2007 The Khronos Group Inc.
+** Copyright (c) 2007-2009 The Khronos Group Inc.
 ** 
 ** Permission is hereby granted, free of charge, to any person obtaining a
 ** copy of this software and/or associated documentation files (the
@@ -28,6 +28,8 @@ extern "C" {
 ** MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 */
 
+/* Function declaration macros - to move into glplatform.h */
+
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
@@ -46,9 +48,9 @@ extern "C" {
 /*************************************************************/
 
 /* Header file version number */
-/* wglext.h last updated 2008/10/07 */
+/* wglext.h last updated 2009/08/03 */
 /* Current version at http://www.opengl.org/registry/ */
-#define WGL_WGLEXT_VERSION 11
+#define WGL_WGLEXT_VERSION 15
 
 #ifndef WGL_ARB_buffer_region
 #define WGL_FRONT_COLOR_BUFFER_BIT_ARB 0x00000001
@@ -174,13 +176,20 @@ extern "C" {
 #endif
 
 #ifndef WGL_ARB_create_context
-#define WGL_CONTEXT_DEBUG_BIT_ARB      0x0001
-#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 0x0002
+#define WGL_CONTEXT_DEBUG_BIT_ARB      0x00000001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 0x00000002
 #define WGL_CONTEXT_MAJOR_VERSION_ARB  0x2091
 #define WGL_CONTEXT_MINOR_VERSION_ARB  0x2092
 #define WGL_CONTEXT_LAYER_PLANE_ARB    0x2093
 #define WGL_CONTEXT_FLAGS_ARB          0x2094
 #define ERROR_INVALID_VERSION_ARB      0x2095
+#endif
+
+#ifndef WGL_ARB_create_context_profile
+#define WGL_CONTEXT_PROFILE_MASK_ARB   0x9126
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
+#define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+#define ERROR_INVALID_PROFILE_ARB      0x2096
 #endif
 
 #ifndef WGL_EXT_make_current_read
@@ -366,6 +375,19 @@ extern "C" {
 #define WGL_ERROR_MISSING_AFFINITY_MASK_NV 0x20D1
 #endif
 
+#ifndef WGL_AMD_gpu_association
+#define WGL_GPU_VENDOR_AMD             0x1F00
+#define WGL_GPU_RENDERER_STRING_AMD    0x1F01
+#define WGL_GPU_OPENGL_VERSION_STRING_AMD 0x1F02
+#define WGL_GPU_FASTEST_TARGET_GPUS_AMD 0x21A2
+#define WGL_GPU_RAM_AMD                0x21A3
+#define WGL_GPU_CLOCK_AMD              0x21A4
+#define WGL_GPU_NUM_PIPES_AMD          0x21A5
+#define WGL_GPU_NUM_SIMD_AMD           0x21A6
+#define WGL_GPU_NUM_RB_AMD             0x21A7
+#define WGL_GPU_NUM_SPI_AMD            0x21A8
+#endif
+
 
 /*************************************************************/
 
@@ -480,6 +502,10 @@ typedef BOOL (WINAPI * PFNWGLSETPBUFFERATTRIBARBPROC) (HPBUFFERARB hPbuffer, con
 extern HGLRC WINAPI wglCreateContextAttribsARB (HDC, HGLRC, const int *);
 #endif /* WGL_WGLEXT_PROTOTYPES */
 typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC hDC, HGLRC hShareContext, const int *attribList);
+#endif
+
+#ifndef WGL_ARB_create_context_profile
+#define WGL_ARB_create_context_profile 1
 #endif
 
 #ifndef WGL_EXT_display_color_table
@@ -696,6 +722,14 @@ typedef BOOL (WINAPI * PFNWGLQUERYFRAMETRACKINGI3DPROC) (DWORD *pFrameCount, DWO
 #define WGL_NV_float_buffer 1
 #endif
 
+#ifndef WGL_3DL_stereo_control
+#define WGL_3DL_stereo_control 1
+#ifdef WGL_WGLEXT_PROTOTYPES
+extern BOOL WINAPI wglSetStereoEmitterState3DL (HDC, UINT);
+#endif /* WGL_WGLEXT_PROTOTYPES */
+typedef BOOL (WINAPI * PFNWGLSETSTEREOEMITTERSTATE3DLPROC) (HDC hDC, UINT uState);
+#endif
+
 #ifndef WGL_EXT_pixel_format_packed_float
 #define WGL_EXT_pixel_format_packed_float 1
 #endif
@@ -766,6 +800,30 @@ typedef BOOL (WINAPI * PFNWGLENUMGPUDEVICESNVPROC) (HGPUNV hGpu, UINT iDeviceInd
 typedef HDC (WINAPI * PFNWGLCREATEAFFINITYDCNVPROC) (const HGPUNV *phGpuList);
 typedef BOOL (WINAPI * PFNWGLENUMGPUSFROMAFFINITYDCNVPROC) (HDC hAffinityDC, UINT iGpuIndex, HGPUNV *hGpu);
 typedef BOOL (WINAPI * PFNWGLDELETEDCNVPROC) (HDC hdc);
+#endif
+
+#ifndef WGL_AMD_gpu_association
+#define WGL_AMD_gpu_association 1
+#ifdef WGL_WGLEXT_PROTOTYPES
+extern UINT WINAPI wglGetGPUIDsAMD (UINT, UINT *);
+extern INT WINAPI wglGetGPUInfoAMD (UINT, int, GLenum, UINT, void *);
+extern UINT WINAPI wglGetContextGPUIDAMD (HGLRC);
+extern HGLRC WINAPI wglCreateAssociatedContextAMD (UINT);
+extern HGLRC WINAPI wglCreateAssociatedContextAttribsAMD (UINT, HGLRC, const int *);
+extern BOOL WINAPI wglDeleteAssociatedContextAMD (HGLRC);
+extern BOOL WINAPI wglMakeAssociatedContextCurrentAMD (HGLRC);
+extern HGLRC WINAPI wglGetCurrentAssociatedContextAMD (void);
+extern VOID WINAPI wglBlitContextFramebufferAMD (HGLRC, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
+#endif /* WGL_WGLEXT_PROTOTYPES */
+typedef UINT (WINAPI * PFNWGLGETGPUIDSAMDPROC) (UINT maxCount, UINT *ids);
+typedef INT (WINAPI * PFNWGLGETGPUINFOAMDPROC) (UINT id, int property, GLenum dataType, UINT size, void *data);
+typedef UINT (WINAPI * PFNWGLGETCONTEXTGPUIDAMDPROC) (HGLRC hglrc);
+typedef HGLRC (WINAPI * PFNWGLCREATEASSOCIATEDCONTEXTAMDPROC) (UINT id);
+typedef HGLRC (WINAPI * PFNWGLCREATEASSOCIATEDCONTEXTATTRIBSAMDPROC) (UINT id, HGLRC hShareContext, const int *attribList);
+typedef BOOL (WINAPI * PFNWGLDELETEASSOCIATEDCONTEXTAMDPROC) (HGLRC hglrc);
+typedef BOOL (WINAPI * PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC) (HGLRC hglrc);
+typedef HGLRC (WINAPI * PFNWGLGETCURRENTASSOCIATEDCONTEXTAMDPROC) (void);
+typedef VOID (WINAPI * PFNWGLBLITCONTEXTFRAMEBUFFERAMDPROC) (HGLRC dstCtx, GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 #endif
 
 
