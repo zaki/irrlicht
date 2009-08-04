@@ -605,27 +605,27 @@ bool CB3DMeshFileLoader::readChunkKEYS(CSkinnedMesh::SJoint *InJoint)
 		frame = os::Byteswap::byteswap(frame);
 		#endif
 
-		// Add key frames
+		// Add key frames, frames in Irrlicht are zero-based
 		f32 data[4];
 		if (flags & 1)
 		{
 			readFloats(data, 3);
 			CSkinnedMesh::SPositionKey *Key=AnimatedMesh->createPositionKey(InJoint);
-			Key->frame = (f32)frame;
+			Key->frame = (f32)frame-1;
 			Key->position.set(data[0], data[1], data[2]);
 		}
 		if (flags & 2)
 		{
 			readFloats(data, 3);
 			CSkinnedMesh::SScaleKey *Key=AnimatedMesh->createScaleKey(InJoint);
-			Key->frame = (f32)frame;
+			Key->frame = (f32)frame-1;
 			Key->scale.set(data[0], data[1], data[2]);
 		}
 		if (flags & 4)
 		{
 			readFloats(data, 4);
 			CSkinnedMesh::SRotationKey *Key=AnimatedMesh->createRotationKey(InJoint);
-			Key->frame = (f32)frame;
+			Key->frame = (f32)frame-1;
 			// meant to be in this order since b3d stores W first
 			Key->rotation.set(data[1], data[2], data[3], data[0]);
 		}
