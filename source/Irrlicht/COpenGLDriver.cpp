@@ -351,9 +351,14 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
+#ifdef WGL_EXT_swap_control
+	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+	// vsync extension
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 	// set vsync
 	if (wglSwapIntervalEXT)
 		wglSwapIntervalEXT(params.Vsync ? 1 : 0);
+#endif
 
 	// set exposed data
 	ExposedData.OpenGLWin32.HDc = HDc;
