@@ -18,9 +18,11 @@ namespace scene
 
 //! constructor
 CSkinnedMesh::CSkinnedMesh()
-: SkinningBuffers(0), HasAnimation(0), PreparedForSkinning(0),
-	AnimationFrames(0.f), LastAnimatedFrame(0.f), LastSkinnedFrame(0.f),
-	BoneControlUsed(false), AnimateNormals(true), HardwareSkinning(0), InterpolationMode(EIM_LINEAR)
+: SkinningBuffers(0), AnimationFrames(0.f),
+	LastAnimatedFrame(0.f), LastSkinnedFrame(0.f),
+	InterpolationMode(EIM_LINEAR),
+	HasAnimation(false), PreparedForSkinning(false),
+	BoneControlUsed(false), AnimateNormals(true), HardwareSkinning(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CSkinnedMesh");
@@ -459,7 +461,6 @@ void CSkinnedMesh::skinMesh()
 
 		for (i=0; i<SkinningBuffers->size(); ++i)
 			(*SkinningBuffers)[i]->setDirty(EBT_VERTEX);
-
 	}
 }
 
@@ -710,8 +711,6 @@ bool CSkinnedMesh::setHardwareSkinning(bool on)
 					LocalBuffers[buffer_id]->boundingBoxNeedsRecalculated();
 				}
 			}
-
-
 		}
 
 		HardwareSkinning=on;

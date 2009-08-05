@@ -147,7 +147,6 @@ namespace scene
 		virtual void updateBoundingBox(void);
 
 private:
-
 		void checkForAnimation();
 
 		void normalizeWeights();
@@ -177,32 +176,26 @@ private:
 		core::array<SJoint*> AllJoints;
 		core::array<SJoint*> RootJoints;
 
-		bool HasAnimation;
+		core::aabbox3d<f32> BoundingBox;
 
-		bool PreparedForSkinning;
+		core::array< core::array<bool> > Vertices_Moved;
 
 		f32 AnimationFrames;
 
 		f32 LastAnimatedFrame;
 		f32 LastSkinnedFrame;
-		bool BoneControlUsed;
-
-		bool AnimateNormals;
-
-		bool HardwareSkinning;
-
 
 		E_INTERPOLATION_MODE InterpolationMode;
 
-		core::aabbox3d<f32> BoundingBox;
-
-		core::array< core::array<bool> > Vertices_Moved;
+		bool HasAnimation;
+		bool PreparedForSkinning;
+		bool BoneControlUsed;
+		bool AnimateNormals;
+		bool HardwareSkinning;
 	};
 
 } // end namespace scene
 } // end namespace irr
 
 #endif
-
-
 
