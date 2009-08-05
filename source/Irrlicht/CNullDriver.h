@@ -32,8 +32,6 @@ namespace video
 	class IImageLoader;
 	class IImageWriter;
 
-
-
 	class CNullDriver : public IVideoDriver, public IGPUProgrammingServices
 	{
 	public:
@@ -45,8 +43,7 @@ namespace video
 		virtual ~CNullDriver();
 
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
-				SColor color=SColor(255,0,0,0),
-				void* windowId=0,
+				SColor color=SColor(255,0,0,0), void* windowId=0,
 				core::rect<s32>* sourceRect=0);
 
 		virtual bool endScene();

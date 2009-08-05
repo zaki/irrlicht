@@ -483,7 +483,7 @@ namespace scene
 					vtx.Pos = vtxPtr.getPosition();
 					vtx.Normal = vtxPtr.getPosition();
 					vtx.Color=vtxPtr.getColor();
-					vtx.TCoords.set(vtxPtr.getTextureCoordinates().X, vtxPtr.getTextureCoordinates().Y);
+					vtx.TCoords.set(vtxPtr.getTextureCoordinates().X, 1.f-vtxPtr.getTextureCoordinates().Y);
 					vtx.TCoords2.set(vtxPtr.getLightMapCoordinates().X, 1.f-vtxPtr.getLightMapCoordinates().Y);
 
 					buffer->Vertices.push_back(vtx);
