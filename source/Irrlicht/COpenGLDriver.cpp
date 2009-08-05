@@ -194,6 +194,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			return false;
 		}
 
+#ifdef WGL_ARB_pixel_format
 		PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
 		if (wglChoosePixelFormat_ARB)
 		{
@@ -242,6 +243,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			}
 		}
 		else
+#endif
 			AntiAlias=0;
 
 		wglMakeCurrent(HDc, NULL);
@@ -308,7 +310,14 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	}
 
 	// create rendering context
-	HRc=wglCreateContext(HDc);
+#ifdef WGL_ARB_create_context
+	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribs_ARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+	if (wglCreateContextAttribs_ARB)
+		HRc=wglCreateContextAttribs_ARB(HDc, 0, NULL);
+	else
+#endif
+		HRc=wglCreateContext(HDc);
+
 	if (!HRc)
 	{
 		os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
@@ -514,10 +523,6 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 
 	// Reset The Current Viewport
 	glViewport(0, 0, screenSize.Width, screenSize.Height);
-
-// This needs an SMaterial flag to enable/disable later on, but should become default sometimes
-//	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-//	glEnable(GL_COLOR_MATERIAL);
 
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
 #ifdef GL_EXT_separate_specular_color
