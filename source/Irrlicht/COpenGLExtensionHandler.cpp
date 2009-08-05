@@ -35,9 +35,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
 	pGlCompressedTexImage2D(0),
-#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
-	wglSwapIntervalEXT(0),
-#elif defined(GLX_SGI_swap_control)
+#if defined(GLX_SGI_swap_control)
 	glxSwapIntervalSGI(0),
 #endif
 	pGlBindFramebufferEXT(0), pGlDeleteFramebuffersEXT(0), pGlGenFramebuffersEXT(0),
@@ -182,9 +180,6 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGetBufferParameterivARB= (PFNGLGETBUFFERPARAMETERIVARBPROC) wglGetProcAddress("glGetBufferParameterivARB");
 	pGlGetBufferPointervARB= (PFNGLGETBUFFERPOINTERVARBPROC) wglGetProcAddress("glGetBufferPointervARB");
 
-
-	// vsync extension
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC) wglGetProcAddress("wglSwapIntervalEXT");
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#ifdef _IRR_OPENGL_USE_EXTPOINTER_
