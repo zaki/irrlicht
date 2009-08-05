@@ -218,8 +218,25 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 				WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
 				WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
 				WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
+#ifdef WGL_ARB_multisample
 				WGL_SAMPLE_BUFFERS_ARB, 1,
-				WGL_SAMPLES_ARB,AntiAlias,
+				WGL_SAMPLES_ARB,AntiAlias, // 20,21
+#elif defined(WGL_EXT_multisample)
+				WGL_SAMPLE_BUFFERS_EXT, 1,
+				WGL_SAMPLES_EXT,AntiAlias, // 20,21
+#elif defined(WGL_3DFX_multisample)
+				WGL_SAMPLE_BUFFERS_3DFX, 1,
+				WGL_SAMPLES_3DFX,AntiAlias, // 20,21
+#endif
+				WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+				// other possible values:
+				// WGL_ARB_pixel_format_float: WGL_TYPE_RGBA_FLOAT_ARB
+				// WGL_EXT_pixel_format_packed_float: WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT
+#if 0
+#ifdef WGL_EXT_framebuffer_sRGB
+				WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_FALSE,
+#endif
+#endif
 				0,0
 			};
 
