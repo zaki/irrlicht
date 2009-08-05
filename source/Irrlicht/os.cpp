@@ -169,6 +169,12 @@ namespace os
 			Logger->log(message, ll);
 	}
 
+	void Printer::log(const wchar_t* message, ELOG_LEVEL ll)
+	{
+		if (Logger)
+			Logger->log(message, ll);
+	}
+
 	void Printer::log(const c8* message, const c8* hint, ELOG_LEVEL ll)
 	{
 		if (Logger)
@@ -180,13 +186,6 @@ namespace os
 		if (Logger)
 			Logger->log(message, hint.c_str(), ll);
 	}
-
-	void Printer::log(const wchar_t* message, ELOG_LEVEL ll)
-	{
-		if (Logger)
-			Logger->log(message, ll);
-	}
-
 
 	// our Randomizer is not really os specific, so we
 	// code one for all, which should work on every platform the same,
