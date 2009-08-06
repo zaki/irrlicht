@@ -330,7 +330,7 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_GREEN_SIZE, 4,
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
-					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
+					GLX_DEPTH_SIZE, CreationParams.ZBufferBits, //10,11
 					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
 					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
 #if defined(GLX_VERSION_1_4) && defined(GLX_SAMPLE_BUFFERS) // we need to check the extension string!
@@ -1604,6 +1604,98 @@ void CIrrDeviceLinux::pollJoysticks()
 	}
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 }
+
+
+//! Set the current Gamma Value for the Display
+bool CIrrDeviceLinux::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast )
+{
+	#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
+	s32 eventbase, errorbase;
+	#ifdef _IRR_LINUX_X11_VIDMODE_
+	if (XF86VidModeQueryExtension(display, &eventbase, &errorbase))
+	{
+		XF86VidModeGamma gamma;
+		gamma.red=red;
+		gamma.green=green;
+		gamma.blue=blue;
+		XF86VidModeSetGamma(display, screennr, &gamma);
+		return true;
+	}
+	#endif
+	#if defined(_IRR_LINUX_X11_VIDMODE_) && defined(_IRR_LINUX_X11_RANDR_)
+	else
+	#endif
+	#ifdef _IRR_LINUX_X11_RANDR_
+	if (XRRQueryExtension(display, &eventbase, &errorbase))
+	{
+		XRRQueryVersion(display, &eventbase, &errorbase); // major, minor
+		if (eventbase>=1 && errorbase>1)
+		{
+		#if (RANDR_MAJOR>1 || RANDR_MINOR>1)
+			XRRCrtcGamma *gamma = XRRGetCrtcGamma(display, screennr);
+			if (gamma)
+			{
+				*gamma->red=red;
+				*gamma->green=green;
+				*gamma->blue=blue;
+				XRRSetCrtcGamma(display, screennr, gamma);
+				XRRFreeGamma(gamma);
+				return true;
+			}
+		#endif
+		}
+	}
+	#endif
+	#endif
+	return false;
+}
+
+
+//! Get the current Gamma Value for the Display
+bool CIrrDeviceLinux::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast )
+{
+	brightness = 0.f;
+	contrast = 0.f;
+	#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
+	s32 eventbase, errorbase;
+	#ifdef _IRR_LINUX_X11_VIDMODE_
+	if (XF86VidModeQueryExtension(display, &eventbase, &errorbase))
+	{
+		XF86VidModeGamma gamma;
+		XF86VidModeGetGamma(display, screennr, &gamma);
+		red = gamma.red;
+		green = gamma.green;
+		blue = gamma.blue;
+		return true;
+	}
+	#endif
+	#if defined(_IRR_LINUX_X11_VIDMODE_) && defined(_IRR_LINUX_X11_RANDR_)
+	else
+	#endif
+	#ifdef _IRR_LINUX_X11_RANDR_
+	if (XRRQueryExtension(display, &eventbase, &errorbase))
+	{
+		XRRQueryVersion(display, &eventbase, &errorbase); // major, minor
+		if (eventbase>=1 && errorbase>1)
+		{
+		#if (RANDR_MAJOR>1 || RANDR_MINOR>1)
+			XRRCrtcGamma *gamma = XRRGetCrtcGamma(display, screennr);
+			if (gamma)
+			{
+				red = *gamma->red;
+				green = *gamma->green;
+				blue= *gamma->blue;
+				XRRFreeGamma(gamma);
+				return true;
+			}
+		#endif
+		}
+	}
+	#endif
+	#endif
+	return false;
+}
+
 
 //! gets text from the clipboard
 //! \return Returns 0 if no string is in there.

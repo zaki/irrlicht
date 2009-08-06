@@ -274,7 +274,7 @@ Changes in 1.6 (??.??.2009)
     virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast ) = 0;
     virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue ) = 0;
   and calculating methods to DeviceStub.
-  implemented in Win32, TODO: other Devices
+  implemented in Win32, SDL, Linux TODO: other Devices
   
   -  irrlicht.h
     changed exported irrlicht.dll routines createDevice, createDeviceEx, IdentityMatrix
