@@ -2306,12 +2306,15 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 			else
 				glDisable(GL_MULTISAMPLE_ARB);
 		}
-		if (AntiAlias >= 2)
+		if ((material.AntiAliasing & EAAM_LINE_SMOOTH) != (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH))
 		{
 			if (material.AntiAliasing & EAAM_LINE_SMOOTH)
 				glEnable(GL_LINE_SMOOTH);
 			else if (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH)
 				glDisable(GL_LINE_SMOOTH);
+		}
+		if ((material.AntiAliasing & EAAM_POINT_SMOOTH) != (lastmaterial.AntiAliasing & EAAM_POINT_SMOOTH))
+		{
 			if (material.AntiAliasing & EAAM_POINT_SMOOTH)
 				// often in software, and thus very slow
 				glEnable(GL_POINT_SMOOTH);
