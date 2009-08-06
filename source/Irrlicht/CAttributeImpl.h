@@ -1238,7 +1238,7 @@ public:
 	{
 		char tmp[10];
 		const video::SColor c = getColor();
-		sprintf(tmp, "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getBlue(), c.getGreen());
+		sprintf(tmp, "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getGreen(), c.getBlue());
 		return core::stringw(tmp);
 	}
 
