@@ -96,6 +96,12 @@ namespace irr
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
+		//! Set the current Gamma Value for the Display
+		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast );
+
+		//! Get the current Gamma Value for the Display
+		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
+
 		//! gets text from the clipboard
 		//! \return Returns 0 if no string is in there.
 		virtual const c8* getTextFromClipboard() const;
