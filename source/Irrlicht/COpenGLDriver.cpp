@@ -47,7 +47,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 }
 
 //! inits the open gl driver
-bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
+bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceWin32* device)
 {
 	// Set up pixel format descriptor with desired parameters
 	PIXELFORMATDESCRIPTOR pfd = {
@@ -427,6 +427,11 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
+}
+
+//! inits the open gl driver
+bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceLinux* device)
+{
 	ExposedData.OpenGLLinux.X11Context = glXGetCurrentContext();
 	ExposedData.OpenGLLinux.X11Display = glXGetCurrentDisplay();
 	ExposedData.OpenGLLinux.X11Window = (unsigned long)params.WindowId;
@@ -444,6 +449,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 		glXSwapIntervalSGI(1);
 #endif
 #endif
+	return true;
 }
 
 #endif // _IRR_COMPILE_WITH_X11_DEVICE_
@@ -3330,7 +3336,7 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 	COpenGLDriver* ogl =  new COpenGLDriver(params, io, device);
-	if (!ogl->initDriver(params))
+	if (!ogl->initDriver(params, device))
 	{
 		ogl->drop();
 		ogl = 0;
@@ -3365,7 +3371,13 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceLinux* device)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	return new COpenGLDriver(params, io, device);
+	COpenGLDriver* ogl =  new COpenGLDriver(params, io, device);
+	if (!ogl->initDriver(params, device))
+	{
+		ogl->drop();
+		ogl = 0;
+	}
+	return ogl;
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_
