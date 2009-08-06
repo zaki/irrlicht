@@ -96,15 +96,15 @@ namespace irr
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
-        //! gets text from the clipboard
-        //! \return Returns 0 if no string is in there.
+		//! gets text from the clipboard
+		//! \return Returns 0 if no string is in there.
 		virtual const c8* getTextFromClipboard() const;
 
-        //! copies text to the clipboard
-        //! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
-        virtual void copyToClipboard(const c8* text) const;
+		//! copies text to the clipboard
+		//! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
+		virtual void copyToClipboard(const c8* text) const;
 
-        //! Get the device type
+		//! Get the device type
 		virtual E_DEVICE_TYPE getType() const
 		{
 				return EIDT_X11;
