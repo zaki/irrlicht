@@ -778,6 +778,21 @@ bool CIrrDeviceSDL::isWindowMinimized() const
 }
 
 
+//! Set the current Gamma Value for the Display
+bool CIrrDeviceSDL::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast )
+{
+	return (SDL_SetGamma(red, green, blue) != -1);
+}
+
+//! Get the current Gamma Value for the Display
+bool CIrrDeviceSDL::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast )
+{
+	brightness = 0.f;
+	contrast = 0.f;
+	return (SDL_GetGamma(&red, &green, &blue) != -1);
+
+}
+
 //! returns color format of the window.
 video::ECOLOR_FORMAT CIrrDeviceSDL::getColorFormat() const
 {
