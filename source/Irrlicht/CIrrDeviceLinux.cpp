@@ -314,7 +314,9 @@ bool CIrrDeviceLinux::createWindow()
 		isAvailableGLX=glXQueryExtension(display,&major,&minor);
 		if (isAvailableGLX && glXQueryVersion(display, &major, &minor))
 		{
-			if (major==1 && minor>2)
+#ifdef GLX_VERSION_1_3
+			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glxChooseFBConfig"));
+			if (major==1 && minor>2 && glxChooseFBConfig)
 			{
 				// attribute array for the draw buffer
 				int visualAttrBuffer[] =
@@ -327,12 +329,15 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
 					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
 					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
-#ifdef GLX_ARB_multisample
-					GLX_SAMPLE_BUFFERS_ARB, 1,
-					GLX_SAMPLES_ARB, CreationParams.AntiAlias,
-#elif defined(GLX_SAMPLE_BUFFERS)
+#if defined(GLX_VERSION_1_4)
 					GLX_SAMPLE_BUFFERS, 1,
-					GLX_SAMPLES, CreationParams.AntiAlias,
+					GLX_SAMPLES, CreationParams.AntiAlias, // 18,19
+#elif defined(GLX_ARB_multisample)
+					GLX_SAMPLE_BUFFERS_ARB, 1,
+					GLX_SAMPLES_ARB, CreationParams.AntiAlias, // 18,19
+#elif defined(GLX_SGIS_multisample)
+					GLX_SAMPLE_BUFFERS_SGIS, 1,
+					GLX_SAMPLES_SGIS, CreationParams.AntiAlias, // 18,19
 #endif
 					GLX_STEREO, CreationParams.Stereobuffer?True:False,
 					None
@@ -347,19 +352,19 @@ bool CIrrDeviceLinux::createWindow()
 				}
 				// first round with unchanged values
 				{
-					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+					configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
 							visualAttrBuffer[19] -= 1;
-							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
 						{
 							visualAttrBuffer[17] = 0;
 							visualAttrBuffer[19] = 0;
-							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
@@ -385,19 +390,19 @@ bool CIrrDeviceLinux::createWindow()
 					CreationParams.Stencilbuffer = !CreationParams.Stencilbuffer;
 					visualAttrBuffer[15]=CreationParams.Stencilbuffer?1:0;
 
-					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+					configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
 							visualAttrBuffer[19] -= 1;
-							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
 						{
 							visualAttrBuffer[17] = 0;
 							visualAttrBuffer[19] = 0;
-							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
@@ -420,19 +425,19 @@ bool CIrrDeviceLinux::createWindow()
 					visualAttrBuffer[13] = GLX_DONT_CARE;
 					CreationParams.Stencilbuffer = false;
 					visualAttrBuffer[15]=0;
-					configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+					configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 					if (!configList && CreationParams.AntiAlias)
 					{
 						while (!configList && (visualAttrBuffer[19]>1))
 						{
 							visualAttrBuffer[19] -= 1;
-							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 						}
 						if (!configList)
 						{
 							visualAttrBuffer[17] = 0;
 							visualAttrBuffer[19] = 0;
-							configList=glXChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
+							configList=glxChooseFBConfig(display, screennr, visualAttrBuffer,&nitems);
 							if (configList)
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
@@ -452,10 +457,13 @@ bool CIrrDeviceLinux::createWindow()
 					glxFBConfig=configList[0];
 					XFree(configList);
 					UseGLXWindow=true;
-					visual = glXGetVisualFromFBConfig(display,glxFBConfig);
+					PFNGLXGETVISUALFROMFBCONFIGPROC glxGetVisualFromFBConfig= (PFNGLXGETVISUALFROMFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glxGetVisualFromFBConfig"));
+					if (glxGetVisualFromFBConfig)
+					visual = glxGetVisualFromFBConfig(display,glxFBConfig);
 				}
 			}
 			else
+#endif
 			{
 				// attribute array for the draw buffer
 				int visualAttrBuffer[] =
@@ -466,12 +474,12 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_BLUE_SIZE, 4,
 					GLX_ALPHA_SIZE, CreationParams.WithAlphaChannel?1:0,
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
-					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
+					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0, // 12,13
 					// The following attributes have no flags, but are
 					// either present or not. As a no-op we use
 					// GLX_USE_GL, which is silently ignored by glXChooseVisual
-					CreationParams.Doublebuffer?GLX_DOUBLEBUFFER:GLX_USE_GL,
-					CreationParams.Stereobuffer?GLX_STEREO:GLX_USE_GL,
+					CreationParams.Doublebuffer?GLX_DOUBLEBUFFER:GLX_USE_GL, // 14
+					CreationParams.Stereobuffer?GLX_STEREO:GLX_USE_GL, // 15
 					None
 				};
 

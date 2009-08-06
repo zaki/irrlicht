@@ -37,10 +37,14 @@ namespace video
 
 		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device);
+		//! inits the windows specific parts of the open gl driver
+		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceWin32* device);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceLinux* device);
+		//! inits the GLX specific parts of the open gl driver
+		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceLinux* device);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
@@ -49,11 +53,6 @@ namespace video
 
 		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device);
-		#endif
-
-		#ifdef _IRR_WINDOWS_API_
-		//! inits the windows specific parts of the open gl driver
-		bool initDriver(SIrrlichtCreationParameters params);
 		#endif
 
 		//! destructor

@@ -121,7 +121,7 @@ namespace irr
 
 		void pollJoysticks();
 
-        void initXAtoms();
+		void initXAtoms();
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -319,6 +319,8 @@ namespace irr
 		friend class CCursorControl;
 
 #ifdef _IRR_COMPILE_WITH_X11_
+		friend class COpenGLDriver;
+
 		Display *display;
 		XVisualInfo* visual;
 		int screennr;
