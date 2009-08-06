@@ -315,7 +315,11 @@ bool CIrrDeviceLinux::createWindow()
 		if (isAvailableGLX && glXQueryVersion(display, &major, &minor))
 		{
 #ifdef GLX_VERSION_1_3
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
 			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glxChooseFBConfig"));
+#else
+			GLXFBConfig * ( * glxChooseFBConfig) (Display *dpy, int screen, const int *attrib_list, int *nelements)=glXChooseFBConfig;
+#endif
 			if (major==1 && minor>2 && glxChooseFBConfig)
 			{
 				// attribute array for the draw buffer
@@ -329,7 +333,7 @@ bool CIrrDeviceLinux::createWindow()
 					GLX_DEPTH_SIZE, CreationParams.ZBufferBits,
 					GLX_DOUBLEBUFFER, CreationParams.Doublebuffer?True:False,
 					GLX_STENCIL_SIZE, CreationParams.Stencilbuffer?1:0,
-#if defined(GLX_VERSION_1_4)
+#if defined(GLX_VERSION_1_4) && defined(GLX_SAMPLE_BUFFERS) // we need to check the extension string!
 					GLX_SAMPLE_BUFFERS, 1,
 					GLX_SAMPLES, CreationParams.AntiAlias, // 18,19
 #elif defined(GLX_ARB_multisample)
@@ -457,9 +461,13 @@ bool CIrrDeviceLinux::createWindow()
 					glxFBConfig=configList[0];
 					XFree(configList);
 					UseGLXWindow=true;
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
 					PFNGLXGETVISUALFROMFBCONFIGPROC glxGetVisualFromFBConfig= (PFNGLXGETVISUALFROMFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glxGetVisualFromFBConfig"));
 					if (glxGetVisualFromFBConfig)
-					visual = glxGetVisualFromFBConfig(display,glxFBConfig);
+						visual = glxGetVisualFromFBConfig(display,glxFBConfig);
+#else
+						visual = glXGetVisualFromFBConfig(display,glxFBConfig);
+#endif
 				}
 			}
 			else
