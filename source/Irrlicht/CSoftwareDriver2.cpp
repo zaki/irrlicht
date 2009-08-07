@@ -1296,11 +1296,11 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 								( check[h].flag & 16 ) >> 4,
 								( check[h].flag & 32 ) >> 5
 							);
-				os::Printer::print ( buf );
+				os::Printer::log( buf );
 			}
 
 			sprintf ( buf, "Vout: %d\n", vOut );
-			os::Printer::print ( buf );
+			os::Printer::log( buf );
 
 			int hold = 1;
 		}
@@ -1378,7 +1378,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 					vertexCount, primitiveCount,
 					VertexCache.CacheMiss
 				);
-	os::Printer::print ( buf );
+	os::Printer::log( buf );
 */
 
 }
