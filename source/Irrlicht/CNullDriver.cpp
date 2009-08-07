@@ -577,21 +577,21 @@ void CNullDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 
 
 //! draws an indexed triangle list
-inline void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
+void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
 }
 
 
 //! draws an indexed triangle list
-inline void CNullDriver::drawIndexedTriangleList(const S3DVertex2TCoords* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
+void CNullDriver::drawIndexedTriangleList(const S3DVertex2TCoords* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLES, EIT_16BIT);
 }
 
 
 //! Draws an indexed triangle list.
-inline void CNullDriver::drawIndexedTriangleList(const S3DVertexTangents* vertices,
+void CNullDriver::drawIndexedTriangleList(const S3DVertexTangents* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES, EIT_16BIT);
@@ -600,7 +600,7 @@ inline void CNullDriver::drawIndexedTriangleList(const S3DVertexTangents* vertic
 
 
 //! Draws an indexed triangle fan.
-inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex* vertices,
+void CNullDriver::drawIndexedTriangleFan(const S3DVertex* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
@@ -609,7 +609,7 @@ inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex* vertices,
 
 
 //! Draws an indexed triangle fan.
-inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
+void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
@@ -618,7 +618,7 @@ inline void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertice
 
 
 //! Draws an indexed triangle fan.
-inline void CNullDriver::drawIndexedTriangleFan(const S3DVertexTangents* vertices,
+void CNullDriver::drawIndexedTriangleFan(const S3DVertexTangents* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);

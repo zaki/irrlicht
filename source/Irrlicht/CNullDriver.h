@@ -128,7 +128,7 @@ namespace video
 			u32 vertexCount, const u16* indexList, u32 triangleCount);
 
 		//! Draws an indexed triangle fan.
-		inline void drawIndexedTriangleFan(const S3DVertexTangents* vertices,
+		virtual void drawIndexedTriangleFan(const S3DVertexTangents* vertices,
 			u32 vertexCount, const u16* indexList, u32 triangleCount);
 
 		//! Draws a 3d line.

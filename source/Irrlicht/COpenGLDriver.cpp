@@ -1305,15 +1305,39 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 				glEnable(GL_POINT_SPRITE_ARB);
 #endif
-			float quadratic[] = {0.0f, 0.0f, 10.01f};
-			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
-			float maxParticleSize=1.0f;
-			glGetFloatv(GL_POINT_SIZE_MAX_ARB, &maxParticleSize);
-//			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
-//			extGlPointParameterf(GL_POINT_SIZE_MAX_ARB,maxParticleSize);
-//			extGlPointParameterf(GL_POINT_SIZE_MIN_ARB,Material.Thickness);
-			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
-			glPointSize(Material.Thickness);
+
+			// prepare size and attenuation (where supported)
+			GLfloat particleSize=Material.Thickness;
+//			if (AntiAlias)
+//				particleSize=core::clamp(particleSize, DimSmoothedPoint[0], DimSmoothedPoint[1]);
+//			else
+				particleSize=core::clamp(particleSize, DimAliasedPoint[0], DimAliasedPoint[1]);
+#if defined(GL_VERSION_1_4) || defined(GL_ARB_point_parameters) || defined(GL_EXT_point_parameters) || defined(GL_SGIS_point_parameters)
+			const float att[] = {1.0f, 1.0f, 0.0f};
+#if defined(GL_VERSION_1_4)
+			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, 1.0f);
+#elif defined(GL_ARB_point_parameters)
+			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION_ARB, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_ARB,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX_ARB, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1.0f);
+#elif defined(GL_EXT_point_parameters)
+			extGlPointParameterfv(GL_DISTANCE_ATTENUATION_EXT, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_EXT,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX_EXT, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_EXT, 1.0f);
+#elif defined(GL_SGIS_point_parameters)
+			extGlPointParameterfv(GL_DISTANCE_ATTENUATION_SGIS, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_SGIS,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX_SGIS, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_SGIS, 1.0f);
+#endif
+#endif
+			glPointSize(particleSize);
+
 #ifdef GL_ARB_point_sprite
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_TRUE);
@@ -2281,8 +2305,18 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// thickness
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 	{
-		glPointSize(material.Thickness);
-		glLineWidth(material.Thickness);
+		if (AntiAlias)
+		{
+//			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimSmoothedPoint[0], DimSmoothedPoint[1]));
+			// we don't use point smoothing
+			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedPoint[0], DimAliasedPoint[1]));
+			glLineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimSmoothedLine[0], DimSmoothedLine[1]));
+		}
+		else
+		{
+			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedPoint[0], DimAliasedPoint[1]));
+			glLineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
+		}
 	}
 
 	// Anti aliasing
