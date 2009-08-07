@@ -134,6 +134,9 @@ namespace irr
 		//! \return Returns only 1,2 or 3. A 4th click will start with 1 again.
 		virtual u32 checkSuccessiveClicks(s32 mouseX, s32 mouseY);
 
+		void calculateGammaRamp ( u16 *ramp, f32 gamma, f32 relativebrightness, f32 relativecontrast );
+		void calculateGammaFromRamp ( f32 &gamma, const u16 *ramp );
+
 		video::IVideoDriver* VideoDriver;
 		gui::IGUIEnvironment* GUIEnvironment;
 		scene::ISceneManager* SceneManager;
@@ -159,10 +162,6 @@ namespace irr
 			core::position2di LastClick;
 		};
 		SMouseMultiClicks MouseMultiClicks;
-
-		void calculateGammaRamp ( u16 *ramp, f32 gamma, f32 relativebrightness, f32 relativecontrast );
-		void calculateGammaFromRamp ( f32 &gamma, const u16 *ramp );
-
 	};
 
 } // end namespace irr

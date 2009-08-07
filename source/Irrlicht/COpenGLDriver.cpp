@@ -214,7 +214,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 				WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
 				WGL_COLOR_BITS_ARB,(params.Bits==32) ? 24 : 15,
 				WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
-				WGL_DEPTH_BITS_ARB,params.ZBufferBits,
+				WGL_DEPTH_BITS_ARB,params.ZBufferBits, // 10,11
 				WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
 				WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
 				WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
