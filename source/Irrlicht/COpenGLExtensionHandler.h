@@ -804,6 +804,14 @@ class COpenGLExtensionHandler
 	f32 MaxTextureLODBias;
 	//! Number of rendertargets available as MRTs
 	u8 MaxMultipleRenderTargets;
+	//! Minimal and maximal supported thickness for lines without smoothing
+	GLfloat DimAliasedLine[2];
+	//! Minimal and maximal supported thickness for points without smoothing
+	GLfloat DimAliasedPoint[2];
+	//! Minimal and maximal supported thickness for lines with smoothing
+	GLfloat DimSmoothedLine[2];
+	//! Minimal and maximal supported thickness for points with smoothing
+	GLfloat DimSmoothedPoint[2];
 
 	//! OpenGL version as Integer: 100*Major+Minor, i.e. 2.1 becomes 201
 	u16 Version;
