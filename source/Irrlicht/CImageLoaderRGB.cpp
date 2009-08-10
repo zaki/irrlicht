@@ -151,8 +151,8 @@ CImageLoaderRGB::CImageLoaderRGB()
 //! based on the file extensions listed here
 bool CImageLoaderRGB::isALoadableFileExtension(const core::string<c16>& filename) const
 {
-	return core::hasFileExtension( fileName, "rgb", "rgba", "sgi" ) ||
-	       core::hasFileExtension( fileName, "int", "inta", "bw" );
+	return core::hasFileExtension( filename, "rgb", "rgba", "sgi" ) ||
+	       core::hasFileExtension( filename, "int", "inta", "bw" );
 }
 
 
