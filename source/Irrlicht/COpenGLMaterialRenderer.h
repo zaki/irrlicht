@@ -527,19 +527,27 @@ public:
 
 		if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 		{
-			// diffuse map
+			// diffuse map is default modulated
 
+			// detail map on second layer
 			if (Driver->queryFeature(EVDF_MULTITEXTURE))
 			{
-				// detail map
 				Driver->extGlActiveTexture(GL_TEXTURE1_ARB);
-
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_ADD_SIGNED_EXT);
-				glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB_EXT,GL_PREVIOUS_EXT);
-				glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-				Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
+				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
 			}
+		}
+	}
+
+	virtual void OnUnsetMaterial()
+	{
+		if (Driver->queryFeature(EVDF_MULTITEXTURE))
+		{
+			Driver->extGlActiveTexture(GL_TEXTURE1_ARB);
+			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			Driver->extGlActiveTexture(GL_TEXTURE0_ARB);
 		}
 	}
 };
@@ -607,7 +615,6 @@ public:
 				glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_PREVIOUS_EXT);
 				glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_TEXTURE);
-
 			}
 			glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
 			glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);

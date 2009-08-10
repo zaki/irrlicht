@@ -65,9 +65,16 @@ namespace video
 		virtual const core::rect<s32>& getViewPort() const;
 
 		//! draws a vertex primitive list
-		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-		const void* indexList, u32 primitiveCount,
-		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
+		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType);
+
+		//! draws a vertex primitive list in 2d
+		virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
@@ -257,6 +264,11 @@ namespace video
 			E_MATERIAL_TYPE baseMaterial, s32 userData);
 
 		void createMaterialRenderers();
+
+		void draw2D3DVertexPrimitiveList(const void* vertices,
+				u32 vertexCount, const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType, bool is3D);
 
 		inline D3DCOLORVALUE colorToD3D(const SColor& col)
 		{

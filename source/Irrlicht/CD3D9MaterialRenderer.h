@@ -399,7 +399,7 @@ public:
 };
 
 
-//! material renderer for all kinds of linghtmaps
+//! material renderer for all kinds of lightmaps
 class CD3D9MaterialRenderer_LIGHTMAP : public CD3D9MaterialRenderer
 {
 public:

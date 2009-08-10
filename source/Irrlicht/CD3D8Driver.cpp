@@ -850,65 +850,114 @@ void CD3D8Driver::drawVertexPrimitiveList(const void* vertices,
 	if (!vertexCount || !primitiveCount)
 		return;
 
+	draw2D3DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount,
+		vType, pType, iType, true);
+}
+
+
+//! draws a vertex primitive list in 2d
+void CD3D8Driver::draw2DVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType)
+{
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType,iType);
+
+	if (!vertexCount || !primitiveCount)
+		return;
+
+	draw2D3DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount,
+		vType, pType, iType, false);
+}
+
+
+void CD3D8Driver::draw2D3DVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType, bool is3D)
+{
 	setVertexShader(vType);
 
 	const u32 stride = getVertexPitchFromType(vType);
 
-	if (setRenderStates3DMode())
+	D3DFORMAT indexType=D3DFMT_UNKNOWN;
+	switch (iType)
 	{
-		switch (pType)
+		case (EIT_16BIT):
 		{
-			case scene::EPT_POINT_SPRITES:
-			case scene::EPT_POINTS:
-			{
-				f32 tmp=Material.Thickness/getScreenSize().Height;
-				if (pType==scene::EPT_POINT_SPRITES)
-					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&tmp));
-				tmp=1.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
-				tmp=0.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
-				if (pType==scene::EPT_POINT_SPRITES)
-					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
-			}
-			break;
-			case scene::EPT_LINE_STRIP:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_LINE_LOOP:
-			{
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-				u16 tmpIndices[] = {0, primitiveCount};
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-					1, tmpIndices, D3DFMT_INDEX16, vertices, stride);
-			}
-			break;
-			case scene::EPT_LINES:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_TRIANGLE_STRIP:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_TRIANGLE_FAN:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_TRIANGLES:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+			indexType=D3DFMT_INDEX16;
 			break;
 		}
+		case (EIT_32BIT):
+		{
+			indexType=D3DFMT_INDEX32;
+			break;
+		}
+	}
+
+	if (is3D)
+	{
+		if (!setRenderStates3DMode())
+			return;
+	}
+	else
+		setRenderStates2DMode(true, (Material.getTexture(0) != 0), true);
+
+	switch (pType)
+	{
+		case scene::EPT_POINT_SPRITES:
+		case scene::EPT_POINTS:
+		{
+			f32 tmp=Material.Thickness/getScreenSize().Height;
+			if (pType==scene::EPT_POINT_SPRITES)
+				pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&tmp));
+			tmp=1.0f;
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
+			tmp=0.0f;
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
+			if (pType==scene::EPT_POINT_SPRITES)
+				pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+		}
+		break;
+		case scene::EPT_LINE_STRIP:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_LINE_LOOP:
+		{
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+			u16 tmpIndices[] = {0, primitiveCount};
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+				1, tmpIndices, indexType, vertices, stride);
+		}
+		break;
+		case scene::EPT_LINES:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_TRIANGLE_STRIP:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_TRIANGLE_FAN:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_TRIANGLES:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
 	}
 }
 

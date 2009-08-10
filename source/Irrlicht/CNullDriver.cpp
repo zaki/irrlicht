@@ -576,6 +576,15 @@ void CNullDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 }
 
 
+//! draws a vertex primitive list in 2d
+void CNullDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount, const void* indexList, u32 primitiveCount, E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	if ((iType==EIT_16BIT) && (vertexCount>65536))
+		os::Printer::log("Too many vertices for 16bit index type, render artifacts may occur.");
+	PrimitivesDrawn += primitiveCount;
+}
+
+
 //! draws an indexed triangle list
 void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
