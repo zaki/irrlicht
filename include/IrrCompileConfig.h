@@ -166,8 +166,8 @@ you will not be able to use anything provided by the GUI Environment, including 
 
 //! Define _IRR_WCHAR_FILESYSTEM to enable unicode filesystem support for the engine.
 /** This enables the engine to read/write from unicode filesystem. If you
-disable this feature, the engine behave as before ( ansi)
-ones. */
+disable this feature, the engine behave as before (ansi). This is currently only supported
+for Windows based systems. */
 //#define _IRR_WCHAR_FILESYSTEM
 
 //! Define _IRR_COMPILE_WITH_ZLIB_ to enable compiling the engine using zlib.
@@ -452,6 +452,10 @@ precision will be lower but speed higher. currently X86 only
 	#undef _IRR_COMPILE_WITH_PSD_WRITER_
 	#undef _IRR_COMPILE_WITH_TGA_WRITER_
 
+#endif
+
+#ifndef _IRR_WINDOWS_API_
+	#undef _IRR_WCHAR_FILESYSTEM
 #endif
 
 #if defined(_IRR_SOLARIS_PLATFORM_)
