@@ -64,7 +64,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		0,                                         // Shift Bit Ignored
 		0,                                         // No Accumulation Buffer
 		0, 0, 0, 0,	                               // Accumulation Bits Ignored
-		24,                                        // Z-Buffer (Depth Buffer)
+		params.ZBufferBits,                        // Z-Buffer (Depth Buffer)
 		params.Stencilbuffer ? 1 : 0,              // Stencil Buffer Depth
 		0,                                         // No Auxiliary Buffer
 		PFD_MAIN_PLANE,                            // Main Drawing Layer
@@ -1136,46 +1136,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 	if (vertices)
-	{
-		// convert colors to gl color format.
-		vertexCount *= 4; //reused as color component count
-		ColorBuffer.set_used(vertexCount);
-		u32 i;
-
-		switch (vType)
-		{
-			case EVT_STANDARD:
-			{
-				const S3DVertex* p = static_cast<const S3DVertex*>(vertices);
-				for (i=0; i<vertexCount; i+=4)
-				{
-					p->Color.toOpenGLColor(&ColorBuffer[i]);
-					++p;
-				}
-			}
-			break;
-			case EVT_2TCOORDS:
-			{
-				const S3DVertex2TCoords* p = static_cast<const S3DVertex2TCoords*>(vertices);
-				for (i=0; i<vertexCount; i+=4)
-				{
-					p->Color.toOpenGLColor(&ColorBuffer[i]);
-					++p;
-				}
-			}
-			break;
-			case EVT_TANGENTS:
-			{
-				const S3DVertexTangents* p = static_cast<const S3DVertexTangents*>(vertices);
-				for (i=0; i<vertexCount; i+=4)
-				{
-					p->Color.toOpenGLColor(&ColorBuffer[i]);
-					++p;
-				}
-			}
-			break;
-		}
-	}
+		createColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
 	setRenderStates3DMode();
@@ -1280,6 +1241,75 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			break;
 	}
 
+	renderArray(indexList, primitiveCount, pType, iType);
+
+	if (MultiTextureExtension)
+	{
+		if (vType==EVT_TANGENTS)
+		{
+			extGlClientActiveTexture(GL_TEXTURE2_ARB);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
+		{
+			extGlClientActiveTexture(GL_TEXTURE1_ARB);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+	}
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+
+void COpenGLDriver::createColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType)
+{
+	// convert colors to gl color format.
+	vertexCount *= 4; //reused as color component count
+	ColorBuffer.set_used(vertexCount);
+	u32 i;
+
+	switch (vType)
+	{
+		case EVT_STANDARD:
+		{
+			const S3DVertex* p = static_cast<const S3DVertex*>(vertices);
+			for (i=0; i<vertexCount; i+=4)
+			{
+				p->Color.toOpenGLColor(&ColorBuffer[i]);
+				++p;
+			}
+		}
+		break;
+		case EVT_2TCOORDS:
+		{
+			const S3DVertex2TCoords* p = static_cast<const S3DVertex2TCoords*>(vertices);
+			for (i=0; i<vertexCount; i+=4)
+			{
+				p->Color.toOpenGLColor(&ColorBuffer[i]);
+				++p;
+			}
+		}
+		break;
+		case EVT_TANGENTS:
+		{
+			const S3DVertexTangents* p = static_cast<const S3DVertexTangents*>(vertices);
+			for (i=0; i<vertexCount; i+=4)
+			{
+				p->Color.toOpenGLColor(&ColorBuffer[i]);
+				++p;
+			}
+		}
+		break;
+	}
+}
+
+
+void COpenGLDriver::renderArray(const void* indexList, u32 primitiveCount,
+		scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
 	GLenum indexSize=0;
 
 	switch (iType)
@@ -1380,14 +1410,108 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			glDrawElements(GL_POLYGON, primitiveCount, indexSize, indexList);
 			break;
 	}
+}
+
+
+//! draws a vertex primitive list in 2d
+void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
+		const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	if (!primitiveCount || !vertexCount)
+		return;
+
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
+
+	if (vertices)
+		createColorBuffer(vertices, vertexCount, vType);
+
+	// draw everything
+	this->setActiveTexture(0, Material.getTexture(0));
+	setRenderStates2DMode(false, (Material.getTexture(0) != 0), false);
+
+	if (MultiTextureExtension)
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if (vertices)
+		glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+
+	switch (vType)
+	{
+		case EVT_STANDARD:
+			if (vertices)
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+			}
+			else
+			{
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex), buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), buffer_offset(28));
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), 0);
+			}
+
+			if (MultiTextureExtension && CurrentTexture[1])
+			{
+				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				if (vertices)
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+				else
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), buffer_offset(28));
+			}
+			break;
+		case EVT_2TCOORDS:
+			if (vertices)
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
+			}
+			else
+			{
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(28));
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(0));
+			}
+
+			if (MultiTextureExtension)
+			{
+				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				if (vertices)
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
+				else
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(36));
+			}
+			break;
+		case EVT_TANGENTS:
+			if (vertices)
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Pos);
+			}
+			else
+			{
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(28));
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(0));
+			}
+
+			break;
+	}
+
+	renderArray(indexList, primitiveCount, pType, iType);
 
 	if (MultiTextureExtension)
 	{
-		if (vType==EVT_TANGENTS)
-		{
-			extGlClientActiveTexture(GL_TEXTURE2_ARB);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
 		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
 		{
 			extGlClientActiveTexture(GL_TEXTURE1_ARB);
@@ -1397,7 +1521,6 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	}
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
@@ -2431,26 +2554,40 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			}
 			else
 			{
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
-				// rgb always modulates
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+#ifdef GL_ARB_texture_env_combine
+				if (FeatureAvailable[IRR_ARB_texture_env_combine])
+				{
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
+					// rgb always modulates
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+				}
+				else
+#endif
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			}
 		}
 		else
 		{
 			if (alpha)
 			{
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
-				// rgb always modulates
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+#ifdef GL_ARB_texture_env_combine
+				if (FeatureAvailable[IRR_ARB_texture_env_combine])
+				{
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
+					// rgb always modulates
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+				}
+				else
+#endif
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			}
 			else
 			{

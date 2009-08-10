@@ -506,8 +506,34 @@ namespace video
 		\param primCount Amount of Primitives
 		\param vType Vertex type, e.g. video::EVT_STANDARD for S3DVertex.
 		\param pType Primitive type, e.g. scene::EPT_TRIANGLE_FAN for a triangle fan.
-		\param iType Index type, e.g. video::EIT_16BIT for a triangle fan. */
+		\param iType Index type, e.g. video::EIT_16BIT for 16bit indices. */
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primCount,
+				E_VERTEX_TYPE vType=EVT_STANDARD,
+				scene::E_PRIMITIVE_TYPE pType=scene::EPT_TRIANGLES,
+				E_INDEX_TYPE iType=EIT_16BIT) =0;
+
+		//! Draws a vertex primitive list in 2d
+		/** Compared to the general (3d) version of this method, this
+		one sets up a 2d render mode, and uses only x and y of vectors.
+		Note that, depending on the index type, some vertices might be
+		not accessible through the index list. The limit is at 65535
+		vertices for 16bit indices. Please note that currently not all
+		primitives are available for all drivers, and some might be
+		emulated via triangle renders. This function is not available
+		for the sw drivers.
+		\param vertices Pointer to array of vertices.
+		\param vertexCount Amount of vertices in the array.
+		\param indexList Pointer to array of indices. These define the
+		vertices used for each primitive. Depending on the pType,
+		indices are interpreted as single objects (for point like
+		primitives), pairs (for lines), triplets (for triangles), or
+		quads.
+		\param primCount Amount of Primitives
+		\param vType Vertex type, e.g. video::EVT_STANDARD for S3DVertex.
+		\param pType Primitive type, e.g. scene::EPT_TRIANGLE_FAN for a triangle fan.
+		\param iType Index type, e.g. video::EIT_16BIT for 16bit indices. */
+		virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primCount,
 				E_VERTEX_TYPE vType=EVT_STANDARD,
 				scene::E_PRIMITIVE_TYPE pType=scene::EPT_TRIANGLES,
