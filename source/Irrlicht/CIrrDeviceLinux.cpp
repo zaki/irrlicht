@@ -315,10 +315,12 @@ bool CIrrDeviceLinux::createWindow()
 		if (isAvailableGLX && glXQueryVersion(display, &major, &minor))
 		{
 #ifdef GLX_VERSION_1_3
+			typedef GLXFBConfig * ( * PFNGLXCHOOSEFBCONFIGPROC) (Display *dpy, int screen, const int *attrib_list, int *nelements);
+			
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXChooseFBConfig"));
 #else
-			GLXFBConfig * ( * glxChooseFBConfig) (Display *dpy, int screen, const int *attrib_list, int *nelements)=glXChooseFBConfig;
+			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig=glXChooseFBConfig;
 #endif
 			if (major==1 && minor>2 && glxChooseFBConfig)
 			{
@@ -462,6 +464,7 @@ bool CIrrDeviceLinux::createWindow()
 					XFree(configList);
 					UseGLXWindow=true;
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
+					typedef XVisualInfo * ( * PFNGLXGETVISUALFROMFBCONFIGPROC) (Display *dpy, GLXFBConfig config);
 					PFNGLXGETVISUALFROMFBCONFIGPROC glxGetVisualFromFBConfig= (PFNGLXGETVISUALFROMFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXGetVisualFromFBConfig"));
 					if (glxGetVisualFromFBConfig)
 						visual = glxGetVisualFromFBConfig(display,glxFBConfig);
