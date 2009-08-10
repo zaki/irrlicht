@@ -107,10 +107,11 @@ void CFileList::constructNative()
 	}
 	if (!tmpPath)
 		return;
+	// note that Path might be stringw, so use tmpPath for system call
 	Path = tmpPath;
-	delete [] tmpPath;
 	// We use the POSIX compliant methods instead of scandir
-	DIR* dirHandle=opendir(Path.c_str());
+	DIR* dirHandle=opendir(tmpPath);
+	delete [] tmpPath;
 	if (!dirHandle)
 		return;
 
