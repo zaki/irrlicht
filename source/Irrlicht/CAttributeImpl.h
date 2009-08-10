@@ -1828,7 +1828,8 @@ public:
 
 	virtual core::stringc getString()
 	{
-		return Value ? Value->getName() : core::stringc();
+		// since texture names can be stringw we are careful with the types
+		return core::stringc(Value ? Value->getName().c_str() : 0);
 	}
 
 	virtual void setString(const char* text)
