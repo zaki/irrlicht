@@ -620,6 +620,8 @@ namespace scene
 
 
 		//! Updates the absolute position based on the relative and the parents position
+		/** Note: This does not recursively update the parents absolute positions, so if you have a deeper 
+			hierarchy you might want to update the parents first.*/
 		virtual void updateAbsolutePosition()
 		{
 			if (Parent)
