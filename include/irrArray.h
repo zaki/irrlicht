@@ -378,7 +378,8 @@ public:
 
 	//! Performs a binary search for an element, returns -1 if not found.
 	/** The array will be sorted before the binary search if it is not
-	already sorted.
+	already sorted. Caution is advised! Be careful not to call this on
+	unsorted const arrays, or the slower method will be used.
 	\param element Element to search for.
 	\return Position of the searched element if it was found,
 	otherwise -1 is returned. */
@@ -386,6 +387,21 @@ public:
 	{
 		sort();
 		return binary_search(element, 0, used-1);
+	}
+
+
+	//! Performs a binary search for an element if possible, returns -1 if not found.
+	/** This method is for const arrays and so cannot call sort(), if the array is
+	not sorted then linear_search will be used instead. Potentially very slow!
+	\param element Element to search for.
+	\return Position of the searched element if it was found,
+	otherwise -1 is returned. */
+	s32 binary_search(const T& element) const
+	{
+		if (is_sorted)
+			return binary_search(element, 0, used-1);
+		else
+			return linear_search(element);
 	}
 
 
