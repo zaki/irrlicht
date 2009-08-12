@@ -1,4 +1,7 @@
-VERSION = 1.6.0-SVN
+VERSION_MAJOR = 1
+VERSION_MINOR = 6
+VERSION_RELEASE = 0-SVN
+VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
 # Irrlicht Engine 1.6.0-SVN
 # Makefile for Linux
 #
@@ -99,7 +102,7 @@ all linux: staticlib
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/Linux
 sharedlib: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).1 -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
@@ -121,14 +124,14 @@ staticlib_win32: $(STATIC_LIB)
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/MacOSX
 sharedlib_osx: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).1 -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Installs Irrlicht if it was created as shared lib
 install:
 	$(RM) -r $(INSTALL_DIR)/../include/irrlicht
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
-	cp -r ../../include $(INSTALL_DIR)/../include/irrlicht
+	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht/
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
 	cd $(INSTALL_DIR) && ln -s -f libIrrlicht.so.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
@@ -136,7 +139,7 @@ install:
 install_osx:
 	$(RM) -r $(INSTALL_DIR)/../include/irrlicht
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
-	cp -r ../../include $(INSTALL_DIR)/../include/irrlicht
+	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
 	cd $(INSTALL_DIR) && ln -s libIrrlicht.dylib.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
