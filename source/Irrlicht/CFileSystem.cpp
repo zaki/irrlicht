@@ -667,7 +667,7 @@ IFileList* CFileSystem::createFileList()
 				{
 					core::string<c16> fullPath = r->getPath() + "/";
 					fullPath += merge->getFullFileName(j);
-					r->addItem(fullPath, merge->isDirectory(j), merge->getFileSize(j), 0);
+					r->addItem(fullPath, merge->getFileSize(j), merge->isDirectory(j), 0);
 				}
 			}
 		}
