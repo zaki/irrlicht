@@ -883,6 +883,7 @@ class COpenGLExtensionHandler
 	GLboolean extGlIsBuffer (GLuint buffer);
 	void extGlGetBufferParameteriv (GLenum target, GLenum pname, GLint *params);
 	void extGlGetBufferPointerv (GLenum target, GLenum pname, GLvoid **params);
+	void extGlProvokingVertex(GLenum mode);
 
 
 	protected:
@@ -951,6 +952,8 @@ class COpenGLExtensionHandler
 		PFNGLISBUFFERARBPROC pGlIsBufferARB;
 		PFNGLGETBUFFERPARAMETERIVARBPROC pGlGetBufferParameterivARB;
 		PFNGLGETBUFFERPOINTERVARBPROC pGlGetBufferPointervARB;
+		PFNGLPROVOKINGVERTEXPROC pGlProvokingVertexARB;
+		PFNGLPROVOKINGVERTEXEXTPROC pGlProvokingVertexEXT;
 	#endif
 };
 
@@ -1641,6 +1644,23 @@ inline void COpenGLExtensionHandler::extGlGetBufferPointerv (GLenum target, GLen
 	glGetBufferPointerv(target, pname, params);
 #else
 	os::Printer::log("glGetBufferPointerv not supported", ELL_ERROR);
+#endif
+}
+
+
+inline void COpenGLExtensionHandler::extGlProvokingVertex(GLenum mode)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlProvokingVertexARB)
+		pGlProvokingVertexARB(mode);
+	else if (pGlProvokingVertexEXT)
+		pGlProvokingVertexEXT(mode);
+#elif defined(GL_ARB_provoking_vertex)
+	glProvokingVertex(mode);
+#elif defined(GL_EXT_provoking_vertex)
+	glProvokingVertexEXT(mode);
+#else
+	os::Printer::log("glProvokingVertex not supported", ELL_ERROR);
 #endif
 }
 

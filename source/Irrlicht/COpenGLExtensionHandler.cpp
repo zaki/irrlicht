@@ -45,7 +45,8 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlDrawBuffersARB(0), pGlDrawBuffersATI(0),
 	pGlGenBuffersARB(0), pGlBindBufferARB(0), pGlBufferDataARB(0), pGlDeleteBuffersARB(0),
 	pGlBufferSubDataARB(0), pGlGetBufferSubDataARB(0), pGlMapBufferARB(0), pGlUnmapBufferARB(0),
-	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0)
+	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0),
+	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0)
 
 
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
@@ -187,6 +188,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlIsBufferARB= (PFNGLISBUFFERARBPROC) wglGetProcAddress("glIsBufferARB");
 	pGlGetBufferParameterivARB= (PFNGLGETBUFFERPARAMETERIVARBPROC) wglGetProcAddress("glGetBufferParameterivARB");
 	pGlGetBufferPointervARB= (PFNGLGETBUFFERPOINTERVARBPROC) wglGetProcAddress("glGetBufferPointervARB");
+	pGLProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC) wglGetProcAddress("glProvokingVertex");
+	pGLProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC) wglGetProcAddress("glProvokingVertexEXT");
 
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
@@ -399,6 +402,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	pGlGetBufferPointervARB = (PFNGLGETBUFFERPOINTERVARBPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetBufferPointervARB"));
+	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertex"));
+	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertexEXT"));
 
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_

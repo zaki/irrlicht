@@ -569,6 +569,10 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace(GL_CW);
+	// adjust flat coloring scheme to DirectX version
+#if defined(GL_ARB_provoking_vertex) || defined(GL_EXT_provoking_vertex)
+	extGlProvokingVertex(GL_FIRST_VERTEX_CONVENTION_EXT);
+#endif
 
 	UserClipPlane.reallocate(MaxUserClipPlanes);
 	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
