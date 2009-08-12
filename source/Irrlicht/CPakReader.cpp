@@ -29,6 +29,11 @@ bool CArchiveLoaderPAK::isALoadableFileFormat(const core::string<c16>& filename)
 	return core::hasFileExtension ( filename, "pak" );
 }
 
+//! Check to see if the loader can create archives of this type.
+bool CArchiveLoaderPAK::isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const
+{
+	return fileType == EFAT_PAK;
+}
 
 //! Creates an archive from the filename
 /** \param file File handle to check.
@@ -43,7 +48,7 @@ IFileArchive* CArchiveLoaderPAK::createArchive(const core::string<c16>& filename
 		archive = createArchive ( file, ignoreCase, ignorePaths );
 		file->drop ();
 	}
-	
+
 	return archive;
 }
 
@@ -79,7 +84,7 @@ bool CArchiveLoaderPAK::isALoadableFileFormat(io::IReadFile* file) const
 	PAK Reader
 */
 CPakReader::CPakReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
-: Type("pak"), File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths)
+: CFileList(file ? file->getFileName() : "", ignoreCase, ignorePaths), File(file)
 {
 	#ifdef _DEBUG
 	setDebugName("CPakReader");
@@ -92,8 +97,7 @@ CPakReader::CPakReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
 		// scan local headers
 		scanLocalHeader();
 
-		// prepare file index for binary search
-		FileList.sort();
+		sort();
 	}
 }
 
@@ -105,63 +109,20 @@ CPakReader::~CPakReader()
 }
 
 
-//! splits filename into useful filenames and paths
-void CPakReader::extractFilename(SPakFileEntry* entry)
+const IFileList* CPakReader::getFileList() const
 {
-	s32 lorfn = 56; // length of real file name
-
-	if (!lorfn)
-		return;
-
-	if (IgnoreCase)
-		entry->pakFileName.make_lower();
-
-	const c16* p = entry->pakFileName.c_str() + lorfn;
-	
-	// suche ein slash oder den anfang.
-
-	while (*p!='/' && p!=entry->pakFileName.c_str())
-	{
-		--p;
-		--lorfn;
-	}
-
-	bool thereIsAPath = p != entry->pakFileName.c_str();
-
-	if (thereIsAPath)
-	{
-		// there is a path
-		++p;
-		++lorfn;
-	}
-
-	entry->simpleFileName = p;
-	entry->path = "";
-
-	// pfad auch kopieren
-	if (thereIsAPath)
-	{
-		lorfn = (s32)(p - entry->pakFileName.c_str());
-		entry->path.append(entry->pakFileName, lorfn);
-	}
-
-	if (!IgnorePaths)
-		entry->simpleFileName = entry->pakFileName; // thanks to Pr3t3nd3r for this fix
+	return this;
 }
-
-
 
 //! scans for a local header, returns false if there is no more local file header.
 bool CPakReader::scanLocalHeader()
 {
-	c8 tmp[1024];
 
-	SPakFileEntry entry;
-	entry.pos = 0;
+	c8 tmp[1024];
+	core::string<c16> PakFileName;
 
 	memset(&header, 0, sizeof(SPAKFileHeader));
 	File->read(&header, sizeof(SPAKFileHeader));
-
 
 	if (header.tag[0] != 'P' && header.tag[1] != 'A')
 		return false; // local file headers end here.
@@ -173,22 +134,29 @@ bool CPakReader::scanLocalHeader()
 	for(int i = 0; i < count; i++)
 	{
 		// read filename
-		entry.pakFileName.reserve(56+2);
+		PakFileName.reserve(56+2);
 		File->read(tmp, 56);
 		tmp[56] = 0x0;
-		entry.pakFileName = tmp;
+		PakFileName = tmp;
 
 		#ifdef _DEBUG
-		os::Printer::log(entry.pakFileName.c_str());
+		os::Printer::log(PakFileName.c_str());
 		#endif
 
-		extractFilename(&entry);
+		s32 offset;
+		s32 size;
 
-		File->read(&entry.pos, sizeof(u32));
-		File->read(&entry.length, sizeof(u32));
-		FileList.push_back(entry);
+		File->read(&offset, sizeof(u32));
+		File->read(&size, sizeof(u32));
+
+#ifdef __BIG_ENDIAN__
+		os::Byteswap::byteswap(offset);
+		os::Byteswap::byteswap(size);
+#endif
+
+		addItem(PakFileName, size, false, Offsets.size());
+		Offsets.push_back(offset);
 	}
-
 	return true;
 }
 
@@ -196,7 +164,7 @@ bool CPakReader::scanLocalHeader()
 //! opens a file by file name
 IReadFile* CPakReader::createAndOpenFile(const core::string<c16>& filename)
 {
-	s32 index = findFile(filename);
+	s32 index = findFile(filename, false);
 
 	if (index != -1)
 		return createAndOpenFile(index);
@@ -208,56 +176,13 @@ IReadFile* CPakReader::createAndOpenFile(const core::string<c16>& filename)
 //! opens a file by index
 IReadFile* CPakReader::createAndOpenFile(u32 index)
 {
-	if (index < FileList.size())
-		return createLimitReadFile(FileList[index].simpleFileName, File, FileList[index].pos, FileList[index].length);
+	if (index < Files.size())
+	{
+		return createLimitReadFile(Files[index].FullName, File, Offsets[Files[index].ID], Files[index].Size);
+	}
 	else
 		return 0;
 }
-
-
-//! returns count of files in archive
-u32 CPakReader::getFileCount() const
-{
-	return FileList.size();
-}
-
-
-//! returns data of file
-const IFileArchiveEntry* CPakReader::getFileInfo(u32 index)
-{
-	return &FileList[index];
-}
-
-
-//! returns fileindex
-s32 CPakReader::findFile(const core::string<c16>& filename)
-{
-	SPakFileEntry entry;
-	entry.simpleFileName = filename;
-
-	if (IgnoreCase)
-		entry.simpleFileName.make_lower();
-
-	if (IgnorePaths)
-		core::deletePathFromFilename(entry.simpleFileName);
-
-	s32 res = FileList.binary_search(entry);
-
-	#ifdef _DEBUG
-	if (res == -1)
-	{
-		for (u32 i=0; i<FileList.size(); ++i)
-			if (FileList[i].simpleFileName == entry.simpleFileName)
-			{
-				os::Printer::log("File in archive but not found.", entry.simpleFileName.c_str(), ELL_ERROR);
-				break;
-			}
-	}
-	#endif
-
-	return res;
-}
-
 
 } // end namespace io
 } // end namespace irr

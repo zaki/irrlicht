@@ -10,14 +10,14 @@
 #include "irrArray.h"
 #include "irrString.h"
 #include "IFileSystem.h"
-#include "IFileList.h"
+#include "CFileList.h"
 
 namespace irr
 {
 namespace io
 {
 
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -61,7 +61,7 @@ namespace io
 
 
 // Default alignment
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 
@@ -79,23 +79,26 @@ namespace io
 		//! based on the file extension (e.g. ".tar")
 		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
 
-		//! Creates an archive from the filename
-		/** \param file File handle to check.
-		\return Pointer to newly created archive, or 0 upon error. */
-		virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const;
-
 		//! Check if the file might be loaded by this class
 		/** Check might look into the file.
 		\param file File handle to check.
 		\return True if file seems to be loadable. */
 		virtual bool isALoadableFileFormat(io::IReadFile* file) const;
 
+		//! Check to see if the loader can create archives of this type.
+		/** Check based on the archive type.
+		\param fileType The archive type to check.
+		\return True if the archile loader supports this type, false if not */
+		virtual bool isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const;
+
+		//! Creates an archive from the filename
+		/** \param file File handle to check.
+		\return Pointer to newly created archive, or 0 upon error. */
+		virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const;
+
 		//! creates/loads an archive from the file.
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
 		virtual io::IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
-
-		//! Returns the type of archive created by this loader
-		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_TAR; }
 
 	private:
 		io::IFileSystem* FileSystem;
@@ -103,11 +106,12 @@ namespace io
 
 
 
-	class CTarReader : public IFileArchive
+	class CTarReader : public virtual IFileArchive, virtual CFileList
 	{
 	public:
 
 		CTarReader(IReadFile* file, bool ignoreCase, bool ignorePaths);
+
 		virtual ~CTarReader();
 
 		//! opens a file by file name
@@ -116,38 +120,20 @@ namespace io
 		//! opens a file by index
 		virtual IReadFile* createAndOpenFile(u32 index);
 
-		//! returns count of files in archive
-		virtual u32 getFileCount() const;
-
-		//! returns data of file
-		virtual const IFileArchiveEntry* getFileInfo(u32 index);
-
-		//! returns fileindex
-		virtual s32 findFile(const core::string<c16>& filename);
-
-		//! return the id of the file Archive
-		virtual const core::string<c16>& getArchiveName();
+		//! returns the list of files
+		virtual const IFileList* getFileList() const;
 
 		//! get the class Type
 		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_TAR; }
 
 	private:
 
-		struct STARArchiveEntry : public IFileArchiveEntry
-		{
-			u32 size;
-			u32 startPos;
-		};
-
 		u32 populateFileList();
-		
+
 		IReadFile* File;
 
-		bool IgnoreCase;
-		bool IgnorePaths;
-		core::array<STARArchiveEntry> FileList;
-
-		core::string<c16> Base;
+		//! Contains offsets of the files from the start of the archive file
+		core::array<u32> Offsets;
 	};
 
 } // end namespace io

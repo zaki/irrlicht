@@ -46,7 +46,7 @@ public:
 	virtual IWriteFile* createAndWriteFile(const core::string<c16>& filename, bool append=false);
 
 	//! Adds an archive to the file system.
-	virtual bool addFileArchive(const core::string<c16>& filename, bool ignoreCase = true, 
+	virtual bool addFileArchive(const core::string<c16>& filename, bool ignoreCase = true,
 		bool ignorePaths = true, E_FILE_ARCHIVE_TYPE archiveType = EFAT_UNKNOWN);
 
 	//! move the hirarchy of the filesystem. moves sourceIndex relative up or down
@@ -92,7 +92,7 @@ public:
 
 	virtual EFileSystemType setFileListSystem(EFileSystemType listType);
 
-	//! Creates a list of files and directories in the current working directory 
+	//! Creates a list of files and directories in the current working directory
 	//! and returns it.
 	virtual IFileList* createFileList();
 
@@ -122,10 +122,14 @@ public:
 
 private:
 
-	EFileSystemType FileSystemType;			// Currently used FileSystemType
-	core::string<c16> WorkingDirectory [2];		// WorkingDirectory for Native/Virtual
-	core::array<IArchiveLoader*> ArchiveLoader;	// currently attached ArchiveLoaders
-	core::array<IFileArchive*> FileArchives;	// currently attached Archives
+	//! Currently used FileSystemType
+	EFileSystemType FileSystemType;
+	//! WorkingDirectory for Native and Virtual filesystems
+	core::string<c16> WorkingDirectory [2];
+	//! currently attached ArchiveLoaders
+	core::array<IArchiveLoader*> ArchiveLoader;
+	//! currently attached Archives
+	core::array<IFileArchive*> FileArchives;
 };
 
 

@@ -8,6 +8,7 @@
 #include "IReadFile.h"
 #include "IWriteFile.h"
 #include "CZipReader.h"
+#include "CMountPointReader.h"
 #include "CPakReader.h"
 #include "CTarReader.h"
 #include "CFileList.h"
@@ -19,15 +20,23 @@
 #include "CMemoryFile.h"
 #include "CLimitReadFile.h"
 
+
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
 		#include <direct.h> // for _chdir
 	#endif
 	#include <io.h> // for _access
 #else
-	#include <unistd.h>
-	#include <limits.h>
-	#include <stdlib.h>
+	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
+		#include <stdio.h>
+		#include <stdlib.h>
+		#include <string.h>
+		#include <limits.h>
+		#include <sys/types.h>
+		#include <dirent.h>
+		#include <sys/stat.h>
+		#include <unistd.h>
+	#endif
 #endif
 
 namespace irr
@@ -43,6 +52,8 @@ CFileSystem::CFileSystem()
 	#endif
 
 	setFileListSystem(FILESYSTEM_NATIVE);
+	//! reset current working directory
+	getWorkingDirectory();
 
 	ArchiveLoader.push_back(new CArchiveLoaderZIP(this));
 	ArchiveLoader.push_back(new CArchiveLoaderMount(this));
@@ -172,7 +183,7 @@ bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreC
 	// check if the archive was already loaded
 	for (i = 0; i < FileArchives.size(); ++i)
 	{
-		if (filename == FileArchives[i]->getArchiveName())
+		if (filename == FileArchives[i]->getFileList()->getPath())
 			return true;
 	}
 
@@ -219,7 +230,7 @@ bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreC
 
 		for (i = 0; i < ArchiveLoader.size(); ++i)
 		{
-			if (ArchiveLoader[i]->getType() == archiveType)
+			if (ArchiveLoader[i]->isALoadableFileFormat(archiveType))
 			{
 				// attempt to open file
 				if (!file)
@@ -286,7 +297,7 @@ bool CFileSystem::removeFileArchive(const core::string<c16>& filename)
 {
 	for (u32 i=0; i < FileArchives.size(); ++i)
 	{
-		if (filename == FileArchives[i]->getArchiveName())
+		if (filename == FileArchives[i]->getFileList()->getPath())
 			return removeFileArchive(i);
 	}
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
@@ -318,25 +329,53 @@ const core::string<c16>& CFileSystem::getWorkingDirectory()
 	}
 	else
 	{
-		const s32 FILE_SYSTEM_MAX_PATH = 1024;
-		WorkingDirectory[type].reserve(FILE_SYSTEM_MAX_PATH);
-		c16* r = (c16*) WorkingDirectory[type].c_str();
-
 		#if defined(_IRR_WINDOWS_CE_PLATFORM_)
+
 		#elif defined(_IRR_WINDOWS_API_)
 			#if defined(_IRR_WCHAR_FILESYSTEM )
-				_wgetcwd(r, FILE_SYSTEM_MAX_PATH);
+				wchar_t tmp[_MAX_PATH];
+				_wgetcwd(tmp, FILE_SYSTEM_MAX_PATH);
 			#else
-				_getcwd(r, FILE_SYSTEM_MAX_PATH);
+				c8 tmp[_MAX_PATH];
+				_getcwd(tmp, _MAX_PATH);
 			#endif
+			WorkingDirectory[FILESYSTEM_NATIVE] = tmp;
 		#endif
 
 		#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 
+			//! getting the CWD is rather complex as we do not know the size
+			//! so try it until the call was successful
+			//! Note that neither the first nor the second parameter may be 0 according to POSIX
+
 			#if defined(_IRR_WCHAR_FILESYSTEM )
-				wgetcwd(r, FILE_SYSTEM_MAX_PATH);
+				u32 pathSize=256;
+				wchar_t *tmpPath = new wchar_t[pathSize];
+				while ((pathSize < (1<<16)) && !(wgetcwd(tmpPath,pathSize)))
+				{
+					delete [] tmpPath;
+					pathSize *= 2;
+					tmpPath = new char[pathSize];
+				}
+				if (tmpPath)
+				{
+					WorkingDirectory[FILESYSTEM_NATIVE] = tmpPath;
+					delete [] tmpPath;
+				}
 			#else
-				getcwd(r, (size_t)FILE_SYSTEM_MAX_PATH);
+				u32 pathSize=256;
+				char *tmpPath = new char[pathSize];
+				while ((pathSize < (1<<16)) && !(getcwd(tmpPath,pathSize)))
+				{
+					delete [] tmpPath;
+					pathSize *= 2;
+					tmpPath = new char[pathSize];
+				}
+				if (tmpPath)
+				{
+					WorkingDirectory[FILESYSTEM_NATIVE] = tmpPath;
+					delete [] tmpPath;
+				}
 			#endif
 		#endif
 
@@ -402,7 +441,7 @@ core::string<c16> CFileSystem::getAbsolutePath(const core::string<c16>& filename
 	if (!p)
 	{
 		// content in fpath is undefined at this point
-		if ('0'==fpath[0]) // seems like fpath wasn't altered
+		if (!fpath[0]) // seems like fpath wasn't altered
 		{
 			// at least remove a ./ prefix
 			if ('.'==filename[0] && '/'==filename[1])
@@ -517,115 +556,138 @@ EFileSystemType CFileSystem::setFileListSystem(EFileSystemType listType)
 //! Creates a list of files and directories in the current working directory
 IFileList* CFileSystem::createFileList()
 {
-	FileEntry e2;
-	FileEntry e3;
+	CFileList* r = 0;
 
-	if ( FileSystemType == FILESYSTEM_NATIVE )
-		return new CFileList();
-
-	CFileList* r = new CFileList( "virtual" );
-	r->Path = WorkingDirectory [ FILESYSTEM_VIRTUAL ];
-
-	for ( u32 i = 0; i != FileArchives.size(); ++i)
+	//! Construct a native filesystem
+	if (FileSystemType == FILESYSTEM_NATIVE)
 	{
-		CFileList* flist[2] = { 0, 0 };
+		core::string<c16> fullPath;
+		core::string<c16> Path = getWorkingDirectory();
+		// --------------------------------------------
+		//! Windows version
+		#ifdef _IRR_WINDOWS_API_
+		#if !defined ( _WIN32_WCE )
 
-		//! merge relative folder file archives
-		if ( FileArchives[i]->getType() == EFAT_FOLDER)
+		r = new CFileList(Path, true, false);
+
+		struct _finddata_t c_file;
+		long hFile;
+
+		if( (hFile = _findfirst( "*", &c_file )) != -1L )
 		{
-			EFileSystemType currentType = setFileListSystem ( FILESYSTEM_NATIVE );
-
-			core::string<c16> save ( getWorkingDirectory () );
-			core::string<c16> current;
-
-			current = FileArchives[i]->getArchiveName() + WorkingDirectory [ FILESYSTEM_VIRTUAL ];
-			flattenFilename ( current );
-
-			if ( changeWorkingDirectoryTo ( current ) )
+			do
 			{
-				flist[0] = new CFileList( "mountpoint" );
-				flist[0]->constructNative ();
-				changeWorkingDirectoryTo ( save );
+				fullPath = WorkingDirectory[FILESYSTEM_NATIVE] + "/";
+				fullPath += c_file.name;
+
+				r->addItem(fullPath, c_file.size, (_A_SUBDIR & c_file.attrib) != 0, 0);
 			}
+			while( _findnext( hFile, &c_file ) == 0 );
 
-			setFileListSystem ( currentType );
+			_findclose( hFile );
 		}
-		else
-		if ( FileArchives[i]->getType() == EFAT_ZIP )
+		#endif
+
+		//TODO add drives
+		//entry.Name = "E:\\";
+		//entry.isDirectory = true;
+		//Files.push_back(entry);
+		#endif
+
+		// --------------------------------------------
+		//! Linux version
+		#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
+
+
+		r = new CFileList(Path, false, false);
+
+		r->addItem(Path + "/..", 0, true, 0);
+
+		//! We use the POSIX compliant methods instead of scandir
+		DIR* dirHandle=opendir(Path.c_str());
+		if (dirHandle)
 		{
-			flist[0] = new CFileList( "zip" );
-			flist[1] = new CFileList( "zip directory" );
-
-			// add relative navigation
-			e2.isDirectory = 1;
-			e2.Name = ".";
-			e2.FullName = r->Path + e2.Name;
-			e2.Size = 0;
-			flist[1]->Files.push_back ( e2 );
-
-			e2.Name = "..";
-			e2.FullName = r->Path + e2.Name;
-			flist[1]->Files.push_back ( e2 );
-
-			for ( u32 g = 0; g < FileArchives[i]->getFileCount(); ++g)
+			struct dirent *dirEntry;
+			while ((dirEntry=readdir(dirHandle)))
 			{
-				const SZipFileEntry *e = (SZipFileEntry*) FileArchives[i]->getFileInfo(g);
-				s32 test = isInSameDirectory ( r->Path, e->zipFileName );
-				if ( test < 0 || test > 1 )
-					continue;
+				u32 size = 0;
+				bool isDirectory = false;
+				fullPath = Path + "/";
+				fullPath += dirEntry->d_name;
 
-				e2.Size = e->header.DataDescriptor.UncompressedSize;
-				e2.isDirectory = e2.Size == 0;
-
-				// check missing directories
-				if ( !e2.isDirectory && test == 1 )
+				if((strcmp(dirEntry->d_name, ".")==0) ||
+				   (strcmp(dirEntry->d_name, "..")==0))
 				{
-					e3.Size = 0;
-					e3.isDirectory = 1;
-					e3.FullName = e->path;
-					e3.Name = e->path.subString ( r->Path.size(), e->path.size() - r->Path.size() - 1 );
-
-					if ( flist[1]->Files.binary_search ( e3 ) < 0 )
-						flist[1]->Files.push_back ( e3 );
+					continue;
 				}
+				struct stat buf;
+				if (stat(dirEntry->d_name, &buf)==0)
+				{
+					size = buf.st_size;
+					isDirectory = S_ISDIR(buf.st_mode);
+				}
+				#if !defined(_IRR_SOLARIS_PLATFORM_) && !defined(__CYGWIN__)
+				// only available on some systems
 				else
 				{
-					e2.FullName = e->zipFileName;
-					e2.Name = e->simpleFileName;
+					isDirectory = dirEntry->d_type == DT_DIR;
+				}
+				#endif
 
-					if ( !e2.isDirectory )
-						core::deletePathFromFilename ( e2.Name );
-					flist[0]->Files.push_back ( e2 );
+				r->addItem(fullPath, size, isDirectory, 0);
+			}
+			closedir(dirHandle);
+		}
+		#endif
+	}
+	else
+	{
+		//! create file list for the virtual filesystem
+		r = new CFileList(WorkingDirectory[FILESYSTEM_VIRTUAL], false, false);
+
+		//! add relative navigation
+		SFileListEntry e2;
+		SFileListEntry e3;
+
+		//! PWD
+		r->addItem(r->getPath() + "/.", 0, true, 0);
+
+		//! add parent dir if we can go up
+		if (WorkingDirectory[FILESYSTEM_VIRTUAL].size())
+			r->addItem(r->getPath() + "/..", 0, true, 0);
+
+		//! merge archives
+		for (u32 i=0; i < FileArchives.size(); ++i)
+		{
+			const IFileList *merge = FileArchives[i]->getFileList();
+
+			for (u32 j=0; j < merge->getFileCount(); ++j)
+			{
+				if (core::isInSameDirectory(WorkingDirectory[FILESYSTEM_VIRTUAL], merge->getFullFileName(j)))
+				{
+					core::string<c16> fullPath = r->getPath() + "/";
+					fullPath += merge->getFullFileName(j);
+					r->addItem(fullPath, merge->isDirectory(j), merge->getFileSize(j), 0);
 				}
 			}
 		}
 
-		// add file to virtual directory
-		for ( u32 g = 0; g < 2; ++g )
-		{
-			if ( !flist[g] )
-				continue;
-			for ( u32 j = 0; j != flist[g]->Files.size(); ++j )
-				r->Files.push_back ( flist[g]->Files[j] );
-
-			flist[g]->drop();
-		}
 	}
 
-	r->Files.sort();
+	if (r)
+		r->sort();
 	return r;
 }
-
 
 //! determines if a file exists and would be able to be opened.
 bool CFileSystem::existFile(const core::string<c16>& filename) const
 {
 	for (u32 i=0; i < FileArchives.size(); ++i)
-		if ( FileArchives[i]->findFile(filename)!=-1)
+		if (FileArchives[i]->getFileList()->findFile(filename)!=-1)
 			return true;
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-#if defined ( _IRR_WCHAR_FILESYSTEM )
+#if defined(_IRR_WCHAR_FILESYSTEM)
 	return (_waccess(filename.c_str(), 0) != -1);
 #elif defined(_MSC_VER)
 	return (_access(filename.c_str(), 0) != -1);
