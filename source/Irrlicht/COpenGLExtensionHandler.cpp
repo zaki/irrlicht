@@ -188,8 +188,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlIsBufferARB= (PFNGLISBUFFERARBPROC) wglGetProcAddress("glIsBufferARB");
 	pGlGetBufferParameterivARB= (PFNGLGETBUFFERPARAMETERIVARBPROC) wglGetProcAddress("glGetBufferParameterivARB");
 	pGlGetBufferPointervARB= (PFNGLGETBUFFERPOINTERVARBPROC) wglGetProcAddress("glGetBufferPointervARB");
-	pGLProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC) wglGetProcAddress("glProvokingVertex");
-	pGLProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC) wglGetProcAddress("glProvokingVertexEXT");
+	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC) wglGetProcAddress("glProvokingVertex");
+	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC) wglGetProcAddress("glProvokingVertexEXT");
 
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
