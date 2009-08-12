@@ -17,8 +17,8 @@ VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
 # make sharedlib
 # make install
 #
-# Please note that Irrlicht as shared lib is just experimental and
-# probably not tested.
+# For cross-compilation for Win32 under Linux, just use the win32 targets. You have to set
+# at least CXX, CC, and AR to the proper binaries.
 #
 
 #List of object files, separated based on engine architecture
