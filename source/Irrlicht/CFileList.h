@@ -15,66 +15,110 @@ namespace irr
 namespace io
 {
 
-/*!
-	FileSystem, which manages where files are, so that modules which
-	use the the io do not need to know where every file is located.
-	local FileEntry
-*/
-struct FileEntry
+//! An entry in a list of files, can be a folder or a file.
+struct SFileListEntry
 {
+	//! The name of the file
+	/** If this is a file or folder in the virtual filesystem and the archive
+	was created with the ignoreCase flag then the file name will be lower case. */
 	core::string<c16> Name;
+
+	//! The name of the file including the path
+	/** If this is a file or folder in the virtual filesystem and the archive was
+	created with the ignoreDirs flag then it will be the same as Name. */
 	core::string<c16> FullName;
-	long Size;
-	bool isDirectory;
 
-	bool operator <(const struct FileEntry& other) const
+	//! The size of the file in bytes
+	u32 Size;
+
+	//! The ID of the file in an archive
+	/** This is used to link the FileList entry to extra info held about this
+	file in an archive, which can hold things like data offset and CRC. */
+	u32 ID;
+
+	//! True if this is a folder, false if not.
+	bool IsDirectory;
+
+	//! The == operator is provided so that CFileList can slowly search the list!
+	bool operator ==(const struct SFileListEntry& other) const
 	{
-		if ( isDirectory ^ other.isDirectory )
-			return isDirectory;
+		if (IsDirectory != other.IsDirectory)
+			return false;
 
-		return Name.lower_ignore_case ( other.Name );
+		return FullName.equals_ignore_case(other.FullName);
+	}
+
+	//! The < operator is provided so that CFileList can sort and quickly search the list.
+	bool operator <(const struct SFileListEntry& other) const
+	{
+		if (IsDirectory != other.IsDirectory)
+			return IsDirectory;
+
+		return FullName.lower_ignore_case(other.FullName);
 	}
 };
 
 
-/*!
-	FileSystem, which manages where files are, so that modules which
-	use the the io do not need to know where every file is located.
-*/
+//! Implementation of a file list
 class CFileList : public IFileList
 {
 public:
 
-	//! constructor
-	CFileList( const c8 *param = 0);
+	// CFileList methods
 
+	//! Constructor
+	/** \param path The path of this file archive */
+	CFileList(const core::string<c16>& path, bool ignoreCase, bool ignorePaths);
+
+	//! Destructor
 	virtual ~CFileList();
 
+	//! Add as a file or folder to the list
+	/** \param fullPath The file name including path, up to the root of the file list.
+	\param isDirectory True if this is a directory rather than a file.
+	\param size The size of the file in bytes.
+	\param id The ID of the file in the archive which owns it */
+	virtual u32 addItem(const core::string<c16>& fullPath, u32 size, bool isDirectory, u32 id=0);
+
+	//! Sorts the file list
+	void sort();
+
+	// IFileList methods
+
 	//! Returns the amount of files in the filelist.
-	/** \return Amount of files and directories in the file list. */
 	virtual u32 getFileCount() const;
 
 	//! Gets the name of a file in the list, based on an index.
-	/** \param index is the zero based index of the file which name should
-	be returned. The index has to be smaller than the amount getFileCount() returns.
-	\return The file name of the file. Returns 0, if an error occured. */
 	virtual const core::string<c16>& getFileName(u32 index) const;
 
 	//! Gets the full name of a file in the list, path included, based on an index.
-	virtual const core::string<c16>& getFullFileName(u32 index);
+	virtual const core::string<c16>& getFullFileName(u32 index) const;
 
-	//! Returns of the file is a directory
-	/** \param index is the zero based index of the file which name should
-	be returned. The index has to be smaller than the amount getFileCount() returns.
-	\return True if the file is a directory, else false. */
+	//! Returns true if the file is a directory
 	virtual bool isDirectory(u32 index) const;
 
-//protected:
+	//! Returns the size of a file
+	virtual u32 getFileSize(u32 index) const;
 
+	//! Searches for a file or folder within the list, returns the index
+	virtual s32 findFile(const core::string<c16>& filename, bool isFolder) const;
+
+	//! Returns the base path of the file list
+	virtual const core::string<c16>& getPath() const;
+
+protected:
+
+	//! Ignore paths when adding or searching for files
+	bool IgnorePaths;
+
+	//! Ignore case when adding or searching for files
+	bool IgnoreCase;
+
+	//! Path to the file list
 	core::string<c16> Path;
-	core::array< FileEntry > Files;
 
-	void constructNative ();
+	//! List of files
+	core::array<SFileListEntry> Files;
 };
 
 

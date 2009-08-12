@@ -6,39 +6,22 @@
 #include "IrrCompileConfig.h"
 #include "irrArray.h"
 #include "coreutil.h"
-#include <stdlib.h>
-
-#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
-#include <stdio.h>
-#include <string.h>
-
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
-
-#ifdef _IRR_WINDOWS_API_
-	#if !defined ( _WIN32_WCE )
-		#include <io.h>
-		#include <direct.h>
-	#endif
-#endif
 
 namespace irr
 {
 namespace io
 {
 
-CFileList::CFileList(const c8 * param)
+static const core::string<c16> emptyFileListEntry;
+
+CFileList::CFileList(const core::string<c16>& path, bool ignoreCase, bool ignorePaths)
+ : IgnorePaths(ignorePaths), IgnoreCase(ignoreCase), Path(path)
 {
 	#ifdef _DEBUG
 	setDebugName("CFileList");
 	#endif
 
-
-	if ( 0 == param )
-		constructNative ();
+	Path.replace('\\', '/');
 }
 
 CFileList::~CFileList()
@@ -46,113 +29,15 @@ CFileList::~CFileList()
 	Files.clear();
 }
 
-
-void CFileList::constructNative()
-{
-	// --------------------------------------------
-	// Windows version
-	#ifdef _IRR_WINDOWS_API_
-	#if !defined ( _WIN32_WCE )
-	char tmp[_MAX_PATH];
-	_getcwd(tmp, _MAX_PATH);
-	Path = tmp;
-
-	struct _finddata_t c_file;
-	long hFile;
-	FileEntry entry;
-
-	if( (hFile = _findfirst( "*", &c_file )) != -1L )
-	{
-		do
-		{
-			entry.Name = c_file.name;
-			entry.Size = c_file.size;
-			entry.isDirectory = (_A_SUBDIR & c_file.attrib) != 0;
-			Files.push_back(entry);
-		}
-		while( _findnext( hFile, &c_file ) == 0 );
-
-		_findclose( hFile );
-	}
-	#endif
-
-	//TODO add drives
-	//entry.Name = "E:\\";
-	//entry.isDirectory = true;
-	//Files.push_back(entry);
-	#endif
-
-	// --------------------------------------------
-	// Linux version
-	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
-
-	FileEntry entry;
-
-	// Add default parent - even when at /, this is available
-	entry.Name = "..";
-	entry.Size = 0;
-	entry.isDirectory = true;
-	Files.push_back(entry);
-
-	// getting the CWD is rather complex as we do not know the size
-	// so try it until the call was successful
-	// Note that neither the first nor the second parameter may be 0 according to POSIX
-	u32 pathSize=256;
-	char *tmpPath = new char[pathSize];
-	while ((pathSize < (1<<16)) && !(getcwd(tmpPath,pathSize)))
-	{
-		delete [] tmpPath;
-		pathSize *= 2;
-		tmpPath = new char[pathSize];
-	}
-	if (!tmpPath)
-		return;
-	// note that Path might be stringw, so use tmpPath for system call
-	Path = tmpPath;
-	// We use the POSIX compliant methods instead of scandir
-	DIR* dirHandle=opendir(tmpPath);
-	delete [] tmpPath;
-	if (!dirHandle)
-		return;
-
-	struct dirent *dirEntry;
-	while ((dirEntry=readdir(dirHandle)))
-	{
-		if((strcmp(dirEntry->d_name, ".")==0) ||
-		   (strcmp(dirEntry->d_name, "..")==0))
-			continue;
-		entry.Name = dirEntry->d_name;
-		entry.Size = 0;
-		entry.isDirectory = false;
-		struct stat buf;
-		if (stat(dirEntry->d_name, &buf)==0)
-		{
-			entry.Size = buf.st_size;
-			entry.isDirectory = S_ISDIR(buf.st_mode);
-		}
-		#if !defined(_IRR_SOLARIS_PLATFORM_) && !defined(__CYGWIN__)
-		// only available on some systems
-		else
-		{
-			entry.isDirectory = dirEntry->d_type == DT_DIR;
-		}
-		#endif
-		Files.push_back(entry);
-	}
-	closedir(dirHandle);
-	#endif
-	// sort the list on all platforms
-	Files.sort();
-
-}
-
 u32 CFileList::getFileCount() const
 {
 	return Files.size();
 }
 
-
-static const core::string<c16> emptyFileListEntry;
+void CFileList::sort()
+{
+	Files.sort();
+}
 
 const core::string<c16>& CFileList::getFileName(u32 index) const
 {
@@ -164,34 +49,95 @@ const core::string<c16>& CFileList::getFileName(u32 index) const
 
 
 //! Gets the full name of a file in the list, path included, based on an index.
-const core::string<c16>& CFileList::getFullFileName(u32 index)
+const core::string<c16>& CFileList::getFullFileName(u32 index) const
 {
 	if (index >= Files.size())
 		return emptyFileListEntry;
 
-	if (Files[index].FullName.size() < Files[index].Name.size())
-	{
-		// create full name
-		Files[index].FullName = Path;
-		c16 last = lastChar ( Files[index].FullName );
-		if ( last != '/' && last != '\\' )
-			Files[index].FullName.append('/');
-
-		Files[index].FullName.append(Files[index].Name);
-	}
-
 	return Files[index].FullName;
 }
 
+//! adds a file or folder
+u32 CFileList::addItem(const core::string<c16>& fullPath, u32 size, bool isDirectory, u32 id)
+{
+	SFileListEntry entry;
+	entry.Size = size;
+	entry.ID   = id;
+	entry.Name = fullPath;
+	entry.Name.replace('\\', '/');
+	entry.IsDirectory = isDirectory;
+
+	// remove trailing slash
+	if (core::lastChar(entry.Name) == '/')
+	{
+		entry.IsDirectory = true;
+		entry.Name[entry.Name.size()-1] = 0;
+		entry.Name.validate();
+	}
+
+	if (IgnoreCase)
+		entry.Name.make_lower();
+
+	entry.FullName = entry.Name;
+
+	core::deletePathFromFilename(entry.Name);
+
+	if (IgnorePaths)
+		entry.FullName = entry.Name;
+
+	Files.push_back(entry);
+
+	return Files.size() - 1;
+}
 
 bool CFileList::isDirectory(u32 index) const
 {
 	bool ret = false;
 	if (index < Files.size())
-		ret = Files[index].isDirectory;
+		ret = Files[index].IsDirectory;
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 	return ret;
+}
+
+//! Returns the size of a file
+u32 CFileList::getFileSize(u32 index) const
+{
+	return index < Files.size() ? Files[index].IsDirectory : 0;
+}
+
+
+//! Searches for a file or folder within the list, returns the index
+s32 CFileList::findFile(const core::string<c16>& filename, bool isDirectory = false) const
+{
+	SFileListEntry entry;
+	entry.FullName = filename;
+	entry.IsDirectory = isDirectory;
+
+	// swap
+	entry.FullName.replace('\\', '/');
+
+	// remove trailing slash
+	if (core::lastChar(entry.Name) == '/')
+	{
+		entry.IsDirectory = true;
+		entry.Name[ entry.Name.size()-1] = 0;
+		entry.Name.validate();
+	}
+
+	if (IgnoreCase)
+		entry.FullName.make_lower();
+
+	if (IgnorePaths)
+		core::deletePathFromFilename(entry.FullName);
+
+	return Files.binary_search(entry);
+}
+
+//! Returns the base path of the file list
+const core::string<c16>& CFileList::getPath() const
+{
+	return Path;
 }
 
 } // end namespace irr

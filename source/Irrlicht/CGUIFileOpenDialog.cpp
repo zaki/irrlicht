@@ -325,10 +325,13 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-	for (u32 i=0; i<FileList->getFileCount(); ++i)
+	if (FileList)
 	{
-		s = FileList->getFileName(i);
-		FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
+		for (u32 i=0; i < FileList->getFileCount(); ++i)
+		{
+			s = FileList->getFileName(i);
+			FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
+		}
 	}
 
 	if (FileNameText)

@@ -32,6 +32,11 @@ bool CArchiveLoaderTAR::isALoadableFileFormat(const core::string<c16>& filename)
 	return core::hasFileExtension(filename, "tar");
 }
 
+//! Check to see if the loader can create archives of this type.
+bool CArchiveLoaderTAR::isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const
+{
+	return fileType == EFAT_TAR;
+}
 
 //! Creates an archive from the filename
 /** \param file File handle to check.
@@ -117,7 +122,7 @@ bool CArchiveLoaderTAR::isALoadableFileFormat(io::IReadFile* file) const
 	TAR Archive
 */
 CTarReader::CTarReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
-: File(file), IgnoreCase(ignoreCase), IgnorePaths(ignorePaths)
+ : CFileList(file ? file->getFileName() : "", ignoreCase, ignorePaths), File(file)
 {
 	#ifdef _DEBUG
 	setDebugName("CTarReader");
@@ -127,11 +132,10 @@ CTarReader::CTarReader(IReadFile* file, bool ignoreCase, bool ignorePaths)
 	{
 		File->grab();
 
-		Base = File->getFileName();
-		Base.replace('\\', '/');
-
 		// fill the file list
 		populateFileList();
+
+		sort();
 	}
 }
 
@@ -140,14 +144,18 @@ CTarReader::~CTarReader()
 {
 	if (File)
 		File->drop();
+}
 
+const IFileList* CTarReader::getFileList() const
+{
+	return this;
 }
 
 
 u32 CTarReader::populateFileList()
 {
 	STarHeader fHead;
-	FileList.clear();
+	Files.clear();
 
 	u32 pos = 0;
 	while ( s32(pos + sizeof(STarHeader)) < File->getSize())
@@ -161,9 +169,7 @@ u32 CTarReader::populateFileList()
 		// only add standard files for now
 		if (fHead.Link == ETLI_REGULAR_FILE || ETLI_REGULAR_FILE_OLD)
 		{
-			STARArchiveEntry entry;
-
-			core::string<c16> fullPath = L"";
+			core::string<c16> fullPath = "";
 			fullPath.reserve(255);
 
 			// USTAR archives have a filename prefix
@@ -171,7 +177,7 @@ u32 CTarReader::populateFileList()
 			if (!strcmp(fHead.Magic, "ustar"))
 			{
 				c8* np = fHead.FileNamePrefix;
-				while(*np && (np - fHead.FileNamePrefix) < 155) 
+				while(*np && (np - fHead.FileNamePrefix) < 155)
 					fullPath.append(*np);
 				np++;
 			}
@@ -184,26 +190,6 @@ u32 CTarReader::populateFileList()
 				np++;
 			}
 
-			fullPath.replace('\\', '/');
-			const s32 lastSlash = fullPath.findLast('/');
-
-			if (IgnoreCase)
-				fullPath.make_lower();
-
-			if (lastSlash == -1)
-			{
-				entry.path = "";
-				entry.simpleFileName = fullPath;
-			}
-			else
-			{
-				entry.path = fullPath.subString(0, lastSlash);
-				if (IgnorePaths)
-					entry.simpleFileName = &fullPath[lastSlash+1];
-				else
-					entry.simpleFileName = fullPath;
-			}
-
 			// get size
 			core::stringc sSize = "";
 			sSize.reserve(12);
@@ -213,38 +199,38 @@ u32 CTarReader::populateFileList()
 				sSize.append(*np);
 				np++;
 			}
-			
-			entry.size=strtoul(sSize.c_str(), NULL, 8);
-			if (errno==ERANGE)
+
+			u32 size = strtoul(sSize.c_str(), NULL, 8);
+			if (errno == ERANGE)
 				os::Printer::log("File too large", fullPath, ELL_WARNING);
 
 			// save start position
-			entry.startPos = pos + 512;
+			u32 offset = pos + 512;
 
 			// move to next file header block
-			pos = entry.startPos + (entry.size / 512) * 512 + 
-				((entry.size % 512) ? 512 : 0);
+			pos = offset + (size / 512) * 512 + ((size % 512) ? 512 : 0);
 
 			// add file to list
-			FileList.push_back(entry);
+			addItem(fullPath, size, false, Offsets.size());
+			Offsets.push_back(offset);
 		}
 		else
 		{
+			// todo: ETLI_DIRECTORY, ETLI_LINK_TO_ARCHIVED_FILE
+
 			// move to next block
 			pos += 512;
 		}
 
 	}
 
-	FileList.sort();
-
-	return FileList.size();
+	return Files.size();
 }
 
 //! opens a file by file name
 IReadFile* CTarReader::createAndOpenFile(const core::string<c16>& filename)
 {
-	const s32 index = findFile(filename);
+	const s32 index = findFile(filename, false);
 
 	if (index != -1)
 		return createAndOpenFile(index);
@@ -252,51 +238,13 @@ IReadFile* CTarReader::createAndOpenFile(const core::string<c16>& filename)
 	return 0;
 }
 
-
 //! opens a file by index
 IReadFile* CTarReader::createAndOpenFile(u32 index)
 {
-	if (index < FileList.size())
-		return createLimitReadFile(FileList[index].simpleFileName, File, FileList[index].startPos, FileList[index].size);
+	if (index < Files.size())
+		return createLimitReadFile(Files[index].FullName, File, Offsets[Files[index].ID], Files[index].Size);
 	else
 		return 0;
-}
-
-
-//! returns count of files in archive
-u32 CTarReader::getFileCount() const
-{
-	return FileList.size();
-}
-
-
-//! returns data of file
-const IFileArchiveEntry* CTarReader::getFileInfo(u32 index)
-{
-	return &FileList[index];
-}
-
-
-//! return the id of the file Archive
-const core::string<c16>& CTarReader::getArchiveName()
-{
-	return Base;
-}
-
-
-//! returns fileindex
-s32 CTarReader::findFile(const core::string<c16>& simpleFilename)
-{
-	STARArchiveEntry entry;
-	entry.simpleFileName = simpleFilename;
-
-	if (IgnoreCase)
-		entry.simpleFileName.make_lower();
-
-	if (IgnorePaths)
-		core::deletePathFromFilename(entry.simpleFileName);
-
-	return FileList.binary_search(entry);
 }
 
 } // end namespace io
