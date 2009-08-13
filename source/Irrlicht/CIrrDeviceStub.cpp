@@ -295,7 +295,7 @@ void CIrrDeviceStub::calculateGammaRamp ( u16 *ramp, f32 gamma, f32 relativebrig
 
 	for ( i = 0; i < 256; ++i )
 	{
-		value = (s32)(powf( rcontrast * i, gamma)*65535.f + 0.5f );
+		value = (s32)(pow( rcontrast * i, gamma)*65535.f + 0.5f );
 		ramp[i] = (u16) core::s32_clamp ( value + rbright, 0, 65535 );
 	}
 

@@ -347,8 +347,6 @@ void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCo
 			break;
 		}
 	}
-
-
 }
 
 
@@ -959,3 +957,4 @@ IVideoDriver* createSoftwareDriver(const core::dimension2d<u32>& windowSize, boo
 
 } // end namespace video
 } // end namespace irr
+

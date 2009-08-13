@@ -416,17 +416,34 @@ void CIrrDeviceConsole::closeDevice()
 	IsDeviceRunning = false;
 }
 
+
 //! Sets if the window should be resizable in windowed mode.
 void CIrrDeviceConsole::setResizable(bool resize)
 {
 	// do nothing
 }
 
+
 //! Minimize the window.
 void CIrrDeviceConsole::minimizeWindow()
 {
 	// do nothing
 }
+
+
+//! Maximize window
+void CIrrDeviceConsole::maximizeWindow()
+{
+	// do nothing
+}
+
+
+//! Restore original window size
+void CIrrDeviceConsole::restoreWindow()
+{
+	// do nothing
+}
+
 
 void CIrrDeviceConsole::setTextCursorPos(s16 x, s16 y)
 {

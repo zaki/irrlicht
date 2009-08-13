@@ -1290,11 +1290,29 @@ video::IVideoModeList* CIrrDeviceLinux::getVideoModeList()
 }
 
 
-//! Return pointer to a list with all video modes supported by the gfx adapter.
+//! Minimize window
 void CIrrDeviceLinux::minimizeWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
 	XIconifyWindow(display, window, screennr);
+#endif
+}
+
+
+//! Maximize window
+void CIrrDeviceLinux::maximizeWindow()
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+	XMapWindow(display, window);
+#endif
+}
+
+
+//! Restore original window size
+void CIrrDeviceLinux::restoreWindow()
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+	XMapWindow(display, window);
 #endif
 }
 
