@@ -2755,6 +2755,14 @@
 				>
 			</File>
 			<File
+				RelativePath="CMountPointReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CMountPointReader.h"
+				>
+			</File>
+			<File
 				RelativePath="CReadFile.cpp"
 				>
 			</File>
