@@ -7,6 +7,8 @@
 #include "irrArray.h"
 #include "coreutil.h"
 
+#include "os.h"
+
 namespace irr
 {
 namespace io
@@ -84,6 +86,8 @@ u32 CFileList::addItem(const core::string<c16>& fullPath, u32 size, bool isDirec
 
 	if (IgnorePaths)
 		entry.FullName = entry.Name;
+
+	//os::Printer::log(Path.c_str(), entry.FullName);
 
 	Files.push_back(entry);
 
