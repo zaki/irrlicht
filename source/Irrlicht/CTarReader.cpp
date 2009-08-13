@@ -3,13 +3,14 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CTarReader.h"
+
+#ifdef __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
+
 #include "CFileList.h"
 #include "CLimitReadFile.h"
 #include "os.h"
 #include "coreutil.h"
 #include "errno.h"
-
-#include "IrrCompileConfig.h"
 
 namespace irr
 {
@@ -250,3 +251,4 @@ IReadFile* CTarReader::createAndOpenFile(u32 index)
 } // end namespace io
 } // end namespace irr
 
+#endif // __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_

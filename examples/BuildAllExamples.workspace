@@ -22,6 +22,7 @@
 		<Project filename="20.ManagedLights/ManagedLights.cbp" />
 		<Project filename="21.Quake3Explorer/Quake3Explorer.cbp" />
 		<Project filename="Demo/demo.cbp" />
+		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" />
 		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" active="1" />
 	</Workspace>
 </CodeBlocks_workspace_file>

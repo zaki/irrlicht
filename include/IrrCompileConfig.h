@@ -349,6 +349,15 @@ B3D, MS3D or X meshes */
 //! Define _IRR_COMPILE_WITH_TGA_WRITER_ if you want to write .tga files
 #define _IRR_COMPILE_WITH_TGA_WRITER_
 
+//! Define __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_ if you want to open ZIP and GZIP archives
+#define __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
+//! Define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_ if you want to mount folders as archives
+#define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
+//! Define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_ if you want to open ID software PAK archives
+#define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+//! Define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_ if you want to open TAR archives
+#define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
+
 //! Set FPU settings
 /** Irrlicht should use approximate float and integer fpu techniques
 precision will be lower but speed higher. currently X86 only

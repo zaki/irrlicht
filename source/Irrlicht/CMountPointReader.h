@@ -5,6 +5,10 @@
 #ifndef __C_MOUNT_READER_H_INCLUDED__
 #define __C_MOUNT_READER_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
+
 #include "IFileSystem.h"
 #include "CFileList.h"
 
@@ -87,4 +91,5 @@ namespace io
 } // io
 } // irr
 
-#endif
+#endif // __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
+#endif // __C_MOUNT_READER_H_INCLUDED__
