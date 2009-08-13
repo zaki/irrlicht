@@ -1,6 +1,11 @@
 /* minwrpngconf.h: headers to make a minimal png-write-only library
- * For conditions of distribution and use, see copyright notice in png.h
- * Copyright (c) 2007 Glenn Randers-Pehrson
+ *
+ * Copyright (c) 2007, 2009 Glenn Randers-Pehrson
+ *
+ * This code is released under the zlib/libpng license.
+ * For conditions of distribution and use, see the disclaimer
+ * and license in png.h
+ *
  * Derived from pngcrush.h, Copyright 1998-2007, Glenn Randers-Pehrson
  */
 
@@ -26,6 +31,7 @@
 #define PNG_NO_WRITE_PACK
 #define PNG_NO_WRITE_PACKSWAP
 #define PNG_NO_WRITE_FILLER
+#define PNG_NO_WRITE_SWAP
 #define PNG_NO_WRITE_SWAP_ALPHA
 #define PNG_NO_WRITE_INVERT_ALPHA
 #define PNG_NO_WRITE_RGB_TO_GRAY
@@ -33,7 +39,6 @@
 #define PNG_NO_WRITE_bKGD
 #define PNG_NO_WRITE_cHRM
 #define PNG_NO_WRITE_gAMA
-#define PNG_NO_WRITE_sRGB
 #define PNG_NO_WRITE_hIST
 #define PNG_NO_WRITE_iCCP
 #define PNG_NO_WRITE_oFFs
@@ -42,6 +47,7 @@
 #define PNG_NO_WRITE_sBIT
 #define PNG_NO_WRITE_sCAL
 #define PNG_NO_WRITE_sPLT
+#define PNG_NO_WRITE_sRGB
 #define PNG_NO_WRITE_TEXT
 #define PNG_NO_WRITE_tIME
 #define PNG_NO_WRITE_UNKNOWN_CHUNKS
@@ -51,6 +57,7 @@
 #define PNG_NO_WRITE_FILTER
 #define PNG_NO_WRITE_WEIGHTED_FILTER
 #define PNG_NO_WRITE_INTERLACING_SUPPORTED
+#define PNG_NO_WRITE_FLUSH
 
 #define PNG_NO_INFO_IMAGE
 #define PNG_NO_USER_MEM
