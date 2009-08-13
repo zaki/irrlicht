@@ -5,10 +5,7 @@
 #ifndef __FAST_A_TO_F_H_INCLUDED__
 #define __FAST_A_TO_F_H_INCLUDED__
 
-#include <stdlib.h>
 #include "irrMath.h"
-#include <float.h> // For FLT_MAX
-#include <limits.h> // For INT_MAX / UINT_MAX
 
 namespace irr
 {

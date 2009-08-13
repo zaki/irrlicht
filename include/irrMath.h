@@ -8,7 +8,9 @@
 #include "IrrCompileConfig.h"
 #include "irrTypes.h"
 #include <math.h>
+#include <float.h>
 #include <stdlib.h> // for abs() etc.
+#include <limits.h> // For INT_MAX / UINT_MAX
 
 #if defined(_IRR_SOLARIS_PLATFORM_) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) || defined (_WIN32_WCE)
 	#define sqrtf(X) (f32)sqrt((f64)(X))
