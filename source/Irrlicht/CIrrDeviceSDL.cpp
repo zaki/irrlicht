@@ -757,6 +757,20 @@ void CIrrDeviceSDL::minimizeWindow()
 }
 
 
+//! Maximize window
+void CIrrDeviceSDL::maximizeWindow()
+{
+	// do nothing
+}
+
+
+//! Restore original window size
+void CIrrDeviceSDL::restoreWindow()
+{
+	// do nothing
+}
+
+
 //! returns if window is active. if not, nothing need to be drawn
 bool CIrrDeviceSDL::isWindowActive() const
 {

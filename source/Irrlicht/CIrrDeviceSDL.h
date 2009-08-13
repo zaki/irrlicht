@@ -71,6 +71,12 @@ namespace irr
 		//! Minimizes the window.
 		virtual void minimizeWindow();
 
+		//! Maximizes the window.
+		virtual void maximizeWindow();
+
+		//! Restores the window size.
+		virtual void restoreWindow();
+
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 

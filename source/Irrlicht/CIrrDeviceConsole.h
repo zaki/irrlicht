@@ -80,6 +80,12 @@ namespace irr
 		//! Minimizes the window.
 		virtual void minimizeWindow();
 
+		//! Maximizes the window.
+		virtual void maximizeWindow();
+
+		//! Restores the window size.
+		virtual void restoreWindow();
+
 		//! Get the device type
 		virtual E_DEVICE_TYPE getType() const
 		{

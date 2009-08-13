@@ -213,6 +213,12 @@ namespace irr
 		//! Minimizes the window if possible.
 		virtual void minimizeWindow() =0;
 
+		//! Maximizes the window if possible.
+		virtual void maximizeWindow() =0;
+
+		//! Restore the window to normal size if possible.
+		virtual void restoreWindow() =0;
+
 		//! Activate any joysticks, and generate events for them.
 		/** Irrlicht contains support for joysticks, but does not generate joystick events by default,
 		as this would consume joystick info that 3rd party libraries might rely on. Call this method to 

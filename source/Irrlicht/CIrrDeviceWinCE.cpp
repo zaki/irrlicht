@@ -781,7 +781,22 @@ void CIrrDeviceWinCE::setResizable(bool resize)
 //! Minimizes the window.
 void CIrrDeviceWinCE::minimizeWindow()
 {
+	// do nothing
 }
+
+//! Maximize window
+void CIrrDeviceWinCE::maximizeWindow()
+{
+	// do nothing
+}
+
+
+//! Restore original window size
+void CIrrDeviceWinCE::restoreWindow()
+{
+	// do nothing
+}
+
 
 } // end namespace
 

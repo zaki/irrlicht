@@ -965,6 +965,28 @@ void CIrrDeviceWin32::minimizeWindow()
 }
 
 
+//! Maximizes the window.
+void CIrrDeviceWin32::maximizeWindow()
+{
+	WINDOWPLACEMENT wndpl;
+	wndpl.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(HWnd, &wndpl);
+	wndpl.showCmd = SW_SHOWMAXIMIZED;
+	SetWindowPlacement(HWnd, &wndpl);
+}
+
+
+//! Restores the window to its original size.
+void CIrrDeviceWin32::restoreWindow()
+{
+	WINDOWPLACEMENT wndpl;
+	wndpl.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(HWnd, &wndpl);
+	wndpl.showCmd = SW_SHOWNORMAL;
+	SetWindowPlacement(HWnd, &wndpl);
+}
+
+
 bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
