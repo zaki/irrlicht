@@ -557,12 +557,15 @@ EFileSystemType CFileSystem::setFileListSystem(EFileSystemType listType)
 IFileList* CFileSystem::createFileList()
 {
 	CFileList* r = 0;
+	core::string<c16> Path = getWorkingDirectory();
+	Path.replace('\\', '/');
+	if (lastChar(Path) != '/')
+		Path.append('/');
 
-	//! Construct a native filesystem
+	//! Construct from native filesystem
 	if (FileSystemType == FILESYSTEM_NATIVE)
 	{
 		core::string<c16> fullPath;
-		core::string<c16> Path = getWorkingDirectory();
 		// --------------------------------------------
 		//! Windows version
 		#ifdef _IRR_WINDOWS_API_
@@ -577,8 +580,7 @@ IFileList* CFileSystem::createFileList()
 		{
 			do
 			{
-				fullPath = WorkingDirectory[FILESYSTEM_NATIVE] + "/";
-				fullPath += c_file.name;
+				fullPath = Path + c_file.name;
 
 				r->addItem(fullPath, c_file.size, (_A_SUBDIR & c_file.attrib) != 0, 0);
 			}
@@ -601,7 +603,7 @@ IFileList* CFileSystem::createFileList()
 
 		r = new CFileList(Path, false, false);
 
-		r->addItem(Path + "/..", 0, true, 0);
+		r->addItem(Path + "..", 0, true, 0);
 
 		//! We use the POSIX compliant methods instead of scandir
 		DIR* dirHandle=opendir(Path.c_str());
@@ -612,8 +614,7 @@ IFileList* CFileSystem::createFileList()
 			{
 				u32 size = 0;
 				bool isDirectory = false;
-				fullPath = Path + "/";
-				fullPath += dirEntry->d_name;
+				fullPath = Path + dirEntry->d_name;
 
 				if((strcmp(dirEntry->d_name, ".")==0) ||
 				   (strcmp(dirEntry->d_name, "..")==0))
@@ -643,18 +644,17 @@ IFileList* CFileSystem::createFileList()
 	else
 	{
 		//! create file list for the virtual filesystem
-		r = new CFileList(WorkingDirectory[FILESYSTEM_VIRTUAL], false, false);
+		r = new CFileList(Path, false, false);
 
 		//! add relative navigation
 		SFileListEntry e2;
 		SFileListEntry e3;
 
 		//! PWD
-		r->addItem(r->getPath() + "/.", 0, true, 0);
+		r->addItem(Path + ".", 0, true, 0);
 
-		//! add parent dir if we can go up
-		if (WorkingDirectory[FILESYSTEM_VIRTUAL].size())
-			r->addItem(r->getPath() + "/..", 0, true, 0);
+		//! parent
+		r->addItem(Path + "..", 0, true, 0);
 
 		//! merge archives
 		for (u32 i=0; i < FileArchives.size(); ++i)
@@ -663,10 +663,9 @@ IFileList* CFileSystem::createFileList()
 
 			for (u32 j=0; j < merge->getFileCount(); ++j)
 			{
-				if (core::isInSameDirectory(WorkingDirectory[FILESYSTEM_VIRTUAL], merge->getFullFileName(j)))
+				if (core::isInSameDirectory(Path, merge->getFullFileName(j)) == 0)
 				{
-					core::string<c16> fullPath = r->getPath() + "/";
-					fullPath += merge->getFullFileName(j);
+					core::string<c16> fullPath = merge->getFullFileName(j);
 					r->addItem(fullPath, merge->getFileSize(j), merge->isDirectory(j), 0);
 				}
 			}

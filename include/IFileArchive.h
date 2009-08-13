@@ -43,27 +43,6 @@ enum E_FILE_ARCHIVE_TYPE
 	EFAT_UNKNOWN = MAKE_IRR_ID('u','n','k','n')
 };
 
-/*
-//! Base Info which all File archives must support on browsing
-struct IFileArchiveEntry
-{
-	IFileArchiveEntry() {}
-
-	core::string<c16> simpleFileName;
-	core::string<c16> path;
-
-	bool operator < (const IFileArchiveEntry& other) const
-	{
-		return path < other.path;
-	}
-
-	bool operator == (const IFileArchiveEntry& other) const
-	{
-		return path == other.path;
-	}
-};
-*/
-
 //! The FileArchive manages archives and provides access to files inside them.
 class IFileArchive : public virtual IReferenceCounted
 {

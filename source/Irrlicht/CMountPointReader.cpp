@@ -118,19 +118,23 @@ void CMountPointReader::buildDirectory()
 	IFileList * list = Parent->createFileList();
 
 	const u32 size = list->getFileCount();
-	for (u32 i = 0; i!= size; ++i)
+	for (u32 i=0; i < size; ++i)
 	{
+		core::string<c16> full = list->getFullFileName(i);
+		full = full.subString(Path.size(), full.size() - Path.size());
+
 		if (!list->isDirectory(i))
 		{
-			addItem(list->getFullFileName(i), list->getFileSize(i), false, RealFileNames.size());
+			addItem(full, list->getFileSize(i), false, RealFileNames.size());
 			RealFileNames.push_back(list->getFullFileName(i));
 		}
 		else
 		{
-			const core::string<c16>& full = list->getFullFileName(i);
 			const core::string<c16> rel = list->getFileName(i);
-			core::string<c16> pwd  = Parent->getWorkingDirectory() + "/";
-			pwd += rel;
+			core::string<c16> pwd  = Parent->getWorkingDirectory();
+			if (core::lastChar(pwd) != '/')
+				pwd.append('/');
+			pwd.append(rel);
 
 			if ( rel != "." && rel != ".." )
 			{
@@ -151,18 +155,17 @@ IReadFile* CMountPointReader::createAndOpenFile(u32 index)
 	if (index >= Files.size())
 		return 0;
 
-	return createReadFile( RealFileNames[Files[index].ID] );
+	return createReadFile(RealFileNames[Files[index].ID]);
 }
 
 //! opens a file by file name
 IReadFile* CMountPointReader::createAndOpenFile(const core::string<c16>& filename)
 {
 	s32 index = findFile(filename, false);
-
-	if (index == -1)
+	if (index != -1)
+		return createAndOpenFile(index);
+	else
 		return 0;
-
-	return createReadFile( RealFileNames[Files[index].ID] );
 }
 
 
