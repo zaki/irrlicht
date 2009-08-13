@@ -3108,11 +3108,19 @@
 					>
 				</File>
 				<File
-					RelativePath=".\CTarReader.cpp"
+					RelativePath="CTarReader.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\CTarReader.h"
+					RelativePath="CTarReader.h"
+					>
+				</File>
+				<File
+					RelativePath="CMountPointReader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CMountPointReader.h"
 					>
 				</File>
 				<File
