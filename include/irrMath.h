@@ -25,6 +25,10 @@
 	#define logf(X) (f32)log((f64)(X))
 #endif
 
+#ifndef FLT_MAX
+#define FLT_MAX 3.402823466E+38F
+#endif
+
 namespace irr
 {
 namespace core

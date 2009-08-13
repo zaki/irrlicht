@@ -122,7 +122,7 @@ namespace irr
 		again by the user.
 		The value is the maximal antialiasing factor requested for
 		the device. The cretion method will automatically try smaller
-		values if no window can be created with the diven value.
+		values if no window can be created with the given value.
 		Value one is usually the same as 0 (disabled), but might be a
 		special value on some platforms. On D3D devices it maps to
 		NONMASKABLE.
