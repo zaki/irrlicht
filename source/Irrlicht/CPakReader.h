@@ -5,6 +5,10 @@
 #ifndef __C_PAK_READER_H_INCLUDED__
 #define __C_PAK_READER_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+
 #include "IReferenceCounted.h"
 #include "IReadFile.h"
 #include "irrArray.h"
@@ -112,5 +116,7 @@ namespace io
 } // end namespace io
 } // end namespace irr
 
-#endif
+#endif // __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+
+#endif // __C_PAK_READER_H_INCLUDED__
 

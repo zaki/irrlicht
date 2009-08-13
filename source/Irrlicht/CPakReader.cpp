@@ -3,8 +3,10 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // Code contributed by skreamz
 
-#include "IrrCompileConfig.h"
 #include "CPakReader.h"
+
+#ifdef __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+
 #include "os.h"
 #include "coreutil.h"
 
@@ -187,3 +189,4 @@ IReadFile* CPakReader::createAndOpenFile(u32 index)
 } // end namespace io
 } // end namespace irr
 
+#endif // __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_

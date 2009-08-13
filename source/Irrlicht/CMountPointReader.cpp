@@ -3,8 +3,10 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CMountPointReader.h"
-#include "CReadFile.h"
 
+#ifdef __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
+
+#include "CReadFile.h"
 #include "os.h"
 
 namespace irr
@@ -171,3 +173,5 @@ IReadFile* CMountPointReader::createAndOpenFile(const core::string<c16>& filenam
 
 } // io
 } // irr
+
+#endif // __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_

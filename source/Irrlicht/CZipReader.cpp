@@ -3,6 +3,9 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
 #include "CZipReader.h"
+
+#ifdef __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
+
 #include "CFileList.h"
 #include "CReadFile.h"
 #include "os.h"
@@ -527,42 +530,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 
 }
 
-/*
-
-//! returns fileindex
-s32 CZipReader::findFile( const core::string<c16>& simpleFilename)
-{
-	SZipFileEntry entry;
-	entry.simpleFileName = simpleFilename;
-
-	if (IgnoreCase)
-		entry.simpleFileName.make_lower();
-
-	if (IgnorePaths)
-		core::deletePathFromFilename(entry.simpleFileName);
-
-	s32 res = FileList.binary_search(entry);
-
-	#ifdef _DEBUG
-	if (res == -1)
-	{
-		for (u32 i=0; i<FileList.size(); ++i)
-			if (FileList[i].simpleFileName == entry.simpleFileName)
-			{
-				os::Printer::log("File in archive but not found.", entry.simpleFileName.c_str(), ELL_ERROR);
-				break;
-			}
-	}
-	#endif
-
-	return res;
-}
-*/
-
-
-
-
-
 } // end namespace io
 } // end namespace irr
 
+#endif // __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
