@@ -80,9 +80,6 @@ private:
 
 	void createRenderTarget(const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
-	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
-
 	//! creates the hardware texture
 	bool createTexture(u32 flags, IImage * image);
 
