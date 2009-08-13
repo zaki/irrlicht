@@ -26,6 +26,8 @@ namespace video
 {
 	class CD3D8Driver : public CNullDriver, IMaterialRendererServices
 	{
+		friend class CD3D8Texture;
+
 	public:
 
 		//! constructor

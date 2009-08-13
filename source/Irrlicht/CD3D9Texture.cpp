@@ -121,11 +121,10 @@ void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 	// are texture size restrictions there ?
 	if(!Driver->queryFeature(EVDF_TEXTURE_NPOT))
 	{
-		TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
-		TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
 		if (TextureSize != ImageSize)
 			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
 	}
+	TextureSize = TextureSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT d3dformat = Driver->getD3DColorFormat();
 
@@ -278,18 +277,10 @@ bool CD3D9Texture::createMipMaps(u32 level)
 //! creates the hardware texture
 bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 {
-	core::dimension2d<u32> optSize;
 	ImageSize = image->getDimension();
 
-	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
-		optSize=ImageSize;
-	else
-	{
-		optSize.Width = getTextureSizeFromSurfaceSize(ImageSize.Width);
-		optSize.Height = getTextureSizeFromSurfaceSize(ImageSize.Height);
-	}
+	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
-	HRESULT hr;
 	D3DFORMAT format = D3DFMT_A1R5G5B5;
 
 	switch(getTextureFormatFromFlags(flags))
@@ -343,7 +334,7 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 		}
 	}
 
-	hr = Device->CreateTexture(optSize.Width, optSize.Height,
+	HRESULT hr = Device->CreateTexture(optSize.Width, optSize.Height,
 		mipmaps ? 0 : 1, // number of mipmaplevels (0 = automatic all)
 		usage, // usage
 		format, D3DPOOL_MANAGED , &Texture, NULL);
@@ -489,25 +480,11 @@ const core::dimension2d<u32>& CD3D9Texture::getSize() const
 }
 
 
-//! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CD3D9Texture::getTextureSizeFromSurfaceSize(s32 size) const
-{
-	s32 ts = 0x01;
-
-	while(ts < size)
-		ts <<= 1;
-
-	return ts;
-}
-
-
-
 //! returns driver type of texture (=the driver, who created the texture)
 E_DRIVER_TYPE CD3D9Texture::getDriverType() const
 {
 	return EDT_DIRECT3D9;
 }
-
 
 
 //! returns color format of texture
@@ -517,13 +494,11 @@ ECOLOR_FORMAT CD3D9Texture::getColorFormat() const
 }
 
 
-
 //! returns pitch of texture (in bytes)
 u32 CD3D9Texture::getPitch() const
 {
 	return Pitch;
 }
-
 
 
 //! returns the DIRECT3D9 Texture

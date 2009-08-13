@@ -112,20 +112,11 @@ CD3D8Texture::~CD3D8Texture()
 //! creates the hardware texture
 bool CD3D8Texture::createTexture(video::IImage* image, u32 flags)
 {
-	core::dimension2d<u32> optSize;
 	ImageSize = image->getDimension();
 
-	if (Driver->queryFeature(EVDF_TEXTURE_NPOT))
-		optSize=ImageSize;
-	else
-	{
-		optSize.Width = getTextureSizeFromSurfaceSize(ImageSize.Width);
-		optSize.Height = getTextureSizeFromSurfaceSize(ImageSize.Height);
-	}
+	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
-	HRESULT hr;
 	D3DFORMAT format = D3DFMT_A1R5G5B5;
-
 	switch(getTextureFormatFromFlags(flags))
 	{
 	case ETCF_ALWAYS_16_BIT:
@@ -165,7 +156,7 @@ bool CD3D8Texture::createTexture(video::IImage* image, u32 flags)
 
 	const bool mipmaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
-	hr = Device->CreateTexture(optSize.Width, optSize.Height,
+	HRESULT hr = Device->CreateTexture(optSize.Width, optSize.Height,
 		mipmaps ? 0 : 1, // number of mipmaplevels (0 = automatic all)
 		0, format, D3DPOOL_MANAGED, &Texture);
 
@@ -313,24 +304,11 @@ const core::dimension2d<u32>& CD3D8Texture::getSize() const
 }
 
 
-//! returns the size of a texture which would be the optimize size for rendering it
-inline s32 CD3D8Texture::getTextureSizeFromSurfaceSize(s32 size) const
-{
-	s32 ts = 0x01;
-
-	while(ts < size)
-		ts <<= 1;
-
-	return ts;
-}
-
-
 //! returns driver type of texture (=the driver, who created the texture)
 E_DRIVER_TYPE CD3D8Texture::getDriverType() const
 {
 	return EDT_DIRECT3D8;
 }
-
 
 
 //! returns color format of texture
@@ -340,13 +318,11 @@ ECOLOR_FORMAT CD3D8Texture::getColorFormat() const
 }
 
 
-
 //! returns pitch of texture (in bytes)
 u32 CD3D8Texture::getPitch() const
 {
 	return Pitch;
 }
-
 
 
 //! returns the DIRECT3D8 Texture
@@ -561,11 +537,9 @@ void CD3D8Texture::copy32BitMipMap(char* src, char* tgt,
 }
 
 
-
 void CD3D8Texture::createRenderTarget()
 {
-	TextureSize.Width = getTextureSizeFromSurfaceSize(TextureSize.Width);
-	TextureSize.Height = getTextureSizeFromSurfaceSize(TextureSize.Height);
+	TextureSize = TextureSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	// get backbuffer format to create the render target in the
 	// same format
@@ -611,7 +585,6 @@ void CD3D8Texture::createRenderTarget()
 }
 
 
-
 //! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
 void CD3D8Texture::regenerateMipMapLevels()
@@ -626,6 +599,7 @@ bool CD3D8Texture::isRenderTarget() const
 {
 	return IsRenderTarget;
 }
+
 
 //! Returns pointer to the render target surface
 IDirect3DSurface8* CD3D8Texture::getRenderTargetSurface()

@@ -44,6 +44,8 @@ namespace video
 	{
 	public:
 
+		friend class CD3D9Texture;
+
 		//! constructor
 		CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window, bool fullscreen,
 			bool stencibuffer, io::IFileSystem* io, bool pureSoftware=false);
