@@ -9,7 +9,6 @@
 #include "IGUIEnvironment.h"
 #include "IEventReceiver.h"
 #include "fast_atof.h"
-#include <float.h>
 #include <wchar.h>
 
 
