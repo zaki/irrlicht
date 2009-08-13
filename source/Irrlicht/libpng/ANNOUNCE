@@ -1,5 +1,5 @@
 
-Libpng 1.2.35 - February 14, 2009
+Libpng 1.2.39 - August 13, 2009
 
 This is a public release of libpng, intended for use in production codes.
 
@@ -8,48 +8,56 @@ Files available for download:
 Source files with LF line endings (for Unix/Linux) and with a
 "configure" script
 
-   libpng-1.2.35.tar.gz
-   libpng-1.2.35.tar.lzma
-     (Get the lzma codec from <http://tukaani.org/lzma>).
-   libpng-1.2.35.tar.bz2
+   libpng-1.2.39.tar.xz (LZMA-compressed, recommended)
+   libpng-1.2.39.tar.gz
+   libpng-1.2.39.tar.bz2
 
 Source files with LF line endings (for Unix/Linux) without the
 "configure" script
 
-   libpng-1.2.35-no-config.tar.gz
-   libpng-1.2.35-no-config.tar.lzma
-   libpng-1.2.35-no-config.tar.bz2
+   libpng-1.2.39-no-config.tar.xz (LZMA-compressed, recommended)
+   libpng-1.2.39-no-config.tar.gz
+   libpng-1.2.39-no-config.tar.bz2
 
 Source files with CRLF line endings (for Windows), without the
 "configure" script
 
-   lpng1235.zip
-   lpng1235.7z
-   lpng1235.tar.bz2
+   lpng1239.zip
+   lpng1239.7z
+   lpng1239.tar.bz2
 
 Project files
 
-   libpng-1.2.35-project-netware.zip
-   libpng-1.2.35-project-wince.zip
+   libpng-1.2.39-project-netware.zip
+   libpng-1.2.39-project-wince.zip
 
 Other information:
 
-   libpng-1.2.35-README.txt
-   libpng-1.2.35-KNOWNBUGS.txt
-   libpng-1.2.35-LICENSE.txt
-   libpng-1.2.35-Y2K-compliance.txt
-   libpng-1.2.35-[previous version]-diff.txt
+   libpng-1.2.39-README.txt
+   libpng-1.2.39-KNOWNBUGS.txt
+   libpng-1.2.39-LICENSE.txt
+   libpng-1.2.39-Y2K-compliance.txt
+   libpng-1.2.39-[previous version]-diff.txt
 
-Changes since the last public release (1.2.34):
+Changes since the last public release (1.2.38):
 
-version 1.2.35 [February 14, 2009]
+version 1.2.39 [August 13, 2009]
 
-  Zero out all arrays of pointers after png_malloc(). (Tavis Ormandy)
-  Use png_memset() instead of a loop to intialize pointers.  We realize
-    this will not work on platforms where the NULL pointer is not all zeroes.
+  Added a prototype for png_64bit_product() in png.h
+  Expanded the information about prototypes in the libpng style section of
+    the documentation.
+  Rebuilt configure scripts with autoconf-2.64.
+  Avoid a possible NULL dereference in debug build, in png_set_text_2().
+    (bug introduced in libpng-0.95, discovered by Evan Rouault)
+  Replaced *.tar.lzma with *.tar.xz in distribution.  Get the xz codec
+    from <http://tukaani.org/xz>.
+  Reject attempt to write iCCP chunk with negative embedded profile length
+    (JD Chen)
 
 Send comments/corrections/commendations to png-mng-implement at lists.sf.net
-(subscription required; visit 
+
+Send comments/corrections/commendations to png-mng-implement at lists.sf.net
+(subscription required; visit
 https://lists.sourceforge.net/lists/listinfo/png-mng-implement
 to subscribe) or to glennrp at users.sourceforge.net
 

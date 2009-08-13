@@ -1,12 +1,15 @@
-                                             
+
 project(PNG)
 
 # Copyright (C) 2007 Glenn Randers-Pehrson
-# For conditions of distribution and use, see copyright notice in png.h
+
+# This code is released under the libpng license.
+# For conditions of distribution and use, see the disclaimer
+# and license in png.h
 
 set(PNGLIB_MAJOR 1)
 set(PNGLIB_MINOR 2)
-set(PNGLIB_RELEASE 35)
+set(PNGLIB_RELEASE 39)
 set(PNGLIB_NAME libpng${PNGLIB_MAJOR}${PNGLIB_MINOR})
 set(PNGLIB_VERSION ${PNGLIB_MAJOR}.${PNGLIB_MINOR}.${PNGLIB_RELEASE})
 
@@ -169,7 +172,7 @@ configure_file(${PNG_SOURCE_DIR}/scripts/libpng-config.in
 
 # SET UP LINKS
 set_target_properties(${PNG_LIB_NAME} PROPERTIES
-#    VERSION 0.${PNGLIB_RELEASE}.1.2.35
+#    VERSION 0.${PNGLIB_RELEASE}.1.2.39
      VERSION 0.${PNGLIB_RELEASE}.0
      SOVERSION 0
      CLEAN_DIRECT_OUTPUT 1)
@@ -184,7 +187,6 @@ install_targets(/lib ${PNG_LIB_NAME})
 if(PNG_STATIC)
   install_targets(/lib ${PNG_LIB_NAME_STATIC})
 endif(PNG_STATIC)
-
 install(FILES png.h pngconf.h         DESTINATION include)
 install(FILES png.h pngconf.h         DESTINATION include/${PNGLIB_NAME})
 install(FILES libpng.3 libpngpf.3             DESTINATION man/man3)
