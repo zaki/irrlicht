@@ -229,6 +229,8 @@ namespace irr
 			//! A tree view node was collapsed. See IGUITreeView::getLastEventNode().
 			EGET_TREEVIEW_NODE_COLLAPS,
 
+			//! No real event. Just for convenience to get number of events
+			EGET_COUNT
 		};
 	} // end namespace gui
 
