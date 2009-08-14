@@ -5,6 +5,8 @@
 #include "CGUIFileOpenDialog.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
 
+#include <locale.h>
+
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
@@ -14,7 +16,6 @@
 #include "IGUIFontBitmap.h"
 #include "IFileList.h"
 #include "os.h"
-#include <locale>
 
 namespace irr
 {
