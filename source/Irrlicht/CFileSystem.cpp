@@ -502,8 +502,8 @@ core::string<c16> CFileSystem::getFileBasename(const core::string<c16>& filename
 	{
 		// take care to search only after last slash to check only for
 		// dots in the filename
-		end = filename.findLast('.', lastSlash);
-		if (end == -1)
+		end = filename.findLast('.');
+		if (end == -1 || end < lastSlash)
 			end=0;
 		else
 			end = filename.size()-end;
