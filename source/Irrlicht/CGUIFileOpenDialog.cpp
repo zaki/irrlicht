@@ -14,6 +14,7 @@
 #include "IGUIFontBitmap.h"
 #include "IFileList.h"
 #include "os.h"
+#include <locale>
 
 namespace irr
 {
@@ -325,18 +326,39 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
+	setlocale(LC_ALL,"");
+
 	if (FileList)
 	{
 		for (u32 i=0; i < FileList->getFileCount(); ++i)
 		{
-			s = FileList->getFileName(i);
+			#ifndef _IRR_WCHAR_FILESYSTEM
+			const c8 *cs = (const c8 *)FileList->getFileName(i).c_str();
+			wchar_t *ws = new wchar_t[strlen(cs) + 1];
+			int len = mbstowcs(ws,cs,strlen(cs));
+			ws[len] = 0;
+			s = ws;
+			delete ws;
+			#else
+			s = FileList->getFileName(i).c_str();
+			#endif
 			FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
 		}
 	}
 
 	if (FileNameText)
 	{
+		#ifndef _IRR_WCHAR_FILESYSTEM
+		const c8 *cs = (const c8 *)FileSystem->getWorkingDirectory().c_str();
+		wchar_t *ws = new wchar_t[strlen(cs) + 1];
+		int len = mbstowcs(ws,cs,strlen(cs));
+		ws[len] = 0;
+		s = ws;
+		delete ws;
+		#else
 		s = FileSystem->getWorkingDirectory();
+		#endif
+
 		FileDirectory = s;
 		FileNameText->setText(s.c_str());
 	}
