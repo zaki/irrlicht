@@ -303,7 +303,7 @@ void CAnimatedMeshSceneNode::render()
 			for (u32 i=0; i<m->getMeshBufferCount(); ++i)
 			{
 				scene::IMeshBuffer* mb = m->getMeshBuffer(i);
-				mat = Materials[i];
+				mat = ReadOnlyMaterials ? mb->getMaterial() : Materials[i];
 				mat.MaterialType = video::EMT_TRANSPARENT_ADD_COLOR;
 				if (RenderFromIdentity)
 					driver->setTransform(video::ETS_WORLD, core::IdentityMatrix );
@@ -330,13 +330,13 @@ void CAnimatedMeshSceneNode::render()
 			if (transparent == isTransparentPass)
 			{
 				scene::IMeshBuffer* mb = m->getMeshBuffer(i);
-
+				const video::SMaterial& material = ReadOnlyMaterials ? mb->getMaterial() : Materials[i];
 				if (RenderFromIdentity)
 					driver->setTransform(video::ETS_WORLD, core::IdentityMatrix );
 				else if (Mesh->getMeshType() == EAMT_SKINNED)
 					driver->setTransform(video::ETS_WORLD, AbsoluteTransformation * ((SSkinMeshBuffer*)mb)->Transformation);
 
-				driver->setMaterial(Materials[i]);
+				driver->setMaterial(material);
 				driver->drawMeshBuffer(mb);
 			}
 		}
