@@ -25,11 +25,20 @@ void CSceneNodeAnimatorRotation::animateNode(ISceneNode* node, u32 timeMs)
 {
 	if (node) // thanks to warui for this fix
 	{
-		u32 diffTime = timeMs - StartTime;
+		const u32 diffTime = timeMs - StartTime;
 
 		if (diffTime != 0)
 		{
-			node->setRotation(node->getRotation() + Rotation*(diffTime*0.1f));
+			// clip the rotation to small values, to avoid
+			// precision problems with huge floats.
+			core::vector3df rot = node->getRotation() + Rotation*(diffTime*0.1f);
+			if (rot.X>360.f)
+				fmodf(rot.X, 360.f);
+			if (rot.Y>360.f)
+				fmodf(rot.Y, 360.f);
+			if (rot.Z>360.f)
+				fmodf(rot.Z, 360.f);
+			node->setRotation(rot);
 			StartTime=timeMs; 
 		}
 	}
