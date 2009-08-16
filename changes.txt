@@ -1,5 +1,7 @@
 Changes in 1.6 (??.??.2009)
 
+ - Added EGDS_TITLEBARTEXT_DISTANCE_X and EGDS_TITLEBARTEXT_DISTANCE_Y to GUI, submitted by FuzzYspo0N
+
  - Fix for UFT8 filenames displayed in file dialog, patch by MadHyde.
 
  - Added const method for array::binary_search, potentially slow as it doesn't sort the list!
