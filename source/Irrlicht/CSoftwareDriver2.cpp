@@ -157,7 +157,7 @@ void CBurningVideoDriver::setCurrentShader()
 	ITexture *texture0 = Material.org.getTexture(0);
 	ITexture *texture1 = Material.org.getTexture(1);
 
-	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER && 
+	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER &&
 							Material.org.ZWriteEnable &&
 							( AllowZWriteOnTransparent || !Material.org.isTransparent() );
 
@@ -941,12 +941,12 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 
 				if ( TransformationFlag [ ETS_TEXTURE_0 + t ] & ETF_TEXGEN_CAMERA_REFLECTION )
 				{
-					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[4] + n.z * view[8] )); 
+					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[4] + n.z * view[8] ));
 					srcT.y = 0.5f * ( 1.f + (n.x * view[1] + n.y * view[5] + n.z * view[9] ));
 				}
 				else
 				{
-					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[1] + n.z * view[2] )); 
+					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[1] + n.z * view[2] ));
 					srcT.y = 0.5f * ( 1.f + (n.x * view[4] + n.y * view[5] + n.z * view[6] ));
 				}
 			}
@@ -1315,7 +1315,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 
 /*
 		// TODO: don't stick on 32 Bit Pointer
-		#define PointerAsValue(x) ( (u32) (u32*) (x) ) 
+		#define PointerAsValue(x) ( (u32) (u32*) (x) )
 
 		// if not complete inside clipping necessary
 		if ( ( test & VERTEX4D_INSIDE ) != VERTEX4D_INSIDE )
@@ -1490,17 +1490,6 @@ void CBurningVideoDriver::setMaterial(const SMaterial& material)
 }
 
 
-
-#ifdef SOFTWARE_DRIVER_2_LIGHTING
-
-//! Sets the fog mode.
-void CBurningVideoDriver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
-	f32 end, f32 density, bool pixelFog, bool rangeFog)
-{
-	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
-	LightSpace.FogColor.setA8R8G8B8 ( color.color );
-}
-
 /*!
 	Camera Position in World Space
 */
@@ -1522,6 +1511,16 @@ void CBurningVideoDriver::getCameraPosWorldSpace ()
 	LightSpace.campos.y = M[13];
 	LightSpace.campos.z = M[14];
 	LightSpace.campos.w = 1.f;
+}
+
+#ifdef SOFTWARE_DRIVER_2_LIGHTING
+
+//! Sets the fog mode.
+void CBurningVideoDriver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
+	f32 end, f32 density, bool pixelFog, bool rangeFog)
+{
+	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
+	LightSpace.FogColor.setA8R8G8B8 ( color.color );
 }
 
 /*!
@@ -1676,7 +1675,7 @@ void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 void CBurningVideoDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
 	BackBuffer->setPixel(x, y, color, true);
-} 
+}
 
 
 //! draw an 2d rectangle
@@ -1990,7 +1989,7 @@ IImage* CBurningVideoDriver::createScreenShot()
 ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
 {
 	return new CSoftwareTexture2(
-		surface, name, 
+		surface, name,
 		(getTextureCreationFlag(ETCF_CREATE_MIP_MAPS) ? CSoftwareTexture2::GEN_MIPMAP : 0 ) |
 		(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE )
 	);
