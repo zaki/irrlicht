@@ -124,7 +124,7 @@ void CD3D9Texture::createRenderTarget(const ECOLOR_FORMAT format)
 		if (TextureSize != ImageSize)
 			os::Printer::log("RenderTarget size has to be a power of two", ELL_INFORMATION);
 	}
-	TextureSize = TextureSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	TextureSize = TextureSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT d3dformat = Driver->getD3DColorFormat();
 
@@ -279,7 +279,7 @@ bool CD3D9Texture::createTexture(u32 flags, IImage * image)
 {
 	ImageSize = image->getDimension();
 
-	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT format = D3DFMT_A1R5G5B5;
 
