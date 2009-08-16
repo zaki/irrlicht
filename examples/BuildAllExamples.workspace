@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_workspace_file>
 	<Workspace title="Build all examples">
-		<Project filename="01.HelloWorld/HelloWorld.cbp" />
+		<Project filename="01.HelloWorld/HelloWorld.cbp" active="1" />
 		<Project filename="02.Quake3Map/Quake3Map.cbp" />
 		<Project filename="03.CustomSceneNode/CustomSceneNode.cbp" />
 		<Project filename="04.Movement/Movement.cbp" />
@@ -23,6 +23,7 @@
 		<Project filename="21.Quake3Explorer/Quake3Explorer.cbp" />
 		<Project filename="Demo/demo.cbp" />
 		<Project filename="../tools/GUIEditor/GUIEditor_gcc.cbp" />
-		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" active="1" />
+		<Project filename="../tools/MeshConverter/MeshConverter.cbp" />
+		<Project filename="../source/Irrlicht/Irrlicht-gcc.cbp" />
 	</Workspace>
 </CodeBlocks_workspace_file>
