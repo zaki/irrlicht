@@ -114,7 +114,7 @@ bool CD3D8Texture::createTexture(video::IImage* image, u32 flags)
 {
 	ImageSize = image->getDimension();
 
-	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	core::dimension2d<u32> optSize = ImageSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	D3DFORMAT format = D3DFMT_A1R5G5B5;
 	switch(getTextureFormatFromFlags(flags))
@@ -149,7 +149,7 @@ bool CD3D8Texture::createTexture(video::IImage* image, u32 flags)
 #else
 			format = D3DFMT_R8G8B8;
 #endif
-			
+
 		else if (format == D3DFMT_A1R5G5B5)
 			format = D3DFMT_R5G6B5;
 	}
@@ -539,7 +539,7 @@ void CD3D8Texture::copy32BitMipMap(char* src, char* tgt,
 
 void CD3D8Texture::createRenderTarget()
 {
-	TextureSize = TextureSize.getOptimalSize(Driver->queryFeature(EVDF_TEXTURE_NPOT), Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
+	TextureSize = TextureSize.getOptimalSize(!Driver->queryFeature(EVDF_TEXTURE_NPOT), !Driver->queryFeature(EVDF_TEXTURE_NSQUARE), true, Driver->Caps.MaxTextureWidth);
 
 	// get backbuffer format to create the render target in the
 	// same format
