@@ -1651,9 +1651,9 @@ inline void COpenGLExtensionHandler::extGlGetBufferPointerv (GLenum target, GLen
 inline void COpenGLExtensionHandler::extGlProvokingVertex(GLenum mode)
 {
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
-	if (pGlProvokingVertexARB)
+	if (FeatureAvailable[IRR_ARB_provoking_vertex] && pGlProvokingVertexARB)
 		pGlProvokingVertexARB(mode);
-	else if (pGlProvokingVertexEXT)
+	else if (FeatureAvailable[IRR_EXT_provoking_vertex] && pGlProvokingVertexEXT)
 		pGlProvokingVertexEXT(mode);
 #elif defined(GL_ARB_provoking_vertex)
 	glProvokingVertex(mode);
