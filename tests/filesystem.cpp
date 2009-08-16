@@ -51,7 +51,7 @@ bool filesystem(void)
 	}
 	
 	// remove it again to not affect other tests
-	device->getFileSystem()->unregisterFileArchive( device->getFileSystem()->getFileArchiveCount() );
+	device->getFileSystem()->removeFileArchive( device->getFileSystem()->getFileArchiveCount() );
 
 	return result;
 }

@@ -16,16 +16,16 @@ bool zipReader(void)
 	if ( !fs )
 		return false;
 	
-	if ( !fs->registerFileArchive(core::string<c16>("media/file_with_path.zip"), /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	if ( !fs->addFileArchive(core::string<c16>("media/file_with_path.zip"), /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
 		return false;
 	
 	// log what we got
 	io::IFileArchive* archive = fs->getFileArchive(fs->getFileArchiveCount()-1);
-	for ( u32 f=0; f < archive->getFileCount(); ++f)
+	const io::IFileList* fileList = archive->getFileList();
+	for ( u32 f=0; f < fileList->getFileCount(); ++f)
 	{
-		const io::IFileArchiveEntry* entry = archive->getFileInfo(f);
-		logTestString("simpleFileName: %s\n", entry->simpleFileName.c_str());
-		logTestString("path: %s\n", entry->path.c_str());
+		logTestString("File name: %s\n", fileList->getFileName(f).c_str());
+		logTestString("Full path: %s\n", fileList->getFullFileName(f).c_str());
 	}
 	
 	bool result = true;
