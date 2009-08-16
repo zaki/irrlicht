@@ -58,6 +58,9 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 
 		Sizes[EGDS_TEXT_DISTANCE_X] = 2;
 		Sizes[EGDS_TEXT_DISTANCE_Y] = 0;
+
+		Sizes[EGDS_TITLEBARTEXT_DISTANCE_X] = 2;
+		Sizes[EGDS_TITLEBARTEXT_DISTANCE_Y] = 0;
 	}
 	else
 	{
@@ -96,6 +99,9 @@ CGUISkin::CGUISkin(EGUI_SKIN_TYPE type, video::IVideoDriver* driver)
 
 		Sizes[EGDS_TEXT_DISTANCE_X] = 3;
 		Sizes[EGDS_TEXT_DISTANCE_Y] = 2;
+
+		Sizes[EGDS_TITLEBARTEXT_DISTANCE_X] = 3;
+		Sizes[EGDS_TITLEBARTEXT_DISTANCE_Y] = 2;
 	}
 
 	Texts[EGDT_MSG_BOX_OK] = L"OK";
