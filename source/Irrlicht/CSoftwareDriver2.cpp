@@ -1062,7 +1062,7 @@ REALINLINE void CBurningVideoDriver::VertexCache_get ( s4DVertex ** face )
 			VertexCache.info[i].hit = 0;
 		}
 
-		// mark all exisiting
+		// mark all existing
 		for ( i = 0; i!= fillIndex; ++i )
 		{
 			for ( dIndex = 0;  dIndex < VERTEXCACHE_ELEMENT; ++dIndex )
@@ -1148,7 +1148,8 @@ REALINLINE void CBurningVideoDriver::VertexCache_getbypass ( s4DVertex ** face )
 */
 void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCount,
 											const void* indices, u32 primitiveCount,
-											E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType,
+											E_VERTEX_TYPE vType,
+											scene::E_PRIMITIVE_TYPE pType,
 											E_INDEX_TYPE iType)
 {
 	VertexCache.vertices = vertices;
@@ -1167,6 +1168,28 @@ void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCo
 
 	switch ( VertexCache.pType )
 	{
+		// most types here will not work as expected, only triangles/triangle_fan
+		// is known to work.
+		case scene::EPT_POINTS:
+			VertexCache.indexCount = primitiveCount;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_LINE_STRIP:
+			VertexCache.indexCount = primitiveCount+1;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_LINE_LOOP:
+			VertexCache.indexCount = primitiveCount+1;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_LINES:
+			VertexCache.indexCount = 2*primitiveCount;
+			VertexCache.primitivePitch = 2;
+			break;
+		case scene::EPT_TRIANGLE_STRIP:
+			VertexCache.indexCount = primitiveCount+2;
+			VertexCache.primitivePitch = 1;
+			break;
 		case scene::EPT_TRIANGLES:
 			VertexCache.indexCount = primitiveCount + primitiveCount + primitiveCount;
 			VertexCache.primitivePitch = 3;
@@ -1175,10 +1198,25 @@ void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCo
 			VertexCache.indexCount = primitiveCount + 2;
 			VertexCache.primitivePitch = 1;
 			break;
+		case scene::EPT_QUAD_STRIP:
+			VertexCache.indexCount = 2*primitiveCount + 2;
+			VertexCache.primitivePitch = 2;
+			break;
+		case scene::EPT_QUADS:
+			VertexCache.indexCount = 4*primitiveCount;
+			VertexCache.primitivePitch = 4;
+			break;
+		case scene::EPT_POLYGON:
+			VertexCache.indexCount = primitiveCount+1;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_POINT_SPRITES:
+			VertexCache.indexCount = primitiveCount;
+			VertexCache.primitivePitch = 1;
+			break;
 	}
 
 	irr::memset32 ( VertexCache.info, VERTEXCACHE_MISS, sizeof ( VertexCache.info ) );
-
 }
 
 
