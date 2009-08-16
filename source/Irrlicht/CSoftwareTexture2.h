@@ -116,7 +116,7 @@ public:
 
 	//! Returns if the texture has an alpha channel
 	virtual bool hasAlpha() const
-	{ 
+	{
 		return (Flags & HAS_ALPHA ) != 0;
 	}
 
