@@ -2207,9 +2207,7 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 			SMaterial mat;
 			mat.ZBuffer=ECFN_NEVER;
 			mat.Lighting=false;
-			mat.FrontfaceCulling=false;
-			mat.BackfaceCulling=true;
-			mat.TextureLayer[0].TextureWrap=ETC_REPEAT;
+			mat.AntiAliasing=video::EAAM_OFF;
 			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);
 			// fix everything that is wrongly set by SMaterial default

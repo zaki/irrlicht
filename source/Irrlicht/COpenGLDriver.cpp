@@ -2273,7 +2273,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		else if (i>0)
 			break;
 
-#ifdef EXT_texture_lod_bias
+#ifdef GL_EXT_texture_lod_bias
 		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		{
 			if (material.TextureLayer[i].LODBias)
@@ -2461,7 +2461,12 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 				glEnable(GL_MULTISAMPLE_ARB);
 #ifdef GL_NV_multisample_filter_hint
 				if (FeatureAvailable[IRR_NV_multisample_filter_hint])
-					glHint(GL_MULTISAMPLE_FILTER_HINT_NV, (material.AntiAliasing & EAAM_QUALITY)?GL_NICEST:GL_FASTEST);
+				{
+					if ((material.AntiAliasing & EAAM_QUALITY) == EAAM_QUALITY)
+						glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+					else
+						glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+				}
 #endif
 			}
 			else
@@ -2505,6 +2510,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			SMaterial mat;
 			mat.ZBuffer=ECFN_NEVER;
 			mat.Lighting=false;
+			mat.AntiAliasing=video::EAAM_OFF;
 			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);
 			LastMaterial = mat;
