@@ -150,6 +150,7 @@ namespace gui
 		void scrollLeft();
 		void scrollRight();
 		bool needScrollControl( s32 startIndex=0, bool withScrollControl=false );
+		s32 calcTabWidth(s32 pos, IGUIFont* font, const wchar_t* text, bool withScrollControl );
 
 		void recalculateScrollBar();
 

@@ -1,5 +1,7 @@
 Changes in 1.6 (??.??.2009)
 
+ - Fix scrolling controls in CGUITabControl
+
  - Fix a bug when getting optimal texture size in D3D drivers, by Jetro Lauha (tonic)
 
  - Added EGDS_TITLEBARTEXT_DISTANCE_X and EGDS_TITLEBARTEXT_DISTANCE_Y to GUI, submitted by FuzzYspo0N
