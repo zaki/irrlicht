@@ -171,7 +171,6 @@ CGUITabControl::CGUITabControl(IGUIEnvironment* environment,
 		sprites = skin->getSpriteBank();
 		color = skin->getColor(EGDC_WINDOW_SYMBOL);
 		TabHeight = skin->getSize(gui::EGDS_BUTTON_HEIGHT) + 2;
-		TabMaxWidth = 3 * TabHeight;
 	}
 
 	UpButton = Environment->addButton(core::rect<s32>(0,0,10,10), this);
@@ -697,6 +696,18 @@ void CGUITabControl::setTabHeight( s32 height )
 s32 CGUITabControl::getTabHeight() const
 {
 	return TabHeight;
+}
+
+//! set the maximal width of a tab. Per default width is 0 which means "no width restriction".
+void CGUITabControl::setTabMaxWidth(s32 width )
+{
+	TabMaxWidth = width;
+}
+	
+//! get the maximal width of a tab
+s32 CGUITabControl::getTabMaxWidth() const
+{
+	return TabMaxWidth;
 }
 
 

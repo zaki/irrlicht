@@ -86,6 +86,12 @@ namespace gui
 		/** return Returns the height of the tabs */
 		virtual s32 getTabHeight() const = 0;
 
+		//! set the maximal width of a tab. Per default width is 0 which means "no width restriction".
+		virtual void setTabMaxWidth(s32 width ) = 0;
+			
+		//! get the maximal width of a tab
+		virtual s32 getTabMaxWidth() const = 0;
+		
 		//! Set the alignment of the tabs
 		/** Use EGUIA_UPPERLEFT or EGUIA_LOWERRIGHT */
 		virtual void setTabVerticalAlignment( gui::EGUI_ALIGNMENT alignment ) = 0;
