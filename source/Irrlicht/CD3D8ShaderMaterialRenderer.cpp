@@ -183,7 +183,7 @@ bool CD3D8ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 	#ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 
 		// compile shader without debug info
-		D3DXAssembleShader(pxsh, strlen(pxsh), 0, 0, &code, &errors);
+		D3DXAssembleShader(pxsh, (UINT)strlen(pxsh), 0, 0, &code, &errors);
 
 	#else
 
@@ -246,7 +246,7 @@ bool CD3D8ShaderMaterialRenderer::createVertexShader(const char* vtxsh, E_VERTEX
 	#ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 
 		// compile shader without debug info
-		D3DXAssembleShader(vtxsh, strlen(vtxsh), 0, 0, &code, &errors);
+		D3DXAssembleShader(vtxsh, (UINT)strlen(vtxsh), 0, 0, &code, &errors);
 
 	#else
 

@@ -344,13 +344,13 @@ u32 CNullDriver::getTextureCount() const
 
 
 //! Renames a texture
-void CNullDriver::renameTexture(ITexture* texture, const core::string<c16>& newName)
+void CNullDriver::renameTexture(ITexture* texture, const io::path& newName)
 {
 	// we can do a const_cast here safely, the name of the ITexture interface
 	// is just readonly to prevent the user changing the texture name without invoking
 	// this method, because the textures will need resorting afterwards
 
-	core::string<c16>& name = const_cast<core::string<c16>&>(texture->getName());
+	io::path& name = const_cast<io::path&>(texture->getName());
 	name = newName;
 
 	Textures.sort();
@@ -358,10 +358,10 @@ void CNullDriver::renameTexture(ITexture* texture, const core::string<c16>& newN
 
 
 //! loads a Texture
-ITexture* CNullDriver::getTexture(const core::string<c16>& filename)
+ITexture* CNullDriver::getTexture(const io::path& filename)
 {
 	// Identify textures by their absolute filenames if possible.
-	const core::string<c16> absolutePath = FileSystem->getAbsolutePath(filename);
+	const io::path absolutePath = FileSystem->getAbsolutePath(filename);
 
 	ITexture* texture = findTexture(absolutePath);
 	if (texture)
@@ -432,7 +432,7 @@ ITexture* CNullDriver::getTexture(io::IReadFile* file)
 
 
 //! opens the file and loads it into the surface
-video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const core::string<c16>& hashName )
+video::ITexture* CNullDriver::loadTextureFromFile(io::IReadFile* file, const io::path& hashName )
 {
 	ITexture* texture = 0;
 	IImage* image = createImageFromFile(file);
@@ -471,7 +471,7 @@ void CNullDriver::addTexture(video::ITexture* texture)
 
 
 //! looks if the image is already loaded
-video::ITexture* CNullDriver::findTexture(const core::string<c16>& filename)
+video::ITexture* CNullDriver::findTexture(const io::path& filename)
 {
 	SSurface s;
 	SDummyTexture dummy(filename);
@@ -486,7 +486,7 @@ video::ITexture* CNullDriver::findTexture(const core::string<c16>& filename)
 
 
 //! Creates a texture from a loaded IImage.
-ITexture* CNullDriver::addTexture(const core::string<c16>& name, IImage* image)
+ITexture* CNullDriver::addTexture(const io::path& name, IImage* image)
 {
 	if ( 0 == name.size() || !image)
 		return 0;
@@ -503,7 +503,7 @@ ITexture* CNullDriver::addTexture(const core::string<c16>& name, IImage* image)
 
 //! creates a Texture
 ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
-				  const core::string<c16>& name, ECOLOR_FORMAT format)
+				  const io::path& name, ECOLOR_FORMAT format)
 {
 	if(IImage::isRenderTargetOnlyFormat(format))
 	{
@@ -529,7 +529,7 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new SDummyTexture(name);
 }
@@ -1251,7 +1251,7 @@ bool CNullDriver::getTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag) const
 
 
 //! Creates a software image from a file.
-IImage* CNullDriver::createImageFromFile(const core::string<c16>& filename)
+IImage* CNullDriver::createImageFromFile(const io::path& filename)
 {
 	if (!filename.size())
 		return 0;
@@ -1313,7 +1313,7 @@ IImage* CNullDriver::createImageFromFile(io::IReadFile* file)
 
 
 //! Writes the provided image to disk file
-bool CNullDriver::writeImageToFile(IImage* image, const core::string<c16>& filename,u32 param)
+bool CNullDriver::writeImageToFile(IImage* image, const io::path& filename,u32 param)
 {
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
 	if(!file)
@@ -1800,10 +1800,10 @@ s32 CNullDriver::addHighLevelShaderMaterial(
 //! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 //! but tries to load the programs from files.
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
-	const core::string<c16>& vertexShaderProgram,
+	const io::path& vertexShaderProgram,
 	const c8* vertexShaderEntryPointName,
 	E_VERTEX_SHADER_TYPE vsCompileTarget,
-	const core::string<c16>& pixelShaderProgram,
+	const io::path& pixelShaderProgram,
 	const c8* pixelShaderEntryPointName,
 	E_PIXEL_SHADER_TYPE psCompileTarget,
 	IShaderConstantSetCallBack* callback,
@@ -1962,8 +1962,8 @@ s32 CNullDriver::addShaderMaterialFromFiles(io::IReadFile* vertexShaderProgram,
 
 //! Like IGPUProgrammingServices::addShaderMaterial(), but tries to load the
 //! programs from files.
-s32 CNullDriver::addShaderMaterialFromFiles(const core::string<c16>& vertexShaderProgramFileName,
-	const core::string<c16>& pixelShaderProgramFileName,
+s32 CNullDriver::addShaderMaterialFromFiles(const io::path& vertexShaderProgramFileName,
+	const io::path& pixelShaderProgramFileName,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
 	s32 userData)
@@ -2010,7 +2010,7 @@ s32 CNullDriver::addShaderMaterialFromFiles(const core::string<c16>& vertexShade
 
 //! Creates a render target texture.
 ITexture* CNullDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-		const core::string<c16>&name, const ECOLOR_FORMAT format)
+		const io::path&name, const ECOLOR_FORMAT format)
 {
 	return 0;
 }

@@ -13,7 +13,6 @@
 #include "testUtils.h"
 #include <stdio.h>
 #include <time.h>
-#include <assert.h>
 #include <vector>
 
 typedef struct _STestDefinition

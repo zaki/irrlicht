@@ -1,9 +1,7 @@
 // Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
-#include "irrlicht.h"
 #include "testUtils.h"
-#include <assert.h>
 
 using namespace irr;
 using namespace core;
@@ -41,6 +39,7 @@ bool b3dAnimation(void)
 			node1->setPosition(vector3df(-3, -3, 10));
 			node1->setMaterialFlag(EMF_LIGHTING, false);
 			node1->setAnimationSpeed(0.f);
+			node1->setCurrentFrame(10.f);
 		}
 
 		node2 = smgr->addAnimatedMeshSceneNode(mesh);
@@ -68,4 +67,3 @@ bool b3dAnimation(void)
 
 	return result;
 }
-

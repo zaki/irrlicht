@@ -414,7 +414,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 /** \brief Tell us if this file is able to be loaded by this class
  based on the file extension (e.g. ".bsp")
  \return true if file is loadable.*/
-bool CDMFLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CDMFLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "dmf" );
 }

@@ -99,7 +99,8 @@ namespace video
 	/** alpha source can be an OR'ed combination of E_ALPHA_SOURCE values. */
 	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
 	{
-		return (f32)((alphaSource << 24) | (modulate << 16) | (srcFact << 8) | dstFact);
+		const u32 tmp = (alphaSource << 24) | (modulate << 16) | (srcFact << 8) | dstFact;
+		return *((f32*)&tmp);
 	}
 
 	//! EMT_ONETEXTURE_BLEND: unpack srcFact & dstFact and Modulo to MaterialTypeParam
@@ -107,7 +108,7 @@ namespace video
 	inline void unpack_texureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
 			E_MODULATE_FUNC &modulo, u32& alphaSource, const f32 param )
 	{
-		const u32 state = (u32)param;
+		const u32 state = *((u32*)&param);
 		alphaSource = (state & 0xFF000000) >> 24;
 		modulo	= E_MODULATE_FUNC( ( state & 0x00FF0000 ) >> 16 );
 		srcFact = E_BLEND_FACTOR ( ( state & 0x0000FF00 ) >> 8 );

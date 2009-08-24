@@ -223,6 +223,8 @@
 		09F649740D2CE2D0001E0599 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 09F649730D2CE2D0001E0599 /* main.cpp */; };
 		3430E4D61022C391006271FD /* CTarReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 3430E4D41022C391006271FD /* CTarReader.h */; };
 		3430E4D71022C391006271FD /* CTarReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3430E4D51022C391006271FD /* CTarReader.cpp */; };
+		344FD4A61039E98C0045FD3F /* CMountPointReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 344FD4A41039E98C0045FD3F /* CMountPointReader.cpp */; };
+		344FD4A71039E98C0045FD3F /* CMountPointReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 344FD4A51039E98C0045FD3F /* CMountPointReader.h */; };
 		3484C4E10F48D1B000C81F60 /* CGUIImageList.h in Headers */ = {isa = PBXBuildFile; fileRef = 3484C4DF0F48D1B000C81F60 /* CGUIImageList.h */; };
 		3484C4E20F48D1B000C81F60 /* CGUIImageList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3484C4E00F48D1B000C81F60 /* CGUIImageList.cpp */; };
 		3484C4EE0F48D3A100C81F60 /* CGUITreeView.h in Headers */ = {isa = PBXBuildFile; fileRef = 3484C4EC0F48D3A100C81F60 /* CGUITreeView.h */; };
@@ -975,6 +977,8 @@
 		09F649730D2CE2D0001E0599 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = 16.Quake3MapShader/main.cpp; sourceTree = "<group>"; };
 		3430E4D41022C391006271FD /* CTarReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTarReader.h; sourceTree = "<group>"; };
 		3430E4D51022C391006271FD /* CTarReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CTarReader.cpp; sourceTree = "<group>"; };
+		344FD4A41039E98C0045FD3F /* CMountPointReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CMountPointReader.cpp; sourceTree = "<group>"; };
+		344FD4A51039E98C0045FD3F /* CMountPointReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMountPointReader.h; sourceTree = "<group>"; };
 		3484C4DF0F48D1B000C81F60 /* CGUIImageList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGUIImageList.h; sourceTree = "<group>"; };
 		3484C4E00F48D1B000C81F60 /* CGUIImageList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CGUIImageList.cpp; sourceTree = "<group>"; };
 		3484C4EC0F48D3A100C81F60 /* CGUITreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGUITreeView.h; sourceTree = "<group>"; };
@@ -2575,6 +2579,8 @@
 		34FFD9C70F66011C00420884 /* archive */ = {
 			isa = PBXGroup;
 			children = (
+				344FD4A41039E98C0045FD3F /* CMountPointReader.cpp */,
+				344FD4A51039E98C0045FD3F /* CMountPointReader.h */,
 				3430E4D41022C391006271FD /* CTarReader.h */,
 				3430E4D51022C391006271FD /* CTarReader.cpp */,
 				4C53E0030A484C250014E966 /* CZipReader.cpp */,
@@ -3126,6 +3132,7 @@
 				34EF91D70F65FCF6000B5651 /* CPLYMeshFileLoader.h in Headers */,
 				34EF91DC0F65FD14000B5651 /* CPLYMeshWriter.h in Headers */,
 				3430E4D61022C391006271FD /* CTarReader.h in Headers */,
+				344FD4A71039E98C0045FD3F /* CMountPointReader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4128,6 +4135,7 @@
 				34EF91D80F65FCF6000B5651 /* CPLYMeshFileLoader.cpp in Sources */,
 				34EF91DD0F65FD14000B5651 /* CPLYMeshWriter.cpp in Sources */,
 				3430E4D71022C391006271FD /* CTarReader.cpp in Sources */,
+				344FD4A61039E98C0045FD3F /* CMountPointReader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

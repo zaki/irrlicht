@@ -33,7 +33,7 @@ namespace gui
 		virtual const wchar_t* getFileName() const;
 
 		//! Returns the directory of the selected file. Returns NULL, if no directory was selected.
-		virtual const core::string<c16>& getDirectoryName();
+		virtual const io::path& getDirectoryName();
 
 		//! called if an event happened.
 		virtual bool OnEvent(const SEvent& event);
@@ -54,7 +54,7 @@ namespace gui
 
 		core::position2d<s32> DragStart;
 		core::stringw FileName;
-		core::string<c16> FileDirectory;
+		io::path FileDirectory;
 
 		IGUIButton* CloseButton;
 		IGUIButton* OKButton;

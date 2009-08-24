@@ -15,7 +15,7 @@ namespace scene
 {
 
 
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -41,7 +41,7 @@ namespace scene
 		s32 numSkins;        // number of textures
 		s32 numVertices;     // total number of vertices
 		s32 numTexcoords;    // number of vertices with texture coords
-		s32 numTriangles;    // number of triangles 
+		s32 numTriangles;    // number of triangles
 		s32 numGlCommands;   // number of opengl commands (triangle strip or triangle fan)
 		s32 numFrames;       // animation keyframe count
 		s32 offsetSkins;     // offset in bytes to 64 character skin names
@@ -69,7 +69,7 @@ namespace scene
 	struct SMD2Triangle
 	{
 		u16 vertexIndices[3];
-		u16 textureIndices[3];  
+		u16 textureIndices[3];
 	} PACK_STRUCT;
 
 	struct SMD2TextureCoordinate
@@ -85,7 +85,7 @@ namespace scene
 	} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 
@@ -102,7 +102,7 @@ CMD2MeshFileLoader::CMD2MeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CMD2MeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CMD2MeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "md2" );
 }
@@ -163,7 +163,7 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 	}
 
 	//
-	// prepare mesh and allocate memory 
+	// prepare mesh and allocate memory
 	//
 
 	mesh->FrameCount = header.numFrames;
@@ -310,7 +310,7 @@ bool CMD2MeshFileLoader::loadFile(io::IReadFile* file, CAnimatedMeshMD2* mesh)
 				v.Pos.Z = frame->vertices[num].vertex[1];
 				v.Pos.Y = frame->vertices[num].vertex[2];
 				v.NormalIdx = frame->vertices[num].lightNormalIndex;
-				
+
 				mesh->FrameList[i].push_back(v);
 			}
 		}

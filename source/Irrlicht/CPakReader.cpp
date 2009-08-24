@@ -26,7 +26,7 @@ CArchiveLoaderPAK::CArchiveLoaderPAK( io::IFileSystem* fs)
 
 
 //! returns true if the file maybe is able to be loaded by this class
-bool CArchiveLoaderPAK::isALoadableFileFormat(const core::string<c16>& filename) const
+bool CArchiveLoaderPAK::isALoadableFileFormat(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "pak" );
 }
@@ -40,7 +40,7 @@ bool CArchiveLoaderPAK::isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) cons
 //! Creates an archive from the filename
 /** \param file File handle to check.
 \return Pointer to newly created archive, or 0 upon error. */
-IFileArchive* CArchiveLoaderPAK::createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const
+IFileArchive* CArchiveLoaderPAK::createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const
 {
 	IFileArchive *archive = 0;
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
@@ -121,7 +121,7 @@ bool CPakReader::scanLocalHeader()
 {
 
 	c8 tmp[1024];
-	core::string<c16> PakFileName;
+	io::path PakFileName;
 
 	memset(&header, 0, sizeof(SPAKFileHeader));
 	File->read(&header, sizeof(SPAKFileHeader));
@@ -164,7 +164,7 @@ bool CPakReader::scanLocalHeader()
 
 
 //! opens a file by file name
-IReadFile* CPakReader::createAndOpenFile(const core::string<c16>& filename)
+IReadFile* CPakReader::createAndOpenFile(const io::path& filename)
 {
 	s32 index = findFile(filename, false);
 

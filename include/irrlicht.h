@@ -125,6 +125,7 @@
 #include "irrMath.h"
 #include "irrString.h"
 #include "irrTypes.h"
+#include "path.h"
 #include "irrXML.h"
 #include "ISceneCollisionManager.h"
 #include "ISceneManager.h"

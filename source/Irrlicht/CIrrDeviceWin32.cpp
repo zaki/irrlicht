@@ -207,16 +207,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			event.EventType = irr::EET_KEY_INPUT_EVENT;
 			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
 			event.KeyInput.PressedDown = (message==WM_KEYDOWN || message == WM_SYSKEYDOWN);
-			dev = getDeviceFromHWnd(hWnd);
 
 			WORD KeyAsc=0;
 			GetKeyboardState(allKeys);
 			ToAscii((UINT)wParam,(UINT)lParam,allKeys,&KeyAsc,0);
 
+			if (event.KeyInput.Key==irr::KEY_SHIFT)
+			{
+				if ((allKeys[VK_LSHIFT] & 0x80)!=0)
+					event.KeyInput.Key=irr::KEY_LSHIFT;
+				else if ((allKeys[VK_RSHIFT] & 0x80)!=0)
+					event.KeyInput.Key=irr::KEY_RSHIFT;
+			}
 			event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
 			event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
 			event.KeyInput.Char = (KeyAsc & 0x00ff); //KeyAsc >= 0 ? KeyAsc : 0;
 
+			dev = getDeviceFromHWnd(hWnd);
 			if (dev)
 				dev->postEventFromUser(event);
 

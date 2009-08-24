@@ -10,7 +10,7 @@ namespace io
 {
 
 
-CReadFile::CReadFile(const core::string<c16>& fileName)
+CReadFile::CReadFile(const io::path& fileName)
 : File(0), FileSize(0), Filename(fileName)
 {
 	#ifdef _DEBUG
@@ -91,14 +91,14 @@ void CReadFile::openFile()
 
 
 //! returns name of file
-const core::string<c16>& CReadFile::getFileName() const
+const io::path& CReadFile::getFileName() const
 {
 	return Filename;
 }
 
 
 
-IReadFile* createReadFile(const core::string<c16>& fileName)
+IReadFile* createReadFile(const io::path& fileName)
 {
 	CReadFile* file = new CReadFile(fileName);
 	if (file->isOpen())

@@ -3,7 +3,7 @@
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 // orginally written by Christian Stehno, modified by Nikolaus Gebhardt
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_OGRE_LOADER_
 
 #include "COgreMeshFileLoader.h"
@@ -86,7 +86,7 @@ COgreMeshFileLoader::~COgreMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool COgreMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool COgreMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "mesh" );
 }
@@ -189,20 +189,20 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 				readGeometry(file, data, mesh.Geometry);
 			}
 			break;
-			case COGRE_SUBMESH: 
+			case COGRE_SUBMESH:
 				mesh.SubMeshes.push_back(OgreSubMesh());
 				readSubMesh(file, data, mesh.SubMeshes.getLast());
 			break;
-			case COGRE_MESH_BOUNDS: 
+			case COGRE_MESH_BOUNDS:
 			{
 				readVector(file, data, mesh.BBoxMinEdge);
 				readVector(file, data, mesh.BBoxMaxEdge);
 				readFloat(file, data, &mesh.BBoxRadius);
 			}
 			break;
-			case COGRE_SKELETON_LINK: 
-			case COGRE_BONE_ASSIGNMENT: 
-			case COGRE_MESH_LOD: 
+			case COGRE_SKELETON_LINK:
+			case COGRE_BONE_ASSIGNMENT:
+			case COGRE_MESH_LOD:
 			case COGRE_MESH_SUBMESH_NAME_TABLE:
 			case COGRE_MESH_EDGE_LISTS:
 				// ignore chunk
@@ -542,7 +542,7 @@ scene::SMeshBufferLightMap* COgreMeshFileLoader::composeMeshBufferLightMap(const
 					{
 						mb->Vertices[k].TCoords.set(geom.Buffers[j].Data[ePos], geom.Buffers[j].Data[ePos+1]);
 						mb->Vertices[k].TCoords2.set(geom.Buffers[j].Data[ePos+2], geom.Buffers[j].Data[ePos+3]);
-						
+
 						ePos += eSize;
 					}
 				}
@@ -595,7 +595,7 @@ void COgreMeshFileLoader::composeObject(void)
 }
 
 
-core::stringc COgreMeshFileLoader::getTextureFileName(const core::stringc& texture, 
+core::stringc COgreMeshFileLoader::getTextureFileName(const core::stringc& texture,
 						 core::stringc& model)
 {
 	s32 idx = -1;
@@ -1014,7 +1014,7 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 	os::Printer::log("Load Materials");
 #endif
 	core::stringc token = meshFile->getFileName();
-	core::string<c16> filename = token.subString(0, token.size()-4) + L"material";
+	io::path filename = token.subString(0, token.size()-4) + L"material";
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename.c_str());
 
 	if (!file)

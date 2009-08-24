@@ -158,7 +158,7 @@ CGUIEnvironment::~CGUIEnvironment()
 
 void CGUIEnvironment::loadBuiltInFont()
 {
-	core::string<c16> filename = "#DefaultFont";
+	io::path filename = "#DefaultFont";
 
 	io::IReadFile* file = io::createMemoryReadFile(BuiltInFontData, BuiltInFontDataSize, filename, false);
 
@@ -660,7 +660,7 @@ IGUIElement* CGUIEnvironment::addGUIElement(const c8* elementName, IGUIElement* 
 
 //! Saves the current gui into a file.
 //! \param filename: Name of the file .
-bool CGUIEnvironment::saveGUI(const core::string<c16>& filename, IGUIElement* start)
+bool CGUIEnvironment::saveGUI(const io::path& filename, IGUIElement* start)
 {
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
 	if (!file)
@@ -702,7 +702,7 @@ bool CGUIEnvironment::saveGUI(io::IWriteFile* file, IGUIElement* start)
 
 //! Loads the gui. Note that the current gui is not cleared before.
 //! \param filename: Name of the file.
-bool CGUIEnvironment::loadGUI(const c16* filename, IGUIElement* parent)
+bool CGUIEnvironment::loadGUI(const io::path& filename, IGUIElement* parent)
 {
 	io::IReadFile* read = FileSystem->createAndOpenFile(filename);
 	if (!read)
@@ -1117,7 +1117,7 @@ IGUIListBox* CGUIEnvironment::addListBox(const core::rect<s32>& rectangle,
 }
 
 //! adds a tree view
-IGUITreeView* CGUIEnvironment::addTreeView(const core::rect<s32>& rectangle, 
+IGUITreeView* CGUIEnvironment::addTreeView(const core::rect<s32>& rectangle,
 					 IGUIElement* parent, s32 id,
 					 bool drawBackground,
 					 bool scrollBarVertical, bool scrollBarHorizontal)
@@ -1305,7 +1305,7 @@ IGUIComboBox* CGUIEnvironment::addComboBox(const core::rect<s32>& rectangle,
 
 
 //! returns the font
-IGUIFont* CGUIEnvironment::getFont(const core::string<c16>& filename)
+IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 {
 	// search existing font
 
@@ -1362,7 +1362,7 @@ IGUIFont* CGUIEnvironment::getFont(const core::string<c16>& filename)
 			CGUIFont* font = new CGUIFont(this, filename);
 			ifont = (IGUIFont*)font;
 			// change working directory, for loading textures
-			core::string<c16> workingDir = FileSystem->getWorkingDirectory();
+			io::path workingDir = FileSystem->getWorkingDirectory();
 			FileSystem->changeWorkingDirectoryTo(FileSystem->getFileDir(f.Filename));
 
 			// load the font
@@ -1409,7 +1409,7 @@ IGUIFont* CGUIEnvironment::getFont(const core::string<c16>& filename)
 }
 
 
-IGUISpriteBank* CGUIEnvironment::getSpriteBank(const core::string<c16>& filename)
+IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 {
 	// search for the file name
 
@@ -1435,7 +1435,7 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const core::string<c16>& filename
 }
 
 
-IGUISpriteBank* CGUIEnvironment::addEmptySpriteBank(const core::string<c16>& name)
+IGUISpriteBank* CGUIEnvironment::addEmptySpriteBank(const io::path& name)
 {
 	// no duplicate names allowed
 
@@ -1466,7 +1466,7 @@ IGUIFont* CGUIEnvironment::getBuiltInFont() const
 }
 
 //! Creates the image list from the given texture.
-IGUIImageList* CGUIEnvironment::createImageList(  video::ITexture* texture, 
+IGUIImageList* CGUIEnvironment::createImageList(  video::ITexture* texture,
 					core::dimension2d<s32>	imageSize, bool useAlphaChannel )
 {
 	CGUIImageList* imageList = new CGUIImageList( Driver );
@@ -1479,7 +1479,7 @@ IGUIImageList* CGUIEnvironment::createImageList(  video::ITexture* texture,
 	return imageList;
 }
 
-//! Returns the root gui element. 
+//! Returns the root gui element.
 IGUIElement* CGUIEnvironment::getRootGUIElement()
 {
 	return this;

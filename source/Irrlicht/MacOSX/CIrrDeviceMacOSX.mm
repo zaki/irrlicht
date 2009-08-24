@@ -1100,6 +1100,18 @@ void CIrrDeviceMacOSX::minimizeWindow()
 {
 	// todo: implement
 }
+	
+//! Maximizes the window if possible.
+void CIrrDeviceMacOSX::maximizeWindow()
+{
+	// todo: implement
+}
+	
+//! Restore the window to normal size if possible.
+void CIrrDeviceMacOSX::restoreWindow()
+{
+	// todo: implement
+}
 
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {

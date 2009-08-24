@@ -30,7 +30,7 @@ namespace scene
 		\param filename: Filename of the mesh. When called ISceneManager::getMesh() with this
 		parameter, the method will return the mesh parameter given with this method.
 		\param mesh: Pointer to a mesh which will now be referenced by this name. */
-		virtual void addMesh(const core::string<c16>& filename, IAnimatedMesh* mesh);
+		virtual void addMesh(const io::path& filename, IAnimatedMesh* mesh);
 
 		//! Removes a mesh from the cache.
 		/** After loading a mesh with getMesh(), the mesh can be removed from the cache
@@ -62,32 +62,32 @@ namespace scene
 
 		//! Returns a mesh based on its file name.
 		/** \return Returns pointer to the mesh or 0 if there is none with this number. */
-		virtual IAnimatedMesh* getMeshByFilename(const core::string<c16>& filename);
+		virtual IAnimatedMesh* getMeshByFilename(const io::path& filename);
 
 		//! Returns name of a mesh based on its index number.
 		/** \param index: Index of the mesh, number between 0 and getMeshCount()-1.
 		Note that this is only valid until a new mesh is loaded */
-		virtual const c16* getMeshFilename(u32 index) const;
+		virtual const io::path& getMeshFilename(u32 index) const;
 
 		//! Returns the filename of a loaded mesh, if there is any.
-		/** Returns 0 if there is none. */
-		virtual const c16* getMeshFilename(const IAnimatedMesh* const mesh) const;
+		/** Returns an empty path if there is none. */
+		virtual const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const;
 
 		//! Returns the filename of a loaded mesh, if there is any.
-		/* Returns 0 if there is none.*/
-		virtual const c16* getMeshFilename(const IMesh* const mesh) const;
+		/** Returns an empty path if there is none.*/
+		virtual const io::path& getMeshFilename(const IMesh* const mesh) const;
 
 		//! Renames a loaded mesh, if possible.
-		virtual bool setMeshFilename(u32 index, const c16* filename);
+		virtual bool setMeshFilename(u32 index, const io::path& filename);
 
 		//! Renames a loaded mesh, if possible.
-		virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const c16* filename);
+		virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename);
 
 		//! Renames a loaded mesh, if possible.
-		virtual bool setMeshFilename(const IMesh* const mesh, const c16* filename);
+		virtual bool setMeshFilename(const IMesh* const mesh, const io::path& filename);
 
 		//! returns if a mesh already was loaded
-		virtual bool isMeshLoaded(const core::string<c16>& filename);
+		virtual bool isMeshLoaded(const io::path& filename);
 
 		//! Clears the whole mesh cache, removing all meshes.
 		virtual void clear();
@@ -99,12 +99,12 @@ namespace scene
 
 		struct MeshEntry
 		{
-			MeshEntry ( const core::string<c16> name )
+			MeshEntry ( const io::path name )
 				: Name ( name )
 			{
 				Name.make_lower ();
 			}
-			core::string<c16> Name;
+			io::path Name;
 			IAnimatedMesh* Mesh;
 
 			bool operator < (const MeshEntry& other) const

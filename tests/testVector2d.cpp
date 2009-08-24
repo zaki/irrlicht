@@ -2,8 +2,6 @@
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
-#include "irrlicht.h"
-#include <assert.h>
 
 using namespace irr;
 using namespace core;
@@ -108,7 +106,7 @@ static bool doTests()
 	logTestString("vector2df getAngle\n");
 	for (s32 i=0; i<200; ++i)
 	{
-		core::vector2d<T> tmp(-1, -100+i);
+		core::vector2d<T> tmp((T)-1, (T)(-100+i));
 		core::vector2d<f64> ref(-1, -100+i);
 		if (!equals(tmp.getAngle(),ref.getAngle(), 0.0003))
 		{
@@ -116,7 +114,7 @@ static bool doTests()
 				tmp.getAngle(), ref.getAngle());
 			return false;
 		}
-		f32 val = atan2f(tmp.Y, tmp.X)*core::RADTODEG;
+		f32 val = atan2f((float)tmp.Y, (float)tmp.X)*core::RADTODEG;
 		if (val<=0)
 			val=-val;
 		else
@@ -127,7 +125,7 @@ static bool doTests()
 				tmp.getAngle(), val, tmp.X, tmp.Y);
 			return false;
 		}
-		tmp = core::vector2d<T>(1, -100+i);
+		tmp = core::vector2d<T>((T)1, (T)(-100+i));
 		ref = core::vector2d<f64>(1, -100+i);
 		if (!equals(tmp.getAngle(),ref.getAngle(), 0.0003))
 		{
@@ -135,7 +133,7 @@ static bool doTests()
 				tmp.getAngle(), ref.getAngle());
 			return false;
 		}
-		val = atan2f(tmp.Y, tmp.X)*core::RADTODEG;
+		val = atan2f((float)tmp.Y, (float)tmp.X)*core::RADTODEG;
 		if (val<=0)
 			val=-val;
 		else

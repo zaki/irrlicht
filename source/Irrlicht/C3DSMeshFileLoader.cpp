@@ -40,7 +40,7 @@ enum e3DSChunk
 	 C3DS_EDIT_OBJECT   = 0x4000,
 
 	// sub chunks of C3DS_EDIT_MATERIAL
-	 C3DS_MATNAME       = 0xA000, 
+	 C3DS_MATNAME       = 0xA000,
 	 C3DS_MATAMBIENT    = 0xA010,
 	 C3DS_MATDIFFUSE    = 0xA020,
 	 C3DS_MATSPECULAR   = 0xA030,
@@ -153,7 +153,7 @@ C3DSMeshFileLoader::~C3DSMeshFileLoader()
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool C3DSMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool C3DSMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "3ds" );
 }
@@ -302,7 +302,7 @@ bool C3DSMeshFileLoader::readColorChunk(io::IReadFile* file, ChunkData* chunk,
 	{
 		// read 8 bit data
 		file->read(c, sizeof(c));
-		out.set(255, c[0], c[1], c[2]); 
+		out.set(255, c[0], c[1], c[2]);
 		data.read += sizeof(c);
 	}
 	break;
@@ -316,7 +316,7 @@ bool C3DSMeshFileLoader::readColorChunk(io::IReadFile* file, ChunkData* chunk,
 		cf[1] = os::Byteswap::byteswap(cf[1]);
 		cf[2] = os::Byteswap::byteswap(cf[2]);
 #endif
-		out.set(255, (s32)(cf[0]*255.0f), (s32)(cf[1]*255.0f), (s32)(cf[2]*255.0f)); 
+		out.set(255, (s32)(cf[0]*255.0f), (s32)(cf[1]*255.0f), (s32)(cf[2]*255.0f));
 		data.read += sizeof(cf);
 	}
 	break;
@@ -914,7 +914,7 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 			readObjectChunk(file, &data);
 			break;
 
-		case C3DS_TRIVERT: 
+		case C3DS_TRIVERT:
 			readVertices(file, data);
 			break;
 
@@ -936,12 +936,12 @@ bool C3DSMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData* parent)
 			}
 			break;
 
-		case C3DS_TRIFACE: 
+		case C3DS_TRIFACE:
 			readIndices(file, data);
 			readObjectChunk(file, &data); // read smooth and material groups
 			break;
 
-		case C3DS_TRIFACEMAT: 
+		case C3DS_TRIFACEMAT:
 			readMaterialGroup(file, data);
 			break;
 
@@ -1066,7 +1066,7 @@ void C3DSMeshFileLoader::composeObject(io::IReadFile* file, const core::stringc&
 			{
 				u32 vtxCount = mb->Vertices.size();
 				if (vtxCount>maxPrimitives)
-				{		
+				{
 					IMeshBuffer* tmp = mb;
 					mb = new SMeshBuffer();
 					Mesh->addMeshBuffer(mb);
@@ -1146,7 +1146,7 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 			{
 				const core::stringc fname = FileSystem->getFileDir(modelFilename) + "/" + FileSystem->getFileBasename(Materials[i].Filename[0]);
 				if (FileSystem->existFile(fname))
-					texture = SceneManager->getVideoDriver()->getTexture(fname);				
+					texture = SceneManager->getVideoDriver()->getTexture(fname);
 			}
 			if (!texture)
 				os::Printer::log("Could not load a texture for entry in 3ds file",
@@ -1164,7 +1164,7 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 			{
 				const core::stringc fname = FileSystem->getFileDir(modelFilename) + "/" + FileSystem->getFileBasename(Materials[i].Filename[2]);
 				if (FileSystem->existFile(fname))
-					texture = SceneManager->getVideoDriver()->getTexture(fname);				
+					texture = SceneManager->getVideoDriver()->getTexture(fname);
 			}
 			if (!texture)
 			{
@@ -1187,7 +1187,7 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 			{
 				const core::stringc fname = FileSystem->getFileDir(modelFilename) + "/" + FileSystem->getFileBasename(Materials[i].Filename[3]);
 				if (FileSystem->existFile(fname))
-					texture = SceneManager->getVideoDriver()->getTexture(fname);				
+					texture = SceneManager->getVideoDriver()->getTexture(fname);
 			}
 
 			if (!texture)
@@ -1212,7 +1212,7 @@ void C3DSMeshFileLoader::loadMaterials(io::IReadFile* file)
 			{
 				const core::stringc fname = FileSystem->getFileDir(modelFilename) + "/" + FileSystem->getFileBasename(Materials[i].Filename[4]);
 				if (FileSystem->existFile(fname))
-					texture = SceneManager->getVideoDriver()->getTexture(fname);				
+					texture = SceneManager->getVideoDriver()->getTexture(fname);
 			}
 			if (!texture)
 				os::Printer::log("Could not load a texture for entry in 3ds file",

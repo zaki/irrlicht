@@ -6,6 +6,7 @@
 #define __IRR_CORE_UTIL_H_INCLUDED__
 
 #include "irrString.h"
+#include "path.h"
 
 namespace irr
 {
@@ -19,11 +20,10 @@ namespace core
 // ----------- some basic quite often used string functions -----------------
 
 //! search if a filename has a proper extension
-inline s32 isFileExtension (	const core::string<c16>& filename,
-								const core::string<c16>& ext0,
-								const core::string<c16>& ext1,
-								const core::string<c16>& ext2
-							)
+inline s32 isFileExtension (	const io::path& filename,
+								const io::path& ext0,
+								const io::path& ext1,
+								const io::path& ext2)
 {
 	s32 extPos = filename.findLast ( '.' );
 	if ( extPos < 0 )
@@ -37,11 +37,10 @@ inline s32 isFileExtension (	const core::string<c16>& filename,
 }
 
 //! search if a filename has a proper extension
-inline bool hasFileExtension (	const core::string<c16>& filename,
-								const core::string<c16>& ext0,
-								const core::string<c16>& ext1 = "",
-								const core::string<c16>& ext2 = ""
-							)
+inline bool hasFileExtension (	const io::path& filename,
+								const io::path& ext0,
+								const io::path& ext1 = "",
+								const io::path& ext2 = "")
 {
 	return isFileExtension ( filename, ext0, ext1, ext2 ) > 0;
 }
@@ -112,7 +111,7 @@ inline core::stringc& deletePathFromFilename(core::stringc& filename)
 }
 
 //! trim paths
-inline core::string<c16>& deletePathFromPath(core::string<c16>& filename, s32 pathCount)
+inline io::path& deletePathFromPath(io::path& filename, s32 pathCount)
 {
 	// delete path from filename
 	s32 i = filename.size();
@@ -136,15 +135,9 @@ inline core::string<c16>& deletePathFromPath(core::string<c16>& filename, s32 pa
 	return filename;
 }
 
-//! gets the last char of a string or null
-inline c16 lastChar( const core::string<c16>& s)
-{
-	return s.size() ? s [ s.size() - 1 ] : 0;
-}
-
 //! looks if file is in the same directory of path. returns offset of directory.
 //! 0 means in same directory. 1 means file is direct child of path
-inline s32 isInSameDirectory ( const core::string<c16>& path, const core::string<c16>& file )
+inline s32 isInSameDirectory ( const io::path& path, const io::path& file )
 {
 	s32 subA = 0;
 	s32 subB = 0;

@@ -1194,7 +1194,6 @@ public:
 		return EAT_COLORF;
 	}
 
-
 	virtual const wchar_t* getTypeString() const
 	{
 		return L"colorf";
@@ -1208,7 +1207,9 @@ class CColorAttribute : public CNumbersAttribute
 {
 public:
 
-	CColorAttribute(const char* name, video::SColorf value) : CNumbersAttribute(name, value) {}
+	CColorAttribute(const char* name, const video::SColorf& value) : CNumbersAttribute(name, value) {}
+
+	CColorAttribute(const char* name, const video::SColor& value) : CNumbersAttribute(name, value) {}
 
 	virtual s32 getInt()
 	{
@@ -1245,8 +1246,12 @@ public:
 	virtual void setString(const char* text)
 	{
 		u32 c;
-		sscanf(text, "%08x", &c);
-		setColor(c);
+		if (sscanf(text, "%08x", &c)!=1)
+		{
+			CNumbersAttribute::setString(text);
+		}
+		else
+			setColor(c);
 	}
 
 	virtual E_ATTRIBUTE_TYPE getType() const

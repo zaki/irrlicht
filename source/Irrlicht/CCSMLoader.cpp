@@ -368,7 +368,7 @@ namespace scene
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	bool CCSMLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+	bool CCSMLoader::isALoadableFileExtension(const io::path& filename) const
 	{
 		return core::hasFileExtension ( filename, "csm" );
 	}
@@ -407,7 +407,7 @@ namespace scene
 
 
 	scene::IMesh* CCSMLoader::createIrrlichtMesh(const CSMFile* csmFile,
-		const core::stringc& textureRoot, const core::string<c16>& lmprefix)
+		const core::stringc& textureRoot, const io::path& lmprefix)
 	{
 		scene::SMesh *pMesh = new scene::SMesh();
 		video::IVideoDriver* driver = SceneManager->getVideoDriver();
@@ -416,9 +416,9 @@ namespace scene
 		{
 			const LightMap* lmap = csmFile->getLightMapAt(l);
 
-			core::string<c16> lmapName = lmprefix;
+			io::path lmapName = lmprefix;
 			lmapName += "LMAP_";
-			lmapName += core::string<c16>(l+1);
+			lmapName += io::path(l+1);
 			os::Printer::log("CCSMLoader loading light map", lmapName.c_str());
 
 			video::IImage* lmapImg = driver->createImageFromData(
@@ -462,9 +462,9 @@ namespace scene
 				}
 
 				//material
-				core::string<c16> lmapName = lmprefix;
+				io::path lmapName = lmprefix;
 				lmapName += "LMAP_";
-				lmapName += core::string<c16>(surface->getLightMapId());
+				lmapName += io::path(surface->getLightMapId());
 
 				scene::SMeshBufferLightMap *buffer = new scene::SMeshBufferLightMap();
 				buffer->Material.setTexture(0, texture);

@@ -9,7 +9,7 @@
 #include "IImage.h"
 #include "dimension2d.h"
 #include "EDriverTypes.h"
-#include "irrString.h"
+#include "path.h"
 #include "matrix4.h"
 
 namespace irr
@@ -102,7 +102,7 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const core::string<c16>& name) : Name(name)
+	ITexture(const io::path& name) : Name(name)
 	{
 		Name.make_lower();
 	}
@@ -161,7 +161,7 @@ public:
 	virtual bool hasMipMaps() const { return false; }
 
 	//! Returns if the texture has an alpha channel
-	virtual bool hasAlpha() const { 
+	virtual bool hasAlpha() const {
 		return getColorFormat () == video::ECF_A8R8G8B8 || getColorFormat () == video::ECF_A1R5G5B5;
 	}
 
@@ -174,11 +174,11 @@ public:
 	virtual bool isRenderTarget() const { return false; }
 
 	//! Get name of texture (in most cases this is the filename)
-	const core::string<c16>& getName() const { return Name; }
+	const io::path& getName() const { return Name; }
 
 protected:
 
-	core::string<c16> Name;
+	io::path Name;
 };
 
 

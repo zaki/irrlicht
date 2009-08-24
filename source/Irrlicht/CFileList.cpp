@@ -14,9 +14,9 @@ namespace irr
 namespace io
 {
 
-static const core::string<c16> emptyFileListEntry;
+static const io::path emptyFileListEntry;
 
-CFileList::CFileList(const core::string<c16>& path, bool ignoreCase, bool ignorePaths)
+CFileList::CFileList(const io::path& path, bool ignoreCase, bool ignorePaths)
  : IgnorePaths(ignorePaths), IgnoreCase(ignoreCase), Path(path)
 {
 	#ifdef _DEBUG
@@ -41,7 +41,7 @@ void CFileList::sort()
 	Files.sort();
 }
 
-const core::string<c16>& CFileList::getFileName(u32 index) const
+const io::path& CFileList::getFileName(u32 index) const
 {
 	if (index >= Files.size())
 		return emptyFileListEntry;
@@ -51,7 +51,7 @@ const core::string<c16>& CFileList::getFileName(u32 index) const
 
 
 //! Gets the full name of a file in the list, path included, based on an index.
-const core::string<c16>& CFileList::getFullFileName(u32 index) const
+const io::path& CFileList::getFullFileName(u32 index) const
 {
 	if (index >= Files.size())
 		return emptyFileListEntry;
@@ -60,7 +60,7 @@ const core::string<c16>& CFileList::getFullFileName(u32 index) const
 }
 
 //! adds a file or folder
-u32 CFileList::addItem(const core::string<c16>& fullPath, u32 size, bool isDirectory, u32 id)
+u32 CFileList::addItem(const io::path& fullPath, u32 size, bool isDirectory, u32 id)
 {
 	SFileListEntry entry;
 	entry.Size = size;
@@ -70,7 +70,7 @@ u32 CFileList::addItem(const core::string<c16>& fullPath, u32 size, bool isDirec
 	entry.IsDirectory = isDirectory;
 
 	// remove trailing slash
-	if (core::lastChar(entry.Name) == '/')
+	if (entry.Name.lastChar() == '/')
 	{
 		entry.IsDirectory = true;
 		entry.Name[entry.Name.size()-1] = 0;
@@ -112,7 +112,7 @@ u32 CFileList::getFileSize(u32 index) const
 
 
 //! Searches for a file or folder within the list, returns the index
-s32 CFileList::findFile(const core::string<c16>& filename, bool isDirectory = false) const
+s32 CFileList::findFile(const io::path& filename, bool isDirectory = false) const
 {
 	SFileListEntry entry;
 	entry.FullName = filename;
@@ -122,7 +122,7 @@ s32 CFileList::findFile(const core::string<c16>& filename, bool isDirectory = fa
 	entry.FullName.replace('\\', '/');
 
 	// remove trailing slash
-	if (core::lastChar(entry.Name) == '/')
+	if (entry.Name.lastChar() == '/')
 	{
 		entry.IsDirectory = true;
 		entry.Name[ entry.Name.size()-1] = 0;
@@ -139,7 +139,7 @@ s32 CFileList::findFile(const core::string<c16>& filename, bool isDirectory = fa
 }
 
 //! Returns the base path of the file list
-const core::string<c16>& CFileList::getPath() const
+const io::path& CFileList::getPath() const
 {
 	return Path;
 }

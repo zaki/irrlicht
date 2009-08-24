@@ -29,7 +29,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -38,7 +38,6 @@ public:
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
 
 private:
-	io::IFileSystem* FileSystem;
 	scene::ISceneManager* SceneManager;
 
 };

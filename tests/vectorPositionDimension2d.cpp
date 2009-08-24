@@ -5,8 +5,6 @@
 	and that they can convert from dimension2d */
 
 #include "testUtils.h"
-#include "irrlicht.h"
-#include <assert.h>
 
 using namespace irr;
 using namespace core;

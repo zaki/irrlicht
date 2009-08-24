@@ -21,12 +21,12 @@ struct SFileListEntry
 	//! The name of the file
 	/** If this is a file or folder in the virtual filesystem and the archive
 	was created with the ignoreCase flag then the file name will be lower case. */
-	core::string<c16> Name;
+	io::path Name;
 
 	//! The name of the file including the path
 	/** If this is a file or folder in the virtual filesystem and the archive was
 	created with the ignoreDirs flag then it will be the same as Name. */
-	core::string<c16> FullName;
+	io::path FullName;
 
 	//! The size of the file in bytes
 	u32 Size;
@@ -68,7 +68,7 @@ public:
 
 	//! Constructor
 	/** \param path The path of this file archive */
-	CFileList(const core::string<c16>& path, bool ignoreCase, bool ignorePaths);
+	CFileList(const io::path& path, bool ignoreCase, bool ignorePaths);
 
 	//! Destructor
 	virtual ~CFileList();
@@ -78,7 +78,7 @@ public:
 	\param isDirectory True if this is a directory rather than a file.
 	\param size The size of the file in bytes.
 	\param id The ID of the file in the archive which owns it */
-	virtual u32 addItem(const core::string<c16>& fullPath, u32 size, bool isDirectory, u32 id=0);
+	virtual u32 addItem(const io::path& fullPath, u32 size, bool isDirectory, u32 id=0);
 
 	//! Sorts the file list
 	void sort();
@@ -89,10 +89,10 @@ public:
 	virtual u32 getFileCount() const;
 
 	//! Gets the name of a file in the list, based on an index.
-	virtual const core::string<c16>& getFileName(u32 index) const;
+	virtual const io::path& getFileName(u32 index) const;
 
 	//! Gets the full name of a file in the list, path included, based on an index.
-	virtual const core::string<c16>& getFullFileName(u32 index) const;
+	virtual const io::path& getFullFileName(u32 index) const;
 
 	//! Returns true if the file is a directory
 	virtual bool isDirectory(u32 index) const;
@@ -101,10 +101,10 @@ public:
 	virtual u32 getFileSize(u32 index) const;
 
 	//! Searches for a file or folder within the list, returns the index
-	virtual s32 findFile(const core::string<c16>& filename, bool isFolder) const;
+	virtual s32 findFile(const io::path& filename, bool isFolder) const;
 
 	//! Returns the base path of the file list
-	virtual const core::string<c16>& getPath() const;
+	virtual const io::path& getPath() const;
 
 protected:
 
@@ -115,7 +115,7 @@ protected:
 	bool IgnoreCase;
 
 	//! Path to the file list
-	core::string<c16> Path;
+	io::path Path;
 
 	//! List of files
 	core::array<SFileListEntry> Files;

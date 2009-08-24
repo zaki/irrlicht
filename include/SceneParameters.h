@@ -120,6 +120,15 @@ namespace scene
 	const c8* const OBJ_LOADER_IGNORE_GROUPS = "OBJ_IgnoreGroups";
 
 
+	//! Flag to avoid loading material .mtl file for .obj files
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
+	\endcode
+	**/
+	const c8* const OBJ_LOADER_IGNORE_MATERIAL_FILES = "OBJ_IgnoreMaterialFiles";
+
+
 	//! Flag to ignore the b3d file's mipmapping flag
 	/** Instead Irrlicht's texture creation flag is used. Use it like this:
 	\code
@@ -133,6 +142,23 @@ namespace scene
 	/** In this way special animators like deletion animators can be stopped from
 	deleting scene nodes for example */
 	const c8* const IRR_SCENE_MANAGER_IS_EDITOR = "IRR_Editor";
+
+	//! Name of the parameter for setting the length of debug normals.
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::DEBUG_NORMAL_LENGTH, 1.5f);
+	\endcode
+	**/
+	const c8* const DEBUG_NORMAL_LENGTH = "DEBUG_Normal_Length";
+
+	//! Name of the parameter for setting the color of debug normals.
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttributeAsColor(scene::DEBUG_NORMAL_COLOR, video::SColor(255, 255, 255, 255));
+	\endcode
+	**/
+	const c8* const DEBUG_NORMAL_COLOR = "DEBUG_Normal_Color";
+
 
 } // end namespace scene
 } // end namespace irr

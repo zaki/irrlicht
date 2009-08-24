@@ -2,7 +2,6 @@
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
-#include "irrlicht.h"
 
 using namespace irr;
 using namespace scene;

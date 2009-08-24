@@ -180,6 +180,10 @@ CSceneManager::CSceneManager(video::IVideoDriver* driver, io::IFileSystem* fs,
 	// root node's scene manager
 	SceneManager = this;
 
+	// set scene parameters
+	Parameters.setAttribute( DEBUG_NORMAL_LENGTH, 1.f );
+	Parameters.setAttribute( DEBUG_NORMAL_COLOR, video::SColor(255, 34, 221, 221));
+
 	if (Driver)
 		Driver->grab();
 
@@ -334,7 +338,7 @@ CSceneManager::~CSceneManager()
 
 
 //! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
-IAnimatedMesh* CSceneManager::getMesh(const core::string<c16>& filename)
+IAnimatedMesh* CSceneManager::getMesh(const io::path& filename)
 {
 	IAnimatedMesh* msh = MeshCache->getMeshByFilename(filename);
 	if (msh)
@@ -381,7 +385,7 @@ IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 	if (!file)
 		return 0;
 
-	core::string<c16> name = file->getFileName();
+	io::path name = file->getFileName();
 	IAnimatedMesh* msh = MeshCache->getMeshByFilename(file->getFileName());
 	if (msh)
 		return msh;
@@ -810,7 +814,7 @@ IParticleSystemSceneNode* CSceneManager::addParticleSystemSceneNode(
 
 //! Adds a terrain scene node to the scene graph.
 ITerrainSceneNode* CSceneManager::addTerrainSceneNode(
-	const core::string<c16>& heightMapFileName,
+	const io::path& heightMapFileName,
 	ISceneNode* parent, s32 id,
 	const core::vector3df& position,
 	const core::vector3df& rotation,
@@ -910,7 +914,7 @@ IDummyTransformationSceneNode* CSceneManager::addDummyTransformationSceneNode(
 //! specify a name for the mesh, because the mesh is added to the mesh pool,
 //! and can be retrieved again using ISceneManager::getMesh with the name as
 //! parameter.
-IAnimatedMesh* CSceneManager::addHillPlaneMesh(const core::string<c16>& name,
+IAnimatedMesh* CSceneManager::addHillPlaneMesh(const io::path& name,
 		const core::dimension2d<f32>& tileSize,
 		const core::dimension2d<u32>& tileCount,
 		video::SMaterial* material, f32 hillHeight,
@@ -945,7 +949,7 @@ IAnimatedMesh* CSceneManager::addHillPlaneMesh(const core::string<c16>& name,
 
 
 //! Adds a terrain mesh to the mesh pool.
-IAnimatedMesh* CSceneManager::addTerrainMesh(const core::string<c16>& name,
+IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 	video::IImage* texture, video::IImage* heightmap,
 	const core::dimension2d<f32>& stretchSize,
 	f32 maxHeight,
@@ -979,7 +983,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const core::string<c16>& name,
 
 
 //! Adds an arrow mesh to the mesh pool.
-IAnimatedMesh* CSceneManager::addArrowMesh(const core::string<c16>& name,
+IAnimatedMesh* CSceneManager::addArrowMesh(const io::path& name,
 		video::SColor vtxColor0, video::SColor vtxColor1,
 		u32 tesselationCylinder, u32 tesselationCone, f32 height,
 		f32 cylinderHeight, f32 width0,f32 width1)
@@ -1012,7 +1016,7 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const core::string<c16>& name,
 
 
 //! Adds a static sphere mesh to the mesh pool.
-IAnimatedMesh* CSceneManager::addSphereMesh(const core::string<c16>& name,
+IAnimatedMesh* CSceneManager::addSphereMesh(const io::path& name,
 		f32 radius, u32 polyCountX, u32 polyCountY)
 {
 	if (MeshCache->isMeshLoaded(name))
@@ -1042,7 +1046,7 @@ IAnimatedMesh* CSceneManager::addSphereMesh(const core::string<c16>& name,
 
 
 //! Adds a static volume light mesh to the mesh pool.
-IAnimatedMesh* CSceneManager::addVolumeLightMesh(const core::string<c16>& name,
+IAnimatedMesh* CSceneManager::addVolumeLightMesh(const io::path& name,
 		const u32 SubdivideU, const u32 SubdivideV,
 		const video::SColor FootColor, const video::SColor TailColor)
 {
@@ -2028,7 +2032,7 @@ ISceneNodeAnimatorFactory* CSceneManager::getSceneNodeAnimatorFactory(u32 index)
 
 //! Saves the current scene into a file.
 //! \param filename: Name of the file .
-bool CSceneManager::saveScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer)
 {
 	bool ret = false;
 	io::IWriteFile* file = FileSystem->createAndWriteFile(filename);
@@ -2068,7 +2072,7 @@ bool CSceneManager::saveScene(io::IWriteFile* file, ISceneUserDataSerializer* us
 
 //! Loads a scene. Note that the current scene is not cleared before.
 //! \param filename: Name of the file .
-bool CSceneManager::loadScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer)
+bool CSceneManager::loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer)
 {
 	bool ret = false;
 	io::IReadFile* read = FileSystem->createAndOpenFile(filename);

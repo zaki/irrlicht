@@ -181,7 +181,7 @@ namespace os
 			Logger->log(message, hint, ll);
 	}
 
-	void Printer::log(const c8* message, const core::string<c16>& hint, ELOG_LEVEL ll)
+	void Printer::log(const c8* message, const io::path& hint, ELOG_LEVEL ll)
 	{
 		if (Logger)
 			Logger->log(message, hint.c_str(), ll);

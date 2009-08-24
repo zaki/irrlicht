@@ -19,7 +19,7 @@ namespace gui
 {
 
 //! constructor
-CGUIFont::CGUIFont(IGUIEnvironment *env, const core::string<c16>& filename)
+CGUIFont::CGUIFont(IGUIEnvironment *env, const io::path& filename)
 : Driver(0), SpriteBank(0), Environment(env), WrongCharacter(0),
 	MaxHeight(0), GlobalKerningWidth(0), GlobalKerningHeight(0)
 {
@@ -218,7 +218,7 @@ bool CGUIFont::load(io::IReadFile* file)
 
 
 //! loads a font file, native file needed, for texture parsing
-bool CGUIFont::load(const core::string<c16>& filename)
+bool CGUIFont::load(const io::path& filename)
 {
 	if (!Driver)
 		return false;
@@ -229,7 +229,7 @@ bool CGUIFont::load(const core::string<c16>& filename)
 
 
 //! load & prepare font from ITexture
-bool CGUIFont::loadTexture(video::IImage* image, const core::string<c16>& name)
+bool CGUIFont::loadTexture(video::IImage* image, const io::path& name)
 {
 	if (!image)
 		return false;

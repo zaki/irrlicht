@@ -30,7 +30,7 @@ namespace io
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".zip")
-		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
+		virtual bool isALoadableFileFormat(const io::path& filename) const;
 
 		//! Check if the file might be loaded by this class
 		/** Check might look into the file.
@@ -47,7 +47,7 @@ namespace io
 		//! Creates an archive from the filename
 		/** \param file File handle to check.
 		\return Pointer to newly created archive, or 0 upon error. */
-		virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const;
+		virtual IFileArchive* createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const;
 
 		//! creates/loads an archive from the file.
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
@@ -63,7 +63,7 @@ namespace io
 	public:
 
 		//! Constructor
-		CMountPointReader(IFileSystem *parent, const core::string<c16>& basename,
+		CMountPointReader(IFileSystem *parent, const io::path& basename,
 				bool ignoreCase, bool ignorePaths);
 
 		//! Destructor
@@ -73,7 +73,7 @@ namespace io
 		virtual IReadFile* createAndOpenFile(u32 index);
 
 		//! opens a file by file name
-		virtual IReadFile* createAndOpenFile(const core::string<c16>& filename);
+		virtual IReadFile* createAndOpenFile(const io::path& filename);
 
 		//! returns the list of files
 		virtual const IFileList* getFileList() const;
@@ -83,7 +83,7 @@ namespace io
 
 	private:
 
-		core::array<core::string<c16> > RealFileNames;
+		core::array<io::path> RealFileNames;
 
 		IFileSystem *Parent;
 		void buildDirectory();

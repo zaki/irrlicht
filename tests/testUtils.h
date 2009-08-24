@@ -10,7 +10,7 @@
 #endif
 
 #include "irrlicht.h"
-
+#include <assert.h>
 
 //! Compare two files
 /** \param fileName1 The first file for comparison.

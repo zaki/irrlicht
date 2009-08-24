@@ -1992,7 +1992,7 @@ const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE st
 
 //! Creates a render target texture.
 ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-		const core::string<c16>& name, const ECOLOR_FORMAT format)
+		const io::path& name, const ECOLOR_FORMAT format)
 {
 	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
 	ITexture* tex = new CSoftwareTexture2(img, name, CSoftwareTexture2::IS_RENDERTARGET );
@@ -2024,7 +2024,7 @@ IImage* CBurningVideoDriver::createScreenShot()
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new CSoftwareTexture2(
 		surface, name,

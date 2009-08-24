@@ -38,7 +38,7 @@ public:
 	\return Returns a pointer to the created file interface.
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information. */
-	virtual IReadFile* createAndOpenFile(const core::string<c16>& filename) =0;
+	virtual IReadFile* createAndOpenFile(const path& filename) =0;
 
 	//! Creates an IReadFile interface for accessing memory like a file.
 	/** This allows you to use a pointer to memory where an IReadFile is requested.
@@ -51,7 +51,7 @@ public:
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information.
 	*/
-	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped=false) =0;
+	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const path& fileName, bool deleteMemoryWhenDropped=false) =0;
 
 	//! Creates an IReadFile interface for accessing files inside files.
 	/** This is useful e.g. for archives.
@@ -63,7 +63,7 @@ public:
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information.
 	*/
-	virtual IReadFile* createLimitReadFile(const core::string<c16>& fileName,
+	virtual IReadFile* createLimitReadFile(const path& fileName,
 			IReadFile* alreadyOpenedFile, long pos, long areaSize) =0;
 
 	//! Creates an IWriteFile interface for accessing memory like a file.
@@ -78,7 +78,7 @@ public:
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information.
 	*/
-	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped=false) =0;
+	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const path& fileName, bool deleteMemoryWhenDropped=false) =0;
 
 
 	//! Opens a file for write access.
@@ -89,7 +89,7 @@ public:
 	file could not created or opened for writing.
 	The returned pointer should be dropped when no longer needed.
 	See IReferenceCounted::drop() for more information. */
-	virtual IWriteFile* createAndWriteFile(const core::string<c16>& filename, bool append=false) =0;
+	virtual IWriteFile* createAndWriteFile(const path& filename, bool append=false) =0;
 
 	//! Adds an archive to the file system.
 	/** After calling this, the Irrlicht Engine will also search and open files directly from this archive.
@@ -102,15 +102,15 @@ public:
 	writing all letters in the right case.
 	\param ignorePaths: If set to true, files in the added archive can be accessed
 	without its complete path.
-	\param archiveType: If no specific E_FILE_ARCHIVE_TYPE is selected then the type of archive will depend on 
+	\param archiveType: If no specific E_FILE_ARCHIVE_TYPE is selected then the type of archive will depend on
 	the extension of the file name. If you use a different extension then you can use this parameter to force
 	a specific type of archive.
 	\return Returns true if the archive was added successfully, false if not. */
-	virtual bool addFileArchive(const core::string<c16>& filename, bool ignoreCase=true, bool ignorePaths=true, 
+	virtual bool addFileArchive(const path& filename, bool ignoreCase=true, bool ignorePaths=true,
 		E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN) =0;
 
 	//! Adds an external archive loader to the engine.
-	/** Use this function to add support for new archive types to the engine, for example propiatrary or 
+	/** Use this function to add support for new archive types to the engine, for example propiatrary or
 	encyrpted file storage. */
 	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
 
@@ -119,20 +119,20 @@ public:
 
 	//! Removes an archive from the file system.
 	/** This will close the archive and free any file handles, but will not close resources which have already
-	been loaded and are now cached, for example textures and meshes. 
+	been loaded and are now cached, for example textures and meshes.
 	\param index: The index of the archive to remove
 	\return Returns true on success, false on failure */
 	virtual bool removeFileArchive(u32 index) =0;
 
 	//! Removes an archive from the file system.
 	/** This will close the archive and free any file handles, but will not close resources which have already
-	been loaded and are now cached, for example textures and meshes. 
+	been loaded and are now cached, for example textures and meshes.
 	\param index: The index of the archive to remove
 	\return Returns true on success, false on failure */
-	virtual bool removeFileArchive(const core::string<c16>& filename) =0;
+	virtual bool removeFileArchive(const path& filename) =0;
 
 	//! Changes the search order of attached archives.
-	/** 
+	/**
 	\param sourceIndex: The index of the archive to change
 	\param relative: The relative change in position, archives with a lower index are searched first */
 	virtual bool moveFileArchive(u32 sourceIndex, s32 relative) =0;
@@ -141,7 +141,7 @@ public:
 	virtual IFileArchive* getFileArchive(u32 index) =0;
 
 	//! Adds a zip archive to the file system. Deprecated! This function is provided for compatibility
-	/** with older versions of Irrlicht and may be removed in future versions, you should use 
+	/** with older versions of Irrlicht and may be removed in future versions, you should use
 	addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
@@ -158,9 +158,9 @@ public:
 	}
 
 	//! Adds an unzipped archive (or basedirectory with subdirectories..) to the file system.
-	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht 
-	and may be removed in future versions, you should use addFileArchive instead. 
-	Useful for handling data which will be in a zip file 
+	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht
+	and may be removed in future versions, you should use addFileArchive instead.
+	Useful for handling data which will be in a zip file
 	\param filename: Filename of the unzipped zip archive base directory to add to the file system.
 	\param ignoreCase: If set to true, files in the archive can be accessed without
 	writing all letters in the right case.
@@ -173,7 +173,7 @@ public:
 	}
 
 	//! Adds a pak archive to the file system.
-	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht 
+	/** Deprecated! This function is provided for compatibility with older versions of Irrlicht
 	and may be removed in future versions, you should use addFileArchive instead.
 	After calling this, the Irrlicht Engine will search and open files directly from this archive too.
 	This is useful for hiding data from the end user, speeding up file access and making it possible to
@@ -191,34 +191,34 @@ public:
 
 	//! Get the current working directory.
 	/** \return Current working directory as a string. */
-	virtual const core::string<c16>& getWorkingDirectory() =0;
+	virtual const path& getWorkingDirectory() =0;
 
 	//! Changes the current working directory.
 	/** \param newDirectory: A string specifying the new working directory.
 	The string is operating system dependent. Under Windows it has
 	the form "<drive>:\<directory>\<sudirectory>\<..>". An example would be: "C:\Windows\"
 	\return True if successful, otherwise false. */
-	virtual bool changeWorkingDirectoryTo(const core::string<c16>& newDirectory) =0;
+	virtual bool changeWorkingDirectoryTo(const path& newDirectory) =0;
 
 	//! Converts a relative path to an absolute (unique) path, resolving symbolic links if required
 	/** \param filename Possibly relative file or directory name to query.
 	\result Absolute filename which points to the same file. */
-	virtual core::string<c16> getAbsolutePath(const core::string<c16>& filename) const =0;
+	virtual path getAbsolutePath(const path& filename) const =0;
 
 	//! Returns the directory a file is located in.
 	/** \param filename: The file to get the directory from.
 	\return String containing the directory of the file. */
-	virtual core::string<c16> getFileDir(const core::string<c16>& filename) const =0;
+	virtual path getFileDir(const path& filename) const =0;
 
 	//! Returns the base part of a filename, i.e. the name without the directory part.
 	/** If no directory is prefixed, the full name is returned.
 	\param filename: The file to get the basename from
 	\param keepExtension True if filename with extension is returned otherwise everything
 	after the final '.' is removed as well. */
-	virtual core::string<c16> getFileBasename(const core::string<c16>& filename, bool keepExtension=true) const =0;
+	virtual path getFileBasename(const path& filename, bool keepExtension=true) const =0;
 
 	//! flatten a path and file name for example: "/you/me/../." becomes "/you"
-	virtual core::string<c16>& flattenFilename(core::string<c16>& directory, const core::string<c16>& root="/") const =0;
+	virtual path& flattenFilename(path& directory, const path& root="/") const =0;
 
 	//! Creates a list of files and directories in the current working directory and returns it.
 	/** \return a Pointer to the created IFileList is returned. After the list has been used
@@ -232,7 +232,7 @@ public:
 	//! Determines if a file exists and could be opened.
 	/** \param filename is the string identifying the file which should be tested for existence.
 	\return Returns true if file exists, and false if it does not exist or an error occured. */
-	virtual bool existFile(const core::string<c16>& filename) const =0;
+	virtual bool existFile(const path& filename) const =0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as wide characters (wchar_t*).
 	/** Use createXMLReaderUTF8() if you prefer char* instead of wchar_t*. See IIrrXMLReader for
@@ -241,7 +241,7 @@ public:
 	IXMLReader is returned. After use, the reader
 	has to be deleted using its IXMLReader::drop() method.
 	See IReferenceCounted::drop() for more information. */
-	virtual IXMLReader* createXMLReader(const core::string<c16>& filename) =0;
+	virtual IXMLReader* createXMLReader(const path& filename) =0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as wide characters (wchar_t*).
 	/** Use createXMLReaderUTF8() if you prefer char* instead of wchar_t*. See IIrrXMLReader for
@@ -259,7 +259,7 @@ public:
 	IXMLReader is returned. After use, the reader
 	has to be deleted using its IXMLReaderUTF8::drop() method.
 	See IReferenceCounted::drop() for more information. */
-	virtual IXMLReaderUTF8* createXMLReaderUTF8(const core::string<c16>& filename) =0;
+	virtual IXMLReaderUTF8* createXMLReaderUTF8(const path& filename) =0;
 
 	//! Creates a XML Reader from a file which returns all parsed strings as ASCII/UTF-8 characters (char*).
 	/** Use createXMLReader() if you prefer wchar_t* instead of char*. See IIrrXMLReader for
@@ -275,7 +275,7 @@ public:
 	IXMLWriter is returned. After use, the reader
 	has to be deleted using its IXMLWriter::drop() method.
 	See IReferenceCounted::drop() for more information. */
-	virtual IXMLWriter* createXMLWriter(const core::string<c16>& filename) =0;
+	virtual IXMLWriter* createXMLWriter(const path& filename) =0;
 
 	//! Creates a XML Writer from a file.
 	/** \return 0, if file could not be opened, otherwise a pointer to the created

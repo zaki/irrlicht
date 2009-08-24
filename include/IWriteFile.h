@@ -6,7 +6,7 @@
 #define __I_WRITE_FILE_H_INCLUDED__
 
 #include "IReferenceCounted.h"
-#include "irrString.h"
+#include "path.h"
 
 namespace irr
 {
@@ -37,11 +37,11 @@ namespace io
 
 		//! Get name of file.
 		/** \return File name as zero terminated character string. */
-		virtual const core::string<c16>& getFileName() const = 0;
+		virtual const path& getFileName() const = 0;
 	};
 
 	//! Internal function, please do not use.
-	IWriteFile* createWriteFile(const core::string<c16>& fileName, bool append);
+	IWriteFile* createWriteFile(const io::path& fileName, bool append);
 
 } // end namespace io
 } // end namespace irr

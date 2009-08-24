@@ -11,7 +11,7 @@ namespace io
 {
 
 
-CMemoryFile::CMemoryFile(void* memory, long len, const core::string<c16>& fileName, bool d)
+CMemoryFile::CMemoryFile(void* memory, long len, const io::path& fileName, bool d)
 : Buffer(memory), Len(len), Pos(0), Filename(fileName), deleteMemoryWhenDropped(d)
 {
 	#ifdef _DEBUG
@@ -39,7 +39,7 @@ s32 CMemoryFile::read(void* buffer, u32 sizeToRead)
 
 	c8* p = (c8*)Buffer;
 	memcpy(buffer, p + Pos, amount);
-	
+
 	Pos += amount;
 
 	return amount;
@@ -57,7 +57,7 @@ s32 CMemoryFile::write(const void* buffer, u32 sizeToWrite)
 
 	c8* p = (c8*)Buffer;
 	memcpy(p + Pos, buffer, amount);
-	
+
 	Pos += amount;
 
 	return amount;
@@ -81,7 +81,7 @@ bool CMemoryFile::seek(long finalPos, bool relativeMovement)
 	{
 		if (finalPos > Len)
 			return false;
-		
+
 		Pos = finalPos;
 	}
 
@@ -104,13 +104,13 @@ long CMemoryFile::getPos() const
 
 
 //! returns name of file
-const core::string<c16>& CMemoryFile::getFileName() const
+const io::path& CMemoryFile::getFileName() const
 {
 	return Filename;
 }
 
 
-IReadFile* createMemoryReadFile(void* memory, long size, const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
+IReadFile* createMemoryReadFile(void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped)
 {
 	CMemoryFile* file = new CMemoryFile(memory, size, fileName, deleteMemoryWhenDropped);
 	return file;

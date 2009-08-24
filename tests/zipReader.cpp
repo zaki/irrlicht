@@ -1,4 +1,3 @@
-#include "irrlicht.h"
 #include "testUtils.h"
 
 using namespace irr;
@@ -16,7 +15,7 @@ bool zipReader(void)
 	if ( !fs )
 		return false;
 	
-	if ( !fs->addFileArchive(core::string<c16>("media/file_with_path.zip"), /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	if ( !fs->addFileArchive(io::path("media/file_with_path.zip"), /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
 		return false;
 	
 	// log what we got
@@ -29,7 +28,7 @@ bool zipReader(void)
 	}
 	
 	bool result = true;
-	core::string<c16> filename("mypath/myfile.txt");
+	io::path filename("mypath/myfile.txt");
 	result &= fs->existFile(filename);
 	if (!result )
 	{

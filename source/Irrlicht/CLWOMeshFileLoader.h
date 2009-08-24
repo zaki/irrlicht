@@ -35,7 +35,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".bsp")
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -73,7 +73,7 @@ private:
 	core::array<core::stringc> DUvName;
 	core::array<core::array<u32> > VmPolyPointsIndex;
 	core::array<core::array<core::vector2df> > VmCoordsIndex;
-		
+
 	core::array<u16> MaterialMapping;
 	core::array<core::array<core::vector2df> > TCoords;
 	core::array<tLWOMaterial*> Materials;

@@ -75,14 +75,14 @@ public:
 					core::dimension2d<s32> imageSize, bool useAlphaChannel );
 
 	//! returns the font
-	virtual IGUIFont* getFont(const core::string<c16>& filename);
+	virtual IGUIFont* getFont(const io::path& filename);
 
 
 	//! returns the sprite bank
-	virtual IGUISpriteBank* getSpriteBank(const core::string<c16>& filename);
+	virtual IGUISpriteBank* getSpriteBank(const io::path& filename);
 
 	//! returns the sprite bank
-	virtual IGUISpriteBank* addEmptySpriteBank(const core::string<c16>& name);
+	virtual IGUISpriteBank* addEmptySpriteBank(const io::path& name);
 
 	//! adds an button. The returned pointer must not be dropped.
 	virtual IGUIButton* addButton(const core::rect<s32>& rectangle, IGUIElement* parent=0, s32 id=-1, const wchar_t* text=0,const wchar_t* tooltiptext = 0);
@@ -214,7 +214,7 @@ public:
 	/** \param filename: Name of the file.
 	\param start: The element to start saving from.
 	if not specified, the root element will be used */
-	virtual bool saveGUI( const core::string<c16>& filename, IGUIElement* start=0);
+	virtual bool saveGUI( const io::path& filename, IGUIElement* start=0);
 
 	//! Saves the current gui into a file.
 	/** \param file: The file to save the GUI to.
@@ -226,7 +226,7 @@ public:
 	/** \param filename: Name of the file.
 	\param parent: The parent of all loaded GUI elements,
 	if not specified, the root element will be used */
-	virtual bool loadGUI(const c16* filename, IGUIElement* parent=0);
+	virtual bool loadGUI(const io::path& filename, IGUIElement* parent=0);
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** \param file: IReadFile to load the GUI from
@@ -256,7 +256,7 @@ private:
 
 	struct SFont
 	{
-		core::string<c16> Filename;
+		io::path Filename;
 		IGUIFont* Font;
 
 		bool operator < (const SFont& other) const

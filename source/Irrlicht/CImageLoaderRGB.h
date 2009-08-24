@@ -88,7 +88,7 @@ namespace video
 		u8 *rgbData;
 
 	public:
-		_RGBdata() : tmp(0), tmpR(0), tmpG(0), tmpB(0), tmpA(0), 
+		_RGBdata() : tmp(0), tmpR(0), tmpG(0), tmpB(0), tmpA(0),
 			StartTable(0), LengthTable(0), TableLen(0), ImageSize(0), rgbData(0)
 		{
 		}
@@ -147,7 +147,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".tga")
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	//! returns true if the file maybe is able to be loaded by this class
 	virtual bool isALoadableFileFormat(io::IReadFile* file) const;

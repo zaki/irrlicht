@@ -665,7 +665,7 @@ namespace scene
 						indexBuffer.push_back(index22);
 						indexBuffer.push_back(index11);
 						indexBuffer.push_back(index21);
-						IndicesToRender+=6; 
+						IndicesToRender+=6;
 
 						// increment index position horizontally
 						x += step;
@@ -1410,7 +1410,7 @@ namespace scene
 	void CTerrainSceneNode::deserializeAttributes(io::IAttributes* in,
 			io::SAttributeReadWriteOptions* options)
 	{
-		core::string<c16> newHeightmap = in->getAttributeAsString("Heightmap");
+		io::path newHeightmap = in->getAttributeAsString("Heightmap");
 		f32 tcoordScale1 = in->getAttributeAsFloat("TextureScale1");
 		f32 tcoordScale2 = in->getAttributeAsFloat("TextureScale2");
 

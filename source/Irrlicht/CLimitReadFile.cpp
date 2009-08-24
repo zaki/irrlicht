@@ -12,7 +12,7 @@ namespace io
 
 
 CLimitReadFile::CLimitReadFile(IReadFile* alreadyOpenedFile, long pos,
-		long areaSize, const core::string<c16>& name)
+		long areaSize, const io::path& name)
 	: Filename(name), AreaStart(0), AreaEnd(0), Pos(0),
 	File(alreadyOpenedFile)
 {
@@ -86,7 +86,7 @@ bool CLimitReadFile::seek(long finalPos, bool relativeMovement)
 			return false;
 	}
 
-	return File->seek(finalPos, relativeMovement);	
+	return File->seek(finalPos, relativeMovement);
 #endif
 }
 
@@ -110,13 +110,13 @@ long CLimitReadFile::getPos() const
 
 
 //! returns name of file
-const core::string<c16>& CLimitReadFile::getFileName() const
+const io::path& CLimitReadFile::getFileName() const
 {
 	return Filename;
 }
 
 
-IReadFile* createLimitReadFile(const core::string<c16>& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize)
+IReadFile* createLimitReadFile(const io::path& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize)
 {
 	return new CLimitReadFile(alreadyOpenedFile, pos, areaSize, fileName);
 }

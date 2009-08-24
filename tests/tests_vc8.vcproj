@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\filesystem.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\flyCircleAnimator.cpp"
 				>
 			</File>
@@ -302,6 +306,10 @@
 			</File>
 			<File
 				RelativePath=".\writeImageToFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\zipReader.cpp"
 				>
 			</File>
 		</Filter>
