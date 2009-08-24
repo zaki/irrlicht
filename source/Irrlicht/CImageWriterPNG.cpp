@@ -44,7 +44,7 @@ void PNGAPI user_write_data_fcn(png_structp png_ptr, png_bytep data, png_size_t 
 	png_size_t check;
 
 	io::IWriteFile* file=(io::IWriteFile*)png_ptr->io_ptr;
-	check=(png_size_t) file->write((void*)data,length);
+	check=(png_size_t) file->write((const void*)data,(u32)length);
 
 	if (check != length)
 		png_error(png_ptr, "Write Error");
@@ -58,7 +58,7 @@ CImageWriterPNG::CImageWriterPNG()
 #endif
 }
 
-bool CImageWriterPNG::isAWriteableFileExtension(const core::string<c16>& filename) const
+bool CImageWriterPNG::isAWriteableFileExtension(const io::path& filename) const
 {
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
 	return core::hasFileExtension ( filename, "png" );

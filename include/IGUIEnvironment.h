@@ -11,6 +11,7 @@
 #include "EMessageBoxFlags.h"
 #include "IEventReceiver.h"
 #include "IXMLReader.h"
+#include "path.h"
 
 namespace irr
 {
@@ -162,7 +163,7 @@ public:
 	\return Pointer to the font. Returns 0 if the font could not be loaded.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
-	virtual IGUIFont* getFont(const core::string<c16>& filename) = 0;
+	virtual IGUIFont* getFont(const io::path& filename) = 0;
 
 	//! Returns the default built-in font.
 	/** \return Pointer to the default built-in font.
@@ -175,18 +176,18 @@ public:
 	\param filename Filename of the sprite bank's origin.
 	\return Pointer to the sprite bank. Returns 0 if it could not be loaded.
 	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-	virtual IGUISpriteBank* getSpriteBank(const core::string<c16>& filename) = 0;
+	virtual IGUISpriteBank* getSpriteBank(const io::path& filename) = 0;
 
 	//! Adds an empty sprite bank to the manager
 	/** \param name Name of the new sprite bank.
 	\return Pointer to the sprite bank.
 	This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-	virtual IGUISpriteBank* addEmptySpriteBank(const core::string<c16>& name) = 0;
+	virtual IGUISpriteBank* addEmptySpriteBank(const io::path& name) = 0;
 
 	//! Returns the root gui element.
-	/** This is the first gui element, the (direct or indirect) parent of all 
-	other gui elements.  It is a valid IGUIElement, with dimensions the same 
-	size as the screen.	You should not need to use this method directly, unless 
+	/** This is the first gui element, the (direct or indirect) parent of all
+	other gui elements.  It is a valid IGUIElement, with dimensions the same
+	size as the screen.	You should not need to use this method directly, unless
 	you wish to reparent GUI elements to the top level.
 	\return Pointer to the root element of the GUI. The returned pointer
 	should not be dropped. See IReferenceCounted::drop() for more
@@ -535,7 +536,7 @@ public:
 	/** \param filename Name of the file.
 	\param start The GUIElement to start with. Root if 0.
 	\return True if saving succeeded, else false. */
-	virtual bool saveGUI(const core::string<c16>& filename, IGUIElement* start=0) = 0;
+	virtual bool saveGUI(const io::path& filename, IGUIElement* start=0) = 0;
 
 	//! Saves the current gui into a file.
 	/** \param file The file to write to.
@@ -547,7 +548,7 @@ public:
 	/** \param filename Name of the file.
 	\param parent Parent for the loaded GUI, root if 0.
 	\return True if loading succeeded, else false. */
-	virtual bool loadGUI(const c16* filename, IGUIElement* parent=0) = 0;
+	virtual bool loadGUI(const io::path& filename, IGUIElement* parent=0) = 0;
 
 	//! Loads the gui. Note that the current gui is not cleared before.
 	/** \param file The file to load from.

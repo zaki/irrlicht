@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 #ifdef _IRR_COMPILE_WITH_PLY_LOADER_
 
 #include "CPLYMeshFileLoader.h"
@@ -23,7 +23,7 @@ namespace scene
 #define PLY_INPUT_BUFFER_SIZE 51200 // file is loaded in 50k chunks
 
 // constructor
-CPLYMeshFileLoader::CPLYMeshFileLoader() 
+CPLYMeshFileLoader::CPLYMeshFileLoader()
 : File(0), Buffer(0)
 {
 }
@@ -45,7 +45,7 @@ CPLYMeshFileLoader::~CPLYMeshFileLoader()
 }
 
 //! returns true if the file maybe is able to be loaded by this class
-bool CPLYMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CPLYMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension(filename, "ply");
 }
@@ -90,13 +90,13 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 			line = getNextLine();
 			word = getNextWord();
 		}
-		
+
 		bool readingHeader   = true;
 		bool continueReading = true;
 		IsBinaryFile = false;
 		IsWrongEndian= false;
 
-		do 
+		do
 		{
 			if (strcmp(word, "format") == 0)
 			{
@@ -233,7 +233,7 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 			mb->getIndexBuffer().reallocate(vertCount);
 			mb->setHardwareMappingHint(EHM_STATIC);
 
-			// loop through each of the elements 
+			// loop through each of the elements
 			for (u32 i=0; i<ElementList.size(); ++i)
 			{
 				// do we want this element type?
@@ -267,7 +267,7 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 			m->drop();
 		}
 	}
-	
+
 
 	// free the buffer
 	delete Buffer;
@@ -353,8 +353,8 @@ bool CPLYMeshFileLoader::readFace(const SPLYElement &Element, scene::CDynamicMes
 		{
 			// get count
 			s32 count = getInt(Element.Properties[i].Data.List.CountType);
-			u32 a = getInt(Element.Properties[i].Data.List.ItemType), 
-				b = getInt(Element.Properties[i].Data.List.ItemType), 
+			u32 a = getInt(Element.Properties[i].Data.List.ItemType),
+				b = getInt(Element.Properties[i].Data.List.ItemType),
 				c = getInt(Element.Properties[i].Data.List.ItemType);
 			s32 j = 3;
 
@@ -397,7 +397,7 @@ void CPLYMeshFileLoader::skipElement(const SPLYElement &Element)
 
 void CPLYMeshFileLoader::skipProperty(const SPLYProperty &Property)
 {
-	if (Property.Type == EPLYPT_LIST) 
+	if (Property.Type == EPLYPT_LIST)
 	{
 		s32 count = getInt(Property.Data.List.CountType);
 
@@ -443,7 +443,7 @@ bool CPLYMeshFileLoader::allocateBuffer()
 	return true;
 }
 
-// gets more data from the file. returns false on EOF 
+// gets more data from the file. returns false on EOF
 void CPLYMeshFileLoader::fillBuffer()
 {
 	if (EndOfFile)
@@ -535,7 +535,7 @@ E_PLY_PROPERTY_TYPE CPLYMeshFileLoader::getPropertyType(const c8* typeString) co
 	}
 	else
 	{
-		// unsupported type. 
+		// unsupported type.
 		// cannot be loaded in binary mode
 		return EPLYPT_UNKNOWN;
 	}
@@ -608,7 +608,7 @@ c8* CPLYMeshFileLoader::getNextWord()
 
 	if (StartPointer == LineEndPointer)
 	{
-		WordLength = -1; // 
+		WordLength = -1; //
 		return LineEndPointer;
 	}
 	// begin at the start of the next word

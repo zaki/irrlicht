@@ -206,7 +206,7 @@ bool COpenGLShaderMaterialRenderer::checkError(const irr::c8* type)
 
 		core::stringc errString = type;
 		errString += " compilation failed at position ";
-		errString += core::stringc(errPos);
+		errString += core::stringc(s32(errPos));
 		errString += ":\n";
 		errString += reinterpret_cast<const char*>(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
 
@@ -287,7 +287,7 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const c8* vtxsh)
 
 	// compile
 	Driver->extGlProgramString(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
-		strlen(vtxsh), vtxsh);
+		(GLsizei)strlen(vtxsh), vtxsh);
 
 	if (checkError("Vertex shader"))
 	{

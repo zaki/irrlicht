@@ -1,5 +1,9 @@
 Changes in 1.6 (??.??.2009)
 
+ - Change debug data to draw using lines instead of arrows, which is much faster. Patch by pc0de
+
+ - Fix a bug with FPS camera animator causing stutters. Patch by FuzzYspo0N
+
  - Fix scrolling controls in CGUITabControl
 
  - Fix a bug when getting optimal texture size in D3D drivers, by Jetro Lauha (tonic)

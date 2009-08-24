@@ -70,7 +70,7 @@ ISceneNode* CDefaultSceneNodeFactory::addSceneNode(ESCENE_NODE_TYPE type, IScene
 	case ESNT_WATER_SURFACE:
 		return Manager->addWaterSurfaceSceneNode(0, 2.0f, 300.0f, 10.0f, parent);
 	case ESNT_TERRAIN:
-		return Manager->addTerrainSceneNode((const c16*)0, parent, -1, 
+		return Manager->addTerrainSceneNode("", parent, -1,
 							core::vector3df(0.0f,0.0f,0.0f),
 							core::vector3df(0.0f,0.0f,0.0f),
 							core::vector3df(1.0f,1.0f,1.0f),
@@ -81,11 +81,11 @@ ISceneNode* CDefaultSceneNodeFactory::addSceneNode(ESCENE_NODE_TYPE type, IScene
 	case ESNT_SKY_DOME:
 		return Manager->addSkyDomeSceneNode(0, 16, 8, 0.9f, 2.0f, 1000.0f, parent);
 	case ESNT_SHADOW_VOLUME:
-		return 0; 
+		return 0;
 	case ESNT_OCT_TREE:
 		return Manager->addOctTreeSceneNode((IMesh*)0, parent, -1, 128, true);
 	case ESNT_MESH:
-		return Manager->addMeshSceneNode(0, parent, -1, core::vector3df(), 
+		return Manager->addMeshSceneNode(0, parent, -1, core::vector3df(),
 										 core::vector3df(), core::vector3df(1,1,1), true);
 	case ESNT_LIGHT:
 		return Manager->addLightSceneNode(parent);
@@ -138,7 +138,7 @@ ESCENE_NODE_TYPE CDefaultSceneNodeFactory::getCreateableSceneNodeType(u32 idx) c
 }
 
 
-//! returns type name of a createable scene node type 
+//! returns type name of a createable scene node type
 const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(u32 idx) const
 {
 	if (idx<SupportedSceneNodeTypes.size())
@@ -148,7 +148,7 @@ const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(u32 idx) cons
 }
 
 
-//! returns type name of a createable scene node type 
+//! returns type name of a createable scene node type
 const c8* CDefaultSceneNodeFactory::getCreateableSceneNodeTypeName(ESCENE_NODE_TYPE type) const
 {
 	for (u32 i=0; i<SupportedSceneNodeTypes.size(); ++i)

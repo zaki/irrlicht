@@ -31,10 +31,10 @@ CArchiveLoaderMount::~CArchiveLoaderMount()
 
 
 //! returns true if the file maybe is able to be loaded by this class
-bool CArchiveLoaderMount::isALoadableFileFormat(const core::string<c16>& filename) const
+bool CArchiveLoaderMount::isALoadableFileFormat(const io::path& filename) const
 {
 	bool ret = false;
-	core::string<c16> fname(filename);
+	io::path fname(filename);
 	deletePathFromFilename(fname);
 
 	if (!fname.size())
@@ -58,14 +58,14 @@ bool CArchiveLoaderMount::isALoadableFileFormat(io::IReadFile* file) const
 }
 
 //! Creates an archive from the filename
-IFileArchive* CArchiveLoaderMount::createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const
+IFileArchive* CArchiveLoaderMount::createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const
 {
 	IFileArchive *archive = 0;
 
 	EFileSystemType current = FileSystem->setFileListSystem(FILESYSTEM_NATIVE);
 
-	core::string<c16> save = FileSystem->getWorkingDirectory();
-	core::string<c16> fullPath = FileSystem->getAbsolutePath(filename);
+	io::path save = FileSystem->getWorkingDirectory();
+	io::path fullPath = FileSystem->getAbsolutePath(filename);
 	FileSystem->flattenFilename(fullPath);
 
 	if ( FileSystem->changeWorkingDirectoryTo ( fullPath ) )
@@ -88,14 +88,14 @@ IFileArchive* CArchiveLoaderMount::createArchive(io::IReadFile* file, bool ignor
 
 //! compatible Folder Archticture
 //
-CMountPointReader::CMountPointReader( IFileSystem * parent, const core::string<c16>& basename, bool ignoreCase, bool ignorePaths)
+CMountPointReader::CMountPointReader(IFileSystem * parent, const io::path& basename, bool ignoreCase, bool ignorePaths)
 	: CFileList(basename, ignoreCase, ignorePaths), Parent(parent)
 {
 	//! ensure CFileList path ends in a slash
-	if (core::lastChar(Path) != '/' )
+	if (Path.lastChar() != '/' )
 		Path.append ('/');
 
-	core::string<c16> work = Parent->getWorkingDirectory();
+	io::path work = Parent->getWorkingDirectory();
 
 	Parent->changeWorkingDirectoryTo(basename);
 	buildDirectory();
@@ -122,7 +122,7 @@ void CMountPointReader::buildDirectory()
 	const u32 size = list->getFileCount();
 	for (u32 i=0; i < size; ++i)
 	{
-		core::string<c16> full = list->getFullFileName(i);
+		io::path full = list->getFullFileName(i);
 		full = full.subString(Path.size(), full.size() - Path.size());
 
 		if (!list->isDirectory(i))
@@ -132,9 +132,9 @@ void CMountPointReader::buildDirectory()
 		}
 		else
 		{
-			const core::string<c16> rel = list->getFileName(i);
-			core::string<c16> pwd  = Parent->getWorkingDirectory();
-			if (core::lastChar(pwd) != '/')
+			const io::path rel = list->getFileName(i);
+			io::path pwd  = Parent->getWorkingDirectory();
+			if (pwd.lastChar() != '/')
 				pwd.append('/');
 			pwd.append(rel);
 
@@ -161,7 +161,7 @@ IReadFile* CMountPointReader::createAndOpenFile(u32 index)
 }
 
 //! opens a file by file name
-IReadFile* CMountPointReader::createAndOpenFile(const core::string<c16>& filename)
+IReadFile* CMountPointReader::createAndOpenFile(const io::path& filename)
 {
 	s32 index = findFile(filename, false);
 	if (index != -1)

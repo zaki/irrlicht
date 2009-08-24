@@ -28,10 +28,10 @@ Copyright 2006-2009 Burningwater, Thomas Alten
 */
 struct GameData
 {
-	GameData ( const string<c16> &startupDir);
+	GameData ( const path &startupDir);
 	void setDefault ();
-	s32 save ( const string<c16> &filename );
-	s32 load ( const string<c16> &filename );
+	s32 save ( const path &filename );
+	s32 load ( const path &filename );
 
 	s32 debugState;
 	s32 gravityState;
@@ -43,9 +43,9 @@ struct GameData
 	s32 retVal;
 	s32 sound;
 
-	string<c16> StartupDir;
+	path StartupDir;
 	stringw CurrentMapName;
-	array < string<c16> > CurrentArchiveList;
+	array<path> CurrentArchiveList;
 
 	vector3df PlayerPosition;
 	vector3df PlayerRotation;
@@ -60,7 +60,7 @@ struct GameData
 
 /*!
 */
-GameData::GameData ( const string<c16> &startupDir)
+GameData::GameData ( const path &startupDir)
 {
 	retVal = 0;
 	createExDevice = 0;
@@ -127,14 +127,14 @@ void GameData::setDefault ()
 /*!
 	Load the current game State from a typical quake3 cfg file
 */
-s32 GameData::load ( const string<c16> &filename )
+s32 GameData::load ( const path &filename )
 {
-	if ( 0 == Device )
+	if (!Device)
 		return 0;
 
 	//! the quake3 mesh loader can also handle *.shader and *.cfg file
 	IQ3LevelMesh* mesh = (IQ3LevelMesh*) Device->getSceneManager()->getMesh ( filename );
-	if ( 0 == mesh )
+	if (!mesh)
 		return 0;
 
 	tQ3EntityList &entityList = mesh->getEntityList ();
@@ -174,10 +174,10 @@ s32 GameData::load ( const string<c16> &filename )
 /*!
 	Store the current game State in a quake3 configuration file
 */
-s32 GameData::save ( const string<c16> &filename )
+s32 GameData::save ( const path &filename )
 {
 	return 0;
-	if ( 0 == Device )
+	if (!Device)
 		return 0;
 
 	c8 buf[128];
@@ -200,7 +200,7 @@ s32 GameData::save ( const string<c16> &filename )
 	}
 
 	IWriteFile *file = fs->createAndWriteFile ( filename );
-	if ( 0 == file )
+	if (!file)
 		return 0;
 
 	snprintf ( buf, 128, "playerposition %.f %.f %.f\nplayerrotation %.f %.f %.f\n",
@@ -500,7 +500,7 @@ public:
 	void Animate();
 	void Render();
 
-	void AddArchive ( const core::string<c16>& archiveName );
+	void AddArchive ( const path& archiveName );
 	void LoadMap ( const stringw& mapName, s32 collision );
 	void CreatePlayers();
 	void AddSky( u32 dome, const c8 *texture );
@@ -833,7 +833,7 @@ void CQuake3EventHandler::CreateGUI()
 /*!
 	Add an Archive to the FileSystems und updates the GUI
 */
-void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
+void CQuake3EventHandler::AddArchive ( const path& archiveName )
 {
 	IFileSystem *fs = Game->Device->getFileSystem();
 	u32 i;
@@ -928,16 +928,16 @@ void CQuake3EventHandler::AddArchive ( const core::string<c16>& archiveName )
 			if ( s.find ( ".bsp" ) >= 0 )
 			{
 				// get level screenshot. reformat texture to 128x128
-				string<c16> c ( s );
+				path c ( s );
 				deletePathFromFilename ( c );
 				cutFilenameExtension ( c, c );
-				c = string<c16> ( "levelshots/" ) + c;
+				c = path ( "levelshots/" ) + c;
 
 				dimension2du dim ( 128, 128 );
 				IVideoDriver * driver = Game->Device->getVideoDriver();
 				IImage* image = 0;
 				ITexture *tex = 0;
-				string<c16> filename;
+				path filename;
 
 				filename = c + ".jpg";
 				if ( fs->existFile ( filename ) )
@@ -1547,7 +1547,7 @@ bool CQuake3EventHandler::OnEvent(const SEvent& eve)
 						pos.X, pos.Y, pos.Z,
 						rot.X, rot.Y, rot.Z
 						);
-				core::string<c16> filename ( buf );
+				path filename ( buf );
 				filename.replace ( '/', '_' );
 				printf ( "screenshot : %s\n", filename.c_str() );
 				Game->Device->getVideoDriver()->writeImageToFile(image, filename, 100 );
@@ -2082,7 +2082,7 @@ void runGame ( GameData *game )
 */
 int IRRCALLCONV main(int argc, char* argv[])
 {
-	core::string<c16> prgname(argv[0]);
+	path prgname(argv[0]);
 	GameData game ( deletePathFromPath ( prgname, 1 ) );
 
 	// dynamically load irrlicht

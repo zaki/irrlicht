@@ -28,7 +28,7 @@ CArchiveLoaderTAR::CArchiveLoaderTAR(io::IFileSystem* fs)
 
 
 //! returns true if the file maybe is able to be loaded by this class
-bool CArchiveLoaderTAR::isALoadableFileFormat(const core::string<c16>& filename) const
+bool CArchiveLoaderTAR::isALoadableFileFormat(const io::path& filename) const
 {
 	return core::hasFileExtension(filename, "tar");
 }
@@ -42,7 +42,7 @@ bool CArchiveLoaderTAR::isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) cons
 //! Creates an archive from the filename
 /** \param file File handle to check.
 \return Pointer to newly created archive, or 0 upon error. */
-IFileArchive* CArchiveLoaderTAR::createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const
+IFileArchive* CArchiveLoaderTAR::createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const
 {
 	IFileArchive *archive = 0;
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
@@ -170,7 +170,7 @@ u32 CTarReader::populateFileList()
 		// only add standard files for now
 		if (fHead.Link == ETLI_REGULAR_FILE || ETLI_REGULAR_FILE_OLD)
 		{
-			core::string<c16> fullPath = "";
+			io::path fullPath = "";
 			fullPath.reserve(255);
 
 			// USTAR archives have a filename prefix
@@ -229,7 +229,7 @@ u32 CTarReader::populateFileList()
 }
 
 //! opens a file by file name
-IReadFile* CTarReader::createAndOpenFile(const core::string<c16>& filename)
+IReadFile* CTarReader::createAndOpenFile(const io::path& filename)
 {
 	const s32 index = findFile(filename, false);
 

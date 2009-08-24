@@ -11,7 +11,7 @@ namespace io
 {
 
 
-CWriteFile::CWriteFile(const core::string<c16>& fileName, bool append)
+CWriteFile::CWriteFile(const io::path& fileName, bool append)
 : FileSize(0)
 {
 	#ifdef _DEBUG
@@ -46,7 +46,7 @@ s32 CWriteFile::write(const void* buffer, u32 sizeToWrite)
 	if (!isOpen())
 		return 0;
 
-	return fwrite(buffer, 1, sizeToWrite, File);
+	return (s32)fwrite(buffer, 1, sizeToWrite, File);
 }
 
 
@@ -78,7 +78,7 @@ void CWriteFile::openFile(bool append)
 	if (Filename.size() == 0)
 	{
 		File = 0;
-		return; 
+		return;
 	}
 
 #if defined(_IRR_WCHAR_FILESYSTEM)
@@ -100,14 +100,14 @@ void CWriteFile::openFile(bool append)
 
 
 //! returns name of file
-const core::string<c16>& CWriteFile::getFileName() const
+const io::path& CWriteFile::getFileName() const
 {
 	return Filename;
 }
 
 
 
-IWriteFile* createWriteFile(const core::string<c16>& fileName, bool append)
+IWriteFile* createWriteFile(const io::path& fileName, bool append)
 {
 	CWriteFile* file = new CWriteFile(fileName, append);
 	if (file->isOpen())

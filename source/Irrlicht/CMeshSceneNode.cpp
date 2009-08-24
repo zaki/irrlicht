@@ -134,7 +134,7 @@ void CMeshSceneNode::render()
 	if (DebugDataVisible && PassCount==1)
 	{
 		// overwrite half transparency
-		if ( DebugDataVisible & scene::EDS_HALF_TRANSPARENCY )
+		if (DebugDataVisible & scene::EDS_HALF_TRANSPARENCY)
 		{
 			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
 			{
@@ -148,7 +148,7 @@ void CMeshSceneNode::render()
 	}
 
 	// render original meshes
-	if ( renderMeshes )
+	if (renderMeshes)
 	{
 		for (u32 i=0; i<Mesh->getMeshBufferCount(); ++i)
 		{
@@ -174,17 +174,17 @@ void CMeshSceneNode::render()
 	driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 
 	// for debug purposes only:
-	if ( DebugDataVisible && PassCount==1)
+	if (DebugDataVisible && PassCount==1)
 	{
 		video::SMaterial m;
 		m.Lighting = false;
 		driver->setMaterial(m);
 
-		if ( DebugDataVisible & scene::EDS_BBOX )
+		if (DebugDataVisible & scene::EDS_BBOX)
 		{
 			driver->draw3DBox(Box, video::SColor(255,255,255,255));
 		}
-		if ( DebugDataVisible & scene::EDS_BBOX_BUFFERS )
+		if (DebugDataVisible & scene::EDS_BBOX_BUFFERS)
 		{
 			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
 			{
@@ -194,49 +194,37 @@ void CMeshSceneNode::render()
 			}
 		}
 
-		if ( DebugDataVisible & scene::EDS_NORMALS )
+		if (DebugDataVisible & scene::EDS_NORMALS)
 		{
-			IAnimatedMesh * arrow = SceneManager->addArrowMesh (
-					"__debugnormal", 0xFFECEC00,
-					0xFF999900, 4, 8, 1.f, 0.6f, 0.05f,
-					0.3f);
-			if ( 0 == arrow )
-			{
-				arrow = SceneManager->getMesh ( "__debugnormal" );
-			}
-			IMesh *mesh = arrow->getMesh(0);
-
-			// find a good scaling factor
-
-			core::matrix4 m2;
 
 			// draw normals
+			core::vector3df normalizedNormal;
+			const f32 DebugNormalLength = SceneManager->getParameters()->getAttributeAsFloat(DEBUG_NORMAL_LENGTH);
+			const video::SColor DebugNormalColor = SceneManager->getParameters()->getAttributeAsColor(DEBUG_NORMAL_COLOR);
+
 			for (u32 g=0; g<Mesh->getMeshBufferCount(); ++g)
 			{
 				const scene::IMeshBuffer* mb = Mesh->getMeshBuffer(g);
 				const u32 vSize = video::getVertexPitchFromType(mb->getVertexType());
 				const video::S3DVertex* v = ( const video::S3DVertex*)mb->getVertices();
-				for ( u32 i=0; i != mb->getVertexCount(); ++i )
+				const bool normalize = mb->getMaterial().NormalizeNormals;
+
+				for (u32 i=0; i != mb->getVertexCount(); ++i)
 				{
-					// align to v->Normal
-					core::quaternion quatRot(v->Normal.X, 0.f, -v->Normal.X, 1+v->Normal.Y);
-					quatRot.normalize();
-					quatRot.getMatrix(m2, v->Pos);
+					normalizedNormal = v->Normal;
+					if (normalize)
+						normalizedNormal.normalize();
 
-					m2*=AbsoluteTransformation;
+					driver->draw3DLine(v->Pos, v->Pos + (normalizedNormal * DebugNormalLength), DebugNormalColor);
 
-					driver->setTransform(video::ETS_WORLD, m2);
-					for (u32 a = 0; a != mesh->getMeshBufferCount(); ++a)
-						driver->drawMeshBuffer(mesh->getMeshBuffer(a));
-
-					v = (const video::S3DVertex*) ( (u8*) v + vSize );
+					v = (const video::S3DVertex*) ( (u8*) v+vSize );
 				}
 			}
 			driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		}
 
 		// show mesh
-		if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
+		if (DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY)
 		{
 			m.Wireframe = true;
 			driver->setMaterial(m);
@@ -270,7 +258,7 @@ video::SMaterial& CMeshSceneNode::getMaterial(u32 i)
 		return tmpReadOnlyMaterial;
 	}
 
-	if ( i >= Materials.size())
+	if (i >= Materials.size())
 		return ISceneNode::getMaterial(i);
 
 	return Materials[i];
@@ -329,15 +317,15 @@ void CMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 {
 	IMeshSceneNode::serializeAttributes(out, options);
 
-	out->addString("Mesh", SceneManager->getMeshCache()->getMeshFilename(Mesh));
+	out->addString("Mesh", SceneManager->getMeshCache()->getMeshFilename(Mesh).c_str());
 	out->addBool("ReadOnlyMaterials", ReadOnlyMaterials);
 }
 
 //! Reads attributes of the scene node.
 void CMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	core::string<c16> oldMeshStr = SceneManager->getMeshCache()->getMeshFilename(Mesh);
-	core::string<c16> newMeshStr = in->getAttributeAsString("Mesh");
+	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshFilename(Mesh);
+	io::path newMeshStr = in->getAttributeAsString("Mesh");
 	ReadOnlyMaterials = in->getAttributeAsBool("ReadOnlyMaterials");
 
 	if (newMeshStr != "" && oldMeshStr != newMeshStr)

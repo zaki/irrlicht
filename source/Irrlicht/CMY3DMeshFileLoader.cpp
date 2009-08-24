@@ -72,7 +72,7 @@ CMY3DMeshFileLoader::~CMY3DMeshFileLoader()
 }
 
 
-bool CMY3DMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CMY3DMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "my3d" );
 }

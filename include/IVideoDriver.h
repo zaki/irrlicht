@@ -292,7 +292,7 @@ namespace video
 		\return Pointer to the texture, or 0 if the texture
 		could not be loaded. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
-		virtual ITexture* getTexture(const core::string<c16>& filename) = 0;
+		virtual ITexture* getTexture(const io::path& filename) = 0;
 
 		//! Get access to a named texture.
 		/** Loads the texture from disk if it is not
@@ -322,7 +322,7 @@ namespace video
 		//! Renames a texture
 		/** \param texture Pointer to the texture to rename.
 		\param newName New name for the texture. This should be a unique name. */
-		virtual void renameTexture(ITexture* texture, const core::string<c16>& newName) = 0;
+		virtual void renameTexture(ITexture* texture, const io::path& newName) = 0;
 
 		//! Creates an empty texture of specified size.
 		/** \param size: Size of the texture.
@@ -335,7 +335,7 @@ namespace video
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size,
-			const core::string<c16>& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
+			const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
 
 		//! Creates a texture from an IImage.
 		/** \param name A name for the texture. Later calls of
@@ -344,7 +344,7 @@ namespace video
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const core::string<c16>& name, IImage* image) = 0;
+		virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
@@ -357,7 +357,7 @@ namespace video
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
+				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
 		/** This method can free a lot of memory!
@@ -996,7 +996,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImageFromFile(const core::string<c16>& filename) = 0;
+		virtual IImage* createImageFromFile(const io::path& filename) = 0;
 
 		//! Creates a software image from a file.
 		/** No hardware texture will be created for this image. This
@@ -1016,7 +1016,7 @@ namespace video
 		\param param Control parameter for the backend (e.g. compression
 		level).
 		\return True on successful write. */
-		virtual bool writeImageToFile(IImage* image, const core::string<c16>& filename, u32 param = 0) = 0;
+		virtual bool writeImageToFile(IImage* image, const io::path& filename, u32 param = 0) = 0;
 
 		//! Writes the provided image to a file.
 		/** Requires that there is a suitable image writer registered
@@ -1206,7 +1206,7 @@ namespace video
 		if it is not currently loaded.
 		\param filename Name of the texture.
 		\return Pointer to loaded texture, or 0 if not found. */
-		virtual video::ITexture* findTexture(const core::string<c16>& filename) = 0;
+		virtual video::ITexture* findTexture(const io::path& filename) = 0;
 
 		//! Set or unset a clipping plane.
 		/** There are at least 6 clipping planes available for the user

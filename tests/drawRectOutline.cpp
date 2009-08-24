@@ -1,5 +1,5 @@
-#include "irrlicht.h"
 #include "testUtils.h"
+
 using namespace irr;
 
 bool drawRectOutline(void)

@@ -32,8 +32,8 @@ namespace io
 		//! Changes position in file, returns true if successful.
 		//! \param finalPos: Destination position in the file.
 		//! \param relativeMovement: If set to true, the position in the file is
-		//! changed relative to current position. Otherwise the position is changed 
-		//! from begin of file.		
+		//! changed relative to current position. Otherwise the position is changed
+		//! from begin of file.
 		//! \return Returns true if successful, otherwise false.
 		virtual bool seek(long finalPos, bool relativeMovement = false);
 
@@ -53,7 +53,7 @@ namespace io
 
 		//! Returns name of file.
 		//! \return Returns the file name as zero terminated character string.
-		virtual const core::string<c16>& getFileName() const;
+		virtual const io::path& getFileName() const;
 
 		//! Returns file data as an array
 		core::array<c8>& getData();
@@ -61,11 +61,11 @@ namespace io
 	private:
 
 		core::array<c8> Data;
-		core::stringc FileName;
+		io::path FileName;
 		long Pos;
 	};
 
-	
+
 
 } // end namespace io
 } // end namespace irr

@@ -45,9 +45,6 @@ namespace scene
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 		virtual E_ANIMATED_MESH_TYPE getMeshType() const;
 
-
-		//link?
-
 		//! returns amount of mesh buffers.
 		virtual u32 getMeshBufferCount() const
 		{
@@ -136,4 +133,3 @@ namespace scene
 } // end namespace irr
 
 #endif
-

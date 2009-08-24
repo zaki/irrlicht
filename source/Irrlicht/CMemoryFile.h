@@ -23,7 +23,7 @@ namespace io
 	public:
 
 		//! Constructor
-		CMemoryFile(void* memory, long len, const core::string<c16>& fileName, bool deleteMemoryWhenDropped);
+		CMemoryFile(void* memory, long len, const io::path& fileName, bool deleteMemoryWhenDropped);
 
 		//! Destructor
 		virtual ~CMemoryFile();
@@ -44,14 +44,14 @@ namespace io
 		virtual long getPos() const;
 
 		//! returns name of file
-		virtual const core::string<c16>& getFileName() const;
+		virtual const io::path& getFileName() const;
 
 	private:
 
 		void *Buffer;
 		long Len;
 		long Pos;
-		core::string<c16> Filename;
+		io::path Filename;
 		bool deleteMemoryWhenDropped;
 	};
 

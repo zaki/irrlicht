@@ -37,7 +37,7 @@ CB3DMeshFileLoader::CB3DMeshFileLoader(scene::ISceneManager* smgr)
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CB3DMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CB3DMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "b3d" );
 }

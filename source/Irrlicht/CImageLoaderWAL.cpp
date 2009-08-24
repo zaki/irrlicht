@@ -51,7 +51,7 @@ s32 CImageLoaderWAL::DefaultPaletteQ2[256] = {
 };
 
 
-bool CImageLoaderWAL::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CImageLoaderWAL::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "wal" );
 }

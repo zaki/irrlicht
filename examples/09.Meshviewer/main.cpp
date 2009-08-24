@@ -35,6 +35,7 @@ core::stringw Caption;
 scene::ISceneNode* Model = 0;
 scene::ISceneNode* SkyBox = 0;
 bool Octree=false;
+bool useLight=false;
 
 scene::ICameraSceneNode* Camera[2] = {0, 0};
 
@@ -186,7 +187,8 @@ void loadModel(const c8* fn)
 		animModel->setAnimationSpeed(30);
 		Model = animModel;
 	}
-	Model->setMaterialFlag(video::EMF_LIGHTING, false);
+	Model->setMaterialFlag(video::EMF_LIGHTING, useLight);
+	Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, useLight);
 //	Model->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 	Model->setDebugDataVisible(scene::EDS_OFF);
 
@@ -305,6 +307,15 @@ public:
 			{
 				if (Device)
 					Device->minimizeWindow();
+			}
+			else if (event.KeyInput.Key == irr::KEY_KEY_L)
+			{
+				useLight=!useLight;
+				if (Model)
+				{
+					Model->setMaterialFlag(video::EMF_LIGHTING, useLight);
+					Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, useLight);
+				}
 			}
 		}
 
@@ -597,8 +608,8 @@ int main(int argc, char* argv[])
 	driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT, true);
 
 	smgr->addLightSceneNode();
-	smgr->addLightSceneNode(0, core::vector3df(50,-50,GUI_ID_OPEN_MODEL),
-		video::SColorf(1.0f,1.0f,1.0f),2000)->setPosition(core::vector3df(200,200,200));
+	smgr->addLightSceneNode(0, core::vector3df(200,200,200),
+		video::SColorf(1.0f,1.0f,1.0f),2000);
 	// add our media directory as "search path"
 	Device->getFileSystem()->addFolderFileArchive("../../media/");
 

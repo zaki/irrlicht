@@ -1981,7 +1981,7 @@ inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new COpenGLTexture(surface, name, this);
 }
@@ -3192,7 +3192,7 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 
 
 ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-					const core::string<c16>& name,
+					const io::path& name,
 					const ECOLOR_FORMAT format)
 {
 	//disable mip-mapping

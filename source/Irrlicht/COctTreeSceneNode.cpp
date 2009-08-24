@@ -461,7 +461,7 @@ void COctTreeSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttribut
 	const s32 oldMinimal = MinimalPolysPerNode;
 
 	MinimalPolysPerNode = in->getAttributeAsInt("MinimalPolysPerNode");
-	core::string<c16> newMeshStr = in->getAttributeAsString("Mesh");
+	io::path newMeshStr = in->getAttributeAsString("Mesh");
 
 	IMesh* newMesh = 0;
 

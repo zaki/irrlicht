@@ -184,15 +184,14 @@ REALINLINE u32 PixelBlend32 ( const u32 c2, const u32 c1, u32 alpha )
 */
 inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u16 alpha )
 {
-	u16 srcRB = c1 & 0x7C1F;
-	u16 srcXG = c1 & 0x03E0;
+	const u16 srcRB = c1 & 0x7C1F;
+	const u16 srcXG = c1 & 0x03E0;
 
-	u16 dstRB = c2 & 0x7C1F;
-	u16 dstXG = c2 & 0x03E0;
+	const u16 dstRB = c2 & 0x7C1F;
+	const u16 dstXG = c2 & 0x03E0;
 
-
-	u16 rb = srcRB - dstRB;
-	u16 xg = srcXG - dstXG;
+	u32 rb = srcRB - dstRB;
+	u32 xg = srcXG - dstXG;
 
 	rb *= alpha;
 	xg *= alpha;

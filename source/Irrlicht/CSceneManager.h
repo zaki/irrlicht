@@ -42,7 +42,7 @@ namespace scene
 		virtual ~CSceneManager();
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
-		virtual IAnimatedMesh* getMesh(const core::string<c16>& filename);
+		virtual IAnimatedMesh* getMesh(const io::path& filename);
 
 		//! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 		virtual IAnimatedMesh* getMesh(io::IReadFile* file);
@@ -204,30 +204,30 @@ namespace scene
 		//! for the mesh because the mesh is added to the mesh pool and
 		//! can be retrieved back using ISceneManager::getMesh with the
 		//! name as parameter.
-		virtual IAnimatedMesh* addHillPlaneMesh(const core::string<c16>& name,
+		virtual IAnimatedMesh* addHillPlaneMesh(const io::path& name,
 			const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 			video::SMaterial* material = 0,	f32 hillHeight = 0.0f,
 			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(1.0f, 1.0f),
 			const core::dimension2d<f32>& textureRepeatCount = core::dimension2d<f32>(1.0f, 1.0f));
 
 		//! Adds a terrain mesh to the mesh pool.
-		virtual IAnimatedMesh* addTerrainMesh(const core::string<c16>& meshname,	video::IImage* texture, video::IImage* heightmap,
+		virtual IAnimatedMesh* addTerrainMesh(const io::path& meshname,	video::IImage* texture, video::IImage* heightmap,
 			const core::dimension2d<f32>& stretchSize,
 			f32 maxHeight, const core::dimension2d<u32>& defaultVertexBlockSize);
 
 		//! Add a arrow mesh to the mesh pool
-		virtual IAnimatedMesh* addArrowMesh(const core::string<c16>& name,
+		virtual IAnimatedMesh* addArrowMesh(const io::path& name,
 				video::SColor vtxColor0, video::SColor vtxColor1,
 				u32 tesselationCylinder, u32 tesselationCone,
 				f32 height, f32 cylinderHeight, f32 width0,
 				f32 width1);
 
 		//! Adds a static sphere mesh to the mesh pool.
-		IAnimatedMesh* addSphereMesh(const core::string<c16>& name,
+		IAnimatedMesh* addSphereMesh(const io::path& name,
 				f32 radius=5.f, u32 polyCountX=16, u32 polyCountY=16);
 
 		//! Adds a static volume light mesh to the mesh pool.
-		IAnimatedMesh* addVolumeLightMesh(const core::string<c16>& name, 
+		IAnimatedMesh* addVolumeLightMesh(const io::path& name,
 			const u32 SubdivideU = 32, const u32 SubdivideV = 32,
 			const video::SColor FootColor = video::SColor(51, 0, 230, 180),
 			const video::SColor TailColor = video::SColor(0, 0, 0, 0));
@@ -241,7 +241,7 @@ namespace scene
 
 		//! Adds a terrain scene node to the scene graph.
 		virtual ITerrainSceneNode* addTerrainSceneNode(
-			const core::string<c16>& heightMapFileName,
+			const io::path& heightMapFileName,
 			ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0.0f,0.0f,0.0f),
 			const core::vector3df& rotation = core::vector3df(0.0f,0.0f,0.0f),
@@ -452,14 +452,14 @@ namespace scene
 
 		//! Saves the current scene into a file.
 		//! \param filename: Name of the file .
-		virtual bool saveScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0);
 
 		//! Saves the current scene into a file.
 		virtual bool saveScene(io::IWriteFile* file, ISceneUserDataSerializer* userDataSerializer=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		//! \param filename: Name of the file .
-		virtual bool loadScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer=0);
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0);
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		virtual bool loadScene(io::IReadFile* file, ISceneUserDataSerializer* userDataSerializer=0);

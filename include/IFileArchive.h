@@ -53,7 +53,7 @@ public:
 	\param filename The file to open
 	\return Returns A pointer to the created file on success,
 	or 0 on failure. */
-	virtual IReadFile* createAndOpenFile(const core::string<c16>& filename) =0;
+	virtual IReadFile* createAndOpenFile(const path& filename) =0;
 
 	//! Opens a file based on its position.
 	/** Creates and returns
@@ -82,7 +82,7 @@ public:
 	/** Check based on the file extension (e.g. ".zip")
 	\param fileName Name of file to check.
 	\return True if file seems to be loadable. */
-	virtual bool isALoadableFileFormat(const core::string<c16>& filename) const =0;
+	virtual bool isALoadableFileFormat(const path& filename) const =0;
 
 	//! Check if the file might be loaded by this class
 	/** This check may look into the file.
@@ -99,7 +99,7 @@ public:
 	//! Creates an archive from the filename
 	/** \param file File handle to check.
 	\return Pointer to newly created archive, or 0 upon error. */
-	virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const =0;
+	virtual IFileArchive* createArchive(const path& filename, bool ignoreCase, bool ignorePaths) const =0;
 
 	//! Creates an archive from the file
 	/** \param file File handle to check.

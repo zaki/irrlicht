@@ -329,7 +329,7 @@ CColladaFileLoader::~CColladaFileLoader()
 
 //! Returns true if the file maybe is able to be loaded by this class.
 /** This decision should be based only on the file extension (e.g. ".cob") */
-bool CColladaFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CColladaFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "xml", "dae" );
 }
@@ -1805,7 +1805,7 @@ void CColladaFileLoader::readGeometry(io::IXMLReaderUTF8* reader)
 	amesh->recalculateBoundingBox();
 
 	// create virtual file name
-	core::string<c16> filename = CurrentlyLoadingMesh;
+	io::path filename = CurrentlyLoadingMesh;
 	filename += '#';
 	filename += id;
 

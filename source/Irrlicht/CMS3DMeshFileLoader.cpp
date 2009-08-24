@@ -125,7 +125,7 @@ CMS3DMeshFileLoader::CMS3DMeshFileLoader(video::IVideoDriver *driver)
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CMS3DMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CMS3DMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "ms3d" );
 }
@@ -278,7 +278,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	os::Printer::log("Load Groups", core::stringc(numGroups).c_str());
 #endif
 	pPtr += sizeof(u16);
-	
+
 	core::array<SGroup> groups;
 	groups.reallocate(numGroups);
 
@@ -564,7 +564,11 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			pPtr += sizeof(u32);
 			for (i=0; i<numComments; ++i)
 			{
-				pPtr += sizeof(s32); // index
+				// according to scorpiomidget this field does
+				// not exist for model comments. So avoid to
+				// read it
+				if (j!=3)
+					pPtr += sizeof(s32); // index
 				s32 commentLength = *(s32*)pPtr;
 #ifdef __BIG_ENDIAN__
 				commentLength = os::Byteswap::byteswap(commentLength);

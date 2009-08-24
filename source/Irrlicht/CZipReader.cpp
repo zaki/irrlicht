@@ -40,7 +40,7 @@ CArchiveLoaderZIP::CArchiveLoaderZIP(io::IFileSystem* fs)
 }
 
 //! returns true if the file maybe is able to be loaded by this class
-bool CArchiveLoaderZIP::isALoadableFileFormat(const core::string<c16>& filename) const
+bool CArchiveLoaderZIP::isALoadableFileFormat(const io::path& filename) const
 {
 	return core::hasFileExtension(filename, "zip", "pk3") ||
 	       core::hasFileExtension(filename, "gz", "tgz");
@@ -56,7 +56,7 @@ bool CArchiveLoaderZIP::isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) cons
 //! Creates an archive from the filename
 /** \param file File handle to check.
 \return Pointer to newly created archive, or 0 upon error. */
-IFileArchive* CArchiveLoaderZIP::createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const
+IFileArchive* CArchiveLoaderZIP::createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const
 {
 	IFileArchive *archive = 0;
 	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
@@ -279,7 +279,7 @@ bool CZipReader::scanGZipHeader()
 			File->seek(dataLen, true);
 		}
 
-		core::string<c16> ZipFileName = "";
+		io::path ZipFileName = "";
 
 		if (header.flags & EGZF_FILE_NAME)
 		{
@@ -353,7 +353,7 @@ bool CZipReader::scanGZipHeader()
 //! scans for a local header, returns false if there is no more local file header.
 bool CZipReader::scanZipHeader()
 {
-	core::string<c16> ZipFileName = "";
+	io::path ZipFileName = "";
 	SZipFileEntry entry;
 	entry.Offset = 0;
 	memset(&entry.header, 0, sizeof(SZIPFileHeader));
@@ -420,7 +420,7 @@ bool CZipReader::scanZipHeader()
 
 
 //! opens a file by file name
-IReadFile* CZipReader::createAndOpenFile(const core::string<c16>& filename)
+IReadFile* CZipReader::createAndOpenFile(const io::path& filename)
 {
 	s32 index = findFile(filename, false);
 

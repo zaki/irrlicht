@@ -135,7 +135,7 @@ const wchar_t* CGUIFileOpenDialog::getFileName() const
 }
 
 //! Returns the directory of the selected file. Returns NULL, if no directory was selected.
-const core::string<c16>& CGUIFileOpenDialog::getDirectoryName()
+const io::path& CGUIFileOpenDialog::getDirectoryName()
 {
 	FileSystem->flattenFilename ( FileDirectory );
 	return FileDirectory;
@@ -221,7 +221,7 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 			case EGET_EDITBOX_ENTER:
 				if (event.GUIEvent.Caller == FileNameText)
 				{
-					core::string<c16> dir( FileNameText->getText () );
+					io::path dir( FileNameText->getText () );
 					if ( FileSystem->changeWorkingDirectoryTo( dir ) )
 					{
 						fillListBox();

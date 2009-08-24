@@ -22,7 +22,7 @@ namespace io
 	{
 	public:
 
-		CWriteFile(const core::string<c16>& fileName, bool append);
+		CWriteFile(const io::path& fileName, bool append);
 
 		virtual ~CWriteFile();
 
@@ -36,7 +36,7 @@ namespace io
 		virtual long getPos() const;
 
 		//! Returns name of file.
-		virtual const core::string<c16>& getFileName() const;
+		virtual const io::path& getFileName() const;
 
 		//! returns if file is open
 		bool isOpen() const;
@@ -46,7 +46,7 @@ namespace io
 		//! opens the file
 		void openFile(bool append);
 
-		core::string<c16> Filename;
+		io::path Filename;
 		FILE* File;
 		long FileSize;
 	};

@@ -1,7 +1,6 @@
 // Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
-#include "irrlicht.h"
 #include "testUtils.h"
 
 using namespace irr;

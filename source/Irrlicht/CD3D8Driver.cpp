@@ -674,7 +674,7 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const core::string<c16>& name)
+video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
 {
 	return new CD3D8Texture(surface, this, TextureCreationFlags, name);
 }
@@ -793,7 +793,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 //! Creates a render target texture.
 ITexture* CD3D8Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-											  const core::string<c16>& name,
+											  const io::path& name,
 											  const ECOLOR_FORMAT format)
 {
 	ITexture* tex = new CD3D8Texture(this, size, name);

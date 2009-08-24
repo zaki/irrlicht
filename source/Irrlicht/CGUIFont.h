@@ -34,13 +34,13 @@ class CGUIFont : public IGUIFontBitmap
 public:
 
 	//! constructor
-	CGUIFont(IGUIEnvironment* env, const core::string<c16>& filename);
+	CGUIFont(IGUIEnvironment* env, const io::path& filename);
 
 	//! destructor
 	virtual ~CGUIFont();
 
 	//! loads a font from a texture file
-	bool load(const core::string<c16>& filename);
+	bool load(const io::path& filename);
 
 	//! loads a font from a texture file
 	bool load(io::IReadFile* file);
@@ -90,7 +90,7 @@ private:
 	};
 
 	//! load & prepare font from ITexture
-	bool loadTexture(video::IImage * image, const core::string<c16>& name);
+	bool loadTexture(video::IImage * image, const io::path& name);
 
 	void readPositions(video::IImage* texture, s32& lowerRightPositions);
 

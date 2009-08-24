@@ -23,8 +23,8 @@ so you can assign Unicode to string<c8> and ASCII/Latin-1 to string<wchar_t>
 (and the other way round) if you want to.
 
 However, note that the conversation between both is not done using any encoding.
-This means that c8 strings are treated as ASCII/Latin-1, not UTF-8, and 
-are simply expanded to the equivalent wchar_t, while Unicode/wchar_t 
+This means that c8 strings are treated as ASCII/Latin-1, not UTF-8, and
+are simply expanded to the equivalent wchar_t, while Unicode/wchar_t
 characters are truncated to 8-bit ASCII/Latin-1 characters, discarding all
 other information in the wchar_t.
 */
@@ -444,7 +444,7 @@ public:
 	{
 		if ( (u32) sourcePos > used )
 			return false;
-			
+
 		u32 i;
 		for( i=0; array[sourcePos + i] && other[i]; ++i)
 			if (locale_lower( array[sourcePos + i]) != locale_lower(other[i]))
@@ -887,7 +887,7 @@ public:
 
 
 	//! Trims the string.
-	/** Removes the specified characters (by default, Latin-1 whitespace) 
+	/** Removes the specified characters (by default, Latin-1 whitespace)
 	from the begining and the end of the string. */
 	string<T>& trim(const string<T> & whitespace = " \t\n\r")
 	{
@@ -939,6 +939,12 @@ public:
 		{
 			used = 0;
 		}
+	}
+
+	//! gets the last char of a string or null
+	inline T lastChar() const
+	{
+		return used > 1 ? array[used-2] : 0;
 	}
 
 private:

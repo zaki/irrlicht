@@ -389,9 +389,17 @@ precision will be lower but speed higher. currently X86 only
 #define IRRCALLCONV __cdecl
 #endif // STDCALL_SUPPORTED
 
+#else // _IRR_WINDOWS_API_
+
+// Force symbol export in shared libraries built with gcc.
+#if (__GNUC__ >= 4) && !defined(_IRR_STATIC_LIB_) && defined(IRRLICHT_EXPORTS)
+#define IRRLICHT_API __attribute__ ((visibility("default")))
 #else
 #define IRRLICHT_API
+#endif
+
 #define IRRCALLCONV
+
 #endif // _IRR_WINDOWS_API_
 
 // We need to disable DIRECT3D9 support for Visual Studio 6.0 because

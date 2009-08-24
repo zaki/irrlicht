@@ -125,10 +125,10 @@ namespace irr
 //! Should the wide character version of the FileSystem be used
 #if defined(_IRR_WCHAR_FILESYSTEM)
 	//! 16 bit character variable. Used for unicode Filesystem and unicode strings
-	typedef wchar_t c16;
+	typedef wchar_t fschar_t;
 #else
 	//! 8 bit character variable. Used for ansi Filesystem and non-unicode strings
-	typedef char c16;
+	typedef char fschar_t;
 #endif
 
 } // end namespace irr

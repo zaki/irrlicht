@@ -91,7 +91,7 @@ CFileSystem::~CFileSystem()
 
 
 //! opens a file for read access
-IReadFile* CFileSystem::createAndOpenFile(const core::string<c16>& filename)
+IReadFile* CFileSystem::createAndOpenFile(const io::path& filename)
 {
 	IReadFile* file = 0;
 	u32 i;
@@ -111,7 +111,7 @@ IReadFile* CFileSystem::createAndOpenFile(const core::string<c16>& filename)
 
 //! Creates an IReadFile interface for treating memory like a file.
 IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len,
-		const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
+		const io::path& fileName, bool deleteMemoryWhenDropped)
 {
 	if (!memory)
 		return 0;
@@ -121,7 +121,7 @@ IReadFile* CFileSystem::createMemoryReadFile(void* memory, s32 len,
 
 
 //! Creates an IReadFile interface for reading files inside files
-IReadFile* CFileSystem::createLimitReadFile(const core::string<c16>& fileName,
+IReadFile* CFileSystem::createLimitReadFile(const io::path& fileName,
 		IReadFile* alreadyOpenedFile, long pos, long areaSize)
 {
 	if (!alreadyOpenedFile)
@@ -133,7 +133,7 @@ IReadFile* CFileSystem::createLimitReadFile(const core::string<c16>& fileName,
 
 //! Creates an IReadFile interface for treating memory like a file.
 IWriteFile* CFileSystem::createMemoryWriteFile(void* memory, s32 len,
-		const core::string<c16>& fileName, bool deleteMemoryWhenDropped)
+		const io::path& fileName, bool deleteMemoryWhenDropped)
 {
 	if (!memory)
 		return 0;
@@ -143,7 +143,7 @@ IWriteFile* CFileSystem::createMemoryWriteFile(void* memory, s32 len,
 
 
 //! Opens a file for write access.
-IWriteFile* CFileSystem::createAndWriteFile(const core::string<c16>& filename, bool append)
+IWriteFile* CFileSystem::createAndWriteFile(const io::path& filename, bool append)
 {
 	return createWriteFile(filename, append);
 }
@@ -184,7 +184,7 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 
 
 //! Adds an archive to the file system.
-bool CFileSystem::addFileArchive(const core::string<c16>& filename, bool ignoreCase,
+bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 									  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
 {
 	IFileArchive* archive = 0;
@@ -304,7 +304,7 @@ bool CFileSystem::removeFileArchive(u32 index)
 
 
 //! removes an archive from the file system.
-bool CFileSystem::removeFileArchive(const core::string<c16>& filename)
+bool CFileSystem::removeFileArchive(const io::path& filename)
 {
 	for (u32 i=0; i < FileArchives.size(); ++i)
 	{
@@ -330,7 +330,7 @@ IFileArchive* CFileSystem::getFileArchive(u32 index)
 
 
 //! Returns the string of the current working directory
-const core::string<c16>& CFileSystem::getWorkingDirectory()
+const io::path& CFileSystem::getWorkingDirectory()
 {
 	EFileSystemType type = FileSystemType;
 
@@ -345,7 +345,7 @@ const core::string<c16>& CFileSystem::getWorkingDirectory()
 		#elif defined(_IRR_WINDOWS_API_)
 			#if defined(_IRR_WCHAR_FILESYSTEM )
 				wchar_t tmp[_MAX_PATH];
-				_wgetcwd(tmp, FILE_SYSTEM_MAX_PATH);
+				_wgetcwd(tmp, _MAX_PATH);
 			#else
 				c8 tmp[_MAX_PATH];
 				_getcwd(tmp, _MAX_PATH);
@@ -398,7 +398,7 @@ const core::string<c16>& CFileSystem::getWorkingDirectory()
 
 
 //! Changes the current Working Directory to the given string.
-bool CFileSystem::changeWorkingDirectoryTo(const core::string<c16>& newDirectory)
+bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 {
 	bool success=false;
 
@@ -429,9 +429,9 @@ bool CFileSystem::changeWorkingDirectoryTo(const core::string<c16>& newDirectory
 }
 
 
-core::string<c16> CFileSystem::getAbsolutePath(const core::string<c16>& filename) const
+io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 {
-	c16 *p=0;
+	fschar_t *p=0;
 
 #if defined(_IRR_WINDOWS_CE_PLATFORM_)
 	return filename;
@@ -461,19 +461,19 @@ core::string<c16> CFileSystem::getAbsolutePath(const core::string<c16>& filename
 				return filename;
 		}
 		else
-			return core::string<c16>(fpath);
+			return io::path(fpath);
 	}
 
 #endif
 
-	return core::string<c16>(p);
+	return io::path(p);
 }
 
 
 //! returns the directory part of a filename, i.e. all until the first
 //! slash or backslash, excluding it. If no directory path is prefixed, a '.'
 //! is returned.
-core::string<c16> CFileSystem::getFileDir(const core::string<c16>& filename) const
+io::path CFileSystem::getFileDir(const io::path& filename) const
 {
 	// find last forward or backslash
 	s32 lastSlash = filename.findLast('/');
@@ -489,7 +489,7 @@ core::string<c16> CFileSystem::getFileDir(const core::string<c16>& filename) con
 
 //! returns the base part of a filename, i.e. all except for the directory
 //! part. If no directory path is prefixed, the full name is returned.
-core::string<c16> CFileSystem::getFileBasename(const core::string<c16>& filename, bool keepExtension) const
+io::path CFileSystem::getFileBasename(const io::path& filename, bool keepExtension) const
 {
 	// find last forward or backslash
 	s32 lastSlash = filename.findLast('/');
@@ -519,14 +519,14 @@ core::string<c16> CFileSystem::getFileBasename(const core::string<c16>& filename
 
 
 //! flaten a path and file name for example: "/you/me/../." becomes "/you"
-core::string<c16>& CFileSystem::flattenFilename(core::string<c16>& directory, const core::string<c16>& root) const
+io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root) const
 {
 	directory.replace('\\', '/');
-	if (lastChar(directory) != '/')
+	if (directory.lastChar() != '/')
 		directory.append('/');
 
-	core::string<c16> dir;
-	core::string<c16> subdir;
+	io::path dir;
+	io::path subdir;
 
 	s32 lastpos = 0;
 	s32 pos = 0;
@@ -568,15 +568,15 @@ EFileSystemType CFileSystem::setFileListSystem(EFileSystemType listType)
 IFileList* CFileSystem::createFileList()
 {
 	CFileList* r = 0;
-	core::string<c16> Path = getWorkingDirectory();
+	io::path Path = getWorkingDirectory();
 	Path.replace('\\', '/');
-	if (lastChar(Path) != '/')
+	if (Path.lastChar() != '/')
 		Path.append('/');
 
 	//! Construct from native filesystem
 	if (FileSystemType == FILESYSTEM_NATIVE)
 	{
-		core::string<c16> fullPath;
+		io::path fullPath;
 		// --------------------------------------------
 		//! Windows version
 		#ifdef _IRR_WINDOWS_API_
@@ -676,7 +676,7 @@ IFileList* CFileSystem::createFileList()
 			{
 				if (core::isInSameDirectory(Path, merge->getFullFileName(j)) == 0)
 				{
-					core::string<c16> fullPath = merge->getFullFileName(j);
+					io::path fullPath = merge->getFullFileName(j);
 					r->addItem(fullPath, merge->getFileSize(j), merge->isDirectory(j), 0);
 				}
 			}
@@ -690,7 +690,7 @@ IFileList* CFileSystem::createFileList()
 }
 
 //! determines if a file exists and would be able to be opened.
-bool CFileSystem::existFile(const core::string<c16>& filename) const
+bool CFileSystem::existFile(const io::path& filename) const
 {
 	for (u32 i=0; i < FileArchives.size(); ++i)
 		if (FileArchives[i]->getFileList()->findFile(filename)!=-1)
@@ -708,7 +708,7 @@ bool CFileSystem::existFile(const core::string<c16>& filename) const
 
 
 //! Creates a XML Reader from a file.
-IXMLReader* CFileSystem::createXMLReader(const core::string<c16>& filename)
+IXMLReader* CFileSystem::createXMLReader(const io::path& filename)
 {
 	IReadFile* file = createAndOpenFile(filename);
 	if (!file)
@@ -731,7 +731,7 @@ IXMLReader* CFileSystem::createXMLReader(IReadFile* file)
 
 
 //! Creates a XML Reader from a file.
-IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(const core::string<c16>& filename)
+IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(const io::path& filename)
 {
 	IReadFile* file = createAndOpenFile(filename);
 	if (!file)
@@ -754,7 +754,7 @@ IXMLReaderUTF8* CFileSystem::createXMLReaderUTF8(IReadFile* file)
 
 
 //! Creates a XML Writer from a file.
-IXMLWriter* CFileSystem::createXMLWriter(const core::string<c16>& filename)
+IXMLWriter* CFileSystem::createXMLWriter(const io::path& filename)
 {
 	IWriteFile* file = createAndWriteFile(filename);
 	IXMLWriter* writer = createXMLWriter(file);

@@ -11,7 +11,7 @@
 # norootforbuild
 
 Name:			libIrrlicht1
-Version:		1.4.2
+Version:		1.6.0
 Release:		0.pm.1
 Summary:		The Irrlicht Engine SDK
 License:		see readme.txt

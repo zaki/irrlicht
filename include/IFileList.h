@@ -6,7 +6,7 @@
 #define __I_FILE_LIST_H_INCLUDED__
 
 #include "IReferenceCounted.h"
-#include "irrString.h"
+#include "path.h"
 
 namespace irr
 {
@@ -28,13 +28,13 @@ public:
 	\param index is the zero based index of the file which name should
 	be returned. The index must be less than the amount getFileCount() returns.
 	\return File name of the file. Returns 0, if an error occured. */
-	virtual const core::string<c16>& getFileName(u32 index) const = 0;
+	virtual const io::path& getFileName(u32 index) const = 0;
 
 	//! Gets the full name of a file in the list including the path, based on an index.
 	/** \param index is the zero based index of the file which name should
 	be returned. The index must be less than the amount getFileCount() returns.
 	\return File name of the file. Returns 0, if an error occured. */
-	virtual const core::string<c16>& getFullFileName(u32 index) const = 0;
+	virtual const io::path& getFullFileName(u32 index) const = 0;
 
 	//! Returns the size of a file in the file list, based on an index.
 	/** \param index is the zero based index of the file which should be returned.
@@ -54,10 +54,10 @@ public:
 	\param isFolder True if you are searching for a file, false if you want a dir.
 	\return Returns the index of the file in the file list, or -1 if
 	no matching name name was found. */
-	virtual s32 findFile(const core::string<c16>& filename, bool isFolder=false) const = 0;
+	virtual s32 findFile(const io::path& filename, bool isFolder=false) const = 0;
 
 	//! Returns the base path of the file list
-	virtual const core::string<c16>& getPath() const = 0;
+	virtual const io::path& getPath() const = 0;
 };
 
 } // end namespace irr

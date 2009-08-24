@@ -28,7 +28,7 @@ CImageWriterTGA::CImageWriterTGA()
 #endif
 }
 
-bool CImageWriterTGA::isAWriteableFileExtension(const core::string<c16>& filename) const
+bool CImageWriterTGA::isAWriteableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "tga" );
 }

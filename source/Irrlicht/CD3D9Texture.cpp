@@ -31,7 +31,7 @@ namespace video
 
 //! rendertarget constructor
 CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size,
-						   const core::string<c16>& name, const ECOLOR_FORMAT format)
+						   const io::path& name, const ECOLOR_FORMAT format)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 	TextureSize(size), ImageSize(size), Pitch(0), ColorFormat(ECF_UNKNOWN),
 	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(true)
@@ -50,7 +50,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 
 //! constructor
 CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
-					   u32 flags, const core::string<c16>& name)
+					   u32 flags, const io::path& name)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 	TextureSize(0,0), ImageSize(0,0), Pitch(0), ColorFormat(ECF_UNKNOWN),
 	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)

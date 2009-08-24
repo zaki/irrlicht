@@ -30,7 +30,7 @@ public:
 		NP2_SIZE		= 4,
 		HAS_ALPHA		= 8
 	};
-	CSoftwareTexture2( IImage* surface, const core::string<c16>& name, u32 flags );
+	CSoftwareTexture2( IImage* surface, const io::path& name, u32 flags );
 
 	//! destructor
 	virtual ~CSoftwareTexture2();

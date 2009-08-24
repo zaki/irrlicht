@@ -435,7 +435,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
-#endif	
+#endif
 	// set the renderstates
 	setRenderStates3DMode();
 
@@ -714,7 +714,7 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const core::string<c16>& name)
+video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
 {
 	return new CD3D9Texture(surface, this, TextureCreationFlags, name);
 }
@@ -1469,19 +1469,23 @@ void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
 				0.0f, 0.0f, 0.0f, color,
 				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
 
-		indices.push_back(0+i*4);
-		indices.push_back(1+i*4);
-		indices.push_back(2+i*4);
+		const u32 curPos = vtx.size()-4;
+		indices.push_back(0+curPos);
+		indices.push_back(1+curPos);
+		indices.push_back(2+curPos);
 
-		indices.push_back(0+i*4);
-		indices.push_back(2+i*4);
-		indices.push_back(3+i*4);	
+		indices.push_back(0+curPos);
+		indices.push_back(2+curPos);
+		indices.push_back(3+curPos);
 	}
 
-	setVertexShader(EVT_STANDARD);
+	if (vtx.size())
+	{
+		setVertexShader(EVT_STANDARD);
 
-	pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vtx.size(), indices.size() / 3, indices.pointer(),
-		D3DFMT_INDEX16,vtx.pointer(), sizeof(S3DVertex));
+		pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vtx.size(), indices.size() / 3, indices.pointer(),
+			D3DFMT_INDEX16,vtx.pointer(), sizeof(S3DVertex));
+	}
 }
 
 
@@ -1939,7 +1943,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	if (queryFeature(EVDF_COLOR_MASK) &&
 		(resetAllRenderstates || lastmaterial.ColorMask != material.ColorMask))
 	{
-		const DWORD flag = 
+		const DWORD flag =
 			((material.ColorMask & ECP_RED)?D3DCOLORWRITEENABLE_RED:0) |
 			((material.ColorMask & ECP_GREEN)?D3DCOLORWRITEENABLE_GREEN:0) |
 			((material.ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
@@ -1965,7 +1969,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			else if (VendorID==0x1002)
 				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, MAKEFOURCC('A','2','M','0'));
 		}
-			
+
 		// enable antialiasing
 		if (AntiAliasing)
 		{
@@ -2572,28 +2576,42 @@ bool CD3D9Driver::reset()
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 
-	// restore screen depthbuffer
-	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
-	D3DSURFACE_DESC desc;
-	DepthBuffers[0]->Surface->GetDesc(&desc);
-	// restore other depth buffers
-	for (i=1; i<DepthBuffers.size(); ++i)
-	{
-		pID3DDevice->CreateDepthStencilSurface(DepthBuffers[i]->Size.Width,
-				DepthBuffers[i]->Size.Height,
-				desc.Format,
-				desc.MultiSampleType,
-				desc.MultiSampleQuality,
-				TRUE,
-				&(DepthBuffers[i]->Surface),
-				NULL);
-	}
-
 	// restore RTTs
 	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
+	}
+
+	// restore screen depthbuffer
+	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
+	D3DSURFACE_DESC desc;
+	// restore other depth buffers
+	// dpeth format is taken from main depth buffer
+	DepthBuffers[0]->Surface->GetDesc(&desc);
+	// multisampling is taken from rendertarget
+	D3DSURFACE_DESC desc2;
+	for (i=1; i<DepthBuffers.size(); ++i)
+	{
+		for (u32 j=0; j<Textures.size(); ++j)
+		{
+			// all textures sharing this depth buffer must have the same setting
+			// so take first one
+			if (((CD3D9Texture*)(Textures[j].Surface))->DepthSurface==DepthBuffers[i])
+			{
+				((CD3D9Texture*)(Textures[j].Surface))->Texture->GetLevelDesc(0,&desc2);
+				break;
+			}
+		}
+
+		pID3DDevice->CreateDepthStencilSurface(DepthBuffers[i]->Size.Width,
+				DepthBuffers[i]->Size.Height,
+				desc.Format,
+				desc2.MultiSampleType,
+				desc2.MultiSampleQuality,
+				TRUE,
+				&(DepthBuffers[i]->Surface),
+				NULL);
 	}
 
 	if (FAILED(hr))
@@ -2782,7 +2800,7 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 
 //! Creates a render target texture.
 ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-											  const core::string<c16>& name,
+											  const io::path& name,
 											  const ECOLOR_FORMAT format)
 {
 	ITexture* tex = new CD3D9Texture(this, size, name, format);
@@ -3040,12 +3058,15 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 	{
 		D3DSURFACE_DESC desc;
 		DepthBuffers[0]->Surface->GetDesc(&desc);
+		// the multisampling needs to match the RTT
+		D3DSURFACE_DESC desc2;
+		((CD3D9Texture*)tex)->Texture->GetLevelDesc(0,&desc2);
 		DepthBuffers.push_back(new SDepthSurface());
 		HRESULT hr=pID3DDevice->CreateDepthStencilSurface(optSize.Width,
 				optSize.Height,
 				desc.Format,
-				desc.MultiSampleType,
-				desc.MultiSampleQuality,
+				desc2.MultiSampleType,
+				desc2.MultiSampleQuality,
 				TRUE,
 				&(DepthBuffers.getLast()->Surface),
 				NULL);

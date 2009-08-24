@@ -6,7 +6,7 @@
 #define __I_MESH_CACHE_H_INCLUDED__
 
 #include "IReferenceCounted.h"
-#include "irrString.h"
+#include "path.h"
 
 namespace irr
 {
@@ -47,7 +47,7 @@ namespace scene
 		set by this method.
 		\param mesh Pointer to a mesh which will now be referenced by
 		this name. */
-		virtual void addMesh(const core::string<c16>& filename, IAnimatedMesh* mesh) = 0;
+		virtual void addMesh(const io::path& filename, IAnimatedMesh* mesh) = 0;
 
 		//! Removes a mesh from the cache.
 		/** After loading a mesh with getMesh(), the mesh can be
@@ -93,25 +93,25 @@ namespace scene
 		//! Returns a mesh based on its filename.
 		/** \param filename Name of the mesh.
 		\return Pointer to the mesh or 0 if there is none with this number. */
-		virtual IAnimatedMesh* getMeshByFilename(const core::string<c16>& filename) = 0;
+		virtual IAnimatedMesh* getMeshByFilename(const io::path& filename) = 0;
 
 		//! Get the filename of a loaded mesh, based on its index.
 		/** \param index: Index of the mesh, number between 0 and getMeshCount()-1.
 		\return String with name if mesh was found and has a name, else
 		0. */
-		virtual const c16* getMeshFilename(u32 index) const = 0;
+		virtual const io::path& getMeshFilename(u32 index) const = 0;
 
 		//! Get the filename of a loaded mesh, if there is any.
 		/** \param mesh Pointer to mesh to query.
 		\return String with name if mesh was found and has a name, else
 		0. */
-		virtual const c16* getMeshFilename(const IAnimatedMesh* const mesh) const = 0;
+		virtual const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const = 0;
 
 		//! Get the filename of a loaded mesh, if there is any.
 		/** \param mesh Pointer to mesh to query.
 		\return String with name if mesh was found and has a name, else
 		0. */
-		virtual const c16* getMeshFilename(const IMesh* const mesh) const = 0;
+		virtual const io::path& getMeshFilename(const IMesh* const mesh) const = 0;
 
 		//! Renames a loaded mesh.
 		/** Note that renaming meshes might change the ordering of the
@@ -120,7 +120,7 @@ namespace scene
 		\param index The index of the mesh in the cache.
 		\param filename New name for the mesh.
 		\return True if mesh was renamed. */
-		virtual bool setMeshFilename(u32 index, const c16* filename) = 0;
+		virtual bool setMeshFilename(u32 index, const io::path& filename) = 0;
 
 		//! Renames a loaded mesh.
 		/** Note that renaming meshes might change the ordering of the
@@ -129,7 +129,7 @@ namespace scene
 		\param mesh Mesh to be renamed.
 		\param filename New name for the mesh.
 		\return True if mesh was renamed. */
-		virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const c16* filename) = 0;
+		virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename) = 0;
 
 		//! Renames a loaded mesh.
 		/** Note that renaming meshes might change the ordering of the
@@ -138,12 +138,12 @@ namespace scene
 		\param mesh Mesh to be renamed.
 		\param filename New name for the mesh.
 		\return True if mesh was renamed. */
-		virtual bool setMeshFilename(const IMesh* const mesh, const c16* filename) = 0;
+		virtual bool setMeshFilename(const IMesh* const mesh, const io::path& filename) = 0;
 
 		//! Check if a mesh was already loaded.
 		/** \param filename Name of the mesh.
 		\return True if the mesh has been loaded, else false. */
-		virtual bool isMeshLoaded(const core::string<c16>& filename) = 0;
+		virtual bool isMeshLoaded(const io::path& filename) = 0;
 
 		//! Clears the whole mesh cache, removing all meshes.
 		/** All meshes will be reloaded completely when using ISceneManager::getMesh()
