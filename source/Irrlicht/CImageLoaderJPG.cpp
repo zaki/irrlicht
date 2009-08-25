@@ -197,8 +197,18 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	// read file parameters with jpeg_read_header()
 	jpeg_read_header(&cinfo, TRUE);
 
-	cinfo.out_color_space=JCS_RGB;
-	cinfo.out_color_components=3;
+	bool useCMYK=false;
+	if (cinfo.jpeg_color_space==JCS_CMYK)
+	{
+		cinfo.out_color_space=JCS_CMYK;
+		cinfo.out_color_components=4;
+		useCMYK=true;
+	}
+	else
+	{
+		cinfo.out_color_space=JCS_RGB;
+		cinfo.out_color_components=3;
+	}
 	cinfo.do_fancy_upsampling=FALSE;
 
 	// Start decompressor
@@ -235,8 +245,32 @@ IImage* CImageLoaderJPG::loadImage(io::IReadFile* file) const
 	jpeg_destroy_decompress(&cinfo);
 
 	// convert image
-	IImage* image = new CImage(ECF_R8G8B8,
-		core::dimension2d<u32>(width, height), output);
+	IImage* image = 0;
+	if (useCMYK)
+	{
+		image = new CImage(ECF_R8G8B8,
+				core::dimension2d<u32>(width, height));
+		const u32 size = 3*width*height;
+		u8* data = (u8*)image->lock();
+		if (data)
+		{
+			for (u32 i=0,j=0; i<size; i+=3, j+=4)
+			{
+				// Also works without K, but has more contrast with K multiplied in
+//				data[i+0] = output[j+2];
+//				data[i+1] = output[j+1];
+//				data[i+2] = output[j+0];
+				data[i+0] = (char)(output[j+2]*(output[j+3]/255.f));
+				data[i+1] = (char)(output[j+1]*(output[j+3]/255.f));
+				data[i+2] = (char)(output[j+0]*(output[j+3]/255.f));
+			}
+		}
+		image->unlock();
+		delete [] output;
+	}
+	else
+		image = new CImage(ECF_R8G8B8,
+				core::dimension2d<u32>(width, height), output);
 
 	delete [] input;
 
