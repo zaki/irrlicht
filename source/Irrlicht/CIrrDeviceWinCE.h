@@ -202,13 +202,33 @@ namespace irr
 					UseReferenceRect = false;
 			}
 
+			/** Used to notify the cursor that the window was resized. */
+			virtual void OnResize(const core::dimension2d<u32>& size)
+			{
+				if (size.Width!=0)
+					InvWindowSize.Width = 1.0f / size.Width;
+				else 
+					InvWindowSize.Width = 0.f;
+ 
+				if (size.Height!=0)
+					InvWindowSize.Height = 1.0f / size.Height;
+				else
+					InvWindowSize.Height = 0.f;
+			}
+
 		private:
 
 			//! Updates the internal cursor position
 			void updateInternalCursorPosition()
 			{
 				POINT p;
-				GetCursorPos(&p);
+				if (!GetCursorPos(&p))
+				{
+					DWORD xy = GetMessagePos();
+					p.x = GET_X_LPARAM(xy);
+					p.y = GET_Y_LPARAM(xy);
+				} 
+
 				RECT rect;
 
 				if (UseReferenceRect)

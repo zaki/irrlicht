@@ -1,5 +1,7 @@
 Changes in 1.6 (??.??.2009)
 
+ - Fix cursor problems found by buffer and by rvl2 as described in http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=34823&highlight=
+
  - Change debug data to draw using lines instead of arrows, which is much faster. Patch by pc0de
 
  - Fix a bug with FPS camera animator causing stutters. Patch by FuzzYspo0N
