@@ -617,6 +617,7 @@ void CIrrDeviceWinCE::resizeIfNecessary()
 		os::Printer::log(tmp);
 
 		getVideoDriver()->OnResize(irr::core::dimension2d<irr::u32>(r.right, r.bottom));
+		getWin32CursorControl()->OnResize(getVideoDriver()->getScreenSize());
 	}
 
 	Resized = false;

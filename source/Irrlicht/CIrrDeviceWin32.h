@@ -16,6 +16,7 @@
 #if !defined(_IRR_XBOX_PLATFORM_)
 	#include <windows.h>
 	#include <mmsystem.h> // For JOYCAPS
+	#include <Windowsx.h>
 #endif
 
 
@@ -243,6 +244,20 @@ namespace irr
 				else
 					UseReferenceRect = false;
 			}
+			
+			/** Used to notify the cursor that the window was resized. */
+			virtual void OnResize(const core::dimension2d<u32>& size)
+			{
+				if (size.Width!=0)
+					InvWindowSize.Width = 1.0f / size.Width;
+				else 
+					InvWindowSize.Width = 0.f;
+
+				if (size.Height!=0)
+					InvWindowSize.Height = 1.0f / size.Height;
+				else
+					InvWindowSize.Height = 0.f;
+			}
 
 		private:
 
@@ -250,7 +265,12 @@ namespace irr
 			void updateInternalCursorPosition()
 			{
 				POINT p;
-				GetCursorPos(&p);
+				if (!GetCursorPos(&p))
+				{
+					DWORD xy = GetMessagePos();
+					p.x = GET_X_LPARAM(xy);
+					p.y = GET_Y_LPARAM(xy);
+				} 
 
 				if (UseReferenceRect)
 				{
