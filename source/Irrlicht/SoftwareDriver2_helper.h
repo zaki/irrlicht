@@ -120,12 +120,7 @@ REALINLINE void memcpy32_small ( void * dest, const void *source, u32 bytesize )
 // integer log2 of a float ieee 754. TODO: non ieee floating point
 static inline s32 s32_log2_f32( f32 f)
 {
-#ifdef IRRLICHT_FAST_MATH
 	u32 x = IR ( f );
-#else
-	u32 x = core::IR ( f );
-#endif
-
 	return ((x & 0x7F800000) >> 23) - 127;
 }
 

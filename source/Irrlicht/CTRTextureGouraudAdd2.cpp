@@ -298,21 +298,23 @@ void CTRTextureGouraudAdd2::drawTriangle ( const s4DVertex *a,const s4DVertex *b
 	if ( F32_A_GREATER_B ( b->Pos.y , c->Pos.y ) ) swapVertexPointer(&b, &c);
 	if ( F32_A_GREATER_B ( a->Pos.y , b->Pos.y ) ) swapVertexPointer(&a, &b);
 
+	const f32 ca = c->Pos.y - a->Pos.y;
+	const f32 ba = b->Pos.y - a->Pos.y;
+	const f32 cb = c->Pos.y - b->Pos.y;
 	// calculate delta y of the edges
-	scan.invDeltaY[0] = core::reciprocal ( c->Pos.y - a->Pos.y );
-	scan.invDeltaY[1] = core::reciprocal ( b->Pos.y - a->Pos.y );
-	scan.invDeltaY[2] = core::reciprocal ( c->Pos.y - b->Pos.y );
-
+	scan.invDeltaY[0] = (ca != 0.f)?core::reciprocal ( ca ):0.f;
+	scan.invDeltaY[1] = (ba != 0.f)?core::reciprocal ( ba ):0.f;
+	scan.invDeltaY[2] = (cb != 0.f)?core::reciprocal ( cb ):0.f;
 
 	// find if the major edge is left or right aligned
 	f32 temp[4];
 
 	temp[0] = a->Pos.x - c->Pos.x;
-	temp[1] = a->Pos.y - c->Pos.y;
+	temp[1] = -ca;
 	temp[2] = b->Pos.x - a->Pos.x;
-	temp[3] = b->Pos.y - a->Pos.y;
+	temp[3] = ba;
 
-	scan.left = ( temp[0] * temp[3] - temp[1] * temp[2] ) > (f32) 0.0 ? 0 : 1;
+	scan.left = ( temp[0] * temp[3] - temp[1] * temp[2] ) > 0.f ? 0 : 1;
 	scan.right = 1 - scan.left;
 
 	// calculate slopes for the major edge

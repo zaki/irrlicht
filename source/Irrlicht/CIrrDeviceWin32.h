@@ -19,7 +19,6 @@
 	#include <Windowsx.h>
 #endif
 
-
 namespace irr
 {
 	class CIrrDeviceWin32 : public CIrrDeviceStub, video::IImagePresenter
@@ -244,7 +243,7 @@ namespace irr
 				else
 					UseReferenceRect = false;
 			}
-			
+
 			/** Used to notify the cursor that the window was resized. */
 			virtual void OnResize(const core::dimension2d<u32>& size)
 			{

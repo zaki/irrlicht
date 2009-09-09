@@ -781,12 +781,14 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			glLoadMatrixf(glmat);
 		}
 		break;
-	case ETS_TEXTURE_0:
-	case ETS_TEXTURE_1:
-	case ETS_TEXTURE_2:
-	case ETS_TEXTURE_3:
+	case ETS_COUNT:
+		return;
+	default:
 	{
 		const u32 i = state - ETS_TEXTURE_0;
+		if (i >= MATERIAL_MAX_TEXTURES)
+			break;
+
 		const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
 
 		if (MultiTextureExtension)
@@ -807,8 +809,6 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		}
 		break;
 	}
-	default:
-		break;
 	}
 }
 

@@ -1124,7 +1124,7 @@ void CSkinnedMesh::updateBoundingBox(void)
 }
 
 
-scene::SSkinMeshBuffer *CSkinnedMesh::createBuffer()
+scene::SSkinMeshBuffer *CSkinnedMesh::addMeshBuffer()
 {
 	scene::SSkinMeshBuffer *buffer=new scene::SSkinMeshBuffer();
 	LocalBuffers.push_back(buffer);
@@ -1132,7 +1132,7 @@ scene::SSkinMeshBuffer *CSkinnedMesh::createBuffer()
 }
 
 
-CSkinnedMesh::SJoint *CSkinnedMesh::createJoint(SJoint *parent)
+CSkinnedMesh::SJoint *CSkinnedMesh::addJoint(SJoint *parent)
 {
 	SJoint *joint=new SJoint;
 
@@ -1151,7 +1151,7 @@ CSkinnedMesh::SJoint *CSkinnedMesh::createJoint(SJoint *parent)
 }
 
 
-CSkinnedMesh::SPositionKey *CSkinnedMesh::createPositionKey(SJoint *joint)
+CSkinnedMesh::SPositionKey *CSkinnedMesh::addPositionKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1161,7 +1161,7 @@ CSkinnedMesh::SPositionKey *CSkinnedMesh::createPositionKey(SJoint *joint)
 }
 
 
-CSkinnedMesh::SScaleKey *CSkinnedMesh::createScaleKey(SJoint *joint)
+CSkinnedMesh::SScaleKey *CSkinnedMesh::addScaleKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1171,7 +1171,7 @@ CSkinnedMesh::SScaleKey *CSkinnedMesh::createScaleKey(SJoint *joint)
 }
 
 
-CSkinnedMesh::SRotationKey *CSkinnedMesh::createRotationKey(SJoint *joint)
+CSkinnedMesh::SRotationKey *CSkinnedMesh::addRotationKey(SJoint *joint)
 {
 	if (!joint)
 		return 0;
@@ -1181,7 +1181,7 @@ CSkinnedMesh::SRotationKey *CSkinnedMesh::createRotationKey(SJoint *joint)
 }
 
 
-CSkinnedMesh::SWeight *CSkinnedMesh::createWeight(SJoint *joint)
+CSkinnedMesh::SWeight *CSkinnedMesh::addWeight(SJoint *joint)
 {
 	if (!joint)
 		return 0;

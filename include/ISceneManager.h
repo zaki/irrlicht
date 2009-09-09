@@ -18,6 +18,7 @@
 #include "EMeshWriterEnums.h"
 #include "SceneParameters.h"
 #include "IGeometryCreator.h"
+#include "ISkinnedMesh.h"
 
 namespace irr
 {
@@ -1439,6 +1440,11 @@ namespace scene
 		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
 		for details. */
 		virtual IMeshWriter* createMeshWriter(EMESH_WRITER_TYPE type) = 0;
+
+		//! Get a skinned mesh, which is not available as header-only code
+		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
+		for details. */
+		virtual ISkinnedMesh* createSkinnedMesh() = 0;
 
 		//! Sets ambient color of the scene
 		virtual void setAmbientLight(const video::SColorf &ambientColor) = 0;

@@ -650,20 +650,20 @@ void CD3D9Driver::setTransform(E_TRANSFORMATION_STATE state,
 	case ETS_PROJECTION:
 		pID3DDevice->SetTransform( D3DTS_PROJECTION, (D3DMATRIX*)((void*)mat.pointer()));
 		break;
-	case ETS_TEXTURE_0:
-	case ETS_TEXTURE_1:
-	case ETS_TEXTURE_2:
-	case ETS_TEXTURE_3:
-		if (mat.isIdentity())
-			pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
-		else
-		{
-			pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
-			pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
-				(D3DMATRIX*)((void*)mat.pointer()));
-		}
-		break;
 	case ETS_COUNT:
+		return;
+	default:
+		if (state-ETS_TEXTURE_0 < MATERIAL_MAX_TEXTURES)
+		{
+			if (mat.isIdentity())
+				pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
+			else
+			{
+				pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
+				pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
+					(D3DMATRIX*)((void*)mat.pointer()));
+			}
+		}
 		break;
 	}
 
@@ -3085,7 +3085,7 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 			else
 			{
 				char buffer[128];
-				sprintf(buffer,"Could not create DepthBuffer of %ix%i",destSize.Width,destSize.Height);
+				sprintf(buffer,"Could not create DepthBuffer of %ix%i",optSize.Width,optSize.Height);
 				os::Printer::log(buffer,ELL_ERROR);
 			}
 			DepthBuffers.erase(DepthBuffers.size()-1);

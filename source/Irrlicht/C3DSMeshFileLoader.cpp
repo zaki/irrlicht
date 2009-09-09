@@ -23,9 +23,10 @@ namespace scene
 {
 
 
+namespace
+{
 enum e3DSChunk
 {
-
 	// Primary chunk
 	 C3DS_MAIN3DS = 0x4D4D,
 
@@ -120,6 +121,7 @@ enum e3DSChunk
 
 	 C3DS_CHUNK_MAX		= 0xFFFF
 };
+}
 
 
 //! Constructor

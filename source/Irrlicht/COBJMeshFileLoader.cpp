@@ -324,10 +324,11 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 	u8 type=0; // map_Kd - diffuse color texture map
 	// map_Ks - specular color texture map
 	// map_Ka - ambient color texture map
+	// map_Ns - shininess texture map
 	if ((!strncmp(bufPtr,"map_bump",8)) || (!strncmp(bufPtr,"bump",4)))
 		type=1; // normal map
-	else if (!strncmp(bufPtr,"map_d",5))
-		type=2; // opactity map
+	else if ((!strncmp(bufPtr,"map_d",5)) || (!strncmp(bufPtr,"map_opacity",11)))
+		type=2; // opacity map
 	else if (!strncmp(bufPtr,"map_refl",8))
 		type=3; // reflection map
 	// extract new material's name
@@ -422,11 +423,14 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 	texname.replace('\\', '/');
 
 	video::ITexture * texture = 0;
-	if (FileSystem->existFile(texname))
-		texture = SceneManager->getVideoDriver()->getTexture(texname);
-	else
-		// try to read in the relative path, the .obj is loaded from
-		texture = SceneManager->getVideoDriver()->getTexture( relPath + texname );
+	if (texname.size())
+	{
+		if (FileSystem->existFile(texname))
+			texture = SceneManager->getVideoDriver()->getTexture(texname);
+		else
+			// try to read in the relative path, the .obj is loaded from
+			texture = SceneManager->getVideoDriver()->getTexture( relPath + texname );
+	}
 	if ( texture )
 	{
 		if (type==0)

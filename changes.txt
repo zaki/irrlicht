@@ -1,6 +1,6 @@
 Changes in 1.6 (??.??.2009)
 
- - Fix cursor problems found by buffer and by rvl2 as described in http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=34823&highlight=
+ - Renamed some methods in ISkinnedMesh to match the official Irrlicht naming scheme according to createXXX()
 
  - Change debug data to draw using lines instead of arrows, which is much faster. Patch by pc0de
 
@@ -646,6 +646,8 @@ Changes in 1.6 (??.??.2009)
 
 -------------------------------------
 Changes in version 1.5.1 (??.?? 2009)
+
+ - Fix cursor problems found by buffer and by rvl2 as described in http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=34823&highlight=
 
  - Make sure a missing font does not corrupt the skin.
 

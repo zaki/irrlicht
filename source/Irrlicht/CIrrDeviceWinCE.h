@@ -229,8 +229,6 @@ namespace irr
 					p.y = GET_Y_LPARAM(xy);
 				} 
 
-				RECT rect;
-
 				if (UseReferenceRect)
 				{
 					CursorPos.X = p.x - ReferenceRect.UpperLeftCorner.X;
@@ -238,6 +236,7 @@ namespace irr
 				}
 				else
 				{
+					RECT rect;
 					if (GetWindowRect(HWnd, &rect))
 					{
 						CursorPos.X = p.x-rect.left-BorderX;

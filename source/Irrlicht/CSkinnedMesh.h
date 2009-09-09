@@ -134,15 +134,15 @@ namespace scene
 		//! loaders should call this after populating the mesh
 		virtual void finalize();
 
-		virtual SSkinMeshBuffer *createBuffer();
+		virtual SSkinMeshBuffer *addMeshBuffer();
 
-		virtual SJoint *createJoint(SJoint *parent=0);
+		virtual SJoint *addJoint(SJoint *parent=0);
 
-		virtual SPositionKey *createPositionKey(SJoint *joint);
-		virtual SRotationKey *createRotationKey(SJoint *joint);
-		virtual SScaleKey *createScaleKey(SJoint *joint);
+		virtual SPositionKey *addPositionKey(SJoint *joint);
+		virtual SRotationKey *addRotationKey(SJoint *joint);
+		virtual SScaleKey *addScaleKey(SJoint *joint);
 
-		virtual SWeight *createWeight(SJoint *joint);
+		virtual SWeight *addWeight(SJoint *joint);
 
 		virtual void updateBoundingBox(void);
 

@@ -473,6 +473,9 @@ namespace scene
 		//! Returns a mesh writer implementation if available
 		virtual IMeshWriter* createMeshWriter(EMESH_WRITER_TYPE type);
 
+		//! Get a skinned mesh, which is not available as header-only code
+		virtual ISkinnedMesh* createSkinnedMesh();
+
 		//! Sets ambient color of the scene
 		virtual void setAmbientLight(const video::SColorf &ambientColor);
 

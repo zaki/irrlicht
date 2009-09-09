@@ -34,33 +34,35 @@ namespace scene
 	public:
 
 		//! Gets joint count.
-		//! \return Returns amount of joints in the skeletal animated mesh.
+		/** \return Amount of joints in the skeletal animated mesh. */
 		virtual u32 getJointCount() const = 0;
 
 		//! Gets the name of a joint.
-		//! \param number: Zero based index of joint. The last joint
-		//! has the number getJointCount()-1;
-		//! \return Returns name of joint and null if an error happened.
+		/** \param number: Zero based index of joint. The last joint
+		has the number getJointCount()-1;
+		\return Name of joint and null if an error happened. */
 		virtual const c8* getJointName(u32 number) const = 0;
 
 		//! Gets a joint number from its name
-		//! \param name: Name of the joint.
-		//! \return Returns the number of the joint or -1 if not found.
+		/** \param name: Name of the joint.
+		\return Number of the joint or -1 if not found. */
 		virtual s32 getJointNumber(const c8* name) const = 0;
 
-		//! uses animation from another mesh
-		//! the animation is linked (not copied) based on joint names (so make sure they are unique)
-		//! \return Returns true if all joints in this mesh were
-		//! matched up (empty names will not be matched, and it's case
-		//! sensitive). Unmatched joints will not be animated.
+		//! Use animation from another mesh
+		/** The animation is linked (not copied) based on joint names
+		so make sure they are unique.
+		\return True if all joints in this mesh were
+		matched up (empty names will not be matched, and it's case
+		sensitive). Unmatched joints will not be animated. */
 		virtual bool useAnimationFrom(const ISkinnedMesh *mesh) = 0;
 
-		//!Update Normals when Animating
-		//!False= Don't animate, faster
-		//!True= Update normals
+		//! Update Normals when Animating
+		/** \param on If false don't animate, which is faster.
+		Else update normals, which allows for proper lighting of
+		animated meshes. */
 		virtual void updateNormalsWhenAnimating(bool on) = 0;
 
-		//!Sets Interpolation Mode
+		//! Sets Interpolation Mode
 		virtual void setInterpolationMode(E_INTERPOLATION_MODE mode) = 0;
 
 		//! Animates this mesh's joints based on frame input
@@ -69,10 +71,12 @@ namespace scene
 		//! Preforms a software skin on this mesh based of joint positions
 		virtual void skinMesh() = 0;
 
-		//! converts the vertex type of all meshbuffers to tangents. eg for bumpmapping
+		//! converts the vertex type of all meshbuffers to tangents.
+		/** E.g. used for bump mapping. */
 		virtual void convertMeshToTangents() = 0;
 
-		//! (This feature is not implementated in irrlicht yet)
+		//! Allows to enable hardware skinning.
+		/* This feature is not implementated in Irrlicht yet */
 		virtual bool setHardwareSkinning(bool on) = 0;
 
 		//! A vertex weight
@@ -179,26 +183,34 @@ namespace scene
 		//these functions will use the needed arrays, set values, etc to help the loaders
 
 		//! exposed for loaders: to add mesh buffers
-		virtual core::array<SSkinMeshBuffer*> &getMeshBuffers() = 0;
+		virtual core::array<SSkinMeshBuffer*>& getMeshBuffers() = 0;
 
 		//! exposed for loaders: joints list
-		virtual core::array<SJoint*> &getAllJoints() = 0;
+		virtual core::array<SJoint*>& getAllJoints() = 0;
 
 		//! exposed for loaders: joints list
-		virtual const core::array<SJoint*> &getAllJoints() const = 0;
+		virtual const core::array<SJoint*>& getAllJoints() const = 0;
 
 		//! loaders should call this after populating the mesh
 		virtual void finalize() = 0;
 
-		virtual SSkinMeshBuffer *createBuffer() = 0;
+		//! Adds a new meshbuffer to the mesh, access it as last one
+		virtual SSkinMeshBuffer* addMeshBuffer() = 0;
 
-		virtual SJoint *createJoint(SJoint *parent=0) = 0;
-		virtual SWeight *createWeight(SJoint *joint) = 0;
+		//! Adds a new joint to the mesh, access it as last one
+		virtual SJoint* addJoint(SJoint *parent=0) = 0;
 
-		virtual SPositionKey *createPositionKey(SJoint *joint) = 0;
-		virtual SScaleKey *createScaleKey(SJoint *joint) = 0;
-		virtual SRotationKey *createRotationKey(SJoint *joint) = 0;
+		//! Adds a new weight to the mesh, access it as last one
+		virtual SWeight* addWeight(SJoint *joint) = 0;
 
+		//! Adds a new position key to the mesh, access it as last one
+		virtual SPositionKey* addPositionKey(SJoint *joint) = 0;
+		//! Adds a new scale key to the mesh, access it as last one
+		virtual SScaleKey* addScaleKey(SJoint *joint) = 0;
+		//! Adds a new rotation key to the mesh, access it as last one
+		virtual SRotationKey* addRotationKey(SJoint *joint) = 0;
+
+		//! Check if the mesh is non-animated
 		virtual bool isStatic()=0;
 	};
 
