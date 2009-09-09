@@ -2523,6 +2523,12 @@ const video::SColorf& CSceneManager::getAmbientLight() const
 }
 
 
+//! Get a skinned mesh, which is not available as header-only code
+ISkinnedMesh* CSceneManager::createSkinnedMesh()
+{
+	return new CSkinnedMesh();
+}
+
 //! Returns a mesh writer implementation if available
 IMeshWriter* CSceneManager::createMeshWriter(EMESH_WRITER_TYPE type)
 {

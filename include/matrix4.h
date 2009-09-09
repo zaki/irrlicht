@@ -1407,9 +1407,11 @@ namespace core
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveFovRH(
 			f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar)
 	{
-		const f64 h = 1.0/tan(fieldOfViewRadians/2.0);
+		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
+		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
 		const T w = h / aspectRatio;
 
+		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = w;
 		M[1] = 0;
 		M[2] = 0;
@@ -1444,9 +1446,11 @@ namespace core
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveFovLH(
 			f32 fieldOfViewRadians, f32 aspectRatio, f32 zNear, f32 zFar)
 	{
-		const f64 h = 1.0/tan(fieldOfViewRadians/2.0);
+		const f64 h = reciprocal(tan(fieldOfViewRadians*0.5));
+		_IRR_DEBUG_BREAK_IF(aspectRatio==0.f); //divide by zero
 		const T w = (T)(h / aspectRatio);
 
+		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = w;
 		M[1] = 0;
 		M[2] = 0;
@@ -1479,6 +1483,9 @@ namespace core
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixOrthoLH(
 			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
+		_IRR_DEBUG_BREAK_IF(widthOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(heightOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = (T)(2/widthOfViewVolume);
 		M[1] = 0;
 		M[2] = 0;
@@ -1511,6 +1518,9 @@ namespace core
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixOrthoRH(
 			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
+		_IRR_DEBUG_BREAK_IF(widthOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(heightOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = (T)(2/widthOfViewVolume);
 		M[1] = 0;
 		M[2] = 0;
@@ -1543,6 +1553,9 @@ namespace core
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveRH(
 			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
+		_IRR_DEBUG_BREAK_IF(widthOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(heightOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = (T)(2*zNear/widthOfViewVolume);
 		M[1] = 0;
 		M[2] = 0;
@@ -1575,6 +1588,9 @@ namespace core
 	inline CMatrix4<T>& CMatrix4<T>::buildProjectionMatrixPerspectiveLH(
 			f32 widthOfViewVolume, f32 heightOfViewVolume, f32 zNear, f32 zFar)
 	{
+		_IRR_DEBUG_BREAK_IF(widthOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(heightOfViewVolume==0.f); //divide by zero
+		_IRR_DEBUG_BREAK_IF(zNear==zFar); //divide by zero
 		M[0] = (T)(2*zNear/widthOfViewVolume);
 		M[1] = 0;
 		M[2] = 0;
@@ -1775,11 +1791,11 @@ namespace core
 	template <class T>
 	inline CMatrix4<T>& CMatrix4<T>::buildNDCToDCMatrix( const core::rect<s32>& viewport, f32 zScale)
 	{
-		const f32 scaleX = (viewport.getWidth() - 0.75f ) / 2.0f;
-		const f32 scaleY = -(viewport.getHeight() - 0.75f ) / 2.0f;
+		const f32 scaleX = (viewport.getWidth() - 0.75f ) * 0.5f;
+		const f32 scaleY = -(viewport.getHeight() - 0.75f ) * 0.5f;
 
-		const f32 dx = -0.5f + ( (viewport.UpperLeftCorner.X + viewport.LowerRightCorner.X ) / 2.0f );
-		const f32 dy = -0.5f + ( (viewport.UpperLeftCorner.Y + viewport.LowerRightCorner.Y ) / 2.0f );
+		const f32 dx = -0.5f + ( (viewport.UpperLeftCorner.X + viewport.LowerRightCorner.X ) * 0.5f );
+		const f32 dy = -0.5f + ( (viewport.UpperLeftCorner.Y + viewport.LowerRightCorner.Y ) * 0.5f );
 
 		makeIdentity();
 		M[12] = (T)dx;

@@ -979,7 +979,7 @@ namespace video
 		\param flag Texture creation flag.
 		\param enabled Specifies if the given flag should be enabled or
 		disabled. */
-		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled) =0;
+		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled=true) =0;
 
 		//! Returns if a texture creation flag is enabled or disabled.
 		/** You can change this value using setTextureCreationMode().

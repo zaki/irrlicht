@@ -340,7 +340,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 	if(numMaterials == 0)
 	{
 		// if there are no materials, add at least one buffer
-		AnimatedMesh->createBuffer();
+		AnimatedMesh->addMeshBuffer();
 	}
 
 	for (i=0; i<numMaterials; ++i)
@@ -366,7 +366,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			return false;
 		}
 
-		scene::SSkinMeshBuffer *tmpBuffer = AnimatedMesh->createBuffer();
+		scene::SSkinMeshBuffer *tmpBuffer = AnimatedMesh->addMeshBuffer();
 
 		tmpBuffer->Material.MaterialType = video::EMT_SOLID;
 
@@ -451,7 +451,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 			return false;
 		}
 
-		ISkinnedMesh::SJoint *jnt = AnimatedMesh->createJoint();
+		ISkinnedMesh::SJoint *jnt = AnimatedMesh->addJoint();
 
 		jnt->Name = pJoint->Name;
 #ifdef _IRR_DEBUG_MS3D_LOADER_
@@ -496,7 +496,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 				return false;
 			}
 
-			ISkinnedMesh::SRotationKey *k=AnimatedMesh->createRotationKey(jnt);
+			ISkinnedMesh::SRotationKey *k=AnimatedMesh->addRotationKey(jnt);
 			k->frame = kf->Time * framesPerSecond-1;
 
 			core::matrix4 tmpMatrix;
@@ -532,7 +532,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 				return false;
 			}
 
-			ISkinnedMesh::SPositionKey *k=AnimatedMesh->createPositionKey(jnt);
+			ISkinnedMesh::SPositionKey *k=AnimatedMesh->addPositionKey(jnt);
 			k->frame = kf->Time * framesPerSecond-1;
 
 			k->position = core::vector3df
@@ -713,7 +713,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 					const s32 boneid = vertices[vertidx].BoneID;
 					if ((u32)boneid < AnimatedMesh->getAllJoints().size())
 					{
-						ISkinnedMesh::SWeight *w=AnimatedMesh->createWeight(AnimatedMesh->getAllJoints()[boneid]);
+						ISkinnedMesh::SWeight *w=AnimatedMesh->addWeight(AnimatedMesh->getAllJoints()[boneid]);
 						w->buffer_id = matidx;
 						w->strength = 1.0f;
 						w->vertex_id = index;
@@ -725,7 +725,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 					s32 boneid = vertices[vertidx].BoneID;
 					if (((u32)boneid < AnimatedMesh->getAllJoints().size()) && (vertexWeights[vertidx].weights[0] != 0))
 					{
-						ISkinnedMesh::SWeight *w=AnimatedMesh->createWeight(AnimatedMesh->getAllJoints()[boneid]);
+						ISkinnedMesh::SWeight *w=AnimatedMesh->addWeight(AnimatedMesh->getAllJoints()[boneid]);
 						w->buffer_id = matidx;
 						sum -= (w->strength = vertexWeights[vertidx].weights[0]/100.f);
 						w->vertex_id = index;
@@ -733,7 +733,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 					boneid = vertexWeights[vertidx].boneIds[0];
 					if (((u32)boneid < AnimatedMesh->getAllJoints().size()) && (vertexWeights[vertidx].weights[1] != 0))
 					{
-						ISkinnedMesh::SWeight *w=AnimatedMesh->createWeight(AnimatedMesh->getAllJoints()[boneid]);
+						ISkinnedMesh::SWeight *w=AnimatedMesh->addWeight(AnimatedMesh->getAllJoints()[boneid]);
 						w->buffer_id = matidx;
 						sum -= (w->strength = vertexWeights[vertidx].weights[1]/100.f);
 						w->vertex_id = index;
@@ -741,7 +741,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 					boneid = vertexWeights[vertidx].boneIds[1];
 					if (((u32)boneid < AnimatedMesh->getAllJoints().size()) && (vertexWeights[vertidx].weights[2] != 0))
 					{
-						ISkinnedMesh::SWeight *w=AnimatedMesh->createWeight(AnimatedMesh->getAllJoints()[boneid]);
+						ISkinnedMesh::SWeight *w=AnimatedMesh->addWeight(AnimatedMesh->getAllJoints()[boneid]);
 						w->buffer_id = matidx;
 						sum -= (w->strength = vertexWeights[vertidx].weights[2]/100.f);
 						w->vertex_id = index;
@@ -749,7 +749,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 					boneid = vertexWeights[vertidx].boneIds[2];
 					if (((u32)boneid < AnimatedMesh->getAllJoints().size()) && (sum > 0.f))
 					{
-						ISkinnedMesh::SWeight *w=AnimatedMesh->createWeight(AnimatedMesh->getAllJoints()[boneid]);
+						ISkinnedMesh::SWeight *w=AnimatedMesh->addWeight(AnimatedMesh->getAllJoints()[boneid]);
 						w->buffer_id = matidx;
 						w->strength = sum;
 						w->vertex_id = index;
@@ -758,7 +758,7 @@ bool CMS3DMeshFileLoader::load(io::IReadFile* file)
 					boneid = vertices[vertidx].BoneID;
 					if ((sum == 1.f) && ((u32)boneid < AnimatedMesh->getAllJoints().size()))
 					{
-						ISkinnedMesh::SWeight *w=AnimatedMesh->createWeight(AnimatedMesh->getAllJoints()[boneid]);
+						ISkinnedMesh::SWeight *w=AnimatedMesh->addWeight(AnimatedMesh->getAllJoints()[boneid]);
 						w->buffer_id = matidx;
 						w->strength = 1.f;
 						w->vertex_id = index;

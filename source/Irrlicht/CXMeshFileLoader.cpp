@@ -132,7 +132,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 #endif
 		for (i=0; i<mesh->Materials.size(); ++i)
 		{
-			mesh->Buffers.push_back( AnimatedMesh->createBuffer() );
+			mesh->Buffers.push_back( AnimatedMesh->addMeshBuffer() );
 			mesh->Buffers.getLast()->Material = mesh->Materials[i];
 
 			if (!mesh->HasSkinning)
@@ -256,7 +256,7 @@ bool CXMeshFileLoader::load(io::IReadFile* file)
 				{
 					for (u32 k=1; k < verticesLinkBuffer[id].size(); ++k)
 					{
-						ISkinnedMesh::SWeight* WeightClone = AnimatedMesh->createWeight(joint);
+						ISkinnedMesh::SWeight* WeightClone = AnimatedMesh->addWeight(joint);
 						WeightClone->strength = weight.strength;
 						WeightClone->vertex_id = verticesLinkIndex[id][k];
 						WeightClone->buffer_id = verticesLinkBuffer[id][k];
@@ -491,11 +491,11 @@ bool CXMeshFileLoader::parseDataObject()
 	if (objectName == "Mesh")
 	{
 		// some meshes have no frames at all
-		//CurFrame = AnimatedMesh->createJoint(0);
+		//CurFrame = AnimatedMesh->addJoint(0);
 
 		SXMesh *mesh=new SXMesh;
 
-		//mesh->Buffer=AnimatedMesh->createBuffer();
+		//mesh->Buffer=AnimatedMesh->addMeshBuffer();
 		Meshes.push_back(mesh);
 
 		return parseDataObjectMesh(*mesh);
@@ -605,7 +605,7 @@ bool CXMeshFileLoader::parseDataObjectFrame(CSkinnedMesh::SJoint *Parent)
 #ifdef _XREADER_DEBUG
 		os::Printer::log("creating joint ", name.c_str());
 #endif
-		joint=AnimatedMesh->createJoint(Parent);
+		joint=AnimatedMesh->addJoint(Parent);
 		joint->Name=name;
 		JointID=AnimatedMesh->getAllJoints().size()-1;
 	}
@@ -1110,7 +1110,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 		os::Printer::log("creating joint for skinning ", TransformNodeName.c_str());
 #endif
 		n = AnimatedMesh->getAllJoints().size();
-		joint=AnimatedMesh->createJoint(0);
+		joint=AnimatedMesh->addJoint(0);
 		joint->Name=TransformNodeName;
 	}
 
@@ -1131,7 +1131,7 @@ bool CXMeshFileLoader::parseDataObjectSkinWeights(SXMesh &mesh)
 		mesh.WeightJoint.push_back(n);
 		mesh.WeightNum.push_back(joint->Weights.size());
 
-		CSkinnedMesh::SWeight *weight=AnimatedMesh->createWeight(joint);
+		CSkinnedMesh::SWeight *weight=AnimatedMesh->addWeight(joint);
 
 		weight->buffer_id=0;
 		weight->vertex_id=readInt();
@@ -1705,7 +1705,7 @@ bool CXMeshFileLoader::parseDataObjectAnimation()
 #ifdef _XREADER_DEBUG
 			os::Printer::log("creating joint for animation ", FrameName.c_str());
 #endif
-			joint=AnimatedMesh->createJoint(0);
+			joint=AnimatedMesh->addJoint(0);
 			joint->Name=FrameName;
 		}
 
@@ -1797,7 +1797,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 					os::Printer::log("Line", core::stringc(Line).c_str(), ELL_WARNING);
 				}
 
-				ISkinnedMesh::SRotationKey *key=AnimatedMesh->createRotationKey(joint);
+				ISkinnedMesh::SRotationKey *key=AnimatedMesh->addRotationKey(joint);
 				key->frame=time;
 				key->rotation.set(X,Y,Z,W);
 			}
@@ -1826,13 +1826,13 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 
 				if (keyType==2)
 				{
-					ISkinnedMesh::SPositionKey *key=AnimatedMesh->createPositionKey(joint);
+					ISkinnedMesh::SPositionKey *key=AnimatedMesh->addPositionKey(joint);
 					key->frame=time;
 					key->position=vector;
 				}
 				else
 				{
-					ISkinnedMesh::SScaleKey *key=AnimatedMesh->createScaleKey(joint);
+					ISkinnedMesh::SScaleKey *key=AnimatedMesh->addScaleKey(joint);
 					key->frame=time;
 					key->scale=vector;
 				}
@@ -1865,12 +1865,12 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 
 				//core::vector3df rotation = mat.getRotationDegrees();
 
-				ISkinnedMesh::SRotationKey *keyR=AnimatedMesh->createRotationKey(joint);
+				ISkinnedMesh::SRotationKey *keyR=AnimatedMesh->addRotationKey(joint);
 				keyR->frame=time;
 				keyR->rotation= core::quaternion(mat);
 
 
-				ISkinnedMesh::SPositionKey *keyP=AnimatedMesh->createPositionKey(joint);
+				ISkinnedMesh::SPositionKey *keyP=AnimatedMesh->addPositionKey(joint);
 				keyP->frame=time;
 				keyP->position=mat.getTranslation();
 
@@ -1883,7 +1883,7 @@ bool CXMeshFileLoader::parseDataObjectAnimationKey(ISkinnedMesh::SJoint *joint)
 					scale.Y=1;
 				if (scale.Z==0)
 					scale.Z=1;
-				ISkinnedMesh::SScaleKey *keyS=AnimatedMesh->createScaleKey(joint);
+				ISkinnedMesh::SScaleKey *keyS=AnimatedMesh->addScaleKey(joint);
 				keyS->frame=time;
 				keyS->scale=scale;
 */
