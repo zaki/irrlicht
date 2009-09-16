@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 //
-// Because I (Nikolaus Gebhardt) did some changes to Murphy McCauley's loader, 
+// Because I (Nikolaus Gebhardt) did some changes to Murphy McCauley's loader,
 // I'm writing this down here:
 // - Replaced all dependencies to STL and stdio with irr:: methods/constructs
 // - Disabled logging define
@@ -70,7 +70,7 @@ namespace scene
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".cob")
-		virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+		virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 		//! creates/loads an animated mesh from the file.
 		//! \return Pointer to the created mesh. Returns 0 if loading failed.

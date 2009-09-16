@@ -16,7 +16,7 @@ namespace scene
 {
 
 //! constructor
-CWaterSurfaceSceneNode::CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength, 
+CWaterSurfaceSceneNode::CWaterSurfaceSceneNode(f32 waveHeight, f32 waveSpeed, f32 waveLength,
 		IMesh* mesh, ISceneNode* parent, ISceneManager* mgr, s32 id,
 		const core::vector3df& position, const core::vector3df& rotation,
 		const core::vector3df& scale)
@@ -67,7 +67,7 @@ void CWaterSurfaceSceneNode::OnAnimate(u32 timeMs)
 			const u32 vtxCnt = Mesh->getMeshBuffer(b)->getVertexCount();
 
 			for (u32 i=0; i<vtxCnt; ++i)
-				addWave(Mesh->getMeshBuffer(b)->getPosition(i),
+				Mesh->getMeshBuffer(b)->getPosition(i).Y = addWave(
 					OriginalMesh->getMeshBuffer(b)->getPosition(i),
 					time);
 		}// end for all mesh buffers
@@ -97,10 +97,10 @@ void CWaterSurfaceSceneNode::serializeAttributes(io::IAttributes* out, io::SAttr
 	out->addFloat("WaveLength", WaveLength);
 	out->addFloat("WaveSpeed",  WaveSpeed);
 	out->addFloat("WaveHeight", WaveHeight);
-	
+
 	CMeshSceneNode::serializeAttributes(out, options);
 	// serialize original mesh
-	out->setAttribute("Mesh", SceneManager->getMeshCache()->getMeshFilename(OriginalMesh));
+	out->setAttribute("Mesh", SceneManager->getMeshCache()->getMeshFilename(OriginalMesh).c_str());
 }
 
 
@@ -110,7 +110,7 @@ void CWaterSurfaceSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 	WaveLength = in->getAttributeAsFloat("WaveLength");
 	WaveSpeed  = in->getAttributeAsFloat("WaveSpeed");
 	WaveHeight = in->getAttributeAsFloat("WaveHeight");
-	
+
 	if (Mesh)
 	{
 		Mesh->drop();
@@ -129,11 +129,11 @@ void CWaterSurfaceSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 }
 
 
-void CWaterSurfaceSceneNode::addWave(core::vector3df& dest, const core::vector3df &source, f32 time) const
+f32 CWaterSurfaceSceneNode::addWave(const core::vector3df &source, f32 time) const
 {
-	dest.Y = source.Y +
-	(sinf(((source.X/WaveLength) + time)) * WaveHeight) +
-	(cosf(((source.Z/WaveLength) + time)) * WaveHeight);
+	return source.Y +
+		(sinf(((source.X/WaveLength) + time)) * WaveHeight) +
+		(cosf(((source.Z/WaveLength) + time)) * WaveHeight);
 }
 
 } // end namespace scene

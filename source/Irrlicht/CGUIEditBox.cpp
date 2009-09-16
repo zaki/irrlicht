@@ -245,6 +245,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		if ( event.KeyInput.Char == '\\' )
 		{
 			inputChar(event.KeyInput.Char);
+			return true;
 		}
 
 		switch(event.KeyInput.Key)
@@ -437,6 +438,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 		if (MultiLine)
 		{
 			inputChar(L'\n');
+			return true;
 		}
 		else
 		{
@@ -658,7 +660,7 @@ bool CGUIEditBox::processKey(const SEvent& event)
 
 	default:
 		inputChar(event.KeyInput.Char);
-		break;
+		return true;
 	}
 
     // Set new text markers
@@ -803,6 +805,12 @@ void CGUIEditBox::draw()
 						// highlight start is on this line
 						s = txtLine->subString(0, realmbgn - startPos);
 						mbegin = font->getDimension(s.c_str()).Width;
+
+						// deal with kerning
+						mbegin += font->getKerningWidth( 
+							&((*txtLine)[realmbgn - startPos]), 
+							realmbgn - startPos > 0 ? &((*txtLine)[realmbgn - startPos - 1]) : 0);   
+
 						lineStartPos = realmbgn - startPos;
 					}
 					if (i == hlineStart + hlineCount - 1)
@@ -846,7 +854,8 @@ void CGUIEditBox::draw()
 			startPos = BrokenTextPositions[cursorLine];
 		}
 		s = txtLine->subString(0,CursorPos-startPos);
-		charcursorpos = font->getDimension(s.c_str()).Width;
+		charcursorpos = font->getDimension(s.c_str()).Width + 
+			font->getKerningWidth(L"_", CursorPos-startPos > 0 ? &((*txtLine)[CursorPos-startPos-1]) : 0);
 
 		if (focus && (os::Timer::getTime() - BlinkStartTime) % 700 < 350)
 		{
@@ -1286,6 +1295,7 @@ void CGUIEditBox::inputChar(wchar_t c)
 	}
 	breakText();
 	sendGuiEvent(EGET_EDITBOX_CHANGED);
+	calculateScrollPos();
 }
 
 

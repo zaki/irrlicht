@@ -34,13 +34,13 @@ class CGUIFont : public IGUIFontBitmap
 public:
 
 	//! constructor
-	CGUIFont(IGUIEnvironment* env, const core::string<c16>& filename);
+	CGUIFont(IGUIEnvironment* env, const io::path& filename);
 
 	//! destructor
 	virtual ~CGUIFont();
 
 	//! loads a font from a texture file
-	bool load(const core::string<c16>& filename);
+	bool load(const io::path& filename);
 
 	//! loads a font from a texture file
 	bool load(io::IReadFile* file);
@@ -49,7 +49,7 @@ public:
 	bool load(io::IXMLReader* xml);
 
 	//! draws an text and clips it to the specified rectangle if wanted
-	virtual void draw(const wchar_t* text, const core::rect<s32>& position,
+	virtual void draw(const core::stringw& text, const core::rect<s32>& position,
 			video::SColor color, bool hcenter=false,
 			bool vcenter=false, const core::rect<s32>* clip=0);
 
@@ -90,10 +90,9 @@ private:
 	};
 
 	//! load & prepare font from ITexture
-	bool loadTexture(video::IImage * image, const core::string<c16>& name);
+	bool loadTexture(video::IImage * image, const io::path& name);
 
-	void readPositions16bit(video::IImage* texture, s32& lowerRightPositions);
-	void readPositions32bit(video::IImage* texture, s32& lowerRightPositions);
+	void readPositions(video::IImage* texture, s32& lowerRightPositions);
 
 	s32 getAreaFromCharacter (const wchar_t c) const;
 	void setMaxHeight();

@@ -1,7 +1,6 @@
 // Copyright (C) 2008-2009 Colin MacDonald
 // No rights reserved: this software is in the public domain.
 
-#include "irrlicht.h"
 #include "testUtils.h"
 
 using namespace irr;
@@ -57,10 +56,15 @@ bool drawPixel(void)
 {
 	bool passed = true;
 
+	logTestString("Check Software driver\n");
 	passed &= runTestWithDriver(EDT_SOFTWARE);
+	logTestString("Check Burning's Video driver\n");
 	passed &= runTestWithDriver(EDT_BURNINGSVIDEO);
+	logTestString("Check Direct3D9 driver\n");
 	passed &= runTestWithDriver(EDT_DIRECT3D9);
+	logTestString("Check Direct3D8 driver\n");
 	passed &= runTestWithDriver(EDT_DIRECT3D8);
+	logTestString("Check OpenGL driver\n");
 	passed &= runTestWithDriver(EDT_OPENGL);
 
 	return passed;

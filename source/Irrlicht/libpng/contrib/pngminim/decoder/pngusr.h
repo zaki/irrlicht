@@ -1,11 +1,20 @@
 /* minrdpngconf.h: headers to make a minimal png-read-only library
- * For conditions of distribution and use, see copyright notice in png.h
- * Copyright (c) 2007 Glenn Randers-Pehrson
+ *
+ * Copyright (c) 2007, 2009 Glenn Randers-Pehrson
+ *
+ * This code is released under the zlib/libpng license.
+ * For conditions of distribution and use, see the disclaimer
+ * and license in png.h
+ *
  * Derived from pngcrush.h, Copyright 1998-2007, Glenn Randers-Pehrson
  */
 
 #ifndef MINRDPNGCONF_H
 #define MINRDPNGCONF_H
+
+#ifdef NJET
+  /* No 16-bit support beyond reading with strip_16 */
+#endif
 
 #define PNG_NO_GLOBAL_ARRAYS
 
@@ -26,6 +35,7 @@
 #define PNG_NO_READ_PACK
 #define PNG_NO_READ_PACKSWAP
 #define PNG_NO_READ_FILLER
+#define PNG_NO_READ_SWAP
 #define PNG_NO_READ_SWAP_ALPHA
 #define PNG_NO_READ_INVERT_ALPHA
 #define PNG_NO_READ_RGB_TO_GRAY
@@ -40,6 +50,7 @@
 #define PNG_NO_READ_sBIT
 #define PNG_NO_READ_sCAL
 #define PNG_NO_READ_sPLT
+#define PNG_NO_READ_sRGB
 #define PNG_NO_READ_TEXT
 #define PNG_NO_READ_tIME
 #define PNG_NO_READ_UNKNOWN_CHUNKS

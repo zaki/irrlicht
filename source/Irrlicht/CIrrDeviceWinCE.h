@@ -6,7 +6,7 @@
 #define __C_IRR_DEVICE_WINCE_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
-#ifdef _IRR_USE_WINDOWS_CE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
 
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
@@ -72,6 +72,18 @@ namespace irr
 		//! Minimizes the window.
 		virtual void minimizeWindow();
 
+		//! Maximizes the window.
+		virtual void maximizeWindow();
+
+		//! Restores the window size.
+		virtual void restoreWindow();
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_WINCE;
+		}
+
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
 		{
@@ -135,7 +147,7 @@ namespace irr
 
 				if (UseReferenceRect)
 				{
-					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x, 
+					SetCursorPos(ReferenceRect.UpperLeftCorner.X + x,
 								 ReferenceRect.UpperLeftCorner.Y + y);
 				}
 				else
@@ -190,14 +202,32 @@ namespace irr
 					UseReferenceRect = false;
 			}
 
+			/** Used to notify the cursor that the window was resized. */
+			virtual void OnResize(const core::dimension2d<u32>& size)
+			{
+				if (size.Width!=0)
+					InvWindowSize.Width = 1.0f / size.Width;
+				else 
+					InvWindowSize.Width = 0.f;
+ 
+				if (size.Height!=0)
+					InvWindowSize.Height = 1.0f / size.Height;
+				else
+					InvWindowSize.Height = 0.f;
+			}
+
 		private:
 
 			//! Updates the internal cursor position
 			void updateInternalCursorPosition()
 			{
 				POINT p;
-				GetCursorPos(&p);
-				RECT rect;
+				if (!GetCursorPos(&p))
+				{
+					DWORD xy = GetMessagePos();
+					p.x = GET_X_LPARAM(xy);
+					p.y = GET_Y_LPARAM(xy);
+				} 
 
 				if (UseReferenceRect)
 				{
@@ -206,6 +236,7 @@ namespace irr
 				}
 				else
 				{
+					RECT rect;
 					if (GetWindowRect(HWnd, &rect))
 					{
 						CursorPos.X = p.x-rect.left-BorderX;
@@ -259,6 +290,5 @@ namespace irr
 
 } // end namespace irr
 
-#endif
-#endif
-
+#endif // _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
+#endif // __C_IRR_DEVICE_WINCE_H_INCLUDED__

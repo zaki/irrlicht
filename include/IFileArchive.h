@@ -6,6 +6,7 @@
 #define __I_FILE_ARCHIVE_H_INCLUDED__
 
 #include "IReadFile.h"
+#include "IFileList.h"
 
 namespace irr
 {
@@ -20,54 +21,53 @@ enum EFileSystemType
 	FILESYSTEM_VIRTUAL,	// Virtual FileSystem
 };
 
-
-//! Base Info which all File archives must support on browsing
-struct IFileArchiveEntry
+//! Contains the different types of archives
+enum E_FILE_ARCHIVE_TYPE
 {
-	IFileArchiveEntry() {}
+	//! A PKZIP archive
+	EFAT_ZIP     = MAKE_IRR_ID('Z','I','P', 0),
 
-	core::string<c16> simpleFileName;
-	core::string<c16> path;
+	//! A gzip archive
+	EFAT_GZIP    = MAKE_IRR_ID('g','z','i','p'),
 
-	bool operator < (const IFileArchiveEntry& other) const
-	{
-		return simpleFileName < other.simpleFileName;
-	}
+	//! A virtual directory
+	EFAT_FOLDER  = MAKE_IRR_ID('f','l','d','r'),
 
-	bool operator == (const IFileArchiveEntry& other) const
-	{
-		return simpleFileName == other.simpleFileName;
-	}
+	//! An ID Software PAK archive
+	EFAT_PAK     = MAKE_IRR_ID('P','A','K', 0),
+
+	//! A Tape ARchive
+	EFAT_TAR     = MAKE_IRR_ID('T','A','R', 0),
+
+	//! The type of this archive is unknown
+	EFAT_UNKNOWN = MAKE_IRR_ID('u','n','k','n')
 };
 
-
-//! The FileArchive manages files and archives and provides access to them.
-/** It manages where files are, so that modules which use the the IO do not
-need to know where every file is located. A file could be in a .zip-Archive or
-as file on disk, using the IFileSystem makes no difference to this. */
-struct IFileArchive : public virtual IReferenceCounted
+//! The FileArchive manages archives and provides access to files inside them.
+class IFileArchive : public virtual IReferenceCounted
 {
-	//! return the id of the file Archive
-	virtual const core::string<c16>& getArchiveName() =0;
+public:
 
-	//! get the class Type
-	virtual const core::string<c16>& getArchiveType() =0;
+	//! Opens a file based on its name
+	/** Creates and returns a new IReadFile for a file in the archive.
+	\param filename The file to open
+	\return Returns A pointer to the created file on success,
+	or 0 on failure. */
+	virtual IReadFile* createAndOpenFile(const path& filename) =0;
 
-	//! opens a file by file name
-	virtual IReadFile* openFile(const core::string<c16>& filename) =0;
+	//! Opens a file based on its position.
+	/** Creates and returns
+	\param index The zero based index of the file.
+	\return Returns a pointer to the created file on success, or 0 on failure. */
+	virtual IReadFile* createAndOpenFile(u32 index) =0;
 
-	//! opens a file by position
-	virtual IReadFile* openFile(s32 index) =0;
+	//! Returns the complete file tree
+	/** \return Returns the complete directory tree for the archive,
+	including all files and folders */
+	virtual const IFileList* getFileList() const =0;
 
-	//! returns fileindex
-	virtual s32 findFile(const core::string<c16>& filename) =0;
-
-	//! Returns the amount of files in the filelist.
-	/** \return Amount of files and directories in the file list. */
-	virtual u32 getFileCount() const =0;
-
-	//! returns data of known file
-	virtual const IFileArchiveEntry* getFileInfo(u32 index) =0;
+	//! get the archive type
+	virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_UNKNOWN; }
 };
 
 //! Class which is able to create an archive from a file.
@@ -75,24 +75,31 @@ struct IFileArchive : public virtual IReferenceCounted
 currently unsupported file formats (e.g .wad), then implement
 this and add your new Archive loader with
 IFileSystem::addArchiveLoader() to the engine. */
-struct IArchiveLoader : public virtual IReferenceCounted
+class IArchiveLoader : public virtual IReferenceCounted
 {
+public:
 	//! Check if the file might be loaded by this class
-	/** Check is based on the file extension (e.g. ".zip")
+	/** Check based on the file extension (e.g. ".zip")
 	\param fileName Name of file to check.
 	\return True if file seems to be loadable. */
-	virtual bool isALoadableFileFormat(const core::string<c16>& filename) const =0;
+	virtual bool isALoadableFileFormat(const path& filename) const =0;
+
+	//! Check if the file might be loaded by this class
+	/** This check may look into the file.
+	\param file File handle to check.
+	\return True if file seems to be loadable. */
+	virtual bool isALoadableFileFormat(io::IReadFile* file) const =0;
+
+	//! Check to see if the loader can create archives of this type.
+	/** Check based on the archive type.
+	\param fileType The archive type to check.
+	\return True if the archile loader supports this type, false if not */
+	virtual bool isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const =0;
 
 	//! Creates an archive from the filename
 	/** \param file File handle to check.
 	\return Pointer to newly created archive, or 0 upon error. */
-	virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const =0;
-
-	//! Check if the file might be loaded by this class
-	/** Check might look into the file.
-	\param file File handle to check.
-	\return True if file seems to be loadable. */
-	virtual bool isALoadableFileFormat(io::IReadFile* file) const =0;
+	virtual IFileArchive* createArchive(const path& filename, bool ignoreCase, bool ignorePaths) const =0;
 
 	//! Creates an archive from the file
 	/** \param file File handle to check.

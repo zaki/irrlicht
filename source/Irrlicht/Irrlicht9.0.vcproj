@@ -3156,6 +3156,22 @@
 					>
 				</File>
 				<File
+					RelativePath="CTarReader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CTarReader.h"
+					>
+				</File>
+				<File
+					RelativePath="CMountPointReader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CMountPointReader.h"
+					>
+				</File>
+				<File
 					RelativePath="CWriteFile.cpp"
 					>
 				</File>

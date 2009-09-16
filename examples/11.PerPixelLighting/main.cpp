@@ -222,7 +222,7 @@ int main()
 	Please note that you will have to set the material flag EMF_FOG_ENABLE
 	to 'true' in every scene node which should be affected by this fog.
 	*/
-	driver->setFog(video::SColor(0,138,125,81), true, 250, 1000, 0, true);
+	driver->setFog(video::SColor(0,138,125,81), video::EFT_FOG_LINEAR, 250, 1000, .003f, true, false);
 
 	/*
 	To be able to display something interesting, we load a mesh from a .3ds

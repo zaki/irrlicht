@@ -6,7 +6,7 @@
 #define __C_IRR_DEVICE_WIN32_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
@@ -16,8 +16,8 @@
 #if !defined(_IRR_XBOX_PLATFORM_)
 	#include <windows.h>
 	#include <mmsystem.h> // For JOYCAPS
+	#include <Windowsx.h>
 #endif
-
 
 namespace irr
 {
@@ -72,6 +72,12 @@ namespace irr
 		//! Minimizes the window.
 		virtual void minimizeWindow();
 
+		//! Maximizes the window.
+		virtual void maximizeWindow();
+
+		//! Restores the window size.
+		virtual void restoreWindow();
+
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
@@ -80,6 +86,20 @@ namespace irr
 
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_WIN32;
+		}
+
+		//! Compares to the last call of this function to return double and triple clicks.
+		//! \return Returns only 1,2 or 3. A 4th click will start with 1 again.
+		virtual u32 checkSuccessiveClicks(s32 mouseX, s32 mouseY)
+		{
+			// we just have to make it public
+			return CIrrDeviceStub::checkSuccessiveClicks(mouseX, mouseY);
+		}
 
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -133,7 +153,7 @@ namespace irr
 						ShowCursor(false);   // this only decreases an internal display counter in windows, so it might have to be called some more
 					}
 				}
-			} 
+			}
 
 			//! Returns if the cursor is currently visible.
 			virtual bool isVisible() const
@@ -224,13 +244,32 @@ namespace irr
 					UseReferenceRect = false;
 			}
 
+			/** Used to notify the cursor that the window was resized. */
+			virtual void OnResize(const core::dimension2d<u32>& size)
+			{
+				if (size.Width!=0)
+					InvWindowSize.Width = 1.0f / size.Width;
+				else 
+					InvWindowSize.Width = 0.f;
+
+				if (size.Height!=0)
+					InvWindowSize.Height = 1.0f / size.Height;
+				else
+					InvWindowSize.Height = 0.f;
+			}
+
 		private:
 
 			//! Updates the internal cursor position
 			void updateInternalCursorPosition()
 			{
 				POINT p;
-				GetCursorPos(&p);
+				if (!GetCursorPos(&p))
+				{
+					DWORD xy = GetMessagePos();
+					p.x = GET_X_LPARAM(xy);
+					p.y = GET_Y_LPARAM(xy);
+				} 
 
 				if (UseReferenceRect)
 				{
@@ -303,6 +342,6 @@ namespace irr
 
 } // end namespace irr
 
-#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #endif // __C_IRR_DEVICE_WIN32_H_INCLUDED__
 

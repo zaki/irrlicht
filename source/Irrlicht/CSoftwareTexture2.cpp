@@ -16,7 +16,7 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture2::CSoftwareTexture2(IImage* image, const core::string<c16>& name, u32 flags )
+CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 flags )
 : ITexture(name), MipMapLOD(0), Flags ( flags )
 {
 	#ifdef _DEBUG
@@ -34,11 +34,11 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const core::string<c16>& nam
 		OrigSize = image->getDimension();
 
 		core::setbit_cond ( Flags,
-							image->getColorFormat () == video::ECF_A8R8G8B8 || 
+							image->getColorFormat () == video::ECF_A8R8G8B8 ||
 							image->getColorFormat () == video::ECF_A1R5G5B5,
 							HAS_ALPHA
 						);
-	
+
 		core::dimension2d<u32> optSize(
 				OrigSize.getOptimalSize( 0 != ( Flags & NP2_SIZE ),
 				false, false,
@@ -55,7 +55,7 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const core::string<c16>& nam
 			core::stringw showName ( name );
 			snprintf ( buf, 256, "Burningvideo: Warning Texture %ls reformat %dx%d -> %dx%d,%d",
 							showName.c_str(),
-							OrigSize.Width, OrigSize.Height, optSize.Width, optSize.Height, 
+							OrigSize.Width, OrigSize.Height, optSize.Width, optSize.Height,
 							BURNINGSHADER_COLOR_FORMAT
 						);
 

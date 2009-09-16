@@ -55,6 +55,13 @@ namespace gui
 		//! get draggable
 		virtual void setDraggable(bool draggable);
 
+		//! not used
+        virtual void setDrawBackground(bool draw)  { }
+		virtual bool getDrawBackground() const { return true; }
+		virtual void setDrawTitlebar(bool draw) { }
+		virtual bool getDrawTitlebar() const { return true; }
+
+
 		void setSelected(s32 index=-1);
 
 	private:

@@ -35,9 +35,7 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlStencilFuncSeparate(0), pGlStencilOpSeparate(0),
 	pGlStencilFuncSeparateATI(0), pGlStencilOpSeparateATI(0),
 	pGlCompressedTexImage2D(0),
-#ifdef _IRR_USE_WINDOWS_DEVICE_
-	wglSwapIntervalEXT(0),
-#elif defined(GLX_SGI_swap_control)
+#if defined(GLX_SGI_swap_control)
 	glxSwapIntervalSGI(0),
 #endif
 	pGlBindFramebufferEXT(0), pGlDeleteFramebuffersEXT(0), pGlGenFramebuffersEXT(0),
@@ -47,13 +45,22 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlDrawBuffersARB(0), pGlDrawBuffersATI(0),
 	pGlGenBuffersARB(0), pGlBindBufferARB(0), pGlBufferDataARB(0), pGlDeleteBuffersARB(0),
 	pGlBufferSubDataARB(0), pGlGetBufferSubDataARB(0), pGlMapBufferARB(0), pGlUnmapBufferARB(0),
-	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0)
+	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0),
+	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0)
 
 
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
 		FeatureAvailable[i]=false;
+	DimAliasedLine[0]=1.f;
+	DimAliasedLine[1]=1.f;
+	DimAliasedPoint[0]=1.f;
+	DimAliasedPoint[1]=1.f;
+	DimSmoothedLine[0]=1.f;
+	DimSmoothedLine[1]=1.f;
+	DimSmoothedPoint[0]=1.f;
+	DimSmoothedPoint[1]=1.f;
 }
 
 
@@ -181,15 +188,14 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlIsBufferARB= (PFNGLISBUFFERARBPROC) wglGetProcAddress("glIsBufferARB");
 	pGlGetBufferParameterivARB= (PFNGLGETBUFFERPARAMETERIVARBPROC) wglGetProcAddress("glGetBufferParameterivARB");
 	pGlGetBufferPointervARB= (PFNGLGETBUFFERPOINTERVARBPROC) wglGetProcAddress("glGetBufferPointervARB");
+	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC) wglGetProcAddress("glProvokingVertex");
+	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC) wglGetProcAddress("glProvokingVertexEXT");
 
 
-	// vsync extension
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALFARPROC) wglGetProcAddress("wglSwapIntervalEXT");
-
-#elif defined(_IRR_USE_LINUX_DEVICE_) || defined (_IRR_USE_SDL_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#ifdef _IRR_OPENGL_USE_EXTPOINTER_
 
-	#ifdef _IRR_USE_SDL_DEVICE_
+	#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_) && !defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 		#define IRR_OGL_LOAD_EXTENSION(x) SDL_GL_GetProcAddress(reinterpret_cast<const char*>(x))
 	#else
 	// Accessing the correct function is quite complex
@@ -322,7 +328,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glCompressedTexImage2D"));
 
-	#if defined(GLX_SGI_swap_control) && !defined(_IRR_USE_SDL_DEVICE_)
+	#if defined(GLX_SGI_swap_control) && !defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 		// get vsync extension
 		glxSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC)IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glXSwapIntervalSGI"));
 	#endif
@@ -396,6 +402,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	pGlGetBufferPointervARB = (PFNGLGETBUFFERPOINTERVARBPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGetBufferPointervARB"));
+	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertex"));
+	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertexEXT"));
 
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
@@ -447,6 +457,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 		MaxMultipleRenderTargets = static_cast<u8>(MaxUserClipPlanes);
 	}
 #endif
+	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);
+	glGetFloatv(GL_ALIASED_POINT_SIZE_RANGE, DimAliasedPoint);
+	glGetFloatv(GL_SMOOTH_LINE_WIDTH_RANGE, DimSmoothedLine);
+	glGetFloatv(GL_SMOOTH_POINT_SIZE_RANGE, DimSmoothedPoint);
 #if defined(GL_ARB_shading_language_100) || defined (GL_VERSION_2_0)
 	if (FeatureAvailable[IRR_ARB_shading_language_100] || Version>=200)
 	{

@@ -1,4 +1,3 @@
-#include "irrlicht.h"
 #include "testUtils.h"
 
 using namespace irr;
@@ -18,16 +17,16 @@ bool filesystem(void)
 	
 	bool result = true;
 	
-	core::string<c16> workingDir = device->getFileSystem()->getWorkingDirectory();
+	io::path workingDir = device->getFileSystem()->getWorkingDirectory();
 	
-	core::string<c16> empty;
+	io::path empty;
 	if ( fs->existFile(empty) )
 	{
 		logTestString("Empty filename should not exist.\n");
 		result = false;
 	}
 	
-	stringc newWd = workingDir + "/media";
+	io::path newWd = workingDir + "/media";
 	bool changed = device->getFileSystem()->changeWorkingDirectoryTo(newWd);
 	assert(changed);
 	
@@ -51,7 +50,7 @@ bool filesystem(void)
 	}
 	
 	// remove it again to not affect other tests
-	device->getFileSystem()->unregisterFileArchive( device->getFileSystem()->getFileArchiveCount() );
+	device->getFileSystem()->removeFileArchive( device->getFileSystem()->getFileArchiveCount() );
 
 	return result;
 }

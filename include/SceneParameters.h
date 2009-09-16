@@ -67,7 +67,9 @@ namespace scene
 	const c8* const COLLADA_CREATE_SCENE_INSTANCES = "COLLADA_CreateSceneInstances";
 
 	//! Name of the parameter for changing the texture path of the built-in DMF loader.
-	/** Use it like this:
+	/** This path is prefixed to the file names defined in the Deled file when loading
+	textures. This allows to alter the paths for a specific project setting.
+	Use it like this:
 	\code
 	SceneManager->getStringParameters()->setAttribute(scene::DMF_TEXTURE_PATH, "path/to/your/textures");
 	\endcode
@@ -75,17 +77,20 @@ namespace scene
 	const c8* const DMF_TEXTURE_PATH = "DMF_TexturePath";
 
 	//! Name of the parameter for preserving DMF textures dir structure with built-in DMF loader.
-	/** Use it like this:
+	/** If this parameter is set to true, the texture directory defined in the Deled file
+	is ignored, and only the texture name is used to find the proper file. Otherwise, the
+	texture path is also used, which allows to use a nicer media layout.
+	Use it like this:
 	\code
-	//this way you won't use this setting
-	SceneManager->getParameters()->setAttribute(scene::DMF_USE_MATERIALS_DIRS, false);
+	//this way you won't use this setting (default)
+	SceneManager->getParameters()->setAttribute(scene::DMF_IGNORE_MATERIALS_DIRS, false);
 	\endcode
 	\code
 	//this way you'll use this setting
-	SceneManager->getParameters()->setAttribute(scene::DMF_USE_MATERIALS_DIRS, true);
+	SceneManager->getParameters()->setAttribute(scene::DMF_IGNORE_MATERIALS_DIRS, true);
 	\endcode
 	**/
-	const c8* const DMF_USE_MATERIALS_DIRS = "DMF_MaterialsDir";
+	const c8* const DMF_IGNORE_MATERIALS_DIRS = "DMF_IgnoreMaterialsDir";
 
 	//! Name of the parameter for setting reference value of alpha in transparent materials.
 	/** Use it like this:
@@ -115,6 +120,15 @@ namespace scene
 	const c8* const OBJ_LOADER_IGNORE_GROUPS = "OBJ_IgnoreGroups";
 
 
+	//! Flag to avoid loading material .mtl file for .obj files
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::OBJ_LOADER_IGNORE_MATERIAL_FILES, true);
+	\endcode
+	**/
+	const c8* const OBJ_LOADER_IGNORE_MATERIAL_FILES = "OBJ_IgnoreMaterialFiles";
+
+
 	//! Flag to ignore the b3d file's mipmapping flag
 	/** Instead Irrlicht's texture creation flag is used. Use it like this:
 	\code
@@ -128,6 +142,23 @@ namespace scene
 	/** In this way special animators like deletion animators can be stopped from
 	deleting scene nodes for example */
 	const c8* const IRR_SCENE_MANAGER_IS_EDITOR = "IRR_Editor";
+
+	//! Name of the parameter for setting the length of debug normals.
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::DEBUG_NORMAL_LENGTH, 1.5f);
+	\endcode
+	**/
+	const c8* const DEBUG_NORMAL_LENGTH = "DEBUG_Normal_Length";
+
+	//! Name of the parameter for setting the color of debug normals.
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttributeAsColor(scene::DEBUG_NORMAL_COLOR, video::SColor(255, 255, 255, 255));
+	\endcode
+	**/
+	const c8* const DEBUG_NORMAL_COLOR = "DEBUG_Normal_Color";
+
 
 } // end namespace scene
 } // end namespace irr

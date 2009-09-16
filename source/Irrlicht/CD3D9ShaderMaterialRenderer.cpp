@@ -177,7 +177,7 @@ bool CD3D9ShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 	#ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 
 		// compile shader without debug info
-		stubD3DXAssembleShader(pxsh, strlen(pxsh), 0, 0, 0, &code, &errors);
+		stubD3DXAssembleShader(pxsh, (UINT)strlen(pxsh), 0, 0, 0, &code, &errors);
 	#else
 
 		// compile shader and emitt some debug informations to
@@ -236,7 +236,7 @@ bool CD3D9ShaderMaterialRenderer::createVertexShader(const char* vtxsh)
 	#ifdef _IRR_D3D_NO_SHADER_DEBUGGING
 
 		// compile shader without debug info
-		stubD3DXAssembleShader(vtxsh, strlen(vtxsh), 0, 0, 0, &code, &errors);
+		stubD3DXAssembleShader(vtxsh, (UINT)strlen(vtxsh), 0, 0, 0, &code, &errors);
 
 	#else
 

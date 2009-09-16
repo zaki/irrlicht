@@ -7,7 +7,7 @@
 
 #include "IReferenceCounted.h"
 #include "IImage.h"
-#include "irrString.h"
+#include "path.h"
 
 namespace irr
 {
@@ -31,7 +31,7 @@ public:
 	/** Check is based on the file extension (e.g. ".tga")
 	\param fileName Name of file to check.
 	\return True if file seems to be loadable. */
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const = 0;
+	virtual bool isALoadableFileExtension(const io::path& filename) const = 0;
 
 	//! Check if the file might be loaded by this class
 	/** Check might look into the file.

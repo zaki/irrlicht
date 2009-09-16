@@ -37,7 +37,7 @@ CIrrMeshFileLoader::CIrrMeshFileLoader(scene::ISceneManager* smgr,
 
 //! Returns true if the file maybe is able to be loaded by this class.
 /** This decision should be based only on the file extension (e.g. ".cob") */
-bool CIrrMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CIrrMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "xml", "irrmesh" );
 }
@@ -195,7 +195,7 @@ IMeshBuffer* CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader)
 				if (vertexTypeName1 == vertexType)
 				{
 					buffer = new CDynamicMeshBuffer(irr::video::EVT_STANDARD, itype);
-						
+
 				}
 				else
 				if (vertexTypeName2 == vertexType)
@@ -283,7 +283,7 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 	{
 		for (int i=0; i<vertexCount && *p; ++i)
 		{
-			switch(vType) 
+			switch(vType)
 			{
 			case video::EVT_STANDARD:
 			{
@@ -308,8 +308,10 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 				// color
 
+				u32 col;
 				findNextNoneWhiteSpace(&p);
-				sscanf(p, "%08x", &vtx.Color.color);
+				sscanf(p, "%08x", &col);
+				vtx.Color.set(col);
 				skipCurrentNoneWhiteSpace(&p);
 
 				// tcoord1
@@ -345,8 +347,10 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 				// color
 
+				u32 col;
 				findNextNoneWhiteSpace(&p);
-				sscanf(p, "%08x", &vtx.Color.color);
+				sscanf(p, "%08x", &col);
+				vtx.Color.set(col);
 				skipCurrentNoneWhiteSpace(&p);
 
 				// tcoord1
@@ -390,8 +394,10 @@ void CIrrMeshFileLoader::readMeshBuffer(io::IXMLReader* reader, int vertexCount,
 
 				// color
 
+				u32 col;
 				findNextNoneWhiteSpace(&p);
-				sscanf(p, "%08x", &vtx.Color.color);
+				sscanf(p, "%08x", &col);
+				vtx.Color.set(col);
 				skipCurrentNoneWhiteSpace(&p);
 
 				// tcoord1

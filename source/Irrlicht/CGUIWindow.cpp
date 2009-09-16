@@ -223,8 +223,8 @@ void CGUIWindow::draw()
 
             if (DrawTitlebar && Text.size())
             {
-                rect.UpperLeftCorner.X += skin->getSize(EGDS_TEXT_DISTANCE_X);
-                rect.UpperLeftCorner.Y += skin->getSize(EGDS_TEXT_DISTANCE_Y);
+                rect.UpperLeftCorner.X += skin->getSize(EGDS_TITLEBARTEXT_DISTANCE_X);
+                rect.UpperLeftCorner.Y += skin->getSize(EGDS_TITLEBARTEXT_DISTANCE_Y);
                 rect.LowerRightCorner.X -= skin->getSize(EGDS_WINDOW_BUTTON_WIDTH) + 5;
 
                 IGUIFont* font = skin->getFont(EGDF_WINDOW);

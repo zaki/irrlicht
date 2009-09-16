@@ -29,7 +29,6 @@ const core::aabbox3d<f32>& CDummyTransformationSceneNode::getBoundingBox() const
 }
 
 
-
 //! Returns a reference to the current relative transformation matrix.
 //! This is the matrix, this scene node uses instead of scale, translation
 //! and rotation.
@@ -48,4 +47,3 @@ core::matrix4 CDummyTransformationSceneNode::getRelativeTransformation() const
 
 } // end namespace scene
 } // end namespace irr
-

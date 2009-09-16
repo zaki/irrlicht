@@ -25,7 +25,7 @@
 #include "ISceneManager.h"
 #include "IAttributes.h"
 #include "SAnimatedMesh.h"
-#include "SMeshBufferLightMap.h"
+#include "SSkinMeshBuffer.h"
 #include "irrString.h"
 #include "irrMath.h"
 #include "dmfsupport.h"
@@ -80,12 +80,10 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 		dmfFace *faces=new dmfFace[header.numFaces];
 
 		//let's get the materials
-		const bool use_mat_dirs=SceneMgr->getParameters()->getAttributeAsBool(DMF_USE_MATERIALS_DIRS);
-
 #ifdef _IRR_DMF_DEBUG_
 		os::Printer::log("Loading materials", core::stringc(header.numMaterials).c_str());
 #endif
-		GetDMFMaterials(dmfRawFile, materiali, header.numMaterials, use_mat_dirs);
+		GetDMFMaterials(dmfRawFile, materiali, header.numMaterials);
 
 		//let's get vertices and faces
 #ifdef _IRR_DMF_DEBUG_
@@ -100,7 +98,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 		for (i=0; i<header.numMaterials; i++)
 		{
 			//create a new SMeshBufferLightMap for each material
-			SMeshBufferLightMap* buffer = new SMeshBufferLightMap();
+			SSkinMeshBuffer* buffer = new SSkinMeshBuffer();
 			buffer->Material.MaterialType = video::EMT_LIGHTMAP_LIGHTING;
 			buffer->Material.Wireframe = false;
 			buffer->Material.Lighting = true;
@@ -115,7 +113,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 		for (i = 0; i < header.numFaces; i++)
 		{
 #ifdef _IRR_DMF_DEBUG_
-		os::Printer::log("Polygon with #vertices", core::stringc(faces[i].numVerts).c_str());
+//		os::Printer::log("Polygon with #vertices", core::stringc(faces[i].numVerts).c_str());
 #endif
 			if (faces[i].numVerts < 3)
 				continue;
@@ -125,24 +123,45 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 						verts[faces[i].firstVert+1].pos,
 						verts[faces[i].firstVert+2].pos).getNormal().normalize();
 
-			SMeshBufferLightMap * meshBuffer = (SMeshBufferLightMap*)mesh->getMeshBuffer(
+			SSkinMeshBuffer* meshBuffer = (SSkinMeshBuffer*)mesh->getMeshBuffer(
 					faces[i].materialID);
 
-			const u32 base = meshBuffer->Vertices.size();
+			const bool use2TCoords = meshBuffer->Vertices_2TCoords.size() ||
+				materiali[faces[i].materialID].lightmapName.size();
+			if (use2TCoords && meshBuffer->Vertices_Standard.size())
+				meshBuffer->MoveTo_2TCoords();
+			const u32 base = meshBuffer->Vertices_2TCoords.size()?meshBuffer->Vertices_2TCoords.size():meshBuffer->Vertices_Standard.size();
 
 			// Add this face's verts
-			u32 v;
-			for (v = 0; v < faces[i].numVerts; v++)
+			if (use2TCoords)
 			{
-				const dmfVert& vv = verts[faces[i].firstVert + v];
-				video::S3DVertex2TCoords vert(vv.pos,
-					normal, video::SColor(255,255,255,255), vv.tc, vv.lc);
-				if (materiali[faces[i].materialID].textureBlend==4 &&
-						SceneMgr->getParameters()->getAttributeAsBool(DMF_FLIP_ALPHA_TEXTURES))
+				for (u32 v = 0; v < faces[i].numVerts; v++)
 				{
-					vert.TCoords.set(vv.tc.X,-vv.tc.Y);
+					const dmfVert& vv = verts[faces[i].firstVert + v];
+					video::S3DVertex2TCoords vert(vv.pos,
+						normal, video::SColor(255,255,255,255), vv.tc, vv.lc);
+					if (materiali[faces[i].materialID].textureBlend==4 &&
+							SceneMgr->getParameters()->getAttributeAsBool(DMF_FLIP_ALPHA_TEXTURES))
+					{
+						vert.TCoords.set(vv.tc.X,-vv.tc.Y);
+					}
+					meshBuffer->Vertices_2TCoords.push_back(vert);
 				}
-				meshBuffer->Vertices.push_back(vert);
+			}
+			else
+			{
+				for (u32 v = 0; v < faces[i].numVerts; v++)
+				{
+					const dmfVert& vv = verts[faces[i].firstVert + v];
+					video::S3DVertex vert(vv.pos,
+						normal, video::SColor(255,255,255,255), vv.tc);
+					if (materiali[faces[i].materialID].textureBlend==4 &&
+							SceneMgr->getParameters()->getAttributeAsBool(DMF_FLIP_ALPHA_TEXTURES))
+					{
+						vert.TCoords.set(vv.tc.X,-vv.tc.Y);
+					}
+					meshBuffer->Vertices_Standard.push_back(vert);
+				}
 			}
 
 			// Now add the indices
@@ -150,7 +169,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			// I do it this way instead of a simple fan because it usually
 			// looks a lot better in wireframe, for example.
 			u32 h = faces[i].numVerts - 1, l = 0, c; // High, Low, Center
-			for (v = 0; v < faces[i].numVerts - 2; v++)
+			for (u32 v = 0; v < faces[i].numVerts - 2; v++)
 			{
 				if (v & 1) // odd
 					c = h - 1;
@@ -174,33 +193,51 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 #ifdef _IRR_DMF_DEBUG_
 		os::Printer::log("Loading textures.");
 #endif
+		const bool use_mat_dirs=!SceneMgr->getParameters()->getAttributeAsBool(DMF_IGNORE_MATERIALS_DIRS);
+
+		core::stringc path;
+		if ( SceneMgr->getParameters()->existsAttribute(DMF_TEXTURE_PATH) )
+			path = SceneMgr->getParameters()->getAttributeAsString(DMF_TEXTURE_PATH);
+		else
+			path = FileSystem->getFileDir(file->getFileName());
+		path += ('/');
+
 		for (i=0; i<header.numMaterials; i++)
 		{
-			core::stringc path;
-			if ( SceneMgr->getParameters()->existsAttribute(DMF_TEXTURE_PATH) )
-				path = SceneMgr->getParameters()->getAttributeAsString(DMF_TEXTURE_PATH);
-			else
-				path = FileSystem->getFileDir(file->getFileName());
-			path += ('/');
-
 			//texture and lightmap
-			ITexture *tex = 0;
-			ITexture *lig = 0;
+			video::ITexture *tex = 0;
+			video::ITexture *lig = 0;
 
 			//current buffer to apply material
-			SMeshBufferLightMap* buffer = (SMeshBufferLightMap*)mesh->getMeshBuffer(i);
+			video::SMaterial& mat = mesh->getMeshBuffer(i)->getMaterial();
 
 			//Primary texture is normal
 			if (materiali[i].textureFlag==0)
 			{
 				if (materiali[i].textureBlend==4)
-					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
-				if (FileSystem->existFile(path+materiali[i].textureName))
+					driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT,true);
+				// path + texpath + full name
+				if (use_mat_dirs && FileSystem->existFile(path+materiali[i].pathName+materiali[i].textureName))
+					tex = driver->getTexture((path+materiali[i].pathName+materiali[i].textureName));
+				// path + full name
+				else if (FileSystem->existFile(path+materiali[i].textureName))
 					tex = driver->getTexture((path+materiali[i].textureName));
+				// path + texpath + base name
+				else if (use_mat_dirs && FileSystem->existFile(path+materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)))
+					tex = driver->getTexture((path+materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)));
+				// path + base name
 				else if (FileSystem->existFile(path+FileSystem->getFileBasename(materiali[i].textureName)))
 					tex = driver->getTexture((path+FileSystem->getFileBasename(materiali[i].textureName)));
+				// texpath + full name
+				else if (use_mat_dirs && FileSystem->existFile(materiali[i].pathName+materiali[i].textureName))
+					tex = driver->getTexture(materiali[i].pathName+materiali[i].textureName.c_str());
+				// full name
 				else if (FileSystem->existFile(materiali[i].textureName))
 					tex = driver->getTexture(materiali[i].textureName.c_str());
+				// texpath + base name
+				else if (use_mat_dirs && FileSystem->existFile(materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)))
+					tex = driver->getTexture(materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName));
+				// base name
 				else if (FileSystem->existFile(FileSystem->getFileBasename(materiali[i].textureName)))
 					tex = driver->getTexture(FileSystem->getFileBasename(materiali[i].textureName));
 #ifdef _IRR_DMF_DEBUG_
@@ -211,14 +248,14 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			//Primary texture is just a colour
 			else if(materiali[i].textureFlag==1)
 			{
-				SColor color(axtoi(materiali[i].textureName.c_str()));
+				video::SColor color(axtoi(materiali[i].textureName.c_str()));
 
 				//just for compatibility with older Irrlicht versions
 				//to support transparent materials
 				if (color.getAlpha()!=255 && materiali[i].textureBlend==4)
-					driver->setTextureCreationFlag(ETCF_ALWAYS_32_BIT,true);
+					driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT,true);
 
-				CImage *immagine= new CImage(ECF_A8R8G8B8,
+				video::CImage *immagine= new video::CImage(video::ECF_A8R8G8B8,
 					core::dimension2d<u32>(8,8));
 				immagine->fill(color);
 				tex = driver->addTexture("", immagine);
@@ -227,8 +264,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				//to support transparent materials
 				if(color.getAlpha()!=255 && materiali[i].textureBlend==4)
 				{
-					buffer->Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-					buffer->Material.MaterialTypeParam =(((f32) (color.getAlpha()-1))/255.0f);
+					mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+					mat.MaterialTypeParam =(((f32) (color.getAlpha()-1))/255.0f);
 				}
 			}
 
@@ -237,15 +274,15 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				lig = driver->getTexture((path+materiali[i].lightmapName));
 			else //no lightmap
 			{
-				buffer->Material.MaterialType = video::EMT_SOLID;
+				mat.MaterialType = video::EMT_SOLID;
 				const f32 mult = 100.0f - header.dmfShadow;
-				buffer->Material.AmbientColor=header.dmfAmbient.getInterpolated(SColor(255,0,0,0),mult/100.f);
+				mat.AmbientColor=header.dmfAmbient.getInterpolated(video::SColor(255,0,0,0),mult/100.f);
 			}
 
 			if (materiali[i].textureBlend==4)
 			{
-				buffer->Material.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
-				buffer->Material.MaterialTypeParam =
+				mat.MaterialType = video::EMT_TRANSPARENT_ALPHA_CHANNEL;
+				mat.MaterialTypeParam =
 					SceneMgr->getParameters()->getAttributeAsFloat(DMF_ALPHA_CHANNEL_REF);
 			}
 
@@ -328,8 +365,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 				lig->regenerateMipMapLevels();
 			}
 
-			buffer->Material.setTexture(0, tex);
-			buffer->Material.setTexture(1, lig);
+			mat.setTexture(0, tex);
+			mat.setTexture(1, lig);
 		}
 
 		delete verts;
@@ -377,7 +414,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 /** \brief Tell us if this file is able to be loaded by this class
  based on the file extension (e.g. ".bsp")
  \return true if file is loadable.*/
-bool CDMFLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CDMFLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "dmf" );
 }

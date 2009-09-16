@@ -37,7 +37,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".ply")
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
@@ -62,7 +62,7 @@ private:
 			} List;
 
 		} Data;
-		
+
 		inline u32 size() const
 		{
 			switch(Type)
@@ -121,7 +121,7 @@ private:
 	c8* getNextWord();
 	void fillBuffer();
 	E_PLY_PROPERTY_TYPE getPropertyType(const c8* typeString) const;
-	
+
 	bool readVertex(const SPLYElement &Element, scene::CDynamicMeshBuffer* mb);
 	bool readFace(const SPLYElement &Element, scene::CDynamicMeshBuffer* mb);
 	void skipElement(const SPLYElement &Element);

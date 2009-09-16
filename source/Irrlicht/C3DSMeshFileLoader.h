@@ -30,7 +30,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".cob")
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -41,7 +41,7 @@ public:
 private:
 
 	// byte-align structures
-	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 	#	pragma pack( push, packing )
 	#	pragma pack( 1 )
 	#	define PACK_STRUCT
@@ -58,7 +58,7 @@ private:
 	} PACK_STRUCT;
 
 	// Default alignment
-	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+	#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 	#	pragma pack( pop, packing )
 	#endif
 
@@ -105,13 +105,13 @@ private:
 			*this = o;
 		}
 
-		~SMaterialGroup() 
-		{ 
+		~SMaterialGroup()
+		{
 			clear();
 		}
 
-		void clear() 
-		{ 
+		void clear()
+		{
 			delete [] faces;
 			faces = 0;
 			faceCount = 0;

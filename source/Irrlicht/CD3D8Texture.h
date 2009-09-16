@@ -29,10 +29,10 @@ public:
 
 	//! constructor
 	CD3D8Texture(IImage* image, CD3D8Driver* driver,
-		u32 flags, const core::string<c16>& name);
+		u32 flags, const io::path& name);
 
 	//! rendertarget constructor
-	CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name);
+	CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& size, const io::path& name);
 
 	//! destructor
 	virtual ~CD3D8Texture();
@@ -78,9 +78,6 @@ private:
 	friend class CD3D8Driver;
 
 	void createRenderTarget();
-
-	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	//! creates the hardware texture
 	bool createTexture(IImage* Image, u32 flags);

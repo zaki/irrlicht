@@ -323,7 +323,7 @@ IAnimatedMesh* COCTLoader::createMesh(io::IReadFile* file)
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool COCTLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool COCTLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "oct" );
 }

@@ -44,6 +44,8 @@ namespace video
 	{
 	public:
 
+		friend class CD3D9Texture;
+
 		//! constructor
 		CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window, bool fullscreen,
 			bool stencibuffer, io::IFileSystem* io, bool pureSoftware=false);
@@ -112,7 +114,14 @@ namespace video
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
-				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType);
+
+		//! draws a vertex primitive list in 2d
+		virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
@@ -123,6 +132,14 @@ namespace video
 		virtual void draw2DImage(const video::ITexture* texture, const core::rect<s32>& destRect,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,
 			const video::SColor* const colors=0, bool useAlphaChannelOfTexture=false);
+
+		//! Draws a set of 2d images, using a color and the alpha channel of the texture.
+		virtual void draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect=0,
+				SColor color=SColor(255,255,255,255),
+				bool useAlphaChannelOfTexture=false);
 
 		//!Draws an 2d rectangle with a gradient.
 		virtual void draw2DRectangle(const core::rect<s32>& pos,
@@ -190,7 +207,7 @@ namespace video
 		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled);
 
 		//! Sets the fog mode.
-		virtual void setFog(SColor color, bool linearFog, f32 start,
+		virtual void setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 
 		//! Only used by the internal engine. Used to notify the driver that
@@ -228,7 +245,7 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
@@ -301,7 +318,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
 
 		//! returns the current size of the screen or rendertarget
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
@@ -329,6 +346,11 @@ namespace video
 			s32 userData=0);
 
 		void createMaterialRenderers();
+
+		void draw2D3DVertexPrimitiveList(const void* vertices,
+				u32 vertexCount, const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType, bool is3D);
 
 		inline D3DCOLORVALUE colorToD3D(const SColor& col)
 		{
@@ -379,6 +401,15 @@ namespace video
 		u32 MaxUserClipPlanes;
 		f32 MaxLightDistance;
 		s32 LastSetLight;
+
+		enum E_CACHE_2D_ATTRIBUTES
+		{
+			EC2D_ALPHA = 0x1,
+			EC2D_TEXTURE = 0x2,
+			EC2D_ALPHA_CHANNEL = 0x4
+		};
+
+		u32 Cached2DModeSignature;
 
 		ECOLOR_FORMAT ColorFormat;
 		D3DFORMAT D3DColorFormat;

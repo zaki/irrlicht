@@ -120,12 +120,7 @@ REALINLINE void memcpy32_small ( void * dest, const void *source, u32 bytesize )
 // integer log2 of a float ieee 754. TODO: non ieee floating point
 static inline s32 s32_log2_f32( f32 f)
 {
-#ifdef IRRLICHT_FAST_MATH
 	u32 x = IR ( f );
-#else
-	u32 x = core::IR ( f );
-#endif
-
 	return ((x & 0x7F800000) >> 23) - 127;
 }
 
@@ -184,15 +179,14 @@ REALINLINE u32 PixelBlend32 ( const u32 c2, const u32 c1, u32 alpha )
 */
 inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u16 alpha )
 {
-	u16 srcRB = c1 & 0x7C1F;
-	u16 srcXG = c1 & 0x03E0;
+	const u16 srcRB = c1 & 0x7C1F;
+	const u16 srcXG = c1 & 0x03E0;
 
-	u16 dstRB = c2 & 0x7C1F;
-	u16 dstXG = c2 & 0x03E0;
+	const u16 dstRB = c2 & 0x7C1F;
+	const u16 dstXG = c2 & 0x03E0;
 
-
-	u16 rb = srcRB - dstRB;
-	u16 xg = srcXG - dstXG;
+	u32 rb = srcRB - dstRB;
+	u32 xg = srcXG - dstXG;
 
 	rb *= alpha;
 	xg *= alpha;
@@ -206,27 +200,6 @@ inline u16 PixelBlend16 ( const u16 c2, const u32 c1, const u16 alpha )
 	xg &= 0x03E0;
 
 	return (u16)(rb | xg);
-}
-
-/*!
-	Scale Color by (1/value)
-	value 0 - 256 ( alpha )
-*/
-inline u32 PixelLerp32 ( const u32 source, const u32 value )
-{
-	u32 srcRB = source & 0x00FF00FF;
-	u32 srcXG = (source & 0xFF00FF00) >> 8;
-
-	srcRB *= value;
-	srcXG *= value;
-
-	srcRB >>= 8;
-	//srcXG >>= 8;
-
-	srcXG &= 0xFF00FF00;
-	srcRB &= 0x00FF00FF;
-
-	return srcRB | srcXG;
 }
 
 /*

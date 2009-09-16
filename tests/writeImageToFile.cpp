@@ -5,9 +5,7 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #endif // _MSC_VER
 
-#include "irrlicht.h"
 #include "testUtils.h"
-#include <assert.h>
 
 using namespace irr;
 using namespace core;

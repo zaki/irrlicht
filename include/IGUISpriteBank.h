@@ -67,6 +67,13 @@ public:
 			const video::SColor& color= video::SColor(255,255,255,255),
 			u32 starttime=0, u32 currenttime=0,
 			bool loop=true, bool center=false) = 0;
+
+	//! Draws a sprite batch in 2d using an array of positions and a color
+	virtual void draw2DSpriteBatch(const core::array<u32>& indices, const core::array<core::position2di>& pos,
+			const core::rect<s32>* clip=0,
+			const video::SColor& color= video::SColor(255,255,255,255),
+			u32 starttime=0, u32 currenttime=0,
+			bool loop=true, bool center=false) = 0;
 };
 
 

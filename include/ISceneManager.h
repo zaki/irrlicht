@@ -8,6 +8,7 @@
 #include "IReferenceCounted.h"
 #include "irrArray.h"
 #include "irrString.h"
+#include "path.h"
 #include "vector3d.h"
 #include "dimension2d.h"
 #include "SColor.h"
@@ -17,6 +18,7 @@
 #include "EMeshWriterEnums.h"
 #include "SceneParameters.h"
 #include "IGeometryCreator.h"
+#include "ISkinnedMesh.h"
 
 namespace irr
 {
@@ -342,7 +344,7 @@ namespace scene
 		 * \return Null if failed, otherwise pointer to the mesh.
 		 * This pointer should not be dropped. See IReferenceCounted::drop() for more information.
 		 **/
-		virtual IAnimatedMesh* getMesh(const core::string<c16>& filename) = 0;
+		virtual IAnimatedMesh* getMesh(const io::path& filename) = 0;
 
 		//! Get pointer to an animateable mesh. Loads the file if not loaded already.
 		/** Works just as getMesh(const char* filename). If you want to
@@ -777,7 +779,7 @@ namespace scene
 		not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITerrainSceneNode* addTerrainSceneNode(
-			const core::string<c16>& heightMapFileName,
+			const io::path& heightMapFileName,
 				ISceneNode* parent=0, s32 id=-1,
 			const core::vector3df& position = core::vector3df(0.0f,0.0f,0.0f),
 			const core::vector3df& rotation = core::vector3df(0.0f,0.0f,0.0f),
@@ -901,7 +903,7 @@ namespace scene
 		specified some invalid parameters or that a mesh with that name already
 		exists. If successful, a pointer to the mesh is returned.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addHillPlaneMesh(const core::string<c16>& name,
+		virtual IAnimatedMesh* addHillPlaneMesh(const io::path& name,
 			const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
 			video::SMaterial* material = 0, f32 hillHeight = 0.0f,
 			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(0.0f, 0.0f),
@@ -930,7 +932,7 @@ namespace scene
 		specified some invalid parameters, that a mesh with that name already
 		exists, or that a texture could not be found. If successful, a pointer to the mesh is returned.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addTerrainMesh(const core::string<c16>& meshname,
+		virtual IAnimatedMesh* addTerrainMesh(const io::path& meshname,
 			video::IImage* texture, video::IImage* heightmap,
 			const core::dimension2d<f32>& stretchSize = core::dimension2d<f32>(10.0f,10.0f),
 			f32 maxHeight=200.0f,
@@ -948,7 +950,7 @@ namespace scene
 		\param width1 Diameter of the cone's base, should be not smaller than the cylinder's diameter
 		\return Pointer to the arrow mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addArrowMesh(const core::string<c16>& name,
+		virtual IAnimatedMesh* addArrowMesh(const io::path& name,
 				video::SColor vtxColor0=0xFFFFFFFF,
 				video::SColor vtxColor1=0xFFFFFFFF,
 				u32 tesselationCylinder=4, u32 tesselationCone=8,
@@ -962,7 +964,7 @@ namespace scene
 		\param polyCountY Number of quads used for the vertical tiling
 		\return Pointer to the sphere mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
-		virtual IAnimatedMesh* addSphereMesh(const core::string<c16>& name,
+		virtual IAnimatedMesh* addSphereMesh(const io::path& name,
 				f32 radius=5.f, u32 polyCountX = 16,
 				u32 polyCountY = 16) = 0;
 
@@ -971,7 +973,7 @@ namespace scene
 		\return Pointer to the volume light mesh if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information.
 		*/
-		virtual IAnimatedMesh* addVolumeLightMesh(const core::string<c16>& name,
+		virtual IAnimatedMesh* addVolumeLightMesh(const io::path& name,
 				const u32 SubdivideU = 32, const u32 SubdivideV = 32,
 				const video::SColor FootColor = video::SColor(51, 0, 230, 180),
 				const video::SColor TailColor = video::SColor(0, 0, 0, 0)) = 0;
@@ -1394,7 +1396,7 @@ namespace scene
 		file, implement the ISceneUserDataSerializer interface and provide it as parameter here.
 		Otherwise, simply specify 0 as this parameter.
 		\return True if successful. */
-		virtual bool saveScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
 
 		//! Saves the current scene into a file.
 		/** Scene nodes with the option isDebugObject set to true are not being saved.
@@ -1419,7 +1421,7 @@ namespace scene
 		as parameter here. Otherwise, simply specify 0 as this
 		parameter.
 		\return True if successful. */
-		virtual bool loadScene(const core::string<c16>& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+		virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
 
 		//! Loads a scene. Note that the current scene is not cleared before.
 		/** The scene is usually load from an .irr file, an xml based format. .irr files can
@@ -1438,6 +1440,11 @@ namespace scene
 		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
 		for details. */
 		virtual IMeshWriter* createMeshWriter(EMESH_WRITER_TYPE type) = 0;
+
+		//! Get a skinned mesh, which is not available as header-only code
+		/** Note: You need to drop() the pointer after use again, see IReferenceCounted::drop()
+		for details. */
+		virtual ISkinnedMesh* createSkinnedMesh() = 0;
 
 		//! Sets ambient color of the scene
 		virtual void setAmbientLight(const video::SColorf &ambientColor) = 0;

@@ -66,14 +66,14 @@ public:
 		// set clip matrix
 
 		core::matrix4 worldViewProj;
-		worldViewProj = driver->getTransform(video::ETS_PROJECTION);			
+		worldViewProj = driver->getTransform(video::ETS_PROJECTION);
 		worldViewProj *= driver->getTransform(video::ETS_VIEW);
 		worldViewProj *= driver->getTransform(video::ETS_WORLD);
 
 		if (UseHighLevelShaders)
 			services->setVertexShaderConstant("mWorldViewProj", worldViewProj.pointer(), 16);
 		else
-			services->setVertexShaderConstant(worldViewProj.pointer(), 4, 4);		
+			services->setVertexShaderConstant(worldViewProj.pointer(), 4, 4);
 
 		// set camera position
 
@@ -96,7 +96,7 @@ public:
 			services->setVertexShaderConstant(reinterpret_cast<f32*>(&col), 9, 1);
 
 		// set transposed world matrix
-			
+
 		core::matrix4 world = driver->getTransform(video::ETS_WORLD);
 		world = world.getTransposed();
 
@@ -135,7 +135,7 @@ int main()
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 1;
-	}	
+	}
 
 	// ask the user if we should use high level shaders for this example
 	if (driverType == video::EDT_DIRECT3D9 ||
@@ -170,9 +170,9 @@ int main()
 	the shaders directly as strings into the cpp source file, and use later
 	addShaderMaterial() instead of addShaderMaterialFromFiles().
 	*/
-	
-	core::string<c16> vsFileName; // filename for the vertex shader
-	core::string<c16> psFileName; // filename for the pixel shader
+
+	io::path vsFileName; // filename for the vertex shader
+	io::path psFileName; // filename for the pixel shader
 
 	switch(driverType)
 	{
@@ -227,7 +227,7 @@ int main()
 			"because of missing driver/hardware support.");
 		psFileName = "";
 	}
-	
+
 	if (!driver->queryFeature(video::EVDF_VERTEX_SHADER_1_1) &&
 		!driver->queryFeature(video::EVDF_ARB_VERTEX_PROGRAM_1))
 	{
@@ -413,7 +413,7 @@ int main()
 	}
 
 	device->drop();
-	
+
 	return 0;
 }
 

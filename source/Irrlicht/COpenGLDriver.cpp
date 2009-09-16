@@ -17,7 +17,7 @@
 #include "CImage.h"
 #include "os.h"
 
-#ifdef _IRR_USE_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 #include <SDL/SDL.h>
 #endif
 
@@ -29,17 +29,17 @@ namespace video
 // -----------------------------------------------------------------------
 // WINDOWS CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceWin32* device)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true), Transformation3DChanged(true),
 	AntiAlias(params.AntiAlias), RenderTargetTexture(0),
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
-	HDc(0), Window(static_cast<HWND>(params.WindowId)), HRc(0)
+	HDc(0), Window(static_cast<HWND>(params.WindowId)), HRc(0), DeviceType(EIDT_WIN32)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -47,7 +47,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 }
 
 //! inits the open gl driver
-bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
+bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceWin32* device)
 {
 	// Set up pixel format descriptor with desired parameters
 	PIXELFORMATDESCRIPTOR pfd = {
@@ -64,7 +64,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 		0,                                         // Shift Bit Ignored
 		0,                                         // No Accumulation Buffer
 		0, 0, 0, 0,	                               // Accumulation Bits Ignored
-		24,                                        // Z-Buffer (Depth Buffer)
+		params.ZBufferBits,                        // Z-Buffer (Depth Buffer)
 		params.Stencilbuffer ? 1 : 0,              // Stencil Buffer Depth
 		0,                                         // No Auxiliary Buffer
 		PFD_MAIN_PLANE,                            // Main Drawing Layer
@@ -194,6 +194,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			return false;
 		}
 
+#ifdef WGL_ARB_pixel_format
 		PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
 		if (wglChoosePixelFormat_ARB)
 		{
@@ -213,12 +214,29 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 				WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
 				WGL_COLOR_BITS_ARB,(params.Bits==32) ? 24 : 15,
 				WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
-				WGL_DEPTH_BITS_ARB,params.ZBufferBits,
+				WGL_DEPTH_BITS_ARB,params.ZBufferBits, // 10,11
 				WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
 				WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
 				WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
+#ifdef WGL_ARB_multisample
 				WGL_SAMPLE_BUFFERS_ARB, 1,
-				WGL_SAMPLES_ARB,AntiAlias,
+				WGL_SAMPLES_ARB,AntiAlias, // 20,21
+#elif defined(WGL_EXT_multisample)
+				WGL_SAMPLE_BUFFERS_EXT, 1,
+				WGL_SAMPLES_EXT,AntiAlias, // 20,21
+#elif defined(WGL_3DFX_multisample)
+				WGL_SAMPLE_BUFFERS_3DFX, 1,
+				WGL_SAMPLES_3DFX,AntiAlias, // 20,21
+#endif
+				WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+				// other possible values:
+				// WGL_ARB_pixel_format_float: WGL_TYPE_RGBA_FLOAT_ARB
+				// WGL_EXT_pixel_format_packed_float: WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT
+#if 0
+#ifdef WGL_EXT_framebuffer_sRGB
+				WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_FALSE,
+#endif
+#endif
 				0,0
 			};
 
@@ -242,6 +260,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 			}
 		}
 		else
+#endif
 			AntiAlias=0;
 
 		wglMakeCurrent(HDc, NULL);
@@ -308,7 +327,14 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	}
 
 	// create rendering context
-	HRc=wglCreateContext(HDc);
+#ifdef WGL_ARB_create_context
+	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribs_ARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+	if (wglCreateContextAttribs_ARB)
+		HRc=wglCreateContextAttribs_ARB(HDc, 0, NULL);
+	else
+#endif
+		HRc=wglCreateContext(HDc);
+
 	if (!HRc)
 	{
 		os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
@@ -342,9 +368,14 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
+#ifdef WGL_EXT_swap_control
+	PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+	// vsync extension
+	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
 	// set vsync
 	if (wglSwapIntervalEXT)
 		wglSwapIntervalEXT(params.Vsync ? 1 : 0);
+#endif
 
 	// set exposed data
 	ExposedData.OpenGLWin32.HDc = HDc;
@@ -354,12 +385,12 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params)
 	return true;
 }
 
-#endif //IRR_USE_WINDOWS_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
 // -----------------------------------------------------------------------
 // MacOSX CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 //! Windows constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceMacOSX *device)
@@ -369,7 +400,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
-	_device(device)
+	_device(device), DeviceType(EIDT_OSX)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -382,20 +413,25 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 // -----------------------------------------------------------------------
 // LINUX CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_LINUX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 //! Linux constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceLinux* device)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer)
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer), DeviceType(EIDT_X11)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
 	#endif
+}
+
+//! inits the open gl driver
+bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceLinux* device)
+{
 	ExposedData.OpenGLLinux.X11Context = glXGetCurrentContext();
 	ExposedData.OpenGLLinux.X11Display = glXGetCurrentDisplay();
 	ExposedData.OpenGLLinux.X11Window = (unsigned long)params.WindowId;
@@ -413,24 +449,25 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 		glXSwapIntervalSGI(1);
 #endif
 #endif
+	return true;
 }
 
-#endif // _IRR_USE_LINUX_DEVICE_
+#endif // _IRR_COMPILE_WITH_X11_DEVICE_
 
 
 // -----------------------------------------------------------------------
 // SDL CONSTRUCTOR
 // -----------------------------------------------------------------------
-#ifdef _IRR_USE_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 //! SDL constructor and init code
 COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceSDL* device)
 : CNullDriver(io, params.WindowSize), COpenGLExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
-	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer)
+	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer), DeviceType(EIDT_SDL)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -439,7 +476,7 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 }
 
-#endif // _IRR_USE_SDL_DEVICE_
+#endif // _IRR_COMPILE_WITH_SDL_DEVICE_
 
 
 //! destructor
@@ -454,18 +491,22 @@ COpenGLDriver::~COpenGLDriver()
 
 	deleteAllTextures();
 
-#ifdef _IRR_USE_WINDOWS_DEVICE_
-	if (HRc)
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	if (DeviceType == EIDT_WIN32)
 	{
-		if (!wglMakeCurrent(0, 0))
-			os::Printer::log("Release of dc and rc failed.", ELL_WARNING);
 
-		if (!wglDeleteContext(HRc))
-			os::Printer::log("Release of rendering context failed.", ELL_WARNING);
+		if (HRc)
+		{
+			if (!wglMakeCurrent(0, 0))
+				os::Printer::log("Release of dc and rc failed.", ELL_WARNING);
+
+			if (!wglDeleteContext(HRc))
+				os::Printer::log("Release of rendering context failed.", ELL_WARNING);
+		}
+
+		if (HDc)
+			ReleaseDC(Window, HDc);
 	}
-
-	if (HDc)
-		ReleaseDC(Window, HDc);
 #endif
 }
 
@@ -511,10 +552,6 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// Reset The Current Viewport
 	glViewport(0, 0, screenSize.Width, screenSize.Height);
 
-// This needs an SMaterial flag to enable/disable later on, but should become default sometimes
-//	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-//	glEnable(GL_COLOR_MATERIAL);
-
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
 #ifdef GL_EXT_separate_specular_color
 	if (FeatureAvailable[IRR_EXT_separate_specular_color])
@@ -532,6 +569,10 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	glHint(GL_POINT_SMOOTH_HINT, GL_FASTEST);
 	glDepthFunc(GL_LEQUAL);
 	glFrontFace(GL_CW);
+	// adjust flat coloring scheme to DirectX version
+#if defined(GL_ARB_provoking_vertex) || defined(GL_EXT_provoking_vertex)
+	extGlProvokingVertex(GL_FIRST_VERTEX_CONVENTION_EXT);
+#endif
 
 	UserClipPlane.reallocate(MaxUserClipPlanes);
 	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
@@ -550,7 +591,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	glAlphaFunc(GL_GREATER, 0.f);
 
 	// set fog mode
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
 	// create matrix for flipping textures
 	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
@@ -621,20 +662,38 @@ bool COpenGLDriver::endScene()
 
 	glFlush();
 
-#ifdef _IRR_USE_WINDOWS_DEVICE_
-	return SwapBuffers(HDc) == TRUE;
-#elif defined(_IRR_USE_LINUX_DEVICE_)
-	glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, Drawable);
-	return true;
-#elif defined(_IRR_USE_OSX_DEVICE_)
-	_device->flush();
-	return true;
-#elif defined(_IRR_USE_SDL_DEVICE_)
-	SDL_GL_SwapBuffers();
-	return true;
-#else
-	return false;
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+	if (DeviceType == EIDT_WIN32)
+		return SwapBuffers(HDc) == TRUE;
 #endif
+
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+	if (DeviceType == EIDT_X11)
+	{
+		glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, Drawable);
+		return true;
+	}
+#endif
+
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+	if (DeviceType == EIDT_OSX)
+	{
+		_device->flush();
+		return true;
+	}
+#endif
+
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+	if (DeviceType == EIDT_SDL)
+	{
+		SDL_GL_SwapBuffers();
+		return true;
+	}
+#endif
+
+	// todo: console device present
+
+	return false;
 }
 
 
@@ -671,10 +730,13 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
 
-#if defined(_IRR_USE_SDL_DEVICE_)
-	// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
-	// it would be better if this was fixed elsewhere.
-	glFrontFace(GL_CW);
+#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
+	if (DeviceType == EIDT_SDL)
+	{
+		// todo: SDL sets glFrontFace(GL_CCW) after driver creation,
+		// it would be better if this was fixed elsewhere.
+		glFrontFace(GL_CW);
+	}
 #endif
 
 	clearBuffers(backBuffer, zBuffer, false, color);
@@ -719,12 +781,14 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			glLoadMatrixf(glmat);
 		}
 		break;
-	case ETS_TEXTURE_0:
-	case ETS_TEXTURE_1:
-	case ETS_TEXTURE_2:
-	case ETS_TEXTURE_3:
+	case ETS_COUNT:
+		return;
+	default:
 	{
 		const u32 i = state - ETS_TEXTURE_0;
+		if (i >= MATERIAL_MAX_TEXTURES)
+			break;
+
 		const bool isRTT = Material.getTexture(i) && Material.getTexture(i)->isRenderTarget();
 
 		if (MultiTextureExtension)
@@ -745,8 +809,6 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 		}
 		break;
 	}
-	default:
-		break;
 	}
 }
 
@@ -779,7 +841,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			const S3DVertex* po = static_cast<const S3DVertex*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
 			}
 		}
 		break;
@@ -789,7 +851,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			const S3DVertex2TCoords* po = static_cast<const S3DVertex2TCoords*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
 			}
 		}
 		break;
@@ -799,7 +861,7 @@ bool COpenGLDriver::updateVertexHardwareBuffer(SHWBufferLink_opengl *HWBuffer)
 			const S3DVertexTangents* po = static_cast<const S3DVertexTangents*>(vertices);
 			for (u32 i=0; i<vertexCount; i++)
 			{
-				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color.color));
+				po[i].Color.toOpenGLColor((u8*)&(pb[i].Color));
 			}
 		}
 		break;
@@ -1078,46 +1140,7 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	CNullDriver::drawVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
 
 	if (vertices)
-	{
-		// convert colors to gl color format.
-		vertexCount *= 4; //reused as color component count
-		ColorBuffer.set_used(vertexCount);
-		u32 i;
-
-		switch (vType)
-		{
-			case EVT_STANDARD:
-			{
-				const S3DVertex* p = static_cast<const S3DVertex*>(vertices);
-				for (i=0; i<vertexCount; i+=4)
-				{
-					p->Color.toOpenGLColor(&ColorBuffer[i]);
-					++p;
-				}
-			}
-			break;
-			case EVT_2TCOORDS:
-			{
-				const S3DVertex2TCoords* p = static_cast<const S3DVertex2TCoords*>(vertices);
-				for (i=0; i<vertexCount; i+=4)
-				{
-					p->Color.toOpenGLColor(&ColorBuffer[i]);
-					++p;
-				}
-			}
-			break;
-			case EVT_TANGENTS:
-			{
-				const S3DVertexTangents* p = static_cast<const S3DVertexTangents*>(vertices);
-				for (i=0; i<vertexCount; i+=4)
-				{
-					p->Color.toOpenGLColor(&ColorBuffer[i]);
-					++p;
-				}
-			}
-			break;
-		}
-	}
+		createColorBuffer(vertices, vertexCount, vType);
 
 	// draw everything
 	setRenderStates3DMode();
@@ -1222,6 +1245,75 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			break;
 	}
 
+	renderArray(indexList, primitiveCount, pType, iType);
+
+	if (MultiTextureExtension)
+	{
+		if (vType==EVT_TANGENTS)
+		{
+			extGlClientActiveTexture(GL_TEXTURE2_ARB);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
+		{
+			extGlClientActiveTexture(GL_TEXTURE1_ARB);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		}
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+	}
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+}
+
+
+void COpenGLDriver::createColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType)
+{
+	// convert colors to gl color format.
+	vertexCount *= 4; //reused as color component count
+	ColorBuffer.set_used(vertexCount);
+	u32 i;
+
+	switch (vType)
+	{
+		case EVT_STANDARD:
+		{
+			const S3DVertex* p = static_cast<const S3DVertex*>(vertices);
+			for (i=0; i<vertexCount; i+=4)
+			{
+				p->Color.toOpenGLColor(&ColorBuffer[i]);
+				++p;
+			}
+		}
+		break;
+		case EVT_2TCOORDS:
+		{
+			const S3DVertex2TCoords* p = static_cast<const S3DVertex2TCoords*>(vertices);
+			for (i=0; i<vertexCount; i+=4)
+			{
+				p->Color.toOpenGLColor(&ColorBuffer[i]);
+				++p;
+			}
+		}
+		break;
+		case EVT_TANGENTS:
+		{
+			const S3DVertexTangents* p = static_cast<const S3DVertexTangents*>(vertices);
+			for (i=0; i<vertexCount; i+=4)
+			{
+				p->Color.toOpenGLColor(&ColorBuffer[i]);
+				++p;
+			}
+		}
+		break;
+	}
+}
+
+
+void COpenGLDriver::renderArray(const void* indexList, u32 primitiveCount,
+		scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
 	GLenum indexSize=0;
 
 	switch (iType)
@@ -1247,15 +1339,39 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 				glEnable(GL_POINT_SPRITE_ARB);
 #endif
-			float quadratic[] = {0.0f, 0.0f, 10.01f};
-			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION_ARB, quadratic);
-			float maxParticleSize=1.0f;
-			glGetFloatv(GL_POINT_SIZE_MAX_ARB, &maxParticleSize);
-//			maxParticleSize=maxParticleSize<Material.Thickness?maxParticleSize:Material.Thickness;
-//			extGlPointParameterf(GL_POINT_SIZE_MAX_ARB,maxParticleSize);
-//			extGlPointParameterf(GL_POINT_SIZE_MIN_ARB,Material.Thickness);
-			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 60.0f);
-			glPointSize(Material.Thickness);
+
+			// prepare size and attenuation (where supported)
+			GLfloat particleSize=Material.Thickness;
+//			if (AntiAlias)
+//				particleSize=core::clamp(particleSize, DimSmoothedPoint[0], DimSmoothedPoint[1]);
+//			else
+				particleSize=core::clamp(particleSize, DimAliasedPoint[0], DimAliasedPoint[1]);
+#if defined(GL_VERSION_1_4) || defined(GL_ARB_point_parameters) || defined(GL_EXT_point_parameters) || defined(GL_SGIS_point_parameters)
+			const float att[] = {1.0f, 1.0f, 0.0f};
+#if defined(GL_VERSION_1_4)
+			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE, 1.0f);
+#elif defined(GL_ARB_point_parameters)
+			extGlPointParameterfv(GL_POINT_DISTANCE_ATTENUATION_ARB, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_ARB,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX_ARB, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_ARB, 1.0f);
+#elif defined(GL_EXT_point_parameters)
+			extGlPointParameterfv(GL_DISTANCE_ATTENUATION_EXT, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_EXT,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX_EXT, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_EXT, 1.0f);
+#elif defined(GL_SGIS_point_parameters)
+			extGlPointParameterfv(GL_DISTANCE_ATTENUATION_SGIS, att);
+//			extGlPointParameterf(GL_POINT_SIZE_MIN_SGIS,1.f);
+			extGlPointParameterf(GL_POINT_SIZE_MAX_SGIS, particleSize);
+			extGlPointParameterf(GL_POINT_FADE_THRESHOLD_SIZE_SGIS, 1.0f);
+#endif
+#endif
+			glPointSize(particleSize);
+
 #ifdef GL_ARB_point_sprite
 			if (pType==scene::EPT_POINT_SPRITES && FeatureAvailable[IRR_ARB_point_sprite])
 				glTexEnvf(GL_POINT_SPRITE_ARB,GL_COORD_REPLACE, GL_TRUE);
@@ -1298,14 +1414,108 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 			glDrawElements(GL_POLYGON, primitiveCount, indexSize, indexList);
 			break;
 	}
+}
+
+
+//! draws a vertex primitive list in 2d
+void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
+		const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType)
+{
+	if (!primitiveCount || !vertexCount)
+		return;
+
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType, iType);
+
+	if (vertices)
+		createColorBuffer(vertices, vertexCount, vType);
+
+	// draw everything
+	this->setActiveTexture(0, Material.getTexture(0));
+	setRenderStates2DMode(false, (Material.getTexture(0) != 0), false);
+
+	if (MultiTextureExtension)
+		extGlClientActiveTexture(GL_TEXTURE0_ARB);
+
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	if ((pType!=scene::EPT_POINTS) && (pType!=scene::EPT_POINT_SPRITES))
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if (vertices)
+		glColorPointer(4, GL_UNSIGNED_BYTE, 0, &ColorBuffer[0]);
+
+	switch (vType)
+	{
+		case EVT_STANDARD:
+			if (vertices)
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].Pos);
+			}
+			else
+			{
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex), buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), buffer_offset(28));
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex), 0);
+			}
+
+			if (MultiTextureExtension && CurrentTexture[1])
+			{
+				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				if (vertices)
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), &(static_cast<const S3DVertex*>(vertices))[0].TCoords);
+				else
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex), buffer_offset(28));
+			}
+			break;
+		case EVT_2TCOORDS:
+			if (vertices)
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords);
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].Pos);
+			}
+			else
+			{
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertex2TCoords), buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(28));
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(0));
+			}
+
+			if (MultiTextureExtension)
+			{
+				extGlClientActiveTexture(GL_TEXTURE1_ARB);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				if (vertices)
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), &(static_cast<const S3DVertex2TCoords*>(vertices))[0].TCoords2);
+				else
+					glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertex2TCoords), buffer_offset(36));
+			}
+			break;
+		case EVT_TANGENTS:
+			if (vertices)
+			{
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].TCoords);
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), &(static_cast<const S3DVertexTangents*>(vertices))[0].Pos);
+			}
+			else
+			{
+				glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(S3DVertexTangents), buffer_offset(24));
+				glTexCoordPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(28));
+				glVertexPointer(2, GL_FLOAT, sizeof(S3DVertexTangents), buffer_offset(0));
+			}
+
+			break;
+	}
+
+	renderArray(indexList, primitiveCount, pType, iType);
 
 	if (MultiTextureExtension)
 	{
-		if (vType==EVT_TANGENTS)
-		{
-			extGlClientActiveTexture(GL_TEXTURE2_ARB);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		}
 		if ((vType!=EVT_STANDARD) || CurrentTexture[1])
 		{
 			extGlClientActiveTexture(GL_TEXTURE1_ARB);
@@ -1315,7 +1525,6 @@ void COpenGLDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCoun
 	}
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
@@ -1772,7 +1981,7 @@ inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new COpenGLTexture(surface, name, this);
 }
@@ -2064,7 +2273,7 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 		else if (i>0)
 			break;
 
-#ifdef EXT_texture_lod_bias
+#ifdef GL_EXT_texture_lod_bias
 		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		{
 			if (material.TextureLayer[i].LODBias)
@@ -2223,8 +2432,18 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 	// thickness
 	if (resetAllRenderStates || lastmaterial.Thickness != material.Thickness)
 	{
-		glPointSize(material.Thickness);
-		glLineWidth(material.Thickness);
+		if (AntiAlias)
+		{
+//			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimSmoothedPoint[0], DimSmoothedPoint[1]));
+			// we don't use point smoothing
+			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedPoint[0], DimAliasedPoint[1]));
+			glLineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimSmoothedLine[0], DimSmoothedLine[1]));
+		}
+		else
+		{
+			glPointSize(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedPoint[0], DimAliasedPoint[1]));
+			glLineWidth(core::clamp(static_cast<GLfloat>(material.Thickness), DimAliasedLine[0], DimAliasedLine[1]));
+		}
 	}
 
 	// Anti aliasing
@@ -2242,18 +2461,26 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 				glEnable(GL_MULTISAMPLE_ARB);
 #ifdef GL_NV_multisample_filter_hint
 				if (FeatureAvailable[IRR_NV_multisample_filter_hint])
-					glHint(GL_MULTISAMPLE_FILTER_HINT_NV, (material.AntiAliasing & EAAM_QUALITY)?GL_NICEST:GL_FASTEST);
+				{
+					if ((material.AntiAliasing & EAAM_QUALITY) == EAAM_QUALITY)
+						glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+					else
+						glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
+				}
 #endif
 			}
 			else
 				glDisable(GL_MULTISAMPLE_ARB);
 		}
-		if (AntiAlias >= 2)
+		if ((material.AntiAliasing & EAAM_LINE_SMOOTH) != (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH))
 		{
 			if (material.AntiAliasing & EAAM_LINE_SMOOTH)
 				glEnable(GL_LINE_SMOOTH);
 			else if (lastmaterial.AntiAliasing & EAAM_LINE_SMOOTH)
 				glDisable(GL_LINE_SMOOTH);
+		}
+		if ((material.AntiAliasing & EAAM_POINT_SMOOTH) != (lastmaterial.AntiAliasing & EAAM_POINT_SMOOTH))
+		{
 			if (material.AntiAliasing & EAAM_POINT_SMOOTH)
 				// often in software, and thus very slow
 				glEnable(GL_POINT_SMOOTH);
@@ -2283,6 +2510,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			SMaterial mat;
 			mat.ZBuffer=ECFN_NEVER;
 			mat.Lighting=false;
+			mat.AntiAliasing=video::EAAM_OFF;
 			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);
 			LastMaterial = mat;
@@ -2336,26 +2564,40 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			}
 			else
 			{
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
-				// rgb always modulates
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+#ifdef GL_ARB_texture_env_combine
+				if (FeatureAvailable[IRR_ARB_texture_env_combine])
+				{
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_TEXTURE);
+					// rgb always modulates
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+				}
+				else
+#endif
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			}
 		}
 		else
 		{
 			if (alpha)
 			{
-				glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
-				// rgb always modulates
-				glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
-				glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+#ifdef GL_ARB_texture_env_combine
+				if (FeatureAvailable[IRR_ARB_texture_env_combine])
+				{
+					glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_EXT);
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_ALPHA_EXT, GL_REPLACE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA_EXT, GL_PRIMARY_COLOR_EXT);
+					// rgb always modulates
+					glTexEnvf(GL_TEXTURE_ENV, GL_COMBINE_RGB_EXT, GL_MODULATE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE0_RGB_EXT, GL_TEXTURE);
+					glTexEnvf(GL_TEXTURE_ENV, GL_SOURCE1_RGB_EXT, GL_PRIMARY_COLOR_EXT);
+				}
+				else
+#endif
+					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			}
 			else
 			{
@@ -2721,7 +2963,6 @@ void COpenGLDriver::drawStencilShadowVolume(const core::vector3df* triangles, s3
 }
 
 
-
 void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor leftUpEdge,
 	video::SColor rightUpEdge, video::SColor leftDownEdge, video::SColor rightDownEdge)
 {
@@ -2782,18 +3023,28 @@ void COpenGLDriver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 
 //! Sets the fog mode.
-void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
+void COpenGLDriver::setFog(SColor c, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(c, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(c, fogType, start, end, density, pixelFog, rangeFog);
 
-	glFogf(GL_FOG_MODE, GLfloat(linearFog ? GL_LINEAR : GL_EXP));
+	glFogf(GL_FOG_MODE, GLfloat((fogType==EFT_FOG_LINEAR)? GL_LINEAR : (fogType==EFT_FOG_EXP)?GL_EXP:GL_EXP2));
+
 #ifdef GL_EXT_fog_coord
 	if (FeatureAvailable[IRR_EXT_fog_coord])
 		glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);
 #endif
+#ifdef GL_NV_fog_distance
+	if (FeatureAvailable[IRR_NV_fog_distance])
+	{
+		if (rangeFog)
+			glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_RADIAL_NV);
+		else
+			glFogi(GL_FOG_DISTANCE_MODE_NV, GL_EYE_PLANE_ABSOLUTE_NV);
+	}
+#endif
 
-	if (linearFog)
+	if (fogType==EFT_FOG_LINEAR)
 	{
 		glFogf(GL_FOG_START, start);
 		glFogf(GL_FOG_END, end);
@@ -2810,7 +3061,6 @@ void COpenGLDriver::setFog(SColor c, bool linearFog, f32 start,
 	GLfloat data[4] = {color.r, color.g, color.b, color.a};
 	glFogfv(GL_FOG_COLOR, data);
 }
-
 
 
 //! Draws a 3d line.
@@ -2942,7 +3192,7 @@ IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
 
 
 ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-					const core::string<c16>& name,
+					const io::path& name,
 					const ECOLOR_FORMAT format)
 {
 	//disable mip-mapping
@@ -3264,13 +3514,13 @@ namespace video
 // -----------------------------------
 // WINDOWS VERSION
 // -----------------------------------
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-	io::IFileSystem* io)
+	io::IFileSystem* io, CIrrDeviceWin32* device)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	COpenGLDriver* ogl =  new COpenGLDriver(params, io);
-	if (!ogl->initDriver(params))
+	COpenGLDriver* ogl =  new COpenGLDriver(params, io, device);
+	if (!ogl->initDriver(params, device))
 	{
 		ogl->drop();
 		ogl = 0;
@@ -3280,12 +3530,12 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 	return 0;
 #endif // _IRR_COMPILE_WITH_OPENGL_
 }
-#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
 // -----------------------------------
 // MACOSX VERSION
 // -----------------------------------
-#if defined(_IRR_USE_OSX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceMacOSX *device)
 {
@@ -3295,22 +3545,44 @@ IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_
 }
-#endif // _IRR_USE_OSX_DEVICE_
+#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
 
 // -----------------------------------
-// X11/SDL VERSION
+// X11 VERSION
 // -----------------------------------
-#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io)
+		io::IFileSystem* io, CIrrDeviceLinux* device)
 {
 #ifdef _IRR_COMPILE_WITH_OPENGL_
-	return new COpenGLDriver(params, io);
+	COpenGLDriver* ogl =  new COpenGLDriver(params, io, device);
+	if (!ogl->initDriver(params, device))
+	{
+		ogl->drop();
+		ogl = 0;
+	}
+	return ogl;
 #else
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OPENGL_
 }
-#endif // _IRR_USE_LINUX_DEVICE_
+#endif // _IRR_COMPILE_WITH_X11_DEVICE_
+
+
+// -----------------------------------
+// SDL VERSION
+// -----------------------------------
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params,
+		io::IFileSystem* io, CIrrDeviceSDL* device)
+{
+#ifdef _IRR_COMPILE_WITH_OPENGL_
+	return new COpenGLDriver(params, io, device);
+#else
+	return 0;
+#endif //  _IRR_COMPILE_WITH_OPENGL_
+}
+#endif // _IRR_COMPILE_WITH_SDL_DEVICE_
 
 } // end namespace
 } // end namespace

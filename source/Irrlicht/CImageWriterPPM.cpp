@@ -31,7 +31,7 @@ CImageWriterPPM::CImageWriterPPM()
 }
 
 
-bool CImageWriterPPM::isAWriteableFileExtension(const core::string<c16>& filename) const
+bool CImageWriterPPM::isAWriteableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "ppm" );
 }

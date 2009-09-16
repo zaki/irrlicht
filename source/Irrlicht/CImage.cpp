@@ -4,1037 +4,15 @@
 
 #include "CImage.h"
 #include "irrString.h"
-#include "SoftwareDriver2_helper.h"
 #include "CColorConverter.h"
-
-namespace irr
-{
-
-	struct SBlitJob
-	{
-		AbsRectangle Dest;
-		AbsRectangle Source;
-
-		u32 argb;
-
-		void * src;
-		void * dst;
-
-		s32 width;
-		s32 height;
-
-		u32 srcPitch;
-		u32 dstPitch;
-
-		u32 srcPixelMul;
-		u32 dstPixelMul;
-	};
-
-	// Blitter Operation
-	enum eBlitter
-	{
-		BLITTER_INVALID = 0,
-		BLITTER_COLOR,
-		BLITTER_COLOR_ALPHA,
-		BLITTER_TEXTURE,
-		BLITTER_TEXTURE_ALPHA_BLEND,
-		BLITTER_TEXTURE_ALPHA_COLOR_BLEND
-	};
-
-	typedef void (*tExecuteBlit) ( const SBlitJob * job );
-
-
-	// Bitfields Cohen Sutherland
-	enum eClipCode
-	{
-		CLIPCODE_EMPTY	=	0,
-		CLIPCODE_BOTTOM	=	1,
-		CLIPCODE_TOP	=	2,
-		CLIPCODE_LEFT	=	4,
-		CLIPCODE_RIGHT	=	8
-	};
-
-inline u32 GetClipCode( const AbsRectangle &r, const core::position2d<s32> &p )
-{
-	u32 code = CLIPCODE_EMPTY;
-
-	if ( p.X < r.x0 )
-		code = CLIPCODE_LEFT;
-	else
-	if ( p.X > r.x1 )
-		code = CLIPCODE_RIGHT;
-
-	if ( p.Y < r.y0 )
-		code |= CLIPCODE_TOP;
-	else
-	if ( p.Y > r.y1 )
-		code |= CLIPCODE_BOTTOM;
-
-	return code;
-}
-
-
-/*!
-	Cohen Sutherland clipping
-	@return: 1 if valid
-*/
-
-static int ClipLine(const AbsRectangle &clipping,
-			core::position2d<s32> &p0,
-			core::position2d<s32> &p1,
-			const core::position2d<s32>& p0_in,
-			const core::position2d<s32>& p1_in)
-{
-	u32 code0;
-	u32 code1;
-	u32 code;
-
-	p0 = p0_in;
-	p1 = p1_in;
-
-	code0 = GetClipCode( clipping, p0 );
-	code1 = GetClipCode( clipping, p1 );
-
-	// trivial accepted
-	while ( code0 | code1 )
-	{
-		s32 x=0;
-		s32 y=0;
-
-		// trivial reject
-		if ( code0 & code1 )
-			return 0;
-
-		if ( code0 )
-		{
-			// clip first point
-			code = code0;
-		}
-		else
-		{
-			// clip last point
-			code = code1;
-		}
-
-		if ( (code & CLIPCODE_BOTTOM) == CLIPCODE_BOTTOM )
-		{
-			// clip bottom viewport
-			y = clipping.y1;
-			x = p0.X + ( p1.X - p0.X ) * ( y - p0.Y ) / ( p1.Y - p0.Y );
-		}
-		else
-		if ( (code & CLIPCODE_TOP) == CLIPCODE_TOP )
-		{
-			// clip to viewport
-			y = clipping.y0;
-			x = p0.X + ( p1.X - p0.X ) * ( y - p0.Y ) / ( p1.Y - p0.Y );
-		}
-		else
-		if ( (code & CLIPCODE_RIGHT) == CLIPCODE_RIGHT )
-		{
-			// clip right viewport
-			x = clipping.x1;
-			y = p0.Y + ( p1.Y - p0.Y ) * ( x - p0.X ) / ( p1.X - p0.X );
-		}
-		else
-		if ( (code & CLIPCODE_LEFT) == CLIPCODE_LEFT )
-		{
-			// clip left viewport
-			x = clipping.x0;
-			y = p0.Y + ( p1.Y - p0.Y ) * ( x - p0.X ) / ( p1.X - p0.X );
-		}
-
-		if ( code == code0 )
-		{
-			// modify first point
-			p0.X = x;
-			p0.Y = y;
-			code0 = GetClipCode( clipping, p0 );
-		}
-		else
-		{
-			// modify second point
-			p1.X = x;
-			p1.Y = y;
-			code1 = GetClipCode( clipping, p1 );
-		}
-	}
-
-	return 1;
-}
-
-/*
-*/
-inline void GetClip(AbsRectangle &clipping, video::IImage * t)
-{
-	clipping.x0 = 0;
-	clipping.y0 = 0;
-	clipping.x1 = t->getDimension().Width - 1;
-	clipping.y1 = t->getDimension().Height - 1;
-}
-
-/*
-	return alpha in [0;256] Granularity from 32-Bit ARGB
-	add highbit alpha ( alpha > 127 ? + 1 )
-*/
-static inline u32 extractAlpha ( const u32 c )
-{
-	return ( c >> 24 ) + ( c >> 31 );
-}
-
-/*
-	return alpha in [0;255] Granularity and 32-Bit ARGB
-	add highbit alpha ( alpha > 127 ? + 1 )
-*/
-static inline u32 packAlpha ( const u32 c )
-{
-	return (c > 127 ? c - 1 : c) << 24;
-}
-
-/*
-*/
-static void RenderLine32_Decal(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u32 argb )
-{
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
-
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
-
-	s32 xInc = 4;
-	s32 yInc = (s32) t->getPitch();
-
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
-
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
-
-	u32 *dst;
-	dst = (u32*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 2 ) );
-
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
-
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	while ( run )
-	{
-		*dst = argb;
-
-		dst = (u32*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u32*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	}
-
-	t->unlock();
-}
-
-
-/*
-*/
-static void RenderLine32_Blend(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u32 argb, u32 alpha)
-{
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
-
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
-
-	s32 xInc = 4;
-	s32 yInc = (s32) t->getPitch();
-
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
-
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
-
-	u32 *dst;
-	dst = (u32*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 2 ) );
-
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
-
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	const u32 packA = packAlpha ( alpha );
-	while ( run )
-	{
-		*dst = packA | PixelBlend32( *dst, argb, alpha );
-
-		dst = (u32*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u32*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	}
-
-	t->unlock();
-}
-
-/*
-*/
-static void RenderLine16_Decal(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u32 argb )
-{
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
-
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
-
-	s32 xInc = 2;
-	s32 yInc = (s32) t->getPitch();
-
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
-
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
-
-	u16 *dst;
-	dst = (u16*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 1 ) );
-
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
-
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	while ( run )
-	{
-		*dst = (u16)argb;
-
-		dst = (u16*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u16*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	}
-
-	t->unlock();
-}
-
-/*
-*/
-static void RenderLine16_Blend(video::IImage *t,
-				const core::position2d<s32> &p0,
-				const core::position2d<s32> &p1,
-				u16 argb,
-				u16 alpha)
-{
-	s32 dx = p1.X - p0.X;
-	s32 dy = p1.Y - p0.Y;
-
-	s32 c;
-	s32 m;
-	s32 d = 0;
-	s32 run;
-
-	s32 xInc = 2;
-	s32 yInc = (s32) t->getPitch();
-
-	if ( dx < 0 )
-	{
-		xInc = -xInc;
-		dx = -dx;
-	}
-
-	if ( dy < 0 )
-	{
-		yInc = -yInc;
-		dy = -dy;
-	}
-
-	u16 *dst;
-	dst = (u16*) ( (u8*) t->lock() + ( p0.Y * t->getPitch() ) + ( p0.X << 1 ) );
-
-	if ( dy > dx )
-	{
-		s32 tmp;
-		tmp = dx;
-		dx = dy;
-		dy = tmp;
-		tmp = xInc;
-		xInc = yInc;
-		yInc = tmp;
-	}
-
-	c = dx << 1;
-	m = dy << 1;
-
-	run = dx;
-	const u16 packA = alpha ? 0x8000 : 0;
-	while ( run )
-	{
-		*dst = packA | PixelBlend16( *dst, argb, alpha );
-
-		dst = (u16*) ( (u8*) dst + xInc );	// x += xInc
-		d += m;
-		if ( d > dx )
-		{
-			dst = (u16*) ( (u8*) dst + yInc );	// y += yInc
-			d -= c;
-		}
-		run -= 1;
-	}
-
-	t->unlock();
-}
-
-
-/*!
-*/
-static void executeBlit_TextureCopy_x_to_x( const SBlitJob * job )
-{
-	const void *src = (void*) job->src;
-	void *dst = (void*) job->dst;
-
-	const u32 widthPitch = job->width * job->dstPixelMul;
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		memcpy( dst, src, widthPitch );
-
-		src = (void*) ( (u8*) (src) + job->srcPitch );
-		dst = (void*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-
-/*!
-*/
-static void executeBlit_TextureCopy_32_to_16( const SBlitJob * job )
-{
-	const u32 *src = static_cast<const u32*>(job->src);
-	u16 *dst = static_cast<u16*>(job->dst);
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			//16 bit Blitter depends on pre-multiplied color
-			const u32 s = PixelLerp32( src[dx] | 0xFF000000, extractAlpha( src[dx] ) );
-			dst[dx] = video::A8R8G8B8toA1R5G5B5( s );
-		}
-
-		src = (u32*) ( (u8*) (src) + job->srcPitch );
-		dst = (u16*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-/*!
-*/
-static void executeBlit_TextureCopy_24_to_16( const SBlitJob * job )
-{
-	const void *src = (void*) job->src;
-	u16 *dst = (u16*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		u8 * s = (u8*) src;
-
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			dst[dx] = video::RGB16(s[0], s[1], s[2]);
-			s += 3;
-		}
-
-		src = (void*) ( (u8*) (src) + job->srcPitch );
-		dst = (u16*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-
-/*!
-*/
-static void executeBlit_TextureCopy_16_to_32( const SBlitJob * job )
-{
-	const u16 *src = (u16*) job->src;
-	u32 *dst = (u32*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			dst[dx] = video::A1R5G5B5toA8R8G8B8( src[dx] );
-		}
-
-		src = (u16*) ( (u8*) (src) + job->srcPitch );
-		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-static void executeBlit_TextureCopy_16_to_24( const SBlitJob * job )
-{
-	const u16 *src = (u16*) job->src;
-	u8 *dst = (u8*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			u32 colour = video::A1R5G5B5toA8R8G8B8( src[dx] );
-			u8 * writeTo = &dst[dx * 3];
-			*writeTo++ = (colour >> 16)& 0xFF;
-			*writeTo++ = (colour >> 8) & 0xFF;
-			*writeTo++ = colour & 0xFF;
-		}
-
-		src = (u16*) ( (u8*) (src) + job->srcPitch );
-		dst += job->dstPitch;
-	}
-}
-
-
-/*!
-*/
-static void executeBlit_TextureCopy_24_to_32( const SBlitJob * job )
-{
-	void *src = (void*) job->src;
-	u32 *dst = (u32*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		u8 * s = (u8*) src;
-
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			dst[dx] = 0xFF000000 | s[0] << 16 | s[1] << 8 | s[2];
-			s += 3;
-		}
-
-		src = (void*) ( (u8*) (src) + job->srcPitch );
-		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-static void executeBlit_TextureCopy_32_to_24( const SBlitJob * job )
-{
-	const u32 * src = (u32*) job->src;
-	u8 * dst = (u8*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			u8 * writeTo = &dst[dx * 3];
-			*writeTo++ = (src[dx] >> 16)& 0xFF;
-			*writeTo++ = (src[dx] >> 8) & 0xFF;
-			*writeTo++ = src[dx] & 0xFF;
-		}
-
-		src = (u32*) ( (u8*) (src) + job->srcPitch );
-		dst += job->dstPitch ;
-	}
-
-}
-
-
-/*!
-*/
-static void executeBlit_TextureBlend_16_to_16( const SBlitJob * job )
-{
-	u32 dx;
-	s32 dy;
-
-	u32 *src = (u32*) job->src;
-	u32 *dst = (u32*) job->dst;
-
-
-	const u32 rdx = job->width >> 1;
-	const u32 off = core::if_c_a_else_b( job->width & 1 ,job->width - 1, 0 );
-
-
-	for ( dy = 0; dy != job->height; ++dy )
-	{
-		for ( dx = 0; dx != rdx; ++dx )
-		{
-			dst[dx] = PixelBlend16_simd( dst[dx], src[dx] );
-		}
-
-		if ( off )
-		{
-			((u16*) dst)[off] = PixelBlend16( ((u16*) dst)[off], ((u16*) src)[off] );
-		}
-
-		src = (u32*) ( (u8*) (src) + job->srcPitch );
-		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-/*!
-*/
-static void executeBlit_TextureBlend_32_to_32( const SBlitJob * job )
-{
-	u32 *src = (u32*) job->src;
-	u32 *dst = (u32*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			dst[dx] = PixelBlend32( dst[dx], src[dx] );
-		}
-		src = (u32*) ( (u8*) (src) + job->srcPitch );
-		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-/*!
-*/
-static void executeBlit_TextureBlendColor_16_to_16( const SBlitJob * job )
-{
-	u16 *src = (u16*) job->src;
-	u16 *dst = (u16*) job->dst;
-
-	u16 blend = video::A8R8G8B8toA1R5G5B5 ( job->argb );
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			if ( 0 == (src[dx] & 0x8000) )
-				continue;
-
-			dst[dx] = PixelMul16_2( src[dx], blend );
-		}
-		src = (u16*) ( (u8*) (src) + job->srcPitch );
-		dst = (u16*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-
-/*!
-*/
-static void executeBlit_TextureBlendColor_32_to_32( const SBlitJob * job )
-{
-	u32 *src = (u32*) job->src;
-	u32 *dst = (u32*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			dst[dx] = PixelBlend32( dst[dx], PixelMul32_2( src[dx], job->argb ) );
-		}
-		src = (u32*) ( (u8*) (src) + job->srcPitch );
-		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-/*!
-*/
-static void executeBlit_Color_16_to_16( const SBlitJob * job )
-{
-	u16 *dst = (u16*) job->dst;
-
-	u16 c0 = video::A8R8G8B8toA1R5G5B5( job->argb );
-	u32 c = c0 | c0 << 16;
-
-	if ( 0 == (job->srcPitch & 3 ) )
-	{
-		for ( s32 dy = 0; dy != job->height; ++dy )
-		{
-			memset32( dst, c, job->srcPitch );
-			dst = (u16*) ( (u8*) (dst) + job->dstPitch );
-		}
-	}
-	else
-	{
-		s32 dx = job->width - 1;
-
-		for ( s32 dy = 0; dy != job->height; ++dy )
-		{
-			memset32( dst, c, job->srcPitch );
-			dst[dx] = c0;
-			dst = (u16*) ( (u8*) (dst) + job->dstPitch );
-		}
-
-	}
-}
-
-/*!
-*/
-static void executeBlit_Color_32_to_32( const SBlitJob * job )
-{
-	u32 *dst = (u32*) job->dst;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		memset32( dst, job->argb, job->srcPitch );
-		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-/*!
-*/
-static void executeBlit_ColorAlpha_16_to_16( const SBlitJob * job )
-{
-	u16 *dst = (u16*) job->dst;
-
-	const u16 alpha = extractAlpha( job->argb ) >> 3;
-	if ( 0 == alpha )
-		return;
-	const u32 src = video::A8R8G8B8toA1R5G5B5( job->argb );
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			dst[dx] = 0x8000 | PixelBlend16( dst[dx], src, alpha );
-		}
-		dst = (u16*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-/*!
-*/
-static void executeBlit_ColorAlpha_32_to_32( const SBlitJob * job )
-{
-	u32 *dst = (u32*) job->dst;
-
-	const u32 alpha = extractAlpha( job->argb );
-	const u32 src = job->argb;
-
-	for ( s32 dy = 0; dy != job->height; ++dy )
-	{
-		for ( s32 dx = 0; dx != job->width; ++dx )
-		{
-			dst[dx] = (job->argb & 0xFF000000 ) | PixelBlend32( dst[dx], src, alpha );
-		}
-		dst = (u32*) ( (u8*) (dst) + job->dstPitch );
-	}
-}
-
-/*!
-*/
-struct blitterTable
-{
-	eBlitter operation;
-	s32 destFormat;
-	s32 sourceFormat;
-	tExecuteBlit func;
-};
-
-static const blitterTable blitTable[] =
-{
-	{ BLITTER_TEXTURE, -2, -2, executeBlit_TextureCopy_x_to_x },
-	{ BLITTER_TEXTURE, video::ECF_A1R5G5B5, video::ECF_A8R8G8B8, executeBlit_TextureCopy_32_to_16 },
-	{ BLITTER_TEXTURE, video::ECF_A1R5G5B5, video::ECF_R8G8B8, executeBlit_TextureCopy_24_to_16 },
-	{ BLITTER_TEXTURE, video::ECF_A8R8G8B8, video::ECF_A1R5G5B5, executeBlit_TextureCopy_16_to_32 },
-	{ BLITTER_TEXTURE, video::ECF_A8R8G8B8, video::ECF_R8G8B8, executeBlit_TextureCopy_24_to_32 },
-	{ BLITTER_TEXTURE, video::ECF_R8G8B8, video::ECF_A1R5G5B5, executeBlit_TextureCopy_16_to_24 },
-	{ BLITTER_TEXTURE, video::ECF_R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureCopy_32_to_24 },
-	{ BLITTER_TEXTURE_ALPHA_BLEND, video::ECF_A1R5G5B5, video::ECF_A1R5G5B5, executeBlit_TextureBlend_16_to_16 },
-	{ BLITTER_TEXTURE_ALPHA_BLEND, video::ECF_A8R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureBlend_32_to_32 },
-	{ BLITTER_TEXTURE_ALPHA_COLOR_BLEND, video::ECF_A1R5G5B5, video::ECF_A1R5G5B5, executeBlit_TextureBlendColor_16_to_16 },
-	{ BLITTER_TEXTURE_ALPHA_COLOR_BLEND, video::ECF_A8R8G8B8, video::ECF_A8R8G8B8, executeBlit_TextureBlendColor_32_to_32 },
-	{ BLITTER_COLOR, video::ECF_A1R5G5B5, -1, executeBlit_Color_16_to_16 },
-	{ BLITTER_COLOR, video::ECF_A8R8G8B8, -1, executeBlit_Color_32_to_32 },
-	{ BLITTER_COLOR_ALPHA, video::ECF_A1R5G5B5, -1, executeBlit_ColorAlpha_16_to_16 },
-	{ BLITTER_COLOR_ALPHA, video::ECF_A8R8G8B8, -1, executeBlit_ColorAlpha_32_to_32 },
-	{ BLITTER_INVALID, -1, -1, 0 }
-};
-
-static inline tExecuteBlit getBlitter2( eBlitter operation,const video::IImage * dest,const video::IImage * source )
-{
-	video::ECOLOR_FORMAT sourceFormat = (video::ECOLOR_FORMAT) ( source ? source->getColorFormat() : -1 );
-	video::ECOLOR_FORMAT destFormat = (video::ECOLOR_FORMAT) ( dest ? dest->getColorFormat() : -1 );
-
-	const blitterTable * b = blitTable;
-
-	while ( b->operation != BLITTER_INVALID )
-	{
-		if ( b->operation == operation )
-		{
-			if (( b->destFormat == -1 || b->destFormat == destFormat ) &&
-				( b->sourceFormat == -1 || b->sourceFormat == sourceFormat ) )
-					return b->func;
-			else
-			if ( b->destFormat == -2 && ( sourceFormat == destFormat ) )
-					return b->func;
-		}
-		b += 1;
-	}
-	return 0;
-}
-
-#if 0
-static tExecuteBlit getBlitter( eBlitter operation,const video::IImage * dest,const video::IImage * source )
-{
-	video::ECOLOR_FORMAT sourceFormat = (video::ECOLOR_FORMAT) -1;
-	video::ECOLOR_FORMAT destFormat = (video::ECOLOR_FORMAT) -1;
-
-	if ( source )
-		sourceFormat = source->getColorFormat ();
-
-	if ( dest )
-		destFormat = dest->getColorFormat();
-
-	switch ( operation )
-	{
-		case BLITTER_TEXTURE:
-		{
-			if ( sourceFormat == destFormat )
-				return executeBlit_TextureCopy_x_to_x;
-
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureCopy_32_to_16;
-
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_R8G8B8 )
-				return executeBlit_TextureCopy_24_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureCopy_16_to_32;
-
-			if ( destFormat == video::ECF_R8G8B8 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureCopy_16_to_24;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_R8G8B8 )
-				return executeBlit_TextureCopy_24_to_32;
-
-			if ( destFormat == video::ECF_R8G8B8 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureCopy_32_to_24;
-
-		} break;
-
-		case BLITTER_TEXTURE_ALPHA_BLEND:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureBlend_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureBlend_32_to_32;
-
-		} break;
-
-		case BLITTER_TEXTURE_ALPHA_COLOR_BLEND:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 && sourceFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_TextureBlendColor_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 && sourceFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_TextureBlendColor_32_to_32;
-		} break;
-
-		case BLITTER_COLOR:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_Color_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_Color_32_to_32;
-		} break;
-
-		case BLITTER_COLOR_ALPHA:
-		{
-			if ( destFormat == video::ECF_A1R5G5B5 )
-				return executeBlit_ColorAlpha_16_to_16;
-
-			if ( destFormat == video::ECF_A8R8G8B8 )
-				return executeBlit_ColorAlpha_32_to_32;
-
-		} break;
-
-		case BLITTER_INVALID:
-		break;
-	}
-/*
-	char buf[64];
-	sprintf( buf, "Blit: %d %d->%d unsupported",operation,sourceFormat,destFormat );
-	os::Printer::log(buf );
-*/
-	return 0;
-
-}
-#endif
-
-// bounce clipping to texture
-inline void setClip ( AbsRectangle &out, const core::rect<s32> *clip,
-					 const video::IImage * tex, s32 passnative )
-{
-	if ( clip && 0 == tex && passnative )
-	{
-		out.x0 = clip->UpperLeftCorner.X;
-		out.x1 = clip->LowerRightCorner.X;
-		out.y0 = clip->UpperLeftCorner.Y;
-		out.y1 = clip->LowerRightCorner.Y;
-		return;
-	}
-
-	const s32 w = tex ? tex->getDimension().Width : 0;
-	const s32 h = tex ? tex->getDimension().Height : 0;
-	if ( clip )
-	{
-		out.x0 = core::s32_clamp ( clip->UpperLeftCorner.X, 0, w );
-		out.x1 = core::s32_clamp ( clip->LowerRightCorner.X, out.x0, w );
-		out.y0 = core::s32_clamp ( clip->UpperLeftCorner.Y, 0, h );
-		out.y1 = core::s32_clamp ( clip->LowerRightCorner.Y, out.y0, h );
-	}
-	else
-	{
-		out.x0 = 0;
-		out.y0 = 0;
-		out.x1 = w;
-		out.y1 = h;
-	}
-
-}
-
-/*!
-	a generic 2D Blitter
-*/
-static s32 Blit(eBlitter operation,
-		video::IImage * dest,
-		const core::rect<s32> *destClipping,
-		const core::position2d<s32> *destPos,
-		video::IImage * const source,
-		const core::rect<s32> *sourceClipping,
-		u32 argb)
-{
-	tExecuteBlit blitter = getBlitter2( operation, dest, source );
-	if ( 0 == blitter )
-	{
-		return 0;
-	}
-
-	// Clipping
-	AbsRectangle sourceClip;
-	AbsRectangle destClip;
-	AbsRectangle v;
-
-	SBlitJob job;
-
-	setClip ( sourceClip, sourceClipping, source, 1 );
-	setClip ( destClip, destClipping, dest, 0 );
-
-	v.x0 = destPos ? destPos->X : 0;
-	v.y0 = destPos ? destPos->Y : 0;
-	v.x1 = v.x0 + ( sourceClip.x1 - sourceClip.x0 );
-	v.y1 = v.y0 + ( sourceClip.y1 - sourceClip.y0 );
-
-	if ( !intersect( job.Dest, destClip, v ) )
-		return 0;
-
-	job.width = job.Dest.x1 - job.Dest.x0;
-	job.height = job.Dest.y1 - job.Dest.y0;
-
-
-	job.Source.x0 = sourceClip.x0 + ( job.Dest.x0 - v.x0 );
-	job.Source.x1 = job.Source.x0 + job.width;
-
-	job.Source.y0 = sourceClip.y0 + ( job.Dest.y0 - v.y0 );
-	job.Source.y1 = job.Source.y0 + job.height;
-
-	job.argb = argb;
-
-	if ( source )
-	{
-		job.srcPitch = source->getPitch();
-		job.srcPixelMul = source->getBytesPerPixel();
-		job.src = (void*) ( (u8*) source->lock() + ( job.Source.y0 * job.srcPitch ) + ( job.Source.x0 * job.srcPixelMul ) );
-	}
-	else
-	{
-		// use srcPitch for color operation on dest
-		job.srcPitch = job.width * dest->getBytesPerPixel();
-	}
-
-	job.dstPitch = dest->getPitch();
-	job.dstPixelMul = dest->getBytesPerPixel();
-	job.dst = (void*) ( (u8*) dest->lock() + ( job.Dest.y0 * job.dstPitch ) + ( job.Dest.x0 * job.dstPixelMul ) );
-
-	blitter( &job );
-
-	if ( source )
-		source->unlock();
-
-	if ( dest )
-		dest->unlock();
-
-	return 1;
-}
-
-}
+#include "CBlit.h"
 
 namespace irr
 {
 namespace video
 {
 
-//! constructor
+//! Constructor of empty image
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 :Data(0), Size(size), Format(format), DeleteMemory(true)
 {
@@ -1045,16 +23,16 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 }
 
 
-//! constructor
+//! Constructor from raw data
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* data,
 			bool ownForeignMemory, bool deleteForeignMemory)
 : Data(0), Size(size), Format(format), DeleteMemory(deleteForeignMemory)
 {
 	if (ownForeignMemory)
 	{
-		Data = (void*)0xbadf00d;
+		Data = (u8*)0xbadf00d;
 		initData();
-		Data = data;
+		Data = (u8*)data;
 	}
 	else
 	{
@@ -1065,8 +43,7 @@ CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size, void* d
 }
 
 
-
-//! constructor
+//! Constructor from other image, with color conversion
 CImage::CImage(ECOLOR_FORMAT format, IImage* imageToCopy)
 : Data(0), Format(format), DeleteMemory(true)
 {
@@ -1077,13 +54,11 @@ CImage::CImage(ECOLOR_FORMAT format, IImage* imageToCopy)
 	initData();
 
 	// now copy data from other image
-
 	Blit ( BLITTER_TEXTURE, this, 0, 0, imageToCopy, 0,0 );
 }
 
 
-
-//! constructor
+//! Constructor from other image, partially
 CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
 		const core::dimension2d<u32>& size)
 	: Data(0), Size(0,0), DeleteMemory(true)
@@ -1101,19 +76,16 @@ CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
 }
 
 
-
 //! assumes format and size has been set and creates the rest
 void CImage::initData()
 {
-	setBitMasks();
-	BitsPerPixel = getBitsPerPixelFromFormat(Format);
-	BytesPerPixel = BitsPerPixel / 8;
+	BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
 
 	// Pitch should be aligned...
 	Pitch = BytesPerPixel * Size.Width;
 
 	if (!Data)
-		Data = new s8[Size.Height * Pitch];
+		Data = new u8[Size.Height * Pitch];
 }
 
 
@@ -1121,7 +93,7 @@ void CImage::initData()
 CImage::~CImage()
 {
 	if ( DeleteMemory )
-		delete [] (s8*)Data;
+		delete [] Data;
 }
 
 
@@ -1132,11 +104,10 @@ const core::dimension2d<u32>& CImage::getDimension() const
 }
 
 
-
 //! Returns bits per pixel.
 u32 CImage::getBitsPerPixel() const
 {
-	return BitsPerPixel;
+	return getBitsPerPixelFromFormat(Format);
 }
 
 
@@ -1147,13 +118,11 @@ u32 CImage::getBytesPerPixel() const
 }
 
 
-
 //! Returns image data size in bytes
 u32 CImage::getImageDataSizeInBytes() const
 {
 	return Pitch * Size.Height;
 }
-
 
 
 //! Returns image data size in pixels
@@ -1163,110 +132,105 @@ u32 CImage::getImageDataSizeInPixels() const
 }
 
 
-
 //! returns mask for red value of a pixel
 u32 CImage::getRedMask() const
 {
-	return RedMask;
+	switch(Format)
+	{
+	case ECF_A1R5G5B5:
+		return 0x1F<<10;
+	case ECF_R5G6B5:
+		return 0x1F<<11;
+	case ECF_R8G8B8:
+		return 0x00FF0000;
+	case ECF_A8R8G8B8:
+		return 0x00FF0000;
+	default:
+		return 0x0;
+	}
 }
-
 
 
 //! returns mask for green value of a pixel
 u32 CImage::getGreenMask() const
 {
-	return GreenMask;
+	switch(Format)
+	{
+	case ECF_A1R5G5B5:
+		return 0x1F<<5;
+	case ECF_R5G6B5:
+		return 0x3F<<5;
+	case ECF_R8G8B8:
+		return 0x0000FF00;
+	case ECF_A8R8G8B8:
+		return 0x0000FF00;
+	default:
+		return 0x0;
+	}
 }
-
 
 
 //! returns mask for blue value of a pixel
 u32 CImage::getBlueMask() const
 {
-	return BlueMask;
+	switch(Format)
+	{
+	case ECF_A1R5G5B5:
+		return 0x1F;
+	case ECF_R5G6B5:
+		return 0x1F;
+	case ECF_R8G8B8:
+		return 0x000000FF;
+	case ECF_A8R8G8B8:
+		return 0x000000FF;
+	default:
+		return 0x0;
+	}
 }
-
 
 
 //! returns mask for alpha value of a pixel
 u32 CImage::getAlphaMask() const
 {
-	return AlphaMask;
-}
-
-
-void CImage::setBitMasks()
-{
 	switch(Format)
 	{
 	case ECF_A1R5G5B5:
-		AlphaMask = 0x1<<15;
-		RedMask = 0x1F<<10;
-		GreenMask = 0x1F<<5;
-		BlueMask = 0x1F;
-	break;
+		return 0x1<<15;
 	case ECF_R5G6B5:
-		AlphaMask = 0x0;
-		RedMask = 0x1F<<11;
-		GreenMask = 0x3F<<5;
-		BlueMask = 0x1F;
-	break;
+		return 0x0;
 	case ECF_R8G8B8:
-		AlphaMask = 0x0;
-		RedMask   = 0x00FF0000;
-		GreenMask = 0x0000FF00;
-		BlueMask  = 0x000000FF;
-	break;
+		return 0x0;
 	case ECF_A8R8G8B8:
-		AlphaMask = 0xFF000000;
-		RedMask   = 0x00FF0000;
-		GreenMask = 0x0000FF00;
-		BlueMask  = 0x000000FF;
-	break;
+		return 0xFF000000;
+	default:
+		return 0x0;
 	}
 }
 
-
-u32 CImage::getBitsPerPixelFromFormat(ECOLOR_FORMAT format)
-{
-	switch(format)
-	{
-	case ECF_A1R5G5B5:
-		return 16;
-	case ECF_R5G6B5:
-		return 16;
-	case ECF_R8G8B8:
-		return 24;
-	case ECF_A8R8G8B8:
-		return 32;
-	}
-
-	return 0;
-}
 
 //! sets a pixel
-void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
+void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend)
 {
-	if (x >= (u32)Size.Width || y >= (u32)Size.Height)
+	if (x >= Size.Width || y >= Size.Height)
 		return;
 
 	switch(Format)
 	{
 		case ECF_A1R5G5B5:
 		{
-			u16 * dest = (u16*) ((u8*) Data + ( y * Pitch ) + ( x << 1 ));
+			u16 * dest = (u16*) (Data + ( y * Pitch ) + ( x << 1 ));
 			*dest = video::A8R8G8B8toA1R5G5B5( color.color );
 		} break;
 
 		case ECF_R5G6B5:
 		{
-			u16 * dest = (u16*) ((u8*) Data + ( y * Pitch ) + ( x << 1 ));
+			u16 * dest = (u16*) (Data + ( y * Pitch ) + ( x << 1 ));
 			*dest = video::A8R8G8B8toR5G6B5( color.color );
 		} break;
 
 		case ECF_R8G8B8:
 		{
-			u8* dest = (u8*) Data + ( y * Pitch ) + ( x * 3 );
+			u8* dest = Data + ( y * Pitch ) + ( x * 3 );
 			dest[0] = (u8)color.getRed();
 			dest[1] = (u8)color.getGreen();
 			dest[2] = (u8)color.getBlue();
@@ -1274,7 +238,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 
 		case ECF_A8R8G8B8:
 		{
-			u32 * dest = (u32*) ((u8*) Data + ( y * Pitch ) + ( x << 2 ));
+			u32 * dest = (u32*) (Data + ( y * Pitch ) + ( x << 2 ));
 			*dest = blend ? PixelBlend32 ( *dest, color.color ) : color.color;
 		} break;
 	}
@@ -1284,7 +248,7 @@ void CImage::setPixel(u32 x, u32 y, const SColor &color, bool blend )
 //! returns a pixel
 SColor CImage::getPixel(u32 x, u32 y) const
 {
-	if (x >= (u32)Size.Width || y >= (u32)Size.Height)
+	if (x >= Size.Width || y >= Size.Height)
 		return SColor(0);
 
 	switch(Format)
@@ -1297,7 +261,7 @@ SColor CImage::getPixel(u32 x, u32 y) const
 		return ((u32*)Data)[y*Size.Width + x];
 	case ECF_R8G8B8:
 		{
-			u8* p = &((u8*)Data)[(y*3)*Size.Width + (x*3)];
+			u8* p = Data+(y*3)*Size.Width + (x*3);
 			return SColor(255,p[0],p[1],p[2]);
 		}
 	}
@@ -1313,30 +277,21 @@ ECOLOR_FORMAT CImage::getColorFormat() const
 }
 
 
-//! draws a rectangle
-void CImage::drawRectangle(const core::rect<s32>& rect, const SColor &color)
-{
-	Blit(color.getAlpha() == 0xFF ? BLITTER_COLOR : BLITTER_COLOR_ALPHA,
-			this, 0, &rect.UpperLeftCorner, 0, &rect, color.color);
-}
-
-
-//! copies this surface into another
+//! copies this surface into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos)
 {
 	Blit(BLITTER_TEXTURE, target, 0, &pos, this, 0, 0);
 }
 
 
-//! copies this surface into another
+//! copies this surface partially into another at given position
 void CImage::copyTo(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect)
 {
 	Blit(BLITTER_TEXTURE, target, clipRect, &pos, this, &sourceRect, 0);
 }
 
 
-
-//! copies this surface into another, using the alpha mask, an cliprect and a color to add with
+//! copies this surface into another, using the alpha mask, a cliprect and a color to add with
 void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, const core::rect<s32>& sourceRect, const SColor &color, const core::rect<s32>* clipRect)
 {
 	// color blend only necessary on not full spectrum aka. color.color != 0xFFFFFFFF
@@ -1345,52 +300,8 @@ void CImage::copyToWithAlpha(IImage* target, const core::position2d<s32>& pos, c
 }
 
 
-
-//! draws a line from to with color
-void CImage::drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color)
-{
-	AbsRectangle clip;
-	GetClip( clip, this );
-
-	core::position2d<s32> p[2];
-
-	if ( ClipLine( clip, p[0], p[1], from, to ) )
-	{
-		u32 alpha = extractAlpha( color.color );
-
-		switch ( Format )
-		{
-			case ECF_A1R5G5B5:
-				if ( alpha == 256 )
-				{
-					RenderLine16_Decal( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ) );
-				}
-				else
-				{
-					RenderLine16_Blend( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ), alpha >> 3 );
-				}
-				break;
-			case ECF_A8R8G8B8:
-				if ( alpha == 256 )
-				{
-					RenderLine32_Decal( this, p[0], p[1], color.color );
-				}
-				else
-				{
-					RenderLine32_Blend( this, p[0], p[1], color.color, alpha );
-				}
-				break;
-			default:
-				break;
-		}
-	}
-}
-
-
-
 //! copies this surface into another, scaling it to the target image size
-// note: this is very very slow. (i didn't want to write a fast version.
-// but hopefully, nobody wants to scale surfaces every frame.
+// note: this is very very slow.
 void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format, u32 pitch)
 {
 	if (!target || !width || !height)
@@ -1410,7 +321,7 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 		else
 		{
 			u8* tgtpos = (u8*) target;
-			u8* srcpos = (u8*) Data;
+			u8* srcpos = Data;
 			const u32 bwidth = width*bpp;
 			const u32 rest = pitch-bwidth;
 			for (u32 y=0; y<height; ++y)
@@ -1435,7 +346,7 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 		f32 sx = 0.0f;
 		for (u32 x=0; x<width; ++x)
 		{
-			CColorConverter::convert_viaFormat(((u8*)Data)+ syval + ((s32)sx)*BytesPerPixel, Format, 1, ((u8*)target)+ yval + (x*bpp), format);
+			CColorConverter::convert_viaFormat(Data+ syval + ((s32)sx)*BytesPerPixel, Format, 1, ((u8*)target)+ yval + (x*bpp), format);
 			sx+=sourceXStep;
 		}
 		sy+=sourceYStep;
@@ -1444,9 +355,9 @@ void CImage::copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT fo
 	}
 }
 
+
 //! copies this surface into another, scaling it to the target image size
-// note: this is very very slow. (i didn't want to write a fast version.
-// but hopefully, nobody wants to scale surfaces every frame.
+// note: this is very very slow.
 void CImage::copyToScaling(IImage* target)
 {
 	if (!target)
@@ -1463,6 +374,7 @@ void CImage::copyToScaling(IImage* target)
 	copyToScaling(target->lock(), targetSize.Width, targetSize.Height, target->getColorFormat());
 	target->unlock();
 }
+
 
 //! copies this surface into another, scaling it to fit it.
 void CImage::copyToScalingBoxFilter(IImage* target, s32 bias, bool blend)
@@ -1504,7 +416,7 @@ void CImage::fill(const SColor &color)
 	switch ( Format )
 	{
 		case ECF_A1R5G5B5:
-			c = video::A8R8G8B8toA1R5G5B5( color.color );
+			c = color.toA1R5G5B5();
 			c |= c << 16;
 			break;
 		case ECF_R5G6B5:
@@ -1514,10 +426,22 @@ void CImage::fill(const SColor &color)
 		case ECF_A8R8G8B8:
 			c = color.color;
 			break;
-		default:
-//			os::Printer::log("CImage::Format not supported", ELL_ERROR);
+		case ECF_R8G8B8:
+		{
+			u8 rgb[3];
+			CColorConverter::convert_A8R8G8B8toR8G8B8(&color, 1, rgb);
+			const u32 size = getImageDataSizeInBytes();
+			for (u32 i=0; i<size; i+=3)
+			{
+				memcpy(Data+i, rgb, 3);
+			}
 			return;
+		}
+		break;
 	}
+	if (Format != ECF_A1R5G5B5 && Format != ECF_R5G6B5 &&
+			Format != ECF_A8R8G8B8)
+		return;
 
 	memset32( Data, c, getImageDataSizeInBytes() );
 }
@@ -1554,6 +478,56 @@ inline SColor CImage::getPixelBox( s32 x, s32 y, s32 fx, s32 fy, s32 bias ) cons
 
 	c.set( a, r, g, b );
 	return c;
+}
+
+
+// Methods for Software drivers, non-virtual and not necessary to copy into other image classes
+//! draws a rectangle
+void CImage::drawRectangle(const core::rect<s32>& rect, const SColor &color)
+{
+	Blit(color.getAlpha() == 0xFF ? BLITTER_COLOR : BLITTER_COLOR_ALPHA,
+			this, 0, &rect.UpperLeftCorner, 0, &rect, color.color);
+}
+
+
+//! draws a line from to with color
+void CImage::drawLine(const core::position2d<s32>& from, const core::position2d<s32>& to, const SColor &color)
+{
+	AbsRectangle clip;
+	GetClip( clip, this );
+
+	core::position2d<s32> p[2];
+
+	if ( ClipLine( clip, p[0], p[1], from, to ) )
+	{
+		u32 alpha = extractAlpha( color.color );
+
+		switch ( Format )
+		{
+			case ECF_A1R5G5B5:
+				if ( alpha == 256 )
+				{
+					RenderLine16_Decal( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ) );
+				}
+				else
+				{
+					RenderLine16_Blend( this, p[0], p[1], video::A8R8G8B8toA1R5G5B5( color.color ), alpha >> 3 );
+				}
+				break;
+			case ECF_A8R8G8B8:
+				if ( alpha == 256 )
+				{
+					RenderLine32_Decal( this, p[0], p[1], color.color );
+				}
+				else
+				{
+					RenderLine32_Blend( this, p[0], p[1], color.color, alpha );
+				}
+				break;
+			default:
+				break;
+		}
+	}
 }
 
 

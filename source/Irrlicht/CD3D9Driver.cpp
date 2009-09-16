@@ -31,8 +31,10 @@ CD3D9Driver::CD3D9Driver(const core::dimension2d<u32>& screenSize, HWND window,
 	StencilBuffer(stencilbuffer), AntiAliasing(0),
 	D3DLibrary(0), pID3D(0), pID3DDevice(0), PrevRenderTarget(0),
 	WindowId(0), SceneSourceRect(0),
-	LastVertexType((video::E_VERTEX_TYPE)-1), MaxTextureUnits(0), MaxUserClipPlanes(0),
-	MaxLightDistance(0.f), LastSetLight(-1), ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
+	LastVertexType((video::E_VERTEX_TYPE)-1), VendorID(0),
+	MaxTextureUnits(0), MaxUserClipPlanes(0),
+	MaxLightDistance(0.f), LastSetLight(-1), Cached2DModeSignature(0),
+	ColorFormat(ECF_A8R8G8B8), DeviceLost(false),
 	Fullscreen(fullscreen), DriverWasReset(true), AlphaToCoverageSupport(false)
 {
 	#ifdef _DEBUG
@@ -408,7 +410,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 	setVertexShader(EVT_STANDARD);
 
 	// set fog mode
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
 	// set exposed data
 	ExposedData.D3D9.D3D9 = pID3D;
@@ -433,7 +435,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		AlphaToCoverageSupport = (pID3D->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
 				D3DFMT_X8R8G8B8, 0,D3DRTYPE_SURFACE,
 				(D3DFORMAT)MAKEFOURCC('A','2','M','1')) == S_OK);
-#endif	
+#endif
 	// set the renderstates
 	setRenderStates3DMode();
 
@@ -648,20 +650,20 @@ void CD3D9Driver::setTransform(E_TRANSFORMATION_STATE state,
 	case ETS_PROJECTION:
 		pID3DDevice->SetTransform( D3DTS_PROJECTION, (D3DMATRIX*)((void*)mat.pointer()));
 		break;
-	case ETS_TEXTURE_0:
-	case ETS_TEXTURE_1:
-	case ETS_TEXTURE_2:
-	case ETS_TEXTURE_3:
-		if (mat.isIdentity())
-			pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
-		else
-		{
-			pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
-			pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
-				(D3DMATRIX*)((void*)mat.pointer()));
-		}
-		break;
 	case ETS_COUNT:
+		return;
+	default:
+		if (state-ETS_TEXTURE_0 < MATERIAL_MAX_TEXTURES)
+		{
+			if (mat.isIdentity())
+				pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );
+			else
+			{
+				pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
+				pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
+					(D3DMATRIX*)((void*)mat.pointer()));
+			}
+		}
 		break;
 	}
 
@@ -712,7 +714,7 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const core::string<c16>& name)
+video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
 {
 	return new CD3D9Texture(surface, this, TextureCreationFlags, name);
 }
@@ -1117,6 +1119,35 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices,
 	if (!vertexCount || !primitiveCount)
 		return;
 
+	draw2D3DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount,
+		vType, pType, iType, true);
+}
+
+
+//! draws a vertex primitive list
+void CD3D9Driver::draw2DVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType)
+{
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType,iType);
+
+	if (!vertexCount || !primitiveCount)
+		return;
+
+	draw2D3DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount,
+		vType, pType, iType, false);
+}
+
+
+void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType, bool is3D)
+{
 	setVertexShader(vType);
 
 	const u32 stride = getVertexPitchFromType(vType);
@@ -1136,100 +1167,106 @@ void CD3D9Driver::drawVertexPrimitiveList(const void* vertices,
 		}
 	}
 
-	if (setRenderStates3DMode())
+	if (is3D)
 	{
-		switch (pType)
+	       	if (!setRenderStates3DMode())
+			return;
+	}
+	else
+		setRenderStates2DMode(true, (Material.getTexture(0) != 0), true);
+
+	switch (pType)
+	{
+		case scene::EPT_POINT_SPRITES:
+		case scene::EPT_POINTS:
 		{
-			case scene::EPT_POINT_SPRITES:
-			case scene::EPT_POINTS:
+			f32 tmp=Material.Thickness/getScreenSize().Height;
+			if (pType==scene::EPT_POINT_SPRITES)
+				pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&tmp));
+			tmp=1.0f;
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
+			tmp=0.0f;
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
+
+			if (!vertices)
 			{
-				if (pType==scene::EPT_POINT_SPRITES)
-					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&Material.Thickness));
-				f32 tmp=1.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
-				tmp=0.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
-
-				if (!vertices)
-				{
-					pID3DDevice->DrawIndexedPrimitive(D3DPT_POINTLIST, 0, 0, vertexCount, 0, primitiveCount);
-				}
-				else
-				{
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
-					primitiveCount, indexList, indexType, vertices, stride);
-				}
-
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
-				if (pType==scene::EPT_POINT_SPRITES)
-					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+				pID3DDevice->DrawIndexedPrimitive(D3DPT_POINTLIST, 0, 0, vertexCount, 0, primitiveCount);
 			}
-				break;
-			case scene::EPT_LINE_STRIP:
-				if(!vertices)
-					pID3DDevice->DrawIndexedPrimitive(D3DPT_LINESTRIP, 0, 0, vertexCount, 0, primitiveCount);
-				else
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-						primitiveCount, indexList, indexType, vertices, stride);
-				break;
-			case scene::EPT_LINE_LOOP:
-				if(!vertices)
-				{
-					// TODO: Implement proper hardware support for this primitive type.
-					// (No looping occurs currently because this would require a way to
-					// draw the hardware buffer with a custom set of indices. We may even
-					// need to create a new mini index buffer specifically for this
-					// primitive type.)
-					pID3DDevice->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, vertexCount, 0, primitiveCount);
-				}
-				else
-				{
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-					primitiveCount, indexList, indexType, vertices, stride);
+			else
+			{
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+			}
 
-					u16 tmpIndices[] = {0, primitiveCount};
-
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-						1, tmpIndices, indexType, vertices, stride);
-				}
-				break;
-			case scene::EPT_LINES:
-				if(!vertices)
-					pID3DDevice->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, vertexCount, 0, primitiveCount);
-				else
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-						primitiveCount, indexList, indexType, vertices, stride);
-				break;
-			case scene::EPT_TRIANGLE_STRIP:
-				if(!vertices)
-					pID3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, vertexCount, 0, primitiveCount);
-				else
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount, primitiveCount,
-							indexList, indexType, vertices, stride);
-				break;
-			case scene::EPT_TRIANGLE_FAN:
-				if(!vertices)
-					pID3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLEFAN, 0, 0, vertexCount, 0, primitiveCount);
-				else
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount, primitiveCount,
-							indexList, indexType, vertices, stride);
-					break;
-			case scene::EPT_TRIANGLES:
-				if(!vertices)
-				{
-					pID3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vertexCount, 0, primitiveCount);
-				}
-				else
-				{
-					pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
-						primitiveCount, indexList, indexType, vertices, stride);
-				}
-				break;
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
+			if (pType==scene::EPT_POINT_SPRITES)
+				pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
 		}
+			break;
+		case scene::EPT_LINE_STRIP:
+			if(!vertices)
+				pID3DDevice->DrawIndexedPrimitive(D3DPT_LINESTRIP, 0, 0, vertexCount, 0, primitiveCount);
+			else
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+					primitiveCount, indexList, indexType, vertices, stride);
+			break;
+		case scene::EPT_LINE_LOOP:
+			if(!vertices)
+			{
+				// TODO: Implement proper hardware support for this primitive type.
+				// (No looping occurs currently because this would require a way to
+				// draw the hardware buffer with a custom set of indices. We may even
+				// need to create a new mini index buffer specifically for this
+				// primitive type.)
+				pID3DDevice->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, vertexCount, 0, primitiveCount);
+			}
+			else
+			{
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+
+				u16 tmpIndices[] = {0, primitiveCount};
+
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+					1, tmpIndices, indexType, vertices, stride);
+			}
+			break;
+		case scene::EPT_LINES:
+			if(!vertices)
+				pID3DDevice->DrawIndexedPrimitive(D3DPT_LINELIST, 0, 0, vertexCount, 0, primitiveCount);
+			else
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+					primitiveCount, indexList, indexType, vertices, stride);
+			break;
+		case scene::EPT_TRIANGLE_STRIP:
+			if(!vertices)
+				pID3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP, 0, 0, vertexCount, 0, primitiveCount);
+			else
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount, primitiveCount,
+						indexList, indexType, vertices, stride);
+			break;
+		case scene::EPT_TRIANGLE_FAN:
+			if(!vertices)
+				pID3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLEFAN, 0, 0, vertexCount, 0, primitiveCount);
+			else
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount, primitiveCount,
+						indexList, indexType, vertices, stride);
+				break;
+		case scene::EPT_TRIANGLES:
+			if(!vertices)
+			{
+				pID3DDevice->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, vertexCount, 0, primitiveCount);
+			}
+			else
+			{
+				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
+					primitiveCount, indexList, indexType, vertices, stride);
+			}
+			break;
 	}
 }
 
@@ -1303,6 +1340,152 @@ void CD3D9Driver::draw2DImage(const video::ITexture* texture,
 
 	if (clipRect)
 		pID3DDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+}
+
+
+void CD3D9Driver::draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect,
+				SColor color,
+				bool useAlphaChannelOfTexture)
+{
+	if (!texture)
+		return;
+
+	if (!setActiveTexture(0, const_cast<video::ITexture*>(texture)))
+		return;
+
+	const irr::u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
+
+	core::array<S3DVertex> vtx(drawCount * 4);
+	core::array<u16> indices(drawCount * 6);
+
+	for(u32 i = 0;i < drawCount;i++)
+	{
+		core::position2d<s32> targetPos = positions[i];
+		core::position2d<s32> sourcePos = sourceRects[i].UpperLeftCorner;
+		// This needs to be signed as it may go negative.
+		core::dimension2d<s32> sourceSize(sourceRects[i].getSize());
+
+		if (clipRect)
+		{
+			if (targetPos.X < clipRect->UpperLeftCorner.X)
+			{
+				sourceSize.Width += targetPos.X - clipRect->UpperLeftCorner.X;
+				if (sourceSize.Width <= 0)
+					continue;
+
+				sourcePos.X -= targetPos.X - clipRect->UpperLeftCorner.X;
+				targetPos.X = clipRect->UpperLeftCorner.X;
+			}
+
+			if (targetPos.X + (s32)sourceSize.Width > clipRect->LowerRightCorner.X)
+			{
+				sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
+				if (sourceSize.Width <= 0)
+					continue;
+			}
+
+			if (targetPos.Y < clipRect->UpperLeftCorner.Y)
+			{
+				sourceSize.Height += targetPos.Y - clipRect->UpperLeftCorner.Y;
+				if (sourceSize.Height <= 0)
+					continue;
+
+				sourcePos.Y -= targetPos.Y - clipRect->UpperLeftCorner.Y;
+				targetPos.Y = clipRect->UpperLeftCorner.Y;
+			}
+
+			if (targetPos.Y + (s32)sourceSize.Height > clipRect->LowerRightCorner.Y)
+			{
+				sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
+				if (sourceSize.Height <= 0)
+					continue;
+			}
+		}
+
+		// clip these coordinates
+
+		if (targetPos.X<0)
+		{
+			sourceSize.Width += targetPos.X;
+			if (sourceSize.Width <= 0)
+				continue;
+
+			sourcePos.X -= targetPos.X;
+			targetPos.X = 0;
+		}
+
+		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+
+		if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
+		{
+			sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
+			if (sourceSize.Width <= 0)
+				continue;
+		}
+
+		if (targetPos.Y<0)
+		{
+			sourceSize.Height += targetPos.Y;
+			if (sourceSize.Height <= 0)
+				continue;
+
+			sourcePos.Y -= targetPos.Y;
+			targetPos.Y = 0;
+		}
+
+		if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
+		{
+			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
+			if (sourceSize.Height <= 0)
+				continue;
+		}
+
+		// ok, we've clipped everything.
+		// now draw it.
+
+		core::rect<f32> tcoords;
+		tcoords.UpperLeftCorner.X = (((f32)sourcePos.X)) / texture->getOriginalSize().Width ;
+		tcoords.UpperLeftCorner.Y = (((f32)sourcePos.Y)) / texture->getOriginalSize().Height;
+		tcoords.LowerRightCorner.X = tcoords.UpperLeftCorner.X + ((f32)(sourceSize.Width) / texture->getOriginalSize().Width);
+		tcoords.LowerRightCorner.Y = tcoords.UpperLeftCorner.Y + ((f32)(sourceSize.Height) / texture->getOriginalSize().Height);
+
+		const core::rect<s32> poss(targetPos, sourceSize);
+
+		setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
+
+		vtx.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y));
+		vtx.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.UpperLeftCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y));
+		vtx.push_back(S3DVertex((f32)poss.LowerRightCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y));
+		vtx.push_back(S3DVertex((f32)poss.UpperLeftCorner.X, (f32)poss.LowerRightCorner.Y, 0.0f,
+				0.0f, 0.0f, 0.0f, color,
+				tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y));
+
+		const u32 curPos = vtx.size()-4;
+		indices.push_back(0+curPos);
+		indices.push_back(1+curPos);
+		indices.push_back(2+curPos);
+
+		indices.push_back(0+curPos);
+		indices.push_back(2+curPos);
+		indices.push_back(3+curPos);
+	}
+
+	if (vtx.size())
+	{
+		setVertexShader(EVT_STANDARD);
+
+		pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vtx.size(), indices.size() / 3, indices.pointer(),
+			D3DFMT_INDEX16,vtx.pointer(), sizeof(S3DVertex));
+	}
 }
 
 
@@ -1760,7 +1943,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 	if (queryFeature(EVDF_COLOR_MASK) &&
 		(resetAllRenderstates || lastmaterial.ColorMask != material.ColorMask))
 	{
-		const DWORD flag = 
+		const DWORD flag =
 			((material.ColorMask & ECP_RED)?D3DCOLORWRITEENABLE_RED:0) |
 			((material.ColorMask & ECP_GREEN)?D3DCOLORWRITEENABLE_GREEN:0) |
 			((material.ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
@@ -1786,7 +1969,7 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			else if (VendorID==0x1002)
 				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, MAKEFOURCC('A','2','M','0'));
 		}
-			
+
 		// enable antialiasing
 		if (AntiAliasing)
 		{
@@ -2028,9 +2211,7 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 			SMaterial mat;
 			mat.ZBuffer=ECFN_NEVER;
 			mat.Lighting=false;
-			mat.FrontfaceCulling=false;
-			mat.BackfaceCulling=true;
-			mat.TextureLayer[0].TextureWrap=ETC_REPEAT;
+			mat.AntiAliasing=video::EAAM_OFF;
 			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);
 			// fix everything that is wrongly set by SMaterial default
@@ -2061,69 +2242,78 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		Transformation3DChanged = false;
 	}
 
-	if (texture)
+	u32 current2DSignature = 0;
+	current2DSignature |= alpha ? EC2D_ALPHA : 0;
+	current2DSignature |= texture ? EC2D_TEXTURE : 0;
+	current2DSignature |= alphaChannel ? EC2D_ALPHA_CHANNEL : 0;
+
+	if(CurrentRenderMode != ERM_2D || current2DSignature != Cached2DModeSignature)
 	{
-		if (alphaChannel)
+		if (texture)
 		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-			pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
+			if (alphaChannel)
+			{
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 
-			if (alpha)
-			{
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-			}
-			else
-			{
-				pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
-			}
+				if (alpha)
+				{
+					pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
+					pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+				}
+				else
+				{
+					pID3DDevice->SetTextureStageState (0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
+				}
 
-			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		}
-		else
-		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-			if (alpha)
-			{
-				pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
 			}
 			else
 			{
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+				if (alpha)
+				{
+					pID3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+					pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+					pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+					pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+				}
+				else
+				{
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+					pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+					pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+				}
+			}
+		}
+		else
+		{
+			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
+			pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
+			if (alpha)
+			{
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
+				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+				pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
+			}
+			else
+			{
 				pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 				pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 			}
 		}
 	}
-	else
-	{
-		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-		pID3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-		if (alpha)
-		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
-			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			pID3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			pID3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-		}
-		else
-		{
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-		}
-	}
 
 	CurrentRenderMode = ERM_2D;
+	Cached2DModeSignature = current2DSignature;
 }
 
 
@@ -2315,10 +2505,10 @@ u32 CD3D9Driver::getMaximalPrimitiveCount() const
 
 
 //! Sets the fog mode.
-void CD3D9Driver::setFog(SColor color, bool linearFog, f32 start,
+void CD3D9Driver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 	f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
 
 	if (!pID3DDevice)
 		return;
@@ -2327,9 +2517,9 @@ void CD3D9Driver::setFog(SColor color, bool linearFog, f32 start,
 
 	pID3DDevice->SetRenderState(
 		pixelFog ? D3DRS_FOGTABLEMODE : D3DRS_FOGVERTEXMODE,
-		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
+		(fogType==EFT_FOG_LINEAR)? D3DFOG_LINEAR : (fogType==EFT_FOG_EXP)?D3DFOG_EXP:D3DFOG_EXP2);
 
-	if(linearFog)
+	if (fogType==EFT_FOG_LINEAR)
 	{
 		pID3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&start));
 		pID3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&end));
@@ -2386,28 +2576,42 @@ bool CD3D9Driver::reset()
 
 	HRESULT hr = pID3DDevice->Reset(&present);
 
-	// restore screen depthbuffer
-	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
-	D3DSURFACE_DESC desc;
-	DepthBuffers[0]->Surface->GetDesc(&desc);
-	// restore other depth buffers
-	for (i=1; i<DepthBuffers.size(); ++i)
-	{
-		HRESULT hr=pID3DDevice->CreateDepthStencilSurface(DepthBuffers[i]->Size.Width,
-				DepthBuffers[i]->Size.Height,
-				desc.Format,
-				desc.MultiSampleType,
-				desc.MultiSampleQuality,
-				TRUE,
-				&(DepthBuffers[i]->Surface),
-				NULL);
-	}
-
 	// restore RTTs
 	for (i=0; i<Textures.size(); ++i)
 	{
 		if (Textures[i].Surface->isRenderTarget())
 			((CD3D9Texture*)(Textures[i].Surface))->createRenderTarget();
+	}
+
+	// restore screen depthbuffer
+	pID3DDevice->GetDepthStencilSurface(&(DepthBuffers[0]->Surface));
+	D3DSURFACE_DESC desc;
+	// restore other depth buffers
+	// dpeth format is taken from main depth buffer
+	DepthBuffers[0]->Surface->GetDesc(&desc);
+	// multisampling is taken from rendertarget
+	D3DSURFACE_DESC desc2;
+	for (i=1; i<DepthBuffers.size(); ++i)
+	{
+		for (u32 j=0; j<Textures.size(); ++j)
+		{
+			// all textures sharing this depth buffer must have the same setting
+			// so take first one
+			if (((CD3D9Texture*)(Textures[j].Surface))->DepthSurface==DepthBuffers[i])
+			{
+				((CD3D9Texture*)(Textures[j].Surface))->Texture->GetLevelDesc(0,&desc2);
+				break;
+			}
+		}
+
+		pID3DDevice->CreateDepthStencilSurface(DepthBuffers[i]->Size.Width,
+				DepthBuffers[i]->Size.Height,
+				desc.Format,
+				desc2.MultiSampleType,
+				desc2.MultiSampleQuality,
+				TRUE,
+				&(DepthBuffers[i]->Surface),
+				NULL);
 	}
 
 	if (FAILED(hr))
@@ -2455,7 +2659,7 @@ bool CD3D9Driver::reset()
 
 	setVertexShader(EVT_STANDARD);
 	setRenderStates3DMode();
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 	setAmbientLight(AmbientLight);
 
 	return true;
@@ -2596,7 +2800,7 @@ IVideoDriver* CD3D9Driver::getVideoDriver()
 
 //! Creates a render target texture.
 ITexture* CD3D9Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-											  const core::string<c16>& name,
+											  const io::path& name,
 											  const ECOLOR_FORMAT format)
 {
 	ITexture* tex = new CD3D9Texture(this, size, name, format);
@@ -2854,12 +3058,15 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 	{
 		D3DSURFACE_DESC desc;
 		DepthBuffers[0]->Surface->GetDesc(&desc);
+		// the multisampling needs to match the RTT
+		D3DSURFACE_DESC desc2;
+		((CD3D9Texture*)tex)->Texture->GetLevelDesc(0,&desc2);
 		DepthBuffers.push_back(new SDepthSurface());
 		HRESULT hr=pID3DDevice->CreateDepthStencilSurface(optSize.Width,
 				optSize.Height,
 				desc.Format,
-				desc.MultiSampleType,
-				desc.MultiSampleQuality,
+				desc2.MultiSampleType,
+				desc2.MultiSampleQuality,
 				TRUE,
 				&(DepthBuffers.getLast()->Surface),
 				NULL);
@@ -2878,7 +3085,7 @@ void CD3D9Driver::checkDepthBuffer(ITexture* tex)
 			else
 			{
 				char buffer[128];
-				sprintf(buffer,"Could not create DepthBuffer of %ix%i",destSize.Width,destSize.Height);
+				sprintf(buffer,"Could not create DepthBuffer of %ix%i",optSize.Width,optSize.Height);
 				os::Printer::log(buffer,ELL_ERROR);
 			}
 			DepthBuffers.erase(DepthBuffers.size()-1);

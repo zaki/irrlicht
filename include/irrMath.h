@@ -8,7 +8,9 @@
 #include "IrrCompileConfig.h"
 #include "irrTypes.h"
 #include <math.h>
+#include <float.h>
 #include <stdlib.h> // for abs() etc.
+#include <limits.h> // For INT_MAX / UINT_MAX
 
 #if defined(_IRR_SOLARIS_PLATFORM_) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) || defined (_WIN32_WCE)
 	#define sqrtf(X) (f32)sqrt((f64)(X))
@@ -23,6 +25,10 @@
 	#define fmodf(X,Y) (f32)fmod((f64)(X),(f64)(Y))
 	#define fabsf(X) (f32)fabs((f64)(X))
 	#define logf(X) (f32)log((f64)(X))
+#endif
+
+#ifndef FLT_MAX
+#define FLT_MAX 3.402823466E+38F
 #endif
 
 namespace irr
@@ -444,6 +450,7 @@ namespace core
 	// calculate: 1 / x
 	REALINLINE f32 reciprocal( const f32 f )
 	{
+		_IRR_DEBUG_BREAK_IF(f==0.f); //divide by zero
 #if defined (IRRLICHT_FAST_MATH)
 
 		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
@@ -477,6 +484,7 @@ namespace core
 	// calculate: 1 / x
 	REALINLINE f64 reciprocal ( const f64 f )
 	{
+		_IRR_DEBUG_BREAK_IF(f==0.); //divide by zero
 		return 1.0 / f;
 	}
 
@@ -484,6 +492,7 @@ namespace core
 	// calculate: 1 / x, low precision allowed
 	REALINLINE f32 reciprocal_approxim ( const f32 f )
 	{
+		_IRR_DEBUG_BREAK_IF(f==0.f); //divide by zero
 #if defined( IRRLICHT_FAST_MATH)
 
 		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
@@ -632,6 +641,11 @@ namespace core
 
 } // end namespace core
 } // end namespace irr
+
+#ifndef IRRLICHT_FAST_MATH
+	using irr::core::IR;
+	using irr::core::FR;
+#endif
 
 #endif
 

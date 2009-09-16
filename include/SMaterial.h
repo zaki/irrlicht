@@ -8,6 +8,7 @@
 #include "SColor.h"
 #include "matrix4.h"
 #include "irrArray.h"
+#include "irrMath.h"
 #include "EMaterialTypes.h"
 #include "EMaterialFlags.h"
 #include "SMaterialLayer.h"
@@ -82,17 +83,34 @@ namespace video
 		ECP_ALL=15
 	};
 
-	//! EMT_ONETEXTURE_BLEND: pack srcFact & dstFact and Modulo to MaterialTypeParam
-	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate )
+	//! Source of the alpha value to take
+	/** This is currently only supported in EMT_ONETEXTURE_BLEND. You can use an
+	or'ed combination of values. Alpha values are modulated (multiplicated). */
+	enum E_ALPHA_SOURCE
 	{
-		return (f32)(modulate << 16 | srcFact << 8 | dstFact);
+		//! Use no alpha, somewhat redundant with other settings
+		EAS_NONE=0,
+		//! Use vertex color alpha
+		EAS_VERTEX_COLOR,
+		//! Use texture alpha channel
+		EAS_TEXTURE
+	};
+
+	//! EMT_ONETEXTURE_BLEND: pack srcFact, dstFact, Modulate and alpha source to MaterialTypeParam
+	/** alpha source can be an OR'ed combination of E_ALPHA_SOURCE values. */
+	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
+	{
+		const u32 tmp = (alphaSource << 24) | (modulate << 16) | (srcFact << 8) | dstFact;
+		return FR(tmp);
 	}
 
 	//! EMT_ONETEXTURE_BLEND: unpack srcFact & dstFact and Modulo to MaterialTypeParam
+	/** The fields don't use the full byte range, so we could pack even more... */
 	inline void unpack_texureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
-			E_MODULATE_FUNC &modulo, const f32 param )
+			E_MODULATE_FUNC &modulo, u32& alphaSource, const f32 param )
 	{
-		const u32 state = (u32)param;
+		const u32 state = IR(param);
+		alphaSource = (state & 0xFF000000) >> 24;
 		modulo	= E_MODULATE_FUNC( ( state & 0x00FF0000 ) >> 16 );
 		srcFact = E_BLEND_FACTOR ( ( state & 0x0000FF00 ) >> 8 );
 		dstFact = E_BLEND_FACTOR ( ( state & 0x000000FF ) );
@@ -165,7 +183,7 @@ namespace video
 	};
 
 	//! Maximum number of texture an SMaterial can have.
-	const u32 MATERIAL_MAX_TEXTURES = 4;
+	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;
 
 	//! Struct for holding parameters for a material renderer
 	class SMaterial

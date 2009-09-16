@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_STL_LOADER_
 
@@ -23,7 +23,7 @@ namespace scene
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".bsp")
-bool CSTLMeshFileLoader::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CSTLMeshFileLoader::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "stl" );
 }
@@ -165,20 +165,6 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* file)
 	mesh->drop();
 
 	return pAM;
-}
-
-
-//! Read RGB color
-const c8* CSTLMeshFileLoader::readColor(const c8* bufPtr, video::SColor& color, const c8* const pBufEnd) const
-{
-	const u32 COLOR_BUFFER_LENGTH = 16;
-	c8 colStr[COLOR_BUFFER_LENGTH];
-
-	color.setAlpha(255);
-	color.setRed((s32)(core::fast_atof(colStr) * 255.0f));
-	color.setGreen((s32)(core::fast_atof(colStr) * 255.0f));
-	color.setBlue((s32)(core::fast_atof(colStr) * 255.0f));
-	return bufPtr;
 }
 
 

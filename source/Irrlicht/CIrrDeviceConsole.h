@@ -2,14 +2,13 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-
 #ifndef __C_IRR_DEVICE_CONSOLE_H_INCLUDED__
 #define __C_IRR_DEVICE_CONSOLE_H_INCLUDED__
 
 #include "IrrCompileConfig.h"
-#ifdef _IRR_USE_CONSOLE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 
-#define _IRR_USE_CONSOLE_FONT_
+//#define _IRR_USE_CONSOLE_FONT_
 
 #include "SIrrCreationParameters.h"
 #include "CIrrDeviceStub.h"
@@ -80,6 +79,18 @@ namespace irr
 
 		//! Minimizes the window.
 		virtual void minimizeWindow();
+
+		//! Maximizes the window.
+		virtual void maximizeWindow();
+
+		//! Restores the window size.
+		virtual void restoreWindow();
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_CONSOLE;
+		}
 
 		void addPostPresentText(s16 X, s16 Y, const wchar_t *text);
 
@@ -180,7 +191,7 @@ namespace irr
 					UseReferenceRect = false;
 			}
 
-			
+
 			//! Updates the internal cursor position
 			void setInternalCursorPosition(const core::position2di &pos)
 			{
@@ -195,7 +206,7 @@ namespace irr
 			core::position2d<s32>  CursorPos;
 			core::dimension2d<u32> WindowSize;
 			core::dimension2d<f32> InvWindowSize;
-			bool                   IsVisible, 
+			bool                   IsVisible,
 			                       UseReferenceRect;
 			core::rect<s32>        ReferenceRect;
 		};
@@ -205,7 +216,7 @@ namespace irr
 		//! Set the position of the text caret
 		void setTextCursorPos(s16 x, s16 y);
 
-		// text to be added after drawing the screen 
+		// text to be added after drawing the screen
 		struct SPostPresentText
 		{
 			core::position2d<s16> Pos;
@@ -218,6 +229,8 @@ namespace irr
 		core::array<core::stringc> OutputBuffer;
 		gui::IGUIFont  *ConsoleFont;
 		core::array<SPostPresentText> Text;
+
+		FILE *OutFile;
 
 #ifdef _IRR_WINDOWS_NT_CONSOLE_
 		HANDLE WindowsSTDIn, WindowsSTDOut;
@@ -241,11 +254,18 @@ namespace gui
 			const core::rect<s32>* clip=0)
 		{
 			core::rect<s32> Area = clip ? *clip : position;
+
+			if (Area.UpperLeftCorner.X < 0)
+				Area.UpperLeftCorner.X = 0;
+
+			if (Area.UpperLeftCorner.Y < 0)
+				Area.UpperLeftCorner.Y = 0;
+
 			core::position2d<s16> pos;
 
 			// centre vertically
-			pos.Y = vcenter ? (Area.UpperLeftCorner.Y + Area.LowerRightCorner.Y) / 2 : Area.UpperLeftCorner.Y;
-			
+			pos.Y = vcenter ? (position.UpperLeftCorner.Y + position.LowerRightCorner.Y) / 2 : position.UpperLeftCorner.Y;
+
 			// nothing to display?
 			if (pos.Y < Area.UpperLeftCorner.Y || pos.Y > Area.LowerRightCorner.Y)
 				return;
@@ -253,17 +273,29 @@ namespace gui
 			tempText = text;
 
 			// centre horizontally
-			pos.X = hcenter ? Area.getCenter().X - ( tempText.size() / 2) : Area.UpperLeftCorner.X;
-			
-			// clip
-			//if (pos.X < Area.UpperLeftCorner.X)
-			//{
-				// nothing to display?
-			//	if (pos.X
-			//}
+			pos.X = hcenter ? position.getCenter().X - ( tempText.size() / 2) : position.UpperLeftCorner.X;
 
-			// todo: clip, centre
-			Device->addPostPresentText(pos.X, pos.Y, text);
+			// clip
+			u32 xlclip = 0,
+				xrclip = 0;
+
+			// get right clip
+			if (pos.X + (s32)tempText.size() > Area.LowerRightCorner.X)
+				xrclip = Area.LowerRightCorner.X - pos.X;
+
+			// get left clip
+			if (pos.X < Area.UpperLeftCorner.X)
+				xlclip = Area.UpperLeftCorner.X - pos.X;
+
+			// totally clipped?
+			if ((s32)tempText.size() - xlclip - xrclip < 0)
+				return;
+
+			// null terminate the string
+			if (xrclip > 0)
+				tempText[xrclip] = L'\0';
+
+			Device->addPostPresentText(pos.X + xlclip, pos.Y, &(tempText.c_str()[xlclip]));
 		}
 
 		//! Calculates the dimension of some text.
@@ -294,7 +326,5 @@ namespace gui
 
 } // end namespace irr
 
-
-
-#endif // _IRR_USE_CONSOLE_DEVICE_
+#endif // _IRR_COMPILE_WITH_CONSOLE_DEVICE_
 #endif // __C_IRR_DEVICE_CONSOLE_H_INCLUDED__

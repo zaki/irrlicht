@@ -1,5 +1,5 @@
 ==========================================================================
-The Irrlicht Engine SDK version 1.5
+The Irrlicht Engine SDK version 1.6
 ==========================================================================
 
   Welcome the Irrlicht Engine SDK.
@@ -179,7 +179,9 @@ The Irrlicht Engine SDK version 1.5
   Gareth Davidson (bitplane)  Developer/ Forum admin
   Thomas Alten (burningwater) Wrote the burningsvideo software rasterizer
   Luke P. Hoschke (luke)      Wrote the b3d loader, the new animation system, VBOs and other things
-  Colin MacDonald (rogerborg)
+  Colin MacDonald (rogerborg) All hands person
+  Michael Zeilfelder (cutealien) GUI and patch expert
+  Ahmed Hilali (blindside)    The shader and advanced effects man
   Dean Wadsworth (varmint)    OSX port maintainer and game developer
   Alvaro F. Celis (afecelis)  Lots of work in the community, for example video tutorials about Irrlicht, forum admin
   John Goewert (Saigumi)      Wrote some tutorials for the Irrlicht Engine and doing admin stuff

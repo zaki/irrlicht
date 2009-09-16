@@ -5,11 +5,16 @@
 #ifndef __C_PAK_READER_H_INCLUDED__
 #define __C_PAK_READER_H_INCLUDED__
 
+#include "IrrCompileConfig.h"
+
+#ifdef __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+
 #include "IReferenceCounted.h"
 #include "IReadFile.h"
 #include "irrArray.h"
 #include "irrString.h"
 #include "IFileSystem.h"
+#include "CFileList.h"
 
 namespace irr
 {
@@ -19,14 +24,6 @@ namespace io
 	{
 		c8 tag[4];
 		u32 offset;
-		u32 length;
-	};
-
-
-	struct SPakFileEntry: public IFileArchiveEntry
-	{
-		core::string<c16> pakFileName;
-		u32 pos;
 		u32 length;
 	};
 
@@ -40,12 +37,7 @@ namespace io
 
 		//! returns true if the file maybe is able to be loaded by this class
 		//! based on the file extension (e.g. ".zip")
-		virtual bool isALoadableFileFormat(const core::string<c16>& filename) const;
-
-		//! Creates an archive from the filename
-		/** \param file File handle to check.
-		\return Pointer to newly created archive, or 0 upon error. */
-		virtual IFileArchive* createArchive(const core::string<c16>& filename, bool ignoreCase, bool ignorePaths) const;
+		virtual bool isALoadableFileFormat(const io::path& filename) const;
 
 		//! Check if the file might be loaded by this class
 		/** Check might look into the file.
@@ -53,9 +45,23 @@ namespace io
 		\return True if file seems to be loadable. */
 		virtual bool isALoadableFileFormat(io::IReadFile* file) const;
 
+		//! Check to see if the loader can create archives of this type.
+		/** Check based on the archive type.
+		\param fileType The archive type to check.
+		\return True if the archile loader supports this type, false if not */
+		virtual bool isALoadableFileFormat(E_FILE_ARCHIVE_TYPE fileType) const;
+
+		//! Creates an archive from the filename
+		/** \param file File handle to check.
+		\return Pointer to newly created archive, or 0 upon error. */
+		virtual IFileArchive* createArchive(const io::path& filename, bool ignoreCase, bool ignorePaths) const;
+
 		//! creates/loads an archive from the file.
 		//! \return Pointer to the created archive. Returns 0 if loading failed.
 		virtual io::IFileArchive* createArchive(io::IReadFile* file, bool ignoreCase, bool ignorePaths) const;
+
+		//! Returns the type of archive created by this loader
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_PAK; }
 
 	private:
 		io::IFileSystem* FileSystem;
@@ -63,61 +69,54 @@ namespace io
 
 
 	//! reads from pak
-	class CPakReader : public IFileArchive
+	class CPakReader : public virtual IFileArchive, virtual CFileList
 	{
 	public:
 
 		CPakReader(IReadFile* file, bool ignoreCase, bool ignorePaths);
 		virtual ~CPakReader();
 
-		//! opens a file by file name
-		virtual IReadFile* openFile(const core::string<c16>& filename);
-
-		//! opens a file by index
-		virtual IReadFile* openFile(s32 index);
-
-		//! returns count of files in archive
-		virtual u32 getFileCount() const;
-
-		//! returns data of file
-		virtual const IFileArchiveEntry* getFileInfo(u32 index);
-
-		//! returns fileindex
-		virtual s32 findFile(const core::string<c16>& filename);
-
-		//! get the class Type
-		virtual const core::string<c16>& getArchiveType() { return Type; }
+		// file archive methods
 
 		//! return the id of the file Archive
-		virtual const core::string<c16>& getArchiveName ()
-		{ 
+
+		virtual const io::path& getArchiveName() const
+		{
 			return File->getFileName();
 		}
 
+		//! opens a file by file name
+		virtual IReadFile* createAndOpenFile(const io::path& filename);
+
+		//! opens a file by index
+		virtual IReadFile* createAndOpenFile(u32 index);
+
+		//! returns the list of files
+		virtual const IFileList* getFileList() const;
+
+		//! get the class Type
+		virtual E_FILE_ARCHIVE_TYPE getType() const { return EFAT_PAK; }
 
 	private:
-		
-		core::string<c16> Type;
 
 		//! scans for a local header, returns false if there is no more local file header.
 		bool scanLocalHeader();
 
 		//! splits filename from zip file into useful filenames and paths
-		void extractFilename(SPakFileEntry* entry);
-
+		//void extractFilename(SPakFileEntry* entry);
 
 		IReadFile* File;
 
 		SPAKFileHeader header;
 
-		core::array<SPakFileEntry> FileList;
-
-		bool IgnoreCase;
-		bool IgnorePaths;
+		//! Contains offsets of the files from the start of the archive file
+		core::array<u32> Offsets;
 	};
 
 } // end namespace io
 } // end namespace irr
 
-#endif
+#endif // __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+
+#endif // __C_PAK_READER_H_INCLUDED__
 

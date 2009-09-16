@@ -72,7 +72,6 @@ CAnimatedMeshMD3::CAnimatedMeshMD3()
 	Mesh = new SMD3Mesh();
 
 	setInterpolationShift ( 0, 0 );
-
 }
 
 
@@ -181,10 +180,10 @@ IMesh* CAnimatedMeshMD3::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop,
 					(SMeshBufferLightMap*) MeshIPol.getMeshBuffer(i)
 				);
 	}
-	MeshIPol.recalculateBoundingBox ();
+	MeshIPol.recalculateBoundingBox();
 
 	// build current tags
-	buildTagArray ( frameA, frameB, iPol );
+	buildTagArray( frameA, frameB, iPol );
 
 	Current = candidate;
 	return &MeshIPol;

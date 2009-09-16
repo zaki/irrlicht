@@ -13,12 +13,12 @@
 
 #include "IImageLoader.h"
 
-namespace irr 
+namespace irr
 {
 namespace video
 {
 
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -30,7 +30,7 @@ namespace video
 
 	 struct SWALHeader {
 		char	FrameName[32];
-		
+
 		u32	ImageWidth;
 		u32	ImageHeight;
 
@@ -43,7 +43,7 @@ namespace video
 		u32	Value;		// light
     } PACK_STRUCT;
 
-#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) || defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 #undef PACK_STRUCT
@@ -52,7 +52,7 @@ namespace video
 class CImageLoaderWAL : public irr::video::IImageLoader
 {
 public:
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	virtual bool isALoadableFileFormat(irr::io::IReadFile* file) const;
 

@@ -20,7 +20,7 @@ namespace io
 		//! Reads an amount of bytes from the file.
 		/** \param buffer Pointer to buffer where read bytes are written to.
 		\param sizeToRead Amount of bytes to read from the file.
-		\return How much bytes were read. */
+		\return How many bytes were read. */
 		virtual s32 read(void* buffer, u32 sizeToRead) = 0;
 
 		//! Changes position in file
@@ -41,15 +41,15 @@ namespace io
 
 		//! Get name of file.
 		/** \return File name as zero terminated character string. */
-		virtual const core::string<c16>& getFileName() const = 0;
+		virtual const io::path& getFileName() const = 0;
 	};
 
 	//! Internal function, please do not use.
-	IReadFile* createReadFile(const core::string<c16>& fileName);
+	IReadFile* createReadFile(const io::path& fileName);
 	//! Internal function, please do not use.
-	IReadFile* createLimitReadFile(const core::string<c16>& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize);
+	IReadFile* createLimitReadFile(const io::path& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize);
 	//! Internal function, please do not use.
-	IReadFile* createMemoryReadFile(void* memory, long size, const core::string<c16>& fileName, bool deleteMemoryWhenDropped);
+	IReadFile* createMemoryReadFile(void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped);
 
 } // end namespace io
 } // end namespace irr

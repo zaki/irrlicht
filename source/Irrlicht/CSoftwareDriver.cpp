@@ -241,7 +241,7 @@ bool CSoftwareDriver::endScene()
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new CSoftwareTexture(surface, name);
 }
@@ -347,8 +347,6 @@ void CSoftwareDriver::drawVertexPrimitiveList(const void* vertices, u32 vertexCo
 			break;
 		}
 	}
-
-
 }
 
 
@@ -803,10 +801,10 @@ void CSoftwareDriver::draw2DImage(const video::ITexture* texture, const core::po
 
 		if (useAlphaChannelOfTexture)
 			((CSoftwareTexture*)texture)->getImage()->copyToWithAlpha(
-				((CImage*)RenderTargetSurface), destPos, sourceRect, color, clipRect);
+				RenderTargetSurface, destPos, sourceRect, color, clipRect);
 		else
 			((CSoftwareTexture*)texture)->getImage()->copyTo(
-				((CImage*)RenderTargetSurface), destPos, sourceRect, clipRect);
+				RenderTargetSurface, destPos, sourceRect, clipRect);
 	}
 }
 
@@ -814,16 +812,17 @@ void CSoftwareDriver::draw2DImage(const video::ITexture* texture, const core::po
 
 //! Draws a 2d line.
 void CSoftwareDriver::draw2DLine(const core::position2d<s32>& start,
-								const core::position2d<s32>& end,
-								SColor color)
+				const core::position2d<s32>& end,
+				SColor color)
 {
-	((CImage*)RenderTargetSurface)->drawLine(start, end, color );
+	RenderTargetSurface->drawLine(start, end, color );
 }
+
 
 //! Draws a pixel
 void CSoftwareDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	((CImage*)BackBuffer)->setPixel(x, y, color, true);
+	BackBuffer->setPixel(x, y, color, true);
 }
 
 
@@ -840,14 +839,14 @@ void CSoftwareDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
 		if(!p.isValid())
 			return;
 
-		((CImage*)RenderTargetSurface)->drawRectangle(p, color);
+		RenderTargetSurface->drawRectangle(p, color);
 	}
 	else
 	{
 		if(!pos.isValid())
 			return;
 
-		((CImage*)RenderTargetSurface)->drawRectangle(pos, color);
+		RenderTargetSurface->drawRectangle(pos, color);
 	}
 }
 
@@ -896,7 +895,7 @@ const core::matrix4& CSoftwareDriver::getTransform(E_TRANSFORMATION_STATE state)
 
 //! Creates a render target texture.
 ITexture* CSoftwareDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-												  const core::string<c16>& name,
+												  const io::path& name,
 												  const ECOLOR_FORMAT format)
 {
 	CImage* img = new CImage(video::ECF_A1R5G5B5, size);
@@ -958,3 +957,4 @@ IVideoDriver* createSoftwareDriver(const core::dimension2d<u32>& windowSize, boo
 
 } // end namespace video
 } // end namespace irr
+

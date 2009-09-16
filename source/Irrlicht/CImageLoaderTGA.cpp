@@ -21,7 +21,7 @@ namespace video
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderTGA::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CImageLoaderTGA::isALoadableFileExtension(const io::path& filename) const
 {
 	return core::hasFileExtension ( filename, "tga" );
 }
@@ -170,7 +170,7 @@ IImage* CImageLoaderTGA::loadImage(io::IReadFile* file) const
 			core::dimension2d<u32>(header.ImageWidth, header.ImageHeight));
 		if (image)
 			CColorConverter::convert8BitTo16Bit((u8*)data,
-				(s16*)image->lock(), 
+				(s16*)image->lock(),
 				header.ImageWidth,header.ImageHeight,
 				header.ImageType == 3 ? 0 : (s32*) palette,
 				0,

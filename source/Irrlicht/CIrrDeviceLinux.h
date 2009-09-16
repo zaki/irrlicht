@@ -7,7 +7,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_LINUX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
@@ -93,16 +93,34 @@ namespace irr
 		//! Minimizes the window.
 		virtual void minimizeWindow();
 
+		//! Maximizes the window.
+		virtual void maximizeWindow();
+
+		//! Restores the window size.
+		virtual void restoreWindow();
+
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
 
-        //! gets text from the clipboard
-        //! \return Returns 0 if no string is in there.
+		//! Set the current Gamma Value for the Display
+		virtual bool setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness, f32 contrast );
+
+		//! Get the current Gamma Value for the Display
+		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
+
+		//! gets text from the clipboard
+		//! \return Returns 0 if no string is in there.
 		virtual const c8* getTextFromClipboard() const;
 
-        //! copies text to the clipboard
-        //! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
-        virtual void copyToClipboard(const c8* text) const;
+		//! copies text to the clipboard
+		//! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
+		virtual void copyToClipboard(const c8* text) const;
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_X11;
+		}
 
 	private:
 
@@ -115,7 +133,7 @@ namespace irr
 
 		void pollJoysticks();
 
-        void initXAtoms();
+		void initXAtoms();
 
 		//! Implementation of the linux cursor control
 		class CCursorControl : public gui::ICursorControl
@@ -313,6 +331,8 @@ namespace irr
 		friend class CCursorControl;
 
 #ifdef _IRR_COMPILE_WITH_X11_
+		friend class COpenGLDriver;
+
 		Display *display;
 		XVisualInfo* visual;
 		int screennr;
@@ -340,6 +360,7 @@ namespace irr
 		bool UseXVidMode;
 		bool UseXRandR;
 		bool UseGLXWindow;
+		bool ExternalWindow;
 		int AutorepeatSupport;
 
 		struct SKeyMap
@@ -379,6 +400,6 @@ namespace irr
 
 } // end namespace irr
 
-#endif // _IRR_USE_LINUX_DEVICE_
+#endif // _IRR_COMPILE_WITH_X11_DEVICE_
 #endif // __C_IRR_DEVICE_LINUX_H_INCLUDED__
 

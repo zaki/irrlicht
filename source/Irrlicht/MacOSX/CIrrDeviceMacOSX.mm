@@ -4,7 +4,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 
 #import <Cocoa/Cocoa.h>
 #import <OpenGL/gl.h>
@@ -1100,6 +1100,18 @@ void CIrrDeviceMacOSX::minimizeWindow()
 {
 	// todo: implement
 }
+	
+//! Maximizes the window if possible.
+void CIrrDeviceMacOSX::maximizeWindow()
+{
+	// todo: implement
+}
+	
+//! Restore the window to normal size if possible.
+void CIrrDeviceMacOSX::restoreWindow()
+{
+	// todo: implement
+}
 
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {
@@ -1436,19 +1448,7 @@ video::IVideoModeList* CIrrDeviceMacOSX::getVideoModeList()
 	return &VideoModeList;
 }
 
-extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(const SIrrlichtCreationParameters& param)
-{
-	CIrrDeviceMacOSX* dev = new CIrrDeviceMacOSX(param);
+} // end namespace irr
 
-	if (dev && !dev->getVideoDriver() && param.DriverType != video::EDT_NULL)
-	{
-		dev->drop();
-		dev = 0;
-	}
+#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
 
-	return dev;
-}
-
-} // end namespace
-
-#endif // _IRR_USE_OSX_DEVICE_

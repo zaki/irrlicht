@@ -157,7 +157,7 @@ void CBurningVideoDriver::setCurrentShader()
 	ITexture *texture0 = Material.org.getTexture(0);
 	ITexture *texture1 = Material.org.getTexture(1);
 
-	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER && 
+	bool zMaterialTest =	Material.org.ZBuffer != ECFN_NEVER &&
 							Material.org.ZWriteEnable &&
 							( AllowZWriteOnTransparent || !Material.org.isTransparent() );
 
@@ -400,7 +400,7 @@ bool CBurningVideoDriver::setRenderTarget(video::ITexture* texture, bool clearBa
 			DepthBuffer->clear();
 
 		if (clearBackBuffer)
-			((video::CImage*)RenderTargetSurface)->fill( color );
+			RenderTargetSurface->fill( color );
 	}
 
 	return true;
@@ -941,12 +941,12 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 
 				if ( TransformationFlag [ ETS_TEXTURE_0 + t ] & ETF_TEXGEN_CAMERA_REFLECTION )
 				{
-					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[4] + n.z * view[8] )); 
+					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[4] + n.z * view[8] ));
 					srcT.y = 0.5f * ( 1.f + (n.x * view[1] + n.y * view[5] + n.z * view[9] ));
 				}
 				else
 				{
-					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[1] + n.z * view[2] )); 
+					srcT.x = 0.5f * ( 1.f + (n.x * view[0] + n.y * view[1] + n.z * view[2] ));
 					srcT.y = 0.5f * ( 1.f + (n.x * view[4] + n.y * view[5] + n.z * view[6] ));
 				}
 			}
@@ -1062,7 +1062,7 @@ REALINLINE void CBurningVideoDriver::VertexCache_get ( s4DVertex ** face )
 			VertexCache.info[i].hit = 0;
 		}
 
-		// mark all exisiting
+		// mark all existing
 		for ( i = 0; i!= fillIndex; ++i )
 		{
 			for ( dIndex = 0;  dIndex < VERTEXCACHE_ELEMENT; ++dIndex )
@@ -1148,7 +1148,8 @@ REALINLINE void CBurningVideoDriver::VertexCache_getbypass ( s4DVertex ** face )
 */
 void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCount,
 											const void* indices, u32 primitiveCount,
-											E_VERTEX_TYPE vType,scene::E_PRIMITIVE_TYPE pType,
+											E_VERTEX_TYPE vType,
+											scene::E_PRIMITIVE_TYPE pType,
 											E_INDEX_TYPE iType)
 {
 	VertexCache.vertices = vertices;
@@ -1167,6 +1168,28 @@ void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCo
 
 	switch ( VertexCache.pType )
 	{
+		// most types here will not work as expected, only triangles/triangle_fan
+		// is known to work.
+		case scene::EPT_POINTS:
+			VertexCache.indexCount = primitiveCount;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_LINE_STRIP:
+			VertexCache.indexCount = primitiveCount+1;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_LINE_LOOP:
+			VertexCache.indexCount = primitiveCount+1;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_LINES:
+			VertexCache.indexCount = 2*primitiveCount;
+			VertexCache.primitivePitch = 2;
+			break;
+		case scene::EPT_TRIANGLE_STRIP:
+			VertexCache.indexCount = primitiveCount+2;
+			VertexCache.primitivePitch = 1;
+			break;
 		case scene::EPT_TRIANGLES:
 			VertexCache.indexCount = primitiveCount + primitiveCount + primitiveCount;
 			VertexCache.primitivePitch = 3;
@@ -1175,10 +1198,25 @@ void CBurningVideoDriver::VertexCache_reset ( const void* vertices, u32 vertexCo
 			VertexCache.indexCount = primitiveCount + 2;
 			VertexCache.primitivePitch = 1;
 			break;
+		case scene::EPT_QUAD_STRIP:
+			VertexCache.indexCount = 2*primitiveCount + 2;
+			VertexCache.primitivePitch = 2;
+			break;
+		case scene::EPT_QUADS:
+			VertexCache.indexCount = 4*primitiveCount;
+			VertexCache.primitivePitch = 4;
+			break;
+		case scene::EPT_POLYGON:
+			VertexCache.indexCount = primitiveCount+1;
+			VertexCache.primitivePitch = 1;
+			break;
+		case scene::EPT_POINT_SPRITES:
+			VertexCache.indexCount = primitiveCount;
+			VertexCache.primitivePitch = 1;
+			break;
 	}
 
 	irr::memset32 ( VertexCache.info, VERTEXCACHE_MISS, sizeof ( VertexCache.info ) );
-
 }
 
 
@@ -1296,11 +1334,11 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 								( check[h].flag & 16 ) >> 4,
 								( check[h].flag & 32 ) >> 5
 							);
-				os::Printer::print ( buf );
+				os::Printer::log( buf );
 			}
 
 			sprintf ( buf, "Vout: %d\n", vOut );
-			os::Printer::print ( buf );
+			os::Printer::log( buf );
 
 			int hold = 1;
 		}
@@ -1315,7 +1353,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 
 /*
 		// TODO: don't stick on 32 Bit Pointer
-		#define PointerAsValue(x) ( (u32) (u32*) (x) ) 
+		#define PointerAsValue(x) ( (u32) (u32*) (x) )
 
 		// if not complete inside clipping necessary
 		if ( ( test & VERTEX4D_INSIDE ) != VERTEX4D_INSIDE )
@@ -1378,7 +1416,7 @@ void CBurningVideoDriver::drawVertexPrimitiveList(const void* vertices, u32 vert
 					vertexCount, primitiveCount,
 					VertexCache.CacheMiss
 				);
-	os::Printer::print ( buf );
+	os::Printer::log( buf );
 */
 
 }
@@ -1490,17 +1528,6 @@ void CBurningVideoDriver::setMaterial(const SMaterial& material)
 }
 
 
-
-#ifdef SOFTWARE_DRIVER_2_LIGHTING
-
-//! Sets the fog mode.
-void CBurningVideoDriver::setFog(SColor color, bool linearFog, f32 start,
-	f32 end, f32 density, bool pixelFog, bool rangeFog)
-{
-	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
-	LightSpace.FogColor.setA8R8G8B8 ( color.color );
-}
-
 /*!
 	Camera Position in World Space
 */
@@ -1522,6 +1549,16 @@ void CBurningVideoDriver::getCameraPosWorldSpace ()
 	LightSpace.campos.y = M[13];
 	LightSpace.campos.z = M[14];
 	LightSpace.campos.w = 1.f;
+}
+
+#ifdef SOFTWARE_DRIVER_2_LIGHTING
+
+//! Sets the fog mode.
+void CBurningVideoDriver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
+	f32 end, f32 density, bool pixelFog, bool rangeFog)
+{
+	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
+	LightSpace.FogColor.setA8R8G8B8 ( color.color );
 }
 
 /*!
@@ -1663,20 +1700,21 @@ void CBurningVideoDriver::draw2DImage(const video::ITexture* texture, const core
 }
 
 
-
 //! Draws a 2d line.
 void CBurningVideoDriver::draw2DLine(const core::position2d<s32>& start,
 					const core::position2d<s32>& end,
 					SColor color)
 {
-	((CImage*)BackBuffer)->drawLine(start, end, color );
+	BackBuffer->drawLine(start, end, color );
 }
+
 
 //! Draws a pixel
 void CBurningVideoDriver::drawPixel(u32 x, u32 y, const SColor & color)
 {
-	((CImage*)BackBuffer)->setPixel(x, y, color, true);
-} 
+	BackBuffer->setPixel(x, y, color, true);
+}
+
 
 //! draw an 2d rectangle
 void CBurningVideoDriver::draw2DRectangle(SColor color, const core::rect<s32>& pos,
@@ -1954,7 +1992,7 @@ const core::matrix4& CBurningVideoDriver::getTransform(E_TRANSFORMATION_STATE st
 
 //! Creates a render target texture.
 ITexture* CBurningVideoDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-		const core::string<c16>& name, const ECOLOR_FORMAT format)
+		const io::path& name, const ECOLOR_FORMAT format)
 {
 	CImage* img = new CImage(BURNINGSHADER_COLOR_FORMAT, size);
 	ITexture* tex = new CSoftwareTexture2(img, name, CSoftwareTexture2::IS_RENDERTARGET );
@@ -1986,10 +2024,10 @@ IImage* CBurningVideoDriver::createScreenShot()
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+ITexture* CBurningVideoDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new CSoftwareTexture2(
-		surface, name, 
+		surface, name,
 		(getTextureCreationFlag(ETCF_CREATE_MIP_MAPS) ? CSoftwareTexture2::GEN_MIPMAP : 0 ) |
 		(getTextureCreationFlag(ETCF_ALLOW_NON_POWER_2) ? 0 : CSoftwareTexture2::NP2_SIZE )
 	);

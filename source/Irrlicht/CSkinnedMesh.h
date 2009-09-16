@@ -134,20 +134,19 @@ namespace scene
 		//! loaders should call this after populating the mesh
 		virtual void finalize();
 
-		virtual SSkinMeshBuffer *createBuffer();
+		virtual SSkinMeshBuffer *addMeshBuffer();
 
-		virtual SJoint *createJoint(SJoint *parent=0);
+		virtual SJoint *addJoint(SJoint *parent=0);
 
-		virtual SPositionKey *createPositionKey(SJoint *joint);
-		virtual SRotationKey *createRotationKey(SJoint *joint);
-		virtual SScaleKey *createScaleKey(SJoint *joint);
+		virtual SPositionKey *addPositionKey(SJoint *joint);
+		virtual SRotationKey *addRotationKey(SJoint *joint);
+		virtual SScaleKey *addScaleKey(SJoint *joint);
 
-		virtual SWeight *createWeight(SJoint *joint);
+		virtual SWeight *addWeight(SJoint *joint);
 
 		virtual void updateBoundingBox(void);
 
 private:
-
 		void checkForAnimation();
 
 		void normalizeWeights();
@@ -177,32 +176,26 @@ private:
 		core::array<SJoint*> AllJoints;
 		core::array<SJoint*> RootJoints;
 
-		bool HasAnimation;
+		core::aabbox3d<f32> BoundingBox;
 
-		bool PreparedForSkinning;
+		core::array< core::array<bool> > Vertices_Moved;
 
 		f32 AnimationFrames;
 
 		f32 LastAnimatedFrame;
 		f32 LastSkinnedFrame;
-		bool BoneControlUsed;
-
-		bool AnimateNormals;
-
-		bool HardwareSkinning;
-
 
 		E_INTERPOLATION_MODE InterpolationMode;
 
-		core::aabbox3d<f32> BoundingBox;
-
-		core::array< core::array<bool> > Vertices_Moved;
+		bool HasAnimation;
+		bool PreparedForSkinning;
+		bool BoneControlUsed;
+		bool AnimateNormals;
+		bool HardwareSkinning;
 	};
 
 } // end namespace scene
 } // end namespace irr
 
 #endif
-
-
 

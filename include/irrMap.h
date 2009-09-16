@@ -186,8 +186,7 @@ class map
 
 		Node& operator* ()
 		{
-			if (atEnd())
-				throw "Iterator at end";
+			_IRR_DEBUG_BREAK_IF(atEnd()) // access violation
 
 			return *Cur;
 		}
@@ -336,8 +335,8 @@ class map
 
 	Node& operator* ()
 	{
-		if (atEnd())
-			throw "ParentFirstIterator at end";
+		_IRR_DEBUG_BREAK_IF(atEnd()) // access violation
+
 		return *getNode();
 	}
 
@@ -436,8 +435,8 @@ class map
 
 		Node& operator* ()
 		{
-			if (atEnd())
-				throw "ParentLastIterator at end";
+			_IRR_DEBUG_BREAK_IF(atEnd()) // access violation
+
 			return *getNode();
 		}
 	private:
@@ -483,7 +482,7 @@ class map
 	// myTree["Foo"] = 32;
 	// If "Foo" already exists update its value else insert a new element.
 	// int i = myTree["Foo"]
-	// If "Foo" exists return its value, else throw an exception.
+	// If "Foo" exists return its value.
 	class AccessClass
 	{
 		// Let map be the only one who can instantiate this class.
@@ -504,8 +503,7 @@ class map
 			Node* node = Tree.find(Key);
 
 			// Not found
-			if (node==0)
-				throw "Item not found";
+			_IRR_DEBUG_BREAK_IF(node==0) // access violation
 
 			_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 			return node->getValue();

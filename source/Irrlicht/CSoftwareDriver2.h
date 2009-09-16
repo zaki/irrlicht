@@ -123,8 +123,8 @@ namespace video
 		virtual const core::matrix4& getTransform(E_TRANSFORMATION_STATE state) const;
 
 		//! Creates a render target texture.
-		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size, 
-			const core::string<c16>& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
+			const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! Clears the DepthBuffer.
 		virtual void clearZBuffer();
@@ -165,7 +165,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
 
 		video::CImage* BackBuffer;
 		video::IImagePresenter* Presenter;
@@ -210,7 +210,7 @@ namespace video
 		};
 		u32 TransformationFlag[ETS_COUNT_BURNING];
 		core::matrix4 Transformation[ETS_COUNT_BURNING];
-		
+
 		void getCameraPosWorldSpace ();
 
 
@@ -240,7 +240,7 @@ namespace video
 
 		void lightVertex ( s4DVertex *dest, u32 vertexargb );
 		//! Sets the fog mode.
-		virtual void setFog(SColor color, bool linearFog, f32 start,
+		virtual void setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 #endif
 

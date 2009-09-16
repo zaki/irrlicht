@@ -26,6 +26,8 @@ namespace video
 {
 	class CD3D8Driver : public CNullDriver, IMaterialRendererServices
 	{
+		friend class CD3D8Texture;
+
 	public:
 
 		//! constructor
@@ -65,9 +67,16 @@ namespace video
 		virtual const core::rect<s32>& getViewPort() const;
 
 		//! draws a vertex primitive list
-		void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
-		const void* indexList, u32 primitiveCount,
-		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
+		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType);
+
+		//! draws a vertex primitive list in 2d
+		virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType);
 
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
@@ -149,7 +158,7 @@ namespace video
 		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled);
 
 		//! Sets the fog mode.
-		virtual void setFog(SColor color, bool linearFog, f32 start,
+		virtual void setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 
 		//! Only used by the internal engine. Used to notify the driver that
@@ -187,7 +196,7 @@ namespace video
 
 		//! Creates a render target texture.
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
@@ -245,7 +254,7 @@ namespace video
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
 
 		// returns the current size of the screen or rendertarget
 		virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const;
@@ -257,6 +266,11 @@ namespace video
 			E_MATERIAL_TYPE baseMaterial, s32 userData);
 
 		void createMaterialRenderers();
+
+		void draw2D3DVertexPrimitiveList(const void* vertices,
+				u32 vertexCount, const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+				E_INDEX_TYPE iType, bool is3D);
 
 		inline D3DCOLORVALUE colorToD3D(const SColor& col)
 		{

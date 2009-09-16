@@ -125,9 +125,16 @@ namespace gui
 
 		//! Reads attributes of the element
 		virtual void deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options);
+		
 		//! Get the height of the tabs
 		virtual s32 getTabHeight() const;
 
+		//! set the maximal width of a tab. Per default width is 0 which means "no width restriction".
+		virtual void setTabMaxWidth(s32 width );
+			
+		//! get the maximal width of a tab
+		virtual s32 getTabMaxWidth() const;
+		
 		//! Set the alignment of the tabs
 		//! note: EGUIA_CENTER is not an option
 		virtual void setTabVerticalAlignment( gui::EGUI_ALIGNMENT alignment );
@@ -150,6 +157,7 @@ namespace gui
 		void scrollLeft();
 		void scrollRight();
 		bool needScrollControl( s32 startIndex=0, bool withScrollControl=false );
+		s32 calcTabWidth(s32 pos, IGUIFont* font, const wchar_t* text, bool withScrollControl );
 
 		void recalculateScrollBar();
 

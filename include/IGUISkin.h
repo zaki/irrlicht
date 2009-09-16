@@ -151,6 +151,10 @@ namespace gui
 		EGDS_TEXT_DISTANCE_X,
 		//! distance for text from background
 		EGDS_TEXT_DISTANCE_Y,
+		//! distance for text in the title bar, from the left of the window rect
+		EGDS_TITLEBARTEXT_DISTANCE_X,
+		//! distance for text in the title bar, from the top of the window rect
+		EGDS_TITLEBARTEXT_DISTANCE_Y,
 		//! this value is not used, it only specifies the amount of default sizes
 		//! available.
 		EGDS_COUNT

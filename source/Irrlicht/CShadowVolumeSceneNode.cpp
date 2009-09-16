@@ -17,10 +17,8 @@ namespace scene
 //! constructor
 CShadowVolumeSceneNode::CShadowVolumeSceneNode(const IMesh* shadowMesh, ISceneNode* parent,
 		ISceneManager* mgr, s32 id, bool zfailmethod, f32 infinity)
-: IShadowVolumeSceneNode(parent, mgr, id), Vertices(0), Indices(0),
-	Adjacency(0), Edges(0), FaceData(0), ShadowMesh(0),
-	IndexCountAllocated(0), VertexCountAllocated(0),
-	IndexCount(0), VertexCount(0), EdgeCount(0), ShadowVolumesUsed(0),
+: IShadowVolumeSceneNode(parent, mgr, id),
+	ShadowMesh(0), IndexCount(0), VertexCount(0), ShadowVolumesUsed(0),
 	Infinity(infinity), UseZFailMethod(zfailmethod)
 {
 	#ifdef _DEBUG
@@ -37,15 +35,8 @@ CShadowVolumeSceneNode::~CShadowVolumeSceneNode()
 	if (ShadowMesh)
 		ShadowMesh->drop();
 
-	delete [] Edges;
-
 	for (u32 i=0; i<ShadowVolumes.size(); ++i)
 		delete [] ShadowVolumes[i].vertices;
-
-	delete [] Vertices;
-	delete [] Indices;
-	delete [] Adjacency;
-	delete [] FaceData;
 }
 
 
@@ -55,7 +46,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 
 	// builds the shadow volume and adds it to the shadow volume list.
 
-	if (ShadowVolumes.size() > (u32)ShadowVolumesUsed)
+	if (ShadowVolumes.size() > ShadowVolumesUsed)
 	{
 		// get the next unused buffer
 		svp = &ShadowVolumes[ShadowVolumesUsed];
@@ -84,16 +75,12 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 		++ShadowVolumesUsed;
 	}
 
-	const s32 faceCount = (s32)(IndexCount / 3);
+	const u32 faceCount = IndexCount / 3;
 
-	if (!Edges || faceCount * 6 > EdgeCount)
-	{
-		delete [] Edges;
-		EdgeCount = faceCount * 6;
-		Edges = new u16[EdgeCount];
-	}
+	if (faceCount * 6 > Edges.size())
+		Edges.set_used(faceCount*6);
 
-	s32 numEdges = 0;
+	u32 numEdges = 0;
 	const core::vector3df ls = light * Infinity; // light scaled
 
 	//if (UseZFailMethod)
@@ -106,7 +93,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 	// is used
 	createZPassVolume(faceCount, numEdges, light, svp, UseZFailMethod);
 
-	for (s32 i=0; i<numEdges; ++i)
+	for (u32 i=0; i<numEdges; ++i)
 	{
 		core::vector3df &v1 = Vertices[Edges[2*i+0]];
 		core::vector3df &v2 = Vertices[Edges[2*i+1]];
@@ -128,7 +115,7 @@ void CShadowVolumeSceneNode::createShadowVolume(const core::vector3df& light)
 }
 
 
-void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
+void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, u32& numEdges,
 						const core::vector3df& light,
 						SShadowVolume* svp)
 {
@@ -208,7 +195,7 @@ void CShadowVolumeSceneNode::createZFailVolume(s32 faceCount, s32& numEdges,
 
 
 void CShadowVolumeSceneNode::createZPassVolume(s32 faceCount,
-						s32& numEdges,
+						u32& numEdges,
 						core::vector3df light,
 						SShadowVolume* svp, bool caps)
 {
@@ -265,8 +252,8 @@ void CShadowVolumeSceneNode::setShadowMesh(const IMesh* mesh)
 
 void CShadowVolumeSceneNode::updateShadowVolumes()
 {
-	const s32 oldIndexCount = IndexCount;
-	const s32 oldVertexCount = VertexCount;
+	const u32 oldIndexCount = IndexCount;
+	const u32 oldVertexCount = VertexCount;
 
 	VertexCount = 0;
 	IndexCount = 0;
@@ -279,8 +266,8 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 	// calculate total amount of vertices and indices
 
 	u32 i;
-	s32 totalVertices = 0;
-	s32 totalIndices = 0;
+	u32 totalVertices = 0;
+	u32 totalIndices = 0;
 	const u32 bufcnt = mesh->getMeshBufferCount();
 
 	for (i=0; i<bufcnt; ++i)
@@ -292,24 +279,15 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 
 	// allocate memory if necessary
 
-	if (totalVertices > VertexCountAllocated)
-	{
-		delete [] Vertices;
-		Vertices = new core::vector3df[totalVertices];
-		VertexCountAllocated = totalVertices;
-	}
+	if (totalVertices > Vertices.size())
+		Vertices.set_used(totalVertices);
 
-	if (totalIndices > IndexCountAllocated)
+	if (totalIndices > Indices.size())
 	{
-		delete [] Indices;
-		Indices = new u16[totalIndices];
-		IndexCountAllocated = totalIndices;
+		Indices.set_used(totalIndices);
 
 		if (UseZFailMethod)
-		{
-			delete [] FaceData;
-			FaceData = new bool[totalIndices / 3];
-		}
+			FaceData.set_used(totalIndices / 3);
 	}
 
 	// copy mesh
@@ -329,8 +307,7 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 	}
 
 	// recalculate adjacency if necessary
-	if (oldVertexCount != VertexCount &&
-		oldIndexCount != IndexCount && UseZFailMethod)
+	if (oldVertexCount != VertexCount && oldIndexCount != IndexCount && UseZFailMethod)
 		calculateAdjacency();
 
 	// create as much shadow volumes as there are lights but
@@ -338,9 +315,9 @@ void CShadowVolumeSceneNode::updateShadowVolumes()
 
 	const u32 lights = SceneManager->getVideoDriver()->getDynamicLightCount();
 	core::matrix4 mat = Parent->getAbsoluteTransformation();
+	mat.makeInverse();
 	const core::vector3df parentpos = Parent->getAbsolutePosition();
 	core::vector3df lpos;
-	mat.makeInverse();
 
 	// TODO: Only correct for point lights.
 	for (i=0; i<lights; ++i)
@@ -378,11 +355,10 @@ void CShadowVolumeSceneNode::render()
 
 	driver->setTransform(video::ETS_WORLD, Parent->getAbsoluteTransformation());
 
-	for (s32 i=0; i<ShadowVolumesUsed; ++i)
+	for (u32 i=0; i<ShadowVolumesUsed; ++i)
 		driver->drawStencilShadowVolume(ShadowVolumes[i].vertices,
 			ShadowVolumes[i].count, UseZFailMethod);
 
-/*
 	if ( DebugDataVisible & scene::EDS_MESH_WIRE_OVERLAY )
 	{
 		video::SMaterial mat;
@@ -390,12 +366,12 @@ void CShadowVolumeSceneNode::render()
 		mat.Wireframe = true;
 		mat.ZBuffer = true;
 		driver->setMaterial(mat);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-		for (s32 i=0; i<ShadowVolumesUsed; ++i)
+		for (u32 i=0; i<ShadowVolumesUsed; ++i)
 			driver->drawVertexPrimitiveList(ShadowVolumes[i].vertices,
 			ShadowVolumes[i].count,0,0,video::EVT_STANDARD,scene::EPT_LINES);
 	}
-*/
 }
 
 
@@ -409,17 +385,14 @@ const core::aabbox3d<f32>& CShadowVolumeSceneNode::getBoundingBox() const
 //! Generates adjacency information based on mesh indices.
 void CShadowVolumeSceneNode::calculateAdjacency(f32 epsilon)
 {
-	delete [] Adjacency;
-	Adjacency = new u16[IndexCount];
+	Adjacency.set_used(IndexCount);
 
 	epsilon *= epsilon;
 
-	f32 t = 0;
-
 	// go through all faces and fetch their three neighbours
-	for (s32 f=0; f<IndexCount; f+=3)
+	for (u32 f=0; f<IndexCount; f+=3)
 	{
-		for (s32 edge = 0; edge<3; ++edge)
+		for (u32 edge = 0; edge<3; ++edge)
 		{
 			core::vector3df v1 = Vertices[Indices[f+edge]];
 			core::vector3df v2 = Vertices[Indices[f+((edge+1)%3)]];
@@ -427,9 +400,10 @@ void CShadowVolumeSceneNode::calculateAdjacency(f32 epsilon)
 			// now we search an_O_ther _F_ace with these two
 			// vertices, which is not the current face.
 
-			s32 of;
+			u32 of;
 
 			for (of=0; of<IndexCount; of+=3)
+			{
 				if (of != f)
 				{
 					s32 cnt1 = 0;
@@ -437,18 +411,19 @@ void CShadowVolumeSceneNode::calculateAdjacency(f32 epsilon)
 
 					for (s32 e=0; e<3; ++e)
 					{
-						t = v1.getDistanceFromSQ(Vertices[Indices[of+e]]);
-						if (core::iszero(t))
+						const f32 t1 = v1.getDistanceFromSQ(Vertices[Indices[of+e]]);
+						if (core::iszero(t1))
 							++cnt1;
 
-						t = v2.getDistanceFromSQ(Vertices[Indices[of+e]]);
-						if (core::iszero(t))
+						const f32 t2 = v2.getDistanceFromSQ(Vertices[Indices[of+e]]);
+						if (core::iszero(t2))
 							++cnt2;
 					}
 
 					if (cnt1 == 1 && cnt2 == 1)
 						break;
 				}
+			}
 
 			if (of == IndexCount)
 				Adjacency[f + edge] = f;
@@ -461,5 +436,4 @@ void CShadowVolumeSceneNode::calculateAdjacency(f32 epsilon)
 
 } // end namespace scene
 } // end namespace irr
-
 

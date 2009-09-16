@@ -67,7 +67,7 @@ namespace gui
 
 		//! Sets an image which should be displayed on the button when it is in normal state.
 		/** \param image: Image to be displayed */
-		virtual void setImage(video::ITexture* image) = 0;
+		virtual void setImage(video::ITexture* image=0) = 0;
 
 		//! Sets a background image for the button when it is in normal state.
 		/** \param image: Texture containing the image to be displayed
@@ -78,7 +78,7 @@ namespace gui
 		/** If no images is specified for the pressed state via
 		setPressedImage(), this image is also drawn in pressed state.
 		\param image: Image to be displayed */
-		virtual void setPressedImage(video::ITexture* image) = 0;
+		virtual void setPressedImage(video::ITexture* image=0) = 0;
 
 		//! Sets an image which should be displayed on the button when it is in pressed state.
 		/** \param image: Texture containing the image to be displayed
@@ -86,7 +86,7 @@ namespace gui
 		virtual void setPressedImage(video::ITexture* image, const core::rect<s32>& pos) = 0;
 
 		//! Sets the sprite bank used by the button
-		virtual void setSpriteBank(IGUISpriteBank* bank) = 0;
+		virtual void setSpriteBank(IGUISpriteBank* bank=0) = 0;
 
 		//! Sets the animated sprite for a specific button state
 		/** \param index: Number of the sprite within the sprite bank, use -1 for no sprite
@@ -101,16 +101,16 @@ namespace gui
 		//! Sets if the button should behave like a push button.
 		/** Which means it can be in two states: Normal or Pressed. With a click on the button,
 		the user can change the state of the button. */
-		virtual void setIsPushButton(bool isPushButton) = 0;
+		virtual void setIsPushButton(bool isPushButton=true) = 0;
 
 		//! Sets the pressed state of the button if this is a pushbutton
-		virtual void setPressed(bool pressed) = 0;
+		virtual void setPressed(bool pressed=true) = 0;
 
 		//! Returns if the button is currently pressed
 		virtual bool isPressed() const = 0;
 
 		//! Sets if the alpha channel should be used for drawing background images on the button (default is false)
-		virtual void setUseAlphaChannel(bool useAlphaChannel) = 0;
+		virtual void setUseAlphaChannel(bool useAlphaChannel=true) = 0;
 
 		//! Returns if the alpha channel should be used for drawing background images on the button
 		virtual bool isAlphaChannelUsed() const = 0;
@@ -119,10 +119,16 @@ namespace gui
 		virtual bool isPushButton() const = 0;
 
 		//! Sets if the button should use the skin to draw its border and button face (default is true)
-		virtual void setDrawBorder(bool border) = 0;
+		virtual void setDrawBorder(bool border=true) = 0;
 
 		//! Returns if the border and button face are being drawn using the skin
 		virtual bool isDrawingBorder() const = 0;
+
+		//! Sets if the button should scale the button images to fit
+		virtual void setScaleImage(bool scaleImage=true) = 0;
+
+		//! Checks whether the button scales the used images
+		virtual bool isScalingImage() const = 0;
 	};
 
 

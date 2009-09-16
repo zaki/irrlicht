@@ -4,7 +4,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 
 #include "CIrrDeviceWin32.h"
 #include "IEventReceiver.h"
@@ -35,7 +35,8 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
+		IVideoDriver* createOpenGLDriver(const SIrrlichtCreationParameters& params, 
+			io::IFileSystem* io, CIrrDeviceWin32* device);
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OGLES1_
@@ -167,7 +168,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		dev = getDeviceFromHWnd(hWnd);
 		if (dev)
+		{
 			dev->postEventFromUser(event);
+
+			if ( event.MouseInput.Event == irr::EMIE_LMOUSE_PRESSED_DOWN )
+			{
+				irr::u32 clicks = dev->checkSuccessiveClicks(event.MouseInput.X, event.MouseInput.Y);
+				if ( clicks == 2 )
+				{
+					event.MouseInput.Event = irr::EMIE_MOUSE_DOUBLE_CLICK;
+					dev->postEventFromUser(event);
+				}
+				else if ( clicks == 3 )
+				{
+					event.MouseInput.Event = irr::EMIE_MOUSE_TRIPLE_CLICK;
+					dev->postEventFromUser(event);
+				}
+			}
+		}
 		return 0;
 	}
 
@@ -184,6 +202,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_ERASEBKGND:
 		return 0;
 
+	case WM_SYSKEYDOWN:
+	case WM_SYSKEYUP:
 	case WM_KEYDOWN:
 	case WM_KEYUP:
 		{
@@ -191,21 +211,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 			event.EventType = irr::EET_KEY_INPUT_EVENT;
 			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
-			event.KeyInput.PressedDown = (message==WM_KEYDOWN);
-			dev = getDeviceFromHWnd(hWnd);
+			event.KeyInput.PressedDown = (message==WM_KEYDOWN || message == WM_SYSKEYDOWN);
 
 			WORD KeyAsc=0;
 			GetKeyboardState(allKeys);
 			ToAscii((UINT)wParam,(UINT)lParam,allKeys,&KeyAsc,0);
 
+			if (event.KeyInput.Key==irr::KEY_SHIFT)
+			{
+				if ((allKeys[VK_LSHIFT] & 0x80)!=0)
+					event.KeyInput.Key=irr::KEY_LSHIFT;
+				else if ((allKeys[VK_RSHIFT] & 0x80)!=0)
+					event.KeyInput.Key=irr::KEY_RSHIFT;
+			}
 			event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
 			event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
 			event.KeyInput.Char = (KeyAsc & 0x00ff); //KeyAsc >= 0 ? KeyAsc : 0;
 
+			dev = getDeviceFromHWnd(hWnd);
 			if (dev)
 				dev->postEventFromUser(event);
 
-			return 0;
+			if (message == WM_SYSKEYDOWN || message == WM_SYSKEYUP)
+				return DefWindowProc(hWnd, message, wParam, lParam);
+			else
+				return 0;
 		}
 
 	case WM_SIZE:
@@ -346,6 +376,9 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	Win32CursorControl = new CCursorControl(CreationParams.WindowSize, HWnd, CreationParams.Fullscreen);
 	CursorControl = Win32CursorControl;
 
+	// initialize doubleclicks with system values
+	MouseMultiClicks.DoubleClickTime = GetDoubleClickTime();
+
 	// create driver
 
 	createDriver();
@@ -434,7 +467,7 @@ void CIrrDeviceWin32::createDriver()
 		if (CreationParams.Fullscreen)
 			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
 
-		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem);
+		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
 		if (!VideoDriver)
 		{
 			os::Printer::log("Could not create OpenGL driver.", ELL_ERROR);
@@ -575,6 +608,7 @@ void CIrrDeviceWin32::resizeIfNecessary()
 		os::Printer::log(tmp);
 
 		getVideoDriver()->OnResize(irr::core::dimension2du((u32)r.right, (u32)r.bottom));
+		getWin32CursorControl()->OnResize(getVideoDriver()->getScreenSize());
 	}
 
 	Resized = false;
@@ -965,6 +999,28 @@ void CIrrDeviceWin32::minimizeWindow()
 }
 
 
+//! Maximizes the window.
+void CIrrDeviceWin32::maximizeWindow()
+{
+	WINDOWPLACEMENT wndpl;
+	wndpl.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(HWnd, &wndpl);
+	wndpl.showCmd = SW_SHOWMAXIMIZED;
+	SetWindowPlacement(HWnd, &wndpl);
+}
+
+
+//! Restores the window to its original size.
+void CIrrDeviceWin32::restoreWindow()
+{
+	WINDOWPLACEMENT wndpl;
+	wndpl.length = sizeof(WINDOWPLACEMENT);
+	GetWindowPlacement(HWnd, &wndpl);
+	wndpl.showCmd = SW_SHOWNORMAL;
+	SetWindowPlacement(HWnd, &wndpl);
+}
+
+
 bool CIrrDeviceWin32::activateJoysticks(core::array<SJoystickInfo> & joystickInfo)
 {
 #if defined _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
@@ -1124,24 +1180,7 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 
 }
 
-extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
-	const SIrrlichtCreationParameters& parameters)
-{
-	CIrrDeviceWin32* dev = new CIrrDeviceWin32(parameters);
-
-	if (dev && !dev->getVideoDriver() && parameters.DriverType != video::EDT_NULL)
-	{
-		dev->closeDevice(); // destroy window
-		dev->run(); // consume quit message
-		dev->drop();
-		dev = 0;
-	}
-
-	return dev;
-}
-
-
 } // end namespace
 
-#endif // _IRR_USE_WINDOWS_DEVICE_
+#endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 

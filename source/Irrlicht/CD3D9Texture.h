@@ -29,10 +29,10 @@ public:
 
 	//! constructor
 	CD3D9Texture(IImage* image, CD3D9Driver* driver,
-		u32 flags, const core::string<c16>& name);
+		u32 flags, const io::path& name);
 
 	//! rendertarget constructor
-	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const core::string<c16>& name,
+	CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& size, const io::path& name,
 		const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! destructor
@@ -79,9 +79,6 @@ private:
 	friend class CD3D9Driver;
 
 	void createRenderTarget(const ECOLOR_FORMAT format = ECF_UNKNOWN);
-
-	//! returns the size of a texture which would be the optimize size for rendering it
-	inline s32 getTextureSizeFromSurfaceSize(s32 size) const;
 
 	//! creates the hardware texture
 	bool createTexture(u32 flags, IImage * image);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="tests"
 	ProjectGUID="{2A1DE18B-F678-4A94-A996-E848E20B2983}"
 	RootNamespace="tests"
@@ -211,6 +211,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\filesystem.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\flyCircleAnimator.cpp"
 				>
 			</File>
@@ -302,6 +306,10 @@
 				RelativePath=".\writeImageToFile.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\zipReader.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -312,12 +320,6 @@
 				RelativePath=".\testUtils.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
 		</Filter>
 	</Files>
 	<Globals>

@@ -1,4 +1,7 @@
-VERSION = 1.6.0-SVN
+VERSION_MAJOR = 1
+VERSION_MINOR = 6
+VERSION_RELEASE = 0-SVN
+VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_RELEASE)
 # Irrlicht Engine 1.6.0-SVN
 # Makefile for Linux
 #
@@ -14,8 +17,8 @@ VERSION = 1.6.0-SVN
 # make sharedlib
 # make install
 #
-# Please note that Irrlicht as shared lib is just experimental and
-# probably not tested.
+# For cross-compilation for Win32 under Linux, just use the win32 targets. You have to set
+# at least CXX, CC, and AR to the proper binaries.
 #
 
 #List of object files, separated based on engine architecture
@@ -33,7 +36,7 @@ IRRIMAGEOBJ = CColorConverter.o CImage.o CImageLoaderBMP.o CImageLoaderJPG.o CIm
 	CImageWriterBMP.o CImageWriterJPG.o CImageWriterPCX.o CImageWriterPNG.o CImageWriterPPM.o CImageWriterPSD.o CImageWriterTGA.o
 IRRVIDEOOBJ = CVideoModeList.o CFPSCounter.o $(IRRDRVROBJ) $(IRRIMAGEOBJ)
 IRRSWRENDEROBJ = CSoftwareDriver.o CSoftwareTexture.o CTRFlat.o CTRFlatWire.o CTRGouraud.o CTRGouraudWire.o CTRTextureFlat.o CTRTextureFlatWire.o CTRTextureGouraud.o CTRTextureGouraudAdd.o CTRTextureGouraudNoZ.o CTRTextureGouraudWire.o CZBuffer.o CTRTextureGouraudVertexAlpha2.o CTRTextureGouraudNoZ2.o CTRTextureLightMap2_M2.o CTRTextureLightMap2_M4.o CTRTextureLightMap2_M1.o CSoftwareDriver2.o CSoftwareTexture2.o CTRTextureGouraud2.o CTRGouraud2.o CTRGouraudAlpha2.o CTRGouraudAlphaNoZ2.o CTRTextureDetailMap2.o CTRTextureGouraudAdd2.o CTRTextureGouraudAddNoZ2.o CTRTextureWire2.o CTRTextureLightMap2_Add.o CTRTextureLightMapGouraud2_M4.o IBurningShader.o CTRTextureBlend.o CTRTextureGouraudAlpha.o CTRTextureGouraudAlphaNoZ.o CDepthBuffer.o CBurningShader_Raster_Reference.o
-IRRIOOBJ = CFileList.o CFileSystem.o CLimitReadFile.o CMemoryFile.o CReadFile.o CWriteFile.o CXMLReader.o CXMLWriter.o CZipReader.o CPakReader.o irrXML.o CAttributes.o
+IRRIOOBJ = CFileList.o CFileSystem.o CLimitReadFile.o CMemoryFile.o CReadFile.o CWriteFile.o CXMLReader.o CXMLWriter.o CZipReader.o CPakReader.o CTarReader.o CMountPointReader.o irrXML.o CAttributes.o
 IRROTHEROBJ = CIrrDeviceSDL.o CIrrDeviceLinux.o CIrrDeviceConsole.o CIrrDeviceStub.o CIrrDeviceWin32.o CLogger.o COSOperator.o Irrlicht.o os.o
 IRRGUIOBJ = CGUIButton.o CGUICheckBox.o CGUIComboBox.o CGUIContextMenu.o CGUIEditBox.o CGUIEnvironment.o CGUIFileOpenDialog.o CGUIFont.o CGUIImage.o CGUIInOutFader.o CGUIListBox.o CGUIMenu.o CGUIMeshViewer.o CGUIMessageBox.o CGUIModalScreen.o CGUIScrollBar.o CGUISpinBox.o CGUISkin.o CGUIStaticText.o CGUITabControl.o CGUITable.o CGUIToolBar.o CGUIWindow.o CGUIColorSelectDialog.o CDefaultGUIElementFactory.o CGUISpriteBank.o CGUIImageList.o CGUITreeView.o
 ZLIBOBJ = zlib/adler32.o zlib/compress.o zlib/crc32.o zlib/deflate.o zlib/inffast.o zlib/inflate.o zlib/inftrees.o zlib/trees.o zlib/uncompr.o zlib/zutil.o
@@ -51,7 +54,7 @@ OGLESINCLUDES = -I$(HOME)/irrlicht/SDKPackage-ogles1/Builds/OGLES/Include -I$(HO
 OGLESLINK = -L$(HOME)/irrlicht/SDKPackage-ogles1/Builds/OGLES/LinuxPC/Lib -lGLES_CM
 CXXINCS = -I../../include -Izlib -Ijpeglib -Ilibpng
 CPPFLAGS = $(CXXINCS) $(OGLESINCLUDES) -DIRRLICHT_EXPORTS=1
-CXXFLAGS = -Wall -pipe
+CXXFLAGS = -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
 ifndef NDEBUG
 CXXFLAGS += -g -D_DEBUG
 else
@@ -101,7 +104,7 @@ all linux: staticlib
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/Linux
 sharedlib: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).1 -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
@@ -123,22 +126,22 @@ staticlib_win32: $(STATIC_LIB)
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/MacOSX
 sharedlib_osx: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).1 -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Installs Irrlicht if it was created as shared lib
 install:
 	$(RM) -r $(INSTALL_DIR)/../include/irrlicht
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
-	cp -r ../../include $(INSTALL_DIR)/../include/irrlicht
+	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht/
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
-	cd $(INSTALL_DIR) && ln -s libIrrlicht.so.$(VERSION) $(SHARED_LIB)
+	cd $(INSTALL_DIR) && ln -s -f libIrrlicht.so.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)
 
 install_osx:
 	$(RM) -r $(INSTALL_DIR)/../include/irrlicht
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
-	cp -r ../../include $(INSTALL_DIR)/../include/irrlicht
+	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
 	cd $(INSTALL_DIR) && ln -s libIrrlicht.dylib.$(VERSION) $(SHARED_LIB)
 	ldconfig -n $(INSTALL_DIR)

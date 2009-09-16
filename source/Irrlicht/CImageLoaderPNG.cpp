@@ -38,7 +38,7 @@ void PNGAPI user_read_data_fcn(png_structp png_ptr, png_bytep data, png_size_t l
 
 	// changed by zola {
 	io::IReadFile* file=(io::IReadFile*)png_ptr->io_ptr;
-	check=(png_size_t) file->read((void*)data,length);
+	check=(png_size_t) file->read((void*)data,(u32)length);
 	// }
 
 	if (check != length)
@@ -49,7 +49,7 @@ void PNGAPI user_read_data_fcn(png_structp png_ptr, png_bytep data, png_size_t l
 
 //! returns true if the file maybe is able to be loaded by this class
 //! based on the file extension (e.g. ".tga")
-bool CImageLoaderPng::isALoadableFileExtension(const core::string<c16>& filename) const
+bool CImageLoaderPng::isALoadableFileExtension(const io::path& filename) const
 {
 #ifdef _IRR_COMPILE_WITH_LIBPNG_
 	return core::hasFileExtension ( filename, "png" );

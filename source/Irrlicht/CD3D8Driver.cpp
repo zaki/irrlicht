@@ -375,7 +375,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 		pID3DDevice->SetRenderState(D3DRS_MULTISAMPLEANTIALIAS, TRUE);
 
 	// set fog mode
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
 	// set exposed data
 	ExposedData.D3D8.D3D8 = pID3D;
@@ -542,7 +542,7 @@ bool CD3D8Driver::reset()
 
 	setVertexShader(EVT_STANDARD);
 	setRenderStates3DMode();
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 	setAmbientLight(AmbientLight);
 
 	return true;
@@ -615,15 +615,15 @@ void CD3D8Driver::setTransform(E_TRANSFORMATION_STATE state,
 		pID3DDevice->SetTransform( D3DTS_PROJECTION, (D3DMATRIX*)((void*)mat.pointer()));
 		Transformation3DChanged = true;
 		break;
-	case ETS_TEXTURE_0:
-	case ETS_TEXTURE_1:
-	case ETS_TEXTURE_2:
-	case ETS_TEXTURE_3:
-		pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
-		pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
-			(D3DMATRIX*)((void*)mat.pointer()));
-		break;
 	case ETS_COUNT:
+		return;
+	default:
+		if (state-ETS_TEXTURE_0 < MATERIAL_MAX_TEXTURES)
+		{
+			pID3DDevice->SetTextureStageState( state - ETS_TEXTURE_0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_COUNT2 );
+			pID3DDevice->SetTransform((D3DTRANSFORMSTATETYPE)(D3DTS_TEXTURE0+ ( state - ETS_TEXTURE_0 )),
+				(D3DMATRIX*)((void*)mat.pointer()));
+		}
 		break;
 	}
 
@@ -674,7 +674,7 @@ void CD3D8Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const core::string<c16>& name)
+video::ITexture* CD3D8Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
 {
 	return new CD3D8Texture(surface, this, TextureCreationFlags, name);
 }
@@ -793,7 +793,7 @@ bool CD3D8Driver::setRenderTarget(video::ITexture* texture,
 
 //! Creates a render target texture.
 ITexture* CD3D8Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
-											  const core::string<c16>& name,
+											  const io::path& name,
 											  const ECOLOR_FORMAT format)
 {
 	ITexture* tex = new CD3D8Texture(this, size, name);
@@ -850,64 +850,114 @@ void CD3D8Driver::drawVertexPrimitiveList(const void* vertices,
 	if (!vertexCount || !primitiveCount)
 		return;
 
+	draw2D3DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount,
+		vType, pType, iType, true);
+}
+
+
+//! draws a vertex primitive list in 2d
+void CD3D8Driver::draw2DVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType)
+{
+	if (!checkPrimitiveCount(primitiveCount))
+		return;
+
+	CNullDriver::draw2DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount, vType, pType,iType);
+
+	if (!vertexCount || !primitiveCount)
+		return;
+
+	draw2D3DVertexPrimitiveList(vertices, vertexCount, indexList, primitiveCount,
+		vType, pType, iType, false);
+}
+
+
+void CD3D8Driver::draw2D3DVertexPrimitiveList(const void* vertices,
+		u32 vertexCount, const void* indexList, u32 primitiveCount,
+		E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
+		E_INDEX_TYPE iType, bool is3D)
+{
 	setVertexShader(vType);
 
 	const u32 stride = getVertexPitchFromType(vType);
 
-	if (setRenderStates3DMode())
+	D3DFORMAT indexType=D3DFMT_UNKNOWN;
+	switch (iType)
 	{
-		switch (pType)
+		case (EIT_16BIT):
 		{
-			case scene::EPT_POINT_SPRITES:
-			case scene::EPT_POINTS:
-			{
-				if (pType==scene::EPT_POINT_SPRITES)
-					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&Material.Thickness));
-				f32 tmp=1.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
-				tmp=0.0f;
-				pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-				pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
-				if (pType==scene::EPT_POINT_SPRITES)
-					pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
-			}
-			break;
-			case scene::EPT_LINE_STRIP:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_LINE_LOOP:
-			{
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-				u16 tmpIndices[] = {0, primitiveCount};
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-					1, tmpIndices, D3DFMT_INDEX16, vertices, stride);
-			}
-			break;
-			case scene::EPT_LINES:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_TRIANGLE_STRIP:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_TRIANGLE_FAN:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
-			break;
-			case scene::EPT_TRIANGLES:
-				pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
-					primitiveCount, indexList, D3DFMT_INDEX16, vertices, stride);
+			indexType=D3DFMT_INDEX16;
 			break;
 		}
+		case (EIT_32BIT):
+		{
+			indexType=D3DFMT_INDEX32;
+			break;
+		}
+	}
+
+	if (is3D)
+	{
+		if (!setRenderStates3DMode())
+			return;
+	}
+	else
+		setRenderStates2DMode(true, (Material.getTexture(0) != 0), true);
+
+	switch (pType)
+	{
+		case scene::EPT_POINT_SPRITES:
+		case scene::EPT_POINTS:
+		{
+			f32 tmp=Material.Thickness/getScreenSize().Height;
+			if (pType==scene::EPT_POINT_SPRITES)
+				pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, TRUE);
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE, *(DWORD*)(&tmp));
+			tmp=1.0f;
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_A, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_B, *(DWORD*)(&tmp));
+			pID3DDevice->SetRenderState(D3DRS_POINTSIZE_MIN, *(DWORD*)(&tmp));
+			tmp=0.0f;
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALE_C, *(DWORD*)(&tmp));
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_POINTLIST, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+			pID3DDevice->SetRenderState(D3DRS_POINTSCALEENABLE, FALSE);
+			if (pType==scene::EPT_POINT_SPRITES)
+				pID3DDevice->SetRenderState(D3DRS_POINTSPRITEENABLE, FALSE);
+		}
+		break;
+		case scene::EPT_LINE_STRIP:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_LINE_LOOP:
+		{
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINESTRIP, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+			u16 tmpIndices[] = {0, primitiveCount};
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+				1, tmpIndices, indexType, vertices, stride);
+		}
+		break;
+		case scene::EPT_LINES:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_LINELIST, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_TRIANGLE_STRIP:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLESTRIP, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_TRIANGLE_FAN:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLEFAN, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
+		case scene::EPT_TRIANGLES:
+			pID3DDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, vertexCount,
+				primitiveCount, indexList, indexType, vertices, stride);
+		break;
 	}
 }
 
@@ -1680,9 +1730,7 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 			SMaterial mat;
 			mat.ZBuffer=ECFN_NEVER;
 			mat.Lighting=false;
-			mat.FrontfaceCulling=false;
-			mat.BackfaceCulling=true;
-			mat.TextureLayer[0].TextureWrap=ETC_REPEAT;
+			mat.AntiAliasing=video::EAAM_OFF;
 			mat.TextureLayer[0].BilinearFilter=false;
 			setBasicRenderStates(mat, mat, true);
 			// fix everything that is wrongly set by SMaterial default
@@ -1964,28 +2012,25 @@ u32 CD3D8Driver::getMaximalPrimitiveCount() const
 
 
 //! Sets the fog mode.
-void CD3D8Driver::setFog(SColor color, bool linearFog, f32 start,
+void CD3D8Driver::setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 	f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(color, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(color, fogType, start, end, density, pixelFog, rangeFog);
 
 	if (!pID3DDevice)
 		return;
 
 	pID3DDevice->SetRenderState(D3DRS_FOGCOLOR, color.color);
 
+	pID3DDevice->SetRenderState(
 #if defined( _IRR_XBOX_PLATFORM_)
-	pID3DDevice->SetRenderState(
-		pixelFog ? D3DRS_FOGTABLEMODE : D3DRS_FOGTABLEMODE,
-		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
-
+		D3DRS_FOGTABLEMODE,
 #else
-	pID3DDevice->SetRenderState(
 		pixelFog ? D3DRS_FOGTABLEMODE : D3DRS_FOGVERTEXMODE,
-		linearFog ? D3DFOG_LINEAR : D3DFOG_EXP);
 #endif
+		(fogType==EFT_FOG_LINEAR)? D3DFOG_LINEAR : (fogType==EFT_FOG_EXP)?D3DFOG_EXP:D3DFOG_EXP2);
 
-	if(linearFog)
+	if (fogType==EFT_FOG_LINEAR)
 	{
 		pID3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&start));
 		pID3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&end));
@@ -1994,7 +2039,7 @@ void CD3D8Driver::setFog(SColor color, bool linearFog, f32 start,
 		pID3DDevice->SetRenderState(D3DRS_FOGDENSITY, *(DWORD*)(&density));
 
 	if(!pixelFog)
-		pID3DDevice->SetRenderState	(D3DRS_RANGEFOGENABLE, rangeFog);
+		pID3DDevice->SetRenderState(D3DRS_RANGEFOGENABLE, rangeFog);
 }
 
 

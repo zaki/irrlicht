@@ -12,6 +12,7 @@
 #include "ITerrainSceneNode.h"
 #include "SMesh.h"
 #include "CDynamicMeshBuffer.h"
+#include "path.h"
 
 namespace irr
 {
@@ -329,7 +330,7 @@ namespace scene
 		// needed for (de)serialization
 		f32 TCoordScale1;
 		f32 TCoordScale2;
-		core::string<c16> HeightmapFile;
+		io::path HeightmapFile;
 		io::IFileSystem* FileSystem;
 	};
 

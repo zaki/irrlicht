@@ -2,7 +2,6 @@
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
-#include "irrlicht.h"
 
 using namespace irr;
 using namespace core;
@@ -49,7 +48,7 @@ bool testGeometryCreator(void)
 	{
 		smgr->drawAll();
 		driver->endScene();
-		result = takeScreenshotAndCompareAgainstReference(driver, "-testGeometryCreator.png", 100);
+		result = takeScreenshotAndCompareAgainstReference(driver, "-testGeometryCreator.png", 99.999f);
 	}
 
     device->drop();

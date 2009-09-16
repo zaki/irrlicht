@@ -13,6 +13,8 @@
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	#define GL_GLEXT_LEGACY 1
+#else
+	#define GL_GLEXT_PROTOTYPES 1
 #endif
 #ifdef _IRR_WINDOWS_API_
 	// include windows headers for HWND
@@ -22,9 +24,9 @@
 #ifdef _MSC_VER
 	#pragma comment(lib, "OpenGL32.lib")
 #endif
-#elif defined(_IRR_USE_OSX_DEVICE_)
+#elif defined(_IRR_OSX_PLATFORM_)
 	#include <OpenGL/gl.h>
-#elif defined(_IRR_USE_SDL_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#define NO_SDL_GLEXT
 	#include <SDL/SDL_video.h>
 	#include <SDL/SDL_opengl.h>
@@ -49,7 +51,7 @@ class COpenGLTexture : public ITexture
 public:
 
 	//! constructor
-	COpenGLTexture(IImage* surface, const core::string<c16>& name, COpenGLDriver* driver=0);
+	COpenGLTexture(IImage* surface, const io::path& name, COpenGLDriver* driver=0);
 
 	//! destructor
 	virtual ~COpenGLTexture();
@@ -103,7 +105,7 @@ public:
 protected:
 
 	//! protected constructor with basic setup, no GL texture name created, for derived classes
-	COpenGLTexture(const core::string<c16>& name, COpenGLDriver* driver);
+	COpenGLTexture(const io::path& name, COpenGLDriver* driver);
 
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
@@ -140,7 +142,7 @@ class COpenGLFBOTexture : public COpenGLTexture
 public:
 
 	//! FrameBufferObject constructor
-	COpenGLFBOTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, 
+	COpenGLFBOTexture(const core::dimension2d<u32>& size, const io::path& name,
 		COpenGLDriver* driver = 0, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 	//! destructor
@@ -169,7 +171,7 @@ class COpenGLFBODepthTexture : public COpenGLFBOTexture
 {
 public:
 	//! FrameBufferObject depth constructor
-	COpenGLFBODepthTexture(const core::dimension2d<u32>& size, const core::string<c16>& name, COpenGLDriver* driver=0, bool useStencil=false);
+	COpenGLFBODepthTexture(const core::dimension2d<u32>& size, const io::path& name, COpenGLDriver* driver=0, bool useStencil=false);
 
 	//! destructor
 	virtual ~COpenGLFBODepthTexture();

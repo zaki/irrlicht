@@ -62,10 +62,30 @@ namespace video
 		ETS_TEXTURE_2,
 		//! Texture transformation
 		ETS_TEXTURE_3,
+#if _IRR_MATERIAL_MAX_TEXTURES_>4
+		//! Texture transformation
+		ETS_TEXTURE_4,
+#if _IRR_MATERIAL_MAX_TEXTURES_>5
+		//! Texture transformation
+		ETS_TEXTURE_5,
+#if _IRR_MATERIAL_MAX_TEXTURES_>6
+		//! Texture transformation
+		ETS_TEXTURE_6,
+#if _IRR_MATERIAL_MAX_TEXTURES_>7
+		//! Texture transformation
+		ETS_TEXTURE_7,
+#endif
+#endif
+#endif
+#endif
 		//! Not used
 		ETS_COUNT
 	};
 
+	//! enumeration for signalling ressources which were lost after the last render cycle
+	/** These values can be signalled by the driver, telling the app that some ressources
+	were lost and need to be recreated. Irrlicht will sometimes recreate the actual objects,
+	but the content needs to be recreated by the application. */
 	enum E_LOST_RESSOURCE
 	{
 		//! The whole device/driver is lost
@@ -78,6 +98,8 @@ namespace video
 		ELR_HW_BUFFERS = 8
 	};
 
+	//! Special render targets, which usually map to dedicated hardware
+	/** These render targets (besides 0 and 1) need not be supported by gfx cards */
 	enum E_RENDER_TARGET
 	{
 		//! Render target is the main color frame buffer
@@ -100,6 +122,14 @@ namespace video
 		ERT_AUX_BUFFER3,
 		//! Auxiliary buffer 4
 		ERT_AUX_BUFFER4
+	};
+
+	//! Enum for the types of fog distributions to choose from
+	enum E_FOG_TYPE
+	{
+		EFT_FOG_EXP=0,
+		EFT_FOG_LINEAR,
+		EFT_FOG_EXP2
 	};
 
 	struct SOverrideMaterial
@@ -262,7 +292,7 @@ namespace video
 		\return Pointer to the texture, or 0 if the texture
 		could not be loaded. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
-		virtual ITexture* getTexture(const core::string<c16>& filename) = 0;
+		virtual ITexture* getTexture(const io::path& filename) = 0;
 
 		//! Get access to a named texture.
 		/** Loads the texture from disk if it is not
@@ -292,7 +322,7 @@ namespace video
 		//! Renames a texture
 		/** \param texture Pointer to the texture to rename.
 		\param newName New name for the texture. This should be a unique name. */
-		virtual void renameTexture(ITexture* texture, const core::string<c16>& newName) = 0;
+		virtual void renameTexture(ITexture* texture, const io::path& newName) = 0;
 
 		//! Creates an empty texture of specified size.
 		/** \param size: Size of the texture.
@@ -305,7 +335,7 @@ namespace video
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
 		virtual ITexture* addTexture(const core::dimension2d<u32>& size,
-			const core::string<c16>& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
+			const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
 
 		//! Creates a texture from an IImage.
 		/** \param name A name for the texture. Later calls of
@@ -314,7 +344,7 @@ namespace video
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const core::string<c16>& name, IImage* image) = 0;
+		virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and
@@ -327,7 +357,7 @@ namespace video
 		could not be created. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
+				const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
 
 		//! Removes a texture from the texture cache and deletes it.
 		/** This method can free a lot of memory!
@@ -465,15 +495,45 @@ namespace video
 		//! Draws a vertex primitive list
 		/** Note that, depending on the index type, some vertices might be not
 		accessible through the index list. The limit is at 65535 vertices for 16bit
-		indices.
+		indices. Please note that currently not all primitives are available for
+		all drivers, and some might be emulated via triangle renders.
 		\param vertices Pointer to array of vertices.
 		\param vertexCount Amount of vertices in the array.
-		\param indexList Pointer to array of indices.
+		\param indexList Pointer to array of indices. These define the vertices used
+		for each primitive. Depending on the pType, indices are interpreted as single
+		objects (for point like primitives), pairs (for lines), triplets (for
+		triangles), or quads.
 		\param primCount Amount of Primitives
 		\param vType Vertex type, e.g. video::EVT_STANDARD for S3DVertex.
 		\param pType Primitive type, e.g. scene::EPT_TRIANGLE_FAN for a triangle fan.
-		\param iType Index type, e.g. video::EIT_16BIT for a triangle fan. */
+		\param iType Index type, e.g. video::EIT_16BIT for 16bit indices. */
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primCount,
+				E_VERTEX_TYPE vType=EVT_STANDARD,
+				scene::E_PRIMITIVE_TYPE pType=scene::EPT_TRIANGLES,
+				E_INDEX_TYPE iType=EIT_16BIT) =0;
+
+		//! Draws a vertex primitive list in 2d
+		/** Compared to the general (3d) version of this method, this
+		one sets up a 2d render mode, and uses only x and y of vectors.
+		Note that, depending on the index type, some vertices might be
+		not accessible through the index list. The limit is at 65535
+		vertices for 16bit indices. Please note that currently not all
+		primitives are available for all drivers, and some might be
+		emulated via triangle renders. This function is not available
+		for the sw drivers.
+		\param vertices Pointer to array of vertices.
+		\param vertexCount Amount of vertices in the array.
+		\param indexList Pointer to array of indices. These define the
+		vertices used for each primitive. Depending on the pType,
+		indices are interpreted as single objects (for point like
+		primitives), pairs (for lines), triplets (for triangles), or
+		quads.
+		\param primCount Amount of Primitives
+		\param vType Vertex type, e.g. video::EVT_STANDARD for S3DVertex.
+		\param pType Primitive type, e.g. scene::EPT_TRIANGLE_FAN for a triangle fan.
+		\param iType Index type, e.g. video::EIT_16BIT for 16bit indices. */
+		virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primCount,
 				E_VERTEX_TYPE vType=EVT_STANDARD,
 				scene::E_PRIMITIVE_TYPE pType=scene::EPT_TRIANGLES,
@@ -636,11 +696,34 @@ namespace video
 		255, the image will be transparent.
 		\param useAlphaChannelOfTexture: If true, the alpha channel of
 		the texture is used to draw the image. */
-		virtual void draw2DImage(const video::ITexture* texture,
+		virtual void draw2DImageBatch(const video::ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::array<core::rect<s32> >& sourceRects,
 				const core::array<s32>& indices,
 				s32 kerningWidth=0,
+				const core::rect<s32>* clipRect=0,
+				SColor color=SColor(255,255,255,255),
+				bool useAlphaChannelOfTexture=false) =0;
+
+		//! Draws a set of 2d images, using a color and the alpha channel of the texture.
+		/** All drawings are clipped against clipRect (if != 0).
+		The subtextures are defined by the array of sourceRects and are
+		positioned using the array of positions.
+		\param texture Texture to be drawn.
+		\param pos Array of upper left 2d destinations where the images
+		will be drawn.
+		\param sourceRects Source rectangles of the image.
+		\param clipRect Pointer to rectangle on the screen where the
+		images are clipped to.
+		If this pointer is 0 then the image is not clipped.
+		\param color Color with which the image is drawn.
+		Note that the alpha component is used. If alpha is other than
+		255, the image will be transparent.
+		\param useAlphaChannelOfTexture: If true, the alpha channel of
+		the texture is used to draw the image. */
+		virtual void draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
 				const core::rect<s32>* clipRect=0,
 				SColor color=SColor(255,255,255,255),
 				bool useAlphaChannelOfTexture=false) =0;
@@ -793,11 +876,11 @@ namespace video
 		you want per-pixel fog.
 		\param rangeFog Set this to true to enable range-based vertex
 		fog. The distance from the viewer is used to compute the fog,
-		not the z-coordinate. This is better, but slower. This is only
-		available with D3D and vertex fog. */
+		not the z-coordinate. This is better, but slower. This might not
+		be available with all drivers and fog settings. */
 		virtual void setFog(SColor color=SColor(0,255,255,255),
-				bool linearFog=true, f32 start=50.0f, f32 end=100.0f,
-				f32 density=0.01f,
+				E_FOG_TYPE fogType=EFT_FOG_LINEAR,
+				f32 start=50.0f, f32 end=100.0f, f32 density=0.01f,
 				bool pixelFog=false, bool rangeFog=false) =0;
 
 		//! Get the current color format of the color buffer
@@ -896,7 +979,7 @@ namespace video
 		\param flag Texture creation flag.
 		\param enabled Specifies if the given flag should be enabled or
 		disabled. */
-		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled) =0;
+		virtual void setTextureCreationFlag(E_TEXTURE_CREATION_FLAG flag, bool enabled=true) =0;
 
 		//! Returns if a texture creation flag is enabled or disabled.
 		/** You can change this value using setTextureCreationMode().
@@ -913,7 +996,7 @@ namespace video
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
-		virtual IImage* createImageFromFile(const core::string<c16>& filename) = 0;
+		virtual IImage* createImageFromFile(const io::path& filename) = 0;
 
 		//! Creates a software image from a file.
 		/** No hardware texture will be created for this image. This
@@ -933,7 +1016,7 @@ namespace video
 		\param param Control parameter for the backend (e.g. compression
 		level).
 		\return True on successful write. */
-		virtual bool writeImageToFile(IImage* image, const core::string<c16>& filename, u32 param = 0) = 0;
+		virtual bool writeImageToFile(IImage* image, const io::path& filename, u32 param = 0) = 0;
 
 		//! Writes the provided image to a file.
 		/** Requires that there is a suitable image writer registered
@@ -986,13 +1069,25 @@ namespace video
 
 		//! Creates a software image from a part of another image.
 		/**
-		\param imageToCopy Image to copy the the new image in part.
+		\param imageToCopy Image to copy to the new image in part.
 		\param pos Position of rectangle to copy.
 		\param size Extents of rectangle to copy.
 		\return The created image.
 		If you no longer need the image, you should call IImage::drop().
 		See IReferenceCounted::drop() for more information. */
 		virtual IImage* createImage(IImage* imageToCopy,
+				const core::position2d<s32>& pos,
+				const core::dimension2d<u32>& size) =0;
+
+		//! Creates a software image from a part of a texture.
+		/**
+		\param texture Texture to copy to the new image in part.
+		\param pos Position of rectangle to copy.
+		\param size Extents of rectangle to copy.
+		\return The created image.
+		If you no longer need the image, you should call IImage::drop().
+		See IReferenceCounted::drop() for more information. */
+		virtual IImage* createImage(ITexture* texture,
 				const core::position2d<s32>& pos,
 				const core::dimension2d<u32>& size) =0;
 
@@ -1111,7 +1206,7 @@ namespace video
 		if it is not currently loaded.
 		\param filename Name of the texture.
 		\return Pointer to loaded texture, or 0 if not found. */
-		virtual video::ITexture* findTexture(const core::string<c16>& filename) = 0;
+		virtual video::ITexture* findTexture(const io::path& filename) = 0;
 
 		//! Set or unset a clipping plane.
 		/** There are at least 6 clipping planes available for the user

@@ -1,12 +1,12 @@
 // Copyright (C) 2002-2009 Nikolaus Gebhardt
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
-// 
+//
 // I (Nikolaus Gebhardt) did some few changes to Jonas Petersen's original loader:
-// - removed setTexturePath() and replaced with the ISceneManager::getStringParameter()-stuff. 
+// - removed setTexturePath() and replaced with the ISceneManager::getStringParameter()-stuff.
 // - added EAMT_LMTS enumeration value
-// Thanks a lot to Jonas Petersen for his work 
-// on this and that he gave me his permission to add it into Irrlicht. 
+// Thanks a lot to Jonas Petersen for his work
+// on this and that he gave me his permission to add it into Irrlicht.
 /*
 
 CLMTSMeshFileLoader.h
@@ -35,22 +35,22 @@ class CLMTSMeshFileLoader : public IMeshLoader
 {
 public:
 
-	CLMTSMeshFileLoader(io::IFileSystem* fs, 
+	CLMTSMeshFileLoader(io::IFileSystem* fs,
 		video::IVideoDriver* driver, io::IAttributes* parameters);
 
 	virtual ~CLMTSMeshFileLoader();
 
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	virtual IAnimatedMesh* createMesh(io::IReadFile* file);
-	
+
 private:
 	void constructMesh(SMesh* mesh);
 	void loadTextures(SMesh* mesh);
 	void cleanup();
 
 // byte-align structures
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( push, packing )
 #	pragma pack( 1 )
 #	define PACK_STRUCT
@@ -98,7 +98,7 @@ private:
 	} PACK_STRUCT;
 
 // Default alignment
-#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__) 
+#if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)
 #	pragma pack( pop, packing )
 #endif
 

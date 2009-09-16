@@ -21,7 +21,7 @@ namespace video
 {
 
 //! constructor for usual textures
-COpenGLTexture::COpenGLTexture(IImage* origImage, const core::string<c16>& name, COpenGLDriver* driver)
+COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
@@ -54,7 +54,7 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const core::string<c16>& name,
 }
 
 //! constructor for basic setup (only for derived classes)
-COpenGLTexture::COpenGLTexture(const core::string<c16>& name, COpenGLDriver* driver)
+COpenGLTexture::COpenGLTexture(const io::path& name, COpenGLDriver* driver)
 	: ITexture(name), ColorFormat(ECF_A8R8G8B8), Driver(driver), Image(0),
 	TextureName(0), InternalFormat(GL_RGBA), PixelFormat(GL_BGRA_EXT),
 	PixelType(GL_UNSIGNED_BYTE),
@@ -450,7 +450,7 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
-										  const core::string<c16>& name,
+										  const io::path& name,
 										  COpenGLDriver* driver,
 								const ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
@@ -507,32 +507,31 @@ GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORM
 		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
 		case ECF_R16F:
 		{
-#ifdef GL_ARB_texture_float
+#ifdef GL_ARB_texture_rg
 			filtering = GL_NEAREST;
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_RGB16F_ARB;
+			return GL_R16F;
 #else
 			return GL_RGB8;
 #endif
 		}
 		case ECF_G16R16F:
 		{
-#ifdef GL_ARB_texture_float
-			// We haven't got support for this type specifically, so we should use RGB for a close match.
+#ifdef GL_ARB_texture_rg
 			filtering = GL_NEAREST;
-			colorformat = GL_RGB;
+			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RGB16F_ARB;
+			return GL_RG16F;
 #else
 			return GL_RGB8;
 #endif
 		}
 		case ECF_A16B16G16R16F:
 		{
-#ifdef GL_ARB_texture_float
+#ifdef GL_ARB_texture_rg
 			filtering = GL_NEAREST;
 			colorformat = GL_RGBA;
 			type = GL_FLOAT;
@@ -544,25 +543,24 @@ GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORM
 		}
 		case ECF_R32F:
 		{
-#ifdef GL_ARB_texture_float
+#ifdef GL_ARB_texture_rg
 			filtering = GL_NEAREST;
 			colorformat = GL_RED;
 			type = GL_FLOAT;
 
-			return GL_RGB32F_ARB;
+			return GL_R32F;
 #else
 			return GL_RGB8;
 #endif
 		}
 		case ECF_G32R32F:
 		{
-#ifdef GL_ARB_texture_float
-			// We haven't got support for this type specifically, so we should use RGB for a close match.
+#ifdef GL_ARB_texture_rg
 			filtering = GL_NEAREST;
-			colorformat = GL_RGB;
+			colorformat = GL_RG;
 			type = GL_FLOAT;
 
-			return GL_RGB32F_ARB;
+			return GL_RG32F;
 #else
 			return GL_RGB8;
 #endif
@@ -629,7 +627,7 @@ void COpenGLFBOTexture::unbindRTT()
 //! RTT DepthBuffer constructor
 COpenGLFBODepthTexture::COpenGLFBODepthTexture(
 		const core::dimension2d<u32>& size,
-		const core::string<c16>& name,
+		const io::path& name,
 		COpenGLDriver* driver,
 		bool useStencil)
 	: COpenGLFBOTexture(size, name, driver), DepthRenderBuffer(0),

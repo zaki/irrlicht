@@ -1584,3 +1584,61 @@ Changed parameter type (interpolation factor must not be int)
 	vector2d<T> getInterpolated_quadratic(const vector2d<T>& v2, const vector2d<T>& v3, f64 d) const
 	vector2d<T>& interpolate(const vector2d<T>& a, const vector2d<T>& b, f64 d)
 
+Changes for Version 1.5.1
+-------------------------
+This release is a pure bugfixes release, with almost no visible API changes. All changes should be backward compatible (as it's just a minor release), but you have to recompile the app due to changes in the virtual method tables.
+
+dimension2d.h
+Fixed a bug in the operator+=, added operator-= and changed comparison to equal() method.
+	dimension2d<T>& operator-=(const dimension2d<T>& other)
+
+IrrCompileConfig.h
+Added defines to check for the Irrlicht version in the code.
+	IRRLICHT_VERSION_MAJOR
+	IRRLICHT_VERSION_MINOR
+	IRRLICHT_VERSION_REVISION
+	IRRLICHT_VERSION_SVN // only defined if you're using a version from SVN, i.e. not officially released one
+
+IrrlichtDevice.h
+Added static method isDriverSupported which checks the driver support of the library
+	static bool isDriverSupported(video::E_DRIVER_TYPE driver)
+
+irrMath.h
+Added iszero specialization for f64
+	bool iszero(const f64 a, const f64 tolerance = ROUNDING_ERROR_64)
+
+irrXML.h
+Added deleteCallback flag for cleanup of the ReadCallback.
+	IrrXMLReader* createIrrXMLReader(IFileReadCallBack* callback, bool deleteCallback = false);
+	IrrXMLReaderUTF16* createIrrXMLReaderUTF16(IFileReadCallBack* callback, bool deleteCallback = false);
+	IrrXMLReaderUTF32* createIrrXMLReaderUTF32(IFileReadCallBack* callback, bool deleteCallback = false);
+
+ISceneNode.h
+Added getSceneManager to get the currently used scene manager of the node.
+	ISceneManager* getSceneManager(void) const
+
+IVideoDriver.h
+Added default values for vType, pType, and iType
+	virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount, const void* indexList, u32 primCount,
+						E_VERTEX_TYPE vType=EVT_STANDARD, scene::E_PRIMITIVE_TYPE pType=scene::EPT_TRIANGLES, E_INDEX_TYPE iType=EIT_16BIT)
+Added method to draw 2d rectangle outline
+	void draw2DRectangleOutline(const core::recti& pos, SColor color=SColor(255,255,255,255))
+
+matrix4.h
+Added method to get transposedInverse
+	CMatrix4<T> transposedInverse(*this, EM4CONST_INVERSE_TRANSPOSED)
+
+rect.h
+Added typedefs
+	typedef rect<f32> rectf;
+	typedef rect<s32> recti;
+
+SSharedMeshBuffer.h
+Split hardware mapping hint into vertex and index part
+	E_HARDWARE_MAPPING getHardwareMappingHint_Vertex() const
+	E_HARDWARE_MAPPING getHardwareMappingHint_Index() const
+	void setHardwareMappingHint( E_HARDWARE_MAPPING NewMappingHint, E_BUFFER_TYPE buffer=EBT_VERTEX_AND_INDEX )
+
+vector2d.h
+Fix angle calculation for integer vectors
+

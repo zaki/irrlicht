@@ -7,7 +7,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 
 #include "CIrrDeviceStub.h"
 #include "IrrlichtDevice.h"
@@ -64,12 +64,18 @@ namespace irr
 
 		//! Sets if the window should be resizable in windowed mode.
 		virtual void setResizable(bool resize);
-		
+
 		//! Returns true if the window is resizable, false if not
 		virtual bool isResizable() const;
-		
+
 		//! Minimizes the window if possible
 		virtual void minimizeWindow();
+		
+		//! Maximizes the window if possible.
+		virtual void maximizeWindow();
+		
+		//! Restore the window to normal size if possible.
+		virtual void restoreWindow();
 
 		//! Activate any joysticks, and generate events for them.
 		virtual bool activateJoysticks(core::array<SJoystickInfo> & joystickInfo);
@@ -77,6 +83,12 @@ namespace irr
 		//! \return Returns a pointer to a list with all video modes
 		//! supported by the gfx adapter.
 		virtual video::IVideoModeList* getVideoModeList();
+
+		//! Get the device type
+		virtual E_DEVICE_TYPE getType() const
+		{
+				return EIDT_OSX;
+		}
 
 		void flush();
 		void setMouseLocation(int x, int y);
@@ -93,13 +105,13 @@ namespace irr
 		{
 		public:
 
-			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device) 
+			CCursorControl(const core::dimension2d<u32>& wsize, CIrrDeviceMacOSX *device)
 				: WindowSize(wsize), IsVisible(true), InvWindowSize(0.0f, 0.0f), Device(device), UseReferenceRect(false)
 			{
 				CursorPos.X = CursorPos.Y = 0;
-				if (WindowSize.Width!=0) 
+				if (WindowSize.Width!=0)
 					InvWindowSize.Width = 1.0f / WindowSize.Width;
-				if (WindowSize.Height!=0) 
+				if (WindowSize.Height!=0)
 					InvWindowSize.Height = 1.0f / WindowSize.Height;
 			}
 
@@ -222,7 +234,7 @@ namespace irr
 		                    ScreenHeight;
 		bool                IsActive;
 		NSBitmapImageRep   *SoftwareDriverTarget;
-		bool                IsSoftwareRenderer, 
+		bool                IsSoftwareRenderer,
 		                    IsShiftDown,
 		                    IsControlDown,
 		                    IsResizable;
@@ -232,6 +244,6 @@ namespace irr
 
 } // end namespace irr
 
-#endif // _IRR_USE_OSX_DEVICE_
+#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
 #endif // __C_IRR_DEVICE_MACOSX_H_INCLUDED__
 

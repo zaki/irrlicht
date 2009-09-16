@@ -1088,9 +1088,8 @@
 			</File>
 			<File
 				RelativePath=".\COBJMeshWriter.h">
-			</File>
+			</File>
 			<File
-
 				RelativePath=".\CPLYMeshWriter.cpp">
 			</File>
 			<File
@@ -1131,6 +1130,18 @@
 			</File>
 			<File
 				RelativePath=".\CPakReader.h">
+			</File>
+			<File
+				RelativePath=".\CTarReader.cpp">
+			</File>
+			<File
+				RelativePath=".\CTarReader.h">
+			</File>
+			<File
+				RelativePath="CMountPointReader.cpp">
+			</File>
+			<File
+				RelativePath="CMountPointReader.h">
 			</File>
 			<File
 				RelativePath=".\CParticleAnimatedMeshSceneNodeEmitter.cpp">

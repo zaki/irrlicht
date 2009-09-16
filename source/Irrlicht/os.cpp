@@ -7,7 +7,7 @@
 #include "IrrCompileConfig.h"
 #include "irrMath.h"
 
-#if defined(_IRR_USE_SDL_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#include <SDL/SDL_endian.h>
 	#define bswap_16(X) SDL_Swap16(X)
 	#define bswap_32(X) SDL_Swap32(X)
@@ -85,7 +85,7 @@ namespace os
 		// disable hires timer on multiple core systems, bios bugs result in bad hires timers.
 		SYSTEM_INFO sysinfo;
 		GetSystemInfo(&sysinfo);
-		MultiCore = (sysinfo.dwNumberOfProcessors > 1);	
+		MultiCore = (sysinfo.dwNumberOfProcessors > 1);
 #endif
 		HighPerformanceTimerSupport = QueryPerformanceFrequency(&HighPerformanceFreq);
 		initVirtualTimer();
@@ -96,11 +96,11 @@ namespace os
 		if (HighPerformanceTimerSupport)
 		{
 #if !defined(_WIN32_WCE) && !defined (_IRR_XBOX_PLATFORM_)
-			// Avoid potential timing inaccuracies across multiple cores by 
+			// Avoid potential timing inaccuracies across multiple cores by
 			// temporarily setting the affinity of this process to one core.
 			DWORD_PTR affinityMask;
 			if(MultiCore)
-				affinityMask = SetThreadAffinityMask(GetCurrentThread(), 1); 
+				affinityMask = SetThreadAffinityMask(GetCurrentThread(), 1);
 #endif
 			LARGE_INTEGER nTime;
 			BOOL queriedOK = QueryPerformanceCounter(&nTime);
@@ -169,24 +169,23 @@ namespace os
 			Logger->log(message, ll);
 	}
 
-	void Printer::log(const c8* message, const c8* hint, ELOG_LEVEL ll)
-	{
-		if (Logger)
-			Logger->log(message, hint, ll);
-	}
-
-	void Printer::log(const c8* message, const core::string<c16>& hint, ELOG_LEVEL ll)
-	{
-		if (Logger)
-			Logger->log(message, hint.c_str(), ll);
-	}
-
 	void Printer::log(const wchar_t* message, ELOG_LEVEL ll)
 	{
 		if (Logger)
 			Logger->log(message, ll);
 	}
 
+	void Printer::log(const c8* message, const c8* hint, ELOG_LEVEL ll)
+	{
+		if (Logger)
+			Logger->log(message, hint, ll);
+	}
+
+	void Printer::log(const c8* message, const io::path& hint, ELOG_LEVEL ll)
+	{
+		if (Logger)
+			Logger->log(message, hint.c_str(), ll);
+	}
 
 	// our Randomizer is not really os specific, so we
 	// code one for all, which should work on every platform the same,

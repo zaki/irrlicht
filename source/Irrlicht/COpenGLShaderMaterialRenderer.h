@@ -10,6 +10,8 @@
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	#define GL_GLEXT_LEGACY 1
+#else
+	#define GL_GLEXT_PROTOTYPES 1
 #endif
 #ifdef _IRR_WINDOWS_API_
 	#define WIN32_LEAN_AND_MEAN
@@ -17,7 +19,7 @@
 	#include <GL/gl.h>
 #elif defined(_IRR_OSX_PLATFORM_)
 	#include <OpenGL/gl.h>
-#elif defined(_IRR_USE_SDL_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 	#define NO_SDL_GLEXT
 	#include <SDL/SDL_video.h>
 	#include <SDL/SDL_opengl.h>
@@ -67,18 +69,22 @@ protected:
 					IShaderConstantSetCallBack* callback,
 					IMaterialRenderer* baseMaterial, s32 userData=0);
 
+	// must not be called more than once!
 	void init(s32& outMaterialTypeNr, const c8* vertexShaderProgram,
 		const c8* pixelShaderProgram, E_VERTEX_TYPE type);
 
 	bool createPixelShader(const c8* pxsh);
 	bool createVertexShader(const c8* vtxsh);
+	bool checkError(const irr::c8* type);
 
 	COpenGLDriver* Driver;
 	IShaderConstantSetCallBack* CallBack;
 	IMaterialRenderer* BaseMaterial;
 
 	GLuint VertexShader;
-	GLuint PixelShader;
+	// We have 4 values here, [0] is the non-fog version, the other three are
+	// ARB_fog_linear, ARB_fog_exp, and ARB_fog_exp2 in that order
+	core::array<GLuint> PixelShader;
 	s32 UserData;
 };
 

@@ -8,6 +8,7 @@
 #include "IReferenceCounted.h"
 #include "SColor.h"
 #include "rect.h"
+#include "irrString.h"
 
 namespace irr
 {
@@ -47,7 +48,7 @@ public:
 	\param vcenter: Specifies if the text should be centered vertically into the rectangle.
 	\param clip: Optional pointer to a rectangle against which the text will be clipped.
 	If the pointer is null, no clipping will be done. */
-	virtual void draw(const wchar_t* text, const core::rect<s32>& position,
+	virtual void draw(const core::stringw& text, const core::rect<s32>& position,
 		video::SColor color, bool hcenter=false, bool vcenter=false,
 		const core::rect<s32>* clip=0) = 0;
 

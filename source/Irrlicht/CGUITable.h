@@ -27,7 +27,7 @@ namespace gui
 	public:
 		//! constructor
 		CGUITable(IGUIEnvironment* environment, IGUIElement* parent,
-			s32 id, core::rect<s32> rectangle, bool clip=true,
+			s32 id, const core::rect<s32>& rectangle, bool clip=true,
 			bool drawBack=false, bool moveOverSelect=true);
 
 		//! destructor

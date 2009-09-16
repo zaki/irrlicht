@@ -2,10 +2,6 @@
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
-#include "irrlicht.h"
-#include <assert.h>
-#include <float.h>
-#include <limits.h>
 
 using namespace irr;
 using namespace core;
@@ -132,6 +128,7 @@ bool fast_atof(void)
 	accurate &= testCalculation("-123456.789");
 	accurate &= testCalculation("0000123456.789");
 	accurate &= testCalculation("-0000123456.789");
+	accurate &= testCalculation("-0.0690462109446526");
 
 	if(!accurate)
 	{
@@ -168,7 +165,8 @@ bool fast_atof(void)
 		atofTime, fastAtofTime, oldFastAtofTime);
 
 	device->drop();
-	if(fastAtofTime > atofTime)
+
+	if(fastAtofTime > (1.2f*atofTime))
 	{
 		logTestString("The fast method is slower than atof()\n");
 		return false;
@@ -176,4 +174,3 @@ bool fast_atof(void)
 
 	return true;
 }
-

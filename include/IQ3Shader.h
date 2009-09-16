@@ -659,7 +659,7 @@ namespace quake3
 			//return name < other.name;
 		}
 
-		const u32 getGroupSize () const
+		u32 getGroupSize () const
 		{
 			if ( 0 == VarGroup )
 				return 0;

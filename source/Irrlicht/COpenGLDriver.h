@@ -17,6 +17,14 @@
 
 #include "SIrrCreationParameters.h"
 
+namespace irr
+{
+	class CIrrDeviceWin32;
+	class CIrrDeviceLinux;
+	class CIrrDeviceSDL;
+	class CIrrDeviceMacOSX;
+}
+
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
 #include "CNullDriver.h"
@@ -26,6 +34,7 @@
 
 namespace irr
 {
+
 namespace video
 {
 	class COpenGLTexture;
@@ -34,18 +43,24 @@ namespace video
 	{
 	public:
 
-		#if defined(_IRR_WINDOWS_API_) || defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_)
-		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io);
-		#endif
-
-		#ifdef _IRR_USE_OSX_DEVICE_
-		COpenGLDriver(const SIrrlichtCreationParameters& params,
-				io::IFileSystem* io, CIrrDeviceMacOSX *device);
-		#endif
-
-		#ifdef _IRR_WINDOWS_API_
+		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceWin32* device);
 		//! inits the windows specific parts of the open gl driver
-		bool initDriver(SIrrlichtCreationParameters params);
+		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceWin32* device);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceLinux* device);
+		//! inits the GLX specific parts of the open gl driver
+		bool initDriver(SIrrlichtCreationParameters params, CIrrDeviceLinux* device);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceSDL* device);
+		#endif
+
+		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
+		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device);
 		#endif
 
 		//! destructor
@@ -89,6 +104,11 @@ namespace video
 
 		//! draws a vertex primitive list
 		virtual void drawVertexPrimitiveList(const void* vertices, u32 vertexCount,
+				const void* indexList, u32 primitiveCount,
+				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
+
+		//! draws a vertex primitive list in 2d
+		virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
 				const void* indexList, u32 primitiveCount,
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
@@ -202,7 +222,7 @@ namespace video
 		virtual void setViewPort(const core::rect<s32>& area);
 
 		//! Sets the fog mode.
-		virtual void setFog(SColor color, bool linearFog, f32 start,
+		virtual void setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 
 		//! Only used by the internal engine. Used to notify the driver that
@@ -267,7 +287,7 @@ namespace video
 		virtual u32 getMaximalPrimitiveCount() const;
 
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
+				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 
 		//! set or reset render target
 		virtual bool setRenderTarget(video::E_RENDER_TARGET target, bool clearTarget,
@@ -319,7 +339,7 @@ namespace video
 		//! inits the parts of the open gl driver used on all platforms
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OpenGL
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
@@ -343,6 +363,13 @@ namespace video
 		//! free hardware lights exist.
 		//! \param[in] lightIndex: the index of the requesting light
 		void assignHardwareLight(u32 lightIndex);
+
+		//! helper function for render setup.
+		void createColorBuffer(const void* vertices, u32 vertexCount, E_VERTEX_TYPE vType);
+
+		//! helper function doing the actual rendering.
+		void renderArray(const void* indexList, u32 primitiveCount,
+				scene::E_PRIMITIVE_TYPE pType, E_INDEX_TYPE iType);
 
 		core::stringw Name;
 		core::matrix4 Matrices[ETS_COUNT];
@@ -401,11 +428,15 @@ namespace video
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
 			HGLRC HRc; // Permanent Rendering Context
-		#elif defined(_IRR_USE_LINUX_DEVICE_)
+		#endif
+		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 			GLXDrawable Drawable;
-		#elif defined(_IRR_USE_OSX_DEVICE_)
+		#endif
+		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 			CIrrDeviceMacOSX *_device;
 		#endif
+
+		E_DEVICE_TYPE DeviceType;
 	};
 
 } // end namespace video

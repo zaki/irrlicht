@@ -5,6 +5,8 @@
 #include "CGUIFileOpenDialog.h"
 #ifdef _IRR_COMPILE_WITH_GUI_
 
+#include <locale.h>
+
 #include "IGUISkin.h"
 #include "IGUIEnvironment.h"
 #include "IVideoDriver.h"
@@ -133,7 +135,7 @@ const wchar_t* CGUIFileOpenDialog::getFileName() const
 }
 
 //! Returns the directory of the selected file. Returns NULL, if no directory was selected.
-const core::string<c16>& CGUIFileOpenDialog::getDirectoryName()
+const io::path& CGUIFileOpenDialog::getDirectoryName()
 {
 	FileSystem->flattenFilename ( FileDirectory );
 	return FileDirectory;
@@ -219,7 +221,7 @@ bool CGUIFileOpenDialog::OnEvent(const SEvent& event)
 			case EGET_EDITBOX_ENTER:
 				if (event.GUIEvent.Caller == FileNameText)
 				{
-					core::string<c16> dir( FileNameText->getText () );
+					io::path dir( FileNameText->getText () );
 					if ( FileSystem->changeWorkingDirectoryTo( dir ) )
 					{
 						fillListBox();
@@ -325,15 +327,39 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
-	for (u32 i=0; i<FileList->getFileCount(); ++i)
+	setlocale(LC_ALL,"");
+
+	if (FileList)
 	{
-		s = FileList->getFileName(i);
-		FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
+		for (u32 i=0; i < FileList->getFileCount(); ++i)
+		{
+			#ifndef _IRR_WCHAR_FILESYSTEM
+			const c8 *cs = (const c8 *)FileList->getFileName(i).c_str();
+			wchar_t *ws = new wchar_t[strlen(cs) + 1];
+			int len = mbstowcs(ws,cs,strlen(cs));
+			ws[len] = 0;
+			s = ws;
+			delete ws;
+			#else
+			s = FileList->getFileName(i).c_str();
+			#endif
+			FileBox->addItem(s.c_str(), skin->getIcon(FileList->isDirectory(i) ? EGDI_DIRECTORY : EGDI_FILE));
+		}
 	}
 
 	if (FileNameText)
 	{
+		#ifndef _IRR_WCHAR_FILESYSTEM
+		const c8 *cs = (const c8 *)FileSystem->getWorkingDirectory().c_str();
+		wchar_t *ws = new wchar_t[strlen(cs) + 1];
+		int len = mbstowcs(ws,cs,strlen(cs));
+		ws[len] = 0;
+		s = ws;
+		delete ws;
+		#else
 		s = FileSystem->getWorkingDirectory();
+		#endif
+
 		FileDirectory = s;
 		FileNameText->setText(s.c_str());
 	}

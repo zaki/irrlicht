@@ -1194,7 +1194,6 @@ public:
 		return EAT_COLORF;
 	}
 
-
 	virtual const wchar_t* getTypeString() const
 	{
 		return L"colorf";
@@ -1208,7 +1207,9 @@ class CColorAttribute : public CNumbersAttribute
 {
 public:
 
-	CColorAttribute(const char* name, video::SColorf value) : CNumbersAttribute(name, value) {}
+	CColorAttribute(const char* name, const video::SColorf& value) : CNumbersAttribute(name, value) {}
+
+	CColorAttribute(const char* name, const video::SColor& value) : CNumbersAttribute(name, value) {}
 
 	virtual s32 getInt()
 	{
@@ -1237,16 +1238,20 @@ public:
 	virtual core::stringw getStringW()
 	{
 		char tmp[10];
-		video::SColor c = getColor();
-		sprintf(tmp, "%08x", c.color);
+		const video::SColor c = getColor();
+		sprintf(tmp, "%02x%02x%02x%02x", c.getAlpha(), c.getRed(), c.getGreen(), c.getBlue());
 		return core::stringw(tmp);
 	}
 
 	virtual void setString(const char* text)
 	{
-		video::SColor c;
-		sscanf(text, "%08x", &c.color);
-		setColor(c);
+		u32 c;
+		if (sscanf(text, "%08x", &c)!=1)
+		{
+			CNumbersAttribute::setString(text);
+		}
+		else
+			setColor(c);
 	}
 
 	virtual E_ATTRIBUTE_TYPE getType() const
@@ -1828,7 +1833,8 @@ public:
 
 	virtual core::stringc getString()
 	{
-		return Value ? Value->getName() : core::stringc();
+		// since texture names can be stringw we are careful with the types
+		return core::stringc(Value ? Value->getName().c_str() : 0);
 	}
 
 	virtual void setString(const char* text)

@@ -30,7 +30,7 @@ public:
 
 	//! returns true if the file maybe is able to be loaded by this class
 	//! based on the file extension (e.g. ".obj")
-	virtual bool isALoadableFileExtension(const core::string<c16>& filename) const;
+	virtual bool isALoadableFileExtension(const io::path& filename) const;
 
 	//! creates/loads an animated mesh from the file.
 	//! \return Pointer to the created mesh. Returns 0 if loading failed.
@@ -71,7 +71,7 @@ private:
 	};
 
 	// helper method for material reading
-	const c8* readTextures(const c8* bufPtr, const c8* const bufEnd, SObjMtl* currMaterial, const core::string<c16>& relPath);
+	const c8* readTextures(const c8* bufPtr, const c8* const bufEnd, SObjMtl* currMaterial, const io::path& relPath);
 
 	// returns a pointer to the first printable character available in the buffer
 	const c8* goFirstWord(const c8* buf, const c8* const bufEnd, bool acrossNewlines=true);
@@ -83,11 +83,13 @@ private:
 	u32 copyWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* const pBufEnd);
 	// copies the current line from the inBuf to the outBuf
 	core::stringc copyLine(const c8* inBuf, const c8* const bufEnd);
+
 	// combination of goNextWord followed by copyWord
 	const c8* goAndCopyNextWord(c8* outBuf, const c8* inBuf, u32 outBufLength, const c8* const pBufEnd);
 
 	//! Read the material from the given file
-	void readMTL(const c8* fileName, const core::string<c16>& relPath);
+	void readMTL(const c8* fileName, const io::path& relPath);
+
 	//! Find and return the material with the given name
 	SObjMtl* findMtl(const core::stringc& mtlName, const core::stringc& grpName);
 

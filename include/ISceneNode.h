@@ -42,9 +42,9 @@ namespace scene
 				const core::vector3df& rotation = core::vector3df(0,0,0),
 				const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f))
 			: RelativeTranslation(position), RelativeRotation(rotation), RelativeScale(scale),
-				Parent(0), ID(id), SceneManager(mgr), TriangleSelector(0),
-				AutomaticCullingState(EAC_BOX), IsVisible(true),
-				DebugDataVisible(EDS_OFF), IsDebugObject(false)
+				Parent(0), SceneManager(mgr), TriangleSelector(0), ID(id),
+				AutomaticCullingState(EAC_BOX), DebugDataVisible(EDS_OFF),
+				IsVisible(true), IsDebugObject(false)
 		{
 			if (parent)
 				parent->addChild(this);
@@ -620,6 +620,8 @@ namespace scene
 
 
 		//! Updates the absolute position based on the relative and the parents position
+		/** Note: This does not recursively update the parents absolute positions, so if you have a deeper 
+			hierarchy you might want to update the parents first.*/
 		virtual void updateAbsolutePosition()
 		{
 			if (Parent)
@@ -795,23 +797,23 @@ namespace scene
 		//! List of all animator nodes
 		core::list<ISceneNodeAnimator*> Animators;
 
-		//! ID of the node.
-		s32 ID;
-
 		//! Pointer to the scene manager
 		ISceneManager* SceneManager;
 
 		//! Pointer to the triangle selector
 		ITriangleSelector* TriangleSelector;
 
+		//! ID of the node.
+		s32 ID;
+
 		//! Automatic culling state
 		E_CULLING_TYPE AutomaticCullingState;
 
-		//! Is the node visible?
-		bool IsVisible;
-
 		//! Flag if debug data should be drawn, such as Bounding Boxes.
 		s32 DebugDataVisible;
+
+		//! Is the node visible?
+		bool IsVisible;
 
 		//! Is debug object?
 		bool IsDebugObject;
