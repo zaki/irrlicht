@@ -252,7 +252,7 @@ public:
 				DesiredRect.UpperLeftCorner.X += diffx/2;
 				break;
 			case EGUIA_SCALE:
-				DesiredRect.UpperLeftCorner.X = (s32)(ScaleRect.UpperLeftCorner.X * fw);
+				DesiredRect.UpperLeftCorner.X = core::round32(ScaleRect.UpperLeftCorner.X * fw);
 				break;
 		}
 
@@ -267,7 +267,7 @@ public:
 				DesiredRect.LowerRightCorner.X += diffx/2;
 				break;
 			case EGUIA_SCALE:
-				DesiredRect.LowerRightCorner.X = (s32)(ScaleRect.LowerRightCorner.X * fw);
+				DesiredRect.LowerRightCorner.X = core::round32(ScaleRect.LowerRightCorner.X * fw);
 				break;
 		}
 
@@ -282,7 +282,7 @@ public:
 				DesiredRect.UpperLeftCorner.Y += diffy/2;
 				break;
 			case EGUIA_SCALE:
-				DesiredRect.UpperLeftCorner.Y = (s32)(ScaleRect.UpperLeftCorner.Y * fh);
+				DesiredRect.UpperLeftCorner.Y = core::round32(ScaleRect.UpperLeftCorner.Y * fh);
 				break;
 		}
 
@@ -297,7 +297,7 @@ public:
 				DesiredRect.LowerRightCorner.Y += diffy/2;
 				break;
 			case EGUIA_SCALE:
-				DesiredRect.LowerRightCorner.Y = (s32)(ScaleRect.LowerRightCorner.Y * fh);
+				DesiredRect.LowerRightCorner.Y = core::round32(ScaleRect.LowerRightCorner.Y * fh);
 				break;
 		}
 
