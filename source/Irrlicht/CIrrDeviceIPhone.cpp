@@ -5,7 +5,7 @@
 
 #include "CIrrDeviceIPhone.h"
 
-#ifdef _IRR_USE_IPHONE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -285,5 +285,5 @@ extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
 
 }
 
-#endif // _IRR_USE_IPHONE_DEVICE_
+#endif // _IRR_COMPILE_WITH_IPHONE_DEVICE_
 

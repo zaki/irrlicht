@@ -4,7 +4,7 @@
 
 #import "CIrrDeviceIPhone.h"
 
-#ifdef _IRR_USE_IPHONE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/CAEAGLLayer.h>
@@ -146,4 +146,4 @@ void irr_device_iphone_create(struct MIrrIPhoneDevice * dev)
 	dev->displayEnd = &irr_device_iphone_display_end;
 }
 
-#endif // _IRR_USE_IPHONE_DEVICE_
+#endif // _IRR_COMPILE_WITH_IPHONE_DEVICE_

@@ -11,9 +11,9 @@
 	// include windows headers for HWND
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
-#elif defined(_IRR_USE_OSX_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 	#include "MacOSX/CIrrDeviceMacOSX.h"
-#elif defined(_IRR_USE_IPHONE_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	#include "CIrrDeviceIPhone.h"
 #endif
 
@@ -26,7 +26,7 @@
 #include "EDriverFeatures.h"
 #include "fast_atof.h"
 
-#if defined(_IRR_USE_IPHONE_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 #include <OpenGLES/ES1/gl.h>
 #include <OpenGLES/ES1/glext.h>
 #else
@@ -47,21 +47,22 @@ namespace video
 	class COGLES1Driver : public CNullDriver, public IMaterialRendererServices, public COGLES1ExtensionHandler
 	{
 	public:
-		#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_WINDOWS_API_)
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
 				const SExposedVideoData& data,
 				io::IFileSystem* io);
-		#endif
+#endif
 
-		#ifdef _IRR_USE_OSX_DEVICE_
+#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
 				io::IFileSystem* io, CIrrDeviceMacOSX *device);
-		#endif
+#endif
 	
-		#if defined(_IRR_USE_IPHONE_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		COGLES1Driver(const SIrrlichtCreationParameters& params,
+				const SExposedVideoData& data,
 				io::IFileSystem* io, MIrrIPhoneDevice const & device);
-		#endif
+#endif
 
 		//! destructor
 		virtual ~COGLES1Driver();
@@ -195,7 +196,7 @@ namespace video
 		virtual void setViewPort(const core::rect<s32>& area);
 
 		//! Sets the fog mode.
-		virtual void setFog(SColor color, bool linearFog, f32 start,
+		virtual void setFog(SColor color, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog);
 
 		//! Only used internally by the engine
@@ -252,8 +253,7 @@ namespace video
 		virtual u32 getMaximalPrimitiveCount() const;
 
 		virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
-				const core::string<c16>& name);
-
+				const io::path& name, const ECOLOR_FORMAT format = ECF_UNKNOWN);
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color);
 
@@ -289,7 +289,7 @@ namespace video
 		bool genericDriverInit(const core::dimension2d<u32>& screenSize, bool stencilBuffer);
 
 		//! returns a device dependent texture from a software surface (IImage)
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const core::string<c16>& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
 
 		//! creates a transposed matrix in supplied GLfloat array to pass to OGLES1
 		inline void createGLMatrix(GLfloat gl_matrix[16], const core::matrix4& m);
@@ -362,10 +362,10 @@ namespace video
 		};
 		core::array<RequestedLight> RequestedLights;
 
-#ifdef _IRR_USE_WINDOWS_DEVICE_
+#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 		HDC HDc;
 #endif
-#if defined(_IRR_USE_IPHONE_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 		MIrrIPhoneDevice Device;
 		GLuint ViewFramebuffer;
 		GLuint ViewRenderbuffer;

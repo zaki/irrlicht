@@ -8,7 +8,7 @@
 
 #include "IrrCompileConfig.h"
 
-#ifdef _IRR_USE_IPHONE_DEVICE_
+#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
 //! Interface between ObjC device and C++ device.
 struct MIrrIPhoneDevice
@@ -132,7 +132,7 @@ namespace irr
 
 #endif // __cplusplus
 
-#endif // _IRR_USE_IPHONE_DEVICE_
+#endif // _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
 #endif // __C_IRR_DEVICE_IPHONE_H_INCLUDED__
 

@@ -18,7 +18,7 @@ int GL_BGRA=GL_RGBA;
 #include "CImage.h"
 #include "os.h"
 
-#ifdef _IRR_USE_SDL_DEVICE_
+#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
 #include <SDL/SDL.h>
 #endif
 
@@ -28,20 +28,19 @@ namespace video
 {
 
 //! constructor and init code
-#if defined(_IRR_USE_IPHONE_DEVICE_)
 COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, const MIrrIPhoneDevice& device)
-#else
-COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
-		const SExposedVideoData& data, io::IFileSystem* io)
+		const SExposedVideoData& data, io::IFileSystem* io
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
+		, const MIrrIPhoneDevice& device
 #endif
+		)
 : CNullDriver(io, params.WindowSize), COGLES1ExtensionHandler(),
 	CurrentRenderMode(ERM_NONE), ResetRenderStates(true),
 	Transformation3DChanged(true), AntiAlias(params.AntiAlias),
 	RenderTargetTexture(0), CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8)
-#if defined(_IRR_USE_WINDOWS_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 	,HDc(0)
-#elif defined(_IRR_USE_IPHONE_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	,ViewFramebuffer(0)
 	,ViewRenderbuffer(0)
 	,ViewDepthRenderbuffer(0)
@@ -50,16 +49,15 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	#ifdef _DEBUG
 	setDebugName("COGLESDriver");
 	#endif
-#if defined(_IRR_USE_WINDOWS_DEVICE_)
 	ExposedData=data;
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 	EglWindow = (NativeWindowType)data.OpenGLWin32.HWnd;
 	HDc = GetDC((HWND)EglWindow);
 	EglDisplay = eglGetDisplay((NativeDisplayType)HDc);
-#elif defined(_IRR_USE_LINUX_DEVICE_)
-	ExposedData=data;
+#elif defined(_IRR_COMPILE_WITH_X11_DEVICE_)
 	EglWindow = (NativeWindowType)ExposedData.OpenGLLinux.X11Window;
 	EglDisplay = eglGetDisplay((NativeDisplayType)ExposedData.OpenGLLinux.X11Display);
-#elif defined(_IRR_USE_IPHONE_DEVICE_)
+#elif defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	Device = device;
 #endif
 #ifdef EGL_VERSION_1_0
@@ -132,7 +130,7 @@ COGLES1Driver::COGLES1Driver(const SIrrlichtCreationParameters& params,
 	glGenRenderbuffersOES(1, &ViewRenderbuffer);
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
 
-	#if defined(_IRR_USE_IPHONE_DEVICE_)
+	#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	ExposedData.OGLESIPhone.AppDelegate = Device.DeviceM;
 	(*Device.displayInit)(&Device, &ExposedData.OGLESIPhone.Context, &ExposedData.OGLESIPhone.View);
 	#endif
@@ -171,7 +169,7 @@ COGLES1Driver::~COGLES1Driver()
 	eglDestroyContext(EglDisplay, EglContext);
 	eglDestroySurface(EglDisplay, EglSurface);
 	eglTerminate(EglDisplay);
-#if defined(_IRR_USE_WINDOWS_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
 	if (HDc)
 		ReleaseDC((HWND)EglWindow, HDc);
 #endif
@@ -274,7 +272,7 @@ bool COGLES1Driver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	glAlphaFunc(GL_GREATER, 0.f);
 
 	// set fog mode
-	setFog(FogColor, LinearFog, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
+	setFog(FogColor, FogType, FogStart, FogEnd, FogDensity, PixelFog, RangeFog);
 
 	// create matrix for flipping textures
 	TextureFlipMatrix.buildTextureTransform(0.0f, core::vector2df(0,0), core::vector2df(0,1.0f), core::vector2df(1.0f,-1.0f));
@@ -367,7 +365,7 @@ bool COGLES1Driver::endScene()
 #elif defined(GL_VERSION_ES_CM_1_0)
 	glFlush();
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, ViewRenderbuffer);
-	#if defined(_IRR_USE_IPHONE_DEVICE_)
+	#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	(*Device.displayEnd)(&Device);
 	#endif
 #endif
@@ -383,7 +381,7 @@ bool COGLES1Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	CNullDriver::beginScene(backBuffer, zBuffer, color);
 
 #if defined(GL_VERSION_ES_CM_1_0)
-	#if defined(_IRR_USE_IPHONE_DEVICE_)
+	#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 	(*Device.displayBegin)(&Device);
 	glBindFramebufferOES(GL_FRAMEBUFFER_OES, ViewFramebuffer);
 	#endif
@@ -1489,7 +1487,7 @@ inline void COGLES1Driver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, const core::string<c16>& name)
+video::ITexture* COGLES1Driver::createDeviceDependentTexture(IImage* surface, const io::path& name)
 {
 	return new COGLES1Texture(surface, name, this);
 }
@@ -2414,18 +2412,19 @@ void COGLES1Driver::drawStencilShadow(bool clearStencilBuffer, video::SColor lef
 
 
 //! Sets the fog mode.
-void COGLES1Driver::setFog(SColor c, bool linearFog, f32 start,
+void COGLES1Driver::setFog(SColor c, E_FOG_TYPE fogType, f32 start,
 			f32 end, f32 density, bool pixelFog, bool rangeFog)
 {
-	CNullDriver::setFog(c, linearFog, start, end, density, pixelFog, rangeFog);
+	CNullDriver::setFog(c, fogType, start, end, density, pixelFog, rangeFog);
 
-	glFogf(GL_FOG_MODE, GLfloat(linearFog ? GL_LINEAR : GL_EXP));
-#ifdef GL_fog_coord
-	if (FeatureAvailable[IRR_fog_coord])
+	glFogf(GL_FOG_MODE, GLfloat((fogType==EFT_FOG_LINEAR)? GL_LINEAR : (fogType==EFT_FOG_EXP)?GL_EXP:GL_EXP2));
+
+#ifdef GL_EXT_fog_coord
+	if (FeatureAvailable[IRR_EXT_fog_coord])
 		glFogi(GL_FOG_COORDINATE_SOURCE, GL_FRAGMENT_DEPTH);
 #endif
 
-	if(linearFog)
+	if (fogType==EFT_FOG_LINEAR)
 	{
 		glFogf(GL_FOG_START, start);
 		glFogf(GL_FOG_END, end);
@@ -2557,7 +2556,9 @@ IGPUProgrammingServices* COGLES1Driver::getGPUProgrammingServices()
 }
 
 
-ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& size, const core::string<c16>& name)
+ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& size,
+					const io::path& name,
+					const ECOLOR_FORMAT format)
 {
 	//disable mip-mapping
 	const bool generateMipLevels = getTextureCreationFlag(ETCF_CREATE_MIP_MAPS);
@@ -2569,7 +2570,7 @@ ITexture* COGLES1Driver::addRenderTargetTexture(const core::dimension2d<u32>& si
 	// if driver supports FrameBufferObjects, use them
 	if (queryFeature(EVDF_FRAMEBUFFER_OBJECT))
 	{
-		rtt = new COGLES1FBOTexture(size, name, this);
+		rtt = new COGLES1FBOTexture(size, name, this, format);
 		if (rtt)
 		{
 			addTexture(rtt);
@@ -2855,8 +2856,9 @@ namespace video
 // -----------------------------------
 // WINDOWS VERSION
 // -----------------------------------
-#if defined(_IRR_USE_LINUX_DEVICE_) || defined(_IRR_USE_SDL_DEVICE_) || defined(_IRR_USE_WINDOWS_DEVICE_)
-IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, video::SExposedVideoData& data, io::IFileSystem* io)
+#if defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined(_IRR_COMPILE_WITH_SDL_DEVICE_) || defined(_IRR_COMPILE_WITH_WINDOWS_DEVICE_)
+IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
+		video::SExposedVideoData& data, io::IFileSystem* io)
 {
 #ifdef _IRR_COMPILE_WITH_OGLES1_
 	return new COGLES1Driver(params, data, io);
@@ -2869,7 +2871,7 @@ IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params, vide
 // -----------------------------------
 // MACOSX VERSION
 // -----------------------------------
-#if defined(_IRR_USE_OSX_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_OSX_DEVICE_)
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 		io::IFileSystem* io, CIrrDeviceMacOSX *device)
 {
@@ -2879,22 +2881,23 @@ IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
 	return 0;
 #endif //  _IRR_COMPILE_WITH_OGLES1_
 }
-#endif // _IRR_USE_OSX_DEVICE_
+#endif // _IRR_COMPILE_WITH_OSX_DEVICE_
 
 // -----------------------------------
 // IPHONE VERSION
 // -----------------------------------
-#if defined(_IRR_USE_IPHONE_DEVICE_)
+#if defined(_IRR_COMPILE_WITH_IPHONE_DEVICE_)
 IVideoDriver* createOGLES1Driver(const SIrrlichtCreationParameters& params,
-		io::IFileSystem* io, MIrrIPhoneDevice const & device)
+		video::SExposedVideoData& data, io::IFileSystem* io,
+		MIrrIPhoneDevice const & device)
 {
 #ifdef _IRR_COMPILE_WITH_OGLES1_
-	return new COGLES1Driver(params, io, device);
+	return new COGLES1Driver(params, data, io, device);
 #else
 	return 0;
 #endif // _IRR_COMPILE_WITH_OGLES1_
 }
-#endif // _IRR_USE_IPHONE_DEVICE_
+#endif // _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
 } // end namespace
 } // end namespace

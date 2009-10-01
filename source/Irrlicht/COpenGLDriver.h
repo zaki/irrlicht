@@ -7,14 +7,6 @@
 
 #include "IrrCompileConfig.h"
 
-#if defined(_IRR_WINDOWS_API_)
-	// include windows headers for HWND
-	#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
-#elif defined(_IRR_USE_OSX_DEVICE_)
-	#include "MacOSX/CIrrDeviceMacOSX.h"
-#endif
-
 #include "SIrrCreationParameters.h"
 
 namespace irr
