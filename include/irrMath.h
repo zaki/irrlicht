@@ -38,7 +38,7 @@ namespace core
 
 	//! Rounding error constant often used when comparing f32 values.
 
-	const s32 ROUNDING_ERROR_S32 = 1;
+	const s32 ROUNDING_ERROR_S32 = 0;
 	const f32 ROUNDING_ERROR_f32 = 0.000001f;
 	const f64 ROUNDING_ERROR_f64 = 0.00000001;
 

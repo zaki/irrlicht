@@ -52,7 +52,7 @@ static bool doTests()
 
 	vec.set(5, 5);
 	vec.normalize();
-	compareVectors(vec, vector2d<T>((T)0.70710681378841400, (T)0.70710681378841400));
+	COMPARE_VECTORS(vec, vector2d<T>((T)0.70710681378841400, (T)0.70710681378841400));
 
 	vec.set(5, 5);
 	otherVec.set(10, 20);
@@ -159,6 +159,16 @@ static bool doTests()
 	{
 		logTestString("\nERROR: angle %.16f != angle %.16f\n",
 			tmp.getAngle(), ref.getAngle());
+		return false;
+	}
+
+	core::vector2d<T> zeroZero(0, 0);
+	core::vector2d<T> oneOne(1, 1);
+	// Check if comparing (0.0, 0.0) with (1.0, 1.0) returns false.
+	if(zeroZero == oneOne)
+	{
+		logTestString("\nERROR: vector2d %.16f, %.16f == vector2d %.16f, %.16f\n",
+			(f64)zeroZero.X, (f64)zeroZero.Y, (f64)oneOne.X, (f64)oneOne.Y);
 		return false;
 	}
 
