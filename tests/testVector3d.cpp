@@ -126,6 +126,17 @@ static bool doTests()
 	if ( is_nan(vec) )
 		return false;
 
+	core::vector3d<T> zeroZero(0, 0, 0);
+	core::vector3d<T> oneOne(1, 1, 1);
+	// Check if comparing (0.0, 0.0, 0.0) with (1.0, 1.0, 1.0) returns false.
+	if(zeroZero == oneOne)
+	{
+		logTestString("\nERROR: vector3d %.16f, %.16f, %.16f == vector3d %.16f, %.16f, %.16f\n",
+			(f64)zeroZero.X, (f64)zeroZero.Y, (f64)zeroZero.Z,
+			(f64)oneOne.X, (f64)oneOne.Y, (f64)oneOne.Z);
+		return false;
+	}
+
 	return true;
 }
 
