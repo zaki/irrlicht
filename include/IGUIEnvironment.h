@@ -240,11 +240,12 @@ public:
 	to (EMBF_OK | EMBF_CANCEL).
 	\param parent Parent gui element of the message box.
 	\param id Id with which the gui element can be identified.
+	\param image Optional texture which will be displayed beside the text as an image
 	\return Pointer to the created message box. Returns 0 if an error
 	occured. This pointer should not be dropped. See
 	IReferenceCounted::drop() for more information. */
 	virtual IGUIWindow* addMessageBox(const wchar_t* caption, const wchar_t* text=0,
-		bool modal = true, s32 flags = EMBF_OK, IGUIElement* parent=0, s32 id=-1) = 0;
+		bool modal = true, s32 flags = EMBF_OK, IGUIElement* parent=0, s32 id=-1, video::ITexture* image=0) = 0;
 
 	//! Adds a scrollbar.
 	/** \param horizontal Specifies if the scroll bar is drawn horizontal
