@@ -139,9 +139,9 @@ namespace gui
 		EGDS_WINDOW_BUTTON_WIDTH,
 		//! width of a checkbox check
 		EGDS_CHECK_BOX_WIDTH,
-		//! width of a messagebox
+		//! deprecated
 		EGDS_MESSAGE_BOX_WIDTH,
-		//! height of a messagebox
+		//! deprecated
 		EGDS_MESSAGE_BOX_HEIGHT,
 		//! width of a default button
 		EGDS_BUTTON_WIDTH,
@@ -155,6 +155,17 @@ namespace gui
 		EGDS_TITLEBARTEXT_DISTANCE_X,
 		//! distance for text in the title bar, from the top of the window rect
 		EGDS_TITLEBARTEXT_DISTANCE_Y,
+		//! free space in a messagebox between borders and contents on all sides
+		EGDS_MESSAGE_BOX_GAP_SPACE,
+		//! minimal space to reserve for messagebox text-width
+		EGDS_MESSAGE_BOX_MIN_TEXT_WIDTH,
+		//! maximal space to reserve for messagebox text-width
+		EGDS_MESSAGE_BOX_MAX_TEST_WIDTH,
+		//! minimal space to reserve for messagebox text-height
+		EGDS_MESSAGE_BOX_MIN_TEXT_HEIGHT,
+		//! maximal space to reserve for messagebox text-height
+		EGDS_MESSAGE_BOX_MAX_TEXT_HEIGHT,
+
 		//! this value is not used, it only specifies the amount of default sizes
 		//! available.
 		EGDS_COUNT
@@ -174,6 +185,13 @@ namespace gui
 		"ButtonHeight",
 		"TextDistanceX",
 		"TextDistanceY",
+		"TitleBarTextX",
+		"TitleBarTextY",
+		"MessageBoxGapSpace",
+		"MessageBoxMinTextWidth",
+		"MessageBoxMaxTextWidth",
+		"MessageBoxMinTextHeight",
+		"MessageBoxMaxTextHeight",
 		0,
 	};
 

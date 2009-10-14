@@ -10,6 +10,7 @@
 
 #include "CGUIWindow.h"
 #include "IGUIStaticText.h"
+#include "IGUIImage.h"
 #include "irrArray.h"
 
 namespace irr
@@ -23,7 +24,7 @@ namespace gui
 		//! constructor
 		CGUIMessageBox(IGUIEnvironment* environment, const wchar_t* caption,
 			const wchar_t* text, s32 flag,
-			IGUIElement* parent, s32 id, core::rect<s32> rectangle);
+			IGUIElement* parent, s32 id, core::rect<s32> rectangle, video::ITexture* image=0);
 
 		//! destructor
 		virtual ~CGUIMessageBox();
@@ -40,12 +41,15 @@ namespace gui
 	private:
 
 		void refreshControls();
+		void setButton(IGUIButton*& button, bool isAvailable, const core::rect<s32> & btnRect, const wchar_t * text, IGUIElement*& focusMe);
 
 		IGUIButton* OkButton;
 		IGUIButton* CancelButton;
 		IGUIButton* YesButton;
 		IGUIButton* NoButton;
 		IGUIStaticText* StaticText;
+		IGUIImage * Icon;
+		video::ITexture * IconTexture;
 
 		s32 Flags;
 		core::stringw MessageText;
