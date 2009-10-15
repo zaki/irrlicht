@@ -218,7 +218,7 @@ void CGUIColorSelectDialog::buildColorRing( const core::dimension2d<u32> & dim, 
 				const f32 r = sqrtf((f32) r2);
 
 				// normalize, dotproduct = xnorm
-				const f32 xn = -p.X * core::reciprocal(r);
+				const f32 xn = r == 0.f ? 0.f : -p.X * core::reciprocal(r);
 
 				hsl.Hue = acosf(xn);
 				if ( p.Y > 0 )
