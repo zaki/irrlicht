@@ -32,3 +32,5 @@ Feel free to use however you like, commercial etc, credits are Appreciated as a 
 Psionic
 
 http://www.psionic3d.co.uk
+
+Note for Irrlicht: Irrlicht uses a 0-based frame index. So subtract 1 from each of the loops!
