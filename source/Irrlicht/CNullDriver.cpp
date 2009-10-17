@@ -625,14 +625,12 @@ void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
 }
 
 
-
 //! Draws an indexed triangle fan.
 void CNullDriver::drawIndexedTriangleFan(const S3DVertexTangents* vertices,
 	u32 vertexCount, const u16* indexList, u32 triangleCount)
 {
 	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
 }
-
 
 
 //! Draws a 3d line.
@@ -642,15 +640,25 @@ void CNullDriver::draw3DLine(const core::vector3df& start,
 }
 
 
-
 //! Draws a 3d triangle.
 void CNullDriver::draw3DTriangle(const core::triangle3df& triangle, SColor color)
 {
-	draw3DLine(triangle.pointA, triangle.pointB, color);
-	draw3DLine(triangle.pointB, triangle.pointC, color);
-	draw3DLine(triangle.pointC, triangle.pointA, color);
+	S3DVertex vertices[3];
+	vertices[0].Pos=triangle.pointA;
+	vertices[0].Color=color;
+	vertices[0].Normal=triangle.getNormal().normalize();
+	vertices[0].TCoords.set(0.f,0.f);
+	vertices[1].Pos=triangle.pointB;
+	vertices[1].Color=color;
+	vertices[1].Normal=vertices[0].Normal;
+	vertices[1].TCoords.set(0.5f,1.f);
+	vertices[2].Pos=triangle.pointC;
+	vertices[2].Color=color;
+	vertices[2].Normal=vertices[0].Normal;
+	vertices[2].TCoords.set(1.f,0.f);
+	const u16 indexList[] = {0,1,2};
+	drawVertexPrimitiveList(vertices, 3, indexList, 1, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
 }
-
 
 
 //! Draws a 3d axis aligned box.
