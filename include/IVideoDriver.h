@@ -548,8 +548,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices / 3. */
-		virtual void drawIndexedTriangleList(const S3DVertex* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleList(const S3DVertex* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle list.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -560,8 +563,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices / 3. */
-		virtual void drawIndexedTriangleList(const S3DVertex2TCoords* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleList(const S3DVertex2TCoords* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLES, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle list.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -572,8 +578,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices / 3. */
-		virtual void drawIndexedTriangleList(const S3DVertexTangents* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleList(const S3DVertexTangents* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle fan.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -584,8 +593,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices - 2. */
-		virtual void drawIndexedTriangleFan(const S3DVertex* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleFan(const S3DVertex* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle fan.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -596,8 +608,26 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices - 2. */
-		virtual void drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
+		}
+
+		//! Draws an indexed triangle fan.
+		/** Note that there may be at maximum 65536 vertices, because
+		the index list is an array of 16 bit values each with a maximum
+		value of 65536. If there are more than 65536 vertices in the
+		list, results of this operation are not defined.
+		\param vertices Pointer to array of vertices.
+		\param vertexCount Amount of vertices in the array.
+		\param indexList Pointer to array of indices.
+		\param triangleCount Amount of Triangles. Usually amount of indices - 2. */
+		void drawIndexedTriangleFan(const S3DVertexTangents* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
+		}
 
 		//! Draws a 3d line.
 		/** For some implementations, this method simply calls
