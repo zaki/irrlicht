@@ -585,54 +585,6 @@ void CNullDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCoun
 }
 
 
-//! draws an indexed triangle list
-void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
-}
-
-
-//! draws an indexed triangle list
-void CNullDriver::drawIndexedTriangleList(const S3DVertex2TCoords* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLES, EIT_16BIT);
-}
-
-
-//! Draws an indexed triangle list.
-void CNullDriver::drawIndexedTriangleList(const S3DVertexTangents* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES, EIT_16BIT);
-}
-
-
-
-//! Draws an indexed triangle fan.
-void CNullDriver::drawIndexedTriangleFan(const S3DVertex* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
-}
-
-
-
-//! Draws an indexed triangle fan.
-void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
-}
-
-
-//! Draws an indexed triangle fan.
-void CNullDriver::drawIndexedTriangleFan(const S3DVertexTangents* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
-}
-
-
 //! Draws a 3d line.
 void CNullDriver::draw3DLine(const core::vector3df& start,
 				const core::vector3df& end, SColor color)
