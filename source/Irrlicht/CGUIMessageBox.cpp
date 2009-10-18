@@ -235,16 +235,16 @@ void CGUIMessageBox::refreshControls()
 	btnRect.LowerRightCorner.X = btnRect.UpperLeftCorner.X + buttonWidth;
 
 	IGUIElement* focusMe = 0;
-	setButton(OkButton, Flags & EMBF_OK, btnRect, skin->getDefaultText(EGDT_MSG_BOX_OK), focusMe);
+	setButton(OkButton, (Flags & EMBF_OK) != 0, btnRect, skin->getDefaultText(EGDT_MSG_BOX_OK), focusMe);
 	if ( Flags & EMBF_OK )
 		btnRect += core::position2d<s32>(buttonWidth + buttonDistance, 0);
-	setButton(CancelButton, Flags & EMBF_CANCEL, btnRect, skin->getDefaultText(EGDT_MSG_BOX_CANCEL), focusMe);
+	setButton(CancelButton, (Flags & EMBF_CANCEL) != 0, btnRect, skin->getDefaultText(EGDT_MSG_BOX_CANCEL), focusMe);
 	if ( Flags & EMBF_CANCEL )
 		btnRect += core::position2d<s32>(buttonWidth + buttonDistance, 0);
-	setButton(YesButton, Flags & EMBF_YES, btnRect, skin->getDefaultText(EGDT_MSG_BOX_YES), focusMe);
+	setButton(YesButton, (Flags & EMBF_YES) != 0, btnRect, skin->getDefaultText(EGDT_MSG_BOX_YES), focusMe);
 	if ( Flags & EMBF_YES )
 		btnRect += core::position2d<s32>(buttonWidth + buttonDistance, 0);
-	setButton(NoButton, Flags & EMBF_NO, btnRect, skin->getDefaultText(EGDT_MSG_BOX_NO), focusMe);
+	setButton(NoButton, (Flags & EMBF_NO) != 0, btnRect, skin->getDefaultText(EGDT_MSG_BOX_NO), focusMe);
 
 	if (Environment->hasFocus(this) && focusMe)
 		Environment->setFocus(focusMe);
