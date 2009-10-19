@@ -124,8 +124,7 @@ public:
 
 		// temporary buffer for 16 numbers
 
-		c8 tmpbuf[16];
-		tmpbuf[15] = 0;
+		c8 tmpbuf[16]={0};
 		u32 idx = 15;
 
 		// special case '0'
@@ -164,8 +163,7 @@ public:
 	{
 		// temporary buffer for 16 numbers
 
-		c8 tmpbuf[16];
-		tmpbuf[15] = 0;
+		c8 tmpbuf[16]={0};
 		u32 idx = 15;
 
 		// special case '0'
@@ -222,7 +220,7 @@ public:
 
 
 	//! Destructor
-	virtual ~string()
+	~string()
 	{
 		allocator.deallocate(array); // delete [] array;
 	}
