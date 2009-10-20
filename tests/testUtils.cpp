@@ -148,8 +148,8 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 
 
 bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
-												const char * fileName,
-												irr::f32 requiredMatch)
+					const char * fileName,
+					irr::f32 requiredMatch)
 {
 	irr::video::IImage * screenshot = driver->createScreenShot();
 	if(!screenshot)
