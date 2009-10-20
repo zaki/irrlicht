@@ -14,6 +14,9 @@
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add directory="..\lib\Win32-gcc\" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="..\bin\gcc\tests" prefix_auto="1" extension_auto="1" />
@@ -47,16 +50,17 @@
 		<Unit filename="enumerateImageManipulators.cpp" />
 		<Unit filename="exports.cpp" />
 		<Unit filename="fast_atof.cpp" />
+		<Unit filename="filesystem.cpp" />
 		<Unit filename="flyCircleAnimator.cpp" />
 		<Unit filename="guiDisabledMenu.cpp" />
 		<Unit filename="irrCoreEquals.cpp" />
+		<Unit filename="lightMaps.cpp" />
 		<Unit filename="line2dIntersectWith.cpp" />
 		<Unit filename="main.cpp" />
 		<Unit filename="makeColorKeyTexture.cpp" />
 		<Unit filename="matrixOps.cpp" />
 		<Unit filename="md2Animation.cpp" />
 		<Unit filename="planeMatrix.cpp" />
-		<Unit filename="relativeTransformations.cpp" />
 		<Unit filename="removeCustomAnimator.cpp" />
 		<Unit filename="sceneCollisionManager.cpp" />
 		<Unit filename="sceneNodeAnimator.cpp" />
@@ -71,6 +75,7 @@
 		<Unit filename="transparentAlphaChannelRef.cpp" />
 		<Unit filename="vectorPositionDimension2d.cpp" />
 		<Unit filename="writeImageToFile.cpp" />
+		<Unit filename="zipReader.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
