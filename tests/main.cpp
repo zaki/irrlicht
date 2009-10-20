@@ -91,6 +91,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(enumerateImageManipulators);
 	TEST(testGeometryCreator);
 	TEST(makeColorKeyTexture);
+	TEST(lightMaps);
 
 	const unsigned int numberOfTests = tests.size();
 

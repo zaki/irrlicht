@@ -10,10 +10,7 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-//! Tests interleaved loading and rendering of textures
-/** The test loads a texture, renders it using draw2dimage, loads another
-	texture and renders the first one again. Due to the texture cache this
-	can lead to rendering of the second texture in second place. */
+//! Tests lightmaps under all drivers that support them
 static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 {
 	IrrlichtDevice *device = createDevice( driverType, dimension2d<u32>(160, 120), 32);
@@ -23,21 +20,30 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 	IVideoDriver* driver = device->getVideoDriver();
 	ISceneManager * smgr = device->getSceneManager();
 
-	ITexture* tex1 = driver->getTexture("../media/wall.bmp");
+	bool result = true;
+	bool added = device->getFileSystem()->addZipFileArchive("../media/map-20kdm2.pk3");
+	assert(added);
 
-	(void)smgr->addCameraSceneNode();
+	if(added)
+	{
+		ISceneNode * node = smgr->addOctTreeSceneNode(smgr->getMesh("20kdm2.bsp")->getMesh(0), 0, -1, 1024);
+		assert(node);
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
-	driver->draw2DImage(tex1, position2di(0,0));
-	driver->endScene();
+		if (node)
+		{
+			node->setMaterialFlag(EMF_LIGHTING, false);
+			node->setPosition(core::vector3df(-1300,-820,-1249));
+			node->setScale(core::vector3df(1, 5, 1));
 
-	driver->getTexture("../media/tools.png");
+			(void)smgr->addCameraSceneNode(0, core::vector3df(0,0,0), core::vector3df(40,100,30));
 
-	driver->beginScene(true, true, SColor(255,100,101,140));
-	driver->draw2DImage(tex1, position2di(0,0));
-	driver->endScene();
+			driver->beginScene(true, true, video::SColor(255,255,255,0));
+			smgr->drawAll();
+			driver->endScene();
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-textureRenderStates.png", 100);
+			result = takeScreenshotAndCompareAgainstReference(driver, "-lightmaps.png", 96);
+		}
+	}
 
 	device->drop();
 
@@ -45,15 +51,14 @@ static bool runTestWithDriver(E_DRIVER_TYPE driverType)
 }
 
 
-bool textureRenderStates(void)
+bool lightMaps(void)
 {
 	bool passed = true;
 
-	passed &= runTestWithDriver(EDT_OPENGL);
-	passed &= runTestWithDriver(EDT_SOFTWARE);
 	passed &= runTestWithDriver(EDT_BURNINGSVIDEO);
 	passed &= runTestWithDriver(EDT_DIRECT3D9);
 	passed &= runTestWithDriver(EDT_DIRECT3D8);
+	passed &= runTestWithDriver(EDT_OPENGL);
 
 	return passed;
 }
