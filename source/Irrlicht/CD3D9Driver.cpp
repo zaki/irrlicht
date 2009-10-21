@@ -163,7 +163,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	if (!pID3D)
 	{
-		D3DLibrary = LoadLibrary( "d3d9.dll" );
+		D3DLibrary = LoadLibrary( io::path("d3d9.dll").c_str() );
 
 		if (!D3DLibrary)
 		{

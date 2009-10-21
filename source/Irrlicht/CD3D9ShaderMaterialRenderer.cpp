@@ -325,7 +325,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader(LPCSTR pSrcData,
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 
@@ -385,7 +385,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShaderFromFile(LPCSTR pSrcF
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 
@@ -446,7 +446,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShader(LPCSTR pSrcData, UINT
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 
@@ -506,7 +506,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShaderFromFile(LPCSTR pSrcFi
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 
