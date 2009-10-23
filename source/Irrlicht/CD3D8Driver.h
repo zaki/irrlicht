@@ -217,6 +217,9 @@ namespace video
 		//! \param enable: If true, enable the clipping plane else disable it.
 		virtual void enableClipPlane(u32 index, bool enable);
 
+		//! Returns the maximum texture size supported.
+		virtual core::dimension2du getMaxTextureSize() const;
+
 		virtual bool checkDriverReset() {return DriverWasReset;}
 	private:
 
