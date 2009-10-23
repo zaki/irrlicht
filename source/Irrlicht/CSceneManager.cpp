@@ -668,59 +668,54 @@ ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
 		parent = this;
 
 	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id, position, lookat);
-	node->drop();
 
 	setActiveCamera(node);
+	node->drop();
 
 	return node;
 }
 
 
-//! Adds a camera scene node which is able to be controlld with the mouse similar
+//! Adds a camera scene node which is able to be controlled with the mouse similar
 //! to in the 3D Software Maya by Alias Wavefront.
 //! The returned pointer must not be dropped.
 ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id)
 {
-	if (!parent)
-		parent = this;
+	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
+			core::vector3df(0,0,100), id);
+	if (node)
+	{
+		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
+			rotateSpeed, zoomSpeed, translationSpeed);
 
-	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
-	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
-		rotateSpeed, zoomSpeed, translationSpeed);
-
-	node->addAnimator(anm);
-	setActiveCamera(node);
-
-	anm->drop();
-	node->drop();
+		node->addAnimator(anm);
+		anm->drop();
+	}
 
 	return node;
 }
 
 
-//! Adds a camera scene node which is able to be controled with the mouse and keys
+//! Adds a camera scene node which is able to be controlled with the mouse and keys
 //! like in most first person shooters (FPS):
 ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
 	f32 rotateSpeed, f32 moveSpeed, s32 id,
 	SKeyMap* keyMapArray, s32 keyMapSize, bool noVerticalMovement, f32 jumpSpeed, bool invertMouseY)
 {
-	if (!parent)
-		parent = this;
+	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
+			core::vector3df(0,0,100), id);
+	if (node)
+	{
+		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl,
+				rotateSpeed, moveSpeed, jumpSpeed,
+				keyMapArray, keyMapSize, noVerticalMovement, invertMouseY);
 
-	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
-	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl,
-			rotateSpeed, moveSpeed, jumpSpeed,
-			keyMapArray, keyMapSize, noVerticalMovement, invertMouseY);
-
-	// Bind the node's rotation to its target. This is consistent with 1.4.2 and below.
-	node->bindTargetAndRotation(true);
-
-	node->addAnimator(anm);
-	setActiveCamera(node);
-
-	anm->drop();
-	node->drop();
+		// Bind the node's rotation to its target. This is consistent with 1.4.2 and below.
+		node->bindTargetAndRotation(true);
+		node->addAnimator(anm);
+		anm->drop();
+	}
 
 	return node;
 }
