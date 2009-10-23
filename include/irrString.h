@@ -735,10 +735,11 @@ public:
 
 	//! finds another string in this string
 	/** \param str: Another string
+	\param start: Start position of the search
 	\return Positions where the string has been found,
 	or -1 if not found. */
 	template <class B>
-	s32 find(const B* const str) const
+	s32 find(const B* const str, const u32 start = 0) const
 	{
 		if (str && *str)
 		{
@@ -750,7 +751,7 @@ public:
 			if (len > used-1)
 				return -1;
 
-			for (u32 i=0; i<used-len; ++i)
+			for (u32 i=start; i<used-len; ++i)
 			{
 				u32 j=0;
 
@@ -884,6 +885,87 @@ public:
 	}
 
 
+	//! Removes characters from a string.
+	/** \param c: Character to remove. */
+	void remove(T c)
+	{
+		u32 pos = 0;
+		u32 found = 0;
+		for (u32 i=0; i<used; ++i)
+		{
+			if (array[i] == c)
+			{
+				++found;
+				continue;
+			}
+
+			array[pos++] = array[i];
+		}
+		used -= found;
+		array[used] = 0;
+	}
+
+
+	//! Removes a string from the string.
+	/** \param toRemove: String to remove. */
+	void remove(const string<T> toRemove)
+	{
+		u32 size = toRemove.size();
+		u32 pos = 0;
+		u32 found = 0;
+		for (u32 i=0; i<used; ++i)
+		{
+			u32 j = 0;
+			while (j < size)
+			{
+				if (array[i + j] != toRemove[j])
+					break;
+				++j;
+			}
+			if (j == size)
+			{
+				found += size;
+				i += size - 1;
+				continue;
+			}
+
+			array[pos++] = array[i];
+		}
+		used -= found;
+		array[used] = 0;
+	}
+
+
+	//! Removes characters from a string.
+	/** \param characters: Characters to remove. */
+	void removeChars(const string<T> & characters)
+	{
+		u32 pos = 0;
+		u32 found = 0;
+		for (u32 i=0; i<used; ++i)
+		{
+			// Don't use characters.findFirst as it finds the \0,
+			// causing used to become incorrect.
+			bool docontinue = false;
+			for (u32 j=0; j<characters.size(); ++j)
+			{
+				if (characters[j] == array[i])
+				{
+					++found;
+					docontinue = true;
+					break;
+				}
+			}
+			if (docontinue)
+				continue;
+
+			array[pos++] = array[i];
+		}
+		used -= found;
+		array[used] = 0;
+	}
+
+
 	//! Trims the string.
 	/** Removes the specified characters (by default, Latin-1 whitespace)
 	from the begining and the end of the string. */
@@ -940,7 +1022,7 @@ public:
 	}
 
 	//! gets the last char of a string or null
-	inline T lastChar() const
+	T lastChar() const
 	{
 		return used > 1 ? array[used-2] : 0;
 	}
