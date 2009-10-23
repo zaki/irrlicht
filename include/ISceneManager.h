@@ -537,25 +537,31 @@ namespace scene
 		\param parent: Parent scene node of the camera. Can be null. If the parent moves,
 		the camera will move too.
 		\param id: id of the camera. This id can be used to identify the camera.
+		\param makeActive Flag whether this camera should become the active one.
+		Make sure you always have one active camera.
 		\return Pointer to interface to camera if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNode(ISceneNode* parent = 0,
 			const core::vector3df& position = core::vector3df(0,0,0),
-			const core::vector3df& lookat = core::vector3df(0,0,100), s32 id=-1) = 0;
+			const core::vector3df& lookat = core::vector3df(0,0,100),
+			s32 id=-1, bool makeActive=true) = 0;
 
 		//! Adds a maya style user controlled camera scene node to the scene graph.
 		/** This is a standard camera with an animator that provides mouse control similar
-		 to camera in the 3D Software Maya by Alias Wavefront.
-		 \param parent: Parent scene node of the camera. Can be null.
-		 \param rotateSpeed: Rotation speed of the camera.
-		 \param zoomSpeed: Zoom speed of the camera.
-		 \param translationSpeed: TranslationSpeed of the camera.
-		 \param id: id of the camera. This id can be used to identify the camera.
-		 \return Returns a pointer to the interface of the camera if successful, otherwise 0.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		to camera in the 3D Software Maya by Alias Wavefront.
+		\param parent: Parent scene node of the camera. Can be null.
+		\param rotateSpeed: Rotation speed of the camera.
+		\param zoomSpeed: Zoom speed of the camera.
+		\param translationSpeed: TranslationSpeed of the camera.
+		\param id: id of the camera. This id can be used to identify the camera.
+		\param makeActive Flag whether this camera should become the active one.
+		Make sure you always have one active camera.
+		\return Returns a pointer to the interface of the camera if successful, otherwise 0.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
 			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
-			f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
+			f32 translationSpeed = 1500.0f, s32 id=-1,
+			bool makeActive=true) = 0;
 
 		//! Adds a camera scene node with an animator which provides mouse and keyboard control appropriate for first person shooters (FPS).
 		/** This FPS camera is intended to provide a demonstration of a
@@ -616,13 +622,16 @@ namespace scene
 		up when the mouse is moved down and down when the mouse is
 		moved up, the default is 'false' which means it will follow the
 		movement of the mouse cursor.
+		\param makeActive Flag whether this camera should become the active one.
+		Make sure you always have one active camera.
 		\return Pointer to the interface of the camera if successful,
 		otherwise 0. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = 0.5f, s32 id=-1,
 			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
-			f32 jumpSpeed = 0.f, bool invertMouse=false) = 0;
+			f32 jumpSpeed = 0.f, bool invertMouse=false,
+			bool makeActive=true) = 0;
 
 		//! Adds a dynamic light scene node to the scene graph.
 		/** The light will cast dynamic light on all

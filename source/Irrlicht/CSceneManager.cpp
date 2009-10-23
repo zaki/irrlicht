@@ -662,14 +662,16 @@ IMeshSceneNode* CSceneManager::addOctTreeSceneNode(IMesh* mesh, ISceneNode* pare
 //! the camera will move too.
 //! \return Returns pointer to interface to camera
 ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
-	const core::vector3df& position, const core::vector3df& lookat, s32 id)
+	const core::vector3df& position, const core::vector3df& lookat, s32 id,
+	bool makeActive)
 {
 	if (!parent)
 		parent = this;
 
 	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id, position, lookat);
 
-	setActiveCamera(node);
+	if (makeActive)
+		setActiveCamera(node);
 	node->drop();
 
 	return node;
@@ -680,10 +682,11 @@ ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
 //! to in the 3D Software Maya by Alias Wavefront.
 //! The returned pointer must not be dropped.
 ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
-	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id)
+	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id,
+	bool makeActive)
 {
 	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
-			core::vector3df(0,0,100), id);
+			core::vector3df(0,0,100), id, makeActive);
 	if (node)
 	{
 		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
@@ -700,11 +703,12 @@ ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
 //! Adds a camera scene node which is able to be controlled with the mouse and keys
 //! like in most first person shooters (FPS):
 ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
-	f32 rotateSpeed, f32 moveSpeed, s32 id,
-	SKeyMap* keyMapArray, s32 keyMapSize, bool noVerticalMovement, f32 jumpSpeed, bool invertMouseY)
+	f32 rotateSpeed, f32 moveSpeed, s32 id, SKeyMap* keyMapArray,
+	s32 keyMapSize, bool noVerticalMovement, f32 jumpSpeed,
+	bool invertMouseY, bool makeActive)
 {
 	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
-			core::vector3df(0,0,100), id);
+			core::vector3df(0,0,100), id, makeActive);
 	if (node)
 	{
 		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl,
