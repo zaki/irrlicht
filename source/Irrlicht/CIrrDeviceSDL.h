@@ -203,7 +203,6 @@ namespace irr
 
 		u32 Width, Height;
 
-		bool Close;
 		bool Resizable;
 		bool WindowHasFocus;
 		bool WindowMinimized;

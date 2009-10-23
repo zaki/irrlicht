@@ -147,8 +147,6 @@ namespace irr
 		IOSOperator* Operator;
 		io::IFileSystem* FileSystem;
 		scene::ISceneManager* InputReceivingSceneManager;
-		video::CVideoModeList VideoModeList;
-		SIrrlichtCreationParameters CreationParams;
 
 		struct SMouseMultiClicks
 		{
@@ -162,6 +160,9 @@ namespace irr
 			core::position2di LastClick;
 		};
 		SMouseMultiClicks MouseMultiClicks;
+		video::CVideoModeList VideoModeList;
+		SIrrlichtCreationParameters CreationParams;
+		bool Close;
 	};
 
 } // end namespace irr

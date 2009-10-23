@@ -354,7 +354,6 @@ namespace irr
 		#endif
 #endif
 		u32 Width, Height;
-		bool Close;
 		bool WindowHasFocus;
 		bool WindowMinimized;
 		bool UseXVidMode;

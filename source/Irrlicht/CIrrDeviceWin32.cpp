@@ -515,8 +515,6 @@ bool CIrrDeviceWin32::run()
 
 	MSG msg;
 
-	bool quit = false;
-
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
@@ -527,17 +525,17 @@ bool CIrrDeviceWin32::run()
 			DispatchMessage(&msg);
 
 		if (msg.message == WM_QUIT)
-			quit = true;
+			Close = true;
 	}
 
-	if (!quit)
+	if (!Close)
 		resizeIfNecessary();
 
-	if(!quit)
+	if(!Close)
 		pollJoysticks();
 
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
-	return !quit;
+	return !Close;
 }
 
 
@@ -675,6 +673,7 @@ void CIrrDeviceWin32::closeDevice()
 	PostQuitMessage(0);
 	PeekMessage(&msg, NULL, WM_QUIT, WM_QUIT, PM_REMOVE);
 	DestroyWindow(HWnd);
+	Close=true;
 }
 
 

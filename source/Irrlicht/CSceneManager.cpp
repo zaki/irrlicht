@@ -2525,7 +2525,11 @@ const video::SColorf& CSceneManager::getAmbientLight() const
 //! Get a skinned mesh, which is not available as header-only code
 ISkinnedMesh* CSceneManager::createSkinnedMesh()
 {
+#ifdef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
 	return new CSkinnedMesh();
+#else
+	return 0;
+#endif
 }
 
 //! Returns a mesh writer implementation if available

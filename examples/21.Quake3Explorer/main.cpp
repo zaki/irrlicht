@@ -92,7 +92,7 @@ void GameData::setDefault ()
 	deviceParam.WindowSize.Height = 600;
 	deviceParam.Fullscreen = false;
 	deviceParam.Bits = 32;
-	deviceParam.ZBufferBits = 32;
+	deviceParam.ZBufferBits = 16;
 	deviceParam.Vsync = false;
 	deviceParam.AntiAlias = false;
 
@@ -281,6 +281,8 @@ void Q3Player::create ( IrrlichtDevice *device, IQ3LevelMesh* mesh, ISceneNode *
 	setTimeFire ( Anim + 0, 200, FIRED );
 	setTimeFire ( Anim + 1, 5000 );
 
+	if (!device)
+		return;
 	// load FPS weapon to Camera
 	Device = device;
 	Mesh = mesh;
@@ -377,6 +379,8 @@ void Q3Player::create ( IrrlichtDevice *device, IQ3LevelMesh* mesh, ISceneNode *
 */
 void Q3Player::respawn ()
 {
+	if (!Device)
+		return;
 	ICameraSceneNode* camera = Device->getSceneManager()->getActiveCamera();
 
 	Device->getLogger()->log( "respawn" );
@@ -395,6 +399,8 @@ void Q3Player::respawn ()
 */
 void Q3Player::setpos ( const vector3df &pos, const vector3df &rotation )
 {
+	if (!Device)
+		return;
 	Device->getLogger()->log( "setpos" );
 
 	ICameraSceneNode* camera = Device->getSceneManager()->getActiveCamera();
@@ -1229,10 +1235,13 @@ void CQuake3EventHandler::AddSky( u32 dome, const c8 *texture)
 		snprintf ( buf, 64, "%s_%s.jpg", texture, p[i] );
 		SkyNode = smgr->addSkyBoxSceneNode( driver->getTexture ( buf ), 0, 0, 0, 0, 0 );
 
-		for ( i = 0; i < 6; ++i )
+		if (SkyNode)
 		{
-			snprintf ( buf, 64, "%s_%s.jpg", texture, p[i] );
-			SkyNode->getMaterial(i).setTexture ( 0, driver->getTexture ( buf ) );
+			for ( i = 0; i < 6; ++i )
+			{
+				snprintf ( buf, 64, "%s_%s.jpg", texture, p[i] );
+				SkyNode->getMaterial(i).setTexture ( 0, driver->getTexture ( buf ) );
+			}
 		}
 	}
 	else
@@ -1264,7 +1273,8 @@ void CQuake3EventHandler::AddSky( u32 dome, const c8 *texture)
 			);
 	}
 
-	SkyNode->setName ( "Skydome" );
+	if (SkyNode)
+		SkyNode->setName("Skydome");
 	//SkyNode->getMaterial(0).ZBuffer = video::EMDF_DEPTH_LESS_EQUAL;
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, oldMipMapState);
@@ -1969,7 +1979,7 @@ void CQuake3EventHandler::Animate()
 
 		IAttributes * attr = smgr->getParameters();
 		swprintf ( msg, 128,
-			L"Q3 %s [%s], FPS:%03d Tri:%.03fm Cull %d/%d nodes (%d,%d,%d)",
+			L"Q3 %s [%ls], FPS:%03d Tri:%.03fm Cull %d/%d nodes (%d,%d,%d)",
 			Game->CurrentMapName.c_str(),
 			driver->getName(),
 			driver->getFPS (),

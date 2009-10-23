@@ -176,7 +176,7 @@ int main()
 		*/
 		anms->setMaterialFlag(video::EMF_LIGHTING, false);
 
-		anms->setFrameLoop(0, 14);
+		anms->setFrameLoop(0, 13);
 		anms->setAnimationSpeed(15);
 //		anms->setMD2Animation(scene::EMAT_RUN);
 

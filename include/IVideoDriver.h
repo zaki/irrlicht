@@ -412,7 +412,7 @@ namespace video
 		\param colorKeyPixelPos Position of a pixel with the color key
 		color. Every texel with this color will become fully transparent as
 		described above.
-		\param \deprecated zeroTexels If set to true, then any texels that match
+		\deprecated \param zeroTexels If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
 		to release 1.5 and is provided for backwards compatibility only.*/
@@ -631,13 +631,13 @@ namespace video
 
 		//! Draws a 3d line.
 		/** For some implementations, this method simply calls
-		drawIndexedTriangles for some triangles.
+		drawVertexPrimitiveList for some triangles.
 		Note that the line is drawn using the current transformation
 		matrix and material. So if you need to draw the 3D line
 		independently of the current transformation, use
 		\code
-		driver->setMaterial(unlitMaterial);
-		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		driver->setMaterial(someMaterial);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		\endcode
 		for some properly set up material before drawing the line.
 		Some drivers support line thickness set in the material.
@@ -648,15 +648,15 @@ namespace video
 			const core::vector3df& end, SColor color = SColor(255,255,255,255)) =0;
 
 		//! Draws a 3d triangle.
-		/** This method calls drawIndexedTriangles for some triangles.
+		/** This method calls drawVertexPrimitiveList for some triangles.
 		This method works with all drivers because it simply calls
-		drawIndexedTriangleList but it is hence not very fast.
+		drawVertexPrimitiveList, but it is hence not very fast.
 		Note that the triangle is drawn using the current
 		transformation matrix and material. So if you need to draw it
 		independently of the current transformation, use
 		\code
-		driver->setMaterial(unlitMaterial);
-		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		driver->setMaterial(someMaterial);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		\endcode
 		for some properly set up material before drawing the triangle.
 		\param triangle The triangle to draw.
@@ -670,8 +670,8 @@ namespace video
 		matrix and material. So if you need to draw it independently of
 		the current transformation, use
 		\code
-		driver->setMaterial(unlitMaterial);
-		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		driver->setMaterial(someMaterial);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		\endcode
 		for some properly set up material before drawing the box.
 		\param box The axis aligned box to draw
@@ -894,8 +894,7 @@ namespace video
 		/** These are global values attached to each 3d object rendered,
 		which has the fog flag enabled in its material.
 		\param color Color of the fog
-		\param linearFog Set this to true for linear fog, otherwise
-		exponential fog is applied.
+		\param fogType Type of fog used
 		\param start Only used in linear fog mode (linearFog=true).
 		Specifies where fog starts.
 		\param end Only used in linear fog mode (linearFog=true).
@@ -995,7 +994,7 @@ namespace video
 
 		//! Returns the maximum amount of primitives
 		/** (mostly vertices) which the device is able to render with
-		one drawIndexedTriangleList call.
+		one drawVertexPrimitiveList call.
 		\return Maximum amount of primitives. */
 		virtual u32 getMaximalPrimitiveCount() const =0;
 

@@ -211,8 +211,8 @@ Compiler version defines: VC6.0 : 1200, VC7.0 : 1300, VC7.1 : 1310, VC8.0 : 1400
 /** some compilers can create those by directly writing the
 code like 'code', but some generate warnings so we use this macro here */
 #define MAKE_IRR_ID(c0, c1, c2, c3) \
-		((u32)(u8)(c0) | ((u32)(u8)(c1) << 8) | \
-		((u32)(u8)(c2) << 16) | ((u32)(u8)(c3) << 24 ))
+		((irr::u32)(irr::u8)(c0) | ((irr::u32)(irr::u8)(c1) << 8) | \
+		((irr::u32)(irr::u8)(c2) << 16) | ((irr::u32)(irr::u8)(c3) << 24 ))
 
 #endif // __IRR_TYPES_H_INCLUDED__
 

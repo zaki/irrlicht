@@ -96,7 +96,7 @@ public:
 	//! set a new allocation strategy
 	/** if the maximum size of the array is unknown, you can define how big the
 	allocation should happen.
-	\param element: newStratgey to applay to this array. */
+	\param newStrategy New strategy to apply to this array. */
 	void setAllocStrategy ( eAllocStrategy newStrategy = ALLOC_STRATEGY_DOUBLE )
 	{
 		strategy = newStrategy;

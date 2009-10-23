@@ -96,6 +96,9 @@ public:
 	//! and returns it.
 	virtual IFileList* createFileList();
 
+	//! Creates an empty filelist
+	virtual IFileList* createEmptyFileList(const io::path& path, bool ignoreCase, bool ignorePaths);
+
 	//! determines if a file exists and would be able to be opened.
 	virtual bool existFile(const io::path& filename) const;
 

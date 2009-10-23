@@ -217,6 +217,7 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		const u16 uvTag = Materials[tag]->Texture[0].UVTag;
 		const u16 duvTag = Materials[tag]->Texture[0].DUVTag;
 		video::S3DVertex vertex;
+		vertex.Color=0xffffffff;
 		const u32 vertCount=mb->Vertices.size();
 		for (u32 i=0; i<polySize; ++i)
 		{
@@ -267,7 +268,11 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		os::Printer::log("LWO loader: Vertex count", core::stringc(Materials[i]->Meshbuffer->Vertices.size()));
 #endif
 		if (!Materials[i]->Meshbuffer->Vertices.size())
+		{
+			Materials[i]->Meshbuffer->drop();
+			delete Materials[i];
 			continue;
+		}
 		for (u32 j=0; j<Materials[i]->Meshbuffer->Vertices.size(); ++j)
 			Materials[i]->Meshbuffer->Vertices[j].Color=Materials[i]->Meshbuffer->Material.DiffuseColor;
 		Materials[i]->Meshbuffer->recalculateBoundingBox();
@@ -343,17 +348,17 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 				}
 			}
 			// get the resolution for this axis
-			f32 resolutionS = 1.f/Materials[i]->Texture[0].Size.Z;
-			f32 resolutionT = 1.f/Materials[i]->Texture[0].Size.Y;
+			f32 resolutionS = core::reciprocal(Materials[i]->Texture[0].Size.Z);
+			f32 resolutionT = core::reciprocal(Materials[i]->Texture[0].Size.Y);
 			if (Materials[i]->Texture[0].Axis==1)
 			{
-				resolutionS = 1.f/Materials[i]->Texture[0].Size.X;
-				resolutionT = 1.f/Materials[i]->Texture[0].Size.Z;
+				resolutionS = core::reciprocal(Materials[i]->Texture[0].Size.X);
+				resolutionT = core::reciprocal(Materials[i]->Texture[0].Size.Z);
 			}
 			else if (Materials[i]->Texture[0].Axis==2)
 			{
-				resolutionS = 1.f/Materials[i]->Texture[0].Size.X;
-				resolutionT = 1.f/Materials[i]->Texture[0].Size.Y;
+				resolutionS = core::reciprocal(Materials[i]->Texture[0].Size.X);
+				resolutionT = core::reciprocal(Materials[i]->Texture[0].Size.Y);
 			}
 			// use the two-way planar mapping
 			SceneManager->getMeshManipulator()->makePlanarTextureMapping(Materials[i]->Meshbuffer, resolutionS, resolutionT, Materials[i]->Texture[0].Axis, Materials[i]->Texture[0].Center);
@@ -362,17 +367,19 @@ IAnimatedMesh* CLWOMeshFileLoader::createMesh(io::IReadFile* file)
 		// add bump maps
 		if (Materials[i]->Meshbuffer->Material.MaterialType==video::EMT_NORMAL_MAP_SOLID)
 		{
-			SMesh tmpmesh;
-			tmpmesh.addMeshBuffer(Materials[i]->Meshbuffer);
-			SceneManager->getMeshManipulator()->createMeshWithTangents(&tmpmesh, true, true);
-			Mesh->addMeshBuffer(tmpmesh.getMeshBuffer(0));
+			SMesh* tmpmesh = new SMesh();
+			tmpmesh->addMeshBuffer(Materials[i]->Meshbuffer);
+			SceneManager->getMeshManipulator()->createMeshWithTangents(tmpmesh, true, true);
+			Mesh->addMeshBuffer(tmpmesh->getMeshBuffer(0));
+			tmpmesh->getMeshBuffer(0)->drop();
+			tmpmesh->drop();
 		}
 		else
 		{
 			SceneManager->getMeshManipulator()->recalculateNormals(Materials[i]->Meshbuffer);
 			Mesh->addMeshBuffer(Materials[i]->Meshbuffer);
 		}
-		Mesh->getMeshBuffer(Mesh->getMeshBufferCount()-1)->drop();
+		Materials[i]->Meshbuffer->drop();
 		// clear the material array elements
 		delete Materials[i];
 	}
@@ -607,6 +614,7 @@ void CLWOMeshFileLoader::readObj1(u32 size)
 	u16 numVerts, vertIndex;
 	s16 material;
 	video::S3DVertex vertex;
+	vertex.Color=0xffffffff;
 
 	while (size!=0)
 	{

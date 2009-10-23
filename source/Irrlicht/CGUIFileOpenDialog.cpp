@@ -327,7 +327,9 @@ void CGUIFileOpenDialog::fillListBox()
 	FileList = FileSystem->createFileList();
 	core::stringw s;
 
+#if !defined(_IRR_WINDOWS_CE_PLATFORM_)
 	setlocale(LC_ALL,"");
+#endif
 
 	if (FileList)
 	{
@@ -339,7 +341,7 @@ void CGUIFileOpenDialog::fillListBox()
 			int len = mbstowcs(ws,cs,strlen(cs));
 			ws[len] = 0;
 			s = ws;
-			delete ws;
+			delete [] ws;
 			#else
 			s = FileList->getFileName(i).c_str();
 			#endif

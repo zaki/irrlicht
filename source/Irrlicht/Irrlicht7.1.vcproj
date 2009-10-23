@@ -1668,12 +1668,6 @@
 					RelativePath="CEmptySceneNode.h">
 				</File>
 				<File
-					RelativePath=".\CLensFlareSceneNode.cpp">
-				</File>
-				<File
-					RelativePath=".\CLensFlareSceneNode.h">
-				</File>
-				<File
 					RelativePath=".\CLightSceneNode.cpp">
 				</File>
 				<File
@@ -1973,28 +1967,28 @@
 				RelativePath=".\CMemoryFile.h">
 			</File>
 			<File
-				RelativePath=".\CPakReader.cpp">
-			</File>
-			<File
-				RelativePath=".\CPakReader.h">
-			</File>
-			<File
-				RelativePath=".\CTarReader.cpp">
-			</File>
-			<File
-				RelativePath=".\CTarReader.h">
-			</File>
-			<File
 				RelativePath=".\CMountPointReader.cpp">
 			</File>
 			<File
 				RelativePath=".\CMountPointReader.h">
 			</File>
 			<File
+				RelativePath=".\CPakReader.cpp">
+			</File>
+			<File
+				RelativePath=".\CPakReader.h">
+			</File>
+			<File
 				RelativePath=".\CReadFile.cpp">
 			</File>
 			<File
 				RelativePath=".\CReadFile.h">
+			</File>
+			<File
+				RelativePath=".\CTarReader.cpp">
+			</File>
+			<File
+				RelativePath=".\CTarReader.h">
 			</File>
 			<File
 				RelativePath="CWriteFile.cpp">

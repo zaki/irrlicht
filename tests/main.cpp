@@ -93,6 +93,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testGeometryCreator);
 	TEST(makeColorKeyTexture);
 	TEST(lightMaps);
+	TEST(testXML);
 
 	const unsigned int numberOfTests = tests.size();
 

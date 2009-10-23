@@ -11,8 +11,8 @@
 #define IRRLICHT_VERSION_REVISION 0
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
-#define IRRLICHT_VERSION_SVN
-#define IRRLICHT_SDK_VERSION "1.6-SVN"
+//#define IRRLICHT_VERSION_SVN
+#define IRRLICHT_SDK_VERSION "1.6"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -85,10 +85,7 @@
 #endif
 
 #if !defined(_IRR_WINDOWS_API_) && !defined(_IRR_OSX_PLATFORM_)
-#if defined(__sparc__) || defined(__sun__)
-#define __BIG_ENDIAN__
-#define _IRR_SOLARIS_PLATFORM_
-#else
+#ifndef _IRR_SOLARIS_PLATFORM_
 #define _IRR_LINUX_PLATFORM_
 #endif
 #define _IRR_POSIX_API_
@@ -119,7 +116,7 @@ headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
 //! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004
-//#define _IRR_COMPILE_WITH_DIRECT3D_8_
+#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif
@@ -473,6 +470,10 @@ precision will be lower but speed higher. currently X86 only
 
 #ifndef _IRR_WINDOWS_API_
 	#undef _IRR_WCHAR_FILESYSTEM
+#endif
+
+#if defined(__sparc__) || defined(__sun__)
+#define __BIG_ENDIAN__
 #endif
 
 #if defined(_IRR_SOLARIS_PLATFORM_)

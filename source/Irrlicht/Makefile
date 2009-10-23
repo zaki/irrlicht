@@ -52,7 +52,7 @@ LINKOBJ = $(IRRMESHOBJ) $(IRROBJ) $(IRRPARTICLEOBJ) $(IRRANIMOBJ) \
 #Compiler flags
 CXXINCS = -I../../include -Izlib -Ijpeglib -Ilibpng
 CPPFLAGS = $(CXXINCS) -DIRRLICHT_EXPORTS=1
-CXXFLAGS = -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
+CXXFLAGS += -Wall -pipe -fno-exceptions -fno-rtti -fstrict-aliasing
 ifndef NDEBUG
 CXXFLAGS += -g -D_DEBUG
 else
@@ -63,8 +63,8 @@ CXXFLAGS += -pg
 endif
 CFLAGS := -fexpensive-optimizations -O3 -DPNG_THREAD_UNSAFE_OK -DPNG_NO_MMX_CODE -DPNG_NO_MNG_FEATURES
 
-sharedlib sharedlib_osx: CXXFLAGS += -fpic
-sharedlib sharedlib_osx: CFLAGS += -fpic
+sharedlib sharedlib_osx: CXXFLAGS += -fPIC
+sharedlib sharedlib_osx: CFLAGS += -fPIC
 
 #multilib handling
 ifeq ($(HOSTTYPE), x86_64)
@@ -74,11 +74,10 @@ endif
 #Linux specific options
 staticlib sharedlib install: SYSTEM = Linux
 STATIC_LIB = libIrrlicht.a
-IRRLICHT_DLL := ../../bin/Win32-gcc/Irrlicht.dll
 LIB_PATH = ../../lib/$(SYSTEM)
 INSTALL_DIR = /usr/local/lib
 sharedlib install: SHARED_LIB = libIrrlicht.so
-staticlib sharedlib: LDFLAGS = --no-export-all-symbols --add-stdcall-alias
+staticlib sharedlib: LDFLAGS += --no-export-all-symbols --add-stdcall-alias
 sharedlib: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
 staticlib sharedlib: CXXINCS += -I/usr/X11R6/include
 
@@ -87,12 +86,13 @@ staticlib_osx sharedlib_osx install_osx: SYSTEM = MacOSX
 staticlib_osx sharedlib_osx: IRROTHEROBJ += MacOSX/CIrrDeviceMacOSX.o MacOSX/OSXClipboard.o MacOSX/AppDelegate.o
 staticlib_osx sharedlib_osx: CXXINCS += -IMacOSX -I/usr/X11R6/include
 sharedlib_osx install_osx: SHARED_LIB = libIrrlicht.dylib
-staticlib_osx sharedlib_osx: LDFLAGS = --no-export-all-symbols --add-stdcall-alias
+staticlib_osx sharedlib_osx: LDFLAGS += --no-export-all-symbols --add-stdcall-alias
 sharedlib_osx: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
 
 #Windows specific options
+IRRLICHT_DLL := ../../bin/Win32-gcc/Irrlicht.dll
 sharedlib_win32 staticlib_win32: SYSTEM = Win32-gcc
-sharedlib_win32: LDFLAGS = -lgdi32 -lopengl32 -ld3dx9d -lwinmm
+sharedlib_win32: LDFLAGS += -lgdi32 -lopengl32 -ld3dx9d -lwinmm
 sharedlib_win32 staticlib_win32: CPPFLAGS += -DIRR_COMPILE_WITH_DX9_DEV_PACK -D__GNUWIN32__ -D_WIN32 -DWIN32 -D_WINDOWS -D_MBCS -D_USRDLL
 staticlib_win32: CPPFLAGS += -D_IRR_STATIC_LIB_
 
@@ -102,7 +102,7 @@ all linux: staticlib
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/Linux
 sharedlib: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -shared -Wl,-soname,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Builds Irrlicht as static lib (libIrrlicht.a)
@@ -124,25 +124,17 @@ staticlib_win32: $(STATIC_LIB)
 
 # Builds Irrlicht as shared lib (libIrrlicht.so.versionNumber) and copies it into /lib/MacOSX
 sharedlib_osx: $(LINKOBJ)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -fPIC -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -dynamiclib -Wl,-install_name,$(SHARED_LIB).$(VERSION_MAJOR).$(VERSION_MINOR) -o $(SHARED_LIB).$(VERSION) $^ $(LDFLAGS)
 	cp $(SHARED_LIB).$(VERSION) $(LIB_PATH)
 
 # Installs Irrlicht if it was created as shared lib
-install:
+install install_osx:
 	$(RM) -r $(INSTALL_DIR)/../include/irrlicht
 	mkdir -p $(INSTALL_DIR)/../include/irrlicht
 	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht/
 	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
-	cd $(INSTALL_DIR) && ln -s -f libIrrlicht.so.$(VERSION) $(SHARED_LIB)
-	ldconfig -n $(INSTALL_DIR)
-
-install_osx:
-	$(RM) -r $(INSTALL_DIR)/../include/irrlicht
-	mkdir -p $(INSTALL_DIR)/../include/irrlicht
-	cp ../../include/*.h $(INSTALL_DIR)/../include/irrlicht
-	cp $(LIB_PATH)/$(SHARED_LIB).$(VERSION) $(INSTALL_DIR)
-	cd $(INSTALL_DIR) && ln -s libIrrlicht.dylib.$(VERSION) $(SHARED_LIB)
-	ldconfig -n $(INSTALL_DIR)
+	cd $(INSTALL_DIR) && ln -s -f $(SHARED_LIB).$(VERSION) $(SHARED_LIB)
+#	ldconfig -n $(INSTALL_DIR)
 
 TAGS:
 	ctags *.cpp ../../include/*.h *.h

@@ -74,8 +74,6 @@ int main()
 		now we add the GUI Editor Workspace
 	*/
 
-	env->loadGUI("guiTest.xml");
-
 	env->addGUIElement("GUIEditor");
 	
 	while(device->run()) 

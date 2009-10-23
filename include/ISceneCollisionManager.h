@@ -58,6 +58,7 @@ namespace scene
 		movement of the ellipsoid.
 		\param triout: Optional parameter where the last triangle
 		causing a collision is stored, if there is a collision.
+		\param hitPosition: Return value for the position of the collision
 		\param outFalling: Is set to true if the ellipsoid is falling
 		down, caused by gravity.
 		\param outNode: the node with which the ellipoid collided (if any)

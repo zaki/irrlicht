@@ -125,9 +125,10 @@ public:
 	virtual bool removeFileArchive(u32 index) =0;
 
 	//! Removes an archive from the file system.
-	/** This will close the archive and free any file handles, but will not close resources which have already
-	been loaded and are now cached, for example textures and meshes.
-	\param index: The index of the archive to remove
+	/** This will close the archive and free any file handles, but will not
+	close resources which have already been loaded and are now cached, for
+	example textures and meshes.
+	\param filename The archive of the given name will be removed
 	\return Returns true on success, false on failure */
 	virtual bool removeFileArchive(const path& filename) =0;
 
@@ -225,6 +226,12 @@ public:
 	it has to be deleted using its IFileList::drop() method.
 	See IReferenceCounted::drop() for more information. */
 	virtual IFileList* createFileList() =0;
+
+	//! Creates an empty filelist
+	/** \return a Pointer to the created IFileList is returned. After the list has been used
+	it has to be deleted using its IFileList::drop() method.
+	See IReferenceCounted::drop() for more information. */
+	virtual IFileList* createEmptyFileList(const io::path& path, bool ignoreCase, bool ignorePaths) =0;
 
 	//! Set the active type of file system.
 	virtual EFileSystemType setFileListSystem(EFileSystemType listType) =0;

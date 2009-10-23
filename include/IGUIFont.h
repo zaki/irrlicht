@@ -92,7 +92,7 @@ public:
 	//! Define which characters should not be drawn by the font.
 	/** For example " " would not draw any space which is usually blank in
 	most fonts.
-	\param invisible: string of symbols, which are not send down to the videodriver
+	\param s String of symbols which are not send down to the videodriver
 	*/
 	virtual void setInvisibleCharacters( const wchar_t *s ) = 0;
 };
