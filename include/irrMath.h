@@ -450,7 +450,6 @@ namespace core
 	// calculate: 1 / x
 	REALINLINE f32 reciprocal( const f32 f )
 	{
-		_IRR_DEBUG_BREAK_IF(f==0.f); //divide by zero
 #if defined (IRRLICHT_FAST_MATH)
 
 		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant
@@ -484,7 +483,6 @@ namespace core
 	// calculate: 1 / x
 	REALINLINE f64 reciprocal ( const f64 f )
 	{
-		_IRR_DEBUG_BREAK_IF(f==0.); //divide by zero
 		return 1.0 / f;
 	}
 
@@ -492,7 +490,6 @@ namespace core
 	// calculate: 1 / x, low precision allowed
 	REALINLINE f32 reciprocal_approxim ( const f32 f )
 	{
-		_IRR_DEBUG_BREAK_IF(f==0.f); //divide by zero
 #if defined( IRRLICHT_FAST_MATH)
 
 		// SSE Newton-Raphson reciprocal estimate, accurate to 23 significant

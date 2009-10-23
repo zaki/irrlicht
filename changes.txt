@@ -1,4 +1,8 @@
-Changes in 1.6 (??.??.2009)
+Changes in 1.6 (23.09.2009)
+
+ - Added IFileSystem::createEmptyFileList, exposed IFileList::sort, addItem and added getID
+
+ - Fix MAKE_IRR_ID so it can be used from outside the irr namespace (Micha's patch)
 
  - Renamed some methods in ISkinnedMesh to match the official Irrlicht naming scheme according to createXXX()
 
@@ -645,9 +649,26 @@ Changes in 1.6 (??.??.2009)
  - Add a hitPosition out parameter to ISceneCollisionManager::getCollisionResultPosition() - this is a (small) API breaking change.
 
 -------------------------------------
-Changes in version 1.5.1 (??.?? 2009)
+Changes in version 1.5.2 (??.??.2009)
+
+ - Fix terrain smoothing, bug found by loverlinfish
+
+ - SOLARIS recognition removed. Please specify the platform define manually. This allows for compilation under sparc/Linux and sparc/Solaris
+
+ - Some uninitialized variables fixed
+
+ - FreeBSD joystick support added (for Debian package)
 
  - Fix cursor problems found by buffer and by rvl2 as described in http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=34823&highlight=
+
+ - OSX/XCode updates
+
+ - MS3D loader bug fixed
+
+ - Float parse bug fixed
+
+-------------------------------------
+Changes in version 1.5.1 (05.08.2009)
 
  - Make sure a missing font does not corrupt the skin.
 

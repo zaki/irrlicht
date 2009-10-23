@@ -80,10 +80,8 @@ public:
 	\param id The ID of the file in the archive which owns it */
 	virtual u32 addItem(const io::path& fullPath, u32 size, bool isDirectory, u32 id=0);
 
-	//! Sorts the file list
-	void sort();
-
-	// IFileList methods
+	//! Sorts the file list. You should call this after adding any items to the file list
+	virtual void sort();
 
 	//! Returns the amount of files in the filelist.
 	virtual u32 getFileCount() const;
@@ -93,6 +91,9 @@ public:
 
 	//! Gets the full name of a file in the list, path included, based on an index.
 	virtual const io::path& getFullFileName(u32 index) const;
+
+	//! Returns the ID of a file in the file list, based on an index.
+	virtual u32 getID(u32 index) const;
 
 	//! Returns true if the file is a directory
 	virtual bool isDirectory(u32 index) const;

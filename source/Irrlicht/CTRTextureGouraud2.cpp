@@ -294,9 +294,9 @@ void CTRTextureGouraud2::drawTriangle ( const s4DVertex *a,const s4DVertex *b,co
 	const f32 ba = b->Pos.y - a->Pos.y;
 	const f32 cb = c->Pos.y - b->Pos.y;
 	// calculate delta y of the edges
-	scan.invDeltaY[0] = (ca != 0.f)?core::reciprocal ( ca ):0.f;
-	scan.invDeltaY[1] = (ba != 0.f)?core::reciprocal ( ba ):0.f;
-	scan.invDeltaY[2] = (cb != 0.f)?core::reciprocal ( cb ):0.f;
+	scan.invDeltaY[0] = core::reciprocal( ca );
+	scan.invDeltaY[1] = core::reciprocal( ba );
+	scan.invDeltaY[2] = core::reciprocal( cb );
 
 	if ( F32_LOWER_EQUAL_0 ( scan.invDeltaY[0] ) )
 		return;

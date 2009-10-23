@@ -931,7 +931,7 @@ inline s32 intervall_intersect_test( const sIntervall& a, const sIntervall& b)
 }
 
 
-}	// namespace
+} // end namespace irr
 
 #endif
 

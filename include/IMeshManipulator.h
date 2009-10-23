@@ -128,7 +128,7 @@ namespace scene
 
 		//! Creates a planar texture mapping on the meshbuffer
 		/** This method is currently implemented towards the LWO planar mapping. A more general biasing might be required.
-		\param meshbuffer Buffer on which the operation is performed.
+		\param buffer Buffer on which the operation is performed.
 		\param resolutionS Resolution of the planar mapping in horizontal direction. This is the ratio between object space and texture space.
 		\param resolutionT Resolution of the planar mapping in vertical direction. This is the ratio between object space and texture space.
 		\param axis The axis along which the texture is projected. The allowed values are 0 (X), 1(Y), and 2(Z).

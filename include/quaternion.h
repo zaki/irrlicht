@@ -83,7 +83,7 @@ class quaternion
 		matrix4 getMatrix() const;
 
 		//! Creates a matrix from this quaternion
-		void getMatrix( matrix4 &dest, const vector3df &translation ) const;
+		void getMatrix( matrix4 &dest, const core::vector3df &translation ) const;
 
 		/*!
 			Creates a matrix from this quaternion
@@ -102,7 +102,7 @@ class quaternion
 			lookat *= m3;
 
 		*/
-		void getMatrixCenter( matrix4 &dest, const vector3df &center, const vector3df &translation ) const;
+		void getMatrixCenter( matrix4 &dest, const core::vector3df &center, const core::vector3df &translation ) const;
 
 		//! Creates a matrix from this quaternion
 		inline void getMatrix_transposed( matrix4 &dest ) const;
@@ -339,10 +339,9 @@ inline void quaternion::getMatrix( matrix4 &dest, const core::vector3df &center 
 	m2.setInverseTranslation ( center );
 	lookat *= m2;
 */
-inline void quaternion::getMatrixCenter(	matrix4 &dest, 
-											const core::vector3df &center,
-											const core::vector3df &translation
-											) const
+inline void quaternion::getMatrixCenter(matrix4 &dest, 
+					const core::vector3df &center,
+					const core::vector3df &translation) const
 {
 	f32 * m = dest.pointer();
 

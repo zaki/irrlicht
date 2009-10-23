@@ -142,7 +142,7 @@ static float fuzzyCompareImages(irr::video::IImage * image1,
 	image1->unlock();
 	image2->unlock();
 
-	const u32 totalColours = pixels * 775;
+	const u32 totalColours = pixels * 255*3;
 	return 100.f * (totalColours - mismatchedColours) / totalColours;
 }
 
@@ -206,7 +206,7 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 		irr::core::stringc mismatchFilename = "results/";
 		mismatchFilename += driverName;
 		mismatchFilename += fileName;
-		logTestString("Writing mismatched image to '%s\n", mismatchFilename.c_str());
+		logTestString("Writing mismatched image to '%s'\n", mismatchFilename.c_str());
 		(void)driver->writeImageToFile(screenshot, mismatchFilename.c_str());
 	}
 
@@ -265,3 +265,4 @@ void logTestString(const char * format, ...)
 	OutputDebugStringA(logString);
 #endif // #if defined(TESTING_ON_WINDOWS)
 }
+

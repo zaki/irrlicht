@@ -349,6 +349,7 @@ void CAnimatedMeshSceneNode::render()
 	{
 		video::SMaterial debug_mat;
 		debug_mat.Lighting = false;
+		debug_mat.AntiAliasing=0;
 		driver->setMaterial(debug_mat);
 		// show normals
 		if (DebugDataVisible & scene::EDS_NORMALS)

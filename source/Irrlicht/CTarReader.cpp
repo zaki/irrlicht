@@ -10,7 +10,9 @@
 #include "CLimitReadFile.h"
 #include "os.h"
 #include "coreutil.h"
+#if !defined(_IRR_WINDOWS_CE_PLATFORM_)
 #include "errno.h"
+#endif
 
 namespace irr
 {
@@ -202,8 +204,10 @@ u32 CTarReader::populateFileList()
 			}
 
 			u32 size = strtoul(sSize.c_str(), NULL, 8);
+#if !defined(_IRR_WINDOWS_CE_PLATFORM_)
 			if (errno == ERANGE)
 				os::Printer::log("File too large", fullPath, ELL_WARNING);
+#endif
 
 			// save start position
 			u32 offset = pos + 512;

@@ -33,7 +33,7 @@ public:
 	//! Returns true if the file might be loaded by this class.
 	/** This decision should be based on the file extension (e.g. ".cob")
 	only.
-	\param fileName Name of the file to test.
+	\param filename Name of the file to test.
 	\return True if the file might be loaded by this class. */
 	virtual bool isALoadableFileExtension(const io::path& filename) const = 0;
 

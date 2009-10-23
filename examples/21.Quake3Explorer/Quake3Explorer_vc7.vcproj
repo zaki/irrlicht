@@ -126,6 +126,15 @@
 		<File
 			RelativePath=".\main.cpp">
 		</File>
+		<File
+			RelativePath=".\q3factory.cpp">
+		</File>
+		<File
+			RelativePath=".\q3factory.h">
+		</File>
+		<File
+			RelativePath=".\sound.cpp">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

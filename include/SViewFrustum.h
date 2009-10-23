@@ -85,7 +85,7 @@ namespace scene
 		const core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state) const;
 
 		//! clips a line to the view frustum.
-		//! \Return: Returns true if the line was clipped, false if not
+		/** \return True if the line was clipped, false if not */
 		bool clipLine(core::line3d<f32>& line) const;
 
 		//! the position of the camera

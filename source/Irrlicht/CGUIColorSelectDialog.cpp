@@ -131,6 +131,8 @@ CGUIColorSelectDialog::CGUIColorSelectDialog(const wchar_t* title, IGUIEnvironme
 		}
 
 		SBatteryItem item;
+		item.Incoming=0.f;
+		item.Outgoing=0.f;
 
 		r.UpperLeftCorner.X = Template[i].x + 15;
 		r.UpperLeftCorner.Y = Template[i].y;

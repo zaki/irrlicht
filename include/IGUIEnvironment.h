@@ -149,8 +149,9 @@ public:
 
 
 	//! Creates the image list from the given texture.
-	/** Loads the font if it was not loaded before.
-	\param filename Filename of the Font.
+	/** \param texture Texture to split into images
+	\param imageSize Dimension of each image
+	\param useAlphaChannel Flag whether alpha channel of the texture should be honored.
 	\return Pointer to the font. Returns 0 if the font could not be loaded.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
@@ -314,6 +315,8 @@ public:
 	\param parent Parent gui element of the list box.
 	\param id Id to identify the gui element.
 	\param drawBackground Flag whether the background should be drawn.
+	\param scrollBarVertical Flag whether a vertical scrollbar should be used
+	\param scrollBarHorizontal Flag whether a horizontal scrollbar should be used
 	\return Pointer to the created list box. Returns 0 if an error occured.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
 	more information. */
@@ -396,6 +399,7 @@ public:
 	/** An edit box with up and down buttons
 	\param text Text to be displayed. Can be altered after creation by setText().
 	\param rectangle Rectangle specifying the borders of the spin box.
+	\param border Set to true if the spin box should have a 3d border.
 	\param parent Parent item of the element, e.g. a window.
 	Set it to 0 to place the spin box directly in the environment.
 	\param id The ID of the element.

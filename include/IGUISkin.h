@@ -192,7 +192,7 @@ namespace gui
 		"MessageBoxMaxTextWidth",
 		"MessageBoxMinTextHeight",
 		"MessageBoxMaxTextHeight",
-		0,
+		0
 	};
 
 
@@ -230,7 +230,7 @@ namespace gui
 		"WindowButtonMaximize",
 		"WindowButtonMinimize",
 		"WindowButtonRestore",
-		0,
+		0
 	};
 
 	//! Customizable symbols for GUI

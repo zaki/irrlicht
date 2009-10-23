@@ -34,7 +34,7 @@ CPLYMeshFileLoader::~CPLYMeshFileLoader()
 	// (we do, but this could be disabled to increase the speed of loading hundreds of meshes)
 	if (Buffer)
 	{
-		delete Buffer;
+		delete [] Buffer;
 		Buffer = 0;
 	}
 
@@ -270,7 +270,7 @@ IAnimatedMesh* CPLYMeshFileLoader::createMesh(io::IReadFile* file)
 
 
 	// free the buffer
-	delete Buffer;
+	delete [] Buffer;
 	Buffer = 0;
 	File->drop();
 	File = 0;
@@ -557,7 +557,7 @@ c8* CPLYMeshFileLoader::getNextLine()
 
 	// begin at the start of the next line
 	c8* pos = StartPointer;
-	while (*pos && pos < EndPointer && *pos != '\r' && *pos != '\n')
+	while (pos < EndPointer && *pos && *pos != '\r' && *pos != '\n')
 		++pos;
 
 	if ( pos < EndPointer && ( *(pos+1) == '\r' || *(pos+1) == '\n') )
