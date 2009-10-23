@@ -557,6 +557,9 @@ namespace video
 		virtual void setAllowZWriteOnTransparent(bool flag)
 		{ AllowZWriteOnTransparent=flag; }
 
+		//! Returns the maximum texture size supported.
+		virtual core::dimension2du getMaxTextureSize() const;
+
 		//! deprecated method
 		virtual ITexture* createRenderTargetTexture(const core::dimension2d<u32>& size,
 				const c8* name=0);

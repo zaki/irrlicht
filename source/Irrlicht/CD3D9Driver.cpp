@@ -3111,6 +3111,12 @@ void CD3D9Driver::removeDepthSurface(SDepthSurface* depth)
 }
 
 
+core::dimension2du CD3D9Driver::getMaxTextureSize() const
+{
+	return core::dimension2du(Caps.MaxTextureWidth, Caps.MaxTextureHeight);
+}
+
+
 } // end namespace video
 } // end namespace irr
 

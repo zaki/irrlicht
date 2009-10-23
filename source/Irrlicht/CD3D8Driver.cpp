@@ -2296,6 +2296,12 @@ void CD3D8Driver::enableClipPlane(u32 index, bool enable)
 }
 
 
+core::dimension2du CD3D8Driver::getMaxTextureSize() const
+{
+	return core::dimension2du(Caps.MaxTextureWidth, Caps.MaxTextureHeight);
+}
+
+
 } // end namespace video
 } // end namespace irr
 

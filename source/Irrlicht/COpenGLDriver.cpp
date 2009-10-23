@@ -3500,6 +3500,11 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 }
 
 
+core::dimension2du COpenGLDriver::getMaxTextureSize() const
+{
+	return core::dimension2du(MaxTextureSize, MaxTextureSize);
+}
+
 } // end namespace
 } // end namespace
 

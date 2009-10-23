@@ -1283,6 +1283,9 @@ namespace video
 		Use the SceneManager attribute to set this value from your app.
 		\param flag Default behavior is to disable ZWrite, i.e. false. */
 		virtual void setAllowZWriteOnTransparent(bool flag) =0;
+
+		//! Returns the maximum texture size supported.
+		virtual core::dimension2du getMaxTextureSize() const =0;
 	};
 
 } // end namespace video

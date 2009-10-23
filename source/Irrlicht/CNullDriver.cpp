@@ -2061,5 +2061,12 @@ SOverrideMaterial& CNullDriver::getOverrideMaterial()
 	return OverrideMaterial;
 }
 
+
+core::dimension2du CNullDriver::getMaxTextureSize() const
+{
+	return core::dimension2du(0x10000,0x10000); // maybe large enough
+}
+
+
 } // end namespace
 } // end namespace
