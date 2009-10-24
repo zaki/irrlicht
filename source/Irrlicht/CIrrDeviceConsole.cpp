@@ -346,8 +346,7 @@ void CIrrDeviceConsole::sleep(u32 timeMs, bool pauseTimer)
 void CIrrDeviceConsole::setWindowCaption(const wchar_t* text)
 {
 #ifdef _IRR_WINDOWS_NT_CONSOLE_
-	core::stringc txt(text);
-	SetConsoleTitle(txt.c_str());
+	SetConsoleTitleW(text);
 #endif
 }
 

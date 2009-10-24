@@ -368,7 +368,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShaderFromFile(LPCSTR pSrcF
 		#endif
 
 		// invoke static linked function
-		return D3DXAssembleShaderFromFile(pSrcFile, pDefines, pInclude, Flags,
+		return D3DXAssembleShaderFromFileA(pSrcFile, pDefines, pInclude, Flags,
 										  ppShader, ppErrorMsgs);
 	#else
 	{
@@ -489,7 +489,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShaderFromFile(LPCSTR pSrcFi
 		#endif
 
 		// invoke static linked function
-		return D3DXCompileShaderFromFile(pSrcFile, pDefines, pInclude, pFunctionName, pProfile, Flags, ppShader, ppErrorMsgs, ppConstantTable);
+		return D3DXCompileShaderFromFileA(pSrcFile, pDefines, pInclude, pFunctionName, pProfile, Flags, ppShader, ppErrorMsgs, ppConstantTable);
 	#else
 	{
 		// try to load shader functions from the dll and print error if failed.
