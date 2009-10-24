@@ -151,7 +151,7 @@ bool CD3D8Driver::initDriver(const core::dimension2d<u32>& screenSize,
 #if defined( _IRR_XBOX_PLATFORM_)
 	D3DCREATETYPE d3dCreate = (D3DCREATETYPE) &Direct3DCreate8;
 #else
-	D3DLibrary = LoadLibrary( "d3d8.dll" );
+	D3DLibrary = LoadLibrary( __TEXT("d3d8.dll") );
 
 	if (!D3DLibrary)
 	{

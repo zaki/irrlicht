@@ -293,17 +293,17 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 	// create the window if we need to and we do not use the null device
 	if (!CreationParams.WindowId && CreationParams.DriverType != video::EDT_NULL)
 	{
-		const c8* ClassName = "CIrrDeviceWin32";
+		const fschar_t* ClassName = __TEXT("CIrrDeviceWin32");
 
 		// Register Class
 		WNDCLASSEX wcex;
-		wcex.cbSize		= sizeof(WNDCLASSEX);
-		wcex.style		= CS_HREDRAW | CS_VREDRAW;
+		wcex.cbSize			= sizeof(WNDCLASSEX);
+		wcex.style			= CS_HREDRAW | CS_VREDRAW;
 		wcex.lpfnWndProc	= WndProc;
 		wcex.cbClsExtra		= 0;
 		wcex.cbWndExtra		= 0;
 		wcex.hInstance		= hInstance;
-		wcex.hIcon		= NULL;
+		wcex.hIcon			= NULL;
 		wcex.hCursor		= LoadCursor(NULL, IDC_ARROW);
 		wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW+1);
 		wcex.lpszMenuName	= 0;
@@ -311,7 +311,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 		wcex.hIconSm		= 0;
 
 		// if there is an icon, load it
-		wcex.hIcon = (HICON)LoadImage(hInstance, "irrlicht.ico", IMAGE_ICON, 0,0, LR_LOADFROMFILE);
+		wcex.hIcon = (HICON)LoadImage(hInstance, __TEXT("irrlicht.ico"), IMAGE_ICON, 0,0, LR_LOADFROMFILE);
 
 		RegisterClassEx(&wcex);
 
@@ -344,7 +344,7 @@ CIrrDeviceWin32::CIrrDeviceWin32(const SIrrlichtCreationParameters& params)
 
 		// create window
 
-		HWnd = CreateWindow( ClassName, "", style, windowLeft, windowTop,
+		HWnd = CreateWindow( ClassName, __TEXT(""), style, windowLeft, windowTop,
 					realWidth, realHeight, NULL, NULL, hInstance, NULL);
 		CreationParams.WindowId = HWnd;
 
@@ -854,17 +854,17 @@ void CIrrDeviceWin32::getWindowsVersion(core::stringc& out)
 			DWORD dwBufLen;
 
 			RegOpenKeyEx( HKEY_LOCAL_MACHINE,
-				"SYSTEM\\CurrentControlSet\\Control\\ProductOptions",
+				__TEXT("SYSTEM\\CurrentControlSet\\Control\\ProductOptions"),
 				0, KEY_QUERY_VALUE, &hKey );
-			RegQueryValueEx( hKey, "ProductType", NULL, NULL,
+			RegQueryValueEx( hKey, __TEXT("ProductType"), NULL, NULL,
 				(LPBYTE) szProductType, &dwBufLen);
 			RegCloseKey( hKey );
 
-			if (lstrcmpi( "WINNT", szProductType) == 0 )
+			if (_strcmpi( "WINNT", szProductType) == 0 )
 				out.append("Professional ");
-			if (lstrcmpi( "LANMANNT", szProductType) == 0)
+			if (_strcmpi( "LANMANNT", szProductType) == 0)
 				out.append("Server ");
-			if (lstrcmpi( "SERVERNT", szProductType) == 0)
+			if (_strcmpi( "SERVERNT", szProductType) == 0)
 				out.append("Advanced Server ");
 		}
 

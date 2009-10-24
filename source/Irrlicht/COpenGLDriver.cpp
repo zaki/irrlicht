@@ -77,7 +77,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	if (AntiAlias > 1)
 	{
 		// Create a window to test antialiasing support
-		const c8* ClassName = "GLCIrrDeviceWin32";
+		const fschar_t* ClassName = __TEXT("GLCIrrDeviceWin32");
 		HINSTANCE lhInstance = GetModuleHandle(0);
 
 		// Register Class
@@ -116,7 +116,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
 		const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
-		HWND temporary_wnd=CreateWindow(ClassName, "", style, windowLeft, windowTop,
+		HWND temporary_wnd=CreateWindow(ClassName, __TEXT(""), style, windowLeft, windowTop,
 			realWidth, realHeight, NULL, NULL, lhInstance, NULL);
 
 		if (!temporary_wnd)

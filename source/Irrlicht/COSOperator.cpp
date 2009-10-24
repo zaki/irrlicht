@@ -132,7 +132,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 
 	HKEY Key;
 	Error = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-			"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0",
+			__TEXT("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
 			0, KEY_READ, &Key);
 
 	if(Error != ERROR_SUCCESS)
@@ -140,7 +140,7 @@ bool COSOperator::getProcessorSpeedMHz(u32* MHz) const
 
 	DWORD Speed = 0;
 	DWORD Size = sizeof(Speed);
-	Error = RegQueryValueEx(Key, "~MHz", NULL, NULL, (LPBYTE)&Speed, &Size);
+	Error = RegQueryValueEx(Key, __TEXT("~MHz"), NULL, NULL, (LPBYTE)&Speed, &Size);
 
 	RegCloseKey(Key);
 
