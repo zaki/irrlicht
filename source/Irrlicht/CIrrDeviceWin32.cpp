@@ -253,6 +253,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return 0;
 		break;
 
+	case WM_ACTIVATE:
+		// we need to take care for screen changes, e.g. Alt-Tab
+		dev = getDeviceFromHWnd(hWnd);
+		if (dev)
+		{
+			if ((wParam&0xFF)==WA_INACTIVE)
+				dev->switchToFullScreen(true);
+			else
+				dev->switchToFullScreen();
+		}
+		break;
+
 	case WM_USER:
 		event.EventType = irr::EET_USER_EVENT;
 		event.UserEvent.UserData1 = (irr::s32)wParam;
@@ -409,8 +421,7 @@ CIrrDeviceWin32::~CIrrDeviceWin32()
 		}
 	}
 
-	if (ChangedToFullScreen)
-		ChangeDisplaySettings(NULL,0);
+	switchToFullScreen(true);
 }
 
 
@@ -458,9 +469,7 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_OPENGL:
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-
-		if (CreationParams.Fullscreen)
-			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
+		switchToFullScreen();
 
 		VideoDriver = video::createOpenGLDriver(CreationParams, FileSystem, this);
 		if (!VideoDriver)
@@ -475,8 +484,7 @@ void CIrrDeviceWin32::createDriver()
 	case video::EDT_SOFTWARE:
 
 		#ifdef _IRR_COMPILE_WITH_SOFTWARE_
-		if (CreationParams.Fullscreen)
-			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
+		switchToFullScreen();
 
 		VideoDriver = video::createSoftwareDriver(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
@@ -487,8 +495,7 @@ void CIrrDeviceWin32::createDriver()
 
 	case video::EDT_BURNINGSVIDEO:
 		#ifdef _IRR_COMPILE_WITH_BURNINGSVIDEO_
-		if (CreationParams.Fullscreen)
-			switchToFullScreen(CreationParams.WindowSize.Width, CreationParams.WindowSize.Height, CreationParams.Bits);
+		switchToFullScreen();
 
 		VideoDriver = video::createSoftwareDriver2(CreationParams.WindowSize, CreationParams.Fullscreen, FileSystem, this);
 		#else
@@ -708,16 +715,26 @@ bool CIrrDeviceWin32::isWindowMinimized() const
 
 
 //! switches to fullscreen
-bool CIrrDeviceWin32::switchToFullScreen(s32 width, s32 height, s32 bits)
+bool CIrrDeviceWin32::switchToFullScreen(bool reset)
 {
+	if (!CreationParams.Fullscreen)
+		return true;
+	if (reset)
+	{
+		if (ChangedToFullScreen)
+			return (ChangeDisplaySettings(NULL,0)==DISP_CHANGE_SUCCESSFUL);
+		else
+			return true;
+	}
+
 	DEVMODE dm;
 	memset(&dm, 0, sizeof(dm));
 	dm.dmSize = sizeof(dm);
 	// use default values from current setting
 	EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm);
-	dm.dmPelsWidth = width;
-	dm.dmPelsHeight = height;
-	dm.dmBitsPerPel = bits;
+	dm.dmPelsWidth = CreationParams.WindowSize.Width;
+	dm.dmPelsHeight = CreationParams.WindowSize.Height;
+	dm.dmBitsPerPel = CreationParams.Bits;
 	dm.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 	LONG res = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);

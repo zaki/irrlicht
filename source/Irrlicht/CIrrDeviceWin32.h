@@ -101,6 +101,9 @@ namespace irr
 			return CIrrDeviceStub::checkSuccessiveClicks(mouseX, mouseY);
 		}
 
+		//! switchs to fullscreen
+		bool switchToFullScreen(bool reset=false);
+
 		//! Implementation of the win32 cursor control
 		class CCursorControl : public gui::ICursorControl
 		{
@@ -315,9 +318,6 @@ namespace irr
 		//! create the driver
 		void createDriver();
 
-		//! switchs to fullscreen
-		bool switchToFullScreen(s32 width, s32 height, s32 bits);
-
 		void getWindowsVersion(core::stringc& version);
 
 		void resizeIfNecessary();
@@ -346,4 +346,3 @@ namespace irr
 
 #endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
 #endif // __C_IRR_DEVICE_WIN32_H_INCLUDED__
-
