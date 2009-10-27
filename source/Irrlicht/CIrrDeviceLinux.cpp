@@ -150,21 +150,8 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		}
 		#endif // #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-		#ifdef _IRR_LINUX_X11_VIDMODE_
-		if (UseXVidMode && CreationParams.Fullscreen)
-		{
-			XF86VidModeSwitchToMode(display, screennr, &oldVideoMode);
-			XF86VidModeSetViewPort(display, screennr, 0, 0);
-		}
-		#endif
-		#ifdef _IRR_LINUX_X11_RANDR_
-		if (UseXRandR && CreationParams.Fullscreen)
-		{
-			XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
-			XRRSetScreenConfig(display,config,DefaultRootWindow(display),oldRandrMode,oldRandrRotation,CurrentTime);
-			XRRFreeScreenConfigInfo(config);
-		}
-		#endif
+		// Reset fullscreen resolution change
+		switchToFullscreen(true);
 
 		if (SoftwareImage)
 			XDestroyImage(SoftwareImage);
@@ -208,10 +195,29 @@ int IrrPrintXError(Display *display, XErrorEvent *event)
 #endif
 
 
-bool CIrrDeviceLinux::switchToFullscreen()
+bool CIrrDeviceLinux::switchToFullscreen(bool reset)
 {
 	if (!CreationParams.Fullscreen)
 		return true;
+	if (reset)
+	{
+#ifdef _IRR_LINUX_X11_VIDMODE_
+		if (UseXVidMode && CreationParams.Fullscreen)
+		{
+			XF86VidModeSwitchToMode(display, screennr, &oldVideoMode);
+			XF86VidModeSetViewPort(display, screennr, 0, 0);
+		}
+		#endif
+		#ifdef _IRR_LINUX_X11_RANDR_
+		if (UseXRandR && CreationParams.Fullscreen)
+		{
+			XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
+			XRRSetScreenConfig(display,config,DefaultRootWindow(display),oldRandrMode,oldRandrRotation,CurrentTime);
+			XRRFreeScreenConfigInfo(config);
+		}
+		#endif
+		return true;
+	}
 
 	getVideoModeList();
 	#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
