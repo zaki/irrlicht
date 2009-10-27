@@ -208,6 +208,90 @@ int IrrPrintXError(Display *display, XErrorEvent *event)
 #endif
 
 
+bool CIrrDeviceLinux::switchToFullscreen()
+{
+	if (!CreationParams.Fullscreen)
+		return true;
+
+	getVideoModeList();
+	#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
+	s32 eventbase, errorbase;
+	s32 bestMode = -1;
+	#endif
+
+	#ifdef _IRR_LINUX_X11_VIDMODE_
+	if (XF86VidModeQueryExtension(display, &eventbase, &errorbase))
+	{
+		// enumerate video modes
+		s32 modeCount;
+		XF86VidModeModeInfo** modes;
+
+		XF86VidModeGetAllModeLines(display, screennr, &modeCount, &modes);
+
+		// find fitting mode
+		for (s32 i = 0; i<modeCount; ++i)
+		{
+			if (bestMode==-1 && modes[i]->hdisplay >= Width && modes[i]->vdisplay >= Height)
+				bestMode = i;
+			else if (bestMode!=-1 &&
+					modes[i]->hdisplay >= Width &&
+					modes[i]->vdisplay >= Height &&
+					modes[i]->hdisplay < modes[bestMode]->hdisplay &&
+					modes[i]->vdisplay < modes[bestMode]->vdisplay)
+				bestMode = i;
+		}
+		if (bestMode != -1)
+		{
+			os::Printer::log("Starting fullscreen mode...", ELL_INFORMATION);
+			XF86VidModeSwitchToMode(display, screennr, modes[bestMode]);
+			XF86VidModeSetViewPort(display, screennr, 0, 0);
+			UseXVidMode=true;
+		}
+		else
+		{
+			os::Printer::log("Could not find specified video mode, running windowed.", ELL_WARNING);
+			CreationParams.Fullscreen = false;
+		}
+
+		XFree(modes);
+	}
+	else
+	#endif
+	#ifdef _IRR_LINUX_X11_RANDR_
+	if (XRRQueryExtension(display, &eventbase, &errorbase))
+	{
+		s32 modeCount;
+		XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
+		XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
+		for (s32 i = 0; i<modeCount; ++i)
+		{
+			if (bestMode==-1 && (u32)modes[i].width >= Width && (u32)modes[i].height >= Height)
+				bestMode = i;
+			else if (bestMode!=-1 &&
+					(u32)modes[i].width >= Width &&
+					(u32)modes[i].height >= Height &&
+					modes[i].width < modes[bestMode].width &&
+					modes[i].height < modes[bestMode].height)
+				bestMode = i;
+		}
+		if (bestMode != -1)
+		{
+			XRRSetScreenConfig(display,config,DefaultRootWindow(display),bestMode,oldRandrRotation,CurrentTime);
+			UseXRandR=true;
+		}
+		XRRFreeScreenConfigInfo(config);
+	}
+	else
+	#endif
+	{
+		os::Printer::log("VidMode or RandR extension must be installed to allow Irrlicht "
+		"to switch to fullscreen mode. Running in windowed mode instead.", ELL_WARNING);
+		CreationParams.Fullscreen = false;
+	}
+	return CreationParams.Fullscreen;
+}
+
+
 bool CIrrDeviceLinux::createWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
@@ -229,86 +313,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	screennr = DefaultScreen(display);
 
-	// query extension
-
-	if (CreationParams.Fullscreen)
-	{
-		getVideoModeList();
-		#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
-		s32 eventbase, errorbase;
-		s32 bestMode = -1;
-		#endif
-
-		#ifdef _IRR_LINUX_X11_VIDMODE_
-		if (XF86VidModeQueryExtension(display, &eventbase, &errorbase))
-		{
-			// enumerate video modes
-			s32 modeCount;
-			XF86VidModeModeInfo** modes;
-
-			XF86VidModeGetAllModeLines(display, screennr, &modeCount, &modes);
-
-			// find fitting mode
-			for (s32 i = 0; i<modeCount; ++i)
-			{
-				if (bestMode==-1 && modes[i]->hdisplay >= Width && modes[i]->vdisplay >= Height)
-					bestMode = i;
-				else if (bestMode!=-1 &&
-						modes[i]->hdisplay >= Width &&
-						modes[i]->vdisplay >= Height &&
-						modes[i]->hdisplay < modes[bestMode]->hdisplay &&
-						modes[i]->vdisplay < modes[bestMode]->vdisplay)
-					bestMode = i;
-			}
-			if (bestMode != -1)
-			{
-				os::Printer::log("Starting fullscreen mode...", ELL_INFORMATION);
-				XF86VidModeSwitchToMode(display, screennr, modes[bestMode]);
-				XF86VidModeSetViewPort(display, screennr, 0, 0);
-				UseXVidMode=true;
-			}
-			else
-			{
-				os::Printer::log("Could not find specified video mode, running windowed.", ELL_WARNING);
-				CreationParams.Fullscreen = false;
-			}
-
-			XFree(modes);
-		}
-		else
-		#endif
-		#ifdef _IRR_LINUX_X11_RANDR_
-		if (XRRQueryExtension(display, &eventbase, &errorbase))
-		{
-			s32 modeCount;
-			XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
-			XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
-			for (s32 i = 0; i<modeCount; ++i)
-			{
-				if (bestMode==-1 && (u32)modes[i].width >= Width && (u32)modes[i].height >= Height)
-					bestMode = i;
-				else if (bestMode!=-1 &&
-						(u32)modes[i].width >= Width &&
-						(u32)modes[i].height >= Height &&
-						modes[i].width < modes[bestMode].width &&
-						modes[i].height < modes[bestMode].height)
-					bestMode = i;
-			}
-			if (bestMode != -1)
-			{
-				XRRSetScreenConfig(display,config,DefaultRootWindow(display),bestMode,oldRandrRotation,CurrentTime);
-				UseXRandR=true;
-			}
-			XRRFreeScreenConfigInfo(config);
-		}
-		else
-		#endif
-		{
-			os::Printer::log("VidMode or RandR extension must be installed to allow Irrlicht "
-			"to switch to fullscreen mode. Running in windowed mode instead.", ELL_WARNING);
-			CreationParams.Fullscreen = false;
-		}
-	}
+	switchToFullscreen();
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
