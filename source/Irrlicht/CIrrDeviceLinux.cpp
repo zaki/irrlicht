@@ -129,6 +129,8 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 #ifdef _IRR_COMPILE_WITH_X11_
 	if (StdHints)
 		XFree(StdHints);
+	// Disable cursor and free it later on
+	CursorControl->setVisible(false);
 	if (display)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -575,7 +577,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	attributes.colormap = colormap;
 	attributes.border_pixel = 0;
-	attributes.event_mask = StructureNotifyMask | FocusChangeMask;
+	attributes.event_mask = StructureNotifyMask | FocusChangeMask | ExposureMask;
 	if (!CreationParams.IgnoreInput)
 		attributes.event_mask |= PointerMotionMask |
 				ButtonPressMask | KeyPressMask |
@@ -583,44 +585,27 @@ bool CIrrDeviceLinux::createWindow()
 
 	if (!CreationParams.WindowId)
 	{
-		// create Window, either for Fullscreen or windowed mode
+		// create new Window
+		// Remove window manager decoration in fullscreen
+		attributes.override_redirect = CreationParams.Fullscreen;
+		window = XCreateWindow(display,
+				RootWindow(display, visual->screen),
+				0, 0, Width, Height, 0, visual->depth,
+				InputOutput, visual->visual,
+				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
+				&attributes);
+		XMapRaised(display, window);
+		CreationParams.WindowId = (void*)window;
+		Atom wmDelete;
+		wmDelete = XInternAtom(display, wmDeleteWindow, True);
+		XSetWMProtocols(display, window, &wmDelete, 1);
 		if (CreationParams.Fullscreen)
 		{
-			attributes.override_redirect = True;
-
-			window = XCreateWindow(display,
-					RootWindow(display, visual->screen),
-					0, 0, Width, Height, 0, visual->depth,
-					InputOutput, visual->visual,
-					CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
-					&attributes);
-			CreationParams.WindowId = (void*)window;
-
-			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
-			XMapRaised(display, window);
 			XGrabKeyboard(display, window, True, GrabModeAsync,
 				GrabModeAsync, CurrentTime);
 			XGrabPointer(display, window, True, ButtonPressMask,
 				GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
-		}
-		else
-		{ // we want windowed mode
-			attributes.event_mask |= ExposureMask;
-			attributes.event_mask |= FocusChangeMask;
-
-			window = XCreateWindow(display,
-					RootWindow(display, visual->screen),
-					0, 0, Width, Height, 0, visual->depth,
-					InputOutput, visual->visual,
-					CWBorderPixel | CWColormap | CWEventMask,
-					&attributes);
-
-			CreationParams.WindowId = (void*)window;
-
-			Atom wmDelete;
-			wmDelete = XInternAtom(display, wmDeleteWindow, True);
-			XSetWMProtocols(display, window, &wmDelete, 1);
-			XMapRaised(display, window);
+			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
 		}
 	}
 	else
