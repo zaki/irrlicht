@@ -25,6 +25,10 @@ namespace irr
 		/** This device uses Apple's Cocoa API and works in Mac OSX 10.2 and above. */
 		EIDT_OSX,
 
+		//! A device native to the IPhone/IPod touch
+		/** This device should be used with the OpenGL-ES driver. */
+		EIDT_IPHONE,
+
 		//! A device which uses Simple DirectMedia Layer
 		/** The SDL device works under all platforms supported by SDL but first must be compiled
 		in by defining the IRR_USE_SDL_DEVICE macro in IrrCompileConfig.h */

@@ -73,6 +73,11 @@ namespace irr
 			dev = new CIrrDeviceMacOSX(params);
 #endif
 
+#ifdef _IRR_COMPILE_WITH_IPHONE_DEVICE
+		if (params.DeviceType == EIDT_IPHONE || (!dev && params.DeviceType == EIDT_BEST))
+			dev = new CIrrDeviceIPhone(params);
+#endif
+
 #ifdef _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_
 		if (params.DeviceType == EIDT_WINCE || (!dev && params.DeviceType == EIDT_BEST))
 			dev = new CIrrDeviceWinCE(params);

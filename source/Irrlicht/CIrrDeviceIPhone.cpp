@@ -278,24 +278,5 @@ void CIrrDeviceIPhone::onWindowActive(MIrrIPhoneDevice * dev, int active)
 
 } // end namespace
 
-namespace irr
-{
-
-extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
-		const SIrrlichtCreationParameters& parameters)
-{
-	irr::CIrrDeviceIPhone* dev = new irr::CIrrDeviceIPhone(parameters);
-	
-	if (dev && !dev->getVideoDriver() && parameters.DriverType != video::EDT_NULL)
-	{
-		dev->drop();
-		dev = 0;
-	}
-
-	return dev;
-}
-
-}
-
 #endif // _IRR_COMPILE_WITH_IPHONE_DEVICE_
 
