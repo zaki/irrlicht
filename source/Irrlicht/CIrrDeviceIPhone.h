@@ -96,13 +96,27 @@ namespace irr
 		virtual void closeDevice();
 
 		//! Sets if the window should be resizeable in windowed mode.
-		virtual void setResizeable(bool resize=false);
+		virtual void setResizable(bool resize=false);
 		
 		//! Minimizes the window
 		virtual void minimizeWindow();
 		
+		//! Maximizes the window if possible.
+		virtual void maximizeWindow();
+
+		//! Restore the window to normal size if possible.
+		virtual void restoreWindow();
+
 		//! De/activates the window. When not active no rendering takes place.
-		void setWindowActive(bool);
+		virtual void setWindowActive(bool);
+
+		//! Get the type of the device.
+		/** This allows the user to check which windowing system is currently being
+		used. */
+		virtual E_DEVICE_TYPE getType() const
+		{
+			return EIDT_OSX;
+		}
 
 	private:
 		

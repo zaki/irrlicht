@@ -229,13 +229,25 @@ bool CIrrDeviceIPhone::isWindowMinimized() const
 
 
 //! Sets if the window should be resizeable in windowed mode.
-void CIrrDeviceIPhone::setResizeable(bool resize)
+void CIrrDeviceIPhone::setResizable(bool resize)
 {
 }
 
 
 //! Minimizes the window
 void CIrrDeviceIPhone::minimizeWindow()
+{
+}
+
+
+//! Maximizes the window if possible.
+void CIrrDeviceIPhone::maximizeWindow()
+{
+}
+
+
+//! Restore the window to normal size if possible.
+void CIrrDeviceIPhone::restoreWindow()
 {
 }
 
