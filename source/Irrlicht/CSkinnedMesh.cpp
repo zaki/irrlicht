@@ -62,7 +62,6 @@ IMesh* CSkinnedMesh::getMesh(s32 frame, s32 detailLevel, s32 startFrameLoop, s32
 		return this;
 
 	animateMesh((f32)frame, 1.0f);
-	buildAll_LocalAnimatedMatrices();
 	skinMesh();
 	return this;
 }
@@ -117,17 +116,17 @@ void CSkinnedMesh::animateMesh(f32 frame, f32 blend)
 			joint->Animatedscale = core::lerp(oldScale, scale, blend);
 			joint->Animatedrotation.slerp(oldRotation, rotation, blend);
 		}
-
-		//Note:
-		//_LocalAnimatedMatrix needs to be built at some point, but this function may be called lots of times for
-		//one render (to play two animations at the same time) _LocalAnimatedMatrix only needs to be built once.
-		//a call to buildAllLocalAnimatedMatrices is needed before skinning the mesh, and before the user gets the joints to move
-
-		//----------------
-		// Temp!
-		buildAll_LocalAnimatedMatrices();
-		//-----------------
 	}
+
+	//Note:
+	//_LocalAnimatedMatrix needs to be built at some point, but this function may be called lots of times for
+	//one render (to play two animations at the same time) _LocalAnimatedMatrix only needs to be built once.
+	//a call to buildAllLocalAnimatedMatrices is needed before skinning the mesh, and before the user gets the joints to move
+
+	//----------------
+	// Temp!
+	buildAll_LocalAnimatedMatrices();
+	//-----------------
 
 	updateBoundingBox();
 }
@@ -462,6 +461,7 @@ void CSkinnedMesh::skinMesh()
 		for (i=0; i<SkinningBuffers->size(); ++i)
 			(*SkinningBuffers)[i]->setDirty(EBT_VERTEX);
 	}
+	updateBoundingBox();
 }
 
 
