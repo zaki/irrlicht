@@ -26,7 +26,7 @@ namespace scene
 	public:
 
 		//! Finds the collision point of a line and lots of triangles, if there is one.
-		/** \param ray: Line with witch collisions are tested.
+		/** \param ray: Line with which collisions are tested.
 		\param selector: TriangleSelector containing the triangles. It
 		can be created for example using
 		ISceneManager::createTriangleSelector() or
