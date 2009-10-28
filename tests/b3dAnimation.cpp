@@ -40,6 +40,7 @@ bool b3dAnimation(void)
 			node1->setMaterialFlag(EMF_LIGHTING, false);
 			node1->setAnimationSpeed(0.f);
 			node1->setCurrentFrame(10.f);
+			node1->setDebugDataVisible(irr::scene::EDS_BBOX_BUFFERS);
 		}
 
 		node2 = smgr->addAnimatedMeshSceneNode(mesh);
@@ -50,13 +51,14 @@ bool b3dAnimation(void)
 			node2->setMaterialFlag(EMF_LIGHTING, false);
 			node2->setAnimationSpeed(0.f);
 			node2->setCurrentFrame(62.f);
+			node2->setDebugDataVisible(irr::scene::EDS_BBOX_BUFFERS);
 		}
 
 		(void)smgr->addCameraSceneNode();
 
 		// Just jump to the last frame since that's all we're interested in.
 		device->run();
-		driver->beginScene(true, true, SColor(255, 255, 255, 0));
+		driver->beginScene(true, true, SColor(255, 60, 60, 60));
 		smgr->drawAll();
 		driver->endScene();
 
