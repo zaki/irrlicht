@@ -524,6 +524,12 @@ void CAnimatedMeshSceneNode::setAnimationSpeed(f32 framesPerSecond)
 }
 
 
+f32 CAnimatedMeshSceneNode::getAnimationSpeed() const
+{
+	return FramesPerSecond * 1000.f;
+}
+
+
 //! returns the axis aligned bounding box of this node
 const core::aabbox3d<f32>& CAnimatedMeshSceneNode::getBoundingBox() const
 {
@@ -768,8 +774,8 @@ void CAnimatedMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttr
 	out->addBool("Looping", Looping);
 	out->addBool("ReadOnlyMaterials", ReadOnlyMaterials);
 	out->addFloat("FramesPerSecond", FramesPerSecond);
-
-	// TODO: write animation names instead of frame begin and ends
+	out->addInt("StartFrame", StartFrame);
+	out->addInt("EndFrame", EndFrame);
 }
 
 
@@ -784,6 +790,8 @@ void CAnimatedMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 	Looping = in->getAttributeAsBool("Looping");
 	ReadOnlyMaterials = in->getAttributeAsBool("ReadOnlyMaterials");
 	FramesPerSecond = in->getAttributeAsFloat("FramesPerSecond");
+	StartFrame = in->getAttributeAsInt("StartFrame");
+	EndFrame = in->getAttributeAsInt("EndFrame");
 
 	if (newMeshStr != "" && oldMeshStr != newMeshStr)
 	{
