@@ -45,7 +45,7 @@ CGUIEditWindow::CGUIEditWindow(IGUIEnvironment* environment, core::rect<s32> rec
 	TabControl->setSubElement(true);
 	TabControl->setAlignment(EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 
-	IGUITab* ToolsTab = TabControl->addTab(L"Tools");
+	TabControl->addTab(L"Tools");
 	//L"Texture Cache Browser"
 	//L"Font Browser"
 	//L"Font Generator"
