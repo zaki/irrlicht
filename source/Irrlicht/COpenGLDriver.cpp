@@ -1435,7 +1435,17 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 	// draw everything
 	this->setActiveTexture(0, Material.getTexture(0));
-	setRenderStates2DMode(false, (Material.getTexture(0) != 0), false);
+	if (Material.MaterialType==EMT_ONETEXTURE_BLEND)
+	{
+		E_BLEND_FACTOR srcFact;
+		E_BLEND_FACTOR dstFact;
+		E_MODULATE_FUNC modulo;
+		u32 alphaSource;
+		unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+		setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), alphaSource&video::EAS_TEXTURE);
+	}
+	else
+		setRenderStates2DMode(Material.MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL);
 
 	if (MultiTextureExtension)
 		extGlClientActiveTexture(GL_TEXTURE0_ARB);
