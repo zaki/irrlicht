@@ -99,6 +99,7 @@ namespace scene
 		f32 CurrentZoom;
 		f32 RotX, RotY;
 		core::vector3df OldTarget;
+		core::vector3df LastCameraTarget;	// to find out if the camera target was moved outside this animator
 		scene::ICameraSceneNode* OldCamera;
 
 		core::position2df MousePos;
