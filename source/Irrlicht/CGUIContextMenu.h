@@ -31,12 +31,25 @@ namespace gui
 		//! destructor
 		virtual ~CGUIContextMenu();
 
+		//! set behaviour when menus are closed
+		virtual void setCloseHandling(ECONTEXT_MENU_CLOSE onClose);
+
+		//! get current behaviour when the menue will be closed
+		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const;
+
 		//! Returns amount of menu items
 		virtual u32 getItemCount() const;
 
 		//! Adds a menu item.
 		virtual u32 addItem(const wchar_t* text, s32 commandid,
-				bool enabled, bool hasSubMenu, bool checked);
+				bool enabled, bool hasSubMenu, bool checked, bool autoChecking);
+
+        //! Insert a menu item at specified position.
+		virtual u32 insertItem(u32 idx, const wchar_t* text, s32 commandId, bool enabled,
+			bool hasSubMenu, bool checked, bool autoChecking);
+
+		//! Find a item which has the given CommandId starting from given index
+		virtual s32 findItemWithCommandId(s32 commandId, u32 idxStartSearch) const;
 
 		//! Adds a separator item to the menu
 		virtual void addSeparator();
@@ -81,6 +94,12 @@ namespace gui
 		//! Sets the visible state of this element.
 		virtual void setVisible(bool visible);
 
+		//! should the element change the checked status on clicking
+		virtual void setItemAutoChecking(u32 idx, bool autoChecking);
+
+		//! does the element change the checked status on clicking
+		virtual bool getItemAutoChecking(u32 idx) const;
+
 		//! Returns command id of a menu item
 		virtual s32 getItemCommandId(u32 idx) const;
 
@@ -89,6 +108,9 @@ namespace gui
 
 		//! Adds a sub menu from an element that already exists.
 		virtual void setSubMenu(u32 index, CGUIContextMenu* menu);
+
+		//! When an eventparent is set it receives events instead of the usual parent element
+		virtual void setEventParent(IGUIElement *parent);
 
 		//! Writes attributes of the element.
 		virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options) const;
@@ -107,6 +129,7 @@ namespace gui
 			bool IsSeparator;
 			bool Enabled;
 			bool Checked;
+			bool AutoChecking;
 			core::dimension2d<u32> Dim;
 			s32 PosY;
 			CGUIContextMenu* SubMenu;
@@ -130,12 +153,12 @@ namespace gui
 		//! Gets drawing rect of Item
 		virtual core::rect<s32> getRect(const SItem& i, const core::rect<s32>& absolute) const;
 
-		void setEventParent(IGUIElement *parent);
 
 		core::array<SItem> Items;
 		core::position2d<s32> Pos;
 		IGUIElement* EventParent;
 		IGUIFont *LastFont;
+		ECONTEXT_MENU_CLOSE CloseHandling;
 		s32 HighLighted;
 		u32 ChangeTime;
 		bool AllowFocus;
