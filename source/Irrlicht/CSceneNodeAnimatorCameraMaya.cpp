@@ -110,6 +110,11 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 	{
 		OldTarget = camera->getTarget();
 		OldCamera = camera;
+		LastCameraTarget = OldTarget;
+	}
+	else
+	{
+		OldTarget += camera->getTarget() - LastCameraTarget;
 	}
 
 	core::vector3df target = camera->getTarget();
@@ -227,6 +232,7 @@ void CSceneNodeAnimatorCameraMaya::animateNode(ISceneNode *node, u32 timeMs)
 	camera->setPosition(Pos);
 	camera->setTarget(target);
 	camera->setUpVector(upVector);
+	LastCameraTarget = camera->getTarget();
 }
 
 
