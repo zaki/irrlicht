@@ -1402,6 +1402,18 @@ void CNullDriver::setFog(SColor color, E_FOG_TYPE fogType, f32 start, f32 end,
 	RangeFog = rangeFog;
 }
 
+//! Gets the fog mode.
+void CNullDriver::getFog(SColor& color, E_FOG_TYPE& fogType, f32& start, f32& end,
+		f32& density, bool& pixelFog, bool& rangeFog)
+{
+	color = FogColor;
+	fogType = FogType;
+	start = FogStart;
+	end = FogEnd;
+	density = FogDensity;
+	pixelFog = PixelFog;
+	rangeFog = RangeFog;
+}
 
 //! Draws a mesh buffer
 void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
