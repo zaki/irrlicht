@@ -2487,6 +2487,22 @@ void CSceneManager::serializeAttributes(io::IAttributes* out, io::SAttributeRead
 	out->addString	("Name", Name.c_str());
 	out->addInt	("Id", ID );
 	out->addColorf	("AmbientLight", AmbientLight);
+
+	// fog attributes from video driver
+	video::SColor color;
+	video::E_FOG_TYPE fogType;
+	f32 start, end, density;
+	bool pixelFog, rangeFog;
+
+	Driver->getFog(color, fogType, start, end, density, pixelFog, rangeFog);
+
+	out->addEnum("FogType", fogType, video::FogTypeNames);
+	out->addColorf("FogColor", color);
+	out->addFloat("FogStart", start);
+	out->addFloat("FogEnd", end);
+	out->addFloat("FogDensity", density);
+	out->addBool("FogPixel", pixelFog);
+	out->addBool("FogRange", rangeFog);
 }
 
 //! Reads attributes of the scene node.
@@ -2495,6 +2511,23 @@ void CSceneManager::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 	Name = in->getAttributeAsString("Name");
 	ID = in->getAttributeAsInt("Id");
 	AmbientLight = in->getAttributeAsColorf("AmbientLight");
+
+	// fog attributes
+	video::SColor color;
+	video::E_FOG_TYPE fogType;
+	f32 start, end, density;
+	bool pixelFog, rangeFog;
+	if (in->existsAttribute("FogType"))
+	{
+		fogType = (video::E_FOG_TYPE) in->getAttributeAsEnumeration("FogType", video::FogTypeNames);
+		color = in->getAttributeAsColorf("FogColor").toSColor();
+		start = in->getAttributeAsFloat("FogStart");
+		end = in->getAttributeAsFloat("FogEnd");
+		density = in->getAttributeAsFloat("FogDensity");
+		pixelFog = in->getAttributeAsBool("FogPixel");
+		rangeFog = in->getAttributeAsBool("FogRange");
+		Driver->setFog(color, fogType, start, end, density, pixelFog, rangeFog);
+	}
 
 	RelativeTranslation.set(0,0,0);
 	RelativeRotation.set(0,0,0);

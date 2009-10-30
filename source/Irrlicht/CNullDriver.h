@@ -216,6 +216,10 @@ namespace video
 				f32 start=50.0f, f32 end=100.0f, f32 density=0.01f,
 				bool pixelFog=false, bool rangeFog=false);
 
+		virtual void getFog(SColor& color, E_FOG_TYPE& fogType,
+				f32& start, f32& end, f32& density,
+				bool& pixelFog, bool& rangeFog);
+
 		//! get color format of the current color buffer
 		virtual ECOLOR_FORMAT getColorFormat() const;
 

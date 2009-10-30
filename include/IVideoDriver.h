@@ -132,6 +132,14 @@ namespace video
 		EFT_FOG_EXP2
 	};
 
+	const c8* const FogTypeNames[] =
+	{
+		"FogExp",
+		"FogLinear",
+		"FogExp2",
+		0
+	};
+
 	struct SOverrideMaterial
 	{
 		//! The Material values
@@ -911,6 +919,11 @@ namespace video
 				E_FOG_TYPE fogType=EFT_FOG_LINEAR,
 				f32 start=50.0f, f32 end=100.0f, f32 density=0.01f,
 				bool pixelFog=false, bool rangeFog=false) =0;
+
+		//! Gets the fog mode.
+		virtual void getFog(SColor& color, E_FOG_TYPE& fogType,
+				f32& start, f32& end, f32& density,
+				bool& pixelFog, bool& rangeFog) = 0;
 
 		//! Get the current color format of the color buffer
 		/** \return Color format of the color buffer. */
