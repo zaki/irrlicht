@@ -423,13 +423,20 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 	texname.replace('\\', '/');
 
 	video::ITexture * texture = 0;
+	bool newTexture=false;
 	if (texname.size())
 	{
 		if (FileSystem->existFile(texname))
+		{
+			newTexture = SceneManager->getVideoDriver()->findTexture(texname) == 0;
 			texture = SceneManager->getVideoDriver()->getTexture(texname);
+		}
 		else
+		{
+			newTexture = SceneManager->getVideoDriver()->findTexture(relPath + texname) == 0;
 			// try to read in the relative path, the .obj is loaded from
 			texture = SceneManager->getVideoDriver()->getTexture( relPath + texname );
+		}
 	}
 	if ( texture )
 	{
@@ -437,7 +444,8 @@ const c8* COBJMeshFileLoader::readTextures(const c8* bufPtr, const c8* const buf
 			currMaterial->Meshbuffer->Material.setTexture(0, texture);
 		else if (type==1)
 		{
-			SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
+			if (newTexture)
+				SceneManager->getVideoDriver()->makeNormalMapTexture(texture, bumpiness);
 			currMaterial->Meshbuffer->Material.setTexture(1, texture);
 			currMaterial->Meshbuffer->Material.MaterialType=video::EMT_PARALLAX_MAP_SOLID;
 			currMaterial->Meshbuffer->Material.MaterialTypeParam=0.035f;
