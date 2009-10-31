@@ -1345,7 +1345,7 @@ void CSceneManager::drawAll()
 	camWorldPos.set(0,0,0);
 	if ( ActiveCamera )
 	{
-		ActiveCamera->OnRegisterSceneNode();
+		ActiveCamera->render();
 		camWorldPos = ActiveCamera->getAbsolutePosition();
 	}
 

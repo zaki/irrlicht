@@ -234,6 +234,16 @@ void CCameraSceneNode::recalculateProjectionMatrix()
 //! prerender
 void CCameraSceneNode::OnRegisterSceneNode()
 {
+	if ( SceneManager->getActiveCamera () == this )
+		SceneManager->registerNodeForRendering(this, ESNRP_CAMERA);
+
+	ISceneNode::OnRegisterSceneNode();
+}
+
+
+//! render
+void CCameraSceneNode::render()
+{	
 	core::vector3df pos = getAbsolutePosition();
 	core::vector3df tgtv = Target - pos;
 	tgtv.normalize();
@@ -245,7 +255,7 @@ void CCameraSceneNode::OnRegisterSceneNode()
 
 	f32 dp = tgtv.dotProduct(up);
 
-	if ( core::equals(fabsf(dp), 1.f) )
+	if ( core::equals(core::abs_<f32>(dp), 1.f) )
 	{
 		up.X += 0.5f;
 	}
@@ -254,16 +264,6 @@ void CCameraSceneNode::OnRegisterSceneNode()
 	ViewArea.getTransform(video::ETS_VIEW) *= Affector;
 	recalculateViewArea();
 
-	if ( SceneManager->getActiveCamera () == this )
-		SceneManager->registerNodeForRendering(this, ESNRP_CAMERA);
-
-	ISceneNode::OnRegisterSceneNode();
-}
-
-
-//! render
-void CCameraSceneNode::render()
-{	
 	video::IVideoDriver* driver = SceneManager->getVideoDriver();
 	if ( driver)
 	{
