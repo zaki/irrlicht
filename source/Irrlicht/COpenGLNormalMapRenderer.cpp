@@ -47,9 +47,6 @@ const char OPENGL_NORMAL_MAP_VSH[] =
 	"PARAM MVP[4] = { state.matrix.mvp }; # modelViewProjection matrix.\n"\
 	"TEMP Temp;\n"\
 	"TEMP TempColor;\n"\
-	"TEMP TempNormal;\n"\
-	"TEMP TempTangent;\n"\
-	"TEMP TempBinormal;\n"\
 	"TEMP TempLightVector1;\n"\
 	"TEMP TempLightVector2;\n"\
 	"TEMP TempTransLightV1;\n"\
@@ -63,21 +60,6 @@ const char OPENGL_NORMAL_MAP_VSH[] =
 	"MOV OutPos.z, Temp.z;\n"\
 	"MOV result.fogcoord.x, Temp.z;\n"\
 	"\n"\
-	"# transform normal \n"\
-	"DP3 TempNormal.x, InNormal.x, program.local[0];\n"\
-	"DP3 TempNormal.y, InNormal.y, program.local[1]; \n"\
-	"DP3 TempNormal.z, InNormal.z, program.local[2];\n"\
-	"\n"\
-	"# transform tangent \n"\
-	"DP3 TempTangent.x, InTangent.x, program.local[0];\n"\
-	"DP3 TempTangent.y, InTangent.y, program.local[1]; \n"\
-	"DP3 TempTangent.z, InTangent.z, program.local[2];\n"\
-	"\n"\
-	"# transform binormal \n"\
-	"DP3 TempBinormal.x, InBinormal.x, program.local[0];\n"\
-	"DP3 TempBinormal.y, InBinormal.y, program.local[1]; \n"\
-	"DP3 TempBinormal.z, InBinormal.z, program.local[2];\n"\
-	"\n"\
 	"# vertex into world position \n"\
 	"DP4 Temp.x, InPos, program.local[0];\n"\
 	"DP4 Temp.y, InPos, program.local[1];\n"\
@@ -89,14 +71,14 @@ const char OPENGL_NORMAL_MAP_VSH[] =
 	"SUB TempLightVector2, program.local[14], Temp; \n"\
 	"\n"\
 	"# transform the light vector 1 with U, V, W \n"\
-	"DP3 TempTransLightV1.x, TempTangent, TempLightVector1; \n"\
-	"DP3 TempTransLightV1.y, TempBinormal, TempLightVector1; \n"\
-	"DP3 TempTransLightV1.z, TempNormal, TempLightVector1; \n"\
+	"DP3 TempTransLightV1.x, InTangent, TempLightVector1; \n"\
+	"DP3 TempTransLightV1.y, InBinormal, TempLightVector1; \n"\
+	"DP3 TempTransLightV1.z, InNormal, TempLightVector1; \n"\
 	"\n"\
 	"# transform the light vector 2 with U, V, W \n"\
-	"DP3 TempTransLightV2.x, TempTangent, TempLightVector2; \n"\
-	"DP3 TempTransLightV2.y, TempBinormal, TempLightVector2; \n"\
-	"DP3 TempTransLightV2.z, TempNormal, TempLightVector2; \n"\
+	"DP3 TempTransLightV2.x, InTangent, TempLightVector2; \n"\
+	"DP3 TempTransLightV2.y, InBinormal, TempLightVector2; \n"\
+	"DP3 TempTransLightV2.z, InNormal, TempLightVector2; \n"\
 	"\n"\
 	"# normalize light vector 1 \n"\
 	"DP3 TempTransLightV1.w, TempTransLightV1, TempTransLightV1; \n"\
@@ -277,6 +259,10 @@ void COpenGLNormalMapRenderer::OnSetConstants(IMaterialRendererServices* service
 
 	u32 cnt = driver->getDynamicLightCount();
 
+	// Load the inverse world matrix.
+	core::matrix4 invWorldMat;
+	driver->getTransform(video::ETS_WORLD).getInverse(invWorldMat);
+
 	for (u32 i=0; i<2; ++i)
 	{
 		video::SLight light;
@@ -290,6 +276,9 @@ void COpenGLNormalMapRenderer::OnSetConstants(IMaterialRendererServices* service
 		}
 
 		light.DiffuseColor.a = 1.0f/(light.Radius*light.Radius); // set attenuation
+
+		// Transform the light by the inverse world matrix to get it into object space.
+		invWorldMat.transformVect(light.Position);
 
 		services->setVertexShaderConstant(
 			reinterpret_cast<const f32*>(&light.Position), 12+(i*2), 1);
