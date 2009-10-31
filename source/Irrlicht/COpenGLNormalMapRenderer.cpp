@@ -60,15 +60,9 @@ const char OPENGL_NORMAL_MAP_VSH[] =
 	"MOV OutPos.z, Temp.z;\n"\
 	"MOV result.fogcoord.x, Temp.z;\n"\
 	"\n"\
-	"# vertex into world position \n"\
-	"DP4 Temp.x, InPos, program.local[0];\n"\
-	"DP4 Temp.y, InPos, program.local[1];\n"\
-	"DP4 Temp.z, InPos, program.local[2];\n"\
-	"DP4 Temp.w, InPos, program.local[3];\n"\
-	"\n"\
 	"# vertex - lightpositions \n"\
-	"SUB TempLightVector1, program.local[12], Temp; \n"\
-	"SUB TempLightVector2, program.local[14], Temp; \n"\
+	"SUB TempLightVector1, program.local[12], InPos; \n"\
+	"SUB TempLightVector2, program.local[14], InPos; \n"\
 	"\n"\
 	"# transform the light vector 1 with U, V, W \n"\
 	"DP3 TempTransLightV1.x, InTangent, TempLightVector1; \n"\
