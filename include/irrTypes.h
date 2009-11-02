@@ -122,12 +122,15 @@ typedef unsigned short wchar_t;
 namespace irr
 {
 
-//! Should the wide character version of the FileSystem be used
+//! Type name for character type used by the file system.
+/** Should the wide character version of the FileSystem be used it is a
+16 bit character variable. Used for unicode Filesystem and unicode strings.
+Else it is a 8 bit character variable. Used for ansi Filesystem and non-unicode
+strings
+*/
 #if defined(_IRR_WCHAR_FILESYSTEM)
-	//! 16 bit character variable. Used for unicode Filesystem and unicode strings
 	typedef wchar_t fschar_t;
 #else
-	//! 8 bit character variable. Used for ansi Filesystem and non-unicode strings
 	typedef char fschar_t;
 #endif
 

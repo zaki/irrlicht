@@ -909,9 +909,9 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNor
 					v[idx[i+2]].TCoords);
 
 				if (recalculateNormals)
-					v[idx[i+0]].Tangent += localTangent * weight.X;
+					v[idx[i+0]].Normal += localNormal * weight.X;
+				v[idx[i+0]].Tangent += localTangent * weight.X;
 				v[idx[i+0]].Binormal += localBinormal * weight.X;
-				v[idx[i+0]].Normal += localNormal * weight.X;
 				
 				calculateTangents(
 					localNormal,
@@ -925,9 +925,9 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNor
 					v[idx[i+0]].TCoords);
 
 				if (recalculateNormals)
-					v[idx[i+1]].Tangent += localTangent * weight.Y;
+					v[idx[i+1]].Normal += localNormal * weight.Y;
+				v[idx[i+1]].Tangent += localTangent * weight.Y;
 				v[idx[i+1]].Binormal += localBinormal * weight.Y;
-				v[idx[i+1]].Normal += localNormal * weight.Y;
 
 				calculateTangents(
 					localNormal,
@@ -941,9 +941,9 @@ IMesh* CMeshManipulator::createMeshWithTangents(IMesh* mesh, bool recalculateNor
 					v[idx[i+1]].TCoords);
 
 				if (recalculateNormals)
-					v[idx[i+2]].Tangent += localTangent * weight.Z;
+					v[idx[i+2]].Normal += localNormal * weight.Z;
+				v[idx[i+2]].Tangent += localTangent * weight.Z;
 				v[idx[i+2]].Binormal += localBinormal * weight.Z;
-				v[idx[i+2]].Normal += localNormal * weight.Z;
 			}
 
 			// Normalize the tangents and binormals
@@ -1104,7 +1104,6 @@ IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 
 		SMeshBuffer* buffer = new SMeshBuffer();
 		buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
-		buffer->Material.MaterialType = video::EMT_SOLID;
 
 		// copy vertices
 

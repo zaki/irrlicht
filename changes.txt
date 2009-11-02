@@ -1,3 +1,11 @@
+Changes in 1.6.1
+
+ - Fix another (OldValue == NewValue) before drop()/grap(), this time in CTextureAttribute::setTexture.
+
+ - Bugfix: CGUIToolBar::addButton does no longer mess up when no image is set and does now actually work with the text.
+
+ - Fix ninja animation range which got messed up a little when b3d animations got fixed (thx gbox for finding)
+
 Changes in 1.6 (23.09.2009)
 
  - Added IFileSystem::createEmptyFileList, exposed IFileList::sort, addItem and added getID
