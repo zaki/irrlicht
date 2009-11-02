@@ -26,6 +26,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#ifdef __FREE_BSD_
+#include <sys/joystick.h>
+#else
+
 // linux/joystick.h includes linux/input.h, which #defines values for various KEY_FOO keys.
 // These override the irr::KEY_FOO equivalents, which stops key handling from working.
 // As a workaround, defining _INPUT_H stops linux/input.h from being included; it
@@ -34,6 +38,8 @@
 #include <sys/ioctl.h> // Would normally be included in linux/input.h
 #include <linux/joystick.h>
 #undef _INPUT_H
+#endif
+
 #endif // _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
 
 namespace irr
@@ -73,7 +79,7 @@ CIrrDeviceLinux::CIrrDeviceLinux(const SIrrlichtCreationParameters& param)
 #endif
 #endif
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-	Close(false), WindowHasFocus(false), WindowMinimized(false),
+	WindowHasFocus(false), WindowMinimized(false),
 	UseXVidMode(false), UseXRandR(false), UseGLXWindow(false),
 	ExternalWindow(false), AutorepeatSupport(0)
 {
@@ -128,6 +134,8 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 #ifdef _IRR_COMPILE_WITH_X11_
 	if (StdHints)
 		XFree(StdHints);
+	// Disable cursor and free it later on
+	CursorControl->setVisible(false);
 	if (display)
 	{
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
@@ -149,21 +157,8 @@ CIrrDeviceLinux::~CIrrDeviceLinux()
 		}
 		#endif // #ifdef _IRR_COMPILE_WITH_OPENGL_
 
-		#ifdef _IRR_LINUX_X11_VIDMODE_
-		if (UseXVidMode && CreationParams.Fullscreen)
-		{
-			XF86VidModeSwitchToMode(display, screennr, &oldVideoMode);
-			XF86VidModeSetViewPort(display, screennr, 0, 0);
-		}
-		#endif
-		#ifdef _IRR_LINUX_X11_RANDR_
-		if (UseXRandR && CreationParams.Fullscreen)
-		{
-			XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
-			XRRSetScreenConfig(display,config,DefaultRootWindow(display),oldRandrMode,oldRandrRotation,CurrentTime);
-			XRRFreeScreenConfigInfo(config);
-		}
-		#endif
+		// Reset fullscreen resolution change
+		switchToFullscreen(true);
 
 		if (SoftwareImage)
 			XDestroyImage(SoftwareImage);
@@ -207,6 +202,109 @@ int IrrPrintXError(Display *display, XErrorEvent *event)
 #endif
 
 
+bool CIrrDeviceLinux::switchToFullscreen(bool reset)
+{
+	if (!CreationParams.Fullscreen)
+		return true;
+	if (reset)
+	{
+#ifdef _IRR_LINUX_X11_VIDMODE_
+		if (UseXVidMode && CreationParams.Fullscreen)
+		{
+			XF86VidModeSwitchToMode(display, screennr, &oldVideoMode);
+			XF86VidModeSetViewPort(display, screennr, 0, 0);
+		}
+		#endif
+		#ifdef _IRR_LINUX_X11_RANDR_
+		if (UseXRandR && CreationParams.Fullscreen)
+		{
+			XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
+			XRRSetScreenConfig(display,config,DefaultRootWindow(display),oldRandrMode,oldRandrRotation,CurrentTime);
+			XRRFreeScreenConfigInfo(config);
+		}
+		#endif
+		return true;
+	}
+
+	getVideoModeList();
+	#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
+	s32 eventbase, errorbase;
+	s32 bestMode = -1;
+	#endif
+
+	#ifdef _IRR_LINUX_X11_VIDMODE_
+	if (XF86VidModeQueryExtension(display, &eventbase, &errorbase))
+	{
+		// enumerate video modes
+		s32 modeCount;
+		XF86VidModeModeInfo** modes;
+
+		XF86VidModeGetAllModeLines(display, screennr, &modeCount, &modes);
+
+		// find fitting mode
+		for (s32 i = 0; i<modeCount; ++i)
+		{
+			if (bestMode==-1 && modes[i]->hdisplay >= Width && modes[i]->vdisplay >= Height)
+				bestMode = i;
+			else if (bestMode!=-1 &&
+					modes[i]->hdisplay >= Width &&
+					modes[i]->vdisplay >= Height &&
+					modes[i]->hdisplay < modes[bestMode]->hdisplay &&
+					modes[i]->vdisplay < modes[bestMode]->vdisplay)
+				bestMode = i;
+		}
+		if (bestMode != -1)
+		{
+			os::Printer::log("Starting fullscreen mode...", ELL_INFORMATION);
+			XF86VidModeSwitchToMode(display, screennr, modes[bestMode]);
+			XF86VidModeSetViewPort(display, screennr, 0, 0);
+			UseXVidMode=true;
+		}
+		else
+		{
+			os::Printer::log("Could not find specified video mode, running windowed.", ELL_WARNING);
+			CreationParams.Fullscreen = false;
+		}
+
+		XFree(modes);
+	}
+	else
+	#endif
+	#ifdef _IRR_LINUX_X11_RANDR_
+	if (XRRQueryExtension(display, &eventbase, &errorbase))
+	{
+		s32 modeCount;
+		XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
+		XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
+		for (s32 i = 0; i<modeCount; ++i)
+		{
+			if (bestMode==-1 && (u32)modes[i].width >= Width && (u32)modes[i].height >= Height)
+				bestMode = i;
+			else if (bestMode!=-1 &&
+					(u32)modes[i].width >= Width &&
+					(u32)modes[i].height >= Height &&
+					modes[i].width < modes[bestMode].width &&
+					modes[i].height < modes[bestMode].height)
+				bestMode = i;
+		}
+		if (bestMode != -1)
+		{
+			XRRSetScreenConfig(display,config,DefaultRootWindow(display),bestMode,oldRandrRotation,CurrentTime);
+			UseXRandR=true;
+		}
+		XRRFreeScreenConfigInfo(config);
+	}
+	else
+	#endif
+	{
+		os::Printer::log("VidMode or RandR extension must be installed to allow Irrlicht "
+		"to switch to fullscreen mode. Running in windowed mode instead.", ELL_WARNING);
+		CreationParams.Fullscreen = false;
+	}
+	return CreationParams.Fullscreen;
+}
+
+
 bool CIrrDeviceLinux::createWindow()
 {
 #ifdef _IRR_COMPILE_WITH_X11_
@@ -228,86 +326,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	screennr = DefaultScreen(display);
 
-	// query extension
-
-	if (CreationParams.Fullscreen)
-	{
-		getVideoModeList();
-		#if defined(_IRR_LINUX_X11_VIDMODE_) || defined(_IRR_LINUX_X11_RANDR_)
-		s32 eventbase, errorbase;
-		s32 bestMode = -1;
-		#endif
-
-		#ifdef _IRR_LINUX_X11_VIDMODE_
-		if (XF86VidModeQueryExtension(display, &eventbase, &errorbase))
-		{
-			// enumerate video modes
-			s32 modeCount;
-			XF86VidModeModeInfo** modes;
-
-			XF86VidModeGetAllModeLines(display, screennr, &modeCount, &modes);
-
-			// find fitting mode
-			for (s32 i = 0; i<modeCount; ++i)
-			{
-				if (bestMode==-1 && modes[i]->hdisplay >= Width && modes[i]->vdisplay >= Height)
-					bestMode = i;
-				else if (bestMode!=-1 &&
-						modes[i]->hdisplay >= Width &&
-						modes[i]->vdisplay >= Height &&
-						modes[i]->hdisplay < modes[bestMode]->hdisplay &&
-						modes[i]->vdisplay < modes[bestMode]->vdisplay)
-					bestMode = i;
-			}
-			if (bestMode != -1)
-			{
-				os::Printer::log("Starting fullscreen mode...", ELL_INFORMATION);
-				XF86VidModeSwitchToMode(display, screennr, modes[bestMode]);
-				XF86VidModeSetViewPort(display, screennr, 0, 0);
-				UseXVidMode=true;
-			}
-			else
-			{
-				os::Printer::log("Could not find specified video mode, running windowed.", ELL_WARNING);
-				CreationParams.Fullscreen = false;
-			}
-
-			XFree(modes);
-		}
-		else
-		#endif
-		#ifdef _IRR_LINUX_X11_RANDR_
-		if (XRRQueryExtension(display, &eventbase, &errorbase))
-		{
-			s32 modeCount;
-			XRRScreenConfiguration *config=XRRGetScreenInfo(display,DefaultRootWindow(display));
-			XRRScreenSize *modes=XRRConfigSizes(config,&modeCount);
-			for (s32 i = 0; i<modeCount; ++i)
-			{
-				if (bestMode==-1 && (u32)modes[i].width >= Width && (u32)modes[i].height >= Height)
-					bestMode = i;
-				else if (bestMode!=-1 &&
-						(u32)modes[i].width >= Width &&
-						(u32)modes[i].height >= Height &&
-						modes[i].width < modes[bestMode].width &&
-						modes[i].height < modes[bestMode].height)
-					bestMode = i;
-			}
-			if (bestMode != -1)
-			{
-				XRRSetScreenConfig(display,config,DefaultRootWindow(display),bestMode,oldRandrRotation,CurrentTime);
-				UseXRandR=true;
-			}
-			XRRFreeScreenConfigInfo(config);
-		}
-		else
-		#endif
-		{
-			os::Printer::log("VidMode or RandR extension must be installed to allow Irrlicht "
-			"to switch to fullscreen mode. Running in windowed mode instead.", ELL_WARNING);
-			CreationParams.Fullscreen = false;
-		}
-	}
+	switchToFullscreen();
 
 #ifdef _IRR_COMPILE_WITH_OPENGL_
 
@@ -563,7 +582,7 @@ bool CIrrDeviceLinux::createWindow()
 
 	attributes.colormap = colormap;
 	attributes.border_pixel = 0;
-	attributes.event_mask = StructureNotifyMask | FocusChangeMask;
+	attributes.event_mask = StructureNotifyMask | FocusChangeMask | ExposureMask;
 	if (!CreationParams.IgnoreInput)
 		attributes.event_mask |= PointerMotionMask |
 				ButtonPressMask | KeyPressMask |
@@ -571,44 +590,27 @@ bool CIrrDeviceLinux::createWindow()
 
 	if (!CreationParams.WindowId)
 	{
-		// create Window, either for Fullscreen or windowed mode
+		// create new Window
+		// Remove window manager decoration in fullscreen
+		attributes.override_redirect = CreationParams.Fullscreen;
+		window = XCreateWindow(display,
+				RootWindow(display, visual->screen),
+				0, 0, Width, Height, 0, visual->depth,
+				InputOutput, visual->visual,
+				CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
+				&attributes);
+		XMapRaised(display, window);
+		CreationParams.WindowId = (void*)window;
+		Atom wmDelete;
+		wmDelete = XInternAtom(display, wmDeleteWindow, True);
+		XSetWMProtocols(display, window, &wmDelete, 1);
 		if (CreationParams.Fullscreen)
 		{
-			attributes.override_redirect = True;
-
-			window = XCreateWindow(display,
-					RootWindow(display, visual->screen),
-					0, 0, Width, Height, 0, visual->depth,
-					InputOutput, visual->visual,
-					CWBorderPixel | CWColormap | CWEventMask | CWOverrideRedirect,
-					&attributes);
-			CreationParams.WindowId = (void*)window;
-
-			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
-			XMapRaised(display, window);
 			XGrabKeyboard(display, window, True, GrabModeAsync,
 				GrabModeAsync, CurrentTime);
 			XGrabPointer(display, window, True, ButtonPressMask,
 				GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
-		}
-		else
-		{ // we want windowed mode
-			attributes.event_mask |= ExposureMask;
-			attributes.event_mask |= FocusChangeMask;
-
-			window = XCreateWindow(display,
-					RootWindow(display, visual->screen),
-					0, 0, Width, Height, 0, visual->depth,
-					InputOutput, visual->visual,
-					CWBorderPixel | CWColormap | CWEventMask,
-					&attributes);
-
-			CreationParams.WindowId = (void*)window;
-
-			Atom wmDelete;
-			wmDelete = XInternAtom(display, wmDeleteWindow, True);
-			XSetWMProtocols(display, window, &wmDelete, 1);
-			XMapRaised(display, window);
+			XWarpPointer(display, None, window, 0, 0, 0, 0, 0, 0);
 		}
 	}
 	else
@@ -1558,15 +1560,26 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 			devName = "/dev/input/js";
 			devName += joystick;
 			info.fd = open(devName.c_str(), O_RDONLY);
+			if(-1 == info.fd)
+			{
+				// and BSD here
+				devName = "/dev/joy";
+				devName += joystick;
+				info.fd = open(devName.c_str(), O_RDONLY);
+			}
 		}
 
 		if(-1 == info.fd)
 			continue;
 
+#ifdef __FREE_BSD_
+		info.axes=2;
+		info.buttons=2;
+#else
 		ioctl( info.fd, JSIOCGAXES, &(info.axes) );
 		ioctl( info.fd, JSIOCGBUTTONS, &(info.buttons) );
-
 		fcntl( info.fd, F_SETFL, O_NONBLOCK );
+#endif
 
 		(void)memset(&info.persistentData, 0, sizeof(info.persistentData));
 		info.persistentData.EventType = irr::EET_JOYSTICK_INPUT_EVENT;
@@ -1583,9 +1596,11 @@ bool CIrrDeviceLinux::activateJoysticks(core::array<SJoystickInfo> & joystickInf
 		returnInfo.Axes = info.axes;
 		returnInfo.Buttons = info.buttons;
 
+#ifndef __FREE_BSD_
 		char name[80];
 		ioctl( info.fd, JSIOCGNAME(80), name);
 		returnInfo.Name = name;
+#endif
 
 		joystickInfo.push_back(returnInfo);
 	}
@@ -1612,11 +1627,19 @@ void CIrrDeviceLinux::pollJoysticks()
 	if(0 == ActiveJoysticks.size())
 		return;
 
-	u32 joystick;
-	for(joystick = 0; joystick < ActiveJoysticks.size(); ++joystick)
+	u32 j;
+	for(j= 0; j< ActiveJoysticks.size(); ++j)
 	{
-		JoystickInfo & info =  ActiveJoysticks[joystick];
+		JoystickInfo & info =  ActiveJoysticks[j];
 
+#ifdef __FREE_BSD_
+		struct joystick js;
+		if( read( info.fd, &js, JS_RETURN ) == JS_RETURN )
+		{
+			info.persistentData.JoystickEvent.ButtonStates = js.buttons; /* should be a two-bit field */
+			info.persistentData.JoystickEvent.Axis[0] = js.x; /* X axis */
+			info.persistentData.JoystickEvent.Axis[1] = js.y; /* Y axis */
+#else
 		struct js_event event;
 		while(sizeof(event) == read(info.fd, &event, sizeof(event)))
 		{
@@ -1637,6 +1660,7 @@ void CIrrDeviceLinux::pollJoysticks()
 				break;
 			}
 		}
+#endif
 
 		// Send an irrlicht joystick event once per ::run() even if no new data were received.
 		(void)postEventFromUser(info.persistentData);

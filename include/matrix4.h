@@ -310,9 +310,9 @@ namespace core
 			 */
 			CMatrix4<T>& buildRotateFromTo(const core::vector3df& from, const core::vector3df& to);
 
-			//! Builds a combined matrix which translate to a center before rotation and translate afterwards
-			/** \param from: vector to rotate from
-			\param to: vector to rotate to
+			//! Builds a combined matrix which translates to a center before rotation and translates from origin afterwards
+			/** \param center Position to rotate around
+			\param translate Translation applied after the rotation
 			 */
 			void setRotationCenter(const core::vector3df& center, const core::vector3df& translate);
 
@@ -1922,9 +1922,6 @@ namespace core
 
 
 	//! Builds a combined matrix which translate to a center before rotation and translate afterwards
-	/** \param from: vector to rotate from
-	\param to: vector to rotate to
-	 */
 	template <class T>
 	inline void CMatrix4<T>::setRotationCenter(const core::vector3df& center, const core::vector3df& translation)
 	{

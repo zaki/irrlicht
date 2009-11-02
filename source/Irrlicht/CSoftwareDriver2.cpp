@@ -2125,6 +2125,12 @@ void CBurningVideoDriver::drawStencilShadow(bool clearStencilBuffer, video::SCol
 }
 
 
+core::dimension2du CBurningVideoDriver::getMaxTextureSize() const
+{
+	return core::dimension2du(SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE, SOFTWARE_DRIVER_2_TEXTURE_MAXSIZE);
+}
+
+
 } // end namespace video
 } // end namespace irr
 
@@ -2149,3 +2155,4 @@ IVideoDriver* createSoftwareDriver2(const core::dimension2d<u32>& windowSize, bo
 
 } // end namespace video
 } // end namespace irr
+

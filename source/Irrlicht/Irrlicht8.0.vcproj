@@ -1613,6 +1613,10 @@
 					RelativePath=".\glext.h"
 					>
 				</File>
+				<File
+					RelativePath=".\wglext.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Direct3D8"
@@ -2222,15 +2226,15 @@
 					>
 				</File>
 				<File
+					RelativePath=".\COgreMeshFileLoader.h"
+					>
+				</File>
+				<File
 					RelativePath=".\CPLYMeshFileLoader.cpp"
 					>
 				</File>
 				<File
 					RelativePath=".\CPLYMeshFileLoader.h"
-					>
-				</File>
-				<File
-					RelativePath=".\COgreMeshFileLoader.h"
 					>
 				</File>
 				<File
@@ -2739,22 +2743,6 @@
 				>
 			</File>
 			<File
-				RelativePath="CPakReader.cpp"
-				>
-			</File>
-			<File
-				RelativePath="CPakReader.h"
-				>
-			</File>
-			<File
-				RelativePath="CTarReader.cpp"
-				>
-			</File>
-			<File
-				RelativePath="CTarReader.h"
-				>
-			</File>
-			<File
 				RelativePath="CMountPointReader.cpp"
 				>
 			</File>
@@ -2763,11 +2751,31 @@
 				>
 			</File>
 			<File
+				RelativePath="CPakReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CPakReader.h"
+				>
+			</File>
+			<File
+				RelativePath="CReadFile.cpp"
+				>
+			</File>
+			<File
 				RelativePath="CReadFile.cpp"
 				>
 			</File>
 			<File
 				RelativePath="CReadFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\CTarReader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="CTarReader.h"
 				>
 			</File>
 			<File

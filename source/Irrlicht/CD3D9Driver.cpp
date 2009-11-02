@@ -163,7 +163,7 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 	if (!pID3D)
 	{
-		D3DLibrary = LoadLibrary( "d3d9.dll" );
+		D3DLibrary = LoadLibrary( __TEXT("d3d9.dll") );
 
 		if (!D3DLibrary)
 		{
@@ -1173,7 +1173,19 @@ void CD3D9Driver::draw2D3DVertexPrimitiveList(const void* vertices,
 			return;
 	}
 	else
-		setRenderStates2DMode(true, (Material.getTexture(0) != 0), true);
+	{
+		if (Material.MaterialType==EMT_ONETEXTURE_BLEND)
+		{
+			E_BLEND_FACTOR srcFact;
+			E_BLEND_FACTOR dstFact;
+			E_MODULATE_FUNC modulo;
+			u32 alphaSource;
+			unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+			setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource&video::EAS_TEXTURE) != 0);
+		}
+		else
+			setRenderStates2DMode(Material.MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL);
+	}
 
 	switch (pType)
 	{
@@ -3108,6 +3120,12 @@ void CD3D9Driver::removeDepthSurface(SDepthSurface* depth)
 			return;
 		}
 	}
+}
+
+
+core::dimension2du CD3D9Driver::getMaxTextureSize() const
+{
+	return core::dimension2du(Caps.MaxTextureWidth, Caps.MaxTextureHeight);
 }
 
 

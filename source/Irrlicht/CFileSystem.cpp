@@ -24,8 +24,8 @@
 #if defined (_IRR_WINDOWS_API_)
 	#if !defined ( _WIN32_WCE )
 		#include <direct.h> // for _chdir
+		#include <io.h> // for _access
 	#endif
-	#include <io.h> // for _access
 #else
 	#if (defined(_IRR_POSIX_API_) || defined(_IRR_OSX_PLATFORM_))
 		#include <stdio.h>
@@ -438,7 +438,7 @@ io::path CFileSystem::getAbsolutePath(const io::path& filename) const
 #elif defined(_IRR_WINDOWS_API_)
 
 	#if defined(_IRR_WCHAR_FILESYSTEM )
-		c16 fpath[_MAX_PATH];
+		wchar_t fpath[_MAX_PATH];
 		p = _wfullpath(fpath, filename.c_str(), _MAX_PATH);
 	#else
 		c8 fpath[_MAX_PATH];
@@ -689,6 +689,13 @@ IFileList* CFileSystem::createFileList()
 	return r;
 }
 
+//! Creates an empty filelist
+IFileList* CFileSystem::createEmptyFileList(const io::path& path, bool ignoreCase, bool ignorePaths)
+{
+	return new CFileList(path, ignoreCase, ignorePaths);
+}
+
+
 //! determines if a file exists and would be able to be opened.
 bool CFileSystem::existFile(const io::path& filename) const
 {
@@ -696,13 +703,30 @@ bool CFileSystem::existFile(const io::path& filename) const
 		if (FileArchives[i]->getFileList()->findFile(filename)!=-1)
 			return true;
 
+#if defined(_IRR_WINDOWS_CE_PLATFORM_)
+#if defined(_IRR_WCHAR_FILESYSTEM)
+	HANDLE hFile = CreateFileW(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+#else
+	HANDLE hFile = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+#endif
+	if (hFile == INVALID_HANDLE_VALUE)
+		return false;
+	else
+	{
+		CloseHandle(hFile);
+		return true;
+	}
+#else
 	_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
+#if defined(_MSC_VER)
 #if defined(_IRR_WCHAR_FILESYSTEM)
 	return (_waccess(filename.c_str(), 0) != -1);
-#elif defined(_MSC_VER)
+#else
 	return (_access(filename.c_str(), 0) != -1);
+#endif
 #else
 	return (access(filename.c_str(), F_OK) != -1);
+#endif
 #endif
 }
 

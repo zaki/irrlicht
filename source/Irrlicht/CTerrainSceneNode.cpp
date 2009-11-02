@@ -1101,10 +1101,10 @@ namespace scene
 				for (s32 x = 1; x < TerrainData.Size - 1; ++x)
 				{
 					mb->getVertexBuffer()[x + yd].Pos.Y =
-						(mb->getVertexBuffer()[x-1 + yd].Pos.Y +
-						mb->getVertexBuffer()[x+1 + yd].Pos.Y +
-						mb->getVertexBuffer()[x   + yd - TerrainData.Size].Pos.Y +
-						mb->getVertexBuffer()[x   + yd - TerrainData.Size].Pos.Y) * 0.25f;
+						(mb->getVertexBuffer()[x-1 + yd].Pos.Y + //left
+						mb->getVertexBuffer()[x+1 + yd].Pos.Y + //right
+						mb->getVertexBuffer()[x   + yd - TerrainData.Size].Pos.Y + //above
+						mb->getVertexBuffer()[x   + yd + TerrainData.Size].Pos.Y) * 0.25f; //below
 				}
 				yd += TerrainData.Size;
 			}

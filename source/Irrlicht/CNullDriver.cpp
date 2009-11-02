@@ -585,56 +585,6 @@ void CNullDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCoun
 }
 
 
-//! draws an indexed triangle list
-void CNullDriver::drawIndexedTriangleList(const S3DVertex* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
-}
-
-
-//! draws an indexed triangle list
-void CNullDriver::drawIndexedTriangleList(const S3DVertex2TCoords* vertices, u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLES, EIT_16BIT);
-}
-
-
-//! Draws an indexed triangle list.
-void CNullDriver::drawIndexedTriangleList(const S3DVertexTangents* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES, EIT_16BIT);
-}
-
-
-
-//! Draws an indexed triangle fan.
-void CNullDriver::drawIndexedTriangleFan(const S3DVertex* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
-}
-
-
-
-//! Draws an indexed triangle fan.
-void CNullDriver::drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
-}
-
-
-
-//! Draws an indexed triangle fan.
-void CNullDriver::drawIndexedTriangleFan(const S3DVertexTangents* vertices,
-	u32 vertexCount, const u16* indexList, u32 triangleCount)
-{
-	drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
-}
-
-
-
 //! Draws a 3d line.
 void CNullDriver::draw3DLine(const core::vector3df& start,
 				const core::vector3df& end, SColor color)
@@ -642,15 +592,25 @@ void CNullDriver::draw3DLine(const core::vector3df& start,
 }
 
 
-
 //! Draws a 3d triangle.
 void CNullDriver::draw3DTriangle(const core::triangle3df& triangle, SColor color)
 {
-	draw3DLine(triangle.pointA, triangle.pointB, color);
-	draw3DLine(triangle.pointB, triangle.pointC, color);
-	draw3DLine(triangle.pointC, triangle.pointA, color);
+	S3DVertex vertices[3];
+	vertices[0].Pos=triangle.pointA;
+	vertices[0].Color=color;
+	vertices[0].Normal=triangle.getNormal().normalize();
+	vertices[0].TCoords.set(0.f,0.f);
+	vertices[1].Pos=triangle.pointB;
+	vertices[1].Color=color;
+	vertices[1].Normal=vertices[0].Normal;
+	vertices[1].TCoords.set(0.5f,1.f);
+	vertices[2].Pos=triangle.pointC;
+	vertices[2].Color=color;
+	vertices[2].Normal=vertices[0].Normal;
+	vertices[2].TCoords.set(1.f,0.f);
+	const u16 indexList[] = {0,1,2};
+	drawVertexPrimitiveList(vertices, 3, indexList, 1, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
 }
-
 
 
 //! Draws a 3d axis aligned box.
@@ -1442,6 +1402,18 @@ void CNullDriver::setFog(SColor color, E_FOG_TYPE fogType, f32 start, f32 end,
 	RangeFog = rangeFog;
 }
 
+//! Gets the fog mode.
+void CNullDriver::getFog(SColor& color, E_FOG_TYPE& fogType, f32& start, f32& end,
+		f32& density, bool& pixelFog, bool& rangeFog)
+{
+	color = FogColor;
+	fogType = FogType;
+	start = FogStart;
+	end = FogEnd;
+	density = FogDensity;
+	pixelFog = PixelFog;
+	rangeFog = RangeFog;
+}
 
 //! Draws a mesh buffer
 void CNullDriver::drawMeshBuffer(const scene::IMeshBuffer* mb)
@@ -2100,6 +2072,13 @@ SOverrideMaterial& CNullDriver::getOverrideMaterial()
 {
 	return OverrideMaterial;
 }
+
+
+core::dimension2du CNullDriver::getMaxTextureSize() const
+{
+	return core::dimension2du(0x10000,0x10000); // maybe large enough
+}
+
 
 } // end namespace
 } // end namespace

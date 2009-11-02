@@ -49,11 +49,11 @@ bool textureRenderStates(void)
 {
 	bool passed = true;
 
+	passed &= runTestWithDriver(EDT_OPENGL);
 	passed &= runTestWithDriver(EDT_SOFTWARE);
 	passed &= runTestWithDriver(EDT_BURNINGSVIDEO);
 	passed &= runTestWithDriver(EDT_DIRECT3D9);
 	passed &= runTestWithDriver(EDT_DIRECT3D8);
-	passed &= runTestWithDriver(EDT_OPENGL);
 
 	return passed;
 }

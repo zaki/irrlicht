@@ -132,6 +132,14 @@ namespace video
 		EFT_FOG_EXP2
 	};
 
+	const c8* const FogTypeNames[] =
+	{
+		"FogExp",
+		"FogLinear",
+		"FogExp2",
+		0
+	};
+
 	struct SOverrideMaterial
 	{
 		//! The Material values
@@ -396,7 +404,7 @@ namespace video
 		example in picture edit programs. To avoid this problem, you
 		could use the makeColorKeyTexture method, which takes the
 		position of a pixel instead a color value.
-		\param \deprecated zeroTexels If set to true, then any texels that match
+		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
 		to release 1.5 and is provided for backwards compatibility only.*/
@@ -412,7 +420,7 @@ namespace video
 		\param colorKeyPixelPos Position of a pixel with the color key
 		color. Every texel with this color will become fully transparent as
 		described above.
-		\param \deprecated zeroTexels If set to true, then any texels that match
+		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
 		to release 1.5 and is provided for backwards compatibility only.*/
@@ -548,8 +556,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices / 3. */
-		virtual void drawIndexedTriangleList(const S3DVertex* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleList(const S3DVertex* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLES, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle list.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -560,8 +571,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices / 3. */
-		virtual void drawIndexedTriangleList(const S3DVertex2TCoords* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleList(const S3DVertex2TCoords* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLES, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle list.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -572,8 +586,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices / 3. */
-		virtual void drawIndexedTriangleList(const S3DVertexTangents* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleList(const S3DVertexTangents* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLES, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle fan.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -584,8 +601,11 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices - 2. */
-		virtual void drawIndexedTriangleFan(const S3DVertex* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleFan(const S3DVertex* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_STANDARD, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
+		}
 
 		//! Draws an indexed triangle fan.
 		/** Note that there may be at maximum 65536 vertices, because
@@ -596,18 +616,36 @@ namespace video
 		\param vertexCount Amount of vertices in the array.
 		\param indexList Pointer to array of indices.
 		\param triangleCount Amount of Triangles. Usually amount of indices - 2. */
-		virtual void drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
-			u32 vertexCount, const u16* indexList, u32 triangleCount) =0;
+		void drawIndexedTriangleFan(const S3DVertex2TCoords* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_2TCOORDS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
+		}
+
+		//! Draws an indexed triangle fan.
+		/** Note that there may be at maximum 65536 vertices, because
+		the index list is an array of 16 bit values each with a maximum
+		value of 65536. If there are more than 65536 vertices in the
+		list, results of this operation are not defined.
+		\param vertices Pointer to array of vertices.
+		\param vertexCount Amount of vertices in the array.
+		\param indexList Pointer to array of indices.
+		\param triangleCount Amount of Triangles. Usually amount of indices - 2. */
+		void drawIndexedTriangleFan(const S3DVertexTangents* vertices,
+			u32 vertexCount, const u16* indexList, u32 triangleCount)
+		{
+			drawVertexPrimitiveList(vertices, vertexCount, indexList, triangleCount, EVT_TANGENTS, scene::EPT_TRIANGLE_FAN, EIT_16BIT);
+		}
 
 		//! Draws a 3d line.
 		/** For some implementations, this method simply calls
-		drawIndexedTriangles for some triangles.
+		drawVertexPrimitiveList for some triangles.
 		Note that the line is drawn using the current transformation
 		matrix and material. So if you need to draw the 3D line
 		independently of the current transformation, use
 		\code
-		driver->setMaterial(unlitMaterial);
-		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		driver->setMaterial(someMaterial);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		\endcode
 		for some properly set up material before drawing the line.
 		Some drivers support line thickness set in the material.
@@ -618,15 +656,15 @@ namespace video
 			const core::vector3df& end, SColor color = SColor(255,255,255,255)) =0;
 
 		//! Draws a 3d triangle.
-		/** This method calls drawIndexedTriangles for some triangles.
+		/** This method calls drawVertexPrimitiveList for some triangles.
 		This method works with all drivers because it simply calls
-		drawIndexedTriangleList but it is hence not very fast.
+		drawVertexPrimitiveList, but it is hence not very fast.
 		Note that the triangle is drawn using the current
 		transformation matrix and material. So if you need to draw it
 		independently of the current transformation, use
 		\code
-		driver->setMaterial(unlitMaterial);
-		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		driver->setMaterial(someMaterial);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		\endcode
 		for some properly set up material before drawing the triangle.
 		\param triangle The triangle to draw.
@@ -640,8 +678,8 @@ namespace video
 		matrix and material. So if you need to draw it independently of
 		the current transformation, use
 		\code
-		driver->setMaterial(unlitMaterial);
-		driver->setTransform(video::ETS_WORLD, core::matrix4());
+		driver->setMaterial(someMaterial);
+		driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 		\endcode
 		for some properly set up material before drawing the box.
 		\param box The axis aligned box to draw
@@ -864,8 +902,7 @@ namespace video
 		/** These are global values attached to each 3d object rendered,
 		which has the fog flag enabled in its material.
 		\param color Color of the fog
-		\param linearFog Set this to true for linear fog, otherwise
-		exponential fog is applied.
+		\param fogType Type of fog used
 		\param start Only used in linear fog mode (linearFog=true).
 		Specifies where fog starts.
 		\param end Only used in linear fog mode (linearFog=true).
@@ -882,6 +919,11 @@ namespace video
 				E_FOG_TYPE fogType=EFT_FOG_LINEAR,
 				f32 start=50.0f, f32 end=100.0f, f32 density=0.01f,
 				bool pixelFog=false, bool rangeFog=false) =0;
+
+		//! Gets the fog mode.
+		virtual void getFog(SColor& color, E_FOG_TYPE& fogType,
+				f32& start, f32& end, f32& density,
+				bool& pixelFog, bool& rangeFog) = 0;
 
 		//! Get the current color format of the color buffer
 		/** \return Color format of the color buffer. */
@@ -965,7 +1007,7 @@ namespace video
 
 		//! Returns the maximum amount of primitives
 		/** (mostly vertices) which the device is able to render with
-		one drawIndexedTriangleList call.
+		one drawVertexPrimitiveList call.
 		\return Maximum amount of primitives. */
 		virtual u32 getMaximalPrimitiveCount() const =0;
 
@@ -1253,6 +1295,9 @@ namespace video
 		Use the SceneManager attribute to set this value from your app.
 		\param flag Default behavior is to disable ZWrite, i.e. false. */
 		virtual void setAllowZWriteOnTransparent(bool flag) =0;
+
+		//! Returns the maximum texture size supported.
+		virtual core::dimension2du getMaxTextureSize() const =0;
 	};
 
 } // end namespace video

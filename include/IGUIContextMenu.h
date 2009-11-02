@@ -11,6 +11,21 @@ namespace irr
 {
 namespace gui
 {
+	//! Close behaviour.
+	//! Default is ECMC_REMOVE
+	enum ECONTEXT_MENU_CLOSE
+	{
+		//! do nothing - menu stays open
+		ECMC_IGNORE = 0,
+
+		//! remove the gui element
+		ECMC_REMOVE = 1,
+
+		//! call setVisible(false)
+		ECMC_HIDE = 2,
+
+	 	// note to implementors - this is planned as bitset, so continue with 4 if you need to add further flags.
+	};
 
 	//! GUI Context menu interface.
 	class IGUIContextMenu : public IGUIElement
@@ -20,6 +35,12 @@ namespace gui
 		//! constructor
 		IGUIContextMenu(IGUIEnvironment* environment, IGUIElement* parent, s32 id, core::rect<s32> rectangle)
 			: IGUIElement(EGUIET_CONTEXT_MENU, environment, parent, id, rectangle) {}
+
+		//! set behaviour when menus are closed
+		virtual void setCloseHandling(ECONTEXT_MENU_CLOSE onClose) = 0;
+
+		//! get current behaviour when the menue will be closed
+		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const = 0;
 
 		//! Get amount of menu items
 		virtual u32 getItemCount() const = 0;
@@ -36,7 +57,30 @@ namespace gui
 		\param checked: Specifies if the menu item should be initially checked.
 		\return Returns the index of the new item */
 		virtual u32 addItem(const wchar_t* text, s32 commandId=-1, bool enabled=true,
-			bool hasSubMenu=false, bool checked=false) = 0;
+			bool hasSubMenu=false, bool checked=false, bool autoChecking=false) = 0;
+
+        //! Insert a menu item at specified position.
+        /** \param idx: Position to insert the new element,
+        should be smaller than itemcount otherwise the item is added to the end.
+        \param text: Text of menu item. Set this to 0 to create
+		an separator instead of a real item, which is the same like
+		calling addSeparator();
+		\param commandId: Command id of menu item, a simple id you may
+		set to whatever you want.
+		\param enabled: Specifies if the menu item should be enabled.
+		\param hasSubMenu: Set this to true if there should be a submenu
+		at this item. You can acess this submenu via getSubMenu().
+		\param checked: Specifies if the menu item should be initially checked.
+		\return Returns the index of the new item */
+		virtual u32 insertItem(u32 idx, const wchar_t* text, s32 commandId=-1, bool enabled=true,
+			bool hasSubMenu=false, bool checked=false, bool autoChecking=false) = 0;
+
+		//! Find an item by it's CommandID 
+		/**
+		\param commandId: We are looking for the first item which has this commandID
+		\param idxStartSearch: Start searching from this index. 
+        \return Returns the index of the item when found or otherwise -1. */
+		virtual s32 findItemWithCommandId(s32 commandId, u32 idxStartSearch=0) const = 0;
 
 		//! Adds a separator item to the menu
 		virtual void addSeparator() = 0;
@@ -94,6 +138,15 @@ namespace gui
 		\param idx: Zero based index of the menu item
 		\return Returns a pointer to the submenu of an item. */
 		virtual IGUIContextMenu* getSubMenu(u32 idx) const = 0;
+
+		//! should the element change the checked status on clicking
+		virtual void setItemAutoChecking(u32 idx, bool autoChecking) = 0;
+
+		//! does the element change the checked status on clicking
+		virtual bool getItemAutoChecking(u32 idx) const = 0;
+
+		//! When an eventparent is set it receives events instead of the usual parent element
+		virtual void setEventParent(IGUIElement *parent) = 0;
 	};
 
 } // end namespace gui

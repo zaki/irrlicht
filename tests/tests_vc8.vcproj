@@ -229,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\lightMaps.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\line2dIntersectWith.cpp"
 				>
 			</File>

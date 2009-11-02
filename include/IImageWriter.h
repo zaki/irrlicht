@@ -26,7 +26,7 @@ class IImageWriter : public IReferenceCounted
 {
 public:
 	//! Check if this writer can write a file with the given extension
-	/** \param fileName Name of the file to check.
+	/** \param filename Name of the file to check.
 	\return True if file extension specifies a writable type. */
 	virtual bool isAWriteableFileExtension(const io::path& filename) const = 0;
 

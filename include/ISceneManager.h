@@ -209,7 +209,7 @@ namespace scene
 		 *        a dummy object in this mode. Meshes included in the
 		 *        scene will be added into the scene manager with the
 		 *        following naming scheme:
-		 *        path/to/file/file.dea#meshname. The loading of such
+		 *        "path/to/file/file.dea#meshname". The loading of such
 		 *        meshes is logged. Currently, this loader is able to
 		 *        create meshes (made of only polygons), lights, and
 		 *        cameras. Materials and animations are currently not
@@ -398,13 +398,12 @@ namespace scene
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
 
-		//! Adds a test scene node for test purposes to the scene.
-		/** It is a simple cube of (1,1,1) size.
-		\param size: Size of the cube.
-		\param parent: Parent of the scene node. Can be NULL if no parent.
+		//! Adds a cube scene node
+		/** \param size: Size of the cube, uniformly in each dimension.
+		\param parent: Parent of the scene node. Can be 0 if no parent.
 		\param id: Id of the node. This id can be used to identify the scene node.
-		\param position: Position of the space relative to its parent where the
-		scene node will be placed.
+		\param position: Position of the space relative to its parent
+		where the scene node will be placed.
 		\param rotation: Initital rotation of the scene node.
 		\param scale: Initial scale of the scene node.
 		\return Pointer to the created test scene node. This
@@ -415,14 +414,14 @@ namespace scene
 			const core::vector3df& rotation = core::vector3df(0,0,0),
 			const core::vector3df& scale = core::vector3df(1.0f, 1.0f, 1.0f)) = 0;
 
-		//! Adds a sphere scene node for test purposes to the scene.
-		/** It is a simple sphere.
-		\param radius: Radius of the sphere.
-		\param polyCount: Polycount of the sphere.
-		\param parent: Parent of the scene node. Can be NULL if no parent.
+		//! Adds a sphere scene node of the given radius and detail
+		/** \param radius: Radius of the sphere.
+		\param polyCount: Polycount of the sphere, i.e. subdivision in
+		horizontal and vertical direction.
+		\param parent: Parent of the scene node. Can be 0 if no parent.
 		\param id: Id of the node. This id can be used to identify the scene node.
-		\param position: Position of the space relative to its parent where the
-		scene node will be placed.
+		\param position: Position of the space relative to its parent
+		where the scene node will be placed.
 		\param rotation: Initital rotation of the scene node.
 		\param scale: Initial scale of the scene node.
 		\return Pointer to the created test scene node. This
@@ -537,25 +536,31 @@ namespace scene
 		\param parent: Parent scene node of the camera. Can be null. If the parent moves,
 		the camera will move too.
 		\param id: id of the camera. This id can be used to identify the camera.
+		\param makeActive Flag whether this camera should become the active one.
+		Make sure you always have one active camera.
 		\return Pointer to interface to camera if successful, otherwise 0.
 		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNode(ISceneNode* parent = 0,
 			const core::vector3df& position = core::vector3df(0,0,0),
-			const core::vector3df& lookat = core::vector3df(0,0,100), s32 id=-1) = 0;
+			const core::vector3df& lookat = core::vector3df(0,0,100),
+			s32 id=-1, bool makeActive=true) = 0;
 
 		//! Adds a maya style user controlled camera scene node to the scene graph.
 		/** This is a standard camera with an animator that provides mouse control similar
-		 to camera in the 3D Software Maya by Alias Wavefront.
-		 \param parent: Parent scene node of the camera. Can be null.
-		 \param rotateSpeed: Rotation speed of the camera.
-		 \param zoomSpeed: Zoom speed of the camera.
-		 \param translationSpeed: TranslationSpeed of the camera.
-		 \param id: id of the camera. This id can be used to identify the camera.
-		 \return Returns a pointer to the interface of the camera if successful, otherwise 0.
-		 This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
+		to camera in the 3D Software Maya by Alias Wavefront.
+		\param parent: Parent scene node of the camera. Can be null.
+		\param rotateSpeed: Rotation speed of the camera.
+		\param zoomSpeed: Zoom speed of the camera.
+		\param translationSpeed: TranslationSpeed of the camera.
+		\param id: id of the camera. This id can be used to identify the camera.
+		\param makeActive Flag whether this camera should become the active one.
+		Make sure you always have one active camera.
+		\return Returns a pointer to the interface of the camera if successful, otherwise 0.
+		This pointer should not be dropped. See IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeMaya(ISceneNode* parent = 0,
 			f32 rotateSpeed = -1500.0f, f32 zoomSpeed = 200.0f,
-			f32 translationSpeed = 1500.0f, s32 id=-1) = 0;
+			f32 translationSpeed = 1500.0f, s32 id=-1,
+			bool makeActive=true) = 0;
 
 		//! Adds a camera scene node with an animator which provides mouse and keyboard control appropriate for first person shooters (FPS).
 		/** This FPS camera is intended to provide a demonstration of a
@@ -616,13 +621,16 @@ namespace scene
 		up when the mouse is moved down and down when the mouse is
 		moved up, the default is 'false' which means it will follow the
 		movement of the mouse cursor.
+		\param makeActive Flag whether this camera should become the active one.
+		Make sure you always have one active camera.
 		\return Pointer to the interface of the camera if successful,
 		otherwise 0. This pointer should not be dropped. See
 		IReferenceCounted::drop() for more information. */
 		virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
 			f32 rotateSpeed = 100.0f, f32 moveSpeed = 0.5f, s32 id=-1,
 			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
-			f32 jumpSpeed = 0.f, bool invertMouse=false) = 0;
+			f32 jumpSpeed = 0.f, bool invertMouse=false,
+			bool makeActive=true) = 0;
 
 		//! Adds a dynamic light scene node to the scene graph.
 		/** The light will cast dynamic light on all
@@ -692,6 +700,7 @@ namespace scene
 		\param spherePercentage: How much of the sphere is drawn.
 		Value should be between 0 and 2, where 1 is an exact
 		half-sphere and 2 is a full sphere.
+		\param radius The Radius of the sphere
 		\param parent: Parent scene node of the dome. A dome usually has no parent,
 		so this should be null. Note: If a parent is set, the dome will not
 		change how it is drawn.
@@ -1098,6 +1107,8 @@ namespace scene
 		move from the start point to the end point.
 		\param loop: If set to false, the node stops when the end point is reached.
 		If loop is true, the node begins again at the start.
+		\param pingpong Flag to set whether the animator should fly
+		back from end to start again.
 		\return The animator. Attach it to a scene node with ISceneNode::addAnimator()
 		and the animator will animate it.
 		If you no longer need the animator, you should call ISceneNodeAnimator::drop().
@@ -1199,10 +1210,11 @@ namespace scene
 		virtual ITriangleSelector* createTriangleSelector(IMesh* mesh, ISceneNode* node) = 0;
 
 		//! Creates a simple ITriangleSelector, based on an animated mesh scene node.
-		//! Details of the mesh associated with the node will be extracted internally.
-		//! Call ITriangleSelector::update() to have the triangle selector updated based
-		//! on the current frame of the animated mesh scene node.
-		//! \param: The animated mesh scene node from which to build the selector
+		/** Details of the mesh associated with the node will be extracted internally.
+		Call ITriangleSelector::update() to have the triangle selector updated based
+		on the current frame of the animated mesh scene node.
+		\param node The animated mesh scene node from which to build the selector
+		*/
 		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node) = 0;
 
 

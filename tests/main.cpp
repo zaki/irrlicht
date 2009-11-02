@@ -58,6 +58,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	TEST(filesystem);
 	TEST(zipReader);
+	TEST(pakReader);
 	TEST(exports);
 	TEST(sceneCollisionManager);
 	TEST(testVector3d);
@@ -91,6 +92,8 @@ int main(int argumentCount, char * arguments[])
 	TEST(enumerateImageManipulators);
 	TEST(testGeometryCreator);
 	TEST(makeColorKeyTexture);
+	TEST(lightMaps);
+	TEST(testXML);
 
 	const unsigned int numberOfTests = tests.size();
 

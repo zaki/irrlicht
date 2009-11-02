@@ -662,65 +662,64 @@ IMeshSceneNode* CSceneManager::addOctTreeSceneNode(IMesh* mesh, ISceneNode* pare
 //! the camera will move too.
 //! \return Returns pointer to interface to camera
 ICameraSceneNode* CSceneManager::addCameraSceneNode(ISceneNode* parent,
-	const core::vector3df& position, const core::vector3df& lookat, s32 id)
+	const core::vector3df& position, const core::vector3df& lookat, s32 id,
+	bool makeActive)
 {
 	if (!parent)
 		parent = this;
 
 	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id, position, lookat);
-	node->drop();
 
-	setActiveCamera(node);
+	if (makeActive)
+		setActiveCamera(node);
+	node->drop();
 
 	return node;
 }
 
 
-//! Adds a camera scene node which is able to be controlld with the mouse similar
+//! Adds a camera scene node which is able to be controlled with the mouse similar
 //! to in the 3D Software Maya by Alias Wavefront.
 //! The returned pointer must not be dropped.
 ICameraSceneNode* CSceneManager::addCameraSceneNodeMaya(ISceneNode* parent,
-	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id)
+	f32 rotateSpeed, f32 zoomSpeed, f32 translationSpeed, s32 id,
+	bool makeActive)
 {
-	if (!parent)
-		parent = this;
+	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
+			core::vector3df(0,0,100), id, makeActive);
+	if (node)
+	{
+		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
+			rotateSpeed, zoomSpeed, translationSpeed);
 
-	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
-	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraMaya(CursorControl,
-		rotateSpeed, zoomSpeed, translationSpeed);
-
-	node->addAnimator(anm);
-	setActiveCamera(node);
-
-	anm->drop();
-	node->drop();
+		node->addAnimator(anm);
+		anm->drop();
+	}
 
 	return node;
 }
 
 
-//! Adds a camera scene node which is able to be controled with the mouse and keys
+//! Adds a camera scene node which is able to be controlled with the mouse and keys
 //! like in most first person shooters (FPS):
 ICameraSceneNode* CSceneManager::addCameraSceneNodeFPS(ISceneNode* parent,
-	f32 rotateSpeed, f32 moveSpeed, s32 id,
-	SKeyMap* keyMapArray, s32 keyMapSize, bool noVerticalMovement, f32 jumpSpeed, bool invertMouseY)
+	f32 rotateSpeed, f32 moveSpeed, s32 id, SKeyMap* keyMapArray,
+	s32 keyMapSize, bool noVerticalMovement, f32 jumpSpeed,
+	bool invertMouseY, bool makeActive)
 {
-	if (!parent)
-		parent = this;
+	ICameraSceneNode* node = addCameraSceneNode(parent, core::vector3df(),
+			core::vector3df(0,0,100), id, makeActive);
+	if (node)
+	{
+		ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl,
+				rotateSpeed, moveSpeed, jumpSpeed,
+				keyMapArray, keyMapSize, noVerticalMovement, invertMouseY);
 
-	ICameraSceneNode* node = new CCameraSceneNode(parent, this, id);
-	ISceneNodeAnimator* anm = new CSceneNodeAnimatorCameraFPS(CursorControl,
-			rotateSpeed, moveSpeed, jumpSpeed,
-			keyMapArray, keyMapSize, noVerticalMovement, invertMouseY);
-
-	// Bind the node's rotation to its target. This is consistent with 1.4.2 and below.
-	node->bindTargetAndRotation(true);
-
-	node->addAnimator(anm);
-	setActiveCamera(node);
-
-	anm->drop();
-	node->drop();
+		// Bind the node's rotation to its target. This is consistent with 1.4.2 and below.
+		node->bindTargetAndRotation(true);
+		node->addAnimator(anm);
+		anm->drop();
+	}
 
 	return node;
 }
@@ -1099,8 +1098,8 @@ ICameraSceneNode* CSceneManager::getActiveCamera() const
 //! \param camera: The new camera which should be active.
 void CSceneManager::setActiveCamera(ICameraSceneNode* camera)
 {
-    if (camera)
-        camera->grab();
+	if (camera)
+		camera->grab();
 	if (ActiveCamera)
 		ActiveCamera->drop();
 
@@ -1346,7 +1345,7 @@ void CSceneManager::drawAll()
 	camWorldPos.set(0,0,0);
 	if ( ActiveCamera )
 	{
-		ActiveCamera->OnRegisterSceneNode();
+		ActiveCamera->render();
 		camWorldPos = ActiveCamera->getAbsolutePosition();
 	}
 
@@ -2488,6 +2487,22 @@ void CSceneManager::serializeAttributes(io::IAttributes* out, io::SAttributeRead
 	out->addString	("Name", Name.c_str());
 	out->addInt	("Id", ID );
 	out->addColorf	("AmbientLight", AmbientLight);
+
+	// fog attributes from video driver
+	video::SColor color;
+	video::E_FOG_TYPE fogType;
+	f32 start, end, density;
+	bool pixelFog, rangeFog;
+
+	Driver->getFog(color, fogType, start, end, density, pixelFog, rangeFog);
+
+	out->addEnum("FogType", fogType, video::FogTypeNames);
+	out->addColorf("FogColor", color);
+	out->addFloat("FogStart", start);
+	out->addFloat("FogEnd", end);
+	out->addFloat("FogDensity", density);
+	out->addBool("FogPixel", pixelFog);
+	out->addBool("FogRange", rangeFog);
 }
 
 //! Reads attributes of the scene node.
@@ -2496,6 +2511,23 @@ void CSceneManager::deserializeAttributes(io::IAttributes* in, io::SAttributeRea
 	Name = in->getAttributeAsString("Name");
 	ID = in->getAttributeAsInt("Id");
 	AmbientLight = in->getAttributeAsColorf("AmbientLight");
+
+	// fog attributes
+	video::SColor color;
+	video::E_FOG_TYPE fogType;
+	f32 start, end, density;
+	bool pixelFog, rangeFog;
+	if (in->existsAttribute("FogType"))
+	{
+		fogType = (video::E_FOG_TYPE) in->getAttributeAsEnumeration("FogType", video::FogTypeNames);
+		color = in->getAttributeAsColorf("FogColor").toSColor();
+		start = in->getAttributeAsFloat("FogStart");
+		end = in->getAttributeAsFloat("FogEnd");
+		density = in->getAttributeAsFloat("FogDensity");
+		pixelFog = in->getAttributeAsBool("FogPixel");
+		rangeFog = in->getAttributeAsBool("FogRange");
+		Driver->setFog(color, fogType, start, end, density, pixelFog, rangeFog);
+	}
 
 	RelativeTranslation.set(0,0,0);
 	RelativeRotation.set(0,0,0);
@@ -2526,7 +2558,11 @@ const video::SColorf& CSceneManager::getAmbientLight() const
 //! Get a skinned mesh, which is not available as header-only code
 ISkinnedMesh* CSceneManager::createSkinnedMesh()
 {
+#ifdef _IRR_COMPILE_WITH_SKINNED_MESH_SUPPORT_
 	return new CSkinnedMesh();
+#else
+	return 0;
+#endif
 }
 
 //! Returns a mesh writer implementation if available

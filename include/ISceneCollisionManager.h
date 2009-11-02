@@ -26,7 +26,7 @@ namespace scene
 	public:
 
 		//! Finds the collision point of a line and lots of triangles, if there is one.
-		/** \param ray: Line with witch collisions are tested.
+		/** \param ray: Line with which collisions are tested.
 		\param selector: TriangleSelector containing the triangles. It
 		can be created for example using
 		ISceneManager::createTriangleSelector() or
@@ -58,6 +58,7 @@ namespace scene
 		movement of the ellipsoid.
 		\param triout: Optional parameter where the last triangle
 		causing a collision is stored, if there is a collision.
+		\param hitPosition: Return value for the position of the collision
 		\param outFalling: Is set to true if the ellipsoid is falling
 		down, caused by gravity.
 		\param outNode: the node with which the ellipoid collided (if any)

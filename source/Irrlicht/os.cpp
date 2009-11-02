@@ -69,8 +69,8 @@ namespace os
 		tmp += L"\n";
 		OutputDebugStringW(tmp.c_str());
 #else
-		OutputDebugString(message);
-		OutputDebugString("\n");
+		OutputDebugStringA(message);
+		OutputDebugStringA("\n");
 		printf("%s\n", message);
 #endif
 	}

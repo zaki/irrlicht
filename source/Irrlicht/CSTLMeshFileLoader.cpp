@@ -43,7 +43,9 @@ IAnimatedMesh* CSTLMeshFileLoader::createMesh(io::IReadFile* file)
 	const u32 WORD_BUFFER_LENGTH = 512;
 
 	SMesh* mesh = new SMesh();
-	mesh->addMeshBuffer( new SMeshBuffer() );
+	SMeshBuffer* meshBuffer = new SMeshBuffer();
+	mesh->addMeshBuffer(meshBuffer);
+	meshBuffer->drop();
 
 	core::vector3df vertex[3];
 	core::vector3df normal;

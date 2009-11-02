@@ -315,6 +315,9 @@ namespace video
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return vendorName;}
 
+		//! Returns the maximum texture size supported.
+		virtual core::dimension2du getMaxTextureSize() const;
+
 		ITexture* createDepthTexture(ITexture* texture, bool shared=true);
 		void removeDepthTexture(ITexture* texture);
 

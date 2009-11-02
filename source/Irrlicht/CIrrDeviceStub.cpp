@@ -19,7 +19,8 @@ namespace irr
 CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 : IrrlichtDevice(), VideoDriver(0), GUIEnvironment(0), SceneManager(0),
 	Timer(0), CursorControl(0), UserReceiver(params.EventReceiver), Logger(0), Operator(0),
-	FileSystem(0), InputReceivingSceneManager(0), CreationParams(params)
+	FileSystem(0), InputReceivingSceneManager(0), CreationParams(params),
+	Close(false)
 {
 	Timer = new CTimer();
 	if (os::Printer::Logger)

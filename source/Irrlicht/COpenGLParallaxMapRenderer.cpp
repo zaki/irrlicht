@@ -49,9 +49,6 @@ const char OPENGL_PARALLAX_MAP_VSH[] =
 	"PARAM MVP[4] = { state.matrix.mvp }; # modelViewProjection matrix.\n"\
 	"TEMP Temp;\n"\
 	"TEMP TempColor;\n"\
-	"TEMP TempNormal;\n"\
-	"TEMP TempTangent;\n"\
-	"TEMP TempBinormal;\n"\
 	"TEMP TempLightVector1;\n"\
 	"TEMP TempLightVector2;\n"\
 	"TEMP TempEyeVector;\n"\
@@ -66,48 +63,27 @@ const char OPENGL_PARALLAX_MAP_VSH[] =
 	"MOV OutPos.z, Temp.z;\n"\
 	"MOV result.fogcoord.x, Temp.z;\n"\
 	"\n"\
-	"# transform normal \n"\
-	"DP3 TempNormal.x, InNormal.x, program.local[0];\n"\
-	"DP3 TempNormal.y, InNormal.y, program.local[1]; \n"\
-	"DP3 TempNormal.z, InNormal.z, program.local[2];\n"\
-	"\n"\
-	"# transform tangent \n"\
-	"DP3 TempTangent.x, InTangent.x, program.local[0];\n"\
-	"DP3 TempTangent.y, InTangent.y, program.local[1]; \n"\
-	"DP3 TempTangent.z, InTangent.z, program.local[2];\n"\
-	"\n"\
-	"# transform binormal \n"\
-	"DP3 TempBinormal.x, InBinormal.x, program.local[0];\n"\
-	"DP3 TempBinormal.y, InBinormal.y, program.local[1]; \n"\
-	"DP3 TempBinormal.z, InBinormal.z, program.local[2];\n"\
-	"\n"\
-	"# vertex into world position \n"\
-	"DP4 Temp.x, InPos, program.local[0];\n"\
-	"DP4 Temp.y, InPos, program.local[1];\n"\
-	"DP4 Temp.z, InPos, program.local[2];\n"\
-	"DP4 Temp.w, InPos, program.local[3];\n"\
-	"\n"\
 	"# vertex - lightpositions \n"\
-	"SUB TempLightVector1, program.local[12], Temp; \n"\
-	"SUB TempLightVector2, program.local[14], Temp; \n"\
+	"SUB TempLightVector1, program.local[12], InPos; \n"\
+	"SUB TempLightVector2, program.local[14], InPos; \n"\
 	"\n"\
 	"# eye vector \n"\
-	"SUB Temp, program.local[16], Temp; \n"\
+	"SUB Temp, program.local[16], InPos; \n"\
 	"\n"\
 	"# transform the light vector 1 with U, V, W \n"\
-	"DP3 TempTransLightV1.x, TempTangent, TempLightVector1; \n"\
-	"DP3 TempTransLightV1.y, TempBinormal, TempLightVector1; \n"\
-	"DP3 TempTransLightV1.z, TempNormal, TempLightVector1; \n"\
+	"DP3 TempTransLightV1.x, InTangent, TempLightVector1; \n"\
+	"DP3 TempTransLightV1.y, InBinormal, TempLightVector1; \n"\
+	"DP3 TempTransLightV1.z, InNormal, TempLightVector1; \n"\
 	"\n"\
 	"# transform the light vector 2 with U, V, W \n"\
-	"DP3 TempTransLightV2.x, TempTangent, TempLightVector2; \n"\
-	"DP3 TempTransLightV2.y, TempBinormal, TempLightVector2; \n"\
-	"DP3 TempTransLightV2.z, TempNormal, TempLightVector2; \n"\
+	"DP3 TempTransLightV2.x, InTangent, TempLightVector2; \n"\
+	"DP3 TempTransLightV2.y, InBinormal, TempLightVector2; \n"\
+	"DP3 TempTransLightV2.z, InNormal, TempLightVector2; \n"\
 	"\n"\
 	"# transform the eye vector with U, V, W \n"\
-	"DP3 TempEyeVector.x, TempTangent, Temp; \n"\
-	"DP3 TempEyeVector.y, TempBinormal, Temp; \n"\
-	"DP3 TempEyeVector.z, TempNormal, Temp; \n"\
+	"DP3 TempEyeVector.x, InTangent, Temp; \n"\
+	"DP3 TempEyeVector.y, InBinormal, Temp; \n"\
+	"DP3 TempEyeVector.z, InNormal, Temp; \n"\
 	"\n"\
 	"# normalize light vector 1 \n"\
 	"DP3 TempTransLightV1.w, TempTransLightV1, TempTransLightV1; \n"\
@@ -311,17 +287,6 @@ void COpenGLParallaxMapRenderer::OnSetConstants(IMaterialRendererServices* servi
 	const core::matrix4& tWorld = driver->getTransform(video::ETS_WORLD).getTransposed();
 	services->setVertexShaderConstant(tWorld.pointer(), 0, 4);
 
-	// The  viewpoint is at (0., 0., 0.) in eye space.
-	// Turning this into a vector [0 0 0 1] and multiply it by
-	// the inverse of the view matrix, the resulting vector is the
-	// object space location of the camera.
-
-	f32 floats[4] = {0.0f,0.0f,0.0f,1.0f};
-	core::matrix4 minv(driver->getTransform(video::ETS_VIEW));
-	minv.makeInverse();
-	minv.multiplyWith1x4Matrix(floats);
-	services->setVertexShaderConstant(floats, 16, 1);
-
 	// set transposed worldViewProj matrix
 	core::matrix4 worldViewProj(driver->getTransform(video::ETS_PROJECTION));
 	worldViewProj *= driver->getTransform(video::ETS_VIEW);
@@ -333,6 +298,10 @@ void COpenGLParallaxMapRenderer::OnSetConstants(IMaterialRendererServices* servi
 	// and set them as constants
 
 	u32 cnt = driver->getDynamicLightCount();
+
+	// Load the inverse world matrix.
+	core::matrix4 invWorldMat;
+	driver->getTransform(video::ETS_WORLD).getInverse(invWorldMat);
 
 	for (u32 i=0; i<2; ++i)
 	{
@@ -348,12 +317,24 @@ void COpenGLParallaxMapRenderer::OnSetConstants(IMaterialRendererServices* servi
 
 		light.DiffuseColor.a = 1.0f/(light.Radius*light.Radius); // set attenuation
 
+		// Transform the light by the inverse world matrix to get it into object space.
+		invWorldMat.transformVect(light.Position);
+		
 		services->setVertexShaderConstant(
 			reinterpret_cast<const f32*>(&light.Position), 12+(i*2), 1);
 
 		services->setVertexShaderConstant(
 			reinterpret_cast<const f32*>(&light.DiffuseColor), 13+(i*2), 1);
 	}
+
+	// Obtain the view position by transforming 0,0,0 by the inverse view matrix
+	// and then multiply this by the inverse world matrix.
+	core::vector3df viewPos(0.0f, 0.0f, 0.0f);
+	core::matrix4 inverseView;
+	driver->getTransform(video::ETS_VIEW).getInverse(inverseView);
+	inverseView.transformVect(viewPos);
+	invWorldMat.transformVect(viewPos);
+	services->setVertexShaderConstant(reinterpret_cast<const f32*>(&viewPos.X), 16, 1);
 
 	// set scale factor
 	f32 factor = 0.02f; // default value

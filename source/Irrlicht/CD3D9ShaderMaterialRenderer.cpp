@@ -325,7 +325,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShader(LPCSTR pSrcData,
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 
@@ -368,7 +368,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShaderFromFile(LPCSTR pSrcF
 		#endif
 
 		// invoke static linked function
-		return D3DXAssembleShaderFromFile(pSrcFile, pDefines, pInclude, Flags,
+		return D3DXAssembleShaderFromFileA(pSrcFile, pDefines, pInclude, Flags,
 										  ppShader, ppErrorMsgs);
 	#else
 	{
@@ -385,7 +385,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXAssembleShaderFromFile(LPCSTR pSrcF
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 
@@ -446,7 +446,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShader(LPCSTR pSrcData, UINT
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 
@@ -489,7 +489,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShaderFromFile(LPCSTR pSrcFi
 		#endif
 
 		// invoke static linked function
-		return D3DXCompileShaderFromFile(pSrcFile, pDefines, pInclude, pFunctionName, pProfile, Flags, ppShader, ppErrorMsgs, ppConstantTable);
+		return D3DXCompileShaderFromFileA(pSrcFile, pDefines, pInclude, pFunctionName, pProfile, Flags, ppShader, ppErrorMsgs, ppConstantTable);
 	#else
 	{
 		// try to load shader functions from the dll and print error if failed.
@@ -506,7 +506,7 @@ HRESULT CD3D9ShaderMaterialRenderer::stubD3DXCompileShaderFromFile(LPCSTR pSrcFi
 		if (!pFn && !LoadFailed)
 		{
 			// try to load dll
-			core::stringc strDllName = "d3dx9_";
+			io::path strDllName = "d3dx9_";
 			strDllName += (int)D3DX_SDK_VERSION;
 			strDllName += ".dll";
 

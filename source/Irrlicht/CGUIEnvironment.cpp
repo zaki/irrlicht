@@ -978,7 +978,7 @@ IGUIElement* CGUIEnvironment::addModalScreen(IGUIElement* parent)
 
 //! Adds a message box.
 IGUIWindow* CGUIEnvironment::addMessageBox(const wchar_t* caption, const wchar_t* text,
-	bool modal, s32 flag, IGUIElement* parent, s32 id)
+	bool modal, s32 flag, IGUIElement* parent, s32 id, video::ITexture* image)
 {
 	if (!CurrentSkin)
 		return 0;
@@ -990,8 +990,8 @@ IGUIWindow* CGUIEnvironment::addMessageBox(const wchar_t* caption, const wchar_t
 
 	screenDim.Width = parent->getAbsolutePosition().getWidth();
 	screenDim.Height = parent->getAbsolutePosition().getHeight();
-	msgBoxDim.Width = CurrentSkin->getSize(gui::EGDS_MESSAGE_BOX_WIDTH);
-	msgBoxDim.Height = CurrentSkin->getSize(gui::EGDS_MESSAGE_BOX_HEIGHT);
+	msgBoxDim.Width = 2;
+	msgBoxDim.Height = 2;
 
 	rect.UpperLeftCorner.X = (screenDim.Width - msgBoxDim.Width) / 2;
 	rect.UpperLeftCorner.Y = (screenDim.Height - msgBoxDim.Height) / 2;
@@ -1005,7 +1005,7 @@ IGUIWindow* CGUIEnvironment::addMessageBox(const wchar_t* caption, const wchar_t
 	}
 
 	IGUIWindow* win = new CGUIMessageBox(this, caption, text, flag,
-		parent, id, rect);
+		parent, id, rect, image);
 
 	win->drop();
 	return win;

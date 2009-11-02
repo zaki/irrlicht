@@ -24,7 +24,7 @@ CGUIContextMenu::CGUIContextMenu(IGUIEnvironment* environment,
 				IGUIElement* parent, s32 id,
 				core::rect<s32> rectangle, bool getFocus, bool allowFocus)
 	: IGUIContextMenu(environment, parent, id, rectangle), EventParent(0), LastFont(0),
-		HighLighted(-1), ChangeTime(0), AllowFocus(allowFocus)
+		CloseHandling(ECMC_REMOVE), HighLighted(-1), ChangeTime(0), AllowFocus(allowFocus)
 {
 	#ifdef _DEBUG
 	setDebugName("CGUIContextMenu");
@@ -51,6 +51,17 @@ CGUIContextMenu::~CGUIContextMenu()
 		LastFont->drop();
 }
 
+//! set behaviour when menus are closed
+void CGUIContextMenu::setCloseHandling(ECONTEXT_MENU_CLOSE onClose)
+{
+	CloseHandling = onClose;
+}
+
+//! get current behaviour when the menue will be closed
+ECONTEXT_MENU_CLOSE CGUIContextMenu::getCloseHandling() const
+{
+	return CloseHandling;
+}
 
 //! Returns amount of menu items
 u32 CGUIContextMenu::getItemCount() const
@@ -60,29 +71,57 @@ u32 CGUIContextMenu::getItemCount() const
 
 
 //! Adds a menu item.
-u32 CGUIContextMenu::addItem(const wchar_t* text, s32 id, bool enabled, bool hasSubMenu, bool checked)
+u32 CGUIContextMenu::addItem(const wchar_t* text, s32 commandId, bool enabled, bool hasSubMenu, bool checked, bool autoChecking)
+{
+    return insertItem(Items.size(), text, commandId, enabled, hasSubMenu, checked, autoChecking);
+}
+
+//! Insert a menu item at specified position.
+u32 CGUIContextMenu::insertItem(u32 idx, const wchar_t* text, s32 commandId, bool enabled,
+    bool hasSubMenu, bool checked, bool autoChecking)
 {
 	SItem s;
 	s.Enabled = enabled;
 	s.Checked = checked;
+	s.AutoChecking = autoChecking;
 	s.Text = text;
 	s.IsSeparator = (text == 0);
 	s.SubMenu = 0;
-	s.CommandId = id;
+	s.CommandId = commandId;
 
 	if (hasSubMenu)
 	{
-		s.SubMenu = new CGUIContextMenu(Environment, this, id,
+		s.SubMenu = new CGUIContextMenu(Environment, this, commandId,
 			core::rect<s32>(0,0,100,100), false, false);
 		s.SubMenu->setVisible(false);
 	}
 
-	Items.push_back(s);
+    u32 result = idx;
+    if ( idx < Items.size() )
+    {
+        Items.insert(s, idx);
+    }
+    else
+    {
+        Items.push_back(s);
+        result = Items.size() - 1;
+    }
 
 	recalculateSize();
-	return Items.size() - 1;
+	return result;
 }
 
+s32 CGUIContextMenu::findItemWithCommandId(s32 commandId, u32 idxStartSearch) const
+{
+	for ( u32 i=idxStartSearch; i<Items.size(); ++i )
+	{
+		if ( Items[i].CommandId == commandId )
+		{
+			return (s32)i;
+		}
+	}
+	return -1;
+}
 
 //! Adds a sub menu from an element that already exists.
 void CGUIContextMenu::setSubMenu(u32 index, CGUIContextMenu* menu)
@@ -114,7 +153,7 @@ void CGUIContextMenu::setSubMenu(u32 index, CGUIContextMenu* menu)
 //! Adds a separator item to the menu
 void CGUIContextMenu::addSeparator()
 {
-	addItem(0, -1, true, false, false);
+	addItem(0, -1, true, false, false, false);
 }
 
 
@@ -136,6 +175,24 @@ void CGUIContextMenu::setItemText(u32 idx, const wchar_t* text)
 
 	Items[idx].Text = text;
 	recalculateSize();
+}
+
+//! should the element change the checked status on clicking
+void CGUIContextMenu::setItemAutoChecking(u32 idx, bool autoChecking)
+{
+	if ( idx >= Items.size())
+		return;
+
+	Items[idx].AutoChecking = autoChecking;
+}
+
+//! does the element change the checked status on clicking
+bool CGUIContextMenu::getItemAutoChecking(u32 idx) const
+{
+	if (idx >= Items.size())
+		return false;
+
+	return Items[idx].AutoChecking;
 }
 
 
@@ -231,8 +288,17 @@ bool CGUIContextMenu::OnEvent(const SEvent& event)
 				if (event.GUIEvent.Caller == this && !isMyChild(event.GUIEvent.Element) && AllowFocus)
 				{
 					// set event parent of submenus
-					setEventParent(Parent);
-					remove();
+					setEventParent(EventParent ? EventParent : Parent);
+
+					if ( CloseHandling & ECMC_HIDE )
+					{
+						setVisible(false);
+					}
+					if ( CloseHandling & ECMC_REMOVE )
+					{
+ 						remove();
+					}
+
 					return false;
 				}
 				break;
@@ -326,16 +392,20 @@ u32 CGUIContextMenu::sendClick(const core::position2d<s32>& p)
 			Items[HighLighted].SubMenu)
 			return 2;
 
+		if ( Items[HighLighted].AutoChecking )
+		{
+			Items[HighLighted].Checked = Items[HighLighted].Checked ? false : true;
+		}
+
 		SEvent event;
 		event.EventType = EET_GUI_EVENT;
 		event.GUIEvent.Caller = this;
 		event.GUIEvent.Element = 0;
 		event.GUIEvent.EventType = EGET_MENU_ITEM_SELECTED;
-		if (Parent)
-			Parent->OnEvent(event);
-		else
 		if (EventParent)
-			EventParent->OnEvent(event);
+ 			EventParent->OnEvent(event);
+		else if (Parent)
+			Parent->OnEvent(event);
 
 		return 1;
 	}
@@ -644,6 +714,8 @@ void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeRe
 		out->addInt("ParentItem", i);
 	}
 
+	out->addInt("CloseHandling", (s32)CloseHandling);
+
 	// write out the item list
 	out->addInt("ItemCount", Items.size());
 
@@ -662,6 +734,10 @@ void CGUIContextMenu::serializeAttributes(io::IAttributes* out, io::SAttributeRe
 			out->addInt(tmp.c_str(), Items[i].CommandId);
 			tmp = "Enabled"; tmp += i;
 			out->addBool(tmp.c_str(), Items[i].Enabled);
+			tmp = "Checked"; tmp += i;
+			out->addBool(tmp.c_str(), Items[i].Checked);
+			tmp = "AutoChecking"; tmp += i;
+			out->addBool(tmp.c_str(), Items[i].AutoChecking);
 		}
 	}
 }
@@ -678,6 +754,7 @@ void CGUIContextMenu::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	if (Parent && ( Parent->getType() == EGUIET_CONTEXT_MENU || Parent->getType() == EGUIET_MENU ) )
 		((CGUIContextMenu*)Parent)->setSubMenu(in->getAttributeAsInt("ParentItem"),this);
 
+	CloseHandling = (ECONTEXT_MENU_CLOSE)in->getAttributeAsInt("CloseHandling");
 
 	removeAllItems();
 
@@ -688,28 +765,37 @@ void CGUIContextMenu::deserializeAttributes(io::IAttributes* in, io::SAttributeR
 	{
 		core::stringc tmp;
 		core::stringw txt;
-		s32 commandid;
-		bool enabled;
-		bool checked;
+		s32 commandid=-1;
+		bool enabled=true;
+		bool checked=false;
+		bool autochecking=false;
 
 		tmp = "IsSeparator"; tmp += i;
-		if ( in->getAttributeAsBool(tmp.c_str()) )
+		if ( in->existsAttribute(tmp.c_str()) && in->getAttributeAsBool(tmp.c_str()) )
 			addSeparator();
 		else
 		{
 			tmp = "Text"; tmp += i;
-			txt = in->getAttributeAsStringW(tmp.c_str());
+			if ( in->existsAttribute(tmp.c_str()) )
+				txt = in->getAttributeAsStringW(tmp.c_str());
 
 			tmp = "CommandID"; tmp += i;
-			commandid = in->getAttributeAsInt(tmp.c_str());
+			if ( in->existsAttribute(tmp.c_str()) )
+				commandid = in->getAttributeAsInt(tmp.c_str());
 
 			tmp = "Enabled"; tmp += i;
-			enabled = in->getAttributeAsBool(tmp.c_str());
+			if ( in->existsAttribute(tmp.c_str()) )
+				enabled = in->getAttributeAsBool(tmp.c_str());
 
 			tmp = "Checked"; tmp += i;
-			checked = in->getAttributeAsBool(tmp.c_str());
+			if ( in->existsAttribute(tmp.c_str()) )
+				checked = in->getAttributeAsBool(tmp.c_str());
 
-			addItem(core::stringw(txt.c_str()).c_str(), commandid, enabled, false, checked);
+ 			tmp = "AutoChecking"; tmp += i;
+			if ( in->existsAttribute(tmp.c_str()) )
+				autochecking = in->getAttributeAsBool(tmp.c_str());
+
+ 			addItem(core::stringw(txt.c_str()).c_str(), commandid, enabled, false, checked, autochecking);
 		}
 	}
 

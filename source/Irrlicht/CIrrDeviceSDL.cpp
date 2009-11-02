@@ -59,8 +59,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 	Screen((SDL_Surface*)param.WindowId), SDL_Flags(SDL_ANYFORMAT),
 	MouseX(0), MouseY(0), MouseButtonStates(0),
 	Width(param.WindowSize.Width), Height(param.WindowSize.Height),
-	Close(0), Resizable(false),
-	WindowHasFocus(false), WindowMinimized(false)
+	Resizable(false), WindowHasFocus(false), WindowMinimized(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CIrrDeviceSDL");
@@ -75,7 +74,7 @@ CIrrDeviceSDL::CIrrDeviceSDL(const SIrrlichtCreationParameters& param)
 				SDL_INIT_NOPARACHUTE ) < 0)
 	{
 		os::Printer::log( "Unable to initialize SDL!", SDL_GetError());
-		Close = 1;
+		Close = true;
 	}
 
 #if defined(_IRR_WINDOWS_)

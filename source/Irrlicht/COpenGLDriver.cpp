@@ -77,7 +77,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	if (AntiAlias > 1)
 	{
 		// Create a window to test antialiasing support
-		const c8* ClassName = "GLCIrrDeviceWin32";
+		const fschar_t* ClassName = __TEXT("GLCIrrDeviceWin32");
 		HINSTANCE lhInstance = GetModuleHandle(0);
 
 		// Register Class
@@ -116,7 +116,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
 		const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
-		HWND temporary_wnd=CreateWindow(ClassName, "", style, windowLeft, windowTop,
+		HWND temporary_wnd=CreateWindow(ClassName, __TEXT(""), style, windowLeft, windowTop,
 			realWidth, realHeight, NULL, NULL, lhInstance, NULL);
 
 		if (!temporary_wnd)
@@ -1435,7 +1435,17 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 
 	// draw everything
 	this->setActiveTexture(0, Material.getTexture(0));
-	setRenderStates2DMode(false, (Material.getTexture(0) != 0), false);
+	if (Material.MaterialType==EMT_ONETEXTURE_BLEND)
+	{
+		E_BLEND_FACTOR srcFact;
+		E_BLEND_FACTOR dstFact;
+		E_MODULATE_FUNC modulo;
+		u32 alphaSource;
+		unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
+		setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), alphaSource&video::EAS_TEXTURE);
+	}
+	else
+		setRenderStates2DMode(Material.MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL);
 
 	if (MultiTextureExtension)
 		extGlClientActiveTexture(GL_TEXTURE0_ARB);
@@ -3499,6 +3509,11 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 	UserClipPlaneEnabled[index]=enable;
 }
 
+
+core::dimension2du COpenGLDriver::getMaxTextureSize() const
+{
+	return core::dimension2du(MaxTextureSize, MaxTextureSize);
+}
 
 } // end namespace
 } // end namespace

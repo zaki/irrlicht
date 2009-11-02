@@ -81,9 +81,13 @@ namespace scene
 		\return True if successful, false if not. */
 		virtual bool setFrameLoop(s32 begin, s32 end) = 0;
 
-		//! Sets the speed with witch the animation is played.
+		//! Sets the speed with which the animation is played.
 		/** \param framesPerSecond: Frames per second played. */
 		virtual void setAnimationSpeed(f32 framesPerSecond) = 0;
+
+		//! Gets the speed with which the animation is played.
+		/** \return Frames per second played. */
+		virtual f32 getAnimationSpeed() const =0;
 
 		//! Creates shadow volume scene node as child of this node.
 		/** The shadow can be rendered using the ZPass or the zfail

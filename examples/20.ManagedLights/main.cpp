@@ -1,8 +1,10 @@
+/** Example 020 Managed Lights
 
-// Written by Colin MacDonald
-// Copyright (C) 2002-2009 Nikolaus Gebhardt
-// This file is part of the "Irrlicht Engine".
-// For conditions of distribution and use, see copyright notice in irrlicht.h
+Written by Colin MacDonald. This tutorial explains the use of the Light Manager
+of Irrlicht. It enables the use of more dynamic light sources than the actual
+hardware supports. Further applications of the Light Manager, such as per scene
+node callbacks, are left out for simplicity of the example.
+*/
 
 #include <irrlicht.h>
 #include <iostream>
@@ -273,7 +275,7 @@ private:
 };
 
 
-/*!
+/*
 */
 int main(int argumentCount, char * argumentValues[])
 {
@@ -328,7 +330,9 @@ int main(int argumentCount, char * argumentValues[])
 	guienv->addStaticText(L"2 - Closest 3 lights", core::rect<s32>(10,30,200,50));
 	guienv->addStaticText(L"3 - Lights in zone", core::rect<s32>(10,50,200,70));
 
-	// Add several "zones".  You could use this technique to light individual rooms, for example.
+/*
+Add several "zones".  You could use this technique to light individual rooms, for example.
+*/
 	for(f32 zoneX = -100.f; zoneX <= 100.f; zoneX += 50.f)
 		for(f32 zoneY = -60.f; zoneY <= 60.f; zoneY += 60.f)
 		{
@@ -403,3 +407,7 @@ int main(int argumentCount, char * argumentValues[])
 	device->drop();
 	return 0;
 }
+
+/*
+**/
+

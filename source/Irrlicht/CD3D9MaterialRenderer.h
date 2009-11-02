@@ -377,7 +377,7 @@ public:
 			pID3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
 			// 127 is required by EMT_TRANSPARENT_ALPHA_CHANNEL_REF
-			pID3DDevice->SetRenderState(D3DRS_ALPHAREF, 127); 
+			pID3DDevice->SetRenderState(D3DRS_ALPHAREF, 127);
 			pID3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
 			pID3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		}
@@ -431,10 +431,10 @@ public:
 			if (material.MaterialType == EMT_LIGHTMAP_ADD)
 				pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_ADD);
 			else
-			if (material.MaterialType == EMT_LIGHTMAP_M4)
+			if (material.MaterialType == EMT_LIGHTMAP_M4 || material.MaterialType == EMT_LIGHTMAP_LIGHTING_M4)
 				pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE4X);
 			else
-			if (material.MaterialType == EMT_LIGHTMAP_M2)
+			if (material.MaterialType == EMT_LIGHTMAP_M2 || material.MaterialType == EMT_LIGHTMAP_LIGHTING_M2)
 				pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE2X);
 			else
 				pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
