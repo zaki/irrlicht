@@ -404,7 +404,7 @@ namespace video
 		example in picture edit programs. To avoid this problem, you
 		could use the makeColorKeyTexture method, which takes the
 		position of a pixel instead a color value.
-		\param \deprecated zeroTexels If set to true, then any texels that match
+		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
 		to release 1.5 and is provided for backwards compatibility only.*/
@@ -420,7 +420,7 @@ namespace video
 		\param colorKeyPixelPos Position of a pixel with the color key
 		color. Every texel with this color will become fully transparent as
 		described above.
-		\deprecated \param zeroTexels If set to true, then any texels that match
+		\param zeroTexels \deprecated If set to true, then any texels that match
 		the color key will have their color, as well as their alpha, set to zero
 		(i.e. black). This behaviour matches the legacy (buggy) behaviour prior
 		to release 1.5 and is provided for backwards compatibility only.*/

@@ -70,7 +70,7 @@ namespace scene
 		virtual void scale(IMeshBuffer* buffer, const core::vector3df& factor) const = 0;
 
 		//! Scales the actual mesh, not a scene node.
-		/** \deprecated
+		/** \deprecated Use scale() instead
 		\param mesh Mesh on which the operation is performed.
 		\param factor Scale factor for each axis. */
 		virtual void scaleMesh(IMesh* mesh, const core::vector3df& factor) const {return scale(mesh,factor);}
@@ -98,7 +98,7 @@ namespace scene
 		virtual void transform(IMeshBuffer* buffer, const core::matrix4& m) const = 0;
 
 		//! Applies a transformation to a mesh
-		/** \deprecated
+		/** \deprecated Use transform() instead
 		\param mesh Mesh on which the operation is performed.
 		\param m transformation matrix. */
 		virtual void transformMesh(IMesh* mesh, const core::matrix4& m) const {return transform(mesh,m);}

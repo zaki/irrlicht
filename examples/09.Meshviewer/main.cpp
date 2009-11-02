@@ -556,11 +556,9 @@ public:
 Most of the hard work is done. We only need to create the Irrlicht Engine
 device and all the buttons, menus and toolbars. We start up the engine as
 usual, using createDevice(). To make our application catch events, we set our
-eventreceiver as parameter. The #ifdef WIN32 preprocessor commands are not
-necessary, but I included them to make the tutorial use DirectX on Windows and
-OpenGL on all other platforms like Linux. As you can see, there is also a
-unusual call to IrrlichtDevice::setResizeAble(). This makes the render window
-resizeable, which is quite useful for a mesh viewer.
+eventreceiver as parameter. As you can see, there is also a call to
+IrrlichtDevice::setResizeable(). This makes the render window resizeable, which
+is quite useful for a mesh viewer.
 */
 int main(int argc, char* argv[])
 {

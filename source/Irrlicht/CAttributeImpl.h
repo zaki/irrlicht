@@ -1850,6 +1850,9 @@ public:
 
 	virtual void setTexture(video::ITexture* value)
 	{
+		if ( value == Value )
+			return;
+		
 		if (Value)
 			Value->drop();
 

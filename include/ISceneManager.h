@@ -209,7 +209,7 @@ namespace scene
 		 *        a dummy object in this mode. Meshes included in the
 		 *        scene will be added into the scene manager with the
 		 *        following naming scheme:
-		 *        path/to/file/file.dea#meshname. The loading of such
+		 *        "path/to/file/file.dea#meshname". The loading of such
 		 *        meshes is logged. Currently, this loader is able to
 		 *        create meshes (made of only polygons), lights, and
 		 *        cameras. Materials and animations are currently not
