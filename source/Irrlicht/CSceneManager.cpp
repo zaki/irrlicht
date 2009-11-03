@@ -1818,8 +1818,8 @@ ISceneNode* CSceneManager::getSceneNodeFromName(const char* name, ISceneNode* st
 
 	ISceneNode* node = 0;
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 	for (; it!=list.end(); ++it)
 	{
 		node = getSceneNodeFromName(name, *it);
@@ -1842,8 +1842,8 @@ ISceneNode* CSceneManager::getSceneNodeFromId(s32 id, ISceneNode* start)
 
 	ISceneNode* node = 0;
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 	for (; it!=list.end(); ++it)
 	{
 		node = getSceneNodeFromId(id, *it);
@@ -1866,8 +1866,8 @@ ISceneNode* CSceneManager::getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, IS
 
 	ISceneNode* node = 0;
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 	for (; it!=list.end(); ++it)
 	{
 		node = getSceneNodeFromType(type, *it);
@@ -1887,8 +1887,8 @@ void CSceneManager::getSceneNodesFromType(ESCENE_NODE_TYPE type, core::array<sce
 	if (start->getType() == type || ESNT_ANY == type)
 		outNodes.push_back(start);
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 
 	for (; it!=list.end(); ++it)
 	{
@@ -2394,7 +2394,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 		writer->writeElement(animatorElement);
 		writer->writeLineBreak();
 
-		core::list<ISceneNodeAnimator*>::ConstIterator it = node->getAnimators().begin();
+		ISceneNodeAnimatorList::ConstIterator it = node->getAnimators().begin();
 		for (; it != node->getAnimators().end(); ++it)
 		{
 			attr->clear();
@@ -2434,7 +2434,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 
 	// write children
 
-	core::list<ISceneNode*>::ConstIterator it = node->getChildren().begin();
+	ISceneNodeList::ConstIterator it = node->getChildren().begin();
 	for (; it != node->getChildren().end(); ++it)
 		writeSceneNode(writer, (*it), userDataSerializer);
 
