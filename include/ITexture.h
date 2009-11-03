@@ -71,23 +71,6 @@ enum E_TEXTURE_CREATION_FLAG
 };
 
 
-//! Helper function, helps to get the desired texture creation format from the flags.
-/** \return Either ETCF_ALWAYS_32_BIT, ETCF_ALWAYS_16_BIT,
-ETCF_OPTIMIZED_FOR_QUALITY, or ETCF_OPTIMIZED_FOR_SPEED. */
-inline E_TEXTURE_CREATION_FLAG getTextureFormatFromFlags(u32 flags)
-{
-	if (flags & ETCF_OPTIMIZED_FOR_SPEED)
-		return ETCF_OPTIMIZED_FOR_SPEED;
-	if (flags & ETCF_ALWAYS_16_BIT)
-		return ETCF_ALWAYS_16_BIT;
-	if (flags & ETCF_ALWAYS_32_BIT)
-		return ETCF_ALWAYS_32_BIT;
-	if (flags & ETCF_OPTIMIZED_FOR_QUALITY)
-		return ETCF_OPTIMIZED_FOR_QUALITY;
-	return ETCF_OPTIMIZED_FOR_SPEED;
-}
-
-
 //! Interface of a Video Driver dependent Texture.
 /** An ITexture is created by an IVideoDriver by using IVideoDriver::addTexture
 or IVideoDriver::getTexture. After that, the texture may only be used by this
@@ -177,6 +160,22 @@ public:
 	const io::path& getName() const { return Name; }
 
 protected:
+
+	//! Helper function, helps to get the desired texture creation format from the flags.
+	/** \return Either ETCF_ALWAYS_32_BIT, ETCF_ALWAYS_16_BIT,
+	ETCF_OPTIMIZED_FOR_QUALITY, or ETCF_OPTIMIZED_FOR_SPEED. */
+	inline E_TEXTURE_CREATION_FLAG getTextureFormatFromFlags(u32 flags)
+	{
+		if (flags & ETCF_OPTIMIZED_FOR_SPEED)
+			return ETCF_OPTIMIZED_FOR_SPEED;
+		if (flags & ETCF_ALWAYS_16_BIT)
+			return ETCF_ALWAYS_16_BIT;
+		if (flags & ETCF_ALWAYS_32_BIT)
+			return ETCF_ALWAYS_32_BIT;
+		if (flags & ETCF_OPTIMIZED_FOR_QUALITY)
+			return ETCF_OPTIMIZED_FOR_QUALITY;
+		return ETCF_OPTIMIZED_FOR_SPEED;
+	}
 
 	io::path Name;
 };
