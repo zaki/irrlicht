@@ -169,6 +169,10 @@ public:
 
 	//! Returns amount of elements in list.
 	/** \return Amount of elements in the list. */
+	u32 size() const
+	{
+		return Size;
+	}
 	u32 getSize() const
 	{
 		return Size;
