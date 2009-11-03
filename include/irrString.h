@@ -1032,6 +1032,55 @@ public:
 		return used > 1 ? array[used-2] : 0;
 	}
 
+	//! split string into parts.
+	/** This method will split a string at certain delimiter characters
+	into the container passed in as reference. The type of the container
+	has to be given as template parameter. It must provide a push_back and
+	a size method.
+	\param ret The result container
+	\param c C-style string of delimiter characters
+	\param count Number of delimiter characters
+	\param ignoreEmptyTokens Flag to avoid empty substrings in the result
+	container. If two delimiters occur without a character in between, an
+	empty substring would be placed in the result. If this flag is set,
+	only non-empty strings are stored.
+	\param keepSeparators Flag which allows to add the separator to the
+	result string. If this flag is true, the concatenation of the
+	substrings results in the original string. Otherwise, only the
+	characters between the delimiters are returned.
+	\return The number of resulting substrings
+	*/
+	template<class container>
+	u32 split(container& ret, const T* const c, u32 count=1, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
+	{
+		if (!c)
+			return 0;
+
+		const u32 oldSize=ret.size();
+		u32 lastpos = 0;
+		bool lastWasSeparator = false;
+		for (u32 i=0; i<used; ++i)
+		{
+			bool foundSeparator = false;
+			for (u32 j=0; j<count; ++j)
+			{
+				if (array[i] == c[j])
+				{
+					if ((!ignoreEmptyTokens || i - lastpos != 0) &&
+							!lastWasSeparator)
+						ret.push_back(string<T>(&array[lastpos], i - lastpos));
+					foundSeparator = true;
+					lastpos = (keepSeparators ? i : i + 1);
+					break;
+				}
+			}
+			lastWasSeparator = foundSeparator;
+		}
+		if ((used - 1) > lastpos)
+			ret.push_back(string<T>(&array[lastpos], (used - 1) - lastpos));
+		return ret.size()-oldSize;
+	}
+
 private:
 
 	//! Reallocate the array, make it bigger or smaller

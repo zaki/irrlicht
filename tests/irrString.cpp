@@ -8,6 +8,17 @@
 using namespace irr;
 using namespace core;
 
+static bool testSplit()
+{
+	logTestString("Test stringw::split()\n");
+	core::stringw teststring(L"[b]this [/b] is a [color=0xff000000]test[/color].");
+	core::list<core::stringw> parts1;
+	teststring.split<core::list<core::stringw> >(parts1, L"[");
+	core::list<core::stringw> parts2;
+	teststring.split<core::list<core::stringw> >(parts2, L"[", 1, false, true);
+	return (parts1.getSize()==4) && (parts2.getSize()==5);
+}
+
 // Test the functionality of irrString
 /** Validation is done with asserts() against expected results. */
 bool testIrrString(void)
@@ -50,6 +61,7 @@ bool testIrrString(void)
 		assert(empty.size()==0);
 		assert(empty[0]==0);
 		assert(*(empty.c_str())==0);
+		assert(allExpected &= testSplit());
 	}
 
 	logTestString("Test io::path\n");
