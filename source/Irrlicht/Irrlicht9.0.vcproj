@@ -179,7 +179,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib opengl32.lib winmm.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib opengl32.lib winmm.lib"
 				OutputFile="..\..\bin\Win32-visualstudio\Irrlicht.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -917,6 +917,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\IXMLWriter.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\path.h"
 					>
 				</File>
 			</Filter>
@@ -2158,6 +2162,10 @@
 						RelativePath="glext.h"
 						>
 					</File>
+					<File
+						RelativePath=".\wglext.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="Direct3D8"
@@ -3092,6 +3100,14 @@
 					>
 				</File>
 				<File
+					RelativePath="CMountPointReader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="CMountPointReader.h"
+					>
+				</File>
+				<File
 					RelativePath="CPakReader.cpp"
 					>
 				</File>
@@ -3113,14 +3129,6 @@
 				</File>
 				<File
 					RelativePath="CTarReader.h"
-					>
-				</File>
-				<File
-					RelativePath="CMountPointReader.cpp"
-					>
-				</File>
-				<File
-					RelativePath="CMountPointReader.h"
 					>
 				</File>
 				<File
