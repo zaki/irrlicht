@@ -1442,7 +1442,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		E_MODULATE_FUNC modulo;
 		u32 alphaSource;
 		unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
-		setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), alphaSource&video::EAS_TEXTURE);
+		setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource&video::EAS_TEXTURE) != 0);
 	}
 	else
 		setRenderStates2DMode(Material.MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL);
