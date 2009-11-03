@@ -110,7 +110,7 @@ bool CCameraSceneNode::OnEvent(const SEvent& event)
 
 	// send events to event receiving animators
 
-	core::list<ISceneNodeAnimator*>::Iterator ait = Animators.begin();
+	ISceneNodeAnimatorList::Iterator ait = Animators.begin();
 	
 	for (; ait != Animators.end(); ++ait)
 		if ((*ait)->isEventReceiverEnabled() && (*ait)->OnEvent(event))
