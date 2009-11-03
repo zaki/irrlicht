@@ -63,6 +63,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(sceneCollisionManager);
 	TEST(testVector3d);
 	TEST(testVector2d);
+	TEST(testIrrString);
 	TEST(planeMatrix);
 	TEST(fast_atof);
 	TEST(line2dIntersectWith);
@@ -73,7 +74,6 @@ int main(int argumentCount, char * arguments[])
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
 	TEST(textureRenderStates);
-	TEST(terrainSceneNode);
 	TEST(burningsVideo);
 	TEST(cursorSetVisible);
 	TEST(transparentAlphaChannelRef);
@@ -92,8 +92,11 @@ int main(int argumentCount, char * arguments[])
 	TEST(enumerateImageManipulators);
 	TEST(testGeometryCreator);
 	TEST(makeColorKeyTexture);
-	TEST(lightMaps);
 	TEST(testXML);
+	// TODO: Needs to be checked first.
+//	TEST(projectionMatrix);
+	TEST(terrainSceneNode);
+	TEST(lightMaps);
 
 	const unsigned int numberOfTests = tests.size();
 

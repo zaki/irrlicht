@@ -232,9 +232,13 @@ public:
 		if (this == &other)
 			return *this;
 
-		allocator.deallocate(array); // delete [] array;
-		allocated = used = other.size()+1;
-		array = allocator.allocate(used); //new T[used];
+		used = other.size()+1;
+		if (used>allocated)
+		{
+			allocator.deallocate(array); // delete [] array;
+			allocated = used;
+			array = allocator.allocate(used); //new T[used];
+		}
 
 		const T* p = other.c_str();
 		for (u32 i=0; i<used; ++i, ++p)
@@ -273,24 +277,28 @@ public:
 
 		u32 len = 0;
 		const B* p = c;
-		while(*p)
+		do
 		{
 			++len;
-			++p;
-		}
+		} while(*p++);
 
-		// we'll take the old string for a while, because the new
+		// we'll keep the old string for a while, because the new
 		// string could be a part of the current string.
 		T* oldArray = array;
 
-		++len;
-		allocated = used = len;
-		array = allocator.allocate(used); //new T[used];
+		used = len;
+		if (used>allocated)
+		{
+			allocated = used;
+			array = allocator.allocate(used); //new T[used];
+		}
 
 		for (u32 l = 0; l<len; ++l)
 			array[l] = (T)c[l];
 
-		allocator.deallocate(oldArray); // delete [] oldArray;
+		if (oldArray != array)
+			allocator.deallocate(oldArray); // delete [] oldArray;
+
 		return *this;
 	}
 
@@ -366,10 +374,6 @@ public:
 			s32 diff = array[i] - other.array[i];
 			if ( diff )
 				return diff < 0;
-/*
-			if (array[i] != other.array[i])
-				return (array[i] < other.array[i]);
-*/
 		}
 
 		return used < other.used;
@@ -390,8 +394,9 @@ public:
 	}
 
 
-	//! Returns length of string
-	/** \return Length of the string in characters. */
+	//! Returns length of the string's content
+	/** \return Length of the string's content in characters, excluding
+	the trailing NUL. */
 	u32 size() const
 	{
 		return used-1;
@@ -399,7 +404,7 @@ public:
 
 
 	//! Returns character string
-	/** \return pointer to C-style zero terminated string. */
+	/** \return pointer to C-style NUL terminated string. */
 	const T* c_str() const
 	{
 		return array;
