@@ -93,6 +93,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(testGeometryCreator);
 	TEST(makeColorKeyTexture);
 	TEST(testXML);
+	TEST(renderTargetTexture);
 	// TODO: Needs to be checked first.
 //	TEST(projectionMatrix);
 	TEST(terrainSceneNode);
