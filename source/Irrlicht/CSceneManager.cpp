@@ -1329,7 +1329,7 @@ void CSceneManager::drawAll()
 		driver->setTransform ( video::ETS_PROJECTION, core::IdentityMatrix );
 		driver->setTransform ( video::ETS_VIEW, core::IdentityMatrix );
 		driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
-		for (i=video::ETS_COUNT; i>video::ETS_TEXTURE_0; --i)
+		for (i=video::ETS_COUNT-1; i>=video::ETS_TEXTURE_0; --i)
 			driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
 	}
 
