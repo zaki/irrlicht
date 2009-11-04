@@ -1320,6 +1320,8 @@ void CSceneManager::drawAll()
 	Parameters.setAttribute ( "drawn_transparent", 0 );
 	Parameters.setAttribute ( "drawn_transparent_effect", 0 );
 
+	u32 i; // new ISO for scoping problem in some compilers
+
 	// reset all transforms
 	video::IVideoDriver* driver = getVideoDriver();
 	if ( driver )
@@ -1327,10 +1329,8 @@ void CSceneManager::drawAll()
 		driver->setTransform ( video::ETS_PROJECTION, core::IdentityMatrix );
 		driver->setTransform ( video::ETS_VIEW, core::IdentityMatrix );
 		driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_0, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_1, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_2, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_3, core::IdentityMatrix );
+		for (i=video::ETS_COUNT; i>video::ETS_TEXTURE_0; --i)
+			driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
 	}
 
 	driver->setAllowZWriteOnTransparent(Parameters.getAttributeAsBool( ALLOW_ZWRITE_ON_TRANSPARENT) );
@@ -1354,8 +1354,6 @@ void CSceneManager::drawAll()
 
 	if(LightManager)
 		LightManager->OnPreRender(LightList);
-
-	u32 i; // new ISO for scoping problem in some compilers
 
 	//render camera scenes
 	{
