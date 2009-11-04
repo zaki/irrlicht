@@ -807,6 +807,12 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 			os::Printer::log("FBO missing an image attachment", ELL_ERROR);
 			break;
 
+#ifdef GL_EXT_framebuffer_multisample
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT:
+			os::Printer::log("FBO wrong multisample setup", ELL_ERROR);
+			break;
+#endif
+
 		case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
 			os::Printer::log("FBO format unsupported", ELL_ERROR);
 			break;
