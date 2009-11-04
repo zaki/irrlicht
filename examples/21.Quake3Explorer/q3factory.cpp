@@ -18,8 +18,8 @@ using namespace quake3;
 //! This list is based on the original quake3.
 static const SItemElement Quake3ItemElement [] = {
 {	"item_health",
-	"models/powerups/health/medium_cross.md3",
-	"models/powerups/health/medium_sphere.md3",
+	{"models/powerups/health/medium_cross.md3",
+	"models/powerups/health/medium_sphere.md3"},
 	"sound/items/n_health.wav",
 	"icons/iconh_yellow",
 	"25 Health",
@@ -278,7 +278,7 @@ static const SItemElement Quake3ItemElement [] = {
 	SPECIAL_SFX_ROTATE
 },
 {
-	""
+	0
 }
 
 };
