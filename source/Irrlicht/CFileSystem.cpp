@@ -404,7 +404,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 
 	if (FileSystemType != FILESYSTEM_NATIVE)
 	{
-		WorkingDirectory[FILESYSTEM_VIRTUAL].append(newDirectory);
+		WorkingDirectory[FILESYSTEM_VIRTUAL] = newDirectory;
 		flattenFilename(WorkingDirectory[FILESYSTEM_VIRTUAL], "");
 		success = 1;
 	}
