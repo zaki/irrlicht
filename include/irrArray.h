@@ -562,10 +562,10 @@ public:
 	private:
 
 		T* data;
-		TAlloc allocator;
 		u32 allocated;
 		u32 used;
-		eAllocStrategy strategy;
+		TAlloc allocator;
+		eAllocStrategy strategy:4;
 		bool free_when_destroyed:1;
 		bool is_sorted:1;
 };

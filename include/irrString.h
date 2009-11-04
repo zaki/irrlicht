@@ -1104,9 +1104,9 @@ private:
 	//--- member variables
 
 	T* array;
-	TAlloc allocator;
 	u32 allocated;
 	u32 used;
+	TAlloc allocator;
 };
 
 

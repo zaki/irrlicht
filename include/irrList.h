@@ -384,10 +384,10 @@ public:
 
 private:
 	
-	irrAllocator<SKListNode> allocator;
 	SKListNode* First;
 	SKListNode* Last;
 	u32 Size;
+	irrAllocator<SKListNode> allocator;
 
 };
 
