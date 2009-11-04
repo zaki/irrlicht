@@ -132,6 +132,23 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 
 	switch(format)
 	{
+		case ECF_A1R5G5B5:
+			colorformat=GL_BGRA_EXT;
+			type=GL_UNSIGNED_SHORT_1_5_5_5_REV;
+			return GL_RGBA;
+		case ECF_R5G6B5:
+			colorformat=GL_BGR;
+			type=GL_UNSIGNED_SHORT_5_6_5_REV;
+			return GL_RGB;
+		case ECF_R8G8B8:
+			colorformat=GL_BGR;
+			type=GL_UNSIGNED_BYTE;
+			return GL_RGB;
+		case ECF_A8R8G8B8:
+			colorformat=GL_BGRA_EXT;
+			if (Driver->Version > 101)
+				type=GL_UNSIGNED_INT_8_8_8_8_REV;
+			return GL_RGBA;
 		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
 		case ECF_R16F:
 		{
@@ -207,6 +224,7 @@ GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT 
 		}
 		default:
 		{
+			os::Printer::log("Unsupported texture format", ELL_ERROR);
 			return GL_RGBA8;
 		}
 	}
@@ -255,34 +273,8 @@ void COpenGLTexture::copyTexture(bool newTexture)
 		return;
 	}
 
-	switch (ColorFormat)
-	{
-		case ECF_A1R5G5B5:
-			InternalFormat=GL_RGBA;
-			PixelFormat=GL_BGRA_EXT;
-			PixelType=GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			break;
-		case ECF_R5G6B5:
-			InternalFormat=GL_RGB;
-			PixelFormat=GL_BGR;
-			PixelType=GL_UNSIGNED_SHORT_5_6_5_REV;
-			break;
-		case ECF_R8G8B8:
-			InternalFormat=GL_RGB;
-			PixelFormat=GL_BGR;
-			PixelType=GL_UNSIGNED_BYTE;
-			break;
-		case ECF_A8R8G8B8:
-			InternalFormat=GL_RGBA;
-			PixelFormat=GL_BGRA_EXT;
-			if (Driver->Version > 101)
-				PixelType=GL_UNSIGNED_INT_8_8_8_8_REV;
-			break;
-		default:
-			os::Printer::log("Unsupported texture format", ELL_ERROR);
-			break;
-	}
-
+	GLint filtering;
+	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(ColorFormat, filtering, PixelFormat, PixelType);
 	Driver->setActiveTexture(0, this);
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
