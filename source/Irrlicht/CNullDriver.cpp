@@ -697,6 +697,9 @@ void CNullDriver::draw2DImage(const video::ITexture* texture, const core::rect<s
 	const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect,
 	const video::SColor* const colors, bool useAlphaChannelOfTexture)
 {
+	draw2DImage(texture, core::position2d<s32>(destRect.UpperLeftCorner),
+				sourceRect, clipRect, colors?colors[0]:0xffffffff,
+				useAlphaChannelOfTexture);
 }
 
 
