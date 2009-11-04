@@ -62,7 +62,7 @@ enum E_TEXTURE_CREATION_FLAG
 	ETCF_NO_ALPHA_CHANNEL = 0x00000020,
 
 	//! Allow the Driver to use Non-Power-2-Textures
-	/** BurningVideo can handle Non-Power-2 Textures in 2D (GUI), but not it 3D. */
+	/** BurningVideo can handle Non-Power-2 Textures in 2D (GUI), but not in 3D. */
 	ETCF_ALLOW_NON_POWER_2 = 0x00000040,
 
 	/** This flag is never used, it only forces the compiler to compile
@@ -109,12 +109,11 @@ public:
 
 	//! Get original size of the texture.
 	/** The texture is usually scaled, if it was created with an unoptimal
-	size. For example if the size of the texture file it was loaded from
-	was not a power of two. This returns the size of the texture, it had
-	before it was scaled. Can be useful when drawing 2d images on the
-	screen, which should have the exact size of the original texture. Use
-	ITexture::getSize() if you want to know the real size it has now stored
-	in the system.
+	size. For example if the size was not a power of two. This method
+	returns the size of the texture it had before it was scaled. Can be
+	useful when drawing 2d images on the screen, which should have the
+	exact size of the original texture. Use ITexture::getSize() if you want
+	to know the real size it has now stored in the system.
 	\return The original size of the texture. */
 	virtual const core::dimension2d<u32>& getOriginalSize() const = 0;
 
