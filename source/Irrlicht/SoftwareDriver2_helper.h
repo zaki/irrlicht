@@ -418,7 +418,7 @@ REALINLINE f32 fix_inverse32 ( const f32 x )
 static inline int f_round2(f32 f)
 {
 	f += (3<<22);
-	return *((int*)&f) - 0x4b400000;
+	return IR(f) - 0x4b400000;
 }
 
 /*
@@ -514,7 +514,7 @@ inline s32 roundFix ( const tFixPoint x )
 inline s32 f32_to_23Bits(const f32 x)
 {
     f32 y = x + 1.f;
-    return ((u32&)y) & 0x7FFFFF;	// last 23 bits
+    return IR(y) & 0x7FFFFF;	// last 23 bits
 }
 
 /*!
