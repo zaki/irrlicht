@@ -89,6 +89,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_APPLE_float_pixels",
 	"GL_APPLE_flush_buffer_range",
 	"GL_APPLE_object_purgeable",
+	"GL_APPLE_rgb_422",
 	"GL_APPLE_row_bytes",
 	"GL_APPLE_specular_vector",
 	"GL_APPLE_texture_range",
@@ -230,6 +231,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_EXT_provoking_vertex",
 	"GL_EXT_rescale_normal",
 	"GL_EXT_secondary_color",
+	"GL_EXT_separate_shader_objects",
 	"GL_EXT_separate_specular_color",
 	"GL_EXT_shadow_funcs",
 	"GL_EXT_shared_texture_palette",
@@ -290,6 +292,7 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_NV_blend_square",
 	"GL_NV_conditional_render",
 	"GL_NV_copy_depth_to_color",
+	"GL_NV_copy_image",
 	"GL_NV_depth_buffer_float",
 	"GL_NV_depth_clamp",
 	"GL_NV_evaluators",
@@ -311,14 +314,17 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_NV_occlusion_query",
 	"GL_NV_packed_depth_stencil",
 	"GL_NV_parameter_buffer_object",
+	"GL_NV_parameter_buffer_object2",
 	"GL_NV_pixel_data_range",
 	"GL_NV_point_sprite",
 	"GL_NV_present_video",
 	"GL_NV_primitive_restart",
 	"GL_NV_register_combiners",
 	"GL_NV_register_combiners2",
+	"GL_NV_shader_buffer_load",
 	"GL_NV_texgen_emboss",
 	"GL_NV_texgen_reflection",
+	"GL_NV_texture_barrier",
 	"GL_NV_texture_compression_vtc",
 	"GL_NV_texture_env_combine4",
 	"GL_NV_texture_expand_normal",
@@ -330,12 +336,14 @@ static const char* const OpenGLFeatureStrings[] = {
 	"GL_NV_transform_feedback2",
 	"GL_NV_vertex_array_range",
 	"GL_NV_vertex_array_range2",
+	"GL_NV_vertex_buffer_unified_memory",
 	"GL_NV_vertex_program",
 	"GL_NV_vertex_program1_1",
 	"GL_NV_vertex_program2",
 	"GL_NV_vertex_program2_option",
 	"GL_NV_vertex_program3",
 	"GL_NV_vertex_program4",
+	"GL_NV_video_capture",
 	"GL_OES_read_format",
 	"GL_OML_interlace",
 	"GL_OML_resample",
@@ -434,6 +442,7 @@ class COpenGLExtensionHandler
 		IRR_APPLE_float_pixels,
 		IRR_APPLE_flush_buffer_range,
 		IRR_APPLE_object_purgeable,
+		IRR_APPLE_rgb_422,
 		IRR_APPLE_row_bytes,
 		IRR_APPLE_specular_vector,
 		IRR_APPLE_texture_range,
@@ -575,6 +584,7 @@ class COpenGLExtensionHandler
 		IRR_EXT_provoking_vertex,
 		IRR_EXT_rescale_normal,
 		IRR_EXT_secondary_color,
+		IRR_EXT_separate_shader_objects,
 		IRR_EXT_separate_specular_color,
 		IRR_EXT_shadow_funcs,
 		IRR_EXT_shared_texture_palette,
@@ -635,6 +645,7 @@ class COpenGLExtensionHandler
 		IRR_NV_blend_square,
 		IRR_NV_conditional_render,
 		IRR_NV_copy_depth_to_color,
+		IRR_NV_copy_image,
 		IRR_NV_depth_buffer_float,
 		IRR_NV_depth_clamp,
 		IRR_NV_evaluators,
@@ -656,14 +667,17 @@ class COpenGLExtensionHandler
 		IRR_NV_occlusion_query,
 		IRR_NV_packed_depth_stencil,
 		IRR_NV_parameter_buffer_object,
+		IRR_NV_parameter_buffer_object2,
 		IRR_NV_pixel_data_range,
 		IRR_NV_point_sprite,
 		IRR_NV_present_video,
 		IRR_NV_primitive_restart,
 		IRR_NV_register_combiners,
 		IRR_NV_register_combiners2,
+		IRR_NV_shader_buffer_load,
 		IRR_NV_texgen_emboss,
 		IRR_NV_texgen_reflection,
+		IRR_NV_texture_barrier,
 		IRR_NV_texture_compression_vtc,
 		IRR_NV_texture_env_combine4,
 		IRR_NV_texture_expand_normal,
@@ -675,12 +689,14 @@ class COpenGLExtensionHandler
 		IRR_NV_transform_feedback2,
 		IRR_NV_vertex_array_range,
 		IRR_NV_vertex_array_range2,
+		IRR_NV_vertex_buffer_unified_memory,
 		IRR_NV_vertex_program,
 		IRR_NV_vertex_program1_1,
 		IRR_NV_vertex_program2,
 		IRR_NV_vertex_program2_option,
 		IRR_NV_vertex_program3,
 		IRR_NV_vertex_program4,
+		IRR_NV_video_capture,
 		IRR_OES_read_format,
 		IRR_OML_interlace,
 		IRR_OML_resample,
@@ -884,6 +900,9 @@ class COpenGLExtensionHandler
 	void extGlGetBufferParameteriv (GLenum target, GLenum pname, GLint *params);
 	void extGlGetBufferPointerv (GLenum target, GLenum pname, GLvoid **params);
 	void extGlProvokingVertex(GLenum mode);
+	void extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
+	void extGlEnableIndexed(GLenum target, GLuint index);
+	void extGlDisableIndexed(GLenum target, GLuint index);
 
 
 	protected:
@@ -954,6 +973,9 @@ class COpenGLExtensionHandler
 		PFNGLGETBUFFERPOINTERVARBPROC pGlGetBufferPointervARB;
 		PFNGLPROVOKINGVERTEXPROC pGlProvokingVertexARB;
 		PFNGLPROVOKINGVERTEXEXTPROC pGlProvokingVertexEXT;
+		PFNGLCOLORMASKINDEXEDEXTPROC pGlColorMaskIndexedEXT;
+		PFNGLENABLEINDEXEDEXTPROC pGlEnableIndexedEXT;
+		PFNGLDISABLEINDEXEDEXTPROC pGlDisableIndexedEXT;
 	#endif
 };
 
@@ -1661,6 +1683,45 @@ inline void COpenGLExtensionHandler::extGlProvokingVertex(GLenum mode)
 	glProvokingVertexEXT(mode);
 #else
 	os::Printer::log("glProvokingVertex not supported", ELL_ERROR);
+#endif
+}
+
+
+inline void COpenGLExtensionHandler::extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlColorMaskIndexedEXT)
+		pGlColorMaskIndexedEXT(buf, r, g, b, a);
+#elif defined(GL_EXT_draw_buffers2)
+	glColorMaskIndexedEXT(buf, r, g, b, a);
+#else
+	os::Printer::log("glColorMaskIndexed not supported", ELL_ERROR);
+#endif
+}
+
+
+inline void COpenGLExtensionHandler::extGlEnableIndexed(GLenum target, GLuint index)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlEnableIndexedEXT)
+		pGlEnableIndexedEXT(target, index);
+#elif defined(GL_EXT_draw_buffers2)
+	glEnableIndexedEXT(target, index);
+#else
+	os::Printer::log("glEnableIndexed not supported", ELL_ERROR);
+#endif
+}
+
+
+inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint index)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_EXT_draw_buffers2] && pGlDisableIndexedEXT)
+		pGlDisableIndexedEXT(target, index);
+#elif defined(GL_EXT_draw_buffers2)
+	glDisableIndexedEXT(target, index);
+#else
+	os::Printer::log("glDisableIndexed not supported", ELL_ERROR);
 #endif
 }
 
