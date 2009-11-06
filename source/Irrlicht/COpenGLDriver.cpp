@@ -440,6 +440,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
 	// set vsync
+	//TODO: Check GLX_EXT_swap_control and GLX_MESA_swap_control
 #ifdef GLX_SGI_swap_control
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (params.Vsync && glxSwapIntervalSGI)
@@ -3429,6 +3430,18 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 		MRTs.set_used(maxMultipleRTTs);
 		for(u32 i = 0; i < maxMultipleRTTs; i++)
 		{
+			if (FeatureAvailable[IRR_EXT_draw_buffers2])
+			{
+				extGlColorMaskIndexed(i, 
+					(targets[i].ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+					(targets[i].ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+					(targets[i].ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+					(targets[i].ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+				if (targets[i].BlendEnable)
+					extGlEnableIndexed(GL_BLEND, i);
+				else
+					extGlDisableIndexed(GL_BLEND, i);
+			}
 			if (targets[0].TargetType==ERT_RENDER_TEXTURE)
 			{
 				GLenum attachment = GL_NONE;
