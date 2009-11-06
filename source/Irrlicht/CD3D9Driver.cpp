@@ -826,7 +826,7 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 
 
 //! Sets multiple render targets
-bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget*>& targets,
+bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
 				bool clearBackBuffer, bool clearZBuffer, SColor color)
 {
 	if (targets.size()==0)
@@ -876,7 +876,7 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget*>& targ
 		return false;
 	}
 
-	CD3D9Texture* tex = static_cast<CD3D9Texture*>(texture[0].RenderTexture);
+	CD3D9Texture* tex = static_cast<CD3D9Texture*>(targets[0].RenderTexture);
 
 	// check if we should set the previous RT back
 
@@ -898,7 +898,7 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget*>& targ
 
 	for (u32 i = 0; i < maxMultipleRTTs; ++i)
 	{
-		if (FAILED(pID3DDevice->SetRenderTarget(i, reinterpret_cast<CD3D9Texture*>(texture[i])->getRenderTargetSurface())))
+		if (FAILED(pID3DDevice->SetRenderTarget(i, static_cast<CD3D9Texture*>(targets[i].RenderTexture)->getRenderTargetSurface())))
 		{
 			os::Printer::log("Error: Could not set render target.", ELL_ERROR);
 			return false;
