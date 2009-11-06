@@ -628,7 +628,11 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_COLOR_MASK:
 		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) != 0;
 	case EVDF_MULTIPLE_RENDER_TARGETS:
-		return true;
+		return Caps.NumSimultaneousRTs > 1;
+	case EVDF_MRT_COLOR_MASK:
+		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_INDEPENDENTWRITEMASKS) != 0;
+	case EVDF_MRT_BLEND:
+		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_MRTPOSTPIXELSHADERBLENDING) != 0;
 	default:
 		return false;
 	};
@@ -896,12 +900,22 @@ bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget>& targe
 
 	// set new render target
 
+	D3DRENDERSTATETYPE colorWrite[4]={D3DRS_COLORWRITEENABLE, D3DRS_COLORWRITEENABLE1, D3DRS_COLORWRITEENABLE2, D3DRS_COLORWRITEENABLE3};
 	for (u32 i = 0; i < maxMultipleRTTs; ++i)
 	{
 		if (FAILED(pID3DDevice->SetRenderTarget(i, static_cast<CD3D9Texture*>(targets[i].RenderTexture)->getRenderTargetSurface())))
 		{
 			os::Printer::log("Error: Could not set render target.", ELL_ERROR);
 			return false;
+		}
+		if (i<4 && (i==0 || queryFeature(EVDF_MRT_COLOR_MASK)))
+		{
+			const DWORD flag =
+				((targets[i].ColorMask & ECP_RED)?D3DCOLORWRITEENABLE_RED:0) |
+				((targets[i].ColorMask & ECP_GREEN)?D3DCOLORWRITEENABLE_GREEN:0) |
+				((targets[i].ColorMask & ECP_BLUE)?D3DCOLORWRITEENABLE_BLUE:0) |
+				((targets[i].ColorMask & ECP_ALPHA)?D3DCOLORWRITEENABLE_ALPHA:0);
+			pID3DDevice->SetRenderState(colorWrite[i], flag);
 		}
 	}
 
