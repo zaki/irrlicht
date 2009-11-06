@@ -535,9 +535,8 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
-										  const io::path& name,
-										  COpenGLDriver* driver,
-								const ECOLOR_FORMAT format)
+					const io::path& name, COpenGLDriver* driver,
+					const ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG

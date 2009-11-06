@@ -535,6 +535,10 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return true;
 	case EVDF_ALPHA_TO_COVERAGE:
 		return FeatureAvailable[IRR_ARB_multisample];
+	case EVDF_GEOMETRY_SHADER:
+		return FeatureAvailable[IRR_ARB_geometry_shader4] || FeatureAvailable[IRR_EXT_geometry_shader4] || FeatureAvailable[IRR_NV_geometry_program4] || FeatureAvailable[IRR_NV_geometry_shader4];
+	case EVDF_MULTIPLE_RENDER_TARGETS:
+		return FeatureAvailable[IRR_ARB_draw_buffers] || FeatureAvailable[IRR_ATI_draw_buffers];
 	default:
 		return false;
 	};
