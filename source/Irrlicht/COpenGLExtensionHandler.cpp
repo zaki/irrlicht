@@ -47,7 +47,8 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlBufferSubDataARB(0), pGlGetBufferSubDataARB(0), pGlMapBufferARB(0), pGlUnmapBufferARB(0),
 	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0),
 	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0),
-	pGlColorMaskIndexedEXT(0), pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0)
+	pGlColorMaskIndexedEXT(0), pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0),
+	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0)
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -192,6 +193,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlColorMaskIndexedEXT= (PFNGLCOLORMASKINDEXEDEXTPROC) wglGetProcAddress("glColorMaskIndexedEXT");
 	pGlEnableIndexedEXT= (PFNGLENABLEINDEXEDEXTPROC) wglGetProcAddress("glEnableIndexedEXT");
 	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC) wglGetProcAddress("glDisableIndexedEXT");
+	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC) wglGetProcAddress("glBlendFuncIndexedAMD");
+	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC) wglGetProcAddress("glBlendFunciARB");
 
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
@@ -414,6 +417,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glEnableIndexedEXT"));
 	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDisableIndexedEXT"));
+	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFuncIndexedAMD"));
+	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFunciARB"));
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
@@ -550,7 +557,7 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	case EVDF_MRT_COLOR_MASK:
 		return FeatureAvailable[IRR_EXT_draw_buffers2];
 	case EVDF_MRT_BLEND_FUNC:
-		return FeatureAvailable[IRR_ARB_draw_buffers_blend];
+		return FeatureAvailable[IRR_ARB_draw_buffers_blend] || FeatureAvailable[IRR_AMD_draw_buffers_blend];
 	default:
 		return false;
 	};
