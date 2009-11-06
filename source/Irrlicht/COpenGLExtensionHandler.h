@@ -903,6 +903,7 @@ class COpenGLExtensionHandler
 	void extGlColorMaskIndexed(GLuint buf, GLboolean r, GLboolean g, GLboolean b, GLboolean a);
 	void extGlEnableIndexed(GLenum target, GLuint index);
 	void extGlDisableIndexed(GLenum target, GLuint index);
+	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
 
 
 	protected:
@@ -976,6 +977,8 @@ class COpenGLExtensionHandler
 		PFNGLCOLORMASKINDEXEDEXTPROC pGlColorMaskIndexedEXT;
 		PFNGLENABLEINDEXEDEXTPROC pGlEnableIndexedEXT;
 		PFNGLDISABLEINDEXEDEXTPROC pGlDisableIndexedEXT;
+		PFNGLBLENDFUNCINDEXEDAMDPROC pGlBlendFuncIndexedAMD;
+		PFNGLBLENDFUNCIPROC pGlBlendFunciARB;
 	#endif
 };
 
@@ -1722,6 +1725,23 @@ inline void COpenGLExtensionHandler::extGlDisableIndexed(GLenum target, GLuint i
 	glDisableIndexedEXT(target, index);
 #else
 	os::Printer::log("glDisableIndexed not supported", ELL_ERROR);
+#endif
+}
+
+
+inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (FeatureAvailable[IRR_ARB_draw_buffers_blend] && pGlBlendFunciARB)
+		pGlBlendFunciARB(buf, src, dst);
+	if (FeatureAvailable[IRR_AMD_draw_buffers_blend] && pGlBlendFuncIndexedAMD)
+		pGlBlendFuncIndexedAMD(buf, src, dst);
+#elif defined(GL_ARB_draw_buffers_blend)
+	glBlendFunciARB(buf, src, dst);
+#elif defined(GL_AMD_draw_buffers_blend)
+	glBlendFuncIndexedAMD(buf, src, dst);
+#else
+	os::Printer::log("glBlendFuncIndexed not supported", ELL_ERROR);
 #endif
 }
 

@@ -198,22 +198,27 @@ namespace video
 	{
 		IRenderTarget(ITexture* texture,
 				E_COLOR_PLANE colorMask=ECP_ALL,
-				E_BLEND_FACTOR blendFunc=EBF_ONE_MINUS_SRC_ALPHA,
+				E_BLEND_FACTOR blendFuncSrc=EBF_ONE,
+				E_BLEND_FACTOR blendFuncDst=EBF_ONE_MINUS_SRC_ALPHA,
 				bool blendEnable=false) :
 			RenderTexture(texture),
 			TargetType(ERT_RENDER_TEXTURE), ColorMask(colorMask),
-			BlendFunc(blendFunc), BlendEnable(blendFunc) {}
+			BlendFuncSrc(blendFuncSrc), BlendFuncDst(blendFuncDst),
+			BlendEnable(blendEnable) {}
 		IRenderTarget(E_RENDER_TARGET target,
 				E_COLOR_PLANE colorMask=ECP_ALL,
-				E_BLEND_FACTOR blendFunc=EBF_ONE_MINUS_SRC_ALPHA,
+				E_BLEND_FACTOR blendFuncSrc=EBF_ONE,
+				E_BLEND_FACTOR blendFuncDst=EBF_ONE_MINUS_SRC_ALPHA,
 				bool blendEnable=false) :
 			RenderTexture(0),
 			TargetType(target), ColorMask(colorMask),
-			BlendFunc(blendFunc), BlendEnable(blendEnable) {}
+			BlendFuncSrc(blendFuncSrc), BlendFuncDst(blendFuncDst),
+			BlendEnable(blendEnable) {}
 		ITexture* RenderTexture;
 		E_RENDER_TARGET TargetType:8;
 		E_COLOR_PLANE ColorMask:8;
-		E_BLEND_FACTOR BlendFunc:8;
+		E_BLEND_FACTOR BlendFuncSrc:4;
+		E_BLEND_FACTOR BlendFuncDst:4;
 		bool BlendEnable;
 	};
 

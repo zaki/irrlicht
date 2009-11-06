@@ -3442,6 +3442,10 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 				else
 					extGlDisableIndexed(GL_BLEND, i);
 			}
+			if (FeatureAvailable[IRR_AMD_draw_buffers_blend] || FeatureAvailable[IRR_ARB_draw_buffers_blend])
+			{
+				extGlBlendFuncIndexed(i, targets[i].BlendFuncSrc, targets[i].BlendFuncDst);
+			}
 			if (targets[0].TargetType==ERT_RENDER_TEXTURE)
 			{
 				GLenum attachment = GL_NONE;
