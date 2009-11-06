@@ -73,7 +73,12 @@ namespace video
 
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture,
-			bool clearBackBuffer=false, bool clearZBuffer=false,
+			bool clearBackBuffer=true, bool clearZBuffer=true,
+			SColor color=video::SColor(0,0,0,0));
+
+		//! Sets multiple render targets
+		virtual bool setRenderTarget(const core::array<video::IRenderTarget*>& texture,
+			bool clearBackBuffer=true, bool clearZBuffer=true,
 			SColor color=video::SColor(0,0,0,0));
 
 		//! sets a viewport

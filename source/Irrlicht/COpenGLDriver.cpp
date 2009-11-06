@@ -3356,6 +3356,120 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 }
 
 
+//! Sets multiple render targets
+bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
+				bool clearBackBuffer, bool clearZBuffer, SColor color)
+{
+	if (targets.size()==0)
+		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+
+	u32 maxMultipleRTTs = core::min_(4u, targets.size());
+
+	// determine common size
+	core::dimension2du rttSize = CurrentRendertargetSize;
+	if (targets[0].TargetType==ERT_RENDER_TEXTURE)
+	{
+		if (!targets[0].RenderTexture)
+		{
+			os::Printer::log("Missing render texture for MRT.", ELL_ERROR);
+			return false;
+		}
+		rttSize=targets[0].RenderTexture->getSize();
+	}
+
+	for (u32 i = 0; i < maxMultipleRTTs; ++i)
+	{
+		// check for right driver type
+		if (targets[i].TargetType==ERT_RENDER_TEXTURE)
+		{
+			if (!targets[i].RenderTexture)
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Missing render texture for MRT.", ELL_WARNING);
+				break;
+			}
+			if (targets[i].RenderTexture->getDriverType() != EDT_OPENGL)
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Tried to set a texture not owned by this driver.", ELL_WARNING);
+				break;
+			}
+
+			// check for valid render target
+			if (!targets[i].RenderTexture->isRenderTarget() || !static_cast<COpenGLTexture*>(targets[i].RenderTexture)->isFrameBufferObject())
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Tried to set a non FBO-RTT as render target.", ELL_WARNING);
+				break;
+			}
+
+			// check for valid size
+			if (rttSize != targets[i].RenderTexture->getSize())
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Render target texture has wrong size.", ELL_WARNING);
+				break;
+			}
+		}
+	}
+	if (maxMultipleRTTs==0)
+	{
+		os::Printer::log("No valid MRTs.", ELL_ERROR);
+		return false;
+	}
+
+	if (targets[0].TargetType==ERT_RENDER_TEXTURE)
+		setRenderTarget(targets[0].RenderTexture, false, false, 0x0);
+	else
+		setRenderTarget(targets[0].TargetType, false, false, 0x0);
+
+	if (maxMultipleRTTs > 1)
+	{
+		core::array<GLenum> MRTs;
+		MRTs.set_used(maxMultipleRTTs);
+		for(u32 i = 0; i < maxMultipleRTTs; i++)
+		{
+			if (targets[0].TargetType==ERT_RENDER_TEXTURE)
+			{
+				GLenum attachment = GL_NONE;
+#ifdef GL_EXT_framebuffer_object
+				// attach texture to FrameBuffer Object on Color [i]
+				attachment = GL_COLOR_ATTACHMENT0_EXT+i;
+				extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, attachment, GL_TEXTURE_2D, static_cast<COpenGLTexture*>(targets[i].RenderTexture)->getOpenGLTextureName(), 0);
+#endif
+				MRTs[i]=attachment;
+			}
+			else
+			{
+				switch(targets[i].TargetType)
+				{
+					case ERT_FRAME_BUFFER:
+						MRTs[i]=GL_BACK_LEFT;
+						break;
+					case ERT_STEREO_BOTH_BUFFERS:
+						MRTs[i]=GL_BACK;
+						break;
+					case ERT_STEREO_RIGHT_BUFFER:
+						MRTs[i]=GL_BACK_RIGHT;
+						break;
+					case ERT_STEREO_LEFT_BUFFER:
+						MRTs[i]=GL_BACK_LEFT;
+						break;
+					default:
+						MRTs[i]=GL_AUX0+(targets[i].TargetType-ERT_AUX_BUFFER0);
+						break;
+				}
+			}
+		}
+
+		extGlDrawBuffers(maxMultipleRTTs, MRTs.const_pointer());
+	}
+
+	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
+	return true;
+}
+
+
 // returns the current size of the screen or rendertarget
 const core::dimension2d<u32>& COpenGLDriver::getCurrentRenderTargetSize() const
 {

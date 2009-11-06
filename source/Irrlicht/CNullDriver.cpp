@@ -554,6 +554,14 @@ bool CNullDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuffer
 }
 
 
+//! Sets multiple render targets
+bool CNullDriver::setRenderTarget(const core::array<video::IRenderTarget>& texture,
+				bool clearBackBuffer, bool clearZBuffer, SColor color)
+{
+	return false;
+}
+
+
 //! sets a viewport
 void CNullDriver::setViewPort(const core::rect<s32>& area)
 {

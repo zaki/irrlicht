@@ -627,6 +627,8 @@ bool CD3D9Driver::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return (Caps.TextureCaps & D3DPTEXTURECAPS_POW2) == 0;
 	case EVDF_COLOR_MASK:
 		return (Caps.PrimitiveMiscCaps & D3DPMISCCAPS_COLORWRITEENABLE) != 0;
+	case EVDF_MULTIPLE_RENDER_TARGETS:
+		return true;
 	default:
 		return false;
 	};
@@ -804,6 +806,110 @@ bool CD3D9Driver::setRenderTarget(video::ITexture* texture,
 		{
 			os::Printer::log("Error: Could not set new depth buffer.", ELL_ERROR);
 		}
+	}
+
+	if (clearBackBuffer || clearZBuffer)
+	{
+		DWORD flags = 0;
+
+		if (clearBackBuffer)
+			flags |= D3DCLEAR_TARGET;
+
+		if (clearZBuffer)
+			flags |= D3DCLEAR_ZBUFFER;
+
+		pID3DDevice->Clear(0, NULL, flags, color.color, 1.0f, 0);
+	}
+
+	return ret;
+}
+
+
+//! Sets multiple render targets
+bool CD3D9Driver::setRenderTarget(const core::array<video::IRenderTarget*>& targets,
+				bool clearBackBuffer, bool clearZBuffer, SColor color)
+{
+	if (targets.size()==0)
+		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+
+	u32 maxMultipleRTTs = core::min_(4u, targets.size());
+
+	for (u32 i = 0; i < maxMultipleRTTs; ++i)
+	{
+		if (targets[i].TargetType != ERT_RENDER_TEXTURE || !targets[i].RenderTexture)
+		{
+			maxMultipleRTTs = i;
+			os::Printer::log("Missing texture for MRT.", ELL_WARNING);
+			break;
+		}
+
+		// check for right driver type
+
+		if (targets[i].RenderTexture->getDriverType() != EDT_DIRECT3D9)
+		{
+			maxMultipleRTTs = i;
+			os::Printer::log("Tried to set a texture not owned by this driver.", ELL_WARNING);
+			break;
+		}
+
+		// check for valid render target
+
+		if (!targets[i].RenderTexture->isRenderTarget())
+		{
+			maxMultipleRTTs = i;
+			os::Printer::log("Tried to set a non render target texture as render target.", ELL_WARNING);
+			break;
+		}
+
+		// check for valid size
+
+		if (targets[0].RenderTexture->getSize() != targets[i].RenderTexture->getSize())
+		{
+			maxMultipleRTTs = i;
+			os::Printer::log("Render target texture has wrong size.", ELL_WARNING);
+			break;
+		}
+	}
+	if (maxMultipleRTTs==0)
+	{
+		os::Printer::log("Fatal Error: No valid MRT found.", ELL_ERROR);
+		return false;
+	}
+
+	CD3D9Texture* tex = static_cast<CD3D9Texture*>(texture[0].RenderTexture);
+
+	// check if we should set the previous RT back
+
+	bool ret = true;
+
+	// we want to set a new target. so do this.
+	// store previous target
+
+	if (!PrevRenderTarget)
+	{
+		if (FAILED(pID3DDevice->GetRenderTarget(0, &PrevRenderTarget)))
+		{
+			os::Printer::log("Could not get previous render target.", ELL_ERROR);
+			return false;
+		}
+	}
+
+	// set new render target
+
+	for (u32 i = 0; i < maxMultipleRTTs; ++i)
+	{
+		if (FAILED(pID3DDevice->SetRenderTarget(i, reinterpret_cast<CD3D9Texture*>(texture[i])->getRenderTargetSurface())))
+		{
+			os::Printer::log("Error: Could not set render target.", ELL_ERROR);
+			return false;
+		}
+	}
+
+	CurrentRendertargetSize = tex->getSize();
+
+	if (FAILED(pID3DDevice->SetDepthStencilSurface(tex->DepthSurface->Surface)))
+	{
+		os::Printer::log("Error: Could not set new depth buffer.", ELL_ERROR);
 	}
 
 	if (clearBackBuffer || clearZBuffer)

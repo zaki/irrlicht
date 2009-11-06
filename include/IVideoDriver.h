@@ -104,10 +104,10 @@ namespace video
 	{
 		//! Render target is the main color frame buffer
 		ERT_FRAME_BUFFER=0,
-		//! Render target is the main color frame buffer
-		ERT_STEREO_LEFT_BUFFER=0,
 		//! Render target is a render texture
 		ERT_RENDER_TEXTURE,
+		//! Render target is the main color frame buffer
+		ERT_STEREO_LEFT_BUFFER,
 		//! Render target is the right color buffer (left is the main buffer)
 		ERT_STEREO_RIGHT_BUFFER,
 		//! Render to both stereo buffers at once
@@ -192,6 +192,29 @@ namespace video
 			}
 		}
 
+	};
+
+	struct IRenderTarget
+	{
+		IRenderTarget(ITexture* texture,
+				E_COLOR_PLANE colorMask=ECP_ALL,
+				E_BLEND_FACTOR blendFunc=EBF_ONE_MINUS_SRC_ALPHA,
+				bool blendEnable=false) :
+			RenderTexture(texture),
+			TargetType(ERT_RENDER_TEXTURE), ColorMask(colorMask),
+			BlendFunc(blendFunc), BlendEnable(blendFunc) {}
+		IRenderTarget(E_RENDER_TARGET target,
+				E_COLOR_PLANE colorMask=ECP_ALL,
+				E_BLEND_FACTOR blendFunc=EBF_ONE_MINUS_SRC_ALPHA,
+				bool blendEnable=false) :
+			RenderTexture(0),
+			TargetType(target), ColorMask(colorMask),
+			BlendFunc(blendFunc), BlendEnable(blendEnable) {}
+		ITexture* RenderTexture;
+		E_RENDER_TARGET TargetType:8;
+		E_COLOR_PLANE ColorMask:8;
+		E_BLEND_FACTOR BlendFunc:8;
+		bool BlendEnable;
 	};
 
 	//! Interface to driver which is able to perform 2d and 3d graphics functions.
@@ -489,6 +512,11 @@ namespace video
 		virtual bool setRenderTarget(E_RENDER_TARGET target, bool clearTarget=true,
 					bool clearZBuffer=true,
 					SColor color=video::SColor(0,0,0,0)) =0;
+
+		//! Sets new multiple render targets.
+		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
+			bool clearBackBuffer=true, bool clearZBuffer=true,
+			SColor color=video::SColor(0,0,0,0)) =0;
 
 		//! Sets a new viewport.
 		/** Every rendering operation is done into this new area.
