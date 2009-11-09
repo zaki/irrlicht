@@ -112,7 +112,7 @@ namespace scene
 		virtual f32 getAspectRatio() const =0;
 
 		//! Gets the field of view of the camera.
-		/** \return The field of view of the camera in radiants. */
+		/** \return The field of view of the camera in radians. */
 		virtual f32 getFOV() const =0;
 
 		//! Sets the value of the near clipping plane. (default: 1.0f)
@@ -128,7 +128,7 @@ namespace scene
 		virtual void setAspectRatio(f32 aspect) =0;
 
 		//! Sets the field of view (Default: PI / 2.5f)
-		/** \param fovy: New field of view in radiants. */
+		/** \param fovy: New field of view in radians. */
 		virtual void setFOV(f32 fovy) =0;
 
 		//! Get the view frustum.
