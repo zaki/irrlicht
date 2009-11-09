@@ -129,7 +129,7 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			const bool use2TCoords = meshBuffer->Vertices_2TCoords.size() ||
 				materiali[faces[i].materialID].lightmapName.size();
 			if (use2TCoords && meshBuffer->Vertices_Standard.size())
-				meshBuffer->MoveTo_2TCoords();
+				meshBuffer->convertTo2TCoords();
 			const u32 base = meshBuffer->Vertices_2TCoords.size()?meshBuffer->Vertices_2TCoords.size():meshBuffer->Vertices_Standard.size();
 
 			// Add this face's verts
