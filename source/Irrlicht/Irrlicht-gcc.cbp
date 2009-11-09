@@ -808,6 +808,8 @@
 		<Unit filename="CPLYMeshWriter.h" />
 		<Unit filename="CPakReader.cpp" />
 		<Unit filename="CPakReader.h" />
+		<Unit filename="CNPKReader.cpp" />
+		<Unit filename="CNPKReader.h" />
 		<Unit filename="CParticleAnimatedMeshSceneNodeEmitter.cpp" />
 		<Unit filename="CParticleAttractionAffector.cpp" />
 		<Unit filename="CParticleBoxEmitter.cpp" />

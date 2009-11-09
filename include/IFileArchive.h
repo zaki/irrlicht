@@ -36,6 +36,9 @@ enum E_FILE_ARCHIVE_TYPE
 	//! An ID Software PAK archive
 	EFAT_PAK     = MAKE_IRR_ID('P','A','K', 0),
 
+	//! A Nebula Device archive
+	EFAT_NPK     = MAKE_IRR_ID('N','P','K', 0),
+
 	//! A Tape ARchive
 	EFAT_TAR     = MAKE_IRR_ID('T','A','R', 0),
 
