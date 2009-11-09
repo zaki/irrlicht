@@ -493,7 +493,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 			{
 				//Check for lightmapping:
 				if (BaseVertices[ vertex_id[i] ].TCoords2 != core::vector2df(0.f,0.f))
-					meshBuffer->MoveTo_2TCoords(); //Will only affect the meshbuffer the first time this is called
+					meshBuffer->convertTo2TCoords(); //Will only affect the meshbuffer the first time this is called
 
 				//Add the vertex to the meshbuffer:
 				if (meshBuffer->VertexType == video::EVT_STANDARD)
