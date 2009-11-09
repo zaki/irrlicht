@@ -41,7 +41,7 @@ IRRVIDEOOBJ = ['CVideoModeList.cpp', 'CFPSCounter.cpp'] + IRRDRVROBJ + IRRIMAGEO
 
 IRRSWRENDEROBJ = ['CSoftwareDriver.cpp', 'CSoftwareTexture.cpp', 'CTRFlat.cpp', 'CTRFlatWire.cpp', 'CTRGouraud.cpp', 'CTRGouraudWire.cpp', 'CTRTextureFlat.cpp', 'CTRTextureFlatWire.cpp', 'CTRTextureGouraud.cpp', 'CTRTextureGouraudAdd.cpp', 'CTRTextureGouraudNoZ.cpp', 'CTRTextureGouraudWire.cpp', 'CZBuffer.cpp', 'CTRTextureGouraudVertexAlpha2.cpp', 'CTRTextureGouraudNoZ2.cpp', 'CTRTextureLightMap2_M2.cpp', 'CTRTextureLightMap2_M4.cpp', 'CTRTextureLightMap2_M1.cpp', 'CSoftwareDriver2.cpp', 'CSoftwareTexture2.cpp', 'CTRTextureGouraud2.cpp', 'CTRGouraud2.cpp', 'CTRGouraudAlpha2.cpp', 'CTRGouraudAlphaNoZ2.cpp', 'CTRTextureDetailMap2.cpp', 'CTRTextureGouraudAdd2.cpp', 'CTRTextureGouraudAddNoZ2.cpp', 'CTRTextureWire2.cpp', 'CTRTextureLightMap2_Add.cpp', 'CTRTextureLightMapGouraud2_M4.cpp', 'IBurningShader.cpp', 'CTRTextureBlend.cpp', 'CTRTextureGouraudAlpha.cpp', 'CTRTextureGouraudAlphaNoZ.cpp', 'CDepthBuffer.cpp', 'CBurningShader_Raster_Reference.cpp'];
 
-IRRIOOBJ = ['CFileList.cpp', 'CFileSystem.cpp', 'CLimitReadFile.cpp', 'CMemoryReadFile.cpp', 'CReadFile.cpp', 'CWriteFile.cpp', 'CXMLReader.cpp', 'CXMLWriter.cpp', 'CZipReader.cpp', 'CPakReader.cpp', 'irrXML.cpp', 'CAttributes.cpp'];
+IRRIOOBJ = ['CFileList.cpp', 'CFileSystem.cpp', 'CLimitReadFile.cpp', 'CMemoryReadFile.cpp', 'CReadFile.cpp', 'CWriteFile.cpp', 'CXMLReader.cpp', 'CXMLWriter.cpp', 'CZipReader.cpp', 'CPakReader.cpp', 'CNPKReader.cpp', 'irrXML.cpp', 'CAttributes.cpp'];
 
 IRROTHEROBJ = ['CIrrDeviceSDL.cpp', 'CIrrDeviceLinux.cpp', 'CIrrDeviceStub.cpp', 'CIrrDeviceWin32.cpp', 'CLogger.cpp', 'COSOperator.cpp', 'Irrlicht.cpp', 'os.cpp'];
 

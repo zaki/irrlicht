@@ -352,6 +352,8 @@ B3D, MS3D or X meshes */
 #define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
 //! Define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_ if you want to open ID software PAK archives
 #define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+//! Define __IRR_COMPILE_WITH_NPK_ARCHIVE_LOADER_ if you want to open Nebula Device NPK archives
+#define __IRR_COMPILE_WITH_NPK_ARCHIVE_LOADER_
 //! Define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_ if you want to open TAR archives
 #define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
 
