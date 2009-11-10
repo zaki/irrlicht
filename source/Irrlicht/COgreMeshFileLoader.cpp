@@ -23,6 +23,8 @@ namespace irr
 namespace scene
 {
 
+namespace
+{
 	enum OGRE_CHUNKS
 	{
 		// Main Chunks
@@ -58,6 +60,7 @@ namespace scene
 		COGRE_GEOMETRY_VERTEX_BUFFER= 0x5200,
 		COGRE_GEOMETRY_VERTEX_BUFFER_DATA= 0x5210
 	};
+}
 
 //! Constructor
 COgreMeshFileLoader::COgreMeshFileLoader(io::IFileSystem* fs, video::IVideoDriver* driver)
@@ -1422,8 +1425,13 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 				keyframe.Time+=animationTotal;
 				readVector(file, data, keyframe.Position);
 				readQuaternion(file, data, keyframe.Orientation);
-				readVector(file, data, keyframe.Scale);
-				keyframe.Scale *= 1.f;
+				if (data.read<data.header.length)
+				{
+					readVector(file, data, keyframe.Scale);
+					keyframe.Scale.X *= -1.f;
+				}
+				else
+					keyframe.Scale=core::vector3df(1,1,1);
 				keyframe.BoneID=bone;
 #ifdef IRR_OGRE_LOADER_DEBUG
 //				os::Printer::log("Keyframe time", core::stringc(keyframe.Time));
