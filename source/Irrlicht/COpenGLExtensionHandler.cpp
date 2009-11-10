@@ -517,6 +517,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	{
 	case EVDF_RENDER_TO_TARGET:
 		return true;
+	case EVDF_HARDWARE_TL:
+		return true; // we cannot tell other things
 	case EVDF_MULTITEXTURE:
 		return MultiTextureExtension;
 	case EVDF_BILINEAR_FILTER:
