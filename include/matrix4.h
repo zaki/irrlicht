@@ -5,7 +5,7 @@
 #ifndef __IRR_MATRIX_H_INCLUDED__
 #define __IRR_MATRIX_H_INCLUDED__
 
-#include "irrTypes.h"
+#include "irrMath.h"
 #include "vector3d.h"
 #include "vector2d.h"
 #include "plane3d.h"
@@ -323,12 +323,11 @@ namespace core
 			\param axis: axis to rotate about
 			\param from: source vector to rotate from
 			 */
-			void buildAxisAlignedBillboard(	const core::vector3df& camPos,
-											const core::vector3df& center,
-											const core::vector3df& translation,
-											const core::vector3df& axis,
-											const core::vector3df& from
-										);
+			void buildAxisAlignedBillboard(const core::vector3df& camPos,
+						const core::vector3df& center,
+						const core::vector3df& translation,
+						const core::vector3df& axis,
+						const core::vector3df& from);
 
 			/*
 				construct 2D Texture transformations
@@ -383,6 +382,9 @@ namespace core
 
 			//! Gets if the matrix is definitely identity matrix
 			bool getDefinitelyIdentityMatrix() const;
+
+			//! Compare two matrices using the equal method
+			bool equals(const core::CMatrix4<T>& other, const T tolerance=(T)ROUNDING_ERROR_f64) const;
 
 		private:
 			//! Matrix data, stored in row-major order
@@ -938,10 +940,10 @@ namespace core
 		if (definitelyIdentityMatrix)
 			return true;
 #endif
-		if (!equals( M[ 0], (T)1 ) ||
-				!equals( M[ 5], (T)1 ) ||
-				!equals( M[10], (T)1 ) ||
-				!equals( M[15], (T)1 ))
+		if (!core::equals( M[ 0], (T)1 ) ||
+				!core::equals( M[ 5], (T)1 ) ||
+				!core::equals( M[10], (T)1 ) ||
+				!core::equals( M[15], (T)1 ))
 			return false;
 
 		for (s32 i=0; i<4; ++i)
@@ -2087,6 +2089,22 @@ namespace core
 #else
 		return false;
 #endif
+	}
+
+
+	//! Compare two matrices using the equal method
+	template <class T>
+	inline bool CMatrix4<T>::equals(const core::CMatrix4<T>& other, const T tolerance) const
+	{
+#if defined ( USE_MATRIX_TEST )
+		if (definitelyIdentityMatrix && other.definitelyIdentityMatrix)
+			return true;
+#endif
+		for (s32 i = 0; i < 16; ++i)
+			if (!core::equals(M[i],other.M[i], tolerance))
+				return false;
+
+		return true;
 	}
 
 
