@@ -56,45 +56,48 @@ int main(int argumentCount, char * arguments[])
 	// process.
 
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
+	// Now the simple tests without device
+	TEST(exports);
+	TEST(irrCoreEquals);
+	TEST(testIrrString);
+	TEST(line2dIntersectWith);
+	TEST(matrixOps);
+	TEST(testDimension2d);
+	TEST(testVector2d);
+	TEST(testVector3d);
+	TEST(vectorPositionDimension2d);
+	// file system checks
 	TEST(filesystem);
 	TEST(archiveReader);
-	TEST(exports);
-	TEST(sceneCollisionManager);
-	TEST(testVector3d);
-	TEST(testVector2d);
-	TEST(testIrrString);
-	TEST(planeMatrix);
+	TEST(testXML);
+	// null driver
 	TEST(fast_atof);
-	TEST(line2dIntersectWith);
-	TEST(testDimension2d);
-	TEST(drawPixel);
-	TEST(md2Animation);
-	TEST(guiDisabledMenu);
+	TEST(collisionResponseAnimator);
+	TEST(enumerateImageManipulators);
+	TEST(removeCustomAnimator);
+	TEST(sceneCollisionManager);
+	TEST(sceneNodeAnimator);
+	// software drivers only
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
-	TEST(textureRenderStates);
 	TEST(burningsVideo);
 	TEST(cursorSetVisible);
-	TEST(transparentAlphaChannelRef);
 	TEST(drawRectOutline);
-	TEST(removeCustomAnimator);
-
-	// Tests available on 1.6+
-	TEST(collisionResponseAnimator);
-	TEST(irrCoreEquals);
-	TEST(makeColorKeyTexture);
-	TEST(matrixOps);
-	TEST(sceneNodeAnimator);
-	TEST(vectorPositionDimension2d);
-	TEST(writeImageToFile);
 	TEST(flyCircleAnimator);
-	TEST(enumerateImageManipulators);
+	TEST(md2Animation);
 	TEST(testGeometryCreator);
+	TEST(writeImageToFile);
+	// all driver checks
+	TEST(drawPixel);
+	TEST(guiDisabledMenu);
 	TEST(makeColorKeyTexture);
-	TEST(testXML);
 	TEST(renderTargetTexture);
+	TEST(textureRenderStates);
+	TEST(transparentAlphaChannelRef);
 	// TODO: Needs to be checked first.
 //	TEST(projectionMatrix);
+	// large scenes
+	TEST(planeMatrix);
 	TEST(terrainSceneNode);
 	TEST(lightMaps);
 
