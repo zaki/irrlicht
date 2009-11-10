@@ -203,6 +203,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 	os::Printer::log("Read Object Chunk");
 #endif
 	readBool(file, parent, mesh.SkeletalAnimation);
+	bool skeleton_loaded=false;
 	while ((parent.read < parent.header.length)&&(file->getPos() < file->getSize()))
 	{
 		ChunkData data;
@@ -237,6 +238,7 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 				core::stringc name;
 				readString(file, data, name);
 				loadSkeleton(file, name);
+				skeleton_loaded=true;
 			}
 			break;
 			case COGRE_BONE_ASSIGNMENT:
@@ -258,6 +260,8 @@ bool COgreMeshFileLoader::readObjectChunk(io::IReadFile* file, ChunkData& parent
 		}
 		parent.read += data.read;
 	}
+	if (!skeleton_loaded)
+		loadSkeleton(file, FileSystem->getFileBasename(file->getFileName(), false));
 	return true;
 }
 
