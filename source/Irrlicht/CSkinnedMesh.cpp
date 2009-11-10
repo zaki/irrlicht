@@ -1448,12 +1448,6 @@ void CSkinnedMesh::calculateTangents(
 }
 
 
-
-
-
-
-
-
 } // end namespace scene
 } // end namespace irr
 
