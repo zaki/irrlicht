@@ -2,6 +2,8 @@
 // No rights reserved: this software is in the public domain.
 
 #include "testUtils.h"
+#include "irrlicht.h"
+#include <assert.h>
 
 using namespace irr;
 using namespace core;
@@ -16,15 +18,39 @@ static bool is_nan(const core::vector3d<T> &vec )
 }
 
 template<class T>
-static bool compareVectors(const core::vector3d<T> & compare,
-						   const core::vector3d<T> & with)
+struct cmp_less
 {
-	if(compare != with)
+	cmp_less(const T& a) : val(a) {}
+	bool operator()(const T& other) const
 	{
-		logTestString("\nERROR: vector3dOr  %.16f, %.16f, %.16f != vector3d %.16f, %.16f, %.16f\n",
-			(f64)compare.X, (f64)compare.Y, (f64)compare.Z,
+		return val<other;
+	}
+	const char* getName() const {return "<";}
+	const T val;
+};
+
+template<class T>
+struct cmp_equal
+{
+	cmp_equal(const T& a) : val(a) {}
+	bool operator()(const T& other) const
+	{
+		return val==other;
+	}
+	const char* getName() const {return "==";}
+	const T val;
+};
+
+template<class S, class T>
+static bool equalVectors(const S& compare,
+			   const core::vector3d<T> & with)
+{
+	if (!compare(with))
+	{
+		logTestString("\nERROR: vector3d %.16f, %.16f, %.16f %s vector3d %.16f, %.16f, %.16f\n",
+			(f64)compare.val.X, (f64)compare.val.Y, (f64)compare.val.Z, compare.getName(),
 			(f64)with.X, (f64)with.Y, (f64)with.Z);
-		assert(compare == with);
+		assert(compare(with));
 		return false;
 	}
 
@@ -34,8 +60,8 @@ static bool compareVectors(const core::vector3d<T> & compare,
 template <class T>
 static bool doTests()
 {
-	#define COMPARE_VECTORS(compare, with)\
-		if(!compareVectors(compare, with)) return false;
+	#define EQUAL_VECTORS(compare, with)\
+	if(!equalVectors(cmp_equal<core::vector3d<T> >(compare), with)) return false;
 
 	vector3d<T> vec(5, 5, 0);
 	vector3d<T> otherVec(10, 20, 0);
@@ -49,78 +75,78 @@ static bool doTests()
 	vector3d<T> center(0, 0, 0);
 
 	vec.rotateXYBy(45, center);
-	COMPARE_VECTORS(vec, vector3d<T>(0, (T)7.0710678118654755, 0));
+	EQUAL_VECTORS(vec, vector3d<T>(0, (T)7.0710678118654755, 0));
 
 	vec.normalize();
-	COMPARE_VECTORS(vec, vector3d<T>(0, (T)1.0000000461060017, 0));
+	EQUAL_VECTORS(vec, vector3d<T>(0, (T)1.0000000461060017, 0));
 
 	vec.set(10, 10, 10);
 	center.set(5, 5, 10);
 	vec.rotateXYBy(-5, center);
 	// -5 means rotate clockwise slightly, so expect the X to increase
 	// slightly and the Y to decrease slightly.
-	COMPARE_VECTORS(vec, vector3d<T>((T)10.416752204197017, (T)9.5451947767204359, 10));
+	EQUAL_VECTORS(vec, vector3d<T>((T)10.416752204197017, (T)9.5451947767204359, 10));
 
 	vec.set(10, 10, 10);
 	center.set(5, 10, 5);
 	vec.rotateXZBy(-5, center);
-	COMPARE_VECTORS(vec, vector3d<T>((T)10.416752204197017, 10, (T)9.5451947767204359));
+	EQUAL_VECTORS(vec, vector3d<T>((T)10.416752204197017, 10, (T)9.5451947767204359));
 
 	vec.set(10, 10, 10);
 	center.set(10, 5, 5);
 	vec.rotateYZBy(-5, center);
-	COMPARE_VECTORS(vec, vector3d<T>(10, (T)10.416752204197017, (T)9.5451947767204359));
+	EQUAL_VECTORS(vec, vector3d<T>(10, (T)10.416752204197017, (T)9.5451947767204359));
 
 	vec.set(5, 5, 0);
 	vec.normalize();
-	compareVectors(vec, vector3d<T>((T)0.70710681378841400, (T)0.70710681378841400, 0));
+	EQUAL_VECTORS(vec, vector3d<T>((T)0.70710681378841400, (T)0.70710681378841400, 0));
 
 	vec.set(5, 5, 0);
 	otherVec.set(10, 20, 40);
 
 	vector3d<T> interpolated;
 	(void)interpolated.interpolate(vec, otherVec, 0.f);
-	COMPARE_VECTORS(interpolated, otherVec); // 0.f means all the second vector
+	EQUAL_VECTORS(interpolated, otherVec); // 0.f means all the second vector
 
 	(void)interpolated.interpolate(vec, otherVec, 0.25f);
-	COMPARE_VECTORS(interpolated, vector3d<T>((T)8.75, (T)16.25, 30));
+	EQUAL_VECTORS(interpolated, vector3d<T>((T)8.75, (T)16.25, 30));
 
 	(void)interpolated.interpolate(vec, otherVec, 0.75f);
-	COMPARE_VECTORS(interpolated, vector3d<T>((T)6.25, (T)8.75, 10));
+	EQUAL_VECTORS(interpolated, vector3d<T>((T)6.25, (T)8.75, 10));
 
 	(void)interpolated.interpolate(vec, otherVec, 1.f);
-	COMPARE_VECTORS(interpolated, vec); // 1.f means all the first vector
+	EQUAL_VECTORS(interpolated, vec); // 1.f means all the first vector
 
 
 	interpolated = vec.getInterpolated(otherVec, 0.f);
-	COMPARE_VECTORS(interpolated, otherVec); // 0.f means all the second vector
+	EQUAL_VECTORS(interpolated, otherVec); // 0.f means all the second vector
 
 	interpolated = vec.getInterpolated(otherVec, 0.25f);
-	COMPARE_VECTORS(interpolated, vector3d<T>((T)8.75, (T)16.25, 30));
+	EQUAL_VECTORS(interpolated, vector3d<T>((T)8.75, (T)16.25, 30));
 
 	interpolated = vec.getInterpolated(otherVec, 0.75f);
-	COMPARE_VECTORS(interpolated, vector3d<T>((T)6.25, (T)8.75, 10));
+	EQUAL_VECTORS(interpolated, vector3d<T>((T)6.25, (T)8.75, 10));
 
 	interpolated = vec.getInterpolated(otherVec, 1.f);
-	COMPARE_VECTORS(interpolated, vec); // 1.f means all the first vector
+	EQUAL_VECTORS(interpolated, vec); // 1.f means all the first vector
 
 
 	vector3d<T> thirdVec(20, 10, -30);
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 0.f);
-	COMPARE_VECTORS(interpolated, vec); // 0.f means all the 1st vector
+	EQUAL_VECTORS(interpolated, vec); // 0.f means all the 1st vector
 
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 0.25f);
-	COMPARE_VECTORS(interpolated, vector3d<T>((T)7.8125, (T)10.9375, (T)13.125));
+	EQUAL_VECTORS(interpolated, vector3d<T>((T)7.8125, (T)10.9375, (T)13.125));
 
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 0.5f);
-	COMPARE_VECTORS(interpolated, vector3d<T>((T)11.25, (T)13.75, (T)12.5));
+	EQUAL_VECTORS(interpolated, vector3d<T>((T)11.25, (T)13.75, (T)12.5));
 
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 0.75f);
-	COMPARE_VECTORS(interpolated, vector3d<T>((T)15.3125, (T)13.4375, (T)-1.875));
+	EQUAL_VECTORS(interpolated, vector3d<T>((T)15.3125, (T)13.4375, (T)-1.875));
 
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 1.f);
-	COMPARE_VECTORS(interpolated, thirdVec); // 1.f means all the 3rd vector
-	
+	EQUAL_VECTORS(interpolated, thirdVec); // 1.f means all the 3rd vector
+
 	vec.set(0,0,0);
 	vec.setLength(99);
 	if ( is_nan(vec) )
@@ -137,6 +163,22 @@ static bool doTests()
 		return false;
 	}
 
+	//TODO: We need a proper order for vectors first
+#if 0
+	#define LESS_VECTORS(compare, with)\
+	if(!equalVectors(cmp_less<core::vector3d<T> >(compare), with)) return false;
+
+	vec.set(5, 5, 0);
+
+	otherVec.set(10, 20, 40);
+	LESS_VECTORS(vec, otherVec);
+
+	vec.set(-1,-1,1);
+	otherVec.set(1,-1,1);
+	LESS_VECTORS(vec, otherVec);
+
+	LESS_VECTORS(vec, vec);
+#endif
 	return true;
 }
 
@@ -159,7 +201,7 @@ bool testVector3d(void)
 	else
 		logTestString("\n*** vector3d<f64> tests failed ***\n\n");
 
-	bool s32Success = true; // doTests<s32>(); Currently broken: see vector3d<T>& normalize() and const T length = core::reciprocal_squareroot ( (T) (X*X + Y*Y + Z*Z) );
+	bool s32Success = doTests<s32>();
 	if(s32Success)
 		logTestString("vector3di tests passed\n\n");
 	else

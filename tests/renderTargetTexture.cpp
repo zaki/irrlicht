@@ -85,7 +85,7 @@ static bool testWith2DImage(E_DRIVER_TYPE driverType)
 		driver->endScene ();
 	}
 
-	bool result = takeScreenshotAndCompareAgainstReference(driver, "-rttWith2DImage.png", 100);
+	bool result = takeScreenshotAndCompareAgainstReference(driver, "-rttWith2DImage.png", 99.91f);
 
 	device->drop();
 
