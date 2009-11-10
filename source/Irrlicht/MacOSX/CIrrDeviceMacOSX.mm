@@ -60,11 +60,11 @@ struct JoystickInfo
 	irr::core::array <JoystickComponent> axisComp;
 	irr::core::array <JoystickComponent> buttonComp;
 	irr::core::array <JoystickComponent> hatComp;
-	
+
 	int	hats;
 	int	axes;
 	int	buttons;
-	
+
 	int numActiveJoysticks;
 
 	irr::SEvent persistentData;
@@ -178,7 +178,7 @@ static void addJoystickComponent (CFTypeRef refElement, JoystickInfo* joyInfo)
 									joyInfo->hatComp.push_back(newComponent);
 								}
 								break;
-							}							
+							}
 						}
 						break;
 					case kHIDPage_Button:
@@ -235,10 +235,10 @@ static void getJoystickDeviceInfo (io_object_t hidDevice, CFMutableDictionaryRef
 {
 	CFMutableDictionaryRef usbProperties = 0;
 	io_registry_entry_t parent1, parent2;
-	
+
 	/* Mac OS X currently is not mirroring all USB properties to HID page so need to look at USB device page also
-	 * get dictionary for usb properties: step up two levels and get CF dictionary for USB properties
-	 */
+	* get dictionary for usb properties: step up two levels and get CF dictionary for USB properties
+	*/
 	if ((KERN_SUCCESS == IORegistryEntryGetParentEntry (hidDevice, kIOServicePlane, &parent1)) &&
 		(KERN_SUCCESS == IORegistryEntryGetParentEntry (parent1, kIOServicePlane, &parent2)) &&
 		(KERN_SUCCESS == IORegistryEntryCreateCFProperties (parent2, &usbProperties, kCFAllocatorDefault, kNilOptions)))
@@ -247,10 +247,9 @@ static void getJoystickDeviceInfo (io_object_t hidDevice, CFMutableDictionaryRef
 		{
 			CFTypeRef refCF = 0;
 			/* get device info
-			 * try hid dictionary first, if fail then go to usb dictionary
-			 */
-			
-			
+			* try hid dictionary first, if fail then go to usb dictionary
+			*/
+
 			/* get joystickName name */
 			refCF = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDProductKey));
 			if (!refCF)
@@ -260,7 +259,7 @@ static void getJoystickDeviceInfo (io_object_t hidDevice, CFMutableDictionaryRef
 				if (!CFStringGetCString ((CFStringRef)refCF, joyInfo->joystickName, 256, CFStringGetSystemEncoding ()))
 					irr::os::Printer::log("CFStringGetCString error getting joyInfo->joystickName", irr::ELL_ERROR);
 			}
-			
+
 			/* get usage page and usage */
 			refCF = CFDictionaryGetValue (hidProperties, CFSTR(kIOHIDPrimaryUsagePageKey));
 			if (refCF)
@@ -368,17 +367,17 @@ CIrrDeviceMacOSX::CIrrDeviceMacOSX(const SIrrlichtCreationParameters& param)
 	initKeycodes();
 	if (CreationParams.DriverType != video::EDT_NULL)
 		createWindow();
-	
+
 	setResizable(false);
-	
+
 	CursorControl = new CCursorControl(CreationParams.WindowSize, this);
 	createDriver();
-	
+
 	if (IsSoftwareRenderer && CreationParams.DriverType != video::EDT_NULL)
 	{
 		// create context for rendering raw bitmap
 	}
-	
+
 	createGUIAndScene();
 }
 
@@ -445,7 +444,7 @@ bool CIrrDeviceMacOSX::createWindow()
 	display = CGMainDisplayID();
 	ScreenWidth  = (int) CGDisplayPixelsWide(display);
 	ScreenHeight = (int) CGDisplayPixelsHigh(display);
-	
+
 	VideoModeList.setDesktop(CreationParams.Bits, core::dimension2d<u32>(ScreenWidth, ScreenHeight));
 
 	if (!CreationParams.Fullscreen)
@@ -453,7 +452,7 @@ bool CIrrDeviceMacOSX::createWindow()
 		Window = [[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,CreationParams.WindowSize.Width,CreationParams.WindowSize.Height) styleMask:NSTitledWindowMask+NSClosableWindowMask+NSResizableWindowMask backing:NSBackingStoreBuffered defer:FALSE];
 		if (Window != NULL)
 		{
-			NSOpenGLPixelFormatAttribute windowattribs[] = 
+			NSOpenGLPixelFormatAttribute windowattribs[] =
 			{
 					NSOpenGLPFANoRecovery,
 					NSOpenGLPFAAccelerated,
@@ -503,7 +502,7 @@ bool CIrrDeviceMacOSX::createWindow()
 							windowattribs[12] = (NSOpenGLPixelFormatAttribute)((int)windowattribs[12]-1);
 							format = [[NSOpenGLPixelFormat alloc] initWithAttributes:windowattribs];
 						}
-						
+
 						if (!format)
 						{
 							windowattribs[9] = (NSOpenGLPixelFormatAttribute)0;
@@ -519,7 +518,7 @@ bool CIrrDeviceMacOSX::createWindow()
 							{
 								os::Printer::log("No FSAA available.", ELL_WARNING);
 							}
-							
+
 						}
 					}
 				}
@@ -633,14 +632,14 @@ bool CIrrDeviceMacOSX::createWindow()
 }
 
 void CIrrDeviceMacOSX::setResize(int width, int height)
-{	
+{
 	// set new window size
 	DeviceWidth = width;
 	DeviceHeight = height;
-	
+
 	// update the size of the opengl rendering context
 	[OGLContext update];
-	
+
 	// resize the driver to the inner pane size
 	NSRect driverFrame = [Window contentRectForFrameRect:[Window frame]];
 	getVideoDriver()->OnResize(core::dimension2d<u32>( (s32)driverFrame.size.width, (s32)driverFrame.size.height));
@@ -689,7 +688,6 @@ void CIrrDeviceMacOSX::createDriver()
 			os::Printer::log("Unable to create video driver of unknown type.", ELL_ERROR);
 			break;
 	}
-	
 }
 
 void CIrrDeviceMacOSX::flush()
@@ -728,32 +726,32 @@ bool CIrrDeviceMacOSX::run()
 				ievent.EventType = irr::EET_KEY_INPUT_EVENT;
 				ievent.KeyInput.Shift   = ([(NSEvent *)event modifierFlags] & NSShiftKeyMask  ) != 0;
 				ievent.KeyInput.Control = ([(NSEvent *)event modifierFlags] & NSControlKeyMask) != 0;
-				
+
 				if (IsShiftDown != ievent.KeyInput.Shift)
 				{
 					ievent.KeyInput.Char = irr::KEY_SHIFT;
 					ievent.KeyInput.Key = irr::KEY_SHIFT;
 					ievent.KeyInput.PressedDown = ievent.KeyInput.Shift;
-					
+
 					IsShiftDown = ievent.KeyInput.Shift;
-					
+
 					postEventFromUser(ievent);
 				}
-				
+
 				if (IsControlDown != ievent.KeyInput.Control)
 				{
 					ievent.KeyInput.Char = irr::KEY_CONTROL;
 					ievent.KeyInput.Key = irr::KEY_CONTROL;
 					ievent.KeyInput.PressedDown = ievent.KeyInput.Control;
-					
+
 					IsControlDown = ievent.KeyInput.Control;
-					
+
 					postEventFromUser(ievent);
 				}
-				
+
 				[NSApp sendEvent:event];
-				break;				
-				
+				break;
+
 			case NSLeftMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_LMOUSE_PRESSED_DOWN;
@@ -769,7 +767,7 @@ bool CIrrDeviceMacOSX::run()
 				ievent.MouseInput.Event = irr::EMIE_LMOUSE_LEFT_UP;
 				postMouseEvent(event,ievent);
 				break;
-				
+
 			case NSOtherMouseDown:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_MMOUSE_PRESSED_DOWN;
@@ -777,7 +775,7 @@ bool CIrrDeviceMacOSX::run()
 				ievent.MouseInput.ButtonStates = MouseButtonStates;
 				postMouseEvent(event,ievent);
 				break;
-				
+
 			case NSOtherMouseUp:
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				MouseButtonStates &= !irr::EMBSM_MIDDLE;
@@ -816,8 +814,10 @@ bool CIrrDeviceMacOSX::run()
 				ievent.EventType = irr::EET_MOUSE_INPUT_EVENT;
 				ievent.MouseInput.Event = irr::EMIE_MOUSE_WHEEL;
 				ievent.MouseInput.Wheel = [(NSEvent *)event deltaY];
-				if (ievent.MouseInput.Wheel < 1.0f) ievent.MouseInput.Wheel *= 10.0f;
-				else ievent.MouseInput.Wheel *= 5.0f;
+				if (ievent.MouseInput.Wheel < 1.0f)
+					ievent.MouseInput.Wheel *= 10.0f;
+				else
+					ievent.MouseInput.Wheel *= 5.0f;
 				postMouseEvent(event,ievent);
 				break;
 
@@ -868,7 +868,7 @@ void CIrrDeviceMacOSX::setWindowCaption(const wchar_t* text)
 	if (Window != NULL)
 	{
 		size = wcstombs(title,text,1024);
-		if (size == 1024) title[1023] = 0;
+		title[1023] = 0;
 		[Window setTitle:[NSString stringWithCString:title length:size]];
 	}
 }
@@ -912,7 +912,7 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 		c = [str characterAtIndex:0];
 
 		iter = KeyCodes.find(c);
-		if (iter != KeyCodes.end()) 
+		if (iter != KeyCodes.end())
 			mkey = (*iter).second;
 		else
 		{
@@ -921,8 +921,8 @@ void CIrrDeviceMacOSX::postKeyEvent(void *event,irr::SEvent &ievent,bool pressed
 			{
 				mkey = irr::KEY_PERIOD;
 				mchar = '.';
-			} 
-			else 
+			}
+			else
 			{
 				cStr = (unsigned char *)[str cStringUsingEncoding:NSWindowsCP1252StringEncoding];
 				if (cStr != NULL && strlen((char*)cStr) > 0)
@@ -965,8 +965,8 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 	{
 		ievent.MouseInput.X = (int)[(NSEvent *)event locationInWindow].x;
 		ievent.MouseInput.Y = DeviceHeight - (int)[(NSEvent *)event locationInWindow].y;
-		
-		if (ievent.MouseInput.Y < 0) 
+
+		if (ievent.MouseInput.Y < 0)
 			post = false;
 	}
 	else
@@ -977,7 +977,7 @@ void CIrrDeviceMacOSX::postMouseEvent(void *event,irr::SEvent &ievent)
 
 	if (post)
 		postEventFromUser(ievent);
-	
+
 	[NSApp sendEvent:(NSEvent *)event];
 }
 
@@ -1090,7 +1090,7 @@ void CIrrDeviceMacOSX::setResizable(bool resize)
 {
 	IsResizable = resize;
 }
-	
+
 bool CIrrDeviceMacOSX::isResizable() const
 {
 	return IsResizable;
@@ -1100,13 +1100,13 @@ void CIrrDeviceMacOSX::minimizeWindow()
 {
 	// todo: implement
 }
-	
+
 //! Maximizes the window if possible.
 void CIrrDeviceMacOSX::maximizeWindow()
 {
 	// todo: implement
 }
-	
+
 //! Restore the window to normal size if possible.
 void CIrrDeviceMacOSX::restoreWindow()
 {
@@ -1116,23 +1116,23 @@ void CIrrDeviceMacOSX::restoreWindow()
 bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rect<s32>* src )
 {
 	// todo: implement window ID and src rectangle
-	
+
 	if (!surface)
 		return false;
-	
+
 	if (IsSoftwareRenderer)
 	{
 		// do we need to change the size?
 		bool updateSize = !SoftwareDriverTarget ||
 		s32([SoftwareDriverTarget size].width)  != surface->getDimension().Width ||
 		s32([SoftwareDriverTarget size].height) != surface->getDimension().Height;
-		
+
 		// release if necessary
 		if (SoftwareDriverTarget && updateSize)
 			[SoftwareDriverTarget release];
-		
+
 		NSRect areaRect = NSMakeRect(0.0, 0.0, surface->getDimension().Width, surface->getDimension().Height);
-		
+
 		// get pointer to image data
 		unsigned char* imgData = (unsigned char*)surface->lock();
 
@@ -1140,25 +1140,25 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 		if (updateSize)
 		{
 			// allocate target for IImage
-			SoftwareDriverTarget = [[NSBitmapImageRep alloc] 
-			                        initWithBitmapDataPlanes: nil
-			                        pixelsWide: areaRect.size.width
-			                        pixelsHigh: areaRect.size.height 
-			                        bitsPerSample: 8
-			                        samplesPerPixel: 3
-			                        hasAlpha: NO
-			                        isPlanar: NO
-			                        colorSpaceName: NSCalibratedRGBColorSpace
-			                        bytesPerRow: (3 * areaRect.size.width)
-			                        bitsPerPixel: 24];
+			SoftwareDriverTarget = [[NSBitmapImageRep alloc]
+					initWithBitmapDataPlanes: nil
+					pixelsWide: areaRect.size.width
+					pixelsHigh: areaRect.size.height
+					bitsPerSample: 8
+					samplesPerPixel: 3
+					hasAlpha: NO
+					isPlanar: NO
+					colorSpaceName: NSCalibratedRGBColorSpace
+					bytesPerRow: (3 * areaRect.size.width)
+					bitsPerPixel: 24];
 		}
-		
+
 		const u32 destwidth = areaRect.size.width;
 		const u32 minWidth = core::min_(surface->getDimension().Width, destwidth);
 		const u32 destPitch = (3 * areaRect.size.width);
-		
+
 		u8* srcdata = reinterpret_cast<u8*>(imgData);
-		u8* destData = reinterpret_cast<u8*>([SoftwareDriverTarget bitmapData]);		
+		u8* destData = reinterpret_cast<u8*>([SoftwareDriverTarget bitmapData]);
 		const u32 destheight =  areaRect.size.height;
 		const u32 srcheight = core::min_(surface->getDimension().Height, destheight);
 		const u32 srcPitch = surface->getPitch();
@@ -1168,22 +1168,20 @@ bool CIrrDeviceMacOSX::present(video::IImage* surface, void* windowId, core::rec
 			srcdata  += srcPitch;
 			destData += destPitch;
 		}
-		
+
 		// unlock the data
 		surface->unlock();
-		
+
 		// todo: draw properly into a sub-view
 		[SoftwareDriverTarget draw];
 	}
-	
+
 	return false;
 }
 
 #if defined (_IRR_COMPILE_WITH_JOYSTICK_EVENTS_)
 static void joystickRemovalCallback(void * target,
-                               IOReturn result,
-                               void * refcon,
-                               void * sender)
+		IOReturn result, void * refcon, void * sender)
 {
 	JoystickInfo *joy = (JoystickInfo *) refcon;
 	joy->removed = 1;
@@ -1279,27 +1277,27 @@ bool CIrrDeviceMacOSX::activateJoysticks(core::array<SJoystickInfo> & joystickIn
 				{
 					CFRelease (hidProperties);
 					os::Printer::log("initialiseJoysticks Open interface failed", ELL_ERROR);
-					continue;				
+					continue;
 				}
 
 				CFRelease (hidProperties);
 
 				result = IOObjectRelease (hidObject);
-				
+
 				if ( (info.usagePage != kHIDPage_GenericDesktop) ||
-					 ((info.usage != kHIDUsage_GD_Joystick &&
-					  info.usage != kHIDUsage_GD_GamePad &&
-					  info.usage != kHIDUsage_GD_MultiAxisController)) ) 
+					((info.usage != kHIDUsage_GD_Joystick &&
+					info.usage != kHIDUsage_GD_GamePad &&
+					info.usage != kHIDUsage_GD_MultiAxisController)) )
 				{
 					closeJoystickDevice (&info);
 					continue;
 				}
 
-				for (u32 i = 0; i < 6; i++)
+				for (u32 i = 0; i < 6; ++i)
 					info.persistentData.JoystickEvent.Axis[i] = 0;
 
 				ActiveJoysticks.push_back(info);
-				
+
 				SJoystickInfo returnInfo;
 				returnInfo.Axes = info.axes;
 				//returnInfo.Hats = info.hats;
@@ -1340,7 +1338,7 @@ void CIrrDeviceMacOSX::pollJoysticks()
 	{
 		if (ActiveJoysticks[joystick].removed)
 			continue;
-		
+
 		bool found = false;
 		ActiveJoysticks[joystick].persistentData.JoystickEvent.Joystick = joystick;
 
@@ -1363,7 +1361,7 @@ void CIrrDeviceMacOSX::pollJoysticks()
 						ActiveJoysticks[joystick].axisComp[n].minRead = hidEvent.value;
 					if (hidEvent.value > ActiveJoysticks[joystick].axisComp[n].maxRead)
 						ActiveJoysticks[joystick].axisComp[n].maxRead = hidEvent.value;
-					
+
 					if (readScale != 0.0f)
 						hidEvent.value = (int)(((f32)((f32)hidEvent.value - (f32)ActiveJoysticks[joystick].axisComp[n].minRead) * deviceScale / readScale) + min);
 
