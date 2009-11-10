@@ -37,11 +37,14 @@ namespace gui
 		EGST_BURNING_SKIN,
 
 		//! An unknown skin, not serializable at present
-		EGST_UNKNOWN
+		EGST_UNKNOWN,
+			
+		//! this value is not used, it only specifies the number of skin types
+		EGST_COUNT
 	};
 
 	//! Names for gui element types
-	const c8* const GUISkinTypeNames[] =
+	const c8* const GUISkinTypeNames[EGST_COUNT+1] =
 	{
 		"windowsClassic",
 		"windowsMetallic",
@@ -102,7 +105,7 @@ namespace gui
 	};
 
 	//! Names for default skin colors
-	const c8* const GUISkinColorNames[] =
+	const c8* const GUISkinColorNames[EGDC_COUNT+1] =
 	{
 		"3DDarkShadow",
 		"3DShadow",
@@ -173,7 +176,7 @@ namespace gui
 
 
 	//! Names for default skin sizes
-	const c8* const GUISkinSizeNames[] =
+	const c8* const GUISkinSizeNames[EGDS_COUNT+1] =
 	{
 		"ScrollBarSize",
 		"MenuHeight",
@@ -220,7 +223,7 @@ namespace gui
 	};
 
 	//! Names for default skin sizes
-	const c8* const GUISkinTextNames[] =
+	const c8* const GUISkinTextNames[EGDT_COUNT+1] =
 	{
 		"MessageBoxOkay",
 		"MessageBoxCancel",
@@ -287,7 +290,7 @@ namespace gui
 		EGDI_COUNT
 	};
 
-	const c8* const GUISkinIconNames[] =
+	const c8* const GUISkinIconNames[EGDI_COUNT+1] =
 	{
 		"windowMaximize",
 		"windowRestore",
@@ -333,7 +336,7 @@ namespace gui
 		EGDF_COUNT
 	};
 
-	const c8* const GUISkinFontNames[] =
+	const c8* const GUISkinFontNames[EGDF_COUNT+1] =
 	{
 		"defaultFont",
 		"buttonFont",
