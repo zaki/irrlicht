@@ -1,3 +1,64 @@
+Changes in 1.7
+
+ - irrArray: Fixed issues with push_front and reallocation
+   Changed behavior for set_pointer and clear, when free_when_destroyed is false
+
+ - NPK (Nebula device archive) reader added, it's an uncompressed PAK-like format
+
+ - SSkinMeshBuffer::MoveTo* methods renamed to convertTo*
+
+ - Multiple Render Target (MRT) support added, including some enhanced blend features where supported
+
+ - Directory changing fixed for virtual file systems (Archives etc)
+
+ - Fix texture matrix init in scene manager and driver
+
+ - More draw2dimage support in software drivers
+
+ - Sphere node now properly chooses a good tesselation based on the parameters
+
+ - Active camera not regsitered twice anymore
+
+ - Parallax/normal map shader rotation bug under OpenGL fixed 
+
+ - bump map handling for obj files fixed
+
+ - Fog serialization added
+
+ - New context menu features added
+
+ - Bounding Box updates for skinned meshes fixed
+
+ - The current FPS for an animated scene node cn be queried now, added some variables to serialization
+
+ - Scrollbars fixed
+
+ - Fixed 2d vertex primitive method to correctly handle transparency
+
+ - Fullscreen handling has been ehanced for Windows, now proper resolution is restored on Alt-Tab etc.
+
+ - Cameras can now be added to the scene node without automatically activating them
+   Clone method added
+
+ - New video driver method getMaxTextureSize
+
+ - PAK archive reader fixed
+
+ - TRANSPARENT_ALPHA_CHANNEL_REF uses modulate to enable lighting
+
+ - LIGHTMAP_ADD now always uses add operator
+
+ - Some Unicode file system fixes
+
+ - destructor of irrString not virtual anymore, please don't derive from irrString
+   Some new methods added, for searching and splitting
+   Assignment operator optimized
+
+ - new lightness method for SColor
+
+ - draw3DTriangle now renders filled polygons, old behavior can be achieved by setting EMT_WIREFRAME
+
+----------------
 Changes in 1.6.1
 
  - Fix another (OldValue == NewValue) before drop()/grap(), this time in CTextureAttribute::setTexture.
@@ -6,6 +67,7 @@ Changes in 1.6.1
 
  - Fix ninja animation range which got messed up a little when b3d animations got fixed (thx gbox for finding)
 
+---------------------------
 Changes in 1.6 (23.09.2009)
 
  - Added IFileSystem::createEmptyFileList, exposed IFileList::sort, addItem and added getID
