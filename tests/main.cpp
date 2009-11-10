@@ -65,6 +65,8 @@ int main(int argumentCount, char * arguments[])
 	TEST(testDimension2d);
 	TEST(testVector2d);
 	TEST(testVector3d);
+	// TODO: Needs to be fixed first
+//	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);
 	// file system checks
 	TEST(filesystem);
@@ -94,7 +96,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(renderTargetTexture);
 	TEST(textureRenderStates);
 	TEST(transparentAlphaChannelRef);
-	// TODO: Needs to be checked first.
+	// TODO: Needs to be fixed first.
 //	TEST(projectionMatrix);
 	// large scenes
 	TEST(planeMatrix);
