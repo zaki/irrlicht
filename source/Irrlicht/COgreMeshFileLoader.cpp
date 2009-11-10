@@ -444,19 +444,10 @@ void COgreMeshFileLoader::composeMeshBufferMaterial(scene::IMeshBuffer* mb, cons
 			material=Materials[k].Techniques[0].Passes[0].Material;
 			if (Materials[k].Techniques[0].Passes[0].Texture.Filename.size())
 			{
-				material.setTexture(0, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename));
-				if (!material.getTexture(0))
-				{
-					// retry with relative path
-					core::stringc relative = Materials[k].Techniques[0].Passes[0].Texture.Filename;
-					s32 idx = relative.findLast('\\');
-					if (idx != -1)
-						relative = relative.subString(idx+1, relative.size()-idx-1);
-					idx = relative.findLast('/');
-					if (idx != -1)
-						relative = relative.subString(idx+1, relative.size()-idx-1);
-					material.setTexture(0, Driver->getTexture((CurrentlyLoadingFromPath+"/"+relative)));
-				}
+				if (FileSystem->existFile(Materials[k].Techniques[0].Passes[0].Texture.Filename))
+					material.setTexture(0, Driver->getTexture(Materials[k].Techniques[0].Passes[0].Texture.Filename));
+				else
+					material.setTexture(0, Driver->getTexture((CurrentlyLoadingFromPath+"/"+FileSystem->getFileBasename(Materials[k].Techniques[0].Passes[0].Texture.Filename))));
 			}
 			break;
 		}
@@ -1232,9 +1223,13 @@ void COgreMeshFileLoader::loadMaterials(io::IReadFile* meshFile)
 #ifdef IRR_OGRE_LOADER_DEBUG
 	os::Printer::log("Load Materials");
 #endif
-	core::stringc token = meshFile->getFileName();
-	io::path filename = token.subString(0, token.size()-4) + L"material";
-	io::IReadFile* file = FileSystem->createAndOpenFile(filename);
+	core::stringc token;
+	io::IReadFile* file = 0;
+	io::path filename = FileSystem->getFileBasename(meshFile->getFileName(), false) + ".material";
+	if (FileSystem->existFile(filename))
+		file = FileSystem->createAndOpenFile(filename);
+	else
+		file = FileSystem->createAndOpenFile(FileSystem->getFileDir(meshFile->getFileName())+"/"+filename);
 
 	if (!file)
 	{
@@ -1319,16 +1314,20 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 #ifdef IRR_OGRE_LOADER_DEBUG
 	os::Printer::log("Load Skeleton", name);
 #endif
-	io::IReadFile* file = FileSystem->createAndOpenFile(name);
+	io::IReadFile* file = 0;
+	io::path filename;
+	if (FileSystem->existFile(name))
+		file = FileSystem->createAndOpenFile(name);
+	else if (FileSystem->existFile(filename = FileSystem->getFileDir(meshFile->getFileName())+"/"+name))
+		file = FileSystem->createAndOpenFile(filename);
+	else if (FileSystem->existFile(filename = FileSystem->getFileBasename(meshFile->getFileName(), false) + ".skeleton"))
+		file = FileSystem->createAndOpenFile(filename);
+	else
+		file = FileSystem->createAndOpenFile(FileSystem->getFileDir(meshFile->getFileName())+"/"+filename);
 	if (!file)
 	{
-		io::path filename = meshFile->getFileName().subString(0, meshFile->getFileName().size()-4) + L"skeleton";
-		file = FileSystem->createAndOpenFile(name);
-		if (!file)
-		{
-			os::Printer::log("Could not load matching skeleton", name);
-			return false;
-		}
+		os::Printer::log("Could not load matching skeleton", name);
+		return false;
 	}
 
 	s16 id;
