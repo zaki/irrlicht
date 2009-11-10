@@ -43,10 +43,7 @@ CGUIListBox::CGUIListBox(IGUIEnvironment* environment, IGUIElement* parent,
 	ScrollBar->setTabStop(false);
 	ScrollBar->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_LOWERRIGHT);
 	ScrollBar->setVisible(false);
-	ScrollBar->drop();
-
 	ScrollBar->setPos(0);
-	ScrollBar->grab();
 
 	setNotClipped(!clip);
 
