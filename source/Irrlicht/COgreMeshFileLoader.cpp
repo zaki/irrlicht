@@ -752,24 +752,14 @@ void COgreMeshFileLoader::composeObject(void)
 				scaleMatrix.setScale( Skeleton.Bones[i].Scale );
 				joint->LocalMatrix *= scaleMatrix;
 			}
-			/*
-			joint->LocalMatrix[2]=-joint->LocalMatrix[2];
-			joint->LocalMatrix[6]=-joint->LocalMatrix[6];
-			joint->LocalMatrix[8]=-joint->LocalMatrix[8];
-			joint->LocalMatrix[9]=-joint->LocalMatrix[9];
-			*/
 			joint->LocalMatrix.setTranslation( Skeleton.Bones[i].Position );
 		}
 		// Joints hierarchy
-		core::array<bool> isRoot;
-		isRoot.set_used(Skeleton.Bones.size());
-		memset(isRoot.pointer(), true, Skeleton.Bones.size());
 		for (u32 i=0; i<Skeleton.Bones.size(); ++i)
 		{
 			if (Skeleton.Bones[i].Parent<m->getJointCount())
 			{
 				m->getAllJoints()[Skeleton.Bones[i].Parent]->Children.push_back(m->getAllJoints()[Skeleton.Bones[i].Handle]);
-				isRoot[Skeleton.Bones[i].Handle]=false;
 			}
 		}
 
@@ -781,9 +771,10 @@ void COgreMeshFileLoader::composeObject(void)
 			{
 				for (u32 k=0; k<Meshes[i].SubMeshes[j].BoneAssignments.size(); ++k)
 				{
-					ISkinnedMesh::SWeight* w = m->addWeight(m->getAllJoints()[Meshes[i].SubMeshes[j].BoneAssignments[k].BoneID]);
-					w->strength=Meshes[i].SubMeshes[j].BoneAssignments[k].Weight;
-					w->vertex_id=Meshes[i].SubMeshes[j].BoneAssignments[k].VertexID;
+					OgreBoneAssignment& ba = Meshes[i].SubMeshes[j].BoneAssignments[k];
+					ISkinnedMesh::SWeight* w = m->addWeight(m->getAllJoints()[ba.BoneID]);
+					w->strength=ba.Weight;
+					w->vertex_id=ba.VertexID;
 					w->buffer_id=bufCount;
 				}
 				++bufCount;
@@ -1437,9 +1428,6 @@ bool COgreMeshFileLoader::loadSkeleton(io::IReadFile* meshFile, const core::stri
 				else
 					keyframe.Scale=core::vector3df(1,1,1);
 				keyframe.BoneID=bone;
-#ifdef IRR_OGRE_LOADER_DEBUG
-//				os::Printer::log("Keyframe time", core::stringc(keyframe.Time));
-#endif
 			}
 			break;
 		case COGRE_ANIMATION_LINK:
