@@ -56,7 +56,7 @@ linked to it.
 
 Logging
 =======
-Please use logTestString() to log any intersting output or fails from your test.  This is declared in
+Please use logTestString() to log any interesting output or fails from your test.  This is declared in
 tests/testUtils.h.  Its output goes to tests/tests.log
 
 
@@ -73,8 +73,8 @@ introduce artifacts and false fails.
 
 Optionally, you can specify the amount of match that is required between the produced screenshot and
 the reference image.  While the images should match exactly, we have found that OpenGL implementations
-can vary significantly across test machines, so a default 99% match (of total colour values across all
-pixels) is assumed.  You may have to go as low as 98% for some images, but please try to err on the side
+can vary significantly across test machines, often around 99% match (of total colour values across all
+pixels).  You may have to go as low as 98% for some images, but please try to err on the side
 of strictness until we can determine that your test image needs to be fuzzier on other peoples' machines.
 
 If takeScreenshotAndCompareAgainstReference() can't find an existing reference image, it will create
@@ -118,3 +118,10 @@ Irrlicht need updated), then please do raise the issue in the bug forum:
 http://irrlicht.sourceforge.net/phpBB2/viewforum.php?f=7
 
 We do want to hear about fails, and will thank you for finding them.
+
+Running specific tests
+======================
+The app takes two parameters. First is the test to start with (starting at 0 anddefaulting to 0), the second is the number of tests to run (beginning with the one given as first parameter). If the second parameter is not given, all existing tests are run (again starting with the first parameter). So, starting the test suite without a parameter will really run all tests.
+Another special parameter is '--list', which outputs a list of all existing tests and their respective number.
+
+For debugging purposes it can make sense to run a test without spawning a separate process for each test case. This can be switched off by a boolean flag in main.cpp ('spawn=false').
