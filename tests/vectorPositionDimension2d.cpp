@@ -59,12 +59,24 @@ bool vectorPositionDimension2d(void)
 {
 	bool result = true;
 
+	logTestString("vector,position,dimesion test with s32\n\n");
 	result &= doTest<dimension2di, vector2di, position2di, s32>();
+	if (result)
+		logTestString("tests passed\n\n");
+	else
+		logTestString("\ntests failed\n\n");
+	logTestString("vector,position,dimesion test with f32\n\n");
 	result &= doTest<dimension2df, vector2df, position2df, f32>();
+	if (result)
+		logTestString("tests passed\n\n");
+	else
+		logTestString("\ntests failed\n\n");
+	logTestString("vector,position,dimesion test with f64\n\n");
 	result &= doTest<dimension2d<f64>, vector2d<f64>, position2d<f64>, f64>();
-	
-	if(!result)
-		assert(false);
+	if (result)
+		logTestString("tests passed\n\n");
+	else
+		logTestString("\ntests failed\n\n");
 
 	return result;
 }

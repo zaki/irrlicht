@@ -50,6 +50,25 @@ bool matrices(void)
 }
 
 // Test rotations
+bool transformations(void)
+{
+	bool result = true;
+	matrix4 m, s;
+	m.setRotationDegrees(core::vector3df(30,40,50));
+	s.setScale(core::vector3df(2,3,4));
+	m *= s;
+	m.setTranslation(core::vector3df(5,6,7));
+	result &= (core::vector3df(5,6,7).equals(m.getTranslation()));
+	assert(result);
+	result &= (core::vector3df(2,3,4).equals(m.getScale()));
+	assert(result);
+	core::vector3df newRotation = m.getRotationDegrees();
+	result &= (core::vector3df(30,40,50).equals(newRotation, 0.000004f));
+	assert(result);
+	return result;
+}
+
+// Test rotations
 bool rotations(void)
 {
 	bool result = true;
@@ -106,7 +125,8 @@ bool rotations(void)
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
 	result &= (vec1.equals(vec12));
 	result &= (vec2.equals(vec22));
-	result &= (vec3.equals(vec32));
+	// this one needs higher tolerance due to rounding issues
+	result &= (vec3.equals(vec32, 0.000002f));
 	assert(result);
 
 	vec1.set(1,2,3);vec12.set(1,2,3);
@@ -124,7 +144,8 @@ bool rotations(void)
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
 	result &= (vec1.equals(vec12));
 	result &= (vec2.equals(vec22));
-	result &= (vec3.equals(vec32));
+	// this one needs higher tolerance due to rounding issues
+	result &= (vec3.equals(vec32, 0.000002f));
 	assert(result);
 
 	return result;
@@ -174,6 +195,7 @@ bool matrixOps(void)
 	result &= matrices();
 	result &= rotations();
 	result &= isOrthogonal();
+	result &= transformations();
 	return result;
 }
 
