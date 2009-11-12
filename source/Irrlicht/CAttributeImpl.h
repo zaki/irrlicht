@@ -1927,7 +1927,7 @@ public:
 
 	virtual s32 getInt()
 	{
-		return *(s32*)(&Value);
+		return *static_cast<s32*>(Value);
 	}
 
 	virtual bool getBool()
@@ -1938,7 +1938,7 @@ public:
 	virtual core::stringw getStringW()
 	{
 		wchar_t buf[32];
-		swprintf(buf, 32, L"0x%x", *(int*)(&Value));
+		swprintf(buf, 32, L"%p", Value);
 
 		return core::stringw(buf);
 	}
