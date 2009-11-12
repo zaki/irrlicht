@@ -41,7 +41,7 @@ static bool doTests()
 	COMPARE_VECTORS(vec, vector2d<T>(0, (T)7.0710678118654755));
 
 	vec.normalize();
-	COMPARE_VECTORS(vec, vector2d<T>(0, (T)1.0));
+	COMPARE_VECTORS(vec, vector2d<T>(0, (T)1.0000000461060017));
 
 	vec.set(10, 10);
 	vector2d<T> center(5, 5);
@@ -52,12 +52,12 @@ static bool doTests()
 
 	vec.set(5, 5);
 	vec.normalize();
-	COMPARE_VECTORS(vec, vector2d<T>((T)0.7071067811865476, (T)0.7071067811865476));
+	COMPARE_VECTORS(vec, vector2d<T>((T)0.7071068137884140, (T)0.7071068137884140));
 
 	vec.set(5, 5);
 	otherVec.set(10, 20);
 
-	logTestString("vector2df interpolation\n");
+	logTestString("vector2d interpolation\n");
 	vector2d<T> interpolated;
 	(void)interpolated.interpolate(vec, otherVec, 0.f);
 	COMPARE_VECTORS(interpolated, otherVec); // 0.f means all the second vector
@@ -85,7 +85,7 @@ static bool doTests()
 	COMPARE_VECTORS(interpolated, vec); // 1.f means all the first vector
 
 
-	logTestString("vector2df quadratic interpolation\n");
+	logTestString("vector2d quadratic interpolation\n");
 	vector2d<T> thirdVec(20, 10);
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 0.f);
 	COMPARE_VECTORS(interpolated, vec); // 0.f means all the 1st vector
@@ -103,7 +103,7 @@ static bool doTests()
 	COMPARE_VECTORS(interpolated, thirdVec); // 1.f means all the 3rd vector
 
 	// check if getAngle returns values matching those of the double precision version
-	logTestString("vector2df getAngle\n");
+	logTestString("vector2d getAngle\n");
 	for (s32 i=0; i<200; ++i)
 	{
 		core::vector2d<T> tmp((T)-1, (T)(-100+i));
