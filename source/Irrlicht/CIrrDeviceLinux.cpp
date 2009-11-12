@@ -1683,9 +1683,9 @@ bool CIrrDeviceLinux::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness
 			XRRCrtcGamma *gamma = XRRGetCrtcGamma(display, screennr);
 			if (gamma)
 			{
-				*gamma->red=red;
-				*gamma->green=green;
-				*gamma->blue=blue;
+				*gamma->red=(u16)red;
+				*gamma->green=(u16)green;
+				*gamma->blue=(u16)blue;
 				XRRSetCrtcGamma(display, screennr, gamma);
 				XRRFreeGamma(gamma);
 				return true;
