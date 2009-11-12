@@ -140,10 +140,10 @@ namespace core
 		\return Reference to this vector after normalization. */
 		vector3d<T>& normalize()
 		{
-		    f64 length = (f32)(X*X + Y*Y + Z*Z);
+			f64 length = X*X + Y*Y + Z*Z;
 			if (core::equals(length, 0.0)) // this check isn't an optimization but prevents getting NAN in the sqrt.
 				return *this;
-			length = core::reciprocal_squareroot ( (f64) (X*X + Y*Y + Z*Z) );
+			length = core::reciprocal_squareroot(length);
 
 			X = (T)(X * length);
 			Y = (T)(Y * length);

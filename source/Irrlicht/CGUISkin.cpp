@@ -204,7 +204,7 @@ void CGUISkin::setSize(EGUI_DEFAULT_SIZE which, s32 size)
 //! returns the default font
 IGUIFont* CGUISkin::getFont(EGUI_DEFAULT_FONT which) const
 {
-	if (((u32)which < EGDS_COUNT) && Fonts[which])
+	if (((u32)which < EGDF_COUNT) && Fonts[which])
 		return Fonts[which];
 	else
 		return Fonts[EGDF_DEFAULT];
@@ -214,7 +214,7 @@ IGUIFont* CGUISkin::getFont(EGUI_DEFAULT_FONT which) const
 //! sets a default font
 void CGUISkin::setFont(IGUIFont* font, EGUI_DEFAULT_FONT which)
 {
-	if ((u32)which >= EGDS_COUNT)
+	if ((u32)which >= EGDF_COUNT)
 		return;
 
 	if (font)
