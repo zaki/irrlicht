@@ -15,29 +15,24 @@
 #include <time.h>
 #include <vector>
 
-typedef struct _STestDefinition
+struct STestDefinition
 {
 	//! The test entry point function
 	bool(*testSignature)(void);
 
 	//! A descriptive name for the test
 	const char * testName;
-} STestDefinition;
+};
 
 //! This is the main entry point for the Irrlicht test suite.
 /** \return The number of test that failed, i.e. 0 is success. */
 int main(int argumentCount, char * arguments[])
 {
-	bool logFileOpened = openTestLog(1 == argumentCount);
-	assert(logFileOpened);
-
 	if(argumentCount > 3)
 	{
-		logTestString("\nUsage: %s [testNumber] [totalFails]\n");
-		closeTestLog();
+		logTestString("\nUsage: %s [testNumber] [testCount]\n");
 		return 9999;
 	}
-
 
 	#define TEST(x)\
 	{\
@@ -103,56 +98,93 @@ int main(int argumentCount, char * arguments[])
 	TEST(terrainSceneNode);
 	TEST(lightMaps);
 
-	const unsigned int numberOfTests = tests.size();
-
+	unsigned int numberOfTests = tests.size();
 	unsigned int testToRun = 0;
 	unsigned int fails = 0;
 
+	bool firstRun=true;
+	const bool spawn=true;
+	// args: [testNumber] [testCount]
 	if(argumentCount > 1)
 	{
-		testToRun = (unsigned int)atoi(arguments[1]);
-		if(testToRun >= numberOfTests)
+		if (!strcmp(arguments[1],"--list"))
 		{
-			logTestString("\nError: invalid test %d (maximum %d)\n",
-						testToRun, numberOfTests - 1);
-			closeTestLog();
-			return 9999;
+			for (unsigned int i=0; i<tests.size(); ++i)
+			{
+				printf("%3d: %s\n", i, tests[i].testName);
+			}
+			printf("\n");
+			return 0;
+		}
+
+		int tmp = atoi(arguments[1]);
+		firstRun = (tmp>=0);
+		testToRun=abs(tmp);
+
+		if(argumentCount > 2)
+		{
+			numberOfTests = testToRun + abs(atoi(arguments[2]));
+			if (numberOfTests>=tests.size())
+				numberOfTests=tests.size();
 		}
 	}
 
-	if(argumentCount > 2)
-		fails = (unsigned int)atoi(arguments[2]);
-
-	logTestString("\nStarting test %d, '%s'\n",
-				testToRun + 1, tests[testToRun].testName);
-
-	bool success = tests[testToRun].testSignature();
-
-	if(!success)
+	if(testToRun >= numberOfTests)
 	{
-		logTestString("\n******** Test failure ********\nTest %d '%s' failed\n"\
-		"******** Test failure ********\n",
-						testToRun + 1, tests[testToRun].testName);
-		fails++;
+		logTestString("\nError: invalid test %d (maximum %d)\n",
+					testToRun, numberOfTests-testToRun);
+		return 9999;
 	}
 
-	testToRun++;
-	if(testToRun < numberOfTests)
-	{
-		closeTestLog();
-		char runNextTest[256];
-		(void)sprintf(runNextTest, "\"%s\" %d %d", arguments[0], testToRun, fails);
-		fails = system(runNextTest); // Spawn the next test in a new process.
-	}
-	else
-	{
-		(void)openTestLog(false);
-		const int passed = numberOfTests - fails;
+	const unsigned int testCount = numberOfTests-testToRun;
+	const bool logFileOpened = openTestLog(firstRun);
+	assert(logFileOpened);
 
-		logTestString("\nTests finished. %d test%s of %d passed.\n",
-			passed, 1 == passed ? "" : "s", numberOfTests);
+	if (firstRun)
+	{
+		if (numberOfTests)
+		{
+			for (unsigned int i=testToRun; i<numberOfTests; ++i)
+			{
+				logTestString("\nStarting test %d, '%s'\n",
+						i, tests[i].testName);
+				if (spawn)
+				{
+					closeTestLog();
+					char runNextTest[256];
+					(void)sprintf(runNextTest, "\"%s\" %d", arguments[0], -i);
+					// Spawn the next test in a new process.
+					if (system(runNextTest))
+					{
+						(void)openTestLog(false);
+						logTestString("\n******** Test failure ********\n"\
+								"Test %d '%s' failed\n"\
+								"******** Test failure ********\n",
+								i, tests[i].testName);
+						++fails;
+					}
+					else
+						(void)openTestLog(false);
+				}
+				else
+				{
+					if (!tests[i].testSignature())
+					{
+						logTestString("\n******** Test failure ********\n"\
+								"Test %d '%s' failed\n"\
+								"******** Test failure ********\n",
+								i, tests[i].testName);
+						++fails;
+					}
+				}
+			}
+		}
+		const int passed = testCount - fails;
 
-		if(0 == fails)
+		logTestString("\nTests finished. %d test%s of %d passed.\n\n",
+			passed, 1 == passed ? "" : "s", testCount);
+
+		if(0 == fails && testCount==tests.size())
 		{
 			time_t rawtime;
 			struct tm * timeinfo;
@@ -172,8 +204,13 @@ int main(int argumentCount, char * arguments[])
 #else
 		(void)system("$PAGER tests.log");
 #endif
+		return fails;
 	}
-
-	return fails;
+	else
+	{
+		const bool res = tests[testToRun].testSignature();
+		closeTestLog();
+		return res?0:1;
+	}
 }
 

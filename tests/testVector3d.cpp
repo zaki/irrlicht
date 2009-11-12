@@ -78,7 +78,7 @@ static bool doTests()
 	EQUAL_VECTORS(vec, vector3d<T>(0, (T)7.0710678118654755, 0));
 
 	vec.normalize();
-	EQUAL_VECTORS(vec, vector3d<T>(0, (T)1.0000000461060017, 0));
+	EQUAL_VECTORS(vec, vector3d<T>(0, (T)1.0, 0));
 
 	vec.set(10, 10, 10);
 	center.set(5, 5, 10);
@@ -189,20 +189,20 @@ static bool doTests()
 	values cast to (T), as we need to test <f64>. */
 bool testVector3d(void)
 {
-	bool f32Success = doTests<f32>();
-	if(f32Success)
+	const bool f32Success = doTests<f32>();
+	if (f32Success)
 		logTestString("vector3df tests passed\n\n");
 	else
 		logTestString("\n*** vector3df tests failed ***\n\n");
 
-	bool f64Success = doTests<f64>();
-	if(f64Success)
+	const bool f64Success = doTests<f64>();
+	if (f64Success)
 		logTestString("vector3d<f64> tests passed\n\n");
 	else
 		logTestString("\n*** vector3d<f64> tests failed ***\n\n");
 
-	bool s32Success = doTests<s32>();
-	if(s32Success)
+	const bool s32Success = doTests<s32>();
+	if (s32Success)
 		logTestString("vector3di tests passed\n\n");
 	else
 		logTestString("\n*** vector3di tests failed ***\n\n");
