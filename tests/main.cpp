@@ -152,7 +152,7 @@ int main(int argumentCount, char * arguments[])
 				{
 					closeTestLog();
 					char runNextTest[256];
-					(void)sprintf(runNextTest, "\"%s\" %d", arguments[0], -i);
+					(void)sprintf(runNextTest, "\"%s\" -%d 1", arguments[0], i+1);
 					// Spawn the next test in a new process.
 					if (system(runNextTest))
 					{
@@ -208,7 +208,7 @@ int main(int argumentCount, char * arguments[])
 	}
 	else
 	{
-		const bool res = tests[testToRun].testSignature();
+		const bool res = tests[testToRun-1].testSignature();
 		closeTestLog();
 		return res?0:1;
 	}
