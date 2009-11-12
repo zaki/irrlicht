@@ -109,7 +109,7 @@ bool CArchiveLoaderZIP::isALoadableFileFormat(io::IReadFile* file) const
 #endif
 
 	return header.Sig == 0x04034b50 || // ZIP
-		   *((u16*)(&header.Sig)) == 0x8b1f; // gzip
+		   (header.Sig&0xffff) == 0x8b1f; // gzip
 }
 
 // -----------------------------------------------------------------------------
