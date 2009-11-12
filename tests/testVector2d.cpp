@@ -10,7 +10,7 @@ template<class T>
 static bool compareVectors(const core::vector2d<T> & compare,
 						   const core::vector2d<T> & with)
 {
-	if(compare != with)
+	if (!compare.equals(with))
 	{
 		logTestString("\nERROR: vector2d %.16f, %.16f != vector2d %.16f, %.16f\n",
 			(f64)compare.X, (f64)compare.Y, (f64)with.X, (f64)with.Y);
@@ -41,7 +41,7 @@ static bool doTests()
 	COMPARE_VECTORS(vec, vector2d<T>(0, (T)7.0710678118654755));
 
 	vec.normalize();
-	COMPARE_VECTORS(vec, vector2d<T>(0, (T)1.0000000461060017));
+	COMPARE_VECTORS(vec, vector2d<T>(0, (T)1.0));
 
 	vec.set(10, 10);
 	vector2d<T> center(5, 5);
@@ -52,7 +52,7 @@ static bool doTests()
 
 	vec.set(5, 5);
 	vec.normalize();
-	COMPARE_VECTORS(vec, vector2d<T>((T)0.70710681378841400, (T)0.70710681378841400));
+	COMPARE_VECTORS(vec, vector2d<T>((T)0.7071067811865476, (T)0.7071067811865476));
 
 	vec.set(5, 5);
 	otherVec.set(10, 20);

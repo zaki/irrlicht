@@ -35,7 +35,7 @@ struct cmp_equal
 	cmp_equal(const T& a) : val(a) {}
 	bool operator()(const T& other) const
 	{
-		return val==other;
+		return val.equals(other);
 	}
 	const char* getName() const {return "==";}
 	const T val;
