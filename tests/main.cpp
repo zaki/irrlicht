@@ -120,6 +120,8 @@ int main(int argumentCount, char * arguments[])
 		int tmp = atoi(arguments[1]);
 		firstRun = (tmp>=0);
 		testToRun=abs(tmp);
+		if (!firstRun)
+			testToRun -= 1;
 
 		if(argumentCount > 2)
 		{
@@ -208,7 +210,7 @@ int main(int argumentCount, char * arguments[])
 	}
 	else
 	{
-		const bool res = tests[testToRun-1].testSignature();
+		const bool res = tests[testToRun].testSignature();
 		closeTestLog();
 		return res?0:1;
 	}
