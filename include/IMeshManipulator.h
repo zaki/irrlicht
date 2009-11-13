@@ -10,6 +10,7 @@
 #include "aabbox3d.h"
 #include "matrix4.h"
 #include "IAnimatedMesh.h"
+#include "IMeshBuffer.h"
 #include "SVertexManipulator.h"
 
 namespace irr
@@ -17,8 +18,6 @@ namespace irr
 namespace scene
 {
 
-	class IMesh;
-	class IMeshBuffer;
 	struct SMesh;
 
 	//! An interface for easy manipulation of meshes.
