@@ -8,6 +8,9 @@
 using namespace irr;
 using namespace core;
 
+#define EQUAL_VECTORS(compare, with)\
+	if(!equalVectors(cmp_equal<core::vector3d<T> >(compare), with)) {assert(false); return false;}
+
 // check if the vector contains a NAN (a==b is guaranteed to return false in this case)
 template<class T>
 static bool is_nan(const core::vector3d<T> &vec )
@@ -58,51 +61,10 @@ static bool equalVectors(const S& compare,
 }
 
 template <class T>
-static bool doTests()
+static bool checkInterpolation()
 {
-	#define EQUAL_VECTORS(compare, with)\
-	if(!equalVectors(cmp_equal<core::vector3d<T> >(compare), with)) return false;
-
-	vector3d<T> vec(5, 5, 0);
-	vector3d<T> otherVec(10, 20, 0);
-	if(!equals(vec.getDistanceFrom(otherVec), (T)15.8113883))
-	{
-		logTestString("vector3d::getDistanceFrom() failed\n");
-		assert(0);
-		return false;
-	}
-
-	vector3d<T> center(0, 0, 0);
-
-	vec.rotateXYBy(45, center);
-	EQUAL_VECTORS(vec, vector3d<T>(0, (T)7.0710678118654755, 0));
-
-	vec.normalize();
-	EQUAL_VECTORS(vec, vector3d<T>(0, (T)1.0, 0));
-
-	vec.set(10, 10, 10);
-	center.set(5, 5, 10);
-	vec.rotateXYBy(-5, center);
-	// -5 means rotate clockwise slightly, so expect the X to increase
-	// slightly and the Y to decrease slightly.
-	EQUAL_VECTORS(vec, vector3d<T>((T)10.416752204197017, (T)9.5451947767204359, 10));
-
-	vec.set(10, 10, 10);
-	center.set(5, 10, 5);
-	vec.rotateXZBy(-5, center);
-	EQUAL_VECTORS(vec, vector3d<T>((T)10.416752204197017, 10, (T)9.5451947767204359));
-
-	vec.set(10, 10, 10);
-	center.set(10, 5, 5);
-	vec.rotateYZBy(-5, center);
-	EQUAL_VECTORS(vec, vector3d<T>(10, (T)10.416752204197017, (T)9.5451947767204359));
-
-	vec.set(5, 5, 0);
-	vec.normalize();
-	EQUAL_VECTORS(vec, vector3d<T>((T)0.70710681378841400, (T)0.70710681378841400, 0));
-
-	vec.set(5, 5, 0);
-	otherVec.set(10, 20, 40);
+	core::vector3d<T> vec(5, 5, 0);
+	core::vector3d<T> otherVec(10, 20, 40);
 
 	vector3d<T> interpolated;
 	(void)interpolated.interpolate(vec, otherVec, 0.f);
@@ -146,6 +108,82 @@ static bool doTests()
 
 	interpolated = vec.getInterpolated_quadratic(otherVec, thirdVec, 1.f);
 	EQUAL_VECTORS(interpolated, thirdVec); // 1.f means all the 3rd vector
+	return true;
+}
+
+template <class T>
+static bool checkAngleCalculations()
+{
+	core::vector3d<T> vec(5, 5, 0);
+	EQUAL_VECTORS(vec.getHorizontalAngle(), vector3d<T>(315, 90, 0));
+	EQUAL_VECTORS(vec.getSphericalCoordinateAngles(), vector3d<T>((T)44.999997, 0, 0));
+	return true;
+}
+
+template <class T>
+static bool checkRotations()
+{
+	core::vector3d<T> vec(5, 5, 0);
+	vector3d<T> center(0, 0, 0);
+
+	vec.rotateXYBy(45, center);
+	EQUAL_VECTORS(vec, vector3d<T>(0, (T)7.0710678118654755, 0));
+
+	vec.normalize();
+	EQUAL_VECTORS(vec, vector3d<T>(0, (T)1.0, 0));
+
+	vec.set(10, 10, 10);
+	center.set(5, 5, 10);
+	vec.rotateXYBy(-5, center);
+	// -5 means rotate clockwise slightly, so expect the X to increase
+	// slightly and the Y to decrease slightly.
+	EQUAL_VECTORS(vec, vector3d<T>((T)10.416752204197017, (T)9.5451947767204359, 10));
+
+	vec.set(10, 10, 10);
+	center.set(5, 10, 5);
+	vec.rotateXZBy(-5, center);
+	EQUAL_VECTORS(vec, vector3d<T>((T)10.416752204197017, 10, (T)9.5451947767204359));
+
+	vec.set(10, 10, 10);
+	center.set(10, 5, 5);
+	vec.rotateYZBy(-5, center);
+	EQUAL_VECTORS(vec, vector3d<T>(10, (T)10.416752204197017, (T)9.5451947767204359));
+
+	vec.set(5, 5, 0);
+	vec.normalize();
+	EQUAL_VECTORS(vec, vector3d<T>((T)0.70710681378841400, (T)0.70710681378841400, 0));
+	return true;
+}
+
+template <class T>
+static bool doTests()
+{
+	vector3d<T> vec(-5, 5, 0);
+	vector3d<T> otherVec((T)-5.1, 5, 0);
+	if(!vec.equals(otherVec, (T)0.1))
+	{
+		logTestString("vector3d::equals failed\n");
+		assert(0);
+		return false;
+	}
+
+	vec.set(5, 5, 0);
+	otherVec.set(10, 20, 0);
+	if(!equals(vec.getDistanceFrom(otherVec), (T)15.8113883))
+	{
+		logTestString("vector3d::getDistanceFrom() failed\n");
+		assert(0);
+		return false;
+	}
+
+	if (!checkRotations<T>())
+		return false;
+
+	if (!checkInterpolation<T>())
+		return false;
+
+	if (!checkAngleCalculations<T>())
+		return false;
 
 	vec.set(0,0,0);
 	vec.setLength(99);

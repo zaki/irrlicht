@@ -142,10 +142,18 @@ bool rotations(void)
 	rot4.transformVect(vec1);rot5.transformVect(vec12);
 	rot4.transformVect(vec2);rot5.transformVect(vec22);
 	rot4.transformVect(vec3);rot5.transformVect(vec32);
-	result &= (vec1.equals(vec12));
+	// these ones need higher tolerance due to rounding issues
+	result &= (vec1.equals(vec12, 0.000002f));
+	assert(result);
 	result &= (vec2.equals(vec22));
-	// this one needs higher tolerance due to rounding issues
+	assert(result);
 	result &= (vec3.equals(vec32, 0.000002f));
+	assert(result);
+
+	rot1.setRotationDegrees(core::vector3df(0,0,34));
+	rot2.setRotationDegrees(core::vector3df(0,43,0));
+	vec1=(rot2*rot1).getRotationDegrees();
+	result &= (vec1.equals(core::vector3df(27.5400505f, 34.4302292f, 42.6845398f), 0.000002f));
 	assert(result);
 
 	return result;
