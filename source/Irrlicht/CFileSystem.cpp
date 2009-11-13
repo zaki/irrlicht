@@ -712,7 +712,7 @@ bool CFileSystem::existFile(const io::path& filename) const
 #if defined(_IRR_WCHAR_FILESYSTEM)
 	HANDLE hFile = CreateFileW(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 #else
-	HANDLE hFile = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hFile = CreateFileW(core::stringw(filename).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 #endif
 	if (hFile == INVALID_HANDLE_VALUE)
 		return false;
