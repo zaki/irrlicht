@@ -161,9 +161,9 @@ namespace core
 		//! Inverts the vector.
 		vector3d<T>& invert()
 		{
-			X *= -1.0f;
-			Y *= -1.0f;
-			Z *= -1.0f;
+			X *= -1;
+			Y *= -1;
+			Z *= -1;
 			return *this;
 		}
 

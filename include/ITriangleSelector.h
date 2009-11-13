@@ -60,8 +60,8 @@ public:
 	an IMetaTriangleSelector) this this function may be called multiple
 	times to retrieve all triangles.
 
-	Please note that unoptimized triangle selectors also may return
-	triangles which are not in the specified box at all.
+	This method will return at least the triangles that intersect the box,
+	but may return other triangles as well.
 	\param triangles: Array where the resulting triangles will be written
 	to.
 	\param arraySize: Size of the target array.
