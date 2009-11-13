@@ -7,6 +7,7 @@
 #include "CMeshBuffer.h"
 #include "SAnimatedMesh.h"
 #include "os.h"
+#include "irrMap.h"
 
 namespace irr
 {
@@ -55,86 +56,6 @@ void CMeshManipulator::flipSurfaces(scene::IMesh* mesh) const
 			tmp = idx[i+1];
 			idx[i+1] = idx[i+2];
 			idx[i+2] = tmp;
-		}
-	}
-}
-
-
-//! Sets the alpha vertex color value of the whole mesh to a new value
-//! \param mesh: Mesh on which the operation is performed.
-void CMeshManipulator::setVertexColorAlpha(scene::IMesh* mesh, s32 alpha) const
-{
-	if (!mesh)
-		return;
-
-	u32 i;
-
-	const u32 bcount = mesh->getMeshBufferCount();
-	for ( u32 b=0; b<bcount; ++b)
-	{
-		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		void* v = buffer->getVertices();
-		u32 vtxcnt = buffer->getVertexCount();
-
-		switch(buffer->getVertexType())
-		{
-		case video::EVT_STANDARD:
-			{
-				for ( i=0; i<vtxcnt; ++i)
-					((video::S3DVertex*)v)[i].Color.setAlpha(alpha);
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				for ( i=0; i<vtxcnt; ++i)
-					((video::S3DVertex2TCoords*)v)[i].Color.setAlpha(alpha);
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				for ( i=0; i<vtxcnt; ++i)
-					((video::S3DVertexTangents*)v)[i].Color.setAlpha(alpha);
-			}
-			break;
-		}
-	}
-}
-
-
-//! Sets the colors of all vertices to one color
-void CMeshManipulator::setVertexColors(IMesh* mesh, video::SColor color) const
-{
-	if (!mesh)
-		return;
-
-	const u32 bcount = mesh->getMeshBufferCount();
-	for (u32 b=0; b<bcount; ++b)
-	{
-		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		void* v = buffer->getVertices();
-		const u32 vtxcnt = buffer->getVertexCount();
-		u32 i;
-
-		switch(buffer->getVertexType())
-		{
-		case video::EVT_STANDARD:
-			{
-				for ( i=0; i<vtxcnt; ++i)
-					((video::S3DVertex*)v)[i].Color = color;
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				for ( i=0; i<vtxcnt; ++i)
-					((video::S3DVertex2TCoords*)v)[i].Color = color;
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				for ( i=0; i<vtxcnt; ++i)
-					((video::S3DVertexTangents*)v)[i].Color = color;
-			}
-			break;
 		}
 	}
 }
@@ -202,143 +123,6 @@ void CMeshManipulator::recalculateNormals(scene::IMesh* mesh, bool smooth, bool 
 	const u32 bcount = mesh->getMeshBufferCount();
 	for ( u32 b=0; b<bcount; ++b)
 		recalculateNormals(mesh->getMeshBuffer(b), smooth, angleWeighted);
-}
-
-
-//! Applies a transformation
-/** \param buffer: Meshbuffer on which the operation is performed.
-	\param m: matrix. */
-void CMeshManipulator::transform(scene::IMeshBuffer* buffer, const core::matrix4& m) const
-{
-	const u32 vtxcnt = buffer->getVertexCount();
-	if (!vtxcnt)
-		return;
-
-	core::aabbox3df bufferbox;
-	// first transform
-	{
-		m.transformVect(buffer->getPosition(0));
-		m.rotateVect(buffer->getNormal(0));
-		buffer->getNormal(0).normalize();
-
-		bufferbox.reset(buffer->getPosition(0));
-	}
-
-	for ( u32 i=1 ;i < vtxcnt; ++i)
-	{
-		m.transformVect(buffer->getPosition(i));
-		m.rotateVect(buffer->getNormal(i));
-		buffer->getNormal(i).normalize();
-
-		bufferbox.addInternalPoint(buffer->getPosition(i));
-	}
-
-	buffer->setBoundingBox(bufferbox);
-}
-
-
-//! Applies a transformation
-/** \param mesh: Mesh on which the operation is performed.
-	\param m: matrix. */
-void CMeshManipulator::transform(scene::IMesh* mesh, const core::matrix4& m) const
-{
-	if (!mesh)
-		return;
-
-	core::aabbox3df meshbox;
-
-	const u32 bcount = mesh->getMeshBufferCount();
-	for ( u32 b=0; b<bcount; ++b)
-	{
-		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		transform(buffer, m);
-
-		if (b == 0)
-			meshbox.reset(buffer->getBoundingBox());
-		else
-			meshbox.addInternalBox(buffer->getBoundingBox());
-	}
-
-	mesh->setBoundingBox( meshbox );
-}
-
-
-//! Scales the actual mesh, not a scene node.
-void CMeshManipulator::scale(scene::IMesh* mesh, const core::vector3df& factor) const
-{
-	if (!mesh)
-		return;
-
-	core::aabbox3df meshbox;
-
-	const u32 bcount = mesh->getMeshBufferCount();
-	for ( u32 b=0; b<bcount; ++b)
-	{
-		IMeshBuffer* buffer = mesh->getMeshBuffer(b);
-		scale(buffer, factor);
-
-		if (b == 0)
-			meshbox.reset(buffer->getBoundingBox());
-		else
-			meshbox.addInternalBox(buffer->getBoundingBox());
-	}
-
-	mesh->setBoundingBox( meshbox );
-}
-
-
-//! Scales the actual meshbuffer, not a scene node.
-void CMeshManipulator::scale(scene::IMeshBuffer* buffer, const core::vector3df& factor) const
-{
-	if (!buffer)
-		return;
-
-	const u32 vtxcnt = buffer->getVertexCount();
-	core::aabbox3df bufferbox;
-
-	if (vtxcnt != 0)
-		bufferbox.reset(buffer->getPosition(0) * factor);
-
-	for (u32 i=0; i<vtxcnt; ++i)
-	{
-		buffer->getPosition(i) *= factor;
-			bufferbox.addInternalPoint(buffer->getPosition(i));
-	}
-
-	buffer->setBoundingBox(bufferbox);
-}
-
-
-//! Scale the texture coords of a mesh.
-void CMeshManipulator::scaleTCoords(scene::IMesh* mesh, const core::vector2df& factor, u32 layer) const
-{
-	if (!mesh)
-		return;
-
-	const u32 bcount = mesh->getMeshBufferCount();
-	for (u32 b=0; b<bcount; ++b)
-		scaleTCoords(mesh->getMeshBuffer(b), factor, layer);
-}
-
-
-//! Scale the level-th texture coords of a meshbuffer.
-void CMeshManipulator::scaleTCoords(scene::IMeshBuffer* buffer, const core::vector2df& factor, u32 level) const
-{
-	if (!buffer || ((level>1) && (buffer->getVertexType() != video::EVT_2TCOORDS)))
-		return;
-
-	const u32 vtxcnt = buffer->getVertexCount();
-
-	if (level==1)
-	{
-		for (u32 i=0; i<vtxcnt; ++i)
-			buffer->getTCoords(i) *= factor;
-	}
-	else
-	{
-		for (u32 i=0; i<vtxcnt; ++i)
-			((SMeshBufferLightMap*)buffer)->Vertices[i].TCoords2 *= factor;
-	}
 }
 
 
@@ -1099,57 +883,64 @@ IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 
 	for (b=0; b<meshBufferCount; ++b)
 	{
-		const u32 idxCnt = mesh->getMeshBuffer(b)->getIndexCount();
-		const u16* idx = mesh->getMeshBuffer(b)->getIndices();
+		const IMeshBuffer* original = mesh->getMeshBuffer(b);
+		const u32 idxCnt = original->getIndexCount();
+		const u16* idx = original->getIndices();
 
 		SMeshBuffer* buffer = new SMeshBuffer();
-		buffer->Material = mesh->getMeshBuffer(b)->getMaterial();
+		buffer->Material = original->getMaterial();
+		buffer->Vertices.reallocate(idxCnt);
+		buffer->Indices.set_used(idxCnt);
+
+		core::map<video::S3DVertex, int> vertMap;
+		int vertLocation;
 
 		// copy vertices
-
-		buffer->Vertices.reallocate(idxCnt);
-		switch(mesh->getMeshBuffer(b)->getVertexType())
-		{
-		case video::EVT_STANDARD:
-			{
-				video::S3DVertex* v =
-					(video::S3DVertex*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(v[idx[i]]);
-
-			}
-			break;
-		case video::EVT_2TCOORDS:
-			{
-				video::S3DVertex2TCoords* v =
-					(video::S3DVertex2TCoords*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(
-						video::S3DVertex(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
-
-			}
-			break;
-		case video::EVT_TANGENTS:
-			{
-				video::S3DVertexTangents* v =
-					(video::S3DVertexTangents*)mesh->getMeshBuffer(b)->getVertices();
-
-				for (u32 i=0; i<idxCnt; ++i)
-					buffer->Vertices.push_back(
-						video::S3DVertex(
-							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords));
-			}
-			break;
-		}
-
-		// create new indices
-
-		buffer->Indices.set_used(idxCnt);
+		const video::E_VERTEX_TYPE vType = original->getVertexType();
+		video::S3DVertex vNew;
 		for (u32 i=0; i<idxCnt; ++i)
-			buffer->Indices[i] = i;
+		{
+			switch(vType)
+			{
+			case video::EVT_STANDARD:
+				{
+					video::S3DVertex* v =
+						(video::S3DVertex*)original->getVertices();
+					vNew = v[idx[i]];
+				}
+				break;
+			case video::EVT_2TCOORDS:
+				{
+					video::S3DVertex2TCoords* v =
+						(video::S3DVertex2TCoords*)original->getVertices();
+					vNew = video::S3DVertex(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
+				}
+				break;
+			case video::EVT_TANGENTS:
+				{
+					video::S3DVertexTangents* v =
+						(video::S3DVertexTangents*)original->getVertices();
+					vNew = video::S3DVertex(
+							v[idx[i]].Pos, v[idx[i]].Normal, v[idx[i]].Color, v[idx[i]].TCoords);
+				}
+				break;
+			}
+			core::map<video::S3DVertex, int>::Node* n = vertMap.find(vNew);
+			if (n)
+			{
+				vertLocation = n->getValue();
+			}
+			else
+			{
+				vertLocation = buffer->Vertices.size();
+				buffer->Vertices.push_back(vNew);
+				vertMap.insert(vNew, vertLocation);
+			}
+
+			// create new indices
+			buffer->Indices[i] = vertLocation;
+		}
 
 		//buffer->setBoundingBox(mesh->getMeshBuffer(b)->getBoundingBox());
 		buffer->recalculateBoundingBox ();
@@ -1159,9 +950,7 @@ IMesh* CMeshManipulator::createMeshWith1TCoords(IMesh* mesh) const
 		buffer->drop();
 	}
 
-	clone->recalculateBoundingBox ();
-	//clone->BoundingBox = mesh->getBoundingBox();
-
+	clone->recalculateBoundingBox();
 	return clone;
 }
 
