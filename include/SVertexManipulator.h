@@ -231,6 +231,23 @@ namespace scene
 		core::vector3df Factor;
 	};
 
+	//! Vertex manipulator which scales the position of the vertex along the normals
+	/** This can look more pleasing than the usual Scale operator, but
+	depends on the mesh geometry.
+	*/
+	class SVertexPositionScaleAlongNormalsManipulator : public IVertexManipulator
+	{
+	public:
+		SVertexPositionScaleAlongNormalsManipulator(const core::vector3df& factor) : Factor(factor) {}
+		template <typename VType>
+		void operator()(VType& vertex) const
+		{
+			vertex.Pos += vertex.Normal*Factor;
+		}
+	private:
+		core::vector3df Factor;
+	};
+
 	//! Vertex manipulator which transforms the position of the vertex
 	class SVertexPositionTransformManipulator : public IVertexManipulator
 	{
