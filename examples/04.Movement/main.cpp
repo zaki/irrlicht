@@ -239,6 +239,14 @@ int main()
 			nodePosition.X -= MOVEMENT_SPEED * frameDeltaTime;
 		else if(receiver.IsKeyDown(irr::KEY_KEY_D))
 			nodePosition.X += MOVEMENT_SPEED * frameDeltaTime;
+		
+		if(receiver.IsKeyDown(irr::KEY_SHIFT))    fprintf(stderr, "Shift\n");
+      if(receiver.IsKeyDown(irr::KEY_LSHIFT))     fprintf(stderr, "Left Shift\n");
+      if(receiver.IsKeyDown(irr::KEY_RSHIFT))     fprintf(stderr, "Right Shift\n");
+      if(receiver.IsKeyDown(irr::KEY_CONTROL))  fprintf(stderr, "Control\n");
+      if(receiver.IsKeyDown(irr::KEY_LCONTROL)) fprintf(stderr, "Left Control\n");
+      if(receiver.IsKeyDown(irr::KEY_RCONTROL)) fprintf(stderr, "Right Control\n");
+      if(receiver.IsKeyDown(irr::KEY_KEY_Z))    fprintf(stderr, "Z key\n"); 
 
 		node->setPosition(nodePosition);
 
