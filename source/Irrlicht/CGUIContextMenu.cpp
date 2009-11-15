@@ -651,9 +651,21 @@ void CGUIContextMenu::recalculateSize()
 			const s32 w = Items[i].SubMenu->getAbsolutePosition().getWidth();
 			const s32 h = Items[i].SubMenu->getAbsolutePosition().getHeight();
 
-			Items[i].SubMenu->setRelativePosition(
-				core::rect<s32>(width-5, Items[i].PosY,
-					width+w-5, Items[i].PosY+h));
+            core::rect<s32> subRect(width-5, Items[i].PosY, width+w-5, Items[i].PosY+h);
+
+            // if it would be drawn beyond the right border, then add it to the left side
+            gui::IGUIElement * root = Environment->getRootGUIElement();
+            if ( root )
+            {
+                core::rect<s32> rectRoot( root->getAbsolutePosition() );
+                if ( getAbsolutePosition().UpperLeftCorner.X+subRect.LowerRightCorner.X > rectRoot.LowerRightCorner.X )
+                {
+                    subRect.UpperLeftCorner.X = -w;
+                    subRect.LowerRightCorner.X = 0;
+                }
+            }
+
+			Items[i].SubMenu->setRelativePosition(subRect);
 		}
 	}
 }
