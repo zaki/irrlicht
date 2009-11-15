@@ -1,6 +1,25 @@
 Changes in 1.7
 
- - irrArray: Fixed issues with push_front and reallocation
+  - windows show now active/inactive state
+
+  - remove unneed drop/grab calls found by manik_sheeri
+
+  - fix rounding problem in IGUIElements which have EGUIA_SCALE alignments.
+
+  - MessageBox supports now automatic resizing and images.
+    Deprecated EGDS_MESSAGE_BOX_WIDTH and EGDS_MESSAGE_BOX_HEIGHT
+
+  - Let maya-cam animator react on a setTarget call to the camera which happened outside it's own control
+
+  - New contextmenue features:
+		automatic checking for checked flag.
+		close handling now customizable
+		serialization can handle incomplete xml's
+		setEventParent now in public interface
+		New function findItemWithCommandId
+  		New function insertItem
+
+  - irrArray: Fixed issues with push_front and reallocation
    Changed behavior for set_pointer and clear, when free_when_destroyed is false
 
  - NPK (Nebula device archive) reader added, it's an uncompressed PAK-like format

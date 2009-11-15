@@ -79,6 +79,7 @@ namespace gui
 		bool Dragging, IsDraggable;
         bool DrawBackground;
         bool DrawTitlebar;
+		bool IsActive;
 	};
 
 } // end namespace gui
