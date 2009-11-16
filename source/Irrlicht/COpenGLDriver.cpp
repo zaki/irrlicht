@@ -74,200 +74,212 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 
 	GLuint PixelFormat;
 
-	if (AntiAlias > 1)
-	{
-		// Create a window to test antialiasing support
+	// Create a window to test antialiasing support
 		const fschar_t* ClassName = __TEXT("GLCIrrDeviceWin32");
-		HINSTANCE lhInstance = GetModuleHandle(0);
+	HINSTANCE lhInstance = GetModuleHandle(0);
 
-		// Register Class
-		WNDCLASSEX wcex;
-		wcex.cbSize        = sizeof(WNDCLASSEX);
-		wcex.style         = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc   = (WNDPROC)DefWindowProc;
-		wcex.cbClsExtra    = 0;
-		wcex.cbWndExtra    = 0;
-		wcex.hInstance     = lhInstance;
-		wcex.hIcon         = NULL;
-		wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-		wcex.lpszMenuName  = 0;
-		wcex.lpszClassName = ClassName;
-		wcex.hIconSm       = 0;
-		wcex.hIcon         = 0;
+	// Register Class
+	WNDCLASSEX wcex;
+	wcex.cbSize        = sizeof(WNDCLASSEX);
+	wcex.style         = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc   = (WNDPROC)DefWindowProc;
+	wcex.cbClsExtra    = 0;
+	wcex.cbWndExtra    = 0;
+	wcex.hInstance     = lhInstance;
+	wcex.hIcon         = NULL;
+	wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+	wcex.lpszMenuName  = 0;
+	wcex.lpszClassName = ClassName;
+	wcex.hIconSm       = 0;
+	wcex.hIcon         = 0;
 
-		RegisterClassEx(&wcex);
-		RECT clientSize;
-		clientSize.top = 0;
-		clientSize.left = 0;
-		clientSize.right = params.WindowSize.Width;
-		clientSize.bottom = params.WindowSize.Height;
+	RegisterClassEx(&wcex);
+	RECT clientSize;
+	clientSize.top = 0;
+	clientSize.left = 0;
+	clientSize.right = params.WindowSize.Width;
+	clientSize.bottom = params.WindowSize.Height;
 
-		DWORD style = WS_POPUP;
+	DWORD style = WS_POPUP;
 
-		if (!params.Fullscreen)
-			style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+	if (!params.Fullscreen)
+		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 
-		AdjustWindowRect(&clientSize, style, FALSE);
+	AdjustWindowRect(&clientSize, style, FALSE);
 
-		const s32 realWidth = clientSize.right - clientSize.left;
-		const s32 realHeight = clientSize.bottom - clientSize.top;
+	const s32 realWidth = clientSize.right - clientSize.left;
+	const s32 realHeight = clientSize.bottom - clientSize.top;
 
-		const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+	const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+	const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
 		HWND temporary_wnd=CreateWindow(ClassName, __TEXT(""), style, windowLeft, windowTop,
 			realWidth, realHeight, NULL, NULL, lhInstance, NULL);
 
-		if (!temporary_wnd)
-		{
-			os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
-			return false;
-		}
+	if (!temporary_wnd)
+	{
+		os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
+		return false;
+	}
 
-		HDc = GetDC(temporary_wnd);
-		for (u32 i=0; i<5; ++i)
+	HDc = GetDC(temporary_wnd);
+
+	for (u32 i=0; i<5; ++i)
+	{
+		if (i == 1)
 		{
-			if (i == 1)
+			if (params.Stencilbuffer)
 			{
-				if (params.Stencilbuffer)
-				{
-					os::Printer::log("Cannot create a GL device with stencil buffer, disabling stencil shadows.", ELL_WARNING);
-					params.Stencilbuffer = false;
-					pfd.cStencilBits = 0;
-				}
-				else
-					continue;
+				os::Printer::log("Cannot create a GL device with stencil buffer, disabling stencil shadows.", ELL_WARNING);
+				params.Stencilbuffer = false;
+				pfd.cStencilBits = 0;
 			}
 			else
-			if (i == 2)
-			{
-				pfd.cDepthBits = 24;
-			}
-			if (i == 3)
-			{
-				if (params.Bits!=16)
-					pfd.cDepthBits = 16;
-				else
-					continue;
-			}
-			else
-			if (i == 4)
-			{
-				// try single buffer
-				if (params.Doublebuffer)
-					pfd.dwFlags &= ~PFD_DOUBLEBUFFER;
-				else
-					continue;
-			}
-			else
-			if (i == 5)
-			{
-				os::Printer::log("Cannot create a GL device context", "No suitable format for temporary window.", ELL_ERROR);
-				ReleaseDC(temporary_wnd, HDc);
-				DestroyWindow(temporary_wnd);
-				return false;
-			}
-
-			// choose pixelformat
-			PixelFormat = ChoosePixelFormat(HDc, &pfd);
-			if (PixelFormat)
-				break;
-		}
-
-		SetPixelFormat(HDc, PixelFormat, &pfd);
-		HRc=wglCreateContext(HDc);
-		if (!HRc)
-		{
-			os::Printer::log("Cannot create a temporary GL rendering context.", ELL_ERROR);
-			ReleaseDC(temporary_wnd, HDc);
-			DestroyWindow(temporary_wnd);
-			return false;
-		}
-
-		if (!wglMakeCurrent(HDc, HRc))
-		{
-			os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
-			wglDeleteContext(HRc);
-			ReleaseDC(temporary_wnd, HDc);
-			DestroyWindow(temporary_wnd);
-			return false;
-		}
-
-#ifdef WGL_ARB_pixel_format
-		PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-		if (wglChoosePixelFormat_ARB)
-		{
-			// This value determines the number of samples used for antialiasing
-			// My experience is that 8 does not show a big
-			// improvement over 4, but 4 shows a big improvement
-			// over 2.
-
-			if(AntiAlias > 32)
-				AntiAlias = 32;
-
-			f32 fAttributes[] = {0.0, 0.0};
-			s32 iAttributes[] =
-			{
-				WGL_DRAW_TO_WINDOW_ARB,GL_TRUE,
-				WGL_SUPPORT_OPENGL_ARB,GL_TRUE,
-				WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
-				WGL_COLOR_BITS_ARB,(params.Bits==32) ? 24 : 15,
-				WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
-				WGL_DEPTH_BITS_ARB,params.ZBufferBits, // 10,11
-				WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
-				WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
-				WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
-#ifdef WGL_ARB_multisample
-				WGL_SAMPLE_BUFFERS_ARB, 1,
-				WGL_SAMPLES_ARB,AntiAlias, // 20,21
-#elif defined(WGL_EXT_multisample)
-				WGL_SAMPLE_BUFFERS_EXT, 1,
-				WGL_SAMPLES_EXT,AntiAlias, // 20,21
-#elif defined(WGL_3DFX_multisample)
-				WGL_SAMPLE_BUFFERS_3DFX, 1,
-				WGL_SAMPLES_3DFX,AntiAlias, // 20,21
-#endif
-				WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-				// other possible values:
-				// WGL_ARB_pixel_format_float: WGL_TYPE_RGBA_FLOAT_ARB
-				// WGL_EXT_pixel_format_packed_float: WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT
-#if 0
-#ifdef WGL_EXT_framebuffer_sRGB
-				WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_FALSE,
-#endif
-#endif
-				0,0
-			};
-
-			s32 rv=0;
-			// Try to get an acceptable pixel format
-			while(rv==0 && iAttributes[21]>1)
-			{
-				s32 pixelFormat=0;
-				u32 numFormats=0;
-				const s32 valid = wglChoosePixelFormat_ARB(HDc,iAttributes,fAttributes,1,&pixelFormat,&numFormats);
-
-				if (valid && numFormats>0)
-					rv = pixelFormat;
-				else
-					iAttributes[21] -= 1;
-			}
-			if (rv)
-			{
-				PixelFormat=rv;
-				AntiAlias=iAttributes[21];
-			}
+				continue;
 		}
 		else
-#endif
-			AntiAlias=0;
+		if (i == 2)
+		{
+			pfd.cDepthBits = 24;
+		}
+		if (i == 3)
+		{
+			if (params.Bits!=16)
+				pfd.cDepthBits = 16;
+			else
+				continue;
+		}
+		else
+		if (i == 4)
+		{
+			// try single buffer
+			if (params.Doublebuffer)
+				pfd.dwFlags &= ~PFD_DOUBLEBUFFER;
+			else
+				continue;
+		}
+		else
+		if (i == 5)
+		{
+			os::Printer::log("Cannot create a GL device context", "No suitable format for temporary window.", ELL_ERROR);
+			ReleaseDC(temporary_wnd, HDc);
+			DestroyWindow(temporary_wnd);
+			return false;
+		}
 
-		wglMakeCurrent(HDc, NULL);
+		// choose pixelformat
+		PixelFormat = ChoosePixelFormat(HDc, &pfd);
+		if (PixelFormat)
+			break;
+	}
+
+	SetPixelFormat(HDc, PixelFormat, &pfd);
+	HRc=wglCreateContext(HDc);
+	if (!HRc)
+	{
+		os::Printer::log("Cannot create a temporary GL rendering context.", ELL_ERROR);
+		ReleaseDC(temporary_wnd, HDc);
+		DestroyWindow(temporary_wnd);
+		return false;
+	}
+
+	if (!wglMakeCurrent(HDc, HRc))
+	{
+		os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
 		wglDeleteContext(HRc);
 		ReleaseDC(temporary_wnd, HDc);
 		DestroyWindow(temporary_wnd);
+		return false;
 	}
+
+#ifdef _DEBUG
+	core::stringc wglExtensions;
+#ifdef WGL_ARB_extensions_string
+	PFNWGLGETEXTENSIONSSTRINGARBPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+	if (irrGetExtensionsString)
+		wglExtensions = irrGetExtensionsString(HDc);
+#elif defined(WGL_EXT_extensions_string)
+	PFNWGLGETEXTENSIONSSTRINGEXTPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+	if (irrGetExtensionsString)
+		wglExtensions = irrGetExtensionsString(HDc);
+#endif
+	os::Printer::log("WGL_extensions", wglExtensions);
+#endif
+
+#ifdef WGL_ARB_pixel_format
+	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+	if (wglChoosePixelFormat_ARB)
+	{
+		// This value determines the number of samples used for antialiasing
+		// My experience is that 8 does not show a big
+		// improvement over 4, but 4 shows a big improvement
+		// over 2.
+
+		if(AntiAlias > 32)
+			AntiAlias = 32;
+
+		f32 fAttributes[] = {0.0, 0.0};
+		s32 iAttributes[] =
+		{
+			WGL_DRAW_TO_WINDOW_ARB,GL_TRUE,
+			WGL_SUPPORT_OPENGL_ARB,GL_TRUE,
+			WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
+			WGL_COLOR_BITS_ARB,(params.Bits==32) ? 24 : 15,
+			WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
+			WGL_DEPTH_BITS_ARB,params.ZBufferBits, // 10,11
+			WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
+			WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
+			WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
+#ifdef WGL_ARB_multisample
+			WGL_SAMPLE_BUFFERS_ARB, 1,
+			WGL_SAMPLES_ARB,AntiAlias, // 20,21
+#elif defined(WGL_EXT_multisample)
+			WGL_SAMPLE_BUFFERS_EXT, 1,
+			WGL_SAMPLES_EXT,AntiAlias, // 20,21
+#elif defined(WGL_3DFX_multisample)
+			WGL_SAMPLE_BUFFERS_3DFX, 1,
+			WGL_SAMPLES_3DFX,AntiAlias, // 20,21
+#endif
+			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+			// other possible values:
+			// WGL_ARB_pixel_format_float: WGL_TYPE_RGBA_FLOAT_ARB
+			// WGL_EXT_pixel_format_packed_float: WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT
+#if 0
+#ifdef WGL_EXT_framebuffer_sRGB
+			WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_FALSE,
+#endif
+#endif
+			0,0
+		};
+
+		s32 rv=0;
+		// Try to get an acceptable pixel format
+		while(rv==0 && iAttributes[21]>1)
+		{
+			s32 pixelFormat=0;
+			u32 numFormats=0;
+			const s32 valid = wglChoosePixelFormat_ARB(HDc,iAttributes,fAttributes,1,&pixelFormat,&numFormats);
+
+			if (valid && numFormats>0)
+				rv = pixelFormat;
+			else
+				iAttributes[21] -= 1;
+		}
+		if (rv)
+		{
+			PixelFormat=rv;
+			AntiAlias=iAttributes[21];
+		}
+	}
+	else
+#endif
+		AntiAlias=0;
+
+	wglMakeCurrent(HDc, NULL);
+	wglDeleteContext(HRc);
+	ReleaseDC(temporary_wnd, HDc);
+	DestroyWindow(temporary_wnd);
 
 	// get hdc
 	HDc=GetDC(Window);
@@ -330,7 +342,15 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 #ifdef WGL_ARB_create_context
 	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribs_ARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 	if (wglCreateContextAttribs_ARB)
-		HRc=wglCreateContextAttribs_ARB(HDc, 0, NULL);
+	{
+		int iAttribs[] =
+		{
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+			0
+		};
+		HRc=wglCreateContextAttribs_ARB(HDc, 0, iAttribs);
+	}
 	else
 #endif
 		HRc=wglCreateContext(HDc);
