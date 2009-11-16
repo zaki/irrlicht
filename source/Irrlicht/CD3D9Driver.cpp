@@ -2137,17 +2137,31 @@ void CD3D9Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			switch (material.TextureLayer[st].TextureWrap)
 			{
 				case ETC_REPEAT:
-					mode=D3DTADDRESS_WRAP;
+					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_WRAP)
+						mode=D3DTADDRESS_WRAP;
 					break;
 				case ETC_CLAMP:
 				case ETC_CLAMP_TO_EDGE:
-					mode=D3DTADDRESS_CLAMP;
+					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_CLAMP)
+						mode=D3DTADDRESS_CLAMP;
 					break;
 				case ETC_MIRROR:
-					mode=D3DTADDRESS_MIRROR;
+					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_MIRROR)
+						mode=D3DTADDRESS_MIRROR;
 					break;
 				case ETC_CLAMP_TO_BORDER:
-					mode=D3DTADDRESS_BORDER;
+					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_BORDER)
+						mode=D3DTADDRESS_BORDER;
+					else
+						mode=D3DTADDRESS_CLAMP;
+					break;
+				case ETC_MIRROR_CLAMP:
+				case ETC_MIRROR_CLAMP_TO_EDGE:
+				case ETC_MIRROR_CLAMP_TO_BORDER:
+					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_MIRRORONCE)
+						mode=D3DTADDRESS_MIRRORONCE;
+					else
+						mode=D3DTADDRESS_CLAMP;
 					break;
 			}
 
