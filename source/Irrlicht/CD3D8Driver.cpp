@@ -1355,7 +1355,7 @@ bool CD3D8Driver::setRenderStates3DMode()
 
 
 //! Map Irrlicht texture wrap mode to native values
-D3DTEXTUREADDRESS CD3D8Driver::getTextureWrapMode(const E_TEXTURE_CLAMP clamp)
+D3DTEXTUREADDRESS CD3D8Driver::getTextureWrapMode(const u8 clamp)
 {
 	switch (clamp)
 	{
