@@ -360,6 +360,8 @@ namespace video
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
 				E_INDEX_TYPE iType, bool is3D);
 
+		D3DTEXTUREADDRESS getTextureWrapMode(const E_TEXTURE_CLAMP clamp);
+
 		inline D3DCOLORVALUE colorToD3D(const SColor& col)
 		{
 			const f32 f = 1.0f / 255.0f;

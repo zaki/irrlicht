@@ -2094,6 +2094,108 @@ void COpenGLDriver::setRenderStates3DMode()
 }
 
 
+//! Get native wrap mode value
+GLint COpenGLDriver::getTextureWrapMode(const u8 clamp)
+{
+	GLint mode=GL_REPEAT;
+	switch (clamp)
+	{
+		case ETC_REPEAT:
+			mode=GL_REPEAT;
+			break;
+		case ETC_CLAMP:
+			mode=GL_CLAMP;
+			break;
+		case ETC_CLAMP_TO_EDGE:
+#ifdef GL_VERSION_1_2
+			if (Version>101)
+				mode=GL_CLAMP_TO_EDGE;
+			else
+#endif
+#ifdef GL_SGIS_texture_edge_clamp
+			if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
+				mode=GL_CLAMP_TO_EDGE_SGIS;
+			else
+#endif
+				// fallback
+				mode=GL_CLAMP;
+			break;
+		case ETC_CLAMP_TO_BORDER:
+#ifdef GL_VERSION_1_3
+			if (Version>102)
+				mode=GL_CLAMP_TO_BORDER;
+			else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+			if (FeatureAvailable[IRR_ARB_texture_border_clamp])
+				mode=GL_CLAMP_TO_BORDER_ARB;
+			else
+#endif
+#ifdef GL_SGIS_texture_border_clamp
+			if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
+				mode=GL_CLAMP_TO_BORDER_SGIS;
+			else
+#endif
+				// fallback
+				mode=GL_CLAMP;
+			break;
+		case ETC_MIRROR:
+#ifdef GL_VERSION_1_4
+			if (Version>103)
+				mode=GL_MIRRORED_REPEAT;
+			else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+			if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
+				mode=GL_MIRRORED_REPEAT_ARB;
+			else
+#endif
+#ifdef GL_IBM_texture_mirrored_repeat
+			if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
+				mode=GL_MIRRORED_REPEAT_IBM;
+			else
+#endif
+				mode=GL_REPEAT;
+			break;
+		case ETC_MIRROR_CLAMP:
+#ifdef GL_EXT_texture_mirror_clamp
+			if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+				mode=GL_MIRROR_CLAMP_EXT;
+			else
+#endif
+#if defined(GL_ATI_texture_mirror_once)
+			if (FeatureAvailable[IRR_ATI_texture_mirror_once])
+				mode=GL_MIRROR_CLAMP_ATI;
+			else
+#endif
+				mode=GL_CLAMP;
+			break;
+		case ETC_MIRROR_CLAMP_TO_EDGE:
+#ifdef GL_EXT_texture_mirror_clamp
+			if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+				mode=GL_MIRROR_CLAMP_TO_EDGE_EXT;
+			else
+#endif
+#if defined(GL_ATI_texture_mirror_once)
+			if (FeatureAvailable[IRR_ATI_texture_mirror_once])
+				mode=GL_MIRROR_CLAMP_TO_EDGE_ATI;
+			else
+#endif
+				mode=GL_CLAMP;
+			break;
+		case ETC_MIRROR_CLAMP_TO_BORDER:
+#ifdef GL_EXT_texture_mirror_clamp
+			if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+				mode=GL_MIRROR_CLAMP_TO_BORDER_EXT;
+			else
+#endif
+				mode=GL_CLAMP;
+			break;
+	}
+	return mode;
+}
+
+
 void COpenGLDriver::setWrapMode(const SMaterial& material)
 {
 	// texture address mode
@@ -2105,104 +2207,8 @@ void COpenGLDriver::setWrapMode(const SMaterial& material)
 		else if (u>0)
 			break; // stop loop
 
-		GLint mode=GL_REPEAT;
-		switch (material.TextureLayer[u].TextureWrap)
-		{
-			case ETC_REPEAT:
-				mode=GL_REPEAT;
-				break;
-			case ETC_CLAMP:
-				mode=GL_CLAMP;
-				break;
-			case ETC_CLAMP_TO_EDGE:
-#ifdef GL_VERSION_1_2
-				if (Version>101)
-					mode=GL_CLAMP_TO_EDGE;
-				else
-#endif
-#ifdef GL_SGIS_texture_edge_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
-					mode=GL_CLAMP_TO_EDGE_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
-				break;
-			case ETC_CLAMP_TO_BORDER:
-#ifdef GL_VERSION_1_3
-				if (Version>102)
-					mode=GL_CLAMP_TO_BORDER;
-				else
-#endif
-#ifdef GL_ARB_texture_border_clamp
-				if (FeatureAvailable[IRR_ARB_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER_ARB;
-				else
-#endif
-#ifdef GL_SGIS_texture_border_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
-				break;
-			case ETC_MIRROR:
-#ifdef GL_VERSION_1_4
-				if (Version>103)
-					mode=GL_MIRRORED_REPEAT;
-				else
-#endif
-#ifdef GL_ARB_texture_border_clamp
-				if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_ARB;
-				else
-#endif
-#ifdef GL_IBM_texture_mirrored_repeat
-				if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_IBM;
-				else
-#endif
-					mode=GL_REPEAT;
-				break;
-			case ETC_MIRROR_CLAMP:
-#ifdef GL_EXT_texture_mirror_clamp
-				if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
-					mode=GL_MIRROR_CLAMP_EXT;
-				else
-#endif
-#if defined(GL_ATI_texture_mirror_once)
-				if (FeatureAvailable[IRR_ATI_texture_mirror_once])
-					mode=GL_MIRROR_CLAMP_ATI;
-				else
-#endif
-					mode=GL_CLAMP;
-				break;
-			case ETC_MIRROR_CLAMP_TO_EDGE:
-#ifdef GL_EXT_texture_mirror_clamp
-				if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
-					mode=GL_MIRROR_CLAMP_TO_EDGE_EXT;
-				else
-#endif
-#if defined(GL_ATI_texture_mirror_once)
-				if (FeatureAvailable[IRR_ATI_texture_mirror_once])
-					mode=GL_MIRROR_CLAMP_TO_EDGE_ATI;
-				else
-#endif
-					mode=GL_CLAMP;
-				break;
-			case ETC_MIRROR_CLAMP_TO_BORDER:
-#ifdef GL_EXT_texture_mirror_clamp
-				if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
-					mode=GL_MIRROR_CLAMP_TO_BORDER_EXT;
-				else
-#endif
-					mode=GL_CLAMP;
-				break;
-		}
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[u].TextureWrapU));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[u].TextureWrapV));
 	}
 }
 

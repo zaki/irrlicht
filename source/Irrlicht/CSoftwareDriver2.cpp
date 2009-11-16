@@ -956,26 +956,17 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 					sizeof ( f32 ) * 2 );
 			}
 
-			switch ( Material.org.TextureLayer[t].TextureWrap )
+			switch ( Material.org.TextureLayer[t].TextureWrapU )
 			{
-				case ETC_REPEAT:
-				default:
-					dest->Tex[t].x = M[0] * srcT.x + M[4] * srcT.y + M[8];
-					dest->Tex[t].y = M[1] * srcT.x + M[5] * srcT.y + M[9];
-					break;
 				case ETC_CLAMP:
 				case ETC_CLAMP_TO_EDGE:
 				case ETC_CLAMP_TO_BORDER:
 					dest->Tex[t].x = core::clamp ( (f32) ( M[0] * srcT.x + M[4] * srcT.y + M[8] ), 0.f, 1.f );
-					dest->Tex[t].y = core::clamp ( (f32) ( M[1] * srcT.x + M[5] * srcT.y + M[9] ), 0.f, 1.f );
 					break;
 				case ETC_MIRROR:
 					dest->Tex[t].x = M[0] * srcT.x + M[4] * srcT.y + M[8];
 					if (core::fract(dest->Tex[t].x)>0.5f)
 						dest->Tex[t].x=1.f-dest->Tex[t].x;
-					dest->Tex[t].y = M[1] * srcT.x + M[5] * srcT.y + M[9];
-					if (core::fract(dest->Tex[t].y)>0.5f)
-						dest->Tex[t].y=1.f-dest->Tex[t].y;
 				break;
 				case ETC_MIRROR_CLAMP:
 				case ETC_MIRROR_CLAMP_TO_EDGE:
@@ -983,10 +974,35 @@ void CBurningVideoDriver::VertexCache_fill(const u32 sourceIndex,
 					dest->Tex[t].x = core::clamp ( (f32) ( M[0] * srcT.x + M[4] * srcT.y + M[8] ), 0.f, 1.f );
 					if (core::fract(dest->Tex[t].x)>0.5f)
 						dest->Tex[t].x=1.f-dest->Tex[t].x;
+				break;
+				case ETC_REPEAT:
+				default:
+					dest->Tex[t].x = M[0] * srcT.x + M[4] * srcT.y + M[8];
+					break;
+			}
+			switch ( Material.org.TextureLayer[t].TextureWrapV )
+			{
+				case ETC_CLAMP:
+				case ETC_CLAMP_TO_EDGE:
+				case ETC_CLAMP_TO_BORDER:
+					dest->Tex[t].y = core::clamp ( (f32) ( M[1] * srcT.x + M[5] * srcT.y + M[9] ), 0.f, 1.f );
+					break;
+				case ETC_MIRROR:
+					dest->Tex[t].y = M[1] * srcT.x + M[5] * srcT.y + M[9];
+					if (core::fract(dest->Tex[t].y)>0.5f)
+						dest->Tex[t].y=1.f-dest->Tex[t].y;
+				break;
+				case ETC_MIRROR_CLAMP:
+				case ETC_MIRROR_CLAMP_TO_EDGE:
+				case ETC_MIRROR_CLAMP_TO_BORDER:
 					dest->Tex[t].y = core::clamp ( (f32) ( M[1] * srcT.x + M[5] * srcT.y + M[9] ), 0.f, 1.f );
 					if (core::fract(dest->Tex[t].y)>0.5f)
 						dest->Tex[t].y=1.f-dest->Tex[t].y;
 				break;
+				case ETC_REPEAT:
+				default:
+					dest->Tex[t].y = M[1] * srcT.x + M[5] * srcT.y + M[9];
+					break;
 			}
 		}
 	}

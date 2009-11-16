@@ -185,7 +185,10 @@ namespace video
 						case EMF_BILINEAR_FILTER: material.TextureLayer[0].BilinearFilter = Material.TextureLayer[0].BilinearFilter; break;
 						case EMF_TRILINEAR_FILTER: material.TextureLayer[0].TrilinearFilter = Material.TextureLayer[0].TrilinearFilter; break;
 						case EMF_ANISOTROPIC_FILTER: material.TextureLayer[0].AnisotropicFilter = Material.TextureLayer[0].AnisotropicFilter; break;
-						case EMF_TEXTURE_WRAP: material.TextureLayer[0].TextureWrap = Material.TextureLayer[0].TextureWrap; break;
+						case EMF_TEXTURE_WRAP:
+							material.TextureLayer[0].TextureWrapU = Material.TextureLayer[0].TextureWrapU;
+							material.TextureLayer[0].TextureWrapV = Material.TextureLayer[0].TextureWrapV;
+							break;
 						}
 					}
 				}

@@ -1354,6 +1354,39 @@ bool CD3D8Driver::setRenderStates3DMode()
 }
 
 
+//! Map Irrlicht texture wrap mode to native values
+D3DTEXTUREADDRESS CD3D8Driver::getTextureWrapMode(const E_TEXTURE_CLAMP clamp)
+{
+	switch (clamp)
+	{
+		case ETC_REPEAT:
+			if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_WRAP)
+				return D3DTADDRESS_WRAP;
+		case ETC_CLAMP:
+		case ETC_CLAMP_TO_EDGE:
+			if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_CLAMP)
+				return D3DTADDRESS_CLAMP;
+		case ETC_MIRROR:
+			if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_MIRROR)
+				return D3DTADDRESS_MIRROR;
+		case ETC_CLAMP_TO_BORDER:
+			if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_BORDER)
+				return D3DTADDRESS_BORDER;
+			else
+				return D3DTADDRESS_CLAMP;
+		case ETC_MIRROR_CLAMP:
+		case ETC_MIRROR_CLAMP_TO_EDGE:
+		case ETC_MIRROR_CLAMP_TO_BORDER:
+			if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_MIRRORONCE)
+				return D3DTADDRESS_MIRRORONCE;
+			else
+				return D3DTADDRESS_CLAMP;
+		default:
+			return D3DTADDRESS_WRAP;
+	}
+}
+
+
 //! Can be called by an IMaterialRenderer to make its work easier.
 void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMaterial& lastmaterial,
 	bool resetAllRenderstates)
@@ -1530,43 +1563,13 @@ void CD3D8Driver::setBasicRenderStates(const SMaterial& material, const SMateria
 			pID3DDevice->SetTextureStageState(st, D3DTSS_MIPMAPLODBIAS, *(DWORD*)(&tmp));
 		}
 
-		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrap != material.TextureLayer[st].TextureWrap)
-		{
-			u32 mode = D3DTADDRESS_WRAP;
-			switch (material.TextureLayer[st].TextureWrap)
-			{
-				case ETC_REPEAT:
-					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_WRAP)
-						mode=D3DTADDRESS_WRAP;
-					break;
-				case ETC_CLAMP:
-				case ETC_CLAMP_TO_EDGE:
-					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_CLAMP)
-						mode=D3DTADDRESS_CLAMP;
-					break;
-				case ETC_MIRROR:
-					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_MIRROR)
-						mode=D3DTADDRESS_MIRROR;
-					break;
-				case ETC_CLAMP_TO_BORDER:
-					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_BORDER)
-						mode=D3DTADDRESS_BORDER;
-					else
-						mode=D3DTADDRESS_CLAMP;
-					break;
-				case ETC_MIRROR_CLAMP:
-				case ETC_MIRROR_CLAMP_TO_EDGE:
-				case ETC_MIRROR_CLAMP_TO_BORDER:
-					if (Caps.TextureAddressCaps & D3DPTADDRESSCAPS_MIRRORONCE)
-						mode=D3DTADDRESS_MIRRORONCE;
-					else
-						mode=D3DTADDRESS_CLAMP;
-					break;
-			}
-
-			pID3DDevice->SetTextureStageState(st, D3DTSS_ADDRESSU, mode );
-			pID3DDevice->SetTextureStageState(st, D3DTSS_ADDRESSV, mode );
-		}
+		if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapU != material.TextureLayer[st].TextureWrapU)
+			pID3DDevice->SetTextureStageState(st, D3DTSS_ADDRESSU, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
+		// If separate UV not supported reuse U for V
+		if (!(Caps.TextureAddressCaps & D3DPTADDRESSCAPS_INDEPENDENTUV))
+			pID3DDevice->SetTextureStageState(st, D3DTSS_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapU));
+		else if (resetAllRenderstates || lastmaterial.TextureLayer[st].TextureWrapV != material.TextureLayer[st].TextureWrapV)
+			pID3DDevice->SetTextureStageState(st, D3DTSS_ADDRESSV, getTextureWrapMode(material.TextureLayer[st].TextureWrapV));
 
 		// Bilinear and/or trilinear
 		if (resetAllRenderstates ||

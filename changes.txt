@@ -1,5 +1,7 @@
 Changes in 1.7
 
+ - Separate TextureWrap mode into U and V fields
+
  - Add mirror texture wrap modes
  
  - windows show now active/inactive state
