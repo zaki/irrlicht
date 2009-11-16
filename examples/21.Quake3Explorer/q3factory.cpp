@@ -755,7 +755,11 @@ vector3df getGravity ( const c8 * surface )
 	Dynamically load the Irrlicht Library
 */
 
-#if defined(_IRR_WINDOWS_API_) && 1
+#if defined(_IRR_WINDOWS_API_)
+#ifdef _MSC_VER
+#pragma comment(lib, "Irrlicht.lib")
+#endif
+
 #include <windows.h>
 
 funcptr_createDevice load_createDevice ( const c8 * filename)
@@ -771,10 +775,6 @@ funcptr_createDeviceEx load_createDeviceEx ( const c8 * filename)
 #else
 
 // TODO: Dynamic Loading for other os
-#ifdef _MSC_VER
-#pragma comment(lib, "Irrlicht.lib")
-#endif
-
 funcptr_createDevice load_createDevice ( const c8 * filename)
 {
 	return createDevice;
