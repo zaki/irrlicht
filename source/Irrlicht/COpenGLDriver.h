@@ -347,6 +347,9 @@ namespace video
 		//! Set GL pipeline to desired texture wrap modes of the material
 		void setWrapMode(const SMaterial& material);
 
+		//! get native wrap mode value
+		GLint getTextureWrapMode(const u8 clamp);
+
 		//! sets the needed renderstates
 		void setRenderStates3DMode();
 
