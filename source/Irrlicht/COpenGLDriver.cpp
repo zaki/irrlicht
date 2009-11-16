@@ -2165,6 +2165,40 @@ void COpenGLDriver::setWrapMode(const SMaterial& material)
 #endif
 					mode=GL_REPEAT;
 				break;
+			case ETC_MIRROR_CLAMP:
+#ifdef GL_EXT_texture_mirror_clamp
+				if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+					mode=GL_MIRROR_CLAMP_EXT;
+				else
+#endif
+#if defined(GL_ATI_texture_mirror_once)
+				if (FeatureAvailable[IRR_ATI_texture_mirror_once])
+					mode=GL_MIRROR_CLAMP_ATI;
+				else
+#endif
+					mode=GL_CLAMP;
+				break;
+			case ETC_MIRROR_CLAMP_TO_EDGE:
+#ifdef GL_EXT_texture_mirror_clamp
+				if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+					mode=GL_MIRROR_CLAMP_TO_EDGE_EXT;
+				else
+#endif
+#if defined(GL_ATI_texture_mirror_once)
+				if (FeatureAvailable[IRR_ATI_texture_mirror_once])
+					mode=GL_MIRROR_CLAMP_TO_EDGE_ATI;
+				else
+#endif
+					mode=GL_CLAMP;
+				break;
+			case ETC_MIRROR_CLAMP_TO_BORDER:
+#ifdef GL_EXT_texture_mirror_clamp
+				if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+					mode=GL_MIRROR_CLAMP_TO_BORDER_EXT;
+				else
+#endif
+					mode=GL_CLAMP;
+				break;
 		}
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
