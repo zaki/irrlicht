@@ -4,7 +4,7 @@ Sources = $(wildcard *.cpp)
 
 CPPFLAGS = -I../include -I/usr/X11R6/include -pipe
 # CXXFLAGS += -O3
-CXXFLAGS += -Wall -O0 -g -D_DEBUG
+CXXFLAGS += -Wall -ansi -pedantic -O0 -g -D_DEBUG
 
 ifeq ($(HOSTTYPE), x86_64)
 LIBSELECT=64
