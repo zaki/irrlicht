@@ -6,8 +6,39 @@ using namespace io;
 
 bool testArchive(IFileSystem* fs, const io::path& archiveName)
 {
-	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+	{
+		logTestString("Already mounted archives found");
 		return false;
+	}
+
+	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	{
+		logTestString("Mounting archive failed");
+		return false;
+	}
+
+	// make sure there is an archive mounted
+	if ( !fs->getFileArchiveCount() )
+	{
+		logTestString("Mounted archive not in list");
+		return false;
+	}
+
+	// mount again
+	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
+	{
+		logTestString("Mounting a second time failed");
+		return false;
+	}
+
+	// make sure there is exactly one archive mounted
+	if ( fs->getFileArchiveCount() != 1 )
+	{
+		logTestString("Duplicate mount not recognized");
+		return false;
+	}
 
 	// log what we got
 	io::IFileArchive* archive = fs->getFileArchive(fs->getFileArchiveCount()-1);
@@ -51,6 +82,11 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 		logTestString("Couldn't remove archive.\n");
 		return false;
 	}
+
+	// make sure there is no archive mounted
+	if ( fs->getFileArchiveCount() )
+		return false;
+
 	return true;
 }
 
