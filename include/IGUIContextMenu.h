@@ -22,7 +22,7 @@ namespace gui
 		ECMC_REMOVE = 1,
 
 		//! call setVisible(false)
-		ECMC_HIDE = 2,
+		ECMC_HIDE = 2
 
 	 	// note to implementors - this is planned as bitset, so continue with 4 if you need to add further flags.
 	};

@@ -18,7 +18,7 @@ namespace io
 enum EFileSystemType
 {
 	FILESYSTEM_NATIVE = 0,	// Native OS FileSystem
-	FILESYSTEM_VIRTUAL,	// Virtual FileSystem
+	FILESYSTEM_VIRTUAL	// Virtual FileSystem
 };
 
 //! Contains the different types of archives
