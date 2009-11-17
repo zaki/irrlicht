@@ -275,16 +275,17 @@ namespace core
 		{
 			vector3d<T> angle;
 
-			angle.Y = (T)(atan2(X, Z) * (T) RADTODEG64);
+			const f64 tmp = (atan2(X, Z) * RADTODEG64);
+			angle.Y = (T)tmp;
 
 			if (angle.Y < 0)
 				angle.Y += 360;
 			if (angle.Y >= 360)
 				angle.Y -= 360;
 
-			const T z1 = core::squareroot(X*X + Z*Z);
+			const f64 z1 = core::squareroot(X*X + Z*Z);
 
-			angle.X = (T)(atan2((f64)z1, (f64)Y) * RADTODEG64 - 90.0);
+			angle.X = (T)(atan2(z1, Y) * RADTODEG64 - 90.0);
 
 			if (angle.X < 0)
 				angle.X += 360;
