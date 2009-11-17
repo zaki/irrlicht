@@ -302,7 +302,7 @@ namespace core
 		vector3d<T> getSphericalCoordinateAngles()
 		{
 			vector3d<T> angle;
-			const T length=getLength();
+			const f64 length = X*X + Y*Y + Z*Z;
 
 			if (length)
 			{
@@ -313,7 +313,7 @@ namespace core
 				else if (Z<0)
 					angle.Y=180;
 
-				angle.X = (T)(acos(Y / length) * RADTODEG);
+				angle.X = (T)(acos(Y * core::reciprocal_squareroot(length)) * RADTODEG64);
 			}
 			return angle;
 		} 
