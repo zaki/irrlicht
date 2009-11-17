@@ -190,7 +190,7 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 
 //! Adds an archive to the file system.
 bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
-									  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
+			  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
@@ -199,7 +199,7 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	// check if the archive was already loaded
 	for (i = 0; i < FileArchives.size(); ++i)
 	{
-		if (filename == FileArchives[i]->getFileList()->getPath())
+		if (getAbsolutePath(filename) == FileArchives[i]->getFileList()->getPath())
 			return true;
 	}
 
