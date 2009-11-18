@@ -573,6 +573,17 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// Reset The Current Viewport
 	glViewport(0, 0, screenSize.Width, screenSize.Height);
 
+	UserClipPlane.reallocate(MaxUserClipPlanes);
+	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
+	for (i=0; i<MaxUserClipPlanes; ++i)
+	{
+		UserClipPlane.push_back(core::plane3df());
+		UserClipPlaneEnabled.push_back(false);
+	}
+
+	for (i=0; i<ETS_COUNT; ++i)
+		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
+
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
 #ifdef GL_EXT_separate_specular_color
 	if (FeatureAvailable[IRR_EXT_separate_specular_color])
@@ -594,14 +605,6 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 #if defined(GL_ARB_provoking_vertex) || defined(GL_EXT_provoking_vertex)
 	extGlProvokingVertex(GL_FIRST_VERTEX_CONVENTION_EXT);
 #endif
-
-	UserClipPlane.reallocate(MaxUserClipPlanes);
-	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
-	for (i=0; i<MaxUserClipPlanes; ++i)
-	{
-		UserClipPlane.push_back(core::plane3df());
-		UserClipPlaneEnabled.push_back(false);
-	}
 
 	// create material renderers
 	createMaterialRenderers();
