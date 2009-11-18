@@ -621,11 +621,6 @@ bool CIrrDeviceMacOSX::createWindow()
 		CGLSetCurrentContext(CGLContext);
 		newSwapInterval = (CreationParams.Vsync) ? 1 : 0;
 		CGLSetParameter(CGLContext,kCGLCPSwapInterval,&newSwapInterval);
-		glViewport(0,0,DeviceWidth,DeviceHeight);
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
 	}
 
 	return (result);
