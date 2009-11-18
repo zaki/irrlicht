@@ -285,7 +285,7 @@ namespace core
 
 			const f64 z1 = core::squareroot(X*X + Z*Z);
 
-			angle.X = (T)(atan2(z1, Y) * RADTODEG64 - 90.0);
+			angle.X = (T)(atan2((f64)z1, (f64)Y) * RADTODEG64 - 90.0);
 
 			if (angle.X < 0)
 				angle.X += 360;
