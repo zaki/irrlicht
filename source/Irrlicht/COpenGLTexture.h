@@ -124,7 +124,6 @@ protected:
 	core::dimension2d<u32> ImageSize;
 	core::dimension2d<u32> TextureSize;
 	ECOLOR_FORMAT ColorFormat;
-	s32 Pitch;
 	COpenGLDriver* Driver;
 	IImage* Image;
 
