@@ -550,7 +550,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	if (renderer && vendor)
 	{
 		os::Printer::log(reinterpret_cast<const c8*>(renderer), reinterpret_cast<const c8*>(vendor), ELL_INFORMATION);
-		vendorName = reinterpret_cast<const c8*>(vendor);
+		VendorName = reinterpret_cast<const c8*>(vendor);
 	}
 
 	u32 i;
@@ -573,13 +573,9 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// Reset The Current Viewport
 	glViewport(0, 0, screenSize.Width, screenSize.Height);
 
-	UserClipPlane.reallocate(MaxUserClipPlanes);
-	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
+	UserClipPlanes.reallocate(MaxUserClipPlanes);
 	for (i=0; i<MaxUserClipPlanes; ++i)
-	{
-		UserClipPlane.push_back(core::plane3df());
-		UserClipPlaneEnabled.push_back(false);
-	}
+		UserClipPlanes.push_back(SUserClipPlane());
 
 	for (i=0; i<ETS_COUNT; ++i)
 		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
@@ -791,7 +787,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
 			// we have to update the clip planes to the latest view matrix
 			for (u32 i=0; i<MaxUserClipPlanes; ++i)
-				if (UserClipPlaneEnabled[i])
+				if (UserClipPlanes[i].Enabled)
 					uploadClipPlane(i);
 		}
 		break;
@@ -3669,7 +3665,7 @@ bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool en
 	if (index >= MaxUserClipPlanes)
 		return false;
 
-	UserClipPlane[index]=plane;
+	UserClipPlanes[index].Plane=plane;
 	enableClipPlane(index, enable);
 	return true;
 }
@@ -3679,10 +3675,10 @@ void COpenGLDriver::uploadClipPlane(u32 index)
 {
 	// opengl needs an array of doubles for the plane equation
 	double clip_plane[4];
-	clip_plane[0] = UserClipPlane[index].Normal.X;
-	clip_plane[1] = UserClipPlane[index].Normal.Y;
-	clip_plane[2] = UserClipPlane[index].Normal.Z;
-	clip_plane[3] = UserClipPlane[index].D;
+	clip_plane[0] = UserClipPlanes[index].Plane.Normal.X;
+	clip_plane[1] = UserClipPlanes[index].Plane.Normal.Y;
+	clip_plane[2] = UserClipPlanes[index].Plane.Normal.Z;
+	clip_plane[3] = UserClipPlanes[index].Plane.D;
 	glClipPlane(GL_CLIP_PLANE0 + index, clip_plane);
 }
 
@@ -3694,7 +3690,7 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 		return;
 	if (enable)
 	{
-		if (!UserClipPlaneEnabled[index])
+		if (!UserClipPlanes[index].Enabled)
 		{
 			uploadClipPlane(index);
 			glEnable(GL_CLIP_PLANE0 + index);
@@ -3703,7 +3699,7 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 	else
 		glDisable(GL_CLIP_PLANE0 + index);
 
-	UserClipPlaneEnabled[index]=enable;
+	UserClipPlanes[index].Enabled=enable;
 }
 
 
