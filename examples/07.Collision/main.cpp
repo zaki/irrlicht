@@ -237,6 +237,9 @@ int main()
 	scene::ISceneCollisionManager* collMan = smgr->getSceneCollisionManager();
 	int lastFPS = -1;
 
+	// draw the selection triangle only as wireframe
+	material.Wireframe=true;
+
 	while(device->run())
 	if (device->isWindowActive())
 	{
