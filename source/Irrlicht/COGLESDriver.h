@@ -299,6 +299,9 @@ namespace video
 		//! Set GL pipeline to desired texture wrap modes of the material
 		void setWrapMode(const SMaterial& material);
 
+		//! Get OpenGL wrap enum from Irrlicht enum
+		GLint getTextureWrapMode(u8 clamp) const;
+
 		//! sets the needed renderstates
 		void setRenderStates3DMode();
 

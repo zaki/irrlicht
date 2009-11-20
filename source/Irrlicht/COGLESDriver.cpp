@@ -1627,6 +1627,48 @@ void COGLES1Driver::setRenderStates3DMode()
 }
 
 
+GLint COGLES1Driver::getTextureWrapMode(u8 clamp) const
+{
+	switch (clamp)
+	{
+		case ETC_CLAMP:
+			//	return GL_CLAMP; not supported in ogl-es
+			return GL_CLAMP_TO_EDGE;
+			break;
+		case ETC_CLAMP_TO_EDGE:
+			return GL_CLAMP_TO_EDGE;
+			break;
+		case ETC_CLAMP_TO_BORDER:
+			//	return GL_CLAMP_TO_BORDER; not supported in ogl-es
+			return GL_CLAMP_TO_EDGE;
+			break;
+		case ETC_MIRROR:
+#ifdef GL_OES_texture_mirrored_repeat
+			if (FeatureAvailable[IRR_OES_texture_mirrored_repeat])
+				return GL_MIRRORED_REPEAT_OES;
+			else
+#endif
+			return GL_REPEAT;
+			break;
+		// the next three are not yet supported at all
+		case ETC_MIRROR_CLAMP:
+		case ETC_MIRROR_CLAMP_TO_EDGE:
+		case ETC_MIRROR_CLAMP_TO_BORDER:
+#ifdef GL_OES_texture_mirrored_repeat
+			if (FeatureAvailable[IRR_OES_texture_mirrored_repeat])
+				return GL_MIRRORED_REPEAT_OES;
+			else
+#endif
+			return GL_CLAMP_TO_EDGE;
+			break;
+		case ETC_REPEAT:
+		default:
+			return GL_REPEAT;
+			break;
+	}
+}
+
+
 void COGLES1Driver::setWrapMode(const SMaterial& material)
 {
 	// texture address mode
@@ -1638,35 +1680,8 @@ void COGLES1Driver::setWrapMode(const SMaterial& material)
 		else if (u>0)
 			break; // stop loop
 
-		GLint mode=GL_REPEAT;
-		switch (material.TextureLayer[u].TextureWrap)
-		{
-			case ETC_REPEAT:
-				mode=GL_REPEAT;
-				break;
-			case ETC_CLAMP:
-				//	mode=GL_CLAMP; not supported in ogl-es
-				mode = GL_CLAMP_TO_EDGE;
-				break;
-			case ETC_CLAMP_TO_EDGE:
-				mode=GL_CLAMP_TO_EDGE;
-				break;
-			case ETC_CLAMP_TO_BORDER:
-				//	mode=GL_CLAMP_TO_BORDER; not supported in ogl-es
-				mode = GL_CLAMP_TO_EDGE;
-				break;
-			case ETC_MIRROR:
-#ifdef GL_OES_texture_mirrored_repeat
-				if (FeatureAvailable[IRR_OES_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_OES;
-				else
-#endif
-				mode = GL_REPEAT;
-				break;
-		}
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[u].TextureWrapU));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[u].TextureWrapV));
 	}
 }
 

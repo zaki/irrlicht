@@ -17,24 +17,31 @@ namespace irr
 namespace video
 {
 
-static const char* const OGLESFeatureStrings[COGLES1ExtensionHandler::IRR_OGLES_Feature_Count] =
+static const char* const OGLESFeatureStrings[] =
 {
 	"GL_AMD_compressed_3DC_texture",
 	"GL_AMD_compressed_ATC_texture",
 	"GL_AMD_performance_monitor",
 	"GL_AMD_program_binary_Z400",
+	"GL_APPLE_texture_2D_limited_npot",
 	"GL_ARB_texture_env_combine",
 	"GL_ARB_texture_env_dot3",
+	"GL_EXT_blend_minmax",
+	"GL_EXT_discard_framebuffer",
 	"GL_EXT_multi_draw_arrays",
+	"GL_EXT_read_format_bgra",
 	"GL_EXT_texture_compression_dxt1",
 	"GL_EXT_texture_filter_anisotropic",
 	"GL_EXT_texture_format_BGRA8888",
+	"GL_EXT_texture_lod_bias",
 	"GL_EXT_texture_type_2_10_10_10_REV",
+	"GL_IMG_program_binary",
 	"GL_IMG_read_format",
+	"GL_IMG_shader_binary",
 	"GL_IMG_texture_compression_pvrtc",
 	"GL_IMG_texture_env_enhanced_fixed_function",
 	"GL_IMG_texture_format_BGRA8888",
-	"GL_IMG_user_clip_planes",
+	"GL_IMG_user_clip_plane",
 	"GL_IMG_vertex_program",
 	"GL_NV_fence",
 	"GL_OES_blend_equation_separate",
@@ -82,7 +89,12 @@ static const char* const OGLESFeatureStrings[COGLES1ExtensionHandler::IRR_OGLES_
 	"GL_OES_vertex_half_float",
 	"GL_OES_vertex_type_10_10_10_2",
 	"GL_QCOM_driver_control",
-	"GL_QCOM_performance_monitor_global_mode"
+	"GL_QCOM_extended_get",
+	"GL_QCOM_extended_get2",
+	"GL_QCOM_perfmon_global_mode",
+	"GL_QCOM_writeonly_rendering",
+	"GL_SUN_multi_draw_arrays",
+	0
 };
 
 
@@ -131,6 +143,11 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 	Version = static_cast<u16>(core::floor32(ogl_ver)*100+core::round32(core::fract(ogl_ver)*10.0f));
 	core::stringc extensions = glGetString(GL_EXTENSIONS);
 	os::Printer::log(extensions.c_str());
+
+	// typo in the simulator (note the postfixed s)
+	if (extensions.find("GL_IMG_user_clip_planes"))
+			FeatureAvailable[IRR_IMG_user_clip_plane] = true;
+
 	{
 		const u32 size = extensions.size()+1;
 		c8* str = new c8[size];
@@ -180,7 +197,7 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 		MaxAnisotropy = static_cast<u8>(val);
 	}
 #endif
-	if ((Version>100) || FeatureAvailable[IRR_IMG_user_clip_planes])
+	if ((Version>100) || FeatureAvailable[IRR_IMG_user_clip_plane])
 	{
 		glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
 		MaxUserClipPlanes = static_cast<u8>(val);
