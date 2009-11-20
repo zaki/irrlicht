@@ -162,7 +162,8 @@ bool takeScreenshotAndCompareAgainstReference(irr::video::IVideoDriver * driver,
 	const video::ECOLOR_FORMAT format = screenshot->getColorFormat();
 	if(format != video::ECF_R8G8B8)
 	{
-		irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot);
+		irr::video::IImage * fixedScreenshot = driver->createImage(video::ECF_R8G8B8, screenshot->getDimension());
+		screenshot->copyTo(fixedScreenshot);
 		screenshot->drop();
 
 		if(!fixedScreenshot)
