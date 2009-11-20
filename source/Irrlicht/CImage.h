@@ -19,22 +19,15 @@ class CImage : public IImage
 {
 public:
 
-	//! constructor from another image with format change
-	CImage(ECOLOR_FORMAT format, IImage* imageToCopy);
-
 	//! constructor from raw image data
-	//! \param useForeignMemory: If true, the image will use the data pointer
-	//! directly and own it from now on, which means it will also try to delete [] the
-	//! data when the image will be destructed. If false, the memory will by copied.
+	/** \param useForeignMemory: If true, the image will use the data pointer
+	directly and own it from now on, which means it will also try to delete [] the
+	data when the image will be destructed. If false, the memory will by copied. */
 	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size,
 		void* data, bool ownForeignMemory=true, bool deleteMemory = true);
 
 	//! constructor for empty image
 	CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size);
-
-	//! constructor using a part from another image
-	CImage(IImage* imageToCopy,
-		const core::position2d<s32>& pos, const core::dimension2d<u32>& size);
 
 	//! destructor
 	virtual ~CImage();

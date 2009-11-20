@@ -1347,20 +1347,26 @@ IImage* CNullDriver::createImage(ECOLOR_FORMAT format, const core::dimension2d<u
 //! Creates a software image from another image.
 IImage* CNullDriver::createImage(ECOLOR_FORMAT format, IImage *imageToCopy)
 {
+	os::Printer::log("Deprecated method, please create an empty image instead and use copyTo().", ELL_WARNING);
 	if(IImage::isRenderTargetOnlyFormat(format))
 	{
 		os::Printer::log("Could not create IImage, format only supported for render target textures.", ELL_WARNING);
 		return 0;
 	}
 
-	return new CImage(format, imageToCopy);
+	CImage* tmp = new CImage(format, imageToCopy->getDimension());
+	imageToCopy->copyTo(tmp);
+	return tmp;
 }
 
 
 //! Creates a software image from part of another image.
 IImage* CNullDriver::createImage(IImage* imageToCopy, const core::position2d<s32>& pos, const core::dimension2d<u32>& size)
 {
-		return new CImage(imageToCopy, pos, size);
+	os::Printer::log("Deprecated method, please create an empty image instead and use copyTo().", ELL_WARNING);
+	CImage* tmp = new CImage(imageToCopy->getColorFormat(), imageToCopy->getDimension());
+	imageToCopy->copyTo(tmp, core::position2di(0,0), core::recti(pos,size));
+	return tmp;
 }
 
 
