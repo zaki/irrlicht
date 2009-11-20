@@ -1789,6 +1789,19 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 		else if (i>0)
 			break;
 
+#ifdef GL_EXT_texture_lod_bias
+		if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		{
+			if (material.TextureLayer[i].LODBias)
+			{
+				const float tmp = core::clamp(material.TextureLayer[i].LODBias * 0.125f, -MaxTextureLODBias, MaxTextureLODBias);
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, tmp);
+			}
+			else
+				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, 0.f);
+		}
+#endif
+
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
 			(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
@@ -2880,6 +2893,11 @@ void COGLES1Driver::enableClipPlane(u32 index, bool enable)
 	UserClipPlaneEnabled[index]=enable;
 }
 
+
+core::dimension2du COGLES1Driver::getMaxTextureSize() const
+{
+	return core::dimension2du(MaxTextureSize, MaxTextureSize);
+}
 
 } // end namespace
 } // end namespace

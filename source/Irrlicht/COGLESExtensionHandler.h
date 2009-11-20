@@ -412,6 +412,10 @@ namespace video
 		u8 MaxLights;
 		u8 MaxAnisotropy;
 		u8 MaxUserClipPlanes;
+		u8 MaxAuxBuffers;
+		u32 MaxIndices;
+		u32 MaxTextureSize;
+		f32 MaxTextureLODBias;
 		bool CommonProfile;
 		bool MultiTextureExtension;
 		bool MultiSamplingExtension;

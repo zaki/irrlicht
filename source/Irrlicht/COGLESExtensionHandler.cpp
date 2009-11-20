@@ -110,7 +110,8 @@ COGLES1ExtensionHandler::COGLES1ExtensionHandler() :
 		pGlGenerateMipMapOES(0),
 #endif
 	EGLVersion(0), Version(0), MaxTextureUnits(0), MaxLights(0), MaxAnisotropy(1),
-	MaxUserClipPlanes(0), CommonProfile(false), MultiTextureExtension(false),
+	MaxUserClipPlanes(0), MaxAuxBuffers(0), MaxIndices(65535), MaxTextureSize(1),
+	MaxTextureLODBias(0.f), CommonProfile(false), MultiTextureExtension(false),
 	MultiSamplingExtension(false), StencilBuffer(false)
 {
 	for (u32 i=0; i<IRR_OGLES_Feature_Count; ++i)
@@ -191,17 +192,26 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 	glGetIntegerv(GL_MAX_LIGHTS, &val);
 	MaxLights = static_cast<u8>(val);
 #ifdef GL_EXT_texture_filter_anisotropic
-	if (FeatureAvailable[GL_EXT_texture_filter_anisotropic])
+	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
 	{
 		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &val);
 		MaxAnisotropy = static_cast<u8>(val);
 	}
+#endif
+	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &val);
+	MaxIndices=val;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
+	MaxTextureSize=static_cast<u32>(val);
+#ifdef EXT_texture_lod_bias
+	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
+		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
 #endif
 	if ((Version>100) || FeatureAvailable[IRR_IMG_user_clip_plane])
 	{
 		glGetIntegerv(GL_MAX_CLIP_PLANES, &val);
 		MaxUserClipPlanes = static_cast<u8>(val);
 	}
+	MaxAuxBuffers=static_cast<u8>(val);
 
 #if defined(_IRR_OPENGL_USE_EXTPOINTER_)
 	if (FeatureAvailable[IRR_OES_draw_texture])
