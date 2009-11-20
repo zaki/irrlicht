@@ -1682,7 +1682,7 @@ void COGLES1Driver::setWrapMode(const SMaterial& material)
 
 		// the APPLE npot restricted extension needs some care as it only supports CLAMP_TO_EDGE
 		if (queryFeature(EVDF_TEXTURE_NPOT) && !FeatureAvailable[IRR_OES_texture_npot] &&
-				(CurrentTexture[u]->getSize() != CurrentTexture[u]->getOriginalSize()))
+				CurrentTexture[u] && (CurrentTexture[u]->getSize() != CurrentTexture[u]->getOriginalSize()))
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
