@@ -141,6 +141,8 @@ namespace video
 					return StencilBuffer;
 				case EVDF_TEXTURE_NSQUARE:
 					return true; // non-square is always supported
+				case EVDF_TEXTURE_NPOT:
+					return FeatureAvailable[IRR_APPLE_texture_2D_limited_npot];
 				default:
 					return false;
 			}

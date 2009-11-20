@@ -1680,8 +1680,18 @@ void COGLES1Driver::setWrapMode(const SMaterial& material)
 		else if (u>0)
 			break; // stop loop
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[u].TextureWrapU));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[u].TextureWrapV));
+		// the APPLE npot restricted extension needs some care as it only supports CLAMP_TO_EDGE
+		if (queryFeature(EVDF_TEXTURE_NPOT) && !FeatureAvailable[IRR_OES_texture_npot] &&
+				(CurrentTexture[u]->getSize() != CurrentTexture[u]->getOriginalSize()))
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+		else
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[u].TextureWrapU));
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[u].TextureWrapV));
+		}
 	}
 }
 
@@ -1783,10 +1793,23 @@ void COGLES1Driver::setBasicRenderStates(const SMaterial& material, const SMater
 			(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
 
 		if (material.getTexture(i) && material.getTexture(i)->hasMipMaps())
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
-				material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
-				GL_NEAREST_MIPMAP_NEAREST );
+			// the npot extensions need some checks, because APPLE
+			// npot is somewhat restricted and only support non-mipmap filter
+			if (queryFeature(EVDF_TEXTURE_NPOT) && !FeatureAvailable[IRR_OES_texture_npot] &&
+					(CurrentTexture[i]->getSize() != CurrentTexture[i]->getOriginalSize()))
+			{
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					material.TextureLayer[i].TrilinearFilter ? GL_LINEAR:
+					material.TextureLayer[i].BilinearFilter ? GL_LINEAR:
+					GL_NEAREST);
+			}
+			else
+			{
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					material.TextureLayer[i].TrilinearFilter ? GL_LINEAR_MIPMAP_LINEAR :
+					material.TextureLayer[i].BilinearFilter ? GL_LINEAR_MIPMAP_NEAREST :
+					GL_NEAREST_MIPMAP_NEAREST );
+			}
 		else
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
 				(material.TextureLayer[i].BilinearFilter || material.TextureLayer[i].TrilinearFilter) ? GL_LINEAR : GL_NEAREST);
