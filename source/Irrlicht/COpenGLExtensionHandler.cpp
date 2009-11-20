@@ -438,8 +438,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	MaxLights=static_cast<u8>(num);
 #ifdef GL_EXT_texture_filter_anisotropic
 	if (FeatureAvailable[IRR_EXT_texture_filter_anisotropic])
+	{
 		glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &num);
-	MaxAnisotropy=static_cast<u8>(num);
+		MaxAnisotropy=static_cast<u8>(num);
+	}
 #endif
 #ifdef GL_VERSION_1_2
 	if (Version>101)
