@@ -2748,19 +2748,21 @@ IImage* COGLES1Driver::createScreenShot()
 {
 	int format=GL_RGBA;
 	int type=GL_UNSIGNED_BYTE;
-	if (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format])
+	if (FeatureAvailable[IRR_IMG_read_format] || FeatureAvailable[IRR_OES_read_format] || FeatureAvailable[IRR_EXT_read_format_bgra])
 	{
 #ifdef GL_IMPLEMENTATION_COLOR_READ_TYPE_OES
 		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_FORMAT_OES, &format);
 		glGetIntegerv(GL_IMPLEMENTATION_COLOR_READ_TYPE_OES, &type);
 #endif
-		// there's a format we don't support ATM
+		// there are formats we don't support ATM
 		if (GL_UNSIGNED_SHORT_4_4_4_4==type)
 			type=GL_UNSIGNED_SHORT_5_5_5_1;
+		else if (GL_UNSIGNED_SHORT_4_4_4_4_REV_EXT==type)
+			type=GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT;
 	}
 
 	IImage* newImage = 0;
-	if (GL_RGBA==format)
+	if ((GL_RGBA==format) || (GL_BGRA_EXT==format))
 	{
 		if (GL_UNSIGNED_BYTE==type)
 			newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
