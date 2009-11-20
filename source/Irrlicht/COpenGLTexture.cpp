@@ -38,7 +38,10 @@ COpenGLTexture::COpenGLTexture(IImage* origImage, const io::path& name, COpenGLD
 	glGenTextures(1, &TextureName);
 
 	if (ImageSize==TextureSize)
-		Image = new CImage(ColorFormat, origImage);
+	{
+		Image = new CImage(ColorFormat, ImageSize);
+		origImage->copyTo(Image);
+	}
 	else
 	{
 		Image = new CImage(ColorFormat, TextureSize);
