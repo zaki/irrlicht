@@ -26,7 +26,8 @@ CSoftwareTexture::CSoftwareTexture(IImage* image, const io::path& name, bool ren
 		OrigSize = image->getDimension();
 		core::dimension2d<u32> optSize=OrigSize.getOptimalSize();
 
-		Image = new CImage(ECF_A1R5G5B5, image);
+		Image = new CImage(ECF_A1R5G5B5, OrigSize);
+		image->copyTo(Image);
 
 		if (optSize == OrigSize)
 		{

@@ -1137,7 +1137,7 @@ namespace video
 		virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) =0;
 
 		//! Creates a software image by converting it to given format from another image.
-		/**
+		/** \deprecated Create an empty image and use copyTo()
 		\param format Desired color format of the image.
 		\param imageToCopy Image to copy to the new image.
 		\return The created image.
@@ -1146,7 +1146,7 @@ namespace video
 		virtual IImage* createImage(ECOLOR_FORMAT format, IImage *imageToCopy) =0;
 
 		//! Creates a software image from a part of another image.
-		/**
+		/** \deprecated Create an empty image and use copyTo()
 		\param imageToCopy Image to copy to the new image in part.
 		\param pos Position of rectangle to copy.
 		\param size Extents of rectangle to copy.
