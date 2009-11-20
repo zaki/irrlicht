@@ -33,11 +33,10 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 fl
 	{
 		OrigSize = image->getDimension();
 
-		core::setbit_cond ( Flags,
-							image->getColorFormat () == video::ECF_A8R8G8B8 ||
-							image->getColorFormat () == video::ECF_A1R5G5B5,
-							HAS_ALPHA
-						);
+		core::setbit_cond(Flags,
+				image->getColorFormat () == video::ECF_A8R8G8B8 ||
+				image->getColorFormat () == video::ECF_A1R5G5B5,
+				HAS_ALPHA);
 
 		core::dimension2d<u32> optSize(
 				OrigSize.getOptimalSize( 0 != ( Flags & NP2_SIZE ),
@@ -47,7 +46,8 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 fl
 
 		if ( OrigSize == optSize )
 		{
-			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, image);
+			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, image->getDimension());
+			image->copyTo(MipMap[0]);
 		}
 		else
 		{
@@ -62,14 +62,7 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 fl
 			OrigSize = optSize;
 			os::Printer::log ( buf, ELL_WARNING );
 			MipMap[0] = new CImage(BURNINGSHADER_COLOR_FORMAT, optSize);
-			MipMap[0]->fill ( 0 );
-
-
-			// temporary CImage needed
-			CImage * temp = new CImage ( BURNINGSHADER_COLOR_FORMAT, image );
-			temp->copyToScalingBoxFilter ( MipMap[0],0, false );
-			//temp->copyToScaling(MipMap[0]);
-			temp->drop ();
+			image->copyToScalingBoxFilter ( MipMap[0],0, false );
 		}
 	}
 

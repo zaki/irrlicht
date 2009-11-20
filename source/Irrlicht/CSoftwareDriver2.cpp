@@ -2049,7 +2049,11 @@ void CBurningVideoDriver::clearZBuffer()
 IImage* CBurningVideoDriver::createScreenShot()
 {
 	if (BackBuffer)
-		return new CImage(BackBuffer->getColorFormat(), BackBuffer);
+	{
+		CImage* tmp = new CImage(BackBuffer->getColorFormat(), BackBuffer->getDimension());
+		BackBuffer->copyTo(tmp);
+		return tmp;
+	}
 	else
 		return 0;
 
