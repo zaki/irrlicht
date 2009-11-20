@@ -46,6 +46,32 @@ CDMFLoader::CDMFLoader(ISceneManager* smgr, io::IFileSystem* filesys)
 }
 
 
+void CDMFLoader::findFile(bool use_mat_dirs, const core::stringc& path, const core::stringc& matPath, core::stringc& filename)
+{
+	// path + texpath + full name
+	if (use_mat_dirs && FileSystem->existFile(path+matPath+filename))
+		filename = path+matPath+filename;
+	// path + full name
+	else if (FileSystem->existFile(path+filename))
+		filename = path+filename;
+	// path + texpath + base name
+	else if (use_mat_dirs && FileSystem->existFile(path+matPath+FileSystem->getFileBasename(filename)))
+		filename = path+matPath+FileSystem->getFileBasename(filename);
+	// path + base name
+	else if (FileSystem->existFile(path+FileSystem->getFileBasename(filename)))
+		filename = path+FileSystem->getFileBasename(filename);
+	// texpath + full name
+	else if (use_mat_dirs && FileSystem->existFile(matPath+filename))
+		filename = matPath+filename;
+	// texpath + base name
+	else if (use_mat_dirs && FileSystem->existFile(matPath+FileSystem->getFileBasename(filename)))
+		filename = matPath+FileSystem->getFileBasename(filename);
+	// base name
+	else if (FileSystem->existFile(FileSystem->getFileBasename(filename)))
+		filename = FileSystem->getFileBasename(filename);
+}
+
+
 /**Creates/loads an animated mesh from the file.
  \return Pointer to the created mesh. Returns 0 if loading failed.
  If you no longer need the mesh, you should call IAnimatedMesh::drop().
@@ -136,6 +162,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			// Add this face's verts
 			if (use2TCoords)
 			{
+				// make sure we have the proper type set
+				meshBuffer->VertexType=video::EVT_2TCOORDS;
 				for (u32 v = 0; v < faces[i].numVerts; v++)
 				{
 					const dmfVert& vv = verts[faces[i].firstVert + v];
@@ -244,34 +272,8 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 			{
 				if (materiali[i].textureBlend==4)
 					driver->setTextureCreationFlag(video::ETCF_ALWAYS_32_BIT,true);
-				// path + texpath + full name
-				if (use_mat_dirs && FileSystem->existFile(path+materiali[i].pathName+materiali[i].textureName))
-					tex = driver->getTexture((path+materiali[i].pathName+materiali[i].textureName));
-				// path + full name
-				else if (FileSystem->existFile(path+materiali[i].textureName))
-					tex = driver->getTexture((path+materiali[i].textureName));
-				// path + texpath + base name
-				else if (use_mat_dirs && FileSystem->existFile(path+materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)))
-					tex = driver->getTexture((path+materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)));
-				// path + base name
-				else if (FileSystem->existFile(path+FileSystem->getFileBasename(materiali[i].textureName)))
-					tex = driver->getTexture((path+FileSystem->getFileBasename(materiali[i].textureName)));
-				// texpath + full name
-				else if (use_mat_dirs && FileSystem->existFile(materiali[i].pathName+materiali[i].textureName))
-					tex = driver->getTexture(materiali[i].pathName+materiali[i].textureName.c_str());
-				// full name
-				else if (FileSystem->existFile(materiali[i].textureName))
-					tex = driver->getTexture(materiali[i].textureName.c_str());
-				// texpath + base name
-				else if (use_mat_dirs && FileSystem->existFile(materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName)))
-					tex = driver->getTexture(materiali[i].pathName+FileSystem->getFileBasename(materiali[i].textureName));
-				// base name
-				else if (FileSystem->existFile(FileSystem->getFileBasename(materiali[i].textureName)))
-					tex = driver->getTexture(FileSystem->getFileBasename(materiali[i].textureName));
-#ifdef _IRR_DMF_DEBUG_
-				else
-					os::Printer::log("Could not load texture", materiali[i].textureName);
-#endif // _IRR_DMF_DEBUG_
+				findFile(use_mat_dirs, path, materiali[i].pathName, materiali[i].textureName);
+				tex = driver->getTexture(materiali[i].textureName);
 			}
 			//Primary texture is just a colour
 			else if(materiali[i].textureFlag==1)
@@ -299,7 +301,10 @@ IAnimatedMesh* CDMFLoader::createMesh(io::IReadFile* file)
 
 			//Lightmap is present
 			if (materiali[i].lightmapFlag == 0)
-				lig = driver->getTexture((path+materiali[i].lightmapName));
+			{
+				findFile(use_mat_dirs, path, materiali[i].pathName, materiali[i].lightmapName);
+				lig = driver->getTexture(materiali[i].lightmapName);
+			}
 			else //no lightmap
 			{
 				mat.MaterialType = video::EMT_SOLID;
