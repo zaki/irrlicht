@@ -198,8 +198,10 @@ void COGLES1ExtensionHandler::initExtensions(COGLES1Driver* driver,
 		MaxAnisotropy = static_cast<u8>(val);
 	}
 #endif
+#ifdef GL_MAX_ELEMENTS_INDICES
 	glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &val);
 	MaxIndices=val;
+#endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &val);
 	MaxTextureSize=static_cast<u32>(val);
 #ifdef EXT_texture_lod_bias

@@ -2757,12 +2757,18 @@ IImage* COGLES1Driver::createScreenShot()
 		// there are formats we don't support ATM
 		if (GL_UNSIGNED_SHORT_4_4_4_4==type)
 			type=GL_UNSIGNED_SHORT_5_5_5_1;
+#ifdef GL_EXT_read_format_bgra
 		else if (GL_UNSIGNED_SHORT_4_4_4_4_REV_EXT==type)
 			type=GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT;
+#endif
 	}
 
 	IImage* newImage = 0;
-	if ((GL_RGBA==format) || (GL_BGRA_EXT==format))
+	if ((GL_RGBA==format)
+#ifdef GL_EXT_read_format_bgra
+			|| (GL_BGRA_EXT==format)
+#endif
+			)
 	{
 		if (GL_UNSIGNED_BYTE==type)
 			newImage = new CImage(ECF_A8R8G8B8, ScreenSize);
