@@ -432,7 +432,6 @@ bool CIrrDeviceMacOSX::createWindow()
 	CGDirectDisplayID       display;
 	CGLPixelFormatObj       pixelFormat;
 	CGRect                  displayRect;
-	CGLPixelFormatAttribute	fullattribs[32];
 	CFDictionaryRef         displaymode, olddisplaymode;
 	GLint                   numPixelFormats, newSwapInterval;
 	int alphaSize = CreationParams.WithAlphaChannel?4:0, depthSize = CreationParams.ZBufferBits;
@@ -566,33 +565,21 @@ bool CIrrDeviceMacOSX::createWindow()
 					numPixelFormats = 0;
 
 					int index = 0;
-					fullattribs[index++] = kCGLPFAFullScreen;
-					fullattribs[index++] = kCGLPFADisplayMask;
-					fullattribs[index++] = (CGLPixelFormatAttribute)CGDisplayIDToOpenGLDisplayMask(display);
-					fullattribs[index++] = kCGLPFADoubleBuffer;
-					fullattribs[index++] = kCGLPFAAccelerated;
-					fullattribs[index++] = kCGLPFADepthSize;
-					fullattribs[index++] = (CGLPixelFormatAttribute)depthSize;
-					fullattribs[index++] = kCGLPFAColorSize;
-					fullattribs[index++] = (CGLPixelFormatAttribute)CreationParams.Bits;
-					fullattribs[index++] = kCGLPFAAlphaSize;
-					fullattribs[index++] = (CGLPixelFormatAttribute)alphaSize;
-
-					if (CreationParams.AntiAlias)
+					CGLPixelFormatAttribute	fullattribs[] =
 					{
-						fullattribs[index++] = kCGLPFASampleBuffers;
-						fullattribs[index++] = (CGLPixelFormatAttribute)1;
-						fullattribs[index++] = kCGLPFASamples;
-						fullattribs[index++] = (CGLPixelFormatAttribute)CreationParams.AntiAlias;
-					}
+						kCGLPFAFullScreen,
+						kCGLPFADisplayMask, (CGLPixelFormatAttribute)CGDisplayIDToOpenGLDisplayMask(display),
+						kCGLPFADoubleBuffer,
+						kCGLPFAAccelerated,
+						kCGLPFADepthSize, (CGLPixelFormatAttribute)depthSize,
+						kCGLPFAColorSize, (CGLPixelFormatAttribute)CreationParams.Bits,
+						kCGLPFAAlphaSize, (CGLPixelFormatAttribute)alphaSize,
+						kCGLPFASampleBuffers, (CGLPixelFormatAttribute)(CreationParams.AntiAlias?1:0),
+						kCGLPFASamples, (CGLPixelFormatAttribute)CreationParams.AntiAlias,
+						kCGLPFAStencilSize, (CGLPixelFormatAttribute)(CreationParams.Stencilbuffer?1:0),
+						(CGLPixelFormatAttribute)NULL
+					};
 
-					if (CreationParams.Stencilbuffer)
-					{
-						fullattribs[index++] = kCGLPFAStencilSize;
-						fullattribs[index++] = (CGLPixelFormatAttribute)1;
-					}
-
-					fullattribs[index++] = (CGLPixelFormatAttribute)NULL;
 					CGLChoosePixelFormat(fullattribs,&pixelFormat,&numPixelFormats);
 
 					if (pixelFormat != NULL)
@@ -607,6 +594,7 @@ bool CIrrDeviceMacOSX::createWindow()
 						displayRect = CGDisplayBounds(display);
 						ScreenWidth = DeviceWidth = (int)displayRect.size.width;
 						ScreenHeight = DeviceHeight = (int)displayRect.size.height;
+						CreationParams.WindowSize.set(ScreenWidth, ScreenHeight);
 						result = true;
 					}
 				}
@@ -616,6 +604,7 @@ bool CIrrDeviceMacOSX::createWindow()
 
 	if (result)
 	{
+		// fullscreen?
 		if (Window == NULL)
 			SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
 		CGLSetCurrentContext(CGLContext);
