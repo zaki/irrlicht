@@ -208,17 +208,30 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			event.KeyInput.Key = (irr::EKEY_CODE)wParam;
 			event.KeyInput.PressedDown = (message==WM_KEYDOWN || message == WM_SYSKEYDOWN);
 
+			const UINT MY_MAPVK_VSC_TO_VK_EX = 3; // MAPVK_VSC_TO_VK_EX should be in SDK according to MSDN, but isn't in mine.
+			if ( event.KeyInput.Key == irr::KEY_SHIFT )
+			{
+				// this will fail on systems before windows NT/2000/XP, not sure _what_ will return there instead.
+				event.KeyInput.Key = (irr::EKEY_CODE)MapVirtualKey( ((lParam>>16) & 255), MY_MAPVK_VSC_TO_VK_EX );
+			}
+			if ( event.KeyInput.Key == irr::KEY_CONTROL )
+			{
+				event.KeyInput.Key = (irr::EKEY_CODE)MapVirtualKey( ((lParam>>16) & 255), MY_MAPVK_VSC_TO_VK_EX );
+				// some keyboards will just return LEFT for both - left and right keys. So also check extend bit.
+				if (lParam & 0x1000000) 
+					event.KeyInput.Key = irr::KEY_RCONTROL;
+			}
+			if ( event.KeyInput.Key == irr::KEY_MENU )
+			{
+				event.KeyInput.Key = (irr::EKEY_CODE)MapVirtualKey( ((lParam>>16) & 255), MY_MAPVK_VSC_TO_VK_EX );
+				if (lParam & 0x1000000) 
+					event.KeyInput.Key = irr::KEY_RMENU;
+			}
+			
 			WORD KeyAsc=0;
 			GetKeyboardState(allKeys);
 			ToAscii((UINT)wParam,(UINT)lParam,allKeys,&KeyAsc,0);
 
-			if (event.KeyInput.Key==irr::KEY_SHIFT)
-			{
-				if ((allKeys[VK_LSHIFT] & 0x80)!=0)
-					event.KeyInput.Key=irr::KEY_LSHIFT;
-				else if ((allKeys[VK_RSHIFT] & 0x80)!=0)
-					event.KeyInput.Key=irr::KEY_RSHIFT;
-			}
 			event.KeyInput.Shift = ((allKeys[VK_SHIFT] & 0x80)!=0);
 			event.KeyInput.Control = ((allKeys[VK_CONTROL] & 0x80)!=0);
 			event.KeyInput.Char = (KeyAsc & 0x00ff); //KeyAsc >= 0 ? KeyAsc : 0;

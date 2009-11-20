@@ -78,6 +78,8 @@ namespace scene
 				bool mode = true);
 
 	private:
+		void findFile(bool use_mat_dirs, const core::stringc& path, const core::stringc& matPath, core::stringc& filename);
+
 		ISceneManager* SceneMgr;
 		io::IFileSystem* FileSystem;
 	};
