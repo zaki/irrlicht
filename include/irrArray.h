@@ -30,6 +30,7 @@ public:
 	{
 	}
 
+
 	//! Constructs an array and allocates an initial chunk of memory.
 	/** \param start_count Amount of elements to pre-allocate. */
 	array(u32 start_count)
@@ -41,12 +42,10 @@ public:
 
 
 	//! Copy constructor
-	array(const array<T>& other)
-		: data(0)
+	array(const array<T>& other) : data(0)
 	{
 		*this = other;
 	}
-
 
 
 	//! Destructor.
@@ -54,13 +53,7 @@ public:
 	false by the user before. */
 	~array()
 	{
-		if (free_when_destroyed)
-		{
-			for (u32 i=0; i<used; ++i)
-				allocator.destruct(&data[i]);
-
-			allocator.deallocate(data);
-		}
+		clear();
 	}
 
 
@@ -102,48 +95,13 @@ public:
 		strategy = newStrategy;
 	}
 
+
 	//! Adds an element at back of array.
 	/** If the array is too small to add this new element it is made bigger.
 	\param element: Element to add at the back of the array. */
 	void push_back(const T& element)
 	{
-		if (used + 1 > allocated)
-		{
-			// this doesn't work if the element is in the same array. So
-			// we'll copy the element first to be sure we'll get no data
-			// corruption
-
-			T e(element);
-			//reallocate(used * 2 +1); // increase data block
-			// TA: okt, 2008. it's only allowed to alloc one element, if
-			// default constructor has to be called
-
-			// increase data block
-			u32 newAlloc;
-			switch ( strategy )
-			{
-				case ALLOC_STRATEGY_DOUBLE:
-					newAlloc = used + 1 + (allocated < 500 ?
-							(allocated < 5 ? 5 : used) : used >> 2);
-					break;
-				default:
-				case ALLOC_STRATEGY_SAFE:
-					newAlloc = used + 1;
-					break;
-			}
-			reallocate( newAlloc);
-			// construct new element
-			// Attention!. in missing default constructors for faster alloc methods
-			allocator.construct(&data[used++], e); // data[used++] = e; // push_back
-		}
-		else
-		{
-			//data[used++] = element;
-			// instead of using this here, we copy it the safe way:
-			allocator.construct(&data[used++], element);
-		}
-
-		is_sorted = false;
+		insert(element, used);
 	}
 
 
@@ -169,18 +127,56 @@ public:
 		_IRR_DEBUG_BREAK_IF(index>used) // access violation
 
 		if (used + 1 > allocated)
-			reallocate(used +1);
-
-		for (u32 i=used; i>index; --i)
 		{
-			if (i<used)
-				allocator.destruct(&data[i]);
-			allocator.construct(&data[i], data[i-1]); // data[i] = data[i-1];
-		}
+			// this doesn't work if the element is in the same
+			// array. So we'll copy the element first to be sure
+			// we'll get no data corruption
+			const T e(element);
 
-		if (used > index)
-			allocator.destruct(&data[index]);
-		allocator.construct(&data[index], element); // data[index] = element;
+			// increase data block
+			u32 newAlloc;
+			switch ( strategy )
+			{
+				case ALLOC_STRATEGY_DOUBLE:
+					newAlloc = used + 1 + (allocated < 500 ?
+							(allocated < 5 ? 5 : used) : used >> 2);
+					break;
+				default:
+				case ALLOC_STRATEGY_SAFE:
+					newAlloc = used + 1;
+					break;
+			}
+			reallocate( newAlloc);
+
+			// move array content and construct new element
+			// first move end one up
+			for (u32 i=used; i>index; --i)
+			{
+				if (i<used)
+					allocator.destruct(&data[i]);
+				allocator.construct(&data[i], data[i-1]); // data[i] = data[i-1];
+			}
+			// then add new element
+			if (used > index)
+				allocator.destruct(&data[index]);
+			allocator.construct(&data[index], e); // data[index] = e;
+		}
+		else
+		{
+			// move array content and construct new element
+			// first move end one up
+			for (u32 i=used; i>index; --i)
+			{
+				if (i<used)
+					allocator.destruct(&data[i]);
+				allocator.construct(&data[i], data[i-1]); // data[i] = data[i-1];
+			}
+			// then add new element
+			if (used > index)
+				allocator.destruct(&data[index]);
+			allocator.construct(&data[index], element); // data[index] = element;
+		}
+		// set to false as we don't know if we have the comparison operators
 		is_sorted = false;
 		++used;
 	}
@@ -189,10 +185,13 @@ public:
 	//! Clears the array and deletes all allocated memory.
 	void clear()
 	{
-		for (u32 i=0; i<used; ++i)
-			allocator.destruct(&data[i]);
+		if (free_when_destroyed)
+		{
+			for (u32 i=0; i<used; ++i)
+				allocator.destruct(&data[i]);
 
-		allocator.deallocate(data); // delete [] data;
+			allocator.deallocate(data); // delete [] data;
+		}
 		data = 0;
 		used = 0;
 		allocated = 0;
@@ -201,23 +200,32 @@ public:
 
 
 	//! Sets pointer to new array, using this as new workspace.
-	/** \param newPointer: Pointer to new array of elements.
-	\param size: Size of the new array. */
-	void set_pointer(T* newPointer, u32 size)
+	/** Make sure that set_free_when_destroyed is used properly.
+	\param newPointer: Pointer to new array of elements.
+	\param size: Size of the new array.
+	\param _is_sorted Flag which tells whether the new array is already
+	sorted.
+	\param _free_when_destroyed Sets whether the new memory area shall be
+	freed by the array upon destruction, or if this will be up to the user
+	application. */
+	void set_pointer(T* newPointer, u32 size, bool _is_sorted=false, bool _free_when_destroyed=true)
 	{
-		for (u32 i=0; i<used; ++i)
-			allocator.destruct(&data[i]);
-
-		allocator.deallocate(data); // delete [] data;
+		clear();
 		data = newPointer;
 		allocated = size;
 		used = size;
-		is_sorted = false;
+		is_sorted = _is_sorted;
+		free_when_destroyed=_free_when_destroyed;
 	}
 
 
 	//! Sets if the array should delete the memory it uses upon destruction.
-	/** \param f If true, the array frees the allocated memory in its
+	/** Also clear and set_pointer will only delete the (original) memory
+	area if this flag is set to true, which is also the default. The
+	methods reallocate, set_used, push_back, push_front, insert, and erase
+	will still try to deallocate the original memory, which might cause
+	troubles depending on the intended use of the memory area.
+	\param f If true, the array frees the allocated memory in its
 	destructor, otherwise not. The default is true. */
 	void set_free_when_destroyed(bool f)
 	{
@@ -244,12 +252,7 @@ public:
 		strategy = other.strategy;
 
 		if (data)
-		{
-			for (u32 i=0; i<used; ++i)
-				allocator.destruct(&data[i]);
-
-			allocator.deallocate(data); // delete [] data;
-		}
+			clear();
 
 		//if (allocated < other.allocated)
 		if (other.allocated == 0)
@@ -258,7 +261,7 @@ public:
 			data = allocator.allocate(other.allocated); // new T[other.allocated];
 
 		used = other.used;
-		free_when_destroyed = other.free_when_destroyed;
+		free_when_destroyed = true;
 		is_sorted = other.is_sorted;
 		allocated = other.allocated;
 
@@ -278,6 +281,7 @@ public:
 				return false;
 		return true;
 	}
+
 
 	//! Inequality operator
 	bool operator != (const array<T>& other) const
@@ -368,10 +372,8 @@ public:
 	O(n*log n) in worst case. */
 	void sort()
 	{
-		if (is_sorted || used<2)
-			return;
-
-		heapsort(data, used);
+		if (!is_sorted || used>1)
+			heapsort(data, used);
 		is_sorted = true;
 	}
 
@@ -473,6 +475,7 @@ public:
 		return index;
 	}
 
+
 	//! Finds an element in linear time, which is very slow.
 	/** Use binary_search for faster finding. Only works if ==operator is
 	implemented.
@@ -559,21 +562,20 @@ public:
 		is_sorted = _is_sorted;
 	}
 
-	private:
 
-		T* data;
-		TAlloc allocator;
-		u32 allocated;
-		u32 used;
-		eAllocStrategy strategy;
-		bool free_when_destroyed:1;
-		bool is_sorted:1;
+private:
+	T* data;
+	u32 allocated;
+	u32 used;
+	TAlloc allocator;
+	eAllocStrategy strategy:4;
+	bool free_when_destroyed:1;
+	bool is_sorted:1;
 };
 
 
 } // end namespace core
 } // end namespace irr
-
 
 #endif
 

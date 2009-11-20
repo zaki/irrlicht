@@ -31,6 +31,7 @@ namespace scene
 #	error compiler not supported
 #endif
 
+namespace {
 // File header
 struct MS3DHeader
 {
@@ -98,6 +99,8 @@ struct MS3DVertexWeights
 	char boneIds[3];
 	u8 weights[3];
 } PACK_STRUCT;
+
+} // end namespace
 
 // Default alignment
 #if defined(_MSC_VER) ||  defined(__BORLANDC__) || defined (__BCPLUSPLUS__)

@@ -974,7 +974,7 @@ bool CIrrDeviceLinux::run()
 					else
 					{
 						irrevent.KeyInput.Key = (EKEY_CODE)0;
-						os::Printer::log("Could not find win32 key for x11 key.", ELL_WARNING);
+						os::Printer::log("Could not find win32 key for x11 key.", core::stringc((int)mp.X11Key).c_str(), ELL_WARNING);
 					}
 					irrevent.EventType = irr::EET_KEY_INPUT_EVENT;
 					irrevent.KeyInput.PressedDown = (event.type == KeyPress);
@@ -1367,6 +1367,7 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_Page_Down, KEY_NEXT));
 	KeyMap.push_back(SKeyMap(XK_End, KEY_END));
 	KeyMap.push_back(SKeyMap(XK_Begin, KEY_HOME));
+	KeyMap.push_back(SKeyMap(XK_Num_Lock, KEY_NUMLOCK));
 	KeyMap.push_back(SKeyMap(XK_KP_Space, KEY_SPACE));
 	KeyMap.push_back(SKeyMap(XK_KP_Tab, KEY_TAB));
 	KeyMap.push_back(SKeyMap(XK_KP_Enter, KEY_RETURN));
@@ -1374,10 +1375,12 @@ void CIrrDeviceLinux::createKeyMap()
 	KeyMap.push_back(SKeyMap(XK_KP_F2, KEY_F2));
 	KeyMap.push_back(SKeyMap(XK_KP_F3, KEY_F3));
 	KeyMap.push_back(SKeyMap(XK_KP_F4, KEY_F4));
+	KeyMap.push_back(SKeyMap(XK_KP_Home, KEY_HOME));
 	KeyMap.push_back(SKeyMap(XK_KP_Left, KEY_LEFT));
 	KeyMap.push_back(SKeyMap(XK_KP_Up, KEY_UP));
 	KeyMap.push_back(SKeyMap(XK_KP_Right, KEY_RIGHT));
 	KeyMap.push_back(SKeyMap(XK_KP_Down, KEY_DOWN));
+	KeyMap.push_back(SKeyMap(XK_Print, KEY_PRINT));
 	KeyMap.push_back(SKeyMap(XK_KP_Prior, KEY_PRIOR));
 	KeyMap.push_back(SKeyMap(XK_KP_Page_Up, KEY_PRIOR));
 	KeyMap.push_back(SKeyMap(XK_KP_Next, KEY_NEXT));
@@ -1698,9 +1701,9 @@ bool CIrrDeviceLinux::setGammaRamp( f32 red, f32 green, f32 blue, f32 brightness
 			XRRCrtcGamma *gamma = XRRGetCrtcGamma(display, screennr);
 			if (gamma)
 			{
-				*gamma->red=red;
-				*gamma->green=green;
-				*gamma->blue=blue;
+				*gamma->red=(u16)red;
+				*gamma->green=(u16)green;
+				*gamma->blue=(u16)blue;
 				XRRSetCrtcGamma(display, screennr, gamma);
 				XRRFreeGamma(gamma);
 				return true;

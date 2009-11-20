@@ -10,6 +10,7 @@
 #include "CZipReader.h"
 #include "CMountPointReader.h"
 #include "CPakReader.h"
+#include "CNPKReader.h"
 #include "CTarReader.h"
 #include "CFileList.h"
 #include "CXMLReader.h"
@@ -65,6 +66,10 @@ CFileSystem::CFileSystem()
 
 #ifdef __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
 	ArchiveLoader.push_back(new CArchiveLoaderPAK(this));
+#endif
+
+#ifdef __IRR_COMPILE_WITH_NPK_ARCHIVE_LOADER_
+	ArchiveLoader.push_back(new CArchiveLoaderNPK(this));
 #endif
 
 #ifdef __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
@@ -185,7 +190,7 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 
 //! Adds an archive to the file system.
 bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
-									  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
+			  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
@@ -194,7 +199,7 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	// check if the archive was already loaded
 	for (i = 0; i < FileArchives.size(); ++i)
 	{
-		if (filename == FileArchives[i]->getFileList()->getPath())
+		if (getAbsolutePath(filename) == FileArchives[i]->getFileList()->getPath())
 			return true;
 	}
 
@@ -404,7 +409,7 @@ bool CFileSystem::changeWorkingDirectoryTo(const io::path& newDirectory)
 
 	if (FileSystemType != FILESYSTEM_NATIVE)
 	{
-		WorkingDirectory[FILESYSTEM_VIRTUAL].append(newDirectory);
+		WorkingDirectory[FILESYSTEM_VIRTUAL] = newDirectory;
 		flattenFilename(WorkingDirectory[FILESYSTEM_VIRTUAL], "");
 		success = 1;
 	}
@@ -707,7 +712,7 @@ bool CFileSystem::existFile(const io::path& filename) const
 #if defined(_IRR_WCHAR_FILESYSTEM)
 	HANDLE hFile = CreateFileW(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 #else
-	HANDLE hFile = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+	HANDLE hFile = CreateFileW(core::stringw(filename).c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 #endif
 	if (hFile == INVALID_HANDLE_VALUE)
 		return false;

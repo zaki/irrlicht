@@ -120,6 +120,117 @@ ECOLOR_FORMAT COpenGLTexture::getBestColorFormat(ECOLOR_FORMAT format)
 }
 
 
+GLint COpenGLTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT format,
+				GLint& filtering,
+				GLenum& colorformat,
+				GLenum& type)
+{
+	// default
+	filtering = GL_LINEAR;
+	colorformat = GL_RGBA;
+	type = GL_UNSIGNED_BYTE;
+
+	switch(format)
+	{
+		case ECF_A1R5G5B5:
+			colorformat=GL_BGRA_EXT;
+			type=GL_UNSIGNED_SHORT_1_5_5_5_REV;
+			return GL_RGBA;
+		case ECF_R5G6B5:
+			colorformat=GL_BGR;
+			type=GL_UNSIGNED_SHORT_5_6_5_REV;
+			return GL_RGB;
+		case ECF_R8G8B8:
+			colorformat=GL_BGR;
+			type=GL_UNSIGNED_BYTE;
+			return GL_RGB;
+		case ECF_A8R8G8B8:
+			colorformat=GL_BGRA_EXT;
+			if (Driver->Version > 101)
+				type=GL_UNSIGNED_INT_8_8_8_8_REV;
+			return GL_RGBA;
+		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
+		case ECF_R16F:
+		{
+#ifdef GL_ARB_texture_rg
+			filtering = GL_NEAREST;
+			colorformat = GL_RED;
+			type = GL_FLOAT;
+
+			return GL_R16F;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_G16R16F:
+		{
+#ifdef GL_ARB_texture_rg
+			filtering = GL_NEAREST;
+			colorformat = GL_RG;
+			type = GL_FLOAT;
+
+			return GL_RG16F;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_A16B16G16R16F:
+		{
+#ifdef GL_ARB_texture_rg
+			filtering = GL_NEAREST;
+			colorformat = GL_RGBA;
+			type = GL_FLOAT;
+
+			return GL_RGBA16F_ARB;
+#else
+			return GL_RGBA8;
+#endif
+		}
+		case ECF_R32F:
+		{
+#ifdef GL_ARB_texture_rg
+			filtering = GL_NEAREST;
+			colorformat = GL_RED;
+			type = GL_FLOAT;
+
+			return GL_R32F;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_G32R32F:
+		{
+#ifdef GL_ARB_texture_rg
+			filtering = GL_NEAREST;
+			colorformat = GL_RG;
+			type = GL_FLOAT;
+
+			return GL_RG32F;
+#else
+			return GL_RGB8;
+#endif
+		}
+		case ECF_A32B32G32R32F:
+		{
+#ifdef GL_ARB_texture_float
+			filtering = GL_NEAREST;
+			colorformat = GL_RGBA;
+			type = GL_FLOAT;
+
+			return GL_RGBA32F_ARB;
+#else
+			return GL_RGBA8;
+#endif
+		}
+		default:
+		{
+			os::Printer::log("Unsupported texture format", ELL_ERROR);
+			return GL_RGBA8;
+		}
+	}
+}
+
+
 void COpenGLTexture::getImageData(IImage* image)
 {
 	if (!image)
@@ -162,34 +273,8 @@ void COpenGLTexture::copyTexture(bool newTexture)
 		return;
 	}
 
-	switch (ColorFormat)
-	{
-		case ECF_A1R5G5B5:
-			InternalFormat=GL_RGBA;
-			PixelFormat=GL_BGRA_EXT;
-			PixelType=GL_UNSIGNED_SHORT_1_5_5_5_REV;
-			break;
-		case ECF_R5G6B5:
-			InternalFormat=GL_RGB;
-			PixelFormat=GL_BGR;
-			PixelType=GL_UNSIGNED_SHORT_5_6_5_REV;
-			break;
-		case ECF_R8G8B8:
-			InternalFormat=GL_RGB;
-			PixelFormat=GL_BGR;
-			PixelType=GL_UNSIGNED_BYTE;
-			break;
-		case ECF_A8R8G8B8:
-			InternalFormat=GL_RGBA;
-			PixelFormat=GL_BGRA_EXT;
-			if (Driver->Version > 101)
-				PixelType=GL_UNSIGNED_INT_8_8_8_8_REV;
-			break;
-		default:
-			os::Printer::log("Unsupported texture format", ELL_ERROR);
-			break;
-	}
-
+	GLint filtering;
+	InternalFormat = getOpenGLFormatAndParametersFromColorFormat(ColorFormat, filtering, PixelFormat, PixelType);
 	Driver->setActiveTexture(0, this);
 	if (Driver->testGLError())
 		os::Printer::log("Could not bind Texture", ELL_ERROR);
@@ -450,9 +535,8 @@ static bool checkFBOStatus(COpenGLDriver* Driver);
 
 //! RTT ColorFrameBuffer constructor
 COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
-										  const io::path& name,
-										  COpenGLDriver* driver,
-								const ECOLOR_FORMAT format)
+					const io::path& name, COpenGLDriver* driver,
+					const ECOLOR_FORMAT format)
 	: COpenGLTexture(name, driver), DepthTexture(0), ColorFrameBuffer(0)
 {
 	#ifdef _DEBUG
@@ -490,98 +574,6 @@ COpenGLFBOTexture::COpenGLFBOTexture(const core::dimension2d<u32>& size,
 						0);
 #endif
 	unbindRTT();
-}
-
-GLint COpenGLFBOTexture::getOpenGLFormatAndParametersFromColorFormat(ECOLOR_FORMAT format,
-				GLint& filtering,
-				GLenum& colorformat,
-				GLenum& type)
-{
-	// default
-	filtering = GL_LINEAR;
-	colorformat = GL_RGBA;
-	type = GL_UNSIGNED_BYTE;
-
-	switch(format)
-	{
-		// Floating Point texture formats. Thanks to Patryk "Nadro" Nadrowski.
-		case ECF_R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RED;
-			type = GL_FLOAT;
-
-			return GL_R16F;
-#else
-			return GL_RGB8;
-#endif
-		}
-		case ECF_G16R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RG;
-			type = GL_FLOAT;
-
-			return GL_RG16F;
-#else
-			return GL_RGB8;
-#endif
-		}
-		case ECF_A16B16G16R16F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RGBA;
-			type = GL_FLOAT;
-
-			return GL_RGBA16F_ARB;
-#else
-			return GL_RGBA8;
-#endif
-		}
-		case ECF_R32F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RED;
-			type = GL_FLOAT;
-
-			return GL_R32F;
-#else
-			return GL_RGB8;
-#endif
-		}
-		case ECF_G32R32F:
-		{
-#ifdef GL_ARB_texture_rg
-			filtering = GL_NEAREST;
-			colorformat = GL_RG;
-			type = GL_FLOAT;
-
-			return GL_RG32F;
-#else
-			return GL_RGB8;
-#endif
-		}
-		case ECF_A32B32G32R32F:
-		{
-#ifdef GL_ARB_texture_float
-			filtering = GL_NEAREST;
-			colorformat = GL_RGBA;
-			type = GL_FLOAT;
-
-			return GL_RGBA32F_ARB;
-#else
-			return GL_RGBA8;
-#endif
-		}
-		default:
-		{
-			return GL_RGBA8;
-		}
-	}
 }
 
 
@@ -806,6 +798,12 @@ bool checkFBOStatus(COpenGLDriver* Driver)
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
 			os::Printer::log("FBO missing an image attachment", ELL_ERROR);
 			break;
+
+#ifdef GL_EXT_framebuffer_multisample
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT:
+			os::Printer::log("FBO wrong multisample setup", ELL_ERROR);
+			break;
+#endif
 
 		case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
 			os::Printer::log("FBO format unsupported", ELL_ERROR);

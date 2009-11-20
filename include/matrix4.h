@@ -5,7 +5,7 @@
 #ifndef __IRR_MATRIX_H_INCLUDED__
 #define __IRR_MATRIX_H_INCLUDED__
 
-#include "irrTypes.h"
+#include "irrMath.h"
 #include "vector3d.h"
 #include "vector2d.h"
 #include "plane3d.h"
@@ -323,12 +323,11 @@ namespace core
 			\param axis: axis to rotate about
 			\param from: source vector to rotate from
 			 */
-			void buildAxisAlignedBillboard(	const core::vector3df& camPos,
-											const core::vector3df& center,
-											const core::vector3df& translation,
-											const core::vector3df& axis,
-											const core::vector3df& from
-										);
+			void buildAxisAlignedBillboard(const core::vector3df& camPos,
+						const core::vector3df& center,
+						const core::vector3df& translation,
+						const core::vector3df& axis,
+						const core::vector3df& from);
 
 			/*
 				construct 2D Texture transformations
@@ -383,6 +382,9 @@ namespace core
 
 			//! Gets if the matrix is definitely identity matrix
 			bool getDefinitelyIdentityMatrix() const;
+
+			//! Compare two matrices using the equal method
+			bool equals(const core::CMatrix4<T>& other, const T tolerance=(T)ROUNDING_ERROR_f64) const;
 
 		private:
 			//! Matrix data, stored in row-major order
@@ -846,34 +848,36 @@ namespace core
 	inline core::vector3d<T> CMatrix4<T>::getRotationDegrees() const
 	{
 		const CMatrix4<T> &mat = *this;
+		const core::vector3d<T> scale = getScale();
+		const core::vector3d<f64> invScale(core::reciprocal(scale.X),core::reciprocal(scale.Y),core::reciprocal(scale.Z));
 
-		f64 Y = -asin(mat(0,2));
+		f64 Y = -asin(mat[2]*invScale.X);
 		const f64 C = cos(Y);
 		Y *= RADTODEG64;
 
 		f64 rotx, roty, X, Z;
 
-		if (fabs(C)>ROUNDING_ERROR_f64)
+		if (!core::iszero(C))
 		{
-			const T invC = (T)(1.0/C);
-			rotx = mat(2,2) * invC;
-			roty = mat(1,2) * invC;
+			const f64 invC = core::reciprocal(C);
+			rotx = mat[10] * invC * invScale.Z;
+			roty = mat[6] * invC * invScale.Y;
 			X = atan2( roty, rotx ) * RADTODEG64;
-			rotx = mat(0,0) * invC;
-			roty = mat(0,1) * invC;
+			rotx = mat[0] * invC * invScale.X;
+			roty = mat[1] * invC * invScale.X;
 			Z = atan2( roty, rotx ) * RADTODEG64;
 		}
 		else
 		{
 			X = 0.0;
-			rotx = mat(1,1);
-			roty = -mat(1,0);
+			rotx = mat[5] * invScale.Y;
+			roty = -mat[4] * invScale.Y;
 			Z = atan2( roty, rotx ) * RADTODEG64;
 		}
 
 		// fix values that get below zero
 		// before it would set (!) values to 360
-		// that where above 360:
+		// that were above 360:
 		if (X < 0.0) X += 360.0;
 		if (Y < 0.0) Y += 360.0;
 		if (Z < 0.0) Z += 360.0;
@@ -938,10 +942,10 @@ namespace core
 		if (definitelyIdentityMatrix)
 			return true;
 #endif
-		if (!equals( M[ 0], (T)1 ) ||
-				!equals( M[ 5], (T)1 ) ||
-				!equals( M[10], (T)1 ) ||
-				!equals( M[15], (T)1 ))
+		if (!core::equals( M[ 0], (T)1 ) ||
+				!core::equals( M[ 5], (T)1 ) ||
+				!core::equals( M[10], (T)1 ) ||
+				!core::equals( M[15], (T)1 ))
 			return false;
 
 		for (s32 i=0; i<4; ++i)
@@ -2087,6 +2091,22 @@ namespace core
 #else
 		return false;
 #endif
+	}
+
+
+	//! Compare two matrices using the equal method
+	template <class T>
+	inline bool CMatrix4<T>::equals(const core::CMatrix4<T>& other, const T tolerance) const
+	{
+#if defined ( USE_MATRIX_TEST )
+		if (definitelyIdentityMatrix && other.definitelyIdentityMatrix)
+			return true;
+#endif
+		for (s32 i = 0; i < 16; ++i)
+			if (!core::equals(M[i],other.M[i], tolerance))
+				return false;
+
+		return true;
 	}
 
 

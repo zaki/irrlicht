@@ -38,7 +38,7 @@ namespace os
 	s16 Byteswap::byteswap(s16 num) {return bswap_16(num);}
 	u32 Byteswap::byteswap(u32 num) {return bswap_32(num);}
 	s32 Byteswap::byteswap(s32 num) {return bswap_32(num);}
-	f32 Byteswap::byteswap(f32 num) {u32 tmp=bswap_32(*((u32*)&num)); return *((f32*)&tmp);}
+	f32 Byteswap::byteswap(f32 num) {u32 tmp=bswap_32(IR(num)); return (FR(tmp));}
 	// prevent accidental byte swapping of chars
 	u8  Byteswap::byteswap(u8 num)  {return num;}
 	c8  Byteswap::byteswap(c8 num)  {return num;}

@@ -25,14 +25,6 @@ public:
 	\param mesh: Mesh on which the operation is performed. */
 	virtual void flipSurfaces(scene::IMesh* mesh) const;
 
-	//! Sets the alpha vertex color value of the whole mesh to a new value
-	/** \param mesh: Mesh on which the operation is performed.
-	\param alpha: New alpha for the vertex color. */
-	virtual void setVertexColorAlpha(scene::IMesh* mesh, s32 alpha) const;
-
-	//! Sets the colors of all vertices to one color
-	virtual void setVertexColors(IMesh* mesh, video::SColor color) const;
-
 	//! Recalculates all normals of the mesh.
 	/** \param mesh: Mesh on which the operation is performed.
 	    \param smooth: Whether to use smoothed normals. */
@@ -42,38 +34,6 @@ public:
 	/** \param buffer: Mesh buffer on which the operation is performed.
 	    \param smooth: Whether to use smoothed normals. */
 	virtual void recalculateNormals(IMeshBuffer* buffer, bool smooth = false, bool angleWeighted = false) const;
-
-	//! Scales the actual mesh, not the scene node.
-	/** \param mesh Mesh on which the operation is performed.
-	\param factor Vector which defines the scale for each axis. */
-	virtual void scale(scene::IMesh* mesh, const core::vector3df& factor) const;
-
-	//! Scales the actual meshbuffer, not the scene node.
-	/** \param buffer MeshBuffer on which the operation is performed.
-	\param factor Vector which defines the scale for each axis. */
-	virtual void scale(scene::IMeshBuffer* buffer, const core::vector3df& factor) const;
-
-	//! Scale the texture coords of a mesh.
-	/** \param mesh Mesh on which the operation is performed.
-	\param factor Vector which defines the scale for each axis.
-	\param level Number of texture coord, starting from 1. Support for level 2 exists for LightMap buffers. */
-	virtual void scaleTCoords(scene::IMesh* mesh, const core::vector2df& factor, u32 layer=1) const;
-
-	//! Scale the texture coords of a meshbuffer.
-	/** \param mesh Mesh on which the operation is performed.
-	\param factor Vector which defines the scale for each axis.
-	\param level Number of texture coord, starting from 1. Support for level 2 exists for LightMap buffers. */
-	virtual void scaleTCoords(scene::IMeshBuffer* buffer, const core::vector2df& factor, u32 level=1) const;
-
-	//! Applies a transformation to a meshbuffer
-	/** \param buffer: Meshbuffer on which the operation is performed.
-		\param m: matrix. */
-	void transform(scene::IMeshBuffer* buffer, const core::matrix4& m) const;
-
-	//! Applies a transformation to a mesh
-	/** \param mesh: Mesh on which the operation is performed.
-		\param m: transformation matrix. */
-	virtual void transform(scene::IMesh* mesh, const core::matrix4& m) const;
 
 	//! Clones a static IMesh into a modifiable SMesh.
 	virtual SMesh* createMeshCopy(scene::IMesh* mesh) const;
@@ -129,4 +89,3 @@ private:
 
 
 #endif
-

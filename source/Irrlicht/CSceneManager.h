@@ -108,7 +108,7 @@ namespace scene
 		virtual const core::aabbox3d<f32>& getBoundingBox() const;
 
 		//! registers a node for rendering it at a specific time.
-		virtual u32 registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS = ESNRP_AUTOMATIC);
+		virtual u32 registerNodeForRendering(ISceneNode* node, E_SCENE_NODE_RENDER_PASS pass = ESNRP_AUTOMATIC);
 
 		//! draws all scene nodes
 		virtual void drawAll();
@@ -556,9 +556,6 @@ namespace scene
 		//! sort on distance (sphere) to camera
 		struct DistanceNodeEntry
 		{
-			DistanceNodeEntry(ISceneNode* n, f32 d)
-				: Node(n), Distance(d) {}
-
 			DistanceNodeEntry(ISceneNode* n, const core::vector3df& cameraPos)
 				: Node(n)
 			{

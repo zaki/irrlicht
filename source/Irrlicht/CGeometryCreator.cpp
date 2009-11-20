@@ -337,8 +337,6 @@ IMesh* CGeometryCreator::createArrowMesh(const u32 tesselationCylinder,
 /* A sphere with proper normals and texture coords */
 IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCountY) const
 {
-	SMeshBuffer* buffer = new SMeshBuffer();
-
 	// thanks to Alfaz93 who made his code available for Irrlicht on which
 	// this one is based!
 
@@ -348,21 +346,20 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 		polyCountX = 2;
 	if (polyCountY < 2)
 		polyCountY = 2;
-	if (polyCountX * polyCountY > 32767) // prevent u16 overflow
+	while (polyCountX * polyCountY > 32767) // prevent u16 overflow
 	{
-		if (polyCountX > polyCountY) // prevent u16 overflow
-			polyCountX = 32767/polyCountY-1;
-		else
-			polyCountY = 32767/(polyCountX+1);
+		polyCountX /= 2;
+		polyCountY /= 2;
 	}
 
-	u32 polyCountXPitch = polyCountX+1; // get to same vertex on next level
-	buffer->Vertices.set_used((polyCountXPitch * polyCountY) + 2);
-	buffer->Indices.set_used((polyCountX * polyCountY) * 6);
+	const u32 polyCountXPitch = polyCountX+1; // get to same vertex on next level
+
+	SMeshBuffer* buffer = new SMeshBuffer();
+
+	buffer->Indices.reallocate((polyCountX * polyCountY) * 6);
 
 	const video::SColor clr(100, 255,255,255);
 
-	u32 i=0;
 	u32 level = 0;
 
 	for (u32 p1 = 0; p1 < polyCountY-1; ++p1)
@@ -371,25 +368,22 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 		for (u32 p2 = 0; p2 < polyCountX - 1; ++p2)
 		{
 			const u32 curr = level + p2;
-			buffer->Indices[i] = curr + polyCountXPitch;
-			buffer->Indices[++i] = curr;
-			buffer->Indices[++i] = curr + 1;
-			buffer->Indices[++i] = curr + polyCountXPitch;
-			buffer->Indices[++i] = curr+1;
-			buffer->Indices[++i] = curr + 1 + polyCountXPitch;
-			++i;
+			buffer->Indices.push_back(curr + polyCountXPitch);
+			buffer->Indices.push_back(curr);
+			buffer->Indices.push_back(curr + 1);
+			buffer->Indices.push_back(curr + polyCountXPitch);
+			buffer->Indices.push_back(curr+1);
+			buffer->Indices.push_back(curr + 1 + polyCountXPitch);
 		}
 
 		// the connectors from front to end
-		buffer->Indices[i] = level + polyCountX - 1 + polyCountXPitch;
-		buffer->Indices[++i] = level + polyCountX - 1;
-		buffer->Indices[++i] = level + polyCountX;
-		++i;
+		buffer->Indices.push_back(level + polyCountX - 1 + polyCountXPitch);
+		buffer->Indices.push_back(level + polyCountX - 1);
+		buffer->Indices.push_back(level + polyCountX);
 
-		buffer->Indices[i] = level + polyCountX - 1 + polyCountXPitch;
-		buffer->Indices[++i] = level + polyCountX;
-		buffer->Indices[++i] = level + polyCountX + polyCountXPitch;
-		++i;
+		buffer->Indices.push_back(level + polyCountX - 1 + polyCountXPitch);
+		buffer->Indices.push_back(level + polyCountX);
+		buffer->Indices.push_back(level + polyCountX + polyCountXPitch);
 		level += polyCountXPitch;
 	}
 
@@ -401,43 +395,41 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 	{
 		// create triangles which are at the top of the sphere
 
-		buffer->Indices[i] = polyCountSq;
-		buffer->Indices[++i] = p2 + 1;
-		buffer->Indices[++i] = p2;
-		++i;
+		buffer->Indices.push_back(polyCountSq);
+		buffer->Indices.push_back(p2 + 1);
+		buffer->Indices.push_back(p2);
 
 		// create triangles which are at the bottom of the sphere
 
-		buffer->Indices[i] = polyCountSqM1 + p2;
-		buffer->Indices[++i] = polyCountSqM1 + p2 + 1;
-		buffer->Indices[++i] = polyCountSq1;
-		++i;
+		buffer->Indices.push_back(polyCountSqM1 + p2);
+		buffer->Indices.push_back(polyCountSqM1 + p2 + 1);
+		buffer->Indices.push_back(polyCountSq1);
 	}
 
 	// create final triangle which is at the top of the sphere
 
-	buffer->Indices[i] = polyCountSq;
-	buffer->Indices[++i] = polyCountX;
-	buffer->Indices[++i] = polyCountX-1;
-	++i;
+	buffer->Indices.push_back(polyCountSq);
+	buffer->Indices.push_back(polyCountX);
+	buffer->Indices.push_back(polyCountX-1);
 
 	// create final triangle which is at the bottom of the sphere
 
-	buffer->Indices[i] = polyCountSqM1 + polyCountX - 1;
-	buffer->Indices[++i] = polyCountSqM1;
-	buffer->Indices[++i] = polyCountSq1;
+	buffer->Indices.push_back(polyCountSqM1 + polyCountX - 1);
+	buffer->Indices.push_back(polyCountSqM1);
+	buffer->Indices.push_back(polyCountSq1);
 
 	// calculate the angle which separates all points in a circle
 	const f64 AngleX = 2 * core::PI / polyCountX;
 	const f64 AngleY = core::PI / polyCountY;
 
-	i = 0;
+	u32 i=0;
 	f64 axz;
 
 	// we don't start at 0.
 
 	f64 ay = 0;//AngleY / 2;
 
+	buffer->Vertices.set_used((polyCountXPitch * polyCountY) + 2);
 	for (u32 y = 0; y < polyCountY; ++y)
 	{
 		ay += AngleY;
@@ -508,8 +500,8 @@ IMesh* CGeometryCreator::createSphereMesh(f32 radius, u32 polyCountX, u32 polyCo
 
 /* A cylinder with proper normals and texture coords */
 IMesh* CGeometryCreator::createCylinderMesh(f32 radius, f32 length, 
-											u32 tesselation, const video::SColor& color, 
-											bool closeTop, f32 oblique) const
+				u32 tesselation, const video::SColor& color, 
+				bool closeTop, f32 oblique) const
 {
 	SMeshBuffer* buffer = new SMeshBuffer();
 

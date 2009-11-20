@@ -289,6 +289,10 @@ namespace video
 		virtual bool setRenderTarget(video::ITexture* texture, bool clearBackBuffer,
 					bool clearZBuffer, SColor color);
 
+		//! Sets multiple render targets
+		virtual bool setRenderTarget(const core::array<video::IRenderTarget>& texture,
+			bool clearBackBuffer=true, bool clearZBuffer=true, SColor color=SColor(0,0,0,0));
+
 		//! Clears the ZBuffer.
 		virtual void clearZBuffer();
 
@@ -313,7 +317,7 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Returns the graphics card vendor name.
-		virtual core::stringc getVendorInfo() {return vendorName;}
+		virtual core::stringc getVendorInfo() {return VendorName;}
 
 		//! Returns the maximum texture size supported.
 		virtual core::dimension2du getMaxTextureSize() const;
@@ -342,6 +346,9 @@ namespace video
 
 		//! Set GL pipeline to desired texture wrap modes of the material
 		void setWrapMode(const SMaterial& material);
+
+		//! get native wrap mode value
+		GLint getTextureWrapMode(const u8 clamp);
 
 		//! sets the needed renderstates
 		void setRenderStates3DMode();
@@ -388,12 +395,17 @@ namespace video
 		COpenGLTexture* RenderTargetTexture;
 		const ITexture* CurrentTexture[MATERIAL_MAX_TEXTURES];
 		core::array<ITexture*> DepthTextures;
-		core::array<core::plane3df> UserClipPlane;
-		core::array<bool> UserClipPlaneEnabled;
+		struct SUserClipPlane
+		{
+			SUserClipPlane() : Enabled(false) {}
+			core::plane3df Plane;
+			bool Enabled;
+		};
+		core::array<SUserClipPlane> UserClipPlanes;
 
 		core::dimension2d<u32> CurrentRendertargetSize;
 
-		core::stringc vendorName;
+		core::stringc VendorName;
 
 		core::matrix4 TextureFlipMatrix;
 
@@ -414,7 +426,7 @@ namespace video
 				: LightData(lightData), HardwareLightIndex(-1), DesireToBeOn(true) { }
 
 			SLight	LightData;
-			s32		HardwareLightIndex; // GL_LIGHT0 - GL_LIGHT7
+			s32	HardwareLightIndex; // GL_LIGHT0 - GL_LIGHT7
 			bool	DesireToBeOn;
 		};
 		core::array<RequestedLight> RequestedLights;

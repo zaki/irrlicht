@@ -378,7 +378,8 @@ void CQuake3ShaderSceneNode::render()
 		material.MaterialType = blendfunc.type;
 		material.MaterialTypeParam = blendfunc.param0;
 
-		material.TextureLayer[0].TextureWrap = q.TextureAddressMode;
+		material.TextureLayer[0].TextureWrapU = q.TextureAddressMode;
+		material.TextureLayer[0].TextureWrapV = q.TextureAddressMode;
 		//material.TextureLayer[0].TrilinearFilter = 1;
 		//material.TextureLayer[0].AnisotropicFilter = 0xFF;
 		material.setTextureMatrix( 0, textureMatrix );

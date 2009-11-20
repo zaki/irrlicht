@@ -1363,7 +1363,7 @@ void CSkinnedMesh::convertMeshToTangents()
 	{
 		if (LocalBuffers[b])
 		{
-			LocalBuffers[b]->MoveTo_Tangents();
+			LocalBuffers[b]->convertToTangents();
 
 			const s32 idxCnt = LocalBuffers[b]->getIndexCount();
 
@@ -1446,12 +1446,6 @@ void CSkinnedMesh::calculateTangents(
 		binormal *= -1.0f;
 	}
 }
-
-
-
-
-
-
 
 
 } // end namespace scene

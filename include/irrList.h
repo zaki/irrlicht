@@ -169,6 +169,10 @@ public:
 
 	//! Returns amount of elements in list.
 	/** \return Amount of elements in the list. */
+	u32 size() const
+	{
+		return Size;
+	}
 	u32 getSize() const
 	{
 		return Size;
@@ -380,10 +384,10 @@ public:
 
 private:
 	
-	irrAllocator<SKListNode> allocator;
 	SKListNode* First;
 	SKListNode* Last;
 	u32 Size;
+	irrAllocator<SKListNode> allocator;
 
 };
 

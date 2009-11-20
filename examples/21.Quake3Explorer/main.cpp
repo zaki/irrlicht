@@ -29,7 +29,7 @@ Copyright 2006-2009 Burningwater, Thomas Alten
 struct GameData
 {
 	GameData ( const path &startupDir) :
-		retVal(0), createExDevice(0), Device(0), StartupDir(startupDir)
+		retVal(0), StartupDir(startupDir), createExDevice(0), Device(0)
 	{
 		setDefault ();
 	}

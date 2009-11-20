@@ -196,3 +196,4 @@ IReadFile* CPakReader::createAndOpenFile(u32 index)
 } // end namespace irr
 
 #endif // __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+

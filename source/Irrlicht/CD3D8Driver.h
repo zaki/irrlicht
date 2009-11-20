@@ -57,7 +57,7 @@ namespace video
 
 		//! sets a render target
 		virtual bool setRenderTarget(video::ITexture* texture,
-			bool clearBackBuffer=false, bool clearZBuffer=false,
+			bool clearBackBuffer=true, bool clearZBuffer=true,
 			SColor color=video::SColor(0,0,0,0));
 
 		//! sets a viewport
@@ -274,6 +274,8 @@ namespace video
 				u32 vertexCount, const void* indexList, u32 primitiveCount,
 				E_VERTEX_TYPE vType, scene::E_PRIMITIVE_TYPE pType,
 				E_INDEX_TYPE iType, bool is3D);
+
+		D3DTEXTUREADDRESS getTextureWrapMode(const u8 clamp);
 
 		inline D3DCOLORVALUE colorToD3D(const SColor& col)
 		{

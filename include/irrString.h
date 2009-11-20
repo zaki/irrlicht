@@ -232,9 +232,13 @@ public:
 		if (this == &other)
 			return *this;
 
-		allocator.deallocate(array); // delete [] array;
-		allocated = used = other.size()+1;
-		array = allocator.allocate(used); //new T[used];
+		used = other.size()+1;
+		if (used>allocated)
+		{
+			allocator.deallocate(array); // delete [] array;
+			allocated = used;
+			array = allocator.allocate(used); //new T[used];
+		}
 
 		const T* p = other.c_str();
 		for (u32 i=0; i<used; ++i, ++p)
@@ -273,24 +277,28 @@ public:
 
 		u32 len = 0;
 		const B* p = c;
-		while(*p)
+		do
 		{
 			++len;
-			++p;
-		}
+		} while(*p++);
 
-		// we'll take the old string for a while, because the new
+		// we'll keep the old string for a while, because the new
 		// string could be a part of the current string.
 		T* oldArray = array;
 
-		++len;
-		allocated = used = len;
-		array = allocator.allocate(used); //new T[used];
+		used = len;
+		if (used>allocated)
+		{
+			allocated = used;
+			array = allocator.allocate(used); //new T[used];
+		}
 
 		for (u32 l = 0; l<len; ++l)
 			array[l] = (T)c[l];
 
-		allocator.deallocate(oldArray); // delete [] oldArray;
+		if (oldArray != array)
+			allocator.deallocate(oldArray); // delete [] oldArray;
+
 		return *this;
 	}
 
@@ -366,10 +374,6 @@ public:
 			s32 diff = array[i] - other.array[i];
 			if ( diff )
 				return diff < 0;
-/*
-			if (array[i] != other.array[i])
-				return (array[i] < other.array[i]);
-*/
 		}
 
 		return used < other.used;
@@ -390,8 +394,9 @@ public:
 	}
 
 
-	//! Returns length of string
-	/** \return Length of the string in characters. */
+	//! Returns length of the string's content
+	/** \return Length of the string's content in characters, excluding
+	the trailing NUL. */
 	u32 size() const
 	{
 		return used-1;
@@ -399,7 +404,7 @@ public:
 
 
 	//! Returns character string
-	/** \return pointer to C-style zero terminated string. */
+	/** \return pointer to C-style NUL terminated string. */
 	const T* c_str() const
 	{
 		return array;
@@ -1027,6 +1032,55 @@ public:
 		return used > 1 ? array[used-2] : 0;
 	}
 
+	//! split string into parts.
+	/** This method will split a string at certain delimiter characters
+	into the container passed in as reference. The type of the container
+	has to be given as template parameter. It must provide a push_back and
+	a size method.
+	\param ret The result container
+	\param c C-style string of delimiter characters
+	\param count Number of delimiter characters
+	\param ignoreEmptyTokens Flag to avoid empty substrings in the result
+	container. If two delimiters occur without a character in between, an
+	empty substring would be placed in the result. If this flag is set,
+	only non-empty strings are stored.
+	\param keepSeparators Flag which allows to add the separator to the
+	result string. If this flag is true, the concatenation of the
+	substrings results in the original string. Otherwise, only the
+	characters between the delimiters are returned.
+	\return The number of resulting substrings
+	*/
+	template<class container>
+	u32 split(container& ret, const T* const c, u32 count=1, bool ignoreEmptyTokens=true, bool keepSeparators=false) const
+	{
+		if (!c)
+			return 0;
+
+		const u32 oldSize=ret.size();
+		u32 lastpos = 0;
+		bool lastWasSeparator = false;
+		for (u32 i=0; i<used; ++i)
+		{
+			bool foundSeparator = false;
+			for (u32 j=0; j<count; ++j)
+			{
+				if (array[i] == c[j])
+				{
+					if ((!ignoreEmptyTokens || i - lastpos != 0) &&
+							!lastWasSeparator)
+						ret.push_back(string<T>(&array[lastpos], i - lastpos));
+					foundSeparator = true;
+					lastpos = (keepSeparators ? i : i + 1);
+					break;
+				}
+			}
+			lastWasSeparator = foundSeparator;
+		}
+		if ((used - 1) > lastpos)
+			ret.push_back(string<T>(&array[lastpos], (used - 1) - lastpos));
+		return ret.size()-oldSize;
+	}
+
 private:
 
 	//! Reallocate the array, make it bigger or smaller
@@ -1050,9 +1104,9 @@ private:
 	//--- member variables
 
 	T* array;
-	TAlloc allocator;
 	u32 allocated;
 	u32 used;
+	TAlloc allocator;
 };
 
 

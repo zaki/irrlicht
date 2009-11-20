@@ -493,7 +493,7 @@ bool CB3DMeshFileLoader::readChunkTRIS(scene::SSkinMeshBuffer *meshBuffer, u32 m
 			{
 				//Check for lightmapping:
 				if (BaseVertices[ vertex_id[i] ].TCoords2 != core::vector2df(0.f,0.f))
-					meshBuffer->MoveTo_2TCoords(); //Will only affect the meshbuffer the first time this is called
+					meshBuffer->convertTo2TCoords(); //Will only affect the meshbuffer the first time this is called
 
 				//Add the vertex to the meshbuffer:
 				if (meshBuffer->VertexType == video::EVT_STANDARD)
@@ -922,9 +922,9 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 				material.Material.setTexture(i, tex);
 			}
 			if (material.Textures[i]->Flags & 0x10) // Clamp U
-				material.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;
+				material.Material.TextureLayer[i].TextureWrapU=video::ETC_CLAMP;
 			if (material.Textures[i]->Flags & 0x20) // Clamp V
-				material.Material.TextureLayer[i].TextureWrap=video::ETC_CLAMP;
+				material.Material.TextureLayer[i].TextureWrapV=video::ETC_CLAMP;
 		}
 	}
 

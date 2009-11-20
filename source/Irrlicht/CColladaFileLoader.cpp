@@ -779,7 +779,7 @@ void CColladaFileLoader::readNodeSection(io::IXMLReaderUTF8* reader, scene::ISce
 				if (node && newnode)
 				{
 					// move children from dummy to new node
-					core::list<ISceneNode*>::ConstIterator it = node->getChildren().begin();
+					ISceneNodeList::ConstIterator it = node->getChildren().begin();
 					for (; it != node->getChildren().end(); it = node->getChildren().begin())
 						(*it)->setParent(newnode);
 

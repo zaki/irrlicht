@@ -74,200 +74,212 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 
 	GLuint PixelFormat;
 
-	if (AntiAlias > 1)
-	{
-		// Create a window to test antialiasing support
+	// Create a window to test antialiasing support
 		const fschar_t* ClassName = __TEXT("GLCIrrDeviceWin32");
-		HINSTANCE lhInstance = GetModuleHandle(0);
+	HINSTANCE lhInstance = GetModuleHandle(0);
 
-		// Register Class
-		WNDCLASSEX wcex;
-		wcex.cbSize        = sizeof(WNDCLASSEX);
-		wcex.style         = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc   = (WNDPROC)DefWindowProc;
-		wcex.cbClsExtra    = 0;
-		wcex.cbWndExtra    = 0;
-		wcex.hInstance     = lhInstance;
-		wcex.hIcon         = NULL;
-		wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
-		wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-		wcex.lpszMenuName  = 0;
-		wcex.lpszClassName = ClassName;
-		wcex.hIconSm       = 0;
-		wcex.hIcon         = 0;
+	// Register Class
+	WNDCLASSEX wcex;
+	wcex.cbSize        = sizeof(WNDCLASSEX);
+	wcex.style         = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc   = (WNDPROC)DefWindowProc;
+	wcex.cbClsExtra    = 0;
+	wcex.cbWndExtra    = 0;
+	wcex.hInstance     = lhInstance;
+	wcex.hIcon         = NULL;
+	wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+	wcex.lpszMenuName  = 0;
+	wcex.lpszClassName = ClassName;
+	wcex.hIconSm       = 0;
+	wcex.hIcon         = 0;
 
-		RegisterClassEx(&wcex);
-		RECT clientSize;
-		clientSize.top = 0;
-		clientSize.left = 0;
-		clientSize.right = params.WindowSize.Width;
-		clientSize.bottom = params.WindowSize.Height;
+	RegisterClassEx(&wcex);
+	RECT clientSize;
+	clientSize.top = 0;
+	clientSize.left = 0;
+	clientSize.right = params.WindowSize.Width;
+	clientSize.bottom = params.WindowSize.Height;
 
-		DWORD style = WS_POPUP;
+	DWORD style = WS_POPUP;
 
-		if (!params.Fullscreen)
-			style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+	if (!params.Fullscreen)
+		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 
-		AdjustWindowRect(&clientSize, style, FALSE);
+	AdjustWindowRect(&clientSize, style, FALSE);
 
-		const s32 realWidth = clientSize.right - clientSize.left;
-		const s32 realHeight = clientSize.bottom - clientSize.top;
+	const s32 realWidth = clientSize.right - clientSize.left;
+	const s32 realHeight = clientSize.bottom - clientSize.top;
 
-		const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-		const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+	const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+	const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
 
 		HWND temporary_wnd=CreateWindow(ClassName, __TEXT(""), style, windowLeft, windowTop,
 			realWidth, realHeight, NULL, NULL, lhInstance, NULL);
 
-		if (!temporary_wnd)
-		{
-			os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
-			return false;
-		}
+	if (!temporary_wnd)
+	{
+		os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
+		return false;
+	}
 
-		HDc = GetDC(temporary_wnd);
-		for (u32 i=0; i<5; ++i)
+	HDc = GetDC(temporary_wnd);
+
+	for (u32 i=0; i<5; ++i)
+	{
+		if (i == 1)
 		{
-			if (i == 1)
+			if (params.Stencilbuffer)
 			{
-				if (params.Stencilbuffer)
-				{
-					os::Printer::log("Cannot create a GL device with stencil buffer, disabling stencil shadows.", ELL_WARNING);
-					params.Stencilbuffer = false;
-					pfd.cStencilBits = 0;
-				}
-				else
-					continue;
+				os::Printer::log("Cannot create a GL device with stencil buffer, disabling stencil shadows.", ELL_WARNING);
+				params.Stencilbuffer = false;
+				pfd.cStencilBits = 0;
 			}
 			else
-			if (i == 2)
-			{
-				pfd.cDepthBits = 24;
-			}
-			if (i == 3)
-			{
-				if (params.Bits!=16)
-					pfd.cDepthBits = 16;
-				else
-					continue;
-			}
-			else
-			if (i == 4)
-			{
-				// try single buffer
-				if (params.Doublebuffer)
-					pfd.dwFlags &= ~PFD_DOUBLEBUFFER;
-				else
-					continue;
-			}
-			else
-			if (i == 5)
-			{
-				os::Printer::log("Cannot create a GL device context", "No suitable format for temporary window.", ELL_ERROR);
-				ReleaseDC(temporary_wnd, HDc);
-				DestroyWindow(temporary_wnd);
-				return false;
-			}
-
-			// choose pixelformat
-			PixelFormat = ChoosePixelFormat(HDc, &pfd);
-			if (PixelFormat)
-				break;
-		}
-
-		SetPixelFormat(HDc, PixelFormat, &pfd);
-		HRc=wglCreateContext(HDc);
-		if (!HRc)
-		{
-			os::Printer::log("Cannot create a temporary GL rendering context.", ELL_ERROR);
-			ReleaseDC(temporary_wnd, HDc);
-			DestroyWindow(temporary_wnd);
-			return false;
-		}
-
-		if (!wglMakeCurrent(HDc, HRc))
-		{
-			os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
-			wglDeleteContext(HRc);
-			ReleaseDC(temporary_wnd, HDc);
-			DestroyWindow(temporary_wnd);
-			return false;
-		}
-
-#ifdef WGL_ARB_pixel_format
-		PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-		if (wglChoosePixelFormat_ARB)
-		{
-			// This value determines the number of samples used for antialiasing
-			// My experience is that 8 does not show a big
-			// improvement over 4, but 4 shows a big improvement
-			// over 2.
-
-			if(AntiAlias > 32)
-				AntiAlias = 32;
-
-			f32 fAttributes[] = {0.0, 0.0};
-			s32 iAttributes[] =
-			{
-				WGL_DRAW_TO_WINDOW_ARB,GL_TRUE,
-				WGL_SUPPORT_OPENGL_ARB,GL_TRUE,
-				WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
-				WGL_COLOR_BITS_ARB,(params.Bits==32) ? 24 : 15,
-				WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
-				WGL_DEPTH_BITS_ARB,params.ZBufferBits, // 10,11
-				WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
-				WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
-				WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
-#ifdef WGL_ARB_multisample
-				WGL_SAMPLE_BUFFERS_ARB, 1,
-				WGL_SAMPLES_ARB,AntiAlias, // 20,21
-#elif defined(WGL_EXT_multisample)
-				WGL_SAMPLE_BUFFERS_EXT, 1,
-				WGL_SAMPLES_EXT,AntiAlias, // 20,21
-#elif defined(WGL_3DFX_multisample)
-				WGL_SAMPLE_BUFFERS_3DFX, 1,
-				WGL_SAMPLES_3DFX,AntiAlias, // 20,21
-#endif
-				WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-				// other possible values:
-				// WGL_ARB_pixel_format_float: WGL_TYPE_RGBA_FLOAT_ARB
-				// WGL_EXT_pixel_format_packed_float: WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT
-#if 0
-#ifdef WGL_EXT_framebuffer_sRGB
-				WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_FALSE,
-#endif
-#endif
-				0,0
-			};
-
-			s32 rv=0;
-			// Try to get an acceptable pixel format
-			while(rv==0 && iAttributes[21]>1)
-			{
-				s32 pixelFormat=0;
-				u32 numFormats=0;
-				const s32 valid = wglChoosePixelFormat_ARB(HDc,iAttributes,fAttributes,1,&pixelFormat,&numFormats);
-
-				if (valid && numFormats>0)
-					rv = pixelFormat;
-				else
-					iAttributes[21] -= 1;
-			}
-			if (rv)
-			{
-				PixelFormat=rv;
-				AntiAlias=iAttributes[21];
-			}
+				continue;
 		}
 		else
-#endif
-			AntiAlias=0;
+		if (i == 2)
+		{
+			pfd.cDepthBits = 24;
+		}
+		if (i == 3)
+		{
+			if (params.Bits!=16)
+				pfd.cDepthBits = 16;
+			else
+				continue;
+		}
+		else
+		if (i == 4)
+		{
+			// try single buffer
+			if (params.Doublebuffer)
+				pfd.dwFlags &= ~PFD_DOUBLEBUFFER;
+			else
+				continue;
+		}
+		else
+		if (i == 5)
+		{
+			os::Printer::log("Cannot create a GL device context", "No suitable format for temporary window.", ELL_ERROR);
+			ReleaseDC(temporary_wnd, HDc);
+			DestroyWindow(temporary_wnd);
+			return false;
+		}
 
-		wglMakeCurrent(HDc, NULL);
+		// choose pixelformat
+		PixelFormat = ChoosePixelFormat(HDc, &pfd);
+		if (PixelFormat)
+			break;
+	}
+
+	SetPixelFormat(HDc, PixelFormat, &pfd);
+	HRc=wglCreateContext(HDc);
+	if (!HRc)
+	{
+		os::Printer::log("Cannot create a temporary GL rendering context.", ELL_ERROR);
+		ReleaseDC(temporary_wnd, HDc);
+		DestroyWindow(temporary_wnd);
+		return false;
+	}
+
+	if (!wglMakeCurrent(HDc, HRc))
+	{
+		os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
 		wglDeleteContext(HRc);
 		ReleaseDC(temporary_wnd, HDc);
 		DestroyWindow(temporary_wnd);
+		return false;
 	}
+
+#ifdef _DEBUG
+	core::stringc wglExtensions;
+#ifdef WGL_ARB_extensions_string
+	PFNWGLGETEXTENSIONSSTRINGARBPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
+	if (irrGetExtensionsString)
+		wglExtensions = irrGetExtensionsString(HDc);
+#elif defined(WGL_EXT_extensions_string)
+	PFNWGLGETEXTENSIONSSTRINGEXTPROC irrGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
+	if (irrGetExtensionsString)
+		wglExtensions = irrGetExtensionsString(HDc);
+#endif
+	os::Printer::log("WGL_extensions", wglExtensions);
+#endif
+
+#ifdef WGL_ARB_pixel_format
+	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormat_ARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+	if (wglChoosePixelFormat_ARB)
+	{
+		// This value determines the number of samples used for antialiasing
+		// My experience is that 8 does not show a big
+		// improvement over 4, but 4 shows a big improvement
+		// over 2.
+
+		if(AntiAlias > 32)
+			AntiAlias = 32;
+
+		f32 fAttributes[] = {0.0, 0.0};
+		s32 iAttributes[] =
+		{
+			WGL_DRAW_TO_WINDOW_ARB,GL_TRUE,
+			WGL_SUPPORT_OPENGL_ARB,GL_TRUE,
+			WGL_ACCELERATION_ARB,WGL_FULL_ACCELERATION_ARB,
+			WGL_COLOR_BITS_ARB,(params.Bits==32) ? 24 : 15,
+			WGL_ALPHA_BITS_ARB,(params.Bits==32) ? 8 : 1,
+			WGL_DEPTH_BITS_ARB,params.ZBufferBits, // 10,11
+			WGL_STENCIL_BITS_ARB,(params.Stencilbuffer) ? 1 : 0,
+			WGL_DOUBLE_BUFFER_ARB,(params.Doublebuffer) ? GL_TRUE : GL_FALSE,
+			WGL_STEREO_ARB,(params.Stereobuffer) ? GL_TRUE : GL_FALSE,
+#ifdef WGL_ARB_multisample
+			WGL_SAMPLE_BUFFERS_ARB, 1,
+			WGL_SAMPLES_ARB,AntiAlias, // 20,21
+#elif defined(WGL_EXT_multisample)
+			WGL_SAMPLE_BUFFERS_EXT, 1,
+			WGL_SAMPLES_EXT,AntiAlias, // 20,21
+#elif defined(WGL_3DFX_multisample)
+			WGL_SAMPLE_BUFFERS_3DFX, 1,
+			WGL_SAMPLES_3DFX,AntiAlias, // 20,21
+#endif
+			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+			// other possible values:
+			// WGL_ARB_pixel_format_float: WGL_TYPE_RGBA_FLOAT_ARB
+			// WGL_EXT_pixel_format_packed_float: WGL_TYPE_RGBA_UNSIGNED_FLOAT_EXT
+#if 0
+#ifdef WGL_EXT_framebuffer_sRGB
+			WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT, GL_FALSE,
+#endif
+#endif
+			0,0
+		};
+
+		s32 rv=0;
+		// Try to get an acceptable pixel format
+		while(rv==0 && iAttributes[21]>1)
+		{
+			s32 pixelFormat=0;
+			u32 numFormats=0;
+			const s32 valid = wglChoosePixelFormat_ARB(HDc,iAttributes,fAttributes,1,&pixelFormat,&numFormats);
+
+			if (valid && numFormats>0)
+				rv = pixelFormat;
+			else
+				iAttributes[21] -= 1;
+		}
+		if (rv)
+		{
+			PixelFormat=rv;
+			AntiAlias=iAttributes[21];
+		}
+	}
+	else
+#endif
+		AntiAlias=0;
+
+	wglMakeCurrent(HDc, NULL);
+	wglDeleteContext(HRc);
+	ReleaseDC(temporary_wnd, HDc);
+	DestroyWindow(temporary_wnd);
 
 	// get hdc
 	HDc=GetDC(Window);
@@ -330,7 +342,15 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 #ifdef WGL_ARB_create_context
 	PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribs_ARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 	if (wglCreateContextAttribs_ARB)
-		HRc=wglCreateContextAttribs_ARB(HDc, 0, NULL);
+	{
+		int iAttribs[] =
+		{
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+			0
+		};
+		HRc=wglCreateContextAttribs_ARB(HDc, 0, iAttribs);
+	}
 	else
 #endif
 		HRc=wglCreateContext(HDc);
@@ -440,6 +460,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
 	// set vsync
+	//TODO: Check GLX_EXT_swap_control and GLX_MESA_swap_control
 #ifdef GLX_SGI_swap_control
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (params.Vsync && glxSwapIntervalSGI)
@@ -529,7 +550,7 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	if (renderer && vendor)
 	{
 		os::Printer::log(reinterpret_cast<const c8*>(renderer), reinterpret_cast<const c8*>(vendor), ELL_INFORMATION);
-		vendorName = reinterpret_cast<const c8*>(vendor);
+		VendorName = reinterpret_cast<const c8*>(vendor);
 	}
 
 	u32 i;
@@ -552,6 +573,13 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 	// Reset The Current Viewport
 	glViewport(0, 0, screenSize.Width, screenSize.Height);
 
+	UserClipPlanes.reallocate(MaxUserClipPlanes);
+	for (i=0; i<MaxUserClipPlanes; ++i)
+		UserClipPlanes.push_back(SUserClipPlane());
+
+	for (i=0; i<ETS_COUNT; ++i)
+		setTransform(static_cast<E_TRANSFORMATION_STATE>(i), core::IdentityMatrix);
+
 	setAmbientLight(SColorf(0.0f,0.0f,0.0f,0.0f));
 #ifdef GL_EXT_separate_specular_color
 	if (FeatureAvailable[IRR_EXT_separate_specular_color])
@@ -573,14 +601,6 @@ bool COpenGLDriver::genericDriverInit(const core::dimension2d<u32>& screenSize, 
 #if defined(GL_ARB_provoking_vertex) || defined(GL_EXT_provoking_vertex)
 	extGlProvokingVertex(GL_FIRST_VERTEX_CONVENTION_EXT);
 #endif
-
-	UserClipPlane.reallocate(MaxUserClipPlanes);
-	UserClipPlaneEnabled.reallocate(MaxUserClipPlanes);
-	for (i=0; i<MaxUserClipPlanes; ++i)
-	{
-		UserClipPlane.push_back(core::plane3df());
-		UserClipPlaneEnabled.push_back(false);
-	}
 
 	// create material renderers
 	createMaterialRenderers();
@@ -767,7 +787,7 @@ void COpenGLDriver::setTransform(E_TRANSFORMATION_STATE state, const core::matri
 			glLoadMatrixf((Matrices[ETS_VIEW] * Matrices[ETS_WORLD]).pointer());
 			// we have to update the clip planes to the latest view matrix
 			for (u32 i=0; i<MaxUserClipPlanes; ++i)
-				if (UserClipPlaneEnabled[i])
+				if (UserClipPlanes[i].Enabled)
 					uploadClipPlane(i);
 		}
 		break;
@@ -1442,7 +1462,7 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 		E_MODULATE_FUNC modulo;
 		u32 alphaSource;
 		unpack_texureBlendFunc ( srcFact, dstFact, modulo, alphaSource, Material.MaterialTypeParam);
-		setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), alphaSource&video::EAS_TEXTURE);
+		setRenderStates2DMode(alphaSource&video::EAS_VERTEX_COLOR, (Material.getTexture(0) != 0), (alphaSource&video::EAS_TEXTURE) != 0);
 	}
 	else
 		setRenderStates2DMode(Material.MaterialType==EMT_TRANSPARENT_VERTEX_ALPHA, (Material.getTexture(0) != 0), Material.MaterialType==EMT_TRANSPARENT_ALPHA_CHANNEL);
@@ -2093,6 +2113,108 @@ void COpenGLDriver::setRenderStates3DMode()
 }
 
 
+//! Get native wrap mode value
+GLint COpenGLDriver::getTextureWrapMode(const u8 clamp)
+{
+	GLint mode=GL_REPEAT;
+	switch (clamp)
+	{
+		case ETC_REPEAT:
+			mode=GL_REPEAT;
+			break;
+		case ETC_CLAMP:
+			mode=GL_CLAMP;
+			break;
+		case ETC_CLAMP_TO_EDGE:
+#ifdef GL_VERSION_1_2
+			if (Version>101)
+				mode=GL_CLAMP_TO_EDGE;
+			else
+#endif
+#ifdef GL_SGIS_texture_edge_clamp
+			if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
+				mode=GL_CLAMP_TO_EDGE_SGIS;
+			else
+#endif
+				// fallback
+				mode=GL_CLAMP;
+			break;
+		case ETC_CLAMP_TO_BORDER:
+#ifdef GL_VERSION_1_3
+			if (Version>102)
+				mode=GL_CLAMP_TO_BORDER;
+			else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+			if (FeatureAvailable[IRR_ARB_texture_border_clamp])
+				mode=GL_CLAMP_TO_BORDER_ARB;
+			else
+#endif
+#ifdef GL_SGIS_texture_border_clamp
+			if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
+				mode=GL_CLAMP_TO_BORDER_SGIS;
+			else
+#endif
+				// fallback
+				mode=GL_CLAMP;
+			break;
+		case ETC_MIRROR:
+#ifdef GL_VERSION_1_4
+			if (Version>103)
+				mode=GL_MIRRORED_REPEAT;
+			else
+#endif
+#ifdef GL_ARB_texture_border_clamp
+			if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
+				mode=GL_MIRRORED_REPEAT_ARB;
+			else
+#endif
+#ifdef GL_IBM_texture_mirrored_repeat
+			if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
+				mode=GL_MIRRORED_REPEAT_IBM;
+			else
+#endif
+				mode=GL_REPEAT;
+			break;
+		case ETC_MIRROR_CLAMP:
+#ifdef GL_EXT_texture_mirror_clamp
+			if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+				mode=GL_MIRROR_CLAMP_EXT;
+			else
+#endif
+#if defined(GL_ATI_texture_mirror_once)
+			if (FeatureAvailable[IRR_ATI_texture_mirror_once])
+				mode=GL_MIRROR_CLAMP_ATI;
+			else
+#endif
+				mode=GL_CLAMP;
+			break;
+		case ETC_MIRROR_CLAMP_TO_EDGE:
+#ifdef GL_EXT_texture_mirror_clamp
+			if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+				mode=GL_MIRROR_CLAMP_TO_EDGE_EXT;
+			else
+#endif
+#if defined(GL_ATI_texture_mirror_once)
+			if (FeatureAvailable[IRR_ATI_texture_mirror_once])
+				mode=GL_MIRROR_CLAMP_TO_EDGE_ATI;
+			else
+#endif
+				mode=GL_CLAMP;
+			break;
+		case ETC_MIRROR_CLAMP_TO_BORDER:
+#ifdef GL_EXT_texture_mirror_clamp
+			if (FeatureAvailable[IRR_EXT_texture_mirror_clamp])
+				mode=GL_MIRROR_CLAMP_TO_BORDER_EXT;
+			else
+#endif
+				mode=GL_CLAMP;
+			break;
+	}
+	return mode;
+}
+
+
 void COpenGLDriver::setWrapMode(const SMaterial& material)
 {
 	// texture address mode
@@ -2104,70 +2226,8 @@ void COpenGLDriver::setWrapMode(const SMaterial& material)
 		else if (u>0)
 			break; // stop loop
 
-		GLint mode=GL_REPEAT;
-		switch (material.TextureLayer[u].TextureWrap)
-		{
-			case ETC_REPEAT:
-				mode=GL_REPEAT;
-				break;
-			case ETC_CLAMP:
-				mode=GL_CLAMP;
-				break;
-			case ETC_CLAMP_TO_EDGE:
-#ifdef GL_VERSION_1_2
-				if (Version>101)
-					mode=GL_CLAMP_TO_EDGE;
-				else
-#endif
-#ifdef GL_SGIS_texture_edge_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_edge_clamp])
-					mode=GL_CLAMP_TO_EDGE_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
-				break;
-			case ETC_CLAMP_TO_BORDER:
-#ifdef GL_VERSION_1_3
-				if (Version>102)
-					mode=GL_CLAMP_TO_BORDER;
-				else
-#endif
-#ifdef GL_ARB_texture_border_clamp
-				if (FeatureAvailable[IRR_ARB_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER_ARB;
-				else
-#endif
-#ifdef GL_SGIS_texture_border_clamp
-				if (FeatureAvailable[IRR_SGIS_texture_border_clamp])
-					mode=GL_CLAMP_TO_BORDER_SGIS;
-				else
-#endif
-					// fallback
-					mode=GL_CLAMP;
-				break;
-			case ETC_MIRROR:
-#ifdef GL_VERSION_1_4
-				if (Version>103)
-					mode=GL_MIRRORED_REPEAT;
-				else
-#endif
-#ifdef GL_ARB_texture_border_clamp
-				if (FeatureAvailable[IRR_ARB_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_ARB;
-				else
-#endif
-#ifdef GL_IBM_texture_mirrored_repeat
-				if (FeatureAvailable[IRR_IBM_texture_mirrored_repeat])
-					mode=GL_MIRRORED_REPEAT_IBM;
-				else
-#endif
-					mode=GL_REPEAT;
-				break;
-		}
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getTextureWrapMode(material.TextureLayer[u].TextureWrapU));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getTextureWrapMode(material.TextureLayer[u].TextureWrapV));
 	}
 }
 
@@ -2539,6 +2599,9 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		glLoadIdentity();
 		glTranslatef(0.375, 0.375, 0.0);
 
+		// Make sure we set first texture matrix
+		if (MultiTextureExtension)
+			extGlActiveTexture(GL_TEXTURE0_ARB);
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
 
@@ -3353,6 +3416,136 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 }
 
 
+//! Sets multiple render targets
+bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& targets,
+				bool clearBackBuffer, bool clearZBuffer, SColor color)
+{
+	if (targets.size()==0)
+		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
+
+	u32 maxMultipleRTTs = core::min_(4u, targets.size());
+
+	// determine common size
+	core::dimension2du rttSize = CurrentRendertargetSize;
+	if (targets[0].TargetType==ERT_RENDER_TEXTURE)
+	{
+		if (!targets[0].RenderTexture)
+		{
+			os::Printer::log("Missing render texture for MRT.", ELL_ERROR);
+			return false;
+		}
+		rttSize=targets[0].RenderTexture->getSize();
+	}
+
+	for (u32 i = 0; i < maxMultipleRTTs; ++i)
+	{
+		// check for right driver type
+		if (targets[i].TargetType==ERT_RENDER_TEXTURE)
+		{
+			if (!targets[i].RenderTexture)
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Missing render texture for MRT.", ELL_WARNING);
+				break;
+			}
+			if (targets[i].RenderTexture->getDriverType() != EDT_OPENGL)
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Tried to set a texture not owned by this driver.", ELL_WARNING);
+				break;
+			}
+
+			// check for valid render target
+			if (!targets[i].RenderTexture->isRenderTarget() || !static_cast<COpenGLTexture*>(targets[i].RenderTexture)->isFrameBufferObject())
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Tried to set a non FBO-RTT as render target.", ELL_WARNING);
+				break;
+			}
+
+			// check for valid size
+			if (rttSize != targets[i].RenderTexture->getSize())
+			{
+				maxMultipleRTTs=i;
+				os::Printer::log("Render target texture has wrong size.", ELL_WARNING);
+				break;
+			}
+		}
+	}
+	if (maxMultipleRTTs==0)
+	{
+		os::Printer::log("No valid MRTs.", ELL_ERROR);
+		return false;
+	}
+
+	if (targets[0].TargetType==ERT_RENDER_TEXTURE)
+		setRenderTarget(targets[0].RenderTexture, false, false, 0x0);
+	else
+		setRenderTarget(targets[0].TargetType, false, false, 0x0);
+
+	if (maxMultipleRTTs > 1)
+	{
+		core::array<GLenum> MRTs;
+		MRTs.set_used(maxMultipleRTTs);
+		for(u32 i = 0; i < maxMultipleRTTs; i++)
+		{
+			if (FeatureAvailable[IRR_EXT_draw_buffers2])
+			{
+				extGlColorMaskIndexed(i, 
+					(targets[i].ColorMask & ECP_RED)?GL_TRUE:GL_FALSE,
+					(targets[i].ColorMask & ECP_GREEN)?GL_TRUE:GL_FALSE,
+					(targets[i].ColorMask & ECP_BLUE)?GL_TRUE:GL_FALSE,
+					(targets[i].ColorMask & ECP_ALPHA)?GL_TRUE:GL_FALSE);
+				if (targets[i].BlendEnable)
+					extGlEnableIndexed(GL_BLEND, i);
+				else
+					extGlDisableIndexed(GL_BLEND, i);
+			}
+			if (FeatureAvailable[IRR_AMD_draw_buffers_blend] || FeatureAvailable[IRR_ARB_draw_buffers_blend])
+			{
+				extGlBlendFuncIndexed(i, targets[i].BlendFuncSrc, targets[i].BlendFuncDst);
+			}
+			if (targets[0].TargetType==ERT_RENDER_TEXTURE)
+			{
+				GLenum attachment = GL_NONE;
+#ifdef GL_EXT_framebuffer_object
+				// attach texture to FrameBuffer Object on Color [i]
+				attachment = GL_COLOR_ATTACHMENT0_EXT+i;
+				extGlFramebufferTexture2D(GL_FRAMEBUFFER_EXT, attachment, GL_TEXTURE_2D, static_cast<COpenGLTexture*>(targets[i].RenderTexture)->getOpenGLTextureName(), 0);
+#endif
+				MRTs[i]=attachment;
+			}
+			else
+			{
+				switch(targets[i].TargetType)
+				{
+					case ERT_FRAME_BUFFER:
+						MRTs[i]=GL_BACK_LEFT;
+						break;
+					case ERT_STEREO_BOTH_BUFFERS:
+						MRTs[i]=GL_BACK;
+						break;
+					case ERT_STEREO_RIGHT_BUFFER:
+						MRTs[i]=GL_BACK_RIGHT;
+						break;
+					case ERT_STEREO_LEFT_BUFFER:
+						MRTs[i]=GL_BACK_LEFT;
+						break;
+					default:
+						MRTs[i]=GL_AUX0+(targets[i].TargetType-ERT_AUX_BUFFER0);
+						break;
+				}
+			}
+		}
+
+		extGlDrawBuffers(maxMultipleRTTs, MRTs.const_pointer());
+	}
+
+	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
+	return true;
+}
+
+
 // returns the current size of the screen or rendertarget
 const core::dimension2d<u32>& COpenGLDriver::getCurrentRenderTargetSize() const
 {
@@ -3472,7 +3665,7 @@ bool COpenGLDriver::setClipPlane(u32 index, const core::plane3df& plane, bool en
 	if (index >= MaxUserClipPlanes)
 		return false;
 
-	UserClipPlane[index]=plane;
+	UserClipPlanes[index].Plane=plane;
 	enableClipPlane(index, enable);
 	return true;
 }
@@ -3482,10 +3675,10 @@ void COpenGLDriver::uploadClipPlane(u32 index)
 {
 	// opengl needs an array of doubles for the plane equation
 	double clip_plane[4];
-	clip_plane[0] = UserClipPlane[index].Normal.X;
-	clip_plane[1] = UserClipPlane[index].Normal.Y;
-	clip_plane[2] = UserClipPlane[index].Normal.Z;
-	clip_plane[3] = UserClipPlane[index].D;
+	clip_plane[0] = UserClipPlanes[index].Plane.Normal.X;
+	clip_plane[1] = UserClipPlanes[index].Plane.Normal.Y;
+	clip_plane[2] = UserClipPlanes[index].Plane.Normal.Z;
+	clip_plane[3] = UserClipPlanes[index].Plane.D;
 	glClipPlane(GL_CLIP_PLANE0 + index, clip_plane);
 }
 
@@ -3497,7 +3690,7 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 		return;
 	if (enable)
 	{
-		if (!UserClipPlaneEnabled[index])
+		if (!UserClipPlanes[index].Enabled)
 		{
 			uploadClipPlane(index);
 			glEnable(GL_CLIP_PLANE0 + index);
@@ -3506,7 +3699,7 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 	else
 		glDisable(GL_CLIP_PLANE0 + index);
 
-	UserClipPlaneEnabled[index]=enable;
+	UserClipPlanes[index].Enabled=enable;
 }
 
 

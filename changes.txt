@@ -1,3 +1,87 @@
+Changes in 1.7
+
+ - Separate TextureWrap mode into U and V fields
+
+ - Add mirror texture wrap modes
+ 
+ - windows show now active/inactive state
+
+ - remove unneed drop/grab calls found by manik_sheeri
+
+ - fix rounding problem in IGUIElements which have EGUIA_SCALE alignments.
+
+ - MessageBox supports now automatic resizing and images.
+   Deprecated EGDS_MESSAGE_BOX_WIDTH and EGDS_MESSAGE_BOX_HEIGHT
+
+ - Let maya-cam animator react on a setTarget call to the camera which happened outside it's own control
+
+ - New contextmenue features:
+	automatic checking for checked flag.
+	close handling now customizable
+	serialization can handle incomplete xml's
+	setEventParent now in public interface
+	New function findItemWithCommandId
+  	New function insertItem
+
+ - irrArray: Fixed issues with push_front and reallocation
+   Changed behavior for set_pointer and clear, when free_when_destroyed is false
+
+ - NPK (Nebula device archive) reader added, it's an uncompressed PAK-like format
+
+ - SSkinMeshBuffer::MoveTo* methods renamed to convertTo*
+
+ - Multiple Render Target (MRT) support added, including some enhanced blend features where supported
+
+ - Directory changing fixed for virtual file systems (Archives etc)
+
+ - Fix texture matrix init in scene manager and driver
+
+ - More draw2dimage support in software drivers
+
+ - Sphere node now properly chooses a good tesselation based on the parameters
+
+ - Active camera not registered twice anymore
+
+ - Parallax/normal map shader rotation bug under OpenGL fixed 
+
+ - bump map handling for obj files fixed
+
+ - Fog serialization added
+
+ - New context menu features added
+
+ - Bounding Box updates for skinned meshes fixed
+
+ - The current FPS for an animated scene node cn be queried now, added some variables to serialization
+
+ - Scrollbars fixed
+
+ - Fixed 2d vertex primitive method to correctly handle transparency
+
+ - Fullscreen handling has been ehanced for Windows, now proper resolution is restored on Alt-Tab etc.
+
+ - Cameras can now be added to the scene node without automatically activating them
+   Clone method added
+
+ - New video driver method getMaxTextureSize
+
+ - PAK archive reader fixed
+
+ - TRANSPARENT_ALPHA_CHANNEL_REF uses modulate to enable lighting
+
+ - LIGHTMAP_ADD now always uses add operator
+
+ - Some Unicode file system fixes
+
+ - destructor of irrString not virtual anymore, please don't derive from irrString
+   Some new methods added, for searching and splitting
+   Assignment operator optimized
+
+ - new lightness method for SColor
+
+ - draw3DTriangle now renders filled polygons, old behavior can be achieved by setting EMT_WIREFRAME
+
+----------------
 Changes in 1.6.1
 
  - Fix another (OldValue == NewValue) before drop()/grap(), this time in CTextureAttribute::setTexture.
@@ -6,6 +90,7 @@ Changes in 1.6.1
 
  - Fix ninja animation range which got messed up a little when b3d animations got fixed (thx gbox for finding)
 
+---------------------------
 Changes in 1.6 (23.09.2009)
 
  - Added IFileSystem::createEmptyFileList, exposed IFileList::sort, addItem and added getID

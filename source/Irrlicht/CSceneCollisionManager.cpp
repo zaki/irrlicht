@@ -74,10 +74,10 @@ void CSceneCollisionManager::getPickedNodeBB(ISceneNode* root,
 		core::line3df& ray, s32 bits, bool bNoDebugObjects,
 		f32& outbestdistance, ISceneNode*& outbestnode)
 {
-	const core::list<ISceneNode*>& children = root->getChildren();
+	const ISceneNodeList& children = root->getChildren();
 	const core::vector3df rayVector = ray.getVector().normalize();
 
-	core::list<ISceneNode*>::ConstIterator it = children.begin();
+	ISceneNodeList::ConstIterator it = children.begin();
 	for (; it != children.end(); ++it)
 	{
 		ISceneNode* current = *it;
@@ -264,9 +264,9 @@ void CSceneCollisionManager::getPickedNodeFromBBAndSelector(
 				core::vector3df & outBestCollisionPoint,
 				core::triangle3df & outBestTriangle)
 {
-	const core::list<ISceneNode*>& children = root->getChildren();
+	const ISceneNodeList& children = root->getChildren();
 
-	core::list<ISceneNode*>::ConstIterator it = children.begin();
+	ISceneNodeList::ConstIterator it = children.begin();
 	for (; it != children.end(); ++it)
 	{
 		ISceneNode* current = *it;

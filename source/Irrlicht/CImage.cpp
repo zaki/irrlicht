@@ -16,9 +16,6 @@ namespace video
 CImage::CImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size)
 :Data(0), Size(size), Format(format), DeleteMemory(true)
 {
-	#ifdef _DEBUG
-	setDebugName("CImage");
-	#endif
 	initData();
 }
 
@@ -79,6 +76,9 @@ CImage::CImage(IImage* imageToCopy, const core::position2d<s32>& pos,
 //! assumes format and size has been set and creates the rest
 void CImage::initData()
 {
+#ifdef _DEBUG
+	setDebugName("CImage");
+#endif
 	BytesPerPixel = getBitsPerPixelFromFormat(Format) / 8;
 
 	// Pitch should be aligned...

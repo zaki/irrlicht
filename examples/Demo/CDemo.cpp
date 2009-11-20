@@ -148,11 +148,11 @@ bool CDemo::OnEvent(const SEvent& event)
 			device->closeDevice();
 	}
 	else
-	if ((event.EventType == EET_KEY_INPUT_EVENT &&
+	if (((event.EventType == EET_KEY_INPUT_EVENT &&
 		event.KeyInput.Key == KEY_SPACE &&
 		event.KeyInput.PressedDown == false) ||
 		(event.EventType == EET_MOUSE_INPUT_EVENT &&
-		event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP) &&
+		 event.MouseInput.Event == EMIE_LMOUSE_LEFT_UP)) &&
 		currentScene == 3)
 	{
 		// shoot

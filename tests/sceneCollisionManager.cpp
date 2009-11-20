@@ -35,21 +35,18 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 	if(hitNode != cubeNode)
 	{
 		logTestString("Unexpected collision node\n");
-		assert(false);
 		result = false;
 	}
 
 	if(!equals(resultPosition.Y, 25.f, 0.01f))
 	{
 		logTestString("Unexpected collision response position\n");
-		assert(false);
 		result = false;
 	}
 
 	if(!equals(hitPosition.Y, 5.f, 0.01f))
 	{
 		logTestString("Unexpected collision position\n");
-		assert(false);
 		result = false;
 	}
 
@@ -66,26 +63,26 @@ static bool testGetCollisionResultPosition(IrrlichtDevice * device,
 	if(hitNode != cubeNode)
 	{
 		logTestString("Unexpected collision node\n");
-		assert(false);
 		result = false;
 	}
 
 	if(!equals(resultPosition.X, -15.f, 0.01f))
 	{
 		logTestString("Unexpected collision response position\n");
-		assert(false);
 		result = false;
 	}
 
 	if(!equals(hitPosition.X, -5.f, 0.01f))
 	{
 		logTestString("Unexpected collision position\n");
-		assert(false);
 		result = false;
 	}
 
+	assert(result);
+
 	cubeSelector->drop();
 	smgr->clear();
+
 	return result;
 }
 
@@ -139,6 +136,8 @@ static bool getCollisionPoint_ignoreTriangleVertices(IrrlichtDevice * device,
 			hitPosition.X, hitPosition.Y, hitPosition.Z );
 		return false;
 	}
+
+	smgr->clear();
 
 	return true;
 }
@@ -230,11 +229,10 @@ static bool testGetSceneNodeFromScreenCoordinatesBB(IrrlichtDevice * device,
 		logTestString("A node was hit when none was expected.\n");
 		result = false;
 	}
+	assert(result);
 
 	smgr->clear();
 
-	if(!result)
-		assert(false);
 	return result;
 }
 
@@ -243,22 +241,22 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 				ISceneManager * smgr,
 				ISceneCollisionManager * collMgr)
 {
-    ISceneNode* farTarget = smgr->addCubeSceneNode(1.f);
-    farTarget->setScale(vector3df(100.f, 100.f, 10.f));
-    farTarget->setPosition(vector3df(0.f, 0.f, 500.f));
-    farTarget->updateAbsolutePosition();
+	ISceneNode* farTarget = smgr->addCubeSceneNode(1.f);
+	farTarget->setScale(vector3df(100.f, 100.f, 10.f));
+	farTarget->setPosition(vector3df(0.f, 0.f, 500.f));
+	farTarget->updateAbsolutePosition();
 
 	// Create a node that's slightly further away than the closest node,
 	// but thinner.  Its furthest corner is closer, but the collision
 	// position is further, so it should not be selected.
 	ISceneNode* middleTarget = smgr->addCubeSceneNode(10.f);
-    middleTarget->setPosition(vector3df(0.f, 0.f, 101.f));
+	middleTarget->setPosition(vector3df(0.f, 0.f, 101.f));
 	middleTarget->setScale(vector3df(1.f, 1.f, 0.5f));
-    middleTarget->updateAbsolutePosition();
+	middleTarget->updateAbsolutePosition();
 
-    ISceneNode* nearTarget = smgr->addCubeSceneNode(10.f);
-    nearTarget->setPosition(vector3df(0.f, 0.f, 100.f));
-    nearTarget->updateAbsolutePosition();
+	ISceneNode* nearTarget = smgr->addCubeSceneNode(10.f);
+	nearTarget->setPosition(vector3df(0.f, 0.f, 100.f));
+	nearTarget->updateAbsolutePosition();
 	// We'll rotate this node 90 degrees to show that we can hit its side.
 	nearTarget->setRotation(vector3df(0.f, 90.f, 0.f));
 
@@ -275,8 +273,64 @@ static bool getScaledPickedNodeBB(IrrlichtDevice * device,
 	else if(hit == middleTarget)
 		logTestString("getSceneNodeFromRayBB() hit the far (scaled) target.\n");
 
-	if(!result)
-		assert(false);
+	assert(result);
+
+	smgr->clear();
+
+	return result;
+}
+
+
+static bool compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(IrrlichtDevice * device,
+				ISceneManager * smgr,
+				ISceneCollisionManager * collMgr)
+{
+	video::IVideoDriver* driver = device->getVideoDriver();
+
+	// add camera
+	scene::ICameraSceneNode* camera = smgr->addCameraSceneNodeFPS();
+	camera->setPosition(core::vector3df(30, 30, 30));
+	camera->setTarget(core::vector3df(-8.f, 8.f, -8.f));
+	camera->setID(0);
+
+	// add a dynamic light (this causes weirdness)
+	smgr->addLightSceneNode(0, core::vector3df(4, 4, 4), video::SColorf(.2f, .3f, .2f));
+
+	// add a cube to pick
+	scene::ISceneNode* cube = smgr->addCubeSceneNode(15);
+
+	bool result = true;
+	for (u32 i=68; i<82; ++i)
+	{
+		for (u32 j=56; j<64; ++j)
+		{
+			driver->beginScene(true, true, video::SColor(100, 50, 50, 100));
+			smgr->drawAll();
+			driver->endScene();
+
+			const core::position2di pos(i, j);
+
+			// get the line used for picking
+			core::line3df ray = smgr->getSceneCollisionManager()->getRayFromScreenCoordinates(pos, camera);
+
+			// find a selected node
+			scene::ISceneNode* pick = smgr->getSceneCollisionManager()->getSceneNodeFromRayBB(ray, 1);
+
+			core::matrix4 invMat = cube->getAbsoluteTransformation();
+			invMat.makeInverse();
+
+			invMat.transformVect(ray.start);
+			invMat.transformVect(ray.end);
+
+			const int a_hit = (pick == cube);
+			const int b_hit = cube->getBoundingBox().intersectsWithLine(ray);
+			result = (a_hit==b_hit);
+		}
+	}
+
+	assert(result);
+
+	smgr->clear();
 
 	return result;
 }
@@ -300,6 +354,9 @@ bool sceneCollisionManager(void)
 	result &= getScaledPickedNodeBB(device, smgr, collMgr);
 
 	result &= getCollisionPoint_ignoreTriangleVertices(device, smgr, collMgr);
+
+	// TODO: Not yet going through
+//	result &= compareGetSceneNodeFromRayBBWithBBIntersectsWithLine(device, smgr, collMgr);
 
 	device->drop();
 	return result;

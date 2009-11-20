@@ -1320,17 +1320,18 @@ void CSceneManager::drawAll()
 	Parameters.setAttribute ( "drawn_transparent", 0 );
 	Parameters.setAttribute ( "drawn_transparent_effect", 0 );
 
+	u32 i; // new ISO for scoping problem in some compilers
+
 	// reset all transforms
 	video::IVideoDriver* driver = getVideoDriver();
 	if ( driver )
 	{
+		driver->setMaterial(video::SMaterial());
 		driver->setTransform ( video::ETS_PROJECTION, core::IdentityMatrix );
 		driver->setTransform ( video::ETS_VIEW, core::IdentityMatrix );
 		driver->setTransform ( video::ETS_WORLD, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_0, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_1, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_2, core::IdentityMatrix );
-		driver->setTransform ( video::ETS_TEXTURE_3, core::IdentityMatrix );
+		for (i=video::ETS_COUNT-1; i>=video::ETS_TEXTURE_0; --i)
+			driver->setTransform ( (video::E_TRANSFORMATION_STATE)i, core::IdentityMatrix );
 	}
 
 	driver->setAllowZWriteOnTransparent(Parameters.getAttributeAsBool( ALLOW_ZWRITE_ON_TRANSPARENT) );
@@ -1354,8 +1355,6 @@ void CSceneManager::drawAll()
 
 	if(LightManager)
 		LightManager->OnPreRender(LightList);
-
-	u32 i; // new ISO for scoping problem in some compilers
 
 	//render camera scenes
 	{
@@ -1818,8 +1817,8 @@ ISceneNode* CSceneManager::getSceneNodeFromName(const char* name, ISceneNode* st
 
 	ISceneNode* node = 0;
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 	for (; it!=list.end(); ++it)
 	{
 		node = getSceneNodeFromName(name, *it);
@@ -1842,8 +1841,8 @@ ISceneNode* CSceneManager::getSceneNodeFromId(s32 id, ISceneNode* start)
 
 	ISceneNode* node = 0;
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 	for (; it!=list.end(); ++it)
 	{
 		node = getSceneNodeFromId(id, *it);
@@ -1866,8 +1865,8 @@ ISceneNode* CSceneManager::getSceneNodeFromType(scene::ESCENE_NODE_TYPE type, IS
 
 	ISceneNode* node = 0;
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 	for (; it!=list.end(); ++it)
 	{
 		node = getSceneNodeFromType(type, *it);
@@ -1887,8 +1886,8 @@ void CSceneManager::getSceneNodesFromType(ESCENE_NODE_TYPE type, core::array<sce
 	if (start->getType() == type || ESNT_ANY == type)
 		outNodes.push_back(start);
 
-	const core::list<ISceneNode*>& list = start->getChildren();
-	core::list<ISceneNode*>::ConstIterator it = list.begin();
+	const ISceneNodeList& list = start->getChildren();
+	ISceneNodeList::ConstIterator it = list.begin();
 
 	for (; it!=list.end(); ++it)
 	{
@@ -1916,6 +1915,9 @@ void CSceneManager::removeAll()
 {
 	ISceneNode::removeAll();
 	setActiveCamera(0);
+	// Make sure the driver is reset, might need a more complex method at some point
+	if (Driver)
+		Driver->setMaterial(video::SMaterial());
 }
 
 
@@ -2394,7 +2396,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 		writer->writeElement(animatorElement);
 		writer->writeLineBreak();
 
-		core::list<ISceneNodeAnimator*>::ConstIterator it = node->getAnimators().begin();
+		ISceneNodeAnimatorList::ConstIterator it = node->getAnimators().begin();
 		for (; it != node->getAnimators().end(); ++it)
 		{
 			attr->clear();
@@ -2434,7 +2436,7 @@ void CSceneManager::writeSceneNode(io::IXMLWriter* writer, ISceneNode* node, ISc
 
 	// write children
 
-	core::list<ISceneNode*>::ConstIterator it = node->getChildren().begin();
+	ISceneNodeList::ConstIterator it = node->getChildren().begin();
 	for (; it != node->getChildren().end(); ++it)
 		writeSceneNode(writer, (*it), userDataSerializer);
 

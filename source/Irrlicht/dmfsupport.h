@@ -14,8 +14,6 @@
 
 // This support library has been made by Salvatore Russo and is released under GNU public license for general uses.
 // For uses in Irrlicht core and only for Irrlicht related uses I release this library under zlib license.
-// It uses standard template libraries to create String class and StringList class used in DeleD
-// plugins made by me.
 
 #ifndef __DMF_SUPPORT_H_INCLUDED__
 #define __DMF_SUPPORT_H_INCLUDED__
@@ -26,6 +24,8 @@
 namespace irr
 {
 namespace scene
+{
+namespace
 {
 
 /** A structure representing some DeleD infos.
@@ -73,7 +73,7 @@ struct dmfFace
 };
 
 
-/** A structure rapresenting a single vertice.
+/** A structure representing a single vertice.
 This structure contains vertice position coordinates and texture an lightmap UV.*/
 struct dmfVert
 {
@@ -93,7 +93,7 @@ struct dmfLight
 	f32 radius;//!<Maximum radius of light.
 };
 
-/** A structure rapresenting a single water plane.
+/** A structure representing a single water plane.
 This structure contains light position coordinates, diffuse colour, specular colour and maximum radius of light.*/
 struct dmfWaterPlane
 {
@@ -117,87 +117,50 @@ int axtoi(const char *hexStg)
 	return (intValue);
 }
 
+typedef core::array<core::stringc> StringList;
 
-/** A standard string.
-A standard string created with standard template libraries.*/
-typedef core::stringc String;
-
-//Define a class StringList based on core::array and the defined class String
-/** A simple stringlist class based on core::array.
-This StringList class is based on core::array and the defined String class.
-*/
-class StringList : public core::array<String>
+//Loads a stringlist from a file
+//note that each String added to StringList
+//is separated by a \\n character and it's present
+//at the end of line.
+/** Loads a StringList from a file.
+This function loads a StringList from a file where each string is divided by a \\n char.*/
+void LoadFromFile(io::IReadFile* file, StringList& strlist)
 {
-public:
+	const long sz = file->getSize();
+	char* buf = new char[sz+1];
+	file->read(buf, sz);
+	buf[sz] = 0;
+	char* p = buf;
+	char* start = p;
 
-	/**Basic Constructor*/
-	StringList()
+	while(*p)
 	{
-	}
-
-	/**Constructor based on file loading.
-	Look at LoadFromFile specifications.*/
-	StringList(io::IReadFile* file)
-	{
-		LoadFromFile(file);
-	}
-
-	/**Basic destructor.*/
-	~StringList()
-	{
-		clear();
-	}
-
-	//Adds a String to StringList
-	/** Add a string to this StringList.*/
-	void Add(String str/*<String to add to the current StringList*/)
-	{
-		push_back(str);
-	}
-
-	//Loads a stringlist from a file
-	//note that each String added to StringList
-	//is separated by a \\n character and it's present
-	//at the end of line.
-	/** Loads a StringList from a file.
-	This function loads a StringList from a file where each string is divided by a \\n char.*/
-	void LoadFromFile(io::IReadFile* file)
-	{
-		const long sz = file->getSize();
-		char* buf = new char[sz+1];
-		file->read(buf, sz);
-		buf[sz] = 0;
-		char* p = buf;
-		char* start = p;
-
-		while(*p)
-		{
-			if (*p == '\n')
-			{
-				core::stringc str(start, (u32)(p - start - 1));
-				str.trim();
-				Add(str);
-				start = p+1;
-			}
-
-			++p;
-		}
-
-		if (p - start > 1)
+		if (*p == '\n')
 		{
 			core::stringc str(start, (u32)(p - start - 1));
 			str.trim();
-			Add(str);
+			strlist.push_back(str);
+			start = p+1;
 		}
 
-		delete [] buf;
+		++p;
 	}
+
+	if (p - start > 1)
+	{
+		core::stringc str(start, (u32)(p - start - 1));
+		str.trim();
+		strlist.push_back(str);
+	}
+
+	delete [] buf;
 };
 
 //This function subdivides a string in a list of strings
 /** This function subdivides strings divided by divider in a list of strings.
 \return A StringList made of all strings divided by divider.*/
-StringList SubdivideString(const String& str, const String& divider)
+StringList SubdivideString(const core::stringc& str, const core::stringc& divider)
 {
 	StringList strings; //returned StringList
 	strings.clear();    //clear returned stringlist
@@ -208,7 +171,7 @@ StringList SubdivideString(const String& str, const String& divider)
 	//process entire string
 	while(c<l)
 	{
-		String resultstr;
+		core::stringc resultstr;
 		resultstr = "";
 		//read characters until divider is encountered
 		while((str[c]!=divider[0]) && c<l)
@@ -221,7 +184,7 @@ StringList SubdivideString(const String& str, const String& divider)
 		//pay attention or change it in dll.h if you don't want to remove
 		//a particular char.
 		resultstr.trim();//trims string resultstr
-		strings.Add(resultstr);//add trimmed string
+		strings.push_back(resultstr);//add trimmed string
 		++c;
 	}
 
@@ -235,21 +198,23 @@ You must give in input a StringList representing a DMF file loaded with LoadFrom
 \return true if function succeed or false on fail.*/
 bool GetDMFHeader(const StringList& RawFile, dmfHeader& header)
 {
-	StringList temp=SubdivideString(RawFile[0],String(";")); //file info
+	StringList temp;
+	RawFile[0].split(temp, ";"); //file info
+//	StringList temp=SubdivideString(RawFile[0],";"); //file info
 
-	if ( temp[0] != String("DeleD Map File") )
+	if ( temp[0] != "DeleD Map File" )
 		return false; //not a deled file
 
 	temp.clear();
-	temp = SubdivideString(RawFile[1],String(" "));//get version
-	StringList temp1=SubdivideString(temp[1],String(";"));
+	temp = SubdivideString(RawFile[1]," ");//get version
+	StringList temp1=SubdivideString(temp[1],";");
 
 	header.dmfVersion = (float)atof(temp1[0].c_str());//save version
 	if (header.dmfVersion < 0.91)
 		return false;//not correct version
 
 	temp.clear();
-	temp = SubdivideString(RawFile[2],String(";"));//get name,ambient color and shadow opacity
+	temp = SubdivideString(RawFile[2],";");//get name,ambient color and shadow opacity
 	header.dmfName=temp[0];//save name
 
 	//set ambient color
@@ -281,8 +246,8 @@ bool GetDMFHeader(const StringList& RawFile, dmfHeader& header)
 
 	for(i=0; i < (int)header.numObjects; i++)
 	{
-		StringList wat=SubdivideString(RawFile[offs],String(";"));
-		StringList wat1=SubdivideString(wat[0],String("_"));
+		StringList wat=SubdivideString(RawFile[offs],";");
+		StringList wat1=SubdivideString(wat[0],"_");
 
 		++offs;
 		offs += atoi(RawFile[offs].c_str());
@@ -290,7 +255,7 @@ bool GetDMFHeader(const StringList& RawFile, dmfHeader& header)
 
 		fac=atoi(RawFile[offs].c_str());
 
-		if(!(wat1[0]==String("water") && wat[2]==String("0")))
+		if(!(wat1[0]=="water" && wat[2]=="0"))
 			header.numFaces = header.numFaces + fac;
 		else
 			header.numWatFaces = header.numWatFaces + fac;
@@ -299,7 +264,7 @@ bool GetDMFHeader(const StringList& RawFile, dmfHeader& header)
 
 		for(int j=0; j<fac; j++)
 		{
-			if(!(wat1[0] == String("water") && wat[2] == String("0")))
+			if(!(wat1[0] == "water" && wat[2] == "0"))
 				header.numVertices=header.numVertices + atoi(RawFile[offs+j].c_str());
 			else
 				header.numWatVertices=header.numWatVertices + atoi(RawFile[offs + j].c_str());
@@ -317,13 +282,13 @@ bool GetDMFHeader(const StringList& RawFile, dmfHeader& header)
 	for (i=0; i<lit; i++)
 	{
 		offs++;
-		temp=SubdivideString(RawFile[offs],String(";"));
+		temp=SubdivideString(RawFile[offs],";");
 
 		if(atoi(temp[0].c_str())==1)
 		{
-			temp1=SubdivideString(temp[18],String("_"));
+			temp1=SubdivideString(temp[18],"_");
 
-			if(temp1[0]==String("dynamic"))
+			if(temp1[0]=="dynamic")
 			header.numLights++;
 		}
 		temp.clear();
@@ -404,14 +369,14 @@ bool GetDMFWaterMaterials(const StringList& RawFile /**<StringList representing 
 	StringList temp1;
 	StringList temp2;
 	//Checking if this is a DeleD map File of version >= 0.91
-	temp=SubdivideString(RawFile[0],String(";"));//file info
+	temp=SubdivideString(RawFile[0],";");//file info
 
-	if ( temp[0] != String("DeleD Map File") )
+	if ( temp[0] != "DeleD Map File" )
 		return false;//not a deled file
 
 	temp.clear();
-	temp=SubdivideString(RawFile[1],String(" "));//get version
-	temp1=SubdivideString(temp[1],String(";"));
+	temp=SubdivideString(RawFile[1]," ");//get version
+	temp1=SubdivideString(temp[1],";");
 
 	if (atof(temp1[0].c_str()) < 0.91)
 		return false;//not correct version
@@ -498,7 +463,7 @@ bool GetDMFVerticesFaces(const StringList& RawFile/**<StringList representing a 
 
 		const s32 numFaces=atoi(RawFile[offs].c_str());
 		offs++;
-		if(!(wat1[0]==String("water") && wat[2]==String("0")))
+		if(!(wat1[0]=="water" && wat[2]=="0"))
 		{
 			for(s32 j=0; j<numFaces; ++j)
 			{
@@ -550,14 +515,14 @@ bool GetDMFLights(const StringList& RawFile/**<StringList representing a DMF fil
 	StringList temp,temp1;
 
 	//Checking if this is a DeleD map File of version >= 0.91
-	temp=SubdivideString(RawFile[0],String(";"));//file info
+	temp=SubdivideString(RawFile[0],";");//file info
 
-	if ( temp[0] != String("DeleD Map File") )
+	if ( temp[0] != "DeleD Map File" )
 		return false;//not a deled file
 
 	temp.clear();
-	temp=SubdivideString(RawFile[1],String(" "));//get version
-	temp1=SubdivideString(temp[1],String(";"));
+	temp=SubdivideString(RawFile[1]," ");//get version
+	temp1=SubdivideString(temp[1],";");
 
 	if (atof(temp1[0].c_str()) < 0.91)
 		return false;//not correct version
@@ -592,11 +557,11 @@ bool GetDMFLights(const StringList& RawFile/**<StringList representing a DMF fil
 	for(i=0;i<lit;i++)
 	{
 		offs++;
-		temp=SubdivideString(RawFile[offs],String(";"));
+		temp=SubdivideString(RawFile[offs],";");
 		if(atoi(temp[0].c_str())==1)
 		{
-			temp1=SubdivideString(temp[18],String("_"));
-			if(temp1[0]==String("dynamic"))
+			temp1=SubdivideString(temp[18],"_");
+			if(temp1[0]=="dynamic")
 			{
 				lights[d_lit].radius = (float)atof(temp[4].c_str());
 				lights[d_lit].pos.set((float)atof(temp[5].c_str()),
@@ -637,14 +602,14 @@ bool GetDMFWaterPlanes(const StringList& RawFile/**<StringList representing a DM
 	StringList temp,temp1;
 
 	//Checking if this is a DeleD map File of version >= 0.91
-	temp=SubdivideString(RawFile[0],String(";"));//file info
+	temp=SubdivideString(RawFile[0],";");//file info
 
-	if ( temp[0] != String("DeleD Map File") )
+	if ( temp[0] != "DeleD Map File" )
 		return false;//not a deled file
 
 	temp.clear();
-	temp=SubdivideString(RawFile[1],String(" "));//get version
-	temp1=SubdivideString(temp[1],String(";"));
+	temp=SubdivideString(RawFile[1]," ");//get version
+	temp1=SubdivideString(temp[1],";");
 
 	if (atof(temp1[0].c_str()) < 0.91)
 		return false;//not correct version
@@ -675,7 +640,7 @@ bool GetDMFWaterPlanes(const StringList& RawFile/**<StringList representing a DM
 		fac=atoi(RawFile[offs].c_str());
 		offs++;
 
-		if(wat1[0]==String("water") && wat[2]==String("0"))
+		if(wat1[0]=="water" && wat[2]=="0")
 		{
 			StringList userinfo=SubdivideString(wat[7],",");
 
@@ -760,6 +725,8 @@ bool GetDMFWaterPlanes(const StringList& RawFile/**<StringList representing a DM
 }
 
 } // end namespace
-} // end namespace
+} // end namespace scene
+} // end namespace irr
 
 #endif /* __DMF_SUPPORT_H__ */
+

@@ -146,7 +146,7 @@ int main()
 
 	/*
 	The last scene node we add to show possibilities of scene node animators is
-	a md2 model, which uses a 'fly straight' animator to run between to points.
+	a b3d model, which uses a 'fly straight' animator to run between to points.
 	*/
 	scene::IAnimatedMeshSceneNode* anms =
 		smgr->addAnimatedMeshSceneNode(smgr->getMesh("../../media/ninja.b3d"));

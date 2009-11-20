@@ -7,12 +7,12 @@
 
 //! Irrlicht SDK Version
 #define IRRLICHT_VERSION_MAJOR 1
-#define IRRLICHT_VERSION_MINOR 6
-#define IRRLICHT_VERSION_REVISION 0
+#define IRRLICHT_VERSION_MINOR 7
+#define IRRLICHT_VERSION_REVISION 0-alpha
 // This flag will be defined only in SVN, the official release code will have
 // it undefined
-//#define IRRLICHT_VERSION_SVN
-#define IRRLICHT_SDK_VERSION "1.6"
+#define IRRLICHT_VERSION_SVN
+#define IRRLICHT_SDK_VERSION "1.7.0-alpha"
 
 #include <stdio.h> // TODO: Although included elsewhere this is required at least for mingw
 
@@ -126,7 +126,7 @@ headers, e.g. Summer 2004.  This is a Microsoft issue, not an Irrlicht one.
 #if defined(_IRR_WINDOWS_API_) && (!defined(__GNUC__) || defined(IRR_COMPILE_WITH_DX9_DEV_PACK))
 
 //! Only define _IRR_COMPILE_WITH_DIRECT3D_8_ if you have an appropriate DXSDK, e.g. Summer 2004
-#define _IRR_COMPILE_WITH_DIRECT3D_8_
+//#define _IRR_COMPILE_WITH_DIRECT3D_8_
 #define _IRR_COMPILE_WITH_DIRECT3D_9_
 
 #endif
@@ -295,6 +295,8 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_MS3D_LOADER_
 //! Define _IRR_COMPILE_WITH_X_LOADER_ if you want to use Microsoft X files
 #define _IRR_COMPILE_WITH_X_LOADER_
+//! Define _IRR_COMPILE_WITH_OGRE_LOADER_ if you want to load Ogre 3D files
+#define _IRR_COMPILE_WITH_OGRE_LOADER_
 #endif
 
 //! Define _IRR_COMPILE_WITH_IRR_MESH_LOADER_ if you want to load Irrlicht Engine .irrmesh files
@@ -323,8 +325,6 @@ B3D, MS3D or X meshes */
 #define _IRR_COMPILE_WITH_OBJ_LOADER_
 //! Define _IRR_COMPILE_WITH_OCT_LOADER_ if you want to load FSRad OCT files
 #define _IRR_COMPILE_WITH_OCT_LOADER_
-//! Define _IRR_COMPILE_WITH_OGRE_LOADER_ if you want to load Ogre 3D files
-#define _IRR_COMPILE_WITH_OGRE_LOADER_
 //! Define _IRR_COMPILE_WITH_LWO_LOADER_ if you want to load Lightwave3D files
 #define _IRR_COMPILE_WITH_LWO_LOADER_
 //! Define _IRR_COMPILE_WITH_STL_LOADER_ if you want to load stereolithography files
@@ -384,6 +384,8 @@ B3D, MS3D or X meshes */
 #define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
 //! Define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_ if you want to open ID software PAK archives
 #define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+//! Define __IRR_COMPILE_WITH_NPK_ARCHIVE_LOADER_ if you want to open Nebula Device NPK archives
+#define __IRR_COMPILE_WITH_NPK_ARCHIVE_LOADER_
 //! Define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_ if you want to open TAR archives
 #define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
 

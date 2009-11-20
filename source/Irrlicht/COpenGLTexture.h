@@ -110,6 +110,10 @@ protected:
 	//! get the desired color format based on texture creation flags and the input format.
 	ECOLOR_FORMAT getBestColorFormat(ECOLOR_FORMAT format);
 
+	//! Get the OpenGL color format parameters based on the given Irrlicht color format
+	GLint getOpenGLFormatAndParametersFromColorFormat(
+		ECOLOR_FORMAT format, GLint& filtering, GLenum& colorformat, GLenum& type);
+
 	//! convert the image into an internal image with better properties for this driver.
 	void getImageData(IImage* image);
 
@@ -120,7 +124,6 @@ protected:
 	core::dimension2d<u32> ImageSize;
 	core::dimension2d<u32> TextureSize;
 	ECOLOR_FORMAT ColorFormat;
-	s32 Pitch;
 	COpenGLDriver* Driver;
 	IImage* Image;
 
@@ -159,9 +162,6 @@ public:
 
 	ITexture* DepthTexture;
 protected:
-	GLint getOpenGLFormatAndParametersFromColorFormat(
-		ECOLOR_FORMAT format, GLint& filtering, GLenum& colorformat, GLenum& type);
-
 	GLuint ColorFrameBuffer;
 };
 

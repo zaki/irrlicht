@@ -91,6 +91,21 @@ namespace video
 		//! Supports Color masks (disabling color planes in output)
 		EVDF_COLOR_MASK,
 
+		//! Supports multiple render targets at once
+		EVDF_MULTIPLE_RENDER_TARGETS,
+
+		//! Supports separate blend settings for multiple render targets
+		EVDF_MRT_BLEND,
+
+		//! Supports separate color masks for multiple render targets
+		EVDF_MRT_COLOR_MASK,
+
+		//! Supports separate blend functions for multiple render targets
+		EVDF_MRT_BLEND_FUNC,
+
+		//! Supports geometry shaders
+		EVDF_GEOMETRY_SHADER,
+
 		//! Only used for counting the elements of this enum
 		EVDF_COUNT
 	};

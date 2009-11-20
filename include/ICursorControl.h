@@ -57,7 +57,7 @@ namespace gui
 		//! Returns the current position of the mouse cursor.
 		/** \return Returns the current position of the cursor. The returned position
 		is the position of the mouse cursor in pixel units. */
-		virtual core::position2d<s32> getPosition() = 0;
+		virtual const core::position2d<s32>& getPosition() = 0;
 
 		//! Returns the current position of the mouse cursor.
 		/** \return Returns the current position of the cursor. The returned position

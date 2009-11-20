@@ -46,9 +46,9 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlGenBuffersARB(0), pGlBindBufferARB(0), pGlBufferDataARB(0), pGlDeleteBuffersARB(0),
 	pGlBufferSubDataARB(0), pGlGetBufferSubDataARB(0), pGlMapBufferARB(0), pGlUnmapBufferARB(0),
 	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0),
-	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0)
-
-
+	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0),
+	pGlColorMaskIndexedEXT(0), pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0),
+	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0)
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -190,6 +190,11 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGetBufferPointervARB= (PFNGLGETBUFFERPOINTERVARBPROC) wglGetProcAddress("glGetBufferPointervARB");
 	pGlProvokingVertexARB= (PFNGLPROVOKINGVERTEXPROC) wglGetProcAddress("glProvokingVertex");
 	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC) wglGetProcAddress("glProvokingVertexEXT");
+	pGlColorMaskIndexedEXT= (PFNGLCOLORMASKINDEXEDEXTPROC) wglGetProcAddress("glColorMaskIndexedEXT");
+	pGlEnableIndexedEXT= (PFNGLENABLEINDEXEDEXTPROC) wglGetProcAddress("glEnableIndexedEXT");
+	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC) wglGetProcAddress("glDisableIndexedEXT");
+	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC) wglGetProcAddress("glBlendFuncIndexedAMD");
+	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC) wglGetProcAddress("glBlendFunciARB");
 
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
@@ -406,7 +411,16 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertex"));
 	pGlProvokingVertexEXT= (PFNGLPROVOKINGVERTEXEXTPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProvokingVertexEXT"));
-
+	pGlColorMaskIndexedEXT= (PFNGLCOLORMASKINDEXEDEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glColorMaskIndexedEXT"));
+	pGlEnableIndexedEXT= (PFNGLENABLEINDEXEDEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glEnableIndexedEXT"));
+	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDisableIndexedEXT"));
+	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFuncIndexedAMD"));
+	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFunciARB"));
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
@@ -503,6 +517,8 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 	{
 	case EVDF_RENDER_TO_TARGET:
 		return true;
+	case EVDF_HARDWARE_TL:
+		return true; // we cannot tell other things
 	case EVDF_MULTITEXTURE:
 		return MultiTextureExtension;
 	case EVDF_BILINEAR_FILTER:
@@ -535,6 +551,15 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return true;
 	case EVDF_ALPHA_TO_COVERAGE:
 		return FeatureAvailable[IRR_ARB_multisample];
+	case EVDF_GEOMETRY_SHADER:
+		return FeatureAvailable[IRR_ARB_geometry_shader4] || FeatureAvailable[IRR_EXT_geometry_shader4] || FeatureAvailable[IRR_NV_geometry_program4] || FeatureAvailable[IRR_NV_geometry_shader4];
+	case EVDF_MULTIPLE_RENDER_TARGETS:
+		return FeatureAvailable[IRR_ARB_draw_buffers] || FeatureAvailable[IRR_ATI_draw_buffers];
+	case EVDF_MRT_BLEND:
+	case EVDF_MRT_COLOR_MASK:
+		return FeatureAvailable[IRR_EXT_draw_buffers2];
+	case EVDF_MRT_BLEND_FUNC:
+		return FeatureAvailable[IRR_ARB_draw_buffers_blend] || FeatureAvailable[IRR_AMD_draw_buffers_blend];
 	default:
 		return false;
 	};

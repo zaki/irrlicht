@@ -15,6 +15,8 @@
 #include "SMeshBufferLightMap.h"
 #include "IMeshManipulator.h"
 #include "matrix4.h"
+#include "quaternion.h"
+#include "CSkinnedMesh.h"
 
 namespace irr
 {
@@ -168,6 +170,13 @@ private:
 		core::stringc Alias;
 	};
 
+	struct OgreBoneAssignment
+	{
+		s32 VertexID;
+		u16 BoneID;
+		f32 Weight;
+	};
+
 	struct OgreSubMesh
 	{
 		core::stringc Material;
@@ -176,6 +185,7 @@ private:
 		OgreGeometry Geometry;
 		u16 Operation;
 		core::array<OgreTextureAlias> TextureAliases;
+		core::array<OgreBoneAssignment> BoneAssignments;
 		bool Indices32Bit;
 	};
 
@@ -184,9 +194,42 @@ private:
 		bool SkeletalAnimation;
 		OgreGeometry Geometry;
 		core::array<OgreSubMesh> SubMeshes;
+		core::array<OgreBoneAssignment> BoneAssignments;
 		core::vector3df BBoxMinEdge;
 		core::vector3df BBoxMaxEdge;
 		f32 BBoxRadius;
+	};
+
+	struct OgreBone
+	{
+		core::stringc Name;
+		core::vector3df Position;
+		core::quaternion Orientation;
+		core::vector3df Scale;
+		u16 Handle;
+		u16 Parent;
+	};
+
+	struct OgreKeyframe
+	{
+		u16 BoneID;
+		f32 Time;
+		core::vector3df Position;
+		core::quaternion Orientation;
+		core::vector3df Scale;
+	};
+
+	struct OgreAnimation
+	{
+		core::stringc Name;
+		f32 Length;
+		core::array<OgreKeyframe> Keyframes;
+	};
+
+	struct OgreSkeleton
+	{
+		core::array<OgreBone> Bones;
+		core::array<OgreAnimation> Animations;
 	};
 
 	bool readChunk(io::IReadFile* file);
@@ -203,16 +246,19 @@ private:
 	void readShort(io::IReadFile* file, ChunkData& data, u16* out, u32 num=1);
 	void readFloat(io::IReadFile* file, ChunkData& data, f32* out, u32 num=1);
 	void readVector(io::IReadFile* file, ChunkData& data, core::vector3df& out);
+	void readQuaternion(io::IReadFile* file, ChunkData& data, core::quaternion& out);
 
 	void composeMeshBufferMaterial(scene::IMeshBuffer* mb, const core::stringc& materialName);
 	scene::SMeshBuffer* composeMeshBuffer(const core::array<s32>& indices, const OgreGeometry& geom);
 	scene::SMeshBufferLightMap* composeMeshBufferLightMap(const core::array<s32>& indices, const OgreGeometry& geom);
+	scene::IMeshBuffer* composeMeshBufferSkinned(scene::CSkinnedMesh& mesh, const core::array<s32>& indices, const OgreGeometry& geom);
 	void composeObject(void);
 	bool readColor(io::IReadFile* meshFile, video::SColor& col);
 	void getMaterialToken(io::IReadFile* file, core::stringc& token, bool noNewLine=false);
 	void readTechnique(io::IReadFile* meshFile, OgreMaterial& mat);
 	void readPass(io::IReadFile* file, OgreTechnique& technique);
 	void loadMaterials(io::IReadFile* file);
+	bool loadSkeleton(io::IReadFile* meshFile, const core::stringc& name);
 	core::stringc getTextureFileName(const core::stringc& texture, core::stringc& model);
 	void clearMeshes();
 
@@ -225,8 +271,9 @@ private:
 	io::path CurrentlyLoadingFromPath;
 
 	core::array<OgreMaterial> Materials;
+	OgreSkeleton Skeleton;
 
-	SMesh* Mesh;
+	IMesh* Mesh;
 	u32 NumUV;
 };
 

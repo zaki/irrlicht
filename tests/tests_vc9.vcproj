@@ -171,6 +171,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\archiveReader.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\b3dAnimation.cpp"
 				>
 			</File>
@@ -227,6 +231,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\irrString.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\lightMaps.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\line2dIntersectWith.cpp"
 				>
 			</File>
@@ -252,6 +264,10 @@
 			</File>
 			<File
 				RelativePath=".\removeCustomAnimator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\renderTargetTexture.cpp"
 				>
 			</File>
 			<File
@@ -291,6 +307,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\testXML.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\textureRenderStates.cpp"
 				>
 			</File>
@@ -304,10 +324,6 @@
 			</File>
 			<File
 				RelativePath=".\writeImageToFile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\zipReader.cpp"
 				>
 			</File>
 		</Filter>

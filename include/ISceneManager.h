@@ -416,8 +416,10 @@ namespace scene
 
 		//! Adds a sphere scene node of the given radius and detail
 		/** \param radius: Radius of the sphere.
-		\param polyCount: Polycount of the sphere, i.e. subdivision in
-		horizontal and vertical direction.
+		\param polyCount: The number of vertices in horizontal and
+		vertical direction. The total polyCount of the sphere is
+		polyCount*polyCount. This parameter must be less than 256 to
+		stay within the 16-bit limit of the indices of a meshbuffer.
 		\param parent: Parent of the scene node. Can be 0 if no parent.
 		\param id: Id of the node. This id can be used to identify the scene node.
 		\param position: Position of the space relative to its parent
