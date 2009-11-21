@@ -101,7 +101,7 @@ public:
 	\return Returns a pointer to the pixel data. The format of the pixel can
 	be determined by using getColorFormat(). 0 is returned, if
 	the texture cannot be locked. */
-	virtual void* lock(bool readOnly = false) = 0;
+	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0) = 0;
 
 	//! Unlock function. Must be called after a lock() to the texture.
 	/** One should avoid to call unlock more than once before another lock. */
@@ -149,7 +149,7 @@ public:
 
 	//! Regenerates the mip map levels of the texture.
 	/** Required after modifying the texture, usually after calling unlock(). */
-	virtual void regenerateMipMapLevels() = 0;
+	virtual void regenerateMipMapLevels(void* mipmapData=0) = 0;
 
 	//! Check whether the texture is a render target
 	/** \return True if this is a render target, otherwise false. */

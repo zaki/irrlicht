@@ -89,6 +89,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(guiDisabledMenu);
 	TEST(makeColorKeyTexture);
 	TEST(renderTargetTexture);
+	TEST(textureFeatures);
 	TEST(textureRenderStates);
 	TEST(transparentAlphaChannelRef);
 	// TODO: Needs to be fixed first.
@@ -103,7 +104,7 @@ int main(int argumentCount, char * arguments[])
 	unsigned int fails = 0;
 
 	bool firstRun=true;
-	const bool spawn=true;
+	const bool spawn=false;
 	// args: [testNumber] [testCount]
 	if(argumentCount > 1)
 	{

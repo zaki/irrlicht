@@ -486,12 +486,12 @@ video::ITexture* CNullDriver::findTexture(const io::path& filename)
 
 
 //! Creates a texture from a loaded IImage.
-ITexture* CNullDriver::addTexture(const io::path& name, IImage* image)
+ITexture* CNullDriver::addTexture(const io::path& name, IImage* image, void* mipmapData)
 {
 	if ( 0 == name.size() || !image)
 		return 0;
 
-	ITexture* t = createDeviceDependentTexture(image, name);
+	ITexture* t = createDeviceDependentTexture(image, name, mipmapData);
 	if (t)
 	{
 		addTexture(t);
@@ -529,7 +529,7 @@ ITexture* CNullDriver::addTexture(const core::dimension2d<u32>& size,
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+ITexture* CNullDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
 	return new SDummyTexture(name);
 }

@@ -29,7 +29,7 @@ public:
 
 	//! constructor
 	CD3D8Texture(IImage* image, CD3D8Driver* driver,
-		u32 flags, const io::path& name);
+		u32 flags, const io::path& name, void* mipmapData=0);
 
 	//! rendertarget constructor
 	CD3D8Texture(CD3D8Driver* driver, const core::dimension2d<u32>& size, const io::path& name);
@@ -38,7 +38,7 @@ public:
 	virtual ~CD3D8Texture();
 
 	//! lock function
-	virtual void* lock(bool readOnly = false);
+	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0);
 
 	//! unlock function
 	virtual void unlock();
@@ -66,7 +66,7 @@ public:
 
 	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
-	virtual void regenerateMipMapLevels();
+	virtual void regenerateMipMapLevels(void* mipmapData=0);
 
 	//! returns if it is a render target
 	virtual bool isRenderTarget() const;
@@ -80,7 +80,7 @@ private:
 	void createRenderTarget();
 
 	//! creates the hardware texture
-	bool createTexture(IImage* Image, u32 flags);
+	bool createTexture(u32 flags, IImage* Image);
 
 	//! copies the image to the texture
 	bool copyTexture(IImage* Image);
@@ -103,7 +103,9 @@ private:
 	core::dimension2d<u32> TextureSize;
 	core::dimension2d<u32> ImageSize;
 	s32 Pitch;
+	u32 MipLevelLocked;
 	ECOLOR_FORMAT ColorFormat;
+
 	bool HasMipMaps;
 	bool IsRenderTarget;
 };

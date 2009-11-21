@@ -380,10 +380,13 @@ namespace video
 		/** \param name A name for the texture. Later calls of
 		getTexture() with this name will return this texture
 		\param image Image the texture is created from.
+		\mipmapData Optional pointer to a set of images which build up the
+		whole mipmap set. Must be images of the same color type as image. If
+		this parameter is not given, the mipmaps are derived from image.
 		\return Pointer to the newly created texture. This pointer
 		should not be dropped. See IReferenceCounted::drop() for more
 		information. */
-		virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
+		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0) = 0;
 
 		//! Adds a new render target texture to the texture cache.
 		/** \param size Size of the texture, in pixels. Width and

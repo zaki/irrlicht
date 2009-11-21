@@ -720,9 +720,9 @@ void CD3D9Driver::setMaterial(const SMaterial& material)
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name)
+video::ITexture* CD3D9Driver::createDeviceDependentTexture(IImage* surface,const io::path& name, void* mipmapData)
 {
-	return new CD3D9Texture(surface, this, TextureCreationFlags, name);
+	return new CD3D9Texture(surface, this, TextureCreationFlags, name, mipmapData);
 }
 
 
