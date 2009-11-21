@@ -1,5 +1,10 @@
 Changes in 1.7
 
+ - Fix adding archives twice, which caused multiple archives of the same name and type covering each other. This one required a texture name change from using backslashes to slahes under Windows.
+
+ - Give access to texture mipmaps. You can provide custom mipmap textures upon generation, regeneration, and locking.
+   Make sure the provided data is large enough and covers all miplevels. Also the returned pointer (from lock) will only cover the smaller data of the mipmap level dimension chosen (level 0 is the original texture).
+
  - Separate TextureWrap mode into U and V fields
 
  - Add mirror texture wrap modes
