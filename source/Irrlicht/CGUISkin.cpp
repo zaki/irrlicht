@@ -9,7 +9,6 @@
 #include "IGUISpriteBank.h"
 #include "IVideoDriver.h"
 #include "IAttributes.h"
-#include "SoftwareDriver2_helper.h"
 
 namespace irr
 {
