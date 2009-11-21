@@ -50,7 +50,7 @@ CD3D9Texture::CD3D9Texture(CD3D9Driver* driver, const core::dimension2d<u32>& si
 
 //! constructor
 CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
-					   u32 flags, const io::path& name)
+			   u32 flags, const io::path& name, void* mipmapData)
 : ITexture(name), Texture(0), RTTSurface(0), Driver(driver), DepthSurface(0),
 	TextureSize(0,0), ImageSize(0,0), Pitch(0), ColorFormat(ECF_UNKNOWN),
 	HasMipMaps(false), HardwareMipMaps(false), IsRenderTarget(false)
@@ -59,7 +59,7 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 	setDebugName("CD3D9Texture");
 	#endif
 
-	const bool generateMipLevels = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
+	HasMipMaps = Driver->getTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS);
 
 	Device=driver->getExposedVideoData().D3D9.D3DDev9;
 	if (Device)
@@ -69,22 +69,9 @@ CD3D9Texture::CD3D9Texture(IImage* image, CD3D9Driver* driver,
 	{
 		if (createTexture(flags, image))
 		{
-			if (copyTexture(image) && generateMipLevels)
+			if (copyTexture(image))
 			{
-				// create mip maps.
-				#ifdef _IRR_USE_D3DXFilterTexture_
-					// The D3DXFilterTexture function seems to get linked wrong when
-					// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
-					// So mipmapgeneration is replaced with my own bad generation
-					HRESULT hr  = D3DXFilterTexture(Texture, NULL, D3DX_DEFAULT, D3DX_DEFAULT);
-					if (FAILED(hr))
-						os::Printer::log("Could not create direct3d mip map levels.", ELL_WARNING);
-					else
-						HasMipMaps = true;
-				#else
-					createMipMaps();
-					HasMipMaps = true;
-				#endif
+				regenerateMipMapLevels(mipmapData);
 			}
 		}
 		else
@@ -188,8 +175,8 @@ bool CD3D9Texture::createMipMaps(u32 level)
 		Texture->GenerateMipSubLevels();
 		return true;
 	}
-	// os::Printer::log("manual mipmap");
 
+	// manual mipmap generation
 	IDirect3DSurface9* upperSurface = 0;
 	IDirect3DSurface9* lowerSurface = 0;
 
@@ -396,30 +383,30 @@ bool CD3D9Texture::copyTexture(IImage * image)
 
 
 //! lock function
-void* CD3D9Texture::lock(bool readOnly)
+void* CD3D9Texture::lock(bool readOnly, u32 mipmapLevel)
 {
 	if (!Texture)
 		return 0;
 
+	MipLevelLocked=mipmapLevel;
 	HRESULT hr;
 	D3DLOCKED_RECT rect;
 	if(!IsRenderTarget)
 	{
-		hr = Texture->LockRect(0, &rect, 0, readOnly?D3DLOCK_READONLY:0);
+		hr = Texture->LockRect(mipmapLevel, &rect, 0, readOnly?D3DLOCK_READONLY:0);
 		if (FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture.", ELL_ERROR);
 			return 0;
 		}
-
-		return rect.pBits;
 	}
 	else
 	{
-		D3DSURFACE_DESC desc;
-		Texture->GetLevelDesc(0, &desc);
 		if (!RTTSurface)
 		{
+			// Make RTT surface large enough for all miplevels (including 0)
+			D3DSURFACE_DESC desc;
+			Texture->GetLevelDesc(0, &desc);
 			hr = Device->CreateOffscreenPlainSurface(desc.Width, desc.Height, desc.Format, D3DPOOL_SYSTEMMEM, &RTTSurface, 0);
 			if (FAILED(hr))
 			{
@@ -429,7 +416,7 @@ void* CD3D9Texture::lock(bool readOnly)
 		}
 
 		IDirect3DSurface9 *surface = 0;
-		hr = Texture->GetSurfaceLevel(0, &surface);
+		hr = Texture->GetSurfaceLevel(mipmapLevel, &surface);
 		if (FAILED(hr))
 		{
 			os::Printer::log("Could not lock DIRECT3D9 Texture", "Could not get surface.", ELL_ERROR);
@@ -448,8 +435,8 @@ void* CD3D9Texture::lock(bool readOnly)
 			os::Printer::log("Could not lock DIRECT3D9 Texture", "LockRect failed.", ELL_ERROR);
 			return 0;
 		}
-		return rect.pBits;
 	}
+	return rect.pBits;
 }
 
 
@@ -460,7 +447,7 @@ void CD3D9Texture::unlock()
 		return;
 
 	if (!IsRenderTarget)
-		Texture->UnlockRect(0);
+		Texture->UnlockRect(MipLevelLocked);
 	else if (RTTSurface)
 		RTTSurface->UnlockRect();
 }
@@ -602,10 +589,58 @@ void CD3D9Texture::copy32BitMipMap(char* src, char* tgt,
 
 //! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
-void CD3D9Texture::regenerateMipMapLevels()
+void CD3D9Texture::regenerateMipMapLevels(void* mipmapData)
 {
-	if (HasMipMaps)
+	if (mipmapData)
+	{
+		core::dimension2du size = TextureSize;
+		u32 level=0;
+		do
+		{
+			if (size.Width>1)
+				size.Width /=2;
+			if (size.Height>1)
+				size.Height /=2;
+			++level;
+			IDirect3DSurface9* mipSurface = 0;
+			HRESULT hr = Texture->GetSurfaceLevel(level, &mipSurface);
+			if (FAILED(hr) || !mipSurface)
+			{
+				os::Printer::log("Could not get mipmap level", ELL_WARNING);
+				return;
+			}
+			D3DSURFACE_DESC mipDesc;
+			mipSurface->GetDesc(&mipDesc);
+			D3DLOCKED_RECT miplr;
+
+			// lock mipmap surface
+			if (FAILED(mipSurface->LockRect(&miplr, NULL, 0)))
+			{
+				mipSurface->Release();
+				os::Printer::log("Could not lock texture", ELL_WARNING);
+				return;
+			}
+
+			memcpy(miplr.pBits, mipmapData, size.getArea()*getPitch()/TextureSize.Width);
+			mipmapData = (u8*)mipmapData+size.getArea()*getPitch()/TextureSize.Width;
+			// unlock
+			mipSurface->UnlockRect();
+			// release
+			mipSurface->Release();
+		} while (size.Width != 1 || size.Height != 1);
+	}
+	else if (HasMipMaps)
+	{
+		// create mip maps.
+#ifdef _IRR_USE_D3DXFilterTexture_
+		// The D3DXFilterTexture function seems to get linked wrong when
+		// compiling with both D3D8 and 9, causing it not to work in the D3D9 device.
+		// So mipmapgeneration is replaced with my own bad generation
+		HRESULT hr  = D3DXFilterTexture(Texture, NULL, D3DX_DEFAULT, D3DX_DEFAULT);
+		if (FAILED(hr))
+#endif
 		createMipMaps();
+	}
 }
 
 
@@ -662,5 +697,3 @@ void CD3D9Texture::setPitch(D3DFORMAT d3dformat)
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_DIRECT3D_9_
-
-

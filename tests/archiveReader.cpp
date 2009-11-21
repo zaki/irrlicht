@@ -9,34 +9,34 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	// make sure there is no archive mounted
 	if ( fs->getFileArchiveCount() )
 	{
-		logTestString("Already mounted archives found");
+		logTestString("Already mounted archives found\n");
 		return false;
 	}
 
 	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
 	{
-		logTestString("Mounting archive failed");
+		logTestString("Mounting archive failed\n");
 		return false;
 	}
 
 	// make sure there is an archive mounted
 	if ( !fs->getFileArchiveCount() )
 	{
-		logTestString("Mounted archive not in list");
+		logTestString("Mounted archive not in list\n");
 		return false;
 	}
 
 	// mount again
 	if ( !fs->addFileArchive(archiveName, /*bool ignoreCase=*/true, /*bool ignorePaths=*/false) )
 	{
-		logTestString("Mounting a second time failed");
+		logTestString("Mounting a second time failed\n");
 		return false;
 	}
 
 	// make sure there is exactly one archive mounted
 	if ( fs->getFileArchiveCount() != 1 )
 	{
-		logTestString("Duplicate mount not recognized");
+		logTestString("Duplicate mount not recognized\n");
 		return false;
 	}
 
@@ -52,21 +52,21 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	io::path filename("mypath/mypath/myfile.txt");
 	if (!fs->existFile(filename))
 	{
-		logTestString("existFile with deep path failed");
+		logTestString("existFile with deep path failed\n");
 		return false;
 	}
 
 	filename="test/test.txt";
 	if (!fs->existFile(filename))
 	{
-		logTestString("existFile failed");
+		logTestString("existFile failed\n");
 		return false;
 	}
 
 	IReadFile* readFile = fs->createAndOpenFile(filename);
 	if ( !readFile )
 	{
-		logTestString("createAndOpenFilefailed");
+		logTestString("createAndOpenFilefailed\n");
 		return false;
 	}
 
@@ -74,7 +74,7 @@ bool testArchive(IFileSystem* fs, const io::path& archiveName)
 	readFile->read(tmp, 12);
 	if (strncmp(tmp, "Hello world!", 12))
 	{
-		logTestString("Read bad data from archive: %s", tmp);
+		logTestString("Read bad data from archive: %s\n", tmp);
 		return false;
 	}
 	if (!fs->removeFileArchive(fs->getFileArchiveCount()-1))

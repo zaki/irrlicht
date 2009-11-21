@@ -241,9 +241,9 @@ bool CSoftwareDriver::endScene()
 
 //! returns a device dependent texture from a software surface (IImage)
 //! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+ITexture* CSoftwareDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
-	return new CSoftwareTexture(surface, name);
+	return new CSoftwareTexture(surface, name, false, mipmapData);
 }
 
 

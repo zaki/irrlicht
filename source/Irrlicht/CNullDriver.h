@@ -585,11 +585,11 @@ namespace video
 		void addTexture(video::ITexture* surface);
 
 		//! Creates a texture from a loaded IImage.
-		virtual ITexture* addTexture(const io::path& name, IImage* image);
+		virtual ITexture* addTexture(const io::path& name, IImage* image, void* mipmapData=0);
 
 		//! returns a device dependent texture from a software surface (IImage)
 		//! THIS METHOD HAS TO BE OVERRIDDEN BY DERIVED DRIVERS WITH OWN TEXTURES
-		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name);
+		virtual video::ITexture* createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData=0);
 
 		//! checks triangle count and print warning if wrong
 		bool checkPrimitiveCount(u32 prmcnt) const;
@@ -640,14 +640,14 @@ namespace video
 		{
 			SDummyTexture(const io::path& name) : ITexture(name), size(0,0) {};
 
-			virtual void* lock(bool readOnly = false) { return 0; };
+			virtual void* lock(bool readOnly = false, u32 mipmapLevel=0) { return 0; };
 			virtual void unlock(){}
 			virtual const core::dimension2d<u32>& getOriginalSize() const { return size; }
 			virtual const core::dimension2d<u32>& getSize() const { return size; }
 			virtual E_DRIVER_TYPE getDriverType() const { return video::EDT_NULL; }
 			virtual ECOLOR_FORMAT getColorFormat() const { return video::ECF_A1R5G5B5; };
 			virtual u32 getPitch() const { return 0; }
-			virtual void regenerateMipMapLevels() {};
+			virtual void regenerateMipMapLevels(void* mipmapData=0) {};
 			core::dimension2d<u32> size;
 		};
 

@@ -16,8 +16,9 @@ namespace video
 {
 
 //! constructor
-CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 flags )
-: ITexture(name), MipMapLOD(0), Flags ( flags )
+CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name,
+		u32 flags, void* mipmapData)
+		: ITexture(name), MipMapLOD(0), Flags ( flags ), OriginalFormat(video::ECF_UNKNOWN)
 {
 	#ifdef _DEBUG
 	setDebugName("CSoftwareTexture2");
@@ -32,6 +33,7 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 fl
 	if (image)
 	{
 		OrigSize = image->getDimension();
+		OriginalFormat = image->getColorFormat();
 
 		core::setbit_cond(Flags,
 				image->getColorFormat () == video::ECF_A8R8G8B8 ||
@@ -66,8 +68,7 @@ CSoftwareTexture2::CSoftwareTexture2(IImage* image, const io::path& name, u32 fl
 		}
 	}
 
-	regenerateMipMapLevels();
-	setCurrentMipMapLOD(0);
+	regenerateMipMapLevels(mipmapData);
 }
 
 
@@ -84,7 +85,7 @@ CSoftwareTexture2::~CSoftwareTexture2()
 
 //! Regenerates the mip map levels of the texture. Useful after locking and
 //! modifying the texture
-void CSoftwareTexture2::regenerateMipMapLevels()
+void CSoftwareTexture2::regenerateMipMapLevels(void* mipmapData)
 {
 	if ( !hasMipMaps () )
 		return;
@@ -99,21 +100,48 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 	}
 
 	core::dimension2d<u32> newSize;
-	core::dimension2d<u32> currentSize;
+	core::dimension2d<u32> origSize=OrigSize;
 
-	i = 1;
-	CImage * c = MipMap[0];
-	while ( i < SOFTWARE_DRIVER_2_MIPMAPPING_MAX )
+	for (i=1; i < SOFTWARE_DRIVER_2_MIPMAPPING_MAX; ++i)
 	{
-		currentSize = c->getDimension();
-		newSize.Width = core::s32_max ( 1, currentSize.Width >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
-		newSize.Height = core::s32_max ( 1, currentSize.Height >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
+		newSize = MipMap[i-1]->getDimension();
+		newSize.Width = core::s32_max ( 1, newSize.Width >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
+		newSize.Height = core::s32_max ( 1, newSize.Height >> SOFTWARE_DRIVER_2_MIPMAPPING_SCALE );
+		origSize.Width = core::s32_max(1, origSize.Width >> 1);
+		origSize.Height = core::s32_max(1, origSize.Height >> 1);
 
-		MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
-		MipMap[i]->fill ( 0 );
-		MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0, false );
-		c = MipMap[i];
-		++i;
+		if (mipmapData)
+		{
+			if (OriginalFormat != BURNINGSHADER_COLOR_FORMAT)
+			{
+				IImage* tmpImage = new CImage(OriginalFormat, origSize, mipmapData, true, false);
+				MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
+				if (origSize==newSize)
+					tmpImage->copyTo(MipMap[i]);
+				else
+					tmpImage->copyToScalingBoxFilter(MipMap[i]);
+				tmpImage->drop();
+			}
+			else
+			{
+				if (origSize==newSize)
+					MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize, mipmapData, false);
+				else
+				{
+					MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
+					IImage* tmpImage = new CImage(BURNINGSHADER_COLOR_FORMAT, origSize, mipmapData, true, false);
+					tmpImage->copyToScalingBoxFilter(MipMap[i]);
+					tmpImage->drop();
+				}
+			}
+			mipmapData = (u8*)mipmapData+origSize.getArea()*IImage::getBitsPerPixelFromFormat(OriginalFormat)/8;
+		}
+		else
+		{
+			MipMap[i] = new CImage(BURNINGSHADER_COLOR_FORMAT, newSize);
+			MipMap[i]->fill ( 0 );
+			MipMap[0]->copyToScalingBoxFilter( MipMap[i], 0, false );
+		}
 	}
 }
 
@@ -122,4 +150,3 @@ void CSoftwareTexture2::regenerateMipMapLevels()
 } // end namespace irr
 
 #endif // _IRR_COMPILE_WITH_BURNINGSVIDEO_
-

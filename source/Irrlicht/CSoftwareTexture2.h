@@ -25,19 +25,21 @@ public:
 	//! constructor
 	enum eTex2Flags
 	{
-		GEN_MIPMAP		= 1,
+		GEN_MIPMAP	= 1,
 		IS_RENDERTARGET	= 2,
-		NP2_SIZE		= 4,
-		HAS_ALPHA		= 8
+		NP2_SIZE	= 4,
+		HAS_ALPHA	= 8
 	};
-	CSoftwareTexture2( IImage* surface, const io::path& name, u32 flags );
+	CSoftwareTexture2(IImage* surface, const io::path& name, u32 flags, void* mipmapData=0);
 
 	//! destructor
 	virtual ~CSoftwareTexture2();
 
 	//! lock function
-	virtual void* lock(bool readOnly = false)
+	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0)
 	{
+		if (Flags & GEN_MIPMAP)
+			MipMapLOD=mipmapLevel;
 		return MipMap[MipMapLOD]->lock();
 	}
 
@@ -99,14 +101,7 @@ public:
 
 	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
-	virtual void regenerateMipMapLevels();
-
-	//! Select a Mipmap Level
-	virtual void setCurrentMipMapLOD ( s32 lod )
-	{
-		if ( Flags & GEN_MIPMAP )
-			MipMapLOD = lod;
-	}
+	virtual void regenerateMipMapLevels(void* mipmapData=0);
 
 	//! support mipmaps
 	virtual bool hasMipMaps() const
@@ -131,8 +126,9 @@ private:
 
 	CImage * MipMap[SOFTWARE_DRIVER_2_MIPMAPPING_MAX];
 
-	s32 MipMapLOD;
+	u32 MipMapLOD;
 	u32 Flags;
+	ECOLOR_FORMAT OriginalFormat;
 };
 
 

@@ -2011,9 +2011,9 @@ inline void COpenGLDriver::createGLTextureMatrix(GLfloat *o, const core::matrix4
 
 
 //! returns a device dependent texture from a software surface (IImage)
-video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name)
+video::ITexture* COpenGLDriver::createDeviceDependentTexture(IImage* surface, const io::path& name, void* mipmapData)
 {
-	return new COpenGLTexture(surface, name, this);
+	return new COpenGLTexture(surface, name, mipmapData, this);
 }
 
 

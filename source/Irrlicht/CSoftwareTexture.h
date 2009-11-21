@@ -21,13 +21,14 @@ class CSoftwareTexture : public ITexture
 public:
 
 	//! constructor
-	CSoftwareTexture(IImage* surface, const io::path& name, bool renderTarget=false);
+	CSoftwareTexture(IImage* surface, const io::path& name,
+			bool renderTarget=false, void* mipmapData=0);
 
 	//! destructor
 	virtual ~CSoftwareTexture();
 
 	//! lock function
-	virtual void* lock(bool readOnly = false);
+	virtual void* lock(bool readOnly = false, u32 mipmapLevel=0);
 
 	//! unlock function
 	virtual void unlock();
@@ -55,7 +56,7 @@ public:
 
 	//! Regenerates the mip map levels of the texture. Useful after locking and
 	//! modifying the texture
-	virtual void regenerateMipMapLevels();
+	virtual void regenerateMipMapLevels(void* mipmapData=0);
 
 	//! is it a render target?
 	virtual bool isRenderTarget() const;
