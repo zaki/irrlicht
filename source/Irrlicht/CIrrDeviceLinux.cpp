@@ -905,17 +905,17 @@ bool CIrrDeviceLinux::run()
 				{
 					postEventFromUser(irrevent);
 
-					if ( irrevent.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN )
+					if ( irrevent.MouseInput.Event >= EMIE_LMOUSE_PRESSED_DOWN && irrevent.MouseInput.Event <= EMIE_MMOUSE_PRESSED_DOWN )
 					{
-						u32 clicks = checkSuccessiveClicks(irrevent.MouseInput.X, irrevent.MouseInput.Y);
+						u32 clicks = checkSuccessiveClicks(irrevent.MouseInput.X, irrevent.MouseInput.Y, irrevent.MouseInput.Event);
 						if ( clicks == 2 )
 						{
-							irrevent.MouseInput.Event = EMIE_MOUSE_DOUBLE_CLICK;
+							irrevent.MouseInput.Event = (EMOUSE_INPUT_EVENT)(EMIE_LMOUSE_DOUBLE_CLICK + irrevent.MouseInput.Event-EMIE_LMOUSE_PRESSED_DOWN);
 							postEventFromUser(irrevent);
 						}
 						else if ( clicks == 3 )
 						{
-							irrevent.MouseInput.Event = EMIE_MOUSE_TRIPLE_CLICK;
+							irrevent.MouseInput.Event = (EMOUSE_INPUT_EVENT)(EMIE_LMOUSE_TRIPLE_CLICK + irrevent.MouseInput.Event-EMIE_LMOUSE_PRESSED_DOWN);
 							postEventFromUser(irrevent);
 						}
 					}
