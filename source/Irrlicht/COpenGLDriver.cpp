@@ -3410,6 +3410,7 @@ bool COpenGLDriver::setRenderTarget(video::ITexture* texture, bool clearBackBuff
 		RenderTargetTexture = 0;
 		CurrentRendertargetSize = core::dimension2d<u32>(0,0);
 		CurrentTarget=ERT_FRAME_BUFFER;
+		glDrawBuffer(Doublebuffer?GL_BACK_LEFT:GL_FRONT_LEFT);
 	}
 
 	clearBuffers(clearBackBuffer, clearZBuffer, false, color);
@@ -3424,7 +3425,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 	if (targets.size()==0)
 		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
 
-	u32 maxMultipleRTTs = core::min_(4u, targets.size());
+	u32 maxMultipleRTTs = core::min_(16u, targets.size());
 
 	// determine common size
 	core::dimension2du rttSize = CurrentRendertargetSize;
@@ -3486,6 +3487,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 
 	if (maxMultipleRTTs > 1)
 	{
+		CurrentTarget=ERT_MULTI_RENDER_TEXTURES;
 		core::array<GLenum> MRTs;
 		MRTs.set_used(maxMultipleRTTs);
 		for(u32 i = 0; i < maxMultipleRTTs; i++)

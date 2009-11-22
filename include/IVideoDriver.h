@@ -106,6 +106,8 @@ namespace video
 		ERT_FRAME_BUFFER=0,
 		//! Render target is a render texture
 		ERT_RENDER_TEXTURE,
+		//! Multi-Render target textures
+		ERT_MULTI_RENDER_TEXTURES,
 		//! Render target is the main color frame buffer
 		ERT_STEREO_LEFT_BUFFER,
 		//! Render target is the right color buffer (left is the main buffer)
