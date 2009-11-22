@@ -95,10 +95,10 @@ namespace irr
 
 		//! Compares to the last call of this function to return double and triple clicks.
 		//! \return Returns only 1,2 or 3. A 4th click will start with 1 again.
-		virtual u32 checkSuccessiveClicks(s32 mouseX, s32 mouseY)
+		virtual u32 checkSuccessiveClicks(s32 mouseX, s32 mouseY, EMOUSE_INPUT_EVENT inputEvent )
 		{
 			// we just have to make it public
-			return CIrrDeviceStub::checkSuccessiveClicks(mouseX, mouseY);
+			return CIrrDeviceStub::checkSuccessiveClicks(mouseX, mouseY, inputEvent );
 		}
 
 		//! switchs to fullscreen
