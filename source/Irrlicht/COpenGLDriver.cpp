@@ -3480,11 +3480,20 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 		return false;
 	}
 
-	if (targets[0].TargetType==ERT_RENDER_TEXTURE)
-		setRenderTarget(targets[0].RenderTexture, false, false, 0x0);
-	else
+	// init FBO, if any
+	for (u32 i=0; i<maxMultipleRTTs; ++i)
+	{
+		if (targets[i].TargetType==ERT_RENDER_TEXTURE)
+		{
+			setRenderTarget(targets[i].RenderTexture, false, false, 0x0);
+			break;
+		}
+	}
+	// init other main buffer, if necessary
+	if (targets[0].TargetType!=ERT_RENDER_TEXTURE)
 		setRenderTarget(targets[0].TargetType, false, false, 0x0);
 
+	// attach other textures and store buffers into array
 	if (maxMultipleRTTs > 1)
 	{
 		CurrentTarget=ERT_MULTI_RENDER_TEXTURES;
@@ -3508,7 +3517,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 			{
 				extGlBlendFuncIndexed(i, targets[i].BlendFuncSrc, targets[i].BlendFuncDst);
 			}
-			if (targets[0].TargetType==ERT_RENDER_TEXTURE)
+			if (targets[i].TargetType==ERT_RENDER_TEXTURE)
 			{
 				GLenum attachment = GL_NONE;
 #ifdef GL_EXT_framebuffer_object
