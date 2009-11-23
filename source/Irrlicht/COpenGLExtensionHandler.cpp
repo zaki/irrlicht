@@ -452,7 +452,7 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
 	MaxTextureSize=static_cast<u32>(num);
-#ifdef EXT_texture_lod_bias
+#ifdef GL_EXT_texture_lod_bias
 	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
 #endif
@@ -460,17 +460,17 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	MaxUserClipPlanes=static_cast<u8>(num);
 	glGetIntegerv(GL_AUX_BUFFERS, &num);
 	MaxAuxBuffers=static_cast<u8>(num);
-#ifdef ARB_draw_buffers
+#ifdef GL_ARB_draw_buffers
 	if (FeatureAvailable[IRR_ARB_draw_buffers])
 	{
-		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
-		MaxMultipleRenderTargets = static_cast<u8>(MaxUserClipPlanes);
+		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &num);
+		MaxMultipleRenderTargets = static_cast<u8>(num);
 	}
-#elif defined(ATI_draw_buffers)
+#elif defined(GL_ATI_draw_buffers)
 	if (FeatureAvailable[IRR_ATI_draw_buffers])
 	{
-		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, reinterpret_cast<GLint*>(&MaxUserClipPlanes));
-		MaxMultipleRenderTargets = static_cast<u8>(MaxUserClipPlanes);
+		glGetIntegerv(GL_MAX_DRAW_BUFFERS_ATI, &num);
+		MaxMultipleRenderTargets = static_cast<u8>(num);
 	}
 #endif
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, DimAliasedLine);

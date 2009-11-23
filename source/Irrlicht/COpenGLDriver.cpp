@@ -3425,7 +3425,7 @@ bool COpenGLDriver::setRenderTarget(const core::array<video::IRenderTarget>& tar
 	if (targets.size()==0)
 		return setRenderTarget(0, clearBackBuffer, clearZBuffer, color);
 
-	u32 maxMultipleRTTs = core::min_(16u, targets.size());
+	u32 maxMultipleRTTs = core::min_(static_cast<u32>(MaxMultipleRenderTargets), targets.size());
 
 	// determine common size
 	core::dimension2du rttSize = CurrentRendertargetSize;
