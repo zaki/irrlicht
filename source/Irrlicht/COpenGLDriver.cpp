@@ -3258,13 +3258,6 @@ IVideoDriver* COpenGLDriver::getVideoDriver()
 }
 
 
-//! Returns pointer to the IGPUProgrammingServices interface.
-IGPUProgrammingServices* COpenGLDriver::getGPUProgrammingServices()
-{
-	return this;
-}
-
-
 ITexture* COpenGLDriver::addRenderTargetTexture(const core::dimension2d<u32>& size,
 					const io::path& name,
 					const ECOLOR_FORMAT format)

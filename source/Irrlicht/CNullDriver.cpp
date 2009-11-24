@@ -1781,7 +1781,7 @@ const char* CNullDriver::getMaterialRendererName(u32 idx) const
 //! Returns pointer to the IGPUProgrammingServices interface.
 IGPUProgrammingServices* CNullDriver::getGPUProgrammingServices()
 {
-	return 0;
+	return this;
 }
 
 
