@@ -478,6 +478,9 @@ namespace video
 			const c8* pixelShaderProgram = 0,
 			const c8* pixelShaderEntryPointName = 0,
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+			const c8* geometryShaderProgram = 0,
+			const c8* geometryShaderEntryPointName = "main",
+			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -491,6 +494,9 @@ namespace video
 			const io::path& pixelShaderProgramFile = "",
 			const c8* pixelShaderEntryPointName = "main",
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+			const io::path& geometryShaderProgramFileName="",
+			const c8* geometryShaderEntryPointName = "main",
+			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -504,6 +510,9 @@ namespace video
 			io::IReadFile* pixelShaderProgram = 0,
 			const c8* pixelShaderEntryPointName = "main",
 			E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+			io::IReadFile* geometryShaderProgram= 0,
+			const c8* geometryShaderEntryPointName = "main",
+			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);

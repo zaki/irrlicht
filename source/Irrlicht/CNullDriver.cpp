@@ -1785,8 +1785,7 @@ IGPUProgrammingServices* CNullDriver::getGPUProgrammingServices()
 }
 
 
-//! Adds a new material renderer to the VideoDriver, based on a high level shading
-//! language. Currently only HLSL in D3D9 is supported.
+//! Adds a new material renderer to the VideoDriver, based on a high level shading language.
 s32 CNullDriver::addHighLevelShaderMaterial(
 	const c8* vertexShaderProgram,
 	const c8* vertexShaderEntryPointName,
@@ -1794,6 +1793,9 @@ s32 CNullDriver::addHighLevelShaderMaterial(
 	const c8* pixelShaderProgram,
 	const c8* pixelShaderEntryPointName,
 	E_PIXEL_SHADER_TYPE psCompileTarget,
+	const c8* geometryShaderProgram,
+	const c8* geometryShaderEntryPointName,
+	E_GEOMETRY_SHADER_TYPE gsCompileTarget,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
 	s32 userData)
@@ -1806,46 +1808,57 @@ s32 CNullDriver::addHighLevelShaderMaterial(
 //! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 //! but tries to load the programs from files.
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
-	const io::path& vertexShaderProgram,
-	const c8* vertexShaderEntryPointName,
-	E_VERTEX_SHADER_TYPE vsCompileTarget,
-	const io::path& pixelShaderProgram,
-	const c8* pixelShaderEntryPointName,
-	E_PIXEL_SHADER_TYPE psCompileTarget,
-	IShaderConstantSetCallBack* callback,
-	E_MATERIAL_TYPE baseMaterial,
-	s32 userData)
+		const io::path& vertexShaderProgramFileName,
+		const c8* vertexShaderEntryPointName,
+		E_VERTEX_SHADER_TYPE vsCompileTarget,
+		const io::path& pixelShaderProgramFileName,
+		const c8* pixelShaderEntryPointName,
+		E_PIXEL_SHADER_TYPE psCompileTarget,
+		const io::path& geometryShaderProgramFileName,
+		const c8* geometryShaderEntryPointName,
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		IShaderConstantSetCallBack* callback,
+		E_MATERIAL_TYPE baseMaterial,
+		s32 userData)
 {
 	io::IReadFile* vsfile = 0;
 	io::IReadFile* psfile = 0;
+	io::IReadFile* gsfile = 0;
 
-	if (vertexShaderProgram.size() )
+	if (vertexShaderProgramFileName.size() )
 	{
-		vsfile = FileSystem->createAndOpenFile(vertexShaderProgram);
+		vsfile = FileSystem->createAndOpenFile(vertexShaderProgramFileName);
 		if (!vsfile)
 		{
 			os::Printer::log("Could not open vertex shader program file",
-				vertexShaderProgram, ELL_WARNING);
-			return -1;
+				vertexShaderProgramFileName, ELL_WARNING);
 		}
 	}
 
-	if (pixelShaderProgram.size() )
+	if (pixelShaderProgramFileName.size() )
 	{
-		psfile = FileSystem->createAndOpenFile(pixelShaderProgram);
+		psfile = FileSystem->createAndOpenFile(pixelShaderProgramFileName);
 		if (!psfile)
 		{
 			os::Printer::log("Could not open pixel shader program file",
-				pixelShaderProgram, ELL_WARNING);
-			if (vsfile)
-				vsfile->drop();
-			return -1;
+				pixelShaderProgramFileName, ELL_WARNING);
+		}
+	}
+
+	if (geometryShaderProgramFileName.size() )
+	{
+		gsfile = FileSystem->createAndOpenFile(geometryShaderProgramFileName);
+		if (!gsfile)
+		{
+			os::Printer::log("Could not open geometry shader program file",
+				geometryShaderProgramFileName, ELL_WARNING);
 		}
 	}
 
 	s32 result = addHighLevelShaderMaterialFromFiles(
 		vsfile, vertexShaderEntryPointName, vsCompileTarget,
 		psfile, pixelShaderEntryPointName, psCompileTarget,
+		gsfile, geometryShaderEntryPointName, gsCompileTarget,
 		callback, baseMaterial, userData);
 
 	if (psfile)
@@ -1854,6 +1867,9 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 	if (vsfile)
 		vsfile->drop();
 
+	if (gsfile)
+		gsfile->drop();
+
 	return result;
 }
 
@@ -1861,18 +1877,22 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 //! Like IGPUProgrammingServices::addShaderMaterial() (look there for a detailed description),
 //! but tries to load the programs from files.
 s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
-	io::IReadFile* vertexShaderProgram,
-	const c8* vertexShaderEntryPointName,
-	E_VERTEX_SHADER_TYPE vsCompileTarget,
-	io::IReadFile* pixelShaderProgram,
-	const c8* pixelShaderEntryPointName,
-	E_PIXEL_SHADER_TYPE psCompileTarget,
-	IShaderConstantSetCallBack* callback,
-	E_MATERIAL_TYPE baseMaterial,
-	s32 userData)
+		io::IReadFile* vertexShaderProgram,
+		const c8* vertexShaderEntryPointName,
+		E_VERTEX_SHADER_TYPE vsCompileTarget,
+		io::IReadFile* pixelShaderProgram,
+		const c8* pixelShaderEntryPointName,
+		E_PIXEL_SHADER_TYPE psCompileTarget,
+		io::IReadFile* geometryShaderProgram,
+		const c8* geometryShaderEntryPointName,
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		IShaderConstantSetCallBack* callback,
+		E_MATERIAL_TYPE baseMaterial,
+		s32 userData)
 {
 	c8* vs = 0;
 	c8* ps = 0;
+	c8* gs = 0;
 
 	if (vertexShaderProgram)
 	{
@@ -1899,13 +1919,30 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		}
 	}
 
+	if (geometryShaderProgram)
+	{
+		const long size = geometryShaderProgram->getSize();
+		if (size)
+		{
+			// if both handles are the same we must reset the file
+			if ((geometryShaderProgram==vertexShaderProgram) ||
+					(geometryShaderProgram==pixelShaderProgram))
+				geometryShaderProgram->seek(0);
+			gs = new c8[size+1];
+			geometryShaderProgram->read(gs, size);
+			gs[size] = 0;
+		}
+	}
+
 	s32 result = this->addHighLevelShaderMaterial(
 		vs, vertexShaderEntryPointName, vsCompileTarget,
 		ps, pixelShaderEntryPointName, psCompileTarget,
+		gs, geometryShaderEntryPointName, gsCompileTarget,
 		callback, baseMaterial, userData);
 
 	delete [] vs;
 	delete [] ps;
+	delete [] gs;
 
 	return result;
 }

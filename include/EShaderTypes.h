@@ -15,6 +15,9 @@ enum E_VERTEX_SHADER_TYPE
 	EVST_VS_2_0,
 	EVST_VS_2_a,
 	EVST_VS_3_0,
+	EVST_VS_4_0,
+	EVST_VS_4_1,
+	EVST_VS_5_0,
 
 	//! This is not a type, but a value indicating how much types there are.
 	EVST_COUNT
@@ -26,6 +29,9 @@ const c8* const VERTEX_SHADER_TYPE_NAMES[] = {
 	"vs_2_0",
 	"vs_2_a",
 	"vs_3_0",
+	"vs_4_0",
+	"vs_4_1",
+	"vs_5_0",
 	0 };
 
 //! Compile target enumeration for the addHighLevelShaderMaterial() method.
@@ -39,6 +45,9 @@ enum E_PIXEL_SHADER_TYPE
 	EPST_PS_2_a,
 	EPST_PS_2_b,
 	EPST_PS_3_0,
+	EPST_PS_4_0,
+	EPST_PS_4_1,
+	EPST_PS_5_0,
 
 	//! This is not a type, but a value indicating how much types there are.
 	EPST_COUNT
@@ -54,6 +63,23 @@ const c8* const PIXEL_SHADER_TYPE_NAMES[] = {
 	"ps_2_a",
 	"ps_2_b",
 	"ps_3_0",
+	"ps_4_0",
+	"ps_4_1",
+	"ps_5_0",
+	0 };
+
+//! Enum for supported geometry shader types
+enum E_GEOMETRY_SHADER_TYPE
+{
+	EGST_GS_4_0 = 0,
+
+	//! This is not a type, but a value indicating how much types there are.
+	EGST_COUNT
+};
+
+//! String names for supported geometry shader types
+const c8* const GEOMETRY_SHADER_TYPE_NAMES[] = {
+	"gs_4_0",
 	0 };
 
 

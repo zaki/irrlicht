@@ -3235,6 +3235,9 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 	const c8* pixelShaderProgram,
 	const c8* pixelShaderEntryPointName,
 	E_PIXEL_SHADER_TYPE psCompileTarget,
+	const c8* geometryShaderProgram,
+	const c8* geometryShaderEntryPointName,
+	E_GEOMETRY_SHADER_TYPE gsCompileTarget,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
 	s32 userData)
@@ -3242,13 +3245,15 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 	s32 nr = -1;
 
 	COpenGLSLMaterialRenderer* r = new COpenGLSLMaterialRenderer(
-		this, nr, vertexShaderProgram, vertexShaderEntryPointName,
-		vsCompileTarget, pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
+		this, nr,
+		vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
+		pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
+		geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
 		callback,getMaterialRenderer(baseMaterial), userData);
-
 	r->drop();
 	return nr;
 }
+
 
 //! Returns a pointer to the IVideoDriver interface. (Implementation for
 //! IMaterialRendererServices)
