@@ -5,7 +5,6 @@
 #ifndef __I_GPU_PROGRAMMING_SERVICES_H_INCLUDED__
 #define __I_GPU_PROGRAMMING_SERVICES_H_INCLUDED__
 
-#include "IReferenceCounted.h"
 #include "SMaterial.h"
 #include "path.h"
 

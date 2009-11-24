@@ -5,7 +5,6 @@
 #ifndef __I_MATERIAL_RENDERER_SERVICES_H_INCLUDED__
 #define __I_MATERIAL_RENDERER_SERVICES_H_INCLUDED__
 
-#include "IReferenceCounted.h"
 #include "SMaterial.h"
 #include "S3DVertex.h"
 
