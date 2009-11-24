@@ -261,10 +261,19 @@ namespace video
 			IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial, s32 userData);
 
 		//! Adds a new material renderer to the VideoDriver, using GLSL to render geometry.
-		virtual s32 addHighLevelShaderMaterial(const c8* vertexShaderProgram, const c8* vertexShaderEntryPointName,
-			E_VERTEX_SHADER_TYPE vsCompileTarget, const c8* pixelShaderProgram, const c8* pixelShaderEntryPointName,
-			E_PIXEL_SHADER_TYPE psCompileTarget, IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial,
-			s32 userData);
+		virtual s32 addHighLevelShaderMaterial(
+				const c8* vertexShaderProgram,
+				const c8* vertexShaderEntryPointName = "main",
+				E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
+				const c8* pixelShaderProgram = 0,
+				const c8* pixelShaderEntryPointName = "main",
+				E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+				const c8* geometryShaderProgram = 0,
+				const c8* geometryShaderEntryPointName = "main",
+				E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+				IShaderConstantSetCallBack* callback = 0,
+				E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
+				s32 userData = 0);
 
 		//! Returns a pointer to the IVideoDriver interface. (Implementation for
 		//! IMaterialRendererServices)

@@ -35,6 +35,9 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 		const c8* pixelShaderProgram,
 		const c8* pixelShaderEntryPointName,
 		E_PIXEL_SHADER_TYPE psCompileTarget,
+		const c8* geometryShaderProgram,
+		const c8* geometryShaderEntryPointName,
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
 		IShaderConstantSetCallBack* callback,
 		video::IMaterialRenderer* baseMaterial,
 		s32 userData)
@@ -58,7 +61,7 @@ COpenGLSLMaterialRenderer::COpenGLSLMaterialRenderer(video::COpenGLDriver* drive
 	if (!Driver->queryFeature(EVDF_ARB_GLSL))
 		return;
 
-	init(outMaterialTypeNr, vertexShaderProgram, pixelShaderProgram);
+	init(outMaterialTypeNr, vertexShaderProgram, pixelShaderProgram, geometryShaderProgram);
 }
 
 
@@ -96,9 +99,11 @@ COpenGLSLMaterialRenderer::~COpenGLSLMaterialRenderer()
 		BaseMaterial->drop();
 }
 
+
 void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
-	const c8* vertexShaderProgram,
-	const c8* pixelShaderProgram)
+		const c8* vertexShaderProgram,
+		const c8* pixelShaderProgram,
+		const c8* geometryShaderProgram)
 {
 	outMaterialTypeNr = -1;
 
@@ -110,9 +115,14 @@ void COpenGLSLMaterialRenderer::init(s32& outMaterialTypeNr,
 		if (!createShader(GL_VERTEX_SHADER_ARB, vertexShaderProgram))
 			return;
 
-
 	if (pixelShaderProgram)
 		if (!createShader(GL_FRAGMENT_SHADER_ARB, pixelShaderProgram))
+			return;
+#endif
+
+#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_program4) || defined(GL_NV_geometry_shader4)
+	if (geometryShaderProgram && Driver->queryFeature(EVDF_GEOMETRY_SHADER))
+		if (!createShader(GL_GEOMETRY_SHADER_EXT, geometryShaderProgram))
 			return;
 #endif
 
@@ -128,7 +138,7 @@ bool COpenGLSLMaterialRenderer::OnRender(IMaterialRendererServices* service,
 					E_VERTEX_TYPE vtxtype)
 {
 	// call callback to set shader constants
-	if (CallBack && (Program))
+	if (CallBack && Program)
 		CallBack->OnSetConstants(this, UserData);
 
 	return true;
@@ -211,6 +221,15 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 	}
 
 	Driver->extGlAttachObject(Program, shaderHandle);
+
+#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_program4) || defined(GL_NV_geometry_shader4)
+	if (shaderType==GL_GEOMETRY_SHADER_EXT && Driver->queryFeature(EVDF_GEOMETRY_SHADER))
+	{
+		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
+		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLES);
+		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
+	}
+#endif
 
 	return true;
 }

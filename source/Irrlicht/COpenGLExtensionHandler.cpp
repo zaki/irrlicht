@@ -19,9 +19,11 @@ namespace video
 COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		StencilBuffer(false), MultiTextureExtension(false),
 		TextureCompressionExtension(false),
-		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1), MaxUserClipPlanes(0),
-		MaxAuxBuffers(0), MaxIndices(65535), MaxTextureSize(1), MaxTextureLODBias(0.f),
-		MaxMultipleRenderTargets(1), Version(0), ShaderLanguageVersion(0)
+		MaxTextureUnits(1), MaxLights(1), MaxAnisotropy(1),
+		MaxUserClipPlanes(0), MaxAuxBuffers(0),
+		MaxMultipleRenderTargets(1), MaxIndices(65535),
+		MaxTextureSize(1), MaxGeometryVerticesOut(0),
+		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
 	pGlGenProgramsARB(0), pGlBindProgramARB(0), pGlProgramStringARB(0),
@@ -48,7 +50,8 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 	pGlIsBufferARB(0), pGlGetBufferParameterivARB(0), pGlGetBufferPointervARB(0),
 	pGlProvokingVertexARB(0), pGlProvokingVertexEXT(0),
 	pGlColorMaskIndexedEXT(0), pGlEnableIndexedEXT(0), pGlDisableIndexedEXT(0),
-	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0)
+	pGlBlendFuncIndexedAMD(0), pGlBlendFunciARB(0),
+	pGlProgramParameteriARB(0), pGlProgramParameteriEXT(0)
 #endif // _IRR_OPENGL_USE_EXTPOINTER_
 {
 	for (u32 i=0; i<IRR_OpenGL_Feature_Count; ++i)
@@ -195,6 +198,8 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlDisableIndexedEXT= (PFNGLDISABLEINDEXEDEXTPROC) wglGetProcAddress("glDisableIndexedEXT");
 	pGlBlendFuncIndexedAMD= (PFNGLBLENDFUNCINDEXEDAMDPROC) wglGetProcAddress("glBlendFuncIndexedAMD");
 	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC) wglGetProcAddress("glBlendFunciARB");
+	pGlProgramParameteriARB= (PFNGLPROGRAMPARAMETERIARBPROC) wglGetProcAddress("glProgramParameteriARB");
+	pGlProgramParameteriEXT= (PFNGLPROGRAMPARAMETERIEXTPROC) wglGetProcAddress("glProgramParameteriEXT");
 
 
 #elif defined(_IRR_COMPILE_WITH_X11_DEVICE_) || defined (_IRR_COMPILE_WITH_SDL_DEVICE_)
@@ -421,6 +426,10 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFuncIndexedAMD"));
 	pGlBlendFunciARB= (PFNGLBLENDFUNCIPROC)
 	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBlendFunciARB"));
+	pGlProgramParameteriARB = (PFNGLPROGRAMPARAMETERIARBPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriARB"));
+	pGlProgramParameteriEXT = (PFNGLPROGRAMPARAMETERIEXTPROC)
+	IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramParameteriEXT"));
 
 	#endif // _IRR_OPENGL_USE_EXTPOINTER_
 #endif // _IRR_WINDOWS_API_
@@ -452,6 +461,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
 	MaxTextureSize=static_cast<u32>(num);
+#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_program4) || defined(GL_NV_geometry_shader4)
+	if (queryFeature(EVDF_GEOMETRY_SHADER))
+	{
+		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &num);
+		MaxGeometryVerticesOut=static_cast<u32>(num);
+	}
+#endif
 #ifdef GL_EXT_texture_lod_bias
 	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);

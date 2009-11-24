@@ -812,14 +812,16 @@ class COpenGLExtensionHandler
 	u8 MaxUserClipPlanes;
 	//! Number of auxiliary buffers
 	u8 MaxAuxBuffers;
+	//! Number of rendertargets available as MRTs
+	u8 MaxMultipleRenderTargets;
 	//! Optimal number of indices per meshbuffer
 	u32 MaxIndices;
 	//! Maximal texture dimension
 	u32 MaxTextureSize;
+	//! Maximal vertices handled by geometry shaders
+	u32 MaxGeometryVerticesOut;
 	//! Maximal LOD Bias
 	f32 MaxTextureLODBias;
-	//! Number of rendertargets available as MRTs
-	u8 MaxMultipleRenderTargets;
 	//! Minimal and maximal supported thickness for lines without smoothing
 	GLfloat DimAliasedLine[2];
 	//! Minimal and maximal supported thickness for points without smoothing
@@ -904,6 +906,7 @@ class COpenGLExtensionHandler
 	void extGlEnableIndexed(GLenum target, GLuint index);
 	void extGlDisableIndexed(GLenum target, GLuint index);
 	void extGlBlendFuncIndexed(GLuint buf, GLenum src, GLenum dst);
+	void extGlProgramParameteri(GLhandleARB program, GLenum pname, GLint value);
 
 
 	protected:
@@ -979,6 +982,8 @@ class COpenGLExtensionHandler
 		PFNGLDISABLEINDEXEDEXTPROC pGlDisableIndexedEXT;
 		PFNGLBLENDFUNCINDEXEDAMDPROC pGlBlendFuncIndexedAMD;
 		PFNGLBLENDFUNCIPROC pGlBlendFunciARB;
+		PFNGLPROGRAMPARAMETERIARBPROC pGlProgramParameteriARB;
+		PFNGLPROGRAMPARAMETERIEXTPROC pGlProgramParameteriEXT;
 	#endif
 };
 
@@ -1742,6 +1747,28 @@ inline void COpenGLExtensionHandler::extGlBlendFuncIndexed(GLuint buf, GLenum sr
 	glBlendFuncIndexedAMD(buf, src, dst);
 #else
 	os::Printer::log("glBlendFuncIndexed not supported", ELL_ERROR);
+#endif
+}
+
+
+inline void COpenGLExtensionHandler::extGlProgramParameteri(GLhandleARB program, GLenum pname, GLint value)
+{
+#if defined(_IRR_OPENGL_USE_EXTPOINTER_)
+	if (queryFeature(EVDF_GEOMETRY_SHADER))
+	{
+		if (pGlProgramParameteriARB)
+			pGlProgramParameteriARB(program, pname, value);
+		else if (pGlProgramParameteriEXT)
+			pGlProgramParameteriEXT(program, pname, value);
+	}
+#elif defined(GL_ARB_geometry_shader4)
+	glProgramParameteriARB(program, pname, value);
+#elif defined(GL_EXT_geometry_shader4)
+	glProgramParameteriEXT(program, pname, value);
+#elif defined(GL_NV_geometry_program4) || defined(GL_NV_geometry_shader4)
+	glProgramParameteriNV(program, pname, value);
+#else
+	os::Printer::log("glProgramParameteri not supported", ELL_ERROR);
 #endif
 }
 
