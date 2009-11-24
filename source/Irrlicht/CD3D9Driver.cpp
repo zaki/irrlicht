@@ -2884,13 +2884,6 @@ bool CD3D9Driver::setPixelShaderConstant(const c8* name, const f32* floats, int 
 }
 
 
-//! Returns pointer to the IGPUProgrammingServices interface.
-IGPUProgrammingServices* CD3D9Driver::getGPUProgrammingServices()
-{
-	return this;
-}
-
-
 //! Adds a new material renderer to the VideoDriver, using pixel and/or
 //! vertex shaders to render geometry.
 s32 CD3D9Driver::addShaderMaterial(const c8* vertexShaderProgram,

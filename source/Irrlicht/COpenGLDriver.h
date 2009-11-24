@@ -266,9 +266,6 @@ namespace video
 			E_PIXEL_SHADER_TYPE psCompileTarget, IShaderConstantSetCallBack* callback, E_MATERIAL_TYPE baseMaterial,
 			s32 userData);
 
-		//! Returns pointer to the IGPUProgrammingServices interface.
-		virtual IGPUProgrammingServices* getGPUProgrammingServices();
-
 		//! Returns a pointer to the IVideoDriver interface. (Implementation for
 		//! IMaterialRendererServices)
 		virtual IVideoDriver* getVideoDriver();
