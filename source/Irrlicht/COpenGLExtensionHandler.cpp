@@ -461,13 +461,16 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 #endif
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &num);
 	MaxTextureSize=static_cast<u32>(num);
-#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_program4) || defined(GL_NV_geometry_shader4)
 	if (queryFeature(EVDF_GEOMETRY_SHADER))
 	{
+#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4)
 		glGetIntegerv(GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT, &num);
 		MaxGeometryVerticesOut=static_cast<u32>(num);
-	}
+#elif defined(GL_NV_geometry_program4)
+		extGlGetProgramiv(GEOMETRY_PROGRAM_NV, GL_MAX_PROGRAM_OUTPUT_VERTICES_NV, &num);
+		MaxGeometryVerticesOut=static_cast<u32>(num);
 #endif
+	}
 #ifdef GL_EXT_texture_lod_bias
 	if (FeatureAvailable[IRR_EXT_texture_lod_bias])
 		glGetFloatv(GL_MAX_TEXTURE_LOD_BIAS_EXT, &MaxTextureLODBias);
