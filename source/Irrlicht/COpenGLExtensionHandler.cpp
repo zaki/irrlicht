@@ -26,8 +26,11 @@ COpenGLExtensionHandler::COpenGLExtensionHandler() :
 		MaxTextureLODBias(0.f), Version(0), ShaderLanguageVersion(0)
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	,pGlActiveTextureARB(0), pGlClientActiveTextureARB(0),
-	pGlGenProgramsARB(0), pGlBindProgramARB(0), pGlProgramStringARB(0),
-	pGlDeleteProgramsARB(0), pGlProgramLocalParameter4fvARB(0),
+	pGlGenProgramsARB(0), pGlGenProgramsNV(0),
+	pGlBindProgramARB(0), pGlBindProgramNV(0),
+	pGlDeleteProgramsARB(0), pGlDeleteProgramsNV(0),
+	pGlProgramStringARB(0), pGlLoadProgramNV(0),
+	pGlProgramLocalParameter4fvARB(0),
 	pGlCreateShaderObjectARB(0), pGlShaderSourceARB(0),
 	pGlCompileShaderARB(0), pGlCreateProgramObjectARB(0), pGlAttachObjectARB(0),
 	pGlLinkProgramARB(0), pGlUseProgramObjectARB(0), pGlDeleteObjectARB(0),
@@ -127,9 +130,13 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 
 	// get fragment and vertex program function pointers
 	pGlGenProgramsARB = (PFNGLGENPROGRAMSARBPROC) wglGetProcAddress("glGenProgramsARB");
+	pGlGenProgramsNV = (PFNGLGENPROGRAMSNVPROC) wglGetProcAddress("glGenProgramsNV");
 	pGlBindProgramARB = (PFNGLBINDPROGRAMARBPROC) wglGetProcAddress("glBindProgramARB");
+	pGlBindProgramNV = (PFNGLBINDPROGRAMNVPROC) wglGetProcAddress("glBindProgramNV");
 	pGlProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC) wglGetProcAddress("glProgramStringARB");
-	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSNVPROC) wglGetProcAddress("glDeleteProgramsARB");
+	pGlLoadProgramNV = (PFNGLLOADPROGRAMNVPROC) wglGetProcAddress("glLoadProgramNV");
+	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC) wglGetProcAddress("glDeleteProgramsARB");
+	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC) wglGetProcAddress("glDeleteProgramsNV");
 	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC) wglGetProcAddress("glProgramLocalParameter4fvARB");
 	pGlCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC) wglGetProcAddress("glCreateShaderObjectARB");
 	pGlShaderSourceARB = (PFNGLSHADERSOURCEARBPROC) wglGetProcAddress("glShaderSourceARB");
@@ -243,14 +250,26 @@ void COpenGLExtensionHandler::initExtensions(bool stencilBuffer)
 	pGlGenProgramsARB = (PFNGLGENPROGRAMSARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenProgramsARB"));
 
+	pGlGenProgramsNV = (PFNGLGENPROGRAMSNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glGenProgramsNV"));
+
 	pGlBindProgramARB = (PFNGLBINDPROGRAMARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindProgramARB"));
+
+	pGlBindProgramNV = (PFNGLBINDPROGRAMNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glBindProgramNV"));
+
+	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSARBPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsARB"));
+
+	pGlDeleteProgramsNV = (PFNGLDELETEPROGRAMSNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsNV"));
 
 	pGlProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramStringARB"));
 
-	pGlDeleteProgramsARB = (PFNGLDELETEPROGRAMSNVPROC)
-		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glDeleteProgramsARB"));
+	pGlLoadProgramNV = (PFNGLLOADPROGRAMNVPROC)
+		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glLoadProgramNV"));
 
 	pGlProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC)
 		IRR_OGL_LOAD_EXTENSION(reinterpret_cast<const GLubyte*>("glProgramLocalParameter4fvARB"));
@@ -550,10 +569,15 @@ bool COpenGLExtensionHandler::queryFeature(E_VIDEO_DRIVER_FEATURE feature) const
 		return FeatureAvailable[IRR_SGIS_generate_mipmap];
 	case EVDF_STENCIL_BUFFER:
 		return StencilBuffer;
+	case EVDF_VERTEX_SHADER_1_1:
 	case EVDF_ARB_VERTEX_PROGRAM_1:
-		return FeatureAvailable[IRR_ARB_vertex_program];
+		return FeatureAvailable[IRR_ARB_vertex_program] || FeatureAvailable[IRR_NV_vertex_program];
+	case EVDF_PIXEL_SHADER_1_1: 
+	case EVDF_PIXEL_SHADER_1_2: 
 	case EVDF_ARB_FRAGMENT_PROGRAM_1:
-		return FeatureAvailable[IRR_ARB_fragment_program];
+		return FeatureAvailable[IRR_ARB_fragment_program] || FeatureAvailable[IRR_NV_fragment_program];
+	case EVDF_PIXEL_SHADER_2_0:
+	case EVDF_VERTEX_SHADER_2_0:
 	case EVDF_ARB_GLSL:
 		return (FeatureAvailable[IRR_ARB_shading_language_100]||Version>=200);
 	case EVDF_TEXTURE_NSQUARE:

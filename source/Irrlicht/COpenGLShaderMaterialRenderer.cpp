@@ -85,8 +85,9 @@ COpenGLShaderMaterialRenderer::~COpenGLShaderMaterialRenderer()
 }
 
 
-void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr, const c8* vertexShaderProgram,
-	const c8* pixelShaderProgram, E_VERTEX_TYPE type)
+void COpenGLShaderMaterialRenderer::init(s32& outMaterialTypeNr,
+		const c8* vertexShaderProgram, const c8* pixelShaderProgram,
+		E_VERTEX_TYPE type)
 {
 	outMaterialTypeNr = -1;
 
@@ -119,41 +120,43 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 {
 	if (material.MaterialType != lastMaterial.MaterialType || resetAllRenderstates)
 	{
-#ifdef GL_ARB_vertex_program
 		if (VertexShader)
 		{
 			// set new vertex shader
+#ifdef GL_ARB_vertex_program
 			Driver->extGlBindProgram(GL_VERTEX_PROGRAM_ARB, VertexShader);
 			glEnable(GL_VERTEX_PROGRAM_ARB);
-		}
+#elif defined(GL_NV_vertex_program)
+			Driver->extGlBindProgram(GL_VERTEX_PROGRAM_NV, VertexShader);
+			glEnable(GL_VERTEX_PROGRAM_NV);
 #endif
+		}
 
 		// set new pixel shader
-#ifdef GL_ARB_fragment_program
 		if (PixelShader[0])
 		{
-			if (!material.FogEnable)
-			{
-				Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader[0]);
-			}
-			else
+			GLuint nextShader=PixelShader[0];
+			if (material.FogEnable)
 			{
 				GLint curFogMode;
 				glGetIntegerv(GL_FOG_MODE, &curFogMode);
 //				if (Driver->LinearFog && PixelShader[1])
 				if (curFogMode==GL_LINEAR && PixelShader[1])
-					Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader[1]);
+					nextShader=PixelShader[1];
 //				else if (!Driver->LinearFog && PixelShader[2])
 				else if (curFogMode==GL_EXP && PixelShader[2])
-					Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader[2]);
+					nextShader=PixelShader[2];
 				else if (curFogMode==GL_EXP2 && PixelShader[3])
-					Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader[3]);
-				else
-					Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader[0]);
+					nextShader=PixelShader[3];
 			}
+#ifdef GL_ARB_fragment_program
+			Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, nextShader);
 			glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		}
+#elif defined(GL_NV_vertex_program)
+			Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_NV, nextShader);
+			glEnable(GL_FRAGMENT_PROGRAM_NV);
 #endif
+		}
 
 		if (BaseMaterial)
 			BaseMaterial->OnSetMaterial(material, material, true, services);
@@ -175,11 +178,17 @@ void COpenGLShaderMaterialRenderer::OnUnsetMaterial()
 #ifdef GL_ARB_vertex_program
 	if (VertexShader)
 		glDisable(GL_VERTEX_PROGRAM_ARB);
+#elif defined(GL_NV_vertex_program)
+	if (VertexShader)
+		glDisable(GL_VERTEX_PROGRAM_NV);
 #endif
 
 #ifdef GL_ARB_fragment_program
 	if (PixelShader[0])
 		glDisable(GL_FRAGMENT_PROGRAM_ARB);
+#elif defined(GL_NV_vertex_program)
+	if (PixelShader[0])
+		glDisable(GL_FRAGMENT_PROGRAM_NV);
 #endif
 
 	if (BaseMaterial)
@@ -197,24 +206,27 @@ bool COpenGLShaderMaterialRenderer::isTransparent() const
 // This method needs a properly cleaned error state before the checked instruction is called
 bool COpenGLShaderMaterialRenderer::checkError(const irr::c8* type)
 {
-#ifdef GL_ARB_vertex_program
+#if defined(GL_ARB_vertex_program) || defined(GL_NV_vertex_program)
 	GLenum g = glGetError();
-	if (g != GL_NO_ERROR)
-	{
-		GLint errPos;
-		glGetIntegerv( GL_PROGRAM_ERROR_POSITION_ARB, &errPos );
+	if (g == GL_NO_ERROR)
+		return false;
 
-		core::stringc errString = type;
-		errString += " compilation failed at position ";
-		errString += core::stringc(s32(errPos));
-		errString += ":\n";
-		errString += reinterpret_cast<const char*>(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
+	core::stringc errString = type;
+	errString += " compilation failed";
 
-		os::Printer::log(errString.c_str(), ELL_ERROR);
-		return true;
-	}
+#if defined(GL_ARB_vertex_program)
+	errString += " at position ";
+	GLint errPos;
+	glGetIntegerv( GL_PROGRAM_ERROR_POSITION_ARB, &errPos );
+	errString += core::stringc(s32(errPos));
+	errString += ":\n";
+	errString += reinterpret_cast<const char*>(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
 #endif
-	return false;
+#else
+	core::stringc errString("Shaders not supported.");
+#endif
+	os::Printer::log(errString.c_str(), ELL_ERROR);
+	return true;
 }
 
 
@@ -244,17 +256,25 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 			}
 			shdr += inshdr.subString(pos+16, inshdr.size()-pos-16);
 		}
-#ifdef GL_ARB_fragment_program
 		Driver->extGlGenPrograms(1, &PixelShader[i]);
+#ifdef GL_ARB_fragment_program
 		Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader[i]);
+#elif defined GL_NV_vertex_program
+		Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_NV, PixelShader[i]);
+#endif
 
 		// clear error buffer
 		while(glGetError() != GL_NO_ERROR)
 			{}
 
+#ifdef GL_ARB_fragment_program
 		// compile
 		Driver->extGlProgramString(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
-			shdr.size(), shdr.c_str());
+				shdr.size(), shdr.c_str());
+#elif defined GL_NV_vertex_program
+		Driver->extGlLoadProgram(GL_FRAGMENT_PROGRAM_NV, PixelShader[i],
+				shdr.size(), shdr.c_str());
+#endif
 
 		if (checkError("Pixel shader"))
 		{
@@ -263,9 +283,6 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 
 			return false;
 		}
-#else
-		return false;
-#endif
 	}
 
 	return true;
@@ -277,17 +294,25 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const c8* vtxsh)
 	if (!vtxsh)
 		return true;
 
-#ifdef GL_ARB_vertex_program
 	Driver->extGlGenPrograms(1, &VertexShader);
+#ifdef GL_ARB_vertex_program
 	Driver->extGlBindProgram(GL_VERTEX_PROGRAM_ARB, VertexShader);
+#elif defined GL_NV_vertex_program
+	Driver->extGlBindProgram(GL_VERTEX_PROGRAM_NV, VertexShader);
+#endif
 
 	// clear error buffer
 	while(glGetError() != GL_NO_ERROR)
 	{}
 
 	// compile
+#ifdef GL_ARB_vertex_program
 	Driver->extGlProgramString(GL_VERTEX_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
-		(GLsizei)strlen(vtxsh), vtxsh);
+			(GLsizei)strlen(vtxsh), vtxsh);
+#elif defined GL_NV_vertex_program
+	Driver->extGlLoadProgram(GL_VERTEX_PROGRAM_NV, VertexShader,
+			(GLsizei)strlen(vtxsh), vtxsh);
+#endif
 
 	if (checkError("Vertex shader"))
 	{
@@ -296,9 +321,6 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const c8* vtxsh)
 
 		return false;
 	}
-#else
-	return false;
-#endif
 
 	return true;
 }
@@ -307,5 +329,5 @@ bool COpenGLShaderMaterialRenderer::createVertexShader(const c8* vtxsh)
 } // end namespace video
 } // end namespace irr
 
-
 #endif
+
