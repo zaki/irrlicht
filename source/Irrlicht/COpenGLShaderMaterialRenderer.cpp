@@ -152,7 +152,7 @@ void COpenGLShaderMaterialRenderer::OnSetMaterial(const video::SMaterial& materi
 #ifdef GL_ARB_fragment_program
 			Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, nextShader);
 			glEnable(GL_FRAGMENT_PROGRAM_ARB);
-#elif defined(GL_NV_vertex_program)
+#elif defined(GL_NV_fragment_program)
 			Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_NV, nextShader);
 			glEnable(GL_FRAGMENT_PROGRAM_NV);
 #endif
@@ -186,7 +186,7 @@ void COpenGLShaderMaterialRenderer::OnUnsetMaterial()
 #ifdef GL_ARB_fragment_program
 	if (PixelShader[0])
 		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-#elif defined(GL_NV_vertex_program)
+#elif defined(GL_NV_fragment_program)
 	if (PixelShader[0])
 		glDisable(GL_FRAGMENT_PROGRAM_NV);
 #endif
@@ -206,7 +206,7 @@ bool COpenGLShaderMaterialRenderer::isTransparent() const
 // This method needs a properly cleaned error state before the checked instruction is called
 bool COpenGLShaderMaterialRenderer::checkError(const irr::c8* type)
 {
-#if defined(GL_ARB_vertex_program) || defined(GL_NV_vertex_program)
+#if defined(GL_ARB_vertex_program) || defined(GL_NV_vertex_program) || defined(GL_ARB_fragment_program) || defined(GL_NV_fragment_program)
 	GLenum g = glGetError();
 	if (g == GL_NO_ERROR)
 		return false;
@@ -214,13 +214,19 @@ bool COpenGLShaderMaterialRenderer::checkError(const irr::c8* type)
 	core::stringc errString = type;
 	errString += " compilation failed";
 
-#if defined(GL_ARB_vertex_program)
 	errString += " at position ";
-	GLint errPos;
+	GLint errPos=-1;
+#if defined(GL_ARB_vertex_program) || defined(GL_ARB_fragment_program)
 	glGetIntegerv( GL_PROGRAM_ERROR_POSITION_ARB, &errPos );
+#else
+	glGetIntegerv( GL_PROGRAM_ERROR_POSITION_NV, &errPos );
+#endif
 	errString += core::stringc(s32(errPos));
 	errString += ":\n";
+#if defined(GL_ARB_vertex_program) || defined(GL_ARB_fragment_program)
 	errString += reinterpret_cast<const char*>(glGetString(GL_PROGRAM_ERROR_STRING_ARB));
+#else
+	errString += reinterpret_cast<const char*>(glGetString(GL_PROGRAM_ERROR_STRING_NV));
 #endif
 #else
 	core::stringc errString("Shaders not supported.");
@@ -259,7 +265,7 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		Driver->extGlGenPrograms(1, &PixelShader[i]);
 #ifdef GL_ARB_fragment_program
 		Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_ARB, PixelShader[i]);
-#elif defined GL_NV_vertex_program
+#elif defined GL_NV_fragment_program
 		Driver->extGlBindProgram(GL_FRAGMENT_PROGRAM_NV, PixelShader[i]);
 #endif
 
@@ -271,7 +277,7 @@ bool COpenGLShaderMaterialRenderer::createPixelShader(const c8* pxsh)
 		// compile
 		Driver->extGlProgramString(GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB,
 				shdr.size(), shdr.c_str());
-#elif defined GL_NV_vertex_program
+#elif defined GL_NV_fragment_program
 		Driver->extGlLoadProgram(GL_FRAGMENT_PROGRAM_NV, PixelShader[i],
 				shdr.size(), shdr.c_str());
 #endif
