@@ -852,6 +852,7 @@ class COpenGLExtensionHandler
 	void extGlGenPrograms(GLsizei n, GLuint *programs);
 	void extGlBindProgram(GLenum target, GLuint program);
 	void extGlProgramString(GLenum target, GLenum format, GLsizei len, const GLvoid *string);
+	void extGlLoadProgram(GLenum target, GLuint id, GLsizei len, const GLubyte *string);
 	void extGlDeletePrograms(GLsizei n, const GLuint *programs);
 	void extGlProgramLocalParameter4fv(GLenum, GLuint, const GLfloat *);
 	GLhandleARB extGlCreateShaderObject(GLenum shaderType);
@@ -917,9 +918,13 @@ class COpenGLExtensionHandler
 		PFNGLACTIVETEXTUREARBPROC pGlActiveTextureARB;
 		PFNGLCLIENTACTIVETEXTUREARBPROC	pGlClientActiveTextureARB;
 		PFNGLGENPROGRAMSARBPROC pGlGenProgramsARB;
+		PFNGLGENPROGRAMSNVPROC pGlGenProgramsNV;
 		PFNGLBINDPROGRAMARBPROC pGlBindProgramARB;
+		PFNGLBINDPROGRAMNVPROC pGlBindProgramNV;
+		PFNGLDELETEPROGRAMSARBPROC pGlDeleteProgramsARB;
+		PFNGLDELETEPROGRAMSNVPROC pGlDeleteProgramsNV;
 		PFNGLPROGRAMSTRINGARBPROC pGlProgramStringARB;
-		PFNGLDELETEPROGRAMSNVPROC pGlDeleteProgramsARB;
+		PFNGLLOADPROGRAMNVPROC pGlLoadProgramNV;
 		PFNGLPROGRAMLOCALPARAMETER4FVARBPROC pGlProgramLocalParameter4fvARB;
 		PFNGLCREATESHADEROBJECTARBPROC pGlCreateShaderObjectARB;
 		PFNGLSHADERSOURCEARBPROC pGlShaderSourceARB;
@@ -1018,8 +1023,12 @@ inline void COpenGLExtensionHandler::extGlGenPrograms(GLsizei n, GLuint *program
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlGenProgramsARB)
 		pGlGenProgramsARB(n, programs);
-#elif defined(GL_ARB_vertex_program)
+	else if (pGlGenProgramsNV)
+		pGlGenProgramsNV(n, programs);
+#elif defined(GL_ARB_vertex_program) || defined(GL_ARB_fragment_program)
 	glGenProgramsARB(n,programs);
+#elif defined(GL_NV_vertex_program) || defined(GL_NV_fragment_program)
+	glGenProgramsNV(n,programs);
 #else
 	os::Printer::log("glGenPrograms not supported", ELL_ERROR);
 #endif
@@ -1030,8 +1039,12 @@ inline void COpenGLExtensionHandler::extGlBindProgram(GLenum target, GLuint prog
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlBindProgramARB)
 		pGlBindProgramARB(target, program);
-#elif defined(GL_ARB_vertex_program)
+	else if (pGlBindProgramNV)
+		pGlBindProgramNV(target, program);
+#elif defined(GL_ARB_vertex_program) || defined(GL_ARB_fragment_program)
 	glBindProgramARB(target, program);
+#elif defined(GL_NV_vertex_program) || defined(GL_NV_fragment_program)
+	glBindProgramNV(target, program);
 #else
 	os::Printer::log("glBindProgram not supported", ELL_ERROR);
 #endif
@@ -1042,10 +1055,22 @@ inline void COpenGLExtensionHandler::extGlProgramString(GLenum target, GLenum fo
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlProgramStringARB)
 		pGlProgramStringARB(target, format, len, string);
-#elif defined(GL_ARB_vertex_program)
+#elif defined(GL_ARB_vertex_program) || defined(GL_ARB_fragment_program)
 	glProgramStringARB(target,format,len,string);
 #else
 	os::Printer::log("glProgramString not supported", ELL_ERROR);
+#endif
+}
+
+inline void COpenGLExtensionHandler::extGlLoadProgram(GLenum target, GLuint id, GLsizei len, const GLubyte *string)
+{
+#ifdef _IRR_OPENGL_USE_EXTPOINTER_
+	if (pGlLoadProgramNV)
+		pGlLoadProgramNV(target, id, len, string);
+#elif defined(GL_NV_vertex_program) || defined(GL_NV_fragment_program)
+	glLoadProgramNV(target,id,len,string);
+#else
+	os::Printer::log("glLoadProgram not supported", ELL_ERROR);
 #endif
 }
 
@@ -1054,8 +1079,12 @@ inline void COpenGLExtensionHandler::extGlDeletePrograms(GLsizei n, const GLuint
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlDeleteProgramsARB)
 		pGlDeleteProgramsARB(n, programs);
-#elif defined(GL_ARB_vertex_program)
+	else if (pGlDeleteProgramsNV)
+		pGlDeleteProgramsNV(n, programs);
+#elif defined(GL_ARB_vertex_program) || defined(GL_ARB_fragment_program)
 	glDeleteProgramsARB(n,programs);
+#elif defined(GL_NV_vertex_program) || defined(GL_NV_fragment_program)
+	glDeleteProgramsNV(n,programs);
 #else
 	os::Printer::log("glDeletePrograms not supported", ELL_ERROR);
 #endif
@@ -1066,7 +1095,7 @@ inline void COpenGLExtensionHandler::extGlProgramLocalParameter4fv(GLenum n, GLu
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 	if (pGlProgramLocalParameter4fvARB)
 		pGlProgramLocalParameter4fvARB(n,i,f);
-#elif defined(GL_ARB_vertex_program)
+#elif defined(GL_ARB_vertex_program) || defined(GL_ARB_fragment_program)
 	glProgramLocalParameter4fvARB(n,i,f);
 #else
 	os::Printer::log("glProgramLocalParameter4fv not supported", ELL_ERROR);
