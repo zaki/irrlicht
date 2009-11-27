@@ -30,6 +30,12 @@ namespace irr
 		in by defining the IRR_USE_SDL_DEVICE macro in IrrCompileConfig.h */
 		EIDT_SDL,
 
+		//! A device for raw framebuffer access
+		/** Best used with embedded devices and mobile systems.
+		Does not need X11 or other graphical subsystems.
+		May support hw-acceleration via OpenGL-ES for FBDirect */
+		EIDT_FRAMEBUFFER,
+
 		//! A simple text only device supported by all platforms.
 		/** This device allows applications to run from the command line without opening a window.
 		It can render the output of the software drivers to the console as ASCII. It only supports

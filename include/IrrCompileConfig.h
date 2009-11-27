@@ -35,6 +35,7 @@
 //! _IRR_COMPILE_WITH_X11_DEVICE_ for Linux X11 based device
 //! _IRR_COMPILE_WITH_SDL_DEVICE_ for platform independent SDL framework
 //! _IRR_COMPILE_WITH_CONSOLE_DEVICE_ for no windowing system, used as a fallback
+//! _IRR_COMPILE_WITH_FB_DEVICE_ for framebuffer systems
 
 
 //! Uncomment this line to compile with the SDL device
