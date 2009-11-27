@@ -116,17 +116,22 @@ bool CIrrDeviceFB::createWindow(const core::dimension2d<u32>& windowSize, u32 bi
 	if (ioctl(KeyboardDevice, KDSETMODE, KD_GRAPHICS) <0)
 		perror("Set keyboard mode");
 
-	Framebuffer=open("/dev/fb0", O_RDWR); 
+	Framebuffer=open("/dev/fb/0", O_RDWR); 
 	if (Framebuffer == -1)
 	{
-		perror("Open framebuffer");
-		return false;
+		Framebuffer=open("/dev/fb0", O_RDWR); 
+		if (Framebuffer == -1)
+		{
+			perror("Open framebuffer");
+			return false;
+		}
 	}
 	EventDevice = open("/dev/input/event0", O_RDONLY | O_NONBLOCK);
 	if (EventDevice == -1)
 		perror("Open event device");
 
 	// make format settings
+	ioctl(Framebuffer, FBIOGET_FSCREENINFO, &fbfixscreeninfo);
 	ioctl(Framebuffer, FBIOGET_VSCREENINFO, &oldscreeninfo);
 snprintf(buf, 256, "Original resolution: %d x %d\nARGB%d%d%d%d\n",oldscreeninfo.xres,oldscreeninfo.yres,
 		oldscreeninfo.transp.length,oldscreeninfo.red.length,oldscreeninfo.green.length,oldscreeninfo.blue.length);
@@ -155,7 +160,7 @@ snprintf(buf, 256, "New resolution: %d x %d (%d x %d)\nARGB%d%d%d%d\n",fbscreeni
 		CreationParams.WindowSize.Width = fbscreeninfo.xres;
 		CreationParams.WindowSize.Height = fbscreeninfo.yres;
 		CreationParams.Bits = fbscreeninfo.bits_per_pixel;
-		Pitch = fbscreeninfo.xres_virtual*CreationParams.Bits/8;
+		Pitch = fbfixscreeninfo.line_length;
 		if (fbscreeninfo.bits_per_pixel == 16)
 		{
 			if (fbscreeninfo.transp.length == 0)
