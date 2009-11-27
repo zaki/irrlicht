@@ -169,6 +169,7 @@ namespace irr
 		int Framebuffer;
 		int EventDevice;
 		int KeyboardDevice;
+		struct fb_fix_screeninfo fbfixscreeninfo;
 		struct fb_var_screeninfo fbscreeninfo;
 		struct fb_var_screeninfo oldscreeninfo;
 		long KeyboardMode;
