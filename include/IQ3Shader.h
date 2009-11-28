@@ -77,7 +77,7 @@ namespace quake3
 
 	// some useful typedefs
 	typedef core::array< core::stringc > tStringList;
-	typedef core::array< video::ITexture* > tTexArray;
+	typedef core::array< video::ITexture*, core::irrAllocator<video::ITexture*>, core::irrAllocStrategySafe > tTexArray;
 
 	// string helper.. TODO: move to generic files
 	inline s16 isEqual ( const core::stringc &string, u32 &pos, const c8 *list[], u16 listSize )
@@ -573,7 +573,7 @@ namespace quake3
 	// string database. "a" = "Hello", "b" = "1234.6"
 	struct SVarGroup
 	{
-		SVarGroup () { Variable.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE ); }
+		SVarGroup () {}
 		virtual ~SVarGroup () {}
 
 		u32 isDefined ( const c8 * name, const c8 * content = 0 ) const
@@ -617,19 +617,16 @@ namespace quake3
 		}
 
 
-		core::array < SVariable > Variable;
+		core::array < SVariable, core::irrAllocator<SVariable>, core::irrAllocStrategySafe > Variable;
 	};
 
 	//! holding a group a variable
 	struct SVarGroupList: public IReferenceCounted
 	{
-		SVarGroupList ()
-		{
-			VariableGroup.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE );
-		}
+		SVarGroupList () {}
 		virtual ~SVarGroupList () {}
 
-		core::array < SVarGroup > VariableGroup;
+		core::array < SVarGroup, core::irrAllocator<SVarGroup>, core::irrAllocStrategySafe > VariableGroup;
 	};
 
 

@@ -17,7 +17,7 @@ namespace core
 //! Self reallocating template array (like stl vector) with additional features.
 /** Some features are: Heap sorting, binary search methods, easier debugging.
 */
-template <class T, typename TAlloc = irrAllocator<T> >
+template <class T, typename TAlloc = irrAllocator<T>, typename TAllocStrategy = irrAllocStrategyDouble >
 class array
 {
 
@@ -25,8 +25,7 @@ public:
 
 	//! Default constructor for empty array.
 	array()
-		: data(0), allocated(0), used(0),
-			strategy(ALLOC_STRATEGY_DOUBLE), free_when_destroyed(true), is_sorted(true)
+		: data(0), allocated(0), used(0), free_when_destroyed(true), is_sorted(true)
 	{
 	}
 
@@ -34,8 +33,7 @@ public:
 	//! Constructs an array and allocates an initial chunk of memory.
 	/** \param start_count Amount of elements to pre-allocate. */
 	array(u32 start_count)
-      : data(0), allocated(0), used(0),
-        strategy(ALLOC_STRATEGY_DOUBLE), free_when_destroyed(true), is_sorted(true)
+      : data(0), allocated(0), used(0), free_when_destroyed(true), is_sorted(true)
 	{
 		reallocate(start_count);
 	}
@@ -85,17 +83,6 @@ public:
 		allocator.deallocate(old_data); //delete [] old_data;
 	}
 
-
-	//! set a new allocation strategy
-	/** if the maximum size of the array is unknown, you can define how big the
-	allocation should happen.
-	\param newStrategy New strategy to apply to this array. */
-	void setAllocStrategy ( eAllocStrategy newStrategy = ALLOC_STRATEGY_DOUBLE )
-	{
-		strategy = newStrategy;
-	}
-
-
 	//! Adds an element at back of array.
 	/** If the array is too small to add this new element it is made bigger.
 	\param element: Element to add at the back of the array. */
@@ -134,18 +121,7 @@ public:
 			const T e(element);
 
 			// increase data block
-			u32 newAlloc;
-			switch ( strategy )
-			{
-				case ALLOC_STRATEGY_DOUBLE:
-					newAlloc = used + 1 + (allocated < 500 ?
-							(allocated < 5 ? 5 : used) : used >> 2);
-					break;
-				default:
-				case ALLOC_STRATEGY_SAFE:
-					newAlloc = used + 1;
-					break;
-			}
+			const u32 newAlloc = allocatorStrategy.getNewSize(used);
 			reallocate( newAlloc);
 
 			// move array content and construct new element
@@ -249,8 +225,6 @@ public:
 	//! Assignment operator
 	void operator=(const array<T>& other)
 	{
-		strategy = other.strategy;
-
 		if (data)
 			clear();
 
@@ -568,7 +542,7 @@ private:
 	u32 allocated;
 	u32 used;
 	TAlloc allocator;
-	eAllocStrategy strategy:4;
+	TAllocStrategy allocatorStrategy;
 	bool free_when_destroyed:1;
 	bool is_sorted:1;
 };
