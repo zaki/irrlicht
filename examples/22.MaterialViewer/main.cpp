@@ -759,13 +759,19 @@ protected:
 		Device = createDevice(Config.DriverType, Config.ScreenSize);
 		if (!Device)
 			return false;
-
+		
         Device->setWindowCaption( DriverTypeNames[Config.DriverType] );
 		Device->setEventReceiver(this);
 		scene::ISceneManager* smgr = Device->getSceneManager();
 		video::IVideoDriver * driver = Device->getVideoDriver ();
 		gui::IGUIEnvironment* guiEnv = Device->getGUIEnvironment();
 
+		// set a nicer font
+		gui::IGUISkin* skin = guiEnv->getSkin();
+		gui::IGUIFont* font = guiEnv->getFont("../../media/fonthaettenschweiler.bmp");
+		if (font)
+			skin->setFont(font);
+		
 		createDefaultTextures(driver);
 
 		gui::IGUIContextMenu * menuBar = guiEnv->addMenu();
