@@ -1,5 +1,17 @@
 Changes in 1.7
 
+ - Add MaterialViewer example.
+
+ - Checkbox uses now disabled text color when disabled.
+
+ - Changed colors for window-title caption to keep them readable when not active.
+
+ - Draw sub-menus to left side if they would be outside main-window otherwise.
+
+ - Give ListBox better defaults for the ScrollBar stepsizes.
+
+ - Double and triple click events now for each mouse-button. Old events for that got removed.
+
  - Fix adding archives twice, which caused multiple archives of the same name and type covering each other. This one required a texture name change from using backslashes to slahes under Windows.
 
  - Give access to texture mipmaps. You can provide custom mipmap textures upon generation, regeneration, and locking.
