@@ -4,6 +4,46 @@ using namespace irr;
 using namespace core;
 using namespace io;
 
+static bool testFlattenFilename(io::IFileSystem* fs)
+{
+	bool result=true;
+	io::path tmpString="../tmp";
+	io::path refString="../tmp/";
+	fs->flattenFilename(tmpString);
+	if (tmpString != refString)
+	{
+		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
+		result = false;
+	}
+
+	tmpString="tmp/tmp/../";
+	refString="tmp/";
+	fs->flattenFilename(tmpString);
+	if (tmpString != refString)
+	{
+		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
+		result = false;
+	}
+
+	tmpString="tmp/tmp/..";
+	fs->flattenFilename(tmpString);
+	if (tmpString != refString)
+	{
+		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
+		result = false;
+	}
+
+	tmpString="tmp/next/../third";
+	refString="tmp/third/";
+	fs->flattenFilename(tmpString);
+	if (tmpString != refString)
+	{
+		logTestString("flattening destroys path.\n%s!=%s\n", tmpString.c_str(),refString.c_str());
+		result = false;
+	}
+	return result;
+}
+
 bool filesystem(void)
 {
 	IrrlichtDevice * device = irr::createDevice(video::EDT_NULL, dimension2d<u32>(1, 1));
@@ -52,5 +92,6 @@ bool filesystem(void)
 	// remove it again to not affect other tests
 	device->getFileSystem()->removeFileArchive( device->getFileSystem()->getFileArchiveCount() );
 
+	result |= testFlattenFilename(fs);
 	return result;
 }

@@ -538,6 +538,7 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 
 	s32 lastpos = 0;
 	s32 pos = 0;
+	bool lastWasRealDir=false;
 
 	while ((pos = directory.findNext('/', lastpos)) >= 0)
 	{
@@ -545,7 +546,11 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 
 		if (subdir == "../")
 		{
-			deletePathFromPath(dir, 2);
+			if (lastWasRealDir)
+				deletePathFromPath(dir, 2);
+			else
+				dir.append(subdir);
+			lastWasRealDir=false;
 		}
 		else if (subdir == "/")
 		{
@@ -554,6 +559,7 @@ io::path& CFileSystem::flattenFilename(io::path& directory, const io::path& root
 		else if (subdir != "./" )
 		{
 			dir.append(subdir);
+			lastWasRealDir=true;
 		}
 
 		lastpos = pos + 1;
