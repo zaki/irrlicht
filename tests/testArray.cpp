@@ -13,6 +13,14 @@ struct VarArray
 	core::array < int, core::irrAllocatorFast<int> > MyArray;
 };
 
+bool testSelfAssignment()
+{
+	core::array<int> myArray;
+	myArray.push_back(1);
+	myArray = myArray;
+	return myArray.size() == 1;
+}
+
 // this will (did once) simply crash when wrong, so no return value
 void crashTestFastAlloc()
 {
@@ -36,6 +44,7 @@ bool testArray(void)
 	
 	logTestString("crashTestFastAlloc\n");
 	crashTestFastAlloc();
+	allExpected &= testSelfAssignment();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");
