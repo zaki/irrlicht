@@ -247,8 +247,10 @@ public:
 
 
 	//! Assignment operator
-	void operator=(const array<T, TAlloc>& other)
+	const array<T, TAlloc>& operator=(const array<T, TAlloc>& other)
 	{
+		if (this == &other) 
+			return *this;
 		strategy = other.strategy;
 
 		if (data)
@@ -267,6 +269,8 @@ public:
 
 		for (u32 i=0; i<other.used; ++i)
 			allocator.construct(&data[i], other.data[i]); // data[i] = other.data[i];
+		
+		return *this;
 	}
 
 
