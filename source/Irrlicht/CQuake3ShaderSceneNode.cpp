@@ -147,6 +147,7 @@ void CQuake3ShaderSceneNode::loadTextures( io::IFileSystem * fileSystem )
 	}
 
 	// clear all stages and prefill empty
+	Q3Texture.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE );
 	Q3Texture.clear();
 	for ( i = 0; i != Shader->VarGroup->VariableGroup.size(); ++i )
 	{

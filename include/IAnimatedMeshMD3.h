@@ -213,7 +213,10 @@ namespace scene
 	//! holds a associative list of named quaternions
 	struct SMD3QuaternionTagList
 	{
-		SMD3QuaternionTagList () {}
+		SMD3QuaternionTagList ()
+		{
+			Container.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE );
+		}
 
 		// construct copy constructor
 		SMD3QuaternionTagList( const SMD3QuaternionTagList & copyMe )
@@ -270,7 +273,7 @@ namespace scene
 		}
 
 	private:
-		core::array < SMD3QuaternionTag, core::irrAllocator<SMD3QuaternionTag>, core::irrAllocStrategySafe > Container;
+		core::array < SMD3QuaternionTag > Container;
 	};
 
 

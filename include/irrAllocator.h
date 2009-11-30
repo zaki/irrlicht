@@ -109,62 +109,11 @@ public:
 #endif
 
 //! defines an allocation strategy
-enum EAllocStrategy
+enum eAllocStrategy
 {
 	ALLOC_STRATEGY_SAFE    = 0,
 	ALLOC_STRATEGY_DOUBLE  = 1,
-	ALLOC_STRATEGY_SQ    = 2
-};
-
-class irrAllocStrategyDouble
-{
-public:
-
-	//! Returns the new size of the buffer based on the current size.
-	const u32 getNewSize(const u32 oldSize) const
-	{		
-		return oldSize + oldSize + 1;
-	}
-
-	//! Returns the EAllocStrategy enum of this allocation strategist.
-	EAllocStrategy getAllocationStrategy() const
-	{
-		return ALLOC_STRATEGY_DOUBLE;
-	}
-};
-
-class irrAllocStrategySafe
-{
-public:
-
-	//! Returns the new size of the buffer based on the current size.
-	const u32 getNewSize(const u32 oldSize) const
-	{		
-		return oldSize + 1;
-	}
-
-	//! Returns the EAllocStrategy enum of this allocation strategist.
-	EAllocStrategy getAllocationStrategy() const
-	{
-		return ALLOC_STRATEGY_SAFE;
-	}
-};
-
-class irrAllocStrategySq
-{
-public:
-
-	//! Returns the new size of the buffer based on the current size.
-	const u32 getNewSize(const u32 oldSize) const
-	{		
-		return oldSize * oldSize + 1;
-	}
-
-	//! Returns the EAllocStrategy enum of this allocation strategist.
-	EAllocStrategy getAllocationStrategy() const
-	{
-		return ALLOC_STRATEGY_SQ;
-	}
+	ALLOC_STRATEGY_SQRT    = 2
 };
 
 

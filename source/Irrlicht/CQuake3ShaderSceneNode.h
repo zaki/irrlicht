@@ -59,7 +59,10 @@ private:
 		SQ3Texture () :
 			TextureIndex ( 0 ),
 			TextureFrequency(0.f),
-			TextureAddressMode( video::ETC_REPEAT )	{}
+			TextureAddressMode( video::ETC_REPEAT )
+			{
+				Texture.setAllocStrategy ( core::ALLOC_STRATEGY_SAFE );
+			}
 
 		quake3::tTexArray Texture;
 
@@ -68,7 +71,7 @@ private:
 		video::E_TEXTURE_CLAMP TextureAddressMode;	// Wrapping/Clamping
 	};
 
-	core::array< SQ3Texture, core::irrAllocator<SQ3Texture>, core::irrAllocStrategySafe > Q3Texture;
+	core::array< SQ3Texture > Q3Texture;
 
 	void loadTextures ( io::IFileSystem * fileSystem );
 	void addBuffer ( scene::SMeshBufferLightMap * buffer );
