@@ -139,7 +139,7 @@ namespace gui
 		will be placed after it. If the row is larger than the actual
 		number of row by more than one, it won't be created.  Note that
 		if you create a row that's not at the end, there might be
-		performance issues. 
+		performance issues.
 		\return index of inserted row. */
 		virtual u32 addRow(u32 rowIndex) = 0;
 

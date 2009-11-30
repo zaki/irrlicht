@@ -292,6 +292,8 @@ bool COpenGLSLMaterialRenderer::linkProgram()
 		return false;
 	}
 
+	// seems that some implementations use an extra null terminator
+	++maxlen;
 	c8 *buf = new c8[maxlen];
 
 	UniformInfo.clear();

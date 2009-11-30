@@ -78,10 +78,10 @@ namespace scene
 		//! recalculates the bounding box member based on the planes
 		inline void recalculateBoundingBox();
 
-		//! update the given state's matrix based on video::E_TRANSFORMATION_STATE
+		//! get the given state's matrix based on frustum E_TRANSFORMATION_STATE
 		core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state);
 
-		//! get the given state's matrix based on frustum E_TRANSFORMATION_STATE_FRUSTUM
+		//! get the given state's matrix based on frustum E_TRANSFORMATION_STATE
 		const core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state) const;
 
 		//! clips a line to the view frustum.

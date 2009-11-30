@@ -101,7 +101,32 @@ Changes in 1.7
 ----------------
 Changes in 1.6.1
 
+ - !!API change!! Disabled AntiAliasing of Lines in material default
+   Please enable this manually per material when sure that it won't lead to SW rendering.
+
+ - IGUIComboBox: clicking on the statictext displaying the active selection does now close and open listbox correctly. (Bug found by Reiko)
+
+ - Scrollbuttons in IGUITabControl adapt now to tab-height.
+
+ - Fix texturing of cylinder mesh
+
+ - Fix modal dialog position (found by LoneBoco: http://sourceforge.net/tracker/?func=detail&aid=2900266&group_id=74339&atid=540676)
+
+ - Fix DMF loading
+
+ - Fixing left+right special keys (ctrl, shift, alt) on Win32 (thanks to pc0de for good patch-ideas).
+
+ - Make stringarrays for enums in IGUISkin a little safer
+
+ - Add support for keys KEY_PRINT, KEY_HOME (on numpad) and KEY_NUMLOCK on Linux.
+
+ - Fix material handling in createMeshWith1TCoords
+
  - Fix another (OldValue == NewValue) before drop()/grap(), this time in CTextureAttribute::setTexture.
+
+ - Fix LIGHTMAP_LIGHTING for D3D drivers.
+
+ - AntiAliasing disabled for debug render elements.
 
  - Bugfix: CGUIToolBar::addButton does no longer mess up when no image is set and does now actually work with the text.
 
@@ -760,6 +785,12 @@ Changes in 1.6 (23.09.2009)
 
 -------------------------------------
 Changes in version 1.5.2 (??.??.2009)
+
+ - Properly check boundaries in getFont and setFont.
+
+ - Reinit values in the driver when scene manager is cleared.
+
+ - Normals handling fixed in createMeshWithTangents, existing normals are not always destroyed now.
 
  - Fix terrain smoothing, bug found by loverlinfish
 

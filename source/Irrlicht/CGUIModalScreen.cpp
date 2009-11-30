@@ -17,7 +17,7 @@ namespace gui
 
 //! constructor
 CGUIModalScreen::CGUIModalScreen(IGUIEnvironment* environment, IGUIElement* parent, s32 id)
-: IGUIElement(EGUIET_MODAL_SCREEN, environment, parent, id, parent->getAbsolutePosition()),
+: IGUIElement(EGUIET_MODAL_SCREEN, environment, parent, id, core::recti(0, 0, parent->getAbsolutePosition().getWidth(), parent->getAbsolutePosition().getHeight()) ),
 	MouseDownTime(0)
 {
 	#ifdef _DEBUG

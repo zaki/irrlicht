@@ -198,7 +198,9 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 			if (event.KeyInput.Key == KEY_RETURN || event.KeyInput.Key == KEY_SPACE)
 			{
 				if (!event.KeyInput.PressedDown)
+				{
 					openCloseMenu();
+				}
 
 				ListButton->setPressed(ListBox == 0);
 
@@ -251,8 +253,7 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 				if (ListBox &&
 					(Environment->hasFocus(ListBox) || ListBox->isMyChild(event.GUIEvent.Caller) ) &&
 					event.GUIEvent.Element != this &&
-					event.GUIEvent.Element != ListButton &&
-					event.GUIEvent.Element != ListBox &&
+					!isMyChild(event.GUIEvent.Element) &&
 					!ListBox->isMyChild(event.GUIEvent.Element))
 				{
 					openCloseMenu();
@@ -303,7 +304,9 @@ bool CGUIComboBox::OnEvent(const SEvent& event)
 					if (!(ListBox &&
 							ListBox->getAbsolutePosition().isPointInside(p) &&
 							ListBox->OnEvent(event)))
+					{
 						openCloseMenu();
+					}
 					return true;
 				}
 			case EMIE_MOUSE_WHEEL:
