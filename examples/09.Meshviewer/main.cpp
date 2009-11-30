@@ -35,7 +35,7 @@ core::stringw Caption;
 scene::ISceneNode* Model = 0;
 scene::ISceneNode* SkyBox = 0;
 bool Octree=false;
-bool useLight=false;
+bool UseLight=false;
 
 scene::ICameraSceneNode* Camera[2] = {0, 0};
 
@@ -234,8 +234,8 @@ void loadModel(const c8* fn)
 		animModel->setAnimationSpeed(30);
 		Model = animModel;
 	}
-	Model->setMaterialFlag(video::EMF_LIGHTING, useLight);
-	Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, useLight);
+	Model->setMaterialFlag(video::EMF_LIGHTING, UseLight);
+	Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, UseLight);
 //	Model->setMaterialFlag(video::EMF_BACK_FACE_CULLING, false);
 	Model->setDebugDataVisible(scene::EDS_OFF);
 
@@ -327,42 +327,8 @@ public:
 		if (event.EventType == EET_KEY_INPUT_EVENT &&
 			event.KeyInput.PressedDown == false)
 		{
-			if (event.KeyInput.Key == irr::KEY_ESCAPE)
-			{
-				if (Device)
-				{
-					scene::ICameraSceneNode * camera =
-						Device->getSceneManager()->getActiveCamera();
-					if (camera)
-					{
-						camera->setInputReceiverEnabled( !camera->isInputReceiverEnabled() );
-					}
-					return true;
-				}
-			}
-			else if (event.KeyInput.Key == irr::KEY_F1)
-			{
-				if (Device)
-				{
-					IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_POSITION_TEXT);
-					if (elem)
-						elem->setVisible(!elem->isVisible());
-				}
-			}
-			else if (event.KeyInput.Key == irr::KEY_KEY_M)
-			{
-				if (Device)
-					Device->minimizeWindow();
-			}
-			else if (event.KeyInput.Key == irr::KEY_KEY_L)
-			{
-				useLight=!useLight;
-				if (Model)
-				{
-					Model->setMaterialFlag(video::EMF_LIGHTING, useLight);
-					Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, useLight);
-				}
-			}
+			if ( OnKeyUp(event.KeyInput.Key) )
+				return true;
 		}
 
 		if (event.EventType == EET_GUI_EVENT)
@@ -467,6 +433,52 @@ public:
 
 		return false;
 	}
+
+
+	/*
+		Handle key-up events
+	*/
+	bool OnKeyUp(irr::EKEY_CODE keyCode)
+	{
+		if (keyCode == irr::KEY_ESCAPE)
+		{
+			if (Device)
+			{
+				scene::ICameraSceneNode * camera =
+					Device->getSceneManager()->getActiveCamera();
+				if (camera)
+				{
+					camera->setInputReceiverEnabled( !camera->isInputReceiverEnabled() );
+				}
+				return true;
+			}
+		}
+		else if (keyCode == irr::KEY_F1)
+		{
+			if (Device)
+			{
+				IGUIElement* elem = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_POSITION_TEXT);
+				if (elem)
+					elem->setVisible(!elem->isVisible());
+			}
+		}
+		else if (keyCode == irr::KEY_KEY_M)
+		{
+			if (Device)
+				Device->minimizeWindow();
+		}
+		else if (keyCode == irr::KEY_KEY_L)
+		{
+			UseLight=!UseLight;
+			if (Model)
+			{
+				Model->setMaterialFlag(video::EMF_LIGHTING, UseLight);
+				Model->setMaterialFlag(video::EMF_NORMALIZE_NORMALS, UseLight);
+			}
+		}
+		return false;
+	}
+
 
 	/*
 		Handle "menu item clicked" events.
