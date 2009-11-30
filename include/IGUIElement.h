@@ -348,7 +348,7 @@ public:
 	\param point: The point at which to find a GUI element.
 	\return The topmost GUI element at that point, or 0 if there are
 	no candidate elements at this point.
-	 */
+	*/
 	IGUIElement* getElementFromPoint(const core::position2d<s32>& point)
 	{
 		IGUIElement* target = 0;

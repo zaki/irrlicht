@@ -1642,3 +1642,860 @@ Split hardware mapping hint into vertex and index part
 vector2d.h
 Fix angle calculation for integer vectors
 
+Changes for Version 1.5.2
+-------------------------
+Even less visible changes have been made in this version. Only the automatic Solaris OS recognition has changed, so make sure you have all things defined properly if you compile for Solaris. And the float parser bugfix is a visible change, though non-interfering for existing code.
+
+Changes for Version 1.6.0
+-------------------------
+This releases has many changes in method signatures. The most obvious ones are signedness changes from s32 to u32. Since many templates won't accept both types, you need to change the ypes manually in your code. The other major change is from many different types of strings to the new class io::path. These changes should be transparent to the app, unless you need proper overrides in derived classes.
+Finally, some deprecated methods have been removed, and some were simply renamed. Just check the API if some methods is not found anymore.
+
+IMeshSceneNode.h
+Added default parameters for identity transformation
+	IMeshSceneNode(ISceneNode* parent, ISceneManager* mgr, s32 id,
+		const core::vector3df& position = core::vector3df(0,0,0),
+		const core::vector3df& rotation = core::vector3df(0,0,0),
+		const core::vector3df& scale = core::vector3df(1,1,1))
+
+path.h
+This is a new type, which handles stuff with UTF file systems.
+typedef core::string<fschar_t> io::path;
+
+ESceneNodeTypes.h
+New scene node identifiers
+	ESNT_SKY_DOME       = MAKE_IRR_ID('s','k','y','d'),
+	ESNT_Q3SHADER_SCENE_NODE  = MAKE_IRR_ID('q','3','s','h'),
+	ESNT_VOLUME_LIGHT  = MAKE_IRR_ID('v','o','l','l'),
+
+IGUIListBox.h
+New methods
+	virtual void setSelected(const wchar_t *item) = 0;
+	virtual void setItemHeight( s32 height ) = 0;
+	virtual void setDrawBackground(bool draw) = 0;
+
+ITexture.h
+New texture generation flag for burnings video driver
+	//! Allow the Driver to use Non-Power-2-Textures
+	ETCF_ALLOW_NON_POWER_2 = 0x00000040,
+Parameter change (now using path type instead of C-strings)
+	ITexture(const io::path& name)
+Signedness change
+	virtual const core::dimension2d<u32>& getOriginalSize() const = 0;
+	virtual const core::dimension2d<u32>& getSize() const = 0;
+New method
+	virtual bool hasAlpha() const
+Parameter change (now using path type instead of stringc)
+	const io::path& getName() const
+
+ILightManager.h
+This is a new interface for the light manager
+	class ILightManager : public IReferenceCounted
+
+IGUIEditBox.h
+Signedness change
+	virtual core::dimension2du getTextDimension() = 0;
+
+ITriangleSelector.h
+New method
+	virtual const ISceneNode* getSceneNodeForTriangle(u32 triangleIndex) const = 0;
+
+IMeshManipulator.h
+New methods
+	virtual void makePlanarTextureMapping(scene::IMeshBuffer* meshbuffer, f32 resolution=0.001f) const =0;
+	virtual void makePlanarTextureMapping(scene::IMeshBuffer* buffer, f32 resolutionS, f32 resolutionT, u8 axis, const core::vector3df& offset) const =0;
+	virtual IMesh* createMeshWith1TCoords(IMesh* mesh) const = 0;
+
+SceneParameters.h
+Removed parameter
+	const c8* const DMF_USE_MATERIALS_DIRS = "DMF_MaterialsDir";
+New parameters
+	const c8* const DMF_IGNORE_MATERIALS_DIRS = "DMF_IgnoreMaterialsDir";
+	const c8* const OBJ_LOADER_IGNORE_MATERIAL_FILES = "OBJ_IgnoreMaterialFiles";
+	const c8* const B3D_LOADER_IGNORE_MIPMAP_FLAG = "B3D_IgnoreMipmapFlag";
+	const c8* const DEBUG_NORMAL_LENGTH = "DEBUG_Normal_Length";
+	const c8* const DEBUG_NORMAL_COLOR = "DEBUG_Normal_Color";
+
+SViewFrustum.h
+Removed method (use getTransform)
+	void setTransformState( video::E_TRANSFORMATION_STATE state);
+New methods
+	core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state);
+	const core::matrix4& getTransform( video::E_TRANSFORMATION_STATE state) const;
+	bool clipLine(core::line3d<f32>& line) const;
+
+IFileList.h
+Changed parameters (to io::path)
+	virtual const io::path& getFileName(u32 index) const = 0;
+	virtual const io::path& getFullFileName(u32 index) const = 0;
+New methods
+	virtual u32 getFileSize(u32 index) const = 0;
+	virtual s32 findFile(const io::path& filename, bool isFolder=false) const = 0;
+	virtual const io::path& getPath() const = 0;
+
+coreutil.h
+New methods
+	s32 isFileExtension(const io::path& filename,
+		const io::path& ext0, const io::path& ext1, const io::path& ext2)
+	bool hasFileExtension(const io::path& filename,
+		const io::path& ext0, const io::path& ext1 = "", const io::path& ext2 = "")
+	stringw& cutFilenameExtension ( stringw &dest, const stringw &source )
+	core::stringw& deletePathFromFilename(core::stringw& filename)
+	core::stringc& deletePathFromFilename(core::stringc& filename)
+	io::path& deletePathFromPath(io::path& filename, s32 pathCount)
+	s32 isInSameDirectory ( const io::path& path, const io::path& file )
+
+IGUIComboBox.h
+New methods
+	virtual u32 getItemData(u32 idx) const = 0;
+	virtual s32 getIndexForItemData(u32 data ) const = 0;
+New parameter
+	virtual u32 addItem(const wchar_t* text, u32 data = 0) = 0;
+
+irrArray.h
+New allocation scheme member
+	array()
+Use overload instead of different name
+	s32 binary_search(const T& element) const
+New method
+	void setAllocStrategy ( eAllocStrategy newStrategy = ALLOC_STRATEGY_DOUBLE )
+	s32 binary_search_multi(const T& element, s32 &last)
+
+IrrCompileConfig.h
+New compiler flags
+	#define _IRR_MATERIAL_MAX_TEXTURES_ 4
+	//! Define _IRR_D3D_USE_LEGACY_HLSL_COMPILER to enable the old HLSL compiler in recent DX SDKs
+	#define BURNINGVIDEO_RENDERER_CE
+	#define IGNORE_DEPRECATED_WARNING
+	#define _IRR_COMPILE_WITH_PLY_LOADER_
+	#define _IRR_COMPILE_WITH_PLY_WRITER_
+	#define _IRR_COMPILE_WITH_RGB_LOADER_
+	#define __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
+	#define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
+	#define __IRR_COMPILE_WITH_PAK_ARCHIVE_LOADER_
+	#define __IRR_COMPILE_WITH_TAR_ARCHIVE_LOADER_
+	//! _IRR_WINDOWS_CE_PLATFORM_ for Windows CE
+	//! _IRR_COMPILE_WITH_WINDOWS_DEVICE_ for Windows API based device
+	//! _IRR_COMPILE_WITH_WINDOWS_CE_DEVICE_ for Windows CE API based device
+	//! _IRR_COMPILE_WITH_OSX_DEVICE_ for Cocoa native windowing on OSX
+	//! _IRR_COMPILE_WITH_X11_DEVICE_ for Linux X11 based device
+	//! _IRR_COMPILE_WITH_SDL_DEVICE_ for platform independent SDL framework
+	//! _IRR_COMPILE_WITH_CONSOLE_DEVICE_ for no windowing system, used as a fallback
+Removed compiler flags
+	//! _IRR_USE_SDL_DEVICE_ for platform independent SDL framework
+	//! _IRR_USE_WINDOWS_DEVICE_ for Windows API based device
+	//! _IRR_USE_WINDOWS_CE_DEVICE_ for Windows CE API based device
+	//! _IRR_USE_LINUX_DEVICE_ for X11 based device
+	//! _IRR_USE_OSX_DEVICE_ for Cocoa native windowing on OSX
+Old compilers rejected
+	#  error "Only Microsoft Visual Studio 7.0 and later are supported."
+Force symbol export in shared libraries built with gcc.
+	#define IRRLICHT_API __attribute__ ((visibility("default")))
+
+IGUIFileOpenDialog.h
+New method
+	virtual const io::path& getDirectoryName() = 0;
+
+EDeviceTypes.h
+New enum for multi-device support
+	enum E_DEVICE_TYPE
+
+IMeshLoader.h
+Changed parameter to use io::path instead of C strings
+	virtual bool isALoadableFileExtension(const io::path& filename) const = 0;
+
+IAnimatedMeshSceneNode.h
+Changed return value to pointer type
+	virtual const SMD3QuaternionTag* getMD3TagTransformation( const core::stringc & tagname) = 0;
+
+ISceneManager.h
+New enum values and numbering
+	enum E_SCENE_NODE_RENDER_PASS
+		ESNRP_NONE =0,
+		ESNRP_TRANSPARENT =16,
+		ESNRP_TRANSPARENT_EFFECT =32,
+Changed parameter to use io::path instead of C strings
+	virtual IAnimatedMesh* getMesh(const io::path& filename) = 0;
+New methods
+	virtual io::IFileSystem* getFileSystem() = 0;
+	virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node) = 0;
+	virtual const c8* getAnimatorTypeName(ESCENE_NODE_ANIMATOR_TYPE type) = 0;
+	virtual ISkinnedMesh* createSkinnedMesh() = 0;
+	virtual void setLightManager(ILightManager* lightManager) = 0;
+	virtual const IGeometryCreator* getGeometryCreator(void) const = 0;
+	virtual bool isCulled(const ISceneNode* node) const =0;
+Changed return type to IMeshSceneNode
+	virtual IMeshSceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false) = 0;
+	virtual IMeshSceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
+			s32 id=-1, s32 minimalPolysPerNode=256, bool alsoAddIfMeshPointerZero=false) = 0;
+	virtual IMeshSceneNode* addQuake3SceneNode(IMeshBuffer* meshBuffer, const quake3::IShader * shader,
+			ISceneNode* parent=0, s32 id=-1) = 0;
+New parameter invertMouse
+	virtual ICameraSceneNode* addCameraSceneNodeFPS(ISceneNode* parent = 0,
+			f32 rotateSpeed = 100.0f, f32 moveSpeed = 0.5f, s32 id=-1,
+			SKeyMap* keyMapArray=0, s32 keyMapSize=0, bool noVerticalMovement=false,
+			f32 jumpSpeed = 0.f, bool invertMouse=false) = 0;
+New parameter radius
+	virtual ISceneNode* addSkyDomeSceneNode(video::ITexture* texture,
+			u32 horiRes=16, u32 vertRes=8,
+			f32 texturePercentage=0.9, f32 spherePercentage=2.0,f32 radius = 1000.f,
+			ISceneNode* parent=0, s32 id=-1) = 0;
+Changed to use io::path instead of C strings
+	virtual ITerrainSceneNode* addTerrainSceneNode(
+			const io::path& heightMapFileName,
+			ISceneNode* parent=0, s32 id=-1,
+	virtual IAnimatedMesh* addHillPlaneMesh(const io::path& name,
+			const core::dimension2d<f32>& tileSize, const core::dimension2d<u32>& tileCount,
+			video::SMaterial* material = 0, f32 hillHeight = 0.0f,
+			const core::dimension2d<f32>& countHills = core::dimension2d<f32>(0.0f, 0.0f),
+			const core::dimension2d<f32>& textureRepeatCount = core::dimension2d<f32>(1.0f, 1.0f)) = 0;
+	virtual IAnimatedMesh* addArrowMesh(const io::path& name,
+				video::SColor vtxColor0=0xFFFFFFFF,
+				video::SColor vtxColor1=0xFFFFFFFF,
+				u32 tesselationCylinder=4, u32 tesselationCone=8,
+	virtual IAnimatedMesh* addSphereMesh(const io::path& name,
+				f32 radius=5.f, u32 polyCountX = 16,
+				u32 polyCountY = 16) = 0;
+	virtual bool saveScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+	virtual bool loadScene(const io::path& filename, ISceneUserDataSerializer* userDataSerializer=0) = 0;
+Changed to use io::path instead of C strings and signedness change
+	virtual IAnimatedMesh* addTerrainMesh(const io::path& meshname,
+			video::IImage* texture, video::IImage* heightmap,
+			const core::dimension2d<f32>& stretchSize = core::dimension2d<f32>(10.0f,10.0f),
+			f32 maxHeight=200.0f,
+			const core::dimension2d<u32>& defaultVertexBlockSize = core::dimension2d<u32>(64,64)) = 0;
+New method
+	virtual IAnimatedMesh* addVolumeLightMesh(const io::path& name,
+			const u32 SubdivideU = 32, const u32 SubdivideV = 32,
+			const video::SColor FootColor = video::SColor(51, 0, 230, 180),
+			const video::SColor TailColor = video::SColor(0, 0, 0, 0)) = 0;
+Constification of method
+	virtual ICameraSceneNode* getActiveCamera() const =0;
+New parameters
+	virtual ISceneNodeAnimator* createFlyCircleAnimator(
+				const core::vector3df& center=core::vector3df(0.f,0.f,0.f),
+				f32 radius=100.f, f32 speed=0.001f,
+				const core::vector3df& direction=core::vector3df(0.f, 1.f, 0.f),
+				f32 startPosition = 0.f,
+				f32 radiusEllipsoid = 0.f) = 0;
+	virtual ISceneNodeAnimator* createFlyStraightAnimator(const core::vector3df& startPoint,
+			const core::vector3df& endPoint, u32 timeForWay, bool loop=false, bool pingpong = false) = 0;
+
+ISceneNodeAnimatorCollisionResponse.h
+New interface
+	class ICollisionCallback : public virtual IReferenceCounted
+New methods for ISceneNodeAnimatorCollisionResponse
+	virtual void setAnimateTarget ( bool enable ) = 0;
+	virtual bool getAnimateTarget () const = 0;
+	virtual void setTargetNode(ISceneNode * node) = 0;
+	virtual ISceneNode* getTargetNode(void) const = 0;
+	virtual bool collisionOccurred() const = 0;
+	virtual const core::vector3df & getCollisionPoint() const = 0;
+	virtual const core::triangle3df & getCollisionTriangle() const = 0;
+	virtual const core::vector3df & getCollisionResultPosition(void) const = 0;
+	virtual const ISceneNode* getCollisionNode(void) const = 0;
+	virtual void setCollisionCallback(ICollisionCallback* callback) = 0;
+
+ILightSceneNode.h
+New methods
+	virtual void setVisible(bool isVisible) = 0;
+
+EMeshWriterEnums.h
+New enums
+	EMWT_PLY          = MAKE_IRR_ID('p','l','y',0)
+	EMWF_WRITE_BINARY = 0x4
+
+ISceneNodeAnimator.h
+New method
+	virtual bool hasFinished(void) const
+
+SMaterialLayer.h
+Changed types
+	u8 TextureWrap;
+	bool BilinearFilter:1;
+	bool TrilinearFilter:1;
+	u8 AnisotropicFilter;
+New member
+	s8 LODBias;
+
+IVideoModeList.h
+Signedness change
+	virtual core::dimension2d<u32> getVideoModeResolution(s32 modeNumber) const = 0;
+	virtual core::dimension2d<u32> getVideoModeResolution(const core::dimension2d<u32>& minSize, const core::dimension2d<u32>& maxSize) const = 0;
+	virtual const core::dimension2d<u32>& getDesktopResolution() const = 0;
+
+EMaterialFlags.h
+Enum values changed (all renumbered)
+
+ISkinnedMesh.h
+Renamed methods (was create... before, but these methods grab the things they create)
+	virtual SSkinMeshBuffer* addMeshBuffer() = 0;
+	virtual SJoint* addJoint(SJoint *parent=0) = 0;
+	virtual SWeight* addWeight(SJoint *joint) = 0;
+	virtual SPositionKey* addPositionKey(SJoint *joint) = 0;
+	virtual SScaleKey* addScaleKey(SJoint *joint) = 0;
+	virtual SRotationKey* addRotationKey(SJoint *joint) = 0;
+
+SLight.h
+Type change
+	bool CastShadows:1;
+
+IGUITreeView.h
+New element
+// written by Reinhard Ostermeier, reinhard@nospam.r-ostermeier.de
+	class IGUITreeView : public IGUIElement
+
+IAnimatedMeshMD3.h
+Renamed class (from SMD3QuaterionTag)
+	struct SMD3QuaternionTag
+
+IGUIEnvironment.h
+New methods
+	virtual IGUIImageList* createImageList( video::ITexture* texture,
+			core::dimension2d<s32>	imageSize, bool useAlphaChannel ) = 0;
+	virtual IGUITreeView* addTreeView(const core::rect<s32>& rectangle,
+		IGUIElement* parent=0, s32 id=-1, bool drawBackground=false,
+		bool scrollBarVertical = true, bool scrollBarHorizontal = false) = 0;
+Changed parameters to use io::path (instead of C strings)
+	virtual IGUIFont* getFont(const io::path& filename) = 0;
+	virtual IGUISpriteBank* getSpriteBank(const io::path& filename) = 0;
+	virtual IGUISpriteBank* addEmptySpriteBank(const io::path& name) = 0;
+	virtual bool saveGUI(const io::path& filename, IGUIElement* start=0) = 0;
+	virtual bool loadGUI(const io::path& filename, IGUIElement* parent=0) = 0;
+New parameter "border"
+	virtual IGUISpinBox* addSpinBox(const wchar_t* text, const core::rect<s32>& rectangle,
+		bool border=true,IGUIElement* parent=0, s32 id=-1) = 0;
+
+IQ3Shader.h
+Made non-const
+	static core::stringc irrEmptyStringc("");
+New enum values
+	enum eQ3MeshIndex
+		E_Q3_MESH_FOG,
+		E_Q3_MESH_UNRESOLVED,
+
+IGeometryCreator.h
+New interface
+	class IGeometryCreator : public IReferenceCounted
+
+IFileArchive.h
+New interfaces
+	class IFileArchive : public virtual IReferenceCounted
+	class IArchiveLoader : public virtual IReferenceCounted
+
+IFileSystem.h
+Changed parameters to use io::path (instead of C strings/stringc)
+	virtual IReadFile* createAndOpenFile(const path& filename) =0;
+	virtual IReadFile* createMemoryReadFile(void* memory, s32 len, const path& fileName, bool deleteMemoryWhenDropped=false) =0;
+	virtual IWriteFile* createAndWriteFile(const path& filename, bool append=false) =0;
+	virtual const path& getWorkingDirectory() =0;
+	virtual bool changeWorkingDirectoryTo(const path& newDirectory) =0;
+	virtual path getAbsolutePath(const path& filename) const =0;
+	virtual path getFileDir(const path& filename) const =0;
+	virtual path getFileBasename(const path& filename, bool keepExtension=true) const =0;
+	virtual bool existFile(const path& filename) const =0;
+	virtual IXMLReader* createXMLReader(const path& filename) =0;
+	virtual IXMLReaderUTF8* createXMLReaderUTF8(const path& filename) =0;
+	virtual IXMLWriter* createXMLWriter(const path& filename) =0;
+New methods
+	virtual IReadFile* createLimitReadFile(const path& fileName,
+			IReadFile* alreadyOpenedFile, long pos, long areaSize) =0;
+	virtual IWriteFile* createMemoryWriteFile(void* memory, s32 len, const path& fileName, bool deleteMemoryWhenDropped=false) =0;
+	virtual bool addFileArchive(const path& filename, bool ignoreCase=true, bool ignorePaths=true,
+		E_FILE_ARCHIVE_TYPE archiveType=EFAT_UNKNOWN) =0;
+	virtual void addArchiveLoader(IArchiveLoader* loader) =0;
+	virtual u32 getFileArchiveCount() const =0;
+	virtual bool removeFileArchive(u32 index) =0;
+	virtual bool removeFileArchive(const path& filename) =0;
+	virtual bool moveFileArchive(u32 sourceIndex, s32 relative) =0;
+	virtual IFileArchive* getFileArchive(u32 index) =0;
+	virtual path& flattenFilename(path& directory, const path& root="/") const =0;
+	virtual EFileSystemType setFileListSystem(EFileSystemType listType) =0;
+Deprecate methods
+	virtual bool addZipFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
+	virtual bool addFolderFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
+	virtual bool addPakFileArchive(const c8* filename, bool ignoreCase=true, bool ignorePaths=true)
+Constification of method
+	virtual IFileList* createFileList() =0;
+
+IrrlichtDevice.h
+Renamed method (from setResizeAble)
+	virtual void setResizable(bool resize=false) = 0;
+New methods
+	virtual void minimizeWindow() =0;
+	virtual void maximizeWindow() =0;
+	virtual void restoreWindow() =0;
+	virtual bool setGammaRamp(f32 red, f32 green, f32 blue,
+			f32 relativebrightness, f32 relativecontrast) =0;
+	virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
+			f32 &brightness, f32 &contrast) =0;
+	virtual E_DEVICE_TYPE getType() const = 0;
+
+irrMath.h
+Renamed from ROUNDING_ERROR_32
+	const f32 ROUNDING_ERROR_f32 = 0.000001f;
+Renamed from ROUNDING_ERROR_64
+	const f64 ROUNDING_ERROR_f64 = 0.00000001;
+New constant
+	const s32 ROUNDING_ERROR_S32 = 1;
+New methods
+	bool isnotzero(const f32 a, const f32 tolerance = ROUNDING_ERROR_f32)
+	u16 if_c_a_else_b ( const s16 condition, const u16 a, const u16 b )
+	f32 squareroot(const f32 f)
+	f64 squareroot(const f64 f)
+	s32 squareroot(const s32 f)
+	f64 reciprocal_squareroot(const f64 x)
+	s32 reciprocal_squareroot(const s32 x)
+	f64 reciprocal ( const f64 f )
+
+IGPUProgrammingServices.h
+Changed parameters to use io::path
+	virtual s32 addHighLevelShaderMaterialFromFiles(
+		const io::path& vertexShaderProgramFileName,
+		const c8* vertexShaderEntryPointName = "main",
+		E_VERTEX_SHADER_TYPE vsCompileTarget = EVST_VS_1_1,
+		const io::path& pixelShaderProgramFileName = "",
+		const c8* pixelShaderEntryPointName = "main",
+		E_PIXEL_SHADER_TYPE psCompileTarget = EPST_PS_1_1,
+		IShaderConstantSetCallBack* callback = 0,
+	virtual s32 addShaderMaterialFromFiles(const io::path& vertexShaderProgramFileName,
+		const io::path& pixelShaderProgramFileName,
+		IShaderConstantSetCallBack* callback = 0,
+		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
+		s32 userData = 0) = 0;
+
+ISceneNode.h
+New method
+	virtual bool isTrulyVisible() const
+
+IEventReceiver.h
+New enum values
+	EMIE_MOUSE_DOUBLE_CLICK,
+	EMIE_MOUSE_TRIPLE_CLICK,
+	EGET_DIRECTORY_SELECTED,
+	EGET_EDITBOX_CHANGED,
+	EGET_EDITBOX_MARKING_CHANGED,
+	EGET_TREEVIEW_NODE_DESELECT,
+	EGET_TREEVIEW_NODE_SELECT,
+	EGET_TREEVIEW_NODE_EXPAND,
+	EGET_TREEVIEW_NODE_COLLAPS,
+	EGET_COUNT
+New enum
+	enum E_MOUSE_BUTTON_STATE_MASK
+New members
+	bool Shift:1;
+	bool Control:1;
+	u32 ButtonStates;
+New methods
+	bool isLeftPressed() const { return 0 != ( ButtonStates & EMBSM_LEFT ); }
+	bool isRightPressed() const { return 0 != ( ButtonStates & EMBSM_RIGHT ); }
+	bool isMiddlePressed() const { return 0 != ( ButtonStates & EMBSM_MIDDLE ); }
+Types changed
+	bool PressedDown:1;
+	bool Shift:1;
+	bool Control:1;
+
+IGUISpriteBank.h
+New method
+	virtual void draw2DSpriteBatch(const core::array<u32>& indices, const core::array<core::position2di>& pos,
+		const core::rect<s32>* clip=0,
+		const video::SColor& color= video::SColor(255,255,255,255),
+		u32 starttime=0, u32 currenttime=0,
+		bool loop=true, bool center=false) = 0;
+
+SMaterial.h
+New enums
+	enum E_COMPARISON_FUNC
+	enum E_COLOR_PLANE
+	enum E_ALPHA_SOURCE
+	enum E_ANTI_ALIASING_MODE
+	enum E_COLOR_MATERIAL
+New parameters
+	inline f32 pack_texureBlendFunc ( const E_BLEND_FACTOR srcFact, const E_BLEND_FACTOR dstFact, const E_MODULATE_FUNC modulate=EMFN_MODULATE_1X, const u32 alphaSource=EAS_TEXTURE )
+	inline void unpack_texureBlendFunc ( E_BLEND_FACTOR &srcFact, E_BLEND_FACTOR &dstFact,
+		E_MODULATE_FUNC &modulo, u32& alphaSource, const f32 param )
+New methods
+	inline bool textureBlendFunc_hasAlpha ( const E_BLEND_FACTOR factor )
+Default value set elsewhere now (see IrrCompileConfig.h)
+	const u32 MATERIAL_MAX_TEXTURES = _IRR_MATERIAL_MAX_TEXTURES_;
+Types changed
+		u8 ZBuffer;
+		bool Wireframe:1;
+		bool PointCloud:1;
+		bool GouraudShading:1;
+		bool Lighting:1;
+		bool ZWriteEnable:1;
+		bool BackfaceCulling:1;
+		bool FrontfaceCulling:1;
+		bool FogEnable:1;
+		bool NormalizeNormals:1;
+New members
+		u8 AntiAliasing;
+		u8 ColorMask:4;
+		u8 ColorMaterial:3;
+New constant
+	IRRLICHT_API extern SMaterial IdentityMaterial;
+
+IGUISkin.h
+New enum values
+	EGDS_TITLEBARTEXT_DISTANCE_X,
+	EGDS_TITLEBARTEXT_DISTANCE_Y,
+
+quaternion.h
+New parameters
+	void getMatrix( matrix4 &dest, const vector3df &translation ) const;
+New method
+	void getMatrixCenter( matrix4 &dest, const vector3df &center, const vector3df &translation ) const;
+
+ISceneNodeAnimatorCameraFPS.h
+New method
+	virtual void setInvertMouse(bool invert) = 0;
+
+IImage.h
+New enum values
+	/** Floating Point formats. The following formats may only be used for render target textures. */
+	ECF_R16F,
+	ECF_G16R16F,
+	ECF_A16B16G16R16F,
+	ECF_R32F,
+	ECF_G32R32F,
+	ECF_A32B32G32R32F,
+	ECF_UNKNOWN
+Signedness change
+	virtual const core::dimension2d<u32>& getDimension() const = 0;
+	virtual void copyToScaling(void* target, u32 width, u32 height, ECOLOR_FORMAT format=ECF_A8R8G8B8, u32 pitch=0) =0;
+New parameter
+	virtual void setPixel(u32 x, u32 y, const SColor &color, bool blend = false ) = 0;
+New method
+	virtual void copyToScalingBoxFilter(IImage* target, s32 bias = 0, bool blend = false) = 0;
+	static u32 getBitsPerPixelFromFormat(const ECOLOR_FORMAT format)
+	static bool isRenderTargetOnlyFormat(const ECOLOR_FORMAT format)
+
+IVideoDriver.h
+New enum values (only existing if _IRR_MATERIAL_MAX_TEXTURES_ large enough)
+	ETS_TEXTURE_4
+	ETS_TEXTURE_5
+	ETS_TEXTURE_6
+	ETS_TEXTURE_7
+New enums
+	enum E_RENDER_TARGET
+	enum E_FOG_TYPE
+New type
+	struct SOverrideMaterial
+New methods
+	virtual u32 getImageLoaderCount() const = 0;
+	virtual IImageLoader* getImageLoader(u32 n) = 0;
+	virtual u32 getImageWriterCount() const = 0;
+	virtual IImageWriter* getImageWriter(u32 n) = 0;
+	virtual bool setRenderTarget(E_RENDER_TARGET target, bool clearTarget=true,
+		bool clearZBuffer=true, SColor color=video::SColor(0,0,0,0)) =0;
+	virtual void draw2DVertexPrimitiveList(const void* vertices, u32 vertexCount,
+		const void* indexList, u32 primCount,
+		E_VERTEX_TYPE vType=EVT_STANDARD,
+		scene::E_PRIMITIVE_TYPE pType=scene::EPT_TRIANGLES,
+		E_INDEX_TYPE iType=EIT_16BIT) =0;
+	virtual void draw2DImageBatch(const video::ITexture* texture,
+		const core::array<core::position2d<s32> >& positions,
+		const core::array<core::rect<s32> >& sourceRects,
+		const core::rect<s32>* clipRect=0,
+		SColor color=SColor(255,255,255,255),
+		bool useAlphaChannelOfTexture=false) =0;
+	virtual void turnLightOn(s32 lightIndex, bool turnOn) =0;
+	virtual bool writeImageToFile(IImage* image, io::IWriteFile* file, u32 param =0) =0;
+	virtual IImage* createImage(ITexture* texture,
+		const core::position2d<s32>& pos, const core::dimension2d<u32>& size) =0;
+	virtual void setMinHardwareBufferVertexCount(u32 count) =0;
+	virtual SOverrideMaterial& getOverrideMaterial() =0;
+Changed parameters to use io::path
+	virtual ITexture* getTexture(const io::path& filename) = 0;
+	virtual void renameTexture(ITexture* texture, const io::path& newName) = 0;
+	virtual ITexture* addTexture(const io::path& name, IImage* image) = 0;
+	virtual IImage* createImageFromFile(const io::path& filename) = 0;
+	virtual bool writeImageToFile(IImage* image, const io::path& filename, u32 param = 0) = 0;
+	virtual video::ITexture* findTexture(const io::path& filename) = 0;
+Changed signedness
+	virtual ITexture* addTexture(const core::dimension2d<u32>& size,
+		const io::path& name, ECOLOR_FORMAT format = ECF_A8R8G8B8) = 0;
+	virtual const core::dimension2d<u32>& getScreenSize() const =0;
+	virtual const core::dimension2d<u32>& getCurrentRenderTargetSize() const =0;
+	virtual IImage* createImageFromData(ECOLOR_FORMAT format,
+		const core::dimension2d<u32>& size, void *data,
+		bool ownForeignMemory=false,
+		bool deleteMemory = true) =0;
+	virtual IImage* createImage(ECOLOR_FORMAT format, const core::dimension2d<u32>& size) =0;
+	virtual IImage* createImage(IImage* imageToCopy,
+		const core::position2d<s32>& pos,
+		const core::dimension2d<u32>& size) =0;
+	virtual void OnResize(const core::dimension2d<u32>& size) =0;
+Changed signedness and usage of io::path
+	virtual ITexture* addRenderTargetTexture(const core::dimension2d<u32>& size,
+		const io::path& name = "rt", const ECOLOR_FORMAT format = ECF_UNKNOWN) =0;
+Removed deprecated method
+	virtual ITexture* createRenderTargetTexture(const core::dimension2d<s32>& size,
+		const c8* name=0) =0;
+New parameter
+	virtual void makeColorKeyTexture(video::ITexture* texture,
+		video::SColor color, bool zeroTexels = false) const =0;
+	virtual void makeColorKeyTexture(video::ITexture* texture,
+		core::position2d<s32> colorKeyPixelPos, bool zeroTexels = false) const =0;
+Changed parameters
+	virtual void setFog(SColor color=SColor(0,255,255,255),
+		E_FOG_TYPE fogType=EFT_FOG_LINEAR,
+		f32 start=50.0f, f32 end=100.0f, f32 density=0.01f,
+		bool pixelFog=false, bool rangeFog=false) =0;
+Changed return types
+	virtual s32 addDynamicLight(const SLight& light) =0;
+
+EDriverFeatures.h
+New enum values
+	EVDF_ALPHA_TO_COVERAGE,
+	EVDF_COLOR_MASK,
+
+IGUIScrollBar.h
+New methods
+	virtual void setMin(s32 max) = 0;
+	virtual s32 getMin() const = 0;
+
+IQ3LevelMesh.h
+Removed method
+	virtual void releaseMesh(s32 index) = 0;
+Made return value non-const
+	virtual quake3::tQ3EntityList& getEntityList() = 0;
+
+ISceneCollisionManager.h
+New parameter
+	virtual bool getCollisionPoint(const core::line3d<f32>& ray,
+		ITriangleSelector* selector, core::vector3df& outCollisionPoint,
+		core::triangle3df& outTriangle, const ISceneNode*& outNode) =0;
+	virtual core::vector3df getCollisionResultPosition(
+		ITriangleSelector* selector,
+		const core::vector3df &ellipsoidPosition,
+		const core::vector3df& ellipsoidRadius,
+		const core::vector3df& ellipsoidDirectionAndSpeed,
+		core::triangle3df& triout,
+		core::vector3df& hitPosition,
+		bool& outFalling,
+		const ISceneNode*& outNode,
+		f32 slidingSpeed = 0.0005f,
+		const core::vector3df& gravityDirectionAndSpeed = core::vector3df(0.0f, 0.0f, 0.0f)) = 0;
+Made parameter const&
+	virtual core::line3d<f32> getRayFromScreenCoordinates(
+		const core::position2d<s32> & pos, ICameraSceneNode* camera = 0) = 0;
+	virtual core::position2d<s32> getScreenCoordinatesFrom3DPosition(
+		const core::vector3df & pos, ICameraSceneNode* camera=0) = 0;
+Made parameter const& and added new parameter
+	virtual ISceneNode* getSceneNodeFromScreenCoordinatesBB(const core::position2d<s32>& pos,
+		s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) =0;
+	virtual ISceneNode* getSceneNodeFromRayBB(const core::line3d<f32>& ray,
+		s32 idBitMask=0, bool bNoDebugObjects=false, ISceneNode* root=0) =0;
+New method
+	virtual ISceneNode* getSceneNodeAndCollisionPointFromRay(
+		core::line3df ray, core::vector3df & outCollisionPoint,
+		core::triangle3df & outTriangle, s32 idBitMask = 0,
+		ISceneNode * collisionRootNode = 0, bool noDebugObjects = false) = 0;
+
+irrlicht.h
+Changed interface of method (qualifiers and signedness)
+	extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDevice(
+		video::E_DRIVER_TYPE deviceType = video::EDT_SOFTWARE,
+		// parantheses are necessary for some compilers
+		const core::dimension2d<u32>& windowSize = (core::dimension2d<u32>(640,480)),
+		u32 bits = 16,
+		bool fullscreen = false,
+		bool stencilbuffer = false,
+		bool vsync = false,
+		IEventReceiver* receiver = 0);
+	extern "C" IRRLICHT_API IrrlichtDevice* IRRCALLCONV createDeviceEx(
+		const SIrrlichtCreationParameters& parameters);
+
+IImageLoader.h
+Changed parameters to use io::path
+	virtual bool isALoadableFileExtension(const io::path& filename) const = 0;
+
+IGUIWindow.h
+New methods
+	virtual bool isDraggable() const = 0;
+	virtual void setDraggable(bool draggable) = 0;
+	virtual void setDrawBackground(bool draw) = 0;
+	virtual bool getDrawBackground() const = 0;
+	virtual void setDrawTitlebar(bool draw) = 0;
+	virtual bool getDrawTitlebar() const = 0;
+
+ICameraSceneNode.h
+New methods
+	virtual void setViewMatrixAffector(const core::matrix4& affector) =0;
+	virtual const core::matrix4& getViewMatrixAffector() const =0;
+
+EGUIElementTypes.h
+New enum value
+	EGUIET_TREE_VIEW,
+
+IImageWriter.h
+Changed parameters to use io::path
+	virtual bool isAWriteableFileExtension(const io::path& filename) const = 0;
+
+SIrrCreationParameters.h
+Added members
+	E_DEVICE_TYPE DeviceType;
+	bool Doublebuffer;
+	bool Stereobuffer;
+Changed signedness
+	core::dimension2d<u32> WindowSize;
+Changed type (from bool)
+	u8 AntiAlias;
+
+matrix4.h
+New methods
+	bool isOrthogonal() const;
+	CMatrix4<T>& buildRotateFromTo(const core::vector3df& from, const core::vector3df& to);
+	void setRotationCenter(const core::vector3df& center, const core::vector3df& translate);
+	void buildAxisAlignedBillboard(	const core::vector3df& camPos,
+		const core::vector3df& center, const core::vector3df& translation,
+		const core::vector3df& axis, const core::vector3df& from);
+
+IWriteFile.h
+Changed parameters to use io::path
+	virtual const path& getFileName() const = 0;
+
+IGUITable.h
+New methods
+	virtual void setSelected( s32 index ) = 0;
+Changed type (from wide c string)
+	virtual void setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text) = 0;
+	virtual void setCellText(u32 rowIndex, u32 columnIndex, const core::stringw& text, video::SColor color) = 0;
+
+SKeyMap.h
+New enum value
+	EKA_CROUCH,
+
+IGUIFont.h
+Changed type (from wide c string)
+	virtual void draw(const core::stringw& text, const core::rect<s32>& position,
+		video::SColor color, bool hcenter=false, bool vcenter=false,
+		const core::rect<s32>* clip=0) = 0;
+Changed signedness
+	virtual core::dimension2d<u32> getDimension(const wchar_t* text) const = 0;
+New method
+	virtual void setInvisibleCharacters( const wchar_t *s ) = 0;
+
+IMeshCache.h
+Changed parameters to use io::path
+	virtual void addMesh(const io::path& filename, IAnimatedMesh* mesh) = 0;
+	virtual IAnimatedMesh* getMeshByFilename(const io::path& filename) = 0;
+	virtual const io::path& getMeshFilename(u32 index) const = 0;
+	virtual const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const = 0;
+	virtual const io::path& getMeshFilename(const IMesh* const mesh) const = 0;
+	virtual bool setMeshFilename(u32 index, const io::path& filename) = 0;
+	virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename) = 0;
+	virtual bool setMeshFilename(const IMesh* const mesh, const io::path& filename) = 0;
+	virtual bool isMeshLoaded(const io::path& filename) = 0;
+
+IGUIButton.h
+Added default value
+	virtual void setImage(video::ITexture* image=0) = 0;
+	virtual void setPressedImage(video::ITexture* image=0) = 0;
+	virtual void setSpriteBank(IGUISpriteBank* bank=0) = 0;
+	virtual void setIsPushButton(bool isPushButton=true) = 0;
+	virtual void setPressed(bool pressed=true) = 0;
+	virtual void setUseAlphaChannel(bool useAlphaChannel=true) = 0;
+	virtual void setDrawBorder(bool border=true) = 0;
+New methods
+	virtual void setScaleImage(bool scaleImage=true) = 0;
+	virtual bool isScalingImage() const = 0;
+
+position2d.h
+Replaced by vector2d
+
+IGUIImageList.h
+New interface
+	class IGUIImageList : public virtual IReferenceCounted
+
+rect.h
+Added second template parameter to allow mismatched signedness
+	template <class U>
+	rect(const position2d<T>& pos, const dimension2d<U>& size)
+
+IParticleEmitter.h
+Removed wrong overrides
+	virtual void serializeAttributes(io::IAttributes* out,
+		io::SAttributeReadWriteOptions* options=0) const {}
+	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in,
+		io::SAttributeReadWriteOptions* options=0) { return 0; }
+
+IOSOperator.h
+Return const string
+	virtual const c8* getTextFromClipboard() const = 0;
+
+IGUIElement.h
+Signedness change
+	void setMaxSize(core::dimension2du size)
+	void setMinSize(core::dimension2du size)
+
+IReadFile.h
+Changed parameters to use io::path
+	virtual const io::path& getFileName() const = 0;
+	IReadFile* createReadFile(const io::path& fileName);
+	IReadFile* createLimitReadFile(const io::path& fileName, IReadFile* alreadyOpenedFile, long pos, long areaSize);
+	IReadFile* createMemoryReadFile(void* memory, long size, const io::path& fileName, bool deleteMemoryWhenDropped);
+
+IGUITabControl.h
+New methods
+	virtual void setTabMaxWidth(s32 width ) = 0;
+	virtual s32 getTabMaxWidth() const = 0;
+
+IParticleAffector.h
+Removed wrong overrides
+	virtual void serializeAttributes(io::IAttributes* out, io::SAttributeReadWriteOptions* options=0) const {}
+	virtual s32 deserializeAttributes(s32 startIndex, io::IAttributes* in, io::SAttributeReadWriteOptions* options=0) { return 0; }
+
+ILogger.h
+New method
+	virtual void log(const c8* text, const wchar_t* hint, ELOG_LEVEL ll=ELL_INFORMATION) = 0;
+
+vector2d.h
+New methods
+	vector2d(const dimension2d<T>& other) : X(other.Width), Y(other.Height) {}
+	vector2d<T>& operator=(const dimension2d<T>& other) { X = other.Width; Y = other.Height; return *this; }
+	vector2d<T> operator+(const dimension2d<T>& other) const { return vector2d<T>(X + other.Width, Y + other.Height); }
+	vector2d<T>& operator+=(const dimension2d<T>& other) { X += other.Width; Y += other.Height; return *this;  }
+	vector2d<T> operator-(const dimension2d<T>& other) const { return vector2d<T>(X - other.Width, Y - other.Height); }
+	vector2d<T>& operator-=(const dimension2d<T>& other) { X -= other.Width; Y -= other.Height; return *this;  }
+	// These methods are declared in dimension2d, but need definitions of vector2d
+	template<class T>
+	dimension2d<T>::dimension2d(const vector2d<T>& other) : Width(other.X), Height(other.Y) { }
+	template<class T>
+	bool dimension2d<T>::operator==(const vector2d<T>& other) const { return Width == other.X && Height == other.Y; }
+
+Changes for Version 1.6.1
+-------------------------
+This is again just a bugfix release. However, some minor API changes have happened. The most important one is the removal of lins anti-aliasing from SMaterial's default values. Please add that line smoothing flag to the materials you want to be smoothed. But note that this may lead to drastically reduced performance, if no multi-sampling is active.
+
+IFileList.h
+new methods
+	virtual u32 getID(u32 index) const = 0;
+	virtual u32 addItem(const io::path& fullPath, u32 size, bool isDirectory, u32 id=0) = 0;
+	virtual void sort() = 0;
+
+IrrCompileConfig.h
+Removed auto recognition of Solaris OS, please define the setting on your own if you need it
+	_IRR_SOLARIS_PLATFORM_
+
+IGUITreeView.h
+removed methods (use automatically generated versions)
+	IGUITreeViewNode() {}
+	virtual ~IGUITreeViewNode() {}
+	virtual ~IGUITreeView() {}
+
+IFileSystem.h
+new method
+	virtual IFileList* createEmptyFileList(const io::path& path, bool ignoreCase, bool ignorePaths) =0;
+
+SMaterial.h
+Removed default value (EAAM_LINE_SMOOTH from AntiAliasing)
+	ZBuffer(ECFN_LESSEQUAL), AntiAliasing(EAAM_SIMPLE), ColorMask(ECP_ALL),
+
+IGUISkin.h
+new enum value
+	EGST_COUNT
+

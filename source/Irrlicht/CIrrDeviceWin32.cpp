@@ -614,7 +614,7 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 	if (IsNonNTWindows)
 	{
 		const core::stringc s = text;
-#ifdef WIN64
+#if defined(_WIN64) || defined(WIN64)
 		SetWindowTextA(HWnd, s.c_str());
 #else
 		SendMessageTimeout(HWnd, WM_SETTEXT, 0,
@@ -624,7 +624,7 @@ void CIrrDeviceWin32::setWindowCaption(const wchar_t* text)
 	}
 	else
 	{
-#ifdef WIN64
+#if defined(_WIN64) || defined(WIN64)
 		SetWindowTextW(HWnd, text);
 #else
 		SendMessageTimeoutW(HWnd, WM_SETTEXT, 0,

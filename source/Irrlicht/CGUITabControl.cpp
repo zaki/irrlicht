@@ -688,6 +688,7 @@ void CGUITabControl::setTabHeight( s32 height )
 
 	TabHeight = height;
 
+	recalculateScrollButtonPlacement();
 	recalculateScrollBar();
 }
 
@@ -758,8 +759,17 @@ void CGUITabControl::setTabVerticalAlignment( EGUI_ALIGNMENT alignment )
 {
 	VerticalAlignment = alignment;
 
+	recalculateScrollButtonPlacement();
+	recalculateScrollBar();
+}
+
+void CGUITabControl::recalculateScrollButtonPlacement()
+{
 	IGUISkin* skin = Environment->getSkin();
 	s32 ButtonSize = 16;
+	s32 ButtonHeight = TabHeight - 2;
+	if ( ButtonHeight < 0 )
+		ButtonHeight = TabHeight;
 	if (skin)
 	{
 		ButtonSize = skin->getSize(EGDS_WINDOW_BUTTON_WIDTH);
@@ -772,24 +782,21 @@ void CGUITabControl::setTabVerticalAlignment( EGUI_ALIGNMENT alignment )
 
 	if (VerticalAlignment == EGUIA_UPPERLEFT)
 	{
-		ButtonY = (TabHeight / 2) - (ButtonSize / 2);
+		ButtonY = 2 + (TabHeight / 2) - (ButtonHeight / 2);
 		UpButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 		DownButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_UPPERLEFT, EGUIA_UPPERLEFT);
 	}
 	else
 	{
-		ButtonY = RelativeRect.getHeight() - (TabHeight / 2) - (ButtonSize / 2);
+		ButtonY = RelativeRect.getHeight() - (TabHeight / 2) - (ButtonHeight / 2) - 2;
 		UpButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 		DownButton->setAlignment(EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT, EGUIA_LOWERRIGHT);
 	}
 
-	UpButton->setRelativePosition(core::rect<s32>(ButtonX, ButtonY, ButtonX+ButtonSize, ButtonY+ButtonSize));
+	UpButton->setRelativePosition(core::rect<s32>(ButtonX, ButtonY, ButtonX+ButtonSize, ButtonY+ButtonHeight));
 	ButtonX += ButtonSize + 1;
-	DownButton->setRelativePosition(core::rect<s32>(ButtonX, ButtonY, ButtonX+ButtonSize, ButtonY+ButtonSize));
-
-	recalculateScrollBar();
+	DownButton->setRelativePosition(core::rect<s32>(ButtonX, ButtonY, ButtonX+ButtonSize, ButtonY+ButtonHeight));
 }
-
 
 //! Get the alignment of the tabs
 EGUI_ALIGNMENT CGUITabControl::getTabVerticalAlignment() const
