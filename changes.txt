@@ -1,5 +1,7 @@
 Changes in 1.7
 
+ - Bugfix: irrArray should no longer crash when using other allocators.
+
  - Add MaterialViewer example.
 
  - Checkbox uses now disabled text color when disabled.

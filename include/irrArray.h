@@ -42,7 +42,7 @@ public:
 
 
 	//! Copy constructor
-	array(const array<T>& other) : data(0)
+	array(const array<T, TAlloc>& other) : data(0)
 	{
 		*this = other;
 	}
@@ -247,7 +247,7 @@ public:
 
 
 	//! Assignment operator
-	void operator=(const array<T>& other)
+	void operator=(const array<T, TAlloc>& other)
 	{
 		strategy = other.strategy;
 
@@ -271,7 +271,7 @@ public:
 
 
 	//! Equality operator
-	bool operator == (const array<T>& other) const
+	bool operator == (const array<T, TAlloc>& other) const
 	{
 		if (used != other.used)
 			return false;
@@ -284,7 +284,7 @@ public:
 
 
 	//! Inequality operator
-	bool operator != (const array<T>& other) const
+	bool operator != (const array<T, TAlloc>& other) const
 	{
 		return !(*this==other);
 	}
