@@ -57,6 +57,7 @@
 
 /* define an unsigned 64-bit type */
 
+#ifdef _MSC_VER
 #if _MSC_VER < 1300
   typedef unsigned __int64   sha2_64t;
   #define s_u64 ui64
@@ -68,6 +69,11 @@
   #define s_u64  ull
 #else
 #error Please define sha2_64t as an unsigned 64 bit type in sha2.h
+#endif
+#else
+#include <stdint.h>
+    typedef int64_t sha2_64t;
+#define s_u64 ul
 #endif
 
 #if defined(__cplusplus)
