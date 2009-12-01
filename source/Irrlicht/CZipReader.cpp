@@ -19,7 +19,7 @@
 	#include "zlib/zlib.h"
 	#endif // _IRR_USE_NON_SYSTEM_ZLIB_
 #endif // _IRR_COMPILE_WITH_ZLIB_
-
+#include "aesGladman/fileenc.h"
 namespace irr
 {
 namespace io
@@ -388,7 +388,43 @@ bool CZipReader::scanZipHeader()
 
 	// move forward length of extra field.
 
-	if (entry.header.ExtraFieldLength)
+	// AES encryption
+	if ((entry.header.GeneralBitFlag & ZIP_FILE_ENCRYPTED) && (entry.header.CompressionMethod == 99))
+	{
+		s16 restSize = entry.header.ExtraFieldLength;
+		SZipFileExtraHeader extraHeader;
+		while (restSize)
+		{
+			File->read(&extraHeader, sizeof(extraHeader));
+#ifdef __BIG_ENDIAN__
+			extraHeader.ID = os::Byteswap::byteswap(extraHeader.ID);
+			extraHeader.Size = os::Byteswap::byteswap(extraHeader.Size);
+#endif
+			restSize -= sizeof(extraHeader);
+			if (extraHeader.ID=(s16)0x9901)
+			{
+				SZipFileAESExtraData data;
+				File->read(&data, sizeof(data));
+#ifdef __BIG_ENDIAN__
+				data.Version = os::Byteswap::byteswap(data.Version);
+				data.CompressionMode = os::Byteswap::byteswap(data.CompressionMode);
+#endif
+				restSize -= sizeof(data);
+				if (data.Vendor[0]=='A' && data.Vendor[1]=='E')
+				{
+					// encode values into Sig
+					// AE-Version | Strength | ActualMode
+					entry.header.Sig =
+						((data.Version & 0xff) << 24) |
+						(data.EncryptionStrength << 16) |
+						(data.CompressionMode);
+					File->seek(restSize, true);
+					break;
+				}
+			}
+		}
+	}
+	else if (entry.header.ExtraFieldLength)
 		File->seek(entry.header.ExtraFieldLength, true);
 
 	// if bit 3 was set, read DataDescriptor, following after the compressed data
@@ -449,39 +485,128 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 
 	const SZipFileEntry &e = FileInfo[Files[index].ID];
 	wchar_t buf[64];
-	switch(e.header.CompressionMethod)
+	s16 actualCompressionMethod=e.header.CompressionMethod;
+	IReadFile* decrypted=0;
+	u8* decryptedBuf=0;
+	u16 decryptedSize=e.header.DataDescriptor.CompressedSize;
+	if ((e.header.GeneralBitFlag & ZIP_FILE_ENCRYPTED) && (e.header.CompressionMethod == 99))
+	{
+		u8 salt[16]={0};
+		const u16 saltSize = (((e.header.Sig & 0x00ff0000) >>16)+1)*64;
+		File->seek(e.Offset);
+		File->read(salt, saltSize);
+		c8 pwVerification[2];
+		c8 pwVerificationFile[2];
+		File->read(pwVerification, 2);
+		fcrypt_ctx zctx; // the encryption context
+		const char* Password="0123456789";
+		int rc = fcrypt_init(
+			(e.header.Sig & 0x00ff0000) >>16,
+			(const unsigned char*)Password, // the password
+			strlen(Password), // number of bytes in password
+			salt, // the salt
+			(unsigned char*)pwVerificationFile, // on return contains password verifier
+			&zctx); // encryption context
+		if (strncmp(pwVerificationFile, pwVerification, 2))
+		{
+			os::Printer::log("Wrong password");
+			return 0;
+		}
+		decryptedSize= e.header.DataDescriptor.CompressedSize-saltSize-12;
+		decryptedBuf= new u8[decryptedSize];
+		u16 c = 0;
+		while ((c+32768)<=decryptedSize)
+		{
+			File->read(decryptedBuf+c, 32768);
+			fcrypt_decrypt(
+				decryptedBuf+c, // pointer to the data to decrypt
+				32768,   // how many bytes to decrypt
+				&zctx); // decryption context
+			c+=32768;
+		}
+		File->read(decryptedBuf+c, decryptedSize-c);
+		fcrypt_decrypt(
+			decryptedBuf+c, // pointer to the data to decrypt
+			decryptedSize-c,   // how many bytes to decrypt
+			&zctx); // decryption context
+
+		char fileMAC[10];
+		char resMAC[10];
+		rc = fcrypt_end(
+			(unsigned char*)resMAC, // on return contains the authentication code
+			&zctx); // encryption context
+		if (rc != 10)
+		{
+			os::Printer::log("Error on encryption closing");
+			delete [] decryptedBuf;
+			return 0;
+		}
+		File->read(fileMAC, 10);
+		if (strncmp(fileMAC, resMAC, 10))
+		{
+			os::Printer::log("Error on encryption check");
+			delete [] decryptedBuf;
+			return 0;
+		}
+		decrypted = io::createMemoryReadFile(decryptedBuf, decryptedSize, Files[index].FullName, true);
+#if 0
+		if ((e.header.Sig & 0xff000000)==0x01000000)
+		{
+		}
+		else if ((e.header.Sig & 0xff000000)==0x02000000)
+		{
+		}
+		else
+		{
+			os::Printer::log("Unknown encryption method");
+			return 0;
+		}
+#endif
+	}
+	switch(actualCompressionMethod)
 	{
 	case 0: // no compression
 		{
-			return createLimitReadFile(Files[index].FullName, File, e.Offset, e.header.DataDescriptor.CompressedSize);
+			if (decrypted)
+				return decrypted;
+			else
+				return createLimitReadFile(Files[index].FullName, File, e.Offset, e.header.DataDescriptor.CompressedSize);
 		}
 	case 8:
 		{
   			#ifdef _IRR_COMPILE_WITH_ZLIB_
 
 			const u32 uncompressedSize = e.header.DataDescriptor.UncompressedSize;
-			const u32 compressedSize   = e.header.DataDescriptor.CompressedSize;
+			const u32 compressedSize   = decryptedSize;
 
 			void* pBuf = new c8[ uncompressedSize ];
 			if (!pBuf)
 			{
 				swprintf ( buf, 64, L"Not enough memory for decompressing %s", Files[index].FullName.c_str() );
 				os::Printer::log( buf, ELL_ERROR);
+				if (decrypted)
+					decrypted->drop();
 				return 0;
 			}
 
-			c8 *pcData = new c8[ compressedSize ];
+			u8 *pcData = decryptedBuf;
 			if (!pcData)
 			{
-				swprintf ( buf, 64, L"Not enough memory for decompressing %s", Files[index].FullName.c_str() );
-				os::Printer::log( buf, ELL_ERROR);
-				delete [] (c8*)pBuf;
-				return 0;
-			}
+				new c8[ compressedSize ];
+				if (!pcData)
+				{
+					swprintf ( buf, 64, L"Not enough memory for decompressing %s", Files[index].FullName.c_str() );
+					os::Printer::log( buf, ELL_ERROR);
+					delete [] (c8*)pBuf;
+					if (decrypted)
+						decrypted->drop();
+					return 0;
+				}
 
-			//memset(pcData, 0, compressedSize );
-			File->seek(e.Offset);
-			File->read(pcData, compressedSize );
+				//memset(pcData, 0, compressedSize );
+				File->seek(e.Offset);
+				File->read(pcData, compressedSize );
+			}
 
 			// Setup the inflate stream.
 			z_stream stream;
@@ -506,7 +631,10 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 				inflateEnd(&stream);
 			}
 
-			delete[] pcData;
+			if (decrypted)
+				decrypted->drop();
+			else
+				delete[] pcData;
 
 			if (err != Z_OK)
 			{
