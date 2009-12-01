@@ -61,7 +61,7 @@ extern "C"
 #if defined(ENCRYPTION) && !defined(AES_ASM)
 
 /* Visual C++ .Net v7.1 provides the fastest encryption code when using
-   Pentium optimiation with small code but this is poor for decryption
+   Pentium optimization with small code but this is poor for decryption
    so we need to control this with the following VC++ pragmas
 */
 
@@ -185,7 +185,7 @@ aes_rval aes_encrypt(const void *in_blk, void *out_blk, const aes_encrypt_ctx cx
 #if defined(DECRYPTION) && !defined(AES_ASM)
 
 /* Visual C++ .Net v7.1 provides the fastest encryption code when using
-   Pentium optimiation with small code but this is poor for decryption
+   Pentium optimization with small code but this is poor for decryption
    so we need to control this with the following VC++ pragmas
 */
 

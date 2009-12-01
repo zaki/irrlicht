@@ -225,14 +225,16 @@ bool COpenGLSLMaterialRenderer::createShader(GLenum shaderType, const char* shad
 
 	Driver->extGlAttachObject(Program, shaderHandle);
 
-#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4)
+#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4) || defined(GL_NV_geometry_program4)
 	if (shaderType==GL_GEOMETRY_SHADER_EXT && Driver->queryFeature(EVDF_GEOMETRY_SHADER))
 	{
+#if defined(GL_ARB_geometry_shader4) || defined(GL_EXT_geometry_shader4) || defined(GL_NV_geometry_shader4)
 		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_INPUT_TYPE_EXT, GL_TRIANGLES);
 		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
 		Driver->extGlProgramParameteri(Program, GL_GEOMETRY_VERTICES_OUT_EXT, Driver->MaxGeometryVerticesOut);
 #elif defined(GL_NV_geometry_program4)
 		Driver->extGlProgramVertexLimit(GL_GEOMETRY_PROGRAM_NV, Driver->MaxGeometryVerticesOut);
+#endif
 	}
 #endif
 
