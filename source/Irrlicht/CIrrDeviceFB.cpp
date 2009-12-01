@@ -329,7 +329,7 @@ bool CIrrDeviceFB::present(video::IImage* image, void* windowId, core::rect<s32>
 		destData+=Pitch;
 	}
 	image->unlock();
-//	msync(SoftwareImage,Width*Height,MS_ASYNC);
+	msync(SoftwareImage,CreationParams.WindowSize.Width*CreationParams.WindowSize.Height,MS_ASYNC);
 	return true;
 }
 
