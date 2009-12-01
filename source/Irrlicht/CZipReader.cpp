@@ -582,6 +582,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
   			#ifdef _IRR_COMPILE_WITH_ZLIB_
 
 			const u32 uncompressedSize = e.header.DataDescriptor.UncompressedSize;
+			const u32 compressedSize   = e.header.DataDescriptor.CompressedSize;			
 			c8* pBuf = new c8[ uncompressedSize ];
 			if (!pBuf)
 			{
@@ -595,7 +596,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 			u8 *pcData = decryptedBuf;
 			if (!pcData)
 			{
-				pcData = new u8[decryptedSize];
+				pcData = new u8[compressedSize];
 				if (!pcData)
 				{
 					swprintf ( buf, 64, L"Not enough memory for decompressing %s", Files[index].FullName.c_str() );
@@ -606,7 +607,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 
 				//memset(pcData, 0, decryptedSize);
 				File->seek(e.Offset);
-				File->read(pcData, decryptedSize);
+				File->read(pcData, compressedSize);
 			}
 
 			// Setup the inflate stream.
@@ -614,7 +615,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 			s32 err;
 
 			stream.next_in = (Bytef*)pcData;
-			stream.avail_in = (uInt)decryptedSize;
+			stream.avail_in = (uInt)compressedSize;
 			stream.next_out = (Bytef*)pBuf;
 			stream.avail_out = uncompressedSize;
 			stream.zalloc = (alloc_func)0;

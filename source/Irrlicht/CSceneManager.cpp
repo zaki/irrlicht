@@ -1685,10 +1685,10 @@ ISceneNodeAnimatorCollisionResponse* CSceneManager::createCollisionResponseAnima
 //! Creates a follow spline animator.
 ISceneNodeAnimator* CSceneManager::createFollowSplineAnimator(s32 startTime,
 	const core::array< core::vector3df >& points,
-	f32 speed, f32 tightness)
+	f32 speed, f32 tightness, bool loop, bool pingpong)
 {
 	ISceneNodeAnimator* a = new CSceneNodeAnimatorFollowSpline(startTime, points,
-		speed, tightness);
+		speed, tightness, loop, pingpong);
 	return a;
 }
 

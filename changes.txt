@@ -1,5 +1,9 @@
 Changes in 1.7
 
+ - SceneNodeAnimatorFollowSpline can now loop and pingpong
+
+ - Meshviewer.example got some fast-scale buttons.
+
  - Support AES-encrypted zip files. Should work with 128, 196, and 256 bit AES. This addition also adds a new PRNG, SHA, and other algorithms to the engine, though no interface is yet added for them. The implementation of the encryption algorithms is provided by Dr Brian Gladman.
 
  - Added geometry shaders for OpenGL. A first version of the code was submitted by Matthew Kielan (devsh).
