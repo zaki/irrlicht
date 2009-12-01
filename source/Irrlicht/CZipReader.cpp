@@ -503,11 +503,10 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 		char pwVerificationFile[2];
 		File->read(pwVerification, 2);
 		fcrypt_ctx zctx; // the encryption context
-		const char* Password="0123456789";
 		int rc = fcrypt_init(
 			(e.header.Sig & 0x00ff0000) >>16,
-			(const unsigned char*)Password, // the password
-			strlen(Password), // number of bytes in password
+			(const unsigned char*)Password.c_str(), // the password
+			Password.size(), // number of bytes in password
 			salt, // the salt
 			(unsigned char*)pwVerificationFile, // on return contains password verifier
 			&zctx); // encryption context

@@ -231,3 +231,4 @@ namespace io
 
 #endif // __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
 #endif // __C_ZIP_READER_H_INCLUDED__
+
