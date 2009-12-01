@@ -73,7 +73,11 @@
 #else
 #include <stdint.h>
     typedef int64_t sha2_64t;
+#if __WORDSIZE==64
 #define s_u64 ul
+#else
+#define s_u64 ull
+#endif
 #endif
 
 #if defined(__cplusplus)
