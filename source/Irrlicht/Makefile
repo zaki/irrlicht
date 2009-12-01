@@ -145,6 +145,10 @@ TAGS:
 %.d:%.cpp
 	$(CXX) $(CPPFLAGS) -MM -MF $@ $<
 
+# Create dependency files for automatic recompilation
+%.d:%.c
+	$(CC) $(CPPFLAGS) -MM -MF $@ $<
+
 # Create object files from objective-c code
 %.o:%.mm
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
