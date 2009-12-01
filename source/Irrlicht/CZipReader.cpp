@@ -496,11 +496,11 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 	{
 		os::Printer::log("Reading encrypted file.");
 		u8 salt[16]={0};
-		const u16 saltSize = (((e.header.Sig & 0x00ff0000) >>16)+1)*64;
+		const u16 saltSize = (((e.header.Sig & 0x00ff0000) >>16)+1)*4;
 		File->seek(e.Offset);
 		File->read(salt, saltSize);
-		c8 pwVerification[2];
-		c8 pwVerificationFile[2];
+		char pwVerification[2];
+		char pwVerificationFile[2];
 		File->read(pwVerification, 2);
 		fcrypt_ctx zctx; // the encryption context
 		const char* Password="0123456789";
@@ -518,7 +518,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 		}
 		decryptedSize= e.header.DataDescriptor.CompressedSize-saltSize-12;
 		decryptedBuf= new u8[decryptedSize];
-		u16 c = 0;
+		u32 c = 0;
 		while ((c+32768)<=decryptedSize)
 		{
 			File->read(decryptedBuf+c, 32768);
