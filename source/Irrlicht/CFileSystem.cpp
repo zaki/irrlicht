@@ -190,7 +190,8 @@ bool CFileSystem::moveFileArchive(u32 sourceIndex, s32 relative)
 
 //! Adds an archive to the file system.
 bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
-			  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType)
+			  bool ignorePaths, E_FILE_ARCHIVE_TYPE archiveType,
+			  const core::stringc& password)
 {
 	IFileArchive* archive = 0;
 	bool ret = false;
@@ -200,7 +201,11 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	for (i = 0; i < FileArchives.size(); ++i)
 	{
 		if (getAbsolutePath(filename) == FileArchives[i]->getFileList()->getPath())
+		{
+			if (password.size())
+				FileArchives[i]->Password=password;
 			return true;
+		}
 	}
 
 	// do we know what type it should be?
@@ -281,6 +286,8 @@ bool CFileSystem::addFileArchive(const io::path& filename, bool ignoreCase,
 	if (archive)
 	{
 		FileArchives.push_back(archive);
+		if (password.size())
+			archive->Password=password;
 		ret = true;
 	}
 	else
