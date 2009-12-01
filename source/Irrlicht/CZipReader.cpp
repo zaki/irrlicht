@@ -490,7 +490,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 	s16 actualCompressionMethod=e.header.CompressionMethod;
 	IReadFile* decrypted=0;
 	u8* decryptedBuf=0;
-	u16 decryptedSize=e.header.DataDescriptor.CompressedSize;
+	u32 decryptedSize=e.header.DataDescriptor.CompressedSize;
 #ifdef _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
 	if ((e.header.GeneralBitFlag & ZIP_FILE_ENCRYPTED) && (e.header.CompressionMethod == 99))
 	{
@@ -576,7 +576,7 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 			if (decrypted)
 				return decrypted;
 			else
-				return createLimitReadFile(Files[index].FullName, File, e.Offset, e.header.DataDescriptor.CompressedSize);
+				return createLimitReadFile(Files[index].FullName, File, e.Offset, decryptedSize);
 		}
 	case 8:
 		{
