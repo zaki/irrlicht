@@ -1884,7 +1884,7 @@ class CStringWArrayAttribute : public IAttribute
 {
 public:
 
-	CStringWArrayAttribute(const char* name, core::array<core::stringw> value)
+	CStringWArrayAttribute(const char* name, const core::array<core::stringw>& value)
 	{
 		Name = name;
 		setArray(value);
@@ -1895,7 +1895,7 @@ public:
 		return Value;
 	}
 
-	virtual void setArray(core::array<core::stringw> value)
+	virtual void setArray(const core::array<core::stringw>& value)
 	{
 		Value = value;
 	}

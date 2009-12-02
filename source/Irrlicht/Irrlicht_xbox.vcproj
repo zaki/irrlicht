@@ -280,6 +280,9 @@
 				RelativePath="..\..\include\IAttributes.h">
 			</File>
 			<File
+				RelativePath="..\..\include\EAttributes.h">
+			</File>
+			<File
 				RelativePath="..\..\include\IBillboardSceneNode.h">
 			</File>
 			<File
@@ -875,6 +878,9 @@
 			</File>
 			<File
 				RelativePath=".\CAttributes.h">
+			</File>
+			<File
+				RelativePath=".\IAttribute.h">
 			</File>
 			<File
 				RelativePath=".\CColorConverter.cpp">
