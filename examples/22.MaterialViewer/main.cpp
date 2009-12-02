@@ -2,6 +2,10 @@
 
 This example can be used to play around with material settings and watch the results.
 Only the default non-shader materials are used in here.
+
+You have two nodes to make it easier to see which difference your settings will make.
+Additionally you have one lightscenenode and you can set the global ambient values.
+
 */
 
 #include <irrlicht.h>
@@ -13,62 +17,69 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-namespace	// empty namespace makes sure all variables in here are only defined local in this file.
+/*
+	Variables within the empty namespace are globals which are restricted to this file.
+*/
+namespace
 {
-    const wchar_t* const DriverTypeNames[] =
-    {
-        L"NULL",
-        L"SOFTWARE",
-        L"BURNINGSVIDEO",
-        L"DIRECT3D8",
-        L"DIRECT3D9",
-        L"EDT_OPENGL",
-        0,
-    };
+	const wchar_t* const DriverTypeNames[] =
+	{
+		L"NULL",
+		L"SOFTWARE",
+		L"BURNINGSVIDEO",
+		L"DIRECT3D8",
+		L"DIRECT3D9",
+		L"OPENGL",
+		0,
+	};
 
+	// For the gui id's
 	enum EGUI_IDS
 	{
 		GUI_ID_OPEN_TEXTURE = 1,
 		GUI_ID_QUIT,
+		GUI_ID_MAX
 	};
 
+	// Name used in texture selection to clear the textures on the node
 	const core::stringw CLEAR_TEXTURE = "CLEAR texture";
 
-	const irr::video::SColor SCOL_BLACK     = irr::video::SColor(255, 0,   0,   0);
-	const irr::video::SColor SCOL_BLUE      = irr::video::SColor(255, 0,   0,  255);
-	const irr::video::SColor SCOL_CYAN      = irr::video::SColor(255, 0,  255, 255);
-	const irr::video::SColor SCOL_GRAY      = irr::video::SColor(255, 128,128, 128);
-	const irr::video::SColor SCOL_GREEN     = irr::video::SColor(255, 0,  255,  0);
-	const irr::video::SColor SCOL_MAGENTA   = irr::video::SColor(255, 255, 0,  255);
-	const irr::video::SColor SCOL_RED       = irr::video::SColor(255, 255, 0,   0);
-	const irr::video::SColor SCOL_YELLOW    = irr::video::SColor(255, 255, 255, 0);
-	const irr::video::SColor SCOL_WHITE     = irr::video::SColor(255, 255, 255, 255);
+	// some useful color constants
+	const video::SColor SCOL_BLACK     = video::SColor(255, 0,   0,   0);
+	const video::SColor SCOL_BLUE      = video::SColor(255, 0,   0,  255);
+	const video::SColor SCOL_CYAN      = video::SColor(255, 0,  255, 255);
+	const video::SColor SCOL_GRAY      = video::SColor(255, 128,128, 128);
+	const video::SColor SCOL_GREEN     = video::SColor(255, 0,  255,  0);
+	const video::SColor SCOL_MAGENTA   = video::SColor(255, 255, 0,  255);
+	const video::SColor SCOL_RED       = video::SColor(255, 255, 0,   0);
+	const video::SColor SCOL_YELLOW    = video::SColor(255, 255, 255, 0);
+	const video::SColor SCOL_WHITE     = video::SColor(255, 255, 255, 255);
 };	// namespace
 
 /*
-Returns a new unique number on each call
+	Returns a new unique number on each call.
 */
 s32 makeUniqueId()
 {
-	static int unique = 10000;
+	static int unique = GUI_ID_MAX;
 	++unique;
 	return unique;
 }
 
 /*
-Find out which vertex-type is needed for the given material type
+	Find out which vertex-type is needed for the given material type.
 */
 video::E_VERTEX_TYPE getVertexTypeForMaterialType(video::E_MATERIAL_TYPE materialType)
 {
-    using namespace video;
+	using namespace video;
 
-    switch ( materialType )
-    {
+	switch ( materialType )
+	{
 		case EMT_SOLID:
-            return EVT_STANDARD;
+			return EVT_STANDARD;
 
 		case EMT_SOLID_2_LAYER:
-            return EVT_STANDARD;
+			return EVT_STANDARD;
 
 		case EMT_LIGHTMAP:
 		case EMT_LIGHTMAP_ADD:
@@ -77,31 +88,31 @@ video::E_VERTEX_TYPE getVertexTypeForMaterialType(video::E_MATERIAL_TYPE materia
 		case EMT_LIGHTMAP_LIGHTING:
 		case EMT_LIGHTMAP_LIGHTING_M2:
 		case EMT_LIGHTMAP_LIGHTING_M4:
-            return EVT_2TCOORDS;
+			return EVT_2TCOORDS;
 
 		case EMT_DETAIL_MAP:
-            return EVT_2TCOORDS;
+			return EVT_2TCOORDS;
 
 		case EMT_SPHERE_MAP:
-            return EVT_STANDARD;
+			return EVT_STANDARD;
 
 		case EMT_REFLECTION_2_LAYER:
-            return EVT_2TCOORDS;
+			return EVT_2TCOORDS;
 
 		case EMT_TRANSPARENT_ADD_COLOR:
-            return EVT_STANDARD;
+			return EVT_STANDARD;
 
 		case EMT_TRANSPARENT_ALPHA_CHANNEL:
-            return EVT_STANDARD;
+			return EVT_STANDARD;
 
 		case EMT_TRANSPARENT_ALPHA_CHANNEL_REF:
-            return EVT_STANDARD;
+			return EVT_STANDARD;
 
 		case EMT_TRANSPARENT_VERTEX_ALPHA:
-            return EVT_STANDARD;
+			return EVT_STANDARD;
 
 		case EMT_TRANSPARENT_REFLECTION_2_LAYER:
-            return EVT_2TCOORDS;
+			return EVT_2TCOORDS;
 
 		case EMT_NORMAL_MAP_SOLID:
 		case EMT_NORMAL_MAP_TRANSPARENT_ADD_COLOR:
@@ -109,56 +120,39 @@ video::E_VERTEX_TYPE getVertexTypeForMaterialType(video::E_MATERIAL_TYPE materia
 		case EMT_PARALLAX_MAP_SOLID:
 		case EMT_PARALLAX_MAP_TRANSPARENT_ADD_COLOR:
 		case EMT_PARALLAX_MAP_TRANSPARENT_VERTEX_ALPHA:
-            return EVT_TANGENTS;
+			return EVT_TANGENTS;
 
 		case EMT_ONETEXTURE_BLEND:
-            return EVT_STANDARD;
-	    
-    	case EMT_FORCE_32BIT:
-	    	return EVT_STANDARD;
-    }
+			return EVT_STANDARD;
+
+		case EMT_FORCE_32BIT:
+			return EVT_STANDARD;
+	}
 	return EVT_STANDARD;
 }
 
 /*
-Control for setting colors
-NOTE: Like with other controls it might have been a good idea deriving this from IGUIElement and make real gui controls of those. 
-This also works, but using real gui-controls might be cleaner.
+	Custom GUI-control to edit colorvalues.
 */
-class CColorControl : public IEventReceiver
+class CColorControl : public gui::IGUIElement
 {
 public:
-	CColorControl()
-		: DirtyFlag(true)
+	// Constructor
+	CColorControl(gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t *text, IGUIElement* parent, s32 id=-1 )
+		: gui::IGUIElement(gui::EGUIET_ELEMENT, guiEnv, parent,id, core::rect< s32 >(pos, pos+core::dimension2d<s32>(80, 75)))
+		, DirtyFlag(true)
 		, ColorStatic(0)
 		, EditAlpha(0)
 		, EditRed(0)
 		, EditGreen(0)
 		, EditBlue(0)
 	{
-		ButtonSetId = makeUniqueId();
-	}
-
-	virtual bool OnEvent(const SEvent &event)
-	{
-		if ( event.EventType != EET_GUI_EVENT )
-			return false;
-
-		if ( event.GUIEvent.Caller->getID() == ButtonSetId && event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
-		{
-			Color = GetColorFromEdits();
-			SetEditsFromColor(Color);
-		}
-
-		return false;
-	}
-
-	void init( gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t *text )
-	{
 		using namespace gui;
+		ButtonSetId = makeUniqueId();
 
-		const core::rect< s32 > rectControls(pos, core::dimension2d<s32>(80, 75));
-		IGUIStaticText * groupElement =	guiEnv->addStaticText (L"", rectControls, true, false, 0, -1, false);
+		const core::rect< s32 > rectControls(0,0,AbsoluteRect.getWidth(),AbsoluteRect.getHeight() );
+		IGUIStaticText * groupElement =	guiEnv->addStaticText (L"", rectControls, true, false, this, -1, false);
+		groupElement->setNotClipped(true);
 
 		guiEnv->addStaticText (text, core::rect<s32>(0,0,80,15), false, false, groupElement, -1, false);
 
@@ -173,21 +167,39 @@ public:
 		SetEditsFromColor(Color);
 	}
 
+	// event receiver
+	virtual bool OnEvent(const SEvent &event)
+	{
+		if ( event.EventType != EET_GUI_EVENT )
+			return false;
+
+		if ( event.GUIEvent.Caller->getID() == ButtonSetId && event.GUIEvent.EventType == gui::EGET_BUTTON_CLICKED )
+		{
+			Color = GetColorFromEdits();
+			SetEditsFromColor(Color);
+		}
+
+		return false;
+	}
+
+	// set the color values
 	void setColor(const video::SColor& col)
 	{
-		setDirty(true);
+		DirtyFlag = true;
 		Color = col;
 		SetEditsFromColor(Color);
 	}
 
+	// get the color values
 	const video::SColor& getColor() const
 	{
 		return Color;
 	}
 
-	void setDirty(bool dirty)
+	// To reset the dirty flag
+	void resetDirty()
 	{
-		DirtyFlag = dirty;
+		DirtyFlag = false;
 	}
 
 	// when the color was changed the dirty flag is set
@@ -198,11 +210,12 @@ public:
 
 protected:
 
+	// Add a staticbox for a description + an editbox so users can enter numbers
 	gui::IGUIEditBox* addEditForNumbers(gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t *text, s32 id, gui::IGUIElement * parent)
 	{
 		using namespace gui;
 
-		core::rect< s32 > rect(pos, core::dimension2d<s32>(10, 15));
+		core::rect< s32 > rect(pos, pos+core::dimension2d<s32>(10, 15));
 		guiEnv->addStaticText (text, rect, false, false, parent, -1, false);
 		rect += core::position2d<s32>( 20, 0 );
 		rect.LowerRightCorner.X += 20;
@@ -210,6 +223,7 @@ protected:
 		return edit;
 	}
 
+	// Get the color value from the editfields
 	video::SColor GetColorFromEdits()
 	{
 		video::SColor col;
@@ -241,7 +255,6 @@ protected:
 		}
 		col.setGreen(green);
 
-
 		u32 blue=col.getBlue();
 		if ( EditBlue )
 		{
@@ -254,9 +267,10 @@ protected:
 		return col;
 	}
 
+	// Fill the editfields with the value for the given color
 	void SetEditsFromColor(video::SColor col)
 	{
-		setDirty(true);
+		DirtyFlag = true;
 		if ( EditAlpha )
 			EditAlpha->setText( core::stringw(col.getAlpha()).c_str() );
 		if ( EditRed )
@@ -282,64 +296,101 @@ private:
 };
 
 /*
-Control for setting colors typically used in materials
+	Custom GUI-control for to edit all colors typically used in materials and lights
 */
-struct SAllColorsControl
+struct CAllColorsControl : public gui::IGUIElement
 {
-	virtual bool OnEvent(const SEvent &event)
+	// Constructor
+	CAllColorsControl(gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t * description, bool hasEmissive, IGUIElement* parent, s32 id=-1)
+		: gui::IGUIElement(gui::EGUIET_ELEMENT, guiEnv, parent,id, core::rect<s32>(pos,pos+core::dimension2d<s32>(60,250)))
+		, ControlAmbientColor(0), ControlDiffuseColor(0), ControlSpecularColor(0), ControlEmissiveColor(0)
 	{
-		if ( ControlAmbientColor.OnEvent(event) )
-			return true;
-		if ( ControlDiffuseColor.OnEvent(event) )
-			return true;
-		if ( ControlEmissiveColor.OnEvent(event) )
-			return true;
-		if ( ControlSpecularColor.OnEvent(event) )
-			return true;
-		return false;
+		core::rect<s32> rect(0, 0, 60, 15);
+		guiEnv->addStaticText (description, rect, false, false, this, -1, false);
+		createColorControls(guiEnv, core::position2d<s32>(0, 15), hasEmissive);
 	}
 
-	void init(gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t * description, bool hasEmissive)
+	// Destructor
+	virtual ~CAllColorsControl()
 	{
-		core::rect<s32> rect(pos, core::dimension2d<s32>(60, 15));
-		guiEnv->addStaticText (description, rect, false, false, 0, -1, false);
-		createColorControls(guiEnv, pos + core::position2d<s32>(0, 15), hasEmissive);
+		ControlAmbientColor->drop();
+		ControlDiffuseColor->drop();
+		ControlEmissiveColor->drop();
+		ControlSpecularColor->drop();
 	}
 
-	// any colors changed?
-	bool isDirty() const
+	// Set the color values to those within the material
+	void setColorsToMaterialColors(const video::SMaterial & material)
 	{
-		return ControlAmbientColor.isDirty() || ControlDiffuseColor.isDirty() || ControlSpecularColor.isDirty() || ControlEmissiveColor.isDirty();
+		ControlAmbientColor->setColor(material.AmbientColor);
+		ControlDiffuseColor->setColor(material.DiffuseColor);
+		ControlEmissiveColor->setColor(material.EmissiveColor);
+		ControlSpecularColor->setColor(material.SpecularColor);
 	}
 
-	void setDirty(bool dirty)
+	// Update all changed colors in the material
+	void updateMaterialColors(video::SMaterial & material)
 	{
-		ControlAmbientColor.setDirty(dirty);
-		ControlDiffuseColor.setDirty(dirty);
-		ControlSpecularColor.setDirty(dirty);
-		ControlEmissiveColor.setDirty(dirty);
+		if ( ControlAmbientColor->isDirty() )
+			material.AmbientColor = ControlAmbientColor->getColor();
+		if ( ControlDiffuseColor->isDirty() )
+			material.DiffuseColor = ControlDiffuseColor->getColor();
+		if ( ControlEmissiveColor->isDirty() )
+			material.EmissiveColor = ControlEmissiveColor->getColor();
+		if ( ControlSpecularColor->isDirty() )
+			material.SpecularColor = ControlSpecularColor->getColor();
 	}
 
-	CColorControl	ControlAmbientColor;
-	CColorControl	ControlDiffuseColor;
-	CColorControl	ControlSpecularColor;
-	CColorControl	ControlEmissiveColor;
+	// Set the color values to those from the light data
+	void setColorsToLightDataColors(const video::SLight & lightData)
+	{
+		ControlAmbientColor->setColor(lightData.AmbientColor.toSColor());
+		ControlAmbientColor->setColor(lightData.DiffuseColor.toSColor());
+		ControlAmbientColor->setColor(lightData.SpecularColor.toSColor());
+	}
+
+	// Update all changed colors in the light data
+	void updateMaterialColors(video::SLight & lightData)
+	{
+		if ( ControlAmbientColor->isDirty() )
+			lightData.AmbientColor = video::SColorf( ControlAmbientColor->getColor() );
+		if ( ControlDiffuseColor->isDirty() )
+			lightData.DiffuseColor = video::SColorf( ControlDiffuseColor->getColor() );
+		if ( ControlSpecularColor->isDirty() )
+			lightData.SpecularColor = video::SColorf(ControlSpecularColor->getColor() );
+	}
+
+	// To reset the dirty flags
+	void resetDirty()
+	{
+		ControlAmbientColor->resetDirty();
+		ControlDiffuseColor->resetDirty();
+		ControlSpecularColor->resetDirty();
+		ControlEmissiveColor->resetDirty();
+	}
 
 protected:
 	void createColorControls(gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, bool hasEmissive)
 	{
-		ControlAmbientColor.init( guiEnv, pos, L"ambient" );
-		ControlDiffuseColor.init( guiEnv, pos + core::position2d<s32>(0, 75), L"diffuse" );
-		ControlSpecularColor.init( guiEnv, pos + core::position2d<s32>(0, 150), L"specular" );
+		ControlAmbientColor = new CColorControl( guiEnv, pos, L"ambient", this);
+		ControlDiffuseColor = new CColorControl( guiEnv, pos + core::position2d<s32>(0, 75), L"diffuse", this );
+		ControlSpecularColor = new CColorControl( guiEnv, pos + core::position2d<s32>(0, 150), L"specular", this );
 		if ( hasEmissive )
 		{
-			ControlEmissiveColor.init( guiEnv, pos + core::position2d<s32>(0, 225), L"emissive" );
+			ControlEmissiveColor = new CColorControl( guiEnv, pos + core::position2d<s32>(0, 225), L"emissive", this );
 		}
 	}
+
+private:
+	CColorControl*	ControlAmbientColor;
+	CColorControl*	ControlDiffuseColor;
+	CColorControl*	ControlSpecularColor;
+	CColorControl*	ControlEmissiveColor;
 };
 
 /*
-Control to offer a selection of available textures
+	Control to offer a selection of available textures.
+	NOTE: This control and also the following two controls could as well be implemented as IGUIElements.
 */
 struct STextureControl
 {
@@ -354,7 +405,7 @@ struct STextureControl
 
 		if ( event.GUIEvent.Caller == ComboTexture && event.GUIEvent.EventType == gui::EGET_COMBO_BOX_CHANGED )
 		{
-			setDirty(true);
+			DirtyFlag = true;
 		}
 
 		return false;
@@ -372,9 +423,10 @@ struct STextureControl
 		return ComboTexture->getItem(selected);
 	}
 
-	void setDirty(bool dirty)
+	// reset the dirty flag
+	void resetDirty()
 	{
-		DirtyFlag = dirty;
+		DirtyFlag = false;
 	}
 
 	// when the texture was changed the dirty flag is set
@@ -423,7 +475,7 @@ struct STextureControl
 		if ( selectNew >= 0 )
 			ComboTexture->setSelected(selectNew);
 
-		setDirty(true);
+		DirtyFlag = true;
 	}
 
 private:
@@ -433,21 +485,28 @@ private:
 };
 
 /*
-Control which allows setting typical material values for a meshscenenode
+	Control which allows setting some of the material values for a meshscenenode
 */
 struct SMeshNodeControl
 {
-	SMeshNodeControl() : Initialized(false), Driver(0), MeshManipulator(0), SceneNode(0), SceneNode2T(0), SceneNodeTangents(0), ButtonLighting(0), ComboMaterial(0) {}
+	// constructor
+	SMeshNodeControl()
+		: Initialized(false), Driver(0), MeshManipulator(0), SceneNode(0), SceneNode2T(0), SceneNodeTangents(0)
+		, AllColorsControl(0), ButtonLighting(0), ComboMaterial(0), ControlVertexColors(0)
+	{
+	}
+
+	// Destructor
+	virtual ~SMeshNodeControl()
+	{
+		delete ControlVertexColors;
+	}
 
 	virtual bool OnEvent(const SEvent &event)
 	{
-		if ( AllColorsControl.OnEvent(event) )
-			return true;
 		if ( Texture1.OnEvent(event) )
 			return true;
 		if ( Texture2.OnEvent(event) )
-			return true;
-		if ( ControlVertexColors.OnEvent(event) )
 			return true;
 		return false;
 	}
@@ -463,24 +522,21 @@ struct SMeshNodeControl
 		MeshManipulator = smgr->getMeshManipulator();
 
 		SceneNode = node;
-        scene::IMeshManipulator * meshManip = smgr->getMeshManipulator();
+		scene::IMeshManipulator * meshManip = smgr->getMeshManipulator();
 
 		scene::IMesh * mesh2T = meshManip->createMeshWith2TCoords(node->getMesh());
 		SceneNode2T = smgr->addMeshSceneNode(mesh2T, 0, -1, SceneNode->getPosition(), SceneNode->getRotation(), SceneNode->getScale() );
-        mesh2T->drop();
+		mesh2T->drop();
 
-        scene::IMesh * meshTangents = meshManip->createMeshWithTangents(node->getMesh(), false, false, false);
-        SceneNodeTangents = smgr->addMeshSceneNode(meshTangents, 0, -1
-                                            , SceneNode->getPosition(), SceneNode->getRotation(), SceneNode->getScale() );
-        meshTangents->drop();
+		scene::IMesh * meshTangents = meshManip->createMeshWithTangents(node->getMesh(), false, false, false);
+		SceneNodeTangents = smgr->addMeshSceneNode(meshTangents, 0, -1
+											, SceneNode->getPosition(), SceneNode->getRotation(), SceneNode->getScale() );
+		meshTangents->drop();
 
 		video::SMaterial & material = SceneNode->getMaterial(0);
 		material.Lighting = true;
-		AllColorsControl.init(guiEnv, pos, description, true);
-		AllColorsControl.ControlAmbientColor.setColor(material.AmbientColor);
-		AllColorsControl.ControlDiffuseColor.setColor(material.DiffuseColor);
-		AllColorsControl.ControlEmissiveColor.setColor(material.EmissiveColor);
-		AllColorsControl.ControlSpecularColor.setColor(material.SpecularColor);
+		AllColorsControl = new CAllColorsControl(guiEnv, pos, description, true, guiEnv->getRootGUIElement());
+		AllColorsControl->setColorsToMaterialColors(material);
 
 		core::rect<s32> rectBtn(pos + core::position2d<s32>(0, 320), core::dimension2d<s32>(100, 15));
 		ButtonLighting = guiEnv->addButton (rectBtn, 0, -1, L"Lighting");
@@ -499,14 +555,14 @@ struct SMeshNodeControl
 		Texture1.init(guiEnv, Driver, posTex);
 		posTex.Y += 15;
 		Texture2.init(guiEnv, Driver, posTex);
-		
+
 		core::position2d<s32> posVertexColors( posTex.X, posTex.Y + 15);
-		ControlVertexColors.init( guiEnv, posVertexColors, L"Vertex colors");
-		
+		ControlVertexColors = new CColorControl( guiEnv, posVertexColors, L"Vertex colors", guiEnv->getRootGUIElement());
+
 		video::S3DVertex * vertices =  (video::S3DVertex *)node->getMesh()->getMeshBuffer(0)->getVertices();
 		if ( vertices )
 		{
-			ControlVertexColors.setColor(vertices[0].Color);
+			ControlVertexColors->setColor(vertices[0].Color);
 		}
 
 		Initialized = true;
@@ -524,38 +580,38 @@ struct SMeshNodeControl
 		s32 selectedMaterial = ComboMaterial->getSelected();
 		if ( selectedMaterial >= (s32)video::EMT_SOLID && selectedMaterial <= (s32)video::EMT_ONETEXTURE_BLEND)
 		{
-            video::E_VERTEX_TYPE vertexType = getVertexTypeForMaterialType((video::E_MATERIAL_TYPE)selectedMaterial);
-            switch ( vertexType )
-            {
-                case video::EVT_STANDARD:
-                    material.MaterialType = (video::E_MATERIAL_TYPE)selectedMaterial;
-                    SceneNode->setVisible(true);
-                    SceneNode2T->setVisible(false);
-                    SceneNodeTangents->setVisible(false);
-                    break;
-                case video::EVT_2TCOORDS:
-                    material2T.MaterialType = (video::E_MATERIAL_TYPE)selectedMaterial;
-                    SceneNode->setVisible(false);
-                    SceneNode2T->setVisible(true);
-                    SceneNodeTangents->setVisible(false);
-                    break;
-                case video::EVT_TANGENTS:
-                    materialTangents.MaterialType = (video::E_MATERIAL_TYPE)selectedMaterial;
-                    SceneNode->setVisible(false);
-                    SceneNode2T->setVisible(false);
-                    SceneNodeTangents->setVisible(true);
-                    break;
-            }
-        }
+			video::E_VERTEX_TYPE vertexType = getVertexTypeForMaterialType((video::E_MATERIAL_TYPE)selectedMaterial);
+			switch ( vertexType )
+			{
+				case video::EVT_STANDARD:
+					material.MaterialType = (video::E_MATERIAL_TYPE)selectedMaterial;
+					SceneNode->setVisible(true);
+					SceneNode2T->setVisible(false);
+					SceneNodeTangents->setVisible(false);
+					break;
+				case video::EVT_2TCOORDS:
+					material2T.MaterialType = (video::E_MATERIAL_TYPE)selectedMaterial;
+					SceneNode->setVisible(false);
+					SceneNode2T->setVisible(true);
+					SceneNodeTangents->setVisible(false);
+					break;
+				case video::EVT_TANGENTS:
+					materialTangents.MaterialType = (video::E_MATERIAL_TYPE)selectedMaterial;
+					SceneNode->setVisible(false);
+					SceneNode2T->setVisible(false);
+					SceneNodeTangents->setVisible(true);
+					break;
+			}
+		}
 
-        updateMaterial(material);
-        updateMaterial(material2T);
-        updateMaterial(materialTangents);
+		updateMaterial(material);
+		updateMaterial(material2T);
+		updateMaterial(materialTangents);
 
-        AllColorsControl.setDirty(false);
-        Texture1.setDirty(false);
-        Texture2.setDirty(false);
-		ControlVertexColors.setDirty(false);
+		AllColorsControl->resetDirty();
+		Texture1.resetDirty();
+		Texture2.resetDirty();
+		ControlVertexColors->resetDirty();
 	}
 
 	void updateTextures()
@@ -566,15 +622,9 @@ struct SMeshNodeControl
 
 protected:
 
-    void updateMaterial(video::SMaterial & material)
-    {
-		if ( AllColorsControl.isDirty() )
-		{
-			material.AmbientColor = AllColorsControl.ControlAmbientColor.getColor();
-			material.DiffuseColor = AllColorsControl.ControlDiffuseColor.getColor();
-			material.EmissiveColor = AllColorsControl.ControlEmissiveColor.getColor();
-			material.SpecularColor = AllColorsControl.ControlSpecularColor.getColor();
-		}
+	void updateMaterial(video::SMaterial & material)
+	{
+		AllColorsControl->updateMaterialColors(material);
 		material.Lighting = ButtonLighting->isPressed();
 		if ( Texture1.isDirty() )
 		{
@@ -584,40 +634,36 @@ protected:
 		{
 			material.TextureLayer[1].Texture = Driver->getTexture( io::path(Texture2.getSelectedTextureName()) );
 		}
-	    if ( ControlVertexColors.isDirty() )
-	    {
-		    MeshManipulator->setVertexColors (SceneNode->getMesh(), ControlVertexColors.getColor());
-		    MeshManipulator->setVertexColors (SceneNode2T->getMesh(), ControlVertexColors.getColor());
-		    MeshManipulator->setVertexColors (SceneNodeTangents->getMesh(), ControlVertexColors.getColor());
-	    }
-    }
+		if ( ControlVertexColors->isDirty() )
+		{
+			MeshManipulator->setVertexColors (SceneNode->getMesh(), ControlVertexColors->getColor());
+			MeshManipulator->setVertexColors (SceneNode2T->getMesh(), ControlVertexColors->getColor());
+			MeshManipulator->setVertexColors (SceneNodeTangents->getMesh(), ControlVertexColors->getColor());
+		}
+	}
 
 	bool Initialized;
-	video::IVideoDriver * Driver;
-	scene::IMeshManipulator* MeshManipulator;
-	scene::IMeshSceneNode* SceneNode;
-	scene::IMeshSceneNode* SceneNode2T;
-	scene::IMeshSceneNode* SceneNodeTangents;
-	SAllColorsControl AllColorsControl;
-	gui::IGUIButton * ButtonLighting;
-	gui::IGUIComboBox * ComboMaterial;
-	STextureControl Texture1;
-	STextureControl Texture2;
-	CColorControl	ControlVertexColors;
+	video::IVideoDriver * 		Driver;
+	scene::IMeshManipulator* 	MeshManipulator;
+	scene::IMeshSceneNode* 		SceneNode;
+	scene::IMeshSceneNode* 		SceneNode2T;
+	scene::IMeshSceneNode* 		SceneNodeTangents;
+	CAllColorsControl* 			AllColorsControl;
+	gui::IGUIButton * 			ButtonLighting;
+	gui::IGUIComboBox * 		ComboMaterial;
+	STextureControl 			Texture1;
+	STextureControl 			Texture2;
+	CColorControl*				ControlVertexColors;
 };
 
 /*
-Control to allow setting the color values of a lightscenenode.
+	Control to allow setting the color values of a lightscenenode.
 */
 struct SLightNodeControl
 {
-	SLightNodeControl() : Initialized(false), SceneNode(0) {}
-
-	virtual bool OnEvent(const SEvent &event)
+	// constructor
+	SLightNodeControl() : Initialized(false), SceneNode(0), AllColorsControl(0)
 	{
-		if ( AllColorsControl.OnEvent(event) )
-			return true;
-		return false;
 	}
 
 	void init(scene::ILightSceneNode* node, gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t * description)
@@ -625,15 +671,9 @@ struct SLightNodeControl
 		if ( Initialized || !node || !guiEnv) // initializing twice or with invalid data not allowed
 			return;
 		SceneNode = node;
-		AllColorsControl.init(guiEnv, pos, description, false);
+		AllColorsControl = new CAllColorsControl(guiEnv, pos, description, false, guiEnv->getRootGUIElement());
 		const video::SLight & lightData = SceneNode->getLightData();
-		if ( AllColorsControl.isDirty() )
-		{
-			AllColorsControl.ControlAmbientColor.setColor(lightData.AmbientColor.toSColor());
-			AllColorsControl.ControlDiffuseColor.setColor(lightData.DiffuseColor.toSColor());
-			AllColorsControl.ControlSpecularColor.setColor(lightData.SpecularColor.toSColor());
-			AllColorsControl.setDirty(false);
-		}
+		AllColorsControl->setColorsToLightDataColors(lightData);
 		Initialized = true;
 	}
 
@@ -643,19 +683,17 @@ struct SLightNodeControl
 			return;
 
 		video::SLight & lightData = SceneNode->getLightData();
-		lightData.AmbientColor = video::SColorf( AllColorsControl.ControlAmbientColor.getColor() );
-		lightData.DiffuseColor = video::SColorf( AllColorsControl.ControlDiffuseColor.getColor() );
-		lightData.SpecularColor = video::SColorf( AllColorsControl.ControlSpecularColor.getColor() );
+		AllColorsControl->updateMaterialColors(lightData);
 	}
 
 protected:
 	bool Initialized;
 	scene::ILightSceneNode* SceneNode;
-	SAllColorsControl AllColorsControl;
+	CAllColorsControl* AllColorsControl;
 };
 
 /*
-Application configuration
+	Application configuration
 */
 struct SConfig
 {
@@ -672,44 +710,43 @@ struct SConfig
 };
 
 /*
-Main application class
+	Main application class
 */
 class CApp : public IEventReceiver
 {
-    friend int main(int argc, char *argv[]);
+	friend int main(int argc, char *argv[]);
 
 public:
-    CApp()
+	// constructor
+	CApp()
 	: IsRunning(false)
 	, Device(0)
 	, Camera(0)
+	, GlobalAmbient(0)
 	{
 	}
 
-    ~CApp()
+	// destructor
+	~CApp()
 	{
 	}
 
 	// stop running - will quit at end of mainloop
-    void stopApp()
+	void stopApp()
 	{
 		IsRunning = false;
 	}
 
+	// Event handler
 	virtual bool OnEvent(const SEvent &event)
 	{
 		if ( NodeLeft.OnEvent(event) )
 			return true;
 		if ( NodeRight.OnEvent(event) )
 			return true;
-		if ( LightControl.OnEvent(event) )
-			return true;
-		if ( GlobalAmbient.OnEvent(event) )
-			return true;
 
 		if (event.EventType == EET_GUI_EVENT)
 		{
-			//s32 id = event.GUIEvent.Caller->getID();
 			gui::IGUIEnvironment* env = Device->getGUIEnvironment();
 
 			switch(event.GUIEvent.EventType)
@@ -750,7 +787,9 @@ public:
 
 protected:
 
-    bool init(int argc, char *argv[])
+	// Application initialization
+	// returns true when it was succesful initialized, otherwise false.
+	bool init(int argc, char *argv[])
 	{
 		Config.DriverType = getDriverTypeFromConsole();
 		if ( (int)Config.DriverType < 0 )
@@ -759,8 +798,8 @@ protected:
 		Device = createDevice(Config.DriverType, Config.ScreenSize);
 		if (!Device)
 			return false;
-		
-        Device->setWindowCaption( DriverTypeNames[Config.DriverType] );
+
+		Device->setWindowCaption( DriverTypeNames[Config.DriverType] );
 		Device->setEventReceiver(this);
 		scene::ISceneManager* smgr = Device->getSceneManager();
 		video::IVideoDriver * driver = Device->getVideoDriver ();
@@ -771,7 +810,7 @@ protected:
 		gui::IGUIFont* font = guiEnv->getFont("../../media/fonthaettenschweiler.bmp");
 		if (font)
 			skin->setFont(font);
-		
+
 		createDefaultTextures(driver);
 
 		gui::IGUIContextMenu * menuBar = guiEnv->addMenu();
@@ -784,18 +823,18 @@ protected:
 
 		Camera = smgr->addCameraSceneNode (0, core::vector3df(0, 0, 0),
 											core::vector3df(0, 0, 100),
-		                                    -1);
+											-1);
 
 		scene::IMeshSceneNode* nodeL = smgr->addCubeSceneNode (10.0f, 0, -1,
-		                                   core::vector3df(-35, 0, 100),
-		                                   core::vector3df(0, 0, 0),
-		                                   core::vector3df(3.0f, 3.0f, 3.0f));
+										   core::vector3df(-35, 0, 100),
+										   core::vector3df(0, 0, 0),
+										   core::vector3df(3.0f, 3.0f, 3.0f));
 		NodeLeft.init( nodeL, Device, core::position2d<s32>(10,20), L"left node" );
 
 		scene::IMeshSceneNode* nodeR = smgr->addCubeSceneNode (10.0f, 0, -1,
-		                                   core::vector3df(35, 0, 100),
-		                                   core::vector3df(0, 0, 0),
-		                                   core::vector3df(3.0f, 3.0f, 3.0f));
+										   core::vector3df(35, 0, 100),
+										   core::vector3df(0, 0, 0),
+										   core::vector3df(3.0f, 3.0f, 3.0f));
 		NodeRight.init( nodeR, Device, core::position2d<s32>(530,20), L"right node" );
 
 		scene::ILightSceneNode* nodeLight = smgr->addLightSceneNode(0, core::vector3df(0, 0, 0),
@@ -803,12 +842,13 @@ protected:
 														100.0f);
 		LightControl.init(nodeLight, guiEnv, core::position2d<s32>(270,20), L"light" );
 
-		GlobalAmbient.init( guiEnv, core::position2d<s32>(270, 300), L"global ambient" );
-		GlobalAmbient.setColor( smgr->getAmbientLight().toSColor() );
+		GlobalAmbient = new CColorControl( guiEnv, core::position2d<s32>(270, 300), L"global ambient", guiEnv->getRootGUIElement());
+		GlobalAmbient->setColor( smgr->getAmbientLight().toSColor() );
 
 		return true;
 	}
 
+	// Ask the user which driver to use
 	video::E_DRIVER_TYPE getDriverTypeFromConsole()
 	{
 		printf("Please select the driver you want for this example:\n"\
@@ -832,11 +872,12 @@ protected:
 		}
 	}
 
+	// Update one frame
 	bool update()
 	{
 		using namespace irr;
 
-    	video::IVideoDriver* videoDriver =  Device->getVideoDriver();
+		video::IVideoDriver* videoDriver =  Device->getVideoDriver();
 		if ( !Device->run() )
 			return false;
 
@@ -857,10 +898,10 @@ protected:
 			NodeRight.update();
 			LightControl.update();
 
-			if ( GlobalAmbient.isDirty() )
+			if ( GlobalAmbient->isDirty() )
 			{
-				smgr->setAmbientLight( GlobalAmbient.getColor() );
-				GlobalAmbient.setDirty(false);
+				smgr->setAmbientLight( GlobalAmbient->getColor() );
+				GlobalAmbient->resetDirty();
 			}
 
 			video::SColor bkColor( skin->getColor(gui::EGDC_APP_WORKSPACE) );
@@ -875,7 +916,8 @@ protected:
 		return true;
 	}
 
-    void run()
+	// Run the application. Our main loop.
+	void run()
 	{
 		IsRunning = true;
 
@@ -892,9 +934,12 @@ protected:
 		}
 	}
 
-    void quit()
+	// Close down the application
+	void quit()
 	{
 		IsRunning = false;
+		GlobalAmbient->drop();
+		GlobalAmbient = NULL;
 		if ( Device )
 		{
 			Device->closeDevice();
@@ -967,6 +1012,7 @@ protected:
 		driver->addTexture (io::path("GRAYSCALE_A8R8G8B8"), imageA8R8G8B8);
 	}
 
+	// Load a texture and make sure nodes know it when more textures are available.
 	void loadTexture(const io::path &name)
 	{
 		Device->getVideoDriver()->getTexture(name);
@@ -976,23 +1022,26 @@ protected:
 
 private:
 	SConfig						Config;
-    volatile bool				IsRunning;
+	volatile bool				IsRunning;
 	IrrlichtDevice * 			Device;
 	scene::ICameraSceneNode *	Camera;
 	SMeshNodeControl			NodeLeft;
 	SMeshNodeControl			NodeRight;
 	SLightNodeControl			LightControl;
-	CColorControl				GlobalAmbient;
+	CColorControl *				GlobalAmbient;
 };
 
+/*
+  A very short main as we do everything else in classes.
+*/
 int main(int argc, char *argv[])
 {
 	CApp APP;
 
-    if ( !APP.init(argc, argv) )
+	if ( !APP.init(argc, argv) )
 	{
 		printf("init failed\n");
-        return 1;
+		return 1;
 	}
 
 	APP.run();
