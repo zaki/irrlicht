@@ -529,6 +529,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\EAttributes.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\IFileList.h"
 					>
 				</File>
@@ -2343,6 +2347,10 @@
 			</File>
 			<File
 				RelativePath="CAttributes.h"
+				>
+			</File>
+			<File
+				RelativePath="IAttribute.h"
 				>
 			</File>
 			<File

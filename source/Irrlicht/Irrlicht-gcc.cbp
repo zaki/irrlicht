@@ -436,6 +436,7 @@
 		<Unit filename="../../include/IAnimatedMeshSceneNode.h" />
 		<Unit filename="../../include/IAttributeExchangingObject.h" />
 		<Unit filename="../../include/IAttributes.h" />
+		<Unit filename="../../include/EAttributes.h" />
 		<Unit filename="../../include/IBillboardSceneNode.h" />
 		<Unit filename="../../include/IBoneSceneNode.h" />
 		<Unit filename="../../include/ICameraSceneNode.h" />
@@ -569,6 +570,7 @@
 		<Unit filename="CAttributeImpl.h" />
 		<Unit filename="CAttributes.cpp" />
 		<Unit filename="CAttributes.h" />
+		<Unit filename="IAttribute.h" />
 		<Unit filename="CB3DMeshFileLoader.cpp" />
 		<Unit filename="CB3DMeshFileLoader.h" />
 		<Unit filename="CBSPMeshFileLoader.cpp" />
