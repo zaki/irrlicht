@@ -3320,7 +3320,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit330]
-FileName=jpeglib\jcphuff.c
+FileName=jpeglib\jcarith.c
 Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
@@ -3510,7 +3510,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit349]
-FileName=jpeglib\jdphuff.c
+FileName=jpeglib\jdarith.c
 Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
@@ -3630,7 +3630,7 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit361]
-FileName=jpeglib\jidctred.c
+FileName=jpeglib\jaricom.c
 Folder=Irrlicht/extern/jpeglib
 Compile=1
 CompileCpp=0
@@ -6337,3 +6337,4 @@ Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
+

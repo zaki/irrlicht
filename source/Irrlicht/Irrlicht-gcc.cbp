@@ -423,6 +423,7 @@
 			<Add alias="All" targets="Win32 - Debug - dll;Win32 - Release - accurate math - dll;Win32 - Release - fast math - dll;" />
 		</VirtualTargets>
 		<Unit filename="../../changes.txt" />
+		<Unit filename="../../include/EAttributes.h" />
 		<Unit filename="../../include/ECullingTypes.h" />
 		<Unit filename="../../include/EDebugSceneTypes.h" />
 		<Unit filename="../../include/EDriverTypes.h" />
@@ -436,7 +437,6 @@
 		<Unit filename="../../include/IAnimatedMeshSceneNode.h" />
 		<Unit filename="../../include/IAttributeExchangingObject.h" />
 		<Unit filename="../../include/IAttributes.h" />
-		<Unit filename="../../include/EAttributes.h" />
 		<Unit filename="../../include/IBillboardSceneNode.h" />
 		<Unit filename="../../include/IBoneSceneNode.h" />
 		<Unit filename="../../include/ICameraSceneNode.h" />
@@ -570,7 +570,6 @@
 		<Unit filename="CAttributeImpl.h" />
 		<Unit filename="CAttributes.cpp" />
 		<Unit filename="CAttributes.h" />
-		<Unit filename="IAttribute.h" />
 		<Unit filename="CB3DMeshFileLoader.cpp" />
 		<Unit filename="CB3DMeshFileLoader.h" />
 		<Unit filename="CBSPMeshFileLoader.cpp" />
@@ -943,6 +942,7 @@
 		<Unit filename="CZBuffer.h" />
 		<Unit filename="CZipReader.cpp" />
 		<Unit filename="CZipReader.h" />
+		<Unit filename="IAttribute.h" />
 		<Unit filename="IBurningShader.cpp" />
 		<Unit filename="IBurningShader.h" />
 		<Unit filename="IDepthBuffer.h" />
@@ -961,10 +961,14 @@
 		<Unit filename="glext.h" />
 		<Unit filename="irrXML.cpp" />
 		<Unit filename="jpeglib/cderror.h" />
+		<Unit filename="jpeglib/jaricom.c">
 		<Unit filename="jpeglib/jcapimin.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jcapistd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="jpeglib/jcarith.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jccoefct.c">
@@ -999,9 +1003,6 @@
 		<Unit filename="jpeglib/jcparam.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib/jcphuff.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="jpeglib/jcprepct.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1015,6 +1016,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jdapistd.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="jpeglib/jdarith.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jdatadst.c">
@@ -1052,9 +1056,6 @@
 		<Unit filename="jpeglib/jdmerge.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="jpeglib/jdphuff.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="jpeglib/jdpostct.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1084,9 +1085,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jidctint.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="jpeglib/jidctred.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="jpeglib/jinclude.h" />

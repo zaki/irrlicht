@@ -558,13 +558,13 @@
 			<Filter
 				Name="io">
 				<File
+					RelativePath=".\..\..\include\EAttributes.h">
+				</File>
+				<File
 					RelativePath=".\..\..\include\IAttributeExchangingObject.h">
 				</File>
 				<File
 					RelativePath=".\..\..\include\IAttributes.h">
-				</File>
-				<File
-					RelativePath=".\..\..\include\EAttributes.h">
 				</File>
 				<File
 					RelativePath=".\..\..\include\IFileList.h">
@@ -1946,9 +1946,6 @@
 				RelativePath=".\CAttributes.h">
 			</File>
 			<File
-				RelativePath=".\IAttribute.h">
-			</File>
-			<File
 				RelativePath=".\CFileList.cpp">
 			</File>
 			<File
@@ -2028,6 +2025,9 @@
 			</File>
 			<File
 				RelativePath=".\CZipReader.h">
+			</File>
+			<File
+				RelativePath=".\IAttribute.h">
 			</File>
 			<File
 				RelativePath=".\irrXML.cpp">
@@ -2151,10 +2151,16 @@
 						RelativePath="jpeglib\cderror.h">
 					</File>
 					<File
+						RelativePath="jpeglib\jaricom.c">
+					</File>
+					<File
 						RelativePath="jpeglib\jcapimin.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jcapistd.c">
+					</File>
+					<File
+						RelativePath="jpeglib\jcarith.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jccoefct.c">
@@ -2193,9 +2199,6 @@
 						RelativePath="jpeglib\jcparam.c">
 					</File>
 					<File
-						RelativePath="jpeglib\jcphuff.c">
-					</File>
-					<File
 						RelativePath="jpeglib\jcprepct.c">
 					</File>
 					<File
@@ -2209,6 +2212,9 @@
 					</File>
 					<File
 						RelativePath="jpeglib\jdapistd.c">
+					</File>
+					<File
+						RelativePath="jpeglib\jdarith.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jdatadst.c">
@@ -2250,9 +2256,6 @@
 						RelativePath="jpeglib\jdmerge.c">
 					</File>
 					<File
-						RelativePath="jpeglib\jdphuff.c">
-					</File>
-					<File
 						RelativePath="jpeglib\jdpostct.c">
 					</File>
 					<File
@@ -2284,9 +2287,6 @@
 					</File>
 					<File
 						RelativePath="jpeglib\jidctint.c">
-					</File>
-					<File
-						RelativePath="jpeglib\jidctred.c">
 					</File>
 					<File
 						RelativePath="jpeglib\jinclude.h">

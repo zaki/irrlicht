@@ -2710,7 +2710,7 @@
 							>
 						</File>
 						<File
-							RelativePath=".\jpeglib\jaricom.c"
+							RelativePath="jpeglib\jaricom.c"
 							>
 						</File>
 						<File
@@ -2722,7 +2722,7 @@
 							>
 						</File>
 						<File
-							RelativePath=".\jpeglib\jcarith.c"
+							RelativePath="jpeglib\jcarith.c"
 							>
 						</File>
 						<File
@@ -2794,7 +2794,7 @@
 							>
 						</File>
 						<File
-							RelativePath=".\jpeglib\jdarith.c"
+							RelativePath="jpeglib\jdarith.c"
 							>
 						</File>
 						<File
