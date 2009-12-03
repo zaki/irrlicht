@@ -274,13 +274,13 @@
 				RelativePath="..\..\include\IAnimatedMeshSceneNode.h">
 			</File>
 			<File
+				RelativePath="..\..\include\EAttributes.h">
+			</File>
+			<File
 				RelativePath="..\..\include\IAttributeExchangingObject.h">
 			</File>
 			<File
 				RelativePath="..\..\include\IAttributes.h">
-			</File>
-			<File
-				RelativePath="..\..\include\EAttributes.h">
 			</File>
 			<File
 				RelativePath="..\..\include\IBillboardSceneNode.h">
@@ -880,9 +880,6 @@
 				RelativePath=".\CAttributes.h">
 			</File>
 			<File
-				RelativePath=".\IAttribute.h">
-			</File>
-			<File
 				RelativePath=".\CColorConverter.cpp">
 			</File>
 			<File
@@ -1379,6 +1376,9 @@
 			</File>
 			<File
 				RelativePath=".\glxext.h">
+			</File>
+			<File
+				RelativePath=".\IAttribute.h">
 			</File>
 			<File
 				RelativePath=".\IBurningShader.cpp">
