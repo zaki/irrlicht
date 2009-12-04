@@ -86,11 +86,6 @@
 
 #include "sha2.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /*  PLATFORM SPECIFIC INCLUDES */
 
 #if defined( __FreeBSD__ ) || defined( __OpenBSD__ )
@@ -705,9 +700,4 @@ sha2_int sha2(unsigned char hval[], unsigned long size,
 }
 
 #endif
-
-#if defined(__cplusplus)
-}
-#endif
-
 

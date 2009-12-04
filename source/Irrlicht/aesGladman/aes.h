@@ -37,13 +37,7 @@
 #ifndef _AES_H
 #define _AES_H
 
-/*  This include is used to find 8 & 32 bit unsigned integer types  */
-#include "limits.h"
-
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
+#include "irrMath.h"
 
 #define AES_128     /* define if AES with 128 bit keys is needed    */
 #define AES_192     /* define if AES with 192 bit keys is needed    */
@@ -53,22 +47,11 @@ extern "C"
 /* The following must also be set in assembler files if being used  */
 
 #define AES_ENCRYPT /* if support for encryption is needed          */
-//#define AES_DECRYPT /* if support for decryption is needed          */
+#define AES_DECRYPT /* if support for decryption is needed          */
 #define AES_ERR_CHK /* for parameter checks & error return codes    */
 
-#if UCHAR_MAX == 0xff                   /* an unsigned 8 bit type   */
-  typedef unsigned char      aes_08t;
-#else
-#error Please define aes_08t as an 8-bit unsigned integer type in aes.h
-#endif
-
-#if UINT_MAX == 0xffffffff              /* an unsigned 32 bit type  */
-  typedef   unsigned int     aes_32t;
-#elif ULONG_MAX == 0xffffffff
-  typedef   unsigned long    aes_32t;
-#else
-#error Please define aes_32t as a 32-bit unsigned integer type in aes.h
-#endif
+typedef irr::u8 aes_08t;
+typedef irr::u32 aes_32t;
 
 #define AES_BLOCK_SIZE  16  /* the AES block size in bytes          */
 #define N_COLS           4  /* the number of columns in the state   */
@@ -101,7 +84,8 @@ void gen_tabs(void);
 #ifdef  AES_ENCRYPT
 
 typedef struct  
-{   aes_32t ks[KS_LENGTH];
+{
+	aes_32t ks[KS_LENGTH];
 } aes_encrypt_ctx;
 
 #if defined(AES_128) || defined(AES_VAR)
@@ -126,7 +110,8 @@ aes_rval aes_encrypt(const void *in_blk, void *out_blk, const aes_encrypt_ctx cx
 #ifdef AES_DECRYPT
 
 typedef struct  
-{   aes_32t ks[KS_LENGTH];
+{
+	aes_32t ks[KS_LENGTH];
 } aes_decrypt_ctx;
 
 #if defined(AES_128) || defined(AES_VAR)
@@ -148,8 +133,5 @@ aes_rval aes_decrypt_key(const void *in_key, int key_len, aes_decrypt_ctx cx[1])
 aes_rval aes_decrypt(const void *in_blk, void *out_blk, const aes_decrypt_ctx cx[1]);
 #endif
 
-#if defined(__cplusplus)
-}
 #endif
 
-#endif

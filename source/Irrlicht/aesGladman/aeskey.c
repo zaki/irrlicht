@@ -37,11 +37,6 @@
 
 #include "aesopt.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /* Initialise the key schedule from the user supplied key. The key
    length can be specified in bytes, with legal values of 16, 24
    and 32, or in bits, with legal values of 128, 192 and 256. These
@@ -458,6 +453,3 @@ aes_rval aes_decrypt_key(const void *in_key, int key_len, aes_decrypt_ctx cx[1])
 
 #endif
 
-#if defined(__cplusplus)
-}
-#endif

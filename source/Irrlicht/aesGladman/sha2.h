@@ -80,11 +80,6 @@
 #endif
 #endif
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 #define SHA256_DIGEST_SIZE  32
 #define SHA384_DIGEST_SIZE  48
 #define SHA512_DIGEST_SIZE  64
@@ -157,8 +152,5 @@ sha2_void sha2_hash(const unsigned char data[], unsigned long len, sha2_ctx ctx[
 sha2_void sha2_end(unsigned char hval[], sha2_ctx ctx[1]);
 sha2_int  sha2(unsigned char hval[], unsigned long size, const unsigned char data[], unsigned long len); 
 
-#if defined(__cplusplus)
-}
 #endif
 
-#endif

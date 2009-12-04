@@ -40,17 +40,13 @@
 
 #include "fileenc.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /* subroutine for data encryption/decryption    */
 /* this could be speeded up a lot by aligning   */
 /* buffers and using 32 bit operations          */
 
 static void encr_data(unsigned char data[], unsigned long d_len, fcrypt_ctx cx[1])
-{   unsigned long i = 0, pos = cx->encr_pos;
+{
+    unsigned long i = 0, pos = cx->encr_pos;
 
     while(i < d_len)
     {
@@ -79,7 +75,8 @@ int fcrypt_init(
     unsigned char pwd_ver[PWD_VER_LENGTH],  /* 2 byte password verifier (output)    */
 #endif
     fcrypt_ctx      cx[1])                  /* the file encryption context (output) */
-{   unsigned char kbuf[2 * MAX_KEY_LENGTH + PWD_VER_LENGTH];
+{
+    unsigned char kbuf[2 * MAX_KEY_LENGTH + PWD_VER_LENGTH];
 
     if(pwd_len > MAX_PWD_LENGTH)
         return PASSWORD_TOO_LONG;
@@ -92,13 +89,13 @@ int fcrypt_init(
     /* initialise the encryption nonce and buffer pos   */
     cx->encr_pos = BLOCK_SIZE;
 
-	/* if we need a random component in the encryption  */
+    /* if we need a random component in the encryption  */
     /* nonce, this is where it would have to be set     */
     memset(cx->nonce, 0, BLOCK_SIZE * sizeof(unsigned char));
-	/* initialise for authentication			        */
+    /* initialise for authentication			        */
     hmac_sha_begin(cx->auth_ctx);
 
-	/* derive the encryption and authetication keys and the password verifier   */
+    /* derive the encryption and authetication keys and the password verifier   */
     derive_key(pwd, pwd_len, salt, SALT_LENGTH(mode), KEYING_ITERATIONS,
                         kbuf, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
     /* set the encryption key							*/
@@ -108,10 +105,10 @@ int fcrypt_init(
 #ifdef PASSWORD_VERIFIER
     memcpy(pwd_ver, kbuf + 2 * KEY_LENGTH(mode), PWD_VER_LENGTH);
 #endif
-	/* clear the buffer holding the derived key values	*/
-	memset(kbuf, 0, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
+    /* clear the buffer holding the derived key values	*/
+    memset(kbuf, 0, 2 * KEY_LENGTH(mode) + PWD_VER_LENGTH);
 
-	return GOOD_RETURN;
+    return GOOD_RETURN;
 }
 
 /* perform 'in place' encryption and authentication */
@@ -133,13 +130,11 @@ void fcrypt_decrypt(unsigned char data[], unsigned int data_len, fcrypt_ctx cx[1
 /* close encryption/decryption and return the MAC value */
 
 int fcrypt_end(unsigned char mac[], fcrypt_ctx cx[1])
-{	unsigned int res = cx->mode;
+{
+    unsigned int res = cx->mode;
 
     hmac_sha_end(mac, MAC_LENGTH(cx->mode), cx->auth_ctx);
-	memset(cx, 0, sizeof(fcrypt_ctx));	/* clear the encryption context	*/
-	return MAC_LENGTH(res);				/* return MAC length in bytes   */
+    memset(cx, 0, sizeof(fcrypt_ctx));	/* clear the encryption context	*/
+    return MAC_LENGTH(res);		/* return MAC length in bytes   */
 }
 
-#if defined(__cplusplus)
-}
-#endif

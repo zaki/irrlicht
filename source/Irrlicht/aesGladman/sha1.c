@@ -39,11 +39,6 @@
 
 #include "sha1.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /*
     To obtain the highest speed on processors with 32-bit words, this code 
     needs to determine the order in which bytes are packed into such words.
@@ -318,6 +313,3 @@ void sha1(unsigned char hval[], const unsigned char data[], unsigned long len)
     sha1_begin(cx); sha1_hash(data, len, cx); sha1_end(hval, cx);
 }
 
-#if defined(__cplusplus)
-}
-#endif

@@ -727,11 +727,6 @@
 #define ls_box(x,c)     no_table(x,t_use(s,box),vf1,rf2,c)
 #endif
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /*  If there are no global variables, the definitions here can be
     used to put the AES tables in a structure so that a pointer 
     can then be added to the AES context to pass them to the AES
@@ -1032,10 +1027,6 @@ extern aes_32t t_dec(r,c)[RC_LENGTH];
 #endif
 #ifdef  IM4_SET
     d_4(aes_32t, t_dec(i,m), mm_data, v);
-#endif
-
-#if defined(__cplusplus)
-}
 #endif
 
 #endif

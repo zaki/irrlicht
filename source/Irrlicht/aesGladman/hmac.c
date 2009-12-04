@@ -35,11 +35,6 @@
 
 #include "hmac.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /* initialise the HMAC context to zero */
 void hmac_sha_begin(hmac_ctx cx[1])
 {
@@ -140,6 +135,3 @@ void hmac_sha(const unsigned char key[], unsigned long key_len,
     hmac_sha_end(mac, mac_len, cx);
 }
 
-#if defined(__cplusplus)
-}
-#endif

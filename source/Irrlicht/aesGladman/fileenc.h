@@ -77,15 +77,10 @@
 
 /* the context for file encryption   */
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 typedef struct
 {   unsigned char   nonce[BLOCK_SIZE];          /* the CTR nonce          */
     unsigned char   encr_bfr[BLOCK_SIZE];       /* encrypt buffer         */
-    aes_encrypt_ctx	encr_ctx[1];                /* encryption context     */
+    aes_encrypt_ctx encr_ctx[1];                /* encryption context     */
     hmac_ctx        auth_ctx[1];                /* authentication context */
     unsigned int    encr_pos;                   /* block position (enc)   */
     unsigned int    pwd_len;                    /* password length        */
@@ -115,8 +110,5 @@ void fcrypt_decrypt(unsigned char data[], unsigned int data_len, fcrypt_ctx cx[1
 int fcrypt_end(unsigned char mac[],     /* the MAC value (output)   */
                fcrypt_ctx cx[1]);       /* the context (input)      */
 
-#if defined(__cplusplus)
-}
 #endif
 
-#endif

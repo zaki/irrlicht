@@ -39,11 +39,6 @@
 #define SHA1_BLOCK_SIZE  64
 #define SHA1_DIGEST_SIZE 20
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /* define an unsigned 32-bit type */
 
 #if UINT_MAX == 0xffffffff
@@ -69,8 +64,5 @@ void sha1_hash(const unsigned char data[], unsigned long len, sha1_ctx ctx[1]);
 void sha1_end(unsigned char hval[], sha1_ctx ctx[1]);
 void sha1(unsigned char hval[], const unsigned char data[], unsigned long len);
 
-#if defined(__cplusplus)
-}
 #endif
 
-#endif
