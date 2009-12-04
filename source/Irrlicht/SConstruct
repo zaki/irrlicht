@@ -66,7 +66,7 @@ for fileName in LIBPNGNAMES:
 	LIBPNGOBJ += [LIBPNG_PREFIX + fileName];
 
 AESGLADMAN_PREFIX = 'aesGladman/';
-AESGLADMANNAMES = ['aescrypt.c', 'aeskey.c', 'aestab.c', 'fileenc.c', 'hmac.c', 'prng.c', 'pwd2key.c', 'sha1.c', 'sha2.c'];
+AESGLADMANNAMES = ['aescrypt.cpp', 'aeskey.cpp', 'aestab.cpp', 'fileenc.cpp', 'hmac.cpp', 'prng.cpp', 'pwd2key.cpp', 'sha1.cpp', 'sha2.cpp'];
 AESGLADMANOBJ = [];
 for fileName in AESGLADMANNAMES:
 	AESGLADMANOBJ += [AESGLADMAN_PREFIX + fileName];

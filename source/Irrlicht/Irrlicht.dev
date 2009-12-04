@@ -6349,20 +6349,20 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit631]
-FileName=aesGladman\aescrypt.c
+FileName=aesGladman\aescrypt.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
 BuildCmd=
 
 [Unit632]
-FileName=aesGladman\aeskey.c
+FileName=aesGladman\aeskey.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
@@ -6379,10 +6379,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit634]
-FileName=aesGladman\aestab.c
+FileName=aesGladman\aestab.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
@@ -6399,10 +6399,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit636]
-FileName=aesGladman\fileenc.c
+FileName=aesGladman\fileenc.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
@@ -6419,10 +6419,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit638]
-FileName=aesGladman\hmac.c
+FileName=aesGladman\hmac.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
@@ -6439,10 +6439,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit640]
-FileName=aesGladman\prng.c
+FileName=aesGladman\prng.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
@@ -6459,10 +6459,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit642]
-FileName=aesGladman\pwd2key.c
+FileName=aesGladman\pwd2key.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
@@ -6479,10 +6479,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit644]
-FileName=aesGladman\sha1.c
+FileName=aesGladman\sha1.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
@@ -6499,10 +6499,10 @@ OverrideBuildCmd=0
 BuildCmd=
 
 [Unit646]
-FileName=aesGladman\sha2.c
+FileName=aesGladman\sha2.cpp
 Folder=Irrlicht/extern/aesGladman
 Compile=1
-CompileCpp=0
+CompileCpp=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
