@@ -1197,40 +1197,22 @@
 		</Unit>
 		<Unit filename="zlib/zutil.h" />
 		<Unit filename="aesGladman/aes.h" />
-		<Unit filename="aesGladman/aescrypt.c" >
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="aesGladman/aeskey.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/aescrypt.cpp" />
+		<Unit filename="aesGladman/aeskey.cpp" />
 		<Unit filename="aesGladman/aesopt.h" />
-		<Unit filename="aesGladman/aestab.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/aestab.cpp" />
 		<Unit filename="aesGladman/bzlib.h" />
-		<Unit filename="aesGladman/fileenc.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/fileenc.cpp" />
 		<Unit filename="aesGladman/fileenc.h" />
-		<Unit filename="aesGladman/hmac.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/hmac.cpp" />
 		<Unit filename="aesGladman/hmac.h" />
-		<Unit filename="aesGladman/prng.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/prng.cpp" />
 		<Unit filename="aesGladman/prng.h" />
-		<Unit filename="aesGladman/pwd2key.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/pwd2key.cpp" />
 		<Unit filename="aesGladman/pwd2key.h" />
-		<Unit filename="aesGladman/sha1.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/sha1.cpp" />
 		<Unit filename="aesGladman/sha1.h" />
-		<Unit filename="aesGladman/sha2.c" >
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="aesGladman/sha2.cpp" />
 		<Unit filename="aesGladman/sha2.h" />
 		<Extensions>
 			<code_completion />

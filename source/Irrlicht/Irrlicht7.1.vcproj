@@ -2382,52 +2382,52 @@
 						RelativePath=".\aesGladman\aes.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\aescrypt.c">
+						RelativePath=".\aesGladman\aescrypt.cpp">
 					</File>
 					<File
-						RelativePath=".\aesGladman\aeskey.c">
+						RelativePath=".\aesGladman\aeskey.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\aesopt.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\aestab.c">
+						RelativePath=".\aesGladman\aestab.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\bzlib.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\fileenc.c">
+						RelativePath=".\aesGladman\fileenc.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\fileenc.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\hmac.c">
+						RelativePath=".\aesGladman\hmac.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\hmac.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\prng.c">
+						RelativePath=".\aesGladman\prng.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\prng.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\pwd2key.c">
+						RelativePath=".\aesGladman\pwd2key.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\pwd2key.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\sha1.c">
+						RelativePath=".\aesGladman\sha1.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\sha1.h">
 					</File>
 					<File
-						RelativePath=".\aesGladman\sha2.c">
+						RelativePath=".\aesGladman\sha2.cpp">
 					</File>
 					<File
 						RelativePath=".\aesGladman\sha2.h">
