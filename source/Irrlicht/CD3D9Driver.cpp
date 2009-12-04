@@ -2910,6 +2910,9 @@ s32 CD3D9Driver::addHighLevelShaderMaterial(
 		const c8* pixelShaderProgram,
 		const c8* pixelShaderEntryPointName,
 		E_PIXEL_SHADER_TYPE psCompileTarget,
+		const c8* geometryShaderProgram,
+		const c8* geometryShaderEntryPointName,
+		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial, s32 userData)
 {
