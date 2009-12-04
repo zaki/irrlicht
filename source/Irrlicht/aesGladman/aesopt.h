@@ -146,19 +146,6 @@
     #if clauses.
 */
 
-/*  PLATFORM SPECIFIC INCLUDES */
-
-#if defined( __FreeBSD__ ) || defined( __OpenBSD__ )
-#  include <sys/endian.h>
-#elif defined( BSD ) && ( BSD >= 199103 )
-#  include <machine/endian.h>
-#elif defined( __GNUC__ ) || defined( __GNU_LIBRARY__ )
-#  include <endian.h>
-#  include <byteswap.h>
-#elif defined( linux )
-#  include <endian.h>
-#endif
-
 /*  BYTE ORDER IN 32-BIT WORDS
 
     To obtain the highest speed on processors with 32-bit words, this code
@@ -173,75 +160,10 @@
 #define BRG_LITTLE_ENDIAN   1234 /* byte 0 is least significant (i386) */
 #define BRG_BIG_ENDIAN      4321 /* byte 0 is most significant (mc68k) */
 
-#if defined( __alpha__ ) || defined( __alpha ) || defined( i386 )       ||   \
-    defined( __i386__ )  || defined( _M_I86 )  || defined( _M_IX86 )    ||   \
-    defined( __OS2__ )   || defined( sun386 )  || defined( __TURBOC__ ) ||   \
-    defined( vax )       || defined( vms )     || defined( VMS )        ||   \
-    defined( __VMS ) 
-
-#define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-
-#endif
-
-#if defined( AMIGA )    || defined( applec )  || defined( __AS400__ )  ||   \
-    defined( _CRAY )    || defined( __hppa )  || defined( __hp9000 )   ||   \
-    defined( ibm370 )   || defined( mc68000 ) || defined( m68k )       ||   \
-    defined( __MRC__ )  || defined( __MVS__ ) || defined( __MWERKS__ ) ||   \
-    defined( sparc )    || defined( __sparc)  || defined( SYMANTEC_C ) ||   \
-    defined( __TANDEM ) || defined( THINK_C ) || defined( __VMCMS__ )
-    
+#ifdef __BIG_ENDIAN__
 #define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-
-#endif
-
-/*  if the platform is still not known, try to find its byte order  */
-/*  from commonly used definitions in the headers included earlier  */
-
-#if !defined(PLATFORM_BYTE_ORDER)
-
-#if defined(LITTLE_ENDIAN) || defined(BIG_ENDIAN)
-#  if    defined(LITTLE_ENDIAN) && !defined(BIG_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-#  elif !defined(LITTLE_ENDIAN) &&  defined(BIG_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-#  elif defined(BYTE_ORDER) && (BYTE_ORDER == LITTLE_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-#  elif defined(BYTE_ORDER) && (BYTE_ORDER == BIG_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-#  endif
-
-#elif defined(_LITTLE_ENDIAN) || defined(_BIG_ENDIAN)
-#  if    defined(_LITTLE_ENDIAN) && !defined(_BIG_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-#  elif !defined(_LITTLE_ENDIAN) &&  defined(_BIG_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-#  elif defined(_BYTE_ORDER) && (_BYTE_ORDER == _LITTLE_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-#  elif defined(_BYTE_ORDER) && (_BYTE_ORDER == _BIG_ENDIAN)
-#    define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-#  endif
-
-#elif defined(__LITTLE_ENDIAN__) || defined(__BIG_ENDIAN__)
-#  if    defined(__LITTLE_ENDIAN__) && !defined(__BIG_ENDIAN__)
-#    define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-#  elif !defined(__LITTLE_ENDIAN__) &&  defined(__BIG_ENDIAN__)
-#    define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-#  elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __LITTLE_ENDIAN__)
-#    define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-#  elif defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __BIG_ENDIAN__)
-#    define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-#  endif
-
-#elif 0     /* **** EDIT HERE IF NECESSARY **** */
-#define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
-
-#elif 0     /* **** EDIT HERE IF NECESSARY **** */
-#define PLATFORM_BYTE_ORDER BRG_BIG_ENDIAN
-
 #else
-#error Please edit aesopt.h (line 235 or 238) to set the platform byte order
-#endif
-
+#define PLATFORM_BYTE_ORDER BRG_LITTLE_ENDIAN
 #endif
 
 /*  SOME LOCAL DEFINITIONS  */
@@ -253,14 +175,7 @@
 #define PARTIAL                1
 #define FULL                   2
 
-#if defined(bswap32)
-#define aes_sw32    bswap32
-#elif defined(bswap_32)
-#define aes_sw32    bswap_32
-#else 
-#define brot(x,n)   (((aes_32t)(x) <<  n) | ((aes_32t)(x) >> (32 - n)))
-#define aes_sw32(x) ((brot((x),8) & 0x00ff00ff) | (brot((x),24) & 0xff00ff00))
-#endif
+#define aes_sw32 Byteswap::byteswap
 
 /*  1. FUNCTIONS REQUIRED
 
@@ -381,7 +296,7 @@
     If this section is included, tables are used to provide faster finite
     field arithmetic (this has no effect if FIXED_TABLES is defined).
 */
-#if 1
+#if 0
 #define FF_TABLES
 #endif
 
@@ -419,13 +334,13 @@
     statically into the binary file.  Otherwise the subroutine gen_tabs()
     must be called to compute them before the code is first used.
 */
-#if 1
+#if 0
 #define FIXED_TABLES
 #endif
 
 /*  9. TABLE ALIGNMENT
 
-    On some sytsems speed will be improved by aligning the AES large lookup
+    On some systems speed will be improved by aligning the AES large lookup
     tables on particular boundaries. This define should be set to a power of
     two giving the desired alignment. It can be left undefined if alignment 
     is not needed.  This option is specific to the Microsft VC++ compiler -
@@ -1030,3 +945,4 @@ extern aes_32t t_dec(r,c)[RC_LENGTH];
 #endif
 
 #endif
+
