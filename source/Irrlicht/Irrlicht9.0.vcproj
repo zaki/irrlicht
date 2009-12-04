@@ -3070,10 +3070,6 @@
 							>
 						</File>
 						<File
-							RelativePath=".\aesGladman\Readme.txt"
-							>
-						</File>
-						<File
 							RelativePath=".\aesGladman\sha1.c"
 							>
 						</File>
