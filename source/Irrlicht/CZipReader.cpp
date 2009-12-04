@@ -15,11 +15,15 @@
 #ifdef _IRR_COMPILE_WITH_ZLIB_
 	#ifndef _IRR_USE_NON_SYSTEM_ZLIB_
 	#include <zlib.h> // use system lib
-	#else // _IRR_USE_NON_SYSTEM_ZLIB_
+	#else
 	#include "zlib/zlib.h"
-	#endif // _IRR_USE_NON_SYSTEM_ZLIB_
-#endif // _IRR_COMPILE_WITH_ZLIB_
-#include "aesGladman/fileenc.h"
+	#endif
+
+	#ifdef _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
+	#include "aesGladman/fileenc.h"
+	#endif
+#endif
+
 namespace irr
 {
 namespace io
