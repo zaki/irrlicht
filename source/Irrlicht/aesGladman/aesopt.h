@@ -334,8 +334,9 @@
     statically into the binary file.  Otherwise the subroutine gen_tabs()
     must be called to compute them before the code is first used.
 */
-#if 0
+#if 1
 #define FIXED_TABLES
+#define DO_TABLES
 #endif
 
 /*  9. TABLE ALIGNMENT
