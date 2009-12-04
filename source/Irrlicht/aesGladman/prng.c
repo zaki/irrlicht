@@ -41,11 +41,6 @@
 #include <memory.h>
 #include "prng.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 /* mix a random data pool using the SHA1 compression function (as   */
 /* suggested by Peter Gutmann in his paper on random pools)         */
 
@@ -148,8 +143,4 @@ void prng_end(prng_ctx ctx[1])
     /* ensure the data in the context is destroyed  */
     memset(ctx, 0, sizeof(prng_ctx));
 }
-
-#if defined(__cplusplus)
-}
-#endif
 

@@ -38,10 +38,6 @@
 
 #include <memory.h>
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
 #define USE_SHA1
 #if !defined(USE_SHA1) && !defined(USE_SHA256)
 #error define USE_SHA1 or USE_SHA256 to set the HMAC hash algorithm
@@ -78,7 +74,8 @@ extern "C"
 #define HMAC_IN_DATA  0xffffffff
 
 typedef struct
-{   unsigned char   key[HASH_INPUT_SIZE];
+{
+    unsigned char   key[HASH_INPUT_SIZE];
     sha_ctx         ctx[1];
     unsigned long   klen;
 } hmac_ctx;
@@ -95,8 +92,5 @@ void hmac_sha(const unsigned char key[], unsigned long key_len,
           const unsigned char data[], unsigned long data_len,
           unsigned char mac[], unsigned long mac_len);
 
-#if defined(__cplusplus)
-}
 #endif
 
-#endif

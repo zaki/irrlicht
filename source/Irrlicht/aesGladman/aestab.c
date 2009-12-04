@@ -32,11 +32,6 @@
 
 */
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 #define DO_TABLES
 
 #include "aesopt.h"
@@ -224,9 +219,5 @@ void gen_tabs(void)
     init = 1;
 }
 
-#endif
-
-#if defined(__cplusplus)
-}
 #endif
 

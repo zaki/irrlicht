@@ -37,11 +37,6 @@
 #include <memory.h>
 #include "hmac.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 void derive_key(const unsigned char pwd[],  /* the PASSWORD     */
                unsigned int pwd_len,        /* and its length   */
                const unsigned char salt[],  /* the SALT and its */
@@ -187,8 +182,5 @@ int main()
     return 0;
 }
 
-#if defined(__cplusplus)
-}
 #endif
 
-#endif

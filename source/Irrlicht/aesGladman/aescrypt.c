@@ -38,11 +38,6 @@
 
 #include "aesopt.h"
 
-#if defined(__cplusplus)
-extern "C"
-{
-#endif
-
 #define si(y,x,k,c) (s(y,c) = word_in(x, c) ^ (k)[c])
 #define so(y,x,c)   word_out(y, c, s(x,c))
 
@@ -306,6 +301,3 @@ aes_rval aes_decrypt(const void *in_blk, void *out_blk, const aes_decrypt_ctx cx
 
 #endif
 
-#if defined(__cplusplus)
-}
-#endif
