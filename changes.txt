@@ -1,5 +1,11 @@
 Changes in 1.7
 
+ - Bugfix: Mousewheel no longer sends EMIE_MOUSE_WHEEL messages twice on Linux.
+
+ - refactoring: E_ATTRIBUTE_TYPE and IAttribute have now own headers
+
+ - CStringWArrayAttribute speedup
+
  - SceneNodeAnimatorFollowSpline can now loop and pingpong
 
  - Meshviewer.example got some fast-scale buttons.

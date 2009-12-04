@@ -42,7 +42,7 @@ namespace
 	};
 
 	// Name used in texture selection to clear the textures on the node
-	const core::stringw CLEAR_TEXTURE = "CLEAR texture";
+	const core::stringw CLEAR_TEXTURE = L"CLEAR texture";
 
 	// some useful color constants
 	const video::SColor SCOL_BLACK     = video::SColor(255, 0,   0,   0);
@@ -298,8 +298,9 @@ private:
 /*
 	Custom GUI-control for to edit all colors typically used in materials and lights
 */
-struct CAllColorsControl : public gui::IGUIElement
+class CAllColorsControl : public gui::IGUIElement
 {
+public:
 	// Constructor
 	CAllColorsControl(gui::IGUIEnvironment* guiEnv, const core::position2d<s32> & pos, const wchar_t * description, bool hasEmissive, IGUIElement* parent, s32 id=-1)
 		: gui::IGUIElement(gui::EGUIET_ELEMENT, guiEnv, parent,id, core::rect<s32>(pos,pos+core::dimension2d<s32>(60,250)))
@@ -389,13 +390,18 @@ private:
 };
 
 /*
-	Control to offer a selection of available textures.
-	NOTE: This control and also the following two controls could as well be implemented as IGUIElements.
+	GUI-Control to offer a selection of available textures.
 */
-struct STextureControl
+class CTextureControl : public gui::IGUIElement
 {
-	STextureControl() : Initialized(false), DirtyFlag(false), ComboTexture(0)
+public:
+	CTextureControl(gui::IGUIEnvironment* guiEnv, video::IVideoDriver * driver, const core::position2d<s32> & pos, IGUIElement* parent, s32 id=-1)
+	: gui::IGUIElement(gui::EGUIET_ELEMENT, guiEnv, parent,id, core::rect<s32>(pos,pos+core::dimension2d<s32>(100,15)))
+	, DirtyFlag(true), ComboTexture(0)
 	{
+		core::rect<s32> rectCombo(0, 0, AbsoluteRect.getWidth(),AbsoluteRect.getHeight());
+		ComboTexture = guiEnv->addComboBox (rectCombo, this);
+		updateTextures(driver);
 	}
 
 	virtual bool OnEvent(const SEvent &event)
@@ -411,12 +417,19 @@ struct STextureControl
 		return false;
 	}
 
+	// Workaround for a problem with comboboxes.
+	// We have to get in front when the combobox wants to get in front or combobox-list might be drawn below other elements.
+	virtual bool bringToFront(IGUIElement* element)
+	{
+		bool result = gui::IGUIElement::bringToFront(element);
+		if ( Parent && element == ComboTexture )
+			result &= Parent->bringToFront(this);
+		return result;
+	}
+
 	// return selected texturename (if any, otherwise 0)
 	const wchar_t * getSelectedTextureName() const
 	{
-		if ( !Initialized )
-			return 0;
-
 		s32 selected = ComboTexture->getSelected();
 		if ( selected < 0 )
 			return 0;
@@ -435,22 +448,9 @@ struct STextureControl
 		return DirtyFlag;
 	};
 
-	void init(gui::IGUIEnvironment* guiEnv, video::IVideoDriver * driver, const core::position2d<s32> & pos)
-	{
-		if ( Initialized || !guiEnv || !driver )
-			return;
-		core::rect<s32> rectCombo(pos.X, pos.Y, pos.X+100, pos.Y+15);
-		ComboTexture = guiEnv->addComboBox (rectCombo);
-		Initialized = true;
-
-		updateTextures(driver);
-	}
-
+	// Put the names of all currenlty loaded textures in a combobox
 	void updateTextures(video::IVideoDriver * driver)
 	{
-		if ( !Initialized )
-			return;
-
 		s32 oldSelected = ComboTexture->getSelected();
 		s32 selectNew = -1;
 		const wchar_t * oldTextureName = 0;
@@ -468,6 +468,7 @@ struct STextureControl
 				selectNew = i;
 		}
 
+		// add another name which can be used to clear the texture
 		ComboTexture->addItem( CLEAR_TEXTURE.c_str() );
 		if ( CLEAR_TEXTURE == oldTextureName )
 			selectNew = ComboTexture->getItemCount()-1;
@@ -479,7 +480,6 @@ struct STextureControl
 	}
 
 private:
-	bool Initialized;
 	bool DirtyFlag;
 	gui::IGUIComboBox * ComboTexture;
 };
@@ -492,23 +492,19 @@ struct SMeshNodeControl
 	// constructor
 	SMeshNodeControl()
 		: Initialized(false), Driver(0), MeshManipulator(0), SceneNode(0), SceneNode2T(0), SceneNodeTangents(0)
-		, AllColorsControl(0), ButtonLighting(0), ComboMaterial(0), ControlVertexColors(0)
+		, AllColorsControl(0), ButtonLighting(0), InfoLighting(0), ComboMaterial(0), TextureControl1(0), TextureControl2(0), ControlVertexColors(0)
 	{
 	}
 
 	// Destructor
 	virtual ~SMeshNodeControl()
 	{
-		delete ControlVertexColors;
-	}
-
-	virtual bool OnEvent(const SEvent &event)
-	{
-		if ( Texture1.OnEvent(event) )
-			return true;
-		if ( Texture2.OnEvent(event) )
-			return true;
-		return false;
+		if ( TextureControl1 )
+			TextureControl1->drop();
+		if ( TextureControl2 )
+			TextureControl2->drop();
+		if ( ControlVertexColors )
+			ControlVertexColors->drop();
 	}
 
 	void init(scene::IMeshSceneNode* node, IrrlichtDevice * device, const core::position2d<s32> & pos, const wchar_t * description)
@@ -538,10 +534,13 @@ struct SMeshNodeControl
 		AllColorsControl = new CAllColorsControl(guiEnv, pos, description, true, guiEnv->getRootGUIElement());
 		AllColorsControl->setColorsToMaterialColors(material);
 
-		core::rect<s32> rectBtn(pos + core::position2d<s32>(0, 320), core::dimension2d<s32>(100, 15));
+		core::rect<s32> rectBtn(pos + core::position2d<s32>(0, 320), core::dimension2d<s32>(60, 15));
 		ButtonLighting = guiEnv->addButton (rectBtn, 0, -1, L"Lighting");
 		ButtonLighting->setIsPushButton(true);
 		ButtonLighting->setPressed(material.Lighting);
+		core::rect<s32> rectInfo( rectBtn.LowerRightCorner.X, rectBtn.UpperLeftCorner.Y, rectBtn.LowerRightCorner.X+40, rectBtn.UpperLeftCorner.Y+15 );
+		InfoLighting = guiEnv->addStaticText(L"", rectInfo, true, false );
+		InfoLighting->setTextAlignment(gui::EGUIA_CENTER, gui::EGUIA_CENTER );
 
 		core::rect<s32> rectCombo(pos.X, rectBtn.LowerRightCorner.Y, pos.X+100, rectBtn.LowerRightCorner.Y+15);
 		ComboMaterial = guiEnv->addComboBox (rectCombo);
@@ -552,9 +551,9 @@ struct SMeshNodeControl
 		ComboMaterial->setSelected( (s32)material.MaterialType );
 
 		core::position2d<s32> posTex(rectCombo.UpperLeftCorner.X,rectCombo.LowerRightCorner.Y);
-		Texture1.init(guiEnv, Driver, posTex);
+		TextureControl1 = new CTextureControl(guiEnv, Driver, posTex, guiEnv->getRootGUIElement());
 		posTex.Y += 15;
-		Texture2.init(guiEnv, Driver, posTex);
+		TextureControl2 = new CTextureControl(guiEnv, Driver, posTex, guiEnv->getRootGUIElement());
 
 		core::position2d<s32> posVertexColors( posTex.X, posTex.Y + 15);
 		ControlVertexColors = new CColorControl( guiEnv, posVertexColors, L"Vertex colors", guiEnv->getRootGUIElement());
@@ -608,16 +607,21 @@ struct SMeshNodeControl
 		updateMaterial(material2T);
 		updateMaterial(materialTangents);
 
+		if ( ButtonLighting->isPressed() )
+			InfoLighting->setText(L"on");
+		else
+			InfoLighting->setText(L"off");
+
 		AllColorsControl->resetDirty();
-		Texture1.resetDirty();
-		Texture2.resetDirty();
+		TextureControl1->resetDirty();
+		TextureControl2->resetDirty();
 		ControlVertexColors->resetDirty();
 	}
 
 	void updateTextures()
 	{
-		Texture1.updateTextures(Driver);
-		Texture2.updateTextures(Driver);
+		TextureControl1->updateTextures(Driver);
+		TextureControl2->updateTextures(Driver);
 	}
 
 protected:
@@ -626,13 +630,13 @@ protected:
 	{
 		AllColorsControl->updateMaterialColors(material);
 		material.Lighting = ButtonLighting->isPressed();
-		if ( Texture1.isDirty() )
+		if ( TextureControl1->isDirty() )
 		{
-			material.TextureLayer[0].Texture = Driver->getTexture( io::path(Texture1.getSelectedTextureName()) );
+			material.TextureLayer[0].Texture = Driver->getTexture( io::path(TextureControl1->getSelectedTextureName()) );
 		}
-		if ( Texture2.isDirty() )
+		if ( TextureControl2->isDirty() )
 		{
-			material.TextureLayer[1].Texture = Driver->getTexture( io::path(Texture2.getSelectedTextureName()) );
+			material.TextureLayer[1].Texture = Driver->getTexture( io::path(TextureControl2->getSelectedTextureName()) );
 		}
 		if ( ControlVertexColors->isDirty() )
 		{
@@ -650,9 +654,10 @@ protected:
 	scene::IMeshSceneNode* 		SceneNodeTangents;
 	CAllColorsControl* 			AllColorsControl;
 	gui::IGUIButton * 			ButtonLighting;
+	gui::IGUIStaticText* 		InfoLighting;
 	gui::IGUIComboBox * 		ComboMaterial;
-	STextureControl 			Texture1;
-	STextureControl 			Texture2;
+	CTextureControl* 			TextureControl1;
+	CTextureControl* 			TextureControl2;
 	CColorControl*				ControlVertexColors;
 };
 
@@ -740,11 +745,6 @@ public:
 	// Event handler
 	virtual bool OnEvent(const SEvent &event)
 	{
-		if ( NodeLeft.OnEvent(event) )
-			return true;
-		if ( NodeRight.OnEvent(event) )
-			return true;
-
 		if (event.EventType == EET_GUI_EVENT)
 		{
 			gui::IGUIEnvironment* env = Device->getGUIEnvironment();

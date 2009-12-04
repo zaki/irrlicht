@@ -335,7 +335,7 @@ bool CIrrDeviceLinux::createWindow()
 		{
 #ifdef GLX_VERSION_1_3
 			typedef GLXFBConfig * ( * PFNGLXCHOOSEFBCONFIGPROC) (Display *dpy, int screen, const int *attrib_list, int *nelements);
-			
+
 #ifdef _IRR_OPENGL_USE_EXTPOINTER_
 			PFNGLXCHOOSEFBCONFIGPROC glxChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC)glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXChooseFBConfig"));
 #else
@@ -891,13 +891,19 @@ bool CIrrDeviceLinux::run()
 					break;
 
 				case  Button4:
-					irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
-					irrevent.MouseInput.Wheel = 1.0f;
+					if (event.type == ButtonPress)
+					{
+						irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
+						irrevent.MouseInput.Wheel = 1.0f;
+					}
 					break;
 
 				case  Button5:
-					irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
-					irrevent.MouseInput.Wheel = -1.0f;
+					if (event.type == ButtonPress)
+					{
+						irrevent.MouseInput.Event = EMIE_MOUSE_WHEEL;
+						irrevent.MouseInput.Wheel = -1.0f;
+					}
 					break;
 				}
 
