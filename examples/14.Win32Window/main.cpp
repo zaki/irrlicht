@@ -80,6 +80,16 @@ int main()
 		default: return 1;
 	}
 
+	printf("Select the render window (some dead window may exist too):\n"\
+		" (a) Window with button (via CreationParam)\n"\
+		" (b) Window with button (via beginScene)\n"\
+		" (c) Own Irrlicht window (default behavior)\n"\
+		" (otherKey) exit\n\n");
+
+	std::cin >> key;
+	if (key != 'a' && key != 'b' && key != 'c')
+		return 1;
+
 	HINSTANCE hInstance = 0;
 	// create dialog
 
@@ -142,8 +152,9 @@ int main()
 	// create irrlicht device in the button window
 
 	irr::SIrrlichtCreationParameters param;
-	param.WindowId = reinterpret_cast<void*>(hIrrlichtWindow); // hColorButton
 	param.DriverType = driverType;
+	if (key=='a')
+		param.WindowId = reinterpret_cast<void*>(hIrrlichtWindow);
 
 	irr::IrrlichtDevice* device = irr::createDeviceEx(param);
 
@@ -196,7 +207,7 @@ int main()
 
 	while (device->run())
 	{
-		driver->beginScene(true, true, 0);
+		driver->beginScene(true, true, 0, (key=='b')?hIrrlichtWindow:0);
 		smgr->drawAll();
 		driver->endScene();
 	}
@@ -222,7 +233,7 @@ int main()
 		device->getTimer()->tick();
 
 		// draw engine picture
-		driver->beginScene(true, true, 0);
+		driver->beginScene(true, true, 0, (key=='c')?hIrrlichtWindow:0);
 		smgr->drawAll();
 		driver->endScene();
 	}*/
