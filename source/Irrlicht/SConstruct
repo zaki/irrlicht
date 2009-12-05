@@ -71,6 +71,12 @@ AESGLADMANOBJ = [];
 for fileName in AESGLADMANNAMES:
 	AESGLADMANOBJ += [AESGLADMAN_PREFIX + fileName];
 
+BZIP2_PREFIX = 'bzip2/';
+BZIP2NAMES = ['blocksort.c', 'bzcompress.c', 'bzlib.c', 'crctable.c', 'decompress.c', 'huffman.c', 'randtable.c'];
+BZIP2OBJ = [];
+for fileName in BZIP2NAMES:
+	BZIP2OBJ += [BZIP2_PREFIX + fileName];
+
 # Next variable is for additional scene nodes etc. of customized Irrlicht versions
 EXTRAOBJ = [];
 
