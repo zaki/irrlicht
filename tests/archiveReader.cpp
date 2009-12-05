@@ -152,6 +152,7 @@ bool testEncryptedZip(IFileSystem* fs)
 
 	archive->Password="33445";
 	readFile = fs->createAndOpenFile(filename);
+#ifdef _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
 	if ( !readFile )
 	{
 		logTestString("createAndOpenFile failed\n");
@@ -165,6 +166,7 @@ bool testEncryptedZip(IFileSystem* fs)
 		logTestString("Read bad data from archive: %s\n", tmp);
 		return false;
 	}
+#endif
 
 	if (!fs->removeFileArchive(fs->getFileArchiveCount()-1))
 	{
