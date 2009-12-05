@@ -1213,6 +1213,29 @@
 		<Unit filename="aesGladman/sha1.h" />
 		<Unit filename="aesGladman/sha2.cpp" />
 		<Unit filename="aesGladman/sha2.h" />
+		<Unit filename="bzip2/blocksort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzcompress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzlib.h" />
+		<Unit filename="bzip2/bzlib_private.h" />
+		<Unit filename="bzip2/crctable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/decompress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/huffman.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/randtable.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
