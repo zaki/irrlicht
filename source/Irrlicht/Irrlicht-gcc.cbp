@@ -448,7 +448,7 @@
 		<Unit filename="../../include/IFileSystem.h" />
 		<Unit filename="../../include/IGPUProgrammingServices.h" />
 		<Unit filename="../../include/IGUIButton.h" />
-		<Unit filename="../../include/IGUICheckbox.h" />
+		<Unit filename="../../include/IGUICheckBox.h" />
 		<Unit filename="../../include/IGUIComboBox.h" />
 		<Unit filename="../../include/IGUIContextMenu.h" />
 		<Unit filename="../../include/IGUIEditBox.h" />
@@ -500,7 +500,6 @@
 		<Unit filename="../../include/ISceneNodeAnimatorCollisionResponse.h" />
 		<Unit filename="../../include/ISceneNodeAnimatorFactory.h" />
 		<Unit filename="../../include/ISceneNodeFactory.h" />
-		<Unit filename="../../include/ISceneNodeMeshLoader.h" />
 		<Unit filename="../../include/IShaderConstantSetCallBack.h" />
 		<Unit filename="../../include/IShadowVolumeSceneNode.h" />
 		<Unit filename="../../include/ISkinnedMesh.h" />
@@ -772,6 +771,8 @@
 		<Unit filename="CMetaTriangleSelector.h" />
 		<Unit filename="CMountPointReader.cpp" />
 		<Unit filename="CMountPointReader.h" />
+		<Unit filename="CNPKReader.cpp" />
+		<Unit filename="CNPKReader.h" />
 		<Unit filename="CNullDriver.cpp" />
 		<Unit filename="CNullDriver.h" />
 		<Unit filename="COBJMeshFileLoader.cpp" />
@@ -809,8 +810,6 @@
 		<Unit filename="CPLYMeshWriter.h" />
 		<Unit filename="CPakReader.cpp" />
 		<Unit filename="CPakReader.h" />
-		<Unit filename="CNPKReader.cpp" />
-		<Unit filename="CNPKReader.h" />
 		<Unit filename="CParticleAnimatedMeshSceneNodeEmitter.cpp" />
 		<Unit filename="CParticleAttractionAffector.cpp" />
 		<Unit filename="CParticleBoxEmitter.cpp" />
@@ -957,11 +956,53 @@
 		<Unit filename="S4DVertex.h" />
 		<Unit filename="SoftwareDriver2_compile_config.h" />
 		<Unit filename="SoftwareDriver2_helper.h" />
+		<Unit filename="aesGladman/aes.h" />
+		<Unit filename="aesGladman/aescrypt.cpp" />
+		<Unit filename="aesGladman/aeskey.cpp" />
+		<Unit filename="aesGladman/aesopt.h" />
+		<Unit filename="aesGladman/aestab.cpp" />
+		<Unit filename="aesGladman/fileenc.cpp" />
+		<Unit filename="aesGladman/fileenc.h" />
+		<Unit filename="aesGladman/hmac.cpp" />
+		<Unit filename="aesGladman/hmac.h" />
+		<Unit filename="aesGladman/prng.cpp" />
+		<Unit filename="aesGladman/prng.h" />
+		<Unit filename="aesGladman/pwd2key.cpp" />
+		<Unit filename="aesGladman/pwd2key.h" />
+		<Unit filename="aesGladman/sha1.cpp" />
+		<Unit filename="aesGladman/sha1.h" />
+		<Unit filename="aesGladman/sha2.cpp" />
+		<Unit filename="aesGladman/sha2.h" />
+		<Unit filename="bzip2/blocksort.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzcompress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/bzlib.h" />
+		<Unit filename="bzip2/bzlib_private.h" />
+		<Unit filename="bzip2/crctable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/decompress.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/huffman.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="bzip2/randtable.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="dmfsupport.h" />
 		<Unit filename="glext.h" />
 		<Unit filename="irrXML.cpp" />
 		<Unit filename="jpeglib/cderror.h" />
 		<Unit filename="jpeglib/jaricom.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="jpeglib/jcapimin.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -1196,46 +1237,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="zlib/zutil.h" />
-		<Unit filename="aesGladman/aes.h" />
-		<Unit filename="aesGladman/aescrypt.cpp" />
-		<Unit filename="aesGladman/aeskey.cpp" />
-		<Unit filename="aesGladman/aesopt.h" />
-		<Unit filename="aesGladman/aestab.cpp" />
-		<Unit filename="aesGladman/fileenc.cpp" />
-		<Unit filename="aesGladman/fileenc.h" />
-		<Unit filename="aesGladman/hmac.cpp" />
-		<Unit filename="aesGladman/hmac.h" />
-		<Unit filename="aesGladman/prng.cpp" />
-		<Unit filename="aesGladman/prng.h" />
-		<Unit filename="aesGladman/pwd2key.cpp" />
-		<Unit filename="aesGladman/pwd2key.h" />
-		<Unit filename="aesGladman/sha1.cpp" />
-		<Unit filename="aesGladman/sha1.h" />
-		<Unit filename="aesGladman/sha2.cpp" />
-		<Unit filename="aesGladman/sha2.h" />
-		<Unit filename="bzip2/blocksort.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="bzip2/bzcompress.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="bzip2/bzlib.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="bzip2/bzlib.h" />
-		<Unit filename="bzip2/bzlib_private.h" />
-		<Unit filename="bzip2/crctable.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="bzip2/decompress.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="bzip2/huffman.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="bzip2/randtable.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
