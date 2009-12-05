@@ -24,14 +24,12 @@ bool b3dAnimation(void)
 	ISceneManager * smgr = device->getSceneManager();
 
 	IAnimatedMesh* mesh = smgr->getMesh("../media/ninja.b3d");
-	IAnimatedMeshSceneNode* node1;
-	IAnimatedMeshSceneNode* node2;
 	assert(mesh);
 
 	bool result = false;
 	if(mesh)
 	{
-		node1 = smgr->addAnimatedMeshSceneNode(mesh);
+		IAnimatedMeshSceneNode* node1 = smgr->addAnimatedMeshSceneNode(mesh);
 		assert(node1);
 
 		if(node1)
@@ -43,7 +41,7 @@ bool b3dAnimation(void)
 			node1->setDebugDataVisible(irr::scene::EDS_BBOX_BUFFERS);
 		}
 
-		node2 = smgr->addAnimatedMeshSceneNode(mesh);
+		IAnimatedMeshSceneNode* node2 = smgr->addAnimatedMeshSceneNode(mesh);
 		assert(node2);
 		if(node2)
 		{

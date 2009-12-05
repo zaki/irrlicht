@@ -259,6 +259,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\meshLoaders.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\planeMatrix.cpp"
 				>
 			</File>
