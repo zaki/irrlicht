@@ -2394,9 +2394,6 @@
 						RelativePath=".\aesGladman\aestab.cpp">
 					</File>
 					<File
-						RelativePath=".\aesGladman\bzlib.h">
-					</File>
-					<File
 						RelativePath=".\aesGladman\fileenc.cpp">
 					</File>
 					<File

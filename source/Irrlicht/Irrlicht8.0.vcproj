@@ -3325,10 +3325,6 @@
 						>
 					</File>
 					<File
-						RelativePath=".\aesGladman\bzlib.h"
-						>
-					</File>
-					<File
 						RelativePath=".\aesGladman\fileenc.cpp"
 						>
 					</File>
