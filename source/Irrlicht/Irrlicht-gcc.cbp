@@ -1201,7 +1201,6 @@
 		<Unit filename="aesGladman/aeskey.cpp" />
 		<Unit filename="aesGladman/aesopt.h" />
 		<Unit filename="aesGladman/aestab.cpp" />
-		<Unit filename="aesGladman/bzlib.h" />
 		<Unit filename="aesGladman/fileenc.cpp" />
 		<Unit filename="aesGladman/fileenc.h" />
 		<Unit filename="aesGladman/hmac.cpp" />
