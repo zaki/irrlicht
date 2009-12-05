@@ -351,7 +351,8 @@ B3D, MS3D or X meshes */
 #define __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
 #ifdef __IRR_COMPILE_WITH_ZIP_ARCHIVE_LOADER_
 //! Define _IRR_COMPILE_WITH_ZIP_ENCRYPTION_ if you want to read AES-encrypted ZIP archives
-//#define _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
+#define _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
+#define _IRR_COMPILE_WITH_BZIP2_
 #endif
 //! Define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_ if you want to mount folders as archives
 #define __IRR_COMPILE_WITH_MOUNT_ARCHIVE_LOADER_
