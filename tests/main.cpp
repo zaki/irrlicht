@@ -64,7 +64,7 @@ int main(int argumentCount, char * arguments[])
 	// TODO: Needs to be fixed first
 //	TEST(testTriangle3d);
 	TEST(vectorPositionDimension2d);
-	// file system checks
+	// file system checks (with null driver)
 	TEST(filesystem);
 	TEST(archiveReader);
 	TEST(testXML);
@@ -75,6 +75,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(removeCustomAnimator);
 	TEST(sceneCollisionManager);
 	TEST(sceneNodeAnimator);
+	TEST(meshLoaders);
 	// software drivers only
 	TEST(softwareDevice);
 	TEST(b3dAnimation);
