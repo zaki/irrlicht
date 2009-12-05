@@ -166,6 +166,14 @@ public:
 	more information. */
 	virtual IGUIFont* getFont(const io::path& filename) = 0;
 
+	//! Adds an externally loaded font to the font list.
+	/** This method allows to attach an already loaded font to the list of
+	existing fonts. The font is grabbed if non-null.
+	\param name Name the font should be stored as.
+	\param font Pointer to font to add.
+	\return Pointer to the font stored. This can differ from given parameter if the name previously existed. */
+	virtual IGUIFont* addFont(const io::path& name, IGUIFont* font) = 0;
+
 	//! Returns the default built-in font.
 	/** \return Pointer to the default built-in font.
 	This pointer should not be dropped. See IReferenceCounted::drop() for
