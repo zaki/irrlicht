@@ -168,7 +168,7 @@ public:
 
 	//! Adds an externally loaded font to the font list.
 	/** This method allows to attach an already loaded font to the list of
-	existing fonts. The font is grabbed if non-null.
+	existing fonts. The font is grabbed if non-null and adding was successful.
 	\param name Name the font should be stored as.
 	\param font Pointer to font to add.
 	\return Pointer to the font stored. This can differ from given parameter if the name previously existed. */
