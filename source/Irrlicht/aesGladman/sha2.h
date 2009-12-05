@@ -34,7 +34,7 @@
 #ifndef _SHA2_H
 #define _SHA2_H
 
-#include <limits.h>
+#include "irrMath.h"
 
 /*  Defines for suffixes to 32 and 64 bit unsigned numeric values   */
 
@@ -71,7 +71,11 @@
 #error Please define sha2_64t as an unsigned 64 bit type in sha2.h
 #endif
 #else
+#ifdef _IRR_SOLARIS_PLATFORM_
+#include <sys/int_types.h>
+#else
 #include <stdint.h>
+#endif
     typedef int64_t sha2_64t;
 #if __WORDSIZE==64
 #define s_u64 ul
