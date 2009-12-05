@@ -114,7 +114,7 @@
 #define rotr32(x,n)   (((x) >> n) | ((x) << (32 - n)))
 
 #if !defined(bswap_32)
-#define bswap_32(x) (rotr32((x), 24) & 0x00ff00ff | rotr32((x), 8) & 0xff00ff00)
+#define bswap_32(x) irr::os::Byteswap::byteswap(x)
 #endif
 
 #if (PLATFORM_BYTE_ORDER == BRG_LITTLE_ENDIAN)
@@ -316,7 +316,7 @@ sha2_void sha256(unsigned char hval[], const unsigned char data[], unsigned long
 #define rotr64(x,n)   (((x) >> n) | ((x) << (64 - n)))
 
 #if !defined(bswap_64)
-#define bswap_64(x) (((sha2_64t)(bswap_32((sha2_32t)(x)))) << 32 | bswap_32((sha2_32t)((x) >> 32)))
+#define bswap_64(x) ((((sha2_64t)(bswap_32((sha2_32t)(x)))) << 32) | (bswap_32((sha2_32t)((x) >> 32))))
 #endif
 
 #if defined(SWAP_BYTES)
