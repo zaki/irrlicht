@@ -22,6 +22,9 @@
 	#ifdef _IRR_COMPILE_WITH_ZIP_ENCRYPTION_
 	#include "aesGladman/fileenc.h"
 	#endif
+	#ifdef _IRR_COMPILE_WITH_BZIP2_
+	#include "bzip2/bzlib.h"
+	#endif
 #endif
 
 namespace irr
@@ -476,7 +479,7 @@ IReadFile* CZipReader::createAndOpenFile(const io::path& filename)
 //! opens a file by index
 IReadFile* CZipReader::createAndOpenFile(u32 index)
 {
-
+	// Irrlicht supports 0, 8, 12, 99
 	//0 - The file is stored (no compression)
 	//1 - The file is Shrunk
 	//2 - The file is Reduced with compression factor 1
@@ -488,6 +491,12 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 	//8 - The file is Deflated
 	//9 - Reserved for enhanced Deflating
 	//10 - PKWARE Date Compression Library Imploding
+	//12 - bzip2 - Compression Method from libbz2, WinZip 10
+	//14 - LZMA - Compression Method, WinZip 12
+	//96 - Jpeg compression - Compression Method, WinZip 12
+	//97 - WavPack - Compression Method, WinZip 11
+	//98 - PPMd - Compression Method, WinZip 10
+	//99 - AES encryption, WinZip 9
 
 	const SZipFileEntry &e = FileInfo[Files[index].ID];
 	wchar_t buf[64];
@@ -653,6 +662,78 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 
 			#else
 			return 0; // zlib not compiled, we cannot decompress the data.
+			#endif
+		}
+	case 12:
+		{
+  			#ifdef _IRR_COMPILE_WITH_BZIP2_
+
+			const u32 uncompressedSize = e.header.DataDescriptor.UncompressedSize;
+			c8* pBuf = new c8[ uncompressedSize ];
+			if (!pBuf)
+			{
+				swprintf ( buf, 64, L"Not enough memory for decompressing %s", Files[index].FullName.c_str() );
+				os::Printer::log( buf, ELL_ERROR);
+				if (decrypted)
+					decrypted->drop();
+				return 0;
+			}
+
+			u8 *pcData = decryptedBuf;
+			if (!pcData)
+			{
+				pcData = new u8[decryptedSize];
+				if (!pcData)
+				{
+					swprintf ( buf, 64, L"Not enough memory for decompressing %s", Files[index].FullName.c_str() );
+					os::Printer::log( buf, ELL_ERROR);
+					delete [] pBuf;
+					return 0;
+				}
+
+				//memset(pcData, 0, decryptedSize);
+				File->seek(e.Offset);
+				File->read(pcData, decryptedSize);
+			}
+
+			bz_stream bz_ctx={0};
+			/* use BZIP2's default memory allocation
+			bz_ctx->bzalloc = NULL;
+			bz_ctx->bzfree  = NULL;
+			bz_ctx->opaque  = NULL;
+			*/
+			int err = BZ2_bzDecompressInit(&bz_ctx, 0, 0); /* decompression */
+			if(err != BZ_OK)
+			{
+				os::Printer::log("bzip2 decompression failed. File cannot be read.", ELL_ERROR);
+				return 0;
+			}
+			bz_ctx.next_in = (char*)pcData;
+			bz_ctx.avail_in = decryptedSize;
+			/* pass all input to decompressor */
+			bz_ctx.next_out = pBuf;
+			bz_ctx.avail_out = uncompressedSize;
+			err = BZ2_bzDecompress(&bz_ctx);
+			err = BZ2_bzDecompressEnd(&bz_ctx);
+
+			if (decrypted)
+				decrypted->drop();
+			else
+				delete[] pcData;
+
+			if (err != BZ_OK)
+			{
+				swprintf ( buf, 64, L"Error decompressing %s", Files[index].FullName.c_str() );
+				os::Printer::log( buf, ELL_ERROR);
+				delete [] pBuf;
+				return 0;
+			}
+			else
+				return io::createMemoryReadFile(pBuf, uncompressedSize, Files[index].FullName, true);
+
+			#else
+			os::Printer::log("bzip2 decompression not supported. File cannot be read.", ELL_ERROR);
+			return 0;
 			#endif
 		}
 	case 99:
