@@ -655,6 +655,10 @@ IReadFile* CZipReader::createAndOpenFile(u32 index)
 			return 0; // zlib not compiled, we cannot decompress the data.
 			#endif
 		}
+	case 99:
+		// If we come here with an encrypted file, decryption support is missing
+		os::Printer::log("Decryption support not enabled. File cannot be read.", ELL_ERROR);
+		return 0;
 	default:
 		swprintf ( buf, 64, L"file has unsupported compression method. %s", Files[index].FullName.c_str() );
 		os::Printer::log( buf, ELL_ERROR);
