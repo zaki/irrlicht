@@ -1303,16 +1303,13 @@ IGUIComboBox* CGUIEnvironment::addComboBox(const core::rect<s32>& rectangle,
 }
 
 
-
 //! returns the font
 IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 {
 	// search existing font
 
 	SFont f;
-	IGUIFont* ifont=0;
 	f.Filename = filename;
-
 	f.Filename.make_lower();
 
 	s32 index = Fonts.binary_search(f);
@@ -1329,6 +1326,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 		return 0;
 	}
 
+	IGUIFont* ifont=0;
 	io::IXMLReader *xml = FileSystem->createXMLReader(filename );
 	if (xml)
 	{
@@ -1409,6 +1407,34 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 }
 
 
+//! add an externally loaded font
+IGUIFont* CGUIEnvironment::addFont(const io::path& name, IGUIFont* font)
+{
+	if (font)
+	{
+		SFont f;
+		f.Filename = name;
+		s32 index = Fonts.binary_search(f);
+		if (index != -1)
+			return Fonts[index].Font;
+		f.Font = font;
+		Fonts.push_back(f);
+		font->grab();
+	}
+	return font;
+}
+
+
+//! returns default font
+IGUIFont* CGUIEnvironment::getBuiltInFont() const
+{
+	if (Fonts.empty())
+		return 0;
+
+	return Fonts[0].Font;
+}
+
+
 IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 {
 	// search for the file name
@@ -1455,15 +1481,6 @@ IGUISpriteBank* CGUIEnvironment::addEmptySpriteBank(const io::path& name)
 	return b.Bank;
 }
 
-
-//! returns default font
-IGUIFont* CGUIEnvironment::getBuiltInFont() const
-{
-	if (Fonts.empty())
-		return 0;
-
-	return Fonts[0].Font;
-}
 
 //! Creates the image list from the given texture.
 IGUIImageList* CGUIEnvironment::createImageList(  video::ITexture* texture,
