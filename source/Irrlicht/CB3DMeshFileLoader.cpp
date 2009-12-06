@@ -912,7 +912,15 @@ void CB3DMeshFileLoader::loadTextures(SB3dMaterial& material) const
 			{
 				video::ITexture* tex = 0;
 				io::IFileSystem* fs = SceneManager->getFileSystem();
-				if (fs->existFile(B3dTexture->TextureName))
+				io::path texnameWithUserPath( SceneManager->getParameters()->getAttributeAsString(B3D_TEXTURE_PATH) );
+				if ( texnameWithUserPath.size() )
+				{
+					texnameWithUserPath += '/';
+					texnameWithUserPath += B3dTexture->TextureName;
+				}
+				if (fs->existFile(texnameWithUserPath))
+					tex = SceneManager->getVideoDriver()->getTexture(texnameWithUserPath);
+				else if (fs->existFile(B3dTexture->TextureName))
 					tex = SceneManager->getVideoDriver()->getTexture(B3dTexture->TextureName);
 				else if (fs->existFile(fs->getFileDir(B3DFile->getFileName()) +"/"+ fs->getFileBasename(B3dTexture->TextureName)))
 					tex = SceneManager->getVideoDriver()->getTexture(fs->getFileDir(B3DFile->getFileName()) +"/"+ fs->getFileBasename(B3dTexture->TextureName));
