@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_STL_WRITER_
 
@@ -66,7 +66,7 @@ bool CSTLMeshWriter::writeMeshBinary(io::IWriteFile* file, scene::IMesh* mesh, s
 	// write STL MESH header
 
 	file->write("binary ",7);
-	const core::stringc name(SceneManager->getMeshCache()->getMeshFilename(mesh));
+	const core::stringc name(SceneManager->getMeshCache()->getMeshName(mesh).getSerializationName());
 	const s32 sizeleft = 73-name.size(); // 80 byte header
 	if (sizeleft<0)
 		file->write(name.c_str(),73);
@@ -115,12 +115,12 @@ bool CSTLMeshWriter::writeMeshASCII(io::IWriteFile* file, scene::IMesh* mesh, s3
 	// write STL MESH header
 
 	file->write("solid ",6);
-	const core::stringc name(SceneManager->getMeshCache()->getMeshFilename(mesh));
+	const core::stringc name(SceneManager->getMeshCache()->getMeshName(mesh).getSerializationName());
 	file->write(name.c_str(),name.size());
 	file->write("\n\n",2);
 
 	// write mesh buffers
-	
+
 	for (u32 i=0; i<mesh->getMeshBufferCount(); ++i)
 	{
 		IMeshBuffer* buffer = mesh->getMeshBuffer(i);

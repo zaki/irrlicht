@@ -258,23 +258,23 @@ private:
 
 	struct SFont
 	{
-		io::path Filename;
+		io::SNamedPath NamedPath;
 		IGUIFont* Font;
 
 		bool operator < (const SFont& other) const
 		{
-			return (Filename < other.Filename);
+			return (NamedPath < other.NamedPath);
 		}
 	};
 
 	struct SSpriteBank
 	{
-		core::stringc Filename;
+		io::SNamedPath NamedPath;
 		IGUISpriteBank* Bank;
 
 		bool operator < (const SSpriteBank& other) const
 		{
-			return (Filename < other.Filename);
+			return (NamedPath < other.NamedPath);
 		}
 	};
 

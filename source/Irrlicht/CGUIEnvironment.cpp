@@ -172,7 +172,7 @@ void CGUIEnvironment::loadBuiltInFont()
 	}
 
 	SFont f;
-	f.Filename = filename;
+	f.NamedPath.setPath(filename);
 	f.Font = font;
 	Fonts.push_back(f);
 
@@ -1309,8 +1309,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 	// search existing font
 
 	SFont f;
-	f.Filename = filename;
-	f.Filename.make_lower();
+	f.NamedPath.setPath(filename);
 
 	s32 index = Fonts.binary_search(f);
 	if (index != -1)
@@ -1322,7 +1321,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 
 	if (!FileSystem->existFile(filename))
 	{
-		os::Printer::log("Could not load font because the file does not exist", f.Filename, ELL_ERROR);
+		os::Printer::log("Could not load font because the file does not exist", f.NamedPath.getPath(), ELL_ERROR);
 		return 0;
 	}
 
@@ -1361,7 +1360,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 			ifont = (IGUIFont*)font;
 			// change working directory, for loading textures
 			io::path workingDir = FileSystem->getWorkingDirectory();
-			FileSystem->changeWorkingDirectoryTo(FileSystem->getFileDir(f.Filename));
+			FileSystem->changeWorkingDirectoryTo(FileSystem->getFileDir(f.NamedPath.getPath()));
 
 			// load the font
 			if (!font->load(xml))
@@ -1376,7 +1375,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 		else if (t==EGFT_VECTOR)
 		{
 			// todo: vector fonts
-			os::Printer::log("Unable to load font, XML vector fonts are not supported yet", f.Filename.c_str(), ELL_ERROR);
+			os::Printer::log("Unable to load font, XML vector fonts are not supported yet", f.NamedPath.getName().c_str(), ELL_ERROR);
 
 			//CGUIFontVector* font = new CGUIFontVector(Driver);
 			//ifont = (IGUIFont*)font;
@@ -1389,9 +1388,9 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 	if (!ifont)
 	{
 
-		CGUIFont* font = new CGUIFont(this, f.Filename );
+		CGUIFont* font = new CGUIFont(this, f.NamedPath.getPath() );
 		ifont = (IGUIFont*)font;
-		if (!font->load(f.Filename))
+		if (!font->load(f.NamedPath.getPath()))
 		{
 			font->drop();
 			return 0;
@@ -1413,7 +1412,7 @@ IGUIFont* CGUIEnvironment::addFont(const io::path& name, IGUIFont* font)
 	if (font)
 	{
 		SFont f;
-		f.Filename = name;
+		f.NamedPath.setPath(name);
 		s32 index = Fonts.binary_search(f);
 		if (index != -1)
 			return Fonts[index].Font;
@@ -1440,8 +1439,7 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 	// search for the file name
 
 	SSpriteBank b;
-	b.Filename = filename;
-	b.Filename.make_lower();
+	b.NamedPath.setPath(filename);
 
 	s32 index = Banks.binary_search(b);
 	if (index != -1)
@@ -1449,9 +1447,9 @@ IGUISpriteBank* CGUIEnvironment::getSpriteBank(const io::path& filename)
 
 	// we don't have this sprite bank, we should load it
 
-	if (!FileSystem->existFile(b.Filename))
+	if (!FileSystem->existFile(b.NamedPath.getPath()))
 	{
-		os::Printer::log("Could not load sprite bank because the file does not exist", filename, ELL_ERROR);
+		os::Printer::log("Could not load sprite bank because the file does not exist", b.NamedPath.getPath(), ELL_ERROR);
 		return 0;
 	}
 
@@ -1466,8 +1464,7 @@ IGUISpriteBank* CGUIEnvironment::addEmptySpriteBank(const io::path& name)
 	// no duplicate names allowed
 
 	SSpriteBank b;
-	b.Filename = name;
-	b.Filename.make_lower();
+	b.NamedPath.setPath(name);
 
 	const s32 index = Banks.binary_search(b);
 	if (index != -1)
