@@ -39,7 +39,7 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 	CurrentRendertargetSize(0,0), ColorFormat(ECF_R8G8B8),
 	CurrentTarget(ERT_FRAME_BUFFER),
 	Doublebuffer(params.Doublebuffer), Stereo(params.Stereobuffer),
-	HDc(0), Window(static_cast<HWND>(params.WindowId)), HRc(0), DeviceType(EIDT_WIN32)
+	HDc(0), Window(static_cast<HWND>(params.WindowId)), DeviceType(EIDT_WIN32)
 {
 	#ifdef _DEBUG
 	setDebugName("COpenGLDriver");
@@ -175,8 +175,8 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	}
 
 	SetPixelFormat(HDc, PixelFormat, &pfd);
-	HRc=wglCreateContext(HDc);
-	if (!HRc)
+	HGLRC hrc=wglCreateContext(HDc);
+	if (!hrc)
 	{
 		os::Printer::log("Cannot create a temporary GL rendering context.", ELL_ERROR);
 		ReleaseDC(temporary_wnd, HDc);
@@ -184,10 +184,10 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		return false;
 	}
 
-	if (!wglMakeCurrent(HDc, HRc))
+	if (!wglMakeCurrent(HDc, hrc))
 	{
 		os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
-		wglDeleteContext(HRc);
+		wglDeleteContext(hrc);
 		ReleaseDC(temporary_wnd, HDc);
 		DestroyWindow(temporary_wnd);
 		return false;
@@ -277,7 +277,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		AntiAlias=0;
 
 	wglMakeCurrent(HDc, NULL);
-	wglDeleteContext(HRc);
+	wglDeleteContext(hrc);
 	ReleaseDC(temporary_wnd, HDc);
 	DestroyWindow(temporary_wnd);
 
@@ -349,23 +349,23 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 			WGL_CONTEXT_MINOR_VERSION_ARB, 1,
 			0
 		};
-		HRc=wglCreateContextAttribs_ARB(HDc, 0, iAttribs);
+		hrc=wglCreateContextAttribs_ARB(HDc, 0, iAttribs);
 	}
 	else
 #endif
-		HRc=wglCreateContext(HDc);
+		hrc=wglCreateContext(HDc);
 
-	if (!HRc)
+	if (!hrc)
 	{
 		os::Printer::log("Cannot create a GL rendering context.", ELL_ERROR);
 		return false;
 	}
 
 	// activate rendering context
-	if (!wglMakeCurrent(HDc, HRc))
+	if (!wglMakeCurrent(HDc, hrc))
 	{
 		os::Printer::log("Cannot activate GL rendering context", ELL_ERROR);
-		wglDeleteContext(HRc);
+		wglDeleteContext(hrc);
 		return false;
 	}
 
@@ -399,7 +399,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 
 	// set exposed data
 	ExposedData.OpenGLWin32.HDc = HDc;
-	ExposedData.OpenGLWin32.HRc = HRc;
+	ExposedData.OpenGLWin32.HRc = hrc;
 	ExposedData.OpenGLWin32.HWnd = Window;
 
 	return true;
@@ -516,12 +516,12 @@ COpenGLDriver::~COpenGLDriver()
 	if (DeviceType == EIDT_WIN32)
 	{
 
-		if (HRc)
+		if (ExposedData.OpenGLWin32.HRc)
 		{
 			if (!wglMakeCurrent(0, 0))
 				os::Printer::log("Release of dc and rc failed.", ELL_WARNING);
 
-			if (!wglDeleteContext(HRc))
+			if (!wglDeleteContext((HGLRC)ExposedData.OpenGLWin32.HRc))
 				os::Printer::log("Release of rendering context failed.", ELL_WARNING);
 		}
 
@@ -746,9 +746,23 @@ void COpenGLDriver::clearBuffers(bool backBuffer, bool zBuffer, bool stencilBuff
 
 //! init call for rendering start
 bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		void* windowId, core::rect<s32>* sourceRect)
+		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
+	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+
+#if 0
+	// This should be fixed to allow using OpenGL with the videoData parameter
+	if (videoData.OpenGLWin32.HWnd)
+	{
+		HDc = (HDC)videoData.OpenGLWin32.HDc;
+		wglMakeCurrent(HDc, (HGLRC)videoData.OpenGLWin32.HRc);
+	}
+	else if (HDc != ExposedData.OpenGLWin32.HDc)
+	{
+		HDc = (HDC)ExposedData.OpenGLWin32.HDc;
+		wglMakeCurrent(HDc, (HGLRC)ExposedData.OpenGLWin32.HRc);
+	}
+#endif
 
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 	if (DeviceType == EIDT_SDL)

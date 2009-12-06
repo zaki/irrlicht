@@ -56,7 +56,7 @@ namespace video
 		//! applications must call this method before performing any rendering. returns false if failed.
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
 				SColor color=SColor(255,0,0,0),
-				void* windowId=0,
+				const SExposedVideoData& videoData=SExposedVideoData(),
 				core::rect<s32>* sourceRect=0);
 
 		//! applications must call this method after performing any rendering. returns false if failed.
@@ -393,7 +393,7 @@ namespace video
 		core::dimension2d<u32> CurrentRendertargetSize;
 		core::dimension2d<u32> CurrentDepthBufferSize;
 
-		void* WindowId;
+		HWND WindowId;
 		core::rect<s32>* SceneSourceRect;
 
 		D3DCAPS9 Caps;

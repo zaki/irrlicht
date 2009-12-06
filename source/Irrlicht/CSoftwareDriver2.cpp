@@ -343,10 +343,11 @@ void CBurningVideoDriver::setTransform(E_TRANSFORMATION_STATE state, const core:
 
 //! clears the zbuffer
 bool CBurningVideoDriver::beginScene(bool backBuffer, bool zBuffer,
-		SColor color, void* windowId, core::rect<s32>* sourceRect)
+		SColor color, const SExposedVideoData& videoData,
+		core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
-	WindowId = windowId;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	WindowId = videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
 	if (backBuffer && BackBuffer)

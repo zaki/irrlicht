@@ -18,6 +18,7 @@
 #include "triangle3d.h"
 #include "EDriverTypes.h"
 #include "EDriverFeatures.h"
+#include "SExposedVideoData.h"
 
 namespace irr
 {
@@ -39,7 +40,6 @@ namespace video
 	struct S3DVertex2TCoords;
 	struct S3DVertexTangents;
 	struct SLight;
-	struct SExposedVideoData;
 	class IImageLoader;
 	class IImageWriter;
 	class IMaterialRenderer;
@@ -259,7 +259,7 @@ namespace video
 		\return False if failed. */
 		virtual bool beginScene(bool backBuffer=true, bool zBuffer=true,
 				SColor color=SColor(255,0,0,0),
-				void* windowId=0,
+				const SExposedVideoData& videoData=SExposedVideoData(),
 				core::rect<s32>* sourceRect=0) =0;
 
 		//! Presents the rendered image to the screen.

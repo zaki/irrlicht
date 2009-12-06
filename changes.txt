@@ -1,5 +1,7 @@
 Changes in 1.7
 
+ - Change the beginScene window parameter from void* to SExposedVideoData&. This will allow to manage contexts for OpenGL at some point.
+
  - Add bzip2 and LZMA decompression modes for zip loader.
 
  - Add OBJ_TEXTURE_PATH and B3D_TEXTURE_PATH to SceneParameters to allow setting texture-paths for obj and b3d.
