@@ -121,7 +121,7 @@ namespace irr
 
 		//! Middle mouse button triple click.
 		//! This event is generated after the third EMIE_MMOUSE_PRESSED_DOWN event.
-		EMIE_MMOUSE_TRIPLE_CLICK,			
+		EMIE_MMOUSE_TRIPLE_CLICK,
 
 		//! No real event. Just for convenience to get number of events
 		EMIE_COUNT
@@ -431,7 +431,11 @@ public:
 	virtual ~IEventReceiver() {}
 
 	//! Called if an event happened.
-	/** \return True if the event was processed. */
+	/** Please take care that you should only return 'true' when you want to _prevent_ Irrlicht
+	* from processing the event any further. So 'true' does mean that an event is completely done.
+	* Therefore your return value for all unprocessed events should be 'false'.
+	\return True if the event was processed.
+	*/
 	virtual bool OnEvent(const SEvent& event) = 0;
 };
 
