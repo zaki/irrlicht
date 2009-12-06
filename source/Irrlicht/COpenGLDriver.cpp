@@ -2597,7 +2597,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			mat.Lighting=false;
 			mat.AntiAliasing=video::EAAM_OFF;
 			mat.TextureLayer[0].BilinearFilter=false;
-			setBasicRenderStates(mat, mat, true);
+			setBasicRenderStates(mat, LastMaterial, true);
 			LastMaterial = mat;
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
