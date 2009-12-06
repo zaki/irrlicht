@@ -2085,6 +2085,15 @@
 			</File>
 			<Filter
 				Name="extern">
+				<File
+					RelativePath=".\lzma\LzmaDec.c">
+				</File>
+				<File
+					RelativePath=".\lzma\LzmaDec.h">
+				</File>
+				<File
+					RelativePath=".\lzma\Types.h">
+				</File>
 				<Filter
 					Name="zlib">
 					<File
