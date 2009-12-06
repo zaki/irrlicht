@@ -60,32 +60,6 @@ namespace scene
 		\return Returns pointer to the mesh or 0 if there is none with this number. */
 		virtual IAnimatedMesh* getMeshByIndex(u32 index);
 
-		//! Returns a mesh based on its file name.
-		/** \return Returns pointer to the mesh or 0 if there is none with this number. */
-		_IRR_DEPRECATED_ virtual IAnimatedMesh* getMeshByFilename(const io::path& filename);
-
-		//! Returns name of a mesh based on its index number.
-		/** \param index: Index of the mesh, number between 0 and getMeshCount()-1.
-		Note that this is only valid until a new mesh is loaded */
-		_IRR_DEPRECATED_ virtual const io::path& getMeshFilename(u32 index) const;
-
-		//! Returns the filename of a loaded mesh, if there is any.
-		/** Returns an empty path if there is none. */
-		_IRR_DEPRECATED_ virtual const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const;
-
-		//! Returns the filename of a loaded mesh, if there is any.
-		/** Returns an empty path if there is none.*/
-		_IRR_DEPRECATED_ virtual const io::path& getMeshFilename(const IMesh* const mesh) const;
-
-		//! Renames a loaded mesh, if possible.
-		_IRR_DEPRECATED_ virtual bool setMeshFilename(u32 index, const io::path& filename);
-
-		//! Renames a loaded mesh, if possible.
-		_IRR_DEPRECATED_ virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename);
-
-		//! Renames a loaded mesh, if possible.
-		_IRR_DEPRECATED_ virtual bool setMeshFilename(const IMesh* const mesh, const io::path& filename);
-
 		//! Returns a mesh based on its name.
 		/** \param name Name of the mesh. Usually a filename.
 		\return Pointer to the mesh or 0 if there is none with this number. */
