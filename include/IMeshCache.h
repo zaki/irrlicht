@@ -92,31 +92,52 @@ namespace scene
 
 		//! Returns a mesh based on its name (often a filename).
 		/** \deprecated Use getMeshByName() instead. */
-		_IRR_DEPRECATED_ virtual IAnimatedMesh* getMeshByFilename(const io::path& filename) = 0;
+		_IRR_DEPRECATED_ IAnimatedMesh* getMeshByFilename(const io::path& filename)
+		{
+			return getMeshByName(filename);
+		}
 
 		//! Get the name of a loaded mesh, based on its index. (Name is often identical to the filename).
 		/** \deprecated Use getMeshName() instead. */
-		_IRR_DEPRECATED_ virtual const io::path& getMeshFilename(u32 index) const = 0;
+		_IRR_DEPRECATED_ const io::path& getMeshFilename(u32 index) const
+		{
+			return getMeshName(index).getName();
+		}
 
 		//! Get the name of a loaded mesh, if there is any. (Name is often identical to the filename).
 		/** \deprecated Use getMeshName() instead. */
-		_IRR_DEPRECATED_ virtual const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const = 0;
+		_IRR_DEPRECATED_ const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const
+		{
+			return getMeshName(mesh).getName();
+		}
 
 		//! Get the name of a loaded mesh, if there is any. (Name is often identical to the filename).
 		/** \deprecated Use getMeshName() instead. */
-		_IRR_DEPRECATED_ virtual const io::path& getMeshFilename(const IMesh* const mesh) const = 0;
+		_IRR_DEPRECATED_ const io::path& getMeshFilename(const IMesh* const mesh) const
+		{
+			return getMeshName(mesh).getName();
+		}
 
 		//! Renames a loaded mesh.
 		/**	\deprecated Use renameMesh() instead. */
-		_IRR_DEPRECATED_ virtual bool setMeshFilename(u32 index, const io::path& filename) = 0;
+		_IRR_DEPRECATED_ bool setMeshFilename(u32 index, const io::path& filename)
+		{
+			return renameMesh(index, filename);
+		}
 
 		//! Renames a loaded mesh.
 		/** \deprecated Use renameMesh() instead. */
-		_IRR_DEPRECATED_ virtual bool setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename) = 0;
+		_IRR_DEPRECATED_ bool setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename)
+		{
+			return renameMesh(mesh, filename);
+		}
 
 		//! Renames a loaded mesh.
 		/** \deprecated Use renameMesh() instead. */
-		_IRR_DEPRECATED_ virtual bool setMeshFilename(const IMesh* const mesh, const io::path& filename) = 0;
+		_IRR_DEPRECATED_ bool setMeshFilename(const IMesh* const mesh, const io::path& filename)
+		{
+			return renameMesh(mesh, filename);
+		}
 
 		//! Returns a mesh based on its name.
 		/** \param name Name of the mesh. Usually a filename.

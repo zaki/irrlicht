@@ -108,56 +108,6 @@ IAnimatedMesh* CMeshCache::getMeshByIndex(u32 number)
 }
 
 
-//! Returns a mesh based on its file name.
-IAnimatedMesh* CMeshCache::getMeshByFilename(const io::path& filename)
-{
-	return getMeshByName(filename);
-}
-
-
-//! Returns name of a mesh based on its index number
-const io::path& CMeshCache::getMeshFilename(u32 number) const
-{
-	return getMeshName(number).getName();
-}
-
-
-
-//! Returns the filename of a loaded mesh, if there is any.
-const io::path& CMeshCache::getMeshFilename(const IAnimatedMesh* const mesh) const
-{
-	return getMeshName(mesh).getName();
-}
-
-
-//! Returns the filename of a loaded mesh, if there is any. Returns 0 if there is none.
-const io::path& CMeshCache::getMeshFilename(const IMesh* const mesh) const
-{
-	return getMeshName(mesh).getName();
-}
-
-
-
-//! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(u32 index, const io::path& filename)
-{
-	return renameMesh(index, filename);
-}
-
-
-//! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(const IAnimatedMesh* const mesh, const io::path& filename)
-{
-	return renameMesh(mesh, filename);
-}
-
-
-//! Renames a loaded mesh, if possible.
-bool CMeshCache::setMeshFilename(const IMesh* const mesh, const io::path& filename)
-{
-	return renameMesh(mesh, filename);
-}
-
 //! Returns a mesh based on its name.
 IAnimatedMesh* CMeshCache::getMeshByName(const io::path& name)
 {
