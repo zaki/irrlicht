@@ -120,11 +120,7 @@ namespace irr
 				if (WindowSize.Height!=0)
 					InvWindowSize.Height = 1.0f / WindowSize.Height;
 
-				if (!fullscreen)
-				{
-					BorderX = GetSystemMetrics(SM_CXDLGFRAME);
-					BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME);
-				}
+				updateBorderSize(fullscreen, false);
 			}
 
 			//! Changes the visible state of the mouse cursor.
@@ -261,6 +257,28 @@ namespace irr
 					InvWindowSize.Height = 1.0f / size.Height;
 				else
 					InvWindowSize.Height = 0.f;
+			}
+
+			/** Used to notify the cursor that the window resizable settings changed. */
+			void updateBorderSize(bool fullscreen, bool resizable)
+			{
+			   if (!fullscreen)
+			   {
+				  if (resizable)
+				  {
+					 BorderX = GetSystemMetrics(SM_CXSIZEFRAME);
+					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME);         
+				  }
+				  else
+				  {
+					 BorderX = GetSystemMetrics(SM_CXDLGFRAME);
+					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME);               
+				  }
+			   }
+			   else
+			   {
+				  BorderX = BorderY = 0;
+			   }
 			}
 
 		private:
