@@ -28,7 +28,7 @@ public:
 
 	//! Constructor
 	IGUIElement(EGUI_ELEMENT_TYPE type, IGUIEnvironment* environment, IGUIElement* parent,
-		s32 id, core::rect<s32> rectangle)
+		s32 id, const core::rect<s32>& rectangle)
 		: Parent(0), RelativeRect(rectangle), AbsoluteRect(rectangle),
 		AbsoluteClippingRect(rectangle), DesiredRect(rectangle),
 		MaxSize(0,0), MinSize(1,1), IsVisible(true), IsEnabled(true),
