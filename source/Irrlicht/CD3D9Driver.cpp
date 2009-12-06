@@ -475,10 +475,10 @@ bool CD3D9Driver::initDriver(const core::dimension2d<u32>& screenSize,
 
 //! applications must call this method before performing any rendering. returns false if failed.
 bool CD3D9Driver::beginScene(bool backBuffer, bool zBuffer, SColor color,
-		void* windowId, core::rect<s32>* sourceRect)
+		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
-	CNullDriver::beginScene(backBuffer, zBuffer, color, windowId, sourceRect);
-	WindowId = windowId;
+	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
+	WindowId = (HWND)videoData.D3D9.HWnd;
 	SceneSourceRect = sourceRect;
 
 	if (!pID3DDevice)
@@ -552,7 +552,7 @@ bool CD3D9Driver::endScene()
 		sourceRectData.bottom = SceneSourceRect->LowerRightCorner.Y;
 	}
 
-	hr = pID3DDevice->Present(srcRct, NULL, (HWND)WindowId, NULL);
+	hr = pID3DDevice->Present(srcRct, NULL, WindowId, NULL);
 
 	if (SUCCEEDED(hr))
 		return true;
