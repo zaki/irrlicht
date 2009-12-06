@@ -111,6 +111,14 @@ namespace scene
 	const c8* const DMF_FLIP_ALPHA_TEXTURES = "DMF_FlipAlpha";
 
 
+	//! Name of the parameter for changing the texture path of the built-in obj loader.
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::OBJ_TEXTURE_PATH, "path/to/your/textures");
+	\endcode
+	**/
+	const c8* const OBJ_TEXTURE_PATH = "OBJ_TexturePath";
+
 	//! Flag to avoid loading group structures in .obj files
 	/** Use it like this:
 	\code
@@ -137,6 +145,13 @@ namespace scene
 	**/
 	const c8* const B3D_LOADER_IGNORE_MIPMAP_FLAG = "B3D_IgnoreMipmapFlag";
 
+	//! Name of the parameter for changing the texture path of the built-in b3d loader.
+	/** Use it like this:
+	\code
+	SceneManager->getParameters()->setAttribute(scene::B3D_TEXTURE_PATH, "path/to/your/textures");
+	\endcode
+	**/
+	const c8* const B3D_TEXTURE_PATH = "B3D_TexturePath";
 
 	//! Flag set as parameter when the scene manager is used as editor
 	/** In this way special animators like deletion animators can be stopped from

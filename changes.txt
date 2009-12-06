@@ -1,5 +1,7 @@
 Changes in 1.7
 
+ - Add OBJ_TEXTURE_PATH and B3D_TEXTURE_PATH to SceneParameters to allow setting texture-paths for obj and b3d.
+
  - Irrlicht keeps now filenames additionaly to the internally used names, thereby fixing some problems with uppercase-filenames on Linux.
 
  - Bugfix: Mousewheel no longer sends EMIE_MOUSE_WHEEL messages twice on Linux.
