@@ -1,4 +1,6 @@
 Changes in 1.7
+ 
+ - Fix incorrect cursorpos for resizable windows on Windows Vista (found and patched by buffer)
 
  - Change the beginScene window parameter from void* to SExposedVideoData&. This will allow to manage contexts for OpenGL at some point.
 
