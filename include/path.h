@@ -26,10 +26,8 @@ struct SNamedPath
 	SNamedPath() {}
 
 	//! Constructor
-	SNamedPath(const path& p) : Path(p), Name(p)
+	SNamedPath(const path& p) : Path(p), Name( PathToName(p) )
 	{
-		Name.replace( '\\', '/' );
-		Name.make_lower();
 	}
 
 	//! Is smaller comparator
@@ -38,15 +36,14 @@ struct SNamedPath
 		return Name < other.Name;
 	}
 
-	//! Set the path. As the name depends on the path it will also be changed.
+	//! Set the path. As the name depends on the path the name will also be changed.
 	void setPath(const path& p)
 	{
 		Path = p;
-		Name = p;
-		Name.make_lower();
+		Name = PathToName(p);
 	}
 
-	//! Get the path
+	//! Get the path. This is the original, unprocessed string passed to SNamedPath.
 	const path& getPath() const
 	{
 		return Path;
@@ -61,24 +58,33 @@ struct SNamedPath
 	//! Has the file been given a new name?
 	bool isRenamed() const
 	{
-		return !Path.equals_ignore_case(Name);
+		// Note: memory over speed here because of the typical use-cases.
+		return PathToName(Path) != Name;
 	}
 
-	//! Get the name which is used to identify the file. By default a lower-case version of the filename.
+	//! Get the name which is used to identify the file.
+	//! This string is similar to the names and filenames used before Irrlicht 1.7
 	const path& getName() const
 	{
 		return Name;
 	}
 
-	//! Returns the name used in serialization
-	/** When the name wasn't renamed the path is used otherwise the name is used.
-		TODO: This is a workaround, as both strings should be serialized in the long run.
-	*/
+	//! Returns the string which should be used in serialization.
 	const path& getSerializationName() const
 	{
 		if ( isRenamed() )
 			return getName();
 		return Path;
+	}
+
+protected:
+	// convert the given path string to a name string.
+	path PathToName(const path& p) const
+	{
+		path name(p);
+		name.replace( '\\', '/' );
+		name.make_lower();
+		return name;
 	}
 
 private:
