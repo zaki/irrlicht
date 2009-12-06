@@ -340,7 +340,7 @@ CSceneManager::~CSceneManager()
 //! gets an animateable mesh. loads it if needed. returned pointer must not be dropped.
 IAnimatedMesh* CSceneManager::getMesh(const io::path& filename)
 {
-	IAnimatedMesh* msh = MeshCache->getMeshByFilename(filename);
+	IAnimatedMesh* msh = MeshCache->getMeshByName(filename);
 	if (msh)
 		return msh;
 
@@ -386,11 +386,10 @@ IAnimatedMesh* CSceneManager::getMesh(io::IReadFile* file)
 		return 0;
 
 	io::path name = file->getFileName();
-	IAnimatedMesh* msh = MeshCache->getMeshByFilename(file->getFileName());
+	IAnimatedMesh* msh = MeshCache->getMeshByName(file->getFileName());
 	if (msh)
 		return msh;
 
-	name.make_lower();
 	s32 count = MeshLoaderList.size();
 	for (s32 i=count-1; i>=0; --i)
 	{
@@ -921,7 +920,7 @@ IAnimatedMesh* CSceneManager::addHillPlaneMesh(const io::path& name,
 		const core::dimension2d<f32>& textureRepeatCount)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createHillPlaneMesh(tileSize,
 			tileCount, material, hillHeight, countHills,
@@ -955,7 +954,7 @@ IAnimatedMesh* CSceneManager::addTerrainMesh(const io::path& name,
 	const core::dimension2d<u32>& defaultVertexBlockSize)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createTerrainMesh(texture, heightmap,
 			stretchSize, maxHeight, getVideoDriver(),
@@ -988,7 +987,7 @@ IAnimatedMesh* CSceneManager::addArrowMesh(const io::path& name,
 		f32 cylinderHeight, f32 width0,f32 width1)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createArrowMesh( tesselationCylinder,
 			tesselationCone, height, cylinderHeight, width0,width1,
@@ -1019,7 +1018,7 @@ IAnimatedMesh* CSceneManager::addSphereMesh(const io::path& name,
 		f32 radius, u32 polyCountX, u32 polyCountY)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createSphereMesh(radius, polyCountX, polyCountY);
 	if (!mesh)
@@ -1050,7 +1049,7 @@ IAnimatedMesh* CSceneManager::addVolumeLightMesh(const io::path& name,
 		const video::SColor FootColor, const video::SColor TailColor)
 {
 	if (MeshCache->isMeshLoaded(name))
-		return MeshCache->getMeshByFilename(name);
+		return MeshCache->getMeshByName(name);
 
 	IMesh* mesh = GeometryCreator->createVolumeLightMesh(SubdivideU, SubdivideV, FootColor, TailColor);
 	if (!mesh)

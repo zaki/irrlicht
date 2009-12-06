@@ -1828,13 +1828,13 @@ public:
 
 	virtual core::stringw getStringW()
 	{
-		return core::stringw(Value ? Value->getName().c_str() : 0);
+		return core::stringw(Value ? Value->getName().getSerializationName().c_str() : 0);
 	}
 
 	virtual core::stringc getString()
 	{
 		// since texture names can be stringw we are careful with the types
-		return core::stringc(Value ? Value->getName().c_str() : 0);
+		return core::stringc(Value ? Value->getName().getSerializationName().c_str() : 0);
 	}
 
 	virtual void setString(const char* text)
@@ -1852,7 +1852,7 @@ public:
 	{
 		if ( value == Value )
 			return;
-		
+
 		if (Value)
 			Value->drop();
 

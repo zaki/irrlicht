@@ -1,5 +1,7 @@
 Changes in 1.7
 
+ - Irrlicht keeps now filenames additionaly to the internally used names, thereby fixing some problems with uppercase-filenames on Linux.
+
  - Bugfix: Mousewheel no longer sends EMIE_MOUSE_WHEEL messages twice on Linux.
 
  - refactoring: E_ATTRIBUTE_TYPE and IAttribute have now own headers

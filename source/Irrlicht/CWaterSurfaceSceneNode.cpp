@@ -100,7 +100,7 @@ void CWaterSurfaceSceneNode::serializeAttributes(io::IAttributes* out, io::SAttr
 
 	CMeshSceneNode::serializeAttributes(out, options);
 	// serialize original mesh
-	out->setAttribute("Mesh", SceneManager->getMeshCache()->getMeshFilename(OriginalMesh).c_str());
+	out->setAttribute("Mesh", SceneManager->getMeshCache()->getMeshName(OriginalMesh).getSerializationName().c_str());
 }
 
 

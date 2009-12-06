@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "IrrCompileConfig.h" 
+#include "IrrCompileConfig.h"
 
 #ifdef _IRR_COMPILE_WITH_OBJ_WRITER_
 
@@ -64,14 +64,14 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 
 	// write OBJ MESH header
 
-	const core::stringc name(FileSystem->getFileBasename(SceneManager->getMeshCache()->getMeshFilename(mesh), false)+".mtl");
+	const core::stringc name(FileSystem->getFileBasename(SceneManager->getMeshCache()->getMeshName(mesh).getSerializationName(), false)+".mtl");
 	file->write("# exported by Irrlicht\n",23);
 	file->write("mtllib ",7);
 	file->write(name.c_str(),name.size());
 	file->write("\n\n",2);
 
 	// write mesh buffers
-	
+
 	core::array<video::SMaterial*> mat;
 
 	u32 allVertexCount=1; // count vertices over the whole file
@@ -192,7 +192,7 @@ bool COBJMeshWriter::writeMesh(io::IWriteFile* file, scene::IMesh* mesh, s32 fla
 			if (mat[i]->getTexture(0))
 			{
 				file->write("map_Kd ", 7);
-				file->write(mat[i]->getTexture(0)->getName().c_str(), mat[i]->getTexture(0)->getName().size());
+				file->write(mat[i]->getTexture(0)->getName().getSerializationName().c_str(), mat[i]->getTexture(0)->getName().getSerializationName().size());
 				file->write("\n",1);
 			}
 			file->write("\n",1);

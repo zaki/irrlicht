@@ -350,8 +350,8 @@ void CNullDriver::renameTexture(ITexture* texture, const io::path& newName)
 	// is just readonly to prevent the user changing the texture name without invoking
 	// this method, because the textures will need resorting afterwards
 
-	io::path& name = const_cast<io::path&>(texture->getName());
-	name = newName;
+	io::SNamedPath& name = const_cast<io::SNamedPath&>(texture->getName());
+	name.rename(newName);
 
 	Textures.sort();
 }

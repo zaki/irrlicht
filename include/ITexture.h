@@ -85,9 +85,8 @@ class ITexture : public virtual IReferenceCounted
 public:
 
 	//! constructor
-	ITexture(const io::path& name) : Name(name)
+	ITexture(const io::path& name) : NamedPath(name)
 	{
-		Name.make_lower();
 	}
 
 	//! Lock function.
@@ -156,7 +155,7 @@ public:
 	virtual bool isRenderTarget() const { return false; }
 
 	//! Get name of texture (in most cases this is the filename)
-	const io::path& getName() const { return Name; }
+	const io::SNamedPath& getName() const { return NamedPath; }
 
 protected:
 
@@ -176,7 +175,7 @@ protected:
 		return ETCF_OPTIMIZED_FOR_SPEED;
 	}
 
-	io::path Name;
+	io::SNamedPath NamedPath;
 };
 
 
