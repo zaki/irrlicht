@@ -115,7 +115,7 @@ void CGUITextureCacheBrowser::updateImageList()
 		core::stringw details;
 		video::ITexture* tex = Driver->getTextureByIndex(i);
 		details = L"File name: ";
-		details += tex->getName().c_str();
+		details += tex->getName();
 		details += L"\nFormat: ";
 		video::ECOLOR_FORMAT cf = tex->getColorFormat();
 

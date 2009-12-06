@@ -69,6 +69,17 @@ struct SNamedPath
 		return Name;
 	}
 
+	//! Implicit cast to io::path
+	operator core::stringc() const
+	{
+		return core::stringc(getSerializationName());
+	}
+	//! Implicit cast to io::path
+	operator core::stringw() const
+	{
+		return core::stringw(getSerializationName());
+	}
+
 	//! Returns the string which should be used in serialization.
 	const path& getSerializationName() const
 	{
