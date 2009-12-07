@@ -3253,6 +3253,9 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 	const c8* geometryShaderProgram,
 	const c8* geometryShaderEntryPointName,
 	E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+	scene::E_PRIMITIVE_TYPE inType,
+	scene::E_PRIMITIVE_TYPE outType,
+	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
 	s32 userData)
@@ -3264,6 +3267,7 @@ s32 COpenGLDriver::addHighLevelShaderMaterial(
 		vertexShaderProgram, vertexShaderEntryPointName, vsCompileTarget,
 		pixelShaderProgram, pixelShaderEntryPointName, psCompileTarget,
 		geometryShaderProgram, geometryShaderEntryPointName, gsCompileTarget,
+		inType, outType, verticesOut,
 		callback,getMaterialRenderer(baseMaterial), userData);
 	r->drop();
 	return nr;
@@ -3731,6 +3735,41 @@ void COpenGLDriver::enableClipPlane(u32 index, bool enable)
 core::dimension2du COpenGLDriver::getMaxTextureSize() const
 {
 	return core::dimension2du(MaxTextureSize, MaxTextureSize);
+}
+
+//! Convert E_PRIMITIVE_TYPE to OpenGL equivalent
+GLenum COpenGLDriver::primitiveTypeToGL(scene::E_PRIMITIVE_TYPE type) const
+{
+	switch (type)
+	{
+		case scene::EPT_POINTS:
+			return GL_POINTS;
+		case scene::EPT_LINE_STRIP:
+			return GL_LINE_STRIP;
+		case scene::EPT_LINE_LOOP:
+			return GL_LINE_LOOP;
+		case scene::EPT_LINES:
+			return GL_LINES;
+		case scene::EPT_TRIANGLE_STRIP:
+			return GL_TRIANGLE_STRIP;
+		case scene::EPT_TRIANGLE_FAN:
+			return GL_TRIANGLE_FAN;
+		case scene::EPT_TRIANGLES:
+			return GL_TRIANGLES;
+		case scene::EPT_QUAD_STRIP:
+			return GL_QUAD_STRIP;
+		case scene::EPT_QUADS:
+			return GL_QUADS;
+		case scene::EPT_POLYGON:
+			return GL_POLYGON;
+		case scene::EPT_POINT_SPRITES:
+#ifdef GL_ARB_point_sprite
+			return GL_POINT_SPRITE_ARB;
+#else
+			return GL_POINTS;
+#endif
+	}
+	return GL_TRIANGLES;
 }
 
 } // end namespace

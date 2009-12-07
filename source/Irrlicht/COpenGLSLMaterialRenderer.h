@@ -63,6 +63,9 @@ public:
 		const c8* geometryShaderProgram = 0,
 		const c8* geometryShaderEntryPointName = "main",
 		E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
 		IMaterialRenderer* baseMaterial = 0,
 		s32 userData = 0);
@@ -100,7 +103,10 @@ protected:
 	void init(s32& outMaterialTypeNr, 
 		const c8* vertexShaderProgram, 
 		const c8* pixelShaderProgram,
-		const c8* geometryShaderProgram);
+		const c8* geometryShaderProgram,
+		scene::E_PRIMITIVE_TYPE inType=scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType=scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut=0);
 
 	bool createProgram();
 	bool createShader(GLenum shaderType, const char* shader);

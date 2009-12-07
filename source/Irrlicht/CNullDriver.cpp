@@ -1796,6 +1796,8 @@ s32 CNullDriver::addHighLevelShaderMaterial(
 	const c8* geometryShaderProgram,
 	const c8* geometryShaderEntryPointName,
 	E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+	scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
+	u32 verticesOut,
 	IShaderConstantSetCallBack* callback,
 	E_MATERIAL_TYPE baseMaterial,
 	s32 userData)
@@ -1817,6 +1819,8 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		const io::path& geometryShaderProgramFileName,
 		const c8* geometryShaderEntryPointName,
 		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
+		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial,
 		s32 userData)
@@ -1859,6 +1863,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		vsfile, vertexShaderEntryPointName, vsCompileTarget,
 		psfile, pixelShaderEntryPointName, psCompileTarget,
 		gsfile, geometryShaderEntryPointName, gsCompileTarget,
+		inType, outType, verticesOut,
 		callback, baseMaterial, userData);
 
 	if (psfile)
@@ -1886,6 +1891,8 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		io::IReadFile* geometryShaderProgram,
 		const c8* geometryShaderEntryPointName,
 		E_GEOMETRY_SHADER_TYPE gsCompileTarget,
+		scene::E_PRIMITIVE_TYPE inType, scene::E_PRIMITIVE_TYPE outType,
+		u32 verticesOut,
 		IShaderConstantSetCallBack* callback,
 		E_MATERIAL_TYPE baseMaterial,
 		s32 userData)
@@ -1938,6 +1945,7 @@ s32 CNullDriver::addHighLevelShaderMaterialFromFiles(
 		vs, vertexShaderEntryPointName, vsCompileTarget,
 		ps, pixelShaderEntryPointName, psCompileTarget,
 		gs, geometryShaderEntryPointName, gsCompileTarget,
+		inType, outType, verticesOut,
 		callback, baseMaterial, userData);
 
 	delete [] vs;

@@ -7,6 +7,7 @@
 
 #include "EShaderTypes.h"
 #include "EMaterialTypes.h"
+#include "EPrimitiveTypes.h"
 #include "path.h"
 
 namespace irr
@@ -52,6 +53,10 @@ public:
 	geometryShaderEntryPointName
 	\param gsCompileTarget: Geometry shader version the high level shader
 	shall be compiled to.
+	\param inType Type of vertices passed to geometry shader
+	\param outType Type of vertices created by geometry shader
+	\param verticesOut Maximal number of vertices created by geometry
+	shader. If 0, maximal number supported is assumed.
 	\param callback: Pointer to an implementation of
 	IShaderConstantSetCallBack in which you can set the needed vertex,
 	pixel, and geometry shader program constants. Set this to 0 if you
@@ -78,6 +83,9 @@ public:
 		const c8* geometryShaderProgram = 0,
 		const c8* geometryShaderEntryPointName = "main",
 		E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 		s32 userData = 0 ) = 0;
@@ -99,6 +107,7 @@ public:
 			vsCompileTarget, pixelShaderProgram,
 			pixelShaderEntryPointName, psCompileTarget,
 			0, "main", EGST_GS_4_0,
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
 			callback, baseMaterial, userData);
 	}
 
@@ -124,6 +133,10 @@ public:
 	geometryShaderEntryPointName
 	\param gsCompileTarget: Geometry shader version the high level shader
 	shall be compiled to.
+	\param inType Type of vertices passed to geometry shader
+	\param outType Type of vertices created by geometry shader
+	\param verticesOut Maximal number of vertices created by geometry
+	shader. If 0, maximal number supported is assumed.
 	\param callback: Pointer to an implementation of
 	IShaderConstantSetCallBack in which you can set the needed vertex,
 	pixel, and geometry shader program constants. Set this to 0 if you
@@ -150,6 +163,9 @@ public:
 		const io::path& geometryShaderProgramFileName="",
 		const c8* geometryShaderEntryPointName = "main",
 		E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 		s32 userData = 0) = 0;
@@ -171,6 +187,7 @@ public:
 			vsCompileTarget, pixelShaderProgramFileName,
 			pixelShaderEntryPointName, psCompileTarget,
 			"", "main", EGST_GS_4_0,
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
 			callback, baseMaterial, userData);
 	}
 
@@ -195,6 +212,10 @@ public:
 	geometryShaderEntryPointName
 	\param gsCompileTarget: Geometry shader version the high level shader
 	shall be compiled to.
+	\param inType Type of vertices passed to geometry shader
+	\param outType Type of vertices created by geometry shader
+	\param verticesOut Maximal number of vertices created by geometry
+	shader. If 0, maximal number supported is assumed.
 	\param callback: Pointer to an implementation of
 	IShaderConstantSetCallBack in which you can set the needed vertex and
 	pixel shader program constants. Set this to 0 if you don't need this.
@@ -220,6 +241,9 @@ public:
 		io::IReadFile* geometryShaderProgram = 0,
 		const c8* geometryShaderEntryPointName = "main",
 		E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+		scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+		scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+		u32 verticesOut = 0,
 		IShaderConstantSetCallBack* callback = 0,
 		E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 		s32 userData = 0) = 0;
@@ -241,6 +265,7 @@ public:
 			vsCompileTarget, pixelShaderProgram,
 			pixelShaderEntryPointName, psCompileTarget,
 			0, "main", EGST_GS_4_0,
+			scene::EPT_TRIANGLES, scene::EPT_TRIANGLE_STRIP, 0,
 			callback, baseMaterial, userData);
 	}
 
