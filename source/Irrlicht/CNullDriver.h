@@ -482,6 +482,9 @@ namespace video
 			const c8* geometryShaderProgram = 0,
 			const c8* geometryShaderEntryPointName = "main",
 			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+			scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+			scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -498,6 +501,9 @@ namespace video
 			const io::path& geometryShaderProgramFileName="",
 			const c8* geometryShaderEntryPointName = "main",
 			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+			scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+			scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
@@ -514,6 +520,9 @@ namespace video
 			io::IReadFile* geometryShaderProgram= 0,
 			const c8* geometryShaderEntryPointName = "main",
 			E_GEOMETRY_SHADER_TYPE gsCompileTarget = EGST_GS_4_0,
+			scene::E_PRIMITIVE_TYPE inType = scene::EPT_TRIANGLES,
+			scene::E_PRIMITIVE_TYPE outType = scene::EPT_TRIANGLE_STRIP,
+			u32 verticesOut = 0,
 			IShaderConstantSetCallBack* callback = 0,
 			E_MATERIAL_TYPE baseMaterial = video::EMT_SOLID,
 			s32 userData=0);
