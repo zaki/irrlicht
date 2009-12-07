@@ -49,6 +49,56 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 //! inits the open gl driver
 bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceWin32* device)
 {
+	// Create a window to test antialiasing support
+	const fschar_t* ClassName = __TEXT("GLCIrrDeviceWin32");
+	HINSTANCE lhInstance = GetModuleHandle(0);
+
+	// Register Class
+	WNDCLASSEX wcex;
+	wcex.cbSize        = sizeof(WNDCLASSEX);
+	wcex.style         = CS_HREDRAW | CS_VREDRAW;
+	wcex.lpfnWndProc   = (WNDPROC)DefWindowProc;
+	wcex.cbClsExtra    = 0;
+	wcex.cbWndExtra    = 0;
+	wcex.hInstance     = lhInstance;
+	wcex.hIcon         = NULL;
+	wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
+	wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
+	wcex.lpszMenuName  = 0;
+	wcex.lpszClassName = ClassName;
+	wcex.hIconSm       = 0;
+	wcex.hIcon         = 0;
+	RegisterClassEx(&wcex);
+
+	RECT clientSize;
+	clientSize.top = 0;
+	clientSize.left = 0;
+	clientSize.right = params.WindowSize.Width;
+	clientSize.bottom = params.WindowSize.Height;
+
+	DWORD style = WS_POPUP;
+	if (!params.Fullscreen)
+		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+
+	AdjustWindowRect(&clientSize, style, FALSE);
+
+	const s32 realWidth = clientSize.right - clientSize.left;
+	const s32 realHeight = clientSize.bottom - clientSize.top;
+
+	const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
+	const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
+
+	HWND temporary_wnd=CreateWindow(ClassName, __TEXT(""), style, windowLeft,
+			windowTop, realWidth, realHeight, NULL, NULL, lhInstance, NULL);
+
+	if (!temporary_wnd)
+	{
+		os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
+		return false;
+	}
+
+	HDc = GetDC(temporary_wnd);
+
 	// Set up pixel format descriptor with desired parameters
 	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),             // Size Of This Pixel Format Descriptor
@@ -73,57 +123,6 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	};
 
 	GLuint PixelFormat;
-
-	// Create a window to test antialiasing support
-		const fschar_t* ClassName = __TEXT("GLCIrrDeviceWin32");
-	HINSTANCE lhInstance = GetModuleHandle(0);
-
-	// Register Class
-	WNDCLASSEX wcex;
-	wcex.cbSize        = sizeof(WNDCLASSEX);
-	wcex.style         = CS_HREDRAW | CS_VREDRAW;
-	wcex.lpfnWndProc   = (WNDPROC)DefWindowProc;
-	wcex.cbClsExtra    = 0;
-	wcex.cbWndExtra    = 0;
-	wcex.hInstance     = lhInstance;
-	wcex.hIcon         = NULL;
-	wcex.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	wcex.hbrBackground  = (HBRUSH)(COLOR_WINDOW+1);
-	wcex.lpszMenuName  = 0;
-	wcex.lpszClassName = ClassName;
-	wcex.hIconSm       = 0;
-	wcex.hIcon         = 0;
-
-	RegisterClassEx(&wcex);
-	RECT clientSize;
-	clientSize.top = 0;
-	clientSize.left = 0;
-	clientSize.right = params.WindowSize.Width;
-	clientSize.bottom = params.WindowSize.Height;
-
-	DWORD style = WS_POPUP;
-
-	if (!params.Fullscreen)
-		style = WS_SYSMENU | WS_BORDER | WS_CAPTION | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-
-	AdjustWindowRect(&clientSize, style, FALSE);
-
-	const s32 realWidth = clientSize.right - clientSize.left;
-	const s32 realHeight = clientSize.bottom - clientSize.top;
-
-	const s32 windowLeft = (GetSystemMetrics(SM_CXSCREEN) - realWidth) / 2;
-	const s32 windowTop = (GetSystemMetrics(SM_CYSCREEN) - realHeight) / 2;
-
-		HWND temporary_wnd=CreateWindow(ClassName, __TEXT(""), style, windowLeft, windowTop,
-			realWidth, realHeight, NULL, NULL, lhInstance, NULL);
-
-	if (!temporary_wnd)
-	{
-		os::Printer::log("Cannot create a temporary window.", ELL_ERROR);
-		return false;
-	}
-
-	HDc = GetDC(temporary_wnd);
 
 	for (u32 i=0; i<5; ++i)
 	{
@@ -751,16 +750,18 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
 
 #if 0
-	// This should be fixed to allow using OpenGL with the videoData parameter
-	if (videoData.OpenGLWin32.HWnd)
+	// This should be fixed to allow using all OpenGL drivers with the videoData parameter
+	if (videoData.OpenGLWin32.HWnd && videoData.OpenGLWin32.HDc && videoData.OpenGLWin32.HRc)
 	{
 		HDc = (HDC)videoData.OpenGLWin32.HDc;
-		wglMakeCurrent(HDc, (HGLRC)videoData.OpenGLWin32.HRc);
+		if (!wglMakeCurrent(HDc, (HGLRC)videoData.OpenGLWin32.HRc))
+			os::Printer::log("Render Context switch failed.");
 	}
 	else if (HDc != ExposedData.OpenGLWin32.HDc)
 	{
 		HDc = (HDC)ExposedData.OpenGLWin32.HDc;
-		wglMakeCurrent(HDc, (HGLRC)ExposedData.OpenGLWin32.HRc);
+		if (!wglMakeCurrent(HDc, (HGLRC)ExposedData.OpenGLWin32.HRc))
+			os::Printer::log("Render Context switch failed.");
 	}
 #endif
 
