@@ -1375,7 +1375,7 @@ IGUIFont* CGUIEnvironment::getFont(const io::path& filename)
 		else if (t==EGFT_VECTOR)
 		{
 			// todo: vector fonts
-			os::Printer::log("Unable to load font, XML vector fonts are not supported yet", f.NamedPath.getName().c_str(), ELL_ERROR);
+			os::Printer::log("Unable to load font, XML vector fonts are not supported yet", f.NamedPath.getPath().c_str(), ELL_ERROR);
 
 			//CGUIFontVector* font = new CGUIFontVector(Driver);
 			//ifont = (IGUIFont*)font;

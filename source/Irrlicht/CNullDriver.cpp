@@ -351,7 +351,7 @@ void CNullDriver::renameTexture(ITexture* texture, const io::path& newName)
 	// this method, because the textures will need resorting afterwards
 
 	io::SNamedPath& name = const_cast<io::SNamedPath&>(texture->getName());
-	name.rename(newName);
+	name.setPath(newName);
 
 	Textures.sort();
 }
