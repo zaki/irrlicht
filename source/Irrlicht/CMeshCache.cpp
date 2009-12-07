@@ -163,7 +163,7 @@ bool CMeshCache::renameMesh(u32 index, const io::path& name)
 	if (index >= Meshes.size())
 		return false;
 
-	Meshes[index].NamedPath.rename(name);
+	Meshes[index].NamedPath.setPath(name);
 	Meshes.sort();
 	return true;
 }
@@ -175,7 +175,7 @@ bool CMeshCache::renameMesh(const IAnimatedMesh* const mesh, const io::path& nam
 	{
 		if (Meshes[i].Mesh == mesh)
 		{
-			Meshes[i].NamedPath.rename(name);
+			Meshes[i].NamedPath.setPath(name);
 			Meshes.sort();
 			return true;
 		}
@@ -191,7 +191,7 @@ bool CMeshCache::renameMesh(const IMesh* const mesh, const io::path& name)
 	{
 		if (Meshes[i].Mesh && Meshes[i].Mesh->getMesh(0) == mesh)
 		{
-			Meshes[i].NamedPath.rename(name);
+			Meshes[i].NamedPath.setPath(name);
 			Meshes.sort();
 			return true;
 		}

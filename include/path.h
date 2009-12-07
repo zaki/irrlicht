@@ -26,66 +26,45 @@ struct SNamedPath
 	SNamedPath() {}
 
 	//! Constructor
-	SNamedPath(const path& p) : Path(p), Name( PathToName(p) )
+	SNamedPath(const path& p) : Path(p), InternalName( PathToName(p) )
 	{
 	}
 
 	//! Is smaller comparator
 	bool operator <(const SNamedPath& other) const
 	{
-		return Name < other.Name;
+		return InternalName < other.InternalName;
 	}
 
-	//! Set the path. As the name depends on the path the name will also be changed.
+	//! Set the path.
 	void setPath(const path& p)
 	{
 		Path = p;
-		Name = PathToName(p);
+		InternalName = PathToName(p);
 	}
 
-	//! Get the path. This is the original, unprocessed string passed to SNamedPath.
+	//! Get the path.
 	const path& getPath() const
 	{
 		return Path;
 	};
 
-	//! Give the file a new name which is used for identification.
-	void rename(const path& name)
-	{
-		Name = name;
-	};
-
-	//! Has the file been given a new name?
-	bool isRenamed() const
-	{
-		// Note: memory over speed here because of the typical use-cases.
-		return PathToName(Path) != Name;
-	}
-
 	//! Get the name which is used to identify the file.
 	//! This string is similar to the names and filenames used before Irrlicht 1.7
-	const path& getName() const
+	const path& getInternalName() const
 	{
-		return Name;
+		return InternalName;
 	}
 
 	//! Implicit cast to io::path
 	operator core::stringc() const
 	{
-		return core::stringc(getSerializationName());
+		return core::stringc(getPath());
 	}
 	//! Implicit cast to io::path
 	operator core::stringw() const
 	{
-		return core::stringw(getSerializationName());
-	}
-
-	//! Returns the string which should be used in serialization.
-	const path& getSerializationName() const
-	{
-		if ( isRenamed() )
-			return getName();
-		return Path;
+		return core::stringw(getPath());
 	}
 
 protected:
@@ -100,7 +79,7 @@ protected:
 
 private:
 	path Path;
-	path Name;
+	path InternalName;
 };
 
 } // io

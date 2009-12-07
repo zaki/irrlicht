@@ -101,21 +101,21 @@ namespace scene
 		/** \deprecated Use getMeshName() instead. */
 		_IRR_DEPRECATED_ const io::path& getMeshFilename(u32 index) const
 		{
-			return getMeshName(index).getName();
+			return getMeshName(index).getInternalName();
 		}
 
 		//! Get the name of a loaded mesh, if there is any. (Name is often identical to the filename).
 		/** \deprecated Use getMeshName() instead. */
 		_IRR_DEPRECATED_ const io::path& getMeshFilename(const IAnimatedMesh* const mesh) const
 		{
-			return getMeshName(mesh).getName();
+			return getMeshName(mesh).getInternalName();
 		}
 
 		//! Get the name of a loaded mesh, if there is any. (Name is often identical to the filename).
 		/** \deprecated Use getMeshName() instead. */
 		_IRR_DEPRECATED_ const io::path& getMeshFilename(const IMesh* const mesh) const
 		{
-			return getMeshName(mesh).getName();
+			return getMeshName(mesh).getInternalName();
 		}
 
 		//! Renames a loaded mesh.

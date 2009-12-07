@@ -770,7 +770,7 @@ void CAnimatedMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttr
 {
 	IAnimatedMeshSceneNode::serializeAttributes(out, options);
 
-	out->addString("Mesh", SceneManager->getMeshCache()->getMeshName(Mesh).getSerializationName().c_str());
+	out->addString("Mesh", SceneManager->getMeshCache()->getMeshName(Mesh).getPath().c_str());
 	out->addBool("Looping", Looping);
 	out->addBool("ReadOnlyMaterials", ReadOnlyMaterials);
 	out->addFloat("FramesPerSecond", FramesPerSecond);
@@ -784,7 +784,7 @@ void CAnimatedMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 {
 	IAnimatedMeshSceneNode::deserializeAttributes(in, options);
 
-	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshName(Mesh).getSerializationName();
+	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshName(Mesh).getPath();
 	io::path newMeshStr = in->getAttributeAsString("Mesh");
 
 	Looping = in->getAttributeAsBool("Looping");
