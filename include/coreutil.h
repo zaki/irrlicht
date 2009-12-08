@@ -45,24 +45,16 @@ inline bool hasFileExtension (	const io::path& filename,
 	return isFileExtension ( filename, ext0, ext1, ext2 ) > 0;
 }
 
-//! cut the filename extension from a source string and stores in the dest string
-inline stringc& cutFilenameExtension ( stringc &dest, const stringc &source )
+//! cut the filename extension from a source file path and store it in a dest file path
+inline io::path& cutFilenameExtension ( io::path &dest, const io::path &source )
 {
 	s32 endPos = source.findLast ( '.' );
 	dest = source.subString ( 0, endPos < 0 ? source.size () : endPos );
 	return dest;
 }
 
-//! cut the filename extension from a source string and stores in the dest string
-inline stringw& cutFilenameExtension ( stringw &dest, const stringw &source )
-{
-	s32 endPos = source.findLast ( '.' );
-	dest = source.subString ( 0, endPos < 0 ? source.size () : endPos );
-	return dest;
-}
-
-//! get the filename extension from a string
-inline stringc& getFileNameExtension ( stringc &dest, const stringc &source )
+//! get the filename extension from a file path
+inline io::path& getFileNameExtension ( io::path &dest, const io::path &source )
 {
 	s32 endPos = source.findLast ( '.' );
 	if ( endPos < 0 )
@@ -73,30 +65,11 @@ inline stringc& getFileNameExtension ( stringc &dest, const stringc &source )
 }
 
 //! delete path from filename
-inline core::stringw& deletePathFromFilename(core::stringw& filename)
+inline io::path& deletePathFromFilename(io::path& filename)
 {
 	// delete path from filename
-	const wchar_t *s = filename.c_str();
-	const wchar_t* p = s + filename.size();
-
-	// search for path separator or beginning
-	while ( *p != '/' && *p != '\\' && p != s )
-		p--;
-
-	if ( p != s )
-	{
-		++p;
-		filename = p;
-	}
-	return filename;
-}
-
-//! delete path from filename
-inline core::stringc& deletePathFromFilename(core::stringc& filename)
-{
-	// delete path from filename
-	const c8 *s = filename.c_str();
-	const c8* p = s + filename.size();
+	const fschar_t* s = filename.c_str();
+	const fschar_t* p = s + filename.size();
 
 	// search for path separator or beginning
 	while ( *p != '/' && *p != '\\' && p != s )
