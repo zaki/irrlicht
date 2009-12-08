@@ -94,6 +94,43 @@ void CGUISpriteBank::setTexture(u32 index, video::ITexture* texture)
 }
 
 
+//! clear everything
+void CGUISpriteBank::clear()
+{
+	// drop textures
+	for (u32 i=0; i<Textures.size(); ++i)
+		if (Textures[i])
+			Textures[i]->drop();
+	Textures.clear();
+	Sprites.clear();
+	Rectangles.clear();
+}
+
+//! Add the texture and use it for a single non-animated sprite.
+s32 CGUISpriteBank::addTextureAsSprite(video::ITexture* texture)
+{
+	if ( !texture )
+		return -1;
+
+	addTexture(texture);
+	u32 textureIndex = getTextureCount() - 1;
+
+	u32 rectangleIndex = Rectangles.size();
+	Rectangles.push_back( core::rect<s32>(0,0, texture->getOriginalSize().Width, texture->getOriginalSize().Height) );
+
+	SGUISprite sprite;
+	sprite.frameTime = 0;
+
+	SGUISpriteFrame frame;
+	frame.textureNumber = textureIndex;
+	frame.rectNumber = rectangleIndex;
+	sprite.Frames.push_back( frame );
+
+	Sprites.push_back( sprite );
+
+	return Sprites.size() - 1;
+}
+
 //! draws a sprite in 2d with scale and color
 void CGUISpriteBank::draw2DSprite(u32 index, const core::position2di& pos,
 		const core::rect<s32>* clip, const video::SColor& color,
