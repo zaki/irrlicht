@@ -39,6 +39,9 @@ struct SGUISprite
 
 
 //! Sprite bank interface.
+/** See http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=25742&highlight=spritebank
+* for more einformation how to use the spritebank.
+*/
 class IGUISpriteBank : public virtual IReferenceCounted
 {
 public:
@@ -60,6 +63,14 @@ public:
 
 	//! Changes one of the textures in the sprite bank
 	virtual void setTexture(u32 index, video::ITexture* texture) = 0;
+
+	//! Add the texture and use it for a single non-animated sprite.
+	//! The texture and the corresponding rectangle and sprite will all be added to the end of each array.
+	//! returns the index of the sprite or -1 on failure
+	virtual s32 addTextureAsSprite(video::ITexture* texture) = 0;
+
+	//! clears sprites, rectangles and textures
+	virtual void clear() = 0;
 
 	//! Draws a sprite in 2d with position and color
 	virtual void draw2DSprite(u32 index, const core::position2di& pos,
