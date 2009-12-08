@@ -676,8 +676,6 @@ namespace video
 			core::dimension2d<u32> size;
 		};
 
-
-
 		core::array<SSurface> Textures;
 		core::array<video::IImageLoader*> SurfaceLoader;
 		core::array<video::IImageWriter*> SurfaceWriter;
@@ -726,6 +724,3 @@ namespace video
 
 
 #endif
-
-
-
