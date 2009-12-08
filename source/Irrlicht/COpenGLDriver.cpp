@@ -1574,6 +1574,144 @@ void COpenGLDriver::draw2DVertexPrimitiveList(const void* vertices, u32 vertexCo
 }
 
 
+//! draws a set of 2d images, using a color and the alpha channel of the
+//! texture if desired.
+void COpenGLDriver::draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect,
+				SColor color,
+				bool useAlphaChannelOfTexture)
+{
+	if (!texture)
+		return;
+
+	const u32 drawCount = core::min_<u32>(positions.size(), sourceRects.size());
+
+	// texcoords need to be flipped horizontally for RTTs
+	const bool isRTT = texture->isRenderTarget();
+	const core::dimension2d<u32>& ss = texture->getOriginalSize();
+	const f32 invW = 1.f / static_cast<f32>(ss.Width);
+	const f32 invH = 1.f / static_cast<f32>(ss.Height);
+	const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+
+	disableTextures(1);
+	if (!setActiveTexture(0, texture))
+		return;
+	setRenderStates2DMode(color.getAlpha()<255, true, useAlphaChannelOfTexture);
+
+	glColor4ub(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	glBegin(GL_QUADS);
+
+	for (u32 i=0; i<drawCount; ++i)
+	{
+		if (!sourceRects[i].isValid())
+			continue;
+
+		core::position2d<s32> targetPos(positions[i]);
+		core::position2d<s32> sourcePos(sourceRects[i].UpperLeftCorner);
+		// This needs to be signed as it may go negative.
+		core::dimension2d<s32> sourceSize(sourceRects[i].getSize());
+		if (clipRect)
+		{
+			if (targetPos.X < clipRect->UpperLeftCorner.X)
+			{
+				sourceSize.Width += targetPos.X - clipRect->UpperLeftCorner.X;
+				if (sourceSize.Width <= 0)
+					continue;
+
+				sourcePos.X -= targetPos.X - clipRect->UpperLeftCorner.X;
+				targetPos.X = clipRect->UpperLeftCorner.X;
+			}
+
+			if (targetPos.X + sourceSize.Width > clipRect->LowerRightCorner.X)
+			{
+				sourceSize.Width -= (targetPos.X + sourceSize.Width) - clipRect->LowerRightCorner.X;
+				if (sourceSize.Width <= 0)
+					continue;
+			}
+
+			if (targetPos.Y < clipRect->UpperLeftCorner.Y)
+			{
+				sourceSize.Height += targetPos.Y - clipRect->UpperLeftCorner.Y;
+				if (sourceSize.Height <= 0)
+					continue;
+
+				sourcePos.Y -= targetPos.Y - clipRect->UpperLeftCorner.Y;
+				targetPos.Y = clipRect->UpperLeftCorner.Y;
+			}
+
+			if (targetPos.Y + sourceSize.Height > clipRect->LowerRightCorner.Y)
+			{
+				sourceSize.Height -= (targetPos.Y + sourceSize.Height) - clipRect->LowerRightCorner.Y;
+				if (sourceSize.Height <= 0)
+					continue;
+			}
+		}
+
+		// clip these coordinates
+
+		if (targetPos.X<0)
+		{
+			sourceSize.Width += targetPos.X;
+			if (sourceSize.Width <= 0)
+				continue;
+
+			sourcePos.X -= targetPos.X;
+			targetPos.X = 0;
+		}
+
+		if (targetPos.X + sourceSize.Width > (s32)renderTargetSize.Width)
+		{
+			sourceSize.Width -= (targetPos.X + sourceSize.Width) - renderTargetSize.Width;
+			if (sourceSize.Width <= 0)
+				continue;
+		}
+
+		if (targetPos.Y<0)
+		{
+			sourceSize.Height += targetPos.Y;
+			if (sourceSize.Height <= 0)
+				continue;
+
+			sourcePos.Y -= targetPos.Y;
+			targetPos.Y = 0;
+		}
+
+		if (targetPos.Y + sourceSize.Height > (s32)renderTargetSize.Height)
+		{
+			sourceSize.Height -= (targetPos.Y + sourceSize.Height) - renderTargetSize.Height;
+			if (sourceSize.Height <= 0)
+				continue;
+		}
+
+		// ok, we've clipped everything.
+		// now draw it.
+
+		const core::rect<f32> tcoords(
+				sourcePos.X * invW,
+				(isRTT?(sourcePos.Y + sourceSize.Height):sourcePos.Y) * invH,
+				(sourcePos.X + sourceSize.Width) * invW,
+				(isRTT?sourcePos.Y:(sourcePos.Y + sourceSize.Height)) * invH);
+
+		const core::rect<s32> poss(targetPos, sourceSize);
+
+		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.UpperLeftCorner.Y);
+		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+
+		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.UpperLeftCorner.Y);
+		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.UpperLeftCorner.Y));
+
+		glTexCoord2f(tcoords.LowerRightCorner.X, tcoords.LowerRightCorner.Y);
+		glVertex2f(GLfloat(poss.LowerRightCorner.X), GLfloat(poss.LowerRightCorner.Y));
+
+		glTexCoord2f(tcoords.UpperLeftCorner.X, tcoords.LowerRightCorner.Y);
+		glVertex2f(GLfloat(poss.UpperLeftCorner.X), GLfloat(poss.LowerRightCorner.Y));
+	}
+	glEnd();
+}
+
+
 //! draws a 2d image, using a color and the alpha channel of the texture if
 //! desired. The image is drawn at pos, clipped against clipRect (if != 0).
 //! Only the subtexture defined by sourceRect is used.
@@ -2593,11 +2731,10 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-			SMaterial mat;
-			mat.ZBuffer=ECFN_NEVER;
+			SMaterial mat(InitMaterial2D);
 			mat.Lighting=false;
-			mat.AntiAliasing=video::EAAM_OFF;
-			mat.TextureLayer[0].BilinearFilter=false;
+			mat.ZBuffer=ECFN_NEVER;
+			mat.ZWriteEnable=false;
 			setBasicRenderStates(mat, LastMaterial, true);
 			LastMaterial = mat;
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -2623,6 +2760,15 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 		Transformation3DChanged = false;
 	}
+	else if (InitMaterial2DEnabled)
+	{
+		SMaterial mat(InitMaterial2D);
+		mat.Lighting=false;
+		mat.ZBuffer=ECFN_NEVER;
+		mat.ZWriteEnable=false;
+		setBasicRenderStates(mat, LastMaterial, false);
+		LastMaterial = mat;
+	}
 
 	if (alphaChannel || alpha)
 	{
@@ -2638,11 +2784,13 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (texture)
 	{
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		if (!InitMaterial2DEnabled)
+		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
 
 		if (alphaChannel)
 		{

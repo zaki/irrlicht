@@ -115,6 +115,15 @@ namespace video
 		//! \param material: Material to be used from now on.
 		virtual void setMaterial(const SMaterial& material);
 
+		//! draws a set of 2d images, using a color and the alpha channel of the
+		//! texture if desired.
+		void draw2DImageBatch(const video::ITexture* texture,
+				const core::array<core::position2d<s32> >& positions,
+				const core::array<core::rect<s32> >& sourceRects,
+				const core::rect<s32>* clipRect,
+				SColor color,
+				bool useAlphaChannelOfTexture);
+
 		//! draws an 2d image, using a color (if color is other then Color(255,255,255,255)) and the alpha channel of the texture if wanted.
 		virtual void draw2DImage(const video::ITexture* texture, const core::position2d<s32>& destPos,
 			const core::rect<s32>& sourceRect, const core::rect<s32>* clipRect = 0,

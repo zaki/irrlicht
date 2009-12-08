@@ -74,7 +74,7 @@ IImageWriter* createImageWriterPPM();
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
 	PrimitivesDrawn(0), MinVertexCountForVBO(500), TextureCreationFlags(0),
-	AllowZWriteOnTransparent(false)
+	InitMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");
@@ -150,6 +150,17 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	memset(&ExposedData, 0, sizeof(ExposedData));
 	for (u32 i=0; i<video::EVDF_COUNT; ++i)
 		FeatureEnabled[i]=true;
+	
+	InitMaterial2D.AntiAliasing=video::EAAM_OFF;
+	InitMaterial2D.Lighting=false;
+	InitMaterial2D.ZWriteEnable=false;
+	InitMaterial2D.ZBuffer=video::ECFN_NEVER;
+	for (u32 i=0; i<video::MATERIAL_MAX_TEXTURES; ++i)
+	{
+		InitMaterial2D.TextureLayer[i].BilinearFilter=false;
+		InitMaterial2D.TextureLayer[i].TextureWrapU=video::ETC_REPEAT;
+		InitMaterial2D.TextureLayer[i].TextureWrapV=video::ETC_REPEAT;
+	}
 }
 
 

@@ -704,6 +704,8 @@ namespace video
 		SExposedVideoData ExposedData;
 
 		SOverrideMaterial OverrideMaterial;
+		SMaterial InitMaterial2D;
+		bool InitMaterial2DEnabled;
 
 		E_FOG_TYPE FogType;
 		bool PixelFog;
