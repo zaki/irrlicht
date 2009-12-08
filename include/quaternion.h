@@ -40,6 +40,9 @@ class quaternion
 		//! Equalilty operator
 		bool operator==(const quaternion& other) const;
 
+		//! inequality operator
+		bool operator!=(const quaternion& other) const;
+
 		//! Assignment operator
 		inline quaternion& operator=(const quaternion& other);
 
@@ -171,6 +174,11 @@ inline bool quaternion::operator==(const quaternion& other) const
 		(W == other.W));
 }
 
+// inequality operator
+inline bool quaternion::operator!=(const quaternion& other) const
+{
+	return !(*this == other);
+}
 
 // assignment operator
 inline quaternion& quaternion::operator=(const quaternion& other)
@@ -339,7 +347,7 @@ inline void quaternion::getMatrix( matrix4 &dest, const core::vector3df &center 
 	m2.setInverseTranslation ( center );
 	lookat *= m2;
 */
-inline void quaternion::getMatrixCenter(matrix4 &dest, 
+inline void quaternion::getMatrixCenter(matrix4 &dest,
 					const core::vector3df &center,
 					const core::vector3df &translation) const
 {

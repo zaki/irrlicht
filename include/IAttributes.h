@@ -234,12 +234,12 @@ public:
 	*/
 
 	//! Adds an attribute as wide string array
-	virtual void addArray(const c8* attributeName, core::array<core::stringw> value) = 0;
+	virtual void addArray(const c8* attributeName, const core::array<core::stringw>& value) = 0;
 
 	//! Sets an attribute value as a wide string array.
 	//! \param attributeName: Name for the attribute
 	//! \param value: Value for the attribute. Set this to 0 to delete the attribute
-	virtual void setAttribute(const c8* attributeName, const core::array<core::stringw> value) = 0;
+	virtual void setAttribute(const c8* attributeName, const core::array<core::stringw>& value) = 0;
 
 	//! Gets an attribute as an array of wide strings.
 	//! \param attributeName: Name of the attribute to get.
@@ -252,7 +252,7 @@ public:
 	virtual core::array<core::stringw> getAttributeAsArray(s32 index) = 0;
 
 	//! Sets an attribute as an array of wide strings
-	virtual void setAttribute(s32 index, core::array<core::stringw> value) = 0;
+	virtual void setAttribute(s32 index, const core::array<core::stringw>& value) = 0;
 
 
 	/*

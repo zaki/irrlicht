@@ -68,6 +68,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(filesystem);
 	TEST(archiveReader);
 	TEST(testXML);
+	TEST(serializeAttributes);
 	// null driver
 	TEST(fast_atof);
 	TEST(collisionResponseAnimator);
