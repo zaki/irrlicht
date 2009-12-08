@@ -581,10 +581,10 @@ namespace video
 		virtual SOverrideMaterial& getOverrideMaterial();
 
 		//! Get the 2d override material for altering its values
-		virtual SMaterial& getInitMaterial2D();
+		virtual SMaterial& getMaterial2D();
 
 		//! Enable the 2d override material
-		virtual void enableInitMaterial2D(bool enable=true);
+		virtual void enableMaterial2D(bool enable=true);
 
 		//! Only used by the engine internally.
 		virtual void setAllowZWriteOnTransparent(bool flag)
@@ -708,8 +708,9 @@ namespace video
 		SExposedVideoData ExposedData;
 
 		SOverrideMaterial OverrideMaterial;
+		SMaterial OverrideMaterial2D;
 		SMaterial InitMaterial2D;
-		bool InitMaterial2DEnabled;
+		bool OverrideMaterial2DEnabled;
 
 		E_FOG_TYPE FogType;
 		bool PixelFog;

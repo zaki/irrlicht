@@ -1336,12 +1336,12 @@ namespace video
 		\return Material reference which should be altered to reflect
 		the new settings.
 		*/
-		virtual SMaterial& getInitMaterial2D() =0;
+		virtual SMaterial& getMaterial2D() =0;
 
 		//! Enable the 2d override material
 		/** \param enable Flag which tells whether the material shall be
 		enabled or disabled. */
-		virtual void enableInitMaterial2D(bool enable=true) =0;
+		virtual void enableMaterial2D(bool enable=true) =0;
 
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() =0;

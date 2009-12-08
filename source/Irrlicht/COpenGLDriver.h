@@ -337,7 +337,7 @@ namespace video
 		virtual void enableClipPlane(u32 index, bool enable);
 
 		//! Enable the 2d override material
-		virtual void enableInitMaterial2D(bool enable=true);
+		virtual void enableMaterial2D(bool enable=true);
 
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return VendorName;}

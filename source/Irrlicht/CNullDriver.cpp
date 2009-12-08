@@ -74,7 +74,7 @@ IImageWriter* createImageWriterPPM();
 CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& screenSize)
 : FileSystem(io), MeshManipulator(0), ViewPort(0,0,0,0), ScreenSize(screenSize),
 	PrimitivesDrawn(0), MinVertexCountForVBO(500), TextureCreationFlags(0),
-	InitMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
+	OverrideMaterial2DEnabled(false), AllowZWriteOnTransparent(false)
 {
 	#ifdef _DEBUG
 	setDebugName("CNullDriver");
@@ -161,6 +161,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 		InitMaterial2D.TextureLayer[i].TextureWrapU=video::ETC_REPEAT;
 		InitMaterial2D.TextureLayer[i].TextureWrapV=video::ETC_REPEAT;
 	}
+	OverrideMaterial2D=InitMaterial2D;
 }
 
 
@@ -2165,16 +2166,16 @@ SOverrideMaterial& CNullDriver::getOverrideMaterial()
 
 
 //! Get the 2d override material for altering its values
-SMaterial& CNullDriver::getInitMaterial2D()
+SMaterial& CNullDriver::getMaterial2D()
 {
-	return InitMaterial2D;
+	return OverrideMaterial2D;
 }
 
 
 //! Enable the 2d override material
-void CNullDriver::enableInitMaterial2D(bool enable)
+void CNullDriver::enableMaterial2D(bool enable)
 {
-	InitMaterial2DEnabled=enable;
+	OverrideMaterial2DEnabled=enable;
 }
 
 

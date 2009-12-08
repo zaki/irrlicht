@@ -2779,11 +2779,11 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 
 
 //! Enable the 2d override material
-void COpenGLDriver::enableInitMaterial2D(bool enable)
+void COpenGLDriver::enableMaterial2D(bool enable)
 {
 	if (!enable)
 		CurrentRenderMode = ERM_NONE;
-	CNullDriver::enableInitMaterial2D(enable);
+	CNullDriver::enableMaterial2D(enable);
 }
 
 
@@ -2820,25 +2820,20 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 			Transformation3DChanged = false;
 		}
-		if (!InitMaterial2DEnabled)
+		if (!OverrideMaterial2DEnabled)
 		{
-			SMaterial mat;
-			mat.Lighting=false;
-			mat.ZBuffer=ECFN_NEVER;
-			mat.ZWriteEnable=false;
-			setBasicRenderStates(mat, LastMaterial, true);
-			LastMaterial = mat;
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+			LastMaterial = InitMaterial2D;
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 	}
-	if (InitMaterial2DEnabled)
+	if (OverrideMaterial2DEnabled)
 	{
-		SMaterial mat(InitMaterial2D);
-		mat.Lighting=false;
-		mat.ZBuffer=ECFN_NEVER;
-		mat.ZWriteEnable=false;
-		setBasicRenderStates(mat, LastMaterial, false);
-		LastMaterial = mat;
+		OverrideMaterial2D.Lighting=false;
+		OverrideMaterial2D.ZBuffer=ECFN_NEVER;
+		OverrideMaterial2D.ZWriteEnable=false;
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
+		LastMaterial = OverrideMaterial2D;
 	}
 
 	if (alphaChannel || alpha)
@@ -2855,7 +2850,7 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 
 	if (texture)
 	{
-		if (!InitMaterial2DEnabled)
+		if (!OverrideMaterial2DEnabled)
 		{
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
