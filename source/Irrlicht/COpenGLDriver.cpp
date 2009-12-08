@@ -2778,6 +2778,15 @@ void COpenGLDriver::setBasicRenderStates(const SMaterial& material, const SMater
 }
 
 
+//! Enable the 2d override material
+void COpenGLDriver::enableInitMaterial2D(bool enable)
+{
+	if (!enable)
+		CurrentRenderMode = ERM_NONE;
+	CNullDriver::enableInitMaterial2D(enable);
+}
+
+
 //! sets the needed renderstates
 void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
@@ -2788,7 +2797,32 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-			SMaterial mat(InitMaterial2D);
+		}
+		if (Transformation3DChanged)
+		{
+			glMatrixMode(GL_PROJECTION);
+
+			const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
+			core::matrix4 m;
+			m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
+			m.setTranslation(core::vector3df(-1,1,0));
+			glLoadMatrixf(m.pointer());
+
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glTranslatef(0.375, 0.375, 0.0);
+
+			// Make sure we set first texture matrix
+			if (MultiTextureExtension)
+				extGlActiveTexture(GL_TEXTURE0_ARB);
+			glMatrixMode(GL_TEXTURE);
+			glLoadIdentity();
+
+			Transformation3DChanged = false;
+		}
+		if (!InitMaterial2DEnabled)
+		{
+			SMaterial mat;
 			mat.Lighting=false;
 			mat.ZBuffer=ECFN_NEVER;
 			mat.ZWriteEnable=false;
@@ -2796,28 +2830,8 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			LastMaterial = mat;
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
-
-		glMatrixMode(GL_PROJECTION);
-
-		const core::dimension2d<u32>& renderTargetSize = getCurrentRenderTargetSize();
-		core::matrix4 m;
-		m.buildProjectionMatrixOrthoLH(f32(renderTargetSize.Width), f32(-(s32)(renderTargetSize.Height)), -1.0, 1.0);
-		m.setTranslation(core::vector3df(-1,1,0));
-		glLoadMatrixf(m.pointer());
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glTranslatef(0.375, 0.375, 0.0);
-
-		// Make sure we set first texture matrix
-		if (MultiTextureExtension)
-			extGlActiveTexture(GL_TEXTURE0_ARB);
-		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
-
-		Transformation3DChanged = false;
 	}
-	else if (InitMaterial2DEnabled)
+	if (InitMaterial2DEnabled)
 	{
 		SMaterial mat(InitMaterial2D);
 		mat.Lighting=false;
