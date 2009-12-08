@@ -66,7 +66,7 @@ bool CSTLMeshWriter::writeMeshBinary(io::IWriteFile* file, scene::IMesh* mesh, s
 	// write STL MESH header
 
 	file->write("binary ",7);
-	const core::stringc name(SceneManager->getMeshCache()->getMeshName(mesh).getPath());
+	const core::stringc name(SceneManager->getMeshCache()->getMeshName(mesh));
 	const s32 sizeleft = 73-name.size(); // 80 byte header
 	if (sizeleft<0)
 		file->write(name.c_str(),73);
@@ -115,7 +115,7 @@ bool CSTLMeshWriter::writeMeshASCII(io::IWriteFile* file, scene::IMesh* mesh, s3
 	// write STL MESH header
 
 	file->write("solid ",6);
-	const core::stringc name(SceneManager->getMeshCache()->getMeshName(mesh).getPath());
+	const core::stringc name(SceneManager->getMeshCache()->getMeshName(mesh));
 	file->write(name.c_str(),name.size());
 	file->write("\n\n",2);
 

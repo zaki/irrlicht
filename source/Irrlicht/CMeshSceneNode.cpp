@@ -325,7 +325,7 @@ void CMeshSceneNode::serializeAttributes(io::IAttributes* out, io::SAttributeRea
 //! Reads attributes of the scene node.
 void CMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAttributeReadWriteOptions* options)
 {
-	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshName(Mesh).getPath();
+	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshName(Mesh);
 	io::path newMeshStr = in->getAttributeAsString("Mesh");
 	ReadOnlyMaterials = in->getAttributeAsBool("ReadOnlyMaterials");
 
