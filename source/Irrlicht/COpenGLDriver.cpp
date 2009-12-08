@@ -46,6 +46,38 @@ COpenGLDriver::COpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 	#endif
 }
 
+
+bool COpenGLDriver::changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceWin32* device)
+{
+	if (videoData.OpenGLWin32.HWnd && videoData.OpenGLWin32.HDc && videoData.OpenGLWin32.HRc)
+	{
+		if (!wglMakeCurrent((HDC)videoData.OpenGLWin32.HDc, (HGLRC)videoData.OpenGLWin32.HRc))
+		{
+			os::Printer::log("Render Context switch failed.");
+			return false;
+		}
+		else
+		{
+			HDc = (HDC)videoData.OpenGLWin32.HDc;
+		}
+	}
+	// set back to main context
+	else if (HDc != ExposedData.OpenGLWin32.HDc)
+	{
+		if (!wglMakeCurrent((HDC)ExposedData.OpenGLWin32.HDc, (HGLRC)ExposedData.OpenGLWin32.HRc))
+		{
+			os::Printer::log("Render Context switch failed.");
+			return false;
+		}
+		else
+		{
+			HDc = (HDC)ExposedData.OpenGLWin32.HDc;
+		}
+	}
+	return true;
+}
+
+
 //! inits the open gl driver
 bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceWin32* device)
 {
@@ -183,7 +215,13 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		return false;
 	}
 
-	if (!wglMakeCurrent(HDc, hrc))
+	SExposedVideoData data;
+	data.OpenGLWin32.HDc = HDc;
+	data.OpenGLWin32.HRc = hrc;
+	data.OpenGLWin32.HWnd = temporary_wnd;
+
+	
+	if (!changeRenderContext(data, device))
 	{
 		os::Printer::log("Cannot activate a temporary GL rendering context.", ELL_ERROR);
 		wglDeleteContext(hrc);
@@ -360,8 +398,14 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 		return false;
 	}
 
+	// set exposed data
+	ExposedData.OpenGLWin32.HDc = HDc;
+	ExposedData.OpenGLWin32.HRc = hrc;
+	ExposedData.OpenGLWin32.HWnd = Window;
+
 	// activate rendering context
-	if (!wglMakeCurrent(HDc, hrc))
+	
+	if (!changeRenderContext(ExposedData, device))
 	{
 		os::Printer::log("Cannot activate GL rendering context", ELL_ERROR);
 		wglDeleteContext(hrc);
@@ -395,12 +439,6 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	if (wglSwapIntervalEXT)
 		wglSwapIntervalEXT(params.Vsync ? 1 : 0);
 #endif
-
-	// set exposed data
-	ExposedData.OpenGLWin32.HDc = HDc;
-	ExposedData.OpenGLWin32.HRc = hrc;
-	ExposedData.OpenGLWin32.HWnd = Window;
-
 	return true;
 }
 
@@ -448,6 +486,40 @@ COpenGLDriver::COpenGLDriver(const SIrrlichtCreationParameters& params,
 	#endif
 }
 
+
+bool COpenGLDriver::changeRenderContext(const SExposedVideoData& videoData, CIrrDeviceLinux* device)
+{
+	if (videoData.OpenGLLinux.X11Display && videoData.OpenGLLinux.X11Window && videoData.OpenGLLinux.X11Context)
+	{
+		if (!glXMakeCurrent((Display*)videoData.OpenGLLinux.X11Display, videoData.OpenGLLinux.X11Window, (GLXContext)videoData.OpenGLLinux.X11Context))
+		{
+			os::Printer::log("Render Context switch failed.");
+			return false;
+		}
+		else
+		{
+			Drawable = videoData.OpenGLLinux.X11Window;
+			X11Display = (Display*)videoData.OpenGLLinux.X11Display;
+		}
+	}
+	// set back to main context
+	else if (X11Display != ExposedData.OpenGLLinux.X11Display)
+	{
+		if (!glXMakeCurrent((Display*)ExposedData.OpenGLLinux.X11Display, ExposedData.OpenGLLinux.X11Window, (GLXContext)ExposedData.OpenGLLinux.X11Context))
+		{
+			os::Printer::log("Render Context switch failed.");
+			return false;
+		}
+		else
+		{
+			Drawable = ExposedData.OpenGLLinux.X11Window;
+			X11Display = (Display*)ExposedData.OpenGLLinux.X11Display;
+		}
+	}
+	return true;
+}
+
+
 //! inits the open gl driver
 bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDeviceLinux* device)
 {
@@ -455,6 +527,7 @@ bool COpenGLDriver::initDriver(irr::SIrrlichtCreationParameters params, CIrrDevi
 	ExposedData.OpenGLLinux.X11Display = glXGetCurrentDisplay();
 	ExposedData.OpenGLLinux.X11Window = (unsigned long)params.WindowId;
 	Drawable = glXGetCurrentDrawable();
+	X11Display = (Display*)ExposedData.OpenGLLinux.X11Display;
 
 	genericDriverInit(params.WindowSize, params.Stencilbuffer);
 
@@ -689,7 +762,7 @@ bool COpenGLDriver::endScene()
 #ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 	if (DeviceType == EIDT_X11)
 	{
-		glXSwapBuffers((Display*)ExposedData.OpenGLLinux.X11Display, Drawable);
+		glXSwapBuffers(X11Display, Drawable);
 		return true;
 	}
 #endif
@@ -748,22 +821,6 @@ bool COpenGLDriver::beginScene(bool backBuffer, bool zBuffer, SColor color,
 		const SExposedVideoData& videoData, core::rect<s32>* sourceRect)
 {
 	CNullDriver::beginScene(backBuffer, zBuffer, color, videoData, sourceRect);
-
-#if 0
-	// This should be fixed to allow using all OpenGL drivers with the videoData parameter
-	if (videoData.OpenGLWin32.HWnd && videoData.OpenGLWin32.HDc && videoData.OpenGLWin32.HRc)
-	{
-		HDc = (HDC)videoData.OpenGLWin32.HDc;
-		if (!wglMakeCurrent(HDc, (HGLRC)videoData.OpenGLWin32.HRc))
-			os::Printer::log("Render Context switch failed.");
-	}
-	else if (HDc != ExposedData.OpenGLWin32.HDc)
-	{
-		HDc = (HDC)ExposedData.OpenGLWin32.HDc;
-		if (!wglMakeCurrent(HDc, (HGLRC)ExposedData.OpenGLWin32.HRc))
-			os::Printer::log("Render Context switch failed.");
-	}
-#endif
 
 #if defined(_IRR_COMPILE_WITH_SDL_DEVICE_)
 	if (DeviceType == EIDT_SDL)
