@@ -580,6 +580,12 @@ namespace video
 		meshbuffer being rendered. */
 		virtual SOverrideMaterial& getOverrideMaterial();
 
+		//! Get the 2d override material for altering its values
+		virtual SMaterial& getInitMaterial2D();
+
+		//! Enable the 2d override material
+		virtual void enableInitMaterial2D(bool enable=true);
+
 		//! Only used by the engine internally.
 		virtual void setAllowZWriteOnTransparent(bool flag)
 		{ AllowZWriteOnTransparent=flag; }
