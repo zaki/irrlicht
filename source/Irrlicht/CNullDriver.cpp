@@ -2164,6 +2164,20 @@ SOverrideMaterial& CNullDriver::getOverrideMaterial()
 }
 
 
+//! Get the 2d override material for altering its values
+SMaterial& CNullDriver::getInitMaterial2D()
+{
+	return InitMaterial2D;
+}
+
+
+//! Enable the 2d override material
+void CNullDriver::enableInitMaterial2D(bool enable)
+{
+	InitMaterial2DEnabled=enable;
+}
+
+
 core::dimension2du CNullDriver::getMaxTextureSize() const
 {
 	return core::dimension2du(0x10000,0x10000); // maybe large enough

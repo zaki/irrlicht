@@ -1322,6 +1322,27 @@ namespace video
 		\return Reference to the Override Material. */
 		virtual SOverrideMaterial& getOverrideMaterial() =0;
 
+		//! Get the 2d override material for altering its values
+		/** The 2d override materual allows to alter certain render
+		states of the 2d methods. Not all members of SMaterial are
+		honored, especially not MaterialType and Textures. Moreover,
+		the zbuffer is always ignored, and lighting is always off. All
+		other flags can be changed, though some might have to effect
+		in most cases.
+		Please note that you have to enable/disable this effect with
+		enableInitMaterial2D(). This effect is costly, as it increases
+		the number of state changes considerably. Always reset the
+		values when done.
+		\return Material reference which should be altered to reflect
+		the new settings.
+		*/
+		virtual SMaterial& getInitMaterial2D() =0;
+
+		//! Enable the 2d override material
+		/** \param enable Flag which tells whether the material shall be
+		enabled or disabled. */
+		virtual void enableInitMaterial2D(bool enable=true) =0;
+
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() =0;
 
