@@ -69,7 +69,7 @@ public:
 	virtual void setFloat(f32 floatValue)		{};
 	virtual void setString(const char* text)	{};
 	virtual void setString(const wchar_t* text){ setString(core::stringc(text).c_str()); };
-	virtual void setArray( core::array<core::stringw> arr )	{};
+	virtual void setArray(const core::array<core::stringw>& arr )	{};
 	virtual void setColor(video::SColorf color)	{};
 	virtual void setColor(video::SColor color)	{};
 	virtual void setBool(bool boolValue)		{};

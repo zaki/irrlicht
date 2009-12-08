@@ -181,13 +181,13 @@ core::stringw CAttributes::getAttributeAsStringW(s32 index)
 
 
 //! Adds an attribute as an array of wide strings
-void CAttributes::addArray(const c8* attributeName, core::array<core::stringw> value)
+void CAttributes::addArray(const c8* attributeName, const core::array<core::stringw>& value)
 {
 	Attributes.push_back(new CStringWArrayAttribute(attributeName, value));
 }
 
 //! Sets an attribute value as an array of wide strings.
-void CAttributes::setAttribute(const c8* attributeName, const core::array<core::stringw> value)
+void CAttributes::setAttribute(const c8* attributeName, const core::array<core::stringw>& value)
 {
 	IAttribute* att = getAttributeP(attributeName);
 	if (att)
@@ -220,7 +220,7 @@ core::array<core::stringw> CAttributes::getAttributeAsArray(s32 index)
 }
 
 //! Sets an attribute as an array of wide strings
-void CAttributes::setAttribute(s32 index, core::array<core::stringw> value)
+void CAttributes::setAttribute(s32 index, const core::array<core::stringw>& value)
 {
 	if (index >= 0 && index < (s32)Attributes.size() )
 		Attributes[index]->setArray(value);
