@@ -784,7 +784,7 @@ void CAnimatedMeshSceneNode::deserializeAttributes(io::IAttributes* in, io::SAtt
 {
 	IAnimatedMeshSceneNode::deserializeAttributes(in, options);
 
-	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshName(Mesh).getPath();
+	io::path oldMeshStr = SceneManager->getMeshCache()->getMeshName(Mesh);
 	io::path newMeshStr = in->getAttributeAsString("Mesh");
 
 	Looping = in->getAttributeAsBool("Looping");

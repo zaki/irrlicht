@@ -284,7 +284,7 @@ bool COctTreeSceneNode::createTree(IMesh* mesh)
 	if (!mesh)
 		return false;
 
-	MeshName = SceneManager->getMeshCache()->getMeshName( mesh ).getPath();
+	MeshName = SceneManager->getMeshCache()->getMeshName(mesh);
 
     mesh->grab();
 	deleteTree();
