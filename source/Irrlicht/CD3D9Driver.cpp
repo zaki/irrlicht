@@ -2344,6 +2344,15 @@ void CD3D9Driver::setRenderStatesStencilFillMode(bool alpha)
 }
 
 
+//! Enable the 2d override material
+void CD3D9Driver::enableMaterial2D(bool enable)
+{
+	if (!enable)
+		CurrentRenderMode = ERM_NONE;
+	CNullDriver::enableMaterial2D(enable);
+}
+
+
 //! sets the needed renderstates
 void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChannel)
 {
@@ -2353,17 +2362,17 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 	if (CurrentRenderMode != ERM_2D || Transformation3DChanged)
 	{
 		// unset last 3d material
-		if (CurrentRenderMode != ERM_2D)
+		if (CurrentRenderMode == ERM_3D)
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
-			SMaterial mat;
-			mat.ZBuffer=ECFN_NEVER;
-			mat.Lighting=false;
-			mat.AntiAliasing=video::EAAM_OFF;
-			mat.TextureLayer[0].BilinearFilter=false;
-			setBasicRenderStates(mat, mat, true);
-			// fix everything that is wrongly set by SMaterial default
+		}
+		if (!OverrideMaterial2DEnabled)
+		{
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+			LastMaterial=InitMaterial2D;
+
+			// fix everything that is wrongly set by InitMaterial2D default
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -2372,11 +2381,7 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 			pID3DDevice->SetTextureStageState(3, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 
 			pID3DDevice->SetRenderState( D3DRS_STENCILENABLE, FALSE );
-
-			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
-			pID3DDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0);
 		}
-
 		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D9);
 
 		core::matrix4 m;
@@ -2389,6 +2394,14 @@ void CD3D9Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)m.pointer()));
 
 		Transformation3DChanged = false;
+	}
+	if (OverrideMaterial2DEnabled)
+	{
+		OverrideMaterial2D.Lighting=false;
+		OverrideMaterial2D.ZBuffer=ECFN_NEVER;
+		OverrideMaterial2D.ZWriteEnable=false;
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
+		LastMaterial = OverrideMaterial2D;
 	}
 
 	u32 current2DSignature = 0;
