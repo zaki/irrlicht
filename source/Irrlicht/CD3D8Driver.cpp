@@ -1754,13 +1754,12 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		{
 			if (static_cast<u32>(LastMaterial.MaterialType) < MaterialRenderers.size())
 				MaterialRenderers[LastMaterial.MaterialType].Renderer->OnUnsetMaterial();
+		}
+		if (!OverrideMaterial2DEnabled)
+		{
+			setBasicRenderStates(InitMaterial2D, LastMaterial, true);
+			LastMaterial=InitMaterial2D;
 
-			SMaterial mat;
-			mat.ZBuffer=ECFN_NEVER;
-			mat.Lighting=false;
-			mat.AntiAliasing=video::EAAM_OFF;
-			mat.TextureLayer[0].BilinearFilter=false;
-			setBasicRenderStates(mat, mat, true);
 			// fix everything that is wrongly set by SMaterial default
 			pID3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 			pID3DDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE );
@@ -1771,11 +1770,8 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 
 			pID3DDevice->SetRenderState( D3DRS_STENCILENABLE, FALSE );
 
-			setTransform(ETS_TEXTURE_0, core::IdentityMatrix);
-			pID3DDevice->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
 		}
 		pID3DDevice->SetTransform(D3DTS_WORLD, &UnitMatrixD3D8);
-
 		core::matrix4 m;
 		m.setTranslation(core::vector3df(-0.5f,-0.5f,0));
 		pID3DDevice->SetTransform(D3DTS_VIEW, (D3DMATRIX*)((void*)m.pointer()));
@@ -1786,6 +1782,14 @@ void CD3D8Driver::setRenderStates2DMode(bool alpha, bool texture, bool alphaChan
 		pID3DDevice->SetTransform(D3DTS_PROJECTION, (D3DMATRIX*)((void*)m.pointer()));
 
 		Transformation3DChanged = false;
+	}
+	if (OverrideMaterial2DEnabled)
+	{
+		OverrideMaterial2D.Lighting=false;
+		OverrideMaterial2D.ZBuffer=ECFN_NEVER;
+		OverrideMaterial2D.ZWriteEnable=false;
+		setBasicRenderStates(OverrideMaterial2D, LastMaterial, false);
+		LastMaterial = OverrideMaterial2D;
 	}
 
 	if (texture)

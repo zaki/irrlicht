@@ -264,6 +264,9 @@ namespace video
 		//! Returns the graphics card vendor name.
 		virtual core::stringc getVendorInfo() {return VendorName;}
 
+		//! Enable the 2d override material
+		virtual void enableMaterial2D(bool enable=true);
+
 		//! Check if the driver was recently reset.
 		virtual bool checkDriverReset() {return DriverWasReset;}
 

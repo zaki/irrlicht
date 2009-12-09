@@ -2815,8 +2815,6 @@ void COpenGLDriver::setRenderStates2DMode(bool alpha, bool texture, bool alphaCh
 			// Make sure we set first texture matrix
 			if (MultiTextureExtension)
 				extGlActiveTexture(GL_TEXTURE0_ARB);
-			glMatrixMode(GL_TEXTURE);
-			glLoadIdentity();
 
 			Transformation3DChanged = false;
 		}
