@@ -57,6 +57,9 @@ namespace video
 		COpenGLDriver(const SIrrlichtCreationParameters& params, io::IFileSystem* io, CIrrDeviceMacOSX *device);
 		#endif
 
+		//! generic version which overloads the unimplemented versions
+		bool changeRenderContext(const SExposedVideoData& videoData, void* device) {return false;}
+
 		//! destructor
 		virtual ~COpenGLDriver();
 
@@ -460,13 +463,20 @@ namespace video
 		#ifdef _IRR_WINDOWS_API_
 			HDC HDc; // Private GDI Device Context
 			HWND Window;
+		#ifdef _IRR_COMPILE_WITH_WINDOWS_DEVICE_
+			CIrrDeviceWin32 *Device;
+		#endif
 		#endif
 		#ifdef _IRR_COMPILE_WITH_X11_DEVICE_
 			GLXDrawable Drawable;
 			Display* X11Display;
+			CIrrDeviceLinux *Device;
 		#endif
 		#ifdef _IRR_COMPILE_WITH_OSX_DEVICE_
-			CIrrDeviceMacOSX *_device;
+			CIrrDeviceMacOSX *Device;
+		#endif
+		#ifdef _IRR_COMPILE_WITH_SDL_DEVICE_
+			CIrrDeviceSDL *Device;
 		#endif
 
 		E_DEVICE_TYPE DeviceType;
