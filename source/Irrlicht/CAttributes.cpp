@@ -1487,6 +1487,12 @@ void CAttributes::readAttributeFromXML(io::IXMLReader* reader)
 		}
 		addArray(name.c_str(),tmpArray);
 	}
+	else
+	if (element == L"userPointer")
+	{
+		// It's debatable if a pointer should be set or not, but it's more likely that adding it now would wreck user-applications.
+		// Also it probably doesn't makes sense setting this to a value when it comes from file.
+	}
 }
 
 //! Write these attributes into a xml file
