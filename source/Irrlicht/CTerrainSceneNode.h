@@ -10,8 +10,7 @@
 #define __C_TERRAIN_SCENE_NODE_H__
 
 #include "ITerrainSceneNode.h"
-#include "SMesh.h"
-#include "CDynamicMeshBuffer.h"
+#include "IDynamicMeshBuffer.h"
 #include "path.h"
 
 namespace irr
@@ -23,6 +22,7 @@ namespace io
 }
 namespace scene
 {
+	struct SMesh;
 	class ITextSceneNode;
 
 	//! A scene node for displaying terrain using the geo mip map algorithm.
@@ -62,17 +62,11 @@ namespace scene
 		//! 1 material.
 		//! \param i: Zero based index i. UNUSED, left in for virtual purposes.
 		//! \return Returns the single material this scene node uses.
-		virtual video::SMaterial& getMaterial ( u32 i )
-		{
-			return Mesh.getMeshBuffer(i)->getMaterial();
-		}
+		virtual video::SMaterial& getMaterial(u32 i);
 
 		//! Returns amount of materials used by this scene node ( always 1 )
 		//! \return Returns current count of materials used by this scene node ( always 1 )
-		virtual u32 getMaterialCount() const
-		{
-			return Mesh.getMeshBufferCount();
-		}
+		virtual u32 getMaterialCount() const;
 
 		//! Gets the last scaling factor applied to the scene node.  This value only represents the
 		//! last scaling factor presented to the node.  For instance, if you make create the node
@@ -136,7 +130,7 @@ namespace scene
 		virtual u32 getIndexCount() const { return IndicesToRender; }
 
 		//! Returns the mesh
-		virtual IMesh* getMesh() { return &Mesh; }
+		virtual IMesh* getMesh();
 
 		//! Returns a pointer to the buffer used by the terrain (most users will not need this)
 		virtual IMeshBuffer* getRenderBuffer() { return RenderBuffer; }
@@ -283,10 +277,10 @@ namespace scene
 		u32 getIndex(const s32 PatchX, const s32 PatchZ, const s32 PatchIndex, u32 vX, u32 vZ) const;
 
 		//! smooth the terrain
-		void smoothTerrain(CDynamicMeshBuffer* mb, s32 smoothFactor);
+		void smoothTerrain(IDynamicMeshBuffer* mb, s32 smoothFactor);
 
 		//! calculate smooth normals
-		void calculateNormals(CDynamicMeshBuffer* mb);
+		void calculateNormals(IDynamicMeshBuffer* mb);
 
 		//! create patches, stuff that needs to only be done once for patches goes here.
 		void createPatches();
@@ -307,9 +301,9 @@ namespace scene
 		void applyTransformation();
 
 		STerrainData TerrainData;
-		SMesh Mesh;
+		SMesh* Mesh;
 
-		CDynamicMeshBuffer *RenderBuffer;
+		IDynamicMeshBuffer *RenderBuffer;
 
 		u32 VerticesToRender;
 		u32 IndicesToRender;
