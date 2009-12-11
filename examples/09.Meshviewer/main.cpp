@@ -128,6 +128,8 @@ void SetSkinTransparency(s32 alpha, irr::gui::IGUISkin * skin)
 void UpdateScaleInfo(scene::ISceneNode* model)
 {
 	IGUIElement* toolboxWnd = Device->getGUIEnvironment()->getRootGUIElement()->getElementFromId(GUI_ID_DIALOG_ROOT_WINDOW, true);
+	if (!toolboxWnd)
+		return;
 	if (!model)
 	{
 		toolboxWnd->getElementFromId(GUI_ID_X_SCALE, true)->setText( L"-" );
