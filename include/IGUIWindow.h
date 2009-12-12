@@ -24,12 +24,15 @@ namespace gui
 			: IGUIElement(EGUIET_WINDOW, environment, parent, id, rectangle) {}
 
 		//! Returns pointer to the close button
+		/** You can hide the button by calling setVisible(false) on the result. */
 		virtual IGUIButton* getCloseButton() const = 0;
 
 		//! Returns pointer to the minimize button
+		/** You can hide the button by calling setVisible(false) on the result. */
 		virtual IGUIButton* getMinimizeButton() const = 0;
 
 		//! Returns pointer to the maximize button
+		/** You can hide the button by calling setVisible(false) on the result. */
 		virtual IGUIButton* getMaximizeButton() const = 0;
 
 		//! Returns true if the window can be dragged with the mouse, false if not

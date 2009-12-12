@@ -39,7 +39,7 @@ namespace gui
 		//! set behaviour when menus are closed
 		virtual void setCloseHandling(ECONTEXT_MENU_CLOSE onClose) = 0;
 
-		//! get current behaviour when the menue will be closed
+		//! get current behaviour when the menu will be closed
 		virtual ECONTEXT_MENU_CLOSE getCloseHandling() const = 0;
 
 		//! Get amount of menu items
@@ -53,7 +53,7 @@ namespace gui
 		set to whatever you want.
 		\param enabled: Specifies if the menu item should be enabled.
 		\param hasSubMenu: Set this to true if there should be a submenu
-		at this item. You can acess this submenu via getSubMenu().
+		at this item. You can access this submenu via getSubMenu().
 		\param checked: Specifies if the menu item should be initially checked.
 		\return Returns the index of the new item */
 		virtual u32 addItem(const wchar_t* text, s32 commandId=-1, bool enabled=true,
@@ -69,16 +69,16 @@ namespace gui
 		set to whatever you want.
 		\param enabled: Specifies if the menu item should be enabled.
 		\param hasSubMenu: Set this to true if there should be a submenu
-		at this item. You can acess this submenu via getSubMenu().
+		at this item. You can access this submenu via getSubMenu().
 		\param checked: Specifies if the menu item should be initially checked.
 		\return Returns the index of the new item */
 		virtual u32 insertItem(u32 idx, const wchar_t* text, s32 commandId=-1, bool enabled=true,
 			bool hasSubMenu=false, bool checked=false, bool autoChecking=false) = 0;
 
-		//! Find an item by it's CommandID 
+		//! Find an item by it's CommandID
 		/**
 		\param commandId: We are looking for the first item which has this commandID
-		\param idxStartSearch: Start searching from this index. 
+		\param idxStartSearch: Start searching from this index.
         \return Returns the index of the item when found or otherwise -1. */
 		virtual s32 findItemWithCommandId(s32 commandId, u32 idxStartSearch=0) const = 0;
 
