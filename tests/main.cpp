@@ -71,6 +71,7 @@ int main(int argumentCount, char * arguments[])
 	TEST(serializeAttributes);
 	// null driver
 	TEST(fast_atof);
+	TEST(loadTextures);
 	TEST(collisionResponseAnimator);
 	TEST(enumerateImageManipulators);
 	TEST(removeCustomAnimator);
