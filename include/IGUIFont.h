@@ -44,7 +44,7 @@ public:
 	/** \param text: Text to draw
 	\param position: Rectangle specifying position where to draw the text.
 	\param color: Color of the text
-	\param hcenter: Specifiies if the text should be centered horizontally into the rectangle.
+	\param hcenter: Specifies if the text should be centered horizontally into the rectangle.
 	\param vcenter: Specifies if the text should be centered vertically into the rectangle.
 	\param clip: Optional pointer to a rectangle against which the text will be clipped.
 	If the pointer is null, no clipping will be done. */
