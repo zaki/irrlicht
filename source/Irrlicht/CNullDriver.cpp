@@ -150,7 +150,7 @@ CNullDriver::CNullDriver(io::IFileSystem* io, const core::dimension2d<u32>& scre
 	memset(&ExposedData, 0, sizeof(ExposedData));
 	for (u32 i=0; i<video::EVDF_COUNT; ++i)
 		FeatureEnabled[i]=true;
-	
+
 	InitMaterial2D.AntiAliasing=video::EAAM_OFF;
 	InitMaterial2D.Lighting=false;
 	InitMaterial2D.ZWriteEnable=false;
@@ -395,7 +395,7 @@ ITexture* CNullDriver::getTexture(const io::path& filename)
 
 	if (file)
 	{
-		texture = loadTextureFromFile(file);
+		texture = loadTextureFromFile(file, filename);
 		file->drop();
 
 		if (texture)

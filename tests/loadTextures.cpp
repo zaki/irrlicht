@@ -31,9 +31,9 @@ bool loadFromFileFolder(void)
 	assert(tex1);
 	if(!tex1)
 		logTestString("Unable to open ../media/tools.png\n");
-	if (!driver->getTextureCount()==numTexs+1)
+	if (driver->getTextureCount()!=numTexs+1)
 	{
-		logTestString("No additional texture in the texture cache");
+		logTestString("No additional texture in the texture cache %s:%d\n", __FILE__, __LINE__);
 		return false;
 	}
 
@@ -41,9 +41,9 @@ bool loadFromFileFolder(void)
 	assert(readFile);
 	if(!readFile)
 		logTestString("Unable to open ../media/tools.png\n");
-	if (!driver->getTextureCount()==numTexs+1)
+	if (driver->getTextureCount()!=numTexs+1)
 	{
-		logTestString("Additional texture in the texture cache");
+		logTestString("Additional texture in the texture cache %s:%d\n", __FILE__, __LINE__);
 		return false;
 	}
 
@@ -51,9 +51,9 @@ bool loadFromFileFolder(void)
 	assert(tex2);
 	if(!readFile)
 		logTestString("Unable to create texture from ../media/tools.png\n");
-	if (!driver->getTextureCount()==numTexs+1)
+	if (driver->getTextureCount()!=numTexs+1)
 	{
-		logTestString("Additional texture in the texture cache");
+		logTestString("Additional texture in the texture cache %s:%d\n", __FILE__, __LINE__);
 		return false;
 	}
 
@@ -62,13 +62,16 @@ bool loadFromFileFolder(void)
 	// adding  a folder archive
 	device->getFileSystem()->addFolderFileArchive( "../media/" );
 
+	// NOTE: Allow that this creates a new texture even if it is the same file.
+	// The reason is that we _want_ to allow accessing the same texture with different names in other contexts,
+	// so we can't use the absolute filename for identification.
 	ITexture * tex3 = driver->getTexture("tools.png");
 	assert(tex3);
 	if(!tex3)
 		logTestString("Unable to open tools.png\n");
-	if (!driver->getTextureCount()==numTexs+1)
+	if (driver->getTextureCount()!=numTexs+2)
 	{
-		logTestString("Additional texture in the texture cache");
+		logTestString("Additional texture in the texture cache %s:%d\n", __FILE__, __LINE__);
 		return false;
 	}
 
@@ -76,20 +79,20 @@ bool loadFromFileFolder(void)
 	assert(tex4);
 	if(!tex4)
 		logTestString("Unable to open tools.png\n");
-	if (!driver->getTextureCount()==numTexs+1)
+	if (driver->getTextureCount()!=numTexs+2)
 	{
-		logTestString("Additional texture in the texture cache");
+		logTestString("Additional texture in the texture cache %s:%d\n", __FILE__, __LINE__);
 		return false;
 	}
 
 	device->drop();
-	return (tex1 == tex2 && tex1 == tex3 && tex1 == tex4);
+	return (tex1 == tex2 && tex3 == tex4);
 }
 
 bool loadTextures()
 {
 	bool result = true;
-	result |= loadFromFileFolder();
+	result &= loadFromFileFolder();
 	return result;
 }
 
