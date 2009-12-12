@@ -243,6 +243,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\loadTextures.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\main.cpp"
 				>
 			</File>
@@ -280,6 +284,10 @@
 			</File>
 			<File
 				RelativePath=".\sceneNodeAnimator.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\serializeAttributes.cpp"
 				>
 			</File>
 			<File
