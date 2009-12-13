@@ -1185,6 +1185,43 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 
 }
 
+// shows last error in a messagebox to help internal debugging.
+void CIrrDeviceWin32::ReportLastWinApiError()
+{
+	// (based on code from ovidiucucu from http://www.codeguru.com/forum/showthread.php?t=318721)
+	LPCTSTR pszCaption = "Windows SDK Error Report";
+	DWORD dwError      = GetLastError();
+
+	if(NOERROR == dwError)
+	{
+		MessageBox(NULL, "No error", pszCaption, MB_OK);
+	}
+	else
+	{
+		const DWORD dwFormatControl = FORMAT_MESSAGE_ALLOCATE_BUFFER |
+										FORMAT_MESSAGE_IGNORE_INSERTS |
+										FORMAT_MESSAGE_FROM_SYSTEM;
+
+		LPVOID pTextBuffer = NULL;
+		DWORD dwCount = FormatMessage(dwFormatControl, 
+										NULL, 
+										dwError, 
+										0, 
+										(LPTSTR) &pTextBuffer, 
+										0, 
+										NULL);
+		if(0 != dwCount)
+		{
+			MessageBox(NULL, (LPCSTR)pTextBuffer, pszCaption, MB_OK|MB_ICONERROR);
+			LocalFree(pTextBuffer);
+		}
+		else
+		{
+			MessageBox(NULL, "Unknown error", pszCaption, MB_OK|MB_ICONERROR);
+		}
+	}
+}
+
 } // end namespace
 
 #endif // _IRR_COMPILE_WITH_WINDOWS_DEVICE_
