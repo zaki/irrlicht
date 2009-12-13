@@ -1814,6 +1814,21 @@ void CIrrDeviceLinux::copyToClipboard(const c8* text) const
 #endif
 }
 
+//! Remove all messages pending in the system message loop
+void CIrrDeviceLinux::clearSystemMessages()
+{
+#ifdef _IRR_COMPILE_WITH_X11_
+	if (CreationParams.DriverType != video::EDT_NULL)
+	{
+		XEvent event;
+		while (XPending(display) > 0 )
+		{
+			XNextEvent(display, &event);
+		}
+	}
+#endif //_IRR_COMPILE_WITH_X11_
+}
+
 void CIrrDeviceLinux::initXAtoms()
 {
 #ifdef _IRR_COMPILE_WITH_X11_

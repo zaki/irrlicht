@@ -116,6 +116,9 @@ namespace irr
 		//! This sets the clipboard selection and _not_ the primary selection which you have on X on the middle mouse button.
 		virtual void copyToClipboard(const c8* text) const;
 
+		//! Remove all messages pending in the system message loop
+		virtual void clearSystemMessages();
+
 		//! Get the device type
 		virtual E_DEVICE_TYPE getType() const
 		{

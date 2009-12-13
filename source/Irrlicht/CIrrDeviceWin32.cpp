@@ -34,7 +34,7 @@ namespace irr
 		#endif
 
 		#ifdef _IRR_COMPILE_WITH_OPENGL_
-		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params, 
+		IVideoDriver* createOpenGLDriver(const irr::SIrrlichtCreationParameters& params,
 			io::IFileSystem* io, CIrrDeviceWin32* device);
 		#endif
 	}
@@ -218,16 +218,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			{
 				event.KeyInput.Key = (irr::EKEY_CODE)MapVirtualKey( ((lParam>>16) & 255), MY_MAPVK_VSC_TO_VK_EX );
 				// some keyboards will just return LEFT for both - left and right keys. So also check extend bit.
-				if (lParam & 0x1000000) 
+				if (lParam & 0x1000000)
 					event.KeyInput.Key = irr::KEY_RCONTROL;
 			}
 			if ( event.KeyInput.Key == irr::KEY_MENU )
 			{
 				event.KeyInput.Key = (irr::EKEY_CODE)MapVirtualKey( ((lParam>>16) & 255), MY_MAPVK_VSC_TO_VK_EX );
-				if (lParam & 0x1000000) 
+				if (lParam & 0x1000000)
 					event.KeyInput.Key = irr::KEY_RMENU;
 			}
-			
+
 			WORD KeyAsc=0;
 			GetKeyboardState(allKeys);
 			ToAscii((UINT)wParam,(UINT)lParam,allKeys,&KeyAsc,0);
@@ -1185,6 +1185,16 @@ bool CIrrDeviceWin32::getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &bright
 
 }
 
+//! Remove all messages pending in the system message loop
+void CIrrDeviceWin32::clearSystemMessages()
+{
+	MSG msg;
+	while (PeekMessage(&msg, NULL, WM_KEYFIRST, WM_KEYLAST, PM_REMOVE))
+	{}
+	while (PeekMessage(&msg, NULL, WM_MOUSEFIRST, WM_MOUSELAST, PM_REMOVE))
+	{}
+}
+
 // shows last error in a messagebox to help internal debugging.
 void CIrrDeviceWin32::ReportLastWinApiError()
 {
@@ -1203,12 +1213,12 @@ void CIrrDeviceWin32::ReportLastWinApiError()
 										FORMAT_MESSAGE_FROM_SYSTEM;
 
 		LPVOID pTextBuffer = NULL;
-		DWORD dwCount = FormatMessage(dwFormatControl, 
-										NULL, 
-										dwError, 
-										0, 
-										(LPTSTR) &pTextBuffer, 
-										0, 
+		DWORD dwCount = FormatMessage(dwFormatControl,
+										NULL,
+										dwError,
+										0,
+										(LPTSTR) &pTextBuffer,
+										0,
 										NULL);
 		if(0 != dwCount)
 		{
