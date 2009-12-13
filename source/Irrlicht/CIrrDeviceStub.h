@@ -123,6 +123,10 @@ namespace irr
 		//! Get the maximal elapsed time between 2 clicks to generate double- and tripleclicks for the mouse.
 		virtual u32 getDoubleClickTime() const;
 
+		//! Remove all messages pending in the system message loop
+		virtual void clearSystemMessages();
+
+
 	protected:
 
 		void createGUIAndScene();

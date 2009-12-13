@@ -87,6 +87,9 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp( f32 &red, f32 &green, f32 &blue, f32 &brightness, f32 &contrast );
 
+		//! Remove all messages pending in the system message loop
+		virtual void clearSystemMessages();
+
 		//! Get the device type
 		virtual E_DEVICE_TYPE getType() const
 		{
@@ -254,7 +257,7 @@ namespace irr
 				WindowSize = size;
 				if (size.Width!=0)
 					InvWindowSize.Width = 1.0f / size.Width;
-				else 
+				else
 					InvWindowSize.Width = 0.f;
 
 				if (size.Height!=0)
@@ -271,12 +274,12 @@ namespace irr
 				  if (resizable)
 				  {
 					 BorderX = GetSystemMetrics(SM_CXSIZEFRAME);
-					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME);         
+					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYSIZEFRAME);
 				  }
 				  else
 				  {
 					 BorderX = GetSystemMetrics(SM_CXDLGFRAME);
-					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME);               
+					 BorderY = GetSystemMetrics(SM_CYCAPTION) + GetSystemMetrics(SM_CYDLGFRAME);
 				  }
 			   }
 			   else
@@ -296,7 +299,7 @@ namespace irr
 					DWORD xy = GetMessagePos();
 					p.x = GET_X_LPARAM(xy);
 					p.y = GET_Y_LPARAM(xy);
-				} 
+				}
 
 				if (UseReferenceRect)
 				{

@@ -179,8 +179,8 @@ namespace irr
 		\return String which contains the version. */
 		virtual const c8* getVersion() const = 0;
 
-		//! Sets a new user event receiver which will receive events from the engine. 
-		/** Return true in IEventReceiver::OnEvent to prevent the event from continuing along 
+		//! Sets a new user event receiver which will receive events from the engine.
+		/** Return true in IEventReceiver::OnEvent to prevent the event from continuing along
 		the chain of event receivers. The path that an event takes through the system depends
 		on its type. See irr::EEVENT_TYPE for details.
 		\param receiver New receiver to be used. */
@@ -221,7 +221,7 @@ namespace irr
 
 		//! Activate any joysticks, and generate events for them.
 		/** Irrlicht contains support for joysticks, but does not generate joystick events by default,
-		as this would consume joystick info that 3rd party libraries might rely on. Call this method to 
+		as this would consume joystick info that 3rd party libraries might rely on. Call this method to
 		activate joystick support in Irrlicht and to receive irr::SJoystickEvent events.
 		\param joystickInfo On return, this will contain an array of each joystick that was found and activated.
 		\return true if joysticks are supported on this device and _IRR_COMPILE_WITH_JOYSTICK_EVENTS_
@@ -236,6 +236,18 @@ namespace irr
 		//! Get the current Gamma Value for the Display
 		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
 					f32 &brightness, f32 &contrast) =0;
+
+		//! Remove all messages pending in the system message loop
+		/** This function is usually used after messages have been buffered for a longer time, for example
+		when loading a large scene. Clearing the message loop prevents that mouse- or buttonclicks which users
+		have pressed in the meantime will now trigger unexpected actions in the gui. <br>
+		So far the following messages are cleared:<br>
+		Win32: All keyboard and mouse messages<br>
+		Linux: All messages<br>
+		All other devices are not yet supported here.<br>
+		The function is still somewhat experimental, as the kind of messages we clear is based on just a few use-cases.
+		If you think further messages should be cleared, or some messages should not be cleared here, then please tell us. */
+		virtual void clearSystemMessages() = 0;
 
 		//! Get the type of the device.
 		/** This allows the user to check which windowing system is currently being

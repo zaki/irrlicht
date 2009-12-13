@@ -1,4 +1,6 @@
 Changes in 1.7
+
+ - Add clearSystemMessages to devices (implemented only for Linux and Win32 so far).
  
  - Fix incorrect cursorpos for resizable windows on Windows Vista (found and patched by buffer)
 

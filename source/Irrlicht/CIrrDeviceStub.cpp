@@ -181,7 +181,7 @@ u32 CIrrDeviceStub::checkSuccessiveClicks(s32 mouseX, s32 mouseY, EMOUSE_INPUT_E
 	if ( (clickTime-MouseMultiClicks.LastClickTime) < MouseMultiClicks.DoubleClickTime
 		&& core::abs_(MouseMultiClicks.LastClick.X - mouseX ) <= MAX_MOUSEMOVE
 		&& core::abs_(MouseMultiClicks.LastClick.Y - mouseY ) <= MAX_MOUSEMOVE
-		&& MouseMultiClicks.CountSuccessiveClicks < 3 
+		&& MouseMultiClicks.CountSuccessiveClicks < 3
 		&& MouseMultiClicks.LastMouseInputEvent == inputEvent
 	   )
 	{
@@ -351,6 +351,12 @@ u32 CIrrDeviceStub::getDoubleClickTime() const
 {
 	return MouseMultiClicks.DoubleClickTime;
 }
+
+//! Remove all messages pending in the system message loop
+void CIrrDeviceStub::clearSystemMessages()
+{
+}
+
 
 
 } // end namespace irr
