@@ -791,16 +791,18 @@ protected:
 	// returns true when it was succesful initialized, otherwise false.
 	bool init(int argc, char *argv[])
 	{
+		// ask user for the driver which should be used
 		Config.DriverType = getDriverTypeFromConsole();
 		if ( (int)Config.DriverType < 0 )
 			return false;
 
+		// create the device with the settings from our config
 		Device = createDevice(Config.DriverType, Config.ScreenSize);
 		if (!Device)
 			return false;
-
 		Device->setWindowCaption( DriverTypeNames[Config.DriverType] );
 		Device->setEventReceiver(this);
+		
 		scene::ISceneManager* smgr = Device->getSceneManager();
 		video::IVideoDriver * driver = Device->getVideoDriver ();
 		gui::IGUIEnvironment* guiEnv = Device->getGUIEnvironment();
@@ -810,9 +812,18 @@ protected:
 		gui::IGUIFont* font = guiEnv->getFont("../../media/fonthaettenschweiler.bmp");
 		if (font)
 			skin->setFont(font);
+		
+		// remove some alpha value because it makes those menus harder to read otherwise
+		video::SColor col3dHighLight( skin->getColor(gui::EGDC_APP_WORKSPACE) );
+		col3dHighLight.setAlpha(255);
+		video::SColor colHighLight( col3dHighLight );
+		skin->setColor(gui::EGDC_HIGH_LIGHT, colHighLight );
+		skin->setColor(gui::EGDC_3D_HIGH_LIGHT, col3dHighLight );
 
+		// Add some textures which are useful to test material settings
 		createDefaultTextures(driver);
 
+		// create a menu 
 		gui::IGUIContextMenu * menuBar = guiEnv->addMenu();
 		menuBar->addItem(L"File", -1, true, true);
 
@@ -821,27 +832,38 @@ protected:
 		subMenuFile->addSeparator();
 		subMenuFile->addItem(L"Quit", GUI_ID_QUIT);
 
+		// a static camera
 		Camera = smgr->addCameraSceneNode (0, core::vector3df(0, 0, 0),
 											core::vector3df(0, 0, 100),
 											-1);
 
-		scene::IMeshSceneNode* nodeL = smgr->addCubeSceneNode (10.0f, 0, -1,
+		// add the nodes which are used to show the materials
+		scene::IMeshSceneNode* nodeL = smgr->addCubeSceneNode (30.0f, 0, -1,
 										   core::vector3df(-35, 0, 100),
 										   core::vector3df(0, 0, 0),
-										   core::vector3df(3.0f, 3.0f, 3.0f));
+										   core::vector3df(1.0f, 1.0f, 1.0f));
 		NodeLeft.init( nodeL, Device, core::position2d<s32>(10,20), L"left node" );
 
-		scene::IMeshSceneNode* nodeR = smgr->addCubeSceneNode (10.0f, 0, -1,
+		scene::IMeshSceneNode* nodeR = smgr->addCubeSceneNode (30.0f, 0, -1,
 										   core::vector3df(35, 0, 100),
 										   core::vector3df(0, 0, 0),
-										   core::vector3df(3.0f, 3.0f, 3.0f));
+										   core::vector3df(1.0f, 1.0f, 1.0f));
 		NodeRight.init( nodeR, Device, core::position2d<s32>(530,20), L"right node" );
 
+		// add one light
 		scene::ILightSceneNode* nodeLight = smgr->addLightSceneNode(0, core::vector3df(0, 0, 0),
 														video::SColorf(1.0f, 1.0f, 1.0f),
 														100.0f);
 		LightControl.init(nodeLight, guiEnv, core::position2d<s32>(270,20), L"light" );
+		
+		// one large cube around everything. That's mainly to make the light more obvious.
+		scene::IMeshSceneNode* backgroundCube = smgr->addCubeSceneNode (200.0f, 0, -1, core::vector3df(0, 0, 0),
+										   core::vector3df(45, 0, 0),
+										   core::vector3df(1.0f, 1.0f, 1.0f));
+		backgroundCube->getMaterial(0).BackfaceCulling = false;	 		// we are within the cube, so we have to disable backface culling to see it
+		backgroundCube->getMaterial(0).EmissiveColor.set(255,50,50,50);	// we keep some self lighting to keep texts visible
 
+		// set the ambient light value
 		GlobalAmbient = new CColorControl( guiEnv, core::position2d<s32>(270, 300), L"global ambient", guiEnv->getRootGUIElement());
 		GlobalAmbient->setColor( smgr->getAmbientLight().toSColor() );
 
@@ -887,23 +909,19 @@ protected:
 			scene::ISceneManager* smgr = Device->getSceneManager();
 			gui::IGUISkin * skin = guiEnv->getSkin();
 
-			// remove some alpha value because it makes those menus harder to read otherwise
-			video::SColor col3dHighLight( skin->getColor(gui::EGDC_APP_WORKSPACE) );
-			col3dHighLight.setAlpha(255);
-			video::SColor colHighLight( col3dHighLight );
-			skin->setColor(gui::EGDC_HIGH_LIGHT, colHighLight );
-			skin->setColor(gui::EGDC_3D_HIGH_LIGHT, col3dHighLight );
-
+			// update our controls
 			NodeLeft.update();
 			NodeRight.update();
 			LightControl.update();
 
+			// update ambient light settings
 			if ( GlobalAmbient->isDirty() )
 			{
 				smgr->setAmbientLight( GlobalAmbient->getColor() );
 				GlobalAmbient->resetDirty();
 			}
 
+			// draw everythings
 			video::SColor bkColor( skin->getColor(gui::EGDC_APP_WORKSPACE) );
 			videoDriver->beginScene(true, true, bkColor);
 
@@ -959,7 +977,7 @@ protected:
 			return;
 		const u32 pitch = imageA8R8G8B8->getPitch();
 
-		// some nice caro with 9 useful colors
+		// some nice caro with 9 typical colors
 		for ( u32 y = 0; y < height; ++ y )
 		{
 			for ( u32 x = 0; x < pitch; ++x )
@@ -995,9 +1013,11 @@ protected:
 		}
 		driver->addTexture (io::path("CARO_A8R8G8B8"), imageA8R8G8B8);
 
+		// all white
 		imageA8R8G8B8->fill(SCOL_WHITE);
 		driver->addTexture (io::path("WHITE_A8R8G8B8"), imageA8R8G8B8);
 
+		// all black
 		imageA8R8G8B8->fill(SCOL_BLACK);
 		driver->addTexture (io::path("BLACK_A8R8G8B8"), imageA8R8G8B8);
 
