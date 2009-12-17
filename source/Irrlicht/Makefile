@@ -92,6 +92,8 @@ staticlib_osx sharedlib_osx: CXXINCS += -IMacOSX -I/usr/X11R6/include
 sharedlib_osx install_osx: SHARED_LIB = libIrrlicht.dylib
 staticlib_osx sharedlib_osx: LDFLAGS += --no-export-all-symbols --add-stdcall-alias
 sharedlib_osx: LDFLAGS += -L/usr/X11R6/lib$(LIBSELECT) -lGL -lXxf86vm
+# for non-X11 app
+#sharedlib_osx: LDFLAGS += -framework cocoa -framework carbon -framework opengl -framework IOKit
 
 #Windows specific options
 IRRLICHT_DLL := ../../bin/Win32-gcc/Irrlicht.dll
