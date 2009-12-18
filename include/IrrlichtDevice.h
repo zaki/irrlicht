@@ -237,13 +237,13 @@ namespace irr
 		virtual bool getGammaRamp(f32 &red, f32 &green, f32 &blue,
 					f32 &brightness, f32 &contrast) =0;
 
-		//! Remove all messages pending in the system message loop
+		//! Remove messages pending in the system message loop
 		/** This function is usually used after messages have been buffered for a longer time, for example
 		when loading a large scene. Clearing the message loop prevents that mouse- or buttonclicks which users
 		have pressed in the meantime will now trigger unexpected actions in the gui. <br>
 		So far the following messages are cleared:<br>
 		Win32: All keyboard and mouse messages<br>
-		Linux: All messages<br>
+		Linux: All keyboard and mouse messages<br>
 		All other devices are not yet supported here.<br>
 		The function is still somewhat experimental, as the kind of messages we clear is based on just a few use-cases.
 		If you think further messages should be cleared, or some messages should not be cleared here, then please tell us. */

@@ -1814,6 +1814,19 @@ void CIrrDeviceLinux::copyToClipboard(const c8* text) const
 #endif
 }
 
+#ifdef _IRR_COMPILE_WITH_X11_
+// return true if the passed event has the type passed in parameter arg
+Bool PredicateIsEventType(Display *display, XEvent *event, XPointer arg)
+{
+	if ( event && event->type == (int)arg )
+	{
+//		os::Printer::log("remove event:", core::stringc((int)arg).c_str(), ELL_INFORMATION);
+		return True;
+	}
+	return False;
+}
+#endif //_IRR_COMPILE_WITH_X11_
+
 //! Remove all messages pending in the system message loop
 void CIrrDeviceLinux::clearSystemMessages()
 {
@@ -1821,10 +1834,11 @@ void CIrrDeviceLinux::clearSystemMessages()
 	if (CreationParams.DriverType != video::EDT_NULL)
 	{
 		XEvent event;
-		while (XPending(display) > 0 )
-		{
-			XNextEvent(display, &event);
-		}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)ButtonPress) == True ) 	{}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)ButtonRelease) == True ) {}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)MotionNotify) == True ) 	{}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)KeyRelease) == True )	{}
+		while ( XCheckIfEvent(display, &event, PredicateIsEventType, (XPointer)KeyPress) == True )		{}
 	}
 #endif //_IRR_COMPILE_WITH_X11_
 }
