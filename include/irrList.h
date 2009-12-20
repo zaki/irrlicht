@@ -75,7 +75,7 @@ public:
 		T * operator ->() { return &Current->Element; }
 
 	private:
-		Iterator(SKListNode* begin) : Current(begin) {}
+		explicit Iterator(SKListNode* begin) : Current(begin) {}
 
 		SKListNode* Current;
 
@@ -88,6 +88,7 @@ public:
 	public:
 
 		ConstIterator() : Current(0) {}
+		ConstIterator(const Iterator& iter) : Current(iter.Current)  {}
 
 		ConstIterator& operator ++()    { Current = Current->Next; return *this; }
 		ConstIterator& operator --()    { Current = Current->Prev; return *this; }
@@ -122,7 +123,7 @@ public:
 		ConstIterator & operator =(const Iterator & iterator) { Current = iterator.Current; return *this; }
 
 	private:
-		ConstIterator(SKListNode* begin) : Current(begin) {}
+		explicit ConstIterator(SKListNode* begin) : Current(begin) {}
 
 		SKListNode* Current;
 

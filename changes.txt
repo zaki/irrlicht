@@ -1,5 +1,13 @@
 Changes in 1.7
 
+ - Allow getting a ConstIterator from a non-const core:list
+
+ - Add swap functions to irrMath and to the core classes.
+
+ - Deprecate map::isEmpty() and replace it with map::empty() to make it similar to other base classes.
+
+ - Allow to set the logging level already in SIrrlichtCreationParameters.
+
  - Add clearSystemMessages to devices (implemented only for Linux and Win32 so far).
  
  - Fix incorrect cursorpos for resizable windows on Windows Vista (found and patched by buffer)
