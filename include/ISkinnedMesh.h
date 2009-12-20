@@ -17,7 +17,7 @@ namespace scene
 
 	enum E_INTERPOLATION_MODE
 	{
-		// constant interpolation
+		// constant does use the current key-values without interpolation
 		EIM_CONSTANT = 0,
 
 		// linear interpolation
