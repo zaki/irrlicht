@@ -113,16 +113,16 @@ namespace scene
 		//! draws all scene nodes
 		virtual void drawAll();
 
-		//! Adds a scene node for rendering using a octtree to the scene graph. This a good method for rendering
+		//! Adds a scene node for rendering using a octree to the scene graph. This a good method for rendering
 		//! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 		//! faster then a bsp tree.
-		virtual IMeshSceneNode* addOctTreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
+		virtual IMeshSceneNode* addOctreeSceneNode(IAnimatedMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=512, bool alsoAddIfMeshPointerZero=false);
 
-		//! Adss a scene node for rendering using a octtree. This a good method for rendering
+		//! Adss a scene node for rendering using a octree. This a good method for rendering
 		//! scenes with lots of geometry. The Octree is built on the fly from the mesh, much
 		//! faster then a bsp tree.
-		virtual IMeshSceneNode* addOctTreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
+		virtual IMeshSceneNode* addOctreeSceneNode(IMesh* mesh, ISceneNode* parent=0,
 			s32 id=-1, s32 minimalPolysPerNode=128, bool alsoAddIfMeshPointerZero=false);
 
 		//! Adds a camera scene node to the tree and sets it as active camera.
@@ -351,7 +351,7 @@ namespace scene
 		virtual ITriangleSelector* createTriangleSelector(IAnimatedMeshSceneNode* node);
 
 		//! Creates a simple ITriangleSelector, based on a mesh.
-		virtual ITriangleSelector* createOctTreeTriangleSelector(IMesh* mesh,
+		virtual ITriangleSelector* createOctreeTriangleSelector(IMesh* mesh,
 			ISceneNode* node, s32 minimalPolysPerNode);
 
 		//! Creates a simple dynamic ITriangleSelector, based on a axis aligned bounding box.

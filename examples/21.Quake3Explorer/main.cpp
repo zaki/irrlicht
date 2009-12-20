@@ -1073,11 +1073,11 @@ void CQuake3EventHandler::LoadMap ( const stringw &mapName, s32 collision )
 	s32 minimalNodes = 2048;
 
 	MapParent = smgr->addMeshSceneNode( geometry );
-	//MapParent = smgr->addOctTreeSceneNode(geometry, 0, -1, minimalNodes);
+	//MapParent = smgr->addOctreeSceneNode(geometry, 0, -1, minimalNodes);
 	MapParent->setName ( mapName );
 	if ( Meta )
 	{
-		selector = smgr->createOctTreeTriangleSelector( geometry,MapParent, minimalNodes);
+		selector = smgr->createOctreeTriangleSelector( geometry,MapParent, minimalNodes);
 		//selector = smgr->createTriangleSelector ( geometry, MapParent );
 		Meta->addTriangleSelector( selector);
 		selector->drop ();
@@ -1142,7 +1142,7 @@ void CQuake3EventHandler::addSceneTreeItem( ISceneNode * parent, IGUITreeViewNod
 			case ESNT_CAMERA: imageIndex = 1; break;
 			case ESNT_EMPTY: imageIndex = 2; break;
 			case ESNT_MESH: imageIndex = 3; break;
-			case ESNT_OCT_TREE: imageIndex = 3; break;
+			case ESNT_OCTREE: imageIndex = 3; break;
 			case ESNT_ANIMATED_MESH: imageIndex = 4; break;
 			case ESNT_SKY_BOX: imageIndex = 5; break;
 			case ESNT_BILLBOARD: imageIndex = 6; break;

@@ -369,7 +369,7 @@ void CDemo::loadSceneData()
 			sm->getMeshManipulator()->transformMesh ( quakeLevelMesh->getMesh(i), m );
 		}
 
-		quakeLevelNode = sm->addOctTreeSceneNode(
+		quakeLevelNode = sm->addOctreeSceneNode(
 			quakeLevelMesh->getMesh( scene::quake3::E_Q3_MESH_GEOMETRY)
 									);
 		if (quakeLevelNode)
@@ -378,7 +378,7 @@ void CDemo::loadSceneData()
 			quakeLevelNode->setVisible(true);
 
 			// create map triangle selector
-			mapSelector = sm->createOctTreeTriangleSelector(quakeLevelMesh->getMesh(0),
+			mapSelector = sm->createOctreeTriangleSelector(quakeLevelMesh->getMesh(0),
 				quakeLevelNode, 128);
 
 			// if not using shader and no gamma it's better to use more lighting, because

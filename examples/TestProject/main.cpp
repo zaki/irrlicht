@@ -47,22 +47,22 @@ int main()
 
 	IrrlichtDevice *device =
 		createDevice(driverType, core::dimension2d<s32>(640, 480), 16, false);
-		
+
 	if (device == 0)
 		return 1; // could not create selected driver.
 
 	video::IVideoDriver* driver = device->getVideoDriver();
 	scene::ISceneManager* smgr = device->getSceneManager();
 
-	
+
 	device->getFileSystem()->addZipFileArchive("../../media/map-20kdm2.pk3");
 
-	
+
 	scene::IAnimatedMesh* q3levelmesh = smgr->getMesh("20kdm2.bsp");
 	scene::ISceneNode* q3node = 0;
-	
+
 	if (q3levelmesh)
-		q3node = smgr->addOctTreeSceneNode(q3levelmesh->getMesh(0));
+		q3node = smgr->addOctreeSceneNode(q3levelmesh->getMesh(0));
 
 	/*
 	So far so good, we've loaded the quake 3 level like in tutorial 2. Now, here
@@ -70,7 +70,7 @@ int main()
 	is a class which can fetch the triangles from scene nodes for doing different
 	things with them, for example collision detection. There are different triangle
 	selectors, and all can be created with the ISceneManager. In this example,
-	we create an OctTreeTriangleSelector, which optimizes the triangle output a l
+	we create an OctreeTriangleSelector, which optimizes the triangle output a l
 	little bit by reducing it like an octree. This is very useful for huge meshes
 	like quake 3 levels.
 	Afte we created the triangle selector, we attach it to the q3node. This is not
@@ -79,12 +79,12 @@ int main()
 	*/
 
 	scene::ITriangleSelector* selector = 0;
-	
+
 	if (q3node)
-	{		
+	{
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
-		selector = smgr->createOctTreeTriangleSelector(
+		selector = smgr->createOctreeTriangleSelector(
 				q3levelmesh->getMesh(0), q3node, 128);
 		q3node->setTriangleSelector(selector);
 		selector->drop();
@@ -122,16 +122,16 @@ int main()
 	are used to have our eyes on top of the body, with which we collide
 	with our world, not in the middle of it. So we place the scene node 50
 	units over the center of the ellipsoid with this parameter. And that's
-	it, collision detection works now. 
+	it, collision detection works now.
 	*/
 
-	scene::ICameraSceneNode* camera = 
+	scene::ICameraSceneNode* camera =
 		smgr->addCameraSceneNodeFPS(0, 100.0f, 300.0f, -1, 0, 0, true);
 	camera->setPosition(core::vector3df(-100,50,-150));
 
 	scene::ISceneNodeAnimator* anim = smgr->createCollisionResponseAnimator(
 		selector, camera, core::vector3df(30,50,30),
-		core::vector3df(0,-3,0), 
+		core::vector3df(0,-3,0),
 		core::vector3df(0,50,0));
 	camera->addAnimator(anim);
 	anim->drop();
@@ -139,7 +139,7 @@ int main()
 	/*
 	Because collision detection is no big deal in irrlicht, I'll describe how to
 	do two different types of picking in the next section. But before this,
-	I'll prepare the scene a little. I need three animated characters which we 
+	I'll prepare the scene a little. I need three animated characters which we
 	could pick later, a dynamic light for lighting them,
 	a billboard for drawing where we found an intersection,	and, yes, I need to
 	get rid of this mouse cursor. :)
@@ -197,7 +197,7 @@ int main()
 
 	/*
 	For not making it to complicated, I'm doing picking inside the drawing loop.
-	We take two pointers for storing the current and the last selected scene node and 
+	We take two pointers for storing the current and the last selected scene node and
 	start the loop.
 	*/
 
@@ -205,7 +205,7 @@ int main()
 	scene::ISceneNode* selectedSceneNode = 0;
 	scene::ISceneNode* lastSelectedSceneNode = 0;
 
-	
+
 	int lastFPS = -1;
 
 	while(device->run())
@@ -239,7 +239,7 @@ int main()
 			line, selector, intersection, tri))
 		{
 			bill->setPosition(intersection);
-				
+
 			driver->setTransform(video::ETS_WORLD, core::matrix4());
 			driver->setMaterial(material);
 			driver->draw3DTriangle(tri, video::SColor(0,255,0,0));
@@ -251,7 +251,7 @@ int main()
 		based on bouding boxes. Every scene node has got a bounding box, and because of
 		that, it's very fast for example to get the scene node which the camera looks
 		at. Again, we ask the collision manager for this, and if we've got a scene node,
-		we highlight it by disabling Lighting in its material, if it is not the 
+		we highlight it by disabling Lighting in its material, if it is not the
 		billboard or the quake 3 level.
 		*/
 
@@ -292,7 +292,7 @@ int main()
 	}
 
 	device->drop();
-	
+
 	return 0;
 }
 

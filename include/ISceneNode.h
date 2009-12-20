@@ -120,7 +120,7 @@ namespace scene
 					ISceneNodeAnimator* anim = *ait;
 					++ait;
 					anim->animateNode(this, timeMs);
-				} 
+				}
 
 				// update absolute position
 				updateAbsolutePosition();
@@ -448,8 +448,8 @@ namespace scene
 
 
 		//! Gets the scale of the scene node relative to its parent.
-		/** This is the scale of this node relative to its parent. 
-		If you want the absolute scale, use 
+		/** This is the scale of this node relative to its parent.
+		If you want the absolute scale, use
 		getAbsoluteTransformation().getScale()
 		\return The scale of the scene node. */
 		virtual const core::vector3df& getScale() const
@@ -537,7 +537,7 @@ namespace scene
 
 
 		//! Sets if debug data like bounding boxes should be drawn.
-		/** A bitwise OR of the types from @ref irr::scene::E_DEBUG_SCENE_TYPE. 
+		/** A bitwise OR of the types from @ref irr::scene::E_DEBUG_SCENE_TYPE.
 		Please note that not all scene nodes support all debug data types.
 		\param state The debug data visibility state to be used. */
 		virtual void setDebugDataVisible(s32 state)
@@ -546,7 +546,7 @@ namespace scene
 		}
 
 		//! Returns if debug data like bounding boxes are drawn.
-		/** \return A bitwise OR of the debug data values from 
+		/** \return A bitwise OR of the debug data values from
 		@ref irr::scene::E_DEBUG_SCENE_TYPE that are currently visible. */
 		s32 isDebugDataVisible() const
 		{
@@ -602,7 +602,7 @@ namespace scene
 		/** The Selector can be used by the engine for doing collision
 		detection. You can create a TriangleSelector with
 		ISceneManager::createTriangleSelector() or
-		ISceneManager::createOctTreeTriangleSelector and set it with
+		ISceneManager::createOctreeTriangleSelector and set it with
 		ISceneNode::setTriangleSelector(). If a scene node got no triangle
 		selector, but collision tests should be done with it, a triangle
 		selector is created using the bounding box of the scene node.
@@ -618,7 +618,7 @@ namespace scene
 		/** The Selector can be used by the engine for doing collision
 		detection. You can create a TriangleSelector with
 		ISceneManager::createTriangleSelector() or
-		ISceneManager::createOctTreeTriangleSelector(). Some nodes may
+		ISceneManager::createOctreeTriangleSelector(). Some nodes may
 		create their own selector by default, so it would be good to
 		check if there is already a selector in this node by calling
 		ISceneNode::getTriangleSelector().
@@ -638,7 +638,7 @@ namespace scene
 
 
 		//! Updates the absolute position based on the relative and the parents position
-		/** Note: This does not recursively update the parents absolute positions, so if you have a deeper 
+		/** Note: This does not recursively update the parents absolute positions, so if you have a deeper
 			hierarchy you might want to update the parents first.*/
 		virtual void updateAbsolutePosition()
 		{

@@ -749,10 +749,10 @@
 				RelativePath=".\CLightSceneNode.h">
 			</File>
 			<File
-				RelativePath=".\COctTreeSceneNode.cpp">
+				RelativePath=".\COctreeSceneNode.cpp">
 			</File>
 			<File
-				RelativePath=".\COctTreeSceneNode.h">
+				RelativePath=".\COctreeSceneNode.h">
 			</File>
 			<File
 				RelativePath=".\CShadowVolumeSceneNode.cpp">
@@ -1105,10 +1105,10 @@
 				RelativePath=".\COCTLoader.h">
 			</File>
 			<File
-				RelativePath=".\COctTreeTriangleSelector.cpp">
+				RelativePath=".\COctreeTriangleSelector.cpp">
 			</File>
 			<File
-				RelativePath=".\COctTreeTriangleSelector.h">
+				RelativePath=".\COctreeTriangleSelector.h">
 			</File>
 			<File
 				RelativePath=".\COgreMeshFileLoader.cpp">
@@ -1408,7 +1408,7 @@
 				RelativePath=".\IZBuffer.h">
 			</File>
 			<File
-				RelativePath=".\OctTree.h">
+				RelativePath=".\Octree.h">
 			</File>
 			<File
 				RelativePath=".\os.cpp">

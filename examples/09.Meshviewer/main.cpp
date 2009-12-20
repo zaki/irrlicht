@@ -229,7 +229,7 @@ void loadModel(const c8* fn)
 	// set default material properties
 
 	if (Octree)
-		Model = Device->getSceneManager()->addOctTreeSceneNode(m->getMesh(0));
+		Model = Device->getSceneManager()->addOctreeSceneNode(m->getMesh(0));
 	else
 	{
 		scene::IAnimatedMeshSceneNode* animModel = Device->getSceneManager()->addAnimatedMeshSceneNode(m);

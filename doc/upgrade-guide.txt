@@ -1648,7 +1648,7 @@ Even less visible changes have been made in this version. Only the automatic Sol
 
 Changes for Version 1.6.0
 -------------------------
-This releases has many changes in method signatures. The most obvious ones are signedness changes from s32 to u32. Since many templates won't accept both types, you need to change the ypes manually in your code. The other major change is from many different types of strings to the new class io::path. These changes should be transparent to the app, unless you need proper overrides in derived classes.
+This releases has many changes in method signatures. The most obvious ones are signedness changes from s32 to u32. Since many templates won't accept both types, you need to change the types manually in your code. The other major change is from many different types of strings to the new class io::path. These changes should be transparent to the app, unless you need proper overrides in derived classes.
 Finally, some deprecated methods have been removed, and some were simply renamed. Just check the API if some methods is not found anymore.
 
 IMeshSceneNode.h

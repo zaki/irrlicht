@@ -2354,11 +2354,11 @@
 					>
 				</File>
 				<File
-					RelativePath=".\COctTreeSceneNode.cpp"
+					RelativePath=".\COctreeSceneNode.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\COctTreeSceneNode.h"
+					RelativePath=".\COctreeSceneNode.h"
 					>
 				</File>
 				<File
@@ -2534,11 +2534,11 @@
 					>
 				</File>
 				<File
-					RelativePath="COctTreeTriangleSelector.cpp"
+					RelativePath="COctreeTriangleSelector.cpp"
 					>
 				</File>
 				<File
-					RelativePath="COctTreeTriangleSelector.h"
+					RelativePath="COctreeTriangleSelector.h"
 					>
 				</File>
 				<File
@@ -2574,7 +2574,7 @@
 					>
 				</File>
 				<File
-					RelativePath=".\OctTree.h"
+					RelativePath=".\Octree.h"
 					>
 				</File>
 			</Filter>

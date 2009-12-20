@@ -46,7 +46,7 @@ static bool transformPlane(const vector3df & point, const vector3df & normal,
 }
 
 
-static bool drawScaledOctTree(void)
+static bool drawScaledOctree(void)
 {
 	bool result = false;
 	IrrlichtDevice *device = createDevice(video::EDT_BURNINGSVIDEO, dimension2d<u32>(160, 120), 32);
@@ -61,7 +61,7 @@ static bool drawScaledOctTree(void)
 
 	if(added)
 	{
-		ISceneNode * node = smgr->addOctTreeSceneNode(smgr->getMesh("20kdm2.bsp")->getMesh(0), 0, -1, 1024);
+		ISceneNode * node = smgr->addOctreeSceneNode(smgr->getMesh("20kdm2.bsp")->getMesh(0), 0, -1, 1024);
 		assert(node);
 
 		if (node)
@@ -228,7 +228,7 @@ bool planeMatrix(void)
 	success &= transformPlane(vector3df(0, 1, 0), vector3df(-1, 1, 0), matrix, plane3df(vector3df(-0.707f,-0.000f,0.354f), -1.768f));
 	success &= transformPlane(vector3df(0, 1, 0), vector3df(1, -1, 0), matrix, plane3df(vector3df(0.707f,0.000f,-0.354f), 1.768f));
 
-	success &= drawScaledOctTree();
+	success &= drawScaledOctree();
 
 	return success;
 }

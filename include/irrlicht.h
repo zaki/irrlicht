@@ -263,15 +263,15 @@
  *
  * Irrlicht can load a lot of file formats automaticly, see irr::scene::ISceneManager::getMesh()
  * for a detailed list. So if you would like to replace the simple blue screen background by
- * a cool Quake 3 Map, optimized by an octtree, just insert this code
+ * a cool Quake 3 Map, optimized by an octree, just insert this code
  * somewhere before the while loop:
  *
  * \code
  *	// add .pk3 archive to the file system
  *	device->getFileSystem()->addZipFileArchive("quake3map.pk3");
  *
- *	// load .bsp file and show it using an octtree
- *	scenemgr->addOctTreeSceneNode(
+ *	// load .bsp file and show it using an octree
+ *	scenemgr->addOctreeSceneNode(
  *		scenemgr->getMesh("quake3map.bsp"));
  * \endcode
  *

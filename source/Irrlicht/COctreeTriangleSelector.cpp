@@ -2,7 +2,7 @@
 // This file is part of the "Irrlicht Engine".
 // For conditions of distribution and use, see copyright notice in irrlicht.h
 
-#include "COctTreeTriangleSelector.h"
+#include "COctreeTriangleSelector.h"
 #include "ISceneNode.h"
 
 #include "os.h"
@@ -13,26 +13,26 @@ namespace scene
 {
 
 //! constructor
-COctTreeTriangleSelector::COctTreeTriangleSelector(const IMesh* mesh,
+COctreeTriangleSelector::COctreeTriangleSelector(const IMesh* mesh,
 		const ISceneNode* node, s32 minimalPolysPerNode)
 	: CTriangleSelector(mesh, node), Root(0), NodeCount(0),
 	 MinimalPolysPerNode(minimalPolysPerNode)
 {
 	#ifdef _DEBUG
-	setDebugName("COctTreeTriangleSelector");
+	setDebugName("COctreeTriangleSelector");
 	#endif
-	
+
 	if (!Triangles.empty())
 	{
 		const u32 start = os::Timer::getRealTime();
 
-		// create the triangle octtree
-		Root = new SOctTreeNode();
+		// create the triangle octree
+		Root = new SOctreeNode();
 		Root->Triangles = Triangles;
-		constructOctTree(Root);
+		constructOctree(Root);
 
 		c8 tmp[256];
-		sprintf(tmp, "Needed %ums to create OctTreeTriangleSelector.(%d nodes, %u polys)",
+		sprintf(tmp, "Needed %ums to create OctreeTriangleSelector.(%d nodes, %u polys)",
 			os::Timer::getRealTime() - start, NodeCount, Triangles.size());
 		os::Printer::log(tmp, ELL_INFORMATION);
 	}
@@ -40,13 +40,13 @@ COctTreeTriangleSelector::COctTreeTriangleSelector(const IMesh* mesh,
 
 
 //! destructor
-COctTreeTriangleSelector::~COctTreeTriangleSelector()
+COctreeTriangleSelector::~COctreeTriangleSelector()
 {
 	delete Root;
 }
 
 
-void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
+void COctreeTriangleSelector::constructOctree(SOctreeNode* node)
 {
 	++NodeCount;
 
@@ -75,7 +75,7 @@ void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
 	{
 		box.reset(middle);
 		box.addInternalPoint(edges[ch]);
-		node->Child[ch] = new SOctTreeNode();
+		node->Child[ch] = new SOctreeNode();
 
 		for (s32 i=0; i<(s32)node->Triangles.size(); ++i)
 		{
@@ -102,13 +102,13 @@ void COctTreeTriangleSelector::constructOctTree(SOctTreeNode* node)
 			node->Child[ch] = 0;
 		}
 		else
-			constructOctTree(node->Child[ch]);
+			constructOctree(node->Child[ch]);
 	}
 }
 
 
 //! Gets all triangles which lie within a specific bounding box.
-void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles,
+void COctreeTriangleSelector::getTriangles(core::triangle3df* triangles,
 					s32 arraySize, s32& outTriangleCount,
 					const core::aabbox3d<f32>& box,
 					const core::matrix4* transform) const
@@ -138,15 +138,15 @@ void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles,
 	s32 trianglesWritten = 0;
 
 	if (Root)
-		getTrianglesFromOctTree(Root, trianglesWritten,
+		getTrianglesFromOctree(Root, trianglesWritten,
 			arraySize, invbox, &mat, triangles);
 
 	outTriangleCount = trianglesWritten;
 }
 
 
-void COctTreeTriangleSelector::getTrianglesFromOctTree(
-		SOctTreeNode* node, s32& trianglesWritten,
+void COctreeTriangleSelector::getTrianglesFromOctree(
+		SOctreeNode* node, s32& trianglesWritten,
 		s32 maximumSize, const core::aabbox3d<f32>& box,
 		const core::matrix4* mat, core::triangle3df* triangles) const
 {
@@ -158,7 +158,7 @@ void COctTreeTriangleSelector::getTrianglesFromOctTree(
 		cnt -= cnt + trianglesWritten - maximumSize;
 
 	s32 i;
-	
+
 	for (i=0; i<cnt; ++i)
 	{
 		mat->transformVect(triangles[trianglesWritten].pointA, node->Triangles[i].pointA );
@@ -169,14 +169,14 @@ void COctTreeTriangleSelector::getTrianglesFromOctTree(
 
 	for (i=0; i<8; ++i)
 		if (node->Child[i])
-			getTrianglesFromOctTree(node->Child[i], trianglesWritten,
+			getTrianglesFromOctree(node->Child[i], trianglesWritten,
 			maximumSize, box, mat, triangles);
 }
 
 
 //! Gets all triangles which have or may have contact with a 3d line.
 // new version: from user Piraaate
-void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
+void COctreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 arraySize,
 		s32& outTriangleCount, const core::line3d<f32>& line,
 		const core::matrix4* transform) const
 {
@@ -185,7 +185,7 @@ void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 ar
 	box.addInternalPoint(line.end);
 
 	// TODO: Could be optimized for line a little bit more.
-	COctTreeTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount,
+	COctreeTriangleSelector::getTriangles(triangles, arraySize, outTriangleCount,
 		box, transform);
 #else
 
@@ -212,13 +212,13 @@ void COctTreeTriangleSelector::getTriangles(core::triangle3df* triangles, s32 ar
 	s32 trianglesWritten = 0;
 
 	if (Root)
-		getTrianglesFromOctTree(Root, trianglesWritten, arraySize, invline, &mat, triangles);
+		getTrianglesFromOctree(Root, trianglesWritten, arraySize, invline, &mat, triangles);
 
 	outTriangleCount = trianglesWritten;
 #endif
 }
 
-void COctTreeTriangleSelector::getTrianglesFromOctTree(SOctTreeNode* node,
+void COctreeTriangleSelector::getTrianglesFromOctree(SOctreeNode* node,
 		s32& trianglesWritten, s32 maximumSize, const core::line3d<f32>& line,
 		const core::matrix4* transform, core::triangle3df* triangles) const
 {
@@ -253,7 +253,7 @@ void COctTreeTriangleSelector::getTrianglesFromOctTree(SOctTreeNode* node,
 
 	for (i=0; i<8; ++i)
 		if (node->Child[i])
-			getTrianglesFromOctTree(node->Child[i], trianglesWritten,
+			getTrianglesFromOctree(node->Child[i], trianglesWritten,
 			maximumSize, line, transform, triangles);
 }
 
