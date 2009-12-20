@@ -13,7 +13,7 @@ struct VarArray
 	core::array < int, core::irrAllocatorFast<int> > MyArray;
 };
 
-bool testSelfAssignment()
+static bool testSelfAssignment()
 {
 	core::array<int> myArray;
 	myArray.push_back(1);
@@ -22,7 +22,7 @@ bool testSelfAssignment()
 }
 
 // this will (did once) simply crash when wrong, so no return value
-void crashTestFastAlloc()
+static void crashTestFastAlloc()
 {
 	core::array < VarArray, core::irrAllocatorFast<VarArray> > ArrayArray;
 	ArrayArray.setAllocStrategy(core::ALLOC_STRATEGY_SAFE); // force more re-allocations
@@ -37,14 +37,38 @@ void crashTestFastAlloc()
 	}
 }
 
+static bool testSwap()
+{
+	bool result = true;
+
+	core::array<int> array1, array2, copy1, copy2;
+	for ( int i=0; i<99; ++i )
+	{
+		array1.push_back(i);
+		if ( i < 10 )	// we want also different container sizes
+			array2.push_back(99-i);
+	}
+	copy1 = array1;
+	copy2 = array2;
+	array1.swap(array2);
+
+	result &= (array1 == copy2);
+	result &= (array2 == copy1);
+
+	assert( result );
+
+	return result;
+}
+
 // Test the functionality of core::array
-bool testArray(void)
+bool testIrrArray(void)
 {
 	bool allExpected = true;
-	
+
 	logTestString("crashTestFastAlloc\n");
 	crashTestFastAlloc();
 	allExpected &= testSelfAssignment();
+	allExpected &= testSwap();
 
 	if(allExpected)
 		logTestString("\nAll tests passed\n");

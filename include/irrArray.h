@@ -8,6 +8,7 @@
 #include "irrTypes.h"
 #include "heapsort.h"
 #include "irrAllocator.h"
+#include "irrMath.h"
 
 namespace irr
 {
@@ -249,7 +250,7 @@ public:
 	//! Assignment operator
 	const array<T, TAlloc>& operator=(const array<T, TAlloc>& other)
 	{
-		if (this == &other) 
+		if (this == &other)
 			return *this;
 		strategy = other.strategy;
 
@@ -269,7 +270,7 @@ public:
 
 		for (u32 i=0; i<other.used; ++i)
 			allocator.construct(&data[i], other.data[i]); // data[i] = other.data[i];
-		
+
 		return *this;
 	}
 
@@ -564,6 +565,28 @@ public:
 	void set_sorted(bool _is_sorted)
 	{
 		is_sorted = _is_sorted;
+	}
+
+
+	//! Swap the content of this array container with the content of another array
+	/** Afterwards this object will contain the content of the other object and the other
+	object will contain the content of this object.
+	\param other Swap content with this object	*/
+	void swap(array<T, TAlloc>& other)
+	{
+		core::swap(data, other.data);
+		core::swap(allocated, other.allocated);
+		core::swap(used, other.used);
+		core::swap(allocator, other.allocator);	// memory is still released by the same allocator used for allocation
+		eAllocStrategy helper_strategy(strategy);	// can't use core::swap with bitfields
+		strategy = other.strategy;
+		other.strategy = helper_strategy;
+		bool helper_free_when_destroyed(free_when_destroyed);
+		free_when_destroyed = other.free_when_destroyed;
+		other.free_when_destroyed = helper_free_when_destroyed;
+		bool helper_is_sorted(is_sorted);
+		is_sorted = other.is_sorted;
+		other.is_sorted = helper_is_sorted;
 	}
 
 
