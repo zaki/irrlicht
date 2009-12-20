@@ -8,19 +8,30 @@ using namespace core;
 // list has no operator== currently so we have to check manually
 // TODO: Add an operator== to core::list and the kick this function out
 template <typename T>
-static bool compareLists(core::list<T> & a, core::list<T> & b)
+static bool compareLists(const core::list<T> & a, const core::list<T> & b)
 {
 	if ( a.size() != b.size() )
 		return false;
 	// can't test allocator because we have no access to it here
-	typename core::list<T>::Iterator iterA = a.begin();	// TODO: why can't we use ConstIterator here? Strange... this has to work!
-	typename core::list<T>::Iterator iterB = b.begin();
+	typename core::list<T>::ConstIterator iterA = a.begin();
+	typename core::list<T>::ConstIterator iterB = b.begin();
 	for ( ; iterA != a.end(); ++iterA, ++iterB )
 	{
 		if ( (*iterA) != (*iterB) )
 			return false;
 	}
 	return true;
+}
+
+// Make sure that we can get a const iterator from a non-const list
+template <typename T>
+static void constIteratorCompileTest(core::list<T> & a)
+{
+	typename core::list<T>::ConstIterator iterA = a.begin();
+	while (iterA != a.end() )
+	{
+		++iterA;
+	}
 }
 
 static bool testSwap()
@@ -51,6 +62,9 @@ static bool testSwap()
 bool testIrrList(void)
 {
 	bool success = true;
+
+	core::list<int> compileThisList;
+	constIteratorCompileTest(compileThisList);
 
 	success &= testSwap();
 
