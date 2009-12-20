@@ -30,7 +30,7 @@ namespace scene
 		\param selector: TriangleSelector containing the triangles. It
 		can be created for example using
 		ISceneManager::createTriangleSelector() or
-		ISceneManager::createTriangleOctTreeSelector().
+		ISceneManager::createTriangleOctreeSelector().
 		\param outCollisionPoint: If a collision is detected, this will
 		contain the position of the nearest collision to the line-start.
 		\param outTriangle: If a collision is detected, this will
@@ -51,7 +51,7 @@ namespace scene
 		\param selector: TriangleSelector containing the triangles of
 		the world. It can be created for example using
 		ISceneManager::createTriangleSelector() or
-		ISceneManager::createTriangleOctTreeSelector().
+		ISceneManager::createTriangleOctreeSelector().
 		\param ellipsoidPosition: Position of the ellipsoid.
 		\param ellipsoidRadius: Radius of the ellipsoid.
 		\param ellipsoidDirectionAndSpeed: Direction and speed of the

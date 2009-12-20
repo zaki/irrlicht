@@ -146,7 +146,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 1;
-	}	
+	}
 
 	// create device and exit if creation failed
 	const core::dimension2du videoDim ( 800,600 );
@@ -200,12 +200,12 @@ int IRRCALLCONV main(int argc, char* argv[])
 	they are only a huge chunk of static geometry with some materials
 	attached. Hence the IAnimated mesh consists of only one frame,
 	so we get the "first frame" of the "animation", which is our quake level
-	and create an OctTree scene node with it, using addOctTreeSceneNode().
-	The OctTree optimizes the scene a little bit, trying to draw only geometry
-	which is currently visible. An alternative to the OctTree would be a
+	and create an Octree scene node with it, using addOctreeSceneNode().
+	The Octree optimizes the scene a little bit, trying to draw only geometry
+	which is currently visible. An alternative to the Octree would be a
 	AnimatedMeshSceneNode, which would draw always the complete geometry of
 	the mesh, without optimization. Try it out: Write addAnimatedMeshSceneNode
-	instead of addOctTreeSceneNode and compare the primitives drawed by the
+	instead of addOctreeSceneNode and compare the primitives drawed by the
 	video driver. (There is a getPrimitiveCountDrawed() method in the
 	IVideoDriver class). Note that this optimization with the Octree is only
 	useful when drawing huge meshes consisting of lots of geometry.
@@ -222,7 +222,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	{
 		scene::IMesh *geometry = mesh->getMesh(quake3::E_Q3_MESH_GEOMETRY);
 //		node = smgr->addMeshSceneNode ( geometry );
-		node = smgr->addOctTreeSceneNode(geometry, 0, -1, 1024);
+		node = smgr->addOctreeSceneNode(geometry, 0, -1, 1024);
 	}
 
 	// create an event receiver for making screenshots
@@ -305,7 +305,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 		we can ask the Quake3 Loader for all entities with class_name
 		"info_player_deathmatch"
 		we choose a random launch
-		
+
 	*/
 	if ( mesh )
 	{
@@ -427,7 +427,7 @@ int IRRCALLCONV main(int argc, char* argv[])
 	In the end, delete the Irrlicht device.
 	*/
 	device->drop();
-	
+
 	return 0;
 }
 

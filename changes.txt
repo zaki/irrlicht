@@ -1,5 +1,7 @@
 Changes in 1.7
 
+ - Renamed OctTree to Octree
+
  - Allow getting a ConstIterator from a non-const core:list
 
  - Add swap functions to irrMath and to the core classes.

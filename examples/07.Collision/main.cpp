@@ -78,7 +78,7 @@ int main()
 
 	// The Quake mesh is pickable, but doesn't get highlighted.
 	if (q3levelmesh)
-		q3node = smgr->addOctTreeSceneNode(q3levelmesh->getMesh(0), 0, IDFlag_IsPickable);
+		q3node = smgr->addOctreeSceneNode(q3levelmesh->getMesh(0), 0, IDFlag_IsPickable);
 
 	/*
 	So far so good, we've loaded the quake 3 level like in tutorial 2. Now,
@@ -87,7 +87,7 @@ int main()
 	nodes for doing different things with them, for example collision
 	detection. There are different triangle selectors, and all can be
 	created with the ISceneManager. In this example, we create an
-	OctTreeTriangleSelector, which optimizes the triangle output a little
+	OctreeTriangleSelector, which optimizes the triangle output a little
 	bit by reducing it like an octree. This is very useful for huge meshes
 	like quake 3 levels. After we created the triangle selector, we attach
 	it to the q3node. This is not necessary, but in this way, we do not
@@ -101,7 +101,7 @@ int main()
 	{
 		q3node->setPosition(core::vector3df(-1350,-130,-1400));
 
-		selector = smgr->createOctTreeTriangleSelector(
+		selector = smgr->createOctreeTriangleSelector(
 				q3node->getMesh(), q3node, 128);
 		q3node->setTriangleSelector(selector);
 		// We're not done with this selector yet, so don't drop it.

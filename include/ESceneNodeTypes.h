@@ -42,8 +42,8 @@ namespace scene
 		//! Shadow Volume Scene Node
 		ESNT_SHADOW_VOLUME  = MAKE_IRR_ID('s','h','d','w'),
 
-		//! OctTree Scene Node
-		ESNT_OCT_TREE       = MAKE_IRR_ID('o','c','t','t'),
+		//! Octree Scene Node
+		ESNT_OCTREE         = MAKE_IRR_ID('o','c','t','r'),
 
 		//! Mesh Scene Node
 		ESNT_MESH           = MAKE_IRR_ID('m','e','s','h'),

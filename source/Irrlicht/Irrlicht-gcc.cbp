@@ -783,10 +783,10 @@
 		<Unit filename="COCTLoader.h" />
 		<Unit filename="COSOperator.cpp" />
 		<Unit filename="COSOperator.h" />
-		<Unit filename="COctTreeSceneNode.cpp" />
-		<Unit filename="COctTreeSceneNode.h" />
-		<Unit filename="COctTreeTriangleSelector.cpp" />
-		<Unit filename="COctTreeTriangleSelector.h" />
+		<Unit filename="COctreeSceneNode.cpp" />
+		<Unit filename="COctreeSceneNode.h" />
+		<Unit filename="COctreeTriangleSelector.cpp" />
+		<Unit filename="COctreeTriangleSelector.h" />
 		<Unit filename="COgreMeshFileLoader.cpp" />
 		<Unit filename="COgreMeshFileLoader.h" />
 		<Unit filename="COpenGLDriver.cpp" />
@@ -951,7 +951,7 @@
 		<Unit filename="Irrlicht.cpp" />
 		<Unit filename="MacOSX/CIrrDeviceMacOSX.h" />
 		<Unit filename="MacOSX/CIrrDeviceMacOSX.mm" />
-		<Unit filename="OctTree.h" />
+		<Unit filename="Octree.h" />
 		<Unit filename="S2DVertex.h" />
 		<Unit filename="S4DVertex.h" />
 		<Unit filename="SoftwareDriver2_compile_config.h" />

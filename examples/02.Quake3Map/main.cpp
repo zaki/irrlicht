@@ -6,7 +6,7 @@ controlled camera.
 
 Please note that you should know the basics of the engine before starting this
 tutorial. Just take a short look at the first tutorial, if you haven't done
-this yet: http://irrlicht.sourceforge.net/tut001.html 
+this yet: http://irrlicht.sourceforge.net/tut001.html
 
 Lets start like the HelloWorld example: We include the irrlicht header files
 and an additional file to be able to ask the user for a driver type using the
@@ -70,7 +70,7 @@ int main()
 		case 'e': driverType = video::EDT_BURNINGSVIDEO;break;
 		case 'f': driverType = video::EDT_NULL;     break;
 		default: return 1;
-	}	
+	}
 
 	// create device and exit if creation failed
 
@@ -104,24 +104,24 @@ int main()
 	really animated, they are only a huge chunk of static geometry with
 	some materials attached. Hence the IAnimatedMesh consists of only one
 	frame, so we get the "first frame" of the "animation", which is our
-	quake level and create an OctTree scene node with it, using
-	irr::scene::ISceneManager::addOctTreeSceneNode().
-	The OctTree optimizes the scene a little bit, trying to draw only geometry
-	which is currently visible. An alternative to the OctTree would be a
+	quake level and create an Octree scene node with it, using
+	irr::scene::ISceneManager::addOctreeSceneNode().
+	The Octree optimizes the scene a little bit, trying to draw only geometry
+	which is currently visible. An alternative to the Octree would be a
 	irr::scene::IMeshSceneNode, which would always draw the complete
 	geometry of the mesh, without optimization. Try it: Use
 	irr::scene::ISceneManager::addMeshSceneNode() instead of
-	addOctTreeSceneNode() and compare the primitives drawn by the video
+	addOctreeSceneNode() and compare the primitives drawn by the video
 	driver. (There is a irr::video::IVideoDriver::getPrimitiveCountDrawn()
 	method in the irr::video::IVideoDriver class). Note that this
-	optimization with the OctTree is only useful when drawing huge meshes
+	optimization with the Octree is only useful when drawing huge meshes
 	consisting of lots of geometry.
 	*/
 	scene::IAnimatedMesh* mesh = smgr->getMesh("20kdm2.bsp");
 	scene::ISceneNode* node = 0;
-	
+
 	if (mesh)
-		node = smgr->addOctTreeSceneNode(mesh->getMesh(0), 0, -1, 1024);
+		node = smgr->addOctreeSceneNode(mesh->getMesh(0), 0, -1, 1024);
 //		node = smgr->addMeshSceneNode(mesh->getMesh(0));
 
 	/*
