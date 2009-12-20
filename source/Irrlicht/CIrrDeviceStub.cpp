@@ -34,6 +34,7 @@ CIrrDeviceStub::CIrrDeviceStub(const SIrrlichtCreationParameters& params)
 		Logger = new CLogger(UserReceiver);
 		os::Printer::Logger = Logger;
 	}
+	Logger->setLogLevel( CreationParams.LoggingLevel );
 
 	os::Printer::Logger = Logger;
 
