@@ -47,7 +47,7 @@ namespace core
 #endif
 	//! Constant for PI.
 	const f32 PI		= 3.14159265359f;
-						
+
 	//! Constant for reciprocal of PI.
 	const f32 RECIPROCAL_PI	= 1.0f/PI;
 
@@ -159,6 +159,15 @@ namespace core
 	inline const T clamp (const T& value, const T& low, const T& high)
 	{
 		return min_ (max_(value,low), high);
+	}
+
+	//! swaps the content of the passed parameters
+	template <class T>
+	inline void swap(T& a, T& b)
+	{
+		T c(a);
+		a = b;
+		b = c;
 	}
 
 	//! returns if a equals b, taking possible rounding errors into account
@@ -462,7 +471,7 @@ namespace core
 		__asm mulss xmm1, xmm0            // xmm1 = f * rcpss(f)
 		__asm mulss xmm1, xmm0            // xmm2 = f * rcpss(f) * rcpss(f)
 		__asm addss xmm0, xmm0            // xmm0 = 2 * rcpss(f)
-		__asm subss xmm0, xmm1            // xmm0 = 2 * rcpss(f) 
+		__asm subss xmm0, xmm1            // xmm0 = 2 * rcpss(f)
 										  //        - f * rcpss(f) * rcpss(f)
 		__asm movss rec, xmm0             // return xmm0
 		return rec;
@@ -502,7 +511,7 @@ namespace core
 		__asm mulss xmm1, xmm0            // xmm1 = f * rcpss(f)
 		__asm mulss xmm1, xmm0            // xmm2 = f * rcpss(f) * rcpss(f)
 		__asm addss xmm0, xmm0            // xmm0 = 2 * rcpss(f)
-		__asm subss xmm0, xmm1            // xmm0 = 2 * rcpss(f) 
+		__asm subss xmm0, xmm1            // xmm0 = 2 * rcpss(f)
 										  //        - f * rcpss(f) * rcpss(f)
 		__asm movss rec, xmm0             // return xmm0
 		return rec;

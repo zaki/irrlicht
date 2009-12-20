@@ -52,7 +52,9 @@ int main(int argumentCount, char * arguments[])
 
 	TEST(disambiguateTextures); // Normally you should run this first, since it validates the working directory.
 	// Now the simple tests without device
-	TEST(testArray);
+	TEST(testIrrArray);
+	TEST(testIrrMap);
+	TEST(testIrrList);
 	TEST(exports);
 	TEST(irrCoreEquals);
 	TEST(testIrrString);

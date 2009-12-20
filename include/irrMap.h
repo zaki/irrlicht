@@ -6,6 +6,7 @@
 #define __IRR_MAP_H_INCLUDED__
 
 #include "irrTypes.h"
+#include "irrMath.h"
 
 namespace irr
 {
@@ -49,7 +50,7 @@ class map
 
 		RBTree* getLeftChild() const	{ return LeftChild; }
 		RBTree* getRightChild() const	{ return RightChild; }
-		RBTree* getParent() const	{ return Parent; }
+		RBTree* getParent() const		{ return Parent; }
 
 		ValueTypeRB getValue() const
 		{
@@ -730,10 +731,16 @@ class map
 
 	//! Is the tree empty?
 	//! \return Returns true if empty, false if not
-	bool isEmpty() const
+	bool empty() const
 	{
 		_IRR_IMPLEMENT_MANAGED_MARSHALLING_BUGFIX;
 		return Root == 0;
+	}
+
+	//! \deprecated Use empty() instead.
+	_IRR_DEPRECATED_ bool isEmpty() const
+	{
+		return empty();
 	}
 
 	//! Search for a node with the specified key.
@@ -770,6 +777,17 @@ class map
 	u32 size() const
 	{
 		return Size;
+	}
+
+	//! Swap the content of this map container with the content of another map
+	/** Afterwards this object will contain the content of the other object and the other
+	object will contain the content of this object. Iterators will afterwards be valid for
+	the swapped object.
+	\param other Swap content with this object	*/
+	void swap(map<KeyType, ValueType>& other)
+	{
+		core::swap(Root, other.Root);
+		core::swap(Size, other.Size);
 	}
 
 	//------------------------------
